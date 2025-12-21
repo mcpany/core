@@ -13,6 +13,7 @@ MCP Any supports a wide range of service types to expose various backends as MCP
 *   **WebSocket**: Connect to WebSocket endpoints.
 *   **WebRTC**: Connect via WebRTC.
 *   **SQL**: (Beta) Connect to SQL databases and expose queries as tools.
+*   **Filesystem**: Expose a local directory as a set of file tools. See [Filesystem Provider](filesystem.md).
 
 ## Configuration
 

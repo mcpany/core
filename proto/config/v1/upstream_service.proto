@@ -69,6 +69,7 @@ message UpstreamServiceConfig {
     WebrtcUpstreamService webrtc_service = 17 [json_name = "webrtc_service"];
     GraphQLUpstreamService graphql_service = 21 [json_name = "graphql_service"];
     SqlUpstreamService sql_service = 31 [json_name = "sql_service"];
+    FilesystemUpstreamService filesystem_service = 32 [json_name = "filesystem_service"];
   }
 
   // The version of the upstream service, if known (e.g., "v1.2.3").
@@ -336,6 +337,14 @@ message SqlUpstreamService {
   string dsn = 2;
   // A map of call definitions, keyed by their unique ID.
   map<string, SqlCallDefinition> calls = 3;
+}
+
+// FilesystemUpstreamService defines an upstream service that exposes a local file system.
+message FilesystemUpstreamService {
+  // The root path of the file system to expose.
+  string root_path = 1 [json_name = "root_path"];
+  // If true, the file system is read-only.
+  bool read_only = 2 [json_name = "read_only"];
 }
 
 

@@ -494,6 +494,7 @@ type UpstreamServiceConfig struct {
 	//	*UpstreamServiceConfig_WebrtcService
 	//	*UpstreamServiceConfig_GraphqlService
 	//	*UpstreamServiceConfig_SqlService
+	//	*UpstreamServiceConfig_FilesystemService
 	ServiceConfig isUpstreamServiceConfig_ServiceConfig `protobuf_oneof:"service_config"`
 	// The version of the upstream service, if known (e.g., "v1.2.3").
 	Version *string `protobuf:"bytes,14,opt,name=version" json:"version,omitempty"`
@@ -699,6 +700,15 @@ func (x *UpstreamServiceConfig) GetSqlService() *SqlUpstreamService {
 	return nil
 }
 
+func (x *UpstreamServiceConfig) GetFilesystemService() *FilesystemUpstreamService {
+	if x != nil {
+		if x, ok := x.ServiceConfig.(*UpstreamServiceConfig_FilesystemService); ok {
+			return x.FilesystemService
+		}
+	}
+	return nil
+}
+
 func (x *UpstreamServiceConfig) GetVersion() string {
 	if x != nil && x.Version != nil {
 		return *x.Version
@@ -898,6 +908,14 @@ func (x *UpstreamServiceConfig) SetSqlService(v *SqlUpstreamService) {
 	x.ServiceConfig = &UpstreamServiceConfig_SqlService{v}
 }
 
+func (x *UpstreamServiceConfig) SetFilesystemService(v *FilesystemUpstreamService) {
+	if v == nil {
+		x.ServiceConfig = nil
+		return
+	}
+	x.ServiceConfig = &UpstreamServiceConfig_FilesystemService{v}
+}
+
 func (x *UpstreamServiceConfig) SetVersion(v string) {
 	x.Version = &v
 }
@@ -1092,6 +1110,14 @@ func (x *UpstreamServiceConfig) HasSqlService() bool {
 	return ok
 }
 
+func (x *UpstreamServiceConfig) HasFilesystemService() bool {
+	if x == nil {
+		return false
+	}
+	_, ok := x.ServiceConfig.(*UpstreamServiceConfig_FilesystemService)
+	return ok
+}
+
 func (x *UpstreamServiceConfig) HasVersion() bool {
 	if x == nil {
 		return false
@@ -1242,6 +1268,12 @@ func (x *UpstreamServiceConfig) ClearSqlService() {
 	}
 }
 
+func (x *UpstreamServiceConfig) ClearFilesystemService() {
+	if _, ok := x.ServiceConfig.(*UpstreamServiceConfig_FilesystemService); ok {
+		x.ServiceConfig = nil
+	}
+}
+
 func (x *UpstreamServiceConfig) ClearVersion() {
 	x.Version = nil
 }
@@ -1284,6 +1316,7 @@ const UpstreamServiceConfig_WebsocketService_case case_UpstreamServiceConfig_Ser
 const UpstreamServiceConfig_WebrtcService_case case_UpstreamServiceConfig_ServiceConfig = 17
 const UpstreamServiceConfig_GraphqlService_case case_UpstreamServiceConfig_ServiceConfig = 21
 const UpstreamServiceConfig_SqlService_case case_UpstreamServiceConfig_ServiceConfig = 31
+const UpstreamServiceConfig_FilesystemService_case case_UpstreamServiceConfig_ServiceConfig = 32
 
 func (x *UpstreamServiceConfig) WhichServiceConfig() case_UpstreamServiceConfig_ServiceConfig {
 	if x == nil {
@@ -1308,6 +1341,8 @@ func (x *UpstreamServiceConfig) WhichServiceConfig() case_UpstreamServiceConfig_
 		return UpstreamServiceConfig_GraphqlService_case
 	case *UpstreamServiceConfig_SqlService:
 		return UpstreamServiceConfig_SqlService_case
+	case *UpstreamServiceConfig_FilesystemService:
+		return UpstreamServiceConfig_FilesystemService_case
 	default:
 		return UpstreamServiceConfig_ServiceConfig_not_set_case
 	}
@@ -1351,6 +1386,7 @@ type UpstreamServiceConfig_builder struct {
 	WebrtcService      *WebrtcUpstreamService
 	GraphqlService     *GraphQLUpstreamService
 	SqlService         *SqlUpstreamService
+	FilesystemService  *FilesystemUpstreamService
 	// -- end of ServiceConfig
 	// The version of the upstream service, if known (e.g., "v1.2.3").
 	Version *string
@@ -1418,6 +1454,9 @@ func (b0 UpstreamServiceConfig_builder) Build() *UpstreamServiceConfig {
 	if b.SqlService != nil {
 		x.ServiceConfig = &UpstreamServiceConfig_SqlService{b.SqlService}
 	}
+	if b.FilesystemService != nil {
+		x.ServiceConfig = &UpstreamServiceConfig_FilesystemService{b.FilesystemService}
+	}
 	x.Version = b.Version
 	x.Authentication = b.Authentication
 	x.Disable = b.Disable
@@ -1484,6 +1523,10 @@ type UpstreamServiceConfig_SqlService struct {
 	SqlService *SqlUpstreamService `protobuf:"bytes,31,opt,name=sql_service,oneof"`
 }
 
+type UpstreamServiceConfig_FilesystemService struct {
+	FilesystemService *FilesystemUpstreamService `protobuf:"bytes,32,opt,name=filesystem_service,oneof"`
+}
+
 func (*UpstreamServiceConfig_McpService) isUpstreamServiceConfig_ServiceConfig() {}
 
 func (*UpstreamServiceConfig_HttpService) isUpstreamServiceConfig_ServiceConfig() {}
@@ -1501,6 +1544,8 @@ func (*UpstreamServiceConfig_WebrtcService) isUpstreamServiceConfig_ServiceConfi
 func (*UpstreamServiceConfig_GraphqlService) isUpstreamServiceConfig_ServiceConfig() {}
 
 func (*UpstreamServiceConfig_SqlService) isUpstreamServiceConfig_ServiceConfig() {}
+
+func (*UpstreamServiceConfig_FilesystemService) isUpstreamServiceConfig_ServiceConfig() {}
 
 type CallPolicy struct {
 	state protoimpl.MessageState `protogen:"hybrid.v1"`
@@ -4485,6 +4530,104 @@ func (b0 SqlUpstreamService_builder) Build() *SqlUpstreamService {
 	return m0
 }
 
+// FilesystemUpstreamService defines an upstream service that exposes a local file system.
+type FilesystemUpstreamService struct {
+	state protoimpl.MessageState `protogen:"hybrid.v1"`
+	// The root path of the file system to expose.
+	RootPath *string `protobuf:"bytes,1,opt,name=root_path" json:"root_path,omitempty"`
+	// If true, the file system is read-only.
+	ReadOnly      *bool `protobuf:"varint,2,opt,name=read_only" json:"read_only,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *FilesystemUpstreamService) Reset() {
+	*x = FilesystemUpstreamService{}
+	mi := &file_proto_config_v1_upstream_service_proto_msgTypes[19]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *FilesystemUpstreamService) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*FilesystemUpstreamService) ProtoMessage() {}
+
+func (x *FilesystemUpstreamService) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_config_v1_upstream_service_proto_msgTypes[19]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+func (x *FilesystemUpstreamService) GetRootPath() string {
+	if x != nil && x.RootPath != nil {
+		return *x.RootPath
+	}
+	return ""
+}
+
+func (x *FilesystemUpstreamService) GetReadOnly() bool {
+	if x != nil && x.ReadOnly != nil {
+		return *x.ReadOnly
+	}
+	return false
+}
+
+func (x *FilesystemUpstreamService) SetRootPath(v string) {
+	x.RootPath = &v
+}
+
+func (x *FilesystemUpstreamService) SetReadOnly(v bool) {
+	x.ReadOnly = &v
+}
+
+func (x *FilesystemUpstreamService) HasRootPath() bool {
+	if x == nil {
+		return false
+	}
+	return x.RootPath != nil
+}
+
+func (x *FilesystemUpstreamService) HasReadOnly() bool {
+	if x == nil {
+		return false
+	}
+	return x.ReadOnly != nil
+}
+
+func (x *FilesystemUpstreamService) ClearRootPath() {
+	x.RootPath = nil
+}
+
+func (x *FilesystemUpstreamService) ClearReadOnly() {
+	x.ReadOnly = nil
+}
+
+type FilesystemUpstreamService_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// The root path of the file system to expose.
+	RootPath *string
+	// If true, the file system is read-only.
+	ReadOnly *bool
+}
+
+func (b0 FilesystemUpstreamService_builder) Build() *FilesystemUpstreamService {
+	m0 := &FilesystemUpstreamService{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.RootPath = b.RootPath
+	x.ReadOnly = b.ReadOnly
+	return m0
+}
+
 // McpUpstreamService defines an upstream that is already an MCP-compliant service.
 type McpUpstreamService struct {
 	state protoimpl.MessageState `protogen:"hybrid.v1"`
@@ -4512,7 +4655,7 @@ type McpUpstreamService struct {
 
 func (x *McpUpstreamService) Reset() {
 	*x = McpUpstreamService{}
-	mi := &file_proto_config_v1_upstream_service_proto_msgTypes[19]
+	mi := &file_proto_config_v1_upstream_service_proto_msgTypes[20]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4524,7 +4667,7 @@ func (x *McpUpstreamService) String() string {
 func (*McpUpstreamService) ProtoMessage() {}
 
 func (x *McpUpstreamService) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_upstream_service_proto_msgTypes[19]
+	mi := &file_proto_config_v1_upstream_service_proto_msgTypes[20]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4781,7 +4924,7 @@ func (b0 McpUpstreamService_builder) Build() *McpUpstreamService {
 type case_McpUpstreamService_ConnectionType protoreflect.FieldNumber
 
 func (x case_McpUpstreamService_ConnectionType) String() string {
-	md := file_proto_config_v1_upstream_service_proto_msgTypes[19].Descriptor()
+	md := file_proto_config_v1_upstream_service_proto_msgTypes[20].Descriptor()
 	if x == 0 {
 		return "not set"
 	}
@@ -4833,7 +4976,7 @@ type McpStdioConnection struct {
 
 func (x *McpStdioConnection) Reset() {
 	*x = McpStdioConnection{}
-	mi := &file_proto_config_v1_upstream_service_proto_msgTypes[20]
+	mi := &file_proto_config_v1_upstream_service_proto_msgTypes[21]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4845,7 +4988,7 @@ func (x *McpStdioConnection) String() string {
 func (*McpStdioConnection) ProtoMessage() {}
 
 func (x *McpStdioConnection) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_upstream_service_proto_msgTypes[20]
+	mi := &file_proto_config_v1_upstream_service_proto_msgTypes[21]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4997,7 +5140,7 @@ type McpStreamableHttpConnection struct {
 
 func (x *McpStreamableHttpConnection) Reset() {
 	*x = McpStreamableHttpConnection{}
-	mi := &file_proto_config_v1_upstream_service_proto_msgTypes[21]
+	mi := &file_proto_config_v1_upstream_service_proto_msgTypes[22]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5009,7 +5152,7 @@ func (x *McpStreamableHttpConnection) String() string {
 func (*McpStreamableHttpConnection) ProtoMessage() {}
 
 func (x *McpStreamableHttpConnection) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_upstream_service_proto_msgTypes[21]
+	mi := &file_proto_config_v1_upstream_service_proto_msgTypes[22]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5097,7 +5240,7 @@ type McpBundleConnection struct {
 
 func (x *McpBundleConnection) Reset() {
 	*x = McpBundleConnection{}
-	mi := &file_proto_config_v1_upstream_service_proto_msgTypes[22]
+	mi := &file_proto_config_v1_upstream_service_proto_msgTypes[23]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5109,7 +5252,7 @@ func (x *McpBundleConnection) String() string {
 func (*McpBundleConnection) ProtoMessage() {}
 
 func (x *McpBundleConnection) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_upstream_service_proto_msgTypes[22]
+	mi := &file_proto_config_v1_upstream_service_proto_msgTypes[23]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5211,7 +5354,7 @@ type ConnectionPoolConfig struct {
 
 func (x *ConnectionPoolConfig) Reset() {
 	*x = ConnectionPoolConfig{}
-	mi := &file_proto_config_v1_upstream_service_proto_msgTypes[23]
+	mi := &file_proto_config_v1_upstream_service_proto_msgTypes[24]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5223,7 +5366,7 @@ func (x *ConnectionPoolConfig) String() string {
 func (*ConnectionPoolConfig) ProtoMessage() {}
 
 func (x *ConnectionPoolConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_upstream_service_proto_msgTypes[23]
+	mi := &file_proto_config_v1_upstream_service_proto_msgTypes[24]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5338,7 +5481,7 @@ type ContainerEnvironment struct {
 
 func (x *ContainerEnvironment) Reset() {
 	*x = ContainerEnvironment{}
-	mi := &file_proto_config_v1_upstream_service_proto_msgTypes[24]
+	mi := &file_proto_config_v1_upstream_service_proto_msgTypes[25]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5350,7 +5493,7 @@ func (x *ContainerEnvironment) String() string {
 func (*ContainerEnvironment) ProtoMessage() {}
 
 func (x *ContainerEnvironment) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_upstream_service_proto_msgTypes[24]
+	mi := &file_proto_config_v1_upstream_service_proto_msgTypes[25]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5470,7 +5613,7 @@ type RateLimitConfig struct {
 
 func (x *RateLimitConfig) Reset() {
 	*x = RateLimitConfig{}
-	mi := &file_proto_config_v1_upstream_service_proto_msgTypes[25]
+	mi := &file_proto_config_v1_upstream_service_proto_msgTypes[26]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5482,7 +5625,7 @@ func (x *RateLimitConfig) String() string {
 func (*RateLimitConfig) ProtoMessage() {}
 
 func (x *RateLimitConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_upstream_service_proto_msgTypes[25]
+	mi := &file_proto_config_v1_upstream_service_proto_msgTypes[26]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5666,7 +5809,7 @@ type ResilienceConfig struct {
 
 func (x *ResilienceConfig) Reset() {
 	*x = ResilienceConfig{}
-	mi := &file_proto_config_v1_upstream_service_proto_msgTypes[26]
+	mi := &file_proto_config_v1_upstream_service_proto_msgTypes[27]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5678,7 +5821,7 @@ func (x *ResilienceConfig) String() string {
 func (*ResilienceConfig) ProtoMessage() {}
 
 func (x *ResilienceConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_upstream_service_proto_msgTypes[26]
+	mi := &file_proto_config_v1_upstream_service_proto_msgTypes[27]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5768,7 +5911,7 @@ type CircuitBreakerConfig struct {
 
 func (x *CircuitBreakerConfig) Reset() {
 	*x = CircuitBreakerConfig{}
-	mi := &file_proto_config_v1_upstream_service_proto_msgTypes[27]
+	mi := &file_proto_config_v1_upstream_service_proto_msgTypes[28]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5780,7 +5923,7 @@ func (x *CircuitBreakerConfig) String() string {
 func (*CircuitBreakerConfig) ProtoMessage() {}
 
 func (x *CircuitBreakerConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_upstream_service_proto_msgTypes[27]
+	mi := &file_proto_config_v1_upstream_service_proto_msgTypes[28]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5920,7 +6063,7 @@ type RetryConfig struct {
 
 func (x *RetryConfig) Reset() {
 	*x = RetryConfig{}
-	mi := &file_proto_config_v1_upstream_service_proto_msgTypes[28]
+	mi := &file_proto_config_v1_upstream_service_proto_msgTypes[29]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5932,7 +6075,7 @@ func (x *RetryConfig) String() string {
 func (*RetryConfig) ProtoMessage() {}
 
 func (x *RetryConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_upstream_service_proto_msgTypes[28]
+	mi := &file_proto_config_v1_upstream_service_proto_msgTypes[29]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6074,7 +6217,7 @@ type TLSConfig struct {
 
 func (x *TLSConfig) Reset() {
 	*x = TLSConfig{}
-	mi := &file_proto_config_v1_upstream_service_proto_msgTypes[29]
+	mi := &file_proto_config_v1_upstream_service_proto_msgTypes[30]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6086,7 +6229,7 @@ func (x *TLSConfig) String() string {
 func (*TLSConfig) ProtoMessage() {}
 
 func (x *TLSConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_upstream_service_proto_msgTypes[29]
+	mi := &file_proto_config_v1_upstream_service_proto_msgTypes[30]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6243,7 +6386,7 @@ const file_proto_config_v1_upstream_service_proto_rawDesc = "" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12\x1a\n" +
 	"\bhttp_url\x18\x02 \x01(\tR\bhttp_url\x12\x1a\n" +
 	"\bpriority\x18\x03 \x01(\x05R\bpriority\x12P\n" +
-	"\x0eauthentication\x18\x04 \x01(\v2(.mcpany.config.v1.UpstreamAuthenticationR\x0eauthentication\"\xc6\x10\n" +
+	"\x0eauthentication\x18\x04 \x01(\v2(.mcpany.config.v1.UpstreamAuthenticationR\x0eauthentication\"\xa5\x11\n" +
 	"\x15UpstreamServiceConfig\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x12\n" +
 	"\x04name\x18\x02 \x01(\tR\x04name\x12&\n" +
@@ -6267,7 +6410,8 @@ const file_proto_config_v1_upstream_service_proto_rawDesc = "" +
 	"\x11websocket_service\x18\x10 \x01(\v2*.mcpany.config.v1.WebsocketUpstreamServiceH\x00R\x11websocket_service\x12Q\n" +
 	"\x0ewebrtc_service\x18\x11 \x01(\v2'.mcpany.config.v1.WebrtcUpstreamServiceH\x00R\x0ewebrtc_service\x12T\n" +
 	"\x0fgraphql_service\x18\x15 \x01(\v2(.mcpany.config.v1.GraphQLUpstreamServiceH\x00R\x0fgraphql_service\x12H\n" +
-	"\vsql_service\x18\x1f \x01(\v2$.mcpany.config.v1.SqlUpstreamServiceH\x00R\vsql_service\x12\x18\n" +
+	"\vsql_service\x18\x1f \x01(\v2$.mcpany.config.v1.SqlUpstreamServiceH\x00R\vsql_service\x12]\n" +
+	"\x12filesystem_service\x18  \x01(\v2+.mcpany.config.v1.FilesystemUpstreamServiceH\x00R\x12filesystem_service\x12\x18\n" +
 	"\aversion\x18\x0e \x01(\tR\aversion\x12N\n" +
 	"\x0eauthentication\x18\x0f \x01(\v2&.mcpany.config.v1.AuthenticationConfigR\x0eauthentication\x12\x18\n" +
 	"\adisable\x18\x13 \x01(\bR\adisable\x12\x1a\n" +
@@ -6456,7 +6600,10 @@ const file_proto_config_v1_upstream_service_proto_rawDesc = "" +
 	"\n" +
 	"CallsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x129\n" +
-	"\x05value\x18\x02 \x01(\v2#.mcpany.config.v1.SqlCallDefinitionR\x05value:\x028\x01\"\xbf\x05\n" +
+	"\x05value\x18\x02 \x01(\v2#.mcpany.config.v1.SqlCallDefinitionR\x05value:\x028\x01\"W\n" +
+	"\x19FilesystemUpstreamService\x12\x1c\n" +
+	"\troot_path\x18\x01 \x01(\tR\troot_path\x12\x1c\n" +
+	"\tread_only\x18\x02 \x01(\bR\tread_only\"\xbf\x05\n" +
 	"\x12McpUpstreamService\x12Y\n" +
 	"\x0fhttp_connection\x18\x01 \x01(\v2-.mcpany.config.v1.McpStreamableHttpConnectionH\x00R\x0fhttp_connection\x12R\n" +
 	"\x10stdio_connection\x18\x02 \x01(\v2$.mcpany.config.v1.McpStdioConnectionH\x00R\x10stdio_connection\x12U\n" +
@@ -6553,7 +6700,7 @@ const file_proto_config_v1_upstream_service_proto_rawDesc = "" +
 	"\x06RANDOM\x10\x02B>B\x14UpstreamServiceProtoZ&github.com/mcpany/core/proto/config/v1b\beditionsp\xe8\a"
 
 var file_proto_config_v1_upstream_service_proto_enumTypes = make([]protoimpl.EnumInfo, 6)
-var file_proto_config_v1_upstream_service_proto_msgTypes = make([]protoimpl.MessageInfo, 44)
+var file_proto_config_v1_upstream_service_proto_msgTypes = make([]protoimpl.MessageInfo, 45)
 var file_proto_config_v1_upstream_service_proto_goTypes = []any{
 	(LoadBalancingStrategy)(0),                            // 0: mcpany.config.v1.LoadBalancingStrategy
 	(CallPolicy_Action)(0),                                // 1: mcpany.config.v1.CallPolicy.Action
@@ -6580,66 +6727,67 @@ var file_proto_config_v1_upstream_service_proto_goTypes = []any{
 	(*CommandLineUpstreamService)(nil),                    // 22: mcpany.config.v1.CommandLineUpstreamService
 	(*GraphQLUpstreamService)(nil),                        // 23: mcpany.config.v1.GraphQLUpstreamService
 	(*SqlUpstreamService)(nil),                            // 24: mcpany.config.v1.SqlUpstreamService
-	(*McpUpstreamService)(nil),                            // 25: mcpany.config.v1.McpUpstreamService
-	(*McpStdioConnection)(nil),                            // 26: mcpany.config.v1.McpStdioConnection
-	(*McpStreamableHttpConnection)(nil),                   // 27: mcpany.config.v1.McpStreamableHttpConnection
-	(*McpBundleConnection)(nil),                           // 28: mcpany.config.v1.McpBundleConnection
-	(*ConnectionPoolConfig)(nil),                          // 29: mcpany.config.v1.ConnectionPoolConfig
-	(*ContainerEnvironment)(nil),                          // 30: mcpany.config.v1.ContainerEnvironment
-	(*RateLimitConfig)(nil),                               // 31: mcpany.config.v1.RateLimitConfig
-	(*ResilienceConfig)(nil),                              // 32: mcpany.config.v1.ResilienceConfig
-	(*CircuitBreakerConfig)(nil),                          // 33: mcpany.config.v1.CircuitBreakerConfig
-	(*RetryConfig)(nil),                                   // 34: mcpany.config.v1.RetryConfig
-	(*TLSConfig)(nil),                                     // 35: mcpany.config.v1.TLSConfig
-	nil,                                                   // 36: mcpany.config.v1.GrpcUpstreamService.CallsEntry
-	nil,                                                   // 37: mcpany.config.v1.HttpUpstreamService.CallsEntry
-	nil,                                                   // 38: mcpany.config.v1.WebsocketUpstreamService.CallsEntry
-	nil,                                                   // 39: mcpany.config.v1.WebrtcUpstreamService.CallsEntry
-	nil,                                                   // 40: mcpany.config.v1.OpenapiUpstreamService.CallsEntry
-	nil,                                                   // 41: mcpany.config.v1.CommandLineUpstreamService.CallsEntry
-	nil,                                                   // 42: mcpany.config.v1.CommandLineUpstreamService.EnvEntry
-	nil,                                                   // 43: mcpany.config.v1.GraphQLUpstreamService.CallsEntry
-	nil,                                                   // 44: mcpany.config.v1.SqlUpstreamService.CallsEntry
-	nil,                                                   // 45: mcpany.config.v1.McpUpstreamService.CallsEntry
-	nil,                                                   // 46: mcpany.config.v1.McpStdioConnection.EnvEntry
-	nil,                                                   // 47: mcpany.config.v1.McpBundleConnection.EnvEntry
-	nil,                                                   // 48: mcpany.config.v1.ContainerEnvironment.VolumesEntry
-	nil,                                                   // 49: mcpany.config.v1.ContainerEnvironment.EnvEntry
-	(*UpstreamAuthentication)(nil),                        // 50: mcpany.config.v1.UpstreamAuthentication
-	(*CacheConfig)(nil),                                   // 51: mcpany.config.v1.CacheConfig
-	(*AuthenticationConfig)(nil),                          // 52: mcpany.config.v1.AuthenticationConfig
-	(*Profile)(nil),                                       // 53: mcpany.config.v1.Profile
-	(*PromptDefinition)(nil),                              // 54: mcpany.config.v1.PromptDefinition
-	(*WebhookConfig)(nil),                                 // 55: mcpany.config.v1.WebhookConfig
-	(*ToolDefinition)(nil),                                // 56: mcpany.config.v1.ToolDefinition
-	(*GrpcHealthCheck)(nil),                               // 57: mcpany.config.v1.GrpcHealthCheck
-	(*ResourceDefinition)(nil),                            // 58: mcpany.config.v1.ResourceDefinition
-	(*HttpHealthCheck)(nil),                               // 59: mcpany.config.v1.HttpHealthCheck
-	(*WebsocketHealthCheck)(nil),                          // 60: mcpany.config.v1.WebsocketHealthCheck
-	(*WebRTCHealthCheck)(nil),                             // 61: mcpany.config.v1.WebRTCHealthCheck
-	(*CommandLineHealthCheck)(nil),                        // 62: mcpany.config.v1.CommandLineHealthCheck
-	(*durationpb.Duration)(nil),                           // 63: google.protobuf.Duration
-	(*bus.RedisBus)(nil),                                  // 64: bus.RedisBus
-	(*GrpcCallDefinition)(nil),                            // 65: mcpany.config.v1.GrpcCallDefinition
-	(*HttpCallDefinition)(nil),                            // 66: mcpany.config.v1.HttpCallDefinition
-	(*WebsocketCallDefinition)(nil),                       // 67: mcpany.config.v1.WebsocketCallDefinition
-	(*WebrtcCallDefinition)(nil),                          // 68: mcpany.config.v1.WebrtcCallDefinition
-	(*OpenAPICallDefinition)(nil),                         // 69: mcpany.config.v1.OpenAPICallDefinition
-	(*CommandLineCallDefinition)(nil),                     // 70: mcpany.config.v1.CommandLineCallDefinition
-	(*SecretValue)(nil),                                   // 71: mcpany.config.v1.SecretValue
-	(*GraphQLCallDefinition)(nil),                         // 72: mcpany.config.v1.GraphQLCallDefinition
-	(*SqlCallDefinition)(nil),                             // 73: mcpany.config.v1.SqlCallDefinition
-	(*MCPCallDefinition)(nil),                             // 74: mcpany.config.v1.MCPCallDefinition
+	(*FilesystemUpstreamService)(nil),                     // 25: mcpany.config.v1.FilesystemUpstreamService
+	(*McpUpstreamService)(nil),                            // 26: mcpany.config.v1.McpUpstreamService
+	(*McpStdioConnection)(nil),                            // 27: mcpany.config.v1.McpStdioConnection
+	(*McpStreamableHttpConnection)(nil),                   // 28: mcpany.config.v1.McpStreamableHttpConnection
+	(*McpBundleConnection)(nil),                           // 29: mcpany.config.v1.McpBundleConnection
+	(*ConnectionPoolConfig)(nil),                          // 30: mcpany.config.v1.ConnectionPoolConfig
+	(*ContainerEnvironment)(nil),                          // 31: mcpany.config.v1.ContainerEnvironment
+	(*RateLimitConfig)(nil),                               // 32: mcpany.config.v1.RateLimitConfig
+	(*ResilienceConfig)(nil),                              // 33: mcpany.config.v1.ResilienceConfig
+	(*CircuitBreakerConfig)(nil),                          // 34: mcpany.config.v1.CircuitBreakerConfig
+	(*RetryConfig)(nil),                                   // 35: mcpany.config.v1.RetryConfig
+	(*TLSConfig)(nil),                                     // 36: mcpany.config.v1.TLSConfig
+	nil,                                                   // 37: mcpany.config.v1.GrpcUpstreamService.CallsEntry
+	nil,                                                   // 38: mcpany.config.v1.HttpUpstreamService.CallsEntry
+	nil,                                                   // 39: mcpany.config.v1.WebsocketUpstreamService.CallsEntry
+	nil,                                                   // 40: mcpany.config.v1.WebrtcUpstreamService.CallsEntry
+	nil,                                                   // 41: mcpany.config.v1.OpenapiUpstreamService.CallsEntry
+	nil,                                                   // 42: mcpany.config.v1.CommandLineUpstreamService.CallsEntry
+	nil,                                                   // 43: mcpany.config.v1.CommandLineUpstreamService.EnvEntry
+	nil,                                                   // 44: mcpany.config.v1.GraphQLUpstreamService.CallsEntry
+	nil,                                                   // 45: mcpany.config.v1.SqlUpstreamService.CallsEntry
+	nil,                                                   // 46: mcpany.config.v1.McpUpstreamService.CallsEntry
+	nil,                                                   // 47: mcpany.config.v1.McpStdioConnection.EnvEntry
+	nil,                                                   // 48: mcpany.config.v1.McpBundleConnection.EnvEntry
+	nil,                                                   // 49: mcpany.config.v1.ContainerEnvironment.VolumesEntry
+	nil,                                                   // 50: mcpany.config.v1.ContainerEnvironment.EnvEntry
+	(*UpstreamAuthentication)(nil),                        // 51: mcpany.config.v1.UpstreamAuthentication
+	(*CacheConfig)(nil),                                   // 52: mcpany.config.v1.CacheConfig
+	(*AuthenticationConfig)(nil),                          // 53: mcpany.config.v1.AuthenticationConfig
+	(*Profile)(nil),                                       // 54: mcpany.config.v1.Profile
+	(*PromptDefinition)(nil),                              // 55: mcpany.config.v1.PromptDefinition
+	(*WebhookConfig)(nil),                                 // 56: mcpany.config.v1.WebhookConfig
+	(*ToolDefinition)(nil),                                // 57: mcpany.config.v1.ToolDefinition
+	(*GrpcHealthCheck)(nil),                               // 58: mcpany.config.v1.GrpcHealthCheck
+	(*ResourceDefinition)(nil),                            // 59: mcpany.config.v1.ResourceDefinition
+	(*HttpHealthCheck)(nil),                               // 60: mcpany.config.v1.HttpHealthCheck
+	(*WebsocketHealthCheck)(nil),                          // 61: mcpany.config.v1.WebsocketHealthCheck
+	(*WebRTCHealthCheck)(nil),                             // 62: mcpany.config.v1.WebRTCHealthCheck
+	(*CommandLineHealthCheck)(nil),                        // 63: mcpany.config.v1.CommandLineHealthCheck
+	(*durationpb.Duration)(nil),                           // 64: google.protobuf.Duration
+	(*bus.RedisBus)(nil),                                  // 65: bus.RedisBus
+	(*GrpcCallDefinition)(nil),                            // 66: mcpany.config.v1.GrpcCallDefinition
+	(*HttpCallDefinition)(nil),                            // 67: mcpany.config.v1.HttpCallDefinition
+	(*WebsocketCallDefinition)(nil),                       // 68: mcpany.config.v1.WebsocketCallDefinition
+	(*WebrtcCallDefinition)(nil),                          // 69: mcpany.config.v1.WebrtcCallDefinition
+	(*OpenAPICallDefinition)(nil),                         // 70: mcpany.config.v1.OpenAPICallDefinition
+	(*CommandLineCallDefinition)(nil),                     // 71: mcpany.config.v1.CommandLineCallDefinition
+	(*SecretValue)(nil),                                   // 72: mcpany.config.v1.SecretValue
+	(*GraphQLCallDefinition)(nil),                         // 73: mcpany.config.v1.GraphQLCallDefinition
+	(*SqlCallDefinition)(nil),                             // 74: mcpany.config.v1.SqlCallDefinition
+	(*MCPCallDefinition)(nil),                             // 75: mcpany.config.v1.MCPCallDefinition
 }
 var file_proto_config_v1_upstream_service_proto_depIdxs = []int32{
-	50,  // 0: mcpany.config.v1.UpstreamServiceCollection.authentication:type_name -> mcpany.config.v1.UpstreamAuthentication
-	29,  // 1: mcpany.config.v1.UpstreamServiceConfig.connection_pool:type_name -> mcpany.config.v1.ConnectionPoolConfig
-	50,  // 2: mcpany.config.v1.UpstreamServiceConfig.upstream_authentication:type_name -> mcpany.config.v1.UpstreamAuthentication
-	51,  // 3: mcpany.config.v1.UpstreamServiceConfig.cache:type_name -> mcpany.config.v1.CacheConfig
-	31,  // 4: mcpany.config.v1.UpstreamServiceConfig.rate_limit:type_name -> mcpany.config.v1.RateLimitConfig
+	51,  // 0: mcpany.config.v1.UpstreamServiceCollection.authentication:type_name -> mcpany.config.v1.UpstreamAuthentication
+	30,  // 1: mcpany.config.v1.UpstreamServiceConfig.connection_pool:type_name -> mcpany.config.v1.ConnectionPoolConfig
+	51,  // 2: mcpany.config.v1.UpstreamServiceConfig.upstream_authentication:type_name -> mcpany.config.v1.UpstreamAuthentication
+	52,  // 3: mcpany.config.v1.UpstreamServiceConfig.cache:type_name -> mcpany.config.v1.CacheConfig
+	32,  // 4: mcpany.config.v1.UpstreamServiceConfig.rate_limit:type_name -> mcpany.config.v1.RateLimitConfig
 	0,   // 5: mcpany.config.v1.UpstreamServiceConfig.load_balancing_strategy:type_name -> mcpany.config.v1.LoadBalancingStrategy
-	32,  // 6: mcpany.config.v1.UpstreamServiceConfig.resilience:type_name -> mcpany.config.v1.ResilienceConfig
-	25,  // 7: mcpany.config.v1.UpstreamServiceConfig.mcp_service:type_name -> mcpany.config.v1.McpUpstreamService
+	33,  // 6: mcpany.config.v1.UpstreamServiceConfig.resilience:type_name -> mcpany.config.v1.ResilienceConfig
+	26,  // 7: mcpany.config.v1.UpstreamServiceConfig.mcp_service:type_name -> mcpany.config.v1.McpUpstreamService
 	18,  // 8: mcpany.config.v1.UpstreamServiceConfig.http_service:type_name -> mcpany.config.v1.HttpUpstreamService
 	13,  // 9: mcpany.config.v1.UpstreamServiceConfig.grpc_service:type_name -> mcpany.config.v1.GrpcUpstreamService
 	21,  // 10: mcpany.config.v1.UpstreamServiceConfig.openapi_service:type_name -> mcpany.config.v1.OpenapiUpstreamService
@@ -6648,109 +6796,110 @@ var file_proto_config_v1_upstream_service_proto_depIdxs = []int32{
 	20,  // 13: mcpany.config.v1.UpstreamServiceConfig.webrtc_service:type_name -> mcpany.config.v1.WebrtcUpstreamService
 	23,  // 14: mcpany.config.v1.UpstreamServiceConfig.graphql_service:type_name -> mcpany.config.v1.GraphQLUpstreamService
 	24,  // 15: mcpany.config.v1.UpstreamServiceConfig.sql_service:type_name -> mcpany.config.v1.SqlUpstreamService
-	52,  // 16: mcpany.config.v1.UpstreamServiceConfig.authentication:type_name -> mcpany.config.v1.AuthenticationConfig
-	8,   // 17: mcpany.config.v1.UpstreamServiceConfig.call_policies:type_name -> mcpany.config.v1.CallPolicy
-	12,  // 18: mcpany.config.v1.UpstreamServiceConfig.pre_call_hooks:type_name -> mcpany.config.v1.CallHook
-	12,  // 19: mcpany.config.v1.UpstreamServiceConfig.post_call_hooks:type_name -> mcpany.config.v1.CallHook
-	53,  // 20: mcpany.config.v1.UpstreamServiceConfig.profiles:type_name -> mcpany.config.v1.Profile
-	54,  // 21: mcpany.config.v1.UpstreamServiceConfig.prompts:type_name -> mcpany.config.v1.PromptDefinition
-	10,  // 22: mcpany.config.v1.UpstreamServiceConfig.tool_export_policy:type_name -> mcpany.config.v1.ExportPolicy
-	10,  // 23: mcpany.config.v1.UpstreamServiceConfig.prompt_export_policy:type_name -> mcpany.config.v1.ExportPolicy
-	10,  // 24: mcpany.config.v1.UpstreamServiceConfig.resource_export_policy:type_name -> mcpany.config.v1.ExportPolicy
-	1,   // 25: mcpany.config.v1.CallPolicy.default_action:type_name -> mcpany.config.v1.CallPolicy.Action
-	9,   // 26: mcpany.config.v1.CallPolicy.rules:type_name -> mcpany.config.v1.CallPolicyRule
-	1,   // 27: mcpany.config.v1.CallPolicyRule.action:type_name -> mcpany.config.v1.CallPolicy.Action
-	2,   // 28: mcpany.config.v1.ExportPolicy.default_action:type_name -> mcpany.config.v1.ExportPolicy.Action
-	11,  // 29: mcpany.config.v1.ExportPolicy.rules:type_name -> mcpany.config.v1.ExportRule
-	2,   // 30: mcpany.config.v1.ExportRule.action:type_name -> mcpany.config.v1.ExportPolicy.Action
-	55,  // 31: mcpany.config.v1.CallHook.webhook:type_name -> mcpany.config.v1.WebhookConfig
-	8,   // 32: mcpany.config.v1.CallHook.call_policy:type_name -> mcpany.config.v1.CallPolicy
-	35,  // 33: mcpany.config.v1.GrpcUpstreamService.tls_config:type_name -> mcpany.config.v1.TLSConfig
-	56,  // 34: mcpany.config.v1.GrpcUpstreamService.tools:type_name -> mcpany.config.v1.ToolDefinition
-	57,  // 35: mcpany.config.v1.GrpcUpstreamService.health_check:type_name -> mcpany.config.v1.GrpcHealthCheck
-	14,  // 36: mcpany.config.v1.GrpcUpstreamService.proto_definitions:type_name -> mcpany.config.v1.ProtoDefinition
-	17,  // 37: mcpany.config.v1.GrpcUpstreamService.proto_collection:type_name -> mcpany.config.v1.ProtoCollection
-	58,  // 38: mcpany.config.v1.GrpcUpstreamService.resources:type_name -> mcpany.config.v1.ResourceDefinition
-	36,  // 39: mcpany.config.v1.GrpcUpstreamService.calls:type_name -> mcpany.config.v1.GrpcUpstreamService.CallsEntry
-	54,  // 40: mcpany.config.v1.GrpcUpstreamService.prompts:type_name -> mcpany.config.v1.PromptDefinition
-	15,  // 41: mcpany.config.v1.ProtoDefinition.proto_file:type_name -> mcpany.config.v1.ProtoFile
-	16,  // 42: mcpany.config.v1.ProtoDefinition.proto_descriptor:type_name -> mcpany.config.v1.ProtoDescriptor
-	56,  // 43: mcpany.config.v1.HttpUpstreamService.tools:type_name -> mcpany.config.v1.ToolDefinition
-	37,  // 44: mcpany.config.v1.HttpUpstreamService.calls:type_name -> mcpany.config.v1.HttpUpstreamService.CallsEntry
-	59,  // 45: mcpany.config.v1.HttpUpstreamService.health_check:type_name -> mcpany.config.v1.HttpHealthCheck
-	35,  // 46: mcpany.config.v1.HttpUpstreamService.tls_config:type_name -> mcpany.config.v1.TLSConfig
-	58,  // 47: mcpany.config.v1.HttpUpstreamService.resources:type_name -> mcpany.config.v1.ResourceDefinition
-	54,  // 48: mcpany.config.v1.HttpUpstreamService.prompts:type_name -> mcpany.config.v1.PromptDefinition
-	56,  // 49: mcpany.config.v1.WebsocketUpstreamService.tools:type_name -> mcpany.config.v1.ToolDefinition
-	35,  // 50: mcpany.config.v1.WebsocketUpstreamService.tls_config:type_name -> mcpany.config.v1.TLSConfig
-	58,  // 51: mcpany.config.v1.WebsocketUpstreamService.resources:type_name -> mcpany.config.v1.ResourceDefinition
-	38,  // 52: mcpany.config.v1.WebsocketUpstreamService.calls:type_name -> mcpany.config.v1.WebsocketUpstreamService.CallsEntry
-	54,  // 53: mcpany.config.v1.WebsocketUpstreamService.prompts:type_name -> mcpany.config.v1.PromptDefinition
-	60,  // 54: mcpany.config.v1.WebsocketUpstreamService.health_check:type_name -> mcpany.config.v1.WebsocketHealthCheck
-	56,  // 55: mcpany.config.v1.WebrtcUpstreamService.tools:type_name -> mcpany.config.v1.ToolDefinition
-	35,  // 56: mcpany.config.v1.WebrtcUpstreamService.tls_config:type_name -> mcpany.config.v1.TLSConfig
-	58,  // 57: mcpany.config.v1.WebrtcUpstreamService.resources:type_name -> mcpany.config.v1.ResourceDefinition
-	39,  // 58: mcpany.config.v1.WebrtcUpstreamService.calls:type_name -> mcpany.config.v1.WebrtcUpstreamService.CallsEntry
-	54,  // 59: mcpany.config.v1.WebrtcUpstreamService.prompts:type_name -> mcpany.config.v1.PromptDefinition
-	61,  // 60: mcpany.config.v1.WebrtcUpstreamService.health_check:type_name -> mcpany.config.v1.WebRTCHealthCheck
-	59,  // 61: mcpany.config.v1.OpenapiUpstreamService.health_check:type_name -> mcpany.config.v1.HttpHealthCheck
-	35,  // 62: mcpany.config.v1.OpenapiUpstreamService.tls_config:type_name -> mcpany.config.v1.TLSConfig
-	56,  // 63: mcpany.config.v1.OpenapiUpstreamService.tools:type_name -> mcpany.config.v1.ToolDefinition
-	58,  // 64: mcpany.config.v1.OpenapiUpstreamService.resources:type_name -> mcpany.config.v1.ResourceDefinition
-	40,  // 65: mcpany.config.v1.OpenapiUpstreamService.calls:type_name -> mcpany.config.v1.OpenapiUpstreamService.CallsEntry
-	54,  // 66: mcpany.config.v1.OpenapiUpstreamService.prompts:type_name -> mcpany.config.v1.PromptDefinition
-	56,  // 67: mcpany.config.v1.CommandLineUpstreamService.tools:type_name -> mcpany.config.v1.ToolDefinition
-	62,  // 68: mcpany.config.v1.CommandLineUpstreamService.health_check:type_name -> mcpany.config.v1.CommandLineHealthCheck
-	51,  // 69: mcpany.config.v1.CommandLineUpstreamService.cache:type_name -> mcpany.config.v1.CacheConfig
-	30,  // 70: mcpany.config.v1.CommandLineUpstreamService.container_environment:type_name -> mcpany.config.v1.ContainerEnvironment
-	63,  // 71: mcpany.config.v1.CommandLineUpstreamService.timeout:type_name -> google.protobuf.Duration
-	58,  // 72: mcpany.config.v1.CommandLineUpstreamService.resources:type_name -> mcpany.config.v1.ResourceDefinition
-	41,  // 73: mcpany.config.v1.CommandLineUpstreamService.calls:type_name -> mcpany.config.v1.CommandLineUpstreamService.CallsEntry
-	54,  // 74: mcpany.config.v1.CommandLineUpstreamService.prompts:type_name -> mcpany.config.v1.PromptDefinition
-	3,   // 75: mcpany.config.v1.CommandLineUpstreamService.communication_protocol:type_name -> mcpany.config.v1.CommandLineUpstreamService.CommunicationProtocol
-	42,  // 76: mcpany.config.v1.CommandLineUpstreamService.env:type_name -> mcpany.config.v1.CommandLineUpstreamService.EnvEntry
-	43,  // 77: mcpany.config.v1.GraphQLUpstreamService.calls:type_name -> mcpany.config.v1.GraphQLUpstreamService.CallsEntry
-	44,  // 78: mcpany.config.v1.SqlUpstreamService.calls:type_name -> mcpany.config.v1.SqlUpstreamService.CallsEntry
-	27,  // 79: mcpany.config.v1.McpUpstreamService.http_connection:type_name -> mcpany.config.v1.McpStreamableHttpConnection
-	26,  // 80: mcpany.config.v1.McpUpstreamService.stdio_connection:type_name -> mcpany.config.v1.McpStdioConnection
-	28,  // 81: mcpany.config.v1.McpUpstreamService.bundle_connection:type_name -> mcpany.config.v1.McpBundleConnection
-	56,  // 82: mcpany.config.v1.McpUpstreamService.tools:type_name -> mcpany.config.v1.ToolDefinition
-	58,  // 83: mcpany.config.v1.McpUpstreamService.resources:type_name -> mcpany.config.v1.ResourceDefinition
-	45,  // 84: mcpany.config.v1.McpUpstreamService.calls:type_name -> mcpany.config.v1.McpUpstreamService.CallsEntry
-	54,  // 85: mcpany.config.v1.McpUpstreamService.prompts:type_name -> mcpany.config.v1.PromptDefinition
-	46,  // 86: mcpany.config.v1.McpStdioConnection.env:type_name -> mcpany.config.v1.McpStdioConnection.EnvEntry
-	35,  // 87: mcpany.config.v1.McpStreamableHttpConnection.tls_config:type_name -> mcpany.config.v1.TLSConfig
-	47,  // 88: mcpany.config.v1.McpBundleConnection.env:type_name -> mcpany.config.v1.McpBundleConnection.EnvEntry
-	63,  // 89: mcpany.config.v1.ConnectionPoolConfig.idle_timeout:type_name -> google.protobuf.Duration
-	48,  // 90: mcpany.config.v1.ContainerEnvironment.volumes:type_name -> mcpany.config.v1.ContainerEnvironment.VolumesEntry
-	49,  // 91: mcpany.config.v1.ContainerEnvironment.env:type_name -> mcpany.config.v1.ContainerEnvironment.EnvEntry
-	4,   // 92: mcpany.config.v1.RateLimitConfig.storage:type_name -> mcpany.config.v1.RateLimitConfig.Storage
-	64,  // 93: mcpany.config.v1.RateLimitConfig.redis:type_name -> bus.RedisBus
-	5,   // 94: mcpany.config.v1.RateLimitConfig.key_by:type_name -> mcpany.config.v1.RateLimitConfig.KeyBy
-	33,  // 95: mcpany.config.v1.ResilienceConfig.circuit_breaker:type_name -> mcpany.config.v1.CircuitBreakerConfig
-	34,  // 96: mcpany.config.v1.ResilienceConfig.retry_policy:type_name -> mcpany.config.v1.RetryConfig
-	63,  // 97: mcpany.config.v1.CircuitBreakerConfig.open_duration:type_name -> google.protobuf.Duration
-	63,  // 98: mcpany.config.v1.RetryConfig.base_backoff:type_name -> google.protobuf.Duration
-	63,  // 99: mcpany.config.v1.RetryConfig.max_backoff:type_name -> google.protobuf.Duration
-	63,  // 100: mcpany.config.v1.RetryConfig.max_elapsed_time:type_name -> google.protobuf.Duration
-	65,  // 101: mcpany.config.v1.GrpcUpstreamService.CallsEntry.value:type_name -> mcpany.config.v1.GrpcCallDefinition
-	66,  // 102: mcpany.config.v1.HttpUpstreamService.CallsEntry.value:type_name -> mcpany.config.v1.HttpCallDefinition
-	67,  // 103: mcpany.config.v1.WebsocketUpstreamService.CallsEntry.value:type_name -> mcpany.config.v1.WebsocketCallDefinition
-	68,  // 104: mcpany.config.v1.WebrtcUpstreamService.CallsEntry.value:type_name -> mcpany.config.v1.WebrtcCallDefinition
-	69,  // 105: mcpany.config.v1.OpenapiUpstreamService.CallsEntry.value:type_name -> mcpany.config.v1.OpenAPICallDefinition
-	70,  // 106: mcpany.config.v1.CommandLineUpstreamService.CallsEntry.value:type_name -> mcpany.config.v1.CommandLineCallDefinition
-	71,  // 107: mcpany.config.v1.CommandLineUpstreamService.EnvEntry.value:type_name -> mcpany.config.v1.SecretValue
-	72,  // 108: mcpany.config.v1.GraphQLUpstreamService.CallsEntry.value:type_name -> mcpany.config.v1.GraphQLCallDefinition
-	73,  // 109: mcpany.config.v1.SqlUpstreamService.CallsEntry.value:type_name -> mcpany.config.v1.SqlCallDefinition
-	74,  // 110: mcpany.config.v1.McpUpstreamService.CallsEntry.value:type_name -> mcpany.config.v1.MCPCallDefinition
-	71,  // 111: mcpany.config.v1.McpStdioConnection.EnvEntry.value:type_name -> mcpany.config.v1.SecretValue
-	71,  // 112: mcpany.config.v1.McpBundleConnection.EnvEntry.value:type_name -> mcpany.config.v1.SecretValue
-	71,  // 113: mcpany.config.v1.ContainerEnvironment.EnvEntry.value:type_name -> mcpany.config.v1.SecretValue
-	114, // [114:114] is the sub-list for method output_type
-	114, // [114:114] is the sub-list for method input_type
-	114, // [114:114] is the sub-list for extension type_name
-	114, // [114:114] is the sub-list for extension extendee
-	0,   // [0:114] is the sub-list for field type_name
+	25,  // 16: mcpany.config.v1.UpstreamServiceConfig.filesystem_service:type_name -> mcpany.config.v1.FilesystemUpstreamService
+	53,  // 17: mcpany.config.v1.UpstreamServiceConfig.authentication:type_name -> mcpany.config.v1.AuthenticationConfig
+	8,   // 18: mcpany.config.v1.UpstreamServiceConfig.call_policies:type_name -> mcpany.config.v1.CallPolicy
+	12,  // 19: mcpany.config.v1.UpstreamServiceConfig.pre_call_hooks:type_name -> mcpany.config.v1.CallHook
+	12,  // 20: mcpany.config.v1.UpstreamServiceConfig.post_call_hooks:type_name -> mcpany.config.v1.CallHook
+	54,  // 21: mcpany.config.v1.UpstreamServiceConfig.profiles:type_name -> mcpany.config.v1.Profile
+	55,  // 22: mcpany.config.v1.UpstreamServiceConfig.prompts:type_name -> mcpany.config.v1.PromptDefinition
+	10,  // 23: mcpany.config.v1.UpstreamServiceConfig.tool_export_policy:type_name -> mcpany.config.v1.ExportPolicy
+	10,  // 24: mcpany.config.v1.UpstreamServiceConfig.prompt_export_policy:type_name -> mcpany.config.v1.ExportPolicy
+	10,  // 25: mcpany.config.v1.UpstreamServiceConfig.resource_export_policy:type_name -> mcpany.config.v1.ExportPolicy
+	1,   // 26: mcpany.config.v1.CallPolicy.default_action:type_name -> mcpany.config.v1.CallPolicy.Action
+	9,   // 27: mcpany.config.v1.CallPolicy.rules:type_name -> mcpany.config.v1.CallPolicyRule
+	1,   // 28: mcpany.config.v1.CallPolicyRule.action:type_name -> mcpany.config.v1.CallPolicy.Action
+	2,   // 29: mcpany.config.v1.ExportPolicy.default_action:type_name -> mcpany.config.v1.ExportPolicy.Action
+	11,  // 30: mcpany.config.v1.ExportPolicy.rules:type_name -> mcpany.config.v1.ExportRule
+	2,   // 31: mcpany.config.v1.ExportRule.action:type_name -> mcpany.config.v1.ExportPolicy.Action
+	56,  // 32: mcpany.config.v1.CallHook.webhook:type_name -> mcpany.config.v1.WebhookConfig
+	8,   // 33: mcpany.config.v1.CallHook.call_policy:type_name -> mcpany.config.v1.CallPolicy
+	36,  // 34: mcpany.config.v1.GrpcUpstreamService.tls_config:type_name -> mcpany.config.v1.TLSConfig
+	57,  // 35: mcpany.config.v1.GrpcUpstreamService.tools:type_name -> mcpany.config.v1.ToolDefinition
+	58,  // 36: mcpany.config.v1.GrpcUpstreamService.health_check:type_name -> mcpany.config.v1.GrpcHealthCheck
+	14,  // 37: mcpany.config.v1.GrpcUpstreamService.proto_definitions:type_name -> mcpany.config.v1.ProtoDefinition
+	17,  // 38: mcpany.config.v1.GrpcUpstreamService.proto_collection:type_name -> mcpany.config.v1.ProtoCollection
+	59,  // 39: mcpany.config.v1.GrpcUpstreamService.resources:type_name -> mcpany.config.v1.ResourceDefinition
+	37,  // 40: mcpany.config.v1.GrpcUpstreamService.calls:type_name -> mcpany.config.v1.GrpcUpstreamService.CallsEntry
+	55,  // 41: mcpany.config.v1.GrpcUpstreamService.prompts:type_name -> mcpany.config.v1.PromptDefinition
+	15,  // 42: mcpany.config.v1.ProtoDefinition.proto_file:type_name -> mcpany.config.v1.ProtoFile
+	16,  // 43: mcpany.config.v1.ProtoDefinition.proto_descriptor:type_name -> mcpany.config.v1.ProtoDescriptor
+	57,  // 44: mcpany.config.v1.HttpUpstreamService.tools:type_name -> mcpany.config.v1.ToolDefinition
+	38,  // 45: mcpany.config.v1.HttpUpstreamService.calls:type_name -> mcpany.config.v1.HttpUpstreamService.CallsEntry
+	60,  // 46: mcpany.config.v1.HttpUpstreamService.health_check:type_name -> mcpany.config.v1.HttpHealthCheck
+	36,  // 47: mcpany.config.v1.HttpUpstreamService.tls_config:type_name -> mcpany.config.v1.TLSConfig
+	59,  // 48: mcpany.config.v1.HttpUpstreamService.resources:type_name -> mcpany.config.v1.ResourceDefinition
+	55,  // 49: mcpany.config.v1.HttpUpstreamService.prompts:type_name -> mcpany.config.v1.PromptDefinition
+	57,  // 50: mcpany.config.v1.WebsocketUpstreamService.tools:type_name -> mcpany.config.v1.ToolDefinition
+	36,  // 51: mcpany.config.v1.WebsocketUpstreamService.tls_config:type_name -> mcpany.config.v1.TLSConfig
+	59,  // 52: mcpany.config.v1.WebsocketUpstreamService.resources:type_name -> mcpany.config.v1.ResourceDefinition
+	39,  // 53: mcpany.config.v1.WebsocketUpstreamService.calls:type_name -> mcpany.config.v1.WebsocketUpstreamService.CallsEntry
+	55,  // 54: mcpany.config.v1.WebsocketUpstreamService.prompts:type_name -> mcpany.config.v1.PromptDefinition
+	61,  // 55: mcpany.config.v1.WebsocketUpstreamService.health_check:type_name -> mcpany.config.v1.WebsocketHealthCheck
+	57,  // 56: mcpany.config.v1.WebrtcUpstreamService.tools:type_name -> mcpany.config.v1.ToolDefinition
+	36,  // 57: mcpany.config.v1.WebrtcUpstreamService.tls_config:type_name -> mcpany.config.v1.TLSConfig
+	59,  // 58: mcpany.config.v1.WebrtcUpstreamService.resources:type_name -> mcpany.config.v1.ResourceDefinition
+	40,  // 59: mcpany.config.v1.WebrtcUpstreamService.calls:type_name -> mcpany.config.v1.WebrtcUpstreamService.CallsEntry
+	55,  // 60: mcpany.config.v1.WebrtcUpstreamService.prompts:type_name -> mcpany.config.v1.PromptDefinition
+	62,  // 61: mcpany.config.v1.WebrtcUpstreamService.health_check:type_name -> mcpany.config.v1.WebRTCHealthCheck
+	60,  // 62: mcpany.config.v1.OpenapiUpstreamService.health_check:type_name -> mcpany.config.v1.HttpHealthCheck
+	36,  // 63: mcpany.config.v1.OpenapiUpstreamService.tls_config:type_name -> mcpany.config.v1.TLSConfig
+	57,  // 64: mcpany.config.v1.OpenapiUpstreamService.tools:type_name -> mcpany.config.v1.ToolDefinition
+	59,  // 65: mcpany.config.v1.OpenapiUpstreamService.resources:type_name -> mcpany.config.v1.ResourceDefinition
+	41,  // 66: mcpany.config.v1.OpenapiUpstreamService.calls:type_name -> mcpany.config.v1.OpenapiUpstreamService.CallsEntry
+	55,  // 67: mcpany.config.v1.OpenapiUpstreamService.prompts:type_name -> mcpany.config.v1.PromptDefinition
+	57,  // 68: mcpany.config.v1.CommandLineUpstreamService.tools:type_name -> mcpany.config.v1.ToolDefinition
+	63,  // 69: mcpany.config.v1.CommandLineUpstreamService.health_check:type_name -> mcpany.config.v1.CommandLineHealthCheck
+	52,  // 70: mcpany.config.v1.CommandLineUpstreamService.cache:type_name -> mcpany.config.v1.CacheConfig
+	31,  // 71: mcpany.config.v1.CommandLineUpstreamService.container_environment:type_name -> mcpany.config.v1.ContainerEnvironment
+	64,  // 72: mcpany.config.v1.CommandLineUpstreamService.timeout:type_name -> google.protobuf.Duration
+	59,  // 73: mcpany.config.v1.CommandLineUpstreamService.resources:type_name -> mcpany.config.v1.ResourceDefinition
+	42,  // 74: mcpany.config.v1.CommandLineUpstreamService.calls:type_name -> mcpany.config.v1.CommandLineUpstreamService.CallsEntry
+	55,  // 75: mcpany.config.v1.CommandLineUpstreamService.prompts:type_name -> mcpany.config.v1.PromptDefinition
+	3,   // 76: mcpany.config.v1.CommandLineUpstreamService.communication_protocol:type_name -> mcpany.config.v1.CommandLineUpstreamService.CommunicationProtocol
+	43,  // 77: mcpany.config.v1.CommandLineUpstreamService.env:type_name -> mcpany.config.v1.CommandLineUpstreamService.EnvEntry
+	44,  // 78: mcpany.config.v1.GraphQLUpstreamService.calls:type_name -> mcpany.config.v1.GraphQLUpstreamService.CallsEntry
+	45,  // 79: mcpany.config.v1.SqlUpstreamService.calls:type_name -> mcpany.config.v1.SqlUpstreamService.CallsEntry
+	28,  // 80: mcpany.config.v1.McpUpstreamService.http_connection:type_name -> mcpany.config.v1.McpStreamableHttpConnection
+	27,  // 81: mcpany.config.v1.McpUpstreamService.stdio_connection:type_name -> mcpany.config.v1.McpStdioConnection
+	29,  // 82: mcpany.config.v1.McpUpstreamService.bundle_connection:type_name -> mcpany.config.v1.McpBundleConnection
+	57,  // 83: mcpany.config.v1.McpUpstreamService.tools:type_name -> mcpany.config.v1.ToolDefinition
+	59,  // 84: mcpany.config.v1.McpUpstreamService.resources:type_name -> mcpany.config.v1.ResourceDefinition
+	46,  // 85: mcpany.config.v1.McpUpstreamService.calls:type_name -> mcpany.config.v1.McpUpstreamService.CallsEntry
+	55,  // 86: mcpany.config.v1.McpUpstreamService.prompts:type_name -> mcpany.config.v1.PromptDefinition
+	47,  // 87: mcpany.config.v1.McpStdioConnection.env:type_name -> mcpany.config.v1.McpStdioConnection.EnvEntry
+	36,  // 88: mcpany.config.v1.McpStreamableHttpConnection.tls_config:type_name -> mcpany.config.v1.TLSConfig
+	48,  // 89: mcpany.config.v1.McpBundleConnection.env:type_name -> mcpany.config.v1.McpBundleConnection.EnvEntry
+	64,  // 90: mcpany.config.v1.ConnectionPoolConfig.idle_timeout:type_name -> google.protobuf.Duration
+	49,  // 91: mcpany.config.v1.ContainerEnvironment.volumes:type_name -> mcpany.config.v1.ContainerEnvironment.VolumesEntry
+	50,  // 92: mcpany.config.v1.ContainerEnvironment.env:type_name -> mcpany.config.v1.ContainerEnvironment.EnvEntry
+	4,   // 93: mcpany.config.v1.RateLimitConfig.storage:type_name -> mcpany.config.v1.RateLimitConfig.Storage
+	65,  // 94: mcpany.config.v1.RateLimitConfig.redis:type_name -> bus.RedisBus
+	5,   // 95: mcpany.config.v1.RateLimitConfig.key_by:type_name -> mcpany.config.v1.RateLimitConfig.KeyBy
+	34,  // 96: mcpany.config.v1.ResilienceConfig.circuit_breaker:type_name -> mcpany.config.v1.CircuitBreakerConfig
+	35,  // 97: mcpany.config.v1.ResilienceConfig.retry_policy:type_name -> mcpany.config.v1.RetryConfig
+	64,  // 98: mcpany.config.v1.CircuitBreakerConfig.open_duration:type_name -> google.protobuf.Duration
+	64,  // 99: mcpany.config.v1.RetryConfig.base_backoff:type_name -> google.protobuf.Duration
+	64,  // 100: mcpany.config.v1.RetryConfig.max_backoff:type_name -> google.protobuf.Duration
+	64,  // 101: mcpany.config.v1.RetryConfig.max_elapsed_time:type_name -> google.protobuf.Duration
+	66,  // 102: mcpany.config.v1.GrpcUpstreamService.CallsEntry.value:type_name -> mcpany.config.v1.GrpcCallDefinition
+	67,  // 103: mcpany.config.v1.HttpUpstreamService.CallsEntry.value:type_name -> mcpany.config.v1.HttpCallDefinition
+	68,  // 104: mcpany.config.v1.WebsocketUpstreamService.CallsEntry.value:type_name -> mcpany.config.v1.WebsocketCallDefinition
+	69,  // 105: mcpany.config.v1.WebrtcUpstreamService.CallsEntry.value:type_name -> mcpany.config.v1.WebrtcCallDefinition
+	70,  // 106: mcpany.config.v1.OpenapiUpstreamService.CallsEntry.value:type_name -> mcpany.config.v1.OpenAPICallDefinition
+	71,  // 107: mcpany.config.v1.CommandLineUpstreamService.CallsEntry.value:type_name -> mcpany.config.v1.CommandLineCallDefinition
+	72,  // 108: mcpany.config.v1.CommandLineUpstreamService.EnvEntry.value:type_name -> mcpany.config.v1.SecretValue
+	73,  // 109: mcpany.config.v1.GraphQLUpstreamService.CallsEntry.value:type_name -> mcpany.config.v1.GraphQLCallDefinition
+	74,  // 110: mcpany.config.v1.SqlUpstreamService.CallsEntry.value:type_name -> mcpany.config.v1.SqlCallDefinition
+	75,  // 111: mcpany.config.v1.McpUpstreamService.CallsEntry.value:type_name -> mcpany.config.v1.MCPCallDefinition
+	72,  // 112: mcpany.config.v1.McpStdioConnection.EnvEntry.value:type_name -> mcpany.config.v1.SecretValue
+	72,  // 113: mcpany.config.v1.McpBundleConnection.EnvEntry.value:type_name -> mcpany.config.v1.SecretValue
+	72,  // 114: mcpany.config.v1.ContainerEnvironment.EnvEntry.value:type_name -> mcpany.config.v1.SecretValue
+	115, // [115:115] is the sub-list for method output_type
+	115, // [115:115] is the sub-list for method input_type
+	115, // [115:115] is the sub-list for extension type_name
+	115, // [115:115] is the sub-list for extension extendee
+	0,   // [0:115] is the sub-list for field type_name
 }
 
 func init() { file_proto_config_v1_upstream_service_proto_init() }
@@ -6776,6 +6925,7 @@ func file_proto_config_v1_upstream_service_proto_init() {
 		(*UpstreamServiceConfig_WebrtcService)(nil),
 		(*UpstreamServiceConfig_GraphqlService)(nil),
 		(*UpstreamServiceConfig_SqlService)(nil),
+		(*UpstreamServiceConfig_FilesystemService)(nil),
 	}
 	file_proto_config_v1_upstream_service_proto_msgTypes[6].OneofWrappers = []any{
 		(*CallHook_Webhook)(nil),
@@ -6796,7 +6946,7 @@ func file_proto_config_v1_upstream_service_proto_init() {
 		(*OpenapiUpstreamService_SpecContent)(nil),
 		(*OpenapiUpstreamService_SpecUrl)(nil),
 	}
-	file_proto_config_v1_upstream_service_proto_msgTypes[19].OneofWrappers = []any{
+	file_proto_config_v1_upstream_service_proto_msgTypes[20].OneofWrappers = []any{
 		(*McpUpstreamService_HttpConnection)(nil),
 		(*McpUpstreamService_StdioConnection)(nil),
 		(*McpUpstreamService_BundleConnection)(nil),
@@ -6807,7 +6957,7 @@ func file_proto_config_v1_upstream_service_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_proto_config_v1_upstream_service_proto_rawDesc), len(file_proto_config_v1_upstream_service_proto_rawDesc)),
 			NumEnums:      6,
-			NumMessages:   44,
+			NumMessages:   45,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
