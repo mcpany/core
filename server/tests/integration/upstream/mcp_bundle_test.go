@@ -9,6 +9,7 @@ import (
 	"encoding/json"
 	"io"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"testing"
 
@@ -234,6 +235,12 @@ func TestE2E_Bundle_Filesystem(t *testing.T) {
 	if os.Getenv("SKIP_DOCKER_TESTS") == "true" {
 		t.Skip("Skipping Docker tests because SKIP_DOCKER_TESTS is set")
 	}
+
+	// Check if Docker is available and accessible
+	if err := exec.Command("docker", "info").Run(); err != nil {
+		t.Skipf("Skipping Docker tests: docker info failed: %v", err)
+	}
+
 	tempDir := t.TempDir()
 	bundlePath := createE2EBundle(t, tempDir)
 
