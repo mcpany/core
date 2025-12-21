@@ -120,6 +120,50 @@ func (x GlobalSettings_LogFormat) Number() protoreflect.EnumNumber {
 	return protoreflect.EnumNumber(x)
 }
 
+type AuditConfig_StorageType int32
+
+const (
+	AuditConfig_STORAGE_TYPE_UNSPECIFIED AuditConfig_StorageType = 0
+	AuditConfig_STORAGE_TYPE_FILE        AuditConfig_StorageType = 1
+	AuditConfig_STORAGE_TYPE_SQLITE      AuditConfig_StorageType = 2
+)
+
+// Enum value maps for AuditConfig_StorageType.
+var (
+	AuditConfig_StorageType_name = map[int32]string{
+		0: "STORAGE_TYPE_UNSPECIFIED",
+		1: "STORAGE_TYPE_FILE",
+		2: "STORAGE_TYPE_SQLITE",
+	}
+	AuditConfig_StorageType_value = map[string]int32{
+		"STORAGE_TYPE_UNSPECIFIED": 0,
+		"STORAGE_TYPE_FILE":        1,
+		"STORAGE_TYPE_SQLITE":      2,
+	}
+)
+
+func (x AuditConfig_StorageType) Enum() *AuditConfig_StorageType {
+	p := new(AuditConfig_StorageType)
+	*p = x
+	return p
+}
+
+func (x AuditConfig_StorageType) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (AuditConfig_StorageType) Descriptor() protoreflect.EnumDescriptor {
+	return file_proto_config_v1_config_proto_enumTypes[2].Descriptor()
+}
+
+func (AuditConfig_StorageType) Type() protoreflect.EnumType {
+	return &file_proto_config_v1_config_proto_enumTypes[2]
+}
+
+func (x AuditConfig_StorageType) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
 // McpAnyServerConfig is the root configuration for the entire MCPANY server.
 type McpAnyServerConfig struct {
 	state                                 protoimpl.MessageState        `protogen:"opaque.v1"`
@@ -706,11 +750,12 @@ func (b0 GlobalSettings_builder) Build() *GlobalSettings {
 }
 
 type AuditConfig struct {
-	state                   protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_Enabled      bool                   `protobuf:"varint,1,opt,name=enabled"`
-	xxx_hidden_OutputPath   *string                `protobuf:"bytes,2,opt,name=output_path"`
-	xxx_hidden_LogArguments bool                   `protobuf:"varint,3,opt,name=log_arguments"`
-	xxx_hidden_LogResults   bool                   `protobuf:"varint,4,opt,name=log_results"`
+	state                   protoimpl.MessageState  `protogen:"opaque.v1"`
+	xxx_hidden_Enabled      bool                    `protobuf:"varint,1,opt,name=enabled"`
+	xxx_hidden_OutputPath   *string                 `protobuf:"bytes,2,opt,name=output_path"`
+	xxx_hidden_LogArguments bool                    `protobuf:"varint,3,opt,name=log_arguments"`
+	xxx_hidden_LogResults   bool                    `protobuf:"varint,4,opt,name=log_results"`
+	xxx_hidden_StorageType  AuditConfig_StorageType `protobuf:"varint,5,opt,name=storage_type,enum=mcpany.config.v1.AuditConfig_StorageType"`
 	XXX_raceDetectHookData  protoimpl.RaceDetectHookData
 	XXX_presence            [1]uint32
 	unknownFields           protoimpl.UnknownFields
@@ -773,24 +818,38 @@ func (x *AuditConfig) GetLogResults() bool {
 	return false
 }
 
+func (x *AuditConfig) GetStorageType() AuditConfig_StorageType {
+	if x != nil {
+		if protoimpl.X.Present(&(x.XXX_presence[0]), 4) {
+			return x.xxx_hidden_StorageType
+		}
+	}
+	return AuditConfig_STORAGE_TYPE_UNSPECIFIED
+}
+
 func (x *AuditConfig) SetEnabled(v bool) {
 	x.xxx_hidden_Enabled = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 4)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 5)
 }
 
 func (x *AuditConfig) SetOutputPath(v string) {
 	x.xxx_hidden_OutputPath = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 4)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 5)
 }
 
 func (x *AuditConfig) SetLogArguments(v bool) {
 	x.xxx_hidden_LogArguments = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 4)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 5)
 }
 
 func (x *AuditConfig) SetLogResults(v bool) {
 	x.xxx_hidden_LogResults = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 3, 4)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 3, 5)
+}
+
+func (x *AuditConfig) SetStorageType(v AuditConfig_StorageType) {
+	x.xxx_hidden_StorageType = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 4, 5)
 }
 
 func (x *AuditConfig) HasEnabled() bool {
@@ -821,6 +880,13 @@ func (x *AuditConfig) HasLogResults() bool {
 	return protoimpl.X.Present(&(x.XXX_presence[0]), 3)
 }
 
+func (x *AuditConfig) HasStorageType() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 4)
+}
+
 func (x *AuditConfig) ClearEnabled() {
 	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
 	x.xxx_hidden_Enabled = false
@@ -841,6 +907,11 @@ func (x *AuditConfig) ClearLogResults() {
 	x.xxx_hidden_LogResults = false
 }
 
+func (x *AuditConfig) ClearStorageType() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 4)
+	x.xxx_hidden_StorageType = AuditConfig_STORAGE_TYPE_UNSPECIFIED
+}
+
 type AuditConfig_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
@@ -852,6 +923,8 @@ type AuditConfig_builder struct {
 	LogArguments *bool
 	// Whether to log output results (caution: might contain sensitive data).
 	LogResults *bool
+	// The storage type to use.
+	StorageType *AuditConfig_StorageType
 }
 
 func (b0 AuditConfig_builder) Build() *AuditConfig {
@@ -859,20 +932,24 @@ func (b0 AuditConfig_builder) Build() *AuditConfig {
 	b, x := &b0, m0
 	_, _ = b, x
 	if b.Enabled != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 4)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 5)
 		x.xxx_hidden_Enabled = *b.Enabled
 	}
 	if b.OutputPath != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 4)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 5)
 		x.xxx_hidden_OutputPath = b.OutputPath
 	}
 	if b.LogArguments != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 4)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 5)
 		x.xxx_hidden_LogArguments = *b.LogArguments
 	}
 	if b.LogResults != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 3, 4)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 3, 5)
 		x.xxx_hidden_LogResults = *b.LogResults
+	}
+	if b.StorageType != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 4, 5)
+		x.xxx_hidden_StorageType = *b.StorageType
 	}
 	return m0
 }
@@ -1248,12 +1325,17 @@ const file_proto_config_v1_config_proto_rawDesc = "" +
 	"\tLogFormat\x12\x1a\n" +
 	"\x16LOG_FORMAT_UNSPECIFIED\x10\x00\x12\x13\n" +
 	"\x0fLOG_FORMAT_TEXT\x10\x01\x12\x13\n" +
-	"\x0fLOG_FORMAT_JSON\x10\x02J\x04\b\x02\x10\x03\"\x91\x01\n" +
+	"\x0fLOG_FORMAT_JSON\x10\x02J\x04\b\x02\x10\x03\"\xbd\x02\n" +
 	"\vAuditConfig\x12\x18\n" +
 	"\aenabled\x18\x01 \x01(\bR\aenabled\x12 \n" +
 	"\voutput_path\x18\x02 \x01(\tR\voutput_path\x12$\n" +
 	"\rlog_arguments\x18\x03 \x01(\bR\rlog_arguments\x12 \n" +
-	"\vlog_results\x18\x04 \x01(\bR\vlog_results\"\x8e\x01\n" +
+	"\vlog_results\x18\x04 \x01(\bR\vlog_results\x12M\n" +
+	"\fstorage_type\x18\x05 \x01(\x0e2).mcpany.config.v1.AuditConfig.StorageTypeR\fstorage_type\"[\n" +
+	"\vStorageType\x12\x1c\n" +
+	"\x18STORAGE_TYPE_UNSPECIFIED\x10\x00\x12\x15\n" +
+	"\x11STORAGE_TYPE_FILE\x10\x01\x12\x17\n" +
+	"\x13STORAGE_TYPE_SQLITE\x10\x02\"\x8e\x01\n" +
 	"\x11ProfileDefinition\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12=\n" +
 	"\bselector\x18\x02 \x01(\v2!.mcpany.config.v1.ProfileSelectorR\bselector\x12&\n" +
@@ -1270,43 +1352,45 @@ const file_proto_config_v1_config_proto_rawDesc = "" +
 	"\bpriority\x18\x02 \x01(\x05R\bpriority\x12\x1a\n" +
 	"\bdisabled\x18\x03 \x01(\bR\bdisabledB5B\vConfigProtoZ&github.com/mcpany/core/proto/config/v1b\beditionsp\xe8\a"
 
-var file_proto_config_v1_config_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
+var file_proto_config_v1_config_proto_enumTypes = make([]protoimpl.EnumInfo, 3)
 var file_proto_config_v1_config_proto_msgTypes = make([]protoimpl.MessageInfo, 8)
 var file_proto_config_v1_config_proto_goTypes = []any{
 	(GlobalSettings_LogLevel)(0),      // 0: mcpany.config.v1.GlobalSettings.LogLevel
 	(GlobalSettings_LogFormat)(0),     // 1: mcpany.config.v1.GlobalSettings.LogFormat
-	(*McpAnyServerConfig)(nil),        // 2: mcpany.config.v1.McpAnyServerConfig
-	(*User)(nil),                      // 3: mcpany.config.v1.User
-	(*GlobalSettings)(nil),            // 4: mcpany.config.v1.GlobalSettings
-	(*AuditConfig)(nil),               // 5: mcpany.config.v1.AuditConfig
-	(*ProfileDefinition)(nil),         // 6: mcpany.config.v1.ProfileDefinition
-	(*ProfileSelector)(nil),           // 7: mcpany.config.v1.ProfileSelector
-	(*Middleware)(nil),                // 8: mcpany.config.v1.Middleware
-	nil,                               // 9: mcpany.config.v1.ProfileSelector.ToolPropertiesEntry
-	(*UpstreamServiceConfig)(nil),     // 10: mcpany.config.v1.UpstreamServiceConfig
-	(*UpstreamServiceCollection)(nil), // 11: mcpany.config.v1.UpstreamServiceCollection
-	(*AuthenticationConfig)(nil),      // 12: mcpany.config.v1.AuthenticationConfig
-	(*bus.MessageBus)(nil),            // 13: bus.MessageBus
+	(AuditConfig_StorageType)(0),      // 2: mcpany.config.v1.AuditConfig.StorageType
+	(*McpAnyServerConfig)(nil),        // 3: mcpany.config.v1.McpAnyServerConfig
+	(*User)(nil),                      // 4: mcpany.config.v1.User
+	(*GlobalSettings)(nil),            // 5: mcpany.config.v1.GlobalSettings
+	(*AuditConfig)(nil),               // 6: mcpany.config.v1.AuditConfig
+	(*ProfileDefinition)(nil),         // 7: mcpany.config.v1.ProfileDefinition
+	(*ProfileSelector)(nil),           // 8: mcpany.config.v1.ProfileSelector
+	(*Middleware)(nil),                // 9: mcpany.config.v1.Middleware
+	nil,                               // 10: mcpany.config.v1.ProfileSelector.ToolPropertiesEntry
+	(*UpstreamServiceConfig)(nil),     // 11: mcpany.config.v1.UpstreamServiceConfig
+	(*UpstreamServiceCollection)(nil), // 12: mcpany.config.v1.UpstreamServiceCollection
+	(*AuthenticationConfig)(nil),      // 13: mcpany.config.v1.AuthenticationConfig
+	(*bus.MessageBus)(nil),            // 14: bus.MessageBus
 }
 var file_proto_config_v1_config_proto_depIdxs = []int32{
-	4,  // 0: mcpany.config.v1.McpAnyServerConfig.global_settings:type_name -> mcpany.config.v1.GlobalSettings
-	10, // 1: mcpany.config.v1.McpAnyServerConfig.upstream_services:type_name -> mcpany.config.v1.UpstreamServiceConfig
-	11, // 2: mcpany.config.v1.McpAnyServerConfig.upstream_service_collections:type_name -> mcpany.config.v1.UpstreamServiceCollection
-	3,  // 3: mcpany.config.v1.McpAnyServerConfig.users:type_name -> mcpany.config.v1.User
-	12, // 4: mcpany.config.v1.User.authentication:type_name -> mcpany.config.v1.AuthenticationConfig
+	5,  // 0: mcpany.config.v1.McpAnyServerConfig.global_settings:type_name -> mcpany.config.v1.GlobalSettings
+	11, // 1: mcpany.config.v1.McpAnyServerConfig.upstream_services:type_name -> mcpany.config.v1.UpstreamServiceConfig
+	12, // 2: mcpany.config.v1.McpAnyServerConfig.upstream_service_collections:type_name -> mcpany.config.v1.UpstreamServiceCollection
+	4,  // 3: mcpany.config.v1.McpAnyServerConfig.users:type_name -> mcpany.config.v1.User
+	13, // 4: mcpany.config.v1.User.authentication:type_name -> mcpany.config.v1.AuthenticationConfig
 	0,  // 5: mcpany.config.v1.GlobalSettings.log_level:type_name -> mcpany.config.v1.GlobalSettings.LogLevel
-	13, // 6: mcpany.config.v1.GlobalSettings.message_bus:type_name -> bus.MessageBus
-	5,  // 7: mcpany.config.v1.GlobalSettings.audit:type_name -> mcpany.config.v1.AuditConfig
-	6,  // 8: mcpany.config.v1.GlobalSettings.profile_definitions:type_name -> mcpany.config.v1.ProfileDefinition
+	14, // 6: mcpany.config.v1.GlobalSettings.message_bus:type_name -> bus.MessageBus
+	6,  // 7: mcpany.config.v1.GlobalSettings.audit:type_name -> mcpany.config.v1.AuditConfig
+	7,  // 8: mcpany.config.v1.GlobalSettings.profile_definitions:type_name -> mcpany.config.v1.ProfileDefinition
 	1,  // 9: mcpany.config.v1.GlobalSettings.log_format:type_name -> mcpany.config.v1.GlobalSettings.LogFormat
-	8,  // 10: mcpany.config.v1.GlobalSettings.middlewares:type_name -> mcpany.config.v1.Middleware
-	7,  // 11: mcpany.config.v1.ProfileDefinition.selector:type_name -> mcpany.config.v1.ProfileSelector
-	9,  // 12: mcpany.config.v1.ProfileSelector.tool_properties:type_name -> mcpany.config.v1.ProfileSelector.ToolPropertiesEntry
-	13, // [13:13] is the sub-list for method output_type
-	13, // [13:13] is the sub-list for method input_type
-	13, // [13:13] is the sub-list for extension type_name
-	13, // [13:13] is the sub-list for extension extendee
-	0,  // [0:13] is the sub-list for field type_name
+	9,  // 10: mcpany.config.v1.GlobalSettings.middlewares:type_name -> mcpany.config.v1.Middleware
+	2,  // 11: mcpany.config.v1.AuditConfig.storage_type:type_name -> mcpany.config.v1.AuditConfig.StorageType
+	8,  // 12: mcpany.config.v1.ProfileDefinition.selector:type_name -> mcpany.config.v1.ProfileSelector
+	10, // 13: mcpany.config.v1.ProfileSelector.tool_properties:type_name -> mcpany.config.v1.ProfileSelector.ToolPropertiesEntry
+	14, // [14:14] is the sub-list for method output_type
+	14, // [14:14] is the sub-list for method input_type
+	14, // [14:14] is the sub-list for extension type_name
+	14, // [14:14] is the sub-list for extension extendee
+	0,  // [0:14] is the sub-list for field type_name
 }
 
 func init() { file_proto_config_v1_config_proto_init() }
@@ -1321,7 +1405,7 @@ func file_proto_config_v1_config_proto_init() {
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_proto_config_v1_config_proto_rawDesc), len(file_proto_config_v1_config_proto_rawDesc)),
-			NumEnums:      2,
+			NumEnums:      3,
 			NumMessages:   8,
 			NumExtensions: 0,
 			NumServices:   0,

@@ -8,7 +8,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
-	"sync"
 	"time"
 
 	"github.com/mcpany/core/pkg/auth"
@@ -19,21 +18,7 @@ import (
 // AuditMiddleware provides audit logging for tool executions.
 type AuditMiddleware struct {
 	config *configv1.AuditConfig
-	mu     sync.Mutex
-	file   *os.File
-}
-
-// AuditEntry represents a single audit log entry.
-type AuditEntry struct {
-	Timestamp  time.Time       `json:"timestamp"`
-	ToolName   string          `json:"tool_name"`
-	UserID     string          `json:"user_id,omitempty"`
-	ProfileID  string          `json:"profile_id,omitempty"`
-	Arguments  json.RawMessage `json:"arguments,omitempty"`
-	Result     any             `json:"result,omitempty"`
-	Error      string          `json:"error,omitempty"`
-	Duration   string          `json:"duration"`
-	DurationMs int64           `json:"duration_ms"`
+	store  AuditStore
 }
 
 // NewAuditMiddleware creates a new AuditMiddleware.
@@ -41,12 +26,31 @@ func NewAuditMiddleware(config *configv1.AuditConfig) (*AuditMiddleware, error) 
 	m := &AuditMiddleware{
 		config: config,
 	}
-	if config != nil && config.GetEnabled() && config.GetOutputPath() != "" {
-		f, err := os.OpenFile(config.GetOutputPath(), os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644) //nolint:gosec
-		if err != nil {
-			return nil, fmt.Errorf("failed to open audit log file: %w", err)
+	if config != nil && config.GetEnabled() {
+		var store AuditStore
+		var err error
+
+		// Determine storage type
+		storageType := config.GetStorageType()
+		// Backward compatibility: if unspecified but output_path is set, default to FILE
+		// Also if output_path is empty, default to FILE (stdout)
+		if storageType == configv1.AuditConfig_STORAGE_TYPE_UNSPECIFIED {
+			storageType = configv1.AuditConfig_STORAGE_TYPE_FILE
 		}
-		m.file = f
+
+		switch storageType {
+		case configv1.AuditConfig_STORAGE_TYPE_SQLITE:
+			store, err = NewSQLiteAuditStore(config.GetOutputPath())
+		case configv1.AuditConfig_STORAGE_TYPE_FILE:
+			store, err = NewFileAuditStore(config.GetOutputPath())
+		default:
+			store, err = NewFileAuditStore(config.GetOutputPath())
+		}
+
+		if err != nil {
+			return nil, fmt.Errorf("failed to initialize audit store: %w", err)
+		}
+		m.store = store
 	}
 	return m, nil
 }
@@ -102,30 +106,18 @@ func (m *AuditMiddleware) Execute(ctx context.Context, req *tool.ExecutionReques
 }
 
 func (m *AuditMiddleware) writeLog(entry AuditEntry) {
-	m.mu.Lock()
-	defer m.mu.Unlock()
-
-	var w *os.File
-	if m.file != nil {
-		w = m.file
-	} else {
-		// Fallback to stdout if enabled but no path
-		w = os.Stdout
+	if m.store == nil {
+		return
 	}
-
-	// JSON encode
-	if err := json.NewEncoder(w).Encode(entry); err != nil {
-		// Last resort: print to stderr
+	if err := m.store.Write(entry); err != nil {
 		fmt.Fprintf(os.Stderr, "Failed to write audit log: %v\n", err)
 	}
 }
 
-// Close closes the underlying file.
+// Close closes the underlying store.
 func (m *AuditMiddleware) Close() error {
-	m.mu.Lock()
-	defer m.mu.Unlock()
-	if m.file != nil {
-		return m.file.Close()
+	if m.store != nil {
+		return m.store.Close()
 	}
 	return nil
 }
