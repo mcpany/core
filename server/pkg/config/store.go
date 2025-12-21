@@ -143,9 +143,33 @@ type Store interface {
 // ServiceStore extends Store to provide CRUD operations for UpstreamServices.
 type ServiceStore interface {
 	Store
+	// SaveService saves or updates a service configuration.
+	//
+	// Parameters:
+	//   - service: The service configuration to save.
+	//
+	// Returns an error if the operation fails.
 	SaveService(service *configv1.UpstreamServiceConfig) error
+
+	// GetService retrieves a service configuration by name.
+	//
+	// Parameters:
+	//   - name: The name of the service to retrieve.
+	//
+	// Returns the service configuration, or an error if not found or the operation fails.
 	GetService(name string) (*configv1.UpstreamServiceConfig, error)
+
+	// ListServices retrieves all stored service configurations.
+	//
+	// Returns a slice of service configurations, or an error if the operation fails.
 	ListServices() ([]*configv1.UpstreamServiceConfig, error)
+
+	// DeleteService removes a service configuration by name.
+	//
+	// Parameters:
+	//   - name: The name of the service to delete.
+	//
+	// Returns an error if the operation fails.
 	DeleteService(name string) error
 }
 
