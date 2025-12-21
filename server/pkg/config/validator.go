@@ -266,7 +266,8 @@ func validateContainerEnvironment(env *configv1.ContainerEnvironment) error {
 			}
 			// dest is the key (Host Path), src is the value (Container Path).
 			// We must validate the Host Path (dest) to ensure it is secure.
-			if err := validation.IsSecurePath(dest); err != nil {
+			// It must be either relative to the CWD or in the allowed list.
+			if err := validation.IsRelativePath(dest); err != nil {
 				return fmt.Errorf("container environment volume host path %q is not a secure path: %w", dest, err)
 			}
 		}

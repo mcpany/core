@@ -758,7 +758,7 @@ func TestValidate(t *testing.T) {
 								ContainerEnvironment: &configv1.ContainerEnvironment{
 									Image: proto.String("alpine"),
 									Volumes: map[string]string{
-										"/host/path": "/container/path",
+										"host/path": "/container/path",
 									},
 								},
 							},
@@ -768,6 +768,31 @@ func TestValidate(t *testing.T) {
 				return cfg
 			}(),
 			expectedErrorCount: 0,
+		},
+		{
+			name: "invalid volume mount - absolute path",
+			config: func() *configv1.McpAnyServerConfig {
+				cfg := &configv1.McpAnyServerConfig{}
+				cfg.UpstreamServices = []*configv1.UpstreamServiceConfig{
+					{
+						Name: proto.String("volume-absolute"),
+						ServiceConfig: &configv1.UpstreamServiceConfig_CommandLineService{
+							CommandLineService: &configv1.CommandLineUpstreamService{
+								Command: proto.String("echo"),
+								ContainerEnvironment: &configv1.ContainerEnvironment{
+									Image: proto.String("alpine"),
+									Volumes: map[string]string{
+										"/host/path": "/container/path",
+									},
+								},
+							},
+						},
+					},
+				}
+				return cfg
+			}(),
+			expectedErrorCount: 1,
+			expectedErrorString: `service "volume-absolute": container environment volume host path "/host/path" is not a secure path: path "/host/path" is not allowed (must be in CWD or in MCPANY_FILE_PATH_ALLOW_LIST)`,
 		},
         /*
 		{
