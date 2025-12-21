@@ -4,15 +4,45 @@
 package util
 
 import (
+	"bytes"
 	"encoding/json"
 	"strings"
 )
 
 const redactedPlaceholder = "[REDACTED]"
 
+var sensitiveKeysBytes [][]byte
+
+func init() {
+	for _, k := range sensitiveKeys {
+		sensitiveKeysBytes = append(sensitiveKeysBytes, []byte(k))
+	}
+}
+
 // RedactJSON parses a JSON byte slice and redacts sensitive keys.
 // If the input is not valid JSON object or array, it returns the input as is.
 func RedactJSON(input []byte) []byte {
+	// Optimization: fast path to skip parsing if no sensitive keys are present in the raw bytes.
+	// This avoids expensive json.Unmarshal/Marshal for the majority of requests.
+	//
+	// SECURITY: We must check for escape sequences ('\') because they can mask keys
+	// (e.g., "p\u0061ssword"). If any backslash is present, we fall back to full parsing.
+	shouldRedact := false
+	if bytes.IndexByte(input, '\\') != -1 {
+		shouldRedact = true
+	} else {
+		for _, k := range sensitiveKeysBytes {
+			if bytes.Contains(input, k) {
+				shouldRedact = true
+				break
+			}
+		}
+	}
+
+	if !shouldRedact {
+		return input
+	}
+
 	var m map[string]interface{}
 	if err := json.Unmarshal(input, &m); err == nil {
 		redacted := RedactMap(m)
