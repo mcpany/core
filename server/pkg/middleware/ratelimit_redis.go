@@ -36,6 +36,11 @@ type RedisLimiter struct {
 
 // NewRedisLimiter creates a new RedisLimiter.
 func NewRedisLimiter(serviceID string, config *configv1.RateLimitConfig) (*RedisLimiter, error) {
+	return NewRedisLimiterWithPartition(serviceID, "", config)
+}
+
+// NewRedisLimiterWithPartition creates a new RedisLimiter with a partition key.
+func NewRedisLimiterWithPartition(serviceID, partitionKey string, config *configv1.RateLimitConfig) (*RedisLimiter, error) {
 	if config.GetRedis() == nil {
 		return nil, fmt.Errorf("redis config is missing")
 	}
@@ -48,12 +53,31 @@ func NewRedisLimiter(serviceID string, config *configv1.RateLimitConfig) (*Redis
 	}
 	client := redisClientCreator(opts)
 
+	key := fmt.Sprintf("ratelimit:%s", serviceID)
+	if partitionKey != "" {
+		key = fmt.Sprintf("%s:%s", key, partitionKey)
+	}
+
 	return &RedisLimiter{
 		client: client,
-		key:    fmt.Sprintf("ratelimit:%s", serviceID),
+		key:    key,
 		rps:    config.GetRequestsPerSecond(),
 		burst:  int(config.GetBurst()),
 	}, nil
+}
+
+// NewRedisLimiterWithClient creates a new RedisLimiter with an existing client.
+func NewRedisLimiterWithClient(client *redis.Client, serviceID, partitionKey string, config *configv1.RateLimitConfig) *RedisLimiter {
+	key := fmt.Sprintf("ratelimit:%s", serviceID)
+	if partitionKey != "" {
+		key = fmt.Sprintf("%s:%s", key, partitionKey)
+	}
+	return &RedisLimiter{
+		client: client,
+		key:    key,
+		rps:    config.GetRequestsPerSecond(),
+		burst:  int(config.GetBurst()),
+	}
 }
 
 // RedisRateLimitScript is the Lua script used for rate limiting.
