@@ -44,9 +44,9 @@ This document outlines the current status and future plans for MCP Any.
 
 ## Upcoming Features (High Priority)
 
-### 1. Role-Based Access Control (RBAC)
-**Why:** Essential for multi-tenant environments to restrict access to specific profiles or tools based on user roles.
-**Status:** Partially Implemented (User Roles & Profile Access)
+### 1. Profile Management
+**Why:** Essential for multi-tenant environments to restrict access to specific tools based on user profiles.
+**Status:** Partially Implemented (Profile-based Access)
 
 ### 2. Dynamic Web UI
 **Why:** A visual dashboard to monitor health, view metrics, and manage configurations without editing YAML.
