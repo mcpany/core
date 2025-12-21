@@ -5,7 +5,7 @@
 
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, memo } from "react";
 import { Server, CheckCircle, XCircle, PowerOff, Power, Trash2 } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -18,13 +18,91 @@ import { UpstreamServiceConfig } from "@/lib/types";
 import { apiClient } from "@/lib/client";
 import { RegisterServiceDialog } from "./register-service-dialog";
 
+// Memoized row component to prevent unnecessary re-renders of all rows when one changes
+// or when the parent component re-renders.
+const ServiceRow = memo(({ service, onDelete }: { service: UpstreamServiceConfig, onDelete: (name: string) => void }) => {
+  return (
+    <TableRow className={service.disable ? "opacity-50" : ""}>
+      <TableCell>
+        <Tooltip>
+          <TooltipTrigger>
+            {service.disable ?
+              <PowerOff className="size-5 text-muted-foreground" /> :
+              <Power className="size-5 text-primary" />
+            }
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>{service.disable ? "Disabled" : "Enabled"}</p>
+          </TooltipContent>
+        </Tooltip>
+      </TableCell>
+      <TableCell className="font-medium">
+        <Link href={`/service/${encodeURIComponent(service.name)}`} className="hover:underline text-primary/90">
+          {service.name}
+        </Link>
+      </TableCell>
+      <TableCell>
+        <Badge variant="outline">
+          { service.grpc_service ? 'gRPC' :
+            service.http_service ? 'HTTP' :
+            service.command_line_service ? 'CLI' :
+            service.openapi_service ? 'OpenAPI' :
+            service.websocket_service ? 'WebSocket' :
+            service.webrtc_service ? 'WebRTC' :
+            service.graphql_service ? 'GraphQL' :
+            service.mcp_service ? 'MCP' :
+            'Unknown'
+          }
+        </Badge>
+      </TableCell>
+      <TableCell className="font-code text-xs truncate max-w-[200px]">
+        { service.grpc_service?.address ||
+          service.http_service?.address ||
+          service.command_line_service?.command ||
+          service.openapi_service?.address ||
+          service.websocket_service?.address ||
+          service.webrtc_service?.address ||
+          service.graphql_service?.address ||
+          service.mcp_service?.http_connection?.http_address ||
+          service.mcp_service?.stdio_connection?.command
+        }
+      </TableCell>
+      <TableCell>
+        <Badge variant="secondary">{service.version || 'N/A'}</Badge>
+      </TableCell>
+      <TableCell className="text-center">
+          <Tooltip>
+            <TooltipTrigger>
+                {(
+                    service.grpc_service?.tls_config ||
+                    service.http_service?.tls_config ||
+                    service.openapi_service?.tls_config ||
+                    service.websocket_service?.tls_config ||
+                    service.webrtc_service?.tls_config ||
+                    service.mcp_service?.http_connection?.tls_config
+                ) ? <CheckCircle className="size-5 text-primary mx-auto" /> : <XCircle className="size-5 text-muted-foreground mx-auto"/>}
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Secure (TLS)</p>
+            </TooltipContent>
+          </Tooltip>
+      </TableCell>
+      <TableCell className="text-right">
+          <Button variant="ghost" size="icon" onClick={() => onDelete(service.name)} title="Delete Service">
+              <Trash2 className="size-4 text-destructive" />
+          </Button>
+      </TableCell>
+    </TableRow>
+  );
+});
+ServiceRow.displayName = "ServiceRow";
 
 export function McpAnyManager() {
   const [services, setServices] = useState<UpstreamServiceConfig[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
 
-  const fetchServices = async () => {
+  const fetchServices = useCallback(async () => {
     setIsLoading(true);
     try {
       const response = await apiClient.listServices();
@@ -43,13 +121,13 @@ export function McpAnyManager() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [toast]);
 
   useEffect(() => {
     fetchServices();
-  }, []);
+  }, [fetchServices]);
 
-  const handleDelete = async (serviceName: string) => {
+  const handleDelete = useCallback(async (serviceName: string) => {
     if (confirm(`Are you sure you want to delete service "${serviceName}"?`)) {
       try {
         await apiClient.unregisterService(serviceName);
@@ -63,7 +141,7 @@ export function McpAnyManager() {
         });
       }
     }
-  };
+  }, [fetchServices, toast]);
 
 
   return (
@@ -112,77 +190,11 @@ export function McpAnyManager() {
                  ))
               )}
               {!isLoading && services.map((service) => (
-                <TableRow key={service.id || service.name} className={service.disable ? "opacity-50" : ""}>
-                   <TableCell>
-                        <Tooltip>
-                          <TooltipTrigger>
-                            {service.disable ?
-                              <PowerOff className="size-5 text-muted-foreground" /> :
-                              <Power className="size-5 text-primary" />
-                            }
-                          </TooltipTrigger>
-                          <TooltipContent>
-                            <p>{service.disable ? "Disabled" : "Enabled"}</p>
-                          </TooltipContent>
-                        </Tooltip>
-                  </TableCell>
-                  <TableCell className="font-medium">
-                    <Link href={`/service/${encodeURIComponent(service.name)}`} className="hover:underline text-primary/90">
-                      {service.name}
-                    </Link>
-                  </TableCell>
-                  <TableCell>
-                    <Badge variant="outline">
-                      { service.grpc_service ? 'gRPC' :
-                        service.http_service ? 'HTTP' :
-                        service.command_line_service ? 'CLI' :
-                        service.openapi_service ? 'OpenAPI' :
-                        service.websocket_service ? 'WebSocket' :
-                        service.webrtc_service ? 'WebRTC' :
-                        service.graphql_service ? 'GraphQL' :
-                        service.mcp_service ? 'MCP' :
-                        'Unknown'
-                      }
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="font-code text-xs truncate max-w-[200px]">
-                    { service.grpc_service?.address ||
-                      service.http_service?.address ||
-                      service.command_line_service?.command ||
-                      service.openapi_service?.address ||
-                      service.websocket_service?.address ||
-                      service.webrtc_service?.address ||
-                      service.graphql_service?.address ||
-                      service.mcp_service?.http_connection?.http_address ||
-                      service.mcp_service?.stdio_connection?.command
-                    }
-                  </TableCell>
-                  <TableCell>
-                    <Badge variant="secondary">{service.version || 'N/A'}</Badge>
-                  </TableCell>
-                  <TableCell className="text-center">
-                      <Tooltip>
-                        <TooltipTrigger>
-                           {(
-                               service.grpc_service?.tls_config ||
-                               service.http_service?.tls_config ||
-                               service.openapi_service?.tls_config ||
-                               service.websocket_service?.tls_config ||
-                               service.webrtc_service?.tls_config ||
-                               service.mcp_service?.http_connection?.tls_config
-                           ) ? <CheckCircle className="size-5 text-primary mx-auto" /> : <XCircle className="size-5 text-muted-foreground mx-auto"/>}
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          <p>Secure (TLS)</p>
-                        </TooltipContent>
-                      </Tooltip>
-                  </TableCell>
-                  <TableCell className="text-right">
-                      <Button variant="ghost" size="icon" onClick={() => handleDelete(service.name)} title="Delete Service">
-                          <Trash2 className="size-4 text-destructive" />
-                      </Button>
-                  </TableCell>
-                </TableRow>
+                <ServiceRow
+                  key={service.id || service.name}
+                  service={service}
+                  onDelete={handleDelete}
+                />
               ))}
                {!isLoading && services.length === 0 && (
                 <TableRow>
