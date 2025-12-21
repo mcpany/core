@@ -52,7 +52,7 @@ func TestResolveSecret_AwsSecretManager(t *testing.T) {
 		secret := &configv1.SecretValue{}
 		secret.SetAwsSecretManager(awsSecret)
 
-	resolved, err := util.ResolveSecret(context.Background(), secret)
+		resolved, err := util.ResolveSecret(context.Background(), secret)
 		assert.NoError(t, err)
 		assert.Contains(t, resolved, "my-aws-value")
 		assert.Contains(t, resolved, "other-key")
