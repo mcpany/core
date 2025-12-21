@@ -31,8 +31,11 @@ func StartStdioServer(t *testing.T, configFile string) (*MCPClient, func()) {
 	root := ProjectRoot(t)
 	serverBin := filepath.Join(root, "../build/bin/server")
 
+	// Use a unique temp DB for each test to avoid conflicts and stale headers
+	dbPath := filepath.Join(t.TempDir(), "test.db")
+
 	// Create command
-	cmd := exec.Command(serverBin, "run", "--stdio", "--config-path", configFile) //nolint:gosec // Test helper
+	cmd := exec.Command(serverBin, "run", "--stdio", "--config-path", configFile, "--db-path", dbPath) //nolint:gosec // Test helper
 	// We need to set pipe before starting
 	stdin, err := cmd.StdinPipe()
 	require.NoError(t, err)
