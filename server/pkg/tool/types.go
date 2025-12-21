@@ -1740,6 +1740,13 @@ func isSensitiveKey(key string) bool {
 }
 
 func checkForPathTraversal(val string) error {
+	if strings.HasPrefix(val, "/") || strings.HasPrefix(val, "\\") {
+		return fmt.Errorf("absolute path not allowed")
+	}
+	// Check for drive letter (e.g. C:)
+	if len(val) >= 2 && val[1] == ':' {
+		return fmt.Errorf("absolute path not allowed")
+	}
 	if val == ".." {
 		return fmt.Errorf("path traversal attempt detected")
 	}
