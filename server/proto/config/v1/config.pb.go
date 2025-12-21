@@ -246,7 +246,9 @@ type User struct {
 	// The authentication configuration for the user.
 	Authentication *AuthenticationConfig `protobuf:"bytes,2,opt,name=authentication" json:"authentication,omitempty"`
 	// The list of profile IDs this user has access to.
-	ProfileIds    []string `protobuf:"bytes,3,rep,name=profile_ids" json:"profile_ids,omitempty"`
+	ProfileIds []string `protobuf:"bytes,3,rep,name=profile_ids" json:"profile_ids,omitempty"`
+	// The list of roles assigned to the user.
+	Roles         []string `protobuf:"bytes,4,rep,name=roles" json:"roles,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -297,6 +299,13 @@ func (x *User) GetProfileIds() []string {
 	return nil
 }
 
+func (x *User) GetRoles() []string {
+	if x != nil {
+		return x.Roles
+	}
+	return nil
+}
+
 func (x *User) SetId(v string) {
 	x.Id = &v
 }
@@ -307,6 +316,10 @@ func (x *User) SetAuthentication(v *AuthenticationConfig) {
 
 func (x *User) SetProfileIds(v []string) {
 	x.ProfileIds = v
+}
+
+func (x *User) SetRoles(v []string) {
+	x.Roles = v
 }
 
 func (x *User) HasId() bool {
@@ -340,6 +353,8 @@ type User_builder struct {
 	Authentication *AuthenticationConfig
 	// The list of profile IDs this user has access to.
 	ProfileIds []string
+	// The list of roles assigned to the user.
+	Roles []string
 }
 
 func (b0 User_builder) Build() *User {
@@ -349,6 +364,7 @@ func (b0 User_builder) Build() *User {
 	x.Id = b.Id
 	x.Authentication = b.Authentication
 	x.ProfileIds = b.ProfileIds
+	x.Roles = b.Roles
 	return m0
 }
 
@@ -371,7 +387,11 @@ type GlobalSettings struct {
 	// The definitions of profiles.
 	ProfileDefinitions []*ProfileDefinition `protobuf:"bytes,9,rep,name=profile_definitions" json:"profile_definitions,omitempty"`
 	// The log format for the server.
-	LogFormat     *GlobalSettings_LogFormat `protobuf:"varint,10,opt,name=log_format,enum=mcpany.config.v1.GlobalSettings_LogFormat" json:"log_format,omitempty"`
+	LogFormat *GlobalSettings_LogFormat `protobuf:"varint,10,opt,name=log_format,enum=mcpany.config.v1.GlobalSettings_LogFormat" json:"log_format,omitempty"`
+	// The path to the database file.
+	DbPath *string `protobuf:"bytes,11,opt,name=db_path" json:"db_path,omitempty"`
+	// The list of middlewares to enable and their configuration.
+	Middlewares   []*Middleware `protobuf:"bytes,12,rep,name=middlewares" json:"middlewares,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -464,6 +484,20 @@ func (x *GlobalSettings) GetLogFormat() GlobalSettings_LogFormat {
 	return GlobalSettings_LOG_FORMAT_UNSPECIFIED
 }
 
+func (x *GlobalSettings) GetDbPath() string {
+	if x != nil && x.DbPath != nil {
+		return *x.DbPath
+	}
+	return ""
+}
+
+func (x *GlobalSettings) GetMiddlewares() []*Middleware {
+	if x != nil {
+		return x.Middlewares
+	}
+	return nil
+}
+
 func (x *GlobalSettings) SetMcpListenAddress(v string) {
 	x.McpListenAddress = &v
 }
@@ -498,6 +532,14 @@ func (x *GlobalSettings) SetProfileDefinitions(v []*ProfileDefinition) {
 
 func (x *GlobalSettings) SetLogFormat(v GlobalSettings_LogFormat) {
 	x.LogFormat = &v
+}
+
+func (x *GlobalSettings) SetDbPath(v string) {
+	x.DbPath = &v
+}
+
+func (x *GlobalSettings) SetMiddlewares(v []*Middleware) {
+	x.Middlewares = v
 }
 
 func (x *GlobalSettings) HasMcpListenAddress() bool {
@@ -542,6 +584,13 @@ func (x *GlobalSettings) HasLogFormat() bool {
 	return x.LogFormat != nil
 }
 
+func (x *GlobalSettings) HasDbPath() bool {
+	if x == nil {
+		return false
+	}
+	return x.DbPath != nil
+}
+
 func (x *GlobalSettings) ClearMcpListenAddress() {
 	x.McpListenAddress = nil
 }
@@ -566,6 +615,10 @@ func (x *GlobalSettings) ClearLogFormat() {
 	x.LogFormat = nil
 }
 
+func (x *GlobalSettings) ClearDbPath() {
+	x.DbPath = nil
+}
+
 type GlobalSettings_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
@@ -587,6 +640,10 @@ type GlobalSettings_builder struct {
 	ProfileDefinitions []*ProfileDefinition
 	// The log format for the server.
 	LogFormat *GlobalSettings_LogFormat
+	// The path to the database file.
+	DbPath *string
+	// The list of middlewares to enable and their configuration.
+	Middlewares []*Middleware
 }
 
 func (b0 GlobalSettings_builder) Build() *GlobalSettings {
@@ -602,6 +659,8 @@ func (b0 GlobalSettings_builder) Build() *GlobalSettings {
 	x.Audit = b.Audit
 	x.ProfileDefinitions = b.ProfileDefinitions
 	x.LogFormat = b.LogFormat
+	x.DbPath = b.DbPath
+	x.Middlewares = b.Middlewares
 	return m0
 }
 
@@ -757,9 +816,13 @@ func (b0 AuditConfig_builder) Build() *AuditConfig {
 }
 
 type ProfileDefinition struct {
-	state         protoimpl.MessageState `protogen:"hybrid.v1"`
-	Name          *string                `protobuf:"bytes,1,opt,name=name" json:"name,omitempty"`
-	Selector      *ProfileSelector       `protobuf:"bytes,2,opt,name=selector" json:"selector,omitempty"`
+	state    protoimpl.MessageState `protogen:"hybrid.v1"`
+	Name     *string                `protobuf:"bytes,1,opt,name=name" json:"name,omitempty"`
+	Selector *ProfileSelector       `protobuf:"bytes,2,opt,name=selector" json:"selector,omitempty"`
+	// List of roles required to access this profile.
+	// If empty, no specific role is required (but user must still have the profile_id explicitly assigned if strict mode).
+	// Alternatively, if user has one of these roles, they get access.
+	RequiredRoles []string `protobuf:"bytes,3,rep,name=required_roles" json:"required_roles,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -803,12 +866,23 @@ func (x *ProfileDefinition) GetSelector() *ProfileSelector {
 	return nil
 }
 
+func (x *ProfileDefinition) GetRequiredRoles() []string {
+	if x != nil {
+		return x.RequiredRoles
+	}
+	return nil
+}
+
 func (x *ProfileDefinition) SetName(v string) {
 	x.Name = &v
 }
 
 func (x *ProfileDefinition) SetSelector(v *ProfileSelector) {
 	x.Selector = v
+}
+
+func (x *ProfileDefinition) SetRequiredRoles(v []string) {
+	x.RequiredRoles = v
 }
 
 func (x *ProfileDefinition) HasName() bool {
@@ -838,6 +912,10 @@ type ProfileDefinition_builder struct {
 
 	Name     *string
 	Selector *ProfileSelector
+	// List of roles required to access this profile.
+	// If empty, no specific role is required (but user must still have the profile_id explicitly assigned if strict mode).
+	// Alternatively, if user has one of these roles, they get access.
+	RequiredRoles []string
 }
 
 func (b0 ProfileDefinition_builder) Build() *ProfileDefinition {
@@ -846,6 +924,7 @@ func (b0 ProfileDefinition_builder) Build() *ProfileDefinition {
 	_, _ = b, x
 	x.Name = b.Name
 	x.Selector = b.Selector
+	x.RequiredRoles = b.RequiredRoles
 	return m0
 }
 
@@ -920,6 +999,130 @@ func (b0 ProfileSelector_builder) Build() *ProfileSelector {
 	return m0
 }
 
+type Middleware struct {
+	state protoimpl.MessageState `protogen:"hybrid.v1"`
+	// The name of the middleware (e.g., "logging", "auth", "ratelimit").
+	Name *string `protobuf:"bytes,1,opt,name=name" json:"name,omitempty"`
+	// The priority of the middleware. Lower values run first (outermost).
+	Priority *int32 `protobuf:"varint,2,opt,name=priority" json:"priority,omitempty"`
+	// Whether this middleware is disabled.
+	Disabled      *bool `protobuf:"varint,3,opt,name=disabled" json:"disabled,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *Middleware) Reset() {
+	*x = Middleware{}
+	mi := &file_proto_config_v1_config_proto_msgTypes[6]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Middleware) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Middleware) ProtoMessage() {}
+
+func (x *Middleware) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_config_v1_config_proto_msgTypes[6]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+func (x *Middleware) GetName() string {
+	if x != nil && x.Name != nil {
+		return *x.Name
+	}
+	return ""
+}
+
+func (x *Middleware) GetPriority() int32 {
+	if x != nil && x.Priority != nil {
+		return *x.Priority
+	}
+	return 0
+}
+
+func (x *Middleware) GetDisabled() bool {
+	if x != nil && x.Disabled != nil {
+		return *x.Disabled
+	}
+	return false
+}
+
+func (x *Middleware) SetName(v string) {
+	x.Name = &v
+}
+
+func (x *Middleware) SetPriority(v int32) {
+	x.Priority = &v
+}
+
+func (x *Middleware) SetDisabled(v bool) {
+	x.Disabled = &v
+}
+
+func (x *Middleware) HasName() bool {
+	if x == nil {
+		return false
+	}
+	return x.Name != nil
+}
+
+func (x *Middleware) HasPriority() bool {
+	if x == nil {
+		return false
+	}
+	return x.Priority != nil
+}
+
+func (x *Middleware) HasDisabled() bool {
+	if x == nil {
+		return false
+	}
+	return x.Disabled != nil
+}
+
+func (x *Middleware) ClearName() {
+	x.Name = nil
+}
+
+func (x *Middleware) ClearPriority() {
+	x.Priority = nil
+}
+
+func (x *Middleware) ClearDisabled() {
+	x.Disabled = nil
+}
+
+type Middleware_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// The name of the middleware (e.g., "logging", "auth", "ratelimit").
+	Name *string
+	// The priority of the middleware. Lower values run first (outermost).
+	Priority *int32
+	// Whether this middleware is disabled.
+	Disabled *bool
+}
+
+func (b0 Middleware_builder) Build() *Middleware {
+	m0 := &Middleware{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.Name = b.Name
+	x.Priority = b.Priority
+	x.Disabled = b.Disabled
+	return m0
+}
+
 var File_proto_config_v1_config_proto protoreflect.FileDescriptor
 
 const file_proto_config_v1_config_proto_rawDesc = "" +
@@ -929,11 +1132,12 @@ const file_proto_config_v1_config_proto_rawDesc = "" +
 	"\x0fglobal_settings\x18\x01 \x01(\v2 .mcpany.config.v1.GlobalSettingsR\x0fglobal_settings\x12U\n" +
 	"\x11upstream_services\x18\x02 \x03(\v2'.mcpany.config.v1.UpstreamServiceConfigR\x11upstream_services\x12o\n" +
 	"\x1cupstream_service_collections\x18\x03 \x03(\v2+.mcpany.config.v1.UpstreamServiceCollectionR\x1cupstream_service_collections\x12,\n" +
-	"\x05users\x18\x04 \x03(\v2\x16.mcpany.config.v1.UserR\x05users\"\x88\x01\n" +
+	"\x05users\x18\x04 \x03(\v2\x16.mcpany.config.v1.UserR\x05users\"\x9e\x01\n" +
 	"\x04User\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12N\n" +
 	"\x0eauthentication\x18\x02 \x01(\v2&.mcpany.config.v1.AuthenticationConfigR\x0eauthentication\x12 \n" +
-	"\vprofile_ids\x18\x03 \x03(\tR\vprofile_ids\"\xbe\x05\n" +
+	"\vprofile_ids\x18\x03 \x03(\tR\vprofile_ids\x12\x14\n" +
+	"\x05roles\x18\x04 \x03(\tR\x05roles\"\x98\x06\n" +
 	"\x0eGlobalSettings\x12.\n" +
 	"\x12mcp_listen_address\x18\x01 \x01(\tR\x12mcp_listen_address\x12G\n" +
 	"\tlog_level\x18\x03 \x01(\x0e2).mcpany.config.v1.GlobalSettings.LogLevelR\tlog_level\x121\n" +
@@ -946,7 +1150,9 @@ const file_proto_config_v1_config_proto_rawDesc = "" +
 	"\n" +
 	"log_format\x18\n" +
 	" \x01(\x0e2*.mcpany.config.v1.GlobalSettings.LogFormatR\n" +
-	"log_format\"w\n" +
+	"log_format\x12\x18\n" +
+	"\adb_path\x18\v \x01(\tR\adb_path\x12>\n" +
+	"\vmiddlewares\x18\f \x03(\v2\x1c.mcpany.config.v1.MiddlewareR\vmiddlewares\"w\n" +
 	"\bLogLevel\x12\x19\n" +
 	"\x15LOG_LEVEL_UNSPECIFIED\x10\x00\x12\x12\n" +
 	"\x0eLOG_LEVEL_INFO\x10\x01\x12\x12\n" +
@@ -961,19 +1167,25 @@ const file_proto_config_v1_config_proto_rawDesc = "" +
 	"\aenabled\x18\x01 \x01(\bR\aenabled\x12 \n" +
 	"\voutput_path\x18\x02 \x01(\tR\voutput_path\x12$\n" +
 	"\rlog_arguments\x18\x03 \x01(\bR\rlog_arguments\x12 \n" +
-	"\vlog_results\x18\x04 \x01(\bR\vlog_results\"f\n" +
+	"\vlog_results\x18\x04 \x01(\bR\vlog_results\"\x8e\x01\n" +
 	"\x11ProfileDefinition\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12=\n" +
-	"\bselector\x18\x02 \x01(\v2!.mcpany.config.v1.ProfileSelectorR\bselector\"\xc9\x01\n" +
+	"\bselector\x18\x02 \x01(\v2!.mcpany.config.v1.ProfileSelectorR\bselector\x12&\n" +
+	"\x0erequired_roles\x18\x03 \x03(\tR\x0erequired_roles\"\xc9\x01\n" +
 	"\x0fProfileSelector\x12\x12\n" +
 	"\x04tags\x18\x01 \x03(\tR\x04tags\x12_\n" +
 	"\x0ftool_properties\x18\x02 \x03(\v25.mcpany.config.v1.ProfileSelector.ToolPropertiesEntryR\x0ftool_properties\x1aA\n" +
 	"\x13ToolPropertiesEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01B5B\vConfigProtoZ&github.com/mcpany/core/proto/config/v1b\beditionsp\xe8\a"
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"X\n" +
+	"\n" +
+	"Middleware\x12\x12\n" +
+	"\x04name\x18\x01 \x01(\tR\x04name\x12\x1a\n" +
+	"\bpriority\x18\x02 \x01(\x05R\bpriority\x12\x1a\n" +
+	"\bdisabled\x18\x03 \x01(\bR\bdisabledB5B\vConfigProtoZ&github.com/mcpany/core/proto/config/v1b\beditionsp\xe8\a"
 
 var file_proto_config_v1_config_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
-var file_proto_config_v1_config_proto_msgTypes = make([]protoimpl.MessageInfo, 7)
+var file_proto_config_v1_config_proto_msgTypes = make([]protoimpl.MessageInfo, 8)
 var file_proto_config_v1_config_proto_goTypes = []any{
 	(GlobalSettings_LogLevel)(0),      // 0: mcpany.config.v1.GlobalSettings.LogLevel
 	(GlobalSettings_LogFormat)(0),     // 1: mcpany.config.v1.GlobalSettings.LogFormat
@@ -983,30 +1195,32 @@ var file_proto_config_v1_config_proto_goTypes = []any{
 	(*AuditConfig)(nil),               // 5: mcpany.config.v1.AuditConfig
 	(*ProfileDefinition)(nil),         // 6: mcpany.config.v1.ProfileDefinition
 	(*ProfileSelector)(nil),           // 7: mcpany.config.v1.ProfileSelector
-	nil,                               // 8: mcpany.config.v1.ProfileSelector.ToolPropertiesEntry
-	(*UpstreamServiceConfig)(nil),     // 9: mcpany.config.v1.UpstreamServiceConfig
-	(*UpstreamServiceCollection)(nil), // 10: mcpany.config.v1.UpstreamServiceCollection
-	(*AuthenticationConfig)(nil),      // 11: mcpany.config.v1.AuthenticationConfig
-	(*bus.MessageBus)(nil),            // 12: bus.MessageBus
+	(*Middleware)(nil),                // 8: mcpany.config.v1.Middleware
+	nil,                               // 9: mcpany.config.v1.ProfileSelector.ToolPropertiesEntry
+	(*UpstreamServiceConfig)(nil),     // 10: mcpany.config.v1.UpstreamServiceConfig
+	(*UpstreamServiceCollection)(nil), // 11: mcpany.config.v1.UpstreamServiceCollection
+	(*AuthenticationConfig)(nil),      // 12: mcpany.config.v1.AuthenticationConfig
+	(*bus.MessageBus)(nil),            // 13: bus.MessageBus
 }
 var file_proto_config_v1_config_proto_depIdxs = []int32{
 	4,  // 0: mcpany.config.v1.McpAnyServerConfig.global_settings:type_name -> mcpany.config.v1.GlobalSettings
-	9,  // 1: mcpany.config.v1.McpAnyServerConfig.upstream_services:type_name -> mcpany.config.v1.UpstreamServiceConfig
-	10, // 2: mcpany.config.v1.McpAnyServerConfig.upstream_service_collections:type_name -> mcpany.config.v1.UpstreamServiceCollection
+	10, // 1: mcpany.config.v1.McpAnyServerConfig.upstream_services:type_name -> mcpany.config.v1.UpstreamServiceConfig
+	11, // 2: mcpany.config.v1.McpAnyServerConfig.upstream_service_collections:type_name -> mcpany.config.v1.UpstreamServiceCollection
 	3,  // 3: mcpany.config.v1.McpAnyServerConfig.users:type_name -> mcpany.config.v1.User
-	11, // 4: mcpany.config.v1.User.authentication:type_name -> mcpany.config.v1.AuthenticationConfig
+	12, // 4: mcpany.config.v1.User.authentication:type_name -> mcpany.config.v1.AuthenticationConfig
 	0,  // 5: mcpany.config.v1.GlobalSettings.log_level:type_name -> mcpany.config.v1.GlobalSettings.LogLevel
-	12, // 6: mcpany.config.v1.GlobalSettings.message_bus:type_name -> bus.MessageBus
+	13, // 6: mcpany.config.v1.GlobalSettings.message_bus:type_name -> bus.MessageBus
 	5,  // 7: mcpany.config.v1.GlobalSettings.audit:type_name -> mcpany.config.v1.AuditConfig
 	6,  // 8: mcpany.config.v1.GlobalSettings.profile_definitions:type_name -> mcpany.config.v1.ProfileDefinition
 	1,  // 9: mcpany.config.v1.GlobalSettings.log_format:type_name -> mcpany.config.v1.GlobalSettings.LogFormat
-	7,  // 10: mcpany.config.v1.ProfileDefinition.selector:type_name -> mcpany.config.v1.ProfileSelector
-	8,  // 11: mcpany.config.v1.ProfileSelector.tool_properties:type_name -> mcpany.config.v1.ProfileSelector.ToolPropertiesEntry
-	12, // [12:12] is the sub-list for method output_type
-	12, // [12:12] is the sub-list for method input_type
-	12, // [12:12] is the sub-list for extension type_name
-	12, // [12:12] is the sub-list for extension extendee
-	0,  // [0:12] is the sub-list for field type_name
+	8,  // 10: mcpany.config.v1.GlobalSettings.middlewares:type_name -> mcpany.config.v1.Middleware
+	7,  // 11: mcpany.config.v1.ProfileDefinition.selector:type_name -> mcpany.config.v1.ProfileSelector
+	9,  // 12: mcpany.config.v1.ProfileSelector.tool_properties:type_name -> mcpany.config.v1.ProfileSelector.ToolPropertiesEntry
+	13, // [13:13] is the sub-list for method output_type
+	13, // [13:13] is the sub-list for method input_type
+	13, // [13:13] is the sub-list for extension type_name
+	13, // [13:13] is the sub-list for extension extendee
+	0,  // [0:13] is the sub-list for field type_name
 }
 
 func init() { file_proto_config_v1_config_proto_init() }
@@ -1022,7 +1236,7 @@ func file_proto_config_v1_config_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_proto_config_v1_config_proto_rawDesc), len(file_proto_config_v1_config_proto_rawDesc)),
 			NumEnums:      2,
-			NumMessages:   7,
+			NumMessages:   8,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

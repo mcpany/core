@@ -4,6 +4,7 @@
 package features_test
 
 import (
+	"context"
 	"os"
 	"testing"
 
@@ -38,6 +39,6 @@ func TestPromptsConfig(t *testing.T) {
 	require.Equal(t, pb.PromptMessage_USER, prompt.Messages[0].GetRole())
 	require.Equal(t, "Hello world", prompt.Messages[0].GetText().GetText())
 
-	err = config.ValidateOrError(service)
+	err = config.ValidateOrError(context.Background(), service)
 	require.NoError(t, err)
 }

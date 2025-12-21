@@ -16,7 +16,7 @@ func TestBus_Coverage_New(t *testing.T) {
 	// We verify that New creates a client with the correct options (address).
 	// Using protojson to avoid issues with opaque API fields.
 	// We use new(buspb.RedisBus) which returns a zero-valued config but valid pointer.
-	b := New[any](new(buspb.RedisBus))
+	b, _ := New[any](new(buspb.RedisBus))
 	assert.NotNil(t, b)
 }
 

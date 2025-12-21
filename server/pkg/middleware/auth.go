@@ -11,6 +11,7 @@ import (
 	"strings"
 
 	"github.com/mcpany/core/pkg/auth"
+	"github.com/mcpany/core/pkg/consts"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
@@ -26,15 +27,34 @@ import (
 func AuthMiddleware(authManager *auth.Manager) mcp.Middleware {
 	return func(next mcp.MethodHandler) mcp.MethodHandler {
 		return func(ctx context.Context, method string, req mcp.Request) (mcp.Result, error) {
-			// Extract serviceID from the method. Assuming the format is "service.method".
-			parts := strings.SplitN(method, ".", 2)
-			if len(parts) < 2 {
-				// If the method format is invalid, we might want to return an error
-				// or let it pass, depending on the desired behavior for malformed requests.
-				// For now, we'll let it pass.
+			var serviceID string
+
+			// Special handling for tool calls
+			if method == consts.MethodToolsCall {
+				if r, ok := req.(*mcp.CallToolRequest); ok {
+					// We expect tool names to be prefixed with the service ID (e.g. "service.tool")
+					parts := strings.SplitN(r.Params.Name, ".", 2)
+					if len(parts) >= 2 {
+						serviceID = parts[0]
+					}
+				}
+			}
+
+			// Fallback to method-based extraction if serviceID not yet found
+			if serviceID == "" {
+				// Extract serviceID from the method. Assuming the format is "service.method".
+				parts := strings.SplitN(method, ".", 2)
+				if len(parts) >= 2 {
+					serviceID = parts[0]
+				}
+			}
+
+			if serviceID == "" {
+				// If we couldn't determine a service ID, we assume it's a global method or
+				// a malformed request that doesn't map to a protected service.
+				// We let it pass, relying on downstream handlers to validate if necessary.
 				return next(ctx, method, req)
 			}
-			serviceID := parts[0]
 
 			// If no authenticator is registered for this service, let the request through.
 			if _, ok := authManager.GetAuthenticator(serviceID); !ok {

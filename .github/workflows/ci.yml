@@ -471,7 +471,7 @@ jobs:
         run: |
            cd server && E2E_DOCKER=true go test -v tests/e2e_sequential/docker_compose_test.go
 
-  ui-build:
+  ui-test:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v5

@@ -25,37 +25,37 @@ import (
 // Manifest represents the structure of the manifest.json file in an MCP bundle.
 type Manifest struct {
 	// ManifestVersion is the version of the manifest format.
-	ManifestVersion string          `json:"manifest_version"`
+	ManifestVersion string `json:"manifest_version"`
 	// Name is the name of the bundle.
-	Name            string          `json:"name"`
+	Name string `json:"name"`
 	// Version is the version of the bundle.
-	Version         string          `json:"version"`
+	Version string `json:"version"`
 	// Description is a description of the bundle.
-	Description     string          `json:"description"`
+	Description string `json:"description"`
 	// Server contains configuration for the MCP server within the bundle.
-	Server          ManifestServer  `json:"server"`
+	Server ManifestServer `json:"server"`
 	// UserConfig contains default configuration for the user.
-	UserConfig      json.RawMessage `json:"user_config"`
+	UserConfig json.RawMessage `json:"user_config"`
 }
 
 // ManifestServer represents the server configuration in the manifest.
 type ManifestServer struct {
 	// Type is the type of the server (e.g., "node", "python").
-	Type       string            `json:"type"`
+	Type string `json:"type"`
 	// EntryPoint is the entry point script or command for the server.
-	EntryPoint string            `json:"entry_point"`
+	EntryPoint string `json:"entry_point"`
 	// McpConfig contains specific configuration for running the MCP server.
-	McpConfig  ManifestMcpConfig `json:"mcp_config"`
+	McpConfig ManifestMcpConfig `json:"mcp_config"`
 }
 
 // ManifestMcpConfig represents the MCP configuration in the manifest.
 type ManifestMcpConfig struct {
 	// Command is the command to run the server.
-	Command string            `json:"command"`
+	Command string `json:"command"`
 	// Args are the arguments to pass to the command.
-	Args    []string          `json:"args"`
+	Args []string `json:"args"`
 	// Env is a map of environment variables to set for the server.
-	Env     map[string]string `json:"env"`
+	Env map[string]string `json:"env"`
 }
 
 // createAndRegisterMCPItemsFromBundle handles the registration of an MCP service
@@ -114,7 +114,8 @@ func (u *Upstream) createAndRegisterMCPItemsFromBundle(
 	}
 
 	// Merge config env (overrides manifest env)
-	resolvedBundleEnv, err := util.ResolveSecretMap(bundleConfig.GetEnv(), nil)
+	// Merge config env (overrides manifest env)
+	resolvedBundleEnv, err := util.ResolveSecretMap(ctx, bundleConfig.GetEnv(), nil)
 	if err != nil {
 		return nil, nil, fmt.Errorf("failed to resolve bundle secret env: %w", err)
 	}

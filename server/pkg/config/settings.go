@@ -207,3 +207,8 @@ func (s *Settings) LogLevel() configv1.GlobalSettings_LogLevel {
 func (s *Settings) DBPath() string {
 	return s.dbPath
 }
+
+// Middlewares returns the configured middlewares.
+func (s *Settings) Middlewares() []*configv1.Middleware {
+	return s.proto.GetMiddlewares()
+}

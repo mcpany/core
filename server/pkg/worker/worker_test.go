@@ -127,8 +127,10 @@ func TestServiceRegistrationWorker(t *testing.T) {
 		messageBus.SetInMemory(bus_pb.InMemoryBus_builder{}.Build())
 		bp, err := bus.NewProvider(messageBus)
 		require.NoError(t, err)
-		requestBus := bus.GetBus[*bus.ServiceRegistrationRequest](bp, bus.ServiceRegistrationRequestTopic)
-		resultBus := bus.GetBus[*bus.ServiceRegistrationResult](bp, bus.ServiceRegistrationResultTopic)
+		requestBus, err := bus.GetBus[*bus.ServiceRegistrationRequest](bp, bus.ServiceRegistrationRequestTopic)
+		require.NoError(t, err)
+		resultBus, err := bus.GetBus[*bus.ServiceRegistrationResult](bp, bus.ServiceRegistrationResultTopic)
+		require.NoError(t, err)
 
 		registry := &mockServiceRegistry{
 			registerFunc: func(_ context.Context, _ *configv1.UpstreamServiceConfig) (string, []*configv1.ToolDefinition, []*configv1.ResourceDefinition, error) {
@@ -164,8 +166,10 @@ func TestServiceRegistrationWorker(t *testing.T) {
 		messageBus.SetInMemory(bus_pb.InMemoryBus_builder{}.Build())
 		bp, err := bus.NewProvider(messageBus)
 		require.NoError(t, err)
-		requestBus := bus.GetBus[*bus.ServiceRegistrationRequest](bp, bus.ServiceRegistrationRequestTopic)
-		resultBus := bus.GetBus[*bus.ServiceRegistrationResult](bp, bus.ServiceRegistrationResultTopic)
+		requestBus, err := bus.GetBus[*bus.ServiceRegistrationRequest](bp, bus.ServiceRegistrationRequestTopic)
+		require.NoError(t, err)
+		resultBus, err := bus.GetBus[*bus.ServiceRegistrationResult](bp, bus.ServiceRegistrationResultTopic)
+		require.NoError(t, err)
 		expectedErr := errors.New("registration failed")
 
 		registry := &mockServiceRegistry{
@@ -202,8 +206,10 @@ func TestServiceRegistrationWorker(t *testing.T) {
 		messageBus.SetInMemory(bus_pb.InMemoryBus_builder{}.Build())
 		bp, err := bus.NewProvider(messageBus)
 		require.NoError(t, err)
-		requestBus := bus.GetBus[*bus.ServiceRegistrationRequest](bp, bus.ServiceRegistrationRequestTopic)
-		resultBus := bus.GetBus[*bus.ServiceRegistrationResult](bp, bus.ServiceRegistrationResultTopic)
+		requestBus, err := bus.GetBus[*bus.ServiceRegistrationRequest](bp, bus.ServiceRegistrationRequestTopic)
+		require.NoError(t, err)
+		resultBus, err := bus.GetBus[*bus.ServiceRegistrationResult](bp, bus.ServiceRegistrationResultTopic)
+		require.NoError(t, err)
 
 		workerCtx, workerCancel := context.WithCancel(context.Background())
 		defer workerCancel()
@@ -259,8 +265,10 @@ func TestUpstreamWorker(t *testing.T) {
 		messageBus.SetInMemory(bus_pb.InMemoryBus_builder{}.Build())
 		bp, err := bus.NewProvider(messageBus)
 		require.NoError(t, err)
-		requestBus := bus.GetBus[*bus.ToolExecutionRequest](bp, bus.ToolExecutionRequestTopic)
-		resultBus := bus.GetBus[*bus.ToolExecutionResult](bp, bus.ToolExecutionResultTopic)
+		requestBus, err := bus.GetBus[*bus.ToolExecutionRequest](bp, bus.ToolExecutionRequestTopic)
+		require.NoError(t, err)
+		resultBus, err := bus.GetBus[*bus.ToolExecutionResult](bp, bus.ToolExecutionResultTopic)
+		require.NoError(t, err)
 		var wg sync.WaitGroup
 		wg.Add(1)
 
@@ -300,8 +308,10 @@ func TestUpstreamWorker(t *testing.T) {
 		messageBus.SetInMemory(bus_pb.InMemoryBus_builder{}.Build())
 		bp, err := bus.NewProvider(messageBus)
 		require.NoError(t, err)
-		requestBus := bus.GetBus[*bus.ToolExecutionRequest](bp, bus.ToolExecutionRequestTopic)
-		resultBus := bus.GetBus[*bus.ToolExecutionResult](bp, bus.ToolExecutionResultTopic)
+		requestBus, err := bus.GetBus[*bus.ToolExecutionRequest](bp, bus.ToolExecutionRequestTopic)
+		require.NoError(t, err)
+		resultBus, err := bus.GetBus[*bus.ToolExecutionResult](bp, bus.ToolExecutionResultTopic)
+		require.NoError(t, err)
 		var wg sync.WaitGroup
 		wg.Add(1)
 		expectedErr := errors.New("execution failed")
@@ -342,8 +352,10 @@ func TestUpstreamWorker(t *testing.T) {
 		messageBus.SetInMemory(bus_pb.InMemoryBus_builder{}.Build())
 		bp, err := bus.NewProvider(messageBus)
 		require.NoError(t, err)
-		requestBus := bus.GetBus[*bus.ToolExecutionRequest](bp, bus.ToolExecutionRequestTopic)
-		resultBus := bus.GetBus[*bus.ToolExecutionResult](bp, bus.ToolExecutionResultTopic)
+		requestBus, err := bus.GetBus[*bus.ToolExecutionRequest](bp, bus.ToolExecutionRequestTopic)
+		require.NoError(t, err)
+		resultBus, err := bus.GetBus[*bus.ToolExecutionResult](bp, bus.ToolExecutionResultTopic)
+		require.NoError(t, err)
 		var wg sync.WaitGroup
 		wg.Add(1)
 
@@ -385,8 +397,10 @@ func TestUpstreamWorker(t *testing.T) {
 		messageBus.SetInMemory(bus_pb.InMemoryBus_builder{}.Build())
 		bp, err := bus.NewProvider(messageBus)
 		require.NoError(t, err)
-		requestBus := bus.GetBus[*bus.ToolExecutionRequest](bp, bus.ToolExecutionRequestTopic)
-		resultBus := bus.GetBus[*bus.ToolExecutionResult](bp, bus.ToolExecutionResultTopic)
+		requestBus, err := bus.GetBus[*bus.ToolExecutionRequest](bp, bus.ToolExecutionRequestTopic)
+		require.NoError(t, err)
+		resultBus, err := bus.GetBus[*bus.ToolExecutionResult](bp, bus.ToolExecutionResultTopic)
+		require.NoError(t, err)
 		var wg sync.WaitGroup
 		wg.Add(1)
 		expectedErr := errors.New("execution partially failed")
@@ -432,8 +446,10 @@ func TestServiceRegistrationWorker_Concurrent(t *testing.T) {
 	messageBus.SetInMemory(bus_pb.InMemoryBus_builder{}.Build())
 	bp, err := bus.NewProvider(messageBus)
 	require.NoError(t, err)
-	requestBus := bus.GetBus[*bus.ServiceRegistrationRequest](bp, bus.ServiceRegistrationRequestTopic)
-	resultBus := bus.GetBus[*bus.ServiceRegistrationResult](bp, bus.ServiceRegistrationResultTopic)
+	requestBus, err := bus.GetBus[*bus.ServiceRegistrationRequest](bp, bus.ServiceRegistrationRequestTopic)
+	require.NoError(t, err)
+	resultBus, err := bus.GetBus[*bus.ServiceRegistrationResult](bp, bus.ServiceRegistrationResultTopic)
+	require.NoError(t, err)
 
 	registry := &mockServiceRegistry{}
 	worker := NewServiceRegistrationWorker(bp, registry)
@@ -546,8 +562,10 @@ func TestUpstreamWorker_Concurrent(t *testing.T) {
 	messageBus.SetInMemory(bus_pb.InMemoryBus_builder{}.Build())
 	bp, err := bus.NewProvider(messageBus)
 	require.NoError(t, err)
-	requestBus := bus.GetBus[*bus.ToolExecutionRequest](bp, bus.ToolExecutionRequestTopic)
-	resultBus := bus.GetBus[*bus.ToolExecutionResult](bp, bus.ToolExecutionResultTopic)
+	requestBus, err := bus.GetBus[*bus.ToolExecutionRequest](bp, bus.ToolExecutionRequestTopic)
+	require.NoError(t, err)
+	resultBus, err := bus.GetBus[*bus.ToolExecutionResult](bp, bus.ToolExecutionResultTopic)
+	require.NoError(t, err)
 
 	tm := &mockToolManager{}
 	worker := NewUpstreamWorker(bp, tm)
@@ -599,8 +617,10 @@ func TestServiceRegistrationWorker_ListRequest(t *testing.T) {
 		messageBus.SetInMemory(bus_pb.InMemoryBus_builder{}.Build())
 		bp, err := bus.NewProvider(messageBus)
 		require.NoError(t, err)
-		requestBus := bus.GetBus[*bus.ServiceListRequest](bp, bus.ServiceListRequestTopic)
-		resultBus := bus.GetBus[*bus.ServiceListResult](bp, bus.ServiceListResultTopic)
+		requestBus, err := bus.GetBus[*bus.ServiceListRequest](bp, bus.ServiceListRequestTopic)
+		require.NoError(t, err)
+		resultBus, err := bus.GetBus[*bus.ServiceListResult](bp, bus.ServiceListResultTopic)
+		require.NoError(t, err)
 
 		expectedServices := []*configv1.UpstreamServiceConfig{
 			{Name: ptr("service1")},

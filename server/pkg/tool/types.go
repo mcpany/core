@@ -441,7 +441,7 @@ func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 
 	for _, param := range t.parameters {
 		if secret := param.GetSecret(); secret != nil {
-			secretValue, err := util.ResolveSecret(secret)
+			secretValue, err := util.ResolveSecret(ctx, secret)
 			if err != nil {
 				return nil, fmt.Errorf("failed to resolve secret for parameter %q: %w", param.GetSchema().GetName(), err)
 			}
@@ -1233,6 +1233,9 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 					if err := checkForPathTraversal(val); err != nil {
 						return nil, fmt.Errorf("parameter %q: %w", k, err)
 					}
+					if err := checkForArgumentInjection(val); err != nil {
+						return nil, fmt.Errorf("parameter %q: %w", k, err)
+					}
 					args[i] = strings.ReplaceAll(arg, placeholder, val)
 				}
 			}
@@ -1282,7 +1285,7 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 	executor := command.NewLocalExecutor()
 
 	env := os.Environ()
-	resolvedServiceEnv, err := util.ResolveSecretMap(t.service.GetEnv(), nil)
+	resolvedServiceEnv, err := util.ResolveSecretMap(ctx, t.service.GetEnv(), nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to resolve service env: %w", err)
 	}
@@ -1293,7 +1296,7 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 	for _, param := range t.callDefinition.GetParameters() {
 		name := param.GetSchema().GetName()
 		if secret := param.GetSecret(); secret != nil {
-			secretValue, err := util.ResolveSecret(secret)
+			secretValue, err := util.ResolveSecret(ctx, secret)
 			if err != nil {
 				return nil, fmt.Errorf("failed to resolve secret for parameter %q: %w", name, err)
 			}
@@ -1443,6 +1446,9 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 					if err := checkForPathTraversal(val); err != nil {
 						return nil, fmt.Errorf("parameter %q: %w", k, err)
 					}
+					if err := checkForArgumentInjection(val); err != nil {
+						return nil, fmt.Errorf("parameter %q: %w", k, err)
+					}
 					args[i] = strings.ReplaceAll(arg, placeholder, val)
 				}
 			}
@@ -1493,7 +1499,7 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 	executor := t.getExecutor(t.service.GetContainerEnvironment())
 
 	env := os.Environ()
-	resolvedServiceEnv, err := util.ResolveSecretMap(t.service.GetEnv(), nil)
+	resolvedServiceEnv, err := util.ResolveSecretMap(ctx, t.service.GetEnv(), nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to resolve service env: %w", err)
 	}
@@ -1502,7 +1508,7 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 	}
 
 	if ce := t.service.GetContainerEnvironment(); ce != nil {
-		resolvedContainerEnv, err := util.ResolveSecretMap(ce.GetEnv(), nil)
+		resolvedContainerEnv, err := util.ResolveSecretMap(ctx, ce.GetEnv(), nil)
 		if err != nil {
 			return nil, fmt.Errorf("failed to resolve container env: %w", err)
 		}
@@ -1514,7 +1520,7 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 	for _, param := range t.callDefinition.GetParameters() {
 		name := param.GetSchema().GetName()
 		if secret := param.GetSecret(); secret != nil {
-			secretValue, err := util.ResolveSecret(secret)
+			secretValue, err := util.ResolveSecret(ctx, secret)
 			if err != nil {
 				return nil, fmt.Errorf("failed to resolve secret for parameter %q: %w", name, err)
 			}
@@ -1700,6 +1706,17 @@ func checkForPathTraversal(val string) error {
 	}
 	if strings.Contains(val, "/../") || strings.Contains(val, "\\..\\") || strings.Contains(val, "/..\\") || strings.Contains(val, "\\../") {
 		return fmt.Errorf("path traversal attempt detected")
+	}
+	return nil
+}
+
+func checkForArgumentInjection(val string) error {
+	if strings.HasPrefix(val, "-") {
+		// Allow negative numbers
+		if _, err := strconv.ParseFloat(val, 64); err == nil {
+			return nil
+		}
+		return fmt.Errorf("argument injection detected: value starts with '-'")
 	}
 	return nil
 }

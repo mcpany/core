@@ -4,6 +4,7 @@
 package util_test
 
 import (
+	"context"
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
@@ -51,7 +52,7 @@ func TestResolveSecret_AwsSecretManager(t *testing.T) {
 		secret := &configv1.SecretValue{}
 		secret.SetAwsSecretManager(awsSecret)
 
-		resolved, err := util.ResolveSecret(secret)
+		resolved, err := util.ResolveSecret(context.Background(), secret)
 		assert.NoError(t, err)
 		assert.Contains(t, resolved, "my-aws-value")
 		assert.Contains(t, resolved, "other-key")
@@ -65,7 +66,7 @@ func TestResolveSecret_AwsSecretManager(t *testing.T) {
 		secret := &configv1.SecretValue{}
 		secret.SetAwsSecretManager(awsSecret)
 
-		resolved, err := util.ResolveSecret(secret)
+		resolved, err := util.ResolveSecret(context.Background(), secret)
 		assert.NoError(t, err)
 		assert.Equal(t, "my-aws-value", resolved)
 	})
@@ -78,7 +79,7 @@ func TestResolveSecret_AwsSecretManager(t *testing.T) {
 		secret := &configv1.SecretValue{}
 		secret.SetAwsSecretManager(awsSecret)
 
-		resolved, err := util.ResolveSecret(secret)
+		resolved, err := util.ResolveSecret(context.Background(), secret)
 		assert.NoError(t, err)
 		assert.Equal(t, "123", resolved)
 	})

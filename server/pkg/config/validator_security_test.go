@@ -4,6 +4,7 @@
 package config
 
 import (
+	"context"
 	"testing"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
@@ -38,7 +39,7 @@ func TestValidate_Security_VolumeMounts(t *testing.T) {
 	cfg := &configv1.McpAnyServerConfig{}
 	require.NoError(t, protojson.Unmarshal([]byte(jsonConfig), cfg))
 
-	validationErrors := Validate(cfg, Server)
+	validationErrors := Validate(context.Background(), cfg, Server)
 
 	// We expect validation errors now because the vulnerability is fixed
 	require.NotEmpty(t, validationErrors, "Expected validation errors for insecure volume mount")

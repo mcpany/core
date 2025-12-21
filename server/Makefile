@@ -403,6 +403,7 @@ e2e-local: e2e-parallel e2e-sequential
 
 e2e-parallel: build build-examples build-e2e-mocks build-e2e-timeserver-docker
 	@echo "Running parallel E2E Go tests locally with a 300s timeout..."
+	@-pkill -f file-upload-server || true
 	@$(EXAMPLE_BIN_DIR)/file-upload-server &
 	@GEMINI_API_KEY=$(GEMINI_API_KEY) MCPANY_DEBUG=true CGO_ENABLED=1 USE_SUDO_FOR_DOCKER=$(NEEDS_SUDO_FOR_DOCKER) $(GO_CMD) test -race -count=1 -timeout 300s -tags=e2e -cover -coverprofile=$(BUILD_DIR)/coverage.e2e-parallel.out $(shell go list ./cmd/... ./pkg/... ./proto/... ./tests/... ./examples/upstream_service_demo/... ./docs/... | grep -v /tests/public_api | grep -v /pkg/command | grep -v /build | grep -v /tests/e2e_sequential)
 	@-pkill -f file-upload-server
@@ -600,6 +601,7 @@ else
 	@exit 1
 endif
 
+
 # Target to run the server Docker container
 run-docker:
 ifdef HAS_DOCKER
@@ -608,6 +610,19 @@ ifdef HAS_DOCKER
 	@$(DOCKER_CMD) run --rm -p 50050:50050 -p 50051:50051 $(SERVER_IMAGE_TAG)
 else
 	@echo "Docker not found. Cannot run server container."
+	@exit 1
+endif
+
+# Target to run the UI Docker smoke test
+docker-smoke-test-ui:
+ifdef HAS_DOCKER
+	@echo "Building UI Docker image..."
+	@$(DOCKER_BUILD_CMD) -t mcpany-ui -f ../ui/Dockerfile ../ui
+	@echo "Running UI smoke test..."
+	@chmod +x tests/smoke_test_ui.sh
+	@./tests/smoke_test_ui.sh mcpany-ui
+else
+	@echo "Docker not found. Cannot run UI smoke test."
 	@exit 1
 endif
 

@@ -49,7 +49,7 @@ func TestCachingConfig(t *testing.T) {
 	require.True(t, service.Cache.GetIsEnabled())
 	// The config in README says "1h" for service, "5m" for call.
 	// We verify basic structure here.
-	err = config.ValidateOrError(service)
+	err = config.ValidateOrError(context.Background(), service)
 	require.NoError(t, err)
 }
 
@@ -124,7 +124,7 @@ global_settings:
 					if strings.HasPrefix(line, name) {
 						// Simple parsing: name{labelKey="labelValue"} value
 						if strings.Contains(line, fmt.Sprintf(`%s="%s"`, labelKey, labelValue)) ||
-						   (labelKey == "" && !strings.Contains(line, "{")) {
+							(labelKey == "" && !strings.Contains(line, "{")) {
 							parts := strings.Fields(line)
 							if len(parts) >= 2 {
 								var val float64

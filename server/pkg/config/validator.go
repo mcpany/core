@@ -4,6 +4,7 @@
 package config
 
 import (
+	"context"
 	"fmt"
 	"net/url"
 	"os"
@@ -51,7 +52,19 @@ func (e *ValidationError) Error() string {
 //
 // It returns a slice of ValidationErrors, which will be empty if the
 // configuration is valid.
-func Validate(config *configv1.McpAnyServerConfig, binaryType BinaryType) []ValidationError {
+// Validate inspects the given McpAnyServerConfig for correctness and consistency.
+// It iterates through the list of upstream services, checking for valid
+// service definitions, addresses, cache settings, and authentication
+// configurations.
+//
+// Invalid services are not removed from the configuration; instead, a list of
+// validation errors is returned.
+//
+// config is the server configuration to be validated.
+//
+// It returns a slice of ValidationErrors, which will be empty if the
+// configuration is valid.
+func Validate(ctx context.Context, config *configv1.McpAnyServerConfig, binaryType BinaryType) []ValidationError {
 	var validationErrors []ValidationError
 	serviceNames := make(map[string]bool)
 
@@ -73,7 +86,7 @@ func Validate(config *configv1.McpAnyServerConfig, binaryType BinaryType) []Vali
 		}
 		serviceNames[service.GetName()] = true
 
-		if err := validateUpstreamService(service); err != nil {
+		if err := validateUpstreamService(ctx, service); err != nil {
 			validationErrors = append(validationErrors, ValidationError{
 				ServiceName: service.GetName(),
 				Err:         err,
@@ -109,11 +122,11 @@ func validateGlobalSettings(gs *configv1.GlobalSettings, binaryType BinaryType) 
 }
 
 // ValidateOrError validates a single upstream service configuration and returns an error if it's invalid.
-func ValidateOrError(service *configv1.UpstreamServiceConfig) error {
-	return validateUpstreamService(service)
+func ValidateOrError(ctx context.Context, service *configv1.UpstreamServiceConfig) error {
+	return validateUpstreamService(ctx, service)
 }
 
-func validateUpstreamService(service *configv1.UpstreamServiceConfig) error {
+func validateUpstreamService(ctx context.Context, service *configv1.UpstreamServiceConfig) error {
 	if service.WhichServiceConfig() == configv1.UpstreamServiceConfig_ServiceConfig_not_set_case {
 		return fmt.Errorf("service type not specified")
 	}
@@ -129,7 +142,7 @@ func validateUpstreamService(service *configv1.UpstreamServiceConfig) error {
 	}
 
 	if authConfig := service.GetUpstreamAuthentication(); authConfig != nil {
-		if err := validateUpstreamAuthentication(authConfig); err != nil {
+		if err := validateUpstreamAuthentication(ctx, authConfig); err != nil {
 			return err
 		}
 	}
@@ -296,25 +309,25 @@ func validateMcpService(mcpService *configv1.McpUpstreamService) error {
 	return nil
 }
 
-func validateUpstreamAuthentication(authConfig *configv1.UpstreamAuthentication) error {
+func validateUpstreamAuthentication(ctx context.Context, authConfig *configv1.UpstreamAuthentication) error {
 	switch authConfig.WhichAuthMethod() {
 	case configv1.UpstreamAuthentication_ApiKey_case:
-		return validateAPIKeyAuth(authConfig.GetApiKey())
+		return validateAPIKeyAuth(ctx, authConfig.GetApiKey())
 	case configv1.UpstreamAuthentication_BearerToken_case:
-		return validateBearerTokenAuth(authConfig.GetBearerToken())
+		return validateBearerTokenAuth(ctx, authConfig.GetBearerToken())
 	case configv1.UpstreamAuthentication_BasicAuth_case:
-		return validateBasicAuth(authConfig.GetBasicAuth())
+		return validateBasicAuth(ctx, authConfig.GetBasicAuth())
 	case configv1.UpstreamAuthentication_Mtls_case:
 		return validateMtlsAuth(authConfig.GetMtls())
 	}
 	return nil
 }
 
-func validateAPIKeyAuth(apiKey *configv1.UpstreamAPIKeyAuth) error {
+func validateAPIKeyAuth(ctx context.Context, apiKey *configv1.UpstreamAPIKeyAuth) error {
 	if apiKey.GetHeaderName() == "" {
 		return fmt.Errorf("api key 'header_name' is empty")
 	}
-	apiKeyValue, err := util.ResolveSecret(apiKey.GetApiKey())
+	apiKeyValue, err := util.ResolveSecret(ctx, apiKey.GetApiKey())
 	if err != nil {
 		return fmt.Errorf("failed to resolve api key secret: %w", err)
 	}
@@ -324,8 +337,8 @@ func validateAPIKeyAuth(apiKey *configv1.UpstreamAPIKeyAuth) error {
 	return nil
 }
 
-func validateBearerTokenAuth(bearerToken *configv1.UpstreamBearerTokenAuth) error {
-	tokenValue, err := util.ResolveSecret(bearerToken.GetToken())
+func validateBearerTokenAuth(ctx context.Context, bearerToken *configv1.UpstreamBearerTokenAuth) error {
+	tokenValue, err := util.ResolveSecret(ctx, bearerToken.GetToken())
 	if err != nil {
 		return fmt.Errorf("failed to resolve bearer token secret: %w", err)
 	}
@@ -335,11 +348,11 @@ func validateBearerTokenAuth(bearerToken *configv1.UpstreamBearerTokenAuth) erro
 	return nil
 }
 
-func validateBasicAuth(basicAuth *configv1.UpstreamBasicAuth) error {
+func validateBasicAuth(ctx context.Context, basicAuth *configv1.UpstreamBasicAuth) error {
 	if basicAuth.GetUsername() == "" {
 		return fmt.Errorf("basic auth 'username' is empty")
 	}
-	passwordValue, err := util.ResolveSecret(basicAuth.GetPassword())
+	passwordValue, err := util.ResolveSecret(ctx, basicAuth.GetPassword())
 	if err != nil {
 		return fmt.Errorf("failed to resolve basic auth password secret: %w", err)
 	}

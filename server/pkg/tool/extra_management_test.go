@@ -241,7 +241,8 @@ func TestManager_AddTool_WithMCPServer_Coverage(t *testing.T) {
 	}
 
 	// Subscribe to bus to verify publication
-	reqBus := bus.GetBus[*bus.ToolExecutionRequest](b, "tool_execution_requests")
+	reqBus, err := bus.GetBus[*bus.ToolExecutionRequest](b, "tool_execution_requests")
+	assert.NoError(t, err)
 	reqChan := make(chan *bus.ToolExecutionRequest, 1)
 	reqBus.SubscribeOnce(context.Background(), "request", func(req *bus.ToolExecutionRequest) {
 		reqChan <- req
@@ -263,7 +264,8 @@ func TestManager_AddTool_WithMCPServer_Coverage(t *testing.T) {
 		// Sending success result
 		resJSON, _ := json.Marshal(map[string]any{"result": "ok"})
 
-		resBus := bus.GetBus[*bus.ToolExecutionResult](b, "tool_execution_results")
+		resBus, err := bus.GetBus[*bus.ToolExecutionResult](b, "tool_execution_results")
+		assert.NoError(t, err)
 		_ = resBus.Publish(context.Background(), req.CorrelationID(), &bus.ToolExecutionResult{
 			Result: json.RawMessage(resJSON),
 		})

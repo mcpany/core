@@ -173,19 +173,19 @@ func (g *GitHub) applyAuthentication(req *http.Request, auth *configv1.UpstreamA
 	}
 
 	if apiKey := auth.GetApiKey(); apiKey != nil {
-		apiKeyValue, err := util.ResolveSecret(apiKey.GetApiKey())
+		apiKeyValue, err := util.ResolveSecret(req.Context(), apiKey.GetApiKey())
 		if err != nil {
 			return err
 		}
 		req.Header.Set(apiKey.GetHeaderName(), apiKeyValue)
 	} else if bearerToken := auth.GetBearerToken(); bearerToken != nil {
-		tokenValue, err := util.ResolveSecret(bearerToken.GetToken())
+		tokenValue, err := util.ResolveSecret(req.Context(), bearerToken.GetToken())
 		if err != nil {
 			return err
 		}
 		req.Header.Set("Authorization", "Bearer "+tokenValue)
 	} else if basicAuth := auth.GetBasicAuth(); basicAuth != nil {
-		passwordValue, err := util.ResolveSecret(basicAuth.GetPassword())
+		passwordValue, err := util.ResolveSecret(req.Context(), basicAuth.GetPassword())
 		if err != nil {
 			return err
 		}

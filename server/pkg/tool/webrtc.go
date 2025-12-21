@@ -179,7 +179,7 @@ func (t *WebrtcTool) executeWithPeerConnection(ctx context.Context, req *Executi
 
 	for _, param := range t.parameters {
 		if secret := param.GetSecret(); secret != nil {
-			secretValue, err := util.ResolveSecret(secret)
+			secretValue, err := util.ResolveSecret(ctx, secret)
 			if err != nil {
 				return nil, fmt.Errorf("failed to resolve secret for parameter %q: %w", param.GetSchema().GetName(), err)
 			}

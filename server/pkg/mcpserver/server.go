@@ -437,6 +437,10 @@ func (s *Server) CallTool(ctx context.Context, req *tool.ExecutionRequest) (any,
 		}
 	}
 
+	if !s.isServiceAllowed(ctx, serviceID) {
+		return nil, fmt.Errorf("access denied to tool %q", req.ToolName)
+	}
+
 	metrics.IncrCounterWithLabels([]string{"tools", "call", "total"}, 1, []metrics.Label{
 		{Name: "tool", Value: req.ToolName},
 		{Name: "service_id", Value: serviceID},
@@ -522,6 +526,30 @@ func (s *Server) AddTool(t tool.Tool) error {
 // GetServiceInfo retrieves information about a service by its ID.
 func (s *Server) GetServiceInfo(serviceID string) (*tool.ServiceInfo, bool) {
 	return s.toolManager.GetServiceInfo(serviceID)
+}
+
+func (s *Server) isServiceAllowed(ctx context.Context, serviceID string) bool {
+	profileID, hasProfile := auth.ProfileIDFromContext(ctx)
+	if !hasProfile {
+		return true
+	}
+
+	info, ok := s.GetServiceInfo(serviceID)
+	if !ok || info.Config == nil {
+		return true
+	}
+
+	if len(info.Config.GetProfiles()) == 0 {
+		return true
+	}
+
+	for _, p := range info.Config.GetProfiles() {
+		if p.GetId() == profileID {
+			return true
+		}
+	}
+
+	return false
 }
 
 // ClearToolsForService removes all tools associated with a specific service.
