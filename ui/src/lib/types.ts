@@ -400,3 +400,13 @@ export interface UnregisterServiceResponse {
   /** A message indicating the result of the unregistration. */
   message: string;
 }
+export type Tool = ToolDefinition;
+export type Resource = ResourceDefinition;
+
+export interface ListToolsResponse {
+    tools: Tool[];
+}
+
+export interface ListResourcesResponse {
+    resources: Resource[];
+}

@@ -137,5 +137,41 @@ export const apiClient = {
         return { metrics: {} };
       }
       return res.json();
+  },
+
+  /**
+   * Lists all tools from all registered services (aggregated).
+   */
+  listTools: async (): Promise<{ tools: import("./types").Tool[] }> => {
+      const { services } = await apiClient.listServices();
+      const tools = services.flatMap(s =>
+          (s.grpc_service?.tools ||
+           s.http_service?.tools ||
+           s.command_line_service?.tools ||
+           s.openapi_service?.tools ||
+           s.websocket_service?.tools ||
+           s.webrtc_service?.tools ||
+           s.mcp_service?.tools ||
+           [])
+      );
+      return { tools };
+  },
+
+  /**
+   * Lists all resources from all registered services (aggregated).
+   */
+  listResources: async (): Promise<{ resources: import("./types").Resource[] }> => {
+      const { services } = await apiClient.listServices();
+      const resources = services.flatMap(s =>
+          (s.grpc_service?.resources ||
+           s.http_service?.resources ||
+           s.command_line_service?.resources ||
+           s.openapi_service?.resources ||
+           s.websocket_service?.resources ||
+           s.webrtc_service?.resources ||
+           s.mcp_service?.resources ||
+           [])
+      );
+      return { resources };
   }
 };

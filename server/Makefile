@@ -472,7 +472,7 @@ else
 	export GOLANGCI_LINT_CACHE=$(BUILD_DIR)/.cache/golangci-lint && \
 	export GOWORK=off && \
 	$(GOLANGCI_LINT_BIN) run --fix ./cmd/... ./pkg/... ./tests/... ./examples/... && \
-	pre-commit run --all-files
+	cd .. && pre-commit run --config server/.pre-commit-config.yaml --all-files
 endif
 
 clean-pre-commit:
