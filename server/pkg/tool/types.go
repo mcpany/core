@@ -434,7 +434,9 @@ func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 
 	var inputs map[string]any
 	if len(req.ToolInputs) > 0 {
-		if err := json.Unmarshal(req.ToolInputs, &inputs); err != nil {
+		decoder := json.NewDecoder(bytes.NewReader(req.ToolInputs))
+		decoder.UseNumber()
+		if err := decoder.Decode(&inputs); err != nil {
 			return nil, fmt.Errorf("failed to unmarshal tool inputs: %w", err)
 		}
 	}
@@ -783,7 +785,9 @@ func (t *MCPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, erro
 	bareToolName := t.tool.GetName()
 
 	var inputs map[string]any
-	if err := json.Unmarshal(req.ToolInputs, &inputs); err != nil {
+	decoder := json.NewDecoder(bytes.NewReader(req.ToolInputs))
+	decoder.UseNumber()
+	if err := decoder.Decode(&inputs); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal tool inputs: %w", err)
 	}
 
@@ -957,7 +961,9 @@ func (t *OpenAPITool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 		logging.GetLogger().Debug("executing tool", "tool", req.ToolName, "inputs", prettyPrint(req.ToolInputs, contentTypeJSON))
 	}
 	var inputs map[string]any
-	if err := json.Unmarshal(req.ToolInputs, &inputs); err != nil {
+	decoder := json.NewDecoder(bytes.NewReader(req.ToolInputs))
+	decoder.UseNumber()
+	if err := decoder.Decode(&inputs); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal tool inputs: %w", err)
 	}
 
@@ -1214,7 +1220,9 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 		return nil, fmt.Errorf("tool execution blocked by policy")
 	}
 	var inputs map[string]any
-	if err := json.Unmarshal(req.ToolInputs, &inputs); err != nil {
+	decoder := json.NewDecoder(bytes.NewReader(req.ToolInputs))
+	decoder.UseNumber()
+	if err := decoder.Decode(&inputs); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal tool inputs: %w", err)
 	}
 
@@ -1329,7 +1337,9 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 		cliExecutor := cli.NewJSONExecutor(stdin, io.LimitReader(stdout, limit))
 		var result map[string]interface{}
 		var unmarshaledInputs map[string]interface{}
-		if err := json.Unmarshal(req.ToolInputs, &unmarshaledInputs); err != nil {
+		decoder := json.NewDecoder(bytes.NewReader(req.ToolInputs))
+		decoder.UseNumber()
+		if err := decoder.Decode(&unmarshaledInputs); err != nil {
 			return nil, fmt.Errorf("failed to unmarshal tool inputs: %w", err)
 		}
 		if err := cliExecutor.Execute(unmarshaledInputs, &result); err != nil {
@@ -1427,7 +1437,9 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 		return nil, fmt.Errorf("tool execution blocked by policy")
 	}
 	var inputs map[string]any
-	if err := json.Unmarshal(req.ToolInputs, &inputs); err != nil {
+	decoder := json.NewDecoder(bytes.NewReader(req.ToolInputs))
+	decoder.UseNumber()
+	if err := decoder.Decode(&inputs); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal tool inputs: %w", err)
 	}
 
@@ -1553,7 +1565,9 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 		cliExecutor := cli.NewJSONExecutor(stdin, io.LimitReader(stdout, limit))
 		var result map[string]interface{}
 		var unmarshaledInputs map[string]interface{}
-		if err := json.Unmarshal(req.ToolInputs, &unmarshaledInputs); err != nil {
+		decoder := json.NewDecoder(bytes.NewReader(req.ToolInputs))
+		decoder.UseNumber()
+		if err := decoder.Decode(&unmarshaledInputs); err != nil {
 			return nil, fmt.Errorf("failed to unmarshal tool inputs: %w", err)
 		}
 		if err := cliExecutor.Execute(unmarshaledInputs, &result); err != nil {
