@@ -445,7 +445,6 @@ func (s *Server) CallTool(ctx context.Context, req *tool.ExecutionRequest) (any,
 		{Name: "tool", Value: req.ToolName},
 		{Name: "service_id", Value: serviceID},
 	})
-	defer metrics.MeasureSince([]string{"tools", "call", "latency"}, startTime)
 
 	result, err := s.toolManager.ExecuteTool(ctx, req)
 	if err != nil {

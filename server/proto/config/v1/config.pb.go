@@ -371,9 +371,7 @@ type GlobalSettings struct {
 	// The definitions of profiles.
 	ProfileDefinitions []*ProfileDefinition `protobuf:"bytes,9,rep,name=profile_definitions" json:"profile_definitions,omitempty"`
 	// The log format for the server.
-	LogFormat *GlobalSettings_LogFormat `protobuf:"varint,10,opt,name=log_format,enum=mcpany.config.v1.GlobalSettings_LogFormat" json:"log_format,omitempty"`
-	// The path to the database file.
-	DbPath        *string `protobuf:"bytes,11,opt,name=db_path" json:"db_path,omitempty"`
+	LogFormat     *GlobalSettings_LogFormat `protobuf:"varint,10,opt,name=log_format,enum=mcpany.config.v1.GlobalSettings_LogFormat" json:"log_format,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -466,13 +464,6 @@ func (x *GlobalSettings) GetLogFormat() GlobalSettings_LogFormat {
 	return GlobalSettings_LOG_FORMAT_UNSPECIFIED
 }
 
-func (x *GlobalSettings) GetDbPath() string {
-	if x != nil && x.DbPath != nil {
-		return *x.DbPath
-	}
-	return ""
-}
-
 func (x *GlobalSettings) SetMcpListenAddress(v string) {
 	x.McpListenAddress = &v
 }
@@ -507,10 +498,6 @@ func (x *GlobalSettings) SetProfileDefinitions(v []*ProfileDefinition) {
 
 func (x *GlobalSettings) SetLogFormat(v GlobalSettings_LogFormat) {
 	x.LogFormat = &v
-}
-
-func (x *GlobalSettings) SetDbPath(v string) {
-	x.DbPath = &v
 }
 
 func (x *GlobalSettings) HasMcpListenAddress() bool {
@@ -555,13 +542,6 @@ func (x *GlobalSettings) HasLogFormat() bool {
 	return x.LogFormat != nil
 }
 
-func (x *GlobalSettings) HasDbPath() bool {
-	if x == nil {
-		return false
-	}
-	return x.DbPath != nil
-}
-
 func (x *GlobalSettings) ClearMcpListenAddress() {
 	x.McpListenAddress = nil
 }
@@ -586,10 +566,6 @@ func (x *GlobalSettings) ClearLogFormat() {
 	x.LogFormat = nil
 }
 
-func (x *GlobalSettings) ClearDbPath() {
-	x.DbPath = nil
-}
-
 type GlobalSettings_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
@@ -611,8 +587,6 @@ type GlobalSettings_builder struct {
 	ProfileDefinitions []*ProfileDefinition
 	// The log format for the server.
 	LogFormat *GlobalSettings_LogFormat
-	// The path to the database file.
-	DbPath *string
 }
 
 func (b0 GlobalSettings_builder) Build() *GlobalSettings {
@@ -628,7 +602,6 @@ func (b0 GlobalSettings_builder) Build() *GlobalSettings {
 	x.Audit = b.Audit
 	x.ProfileDefinitions = b.ProfileDefinitions
 	x.LogFormat = b.LogFormat
-	x.DbPath = b.DbPath
 	return m0
 }
 
@@ -960,7 +933,7 @@ const file_proto_config_v1_config_proto_rawDesc = "" +
 	"\x04User\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12N\n" +
 	"\x0eauthentication\x18\x02 \x01(\v2&.mcpany.config.v1.AuthenticationConfigR\x0eauthentication\x12 \n" +
-	"\vprofile_ids\x18\x03 \x03(\tR\vprofile_ids\"\xd8\x05\n" +
+	"\vprofile_ids\x18\x03 \x03(\tR\vprofile_ids\"\xbe\x05\n" +
 	"\x0eGlobalSettings\x12.\n" +
 	"\x12mcp_listen_address\x18\x01 \x01(\tR\x12mcp_listen_address\x12G\n" +
 	"\tlog_level\x18\x03 \x01(\x0e2).mcpany.config.v1.GlobalSettings.LogLevelR\tlog_level\x121\n" +
@@ -973,8 +946,7 @@ const file_proto_config_v1_config_proto_rawDesc = "" +
 	"\n" +
 	"log_format\x18\n" +
 	" \x01(\x0e2*.mcpany.config.v1.GlobalSettings.LogFormatR\n" +
-	"log_format\x12\x18\n" +
-	"\adb_path\x18\v \x01(\tR\adb_path\"w\n" +
+	"log_format\"w\n" +
 	"\bLogLevel\x12\x19\n" +
 	"\x15LOG_LEVEL_UNSPECIFIED\x10\x00\x12\x12\n" +
 	"\x0eLOG_LEVEL_INFO\x10\x01\x12\x12\n" +

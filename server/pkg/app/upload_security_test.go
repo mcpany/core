@@ -13,7 +13,7 @@ import (
 )
 
 func TestUploadFile_Security(t *testing.T) {
-	app := newTestApp(t)
+	app := NewApplication()
 
 	t.Run("Reflected XSS", func(t *testing.T) {
 		body := &bytes.Buffer{}
