@@ -300,6 +300,8 @@ type HTTPTool struct {
 	cachedPath         string // with %7B replaced
 	cachedQuery        string // with %7B replaced
 	cachedPlaceholders map[string]string
+	paramInPath        []bool
+	paramInQuery       []bool
 }
 
 // NewHTTPTool creates a new HTTPTool.
@@ -362,10 +364,21 @@ func NewHTTPTool(tool *v1.Tool, poolManager *pool.Manager, serviceID string, aut
 	t.cachedQuery = queryStr
 
 	t.cachedPlaceholders = make(map[string]string)
-	for _, param := range callDefinition.GetParameters() {
+	t.paramInPath = make([]bool, len(callDefinition.GetParameters()))
+	t.paramInQuery = make([]bool, len(callDefinition.GetParameters()))
+
+	for i, param := range callDefinition.GetParameters() {
 		if schema := param.GetSchema(); schema != nil {
 			name := schema.GetName()
-			t.cachedPlaceholders[name] = "{{" + name + "}}"
+			placeholder := "{{" + name + "}}"
+			t.cachedPlaceholders[name] = placeholder
+
+			if strings.Contains(t.cachedPath, placeholder) {
+				t.paramInPath[i] = true
+			}
+			if strings.Contains(t.cachedQuery, placeholder) {
+				t.paramInQuery[i] = true
+			}
 		}
 	}
 
@@ -439,36 +452,58 @@ func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 		}
 	}
 
-	for _, param := range t.parameters {
+	for i, param := range t.parameters {
 		if secret := param.GetSecret(); secret != nil {
 			secretValue, err := util.ResolveSecret(ctx, secret)
 			if err != nil {
 				return nil, fmt.Errorf("failed to resolve secret for parameter %q: %w", param.GetSchema().GetName(), err)
 			}
 			placeholder := t.cachedPlaceholders[param.GetSchema().GetName()]
-			pathStr = strings.ReplaceAll(pathStr, placeholder, secretValue)
-			queryStr = strings.ReplaceAll(queryStr, placeholder, secretValue)
+			if t.paramInPath[i] {
+				pathStr = strings.ReplaceAll(pathStr, placeholder, secretValue)
+			}
+			if t.paramInQuery[i] {
+				queryStr = strings.ReplaceAll(queryStr, placeholder, secretValue)
+			}
 		} else if schema := param.GetSchema(); schema != nil {
 			placeholder := t.cachedPlaceholders[schema.GetName()]
 			if val, ok := inputs[schema.GetName()]; ok {
-				valStr := fmt.Sprintf("%v", val)
+				var valStr string
+				// Optimization: avoid fmt.Sprintf for strings
+				switch v := val.(type) {
+				case string:
+					valStr = v
+				default:
+					valStr = fmt.Sprintf("%v", v)
+				}
+
 				if param.GetDisableEscape() {
 					// Check for path traversal if in path
-					if strings.Contains(pathStr, placeholder) {
+					if t.paramInPath[i] {
 						if valStr == ".." || strings.HasPrefix(valStr, "../") || strings.HasSuffix(valStr, "/..") || strings.Contains(valStr, "/../") {
 							return nil, fmt.Errorf("path traversal attempt detected in parameter %q", schema.GetName())
 						}
+						pathStr = strings.ReplaceAll(pathStr, placeholder, valStr)
 					}
-					pathStr = strings.ReplaceAll(pathStr, placeholder, valStr)
-					queryStr = strings.ReplaceAll(queryStr, placeholder, valStr)
+					if t.paramInQuery[i] {
+						queryStr = strings.ReplaceAll(queryStr, placeholder, valStr)
+					}
 				} else {
-					pathStr = strings.ReplaceAll(pathStr, placeholder, url.PathEscape(valStr))
-					queryStr = strings.ReplaceAll(queryStr, placeholder, url.QueryEscape(valStr))
+					if t.paramInPath[i] {
+						pathStr = strings.ReplaceAll(pathStr, placeholder, url.PathEscape(valStr))
+					}
+					if t.paramInQuery[i] {
+						queryStr = strings.ReplaceAll(queryStr, placeholder, url.QueryEscape(valStr))
+					}
 				}
 				delete(inputs, schema.GetName())
 			} else {
-				pathStr = strings.ReplaceAll(pathStr, "/"+placeholder, "")
-				queryStr = strings.ReplaceAll(queryStr, "/"+placeholder, "")
+				if t.paramInPath[i] {
+					pathStr = strings.ReplaceAll(pathStr, "/"+placeholder, "")
+				}
+				if t.paramInQuery[i] {
+					queryStr = strings.ReplaceAll(queryStr, "/"+placeholder, "")
+				}
 			}
 		}
 	}
