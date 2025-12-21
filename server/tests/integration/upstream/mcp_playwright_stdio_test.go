@@ -17,7 +17,6 @@ import (
 )
 
 func TestUpstreamService_MCP_Playwright_Stdio(t *testing.T) {
-	// TODO: Remove skip once server hang is resolved (npm exec issues?)
 	t.Skip("Skipping failing Playwright test: server hangs on startup with npm exec")
 
 	testCase := &framework.E2ETestCase{
@@ -30,6 +29,7 @@ func TestUpstreamService_MCP_Playwright_Stdio(t *testing.T) {
 				"HOME":                             "/tmp",
 				"NPM_CONFIG_LOGLEVEL":              "silent",
 				"PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD": "1",
+				"NPM_CONFIG_YES":                   "true",
 			}
 			cmd := "npm" // Use npm to find the binary
 			args := []string{"exec", "mcp-server-playwright", "--", "--console-level", "debug"}
