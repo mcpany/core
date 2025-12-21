@@ -129,13 +129,23 @@ const (
 )
 
 var (
-	// disallowedIDChars is a regular expression that matches any character that is
-	// not a valid character in an operation ID.
-	disallowedIDChars = regexp.MustCompile(`[^a-zA-Z0-9-._~:/?#\[\]@!$&'()*+,;=]+`)
-
 	// placeholderRegex matches {{key}} patterns.
 	placeholderRegex = regexp.MustCompile(`(?s)\{\{(.+?)\}\}`)
+
+	// allowedIDChars is a lookup table for allowed characters in an operation ID.
+	// It corresponds to the regex `[a-zA-Z0-9-._~:/?#\[\]@!$&'()*+,;=]`.
+	allowedIDChars [256]bool
 )
+
+func init() {
+	const allowed = "abcdefghijklmnopqrstuvwxyz" +
+		"ABCDEFGHIJKLMNOPQRSTUVWXYZ" +
+		"0123456789" +
+		"-._~:/?#[]@!$&'()*+,;="
+	for i := 0; i < len(allowed); i++ {
+		allowedIDChars[allowed[i]] = true
+	}
+}
 
 // TrueStr is a string constant for "true".
 const TrueStr = "true"
@@ -172,19 +182,46 @@ func ParseToolName(toolName string) (service, bareToolName string, err error) {
 // input is the string to be sanitized.
 // It returns the sanitized string.
 func SanitizeOperationID(input string) string {
-	if !disallowedIDChars.MatchString(input) {
+	// Fast path: check if valid without allocating
+	isClean := true
+	for i := 0; i < len(input); i++ {
+		if !allowedIDChars[input[i]] {
+			isClean = false
+			break
+		}
+	}
+
+	if isClean {
 		return input
 	}
 
-	// Use ReplaceAllStringFunc to generate a unique hash for each match
-	sanitized := disallowedIDChars.ReplaceAllStringFunc(input, func(s string) string {
-		h := sha256.New()
-		h.Write([]byte(s))
-		hash := hex.EncodeToString(h.Sum(nil))[:6]
-		return fmt.Sprintf("_%s_", hash)
-	})
+	var sb strings.Builder
+	sb.Grow(len(input) + 16) // slightly more for potential hashes
 
-	return sanitized
+	for i := 0; i < len(input); {
+		if allowedIDChars[input[i]] {
+			sb.WriteByte(input[i])
+			i++
+		} else {
+			// Found start of disallowed sequence
+			start := i
+			for i < len(input) && !allowedIDChars[input[i]] {
+				i++
+			}
+			// Disallowed sequence is input[start:i]
+			badChunk := input[start:i]
+
+			// Optimization: Use sha256.Sum256 to avoid heap allocation of hash.Hash
+			sum := sha256.Sum256([]byte(badChunk))
+			var hashBuf [64]byte
+			hex.Encode(hashBuf[:], sum[:])
+
+			sb.WriteString("_")
+			sb.Write(hashBuf[:6])
+			sb.WriteString("_")
+		}
+	}
+	return sb.String()
 }
 
 // GetDockerCommand returns the command and base arguments for running Docker.
