@@ -13,6 +13,7 @@ import (
 	context "context"
 	reflect "reflect"
 
+	"github.com/mcpany/core/pkg/bus"
 	v1 "github.com/mcpany/core/proto/config/v1"
 	gomock "go.uber.org/mock/gomock"
 )
@@ -186,4 +187,16 @@ func (m *MockManagerInterface) SetProfiles(enabled []string, defs []*v1.ProfileD
 func (mr *MockManagerInterfaceMockRecorder) SetProfiles(enabled, defs any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SetProfiles", reflect.TypeOf((*MockManagerInterface)(nil).SetProfiles), enabled, defs)
+}
+
+// SetBus mocks base method.
+func (m *MockManagerInterface) SetBus(bus *bus.Provider) {
+	m.ctrl.T.Helper()
+	m.ctrl.Call(m, "SetBus", bus)
+}
+
+// SetBus indicates an expected call of SetBus.
+func (mr *MockManagerInterfaceMockRecorder) SetBus(bus any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SetBus", reflect.TypeOf((*MockManagerInterface)(nil).SetBus), bus)
 }

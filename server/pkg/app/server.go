@@ -36,8 +36,8 @@ import (
 	"github.com/mcpany/core/pkg/storage/sqlite"
 	"github.com/mcpany/core/pkg/telemetry"
 	"github.com/mcpany/core/pkg/tool"
-	"github.com/mcpany/core/pkg/util"
 	"github.com/mcpany/core/pkg/upstream/factory"
+	"github.com/mcpany/core/pkg/util"
 	"github.com/mcpany/core/pkg/worker"
 	pb_admin "github.com/mcpany/core/proto/admin/v1"
 	v1 "github.com/mcpany/core/proto/api/v1"
@@ -144,6 +144,8 @@ type Application struct {
 	ResourceManager  resource.ManagerInterface
 	UpstreamFactory  factory.Factory
 	ServiceRegistry  serviceregistry.ServiceRegistryInterface
+	PoolManager      *pool.Manager
+	AuthManager      *auth.Manager
 	configFiles      map[string]string
 	fs               afero.Fs
 	configPaths      []string
@@ -159,7 +161,8 @@ func NewApplication() *Application {
 	promptManager := prompt.NewManager()
 	toolManager := tool.NewManager(busProvider)
 	resourceManager := resource.NewManager()
-	upstreamFactory := factory.NewUpstreamServiceFactory(pool.NewManager())
+	poolManager := pool.NewManager()
+	upstreamFactory := factory.NewUpstreamServiceFactory(poolManager)
 	authManager := auth.NewManager()
 
 	serviceRegistry := serviceregistry.New(
@@ -178,6 +181,8 @@ func NewApplication() *Application {
 		ResourceManager: resourceManager,
 		UpstreamFactory: upstreamFactory,
 		ServiceRegistry: serviceRegistry,
+		PoolManager:     poolManager,
+		AuthManager:     authManager,
 		configFiles:     make(map[string]string),
 	}
 }
@@ -264,17 +269,16 @@ func (a *Application) Run(
 	if err != nil {
 		return fmt.Errorf("failed to create bus provider: %w", err)
 	}
-	poolManager := pool.NewManager()
-	upstreamFactory := factory.NewUpstreamServiceFactory(poolManager)
-	a.ToolManager = tool.NewManager(busProvider)
+	poolManager := a.PoolManager
+	_ = poolManager // Utilize poolManager variable to avoid unused error if factory doesn't use it directly here
+	// upstreamFactory is already in a.UpstreamFactory
+
+	a.ToolManager.SetBus(busProvider)
 	// Add Tool Metrics Middleware
 	a.ToolManager.AddMiddleware(middleware.NewToolMetricsMiddleware())
 
-	a.PromptManager = prompt.NewManager()
-	a.ResourceManager = resource.NewManager()
-	authManager := auth.NewManager()
 	if cfg.GetGlobalSettings().GetApiKey() != "" {
-		authManager.SetAPIKey(cfg.GetGlobalSettings().GetApiKey())
+		a.AuthManager.SetAPIKey(cfg.GetGlobalSettings().GetApiKey())
 	}
 
 	// Set profiles for tool filtering
@@ -283,13 +287,8 @@ func (a *Application) Run(
 		cfg.GetGlobalSettings().GetProfileDefinitions(),
 	)
 
-	a.ServiceRegistry = serviceregistry.New(
-		upstreamFactory,
-		a.ToolManager,
-		a.PromptManager,
-		a.ResourceManager,
-		authManager,
-	)
+	// Reuse existing ServiceRegistry which already points to the correct managers
+
 
 	// New message bus and workers
 	upstreamWorker := worker.NewUpstreamWorker(busProvider, a.ToolManager)
@@ -316,7 +315,7 @@ func (a *Application) Run(
 		a.ToolManager,
 		a.PromptManager,
 		a.ResourceManager,
-		authManager,
+		a.AuthManager,
 		a.ServiceRegistry,
 		busProvider,
 		config.GlobalSettings().IsDebug(),

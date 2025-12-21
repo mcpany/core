@@ -52,6 +52,8 @@ type ManagerInterface interface {
 	ListServices() []*ServiceInfo
 	// SetProfiles sets the enabled profiles and their definitions.
 	SetProfiles(enabled []string, defs []*configv1.ProfileDefinition)
+	// SetBus sets the event bus provider.
+	SetBus(bus *bus.Provider)
 }
 
 // ExecutionMiddleware defines the interface for tool execution middleware.
@@ -210,6 +212,13 @@ func (tm *Manager) SetMCPServer(mcpServer MCPServerProvider) {
 	tm.mu.Lock()
 	defer tm.mu.Unlock()
 	tm.mcpServer = mcpServer
+}
+
+// SetBus sets the event bus provider for the manager.
+func (tm *Manager) SetBus(bus *bus.Provider) {
+	tm.mu.Lock()
+	defer tm.mu.Unlock()
+	tm.bus = bus
 }
 
 // ExecuteTool finds a tool by its name and executes it with the provided
