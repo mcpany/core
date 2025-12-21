@@ -27,6 +27,17 @@ const (
 	Client
 )
 
+const (
+	// SchemeHTTP is the URL scheme for HTTP.
+	SchemeHTTP = "http"
+	// SchemeHTTPS is the URL scheme for HTTPS.
+	SchemeHTTPS = "https"
+	// SchemeWS is the URL scheme for WebSocket.
+	SchemeWS = "ws"
+	// SchemeWSS is the URL scheme for Secure WebSocket.
+	SchemeWSS = "wss"
+)
+
 var osStat = os.Stat
 
 // ValidationError encapsulates a validation error for a specific service.
@@ -40,18 +51,6 @@ func (e *ValidationError) Error() string {
 	return fmt.Sprintf("service %q: %v", e.ServiceName, e.Err)
 }
 
-// Validate inspects the given McpAnyServerConfig for correctness and consistency.
-// It iterates through the list of upstream services, checking for valid
-// service definitions, addresses, cache settings, and authentication
-// configurations.
-//
-// Invalid services are not removed from the configuration; instead, a list of
-// validation errors is returned.
-//
-// config is the server configuration to be validated.
-//
-// It returns a slice of ValidationErrors, which will be empty if the
-// configuration is valid.
 // Validate inspects the given McpAnyServerConfig for correctness and consistency.
 // It iterates through the list of upstream services, checking for valid
 // service definitions, addresses, cache settings, and authentication
@@ -117,7 +116,7 @@ func validateUpstreamServiceCollection(ctx context.Context, collection *configv1
 		return fmt.Errorf("invalid collection http_url: %s", collection.GetHttpUrl())
 	}
 	u, _ := url.Parse(collection.GetHttpUrl())
-	if u.Scheme != "http" && u.Scheme != "https" {
+	if u.Scheme != SchemeHTTP && u.Scheme != SchemeHTTPS {
 		return fmt.Errorf("invalid collection http_url scheme: %s", u.Scheme)
 	}
 
@@ -206,7 +205,7 @@ func validateHTTPService(httpService *configv1.HttpUpstreamService) error {
 		return fmt.Errorf("invalid http target_address: %s", httpService.GetAddress())
 	}
 	u, _ := url.Parse(httpService.GetAddress())
-	if u.Scheme != "http" && u.Scheme != "https" {
+	if u.Scheme != SchemeHTTP && u.Scheme != SchemeHTTPS {
 		return fmt.Errorf("invalid http target_address scheme: %s", u.Scheme)
 	}
 

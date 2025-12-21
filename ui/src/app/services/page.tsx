@@ -1,3 +1,8 @@
+/**
+ * Copyright 2025 Author(s) of MCP Any
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 
 import { ServicesTable } from "@/components/services/services-table";
 import { Button } from "@/components/ui/button";
