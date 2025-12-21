@@ -18,6 +18,7 @@ import (
 	"github.com/mcpany/core/pkg/metrics"
 	"github.com/mcpany/core/pkg/prompt"
 	"github.com/mcpany/core/pkg/resource"
+	"github.com/mcpany/core/pkg/sampling"
 	"github.com/mcpany/core/pkg/serviceregistry"
 	"github.com/mcpany/core/pkg/tool"
 	"github.com/mcpany/core/pkg/util"
@@ -43,6 +44,7 @@ type Server struct {
 	bus             *bus.Provider
 	reloadFunc      func() error
 	debug           bool
+	sampler         sampling.Sampler
 }
 
 // Server returns the underlying *mcp.Server instance, which provides access to
@@ -95,6 +97,7 @@ func NewServer(
 		bus:             bus,
 		debug:           debug,
 	}
+	s.sampler = sampling.NewMCPSampler(s)
 
 	s.router.Register(
 		consts.MethodPromptsList,
@@ -462,6 +465,9 @@ func (s *Server) CallTool(ctx context.Context, req *tool.ExecutionRequest) (any,
 		{Name: "tool", Value: req.ToolName},
 		{Name: "service_id", Value: serviceID},
 	})
+
+	// Inject Sampler
+	ctx = sampling.NewContextWithSampler(ctx, s.sampler)
 
 	result, err := s.toolManager.ExecuteTool(ctx, req)
 	if err != nil {

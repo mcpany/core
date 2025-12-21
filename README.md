@@ -55,6 +55,8 @@ Most "popular" MCP servers today are bespoke binaries. If the upstream API chang
 - **Advanced Service & Safety Policies**:
   - **Safety**: Control which tools are exposed to the AI to limit context (reduce hallucinations) and prevent dangerous actions (e.g., blocking `DELETE` operations).
   - **Performance**: Configure [Caching](docs/caching.md) and Rate Limiting to optimize performance and protect upstream services.
+- **MCP Protocol Extensions**:
+  - **Sampling Support**: Allow tools to request LLM completions (e.g., for agentic workflows) from the connected client.
 - **MCP Any Proxy**: Proxy and re-expose tools from another MCP Any instance.
 - **Upstream Authentication**: Securely connect to your backend services using:
   - **API Keys**
