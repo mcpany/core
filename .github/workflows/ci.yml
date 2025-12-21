@@ -64,7 +64,7 @@ jobs:
     - name: Set up Node.js
       uses: actions/setup-node@v6
       with:
-        node-version: '24'
+        node-version: '22'
         cache: 'npm'
         cache-dependency-path: server/tests/integration/upstream/package-lock.json
 
@@ -158,7 +158,7 @@ jobs:
     - name: Set up Node.js
       uses: actions/setup-node@v6
       with:
-        node-version: '24'
+        node-version: '22'
         cache: 'npm'
         cache-dependency-path: server/tests/integration/upstream/package-lock.json
 
@@ -260,7 +260,7 @@ jobs:
     - name: Set up Node.js
       uses: actions/setup-node@v6
       with:
-        node-version: '24'
+        node-version: '22'
         cache: 'npm'
         cache-dependency-path: server/tests/integration/upstream/package-lock.json
 
@@ -362,7 +362,7 @@ jobs:
     - name: Set up Node.js
       uses: actions/setup-node@v6
       with:
-        node-version: '24'
+        node-version: '22'
         cache: 'npm'
         cache-dependency-path: server/tests/integration/upstream/package-lock.json
 
@@ -479,7 +479,7 @@ jobs:
     - name: Set up Node.js
       uses: actions/setup-node@v6
       with:
-        node-version: '24'
+        node-version: '22'
         cache: 'npm'
         cache-dependency-path: ui/package-lock.json
 
