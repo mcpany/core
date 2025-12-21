@@ -294,7 +294,7 @@ func TestCachingMiddleware_ActionDeleteCache(t *testing.T) {
 	// `ActionDeleteCache` check is at step 4 (after execution).
 	// If step 2 returns, step 4 is NOT reached!
 	// This means `DELETE_CACHE` action is IGNORED if cache hit!
-	// THIS IS A LOGIC BUG.
+
 	// If `ActionDeleteCache` is present, we should probably SKIP cache lookup?
 	// Or proceed to delete AFTER returning cached value? (Doesn't make sense to delete if we just used it).
 	// "User converts parameter transformer to webhook based system... add SAVE_CACHE and DELETE_CACHE actions".

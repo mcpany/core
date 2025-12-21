@@ -53,7 +53,8 @@ func (b *Bus[T]) Publish(ctx context.Context, topic string, msg T) error {
 // Subscribe subscribes to a Redis channel.
 func (b *Bus[T]) Subscribe(ctx context.Context, topic string, handler func(T)) (unsubscribe func()) {
 	if handler == nil {
-		panic("redis bus: handler cannot be nil")
+		logging.GetLogger().Error("redis bus: handler cannot be nil")
+		return func() {}
 	}
 	b.mu.Lock()
 	if ps, ok := b.pubsubs[topic]; ok {
@@ -113,7 +114,8 @@ func (b *Bus[T]) Subscribe(ctx context.Context, topic string, handler func(T)) (
 // SubscribeOnce subscribes to a topic for a single message.
 func (b *Bus[T]) SubscribeOnce(ctx context.Context, topic string, handler func(T)) (unsubscribe func()) {
 	if handler == nil {
-		panic("redis bus: handler cannot be nil")
+		logging.GetLogger().Error("redis bus: handler cannot be nil")
+		return func() {}
 	}
 	var once sync.Once
 	var unsub func()

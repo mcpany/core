@@ -93,19 +93,16 @@ func TestBus_SubscribeOnce_Success(t *testing.T) {
 	unsub()
 }
 
-func TestBus_Subscribe_PanicRecovery(t *testing.T) {
-	// We want to test that if handler panics, it is recovered and logged.
-	// Similar to SubscribeOnce, injecting the message to trigger the handler is difficult with redismock.
-	// This test primarily ensures no immediate panic on registration.
-
+func TestBus_Subscribe_NoPanicOnNil(t *testing.T) {
+	// We want to verify that it does NOT panic on nil handler (just logs error).
 	db, _ := redismock.NewClientMock()
 	b := NewWithClient[any](db)
 
-	assert.Panics(t, func() {
+	assert.NotPanics(t, func() {
 		b.Subscribe(context.Background(), "topic", nil)
 	})
 
-	assert.Panics(t, func() {
+	assert.NotPanics(t, func() {
 		b.SubscribeOnce(context.Background(), "topic", nil)
 	})
 }

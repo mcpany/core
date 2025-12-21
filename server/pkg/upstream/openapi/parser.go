@@ -9,6 +9,7 @@ import (
 	"strings"
 
 	"github.com/getkin/kin-openapi/openapi3"
+	"github.com/mcpany/core/pkg/logging"
 	"github.com/mcpany/core/pkg/util"
 	pb "github.com/mcpany/core/proto/mcp_router/v1"
 	"google.golang.org/protobuf/proto"
@@ -192,7 +193,7 @@ func convertMcpOperationsToTools(ops []McpOperation, doc *openapi3.T, mcpServerS
 		properties, err := convertOpenAPISchemaToInputSchemaProperties(bodySchemaRef, op.Parameters, doc)
 		if err != nil {
 			// Use baseOperationID for the error message as toolID is removed.
-			fmt.Printf("Warning: Failed to convert OpenAPI schema to InputSchema for tool '%s': %v. Input schema will be empty.\n", baseOperationID, err)
+			logging.GetLogger().Warn("Failed to convert OpenAPI schema to InputSchema for tool. Input schema will be empty.", "tool", baseOperationID, "error", err)
 			properties = &structpb.Struct{Fields: make(map[string]*structpb.Value)} // Empty properties
 		}
 
@@ -217,7 +218,7 @@ func convertMcpOperationsToTools(ops []McpOperation, doc *openapi3.T, mcpServerS
 
 		outputProperties, err := convertOpenAPISchemaToOutputSchemaProperties(outputSchemaRef, doc)
 		if err != nil {
-			fmt.Printf("Warning: Failed to convert OpenAPI schema to OutputSchema for tool '%s': %v. Output schema will be empty.\n", baseOperationID, err)
+			logging.GetLogger().Warn("Failed to convert OpenAPI schema to OutputSchema for tool. Output schema will be empty.", "tool", baseOperationID, "error", err)
 			outputProperties = &structpb.Struct{Fields: make(map[string]*structpb.Value)} // Empty properties
 		}
 
@@ -287,12 +288,12 @@ func convertOpenAPISchemaToOutputSchemaProperties(
 			if isObject {
 				mergedProps, err := mergeSchemaProperties(bodyActualSchema, doc)
 				if err != nil {
-					fmt.Printf("Warning: failed to merge properties: %v\n", err)
+					logging.GetLogger().Warn("Failed to merge properties", "error", err)
 				}
 				for propName, propSchemaRef := range mergedProps {
 					val, err := convertSchemaToStructPB(propName, propSchemaRef, "", doc)
 					if err != nil {
-						fmt.Printf("Warning: skipping property '%s' from request body: %v\n", propName, err)
+						logging.GetLogger().Warn("Skipping property from request body", "property", propName, "error", err)
 						continue
 					}
 					props.Fields[propName] = val
@@ -300,7 +301,7 @@ func convertOpenAPISchemaToOutputSchemaProperties(
 			} else {
 				val, err := convertSchemaToStructPB("response_body", bodySchemaRef, bodyActualSchema.Description, doc)
 				if err != nil {
-					fmt.Printf("Warning: Failed to convert non-object request body schema: %v\n", err)
+					logging.GetLogger().Warn("Failed to convert non-object request body schema", "error", err)
 				} else {
 					props.Fields["response_body"] = val
 				}
@@ -341,12 +342,12 @@ func convertOpenAPISchemaToInputSchemaProperties(
 			if isObject {
 				mergedProps, err := mergeSchemaProperties(bodyActualSchema, doc)
 				if err != nil {
-					fmt.Printf("Warning: failed to merge properties: %v\n", err)
+					logging.GetLogger().Warn("Failed to merge properties", "error", err)
 				}
 				for propName, propSchemaRef := range mergedProps {
 					val, err := convertSchemaToStructPB(propName, propSchemaRef, "", doc)
 					if err != nil {
-						fmt.Printf("Warning: skipping property '%s' from request body: %v\n", propName, err)
+						logging.GetLogger().Warn("Skipping property from request body", "property", propName, "error", err)
 						continue
 					}
 					props.Fields[propName] = val
@@ -355,7 +356,7 @@ func convertOpenAPISchemaToInputSchemaProperties(
 				// If the request body is not an object, wrap its schema under "request_body".
 				val, err := convertSchemaToStructPB("request_body", bodySchemaRef, bodyActualSchema.Description, doc)
 				if err != nil {
-					fmt.Printf("Warning: Failed to convert non-object request body schema: %v\n", err)
+					logging.GetLogger().Warn("Failed to convert non-object request body schema", "error", err)
 				} else {
 					props.Fields["request_body"] = val
 				}
@@ -375,13 +376,13 @@ func convertOpenAPISchemaToInputSchemaProperties(
 		// We are interested in parameters that are part of the input: query, path, header. Cookie params are ignored for now.
 		if param.In == openapi3.ParameterInQuery || param.In == openapi3.ParameterInPath || param.In == openapi3.ParameterInHeader {
 			if param.Schema == nil { // Parameter must have a schema
-				fmt.Printf("Warning: parameter '%s' in '%s' has no schema, skipping.\n", param.Name, param.In)
+				logging.GetLogger().Warn("Warning: parameter '%s' in '%s' has no schema, skipping.\n", param.Name, param.In)
 				continue
 			}
 			// Pass param.Description as the explicit description for the parameter's schema
 			val, err := convertSchemaToStructPB(param.Name, param.Schema, param.Description, doc)
 			if err != nil {
-				fmt.Printf("Warning: skipping parameter '%s': %v\n", param.Name, err)
+				logging.GetLogger().Warn("Warning: skipping parameter '%s': %v\n", param.Name, err)
 				continue
 			}
 			props.Fields[param.Name] = val
@@ -437,13 +438,13 @@ func convertSchemaToStructPB(name string, sr *openapi3.SchemaRef, explicitDescri
 
 		mergedProps, err := mergeSchemaProperties(sVal, doc)
 		if err != nil {
-			fmt.Printf("Warning: failed to merge properties for object '%s': %v\n", name, err)
+			logging.GetLogger().Warn("Warning: failed to merge properties for object '%s': %v\n", name, err)
 		}
 
 		for propName, propSchemaRef := range mergedProps {
 			nestedVal, err := convertSchemaToStructPB(propName, propSchemaRef, "", doc)
 			if err != nil {
-				fmt.Printf("Warning: skipping property '%s' of object '%s': %v\n", propName, name, err)
+				logging.GetLogger().Warn("Skipping property of object", "property", propName, "object", name, "error", err)
 				continue
 			}
 			nestedProps.Fields[propName] = nestedVal
@@ -456,19 +457,19 @@ func convertSchemaToStructPB(name string, sr *openapi3.SchemaRef, explicitDescri
 		if sVal.Items != nil {
 			itemSchemaVal, err := convertSchemaToStructPB(name+"_items", sVal.Items, "", doc)
 			if err != nil {
-				fmt.Printf("Warning: could not determine item type for array '%s': %v\n", name, err)
+				logging.GetLogger().Warn("Could not determine item type for array", "array", name, "error", err)
 			} else if itemSchemaVal != nil {
 				if sv := itemSchemaVal.GetStructValue(); sv != nil {
 					fieldSchema["items"] = sv.AsMap()
 				}
 			}
 		} else {
-			fmt.Printf("Warning: array '%s' has no items schema specified.\n", name)
+			logging.GetLogger().Warn("Array has no items schema specified", "array", name)
 		}
 	case openapi3.TypeString, openapi3.TypeNumber, openapi3.TypeInteger, openapi3.TypeBoolean:
 		fieldSchema["type"] = (*sVal.Type)[0]
 	default:
-		fmt.Printf("Warning: unhandled schema type '%s' for field '%s'. Defaulting to 'string'.\n", schemaType, name)
+		logging.GetLogger().Warn("Unhandled schema type for field. Defaulting to 'string'.", "type", schemaType, "field", name)
 		fieldSchema["type"] = typeString
 	}
 

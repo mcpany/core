@@ -39,31 +39,31 @@ func BindRootFlags(cmd *cobra.Command) {
 	cmd.PersistentFlags().String("logfile", "", "Path to a file to write logs to. If not set, logs are written to stdout.")
 
 	if err := viper.BindPFlag("mcp-listen-address", cmd.PersistentFlags().Lookup("mcp-listen-address")); err != nil {
-		fmt.Printf("Error binding mcp-listen-address flag: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Error binding mcp-listen-address flag: %v\n", err)
 		os.Exit(1)
 	}
 	if err := viper.BindPFlag("config-path", cmd.PersistentFlags().Lookup("config-path")); err != nil {
-		fmt.Printf("Error binding config-path flag: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Error binding config-path flag: %v\n", err)
 		os.Exit(1)
 	}
 	if err := viper.BindPFlag("metrics-listen-address", cmd.PersistentFlags().Lookup("metrics-listen-address")); err != nil {
-		fmt.Printf("Error binding metrics-listen-address flag: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Error binding metrics-listen-address flag: %v\n", err)
 		os.Exit(1)
 	}
 	if err := viper.BindPFlag("debug", cmd.PersistentFlags().Lookup("debug")); err != nil {
-		fmt.Printf("Error binding debug flag: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Error binding debug flag: %v\n", err)
 		os.Exit(1)
 	}
 	if err := viper.BindPFlag("log-level", cmd.PersistentFlags().Lookup("log-level")); err != nil {
-		fmt.Printf("Error binding log-level flag: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Error binding log-level flag: %v\n", err)
 		os.Exit(1)
 	}
 	if err := viper.BindPFlag("log-format", cmd.PersistentFlags().Lookup("log-format")); err != nil {
-		fmt.Printf("Error binding log-format flag: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Error binding log-format flag: %v\n", err)
 		os.Exit(1)
 	}
 	if err := viper.BindPFlag("logfile", cmd.PersistentFlags().Lookup("logfile")); err != nil {
-		fmt.Printf("Error binding logfile flag: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Error binding logfile flag: %v\n", err)
 		os.Exit(1)
 	}
 }
@@ -87,27 +87,27 @@ func BindServerFlags(cmd *cobra.Command) {
 	cmd.Flags().String("db-path", "data/mcpany.db", "Path to the SQLite database file. Env: MCPANY_DB_PATH")
 
 	if err := viper.BindPFlag("grpc-port", cmd.Flags().Lookup("grpc-port")); err != nil {
-		fmt.Printf("Error binding grpc-port flag: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Error binding grpc-port flag: %v\n", err)
 		os.Exit(1)
 	}
 	if err := viper.BindPFlag("stdio", cmd.Flags().Lookup("stdio")); err != nil {
-		fmt.Printf("Error binding stdio flag: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Error binding stdio flag: %v\n", err)
 		os.Exit(1)
 	}
 	if err := viper.BindPFlag("shutdown-timeout", cmd.Flags().Lookup("shutdown-timeout")); err != nil {
-		fmt.Printf("Error binding shutdown-timeout flag: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Error binding shutdown-timeout flag: %v\n", err)
 		os.Exit(1)
 	}
 	if err := viper.BindPFlag("api-key", cmd.Flags().Lookup("api-key")); err != nil {
-		fmt.Printf("Error binding api-key flag: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Error binding api-key flag: %v\n", err)
 		os.Exit(1)
 	}
 	if err := viper.BindPFlag("profiles", cmd.Flags().Lookup("profiles")); err != nil {
-		fmt.Printf("Error binding profiles flag: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Error binding profiles flag: %v\n", err)
 		os.Exit(1)
 	}
 	if err := viper.BindPFlag("db-path", cmd.Flags().Lookup("db-path")); err != nil {
-		fmt.Printf("Error binding db-path flag: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Error binding db-path flag: %v\n", err)
 		os.Exit(1)
 	}
 }
