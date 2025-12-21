@@ -94,7 +94,39 @@ func Validate(ctx context.Context, config *configv1.McpAnyServerConfig, binaryTy
 		}
 	}
 
+	for _, collection := range config.GetUpstreamServiceCollections() {
+		if err := validateUpstreamServiceCollection(ctx, collection); err != nil {
+			validationErrors = append(validationErrors, ValidationError{
+				ServiceName: collection.GetName(),
+				Err:         err,
+			})
+		}
+	}
+
 	return validationErrors
+}
+
+func validateUpstreamServiceCollection(ctx context.Context, collection *configv1.UpstreamServiceCollection) error {
+	if collection.GetName() == "" {
+		return fmt.Errorf("collection name is empty")
+	}
+	if collection.GetHttpUrl() == "" {
+		return fmt.Errorf("collection http_url is empty")
+	}
+	if !validation.IsValidURL(collection.GetHttpUrl()) {
+		return fmt.Errorf("invalid collection http_url: %s", collection.GetHttpUrl())
+	}
+	u, _ := url.Parse(collection.GetHttpUrl())
+	if u.Scheme != "http" && u.Scheme != "https" {
+		return fmt.Errorf("invalid collection http_url scheme: %s", u.Scheme)
+	}
+
+	if authConfig := collection.GetAuthentication(); authConfig != nil {
+		if err := validateUpstreamAuthentication(ctx, authConfig); err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 func validateGlobalSettings(gs *configv1.GlobalSettings, binaryType BinaryType) error {
