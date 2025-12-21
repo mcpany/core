@@ -84,7 +84,7 @@ func BindServerFlags(cmd *cobra.Command) {
 	cmd.Flags().Duration("shutdown-timeout", 5*time.Second, "Graceful shutdown timeout. Env: MCPANY_SHUTDOWN_TIMEOUT")
 	cmd.Flags().String("api-key", "", "API key for securing the MCP server. If set, all requests must include this key in the 'X-API-Key' header. Env: MCPANY_API_KEY")
 	cmd.Flags().StringSlice("profiles", []string{"default"}, "Comma-separated list of active profiles. Env: MCPANY_PROFILES")
-	cmd.Flags().String("db-path", "mcpany.db", "Path to the SQLite database file. Env: MCPANY_DB_PATH")
+	cmd.Flags().String("db-path", "data/mcpany.db", "Path to the SQLite database file. Env: MCPANY_DB_PATH")
 
 	if err := viper.BindPFlag("grpc-port", cmd.Flags().Lookup("grpc-port")); err != nil {
 		fmt.Printf("Error binding grpc-port flag: %v\n", err)
