@@ -1,17 +1,15 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
-package sql
+package sqlite
 
 import (
-	"database/sql"
 	"os"
 	"path/filepath"
 	"testing"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"google.golang.org/protobuf/proto"
-	_ "modernc.org/sqlite" // Ensure sqlite driver is available for database/sql
 )
 
 func TestSaveServiceValidation(t *testing.T) {
@@ -22,16 +20,18 @@ func TestSaveServiceValidation(t *testing.T) {
 	defer os.RemoveAll(tmpDir)
 
 	dbPath := filepath.Join(tmpDir, "test.db")
-	store, err := NewStore("sqlite", dbPath)
+	db, err := NewDB(dbPath)
 	if err != nil {
-		t.Fatalf("failed to create store: %v", err)
+		t.Fatalf("failed to create db: %v", err)
 	}
-	defer store.Close()
+	defer db.Close()
+
+	store := NewStore(db)
 
 	// Test case: Empty name
 	svc := &configv1.UpstreamServiceConfig{
-		Name: proto.String(""),
-		Id:   proto.String("test-id"),
+		Name:    proto.String(""),
+		Id:      proto.String("test-id"),
 	}
 	err = store.SaveService(svc)
 	if err == nil {
@@ -41,7 +41,11 @@ func TestSaveServiceValidation(t *testing.T) {
 	}
 }
 
-func TestNewStoreErrors(t *testing.T) {
+func TestNewDBErrors(t *testing.T) {
+	// Test case: Invalid path (directory creation failure)
+	// We can try to create a DB in a read-only directory or a non-existent parent that we can't create
+	// But in a sandbox, permissions are tricky.
+	// We can try using a path that is actually a directory.
 	tmpDir, err := os.MkdirTemp("", "mcpany-test-db-errors-*")
 	if err != nil {
 		t.Fatalf("failed to create temp dir: %v", err)
@@ -54,7 +58,7 @@ func TestNewStoreErrors(t *testing.T) {
 		t.Fatalf("failed to create directory: %v", err)
 	}
 
-	_, err = NewStore("sqlite", dbPath)
+	_, err = NewDB(dbPath)
 	if err == nil {
 		t.Error("expected error when opening a directory as a DB file, got nil")
 	}
@@ -68,47 +72,30 @@ func TestLoadInvalidData(t *testing.T) {
 	defer os.RemoveAll(tmpDir)
 
 	dbPath := filepath.Join(tmpDir, "test.db")
-
-	// Open store to initialize DB and tables
-	store, err := NewStore("sqlite", dbPath)
+	db, err := NewDB(dbPath)
 	if err != nil {
-		t.Fatalf("failed to create store: %v", err)
+		t.Fatalf("failed to create db: %v", err)
 	}
-	store.Close()
+	defer db.Close()
 
-	// Manually insert invalid JSON using raw sql
-	rawDB, err := sql.Open("sqlite", dbPath)
-	if err != nil {
-		t.Skipf("skipping test because failing to open raw sqlite db: %v", err)
-	}
-	defer rawDB.Close()
+	store := NewStore(db)
 
-	// Note: invalid json in 'config' column
-	_, err = rawDB.Exec("INSERT INTO upstream_services (id, name, config, created_at, updated_at) VALUES (?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)", "bad-id", "bad-service", "{invalid-json")
+	// Manually insert invalid JSON
+	_, err = db.Exec("INSERT INTO upstream_services (id, name, config_json) VALUES (?, ?, ?)", "bad-id", "bad-service", "{invalid-json")
 	if err != nil {
-		// Attempt without checking exact schema?
-		// Gorm uses 'upstream_services' table and 'config' column.
 		t.Fatalf("failed to insert invalid data: %v", err)
 	}
-	rawDB.Close()
-
-	// Re-open store to Load
-	store, err = NewStore("sqlite", dbPath)
-	if err != nil {
-		t.Fatalf("failed to re-open store: %v", err)
-	}
-	defer store.Close()
 
 	// Try to load
-	config, err := store.Load()
-	if err != nil {
-		t.Fatalf("expected nil error when loading invalid JSON (should be skipped), got %v", err)
-	}
-	if len(config.UpstreamServices) != 0 {
-		t.Errorf("expected 0 services, got %d", len(config.UpstreamServices))
+	_, err = store.Load()
+	if err == nil {
+		t.Error("expected error when loading invalid JSON, got nil")
+	} else {
+		// Error message depends on protojson implementation, but should fail
+		t.Logf("Got expected error: %v", err)
 	}
 
-	// Try GetService - this SHOULD fail because it targets the specific invalid item
+	// Try GetService
 	_, err = store.GetService("bad-service")
 	if err == nil {
 		t.Error("expected error when getting service with invalid JSON, got nil")
@@ -123,13 +110,14 @@ func TestDBErrors(t *testing.T) {
 	defer os.RemoveAll(tmpDir)
 
 	dbPath := filepath.Join(tmpDir, "test.db")
-	store, err := NewStore("sqlite", dbPath)
+	db, err := NewDB(dbPath)
 	if err != nil {
-		t.Fatalf("failed to create store: %v", err)
+		t.Fatalf("failed to create db: %v", err)
 	}
+	store := NewStore(db)
 
 	// Close the DB to force errors
-	store.Close()
+	db.Close()
 
 	// Test Load
 	_, err = store.Load()
