@@ -7,7 +7,6 @@ import (
 	"context"
 
 	"github.com/alexliesenfeld/health"
-	healthChecker "github.com/mcpany/core/pkg/health"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/connectivity"
@@ -34,11 +33,11 @@ type GrpcClientWrapper struct {
 }
 
 // NewGrpcClientWrapper creates a new GrpcClientWrapper.
-func NewGrpcClientWrapper(conn Conn, config *configv1.UpstreamServiceConfig) *GrpcClientWrapper {
+func NewGrpcClientWrapper(conn Conn, config *configv1.UpstreamServiceConfig, checker health.Checker) *GrpcClientWrapper {
 	return &GrpcClientWrapper{
 		Conn:    conn,
 		config:  config,
-		checker: healthChecker.NewChecker(config),
+		checker: checker,
 	}
 }
 
