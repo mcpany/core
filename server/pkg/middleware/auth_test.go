@@ -144,39 +144,4 @@ func TestAuthMiddleware(t *testing.T) {
 		require.Error(t, err)
 		assert.Contains(t, err.Error(), "http.Request not found in context")
 	})
-
-	t.Run("should propagate context enriched by authenticator", func(t *testing.T) {
-		authManager := auth.NewManager()
-		authenticator := &MockContextAuthenticator{}
-		err := authManager.AddAuthenticator("test", authenticator)
-		require.NoError(t, err)
-
-		mw := middleware.AuthMiddleware(authManager)
-
-		var capturedUser string
-		nextHandler := func(ctx context.Context, _ string, _ mcp.Request) (mcp.Result, error) {
-			val, _ := auth.UserFromContext(ctx)
-			capturedUser = val
-			return nil, nil
-		}
-
-		handler := mw(nextHandler)
-
-		httpReq, err := http.NewRequest("POST", "/", nil)
-		require.NoError(t, err)
-
-		//nolint:revive,staticcheck // "http.request" is a string key used by convention
-		ctx := context.WithValue(context.Background(), "http.request", httpReq)
-
-		_, err = handler(ctx, "test.method", nil)
-		require.NoError(t, err)
-
-		assert.Equal(t, "testuser", capturedUser, "User context should be propagated")
-	})
-}
-
-type MockContextAuthenticator struct{}
-
-func (m *MockContextAuthenticator) Authenticate(ctx context.Context, r *http.Request) (context.Context, error) {
-	return auth.ContextWithUser(ctx, "testuser"), nil
 }

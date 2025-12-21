@@ -409,12 +409,7 @@ func (a *Application) Run(
 		allowedIPs = cfg.GetGlobalSettings().GetAllowedIps()
 	}
 
-	apiKey := cfg.GetGlobalSettings().GetApiKey()
-	if apiKey == "" {
-		apiKey = config.GlobalSettings().APIKey()
-	}
-
-	return a.runServerMode(ctx, mcpSrv, busProvider, bindAddress, grpcPort, shutdownTimeout, cfg.GetUsers(), allowedIPs, cachingMiddleware, sqliteStore, apiKey)
+	return a.runServerMode(ctx, mcpSrv, busProvider, bindAddress, grpcPort, shutdownTimeout, cfg.GetUsers(), allowedIPs, cachingMiddleware, sqliteStore)
 }
 
 // ReloadConfig reloads the configuration from the given paths and updates the
@@ -608,7 +603,6 @@ func (a *Application) runServerMode(
 	allowedIPs []string,
 	cachingMiddleware *middleware.CachingMiddleware,
 	store *sqlite.Store,
-	apiKey string,
 ) error {
 	ipMiddleware, err := middleware.NewIPAllowlistMiddleware(allowedIPs)
 	if err != nil {
@@ -627,6 +621,7 @@ func (a *Application) runServerMode(
 		return mcpSrv.Server()
 	}, nil)
 
+	apiKey := config.GlobalSettings().APIKey()
 	authMiddleware := func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			if apiKey != "" {

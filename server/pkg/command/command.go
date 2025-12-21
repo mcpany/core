@@ -29,14 +29,6 @@ type Executor interface {
 }
 
 // NewExecutor creates a new command executor.
-//
-// Parameters:
-//
-//	containerEnv: The container environment configuration. If specified with an image, a Docker executor is returned.
-//
-// Returns:
-//
-//	An Executor instance (either Docker or local).
 func NewExecutor(containerEnv *configv1.ContainerEnvironment) Executor {
 	if containerEnv != nil && containerEnv.GetImage() != "" {
 		return newDockerExecutor(containerEnv)
@@ -45,10 +37,6 @@ func NewExecutor(containerEnv *configv1.ContainerEnvironment) Executor {
 }
 
 // NewLocalExecutor creates a new local command executor.
-//
-// Returns:
-//
-//	A new local Executor instance.
 func NewLocalExecutor() Executor {
 	return &localExecutor{}
 }
@@ -56,21 +44,6 @@ func NewLocalExecutor() Executor {
 type localExecutor struct{}
 
 // Execute executes a command locally.
-//
-// Parameters:
-//
-//	ctx: The context for the command.
-//	command: The command to execute.
-//	args: The arguments for the command.
-//	workingDir: The working directory for the command.
-//	env: The environment variables for the command.
-//
-// Returns:
-//
-//	stdout: A stream for standard output.
-//	stderr: A stream for standard error.
-//	exitCode: A channel receiving the exit code.
-//	err: An error if the command fails to start.
 func (e *localExecutor) Execute(ctx context.Context, command string, args []string, workingDir string, env []string) (io.ReadCloser, io.ReadCloser, <-chan int, error) {
 	cmd := exec.CommandContext(ctx, command, args...)
 	cmd.Dir = workingDir
@@ -111,22 +84,6 @@ func (e *localExecutor) Execute(ctx context.Context, command string, args []stri
 }
 
 // ExecuteWithStdIO executes a command locally with stdin/stdout/stderr pipes.
-//
-// Parameters:
-//
-//	ctx: The context for the command.
-//	command: The command to execute.
-//	args: The arguments for the command.
-//	workingDir: The working directory for the command.
-//	env: The environment variables for the command.
-//
-// Returns:
-//
-//	stdin: A stream for standard input.
-//	stdout: A stream for standard output.
-//	stderr: A stream for standard error.
-//	exitCode: A channel receiving the exit code.
-//	err: An error if the command fails to start.
 func (e *localExecutor) ExecuteWithStdIO(ctx context.Context, command string, args []string, workingDir string, env []string) (io.WriteCloser, io.ReadCloser, io.ReadCloser, <-chan int, error) {
 	cmd := exec.CommandContext(ctx, command, args...)
 	cmd.Dir = workingDir
@@ -189,21 +146,6 @@ func newDockerExecutor(containerEnv *configv1.ContainerEnvironment) Executor {
 }
 
 // Execute executes a command inside a docker container.
-//
-// Parameters:
-//
-//	ctx: The context for the command.
-//	command: The command to execute.
-//	args: The arguments for the command.
-//	workingDir: The working directory for the command.
-//	env: The environment variables for the command.
-//
-// Returns:
-//
-//	stdout: A stream for standard output.
-//	stderr: A stream for standard error.
-//	exitCode: A channel receiving the exit code.
-//	err: An error if the command execution fails.
 func (e *dockerExecutor) Execute(ctx context.Context, command string, args []string, workingDir string, env []string) (io.ReadCloser, io.ReadCloser, <-chan int, error) {
 	log := logging.GetLogger()
 	cli, err := e.clientFactory()
@@ -294,22 +236,6 @@ func (e *dockerExecutor) Execute(ctx context.Context, command string, args []str
 }
 
 // ExecuteWithStdIO executes a command inside a docker container with stdin/stdout/stderr pipes.
-//
-// Parameters:
-//
-//	ctx: The context for the command.
-//	command: The command to execute.
-//	args: The arguments for the command.
-//	workingDir: The working directory for the command.
-//	env: The environment variables for the command.
-//
-// Returns:
-//
-//	stdin: A stream for standard input.
-//	stdout: A stream for standard output.
-//	stderr: A stream for standard error.
-//	exitCode: A channel receiving the exit code.
-//	err: An error if the command execution fails.
 func (e *dockerExecutor) ExecuteWithStdIO(ctx context.Context, command string, args []string, workingDir string, env []string) (io.WriteCloser, io.ReadCloser, io.ReadCloser, <-chan int, error) {
 	log := logging.GetLogger()
 	cli, err := e.clientFactory()

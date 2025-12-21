@@ -1,8 +1,7 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
-// Package util provides utility functions.
-package util
+package util //nolint:revive
 
 import (
 	"crypto/sha256"
@@ -111,15 +110,6 @@ func SanitizeID(ids []string, alwaysAppendHash bool, maxSanitizedPrefixLength, h
 // It ensures that the name is a valid identifier by removing disallowed characters
 // and appending a hash if the name is too long or contains illegal characters.
 // This function calls SanitizeID with alwaysAppendHash set to false.
-//
-// Parameters:
-//
-//	name: The service name to sanitize.
-//
-// Returns:
-//
-//	The sanitized service name.
-//	An error if sanitization fails.
 func SanitizeServiceName(name string) (string, error) {
 	return SanitizeID([]string{name}, false, maxSanitizedPrefixLength, hashLength)
 }
@@ -128,15 +118,6 @@ func SanitizeServiceName(name string) (string, error) {
 // It ensures that the name is a valid identifier by removing disallowed characters
 // and appending a hash if the name is too long or contains illegal characters.
 // This function calls SanitizeID with alwaysAppendHash set to false.
-//
-// Parameters:
-//
-//	name: The tool name to sanitize.
-//
-// Returns:
-//
-//	The sanitized tool name.
-//	An error if sanitization fails.
 func SanitizeToolName(name string) (string, error) {
 	return SanitizeID([]string{name}, false, maxSanitizedPrefixLength, hashLength)
 }
@@ -148,13 +129,23 @@ const (
 )
 
 var (
-	// disallowedIDChars is a regular expression that matches any character that is
-	// not a valid character in an operation ID.
-	disallowedIDChars = regexp.MustCompile(`[^a-zA-Z0-9-._~:/?#\[\]@!$&'()*+,;=]+`)
-
 	// placeholderRegex matches {{key}} patterns.
 	placeholderRegex = regexp.MustCompile(`(?s)\{\{(.+?)\}\}`)
+
+	// allowedIDChars is a lookup table for allowed characters in an operation ID.
+	// It corresponds to the regex `[a-zA-Z0-9-._~:/?#\[\]@!$&'()*+,;=]`.
+	allowedIDChars [256]bool
 )
+
+func init() {
+	const allowed = "abcdefghijklmnopqrstuvwxyz" +
+		"ABCDEFGHIJKLMNOPQRSTUVWXYZ" +
+		"0123456789" +
+		"-._~:/?#[]@!$&'()*+,;="
+	for i := 0; i < len(allowed); i++ {
+		allowedIDChars[allowed[i]] = true
+	}
+}
 
 // TrueStr is a string constant for "true".
 const TrueStr = "true"
@@ -172,15 +163,9 @@ func GenerateUUID() string {
 // and bare tool name components. It splits the name using the standard
 // separator.
 //
-// Parameters:
-//
-//	toolName: The fully qualified tool name.
-//
-// Returns:
-//
-//	service: The service key extracted from the tool name.
-//	bareToolName: The bare tool name (without the service prefix).
-//	err: An error if parsing fails (currently always nil).
+// toolName is the fully qualified tool name.
+// It returns the service key, the bare tool name, and an error if parsing fails
+// (though the current implementation does not return an error).
 func ParseToolName(toolName string) (service, bareToolName string, err error) {
 	parts := strings.SplitN(toolName, consts.ToolNameServiceSeparator, 2)
 	if len(parts) == 2 {
@@ -194,27 +179,49 @@ func ParseToolName(toolName string) (service, bareToolName string, err error) {
 // hexadecimal hash of that sequence, ensuring uniqueness while preserving as
 // much of the original string as possible.
 //
-// Parameters:
-//
-//	input: The string to be sanitized.
-//
-// Returns:
-//
-//	The sanitized string.
+// input is the string to be sanitized.
+// It returns the sanitized string.
 func SanitizeOperationID(input string) string {
-	if !disallowedIDChars.MatchString(input) {
+	// Fast path: check if valid without allocating
+	isClean := true
+	for i := 0; i < len(input); i++ {
+		if !allowedIDChars[input[i]] {
+			isClean = false
+			break
+		}
+	}
+
+	if isClean {
 		return input
 	}
 
-	// Use ReplaceAllStringFunc to generate a unique hash for each match
-	sanitized := disallowedIDChars.ReplaceAllStringFunc(input, func(s string) string {
-		h := sha256.New()
-		h.Write([]byte(s))
-		hash := hex.EncodeToString(h.Sum(nil))[:6]
-		return fmt.Sprintf("_%s_", hash)
-	})
+	var sb strings.Builder
+	sb.Grow(len(input) + 16) // slightly more for potential hashes
 
-	return sanitized
+	for i := 0; i < len(input); {
+		if allowedIDChars[input[i]] {
+			sb.WriteByte(input[i])
+			i++
+		} else {
+			// Found start of disallowed sequence
+			start := i
+			for i < len(input) && !allowedIDChars[input[i]] {
+				i++
+			}
+			// Disallowed sequence is input[start:i]
+			badChunk := input[start:i]
+
+			// Optimization: Use sha256.Sum256 to avoid heap allocation of hash.Hash
+			sum := sha256.Sum256([]byte(badChunk))
+			var hashBuf [64]byte
+			hex.Encode(hashBuf[:], sum[:])
+
+			sb.WriteString("_")
+			sb.Write(hashBuf[:6])
+			sb.WriteString("_")
+		}
+	}
+	return sb.String()
 }
 
 // GetDockerCommand returns the command and base arguments for running Docker.

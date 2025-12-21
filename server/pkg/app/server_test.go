@@ -14,7 +14,6 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"os"
-	"path/filepath"
 	"strings"
 	"sync"
 	"sync/atomic"
@@ -43,7 +42,7 @@ import (
 func TestReloadConfig(t *testing.T) {
 	t.Run("successful reload", func(t *testing.T) {
 		fs := afero.NewMemMapFs()
-		app := newTestApp(t)
+		app := NewApplication()
 
 		configContent := `
 upstream_services:
@@ -72,7 +71,7 @@ upstream_services:
 
 	t.Run("malformed config", func(t *testing.T) {
 		fs := afero.NewMemMapFs()
-		app := newTestApp(t)
+		app := NewApplication()
 
 		err := afero.WriteFile(fs, "/config.yaml", []byte("malformed yaml:"), 0o644)
 		require.NoError(t, err)
@@ -83,7 +82,7 @@ upstream_services:
 
 	t.Run("disabled service", func(t *testing.T) {
 		fs := afero.NewMemMapFs()
-		app := newTestApp(t)
+		app := NewApplication()
 
 		configContent := `
 upstream_services:
@@ -113,7 +112,7 @@ upstream_services:
 
 	t.Run("unknown service type", func(t *testing.T) {
 		fs := afero.NewMemMapFs()
-		app := newTestApp(t)
+		app := NewApplication()
 
 		configContent := `
 upstream_services:
@@ -130,7 +129,7 @@ upstream_services:
 }
 
 func TestUploadFile(t *testing.T) {
-	app := newTestApp(t)
+	app := NewApplication()
 
 	// Test case 1: Successful file upload
 	t.Run("successful upload", func(t *testing.T) {
@@ -549,7 +548,7 @@ upstream_services:
 	err := afero.WriteFile(fs, "/config.yaml", []byte(configContent), 0o644)
 	require.NoError(t, err)
 
-	app := newTestApp(t)
+	app := NewApplication()
 	errChan := make(chan error, 1)
 	go func() {
 		// Use ephemeral ports by passing "0"
@@ -573,7 +572,7 @@ func TestRun_ConfigLoadError(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), 100*time.Millisecond)
 	defer cancel()
 
-	app := newTestApp(t)
+	app := NewApplication()
 	err = app.Run(ctx, fs, false, "localhost:0", "localhost:0", []string{"/config.yaml"}, 5*time.Second)
 	require.Error(t, err)
 	assert.Contains(t, err.Error(), "failed to load services from config")
@@ -592,7 +591,7 @@ func TestRun_BusProviderError(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), 100*time.Millisecond)
 	defer cancel()
 
-	app := newTestApp(t)
+	app := NewApplication()
 	err = app.Run(ctx, fs, false, "localhost:0", "localhost:0", []string{"/config.yaml"}, 5*time.Second)
 
 	require.Error(t, err)
@@ -608,7 +607,7 @@ func TestRun_EmptyConfig(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), 100*time.Millisecond)
 	defer cancel()
 
-	app := newTestApp(t)
+	app := NewApplication()
 	// This should not panic
 	err = app.Run(ctx, fs, false, "localhost:0", "localhost:0", []string{"/config.yaml"}, 5*time.Second)
 	require.NoError(t, err)
@@ -622,7 +621,7 @@ func TestRun_StdioMode(t *testing.T) {
 	}
 
 	app := &Application{
-		runStdioModeFunc: mockStdioFunc, DefaultDBPath: filepath.Join(t.TempDir(), "mcpany.db"),
+		runStdioModeFunc: mockStdioFunc,
 	}
 
 	fs := afero.NewMemMapFs()
@@ -640,7 +639,7 @@ func TestRun_NoGrpcServer(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 	defer cancel()
 
-	app := newTestApp(t)
+	app := NewApplication()
 	errChan := make(chan error, 1)
 	go func() {
 		errChan <- app.Run(ctx, fs, false, "localhost:0", "", nil, 5*time.Second)
@@ -651,7 +650,7 @@ func TestRun_NoGrpcServer(t *testing.T) {
 }
 
 func TestRun_ServerStartupErrors(t *testing.T) {
-	app := newTestApp(t)
+	app := NewApplication()
 
 	t.Run("nil_fs_fail", func(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), 100*time.Millisecond)
@@ -708,7 +707,7 @@ func TestRun_ServerStartupError_GracefulShutdown(t *testing.T) {
 	defer func() { _ = l.Close() }()
 	httpPort := l.Addr().(*net.TCPAddr).Port
 
-	app := newTestApp(t)
+	app := NewApplication()
 	fs := afero.NewMemMapFs()
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
@@ -738,7 +737,7 @@ func TestRun_DefaultBindAddress(t *testing.T) {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	app := newTestApp(t)
+	app := NewApplication()
 	errChan := make(chan error, 1)
 
 	go func() {
@@ -785,7 +784,7 @@ func TestRun_GrpcPortNumber(t *testing.T) {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	app := newTestApp(t)
+	app := NewApplication()
 	errChan := make(chan error, 1)
 
 	go func() {
@@ -817,7 +816,7 @@ func TestRunServerMode_GracefulShutdownOnContextCancel(t *testing.T) {
 	var buf ThreadSafeBuffer
 	logging.Init(slog.LevelInfo, &buf)
 
-	app := newTestApp(t)
+	app := NewApplication()
 	// This context will be canceled to trigger the shutdown.
 	ctx, cancel := context.WithCancel(context.Background())
 
@@ -929,7 +928,7 @@ func TestRun_ServerMode_LogsCorrectPort(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 	defer cancel()
 
-	app := newTestApp(t)
+	app := NewApplication()
 	errChan := make(chan error, 1)
 
 	go func() {
@@ -1310,7 +1309,7 @@ func TestHTTPServer_HangOnListenError(t *testing.T) {
 }
 
 func TestRunServerMode_ContextCancellation(t *testing.T) {
-	app := newTestApp(t)
+	app := NewApplication()
 	ctx, cancel := context.WithCancel(context.Background())
 	errChan := make(chan error, 1)
 
@@ -1359,7 +1358,7 @@ func TestRunStdioMode(t *testing.T) {
 	}
 
 	app := &Application{
-		runStdioModeFunc: mockStdioFunc, DefaultDBPath: filepath.Join(t.TempDir(), "mcpany.db"),
+		runStdioModeFunc: mockStdioFunc,
 	}
 
 	fs := afero.NewMemMapFs()
@@ -1446,7 +1445,7 @@ func TestRun_InMemoryBus(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), 100*time.Millisecond)
 	defer cancel()
 
-	app := newTestApp(t)
+	app := NewApplication()
 	// This should not panic and should exit gracefully.
 	err = app.Run(ctx, fs, false, "localhost:0", "localhost:0", []string{"/config.yaml"}, 5*time.Second)
 	require.NoError(t, err)
@@ -1460,7 +1459,7 @@ func TestRun_CachingMiddleware(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), 100*time.Millisecond)
 	defer cancel()
 
-	app := newTestApp(t)
+	app := NewApplication()
 
 	// We need a way to inspect the middleware chain. We can use a test hook for this.
 	var middlewareNames []string
@@ -1667,7 +1666,7 @@ upstream_services:
 	}
 	defer func() { bus.GetBusHook = nil }()
 
-	app := newTestApp(t)
+	app := NewApplication()
 	errChan := make(chan error, 1)
 	go func() {
 		errChan <- app.Run(ctx, fs, false, "localhost:0", "", []string{"/config.yaml"}, 5*time.Second)
@@ -1724,7 +1723,7 @@ upstream_services:
 	}
 	defer func() { bus.GetBusHook = nil }()
 
-	app := newTestApp(t)
+	app := NewApplication()
 	errChan := make(chan error, 1)
 	go func() {
 		errChan <- app.Run(ctx, fs, false, "localhost:0", "", []string{"/config.yaml"}, 5*time.Second)
@@ -1749,7 +1748,7 @@ func TestRun_NoConfigDoesNotBlock(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 	defer cancel()
 
-	app := newTestApp(t)
+	app := NewApplication()
 	errChan := make(chan error, 1)
 
 	go func() {
@@ -1765,7 +1764,7 @@ func TestRun_NoConfig(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 	defer cancel()
 
-	app := newTestApp(t)
+	app := NewApplication()
 	errChan := make(chan error, 1)
 	go func() {
 		errChan <- app.Run(ctx, fs, false, "localhost:0", "", nil, 5*time.Second)
@@ -1977,7 +1976,7 @@ func TestRunServerMode_grpcListenErrorHangs(t *testing.T) {
 	defer func() { _ = l.Close() }()
 	port := l.Addr().(*net.TCPAddr).Port
 
-	app := newTestApp(t)
+	app := NewApplication()
 	// Use a context that will never be canceled.
 	ctx := context.Background()
 
@@ -2154,7 +2153,7 @@ func TestRun_APIKeyAuthentication(t *testing.T) {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	app := newTestApp(t)
+	app := NewApplication()
 	errChan := make(chan error, 1)
 
 	// Set the API key
@@ -2263,10 +2262,8 @@ func TestRun_IPAllowlist(t *testing.T) {
 		addr := fmt.Sprintf("localhost:%d", port)
 
 		// Allow localhost (IPv4 and IPv6 just in case)
-		dbPath := filepath.Join(t.TempDir(), "mcpany.db")
 		configContent := fmt.Sprintf(`
 global_settings:
-  db_path: %s
   allowed_ips:
     - "127.0.0.1"
     - "::1"
@@ -2274,11 +2271,11 @@ upstream_services:
  - name: "test-service"
    http_service:
      address: "http://localhost:8080"
-`, dbPath)
+`)
 		err = afero.WriteFile(fs, "/config.yaml", []byte(configContent), 0o644)
 		require.NoError(t, err)
 
-		app := newTestApp(t)
+		app := NewApplication()
 		errChan := make(chan error, 1)
 		go func() {
 			errChan <- app.Run(ctx, fs, false, addr, "", []string{"/config.yaml"}, 5*time.Second)
@@ -2307,18 +2304,16 @@ upstream_services:
 		addr := fmt.Sprintf("localhost:%d", port)
 
 		// Only allow a different IP
-		dbPath := filepath.Join(t.TempDir(), "mcpany.db")
 		configContent := fmt.Sprintf(`
 global_settings:
-  db_path: %s
   allowed_ips:
     - "10.0.0.1"
 upstream_services: []
-`, dbPath)
+`)
 		err = afero.WriteFile(fs, "/config.yaml", []byte(configContent), 0o644)
 		require.NoError(t, err)
 
-		app := newTestApp(t)
+		app := NewApplication()
 		errChan := make(chan error, 1)
 		go func() {
 			errChan <- app.Run(ctx, fs, false, addr, "", []string{"/config.yaml"}, 5*time.Second)
@@ -2334,11 +2329,4 @@ upstream_services: []
 		cancel()
 		<-errChan
 	})
-}
-
-func newTestApp(t *testing.T) *Application {
-	app := NewApplication()
-tmpDir := t.TempDir()
-app.DefaultDBPath = filepath.Join(tmpDir, "mcpany.db")
-return app
 }

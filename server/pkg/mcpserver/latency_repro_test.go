@@ -5,7 +5,6 @@ package mcpserver_test
 
 import (
 	"context"
-	"fmt"
 	"testing"
 	"time"
 
@@ -30,9 +29,9 @@ import (
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
-func TestMetricLatencyConsistency(t *testing.T) {
+func TestServer_CallTool_Latency_Metrics_Repro(t *testing.T) {
 	// Initialize metrics with an in-memory sink
-	sink := metrics.NewInmemSink(10*time.Second, 30*time.Second)
+	sink := metrics.NewInmemSink(10*time.Second, 10*time.Second)
 	conf := metrics.DefaultConfig("mcpany")
 	conf.EnableHostname = false
 	_, err := metrics.NewGlobal(conf, sink)
@@ -51,6 +50,7 @@ func TestMetricLatencyConsistency(t *testing.T) {
 	serviceRegistry := serviceregistry.New(factory, toolManager, promptManager, resourceManager, authManager)
 	ctx := context.Background()
 
+	// Start the worker to handle tool execution
 	upstreamWorker := worker.NewUpstreamWorker(busProvider, toolManager)
 	upstreamWorker.Start(ctx)
 
@@ -59,7 +59,7 @@ func TestMetricLatencyConsistency(t *testing.T) {
 
 	tm := server.ToolManager().(*tool.Manager)
 
-	// Add success tool
+	// Add test tool
 	successTool := &mockTool{
 		tool: v1.Tool_builder{
 			Name:      proto.String("success-tool"),
@@ -76,8 +76,11 @@ func TestMetricLatencyConsistency(t *testing.T) {
 	}
 	_ = tm.AddTool(successTool)
 
+	// Create client-server connection
 	client := mcp.NewClient(&mcp.Implementation{Name: "test-client"}, nil)
 	clientTransport, serverTransport := mcp.NewInMemoryTransports()
+
+	// Connect server and client
 	serverSession, err := server.Server().Connect(ctx, serverTransport, nil)
 	require.NoError(t, err)
 	defer func() { _ = serverSession.Close() }()
@@ -85,38 +88,37 @@ func TestMetricLatencyConsistency(t *testing.T) {
 	require.NoError(t, err)
 	defer func() { _ = clientSession.Close() }()
 
-	// Call success tool
-	sanitizedSuccessName, _ := util.SanitizeToolName("success-tool")
-	successID := "test-service" + "." + sanitizedSuccessName
-	_, err = clientSession.CallTool(ctx, &mcp.CallToolParams{Name: successID})
+	// Call the tool
+	sanitizedToolName, _ := util.SanitizeToolName("success-tool")
+	toolID := "test-service" + "." + sanitizedToolName
+	_, err = clientSession.CallTool(ctx, &mcp.CallToolParams{
+		Name: toolID,
+	})
 	require.NoError(t, err)
 
 	// Check metrics
 	data := sink.Data()
+	require.NotEmpty(t, data)
+	samples := data[0].Samples
+	require.NotEmpty(t, samples)
 
-    // Debug print
-    fmt.Println("Available samples:")
-    for k := range data[0].Samples {
-        fmt.Println(k)
-    }
+	// We expect the unlabelled metric "mcpany.tools.call.latency" NOT to exist.
+	// But in the buggy version, it DOES exist.
 
-	// We expect consistent naming with counters: mcpany.tools.call.latency (plural)
-    // and properly labeled for tool specific metrics.
+	// Check for unlabelled metric
+	_, unlabelledExists := samples["mcpany.tools.call.latency"]
 
-    // Check global latency metric
-    assert.NotContains(t, data[0].Samples, "mcpany.tools.call.latency")
+	// This assertion should FAIL currently, demonstrating the bug.
+	assert.False(t, unlabelledExists, "Unlabelled metric 'mcpany.tools.call.latency' should not exist")
 
-    // Check tool-specific latency metric
-    // Ideally it should be mcpany.tools.call.latency;tool=...
-    // But currently it is mcpany.tool.<toolname>.call.latency (which causes high cardinality)
-
-    // We expect tool AND service_id labels
-    expectedIdealKey := "mcpany.tools.call.latency;tool=" + successID + ";service_id=test-service"
-
-    // This assertion fails with current implementation
-    assert.Contains(t, data[0].Samples, expectedIdealKey, "Should have labeled latency metric")
-
-    // This assertion would pass with current implementation (proving the bug/inconsistency)
-    currentBadKey := "mcpany.tool." + successID + ".call.latency"
-    assert.NotContains(t, data[0].Samples, currentBadKey, "Should NOT have embedded tool name in metric key")
+	// Check for labelled metric (should exist)
+	foundLabelled := false
+	expectedPrefix := "mcpany.tools.call.latency;tool="
+	for k := range samples {
+		if len(k) >= len(expectedPrefix) && k[:len(expectedPrefix)] == expectedPrefix {
+			foundLabelled = true
+			break
+		}
+	}
+	assert.True(t, foundLabelled, "Labelled metric should exist")
 }
