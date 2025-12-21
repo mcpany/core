@@ -50,3 +50,33 @@ func BenchmarkSanitizeID(b *testing.B) {
 		}
 	})
 }
+
+func BenchmarkSanitizeOperationID(b *testing.B) {
+	b.Run("Clean", func(b *testing.B) {
+		input := "validOperationID-123_test"
+		b.ReportAllocs()
+		b.ResetTimer()
+		for i := 0; i < b.N; i++ {
+			SanitizeOperationID(input)
+		}
+	})
+
+	b.Run("Dirty", func(b *testing.B) {
+		input := "invalid op ID with spaces & symbols!"
+		b.ReportAllocs()
+		b.ResetTimer()
+		for i := 0; i < b.N; i++ {
+			SanitizeOperationID(input)
+		}
+	})
+
+	b.Run("Mixed", func(b *testing.B) {
+		// A mix of valid and invalid characters, multiple segments
+		input := "op" + strings.Repeat(" ", 5) + "ID" + strings.Repeat("!", 5) + "123"
+		b.ReportAllocs()
+		b.ResetTimer()
+		for i := 0; i < b.N; i++ {
+			SanitizeOperationID(input)
+		}
+	})
+}
