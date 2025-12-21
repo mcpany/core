@@ -152,7 +152,9 @@ type Application struct {
 // It initializes the application with the standard implementation of the stdio
 // mode runner, making it ready to be configured and started.
 //
-// Returns a new instance of the Application, ready to be run.
+// Returns:
+//
+//	A new instance of the Application, ready to be run.
 func NewApplication() *Application {
 	busProvider, _ := bus.NewProvider(nil)
 	return &Application{
@@ -175,17 +177,18 @@ func NewApplication() *Application {
 // shutdown is initiated when the context is canceled.
 //
 // Parameters:
-//   - ctx: The context for managing the application's lifecycle.
-//   - fs: The filesystem interface for reading configuration files.
-//   - stdio: A boolean indicating whether to run in standard I/O mode.
-//   - jsonrpcPort: The port for the JSON-RPC server.
-//   - grpcPort: The port for the gRPC registration server. An empty string
-//     disables the gRPC server.
-//   - configPaths: A slice of paths to service configuration files.
-//   - shutdownTimeout: The duration to wait for a graceful shutdown before
-//     forcing termination.
 //
-// Returns an error if any part of the startup or execution fails.
+//	ctx: The context for managing the application's lifecycle.
+//	fs: The filesystem interface for reading configuration files.
+//	stdio: A boolean indicating whether to run in standard I/O mode.
+//	jsonrpcPort: The port for the JSON-RPC server.
+//	grpcPort: The port for the gRPC registration server. An empty string disables the gRPC server.
+//	configPaths: A slice of paths to service configuration files.
+//	shutdownTimeout: The duration to wait for a graceful shutdown before forcing termination.
+//
+// Returns:
+//
+//	An error if any part of the startup or execution fails.
 func (a *Application) Run(
 	ctx context.Context,
 	fs afero.Fs,
@@ -427,6 +430,15 @@ func (a *Application) Run(
 
 // ReloadConfig reloads the configuration from the given paths and updates the
 // services.
+//
+// Parameters:
+//
+//	fs: The filesystem interface for reading configuration files.
+//	configPaths: A slice of paths to configuration files to reload.
+//
+// Returns:
+//
+//	An error if the configuration reload fails.
 func (a *Application) ReloadConfig(fs afero.Fs, configPaths []string) error {
 	log := logging.GetLogger()
 	log.Info("Reloading configuration...")
@@ -519,12 +531,15 @@ func runStdioMode(ctx context.Context, mcpSrv *mcpserver.Server) error {
 // health check.
 //
 // Parameters:
-//   - out: The writer to which the success message will be written.
-//   - addr: The address (host:port) on which the server is running.
 //
-// Returns nil if the server is healthy (i.e., responds with a 200 OK), or an
-// error if the health check fails for any reason (e.g., connection error,
-// non-200 status code).
+//	out: The writer to which the success message will be written.
+//	addr: The address (host:port) on which the server is running.
+//	timeout: The timeout duration for the health check.
+//
+// Returns:
+//
+//	Nil if the server is healthy (i.e., responds with a 200 OK).
+//	An error if the health check fails for any reason (e.g., connection error, non-200 status code).
 func HealthCheck(out io.Writer, addr string, timeout time.Duration) error {
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	defer cancel()
@@ -540,13 +555,15 @@ func HealthCheck(out io.Writer, addr string, timeout time.Duration) error {
 // health check.
 //
 // Parameters:
-//   - ctx: The context for managing the health check's lifecycle.
-//   - out: The writer to which the success message will be written.
-//   - addr: The address (host:port) on which the server is running.
 //
-// Returns nil if the server is healthy (i.e., responds with a 200 OK), or an
-// error if the health check fails for any reason (e.g., connection error,
-// non-200 status code).
+//	ctx: The context for managing the health check's lifecycle.
+//	out: The writer to which the success message will be written.
+//	addr: The address (host:port) on which the server is running.
+//
+// Returns:
+//
+//	Nil if the server is healthy (i.e., responds with a 200 OK).
+//	An error if the health check fails for any reason (e.g., connection error, non-200 status code).
 func HealthCheckWithContext(
 	ctx context.Context,
 	out io.Writer,

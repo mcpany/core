@@ -1,0 +1,5 @@
+server/pkg/config/store.go:146: missing doc for interface method ServiceStore.SaveService
+server/pkg/config/store.go:147: missing doc for interface method ServiceStore.GetService
+server/pkg/config/store.go:148: missing doc for interface method ServiceStore.ListServices
+server/pkg/config/store.go:149: missing doc for interface method ServiceStore.DeleteService
+server/pkg/tool/hooks.go:295: missing doc for type ResponseData
