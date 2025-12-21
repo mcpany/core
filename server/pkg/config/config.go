@@ -14,7 +14,16 @@ import (
 	"github.com/spf13/viper"
 )
 
+// BinaryType defines the type of the binary being validated.
+const (
+	// SchemeHTTP is the http scheme.
+	SchemeHTTP = "http"
+	// SchemeHTTPS is the https scheme.
+	SchemeHTTPS = "https"
+)
+
 // BindRootFlags binds the global/persistent flags to viper.
+
 // It sets up environment variable reading (MCPANY_ prefix) and defines flags for:
 // - mcp-listen-address
 // - config-path

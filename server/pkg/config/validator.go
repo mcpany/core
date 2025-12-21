@@ -117,7 +117,7 @@ func validateUpstreamServiceCollection(ctx context.Context, collection *configv1
 		return fmt.Errorf("invalid collection http_url: %s", collection.GetHttpUrl())
 	}
 	u, _ := url.Parse(collection.GetHttpUrl())
-	if u.Scheme != "http" && u.Scheme != "https" {
+	if u.Scheme != SchemeHTTP && u.Scheme != SchemeHTTPS {
 		return fmt.Errorf("invalid collection http_url scheme: %s", u.Scheme)
 	}
 
@@ -206,7 +206,7 @@ func validateHTTPService(httpService *configv1.HttpUpstreamService) error {
 		return fmt.Errorf("invalid http target_address: %s", httpService.GetAddress())
 	}
 	u, _ := url.Parse(httpService.GetAddress())
-	if u.Scheme != "http" && u.Scheme != "https" {
+	if u.Scheme != SchemeHTTP && u.Scheme != SchemeHTTPS {
 		return fmt.Errorf("invalid http target_address scheme: %s", u.Scheme)
 	}
 

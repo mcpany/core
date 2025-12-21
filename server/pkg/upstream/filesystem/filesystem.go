@@ -266,7 +266,7 @@ func (c *fsCallable) Call(_ context.Context, req *tool.ExecutionRequest) (any, e
 }
 
 func listFiles(path string) (any, error) {
-	//nolint:gosec // Path is validated to be within root_path
+
 	entries, err := os.ReadDir(path)
 	if err != nil {
 		return nil, err
@@ -300,7 +300,7 @@ func writeFile(path string, content string) (any, error) {
 }
 
 func getFileInfo(path string) (any, error) {
-	//nolint:gosec // Path is validated to be within root_path
+
 	info, err := os.Stat(path)
 	if err != nil {
 		return nil, err
