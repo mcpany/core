@@ -1,0 +1,421 @@
+make -C server test
+make[1]: Entering directory '/app/server'
+Cleaning generated protobuf files...
+Preparing development environment...
+protoc version v33.1 is already installed.
+Installing Go protobuf plugins...
+Checking for Go protobuf plugins...
+Go protobuf plugins installation check complete.
+Checking for Python to install dependencies and pre-commit hooks...
+Python found. Installing/updating pre-commit and fastmcp locally...
+pre-commit installed at .git/hooks/pre-commit
+Installing Node.js dependencies for integration tests...
+Found package.json, running npm install...
+
+up to date, audited 615 packages in 3s
+
+152 packages are looking for funding
+  run `npm fund` for details
+
+found 0 vulnerabilities
+Installing Playwright browsers (skipping system deps)...
+Playwright Host validation warning:
+╔══════════════════════════════════════════════════════╗
+║ Host system is missing dependencies to run browsers. ║
+║ Missing libraries:                                   ║
+║     libgtk-4.so.1                                    ║
+║     libgraphene-1.0.so.0                             ║
+║     libxslt.so.1                                     ║
+║     libwoff2dec.so.1.0.2                             ║
+║     libvpx.so.9                                      ║
+║     libevent-2.1.so.7                                ║
+║     libopus.so.0                                     ║
+║     libgstallocators-1.0.so.0                        ║
+║     libgstapp-1.0.so.0                               ║
+║     libgstpbutils-1.0.so.0                           ║
+║     libgstaudio-1.0.so.0                             ║
+║     libgsttag-1.0.so.0                               ║
+║     libgstvideo-1.0.so.0                             ║
+║     libgstgl-1.0.so.0                                ║
+║     libgstcodecparsers-1.0.so.0                      ║
+║     libgstfft-1.0.so.0                               ║
+║     libflite.so.1                                    ║
+║     libflite_usenglish.so.1                          ║
+║     libflite_cmu_grapheme_lang.so.1                  ║
+║     libflite_cmu_grapheme_lex.so.1                   ║
+║     libflite_cmu_indic_lang.so.1                     ║
+║     libflite_cmu_indic_lex.so.1                      ║
+║     libflite_cmulex.so.1                             ║
+║     libflite_cmu_time_awb.so.1                       ║
+║     libflite_cmu_us_awb.so.1                         ║
+║     libflite_cmu_us_kal16.so.1                       ║
+║     libflite_cmu_us_kal.so.1                         ║
+║     libflite_cmu_us_rms.so.1                         ║
+║     libflite_cmu_us_slt.so.1                         ║
+║     libwebpdemux.so.2                                ║
+║     libavif.so.16                                    ║
+║     libharfbuzz-icu.so.0                             ║
+║     libwebpmux.so.3                                  ║
+║     libenchant-2.so.2                                ║
+║     libsecret-1.so.0                                 ║
+║     libhyphen.so.0                                   ║
+║     libmanette-0.2.so.0                              ║
+║     libx264.so                                       ║
+╚══════════════════════════════════════════════════════╝
+    at validateDependenciesLinux (/app/server/tests/integration/upstream/node_modules/playwright-core/lib/server/registry/dependencies.js:269:9)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async Registry._validateHostRequirements (/app/server/tests/integration/upstream/node_modules/playwright-core/lib/server/registry/index.js:961:14)
+    at async Registry._validateHostRequirementsForExecutableIfNeeded (/app/server/tests/integration/upstream/node_modules/playwright-core/lib/server/registry/index.js:1083:7)
+    at async Registry.validateHostRequirementsForExecutablesIfNeeded (/app/server/tests/integration/upstream/node_modules/playwright-core/lib/server/registry/index.js:1072:7)
+    at async i.<anonymous> (/app/server/tests/integration/upstream/node_modules/playwright-core/lib/cli/program.js:217:7)
+Checking for Helm...
+Helm is already installed.
+Checking for ShellCheck...
+ShellCheck is already installed.
+Checking for nats-server...
+nats-server is already installed.
+Checking for golangci-lint...
+Installing golangci-lint v2.7.2 to /app/build/env/bin...
+golangci/golangci-lint info checking GitHub for tag 'v2.7.2'
+golangci/golangci-lint info found version: 2.7.2 for v2.7.2/linux/amd64
+golangci/golangci-lint info installed /app/build/env/bin/golangci-lint
+golangci-lint installed successfully.
+Downloading go modules...
+Preparation complete.
+Removing old protobuf files...
+Generating protobuf files...
+Using protoc: libprotoc 33.1
+Protobuf generation complete.
+Building Go project locally...
+Building weather server example...
+make[2]: Entering directory '/app/server'
+make[2]: '/app/build/test/bin/http_echo_server' is up to date.
+make[2]: '/app/build/test/bin/http_authed_echo_server' is up to date.
+make[2]: '/app/build/test/bin/grpc_weather_server' is up to date.
+make[2]: '/app/build/test/bin/grpc_authed_weather_server' is up to date.
+make[2]: '/app/build/test/bin/openapi_weather_server' is up to date.
+make[2]: '/app/build/test/bin/webrtc_weather_server' is up to date.
+make[2]: '/app/build/test/bin/command-tester' is up to date.
+make[2]: '/app/build/test/bin/prompt-server' is up to date.
+make[2]: Leaving directory '/app/server'
+make[2]: Entering directory '/app/server'
+Building file upload server example...
+make[2]: Leaving directory '/app/server'
+Building E2E time server Docker image (mcpany-e2e-time-server)...
+#0 building with "default" instance using docker driver
+
+#1 [internal] load build definition from Dockerfile.timeserver
+#1 transferring dockerfile: 864B done
+#1 DONE 0.0s
+
+#2 [internal] load metadata for mirror.gcr.io/library/python:3.11-slim
+#2 DONE 0.1s
+
+#3 [internal] load .dockerignore
+#3 transferring context: 2B done
+#3 DONE 0.0s
+
+#4 [1/5] FROM mirror.gcr.io/library/python:3.11-slim@sha256:158caf0e080e2cd74ef2879ed3c4e697792ee65251c8208b7afb56683c32ea6c
+#4 DONE 0.0s
+
+#5 [internal] load build context
+#5 transferring context: 134B done
+#5 DONE 0.0s
+
+#6 [4/5] RUN pip install -r requirements.txt
+#6 CACHED
+
+#7 [2/5] WORKDIR /app
+#7 CACHED
+
+#8 [3/5] COPY timeserver_patch/requirements.txt .
+#8 CACHED
+
+#9 [5/5] COPY timeserver_patch/main.py /app/main.py
+#9 CACHED
+
+#10 exporting to image
+#10 exporting layers done
+#10 writing image sha256:966ee82e8af7deb029fc0882f074e94341f6f9446b3129e3f6a1cb8d2154cc37 done
+#10 naming to docker.io/library/mcpany-e2e-time-server done
+#10 DONE 0.0s
+Running fast Go tests locally with a 300s timeout...
+make[1]: *** [Makefile:417: test-fast] Terminated
+make: *** [Makefile:6: test] Terminated
+	github.com/mcpany/core/cmd/mock_mcp_server		coverage: 0.0% of statements
+ok  	github.com/mcpany/core/cmd/server	3.835s	coverage: 68.5% of statements
+	github.com/mcpany/core/cmd/webhooks		coverage: 0.0% of statements
+ok  	github.com/mcpany/core/cmd/webhooks/hooks	1.108s	coverage: 84.7% of statements
+ok  	github.com/mcpany/core/cmd/worker	1.604s	coverage: 92.9% of statements
+ok  	github.com/mcpany/core/pkg/admin	1.393s	coverage: 92.6% of statements
+ok  	github.com/mcpany/core/pkg/app	25.181s	coverage: 84.1% of statements
+?   	github.com/mcpany/core/pkg/appconsts	[no test files]
+ok  	github.com/mcpany/core/pkg/auth	5.985s	coverage: 94.6% of statements
+ok  	github.com/mcpany/core/pkg/bus	12.169s	coverage: 72.7% of statements
+ok  	github.com/mcpany/core/pkg/bus/kafka	1.349s	coverage: 83.9% of statements
+ok  	github.com/mcpany/core/pkg/bus/memory	1.117s	coverage: 100.0% of statements
+ok  	github.com/mcpany/core/pkg/bus/nats	1.863s	coverage: 86.8% of statements
+ok  	github.com/mcpany/core/pkg/bus/redis	4.002s	coverage: 75.8% of statements
+ok  	github.com/mcpany/core/pkg/cli	1.042s	coverage: 100.0% of statements
+ok  	github.com/mcpany/core/pkg/client	2.198s	coverage: 94.1% of statements
+ok  	github.com/mcpany/core/pkg/config	3.146s	coverage: 88.7% of statements
+?   	github.com/mcpany/core/pkg/consts	[no test files]
+ok  	github.com/mcpany/core/pkg/health	1.205s	coverage: 90.1% of statements
+ok  	github.com/mcpany/core/pkg/logging	1.144s	coverage: 90.5% of statements
+time=2025-12-21T22:20:58.356Z level=INFO source=/app/server/pkg/worker/registration_worker.go:46 msg="Service registration worker started" component=ServiceRegistrationWorker
+time=2025-12-21T22:20:58.356Z level=INFO source=/app/server/pkg/worker/registration_worker.go:63 msg="Received service registration request" component=ServiceRegistrationWorker correlationID=a7639b59-efad-48eb-be71-44cea7b429a2
+time=2025-12-21T22:20:58.357Z level=INFO source=/app/server/pkg/upstream/http/http.go:183 msg="Registered HTTP service" serviceID=testservice toolsAdded=0
+time=2025-12-21T22:20:58.358Z level=INFO source=/app/server/pkg/mcpserver/registration_server.go:111 msg="Service registered via bus" service_name=testservice service_key=testservice discovered_tools_count=0 discovered_resources_count=0
+time=2025-12-21T22:20:58.361Z level=INFO source=/app/server/pkg/worker/registration_worker.go:63 msg="Received service registration request" component=ServiceRegistrationWorker correlationID=ecc3ef41-f2e8-41dd-ba77-e9aa84e0ecb2
+time=2025-12-21T22:20:58.366Z level=ERROR source=/app/server/pkg/health/health.go:369 msg="checkConnection failed" address=localhost:8080 error="dial tcp [::1]:8080: connect: connection refused"
+time=2025-12-21T22:20:58.366Z level=ERROR source=/app/server/pkg/health/health.go:369 msg="checkConnection failed" address=localhost:8080 error="dial tcp [::1]:8080: connect: connection refused"
+time=2025-12-21T22:20:58.366Z level=ERROR source=/app/server/pkg/health/health.go:369 msg="checkConnection failed" address=localhost:8080 error="dial tcp [::1]:8080: connect: connection refused"
+time=2025-12-21T22:20:58.366Z level=INFO source=/app/server/pkg/health/health.go:85 msg="health status changed" service=testservice status=down
+time=2025-12-21T22:20:58.367Z level=INFO source=/app/server/pkg/health/health.go:85 msg="health status changed" service=testservice status=down
+time=2025-12-21T22:20:58.367Z level=ERROR source=/app/server/pkg/health/health.go:369 msg="checkConnection failed" address=localhost:8080 error="dial tcp [::1]:8080: connect: connection refused"
+time=2025-12-21T22:20:58.367Z level=ERROR source=/app/server/pkg/health/health.go:369 msg="checkConnection failed" address=localhost:8080 error="dial tcp [::1]:8080: connect: connection refused"
+time=2025-12-21T22:20:58.367Z level=INFO source=/app/server/pkg/health/health.go:85 msg="health status changed" service=testservice status=down
+time=2025-12-21T22:20:58.367Z level=ERROR source=/app/server/pkg/health/health.go:369 msg="checkConnection failed" address=localhost:8080 error="dial tcp [::1]:8080: connect: connection refused"
+time=2025-12-21T22:20:58.367Z level=INFO source=/app/server/pkg/health/health.go:85 msg="health status changed" service=testservice status=down
+time=2025-12-21T22:20:58.367Z level=INFO source=/app/server/pkg/health/health.go:85 msg="health status changed" service=testservice status=down
+time=2025-12-21T22:20:58.368Z level=ERROR source=/app/server/pkg/health/health.go:369 msg="checkConnection failed" address=localhost:8080 error="dial tcp [::1]:8080: connect: connection refused"
+time=2025-12-21T22:20:58.368Z level=INFO source=/app/server/pkg/health/health.go:85 msg="health status changed" service=testservice status=down
+time=2025-12-21T22:20:58.368Z level=INFO source=/app/server/pkg/health/health.go:85 msg="health status changed" service=testservice status=down
+time=2025-12-21T22:20:58.368Z level=ERROR source=/app/server/pkg/health/health.go:369 msg="checkConnection failed" address=localhost:8080 error="dial tcp [::1]:8080: connect: connection refused"
+time=2025-12-21T22:20:58.368Z level=INFO source=/app/server/pkg/health/health.go:85 msg="health status changed" service=testservice status=down
+time=2025-12-21T22:20:58.367Z level=ERROR source=/app/server/pkg/health/health.go:369 msg="checkConnection failed" address=localhost:8080 error="dial tcp [::1]:8080: connect: connection refused"
+time=2025-12-21T22:20:58.368Z level=ERROR source=/app/server/pkg/health/health.go:369 msg="checkConnection failed" address=localhost:8080 error="dial tcp [::1]:8080: connect: connection refused"
+time=2025-12-21T22:20:58.368Z level=INFO source=/app/server/pkg/health/health.go:85 msg="health status changed" service=testservice status=down
+time=2025-12-21T22:20:58.368Z level=INFO source=/app/server/pkg/health/health.go:85 msg="health status changed" service=testservice status=down
+time=2025-12-21T22:20:58.388Z level=INFO source=/app/server/pkg/upstream/grpc/grpc.go:331 msg="Registered gRPC tool" tool_id=ServerReflectionInfo is_reload=false
+time=2025-12-21T22:20:58.388Z level=INFO source=/app/server/pkg/upstream/grpc/grpc.go:331 msg="Registered gRPC tool" tool_id=GetWeather is_reload=false
+time=2025-12-21T22:20:58.389Z level=INFO source=/app/server/pkg/upstream/grpc/grpc.go:184 msg="Registered gRPC service" serviceID=weather-service toolsAdded=2
+time=2025-12-21T22:20:58.389Z level=INFO source=/app/server/pkg/mcpserver/registration_server.go:111 msg="Service registered via bus" service_name=weather-service service_key=weather-service discovered_tools_count=2 discovered_resources_count=0
+time=2025-12-21T22:20:58.389Z level=INFO source=/app/server/pkg/mcpserver/registration_server.go:119 msg="Discovered tool" tool="name:\"ServerReflectionInfo\" description:\"\""
+time=2025-12-21T22:20:58.390Z level=INFO source=/app/server/pkg/mcpserver/registration_server.go:119 msg="Discovered tool" tool="name:\"GetWeather\" description:\"\""
+time=2025-12-21T22:20:58.391Z level=INFO source=/app/server/pkg/worker/registration_worker.go:63 msg="Received service registration request" component=ServiceRegistrationWorker correlationID=3adcc511-515e-415b-bcb2-85db7227a027
+time=2025-12-21T22:20:58.395Z level=INFO source=/app/server/pkg/upstream/openapi/openapi.go:348 msg="Registered OpenAPI tool" tool_id=getUser is_reload=false
+time=2025-12-21T22:20:58.395Z level=INFO source=/app/server/pkg/upstream/openapi/openapi.go:173 msg="Registered OpenAPI service" serviceID=openapi-service toolsAdded=1
+time=2025-12-21T22:20:58.395Z level=INFO source=/app/server/pkg/mcpserver/registration_server.go:111 msg="Service registered via bus" service_name=openapi-service service_key=openapi-service discovered_tools_count=1 discovered_resources_count=0
+time=2025-12-21T22:20:58.396Z level=INFO source=/app/server/pkg/mcpserver/registration_server.go:119 msg="Discovered tool" tool="name:\"getUser\" description:\"\""
+time=2025-12-21T22:20:58.396Z level=INFO source=/app/server/pkg/worker/registration_worker.go:63 msg="Received service registration request" component=ServiceRegistrationWorker correlationID=610cb572-d374-4502-906f-446ac3c27378
+time=2025-12-21T22:20:58.397Z level=INFO source=/app/server/pkg/upstream/websocket/websocket.go:106 msg="Registered Websocket service" serviceID=websocket-service toolsAdded=1
+time=2025-12-21T22:20:58.397Z level=INFO source=/app/server/pkg/mcpserver/registration_server.go:111 msg="Service registered via bus" service_name=websocket-service service_key=websocket-service discovered_tools_count=1 discovered_resources_count=0
+time=2025-12-21T22:20:58.397Z level=INFO source=/app/server/pkg/mcpserver/registration_server.go:119 msg="Discovered tool" tool="name:\"test-tool\" description:\"\""
+time=2025-12-21T22:20:58.397Z level=INFO source=/app/server/pkg/worker/registration_worker.go:46 msg="Service registration worker started" component=ServiceRegistrationWorker
+time=2025-12-21T22:20:58.397Z level=INFO source=/app/server/pkg/worker/registration_worker.go:162 msg="Service registration worker stopping" component=ServiceRegistrationWorker
+time=2025-12-21T22:20:58.398Z level=INFO source=/app/server/pkg/worker/registration_worker.go:63 msg="Received service registration request" component=ServiceRegistrationWorker correlationID=5657ac86-546f-4d87-80a7-d20b1cb977a7
+time=2025-12-21T22:20:58.398Z level=INFO source=/app/server/pkg/upstream/http/http.go:183 msg="Registered HTTP service" serviceID=test-service-for-listing toolsAdded=0
+time=2025-12-21T22:20:58.398Z level=INFO source=/app/server/pkg/mcpserver/registration_server.go:111 msg="Service registered via bus" service_name=test-service-for-listing service_key=test-service-for-listing discovered_tools_count=0 discovered_resources_count=0
+time=2025-12-21T22:20:58.399Z level=INFO source=/app/server/pkg/worker/registration_worker.go:110 msg="Received service list request" component=ServiceRegistrationWorker correlationID=3c9eba46-8cee-4c6d-8f63-b61a602577c5
+time=2025-12-21T22:20:58.401Z level=ERROR source=/app/server/pkg/health/health.go:369 msg="checkConnection failed" address=localhost:8080 error="dial tcp [::1]:8080: connect: connection refused"
+time=2025-12-21T22:20:58.401Z level=ERROR source=/app/server/pkg/health/health.go:369 msg="checkConnection failed" address=localhost:8080 error="dial tcp [::1]:8080: connect: connection refused"
+time=2025-12-21T22:20:58.401Z level=INFO source=/app/server/pkg/health/health.go:85 msg="health status changed" service=test-service-for-listing status=down
+time=2025-12-21T22:20:58.401Z level=INFO source=/app/server/pkg/health/health.go:85 msg="health status changed" service=test-service-for-listing status=down
+time=2025-12-21T22:20:58.401Z level=ERROR source=/app/server/pkg/health/health.go:369 msg="checkConnection failed" address=localhost:8080 error="dial tcp [::1]:8080: connect: connection refused"
+time=2025-12-21T22:20:58.401Z level=INFO source=/app/server/pkg/health/health.go:85 msg="health status changed" service=test-service-for-listing status=down
+time=2025-12-21T22:20:58.401Z level=ERROR source=/app/server/pkg/health/health.go:369 msg="checkConnection failed" address=localhost:8080 error="dial tcp [::1]:8080: connect: connection refused"
+time=2025-12-21T22:20:58.401Z level=ERROR source=/app/server/pkg/health/health.go:369 msg="checkConnection failed" address=localhost:8080 error="dial tcp [::1]:8080: connect: connection refused"
+time=2025-12-21T22:20:58.401Z level=INFO source=/app/server/pkg/health/health.go:85 msg="health status changed" service=test-service-for-listing status=down
+time=2025-12-21T22:20:58.401Z level=INFO source=/app/server/pkg/health/health.go:85 msg="health status changed" service=test-service-for-listing status=down
+time=2025-12-21T22:20:58.402Z level=ERROR source=/app/server/pkg/health/health.go:369 msg="checkConnection failed" address=localhost:8080 error="dial tcp [::1]:8080: connect: connection refused"
+time=2025-12-21T22:20:58.402Z level=INFO source=/app/server/pkg/health/health.go:85 msg="health status changed" service=test-service-for-listing status=down
+time=2025-12-21T22:20:58.402Z level=ERROR source=/app/server/pkg/health/health.go:369 msg="checkConnection failed" address=localhost:8080 error="dial tcp [::1]:8080: connect: connection refused"
+time=2025-12-21T22:20:58.402Z level=ERROR source=/app/server/pkg/health/health.go:369 msg="checkConnection failed" address=localhost:8080 error="dial tcp [::1]:8080: connect: connection refused"
+time=2025-12-21T22:20:58.402Z level=INFO source=/app/server/pkg/health/health.go:85 msg="health status changed" service=test-service-for-listing status=down
+time=2025-12-21T22:20:58.402Z level=INFO source=/app/server/pkg/health/health.go:85 msg="health status changed" service=test-service-for-listing status=down
+time=2025-12-21T22:20:58.402Z level=ERROR source=/app/server/pkg/health/health.go:369 msg="checkConnection failed" address=localhost:8080 error="dial tcp [::1]:8080: connect: connection refused"
+time=2025-12-21T22:20:58.403Z level=INFO source=/app/server/pkg/health/health.go:85 msg="health status changed" service=test-service-for-listing status=down
+time=2025-12-21T22:20:58.403Z level=ERROR source=/app/server/pkg/health/health.go:369 msg="checkConnection failed" address=localhost:8080 error="dial tcp [::1]:8080: connect: connection refused"
+time=2025-12-21T22:20:58.403Z level=INFO source=/app/server/pkg/health/health.go:85 msg="health status changed" service=test-service-for-listing status=down
+time=2025-12-21T22:20:58.502Z level=INFO source=/app/server/pkg/worker/registration_worker.go:162 msg="Service registration worker stopping" component=ServiceRegistrationWorker
+time=2025-12-21T22:20:58.505Z level=INFO source=/app/server/pkg/worker/registration_worker.go:46 msg="Service registration worker started" component=ServiceRegistrationWorker
+time=2025-12-21T22:20:58.506Z level=INFO source=/app/server/pkg/worker/registration_worker.go:63 msg="Received service registration request" component=ServiceRegistrationWorker correlationID=f6807737-556d-4d79-bc65-29fd2d52aa4e
+time=2025-12-21T22:20:58.506Z level=INFO source=/app/server/pkg/upstream/http/http.go:183 msg="Registered HTTP service" serviceID=test-service-for-get toolsAdded=0
+time=2025-12-21T22:20:58.507Z level=INFO source=/app/server/pkg/mcpserver/registration_server.go:111 msg="Service registered via bus" service_name=test-service-for-get service_key=test-service-for-get discovered_tools_count=0 discovered_resources_count=0
+time=2025-12-21T22:20:58.508Z level=INFO source=/app/server/pkg/worker/registration_worker.go:132 msg="Received service get request" component=ServiceRegistrationWorker correlationID=316c8cf8-c1e6-49cf-81dc-a838bef4c61d serviceName=test-service-for-get
+time=2025-12-21T22:20:58.509Z level=ERROR source=/app/server/pkg/health/health.go:369 msg="checkConnection failed" address=localhost:8080 error="dial tcp [::1]:8080: connect: connection refused"
+time=2025-12-21T22:20:58.509Z level=INFO source=/app/server/pkg/health/health.go:85 msg="health status changed" service=test-service-for-get status=down
+time=2025-12-21T22:20:58.509Z level=ERROR source=/app/server/pkg/health/health.go:369 msg="checkConnection failed" address=localhost:8080 error="dial tcp [::1]:8080: connect: connection refused"
+time=2025-12-21T22:20:58.509Z level=ERROR source=/app/server/pkg/health/health.go:369 msg="checkConnection failed" address=localhost:8080 error="dial tcp [::1]:8080: connect: connection refused"
+time=2025-12-21T22:20:58.510Z level=INFO source=/app/server/pkg/health/health.go:85 msg="health status changed" service=test-service-for-get status=down
+time=2025-12-21T22:20:58.510Z level=ERROR source=/app/server/pkg/health/health.go:369 msg="checkConnection failed" address=localhost:8080 error="dial tcp [::1]:8080: connect: connection refused"
+time=2025-12-21T22:20:58.510Z level=ERROR source=/app/server/pkg/health/health.go:369 msg="checkConnection failed" address=localhost:8080 error="dial tcp [::1]:8080: connect: connection refused"
+time=2025-12-21T22:20:58.510Z level=ERROR source=/app/server/pkg/health/health.go:369 msg="checkConnection failed" address=localhost:8080 error="dial tcp [::1]:8080: connect: connection refused"
+time=2025-12-21T22:20:58.510Z level=INFO source=/app/server/pkg/health/health.go:85 msg="health status changed" service=test-service-for-get status=down
+time=2025-12-21T22:20:58.510Z level=INFO source=/app/server/pkg/health/health.go:85 msg="health status changed" service=test-service-for-get status=down
+time=2025-12-21T22:20:58.510Z level=ERROR source=/app/server/pkg/health/health.go:369 msg="checkConnection failed" address=localhost:8080 error="dial tcp [::1]:8080: connect: connection refused"
+time=2025-12-21T22:20:58.510Z level=INFO source=/app/server/pkg/health/health.go:85 msg="health status changed" service=test-service-for-get status=down
+time=2025-12-21T22:20:58.510Z level=INFO source=/app/server/pkg/health/health.go:85 msg="health status changed" service=test-service-for-get status=down
+time=2025-12-21T22:20:58.510Z level=INFO source=/app/server/pkg/health/health.go:85 msg="health status changed" service=test-service-for-get status=down
+time=2025-12-21T22:20:58.511Z level=INFO source=/app/server/pkg/worker/registration_worker.go:132 msg="Received service get request" component=ServiceRegistrationWorker correlationID=c4d7a016-a503-4a52-87d1-003750a8b1f5 serviceName=non-existent
+time=2025-12-21T22:20:58.511Z level=ERROR source=/app/server/pkg/health/health.go:369 msg="checkConnection failed" address=localhost:8080 error="dial tcp [::1]:8080: connect: connection refused"
+time=2025-12-21T22:20:58.511Z level=ERROR source=/app/server/pkg/health/health.go:369 msg="checkConnection failed" address=localhost:8080 error="dial tcp [::1]:8080: connect: connection refused"
+time=2025-12-21T22:20:58.511Z level=INFO source=/app/server/pkg/health/health.go:85 msg="health status changed" service=test-service-for-get status=down
+time=2025-12-21T22:20:58.511Z level=INFO source=/app/server/pkg/health/health.go:85 msg="health status changed" service=test-service-for-get status=down
+time=2025-12-21T22:20:58.512Z level=ERROR source=/app/server/pkg/health/health.go:369 msg="checkConnection failed" address=localhost:8080 error="dial tcp [::1]:8080: connect: connection refused"
+time=2025-12-21T22:20:58.513Z level=INFO source=/app/server/pkg/health/health.go:85 msg="health status changed" service=test-service-for-get status=down
+time=2025-12-21T22:20:58.522Z level=INFO source=/app/server/pkg/worker/registration_worker.go:162 msg="Service registration worker stopping" component=ServiceRegistrationWorker
+time=2025-12-21T22:20:58.523Z level=INFO source=/app/server/pkg/worker/upstream_worker.go:44 msg="Upstream worker started" component=UpstreamWorker
+time=2025-12-21T22:20:58.523Z level=INFO source=/app/server/pkg/tool/management.go:428 msg="Registering tool with MCP server" toolID=test-service.success-tool toolName=test-service.success-tool tool="&{Meta:map[] Annotations:0xc0004d72f0 Description: InputSchema:map[properties:map[] type:object] Name:test-service.success-tool OutputSchema:<nil> Title:}"
+time=2025-12-21T22:20:58.526Z level=INFO source=/app/server/pkg/mcpserver/server.go:480 msg="Calling tool..." toolName=test-service.success-tool arguments={}
+time=2025-12-21T22:20:58.577Z level=INFO source=/app/server/pkg/mcpserver/server.go:510 msg="Tool execution completed" result_type=string result_value=success
+time=2025-12-21T22:20:58.578Z level=INFO source=/app/server/pkg/worker/upstream_worker.go:44 msg="Upstream worker started" component=UpstreamWorker
+time=2025-12-21T22:20:58.579Z level=INFO source=/app/server/pkg/tool/management.go:428 msg="Registering tool with MCP server" toolID=test-service.success-tool toolName=test-service.success-tool tool="&{Meta:map[] Annotations:0xc00003ca50 Description: InputSchema:map[properties:map[] type:object] Name:test-service.success-tool OutputSchema:<nil> Title:}"
+time=2025-12-21T22:20:58.581Z level=INFO source=/app/server/pkg/mcpserver/server.go:480 msg="Calling tool..." toolName=test-service.success-tool arguments={}
+time=2025-12-21T22:20:58.632Z level=INFO source=/app/server/pkg/mcpserver/server.go:510 msg="Tool execution completed" result_type=string result_value=success
+Available samples:
+mcpany.tools.call.latency;tool=test-service.success-tool;service_id=test-service
+time=2025-12-21T22:20:58.633Z level=INFO source=/app/server/pkg/worker/upstream_worker.go:44 msg="Upstream worker started" component=UpstreamWorker
+time=2025-12-21T22:20:58.633Z level=INFO source=/app/server/pkg/tool/management.go:428 msg="Registering tool with MCP server" toolID=test-service.success-tool toolName=test-service.success-tool tool="&{Meta:map[] Annotations:0xc000037530 Description: InputSchema:map[properties:map[] type:object] Name:test-service.success-tool OutputSchema:<nil> Title:}"
+time=2025-12-21T22:20:58.635Z level=INFO source=/app/server/pkg/mcpserver/server.go:480 msg="Calling tool..." toolName=test-service.success-tool arguments={}
+time=2025-12-21T22:20:58.686Z level=INFO source=/app/server/pkg/mcpserver/server.go:510 msg="Tool execution completed" result_type=string result_value=success
+time=2025-12-21T22:20:58.742Z level=INFO source=/app/server/pkg/worker/upstream_worker.go:44 msg="Upstream worker started" component=UpstreamWorker
+time=2025-12-21T22:20:58.742Z level=INFO source=/app/server/pkg/tool/management.go:428 msg="Registering tool with MCP server" toolID=test-service.success-tool toolName=test-service.success-tool tool="&{Meta:map[] Annotations:0xc0002b7680 Description: InputSchema:map[properties:map[] type:object] Name:test-service.success-tool OutputSchema:<nil> Title:}"
+time=2025-12-21T22:20:58.743Z level=INFO source=/app/server/pkg/tool/management.go:428 msg="Registering tool with MCP server" toolID=test-service.error-tool toolName=test-service.error-tool tool="&{Meta:map[] Annotations:0xc0002b7890 Description: InputSchema:map[properties:map[] type:object] Name:test-service.error-tool OutputSchema:<nil> Title:}"
+time=2025-12-21T22:20:58.745Z level=INFO source=/app/server/pkg/mcpserver/server.go:480 msg="Calling tool..." toolName=test-service.success-tool arguments={}
+time=2025-12-21T22:20:58.796Z level=INFO source=/app/server/pkg/mcpserver/server.go:510 msg="Tool execution completed" result_type=string result_value=success
+time=2025-12-21T22:20:58.797Z level=INFO source=/app/server/pkg/mcpserver/server.go:480 msg="Calling tool..." toolName=test-service.error-tool arguments={}
+time=2025-12-21T22:20:58.798Z level=ERROR source=/app/server/pkg/tool/management.go:282 msg="Tool execution failed" toolName=test-service.error-tool error="execution error"
+time=2025-12-21T22:20:58.798Z level=ERROR source=/app/server/pkg/tool/management.go:303 msg="Tool execution chain failed" toolName=test-service.error-tool error="execution error"
+time=2025-12-21T22:20:58.798Z level=INFO source=/app/server/pkg/mcpserver/server.go:510 msg="Tool execution completed" result_type=<nil> result_value=<nil>
+Available counters:
+mcpany.tools.call.total;tool=test-service.error-tool;service_id=test-service
+mcpany.tools.call.errors;tool=test-service.error-tool;service_id=test-service
+mcpany.tools.call.total;tool=test-service.success-tool;service_id=test-service
+time=2025-12-21T22:20:58.801Z level=INFO source=/app/server/pkg/tool/management.go:428 msg="Registering tool with MCP server" toolID=restricted-service.restricted-tool toolName=restricted-service.restricted-tool tool="&{Meta:map[] Annotations:0xc0002916e0 Description: InputSchema:map[properties:map[] type:object] Name:restricted-service.restricted-tool OutputSchema:<nil> Title:}"
+time=2025-12-21T22:20:58.802Z level=INFO source=/app/server/pkg/mcpserver/server.go:480 msg="Calling tool..." toolName=restricted-service.restricted-tool arguments={}
+time=2025-12-21T22:20:58.802Z level=INFO source=/app/server/pkg/mcpserver/server.go:480 msg="Calling tool..." toolName=restricted-service.restricted-tool arguments={}
+time=2025-12-21T22:20:58.803Z level=INFO source=/app/server/pkg/mcpserver/server.go:510 msg="Tool execution completed" result_type=string result_value=success
+time=2025-12-21T22:20:58.803Z level=INFO source=/app/server/pkg/worker/upstream_worker.go:44 msg="Upstream worker started" component=UpstreamWorker
+time=2025-12-21T22:20:58.803Z level=INFO source=/app/server/pkg/tool/management.go:428 msg="Registering tool with MCP server" toolID=test-service.success-tool toolName=test-service.success-tool tool="&{Meta:map[] Annotations:0xc0002dc630 Description: InputSchema:map[properties:map[] type:object] Name:test-service.success-tool OutputSchema:<nil> Title:}"
+time=2025-12-21T22:20:58.806Z level=INFO source=/app/server/pkg/mcpserver/server.go:480 msg="Calling tool..." toolName=test-service.success-tool arguments={}
+time=2025-12-21T22:20:58.856Z level=INFO source=/app/server/pkg/mcpserver/server.go:510 msg="Tool execution completed" result_type=string result_value=success
+time=2025-12-21T22:20:58.857Z level=INFO source=/app/server/pkg/worker/upstream_worker.go:44 msg="Upstream worker started" component=UpstreamWorker
+time=2025-12-21T22:20:58.857Z level=INFO source=/app/server/pkg/tool/management.go:428 msg="Registering tool with MCP server" toolID=test-service.test-tool toolName=test-service.test-tool tool="&{Meta:map[] Annotations:0xc0002fa630 Description: InputSchema:map[properties:map[] type:object] Name:test-service.test-tool OutputSchema:<nil> Title:}"
+time=2025-12-21T22:20:58.861Z level=INFO source=/app/server/pkg/tool/management.go:428 msg="Registering tool with MCP server" toolID=test-service.test-tool toolName=test-service.test-tool tool="&{Meta:map[] Annotations:0xc0002d3200 Description: InputSchema:map[properties:map[] type:object] Name:test-service.test-tool OutputSchema:<nil> Title:}"
+time=2025-12-21T22:20:58.863Z level=INFO source=/app/server/pkg/worker/upstream_worker.go:44 msg="Upstream worker started" component=UpstreamWorker
+time=2025-12-21T22:20:58.863Z level=INFO source=/app/server/pkg/tool/management.go:428 msg="Registering tool with MCP server" toolID=test-service.success-tool toolName=test-service.success-tool tool="&{Meta:map[] Annotations:0xc0003027b0 Description: InputSchema:map[properties:map[] type:object] Name:test-service.success-tool OutputSchema:<nil> Title:}"
+time=2025-12-21T22:20:58.864Z level=INFO source=/app/server/pkg/tool/management.go:428 msg="Registering tool with MCP server" toolID=test-service.error-tool toolName=test-service.error-tool tool="&{Meta:map[] Annotations:0xc0003029c0 Description: InputSchema:map[properties:map[] type:object] Name:test-service.error-tool OutputSchema:<nil> Title:}"
+time=2025-12-21T22:20:58.870Z level=INFO source=/app/server/pkg/mcpserver/server.go:480 msg="Calling tool..." toolName=test-service.success-tool arguments={}
+time=2025-12-21T22:20:58.921Z level=INFO source=/app/server/pkg/mcpserver/server.go:510 msg="Tool execution completed" result_type=string result_value=success
+time=2025-12-21T22:20:58.923Z level=INFO source=/app/server/pkg/mcpserver/server.go:480 msg="Calling tool..." toolName=test-service.error-tool arguments={}
+time=2025-12-21T22:20:58.923Z level=ERROR source=/app/server/pkg/tool/management.go:282 msg="Tool execution failed" toolName=test-service.error-tool error="execution error"
+time=2025-12-21T22:20:58.923Z level=ERROR source=/app/server/pkg/tool/management.go:303 msg="Tool execution chain failed" toolName=test-service.error-tool error="execution error"
+time=2025-12-21T22:20:58.923Z level=INFO source=/app/server/pkg/mcpserver/server.go:510 msg="Tool execution completed" result_type=<nil> result_value=<nil>
+time=2025-12-21T22:20:58.925Z level=INFO source=/app/server/pkg/mcpserver/server.go:480 msg="Calling tool..." toolName=test-service.success-tool arguments={}
+time=2025-12-21T22:20:58.936Z level=ERROR source=/app/server/pkg/tool/management.go:282 msg="Tool execution failed" toolName=test-service.success-tool error="context canceled"
+time=2025-12-21T22:20:58.936Z level=ERROR source=/app/server/pkg/tool/management.go:303 msg="Tool execution chain failed" toolName=test-service.success-tool error="context canceled"
+time=2025-12-21T22:20:58.936Z level=INFO source=/app/server/pkg/mcpserver/server.go:510 msg="Tool execution completed" result_type=<nil> result_value=<nil>
+time=2025-12-21T22:20:58.937Z level=INFO source=/app/server/pkg/worker/upstream_worker.go:86 msg="Upstream worker stopping" component=UpstreamWorker
+time=2025-12-21T22:20:58.946Z level=INFO source=/app/server/pkg/mcpserver/server.go:465 msg="Listing tools..."
+time=2025-12-21T22:20:58.947Z level=INFO source=/app/server/pkg/mcpserver/server.go:480 msg="Calling tool..." toolName="" arguments=""
+time=2025-12-21T22:20:58.947Z level=INFO source=/app/server/pkg/mcpserver/server.go:510 msg="Tool execution completed" result_type=<nil> result_value=<nil>
+time=2025-12-21T22:20:58.952Z level=INFO source=/app/server/pkg/tool/management.go:428 msg="Registering tool with MCP server" toolID=test-service.test-tool toolName=test-service.test-tool tool="&{Meta:map[] Annotations:0xc000309500 Description: InputSchema:map[properties:map[] type:object] Name:test-service.test-tool OutputSchema:<nil> Title:}"
+time=2025-12-21T22:20:58.954Z level=INFO source=/app/server/pkg/tool/management.go:428 msg="Registering tool with MCP server" toolID=test-service.valid-name toolName=test-service.valid-name tool="&{Meta:map[] Annotations:0xc000999e90 Description: InputSchema:map[properties:map[] type:object] Name:test-service.valid-name OutputSchema:<nil> Title:}"
+time=2025-12-21T22:20:58.956Z level=ERROR source=/app/server/pkg/mcpserver/server.go:284 msg="Failed to convert tool to MCP format" toolName=""
+--- FAIL: TestServer_MiddlewareChain (0.00s)
+    server_test.go:1062:
+		Error Trace:	/app/server/pkg/mcpserver/server_test.go:1062
+		Error:      	map[string]bool{"global-service.globaltool_bb94dd4e":true, "profile-service.profiletool_9cd65995":true} does not contain "global-service.global.tool"
+		Test:       	TestServer_MiddlewareChain
+    server_test.go:1063:
+		Error Trace:	/app/server/pkg/mcpserver/server_test.go:1063
+		Error:      	map[string]bool{"global-service.globaltool_bb94dd4e":true, "profile-service.profiletool_9cd65995":true} does not contain "profile-service.profile.tool"
+		Test:       	TestServer_MiddlewareChain
+time=2025-12-21T22:20:58.960Z level=INFO source=/app/server/pkg/tool/management.go:428 msg="Registering tool with MCP server" toolID=test-service.smart-tool toolName=test-service.smart-tool tool="&{Meta:map[] Annotations:0xc00086c240 Description: InputSchema:map[properties:map[] type:object] Name:test-service.smart-tool OutputSchema:<nil> Title:}"
+time=2025-12-21T22:20:58.960Z level=INFO source=/app/server/pkg/tool/management.go:428 msg="Registering tool with MCP server" toolID=test-service.ambiguous-tool toolName=test-service.ambiguous-tool tool="&{Meta:map[] Annotations:0xc00086c7b0 Description: InputSchema:map[properties:map[] type:object] Name:test-service.ambiguous-tool OutputSchema:<nil> Title:}"
+time=2025-12-21T22:20:58.962Z level=INFO source=/app/server/pkg/mcpserver/server.go:480 msg="Calling tool..." toolName=test-service.smart-tool arguments={}
+time=2025-12-21T22:20:58.962Z level=INFO source=/app/server/pkg/mcpserver/server.go:510 msg="Tool execution completed" result_type="map[string]interface {}" result_value="map[content:[map[text:hello type:text]] isError:false]"
+time=2025-12-21T22:20:58.963Z level=INFO source=/app/server/pkg/mcpserver/server.go:480 msg="Calling tool..." toolName=test-service.ambiguous-tool arguments={}
+time=2025-12-21T22:20:58.963Z level=INFO source=/app/server/pkg/mcpserver/server.go:510 msg="Tool execution completed" result_type="map[string]interface {}" result_value="map[content:some raw text content]"
+time=2025-12-21T22:20:58.964Z level=WARN source=/app/server/pkg/mcpserver/server.go:543 msg="Failed to unmarshal potential CallToolResult map, treating as raw data" toolName=test-service.ambiguous-tool
+FAIL
+coverage: 93.7% of statements
+FAIL	github.com/mcpany/core/pkg/mcpserver	0.820s
+ok  	github.com/mcpany/core/pkg/metrics	1.211s	coverage: 80.6% of statements
+ok  	github.com/mcpany/core/pkg/middleware	2.463s	coverage: 67.8% of statements
+ok  	github.com/mcpany/core/pkg/pool	6.971s	coverage: 86.5% of statements
+ok  	github.com/mcpany/core/pkg/prompt	1.191s	coverage: 98.3% of statements
+ok  	github.com/mcpany/core/pkg/resilience	1.241s	coverage: 89.5% of statements
+ok  	github.com/mcpany/core/pkg/resource	1.346s	coverage: 98.2% of statements
+ok  	github.com/mcpany/core/pkg/service	1.326s	coverage: 85.7% of statements
+ok  	github.com/mcpany/core/pkg/serviceregistry	1.544s	coverage: 93.1% of statements
+ok  	github.com/mcpany/core/pkg/storage/sqlite	1.296s	coverage: 88.6% of statements
+ok  	github.com/mcpany/core/pkg/telemetry	1.088s	coverage: 87.0% of statements
+	github.com/mcpany/core/pkg/testutil		coverage: 0.0% of statements
+ok  	github.com/mcpany/core/pkg/tool	8.313s	coverage: 81.5% of statements
+ok  	github.com/mcpany/core/pkg/transformer	1.115s	coverage: 92.4% of statements
+ok  	github.com/mcpany/core/pkg/update	1.135s	coverage: 84.0% of statements
+?   	github.com/mcpany/core/pkg/upstream	[no test files]
+ok  	github.com/mcpany/core/pkg/upstream/command	1.471s	coverage: 83.5% of statements
+ok  	github.com/mcpany/core/pkg/upstream/factory	1.285s	coverage: 85.7% of statements
+ok  	github.com/mcpany/core/pkg/upstream/graphql	1.322s	coverage: 92.1% of statements
+ok  	github.com/mcpany/core/pkg/upstream/grpc	11.540s	coverage: 82.6% of statements
+ok  	github.com/mcpany/core/pkg/upstream/grpc/protobufparser	11.232s	coverage: 85.3% of statements
+ok  	github.com/mcpany/core/pkg/upstream/http	1.525s	coverage: 87.7% of statements
+ok  	github.com/mcpany/core/pkg/upstream/mcp	1.211s	coverage: 86.7% of statements
+ok  	github.com/mcpany/core/pkg/upstream/openapi	1.273s	coverage: 82.5% of statements
+ok  	github.com/mcpany/core/pkg/upstream/sql	1.190s	coverage: 64.0% of statements
+ok  	github.com/mcpany/core/pkg/upstream/webrtc	1.457s	coverage: 91.1% of statements
+ok  	github.com/mcpany/core/pkg/upstream/websocket	1.175s	coverage: 90.7% of statements
+# github.com/mcpany/core/proto/examples/userservice/v1
+# [/home/jules/go/pkg/mod/golang.org/toolchain@v0.0.1-go1.24.11.linux-amd64/pkg/tool/linux_amd64/cover -pkgcfg $WORK/b1199/pkgcfg.txt -mode atomic -var goCover_ea61da2b8bfc_ -outfilelist $WORK/b1199/coveroutfiles.txt /app/server/proto/examples/userservice/v1/userservice.pb.go /app/server/proto/examples/userservice/v1/userservice_grpc.pb.go]
+2025/12/21 22:22:11 cover: /app/server/proto/examples/userservice/v1/userservice.pb.go: open /app/server/proto/examples/userservice/v1/userservice.pb.go: no such file or directory
+ok  	github.com/mcpany/core/pkg/util	18.297s	coverage: 86.7% of statements
+ok  	github.com/mcpany/core/pkg/util/schemaconv	1.100s	coverage: 90.6% of statements
+ok  	github.com/mcpany/core/pkg/util/testutil	1.053s	coverage: 100.0% of statements
+ok  	github.com/mcpany/core/pkg/validation	1.072s	coverage: 93.2% of statements
+ok  	github.com/mcpany/core/pkg/worker	3.456s	coverage: 72.9% of statements
+	github.com/mcpany/core/proto/admin/v1		coverage: 0.0% of statements
+	github.com/mcpany/core/proto/api/v1		coverage: 0.0% of statements
+	github.com/mcpany/core/proto/bus		coverage: 0.0% of statements
+	github.com/mcpany/core/proto/config/v1		coverage: 0.0% of statements
+FAIL	github.com/mcpany/core/proto/examples/userservice/v1 [build failed]
+	github.com/mcpany/core/proto/examples/weather/v1		coverage: 0.0% of statements
+	github.com/mcpany/core/proto/mcp_options/v1		coverage: 0.0% of statements
+	github.com/mcpany/core/proto/mcp_router/v1		coverage: 0.0% of statements
+ok  	github.com/mcpany/core/tests/framework	8.276s	coverage: 6.5% of statements
+ok  	github.com/mcpany/core/tests/integration	47.531s	coverage: 50.1% of statements
+ok  	github.com/mcpany/core/tests/integration/cmd	1.066s	coverage: [no statements]
+	github.com/mcpany/core/tests/integration/cmd/command-tester		coverage: 0.0% of statements
+	github.com/mcpany/core/tests/integration/cmd/mocks/grpc_authed_weather_server		coverage: 0.0% of statements
+	github.com/mcpany/core/tests/integration/cmd/mocks/grpc_weather_server		coverage: 0.0% of statements
+	github.com/mcpany/core/tests/integration/cmd/mocks/http_authed_echo_server		coverage: 0.0% of statements
+	github.com/mcpany/core/tests/integration/cmd/mocks/http_caching_server		coverage: 0.0% of statements
+	github.com/mcpany/core/tests/integration/cmd/mocks/http_echo_server		coverage: 0.0% of statements
+	github.com/mcpany/core/tests/integration/cmd/mocks/openapi_weather_server		coverage: 0.0% of statements
+	github.com/mcpany/core/tests/integration/cmd/mocks/prompt-server		coverage: 0.0% of statements
+	github.com/mcpany/core/tests/integration/cmd/mocks/webrtc_weather_server		coverage: 0.0% of statements
+	github.com/mcpany/core/tests/integration/cmd/mocks/websocket_echo_server		coverage: 0.0% of statements
+ok  	github.com/mcpany/core/tests/integration/examples	6.587s	coverage: [no statements]
+ok  	github.com/mcpany/core/tests/integration/resilience	2.038s	coverage: [no statements]
+time=2025-12-21T22:22:50.552Z level=WARN source=/app/server/pkg/upstream/mcp/bundle_transport.go:64 msg="Failed to pull docker image, will try to use local image if available" image=node:18-alpine error="permission denied while trying to connect to the Docker daemon socket at unix:///var/run/docker.sock: Post \"http://%2Fvar%2Frun%2Fdocker.sock/v1.51/images/create?fromImage=docker.io%2Flibrary%2Fnode&tag=18-alpine\": dial unix /var/run/docker.sock: connect: permission denied"
+--- FAIL: TestE2E_Bundle_Filesystem (0.03s)
+    mcp_bundle_test.go:259:
+		Error Trace:	/app/server/tests/integration/upstream/mcp_bundle_test.go:259
+		Error:      	Received unexpected error:
+				failed to connect to MCP bundle service: failed to create container: permission denied while trying to connect to the Docker daemon socket at unix:///var/run/docker.sock: Head "http://%2Fvar%2Frun%2Fdocker.sock/_ping": dial unix /var/run/docker.sock: connect: permission denied
+		Test:       	TestE2E_Bundle_Filesystem
+2025/12/21 22:22:56 Starting Webhook Server on :37865
+time=2025-12-21T22:22:56.695Z level=INFO source=/app/server/pkg/tool/hooks.go:282 msg="ExecutePost called" tool=test-tool
+time=2025-12-21T22:22:56.702Z level=INFO source=/app/server/pkg/tool/hooks.go:282 msg="ExecutePost called" tool=test-tool
+2025/12/21 22:22:58 Starting Webhook Server on :41207
+time=2025-12-21T22:22:58.654Z level=INFO source=/app/server/pkg/upstream/mcp/streamable_http.go:233 msg="Registered MCP service" serviceID=mock-service toolsAdded=1
+time=2025-12-21T22:22:58.671Z level=INFO source=/app/server/pkg/tool/hooks.go:282 msg="ExecutePost called" tool=mock-service.get_html
+FAIL
+coverage: 90.9% of statements
+FAIL	github.com/mcpany/core/tests/integration/upstream	11.693s
+	github.com/mcpany/core/examples/upstream_service_demo/file-upload		coverage: 0.0% of statements
+	github.com/mcpany/core/examples/upstream_service_demo/graphql/server		coverage: 0.0% of statements
+	github.com/mcpany/core/examples/upstream_service_demo/http/client		coverage: 0.0% of statements
+	github.com/mcpany/core/examples/upstream_service_demo/http/server		coverage: 0.0% of statements
+ok  	github.com/mcpany/core/examples/upstream_service_demo/http/server/weather_server	1.121s	coverage: 56.6% of statements
+	github.com/mcpany/core/examples/upstream_service_demo/openapi/client		coverage: 0.0% of statements
+	github.com/mcpany/core/examples/upstream_service_demo/openapi/server		coverage: 0.0% of statements
+	github.com/mcpany/core/examples/upstream_service_demo/webrtc/client		coverage: 0.0% of statements
+	github.com/mcpany/core/examples/upstream_service_demo/webrtc/server		coverage: 0.0% of statements
+	github.com/mcpany/core/examples/upstream_service_demo/websocket		coverage: 0.0% of statements
+	github.com/mcpany/core/examples/upstream_service_demo/websocket/client		coverage: 0.0% of statements
+	github.com/mcpany/core/examples/upstream_service_demo/websocket/echo_server/server		coverage: 0.0% of statements
+FAIL

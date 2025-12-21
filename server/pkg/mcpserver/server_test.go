@@ -1059,9 +1059,13 @@ func TestServer_MiddlewareChain(t *testing.T) {
 	for _, t := range lRes.Tools {
 	    foundNames[t.Name] = true
 	}
-	assert.Contains(t, foundNames, "global-service.global.tool")
-	assert.Contains(t, foundNames, "profile-service.profile.tool")
-	assert.NotContains(t, foundNames, "other-service.other.tool")
+	sanitizedGlobalTool, _ := util.SanitizeToolName("global.tool")
+	sanitizedProfileTool, _ := util.SanitizeToolName("profile.tool")
+	sanitizedOtherTool, _ := util.SanitizeToolName("other.tool")
+
+	assert.Contains(t, foundNames, "global-service."+sanitizedGlobalTool)
+	assert.Contains(t, foundNames, "profile-service."+sanitizedProfileTool)
+	assert.NotContains(t, foundNames, "other-service."+sanitizedOtherTool)
 	assert.Len(t, lRes.Tools, 2)
 
     // Case C: Profile "p2"

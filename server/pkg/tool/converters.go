@@ -10,6 +10,7 @@ import (
 
 	"github.com/google/jsonschema-go/jsonschema"
 	"github.com/mcpany/core/pkg/upstream/grpc/protobufparser"
+	"github.com/mcpany/core/pkg/util"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	pb "github.com/mcpany/core/proto/mcp_router/v1"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
@@ -209,8 +210,13 @@ func ConvertProtoToMCPTool(pbTool *pb.Tool) (*mcp.Tool, error) {
 		return nil, fmt.Errorf("tool name cannot be empty")
 	}
 
+	sanitizedName, err := util.SanitizeToolName(pbTool.GetName())
+	if err != nil {
+		return nil, fmt.Errorf("failed to sanitize tool name: %w", err)
+	}
+
 	mcpTool := &mcp.Tool{
-		Name:        pbTool.GetServiceId() + "." + pbTool.GetName(),
+		Name:        pbTool.GetServiceId() + "." + sanitizedName,
 		Description: pbTool.GetDescription(),
 		Title:       pbTool.GetDisplayName(),
 	}

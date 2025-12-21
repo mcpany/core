@@ -1,0 +1,100 @@
+make -C server lint
+make[1]: Entering directory '/app/server'
+Cleaning generated protobuf files...
+Preparing development environment...
+protoc version v33.1 is already installed.
+Installing Go protobuf plugins...
+Checking for Go protobuf plugins...
+Go protobuf plugins installation check complete.
+Checking for Python to install dependencies and pre-commit hooks...
+Python found. Installing/updating pre-commit and fastmcp locally...
+pre-commit installed at .git/hooks/pre-commit
+Installing Node.js dependencies for integration tests...
+Found package.json, running npm install...
+
+up to date, audited 615 packages in 2s
+
+152 packages are looking for funding
+  run `npm fund` for details
+
+found 0 vulnerabilities
+Installing Playwright browsers (skipping system deps)...
+Playwright Host validation warning:
+╔══════════════════════════════════════════════════════╗
+║ Host system is missing dependencies to run browsers. ║
+║ Missing libraries:                                   ║
+║     libgtk-4.so.1                                    ║
+║     libgraphene-1.0.so.0                             ║
+║     libxslt.so.1                                     ║
+║     libwoff2dec.so.1.0.2                             ║
+║     libvpx.so.9                                      ║
+║     libevent-2.1.so.7                                ║
+║     libopus.so.0                                     ║
+║     libgstallocators-1.0.so.0                        ║
+║     libgstapp-1.0.so.0                               ║
+║     libgstpbutils-1.0.so.0                           ║
+║     libgstaudio-1.0.so.0                             ║
+║     libgsttag-1.0.so.0                               ║
+║     libgstvideo-1.0.so.0                             ║
+║     libgstgl-1.0.so.0                                ║
+║     libgstcodecparsers-1.0.so.0                      ║
+║     libgstfft-1.0.so.0                               ║
+║     libflite.so.1                                    ║
+║     libflite_usenglish.so.1                          ║
+║     libflite_cmu_grapheme_lang.so.1                  ║
+║     libflite_cmu_grapheme_lex.so.1                   ║
+║     libflite_cmu_indic_lang.so.1                     ║
+║     libflite_cmu_indic_lex.so.1                      ║
+║     libflite_cmulex.so.1                             ║
+║     libflite_cmu_time_awb.so.1                       ║
+║     libflite_cmu_us_awb.so.1                         ║
+║     libflite_cmu_us_kal16.so.1                       ║
+║     libflite_cmu_us_kal.so.1                         ║
+║     libflite_cmu_us_rms.so.1                         ║
+║     libflite_cmu_us_slt.so.1                         ║
+║     libwebpdemux.so.2                                ║
+║     libavif.so.16                                    ║
+║     libharfbuzz-icu.so.0                             ║
+║     libwebpmux.so.3                                  ║
+║     libenchant-2.so.2                                ║
+║     libsecret-1.so.0                                 ║
+║     libhyphen.so.0                                   ║
+║     libmanette-0.2.so.0                              ║
+║     libx264.so                                       ║
+╚══════════════════════════════════════════════════════╝
+    at validateDependenciesLinux (/app/server/tests/integration/upstream/node_modules/playwright-core/lib/server/registry/dependencies.js:269:9)
+    at async Registry._validateHostRequirements (/app/server/tests/integration/upstream/node_modules/playwright-core/lib/server/registry/index.js:961:14)
+    at async Registry._validateHostRequirementsForExecutableIfNeeded (/app/server/tests/integration/upstream/node_modules/playwright-core/lib/server/registry/index.js:1083:7)
+    at async Registry.validateHostRequirementsForExecutablesIfNeeded (/app/server/tests/integration/upstream/node_modules/playwright-core/lib/server/registry/index.js:1072:7)
+    at async i.<anonymous> (/app/server/tests/integration/upstream/node_modules/playwright-core/lib/cli/program.js:217:7)
+Checking for Helm...
+Helm is already installed.
+Checking for ShellCheck...
+ShellCheck is already installed.
+Checking for nats-server...
+nats-server is already installed.
+Checking for golangci-lint...
+Installing golangci-lint v2.7.2 to /app/build/env/bin...
+golangci/golangci-lint info checking GitHub for tag 'v2.7.2'
+golangci/golangci-lint info found version: 2.7.2 for v2.7.2/linux/amd64
+golangci/golangci-lint info installed /app/build/env/bin/golangci-lint
+golangci-lint installed successfully.
+Downloading go modules...
+Preparation complete.
+Removing old protobuf files...
+Generating protobuf files...
+Using protoc: libprotoc 33.1
+Protobuf generation complete.
+Running lint (using pre-commit)...
+pkg/middleware/audit_sqlite.go:48:11: Error return value of `db.Close` is not checked (errcheck)
+		db.Close()
+		        ^
+pkg/config/validator.go:120:17: string `http` has 3 occurrences, make it a constant (goconst)
+	if u.Scheme != "http" && u.Scheme != "https" {
+	               ^
+2 issues:
+* errcheck: 1
+* goconst: 1
+make[1]: *** [Makefile:470: lint] Error 1
+make[1]: Leaving directory '/app/server'
+make: *** [Makefile:6: lint] Error 2
