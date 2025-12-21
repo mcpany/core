@@ -54,7 +54,7 @@ This document outlines the current status and future plans for MCP Any.
 
 ### 3. Admin Management API
 **Why:** Expand the Admin API to support full CRUD operations on services/config at runtime.
-**Status:** In Progress (Skeletal)
+**Status:** Implemented (CRUD for Services is available via the Registration API at `/v1/services/register` and `/v1/services/unregister`)
 
 ### 4. WASM Plugins
 **Why:** Allow users to deploy safe, sandboxed custom logic for transformations or validations.

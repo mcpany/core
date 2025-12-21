@@ -1,7 +1,8 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
-package util //nolint:revive
+// Package util provides utility functions.
+package util
 
 import (
 	"crypto/sha256"

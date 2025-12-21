@@ -17,8 +17,8 @@ import (
 )
 
 func TestUpstreamService_MCP_Playwright_Stdio(t *testing.T) {
-	// TODO: Remove skip once server hang is resolved
-	t.Skip("Skipping failing Playwright test: server hangs on startup despite successful installation")
+	// TODO: Remove skip once server hang is resolved (npm exec issues?)
+	t.Skip("Skipping failing Playwright test: server hangs on startup with npm exec")
 
 	testCase := &framework.E2ETestCase{
 		Name:                "playwright server (Stdio)",
@@ -28,13 +28,13 @@ func TestUpstreamService_MCP_Playwright_Stdio(t *testing.T) {
 			const serviceID = "playwright"
 			env := map[string]string{
 				"HOME":                             "/tmp",
-				"NPM_CONFIG_LOGLEVEL":              "warn",
+				"NPM_CONFIG_LOGLEVEL":              "silent",
 				"PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD": "1",
 			}
-			cmd := "./node_modules/.bin/mcp-server-playwright"
-			args := []string{"--console-level", "debug"}
+			cmd := "npm" // Use npm to find the binary
+			args := []string{"exec", "mcp-server-playwright", "--", "--console-level", "debug"}
 			setupCommands := []string{
-				"timeout -s 9 20s yarn add @playwright/mcp@latest > /dev/stderr 2>&1",
+				"timeout -s 9 20s npm install @playwright/mcp", // Install local package
 			}
 			integration.RegisterStdioServiceWithSetup(t, registrationClient, serviceID, cmd, true, "/tmp", "mcr.microsoft.com/playwright:v1.50.0-jammy", setupCommands, env, args...)
 

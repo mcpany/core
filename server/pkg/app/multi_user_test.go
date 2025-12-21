@@ -105,6 +105,20 @@ upstream_services:
           id: "shared-call"
           endpoint_path: "/shared"
           method: "HTTP_METHOD_POST"
+  - name: "rbac-service"
+    profiles:
+      - name: "rbac"
+        id: "rbac-profile"
+    http_service:
+      address: "http://localhost:8085"
+      tools:
+        - name: "rbac-tool"
+          call_id: "rbac-call"
+      calls:
+        rbac-call:
+          id: "rbac-call"
+          endpoint_path: "/rbac"
+          method: "HTTP_METHOD_POST"
 `
 	err := afero.WriteFile(fs, "/config.yaml", []byte(configContent), 0o644)
 	require.NoError(t, err)
@@ -113,7 +127,7 @@ upstream_services:
 	defer cancel()
 
 	// Set enabled profiles for the server instance so it loads all services
-	viper.Set("profiles", []string{"dev", "prod", "secure", "default"})
+	viper.Set("profiles", []string{"dev", "prod", "secure", "rbac", "default"})
 	defer viper.Set("profiles", nil)
 
 	app := NewApplication()
@@ -160,6 +174,29 @@ users:
         key_value: "key-secure-user"
         in: "HEADER"
     profile_ids: ["secure-profile"]
+  - id: "user-admin"
+    authentication:
+      api_key:
+        param_name: "X-User-Key"
+        key_value: "key-admin"
+        in: "HEADER"
+    profile_ids: ["rbac-profile"]
+    roles: ["admin"]
+  - id: "user-guest"
+    authentication:
+      api_key:
+        param_name: "X-User-Key"
+        key_value: "key-guest"
+        in: "HEADER"
+    profile_ids: ["rbac-profile"]
+    roles: ["guest"]
+
+global_settings:
+  profile_definitions:
+    - name: "rbac-profile"
+      required_roles: ["admin"]
+      selector:
+        tags: ["rbac"]
 `
 	err = afero.WriteFile(fs, "/config.yaml", []byte(configContentWithUsers), 0o644)
 	require.NoError(t, err)
@@ -310,5 +347,21 @@ users:
 		_, err := listTools("user-dev", "prod-profile", "X-User-Key", "key-dev")
 		require.Error(t, err)
 		assert.Contains(t, err.Error(), "status code: 403") // Forbidden
+	})
+
+	// Test Case 6: RBAC Access
+	// User Admin (role: admin) accessing rbac-profile (requires: admin) -> Allowed
+	t.Run("UserAdmin accessing rbac-profile allowed", func(t *testing.T) {
+		tools, err := listTools("user-admin", "rbac-profile", "X-User-Key", "key-admin")
+		require.NoError(t, err)
+		assert.Contains(t, tools, "rbac-tool")
+	})
+
+	// Test Case 7: RBAC Denial
+	// User Guest (role: guest) accessing rbac-profile (requires: admin) -> Denied
+	t.Run("UserGuest accessing rbac-profile denied", func(t *testing.T) {
+		_, err := listTools("user-guest", "rbac-profile", "X-User-Key", "key-guest")
+		require.Error(t, err)
+		assert.Contains(t, err.Error(), "status code: 403")
 	})
 }

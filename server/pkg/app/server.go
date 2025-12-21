@@ -50,6 +50,7 @@ import (
 	"google.golang.org/grpc/peer"
 	"google.golang.org/grpc/reflection"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/proto"
 )
 
 var healthCheckClient = &http.Client{
@@ -339,63 +340,47 @@ func (a *Application) Run(
 		log.Info("No services found in config, skipping service registration.")
 	}
 
-	mcpSrv.Server().AddReceivingMiddleware(middleware.CORSMiddleware())
+	// Initialize standard middlewares in registry
 	cachingMiddleware := middleware.NewCachingMiddleware(a.ToolManager)
-	rateLimitMiddleware := middleware.NewRateLimitMiddleware(a.ToolManager)
-	callPolicyMiddleware := middleware.NewCallPolicyMiddleware(a.ToolManager)
-
-	auditConfig := cfg.GetGlobalSettings().GetAudit()
-	auditMiddleware, err := middleware.NewAuditMiddleware(auditConfig)
-	if err != nil {
-		return fmt.Errorf("failed to create audit middleware: %w", err)
+	if err := middleware.InitStandardMiddlewares(mcpSrv.AuthManager(), a.ToolManager, cfg.GetGlobalSettings().GetAudit(), cachingMiddleware); err != nil {
+		return fmt.Errorf("failed to init standard middlewares: %w", err)
 	}
-	defer func() { _ = auditMiddleware.Close() }()
 
-	mcpSrv.Server().AddReceivingMiddleware(func(next mcp.MethodHandler) mcp.MethodHandler {
-		return func(ctx context.Context, method string, req mcp.Request) (mcp.Result, error) {
-			if r, ok := req.(*mcp.CallToolRequest); ok {
-				executionReq := &tool.ExecutionRequest{
-					ToolName:   r.Params.Name,
-					ToolInputs: r.Params.Arguments,
-				}
-				result, err := auditMiddleware.Execute(
-					ctx,
-					executionReq,
-					func(ctx context.Context, _ *tool.ExecutionRequest) (any, error) {
-						return callPolicyMiddleware.Execute(
-							ctx,
-							executionReq,
-							func(ctx context.Context, _ *tool.ExecutionRequest) (any, error) {
-								return cachingMiddleware.Execute(
-									ctx,
-									executionReq,
-									func(ctx context.Context, _ *tool.ExecutionRequest) (any, error) {
-										return rateLimitMiddleware.Execute(
-											ctx,
-											executionReq,
-											func(ctx context.Context, _ *tool.ExecutionRequest) (any, error) {
-												return next(ctx, method, r)
-											},
-										)
-									},
-								)
-							},
-						)
-					},
-				)
-				if err != nil {
-					return nil, err
-				}
-				return result.(*mcp.CallToolResult), nil
-			}
-			return next(ctx, method, req)
+	// Get configured middlewares
+	middlewares := config.GlobalSettings().Middlewares()
+	if len(middlewares) == 0 {
+		// Default chain if none configured
+		middlewares = []*config_v1.Middleware{
+			{Name: proto.String("debug"), Priority: proto.Int32(10)},
+			{Name: proto.String("auth"), Priority: proto.Int32(20)},
+			{Name: proto.String("logging"), Priority: proto.Int32(30)},
+			{Name: proto.String("audit"), Priority: proto.Int32(40)},
+			{Name: proto.String("call_policy"), Priority: proto.Int32(50)},
+			{Name: proto.String("caching"), Priority: proto.Int32(60)},
+			{Name: proto.String("ratelimit"), Priority: proto.Int32(70)},
+			// CORS is typically 0 or negative to be outermost, but AddReceivingMiddleware adds in order.
+			// The SDK executes them in reverse order of addition?
+			// Wait, mcp.Server implementation:
+			// "Middleware is called in the order it was added." -> First added = First called?
+			// Usually middleware "wraps" the handler. first(second(handler)).
+			// If I add A then B.
+			// Chain = A(B(handler)).
+			// Helper `AddReceivingMiddleware` usually appends.
+			// Let's assume standard "wrap" logic.
+			// We want CORS outer.
+			{Name: proto.String("cors"), Priority: proto.Int32(0)},
 		}
-	})
-	mcpSrv.Server().AddReceivingMiddleware(middleware.LoggingMiddleware(nil))
-	mcpSrv.Server().AddReceivingMiddleware(middleware.AuthMiddleware(mcpSrv.AuthManager()))
+	}
 
-	if config.GlobalSettings().IsDebug() {
-		mcpSrv.Server().AddReceivingMiddleware(middleware.DebugMiddleware())
+	// Apply middlewares
+	// Registry returns sorted list based on priority (low to high).
+	// If priority 0 is first, it wraps the rest?
+	// If we iterate:
+	// M1(M2(M3(...)))
+	// M1 is priority 0.
+	chain := middleware.GetMCPMiddlewares(middlewares)
+	for _, m := range chain {
+		mcpSrv.Server().AddReceivingMiddleware(m)
 	}
 
 	if stdio {
@@ -412,7 +397,7 @@ func (a *Application) Run(
 		allowedIPs = cfg.GetGlobalSettings().GetAllowedIps()
 	}
 
-	return a.runServerMode(ctx, mcpSrv, busProvider, bindAddress, grpcPort, shutdownTimeout, cfg.GetUsers(), allowedIPs, cachingMiddleware, sqliteStore)
+	return a.runServerMode(ctx, mcpSrv, busProvider, bindAddress, grpcPort, shutdownTimeout, cfg.GetUsers(), cfg.GetGlobalSettings().GetProfileDefinitions(), allowedIPs, cachingMiddleware, sqliteStore)
 }
 
 // ReloadConfig reloads the configuration from the given paths and updates the
@@ -583,17 +568,7 @@ func HealthCheckWithContext(
 // grpcPort is the port for the gRPC registration server.
 //
 // It returns an error if any of the servers fail to start or run.
-// runServerMode runs the server in the standard HTTP and gRPC server mode. It
-// starts the HTTP server for JSON-RPC and the gRPC server for service
-// registration, and handles graceful shutdown.
-//
-// ctx is the context for managing the server's lifecycle.
-// mcpSrv is the MCP server instance.
-// bus is the message bus for inter-component communication.
-// jsonrpcPort is the port for the JSON-RPC server.
-// grpcPort is the port for the gRPC registration server.
-//
-// It returns an error if any of the servers fail to start or run.
+
 //
 //nolint:gocyclo
 func (a *Application) runServerMode(
@@ -603,6 +578,7 @@ func (a *Application) runServerMode(
 	bindAddress, grpcPort string,
 	shutdownTimeout time.Duration,
 	users []*config_v1.User,
+	profileDefinitions []*config_v1.ProfileDefinition,
 	allowedIPs []string,
 	cachingMiddleware *middleware.CachingMiddleware,
 	store *sqlite.Store,
@@ -642,13 +618,22 @@ func (a *Application) runServerMode(
 		userMap[u.GetId()] = u
 	}
 
+	// Build Profile Definition Map for RBAC
+	profileDefMap := make(map[string]*config_v1.ProfileDefinition)
+	for _, def := range profileDefinitions {
+		profileDefMap[def.GetName()] = def
+	}
+
 	mux := http.NewServeMux()
+
+	// UI Handler
+	uiFS := http.FileServer(http.Dir("./ui"))
+	mux.Handle("/ui/", http.StripPrefix("/ui", uiFS))
+
 	mux.Handle("/", authMiddleware(httpHandler))
 
 	// API Routes for Configuration Management
-	// TODO: Add auth middleware to these routes if needed, or rely on global auth
-	// For now, these are protected by the same authMiddleware if applied to specific paths,
-	// but we should explicitly guard them.
+	// Protected by auth middleware
 	apiHandler := http.StripPrefix("/api/v1", a.createAPIHandler(store))
 	mux.Handle("/api/v1/", authMiddleware(apiHandler))
 
@@ -796,13 +781,35 @@ func (a *Application) runServerMode(
 			}
 		}
 		if !hasAccess {
-			http.Error(w, "Forbidden", http.StatusForbidden)
+			http.Error(w, "Forbidden: User does not have access to this profile", http.StatusForbidden)
 			return
+		}
+
+		// RBAC Check: Check if profile requires specific roles
+		if def, ok := profileDefMap[profileID]; ok && len(def.RequiredRoles) > 0 {
+			hasRole := false
+			// Check if user has any of the required roles
+			for _, requiredRole := range def.RequiredRoles {
+				for _, userRole := range user.GetRoles() {
+					if userRole == requiredRole {
+						hasRole = true
+						break
+					}
+				}
+				if hasRole {
+					break
+				}
+			}
+			if !hasRole {
+				http.Error(w, fmt.Sprintf("Forbidden: Profile %s requires roles %v", profileID, def.RequiredRoles), http.StatusForbidden)
+				return
+			}
 		}
 
 		// Inject context
 		ctx := auth.ContextWithUser(r.Context(), uid)
 		ctx = auth.ContextWithProfileID(ctx, profileID)
+		ctx = auth.ContextWithRoles(ctx, user.GetRoles())
 
 		// Strip the prefix so the underlying handler sees the relative path
 		prefix := fmt.Sprintf("/mcp/u/%s/profile/%s", uid, profileID)
