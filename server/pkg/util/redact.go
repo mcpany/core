@@ -5,10 +5,31 @@ package util
 
 import (
 	"encoding/json"
+	"net/url"
 	"strings"
 )
 
 const redactedPlaceholder = "[REDACTED]"
+
+// RedactForm parses a URL-encoded form string and redacts sensitive keys.
+// If the input is not a valid query string, it might return the input or a partially parsed result.
+func RedactForm(input []byte) []byte {
+	values, err := url.ParseQuery(string(input))
+	if err != nil {
+		return input
+	}
+	// Check if we actually parsed anything useful to avoid corrupting non-form data
+	if len(values) == 0 && len(input) > 0 {
+		return input
+	}
+
+	for k := range values {
+		if IsSensitiveKey(k) {
+			values.Set(k, redactedPlaceholder)
+		}
+	}
+	return []byte(values.Encode())
+}
 
 // RedactJSON parses a JSON byte slice and redacts sensitive keys.
 // If the input is not valid JSON object or array, it returns the input as is.

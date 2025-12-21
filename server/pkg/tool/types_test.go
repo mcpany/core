@@ -415,6 +415,21 @@ func TestGRPCTool_Execute_UnmarshalError(t *testing.T) {
 	assert.Contains(t, err.Error(), "failed to unmarshal tool inputs")
 }
 
+func TestPrettyPrint_Redaction(t *testing.T) {
+	sensitiveData := "password=mysecretpassword"
+
+	// Test JSON
+	jsonInput := []byte(`{"password": "mysecretpassword"}`)
+	output := prettyPrint(jsonInput, "application/json")
+	assert.Contains(t, output, "[REDACTED]")
+	assert.NotContains(t, output, "mysecretpassword")
+
+	// Test Form Data
+	formInput := []byte(sensitiveData)
+	output = prettyPrint(formInput, "application/x-www-form-urlencoded")
+	assert.NotContains(t, output, "mysecretpassword", "Form data should be redacted")
+}
+
 func TestGRPCTool_Execute_InvokeError(t *testing.T) {
 	poolManager := pool.NewManager()
 	mockConn := new(MockConn)

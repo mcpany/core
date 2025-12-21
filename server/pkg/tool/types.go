@@ -1707,6 +1707,11 @@ func prettyPrint(input []byte, contentType string) string {
 		// If JSON parsing fails, fall through to return string(input)
 	}
 
+	// Try Form Data
+	if strings.Contains(contentType, "x-www-form-urlencoded") {
+		input = util.RedactForm(input)
+	}
+
 	// Try XML
 	if strings.Contains(contentType, "xml") {
 		decoder := xml.NewDecoder(bytes.NewReader(input))

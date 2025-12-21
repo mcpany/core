@@ -109,3 +109,30 @@ func TestRedactJSON(t *testing.T) {
 		assert.Equal(t, []byte(input), output)
 	})
 }
+
+func TestRedactForm(t *testing.T) {
+	t.Run("valid form data", func(t *testing.T) {
+		input := "username=user1&password=secretpassword&other=value"
+		output := RedactForm([]byte(input))
+		outputStr := string(output)
+
+		assert.Contains(t, outputStr, "username=user1")
+		assert.Contains(t, outputStr, "other=value")
+		// The order of keys in encoded form data is sorted by key
+		assert.Contains(t, outputStr, "password=%5BREDACTED%5D")
+		assert.NotContains(t, outputStr, "secretpassword")
+	})
+
+	t.Run("sensitive key in mixed case", func(t *testing.T) {
+		input := "API_KEY=12345"
+		output := RedactForm([]byte(input))
+		assert.Contains(t, string(output), "API_KEY=%5BREDACTED%5D")
+		assert.NotContains(t, string(output), "12345")
+	})
+
+	t.Run("invalid form data", func(t *testing.T) {
+		input := "not a valid query string %%%" // %%% is invalid escape
+		output := RedactForm([]byte(input))
+		assert.Equal(t, []byte(input), output)
+	})
+}
