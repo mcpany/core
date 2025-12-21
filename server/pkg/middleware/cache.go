@@ -11,6 +11,7 @@ import (
 	"github.com/eko/gocache/lib/v4/cache"
 	"github.com/eko/gocache/lib/v4/store"
 	gocache_store "github.com/eko/gocache/store/go_cache/v4"
+	"github.com/mcpany/core/pkg/ai/embeddings"
 	"github.com/mcpany/core/pkg/logging"
 	"github.com/mcpany/core/pkg/metrics"
 	"github.com/mcpany/core/pkg/tool"
@@ -23,6 +24,7 @@ import (
 type CachingMiddleware struct {
 	cache       *cache.Cache[any]
 	toolManager tool.ManagerInterface
+	vectorStore *VectorStore
 }
 
 // NewCachingMiddleware creates a new CachingMiddleware.
@@ -32,6 +34,7 @@ func NewCachingMiddleware(toolManager tool.ManagerInterface) *CachingMiddleware 
 	return &CachingMiddleware{
 		cache:       cacheManager,
 		toolManager: toolManager,
+		vectorStore: NewVectorStore(),
 	}
 }
 
@@ -73,15 +76,36 @@ func (m *CachingMiddleware) Execute(ctx context.Context, req *tool.ExecutionRequ
 	}
 
 	cacheKey := m.getCacheKey(req)
+	var semanticConfig *configv1.SemanticCacheConfig
+	if cacheConfig != nil {
+		semanticConfig = cacheConfig.GetSemantic()
+	}
 
 	// Check cache ONLY if action is not DeleteCache
 	if cacheControl.Action != tool.ActionDeleteCache {
-		// If normal allow (0), check cache.
+		// 1. Check Exact Match
 		if cached, err := m.cache.Get(ctx, cacheKey); err == nil {
 			// Found in cache
 			metrics.IncrCounterWithLabels([]string{"cache", "hits"}, 1, labels)
 			return cached, nil
 		}
+
+		// 2. Check Semantic Match
+		if semanticConfig != nil && semanticConfig.GetIsEnabled() {
+			embedder, err := embeddings.NewEmbedder(semanticConfig.GetEmbeddingProvider(), semanticConfig.GetEmbeddingModel())
+			if err == nil {
+				// Convert inputs to text.
+				inputText := string(req.ToolInputs)
+				vecs, err := embedder.Embed(ctx, []string{inputText})
+				if err == nil && len(vecs) > 0 {
+					if result, found := m.vectorStore.Search(req.ToolName, vecs[0], semanticConfig.GetSimilarityThreshold()); found {
+						metrics.IncrCounterWithLabels([]string{"cache", "semantic_hits"}, 1, labels)
+						return result, nil
+					}
+				}
+			}
+		}
+
 		// Not found in cache
 		metrics.IncrCounterWithLabels([]string{"cache", "misses"}, 1, labels)
 	} else {
@@ -100,13 +124,31 @@ func (m *CachingMiddleware) Execute(ctx context.Context, req *tool.ExecutionRequ
 			metrics.IncrCounterWithLabels([]string{"cache", "errors"}, 1, labels)
 			logging.GetLogger().Error("Failed to delete cache", "error", err, "tool", toolName)
 		}
+		// Also clear semantic cache? VectorStore doesn't support targeted delete by key yet,
+		// and we don't know the exact vector.
+		// For now we skip semantic delete.
 		return result, nil
 	}
 
-	if err := m.cache.Set(ctx, cacheKey, result, store.WithExpiration(cacheConfig.GetTtl().AsDuration())); err != nil {
+	ttl := cacheConfig.GetTtl().AsDuration()
+
+	if err := m.cache.Set(ctx, cacheKey, result, store.WithExpiration(ttl)); err != nil {
 		metrics.IncrCounterWithLabels([]string{"cache", "errors"}, 1, labels)
 		logging.GetLogger().Error("Failed to set cache", "error", err, "tool", toolName)
 	}
+
+	// Store Semantic
+	if semanticConfig != nil && semanticConfig.GetIsEnabled() {
+		embedder, err := embeddings.NewEmbedder(semanticConfig.GetEmbeddingProvider(), semanticConfig.GetEmbeddingModel())
+		if err == nil {
+			inputText := string(req.ToolInputs)
+			vecs, err := embedder.Embed(ctx, []string{inputText})
+			if err == nil && len(vecs) > 0 {
+				m.vectorStore.Add(req.ToolName, vecs[0], result, ttl)
+			}
+		}
+	}
+
 	return result, nil
 }
 
@@ -129,5 +171,6 @@ func (m *CachingMiddleware) getCacheKey(req *tool.ExecutionRequest) string {
 
 // Clear clears the cache.
 func (m *CachingMiddleware) Clear(ctx context.Context) error {
+	m.vectorStore.Clear()
 	return m.cache.Clear(ctx)
 }
