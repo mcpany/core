@@ -23,14 +23,14 @@ type Bus[T any] struct {
 }
 
 // New creates a new RedisBus.
-func New[T any](redisConfig *bus.RedisBus) *Bus[T] {
+func New[T any](redisConfig *bus.RedisBus) (*Bus[T], error) {
 	var options redis.Options
 	if redisConfig != nil {
 		options.Addr = redisConfig.GetAddress()
 		options.Password = redisConfig.GetPassword()
 		options.DB = int(redisConfig.GetDb())
 	}
-	return NewWithClient[T](redis.NewClient(&options))
+	return NewWithClient[T](redis.NewClient(&options)), nil
 }
 
 // NewWithClient creates a new RedisBus with an existing Redis client.

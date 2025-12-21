@@ -282,7 +282,7 @@ func newRootCmd() *cobra.Command {
 			}
 
 			var allErrors []string
-			if validationErrors := config.Validate(configs, config.Server); len(validationErrors) > 0 {
+			if validationErrors := config.Validate(context.Background(), configs, config.Server); len(validationErrors) > 0 {
 				for _, e := range validationErrors {
 					allErrors = append(allErrors, e.Error())
 				}

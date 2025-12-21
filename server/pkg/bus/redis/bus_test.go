@@ -376,7 +376,7 @@ func TestBus_New(t *testing.T) {
 		Db:       proto.Int32(1),
 	}.Build()
 
-	bus := New[string](redisBus)
+	bus, _ := New[string](redisBus)
 	assert.NotNil(t, bus)
 	assert.NotNil(t, bus.client)
 	options := bus.client.Options()
@@ -392,7 +392,7 @@ func TestBus_New_WithValidConfig(t *testing.T) {
 		Db:       proto.Int32(2),
 	}.Build()
 
-	bus := New[string](redisBus)
+	bus, _ := New[string](redisBus)
 	assert.NotNil(t, bus)
 	assert.NotNil(t, bus.client)
 	options := bus.client.Options()
@@ -404,7 +404,7 @@ func TestBus_New_WithValidConfig(t *testing.T) {
 func TestBus_New_NilConfig(t *testing.T) {
 	var bus *Bus[string]
 	assert.NotPanics(t, func() {
-		bus = New[string](nil)
+		bus, _ = New[string](nil)
 	})
 	assert.NotNil(t, bus)
 	assert.NotNil(t, bus.client)
@@ -419,7 +419,7 @@ func TestBus_New_PartialConfig(t *testing.T) {
 		Address: proto.String("localhost:6381"),
 	}.Build()
 
-	bus := New[string](redisBus)
+	bus, _ := New[string](redisBus)
 	assert.NotNil(t, bus)
 	assert.NotNil(t, bus.client)
 	options := bus.client.Options()

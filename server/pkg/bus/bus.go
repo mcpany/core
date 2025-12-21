@@ -111,37 +111,42 @@ var GetBusHook func(p *Provider, topic string) any
 //
 // The type parameter T specifies the message type for the bus, ensuring
 // type safety for each topic.
-func GetBus[T any](p *Provider, topic string) Bus[T] {
+func GetBus[T any](p *Provider, topic string) (Bus[T], error) {
 	if GetBusHook != nil {
 		if bus := GetBusHook(p, topic); bus != nil {
-			return bus.(Bus[T])
+			return bus.(Bus[T]), nil
 		}
 	}
 
 	if bus, ok := p.buses.Load(topic); ok {
-		return bus.(Bus[T])
+		return bus.(Bus[T]), nil
 	}
 
 	var newBus Bus[T]
+	var err error
+
 	switch p.config.WhichBusType() {
 	case bus.MessageBus_InMemory_case:
 		newBus = memory.New[T]()
 	case bus.MessageBus_Redis_case:
-		newBus = redis.New[T](p.config.GetRedis())
+		newBus, err = redis.New[T](p.config.GetRedis())
+		if err != nil {
+			return nil, fmt.Errorf("failed to create Redis bus: %w", err)
+		}
 	case bus.MessageBus_Nats_case:
-		var err error
 		newBus, err = nats.New[T](p.config.GetNats())
 		if err != nil {
-			panic(err)
+			return nil, fmt.Errorf("failed to create NATS bus: %w", err)
 		}
 	case bus.MessageBus_Kafka_case:
-		var err error
 		newBus, err = kafka.New[T](p.config.GetKafka())
 		if err != nil {
-			panic(err)
+			return nil, fmt.Errorf("failed to create Kafka bus: %w", err)
 		}
+	default:
+		return nil, fmt.Errorf("unknown bus type: %v", p.config.WhichBusType())
 	}
 
 	bus, _ := p.buses.LoadOrStore(topic, newBus)
-	return bus.(Bus[T])
+	return bus.(Bus[T]), nil
 }

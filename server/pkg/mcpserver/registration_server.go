@@ -80,20 +80,20 @@ func (s *RegistrationServer) RegisterService(ctx context.Context, req *v1.Regist
 		return nil, status.Errorf(codes.InvalidArgument, "config.name is required")
 	}
 
-	if err := config.ValidateOrError(req.GetConfig()); err != nil {
+	if err := config.ValidateOrError(ctx, req.GetConfig()); err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, "invalid config: %v", err)
 	}
 
 	correlationID := uuid.New().String()
 	resultChan := make(chan *bus.ServiceRegistrationResult, 1)
 
-	resultBus := bus.GetBus[*bus.ServiceRegistrationResult](s.bus, "service_registration_results")
+	resultBus, _ := bus.GetBus[*bus.ServiceRegistrationResult](s.bus, "service_registration_results")
 	unsubscribe := resultBus.SubscribeOnce(ctx, correlationID, func(result *bus.ServiceRegistrationResult) {
 		resultChan <- result
 	})
 	defer unsubscribe()
 
-	requestBus := bus.GetBus[*bus.ServiceRegistrationRequest](s.bus, "service_registration_requests")
+	requestBus, _ := bus.GetBus[*bus.ServiceRegistrationRequest](s.bus, "service_registration_requests")
 	regReq := &bus.ServiceRegistrationRequest{
 		Config: req.GetConfig(),
 	}
@@ -212,13 +212,13 @@ func (s *RegistrationServer) GetService(ctx context.Context, req *v1.GetServiceR
 	correlationID := uuid.New().String()
 	resultChan := make(chan *bus.ServiceGetResult, 1)
 
-	resultBus := bus.GetBus[*bus.ServiceGetResult](s.bus, "service_get_results")
+	resultBus, _ := bus.GetBus[*bus.ServiceGetResult](s.bus, "service_get_results")
 	unsubscribe := resultBus.SubscribeOnce(ctx, correlationID, func(result *bus.ServiceGetResult) {
 		resultChan <- result
 	})
 	defer unsubscribe()
 
-	requestBus := bus.GetBus[*bus.ServiceGetRequest](s.bus, "service_get_requests")
+	requestBus, _ := bus.GetBus[*bus.ServiceGetRequest](s.bus, "service_get_requests")
 	getReq := &bus.ServiceGetRequest{
 		ServiceName: req.GetServiceName(),
 	}
@@ -258,13 +258,13 @@ func (s *RegistrationServer) ListServices(ctx context.Context, _ *v1.ListService
 	correlationID := uuid.New().String()
 	resultChan := make(chan *bus.ServiceListResult, 1)
 
-	resultBus := bus.GetBus[*bus.ServiceListResult](s.bus, "service_list_results")
+	resultBus, _ := bus.GetBus[*bus.ServiceListResult](s.bus, "service_list_results")
 	unsubscribe := resultBus.SubscribeOnce(ctx, correlationID, func(result *bus.ServiceListResult) {
 		resultChan <- result
 	})
 	defer unsubscribe()
 
-	requestBus := bus.GetBus[*bus.ServiceListRequest](s.bus, "service_list_requests")
+	requestBus, _ := bus.GetBus[*bus.ServiceListRequest](s.bus, "service_list_requests")
 	listReq := &bus.ServiceListRequest{}
 	listReq.SetCorrelationID(correlationID)
 	_ = requestBus.Publish(ctx, "request", listReq)

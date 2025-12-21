@@ -613,7 +613,7 @@ func TestBuildCommandFromStdioConfig(t *testing.T) {
 		stdio := &configv1.McpStdioConnection{}
 		stdio.SetCommand("ls")
 		stdio.SetArgs([]string{"-l", "-a"})
-		cmd, err := buildCommandFromStdioConfig(stdio)
+		cmd, err := buildCommandFromStdioConfig(context.Background(), stdio)
 		assert.NoError(t, err)
 		assert.Equal(t, "/bin/sh", cmd.Path)
 		assert.Equal(t, []string{"/bin/sh", "-c", "exec ls -l -a"}, cmd.Args)
@@ -624,7 +624,7 @@ func TestBuildCommandFromStdioConfig(t *testing.T) {
 		stdio.SetCommand("my-app")
 		stdio.SetArgs([]string{"--verbose"})
 		stdio.SetSetupCommands([]string{"cd /tmp", "export FOO=bar"})
-		cmd, err := buildCommandFromStdioConfig(stdio)
+		cmd, err := buildCommandFromStdioConfig(context.Background(), stdio)
 		assert.NoError(t, err)
 		assert.Equal(t, "/bin/sh", cmd.Path)
 		assert.Equal(t, []string{"/bin/sh", "-c", "cd /tmp && export FOO=bar && exec my-app --verbose"}, cmd.Args)
@@ -635,7 +635,7 @@ func TestBuildCommandFromStdioConfig(t *testing.T) {
 		stdio := &configv1.McpStdioConnection{}
 		stdio.SetCommand("docker")
 		stdio.SetArgs([]string{"run", "hello-world"})
-		cmd, err := buildCommandFromStdioConfig(stdio)
+		cmd, err := buildCommandFromStdioConfig(context.Background(), stdio)
 		assert.NoError(t, err)
 		assert.Contains(t, cmd.Path, "sudo")
 		assert.Equal(t, []string{"sudo", "docker", "run", "hello-world"}, cmd.Args)
@@ -645,10 +645,23 @@ func TestBuildCommandFromStdioConfig(t *testing.T) {
 		stdio := &configv1.McpStdioConnection{}
 		stdio.SetCommand("echo")
 		stdio.SetArgs([]string{"hello; date"})
-		cmd, err := buildCommandFromStdioConfig(stdio)
+		cmd, err := buildCommandFromStdioConfig(context.Background(), stdio)
 		assert.NoError(t, err)
 		assert.Equal(t, "/bin/sh", cmd.Path)
 		assert.Equal(t, []string{"/bin/sh", "-c", "exec echo 'hello; date'"}, cmd.Args)
+	})
+
+	t.Run("attempt complex injection in args", func(t *testing.T) {
+		stdio := &configv1.McpStdioConnection{}
+		stdio.SetCommand("echo")
+		// Attempt to close quote, run command, open quote
+		stdio.SetArgs([]string{"foo'; date; echo 'bar"})
+	cmd, err := buildCommandFromStdioConfig(context.Background(), stdio)
+		assert.NoError(t, err)
+		assert.Equal(t, "/bin/sh", cmd.Path)
+		// shellescape should escape the single quote
+		// Expected: exec echo 'foo'"'"'; date; echo '"'"'bar'
+		assert.Equal(t, []string{"/bin/sh", "-c", "exec echo 'foo'\"'\"'; date; echo '\"'\"'bar'"}, cmd.Args)
 	})
 }
 
