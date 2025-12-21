@@ -36,6 +36,7 @@ import (
 	"github.com/mcpany/core/pkg/storage/sqlite"
 	"github.com/mcpany/core/pkg/telemetry"
 	"github.com/mcpany/core/pkg/tool"
+	"github.com/mcpany/core/pkg/util"
 	"github.com/mcpany/core/pkg/upstream/factory"
 	"github.com/mcpany/core/pkg/worker"
 	pb_admin "github.com/mcpany/core/proto/admin/v1"
@@ -603,6 +604,10 @@ func (a *Application) runServerMode(
 	apiKey := config.GlobalSettings().APIKey()
 	authMiddleware := func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			ip := util.ExtractIP(r.RemoteAddr)
+			ctx := util.ContextWithRemoteIP(r.Context(), ip)
+			r = r.WithContext(ctx)
+
 			if apiKey != "" {
 				if subtle.ConstantTimeCompare([]byte(r.Header.Get("X-API-Key")), []byte(apiKey)) != 1 {
 					http.Error(w, "Unauthorized", http.StatusUnauthorized)
@@ -933,6 +938,9 @@ func (a *Application) runServerMode(
 		} else {
 			grpcUnaryInterceptor := func(ctx context.Context, req interface{}, _ *gogrpc.UnaryServerInfo, handler gogrpc.UnaryHandler) (interface{}, error) {
 				if p, ok := peer.FromContext(ctx); ok {
+					ip := util.ExtractIP(p.Addr.String())
+					ctx = util.ContextWithRemoteIP(ctx, ip)
+
 					if !ipMiddleware.Allow(p.Addr.String()) {
 						return nil, status.Error(codes.PermissionDenied, "IP not allowed")
 					}
@@ -941,9 +949,16 @@ func (a *Application) runServerMode(
 			}
 			grpcStreamInterceptor := func(srv interface{}, ss gogrpc.ServerStream, _ *gogrpc.StreamServerInfo, handler gogrpc.StreamHandler) error {
 				if p, ok := peer.FromContext(ss.Context()); ok {
+					ip := util.ExtractIP(p.Addr.String())
+					// Wrapper to modify context for stream
+					wrappedStream := &util.WrappedServerStream{
+						ServerStream: ss,
+						Ctx:          util.ContextWithRemoteIP(ss.Context(), ip),
+					}
 					if !ipMiddleware.Allow(p.Addr.String()) {
 						return status.Error(codes.PermissionDenied, "IP not allowed")
 					}
+					return handler(srv, wrappedStream)
 				}
 				return handler(srv, ss)
 			}
