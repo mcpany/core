@@ -346,8 +346,16 @@ func (a *Application) Run(
 
 	// Initialize standard middlewares in registry
 	cachingMiddleware := middleware.NewCachingMiddleware(a.ToolManager)
-	if err := middleware.InitStandardMiddlewares(mcpSrv.AuthManager(), a.ToolManager, cfg.GetGlobalSettings().GetAudit(), cachingMiddleware); err != nil {
+	auditCleanup, err := middleware.InitStandardMiddlewares(mcpSrv.AuthManager(), a.ToolManager, cfg.GetGlobalSettings().GetAudit(), cachingMiddleware)
+	if err != nil {
 		return fmt.Errorf("failed to init standard middlewares: %w", err)
+	}
+	if auditCleanup != nil {
+		defer func() {
+			if err := auditCleanup(); err != nil {
+				log.Error("Failed to close audit middleware", "error", err)
+			}
+		}()
 	}
 
 	// Get configured middlewares

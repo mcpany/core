@@ -45,7 +45,7 @@ func NewSQLiteAuditStore(path string) (*SQLiteAuditStore, error) {
 	);
 	`
 	if _, err := db.Exec(schema); err != nil {
-		db.Close()
+		_ = db.Close() // Best effort close
 		return nil, fmt.Errorf("failed to create audit_logs table: %w", err)
 	}
 
