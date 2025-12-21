@@ -601,6 +601,7 @@ else
 	@exit 1
 endif
 
+
 # Target to run the server Docker container
 run-docker:
 ifdef HAS_DOCKER
@@ -609,6 +610,19 @@ ifdef HAS_DOCKER
 	@$(DOCKER_CMD) run --rm -p 50050:50050 -p 50051:50051 $(SERVER_IMAGE_TAG)
 else
 	@echo "Docker not found. Cannot run server container."
+	@exit 1
+endif
+
+# Target to run the UI Docker smoke test
+docker-smoke-test-ui:
+ifdef HAS_DOCKER
+	@echo "Building UI Docker image..."
+	@$(DOCKER_BUILD_CMD) -t mcpany-ui -f ../ui/Dockerfile ../ui
+	@echo "Running UI smoke test..."
+	@chmod +x tests/smoke_test_ui.sh
+	@./tests/smoke_test_ui.sh mcpany-ui
+else
+	@echo "Docker not found. Cannot run UI smoke test."
 	@exit 1
 endif
 

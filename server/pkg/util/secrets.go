@@ -145,7 +145,7 @@ func resolveSecretRecursive(ctx context.Context, secret *configv1.SecretValue, d
 	case configv1.SecretValue_Vault_case:
 		vaultSecret := secret.GetVault()
 		config := &api.Config{
-			Address: vaultSecret.GetAddress(),
+			Address:    vaultSecret.GetAddress(),
 			HttpClient: safeSecretClient, // Use safe client for vault too
 		}
 		client, err := api.NewClient(config)
@@ -230,7 +230,10 @@ func resolveSecretRecursive(ctx context.Context, secret *configv1.SecretValue, d
 			input.VersionStage = aws.String(smSecret.GetVersionStage())
 		}
 
-		// Use the passed context
+		// Use a custom endpoint resolver if provided (mostly for testing)
+		// Since we can't easily inject it into LoadDefaultConfig without environment vars
+		// or changing the function signature, we rely on environment variables for testing.
+		// AWS_ENDPOINT_URL is supported in newer SDK versions.
 		result, err := client.GetSecretValue(ctx, input)
 		if err != nil {
 			return "", fmt.Errorf("failed to get secret value from aws secrets manager: %w", err)
