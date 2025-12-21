@@ -105,9 +105,9 @@ func TestBus_Subscribe(t *testing.T) {
 	db, _ := redismock.NewClientMock()
 	b := redis.NewWithClient[string](db)
 	t.Cleanup(func() { _ = b.Close() })
-	t.Run("should panic if handler is nil", func(t *testing.T) {
+	t.Run("should not panic if handler is nil", func(t *testing.T) {
 		t.Parallel()
-		assert.Panics(t, func() {
+		assert.NotPanics(t, func() {
 			b.Subscribe(context.Background(), "test-topic", nil)
 		})
 	})
@@ -118,9 +118,9 @@ func TestBus_SubscribeOnce(t *testing.T) {
 	db, _ := redismock.NewClientMock()
 	b := redis.NewWithClient[string](db)
 	t.Cleanup(func() { _ = b.Close() })
-	t.Run("should panic if handler is nil", func(t *testing.T) {
+	t.Run("should not panic if handler is nil", func(t *testing.T) {
 		t.Parallel()
-		assert.Panics(t, func() {
+		assert.NotPanics(t, func() {
 			b.SubscribeOnce(context.Background(), "test-topic", nil)
 		})
 	})

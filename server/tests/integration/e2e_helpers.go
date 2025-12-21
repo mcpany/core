@@ -865,7 +865,9 @@ func StartMCPANYServerWithClock(t *testing.T, testName string, healthCheck bool,
 	// Regex patterns to extract ports from logs.
 	// Matches: msg="HTTP server listening" ... port=127.0.0.1:12345
 	httpPortRegex := regexp.MustCompile(`msg="HTTP server listening".*?port=[^:]+:(\d+)`)
-	grpcPortRegex := regexp.MustCompile(`msg="gRPC server listening".*?port=[^:]+:(\d+)`)
+	// Matches: msg="gRPC server listening" ... port=127.0.0.1:12345
+	// OR: INFO grpc_weather_server: Listening on port port=43523
+	grpcPortRegex := regexp.MustCompile(`(?:msg="gRPC server listening".*?port=[^:]+:(\d+))|(?:Listening on port port=(\d+))`)
 
 	require.Eventually(t, func() bool {
 		stdout := mcpProcess.StdoutString()
