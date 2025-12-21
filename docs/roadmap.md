@@ -46,15 +46,15 @@ This document outlines the current status and future plans for MCP Any.
 
 ### 1. Role-Based Access Control (RBAC)
 **Why:** Essential for multi-tenant environments to restrict access to specific profiles or tools based on user roles.
-**Status:** Planned
+**Status:** Partially Implemented (User Roles & Profile Access)
 
 ### 2. Dynamic Web UI
 **Why:** A visual dashboard to monitor health, view metrics, and manage configurations without editing YAML.
-**Status:** Planned
+**Status:** Implemented (Beta)
 
 ### 3. Admin Management API
 **Why:** Expand the Admin API to support full CRUD operations on services/config at runtime.
-**Status:** Implemented (CRUD for Services is available via the Registration API at `/v1/services/register` and `/v1/services/unregister`)
+**Status:** Implemented (CRUD for Services is available via the Management API at `/api/v1/services`)
 
 ### 4. WASM Plugins
 **Why:** Allow users to deploy safe, sandboxed custom logic for transformations or validations.

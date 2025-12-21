@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 // Package util provides utility functions.
-package util
+package util //nolint:var-naming
 
 import (
 	"crypto/sha256"
