@@ -103,6 +103,7 @@ func InitStandardMiddlewares(
 	toolManager tool.ManagerInterface,
 	auditConfig *configv1.AuditConfig,
 	cachingMiddleware *CachingMiddleware,
+	profileDefinitions []*configv1.ProfileDefinition,
 ) error {
 	// 1. Logging
 	RegisterMCP("logging", func(_ *configv1.Middleware) func(mcp.MethodHandler) mcp.MethodHandler {
@@ -112,6 +113,11 @@ func InitStandardMiddlewares(
 	// 2. Auth
 	RegisterMCP("auth", func(_ *configv1.Middleware) func(mcp.MethodHandler) mcp.MethodHandler {
 		return AuthMiddleware(authManager)
+	})
+
+	// 2.5 RBAC (After Auth)
+	RegisterMCP("rbac", func(_ *configv1.Middleware) func(mcp.MethodHandler) mcp.MethodHandler {
+		return RBACMiddleware(toolManager, profileDefinitions)
 	})
 
 	// 3. Debug

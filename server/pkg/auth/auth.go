@@ -22,6 +22,8 @@ const (
 	UserContextKey authContextKey = "user_id"
 	// ProfileIDContextKey is the context key for the profile ID.
 	ProfileIDContextKey authContextKey = "profile_id"
+	// ProfileIDsContextKey is the context key for the profile IDs.
+	ProfileIDsContextKey authContextKey = "profile_ids"
 )
 
 // ContextWithUser returns a new context with the user ID.
@@ -43,6 +45,17 @@ func ContextWithProfileID(ctx context.Context, profileID string) context.Context
 // ProfileIDFromContext returns the profile ID from the context.
 func ProfileIDFromContext(ctx context.Context) (string, bool) {
 	val, ok := ctx.Value(ProfileIDContextKey).(string)
+	return val, ok
+}
+
+// ContextWithProfileIDs returns a new context with the profile IDs.
+func ContextWithProfileIDs(ctx context.Context, profileIDs []string) context.Context {
+	return context.WithValue(ctx, ProfileIDsContextKey, profileIDs)
+}
+
+// ProfileIDsFromContext returns the profile IDs from the context.
+func ProfileIDsFromContext(ctx context.Context) ([]string, bool) {
+	val, ok := ctx.Value(ProfileIDsContextKey).([]string)
 	return val, ok
 }
 
@@ -123,6 +136,7 @@ func (a *APIKeyAuthenticator) Authenticate(ctx context.Context, r *http.Request)
 type Manager struct {
 	authenticators *xsync.Map[string, Authenticator]
 	apiKey         string
+	users          []*configv1.User
 }
 
 // NewManager creates and initializes a new Manager with an empty
@@ -132,6 +146,11 @@ func NewManager() *Manager {
 	return &Manager{
 		authenticators: xsync.NewMap[string, Authenticator](),
 	}
+}
+
+// SetUsers updates the list of users managed by the authentication system.
+func (am *Manager) SetUsers(users []*configv1.User) {
+	am.users = users
 }
 
 // SetAPIKey sets the global API key for the server.
@@ -171,6 +190,22 @@ func (am *Manager) AddAuthenticator(serviceID string, authenticator Authenticato
 // Returns a potentially modified context on success, or an error if
 // authentication fails.
 func (am *Manager) Authenticate(ctx context.Context, serviceID string, r *http.Request) (context.Context, error) {
+	// 1. Check configured Users (Global/RBAC)
+	for _, user := range am.users {
+		authConfig := user.GetAuthentication()
+		if authConfig == nil {
+			continue
+		}
+		if err := ValidateAuthentication(ctx, authConfig, r); err == nil {
+			// User authenticated
+			ctx = ContextWithUser(ctx, user.GetId())
+			ctx = ContextWithRoles(ctx, user.GetRoles())
+			ctx = ContextWithProfileIDs(ctx, user.GetProfileIds())
+			return ctx, nil
+		}
+	}
+
+	// 2. Check Global API Key (Legacy/Simple)
 	if am.apiKey != "" {
 		if r.Header.Get("X-API-Key") == "" {
 			return ctx, fmt.Errorf("unauthorized: missing API key")
@@ -178,8 +213,10 @@ func (am *Manager) Authenticate(ctx context.Context, serviceID string, r *http.R
 		if subtle.ConstantTimeCompare([]byte(r.Header.Get("X-API-Key")), []byte(am.apiKey)) != 1 {
 			return ctx, fmt.Errorf("unauthorized: invalid API key")
 		}
+		return ctx, nil
 	}
 
+	// 3. Check Service-specific Authenticator
 	if authenticator, ok := am.authenticators.Load(serviceID); ok {
 		return authenticator.Authenticate(ctx, r)
 	}

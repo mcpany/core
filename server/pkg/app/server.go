@@ -260,6 +260,9 @@ func (a *Application) Run(
 	if cfg.GetGlobalSettings().GetApiKey() != "" {
 		authManager.SetAPIKey(cfg.GetGlobalSettings().GetApiKey())
 	}
+	if len(cfg.GetUsers()) > 0 {
+		authManager.SetUsers(cfg.GetUsers())
+	}
 
 	// Set profiles for tool filtering
 	a.ToolManager.SetProfiles(
@@ -346,7 +349,7 @@ func (a *Application) Run(
 
 	// Initialize standard middlewares in registry
 	cachingMiddleware := middleware.NewCachingMiddleware(a.ToolManager)
-	if err := middleware.InitStandardMiddlewares(mcpSrv.AuthManager(), a.ToolManager, cfg.GetGlobalSettings().GetAudit(), cachingMiddleware); err != nil {
+	if err := middleware.InitStandardMiddlewares(mcpSrv.AuthManager(), a.ToolManager, cfg.GetGlobalSettings().GetAudit(), cachingMiddleware, cfg.GetGlobalSettings().GetProfileDefinitions()); err != nil {
 		return fmt.Errorf("failed to init standard middlewares: %w", err)
 	}
 
@@ -357,6 +360,7 @@ func (a *Application) Run(
 		middlewares = []*config_v1.Middleware{
 			{Name: proto.String("debug"), Priority: proto.Int32(10)},
 			{Name: proto.String("auth"), Priority: proto.Int32(20)},
+			{Name: proto.String("rbac"), Priority: proto.Int32(25)},
 			{Name: proto.String("logging"), Priority: proto.Int32(30)},
 			{Name: proto.String("audit"), Priority: proto.Int32(40)},
 			{Name: proto.String("call_policy"), Priority: proto.Int32(50)},

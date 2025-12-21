@@ -117,7 +117,7 @@ func validateUpstreamServiceCollection(ctx context.Context, collection *configv1
 		return fmt.Errorf("invalid collection http_url: %s", collection.GetHttpUrl())
 	}
 	u, _ := url.Parse(collection.GetHttpUrl())
-	if u.Scheme != "http" && u.Scheme != "https" {
+	if u.Scheme != "http" && u.Scheme != "https" { //nolint:goconst
 		return fmt.Errorf("invalid collection http_url scheme: %s", u.Scheme)
 	}
 

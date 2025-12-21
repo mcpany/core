@@ -22,6 +22,6 @@ MCP Any implements a core RBAC engine to manage user permissions.
 
 *   **Roles**: Define sets of permissions.
 *   **Users**: Assigned one or more roles.
-*   **Enforcement**: The `RBACEnforcer` checks if a user has the required role to access a resource or perform an action.
+*   **Enforcement**: The `RBACMiddleware` intercepts requests and enforces policy based on User Roles and Profile requirements.
 
-Currently, RBAC logic is implemented in the core `auth` package, allowing for granular control over tool execution and admin API access.
+RBAC logic is enforced globally via middleware, allowing for granular control over tool execution and service access based on the authenticated user's profile and roles.
