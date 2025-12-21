@@ -47,6 +47,10 @@ type Server struct {
 // Server returns the underlying *mcp.Server instance, which provides access to
 // the core MCP server functionality. This can be used for advanced
 // configurations or direct interaction with the MCP server.
+//
+// Returns:
+//
+//	The underlying *mcp.Server instance.
 func (s *Server) Server() *mcp.Server {
 	if AddReceivingMiddlewareHook != nil {
 		// This is a test hook to allow inspection of the middleware chain.
@@ -65,15 +69,20 @@ func (s *Server) Server() *mcp.Server {
 // requests and managing the lifecycle of tools, prompts, and resources.
 //
 // Parameters:
-//   - ctx: The application's root context.
-//   - toolManager: Manages the lifecycle and access to tools.
-//   - promptManager: Manages the lifecycle and access to prompts.
-//   - resourceManager: Manages the lifecycle and access to resources.
-//   - authManager: Handles authentication for incoming requests.
-//   - serviceRegistry: Keeps track of all registered upstream services.
-//   - bus: The event bus used for asynchronous communication between components.
 //
-// Returns a new instance of the Server and an error if initialization fails.
+//	ctx: The application's root context.
+//	toolManager: Manages the lifecycle and access to tools.
+//	promptManager: Manages the lifecycle and access to prompts.
+//	resourceManager: Manages the lifecycle and access to resources.
+//	authManager: Handles authentication for incoming requests.
+//	serviceRegistry: Keeps track of all registered upstream services.
+//	bus: The event bus used for asynchronous communication between components.
+//	debug: Whether to enable debug mode.
+//
+// Returns:
+//
+//	A new instance of the Server.
+//	An error if initialization fails.
 func NewServer(
 	_ context.Context,
 	toolManager tool.ManagerInterface,
@@ -285,10 +294,14 @@ func (s *Server) toolListFilteringMiddleware(next mcp.MethodHandler) mcp.MethodH
 // returns them to the client.
 //
 // Parameters:
-//   - ctx: The context for the request.
-//   - req: The "prompts/list" request from the client.
 //
-// Returns a list of available prompts or an error if the retrieval fails.
+//	ctx: The context for the request.
+//	req: The "prompts/list" request from the client.
+//
+// Returns:
+//
+//	A list of available prompts.
+//	An error if the retrieval fails.
 func (s *Server) ListPrompts(
 	_ context.Context,
 	_ *mcp.ListPromptsRequest,
@@ -309,12 +322,14 @@ func (s *Server) ListPrompts(
 // prompt.ErrPromptNotFound error.
 //
 // Parameters:
-//   - ctx: The context for the request.
-//   - req: The "prompts/get" request from the client, containing the prompt
-//     name and arguments.
 //
-// Returns the result of the prompt execution or an error if the prompt is not
-// found or execution fails.
+//	ctx: The context for the request.
+//	req: The "prompts/get" request from the client, containing the prompt name and arguments.
+//
+// Returns:
+//
+//	The result of the prompt execution.
+//	An error if the prompt is not found or execution fails.
 func (s *Server) GetPrompt(
 	ctx context.Context,
 	req *mcp.GetPromptRequest,
@@ -337,10 +352,14 @@ func (s *Server) GetPrompt(
 // format, and returns them to the client.
 //
 // Parameters:
-//   - ctx: The context for the request.
-//   - req: The "resources/list" request from the client.
 //
-// Returns a list of available resources or an error if the retrieval fails.
+//	ctx: The context for the request.
+//	req: The "resources/list" request from the client.
+//
+// Returns:
+//
+//	A list of available resources.
+//	An error if the retrieval fails.
 func (s *Server) ListResources(
 	_ context.Context,
 	_ *mcp.ListResourcesRequest,
@@ -361,12 +380,14 @@ func (s *Server) ListResources(
 // error.
 //
 // Parameters:
-//   - ctx: The context for the request.
-//   - req: The "resources/read" request from the client, containing the URI
-//     of the resource to be read.
 //
-// Returns the content of the resource or an error if the resource is not found
-// or reading fails.
+//	ctx: The context for the request.
+//	req: The "resources/read" request from the client, containing the URI of the resource to be read.
+//
+// Returns:
+//
+//	The content of the resource.
+//	An error if the resource is not found or reading fails.
 func (s *Server) ReadResource(
 	ctx context.Context,
 	req *mcp.ReadResourceRequest,

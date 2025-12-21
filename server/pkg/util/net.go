@@ -21,6 +21,10 @@ type SafeDialer struct {
 }
 
 // NewSafeDialer creates a new SafeDialer with strict defaults (blocking all non-public IPs).
+//
+// Returns:
+//
+//	A new SafeDialer instance with secure defaults.
 func NewSafeDialer() *SafeDialer {
 	return &SafeDialer{
 		AllowLoopback:  false,
@@ -30,6 +34,17 @@ func NewSafeDialer() *SafeDialer {
 }
 
 // DialContext creates a connection to the given address, enforcing the configured egress policy.
+//
+// Parameters:
+//
+//	ctx: The context for the dial operation.
+//	network: The network type (e.g., "tcp", "udp").
+//	addr: The address to connect to (host:port).
+//
+// Returns:
+//
+//	The established connection.
+//	An error if the connection fails or is blocked by policy.
 func (d *SafeDialer) DialContext(ctx context.Context, network, addr string) (net.Conn, error) {
 	host, port, err := net.SplitHostPort(addr)
 	if err != nil {
@@ -72,10 +87,16 @@ func (d *SafeDialer) DialContext(ctx context.Context, network, addr string) (net
 // It resolves the host's IP addresses and checks each one. If any resolved IP
 // is private or loopback, the connection is blocked.
 //
-// ctx is the context for the dial operation.
-// network is the network type (e.g., "tcp").
-// addr is the address to connect to (host:port).
-// It returns the established connection or an error if the connection fails or is blocked.
+// Parameters:
+//
+//	ctx: The context for the dial operation.
+//	network: The network type (e.g., "tcp").
+//	addr: The address to connect to (host:port).
+//
+// Returns:
+//
+//	The established connection.
+//	An error if the connection fails or is blocked.
 func SafeDialContext(ctx context.Context, network, addr string) (net.Conn, error) {
 	return NewSafeDialer().DialContext(ctx, network, addr)
 }

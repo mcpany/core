@@ -1,6 +1,7 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
+// Package util provides utility functions.
 package util //nolint:revive
 
 import (
@@ -110,6 +111,15 @@ func SanitizeID(ids []string, alwaysAppendHash bool, maxSanitizedPrefixLength, h
 // It ensures that the name is a valid identifier by removing disallowed characters
 // and appending a hash if the name is too long or contains illegal characters.
 // This function calls SanitizeID with alwaysAppendHash set to false.
+//
+// Parameters:
+//
+//	name: The service name to sanitize.
+//
+// Returns:
+//
+//	The sanitized service name.
+//	An error if sanitization fails.
 func SanitizeServiceName(name string) (string, error) {
 	return SanitizeID([]string{name}, false, maxSanitizedPrefixLength, hashLength)
 }
@@ -118,6 +128,15 @@ func SanitizeServiceName(name string) (string, error) {
 // It ensures that the name is a valid identifier by removing disallowed characters
 // and appending a hash if the name is too long or contains illegal characters.
 // This function calls SanitizeID with alwaysAppendHash set to false.
+//
+// Parameters:
+//
+//	name: The tool name to sanitize.
+//
+// Returns:
+//
+//	The sanitized tool name.
+//	An error if sanitization fails.
 func SanitizeToolName(name string) (string, error) {
 	return SanitizeID([]string{name}, false, maxSanitizedPrefixLength, hashLength)
 }
@@ -153,9 +172,15 @@ func GenerateUUID() string {
 // and bare tool name components. It splits the name using the standard
 // separator.
 //
-// toolName is the fully qualified tool name.
-// It returns the service key, the bare tool name, and an error if parsing fails
-// (though the current implementation does not return an error).
+// Parameters:
+//
+//	toolName: The fully qualified tool name.
+//
+// Returns:
+//
+//	service: The service key extracted from the tool name.
+//	bareToolName: The bare tool name (without the service prefix).
+//	err: An error if parsing fails (currently always nil).
 func ParseToolName(toolName string) (service, bareToolName string, err error) {
 	parts := strings.SplitN(toolName, consts.ToolNameServiceSeparator, 2)
 	if len(parts) == 2 {
@@ -169,8 +194,13 @@ func ParseToolName(toolName string) (service, bareToolName string, err error) {
 // hexadecimal hash of that sequence, ensuring uniqueness while preserving as
 // much of the original string as possible.
 //
-// input is the string to be sanitized.
-// It returns the sanitized string.
+// Parameters:
+//
+//	input: The string to be sanitized.
+//
+// Returns:
+//
+//	The sanitized string.
 func SanitizeOperationID(input string) string {
 	if !disallowedIDChars.MatchString(input) {
 		return input
