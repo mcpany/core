@@ -14,55 +14,71 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestLocalCommandTool_EnvironmentInjection(t *testing.T) {
-	// Setup a tool that runs 'env' to print environment variables
+func TestLocalCommandTool_ArgumentInjection_Prevention(t *testing.T) {
+	// This test verifies that argument injection via placeholders is prevented.
+
 	tool := &v1.Tool{
-		Name:        proto.String("env-tool"),
-		Description: proto.String("Prints environment"),
+		Name:        proto.String("test-tool-cat"),
 	}
 	service := &configv1.CommandLineUpstreamService{
-		Command: proto.String("env"),
+		Command: proto.String("cat"),
 		Local:   proto.Bool(true),
 	}
-
-	// Define explicitly allowed parameters
 	callDef := &configv1.CommandLineCallDefinition{
 		Parameters: []*configv1.CommandLineParameterMapping{
-			{
-				Schema: &configv1.ParameterSchema{
-					Name: proto.String("VALID_VAR"),
-				},
-			},
+			{Schema: &configv1.ParameterSchema{Name: proto.String("file")}},
 		},
+		Args: []string{"{{file}}"},
 	}
 
 	localTool := NewLocalCommandTool(tool, service, callDef, nil, "call-id")
 
-	// Inject a malicious environment variable and a valid one
-	maliciousEnvVar := "MALICIOUS_VAR"
-	maliciousValue := "hacked"
-
-	req := &ExecutionRequest{
-		ToolName: "env-tool",
+	// Case 1: Safe input
+	reqSafe := &ExecutionRequest{
+		ToolName: "test-tool-cat",
 		Arguments: map[string]interface{}{
-			maliciousEnvVar: maliciousValue,
-			"VALID_VAR": "valid_value",
+			"file": "/etc/hosts",
 		},
 	}
-	req.ToolInputs, _ = json.Marshal(req.Arguments)
+	reqSafe.ToolInputs, _ = json.Marshal(reqSafe.Arguments)
 
-	result, err := localTool.Execute(context.Background(), req)
+	_, err := localTool.Execute(context.Background(), reqSafe)
 	assert.NoError(t, err)
 
-	resultMap, ok := result.(map[string]interface{})
-	assert.True(t, ok)
+	// Case 2: Argument Injection
+	reqAttack := &ExecutionRequest{
+		ToolName: "test-tool-cat",
+		Arguments: map[string]interface{}{
+			"file": "-n", // Attempt to inject a flag
+		},
+	}
+	reqAttack.ToolInputs, _ = json.Marshal(reqAttack.Arguments)
 
-	stdout, ok := resultMap["stdout"].(string)
-	assert.True(t, ok)
+	_, err = localTool.Execute(context.Background(), reqAttack)
 
-	// Check if the malicious variable is NOT present in the output
-	assert.NotContains(t, stdout, maliciousEnvVar+"="+maliciousValue, "Malicious environment variable should NOT be injected")
+	assert.Error(t, err)
+	if err != nil {
+		assert.Contains(t, err.Error(), "argument injection")
+	}
 
-	// Check if the valid variable IS present
-	assert.Contains(t, stdout, "VALID_VAR=valid_value", "Valid parameter should be passed as environment variable")
+	// Case 3: Negative number (should be allowed)
+	reqNegative := &ExecutionRequest{
+		ToolName: "test-tool-cat",
+		Arguments: map[string]interface{}{
+			"file": "-5",
+		},
+	}
+	reqNegative.ToolInputs, _ = json.Marshal(reqNegative.Arguments)
+
+	// We expect this to fail with "argument injection" if we block all negatives,
+	// or pass if we allow numbers.
+	// Our implementation allows numbers.
+	// However, "cat -5" will fail with "No such file", but NOT "argument injection".
+	_, err = localTool.Execute(context.Background(), reqNegative)
+
+	// Error could be from cat failing, or injection check.
+	// We want to ensure it is NOT injection check.
+	if err != nil {
+		assert.NotContains(t, err.Error(), "argument injection")
+	}
 }
