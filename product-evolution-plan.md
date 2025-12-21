@@ -40,7 +40,7 @@ We have identified the following features as critical for the next phase of prod
 | :--- | :--- | :--- | :--- |
 | 1 | **RBAC (Role-Based Access Control)** | **Security**: Essential for multi-tenant environments to restrict access to specific profiles or tools based on user roles. | High |
 | 2 | **Dynamic Web UI** | **UX**: A visual dashboard to monitor health, view metrics, and manage configurations without editing YAML. | High |
-| 3 | **Admin Management API (CRUD)** | **Automation**: Expand the Admin API to support full CRUD operations on services/config at runtime (currently mostly read-only). | Medium |
+| 3 | **Admin Management API (CRUD)** | **Automation**: Expand the Admin API to support full CRUD operations on services/config at runtime. **Update:** Service CRUD is currently handled by the Registration API. | Medium |
 | 4 | **WASM Plugins** | **Extensibility**: Allow users to deploy safe, sandboxed custom logic for transformations or validations. | High |
 | 5 | **File System Provider** | **Utility**: Safe, controlled access to the local file system (read/write/list) as an MCP tool source. | Medium |
 | 6 | **Cost & Quota Management** | **Governance**: Track token usage or call counts per user/profile and enforce strict quotas (beyond rate limiting). | Medium |
