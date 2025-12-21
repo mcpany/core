@@ -475,3 +475,93 @@ func TestRegistrationServer_Timeouts(t *testing.T) {
 		assert.Equal(t, codes.DeadlineExceeded, st.Code())
 	})
 }
+
+func TestGetService(t *testing.T) {
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	// Setup bus and worker
+	messageBus := bus_pb.MessageBus_builder{}.Build()
+	messageBus.SetInMemory(bus_pb.InMemoryBus_builder{}.Build())
+	busProvider, err := bus.NewProvider(messageBus)
+	require.NoError(t, err)
+
+	// Setup components
+	poolManager := pool.NewManager()
+	upstreamFactory := factory.NewUpstreamServiceFactory(poolManager)
+	toolManager := tool.NewManager(busProvider)
+	promptManager := prompt.NewManager()
+	resourceManager := resource.NewManager()
+	authManager := auth.NewManager()
+	serviceRegistry := serviceregistry.New(upstreamFactory, toolManager, promptManager, resourceManager, authManager)
+	registrationWorker := worker.NewServiceRegistrationWorker(busProvider, serviceRegistry)
+	registrationWorker.Start(ctx)
+
+	// Setup server
+	registrationServer, err := NewRegistrationServer(busProvider)
+	require.NoError(t, err)
+
+	// Register a service to be retrieved
+	serviceName := "test-service-for-get"
+	config := &configv1.UpstreamServiceConfig{}
+	config.SetName(serviceName)
+	httpService := &configv1.HttpUpstreamService{}
+	httpService.SetAddress("http://localhost:8080")
+	config.SetHttpService(httpService)
+	req := &v1.RegisterServiceRequest{}
+	req.SetConfig(config)
+	_, err = registrationServer.RegisterService(ctx, req)
+	require.NoError(t, err)
+
+	t.Run("get existing service", func(t *testing.T) {
+		req := &v1.GetServiceRequest{}
+		req.SetServiceName(serviceName)
+		resp, err := registrationServer.GetService(ctx, req)
+		require.NoError(t, err)
+		require.NotNil(t, resp)
+		require.NotNil(t, resp.GetService())
+		assert.Equal(t, serviceName, resp.GetService().GetName())
+	})
+
+	t.Run("get non-existent service", func(t *testing.T) {
+		req := &v1.GetServiceRequest{}
+		req.SetServiceName("non-existent")
+		_, err := registrationServer.GetService(ctx, req)
+		require.Error(t, err)
+		st, ok := status.FromError(err)
+		require.True(t, ok)
+		assert.Equal(t, codes.NotFound, st.Code())
+	})
+
+	t.Run("missing service name", func(t *testing.T) {
+		req := &v1.GetServiceRequest{}
+		_, err := registrationServer.GetService(ctx, req)
+		require.Error(t, err)
+		st, ok := status.FromError(err)
+		require.True(t, ok)
+		assert.Equal(t, codes.InvalidArgument, st.Code())
+	})
+
+	t.Run("timeout", func(t *testing.T) {
+		// Create a server connected to a bus with no workers to force timeout
+		messageBus := bus_pb.MessageBus_builder{}.Build()
+		messageBus.SetInMemory(bus_pb.InMemoryBus_builder{}.Build())
+		emptyBusProvider, err := bus.NewProvider(messageBus)
+		require.NoError(t, err)
+
+		timeoutServer, err := NewRegistrationServer(emptyBusProvider)
+		require.NoError(t, err)
+
+		// Use a short context to simulate timeout
+		shortCtx, cancel := context.WithTimeout(context.Background(), 10*time.Millisecond)
+		defer cancel()
+
+		req := &v1.GetServiceRequest{}
+		req.SetServiceName(serviceName)
+		_, err = timeoutServer.GetService(shortCtx, req)
+		require.Error(t, err)
+		st, ok := status.FromError(err)
+		require.True(t, ok)
+		assert.Equal(t, codes.DeadlineExceeded, st.Code())
+	})
+}
