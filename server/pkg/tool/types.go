@@ -1292,7 +1292,16 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 
 	executor := command.NewLocalExecutor()
 
-	env := os.Environ()
+	env := []string{}
+	// Inherit only safe environment variables from host
+	// We strictly only preserve PATH and system identifiers to avoid leaking secrets
+	allowedEnvVars := []string{"PATH", "HOME", "USER", "SHELL", "TMPDIR", "SYSTEMROOT", "WINDIR"}
+	for _, key := range allowedEnvVars {
+		if val, ok := os.LookupEnv(key); ok {
+			env = append(env, fmt.Sprintf("%s=%s", key, val))
+		}
+	}
+
 	resolvedServiceEnv, err := util.ResolveSecretMap(ctx, t.service.GetEnv(), nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to resolve service env: %w", err)
@@ -1510,7 +1519,20 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 
 	executor := t.getExecutor(t.service.GetContainerEnvironment())
 
-	env := os.Environ()
+	env := []string{}
+	// Only inherit safe environment variables from host for local execution
+	// For Docker execution, we should not inherit host environment variables at all
+	isDocker := t.service.GetContainerEnvironment() != nil && t.service.GetContainerEnvironment().GetImage() != ""
+	if !isDocker {
+		// We strictly only preserve PATH and system identifiers to avoid leaking secrets
+		allowedEnvVars := []string{"PATH", "HOME", "USER", "SHELL", "TMPDIR", "SYSTEMROOT", "WINDIR"}
+		for _, key := range allowedEnvVars {
+			if val, ok := os.LookupEnv(key); ok {
+				env = append(env, fmt.Sprintf("%s=%s", key, val))
+			}
+		}
+	}
+
 	resolvedServiceEnv, err := util.ResolveSecretMap(ctx, t.service.GetEnv(), nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to resolve service env: %w", err)
