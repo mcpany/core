@@ -6,7 +6,7 @@
 
 "use client";
 
-import { useState, useEffect } from "react";
+import { useMemo, memo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { UpstreamServiceConfig } from "@/lib/types";
@@ -60,18 +60,16 @@ function CodeBlock({ language, code }: { language: string; code: string }) {
     )
 }
 
-export function FileConfigCard({ service }: { service: UpstreamServiceConfig }) {
-    const [jsonConfig, setJsonConfig] = useState("");
-    const [yamlConfig, setYamlConfig] = useState("");
-    const [textProtoConfig, setTextProtoConfig] = useState("");
-
-    useEffect(() => {
+export const FileConfigCard = memo(function FileConfigCard({ service }: { service: UpstreamServiceConfig }) {
+    const { jsonConfig, yamlConfig, textProtoConfig } = useMemo(() => {
         const tempService = JSON.parse(JSON.stringify(service));
         delete tempService.id;
 
-        setJsonConfig(JSON.stringify(tempService, null, 2));
-        setYamlConfig(yaml.dump(tempService));
-        setTextProtoConfig(objectToTextProto(tempService));
+        return {
+            jsonConfig: JSON.stringify(tempService, null, 2),
+            yamlConfig: yaml.dump(tempService),
+            textProtoConfig: objectToTextProto(tempService)
+        };
     }, [service]);
 
     return (
@@ -99,4 +97,4 @@ export function FileConfigCard({ service }: { service: UpstreamServiceConfig }) 
             </CardContent>
         </Card>
     )
-}
+});
