@@ -1,7 +1,7 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
-package sql
+package sqlite
 
 import (
 	"os"
@@ -20,11 +20,13 @@ func TestStore(t *testing.T) {
 	defer os.RemoveAll(tmpDir)
 
 	dbPath := filepath.Join(tmpDir, "test.db")
-	store, err := NewStore("sqlite", dbPath)
+	db, err := NewDB(dbPath)
 	if err != nil {
-		t.Fatalf("failed to create store: %v", err)
+		t.Fatalf("failed to create db: %v", err)
 	}
-	defer store.Close()
+	defer db.Close()
+
+	store := NewStore(db)
 
 	t.Run("SaveAndLoad", func(t *testing.T) {
 		svc := &configv1.UpstreamServiceConfig{
@@ -39,9 +41,6 @@ func TestStore(t *testing.T) {
 		loaded, err := store.GetService("test-service")
 		if err != nil {
 			t.Fatalf("failed to get service: %v", err)
-		}
-		if loaded == nil {
-			t.Fatalf("service not found")
 		}
 		if loaded.GetName() != svc.GetName() {
 			t.Errorf("expected name %s, got %s", svc.GetName(), loaded.GetName())

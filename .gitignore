@@ -26,9 +26,3 @@ coverage.html
 .cache/
 build/
 .[Jj][Uu][Ll][Ee][Ss]/
-
-# Database
-*.db
-*.db-shm
-*.db-wal
-data/
