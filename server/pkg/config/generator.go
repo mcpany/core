@@ -43,7 +43,7 @@ func (g *Generator) Generate() ([]byte, error) {
 	}
 
 	switch strings.ToLower(serviceType) {
-	case "http": //nolint:goconst
+	case "http":
 		return g.generateHTTPService()
 	case "grpc":
 		return g.generateGRPCService()
