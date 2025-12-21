@@ -42,6 +42,9 @@ This document outlines the current status and future plans for MCP Any.
 - [x] Dynamic Tool Registration
 - [x] Message Bus (NATS, Kafka)
 
+### Transformation
+- [x] Structured Output Transformation (JQ/JSONPath)
+
 ## Upcoming Features (High Priority)
 
 ### 1. Role-Based Access Control (RBAC)
@@ -70,10 +73,6 @@ This document outlines the current status and future plans for MCP Any.
 
 ### 7. Client SDKs (Python/TS)
 **Why:** Provide idiomatic wrappers for connecting to MCP Any.
-**Status:** Planned
-
-### 8. Structured Output Transformation (JQ/JSONPath)
-**Why:** Native support for JQ or JSONPath to transform complex upstream API responses.
 **Status:** Planned
 
 ## Deprecated / Obsolete
