@@ -236,7 +236,7 @@ func (h *WebhookHook) ExecutePre(
 		return ActionDeny, nil, fmt.Errorf("webhook error: %w", err)
 	}
 
-	// Helper struct for response data
+	// ResponseData is a helper struct for parsing the webhook response.
 	type ResponseData struct {
 		Allowed           bool            `json:"allowed"`
 		Status            *WebhookStatus  `json:"status,omitempty"`
@@ -292,6 +292,7 @@ func (h *WebhookHook) ExecutePost(
 		return nil, fmt.Errorf("webhook error: %w", err)
 	}
 
+	// ResponseData is a helper struct for parsing the webhook response.
 	type ResponseData struct {
 		Allowed           bool            `json:"allowed"`
 		Status            *WebhookStatus  `json:"status,omitempty"`
