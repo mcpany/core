@@ -50,6 +50,7 @@ import (
 	"google.golang.org/grpc/peer"
 	"google.golang.org/grpc/reflection"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/proto"
 )
 
 var healthCheckClient = &http.Client{
@@ -339,63 +340,47 @@ func (a *Application) Run(
 		log.Info("No services found in config, skipping service registration.")
 	}
 
-	mcpSrv.Server().AddReceivingMiddleware(middleware.CORSMiddleware())
+	// Initialize standard middlewares in registry
 	cachingMiddleware := middleware.NewCachingMiddleware(a.ToolManager)
-	rateLimitMiddleware := middleware.NewRateLimitMiddleware(a.ToolManager)
-	callPolicyMiddleware := middleware.NewCallPolicyMiddleware(a.ToolManager)
-
-	auditConfig := cfg.GetGlobalSettings().GetAudit()
-	auditMiddleware, err := middleware.NewAuditMiddleware(auditConfig)
-	if err != nil {
-		return fmt.Errorf("failed to create audit middleware: %w", err)
+	if err := middleware.InitStandardMiddlewares(mcpSrv.AuthManager(), a.ToolManager, cfg.GetGlobalSettings().GetAudit(), cachingMiddleware); err != nil {
+		return fmt.Errorf("failed to init standard middlewares: %w", err)
 	}
-	defer func() { _ = auditMiddleware.Close() }()
 
-	mcpSrv.Server().AddReceivingMiddleware(func(next mcp.MethodHandler) mcp.MethodHandler {
-		return func(ctx context.Context, method string, req mcp.Request) (mcp.Result, error) {
-			if r, ok := req.(*mcp.CallToolRequest); ok {
-				executionReq := &tool.ExecutionRequest{
-					ToolName:   r.Params.Name,
-					ToolInputs: r.Params.Arguments,
-				}
-				result, err := auditMiddleware.Execute(
-					ctx,
-					executionReq,
-					func(ctx context.Context, _ *tool.ExecutionRequest) (any, error) {
-						return callPolicyMiddleware.Execute(
-							ctx,
-							executionReq,
-							func(ctx context.Context, _ *tool.ExecutionRequest) (any, error) {
-								return cachingMiddleware.Execute(
-									ctx,
-									executionReq,
-									func(ctx context.Context, _ *tool.ExecutionRequest) (any, error) {
-										return rateLimitMiddleware.Execute(
-											ctx,
-											executionReq,
-											func(ctx context.Context, _ *tool.ExecutionRequest) (any, error) {
-												return next(ctx, method, r)
-											},
-										)
-									},
-								)
-							},
-						)
-					},
-				)
-				if err != nil {
-					return nil, err
-				}
-				return result.(*mcp.CallToolResult), nil
-			}
-			return next(ctx, method, req)
+	// Get configured middlewares
+	middlewares := config.GlobalSettings().Middlewares()
+	if len(middlewares) == 0 {
+		// Default chain if none configured
+		middlewares = []*config_v1.Middleware{
+			{Name: proto.String("debug"), Priority: proto.Int32(10)},
+			{Name: proto.String("auth"), Priority: proto.Int32(20)},
+			{Name: proto.String("logging"), Priority: proto.Int32(30)},
+			{Name: proto.String("audit"), Priority: proto.Int32(40)},
+			{Name: proto.String("call_policy"), Priority: proto.Int32(50)},
+			{Name: proto.String("caching"), Priority: proto.Int32(60)},
+			{Name: proto.String("ratelimit"), Priority: proto.Int32(70)},
+			// CORS is typically 0 or negative to be outermost, but AddReceivingMiddleware adds in order.
+			// The SDK executes them in reverse order of addition?
+			// Wait, mcp.Server implementation:
+			// "Middleware is called in the order it was added." -> First added = First called?
+			// Usually middleware "wraps" the handler. first(second(handler)).
+			// If I add A then B.
+			// Chain = A(B(handler)).
+			// Helper `AddReceivingMiddleware` usually appends.
+			// Let's assume standard "wrap" logic.
+			// We want CORS outer.
+			{Name: proto.String("cors"), Priority: proto.Int32(0)},
 		}
-	})
-	mcpSrv.Server().AddReceivingMiddleware(middleware.LoggingMiddleware(nil))
-	mcpSrv.Server().AddReceivingMiddleware(middleware.AuthMiddleware(mcpSrv.AuthManager()))
+	}
 
-	if config.GlobalSettings().IsDebug() {
-		mcpSrv.Server().AddReceivingMiddleware(middleware.DebugMiddleware())
+	// Apply middlewares
+	// Registry returns sorted list based on priority (low to high).
+	// If priority 0 is first, it wraps the rest?
+	// If we iterate:
+	// M1(M2(M3(...)))
+	// M1 is priority 0.
+	chain := middleware.GetMCPMiddlewares(middlewares)
+	for _, m := range chain {
+		mcpSrv.Server().AddReceivingMiddleware(m)
 	}
 
 	if stdio {

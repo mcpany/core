@@ -73,6 +73,10 @@ message GlobalSettings {
   repeated ProfileDefinition profile_definitions = 9 [json_name = "profile_definitions"];
   // The log format for the server.
   LogFormat log_format = 10 [json_name = "log_format"];
+  // The path to the database file.
+  string db_path = 11 [json_name = "db_path"];
+  // The list of middlewares to enable and their configuration.
+  repeated Middleware middlewares = 12 [json_name = "middlewares"];
 }
 
 message AuditConfig {
@@ -98,4 +102,13 @@ message ProfileDefinition {
 message ProfileSelector {
   repeated string tags = 1;
   map<string, string> tool_properties = 2 [json_name = "tool_properties"];
+}
+
+message Middleware {
+  // The name of the middleware (e.g., "logging", "auth", "ratelimit").
+  string name = 1 [json_name = "name"];
+  // The priority of the middleware. Lower values run first (outermost).
+  int32 priority = 2 [json_name = "priority"];
+  // Whether this middleware is disabled.
+  bool disabled = 3 [json_name = "disabled"];
 }
