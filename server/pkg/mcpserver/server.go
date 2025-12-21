@@ -20,6 +20,7 @@ import (
 	"github.com/mcpany/core/pkg/resource"
 	"github.com/mcpany/core/pkg/serviceregistry"
 	"github.com/mcpany/core/pkg/tool"
+	"github.com/mcpany/core/pkg/util"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
@@ -427,7 +428,7 @@ func (s *Server) ListTools() []tool.Tool {
 
 // CallTool executes a tool with the provided request.
 func (s *Server) CallTool(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
-	logging.GetLogger().Info("Calling tool...", "toolName", req.ToolName, "arguments", req.Arguments)
+	logging.GetLogger().Info("Calling tool...", "toolName", req.ToolName, "arguments", string(util.RedactJSON(req.ToolInputs)))
 	// Try to get service ID from tool
 	var serviceID string
 	if t, ok := s.GetTool(req.ToolName); ok {
