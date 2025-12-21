@@ -219,7 +219,7 @@ func (t *WebrtcTool) executeWithPeerConnection(ctx context.Context, req *Executi
 
 	dc.OnOpen(func() {
 		if err := dc.SendText(string(message)); err != nil {
-			fmt.Printf("failed to send message over webrtc data channel: %v\n", err)
+			logging.GetLogger().Warn("failed to send message over webrtc data channel", "error", err)
 		}
 	})
 
