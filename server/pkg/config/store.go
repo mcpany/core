@@ -140,52 +140,6 @@ type Store interface {
 	Load() (*configv1.McpAnyServerConfig, error)
 }
 
-// ServiceStore extends Store to provide CRUD operations for UpstreamServices.
-type ServiceStore interface {
-	Store
-	// SaveService saves or updates a service configuration.
-	//
-	// Parameters:
-	//
-	//	service: The service configuration to save.
-	//
-	// Returns:
-	//
-	//	An error if the save operation fails.
-	SaveService(service *configv1.UpstreamServiceConfig) error
-
-	// GetService retrieves a service configuration by name.
-	//
-	// Parameters:
-	//
-	//	name: The name of the service to retrieve.
-	//
-	// Returns:
-	//
-	//	The service configuration.
-	//	An error if the service is not found or retrieval fails.
-	GetService(name string) (*configv1.UpstreamServiceConfig, error)
-
-	// ListServices retrieves all registered service configurations.
-	//
-	// Returns:
-	//
-	//	A list of service configurations.
-	//	An error if retrieval fails.
-	ListServices() ([]*configv1.UpstreamServiceConfig, error)
-
-	// DeleteService deletes a service configuration by name.
-	//
-	// Parameters:
-	//
-	//	name: The name of the service to delete.
-	//
-	// Returns:
-	//
-	//	An error if the delete operation fails.
-	DeleteService(name string) error
-}
-
 var envVarRegex = regexp.MustCompile(`\${([^{}]+)}`)
 
 func expand(b []byte) []byte {

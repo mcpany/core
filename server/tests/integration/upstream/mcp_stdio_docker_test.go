@@ -24,9 +24,6 @@ func TestUpstreamService_MCP_Stdio_WithSetupCommandsInDocker(t *testing.T) {
 	if os.Getenv("CI") != "" {
 		t.Skip("Skipping Docker-in-Docker test in CI environment")
 	}
-	if os.Getenv("SKIP_DOCKER_TESTS") == "true" {
-		t.Skip("Skipping Docker test as requested by SKIP_DOCKER_TESTS")
-	}
 
 	testCase := &framework.E2ETestCase{
 		Name:                "cowsay server (Stdio via Docker with setup)",

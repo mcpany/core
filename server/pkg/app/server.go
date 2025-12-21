@@ -15,7 +15,6 @@ import (
 	"net"
 	"net/http"
 	"os"
-	"path/filepath"
 	"strings"
 	"sync"
 	"time"
@@ -34,7 +33,7 @@ import (
 	"github.com/mcpany/core/pkg/prompt"
 	"github.com/mcpany/core/pkg/resource"
 	"github.com/mcpany/core/pkg/serviceregistry"
-	"github.com/mcpany/core/pkg/storage/sql"
+	"github.com/mcpany/core/pkg/storage/sqlite"
 	"github.com/mcpany/core/pkg/telemetry"
 	"github.com/mcpany/core/pkg/tool"
 	"github.com/mcpany/core/pkg/upstream/factory"
@@ -145,16 +144,13 @@ type Application struct {
 	configFiles      map[string]string
 	fs               afero.Fs
 	configPaths      []string
-	DefaultDBPath    string // For testing
 }
 
 // NewApplication creates a new Application with default dependencies.
 // It initializes the application with the standard implementation of the stdio
 // mode runner, making it ready to be configured and started.
 //
-// Returns:
-//
-//	A new instance of the Application, ready to be run.
+// Returns a new instance of the Application, ready to be run.
 func NewApplication() *Application {
 	busProvider, _ := bus.NewProvider(nil)
 	return &Application{
@@ -177,18 +173,17 @@ func NewApplication() *Application {
 // shutdown is initiated when the context is canceled.
 //
 // Parameters:
+//   - ctx: The context for managing the application's lifecycle.
+//   - fs: The filesystem interface for reading configuration files.
+//   - stdio: A boolean indicating whether to run in standard I/O mode.
+//   - jsonrpcPort: The port for the JSON-RPC server.
+//   - grpcPort: The port for the gRPC registration server. An empty string
+//     disables the gRPC server.
+//   - configPaths: A slice of paths to service configuration files.
+//   - shutdownTimeout: The duration to wait for a graceful shutdown before
+//     forcing termination.
 //
-//	ctx: The context for managing the application's lifecycle.
-//	fs: The filesystem interface for reading configuration files.
-//	stdio: A boolean indicating whether to run in standard I/O mode.
-//	jsonrpcPort: The port for the JSON-RPC server.
-//	grpcPort: The port for the gRPC registration server. An empty string disables the gRPC server.
-//	configPaths: A slice of paths to service configuration files.
-//	shutdownTimeout: The duration to wait for a graceful shutdown before forcing termination.
-//
-// Returns:
-//
-//	An error if any part of the startup or execution fails.
+// Returns an error if any part of the startup or execution fails.
 func (a *Application) Run(
 	ctx context.Context,
 	fs afero.Fs,
@@ -221,31 +216,20 @@ func (a *Application) Run(
 	// Load initial services from config files and SQLite
 	dbPath := config.GlobalSettings().DBPath()
 	if dbPath == "" {
-		if a.DefaultDBPath != "" {
-			dbPath = a.DefaultDBPath
-		} else {
-			dbPath = "data/mcpany.db"
-		}
+		dbPath = "mcpany.db"
 	}
-	// Ensure DB directory exists
-	if err := os.MkdirAll(filepath.Dir(dbPath), 0750); err != nil {
-		return fmt.Errorf("failed to create db directory: %w", err)
-	}
-
-	// Use sqlite as default dialect for now
-	sqlStore, err := sql.NewStore("sqlite", dbPath)
+	sqliteDB, err := sqlite.NewDB(dbPath)
 	if err != nil {
-		return fmt.Errorf("failed to initialize sql store: %w", err)
+		return fmt.Errorf("failed to initialize sqlite db: %w", err)
 	}
-	// Gorm handles connection pooling and closing internally somewhat, but we can't explicitly defer Close on gorm.DB easily without getting sql.DB.
-	// sql.NewStore returns *Store which holds *gorm.DB.
-	// The sql.Store implementation keeps the connection open.
+	defer func() { _ = sqliteDB.Close() }()
+	sqliteStore := sqlite.NewStore(sqliteDB)
 
 	var stores []config.Store
 	if len(configPaths) > 0 {
 		stores = append(stores, config.NewFileStore(fs, configPaths))
 	}
-	stores = append(stores, sqlStore)
+	stores = append(stores, sqliteStore)
 	multiStore := config.NewMultiStore(stores...)
 
 	var cfg *config_v1.McpAnyServerConfig
@@ -425,20 +409,11 @@ func (a *Application) Run(
 		allowedIPs = cfg.GetGlobalSettings().GetAllowedIps()
 	}
 
-	return a.runServerMode(ctx, mcpSrv, busProvider, bindAddress, grpcPort, shutdownTimeout, cfg.GetUsers(), allowedIPs, cachingMiddleware, sqlStore)
+	return a.runServerMode(ctx, mcpSrv, busProvider, bindAddress, grpcPort, shutdownTimeout, cfg.GetUsers(), allowedIPs, cachingMiddleware, sqliteStore)
 }
 
 // ReloadConfig reloads the configuration from the given paths and updates the
 // services.
-//
-// Parameters:
-//
-//	fs: The filesystem interface for reading configuration files.
-//	configPaths: A slice of paths to configuration files to reload.
-//
-// Returns:
-//
-//	An error if the configuration reload fails.
 func (a *Application) ReloadConfig(fs afero.Fs, configPaths []string) error {
 	log := logging.GetLogger()
 	log.Info("Reloading configuration...")
@@ -531,15 +506,12 @@ func runStdioMode(ctx context.Context, mcpSrv *mcpserver.Server) error {
 // health check.
 //
 // Parameters:
+//   - out: The writer to which the success message will be written.
+//   - addr: The address (host:port) on which the server is running.
 //
-//	out: The writer to which the success message will be written.
-//	addr: The address (host:port) on which the server is running.
-//	timeout: The timeout duration for the health check.
-//
-// Returns:
-//
-//	Nil if the server is healthy (i.e., responds with a 200 OK).
-//	An error if the health check fails for any reason (e.g., connection error, non-200 status code).
+// Returns nil if the server is healthy (i.e., responds with a 200 OK), or an
+// error if the health check fails for any reason (e.g., connection error,
+// non-200 status code).
 func HealthCheck(out io.Writer, addr string, timeout time.Duration) error {
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	defer cancel()
@@ -555,15 +527,13 @@ func HealthCheck(out io.Writer, addr string, timeout time.Duration) error {
 // health check.
 //
 // Parameters:
+//   - ctx: The context for managing the health check's lifecycle.
+//   - out: The writer to which the success message will be written.
+//   - addr: The address (host:port) on which the server is running.
 //
-//	ctx: The context for managing the health check's lifecycle.
-//	out: The writer to which the success message will be written.
-//	addr: The address (host:port) on which the server is running.
-//
-// Returns:
-//
-//	Nil if the server is healthy (i.e., responds with a 200 OK).
-//	An error if the health check fails for any reason (e.g., connection error, non-200 status code).
+// Returns nil if the server is healthy (i.e., responds with a 200 OK), or an
+// error if the health check fails for any reason (e.g., connection error,
+// non-200 status code).
 func HealthCheckWithContext(
 	ctx context.Context,
 	out io.Writer,
@@ -632,7 +602,7 @@ func (a *Application) runServerMode(
 	users []*config_v1.User,
 	allowedIPs []string,
 	cachingMiddleware *middleware.CachingMiddleware,
-	store config.ServiceStore,
+	store *sqlite.Store,
 ) error {
 	ipMiddleware, err := middleware.NewIPAllowlistMiddleware(allowedIPs)
 	if err != nil {

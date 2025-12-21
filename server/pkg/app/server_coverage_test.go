@@ -38,7 +38,7 @@ upstream_services: []
 	err := afero.WriteFile(fs, "/config.yaml", []byte(configContent), 0o644)
 	assert.NoError(t, err)
 
-	app := newTestApp(t)
+	app := NewApplication()
 	errChan := make(chan error, 1)
 
 	go func() {
@@ -58,7 +58,7 @@ func TestUploadFile_TempDirFail(t *testing.T) {
 	orig := os.Getenv("TMPDIR")
 	_ = os.Setenv("TMPDIR", orig)
 
-	app := newTestApp(t)
+	app := NewApplication()
 
 	// Create logic to trigger upload
 	var buf bytes.Buffer

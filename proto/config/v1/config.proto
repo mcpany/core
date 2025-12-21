@@ -71,8 +71,6 @@ message GlobalSettings {
   repeated ProfileDefinition profile_definitions = 9 [json_name = "profile_definitions"];
   // The log format for the server.
   LogFormat log_format = 10 [json_name = "log_format"];
-  // The path to the database file.
-  string db_path = 11 [json_name = "db_path"];
 }
 
 message AuditConfig {
