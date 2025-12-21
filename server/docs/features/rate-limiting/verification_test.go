@@ -4,6 +4,7 @@
 package features_test
 
 import (
+	"context"
 	"os"
 	"testing"
 
@@ -34,6 +35,6 @@ func TestRateLimitConfig(t *testing.T) {
 	require.Equal(t, 50.0, service.RateLimit.GetRequestsPerSecond())
 	require.Equal(t, int64(100), service.RateLimit.GetBurst())
 
-	err = config.ValidateOrError(service)
+	err = config.ValidateOrError(context.Background(), service)
 	require.NoError(t, err)
 }

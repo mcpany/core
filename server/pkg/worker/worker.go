@@ -58,8 +58,17 @@ func (w *Worker) Stop() {
 
 func (w *Worker) startToolExecutionWorker(ctx context.Context) {
 	defer w.wg.Done()
-	reqBus := bus.GetBus[*bus.ToolExecutionRequest](w.busProvider, bus.ToolExecutionRequestTopic)
-	resBus := bus.GetBus[*bus.ToolExecutionResult](w.busProvider, bus.ToolExecutionResultTopic)
+	log := logging.GetLogger()
+	reqBus, err := bus.GetBus[*bus.ToolExecutionRequest](w.busProvider, bus.ToolExecutionRequestTopic)
+	if err != nil {
+		log.Error("Failed to get request bus", "error", err)
+		return
+	}
+	resBus, err := bus.GetBus[*bus.ToolExecutionResult](w.busProvider, bus.ToolExecutionResultTopic)
+	if err != nil {
+		log.Error("Failed to get result bus", "error", err)
+		return
+	}
 
 	unsubscribe := reqBus.Subscribe(ctx, bus.ToolExecutionRequestTopic, func(req *bus.ToolExecutionRequest) {
 		w.pond.Submit(func() {

@@ -36,8 +36,10 @@ func TestWorker_StartStopRace(t *testing.T) {
 
 		// After stopping, the worker should not process any more requests.
 		// If the unsubscribe function was not called due to the race, the worker will still be subscribed.
-		reqBus := bus.GetBus[*bus.ToolExecutionRequest](bp, bus.ToolExecutionRequestTopic)
-		resBus := bus.GetBus[*bus.ToolExecutionResult](bp, bus.ToolExecutionResultTopic)
+		reqBus, err := bus.GetBus[*bus.ToolExecutionRequest](bp, bus.ToolExecutionRequestTopic)
+		require.NoError(t, err)
+		resBus, err := bus.GetBus[*bus.ToolExecutionResult](bp, bus.ToolExecutionResultTopic)
+		require.NoError(t, err)
 
 		resultChan := make(chan *bus.ToolExecutionResult, 1)
 		correlationID := "test-race"

@@ -86,7 +86,7 @@ func (m *CachingMiddleware) Execute(ctx context.Context, req *tool.ExecutionRequ
 		metrics.IncrCounterWithLabels([]string{"cache", "misses"}, 1, labels)
 	} else {
 		// If DeleteCache, we skip cache lookup (force miss)
-		metrics.IncrCounterWithLabels([]string{"cache", "skips"}, 1, labels) // Optional: track skips
+		metrics.IncrCounterWithLabels([]string{"cache", "skips"}, 1, labels)
 	}
 
 	result, err := next(ctx, req)

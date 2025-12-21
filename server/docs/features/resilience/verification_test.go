@@ -4,6 +4,7 @@
 package features_test
 
 import (
+	"context"
 	"os"
 	"testing"
 
@@ -34,6 +35,6 @@ func TestResilienceConfig(t *testing.T) {
 	require.Equal(t, 0.5, service.Resilience.CircuitBreaker.GetFailureRateThreshold())
 	require.Equal(t, int64(5), service.Resilience.CircuitBreaker.GetOpenDuration().GetSeconds())
 
-	err = config.ValidateOrError(service)
+	err = config.ValidateOrError(context.Background(), service)
 	require.NoError(t, err)
 }

@@ -22,9 +22,9 @@ func TestBusProvider(t *testing.T) {
 		provider, err := NewProvider(messageBus)
 		assert.NoError(t, err)
 
-		bus1 := GetBus[string](provider, "strings")
-		bus2 := GetBus[int](provider, "ints")
-		bus3 := GetBus[string](provider, "strings")
+		bus1, _ := GetBus[string](provider, "strings")
+		bus2, _ := GetBus[int](provider, "ints")
+		bus3, _ := GetBus[string](provider, "strings")
 
 		assert.NotNil(t, bus1)
 		assert.NotNil(t, bus2)
@@ -47,9 +47,9 @@ func TestBusProvider(t *testing.T) {
 		provider, err := NewProvider(messageBus)
 		assert.NoError(t, err)
 
-		bus1 := GetBus[string](provider, "strings")
-		bus2 := GetBus[int](provider, "ints")
-		bus3 := GetBus[string](provider, "strings")
+		bus1, _ := GetBus[string](provider, "strings")
+		bus2, _ := GetBus[int](provider, "ints")
+		bus3, _ := GetBus[string](provider, "strings")
 
 		assert.NotNil(t, bus1)
 		assert.NotNil(t, bus2)
@@ -66,8 +66,8 @@ func TestBusProvider(t *testing.T) {
 		provider, err := NewProvider(messageBus)
 		assert.NoError(t, err)
 
-		bus1 := GetBus[string](provider, "strings")
-		bus2 := GetBus[int](provider, "ints")
+		bus1, _ := GetBus[string](provider, "strings")
+		bus2, _ := GetBus[int](provider, "ints")
 
 		assert.NotNil(t, bus1)
 		assert.NotNil(t, bus2)
@@ -102,7 +102,7 @@ func TestBusProvider(t *testing.T) {
 		provider, err := NewProvider(messageBus)
 		assert.NoError(t, err)
 
-		bus1 := GetBus[string](provider, "strings")
+		bus1, _ := GetBus[string](provider, "strings")
 		assert.NotNil(t, bus1)
 	})
 }
@@ -114,8 +114,8 @@ func TestIntegration(t *testing.T) {
 	assert.NoError(t, err)
 
 	// Simulate a tool execution request/response
-	reqBus := GetBus[*ToolExecutionRequest](provider, "tool_requests")
-	resBus := GetBus[*ToolExecutionResult](provider, "tool_results")
+	reqBus, _ := GetBus[*ToolExecutionRequest](provider, "tool_requests")
+	resBus, _ := GetBus[*ToolExecutionResult](provider, "tool_results")
 
 	var wg sync.WaitGroup
 	wg.Add(1)
@@ -165,13 +165,13 @@ func TestBusProvider_Concurrent(t *testing.T) {
 	var wg sync.WaitGroup
 	wg.Add(numGoroutines)
 
-	stringBus := GetBus[string](provider, "string_topic")
+	stringBus, _ := GetBus[string](provider, "string_topic")
 
 	for i := 0; i < numGoroutines; i++ {
 		go func() {
 			defer wg.Done()
 			// Concurrently get the same bus
-			bus := GetBus[string](provider, "string_topic")
+			bus, _ := GetBus[string](provider, "string_topic")
 			assert.Same(t, stringBus, bus, "Expected the same bus instance to be returned")
 		}()
 	}
@@ -195,7 +195,7 @@ func TestRedisBus_SubscribeOnce(t *testing.T) {
 	provider, err := NewProvider(messageBus)
 	assert.NoError(t, err)
 
-	bus := GetBus[string](provider, "test-topic")
+	bus, _ := GetBus[string](provider, "test-topic")
 
 	var wg sync.WaitGroup
 	wg.Add(1)
@@ -231,7 +231,7 @@ func TestRedisBus_Unsubscribe(t *testing.T) {
 	provider, err := NewProvider(messageBus)
 	assert.NoError(t, err)
 
-	bus := GetBus[string](provider, "test-topic")
+	bus, _ := GetBus[string](provider, "test-topic")
 
 	var receivedMessages []string
 	unsubscribe := bus.Subscribe(context.Background(), "test-message", func(msg string) {
@@ -266,7 +266,7 @@ func TestRedisBus_Concurrent(t *testing.T) {
 	provider, err := NewProvider(messageBus)
 	assert.NoError(t, err)
 
-	bus := GetBus[string](provider, "test-topic")
+	bus, _ := GetBus[string](provider, "test-topic")
 
 	numSubscribers := 10
 	numMessages := 100

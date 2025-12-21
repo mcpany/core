@@ -4,6 +4,7 @@
 package util_test
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"net/http/httptest"
@@ -13,6 +14,7 @@ import (
 	"github.com/mcpany/core/pkg/util"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/stretchr/testify/assert"
+	"google.golang.org/protobuf/proto"
 )
 
 func TestResolveSecret(t *testing.T) {
@@ -20,14 +22,14 @@ func TestResolveSecret(t *testing.T) {
 	t.Setenv("MCPANY_FILE_PATH_ALLOW_LIST", os.TempDir())
 
 	t.Run("nil secret", func(t *testing.T) {
-		resolved, err := util.ResolveSecret(nil)
+		resolved, err := util.ResolveSecret(context.Background(), nil)
 		assert.NoError(t, err)
-		assert.Empty(t, resolved)
+		assert.Equal(t, "", resolved)
 	})
 
 	t.Run("unknown secret type", func(t *testing.T) {
 		secret := &configv1.SecretValue{}
-		resolved, err := util.ResolveSecret(secret)
+		resolved, err := util.ResolveSecret(context.Background(), secret)
 		assert.NoError(t, err)
 		assert.Empty(t, resolved)
 	})
@@ -35,7 +37,7 @@ func TestResolveSecret(t *testing.T) {
 	t.Run("PlainText", func(t *testing.T) {
 		secret := &configv1.SecretValue{}
 		secret.SetPlainText("my-secret")
-		resolved, err := util.ResolveSecret(secret)
+		resolved, err := util.ResolveSecret(context.Background(), secret)
 		assert.NoError(t, err)
 		assert.Equal(t, "my-secret", resolved)
 	})
@@ -44,7 +46,7 @@ func TestResolveSecret(t *testing.T) {
 		t.Setenv("MY_SECRET_ENV", "my-env-secret")
 		secret := &configv1.SecretValue{}
 		secret.SetEnvironmentVariable("MY_SECRET_ENV")
-		resolved, err := util.ResolveSecret(secret)
+		resolved, err := util.ResolveSecret(context.Background(), secret)
 		assert.NoError(t, err)
 		assert.Equal(t, "my-env-secret", resolved)
 	})
@@ -52,8 +54,9 @@ func TestResolveSecret(t *testing.T) {
 	t.Run("EnvironmentVariable not set", func(t *testing.T) {
 		secret := &configv1.SecretValue{}
 		secret.SetEnvironmentVariable("MY_SECRET_ENV_NOT_SET")
-		_, err := util.ResolveSecret(secret)
+		_, err := util.ResolveSecret(context.Background(), secret)
 		assert.Error(t, err)
+		assert.Contains(t, err.Error(), "environment variable \"MY_SECRET_ENV_NOT_SET\" is not set")
 	})
 
 	t.Run("FilePath", func(t *testing.T) {
@@ -67,7 +70,7 @@ func TestResolveSecret(t *testing.T) {
 
 		secret := &configv1.SecretValue{}
 		secret.SetFilePath(tmpfile.Name())
-		resolved, err := util.ResolveSecret(secret)
+		resolved, err := util.ResolveSecret(context.Background(), secret)
 		assert.NoError(t, err)
 		assert.Equal(t, "my-file-secret", resolved)
 	})
@@ -75,7 +78,7 @@ func TestResolveSecret(t *testing.T) {
 	t.Run("FilePath not found", func(t *testing.T) {
 		secret := &configv1.SecretValue{}
 		secret.SetFilePath("non-existent-file")
-		_, err := util.ResolveSecret(secret)
+		_, err := util.ResolveSecret(context.Background(), secret)
 		assert.Error(t, err)
 	})
 
@@ -90,7 +93,7 @@ func TestResolveSecret(t *testing.T) {
 		remoteContent.SetHttpUrl(server.URL)
 		secret.SetRemoteContent(remoteContent)
 
-		resolved, err := util.ResolveSecret(secret)
+		resolved, err := util.ResolveSecret(context.Background(), secret)
 		assert.NoError(t, err)
 		assert.Equal(t, "my-remote-secret", resolved)
 	})
@@ -119,7 +122,7 @@ func TestResolveSecret(t *testing.T) {
 		secret := &configv1.SecretValue{}
 		secret.SetRemoteContent(remoteContent)
 
-		resolved, err := util.ResolveSecret(secret)
+		resolved, err := util.ResolveSecret(context.Background(), secret)
 		assert.NoError(t, err)
 		assert.Equal(t, "my-remote-secret", resolved)
 	})
@@ -147,7 +150,7 @@ func TestResolveSecret(t *testing.T) {
 		secret := &configv1.SecretValue{}
 		secret.SetRemoteContent(remoteContent)
 
-		resolved, err := util.ResolveSecret(secret)
+		resolved, err := util.ResolveSecret(context.Background(), secret)
 		assert.NoError(t, err)
 		assert.Equal(t, "my-remote-secret", resolved)
 	})
@@ -179,7 +182,7 @@ func TestResolveSecret(t *testing.T) {
 		secret := &configv1.SecretValue{}
 		secret.SetRemoteContent(remoteContent)
 
-		resolved, err := util.ResolveSecret(secret)
+		resolved, err := util.ResolveSecret(context.Background(), secret)
 		assert.NoError(t, err)
 		assert.Equal(t, "my-remote-secret", resolved)
 	})
@@ -190,7 +193,7 @@ func TestResolveSecret(t *testing.T) {
 		secret := &configv1.SecretValue{}
 		secret.SetRemoteContent(remoteContent)
 
-		_, err := util.ResolveSecret(secret)
+		_, err := util.ResolveSecret(context.Background(), secret)
 		assert.Error(t, err)
 	})
 
@@ -205,7 +208,7 @@ func TestResolveSecret(t *testing.T) {
 		secret := &configv1.SecretValue{}
 		secret.SetRemoteContent(remoteContent)
 
-		_, err := util.ResolveSecret(secret)
+		_, err := util.ResolveSecret(context.Background(), secret)
 		assert.Error(t, err)
 	})
 
@@ -220,7 +223,7 @@ func TestResolveSecret(t *testing.T) {
 		secret := &configv1.SecretValue{}
 		secret.SetRemoteContent(remoteContent)
 
-		_, err := util.ResolveSecret(secret)
+		_, err := util.ResolveSecret(context.Background(), secret)
 		assert.Error(t, err)
 	})
 }
@@ -249,7 +252,7 @@ func TestResolveSecret_Vault(t *testing.T) {
 		secret := &configv1.SecretValue{}
 		secret.SetVault(vaultSecret)
 
-		resolved, err := util.ResolveSecret(secret)
+		resolved, err := util.ResolveSecret(context.Background(), secret)
 		assert.NoError(t, err)
 		assert.Equal(t, "my-vault-secret", resolved)
 	})
@@ -272,7 +275,7 @@ func TestResolveSecret_Vault(t *testing.T) {
 		secret := &configv1.SecretValue{}
 		secret.SetVault(vaultSecret)
 
-		_, err := util.ResolveSecret(secret)
+		_, err := util.ResolveSecret(context.Background(), secret)
 		assert.Error(t, err)
 	})
 
@@ -295,7 +298,7 @@ func TestResolveSecret_Vault(t *testing.T) {
 		secret := &configv1.SecretValue{}
 		secret.SetVault(vaultSecret)
 
-		_, err := util.ResolveSecret(secret)
+		_, err := util.ResolveSecret(context.Background(), secret)
 		assert.Error(t, err)
 	})
 
@@ -320,7 +323,7 @@ func TestResolveSecret_Vault(t *testing.T) {
 		secret := &configv1.SecretValue{}
 		secret.SetVault(vaultSecret)
 
-		resolved, err := util.ResolveSecret(secret)
+		resolved, err := util.ResolveSecret(context.Background(), secret)
 		assert.NoError(t, err)
 		assert.Equal(t, "my-vault-secret-v1", resolved)
 	})
@@ -348,7 +351,7 @@ func TestResolveSecret_Vault(t *testing.T) {
 		secret := &configv1.SecretValue{}
 		secret.SetVault(vaultSecret)
 
-		resolved, err := util.ResolveSecret(secret)
+		resolved, err := util.ResolveSecret(context.Background(), secret)
 		assert.NoError(t, err)
 		assert.Equal(t, "my-vault-secret-v1", resolved)
 	})
@@ -375,7 +378,7 @@ func TestResolveSecret_Vault(t *testing.T) {
 		vaultA.SetToken(secretB)
 		vaultB.SetToken(secretA)
 
-		_, err := util.ResolveSecret(secretA)
+		_, err := util.ResolveSecret(context.Background(), secretA)
 		assert.Error(t, err)
 		assert.Contains(t, err.Error(), "secret resolution exceeded max recursion depth")
 	})
@@ -395,7 +398,7 @@ func TestResolveSecretMap(t *testing.T) {
 			"SECRET_VAR": "will_be_overridden",
 		}
 
-		resolved, err := util.ResolveSecretMap(secretMap, plainMap)
+		resolved, err := util.ResolveSecretMap(context.Background(), secretMap, plainMap)
 		assert.NoError(t, err)
 		assert.Equal(t, "plain_value", resolved["PLAIN_VAR"])
 		assert.Equal(t, "secret_value", resolved["SECRET_VAR"])
@@ -411,7 +414,43 @@ func TestResolveSecretMap(t *testing.T) {
 		}
 		plainMap := map[string]string{}
 
-		_, err := util.ResolveSecretMap(secretMap, plainMap)
+		_, err := util.ResolveSecretMap(context.Background(), secretMap, plainMap)
 		assert.Error(t, err)
+		assert.Contains(t, err.Error(), "environment variable \"NON_EXISTENT_VAR\" is not set")
+	})
+
+	t.Run("resolve secret map", func(t *testing.T) {
+		secretMap := map[string]*configv1.SecretValue{
+			"KEY1": {
+				Value: &configv1.SecretValue_PlainText{
+					PlainText: "test-value",
+				},
+			},
+			"KEY3": {
+				Value: &configv1.SecretValue_PlainText{
+					PlainText: "test-secret-override",
+				},
+			},
+		}
+		plainMap := map[string]string{
+			"KEY2": "test-plain",
+			"KEY3": "test-plain-override",
+		}
+		resolved, err := util.ResolveSecretMap(context.Background(), secretMap, plainMap)
+		assert.NoError(t, err)
+		assert.Equal(t, "test-value", resolved["KEY1"])
+		assert.Equal(t, "test-plain", resolved["KEY2"])
+		assert.Equal(t, "test-secret-override", resolved["KEY3"])
+	})
+
+	t.Run("resolve secret map error", func(t *testing.T) {
+		secretMap := map[string]*configv1.SecretValue{}
+		plainMap := map[string]string{}
+		secretMap["KEY4"] = configv1.SecretValue_builder{
+			EnvironmentVariable: proto.String("NON_EXISTENT_VAR"),
+		}.Build()
+		_, err := util.ResolveSecretMap(context.Background(), secretMap, plainMap)
+		assert.Error(t, err)
+		assert.Contains(t, err.Error(), "environment variable \"NON_EXISTENT_VAR\" is not set")
 	})
 }

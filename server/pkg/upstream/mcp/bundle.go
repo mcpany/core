@@ -114,7 +114,8 @@ func (u *Upstream) createAndRegisterMCPItemsFromBundle(
 	}
 
 	// Merge config env (overrides manifest env)
-	resolvedBundleEnv, err := util.ResolveSecretMap(bundleConfig.GetEnv(), nil)
+	// Merge config env (overrides manifest env)
+	resolvedBundleEnv, err := util.ResolveSecretMap(ctx, bundleConfig.GetEnv(), nil)
 	if err != nil {
 		return nil, nil, fmt.Errorf("failed to resolve bundle secret env: %w", err)
 	}

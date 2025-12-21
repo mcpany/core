@@ -4,6 +4,7 @@
 package examples_test
 
 import (
+	"context"
 	"os"
 	"path/filepath"
 	"testing"
@@ -60,7 +61,7 @@ func validateConfig(t *testing.T, configPath string) {
 	}
 
 	// Validate
-	validationErrors := config.Validate(configs, config.Server)
+	validationErrors := config.Validate(context.Background(), configs, config.Server)
 	assert.Empty(t, validationErrors, "Config validation failed for %s", configPath)
 }
 

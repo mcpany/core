@@ -45,8 +45,16 @@ func (w *ServiceRegistrationWorker) Start(ctx context.Context) {
 	log := logging.GetLogger().With("component", "ServiceRegistrationWorker")
 	log.Info("Service registration worker started")
 
-	requestBus := bus.GetBus[*bus.ServiceRegistrationRequest](w.bus, bus.ServiceRegistrationRequestTopic)
-	resultBus := bus.GetBus[*bus.ServiceRegistrationResult](w.bus, bus.ServiceRegistrationResultTopic)
+	requestBus, err := bus.GetBus[*bus.ServiceRegistrationRequest](w.bus, bus.ServiceRegistrationRequestTopic)
+	if err != nil {
+		log.Error("Failed to get service registration request bus", "error", err)
+		return
+	}
+	resultBus, err := bus.GetBus[*bus.ServiceRegistrationResult](w.bus, bus.ServiceRegistrationResultTopic)
+	if err != nil {
+		log.Error("Failed to get service registration result bus", "error", err)
+		return
+	}
 
 	unsubscribe := requestBus.Subscribe(ctx, "request", func(req *bus.ServiceRegistrationRequest) {
 		start := time.Now()
@@ -87,8 +95,16 @@ func (w *ServiceRegistrationWorker) Start(ctx context.Context) {
 		_ = resultBus.Publish(ctx, req.CorrelationID(), res)
 	})
 
-	listRequestBus := bus.GetBus[*bus.ServiceListRequest](w.bus, bus.ServiceListRequestTopic)
-	listResultBus := bus.GetBus[*bus.ServiceListResult](w.bus, bus.ServiceListResultTopic)
+	listRequestBus, err := bus.GetBus[*bus.ServiceListRequest](w.bus, bus.ServiceListRequestTopic)
+	if err != nil {
+		log.Error("Failed to get service list request bus", "error", err)
+		return
+	}
+	listResultBus, err := bus.GetBus[*bus.ServiceListResult](w.bus, bus.ServiceListResultTopic)
+	if err != nil {
+		log.Error("Failed to get service list result bus", "error", err)
+		return
+	}
 
 	listUnsubscribe := listRequestBus.Subscribe(ctx, "request", func(req *bus.ServiceListRequest) {
 		log.Info("Received service list request", "correlationID", req.CorrelationID())
@@ -101,8 +117,16 @@ func (w *ServiceRegistrationWorker) Start(ctx context.Context) {
 		_ = listResultBus.Publish(ctx, req.CorrelationID(), res)
 	})
 
-	getRequestBus := bus.GetBus[*bus.ServiceGetRequest](w.bus, bus.ServiceGetRequestTopic)
-	getResultBus := bus.GetBus[*bus.ServiceGetResult](w.bus, bus.ServiceGetResultTopic)
+	getRequestBus, err := bus.GetBus[*bus.ServiceGetRequest](w.bus, bus.ServiceGetRequestTopic)
+	if err != nil {
+		log.Error("Failed to get service get request bus", "error", err)
+		return
+	}
+	getResultBus, err := bus.GetBus[*bus.ServiceGetResult](w.bus, bus.ServiceGetResultTopic)
+	if err != nil {
+		log.Error("Failed to get service get result bus", "error", err)
+		return
+	}
 
 	getUnsubscribe := getRequestBus.Subscribe(ctx, "request", func(req *bus.ServiceGetRequest) {
 		log.Info("Received service get request", "correlationID", req.CorrelationID(), "serviceName", req.ServiceName)

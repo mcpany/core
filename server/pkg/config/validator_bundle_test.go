@@ -4,6 +4,7 @@
 package config
 
 import (
+	"context"
 	"testing"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
@@ -30,7 +31,7 @@ func TestValidate_McpBundleConnection(t *testing.T) {
 			},
 		}
 
-		validationErrors := Validate(cfg, Server)
+		validationErrors := Validate(context.Background(), cfg, Server)
 		assert.Empty(t, validationErrors)
 	})
 
@@ -52,7 +53,7 @@ func TestValidate_McpBundleConnection(t *testing.T) {
 			},
 		}
 
-		validationErrors := Validate(cfg, Server)
+		validationErrors := Validate(context.Background(), cfg, Server)
 		assert.NotEmpty(t, validationErrors)
 		assert.Contains(t, validationErrors[0].Error(), "mcp service with bundle_connection has empty bundle_path")
 	})

@@ -7,9 +7,11 @@ import (
 	"context"
 	"testing"
 
+	"encoding/json"
 	"net/http"
 
 	"github.com/mcpany/core/pkg/auth"
+	"github.com/mcpany/core/pkg/consts"
 	"github.com/mcpany/core/pkg/middleware"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
@@ -143,5 +145,50 @@ func TestAuthMiddleware(t *testing.T) {
 		_, err = handler(context.Background(), "test.method", nil)
 		require.Error(t, err)
 		assert.Contains(t, err.Error(), "http.Request not found in context")
+	})
+
+	t.Run("should enforce auth for tools/call with protected service prefix", func(t *testing.T) {
+		authManager := auth.NewManager()
+		authenticator := &auth.APIKeyAuthenticator{
+			ParamName: "X-API-Key",
+			Value:     "secret-value",
+			In:        configv1.APIKeyAuth_HEADER,
+		}
+		err := authManager.AddAuthenticator("protected", authenticator)
+		require.NoError(t, err)
+
+		mw := middleware.AuthMiddleware(authManager)
+
+		// Mock next handler
+		var nextCalled bool
+		nextHandler := func(_ context.Context, _ string, _ mcp.Request) (mcp.Result, error) {
+			nextCalled = true
+			return &mcp.CallToolResult{}, nil
+		}
+
+		handler := mw(nextHandler)
+
+		// Create a "tools/call" request for a tool in the "protected" service
+		toolName := "protected.my-tool"
+		req := &mcp.CallToolRequest{
+			Params: &mcp.CallToolParamsRaw{
+				Name:      toolName,
+				Arguments: json.RawMessage(`{}`),
+			},
+		}
+
+		// Create an http.Request WITHOUT credentials
+		httpReq, err := http.NewRequest("POST", "/", nil) // No X-API-Key
+		require.NoError(t, err)
+
+		ctx := context.WithValue(context.Background(), "http.request", httpReq)
+
+		// Call the handler with "tools/call" method
+		_, err = handler(ctx, consts.MethodToolsCall, req)
+
+		// EXPECTATION: Should FAIL with Unauthorized
+		require.Error(t, err)
+		assert.Contains(t, err.Error(), "unauthorized")
+		assert.False(t, nextCalled)
 	})
 }
