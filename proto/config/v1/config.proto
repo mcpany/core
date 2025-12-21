@@ -80,6 +80,12 @@ message GlobalSettings {
 }
 
 message AuditConfig {
+  enum StorageType {
+    STORAGE_TYPE_UNSPECIFIED = 0;
+    STORAGE_TYPE_FILE = 1;
+    STORAGE_TYPE_SQLITE = 2;
+  }
+
   // Whether audit logging is enabled.
   bool enabled = 1 [json_name = "enabled"];
   // The file path to write audit logs to.
@@ -88,6 +94,8 @@ message AuditConfig {
   bool log_arguments = 3 [json_name = "log_arguments"];
   // Whether to log output results (caution: might contain sensitive data).
   bool log_results = 4 [json_name = "log_results"];
+  // The storage type to use.
+  StorageType storage_type = 5 [json_name = "storage_type"];
 }
 
 message ProfileDefinition {
