@@ -12,7 +12,6 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/docker/docker/client"
 	"github.com/mcpany/core/pkg/prompt"
 	"github.com/mcpany/core/pkg/resource"
 	"github.com/mcpany/core/pkg/tool"
@@ -235,7 +234,6 @@ func TestE2E_Bundle_Filesystem(t *testing.T) {
 	if os.Getenv("SKIP_DOCKER_TESTS") == "true" {
 		t.Skip("Skipping Docker tests because SKIP_DOCKER_TESTS is set")
 	}
-	requireDocker(t)
 	tempDir := t.TempDir()
 	bundlePath := createE2EBundle(t, tempDir)
 
@@ -327,16 +325,4 @@ func TestE2E_Bundle_Filesystem(t *testing.T) {
 	assert.Contains(t, listResultStr, "manifest.json")
 	assert.Contains(t, listResultStr, "server.js")
 	assert.Contains(t, listResultStr, "hello.txt")
-}
-
-func requireDocker(t *testing.T) {
-	t.Helper()
-	cli, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
-	if err != nil {
-		t.Skipf("Skipping test: Docker client creation failed: %v", err)
-	}
-	ctx := context.Background()
-	if _, err := cli.Ping(ctx); err != nil {
-		t.Skipf("Skipping test: Docker daemon not reachable: %v", err)
-	}
 }
