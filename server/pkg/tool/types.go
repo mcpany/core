@@ -107,29 +107,11 @@ type contextKey string
 const toolContextKey = contextKey("tool")
 
 // NewContextWithTool creates a new context with the given tool.
-//
-// Parameters:
-//
-//	ctx: The parent context.
-//	t: The tool to store in the context.
-//
-// Returns:
-//
-//	A new context containing the tool.
 func NewContextWithTool(ctx context.Context, t Tool) context.Context {
 	return context.WithValue(ctx, toolContextKey, t)
 }
 
 // GetFromContext retrieves a tool from the context.
-//
-// Parameters:
-//
-//	ctx: The context to retrieve the tool from.
-//
-// Returns:
-//
-//	The tool if found.
-//	True if the tool was found, false otherwise.
 func GetFromContext(ctx context.Context) (Tool, bool) {
 	t, ok := ctx.Value(toolContextKey).(Tool)
 	return t, ok
@@ -163,29 +145,11 @@ type CacheControl struct {
 const cacheControlContextKey = contextKey("cache_control")
 
 // NewContextWithCacheControl creates a new context with the given CacheControl.
-//
-// Parameters:
-//
-//	ctx: The parent context.
-//	cc: The CacheControl to store in the context.
-//
-// Returns:
-//
-//	A new context containing the CacheControl.
 func NewContextWithCacheControl(ctx context.Context, cc *CacheControl) context.Context {
 	return context.WithValue(ctx, cacheControlContextKey, cc)
 }
 
 // GetCacheControl retrieves the CacheControl from the context.
-//
-// Parameters:
-//
-//	ctx: The context to retrieve the CacheControl from.
-//
-// Returns:
-//
-//	The CacheControl if found.
-//	True if the CacheControl was found, false otherwise.
 func GetCacheControl(ctx context.Context) (*CacheControl, bool) {
 	cc, ok := ctx.Value(cacheControlContextKey).(*CacheControl)
 	return cc, ok
@@ -1776,13 +1740,6 @@ func isSensitiveKey(key string) bool {
 }
 
 func checkForPathTraversal(val string) error {
-	if strings.HasPrefix(val, "/") || strings.HasPrefix(val, "\\") {
-		return fmt.Errorf("absolute path not allowed")
-	}
-	// Check for drive letter (e.g. C:)
-	if len(val) >= 2 && val[1] == ':' {
-		return fmt.Errorf("absolute path not allowed")
-	}
 	if val == ".." {
 		return fmt.Errorf("path traversal attempt detected")
 	}

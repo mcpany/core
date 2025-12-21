@@ -34,10 +34,6 @@ var initDockerClientDefault = func() {
 }
 
 // IsDockerSocketAccessible checks if the Docker daemon is accessible through the socket.
-//
-// Returns:
-//
-//	True if the Docker socket is accessible, false otherwise.
 func IsDockerSocketAccessible() bool {
 	return IsDockerSocketAccessibleFunc()
 }

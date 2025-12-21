@@ -490,10 +490,6 @@ func WaitForHTTPHealth(t *testing.T, url string, timeout time.Duration) {
 
 // IsDockerSocketAccessible checks if the Docker daemon is accessible.
 func IsDockerSocketAccessible() bool {
-	// Respect SKIP_DOCKER_TESTS environment variable
-	if os.Getenv("SKIP_DOCKER_TESTS") == "true" {
-		return false
-	}
 	dockerExe, dockerArgs := getDockerCommand()
 
 	cmd := exec.Command(dockerExe, append(dockerArgs, "info")...) //nolint:gosec // Test helper
