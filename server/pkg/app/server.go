@@ -143,6 +143,7 @@ type Application struct {
 	ToolManager      tool.ManagerInterface
 	ResourceManager  resource.ManagerInterface
 	UpstreamFactory  factory.Factory
+	ServiceRegistry  serviceregistry.ServiceRegistryInterface
 	configFiles      map[string]string
 	fs               afero.Fs
 	configPaths      []string
@@ -155,13 +156,28 @@ type Application struct {
 // Returns a new instance of the Application, ready to be run.
 func NewApplication() *Application {
 	busProvider, _ := bus.NewProvider(nil)
+	promptManager := prompt.NewManager()
+	toolManager := tool.NewManager(busProvider)
+	resourceManager := resource.NewManager()
+	upstreamFactory := factory.NewUpstreamServiceFactory(pool.NewManager())
+	authManager := auth.NewManager()
+
+	serviceRegistry := serviceregistry.New(
+		upstreamFactory,
+		toolManager,
+		promptManager,
+		resourceManager,
+		authManager,
+	)
+
 	return &Application{
 		runStdioModeFunc: runStdioMode,
-		PromptManager:    prompt.NewManager(),
-		ToolManager:      tool.NewManager(busProvider),
+		PromptManager:    promptManager,
+		ToolManager:      toolManager,
 
-		ResourceManager: resource.NewManager(),
-		UpstreamFactory: factory.NewUpstreamServiceFactory(pool.NewManager()),
+		ResourceManager: resourceManager,
+		UpstreamFactory: upstreamFactory,
+		ServiceRegistry: serviceRegistry,
 		configFiles:     make(map[string]string),
 	}
 }
@@ -267,7 +283,7 @@ func (a *Application) Run(
 		cfg.GetGlobalSettings().GetProfileDefinitions(),
 	)
 
-	serviceRegistry := serviceregistry.New(
+	a.ServiceRegistry = serviceregistry.New(
 		upstreamFactory,
 		a.ToolManager,
 		a.PromptManager,
@@ -277,7 +293,7 @@ func (a *Application) Run(
 
 	// New message bus and workers
 	upstreamWorker := worker.NewUpstreamWorker(busProvider, a.ToolManager)
-	registrationWorker := worker.NewServiceRegistrationWorker(busProvider, serviceRegistry)
+	registrationWorker := worker.NewServiceRegistrationWorker(busProvider, a.ServiceRegistry)
 
 	// Start background workers
 	upstreamWorker.Start(ctx)
@@ -301,7 +317,7 @@ func (a *Application) Run(
 		a.PromptManager,
 		a.ResourceManager,
 		authManager,
-		serviceRegistry,
+		a.ServiceRegistry,
 		busProvider,
 		config.GlobalSettings().IsDebug(),
 	)
@@ -423,36 +439,77 @@ func (a *Application) ReloadConfig(fs afero.Fs, configPaths []string) error {
 		cfg.GetGlobalSettings().GetProfileDefinitions(),
 	)
 
-	// Clear existing services
-	// We iterate over all currently registered services and clear them.
-	// This handles cases where a service was removed or renamed in the new config.
-	for _, svcInfo := range a.ToolManager.ListServices() {
-		serviceID := svcInfo.Name
-		a.ToolManager.ClearToolsForService(serviceID)
-		a.ResourceManager.ClearResourcesForService(serviceID)
-		a.PromptManager.ClearPromptsForService(serviceID)
+	// Get current services
+	currentServices, err := a.ServiceRegistry.GetAllServices()
+	if err != nil {
+		log.Error("Failed to get current services during reload", "error", err)
+		// Proceed assuming empty? Or return error?
+		// If we can't get current services, we might double-register or fail to cleanup.
+		// Better to fail the reload than corrupt state.
+		return fmt.Errorf("failed to get current services: %w", err)
+	}
+	currentServiceMap := make(map[string]*config_v1.UpstreamServiceConfig)
+	for _, svc := range currentServices {
+		currentServiceMap[svc.GetName()] = svc
 	}
 
+	newServiceMap := make(map[string]*config_v1.UpstreamServiceConfig)
 	if cfg.GetUpstreamServices() != nil {
-		for _, serviceConfig := range cfg.GetUpstreamServices() {
-			if serviceConfig.GetDisable() {
-				log.Info("Skipping disabled service", "service", serviceConfig.GetName())
-				continue
-			}
+		for _, svc := range cfg.GetUpstreamServices() {
+			newServiceMap[svc.GetName()] = svc
+		}
+	}
 
-			// Reload tools, prompts, and resources
-			upstream, err := a.UpstreamFactory.NewUpstream(serviceConfig)
+	// 1. Remove services that are no longer in config
+	for name := range currentServiceMap {
+		if _, ok := newServiceMap[name]; !ok {
+			log.Info("Removing service", "service", name)
+			serviceID, err := util.SanitizeServiceName(name)
 			if err != nil {
-				log.Error("Failed to get upstream service", "error", err)
+				log.Error("Failed to sanitize service name for removal", "name", name, "error", err)
 				continue
 			}
-			if upstream != nil {
-				_, _, _, err = upstream.Register(context.Background(), serviceConfig, a.ToolManager, a.PromptManager, a.ResourceManager, false)
-				if err != nil {
-					log.Error("Failed to register upstream service", "error", err)
-					continue
+			if err := a.ServiceRegistry.UnregisterService(context.Background(), serviceID); err != nil {
+				log.Error("Failed to unregister service", "service", name, "error", err)
+			}
+		}
+	}
+
+	// 2. Add or Update services
+	for name, svcConfig := range newServiceMap {
+		serviceID, err := util.SanitizeServiceName(name)
+		if err != nil {
+			log.Error("Failed to sanitize service name for registration", "name", name, "error", err)
+			continue
+		}
+
+		if svcConfig.GetDisable() {
+			log.Info("Skipping disabled service", "service", name)
+			// If it was previously enabled, we should unregister it
+			if _, ok := currentServiceMap[name]; ok {
+				if err := a.ServiceRegistry.UnregisterService(context.Background(), serviceID); err != nil {
+					log.Error("Failed to unregister disabled service", "service", name, "error", err)
 				}
 			}
+			continue
+		}
+
+		// If exists, unregister first (to handle updates)
+		// Optimization: We could check if config actually changed, but "Update" implies reload always refreshes.
+		if _, ok := currentServiceMap[name]; ok {
+			log.Info("Updating service", "service", name)
+			if err := a.ServiceRegistry.UnregisterService(context.Background(), serviceID); err != nil {
+				log.Error("Failed to unregister service for update", "service", name, "error", err)
+				// If unregister fails, should we try to register anyway? Probably yes, might overwrite.
+			}
+		} else {
+			log.Info("Adding service", "service", name)
+		}
+
+		// Register
+		_, _, _, err = a.ServiceRegistry.RegisterService(context.Background(), svcConfig)
+		if err != nil {
+			log.Error("Failed to register service", "service", name, "error", err)
 		}
 	}
 	log.Info("Tools", "tools", a.ToolManager.ListTools())
