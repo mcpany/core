@@ -35,6 +35,8 @@ message User {
   AuthenticationConfig authentication = 2 [json_name = "authentication"];
   // The list of profile IDs this user has access to.
   repeated string profile_ids = 3 [json_name = "profile_ids"];
+  // The list of roles assigned to the user.
+  repeated string roles = 4 [json_name = "roles"];
 }
 
 message GlobalSettings {
@@ -87,6 +89,10 @@ message AuditConfig {
 message ProfileDefinition {
   string name = 1;
   ProfileSelector selector = 2;
+  // List of roles required to access this profile.
+  // If empty, no specific role is required (but user must still have the profile_id explicitly assigned if strict mode).
+  // Alternatively, if user has one of these roles, they get access.
+  repeated string required_roles = 3 [json_name = "required_roles"];
 }
 
 message ProfileSelector {

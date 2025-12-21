@@ -246,7 +246,9 @@ type User struct {
 	// The authentication configuration for the user.
 	Authentication *AuthenticationConfig `protobuf:"bytes,2,opt,name=authentication" json:"authentication,omitempty"`
 	// The list of profile IDs this user has access to.
-	ProfileIds    []string `protobuf:"bytes,3,rep,name=profile_ids" json:"profile_ids,omitempty"`
+	ProfileIds []string `protobuf:"bytes,3,rep,name=profile_ids" json:"profile_ids,omitempty"`
+	// The list of roles assigned to the user.
+	Roles         []string `protobuf:"bytes,4,rep,name=roles" json:"roles,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -297,6 +299,13 @@ func (x *User) GetProfileIds() []string {
 	return nil
 }
 
+func (x *User) GetRoles() []string {
+	if x != nil {
+		return x.Roles
+	}
+	return nil
+}
+
 func (x *User) SetId(v string) {
 	x.Id = &v
 }
@@ -307,6 +316,10 @@ func (x *User) SetAuthentication(v *AuthenticationConfig) {
 
 func (x *User) SetProfileIds(v []string) {
 	x.ProfileIds = v
+}
+
+func (x *User) SetRoles(v []string) {
+	x.Roles = v
 }
 
 func (x *User) HasId() bool {
@@ -340,6 +353,8 @@ type User_builder struct {
 	Authentication *AuthenticationConfig
 	// The list of profile IDs this user has access to.
 	ProfileIds []string
+	// The list of roles assigned to the user.
+	Roles []string
 }
 
 func (b0 User_builder) Build() *User {
@@ -349,6 +364,7 @@ func (b0 User_builder) Build() *User {
 	x.Id = b.Id
 	x.Authentication = b.Authentication
 	x.ProfileIds = b.ProfileIds
+	x.Roles = b.Roles
 	return m0
 }
 
@@ -757,9 +773,13 @@ func (b0 AuditConfig_builder) Build() *AuditConfig {
 }
 
 type ProfileDefinition struct {
-	state         protoimpl.MessageState `protogen:"hybrid.v1"`
-	Name          *string                `protobuf:"bytes,1,opt,name=name" json:"name,omitempty"`
-	Selector      *ProfileSelector       `protobuf:"bytes,2,opt,name=selector" json:"selector,omitempty"`
+	state    protoimpl.MessageState `protogen:"hybrid.v1"`
+	Name     *string                `protobuf:"bytes,1,opt,name=name" json:"name,omitempty"`
+	Selector *ProfileSelector       `protobuf:"bytes,2,opt,name=selector" json:"selector,omitempty"`
+	// List of roles required to access this profile.
+	// If empty, no specific role is required (but user must still have the profile_id explicitly assigned if strict mode).
+	// Alternatively, if user has one of these roles, they get access.
+	RequiredRoles []string `protobuf:"bytes,3,rep,name=required_roles" json:"required_roles,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -803,12 +823,23 @@ func (x *ProfileDefinition) GetSelector() *ProfileSelector {
 	return nil
 }
 
+func (x *ProfileDefinition) GetRequiredRoles() []string {
+	if x != nil {
+		return x.RequiredRoles
+	}
+	return nil
+}
+
 func (x *ProfileDefinition) SetName(v string) {
 	x.Name = &v
 }
 
 func (x *ProfileDefinition) SetSelector(v *ProfileSelector) {
 	x.Selector = v
+}
+
+func (x *ProfileDefinition) SetRequiredRoles(v []string) {
+	x.RequiredRoles = v
 }
 
 func (x *ProfileDefinition) HasName() bool {
@@ -838,6 +869,10 @@ type ProfileDefinition_builder struct {
 
 	Name     *string
 	Selector *ProfileSelector
+	// List of roles required to access this profile.
+	// If empty, no specific role is required (but user must still have the profile_id explicitly assigned if strict mode).
+	// Alternatively, if user has one of these roles, they get access.
+	RequiredRoles []string
 }
 
 func (b0 ProfileDefinition_builder) Build() *ProfileDefinition {
@@ -846,6 +881,7 @@ func (b0 ProfileDefinition_builder) Build() *ProfileDefinition {
 	_, _ = b, x
 	x.Name = b.Name
 	x.Selector = b.Selector
+	x.RequiredRoles = b.RequiredRoles
 	return m0
 }
 
@@ -929,11 +965,12 @@ const file_proto_config_v1_config_proto_rawDesc = "" +
 	"\x0fglobal_settings\x18\x01 \x01(\v2 .mcpany.config.v1.GlobalSettingsR\x0fglobal_settings\x12U\n" +
 	"\x11upstream_services\x18\x02 \x03(\v2'.mcpany.config.v1.UpstreamServiceConfigR\x11upstream_services\x12o\n" +
 	"\x1cupstream_service_collections\x18\x03 \x03(\v2+.mcpany.config.v1.UpstreamServiceCollectionR\x1cupstream_service_collections\x12,\n" +
-	"\x05users\x18\x04 \x03(\v2\x16.mcpany.config.v1.UserR\x05users\"\x88\x01\n" +
+	"\x05users\x18\x04 \x03(\v2\x16.mcpany.config.v1.UserR\x05users\"\x9e\x01\n" +
 	"\x04User\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12N\n" +
 	"\x0eauthentication\x18\x02 \x01(\v2&.mcpany.config.v1.AuthenticationConfigR\x0eauthentication\x12 \n" +
-	"\vprofile_ids\x18\x03 \x03(\tR\vprofile_ids\"\xbe\x05\n" +
+	"\vprofile_ids\x18\x03 \x03(\tR\vprofile_ids\x12\x14\n" +
+	"\x05roles\x18\x04 \x03(\tR\x05roles\"\xbe\x05\n" +
 	"\x0eGlobalSettings\x12.\n" +
 	"\x12mcp_listen_address\x18\x01 \x01(\tR\x12mcp_listen_address\x12G\n" +
 	"\tlog_level\x18\x03 \x01(\x0e2).mcpany.config.v1.GlobalSettings.LogLevelR\tlog_level\x121\n" +
@@ -961,10 +998,11 @@ const file_proto_config_v1_config_proto_rawDesc = "" +
 	"\aenabled\x18\x01 \x01(\bR\aenabled\x12 \n" +
 	"\voutput_path\x18\x02 \x01(\tR\voutput_path\x12$\n" +
 	"\rlog_arguments\x18\x03 \x01(\bR\rlog_arguments\x12 \n" +
-	"\vlog_results\x18\x04 \x01(\bR\vlog_results\"f\n" +
+	"\vlog_results\x18\x04 \x01(\bR\vlog_results\"\x8e\x01\n" +
 	"\x11ProfileDefinition\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12=\n" +
-	"\bselector\x18\x02 \x01(\v2!.mcpany.config.v1.ProfileSelectorR\bselector\"\xc9\x01\n" +
+	"\bselector\x18\x02 \x01(\v2!.mcpany.config.v1.ProfileSelectorR\bselector\x12&\n" +
+	"\x0erequired_roles\x18\x03 \x03(\tR\x0erequired_roles\"\xc9\x01\n" +
 	"\x0fProfileSelector\x12\x12\n" +
 	"\x04tags\x18\x01 \x03(\tR\x04tags\x12_\n" +
 	"\x0ftool_properties\x18\x02 \x03(\v25.mcpany.config.v1.ProfileSelector.ToolPropertiesEntryR\x0ftool_properties\x1aA\n" +

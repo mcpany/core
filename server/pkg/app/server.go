@@ -412,7 +412,7 @@ func (a *Application) Run(
 		allowedIPs = cfg.GetGlobalSettings().GetAllowedIps()
 	}
 
-	return a.runServerMode(ctx, mcpSrv, busProvider, bindAddress, grpcPort, shutdownTimeout, cfg.GetUsers(), allowedIPs, cachingMiddleware, sqliteStore)
+	return a.runServerMode(ctx, mcpSrv, busProvider, bindAddress, grpcPort, shutdownTimeout, cfg.GetUsers(), cfg.GetGlobalSettings().GetProfileDefinitions(), allowedIPs, cachingMiddleware, sqliteStore)
 }
 
 // ReloadConfig reloads the configuration from the given paths and updates the
@@ -583,17 +583,7 @@ func HealthCheckWithContext(
 // grpcPort is the port for the gRPC registration server.
 //
 // It returns an error if any of the servers fail to start or run.
-// runServerMode runs the server in the standard HTTP and gRPC server mode. It
-// starts the HTTP server for JSON-RPC and the gRPC server for service
-// registration, and handles graceful shutdown.
-//
-// ctx is the context for managing the server's lifecycle.
-// mcpSrv is the MCP server instance.
-// bus is the message bus for inter-component communication.
-// jsonrpcPort is the port for the JSON-RPC server.
-// grpcPort is the port for the gRPC registration server.
-//
-// It returns an error if any of the servers fail to start or run.
+
 //
 //nolint:gocyclo
 func (a *Application) runServerMode(
@@ -603,6 +593,7 @@ func (a *Application) runServerMode(
 	bindAddress, grpcPort string,
 	shutdownTimeout time.Duration,
 	users []*config_v1.User,
+	profileDefinitions []*config_v1.ProfileDefinition,
 	allowedIPs []string,
 	cachingMiddleware *middleware.CachingMiddleware,
 	store *sqlite.Store,
@@ -642,13 +633,22 @@ func (a *Application) runServerMode(
 		userMap[u.GetId()] = u
 	}
 
+	// Build Profile Definition Map for RBAC
+	profileDefMap := make(map[string]*config_v1.ProfileDefinition)
+	for _, def := range profileDefinitions {
+		profileDefMap[def.GetName()] = def
+	}
+
 	mux := http.NewServeMux()
+
+	// UI Handler
+	uiFS := http.FileServer(http.Dir("./ui"))
+	mux.Handle("/ui/", http.StripPrefix("/ui", uiFS))
+
 	mux.Handle("/", authMiddleware(httpHandler))
 
 	// API Routes for Configuration Management
-	// TODO: Add auth middleware to these routes if needed, or rely on global auth
-	// For now, these are protected by the same authMiddleware if applied to specific paths,
-	// but we should explicitly guard them.
+	// Protected by auth middleware
 	apiHandler := http.StripPrefix("/api/v1", a.createAPIHandler(store))
 	mux.Handle("/api/v1/", authMiddleware(apiHandler))
 
@@ -796,13 +796,35 @@ func (a *Application) runServerMode(
 			}
 		}
 		if !hasAccess {
-			http.Error(w, "Forbidden", http.StatusForbidden)
+			http.Error(w, "Forbidden: User does not have access to this profile", http.StatusForbidden)
 			return
+		}
+
+		// RBAC Check: Check if profile requires specific roles
+		if def, ok := profileDefMap[profileID]; ok && len(def.RequiredRoles) > 0 {
+			hasRole := false
+			// Check if user has any of the required roles
+			for _, requiredRole := range def.RequiredRoles {
+				for _, userRole := range user.GetRoles() {
+					if userRole == requiredRole {
+						hasRole = true
+						break
+					}
+				}
+				if hasRole {
+					break
+				}
+			}
+			if !hasRole {
+				http.Error(w, fmt.Sprintf("Forbidden: Profile %s requires roles %v", profileID, def.RequiredRoles), http.StatusForbidden)
+				return
+			}
 		}
 
 		// Inject context
 		ctx := auth.ContextWithUser(r.Context(), uid)
 		ctx = auth.ContextWithProfileID(ctx, profileID)
+		ctx = auth.ContextWithRoles(ctx, user.GetRoles())
 
 		// Strip the prefix so the underlying handler sees the relative path
 		prefix := fmt.Sprintf("/mcp/u/%s/profile/%s", uid, profileID)
