@@ -17,6 +17,10 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+func newTestApp(t *testing.T) *Application {
+	return NewApplication()
+}
+
 func TestRun_UI(t *testing.T) {
 	// Create temporary ui directory in current package dir
 	err := os.Mkdir("ui", 0755)
