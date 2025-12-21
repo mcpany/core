@@ -15,7 +15,7 @@ This document outlines the current status and future plans for MCP Any.
 - [x] [MCP-to-MCP Proxy](features/service_types.md)
 - [x] [WebSocket](features/service_types.md)
 - [x] [WebRTC](features/service_types.md)
-- [x] [SQL](features/service_types.md) (Beta)
+- [x] [SQL](features/service_types.md)
 
 ### Authentication
 - [x] [API Key](features/auth.md)
@@ -37,26 +37,23 @@ This document outlines the current status and future plans for MCP Any.
 - [x] [Secrets Management](features/security.md)
 - [x] [IP Allowlisting](features/security.md)
 - [x] [Webhooks](features/security.md)
+- [x] [Role-Based Access Control (RBAC)](features/auth.md)
 
 ### Core
 - [x] Dynamic Tool Registration
 - [x] Message Bus (NATS, Kafka)
+- [x] [Structured Output Transformation](features/transformation.md) (JQ/JSONPath)
+
+### User Interface
+- [x] [Dynamic Web UI](features/web_ui.md) (Beta)
 
 ## Upcoming Features (High Priority)
 
-### 1. Role-Based Access Control (RBAC)
-**Why:** Essential for multi-tenant environments to restrict access to specific profiles or tools based on user roles.
-**Status:** Planned
-
-### 2. Dynamic Web UI
-**Why:** A visual dashboard to monitor health, view metrics, and manage configurations without editing YAML.
-**Status:** Planned
-
-### 3. Admin Management API
+### 1. Admin Management API
 **Why:** Expand the Admin API to support full CRUD operations on services/config at runtime.
 **Status:** Implemented (CRUD for Services is available via the Registration API at `/v1/services/register` and `/v1/services/unregister`)
 
-### 4. WASM Plugins
+### 2. WASM Plugins
 **Why:** Allow users to deploy safe, sandboxed custom logic for transformations or validations.
 **Status:** Planned
 
@@ -70,10 +67,6 @@ This document outlines the current status and future plans for MCP Any.
 
 ### 7. Client SDKs (Python/TS)
 **Why:** Provide idiomatic wrappers for connecting to MCP Any.
-**Status:** Planned
-
-### 8. Structured Output Transformation (JQ/JSONPath)
-**Why:** Native support for JQ or JSONPath to transform complex upstream API responses.
 **Status:** Planned
 
 ## Deprecated / Obsolete
