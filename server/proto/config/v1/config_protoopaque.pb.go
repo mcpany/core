@@ -246,6 +246,7 @@ type User struct {
 	xxx_hidden_Id             *string                `protobuf:"bytes,1,opt,name=id"`
 	xxx_hidden_Authentication *AuthenticationConfig  `protobuf:"bytes,2,opt,name=authentication"`
 	xxx_hidden_ProfileIds     []string               `protobuf:"bytes,3,rep,name=profile_ids"`
+	xxx_hidden_Roles          []string               `protobuf:"bytes,4,rep,name=roles"`
 	XXX_raceDetectHookData    protoimpl.RaceDetectHookData
 	XXX_presence              [1]uint32
 	unknownFields             protoimpl.UnknownFields
@@ -301,9 +302,16 @@ func (x *User) GetProfileIds() []string {
 	return nil
 }
 
+func (x *User) GetRoles() []string {
+	if x != nil {
+		return x.xxx_hidden_Roles
+	}
+	return nil
+}
+
 func (x *User) SetId(v string) {
 	x.xxx_hidden_Id = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 3)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 4)
 }
 
 func (x *User) SetAuthentication(v *AuthenticationConfig) {
@@ -312,6 +320,10 @@ func (x *User) SetAuthentication(v *AuthenticationConfig) {
 
 func (x *User) SetProfileIds(v []string) {
 	x.xxx_hidden_ProfileIds = v
+}
+
+func (x *User) SetRoles(v []string) {
+	x.xxx_hidden_Roles = v
 }
 
 func (x *User) HasId() bool {
@@ -346,6 +358,8 @@ type User_builder struct {
 	Authentication *AuthenticationConfig
 	// The list of profile IDs this user has access to.
 	ProfileIds []string
+	// The list of roles assigned to the user.
+	Roles []string
 }
 
 func (b0 User_builder) Build() *User {
@@ -353,11 +367,12 @@ func (b0 User_builder) Build() *User {
 	b, x := &b0, m0
 	_, _ = b, x
 	if b.Id != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 3)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 4)
 		x.xxx_hidden_Id = b.Id
 	}
 	x.xxx_hidden_Authentication = b.Authentication
 	x.xxx_hidden_ProfileIds = b.ProfileIds
+	x.xxx_hidden_Roles = b.Roles
 	return m0
 }
 
@@ -812,13 +827,14 @@ func (b0 AuditConfig_builder) Build() *AuditConfig {
 }
 
 type ProfileDefinition struct {
-	state                  protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_Name        *string                `protobuf:"bytes,1,opt,name=name"`
-	xxx_hidden_Selector    *ProfileSelector       `protobuf:"bytes,2,opt,name=selector"`
-	XXX_raceDetectHookData protoimpl.RaceDetectHookData
-	XXX_presence           [1]uint32
-	unknownFields          protoimpl.UnknownFields
-	sizeCache              protoimpl.SizeCache
+	state                    protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Name          *string                `protobuf:"bytes,1,opt,name=name"`
+	xxx_hidden_Selector      *ProfileSelector       `protobuf:"bytes,2,opt,name=selector"`
+	xxx_hidden_RequiredRoles []string               `protobuf:"bytes,3,rep,name=required_roles"`
+	XXX_raceDetectHookData   protoimpl.RaceDetectHookData
+	XXX_presence             [1]uint32
+	unknownFields            protoimpl.UnknownFields
+	sizeCache                protoimpl.SizeCache
 }
 
 func (x *ProfileDefinition) Reset() {
@@ -863,13 +879,24 @@ func (x *ProfileDefinition) GetSelector() *ProfileSelector {
 	return nil
 }
 
+func (x *ProfileDefinition) GetRequiredRoles() []string {
+	if x != nil {
+		return x.xxx_hidden_RequiredRoles
+	}
+	return nil
+}
+
 func (x *ProfileDefinition) SetName(v string) {
 	x.xxx_hidden_Name = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 2)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 3)
 }
 
 func (x *ProfileDefinition) SetSelector(v *ProfileSelector) {
 	x.xxx_hidden_Selector = v
+}
+
+func (x *ProfileDefinition) SetRequiredRoles(v []string) {
+	x.xxx_hidden_RequiredRoles = v
 }
 
 func (x *ProfileDefinition) HasName() bool {
@@ -900,6 +927,10 @@ type ProfileDefinition_builder struct {
 
 	Name     *string
 	Selector *ProfileSelector
+	// List of roles required to access this profile.
+	// If empty, no specific role is required (but user must still have the profile_id explicitly assigned if strict mode).
+	// Alternatively, if user has one of these roles, they get access.
+	RequiredRoles []string
 }
 
 func (b0 ProfileDefinition_builder) Build() *ProfileDefinition {
@@ -907,10 +938,11 @@ func (b0 ProfileDefinition_builder) Build() *ProfileDefinition {
 	b, x := &b0, m0
 	_, _ = b, x
 	if b.Name != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 2)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 3)
 		x.xxx_hidden_Name = b.Name
 	}
 	x.xxx_hidden_Selector = b.Selector
+	x.xxx_hidden_RequiredRoles = b.RequiredRoles
 	return m0
 }
 
@@ -994,11 +1026,12 @@ const file_proto_config_v1_config_proto_rawDesc = "" +
 	"\x0fglobal_settings\x18\x01 \x01(\v2 .mcpany.config.v1.GlobalSettingsR\x0fglobal_settings\x12U\n" +
 	"\x11upstream_services\x18\x02 \x03(\v2'.mcpany.config.v1.UpstreamServiceConfigR\x11upstream_services\x12o\n" +
 	"\x1cupstream_service_collections\x18\x03 \x03(\v2+.mcpany.config.v1.UpstreamServiceCollectionR\x1cupstream_service_collections\x12,\n" +
-	"\x05users\x18\x04 \x03(\v2\x16.mcpany.config.v1.UserR\x05users\"\x88\x01\n" +
+	"\x05users\x18\x04 \x03(\v2\x16.mcpany.config.v1.UserR\x05users\"\x9e\x01\n" +
 	"\x04User\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12N\n" +
 	"\x0eauthentication\x18\x02 \x01(\v2&.mcpany.config.v1.AuthenticationConfigR\x0eauthentication\x12 \n" +
-	"\vprofile_ids\x18\x03 \x03(\tR\vprofile_ids\"\xbe\x05\n" +
+	"\vprofile_ids\x18\x03 \x03(\tR\vprofile_ids\x12\x14\n" +
+	"\x05roles\x18\x04 \x03(\tR\x05roles\"\xbe\x05\n" +
 	"\x0eGlobalSettings\x12.\n" +
 	"\x12mcp_listen_address\x18\x01 \x01(\tR\x12mcp_listen_address\x12G\n" +
 	"\tlog_level\x18\x03 \x01(\x0e2).mcpany.config.v1.GlobalSettings.LogLevelR\tlog_level\x121\n" +
@@ -1026,10 +1059,11 @@ const file_proto_config_v1_config_proto_rawDesc = "" +
 	"\aenabled\x18\x01 \x01(\bR\aenabled\x12 \n" +
 	"\voutput_path\x18\x02 \x01(\tR\voutput_path\x12$\n" +
 	"\rlog_arguments\x18\x03 \x01(\bR\rlog_arguments\x12 \n" +
-	"\vlog_results\x18\x04 \x01(\bR\vlog_results\"f\n" +
+	"\vlog_results\x18\x04 \x01(\bR\vlog_results\"\x8e\x01\n" +
 	"\x11ProfileDefinition\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12=\n" +
-	"\bselector\x18\x02 \x01(\v2!.mcpany.config.v1.ProfileSelectorR\bselector\"\xc9\x01\n" +
+	"\bselector\x18\x02 \x01(\v2!.mcpany.config.v1.ProfileSelectorR\bselector\x12&\n" +
+	"\x0erequired_roles\x18\x03 \x03(\tR\x0erequired_roles\"\xc9\x01\n" +
 	"\x0fProfileSelector\x12\x12\n" +
 	"\x04tags\x18\x01 \x03(\tR\x04tags\x12_\n" +
 	"\x0ftool_properties\x18\x02 \x03(\v25.mcpany.config.v1.ProfileSelector.ToolPropertiesEntryR\x0ftool_properties\x1aA\n" +
