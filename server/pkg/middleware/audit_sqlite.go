@@ -12,7 +12,7 @@ import (
 	"sync"
 	"time"
 
-	_ "modernc.org/sqlite"
+	_ "modernc.org/sqlite" // register sqlite driver
 )
 
 // SQLiteAuditStore writes audit logs to a SQLite database.
@@ -55,7 +55,7 @@ func NewSQLiteAuditStore(path string) (*SQLiteAuditStore, error) {
 
 	// Ensure columns exist (for migration)
 	if err := ensureColumns(db); err != nil {
-		db.Close()
+		_ = db.Close()
 		return nil, fmt.Errorf("failed to ensure columns: %w", err)
 	}
 
@@ -68,7 +68,7 @@ func ensureColumns(db *sql.DB) error {
 	// Helper to check and add column
 	addColumn := func(colName string) error {
 		// Check if column exists
-		query := fmt.Sprintf("SELECT %s FROM audit_logs LIMIT 1", colName)
+		query := fmt.Sprintf("SELECT %s FROM audit_logs LIMIT 1", colName) //nolint:gosec // colName is trusted (hardcoded)
 		if _, err := db.Exec(query); err == nil {
 			return nil
 		}
@@ -160,7 +160,7 @@ func (s *SQLiteAuditStore) Verify() (bool, error) {
 	if err != nil {
 		return false, err
 	}
-	defer rows.Close()
+	defer func() { _ = rows.Close() }()
 
 	var expectedPrevHash string
 	for rows.Next() {
