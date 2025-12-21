@@ -233,34 +233,46 @@ func (s *Server) toolListFilteringMiddleware(next mcp.MethodHandler) mcp.MethodH
 
 			profileID, hasProfile := auth.ProfileIDFromContext(ctx)
 
+			// Cache service access decisions to avoid repeated lookups
+			var serviceAccessCache map[string]bool
+			if hasProfile {
+				serviceAccessCache = make(map[string]bool)
+			}
+
 			for _, toolInstance := range managedTools {
 				// Profile-based filtering
 				if hasProfile {
 					serviceID := toolInstance.Tool().GetServiceId()
-					if info, ok := s.GetServiceInfo(serviceID); ok && info.Config != nil {
-						// If service has profiles defined, we must match one
-						// If service has NO profiles defined, does it mean "all" or "none"?
-						// Usually "none" or "default".
-						// Let's assume if profiles are listed, we restrict.
-						// If no profiles listed, maybe it's globally available?
-						// Or better: if user has access to profile X, they only see services attached to profile X.
+					allowed, cached := serviceAccessCache[serviceID]
+					if !cached {
+						allowed = true // Default to allowed
+						if info, ok := s.GetServiceInfo(serviceID); ok && info.Config != nil {
+							// If service has profiles defined, we must match one
+							// If service has NO profiles defined, does it mean "all" or "none"?
+							// Usually "none" or "default".
+							// Let's assume if profiles are listed, we restrict.
+							// If no profiles listed, maybe it's globally available?
+							// Or better: if user has access to profile X, they only see services attached to profile X.
 
-						hasAccess := false
-						if len(info.Config.GetProfiles()) == 0 {
-							// If service belongs to NO profiles, it might be legacy or global.
-							// Let's include it for now to avoid breaking legacy services.
-							hasAccess = true
-						} else {
-							for _, p := range info.Config.GetProfiles() {
-								if p.GetId() == profileID {
-									hasAccess = true
-									break
+							hasAccess := false
+							if len(info.Config.GetProfiles()) == 0 {
+								// If service belongs to NO profiles, it might be legacy or global.
+								// Let's include it for now to avoid breaking legacy services.
+								hasAccess = true
+							} else {
+								for _, p := range info.Config.GetProfiles() {
+									if p.GetId() == profileID {
+										hasAccess = true
+										break
+									}
 								}
 							}
+							allowed = hasAccess
 						}
-						if !hasAccess {
-							continue
-						}
+						serviceAccessCache[serviceID] = allowed
+					}
+					if !allowed {
+						continue
 					}
 				}
 
@@ -554,25 +566,37 @@ func (s *Server) resourceListFilteringMiddleware(next mcp.MethodHandler) mcp.Met
 
 			profileID, hasProfile := auth.ProfileIDFromContext(ctx)
 
+			// Cache service access decisions to avoid repeated lookups
+			var serviceAccessCache map[string]bool
+			if hasProfile {
+				serviceAccessCache = make(map[string]bool)
+			}
+
 			for _, resourceInstance := range managedResources {
 				// Profile-based filtering
 				if hasProfile {
 					serviceID := resourceInstance.Service()
-					if info, ok := s.GetServiceInfo(serviceID); ok && info.Config != nil {
-						hasAccess := false
-						if len(info.Config.GetProfiles()) == 0 {
-							hasAccess = true
-						} else {
-							for _, p := range info.Config.GetProfiles() {
-								if p.GetId() == profileID {
-									hasAccess = true
-									break
+					allowed, cached := serviceAccessCache[serviceID]
+					if !cached {
+						allowed = true
+						if info, ok := s.GetServiceInfo(serviceID); ok && info.Config != nil {
+							hasAccess := false
+							if len(info.Config.GetProfiles()) == 0 {
+								hasAccess = true
+							} else {
+								for _, p := range info.Config.GetProfiles() {
+									if p.GetId() == profileID {
+										hasAccess = true
+										break
+									}
 								}
 							}
+							allowed = hasAccess
 						}
-						if !hasAccess {
-							continue
-						}
+						serviceAccessCache[serviceID] = allowed
+					}
+					if !allowed {
+						continue
 					}
 				}
 				refreshedResources = append(refreshedResources, resourceInstance.Resource())
@@ -595,25 +619,37 @@ func (s *Server) promptListFilteringMiddleware(next mcp.MethodHandler) mcp.Metho
 
 			profileID, hasProfile := auth.ProfileIDFromContext(ctx)
 
+			// Cache service access decisions to avoid repeated lookups
+			var serviceAccessCache map[string]bool
+			if hasProfile {
+				serviceAccessCache = make(map[string]bool)
+			}
+
 			for _, promptInstance := range managedPrompts {
 				// Profile-based filtering
 				if hasProfile {
 					serviceID := promptInstance.Service()
-					if info, ok := s.GetServiceInfo(serviceID); ok && info.Config != nil {
-						hasAccess := false
-						if len(info.Config.GetProfiles()) == 0 {
-							hasAccess = true
-						} else {
-							for _, p := range info.Config.GetProfiles() {
-								if p.GetId() == profileID {
-									hasAccess = true
-									break
+					allowed, cached := serviceAccessCache[serviceID]
+					if !cached {
+						allowed = true
+						if info, ok := s.GetServiceInfo(serviceID); ok && info.Config != nil {
+							hasAccess := false
+							if len(info.Config.GetProfiles()) == 0 {
+								hasAccess = true
+							} else {
+								for _, p := range info.Config.GetProfiles() {
+									if p.GetId() == profileID {
+										hasAccess = true
+										break
+									}
 								}
 							}
+							allowed = hasAccess
 						}
-						if !hasAccess {
-							continue
-						}
+						serviceAccessCache[serviceID] = allowed
+					}
+					if !allowed {
+						continue
 					}
 				}
 				refreshedPrompts = append(refreshedPrompts, promptInstance.Prompt())
