@@ -121,7 +121,7 @@ func TestCommandTool_Execute(t *testing.T) {
 		}
 		cmdTool := newCommandTool("/usr/bin/env", callDef)
 		inputData := map[string]interface{}{
-			"args":   []string{"bash", "-c", "echo $MY_VAR"},
+			"args":   []string{"printenv", "MY_VAR"},
 			"MY_VAR": "hello from env",
 		}
 		inputs, err := json.Marshal(inputData)
@@ -151,7 +151,7 @@ func TestCommandTool_Execute(t *testing.T) {
 			},
 		}
 		cmdTool := newCommandTool("/usr/bin/env", callDef)
-		inputData := map[string]interface{}{"args": []string{"bash", "-c", "exit 1"}}
+		inputData := map[string]interface{}{"args": []string{"false"}}
 		inputs, err := json.Marshal(inputData)
 		require.NoError(t, err)
 		req := &tool.ExecutionRequest{ToolInputs: inputs}
