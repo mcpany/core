@@ -1654,7 +1654,25 @@ func prettyPrint(input []byte, contentType string) string {
 		}
 	}
 
+	// Try Form
+	if strings.Contains(contentType, "x-www-form-urlencoded") {
+		return string(redactForm(input))
+	}
+
 	return string(input)
+}
+
+func redactForm(input []byte) []byte {
+	values, err := url.ParseQuery(string(input))
+	if err != nil {
+		return input
+	}
+	for k := range values {
+		if isSensitiveKey(k) {
+			values.Set(k, redactedPlaceholder)
+		}
+	}
+	return []byte(values.Encode())
 }
 
 func (t *CommandTool) getExecutor(env *configv1.ContainerEnvironment) command.Executor {

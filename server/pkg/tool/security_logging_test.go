@@ -74,3 +74,45 @@ func TestHTTPTool_Execute_LogsSensitiveHeaders(t *testing.T) {
 	assert.NotContains(t, output, "sensitive-token-123", "Actual token should not be present")
 	assert.NotContains(t, output, "secret-api-key-456", "Actual API key should not be present")
 }
+
+func TestHTTPTool_Execute_LogsSensitiveBodyForm(t *testing.T) {
+	// Reset logger to ensure we can set it to DEBUG
+	logging.ForTestsOnlyResetLogger()
+
+	// Create a buffer to capture logs
+	var logBuf bytes.Buffer
+	logging.Init(slog.LevelDebug, &logBuf)
+
+	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/x-www-form-urlencoded")
+		w.WriteHeader(http.StatusOK)
+		_, _ = w.Write([]byte(`access_token=secret-token-123&other=value`))
+	})
+	server := httptest.NewServer(handler)
+	defer server.Close()
+
+	poolManager := pool.NewManager()
+	p, _ := pool.New(func(_ context.Context) (*client.HTTPClientWrapper, error) {
+		return &client.HTTPClientWrapper{Client: server.Client()}, nil
+	}, 1, 1, 0, true)
+	poolManager.Register("test-service", p)
+
+	mcpTool := v1.Tool_builder{
+		UnderlyingMethodFqn: lo.ToPtr("GET " + server.URL),
+		Name:                lo.ToPtr("test-tool"),
+	}.Build()
+
+	httpTool := tool.NewHTTPTool(mcpTool, poolManager, "test-service", nil, &configv1.HttpCallDefinition{}, nil, nil, "")
+
+	_, err := httpTool.Execute(context.Background(), &tool.ExecutionRequest{
+		ToolName:   "test-tool",
+		ToolInputs: []byte("{}"),
+	})
+	require.NoError(t, err)
+
+	output := logBuf.String()
+
+	// Verify that the secret is redacted
+	assert.NotContains(t, output, "secret-token-123", "Actual token should not be present")
+	assert.Contains(t, output, "access_token=%5BREDACTED%5D", "Token should be redacted (URL encoded [REDACTED])")
+}
