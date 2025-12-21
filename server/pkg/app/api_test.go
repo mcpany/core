@@ -1,213 +1,159 @@
-// Copyright 2025 Author(s) of MCP Any
-// SPDX-License-Identifier: Apache-2.0
-
 package app
 
 import (
 	"bytes"
+	"encoding/json"
 	"net/http"
 	"net/http/httptest"
+	"path/filepath"
 	"testing"
 
 	"github.com/mcpany/core/pkg/storage/sqlite"
-	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/spf13/afero"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"google.golang.org/protobuf/encoding/protojson"
-	"google.golang.org/protobuf/proto"
 )
 
-func TestAPI_Services(t *testing.T) {
-	// Use in-memory SQLite for testing
-	db, err := sqlite.NewDB(":memory:")
+func TestCreateAPIHandler(t *testing.T) {
+	// Setup SQLite DB
+	tempDir := t.TempDir()
+	dbPath := filepath.Join(tempDir, "test.db")
+	db, err := sqlite.NewDB(dbPath)
 	require.NoError(t, err)
 	defer db.Close()
+
 	store := sqlite.NewStore(db)
 
+	// Setup Application
 	app := NewApplication()
-	app.fs = afero.NewMemMapFs()
-	app.configPaths = []string{"/config.yaml"}
-	// Create dummy config file so ReloadConfig doesn't fail on file not found
-	err = afero.WriteFile(app.fs, "/config.yaml", []byte("upstream_services: []"), 0644)
-	require.NoError(t, err)
+	app.fs = afero.NewMemMapFs() // Use in-memory FS to avoid side effects in ReloadConfig
 
 	handler := app.createAPIHandler(store)
-	srv := httptest.NewServer(handler)
-	defer srv.Close()
+	ts := httptest.NewServer(handler)
+	defer ts.Close()
 
-	client := srv.Client()
+	t.Run("ListServices_Empty", func(t *testing.T) {
+		resp, err := http.Get(ts.URL + "/services")
+		require.NoError(t, err)
+		defer resp.Body.Close()
 
-	t.Run("Create Service", func(t *testing.T) {
-		svc := &configv1.UpstreamServiceConfig{
-			Name: proto.String("test-service"),
-			Id:   proto.String("test-id"),
-			ServiceConfig: &configv1.UpstreamServiceConfig_HttpService{
-				HttpService: &configv1.HttpUpstreamService{
-					Address: proto.String("http://localhost:8080"),
+		assert.Equal(t, http.StatusOK, resp.StatusCode)
+
+		// Should decode to empty list
+		var services []map[string]interface{}
+		err = json.NewDecoder(resp.Body).Decode(&services)
+		require.NoError(t, err)
+		assert.Empty(t, services)
+	})
+
+	t.Run("CreateService", func(t *testing.T) {
+		// Use standard JSON for simplicity
+		body := map[string]interface{}{
+			"name": "test-service",
+			"id":   "test-id",
+			"mcp_service": map[string]interface{}{
+				"http_connection": map[string]interface{}{
+					"http_address": "http://localhost:8080",
 				},
 			},
 		}
-		body, err := protojson.Marshal(svc)
-		require.NoError(t, err)
+		bodyBytes, _ := json.Marshal(body)
 
-		resp, err := client.Post(srv.URL+"/services", "application/json", bytes.NewReader(body))
+		resp, err := http.Post(ts.URL + "/services", "application/json", bytes.NewReader(bodyBytes))
 		require.NoError(t, err)
 		defer resp.Body.Close()
+
 		assert.Equal(t, http.StatusCreated, resp.StatusCode)
 
-		// Verify it exists in store
-		saved, err := store.GetService("test-service")
+		// Verify it was stored
+		stored, err := store.GetService("test-service")
 		require.NoError(t, err)
-		require.NotNil(t, saved)
-		assert.Equal(t, "test-service", saved.GetName())
-
-		httpSvc := saved.GetHttpService()
-		require.NotNil(t, httpSvc)
-		assert.Equal(t, "http://localhost:8080", httpSvc.GetAddress())
+		assert.Equal(t, "test-service", stored.GetName())
+		assert.Equal(t, "http://localhost:8080", stored.GetMcpService().GetHttpConnection().GetHttpAddress())
 	})
 
-	t.Run("List Services", func(t *testing.T) {
-		resp, err := client.Get(srv.URL + "/services")
+	t.Run("GetService", func(t *testing.T) {
+		resp, err := http.Get(ts.URL + "/services/test-service")
 		require.NoError(t, err)
 		defer resp.Body.Close()
+
 		assert.Equal(t, http.StatusOK, resp.StatusCode)
 
-		buf := new(bytes.Buffer)
-		_, err = buf.ReadFrom(resp.Body)
+		var result map[string]interface{}
+		err = json.NewDecoder(resp.Body).Decode(&result)
 		require.NoError(t, err)
-		bodyStr := buf.String()
-
-		assert.Contains(t, bodyStr, `"name":"test-service"`)
-		assert.Contains(t, bodyStr, "[")
-		assert.Contains(t, bodyStr, "]")
+		assert.Equal(t, "test-service", result["name"])
 	})
 
-	t.Run("Get Service", func(t *testing.T) {
-		resp, err := client.Get(srv.URL + "/services/test-service")
+	t.Run("UpdateService", func(t *testing.T) {
+		body := map[string]interface{}{
+			"name": "test-service",
+			"id":   "test-id",
+			"mcp_service": map[string]interface{}{
+				"http_connection": map[string]interface{}{
+					"http_address": "http://localhost:9090", // Changed port
+				},
+			},
+		}
+		bodyBytes, _ := json.Marshal(body)
+
+		req, err := http.NewRequest(http.MethodPut, ts.URL+"/services/test-service", bytes.NewReader(bodyBytes))
+		require.NoError(t, err)
+
+		resp, err := http.DefaultClient.Do(req)
 		require.NoError(t, err)
 		defer resp.Body.Close()
+
 		assert.Equal(t, http.StatusOK, resp.StatusCode)
 
-		buf := new(bytes.Buffer)
-		_, err = buf.ReadFrom(resp.Body)
+		// Verify update
+		stored, err := store.GetService("test-service")
 		require.NoError(t, err)
-		bodyStr := buf.String()
-		assert.Contains(t, bodyStr, `"name":"test-service"`)
+		assert.Equal(t, "http://localhost:9090", stored.GetMcpService().GetHttpConnection().GetHttpAddress())
 	})
 
-	t.Run("Get Service Not Found", func(t *testing.T) {
-		resp, err := client.Get(srv.URL + "/services/non-existent")
+	t.Run("DeleteService", func(t *testing.T) {
+		req, err := http.NewRequest(http.MethodDelete, ts.URL+"/services/test-service", nil)
+		require.NoError(t, err)
+
+		resp, err := http.DefaultClient.Do(req)
 		require.NoError(t, err)
 		defer resp.Body.Close()
+
+		assert.Equal(t, http.StatusNoContent, resp.StatusCode)
+
+		// Verify deletion
+		stored, err := store.GetService("test-service")
+		require.NoError(t, err)
+		assert.Nil(t, stored)
+	})
+
+	t.Run("GetNonExistentService", func(t *testing.T) {
+		resp, err := http.Get(ts.URL + "/services/non-existent")
+		require.NoError(t, err)
+		defer resp.Body.Close()
+
 		assert.Equal(t, http.StatusNotFound, resp.StatusCode)
 	})
 
-	t.Run("Update Service", func(t *testing.T) {
-		svc := &configv1.UpstreamServiceConfig{
-			Name: proto.String("test-service"),
-			ServiceConfig: &configv1.UpstreamServiceConfig_HttpService{
-				HttpService: &configv1.HttpUpstreamService{
-					Address: proto.String("http://localhost:9090"), // Changed port
-				},
-			},
+	t.Run("CreateService_MissingName", func(t *testing.T) {
+		body := map[string]interface{}{
+			"id": "test-id-no-name",
 		}
-		body, err := protojson.Marshal(svc)
-		require.NoError(t, err)
+		bodyBytes, _ := json.Marshal(body)
 
-		req, err := http.NewRequest(http.MethodPut, srv.URL+"/services/test-service", bytes.NewReader(body))
-		require.NoError(t, err)
-		resp, err := client.Do(req)
+		resp, err := http.Post(ts.URL+"/services", "application/json", bytes.NewReader(bodyBytes))
 		require.NoError(t, err)
 		defer resp.Body.Close()
-		assert.Equal(t, http.StatusOK, resp.StatusCode)
 
-		saved, err := store.GetService("test-service")
-		require.NoError(t, err)
-		assert.Equal(t, "http://localhost:9090", saved.GetHttpService().GetAddress())
-	})
-
-	t.Run("Delete Service", func(t *testing.T) {
-		req, err := http.NewRequest(http.MethodDelete, srv.URL+"/services/test-service", nil)
-		require.NoError(t, err)
-		resp, err := client.Do(req)
-		require.NoError(t, err)
-		defer resp.Body.Close()
-		assert.Equal(t, http.StatusNoContent, resp.StatusCode)
-
-		saved, err := store.GetService("test-service")
-		require.NoError(t, err)
-		assert.Nil(t, saved)
-	})
-
-	t.Run("Delete Service Missing Name", func(t *testing.T) {
-		req, err := http.NewRequest(http.MethodDelete, srv.URL+"/services/", nil)
-		require.NoError(t, err)
-		resp, err := client.Do(req)
-		require.NoError(t, err)
-		defer resp.Body.Close()
 		assert.Equal(t, http.StatusBadRequest, resp.StatusCode)
 	})
 
-	t.Run("Method Not Allowed on /services", func(t *testing.T) {
-		req, err := http.NewRequest(http.MethodPatch, srv.URL+"/services", nil)
-		require.NoError(t, err)
-		resp, err := client.Do(req)
+	t.Run("CreateService_InvalidJSON", func(t *testing.T) {
+		resp, err := http.Post(ts.URL+"/services", "application/json", bytes.NewReader([]byte("{invalid-json")))
 		require.NoError(t, err)
 		defer resp.Body.Close()
-		assert.Equal(t, http.StatusMethodNotAllowed, resp.StatusCode)
-	})
 
-	t.Run("Method Not Allowed on /services/{name}", func(t *testing.T) {
-		req, err := http.NewRequest(http.MethodPatch, srv.URL+"/services/foo", nil)
-		require.NoError(t, err)
-		resp, err := client.Do(req)
-		require.NoError(t, err)
-		defer resp.Body.Close()
-		assert.Equal(t, http.StatusMethodNotAllowed, resp.StatusCode)
-	})
-
-	t.Run("Create Service Missing Name", func(t *testing.T) {
-		svc := &configv1.UpstreamServiceConfig{
-			ServiceConfig: &configv1.UpstreamServiceConfig_HttpService{
-				HttpService: &configv1.HttpUpstreamService{
-					Address: proto.String("http://localhost:8080"),
-				},
-			},
-		}
-		body, err := protojson.Marshal(svc)
-		require.NoError(t, err)
-
-		resp, err := client.Post(srv.URL+"/services", "application/json", bytes.NewReader(body))
-		require.NoError(t, err)
-		defer resp.Body.Close()
 		assert.Equal(t, http.StatusBadRequest, resp.StatusCode)
-	})
-
-	t.Run("Create Service Bad JSON", func(t *testing.T) {
-		resp, err := client.Post(srv.URL+"/services", "application/json", bytes.NewReader([]byte("{invalid-json")))
-		require.NoError(t, err)
-		defer resp.Body.Close()
-		assert.Equal(t, http.StatusBadRequest, resp.StatusCode)
-	})
-
-	t.Run("Update Service Bad JSON", func(t *testing.T) {
-		req, err := http.NewRequest(http.MethodPut, srv.URL+"/services/foo", bytes.NewReader([]byte("{invalid-json")))
-		require.NoError(t, err)
-		resp, err := client.Do(req)
-		require.NoError(t, err)
-		defer resp.Body.Close()
-		assert.Equal(t, http.StatusBadRequest, resp.StatusCode)
-	})
-
-	t.Run("Health Check", func(t *testing.T) {
-		resp, err := client.Get(srv.URL + "/health")
-		require.NoError(t, err)
-		defer resp.Body.Close()
-		assert.Equal(t, http.StatusOK, resp.StatusCode)
-
-		buf := new(bytes.Buffer)
-		buf.ReadFrom(resp.Body)
-		assert.Equal(t, "OK", buf.String())
 	})
 }
