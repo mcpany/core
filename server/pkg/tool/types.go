@@ -509,6 +509,16 @@ func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 		}
 	}
 
+	// Clean the path to resolve . and .. and //
+	// We do this on the encoded string to treat %2F as opaque characters
+	// This prevents path.Clean from treating encoded slashes as separators
+	// and messing up the re-encoding later (which would convert %2F to /).
+	hadTrailingSlash := strings.HasSuffix(pathStr, "/")
+	pathStr = path.Clean(pathStr)
+	if hadTrailingSlash && pathStr != "/" {
+		pathStr += "/"
+	}
+
 	// Reconstruct URL string manually to avoid re-encoding
 	var buf strings.Builder
 	buf.WriteString(u.Scheme)
@@ -532,7 +542,6 @@ func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 	if err != nil {
 		return nil, fmt.Errorf("failed to parse URL: %w", err)
 	}
-	parsedURL.Path = path.Clean(parsedURL.Path)
 	urlString = parsedURL.String()
 
 	var body io.Reader
