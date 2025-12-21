@@ -424,10 +424,13 @@ func (a *Application) ReloadConfig(fs afero.Fs, configPaths []string) error {
 	)
 
 	// Clear existing services
-	for _, serviceConfig := range cfg.GetUpstreamServices() {
-		a.ToolManager.ClearToolsForService(serviceConfig.GetName())
-		a.ResourceManager.ClearResourcesForService(serviceConfig.GetName())
-		a.PromptManager.ClearPromptsForService(serviceConfig.GetName())
+	// We iterate over all currently registered services and clear them.
+	// This handles cases where a service was removed or renamed in the new config.
+	for _, svcInfo := range a.ToolManager.ListServices() {
+		serviceID := svcInfo.Name
+		a.ToolManager.ClearToolsForService(serviceID)
+		a.ResourceManager.ClearResourcesForService(serviceID)
+		a.PromptManager.ClearPromptsForService(serviceID)
 	}
 
 	if cfg.GetUpstreamServices() != nil {
