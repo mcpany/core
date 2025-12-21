@@ -1263,6 +1263,9 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 						if err := checkForPathTraversal(argStr); err != nil {
 							return nil, fmt.Errorf("args parameter: %w", err)
 						}
+						if err := checkForArgumentInjection(argStr); err != nil {
+							return nil, fmt.Errorf("args parameter: %w", err)
+						}
 						args = append(args, argStr)
 					} else {
 						return nil, fmt.Errorf("non-string value in 'args' array")
@@ -1475,6 +1478,9 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 				for _, arg := range argsList {
 					if argStr, ok := arg.(string); ok {
 						if err := checkForPathTraversal(argStr); err != nil {
+							return nil, fmt.Errorf("args parameter: %w", err)
+						}
+						if err := checkForArgumentInjection(argStr); err != nil {
 							return nil, fmt.Errorf("args parameter: %w", err)
 						}
 						args = append(args, argStr)
