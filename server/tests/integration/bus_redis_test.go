@@ -19,6 +19,9 @@ func TestRedisBus_Integration_Subscribe(t *testing.T) {
 	if testing.Short() {
 		t.Skip("skipping integration test in short mode.")
 	}
+	if !IsDockerSocketAccessible() {
+		t.Skip("Docker is not running or accessible.")
+	}
 
 	redisAddr, cleanup := StartRedisContainer(t)
 	defer cleanup()
@@ -58,6 +61,9 @@ func TestRedisBus_Integration_Subscribe(t *testing.T) {
 func TestRedisBus_Integration_SubscribeOnce(t *testing.T) {
 	if testing.Short() {
 		t.Skip("skipping integration test in short mode.")
+	}
+	if !IsDockerSocketAccessible() {
+		t.Skip("Docker is not running or accessible.")
 	}
 
 	redisAddr, cleanup := StartRedisContainer(t)
