@@ -116,7 +116,7 @@ upstream_services:
 	viper.Set("profiles", []string{"dev", "prod", "secure", "default"})
 	defer viper.Set("profiles", nil)
 
-	app := NewApplication()
+	app := newTestApp(t)
 
 	// Start server on random ports
 	l, err := net.Listen("tcp", "localhost:0")

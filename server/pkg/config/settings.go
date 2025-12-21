@@ -86,6 +86,10 @@ func (s *Settings) Load(cmd *cobra.Command, fs afero.Fs) error {
 	s.shutdownTimeout = viper.GetDuration("shutdown-timeout")
 	s.profiles = viper.GetStringSlice("profiles")
 	s.dbPath = viper.GetString("db-path")
+	if s.dbPath == "" {
+		s.dbPath = "./data/mcpany.db"
+	}
+
 
 	// Special handling for MCPListenAddress to respect config file precedence
 	mcpListenAddress := viper.GetString("mcp-listen-address")
@@ -97,6 +101,9 @@ func (s *Settings) Load(cmd *cobra.Command, fs afero.Fs) error {
 		}
 		if cfg.GetGlobalSettings().GetMcpListenAddress() != "" {
 			mcpListenAddress = cfg.GetGlobalSettings().GetMcpListenAddress()
+		}
+		if cfg.GetGlobalSettings().GetDbPath() != "" {
+			s.dbPath = cfg.GetGlobalSettings().GetDbPath()
 		}
 	}
 	s.proto.SetMcpListenAddress(mcpListenAddress)

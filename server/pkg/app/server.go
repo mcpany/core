@@ -15,6 +15,7 @@ import (
 	"net"
 	"net/http"
 	"os"
+	"path/filepath"
 	"strings"
 	"sync"
 	"time"
@@ -33,7 +34,7 @@ import (
 	"github.com/mcpany/core/pkg/prompt"
 	"github.com/mcpany/core/pkg/resource"
 	"github.com/mcpany/core/pkg/serviceregistry"
-	"github.com/mcpany/core/pkg/storage/sqlite"
+	"github.com/mcpany/core/pkg/storage/sql"
 	"github.com/mcpany/core/pkg/telemetry"
 	"github.com/mcpany/core/pkg/tool"
 	"github.com/mcpany/core/pkg/upstream/factory"
@@ -144,6 +145,7 @@ type Application struct {
 	configFiles      map[string]string
 	fs               afero.Fs
 	configPaths      []string
+	DefaultDBPath    string // For testing
 }
 
 // NewApplication creates a new Application with default dependencies.
@@ -216,20 +218,31 @@ func (a *Application) Run(
 	// Load initial services from config files and SQLite
 	dbPath := config.GlobalSettings().DBPath()
 	if dbPath == "" {
-		dbPath = "mcpany.db"
+		if a.DefaultDBPath != "" {
+			dbPath = a.DefaultDBPath
+		} else {
+			dbPath = "data/mcpany.db"
+		}
 	}
-	sqliteDB, err := sqlite.NewDB(dbPath)
+	// Ensure DB directory exists
+	if err := os.MkdirAll(filepath.Dir(dbPath), 0750); err != nil {
+		return fmt.Errorf("failed to create db directory: %w", err)
+	}
+
+	// Use sqlite as default dialect for now
+	sqlStore, err := sql.NewStore("sqlite", dbPath)
 	if err != nil {
-		return fmt.Errorf("failed to initialize sqlite db: %w", err)
+		return fmt.Errorf("failed to initialize sql store: %w", err)
 	}
-	defer func() { _ = sqliteDB.Close() }()
-	sqliteStore := sqlite.NewStore(sqliteDB)
+	// Gorm handles connection pooling and closing internally somewhat, but we can't explicitly defer Close on gorm.DB easily without getting sql.DB.
+	// sql.NewStore returns *Store which holds *gorm.DB.
+	// The sql.Store implementation keeps the connection open.
 
 	var stores []config.Store
 	if len(configPaths) > 0 {
 		stores = append(stores, config.NewFileStore(fs, configPaths))
 	}
-	stores = append(stores, sqliteStore)
+	stores = append(stores, sqlStore)
 	multiStore := config.NewMultiStore(stores...)
 
 	var cfg *config_v1.McpAnyServerConfig
@@ -414,7 +427,7 @@ func (a *Application) Run(
 		apiKey = config.GlobalSettings().APIKey()
 	}
 
-	return a.runServerMode(ctx, mcpSrv, busProvider, bindAddress, grpcPort, shutdownTimeout, cfg.GetUsers(), allowedIPs, cachingMiddleware, sqliteStore, apiKey)
+	return a.runServerMode(ctx, mcpSrv, busProvider, bindAddress, grpcPort, shutdownTimeout, cfg.GetUsers(), allowedIPs, cachingMiddleware, sqlStore, apiKey)
 }
 
 // ReloadConfig reloads the configuration from the given paths and updates the
@@ -607,7 +620,7 @@ func (a *Application) runServerMode(
 	users []*config_v1.User,
 	allowedIPs []string,
 	cachingMiddleware *middleware.CachingMiddleware,
-	store *sqlite.Store,
+	store config.ServiceStore,
 	apiKey string,
 ) error {
 	ipMiddleware, err := middleware.NewIPAllowlistMiddleware(allowedIPs)

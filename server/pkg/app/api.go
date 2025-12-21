@@ -8,15 +8,15 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/mcpany/core/pkg/config"
 	"github.com/mcpany/core/pkg/logging"
-	"github.com/mcpany/core/pkg/storage/sqlite"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 )
 
 // createAPIHandler creates a http.Handler for the config API.
-func (a *Application) createAPIHandler(store *sqlite.Store) http.Handler {
+func (a *Application) createAPIHandler(store config.ServiceStore) http.Handler {
 	mux := http.NewServeMux()
 
 	mux.HandleFunc("/services", func(w http.ResponseWriter, r *http.Request) {

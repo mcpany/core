@@ -47,7 +47,7 @@ func TestRunServerMode_Auth(t *testing.T) {
 	upstreamFactory := factory.NewUpstreamServiceFactory(poolManager)
 
 	// Create app
-	app := NewApplication()
+	app := newTestApp(t)
 
 	// Global Key
 	globalKey := "global-secret"

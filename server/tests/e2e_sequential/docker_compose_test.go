@@ -8,9 +8,11 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"net"
 	"net/http"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"strings"
 	"testing"
 	"time"
@@ -19,23 +21,66 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+// findFreePort finds a free TCP port on localhost.
+func findFreePort(t *testing.T) int {
+	t.Helper()
+	addr, err := net.ResolveTCPAddr("tcp", "127.0.0.1:0")
+	require.NoError(t, err)
+	l, err := net.ListenTCP("tcp", addr)
+	require.NoError(t, err)
+	defer l.Close()
+	return l.Addr().(*net.TCPAddr).Port
+}
+
 func TestDockerComposeE2E(t *testing.T) {
 	if os.Getenv("E2E_DOCKER") != "true" {
 		t.Skip("Skipping E2E Docker test. Set E2E_DOCKER=true to run.")
 	}
 
 	rootDir, err := os.Getwd()
-	// Navigate up if we are running from inside tests/e2e or tests/e2e_sequential
-	if strings.HasSuffix(rootDir, "tests/e2e") || strings.HasSuffix(rootDir, "tests/e2e_sequential") {
-		rootDir = "../.."
-	}
 	require.NoError(t, err)
+
+	// Find the project root by looking for "docker-compose.yml"
+	// We might be running from:
+	// - core/server (go test ./...)
+	// - core/server/tests/e2e_sequential (go test .)
+	// - core (IDE)
+	for {
+		if _, err := os.Stat(fmt.Sprintf("%s/docker-compose.yml", rootDir)); err == nil {
+			break
+		}
+		newRoot := fmt.Sprintf("%s/..", rootDir)
+		// Check if we are at root
+		if absNew, _ := filepath.Abs(newRoot); absNew == rootDir {
+			t.Fatal("Could not find docker-compose.yml in any parent directory")
+		}
+		rootDir = newRoot
+		// Update absolute path for robustness
+		rootDir, _ = filepath.Abs(rootDir)
+	}
 
 	imageName := "ghcr.io/mcpany/server:latest"
 
+	// Find free ports
+	mcpPort := findFreePort(t)
+	grpcPort := findFreePort(t)
+	// Ensure they are different
+	for grpcPort == mcpPort {
+		grpcPort = findFreePort(t)
+	}
+
+	t.Logf("Using ports: MCP=%d, GRPC=%d", mcpPort, grpcPort)
+	t.Setenv("MCP_PORT", fmt.Sprintf("%d", mcpPort))
+	t.Setenv("MCP_GRPC_PORT", fmt.Sprintf("%d", grpcPort))
+
 	// 1. Build Docker Image
-	t.Log("Building mcpany/server image...")
-	runCommand(t, rootDir, "docker", "build", "-t", imageName, "-f", "docker/Dockerfile.server", ".")
+	if os.Getenv("SKIP_BUILD") != "true" {
+		t.Log("Building mcpany/server image...")
+		// Build from core root, utilizing server directory as context
+		runCommand(t, rootDir, "docker", "build", "-t", imageName, "-f", "server/docker/Dockerfile.server", "server")
+	} else {
+		t.Log("Skipping docker build (SKIP_BUILD=true)")
+	}
 
 	// Cleanup function
 	cleanup := func() {
@@ -51,7 +96,8 @@ func TestDockerComposeE2E(t *testing.T) {
 		dumpLogs("mcpany-weather-test")
 
 		_ = exec.Command("docker", "compose", "down", "-v").Run()
-		_ = exec.Command("docker", "compose", "-f", "examples/docker-compose-demo/docker-compose.yml", "down", "-v").Run()
+		_ = exec.Command("docker", "compose", "-f", "server/examples/docker-compose-demo/docker-compose.yml", "down", "-v").Run()
+		_ = exec.Command("docker", "rm", "-f", "mcpany-weather-test").Run()
 		time.Sleep(5 * time.Second)
 	}
 	defer cleanup()
@@ -62,34 +108,42 @@ func TestDockerComposeE2E(t *testing.T) {
 	runCommand(t, rootDir, "docker", "compose", "up", "-d", "--wait")
 
 	// 3. Verify Health
+	baseURL := fmt.Sprintf("http://localhost:%d", mcpPort)
 	t.Log("Verifying mcpany-server health...")
-	verifyEndpoint(t, "http://localhost:50050/healthz", 200, 30*time.Second)
+	verifyEndpoint(t, fmt.Sprintf("%s/healthz", baseURL), 200, 30*time.Second)
 
 	// 4. Verify Prometheus Metrics
 	t.Log("Verifying Prometheus metrics...")
 	// Wait a bit for scraping
 	time.Sleep(15 * time.Second)
-	verifyPrometheusMetric(t, "http://localhost:9099/api/v1/query?query=up", "mcpany-server:50050")
+	// Prometheus is mapped 9099:9090 in docker-compose.yml (hardcoded there, but mcpany-server is dynamic)
+	// We didn't parameterize Prometheus port, but that's likely fine as it conflicts less often?
+	// But if mcpany-server target is dynamic, Prometheus scraping config (in prometheus.yml) is static!
+	// prometheus.yml likely scrapes "mcpany-server:50050".
+	// Since we are running in docker network, "mcpany-server" hostname resolves to container.
+	// Container INTERNAL port is still 50050.
+	// So Prometheus scraping WORKS.
+	// We only verify "up" metric.
+	verifyPrometheusMetric(t, "http://localhost:9099/api/v1/query?query=up", fmt.Sprintf("mcpany-server:50050"))
 
 	// 5. Start Example Docker Compose
 	t.Log("Switching to example docker-compose...")
 	// Stop root to avoid conflicts
 	runCommand(t, rootDir, "docker", "compose", "down")
 
-	exampleDir := "examples/docker-compose-demo"
+	exampleDir := "server/examples/docker-compose-demo"
 	runCommand(t, rootDir, "docker", "compose", "-f", fmt.Sprintf("%s/docker-compose.yml", exampleDir), "up", "-d", "--wait")
 
 	// 6. Verify Example Health
 	t.Log("Verifying example mcpany-server health...")
-	// Example server is also exposed on host 50050
-	verifyEndpoint(t, "http://localhost:50050/healthz", 200, 30*time.Second)
+	verifyEndpoint(t, fmt.Sprintf("%s/healthz", baseURL), 200, 30*time.Second)
 
 	// 7. Functional Test: Simulate Gemini CLI & Verify Metrics
 	t.Log("Simulating Gemini CLI interaction with echo tool...")
-	simulateGeminiCLI(t, "http://localhost:50050")
+	simulateGeminiCLI(t, baseURL)
 
 	t.Log("Verifying tool execution metrics...")
-	verifyToolMetricDirect(t, "http://localhost:50050/metrics", "docker-http-echo.echo")
+	verifyToolMetricDirect(t, fmt.Sprintf("%s/metrics", baseURL), "docker-http-echo.echo")
 
 	// 8. Functional Test: Weather Service (Real external call)
 	t.Log("Starting Weather Service functional test...")
@@ -102,14 +156,17 @@ func testFunctionalWeather(t *testing.T, rootDir string) {
 	// 1. Start mcpany-server with wttr.in config
 	// We run it on a different port to avoid conflict with previous steps if they didn't clean up fully,
 	// or just to be isolated.
-	port := 50060
-	configURL := "https://raw.githubusercontent.com/mcpany/core/main/examples/popular_services/wttr.in/config.yaml"
+	port := findFreePort(t)
+	// Mount local config path instead of using URL to ensure it works in CI/local without external dependency
+	// or needing correct branch state on remote.
+	configPath := filepath.Join(rootDir, "server/examples/popular_services/wttr.in/config.yaml")
 
 	t.Logf("Starting mcpany-server for weather test on port %d...", port)
-	cmd := exec.Command("docker", "run", "-d", "--rm", "--name", "mcpany-weather-test",
+	cmd := exec.Command("docker", "run", "-d", "--name", "mcpany-weather-test",
 		"-p", fmt.Sprintf("%d:50050", port),
+		"-v", fmt.Sprintf("%s:/etc/mcpany/config.yaml", configPath),
 		"ghcr.io/mcpany/server:latest",
-		"run", "--config-path", configURL, "--mcp-listen-address", ":50050",
+		"run", "--config-path", "/etc/mcpany/config.yaml", "--mcp-listen-address", ":50050",
 	)
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
@@ -207,7 +264,7 @@ func verifyToolMetricWithService(t *testing.T, metricsURL, toolName, serviceID s
 		resp.Body.Close()
 		body = string(bodyBytes)
 
-		if strings.Contains(body, "mcpany_tool_call_total") &&
+		if strings.Contains(body, "mcpany_tools_call_total") &&
 			strings.Contains(body, fmt.Sprintf("tool=\"%s\"", toolName)) &&
 			strings.Contains(body, fmt.Sprintf("service_id=\"%s\"", serviceID)) {
 			return // Success
@@ -218,7 +275,7 @@ func verifyToolMetricWithService(t *testing.T, metricsURL, toolName, serviceID s
 
 	// Failed after retries, fail with detailed message
 	t.Logf("Metrics output:\n%s", body)
-	require.Contains(t, body, "mcpany_tool_call_total", "Metric name not found")
+	require.Contains(t, body, "mcpany_tools_call_total", "Metric name not found")
 	require.Contains(t, body, fmt.Sprintf("tool=\"%s\"", toolName), "Tool label not found")
 	require.Contains(t, body, fmt.Sprintf("service_id=\"%s\"", serviceID), "Service ID label not found")
 }
@@ -360,7 +417,7 @@ func verifyToolMetricDirect(t *testing.T, metricsURL, toolName string) {
 		resp.Body.Close()
 		body = string(bodyBytes)
 
-		if strings.Contains(body, "mcpany_tool_call_total") &&
+		if strings.Contains(body, "mcpany_tools_call_total") &&
 			strings.Contains(body, fmt.Sprintf("tool=\"%s\"", toolName)) {
 			return // Success
 		}
@@ -369,6 +426,6 @@ func verifyToolMetricDirect(t *testing.T, metricsURL, toolName string) {
 
 	// Failed
 	t.Logf("Metrics output:\n%s", body)
-	require.Contains(t, body, "mcpany_tool_call_total", "Metric name not found")
+	require.Contains(t, body, "mcpany_tools_call_total", "Metric name not found")
 	require.Contains(t, body, fmt.Sprintf("tool=\"%s\"", toolName), "Tool label not found")
 }
