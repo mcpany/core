@@ -55,7 +55,7 @@ func NewSQLiteAuditStore(path string) (*SQLiteAuditStore, error) {
 
 	// Ensure columns exist (for migration)
 	if err := ensureColumns(db); err != nil {
-		db.Close()
+		_ = db.Close()
 		return nil, fmt.Errorf("failed to ensure columns: %w", err)
 	}
 
@@ -68,11 +68,13 @@ func ensureColumns(db *sql.DB) error {
 	// Helper to check and add column
 	addColumn := func(colName string) error {
 		// Check if column exists
+		//nolint:gosec // colName is trusted input from this function
 		query := fmt.Sprintf("SELECT %s FROM audit_logs LIMIT 1", colName)
 		if _, err := db.Exec(query); err == nil {
 			return nil
 		}
 		// Add column
+
 		query = fmt.Sprintf("ALTER TABLE audit_logs ADD COLUMN %s TEXT DEFAULT ''", colName)
 		_, err := db.Exec(query)
 		return err
@@ -160,7 +162,7 @@ func (s *SQLiteAuditStore) Verify() (bool, error) {
 	if err != nil {
 		return false, err
 	}
-	defer rows.Close()
+	defer func() { _ = rows.Close() }()
 
 	var expectedPrevHash string
 	for rows.Next() {
