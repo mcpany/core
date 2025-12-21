@@ -4,6 +4,7 @@
 package config
 
 import (
+	"context"
 	"os"
 	"testing"
 
@@ -796,7 +797,7 @@ func TestValidate(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			validationErrors := Validate(tt.config, Server)
+			validationErrors := Validate(context.Background(), tt.config, Server)
 			if tt.expectedErrorCount > 0 {
 				require.NotEmpty(t, validationErrors)
 				assert.EqualError(t, &validationErrors[0], tt.expectedErrorString)
@@ -814,13 +815,13 @@ func TestValidateOrError(t *testing.T) {
 			},
 		},
 	}
-	err := ValidateOrError(cfg)
+	err := ValidateOrError(context.Background(), cfg)
 	assert.NoError(t, err)
 
 	cfgInvalid := &configv1.UpstreamServiceConfig{
 		Name: proto.String("test"),
 	}
-	err = ValidateOrError(cfgInvalid)
+	err = ValidateOrError(context.Background(), cfgInvalid)
 	assert.Error(t, err)
 }
 
@@ -830,7 +831,7 @@ func TestValidate_Client(t *testing.T) {
 			ApiKey: proto.String("short"),
 		},
 	}
-	errs := Validate(cfg, Client)
+	errs := Validate(context.Background(), cfg, Client)
 	require.Len(t, errs, 1)
 	assert.Contains(t, errs[0].Error(), "API key must be at least 16 characters long")
 }
@@ -854,7 +855,7 @@ func TestValidate_MTLS(t *testing.T) {
 			},
 		},
 	}
-	errs := Validate(cfg, Server)
+	errs := Validate(context.Background(), cfg, Server)
 	require.NotEmpty(t, errs)
 }
 
@@ -865,7 +866,7 @@ func TestValidateGlobalSettings(t *testing.T) {
 				ApiKey: proto.String("short"),
 			},
 		}
-		errs := Validate(cfg, Client)
+		errs := Validate(context.Background(), cfg, Client)
 		assert.Len(t, errs, 1)
 		assert.Equal(t, `service "global_settings": API key must be at least 16 characters long`, errs[0].Error())
 	})
@@ -880,7 +881,7 @@ func TestValidateGlobalSettings(t *testing.T) {
 				MessageBus: mb,
 			},
 		}
-		errs := Validate(cfg, Server)
+		errs := Validate(context.Background(), cfg, Server)
 		assert.Len(t, errs, 1)
 		assert.Equal(t, `service "global_settings": redis message bus address is empty`, errs[0].Error())
 	})

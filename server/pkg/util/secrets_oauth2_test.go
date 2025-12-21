@@ -4,6 +4,7 @@
 package util_test
 
 import (
+	"context"
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
@@ -88,7 +89,7 @@ func TestResolveSecret_RemoteContent_OAuth2(t *testing.T) {
 	}
 
 	// 4. Resolve Secret
-	val, err := util.ResolveSecret(secret)
+	val, err := util.ResolveSecret(context.Background(), secret)
 
 	// Expectation: This should succeed now (after fix)
 	assert.NoError(t, err)

@@ -11,8 +11,8 @@ import (
 
 	"github.com/gorilla/websocket"
 	"github.com/mcpany/core/pkg/auth"
-	"github.com/mcpany/core/pkg/logging"
 	"github.com/mcpany/core/pkg/client"
+	"github.com/mcpany/core/pkg/logging"
 	"github.com/mcpany/core/pkg/pool"
 	"github.com/mcpany/core/pkg/transformer"
 	"github.com/mcpany/core/pkg/util"
@@ -110,7 +110,7 @@ func (t *WebsocketTool) Execute(ctx context.Context, req *ExecutionRequest) (any
 
 	for _, param := range t.parameters {
 		if secret := param.GetSecret(); secret != nil {
-			secretValue, err := util.ResolveSecret(secret)
+			secretValue, err := util.ResolveSecret(ctx, secret)
 			if err != nil {
 				return nil, fmt.Errorf("failed to resolve secret for parameter %q: %w", param.GetSchema().GetName(), err)
 			}

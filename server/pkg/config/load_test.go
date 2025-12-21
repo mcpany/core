@@ -4,6 +4,7 @@
 package config
 
 import (
+	"context"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -205,7 +206,7 @@ upstream_services: {
 				apiKey := auth.GetApiKey()
 				require.NotNil(t, apiKey)
 				assert.Equal(t, "X-Token", apiKey.GetHeaderName())
-				apiKeyValue, err := util.ResolveSecret(apiKey.GetApiKey())
+				apiKeyValue, err := util.ResolveSecret(context.Background(), apiKey.GetApiKey())
 				require.NoError(t, err)
 				assert.Equal(t, "secretapikey", apiKeyValue, "API key should be plaintext")
 				assert.Len(t, httpService.GetTools(), 1)
@@ -239,7 +240,7 @@ upstream_services: {
 				require.NotNil(t, auth)
 				bearerToken := auth.GetBearerToken()
 				require.NotNil(t, bearerToken)
-				tokenValue, err := util.ResolveSecret(bearerToken.GetToken())
+				tokenValue, err := util.ResolveSecret(context.Background(), bearerToken.GetToken())
 				require.NoError(t, err)
 				assert.Equal(t, "secretbearertoken", tokenValue)
 			},
@@ -268,7 +269,7 @@ upstream_services: {
 				basicAuth := auth.GetBasicAuth()
 				require.NotNil(t, basicAuth)
 				assert.Equal(t, "testuser", basicAuth.GetUsername())
-				passwordValue, err := util.ResolveSecret(basicAuth.GetPassword())
+				passwordValue, err := util.ResolveSecret(context.Background(), basicAuth.GetPassword())
 				require.NoError(t, err)
 				assert.Equal(t, "secretpassword", passwordValue)
 			},
