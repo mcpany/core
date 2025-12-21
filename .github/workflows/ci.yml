@@ -116,6 +116,9 @@ jobs:
           ${{ runner.os }}-build-env-bin-${{ steps.get-date.outputs.week }}-${{ hashFiles('Makefile') }}-
           ${{ runner.os }}-build-env-bin-${{ steps.get-date.outputs.week }}-
 
+    - name: Fix Docker Socket Permissions
+      run: sudo chmod 666 /var/run/docker.sock
+
     - name: Prepare environment
       run: |
         make prepare CACHE_TO=type=local,dest=build/buildx-cache CACHE_FROM=type=local,src=build/buildx-cache
@@ -209,6 +212,9 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-build-env-bin-${{ steps.get-date.outputs.week }}-${{ hashFiles('Makefile') }}-
           ${{ runner.os }}-build-env-bin-${{ steps.get-date.outputs.week }}-
+
+    - name: Fix Docker Socket Permissions
+      run: sudo chmod 666 /var/run/docker.sock
 
     - name: Prepare environment
       run: make prepare CACHE_TO=type=local,dest=build/buildx-cache CACHE_FROM=type=local,src=build/buildx-cache
@@ -312,6 +318,9 @@ jobs:
           ${{ runner.os }}-build-env-bin-${{ steps.get-date.outputs.week }}-${{ hashFiles('Makefile') }}-
           ${{ runner.os }}-build-env-bin-${{ steps.get-date.outputs.week }}-
 
+    - name: Fix Docker Socket Permissions
+      run: sudo chmod 666 /var/run/docker.sock
+
     - name: Prepare environment
       run: make prepare CACHE_TO=type=local,dest=build/buildx-cache CACHE_FROM=type=local,src=build/buildx-cache
 
@@ -413,6 +422,9 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-build-env-bin-${{ steps.get-date.outputs.week }}-${{ hashFiles('Makefile') }}-
           ${{ runner.os }}-build-env-bin-${{ steps.get-date.outputs.week }}-
+
+    - name: Fix Docker Socket Permissions
+      run: sudo chmod 666 /var/run/docker.sock
 
     - name: Prepare environment
       run: make prepare CACHE_TO=type=local,dest=build/buildx-cache CACHE_FROM=type=local,src=build/buildx-cache
