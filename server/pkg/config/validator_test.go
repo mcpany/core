@@ -249,6 +249,84 @@ func TestValidate(t *testing.T) {
 			expectedErrorCount: 0,
 		},
 		{
+			name: "invalid sql service - empty driver",
+			config: func() *configv1.McpAnyServerConfig {
+				cfg := &configv1.McpAnyServerConfig{}
+				require.NoError(t, protojson.Unmarshal([]byte(`{
+					"upstream_services": [
+						{
+							"name": "sql-svc-empty-driver",
+							"sql_service": {
+								"driver": "",
+								"dsn": "postgres://user:pass@localhost:5432/db"
+							}
+						}
+					]
+				}`), cfg))
+				return cfg
+			}(),
+			expectedErrorCount:  1,
+			expectedErrorString: `service "sql-svc-empty-driver": sql service has empty driver`,
+		},
+		{
+			name: "invalid sql service - empty dsn",
+			config: func() *configv1.McpAnyServerConfig {
+				cfg := &configv1.McpAnyServerConfig{}
+				require.NoError(t, protojson.Unmarshal([]byte(`{
+					"upstream_services": [
+						{
+							"name": "sql-svc-empty-dsn",
+							"sql_service": {
+								"driver": "postgres",
+								"dsn": ""
+							}
+						}
+					]
+				}`), cfg))
+				return cfg
+			}(),
+			expectedErrorCount:  1,
+			expectedErrorString: `service "sql-svc-empty-dsn": sql service has empty dsn`,
+		},
+		{
+			name: "invalid graphql service - empty address",
+			config: func() *configv1.McpAnyServerConfig {
+				cfg := &configv1.McpAnyServerConfig{}
+				require.NoError(t, protojson.Unmarshal([]byte(`{
+					"upstream_services": [
+						{
+							"name": "graphql-svc-empty-addr",
+							"graphql_service": {
+								"address": ""
+							}
+						}
+					]
+				}`), cfg))
+				return cfg
+			}(),
+			expectedErrorCount:  1,
+			expectedErrorString: `service "graphql-svc-empty-addr": graphql service has empty address`,
+		},
+		{
+			name: "invalid webrtc service - empty address",
+			config: func() *configv1.McpAnyServerConfig {
+				cfg := &configv1.McpAnyServerConfig{}
+				require.NoError(t, protojson.Unmarshal([]byte(`{
+					"upstream_services": [
+						{
+							"name": "webrtc-svc-empty-addr",
+							"webrtc_service": {
+								"address": ""
+							}
+						}
+					]
+				}`), cfg))
+				return cfg
+			}(),
+			expectedErrorCount:  1,
+			expectedErrorString: `service "webrtc-svc-empty-addr": webrtc service has empty address`,
+		},
+		{
 			name: "invalid openapi service - bad spec url",
 			config: func() *configv1.McpAnyServerConfig {
 				cfg := &configv1.McpAnyServerConfig{}
@@ -758,7 +836,7 @@ func TestValidate(t *testing.T) {
 								ContainerEnvironment: &configv1.ContainerEnvironment{
 									Image: proto.String("alpine"),
 									Volumes: map[string]string{
-										"/host/path": "/container/path",
+										"host/path": "/container/path",
 									},
 								},
 							},
@@ -768,6 +846,31 @@ func TestValidate(t *testing.T) {
 				return cfg
 			}(),
 			expectedErrorCount: 0,
+		},
+		{
+			name: "invalid volume mount - absolute path",
+			config: func() *configv1.McpAnyServerConfig {
+				cfg := &configv1.McpAnyServerConfig{}
+				cfg.UpstreamServices = []*configv1.UpstreamServiceConfig{
+					{
+						Name: proto.String("volume-absolute"),
+						ServiceConfig: &configv1.UpstreamServiceConfig_CommandLineService{
+							CommandLineService: &configv1.CommandLineUpstreamService{
+								Command: proto.String("echo"),
+								ContainerEnvironment: &configv1.ContainerEnvironment{
+									Image: proto.String("alpine"),
+									Volumes: map[string]string{
+										"/host/path": "/container/path",
+									},
+								},
+							},
+						},
+					},
+				}
+				return cfg
+			}(),
+			expectedErrorCount: 1,
+			expectedErrorString: `service "volume-absolute": container environment volume host path "/host/path" is not a secure path: path "/host/path" is not allowed (must be in CWD or in MCPANY_FILE_PATH_ALLOW_LIST)`,
 		},
         /*
 		{
