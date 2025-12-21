@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 // Package util provides utility functions.
+
 package util
 
 import (
@@ -10,7 +11,6 @@ import (
 	"fmt"
 	"net/url"
 	"os"
-	"regexp"
 	"strings"
 
 	"github.com/google/uuid"
@@ -130,9 +130,6 @@ const (
 )
 
 var (
-	// placeholderRegex matches {{key}} patterns.
-	placeholderRegex = regexp.MustCompile(`(?s)\{\{(.+?)\}\}`)
-
 	// allowedIDChars is a lookup table for allowed characters in an operation ID.
 	// It corresponds to the regex `[a-zA-Z0-9-._~:/?#\[\]@!$&'()*+,;=]`.
 	allowedIDChars [256]bool
@@ -254,19 +251,7 @@ func GetDockerCommand() (string, []string) {
 //
 //	The URL path with placeholders replaced.
 func ReplaceURLPath(urlPath string, params map[string]interface{}, noEscapeParams map[string]bool) string {
-	return placeholderRegex.ReplaceAllStringFunc(urlPath, func(match string) string {
-		// match includes {{ and }}, we want to extract the key
-		key := match[2 : len(match)-2]
-		v, ok := params[key]
-		if !ok {
-			return match
-		}
-		val := fmt.Sprintf("%v", v)
-		if noEscapeParams == nil || !noEscapeParams[key] {
-			val = url.PathEscape(val)
-		}
-		return val
-	})
+	return replacePlaceholders(urlPath, params, noEscapeParams, url.PathEscape)
 }
 
 // ReplaceURLQuery replaces placeholders in a URL query string with values from a params map.
@@ -282,17 +267,43 @@ func ReplaceURLPath(urlPath string, params map[string]interface{}, noEscapeParam
 //
 //	The URL query string with placeholders replaced.
 func ReplaceURLQuery(urlQuery string, params map[string]interface{}, noEscapeParams map[string]bool) string {
-	return placeholderRegex.ReplaceAllStringFunc(urlQuery, func(match string) string {
-		// match includes {{ and }}, we want to extract the key
-		key := match[2 : len(match)-2]
+	return replacePlaceholders(urlQuery, params, noEscapeParams, url.QueryEscape)
+}
+
+func replacePlaceholders(input string, params map[string]interface{}, noEscapeParams map[string]bool, escapeFunc func(string) string) string {
+	var sb strings.Builder
+	// Heuristic: grow slightly more than original to accommodate values
+	sb.Grow(len(input) + 32)
+
+	start := 0
+	for {
+		idx := strings.Index(input[start:], "{{")
+		if idx == -1 {
+			sb.WriteString(input[start:])
+			break
+		}
+		absoluteIdx := start + idx
+		sb.WriteString(input[start:absoluteIdx])
+
+		end := strings.Index(input[absoluteIdx+2:], "}}")
+		if end == -1 {
+			sb.WriteString(input[absoluteIdx:])
+			break
+		}
+		absoluteEnd := absoluteIdx + 2 + end
+
+		key := input[absoluteIdx+2 : absoluteEnd]
 		v, ok := params[key]
 		if !ok {
-			return match
+			sb.WriteString(input[absoluteIdx : absoluteEnd+2])
+		} else {
+			val := fmt.Sprintf("%v", v)
+			if noEscapeParams == nil || !noEscapeParams[key] {
+				val = escapeFunc(val)
+			}
+			sb.WriteString(val)
 		}
-		val := fmt.Sprintf("%v", v)
-		if noEscapeParams == nil || !noEscapeParams[key] {
-			val = url.QueryEscape(val)
-		}
-		return val
-	})
+		start = absoluteEnd + 2
+	}
+	return sb.String()
 }

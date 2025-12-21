@@ -16,7 +16,7 @@ This document outlines the current status and future plans for MCP Any.
 - [x] [MCP-to-MCP Proxy](features/service_types.md)
 - [x] [WebSocket](features/service_types.md)
 - [x] [WebRTC](features/service_types.md)
-- [x] [SQL](features/service_types.md) (Beta)
+- [x] [SQL](features/service_types.md)
 
 ### Authentication
 
@@ -42,11 +42,13 @@ This document outlines the current status and future plans for MCP Any.
 - [x] [Secrets Management](features/security.md)
 - [x] [IP Allowlisting](features/security.md)
 - [x] [Webhooks](features/security.md)
+- [x] [Role-Based Access Control (RBAC)](features/auth.md)
 
 ### Core
 
 - [x] Dynamic Tool Registration
 - [x] Message Bus (NATS, Kafka)
+- [x] [Structured Output Transformation](features/transformation.md) (JQ/JSONPath)
 
 ### Transformation
 

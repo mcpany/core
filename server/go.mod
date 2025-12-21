@@ -40,6 +40,7 @@ require (
 	github.com/itchyny/gojq v0.12.18
 	github.com/jellydator/ttlcache/v3 v3.4.0
 	github.com/jhump/protoreflect v1.15.3
+	github.com/lib/pq v1.10.9
 	github.com/machinebox/graphql v0.2.2
 	github.com/modelcontextprotocol/go-sdk v1.1.0
 	github.com/nats-io/nats-server/v2 v2.12.1
@@ -136,7 +137,6 @@ require (
 	github.com/josharian/intern v1.0.0 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/klauspost/compress v1.18.0 // indirect
-	github.com/lib/pq v1.10.9 // indirect
 	github.com/magiconair/properties v1.8.7 // indirect
 	github.com/mailru/easyjson v0.7.7 // indirect
 	github.com/matryer/is v1.4.1 // indirect

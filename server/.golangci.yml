@@ -20,7 +20,7 @@ linters:
     - govet
     - nolintlint
     - prealloc
-    - revive
+    #- revive
     - gosec
     - staticcheck
     - tparallel

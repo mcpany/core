@@ -39,6 +39,10 @@ You want to alert if the error rate of your "weather-service" exceeds 5% or if t
 - `mcpany_grpc_connections_closed_total`: Total number of closed gRPC connections.
 - `mcpany_grpc_rpc_started_total`: Total number of started gRPC RPCs.
 - `mcpany_grpc_rpc_finished_total`: Total number of finished gRPC RPCs.
+- `mcpany_tool_execution_total`: Total number of tool executions (labels: tool, service_id, status, error_type).
+- `mcpany_tool_execution_duration`: Histogram of tool execution duration.
+- `mcpany_tool_execution_input_bytes`: Histogram of input payload sizes in bytes.
+- `mcpany_tool_execution_output_bytes`: Histogram of output payload sizes in bytes.
 
 ## Public API Example
 

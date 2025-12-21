@@ -36,6 +36,7 @@ import (
 	"github.com/mcpany/core/pkg/storage/sqlite"
 	"github.com/mcpany/core/pkg/telemetry"
 	"github.com/mcpany/core/pkg/tool"
+	"github.com/mcpany/core/pkg/util"
 	"github.com/mcpany/core/pkg/upstream/factory"
 	"github.com/mcpany/core/pkg/worker"
 	pb_admin "github.com/mcpany/core/proto/admin/v1"
@@ -250,6 +251,9 @@ func (a *Application) Run(
 	poolManager := pool.NewManager()
 	upstreamFactory := factory.NewUpstreamServiceFactory(poolManager)
 	a.ToolManager = tool.NewManager(busProvider)
+	// Add Tool Metrics Middleware
+	a.ToolManager.AddMiddleware(middleware.NewToolMetricsMiddleware())
+
 	a.PromptManager = prompt.NewManager()
 	a.ResourceManager = resource.NewManager()
 	authManager := auth.NewManager()
@@ -342,8 +346,16 @@ func (a *Application) Run(
 
 	// Initialize standard middlewares in registry
 	cachingMiddleware := middleware.NewCachingMiddleware(a.ToolManager)
-	if err := middleware.InitStandardMiddlewares(mcpSrv.AuthManager(), a.ToolManager, cfg.GetGlobalSettings().GetAudit(), cachingMiddleware); err != nil {
+	auditCleanup, err := middleware.InitStandardMiddlewares(mcpSrv.AuthManager(), a.ToolManager, cfg.GetGlobalSettings().GetAudit(), cachingMiddleware)
+	if err != nil {
 		return fmt.Errorf("failed to init standard middlewares: %w", err)
+	}
+	if auditCleanup != nil {
+		defer func() {
+			if err := auditCleanup(); err != nil {
+				log.Error("Failed to close audit middleware", "error", err)
+			}
+		}()
 	}
 
 	// Get configured middlewares
@@ -420,10 +432,13 @@ func (a *Application) ReloadConfig(fs afero.Fs, configPaths []string) error {
 	)
 
 	// Clear existing services
-	for _, serviceConfig := range cfg.GetUpstreamServices() {
-		a.ToolManager.ClearToolsForService(serviceConfig.GetName())
-		a.ResourceManager.ClearResourcesForService(serviceConfig.GetName())
-		a.PromptManager.ClearPromptsForService(serviceConfig.GetName())
+	// We iterate over all currently registered services and clear them.
+	// This handles cases where a service was removed or renamed in the new config.
+	for _, svcInfo := range a.ToolManager.ListServices() {
+		serviceID := svcInfo.Name
+		a.ToolManager.ClearToolsForService(serviceID)
+		a.ResourceManager.ClearResourcesForService(serviceID)
+		a.PromptManager.ClearPromptsForService(serviceID)
 	}
 
 	if cfg.GetUpstreamServices() != nil {
@@ -603,6 +618,10 @@ func (a *Application) runServerMode(
 	apiKey := config.GlobalSettings().APIKey()
 	authMiddleware := func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			ip := util.ExtractIP(r.RemoteAddr)
+			ctx := util.ContextWithRemoteIP(r.Context(), ip)
+			r = r.WithContext(ctx)
+
 			if apiKey != "" {
 				if subtle.ConstantTimeCompare([]byte(r.Header.Get("X-API-Key")), []byte(apiKey)) != 1 {
 					http.Error(w, "Unauthorized", http.StatusUnauthorized)
@@ -933,6 +952,9 @@ func (a *Application) runServerMode(
 		} else {
 			grpcUnaryInterceptor := func(ctx context.Context, req interface{}, _ *gogrpc.UnaryServerInfo, handler gogrpc.UnaryHandler) (interface{}, error) {
 				if p, ok := peer.FromContext(ctx); ok {
+					ip := util.ExtractIP(p.Addr.String())
+					ctx = util.ContextWithRemoteIP(ctx, ip)
+
 					if !ipMiddleware.Allow(p.Addr.String()) {
 						return nil, status.Error(codes.PermissionDenied, "IP not allowed")
 					}
@@ -941,9 +963,16 @@ func (a *Application) runServerMode(
 			}
 			grpcStreamInterceptor := func(srv interface{}, ss gogrpc.ServerStream, _ *gogrpc.StreamServerInfo, handler gogrpc.StreamHandler) error {
 				if p, ok := peer.FromContext(ss.Context()); ok {
+					ip := util.ExtractIP(p.Addr.String())
+					// Wrapper to modify context for stream
+					wrappedStream := &util.WrappedServerStream{
+						ServerStream: ss,
+						Ctx:          util.ContextWithRemoteIP(ss.Context(), ip),
+					}
 					if !ipMiddleware.Allow(p.Addr.String()) {
 						return status.Error(codes.PermissionDenied, "IP not allowed")
 					}
+					return handler(srv, wrappedStream)
 				}
 				return handler(srv, ss)
 			}

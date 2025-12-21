@@ -103,7 +103,7 @@ func InitStandardMiddlewares(
 	toolManager tool.ManagerInterface,
 	auditConfig *configv1.AuditConfig,
 	cachingMiddleware *CachingMiddleware,
-) error {
+) (func() error, error) {
 	// 1. Logging
 	RegisterMCP("logging", func(_ *configv1.Middleware) func(mcp.MethodHandler) mcp.MethodHandler {
 		return LoggingMiddleware(nil)
@@ -204,19 +204,11 @@ func InitStandardMiddlewares(
 	})
 
 	// Audit
-	// Audit middleware might need to be closed? server.go deferred Close().
-	// We can't easy defer Close here.
-	// The AuditMiddleware struct has a Close method.
-	// We should probably allow the caller to manage the lifecycle or make it a singleton in App.
-	// For now, let's assume it's safe OR we refactor how it's created.
-	// Actually, `NewAuditMiddleware` returns (*AuditMiddleware, error).
+	// Audit middleware needs to be closed to ensure file handles are released.
 	audit, err := NewAuditMiddleware(auditConfig)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	// TODO: Handle closing audit middleware?
-	// Maybe we just don't close it globally here, relying on app shutdown?
-	// Or we add a Shutdown/Close method to registry?
 
 	RegisterMCP("audit", func(_ *configv1.Middleware) func(mcp.MethodHandler) mcp.MethodHandler {
 		return func(next mcp.MethodHandler) mcp.MethodHandler {
@@ -241,5 +233,5 @@ func InitStandardMiddlewares(
 		}
 	})
 
-	return nil
+	return audit.Close, nil
 }

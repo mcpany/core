@@ -18,6 +18,8 @@ func strPtr(s string) *string { return &s }
 func int64Ptr(i int64) *int64 { return &i }
 
 func TestStaticResource(t *testing.T) {
+	t.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "true")
+
 	// Setup test server
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Path == "/test.txt" {

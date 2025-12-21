@@ -1,0 +1,95 @@
+// Copyright 2025 Author(s) of MCP Any
+// SPDX-License-Identifier: Apache-2.0
+
+package tool
+
+import (
+	"context"
+	"encoding/json"
+	"io"
+	"strings"
+	"testing"
+
+	"github.com/mcpany/core/pkg/command"
+	configv1 "github.com/mcpany/core/proto/config/v1"
+	v1 "github.com/mcpany/core/proto/mcp_router/v1"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/types/known/structpb"
+)
+
+type mockExecutor struct {
+	capturedArgs []string
+}
+
+func (m *mockExecutor) Execute(ctx context.Context, cmd string, args []string, workingDir string, env []string) (io.ReadCloser, io.ReadCloser, <-chan int, error) {
+	m.capturedArgs = args
+	ch := make(chan int, 1)
+	ch <- 0
+	close(ch)
+	return io.NopCloser(strings.NewReader("")), io.NopCloser(strings.NewReader("")), ch, nil
+}
+
+func (m *mockExecutor) ExecuteWithStdIO(ctx context.Context, cmd string, args []string, workingDir string, env []string) (io.WriteCloser, io.ReadCloser, io.ReadCloser, <-chan int, error) {
+	return nil, nil, nil, nil, nil
+}
+
+func TestLargeIntPrecisionLoss(t *testing.T) {
+	// Large integer that cannot be represented exactly as float64
+	// 2^63 - 1 = 9223372036854775807
+	// float64 has 53 bits of mantissa.
+	largeIntStr := "9223372036854775807"
+
+	mockExec := &mockExecutor{}
+
+	// Define tool
+	toolDef := &v1.Tool{
+		Name: proto.String("test-tool"),
+		InputSchema: &structpb.Struct{
+			Fields: map[string]*structpb.Value{
+				"type": structpb.NewStringValue("object"),
+				"properties": structpb.NewStructValue(&structpb.Struct{
+					Fields: map[string]*structpb.Value{
+						"id": {Kind: &structpb.Value_StringValue{StringValue: "string"}}, // Treat as string in schema? No, user might send number.
+						// Even if schema says number, JSON decoder into interface{} makes it float64.
+					},
+				}),
+			},
+		},
+	}
+
+	service := &configv1.CommandLineUpstreamService{
+		Command: proto.String("echo"),
+	}
+
+	callDef := &configv1.CommandLineCallDefinition{
+		Args: []string{"{{id}}"},
+	}
+
+	// Create CommandTool manually
+	ct := &CommandTool{
+		tool:           toolDef,
+		service:        service,
+		callDefinition: callDef,
+		executorFactory: func(env *configv1.ContainerEnvironment) command.Executor {
+			return mockExec
+		},
+	}
+
+	// Execute
+	inputsJSON := `{"id": ` + largeIntStr + `}`
+	req := &ExecutionRequest{
+		ToolName:   "test-tool",
+		ToolInputs: json.RawMessage([]byte(inputsJSON)),
+	}
+
+	_, err := ct.Execute(context.Background(), req)
+	require.NoError(t, err)
+
+	require.Len(t, mockExec.capturedArgs, 1)
+	captured := mockExec.capturedArgs[0]
+
+	// Check if captured argument matches original string
+	assert.Equal(t, largeIntStr, captured, "Large integer should be preserved exactly")
+}

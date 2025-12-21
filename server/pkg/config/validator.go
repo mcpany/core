@@ -19,6 +19,11 @@ import (
 type BinaryType int
 
 const (
+	schemeHTTP  = "http"
+	schemeHTTPS = "https"
+)
+
+const (
 	// Server represents the server binary.
 	Server BinaryType = iota
 	// Worker represents the worker binary.
@@ -94,7 +99,39 @@ func Validate(ctx context.Context, config *configv1.McpAnyServerConfig, binaryTy
 		}
 	}
 
+	for _, collection := range config.GetUpstreamServiceCollections() {
+		if err := validateUpstreamServiceCollection(ctx, collection); err != nil {
+			validationErrors = append(validationErrors, ValidationError{
+				ServiceName: collection.GetName(),
+				Err:         err,
+			})
+		}
+	}
+
 	return validationErrors
+}
+
+func validateUpstreamServiceCollection(ctx context.Context, collection *configv1.UpstreamServiceCollection) error {
+	if collection.GetName() == "" {
+		return fmt.Errorf("collection name is empty")
+	}
+	if collection.GetHttpUrl() == "" {
+		return fmt.Errorf("collection http_url is empty")
+	}
+	if !validation.IsValidURL(collection.GetHttpUrl()) {
+		return fmt.Errorf("invalid collection http_url: %s", collection.GetHttpUrl())
+	}
+	u, _ := url.Parse(collection.GetHttpUrl())
+	if u.Scheme != schemeHTTP && u.Scheme != schemeHTTPS {
+		return fmt.Errorf("invalid collection http_url scheme: %s", u.Scheme)
+	}
+
+	if authConfig := collection.GetAuthentication(); authConfig != nil {
+		if err := validateUpstreamAuthentication(ctx, authConfig); err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 func validateGlobalSettings(gs *configv1.GlobalSettings, binaryType BinaryType) error {
@@ -162,6 +199,12 @@ func validateServiceConfig(service *configv1.UpstreamServiceConfig) error {
 		return validateCommandLineService(commandLineService)
 	} else if mcpService := service.GetMcpService(); mcpService != nil {
 		return validateMcpService(mcpService)
+	} else if sqlService := service.GetSqlService(); sqlService != nil {
+		return validateSqlService(sqlService)
+	} else if graphqlService := service.GetGraphqlService(); graphqlService != nil {
+		return validateGraphQLService(graphqlService)
+	} else if webrtcService := service.GetWebrtcService(); webrtcService != nil {
+		return validateWebrtcService(webrtcService)
 	}
 	return nil
 }
@@ -174,7 +217,7 @@ func validateHTTPService(httpService *configv1.HttpUpstreamService) error {
 		return fmt.Errorf("invalid http target_address: %s", httpService.GetAddress())
 	}
 	u, _ := url.Parse(httpService.GetAddress())
-	if u.Scheme != "http" && u.Scheme != "https" {
+	if u.Scheme != schemeHTTP && u.Scheme != schemeHTTPS {
 		return fmt.Errorf("invalid http target_address scheme: %s", u.Scheme)
 	}
 
@@ -266,7 +309,8 @@ func validateContainerEnvironment(env *configv1.ContainerEnvironment) error {
 			}
 			// dest is the key (Host Path), src is the value (Container Path).
 			// We must validate the Host Path (dest) to ensure it is secure.
-			if err := validation.IsSecurePath(dest); err != nil {
+			// It must be either relative to the CWD or in the allowed list.
+			if err := validation.IsRelativePath(dest); err != nil {
 				return fmt.Errorf("container environment volume host path %q is not a secure path: %w", dest, err)
 			}
 		}
@@ -305,6 +349,44 @@ func validateMcpService(mcpService *configv1.McpUpstreamService) error {
 		if err := validateSchema(call.GetOutputSchema()); err != nil {
 			return fmt.Errorf("mcp call %q output_schema error: %w", name, err)
 		}
+	}
+	return nil
+}
+
+func validateSqlService(sqlService *configv1.SqlUpstreamService) error {
+	if sqlService.GetDriver() == "" {
+		return fmt.Errorf("sql service has empty driver")
+	}
+	if sqlService.GetDsn() == "" {
+		return fmt.Errorf("sql service has empty dsn")
+	}
+	return nil
+}
+
+func validateGraphQLService(graphqlService *configv1.GraphQLUpstreamService) error {
+	if graphqlService.GetAddress() == "" {
+		return fmt.Errorf("graphql service has empty address")
+	}
+	if !validation.IsValidURL(graphqlService.GetAddress()) {
+		return fmt.Errorf("invalid graphql target_address: %s", graphqlService.GetAddress())
+	}
+	u, _ := url.Parse(graphqlService.GetAddress())
+	if u.Scheme != schemeHTTP && u.Scheme != schemeHTTPS {
+		return fmt.Errorf("invalid graphql target_address scheme: %s", u.Scheme)
+	}
+	return nil
+}
+
+func validateWebrtcService(webrtcService *configv1.WebrtcUpstreamService) error {
+	if webrtcService.GetAddress() == "" {
+		return fmt.Errorf("webrtc service has empty address")
+	}
+	if !validation.IsValidURL(webrtcService.GetAddress()) {
+		return fmt.Errorf("invalid webrtc target_address: %s", webrtcService.GetAddress())
+	}
+	u, _ := url.Parse(webrtcService.GetAddress())
+	if u.Scheme != schemeHTTP && u.Scheme != schemeHTTPS {
+		return fmt.Errorf("invalid webrtc target_address scheme: %s", u.Scheme)
 	}
 	return nil
 }

@@ -130,3 +130,22 @@ func MeasureSince(name []string, start time.Time) {
 func MeasureSinceWithLabels(name []string, start time.Time, labels []metrics.Label) {
 	metrics.MeasureSinceWithLabels(name, start, labels)
 }
+
+// AddSample adds a sample to a histogram/summary.
+//
+// Parameters:
+//   - name: The name of the metric (as a path).
+//   - val: The value to sample.
+func AddSample(name []string, val float32) {
+	metrics.AddSample(name, val)
+}
+
+// AddSampleWithLabels adds a sample to a histogram/summary with labels.
+//
+// Parameters:
+//   - name: The name of the metric (as a path).
+//   - val: The value to sample.
+//   - labels: The labels to apply.
+func AddSampleWithLabels(name []string, val float32, labels []metrics.Label) {
+	metrics.AddSampleWithLabels(name, val, labels)
+}

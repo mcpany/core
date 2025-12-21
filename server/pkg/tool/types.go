@@ -300,6 +300,8 @@ type HTTPTool struct {
 	cachedPath         string // with %7B replaced
 	cachedQuery        string // with %7B replaced
 	cachedPlaceholders map[string]string
+	paramInPath        []bool
+	paramInQuery       []bool
 }
 
 // NewHTTPTool creates a new HTTPTool.
@@ -362,10 +364,21 @@ func NewHTTPTool(tool *v1.Tool, poolManager *pool.Manager, serviceID string, aut
 	t.cachedQuery = queryStr
 
 	t.cachedPlaceholders = make(map[string]string)
-	for _, param := range callDefinition.GetParameters() {
+	t.paramInPath = make([]bool, len(callDefinition.GetParameters()))
+	t.paramInQuery = make([]bool, len(callDefinition.GetParameters()))
+
+	for i, param := range callDefinition.GetParameters() {
 		if schema := param.GetSchema(); schema != nil {
 			name := schema.GetName()
-			t.cachedPlaceholders[name] = "{{" + name + "}}"
+			placeholder := "{{" + name + "}}"
+			t.cachedPlaceholders[name] = placeholder
+
+			if strings.Contains(t.cachedPath, placeholder) {
+				t.paramInPath[i] = true
+			}
+			if strings.Contains(t.cachedQuery, placeholder) {
+				t.paramInQuery[i] = true
+			}
 		}
 	}
 
@@ -434,41 +447,74 @@ func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 
 	var inputs map[string]any
 	if len(req.ToolInputs) > 0 {
-		if err := json.Unmarshal(req.ToolInputs, &inputs); err != nil {
+		decoder := json.NewDecoder(bytes.NewReader(req.ToolInputs))
+		decoder.UseNumber()
+		if err := decoder.Decode(&inputs); err != nil {
 			return nil, fmt.Errorf("failed to unmarshal tool inputs: %w", err)
 		}
 	}
 
-	for _, param := range t.parameters {
+	for i, param := range t.parameters {
 		if secret := param.GetSecret(); secret != nil {
 			secretValue, err := util.ResolveSecret(ctx, secret)
 			if err != nil {
 				return nil, fmt.Errorf("failed to resolve secret for parameter %q: %w", param.GetSchema().GetName(), err)
 			}
 			placeholder := t.cachedPlaceholders[param.GetSchema().GetName()]
-			pathStr = strings.ReplaceAll(pathStr, placeholder, secretValue)
-			queryStr = strings.ReplaceAll(queryStr, placeholder, secretValue)
+			if t.paramInPath[i] {
+				pathStr = strings.ReplaceAll(pathStr, placeholder, secretValue)
+			}
+			if t.paramInQuery[i] {
+				queryStr = strings.ReplaceAll(queryStr, placeholder, secretValue)
+			}
 		} else if schema := param.GetSchema(); schema != nil {
 			placeholder := t.cachedPlaceholders[schema.GetName()]
 			if val, ok := inputs[schema.GetName()]; ok {
-				valStr := fmt.Sprintf("%v", val)
+				var valStr string
+				// Optimization: avoid fmt.Sprintf for strings
+				switch v := val.(type) {
+				case string:
+					valStr = v
+				default:
+					valStr = fmt.Sprintf("%v", v)
+				}
+
 				if param.GetDisableEscape() {
 					// Check for path traversal if in path
-					if strings.Contains(pathStr, placeholder) {
-						if valStr == ".." || strings.HasPrefix(valStr, "../") || strings.HasSuffix(valStr, "/..") || strings.Contains(valStr, "/../") {
-							return nil, fmt.Errorf("path traversal attempt detected in parameter %q", schema.GetName())
+					if t.paramInPath[i] {
+						// Check the raw value first
+						if err := checkForPathTraversal(valStr); err != nil {
+							return nil, fmt.Errorf("path traversal attempt detected in parameter %q: %w", schema.GetName(), err)
 						}
+
+						// Check the decoded value to prevent bypasses like %2e%2e
+						if decodedVal, err := url.QueryUnescape(valStr); err == nil {
+							if err := checkForPathTraversal(decodedVal); err != nil {
+								return nil, fmt.Errorf("path traversal attempt detected in parameter %q (decoded): %w", schema.GetName(), err)
+							}
+						}
+
+						pathStr = strings.ReplaceAll(pathStr, placeholder, valStr)
 					}
-					pathStr = strings.ReplaceAll(pathStr, placeholder, valStr)
-					queryStr = strings.ReplaceAll(queryStr, placeholder, valStr)
+					if t.paramInQuery[i] {
+						queryStr = strings.ReplaceAll(queryStr, placeholder, valStr)
+					}
 				} else {
-					pathStr = strings.ReplaceAll(pathStr, placeholder, url.PathEscape(valStr))
-					queryStr = strings.ReplaceAll(queryStr, placeholder, url.QueryEscape(valStr))
+					if t.paramInPath[i] {
+						pathStr = strings.ReplaceAll(pathStr, placeholder, url.PathEscape(valStr))
+					}
+					if t.paramInQuery[i] {
+						queryStr = strings.ReplaceAll(queryStr, placeholder, url.QueryEscape(valStr))
+					}
 				}
 				delete(inputs, schema.GetName())
 			} else {
-				pathStr = strings.ReplaceAll(pathStr, "/"+placeholder, "")
-				queryStr = strings.ReplaceAll(queryStr, "/"+placeholder, "")
+				if t.paramInPath[i] {
+					pathStr = strings.ReplaceAll(pathStr, "/"+placeholder, "")
+				}
+				if t.paramInQuery[i] {
+					queryStr = strings.ReplaceAll(queryStr, "/"+placeholder, "")
+				}
 			}
 		}
 	}
@@ -783,7 +829,9 @@ func (t *MCPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, erro
 	bareToolName := t.tool.GetName()
 
 	var inputs map[string]any
-	if err := json.Unmarshal(req.ToolInputs, &inputs); err != nil {
+	decoder := json.NewDecoder(bytes.NewReader(req.ToolInputs))
+	decoder.UseNumber()
+	if err := decoder.Decode(&inputs); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal tool inputs: %w", err)
 	}
 
@@ -957,7 +1005,9 @@ func (t *OpenAPITool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 		logging.GetLogger().Debug("executing tool", "tool", req.ToolName, "inputs", prettyPrint(req.ToolInputs, contentTypeJSON))
 	}
 	var inputs map[string]any
-	if err := json.Unmarshal(req.ToolInputs, &inputs); err != nil {
+	decoder := json.NewDecoder(bytes.NewReader(req.ToolInputs))
+	decoder.UseNumber()
+	if err := decoder.Decode(&inputs); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal tool inputs: %w", err)
 	}
 
@@ -1214,7 +1264,9 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 		return nil, fmt.Errorf("tool execution blocked by policy")
 	}
 	var inputs map[string]any
-	if err := json.Unmarshal(req.ToolInputs, &inputs); err != nil {
+	decoder := json.NewDecoder(bytes.NewReader(req.ToolInputs))
+	decoder.UseNumber()
+	if err := decoder.Decode(&inputs); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal tool inputs: %w", err)
 	}
 
@@ -1284,7 +1336,16 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 
 	executor := command.NewLocalExecutor()
 
-	env := os.Environ()
+	env := []string{}
+	// Inherit only safe environment variables from host
+	// We strictly only preserve PATH and system identifiers to avoid leaking secrets
+	allowedEnvVars := []string{"PATH", "HOME", "USER", "SHELL", "TMPDIR", "SYSTEMROOT", "WINDIR"}
+	for _, key := range allowedEnvVars {
+		if val, ok := os.LookupEnv(key); ok {
+			env = append(env, fmt.Sprintf("%s=%s", key, val))
+		}
+	}
+
 	resolvedServiceEnv, err := util.ResolveSecretMap(ctx, t.service.GetEnv(), nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to resolve service env: %w", err)
@@ -1329,7 +1390,9 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 		cliExecutor := cli.NewJSONExecutor(stdin, io.LimitReader(stdout, limit))
 		var result map[string]interface{}
 		var unmarshaledInputs map[string]interface{}
-		if err := json.Unmarshal(req.ToolInputs, &unmarshaledInputs); err != nil {
+		decoder := json.NewDecoder(bytes.NewReader(req.ToolInputs))
+		decoder.UseNumber()
+		if err := decoder.Decode(&unmarshaledInputs); err != nil {
 			return nil, fmt.Errorf("failed to unmarshal tool inputs: %w", err)
 		}
 		if err := cliExecutor.Execute(unmarshaledInputs, &result); err != nil {
@@ -1427,7 +1490,9 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 		return nil, fmt.Errorf("tool execution blocked by policy")
 	}
 	var inputs map[string]any
-	if err := json.Unmarshal(req.ToolInputs, &inputs); err != nil {
+	decoder := json.NewDecoder(bytes.NewReader(req.ToolInputs))
+	decoder.UseNumber()
+	if err := decoder.Decode(&inputs); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal tool inputs: %w", err)
 	}
 
@@ -1498,7 +1563,20 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 
 	executor := t.getExecutor(t.service.GetContainerEnvironment())
 
-	env := os.Environ()
+	env := []string{}
+	// Only inherit safe environment variables from host for local execution
+	// For Docker execution, we should not inherit host environment variables at all
+	isDocker := t.service.GetContainerEnvironment() != nil && t.service.GetContainerEnvironment().GetImage() != ""
+	if !isDocker {
+		// We strictly only preserve PATH and system identifiers to avoid leaking secrets
+		allowedEnvVars := []string{"PATH", "HOME", "USER", "SHELL", "TMPDIR", "SYSTEMROOT", "WINDIR"}
+		for _, key := range allowedEnvVars {
+			if val, ok := os.LookupEnv(key); ok {
+				env = append(env, fmt.Sprintf("%s=%s", key, val))
+			}
+		}
+	}
+
 	resolvedServiceEnv, err := util.ResolveSecretMap(ctx, t.service.GetEnv(), nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to resolve service env: %w", err)
@@ -1553,7 +1631,9 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 		cliExecutor := cli.NewJSONExecutor(stdin, io.LimitReader(stdout, limit))
 		var result map[string]interface{}
 		var unmarshaledInputs map[string]interface{}
-		if err := json.Unmarshal(req.ToolInputs, &unmarshaledInputs); err != nil {
+		decoder := json.NewDecoder(bytes.NewReader(req.ToolInputs))
+		decoder.UseNumber()
+		if err := decoder.Decode(&unmarshaledInputs); err != nil {
 			return nil, fmt.Errorf("failed to unmarshal tool inputs: %w", err)
 		}
 		if err := cliExecutor.Execute(unmarshaledInputs, &result); err != nil {

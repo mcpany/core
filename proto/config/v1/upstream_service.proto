@@ -445,6 +445,15 @@ message RateLimitConfig {
 
   // Redis configuration if storage is set to STORAGE_REDIS.
   bus.RedisBus redis = 5;
+
+  enum KeyBy {
+    KEY_BY_UNSPECIFIED = 0;
+    KEY_BY_GLOBAL = 1;
+    KEY_BY_IP = 2;
+    KEY_BY_USER_ID = 3;
+    KEY_BY_API_KEY = 4;
+  }
+  KeyBy key_by = 6 [json_name = "key_by"];
 }
 
 

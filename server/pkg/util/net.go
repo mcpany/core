@@ -7,6 +7,9 @@ import (
 	"context"
 	"fmt"
 	"net"
+	"net/http"
+	"os"
+	"time"
 )
 
 // SafeDialer provides control over outbound connections to prevent SSRF.
@@ -78,4 +81,27 @@ func (d *SafeDialer) DialContext(ctx context.Context, network, addr string) (net
 // It returns the established connection or an error if the connection fails or is blocked.
 func SafeDialContext(ctx context.Context, network, addr string) (net.Conn, error) {
 	return NewSafeDialer().DialContext(ctx, network, addr)
+}
+
+// NewSafeHTTPClient creates a new http.Client that prevents SSRF.
+// It uses SafeDialer to block access to link-local and private IPs.
+// Configuration can be overridden via environment variables:
+// - MCPANY_ALLOW_LOOPBACK_RESOURCES: Set to "true" to allow loopback addresses.
+// - MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES: Set to "true" to allow private network addresses.
+func NewSafeHTTPClient() *http.Client {
+	dialer := NewSafeDialer()
+	if os.Getenv("MCPANY_ALLOW_LOOPBACK_RESOURCES") == TrueStr {
+		dialer.AllowLoopback = true
+	}
+	if os.Getenv("MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES") == TrueStr {
+		dialer.AllowPrivate = true
+	}
+	// LinkLocal is always blocked by default and cannot be enabled via env var for now (safest default).
+
+	return &http.Client{
+		Timeout: 10 * time.Second,
+		Transport: &http.Transport{
+			DialContext: dialer.DialContext,
+		},
+	}
 }

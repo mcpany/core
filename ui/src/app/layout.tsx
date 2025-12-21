@@ -13,6 +13,13 @@ export const metadata: Metadata = {
   description: 'A server management UI for the MCP Any server.',
 };
 
+/**
+ * Root layout component for the application.
+ *
+ * @param props - The component props.
+ * @param props.children - The child components to render.
+ * @returns The root HTML structure.
+ */
 export default function RootLayout({
   children,
 }: Readonly<{

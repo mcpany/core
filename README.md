@@ -52,9 +52,13 @@ Most "popular" MCP servers today are bespoke binaries. If the upstream API chang
   - **OpenAPI**: Ingest OpenAPI (Swagger) specifications to expose RESTful APIs as tools.
   - **HTTP**: Expose any HTTP endpoint as a tool.
   - **GraphQL**: Expose a GraphQL API as a set of tools, with the ability to customize the selection set for each query.
+  - **SQL**: Connect to SQL databases (Postgres, SQLite, MySQL) and expose safe queries as tools.
+  - **WebSocket**: Connect to WebSocket servers.
+  - **WebRTC**: Connect to WebRTC services.
 - **Advanced Service & Safety Policies**:
   - **Safety**: Control which tools are exposed to the AI to limit context (reduce hallucinations) and prevent dangerous actions (e.g., blocking `DELETE` operations).
   - **Performance**: Configure [Caching](docs/caching.md) and Rate Limiting to optimize performance and protect upstream services.
+  - **Audit Logging**: Keep a tamper-evident record of all tool executions in a JSON file or **SQLite database** (using SHA-256 hash chaining) for compliance and security auditing.
 - **MCP Any Proxy**: Proxy and re-expose tools from another MCP Any instance.
 - **Upstream Authentication**: Securely connect to your backend services using:
   - **API Keys**

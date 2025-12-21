@@ -11,6 +11,13 @@ import { useState, useEffect, use } from "react";
 import { apiClient } from "@/lib/client";
 import { UpstreamServiceConfig } from "@/lib/types";
 
+/**
+ * Page component for displaying service details.
+ *
+ * @param props - The component props.
+ * @param props.params - Promise resolving to route parameters containing the service ID.
+ * @returns The service detail page.
+ */
 export default function ServiceDetailPage({ params: paramsPromise }: { params: Promise<{ id: string }> }) {
   const params = use(paramsPromise);
   const [service, setService] = useState<UpstreamServiceConfig | null>(null);

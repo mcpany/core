@@ -2,67 +2,95 @@
 
 ## 1. Updated Roadmap
 
-### Current Status
+The following roadmap reflects the reconciled state of the project, with implemented features marked and linked to their documentation.
 
-#### Implemented Features
+### Implemented Features
 
-The following features are fully implemented and tested:
+#### Service Types
+- [x] [gRPC](docs/features/service_types.md)
+- [x] [HTTP](docs/features/service_types.md)
+- [x] [OpenAPI](docs/features/service_types.md)
+- [x] [GraphQL](docs/features/service_types.md)
+- [x] [Stdio](docs/features/service_types.md)
+- [x] [MCP-to-MCP Proxy](docs/features/service_types.md)
+- [x] [WebSocket](docs/features/service_types.md)
+- [x] [WebRTC](docs/features/service_types.md)
+- [x] [SQL](docs/features/service_types.md)
 
-- **Service Types**: gRPC, HTTP, OpenAPI, GraphQL, Stdio, MCP-to-MCP Proxy, WebSocket, WebRTC, **SQL**.
-- **Upstream Authentication**: API Key, Bearer Token, OAuth 2.0.
-- **Registration**: Dynamic (gRPC) and Static (YAML/JSON).
-- **Policies**: Caching, Rate Limiting (Memory & Redis), Resilience (Circuit Breakers & Retries).
-- **Deployment**: Helm Chart, Docker.
-- **Observability**: Distributed Tracing (OpenTelemetry), Metrics, Structured Logging, Audit Logging.
-- **Security**: Secrets Management (Env, AWS Secrets Manager), IP Allowlisting, Webhooks (Pre/Post/Transform), Fine-grained Policies.
-- **Message Bus**: NATS and Kafka support.
-- **Transformation**: JQ, JSONPath, and Go Template support for input/output transformation.
+#### Authentication & Security
+- [x] [API Key](docs/features/auth.md)
+- [x] [Bearer Token](docs/features/auth.md)
+- [x] [OAuth 2.0](docs/features/auth.md)
+- [x] [Secrets Management](docs/features/security.md)
+- [x] [IP Allowlisting](docs/features/security.md)
+- [x] [Webhooks](docs/features/security.md)
+- [x] [Role-Based Access Control (RBAC)](docs/features/auth.md)
 
-#### High Priority (Next 1-3 Months)
+#### Policies
+- [x] [Caching](docs/features/policies.md)
+- [x] [Rate Limiting](docs/features/policies.md)
+- [x] [Resilience](docs/features/policies.md)
 
-- **Dynamic Web UI**: Build a web-based UI for managing upstream services dynamically.
-- **RBAC**: Role-Based Access Control for managing user permissions.
-- **Admin Management API**: Expand to support CRUD operations (currently Read-Only/ClearCache).
+#### Observability
+- [x] [Distributed Tracing](docs/features/observability.md)
+- [x] [Metrics](docs/features/observability.md)
+- [x] [Structured Logging](docs/features/observability.md)
+- [x] [Audit Logging](docs/features/observability.md)
 
-#### Long-Term Goals
+#### Core & UI
+- [x] Dynamic Tool Registration
+- [x] Message Bus
+- [x] [Structured Output Transformation](docs/features/transformation.md)
+- [x] [Dynamic Web UI](docs/features/web_ui.md) (Beta)
+- [x] Admin Management API (Partial)
 
-- **WASM Plugin Support**: Extensibility via WebAssembly.
-- **MCP Any Config Registry**: Public registry for configurations.
-- **Client SDKs**: Official libraries for Go, Python, TS.
+### Planned Features (Backlog)
+1.  **WASM Plugins**: For sandboxed custom logic.
+2.  **File System Provider**: Safe local file access.
+3.  **Cost & Quota Management**: User-level limits.
+4.  **Client SDKs (Python/TS)**: Idiomatic client libraries.
+5.  **Admin API Expansion**: Full CRUD for all resources.
 
 ---
 
 ## 2. Top 10 Recommended Features
 
-We have identified the following features as critical for the next phase of product evolution, focusing on Enterprise Readiness and Developer Experience.
+These recommendations focus on enabling enterprise adoption, developer experience, and extensibility.
 
-| Rank | Feature Name | Why it matters | Implementation Difficulty |
-| :--- | :--- | :--- | :--- |
-| 1 | **RBAC (Role-Based Access Control)** | **Security**: Essential for multi-tenant environments to restrict access to specific profiles or tools based on user roles. | High |
-| 2 | **Dynamic Web UI** | **UX**: A visual dashboard to monitor health, view metrics, and manage configurations without editing YAML. | High |
-| 3 | **Admin Management API (CRUD)** | **Automation**: Expand the Admin API to support full CRUD operations on services/config at runtime. **Update:** Service CRUD is currently handled by the Registration API. | Medium |
-| 4 | **WASM Plugins** | **Extensibility**: Allow users to deploy safe, sandboxed custom logic for transformations or validations. | High |
-| 5 | **File System Provider** | **Utility**: Safe, controlled access to the local file system (read/write/list) as an MCP tool source. | Medium |
-| 6 | **Cost & Quota Management** | **Governance**: Track token usage or call counts per user/profile and enforce strict quotas (beyond rate limiting). | Medium |
-| 7 | **Client SDKs (Python/TS)** | **DX**: Provide idiomatic wrappers for connecting to MCP Any, handling authentication, and parsing responses. | Medium |
-| 8 | **Playground** | **UX**: An interactive web-based playground to test tools and query logic (similar to GraphiQL). | Medium |
-| 9 | **Config Versioning & History** | **Ops**: Track changes to configurations over time, allowing rollback and audit trails of *who* changed *what*. | Medium |
-| 10 | **Advanced Secrets Integration** | **Security**: Integration with Vault or Azure KeyVault for enterprise-grade secret management beyond AWS/Env. | High |
+| #  | Feature Name | Why it matters | Difficulty |
+| -- | :--- | :--- | :--- |
+| 1  | **Client SDKs (Python/TypeScript)** | **UX**: Drastically reduces friction for developers integrating MCP Any into their apps. Essential for ecosystem growth. | Medium |
+| 2  | **Advanced Cost & Quota Management** | **Scalability/Business**: Critical for SaaS/Enterprise use cases to prevent abuse and enable monetization (tier-based access). | Medium |
+| 3  | **WASM Plugin System** | **Extensibility**: Allows users to write custom transformations/validations safely without recompiling the core server. | High |
+| 4  | **File System Provider (Sandboxed)** | **UX/Utility**: Enables "Agentic" workflows where LLMs can read/write files locally in a controlled manner. | Medium |
+| 5  | **Configuration Versioning & GitOps** | **Ops/Scalability**: Treat configuration as code. Auto-reload from Git repositories. | Medium |
+| 6  | **Interactive Playground** | **UX**: A UI component to test tools immediately after registration, debugging inputs/outputs visually. | Low |
+| 7  | **Cloud Provider Identity Federation** | **Security**: Support AWS SigV4, GCP OIDC, and Azure AD natively to avoid managing long-lived keys. | High |
+| 8  | **Comprehensive E2E Testing Framework** | **Reliability**: A framework for users to write tests for their *configurations* to ensure upstream changes don't break tools. | Medium |
+| 9  | **Policy-as-Code (OPA/Rego)** | **Security**: More expressive than simple RBAC. Allow complex rules like "User X can only call Tool Y if argument Z < 100". | High |
+| 10 | **Marketplace / Config Hub** | **UX**: A centralized registry or CLI command to pull community-maintained configs for popular services (e.g., `mcpany pull github`). | Medium |
 
 ---
 
-## 3. Codebase Health Report
+## 3. Codebase Health & Refactoring
 
-This section highlights areas of the codebase that require refactoring or attention to ensure stability and maintainability.
+### Current State
+The codebase is well-structured with clear separation of concerns (`upstream`, `auth`, `transformer`, `ui`). The use of interfaces for `Upstream` and `Tool` is robust.
 
-### 1. High Complexity in Tool Discovery
-The function `createAndRegisterHTTPTools` in `pkg/upstream/http/http.go` has identified high cyclomatic complexity (flagged with `//nolint:gocyclo`). This function handles too many responsibilities (parsing, validation, registration) and should be refactored into smaller, testable sub-components.
+### Areas for Improvement
 
-### 2. Admin API Limitations
-The current `pkg/admin` package implements `ClearCache`, `ListServices`, `GetService`, `ListTools`, and `GetTool`. It lacks **Create**, **Update**, and **Delete** operations, which are prerequisites for the "Dynamic UI".
+1.  **RBAC Integration**:
+    *   **Issue**: `server/pkg/auth/rbac.go` contains the logic, but it needs to be consistently applied across all access points (gRPC, HTTP, Admin API).
+    *   **Action**: Implement a unified RBAC middleware that intercepts all incoming requests and enforces policy based on the user context.
 
-### 3. Redis Rate Limiter Time Synchronization
-The `RedisLimiter` (in `pkg/middleware/ratelimit_redis.go`) relies on client-side timestamps (`now = timeNow().UnixMicro()`) passed to a Lua script. This can lead to inaccuracies if server clocks drift. Future improvements should consider using Redis server time or robust drift mitigation.
+2.  **Admin API Completeness**:
+    *   **Issue**: `server/pkg/admin/server.go` currently implements read-only operations and cache clearing. Registration is handled separately via `serviceregistry`.
+    *   **Action**: Consolidate management into a RESTful Admin API that supports full CRUD (Create, Read, Update, Delete) for services, policies, and users.
 
-### 4. Dependency Management (Google APIs)
-The project vendors Google API definitions in `build/googleapis`, which is approximately **105MB**. This manual management leads to repo bloat and version drift. Moving to a managed dependency or automated generation pipeline is highly recommended.
+3.  **UI/Backend Coupling**:
+    *   **Issue**: The UI is a separate Next.js app. Ensure the API contract between the UI and the Backend is stable and versioned (e.g., using the Admin API).
+    *   **Action**: Formalize the "Management API" spec (OpenAPI/Protobuf) used by the UI.
+
+4.  **Error Handling & Validation**:
+    *   **Issue**: Transformation errors or upstream failures need to be propagated clearly to the LLM/Client.
+    *   **Action**: Standardize error responses (MCP standard error codes) and improve validation feedback for configuration files.
