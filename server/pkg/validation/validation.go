@@ -114,6 +114,15 @@ var IsRelativePath = func(path string) error {
 	return fmt.Errorf("path %q is not allowed (must be in CWD or in MCPANY_FILE_PATH_ALLOW_LIST)", path)
 }
 
+// allowedOpaqueSchemes are schemes that are allowed to not have a host component.
+var allowedOpaqueSchemes = map[string]bool{
+	"dns":         true,
+	"unix":        true,
+	"passthrough": true,
+	"mailto":      true,
+	"data":        true,
+}
+
 // IsValidURL checks if a given string is a valid URL. This function performs
 // several checks, including for length, whitespace, the presence of a scheme,
 // and host, considering special cases for schemes like "unix" or "mailto" that
@@ -136,14 +145,6 @@ func IsValidURL(s string) bool {
 	}
 	// If a host is NOT present, the scheme must be one that allows an opaque part.
 	if u.Host == "" {
-		// These schemes are allowed to not have a host component.
-		allowedOpaqueSchemes := map[string]bool{
-			"dns":         true,
-			"unix":        true,
-			"passthrough": true,
-			"mailto":      true,
-			"data":        true,
-		}
 		if !allowedOpaqueSchemes[u.Scheme] {
 			return false
 		}
