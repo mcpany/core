@@ -1612,7 +1612,7 @@ func prettyPrint(input []byte, contentType string) string {
 	// Try JSON
 	if strings.Contains(contentType, "json") {
 		// Redact sensitive keys
-		input = redactJSON(input)
+		input = util.RedactJSON(input)
 
 		var prettyJSON bytes.Buffer
 		if err := json.Indent(&prettyJSON, input, "", "  "); err == nil {
@@ -1675,66 +1675,6 @@ func isSensitiveHeader(key string) bool {
 	}
 	if strings.Contains(k, "token") || strings.Contains(k, "secret") || strings.Contains(k, "password") {
 		return true
-	}
-	return false
-}
-
-func redactJSON(input []byte) []byte {
-	var m map[string]interface{}
-	if err := json.Unmarshal(input, &m); err == nil {
-		redacted := redactMap(m)
-		b, _ := json.Marshal(redacted)
-		return b
-	}
-	var s []interface{}
-	if err := json.Unmarshal(input, &s); err == nil {
-		redacted := redactSlice(s)
-		b, _ := json.Marshal(redacted)
-		return b
-	}
-	return input
-}
-
-func redactMap(m map[string]interface{}) map[string]interface{} {
-	newMap := make(map[string]interface{})
-	for k, v := range m {
-		if isSensitiveKey(k) {
-			newMap[k] = redactedPlaceholder
-		} else {
-			if nestedMap, ok := v.(map[string]interface{}); ok {
-				newMap[k] = redactMap(nestedMap)
-			} else if nestedSlice, ok := v.([]interface{}); ok {
-				newMap[k] = redactSlice(nestedSlice)
-			} else {
-				newMap[k] = v
-			}
-		}
-	}
-	return newMap
-}
-
-func redactSlice(s []interface{}) []interface{} {
-	newSlice := make([]interface{}, len(s))
-	for i, v := range s {
-		if nestedMap, ok := v.(map[string]interface{}); ok {
-			newSlice[i] = redactMap(nestedMap)
-		} else if nestedSlice, ok := v.([]interface{}); ok {
-			newSlice[i] = redactSlice(nestedSlice)
-		} else {
-			newSlice[i] = v
-		}
-	}
-	return newSlice
-}
-
-func isSensitiveKey(key string) bool {
-	k := strings.ToLower(key)
-	// Common sensitive keys
-	sensitive := []string{"api_key", "apikey", "access_token", "token", "secret", "password", "passwd", "credential", "auth", "private_key", "client_secret"}
-	for _, s := range sensitive {
-		if strings.Contains(k, s) {
-			return true
-		}
 	}
 	return false
 }
