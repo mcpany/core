@@ -77,7 +77,7 @@ func (t *DockerTransport) Connect(ctx context.Context) (mcp.Connection, error) {
 	script := strings.Join(scriptCommands, " && ")
 
 	// Prepare environment variables
-	resolvedEnv, err := util.ResolveSecretMap(t.StdioConfig.GetEnv(), nil)
+	resolvedEnv, err := util.ResolveSecretMap(ctx, t.StdioConfig.GetEnv(), nil)
 	if err != nil {
 		return nil, err
 	}

@@ -10,8 +10,8 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestGetBus_NatsPanic(t *testing.T) {
-	// Configure NATS with invalid URL to trigger panic in GetBus
+func TestGetBus_NatsError(t *testing.T) {
+	// Configure NATS with invalid URL to trigger error in GetBus
 	msgBus := bus.MessageBus_builder{}.Build()
 	natsBus := bus.NatsBus_builder{}.Build()
 	natsBus.SetServerUrl("nats://invalid:1234")
@@ -20,14 +20,8 @@ func TestGetBus_NatsPanic(t *testing.T) {
 	provider, err := NewProvider(msgBus)
 	assert.NoError(t, err)
 
-	// Recover from panic
-	defer func() {
-		if r := recover(); r == nil {
-			t.Errorf("The code did not panic")
-		}
-	}()
-
-	GetBus[string](provider, "test-topic")
+	_, err = GetBus[string](provider, "test-topic")
+	assert.Error(t, err)
 }
 
 func TestGetBus_NatsSuccess(t *testing.T) {
@@ -40,7 +34,8 @@ func TestGetBus_NatsSuccess(t *testing.T) {
 	assert.NoError(t, err)
 
 	// This should start embedded NATS and succeed
-	bus := GetBus[string](provider, "test-topic")
+	bus, err := GetBus[string](provider, "test-topic")
+	assert.NoError(t, err)
 	assert.NotNil(t, bus)
 }
 
@@ -57,7 +52,7 @@ func TestNewProvider_Default(t *testing.T) {
 	assert.NotNil(t, provider)
 
 	// Verify it uses InMemory by checking type indirectly or just that it works
-	bus := GetBus[string](provider, "topic")
+	bus, _ := GetBus[string](provider, "topic")
 	assert.NotNil(t, bus)
 }
 

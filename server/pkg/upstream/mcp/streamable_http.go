@@ -262,7 +262,7 @@ func (c *mcpConnection) withMCPClientSession(ctx context.Context, f func(cs Clie
 				return fmt.Errorf("docker socket not accessible, but container_image is specified")
 			}
 		} else {
-			cmd, err := buildCommandFromStdioConfig(c.stdioConfig)
+			cmd, err := buildCommandFromStdioConfig(ctx, c.stdioConfig)
 			if err != nil {
 				return fmt.Errorf("failed to build command from stdio config: %w", err)
 			}
@@ -311,11 +311,11 @@ func (c *mcpConnection) CallTool(ctx context.Context, params *mcp.CallToolParams
 // buildCommandFromStdioConfig constructs an *exec.Cmd from an McpStdioConnection
 // configuration. It combines the setup commands and the main command into a
 // single shell script to be executed.
-func buildCommandFromStdioConfig(stdio *configv1.McpStdioConnection) (*exec.Cmd, error) {
+func buildCommandFromStdioConfig(ctx context.Context, stdio *configv1.McpStdioConnection) (*exec.Cmd, error) {
 	command := stdio.GetCommand()
 	args := stdio.GetArgs()
 
-	resolvedEnv, err := util.ResolveSecretMap(stdio.GetEnv(), nil)
+	resolvedEnv, err := util.ResolveSecretMap(ctx, stdio.GetEnv(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -326,7 +326,7 @@ func buildCommandFromStdioConfig(stdio *configv1.McpStdioConnection) (*exec.Cmd,
 		if useSudo {
 			fullArgs := append([]string{command}, args...)
 
-			cmd := exec.Command("sudo", fullArgs...) //nolint:gosec // Command construction is intended
+			cmd := exec.CommandContext(ctx, "sudo", fullArgs...) //nolint:gosec // Command construction is intended
 			cmd.Dir = stdio.GetWorkingDirectory()
 			currentEnv := os.Environ()
 			for k, v := range resolvedEnv {
@@ -336,7 +336,7 @@ func buildCommandFromStdioConfig(stdio *configv1.McpStdioConnection) (*exec.Cmd,
 			return cmd, nil
 		}
 
-		cmd := exec.Command(command, args...) //nolint:gosec // Command construction is intended
+		cmd := exec.CommandContext(ctx, command, args...) //nolint:gosec // Command construction is intended
 		cmd.Dir = stdio.GetWorkingDirectory()
 		currentEnv := os.Environ()
 		for k, v := range resolvedEnv {
@@ -361,7 +361,7 @@ func buildCommandFromStdioConfig(stdio *configv1.McpStdioConnection) (*exec.Cmd,
 
 	// run the script directly on the host.
 
-	cmd := exec.Command("/bin/sh", "-c", script) //nolint:gosec // Command construction is intended
+	cmd := exec.CommandContext(ctx, "/bin/sh", "-c", script) //nolint:gosec // Command construction is intended
 	cmd.Dir = stdio.GetWorkingDirectory()
 	currentEnv := os.Environ()
 	for k, v := range resolvedEnv {
@@ -391,7 +391,7 @@ func (u *Upstream) createAndRegisterMCPItemsFromStdio(
 		return nil, nil, fmt.Errorf("stdio connection config is nil")
 	}
 
-	transport, err := createStdioTransport(stdio)
+	transport, err := createStdioTransport(ctx, stdio)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -444,10 +444,11 @@ func (u *Upstream) createAndRegisterMCPItemsFromStdio(
 		promptConnection = conn
 	}
 
+	// We pass the new client and connection to the processing logic
 	return u.processMCPItems(ctx, serviceID, listToolsResult, toolClient, promptConnection, cs, toolManager, promptManager, resourceManager, serviceConfig)
 }
 
-func createStdioTransport(stdio *configv1.McpStdioConnection) (mcp.Transport, error) {
+func createStdioTransport(ctx context.Context, stdio *configv1.McpStdioConnection) (mcp.Transport, error) {
 	image := stdio.GetContainerImage()
 	if image != "" {
 		if util.IsDockerSocketAccessible() {
@@ -457,7 +458,7 @@ func createStdioTransport(stdio *configv1.McpStdioConnection) (mcp.Transport, er
 		}
 		return nil, fmt.Errorf("docker socket not accessible, but container_image is specified")
 	}
-	cmd, err := buildCommandFromStdioConfig(stdio)
+	cmd, err := buildCommandFromStdioConfig(ctx, stdio)
 	if err != nil {
 		return nil, fmt.Errorf("failed to build command: %w", err)
 	}

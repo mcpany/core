@@ -312,10 +312,13 @@ func (a *Application) Run(
 
 	if cfg.GetUpstreamServices() != nil {
 		// Publish registration requests to the bus for each service
-		registrationBus := bus.GetBus[*bus.ServiceRegistrationRequest](
+		registrationBus, err := bus.GetBus[*bus.ServiceRegistrationRequest](
 			busProvider,
 			"service_registration_requests",
 		)
+		if err != nil {
+			return fmt.Errorf("failed to get registration bus: %w", err)
+		}
 		for _, serviceConfig := range cfg.GetUpstreamServices() {
 			if serviceConfig.GetDisable() {
 				log.Info("Skipping disabled service", "service", serviceConfig.GetName())

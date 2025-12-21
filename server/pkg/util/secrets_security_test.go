@@ -4,6 +4,7 @@
 package util_test
 
 import (
+	"context"
 	"os"
 	"path/filepath"
 	"testing"
@@ -26,7 +27,7 @@ func TestResolveSecret_PathTraversal(t *testing.T) {
 	secret.SetFilePath(traversalPath)
 
 	// This should now FAIL because of IsSecurePath check
-	_, err := util.ResolveSecret(secret)
+	_, err := util.ResolveSecret(context.Background(), secret)
 	assert.Error(t, err, "ResolveSecret should block traversal paths")
 	if err != nil {
 		assert.Contains(t, err.Error(), "invalid secret file path")
@@ -48,7 +49,7 @@ func TestResolveSecret_ValidPathWithDoubleDotsInName(t *testing.T) {
 	secret := &configv1.SecretValue{}
 	secret.SetFilePath(secretFile)
 
-	resolved, err := util.ResolveSecret(secret)
+	resolved, err := util.ResolveSecret(context.Background(), secret)
 	assert.NoError(t, err)
 	assert.Equal(t, "VALID_SECRET", resolved)
 }
@@ -64,7 +65,7 @@ func TestResolveSecret_SSRF_Blocked(t *testing.T) {
 	secret := &configv1.SecretValue{}
 	secret.SetRemoteContent(remoteContent)
 
-	_, err := util.ResolveSecret(secret)
+	_, err := util.ResolveSecret(context.Background(), secret)
 	assert.Error(t, err)
 	// Currently (before fix), this will error with network timeout or similar,
 	// NOT "blocked link-local IP".
@@ -86,8 +87,8 @@ func TestResolveSecret_SSRF_PrivateIP_Blocked(t *testing.T) {
 	secret := &configv1.SecretValue{}
 	secret.SetRemoteContent(remoteContent)
 
-	_, err := util.ResolveSecret(secret)
-	assert.Error(t, err)
+	_, err := util.ResolveSecret(context.Background(), secret)
+	assert.Error(t, err, "ResolveSecret should block SSRF to private IP")
 
 	// Before fix, this might fail with "connection refused" or "i/o timeout" or similar.
 	// After fix, it MUST contain "blocked private IP".
@@ -106,7 +107,7 @@ func TestResolveSecret_SSRF_PrivateIP_Allowed(t *testing.T) {
 	secret := &configv1.SecretValue{}
 	secret.SetRemoteContent(remoteContent)
 
-	_, err := util.ResolveSecret(secret)
+	_, err := util.ResolveSecret(context.Background(), secret)
 	assert.Error(t, err)
 
 	// It should NOT be "blocked private IP"
@@ -134,7 +135,7 @@ func TestResolveSecret_AbsolutePathsBlockedByDefault(t *testing.T) {
 	secret.SetFilePath(absPath)
 
 	// This should FAIL because /tmp is not in CWD and not in allow list
-	_, err = util.ResolveSecret(secret)
+	_, err = util.ResolveSecret(context.Background(), secret)
 	assert.Error(t, err, "ResolveSecret should block absolute paths outside CWD by default")
 	if err != nil {
 		assert.Contains(t, err.Error(), "path")
@@ -162,7 +163,7 @@ func TestResolveSecret_AbsolutePathsAllowedWithList(t *testing.T) {
 	secret.SetFilePath(absPath)
 
 	// This should pass
-	val, err := util.ResolveSecret(secret)
+	val, err := util.ResolveSecret(context.Background(), secret)
 	assert.NoError(t, err)
 	assert.Equal(t, "supersecret", val)
 }

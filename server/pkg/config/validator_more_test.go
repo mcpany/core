@@ -4,6 +4,7 @@
 package config
 
 import (
+	"context"
 	"fmt"
 	"os"
 	"testing"
@@ -735,7 +736,7 @@ func TestValidate_MoreServices(t *testing.T) {
 
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
-			errs := Validate(tc.config, Server)
+			errs := Validate(context.Background(), tc.config, Server)
 			assert.Equal(t, tc.expectedErrorCount, len(errs), "error count mismatch for %s", tc.name)
 			if tc.expectedErrorString != "" && len(errs) > 0 {
 				assert.Contains(t, errs[0].Error(), tc.expectedErrorString)
@@ -933,7 +934,7 @@ func TestValidate_MtlsInsecure(t *testing.T) {
 			// So if IsSecurePath fails, we get error immediately.
 			// "insecure.pem" created as temp file in TestValidate_MtlsInsecure setup.
 
-			errs := Validate(tc.config, Server)
+			errs := Validate(context.Background(), tc.config, Server)
 			if tc.expectedErrorCount != len(errs) {
 				t.Fatalf("error count mismatch: expected %d, got %d. Errors: %v", tc.expectedErrorCount, len(errs), errs)
 			}
@@ -957,7 +958,7 @@ func TestValidate_RedisAddressNil(t *testing.T) {
 		},
 	}
 	// Address is empty/nil -> GetAddress() == "" -> Error
-	errs := Validate(config, Server)
+	errs := Validate(context.Background(), config, Server)
 	assert.NotEmpty(t, errs)
 	assert.Contains(t, errs[0].Error(), "redis message bus address is empty")
 }
@@ -971,6 +972,6 @@ func TestValidate_MemoryBus(t *testing.T) {
 			MessageBus: msgBus,
 		},
 	}
-	errs := Validate(config, Server)
+	errs := Validate(context.Background(), config, Server)
 	assert.Empty(t, errs)
 }
