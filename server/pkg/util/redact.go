@@ -61,12 +61,13 @@ func redactSlice(s []interface{}) []interface{} {
 	return newSlice
 }
 
+// sensitiveKeys is a list of substrings that suggest a key contains sensitive information.
+var sensitiveKeys = []string{"api_key", "apikey", "access_token", "token", "secret", "password", "passwd", "credential", "auth", "private_key", "client_secret"}
+
 // IsSensitiveKey checks if a key name suggests it contains sensitive information.
 func IsSensitiveKey(key string) bool {
 	k := strings.ToLower(key)
-	// Common sensitive keys
-	sensitive := []string{"api_key", "apikey", "access_token", "token", "secret", "password", "passwd", "credential", "auth", "private_key", "client_secret"}
-	for _, s := range sensitive {
+	for _, s := range sensitiveKeys {
 		if strings.Contains(k, s) {
 			return true
 		}
