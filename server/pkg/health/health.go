@@ -18,6 +18,7 @@ import (
 	"github.com/alexliesenfeld/health"
 	"github.com/coder/websocket"
 	"github.com/mcpany/core/pkg/command"
+	"google.golang.org/protobuf/types/known/durationpb"
 	"github.com/mcpany/core/pkg/logging"
 	"github.com/mcpany/core/pkg/metrics"
 	configv1 "github.com/mcpany/core/proto/config/v1"
@@ -90,7 +91,49 @@ func NewChecker(uc *configv1.UpstreamServiceConfig) health.Checker {
 		health.WithCheck(check),
 	}
 
+	if interval := getCacheDuration(uc); interval > 0 {
+		opts = append(opts, health.WithCacheDuration(interval))
+	}
+
 	return health.NewChecker(opts...)
+}
+
+func getCacheDuration(uc *configv1.UpstreamServiceConfig) time.Duration {
+	var interval *durationpb.Duration
+	switch uc.WhichServiceConfig() {
+	case configv1.UpstreamServiceConfig_HttpService_case:
+		if hc := uc.GetHttpService().GetHealthCheck(); hc != nil {
+			interval = hc.GetInterval()
+		}
+	case configv1.UpstreamServiceConfig_GrpcService_case:
+		if hc := uc.GetGrpcService().GetHealthCheck(); hc != nil {
+			interval = hc.GetInterval()
+		}
+	case configv1.UpstreamServiceConfig_OpenapiService_case:
+		if hc := uc.GetOpenapiService().GetHealthCheck(); hc != nil {
+			interval = hc.GetInterval()
+		}
+	case configv1.UpstreamServiceConfig_CommandLineService_case:
+		if hc := uc.GetCommandLineService().GetHealthCheck(); hc != nil {
+			interval = hc.GetInterval()
+		}
+	case configv1.UpstreamServiceConfig_WebsocketService_case:
+		if hc := uc.GetWebsocketService().GetHealthCheck(); hc != nil {
+			interval = hc.GetInterval()
+		}
+	case configv1.UpstreamServiceConfig_WebrtcService_case:
+		if hc := uc.GetWebrtcService().GetHealthCheck(); hc != nil {
+			if h := hc.GetHttp(); h != nil {
+				interval = h.GetInterval()
+			} else if w := hc.GetWebsocket(); w != nil {
+				interval = w.GetInterval()
+			}
+		}
+	}
+	if interval != nil {
+		return interval.AsDuration()
+	}
+	return 0
 }
 
 func httpCheckFunc(ctx context.Context, address string, hc *configv1.HttpHealthCheck) error {
