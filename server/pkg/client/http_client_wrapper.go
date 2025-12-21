@@ -8,6 +8,7 @@ import (
 	"net/http"
 
 	"github.com/alexliesenfeld/health"
+	healthChecker "github.com/mcpany/core/pkg/health"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 )
 
@@ -23,11 +24,11 @@ type HTTPClientWrapper struct {
 }
 
 // NewHTTPClientWrapper creates a new HTTPClientWrapper.
-func NewHTTPClientWrapper(client *http.Client, config *configv1.UpstreamServiceConfig, checker health.Checker) *HTTPClientWrapper {
+func NewHTTPClientWrapper(client *http.Client, config *configv1.UpstreamServiceConfig) *HTTPClientWrapper {
 	return &HTTPClientWrapper{
 		Client:  client,
 		config:  config,
-		checker: checker,
+		checker: healthChecker.NewChecker(config),
 	}
 }
 
