@@ -34,17 +34,33 @@ func RedactJSON(input []byte) []byte {
 		return input
 	}
 
-	var m map[string]interface{}
-	if err := json.Unmarshal(input, &m); err == nil {
-		redactMapInPlace(m)
-		b, _ := json.Marshal(m)
-		return b
+	// Peek at the first non-whitespace byte to determine if it's an object or an array.
+	var firstByte byte
+	for _, b := range input {
+		switch b {
+		case ' ', '\t', '\r', '\n':
+			continue
+		default:
+			firstByte = b
+		}
+		break
 	}
-	var s []interface{}
-	if err := json.Unmarshal(input, &s); err == nil {
-		redactSliceInPlace(s)
-		b, _ := json.Marshal(s)
-		return b
+
+	switch firstByte {
+	case '{':
+		var m map[string]interface{}
+		if err := json.Unmarshal(input, &m); err == nil {
+			redactMapInPlace(m)
+			b, _ := json.Marshal(m)
+			return b
+		}
+	case '[':
+		var s []interface{}
+		if err := json.Unmarshal(input, &s); err == nil {
+			redactSliceInPlace(s)
+			b, _ := json.Marshal(s)
+			return b
+		}
 	}
 	return input
 }
