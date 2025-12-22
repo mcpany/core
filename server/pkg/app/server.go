@@ -939,7 +939,7 @@ func (a *Application) runServerMode(
 		httpBindAddress = ":" + httpBindAddress
 	}
 
-	startHTTPServer(localCtx, &wg, errChan, "MCP Any HTTP", httpBindAddress, otelhttp.NewHandler(ipMiddleware.Handler(mux), "mcp-server"), shutdownTimeout)
+	startHTTPServer(localCtx, &wg, errChan, "MCP Any HTTP", httpBindAddress, otelhttp.NewHandler(middleware.HTTPSecurityHeadersMiddleware(ipMiddleware.Handler(mux)), "mcp-server"), shutdownTimeout)
 
 	grpcBindAddress := grpcPort
 	if grpcBindAddress != "" {
