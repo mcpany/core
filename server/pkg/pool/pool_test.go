@@ -157,8 +157,9 @@ func TestPool_Put_Unhealthy(t *testing.T) {
 	c.isHealthy = false
 	// Put it back. This will release the semaphore.
 	p.Put(c)
-	// Pool should not store the unhealthy client.
-	assert.Equal(t, 0, p.Len())
+	// Pool should not store the unhealthy client, but may store a retry token.
+	// In the improved implementation, we push a nil token to wake up waiters.
+	assert.Equal(t, 1, p.Len())
 	assert.True(t, c.isClosed)
 }
 
@@ -266,7 +267,8 @@ func TestPool_Put_UnhealthyClientDoesNotLeakSemaphore(t *testing.T) {
 		// The unhealthy client should have been closed.
 		assert.True(t, c.isClosed, "Client should be closed after being put back as unhealthy")
 		// The pool should not store the unhealthy client.
-		assert.Equal(t, 0, p.Len(), "Pool should be empty after returning an unhealthy client")
+		// However, it stores a nil token to signal waiters.
+		assert.Equal(t, 1, p.Len(), "Pool should contain a retry token")
 	}
 }
 
@@ -635,7 +637,7 @@ func TestPool_GetWithUnhealthyClients(t *testing.T) {
 	}
 }
 
-func TestPool_GetReturnsErrorWhenClientIsNil(t *testing.T) {
+func TestPool_GetRetriesWhenClientIsNil(t *testing.T) {
 	p, err := New(newMockClientFactory(true), 0, 1, 0, false)
 	require.NoError(t, err)
 	defer func() { _ = p.Close() }()
@@ -644,9 +646,10 @@ func TestPool_GetReturnsErrorWhenClientIsNil(t *testing.T) {
 	poolImpl := p.(*poolImpl[*mockClient])
 	poolImpl.clients <- nil
 
-	// Now, try to get a client. It should return ErrPoolClosed.
-	_, err = p.Get(context.Background())
-	assert.Equal(t, ErrPoolClosed, err, "Expected to get ErrPoolClosed when a nil client is pulled from the channel")
+	// Now, try to get a client. It should NOT return error, but retry and create a new one.
+	c, err := p.Get(context.Background())
+	require.NoError(t, err)
+	assert.NotNil(t, c)
 }
 
 func TestPool_Get_RaceWithClose(t *testing.T) {
@@ -833,4 +836,53 @@ func secureRandomInt(maxVal int) int {
 		return 0
 	}
 	return int(n.Int64())
+}
+
+func TestPool_Starvation(t *testing.T) {
+	// Max size 1.
+	p, err := New(newMockClientFactory(true), 0, 1, 0, false)
+	require.NoError(t, err)
+	defer func() { _ = p.Close() }()
+
+	// 1. Get client C1.
+	c1, err := p.Get(context.Background())
+	require.NoError(t, err)
+
+	// 2. Start goroutine to Get C2. It should block.
+	var wg sync.WaitGroup
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		// Use timeout to prevent indefinite hang if bug exists
+		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+		defer cancel()
+		c2, err := p.Get(ctx)
+		// If starvation occurs, we get DeadlineExceeded
+		assert.NoError(t, err, "Get timed out, starvation occurred")
+		assert.NotNil(t, c2)
+	}()
+
+	// Sleep to let C2 block
+	time.Sleep(50 * time.Millisecond)
+
+	// 3. Mark C1 unhealthy and Put it.
+	// This releases permit, but p.clients is empty.
+	c1.mu.Lock()
+	c1.isHealthy = false
+	c1.mu.Unlock()
+	p.Put(c1)
+
+	// 4. Wait for C2.
+	done := make(chan struct{})
+	go func() {
+		wg.Wait()
+		close(done)
+	}()
+
+	select {
+	case <-done:
+		// Success
+	case <-time.After(3 * time.Second):
+		t.Fatal("Starvation detected: Get() did not return")
+	}
 }
