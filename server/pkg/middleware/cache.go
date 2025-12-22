@@ -5,6 +5,7 @@ package middleware
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"time"
 
@@ -124,7 +125,24 @@ func (m *CachingMiddleware) getCacheConfig(t tool.Tool) *configv1.CacheConfig {
 }
 
 func (m *CachingMiddleware) getCacheKey(req *tool.ExecutionRequest) string {
-	return fmt.Sprintf("%s:%s", req.ToolName, req.ToolInputs)
+	// Normalize ToolInputs if they are JSON
+	var normalizedInputs []byte
+	if len(req.ToolInputs) > 0 {
+		var input any
+		// We use standard json.Unmarshal which sorts map keys when Marshaling back.
+		if err := json.Unmarshal(req.ToolInputs, &input); err == nil {
+			if marshaled, err := json.Marshal(input); err == nil {
+				normalizedInputs = marshaled
+			}
+		}
+	}
+
+	// Fallback to raw bytes if unmarshal fails or empty
+	if normalizedInputs == nil {
+		normalizedInputs = req.ToolInputs
+	}
+
+	return fmt.Sprintf("%s:%s", req.ToolName, normalizedInputs)
 }
 
 // Clear clears the cache.
