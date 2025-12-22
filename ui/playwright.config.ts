@@ -13,7 +13,7 @@ export default defineConfig({
   workers: process.env.CI ? 1 : undefined,
   reporter: 'html',
   use: {
-    baseURL: 'http://localhost:3000',
+    baseURL: 'http://localhost:9002',
     trace: 'on-first-retry',
   },
   projects: [
@@ -22,9 +22,10 @@ export default defineConfig({
       use: { ...devices['Desktop Chrome'] },
     },
   ],
+  // Use the dev server I started
   webServer: {
-    command: 'node .next/standalone/server.js',
-    url: 'http://localhost:3000',
-    reuseExistingServer: !process.env.CI,
+    command: 'npm run dev',
+    url: 'http://localhost:9002',
+    reuseExistingServer: true,
   },
 });
