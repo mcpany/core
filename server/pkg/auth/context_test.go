@@ -11,37 +11,38 @@ import (
 )
 
 func TestContextHelpers(t *testing.T) {
-	t.Run("user_context", func(t *testing.T) {
-		ctx := context.Background()
-		userID := "test-user"
+	ctx := context.Background()
 
-		// Test ContextWithUser
-		ctx = ContextWithUser(ctx, userID)
-
-		// Test UserFromContext
-		got, ok := UserFromContext(ctx)
+	t.Run("APIKey", func(t *testing.T) {
+		apiKey := "test-api-key"
+		ctxWithKey := ContextWithAPIKey(ctx, apiKey)
+		val, ok := APIKeyFromContext(ctxWithKey)
 		assert.True(t, ok)
-		assert.Equal(t, userID, got)
+		assert.Equal(t, apiKey, val)
 
-		// Test missing user
-		_, ok = UserFromContext(context.Background())
+		_, ok = APIKeyFromContext(ctx)
 		assert.False(t, ok)
 	})
 
-	t.Run("profile_context", func(t *testing.T) {
-		ctx := context.Background()
-		profileID := "test-profile"
-
-		// Test ContextWithProfileID
-		ctx = ContextWithProfileID(ctx, profileID)
-
-		// Test ProfileIDFromContext
-		got, ok := ProfileIDFromContext(ctx)
+	t.Run("User", func(t *testing.T) {
+		userID := "test-user-id"
+		ctxWithUser := ContextWithUser(ctx, userID)
+		val, ok := UserFromContext(ctxWithUser)
 		assert.True(t, ok)
-		assert.Equal(t, profileID, got)
+		assert.Equal(t, userID, val)
 
-		// Test missing profile
-		_, ok = ProfileIDFromContext(context.Background())
+		_, ok = UserFromContext(ctx)
+		assert.False(t, ok)
+	})
+
+	t.Run("ProfileID", func(t *testing.T) {
+		profileID := "test-profile-id"
+		ctxWithProfile := ContextWithProfileID(ctx, profileID)
+		val, ok := ProfileIDFromContext(ctxWithProfile)
+		assert.True(t, ok)
+		assert.Equal(t, profileID, val)
+
+		_, ok = ProfileIDFromContext(ctx)
 		assert.False(t, ok)
 	})
 }
