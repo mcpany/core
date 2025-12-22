@@ -62,7 +62,7 @@ func (s *Settings) Load(cmd *cobra.Command, fs afero.Fs) error {
 	s.grpcPort = viper.GetString("grpc-port")
 	s.stdio = viper.GetBool("stdio") // Corrected from "std"
 	// Bind config paths
-	s.configPaths = viper.GetStringSlice("config-path")
+	s.configPaths = getStringSlice("config-path")
 	s.debug = viper.GetBool("debug")
 	s.logLevel = viper.GetString("log-level")
 
@@ -88,7 +88,7 @@ func (s *Settings) Load(cmd *cobra.Command, fs afero.Fs) error {
 	logging.Init(logLevel, logOutput, logFormat)
 	s.logFile = viper.GetString("logfile")
 	s.shutdownTimeout = viper.GetDuration("shutdown-timeout")
-	s.profiles = viper.GetStringSlice("profiles")
+	s.profiles = getStringSlice("profiles")
 	s.dbPath = viper.GetString("db-path")
 
 	// Special handling for MCPListenAddress to respect config file precedence
@@ -177,7 +177,7 @@ func (s *Settings) SetAPIKey(key string) {
 // Profiles returns the active profiles.
 func (s *Settings) Profiles() []string {
 	if viper.IsSet("profiles") {
-		return viper.GetStringSlice("profiles")
+		return getStringSlice("profiles")
 	}
 	if len(s.profiles) == 0 {
 		return []string{"default"}
@@ -215,4 +215,15 @@ func (s *Settings) DBPath() string {
 // Middlewares returns the configured middlewares.
 func (s *Settings) Middlewares() []*configv1.Middleware {
 	return s.proto.GetMiddlewares()
+}
+
+// getStringSlice is a helper function to get a string slice from viper.
+// It handles the case where viper returns a slice with a single element
+// containing comma-separated values (which happens with environment variables).
+func getStringSlice(key string) []string {
+	res := viper.GetStringSlice(key)
+	if len(res) == 1 && strings.Contains(res[0], ",") {
+		return strings.Split(res[0], ",")
+	}
+	return res
 }
