@@ -1,8 +1,6 @@
 module github.com/mcpany/core
 
-go 1.24.0
-
-toolchain go1.24.11
+go 1.25
 
 replace github.com/mcpany/core => ./
 
@@ -23,13 +21,13 @@ require (
 	github.com/coder/websocket v1.8.14
 	github.com/coreos/go-oidc/v3 v3.13.0
 	github.com/docker/docker v28.5.0+incompatible
-	github.com/eko/gocache/lib/v4 v4.2.0
-	github.com/eko/gocache/store/go_cache/v4 v4.2.0
+	github.com/eko/gocache/lib/v4 v4.2.3
+	github.com/eko/gocache/store/go_cache/v4 v4.2.4
 	github.com/fsnotify/fsnotify v1.9.0
 	github.com/getkin/kin-openapi v0.131.0
 	github.com/go-jose/go-jose/v4 v4.1.1
 	github.com/go-redis/redismock/v9 v9.2.0
-	github.com/golang-jwt/jwt/v5 v5.2.2
+	github.com/golang-jwt/jwt/v5 v5.3.0
 	github.com/google/go-github/v39 v39.2.0
 	github.com/google/jsonschema-go v0.3.0
 	github.com/google/uuid v1.6.0
@@ -48,7 +46,7 @@ require (
 	github.com/opencontainers/image-spec v1.1.1
 	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/pion/webrtc/v3 v3.3.6
-	github.com/prometheus/client_golang v1.19.0
+	github.com/prometheus/client_golang v1.23.2
 	github.com/puzpuzpuz/xsync/v4 v4.2.0
 	github.com/redis/go-redis/v9 v9.16.0
 	github.com/samber/lo v1.51.0
@@ -67,8 +65,8 @@ require (
 	go.opentelemetry.io/otel/exporters/stdout/stdouttrace v1.39.0
 	go.opentelemetry.io/otel/sdk v1.39.0
 	go.uber.org/goleak v1.3.0
-	go.uber.org/mock v0.4.0
-	golang.org/x/oauth2 v0.30.0
+	go.uber.org/mock v0.6.0
+	golang.org/x/oauth2 v0.32.0
 	golang.org/x/sync v0.19.0
 	golang.org/x/time v0.14.0
 	google.golang.org/genproto/googleapis/api v0.0.0-20251111163417-95abcf5c77ba
@@ -111,6 +109,7 @@ require (
 	github.com/docker/go-connections v0.6.0 // indirect
 	github.com/docker/go-units v0.5.0 // indirect
 	github.com/dustin/go-humanize v1.0.1 // indirect
+	github.com/eko/gocache/store/redis/v4 v4.2.6 // indirect
 	github.com/felixge/httpsnoop v1.0.4 // indirect
 	github.com/go-logr/logr v1.4.3 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
@@ -178,9 +177,9 @@ require (
 	github.com/pion/turn/v2 v2.1.6 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2 // indirect
-	github.com/prometheus/client_model v0.6.1 // indirect
-	github.com/prometheus/common v0.52.3 // indirect
-	github.com/prometheus/procfs v0.13.0 // indirect
+	github.com/prometheus/client_model v0.6.2 // indirect
+	github.com/prometheus/common v0.67.4 // indirect
+	github.com/prometheus/procfs v0.19.2 // indirect
 	github.com/remyoudompheng/bigfft v0.0.0-20230129092748-24d4a6f8daec // indirect
 	github.com/ryanuber/go-glob v1.0.0 // indirect
 	github.com/sagikazarmark/locafero v0.4.0 // indirect
@@ -199,9 +198,9 @@ require (
 	go.opentelemetry.io/proto/otlp v1.7.1 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
 	go.uber.org/zap v1.27.0 // indirect
-	go.yaml.in/yaml/v2 v2.4.2 // indirect
+	go.yaml.in/yaml/v2 v2.4.3 // indirect
 	golang.org/x/crypto v0.46.0 // indirect
-	golang.org/x/exp v0.0.0-20250620022241-b7579e27df2b // indirect
+	golang.org/x/exp v0.0.0-20251209150349-8475f28825e9 // indirect
 	golang.org/x/net v0.48.0 // indirect
 	golang.org/x/sys v0.39.0 // indirect
 	golang.org/x/text v0.32.0 // indirect
