@@ -1,7 +1,4 @@
 #!/bin/bash
-# Copyright 2025 Author(s) of MCP Any
-# SPDX-License-Identifier: Apache-2.0
-
 
 # This script builds and starts the MCP server with the stdio example configuration.
 
