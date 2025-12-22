@@ -34,11 +34,14 @@ type GrpcClientWrapper struct {
 }
 
 // NewGrpcClientWrapper creates a new GrpcClientWrapper.
-func NewGrpcClientWrapper(conn Conn, config *configv1.UpstreamServiceConfig) *GrpcClientWrapper {
+func NewGrpcClientWrapper(conn Conn, config *configv1.UpstreamServiceConfig, checker health.Checker) *GrpcClientWrapper {
+	if checker == nil {
+		checker = healthChecker.NewChecker(config)
+	}
 	return &GrpcClientWrapper{
 		Conn:    conn,
 		config:  config,
-		checker: healthChecker.NewChecker(config),
+		checker: checker,
 	}
 }
 

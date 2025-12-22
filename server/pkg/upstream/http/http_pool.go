@@ -13,6 +13,7 @@ import (
 	"time"
 
 	"github.com/mcpany/core/pkg/client"
+	healthChecker "github.com/mcpany/core/pkg/health"
 	"github.com/mcpany/core/pkg/pool"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
@@ -65,10 +66,15 @@ var NewHTTPPool = func(
 		}),
 	}
 
+	// Create the health checker once and share it across all clients in the pool
+	// to avoid the overhead of creating a new checker for each connection.
+	checker := healthChecker.NewChecker(config)
+
 	factory := func(_ context.Context) (*client.HTTPClientWrapper, error) {
 		return client.NewHTTPClientWrapper(
 			sharedClient,
 			config,
+			checker,
 		), nil
 	}
 	return pool.New(factory, minSize, maxSize, idleTimeout, false)
