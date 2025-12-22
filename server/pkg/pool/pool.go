@@ -170,10 +170,14 @@ func (p *poolImpl[T]) Get(ctx context.Context) (T, error) {
 	for {
 		// First, try a non-blocking retrieval of an existing client.
 		select {
-		case client := <-p.clients:
+		case client, ok := <-p.clients:
+			if !ok {
+				return zero, ErrPoolClosed
+			}
 			v := reflect.ValueOf(client)
 			if (v.Kind() == reflect.Ptr || v.Kind() == reflect.Interface) && v.IsNil() {
-				return zero, ErrPoolClosed
+				// Nil received: permit released, retry creation
+				continue
 			}
 			if p.disableHealthCheck || client.IsHealthy(ctx) {
 				return client, nil
@@ -190,12 +194,16 @@ func (p *poolImpl[T]) Get(ctx context.Context) (T, error) {
 			// Acquired a permit, but double-check for a race condition where
 			// a client was returned just before we acquired the permit.
 			select {
-			case client := <-p.clients:
+			case client, ok := <-p.clients:
 				// A client was available, so we use it and release the permit.
 				p.sem.Release(1)
+				if !ok {
+					return zero, ErrPoolClosed
+				}
 				v := reflect.ValueOf(client)
 				if (v.Kind() == reflect.Ptr || v.Kind() == reflect.Interface) && v.IsNil() {
-					return zero, ErrPoolClosed
+					// Nil received: permit released, retry creation
+					continue
 				}
 				if p.disableHealthCheck || client.IsHealthy(ctx) {
 					return client, nil
@@ -235,10 +243,14 @@ func (p *poolImpl[T]) Get(ctx context.Context) (T, error) {
 
 		// Pool is full, so we must wait for a client to be returned.
 		select {
-		case client := <-p.clients:
+		case client, ok := <-p.clients:
+			if !ok {
+				return zero, ErrPoolClosed
+			}
 			v := reflect.ValueOf(client)
 			if (v.Kind() == reflect.Ptr || v.Kind() == reflect.Interface) && v.IsNil() {
-				return zero, ErrPoolClosed
+				// Nil received: permit released, retry creation
+				continue
 			}
 			if p.disableHealthCheck || client.IsHealthy(ctx) {
 				return client, nil
@@ -280,6 +292,12 @@ func (p *poolImpl[T]) Put(client T) {
 		p.mu.Unlock()
 		_ = lo.Try(client.Close)
 		p.sem.Release(1)
+		// Notify waiting Get routines
+		var zero T
+		select {
+		case p.clients <- zero:
+		default:
+		}
 		return
 	}
 
@@ -311,6 +329,10 @@ func (p *poolImpl[T]) Close() error {
 
 	// Drain the channel and close all idle clients
 	for client := range p.clients {
+		v := reflect.ValueOf(client)
+		if (v.Kind() == reflect.Ptr || v.Kind() == reflect.Interface) && v.IsNil() {
+			continue
+		}
 		_ = lo.Try(client.Close)
 		p.sem.Release(1)
 	}
