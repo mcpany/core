@@ -5,13 +5,14 @@
 
 "use client";
 
-import { useState } from "react";
+import { use, useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { McpAnyManager } from "@/components/mcpany-manager";
 import { FileText, List, Box } from "lucide-react";
 
-export default function StackDetailPage({ params }: { params: { stackId: string } }) {
+export default function StackDetailPage({ params }: { params: Promise<{ stackId: string }> }) {
+  const { stackId } = use(params);
   const [activeTab, setActiveTab] = useState("services");
 
   return (
@@ -19,7 +20,7 @@ export default function StackDetailPage({ params }: { params: { stackId: string 
         <div className="flex flex-col gap-2">
             <h1 className="text-2xl font-bold tracking-tight flex items-center gap-2">
                 <Box className="h-6 w-6 text-blue-500" />
-                Stack: {params.stackId}
+                Stack: {stackId}
             </h1>
             <p className="text-muted-foreground">Manage services and configuration for this stack.</p>
         </div>
@@ -48,7 +49,7 @@ export default function StackDetailPage({ params }: { params: { stackId: string 
                     <CardContent>
                         <div className="border border-muted rounded-md p-4 bg-muted/20 font-mono text-sm min-h-[400px]">
                             {/* Placeholder for Editor */}
-                            # Configuration for {params.stackId} <br/>
+                            # Configuration for {stackId} <br/>
                             # Work in progress... <br/>
                             <br/>
                             # This feature will allow direct editing of config.yaml
