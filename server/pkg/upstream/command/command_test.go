@@ -144,7 +144,7 @@ func TestStdioUpstream_Register(t *testing.T) {
 		assert.Contains(t, properties, "stdout")
 		assert.Equal(t, "string", properties["stdout"].GetStructValue().GetFields()["type"].GetStringValue())
 
-		inputData := map[string]interface{}{"args": []string{"-n", "hello from test"}}
+		inputData := map[string]interface{}{"args": []string{"hello from test"}}
 		inputs, err := json.Marshal(inputData)
 		require.NoError(t, err)
 		req := &tool.ExecutionRequest{ToolInputs: inputs}
@@ -154,7 +154,7 @@ func TestStdioUpstream_Register(t *testing.T) {
 
 		resultMap, ok := result.(map[string]interface{})
 		require.True(t, ok)
-		assert.Equal(t, "hello from test", resultMap["stdout"])
+		assert.Equal(t, "hello from test\n", resultMap["stdout"])
 		assert.Equal(t, "/bin/echo", resultMap["command"])
 	})
 
