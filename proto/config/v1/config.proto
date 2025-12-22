@@ -77,6 +77,8 @@ message GlobalSettings {
   string db_path = 11 [json_name = "db_path"];
   // The list of middlewares to enable and their configuration.
   repeated Middleware middlewares = 12 [json_name = "middlewares"];
+  // Rate limiting configuration for the HTTP server.
+  RateLimitConfig rate_limit = 13 [json_name = "rate_limit"];
 }
 
 message AuditConfig {

@@ -102,6 +102,13 @@ func (s *Settings) Load(cmd *cobra.Command, fs afero.Fs) error {
 		if cfg.GetGlobalSettings().GetMcpListenAddress() != "" {
 			mcpListenAddress = cfg.GetGlobalSettings().GetMcpListenAddress()
 		}
+		// Also load RateLimit from the loaded config into the singleton proto
+		// s.proto points to globalSettings.proto
+		// cfg.GetGlobalSettings() has the loaded settings.
+		// We should probably merge them or copy fields.
+		if cfg.GetGlobalSettings().GetRateLimit() != nil {
+			s.proto.SetRateLimit(cfg.GetGlobalSettings().GetRateLimit())
+		}
 	}
 	s.proto.SetMcpListenAddress(mcpListenAddress)
 	s.proto.SetLogLevel(s.LogLevel())
@@ -215,4 +222,9 @@ func (s *Settings) DBPath() string {
 // Middlewares returns the configured middlewares.
 func (s *Settings) Middlewares() []*configv1.Middleware {
 	return s.proto.GetMiddlewares()
+}
+
+// RateLimit returns the rate limit configuration.
+func (s *Settings) RateLimit() *configv1.RateLimitConfig {
+	return s.proto.GetRateLimit()
 }

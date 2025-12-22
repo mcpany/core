@@ -603,8 +603,6 @@ func (a *Application) runServerMode(
 		return fmt.Errorf("failed to create IP allowlist middleware: %w", err)
 	}
 
-	httpRateLimiter := middleware.NewHTTPRateLimitMiddleware(20, 50)
-
 	// localCtx is used to manage the lifecycle of the servers started in this function.
 	// It's canceled when this function returns, ensuring that all servers are shut down.
 	localCtx, cancel := context.WithCancel(ctx)
@@ -941,7 +939,29 @@ func (a *Application) runServerMode(
 		httpBindAddress = ":" + httpBindAddress
 	}
 
-	startHTTPServer(localCtx, &wg, errChan, "MCP Any HTTP", httpBindAddress, otelhttp.NewHandler(middleware.HTTPSecurityHeadersMiddleware(ipMiddleware.Handler(httpRateLimiter.Handler(mux))), "mcp-server"), shutdownTimeout)
+	// Rate Limiting Configuration
+	// Default: 20 RPS, 50 Burst, Enabled
+	var rps float64 = 20
+	var burst int = 50
+	enabled := true
+
+	if rlConfig := config.GlobalSettings().RateLimit(); rlConfig != nil {
+		enabled = rlConfig.GetIsEnabled()
+		if rlConfig.GetRequestsPerSecond() > 0 {
+			rps = rlConfig.GetRequestsPerSecond()
+		}
+		if rlConfig.GetBurst() > 0 {
+			burst = int(rlConfig.GetBurst())
+		}
+	}
+
+	var finalHandler http.Handler = mux
+	if enabled {
+		httpRateLimiter := middleware.NewHTTPRateLimitMiddleware(rps, burst)
+		finalHandler = httpRateLimiter.Handler(mux)
+	}
+
+	startHTTPServer(localCtx, &wg, errChan, "MCP Any HTTP", httpBindAddress, otelhttp.NewHandler(middleware.HTTPSecurityHeadersMiddleware(ipMiddleware.Handler(finalHandler)), "mcp-server"), shutdownTimeout)
 
 	grpcBindAddress := grpcPort
 	if grpcBindAddress != "" {

@@ -435,7 +435,9 @@ type GlobalSettings struct {
 	// The path to the database file.
 	DbPath *string `protobuf:"bytes,11,opt,name=db_path" json:"db_path,omitempty"`
 	// The list of middlewares to enable and their configuration.
-	Middlewares   []*Middleware `protobuf:"bytes,12,rep,name=middlewares" json:"middlewares,omitempty"`
+	Middlewares []*Middleware `protobuf:"bytes,12,rep,name=middlewares" json:"middlewares,omitempty"`
+	// Rate limiting configuration for the HTTP server.
+	RateLimit     *RateLimitConfig `protobuf:"bytes,13,opt,name=rate_limit" json:"rate_limit,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -542,6 +544,13 @@ func (x *GlobalSettings) GetMiddlewares() []*Middleware {
 	return nil
 }
 
+func (x *GlobalSettings) GetRateLimit() *RateLimitConfig {
+	if x != nil {
+		return x.RateLimit
+	}
+	return nil
+}
+
 func (x *GlobalSettings) SetMcpListenAddress(v string) {
 	x.McpListenAddress = &v
 }
@@ -584,6 +593,10 @@ func (x *GlobalSettings) SetDbPath(v string) {
 
 func (x *GlobalSettings) SetMiddlewares(v []*Middleware) {
 	x.Middlewares = v
+}
+
+func (x *GlobalSettings) SetRateLimit(v *RateLimitConfig) {
+	x.RateLimit = v
 }
 
 func (x *GlobalSettings) HasMcpListenAddress() bool {
@@ -635,6 +648,13 @@ func (x *GlobalSettings) HasDbPath() bool {
 	return x.DbPath != nil
 }
 
+func (x *GlobalSettings) HasRateLimit() bool {
+	if x == nil {
+		return false
+	}
+	return x.RateLimit != nil
+}
+
 func (x *GlobalSettings) ClearMcpListenAddress() {
 	x.McpListenAddress = nil
 }
@@ -663,6 +683,10 @@ func (x *GlobalSettings) ClearDbPath() {
 	x.DbPath = nil
 }
 
+func (x *GlobalSettings) ClearRateLimit() {
+	x.RateLimit = nil
+}
+
 type GlobalSettings_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
@@ -688,6 +712,8 @@ type GlobalSettings_builder struct {
 	DbPath *string
 	// The list of middlewares to enable and their configuration.
 	Middlewares []*Middleware
+	// Rate limiting configuration for the HTTP server.
+	RateLimit *RateLimitConfig
 }
 
 func (b0 GlobalSettings_builder) Build() *GlobalSettings {
@@ -705,6 +731,7 @@ func (b0 GlobalSettings_builder) Build() *GlobalSettings {
 	x.LogFormat = b.LogFormat
 	x.DbPath = b.DbPath
 	x.Middlewares = b.Middlewares
+	x.RateLimit = b.RateLimit
 	return m0
 }
 
@@ -1208,7 +1235,7 @@ const file_proto_config_v1_config_proto_rawDesc = "" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12N\n" +
 	"\x0eauthentication\x18\x02 \x01(\v2&.mcpany.config.v1.AuthenticationConfigR\x0eauthentication\x12 \n" +
 	"\vprofile_ids\x18\x03 \x03(\tR\vprofile_ids\x12\x14\n" +
-	"\x05roles\x18\x04 \x03(\tR\x05roles\"\x98\x06\n" +
+	"\x05roles\x18\x04 \x03(\tR\x05roles\"\xdb\x06\n" +
 	"\x0eGlobalSettings\x12.\n" +
 	"\x12mcp_listen_address\x18\x01 \x01(\tR\x12mcp_listen_address\x12G\n" +
 	"\tlog_level\x18\x03 \x01(\x0e2).mcpany.config.v1.GlobalSettings.LogLevelR\tlog_level\x121\n" +
@@ -1223,7 +1250,10 @@ const file_proto_config_v1_config_proto_rawDesc = "" +
 	" \x01(\x0e2*.mcpany.config.v1.GlobalSettings.LogFormatR\n" +
 	"log_format\x12\x18\n" +
 	"\adb_path\x18\v \x01(\tR\adb_path\x12>\n" +
-	"\vmiddlewares\x18\f \x03(\v2\x1c.mcpany.config.v1.MiddlewareR\vmiddlewares\"w\n" +
+	"\vmiddlewares\x18\f \x03(\v2\x1c.mcpany.config.v1.MiddlewareR\vmiddlewares\x12A\n" +
+	"\n" +
+	"rate_limit\x18\r \x01(\v2!.mcpany.config.v1.RateLimitConfigR\n" +
+	"rate_limit\"w\n" +
 	"\bLogLevel\x12\x19\n" +
 	"\x15LOG_LEVEL_UNSPECIFIED\x10\x00\x12\x12\n" +
 	"\x0eLOG_LEVEL_INFO\x10\x01\x12\x12\n" +
@@ -1278,6 +1308,7 @@ var file_proto_config_v1_config_proto_goTypes = []any{
 	(*UpstreamServiceCollection)(nil), // 12: mcpany.config.v1.UpstreamServiceCollection
 	(*AuthenticationConfig)(nil),      // 13: mcpany.config.v1.AuthenticationConfig
 	(*bus.MessageBus)(nil),            // 14: bus.MessageBus
+	(*RateLimitConfig)(nil),           // 15: mcpany.config.v1.RateLimitConfig
 }
 var file_proto_config_v1_config_proto_depIdxs = []int32{
 	5,  // 0: mcpany.config.v1.McpAnyServerConfig.global_settings:type_name -> mcpany.config.v1.GlobalSettings
@@ -1291,14 +1322,15 @@ var file_proto_config_v1_config_proto_depIdxs = []int32{
 	7,  // 8: mcpany.config.v1.GlobalSettings.profile_definitions:type_name -> mcpany.config.v1.ProfileDefinition
 	1,  // 9: mcpany.config.v1.GlobalSettings.log_format:type_name -> mcpany.config.v1.GlobalSettings.LogFormat
 	9,  // 10: mcpany.config.v1.GlobalSettings.middlewares:type_name -> mcpany.config.v1.Middleware
-	2,  // 11: mcpany.config.v1.AuditConfig.storage_type:type_name -> mcpany.config.v1.AuditConfig.StorageType
-	8,  // 12: mcpany.config.v1.ProfileDefinition.selector:type_name -> mcpany.config.v1.ProfileSelector
-	10, // 13: mcpany.config.v1.ProfileSelector.tool_properties:type_name -> mcpany.config.v1.ProfileSelector.ToolPropertiesEntry
-	14, // [14:14] is the sub-list for method output_type
-	14, // [14:14] is the sub-list for method input_type
-	14, // [14:14] is the sub-list for extension type_name
-	14, // [14:14] is the sub-list for extension extendee
-	0,  // [0:14] is the sub-list for field type_name
+	15, // 11: mcpany.config.v1.GlobalSettings.rate_limit:type_name -> mcpany.config.v1.RateLimitConfig
+	2,  // 12: mcpany.config.v1.AuditConfig.storage_type:type_name -> mcpany.config.v1.AuditConfig.StorageType
+	8,  // 13: mcpany.config.v1.ProfileDefinition.selector:type_name -> mcpany.config.v1.ProfileSelector
+	10, // 14: mcpany.config.v1.ProfileSelector.tool_properties:type_name -> mcpany.config.v1.ProfileSelector.ToolPropertiesEntry
+	15, // [15:15] is the sub-list for method output_type
+	15, // [15:15] is the sub-list for method input_type
+	15, // [15:15] is the sub-list for extension type_name
+	15, // [15:15] is the sub-list for extension extendee
+	0,  // [0:15] is the sub-list for field type_name
 }
 
 func init() { file_proto_config_v1_config_proto_init() }
