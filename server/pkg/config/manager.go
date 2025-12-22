@@ -127,7 +127,12 @@ func (m *UpstreamServiceManager) loadAndMergeCollection(ctx context.Context, col
 					m.log.Warn("Failed to load from github url", "url", content.HTMLURL, "error", err)
 				}
 			} else if content.Type == "file" {
-				if !strings.HasSuffix(content.HTMLURL, ".yaml") && !strings.HasSuffix(content.HTMLURL, ".yml") && !strings.HasSuffix(content.HTMLURL, ".json") {
+				fileName := content.Name
+				if fileName == "" {
+					fileName = content.HTMLURL
+				}
+				lowerName := strings.ToLower(fileName)
+				if !strings.HasSuffix(lowerName, ".yaml") && !strings.HasSuffix(lowerName, ".yml") && !strings.HasSuffix(lowerName, ".json") {
 					continue
 				}
 				if err := m.loadFromURL(ctx, content.DownloadURL, collection); err != nil {
