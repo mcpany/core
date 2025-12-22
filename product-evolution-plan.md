@@ -2,95 +2,60 @@
 
 ## 1. Updated Roadmap
 
-The following roadmap reflects the reconciled state of the project, with implemented features marked and linked to their documentation.
+The `ROADMAP.md` (located at `docs/roadmap.md`) has been reconciled with the codebase.
 
-### Implemented Features
+### Implemented Features (Moved from Planned)
+*   **Dynamic Web UI (Beta)**: Now marked as implemented (Beta). Source located in `ui/`.
+*   **Admin Management API**: Now marked as implemented. Source located in `server/pkg/admin`.
+*   **Role-Based Access Control (RBAC)**: Confirmed as implemented (Code exists in `server/pkg/auth/rbac.go`), though pending full integration into middleware.
+
+### Current Roadmap Snapshot
 
 #### Service Types
-- [x] [gRPC](docs/features/service_types.md)
-- [x] [HTTP](docs/features/service_types.md)
-- [x] [OpenAPI](docs/features/service_types.md)
-- [x] [GraphQL](docs/features/service_types.md)
-- [x] [Stdio](docs/features/service_types.md)
-- [x] [MCP-to-MCP Proxy](docs/features/service_types.md)
-- [x] [WebSocket](docs/features/service_types.md)
-- [x] [WebRTC](docs/features/service_types.md)
-- [x] [SQL](docs/features/service_types.md)
+*   gRPC, HTTP, OpenAPI, GraphQL, Stdio, MCP-to-MCP Proxy, WebSocket, WebRTC, SQL
 
-#### Authentication & Security
-- [x] [API Key](docs/features/auth.md)
-- [x] [Bearer Token](docs/features/auth.md)
-- [x] [OAuth 2.0](docs/features/auth.md)
-- [x] [Secrets Management](docs/features/security.md)
-- [x] [IP Allowlisting](docs/features/security.md)
-- [x] [Webhooks](docs/features/security.md)
-- [x] [Role-Based Access Control (RBAC)](docs/features/auth.md)
+#### Security & Auth
+*   API Key, Bearer Token, OAuth 2.0, Secrets Management, IP Allowlisting, Webhooks, RBAC
 
-#### Policies
-- [x] [Caching](docs/features/policies.md)
-- [x] [Rate Limiting](docs/features/policies.md)
-- [x] [Resilience](docs/features/policies.md)
+#### Policies & Observability
+*   Caching, Rate Limiting, Resilience, Tracing, Metrics, Logging, Audit
 
-#### Observability
-- [x] [Distributed Tracing](docs/features/observability.md)
-- [x] [Metrics](docs/features/observability.md)
-- [x] [Structured Logging](docs/features/observability.md)
-- [x] [Audit Logging](docs/features/observability.md)
-
-#### Core & UI
-- [x] Dynamic Tool Registration
-- [x] Message Bus
-- [x] [Structured Output Transformation](docs/features/transformation.md)
-- [x] [Dynamic Web UI](docs/features/web_ui.md) (Beta)
-- [x] Admin Management API (Partial)
-
-### Planned Features (Backlog)
-1.  **WASM Plugins**: For sandboxed custom logic.
-2.  **File System Provider**: Safe local file access.
-3.  **Cost & Quota Management**: User-level limits.
-4.  **Client SDKs (Python/TS)**: Idiomatic client libraries.
-5.  **Admin API Expansion**: Full CRUD for all resources.
-
----
+#### Core
+*   Dynamic Tool Registration, Message Bus, Transformation
 
 ## 2. Top 10 Recommended Features
 
-These recommendations focus on enabling enterprise adoption, developer experience, and extensibility.
+These features are selected based on industry standards for API gateways and MCP servers, addressing gaps in the current implementation.
 
-| #  | Feature Name | Why it matters | Difficulty |
-| -- | :--- | :--- | :--- |
-| 1  | **Client SDKs (Python/TypeScript)** | **UX**: Drastically reduces friction for developers integrating MCP Any into their apps. Essential for ecosystem growth. | Medium |
-| 2  | **Advanced Cost & Quota Management** | **Scalability/Business**: Critical for SaaS/Enterprise use cases to prevent abuse and enable monetization (tier-based access). | Medium |
-| 3  | **WASM Plugin System** | **Extensibility**: Allows users to write custom transformations/validations safely without recompiling the core server. | High |
-| 4  | **File System Provider (Sandboxed)** | **UX/Utility**: Enables "Agentic" workflows where LLMs can read/write files locally in a controlled manner. | Medium |
-| 5  | **Configuration Versioning & GitOps** | **Ops/Scalability**: Treat configuration as code. Auto-reload from Git repositories. | Medium |
-| 6  | **Interactive Playground** | **UX**: A UI component to test tools immediately after registration, debugging inputs/outputs visually. | Low |
-| 7  | **Cloud Provider Identity Federation** | **Security**: Support AWS SigV4, GCP OIDC, and Azure AD natively to avoid managing long-lived keys. | High |
-| 8  | **Comprehensive E2E Testing Framework** | **Reliability**: A framework for users to write tests for their *configurations* to ensure upstream changes don't break tools. | Medium |
-| 9  | **Policy-as-Code (OPA/Rego)** | **Security**: More expressive than simple RBAC. Allow complex rules like "User X can only call Tool Y if argument Z < 100". | High |
-| 10 | **Marketplace / Config Hub** | **UX**: A centralized registry or CLI command to pull community-maintained configs for popular services (e.g., `mcpany pull github`). | Medium |
+| Feature Name | Why it matters | Difficulty |
+| :--- | :--- | :--- |
+| **1. WASM Plugins** | **Extensibility/Security**. Allows users to write custom transformation/validation logic in any language (Rust/Go/TS) and run it safely in a sandbox. Critical for "Edge" logic. | High |
+| **2. File System Provider** | **Utility**. A core use case for MCP is interacting with local files (coding agents). Needs strict sandboxing and allow-listing. | Medium |
+| **3. Persistent State / KV Store** | **Statefulness**. MCP servers are often stateless, but agents need "memory". A simple KV store provider (backed by Redis/Disk) allows tools to save state between calls. | Medium |
+| **4. Cost & Quota Management** | **Enterprise**. Beyond rate limiting. Track "token usage" (if proxied) or "call counts" per user/tenant for billing or strict quota enforcement. | Medium |
+| **5. Client SDKs (Python/TS)** | **Adoption**. While MCP is standard, idiomatic SDKs make it easier to build clients *for* MCP Any or consume it. | Medium |
+| **6. Interactive Playground** | **UX**. Complete the "Coming Soon" feature in the Web UI. Allow users to construct MCP calls and see results/traces in real-time. | Low |
+| **7. Async/Long-running Tool Support** | **Scalability**. Some tools take minutes. Support 202-Accepted patterns or "Job" based MCP tools where the client polls for result. | High |
+| **8. Secret Rotation / Dynamic Secrets** | **Security**. Integrate with Vault or AWS Secrets Manager to fetch secrets dynamically instead of static config, and support rotation. | High |
+| **9. Agent Framework Integrations** | **Ecosystem**. Official adapters or guides for LangChain, AutoGen, and LlamaIndex. "How to use MCP Any with LangChain". | Low |
+| **10. Container/Docker Provider** | **Sandboxing**. A provider that spins up ephemeral Docker containers to run CLI tools, ensuring total isolation for dangerous tools. | High |
 
----
-
-## 3. Codebase Health & Refactoring
-
-### Current State
-The codebase is well-structured with clear separation of concerns (`upstream`, `auth`, `transformer`, `ui`). The use of interfaces for `Upstream` and `Tool` is robust.
+## 3. Codebase Health
 
 ### Areas for Improvement
 
-1.  **RBAC Integration**:
-    *   **Issue**: `server/pkg/auth/rbac.go` contains the logic, but it needs to be consistently applied across all access points (gRPC, HTTP, Admin API).
-    *   **Action**: Implement a unified RBAC middleware that intercepts all incoming requests and enforces policy based on the user context.
+1.  **RBAC Middleware Integration**:
+    *   **Issue**: `server/pkg/auth/rbac.go` contains the `RBACEnforcer` logic, but it is currently **not wired** into the global `AuthMiddleware` or `Registry`. The `AuthMiddleware` verifies identity but does not enforce role checks.
+    *   **Recommendation**: Create a dedicated `RBACMiddleware` in `server/pkg/middleware` that utilizes `RBACEnforcer` and checks against configured policies before allowing tool execution.
 
-2.  **Admin API Completeness**:
-    *   **Issue**: `server/pkg/admin/server.go` currently implements read-only operations and cache clearing. Registration is handled separately via `serviceregistry`.
-    *   **Action**: Consolidate management into a RESTful Admin API that supports full CRUD (Create, Read, Update, Delete) for services, policies, and users.
+2.  **Client Package Ambiguity**:
+    *   **Issue**: `server/pkg/client` exists but appears to be an internal abstraction for connecting to *upstream* services (gRPC/HTTP), not a user-facing SDK.
+    *   **Recommendation**: Rename `server/pkg/client` to `server/pkg/upstream_client` or similar to avoid confusion. Develop actual client SDKs in separate repositories or top-level folders.
 
-3.  **UI/Backend Coupling**:
-    *   **Issue**: The UI is a separate Next.js app. Ensure the API contract between the UI and the Backend is stable and versioned (e.g., using the Admin API).
-    *   **Action**: Formalize the "Management API" spec (OpenAPI/Protobuf) used by the UI.
+3.  **Documentation Coverage**:
+    *   **Issue**: While the structure is good, many feature docs are likely stubs. `AGENTS.md` was missing in root (found in `server/`).
+    *   **Recommendation**: Ensure `docs/` is the single source of truth. Move `server/AGENTS.md` content to `docs/developer_guide.md` or keep it but reference it clearly.
 
-4.  **Error Handling & Validation**:
-    *   **Issue**: Transformation errors or upstream failures need to be propagated clearly to the LLM/Client.
-    *   **Action**: Standardize error responses (MCP standard error codes) and improve validation feedback for configuration files.
+4.  **Test Coverage**:
+    *   **Issue**: RBAC tests exist but are unit tests for the struct. Integration tests ensuring a user with `role: viewer` cannot access `admin` tools are needed.
+    *   **Recommendation**: Add integration tests in `server/tests` covering the full authz flow.
