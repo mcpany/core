@@ -14,6 +14,7 @@ import (
 
 	"github.com/mcpany/core/pkg/client"
 	"github.com/mcpany/core/pkg/pool"
+	"github.com/mcpany/core/pkg/util"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 )
@@ -54,12 +55,23 @@ var NewHTTPPool = func(
 		tlsConfig.RootCAs = caCertPool
 	}
 
+	dialer := util.NewSafeDialer()
+	if os.Getenv("MCPANY_ALLOW_LOOPBACK_RESOURCES") == util.TrueStr {
+		dialer.AllowLoopback = true
+	}
+	if os.Getenv("MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES") == util.TrueStr {
+		dialer.AllowPrivate = true
+	}
+
 	sharedClient := &http.Client{
 		Transport: otelhttp.NewTransport(&http.Transport{
 			TLSClientConfig: tlsConfig,
-			DialContext: (&net.Dialer{
-				Timeout: 30 * time.Second,
-			}).DialContext,
+			DialContext: func(ctx context.Context, network, addr string) (net.Conn, error) {
+				// Create a context with a timeout for the connection establishment
+				dialCtx, cancel := context.WithTimeout(ctx, 30*time.Second)
+				defer cancel()
+				return dialer.DialContext(dialCtx, network, addr)
+			},
 			MaxIdleConns:        maxSize,
 			MaxIdleConnsPerHost: maxSize,
 		}),
