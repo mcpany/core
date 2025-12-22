@@ -18,8 +18,70 @@ import { UpstreamServiceConfig } from "@/lib/types";
 import { apiClient } from "@/lib/client";
 import { RegisterServiceDialog } from "./register-service-dialog";
 
-// Memoized row component to prevent unnecessary re-renders of all rows when one changes
-// or when the parent component re-renders.
+// Helper functions for extracting service details
+function getServiceType(service: UpstreamServiceConfig) {
+  if (service.grpc_service) return 'gRPC';
+  if (service.http_service) return 'HTTP';
+  if (service.command_line_service) return 'CLI';
+  if (service.openapi_service) return 'OpenAPI';
+  if (service.websocket_service) return 'WebSocket';
+  if (service.webrtc_service) return 'WebRTC';
+  if (service.graphql_service) return 'GraphQL';
+  if (service.mcp_service) return 'MCP';
+  return 'Unknown';
+}
+
+function getServiceAddress(service: UpstreamServiceConfig) {
+  return service.grpc_service?.address ||
+    service.http_service?.address ||
+    service.command_line_service?.command ||
+    service.openapi_service?.address ||
+    service.websocket_service?.address ||
+    service.webrtc_service?.address ||
+    service.graphql_service?.address ||
+    service.mcp_service?.http_connection?.http_address ||
+    service.mcp_service?.stdio_connection?.command;
+}
+
+function hasTLS(service: UpstreamServiceConfig) {
+  return !!(
+    service.grpc_service?.tls_config ||
+    service.http_service?.tls_config ||
+    service.openapi_service?.tls_config ||
+    service.websocket_service?.tls_config ||
+    service.webrtc_service?.tls_config ||
+    service.mcp_service?.http_connection?.tls_config
+  );
+}
+
+// ⚡ Bolt: Custom comparison function to prevent unnecessary re-renders.
+// The API returns new object references on every fetch, even if data hasn't changed.
+// We strictly compare the fields that are actually displayed in the row.
+function areServiceRowsEqual(
+  prev: { service: UpstreamServiceConfig, onDelete: (name: string) => void },
+  next: { service: UpstreamServiceConfig, onDelete: (name: string) => void }
+) {
+  if (prev.onDelete !== next.onDelete) return false;
+  if (prev.service === next.service) return true;
+
+  const s1 = prev.service;
+  const s2 = next.service;
+
+  // Compare stable identifiers and basic fields
+  if (s1.id !== s2.id) return false;
+  if (s1.name !== s2.name) return false;
+  if (s1.version !== s2.version) return false;
+  if (s1.disable !== s2.disable) return false;
+
+  // Compare derived fields used for rendering
+  if (getServiceType(s1) !== getServiceType(s2)) return false;
+  if (getServiceAddress(s1) !== getServiceAddress(s2)) return false;
+  if (hasTLS(s1) !== hasTLS(s2)) return false;
+
+  return true;
+}
+
+// Memoized row component
 const ServiceRow = memo(({ service, onDelete }: { service: UpstreamServiceConfig, onDelete: (name: string) => void }) => {
   return (
     <TableRow className={service.disable ? "opacity-50" : ""}>
@@ -43,29 +105,11 @@ const ServiceRow = memo(({ service, onDelete }: { service: UpstreamServiceConfig
       </TableCell>
       <TableCell>
         <Badge variant="outline">
-          { service.grpc_service ? 'gRPC' :
-            service.http_service ? 'HTTP' :
-            service.command_line_service ? 'CLI' :
-            service.openapi_service ? 'OpenAPI' :
-            service.websocket_service ? 'WebSocket' :
-            service.webrtc_service ? 'WebRTC' :
-            service.graphql_service ? 'GraphQL' :
-            service.mcp_service ? 'MCP' :
-            'Unknown'
-          }
+          {getServiceType(service)}
         </Badge>
       </TableCell>
       <TableCell className="font-code text-xs truncate max-w-[200px]">
-        { service.grpc_service?.address ||
-          service.http_service?.address ||
-          service.command_line_service?.command ||
-          service.openapi_service?.address ||
-          service.websocket_service?.address ||
-          service.webrtc_service?.address ||
-          service.graphql_service?.address ||
-          service.mcp_service?.http_connection?.http_address ||
-          service.mcp_service?.stdio_connection?.command
-        }
+        {getServiceAddress(service)}
       </TableCell>
       <TableCell>
         <Badge variant="secondary">{service.version || 'N/A'}</Badge>
@@ -73,14 +117,7 @@ const ServiceRow = memo(({ service, onDelete }: { service: UpstreamServiceConfig
       <TableCell className="text-center">
           <Tooltip>
             <TooltipTrigger>
-                {(
-                    service.grpc_service?.tls_config ||
-                    service.http_service?.tls_config ||
-                    service.openapi_service?.tls_config ||
-                    service.websocket_service?.tls_config ||
-                    service.webrtc_service?.tls_config ||
-                    service.mcp_service?.http_connection?.tls_config
-                ) ? <CheckCircle className="size-5 text-primary mx-auto" /> : <XCircle className="size-5 text-muted-foreground mx-auto"/>}
+                {hasTLS(service) ? <CheckCircle className="size-5 text-primary mx-auto" /> : <XCircle className="size-5 text-muted-foreground mx-auto"/>}
             </TooltipTrigger>
             <TooltipContent>
               <p>Secure (TLS)</p>
@@ -94,7 +131,7 @@ const ServiceRow = memo(({ service, onDelete }: { service: UpstreamServiceConfig
       </TableCell>
     </TableRow>
   );
-});
+}, areServiceRowsEqual);
 ServiceRow.displayName = "ServiceRow";
 
 export function McpAnyManager() {
