@@ -1572,17 +1572,7 @@ func RegisterHTTPServiceWithJSONRPC(t *testing.T, mcpanyEndpoint, serviceID, bas
 }
 
 
-<<<<<<< HEAD
-// Error returns the string representation of the JSON-RPC error.
-// It implements the error interface.
-//
-// Returns:
-//   string: The formatted error message.
-func (e *MCPJSONRPCError) Error() string {
-	return fmt.Sprintf("JSON-RPC Error: Code=%d, Message=%s, Data=%v", e.Code, e.Message, e.Data)
-}
-=======
->>>>>>> c89e23c9 (Fix middleware and integration tests)
+
 
 
 
