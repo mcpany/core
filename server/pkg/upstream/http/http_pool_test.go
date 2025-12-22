@@ -18,6 +18,9 @@ import (
 )
 
 func TestHTTPPool_New(t *testing.T) {
+	// Allow loopback for tests
+	t.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "true")
+
 	t.Run("valid config", func(t *testing.T) {
 		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 			w.WriteHeader(http.StatusOK)
@@ -51,6 +54,9 @@ func TestHTTPPool_New(t *testing.T) {
 }
 
 func TestHTTPPool_GetPut(t *testing.T) {
+	// Allow loopback for tests
+	t.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "true")
+
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		w.WriteHeader(http.StatusOK)
 	}))
@@ -145,5 +151,36 @@ func TestHTTPPool_KeepAliveEnabled(t *testing.T) {
 		// If wrapped by otelhttp, we assume it preserves the underlying behavior.
 		// We can't easily access the private Base field of otelhttp.Transport.
 		t.Log("Transport is wrapped (likely by otelhttp), skipping direct *http.Transport assertions")
+	}
+}
+
+func TestHTTPPool_SSRFProtection(t *testing.T) {
+	// Ensure loopback is blocked (default behavior, but being explicit)
+	t.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "false")
+
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+		w.WriteHeader(http.StatusOK)
+	}))
+	defer server.Close()
+
+	configJSON := `{"http_service": {"address": "` + strings.TrimPrefix(server.URL, "http://") + `"}}`
+	config := &configv1.UpstreamServiceConfig{}
+	require.NoError(t, protojson.Unmarshal([]byte(configJSON), config))
+
+	p, err := NewHTTPPool(1, 1, 10, config)
+	require.NoError(t, err)
+	defer func() { _ = p.Close() }()
+
+	client, err := p.Get(context.Background())
+	require.NoError(t, err)
+
+	// Try to make a request to localhost
+	resp, err := client.Get(server.URL)
+	assert.Error(t, err)
+	if err != nil {
+		assert.Contains(t, err.Error(), "ssrf attempt blocked")
+	}
+	if resp != nil {
+		_ = resp.Body.Close()
 	}
 }
