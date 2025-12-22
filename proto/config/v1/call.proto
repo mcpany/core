@@ -286,4 +286,16 @@ message CacheConfig {
   bool is_enabled = 1 [json_name = "is_enabled"];
   google.protobuf.Duration ttl = 2;
   string strategy = 3;
+  SemanticCacheConfig semantic_config = 4 [json_name = "semantic_config"];
+}
+
+message SemanticCacheConfig {
+  // Provider for embeddings (e.g., "openai", "vertexai")
+  string provider = 1;
+  // Model name (e.g., "text-embedding-3-small")
+  string model = 2;
+  // API Key (can be a reference to environment variable or secret)
+  SecretValue api_key = 3 [json_name = "api_key"];
+  // Similarity threshold (0.0 to 1.0). Higher means stricter matching.
+  float similarity_threshold = 4 [json_name = "similarity_threshold"];
 }
