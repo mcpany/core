@@ -16,6 +16,13 @@ type schemaGenerator struct {
 }
 
 // GenerateSchemaFromProto generates a jsonschema from a protobuf message using reflection.
+//
+// Parameters:
+//   msg: The protobuf message to generate the schema from.
+//
+// Returns:
+//   *jsonschema.Schema: The generated JSON schema.
+//   error: An error if the schema generation fails.
 func GenerateSchemaFromProto(msg protoreflect.Message) (*jsonschema.Schema, error) {
 	gen := &schemaGenerator{
 		defs: make(map[string]interface{}),

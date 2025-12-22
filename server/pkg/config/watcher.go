@@ -88,7 +88,7 @@ func (w *Watcher) Watch(paths []string, reloadFunc func()) error {
 	return nil
 }
 
-// Close stops the file watcher.
+// Close stops the file watcher and releases resources.
 func (w *Watcher) Close() {
 	close(w.done)
 	_ = w.watcher.Close()
