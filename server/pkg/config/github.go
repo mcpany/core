@@ -107,10 +107,12 @@ func (g *GitHub) ToRawContentURL() string {
 
 // Content represents a file or directory in a GitHub repository.
 type Content struct {
+	// Name is the name of the file or directory.
+	Name string `json:"name"`
 	// Type is the type of content (e.g., "file", "dir").
-	Type        string `json:"type"`
+	Type string `json:"type"`
 	// HTMLURL is the URL to view the content on GitHub.
-	HTMLURL     string `json:"html_url"`
+	HTMLURL string `json:"html_url"`
 	// DownloadURL is the URL to download the content (only for files).
 	DownloadURL string `json:"download_url"`
 }
