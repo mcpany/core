@@ -1,42 +1,57 @@
-/**
- * Copyright 2025 Author(s) of MCP Any
- * SPDX-License-Identifier: Apache-2.0
- */
-
-import type {Metadata} from 'next';
-import './globals.css';
-import { Toaster } from "@/components/ui/toaster";
-import { TooltipProvider } from "@/components/ui/tooltip";
+import type { Metadata } from "next";
+import "./globals.css";
+import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { AppSidebar } from "@/components/app-sidebar";
+import { Separator } from "@/components/ui/separator";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb"
 
 export const metadata: Metadata = {
-  title: 'MCPAny Manager',
-  description: 'A server management UI for the MCP Any server.',
+  title: "MCP Any",
+  description: "Enterprise management console for MCP Any",
 };
 
-/**
- * Root layout component for the application.
- *
- * @param props - The component props.
- * @param props.children - The child components to render.
- * @returns The root HTML structure.
- */
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="dark">
-      <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link href="https://fonts.googleapis.com/css2?family=Inter&display=swap" rel="stylesheet" />
-      </head>
-      <body className="font-body antialiased">
-        <TooltipProvider>
-          {children}
-          <Toaster />
-        </TooltipProvider>
+    <html lang="en">
+      <body
+        className={`antialiased`}
+      >
+        <SidebarProvider>
+          <AppSidebar />
+          <SidebarInset>
+            <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
+              <SidebarTrigger className="-ml-1" />
+              <Separator orientation="vertical" className="mr-2 h-4" />
+              <Breadcrumb>
+                <BreadcrumbList>
+                  <BreadcrumbItem className="hidden md:block">
+                    <BreadcrumbLink href="/">Console</BreadcrumbLink>
+                  </BreadcrumbItem>
+                  <BreadcrumbSeparator className="hidden md:block" />
+                  <BreadcrumbItem>
+                    <BreadcrumbPage>Dashboard</BreadcrumbPage>
+                  </BreadcrumbItem>
+                </BreadcrumbList>
+              </Breadcrumb>
+            </header>
+            <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
+               <div className="min-h-[100vh] flex-1 rounded-xl bg-muted/50 md:min-h-min p-6" >
+                  {children}
+               </div>
+            </div>
+          </SidebarInset>
+        </SidebarProvider>
       </body>
     </html>
   );

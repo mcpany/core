@@ -1,9 +1,8 @@
-/**
- * Copyright 2025 Author(s) of MCP Any
- * SPDX-License-Identifier: Apache-2.0
- */
+"use client"
 
-
+import { useEffect, useState } from "react"
+import { apiClient } from "@/lib/mock-client"
+import { UpstreamServiceConfig, PromptDefinition } from "@/lib/types"
 import {
   Table,
   TableBody,
@@ -11,39 +10,86 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
+} from "@/components/ui/table"
+import { Badge } from "@/components/ui/badge"
 
-const mockPrompts = [
-  { name: "summarize_text", description: "Summarizes the given text", arguments: ["text", "length"] },
-  { name: "code_review", description: "Reviews code for bugs", arguments: ["code", "language"] },
-];
+interface PromptWithService extends PromptDefinition {
+    serviceName: string;
+    serviceId: string;
+}
 
 export default function PromptsPage() {
+  const [prompts, setPrompts] = useState<PromptWithService[]>([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    const fetchPrompts = async () => {
+      try {
+        const { services } = await apiClient.listServices()
+        const allPrompts: PromptWithService[] = []
+        services.forEach(service => {
+            const servicePrompts = service.grpc_service?.prompts || service.http_service?.prompts || service.command_line_service?.prompts || []
+            servicePrompts.forEach(prompt => {
+                allPrompts.push({
+                    ...prompt,
+                    serviceName: service.name,
+                    serviceId: service.id || ""
+                })
+            })
+        })
+        setPrompts(allPrompts)
+      } catch (error) {
+        console.error("Failed to fetch prompts", error)
+      } finally {
+        setLoading(false)
+      }
+    }
+    fetchPrompts()
+  }, [])
+
   return (
-    <div className="flex-1 space-y-4 p-8 pt-6">
-      <div className="flex items-center justify-between space-y-2">
-        <h2 className="text-3xl font-bold tracking-tight">Prompts</h2>
+    <div className="flex flex-col gap-8">
+      <div>
+        <h1 className="text-3xl font-bold tracking-tight">Prompts</h1>
+        <p className="text-muted-foreground">Manage AI prompts and templates.</p>
       </div>
+
       <div className="rounded-md border">
         <Table>
           <TableHeader>
             <TableRow>
               <TableHead>Name</TableHead>
               <TableHead>Description</TableHead>
-              <TableHead>Arguments</TableHead>
+              <TableHead>Service</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {mockPrompts.map((prompt) => (
-              <TableRow key={prompt.name}>
+            {prompts.map((prompt, index) => (
+              <TableRow key={`${prompt.serviceId}-${prompt.name}-${index}`}>
                 <TableCell className="font-medium">{prompt.name}</TableCell>
-                <TableCell>{prompt.description}</TableCell>
-                <TableCell>{prompt.arguments.join(", ")}</TableCell>
+                <TableCell className="text-muted-foreground">{prompt.description || "-"}</TableCell>
+                <TableCell>
+                    <Badge variant="secondary">{prompt.serviceName}</Badge>
+                </TableCell>
               </TableRow>
             ))}
+             {loading && (
+                 <TableRow>
+                     <TableCell colSpan={3} className="text-center h-24">
+                        Loading prompts...
+                     </TableCell>
+                 </TableRow>
+            )}
+             {!loading && prompts.length === 0 && (
+                <TableRow>
+                    <TableCell colSpan={3} className="text-center h-24">
+                        No prompts found.
+                    </TableCell>
+                </TableRow>
+            )}
           </TableBody>
         </Table>
       </div>
     </div>
-  );
+  )
 }
