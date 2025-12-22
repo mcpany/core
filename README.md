@@ -5,7 +5,7 @@
 [![codecov](https://codecov.io/gh/mcpany/core/branch/main/graph/badge.svg)](https://codecov.io/gh/mcpany/core)
 
 <p align="center">
-  <img src="docs/images/logo.png" alt="MCP Any Logo" width="200"/>
+  <img src="server/docs/images/logo.png" alt="MCP Any Logo" width="200"/>
 </p>
 
 # MCP Any: Configuration-Driven MCP Server
@@ -57,7 +57,7 @@ Most "popular" MCP servers today are bespoke binaries. If the upstream API chang
   - **WebRTC**: Connect to WebRTC services.
 - **Advanced Service & Safety Policies**:
   - **Safety**: Control which tools are exposed to the AI to limit context (reduce hallucinations) and prevent dangerous actions (e.g., blocking `DELETE` operations).
-  - **Performance**: Configure [Caching](docs/caching.md) and Rate Limiting (per-IP, per-user, or **per-API Key**) to optimize performance and protect upstream services.
+  - **Performance**: Configure [Caching](server/docs/caching.md) and Rate Limiting to optimize performance and protect upstream services.
   - **Audit Logging**: Keep a tamper-evident record of all tool executions in a JSON file or **SQLite database** (using SHA-256 hash chaining) for compliance and security auditing.
 - **MCP Any Proxy**: Proxy and re-expose tools from another MCP Any instance.
 - **Upstream Authentication**: Securely connect to your backend services using:
@@ -67,7 +67,7 @@ Most "popular" MCP servers today are bespoke binaries. If the upstream API chang
   - **mTLS**
 - **Unified API**: Interact with all registered tools through a single, consistent API based on the [Model Context Protocol](https://modelcontext.protocol.ai/).
 - **Multi-User & Multi-Profile**: Securely support multiple users with distinct profiles, each with its own set of enabled services and granular authentication.
-- **Advanced Configuration**: Customize tool behavior with [Merge Strategies and Profile Filtering](docs/feature/merge_strategy.md).
+- **Advanced Configuration**: Customize tool behavior with [Merge Strategies and Profile Filtering](server/docs/feature/merge_strategy.md).
 - **Extensible**: Designed to be easily extended with new service types and capabilities.
 
 ## ⚡ Quick Start (5 Minutes)
@@ -79,11 +79,11 @@ Ready to give your AI access to real-time data? Let's connect a public Weather A
 - **Go**: Ensure you have [Go](https://go.dev/doc/install) installed (1.23+ recommended).
 - **Gemini CLI**: If not installed, see the [installation guide](https://docs.cloud.google.com/gemini/docs/codeassist/gemini-cli).
 
-_(Prefer building from source? See [Getting Started](docs/getting_started.md) for build instructions.)_
+_(Prefer building from source? See [Getting Started](server/docs/developer_guide.md) for build instructions.)_
 
 ### 2. Configuration
 
-We will use the pre-built `wttr.in` configuration available in the examples directory: `examples/popular_services/wttr.in/config.yaml`.
+We will use the pre-built `wttr.in` configuration available in the examples directory: `server/examples/popular_services/wttr.in/config.yaml`.
 
 ### Quick Start: Weather Service
 
@@ -99,7 +99,7 @@ We will use the pre-built `wttr.in` configuration available in the examples dire
     docker run -d --rm --name mcpany-server \
       -p 50050:50050 \
       ghcr.io/mcpany/server:dev-latest \
-      run --config-path https://raw.githubusercontent.com/mcpany/core/main/examples/popular_services/wttr.in/config.yaml
+      run --config-path https://raw.githubusercontent.com/mcpany/core/main/server/examples/popular_services/wttr.in/config.yaml
     ```
 
     **Option 2: Local Configuration**
@@ -114,7 +114,7 @@ We will use the pre-built `wttr.in` configuration available in the examples dire
     # Run with local config mounted
     docker run -d --rm --name mcpany-server \
       -p 50050:50050 \
-      -v $(pwd)/examples/popular_services/wttr.in/config.yaml:/config.yaml \
+      -v $(pwd)/server/examples/popular_services/wttr.in/config.yaml:/config.yaml \
       ghcr.io/mcpany/server:dev-latest \
       run --config-path /config.yaml
     ```
@@ -153,16 +153,16 @@ The AI will:
 2.  `mcpany` will **proxy** the request to `https://wttr.in/moon`.
 3.  The AI receives the ASCII art response and describes it!
 
-For more complex examples, including gRPC, OpenAPI, and authentication, check out [docs/reference/configuration.md](docs/reference/configuration.md).
+For more complex examples, including gRPC, OpenAPI, and authentication, check out [server/docs/reference/configuration.md](server/docs/reference/configuration.md).
 
 ## 💡 More Usage
 
 Once the server is running, you can interact with it using its JSON-RPC API.
 
-- For detailed configuration options, see **[Configuration Reference](docs/reference/configuration.md)**.
-- For instructions on how to connect `mcpany` with your favorite AI coding assistant (Claude Desktop, Cursor, VS Code, JetBrains, Cline), see the **[Integration Guide](docs/integrations.md)**.
-- For hands-on examples, see the **[Examples](docs/examples.md)** and the **[Profile Authentication Example](examples/profile_example/README.md)**.
-- For monitoring metrics, see **[Monitoring](docs/monitoring.md)**.
+- For detailed configuration options, see **[Configuration Reference](server/docs/reference/configuration.md)**.
+- For instructions on how to connect `mcpany` with your favorite AI coding assistant (Claude Desktop, Cursor, VS Code, JetBrains, Cline), see the **[Integration Guide](server/docs/integrations.md)**.
+- For hands-on examples, see the **[Examples](server/docs/examples.md)** and the **[Profile Authentication Example](server/examples/profile_example/README.md)**.
+- For monitoring metrics, see **[Monitoring](server/docs/monitoring.md)**.
 
 ## 🛠️ Development Guide
 
@@ -212,16 +212,16 @@ We use `golangci-lint` and `pre-commit` hooks.
 
 ### Project Structure
 
-- **`cmd/`**: Entry points for the applications (server, worker, webhooks).
-- **`pkg/`**: Core library code.
+- **`server/cmd/`**: Entry points for the applications (server, worker, webhooks).
+- **`server/pkg/`**: Core library code.
     - **`config/`**: Configuration loading and validation.
     - **`mcpserver/`**: Core MCP server implementation.
     - **`tool/`**: Tool management and execution logic.
     - **`upstream/`**: Upstream service integrations (gRPC, HTTP, etc.).
     - **`util/`**: Utility functions.
 - **`proto/`**: Protocol Buffer definitions.
-- **`examples/`**: Example configurations.
-- **`docs/`**: Detailed documentation.
+- **`server/examples/`**: Example configurations.
+- **`server/docs/`**: Detailed documentation.
 
 ### Code Standards
 
@@ -234,7 +234,7 @@ We use `golangci-lint` and `pre-commit` hooks.
 After building, you can run the server locally:
 
 ```bash
-./build/bin/server run --config-path examples/popular_services/wttr.in/config.yaml
+./build/bin/server run --config-path server/examples/popular_services/wttr.in/config.yaml
 ```
 
 ## 🤝 Contributing
@@ -243,7 +243,7 @@ Contributions are welcome! Please feel free to open an issue or submit a pull re
 
 ## 🗺️ Roadmap
 
-Check out our [Roadmap](docs/roadmap.md) to see what we're working on and what's coming next.
+Check out our [Roadmap](server/docs/roadmap.md) to see what we're working on and what's coming next.
 
 ## 📄 License
 
