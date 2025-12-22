@@ -92,16 +92,17 @@ func New(factory factory.Factory, toolManager tool.ManagerInterface, promptManag
 // Returns the unique service key, a slice of discovered tool definitions, and
 // an error if the registration fails.
 func (r *ServiceRegistry) RegisterService(ctx context.Context, serviceConfig *config.UpstreamServiceConfig) (string, []*config.ToolDefinition, []*config.ResourceDefinition, error) {
-	r.mu.Lock()
-	defer r.mu.Unlock()
-
 	serviceID, err := util.SanitizeServiceName(serviceConfig.GetName())
 	if err != nil {
 		return "", nil, nil, fmt.Errorf("failed to generate service key: %w", err)
 	}
+
+	r.mu.Lock()
 	if _, ok := r.serviceConfigs[serviceID]; ok {
+		r.mu.Unlock()
 		return "", nil, nil, fmt.Errorf("service with name %q already registered", serviceConfig.GetName())
 	}
+	r.mu.Unlock()
 
 	u, err := r.factory.NewUpstream(serviceConfig)
 	if err != nil {
@@ -111,6 +112,14 @@ func (r *ServiceRegistry) RegisterService(ctx context.Context, serviceConfig *co
 	serviceID, discoveredTools, discoveredResources, err := u.Register(ctx, serviceConfig, r.toolManager, r.promptManager, r.resourceManager, false)
 	if err != nil {
 		return "", nil, nil, err
+	}
+
+	r.mu.Lock()
+	defer r.mu.Unlock()
+
+	// Double check if registered in the meantime
+	if _, ok := r.serviceConfigs[serviceID]; ok {
+		return "", nil, nil, fmt.Errorf("service with name %q already registered", serviceConfig.GetName())
 	}
 
 	r.serviceConfigs[serviceID] = serviceConfig
