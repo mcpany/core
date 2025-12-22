@@ -36,6 +36,10 @@ export interface ResourceDefinition {
   name: string;
   /** The type of the resource. */
   type?: string;
+  /** A description of the resource. */
+  description?: string;
+  /** The MIME type of the resource. */
+  mimeType?: string;
 }
 
 /**
