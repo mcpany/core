@@ -144,6 +144,13 @@ func NewServer(
 					ToolName:   r.Params.Name,
 					ToolInputs: r.Params.Arguments,
 				}
+
+				session := req.GetSession()
+				if serverSession, ok := session.(*mcp.ServerSession); ok {
+					sampler := NewMCPSampler(serverSession)
+					ctx = tool.NewContextWithSampler(ctx, sampler)
+				}
+
 				res, err := s.CallTool(ctx, execReq)
 				if err != nil {
 					return nil, err
