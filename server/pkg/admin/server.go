@@ -8,6 +8,7 @@ import (
 	"context"
 
 	"github.com/mcpany/core/pkg/middleware"
+	"github.com/mcpany/core/pkg/serviceregistry"
 	"github.com/mcpany/core/pkg/tool"
 	pb "github.com/mcpany/core/proto/admin/v1"
 	configv1 "github.com/mcpany/core/proto/config/v1"
@@ -19,15 +20,17 @@ import (
 // Server implements the AdminServiceServer interface.
 type Server struct {
 	pb.UnimplementedAdminServiceServer
-	cache       *middleware.CachingMiddleware
-	toolManager tool.ManagerInterface
+	cache           *middleware.CachingMiddleware
+	toolManager     tool.ManagerInterface
+	serviceRegistry serviceregistry.ServiceRegistryInterface
 }
 
 // NewServer creates a new Admin Server.
-func NewServer(cache *middleware.CachingMiddleware, toolManager tool.ManagerInterface) *Server {
+func NewServer(cache *middleware.CachingMiddleware, toolManager tool.ManagerInterface, serviceRegistry serviceregistry.ServiceRegistryInterface) *Server {
 	return &Server{
-		cache:       cache,
-		toolManager: toolManager,
+		cache:           cache,
+		toolManager:     toolManager,
+		serviceRegistry: serviceRegistry,
 	}
 }
 
@@ -44,6 +47,15 @@ func (s *Server) ClearCache(ctx context.Context, _ *pb.ClearCacheRequest) (*pb.C
 
 // ListServices returns all registered services.
 func (s *Server) ListServices(_ context.Context, _ *pb.ListServicesRequest) (*pb.ListServicesResponse, error) {
+	if s.serviceRegistry != nil {
+		services, err := s.serviceRegistry.GetAllServices()
+		if err != nil {
+			return nil, status.Errorf(codes.Internal, "failed to list services: %v", err)
+		}
+		return &pb.ListServicesResponse{Services: services}, nil
+	}
+
+	// Fallback to toolManager if serviceRegistry is not available (e.g. legacy tests)
 	serviceInfos := s.toolManager.ListServices()
 	var services []*configv1.UpstreamServiceConfig
 	for _, info := range serviceInfos {
@@ -56,6 +68,15 @@ func (s *Server) ListServices(_ context.Context, _ *pb.ListServicesRequest) (*pb
 
 // GetService returns a specific service by ID.
 func (s *Server) GetService(_ context.Context, req *pb.GetServiceRequest) (*pb.GetServiceResponse, error) {
+	if s.serviceRegistry != nil {
+		cfg, ok := s.serviceRegistry.GetServiceConfig(req.GetServiceId())
+		if !ok {
+			return nil, status.Error(codes.NotFound, "service not found")
+		}
+		return &pb.GetServiceResponse{Service: cfg}, nil
+	}
+
+	// Fallback to toolManager
 	info, ok := s.toolManager.GetServiceInfo(req.GetServiceId())
 	if !ok {
 		return nil, status.Error(codes.NotFound, "service not found")
@@ -83,4 +104,41 @@ func (s *Server) GetTool(_ context.Context, req *pb.GetToolRequest) (*pb.GetTool
 		return nil, status.Error(codes.NotFound, "tool not found")
 	}
 	return &pb.GetToolResponse{Tool: t.Tool()}, nil
+}
+
+// CreateService registers a new upstream service.
+func (s *Server) CreateService(ctx context.Context, req *pb.CreateServiceRequest) (*pb.CreateServiceResponse, error) {
+	if s.serviceRegistry == nil {
+		return nil, status.Error(codes.Unimplemented, "service registry not available")
+	}
+	if req.GetService() == nil {
+		return nil, status.Error(codes.InvalidArgument, "service config is required")
+	}
+
+	serviceID, tools, resources, err := s.serviceRegistry.RegisterService(ctx, req.GetService())
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to register service: %v", err)
+	}
+
+	return &pb.CreateServiceResponse{
+		ServiceId: &serviceID,
+		Tools:     tools,
+		Resources: resources,
+	}, nil
+}
+
+// DeleteService unregisters an upstream service.
+func (s *Server) DeleteService(ctx context.Context, req *pb.DeleteServiceRequest) (*pb.DeleteServiceResponse, error) {
+	if s.serviceRegistry == nil {
+		return nil, status.Error(codes.Unimplemented, "service registry not available")
+	}
+	if req.GetServiceId() == "" {
+		return nil, status.Error(codes.InvalidArgument, "service ID is required")
+	}
+
+	if err := s.serviceRegistry.UnregisterService(ctx, req.GetServiceId()); err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to unregister service: %v", err)
+	}
+
+	return &pb.DeleteServiceResponse{}, nil
 }

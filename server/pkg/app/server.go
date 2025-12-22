@@ -409,7 +409,7 @@ func (a *Application) Run(
 		allowedIPs = cfg.GetGlobalSettings().GetAllowedIps()
 	}
 
-	return a.runServerMode(ctx, mcpSrv, busProvider, bindAddress, grpcPort, shutdownTimeout, cfg.GetUsers(), cfg.GetGlobalSettings().GetProfileDefinitions(), allowedIPs, cachingMiddleware, sqliteStore)
+	return a.runServerMode(ctx, mcpSrv, busProvider, bindAddress, grpcPort, shutdownTimeout, cfg.GetUsers(), cfg.GetGlobalSettings().GetProfileDefinitions(), allowedIPs, cachingMiddleware, sqliteStore, serviceRegistry)
 }
 
 // ReloadConfig reloads the configuration from the given paths and updates the
@@ -597,6 +597,7 @@ func (a *Application) runServerMode(
 	allowedIPs []string,
 	cachingMiddleware *middleware.CachingMiddleware,
 	store *sqlite.Store,
+	serviceRegistry serviceregistry.ServiceRegistryInterface,
 ) error {
 	ipMiddleware, err := middleware.NewIPAllowlistMiddleware(allowedIPs)
 	if err != nil {
@@ -998,7 +999,7 @@ func (a *Application) runServerMode(
 					v1.RegisterRegistrationServiceServer(s, registrationServer)
 
 					// Register Admin Service
-					adminServer := admin.NewServer(cachingMiddleware, a.ToolManager)
+					adminServer := admin.NewServer(cachingMiddleware, a.ToolManager, serviceRegistry)
 					pb_admin.RegisterAdminServiceServer(s, adminServer)
 
 					// config_v1.RegisterMcpAnyConfigServiceServer(s, mcpSrv.ConfigServer())

@@ -5,6 +5,8 @@ edition = "2023";
 
 package mcpany.admin.v1;
 
+import "proto/config/v1/resource.proto";
+import "proto/config/v1/tool.proto";
 import "proto/config/v1/upstream_service.proto";
 import "proto/mcp_router/v1/mcp_router.proto";
 
@@ -27,6 +29,12 @@ service AdminService {
 
   // GetTool returns a specific tool by name.
   rpc GetTool(GetToolRequest) returns (GetToolResponse);
+
+  // CreateService registers a new upstream service.
+  rpc CreateService(CreateServiceRequest) returns (CreateServiceResponse);
+
+  // DeleteService unregisters an upstream service.
+  rpc DeleteService(DeleteServiceRequest) returns (DeleteServiceResponse);
 }
 
 message ClearCacheRequest {}
@@ -60,3 +68,19 @@ message GetToolRequest {
 message GetToolResponse {
   mcpany.mcp_router.v1.Tool tool = 1;
 }
+
+message CreateServiceRequest {
+  mcpany.config.v1.UpstreamServiceConfig service = 1;
+}
+
+message CreateServiceResponse {
+  string service_id = 1;
+  repeated mcpany.config.v1.ToolDefinition tools = 2;
+  repeated mcpany.config.v1.ResourceDefinition resources = 3;
+}
+
+message DeleteServiceRequest {
+  string service_id = 1;
+}
+
+message DeleteServiceResponse {}

@@ -190,10 +190,18 @@ func (r *ServiceRegistry) UnregisterService(ctx context.Context, serviceName str
 
 	delete(r.serviceConfigs, serviceName)
 	delete(r.serviceInfo, serviceName)
-	r.toolManager.ClearToolsForService(serviceName)
-	r.promptManager.ClearPromptsForService(serviceName)
-	r.resourceManager.ClearResourcesForService(serviceName)
-	r.authManager.RemoveAuthenticator(serviceName)
+	if r.toolManager != nil {
+		r.toolManager.ClearToolsForService(serviceName)
+	}
+	if r.promptManager != nil {
+		r.promptManager.ClearPromptsForService(serviceName)
+	}
+	if r.resourceManager != nil {
+		r.resourceManager.ClearResourcesForService(serviceName)
+	}
+	if r.authManager != nil {
+		r.authManager.RemoveAuthenticator(serviceName)
+	}
 	return nil
 }
 
