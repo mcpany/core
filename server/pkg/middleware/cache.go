@@ -5,6 +5,7 @@ package middleware
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"time"
 
@@ -16,6 +17,7 @@ import (
 	"github.com/mcpany/core/pkg/tool"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	go_cache "github.com/patrickmn/go-cache"
+	"golang.org/x/sync/singleflight"
 )
 
 // CachingMiddleware is a tool execution middleware that provides caching
@@ -23,6 +25,7 @@ import (
 type CachingMiddleware struct {
 	cache       *cache.Cache[any]
 	toolManager tool.ManagerInterface
+	sfGroup     singleflight.Group
 }
 
 // NewCachingMiddleware creates a new CachingMiddleware.
@@ -75,27 +78,14 @@ func (m *CachingMiddleware) Execute(ctx context.Context, req *tool.ExecutionRequ
 	cacheKey := m.getCacheKey(req)
 
 	// Check cache ONLY if action is not DeleteCache
-	if cacheControl.Action != tool.ActionDeleteCache {
-		// If normal allow (0), check cache.
-		if cached, err := m.cache.Get(ctx, cacheKey); err == nil {
-			// Found in cache
-			metrics.IncrCounterWithLabels([]string{"cache", "hits"}, 1, labels)
-			return cached, nil
-		}
-		// Not found in cache
-		metrics.IncrCounterWithLabels([]string{"cache", "misses"}, 1, labels)
-	} else {
-		// If DeleteCache, we skip cache lookup (force miss)
-		metrics.IncrCounterWithLabels([]string{"cache", "skips"}, 1, labels)
-	}
-
-	result, err := next(ctx, req)
-	if err != nil {
-		return nil, err
-	}
-
-	// Check CacheControl
 	if cacheControl.Action == tool.ActionDeleteCache {
+		metrics.IncrCounterWithLabels([]string{"cache", "skips"}, 1, labels)
+
+		result, err := next(ctx, req)
+		if err != nil {
+			return nil, err
+		}
+
 		if err := m.cache.Delete(ctx, cacheKey); err != nil {
 			metrics.IncrCounterWithLabels([]string{"cache", "errors"}, 1, labels)
 			logging.GetLogger().Error("Failed to delete cache", "error", err, "tool", toolName)
@@ -103,11 +93,37 @@ func (m *CachingMiddleware) Execute(ctx context.Context, req *tool.ExecutionRequ
 		return result, nil
 	}
 
-	if err := m.cache.Set(ctx, cacheKey, result, store.WithExpiration(cacheConfig.GetTtl().AsDuration())); err != nil {
-		metrics.IncrCounterWithLabels([]string{"cache", "errors"}, 1, labels)
-		logging.GetLogger().Error("Failed to set cache", "error", err, "tool", toolName)
+	// 1. Check Cache
+	if cached, err := m.cache.Get(ctx, cacheKey); err == nil {
+		// Found in cache
+		metrics.IncrCounterWithLabels([]string{"cache", "hits"}, 1, labels)
+		return cached, nil
 	}
-	return result, nil
+	// Not found in cache
+	metrics.IncrCounterWithLabels([]string{"cache", "misses"}, 1, labels)
+
+	// 2. Use Singleflight to coalesce requests
+	val, err, shared := m.sfGroup.Do(cacheKey, func() (any, error) {
+		result, err := next(ctx, req)
+		if err != nil {
+			return nil, err
+		}
+
+		if err := m.cache.Set(ctx, cacheKey, result, store.WithExpiration(cacheConfig.GetTtl().AsDuration())); err != nil {
+			metrics.IncrCounterWithLabels([]string{"cache", "errors"}, 1, labels)
+			logging.GetLogger().Error("Failed to set cache", "error", err, "tool", toolName)
+		}
+		return result, nil
+	})
+
+	if shared {
+		metrics.IncrCounterWithLabels([]string{"cache", "coalesced"}, 1, labels)
+	}
+
+	if err != nil {
+		return nil, err
+	}
+	return val, nil
 }
 
 func (m *CachingMiddleware) getCacheConfig(t tool.Tool) *configv1.CacheConfig {
@@ -124,7 +140,22 @@ func (m *CachingMiddleware) getCacheConfig(t tool.Tool) *configv1.CacheConfig {
 }
 
 func (m *CachingMiddleware) getCacheKey(req *tool.ExecutionRequest) string {
-	return fmt.Sprintf("%s:%s", req.ToolName, req.ToolInputs)
+	// Canonicalize JSON inputs
+	var canonicalInputs []byte
+	if len(req.ToolInputs) > 0 {
+		var inputs interface{}
+		if err := json.Unmarshal(req.ToolInputs, &inputs); err == nil {
+			if marshaled, err := json.Marshal(inputs); err == nil {
+				canonicalInputs = marshaled
+			}
+		}
+	}
+
+	if canonicalInputs == nil {
+		canonicalInputs = req.ToolInputs
+	}
+
+	return fmt.Sprintf("%s:%s", req.ToolName, canonicalInputs)
 }
 
 // Clear clears the cache.

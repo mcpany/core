@@ -111,3 +111,12 @@ The caching middleware exposes the following Prometheus metrics on the configure
 - `mcpany_cache_hits`: Counter of cache hits, labeled by `service` and `tool`.
 - `mcpany_cache_misses`: Counter of cache misses, labeled by `service` and `tool`.
 - `mcpany_cache_errors`: Counter of cache errors, labeled by `service` and `tool`.
+- `mcpany_cache_coalesced`: Counter of requests that were served by a shared singleflight execution, labeled by `service` and `tool`.
+
+## Advanced Features
+
+### Canonical JSON Keys
+MCP Any automatically canonicalizes JSON inputs used for cache keys. This means that requests with the same parameters in a different order (e.g., `{"a": 1, "b": 2}` and `{"b": 2, "a": 1}`) will hit the same cache entry, increasing cache efficiency.
+
+### Request Coalescing (Singleflight)
+To prevent "Cache Stampede" (where multiple concurrent requests for the same uncached item all hit the upstream service), MCP Any uses request coalescing. If multiple identical requests arrive simultaneously, only one will execute the upstream call, and the result will be shared among all waiting requests.
