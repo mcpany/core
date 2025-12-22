@@ -1,0 +1,742 @@
+=== RUN   TestRedisBus_Integration_Subscribe
+redis: 2025/12/22 05:21:44 redis.go:478: auto mode fallback: maintnotifications disabled due to handshake error: ERR unknown subcommand 'maint_notifications'. Try CLIENT HELP.
+    e2e_helpers.go:544: Stopping and removing docker container: mcpany-redis-test-1766380900750326288
+--- PASS: TestRedisBus_Integration_Subscribe (4.67s)
+=== RUN   TestRedisBus_Integration_SubscribeOnce
+redis: 2025/12/22 05:21:49 redis.go:478: auto mode fallback: maintnotifications disabled due to handshake error: ERR unknown subcommand 'maint_notifications'. Try CLIENT HELP.
+    e2e_helpers.go:544: Stopping and removing docker container: mcpany-redis-test-1766380905350310319
+--- PASS: TestRedisBus_Integration_SubscribeOnce (4.60s)
+=== RUN   TestConfigLoading
+=== RUN   TestConfigLoading/json_config
+DEBUG: Using MCPANY binary from: /app/build/bin/server
+    e2e_helpers.go:659: DEBUG: Using nats-server binary at: /app/build/env/bin/nats-server (ModTime: 2025-12-22 00:34:27.686952105 +0000 UTC)
+    e2e_helpers.go:659: MCPANY_METRICS_LISTEN_ADDRESS not found in env, using default localhost:19091
+    e2e_helpers.go:290: [MCPANYServer-config-loading-json config] Starting process: /app/build/bin/server [/app/build/bin/server run --mcp-listen-address 127.0.0.1:0 --grpc-port 127.0.0.1:0 --config-path /app/server/tests/integration/testdata/config.json]
+    e2e_helpers.go:659: MCPANY server health check target URL: http://127.0.0.1:37527/mcp
+    e2e_helpers.go:659: MCPANY Server process started. MCP Endpoint Base: http://127.0.0.1:37527, gRPC Reg: 127.0.0.1:40109
+    e2e_helpers.go:997: Cleaning up MCPANYTestServerInfo for config-loading-json config...
+    e2e_helpers.go:339: [MCPANYServer-config-loading-json config] Stopping process: /app/build/bin/server (PID: 51909)
+    e2e_helpers.go:347: [MCPANYServer-config-loading-json config] Sent SIGINT to process group 51909 for /app/build/bin/server.
+    e2e_helpers.go:302: [MCPANYServer-config-loading-json config] Process /app/build/bin/server finished. Stdout:
+        time=2025-12-22T05:21:50.145Z level=INFO source=/app/server/cmd/server/main.go:76 msg=Configuration service=mcpany mcp-listen-address=127.0.0.1:0 registration-port=127.0.0.1:0 stdio=false config-path=[/app/server/tests/integration/testdata/config.json]
+        time=2025-12-22T05:21:50.145Z level=INFO source=/app/server/cmd/server/main.go:78 msg="Attempting to load services from config path" service=mcpany paths=[/app/server/tests/integration/testdata/config.json]
+        time=2025-12-22T05:21:50.146Z level=INFO source=/app/server/pkg/app/server.go:216 msg="Starting MCP Any Service..."
+        time=2025-12-22T05:21:50.146Z level=INFO source=/app/server/cmd/server/main.go:116 msg="Starting metrics server" service=mcpany address=localhost:19091
+        time=2025-12-22T05:21:50.148Z level=INFO source=/app/server/pkg/config/manager.go:331 msg="Added new service" component=UpstreamServiceManager service_name=http-echo-from-json priority=0
+        time=2025-12-22T05:21:50.149Z level=INFO source=/app/server/pkg/config/load.go:58 msg="No users configured, creating default user" component=configLoader
+        time=2025-12-22T05:21:50.149Z level=INFO source=/app/server/pkg/config/load.go:113 msg="Successfully processed config file" component=configLoader services=1
+        time=2025-12-22T05:21:50.149Z level=INFO source=/app/server/pkg/worker/upstream_worker.go:44 msg="Upstream worker started" component=UpstreamWorker
+        time=2025-12-22T05:21:50.149Z level=INFO source=/app/server/pkg/worker/registration_worker.go:46 msg="Service registration worker started" component=ServiceRegistrationWorker
+        time=2025-12-22T05:21:50.149Z level=INFO source=/app/server/pkg/app/server.go:332 msg="Queueing service for registration from config" service=http-echo-from-json
+        time=2025-12-22T05:21:50.149Z level=INFO source=/app/server/pkg/worker/registration_worker.go:63 msg="Received service registration request" component=ServiceRegistrationWorker correlationID=""
+        time=2025-12-22T05:21:50.149Z level=INFO source=/app/server/pkg/app/server.go:659 msg="DEBUG: Registering /mcp/u/ handler"
+        time=2025-12-22T05:21:50.150Z level=INFO source=/app/server/pkg/tool/management.go:428 msg="Registering tool with MCP server" toolID=http-echo-from-json.echo toolName=http-echo-from-json.echo tool="&{Meta:map[] Annotations:0xc000025e00 Description: InputSchema:map[properties:map[] type:object] Name:http-echo-from-json.echo OutputSchema:<nil> Title:}"
+        time=2025-12-22T05:21:50.150Z level=INFO source=/app/server/pkg/upstream/http/http.go:183 msg="Registered HTTP service" serviceID=http-echo-from-json toolsAdded=1
+        time=2025-12-22T05:21:50.152Z level=INFO source=/app/server/pkg/app/server.go:1098 msg="HTTP server listening" server="MCP Any HTTP" port=127.0.0.1:37527
+        time=2025-12-22T05:21:50.152Z level=INFO source=/app/server/pkg/app/server.go:1186 msg="gRPC server listening" server=Registration port=127.0.0.1:40109
+        time=2025-12-22T05:21:50.153Z level=ERROR source=/app/server/pkg/health/health.go:369 msg="checkConnection failed" address=localhost:8080 error="dial tcp [::1]:8080: connect: connection refused"
+        time=2025-12-22T05:21:50.153Z level=INFO source=/app/server/pkg/health/health.go:85 msg="health status changed" service=http-echo-from-json status=down
+        time=2025-12-22T05:21:50.153Z level=ERROR source=/app/server/pkg/health/health.go:369 msg="checkConnection failed" address=localhost:8080 error="dial tcp [::1]:8080: connect: connection refused"
+        time=2025-12-22T05:21:50.154Z level=INFO source=/app/server/pkg/health/health.go:85 msg="health status changed" service=http-echo-from-json status=down
+        time=2025-12-22T05:21:50.154Z level=ERROR source=/app/server/pkg/health/health.go:369 msg="checkConnection failed" address=localhost:8080 error="dial tcp [::1]:8080: connect: connection refused"
+        time=2025-12-22T05:21:50.154Z level=ERROR source=/app/server/pkg/health/health.go:369 msg="checkConnection failed" address=localhost:8080 error="dial tcp [::1]:8080: connect: connection refused"
+        time=2025-12-22T05:21:50.154Z level=INFO source=/app/server/pkg/health/health.go:85 msg="health status changed" service=http-echo-from-json status=down
+        time=2025-12-22T05:21:50.154Z level=INFO source=/app/server/pkg/health/health.go:85 msg="health status changed" service=http-echo-from-json status=down
+        time=2025-12-22T05:21:50.154Z level=ERROR source=/app/server/pkg/health/health.go:369 msg="checkConnection failed" address=localhost:8080 error="dial tcp [::1]:8080: connect: connection refused"
+        time=2025-12-22T05:21:50.154Z level=ERROR source=/app/server/pkg/health/health.go:369 msg="checkConnection failed" address=localhost:8080 error="dial tcp [::1]:8080: connect: connection refused"
+        time=2025-12-22T05:21:50.154Z level=INFO source=/app/server/pkg/health/health.go:85 msg="health status changed" service=http-echo-from-json status=down
+        time=2025-12-22T05:21:50.154Z level=INFO source=/app/server/pkg/health/health.go:85 msg="health status changed" service=http-echo-from-json status=down
+        time=2025-12-22T05:21:50.154Z level=ERROR source=/app/server/pkg/health/health.go:369 msg="checkConnection failed" address=localhost:8080 error="dial tcp [::1]:8080: connect: connection refused"
+        time=2025-12-22T05:21:50.154Z level=INFO source=/app/server/pkg/health/health.go:85 msg="health status changed" service=http-echo-from-json status=down
+        time=2025-12-22T05:21:50.154Z level=ERROR source=/app/server/pkg/health/health.go:369 msg="checkConnection failed" address=localhost:8080 error="dial tcp [::1]:8080: connect: connection refused"
+        time=2025-12-22T05:21:50.154Z level=INFO source=/app/server/pkg/health/health.go:85 msg="health status changed" service=http-echo-from-json status=down
+        time=2025-12-22T05:21:50.155Z level=ERROR source=/app/server/pkg/health/health.go:369 msg="checkConnection failed" address=localhost:8080 error="dial tcp [::1]:8080: connect: connection refused"
+        time=2025-12-22T05:21:50.155Z level=INFO source=/app/server/pkg/health/health.go:85 msg="health status changed" service=http-echo-from-json status=down
+        time=2025-12-22T05:21:50.155Z level=ERROR source=/app/server/pkg/health/health.go:369 msg="checkConnection failed" address=localhost:8080 error="dial tcp [::1]:8080: connect: connection refused"
+        time=2025-12-22T05:21:50.155Z level=INFO source=/app/server/pkg/health/health.go:85 msg="health status changed" service=http-echo-from-json status=down
+        time=2025-12-22T05:21:50.370Z level=INFO source=/app/server/pkg/worker/registration_worker.go:110 msg="Received service list request" component=ServiceRegistrationWorker correlationID=630d36e1-1858-435d-912f-5d85eda58367
+        time=2025-12-22T05:21:50.372Z level=INFO source=/app/server/cmd/server/main.go:89 msg="Received interrupt signal, shutting down..." service=mcpany
+        time=2025-12-22T05:21:50.372Z level=INFO source=/app/server/pkg/app/server.go:1019 msg="Received shutdown signal, shutting down gracefully..."
+        time=2025-12-22T05:21:50.372Z level=INFO source=/app/server/pkg/app/server.go:1024 msg="Waiting for HTTP and gRPC servers to shut down..."
+        time=2025-12-22T05:21:50.372Z level=INFO source=/app/server/pkg/app/server.go:1167 msg="Attempting to gracefully shut down server..." server=Registration
+        time=2025-12-22T05:21:50.372Z level=INFO source=/app/server/pkg/worker/upstream_worker.go:86 msg="Upstream worker stopping" component=UpstreamWorker
+        time=2025-12-22T05:21:50.372Z level=INFO source=/app/server/pkg/worker/registration_worker.go:162 msg="Service registration worker stopping" component=ServiceRegistrationWorker
+        time=2025-12-22T05:21:50.372Z level=INFO source=/app/server/pkg/app/server.go:1092 msg="Attempting to gracefully shut down server..." server="MCP Any HTTP" port=127.0.0.1:37527
+        time=2025-12-22T05:21:50.373Z level=INFO source=/app/server/pkg/app/server.go:1105 msg="Server shut down." server="MCP Any HTTP" port=127.0.0.1:37527
+        time=2025-12-22T05:21:50.373Z level=INFO source=/app/server/pkg/app/server.go:1192 msg="Server shut down." server=Registration
+        time=2025-12-22T05:21:50.373Z level=INFO source=/app/server/pkg/app/server.go:1026 msg="All servers have shut down."
+        time=2025-12-22T05:21:50.373Z level=INFO source=/app/server/cmd/server/main.go:127 msg="Shutdown complete." service=mcpany
+
+        Stderr:
+    e2e_helpers.go:314: [MCPANYServer-config-loading-json config] Process /app/build/bin/server exited successfully.
+    e2e_helpers.go:374: [MCPANYServer-config-loading-json config] Process /app/build/bin/server stopped gracefully after SIGINT.
+=== RUN   TestConfigLoading/yaml_config
+DEBUG: Using MCPANY binary from: /app/build/bin/server
+    e2e_helpers.go:659: DEBUG: Using nats-server binary at: /app/build/env/bin/nats-server (ModTime: 2025-12-22 00:34:27.686952105 +0000 UTC)
+    e2e_helpers.go:659: MCPANY_METRICS_LISTEN_ADDRESS not found in env, using default localhost:19091
+    e2e_helpers.go:290: [MCPANYServer-config-loading-yaml config] Starting process: /app/build/bin/server [/app/build/bin/server run --mcp-listen-address 127.0.0.1:0 --grpc-port 127.0.0.1:0 --config-path /app/server/tests/integration/testdata/config.yaml]
+    e2e_helpers.go:659: MCPANY server health check target URL: http://127.0.0.1:43841/mcp
+    e2e_helpers.go:659: MCPANY Server process started. MCP Endpoint Base: http://127.0.0.1:43841, gRPC Reg: 127.0.0.1:32795
+    e2e_helpers.go:997: Cleaning up MCPANYTestServerInfo for config-loading-yaml config...
+    e2e_helpers.go:339: [MCPANYServer-config-loading-yaml config] Stopping process: /app/build/bin/server (PID: 51927)
+    e2e_helpers.go:347: [MCPANYServer-config-loading-yaml config] Sent SIGINT to process group 51927 for /app/build/bin/server.
+    e2e_helpers.go:302: [MCPANYServer-config-loading-yaml config] Process /app/build/bin/server finished. Stdout:
+        time=2025-12-22T05:21:50.677Z level=INFO source=/app/server/cmd/server/main.go:76 msg=Configuration service=mcpany mcp-listen-address=127.0.0.1:0 registration-port=127.0.0.1:0 stdio=false config-path=[/app/server/tests/integration/testdata/config.yaml]
+        time=2025-12-22T05:21:50.677Z level=INFO source=/app/server/cmd/server/main.go:78 msg="Attempting to load services from config path" service=mcpany paths=[/app/server/tests/integration/testdata/config.yaml]
+        time=2025-12-22T05:21:50.677Z level=INFO source=/app/server/pkg/app/server.go:216 msg="Starting MCP Any Service..."
+        time=2025-12-22T05:21:50.678Z level=INFO source=/app/server/cmd/server/main.go:116 msg="Starting metrics server" service=mcpany address=localhost:19091
+        time=2025-12-22T05:21:50.719Z level=INFO source=/app/server/pkg/config/manager.go:331 msg="Added new service" component=UpstreamServiceManager service_name=http-echo-from-yaml priority=0
+        time=2025-12-22T05:21:50.719Z level=INFO source=/app/server/pkg/config/load.go:58 msg="No users configured, creating default user" component=configLoader
+        time=2025-12-22T05:21:50.719Z level=INFO source=/app/server/pkg/config/load.go:113 msg="Successfully processed config file" component=configLoader services=1
+        time=2025-12-22T05:21:50.720Z level=INFO source=/app/server/pkg/worker/upstream_worker.go:44 msg="Upstream worker started" component=UpstreamWorker
+        time=2025-12-22T05:21:50.720Z level=INFO source=/app/server/pkg/worker/registration_worker.go:46 msg="Service registration worker started" component=ServiceRegistrationWorker
+        time=2025-12-22T05:21:50.720Z level=INFO source=/app/server/pkg/app/server.go:332 msg="Queueing service for registration from config" service=http-echo-from-yaml
+        time=2025-12-22T05:21:50.720Z level=INFO source=/app/server/pkg/app/server.go:659 msg="DEBUG: Registering /mcp/u/ handler"
+        time=2025-12-22T05:21:50.720Z level=INFO source=/app/server/pkg/worker/registration_worker.go:63 msg="Received service registration request" component=ServiceRegistrationWorker correlationID=""
+        time=2025-12-22T05:21:50.721Z level=INFO source=/app/server/pkg/app/server.go:1098 msg="HTTP server listening" server="MCP Any HTTP" port=127.0.0.1:43841
+        time=2025-12-22T05:21:50.721Z level=INFO source=/app/server/pkg/app/server.go:1186 msg="gRPC server listening" server=Registration port=127.0.0.1:32795
+        time=2025-12-22T05:21:50.720Z level=INFO source=/app/server/pkg/tool/management.go:428 msg="Registering tool with MCP server" toolID=http-echo-from-yaml.echo toolName=http-echo-from-yaml.echo tool="&{Meta:map[] Annotations:0xc000a14750 Description: InputSchema:map[properties:map[] type:object] Name:http-echo-from-yaml.echo OutputSchema:<nil> Title:}"
+        time=2025-12-22T05:21:50.721Z level=INFO source=/app/server/pkg/upstream/http/http.go:183 msg="Registered HTTP service" serviceID=http-echo-from-yaml toolsAdded=1
+        time=2025-12-22T05:21:50.722Z level=ERROR source=/app/server/pkg/health/health.go:369 msg="checkConnection failed" address=localhost:8080 error="dial tcp [::1]:8080: connect: connection refused"
+        time=2025-12-22T05:21:50.722Z level=INFO source=/app/server/pkg/health/health.go:85 msg="health status changed" service=http-echo-from-yaml status=down
+        time=2025-12-22T05:21:50.722Z level=ERROR source=/app/server/pkg/health/health.go:369 msg="checkConnection failed" address=localhost:8080 error="dial tcp [::1]:8080: connect: connection refused"
+        time=2025-12-22T05:21:50.723Z level=INFO source=/app/server/pkg/health/health.go:85 msg="health status changed" service=http-echo-from-yaml status=down
+        time=2025-12-22T05:21:50.723Z level=ERROR source=/app/server/pkg/health/health.go:369 msg="checkConnection failed" address=localhost:8080 error="dial tcp [::1]:8080: connect: connection refused"
+        time=2025-12-22T05:21:50.723Z level=INFO source=/app/server/pkg/health/health.go:85 msg="health status changed" service=http-echo-from-yaml status=down
+        time=2025-12-22T05:21:50.723Z level=ERROR source=/app/server/pkg/health/health.go:369 msg="checkConnection failed" address=localhost:8080 error="dial tcp [::1]:8080: connect: connection refused"
+        time=2025-12-22T05:21:50.723Z level=INFO source=/app/server/pkg/health/health.go:85 msg="health status changed" service=http-echo-from-yaml status=down
+        time=2025-12-22T05:21:50.723Z level=ERROR source=/app/server/pkg/health/health.go:369 msg="checkConnection failed" address=localhost:8080 error="dial tcp [::1]:8080: connect: connection refused"
+        time=2025-12-22T05:21:50.723Z level=ERROR source=/app/server/pkg/health/health.go:369 msg="checkConnection failed" address=localhost:8080 error="dial tcp [::1]:8080: connect: connection refused"
+        time=2025-12-22T05:21:50.724Z level=ERROR source=/app/server/pkg/health/health.go:369 msg="checkConnection failed" address=localhost:8080 error="dial tcp [::1]:8080: connect: connection refused"
+        time=2025-12-22T05:21:50.724Z level=INFO source=/app/server/pkg/health/health.go:85 msg="health status changed" service=http-echo-from-yaml status=down
+        time=2025-12-22T05:21:50.724Z level=INFO source=/app/server/pkg/health/health.go:85 msg="health status changed" service=http-echo-from-yaml status=down
+        time=2025-12-22T05:21:50.723Z level=INFO source=/app/server/pkg/health/health.go:85 msg="health status changed" service=http-echo-from-yaml status=down
+        time=2025-12-22T05:21:50.724Z level=ERROR source=/app/server/pkg/health/health.go:369 msg="checkConnection failed" address=localhost:8080 error="dial tcp [::1]:8080: connect: connection refused"
+        time=2025-12-22T05:21:50.724Z level=INFO source=/app/server/pkg/health/health.go:85 msg="health status changed" service=http-echo-from-yaml status=down
+        time=2025-12-22T05:21:50.724Z level=ERROR source=/app/server/pkg/health/health.go:369 msg="checkConnection failed" address=localhost:8080 error="dial tcp [::1]:8080: connect: connection refused"
+        time=2025-12-22T05:21:50.724Z level=ERROR source=/app/server/pkg/health/health.go:369 msg="checkConnection failed" address=localhost:8080 error="dial tcp [::1]:8080: connect: connection refused"
+        time=2025-12-22T05:21:50.724Z level=INFO source=/app/server/pkg/health/health.go:85 msg="health status changed" service=http-echo-from-yaml status=down
+        time=2025-12-22T05:21:50.724Z level=INFO source=/app/server/pkg/health/health.go:85 msg="health status changed" service=http-echo-from-yaml status=down
+        time=2025-12-22T05:21:50.901Z level=INFO source=/app/server/pkg/worker/registration_worker.go:110 msg="Received service list request" component=ServiceRegistrationWorker correlationID=440ed3f8-b3e0-448e-95bf-b88af19b1685
+        time=2025-12-22T05:21:50.902Z level=INFO source=/app/server/cmd/server/main.go:89 msg="Received interrupt signal, shutting down..." service=mcpany
+        time=2025-12-22T05:21:50.902Z level=INFO source=/app/server/pkg/app/server.go:1019 msg="Received shutdown signal, shutting down gracefully..."
+        time=2025-12-22T05:21:50.902Z level=INFO source=/app/server/pkg/app/server.go:1024 msg="Waiting for HTTP and gRPC servers to shut down..."
+        time=2025-12-22T05:21:50.902Z level=INFO source=/app/server/pkg/app/server.go:1092 msg="Attempting to gracefully shut down server..." server="MCP Any HTTP" port=127.0.0.1:43841
+        time=2025-12-22T05:21:50.902Z level=INFO source=/app/server/pkg/app/server.go:1167 msg="Attempting to gracefully shut down server..." server=Registration
+        time=2025-12-22T05:21:50.902Z level=INFO source=/app/server/pkg/worker/upstream_worker.go:86 msg="Upstream worker stopping" component=UpstreamWorker
+        time=2025-12-22T05:21:50.902Z level=INFO source=/app/server/pkg/worker/registration_worker.go:162 msg="Service registration worker stopping" component=ServiceRegistrationWorker
+        time=2025-12-22T05:21:50.902Z level=INFO source=/app/server/pkg/app/server.go:1105 msg="Server shut down." server="MCP Any HTTP" port=127.0.0.1:43841
+        time=2025-12-22T05:21:50.902Z level=INFO source=/app/server/pkg/app/server.go:1192 msg="Server shut down." server=Registration
+        time=2025-12-22T05:21:50.902Z level=INFO source=/app/server/pkg/app/server.go:1026 msg="All servers have shut down."
+        time=2025-12-22T05:21:50.903Z level=INFO source=/app/server/cmd/server/main.go:127 msg="Shutdown complete." service=mcpany
+
+        Stderr:
+    e2e_helpers.go:314: [MCPANYServer-config-loading-yaml config] Process /app/build/bin/server exited successfully.
+    e2e_helpers.go:374: [MCPANYServer-config-loading-yaml config] Process /app/build/bin/server stopped gracefully after SIGINT.
+=== RUN   TestConfigLoading/textproto_config
+DEBUG: Using MCPANY binary from: /app/build/bin/server
+    e2e_helpers.go:659: DEBUG: Using nats-server binary at: /app/build/env/bin/nats-server (ModTime: 2025-12-22 00:34:27.686952105 +0000 UTC)
+    e2e_helpers.go:659: MCPANY_METRICS_LISTEN_ADDRESS not found in env, using default localhost:19091
+    e2e_helpers.go:290: [MCPANYServer-config-loading-textproto config] Starting process: /app/build/bin/server [/app/build/bin/server run --mcp-listen-address 127.0.0.1:0 --grpc-port 127.0.0.1:0 --config-path /app/server/tests/integration/testdata/config.textproto]
+    e2e_helpers.go:659: MCPANY server health check target URL: http://127.0.0.1:45223/mcp
+    e2e_helpers.go:659: MCPANY Server process started. MCP Endpoint Base: http://127.0.0.1:45223, gRPC Reg: 127.0.0.1:33539
+    e2e_helpers.go:997: Cleaning up MCPANYTestServerInfo for config-loading-textproto config...
+    e2e_helpers.go:339: [MCPANYServer-config-loading-textproto config] Stopping process: /app/build/bin/server (PID: 51945)
+    e2e_helpers.go:347: [MCPANYServer-config-loading-textproto config] Sent SIGINT to process group 51945 for /app/build/bin/server.
+    e2e_helpers.go:302: [MCPANYServer-config-loading-textproto config] Process /app/build/bin/server finished. Stdout:
+        time=2025-12-22T05:21:51.194Z level=INFO source=/app/server/cmd/server/main.go:76 msg=Configuration service=mcpany mcp-listen-address=127.0.0.1:0 registration-port=127.0.0.1:0 stdio=false config-path=[/app/server/tests/integration/testdata/config.textproto]
+        time=2025-12-22T05:21:51.194Z level=INFO source=/app/server/cmd/server/main.go:78 msg="Attempting to load services from config path" service=mcpany paths=[/app/server/tests/integration/testdata/config.textproto]
+        time=2025-12-22T05:21:51.195Z level=INFO source=/app/server/pkg/app/server.go:216 msg="Starting MCP Any Service..."
+        time=2025-12-22T05:21:51.195Z level=INFO source=/app/server/cmd/server/main.go:116 msg="Starting metrics server" service=mcpany address=localhost:19091
+        time=2025-12-22T05:21:51.199Z level=INFO source=/app/server/pkg/config/manager.go:331 msg="Added new service" component=UpstreamServiceManager service_name=http-echo-from-textproto priority=0
+        time=2025-12-22T05:21:51.199Z level=INFO source=/app/server/pkg/config/load.go:58 msg="No users configured, creating default user" component=configLoader
+        time=2025-12-22T05:21:51.199Z level=INFO source=/app/server/pkg/config/load.go:113 msg="Successfully processed config file" component=configLoader services=1
+        time=2025-12-22T05:21:51.199Z level=INFO source=/app/server/pkg/worker/upstream_worker.go:44 msg="Upstream worker started" component=UpstreamWorker
+        time=2025-12-22T05:21:51.199Z level=INFO source=/app/server/pkg/worker/registration_worker.go:46 msg="Service registration worker started" component=ServiceRegistrationWorker
+        time=2025-12-22T05:21:51.199Z level=INFO source=/app/server/pkg/app/server.go:332 msg="Queueing service for registration from config" service=http-echo-from-textproto
+        time=2025-12-22T05:21:51.200Z level=INFO source=/app/server/pkg/worker/registration_worker.go:63 msg="Received service registration request" component=ServiceRegistrationWorker correlationID=""
+        time=2025-12-22T05:21:51.200Z level=INFO source=/app/server/pkg/app/server.go:659 msg="DEBUG: Registering /mcp/u/ handler"
+        time=2025-12-22T05:21:51.200Z level=INFO source=/app/server/pkg/tool/management.go:428 msg="Registering tool with MCP server" toolID=http-echo-from-textproto.echo toolName=http-echo-from-textproto.echo tool="&{Meta:map[] Annotations:0xc000290720 Description: InputSchema:map[properties:map[] type:object] Name:http-echo-from-textproto.echo OutputSchema:<nil> Title:}"
+        time=2025-12-22T05:21:51.200Z level=INFO source=/app/server/pkg/upstream/http/http.go:183 msg="Registered HTTP service" serviceID=http-echo-from-textproto toolsAdded=1
+        time=2025-12-22T05:21:51.200Z level=ERROR source=/app/server/pkg/health/health.go:369 msg="checkConnection failed" address=localhost:8080 error="dial tcp [::1]:8080: connect: connection refused"
+        time=2025-12-22T05:21:51.201Z level=INFO source=/app/server/pkg/health/health.go:85 msg="health status changed" service=http-echo-from-textproto status=down
+        time=2025-12-22T05:21:51.202Z level=ERROR source=/app/server/pkg/health/health.go:369 msg="checkConnection failed" address=localhost:8080 error="dial tcp [::1]:8080: connect: connection refused"
+        time=2025-12-22T05:21:51.202Z level=ERROR source=/app/server/pkg/health/health.go:369 msg="checkConnection failed" address=localhost:8080 error="dial tcp [::1]:8080: connect: connection refused"
+        time=2025-12-22T05:21:51.202Z level=INFO source=/app/server/pkg/app/server.go:1186 msg="gRPC server listening" server=Registration port=127.0.0.1:33539
+        time=2025-12-22T05:21:51.202Z level=INFO source=/app/server/pkg/health/health.go:85 msg="health status changed" service=http-echo-from-textproto status=down
+        time=2025-12-22T05:21:51.202Z level=INFO source=/app/server/pkg/health/health.go:85 msg="health status changed" service=http-echo-from-textproto status=down
+        time=2025-12-22T05:21:51.202Z level=ERROR source=/app/server/pkg/health/health.go:369 msg="checkConnection failed" address=localhost:8080 error="dial tcp [::1]:8080: connect: connection refused"
+        time=2025-12-22T05:21:51.202Z level=INFO source=/app/server/pkg/health/health.go:85 msg="health status changed" service=http-echo-from-textproto status=down
+        time=2025-12-22T05:21:51.202Z level=ERROR source=/app/server/pkg/health/health.go:369 msg="checkConnection failed" address=localhost:8080 error="dial tcp [::1]:8080: connect: connection refused"
+        time=2025-12-22T05:21:51.202Z level=INFO source=/app/server/pkg/health/health.go:85 msg="health status changed" service=http-echo-from-textproto status=down
+        time=2025-12-22T05:21:51.202Z level=INFO source=/app/server/pkg/app/server.go:1098 msg="HTTP server listening" server="MCP Any HTTP" port=127.0.0.1:45223
+        time=2025-12-22T05:21:51.202Z level=ERROR source=/app/server/pkg/health/health.go:369 msg="checkConnection failed" address=localhost:8080 error="dial tcp [::1]:8080: connect: connection refused"
+        time=2025-12-22T05:21:51.202Z level=ERROR source=/app/server/pkg/health/health.go:369 msg="checkConnection failed" address=localhost:8080 error="dial tcp [::1]:8080: connect: connection refused"
+        time=2025-12-22T05:21:51.202Z level=ERROR source=/app/server/pkg/health/health.go:369 msg="checkConnection failed" address=localhost:8080 error="dial tcp [::1]:8080: connect: connection refused"
+        time=2025-12-22T05:21:51.202Z level=INFO source=/app/server/pkg/health/health.go:85 msg="health status changed" service=http-echo-from-textproto status=down
+        time=2025-12-22T05:21:51.202Z level=ERROR source=/app/server/pkg/health/health.go:369 msg="checkConnection failed" address=localhost:8080 error="dial tcp [::1]:8080: connect: connection refused"
+        time=2025-12-22T05:21:51.202Z level=INFO source=/app/server/pkg/health/health.go:85 msg="health status changed" service=http-echo-from-textproto status=down
+        time=2025-12-22T05:21:51.202Z level=INFO source=/app/server/pkg/health/health.go:85 msg="health status changed" service=http-echo-from-textproto status=down
+        time=2025-12-22T05:21:51.202Z level=ERROR source=/app/server/pkg/health/health.go:369 msg="checkConnection failed" address=localhost:8080 error="dial tcp [::1]:8080: connect: connection refused"
+        time=2025-12-22T05:21:51.202Z level=INFO source=/app/server/pkg/health/health.go:85 msg="health status changed" service=http-echo-from-textproto status=down
+        time=2025-12-22T05:21:51.202Z level=INFO source=/app/server/pkg/health/health.go:85 msg="health status changed" service=http-echo-from-textproto status=down
+        time=2025-12-22T05:21:51.419Z level=INFO source=/app/server/pkg/worker/registration_worker.go:110 msg="Received service list request" component=ServiceRegistrationWorker correlationID=dfdd2667-3529-49ac-8633-ad64b4bc9167
+        time=2025-12-22T05:21:51.420Z level=INFO source=/app/server/cmd/server/main.go:89 msg="Received interrupt signal, shutting down..." service=mcpany
+        time=2025-12-22T05:21:51.420Z level=INFO source=/app/server/pkg/worker/upstream_worker.go:86 msg="Upstream worker stopping" component=UpstreamWorker
+        time=2025-12-22T05:21:51.420Z level=INFO source=/app/server/pkg/app/server.go:1019 msg="Received shutdown signal, shutting down gracefully..."
+        time=2025-12-22T05:21:51.420Z level=INFO source=/app/server/pkg/app/server.go:1024 msg="Waiting for HTTP and gRPC servers to shut down..."
+        time=2025-12-22T05:21:51.420Z level=INFO source=/app/server/pkg/worker/registration_worker.go:162 msg="Service registration worker stopping" component=ServiceRegistrationWorker
+        time=2025-12-22T05:21:51.421Z level=INFO source=/app/server/pkg/app/server.go:1092 msg="Attempting to gracefully shut down server..." server="MCP Any HTTP" port=127.0.0.1:45223
+        time=2025-12-22T05:21:51.421Z level=INFO source=/app/server/pkg/app/server.go:1105 msg="Server shut down." server="MCP Any HTTP" port=127.0.0.1:45223
+        time=2025-12-22T05:21:51.421Z level=INFO source=/app/server/pkg/app/server.go:1167 msg="Attempting to gracefully shut down server..." server=Registration
+        time=2025-12-22T05:21:51.421Z level=INFO source=/app/server/pkg/app/server.go:1192 msg="Server shut down." server=Registration
+        time=2025-12-22T05:21:51.421Z level=INFO source=/app/server/pkg/app/server.go:1026 msg="All servers have shut down."
+        time=2025-12-22T05:21:51.421Z level=INFO source=/app/server/cmd/server/main.go:127 msg="Shutdown complete." service=mcpany
+
+        Stderr:
+    e2e_helpers.go:314: [MCPANYServer-config-loading-textproto config] Process /app/build/bin/server exited successfully.
+    e2e_helpers.go:374: [MCPANYServer-config-loading-textproto config] Process /app/build/bin/server stopped gracefully after SIGINT.
+=== RUN   TestConfigLoading/disabled_config
+DEBUG: Using MCPANY binary from: /app/build/bin/server
+    e2e_helpers.go:659: DEBUG: Using nats-server binary at: /app/build/env/bin/nats-server (ModTime: 2025-12-22 00:34:27.686952105 +0000 UTC)
+    e2e_helpers.go:659: MCPANY_METRICS_LISTEN_ADDRESS not found in env, using default localhost:19091
+    e2e_helpers.go:290: [MCPANYServer-config-loading-disabled config] Starting process: /app/build/bin/server [/app/build/bin/server run --mcp-listen-address 127.0.0.1:0 --grpc-port 127.0.0.1:0 --config-path /app/server/tests/integration/testdata/disabled_config.yaml]
+    e2e_helpers.go:659: MCPANY server health check target URL: http://127.0.0.1:42707/mcp
+    e2e_helpers.go:659: MCPANY Server process started. MCP Endpoint Base: http://127.0.0.1:42707, gRPC Reg: 127.0.0.1:38871
+    e2e_helpers.go:997: Cleaning up MCPANYTestServerInfo for config-loading-disabled config...
+    e2e_helpers.go:339: [MCPANYServer-config-loading-disabled config] Stopping process: /app/build/bin/server (PID: 51963)
+    e2e_helpers.go:347: [MCPANYServer-config-loading-disabled config] Sent SIGINT to process group 51963 for /app/build/bin/server.
+    e2e_helpers.go:302: [MCPANYServer-config-loading-disabled config] Process /app/build/bin/server finished. Stdout:
+        time=2025-12-22T05:21:51.706Z level=INFO source=/app/server/cmd/server/main.go:76 msg=Configuration service=mcpany mcp-listen-address=127.0.0.1:0 registration-port=127.0.0.1:0 stdio=false config-path=[/app/server/tests/integration/testdata/disabled_config.yaml]
+        time=2025-12-22T05:21:51.706Z level=INFO source=/app/server/cmd/server/main.go:78 msg="Attempting to load services from config path" service=mcpany paths=[/app/server/tests/integration/testdata/disabled_config.yaml]
+        time=2025-12-22T05:21:51.706Z level=INFO source=/app/server/pkg/app/server.go:216 msg="Starting MCP Any Service..."
+        time=2025-12-22T05:21:51.707Z level=INFO source=/app/server/cmd/server/main.go:116 msg="Starting metrics server" service=mcpany address=localhost:19091
+        time=2025-12-22T05:21:51.749Z level=INFO source=/app/server/pkg/config/manager.go:331 msg="Added new service" component=UpstreamServiceManager service_name=disabled-service priority=0
+        time=2025-12-22T05:21:51.749Z level=INFO source=/app/server/pkg/config/load.go:58 msg="No users configured, creating default user" component=configLoader
+        time=2025-12-22T05:21:51.749Z level=INFO source=/app/server/pkg/config/load.go:113 msg="Successfully processed config file" component=configLoader services=1
+        time=2025-12-22T05:21:51.749Z level=INFO source=/app/server/pkg/worker/upstream_worker.go:44 msg="Upstream worker started" component=UpstreamWorker
+        time=2025-12-22T05:21:51.749Z level=INFO source=/app/server/pkg/worker/registration_worker.go:46 msg="Service registration worker started" component=ServiceRegistrationWorker
+        time=2025-12-22T05:21:51.749Z level=INFO source=/app/server/pkg/app/server.go:329 msg="Skipping disabled service" service=disabled-service
+        time=2025-12-22T05:21:51.749Z level=INFO source=/app/server/pkg/app/server.go:659 msg="DEBUG: Registering /mcp/u/ handler"
+        time=2025-12-22T05:21:51.750Z level=INFO source=/app/server/pkg/app/server.go:1098 msg="HTTP server listening" server="MCP Any HTTP" port=127.0.0.1:42707
+        time=2025-12-22T05:21:51.750Z level=INFO source=/app/server/pkg/app/server.go:1186 msg="gRPC server listening" server=Registration port=127.0.0.1:38871
+        time=2025-12-22T05:21:51.930Z level=INFO source=/app/server/pkg/worker/registration_worker.go:110 msg="Received service list request" component=ServiceRegistrationWorker correlationID=b480d9ab-7de1-417e-a702-07944d5686f9
+        time=2025-12-22T05:21:51.931Z level=INFO source=/app/server/cmd/server/main.go:89 msg="Received interrupt signal, shutting down..." service=mcpany
+        time=2025-12-22T05:21:51.931Z level=INFO source=/app/server/pkg/app/server.go:1019 msg="Received shutdown signal, shutting down gracefully..."
+        time=2025-12-22T05:21:51.931Z level=INFO source=/app/server/pkg/app/server.go:1024 msg="Waiting for HTTP and gRPC servers to shut down..."
+        time=2025-12-22T05:21:51.931Z level=INFO source=/app/server/pkg/worker/upstream_worker.go:86 msg="Upstream worker stopping" component=UpstreamWorker
+        time=2025-12-22T05:21:51.931Z level=INFO source=/app/server/pkg/app/server.go:1167 msg="Attempting to gracefully shut down server..." server=Registration
+        time=2025-12-22T05:21:51.931Z level=INFO source=/app/server/pkg/worker/registration_worker.go:162 msg="Service registration worker stopping" component=ServiceRegistrationWorker
+        time=2025-12-22T05:21:51.931Z level=INFO source=/app/server/pkg/app/server.go:1192 msg="Server shut down." server=Registration
+        time=2025-12-22T05:21:51.931Z level=INFO source=/app/server/pkg/app/server.go:1092 msg="Attempting to gracefully shut down server..." server="MCP Any HTTP" port=127.0.0.1:42707
+        time=2025-12-22T05:21:51.931Z level=INFO source=/app/server/pkg/app/server.go:1105 msg="Server shut down." server="MCP Any HTTP" port=127.0.0.1:42707
+        time=2025-12-22T05:21:51.931Z level=INFO source=/app/server/pkg/app/server.go:1026 msg="All servers have shut down."
+        time=2025-12-22T05:21:51.932Z level=INFO source=/app/server/cmd/server/main.go:127 msg="Shutdown complete." service=mcpany
+
+        Stderr:
+    e2e_helpers.go:314: [MCPANYServer-config-loading-disabled config] Process /app/build/bin/server exited successfully.
+    e2e_helpers.go:374: [MCPANYServer-config-loading-disabled config] Process /app/build/bin/server stopped gracefully after SIGINT.
+--- PASS: TestConfigLoading (2.07s)
+    --- PASS: TestConfigLoading/json_config (0.53s)
+    --- PASS: TestConfigLoading/yaml_config (0.52s)
+    --- PASS: TestConfigLoading/textproto_config (0.51s)
+    --- PASS: TestConfigLoading/disabled_config (0.51s)
+=== RUN   TestDisabledHierarchyConfig
+DEBUG: Using MCPANY binary from: /app/build/bin/server
+    e2e_helpers.go:659: DEBUG: Using nats-server binary at: /app/build/env/bin/nats-server (ModTime: 2025-12-22 00:34:27.686952105 +0000 UTC)
+    e2e_helpers.go:659: MCPANY_METRICS_LISTEN_ADDRESS not found in env, using default localhost:19091
+    e2e_helpers.go:290: [MCPANYServer-config-loading-hierarchy] Starting process: /app/build/bin/server [/app/build/bin/server run --mcp-listen-address 127.0.0.1:0 --grpc-port 127.0.0.1:0 --config-path /app/server/tests/integration/testdata/disabled_hierarchy_config.yaml]
+    e2e_helpers.go:659: MCPANY server health check target URL: http://127.0.0.1:40351/mcp
+    e2e_helpers.go:659: MCPANY Server process started. MCP Endpoint Base: http://127.0.0.1:40351, gRPC Reg: 127.0.0.1:44771
+    e2e_helpers.go:997: Cleaning up MCPANYTestServerInfo for config-loading-hierarchy...
+    e2e_helpers.go:339: [MCPANYServer-config-loading-hierarchy] Stopping process: /app/build/bin/server (PID: 51982)
+    e2e_helpers.go:347: [MCPANYServer-config-loading-hierarchy] Sent SIGINT to process group 51982 for /app/build/bin/server.
+    e2e_helpers.go:302: [MCPANYServer-config-loading-hierarchy] Process /app/build/bin/server finished. Stdout:
+        time=2025-12-22T05:21:52.219Z level=INFO source=/app/server/cmd/server/main.go:76 msg=Configuration service=mcpany mcp-listen-address=127.0.0.1:0 registration-port=127.0.0.1:0 stdio=false config-path=[/app/server/tests/integration/testdata/disabled_hierarchy_config.yaml]
+        time=2025-12-22T05:21:52.219Z level=INFO source=/app/server/cmd/server/main.go:78 msg="Attempting to load services from config path" service=mcpany paths=[/app/server/tests/integration/testdata/disabled_hierarchy_config.yaml]
+        time=2025-12-22T05:21:52.219Z level=INFO source=/app/server/pkg/app/server.go:216 msg="Starting MCP Any Service..."
+        time=2025-12-22T05:21:52.219Z level=INFO source=/app/server/cmd/server/main.go:116 msg="Starting metrics server" service=mcpany address=localhost:19091
+        time=2025-12-22T05:21:52.265Z level=INFO source=/app/server/pkg/config/manager.go:331 msg="Added new service" component=UpstreamServiceManager service_name=disabled-service priority=0
+        time=2025-12-22T05:21:52.265Z level=INFO source=/app/server/pkg/config/manager.go:331 msg="Added new service" component=UpstreamServiceManager service_name=tool-disabled-service priority=0
+        time=2025-12-22T05:21:52.265Z level=INFO source=/app/server/pkg/config/manager.go:331 msg="Added new service" component=UpstreamServiceManager service_name=call-disabled-service priority=0
+        time=2025-12-22T05:21:52.265Z level=INFO source=/app/server/pkg/config/load.go:58 msg="No users configured, creating default user" component=configLoader
+        time=2025-12-22T05:21:52.265Z level=INFO source=/app/server/pkg/config/load.go:113 msg="Successfully processed config file" component=configLoader services=3
+        time=2025-12-22T05:21:52.265Z level=INFO source=/app/server/pkg/worker/upstream_worker.go:44 msg="Upstream worker started" component=UpstreamWorker
+        time=2025-12-22T05:21:52.265Z level=INFO source=/app/server/pkg/worker/registration_worker.go:46 msg="Service registration worker started" component=ServiceRegistrationWorker
+        time=2025-12-22T05:21:52.265Z level=INFO source=/app/server/pkg/app/server.go:332 msg="Queueing service for registration from config" service=call-disabled-service
+        time=2025-12-22T05:21:52.265Z level=INFO source=/app/server/pkg/app/server.go:329 msg="Skipping disabled service" service=disabled-service
+        time=2025-12-22T05:21:52.265Z level=INFO source=/app/server/pkg/app/server.go:332 msg="Queueing service for registration from config" service=tool-disabled-service
+        time=2025-12-22T05:21:52.265Z level=INFO source=/app/server/pkg/app/server.go:659 msg="DEBUG: Registering /mcp/u/ handler"
+        time=2025-12-22T05:21:52.265Z level=INFO source=/app/server/pkg/worker/registration_worker.go:63 msg="Received service registration request" component=ServiceRegistrationWorker correlationID=""
+        time=2025-12-22T05:21:52.265Z level=INFO source=/app/server/pkg/upstream/http/http.go:259 msg="Skipping blocked tool/call" toolName=disabled-call callID=disabled-call
+        time=2025-12-22T05:21:52.265Z level=INFO source=/app/server/pkg/upstream/http/http.go:183 msg="Registered HTTP service" serviceID=call-disabled-service toolsAdded=0
+        time=2025-12-22T05:21:52.266Z level=INFO source=/app/server/pkg/worker/registration_worker.go:63 msg="Received service registration request" component=ServiceRegistrationWorker correlationID=""
+        time=2025-12-22T05:21:52.266Z level=INFO source=/app/server/pkg/app/server.go:1186 msg="gRPC server listening" server=Registration port=127.0.0.1:44771
+        time=2025-12-22T05:21:52.266Z level=INFO source=/app/server/pkg/app/server.go:1098 msg="HTTP server listening" server="MCP Any HTTP" port=127.0.0.1:40351
+        time=2025-12-22T05:21:52.266Z level=INFO source=/app/server/pkg/upstream/http/http.go:259 msg="Skipping blocked tool/call" toolName=disabled-tool callID=disabled-tool
+        time=2025-12-22T05:21:52.266Z level=INFO source=/app/server/pkg/tool/management.go:428 msg="Registering tool with MCP server" toolID=tool-disabled-service.enabled-tool toolName=tool-disabled-service.enabled-tool tool="&{Meta:map[] Annotations:0xc00015ce40 Description:Auto-discovered tool for call enabled-tool InputSchema:map[properties:map[] type:object] Name:tool-disabled-service.enabled-tool OutputSchema:<nil> Title:}"
+        time=2025-12-22T05:21:52.266Z level=INFO source=/app/server/pkg/upstream/http/http.go:183 msg="Registered HTTP service" serviceID=tool-disabled-service toolsAdded=1
+        time=2025-12-22T05:21:52.268Z level=ERROR source=/app/server/pkg/health/health.go:369 msg="checkConnection failed" address=localhost:8080 error="dial tcp [::1]:8080: connect: connection refused"
+        time=2025-12-22T05:21:52.268Z level=INFO source=/app/server/pkg/health/health.go:85 msg="health status changed" service=tool-disabled-service status=down
+        time=2025-12-22T05:21:52.268Z level=ERROR source=/app/server/pkg/health/health.go:369 msg="checkConnection failed" address=localhost:8080 error="dial tcp [::1]:8080: connect: connection refused"
+        time=2025-12-22T05:21:52.268Z level=INFO source=/app/server/pkg/health/health.go:85 msg="health status changed" service=call-disabled-service status=down
+        time=2025-12-22T05:21:52.268Z level=ERROR source=/app/server/pkg/health/health.go:369 msg="checkConnection failed" address=localhost:8080 error="dial tcp [::1]:8080: connect: connection refused"
+        time=2025-12-22T05:21:52.268Z level=INFO source=/app/server/pkg/health/health.go:85 msg="health status changed" service=tool-disabled-service status=down
+        time=2025-12-22T05:21:52.269Z level=ERROR source=/app/server/pkg/health/health.go:369 msg="checkConnection failed" address=localhost:8080 error="dial tcp [::1]:8080: connect: connection refused"
+        time=2025-12-22T05:21:52.269Z level=INFO source=/app/server/pkg/health/health.go:85 msg="health status changed" service=call-disabled-service status=down
+        time=2025-12-22T05:21:52.269Z level=ERROR source=/app/server/pkg/health/health.go:369 msg="checkConnection failed" address=localhost:8080 error="dial tcp [::1]:8080: connect: connection refused"
+        time=2025-12-22T05:21:52.269Z level=ERROR source=/app/server/pkg/health/health.go:369 msg="checkConnection failed" address=localhost:8080 error="dial tcp [::1]:8080: connect: connection refused"
+        time=2025-12-22T05:21:52.269Z level=INFO source=/app/server/pkg/health/health.go:85 msg="health status changed" service=call-disabled-service status=down
+        time=2025-12-22T05:21:52.269Z level=ERROR source=/app/server/pkg/health/health.go:369 msg="checkConnection failed" address=localhost:8080 error="dial tcp [::1]:8080: connect: connection refused"
+        time=2025-12-22T05:21:52.269Z level=INFO source=/app/server/pkg/health/health.go:85 msg="health status changed" service=call-disabled-service status=down
+        time=2025-12-22T05:21:52.269Z level=ERROR source=/app/server/pkg/health/health.go:369 msg="checkConnection failed" address=localhost:8080 error="dial tcp [::1]:8080: connect: connection refused"
+        time=2025-12-22T05:21:52.269Z level=ERROR source=/app/server/pkg/health/health.go:369 msg="checkConnection failed" address=localhost:8080 error="dial tcp [::1]:8080: connect: connection refused"
+        time=2025-12-22T05:21:52.269Z level=INFO source=/app/server/pkg/health/health.go:85 msg="health status changed" service=tool-disabled-service status=down
+        time=2025-12-22T05:21:52.269Z level=INFO source=/app/server/pkg/health/health.go:85 msg="health status changed" service=call-disabled-service status=down
+        time=2025-12-22T05:21:52.269Z level=INFO source=/app/server/pkg/health/health.go:85 msg="health status changed" service=tool-disabled-service status=down
+        time=2025-12-22T05:21:52.269Z level=ERROR source=/app/server/pkg/health/health.go:369 msg="checkConnection failed" address=localhost:8080 error="dial tcp [::1]:8080: connect: connection refused"
+        time=2025-12-22T05:21:52.269Z level=ERROR source=/app/server/pkg/health/health.go:369 msg="checkConnection failed" address=localhost:8080 error="dial tcp [::1]:8080: connect: connection refused"
+        time=2025-12-22T05:21:52.269Z level=ERROR source=/app/server/pkg/health/health.go:369 msg="checkConnection failed" address=localhost:8080 error="dial tcp [::1]:8080: connect: connection refused"
+        time=2025-12-22T05:21:52.269Z level=INFO source=/app/server/pkg/health/health.go:85 msg="health status changed" service=call-disabled-service status=down
+        time=2025-12-22T05:21:52.269Z level=ERROR source=/app/server/pkg/health/health.go:369 msg="checkConnection failed" address=localhost:8080 error="dial tcp [::1]:8080: connect: connection refused"
+        time=2025-12-22T05:21:52.269Z level=INFO source=/app/server/pkg/health/health.go:85 msg="health status changed" service=tool-disabled-service status=down
+        time=2025-12-22T05:21:52.269Z level=ERROR source=/app/server/pkg/health/health.go:369 msg="checkConnection failed" address=localhost:8080 error="dial tcp [::1]:8080: connect: connection refused"
+        time=2025-12-22T05:21:52.269Z level=INFO source=/app/server/pkg/health/health.go:85 msg="health status changed" service=tool-disabled-service status=down
+        time=2025-12-22T05:21:52.269Z level=INFO source=/app/server/pkg/health/health.go:85 msg="health status changed" service=tool-disabled-service status=down
+        time=2025-12-22T05:21:52.269Z level=ERROR source=/app/server/pkg/health/health.go:369 msg="checkConnection failed" address=localhost:8080 error="dial tcp [::1]:8080: connect: connection refused"
+        time=2025-12-22T05:21:52.269Z level=ERROR source=/app/server/pkg/health/health.go:369 msg="checkConnection failed" address=localhost:8080 error="dial tcp [::1]:8080: connect: connection refused"
+        time=2025-12-22T05:21:52.269Z level=ERROR source=/app/server/pkg/health/health.go:369 msg="checkConnection failed" address=localhost:8080 error="dial tcp [::1]:8080: connect: connection refused"
+        time=2025-12-22T05:21:52.269Z level=ERROR source=/app/server/pkg/health/health.go:369 msg="checkConnection failed" address=localhost:8080 error="dial tcp [::1]:8080: connect: connection refused"
+        time=2025-12-22T05:21:52.269Z level=INFO source=/app/server/pkg/health/health.go:85 msg="health status changed" service=tool-disabled-service status=down
+        time=2025-12-22T05:21:52.269Z level=INFO source=/app/server/pkg/health/health.go:85 msg="health status changed" service=tool-disabled-service status=down
+        time=2025-12-22T05:21:52.269Z level=ERROR source=/app/server/pkg/health/health.go:369 msg="checkConnection failed" address=localhost:8080 error="dial tcp [::1]:8080: connect: connection refused"
+        time=2025-12-22T05:21:52.269Z level=INFO source=/app/server/pkg/health/health.go:85 msg="health status changed" service=call-disabled-service status=down
+        time=2025-12-22T05:21:52.269Z level=INFO source=/app/server/pkg/health/health.go:85 msg="health status changed" service=call-disabled-service status=down
+        time=2025-12-22T05:21:52.269Z level=INFO source=/app/server/pkg/health/health.go:85 msg="health status changed" service=call-disabled-service status=down
+        time=2025-12-22T05:21:52.269Z level=INFO source=/app/server/pkg/health/health.go:85 msg="health status changed" service=tool-disabled-service status=down
+        time=2025-12-22T05:21:52.269Z level=ERROR source=/app/server/pkg/health/health.go:369 msg="checkConnection failed" address=localhost:8080 error="dial tcp [::1]:8080: connect: connection refused"
+        time=2025-12-22T05:21:52.269Z level=INFO source=/app/server/pkg/health/health.go:85 msg="health status changed" service=call-disabled-service status=down
+        time=2025-12-22T05:21:52.442Z level=INFO source=/app/server/pkg/worker/registration_worker.go:110 msg="Received service list request" component=ServiceRegistrationWorker correlationID=16ee2bc3-2bc3-4208-879f-12c3dbbfbf96
+        time=2025-12-22T05:21:52.443Z level=INFO source=/app/server/cmd/server/main.go:89 msg="Received interrupt signal, shutting down..." service=mcpany
+        time=2025-12-22T05:21:52.443Z level=INFO source=/app/server/pkg/app/server.go:1019 msg="Received shutdown signal, shutting down gracefully..."
+        time=2025-12-22T05:21:52.443Z level=INFO source=/app/server/pkg/app/server.go:1024 msg="Waiting for HTTP and gRPC servers to shut down..."
+        time=2025-12-22T05:21:52.443Z level=INFO source=/app/server/pkg/worker/upstream_worker.go:86 msg="Upstream worker stopping" component=UpstreamWorker
+        time=2025-12-22T05:21:52.443Z level=INFO source=/app/server/pkg/app/server.go:1092 msg="Attempting to gracefully shut down server..." server="MCP Any HTTP" port=127.0.0.1:40351
+        time=2025-12-22T05:21:52.444Z level=INFO source=/app/server/pkg/worker/registration_worker.go:162 msg="Service registration worker stopping" component=ServiceRegistrationWorker
+        time=2025-12-22T05:21:52.444Z level=INFO source=/app/server/pkg/app/server.go:1167 msg="Attempting to gracefully shut down server..." server=Registration
+        time=2025-12-22T05:21:52.444Z level=INFO source=/app/server/pkg/app/server.go:1105 msg="Server shut down." server="MCP Any HTTP" port=127.0.0.1:40351
+        time=2025-12-22T05:21:52.444Z level=INFO source=/app/server/pkg/app/server.go:1192 msg="Server shut down." server=Registration
+        time=2025-12-22T05:21:52.444Z level=INFO source=/app/server/pkg/app/server.go:1026 msg="All servers have shut down."
+        time=2025-12-22T05:21:52.444Z level=INFO source=/app/server/cmd/server/main.go:127 msg="Shutdown complete." service=mcpany
+
+        Stderr:
+    e2e_helpers.go:314: [MCPANYServer-config-loading-hierarchy] Process /app/build/bin/server exited successfully.
+    e2e_helpers.go:374: [MCPANYServer-config-loading-hierarchy] Process /app/build/bin/server stopped gracefully after SIGINT.
+--- PASS: TestDisabledHierarchyConfig (0.51s)
+=== RUN   TestCreateTempConfigFile
+=== PAUSE TestCreateTempConfigFile
+=== RUN   TestProjectRoot
+=== PAUSE TestProjectRoot
+=== RUN   TestManagedProcess
+=== PAUSE TestManagedProcess
+=== RUN   TestWaitForText
+=== PAUSE TestWaitForText
+=== RUN   TestDockerHelpers
+    e2e_helpers_test.go:65: Skipping test due to DockerHub rate limiting issues
+--- SKIP: TestDockerHelpers (0.00s)
+=== RUN   TestFileUpload
+time=2025-12-22T05:21:52.449Z level=INFO source=/app/server/pkg/app/server.go:216 msg="Starting MCP Any Service..."
+time=2025-12-22T05:21:52.450Z level=INFO source=/app/server/pkg/config/load.go:58 msg="No users configured, creating default user" component=configLoader
+time=2025-12-22T05:21:52.450Z level=INFO source=/app/server/pkg/worker/upstream_worker.go:44 msg="Upstream worker started" component=UpstreamWorker
+time=2025-12-22T05:21:52.450Z level=INFO source=/app/server/pkg/worker/registration_worker.go:46 msg="Service registration worker started" component=ServiceRegistrationWorker
+time=2025-12-22T05:21:52.451Z level=INFO source=/app/server/pkg/app/server.go:659 msg="DEBUG: Registering /mcp/u/ handler"
+time=2025-12-22T05:21:52.451Z level=INFO source=/app/server/pkg/app/server.go:1098 msg="HTTP server listening" server="MCP Any HTTP" port=[::]:38201
+time=2025-12-22T05:21:52.451Z level=INFO source=/app/server/pkg/app/server.go:1186 msg="gRPC server listening" server=Registration port=[::]:43839
+    e2e_helpers.go:712: Successfully connected to MCPANY gRPC registration endpoint at 127.0.0.1:43839 with state IDLE
+time=2025-12-22T05:21:52.701Z level=INFO source=/app/server/pkg/worker/upstream_worker.go:86 msg="Upstream worker stopping" component=UpstreamWorker
+time=2025-12-22T05:21:52.701Z level=INFO source=/app/server/pkg/app/server.go:1167 msg="Attempting to gracefully shut down server..." server=Registration
+time=2025-12-22T05:21:52.701Z level=INFO source=/app/server/pkg/worker/registration_worker.go:162 msg="Service registration worker stopping" component=ServiceRegistrationWorker
+time=2025-12-22T05:21:52.701Z level=INFO source=/app/server/pkg/app/server.go:1092 msg="Attempting to gracefully shut down server..." server="MCP Any HTTP" port=[::]:38201
+time=2025-12-22T05:21:52.701Z level=INFO source=/app/server/pkg/app/server.go:1019 msg="Received shutdown signal, shutting down gracefully..."
+time=2025-12-22T05:21:52.701Z level=INFO source=/app/server/pkg/app/server.go:1105 msg="Server shut down." server="MCP Any HTTP" port=[::]:38201
+time=2025-12-22T05:21:52.701Z level=INFO source=/app/server/pkg/app/server.go:1024 msg="Waiting for HTTP and gRPC servers to shut down..."
+time=2025-12-22T05:21:52.702Z level=INFO source=/app/server/pkg/app/server.go:1192 msg="Server shut down." server=Registration
+--- PASS: TestFileUpload (0.25s)
+time=2025-12-22T05:21:52.702Z level=INFO source=/app/server/pkg/app/server.go:1026 msg="All servers have shut down."
+=== RUN   TestHTTPGateway_RegisterService
+time=2025-12-22T05:21:52.702Z level=INFO source=/app/server/pkg/app/server.go:216 msg="Starting MCP Any Service..."
+time=2025-12-22T05:21:52.703Z level=INFO source=/app/server/pkg/config/load.go:58 msg="No users configured, creating default user" component=configLoader
+time=2025-12-22T05:21:52.703Z level=INFO source=/app/server/pkg/worker/upstream_worker.go:44 msg="Upstream worker started" component=UpstreamWorker
+time=2025-12-22T05:21:52.703Z level=INFO source=/app/server/pkg/worker/registration_worker.go:46 msg="Service registration worker started" component=ServiceRegistrationWorker
+time=2025-12-22T05:21:52.703Z level=INFO source=/app/server/pkg/app/server.go:659 msg="DEBUG: Registering /mcp/u/ handler"
+time=2025-12-22T05:21:52.704Z level=INFO source=/app/server/pkg/app/server.go:1098 msg="HTTP server listening" server="MCP Any HTTP" port=[::]:41579
+time=2025-12-22T05:21:52.704Z level=INFO source=/app/server/pkg/app/server.go:1186 msg="gRPC server listening" server=Registration port=[::]:41583
+    e2e_helpers.go:712: Successfully connected to MCPANY gRPC registration endpoint at 127.0.0.1:41583 with state IDLE
+time=2025-12-22T05:21:52.958Z level=INFO source=/app/server/pkg/worker/registration_worker.go:63 msg="Received service registration request" component=ServiceRegistrationWorker correlationID=322e3824-b3ba-4b48-8db4-da6abd830309
+time=2025-12-22T05:21:52.958Z level=INFO source=/app/server/pkg/tool/management.go:428 msg="Registering tool with MCP server" toolID=http-gateway-test-service.test-op toolName=http-gateway-test-service.test-op tool="&{Meta:map[] Annotations:0xc00019ad80 Description: InputSchema:map[properties:map[] type:object] Name:http-gateway-test-service.test-op OutputSchema:<nil> Title:}"
+time=2025-12-22T05:21:52.959Z level=INFO source=/app/server/pkg/upstream/http/http.go:183 msg="Registered HTTP service" serviceID=http-gateway-test-service toolsAdded=1
+time=2025-12-22T05:21:52.960Z level=INFO source=/app/server/pkg/mcpserver/registration_server.go:111 msg="Service registered via bus" service_name=http-gateway-test-service service_key=http-gateway-test-service discovered_tools_count=1 discovered_resources_count=0
+time=2025-12-22T05:21:52.960Z level=INFO source=/app/server/pkg/mcpserver/registration_server.go:119 msg="Discovered tool" tool="name:\"test-op\"  description:\"\""
+time=2025-12-22T05:21:52.964Z level=INFO source=/app/server/pkg/worker/registration_worker.go:110 msg="Received service list request" component=ServiceRegistrationWorker correlationID=51a6276d-7bdc-4069-8695-42d121591cd6
+time=2025-12-22T05:21:52.965Z level=INFO source=/app/server/pkg/app/server.go:1167 msg="Attempting to gracefully shut down server..." server=Registration
+--- PASS: TestHTTPGateway_RegisterService (0.26s)
+time=2025-12-22T05:21:52.965Z level=INFO source=/app/server/pkg/worker/registration_worker.go:162 msg="Service registration worker stopping" component=ServiceRegistrationWorker
+=== RUN   TestMTLSAuthentication
+time=2025-12-22T05:21:52.965Z level=INFO source=/app/server/pkg/app/server.go:1019 msg="Received shutdown signal, shutting down gracefully..."
+time=2025-12-22T05:21:52.965Z level=INFO source=/app/server/pkg/app/server.go:1024 msg="Waiting for HTTP and gRPC servers to shut down..."
+time=2025-12-22T05:21:52.965Z level=INFO source=/app/server/pkg/worker/upstream_worker.go:86 msg="Upstream worker stopping" component=UpstreamWorker
+time=2025-12-22T05:21:52.965Z level=INFO source=/app/server/pkg/app/server.go:1092 msg="Attempting to gracefully shut down server..." server="MCP Any HTTP" port=[::]:41579
+time=2025-12-22T05:21:52.965Z level=INFO source=/app/server/pkg/app/server.go:1105 msg="Server shut down." server="MCP Any HTTP" port=[::]:41579
+time=2025-12-22T05:21:52.965Z level=INFO source=/app/server/pkg/app/server.go:1192 msg="Server shut down." server=Registration
+time=2025-12-22T05:21:52.965Z level=INFO source=/app/server/pkg/app/server.go:1026 msg="All servers have shut down."
+DEBUG: Using MCPANY binary from: /app/build/bin/server
+    e2e_helpers.go:659: DEBUG: Using nats-server binary at: /app/build/env/bin/nats-server (ModTime: 2025-12-22 00:34:27.686952105 +0000 UTC)
+time=2025-12-22T05:21:52.972Z level=INFO source=/app/server/pkg/health/health.go:85 msg="health status changed" service=http-gateway-test-service status=up
+time=2025-12-22T05:21:52.973Z level=INFO source=/app/server/pkg/health/health.go:85 msg="health status changed" service=http-gateway-test-service status=up
+time=2025-12-22T05:21:52.973Z level=INFO source=/app/server/pkg/health/health.go:85 msg="health status changed" service=http-gateway-test-service status=up
+time=2025-12-22T05:21:52.973Z level=INFO source=/app/server/pkg/health/health.go:85 msg="health status changed" service=http-gateway-test-service status=up
+time=2025-12-22T05:21:52.974Z level=INFO source=/app/server/pkg/health/health.go:85 msg="health status changed" service=http-gateway-test-service status=up
+time=2025-12-22T05:21:52.974Z level=INFO source=/app/server/pkg/health/health.go:85 msg="health status changed" service=http-gateway-test-service status=up
+time=2025-12-22T05:21:52.974Z level=INFO source=/app/server/pkg/health/health.go:85 msg="health status changed" service=http-gateway-test-service status=up
+time=2025-12-22T05:21:52.975Z level=INFO source=/app/server/pkg/health/health.go:85 msg="health status changed" service=http-gateway-test-service status=up
+time=2025-12-22T05:21:52.975Z level=INFO source=/app/server/pkg/health/health.go:85 msg="health status changed" service=http-gateway-test-service status=up
+time=2025-12-22T05:21:52.975Z level=INFO source=/app/server/pkg/health/health.go:85 msg="health status changed" service=http-gateway-test-service status=up
+    e2e_helpers.go:659: MCPANY_METRICS_LISTEN_ADDRESS not found in env, using default localhost:19091
+    e2e_helpers.go:290: [MCPANYServer-mtls-test] Starting process: /app/build/bin/server [/app/build/bin/server run --mcp-listen-address 127.0.0.1:0 --grpc-port 127.0.0.1:0 --config-path /tmp/TestMTLSAuthentication3283861181/001/mcpany-config-275906248.yaml]
+2025/12/22 05:21:53 http: TLS handshake error from 127.0.0.1:39302: EOF
+2025/12/22 05:21:53 http: TLS handshake error from 127.0.0.1:39346: EOF
+2025/12/22 05:21:53 http: TLS handshake error from 127.0.0.1:39376: EOF
+2025/12/22 05:21:53 http: TLS handshake error from 127.0.0.1:39360: EOF
+2025/12/22 05:21:53 http: TLS handshake error from 127.0.0.1:39364: EOF
+2025/12/22 05:21:53 http: TLS handshake error from 127.0.0.1:39306: EOF
+2025/12/22 05:21:53 http: TLS handshake error from 127.0.0.1:39334: EOF
+2025/12/22 05:21:53 http: TLS handshake error from 127.0.0.1:39384: EOF
+2025/12/22 05:21:53 http: TLS handshake error from 127.0.0.1:39304: EOF
+2025/12/22 05:21:53 http: TLS handshake error from 127.0.0.1:39326: EOF
+    e2e_helpers.go:659: MCPANY server health check target URL: http://127.0.0.1:37455/mcp
+    e2e_helpers.go:659: MCPANY Server process started. MCP Endpoint Base: http://127.0.0.1:37455, gRPC Reg: 127.0.0.1:45011
+    e2e_helpers.go:997: Cleaning up MCPANYTestServerInfo for mtls-test...
+    e2e_helpers.go:339: [MCPANYServer-mtls-test] Stopping process: /app/build/bin/server (PID: 52001)
+    e2e_helpers.go:347: [MCPANYServer-mtls-test] Sent SIGINT to process group 52001 for /app/build/bin/server.
+    e2e_helpers.go:302: [MCPANYServer-mtls-test] Process /app/build/bin/server finished. Stdout:
+        time=2025-12-22T05:21:53.250Z level=INFO source=/app/server/cmd/server/main.go:76 msg=Configuration service=mcpany mcp-listen-address=127.0.0.1:0 registration-port=127.0.0.1:0 stdio=false config-path=[/tmp/TestMTLSAuthentication3283861181/001/mcpany-config-275906248.yaml]
+        time=2025-12-22T05:21:53.250Z level=INFO source=/app/server/cmd/server/main.go:78 msg="Attempting to load services from config path" service=mcpany paths=[/tmp/TestMTLSAuthentication3283861181/001/mcpany-config-275906248.yaml]
+        time=2025-12-22T05:21:53.250Z level=INFO source=/app/server/pkg/app/server.go:216 msg="Starting MCP Any Service..."
+        time=2025-12-22T05:21:53.250Z level=INFO source=/app/server/cmd/server/main.go:116 msg="Starting metrics server" service=mcpany address=localhost:19091
+        time=2025-12-22T05:21:53.294Z level=INFO source=/app/server/pkg/config/manager.go:331 msg="Added new service" component=UpstreamServiceManager service_name=my-upstream priority=0
+        time=2025-12-22T05:21:53.294Z level=INFO source=/app/server/pkg/config/load.go:58 msg="No users configured, creating default user" component=configLoader
+        time=2025-12-22T05:21:53.294Z level=INFO source=/app/server/pkg/config/load.go:113 msg="Successfully processed config file" component=configLoader services=1
+        time=2025-12-22T05:21:53.294Z level=INFO source=/app/server/pkg/worker/upstream_worker.go:44 msg="Upstream worker started" component=UpstreamWorker
+        time=2025-12-22T05:21:53.294Z level=INFO source=/app/server/pkg/worker/registration_worker.go:46 msg="Service registration worker started" component=ServiceRegistrationWorker
+        time=2025-12-22T05:21:53.294Z level=INFO source=/app/server/pkg/app/server.go:332 msg="Queueing service for registration from config" service=my-upstream
+        time=2025-12-22T05:21:53.294Z level=INFO source=/app/server/pkg/app/server.go:659 msg="DEBUG: Registering /mcp/u/ handler"
+        time=2025-12-22T05:21:53.294Z level=INFO source=/app/server/pkg/worker/registration_worker.go:63 msg="Received service registration request" component=ServiceRegistrationWorker correlationID=""
+        time=2025-12-22T05:21:53.294Z level=INFO source=/app/server/pkg/app/server.go:1098 msg="HTTP server listening" server="MCP Any HTTP" port=127.0.0.1:37455
+        time=2025-12-22T05:21:53.295Z level=INFO source=/app/server/pkg/app/server.go:1186 msg="gRPC server listening" server=Registration port=127.0.0.1:45011
+        time=2025-12-22T05:21:53.295Z level=INFO source=/app/server/pkg/tool/management.go:428 msg="Registering tool with MCP server" toolID=my-upstream.my-tool toolName=my-upstream.my-tool tool="&{Meta:map[] Annotations:0xc000459590 Description: InputSchema:map[properties:map[] type:object] Name:my-upstream.my-tool OutputSchema:<nil> Title:}"
+        time=2025-12-22T05:21:53.295Z level=INFO source=/app/server/pkg/upstream/http/http.go:183 msg="Registered HTTP service" serviceID=my-upstream toolsAdded=1
+        time=2025-12-22T05:21:53.297Z level=INFO source=/app/server/pkg/health/health.go:85 msg="health status changed" service=my-upstream status=up
+        time=2025-12-22T05:21:53.297Z level=INFO source=/app/server/pkg/health/health.go:85 msg="health status changed" service=my-upstream status=up
+        time=2025-12-22T05:21:53.297Z level=INFO source=/app/server/pkg/health/health.go:85 msg="health status changed" service=my-upstream status=up
+        time=2025-12-22T05:21:53.297Z level=INFO source=/app/server/pkg/health/health.go:85 msg="health status changed" service=my-upstream status=up
+        time=2025-12-22T05:21:53.297Z level=INFO source=/app/server/pkg/health/health.go:85 msg="health status changed" service=my-upstream status=up
+        time=2025-12-22T05:21:53.297Z level=INFO source=/app/server/pkg/health/health.go:85 msg="health status changed" service=my-upstream status=up
+        time=2025-12-22T05:21:53.297Z level=INFO source=/app/server/pkg/health/health.go:85 msg="health status changed" service=my-upstream status=up
+        time=2025-12-22T05:21:53.297Z level=INFO source=/app/server/pkg/health/health.go:85 msg="health status changed" service=my-upstream status=up
+        time=2025-12-22T05:21:53.297Z level=INFO source=/app/server/pkg/health/health.go:85 msg="health status changed" service=my-upstream status=up
+        time=2025-12-22T05:21:53.297Z level=INFO source=/app/server/pkg/health/health.go:85 msg="health status changed" service=my-upstream status=up
+        time=2025-12-22T05:21:53.471Z level=INFO source=/app/server/pkg/middleware/logging.go:38 msg="Request received" method=initialize
+        time=2025-12-22T05:21:53.472Z level=INFO source=/app/server/pkg/middleware/logging.go:45 msg="Request completed" method=initialize duration=167.836µs
+        time=2025-12-22T05:21:53.474Z level=INFO source=/app/server/pkg/middleware/logging.go:38 msg="Request received" method=notifications/initialized
+        time=2025-12-22T05:21:53.474Z level=INFO source=/app/server/pkg/middleware/logging.go:45 msg="Request completed" method=notifications/initialized duration=107.612µs
+        time=2025-12-22T05:21:53.474Z level=INFO source=/app/server/pkg/middleware/logging.go:38 msg="Request received" method=tools/list
+        time=2025-12-22T05:21:53.474Z level=INFO source=/app/server/pkg/middleware/logging.go:45 msg="Request completed" method=tools/list duration=154.161µs
+        time=2025-12-22T05:21:53.475Z level=INFO source=/app/server/pkg/middleware/logging.go:38 msg="Request received" method=tools/call
+        time=2025-12-22T05:21:53.475Z level=INFO source=/app/server/pkg/mcpserver/server.go:480 msg="Calling tool..." toolName=my-upstream.my-tool arguments={}
+        time=2025-12-22T05:21:53.483Z level=INFO source=/app/server/pkg/mcpserver/server.go:510 msg="Tool execution completed" result_type=string result_value=ok
+        time=2025-12-22T05:21:53.483Z level=INFO source=/app/server/pkg/middleware/logging.go:45 msg="Request completed" method=tools/call duration=8.318336ms
+        time=2025-12-22T05:21:53.485Z level=INFO source=/app/server/cmd/server/main.go:89 msg="Received interrupt signal, shutting down..." service=mcpany
+        time=2025-12-22T05:21:53.485Z level=INFO source=/app/server/pkg/app/server.go:1019 msg="Received shutdown signal, shutting down gracefully..."
+        time=2025-12-22T05:21:53.485Z level=INFO source=/app/server/pkg/app/server.go:1024 msg="Waiting for HTTP and gRPC servers to shut down..."
+        time=2025-12-22T05:21:53.485Z level=INFO source=/app/server/pkg/worker/upstream_worker.go:86 msg="Upstream worker stopping" component=UpstreamWorker
+        time=2025-12-22T05:21:53.485Z level=INFO source=/app/server/pkg/worker/registration_worker.go:162 msg="Service registration worker stopping" component=ServiceRegistrationWorker
+        time=2025-12-22T05:21:53.485Z level=INFO source=/app/server/pkg/app/server.go:1167 msg="Attempting to gracefully shut down server..." server=Registration
+        time=2025-12-22T05:21:53.485Z level=INFO source=/app/server/pkg/app/server.go:1092 msg="Attempting to gracefully shut down server..." server="MCP Any HTTP" port=127.0.0.1:37455
+        time=2025-12-22T05:21:53.485Z level=INFO source=/app/server/pkg/app/server.go:1192 msg="Server shut down." server=Registration
+        time=2025-12-22T05:21:53.485Z level=INFO source=/app/server/pkg/app/server.go:1105 msg="Server shut down." server="MCP Any HTTP" port=127.0.0.1:37455
+        time=2025-12-22T05:21:53.485Z level=INFO source=/app/server/pkg/app/server.go:1026 msg="All servers have shut down."
+        time=2025-12-22T05:21:53.486Z level=INFO source=/app/server/cmd/server/main.go:127 msg="Shutdown complete." service=mcpany
+
+        Stderr:
+    e2e_helpers.go:314: [MCPANYServer-mtls-test] Process /app/build/bin/server exited successfully.
+    e2e_helpers.go:374: [MCPANYServer-mtls-test] Process /app/build/bin/server stopped gracefully after SIGINT.
+--- PASS: TestMTLSAuthentication (0.52s)
+=== RUN   TestNatsBus_EmbeddedServer
+time=2025-12-22T05:21:53.490Z level=INFO source=/app/server/pkg/app/server.go:216 msg="Starting MCP Any Service..."
+time=2025-12-22T05:21:53.491Z level=INFO source=/app/server/pkg/config/load.go:58 msg="No users configured, creating default user" component=configLoader
+time=2025-12-22T05:21:53.491Z level=INFO source=/app/server/pkg/worker/upstream_worker.go:44 msg="Upstream worker started" component=UpstreamWorker
+time=2025-12-22T05:21:53.491Z level=INFO source=/app/server/pkg/worker/registration_worker.go:46 msg="Service registration worker started" component=ServiceRegistrationWorker
+time=2025-12-22T05:21:53.491Z level=INFO source=/app/server/pkg/app/server.go:659 msg="DEBUG: Registering /mcp/u/ handler"
+time=2025-12-22T05:21:53.492Z level=INFO source=/app/server/pkg/app/server.go:1186 msg="gRPC server listening" server=Registration port=[::]:40691
+time=2025-12-22T05:21:53.492Z level=INFO source=/app/server/pkg/app/server.go:1098 msg="HTTP server listening" server="MCP Any HTTP" port=[::]:36661
+    e2e_helpers.go:712: Successfully connected to MCPANY gRPC registration endpoint at 127.0.0.1:40691 with state IDLE
+time=2025-12-22T05:21:53.871Z level=INFO source=/app/server/pkg/app/server.go:1167 msg="Attempting to gracefully shut down server..." server=Registration
+time=2025-12-22T05:21:53.871Z level=INFO source=/app/server/pkg/app/server.go:1019 msg="Received shutdown signal, shutting down gracefully..."
+time=2025-12-22T05:21:53.871Z level=INFO source=/app/server/pkg/app/server.go:1024 msg="Waiting for HTTP and gRPC servers to shut down..."
+time=2025-12-22T05:21:53.871Z level=INFO source=/app/server/pkg/worker/upstream_worker.go:86 msg="Upstream worker stopping" component=UpstreamWorker
+time=2025-12-22T05:21:53.871Z level=INFO source=/app/server/pkg/worker/registration_worker.go:162 msg="Service registration worker stopping" component=ServiceRegistrationWorker
+time=2025-12-22T05:21:53.871Z level=INFO source=/app/server/pkg/app/server.go:1092 msg="Attempting to gracefully shut down server..." server="MCP Any HTTP" port=[::]:36661
+time=2025-12-22T05:21:53.871Z level=INFO source=/app/server/pkg/app/server.go:1192 msg="Server shut down." server=Registration
+--- PASS: TestNatsBus_EmbeddedServer (0.38s)
+time=2025-12-22T05:21:53.871Z level=INFO source=/app/server/pkg/app/server.go:1105 msg="Server shut down." server="MCP Any HTTP" port=[::]:36661
+=== RUN   TestNatsBus_ExternalServer
+time=2025-12-22T05:21:53.871Z level=INFO source=/app/server/pkg/app/server.go:1026 msg="All servers have shut down."
+DEBUG: Using MCPANY binary from: /app/build/bin/server
+    e2e_helpers.go:659: DEBUG: Using nats-server binary at: /app/build/env/bin/nats-server (ModTime: 2025-12-22 00:34:27.686952105 +0000 UTC)
+    e2e_helpers.go:659: MCPANY_METRICS_LISTEN_ADDRESS not found in env, using default localhost:19091
+    e2e_helpers.go:290: [MCPANYServer-external-nats] Starting process: /app/build/bin/server [/app/build/bin/server run --mcp-listen-address 127.0.0.1:0 --grpc-port 127.0.0.1:0]
+    e2e_helpers.go:659: MCPANY server health check target URL: http://127.0.0.1:42779/mcp
+    e2e_helpers.go:659: MCPANY Server process started. MCP Endpoint Base: http://127.0.0.1:42779, gRPC Reg: 127.0.0.1:38563
+    e2e_helpers.go:997: Cleaning up MCPANYTestServerInfo for external-nats...
+    e2e_helpers.go:339: [MCPANYServer-external-nats] Stopping process: /app/build/bin/server (PID: 52021)
+    e2e_helpers.go:347: [MCPANYServer-external-nats] Sent SIGINT to process group 52021 for /app/build/bin/server.
+    e2e_helpers.go:302: [MCPANYServer-external-nats] Process /app/build/bin/server finished. Stdout:
+        time=2025-12-22T05:21:54.183Z level=INFO source=/app/server/cmd/server/main.go:76 msg=Configuration service=mcpany mcp-listen-address=127.0.0.1:0 registration-port=127.0.0.1:0 stdio=false config-path=[]
+        time=2025-12-22T05:21:54.183Z level=INFO source=/app/server/pkg/app/server.go:216 msg="Starting MCP Any Service..."
+        time=2025-12-22T05:21:54.183Z level=INFO source=/app/server/cmd/server/main.go:116 msg="Starting metrics server" service=mcpany address=localhost:19091
+        time=2025-12-22T05:21:54.189Z level=INFO source=/app/server/pkg/config/load.go:58 msg="No users configured, creating default user" component=configLoader
+        time=2025-12-22T05:21:54.189Z level=INFO source=/app/server/pkg/worker/upstream_worker.go:44 msg="Upstream worker started" component=UpstreamWorker
+        time=2025-12-22T05:21:54.189Z level=INFO source=/app/server/pkg/worker/registration_worker.go:46 msg="Service registration worker started" component=ServiceRegistrationWorker
+        time=2025-12-22T05:21:54.189Z level=INFO source=/app/server/pkg/app/server.go:659 msg="DEBUG: Registering /mcp/u/ handler"
+        time=2025-12-22T05:21:54.190Z level=INFO source=/app/server/pkg/app/server.go:1186 msg="gRPC server listening" server=Registration port=127.0.0.1:38563
+        time=2025-12-22T05:21:54.190Z level=INFO source=/app/server/pkg/app/server.go:1098 msg="HTTP server listening" server="MCP Any HTTP" port=127.0.0.1:42779
+        time=2025-12-22T05:21:54.481Z level=INFO source=/app/server/cmd/server/main.go:89 msg="Received interrupt signal, shutting down..." service=mcpany
+        time=2025-12-22T05:21:54.481Z level=INFO source=/app/server/pkg/app/server.go:1019 msg="Received shutdown signal, shutting down gracefully..."
+        time=2025-12-22T05:21:54.481Z level=INFO source=/app/server/pkg/app/server.go:1024 msg="Waiting for HTTP and gRPC servers to shut down..."
+        time=2025-12-22T05:21:54.481Z level=INFO source=/app/server/pkg/app/server.go:1092 msg="Attempting to gracefully shut down server..." server="MCP Any HTTP" port=127.0.0.1:42779
+        time=2025-12-22T05:21:54.481Z level=INFO source=/app/server/pkg/worker/upstream_worker.go:86 msg="Upstream worker stopping" component=UpstreamWorker
+        time=2025-12-22T05:21:54.481Z level=INFO source=/app/server/pkg/app/server.go:1167 msg="Attempting to gracefully shut down server..." server=Registration
+        time=2025-12-22T05:21:54.481Z level=INFO source=/app/server/pkg/worker/registration_worker.go:162 msg="Service registration worker stopping" component=ServiceRegistrationWorker
+        time=2025-12-22T05:21:54.481Z level=INFO source=/app/server/pkg/app/server.go:1105 msg="Server shut down." server="MCP Any HTTP" port=127.0.0.1:42779
+        time=2025-12-22T05:21:54.481Z level=INFO source=/app/server/pkg/app/server.go:1192 msg="Server shut down." server=Registration
+        time=2025-12-22T05:21:54.481Z level=INFO source=/app/server/pkg/app/server.go:1026 msg="All servers have shut down."
+        time=2025-12-22T05:21:54.482Z level=INFO source=/app/server/cmd/server/main.go:127 msg="Shutdown complete." service=mcpany
+
+        Stderr:
+    e2e_helpers.go:314: [MCPANYServer-external-nats] Process /app/build/bin/server exited successfully.
+    e2e_helpers.go:374: [MCPANYServer-external-nats] Process /app/build/bin/server stopped gracefully after SIGINT.
+--- PASS: TestNatsBus_ExternalServer (0.62s)
+=== RUN   TestAutoDiscoverAndExportPolicy
+Error: failed to load services from config: config validation failed: service 'auto-discover-test': invalid http target_address: loopback IP "127.0.0.1" is not allowed
+Usage:
+  mcpany run [flags]
+
+Flags:
+      --api-key string              API key for securing the MCP server. If set, all requests must include this key in the 'X-API-Key' header. Env: MCPANY_API_KEY
+      --db-path string              Path to the SQLite database file. Env: MCPANY_DB_PATH (default "data/mcpany.db")
+      --grpc-port string            Port for the gRPC registration server. If not specified, gRPC registration is disabled. Env: MCPANY_GRPC_PORT
+  -h, --help                        help for run
+      --profiles strings            Comma-separated list of active profiles. Env: MCPANY_PROFILES (default [default])
+      --shutdown-timeout duration   Graceful shutdown timeout. Env: MCPANY_SHUTDOWN_TIMEOUT (default 5s)
+      --stdio                       Enable stdio mode for JSON-RPC communication. Env: MCPANY_STDIO
+
+Global Flags:
+      --config-path strings             Paths to configuration files or directories for pre-registering services. Can be specified multiple times. Env: MCPANY_CONFIG_PATH
+      --debug                           Enable debug logging. Env: MCPANY_DEBUG
+      --log-format string               Set the log format (text, json). Env: MCPANY_LOG_FORMAT (default "text")
+      --log-level string                Set the log level (debug, info, warn, error). Env: MCPANY_LOG_LEVEL (default "info")
+      --logfile string                  Path to a file to write logs to. If not set, logs are written to stdout.
+      --mcp-listen-address string       MCP server's bind address. Env: MCPANY_MCP_LISTEN_ADDRESS (default "50050")
+      --metrics-listen-address string   Address to expose Prometheus metrics on. If not specified, metrics are disabled. Env: MCPANY_METRICS_LISTEN_ADDRESS
+
+    policy_test.go:249:
+		Error Trace:	/app/server/tests/integration/policy_test.go:62
+							/app/server/tests/integration/policy_test.go:249
+		Error:      	Received unexpected error:
+				context deadline exceeded
+		Test:       	TestAutoDiscoverAndExportPolicy
+--- FAIL: TestAutoDiscoverAndExportPolicy (5.00s)
+=== RUN   TestCallPolicyExecution
+Error: failed to load services from config: config validation failed: service 'call-policy-test': invalid http target_address: loopback IP "127.0.0.1" is not allowed
+Usage:
+  mcpany run [flags]
+
+Flags:
+      --api-key string              API key for securing the MCP server. If set, all requests must include this key in the 'X-API-Key' header. Env: MCPANY_API_KEY
+      --db-path string              Path to the SQLite database file. Env: MCPANY_DB_PATH (default "data/mcpany.db")
+      --grpc-port string            Port for the gRPC registration server. If not specified, gRPC registration is disabled. Env: MCPANY_GRPC_PORT
+  -h, --help                        help for run
+      --profiles strings            Comma-separated list of active profiles. Env: MCPANY_PROFILES (default [default])
+      --shutdown-timeout duration   Graceful shutdown timeout. Env: MCPANY_SHUTDOWN_TIMEOUT (default 5s)
+      --stdio                       Enable stdio mode for JSON-RPC communication. Env: MCPANY_STDIO
+
+Global Flags:
+      --config-path strings             Paths to configuration files or directories for pre-registering services. Can be specified multiple times. Env: MCPANY_CONFIG_PATH
+      --debug                           Enable debug logging. Env: MCPANY_DEBUG
+      --log-format string               Set the log format (text, json). Env: MCPANY_LOG_FORMAT (default "text")
+      --log-level string                Set the log level (debug, info, warn, error). Env: MCPANY_LOG_LEVEL (default "info")
+      --logfile string                  Path to a file to write logs to. If not set, logs are written to stdout.
+      --mcp-listen-address string       MCP server's bind address. Env: MCPANY_MCP_LISTEN_ADDRESS (default "50050")
+      --metrics-listen-address string   Address to expose Prometheus metrics on. If not specified, metrics are disabled. Env: MCPANY_METRICS_LISTEN_ADDRESS
+
+    policy_test.go:340:
+		Error Trace:	/app/server/tests/integration/policy_test.go:62
+							/app/server/tests/integration/policy_test.go:340
+		Error:      	Received unexpected error:
+				context deadline exceeded
+		Test:       	TestCallPolicyExecution
+--- FAIL: TestCallPolicyExecution (5.00s)
+=== RUN   TestExportPolicyForPromptsAndResources
+Error: failed to load services from config: config validation failed: service 'export-policy-misc': invalid http target_address: localhost is not allowed
+Usage:
+  mcpany run [flags]
+
+Flags:
+      --api-key string              API key for securing the MCP server. If set, all requests must include this key in the 'X-API-Key' header. Env: MCPANY_API_KEY
+      --db-path string              Path to the SQLite database file. Env: MCPANY_DB_PATH (default "data/mcpany.db")
+      --grpc-port string            Port for the gRPC registration server. If not specified, gRPC registration is disabled. Env: MCPANY_GRPC_PORT
+  -h, --help                        help for run
+      --profiles strings            Comma-separated list of active profiles. Env: MCPANY_PROFILES (default [default])
+      --shutdown-timeout duration   Graceful shutdown timeout. Env: MCPANY_SHUTDOWN_TIMEOUT (default 5s)
+      --stdio                       Enable stdio mode for JSON-RPC communication. Env: MCPANY_STDIO
+
+Global Flags:
+      --config-path strings             Paths to configuration files or directories for pre-registering services. Can be specified multiple times. Env: MCPANY_CONFIG_PATH
+      --debug                           Enable debug logging. Env: MCPANY_DEBUG
+      --log-format string               Set the log format (text, json). Env: MCPANY_LOG_FORMAT (default "text")
+      --log-level string                Set the log level (debug, info, warn, error). Env: MCPANY_LOG_LEVEL (default "info")
+      --logfile string                  Path to a file to write logs to. If not set, logs are written to stdout.
+      --mcp-listen-address string       MCP server's bind address. Env: MCPANY_MCP_LISTEN_ADDRESS (default "50050")
+      --metrics-listen-address string   Address to expose Prometheus metrics on. If not specified, metrics are disabled. Env: MCPANY_METRICS_LISTEN_ADDRESS
+
+    policy_test.go:404:
+		Error Trace:	/app/server/tests/integration/policy_test.go:62
+							/app/server/tests/integration/policy_test.go:404
+		Error:      	Received unexpected error:
+				context deadline exceeded
+		Test:       	TestExportPolicyForPromptsAndResources
+--- FAIL: TestExportPolicyForPromptsAndResources (5.00s)
+=== RUN   TestManagedProcess_StopFallback
+    e2e_helpers.go:290: [StopFallbackTest] Starting process: /usr/bin/sleep [/usr/bin/sleep 30]
+    e2e_helpers.go:339: [StopFallbackTest] Stopping process: /usr/bin/sleep (PID: 52054)
+    e2e_helpers.go:349: [StopFallbackTest] Failed to send SIGINT to process group 52054 for /usr/bin/sleep: operation not permitted. Will try single process.
+    e2e_helpers.go:359: [StopFallbackTest] Sent SIGINT to single process /usr/bin/sleep (PID: 52054).
+    e2e_helpers.go:302: [StopFallbackTest] Process /usr/bin/sleep finished. Stdout:
+
+        Stderr:
+    e2e_helpers.go:311: [StopFallbackTest] Process /usr/bin/sleep exited as expected (killed/interrupted).
+    e2e_helpers.go:374: [StopFallbackTest] Process /usr/bin/sleep stopped gracefully after SIGINT.
+--- PASS: TestManagedProcess_StopFallback (0.00s)
+=== RUN   TestPromptIntegration
+--- PASS: TestPromptIntegration (0.00s)
+=== RUN   TestPromptLifecycle
+--- PASS: TestPromptLifecycle (0.00s)
+=== RUN   TestPromptsEndToEnd
+--- PASS: TestPromptsEndToEnd (0.00s)
+=== RUN   TestTransformerE2E_Extraction
+    transformer_e2e_test.go:129: Skipping flaky test
+--- SKIP: TestTransformerE2E_Extraction (0.00s)
+=== RUN   TestDockerCompose
+--- SKIP: TestDockerCompose (0.00s)
+=== RUN   TestHelmChart
+--- SKIP: TestHelmChart (0.00s)
+=== RUN   TestE2EPrompt
+=== RUN   TestE2EPrompt/prompt_grpc
+    e2e.go:92: INFO: Starting E2E Test Scenario for prompt with grpc registration...
+=== PAUSE TestE2EPrompt/prompt_grpc
+=== CONT  TestE2EPrompt/prompt_grpc
+    e2e_helpers.go:290: [prompt_server] Starting process: /app/build/test/bin/prompt-server [/app/build/test/bin/prompt-server --port 36679]
+DEBUG: Using MCPANY binary from: /app/build/bin/server
+    e2e_helpers.go:659: DEBUG: Using nats-server binary at: /app/build/env/bin/nats-server (ModTime: 2025-12-22 00:34:27.686952105 +0000 UTC)
+    e2e_helpers.go:659: MCPANY_METRICS_LISTEN_ADDRESS not found in env, using default localhost:19091
+    e2e_helpers.go:290: [MCPANYServer-prompt] Starting process: /app/build/bin/server [/app/build/bin/server run --mcp-listen-address 127.0.0.1:0 --grpc-port 127.0.0.1:0]
+    e2e_helpers.go:659: MCPANY server health check target URL: http://127.0.0.1:42383/mcp
+    e2e_helpers.go:659: MCPANY Server process started. MCP Endpoint Base: http://127.0.0.1:42383, gRPC Reg: 127.0.0.1:38365
+    e2e.go:142: INFO: Registering upstream service with MCPANY at endpoint http://localhost:36679...
+    e2e_prompt_test.go:43: Service e2e_prompt_server registered via API successfully. Message: service e2e_prompt_server registered successfully with key e2e_prompt_server, Discovered tools:
+        []
+    e2e_prompt_test.go:43: Streamable MCP HTTP Service 'e2e_prompt_server' registration request sent via API: URL http://localhost:36679
+    e2e.go:149: INFO: Upstream service registered.
+    e2e.go:172: INFO: E2E Test Scenario for prompt Completed Successfully!
+    e2e_helpers.go:997: Cleaning up MCPANYTestServerInfo for prompt...
+    e2e_helpers.go:339: [MCPANYServer-prompt] Stopping process: /app/build/bin/server (PID: 52071)
+    e2e_helpers.go:347: [MCPANYServer-prompt] Sent SIGINT to process group 52071 for /app/build/bin/server.
+    e2e_helpers.go:302: [MCPANYServer-prompt] Process /app/build/bin/server finished. Stdout:
+        time=2025-12-22T05:22:10.034Z level=INFO source=/app/server/cmd/server/main.go:76 msg=Configuration service=mcpany mcp-listen-address=127.0.0.1:0 registration-port=127.0.0.1:0 stdio=false config-path=[]
+        time=2025-12-22T05:22:10.034Z level=INFO source=/app/server/pkg/app/server.go:216 msg="Starting MCP Any Service..."
+        time=2025-12-22T05:22:10.034Z level=INFO source=/app/server/cmd/server/main.go:116 msg="Starting metrics server" service=mcpany address=localhost:19091
+        time=2025-12-22T05:22:10.037Z level=INFO source=/app/server/pkg/config/load.go:58 msg="No users configured, creating default user" component=configLoader
+        time=2025-12-22T05:22:10.037Z level=INFO source=/app/server/pkg/worker/upstream_worker.go:44 msg="Upstream worker started" component=UpstreamWorker
+        time=2025-12-22T05:22:10.038Z level=INFO source=/app/server/pkg/worker/registration_worker.go:46 msg="Service registration worker started" component=ServiceRegistrationWorker
+        time=2025-12-22T05:22:10.038Z level=INFO source=/app/server/pkg/app/server.go:659 msg="DEBUG: Registering /mcp/u/ handler"
+        time=2025-12-22T05:22:10.038Z level=INFO source=/app/server/pkg/app/server.go:1186 msg="gRPC server listening" server=Registration port=127.0.0.1:38365
+        time=2025-12-22T05:22:10.038Z level=INFO source=/app/server/pkg/app/server.go:1098 msg="HTTP server listening" server="MCP Any HTTP" port=127.0.0.1:42383
+        time=2025-12-22T05:22:11.258Z level=INFO source=/app/server/pkg/worker/registration_worker.go:63 msg="Received service registration request" component=ServiceRegistrationWorker correlationID=523a7940-0a08-4e9a-9e86-9871b187ba3f
+        time=2025-12-22T05:22:11.265Z level=INFO source=/app/server/pkg/upstream/mcp/streamable_http.go:233 msg="Registered MCP service" serviceID=e2e_prompt_server toolsAdded=0
+        time=2025-12-22T05:22:11.265Z level=INFO source=/app/server/pkg/mcpserver/registration_server.go:111 msg="Service registered via bus" service_name=e2e_prompt_server service_key=e2e_prompt_server discovered_tools_count=0 discovered_resources_count=0
+        time=2025-12-22T05:22:16.268Z level=INFO source=/app/server/pkg/middleware/logging.go:38 msg="Request received" method=initialize
+        time=2025-12-22T05:22:16.268Z level=INFO source=/app/server/pkg/middleware/logging.go:45 msg="Request completed" method=initialize duration=195.911µs
+        time=2025-12-22T05:22:16.271Z level=INFO source=/app/server/pkg/middleware/logging.go:38 msg="Request received" method=notifications/initialized
+        time=2025-12-22T05:22:16.271Z level=INFO source=/app/server/pkg/middleware/logging.go:45 msg="Request completed" method=notifications/initialized duration=118.494µs
+        time=2025-12-22T05:22:16.271Z level=INFO source=/app/server/pkg/middleware/logging.go:38 msg="Request received" method=prompts/get
+        time=2025-12-22T05:22:16.274Z level=INFO source=/app/server/pkg/middleware/logging.go:45 msg="Request completed" method=prompts/get duration=3.196674ms
+        time=2025-12-22T05:22:16.275Z level=INFO source=/app/server/cmd/server/main.go:89 msg="Received interrupt signal, shutting down..." service=mcpany
+        time=2025-12-22T05:22:16.276Z level=INFO source=/app/server/pkg/app/server.go:1019 msg="Received shutdown signal, shutting down gracefully..."
+        time=2025-12-22T05:22:16.276Z level=INFO source=/app/server/pkg/app/server.go:1024 msg="Waiting for HTTP and gRPC servers to shut down..."
+        time=2025-12-22T05:22:16.276Z level=INFO source=/app/server/pkg/app/server.go:1167 msg="Attempting to gracefully shut down server..." server=Registration
+        time=2025-12-22T05:22:16.276Z level=INFO source=/app/server/pkg/worker/upstream_worker.go:86 msg="Upstream worker stopping" component=UpstreamWorker
+        time=2025-12-22T05:22:16.276Z level=INFO source=/app/server/pkg/worker/registration_worker.go:162 msg="Service registration worker stopping" component=ServiceRegistrationWorker
+        time=2025-12-22T05:22:16.276Z level=INFO source=/app/server/pkg/app/server.go:1092 msg="Attempting to gracefully shut down server..." server="MCP Any HTTP" port=127.0.0.1:42383
+        time=2025-12-22T05:22:16.276Z level=INFO source=/app/server/pkg/app/server.go:1192 msg="Server shut down." server=Registration
+        time=2025-12-22T05:22:16.276Z level=INFO source=/app/server/pkg/app/server.go:1105 msg="Server shut down." server="MCP Any HTTP" port=127.0.0.1:42383
+        time=2025-12-22T05:22:16.276Z level=INFO source=/app/server/pkg/app/server.go:1026 msg="All servers have shut down."
+        time=2025-12-22T05:22:16.276Z level=INFO source=/app/server/cmd/server/main.go:127 msg="Shutdown complete." service=mcpany
+
+        Stderr:
+    e2e_helpers.go:314: [MCPANYServer-prompt] Process /app/build/bin/server exited successfully.
+    e2e_helpers.go:374: [MCPANYServer-prompt] Process /app/build/bin/server stopped gracefully after SIGINT.
+    e2e_helpers.go:339: [prompt_server] Stopping process: /app/build/test/bin/prompt-server (PID: 52055)
+    e2e_helpers.go:347: [prompt_server] Sent SIGINT to process group 52055 for /app/build/test/bin/prompt-server.
+    e2e_helpers.go:302: [prompt_server] Process /app/build/test/bin/prompt-server finished. Stdout:
+
+        Stderr:
+        2025/12/22 05:22:09 server listening at :36679
+    e2e_helpers.go:311: [prompt_server] Process /app/build/test/bin/prompt-server exited as expected (killed/interrupted).
+    e2e_helpers.go:374: [prompt_server] Process /app/build/test/bin/prompt-server stopped gracefully after SIGINT.
+--- PASS: TestE2EPrompt (0.00s)
+    --- PASS: TestE2EPrompt/prompt_grpc (6.78s)
+=== RUN   TestCacheMiddleware_CacheHit
+    middleware_test.go:23: Skipping flaky test: tool registration times out intermittently.
+--- SKIP: TestCacheMiddleware_CacheHit (0.00s)
+=== RUN   TestCacheMiddleware_CacheExpires
+    middleware_test.go:79: Skipping flaky test: tool registration times out intermittently.
+--- SKIP: TestCacheMiddleware_CacheExpires (0.00s)
+=== CONT  TestCreateTempConfigFile
+=== CONT  TestManagedProcess
+=== CONT  TestWaitForText
+=== CONT  TestProjectRoot
+=== NAME  TestWaitForText
+    e2e_helpers.go:290: [echo] Starting process: /usr/bin/sh [sh -c sleep 0.1; echo hello]
+=== NAME  TestManagedProcess
+    e2e_helpers.go:290: [echo] Starting process: /usr/bin/echo [echo hello]
+--- PASS: TestProjectRoot (0.00s)
+--- PASS: TestCreateTempConfigFile (0.00s)
+=== NAME  TestManagedProcess
+    e2e_helpers.go:302: [echo] Process /usr/bin/echo finished. Stdout:
+        hello
+
+        Stderr:
+    e2e_helpers.go:314: [echo] Process /usr/bin/echo exited successfully.
+    e2e_helpers.go:327: [echo] Process /usr/bin/echo already exited.
+--- PASS: TestManagedProcess (0.00s)
+=== NAME  TestWaitForText
+    e2e_helpers.go:302: [echo] Process /usr/bin/sh finished. Stdout:
+        hello
+
+        Stderr:
+    e2e_helpers.go:314: [echo] Process /usr/bin/sh exited successfully.
+    e2e_helpers.go:327: [echo] Process /usr/bin/sh already exited.
+--- PASS: TestWaitForText (0.25s)
+FAIL
+FAIL	github.com/mcpany/core/tests/integration	35.977s
+FAIL

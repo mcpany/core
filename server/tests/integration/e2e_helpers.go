@@ -668,6 +668,9 @@ func StartMCPANYServerWithNoHealthCheck(t *testing.T, testName string, extraArgs
 func StartInProcessMCPANYServer(t *testing.T, _ string) *MCPANYTestServerInfo {
 	t.Helper()
 
+	// Set env var to allow localhost for in-process tests
+	t.Setenv("MCPANY_URL_ALLOW_LIST", "localhost,127.0.0.1,::1")
+
 	_, err := GetProjectRoot()
 	require.NoError(t, err, "Failed to get project root")
 
@@ -836,7 +839,11 @@ func StartMCPANYServerWithClock(t *testing.T, testName string, healthCheck bool,
 		"--grpc-port", grpcRegPortArg,
 	}
 	args = append(args, extraArgs...)
-	env := []string{"MCPANY_LOG_LEVEL=debug", "NATS_URL=" + natsURL}
+	env := []string{
+		"MCPANY_LOG_LEVEL=debug",
+		"NATS_URL=" + natsURL,
+		"MCPANY_URL_ALLOW_LIST=localhost,127.0.0.1,::1",
+	}
 	if sudo, ok := os.LookupEnv("USE_SUDO_FOR_DOCKER"); ok {
 		env = append(env, "USE_SUDO_FOR_DOCKER="+sudo)
 	}
