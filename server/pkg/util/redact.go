@@ -160,22 +160,33 @@ func containsFold(s, substr string) bool {
 		return true
 	}
 
-	// Brute force case-insensitive search
+	// Optimized case-insensitive search
+	// We first check the first character to avoid setting up the inner loop for mismatches.
+	// Since sensitiveKeys are all lowercase, we can safely assume substr[0] is lowercase.
+	first := substr[0]
 	end := len(s) - len(substr)
+
 	for i := 0; i <= end; i++ {
-		match := true
-		for j := 0; j < len(substr); j++ {
-			charS := s[i+j]
-			if charS >= 'A' && charS <= 'Z' {
-				charS += 32 // to lower
-			}
-			if charS != substr[j] {
-				match = false
-				break
-			}
+		c := s[i]
+		if c >= 'A' && c <= 'Z' {
+			c += 32 // to lower
 		}
-		if match {
-			return true
+		if c == first {
+			// First character matches, check the rest
+			match := true
+			for j := 1; j < len(substr); j++ {
+				charS := s[i+j]
+				if charS >= 'A' && charS <= 'Z' {
+					charS += 32 // to lower
+				}
+				if charS != substr[j] {
+					match = false
+					break
+				}
+			}
+			if match {
+				return true
+			}
 		}
 	}
 	return false
