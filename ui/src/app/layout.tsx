@@ -7,6 +7,7 @@ import type {Metadata} from 'next';
 import './globals.css';
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { GlobalSearch } from "@/components/global-search";
 
 export const metadata: Metadata = {
   title: 'MCPAny Manager',
@@ -35,6 +36,7 @@ export default function RootLayout({
       <body className="font-body antialiased">
         <TooltipProvider>
           {children}
+          <GlobalSearch />
           <Toaster />
         </TooltipProvider>
       </body>
