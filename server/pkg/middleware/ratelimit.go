@@ -38,11 +38,14 @@ type LocalLimiter struct {
 }
 
 // Allow checks if the request is allowed.
+// Returns the result, an error.
 func (l *LocalLimiter) Allow(_ context.Context) (bool, error) {
 	return l.Limiter.Allow(), nil
 }
 
 // Update updates the limiter configuration.
+// rps is the rps.
+// burst is the burst.
 func (l *LocalLimiter) Update(rps float64, burst int) {
 	limit := rate.Limit(rps)
 	if l.Limit() != limit {
@@ -64,6 +67,8 @@ type RateLimitMiddleware struct {
 }
 
 // NewRateLimitMiddleware creates a new RateLimitMiddleware.
+// toolManager is the toolManager.
+// Returns the result.
 func NewRateLimitMiddleware(toolManager tool.ManagerInterface) *RateLimitMiddleware {
 	return &RateLimitMiddleware{
 		toolManager: toolManager,
@@ -72,6 +77,10 @@ func NewRateLimitMiddleware(toolManager tool.ManagerInterface) *RateLimitMiddlew
 }
 
 // Execute executes the rate limiting middleware.
+// ctx is the context.
+// req is the req.
+// next is the next.
+// Returns the result, an error.
 func (m *RateLimitMiddleware) Execute(ctx context.Context, req *tool.ExecutionRequest, next tool.ExecutionFunc) (any, error) {
 	t, ok := m.toolManager.GetTool(req.ToolName)
 	if !ok {

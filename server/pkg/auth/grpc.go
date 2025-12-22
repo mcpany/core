@@ -37,6 +37,7 @@ func NewPerRPCCredentials(authenticator UpstreamAuthenticator) credentials.PerRP
 //
 // ctx is the context for the request.
 // uri is the URI of the gRPC service being called.
+// Returns the result, an error.
 func (c *PerRPCCredentials) GetRequestMetadata(_ context.Context, _ ...string) (map[string]string, error) {
 	if c.authenticator == nil {
 		return nil, nil

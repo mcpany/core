@@ -36,6 +36,7 @@ var (
 )
 
 // Register registers a HTTP middleware factory.
+// name is the name.
 func Register(name string, factory Factory) {
 	globalRegistry.mu.Lock()
 	defer globalRegistry.mu.Unlock()
@@ -43,6 +44,7 @@ func Register(name string, factory Factory) {
 }
 
 // RegisterMCP registers an MCP middleware factory.
+// name is the name.
 func RegisterMCP(name string, factory MCPFactory) {
 	globalRegistry.mu.Lock()
 	defer globalRegistry.mu.Unlock()
@@ -50,6 +52,7 @@ func RegisterMCP(name string, factory MCPFactory) {
 }
 
 // GetHTTPMiddlewares returns a sorted list of HTTP middlewares based on configuration.
+// configs is the configs.
 func GetHTTPMiddlewares(configs []*configv1.Middleware) []func(http.Handler) http.Handler {
 	globalRegistry.mu.RLock()
 	defer globalRegistry.mu.RUnlock()
@@ -74,6 +77,7 @@ func GetHTTPMiddlewares(configs []*configv1.Middleware) []func(http.Handler) htt
 }
 
 // GetMCPMiddlewares returns a sorted list of MCP middlewares based on configuration.
+// configs is the configs.
 func GetMCPMiddlewares(configs []*configv1.Middleware) []func(mcp.MethodHandler) mcp.MethodHandler {
 	globalRegistry.mu.RLock()
 	defer globalRegistry.mu.RUnlock()
@@ -98,6 +102,11 @@ func GetMCPMiddlewares(configs []*configv1.Middleware) []func(mcp.MethodHandler)
 }
 
 // InitStandardMiddlewares registers standard middlewares.
+// authManager is the authManager.
+// toolManager is the toolManager.
+// auditConfig is the auditConfig.
+// cachingMiddleware is the cachingMiddleware.
+// Returns the result, an error.
 func InitStandardMiddlewares(
 	authManager *auth.Manager,
 	toolManager tool.ManagerInterface,

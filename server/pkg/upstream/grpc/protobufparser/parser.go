@@ -80,6 +80,8 @@ func (f *McpField) GetType() string {
 // ProtoDefinition and a ProtoCollection. It writes the proto files to a
 // temporary directory, invokes protoc to generate a FileDescriptorSet, and
 // then returns the parsed FileDescriptorSet.
+// protoDefinitions is the protoDefinitions.
+// protoCollections is the protoCollections.
 func ParseProtoFromDefs(
 	_ context.Context,
 	protoDefinitions []*configv1.ProtoDefinition,

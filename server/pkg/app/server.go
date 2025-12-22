@@ -36,8 +36,8 @@ import (
 	"github.com/mcpany/core/pkg/storage/sqlite"
 	"github.com/mcpany/core/pkg/telemetry"
 	"github.com/mcpany/core/pkg/tool"
-	"github.com/mcpany/core/pkg/util"
 	"github.com/mcpany/core/pkg/upstream/factory"
+	"github.com/mcpany/core/pkg/util"
 	"github.com/mcpany/core/pkg/worker"
 	pb_admin "github.com/mcpany/core/proto/admin/v1"
 	v1 "github.com/mcpany/core/proto/api/v1"
@@ -414,6 +414,9 @@ func (a *Application) Run(
 
 // ReloadConfig reloads the configuration from the given paths and updates the
 // services.
+// fs is the fs.
+// configPaths is the configPaths.
+// Returns an error.
 func (a *Application) ReloadConfig(fs afero.Fs, configPaths []string) error {
 	log := logging.GetLogger()
 	log.Info("Reloading configuration...")
@@ -515,6 +518,7 @@ func runStdioMode(ctx context.Context, mcpSrv *mcpserver.Server) error {
 // Returns nil if the server is healthy (i.e., responds with a 200 OK), or an
 // error if the health check fails for any reason (e.g., connection error,
 // non-200 status code).
+// timeout is the timeout.
 func HealthCheck(out io.Writer, addr string, timeout time.Duration) error {
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	defer cancel()

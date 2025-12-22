@@ -17,11 +17,16 @@ type MCPSampler struct {
 }
 
 // NewMCPSampler creates a new MCPSampler.
+// session is the session.
+// Returns the result.
 func NewMCPSampler(session *mcp.ServerSession) *MCPSampler {
 	return &MCPSampler{session: session}
 }
 
 // CreateMessage requests a message creation from the client (sampling).
+// ctx is the context.
+// params is the params.
+// Returns the result, an error.
 func (s *MCPSampler) CreateMessage(ctx context.Context, params *mcp.CreateMessageParams) (*mcp.CreateMessageResult, error) {
 	if s.session == nil {
 		return nil, fmt.Errorf("no active session available for sampling")

@@ -24,6 +24,9 @@ type Server struct {
 }
 
 // NewServer creates a new Admin Server.
+// cache is the cache.
+// toolManager is the toolManager.
+// Returns the result.
 func NewServer(cache *middleware.CachingMiddleware, toolManager tool.ManagerInterface) *Server {
 	return &Server{
 		cache:       cache,
@@ -32,6 +35,8 @@ func NewServer(cache *middleware.CachingMiddleware, toolManager tool.ManagerInte
 }
 
 // ClearCache clears the cache.
+// ctx is the context.
+// Returns the result, an error.
 func (s *Server) ClearCache(ctx context.Context, _ *pb.ClearCacheRequest) (*pb.ClearCacheResponse, error) {
 	if s.cache == nil {
 		return nil, status.Error(codes.FailedPrecondition, "caching is not enabled")
@@ -55,6 +60,7 @@ func (s *Server) ListServices(_ context.Context, _ *pb.ListServicesRequest) (*pb
 }
 
 // GetService returns a specific service by ID.
+// req is the req.
 func (s *Server) GetService(_ context.Context, req *pb.GetServiceRequest) (*pb.GetServiceResponse, error) {
 	info, ok := s.toolManager.GetServiceInfo(req.GetServiceId())
 	if !ok {
@@ -77,6 +83,7 @@ func (s *Server) ListTools(_ context.Context, _ *pb.ListToolsRequest) (*pb.ListT
 }
 
 // GetTool returns a specific tool by name.
+// req is the req.
 func (s *Server) GetTool(_ context.Context, req *pb.GetToolRequest) (*pb.GetToolResponse, error) {
 	t, ok := s.toolManager.GetTool(req.GetToolName())
 	if !ok {

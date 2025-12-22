@@ -79,6 +79,7 @@ type poolImpl[T ClosableClient] struct {
 //     connection handling.
 //
 // Returns a new `Pool` instance or an error if the configuration is invalid.
+// disableHealthCheck is the disableHealthCheck.
 func New[T ClosableClient](
 	factory func(context.Context) (T, error),
 	minSize, maxSize int,
@@ -391,6 +392,7 @@ func (m *Manager) Register(name string, pool any) {
 }
 
 // Deregister closes and removes a pool from the manager.
+// name is the name.
 func (m *Manager) Deregister(name string) {
 	m.mu.Lock()
 	defer m.mu.Unlock()

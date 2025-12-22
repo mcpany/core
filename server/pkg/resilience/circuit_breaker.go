@@ -37,6 +37,7 @@ type CircuitBreaker struct {
 }
 
 // NewCircuitBreaker creates a new CircuitBreaker with the given configuration.
+// Returns the result.
 func NewCircuitBreaker(config *configv1.CircuitBreakerConfig) *CircuitBreaker {
 	return &CircuitBreaker{
 		config: config,

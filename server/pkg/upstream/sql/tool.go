@@ -31,6 +31,9 @@ type Tool struct {
 }
 
 // NewTool creates a new SQL Tool.
+// db is the db.
+// callDef is the callDef.
+// Returns the result.
 func NewTool(t *v1.Tool, db *sql.DB, callDef *configv1.SqlCallDefinition) *Tool {
 	return &Tool{
 		tool:    t,
@@ -65,6 +68,9 @@ func (t *Tool) GetCacheConfig() *configv1.CacheConfig {
 }
 
 // Execute runs the SQL query with the provided inputs.
+// ctx is the context.
+// req is the req.
+// Returns the result, an error.
 func (t *Tool) Execute(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
 	if logging.GetLogger().Enabled(ctx, slog.LevelDebug) {
 		logging.GetLogger().Debug("executing tool", "tool", req.ToolName, "inputs", string(req.ToolInputs))

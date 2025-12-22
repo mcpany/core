@@ -65,6 +65,7 @@ type yamlEngine struct{}
 // to JSON, and finally unmarshaling the JSON into the target protobuf message.
 // This two-step process is a common pattern for converting YAML to a protobuf
 // message.
+// Returns an error.
 func (e *yamlEngine) Unmarshal(b []byte, v proto.Message) error {
 	// First, unmarshal YAML into a generic map.
 	var yamlMap map[string]interface{}
@@ -120,6 +121,8 @@ func (e *yamlEngine) Unmarshal(b []byte, v proto.Message) error {
 type textprotoEngine struct{}
 
 // Unmarshal parses a textproto byte slice into a `proto.Message`.
+// v is the v.
+// Returns an error.
 func (e *textprotoEngine) Unmarshal(b []byte, v proto.Message) error {
 	return prototext.Unmarshal(b, v)
 }
@@ -128,6 +131,8 @@ func (e *textprotoEngine) Unmarshal(b []byte, v proto.Message) error {
 type jsonEngine struct{}
 
 // Unmarshal parses a JSON byte slice into a `proto.Message`.
+// v is the v.
+// Returns an error.
 func (e *jsonEngine) Unmarshal(b []byte, v proto.Message) error {
 	return protojson.Unmarshal(b, v)
 }
@@ -450,11 +455,13 @@ type MultiStore struct {
 }
 
 // NewMultiStore creates a new MultiStore with the given stores.
+// Returns the result.
 func NewMultiStore(stores ...Store) *MultiStore {
 	return &MultiStore{stores: stores}
 }
 
 // Load loads configurations from all stores and merges them into a single config.
+// Returns the result, an error.
 func (ms *MultiStore) Load() (*configv1.McpAnyServerConfig, error) {
 	mergedConfig := &configv1.McpAnyServerConfig{}
 	for _, s := range ms.stores {

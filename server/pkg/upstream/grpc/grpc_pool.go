@@ -32,6 +32,7 @@ import (
 // dialer is an optional custom dialer for creating network connections.
 // creds is the per-RPC credentials to be used for authentication.
 // It returns a new gRPC client pool or an error if the pool cannot be created.
+// disableHealthCheck is the disableHealthCheck.
 func NewGrpcPool(
 	minSize, maxSize int,
 	idleTimeout time.Duration,

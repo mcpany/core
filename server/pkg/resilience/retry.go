@@ -18,6 +18,7 @@ type Retry struct {
 
 // NewRetry creates a new Retry instance with the given configuration.
 // It sets default values for base and max backoff if they are not provided.
+// Returns the result.
 func NewRetry(config *configv1.RetryConfig) *Retry {
 	if config.GetBaseBackoff() == nil {
 		config.SetBaseBackoff(durationpb.New(time.Second))
@@ -32,6 +33,7 @@ func NewRetry(config *configv1.RetryConfig) *Retry {
 
 // Execute runs the provided work function, retrying it if it fails according
 // to the configured policy.
+// Returns an error.
 func (r *Retry) Execute(work func() error) error {
 	var err error
 	for i := 0; i < int(r.config.GetNumberOfRetries())+1; i++ {

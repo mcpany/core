@@ -30,6 +30,8 @@ type MockManagerInterfaceMockRecorder struct {
 }
 
 // NewMockManagerInterface creates a new mock instance.
+// ctrl is the ctrl.
+// Returns the result.
 func NewMockManagerInterface(ctrl *gomock.Controller) *MockManagerInterface {
 	mock := &MockManagerInterface{ctrl: ctrl}
 	mock.recorder = &MockManagerInterfaceMockRecorder{mock}
@@ -42,30 +44,40 @@ func (m *MockManagerInterface) EXPECT() *MockManagerInterfaceMockRecorder {
 }
 
 // AddMiddleware mocks base method.
+// middleware is the middleware.
 func (m *MockManagerInterface) AddMiddleware(middleware ExecutionMiddleware) {
 	m.ctrl.T.Helper()
 	m.ctrl.Call(m, "AddMiddleware", middleware)
 }
 
 // AddMiddleware indicates an expected call of AddMiddleware.
+// middleware is the middleware.
+// Returns the result.
 func (mr *MockManagerInterfaceMockRecorder) AddMiddleware(middleware any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AddMiddleware", reflect.TypeOf((*MockManagerInterface)(nil).AddMiddleware), middleware)
 }
 
 // AddServiceInfo mocks base method.
+// serviceID is the serviceID.
+// info is the info.
 func (m *MockManagerInterface) AddServiceInfo(serviceID string, info *ServiceInfo) {
 	m.ctrl.T.Helper()
 	m.ctrl.Call(m, "AddServiceInfo", serviceID, info)
 }
 
 // AddServiceInfo indicates an expected call of AddServiceInfo.
+// serviceID is the serviceID.
+// info is the info.
+// Returns the result.
 func (mr *MockManagerInterfaceMockRecorder) AddServiceInfo(serviceID, info any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AddServiceInfo", reflect.TypeOf((*MockManagerInterface)(nil).AddServiceInfo), serviceID, info)
 }
 
 // AddTool mocks base method.
+// tool is the tool.
+// Returns an error.
 func (m *MockManagerInterface) AddTool(tool Tool) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "AddTool", tool)
@@ -74,24 +86,32 @@ func (m *MockManagerInterface) AddTool(tool Tool) error {
 }
 
 // AddTool indicates an expected call of AddTool.
+// tool is the tool.
+// Returns the result.
 func (mr *MockManagerInterfaceMockRecorder) AddTool(tool any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AddTool", reflect.TypeOf((*MockManagerInterface)(nil).AddTool), tool)
 }
 
 // ClearToolsForService mocks base method.
+// serviceID is the serviceID.
 func (m *MockManagerInterface) ClearToolsForService(serviceID string) {
 	m.ctrl.T.Helper()
 	m.ctrl.Call(m, "ClearToolsForService", serviceID)
 }
 
 // ClearToolsForService indicates an expected call of ClearToolsForService.
+// serviceID is the serviceID.
+// Returns the result.
 func (mr *MockManagerInterfaceMockRecorder) ClearToolsForService(serviceID any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ClearToolsForService", reflect.TypeOf((*MockManagerInterface)(nil).ClearToolsForService), serviceID)
 }
 
 // ExecuteTool mocks base method.
+// ctx is the context.
+// req is the req.
+// Returns the result, an error.
 func (m *MockManagerInterface) ExecuteTool(ctx context.Context, req *ExecutionRequest) (any, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ExecuteTool", ctx, req)
@@ -101,12 +121,17 @@ func (m *MockManagerInterface) ExecuteTool(ctx context.Context, req *ExecutionRe
 }
 
 // ExecuteTool indicates an expected call of ExecuteTool.
+// ctx is the context.
+// req is the req.
+// Returns the result.
 func (mr *MockManagerInterfaceMockRecorder) ExecuteTool(ctx, req any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ExecuteTool", reflect.TypeOf((*MockManagerInterface)(nil).ExecuteTool), ctx, req)
 }
 
 // GetServiceInfo mocks base method.
+// serviceID is the serviceID.
+// Returns the result, the result.
 func (m *MockManagerInterface) GetServiceInfo(serviceID string) (*ServiceInfo, bool) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetServiceInfo", serviceID)
@@ -116,12 +141,16 @@ func (m *MockManagerInterface) GetServiceInfo(serviceID string) (*ServiceInfo, b
 }
 
 // GetServiceInfo indicates an expected call of GetServiceInfo.
+// serviceID is the serviceID.
+// Returns the result.
 func (mr *MockManagerInterfaceMockRecorder) GetServiceInfo(serviceID any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetServiceInfo", reflect.TypeOf((*MockManagerInterface)(nil).GetServiceInfo), serviceID)
 }
 
 // GetTool mocks base method.
+// toolName is the toolName.
+// Returns the result, the result.
 func (m *MockManagerInterface) GetTool(toolName string) (Tool, bool) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetTool", toolName)
@@ -131,12 +160,15 @@ func (m *MockManagerInterface) GetTool(toolName string) (Tool, bool) {
 }
 
 // GetTool indicates an expected call of GetTool.
+// toolName is the toolName.
+// Returns the result.
 func (mr *MockManagerInterfaceMockRecorder) GetTool(toolName any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetTool", reflect.TypeOf((*MockManagerInterface)(nil).GetTool), toolName)
 }
 
 // ListServices mocks base method.
+// Returns the result.
 func (m *MockManagerInterface) ListServices() []*ServiceInfo {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ListServices")
@@ -145,12 +177,14 @@ func (m *MockManagerInterface) ListServices() []*ServiceInfo {
 }
 
 // ListServices indicates an expected call of ListServices.
+// Returns the result.
 func (mr *MockManagerInterfaceMockRecorder) ListServices() *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListServices", reflect.TypeOf((*MockManagerInterface)(nil).ListServices))
 }
 
 // ListTools mocks base method.
+// Returns the result.
 func (m *MockManagerInterface) ListTools() []Tool {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ListTools")
@@ -159,30 +193,39 @@ func (m *MockManagerInterface) ListTools() []Tool {
 }
 
 // ListTools indicates an expected call of ListTools.
+// Returns the result.
 func (mr *MockManagerInterfaceMockRecorder) ListTools() *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListTools", reflect.TypeOf((*MockManagerInterface)(nil).ListTools))
 }
 
 // SetMCPServer mocks base method.
+// mcpServer is the mcpServer.
 func (m *MockManagerInterface) SetMCPServer(mcpServer MCPServerProvider) {
 	m.ctrl.T.Helper()
 	m.ctrl.Call(m, "SetMCPServer", mcpServer)
 }
 
 // SetMCPServer indicates an expected call of SetMCPServer.
+// mcpServer is the mcpServer.
+// Returns the result.
 func (mr *MockManagerInterfaceMockRecorder) SetMCPServer(mcpServer any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SetMCPServer", reflect.TypeOf((*MockManagerInterface)(nil).SetMCPServer), mcpServer)
 }
 
 // SetProfiles mocks base method.
+// enabled is the enabled.
+// defs is the defs.
 func (m *MockManagerInterface) SetProfiles(enabled []string, defs []*v1.ProfileDefinition) {
 	m.ctrl.T.Helper()
 	m.ctrl.Call(m, "SetProfiles", enabled, defs)
 }
 
 // SetProfiles indicates an expected call of SetProfiles.
+// enabled is the enabled.
+// defs is the defs.
+// Returns the result.
 func (mr *MockManagerInterfaceMockRecorder) SetProfiles(enabled, defs any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SetProfiles", reflect.TypeOf((*MockManagerInterface)(nil).SetProfiles), enabled, defs)

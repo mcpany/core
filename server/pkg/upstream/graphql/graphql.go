@@ -90,11 +90,13 @@ const introspectionQuery = `
 type graphqlUpstream struct{}
 
 // NewGraphQLUpstream creates a new GraphQL upstream.
+// Returns the result.
 func NewGraphQLUpstream() upstream.Upstream {
 	return &graphqlUpstream{}
 }
 
 // Shutdown shuts down the upstream.
+// Returns an error.
 func (g *graphqlUpstream) Shutdown(_ context.Context) error {
 	return nil
 }
@@ -121,6 +123,9 @@ type Callable struct {
 }
 
 // Call executes the GraphQL query.
+// ctx is the context.
+// req is the req.
+// Returns the result, an error.
 func (c *Callable) Call(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
 	graphqlReq := graphql.NewRequest(c.query)
 	for key, value := range req.Arguments {
@@ -144,6 +149,10 @@ func (c *Callable) Call(ctx context.Context, req *tool.ExecutionRequest) (any, e
 }
 
 // Register inspects the GraphQL upstream service and registers its capabilities.
+// ctx is the context.
+// serviceConfig is the serviceConfig.
+// toolManager is the toolManager.
+// Returns the result, the result, the result, an error.
 func (g *graphqlUpstream) Register(
 	ctx context.Context,
 	serviceConfig *configv1.UpstreamServiceConfig,

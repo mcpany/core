@@ -27,6 +27,7 @@ type UpstreamWorker struct {
 //
 // bus is the event bus used for receiving requests and publishing results.
 // toolManager is the tool manager that will handle the actual tool execution.
+// Returns the result.
 func NewUpstreamWorker(bus *bus.Provider, toolManager tool.ManagerInterface) *UpstreamWorker {
 	return &UpstreamWorker{
 		bus:         bus,

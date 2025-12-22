@@ -29,6 +29,7 @@ type ServiceRegistrationWorker struct {
 //
 // bus is the event bus used for receiving requests and publishing results.
 // serviceRegistry is the registry that will handle the actual registration logic.
+// Returns the result.
 func NewServiceRegistrationWorker(bus *bus.Provider, serviceRegistry serviceregistry.ServiceRegistryInterface) *ServiceRegistrationWorker {
 	return &ServiceRegistrationWorker{
 		bus:             bus,

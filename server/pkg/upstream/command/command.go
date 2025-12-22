@@ -29,18 +29,27 @@ import (
 type Upstream struct{}
 
 // Shutdown implements the upstream.Upstream interface.
+// Returns an error.
 func (u *Upstream) Shutdown(_ context.Context) error {
 	// Noop for command upstream
 	return nil
 }
 
 // NewUpstream creates a new instance of CommandUpstream.
+// Returns the result.
 func NewUpstream() upstream.Upstream {
 	return &Upstream{}
 }
 
 // Register processes the configuration for a command-line service, creates a
 // new tool for each defined command, and registers them with the tool manager.
+// ctx is the context.
+// serviceConfig is the serviceConfig.
+// toolManager is the toolManager.
+// promptManager is the promptManager.
+// resourceManager is the resourceManager.
+// isReload is the isReload.
+// Returns the result, the result, the result, an error.
 func (u *Upstream) Register(
 	ctx context.Context,
 	serviceConfig *configv1.UpstreamServiceConfig,

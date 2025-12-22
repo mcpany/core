@@ -22,6 +22,8 @@ type SQLiteAuditStore struct {
 }
 
 // NewSQLiteAuditStore creates a new SQLiteAuditStore.
+// path is the path.
+// Returns the result, an error.
 func NewSQLiteAuditStore(path string) (*SQLiteAuditStore, error) {
 	if path == "" {
 		return nil, fmt.Errorf("sqlite path is required")
@@ -90,6 +92,7 @@ func ensureColumns(db *sql.DB) error {
 }
 
 // Write writes an audit entry to the database.
+// Returns an error.
 func (s *SQLiteAuditStore) Write(entry AuditEntry) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -189,6 +192,7 @@ func (s *SQLiteAuditStore) Verify() (bool, error) {
 }
 
 // Close closes the database connection.
+// Returns an error.
 func (s *SQLiteAuditStore) Close() error {
 	s.mu.Lock()
 	defer s.mu.Unlock()

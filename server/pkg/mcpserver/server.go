@@ -75,6 +75,7 @@ func (s *Server) Server() *mcp.Server {
 //   - bus: The event bus used for asynchronous communication between components.
 //
 // Returns a new instance of the Server and an error if initialization fails.
+// debug is the debug.
 func NewServer(
 	_ context.Context,
 	toolManager tool.ManagerInterface,

@@ -23,6 +23,8 @@ const (
 // MethodDescriptorToProtoProperties converts the fields of a method's input
 // message into a `structpb.Struct` for use as the `properties` field in a tool
 // input schema.
+// methodDesc is the methodDesc.
+// Returns the result, an error.
 func MethodDescriptorToProtoProperties(methodDesc protoreflect.MethodDescriptor) (*structpb.Struct, error) {
 	properties := &structpb.Struct{Fields: make(map[string]*structpb.Value)}
 	inputFields := methodDesc.Input().Fields()
@@ -57,6 +59,8 @@ func MethodDescriptorToProtoProperties(methodDesc protoreflect.MethodDescriptor)
 // MethodOutputDescriptorToProtoProperties converts the fields of a method's
 // output message into a `structpb.Struct` for use as the `properties` field in
 // a tool output schema.
+// methodDesc is the methodDesc.
+// Returns the result, an error.
 func MethodOutputDescriptorToProtoProperties(methodDesc protoreflect.MethodDescriptor) (*structpb.Struct, error) {
 	properties := &structpb.Struct{Fields: make(map[string]*structpb.Value)}
 	outputFields := methodDesc.Output().Fields()
@@ -107,6 +111,8 @@ type McpFieldParameter interface {
 // ConfigSchemaToProtoProperties converts a slice of parameter schema definitions
 // from a service configuration into a `structpb.Struct` that can be used as the
 // `properties` field in a protobuf-based tool input schema.
+// params is the params.
+// Returns the result, an error.
 func ConfigSchemaToProtoProperties[T ConfigParameter](params []T) (*structpb.Struct, error) {
 	properties, err := structpb.NewStruct(make(map[string]interface{}))
 	if err != nil {
@@ -134,6 +140,8 @@ func ConfigSchemaToProtoProperties[T ConfigParameter](params []T) (*structpb.Str
 // McpFieldsToProtoProperties converts a slice of McpField definitions into a
 // `structpb.Struct` that can be used as the `properties` field in a
 // protobuf-based tool input schema.
+// params is the params.
+// Returns the result, an error.
 func McpFieldsToProtoProperties[T McpFieldParameter](params []T) (*structpb.Struct, error) {
 	properties, err := structpb.NewStruct(make(map[string]interface{}))
 	if err != nil {

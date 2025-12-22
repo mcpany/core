@@ -59,6 +59,7 @@ type Upstream struct {
 
 // Shutdown gracefully terminates the HTTP upstream service by shutting down the
 // associated connection pool.
+// Returns an error.
 func (u *Upstream) Shutdown(_ context.Context) error {
 	u.poolManager.Deregister(u.serviceID)
 	return nil
@@ -80,6 +81,13 @@ func NewUpstream(poolManager *pool.Manager) upstream.Upstream {
 // Register processes the configuration for an HTTP service, creates a connection
 // pool for it, and then creates and registers tools for each call definition
 // specified in the configuration.
+// ctx is the context.
+// serviceConfig is the serviceConfig.
+// toolManager is the toolManager.
+// promptManager is the promptManager.
+// resourceManager is the resourceManager.
+// isReload is the isReload.
+// Returns the result, the result, the result, an error.
 func (u *Upstream) Register(
 	ctx context.Context,
 	serviceConfig *configv1.UpstreamServiceConfig,

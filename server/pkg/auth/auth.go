@@ -27,33 +27,42 @@ const (
 )
 
 // ContextWithAPIKey returns a new context with the API Key.
+// ctx is the context.
+// apiKey is the apiKey.
 func ContextWithAPIKey(ctx context.Context, apiKey string) context.Context {
 	return context.WithValue(ctx, APIKeyContextKey, apiKey)
 }
 
 // APIKeyFromContext returns the API Key from the context.
+// ctx is the context.
 func APIKeyFromContext(ctx context.Context) (string, bool) {
 	val, ok := ctx.Value(APIKeyContextKey).(string)
 	return val, ok
 }
 
 // ContextWithUser returns a new context with the user ID.
+// ctx is the context.
+// userID is the userID.
 func ContextWithUser(ctx context.Context, userID string) context.Context {
 	return context.WithValue(ctx, UserContextKey, userID)
 }
 
 // UserFromContext returns the user ID from the context.
+// ctx is the context.
 func UserFromContext(ctx context.Context) (string, bool) {
 	val, ok := ctx.Value(UserContextKey).(string)
 	return val, ok
 }
 
 // ContextWithProfileID returns a new context with the profile ID.
+// ctx is the context.
+// profileID is the profileID.
 func ContextWithProfileID(ctx context.Context, profileID string) context.Context {
 	return context.WithValue(ctx, ProfileIDContextKey, profileID)
 }
 
 // ProfileIDFromContext returns the profile ID from the context.
+// ctx is the context.
 func ProfileIDFromContext(ctx context.Context) (string, bool) {
 	val, ok := ctx.Value(ProfileIDContextKey).(string)
 	return val, ok
@@ -141,6 +150,7 @@ type Manager struct {
 // NewManager creates and initializes a new Manager with an empty
 // authenticator registry. This manager can then be used to register and manage
 // authenticators for various services.
+// Returns the result.
 func NewManager() *Manager {
 	return &Manager{
 		authenticators: xsync.NewMap[string, Authenticator](),
@@ -148,6 +158,7 @@ func NewManager() *Manager {
 }
 
 // SetAPIKey sets the global API key for the server.
+// apiKey is the apiKey.
 func (am *Manager) SetAPIKey(apiKey string) {
 	am.apiKey = apiKey
 }
@@ -214,6 +225,7 @@ func (am *Manager) GetAuthenticator(serviceID string) (Authenticator, bool) {
 }
 
 // RemoveAuthenticator removes the authenticator for a given service ID.
+// serviceID is the serviceID.
 func (am *Manager) RemoveAuthenticator(serviceID string) {
 	am.authenticators.Delete(serviceID)
 }

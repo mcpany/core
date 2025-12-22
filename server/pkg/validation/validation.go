@@ -18,6 +18,7 @@ import (
 
 // IsValidBindAddress checks if a given string is a valid bind address.
 // A valid bind address is in the format "host:port".
+// Returns an error.
 func IsValidBindAddress(s string) error {
 	_, port, err := net.SplitHostPort(s)
 	if err != nil {
@@ -189,6 +190,7 @@ func ValidateHTTPServiceDefinition(def *configv1.HttpCallDefinition) error {
 }
 
 // FileExists checks if a file exists at the given path.
+// Returns an error.
 func FileExists(path string) error {
 	if _, err := os.Stat(path); os.IsNotExist(err) {
 		return err

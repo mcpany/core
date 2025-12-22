@@ -70,6 +70,10 @@ Most "popular" MCP servers today are bespoke binaries. If the upstream API chang
 - **Advanced Configuration**: Customize tool behavior with [Merge Strategies and Profile Filtering](server/docs/feature/merge_strategy.md).
 - **Extensible**: Designed to be easily extended with new service types and capabilities.
 
+## 🏗️ Architecture
+
+For a detailed overview of how MCP Any works, including its system design and core concepts, please refer to the [Architecture Documentation](server/docs/architecture.md).
+
 ## ⚡ Quick Start (5 Minutes)
 
 Ready to give your AI access to real-time data? Let's connect a public Weather API to **Gemini CLI** (or any MCP client) using MCP Any.
@@ -225,7 +229,7 @@ We use `golangci-lint` and `pre-commit` hooks.
 
 ### Code Standards
 
-- **Documentation**: All public functions, methods, and types must be documented. Use `go run server/tools/check_doc.go server/` to verify documentation coverage.
+- **Documentation**: All public functions, methods, and types must be documented following GoDoc conventions. Use `go run server/tools/check_doc.go server/` to verify documentation coverage.
 - **Linting**: Ensure `make lint` passes before submitting code.
 - **Testing**: Ensure `make test` passes.
 

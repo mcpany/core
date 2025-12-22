@@ -10,11 +10,15 @@ type MockWatcher struct {
 }
 
 // NewMockWatcher creates a new mock watcher.
+// Returns the result.
 func NewMockWatcher() *MockWatcher {
 	return &MockWatcher{}
 }
 
 // Watch mocks the Watch method.
+// paths is the paths.
+// reloadFunc is the reloadFunc.
+// Returns an error.
 func (m *MockWatcher) Watch(paths []string, reloadFunc func()) error {
 	if m.WatchFunc != nil {
 		m.WatchFunc(paths, reloadFunc)

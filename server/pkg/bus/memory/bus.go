@@ -52,6 +52,8 @@ func New[T any]() *DefaultBus[T] {
 // Parameters:
 //   - topic: The topic to publish the message to.
 //   - msg: The message to be sent.
+//
+// Returns an error.
 func (b *DefaultBus[T]) Publish(_ context.Context, topic string, msg T) error {
 	b.mu.RLock()
 	defer b.mu.RUnlock()
@@ -142,6 +144,7 @@ func (b *DefaultBus[T]) Subscribe(_ context.Context, topic string, handler func(
 //
 // Returns a function that can be used to unsubscribe before the handler is
 // invoked.
+// ctx is the context.
 func (b *DefaultBus[T]) SubscribeOnce(ctx context.Context, topic string, handler func(T)) (unsubscribe func()) {
 	var once sync.Once
 	var unsub func()

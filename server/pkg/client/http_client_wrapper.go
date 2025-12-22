@@ -24,6 +24,9 @@ type HTTPClientWrapper struct {
 }
 
 // NewHTTPClientWrapper creates a new HTTPClientWrapper.
+// client is the client.
+// config is the config.
+// Returns the result.
 func NewHTTPClientWrapper(client *http.Client, config *configv1.UpstreamServiceConfig) *HTTPClientWrapper {
 	return &HTTPClientWrapper{
 		Client:  client,
@@ -33,6 +36,8 @@ func NewHTTPClientWrapper(client *http.Client, config *configv1.UpstreamServiceC
 }
 
 // IsHealthy checks the health of the upstream service by making a request to the configured health check endpoint.
+// ctx is the context.
+// Returns the result.
 func (w *HTTPClientWrapper) IsHealthy(ctx context.Context) bool {
 	if w.checker == nil {
 		return true // No health check configured, assume healthy.
@@ -43,6 +48,7 @@ func (w *HTTPClientWrapper) IsHealthy(ctx context.Context) bool {
 // Close is a no-op for the `*http.Client` wrapper. The underlying transport
 // manages the connections, and closing the client itself is not typically
 // necessary.
+// Returns an error.
 func (w *HTTPClientWrapper) Close() error {
 	return nil
 }

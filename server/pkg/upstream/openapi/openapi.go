@@ -41,6 +41,7 @@ type OpenAPIUpstream struct { //nolint:revive
 
 // Shutdown gracefully terminates the OpenAPI upstream service. For HTTP-based
 // services, this typically means closing any persistent connections.
+// Returns an error.
 func (u *OpenAPIUpstream) Shutdown(_ context.Context) error {
 	u.mu.Lock()
 	defer u.mu.Unlock()
@@ -54,6 +55,7 @@ func (u *OpenAPIUpstream) Shutdown(_ context.Context) error {
 
 // NewOpenAPIUpstream creates a new instance of OpenAPIUpstream. It initializes a
 // cache for storing parsed OpenAPI documents to avoid redundant parsing.
+// Returns the result.
 func NewOpenAPIUpstream() upstream.Upstream {
 	cache := ttlcache.New[string, *openapi3.T](
 		ttlcache.WithTTL[string, *openapi3.T](5 * time.Minute),
@@ -69,6 +71,13 @@ func NewOpenAPIUpstream() upstream.Upstream {
 // Register processes an OpenAPI service configuration. It parses the OpenAPI
 // specification, extracts the operations, converts them into tools, and
 // registers them with the tool manager.
+// ctx is the context.
+// serviceConfig is the serviceConfig.
+// toolManager is the toolManager.
+// promptManager is the promptManager.
+// resourceManager is the resourceManager.
+// isReload is the isReload.
+// Returns the result, the result, the result, an error.
 func (u *OpenAPIUpstream) Register(
 	ctx context.Context,
 	serviceConfig *configv1.UpstreamServiceConfig,

@@ -24,6 +24,7 @@ type SafeDialer struct {
 }
 
 // NewSafeDialer creates a new SafeDialer with strict defaults (blocking all non-public IPs).
+// Returns the result.
 func NewSafeDialer() *SafeDialer {
 	return &SafeDialer{
 		AllowLoopback:  false,
@@ -33,6 +34,9 @@ func NewSafeDialer() *SafeDialer {
 }
 
 // DialContext creates a connection to the given address, enforcing the configured egress policy.
+// ctx is the context.
+// network is the network.
+// Returns the result, an error.
 func (d *SafeDialer) DialContext(ctx context.Context, network, addr string) (net.Conn, error) {
 	host, port, err := net.SplitHostPort(addr)
 	if err != nil {
@@ -88,6 +92,7 @@ func SafeDialContext(ctx context.Context, network, addr string) (net.Conn, error
 // Configuration can be overridden via environment variables:
 // - MCPANY_ALLOW_LOOPBACK_RESOURCES: Set to "true" to allow loopback addresses.
 // - MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES: Set to "true" to allow private network addresses.
+// Returns the result.
 func NewSafeHTTPClient() *http.Client {
 	dialer := NewSafeDialer()
 	if os.Getenv("MCPANY_ALLOW_LOOPBACK_RESOURCES") == TrueStr {

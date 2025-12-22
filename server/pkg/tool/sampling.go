@@ -18,11 +18,15 @@ type Sampler interface {
 type samplerContextKey struct{}
 
 // NewContextWithSampler creates a new context with the given Sampler.
+// ctx is the context.
+// Returns the result.
 func NewContextWithSampler(ctx context.Context, s Sampler) context.Context {
 	return context.WithValue(ctx, samplerContextKey{}, s)
 }
 
 // GetSampler retrieves the Sampler from the context.
+// ctx is the context.
+// Returns the result, the result.
 func GetSampler(ctx context.Context) (Sampler, bool) {
 	s, ok := ctx.Value(samplerContextKey{}).(Sampler)
 	return s, ok

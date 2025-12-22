@@ -36,6 +36,7 @@ func (m *BaseMessage) CorrelationID() string {
 
 // SetCorrelationID sets the correlation ID for the message. This is typically
 // called by the message publisher to assign a unique ID to a request.
+// id is the id.
 func (m *BaseMessage) SetCorrelationID(id string) {
 	m.CID = id
 }

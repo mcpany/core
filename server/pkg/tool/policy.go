@@ -13,6 +13,8 @@ import (
 
 // ShouldExport determines whether a named item (tool, prompt, or resource) should be exported
 // based on the provided ExportPolicy.
+// policy is the policy.
+// Returns the result.
 func ShouldExport(name string, policy *configv1.ExportPolicy) bool {
 	if policy == nil {
 		// Default to Allow/Export if no policy is present?
@@ -46,6 +48,8 @@ func ShouldExport(name string, policy *configv1.ExportPolicy) bool {
 // EvaluateCallPolicy checks if a call should be allowed based on the policies.
 // If arguments is nil, it performs a static check (ignoring rules with argument_regex).
 // It returns true if the call is allowed, false otherwise.
+// toolName is the toolName.
+// callID is the callID.
 func EvaluateCallPolicy(policies []*configv1.CallPolicy, toolName, callID string, arguments []byte) (bool, error) {
 	// Fallback to slower implementation if not using compiled policies
 	for _, policy := range policies {
@@ -113,6 +117,7 @@ type CompiledCallPolicy struct {
 }
 
 // CompileCallPolicies compiles a list of call policies.
+// Returns the result, an error.
 func CompileCallPolicies(policies []*configv1.CallPolicy) ([]*CompiledCallPolicy, error) {
 	compiled := make([]*CompiledCallPolicy, 0, len(policies))
 	for _, p := range policies {
@@ -129,6 +134,7 @@ func CompileCallPolicies(policies []*configv1.CallPolicy) ([]*CompiledCallPolicy
 }
 
 // NewCompiledCallPolicy compiles a single call policy.
+// Returns the result, an error.
 func NewCompiledCallPolicy(policy *configv1.CallPolicy) (*CompiledCallPolicy, error) {
 	compiledRules := make([]compiledCallPolicyRule, len(policy.GetRules()))
 	for i, rule := range policy.GetRules() {
@@ -170,6 +176,10 @@ func NewCompiledCallPolicy(policy *configv1.CallPolicy) (*CompiledCallPolicy, er
 }
 
 // EvaluateCompiledCallPolicy checks if a call should be allowed based on the compiled policies.
+// toolName is the toolName.
+// callID is the callID.
+// arguments is the arguments.
+// Returns the result, an error.
 func EvaluateCompiledCallPolicy(policies []*CompiledCallPolicy, toolName, callID string, arguments []byte) (bool, error) {
 	for _, policy := range policies {
 		policyBlocked := false

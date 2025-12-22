@@ -76,6 +76,7 @@ type Manager struct {
 }
 
 // NewManager creates and returns a new, empty Manager.
+// bus is the bus.
 func NewManager(bus *bus.Provider) *Manager {
 	return &Manager{
 		bus:         bus,
@@ -86,6 +87,7 @@ func NewManager(bus *bus.Provider) *Manager {
 }
 
 // SetProfiles sets the enabled profiles and their definitions for filtering.
+// defs is the defs.
 func (tm *Manager) SetProfiles(enabled []string, defs []*configv1.ProfileDefinition) {
 	tm.mu.Lock()
 	defer tm.mu.Unlock()
@@ -206,6 +208,7 @@ func (tm *Manager) AddMiddleware(middleware ExecutionMiddleware) {
 
 // SetMCPServer provides the Manager with a reference to the MCP server.
 // This is necessary for registering tool handlers with the server.
+// mcpServer is the mcpServer.
 func (tm *Manager) SetMCPServer(mcpServer MCPServerProvider) {
 	tm.mu.Lock()
 	defer tm.mu.Unlock()

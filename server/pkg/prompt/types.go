@@ -44,6 +44,9 @@ type TemplatedPrompt struct {
 }
 
 // NewTemplatedPrompt creates a new TemplatedPrompt.
+// definition is the definition.
+// serviceID is the serviceID.
+// Returns the result.
 func NewTemplatedPrompt(definition *configv1.PromptDefinition, serviceID string) *TemplatedPrompt {
 	return &TemplatedPrompt{
 		definition: definition,
@@ -111,6 +114,8 @@ func (p *TemplatedPrompt) Service() string {
 }
 
 // Get executes the prompt with the provided arguments.
+// args is the args.
+// Returns the result, an error.
 func (p *TemplatedPrompt) Get(_ context.Context, args json.RawMessage) (*mcp.GetPromptResult, error) {
 	var inputs map[string]any
 	if err := json.Unmarshal(args, &inputs); err != nil {
@@ -142,6 +147,8 @@ func (p *TemplatedPrompt) Get(_ context.Context, args json.RawMessage) (*mcp.Get
 }
 
 // NewPromptFromConfig creates a new Prompt from a configuration definition.
+// serviceID is the serviceID.
+// Returns the result, an error.
 func NewPromptFromConfig(definition *configv1.PromptDefinition, serviceID string) (Prompt, error) {
 	return NewTemplatedPrompt(definition, serviceID), nil
 }

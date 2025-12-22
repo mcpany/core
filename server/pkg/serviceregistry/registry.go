@@ -173,6 +173,9 @@ func (r *ServiceRegistry) GetServiceConfig(serviceID string) (*config.UpstreamSe
 }
 
 // UnregisterService removes a service from the registry.
+// ctx is the context.
+// serviceName is the serviceName.
+// Returns an error.
 func (r *ServiceRegistry) UnregisterService(ctx context.Context, serviceName string) error {
 	r.mu.Lock()
 	defer r.mu.Unlock()

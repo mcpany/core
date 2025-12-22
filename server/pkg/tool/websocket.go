@@ -45,6 +45,7 @@ type WebsocketTool struct {
 // authenticator handles adding authentication credentials to the connection request.
 // callDefinition contains the configuration for the WebSocket call, such as
 // parameter mappings and transformers.
+// Returns the result.
 func NewWebsocketTool(
 	tool *v1.Tool,
 	poolManager *pool.Manager,
@@ -89,6 +90,8 @@ func (t *WebsocketTool) GetCacheConfig() *configv1.CacheConfig {
 // Execute handles the execution of the WebSocket tool. It retrieves a connection
 // from the pool, sends the tool inputs as a message, and waits for a single
 // response message, which it then processes and returns.
+// ctx is the context.
+// req is the req.
 func (t *WebsocketTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
 	wsPool, ok := pool.Get[*client.WebsocketClientWrapper](t.poolManager, t.serviceID)
 	if !ok {

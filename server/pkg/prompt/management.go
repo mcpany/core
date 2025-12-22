@@ -43,6 +43,7 @@ func NewManager() *Manager {
 }
 
 // SetMCPServer provides the Manager with a reference to the MCP server.
+// mcpServer is the mcpServer.
 func (pm *Manager) SetMCPServer(mcpServer MCPServerProvider) {
 	pm.mu.Lock()
 	defer pm.mu.Unlock()
@@ -69,6 +70,7 @@ func (pm *Manager) UpdatePrompt(prompt Prompt) {
 }
 
 // GetPrompt retrieves a prompt from the manager by its name.
+// Returns the result, the result.
 func (pm *Manager) GetPrompt(name string) (Prompt, bool) {
 	prompt, ok := pm.prompts.Load(name)
 	return prompt, ok
@@ -85,6 +87,7 @@ func (pm *Manager) ListPrompts() []Prompt {
 }
 
 // ClearPromptsForService removes all prompts associated with a given service.
+// serviceID is the serviceID.
 func (pm *Manager) ClearPromptsForService(serviceID string) {
 	pm.prompts.Range(func(key string, value Prompt) bool {
 		if value.Service() == serviceID {

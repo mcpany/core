@@ -34,6 +34,7 @@ func TestE2ECaching(t *testing.T) {
 }
 
 // BuildCachingServer builds and starts a caching server for testing.
+// Returns the result.
 func BuildCachingServer(t *testing.T) *integration.ManagedProcess {
 	port := integration.FindFreePort(t)
 	root, err := integration.GetProjectRoot()
@@ -44,12 +45,15 @@ func BuildCachingServer(t *testing.T) *integration.ManagedProcess {
 }
 
 // RegisterCachingService registers the caching service with the MCP server.
+// registrationClient is the registrationClient.
+// upstreamEndpoint is the upstreamEndpoint.
 func RegisterCachingService(t *testing.T, registrationClient apiv1.RegistrationServiceClient, upstreamEndpoint string) {
 	const serviceID = "e2e_caching_server"
 	integration.RegisterHTTPService(t, registrationClient, serviceID, upstreamEndpoint, "get_data", "/", "GET", nil)
 }
 
 // NoOpMiddleware is a middleware that does nothing and calls the next handler.
+// Returns the result.
 func NoOpMiddleware(_ *testing.T, next http.Handler) http.Handler {
 	return next
 }
@@ -73,6 +77,8 @@ func callTool(t *testing.T, mcpanyEndpoint, toolName string) {
 }
 
 // ValidateCaching validates that caching is working correctly.
+// mcpanyEndpoint is the mcpanyEndpoint.
+// upstreamEndpoint is the upstreamEndpoint.
 func ValidateCaching(t *testing.T, mcpanyEndpoint, upstreamEndpoint string) {
 	// 1. Reset the upstream server's counter.
 	resp, err := http.Post(fmt.Sprintf("http://%s/reset", upstreamEndpoint), "", nil)

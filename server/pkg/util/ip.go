@@ -13,12 +13,15 @@ type contextKey string
 const remoteIPContextKey = contextKey("remote_ip")
 
 // ContextWithRemoteIP returns a new context with the remote IP.
+// ctx is the context.
+// ip is the ip.
 func ContextWithRemoteIP(ctx context.Context, ip string) context.Context {
 	return context.WithValue(ctx, remoteIPContextKey, ip)
 }
 
 // ExtractIP extracts the IP address from a host:port string or just an IP string.
 // It also handles IPv6 brackets.
+// Returns the result.
 func ExtractIP(addr string) string {
 	ip, _, err := net.SplitHostPort(addr)
 	if err != nil {
@@ -31,6 +34,8 @@ func ExtractIP(addr string) string {
 }
 
 // RemoteIPFromContext retrieves the remote IP from the context.
+// ctx is the context.
+// Returns the result, the result.
 func RemoteIPFromContext(ctx context.Context) (string, bool) {
 	ip, ok := ctx.Value(remoteIPContextKey).(string)
 	return ip, ok

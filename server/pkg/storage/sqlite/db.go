@@ -19,6 +19,7 @@ type DB struct {
 }
 
 // NewDB opens or creates a SQLite database at the specified path.
+// Returns the result, an error.
 func NewDB(path string) (*DB, error) {
 	if err := os.MkdirAll(filepath.Dir(path), 0750); err != nil {
 		return nil, fmt.Errorf("failed to create db directory: %w", err)
@@ -41,7 +42,6 @@ func NewDB(path string) (*DB, error) {
 	if _, err := db.Exec("PRAGMA busy_timeout=5000;"); err != nil {
 		return nil, fmt.Errorf("failed to set busy_timeout: %w", err)
 	}
-
 
 	return &DB{db}, nil
 }

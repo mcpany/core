@@ -24,6 +24,8 @@ func (m *MockTool) Tool() *v1.Tool {
 }
 
 // Execute calls the mock ExecuteFunc if set, otherwise returns nil.
+// ctx is the context.
+// req is the req.
 func (m *MockTool) Execute(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
 	if m.ExecuteFunc != nil {
 		return m.ExecuteFunc(ctx, req)

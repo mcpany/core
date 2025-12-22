@@ -23,6 +23,8 @@ type TextTemplate struct {
 //
 // templateString is the template content to be parsed.
 // It returns a new TextTemplate or an error if the template string is invalid.
+// startTag is the startTag.
+// endTag is the endTag.
 func NewTemplate(templateString, startTag, endTag string) (*TextTemplate, error) {
 	tpl, err := fasttemplate.NewTemplate(templateString, startTag, endTag)
 	if err != nil {

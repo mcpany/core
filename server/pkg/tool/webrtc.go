@@ -30,6 +30,7 @@ type peerConnectionWrapper struct {
 }
 
 // Close closes the peer connection.
+// Returns an error.
 func (w *peerConnectionWrapper) Close() error {
 	if w.PeerConnection == nil {
 		return nil
@@ -38,6 +39,7 @@ func (w *peerConnectionWrapper) Close() error {
 }
 
 // IsHealthy checks if the peer connection is in a connected state.
+// Returns the result.
 func (w *peerConnectionWrapper) IsHealthy(_ context.Context) bool {
 	return w.PeerConnection != nil && w.ICEConnectionState() == webrtc.ICEConnectionStateConnected
 }
@@ -68,6 +70,7 @@ type WebrtcTool struct {
 // authenticator handles adding authentication credentials to the signaling request.
 // callDefinition contains the configuration for the WebRTC call, such as
 // parameter mappings and transformers.
+// Returns the result, an error.
 func NewWebrtcTool(
 	tool *v1.Tool,
 	poolManager *pool.Manager,
@@ -146,6 +149,9 @@ func (t *WebrtcTool) GetCacheConfig() *configv1.CacheConfig {
 // Execute handles the execution of the WebRTC tool. It establishes a new peer
 // connection, negotiates the session via an HTTP signaling server, sends the
 // tool inputs over the data channel, and waits for a response.
+// ctx is the context.
+// req is the req.
+// Returns the result, an error.
 func (t *WebrtcTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
 	if t.webrtcPool == nil {
 		// Fallback to creating a new connection if the pool is not initialized
@@ -294,6 +300,7 @@ func (t *WebrtcTool) executeWithPeerConnection(ctx context.Context, req *Executi
 
 // Close is a placeholder for any cleanup logic. Currently, it is a no-op as the
 // peer connection is created and closed within the Execute method.
+// Returns an error.
 func (t *WebrtcTool) Close() error {
 	if t.webrtcPool != nil {
 		_ = t.webrtcPool.Close()

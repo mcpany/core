@@ -17,6 +17,8 @@ type FileAuditStore struct {
 }
 
 // NewFileAuditStore creates a new FileAuditStore.
+// path is the path.
+// Returns the result, an error.
 func NewFileAuditStore(path string) (*FileAuditStore, error) {
 	var f *os.File
 	var err error
@@ -32,6 +34,7 @@ func NewFileAuditStore(path string) (*FileAuditStore, error) {
 }
 
 // Write writes an audit entry to the file.
+// Returns an error.
 func (s *FileAuditStore) Write(entry AuditEntry) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -47,6 +50,7 @@ func (s *FileAuditStore) Write(entry AuditEntry) error {
 }
 
 // Close closes the file.
+// Returns an error.
 func (s *FileAuditStore) Close() error {
 	s.mu.Lock()
 	defer s.mu.Unlock()

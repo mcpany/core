@@ -49,6 +49,8 @@ type DockerTransport struct {
 }
 
 // Connect establishes a connection to the service within the Docker container.
+// ctx is the context.
+// Returns the result, an error.
 func (t *DockerTransport) Connect(ctx context.Context) (mcp.Connection, error) {
 	log := logging.GetLogger()
 	cli, err := newDockerClient(client.FromEnv, client.WithAPIVersionNegotiation())
@@ -154,6 +156,7 @@ type dockerConn struct {
 }
 
 // Read decodes a single JSON-RPC message from the container's output stream.
+// Returns the result, an error.
 func (c *dockerConn) Read(_ context.Context) (jsonrpc.Message, error) {
 	var raw json.RawMessage
 	if err := c.decoder.Decode(&raw); err != nil {
@@ -182,11 +185,14 @@ func (c *dockerConn) Read(_ context.Context) (jsonrpc.Message, error) {
 }
 
 // Write encodes and sends a JSON-RPC message to the container's input stream.
+// msg is the msg.
+// Returns an error.
 func (c *dockerConn) Write(_ context.Context, msg jsonrpc.Message) error {
 	return c.encoder.Encode(msg)
 }
 
 // Close terminates the connection by closing the underlying ReadWriteCloser.
+// Returns an error.
 func (c *dockerConn) Close() error {
 	return c.rwc.Close()
 }
@@ -205,6 +211,7 @@ type dockerReadWriteCloser struct {
 }
 
 // Close closes the underlying connection and removes the associated Docker container.
+// Returns an error.
 func (c *dockerReadWriteCloser) Close() error {
 	err := c.WriteCloser.Close()
 
@@ -235,6 +242,8 @@ type slogWriter struct {
 
 // Write takes a byte slice, scans it for lines, and logs each line
 // individually using the configured slog.Logger and level.
+// p is the p.
+// Returns the result, the result.
 func (s *slogWriter) Write(p []byte) (n int, err error) {
 	scanner := bufio.NewScanner(strings.NewReader(string(p)))
 	for scanner.Scan() {

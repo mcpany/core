@@ -143,6 +143,7 @@ func (rm *Manager) Subscribe(ctx context.Context, uri string) error {
 }
 
 // ClearResourcesForService removes all resources associated with a given service ID.
+// serviceID is the serviceID.
 func (rm *Manager) ClearResourcesForService(serviceID string) {
 	rm.mu.Lock()
 	defer rm.mu.Unlock()

@@ -34,6 +34,9 @@ type GrpcClientWrapper struct {
 }
 
 // NewGrpcClientWrapper creates a new GrpcClientWrapper.
+// conn is the conn.
+// config is the config.
+// Returns the result.
 func NewGrpcClientWrapper(conn Conn, config *configv1.UpstreamServiceConfig) *GrpcClientWrapper {
 	return &GrpcClientWrapper{
 		Conn:    conn,
@@ -46,6 +49,7 @@ func NewGrpcClientWrapper(conn Conn, config *configv1.UpstreamServiceConfig) *Gr
 //
 // It returns `true` if the connection's state is not `connectivity.Shutdown`,
 // indicating that it is still active and can be used for new RPCs.
+// ctx is the context.
 func (w *GrpcClientWrapper) IsHealthy(ctx context.Context) bool {
 	if w.GetState() == connectivity.Shutdown {
 		return false
@@ -61,6 +65,7 @@ func (w *GrpcClientWrapper) IsHealthy(ctx context.Context) bool {
 
 // Close terminates the underlying gRPC connection, releasing any associated
 // resources.
+// Returns an error.
 func (w *GrpcClientWrapper) Close() error {
 	return w.Conn.Close()
 }

@@ -35,6 +35,7 @@ type PolicyHook struct {
 }
 
 // NewPolicyHook creates a new PolicyHook with the given call policy.
+// Returns the result.
 func NewPolicyHook(policy *configv1.CallPolicy) *PolicyHook {
 	compiledRules := make([]compiledRule, len(policy.GetRules()))
 	for i, rule := range policy.GetRules() {
@@ -71,6 +72,8 @@ func NewPolicyHook(policy *configv1.CallPolicy) *PolicyHook {
 }
 
 // ExecutePre executes the policy check before a tool is called.
+// req is the req.
+// Returns the result, the result, an error.
 func (h *PolicyHook) ExecutePre(
 	_ context.Context,
 	req *ExecutionRequest,
@@ -131,6 +134,8 @@ type WebhookClient struct {
 }
 
 // NewWebhookClient creates a new WebhookClient.
+// config is the config.
+// Returns the result.
 func NewWebhookClient(config *configv1.WebhookConfig) *WebhookClient {
 	timeout := 5 * time.Second
 	if t := config.GetTimeout(); t != nil {
@@ -163,6 +168,9 @@ func NewWebhookClient(config *configv1.WebhookConfig) *WebhookClient {
 }
 
 // Call sends a cloud event to the webhook and returns the response event.
+// ctx is the context.
+// eventType is the eventType.
+// data is the data.
 func (c *WebhookClient) Call(ctx context.Context, eventType string, data any) (*cloudevents.Event, error) {
 	event := cloudevents.NewEvent()
 	event.SetID(uuid.New().String())
@@ -206,6 +214,8 @@ type WebhookHook struct {
 }
 
 // NewWebhookHook creates a new WebhookHook.
+// config is the config.
+// Returns the result.
 func NewWebhookHook(config *configv1.WebhookConfig) *WebhookHook {
 	return &WebhookHook{
 		client: NewWebhookClient(config),
@@ -213,6 +223,9 @@ func NewWebhookHook(config *configv1.WebhookConfig) *WebhookHook {
 }
 
 // ExecutePre executes the webhook notification before a tool is called.
+// ctx is the context.
+// req is the req.
+// Returns the result, the result, an error.
 func (h *WebhookHook) ExecutePre(
 	ctx context.Context,
 	req *ExecutionRequest,
@@ -274,6 +287,10 @@ func (h *WebhookHook) ExecutePre(
 }
 
 // ExecutePost executes the webhook notification after a tool is called.
+// ctx is the context.
+// req is the req.
+// result is the result.
+// Returns the result, an error.
 func (h *WebhookHook) ExecutePost(
 	ctx context.Context,
 	req *ExecutionRequest,
@@ -326,7 +343,7 @@ func (h *WebhookHook) ExecutePost(
 // WebhookStatus represents the status returned by the webhook.
 type WebhookStatus struct {
 	// Code is the status code returned by the webhook.
-	Code    int    `json:"code"`
+	Code int `json:"code"`
 	// Message is a descriptive message returned by the webhook.
 	Message string `json:"message"`
 }
@@ -338,6 +355,7 @@ type SigningRoundTripper struct {
 }
 
 // RoundTrip executes the HTTP request with a signature.
+// Returns the result, an error.
 func (s *SigningRoundTripper) RoundTrip(req *http.Request) (*http.Response, error) {
 	if s.signer != nil {
 		payload := []byte{} // Signing requires payload, but request body might be stream.

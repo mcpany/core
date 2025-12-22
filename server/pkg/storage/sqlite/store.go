@@ -17,11 +17,14 @@ type Store struct {
 }
 
 // NewStore creates a new SQLite store.
+// db is the db.
+// Returns the result.
 func NewStore(db *DB) *Store {
 	return &Store{db: db}
 }
 
 // Load implements config.Store interface
+// Returns the result, an error.
 func (s *Store) Load() (*configv1.McpAnyServerConfig, error) {
 	rows, err := s.db.Query("SELECT config_json FROM upstream_services")
 	if err != nil {
@@ -55,6 +58,7 @@ func (s *Store) Load() (*configv1.McpAnyServerConfig, error) {
 }
 
 // SaveService saves an upstream service configuration.
+// Returns an error.
 func (s *Store) SaveService(service *configv1.UpstreamServiceConfig) error {
 	if service.GetName() == "" {
 		return fmt.Errorf("service name is required")
@@ -86,6 +90,7 @@ func (s *Store) SaveService(service *configv1.UpstreamServiceConfig) error {
 }
 
 // GetService retrieves an upstream service configuration by name.
+// Returns the result, an error.
 func (s *Store) GetService(name string) (*configv1.UpstreamServiceConfig, error) {
 	query := "SELECT config_json FROM upstream_services WHERE name = ?"
 	row := s.db.QueryRow(query, name)
@@ -106,6 +111,7 @@ func (s *Store) GetService(name string) (*configv1.UpstreamServiceConfig, error)
 }
 
 // ListServices lists all upstream service configurations.
+// Returns the result, an error.
 func (s *Store) ListServices() ([]*configv1.UpstreamServiceConfig, error) {
 	cfg, err := s.Load()
 	if err != nil {
@@ -115,6 +121,7 @@ func (s *Store) ListServices() ([]*configv1.UpstreamServiceConfig, error) {
 }
 
 // DeleteService deletes an upstream service configuration by name.
+// Returns an error.
 func (s *Store) DeleteService(name string) error {
 	_, err := s.db.Exec("DELETE FROM upstream_services WHERE name = ?", name)
 	if err != nil {

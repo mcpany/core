@@ -23,6 +23,8 @@ type Bus[T any] struct {
 }
 
 // New creates a new NATS bus.
+// config is the config.
+// Returns the result, an error.
 func New[T any](config *bus.NatsBus) (*Bus[T], error) {
 	var s *server.Server
 	if config.GetServerUrl() == "" {
@@ -60,6 +62,8 @@ func (b *Bus[T]) Close() {
 }
 
 // Publish sends a message to a NATS topic.
+// msg is the msg.
+// Returns an error.
 func (b *Bus[T]) Publish(_ context.Context, topic string, msg T) error {
 	data, err := json.Marshal(msg)
 	if err != nil {
@@ -69,6 +73,7 @@ func (b *Bus[T]) Publish(_ context.Context, topic string, msg T) error {
 }
 
 // Subscribe registers a handler for a NATS topic.
+// Returns the result.
 func (b *Bus[T]) Subscribe(_ context.Context, topic string, handler func(T)) (unsubscribe func()) {
 	sub, _ := b.nc.Subscribe(topic, func(m *natsgo.Msg) {
 		var msg T
@@ -82,6 +87,7 @@ func (b *Bus[T]) Subscribe(_ context.Context, topic string, handler func(T)) (un
 }
 
 // SubscribeOnce registers a one-time handler for a NATS topic.
+// Returns the result.
 func (b *Bus[T]) SubscribeOnce(_ context.Context, topic string, handler func(T)) (unsubscribe func()) {
 	sub, err := b.nc.Subscribe(topic, func(m *natsgo.Msg) {
 		var msg T

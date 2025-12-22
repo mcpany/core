@@ -28,11 +28,13 @@ type Upstream struct {
 }
 
 // NewUpstream creates a new SQL upstream.
+// Returns the result.
 func NewUpstream() *Upstream {
 	return &Upstream{}
 }
 
 // Shutdown closes the database connection.
+// Returns an error.
 func (u *Upstream) Shutdown(_ context.Context) error {
 	u.mu.Lock()
 	defer u.mu.Unlock()
@@ -47,6 +49,10 @@ func ptr(s string) *string {
 }
 
 // Register discovers and registers tools from the SQL configuration.
+// ctx is the context.
+// serviceConfig is the serviceConfig.
+// toolManager is the toolManager.
+// Returns the result, the result, the result, an error.
 func (u *Upstream) Register(
 	ctx context.Context,
 	serviceConfig *configv1.UpstreamServiceConfig,

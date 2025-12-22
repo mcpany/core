@@ -22,6 +22,7 @@ func SetRedisClientCreatorForTests(creator func(opts *redis.Options) *redis.Clie
 var timeNow = time.Now
 
 // SetTimeNowForTests sets the time.Now function for tests.
+// nowFunc is the nowFunc.
 func SetTimeNowForTests(nowFunc func() time.Time) {
 	timeNow = nowFunc
 }
@@ -35,11 +36,18 @@ type RedisLimiter struct {
 }
 
 // NewRedisLimiter creates a new RedisLimiter.
+// serviceID is the serviceID.
+// config is the config.
+// Returns the result, an error.
 func NewRedisLimiter(serviceID string, config *configv1.RateLimitConfig) (*RedisLimiter, error) {
 	return NewRedisLimiterWithPartition(serviceID, "", config)
 }
 
 // NewRedisLimiterWithPartition creates a new RedisLimiter with a partition key.
+// serviceID is the serviceID.
+// partitionKey is the partitionKey.
+// config is the config.
+// Returns the result, an error.
 func NewRedisLimiterWithPartition(serviceID, partitionKey string, config *configv1.RateLimitConfig) (*RedisLimiter, error) {
 	if config.GetRedis() == nil {
 		return nil, fmt.Errorf("redis config is missing")
@@ -67,6 +75,10 @@ func NewRedisLimiterWithPartition(serviceID, partitionKey string, config *config
 }
 
 // NewRedisLimiterWithClient creates a new RedisLimiter with an existing client.
+// serviceID is the serviceID.
+// partitionKey is the partitionKey.
+// config is the config.
+// Returns the result.
 func NewRedisLimiterWithClient(client *redis.Client, serviceID, partitionKey string, config *configv1.RateLimitConfig) *RedisLimiter {
 	key := fmt.Sprintf("ratelimit:%s", serviceID)
 	if partitionKey != "" {
@@ -118,6 +130,8 @@ const RedisRateLimitScript = `
     `
 
 // Allow checks if the request is allowed.
+// ctx is the context.
+// Returns the result, an error.
 func (l *RedisLimiter) Allow(ctx context.Context) (bool, error) {
 	now := timeNow().UnixMicro()
 
@@ -137,12 +151,15 @@ func (l *RedisLimiter) Allow(ctx context.Context) (bool, error) {
 }
 
 // Update updates the limiter configuration.
+// rps is the rps.
+// burst is the burst.
 func (l *RedisLimiter) Update(rps float64, burst int) {
 	l.rps = rps
 	l.burst = burst
 }
 
 // Close closes the Redis client.
+// Returns an error.
 func (l *RedisLimiter) Close() error {
 	return l.client.Close()
 }

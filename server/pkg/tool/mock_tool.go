@@ -36,6 +36,8 @@ func (m *MockTool) MCPTool() *mcp.Tool {
 }
 
 // Execute calls the mock ExecuteFunc if set, otherwise returns nil.
+// ctx is the context.
+// req is the req.
 func (m *MockTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
 	if m.ExecuteFunc != nil {
 		return m.ExecuteFunc(ctx, req)

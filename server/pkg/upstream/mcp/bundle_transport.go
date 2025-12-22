@@ -48,6 +48,8 @@ type BundleDockerTransport struct {
 }
 
 // Connect establishes a connection to the service within the Docker container.
+// ctx is the context.
+// Returns the result, an error.
 func (t *BundleDockerTransport) Connect(ctx context.Context) (mcp.Connection, error) {
 	log := logging.GetLogger()
 	cli, err := newDockerClient(client.FromEnv, client.WithAPIVersionNegotiation())
@@ -153,6 +155,7 @@ type bundleDockerConn struct {
 }
 
 // Read reads a JSON-RPC message from the connection.
+// Returns the result, an error.
 func (c *bundleDockerConn) Read(_ context.Context) (jsonrpc.Message, error) {
 	var raw json.RawMessage
 	if err := c.decoder.Decode(&raw); err != nil {
@@ -269,6 +272,8 @@ func setUnexportedID(idPtr interface{}, val interface{}) {
 }
 
 // Write writes a JSON-RPC message to the connection.
+// msg is the msg.
+// Returns an error.
 func (c *bundleDockerConn) Write(_ context.Context, msg jsonrpc.Message) error {
 	// Workaround: jsonrpc.ID in the SDK marshals to {} because of unexported fields.
 	// We extract the value manually and send an intermediate struct.
@@ -346,6 +351,7 @@ func fixID(id interface{}) interface{} {
 }
 
 // Close closes the connection.
+// Returns an error.
 func (c *bundleDockerConn) Close() error {
 	return c.rwc.Close()
 }
@@ -362,6 +368,8 @@ type bundleSlogWriter struct {
 }
 
 // Write writes the log message to the logger.
+// p is the p.
+// Returns the result, the result.
 func (s *bundleSlogWriter) Write(p []byte) (n int, err error) {
 	msg := string(p)
 	s.log.Log(context.Background(), s.level, msg)

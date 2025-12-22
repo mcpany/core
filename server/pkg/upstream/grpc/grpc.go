@@ -47,6 +47,7 @@ type Upstream struct {
 //
 // poolManager is the connection pool manager to be used for managing gRPC
 // connections.
+// Returns the result.
 func NewUpstream(poolManager *pool.Manager) upstream.Upstream {
 	cache := ttlcache.New[string, *descriptorpb.FileDescriptorSet](
 		ttlcache.WithTTL[string, *descriptorpb.FileDescriptorSet](5 * time.Minute),
@@ -61,6 +62,7 @@ func NewUpstream(poolManager *pool.Manager) upstream.Upstream {
 
 // Shutdown gracefully terminates the gRPC upstream service by shutting down the
 // associated connection pool.
+// Returns an error.
 func (u *Upstream) Shutdown(_ context.Context) error {
 	u.poolManager.Deregister(u.serviceID)
 	return nil
@@ -70,6 +72,13 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 // connection pool, uses gRPC reflection to discover the service's protobuf
 // definitions, and then creates and registers tools based on the discovered
 // methods and any MCP annotations.
+// ctx is the context.
+// serviceConfig is the serviceConfig.
+// toolManager is the toolManager.
+// promptManager is the promptManager.
+// resourceManager is the resourceManager.
+// isReload is the isReload.
+// Returns the result, the result, the result, an error.
 func (u *Upstream) Register(
 	ctx context.Context,
 	serviceConfig *configv1.UpstreamServiceConfig,

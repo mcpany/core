@@ -82,11 +82,13 @@ type Upstream struct{}
 // Shutdown is a no-op for the MCP upstream, as the connections it manages are
 // transient and established on a per-call basis. There are no persistent
 // connections to tear down.
+// Returns an error.
 func (u *Upstream) Shutdown(_ context.Context) error {
 	return nil
 }
 
 // NewUpstream creates a new instance of Upstream.
+// Returns the result.
 func NewUpstream() upstream.Upstream {
 	return &Upstream{}
 }
@@ -111,6 +113,9 @@ func (p *mcpPrompt) Service() string {
 
 // Get executes the prompt by establishing a session with the downstream MCP
 // service and calling its GetPrompt method.
+// ctx is the context.
+// args is the args.
+// Returns the result, an error.
 func (p *mcpPrompt) Get(ctx context.Context, args json.RawMessage) (*mcp.GetPromptResult, error) {
 	var arguments map[string]string
 	if args != nil {
@@ -161,6 +166,8 @@ func (r *mcpResource) Service() string {
 
 // Read retrieves the content of the resource by establishing a session with the
 // downstream MCP service and calling its ReadResource method.
+// ctx is the context.
+// Returns the result, an error.
 func (r *mcpResource) Read(ctx context.Context) (*mcp.ReadResourceResult, error) {
 	var result *mcp.ReadResourceResult
 	err := r.withMCPClientSession(ctx, func(cs ClientSession) error {
@@ -183,6 +190,13 @@ func (r *mcpResource) Subscribe(_ context.Context) error {
 // determines the connection type (stdio or HTTP), connects to the downstream
 // service, lists its available tools, prompts, and resources, and registers
 // them with the appropriate managers.
+// ctx is the context.
+// serviceConfig is the serviceConfig.
+// toolManager is the toolManager.
+// promptManager is the promptManager.
+// resourceManager is the resourceManager.
+// isReload is the isReload.
+// Returns the result, the result, the result, an error.
 func (u *Upstream) Register(
 	ctx context.Context,
 	serviceConfig *configv1.UpstreamServiceConfig,
@@ -298,6 +312,9 @@ func (c *mcpConnection) withMCPClientSession(ctx context.Context, f func(cs Clie
 
 // CallTool executes a tool on the downstream MCP service by establishing a
 // session and forwarding the tool call.
+// ctx is the context.
+// params is the params.
+// Returns the result, an error.
 func (c *mcpConnection) CallTool(ctx context.Context, params *mcp.CallToolParams) (*mcp.CallToolResult, error) {
 	var result *mcp.CallToolResult
 	err := c.withMCPClientSession(ctx, func(cs ClientSession) error {
@@ -858,6 +875,7 @@ type authenticatedRoundTripper struct {
 
 // RoundTrip applies the configured authenticator to the request and then passes
 // it to the base RoundTripper.
+// Returns the result, an error.
 func (rt *authenticatedRoundTripper) RoundTrip(req *http.Request) (*http.Response, error) {
 	if rt.authenticator != nil {
 		if err := rt.authenticator.Authenticate(req); err != nil {

@@ -37,6 +37,7 @@ type Upstream struct {
 
 // Shutdown gracefully terminates the WebSocket upstream service by shutting down
 // the associated connection pool.
+// Returns an error.
 func (u *Upstream) Shutdown(_ context.Context) error {
 	u.poolManager.Deregister(u.serviceID)
 	return nil
@@ -46,6 +47,7 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 //
 // poolManager is the connection pool manager to be used for managing WebSocket
 // connections.
+// Returns the result.
 func NewUpstream(poolManager *pool.Manager) upstream.Upstream {
 	return &Upstream{
 		poolManager: poolManager,
@@ -55,6 +57,13 @@ func NewUpstream(poolManager *pool.Manager) upstream.Upstream {
 // Register processes the configuration for a WebSocket service. It creates a
 // connection pool and registers tools for each call definition specified in the
 // configuration.
+// ctx is the context.
+// serviceConfig is the serviceConfig.
+// toolManager is the toolManager.
+// promptManager is the promptManager.
+// resourceManager is the resourceManager.
+// isReload is the isReload.
+// Returns the result, the result, the result, an error.
 func (u *Upstream) Register(
 	ctx context.Context,
 	serviceConfig *configv1.UpstreamServiceConfig,

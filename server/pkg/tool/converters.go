@@ -21,6 +21,7 @@ import (
 // ConvertMCPToolToProto transforms an *mcp.Tool, which uses a flexible schema
 // representation, into a protobuf-defined *pb.Tool with a structured input
 // schema. This is used to standardize tool definitions within the system.
+// Returns the result, an error.
 func ConvertMCPToolToProto(tool *mcp.Tool) (*pb.Tool, error) {
 	if tool == nil {
 		return nil, fmt.Errorf("cannot convert nil mcp tool to proto")
@@ -138,6 +139,10 @@ func convertMcpFieldsToInputSchemaProperties(fields []*protobufparser.McpField) 
 
 // ConvertToolDefinitionToProto transforms a *configv1.ToolDefinition into a
 // *pb.Tool.
+// toolDef is the toolDef.
+// inputSchema is the inputSchema.
+// outputSchema is the outputSchema.
+// Returns the result, an error.
 func ConvertToolDefinitionToProto(toolDef *configv1.ToolDefinition, inputSchema, outputSchema *structpb.Struct) (*pb.Tool, error) {
 	if toolDef == nil {
 		return nil, fmt.Errorf("cannot convert nil tool definition to proto")
@@ -200,6 +205,8 @@ func getJSONSchemaForScalarType(scalarType, description string) (*jsonschema.Sch
 // ConvertProtoToMCPTool transforms a protobuf-defined *pb.Tool into an
 // *mcp.Tool. This is the reverse of convertMCPToolToProto and is used when
 // exposing internally defined tools to the outside world.
+// pbTool is the pbTool.
+// Returns the result, an error.
 func ConvertProtoToMCPTool(pbTool *pb.Tool) (*mcp.Tool, error) {
 	if pbTool == nil {
 		return nil, fmt.Errorf("cannot convert nil pb tool to mcp tool")

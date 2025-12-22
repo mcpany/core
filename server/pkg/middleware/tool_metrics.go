@@ -17,11 +17,16 @@ import (
 type ToolMetricsMiddleware struct{}
 
 // NewToolMetricsMiddleware creates a new ToolMetricsMiddleware.
+// Returns the result.
 func NewToolMetricsMiddleware() *ToolMetricsMiddleware {
 	return &ToolMetricsMiddleware{}
 }
 
 // Execute executes the tool metrics middleware.
+// ctx is the context.
+// req is the req.
+// next is the next.
+// Returns the result, an error.
 func (m *ToolMetricsMiddleware) Execute(ctx context.Context, req *tool.ExecutionRequest, next tool.ExecutionFunc) (any, error) {
 	start := time.Now()
 

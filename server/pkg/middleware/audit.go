@@ -22,6 +22,8 @@ type AuditMiddleware struct {
 }
 
 // NewAuditMiddleware creates a new AuditMiddleware.
+// config is the config.
+// Returns the result, an error.
 func NewAuditMiddleware(config *configv1.AuditConfig) (*AuditMiddleware, error) {
 	m := &AuditMiddleware{
 		config: config,
@@ -56,6 +58,10 @@ func NewAuditMiddleware(config *configv1.AuditConfig) (*AuditMiddleware, error) 
 }
 
 // Execute intercepts tool execution to log audit events.
+// ctx is the context.
+// req is the req.
+// next is the next.
+// Returns the result, an error.
 func (m *AuditMiddleware) Execute(ctx context.Context, req *tool.ExecutionRequest, next tool.ExecutionFunc) (any, error) {
 	if m.config == nil || !m.config.GetEnabled() {
 		return next(ctx, req)
@@ -115,6 +121,7 @@ func (m *AuditMiddleware) writeLog(entry AuditEntry) {
 }
 
 // Close closes the underlying store.
+// Returns an error.
 func (m *AuditMiddleware) Close() error {
 	if m.store != nil {
 		return m.store.Close()

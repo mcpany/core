@@ -20,6 +20,7 @@ type Service struct {
 }
 
 // NewService creates and returns a new Service instance.
+// promptManager is the promptManager.
 func NewService(promptManager ManagerInterface) *Service {
 	s := &Service{
 		promptManager: promptManager,
@@ -29,6 +30,7 @@ func NewService(promptManager ManagerInterface) *Service {
 }
 
 // SetMCPServer sets the MCP server instance for the service.
+// mcpServer is the mcpServer.
 func (s *Service) SetMCPServer(mcpServer *mcp.Server) {
 	s.mcpServer = mcpServer
 	s.promptManager.SetMCPServer(NewMCPServerProvider(mcpServer))
@@ -63,6 +65,7 @@ func (s *Service) ListPrompts(
 // prompt by name from the Manager and executes it with the provided
 // arguments, returning the result. If the prompt is not found, it returns a
 // ErrPromptNotFound error.
+// ctx is the context.
 func (s *Service) GetPrompt(
 	ctx context.Context,
 	req *mcp.GetPromptRequest,

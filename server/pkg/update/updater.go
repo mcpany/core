@@ -26,6 +26,8 @@ type Updater struct {
 }
 
 // NewUpdater creates a new Updater.
+// httpClient is the httpClient.
+// Returns the result.
 func NewUpdater(httpClient *http.Client) *Updater {
 	if httpClient == nil {
 		httpClient = http.DefaultClient
@@ -44,6 +46,11 @@ func NewUpdater(httpClient *http.Client) *Updater {
 }
 
 // CheckForUpdate checks for a new release on GitHub.
+// ctx is the context.
+// owner is the owner.
+// repo is the repo.
+// currentVersion is the currentVersion.
+// Returns the result, the result, an error.
 func (u *Updater) CheckForUpdate(ctx context.Context, owner, repo, currentVersion string) (*github.RepositoryRelease, bool, error) {
 	release, _, err := u.client.Repositories.GetLatestRelease(ctx, owner, repo)
 	if err != nil {
@@ -58,6 +65,11 @@ func (u *Updater) CheckForUpdate(ctx context.Context, owner, repo, currentVersio
 }
 
 // UpdateTo downloads the new release, verifies its checksum, and replaces the current executable.
+// fs is the fs.
+// executablePath is the executablePath.
+// assetName is the assetName.
+// checksumsAssetName is the checksumsAssetName.
+// Returns an error.
 func (u *Updater) UpdateTo(fs afero.Fs, executablePath string, release *github.RepositoryRelease, assetName, checksumsAssetName string) error {
 	var asset *github.ReleaseAsset
 	for _, a := range release.Assets {

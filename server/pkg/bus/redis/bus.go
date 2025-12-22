@@ -23,6 +23,8 @@ type Bus[T any] struct {
 }
 
 // New creates a new RedisBus.
+// redisConfig is the redisConfig.
+// Returns the result, an error.
 func New[T any](redisConfig *bus.RedisBus) (*Bus[T], error) {
 	var options redis.Options
 	if redisConfig != nil {
@@ -34,6 +36,7 @@ func New[T any](redisConfig *bus.RedisBus) (*Bus[T], error) {
 }
 
 // NewWithClient creates a new RedisBus with an existing Redis client.
+// Returns the result.
 func NewWithClient[T any](client *redis.Client) *Bus[T] {
 	return &Bus[T]{
 		client:  client,
@@ -42,6 +45,10 @@ func NewWithClient[T any](client *redis.Client) *Bus[T] {
 }
 
 // Publish publishes a message to a Redis channel.
+// ctx is the context.
+// topic is the topic.
+// msg is the msg.
+// Returns an error.
 func (b *Bus[T]) Publish(ctx context.Context, topic string, msg T) error {
 	payload, err := json.Marshal(msg)
 	if err != nil {
@@ -51,6 +58,10 @@ func (b *Bus[T]) Publish(ctx context.Context, topic string, msg T) error {
 }
 
 // Subscribe subscribes to a Redis channel.
+// ctx is the context.
+// topic is the topic.
+// handler is the handler.
+// Returns the result.
 func (b *Bus[T]) Subscribe(ctx context.Context, topic string, handler func(T)) (unsubscribe func()) {
 	if handler == nil {
 		logging.GetLogger().Error("redis bus: handler cannot be nil")
@@ -112,6 +123,9 @@ func (b *Bus[T]) Subscribe(ctx context.Context, topic string, handler func(T)) (
 }
 
 // SubscribeOnce subscribes to a topic for a single message.
+// ctx is the context.
+// handler is the handler.
+// Returns the result.
 func (b *Bus[T]) SubscribeOnce(ctx context.Context, topic string, handler func(T)) (unsubscribe func()) {
 	if handler == nil {
 		logging.GetLogger().Error("redis bus: handler cannot be nil")
@@ -130,6 +144,7 @@ func (b *Bus[T]) SubscribeOnce(ctx context.Context, topic string, handler func(T
 }
 
 // Close closes the Redis client and all pubsub connections.
+// Returns an error.
 func (b *Bus[T]) Close() error {
 	b.mu.Lock()
 	defer b.mu.Unlock()

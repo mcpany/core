@@ -24,6 +24,9 @@ const exporterOTLP = "otlp"
 // InitTracer initializes the OpenTelemetry tracer provider.
 // It writes traces to the provided writer (e.g., os.Stderr).
 // It returns a shutdown function that should be called when the application exits.
+// ctx is the context.
+// serviceName is the serviceName.
+// version is the version.
 func InitTracer(ctx context.Context, serviceName string, version string, writer io.Writer) (func(context.Context) error, error) {
 	// If writer is nil, discard output
 	if writer == nil {

@@ -17,6 +17,7 @@ type RBACMiddleware struct {
 }
 
 // NewRBACMiddleware creates a new RBACMiddleware.
+// Returns the result.
 func NewRBACMiddleware() *RBACMiddleware {
 	return &RBACMiddleware{
 		enforcer: auth.NewRBACEnforcer(),
@@ -73,6 +74,8 @@ func (m *RBACMiddleware) RequireAnyRole(roles ...string) func(http.Handler) http
 }
 
 // EnforcePolicy allows passing a custom policy function.
+// policyFunc is the policyFunc.
+// Returns the result.
 func (m *RBACMiddleware) EnforcePolicy(policyFunc func(user *configv1.User) bool) func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

@@ -17,6 +17,8 @@ func (p *mcpServerProvider) Server() *mcp.Server {
 }
 
 // NewMCPServerProvider creates a new MCPServerProvider.
+// server is the server.
+// Returns the result.
 func NewMCPServerProvider(server *mcp.Server) MCPServerProvider {
 	return &mcpServerProvider{server: server}
 }
