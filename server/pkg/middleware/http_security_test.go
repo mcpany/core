@@ -29,5 +29,6 @@ func TestHTTPSecurityHeadersMiddleware(t *testing.T) {
 	assert.Equal(t, "SAMEORIGIN", resp.Header.Get("X-Frame-Options"))
 	assert.Equal(t, "1; mode=block", resp.Header.Get("X-XSS-Protection"))
 	assert.Equal(t, "strict-origin-when-cross-origin", resp.Header.Get("Referrer-Policy"))
+	assert.Equal(t, "default-src 'self'; img-src 'self' data:; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; object-src 'none'; base-uri 'self'; form-action 'self';", resp.Header.Get("Content-Security-Policy"))
 	assert.Equal(t, http.StatusOK, resp.StatusCode)
 }
