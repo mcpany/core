@@ -4,36 +4,14 @@
 package util //nolint:revive
 
 import (
-	"bytes"
 	"encoding/json"
 )
 
 const redactedPlaceholder = "[REDACTED]"
 
-var sensitiveKeysBytes [][]byte
-
-func init() {
-	for _, k := range sensitiveKeys {
-		sensitiveKeysBytes = append(sensitiveKeysBytes, []byte(k))
-	}
-}
-
 // RedactJSON parses a JSON byte slice and redacts sensitive keys.
 // If the input is not valid JSON object or array, it returns the input as is.
 func RedactJSON(input []byte) []byte {
-	// Optimization: Check if any sensitive key is present in the input.
-	// If not, we can skip the expensive unmarshal/marshal process.
-	hasSensitiveKey := false
-	for _, k := range sensitiveKeysBytes {
-		if bytes.Contains(input, k) {
-			hasSensitiveKey = true
-			break
-		}
-	}
-	if !hasSensitiveKey {
-		return input
-	}
-
 	// Optimization: Determine if input is an object or array to avoid unnecessary Unmarshal calls.
 	// We only need to check the first non-whitespace character.
 	// bytes.TrimSpace scans the whole slice (left and right), which is O(N). We only need O(Whitespace).
