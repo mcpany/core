@@ -21,7 +21,6 @@ import (
 	"time"
 
 	"github.com/mcpany/core/pkg/auth"
-	"github.com/mcpany/core/pkg/cli"
 	"github.com/mcpany/core/pkg/client"
 	"github.com/mcpany/core/pkg/command"
 	"github.com/mcpany/core/pkg/consts"
@@ -1380,23 +1379,36 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 		if err != nil {
 			return nil, fmt.Errorf("failed to execute command with stdio: %w", err)
 		}
-		defer func() { _ = stdin.Close() }()
+		// We don't defer stdin.Close() here because we close it in the writer goroutine
 
+		var stderrBuf bytes.Buffer
+		stderrDone := make(chan struct{})
 		go func() {
+			defer close(stderrDone)
 			defer func() { _ = stderr.Close() }()
-			_, _ = io.Copy(io.Discard, io.LimitReader(stderr, limit))
+			_, _ = io.Copy(&stderrBuf, io.LimitReader(stderr, limit))
 		}()
 
-		cliExecutor := cli.NewJSONExecutor(stdin, io.LimitReader(stdout, limit))
-		var result map[string]interface{}
 		var unmarshaledInputs map[string]interface{}
 		decoder := json.NewDecoder(bytes.NewReader(req.ToolInputs))
 		decoder.UseNumber()
 		if err := decoder.Decode(&unmarshaledInputs); err != nil {
+			_ = stdin.Close()
 			return nil, fmt.Errorf("failed to unmarshal tool inputs: %w", err)
 		}
-		if err := cliExecutor.Execute(unmarshaledInputs, &result); err != nil {
-			return nil, fmt.Errorf("failed to execute JSON CLI command: %w", err)
+
+		// Write inputs to stdin in a separate goroutine to avoid deadlock if the command crashes
+		go func() {
+			defer func() { _ = stdin.Close() }()
+			if err := json.NewEncoder(stdin).Encode(unmarshaledInputs); err != nil {
+				logging.GetLogger().Warn("Failed to encode inputs to stdin", "error", err)
+			}
+		}()
+
+		var result map[string]interface{}
+		if err := json.NewDecoder(io.LimitReader(stdout, limit)).Decode(&result); err != nil {
+			<-stderrDone
+			return nil, fmt.Errorf("failed to execute JSON CLI command: %w. Stderr: %s", err, stderrBuf.String())
 		}
 		return result, nil
 	}
@@ -1621,23 +1633,36 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 		if err != nil {
 			return nil, fmt.Errorf("failed to execute command with stdio: %w", err)
 		}
-		defer func() { _ = stdin.Close() }()
+		// We don't defer stdin.Close() here because we close it in the writer goroutine
 
+		var stderrBuf bytes.Buffer
+		stderrDone := make(chan struct{})
 		go func() {
+			defer close(stderrDone)
 			defer func() { _ = stderr.Close() }()
-			_, _ = io.Copy(io.Discard, io.LimitReader(stderr, limit))
+			_, _ = io.Copy(&stderrBuf, io.LimitReader(stderr, limit))
 		}()
 
-		cliExecutor := cli.NewJSONExecutor(stdin, io.LimitReader(stdout, limit))
-		var result map[string]interface{}
 		var unmarshaledInputs map[string]interface{}
 		decoder := json.NewDecoder(bytes.NewReader(req.ToolInputs))
 		decoder.UseNumber()
 		if err := decoder.Decode(&unmarshaledInputs); err != nil {
+			_ = stdin.Close()
 			return nil, fmt.Errorf("failed to unmarshal tool inputs: %w", err)
 		}
-		if err := cliExecutor.Execute(unmarshaledInputs, &result); err != nil {
-			return nil, fmt.Errorf("failed to execute JSON CLI command: %w", err)
+
+		// Write inputs to stdin in a separate goroutine to avoid deadlock if the command crashes
+		go func() {
+			defer func() { _ = stdin.Close() }()
+			if err := json.NewEncoder(stdin).Encode(unmarshaledInputs); err != nil {
+				logging.GetLogger().Warn("Failed to encode inputs to stdin", "error", err)
+			}
+		}()
+
+		var result map[string]interface{}
+		if err := json.NewDecoder(io.LimitReader(stdout, limit)).Decode(&result); err != nil {
+			<-stderrDone
+			return nil, fmt.Errorf("failed to execute JSON CLI command: %w. Stderr: %s", err, stderrBuf.String())
 		}
 		return result, nil
 	}
