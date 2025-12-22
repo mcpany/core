@@ -32,7 +32,7 @@ func getDockerCommand(t *testing.T) []string {
 }
 
 func TestDockerCompose(t *testing.T) {
-	t.SkipNow()
+	// t.SkipNow()
 	if !integration.IsDockerSocketAccessible() {
 		t.Skip("Docker socket not accessible, skipping TestDockerCompose.")
 	}
@@ -43,7 +43,7 @@ func TestDockerCompose(t *testing.T) {
 	t.Parallel()
 
 	rootDir := integration.ProjectRoot(t)
-	dockerComposeFile := filepath.Join(rootDir, "docker-compose.yml")
+	dockerComposeFile := filepath.Join(rootDir, "examples/docker-compose-demo/docker-compose.yml")
 
 	dockerCmd := getDockerCommand(t)
 
@@ -156,7 +156,13 @@ func TestDockerCompose(t *testing.T) {
 }
 
 func TestHelmChart(t *testing.T) {
-	t.SkipNow()
+	// Add build/env/bin to PATH to find helm installed by make
+	rootDir := integration.ProjectRoot(t)
+	buildBin := filepath.Join(rootDir, "../build/env/bin")
+	oldPath := os.Getenv("PATH")
+	os.Setenv("PATH", buildBin+string(os.PathListSeparator)+oldPath)
+	defer os.Setenv("PATH", oldPath)
+
 	if !commandExists("helm") {
 		t.Skip("helm command not found, skipping TestHelmChart.")
 	}

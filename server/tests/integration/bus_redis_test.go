@@ -10,7 +10,9 @@ import (
 	"testing"
 	"time"
 
+	"github.com/mcpany/core/pkg/bus"
 	"github.com/mcpany/core/pkg/bus/redis"
+	bustypes "github.com/mcpany/core/proto/bus"
 	goredis "github.com/redis/go-redis/v9"
 	"github.com/stretchr/testify/assert"
 )
@@ -93,4 +95,146 @@ func TestRedisBus_Integration_SubscribeOnce(t *testing.T) {
 	assert.NoError(t, err)
 
 	wg.Wait()
+}
+
+func TestBusProvider_Integration_Redis(t *testing.T) {
+	if testing.Short() {
+		t.Skip("skipping integration test in short mode.")
+	}
+
+	redisAddr, cleanup := StartRedisContainer(t)
+	defer cleanup()
+
+	messageBus := bustypes.MessageBus_builder{}.Build()
+	redisBus := bustypes.RedisBus_builder{}.Build()
+	redisBus.SetAddress(redisAddr)
+	messageBus.SetRedis(redisBus)
+
+	provider, err := bus.NewProvider(messageBus)
+	assert.NoError(t, err)
+
+	bus1, _ := bus.GetBus[string](provider, "strings")
+	bus2, _ := bus.GetBus[int](provider, "ints")
+	bus3, _ := bus.GetBus[string](provider, "strings")
+
+	assert.NotNil(t, bus1)
+	assert.NotNil(t, bus2)
+	assert.Same(t, bus1, bus3)
+}
+
+func TestRedisBus_Integration_Unsubscribe(t *testing.T) {
+	if testing.Short() {
+		t.Skip("skipping integration test in short mode.")
+	}
+
+	redisAddr, cleanup := StartRedisContainer(t)
+	defer cleanup()
+
+	client := goredis.NewClient(&goredis.Options{
+		Addr: redisAddr,
+	})
+
+	redisBus := redis.NewWithClient[string](client)
+
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	topic := "test-topic"
+	msg1 := "hello"
+	msg2 := "world"
+
+	var receivedMessages []string
+	var mu sync.Mutex
+
+	handler := func(m string) {
+		mu.Lock()
+		defer mu.Unlock()
+		receivedMessages = append(receivedMessages, m)
+	}
+
+	unsubscribe := redisBus.Subscribe(ctx, topic, handler)
+
+	// Give subscriber a moment to connect
+	time.Sleep(100 * time.Millisecond)
+
+	err := redisBus.Publish(ctx, topic, msg1)
+	assert.NoError(t, err)
+
+	// Wait for message 1
+	time.Sleep(100 * time.Millisecond)
+
+	unsubscribe()
+
+	err = redisBus.Publish(ctx, topic, msg2)
+	assert.NoError(t, err)
+
+	// Wait for message 2 (should not be received)
+	time.Sleep(100 * time.Millisecond)
+
+	mu.Lock()
+	messages := receivedMessages
+	mu.Unlock()
+
+	assert.Len(t, messages, 1)
+	assert.Equal(t, msg1, messages[0])
+}
+
+func TestRedisBus_Integration_Concurrent(t *testing.T) {
+	if testing.Short() {
+		t.Skip("skipping integration test in short mode.")
+	}
+
+	redisAddr, cleanup := StartRedisContainer(t)
+	defer cleanup()
+
+	client := goredis.NewClient(&goredis.Options{
+		Addr: redisAddr,
+	})
+
+	redisBus := redis.NewWithClient[string](client)
+
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	topic := "test-topic-concurrent"
+	numSubscribers := 10
+	numMessages := 50
+
+	var wg sync.WaitGroup
+	wg.Add(numSubscribers * numMessages)
+
+	var receivedMessages [][]string
+	var mu sync.Mutex
+
+    receivedMessages = make([][]string, numSubscribers)
+    for i := 0; i < numSubscribers; i++ {
+        receivedMessages[i] = make([]string, 0, numMessages)
+    }
+
+	for i := 0; i < numSubscribers; i++ {
+		go func(subIdx int) {
+			redisBus.Subscribe(ctx, topic, func(msg string) {
+				mu.Lock()
+				receivedMessages[subIdx] = append(receivedMessages[subIdx], msg)
+				mu.Unlock()
+				wg.Done()
+			})
+		}(i)
+	}
+
+	// Give subscribers a moment to connect
+	time.Sleep(500 * time.Millisecond)
+
+	for i := 0; i < numMessages; i++ {
+		err := redisBus.Publish(ctx, topic, "msg")
+		assert.NoError(t, err)
+	}
+
+	wg.Wait()
+
+	mu.Lock()
+	defer mu.Unlock()
+	for i := 0; i < numSubscribers; i++ {
+		assert.Len(t, receivedMessages[i], numMessages)
+	}
 }
