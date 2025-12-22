@@ -4,7 +4,6 @@
 package util //nolint:revive
 
 import (
-	"bytes"
 	"encoding/json"
 )
 
@@ -25,7 +24,7 @@ func RedactJSON(input []byte) []byte {
 	// If not, we can skip the expensive unmarshal/marshal process.
 	hasSensitiveKey := false
 	for _, k := range sensitiveKeysBytes {
-		if bytes.Contains(input, k) {
+		if bytesContainsFold(input, k) {
 			hasSensitiveKey = true
 			break
 		}
@@ -145,6 +144,36 @@ var sensitiveKeys = []string{"api_key", "apikey", "access_token", "token", "secr
 func IsSensitiveKey(key string) bool {
 	for _, s := range sensitiveKeys {
 		if containsFold(key, s) {
+			return true
+		}
+	}
+	return false
+}
+
+// bytesContainsFold reports whether substr is within s, interpreting ASCII characters case-insensitively.
+func bytesContainsFold(s, substr []byte) bool {
+	if len(substr) > len(s) {
+		return false
+	}
+	if len(substr) == 0 {
+		return true
+	}
+
+	// Brute force case-insensitive search
+	end := len(s) - len(substr)
+	for i := 0; i <= end; i++ {
+		match := true
+		for j := 0; j < len(substr); j++ {
+			charS := s[i+j]
+			if charS >= 'A' && charS <= 'Z' {
+				charS += 32 // to lower
+			}
+			if charS != substr[j] {
+				match = false
+				break
+			}
+		}
+		if match {
 			return true
 		}
 	}
