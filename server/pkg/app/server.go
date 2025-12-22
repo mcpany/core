@@ -939,7 +939,17 @@ func (a *Application) runServerMode(
 		httpBindAddress = ":" + httpBindAddress
 	}
 
-	startHTTPServer(localCtx, &wg, errChan, "MCP Any HTTP", httpBindAddress, otelhttp.NewHandler(middleware.HTTPSecurityHeadersMiddleware(ipMiddleware.Handler(mux)), "mcp-server"), shutdownTimeout)
+	// Apply Global Rate Limit: 20 RPS with a burst of 50.
+	// This helps prevent basic DoS attacks on all HTTP endpoints, including /upload.
+	rateLimiter := middleware.NewHTTPRateLimitMiddleware(20, 50)
+	// Middleware order: SecurityHeaders -> IPAllowList -> RateLimit -> Mux
+	handler := middleware.HTTPSecurityHeadersMiddleware(
+		ipMiddleware.Handler(
+			rateLimiter.Handler(mux),
+		),
+	)
+
+	startHTTPServer(localCtx, &wg, errChan, "MCP Any HTTP", httpBindAddress, otelhttp.NewHandler(handler, "mcp-server"), shutdownTimeout)
 
 	grpcBindAddress := grpcPort
 	if grpcBindAddress != "" {
