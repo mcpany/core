@@ -5,7 +5,10 @@ package middleware
 
 import (
 	"context"
+	"crypto/sha256"
+	"encoding/hex"
 	"fmt"
+	"net/http"
 	"sync"
 	"time"
 
@@ -190,7 +193,22 @@ func (m *RateLimitMiddleware) getPartitionKey(ctx context.Context, keyBy configv
 		// Fallback or separate bucket for anonymous?
 		return "user:anonymous"
 	case configv1.RateLimitConfig_KEY_BY_API_KEY:
-		// Not implemented extraction yet
+		if apiKey, ok := auth.APIKeyFromContext(ctx); ok {
+			hash := sha256.Sum256([]byte(apiKey))
+			return "apikey:" + hex.EncodeToString(hash[:])
+		}
+		// Fallback to extraction from HTTP request if available
+		if req, ok := ctx.Value("http.request").(*http.Request); ok {
+			if key := req.Header.Get("X-API-Key"); key != "" {
+				hash := sha256.Sum256([]byte(key))
+				return "apikey:" + hex.EncodeToString(hash[:])
+			}
+			if key := req.Header.Get("Authorization"); key != "" {
+				// Use hash of token to avoid storing sensitive data in cache keys
+				hash := sha256.Sum256([]byte(key))
+				return "auth:" + hex.EncodeToString(hash[:])
+			}
+		}
 		return ""
 	default:
 		return ""
