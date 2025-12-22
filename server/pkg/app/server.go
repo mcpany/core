@@ -1025,6 +1025,13 @@ func (a *Application) runServerMode(
 	wg.Wait()
 	logging.GetLogger().Info("All servers have shut down.")
 
+	// Shutdown all upstreams
+	shutdownCtx, shutdownCancel := context.WithTimeout(context.Background(), shutdownTimeout)
+	defer shutdownCancel()
+	if err := serviceRegistry.Close(shutdownCtx); err != nil {
+		logging.GetLogger().Error("Failed to shutdown services", "error", err)
+	}
+
 	return startupErr
 }
 
