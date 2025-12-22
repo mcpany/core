@@ -57,7 +57,7 @@ func TestHTTPTool_PathTraversal_Vulnerability(t *testing.T) {
 		Parameters: []*configv1.HttpParameterMapping{paramMapping},
 	}.Build()
 
-	httpTool := tool.NewHTTPTool(mcpTool, poolManager, "test-service", nil, callDef, nil, nil, "")
+	httpTool := tool.NewHTTPTool(mcpTool, poolManager, "test-service", nil, callDef, nil, nil, nil, "")
 
 	inputs := json.RawMessage(`{"file": "../../secret"}`)
 	req := &tool.ExecutionRequest{ToolInputs: inputs}

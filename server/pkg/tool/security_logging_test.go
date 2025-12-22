@@ -59,7 +59,7 @@ func TestHTTPTool_Execute_LogsSensitiveHeaders(t *testing.T) {
 		UnderlyingMethodFqn: lo.ToPtr("GET " + server.URL),
 	}.Build()
 
-	httpTool := tool.NewHTTPTool(mcpTool, poolManager, "test-service", &sensitiveAuthenticator{}, &configv1.HttpCallDefinition{}, nil, nil, "")
+	httpTool := tool.NewHTTPTool(mcpTool, poolManager, "test-service", &sensitiveAuthenticator{}, &configv1.HttpCallDefinition{}, nil, nil, nil, "")
 
 	_, err := httpTool.Execute(context.Background(), &tool.ExecutionRequest{})
 	require.NoError(t, err)

@@ -61,7 +61,7 @@ func TestGRPCTool_Execute_PoolError(t *testing.T) {
 func TestHTTPTool_Execute_PoolError(t *testing.T) {
 	poolManager := pool.NewManager()
 	toolProto := &v1.Tool{}
-	httpTool := NewHTTPTool(toolProto, poolManager, "non-existent-service", nil, &configv1.HttpCallDefinition{}, nil, nil, "")
+	httpTool := NewHTTPTool(toolProto, poolManager, "non-existent-service", nil, &configv1.HttpCallDefinition{}, nil, nil, nil, "")
 	_, err := httpTool.Execute(context.Background(), &ExecutionRequest{})
 	assert.Error(t, err)
 	assert.Contains(t, err.Error(), "no http pool found for service")
@@ -75,7 +75,7 @@ func TestHTTPTool_Execute_InvalidFQN(t *testing.T) {
 	poolManager.Register("http-service", httpPool)
 	toolProto := &v1.Tool{}
 	toolProto.SetUnderlyingMethodFqn("invalid")
-	httpTool := NewHTTPTool(toolProto, poolManager, "http-service", nil, &configv1.HttpCallDefinition{}, nil, nil, "")
+	httpTool := NewHTTPTool(toolProto, poolManager, "http-service", nil, &configv1.HttpCallDefinition{}, nil, nil, nil, "")
 	_, err := httpTool.Execute(context.Background(), &ExecutionRequest{})
 	assert.Error(t, err)
 	assert.Contains(t, err.Error(), "invalid http tool definition")
@@ -89,7 +89,7 @@ func TestHTTPTool_Execute_BadURL(t *testing.T) {
 	poolManager.Register("http-service", httpPool)
 	toolProto := &v1.Tool{}
 	toolProto.SetUnderlyingMethodFqn("GET %")
-	httpTool := NewHTTPTool(toolProto, poolManager, "http-service", nil, &configv1.HttpCallDefinition{}, nil, nil, "")
+	httpTool := NewHTTPTool(toolProto, poolManager, "http-service", nil, &configv1.HttpCallDefinition{}, nil, nil, nil, "")
 	_, err := httpTool.Execute(context.Background(), &ExecutionRequest{})
 	assert.Error(t, err)
 }
@@ -112,7 +112,7 @@ func TestHTTPTool_Execute_InputTransformerError(t *testing.T) {
 	inputTransformer := &configv1.InputTransformer{}
 	inputTransformer.SetTemplate("{{.invalid}}")
 	callDef.SetInputTransformer(inputTransformer)
-	httpTool := NewHTTPTool(toolProto, poolManager, "http-service", nil, callDef, nil, nil, "")
+	httpTool := NewHTTPTool(toolProto, poolManager, "http-service", nil, callDef, nil, nil, nil, "")
 	_, err := httpTool.Execute(context.Background(), &ExecutionRequest{ToolInputs: json.RawMessage(`{"key":"value"}`)})
 	assert.Error(t, err)
 }
@@ -136,7 +136,7 @@ func TestHTTPTool_Execute_OutputTransformerError(t *testing.T) {
 	outputTransformer := &configv1.OutputTransformer{}
 	outputTransformer.SetTemplate("{{.invalid}}")
 	callDef.SetOutputTransformer(outputTransformer)
-	httpTool := NewHTTPTool(toolProto, poolManager, "http-service", nil, callDef, nil, nil, "")
+	httpTool := NewHTTPTool(toolProto, poolManager, "http-service", nil, callDef, nil, nil, nil, "")
 	_, err := httpTool.Execute(context.Background(), &ExecutionRequest{})
 	assert.Error(t, err)
 }
@@ -317,7 +317,7 @@ func TestHTTPTool_Getters(t *testing.T) {
 	cacheConfig.SetIsEnabled(true)
 	callDef := &configv1.HttpCallDefinition{}
 	callDef.SetCache(cacheConfig)
-	httpTool := NewHTTPTool(toolProto, nil, "", nil, callDef, nil, nil, "")
+	httpTool := NewHTTPTool(toolProto, nil, "", nil, callDef, nil, nil, nil, "")
 
 	assert.Equal(t, toolProto, httpTool.Tool(), "Tool() should return the correct tool proto")
 	assert.Equal(t, cacheConfig, httpTool.GetCacheConfig(), "GetCacheConfig() should return the correct cache config")
@@ -511,7 +511,7 @@ func TestHTTPTool_Execute_UnmarshalError(t *testing.T) {
 
 	toolProto := &v1.Tool{}
 	toolProto.SetUnderlyingMethodFqn("POST " + server.URL)
-	httpTool := NewHTTPTool(toolProto, poolManager, "http-service", nil, &configv1.HttpCallDefinition{}, nil, nil, "")
+	httpTool := NewHTTPTool(toolProto, poolManager, "http-service", nil, &configv1.HttpCallDefinition{}, nil, nil, nil, "")
 
 	_, err := httpTool.Execute(context.Background(), &ExecutionRequest{ToolInputs: json.RawMessage(`{invalid`)})
 	assert.Error(t, err)

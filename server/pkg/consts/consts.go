@@ -45,6 +45,8 @@ const (
 	// DefaultMaxCommandOutputBytes is the default maximum size of the command output (stdout + stderr) in bytes.
 	// 10MB should be enough for most use cases while preventing OOM.
 	DefaultMaxCommandOutputBytes = 10 * 1024 * 1024
+	// ContextKeyHTTPRequest is the context key used to store the incoming *http.Request.
+	ContextKeyHTTPRequest = "http.request"
 )
 
 const (

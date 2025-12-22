@@ -100,6 +100,15 @@ message UpstreamServiceConfig {
 
   // If true, automatically convert all API calls to tools.
   bool auto_discover_tool = 30 [json_name = "auto_discover_tool"];
+
+  // Configuration for context propagation.
+  ContextPropagationConfig context_propagation = 32 [json_name = "context_propagation"];
+}
+
+message ContextPropagationConfig {
+  // Headers to propagate from the incoming request to the upstream request.
+  // The value will be extracted from the incoming HTTP request headers (if available).
+  repeated string headers = 1 [json_name = "headers"];
 }
 
 message CallPolicy {

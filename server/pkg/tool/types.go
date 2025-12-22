@@ -295,6 +295,7 @@ type HTTPTool struct {
 	cache             *configv1.CacheConfig
 	resilienceManager *resilience.Manager
 	policies          []*CompiledCallPolicy
+	contextPropagation *configv1.ContextPropagationConfig
 	callID            string
 
 	// Cached fields for performance
@@ -318,27 +319,29 @@ type HTTPTool struct {
 //   callDefinition: The configuration for the HTTP call.
 //   cfg: The resilience configuration.
 //   policies: The security policies for the call.
+//   contextPropagation: The context propagation configuration.
 //   callID: The unique identifier for the call.
 //
 // Returns:
 //   *HTTPTool: The created HTTPTool.
-func NewHTTPTool(tool *v1.Tool, poolManager *pool.Manager, serviceID string, authenticator auth.UpstreamAuthenticator, callDefinition *configv1.HttpCallDefinition, cfg *configv1.ResilienceConfig, policies []*configv1.CallPolicy, callID string) *HTTPTool {
+func NewHTTPTool(tool *v1.Tool, poolManager *pool.Manager, serviceID string, authenticator auth.UpstreamAuthenticator, callDefinition *configv1.HttpCallDefinition, cfg *configv1.ResilienceConfig, policies []*configv1.CallPolicy, contextPropagation *configv1.ContextPropagationConfig, callID string) *HTTPTool {
 	var webhookClient *WebhookClient
 	if it := callDefinition.GetInputTransformer(); it != nil && it.GetWebhook() != nil {
 		webhookClient = NewWebhookClient(it.GetWebhook())
 	}
 	t := &HTTPTool{
-		tool:              tool,
-		poolManager:       poolManager,
-		serviceID:         serviceID,
-		authenticator:     authenticator,
-		parameters:        callDefinition.GetParameters(),
-		inputTransformer:  callDefinition.GetInputTransformer(),
-		outputTransformer: callDefinition.GetOutputTransformer(),
-		webhookClient:     webhookClient,
-		cache:             callDefinition.GetCache(),
-		resilienceManager: resilience.NewManager(cfg),
-		callID:            callID,
+		tool:               tool,
+		poolManager:        poolManager,
+		serviceID:          serviceID,
+		authenticator:      authenticator,
+		parameters:         callDefinition.GetParameters(),
+		inputTransformer:   callDefinition.GetInputTransformer(),
+		outputTransformer:  callDefinition.GetOutputTransformer(),
+		webhookClient:      webhookClient,
+		cache:              callDefinition.GetCache(),
+		resilienceManager:  resilience.NewManager(cfg),
+		contextPropagation: contextPropagation,
+		callID:             callID,
 	}
 
 	compiled, err := CompileCallPolicies(policies)
@@ -642,6 +645,19 @@ func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 			logging.GetLogger().Debug("Applied authentication", "user_agent", httpReq.Header.Get("User-Agent"))
 		} else {
 			logging.GetLogger().Debug("No authenticator configured")
+		}
+
+		// Apply context propagation
+		if t.contextPropagation != nil {
+			// Extract original request from context if available
+			if originalReq, ok := ctx.Value(consts.ContextKeyHTTPRequest).(*http.Request); ok {
+				for _, headerName := range t.contextPropagation.GetHeaders() {
+					if val := originalReq.Header.Get(headerName); val != "" {
+						httpReq.Header.Set(headerName, val)
+						logging.GetLogger().DebugContext(ctx, "Propagated header", "header", headerName)
+					}
+				}
+			}
 		}
 
 		if method == http.MethodGet || method == http.MethodDelete {

@@ -51,6 +51,7 @@ func TestHTTPTool_Execute_Success(t *testing.T) {
 		&configv1.HttpCallDefinition{},
 		nil, // Resilience
 		nil, // Policies
+		nil, // ContextPropagation
 		"",  // CallID
 	)
 
@@ -98,6 +99,7 @@ func TestHTTPTool_Execute_Post_WithBody(t *testing.T) {
 		&configv1.HttpCallDefinition{},
 		nil,
 		nil,
+		nil,
 		"",
 	)
 
@@ -142,6 +144,7 @@ func TestHTTPTool_Execute_Auth(t *testing.T) {
 		"s",
 		mockAuth,
 		&configv1.HttpCallDefinition{},
+		nil,
 		nil,
 		nil,
 		"",

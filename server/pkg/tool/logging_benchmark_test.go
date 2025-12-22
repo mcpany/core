@@ -40,7 +40,7 @@ func BenchmarkHTTPToolExecute_LoggingOverhead(b *testing.B) {
 	toolProto := &v1.Tool{}
 	toolProto.SetUnderlyingMethodFqn("GET http://example.com")
 
-	httpTool := NewHTTPTool(toolProto, poolManager, "service-id", nil, &configv1.HttpCallDefinition{}, nil, nil, "")
+	httpTool := NewHTTPTool(toolProto, poolManager, "service-id", nil, &configv1.HttpCallDefinition{}, nil, nil, nil, "")
 
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {

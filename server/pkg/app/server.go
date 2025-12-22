@@ -24,6 +24,7 @@ import (
 	"github.com/mcpany/core/pkg/appconsts"
 	"github.com/mcpany/core/pkg/auth"
 	"github.com/mcpany/core/pkg/bus"
+	"github.com/mcpany/core/pkg/consts"
 	"github.com/mcpany/core/pkg/config"
 	"github.com/mcpany/core/pkg/logging"
 	"github.com/mcpany/core/pkg/mcpserver"
@@ -620,6 +621,9 @@ func (a *Application) runServerMode(
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			ip := util.ExtractIP(r.RemoteAddr)
 			ctx := util.ContextWithRemoteIP(r.Context(), ip)
+			// Inject http.request into context for downstream consumption (e.g. Context Propagation)
+			// We use string key "http.request" to match existing usage in auth.go and SDK conventions.
+			ctx = context.WithValue(ctx, consts.ContextKeyHTTPRequest, r)
 			r = r.WithContext(ctx)
 
 			if apiKey != "" {
