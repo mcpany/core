@@ -125,3 +125,36 @@ func TestStartServer_Error(t *testing.T) {
 	err := StartServer("invalid:address")
 	assert.Error(t, err)
 }
+
+func TestMetricsWrappers(t *testing.T) {
+	// Initialize to ensure sink is set up (though it might be already by other tests or init)
+	sink := metrics.NewInmemSink(time.Second, 5*time.Second)
+	conf := metrics.DefaultConfig("mcpany")
+	conf.EnableHostname = false
+	_, err := metrics.NewGlobal(conf, sink)
+	require.NoError(t, err)
+
+	t.Run("IncrCounterWithLabels", func(t *testing.T) {
+		assert.NotPanics(t, func() {
+			IncrCounterWithLabels([]string{"test", "counter_lbl"}, 1, []Label{{Name: "k", Value: "v"}})
+		})
+	})
+
+	t.Run("MeasureSinceWithLabels", func(t *testing.T) {
+		assert.NotPanics(t, func() {
+			MeasureSinceWithLabels([]string{"test", "timer_lbl"}, time.Now(), []Label{{Name: "k", Value: "v"}})
+		})
+	})
+
+	t.Run("AddSample", func(t *testing.T) {
+		assert.NotPanics(t, func() {
+			AddSample([]string{"test", "sample"}, 1.0)
+		})
+	})
+
+	t.Run("AddSampleWithLabels", func(t *testing.T) {
+		assert.NotPanics(t, func() {
+			AddSampleWithLabels([]string{"test", "sample_lbl"}, 1.0, []Label{{Name: "k", Value: "v"}})
+		})
+	})
+}
