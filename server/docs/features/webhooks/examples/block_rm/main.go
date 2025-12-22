@@ -27,6 +27,8 @@ type WebhookResponse struct {
 	Status  *Status `json:"status,omitempty"`
 }
 
+// Status represents the status of the webhook response.
+// It contains a code and a message.
 type Status struct {
 	Code    int32  `json:"code"`
 	Message string `json:"message"`

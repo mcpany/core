@@ -185,10 +185,15 @@ type GRPCTool struct {
 
 // NewGRPCTool creates a new GRPCTool.
 //
-// tool is the protobuf definition of the tool.
-// poolManager is used to get a gRPC client from the connection pool.
-// serviceID identifies the specific gRPC service connection pool.
-// method is the protobuf descriptor for the gRPC method to be called.
+// Parameters:
+//   tool: The protobuf definition of the tool.
+//   poolManager: The connection pool manager.
+//   serviceID: The identifier for the service.
+//   method: The gRPC method descriptor.
+//   callDefinition: The configuration for the gRPC call.
+//
+// Returns:
+//   *GRPCTool: The created GRPCTool.
 func NewGRPCTool(tool *v1.Tool, poolManager *pool.Manager, serviceID string, method protoreflect.MethodDescriptor, callDefinition *configv1.GrpcCallDefinition) *GRPCTool {
 	return &GRPCTool{
 		tool:           tool,
@@ -306,12 +311,18 @@ type HTTPTool struct {
 
 // NewHTTPTool creates a new HTTPTool.
 //
-// tool is the protobuf definition of the tool.
-// poolManager is used to get an HTTP client from the connection pool.
-// serviceID identifies the specific HTTP service connection pool.
-// authenticator handles adding authentication credentials to the request.
-// callDefinition contains the configuration for the HTTP call, such as
-// parameter mappings and transformers.
+// Parameters:
+//   tool: The protobuf definition of the tool.
+//   poolManager: The connection pool manager.
+//   serviceID: The identifier for the service.
+//   authenticator: The authenticator for upstream requests.
+//   callDefinition: The configuration for the HTTP call.
+//   cfg: The resilience configuration.
+//   policies: The security policies for the call.
+//   callID: The unique identifier for the call.
+//
+// Returns:
+//   *HTTPTool: The created HTTPTool.
 func NewHTTPTool(tool *v1.Tool, poolManager *pool.Manager, serviceID string, authenticator auth.UpstreamAuthenticator, callDefinition *configv1.HttpCallDefinition, cfg *configv1.ResilienceConfig, policies []*configv1.CallPolicy, callID string) *HTTPTool {
 	var webhookClient *WebhookClient
 	if it := callDefinition.GetInputTransformer(); it != nil && it.GetWebhook() != nil {
@@ -777,9 +788,13 @@ type MCPTool struct {
 
 // NewMCPTool creates a new MCPTool.
 //
-// tool is the protobuf definition of the tool.
-// client is the MCP client used to communicate with the downstream service.
-// callDefinition contains configuration for input/output transformations.
+// Parameters:
+//   tool: The protobuf definition of the tool.
+//   client: The MCP client for downstream communication.
+//   callDefinition: The configuration for the MCP call.
+//
+// Returns:
+//   *MCPTool: The created MCPTool.
 func NewMCPTool(tool *v1.Tool, client client.MCPClient, callDefinition *configv1.MCPCallDefinition) *MCPTool {
 	var webhookClient *WebhookClient
 	if it := callDefinition.GetInputTransformer(); it != nil && it.GetWebhook() != nil {
@@ -948,13 +963,17 @@ type OpenAPITool struct {
 
 // NewOpenAPITool creates a new OpenAPITool.
 //
-// tool is the protobuf definition of the tool.
-// client is the HTTP client used to make the request.
-// parameterDefs maps parameter names to their location (e.g., "path", "query").
-// method is the HTTP method for the operation.
-// url is the URL template for the endpoint.
-// authenticator handles adding authentication credentials to the request.
-// callDefinition contains configuration for input/output transformations.
+// Parameters:
+//   tool: The protobuf definition of the tool.
+//   client: The HTTP client for requests.
+//   parameterDefs: Mapping of parameter names to their locations (path, query, etc.).
+//   method: The HTTP method.
+//   url: The URL template.
+//   authenticator: The authenticator for requests.
+//   callDefinition: The configuration for the OpenAPI call.
+//
+// Returns:
+//   *OpenAPITool: The created OpenAPITool.
 func NewOpenAPITool(tool *v1.Tool, client client.HTTPClient, parameterDefs map[string]string, method, url string, authenticator auth.UpstreamAuthenticator, callDefinition *configv1.OpenAPICallDefinition) *OpenAPITool {
 	var webhookClient *WebhookClient
 	if it := callDefinition.GetInputTransformer(); it != nil && it.GetWebhook() != nil {
@@ -1160,8 +1179,15 @@ type CommandTool struct {
 
 // NewCommandTool creates a new CommandTool.
 //
-// tool is the protobuf definition of the tool.
-// command is the command to be executed.
+// Parameters:
+//   tool: The protobuf definition of the tool.
+//   service: The configuration of the command-line service.
+//   callDefinition: The configuration for the command-line call.
+//   policies: The security policies.
+//   callID: The unique identifier for the call.
+//
+// Returns:
+//   Tool: The created CommandTool.
 func NewCommandTool(
 	tool *v1.Tool,
 	service *configv1.CommandLineUpstreamService,
@@ -1199,8 +1225,15 @@ type LocalCommandTool struct {
 
 // NewLocalCommandTool creates a new LocalCommandTool.
 //
-// tool is the protobuf definition of the tool.
-// command is the command to be executed.
+// Parameters:
+//   tool: The protobuf definition of the tool.
+//   service: The configuration of the command-line service.
+//   callDefinition: The configuration for the command-line call.
+//   policies: The security policies.
+//   callID: The unique identifier for the call.
+//
+// Returns:
+//   Tool: The created LocalCommandTool.
 func NewLocalCommandTool(
 	tool *v1.Tool,
 	service *configv1.CommandLineUpstreamService,

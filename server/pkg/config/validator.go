@@ -53,22 +53,13 @@ func (e *ValidationError) Error() string {
 // Invalid services are not removed from the configuration; instead, a list of
 // validation errors is returned.
 //
-// config is the server configuration to be validated.
+// Parameters:
+//   ctx: The context for the validation (used for secret resolution).
+//   config: The server configuration to be validated.
+//   binaryType: The type of binary (server, worker) which might affect validation rules.
 //
-// It returns a slice of ValidationErrors, which will be empty if the
-// configuration is valid.
-// Validate inspects the given McpAnyServerConfig for correctness and consistency.
-// It iterates through the list of upstream services, checking for valid
-// service definitions, addresses, cache settings, and authentication
-// configurations.
-//
-// Invalid services are not removed from the configuration; instead, a list of
-// validation errors is returned.
-//
-// config is the server configuration to be validated.
-//
-// It returns a slice of ValidationErrors, which will be empty if the
-// configuration is valid.
+// Returns:
+//   []ValidationError: A slice of ValidationErrors, which will be empty if the configuration is valid.
 func Validate(ctx context.Context, config *configv1.McpAnyServerConfig, binaryType BinaryType) []ValidationError {
 	var validationErrors []ValidationError
 	serviceNames := make(map[string]bool)
@@ -159,6 +150,13 @@ func validateGlobalSettings(gs *configv1.GlobalSettings, binaryType BinaryType) 
 }
 
 // ValidateOrError validates a single upstream service configuration and returns an error if it's invalid.
+//
+// Parameters:
+//   ctx: The context for the validation.
+//   service: The upstream service configuration to validate.
+//
+// Returns:
+//   error: An error if validation fails.
 func ValidateOrError(ctx context.Context, service *configv1.UpstreamServiceConfig) error {
 	return validateUpstreamService(ctx, service)
 }

@@ -38,8 +38,12 @@ type UpstreamServiceFactory struct {
 
 // NewUpstreamServiceFactory creates a new UpstreamServiceFactory.
 //
-// poolManager is the connection pool manager used by upstreams that require
-// connection pooling (e.g., gRPC, HTTP, WebSocket).
+// Parameters:
+//   poolManager: The connection pool manager used by upstreams that require
+//   connection pooling (e.g., gRPC, HTTP, WebSocket).
+//
+// Returns:
+//   Factory: A new Factory instance.
 func NewUpstreamServiceFactory(poolManager *pool.Manager) Factory {
 	return &UpstreamServiceFactory{
 		poolManager: poolManager,
@@ -49,9 +53,12 @@ func NewUpstreamServiceFactory(poolManager *pool.Manager) Factory {
 // NewUpstream creates and returns an appropriate upstream.Upstream implementation
 // based on the type of service specified in the configuration.
 //
-// config is the configuration for the upstream service.
-// It returns a new upstream service instance or an error if the service type is
-// unknown.
+// Parameters:
+//   config: The configuration for the upstream service.
+//
+// Returns:
+//   upstream.Upstream: A new upstream service instance.
+//   error: An error if the service type is unknown.
 func (f *UpstreamServiceFactory) NewUpstream(config *configv1.UpstreamServiceConfig) (upstream.Upstream, error) {
 	if config == nil {
 		return nil, fmt.Errorf("upstream service config cannot be nil")

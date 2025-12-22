@@ -51,6 +51,10 @@ func GlobalSettings() *Settings {
 }
 
 // Load initializes the global settings from the command line and config files.
+//
+// Parameters:
+//   cmd: The cobra command containing flags.
+//   fs: The file system interface for reading config files.
 func (s *Settings) Load(cmd *cobra.Command, fs afero.Fs) error {
 	s.cmd = cmd
 	s.fs = fs
