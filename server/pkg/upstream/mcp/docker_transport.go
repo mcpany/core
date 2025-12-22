@@ -168,14 +168,54 @@ func (c *dockerConn) Read(_ context.Context) (jsonrpc.Message, error) {
 	}
 
 	var msg jsonrpc.Message
-	if header.Method != "" {
-		msg = &jsonrpc.Request{}
-	} else {
-		msg = &jsonrpc.Response{}
-	}
+	isRequest := header.Method != ""
 
-	if err := json.Unmarshal(raw, msg); err != nil {
-		return nil, fmt.Errorf("failed to unmarshal message: %w", err)
+	if isRequest {
+		req := &jsonrpc.Request{}
+		if err := json.Unmarshal(raw, req); err != nil {
+			// Alternative: Unmarshal into a temporary struct that matches Request/Response but with Any ID.
+			type requestAnyID struct {
+				Method string          `json:"method"`
+				Params json.RawMessage `json:"params,omitempty"`
+				ID     any             `json:"id,omitempty"`
+			}
+			var rAny requestAnyID
+			if err2 := json.Unmarshal(raw, &rAny); err2 != nil {
+				return nil, fmt.Errorf("failed to unmarshal request: %w (and %v)", err2, err)
+			}
+			req = &jsonrpc.Request{
+				Method: rAny.Method,
+				Params: rAny.Params,
+			}
+			setUnexportedID(&req.ID, rAny.ID)
+			msg = req
+		} else {
+			msg = req
+		}
+	} else {
+		resp := &jsonrpc.Response{}
+		if err := json.Unmarshal(raw, resp); err != nil {
+			// Use alias struct
+			type responseAnyID struct {
+				Result json.RawMessage `json:"result,omitempty"`
+				Error  *transportError `json:"error,omitempty"`
+				ID     any             `json:"id,omitempty"`
+			}
+			var rAny responseAnyID
+			if err2 := json.Unmarshal(raw, &rAny); err2 != nil {
+				return nil, fmt.Errorf("failed to unmarshal response: %w (and %v)", err2, err)
+			}
+			resp = &jsonrpc.Response{
+				Result: rAny.Result,
+			}
+			if rAny.Error != nil {
+				resp.Error = rAny.Error
+			}
+			setUnexportedID(&resp.ID, rAny.ID)
+			msg = resp
+		} else {
+			msg = resp
+		}
 	}
 
 	return msg, nil
@@ -183,7 +223,42 @@ func (c *dockerConn) Read(_ context.Context) (jsonrpc.Message, error) {
 
 // Write encodes and sends a JSON-RPC message to the container's input stream.
 func (c *dockerConn) Write(_ context.Context, msg jsonrpc.Message) error {
-	return c.encoder.Encode(msg)
+	var method string
+	var params any
+	var result any
+	var errorObj any
+	var id any
+
+	if req, ok := msg.(*jsonrpc.Request); ok {
+		method = req.Method
+		params = req.Params
+		id = fixID(req.ID)
+	} else if resp, ok := msg.(*jsonrpc.Response); ok {
+		result = resp.Result
+		errorObj = resp.Error
+		id = fixID(resp.ID)
+	}
+
+	wire := map[string]any{
+		"jsonrpc": "2.0",
+	}
+	if method != "" {
+		wire["method"] = method
+	}
+	if params != nil {
+		wire["params"] = params
+	}
+	if id != nil {
+		wire["id"] = id
+	}
+	if result != nil {
+		wire["result"] = result
+	}
+	if errorObj != nil {
+		wire["error"] = errorObj
+	}
+
+	return c.encoder.Encode(wire)
 }
 
 // Close terminates the connection by closing the underlying ReadWriteCloser.
