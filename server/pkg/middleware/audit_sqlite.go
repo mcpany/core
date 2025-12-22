@@ -158,7 +158,21 @@ func (s *SQLiteAuditStore) Verify() (bool, error) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
-	rows, err := s.db.Query("SELECT id, timestamp, tool_name, user_id, profile_id, arguments, result, error, duration_ms, prev_hash, hash FROM audit_logs ORDER BY id ASC")
+	rows, err := s.db.Query(`
+		SELECT
+			id,
+			COALESCE(timestamp, ''),
+			COALESCE(tool_name, ''),
+			COALESCE(user_id, ''),
+			COALESCE(profile_id, ''),
+			COALESCE(arguments, ''),
+			COALESCE(result, ''),
+			COALESCE(error, ''),
+			COALESCE(duration_ms, 0),
+			COALESCE(prev_hash, ''),
+			COALESCE(hash, '')
+		FROM audit_logs ORDER BY id ASC
+	`)
 	if err != nil {
 		return false, err
 	}
@@ -176,6 +190,14 @@ func (s *SQLiteAuditStore) Verify() (bool, error) {
 
 		if prevHash != expectedPrevHash {
 			return false, fmt.Errorf("integrity violation at id %d: prev_hash mismatch (expected %q, got %q)", id, expectedPrevHash, prevHash)
+		}
+
+		if hash == "" {
+			// Legacy record, skip verification but update expectedPrevHash
+			// We can't verify the hash, but we can reset the chain for subsequent entries.
+			// Effectively, a legacy entry acts as a new genesis block.
+			expectedPrevHash = ""
+			continue
 		}
 
 		calculatedHash := computeHash(ts, toolName, userID, profileID, args, result, errorMsg, durationMs, prevHash)

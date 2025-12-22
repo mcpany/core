@@ -170,9 +170,8 @@ func TestSQLiteAuditStore_Migration(t *testing.T) {
 	assert.NoError(t, err, "Columns should exist after migration")
 
 	// Verify behavior on legacy data
-	// Since legacy data has empty hashes, verification should fail
+	// Since legacy data has empty hashes, verification should now pass (skipped for empty hash)
 	valid, err := store.Verify()
-	// Verify should fail
-	assert.False(t, valid)
-	assert.Error(t, err)
+	assert.NoError(t, err)
+	assert.True(t, valid, "Verify should pass for legacy data (hash check skipped)")
 }
