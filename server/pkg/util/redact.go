@@ -34,18 +34,49 @@ func RedactJSON(input []byte) []byte {
 		return input
 	}
 
-	var m map[string]interface{}
-	if err := json.Unmarshal(input, &m); err == nil {
-		redactMapInPlace(m)
-		b, _ := json.Marshal(m)
-		return b
+	// Optimization: Determine if input is an object or array to avoid unnecessary Unmarshal calls.
+	// We only need to check the first non-whitespace character.
+	// bytes.TrimSpace scans the whole slice (left and right), which is O(N). We only need O(Whitespace).
+	var firstByte byte
+	for i := 0; i < len(input); i++ {
+		b := input[i]
+		if b != ' ' && b != '\t' && b != '\n' && b != '\r' {
+			firstByte = b
+			break
+		}
 	}
-	var s []interface{}
-	if err := json.Unmarshal(input, &s); err == nil {
-		redactSliceInPlace(s)
-		b, _ := json.Marshal(s)
-		return b
+
+	switch firstByte {
+	case '{':
+		var m map[string]interface{}
+		if err := json.Unmarshal(input, &m); err == nil {
+			redactMapInPlace(m)
+			b, _ := json.Marshal(m)
+			return b
+		}
+	case '[':
+		var s []interface{}
+		if err := json.Unmarshal(input, &s); err == nil {
+			redactSliceInPlace(s)
+			b, _ := json.Marshal(s)
+			return b
+		}
+	default:
+		// Try both if we can't determine (e.g. unknown format), though unlikely for valid JSON
+		var m map[string]interface{}
+		if err := json.Unmarshal(input, &m); err == nil {
+			redactMapInPlace(m)
+			b, _ := json.Marshal(m)
+			return b
+		}
+		var s []interface{}
+		if err := json.Unmarshal(input, &s); err == nil {
+			redactSliceInPlace(s)
+			b, _ := json.Marshal(s)
+			return b
+		}
 	}
+
 	return input
 }
 
