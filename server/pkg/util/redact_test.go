@@ -108,4 +108,19 @@ func TestRedactJSON(t *testing.T) {
 		output := RedactJSON([]byte(input))
 		assert.Equal(t, []byte(input), output)
 	})
+
+	t.Run("case sensitivity check", func(t *testing.T) {
+		// usage of uppercase key should be redacted
+		// Note: We use "innocent_value" to ensure that the value itself doesn't trigger the sensitive key check
+		input := `{"API_KEY": "innocent_value", "public": "value"}`
+		output := RedactJSON([]byte(input))
+
+		var m map[string]interface{}
+		err := json.Unmarshal(output, &m)
+		assert.NoError(t, err)
+
+		// API_KEY should be redacted regardless of case
+		assert.Equal(t, "[REDACTED]", m["API_KEY"], "API_KEY should be redacted")
+		assert.Equal(t, "value", m["public"])
+	})
 }
