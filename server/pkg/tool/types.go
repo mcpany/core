@@ -15,6 +15,7 @@ import (
 	"net/url"
 	"os"
 	"path"
+	"path/filepath"
 	"strconv"
 	"strings"
 	"sync"
@@ -1314,7 +1315,7 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 				placeholder := "{{" + k + "}}"
 				if strings.Contains(arg, placeholder) {
 					val := fmt.Sprintf("%v", v)
-					if err := checkForPathTraversal(val); err != nil {
+					if err := checkForInsecurePath(val); err != nil {
 						return nil, fmt.Errorf("parameter %q: %w", k, err)
 					}
 					if err := checkForArgumentInjection(val); err != nil {
@@ -1344,7 +1345,7 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 			if argsList, ok := argsVal.([]any); ok {
 				for _, arg := range argsList {
 					if argStr, ok := arg.(string); ok {
-						if err := checkForPathTraversal(argStr); err != nil {
+						if err := checkForInsecurePath(argStr); err != nil {
 							return nil, fmt.Errorf("args parameter: %w", err)
 						}
 						if err := checkForArgumentInjection(argStr); err != nil {
@@ -1399,7 +1400,7 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 			env = append(env, fmt.Sprintf("%s=%s", name, secretValue))
 		} else if val, ok := inputs[name]; ok {
 			valStr := fmt.Sprintf("%v", val)
-			if err := checkForPathTraversal(valStr); err != nil {
+			if err := checkForInsecurePath(valStr); err != nil {
 				return nil, fmt.Errorf("parameter %q: %w", name, err)
 			}
 			env = append(env, fmt.Sprintf("%s=%s", name, valStr))
@@ -1850,6 +1851,16 @@ func checkForPathTraversal(val string) error {
 	}
 	if strings.Contains(val, "/../") || strings.Contains(val, "\\..\\") || strings.Contains(val, "/..\\") || strings.Contains(val, "\\../") {
 		return fmt.Errorf("path traversal attempt detected")
+	}
+	return nil
+}
+
+func checkForInsecurePath(val string) error {
+	if err := checkForPathTraversal(val); err != nil {
+		return err
+	}
+	if filepath.IsAbs(val) {
+		return fmt.Errorf("absolute paths are not allowed")
 	}
 	return nil
 }
