@@ -72,13 +72,13 @@ func AuthMiddleware(authManager *auth.Manager) mcp.Middleware {
 			}
 
 			// Authenticate the request.
-			_, err := authManager.Authenticate(ctx, serviceID, httpReq)
+			newCtx, err := authManager.Authenticate(ctx, serviceID, httpReq)
 			if err != nil {
 				return nil, fmt.Errorf("unauthorized: %w", err)
 			}
 
 			// If authentication is successful, proceed to the next handler.
-			return next(ctx, method, req)
+			return next(newCtx, method, req)
 		}
 	}
 }
