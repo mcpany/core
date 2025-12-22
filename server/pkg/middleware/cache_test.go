@@ -310,3 +310,46 @@ func TestCachingMiddleware_ActionDeleteCache(t *testing.T) {
 	// I will update Validated Logic in CacheMiddleware:
 	// If Action == DeleteCache, SKIP cache check.
 }
+
+func TestCachingMiddleware_Clear(t *testing.T) {
+	// Setup
+	tm := &mockToolManager{}
+	cacheMiddleware := middleware.NewCachingMiddleware(tm)
+
+	testTool := &mockTool{
+		tool: v1.Tool_builder{
+			Name:      proto.String(testToolName),
+			ServiceId: proto.String(testServiceName),
+		}.Build(),
+		cacheConfig: configv1.CacheConfig_builder{
+			IsEnabled: proto.Bool(true),
+			Ttl:       durationpb.New(1 * time.Hour),
+		}.Build(),
+	}
+	req := &tool.ExecutionRequest{ToolName: testServiceToolName}
+	ctx := tool.NewContextWithTool(context.Background(), testTool)
+
+	nextFunc := func(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
+		t, _ := tool.GetFromContext(ctx)
+		return t.Execute(ctx, req)
+	}
+
+	// 1. Populate cache
+	_, err := cacheMiddleware.Execute(ctx, req, nextFunc)
+	require.NoError(t, err)
+	assert.Equal(t, 1, testTool.executeCount)
+
+	// 2. Verify cache hit
+	_, err = cacheMiddleware.Execute(ctx, req, nextFunc)
+	require.NoError(t, err)
+	assert.Equal(t, 1, testTool.executeCount)
+
+	// 3. Clear cache
+	err = cacheMiddleware.Clear(context.Background())
+	require.NoError(t, err)
+
+	// 4. Verify cache miss
+	_, err = cacheMiddleware.Execute(ctx, req, nextFunc)
+	require.NoError(t, err)
+	assert.Equal(t, 2, testTool.executeCount, "Tool should be executed again after cache clear")
+}

@@ -72,6 +72,11 @@ func TestSQLUpstream_Register_Execute(t *testing.T) {
 	// Test Tool Execution
 	require.NotNil(t, capturedTool)
 
+	// Coverage for getters
+	assert.NotNil(t, capturedTool.Tool())
+	assert.NotNil(t, capturedTool.MCPTool())
+	assert.Nil(t, capturedTool.GetCacheConfig())
+
 	// Test Case 1: Active users
 	req := &tool.ExecutionRequest{
 		ToolName:   "get_users",
