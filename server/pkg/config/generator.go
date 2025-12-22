@@ -59,7 +59,7 @@ func (g *Generator) Generate() ([]byte, error) {
 func (g *Generator) prompt(prompt string) (string, error) {
 	fmt.Print(prompt)
 	input, err := g.Reader.ReadString('\n')
-	if err != nil {
+	if err != nil && len(input) == 0 {
 		return "", err
 	}
 	return strings.TrimSpace(input), nil
