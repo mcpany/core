@@ -57,7 +57,7 @@ Most "popular" MCP servers today are bespoke binaries. If the upstream API chang
   - **WebRTC**: Connect to WebRTC services.
 - **Advanced Service & Safety Policies**:
   - **Safety**: Control which tools are exposed to the AI to limit context (reduce hallucinations) and prevent dangerous actions (e.g., blocking `DELETE` operations).
-  - **Performance**: Configure [Caching](docs/caching.md) and Rate Limiting to optimize performance and protect upstream services.
+  - **Performance**: Configure [Caching](docs/caching.md) and Rate Limiting (per-IP, per-user, or **per-API Key**) to optimize performance and protect upstream services.
   - **Audit Logging**: Keep a tamper-evident record of all tool executions in a JSON file or **SQLite database** (using SHA-256 hash chaining) for compliance and security auditing.
 - **MCP Any Proxy**: Proxy and re-expose tools from another MCP Any instance.
 - **Upstream Authentication**: Securely connect to your backend services using:
