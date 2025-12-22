@@ -8,6 +8,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/mcpany/core/pkg/auth"
 	"github.com/mcpany/core/pkg/tool"
 	"github.com/mcpany/core/pkg/util"
 	configv1 "github.com/mcpany/core/proto/config/v1"
@@ -179,6 +180,66 @@ func TestRateLimitMiddleware_Granular(t *testing.T) {
 	// IP A should be allowed again
 	executed = false
 	_, err = mw.Execute(ctxA, req, next)
+	assert.NoError(t, err)
+	assert.True(t, executed)
+}
+
+func TestRateLimitMiddleware_Granular_APIKey(t *testing.T) {
+	// Setup
+	mockManager := new(MockToolManager)
+	mw := NewRateLimitMiddleware(mockManager)
+
+	// Define Tool and Service
+	toolName := "my_tool"
+	serviceID := "my_service"
+	mockTool := new(MockTool)
+	// Using proto helpers
+	mockTool.On("Tool").Return(&v1.Tool{Name: proto.String(toolName), ServiceId: proto.String(serviceID)})
+
+	mockManager.On("GetTool", toolName).Return(mockTool, true)
+
+	// Rate Limit Config with Granularity
+	rlConfig := &configv1.RateLimitConfig{
+		IsEnabled: proto.Bool(true),
+		RequestsPerSecond: proto.Float64(1),
+		Burst: proto.Int64(1),
+		Storage: enumPtr(configv1.RateLimitConfig_STORAGE_MEMORY),
+		KeyBy: enumPtr(configv1.RateLimitConfig_KEY_BY_API_KEY),
+	}
+
+	serviceInfo := &tool.ServiceInfo{
+		Name: "My Service",
+		Config: &configv1.UpstreamServiceConfig{
+			RateLimit: rlConfig,
+		},
+	}
+	mockManager.On("GetServiceInfo", serviceID).Return(serviceInfo, true)
+
+	// Test Case 1: API Key A makes a request
+	ctxA := auth.ContextWithAPIKey(context.Background(), "key-A")
+	req := &tool.ExecutionRequest{ToolName: toolName}
+
+	executed := false
+	next := func(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
+		executed = true
+		return "success", nil
+	}
+
+	// First request should pass
+	_, err := mw.Execute(ctxA, req, next)
+	assert.NoError(t, err)
+	assert.True(t, executed)
+
+	// Second request from API Key A should fail
+	executed = false
+	_, err = mw.Execute(ctxA, req, next)
+	assert.Error(t, err)
+	assert.False(t, executed)
+
+	// Test Case 2: API Key B makes a request (should pass)
+	ctxB := auth.ContextWithAPIKey(context.Background(), "key-B")
+	executed = false
+	_, err = mw.Execute(ctxB, req, next)
 	assert.NoError(t, err)
 	assert.True(t, executed)
 }

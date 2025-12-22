@@ -85,8 +85,12 @@ func TestAuthMiddleware(t *testing.T) {
 		mw := middleware.AuthMiddleware(authManager)
 
 		var nextCalled bool
-		nextHandler := func(_ context.Context, _ string, _ mcp.Request) (mcp.Result, error) {
+		nextHandler := func(ctx context.Context, _ string, _ mcp.Request) (mcp.Result, error) {
 			nextCalled = true
+			// Verify context has API key
+			key, ok := auth.APIKeyFromContext(ctx)
+			assert.True(t, ok, "API key should be in context")
+			assert.Equal(t, "secret", key)
 			return nil, nil
 		}
 
