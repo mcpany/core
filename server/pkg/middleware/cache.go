@@ -7,6 +7,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"sync"
 	"time"
 
 	"github.com/eko/gocache/lib/v4/cache"
@@ -22,8 +23,9 @@ import (
 // CachingMiddleware is a tool execution middleware that provides caching
 // functionality.
 type CachingMiddleware struct {
-	cache       *cache.Cache[any]
-	toolManager tool.ManagerInterface
+	cache          *cache.Cache[any]
+	toolManager    tool.ManagerInterface
+	semanticCaches sync.Map
 }
 
 // NewCachingMiddleware creates a new CachingMiddleware.
@@ -62,6 +64,10 @@ func (m *CachingMiddleware) Execute(ctx context.Context, req *tool.ExecutionRequ
 	labels := []metrics.Label{
 		{Name: "service", Value: serviceID},
 		{Name: "tool", Value: toolName},
+	}
+
+	if cacheConfig.GetStrategy() == "semantic" {
+		return m.executeSemantic(ctx, t, req, next, cacheConfig, labels)
 	}
 
 	// Inject CacheControl if not present
@@ -145,7 +151,72 @@ func (m *CachingMiddleware) getCacheKey(req *tool.ExecutionRequest) string {
 	return fmt.Sprintf("%s:%s", req.ToolName, normalizedInputs)
 }
 
+func (m *CachingMiddleware) executeSemantic(ctx context.Context, t tool.Tool, req *tool.ExecutionRequest, next tool.ExecutionFunc, config *configv1.CacheConfig, labels []metrics.Label) (any, error) {
+	serviceID := t.Tool().GetServiceId()
+
+	var semCache *SemanticCache
+	if val, ok := m.semanticCaches.Load(serviceID); ok {
+		semCache = val.(*SemanticCache)
+	} else {
+		semConfig := config.GetSemanticConfig()
+		if semConfig == nil {
+			logging.GetLogger().Warn("Semantic strategy selected but no semantic config found", "tool", t.Tool().GetName())
+			// Fallback to exact match logic (basically continuing is hard without refactoring, so we just skip cache here)
+			return next(ctx, req)
+		}
+
+		var provider EmbeddingProvider
+		if semConfig.GetProvider() == "openai" {
+			provider = NewOpenAIEmbeddingProvider(semConfig.GetApiKey(), semConfig.GetModel())
+		} else {
+			logging.GetLogger().Warn("Unknown embedding provider", "provider", semConfig.GetProvider())
+			return next(ctx, req)
+		}
+
+		semCache = NewSemanticCache(provider, semConfig.GetSimilarityThreshold())
+		m.semanticCaches.Store(serviceID, semCache)
+	}
+
+	inputBytes, err := json.Marshal(req.ToolInputs)
+	if err != nil {
+		logging.GetLogger().Error("Failed to marshal tool inputs for semantic cache", "error", err)
+		return next(ctx, req)
+	}
+	inputStr := string(inputBytes)
+
+	// Check cache
+	cached, hit, err := semCache.Get(ctx, req.ToolName, inputStr)
+	if err != nil {
+		logging.GetLogger().Error("Semantic cache error", "error", err)
+		return next(ctx, req)
+	}
+
+	if hit {
+		metrics.IncrCounterWithLabels([]string{"cache", "hits"}, 1, labels)
+		return cached, nil
+	}
+
+	metrics.IncrCounterWithLabels([]string{"cache", "misses"}, 1, labels)
+
+	result, err := next(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+
+	// Set cache
+	if err := semCache.Set(ctx, req.ToolName, inputStr, result, config.GetTtl().AsDuration()); err != nil {
+		logging.GetLogger().Error("Failed to set semantic cache", "error", err)
+	}
+
+	return result, nil
+}
+
 // Clear clears the cache.
 func (m *CachingMiddleware) Clear(ctx context.Context) error {
+	// Also clear semantic caches
+	m.semanticCaches.Range(func(key, value any) bool {
+		m.semanticCaches.Delete(key)
+		return true
+	})
 	return m.cache.Clear(ctx)
 }
