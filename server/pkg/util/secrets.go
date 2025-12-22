@@ -240,10 +240,8 @@ func resolveSecretRecursive(ctx context.Context, secret *configv1.SecretValue, d
 		}
 
 		if result.SecretString == nil {
-			if result.SecretBinary != nil {
-				return string(result.SecretBinary), nil
-			}
-			return "", fmt.Errorf("secret value is not a string or binary")
+			// Handle binary secret? For now, we only support string.
+			return "", fmt.Errorf("secret value is not a string (binary secrets not supported)")
 		}
 
 		secretVal := *result.SecretString

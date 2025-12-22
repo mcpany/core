@@ -482,18 +482,9 @@ func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 				if param.GetDisableEscape() {
 					// Check for path traversal if in path
 					if t.paramInPath[i] {
-						// Check the raw value first
-						if err := checkForPathTraversal(valStr); err != nil {
-							return nil, fmt.Errorf("path traversal attempt detected in parameter %q: %w", schema.GetName(), err)
+						if valStr == ".." || strings.HasPrefix(valStr, "../") || strings.HasSuffix(valStr, "/..") || strings.Contains(valStr, "/../") {
+							return nil, fmt.Errorf("path traversal attempt detected in parameter %q", schema.GetName())
 						}
-
-						// Check the decoded value to prevent bypasses like %2e%2e
-						if decodedVal, err := url.QueryUnescape(valStr); err == nil {
-							if err := checkForPathTraversal(decodedVal); err != nil {
-								return nil, fmt.Errorf("path traversal attempt detected in parameter %q (decoded): %w", schema.GetName(), err)
-							}
-						}
-
 						pathStr = strings.ReplaceAll(pathStr, placeholder, valStr)
 					}
 					if t.paramInQuery[i] {

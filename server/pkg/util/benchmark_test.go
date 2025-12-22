@@ -51,21 +51,6 @@ func BenchmarkSanitizeID(b *testing.B) {
 	})
 }
 
-func BenchmarkReplaceURLPath(b *testing.B) {
-	path := "/api/v1/users/{{userId}}/posts/{{postId}}"
-	params := map[string]interface{}{
-		"userId": "123",
-		"postId": "456",
-	}
-
-	b.Run("Standard", func(b *testing.B) {
-		b.ReportAllocs()
-		for i := 0; i < b.N; i++ {
-			ReplaceURLPath(path, params, nil)
-		}
-	})
-}
-
 func BenchmarkSanitizeOperationID(b *testing.B) {
 	b.Run("Clean", func(b *testing.B) {
 		input := "validOperationID-123_test"

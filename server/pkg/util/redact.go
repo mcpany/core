@@ -1,40 +1,18 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
-package util //nolint:revive
+package util
 
 import (
-	"bytes"
 	"encoding/json"
 	"strings"
 )
 
 const redactedPlaceholder = "[REDACTED]"
 
-var sensitiveKeysBytes [][]byte
-
-func init() {
-	for _, k := range sensitiveKeys {
-		sensitiveKeysBytes = append(sensitiveKeysBytes, []byte(k))
-	}
-}
-
 // RedactJSON parses a JSON byte slice and redacts sensitive keys.
 // If the input is not valid JSON object or array, it returns the input as is.
 func RedactJSON(input []byte) []byte {
-	// Optimization: Check if any sensitive key is present in the input.
-	// If not, we can skip the expensive unmarshal/marshal process.
-	hasSensitiveKey := false
-	for _, k := range sensitiveKeysBytes {
-		if bytes.Contains(input, k) {
-			hasSensitiveKey = true
-			break
-		}
-	}
-	if !hasSensitiveKey {
-		return input
-	}
-
 	var m map[string]interface{}
 	if err := json.Unmarshal(input, &m); err == nil {
 		redacted := RedactMap(m)

@@ -4,9 +4,7 @@
 package middleware
 
 import (
-	"crypto/sha256"
 	"database/sql"
-	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"sync"
@@ -43,52 +41,17 @@ func NewSQLiteAuditStore(path string) (*SQLiteAuditStore, error) {
 		arguments TEXT,
 		result TEXT,
 		error TEXT,
-		duration_ms INTEGER,
-		prev_hash TEXT,
-		hash TEXT
+		duration_ms INTEGER
 	);
 	`
 	if _, err := db.Exec(schema); err != nil {
-		_ = db.Close() // Best effort close
+		db.Close()
 		return nil, fmt.Errorf("failed to create audit_logs table: %w", err)
-	}
-
-	// Ensure columns exist (for migration)
-	if err := ensureColumns(db); err != nil {
-		_ = db.Close()
-		return nil, fmt.Errorf("failed to ensure columns: %w", err)
 	}
 
 	return &SQLiteAuditStore{
 		db: db,
 	}, nil
-}
-
-func ensureColumns(db *sql.DB) error {
-	// Helper to check and add column
-	addColumn := func(colName string) error {
-		// Check if column exists
-		query := fmt.Sprintf("SELECT %s FROM audit_logs LIMIT 1", colName) //nolint:gosec
-		rows, err := db.Query(query)
-		if err == nil {
-			// If no error, column exists. Close rows and return.
-			_ = rows.Close()
-			return nil
-		}
-		// If error, it might be "no such column". Proceed to add.
-		// Add column
-		query = fmt.Sprintf("ALTER TABLE audit_logs ADD COLUMN %s TEXT DEFAULT ''", colName)
-		_, err = db.Exec(query)
-		return err
-	}
-
-	if err := addColumn("prev_hash"); err != nil {
-		return err
-	}
-	if err := addColumn("hash"); err != nil {
-		return err
-	}
-	return nil
 }
 
 // Write writes an audit entry to the database.
@@ -109,30 +72,14 @@ func (s *SQLiteAuditStore) Write(entry AuditEntry) error {
 		}
 	}
 
-	ts := entry.Timestamp.Format(time.RFC3339Nano)
-
-	// Get previous hash
-	var prevHash string
-	// Order by ID desc to get the last entry
-	err := s.db.QueryRow("SELECT hash FROM audit_logs ORDER BY id DESC LIMIT 1").Scan(&prevHash)
-	if err != nil && err != sql.ErrNoRows {
-		return fmt.Errorf("failed to get previous hash: %w", err)
-	}
-	if err == sql.ErrNoRows {
-		prevHash = "" // First entry
-	}
-
-	// Compute hash
-	hash := computeHash(ts, entry.ToolName, entry.UserID, entry.ProfileID, argsJSON, resultJSON, entry.Error, entry.DurationMs, prevHash)
-
 	query := `
 	INSERT INTO audit_logs (
-		timestamp, tool_name, user_id, profile_id, arguments, result, error, duration_ms, prev_hash, hash
-	) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+		timestamp, tool_name, user_id, profile_id, arguments, result, error, duration_ms
+	) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
 	`
 
-	_, err = s.db.Exec(query,
-		ts,
+	_, err := s.db.Exec(query,
+		entry.Timestamp.Format(time.RFC3339Nano),
 		entry.ToolName,
 		entry.UserID,
 		entry.ProfileID,
@@ -140,54 +87,8 @@ func (s *SQLiteAuditStore) Write(entry AuditEntry) error {
 		resultJSON,
 		entry.Error,
 		entry.DurationMs,
-		prevHash,
-		hash,
 	)
 	return err
-}
-
-func computeHash(timestamp, toolName, userID, profileID, args, result, errorMsg string, durationMs int64, prevHash string) string {
-	data := fmt.Sprintf("%s|%s|%s|%s|%s|%s|%s|%d|%s",
-		timestamp, toolName, userID, profileID, args, result, errorMsg, durationMs, prevHash)
-	h := sha256.Sum256([]byte(data))
-	return hex.EncodeToString(h[:])
-}
-
-// Verify checks the integrity of the audit logs.
-// It returns true if the chain is valid, false otherwise.
-// If an error occurs during reading, it returns false and the error.
-func (s *SQLiteAuditStore) Verify() (bool, error) {
-	s.mu.Lock()
-	defer s.mu.Unlock()
-
-	rows, err := s.db.Query("SELECT id, timestamp, tool_name, user_id, profile_id, arguments, result, error, duration_ms, prev_hash, hash FROM audit_logs ORDER BY id ASC")
-	if err != nil {
-		return false, err
-	}
-	defer func() { _ = rows.Close() }()
-
-	var expectedPrevHash string
-	for rows.Next() {
-		var id int64
-		var ts, toolName, userID, profileID, args, result, errorMsg, prevHash, hash string
-		var durationMs int64
-
-		if err := rows.Scan(&id, &ts, &toolName, &userID, &profileID, &args, &result, &errorMsg, &durationMs, &prevHash, &hash); err != nil {
-			return false, fmt.Errorf("scan error at id %d: %w", id, err)
-		}
-
-		if prevHash != expectedPrevHash {
-			return false, fmt.Errorf("integrity violation at id %d: prev_hash mismatch (expected %q, got %q)", id, expectedPrevHash, prevHash)
-		}
-
-		calculatedHash := computeHash(ts, toolName, userID, profileID, args, result, errorMsg, durationMs, prevHash)
-		if calculatedHash != hash {
-			return false, fmt.Errorf("integrity violation at id %d: hash mismatch (calculated %q, got %q)", id, calculatedHash, hash)
-		}
-
-		expectedPrevHash = hash
-	}
-	return true, nil
 }
 
 // Close closes the database connection.

@@ -34,12 +34,12 @@ func (s *Service) SetMCPServer(mcpServer *mcp.Server) {
 	s.promptManager.SetMCPServer(NewMCPServerProvider(mcpServer))
 }
 
-// onPromptListChanged notifies clients that the prompt list has changed.
-// Currently this is a no-op as the go-sdk does not expose a public Notify method
-// for PromptListChanged.
+// TODO: Re-enable this method when the go-sdk supports notifications.
+// See: https://github.com/modelcontextprotocol/go-sdk/issues/123
 // func (s *Service) onPromptListChanged() {
-//    // TODO: Re-enable when go-sdk supports public notification triggering
-//	  // log.Warn("Prompt list changed notification not sent (SDK limitation)")
+// 	if s.mcpServer != nil {
+// 		s.mcpServer.Notify("notifications/prompts/list_changed", nil)
+// 	}
 // }
 
 // ListPrompts handles the "prompts/list" MCP request. It retrieves the list of
