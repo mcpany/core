@@ -108,4 +108,18 @@ func TestRedactJSON(t *testing.T) {
 		output := RedactJSON([]byte(input))
 		assert.Equal(t, []byte(input), output)
 	})
+
+	t.Run("case sensitivity check", func(t *testing.T) {
+		// "api_key" is in sensitiveKeys.
+		// We use "superhidden" as value, which is NOT in sensitiveKeys.
+		input := `{"API_KEY": "superhidden", "normal": "value"}`
+		output := RedactJSON([]byte(input))
+
+		// Check if it was redacted
+		var m map[string]interface{}
+		err := json.Unmarshal(output, &m)
+		assert.NoError(t, err)
+		assert.Equal(t, "[REDACTED]", m["API_KEY"])
+		assert.Equal(t, "value", m["normal"])
+	})
 }

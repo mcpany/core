@@ -4,17 +4,25 @@
 package util //nolint:revive
 
 import (
-	"bytes"
 	"encoding/json"
 )
 
 const redactedPlaceholder = "[REDACTED]"
 
 var sensitiveKeysBytes [][]byte
+var sensitiveKeysByFirstChar [256][][]byte
 
 func init() {
 	for _, k := range sensitiveKeys {
-		sensitiveKeysBytes = append(sensitiveKeysBytes, []byte(k))
+		kBytes := []byte(k)
+		sensitiveKeysBytes = append(sensitiveKeysBytes, kBytes)
+		if len(kBytes) > 0 {
+			first := kBytes[0] // sensitiveKeys are all lowercase
+			sensitiveKeysByFirstChar[first] = append(sensitiveKeysByFirstChar[first], kBytes)
+			// Also add for uppercase
+			upper := first - 32
+			sensitiveKeysByFirstChar[upper] = append(sensitiveKeysByFirstChar[upper], kBytes)
+		}
 	}
 }
 
@@ -23,14 +31,7 @@ func init() {
 func RedactJSON(input []byte) []byte {
 	// Optimization: Check if any sensitive key is present in the input.
 	// If not, we can skip the expensive unmarshal/marshal process.
-	hasSensitiveKey := false
-	for _, k := range sensitiveKeysBytes {
-		if bytes.Contains(input, k) {
-			hasSensitiveKey = true
-			break
-		}
-	}
-	if !hasSensitiveKey {
+	if !hasSensitiveKey(input) {
 		return input
 	}
 
@@ -146,6 +147,43 @@ func IsSensitiveKey(key string) bool {
 	for _, s := range sensitiveKeys {
 		if containsFold(key, s) {
 			return true
+		}
+	}
+	return false
+}
+
+// hasSensitiveKey checks if any sensitive key is present in the input (case-insensitive).
+// It uses a lookup table for the first character to quickly skip non-matching sequences.
+func hasSensitiveKey(input []byte) bool {
+	for i := 0; i < len(input); i++ {
+		b := input[i]
+		candidates := sensitiveKeysByFirstChar[b]
+		if len(candidates) == 0 {
+			continue
+		}
+
+		for _, k := range candidates {
+			if len(k) > len(input)-i {
+				continue
+			}
+			match := true
+			// k is lower case. We need to check if input[i:] matches k case-insensitively.
+			// We already matched the first char (case-insensitively via the lookup table).
+			for j := 1; j < len(k); j++ {
+				charInput := input[i+j]
+				charKey := k[j]
+				if charInput == charKey {
+					continue
+				}
+				if charInput >= 'A' && charInput <= 'Z' && charInput+32 == charKey {
+					continue
+				}
+				match = false
+				break
+			}
+			if match {
+				return true
+			}
 		}
 	}
 	return false
