@@ -69,6 +69,13 @@ var NewProviderHook func(*bus.MessageBus) (*Provider, error)
 
 // NewProvider creates and returns a new Provider, which is used to manage
 // multiple topic-based bus instances.
+//
+// Parameters:
+//   messageBus: The configuration for the message bus.
+//
+// Returns:
+//   *Provider: The created Provider.
+//   error: An error if creation fails.
 func NewProvider(messageBus *bus.MessageBus) (*Provider, error) {
 	if NewProviderHook != nil {
 		return NewProviderHook(messageBus)
@@ -111,6 +118,14 @@ var GetBusHook func(p *Provider, topic string) any
 //
 // The type parameter T specifies the message type for the bus, ensuring
 // type safety for each topic.
+//
+// Parameters:
+//   p: The Provider instance.
+//   topic: The topic name.
+//
+// Returns:
+//   Bus[T]: The requested Bus instance.
+//   error: An error if retrieval or creation fails.
 func GetBus[T any](p *Provider, topic string) (Bus[T], error) {
 	if GetBusHook != nil {
 		if bus := GetBusHook(p, topic); bus != nil {

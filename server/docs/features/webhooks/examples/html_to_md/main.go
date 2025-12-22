@@ -115,4 +115,5 @@ func convertHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write(respBytes)
 }
 
+// StatusOK represents the HTTP 200 OK status code.
 const StatusOK = 200
