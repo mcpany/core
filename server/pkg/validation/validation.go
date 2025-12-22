@@ -114,6 +114,58 @@ var IsRelativePath = func(path string) error {
 	return fmt.Errorf("path %q is not allowed (must be in CWD or in MCPANY_FILE_PATH_ALLOW_LIST)", path)
 }
 
+// IsSafeURL checks if a given URL is safe to access.
+// It blocks loopback, private, link-local, and multicast addresses.
+// It also blocks "localhost".
+// It respects MCPANY_URL_ALLOW_LIST environment variable (comma separated).
+// It is a variable to allow mocking in tests.
+var IsSafeURL = func(rawURL string) error {
+	if !IsValidURL(rawURL) {
+		return fmt.Errorf("invalid URL structure")
+	}
+	u, err := url.Parse(rawURL)
+	if err != nil {
+		return err
+	}
+
+	hostname := strings.ToLower(u.Hostname())
+
+	// Check allow list
+	allowList := os.Getenv("MCPANY_URL_ALLOW_LIST")
+	if allowList != "" {
+		for _, allowed := range strings.Split(allowList, ",") {
+			if strings.ToLower(strings.TrimSpace(allowed)) == hostname {
+				return nil
+			}
+		}
+	}
+
+	if hostname == "localhost" {
+		return fmt.Errorf("localhost is not allowed")
+	}
+
+	ip := net.ParseIP(hostname)
+	if ip != nil {
+		if ip.IsLoopback() {
+			return fmt.Errorf("loopback IP %q is not allowed", hostname)
+		}
+		if ip.IsPrivate() {
+			return fmt.Errorf("private IP %q is not allowed", hostname)
+		}
+		if ip.IsLinkLocalUnicast() {
+			return fmt.Errorf("link-local IP %q is not allowed", hostname)
+		}
+		if ip.IsLinkLocalMulticast() {
+			return fmt.Errorf("multicast IP %q is not allowed", hostname)
+		}
+		if ip.IsUnspecified() {
+			return fmt.Errorf("unspecified IP %q is not allowed", hostname)
+		}
+	}
+
+	return nil
+}
+
 // allowedOpaqueSchemes are schemes that are allowed to not have a host component.
 var allowedOpaqueSchemes = map[string]bool{
 	"dns":         true,

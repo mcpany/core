@@ -343,7 +343,7 @@ func TestValidate(t *testing.T) {
 				return cfg
 			}(),
 			expectedErrorCount:  1,
-			expectedErrorString: `service "openapi-bad-url": invalid openapi spec_url: not-a-url`,
+			expectedErrorString: `service "openapi-bad-url": invalid openapi spec_url: invalid URL structure`,
 		},
 		{
 			name: "invalid mcp service - empty command for stdio",
@@ -464,7 +464,7 @@ func TestValidate(t *testing.T) {
 								return cfg
 							}(),
 							expectedErrorCount:  1,
-							expectedErrorString: `service "openapi-invalid-url": invalid openapi spec_url: javascript:alert(1)`,
+							expectedErrorString: `service "openapi-invalid-url": invalid openapi spec_url: invalid URL structure`,
 						},
 						{
 							name: "invalid openapi service - invalid address",
@@ -483,7 +483,7 @@ func TestValidate(t *testing.T) {
 								return cfg
 							}(),
 							expectedErrorCount:  1,
-							expectedErrorString: `service "openapi-invalid-Addr": invalid openapi target_address: javascript:alert(1)`,
+							expectedErrorString: `service "openapi-invalid-Addr": invalid openapi target_address: invalid URL structure`,
 						},
 		{
 			name: "invalid mcp service - bad http url",
@@ -504,7 +504,7 @@ func TestValidate(t *testing.T) {
 				return cfg
 			}(),
 			expectedErrorCount:  1,
-			expectedErrorString: `service "mcp-http-bad": mcp service with http_connection has invalid http_address: bad-url`,
+			expectedErrorString: `service "mcp-http-bad": mcp service with http_connection has invalid http_address: invalid URL structure`,
 		},
 		{
 			name: "invalid mcp service - no connection type",

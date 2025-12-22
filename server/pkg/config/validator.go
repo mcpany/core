@@ -118,8 +118,8 @@ func validateUpstreamServiceCollection(ctx context.Context, collection *configv1
 	if collection.GetHttpUrl() == "" {
 		return fmt.Errorf("collection http_url is empty")
 	}
-	if !validation.IsValidURL(collection.GetHttpUrl()) {
-		return fmt.Errorf("invalid collection http_url: %s", collection.GetHttpUrl())
+	if err := validation.IsSafeURL(collection.GetHttpUrl()); err != nil {
+		return fmt.Errorf("invalid collection http_url: %w", err)
 	}
 	u, _ := url.Parse(collection.GetHttpUrl())
 	if u.Scheme != schemeHTTP && u.Scheme != schemeHTTPS {
@@ -213,8 +213,8 @@ func validateHTTPService(httpService *configv1.HttpUpstreamService) error {
 	if httpService.GetAddress() == "" {
 		return fmt.Errorf("http service has empty target_address")
 	}
-	if !validation.IsValidURL(httpService.GetAddress()) {
-		return fmt.Errorf("invalid http target_address: %s", httpService.GetAddress())
+	if err := validation.IsSafeURL(httpService.GetAddress()); err != nil {
+		return fmt.Errorf("invalid http target_address: %w", err)
 	}
 	u, _ := url.Parse(httpService.GetAddress())
 	if u.Scheme != schemeHTTP && u.Scheme != schemeHTTPS {
@@ -236,8 +236,8 @@ func validateWebSocketService(websocketService *configv1.WebsocketUpstreamServic
 	if websocketService.GetAddress() == "" {
 		return fmt.Errorf("websocket service has empty target_address")
 	}
-	if !validation.IsValidURL(websocketService.GetAddress()) {
-		return fmt.Errorf("invalid websocket target_address: %s", websocketService.GetAddress())
+	if err := validation.IsSafeURL(websocketService.GetAddress()); err != nil {
+		return fmt.Errorf("invalid websocket target_address: %w", err)
 	}
 	u, _ := url.Parse(websocketService.GetAddress())
 	if u.Scheme != "ws" && u.Scheme != "wss" {
@@ -275,11 +275,15 @@ func validateOpenAPIService(openapiService *configv1.OpenapiUpstreamService) err
 	if openapiService.GetAddress() == "" && openapiService.GetSpecContent() == "" && openapiService.GetSpecUrl() == "" {
 		return fmt.Errorf("openapi service must have either an address, spec content or spec url")
 	}
-	if openapiService.GetAddress() != "" && !validation.IsValidURL(openapiService.GetAddress()) {
-		return fmt.Errorf("invalid openapi target_address: %s", openapiService.GetAddress())
+	if openapiService.GetAddress() != "" {
+		if err := validation.IsSafeURL(openapiService.GetAddress()); err != nil {
+			return fmt.Errorf("invalid openapi target_address: %w", err)
+		}
 	}
-	if openapiService.GetSpecUrl() != "" && !validation.IsValidURL(openapiService.GetSpecUrl()) {
-		return fmt.Errorf("invalid openapi spec_url: %s", openapiService.GetSpecUrl())
+	if openapiService.GetSpecUrl() != "" {
+		if err := validation.IsSafeURL(openapiService.GetSpecUrl()); err != nil {
+			return fmt.Errorf("invalid openapi spec_url: %w", err)
+		}
 	}
 	return nil
 }
@@ -325,8 +329,8 @@ func validateMcpService(mcpService *configv1.McpUpstreamService) error {
 		if httpConn.GetHttpAddress() == "" {
 			return fmt.Errorf("mcp service with http_connection has empty http_address")
 		}
-		if !validation.IsValidURL(httpConn.GetHttpAddress()) {
-			return fmt.Errorf("mcp service with http_connection has invalid http_address: %s", httpConn.GetHttpAddress())
+		if err := validation.IsSafeURL(httpConn.GetHttpAddress()); err != nil {
+			return fmt.Errorf("mcp service with http_connection has invalid http_address: %w", err)
 		}
 	case configv1.McpUpstreamService_StdioConnection_case:
 		stdioConn := mcpService.GetStdioConnection()
@@ -367,8 +371,8 @@ func validateGraphQLService(graphqlService *configv1.GraphQLUpstreamService) err
 	if graphqlService.GetAddress() == "" {
 		return fmt.Errorf("graphql service has empty address")
 	}
-	if !validation.IsValidURL(graphqlService.GetAddress()) {
-		return fmt.Errorf("invalid graphql target_address: %s", graphqlService.GetAddress())
+	if err := validation.IsSafeURL(graphqlService.GetAddress()); err != nil {
+		return fmt.Errorf("invalid graphql target_address: %w", err)
 	}
 	u, _ := url.Parse(graphqlService.GetAddress())
 	if u.Scheme != schemeHTTP && u.Scheme != schemeHTTPS {
@@ -381,8 +385,8 @@ func validateWebrtcService(webrtcService *configv1.WebrtcUpstreamService) error 
 	if webrtcService.GetAddress() == "" {
 		return fmt.Errorf("webrtc service has empty address")
 	}
-	if !validation.IsValidURL(webrtcService.GetAddress()) {
-		return fmt.Errorf("invalid webrtc target_address: %s", webrtcService.GetAddress())
+	if err := validation.IsSafeURL(webrtcService.GetAddress()); err != nil {
+		return fmt.Errorf("invalid webrtc target_address: %w", err)
 	}
 	u, _ := url.Parse(webrtcService.GetAddress())
 	if u.Scheme != schemeHTTP && u.Scheme != schemeHTTPS {
