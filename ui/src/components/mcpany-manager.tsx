@@ -132,7 +132,9 @@ export function McpAnyManager() {
       try {
         await apiClient.unregisterService(serviceName);
         toast({ title: "Service Deleted", description: `${serviceName} unregistered.` });
-        fetchServices();
+
+        // ⚡ Bolt: Local state update to avoid network roundtrip and loading flash.
+        setServices((prev) => prev.filter((s) => s.name !== serviceName));
       } catch (error: any) {
         toast({
           variant: "destructive",
@@ -141,7 +143,7 @@ export function McpAnyManager() {
         });
       }
     }
-  }, [fetchServices, toast]);
+  }, [toast]);
 
 
   return (
