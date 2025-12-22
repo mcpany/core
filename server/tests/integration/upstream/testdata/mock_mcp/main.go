@@ -9,6 +9,7 @@ import (
 	"os"
 )
 
+// JSONRPCRequest represents a JSON-RPC 2.0 request.
 type JSONRPCRequest struct {
 	JSONRPC string           `json:"jsonrpc"`
 	ID      *json.RawMessage `json:"id,omitempty"`
@@ -16,6 +17,7 @@ type JSONRPCRequest struct {
 	Params  json.RawMessage  `json:"params,omitempty"`
 }
 
+// JSONRPCResponse represents a JSON-RPC 2.0 response.
 type JSONRPCResponse struct {
 	JSONRPC string           `json:"jsonrpc"`
 	ID      *json.RawMessage `json:"id,omitempty"`
@@ -23,6 +25,7 @@ type JSONRPCResponse struct {
 	Error   *JSONRPCError    `json:"error,omitempty"`
 }
 
+// JSONRPCError represents a JSON-RPC 2.0 error object.
 type JSONRPCError struct {
 	Code    int    `json:"code"`
 	Message string `json:"message"`

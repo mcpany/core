@@ -225,7 +225,7 @@ We use `golangci-lint` and `pre-commit` hooks.
 
 ### Code Standards
 
-- **Documentation**: All public functions, methods, and types must be documented. Use `go run tools/check_doc.go <directory>` to verify documentation coverage.
+- **Documentation**: All public functions, methods, and types must be documented. Use `go run server/tools/check_doc.go server/` to verify documentation coverage.
 - **Linting**: Ensure `make lint` passes before submitting code.
 - **Testing**: Ensure `make test` passes.
 

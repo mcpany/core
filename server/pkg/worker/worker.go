@@ -29,6 +29,13 @@ type Worker struct {
 }
 
 // New creates a new Worker.
+//
+// Parameters:
+//   busProvider: The bus provider for messaging.
+//   cfg: The worker configuration.
+//
+// Returns:
+//   *Worker: The created Worker.
 func New(busProvider *bus.Provider, cfg *Config) *Worker {
 	return &Worker{
 		busProvider: busProvider,
@@ -39,13 +46,16 @@ func New(busProvider *bus.Provider, cfg *Config) *Worker {
 	}
 }
 
-// Start starts the worker.
+// Start starts the worker and its background tasks.
+//
+// Parameters:
+//   ctx: The context for the worker.
 func (w *Worker) Start(ctx context.Context) {
 	w.wg.Add(1)
 	go w.startToolExecutionWorker(ctx)
 }
 
-// Stop stops the worker.
+// Stop stops the worker and cleans up resources.
 func (w *Worker) Stop() {
 	w.wg.Wait() // Wait for the subscription to be set up
 	w.mu.Lock()
