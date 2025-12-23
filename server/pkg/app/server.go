@@ -143,9 +143,12 @@ type Application struct {
 	ToolManager      tool.ManagerInterface
 	ResourceManager  resource.ManagerInterface
 	UpstreamFactory  factory.Factory
-	configFiles      map[string]string
-	fs               afero.Fs
-	configPaths      []string
+	// serviceRegistry manages upstream services and their lifecycles.
+	// It is used to register and unregister services during configuration updates.
+	serviceRegistry serviceregistry.ServiceRegistryInterface
+	configFiles     map[string]string
+	fs              afero.Fs
+	configPaths     []string
 }
 
 // NewApplication creates a new Application with default dependencies.
@@ -278,6 +281,9 @@ func (a *Application) Run(
 	// New message bus and workers
 	upstreamWorker := worker.NewUpstreamWorker(busProvider, a.ToolManager)
 	registrationWorker := worker.NewServiceRegistrationWorker(busProvider, serviceRegistry)
+
+	// Assign the service registry to the application so it can be used during reload
+	a.serviceRegistry = serviceRegistry
 
 	// Start background workers
 	upstreamWorker.Start(ctx)
@@ -435,34 +441,76 @@ func (a *Application) ReloadConfig(fs afero.Fs, configPaths []string) error {
 		cfg.GetGlobalSettings().GetProfileDefinitions(),
 	)
 
-	// Clear existing services
-	// We iterate over all currently registered services and clear them.
-	// This handles cases where a service was removed or renamed in the new config.
-	for _, svcInfo := range a.ToolManager.ListServices() {
-		serviceID := svcInfo.Name
-		a.ToolManager.ClearToolsForService(serviceID)
-		a.ResourceManager.ClearResourcesForService(serviceID)
-		a.PromptManager.ClearPromptsForService(serviceID)
-	}
+	if a.serviceRegistry != nil {
+		log.Info("Using ServiceRegistry for reload")
 
-	if cfg.GetUpstreamServices() != nil {
-		for _, serviceConfig := range cfg.GetUpstreamServices() {
-			if serviceConfig.GetDisable() {
-				log.Info("Skipping disabled service", "service", serviceConfig.GetName())
-				continue
+		// 1. Unregister all existing services (this triggers Shutdown on upstreams)
+		existingServices, err := a.serviceRegistry.GetAllServices()
+		if err != nil {
+			log.Error("Failed to list existing services during reload", "error", err)
+		} else {
+			for _, svc := range existingServices {
+				serviceID := svc.GetId()
+				if serviceID == "" {
+					// Fallback if ID wasn't set on the config object stored
+					sName, _ := util.SanitizeServiceName(svc.GetName())
+					serviceID = sName
+				}
+				if err := a.serviceRegistry.UnregisterService(context.Background(), serviceID); err != nil {
+					log.Error("Failed to unregister service during reload", "service", serviceID, "error", err)
+				}
 			}
+		}
 
-			// Reload tools, prompts, and resources
-			upstream, err := a.UpstreamFactory.NewUpstream(serviceConfig)
-			if err != nil {
-				log.Error("Failed to get upstream service", "error", err)
-				continue
-			}
-			if upstream != nil {
-				_, _, _, err = upstream.Register(context.Background(), serviceConfig, a.ToolManager, a.PromptManager, a.ResourceManager, false)
-				if err != nil {
-					log.Error("Failed to register upstream service", "error", err)
+		// 2. Register services from new config
+		if cfg.GetUpstreamServices() != nil {
+			for _, serviceConfig := range cfg.GetUpstreamServices() {
+				if serviceConfig.GetDisable() {
+					log.Info("Skipping disabled service", "service", serviceConfig.GetName())
 					continue
+				}
+				_, _, _, err := a.serviceRegistry.RegisterService(context.Background(), serviceConfig)
+				if err != nil {
+					log.Error("Failed to register service during reload", "service", serviceConfig.GetName(), "error", err)
+				}
+			}
+		}
+
+	} else {
+		// Fallback for when ServiceRegistry is not available (e.g. tests that don't set it)
+		// Or we can just use the manual way but try to close upstreams if we can track them?
+		// Since we can't track them without registry, this path remains leaky but compatible with old tests.
+		log.Warn("ServiceRegistry not available during reload. Upstreams may not be shut down properly.")
+
+		// Clear existing services
+		// We iterate over all currently registered services and clear them.
+		// This handles cases where a service was removed or renamed in the new config.
+		for _, svcInfo := range a.ToolManager.ListServices() {
+			serviceID := svcInfo.Name
+			a.ToolManager.ClearToolsForService(serviceID)
+			a.ResourceManager.ClearResourcesForService(serviceID)
+			a.PromptManager.ClearPromptsForService(serviceID)
+		}
+
+		if cfg.GetUpstreamServices() != nil {
+			for _, serviceConfig := range cfg.GetUpstreamServices() {
+				if serviceConfig.GetDisable() {
+					log.Info("Skipping disabled service", "service", serviceConfig.GetName())
+					continue
+				}
+
+				// Reload tools, prompts, and resources
+				upstream, err := a.UpstreamFactory.NewUpstream(serviceConfig)
+				if err != nil {
+					log.Error("Failed to get upstream service", "error", err)
+					continue
+				}
+				if upstream != nil {
+					_, _, _, err = upstream.Register(context.Background(), serviceConfig, a.ToolManager, a.PromptManager, a.ResourceManager, false)
+					if err != nil {
+						log.Error("Failed to register upstream service", "error", err)
+						continue
+					}
 				}
 			}
 		}
