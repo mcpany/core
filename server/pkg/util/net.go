@@ -92,10 +92,10 @@ func SafeDialContext(ctx context.Context, network, addr string) (net.Conn, error
 // - MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES: Set to "true" to allow private network addresses.
 func NewSafeHTTPClient() *http.Client {
 	dialer := NewSafeDialer()
-	if os.Getenv("MCPANY_ALLOW_LOOPBACK_RESOURCES") == TrueStr {
+	if os.Getenv("MCPANY_ALLOW_LOOPBACK_RESOURCES") == "true" {
 		dialer.AllowLoopback = true
 	}
-	if os.Getenv("MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES") == TrueStr {
+	if os.Getenv("MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES") == "true" {
 		dialer.AllowPrivate = true
 	}
 	// LinkLocal is always blocked by default and cannot be enabled via env var for now (safest default).

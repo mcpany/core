@@ -61,7 +61,7 @@ func NewHTTPClientWithTLS(tlsConfig *configv1.TLSConfig) (*http.Client, error) {
 	dialer.AllowLoopback = true
 
 	// Allow stricter security via environment variable.
-	if os.Getenv("MCPANY_DENY_PRIVATE_UPSTREAM") == TrueStr {
+	if os.Getenv("MCPANY_DENY_PRIVATE_UPSTREAM") == "true" {
 		dialer.AllowPrivate = false
 		dialer.AllowLoopback = false
 	}

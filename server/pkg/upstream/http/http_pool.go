@@ -56,10 +56,10 @@ var NewHTTPPool = func(
 
 	dialer := util.NewSafeDialer()
 	dialer.Timeout = 30 * time.Second
-	if os.Getenv("MCPANY_ALLOW_LOOPBACK_RESOURCES") == util.TrueStr {
+	if os.Getenv("MCPANY_ALLOW_LOOPBACK_RESOURCES") == "true" {
 		dialer.AllowLoopback = true
 	}
-	if os.Getenv("MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES") == util.TrueStr {
+	if os.Getenv("MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES") == "true" {
 		dialer.AllowPrivate = true
 	}
 

@@ -145,9 +145,6 @@ func init() {
 	}
 }
 
-// TrueStr is a string constant for "true".
-const TrueStr = "true"
-
 // GenerateUUID creates a new random (version 4) UUID.
 //
 // Returns:
@@ -232,7 +229,7 @@ func SanitizeOperationID(input string) string {
 //	[]string: The arguments for the command (e.g., [] or ["docker"]).
 func GetDockerCommand() (string, []string) {
 	const dockerCmd = "docker"
-	if os.Getenv("USE_SUDO_FOR_DOCKER") == TrueStr {
+	if os.Getenv("USE_SUDO_FOR_DOCKER") == "true" {
 		return "sudo", []string{dockerCmd}
 	}
 	return dockerCmd, []string{}
