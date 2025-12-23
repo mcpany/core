@@ -14,6 +14,7 @@ import (
 	"github.com/mcpany/core/pkg/bus"
 	"github.com/mcpany/core/pkg/serviceregistry"
 	"github.com/mcpany/core/pkg/tool"
+	"github.com/mcpany/core/pkg/util"
 	bus_pb "github.com/mcpany/core/proto/bus"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/stretchr/testify/assert"
@@ -45,9 +46,11 @@ func (m *mockBus[T]) Subscribe(ctx context.Context, topic string, handler func(T
 
 type mockServiceRegistry struct {
 	serviceregistry.ServiceRegistryInterface
-	registerFunc    func(ctx context.Context, serviceConfig *configv1.UpstreamServiceConfig) (string, []*configv1.ToolDefinition, []*configv1.ResourceDefinition, error)
-	registerResFunc func(ctx context.Context, resourceConfig *configv1.ResourceDefinition) error
-	getAllServicesFunc func() ([]*configv1.UpstreamServiceConfig, error)
+	registerFunc         func(ctx context.Context, serviceConfig *configv1.UpstreamServiceConfig) (string, []*configv1.ToolDefinition, []*configv1.ResourceDefinition, error)
+	registerResFunc      func(ctx context.Context, resourceConfig *configv1.ResourceDefinition) error
+	getAllServicesFunc   func() ([]*configv1.UpstreamServiceConfig, error)
+	getServiceConfigFunc func(serviceID string) (*configv1.UpstreamServiceConfig, bool)
+	unregisterFunc       func(ctx context.Context, serviceName string) error
 }
 
 func (m *mockServiceRegistry) RegisterService(ctx context.Context, serviceConfig *configv1.UpstreamServiceConfig) (string, []*configv1.ToolDefinition, []*configv1.ResourceDefinition, error) {
@@ -69,6 +72,20 @@ func (m *mockServiceRegistry) GetAllServices() ([]*configv1.UpstreamServiceConfi
 		return m.getAllServicesFunc()
 	}
 	return nil, nil
+}
+
+func (m *mockServiceRegistry) GetServiceConfig(serviceID string) (*configv1.UpstreamServiceConfig, bool) {
+	if m.getServiceConfigFunc != nil {
+		return m.getServiceConfigFunc(serviceID)
+	}
+	return nil, false
+}
+
+func (m *mockServiceRegistry) UnregisterService(ctx context.Context, serviceName string) error {
+	if m.unregisterFunc != nil {
+		return m.unregisterFunc(ctx, serviceName)
+	}
+	return nil
 }
 
 type mockToolManager struct {
@@ -252,6 +269,54 @@ func TestServiceRegistrationWorker(t *testing.T) {
 			assert.Equal(t, "success-key-request-context", result.ServiceKey)
 		case <-time.After(1 * time.Second):
 			t.Fatal("timed out waiting for registration result")
+		}
+	})
+
+	t.Run("unregister disabled service", func(t *testing.T) {
+		messageBus := bus_pb.MessageBus_builder{}.Build()
+		messageBus.SetInMemory(bus_pb.InMemoryBus_builder{}.Build())
+		bp, err := bus.NewProvider(messageBus)
+		require.NoError(t, err)
+		requestBus, err := bus.GetBus[*bus.ServiceRegistrationRequest](bp, bus.ServiceRegistrationRequestTopic)
+		require.NoError(t, err)
+		resultBus, err := bus.GetBus[*bus.ServiceRegistrationResult](bp, bus.ServiceRegistrationResultTopic)
+		require.NoError(t, err)
+
+		serviceName := "disabled-service"
+
+		registry := &mockServiceRegistry{
+			unregisterFunc: func(ctx context.Context, name string) error {
+				if name == serviceName {
+					return nil
+				}
+				return errors.New("service not found")
+			},
+		}
+
+		worker := NewServiceRegistrationWorker(bp, registry)
+		worker.Start(ctx)
+
+		resultChan := make(chan *bus.ServiceRegistrationResult, 1)
+		unsubscribe := resultBus.SubscribeOnce(ctx, "test-disable", func(result *bus.ServiceRegistrationResult) {
+			resultChan <- result
+		})
+		defer unsubscribe()
+
+		req := &bus.ServiceRegistrationRequest{
+			Config: &configv1.UpstreamServiceConfig{
+				Name:    ptr(serviceName),
+				Disable: ptr(true),
+			},
+		}
+		req.SetCorrelationID("test-disable")
+		err = requestBus.Publish(ctx, "request", req)
+		require.NoError(t, err)
+
+		select {
+		case result := <-resultChan:
+			assert.NoError(t, result.Error)
+		case <-time.After(1 * time.Second):
+			t.Fatal("timed out waiting for unregister result")
 		}
 	})
 }
@@ -652,6 +717,141 @@ func TestServiceRegistrationWorker_ListRequest(t *testing.T) {
 			assert.Equal(t, expectedServices, result.Services)
 		case <-time.After(1 * time.Second):
 			t.Fatal("timed out waiting for list result")
+		}
+	})
+}
+
+func TestServiceRegistrationWorker_GetRequest(t *testing.T) {
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	t.Run("get service success", func(t *testing.T) {
+		messageBus := bus_pb.MessageBus_builder{}.Build()
+		messageBus.SetInMemory(bus_pb.InMemoryBus_builder{}.Build())
+		bp, err := bus.NewProvider(messageBus)
+		require.NoError(t, err)
+		requestBus, err := bus.GetBus[*bus.ServiceGetRequest](bp, bus.ServiceGetRequestTopic)
+		require.NoError(t, err)
+		resultBus, err := bus.GetBus[*bus.ServiceGetResult](bp, bus.ServiceGetResultTopic)
+		require.NoError(t, err)
+
+		expectedService := &configv1.UpstreamServiceConfig{Name: ptr("service1")}
+
+		registry := &mockServiceRegistry{
+			getServiceConfigFunc: func(serviceID string) (*configv1.UpstreamServiceConfig, bool) {
+				if serviceID == "service1" {
+					return expectedService, true
+				}
+				return nil, false
+			},
+		}
+
+		worker := NewServiceRegistrationWorker(bp, registry)
+		worker.Start(ctx)
+
+		resultChan := make(chan *bus.ServiceGetResult, 1)
+		unsubscribe := resultBus.SubscribeOnce(ctx, "get-test", func(result *bus.ServiceGetResult) {
+			resultChan <- result
+		})
+		defer unsubscribe()
+
+		req := &bus.ServiceGetRequest{ServiceName: "service1"}
+		req.SetCorrelationID("get-test")
+		err = requestBus.Publish(ctx, "request", req)
+		require.NoError(t, err)
+
+		select {
+		case result := <-resultChan:
+			assert.NoError(t, result.Error)
+			assert.Equal(t, expectedService, result.Service)
+		case <-time.After(1 * time.Second):
+			t.Fatal("timed out waiting for get result")
+		}
+	})
+
+	t.Run("get service not found", func(t *testing.T) {
+		messageBus := bus_pb.MessageBus_builder{}.Build()
+		messageBus.SetInMemory(bus_pb.InMemoryBus_builder{}.Build())
+		bp, err := bus.NewProvider(messageBus)
+		require.NoError(t, err)
+		requestBus, err := bus.GetBus[*bus.ServiceGetRequest](bp, bus.ServiceGetRequestTopic)
+		require.NoError(t, err)
+		resultBus, err := bus.GetBus[*bus.ServiceGetResult](bp, bus.ServiceGetResultTopic)
+		require.NoError(t, err)
+
+		registry := &mockServiceRegistry{
+			getServiceConfigFunc: func(serviceID string) (*configv1.UpstreamServiceConfig, bool) {
+				return nil, false
+			},
+		}
+
+		worker := NewServiceRegistrationWorker(bp, registry)
+		worker.Start(ctx)
+
+		resultChan := make(chan *bus.ServiceGetResult, 1)
+		unsubscribe := resultBus.SubscribeOnce(ctx, "get-test-not-found", func(result *bus.ServiceGetResult) {
+			resultChan <- result
+		})
+		defer unsubscribe()
+
+		req := &bus.ServiceGetRequest{ServiceName: "unknown"}
+		req.SetCorrelationID("get-test-not-found")
+		err = requestBus.Publish(ctx, "request", req)
+		require.NoError(t, err)
+
+		select {
+		case result := <-resultChan:
+			assert.Error(t, result.Error)
+			assert.Nil(t, result.Service)
+			assert.Contains(t, result.Error.Error(), "service \"unknown\" not found")
+		case <-time.After(1 * time.Second):
+			t.Fatal("timed out waiting for get result")
+		}
+	})
+
+	t.Run("get service with sanitization", func(t *testing.T) {
+		messageBus := bus_pb.MessageBus_builder{}.Build()
+		messageBus.SetInMemory(bus_pb.InMemoryBus_builder{}.Build())
+		bp, err := bus.NewProvider(messageBus)
+		require.NoError(t, err)
+		requestBus, err := bus.GetBus[*bus.ServiceGetRequest](bp, bus.ServiceGetRequestTopic)
+		require.NoError(t, err)
+		resultBus, err := bus.GetBus[*bus.ServiceGetResult](bp, bus.ServiceGetResultTopic)
+		require.NoError(t, err)
+
+		expectedService := &configv1.UpstreamServiceConfig{Name: ptr("Service One")}
+		expectedID, err := util.SanitizeServiceName("Service One")
+		require.NoError(t, err)
+
+		registry := &mockServiceRegistry{
+			getServiceConfigFunc: func(serviceID string) (*configv1.UpstreamServiceConfig, bool) {
+				if serviceID == expectedID {
+					return expectedService, true
+				}
+				return nil, false
+			},
+		}
+
+		worker := NewServiceRegistrationWorker(bp, registry)
+		worker.Start(ctx)
+
+		resultChan := make(chan *bus.ServiceGetResult, 1)
+		unsubscribe := resultBus.SubscribeOnce(ctx, "get-test-sanitize", func(result *bus.ServiceGetResult) {
+			resultChan <- result
+		})
+		defer unsubscribe()
+
+		req := &bus.ServiceGetRequest{ServiceName: "Service One"}
+		req.SetCorrelationID("get-test-sanitize")
+		err = requestBus.Publish(ctx, "request", req)
+		require.NoError(t, err)
+
+		select {
+		case result := <-resultChan:
+			assert.NoError(t, result.Error)
+			assert.Equal(t, expectedService, result.Service)
+		case <-time.After(1 * time.Second):
+			t.Fatal("timed out waiting for get result")
 		}
 	})
 }
