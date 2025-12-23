@@ -8,6 +8,7 @@ replace github.com/mcpany/core => ./
 
 require (
 	al.essio.dev/pkg/shellescape v1.6.0
+	github.com/DATA-DOG/go-sqlmock v1.5.2
 	github.com/JohannesKaufmann/html-to-markdown v1.6.0
 	github.com/Masterminds/semver/v3 v3.4.0
 	github.com/alexliesenfeld/health v0.8.1
