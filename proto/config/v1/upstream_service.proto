@@ -357,6 +357,34 @@ message FilesystemUpstreamService {
 
   // Prompts that are exposed.
   repeated PromptDefinition prompts = 5;
+
+  // The specific configuration for the filesystem type.
+  oneof filesystem_type {
+    OsFs os = 10;
+    MemMapFs tmpfs = 11;
+    HttpFs http = 12;
+    ZipFs zip = 13;
+    GcsFs gcs = 14;
+    SftpFs sftp = 15;
+  }
+}
+
+message OsFs {}
+message MemMapFs {}
+message HttpFs {
+  string endpoint = 1;
+}
+message ZipFs {
+  string file_path = 1;
+}
+message GcsFs {
+  string bucket = 1;
+}
+message SftpFs {
+  string address = 1;
+  string username = 2;
+  string password = 3;
+  string key_path = 4;
 }
 
 // McpUpstreamService defines an upstream that is already an MCP-compliant service.

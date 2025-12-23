@@ -21,6 +21,7 @@ import (
 	"github.com/mcpany/core/pkg/upstream"
 	"github.com/mcpany/core/pkg/util"
 	configv1 "github.com/mcpany/core/proto/config/v1"
+	"github.com/spf13/afero"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/structpb"
 )
@@ -67,9 +68,10 @@ func (u *Upstream) Register(
 		return "", nil, nil, fmt.Errorf("filesystem service config is nil")
 	}
 
-	// Validate root paths
-	if len(fsService.RootPaths) == 0 {
-		return "", nil, nil, fmt.Errorf("no root paths defined for filesystem service")
+	// Create the filesystem backend
+	fs, err := u.createFilesystem(fsService)
+	if err != nil {
+		return "", nil, nil, fmt.Errorf("failed to create filesystem: %w", err)
 	}
 
 	info := &tool.ServiceInfo{
@@ -98,7 +100,7 @@ func (u *Upstream) Register(
 					"items": map[string]interface{}{
 						"type": "object",
 						"properties": map[string]interface{}{
-							"name":  map[string]interface{}{"type": "string"},
+							"name":   map[string]interface{}{"type": "string"},
 							"is_dir": map[string]interface{}{"type": "boolean"},
 							"size":   map[string]interface{}{"type": "integer"},
 						},
@@ -110,26 +112,23 @@ func (u *Upstream) Register(
 				if !ok {
 					return nil, fmt.Errorf("path is required")
 				}
-				realPath, err := u.validatePath(path, fsService.RootPaths)
+
+				resolvedPath, err := u.resolvePath(path, fsService)
 				if err != nil {
 					return nil, err
 				}
 
-				entries, err := os.ReadDir(realPath)
+				entries, err := afero.ReadDir(fs, resolvedPath)
 				if err != nil {
 					return nil, err
 				}
 
 				resultList := []interface{}{}
 				for _, entry := range entries {
-					info, err := entry.Info()
-					if err != nil {
-						continue
-					}
 					resultList = append(resultList, map[string]interface{}{
 						"name":   entry.Name(),
 						"is_dir": entry.IsDir(),
-						"size":   info.Size(),
+						"size":   entry.Size(),
 					})
 				}
 				return map[string]interface{}{"entries": resultList}, nil
@@ -149,13 +148,14 @@ func (u *Upstream) Register(
 				if !ok {
 					return nil, fmt.Errorf("path is required")
 				}
-				realPath, err := u.validatePath(path, fsService.RootPaths)
+
+				resolvedPath, err := u.resolvePath(path, fsService)
 				if err != nil {
 					return nil, err
 				}
 
 				// Check if it's a directory
-				info, err := os.Stat(realPath)
+				info, err := fs.Stat(resolvedPath)
 				if err != nil {
 					return nil, err
 				}
@@ -163,7 +163,7 @@ func (u *Upstream) Register(
 					return nil, fmt.Errorf("path is a directory")
 				}
 
-				content, err := os.ReadFile(realPath)
+				content, err := afero.ReadFile(fs, resolvedPath)
 				if err != nil {
 					return nil, err
 				}
@@ -193,18 +193,14 @@ func (u *Upstream) Register(
 					return nil, fmt.Errorf("content is required")
 				}
 
-				realPath, err := u.validatePath(path, fsService.RootPaths)
+				resolvedPath, err := u.resolvePath(path, fsService)
 				if err != nil {
 					// Check if parent directory is allowed if file doesn't exist yet
-					// But validatePath checks for prefix, so we need to construct what the real path *would* be
-					// This is tricky. validatePath logic needs to handle non-existent files if we are writing.
-					// Actually, validatePath implementation below handles checking if the resolved path starts with the real root.
-					// It doesn't strictly require the file to exist, but filepath.Abs might resolve links.
-					// Let's rely on validatePath to ensure safety.
+					// resolvePath usually checks validity of prefix.
 					return nil, err
 				}
 
-				if err := os.WriteFile(realPath, []byte(content), 0644); err != nil {
+				if err := afero.WriteFile(fs, resolvedPath, []byte(content), 0644); err != nil {
 					return nil, err
 				}
 				return map[string]interface{}{"success": true}, nil
@@ -217,9 +213,9 @@ func (u *Upstream) Register(
 				"path": map[string]interface{}{"type": "string", "description": "The path."},
 			},
 			Output: map[string]interface{}{
-				"name":    map[string]interface{}{"type": "string"},
-				"is_dir":  map[string]interface{}{"type": "boolean"},
-				"size":    map[string]interface{}{"type": "integer"},
+				"name":     map[string]interface{}{"type": "string"},
+				"is_dir":   map[string]interface{}{"type": "boolean"},
+				"size":     map[string]interface{}{"type": "integer"},
 				"mod_time": map[string]interface{}{"type": "string"},
 			},
 			Handler: func(args map[string]interface{}) (map[string]interface{}, error) {
@@ -227,11 +223,13 @@ func (u *Upstream) Register(
 				if !ok {
 					return nil, fmt.Errorf("path is required")
 				}
-				realPath, err := u.validatePath(path, fsService.RootPaths)
+
+				resolvedPath, err := u.resolvePath(path, fsService)
 				if err != nil {
 					return nil, err
 				}
-				info, err := os.Stat(realPath)
+
+				info, err := fs.Stat(resolvedPath)
 				if err != nil {
 					return nil, err
 				}
@@ -245,12 +243,14 @@ func (u *Upstream) Register(
 		},
 		{
 			Name:        "list_allowed_directories",
-			Description: "List the allowed root directories.",
+			Description: "List the allowed root directories. (Deprecated with afero usage)",
 			Input:       map[string]interface{}{},
 			Output: map[string]interface{}{
 				"roots": map[string]interface{}{"type": "array", "items": map[string]interface{}{"type": "string"}},
 			},
 			Handler: func(args map[string]interface{}) (map[string]interface{}, error) {
+				// With afero, we might just have one root or multiple mounts.
+				// For backward compatibility, we can list keys from RootPaths if available.
 				roots := []string{}
 				for k := range fsService.RootPaths {
 					roots = append(roots, k)
@@ -284,7 +284,7 @@ func (u *Upstream) Register(
 		}
 
 		toolDef := configv1.ToolDefinition_builder{
-			Name: proto.String(toolName),
+			Name:      proto.String(toolName),
 			ServiceId: proto.String(serviceID),
 		}.Build()
 
@@ -318,9 +318,75 @@ func (c *fsCallable) Call(ctx context.Context, req *tool.ExecutionRequest) (any,
 	return c.handler(req.Arguments)
 }
 
+func (u *Upstream) createFilesystem(config *configv1.FilesystemUpstreamService) (afero.Fs, error) {
+	var baseFs afero.Fs
+
+	// Determine the backend filesystem
+	switch config.FilesystemType.(type) {
+	case *configv1.FilesystemUpstreamService_Tmpfs:
+		baseFs = afero.NewMemMapFs()
+
+	case *configv1.FilesystemUpstreamService_Http:
+		return nil, fmt.Errorf("http filesystem is not yet supported")
+
+	case *configv1.FilesystemUpstreamService_Zip:
+		// To support zipfs, we need the file path. But zipfs in afero is separate.
+		// import "github.com/spf13/afero/zipfs"
+		// zipfs.New(zipReader)
+		// This requires opening the file first.
+		return nil, fmt.Errorf("zip filesystem is not yet supported")
+
+	case *configv1.FilesystemUpstreamService_Gcs:
+		// Requires external package gcsfs
+		return nil, fmt.Errorf("gcs filesystem is not yet supported")
+
+	case *configv1.FilesystemUpstreamService_Sftp:
+		// Requires external package sftpfs
+		return nil, fmt.Errorf("sftp filesystem is not yet supported")
+
+	case *configv1.FilesystemUpstreamService_Os:
+		baseFs = afero.NewOsFs()
+
+	default:
+		// Fallback to OsFs for backward compatibility if root_paths is set?
+		// Or defaulting to OsFs.
+		baseFs = afero.NewOsFs()
+	}
+
+	// Wrap with ReadOnly if requested
+	if config.GetReadOnly() {
+		baseFs = afero.NewReadOnlyFs(baseFs)
+	}
+
+	return baseFs, nil
+}
+
+// resolvePath determines the actual path to access based on the filesystem type.
+// For OsFs, it resolves virtual path to real OS path using root_paths.
+// For others, it uses the virtual path directly (cleaned).
+func (u *Upstream) resolvePath(virtualPath string, config *configv1.FilesystemUpstreamService) (string, error) {
+	switch config.FilesystemType.(type) {
+	case *configv1.FilesystemUpstreamService_Tmpfs:
+		// For MemMapFs, just clean the path. It's virtual.
+		return filepath.Clean(virtualPath), nil
+
+	case *configv1.FilesystemUpstreamService_Os:
+		return u.validatePath(virtualPath, config.RootPaths)
+
+	default:
+		// Default (legacy) uses OsFs and validatePath
+		return u.validatePath(virtualPath, config.RootPaths)
+	}
+}
+
 // validatePath checks if the given virtual path resolves to a safe local path
 // within one of the allowed root paths.
+// This is used ONLY when we are mapping virtual paths to local OS paths (Legacy/OsFs mode).
 func (u *Upstream) validatePath(virtualPath string, rootPaths map[string]string) (string, error) {
+	if len(rootPaths) == 0 {
+		return "", fmt.Errorf("no root paths defined")
+	}
+
 	// 1. Find the best matching root path (longest prefix match)
 	var bestMatchVirtual string
 	var bestMatchReal string
@@ -370,9 +436,6 @@ func (u *Upstream) validatePath(virtualPath string, rootPaths map[string]string)
 	realRootCanonical, err := filepath.EvalSymlinks(realRootAbs)
 	if err != nil {
 		// If root doesn't exist, we can't really secure it, so error out.
-		// However, for testing sometimes we use temp dirs.
-		// If it fails, maybe fallback to Abs, but for security, EvalSymlinks is better.
-		// If EvalSymlinks fails (e.g. doesn't exist), we should probably fail.
 		return "", fmt.Errorf("failed to resolve root path symlinks: %w", err)
 	}
 
@@ -382,7 +445,7 @@ func (u *Upstream) validatePath(virtualPath string, rootPaths map[string]string)
 		return "", fmt.Errorf("failed to resolve target path: %w", err)
 	}
 
-	// Resolve symlinks for the target path too, to ensure we don't jump out via a symlink *inside* the sandbox
+	// Resolve symlinks for the target path too
 	targetPathCanonical, err := filepath.EvalSymlinks(targetPathAbs)
 	if err != nil {
 		if os.IsNotExist(err) {
@@ -392,7 +455,6 @@ func (u *Upstream) validatePath(virtualPath string, rootPaths map[string]string)
 			if err != nil {
 				return "", fmt.Errorf("failed to resolve parent path symlinks: %w", err)
 			}
-			// Use the canonical parent + base name for check
 			targetPathCanonical = filepath.Join(parentCanonical, filepath.Base(targetPathAbs))
 		} else {
 			return "", fmt.Errorf("failed to resolve target path symlinks: %w", err)
@@ -400,7 +462,6 @@ func (u *Upstream) validatePath(virtualPath string, rootPaths map[string]string)
 	}
 
 	// 3. Security Check: Ensure targetPathCanonical starts with realRootCanonical
-	// Use explicit separator to prevent /root -> /root_evil
 	if !strings.HasPrefix(targetPathCanonical, realRootCanonical+string(os.PathSeparator)) && targetPathCanonical != realRootCanonical {
 		return "", fmt.Errorf("access denied: path traversal detected")
 	}
