@@ -113,8 +113,9 @@ func TestMcpFieldsToProtoProperties(t *testing.T) {
 // mockFieldDescriptor is a mock implementation of protoreflect.FieldDescriptor for testing.
 type mockFieldDescriptor struct {
 	protoreflect.FieldDescriptor
-	kind protoreflect.Kind
-	name string
+	kind   protoreflect.Kind
+	name   string
+	isList bool
 }
 
 func (m *mockFieldDescriptor) Kind() protoreflect.Kind {
@@ -126,7 +127,7 @@ func (m *mockFieldDescriptor) Name() protoreflect.Name {
 }
 
 func (m *mockFieldDescriptor) IsList() bool {
-	return false
+	return m.isList
 }
 
 // mockFieldDescriptors is a mock implementation of protoreflect.FieldDescriptors for testing.
@@ -226,6 +227,43 @@ func TestMethodDescriptorToProtoProperties(t *testing.T) {
 				assert.Equal(t, tc.expectedType, s.Fields["type"].GetStringValue())
 			})
 		}
+	})
+
+	t.Run("with repeated fields", func(t *testing.T) {
+		mockMethod := &mockMethodDescriptor{
+			input: &mockMessageDescriptor{
+				fields: &mockFieldDescriptors{
+					fields: []protoreflect.FieldDescriptor{
+						&mockFieldDescriptor{name: "tags", kind: protoreflect.StringKind, isList: true},
+						&mockFieldDescriptor{name: "scores", kind: protoreflect.Int32Kind, isList: true},
+					},
+				},
+			},
+		}
+
+		properties, err := MethodDescriptorToProtoProperties(mockMethod)
+		require.NoError(t, err)
+		require.Len(t, properties.Fields, 2)
+
+		tagsField, ok := properties.Fields["tags"]
+		require.True(t, ok)
+		sTags := tagsField.GetStructValue()
+		require.NotNil(t, sTags)
+		assert.Equal(t, "array", sTags.Fields["type"].GetStringValue())
+		require.NotNil(t, sTags.Fields["items"])
+		items := sTags.Fields["items"].GetStructValue()
+		require.NotNil(t, items)
+		assert.Equal(t, "string", items.Fields["type"].GetStringValue())
+
+		scoresField, ok := properties.Fields["scores"]
+		require.True(t, ok)
+		sScores := scoresField.GetStructValue()
+		require.NotNil(t, sScores)
+		assert.Equal(t, "array", sScores.Fields["type"].GetStringValue())
+		require.NotNil(t, sScores.Fields["items"])
+		itemsScores := sScores.Fields["items"].GetStructValue()
+		require.NotNil(t, itemsScores)
+		assert.Equal(t, "integer", itemsScores.Fields["type"].GetStringValue())
 	})
 }
 
