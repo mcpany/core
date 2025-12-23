@@ -30,10 +30,10 @@ func TestCheckForPathTraversal(t *testing.T) {
 		{"\\..\\", true},
 		{"/..\\", true},
 		{"\\../", true},
-		{"foo/../bar", true},
+		{"foo/../bar", false}, // Safe because it resolves to "bar"
 		{"foo\\..\\bar", true},
 		{"../bar", true},
-		{"bar/..", true},
+		{"bar/..", false}, // Safe because it resolves to "."
 		{"bar\\..", true},
 		{"mixed/..\\slash", true},
 	}

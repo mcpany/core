@@ -31,6 +31,7 @@ import (
 	"github.com/mcpany/core/pkg/resilience"
 	"github.com/mcpany/core/pkg/transformer"
 	"github.com/mcpany/core/pkg/util"
+	"github.com/mcpany/core/pkg/validation"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	v1 "github.com/mcpany/core/proto/mcp_router/v1"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
@@ -1840,25 +1841,17 @@ func isSensitiveHeader(key string) bool {
 }
 
 func checkForPathTraversal(val string) error {
-	if val == ".." {
-		return fmt.Errorf("path traversal attempt detected")
+	if err := validation.IsSecurePath(val); err != nil {
+		return fmt.Errorf("path traversal attempt detected: %w", err)
 	}
-	if strings.HasPrefix(val, "../") || strings.HasPrefix(val, "..\\") {
-		return fmt.Errorf("path traversal attempt detected")
-	}
-	if strings.HasSuffix(val, "/..") || strings.HasSuffix(val, "\\..") {
-		return fmt.Errorf("path traversal attempt detected")
-	}
-	if strings.Contains(val, "/../") || strings.Contains(val, "\\..\\") || strings.Contains(val, "/..\\") || strings.Contains(val, "\\../") {
-		return fmt.Errorf("path traversal attempt detected")
-	}
+
 	// Check for absolute paths
 	if filepath.IsAbs(val) {
-		return fmt.Errorf("absolute path not allowed")
+		return fmt.Errorf("path traversal attempt detected: absolute path not allowed")
 	}
 	// Additional check for common absolute path indicators to be safe across platforms
 	if strings.HasPrefix(val, "/") || strings.HasPrefix(val, "\\") {
-		return fmt.Errorf("absolute path not allowed")
+		return fmt.Errorf("path traversal attempt detected: absolute path not allowed")
 	}
 	return nil
 }

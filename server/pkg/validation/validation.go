@@ -57,6 +57,10 @@ var IsSecurePath = func(path string) error {
 			return fmt.Errorf("path contains '..', which is not allowed")
 		}
 	}
+	// Extra check for mixed separators (e.g. windows path on linux)
+	if strings.Contains(path, "..\\") || strings.Contains(path, "\\..") {
+		return fmt.Errorf("path contains '..', which is not allowed")
+	}
 	return nil
 }
 
