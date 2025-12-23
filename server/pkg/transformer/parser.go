@@ -33,11 +33,19 @@ type TextParser struct {
 	transformer *Transformer
 }
 
-// NewTextParser creates and returns a new instance of TextParser.
+var (
+	defaultTextParser     *TextParser
+	defaultTextParserOnce sync.Once
+)
+
+// NewTextParser returns a shared instance of TextParser.
 func NewTextParser() *TextParser {
-	return &TextParser{
-		transformer: NewTransformer(),
-	}
+	defaultTextParserOnce.Do(func() {
+		defaultTextParser = &TextParser{
+			transformer: NewTransformer(),
+		}
+	})
+	return defaultTextParser
 }
 
 // Transform takes a map of data and a Go template string and returns a byte

@@ -313,6 +313,10 @@ func (a *Application) Run(
 		return a.ReloadConfig(fs, configPaths)
 	})
 
+	if cfg.GetGlobalSettings().GetSamplingCache() != nil {
+		mcpSrv.SetSamplingCacheConfig(cfg.GetGlobalSettings().GetSamplingCache())
+	}
+
 	a.ToolManager.SetMCPServer(mcpSrv)
 
 	if cfg.GetUpstreamServices() != nil {
@@ -421,7 +425,7 @@ func (a *Application) Run(
 		allowedIPs = cfg.GetGlobalSettings().GetAllowedIps()
 	}
 
-	return a.runServerMode(ctx, mcpSrv, busProvider, bindAddress, grpcPort, shutdownTimeout, cfg.GetUsers(), cfg.GetGlobalSettings().GetProfileDefinitions(), allowedIPs, cachingMiddleware, sqliteStore)
+	return a.runServerMode(ctx, mcpSrv, busProvider, bindAddress, grpcPort, shutdownTimeout, cfg.GetUsers(), cfg.GetGlobalSettings().GetProfileDefinitions(), allowedIPs, cachingMiddleware, sqliteStore, serviceRegistry)
 }
 
 // ReloadConfig reloads the configuration from the given paths and updates the
@@ -609,6 +613,7 @@ func (a *Application) runServerMode(
 	allowedIPs []string,
 	cachingMiddleware *middleware.CachingMiddleware,
 	store *sqlite.Store,
+	serviceRegistry *serviceregistry.ServiceRegistry,
 ) error {
 	ipMiddleware, err := middleware.NewIPAllowlistMiddleware(allowedIPs)
 	if err != nil {
@@ -1037,6 +1042,15 @@ func (a *Application) runServerMode(
 	logging.GetLogger().Info("Waiting for HTTP and gRPC servers to shut down...")
 	wg.Wait()
 	logging.GetLogger().Info("All servers have shut down.")
+
+	// Shutdown all upstreams
+	if serviceRegistry != nil {
+		shutdownCtx, shutdownCancel := context.WithTimeout(context.Background(), shutdownTimeout)
+		defer shutdownCancel()
+		if err := serviceRegistry.Close(shutdownCtx); err != nil {
+			logging.GetLogger().Error("Failed to shutdown services", "error", err)
+		}
+	}
 
 	return startupErr
 }

@@ -7,6 +7,7 @@ package worker
 import (
 	"context"
 	"fmt"
+	"runtime/debug"
 	"time"
 
 	"github.com/mcpany/core/pkg/bus"
@@ -60,6 +61,21 @@ func (w *ServiceRegistrationWorker) Start(ctx context.Context) {
 		start := time.Now()
 		metrics.IncrCounter([]string{"worker", "registration", "request", "total"}, 1)
 		defer metrics.MeasureSince([]string{"worker", "registration", "request", "latency"}, start)
+
+		// Panic recovery for registration request processing
+		defer func() {
+			if r := recover(); r != nil {
+				metrics.IncrCounter([]string{"worker", "registration", "request", "panics"}, 1)
+				log.Error("Panic during service registration", "panic", r, "stack", string(debug.Stack()))
+				// Publish failure result so caller is not hanging if waiting (though this is fire-and-forget mostly)
+				res := &bus.ServiceRegistrationResult{
+					Error: fmt.Errorf("panic during registration: %v", r),
+				}
+				res.SetCorrelationID(req.CorrelationID())
+				_ = resultBus.Publish(ctx, req.CorrelationID(), res)
+			}
+		}()
+
 		log.Info("Received service registration request", "correlationID", req.CorrelationID())
 
 		requestCtx := req.Context
@@ -107,6 +123,18 @@ func (w *ServiceRegistrationWorker) Start(ctx context.Context) {
 	}
 
 	listUnsubscribe := listRequestBus.Subscribe(ctx, "request", func(req *bus.ServiceListRequest) {
+		// Panic recovery for list request processing
+		defer func() {
+			if r := recover(); r != nil {
+				log.Error("Panic during service list", "panic", r, "stack", string(debug.Stack()))
+				res := &bus.ServiceListResult{
+					Error: fmt.Errorf("panic during service list: %v", r),
+				}
+				res.SetCorrelationID(req.CorrelationID())
+				_ = listResultBus.Publish(ctx, req.CorrelationID(), res)
+			}
+		}()
+
 		log.Info("Received service list request", "correlationID", req.CorrelationID())
 		services, err := w.serviceRegistry.GetAllServices()
 		res := &bus.ServiceListResult{
@@ -129,6 +157,18 @@ func (w *ServiceRegistrationWorker) Start(ctx context.Context) {
 	}
 
 	getUnsubscribe := getRequestBus.Subscribe(ctx, "request", func(req *bus.ServiceGetRequest) {
+		// Panic recovery for get request processing
+		defer func() {
+			if r := recover(); r != nil {
+				log.Error("Panic during service get", "panic", r, "stack", string(debug.Stack()))
+				res := &bus.ServiceGetResult{
+					Error: fmt.Errorf("panic during service get: %v", r),
+				}
+				res.SetCorrelationID(req.CorrelationID())
+				_ = getResultBus.Publish(ctx, req.CorrelationID(), res)
+			}
+		}()
+
 		log.Info("Received service get request", "correlationID", req.CorrelationID(), "serviceName", req.ServiceName)
 		// We use GetServiceConfig because GetServiceInfo returns Tool/Prompt info, but we want the config.
 		// However, GetServiceConfig expects the serviceID (sanitized name).
