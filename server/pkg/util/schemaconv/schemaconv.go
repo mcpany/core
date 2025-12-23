@@ -47,6 +47,13 @@ func MethodDescriptorToProtoProperties(methodDesc protoreflect.MethodDescriptor)
 			schema["type"] = TypeObject
 		}
 
+		if field.IsList() {
+			schema = map[string]interface{}{
+				"type":  "array",
+				"items": schema,
+			}
+		}
+
 		structValue, err := structpb.NewStruct(schema)
 		if err != nil {
 			return nil, fmt.Errorf("failed to create struct for field %s: %w", field.Name(), err)
@@ -81,6 +88,13 @@ func MethodOutputDescriptorToProtoProperties(methodDesc protoreflect.MethodDescr
 			schema["type"] = TypeBoolean
 		case protoreflect.MessageKind:
 			schema["type"] = TypeObject
+		}
+
+		if field.IsList() {
+			schema = map[string]interface{}{
+				"type":  "array",
+				"items": schema,
+			}
 		}
 
 		structValue, err := structpb.NewStruct(schema)
