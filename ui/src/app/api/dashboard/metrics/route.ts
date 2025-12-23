@@ -1,43 +1,24 @@
-/**
- * Copyright 2025 Author(s) of MCP Any
- * SPDX-License-Identifier: Apache-2.0
- */
-
 
 import { NextResponse } from 'next/server';
 
 export async function GET() {
-  // Simulate backend data
-  const metrics = [
-    {
-      label: "Total Requests",
-      value: "1.2M",
-      change: "+12.5%",
-      trend: "up",
-      icon: "Activity",
-    },
-    {
-      label: "Active Services",
-      value: "14",
-      change: "+2",
-      trend: "up",
-      icon: "Server",
-    },
-    {
-      label: "Avg Latency",
-      value: "45ms",
-      change: "-5ms",
-      trend: "down",
-      icon: "Zap",
-    },
-    {
-      label: "Active Users",
-      value: "573",
-      change: "+201",
-      trend: "up",
-      icon: "Users",
-    },
-  ];
-
-  return NextResponse.json(metrics);
+  return NextResponse.json({
+    totalRequests: 245231,
+    requestsChange: 20.1,
+    avgLatency: "45ms",
+    latencyChange: -10,
+    activeServices: 12,
+    servicesChange: 2,
+    resourcesServed: 573,
+    resourcesChange: 201,
+    requestVolume: [
+        { time: "10:00", reqs: 400 },
+        { time: "10:05", reqs: 300 },
+        { time: "10:10", reqs: 550 },
+        { time: "10:15", reqs: 450 },
+        { time: "10:20", reqs: 600 },
+        { time: "10:25", reqs: 700 },
+        { time: "10:30", reqs: 650 },
+    ]
+  });
 }

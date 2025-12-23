@@ -1,74 +1,70 @@
-/**
- * Copyright 2025 Author(s) of MCP Any
- * SPDX-License-Identifier: Apache-2.0
- */
 
 "use client";
 
 import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { CheckCircle2, XCircle, AlertCircle } from "lucide-react";
-
-interface ServiceStatus {
-  id?: string;
-  name: string;
-  status: "healthy" | "unhealthy" | "degraded";
-  uptime: string;
-  version: string;
-}
+import { CheckCircle2, XCircle, AlertTriangle } from "lucide-react";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export function ServiceHealthWidget() {
-  const [services, setServices] = useState<ServiceStatus[]>([]);
+  const [services, setServices] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    async function fetchServices() {
-      try {
-        const res = await fetch("/api/dashboard/health");
-        if (res.ok) {
-          const data = await res.json();
+    fetch("/api/dashboard/health")
+      .then(res => res.json())
+      .then(data => {
           setServices(data);
-        }
-      } catch (error) {
-        console.error("Failed to fetch service health", error);
-      }
-    }
-    fetchServices();
-    const interval = setInterval(fetchServices, 5000);
-    return () => clearInterval(interval);
+          setLoading(false);
+      });
   }, []);
 
   return (
-    <Card className="col-span-3 backdrop-blur-sm bg-background/50">
+    <Card className="col-span-3 backdrop-blur-xl bg-background/60 border-muted/20 shadow-sm">
       <CardHeader>
         <CardTitle>Service Health</CardTitle>
         <CardDescription>Real-time status of connected upstream services.</CardDescription>
       </CardHeader>
       <CardContent>
-        <div className="space-y-4">
-          {services.map((service, index) => (
-            <div key={service.id || index} className="flex items-center justify-between p-2 rounded-lg hover:bg-muted/50 transition-colors">
-              <div className="flex items-center space-x-4">
-                {service.status === "healthy" && <CheckCircle2 className="text-green-500 h-5 w-5" />}
-                {service.status === "degraded" && <AlertCircle className="text-yellow-500 h-5 w-5" />}
-                {service.status === "unhealthy" && <XCircle className="text-red-500 h-5 w-5" />}
-                <div>
-                  <p className="text-sm font-medium leading-none">{service.name}</p>
-                  <p className="text-xs text-muted-foreground">{service.version}</p>
+        <ScrollArea className="h-[300px] w-full pr-4">
+          {loading ? (
+             <div className="space-y-4">
+                 <Skeleton className="h-12 w-full" />
+                 <Skeleton className="h-12 w-full" />
+                 <Skeleton className="h-12 w-full" />
+             </div>
+          ) : (
+            <div className="space-y-4">
+                {services.map((service, i) => (
+                <div key={i} className="flex items-center justify-between border-b pb-4 last:border-0 last:pb-0 border-muted/20">
+                    <div className="space-y-1">
+                    <p className="text-sm font-medium leading-none">{service.name}</p>
+                    <p className="text-xs text-muted-foreground">{service.latency}</p>
+                    </div>
+                    <div className="flex items-center">
+                    {service.status === "healthy" && (
+                        <Badge variant="outline" className="bg-green-500/10 text-green-500 border-green-500/20 hover:bg-green-500/20 transition-colors">
+                        <CheckCircle2 className="mr-1 h-3 w-3" /> Healthy
+                        </Badge>
+                    )}
+                    {service.status === "degraded" && (
+                        <Badge variant="outline" className="bg-yellow-500/10 text-yellow-500 border-yellow-500/20 hover:bg-yellow-500/20 transition-colors">
+                        <AlertTriangle className="mr-1 h-3 w-3" /> Degraded
+                        </Badge>
+                    )}
+                    {service.status === "down" && (
+                        <Badge variant="outline" className="bg-red-500/10 text-red-500 border-red-500/20 hover:bg-red-500/20 transition-colors">
+                        <XCircle className="mr-1 h-3 w-3" /> Down
+                        </Badge>
+                    )}
+                    </div>
                 </div>
-              </div>
-              <div className="flex items-center space-x-4">
-                <div className="text-right">
-                    <p className="text-sm font-medium">{service.uptime}</p>
-                    <p className="text-xs text-muted-foreground">Uptime</p>
-                </div>
-                <Badge variant={service.status === "healthy" ? "default" : service.status === "degraded" ? "secondary" : "destructive"}>
-                    {service.status}
-                </Badge>
-              </div>
+                ))}
             </div>
-          ))}
-        </div>
+          )}
+        </ScrollArea>
       </CardContent>
     </Card>
   );

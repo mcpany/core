@@ -1,29 +1,47 @@
-/**
- * Copyright 2025 Author(s) of MCP Any
- * SPDX-License-Identifier: Apache-2.0
- */
-
 
 import { test, expect } from '@playwright/test';
 import path from 'path';
 
-test('capture screenshots', async ({ page }) => {
-  const date = new Date().toISOString().split('T')[0];
-  const auditDir = path.join(__dirname, `../.audits/ui/${date}`);
+const date = new Date().toISOString().split('T')[0];
+const auditDir = path.join(__dirname, `../../.audit/ui/${date}`);
 
-  await page.goto('/');
-  await page.waitForTimeout(1000); // Wait for animations
-  await page.screenshot({ path: `${auditDir}/dashboard.png`, fullPage: true });
+test.describe('Audit Screenshots', () => {
+    test.use({ viewport: { width: 1920, height: 1080 } });
 
-  await page.goto('/services');
-  await page.waitForTimeout(1000);
-  await page.screenshot({ path: `${auditDir}/services.png`, fullPage: true });
+    test('capture screenshots', async ({ page }) => {
+        // Dashboard
+        await page.goto('/');
+        await page.waitForTimeout(1000); // Allow animations/charts to settle
+        await page.screenshot({ path: path.join(auditDir, 'dashboard.png'), fullPage: true });
 
-  await page.goto('/tools');
-  await page.waitForTimeout(1000);
-  await page.screenshot({ path: `${auditDir}/tools.png`, fullPage: true });
+        // Services
+        await page.goto('/services');
+        await page.waitForTimeout(500);
+        await page.screenshot({ path: path.join(auditDir, 'services.png'), fullPage: true });
 
-  await page.goto('/settings');
-  await page.waitForTimeout(1000);
-  await page.screenshot({ path: `${auditDir}/settings.png`, fullPage: true });
+        // Tools
+        await page.goto('/tools');
+        await page.waitForTimeout(500);
+        await page.screenshot({ path: path.join(auditDir, 'tools.png'), fullPage: true });
+
+        // Resources
+        await page.goto('/resources');
+        await page.waitForTimeout(500);
+        await page.screenshot({ path: path.join(auditDir, 'resources.png'), fullPage: true });
+
+        // Prompts
+        await page.goto('/prompts');
+        await page.waitForTimeout(500);
+        await page.screenshot({ path: path.join(auditDir, 'prompts.png'), fullPage: true });
+
+        // Middleware
+        await page.goto('/settings/middleware');
+        await page.waitForTimeout(500);
+        await page.screenshot({ path: path.join(auditDir, 'middleware.png'), fullPage: true });
+
+        // Webhooks
+        await page.goto('/settings/webhooks');
+        await page.waitForTimeout(500);
+        await page.screenshot({ path: path.join(auditDir, 'webhooks.png'), fullPage: true });
+    });
 });
