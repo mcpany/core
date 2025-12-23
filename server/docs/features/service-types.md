@@ -44,12 +44,6 @@ Connects to WebSocket servers.
 Connects to services via WebRTC data channels.
 -   **Features**: Low-latency peer-to-peer communication.
 
-### 9. File System (`filesystem_service`)
-Exposes local directories as tools.
--   **Features**: Read, write, list files safely within sandboxed directories.
--   **Use Cases**: Agentic coding, log analysis, local config management.
--   [Detailed Documentation](filesystem.md)
-
 ## Configuration Reference
 
 For detailed configuration options for each service type, please refer to the [Configuration Reference](../reference/configuration.md) (if available) or the `upstream_services` section of your `config.yaml`.
