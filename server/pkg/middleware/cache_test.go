@@ -355,3 +355,82 @@ func TestCachingMiddleware_DeterministicKeys(t *testing.T) {
 	assert.Equal(t, successResult, res2)
 	assert.Equal(t, 1, testTool.executeCount, "Should be cache hit despite different key order")
 }
+
+func TestCachingMiddleware_Clear(t *testing.T) {
+	// Setup
+	tm := &mockToolManager{}
+	cacheMiddleware := middleware.NewCachingMiddleware(tm)
+
+	testTool := &mockTool{
+		tool: v1.Tool_builder{
+			Name:      proto.String(testToolName),
+			ServiceId: proto.String(testServiceName),
+		}.Build(),
+		cacheConfig: configv1.CacheConfig_builder{
+			IsEnabled: proto.Bool(true),
+			Ttl:       durationpb.New(1 * time.Hour),
+		}.Build(),
+	}
+	req := &tool.ExecutionRequest{ToolName: testServiceToolName}
+	ctx := tool.NewContextWithTool(context.Background(), testTool)
+	nextFunc := func(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
+		t, _ := tool.GetFromContext(ctx)
+		return t.Execute(ctx, req)
+	}
+
+	// 1. Populate cache
+	_, err := cacheMiddleware.Execute(ctx, req, nextFunc)
+	require.NoError(t, err)
+	assert.Equal(t, 1, testTool.executeCount)
+
+	// 2. Clear cache
+	err = cacheMiddleware.Clear(context.Background())
+	require.NoError(t, err)
+
+	// 3. Call again - should execute (miss)
+	_, err = cacheMiddleware.Execute(ctx, req, nextFunc)
+	require.NoError(t, err)
+	assert.Equal(t, 2, testTool.executeCount, "Tool should be executed again after cache clear")
+}
+
+func TestCachingMiddleware_ActionDeleteCache_VerifyDeletion(t *testing.T) {
+	// Setup
+	tm := &mockToolManager{}
+	cacheMiddleware := middleware.NewCachingMiddleware(tm)
+
+	testTool := &mockTool{
+		tool: v1.Tool_builder{
+			Name:      proto.String(testToolName),
+			ServiceId: proto.String(testServiceName),
+		}.Build(),
+		cacheConfig: configv1.CacheConfig_builder{
+			IsEnabled: proto.Bool(true),
+			Ttl:       durationpb.New(1 * time.Hour),
+		}.Build(),
+	}
+	req := &tool.ExecutionRequest{ToolName: testServiceToolName}
+	ctx := tool.NewContextWithTool(context.Background(), testTool)
+	nextFunc := func(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
+		t, _ := tool.GetFromContext(ctx)
+		return t.Execute(ctx, req)
+	}
+
+	// 1. Populate cache
+	_, err := cacheMiddleware.Execute(ctx, req, nextFunc)
+	require.NoError(t, err)
+	assert.Equal(t, 1, testTool.executeCount)
+
+	// 2. Call with DeleteCache
+	cacheControl := &tool.CacheControl{Action: tool.ActionDeleteCache}
+	ctxWithDelete := tool.NewContextWithCacheControl(ctx, cacheControl)
+
+	_, err = cacheMiddleware.Execute(ctxWithDelete, req, nextFunc)
+	require.NoError(t, err)
+	assert.Equal(t, 2, testTool.executeCount, "Should execute due to skip cache")
+
+	// 3. Call again with Normal Allow
+	// If cache was deleted in step 2, this should be a MISS -> Execute -> count=3
+	_, err = cacheMiddleware.Execute(ctx, req, nextFunc)
+	require.NoError(t, err)
+	assert.Equal(t, 3, testTool.executeCount, "Should execute again because cache was deleted and not repopulated in step 2")
+}

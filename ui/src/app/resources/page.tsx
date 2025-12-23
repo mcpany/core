@@ -1,9 +1,8 @@
-/**
- * Copyright 2025 Author(s) of MCP Any
- * SPDX-License-Identifier: Apache-2.0
- */
 
-
+import { Sidebar } from "@/components/sidebar"
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import {
   Table,
   TableBody,
@@ -11,42 +10,90 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
+} from "@/components/ui/table"
+import { MoreHorizontal } from "lucide-react"
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 
+// Mock Resources
 const mockResources = [
-  { name: "api_spec.yaml", description: "OpenAPI Specification", type: "text/yaml" },
-  { name: "logo.png", description: "Company Logo", type: "image/png" },
-];
+    { name: "system_logs", uri: "file:///var/log/system.log", mimeType: "text/plain" },
+    { name: "config_file", uri: "file:///etc/config.json", mimeType: "application/json" }
+]
 
 export default function ResourcesPage() {
   return (
-    <div className="flex-1 space-y-4 p-8 pt-6">
-      <div className="flex items-center justify-between space-y-2">
-        <h2 className="text-3xl font-bold tracking-tight">Resources</h2>
-      </div>
-      <div className="rounded-md border">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Name</TableHead>
-              <TableHead>Description</TableHead>
-              <TableHead>Type</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {mockResources.map((res) => (
-              <TableRow key={res.name}>
-                <TableCell className="font-medium">{res.name}</TableCell>
-                <TableCell>{res.description}</TableCell>
-                <TableCell>
-                    <Badge variant="outline">{res.type}</Badge>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+    <div className="flex min-h-screen w-full flex-col bg-muted/40 md:flex-row">
+      <Sidebar />
+      <div className="flex flex-col sm:gap-4 sm:py-4 sm:pl-14 w-full">
+        <main className="grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8">
+            <div className="flex items-center">
+                <h1 className="text-lg font-semibold md:text-2xl">Resources</h1>
+            </div>
+          <Card x-chunk="dashboard-06-chunk-0">
+            <CardHeader>
+              <CardTitle>Resources</CardTitle>
+              <CardDescription>
+                Manage static resources exposed by services.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Name</TableHead>
+                    <TableHead>URI</TableHead>
+                    <TableHead>MIME Type</TableHead>
+                     <TableHead>
+                      <span className="sr-only">Actions</span>
+                    </TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                    {mockResources.map((res, index) => (
+                        <TableRow key={index}>
+                            <TableCell className="font-medium">
+                                {res.name}
+                            </TableCell>
+                            <TableCell>
+                                <code className="relative rounded bg-muted px-[0.3rem] py-[0.2rem] font-mono text-sm font-semibold">
+                                    {res.uri}
+                                </code>
+                            </TableCell>
+                            <TableCell>
+                                <Badge variant="secondary">{res.mimeType}</Badge>
+                            </TableCell>
+                            <TableCell>
+                                <DropdownMenu>
+                                    <DropdownMenuTrigger asChild>
+                                        <Button
+                                            aria-haspopup="true"
+                                            size="icon"
+                                            variant="ghost"
+                                        >
+                                            <MoreHorizontal className="h-4 w-4" />
+                                            <span className="sr-only">Toggle menu</span>
+                                        </Button>
+                                    </DropdownMenuTrigger>
+                                    <DropdownMenuContent align="end">
+                                        <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                                        <DropdownMenuItem>View Content</DropdownMenuItem>
+                                    </DropdownMenuContent>
+                                </DropdownMenu>
+                            </TableCell>
+                        </TableRow>
+                    ))}
+                </TableBody>
+              </Table>
+            </CardContent>
+          </Card>
+        </main>
       </div>
     </div>
-  );
+  )
 }
