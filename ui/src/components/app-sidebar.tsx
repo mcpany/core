@@ -36,6 +36,11 @@ const items = [
     icon: Server,
   },
   {
+    title: "Logs",
+    url: "/logs",
+    icon: Terminal,
+  },
+  {
     title: "Playground",
     url: "/playground",
     icon: Bot,
