@@ -21,6 +21,7 @@ import (
 	"github.com/mcpany/core/pkg/serviceregistry"
 	"github.com/mcpany/core/pkg/tool"
 	"github.com/mcpany/core/pkg/util"
+	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
@@ -33,16 +34,17 @@ var AddReceivingMiddlewareHook func(name string)
 // delegate requests to the appropriate handlers and communicates with backend
 // workers via an event bus.
 type Server struct {
-	server          *mcp.Server
-	router          *Router
-	toolManager     tool.ManagerInterface
-	promptManager   prompt.ManagerInterface
-	resourceManager resource.ManagerInterface
-	authManager     *auth.Manager
-	serviceRegistry *serviceregistry.ServiceRegistry
-	bus             *bus.Provider
-	reloadFunc      func() error
-	debug           bool
+	server              *mcp.Server
+	router              *Router
+	toolManager         tool.ManagerInterface
+	promptManager       prompt.ManagerInterface
+	resourceManager     resource.ManagerInterface
+	authManager         *auth.Manager
+	serviceRegistry     *serviceregistry.ServiceRegistry
+	bus                 *bus.Provider
+	reloadFunc          func() error
+	debug               bool
+	samplingCacheConfig *configv1.CacheConfig
 }
 
 // Server returns the underlying *mcp.Server instance, which provides access to
@@ -147,7 +149,10 @@ func NewServer(
 
 				session := req.GetSession()
 				if serverSession, ok := session.(*mcp.ServerSession); ok {
-					sampler := NewMCPSampler(serverSession)
+					var sampler tool.Sampler = NewMCPSampler(serverSession)
+					if s.samplingCacheConfig != nil && s.samplingCacheConfig.GetIsEnabled() {
+						sampler = NewCachingSampler(sampler, s.samplingCacheConfig)
+					}
 					ctx = tool.NewContextWithSampler(ctx, sampler)
 				}
 
@@ -655,6 +660,14 @@ func (s *Server) Reload() error {
 		return s.reloadFunc()
 	}
 	return nil
+}
+
+// SetSamplingCacheConfig sets the configuration for the sampling cache.
+//
+// Parameters:
+//   - config: The cache configuration.
+func (s *Server) SetSamplingCacheConfig(config *configv1.CacheConfig) {
+	s.samplingCacheConfig = config
 }
 
 func (s *Server) resourceListFilteringMiddleware(next mcp.MethodHandler) mcp.MethodHandler {
