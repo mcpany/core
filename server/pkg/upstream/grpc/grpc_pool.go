@@ -58,19 +58,23 @@ func NewGrpcPool(
 				return nil, err
 			}
 
-			caCert, err := os.ReadFile(mtlsConfig.GetCaCertPath())
-			if err != nil {
-				return nil, err
+			tlsConfig := &tls.Config{
+				Certificates: []tls.Certificate{certificate},
+				MinVersion:   tls.VersionTLS12,
 			}
 
-			caCertPool := x509.NewCertPool()
-			caCertPool.AppendCertsFromPEM(caCert)
+			if mtlsConfig.GetCaCertPath() != "" {
+				caCert, err := os.ReadFile(mtlsConfig.GetCaCertPath())
+				if err != nil {
+					return nil, err
+				}
 
-			transportCreds = credentials.NewTLS(&tls.Config{
-				Certificates: []tls.Certificate{certificate},
-				RootCAs:      caCertPool,
-				MinVersion:   tls.VersionTLS12,
-			})
+				caCertPool := x509.NewCertPool()
+				caCertPool.AppendCertsFromPEM(caCert)
+				tlsConfig.RootCAs = caCertPool
+			}
+
+			transportCreds = credentials.NewTLS(tlsConfig)
 		} else {
 			transportCreds = insecure.NewCredentials()
 		}

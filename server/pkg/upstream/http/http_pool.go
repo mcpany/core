@@ -45,13 +45,15 @@ var NewHTTPPool = func(
 		}
 		tlsConfig.Certificates = []tls.Certificate{cert}
 
-		caCert, err := os.ReadFile(mtlsConfig.GetCaCertPath())
-		if err != nil {
-			return nil, err
+		if mtlsConfig.GetCaCertPath() != "" {
+			caCert, err := os.ReadFile(mtlsConfig.GetCaCertPath())
+			if err != nil {
+				return nil, err
+			}
+			caCertPool := x509.NewCertPool()
+			caCertPool.AppendCertsFromPEM(caCert)
+			tlsConfig.RootCAs = caCertPool
 		}
-		caCertPool := x509.NewCertPool()
-		caCertPool.AppendCertsFromPEM(caCert)
-		tlsConfig.RootCAs = caCertPool
 	}
 
 	sharedClient := &http.Client{
