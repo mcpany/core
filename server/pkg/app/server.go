@@ -36,8 +36,8 @@ import (
 	"github.com/mcpany/core/pkg/storage/sqlite"
 	"github.com/mcpany/core/pkg/telemetry"
 	"github.com/mcpany/core/pkg/tool"
-	"github.com/mcpany/core/pkg/util"
 	"github.com/mcpany/core/pkg/upstream/factory"
+	"github.com/mcpany/core/pkg/util"
 	"github.com/mcpany/core/pkg/worker"
 	pb_admin "github.com/mcpany/core/proto/admin/v1"
 	v1 "github.com/mcpany/core/proto/api/v1"
@@ -390,6 +390,18 @@ func (a *Application) Run(
 	// If we iterate:
 	// M1(M2(M3(...)))
 	// M1 is priority 0.
+
+	// Filter out auth middleware in stdio mode as it requires http.Request
+	if stdio {
+		var filtered []*config_v1.Middleware
+		for _, m := range middlewares {
+			if m.GetName() != "auth" {
+				filtered = append(filtered, m)
+			}
+		}
+		middlewares = filtered
+	}
+
 	chain := middleware.GetMCPMiddlewares(middlewares)
 	for _, m := range chain {
 		mcpSrv.Server().AddReceivingMiddleware(m)
@@ -620,6 +632,7 @@ func (a *Application) runServerMode(
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			ip := util.ExtractIP(r.RemoteAddr)
 			ctx := util.ContextWithRemoteIP(r.Context(), ip)
+			ctx = context.WithValue(ctx, "http.request", r)
 			r = r.WithContext(ctx)
 
 			if apiKey != "" {
