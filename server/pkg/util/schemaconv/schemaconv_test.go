@@ -223,6 +223,77 @@ func TestMethodDescriptorToProtoProperties(t *testing.T) {
 			})
 		}
 	})
+
+	t.Run("missing types", func(t *testing.T) {
+		t.Run("bytes field", func(t *testing.T) {
+			mockMethod := &mockMethodDescriptor{
+				input: &mockMessageDescriptor{
+					fields: &mockFieldDescriptors{
+						fields: []protoreflect.FieldDescriptor{
+							&mockFieldDescriptor{name: "bytes_field", kind: protoreflect.BytesKind},
+						},
+					},
+				},
+			}
+
+			properties, err := MethodDescriptorToProtoProperties(mockMethod)
+			require.NoError(t, err)
+			require.Len(t, properties.Fields, 1)
+
+			field, ok := properties.Fields["bytes_field"]
+			require.True(t, ok)
+			s := field.GetStructValue()
+			require.NotNil(t, s)
+			// Explicitly check for string, as bytes are usually represented as base64 strings in JSON
+			assert.Equal(t, "string", s.Fields["type"].GetStringValue())
+		})
+
+		t.Run("enum field", func(t *testing.T) {
+			mockMethod := &mockMethodDescriptor{
+				input: &mockMessageDescriptor{
+					fields: &mockFieldDescriptors{
+						fields: []protoreflect.FieldDescriptor{
+							&mockFieldDescriptor{name: "enum_field", kind: protoreflect.EnumKind},
+						},
+					},
+				},
+			}
+
+			properties, err := MethodDescriptorToProtoProperties(mockMethod)
+			require.NoError(t, err)
+			require.Len(t, properties.Fields, 1)
+
+			field, ok := properties.Fields["enum_field"]
+			require.True(t, ok)
+			s := field.GetStructValue()
+			require.NotNil(t, s)
+			// Enums are typically represented as strings (names) or integers. Defaulting to string (names) is good practice for JSON-RPC.
+			assert.Equal(t, "string", s.Fields["type"].GetStringValue())
+		})
+
+		t.Run("message field (nested object)", func(t *testing.T) {
+			mockMethod := &mockMethodDescriptor{
+				input: &mockMessageDescriptor{
+					fields: &mockFieldDescriptors{
+						fields: []protoreflect.FieldDescriptor{
+							&mockFieldDescriptor{name: "message_field", kind: protoreflect.MessageKind},
+						},
+					},
+				},
+			}
+
+			properties, err := MethodDescriptorToProtoProperties(mockMethod)
+			require.NoError(t, err)
+			require.Len(t, properties.Fields, 1)
+
+			field, ok := properties.Fields["message_field"]
+			require.True(t, ok)
+			s := field.GetStructValue()
+			require.NotNil(t, s)
+
+			assert.Equal(t, "object", s.Fields["type"].GetStringValue())
+		})
+	})
 }
 
 func TestMethodOutputDescriptorToProtoProperties(t *testing.T) {
@@ -283,5 +354,30 @@ func TestMethodOutputDescriptorToProtoProperties(t *testing.T) {
 				assert.Equal(t, tc.expectedType, s.Fields["type"].GetStringValue())
 			})
 		}
+	})
+
+	t.Run("missing types", func(t *testing.T) {
+		t.Run("message field (nested object)", func(t *testing.T) {
+			mockMethod := &mockMethodDescriptor{
+				output: &mockMessageDescriptor{
+					fields: &mockFieldDescriptors{
+						fields: []protoreflect.FieldDescriptor{
+							&mockFieldDescriptor{name: "message_field", kind: protoreflect.MessageKind},
+						},
+					},
+				},
+			}
+
+			properties, err := MethodOutputDescriptorToProtoProperties(mockMethod)
+			require.NoError(t, err)
+			require.Len(t, properties.Fields, 1)
+
+			field, ok := properties.Fields["message_field"]
+			require.True(t, ok)
+			s := field.GetStructValue()
+			require.NotNil(t, s)
+
+			assert.Equal(t, "object", s.Fields["type"].GetStringValue())
+		})
 	})
 }
