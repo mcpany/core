@@ -49,14 +49,18 @@ func RedactJSON(input []byte) []byte {
 	switch firstByte {
 	case '{':
 		var m map[string]interface{}
-		if err := json.Unmarshal(input, &m); err == nil {
+		decoder := json.NewDecoder(bytes.NewReader(input))
+		decoder.UseNumber()
+		if err := decoder.Decode(&m); err == nil {
 			redactMapInPlace(m)
 			b, _ := json.Marshal(m)
 			return b
 		}
 	case '[':
 		var s []interface{}
-		if err := json.Unmarshal(input, &s); err == nil {
+		decoder := json.NewDecoder(bytes.NewReader(input))
+		decoder.UseNumber()
+		if err := decoder.Decode(&s); err == nil {
 			redactSliceInPlace(s)
 			b, _ := json.Marshal(s)
 			return b
@@ -64,13 +68,17 @@ func RedactJSON(input []byte) []byte {
 	default:
 		// Try both if we can't determine (e.g. unknown format), though unlikely for valid JSON
 		var m map[string]interface{}
-		if err := json.Unmarshal(input, &m); err == nil {
+		decoder := json.NewDecoder(bytes.NewReader(input))
+		decoder.UseNumber()
+		if err := decoder.Decode(&m); err == nil {
 			redactMapInPlace(m)
 			b, _ := json.Marshal(m)
 			return b
 		}
 		var s []interface{}
-		if err := json.Unmarshal(input, &s); err == nil {
+		decoder2 := json.NewDecoder(bytes.NewReader(input))
+		decoder2.UseNumber()
+		if err := decoder2.Decode(&s); err == nil {
 			redactSliceInPlace(s)
 			b, _ := json.Marshal(s)
 			return b
