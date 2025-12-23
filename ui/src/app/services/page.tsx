@@ -4,125 +4,159 @@
  */
 
 
-import { Sidebar } from "@/components/sidebar"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table"
-import { mockServices } from "@/lib/mock-data"
-import { PlusCircle, MoreHorizontal } from "lucide-react"
+"use client";
+
+import { useState, useEffect } from "react";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Switch } from "@/components/ui/switch";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { MoreHorizontal, Settings, Trash2 } from "lucide-react";
 import {
   DropdownMenu,
-  DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { UpstreamServiceConfig } from "@/proto/config/v1/upstream_service"
+} from "@/components/ui/dropdown-menu";
+import {
+    Sheet,
+    SheetContent,
+    SheetDescription,
+    SheetHeader,
+    SheetTitle,
+    SheetTrigger,
+} from "@/components/ui/sheet"
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
+interface Service {
+  id: string;
+  name: string;
+  version: string;
+  disable: boolean;
+  service_config?: any; // Simplified for now
+}
 
 export default function ServicesPage() {
+  const [services, setServices] = useState<Service[]>([]);
+  const [selectedService, setSelectedService] = useState<Service | null>(null);
+
+  useEffect(() => {
+    fetchServices();
+  }, []);
+
+  const fetchServices = async () => {
+    const res = await fetch("/api/services");
+    if (res.ok) {
+      setServices(await res.json());
+    }
+  };
+
+  const toggleService = async (id: string, currentStatus: boolean) => {
+    // Optimistic update
+    setServices(services.map(s => s.id === id ? { ...s, disable: !currentStatus } : s));
+
+    try {
+        await fetch("/api/services", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ id, disable: !currentStatus })
+        });
+    } catch (e) {
+        console.error("Failed to toggle service", e);
+        fetchServices(); // Revert
+    }
+  };
+
   return (
-    <div className="flex min-h-screen w-full flex-col bg-muted/40 md:flex-row">
-      <Sidebar />
-      <div className="flex flex-col sm:gap-4 sm:py-4 sm:pl-14 w-full">
-        <main className="grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8">
-            <div className="flex items-center">
-                <h1 className="text-lg font-semibold md:text-2xl">Services</h1>
-                <div className="ml-auto flex items-center gap-2">
-                    <Button size="sm" className="h-8 gap-1">
-                        <PlusCircle className="h-3.5 w-3.5" />
-                        <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
-                            Add Service
-                        </span>
-                    </Button>
-                </div>
-            </div>
-          <Card x-chunk="dashboard-06-chunk-0">
-            <CardHeader>
-              <CardTitle>Services</CardTitle>
-              <CardDescription>
-                Manage your upstream services and their configurations.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Name</TableHead>
-                    <TableHead>Type</TableHead>
-                    <TableHead className="hidden md:table-cell">Status</TableHead>
-                    <TableHead className="hidden md:table-cell">
-                      Version
-                    </TableHead>
-                    <TableHead className="hidden md:table-cell">
-                      Priority
-                    </TableHead>
-                    <TableHead>
-                      <span className="sr-only">Actions</span>
-                    </TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                    {mockServices.map((service: UpstreamServiceConfig) => (
-                        <TableRow key={service.id}>
-                            <TableCell className="font-medium">
-                                {service.name}
-                            </TableCell>
-                            <TableCell>
-                                <Badge variant="outline">{service.serviceConfig?.case?.replace('Service', '').toUpperCase()}</Badge>
-                            </TableCell>
-                            <TableCell className="hidden md:table-cell">
-                                <Badge variant={service.disable ? "secondary" : "default"}>
-                                    {service.disable ? "Disabled" : "Active"}
-                                </Badge>
-                            </TableCell>
-                             <TableCell className="hidden md:table-cell">
-                                {service.version}
-                            </TableCell>
-                             <TableCell className="hidden md:table-cell">
-                                {service.priority}
-                            </TableCell>
-                            <TableCell>
-                                <DropdownMenu>
-                                    <DropdownMenuTrigger asChild>
-                                        <Button
-                                            aria-haspopup="true"
-                                            size="icon"
-                                            variant="ghost"
-                                        >
-                                            <MoreHorizontal className="h-4 w-4" />
-                                            <span className="sr-only">Toggle menu</span>
-                                        </Button>
-                                    </DropdownMenuTrigger>
-                                    <DropdownMenuContent align="end">
-                                        <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                                        <DropdownMenuItem>Edit</DropdownMenuItem>
-                                        <DropdownMenuItem>
-                                            {service.disable ? "Enable" : "Disable"}
-                                        </DropdownMenuItem>
-                                        <DropdownMenuSeparator />
-                                        <DropdownMenuItem className="text-destructive">Delete</DropdownMenuItem>
-                                    </DropdownMenuContent>
-                                </DropdownMenu>
-                            </TableCell>
-                        </TableRow>
-                    ))}
-                </TableBody>
-              </Table>
-            </CardContent>
-          </Card>
-        </main>
+    <div className="flex-1 space-y-4 p-8 pt-6">
+      <div className="flex items-center justify-between">
+        <h2 className="text-3xl font-bold tracking-tight">Services</h2>
+        <Button>Add Service</Button>
       </div>
+
+      <Card className="backdrop-blur-sm bg-background/50">
+        <CardHeader>
+          <CardTitle>Upstream Services</CardTitle>
+          <CardDescription>Manage your connected upstream services.</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Name</TableHead>
+                <TableHead>Type</TableHead>
+                <TableHead>Version</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead className="text-right">Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {services.map((service) => (
+                <TableRow key={service.id}>
+                  <TableCell className="font-medium">{service.name}</TableCell>
+                  <TableCell>
+                      {service.service_config?.http_service ? "HTTP" :
+                       service.service_config?.grpc_service ? "gRPC" : "Other"}
+                  </TableCell>
+                  <TableCell>{service.version}</TableCell>
+                  <TableCell>
+                    <div className="flex items-center space-x-2">
+                        <Switch
+                            checked={!service.disable}
+                            onCheckedChange={() => toggleService(service.id, service.disable)}
+                        />
+                        <span className="text-sm text-muted-foreground">
+                            {!service.disable ? "Enabled" : "Disabled"}
+                        </span>
+                    </div>
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <Sheet>
+                        <SheetTrigger asChild>
+                             <Button variant="ghost" size="icon" onClick={() => setSelectedService(service)}>
+                                <Settings className="h-4 w-4" />
+                            </Button>
+                        </SheetTrigger>
+                        <SheetContent className="w-[400px] sm:w-[540px]">
+                            <SheetHeader>
+                                <SheetTitle>Edit Service</SheetTitle>
+                                <SheetDescription>
+                                    Make changes to your service configuration here. Click save when you're done.
+                                </SheetDescription>
+                            </SheetHeader>
+                            {selectedService && (
+                                <div className="grid gap-4 py-4">
+                                    <div className="grid grid-cols-4 items-center gap-4">
+                                        <Label htmlFor="name" className="text-right">
+                                            Name
+                                        </Label>
+                                        <Input id="name" value={selectedService.name} className="col-span-3" />
+                                    </div>
+                                    <div className="grid grid-cols-4 items-center gap-4">
+                                        <Label htmlFor="version" className="text-right">
+                                            Version
+                                        </Label>
+                                        <Input id="version" value={selectedService.version} className="col-span-3" />
+                                    </div>
+                                     {/* More complex forms would go here */}
+                                </div>
+                            )}
+                             <div className="flex justify-end">
+                                <Button type="submit">Save changes</Button>
+                            </div>
+                        </SheetContent>
+                    </Sheet>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
     </div>
-  )
+  );
 }
