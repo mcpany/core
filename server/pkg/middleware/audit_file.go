@@ -7,6 +7,7 @@ import (
 	"bufio"
 	"encoding/json"
 	"fmt"
+	"io"
 	"os"
 	"sync"
 )
@@ -25,6 +26,7 @@ func NewFileAuditStore(path string) (*FileAuditStore, error) {
 	if path != "" {
 		if _, err := os.Stat(path); err == nil {
 			// Read file to get last hash
+			//nolint:gosec // Path is from trusted configuration
 			f, err := os.Open(path)
 			if err != nil {
 				return nil, fmt.Errorf("failed to open audit log for reading: %w", err)
@@ -121,8 +123,8 @@ func (s *FileAuditStore) Verify() (bool, error) {
 			prevHash = entry.Hash
 		}
 		if err != nil {
-			if err != os.ErrClosed && err.Error() != "EOF" {
-				// return false, fmt.Errorf("read error: %w", err)
+			if err != os.ErrClosed && err != io.EOF {
+				return false, fmt.Errorf("read error: %w", err)
 			}
 			break
 		}
