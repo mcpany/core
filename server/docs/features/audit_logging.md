@@ -4,7 +4,7 @@ MCP Any provides a built-in audit logging capability to record details about eve
 
 ## Overview
 
-When enabled, the audit logger intercepts every tool execution request and records structured data about the event to a specified file.
+When enabled, the audit logger intercepts every tool execution request and records structured data about the event to a specified file or database.
 
 The audit log captures:
 - **Timestamp**: When the execution started.
@@ -15,6 +15,7 @@ The audit log captures:
 - **Arguments**: The input arguments provided to the tool (optional).
 - **Result**: The result returned by the tool (optional).
 - **Error**: Any error that occurred during execution.
+- **Hash Integrity**: SHA-256 hash chaining to detect tampering.
 
 ## Configuration
 
@@ -29,6 +30,7 @@ global_settings:
     output_path: "audit.log"
     log_arguments: true
     log_results: false
+    storage_type: STORAGE_TYPE_FILE # or STORAGE_TYPE_SQLITE
 ```
 
 ### Configuration Options
@@ -36,11 +38,12 @@ global_settings:
 | Option | Type | Default | Description |
 | :--- | :--- | :--- | :--- |
 | `enabled` | `bool` | `false` | Enables or disables audit logging. |
-| `output_path` | `string` | `""` | Path to the log file. If empty, logs are written to stdout. |
+| `output_path` | `string` | `""` | Path to the log file or database. If empty, logs are written to stdout (File mode). |
 | `log_arguments` | `bool` | `false` | If true, logs the input arguments. **Warning:** May log sensitive data. |
 | `log_results` | `bool` | `false` | If true, logs the execution result. **Warning:** May log sensitive data. |
+| `storage_type` | `enum` | `FILE` | The storage backend to use: `STORAGE_TYPE_FILE` or `STORAGE_TYPE_SQLITE`. |
 
-## Log Format
+## Log Format (File / JSON)
 
 Audit logs are written as newline-delimited JSON (NDJSON). Each line represents a single tool execution event.
 
@@ -60,9 +63,19 @@ Audit logs are written as newline-delimited JSON (NDJSON). Each line represents 
   "result": {
     "temperature": 15,
     "unit": "C"
-  }
+  },
+  "prev_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "hash": "88a7c9ce3aee64920d1d58892f9db28a7b76bf0a4785c31fc08176c28e080362"
 }
 ```
+
+## Tamper-Evidence
+
+Audit logs are secured using a SHA-256 hash chain. Each log entry contains:
+1.  **`prev_hash`**: The hash of the previous log entry (or empty string for the first entry).
+2.  **`hash`**: The SHA-256 hash of the current entry's content combined with `prev_hash`.
+
+This ensures that any modification to the log file (deletion, insertion, or modification of lines) will invalidate the hash chain of all subsequent entries, allowing auditors to detect tampering.
 
 ## Security Considerations
 

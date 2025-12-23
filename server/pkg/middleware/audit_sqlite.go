@@ -4,9 +4,7 @@
 package middleware
 
 import (
-	"crypto/sha256"
 	"database/sql"
-	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"sync"
@@ -94,7 +92,7 @@ func (s *SQLiteAuditStore) Write(entry AuditEntry) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
-	// Marshal complex types
+	// Marshal complex types to JSON strings for storage
 	argsJSON := "{}"
 	if len(entry.Arguments) > 0 {
 		argsJSON = string(entry.Arguments)
@@ -120,8 +118,15 @@ func (s *SQLiteAuditStore) Write(entry AuditEntry) error {
 		prevHash = "" // First entry
 	}
 
-	// Compute hash
-	hash := computeHash(ts, entry.ToolName, entry.UserID, entry.ProfileID, argsJSON, resultJSON, entry.Error, entry.DurationMs, prevHash)
+	// Compute hash using the shared function
+	// We need to ensure the entry passed to ComputeAuditHash reflects exactly what we store.
+	// We reconstruct an entry with the serialized values if needed, but ComputeAuditHash
+	// does its own serialization. We must ensure consistency.
+	// ComputeAuditHash uses string(entry.Arguments) and json.Marshal(entry.Result).
+	// If we store `argsJSON` and `resultJSON`, we should verify they match what ComputeAuditHash produces.
+	// They do match the logic inside ComputeAuditHash.
+
+	hash := ComputeAuditHash(entry, prevHash)
 
 	query := `
 	INSERT INTO audit_logs (
@@ -142,13 +147,6 @@ func (s *SQLiteAuditStore) Write(entry AuditEntry) error {
 		hash,
 	)
 	return err
-}
-
-func computeHash(timestamp, toolName, userID, profileID, args, result, errorMsg string, durationMs int64, prevHash string) string {
-	data := fmt.Sprintf("%s|%s|%s|%s|%s|%s|%s|%d|%s",
-		timestamp, toolName, userID, profileID, args, result, errorMsg, durationMs, prevHash)
-	h := sha256.Sum256([]byte(data))
-	return hex.EncodeToString(h[:])
 }
 
 // Verify checks the integrity of the audit logs.
@@ -178,7 +176,31 @@ func (s *SQLiteAuditStore) Verify() (bool, error) {
 			return false, fmt.Errorf("integrity violation at id %d: prev_hash mismatch (expected %q, got %q)", id, expectedPrevHash, prevHash)
 		}
 
-		calculatedHash := computeHash(ts, toolName, userID, profileID, args, result, errorMsg, durationMs, prevHash)
+		// Reconstruct AuditEntry for hash verification
+		parsedTime, _ := time.Parse(time.RFC3339Nano, ts)
+
+		// We need to be careful with Result.
+		// `ComputeAuditHash` marshals `Result`.
+		// We stored `result` string.
+		// We need to put something in `Result` that marshals back to `result` string.
+		// json.RawMessage does exactly that.
+		var resultAny any
+		if result != "" {
+			resultAny = json.RawMessage(result)
+		}
+
+		entry := AuditEntry{
+			Timestamp:  parsedTime,
+			ToolName:   toolName,
+			UserID:     userID,
+			ProfileID:  profileID,
+			Arguments:  json.RawMessage(args),
+			Result:     resultAny,
+			Error:      errorMsg,
+			DurationMs: durationMs,
+		}
+
+		calculatedHash := ComputeAuditHash(entry, prevHash)
 		if calculatedHash != hash {
 			return false, fmt.Errorf("integrity violation at id %d: hash mismatch (calculated %q, got %q)", id, calculatedHash, hash)
 		}
