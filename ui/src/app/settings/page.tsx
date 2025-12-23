@@ -1,108 +1,87 @@
-/**
- * Copyright 2025 Author(s) of MCP Any
- * SPDX-License-Identifier: Apache-2.0
- */
 
-
-"use client";
-
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Switch } from "@/components/ui/switch";
+import { Sidebar } from "@/components/sidebar"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Textarea } from "@/components/ui/textarea"
+import { Switch } from "@/components/ui/switch"
 
 export default function SettingsPage() {
   return (
-    <div className="flex-1 space-y-4 p-8 pt-6">
-      <div className="flex items-center justify-between space-y-2">
-        <h2 className="text-3xl font-bold tracking-tight">Settings</h2>
-      </div>
-      <Tabs defaultValue="profiles" className="space-y-4">
-        <TabsList>
-          <TabsTrigger value="profiles">Profiles</TabsTrigger>
-          <TabsTrigger value="webhooks">Webhooks</TabsTrigger>
-          <TabsTrigger value="middleware">Middleware</TabsTrigger>
-        </TabsList>
-        <TabsContent value="profiles" className="space-y-4">
-            <Card>
+    <div className="flex min-h-screen w-full flex-col bg-muted/40 md:flex-row">
+      <Sidebar />
+      <div className="flex flex-col sm:gap-4 sm:py-4 sm:pl-14 w-full">
+        <main className="grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8">
+             <div className="flex items-center">
+                <h1 className="text-lg font-semibold md:text-2xl">Settings</h1>
+            </div>
+          <Tabs defaultValue="general" className="w-full">
+            <TabsList>
+              <TabsTrigger value="general">General</TabsTrigger>
+              <TabsTrigger value="webhooks">Webhooks</TabsTrigger>
+              <TabsTrigger value="security">Security</TabsTrigger>
+            </TabsList>
+            <TabsContent value="general">
+              <Card>
                 <CardHeader>
-                    <CardTitle>Execution Profiles</CardTitle>
-                    <CardDescription>
-                        Manage environments like Development, Production, and Debug.
-                    </CardDescription>
+                  <CardTitle>General Configuration</CardTitle>
+                  <CardDescription>
+                    Manage basic server settings.
+                  </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                    <div className="flex items-center justify-between border p-4 rounded-lg">
-                        <div>
-                            <p className="font-medium">Development</p>
-                            <p className="text-sm text-muted-foreground">Verbose logging, auto-reload.</p>
-                        </div>
-                        <Button variant="outline">Edit</Button>
-                    </div>
-                    <div className="flex items-center justify-between border p-4 rounded-lg">
-                        <div>
-                            <p className="font-medium">Production</p>
-                            <p className="text-sm text-muted-foreground">Optimized for performance, strict security.</p>
-                        </div>
-                        <Button variant="outline">Edit</Button>
-                    </div>
+                  <div className="grid gap-2">
+                    <Label htmlFor="server-name">Server Name</Label>
+                    <Input id="server-name" defaultValue="MCP Any Main" />
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <Switch id="maintenance-mode" />
+                    <Label htmlFor="maintenance-mode">Maintenance Mode</Label>
+                  </div>
                 </CardContent>
-            </Card>
-        </TabsContent>
-        <TabsContent value="webhooks" className="space-y-4">
-             <Card>
+              </Card>
+            </TabsContent>
+            <TabsContent value="webhooks">
+              <Card>
                 <CardHeader>
-                    <CardTitle>Webhooks</CardTitle>
-                    <CardDescription>
-                        Configure and test webhooks for event notifications.
-                    </CardDescription>
+                  <CardTitle>Webhook Configuration</CardTitle>
+                  <CardDescription>
+                    Configure global webhooks for server events.
+                  </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                    <div className="grid w-full max-w-sm items-center gap-1.5">
-                        <Label htmlFor="webhook-url">Endpoint URL</Label>
-                        <Input type="url" id="webhook-url" placeholder="https://api.example.com/webhook" />
+                  <div className="grid gap-2">
+                    <Label htmlFor="webhook-url">Global Webhook URL</Label>
+                    <Input id="webhook-url" placeholder="https://api.example.com/hooks/mcp" />
+                  </div>
+                   <div className="grid gap-2">
+                    <Label htmlFor="webhook-secret">Webhook Secret</Label>
+                    <Input id="webhook-secret" type="password" placeholder="whsec_..." />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label>Events to Trigger</Label>
+                    <div className="flex items-center space-x-2">
+                        <Switch id="event-service-up" defaultChecked />
+                        <Label htmlFor="event-service-up">Service Up</Label>
                     </div>
                     <div className="flex items-center space-x-2">
-                         <Switch id="webhook-active" />
-                         <Label htmlFor="webhook-active">Active</Label>
+                        <Switch id="event-service-down" defaultChecked />
+                        <Label htmlFor="event-service-down">Service Down</Label>
                     </div>
-                </CardContent>
-                <CardFooter>
-                    <Button>Save Webhook</Button>
-                </CardFooter>
-            </Card>
-        </TabsContent>
-        <TabsContent value="middleware" className="space-y-4">
-             <Card>
-                <CardHeader>
-                    <CardTitle>Middleware Pipeline</CardTitle>
-                    <CardDescription>
-                        Visual management of the request processing pipeline.
-                    </CardDescription>
-                </CardHeader>
-                <CardContent>
-                    <div className="flex items-center space-x-2 p-4 border rounded-lg bg-muted/50">
-                        <div className="p-2 bg-background border rounded shadow-sm">Auth</div>
-                        <div className="h-px w-8 bg-muted-foreground"></div>
-                        <div className="p-2 bg-background border rounded shadow-sm">Rate Limit</div>
-                        <div className="h-px w-8 bg-muted-foreground"></div>
-                        <div className="p-2 bg-background border rounded shadow-sm">Cache</div>
-                        <div className="h-px w-8 bg-muted-foreground"></div>
-                        <div className="p-2 bg-background border rounded shadow-sm">Router</div>
+                     <div className="flex items-center space-x-2">
+                        <Switch id="event-error" />
+                        <Label htmlFor="event-error">Critical Errors</Label>
                     </div>
+                  </div>
+                   <Button>Save Webhook Settings</Button>
                 </CardContent>
-            </Card>
-        </TabsContent>
-      </Tabs>
+              </Card>
+            </TabsContent>
+          </Tabs>
+        </main>
+      </div>
     </div>
-  );
+  )
 }

@@ -433,7 +433,8 @@ type GlobalSettings struct {
 	xxx_hidden_LogFormat          GlobalSettings_LogFormat `protobuf:"varint,10,opt,name=log_format,enum=mcpany.config.v1.GlobalSettings_LogFormat"`
 	xxx_hidden_DbPath             *string                  `protobuf:"bytes,11,opt,name=db_path"`
 	xxx_hidden_Middlewares        *[]*Middleware           `protobuf:"bytes,12,rep,name=middlewares"`
-	xxx_hidden_MaxRequestBodySize int64                    `protobuf:"varint,13,opt,name=max_request_body_size"`
+	xxx_hidden_SamplingCache      *CacheConfig             `protobuf:"bytes,13,opt,name=sampling_cache"`
+	xxx_hidden_MaxRequestBodySize int64                    `protobuf:"varint,14,opt,name=max_request_body_size"`
 	XXX_raceDetectHookData        protoimpl.RaceDetectHookData
 	XXX_presence                  [1]uint32
 	unknownFields                 protoimpl.UnknownFields
@@ -559,6 +560,13 @@ func (x *GlobalSettings) GetMiddlewares() []*Middleware {
 	return nil
 }
 
+func (x *GlobalSettings) GetSamplingCache() *CacheConfig {
+	if x != nil {
+		return x.xxx_hidden_SamplingCache
+	}
+	return nil
+}
+
 func (x *GlobalSettings) GetMaxRequestBodySize() int64 {
 	if x != nil {
 		return x.xxx_hidden_MaxRequestBodySize
@@ -568,12 +576,12 @@ func (x *GlobalSettings) GetMaxRequestBodySize() int64 {
 
 func (x *GlobalSettings) SetMcpListenAddress(v string) {
 	x.xxx_hidden_McpListenAddress = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 12)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 13)
 }
 
 func (x *GlobalSettings) SetLogLevel(v GlobalSettings_LogLevel) {
 	x.xxx_hidden_LogLevel = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 12)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 13)
 }
 
 func (x *GlobalSettings) SetMessageBus(v *bus.MessageBus) {
@@ -582,7 +590,7 @@ func (x *GlobalSettings) SetMessageBus(v *bus.MessageBus) {
 
 func (x *GlobalSettings) SetApiKey(v string) {
 	x.xxx_hidden_ApiKey = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 3, 12)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 3, 13)
 }
 
 func (x *GlobalSettings) SetProfiles(v []string) {
@@ -603,21 +611,25 @@ func (x *GlobalSettings) SetProfileDefinitions(v []*ProfileDefinition) {
 
 func (x *GlobalSettings) SetLogFormat(v GlobalSettings_LogFormat) {
 	x.xxx_hidden_LogFormat = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 8, 12)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 8, 13)
 }
 
 func (x *GlobalSettings) SetDbPath(v string) {
 	x.xxx_hidden_DbPath = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 9, 12)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 9, 13)
 }
 
 func (x *GlobalSettings) SetMiddlewares(v []*Middleware) {
 	x.xxx_hidden_Middlewares = &v
 }
 
+func (x *GlobalSettings) SetSamplingCache(v *CacheConfig) {
+	x.xxx_hidden_SamplingCache = v
+}
+
 func (x *GlobalSettings) SetMaxRequestBodySize(v int64) {
 	x.xxx_hidden_MaxRequestBodySize = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 11, 12)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 12, 13)
 }
 
 func (x *GlobalSettings) HasMcpListenAddress() bool {
@@ -669,11 +681,18 @@ func (x *GlobalSettings) HasDbPath() bool {
 	return protoimpl.X.Present(&(x.XXX_presence[0]), 9)
 }
 
+func (x *GlobalSettings) HasSamplingCache() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_SamplingCache != nil
+}
+
 func (x *GlobalSettings) HasMaxRequestBodySize() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 11)
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 12)
 }
 
 func (x *GlobalSettings) ClearMcpListenAddress() {
@@ -709,8 +728,12 @@ func (x *GlobalSettings) ClearDbPath() {
 	x.xxx_hidden_DbPath = nil
 }
 
+func (x *GlobalSettings) ClearSamplingCache() {
+	x.xxx_hidden_SamplingCache = nil
+}
+
 func (x *GlobalSettings) ClearMaxRequestBodySize() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 11)
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 12)
 	x.xxx_hidden_MaxRequestBodySize = 0
 }
 
@@ -739,6 +762,8 @@ type GlobalSettings_builder struct {
 	DbPath *string
 	// The list of middlewares to enable and their configuration.
 	Middlewares []*Middleware
+	// Sampling cache configuration.
+	SamplingCache *CacheConfig
 	// The maximum size of the request body in bytes.
 	MaxRequestBodySize *int64
 }
@@ -748,16 +773,16 @@ func (b0 GlobalSettings_builder) Build() *GlobalSettings {
 	b, x := &b0, m0
 	_, _ = b, x
 	if b.McpListenAddress != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 12)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 13)
 		x.xxx_hidden_McpListenAddress = b.McpListenAddress
 	}
 	if b.LogLevel != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 12)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 13)
 		x.xxx_hidden_LogLevel = *b.LogLevel
 	}
 	x.xxx_hidden_MessageBus = b.MessageBus
 	if b.ApiKey != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 3, 12)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 3, 13)
 		x.xxx_hidden_ApiKey = b.ApiKey
 	}
 	x.xxx_hidden_Profiles = b.Profiles
@@ -765,16 +790,17 @@ func (b0 GlobalSettings_builder) Build() *GlobalSettings {
 	x.xxx_hidden_Audit = b.Audit
 	x.xxx_hidden_ProfileDefinitions = &b.ProfileDefinitions
 	if b.LogFormat != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 8, 12)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 8, 13)
 		x.xxx_hidden_LogFormat = *b.LogFormat
 	}
 	if b.DbPath != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 9, 12)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 9, 13)
 		x.xxx_hidden_DbPath = b.DbPath
 	}
 	x.xxx_hidden_Middlewares = &b.Middlewares
+	x.xxx_hidden_SamplingCache = b.SamplingCache
 	if b.MaxRequestBodySize != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 11, 12)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 12, 13)
 		x.xxx_hidden_MaxRequestBodySize = *b.MaxRequestBodySize
 	}
 	return m0
@@ -1321,7 +1347,7 @@ var File_proto_config_v1_config_proto protoreflect.FileDescriptor
 
 const file_proto_config_v1_config_proto_rawDesc = "" +
 	"\n" +
-	"\x1cproto/config/v1/config.proto\x12\x10mcpany.config.v1\x1a\x13proto/bus/bus.proto\x1a&proto/config/v1/upstream_service.proto\x1a\x1aproto/config/v1/auth.proto\"\xd6\x02\n" +
+	"\x1cproto/config/v1/config.proto\x12\x10mcpany.config.v1\x1a\x13proto/bus/bus.proto\x1a&proto/config/v1/upstream_service.proto\x1a\x1aproto/config/v1/auth.proto\x1a\x1aproto/config/v1/call.proto\"\xd6\x02\n" +
 	"\x12McpAnyServerConfig\x12J\n" +
 	"\x0fglobal_settings\x18\x01 \x01(\v2 .mcpany.config.v1.GlobalSettingsR\x0fglobal_settings\x12U\n" +
 	"\x11upstream_services\x18\x02 \x03(\v2'.mcpany.config.v1.UpstreamServiceConfigR\x11upstream_services\x12o\n" +
@@ -1331,7 +1357,7 @@ const file_proto_config_v1_config_proto_rawDesc = "" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12N\n" +
 	"\x0eauthentication\x18\x02 \x01(\v2&.mcpany.config.v1.AuthenticationConfigR\x0eauthentication\x12 \n" +
 	"\vprofile_ids\x18\x03 \x03(\tR\vprofile_ids\x12\x14\n" +
-	"\x05roles\x18\x04 \x03(\tR\x05roles\"\xce\x06\n" +
+	"\x05roles\x18\x04 \x03(\tR\x05roles\"\x95\a\n" +
 	"\x0eGlobalSettings\x12.\n" +
 	"\x12mcp_listen_address\x18\x01 \x01(\tR\x12mcp_listen_address\x12G\n" +
 	"\tlog_level\x18\x03 \x01(\x0e2).mcpany.config.v1.GlobalSettings.LogLevelR\tlog_level\x121\n" +
@@ -1346,8 +1372,9 @@ const file_proto_config_v1_config_proto_rawDesc = "" +
 	" \x01(\x0e2*.mcpany.config.v1.GlobalSettings.LogFormatR\n" +
 	"log_format\x12\x18\n" +
 	"\adb_path\x18\v \x01(\tR\adb_path\x12>\n" +
-	"\vmiddlewares\x18\f \x03(\v2\x1c.mcpany.config.v1.MiddlewareR\vmiddlewares\x124\n" +
-	"\x15max_request_body_size\x18\r \x01(\x03R\x15max_request_body_size\"w\n" +
+	"\vmiddlewares\x18\f \x03(\v2\x1c.mcpany.config.v1.MiddlewareR\vmiddlewares\x12E\n" +
+	"\x0esampling_cache\x18\r \x01(\v2\x1d.mcpany.config.v1.CacheConfigR\x0esampling_cache\x124\n" +
+	"\x15max_request_body_size\x18\x0e \x01(\x03R\x15max_request_body_size\"w\n" +
 	"\bLogLevel\x12\x19\n" +
 	"\x15LOG_LEVEL_UNSPECIFIED\x10\x00\x12\x12\n" +
 	"\x0eLOG_LEVEL_INFO\x10\x01\x12\x12\n" +
@@ -1402,6 +1429,7 @@ var file_proto_config_v1_config_proto_goTypes = []any{
 	(*UpstreamServiceCollection)(nil), // 12: mcpany.config.v1.UpstreamServiceCollection
 	(*AuthenticationConfig)(nil),      // 13: mcpany.config.v1.AuthenticationConfig
 	(*bus.MessageBus)(nil),            // 14: bus.MessageBus
+	(*CacheConfig)(nil),               // 15: mcpany.config.v1.CacheConfig
 }
 var file_proto_config_v1_config_proto_depIdxs = []int32{
 	5,  // 0: mcpany.config.v1.McpAnyServerConfig.global_settings:type_name -> mcpany.config.v1.GlobalSettings
@@ -1415,14 +1443,15 @@ var file_proto_config_v1_config_proto_depIdxs = []int32{
 	7,  // 8: mcpany.config.v1.GlobalSettings.profile_definitions:type_name -> mcpany.config.v1.ProfileDefinition
 	1,  // 9: mcpany.config.v1.GlobalSettings.log_format:type_name -> mcpany.config.v1.GlobalSettings.LogFormat
 	9,  // 10: mcpany.config.v1.GlobalSettings.middlewares:type_name -> mcpany.config.v1.Middleware
-	2,  // 11: mcpany.config.v1.AuditConfig.storage_type:type_name -> mcpany.config.v1.AuditConfig.StorageType
-	8,  // 12: mcpany.config.v1.ProfileDefinition.selector:type_name -> mcpany.config.v1.ProfileSelector
-	10, // 13: mcpany.config.v1.ProfileSelector.tool_properties:type_name -> mcpany.config.v1.ProfileSelector.ToolPropertiesEntry
-	14, // [14:14] is the sub-list for method output_type
-	14, // [14:14] is the sub-list for method input_type
-	14, // [14:14] is the sub-list for extension type_name
-	14, // [14:14] is the sub-list for extension extendee
-	0,  // [0:14] is the sub-list for field type_name
+	15, // 11: mcpany.config.v1.GlobalSettings.sampling_cache:type_name -> mcpany.config.v1.CacheConfig
+	2,  // 12: mcpany.config.v1.AuditConfig.storage_type:type_name -> mcpany.config.v1.AuditConfig.StorageType
+	8,  // 13: mcpany.config.v1.ProfileDefinition.selector:type_name -> mcpany.config.v1.ProfileSelector
+	10, // 14: mcpany.config.v1.ProfileSelector.tool_properties:type_name -> mcpany.config.v1.ProfileSelector.ToolPropertiesEntry
+	15, // [15:15] is the sub-list for method output_type
+	15, // [15:15] is the sub-list for method input_type
+	15, // [15:15] is the sub-list for extension type_name
+	15, // [15:15] is the sub-list for extension extendee
+	0,  // [0:15] is the sub-list for field type_name
 }
 
 func init() { file_proto_config_v1_config_proto_init() }
@@ -1432,6 +1461,7 @@ func file_proto_config_v1_config_proto_init() {
 	}
 	file_proto_config_v1_upstream_service_proto_init()
 	file_proto_config_v1_auth_proto_init()
+	file_proto_config_v1_call_proto_init()
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
