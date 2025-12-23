@@ -1320,6 +1320,9 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 					if err := checkForArgumentInjection(val); err != nil {
 						return nil, fmt.Errorf("parameter %q: %w", k, err)
 					}
+					if err := checkForShellInjection(val); err != nil {
+						return nil, fmt.Errorf("parameter %q: %w", k, err)
+					}
 					args[i] = strings.ReplaceAll(arg, placeholder, val)
 				}
 			}
@@ -1348,6 +1351,9 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 							return nil, fmt.Errorf("args parameter: %w", err)
 						}
 						if err := checkForArgumentInjection(argStr); err != nil {
+							return nil, fmt.Errorf("args parameter: %w", err)
+						}
+						if err := checkForShellInjection(argStr); err != nil {
 							return nil, fmt.Errorf("args parameter: %w", err)
 						}
 						args = append(args, argStr)
@@ -1562,6 +1568,9 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 					if err := checkForArgumentInjection(val); err != nil {
 						return nil, fmt.Errorf("parameter %q: %w", k, err)
 					}
+					if err := checkForShellInjection(val); err != nil {
+						return nil, fmt.Errorf("parameter %q: %w", k, err)
+					}
 					args[i] = strings.ReplaceAll(arg, placeholder, val)
 				}
 			}
@@ -1591,6 +1600,9 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 							return nil, fmt.Errorf("args parameter: %w", err)
 						}
 						if err := checkForArgumentInjection(argStr); err != nil {
+							return nil, fmt.Errorf("args parameter: %w", err)
+						}
+						if err := checkForShellInjection(argStr); err != nil {
 							return nil, fmt.Errorf("args parameter: %w", err)
 						}
 						args = append(args, argStr)
@@ -1850,6 +1862,18 @@ func checkForPathTraversal(val string) error {
 	}
 	if strings.Contains(val, "/../") || strings.Contains(val, "\\..\\") || strings.Contains(val, "/..\\") || strings.Contains(val, "\\../") {
 		return fmt.Errorf("path traversal attempt detected")
+	}
+	return nil
+}
+
+func checkForShellInjection(val string) error {
+	// Check for characters that allow command injection in shell.
+	// This list is aggressive to strictly prevent RCE, which may impact some legitimate use cases.
+	dangerous := []string{";", "|", "&", "$", "`", "(", ")", "<", ">", "\n", "\r"}
+	for _, char := range dangerous {
+		if strings.Contains(val, char) {
+			return fmt.Errorf("shell injection attempt detected: contains %q", char)
+		}
 	}
 	return nil
 }

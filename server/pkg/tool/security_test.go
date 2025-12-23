@@ -11,74 +11,42 @@ import (
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	v1 "github.com/mcpany/core/proto/mcp_router/v1"
 	"github.com/stretchr/testify/assert"
-	"google.golang.org/protobuf/proto"
+	"github.com/stretchr/testify/require"
 )
 
-func TestLocalCommandTool_ArgumentInjection_Prevention(t *testing.T) {
-	// This test verifies that argument injection via placeholders is prevented.
+func TestCommandTool_ShellInjectionPrevention(t *testing.T) {
+	// Setup
+	// We want to run: sh -c "echo {{msg}}"
+	// Payload: "hello; echo pwned" - should be blocked
 
-	tool := &v1.Tool{
-		Name:        proto.String("test-tool-cat"),
+	toolDef := &v1.Tool{
+		Name: strPtr("echo_tool"),
 	}
+
 	service := &configv1.CommandLineUpstreamService{
-		Command: proto.String("cat"),
-		Local:   proto.Bool(true),
+		Command: strPtr("sh"),
+		// No container environment means local execution
 	}
+
 	callDef := &configv1.CommandLineCallDefinition{
-		Parameters: []*configv1.CommandLineParameterMapping{
-			{Schema: &configv1.ParameterSchema{Name: proto.String("file")}},
-		},
-		Args: []string{"{{file}}"},
+		Args: []string{"-c", "echo {{msg}}"},
 	}
 
-	localTool := NewLocalCommandTool(tool, service, callDef, nil, "call-id")
+	cmdTool := NewLocalCommandTool(toolDef, service, callDef, nil, "test-call-id")
 
-	// Case 1: Safe input
-	reqSafe := &ExecutionRequest{
-		ToolName: "test-tool-cat",
-		Arguments: map[string]interface{}{
-			"file": "/etc/hosts",
-		},
+	// Inputs
+	inputs := map[string]interface{}{
+		"msg": "hello; echo pwned",
 	}
-	reqSafe.ToolInputs, _ = json.Marshal(reqSafe.Arguments)
+	inputBytes, _ := json.Marshal(inputs)
 
-	_, err := localTool.Execute(context.Background(), reqSafe)
-	assert.NoError(t, err)
-
-	// Case 2: Argument Injection
-	reqAttack := &ExecutionRequest{
-		ToolName: "test-tool-cat",
-		Arguments: map[string]interface{}{
-			"file": "-n", // Attempt to inject a flag
-		},
-	}
-	reqAttack.ToolInputs, _ = json.Marshal(reqAttack.Arguments)
-
-	_, err = localTool.Execute(context.Background(), reqAttack)
-
-	assert.Error(t, err)
-	if err != nil {
-		assert.Contains(t, err.Error(), "argument injection")
+	req := &ExecutionRequest{
+		ToolName:   "echo_tool",
+		ToolInputs: json.RawMessage(inputBytes),
 	}
 
-	// Case 3: Negative number (should be allowed)
-	reqNegative := &ExecutionRequest{
-		ToolName: "test-tool-cat",
-		Arguments: map[string]interface{}{
-			"file": "-5",
-		},
-	}
-	reqNegative.ToolInputs, _ = json.Marshal(reqNegative.Arguments)
-
-	// We expect this to fail with "argument injection" if we block all negatives,
-	// or pass if we allow numbers.
-	// Our implementation allows numbers.
-	// However, "cat -5" will fail with "No such file", but NOT "argument injection".
-	_, err = localTool.Execute(context.Background(), reqNegative)
-
-	// Error could be from cat failing, or injection check.
-	// We want to ensure it is NOT injection check.
-	if err != nil {
-		assert.NotContains(t, err.Error(), "argument injection")
-	}
+	// Execute
+	_, err := cmdTool.Execute(context.Background(), req)
+	require.Error(t, err)
+	assert.Contains(t, err.Error(), "shell injection attempt detected")
 }

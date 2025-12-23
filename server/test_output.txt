@@ -1,0 +1,745 @@
+=== RUN   TestLocalCommandTool_Execute_Echo
+--- PASS: TestLocalCommandTool_Execute_Echo (0.00s)
+=== RUN   TestLocalCommandTool_Execute_JSON
+--- PASS: TestLocalCommandTool_Execute_JSON (0.00s)
+=== RUN   TestLocalCommandTool_Execute_Error
+--- PASS: TestLocalCommandTool_Execute_Error (0.00s)
+=== RUN   TestLocalCommandTool_Execute_NonExistent
+--- PASS: TestLocalCommandTool_Execute_NonExistent (0.00s)
+=== RUN   TestLocalCommandTool_Execute_Timeout
+--- PASS: TestLocalCommandTool_Execute_Timeout (0.10s)
+=== RUN   TestLocalCommandTool_Execute_InvalidArgs
+--- PASS: TestLocalCommandTool_Execute_InvalidArgs (0.00s)
+=== RUN   TestCommandTool_Execute_Echo
+--- PASS: TestCommandTool_Execute_Echo (0.00s)
+=== RUN   TestCommandTool_Execute_JSON
+--- PASS: TestCommandTool_Execute_JSON (0.00s)
+=== RUN   TestCommandTool_Execute_Error
+time=2025-12-23T09:12:05.855Z level=ERROR source=/app/server/pkg/command/command.go:123 msg="Command execution failed" error="context canceled"
+--- PASS: TestCommandTool_Execute_Error (0.00s)
+=== RUN   TestCommandTool_Execute_InvalidArgs
+--- PASS: TestCommandTool_Execute_InvalidArgs (0.00s)
+=== RUN   TestPrettyPrint
+--- PASS: TestPrettyPrint (0.00s)
+=== RUN   TestConvertToolDefinitionToProto
+=== RUN   TestConvertToolDefinitionToProto/nil_tool_definition
+=== RUN   TestConvertToolDefinitionToProto/valid_tool_definition
+--- PASS: TestConvertToolDefinitionToProto (0.00s)
+    --- PASS: TestConvertToolDefinitionToProto/nil_tool_definition (0.00s)
+    --- PASS: TestConvertToolDefinitionToProto/valid_tool_definition (0.00s)
+=== RUN   TestConvertJSONSchemaToStruct
+=== RUN   TestConvertJSONSchemaToStruct/nil_schema
+=== RUN   TestConvertJSONSchemaToStruct/invalid_schema_type
+=== RUN   TestConvertJSONSchemaToStruct/valid_schema
+--- PASS: TestConvertJSONSchemaToStruct (0.00s)
+    --- PASS: TestConvertJSONSchemaToStruct/nil_schema (0.00s)
+    --- PASS: TestConvertJSONSchemaToStruct/invalid_schema_type (0.00s)
+    --- PASS: TestConvertJSONSchemaToStruct/valid_schema (0.00s)
+=== RUN   TestGetJSONSchemaForScalarType
+=== RUN   TestGetJSONSchemaForScalarType/unsupported_type
+=== RUN   TestGetJSONSchemaForScalarType/supported_types
+=== RUN   TestGetJSONSchemaForScalarType/supported_types/TYPE_DOUBLE
+=== RUN   TestGetJSONSchemaForScalarType/supported_types/TYPE_FLOAT
+=== RUN   TestGetJSONSchemaForScalarType/supported_types/TYPE_INT32
+=== RUN   TestGetJSONSchemaForScalarType/supported_types/TYPE_INT64
+=== RUN   TestGetJSONSchemaForScalarType/supported_types/TYPE_UINT32
+=== RUN   TestGetJSONSchemaForScalarType/supported_types/TYPE_UINT64
+=== RUN   TestGetJSONSchemaForScalarType/supported_types/TYPE_SINT32
+=== RUN   TestGetJSONSchemaForScalarType/supported_types/TYPE_SINT64
+=== RUN   TestGetJSONSchemaForScalarType/supported_types/TYPE_FIXED32
+=== RUN   TestGetJSONSchemaForScalarType/supported_types/TYPE_FIXED64
+=== RUN   TestGetJSONSchemaForScalarType/supported_types/TYPE_SFIXED32
+=== RUN   TestGetJSONSchemaForScalarType/supported_types/TYPE_SFIXED64
+=== RUN   TestGetJSONSchemaForScalarType/supported_types/TYPE_BOOL
+=== RUN   TestGetJSONSchemaForScalarType/supported_types/TYPE_STRING
+=== RUN   TestGetJSONSchemaForScalarType/supported_types/TYPE_BYTES
+--- PASS: TestGetJSONSchemaForScalarType (0.00s)
+    --- PASS: TestGetJSONSchemaForScalarType/unsupported_type (0.00s)
+    --- PASS: TestGetJSONSchemaForScalarType/supported_types (0.00s)
+        --- PASS: TestGetJSONSchemaForScalarType/supported_types/TYPE_DOUBLE (0.00s)
+        --- PASS: TestGetJSONSchemaForScalarType/supported_types/TYPE_FLOAT (0.00s)
+        --- PASS: TestGetJSONSchemaForScalarType/supported_types/TYPE_INT32 (0.00s)
+        --- PASS: TestGetJSONSchemaForScalarType/supported_types/TYPE_INT64 (0.00s)
+        --- PASS: TestGetJSONSchemaForScalarType/supported_types/TYPE_UINT32 (0.00s)
+        --- PASS: TestGetJSONSchemaForScalarType/supported_types/TYPE_UINT64 (0.00s)
+        --- PASS: TestGetJSONSchemaForScalarType/supported_types/TYPE_SINT32 (0.00s)
+        --- PASS: TestGetJSONSchemaForScalarType/supported_types/TYPE_SINT64 (0.00s)
+        --- PASS: TestGetJSONSchemaForScalarType/supported_types/TYPE_FIXED32 (0.00s)
+        --- PASS: TestGetJSONSchemaForScalarType/supported_types/TYPE_FIXED64 (0.00s)
+        --- PASS: TestGetJSONSchemaForScalarType/supported_types/TYPE_SFIXED32 (0.00s)
+        --- PASS: TestGetJSONSchemaForScalarType/supported_types/TYPE_SFIXED64 (0.00s)
+        --- PASS: TestGetJSONSchemaForScalarType/supported_types/TYPE_BOOL (0.00s)
+        --- PASS: TestGetJSONSchemaForScalarType/supported_types/TYPE_STRING (0.00s)
+        --- PASS: TestGetJSONSchemaForScalarType/supported_types/TYPE_BYTES (0.00s)
+=== RUN   TestConvertMCPToolToProto
+=== RUN   TestConvertMCPToolToProto/nil_tool
+=== RUN   TestConvertMCPToolToProto/valid_tool
+=== RUN   TestConvertMCPToolToProto/full_annotations_and_schemas
+=== RUN   TestConvertMCPToolToProto/nil_annotations
+--- PASS: TestConvertMCPToolToProto (0.00s)
+    --- PASS: TestConvertMCPToolToProto/nil_tool (0.00s)
+    --- PASS: TestConvertMCPToolToProto/valid_tool (0.00s)
+    --- PASS: TestConvertMCPToolToProto/full_annotations_and_schemas (0.00s)
+    --- PASS: TestConvertMCPToolToProto/nil_annotations (0.00s)
+=== RUN   TestConvertMcpFieldsToInputSchemaProperties
+=== RUN   TestConvertMcpFieldsToInputSchemaProperties/empty_fields
+=== RUN   TestConvertMcpFieldsToInputSchemaProperties/valid_fields
+--- PASS: TestConvertMcpFieldsToInputSchemaProperties (0.00s)
+    --- PASS: TestConvertMcpFieldsToInputSchemaProperties/empty_fields (0.00s)
+    --- PASS: TestConvertMcpFieldsToInputSchemaProperties/valid_fields (0.00s)
+=== RUN   TestConvertMCPToolToProto_NilInputSchema
+--- PASS: TestConvertMCPToolToProto_NilInputSchema (0.00s)
+=== RUN   TestConvertProtoToMCPTool_NilTool
+--- PASS: TestConvertProtoToMCPTool_NilTool (0.00s)
+=== RUN   TestConvertProtoToMCPTool_EmptyToolName
+--- PASS: TestConvertProtoToMCPTool_EmptyToolName (0.00s)
+=== RUN   TestConvertProtoToMCPTool
+=== RUN   TestConvertProtoToMCPTool/valid_tool
+--- PASS: TestConvertProtoToMCPTool (0.00s)
+    --- PASS: TestConvertProtoToMCPTool/valid_tool (0.00s)
+=== RUN   TestErrToolNotFound
+--- PASS: TestErrToolNotFound (0.00s)
+=== RUN   TestManager_ExecuteTool_Coverage
+=== PAUSE TestManager_ExecuteTool_Coverage
+=== RUN   TestManager_ExecuteTool_Hooks_Coverage
+=== PAUSE TestManager_ExecuteTool_Hooks_Coverage
+=== RUN   TestManager_ClearToolsForService_Coverage
+=== PAUSE TestManager_ClearToolsForService_Coverage
+=== RUN   TestManager_AddTool_WithMCPServer_Coverage
+=== PAUSE TestManager_AddTool_WithMCPServer_Coverage
+=== RUN   TestNewWebhookHook
+--- PASS: TestNewWebhookHook (0.00s)
+=== RUN   TestSigningRoundTripper_RoundTrip
+--- PASS: TestSigningRoundTripper_RoundTrip (0.00s)
+=== RUN   TestWebhookHook_ExecutePre
+--- PASS: TestWebhookHook_ExecutePre (0.00s)
+=== RUN   TestWebhookHook_ExecutePre_Errors
+time=2025-12-23T09:12:05.869Z level=ERROR source=/app/server/pkg/tool/hooks.go:196 msg="No response event received" result="Post \"http://invalid-url-that-fails-dns-lookup\": dial tcp: lookup invalid-url-that-fails-dns-lookup on 192.168.0.1:53: no such host"
+time=2025-12-23T09:12:05.871Z level=ERROR source=/app/server/pkg/tool/hooks.go:196 msg="No response event received" result="failed to convert response into event: unknown Message encoding\n500: "
+--- PASS: TestWebhookHook_ExecutePre_Errors (0.00s)
+=== RUN   TestPolicyHook_InvalidRegex
+time=2025-12-23T09:12:05.871Z level=ERROR source=/app/server/pkg/tool/hooks.go:48 msg="Invalid tool name regex in policy" regex=[ error="error parsing regexp: missing closing ]: `[`"
+--- PASS: TestPolicyHook_InvalidRegex (0.00s)
+=== RUN   TestToolManager_ExecuteTool_WithHooks
+=== RUN   TestToolManager_ExecuteTool_WithHooks/PreCallHook_Deny
+time=2025-12-23T09:12:05.871Z level=WARN source=/app/server/pkg/tool/management.go:250 msg="Tool execution denied by pre-hook error" toolName=service-1.my-tool error="tool execution denied by default policy: service-1.my-tool"
+=== RUN   TestToolManager_ExecuteTool_WithHooks/LegacyCallPolicy_Deny
+time=2025-12-23T09:12:05.871Z level=WARN source=/app/server/pkg/tool/management.go:250 msg="Tool execution denied by pre-hook error" toolName=service-1.my-tool error="tool execution denied by default policy: service-1.my-tool"
+=== RUN   TestToolManager_ExecuteTool_WithHooks/ToolManagement
+=== RUN   TestToolManager_ExecuteTool_WithHooks/Middleware
+--- PASS: TestToolManager_ExecuteTool_WithHooks (0.00s)
+    --- PASS: TestToolManager_ExecuteTool_WithHooks/PreCallHook_Deny (0.00s)
+    --- PASS: TestToolManager_ExecuteTool_WithHooks/LegacyCallPolicy_Deny (0.00s)
+    --- PASS: TestToolManager_ExecuteTool_WithHooks/ToolManagement (0.00s)
+    --- PASS: TestToolManager_ExecuteTool_WithHooks/Middleware (0.00s)
+=== RUN   TestPolicyHook_ExecutePre
+=== RUN   TestPolicyHook_ExecutePre/Default_Allow
+=== RUN   TestPolicyHook_ExecutePre/Default_Deny
+=== RUN   TestPolicyHook_ExecutePre/Explicit_Allow_Rule
+=== RUN   TestPolicyHook_ExecutePre/Explicit_Deny_Rule
+=== RUN   TestPolicyHook_ExecutePre/Argument_Regex_Matching
+=== RUN   TestPolicyHook_ExecutePre/Argument_Regex_Matching_Safe
+=== RUN   TestPolicyHook_ExecutePre/Save_Cache_Rule
+=== RUN   TestPolicyHook_ExecutePre/Delete_Cache_Rule
+--- PASS: TestPolicyHook_ExecutePre (0.00s)
+    --- PASS: TestPolicyHook_ExecutePre/Default_Allow (0.00s)
+    --- PASS: TestPolicyHook_ExecutePre/Default_Deny (0.00s)
+    --- PASS: TestPolicyHook_ExecutePre/Explicit_Allow_Rule (0.00s)
+    --- PASS: TestPolicyHook_ExecutePre/Explicit_Deny_Rule (0.00s)
+    --- PASS: TestPolicyHook_ExecutePre/Argument_Regex_Matching (0.00s)
+    --- PASS: TestPolicyHook_ExecutePre/Argument_Regex_Matching_Safe (0.00s)
+    --- PASS: TestPolicyHook_ExecutePre/Save_Cache_Rule (0.00s)
+    --- PASS: TestPolicyHook_ExecutePre/Delete_Cache_Rule (0.00s)
+=== RUN   TestWebhookHook
+=== RUN   TestWebhookHook/Pre_Allow
+=== RUN   TestWebhookHook/Pre_Deny
+=== RUN   TestWebhookHook/Pre_Modify
+=== RUN   TestWebhookHook/Post_No_Modification
+time=2025-12-23T09:12:05.876Z level=INFO source=/app/server/pkg/tool/hooks.go:282 msg="ExecutePost called" tool=allowed-tool
+=== RUN   TestWebhookHook/Post_Modify
+time=2025-12-23T09:12:05.876Z level=INFO source=/app/server/pkg/tool/hooks.go:282 msg="ExecutePost called" tool=modify-result
+--- PASS: TestWebhookHook (0.00s)
+    --- PASS: TestWebhookHook/Pre_Allow (0.00s)
+    --- PASS: TestWebhookHook/Pre_Deny (0.00s)
+    --- PASS: TestWebhookHook/Pre_Modify (0.00s)
+    --- PASS: TestWebhookHook/Post_No_Modification (0.00s)
+    --- PASS: TestWebhookHook/Post_Modify (0.00s)
+=== RUN   TestLargeIntPrecisionLoss
+--- PASS: TestLargeIntPrecisionLoss (0.00s)
+=== RUN   TestLocalCommandTool_Execute_JSONProtocol_StderrCapture
+--- PASS: TestLocalCommandTool_Execute_JSONProtocol_StderrCapture (0.00s)
+=== RUN   TestLocalCommandTool_Execute
+--- PASS: TestLocalCommandTool_Execute (0.00s)
+=== RUN   TestLocalCommandTool_Execute_WithEnv
+--- PASS: TestLocalCommandTool_Execute_WithEnv (0.00s)
+=== RUN   TestLocalCommandTool_Execute_BlockedByPolicy
+--- PASS: TestLocalCommandTool_Execute_BlockedByPolicy (0.00s)
+=== RUN   TestManager_AddTool_Errors
+--- PASS: TestManager_AddTool_Errors (0.00s)
+=== RUN   TestManager_AddTool_WithServer
+time=2025-12-23T09:12:05.884Z level=INFO source=/app/server/pkg/tool/management.go:428 msg="Registering tool with MCP server" toolID=service-1.test-tool toolName=service-1.test-tool tool="&{Meta:map[] Annotations:<nil> Description:A test tool InputSchema:map[type:object] Name:service-1.test-tool OutputSchema:<nil> Title:}"
+--- PASS: TestManager_AddTool_WithServer (0.00s)
+=== RUN   TestManager_ExecuteTool_NotFound
+time=2025-12-23T09:12:05.885Z level=ERROR source=/app/server/pkg/tool/management.go:229 msg="Tool not found" toolName=missing
+--- PASS: TestManager_ExecuteTool_NotFound (0.00s)
+=== RUN   TestManager_ExecuteTool_Chain
+--- PASS: TestManager_ExecuteTool_Chain (0.00s)
+=== RUN   TestToolManager_AddAndGetTool
+--- PASS: TestToolManager_AddAndGetTool (0.00s)
+=== RUN   TestToolManager_ListTools
+--- PASS: TestToolManager_ListTools (0.00s)
+=== RUN   TestToolManager_ClearToolsForService
+--- PASS: TestToolManager_ClearToolsForService (0.00s)
+=== RUN   TestToolManager_ExecuteTool
+--- PASS: TestToolManager_ExecuteTool (0.00s)
+=== RUN   TestToolManager_ExecuteTool_NotFound
+time=2025-12-23T09:12:05.885Z level=ERROR source=/app/server/pkg/tool/management.go:229 msg="Tool not found" toolName=non-existent-tool
+--- PASS: TestToolManager_ExecuteTool_NotFound (0.00s)
+=== RUN   TestToolManager_ConcurrentAccess
+--- PASS: TestToolManager_ConcurrentAccess (0.00s)
+=== RUN   TestToolManager_AddTool_NoServiceID
+--- PASS: TestToolManager_AddTool_NoServiceID (0.00s)
+=== RUN   TestToolManager_AddTool_EmptyToolName
+time=2025-12-23T09:12:05.887Z level=ERROR source=/app/server/pkg/tool/management.go:390 msg="Failed to sanitize tool name" serviceID=test-service toolName="" error="id cannot be empty"
+--- PASS: TestToolManager_AddTool_EmptyToolName (0.00s)
+=== RUN   TestToolManager_AddTool_WithMCPServer
+time=2025-12-23T09:12:05.887Z level=INFO source=/app/server/pkg/tool/management.go:428 msg="Registering tool with MCP server" toolID=test-service.test-tool toolName=test-service.test-tool tool="&{Meta:map[] Annotations:0xc000395890 Description:A test tool InputSchema:map[type:object] Name:test-service.test-tool OutputSchema:<nil> Title:}"
+time=2025-12-23T09:12:05.887Z level=INFO source=/app/server/pkg/tool/management.go:428 msg="Registering tool with MCP server" toolID=test-service.error-tool toolName=test-service.error-tool tool="&{Meta:map[] Annotations:0xc0003959e0 Description: InputSchema:map[type:object] Name:test-service.error-tool OutputSchema:<nil> Title:}"
+--- PASS: TestToolManager_AddTool_WithMCPServer (0.00s)
+=== RUN   TestToolManager_AddAndExecuteWithMiddleware
+--- PASS: TestToolManager_AddAndExecuteWithMiddleware (0.00s)
+=== RUN   TestToolManager_ClearToolsForService_NoDeletions
+--- PASS: TestToolManager_ClearToolsForService_NoDeletions (0.00s)
+=== RUN   TestToolManager_AddTool_MCPServerAddToolError
+time=2025-12-23T09:12:05.887Z level=INFO source=/app/server/pkg/tool/management.go:428 msg="Registering tool with MCP server" toolID=test.id_36a9e7f1 toolName="test. " tool="&{Meta:map[] Annotations:0xc000516810 Description: InputSchema:map[type:object] Name:test.  OutputSchema:<nil> Title:}"
+--- PASS: TestToolManager_AddTool_MCPServerAddToolError (0.00s)
+=== RUN   TestToolManager_AddTool_WithMCPServerAndBus
+time=2025-12-23T09:12:05.887Z level=INFO source=/app/server/pkg/tool/management.go:428 msg="Registering tool with MCP server" toolID=test-service.bus-tool toolName=test-service.bus-tool tool="&{Meta:map[] Annotations:0xc0003d4270 Description: InputSchema:map[properties:map[arg:map[type:string]] type:object] Name:test-service.bus-tool OutputSchema:<nil> Title:}"
+--- PASS: TestToolManager_AddTool_WithMCPServerAndBus (0.00s)
+=== RUN   TestToolManager_AddTool_WithMCPServer_ErrorCases
+time=2025-12-23T09:12:05.888Z level=ERROR source=/app/server/pkg/tool/management.go:390 msg="Failed to sanitize tool name" serviceID=test toolName="" error="id cannot be empty"
+time=2025-12-23T09:12:05.888Z level=INFO source=/app/server/pkg/tool/management.go:428 msg="Registering tool with MCP server" toolID=test.good-tool toolName=test.good-tool tool="&{Meta:map[] Annotations:0xc00019d020 Description: InputSchema:map[type:object] Name:test.good-tool OutputSchema:<nil> Title:}"
+--- PASS: TestToolManager_AddTool_WithMCPServer_ErrorCases (0.00s)
+=== RUN   TestToolManager_AddAndGetServiceInfo
+--- PASS: TestToolManager_AddAndGetServiceInfo (0.00s)
+=== RUN   TestToolManager_SetMCPServer
+--- PASS: TestToolManager_SetMCPServer (0.00s)
+=== RUN   TestToolManager_ExecuteTool_ExecutionError
+time=2025-12-23T09:12:05.888Z level=ERROR source=/app/server/pkg/tool/management.go:282 msg="Tool execution failed" toolName=exec-service.exec-tool error="execution failed"
+time=2025-12-23T09:12:05.888Z level=ERROR source=/app/server/pkg/tool/management.go:303 msg="Tool execution chain failed" toolName=exec-service.exec-tool error="execution failed"
+--- PASS: TestToolManager_ExecuteTool_ExecutionError (0.00s)
+=== RUN   TestToolManager_ListTools_Caching
+--- PASS: TestToolManager_ListTools_Caching (0.00s)
+=== RUN   TestToolManager_AddServiceInfo_WithConfig
+--- PASS: TestToolManager_AddServiceInfo_WithConfig (0.00s)
+=== RUN   TestToolManager_ProfileFiltering
+--- PASS: TestToolManager_ProfileFiltering (0.00s)
+=== RUN   TestToolManager_ProfileFiltering_Properties
+--- PASS: TestToolManager_ProfileFiltering_Properties (0.00s)
+=== RUN   TestMockManagerInterface
+--- PASS: TestMockManagerInterface (0.00s)
+=== RUN   TestLocalCommandTool_Execute_LargeOutput
+time=2025-12-23T09:12:06.477Z level=ERROR source=/app/server/pkg/command/command.go:75 msg="Command execution failed" error="io: read/write on closed pipe"
+    output_limit_test.go:62: Execution took 710.21013ms, output size: 10485760
+--- PASS: TestLocalCommandTool_Execute_LargeOutput (0.71s)
+=== RUN   TestLocalCommandTool_Execute_LargeOutput_Truncated
+time=2025-12-23T09:12:06.853Z level=ERROR source=/app/server/pkg/command/command.go:75 msg="Command execution failed" error="io: read/write on closed pipe"
+--- PASS: TestLocalCommandTool_Execute_LargeOutput_Truncated (0.25s)
+=== RUN   TestShouldExport
+=== RUN   TestShouldExport/Nil_Policy
+=== RUN   TestShouldExport/Default_Action_Unspecified
+=== RUN   TestShouldExport/Default_Action_Export
+=== RUN   TestShouldExport/Default_Action_Unexport
+=== RUN   TestShouldExport/Rule_Match_Export
+=== RUN   TestShouldExport/Rule_Match_Unexport
+=== RUN   TestShouldExport/Rule_No_Match_Fallthrough
+=== RUN   TestShouldExport/Invalid_Regex
+time=2025-12-23T09:12:06.854Z level=ERROR source=/app/server/pkg/tool/policy.go:30 msg="Invalid regex in export policy" regex=[ error="error parsing regexp: missing closing ]: `[`"
+=== RUN   TestShouldExport/Empty_Regex
+--- PASS: TestShouldExport (0.00s)
+    --- PASS: TestShouldExport/Nil_Policy (0.00s)
+    --- PASS: TestShouldExport/Default_Action_Unspecified (0.00s)
+    --- PASS: TestShouldExport/Default_Action_Export (0.00s)
+    --- PASS: TestShouldExport/Default_Action_Unexport (0.00s)
+    --- PASS: TestShouldExport/Rule_Match_Export (0.00s)
+    --- PASS: TestShouldExport/Rule_Match_Unexport (0.00s)
+    --- PASS: TestShouldExport/Rule_No_Match_Fallthrough (0.00s)
+    --- PASS: TestShouldExport/Invalid_Regex (0.00s)
+    --- PASS: TestShouldExport/Empty_Regex (0.00s)
+=== RUN   TestEvaluateCallPolicy
+=== RUN   TestEvaluateCallPolicy/No_Policies
+=== RUN   TestEvaluateCallPolicy/Default_Deny
+=== RUN   TestEvaluateCallPolicy/Default_Allow
+=== RUN   TestEvaluateCallPolicy/Name_Regex_Deny
+=== RUN   TestEvaluateCallPolicy/Argument_Regex_Deny
+=== RUN   TestEvaluateCallPolicy/Argument_Regex_Static_Check_(Nil_Args)
+=== RUN   TestEvaluateCallPolicy/CallID_Regex_Deny
+=== RUN   TestEvaluateCallPolicy/Multiple_Policies_(One_blocks)
+--- PASS: TestEvaluateCallPolicy (0.00s)
+    --- PASS: TestEvaluateCallPolicy/No_Policies (0.00s)
+    --- PASS: TestEvaluateCallPolicy/Default_Deny (0.00s)
+    --- PASS: TestEvaluateCallPolicy/Default_Allow (0.00s)
+    --- PASS: TestEvaluateCallPolicy/Name_Regex_Deny (0.00s)
+    --- PASS: TestEvaluateCallPolicy/Argument_Regex_Deny (0.00s)
+    --- PASS: TestEvaluateCallPolicy/Argument_Regex_Static_Check_(Nil_Args) (0.00s)
+    --- PASS: TestEvaluateCallPolicy/CallID_Regex_Deny (0.00s)
+    --- PASS: TestEvaluateCallPolicy/Multiple_Policies_(One_blocks) (0.00s)
+=== RUN   TestEvaluateCompiledCallPolicy
+=== RUN   TestEvaluateCompiledCallPolicy/No_Policies
+=== RUN   TestEvaluateCompiledCallPolicy/Default_Deny
+=== RUN   TestEvaluateCompiledCallPolicy/Default_Allow
+=== RUN   TestEvaluateCompiledCallPolicy/Name_Regex_Deny
+=== RUN   TestEvaluateCompiledCallPolicy/Argument_Regex_Deny
+--- PASS: TestEvaluateCompiledCallPolicy (0.00s)
+    --- PASS: TestEvaluateCompiledCallPolicy/No_Policies (0.00s)
+    --- PASS: TestEvaluateCompiledCallPolicy/Default_Deny (0.00s)
+    --- PASS: TestEvaluateCompiledCallPolicy/Default_Allow (0.00s)
+    --- PASS: TestEvaluateCompiledCallPolicy/Name_Regex_Deny (0.00s)
+    --- PASS: TestEvaluateCompiledCallPolicy/Argument_Regex_Deny (0.00s)
+=== RUN   TestCompileCallPolicies_InvalidRegex
+--- PASS: TestCompileCallPolicies_InvalidRegex (0.00s)
+=== RUN   TestMatchesProperties_Extended
+=== RUN   TestMatchesProperties_Extended/Destructive_true_match
+=== RUN   TestMatchesProperties_Extended/Destructive_false_match
+=== RUN   TestMatchesProperties_Extended/Destructive_mismatch
+=== RUN   TestMatchesProperties_Extended/Destructive_nil_annotations_(defaults_to_false)
+=== RUN   TestMatchesProperties_Extended/Destructive_nil_annotations_mismatch
+=== RUN   TestMatchesProperties_Extended/ReadOnly_nil_annotations_(defaults_to_false)
+=== RUN   TestMatchesProperties_Extended/Idempotent_nil_annotations_(defaults_to_false)
+=== RUN   TestMatchesProperties_Extended/OpenWorld_nil_annotations_(defaults_to_false)
+=== RUN   TestMatchesProperties_Extended/Idempotent_true_match
+=== RUN   TestMatchesProperties_Extended/OpenWorld_true_match
+=== RUN   TestMatchesProperties_Extended/Invalid_property_key
+=== RUN   TestMatchesProperties_Extended/Multiple_properties_all_match
+=== RUN   TestMatchesProperties_Extended/Multiple_properties_one_mismatch
+--- PASS: TestMatchesProperties_Extended (0.00s)
+    --- PASS: TestMatchesProperties_Extended/Destructive_true_match (0.00s)
+    --- PASS: TestMatchesProperties_Extended/Destructive_false_match (0.00s)
+    --- PASS: TestMatchesProperties_Extended/Destructive_mismatch (0.00s)
+    --- PASS: TestMatchesProperties_Extended/Destructive_nil_annotations_(defaults_to_false) (0.00s)
+    --- PASS: TestMatchesProperties_Extended/Destructive_nil_annotations_mismatch (0.00s)
+    --- PASS: TestMatchesProperties_Extended/ReadOnly_nil_annotations_(defaults_to_false) (0.00s)
+    --- PASS: TestMatchesProperties_Extended/Idempotent_nil_annotations_(defaults_to_false) (0.00s)
+    --- PASS: TestMatchesProperties_Extended/OpenWorld_nil_annotations_(defaults_to_false) (0.00s)
+    --- PASS: TestMatchesProperties_Extended/Idempotent_true_match (0.00s)
+    --- PASS: TestMatchesProperties_Extended/OpenWorld_true_match (0.00s)
+    --- PASS: TestMatchesProperties_Extended/Invalid_property_key (0.00s)
+    --- PASS: TestMatchesProperties_Extended/Multiple_properties_all_match (0.00s)
+    --- PASS: TestMatchesProperties_Extended/Multiple_properties_one_mismatch (0.00s)
+=== RUN   TestManager_IsToolAllowed
+=== RUN   TestManager_IsToolAllowed/No_profiles_enabled_(should_allow_all)
+=== RUN   TestManager_IsToolAllowed/Dev_profile_enabled,_matches_tag
+=== RUN   TestManager_IsToolAllowed/Dev_profile_enabled,_no_match
+=== RUN   TestManager_IsToolAllowed/Readonly_profile_enabled,_matches_property
+=== RUN   TestManager_IsToolAllowed/Readonly_profile_enabled,_no_match
+=== RUN   TestManager_IsToolAllowed/Mixed_profile_enabled,_matches_both
+=== RUN   TestManager_IsToolAllowed/Mixed_profile_enabled,_matches_only_tag
+=== RUN   TestManager_IsToolAllowed/Mixed_profile_enabled,_matches_only_prop
+--- PASS: TestManager_IsToolAllowed (0.00s)
+    --- PASS: TestManager_IsToolAllowed/No_profiles_enabled_(should_allow_all) (0.00s)
+    --- PASS: TestManager_IsToolAllowed/Dev_profile_enabled,_matches_tag (0.00s)
+    --- PASS: TestManager_IsToolAllowed/Dev_profile_enabled,_no_match (0.00s)
+    --- PASS: TestManager_IsToolAllowed/Readonly_profile_enabled,_matches_property (0.00s)
+    --- PASS: TestManager_IsToolAllowed/Readonly_profile_enabled,_no_match (0.00s)
+    --- PASS: TestManager_IsToolAllowed/Mixed_profile_enabled,_matches_both (0.00s)
+    --- PASS: TestManager_IsToolAllowed/Mixed_profile_enabled,_matches_only_tag (0.00s)
+    --- PASS: TestManager_IsToolAllowed/Mixed_profile_enabled,_matches_only_prop (0.00s)
+=== RUN   TestCommandTool_Injection
+--- PASS: TestCommandTool_Injection (0.00s)
+=== RUN   TestLocalCommandTool_DoesNotLeakHostEnv
+--- PASS: TestLocalCommandTool_DoesNotLeakHostEnv (0.00s)
+=== RUN   TestCommandTool_DoesNotLeakHostEnv
+--- PASS: TestCommandTool_DoesNotLeakHostEnv (0.00s)
+=== RUN   TestSecurity_PrettyPrint_RedactsSecrets
+--- PASS: TestSecurity_PrettyPrint_RedactsSecrets (0.00s)
+=== RUN   TestLocalCommandTool_ArgumentInjection_Prevention
+--- PASS: TestLocalCommandTool_ArgumentInjection_Prevention (0.00s)
+=== RUN   TestCallableTool
+--- PASS: TestCallableTool (0.00s)
+=== RUN   TestCallableTool_Execute
+--- PASS: TestCallableTool_Execute (0.00s)
+=== RUN   TestParseToolName
+=== RUN   TestParseToolName/valid_tool_name
+=== RUN   TestParseToolName/valid_tool_name_with_dashes
+=== RUN   TestParseToolName/tool_name_without_namespace
+=== RUN   TestParseToolName/empty_tool_name
+=== RUN   TestParseToolName/tool_name_with_only_separator
+=== RUN   TestParseToolName/tool_name_with_only_separator_and_dashes
+--- PASS: TestParseToolName (0.00s)
+    --- PASS: TestParseToolName/valid_tool_name (0.00s)
+    --- PASS: TestParseToolName/valid_tool_name_with_dashes (0.00s)
+    --- PASS: TestParseToolName/tool_name_without_namespace (0.00s)
+    --- PASS: TestParseToolName/empty_tool_name (0.00s)
+    --- PASS: TestParseToolName/tool_name_with_only_separator (0.00s)
+    --- PASS: TestParseToolName/tool_name_with_only_separator_and_dashes (0.00s)
+=== RUN   TestGetFullyQualifiedToolName
+--- PASS: TestGetFullyQualifiedToolName (0.00s)
+=== RUN   TestHTTPTool_Execute_Success
+--- PASS: TestHTTPTool_Execute_Success (0.00s)
+=== RUN   TestHTTPTool_Execute_Post_WithBody
+--- PASS: TestHTTPTool_Execute_Post_WithBody (0.00s)
+=== RUN   TestHTTPTool_Execute_Auth
+--- PASS: TestHTTPTool_Execute_Auth (0.00s)
+=== RUN   TestMCPTool_Execute
+--- PASS: TestMCPTool_Execute (0.00s)
+=== RUN   TestMCPTool_Execute_Errors
+--- PASS: TestMCPTool_Execute_Errors (0.00s)
+=== RUN   TestOpenAPITool_Execute_Success
+--- PASS: TestOpenAPITool_Execute_Success (0.00s)
+=== RUN   TestOpenAPITool_Execute_QueryParam
+--- PASS: TestOpenAPITool_Execute_QueryParam (0.00s)
+=== RUN   TestCheckForPathTraversal
+=== RUN   TestCheckForPathTraversal/safe
+=== RUN   TestCheckForPathTraversal/safe/path
+=== RUN   TestCheckForPathTraversal/..
+=== RUN   TestCheckForPathTraversal/../
+=== RUN   TestCheckForPathTraversal/..\
+=== RUN   TestCheckForPathTraversal//..
+=== RUN   TestCheckForPathTraversal/\..
+=== RUN   TestCheckForPathTraversal//../
+=== RUN   TestCheckForPathTraversal/\..\
+=== RUN   TestCheckForPathTraversal//..\
+=== RUN   TestCheckForPathTraversal/\../
+=== RUN   TestCheckForPathTraversal/foo/../bar
+=== RUN   TestCheckForPathTraversal/foo\..\bar
+=== RUN   TestCheckForPathTraversal/../bar
+=== RUN   TestCheckForPathTraversal/bar/..
+=== RUN   TestCheckForPathTraversal/bar\..
+=== RUN   TestCheckForPathTraversal/mixed/..\slash
+--- PASS: TestCheckForPathTraversal (0.00s)
+    --- PASS: TestCheckForPathTraversal/safe (0.00s)
+    --- PASS: TestCheckForPathTraversal/safe/path (0.00s)
+    --- PASS: TestCheckForPathTraversal/.. (0.00s)
+    --- PASS: TestCheckForPathTraversal/../ (0.00s)
+    --- PASS: TestCheckForPathTraversal/..\ (0.00s)
+    --- PASS: TestCheckForPathTraversal//.. (0.00s)
+    --- PASS: TestCheckForPathTraversal/\.. (0.00s)
+    --- PASS: TestCheckForPathTraversal//../ (0.00s)
+    --- PASS: TestCheckForPathTraversal/\..\ (0.00s)
+    --- PASS: TestCheckForPathTraversal//..\ (0.00s)
+    --- PASS: TestCheckForPathTraversal/\../ (0.00s)
+    --- PASS: TestCheckForPathTraversal/foo/../bar (0.00s)
+    --- PASS: TestCheckForPathTraversal/foo\..\bar (0.00s)
+    --- PASS: TestCheckForPathTraversal/../bar (0.00s)
+    --- PASS: TestCheckForPathTraversal/bar/.. (0.00s)
+    --- PASS: TestCheckForPathTraversal/bar\.. (0.00s)
+    --- PASS: TestCheckForPathTraversal/mixed/..\slash (0.00s)
+=== RUN   TestManager_ListServices
+--- PASS: TestManager_ListServices (0.00s)
+=== RUN   TestCommandTool_Execute_PathTraversal_Args
+--- PASS: TestCommandTool_Execute_PathTraversal_Args (0.00s)
+=== RUN   TestCommandTool_Execute_PathTraversal_Env
+--- PASS: TestCommandTool_Execute_PathTraversal_Env (0.00s)
+=== RUN   TestContextWithTool
+--- PASS: TestContextWithTool (0.00s)
+=== RUN   TestGRPCTool_Execute_PoolError
+--- PASS: TestGRPCTool_Execute_PoolError (0.00s)
+=== RUN   TestHTTPTool_Execute_PoolError
+--- PASS: TestHTTPTool_Execute_PoolError (0.00s)
+=== RUN   TestHTTPTool_Execute_InvalidFQN
+--- PASS: TestHTTPTool_Execute_InvalidFQN (0.00s)
+=== RUN   TestHTTPTool_Execute_BadURL
+--- PASS: TestHTTPTool_Execute_BadURL (0.00s)
+=== RUN   TestHTTPTool_Execute_InputTransformerError
+--- PASS: TestHTTPTool_Execute_InputTransformerError (0.00s)
+=== RUN   TestHTTPTool_Execute_OutputTransformerError
+--- PASS: TestHTTPTool_Execute_OutputTransformerError (0.00s)
+=== RUN   TestMCPTool_Execute_InputTransformerError
+--- PASS: TestMCPTool_Execute_InputTransformerError (0.00s)
+=== RUN   TestMCPTool_Execute_OutputTransformerError
+--- PASS: TestMCPTool_Execute_OutputTransformerError (0.00s)
+=== RUN   TestOpenAPITool_Execute_InputTransformerError
+--- PASS: TestOpenAPITool_Execute_InputTransformerError (0.00s)
+=== RUN   TestOpenAPITool_Execute_OutputTransformerError
+--- PASS: TestOpenAPITool_Execute_OutputTransformerError (0.00s)
+=== RUN   TestGRPCTool_Execute_Success
+--- PASS: TestGRPCTool_Execute_Success (0.00s)
+=== RUN   TestHTTPTool_Getters
+--- PASS: TestHTTPTool_Getters (0.00s)
+=== RUN   TestMCPTool_Getters
+--- PASS: TestMCPTool_Getters (0.00s)
+=== RUN   TestOpenAPITool_Getters
+--- PASS: TestOpenAPITool_Getters (0.00s)
+=== RUN   TestGRPCTool_Getters
+--- PASS: TestGRPCTool_Getters (0.00s)
+=== RUN   TestWebsocketTool_Getters
+--- PASS: TestWebsocketTool_Getters (0.00s)
+=== RUN   TestOpenAPITool_GetCacheConfig
+--- PASS: TestOpenAPITool_GetCacheConfig (0.00s)
+=== RUN   TestOpenAPITool_Tool
+--- PASS: TestOpenAPITool_Tool (0.00s)
+=== RUN   TestGRPCTool_Execute_UnmarshalError
+--- PASS: TestGRPCTool_Execute_UnmarshalError (0.00s)
+=== RUN   TestGRPCTool_Execute_InvokeError
+--- PASS: TestGRPCTool_Execute_InvokeError (0.00s)
+=== RUN   TestOpenAPITool_Execute_Errors
+--- PASS: TestOpenAPITool_Execute_Errors (0.00s)
+=== RUN   TestOpenAPITool_Execute_StatusError
+--- PASS: TestOpenAPITool_Execute_StatusError (0.00s)
+=== RUN   TestHTTPTool_Execute_UnmarshalError
+--- PASS: TestHTTPTool_Execute_UnmarshalError (0.00s)
+=== RUN   TestNewWebrtcTool
+--- PASS: TestNewWebrtcTool (0.00s)
+=== RUN   TestWebrtcTool_Close
+--- PASS: TestWebrtcTool_Close (0.00s)
+=== RUN   TestWebrtcTool_PoolInteraction
+--- PASS: TestWebrtcTool_PoolInteraction (0.02s)
+=== RUN   TestWebrtcTool_Execute_Success
+--- PASS: TestWebrtcTool_Execute_Success (0.01s)
+=== RUN   TestWebrtcTool_Execute_WithTransformers
+--- PASS: TestWebrtcTool_Execute_WithTransformers (0.01s)
+=== RUN   TestWebrtcTool_Execute_WithAuth
+--- PASS: TestWebrtcTool_Execute_WithAuth (0.01s)
+=== RUN   TestWebrtcTool_Execute_SignalingFailure
+--- PASS: TestWebrtcTool_Execute_SignalingFailure (0.01s)
+=== RUN   TestWebrtcTool_Execute_Timeout
+--- PASS: TestWebrtcTool_Execute_Timeout (1.00s)
+=== RUN   TestWebrtcTool_GetCacheConfig
+--- PASS: TestWebrtcTool_GetCacheConfig (0.00s)
+=== RUN   TestWebrtcTool_Execute_InvalidInputTemplate
+--- PASS: TestWebrtcTool_Execute_InvalidInputTemplate (0.00s)
+=== RUN   TestWebrtcTool_CloseMethod
+--- PASS: TestWebrtcTool_CloseMethod (0.00s)
+=== RUN   TestWebsocketTool_Execute_Success
+--- PASS: TestWebsocketTool_Execute_Success (0.00s)
+=== RUN   TestWebsocketTool_Execute_NoPool
+--- PASS: TestWebsocketTool_Execute_NoPool (0.00s)
+=== RUN   TestWebsocketTool_Execute_PoolGetError
+--- PASS: TestWebsocketTool_Execute_PoolGetError (0.00s)
+=== RUN   TestWebsocketTool_Execute_WriteError
+--- PASS: TestWebsocketTool_Execute_WriteError (0.00s)
+=== RUN   TestWebsocketTool_Execute_Transformer
+--- PASS: TestWebsocketTool_Execute_Transformer (0.00s)
+=== RUN   TestWebsocketTool_Execute_MalformedInputs
+--- PASS: TestWebsocketTool_Execute_MalformedInputs (0.00s)
+=== RUN   TestWebsocketTool_Execute_TemplateError
+--- PASS: TestWebsocketTool_Execute_TemplateError (0.00s)
+=== RUN   TestNewWebsocketTool
+--- PASS: TestNewWebsocketTool (0.00s)
+=== RUN   TestWebsocketTool_Execute
+=== RUN   TestWebsocketTool_Execute/successful_execution
+=== RUN   TestWebsocketTool_Execute/with_input_and_output_transformation
+=== RUN   TestWebsocketTool_Execute/pool_get_error
+=== RUN   TestWebsocketTool_Execute/pool_not_found
+=== RUN   TestWebsocketTool_Execute/bad_tool_input
+=== RUN   TestWebsocketTool_Execute/input_transformer_template_error
+=== RUN   TestWebsocketTool_Execute/write_message_error
+=== RUN   TestWebsocketTool_Execute/read_message_error
+=== RUN   TestWebsocketTool_Execute/non-json_response
+--- PASS: TestWebsocketTool_Execute (0.01s)
+    --- PASS: TestWebsocketTool_Execute/successful_execution (0.00s)
+    --- PASS: TestWebsocketTool_Execute/with_input_and_output_transformation (0.00s)
+    --- PASS: TestWebsocketTool_Execute/pool_get_error (0.00s)
+    --- PASS: TestWebsocketTool_Execute/pool_not_found (0.00s)
+    --- PASS: TestWebsocketTool_Execute/bad_tool_input (0.00s)
+    --- PASS: TestWebsocketTool_Execute/input_transformer_template_error (0.00s)
+    --- PASS: TestWebsocketTool_Execute/write_message_error (0.00s)
+    --- PASS: TestWebsocketTool_Execute/read_message_error (0.00s)
+    --- PASS: TestWebsocketTool_Execute/non-json_response (0.00s)
+=== RUN   TestCommandTool_Execute
+=== PAUSE TestCommandTool_Execute
+=== RUN   TestCommandTool_GetCacheConfig
+--- PASS: TestCommandTool_GetCacheConfig (0.00s)
+=== RUN   TestCommandTool_Tool
+--- PASS: TestCommandTool_Tool (0.00s)
+=== RUN   TestNewGRPCTool
+    grpc_tool_test.go:66:
+		Error Trace:	/app/server/pkg/tool/grpc_tool_test.go:33
+							/app/server/pkg/tool/grpc_tool_test.go:66
+		Error:      	Received unexpected error:
+				open ../../../build/all.protoset: no such file or directory
+		Test:       	TestNewGRPCTool
+		Messages:   	Failed to read protoset file. Ensure 'make gen' has been run.
+--- FAIL: TestNewGRPCTool (0.00s)
+=== RUN   TestGRPCTool_Execute
+    grpc_tool_test.go:133:
+		Error Trace:	/app/server/pkg/tool/grpc_tool_test.go:33
+							/app/server/pkg/tool/grpc_tool_test.go:133
+		Error:      	Received unexpected error:
+				open ../../../build/all.protoset: no such file or directory
+		Test:       	TestGRPCTool_Execute
+		Messages:   	Failed to read protoset file. Ensure 'make gen' has been run.
+--- FAIL: TestGRPCTool_Execute (0.00s)
+=== RUN   TestHTTPTool_Execute_InputTransformation
+=== PAUSE TestHTTPTool_Execute_InputTransformation
+=== RUN   TestHTTPTool_Execute_OutputTransformation_XML
+=== PAUSE TestHTTPTool_Execute_OutputTransformation_XML
+=== RUN   TestHTTPTool_Execute_OutputTransformation_Text
+=== PAUSE TestHTTPTool_Execute_OutputTransformation_Text
+=== RUN   TestHTTPTool_Execute_NoTransformation
+=== PAUSE TestHTTPTool_Execute_NoTransformation
+=== RUN   TestHTTPTool_Execute_Errors
+=== PAUSE TestHTTPTool_Execute_Errors
+=== RUN   TestHTTPTool_Execute_InputTransformation_Webhook
+=== PAUSE TestHTTPTool_Execute_InputTransformation_Webhook
+=== RUN   TestHTTPTool_Execute_OutputTransformation_RawBytes
+=== PAUSE TestHTTPTool_Execute_OutputTransformation_RawBytes
+=== RUN   TestHTTPTool_Execute_OutputTransformation_JQ
+=== PAUSE TestHTTPTool_Execute_OutputTransformation_JQ
+=== RUN   TestHTTPTool_Execute_PathParameterEncoding
+=== PAUSE TestHTTPTool_Execute_PathParameterEncoding
+=== RUN   TestHTTPTool_Execute_WithRetry
+=== PAUSE TestHTTPTool_Execute_WithRetry
+=== RUN   TestHTTPTool_Execute_ConsecutiveCalls
+=== PAUSE TestHTTPTool_Execute_ConsecutiveCalls
+=== RUN   TestMCPTool_Execute_Bug_OriginalName
+--- PASS: TestMCPTool_Execute_Bug_OriginalName (0.00s)
+=== RUN   TestMCPTool_Execute
+=== RUN   TestMCPTool_Execute/successful_execution
+=== RUN   TestMCPTool_Execute/execution_error
+=== RUN   TestMCPTool_Execute/with_input_transformation
+--- PASS: TestMCPTool_Execute (0.00s)
+    --- PASS: TestMCPTool_Execute/successful_execution (0.00s)
+    --- PASS: TestMCPTool_Execute/execution_error (0.00s)
+    --- PASS: TestMCPTool_Execute/with_input_transformation (0.00s)
+=== RUN   TestOpenAPITool_Execute_Extended
+=== RUN   TestOpenAPITool_Execute_Extended/POST_with_Input_Template
+=== RUN   TestOpenAPITool_Execute_Extended/Output_Transformer_Template
+=== RUN   TestOpenAPITool_Execute_Extended/Input_Transformer_via_Webhook
+--- PASS: TestOpenAPITool_Execute_Extended (0.00s)
+    --- PASS: TestOpenAPITool_Execute_Extended/POST_with_Input_Template (0.00s)
+    --- PASS: TestOpenAPITool_Execute_Extended/Output_Transformer_Template (0.00s)
+    --- PASS: TestOpenAPITool_Execute_Extended/Input_Transformer_via_Webhook (0.00s)
+=== RUN   TestOpenAPITool_Execute
+=== RUN   TestOpenAPITool_Execute/successful_execution_with_path_and_query_params
+=== RUN   TestOpenAPITool_Execute/server_error
+=== RUN   TestOpenAPITool_Execute/with_authentication
+--- PASS: TestOpenAPITool_Execute (0.00s)
+    --- PASS: TestOpenAPITool_Execute/successful_execution_with_path_and_query_params (0.00s)
+    --- PASS: TestOpenAPITool_Execute/server_error (0.00s)
+    --- PASS: TestOpenAPITool_Execute/with_authentication (0.00s)
+=== RUN   TestHTTPTool_PathTraversal_Vulnerability
+--- PASS: TestHTTPTool_PathTraversal_Vulnerability (0.00s)
+=== RUN   TestHTTPTool_Execute_LogsSensitiveHeaders
+--- PASS: TestHTTPTool_Execute_LogsSensitiveHeaders (0.00s)
+=== CONT  TestManager_ExecuteTool_Coverage
+=== CONT  TestHTTPTool_Execute_Errors
+=== CONT  TestHTTPTool_Execute_WithRetry
+=== RUN   TestHTTPTool_Execute_WithRetry/retry_succeeds
+=== PAUSE TestHTTPTool_Execute_WithRetry/retry_succeeds
+=== CONT  TestHTTPTool_Execute_ConsecutiveCalls
+=== RUN   TestHTTPTool_Execute_Errors/pool_not_found
+=== PAUSE TestHTTPTool_Execute_Errors/pool_not_found
+=== RUN   TestHTTPTool_Execute_Errors/pool_get_error
+=== PAUSE TestHTTPTool_Execute_Errors/pool_get_error
+=== RUN   TestHTTPTool_Execute_WithRetry/retry_fails
+=== RUN   TestHTTPTool_Execute_Errors/invalid_method_fqn
+=== PAUSE TestHTTPTool_Execute_Errors/invalid_method_fqn
+=== RUN   TestHTTPTool_Execute_Errors/bad_tool_input_json
+=== PAUSE TestHTTPTool_Execute_WithRetry/retry_fails
+=== PAUSE TestHTTPTool_Execute_Errors/bad_tool_input_json
+=== RUN   TestHTTPTool_Execute_Errors/upstream_error
+=== PAUSE TestHTTPTool_Execute_Errors/upstream_error
+=== RUN   TestHTTPTool_Execute_Errors/auth_failure
+=== CONT  TestHTTPTool_Execute_NoTransformation
+=== PAUSE TestHTTPTool_Execute_Errors/auth_failure
+=== RUN   TestHTTPTool_Execute_Errors/path_parameter_mapping
+=== PAUSE TestHTTPTool_Execute_Errors/path_parameter_mapping
+=== RUN   TestHTTPTool_Execute_Errors/output_transformation_template_error
+=== PAUSE TestHTTPTool_Execute_Errors/output_transformation_template_error
+=== RUN   TestHTTPTool_Execute_Errors/input_transformation_render_error
+=== PAUSE TestHTTPTool_Execute_Errors/input_transformation_render_error
+=== RUN   TestHTTPTool_Execute_Errors/output_transformation_parse_error
+=== PAUSE TestHTTPTool_Execute_Errors/output_transformation_parse_error
+=== RUN   TestHTTPTool_Execute_Errors/non_json_response
+=== PAUSE TestHTTPTool_Execute_Errors/non_json_response
+=== RUN   TestHTTPTool_Execute_Errors/delete_method_with_params
+=== PAUSE TestHTTPTool_Execute_Errors/delete_method_with_params
+=== RUN   TestHTTPTool_Execute_Errors/optional_path_parameter
+=== PAUSE TestHTTPTool_Execute_Errors/optional_path_parameter
+=== RUN   TestHTTPTool_Execute_WithRetry/non_retriable_error
+=== PAUSE TestHTTPTool_Execute_WithRetry/non_retriable_error
+=== RUN   TestHTTPTool_Execute_WithRetry/retry_post_succeeds
+=== PAUSE TestHTTPTool_Execute_WithRetry/retry_post_succeeds
+=== CONT  TestHTTPTool_Execute_OutputTransformation_Text
+--- PASS: TestManager_ExecuteTool_Coverage (0.00s)
+=== CONT  TestHTTPTool_Execute_OutputTransformation_XML
+--- PASS: TestHTTPTool_Execute_NoTransformation (0.00s)
+=== CONT  TestHTTPTool_Execute_InputTransformation
+--- PASS: TestHTTPTool_Execute_OutputTransformation_Text (0.00s)
+=== CONT  TestCommandTool_Execute
+=== RUN   TestCommandTool_Execute/successful_execution
+=== PAUSE TestCommandTool_Execute/successful_execution
+=== RUN   TestCommandTool_Execute/command_not_found
+=== PAUSE TestCommandTool_Execute/command_not_found
+=== RUN   TestCommandTool_Execute/execution_with_environment_variables
+=== PAUSE TestCommandTool_Execute/execution_with_environment_variables
+=== RUN   TestCommandTool_Execute/non-zero_exit_code
+=== PAUSE TestCommandTool_Execute/non-zero_exit_code
+=== RUN   TestCommandTool_Execute/malformed_tool_inputs
+=== PAUSE TestCommandTool_Execute/malformed_tool_inputs
+=== RUN   TestCommandTool_Execute/json_communication_protocol
+=== PAUSE TestCommandTool_Execute/json_communication_protocol
+=== RUN   TestCommandTool_Execute/argument_substitution
+=== PAUSE TestCommandTool_Execute/argument_substitution
+=== CONT  TestManager_AddTool_WithMCPServer_Coverage
+--- PASS: TestHTTPTool_Execute_ConsecutiveCalls (0.00s)
+=== CONT  TestManager_ClearToolsForService_Coverage
+--- PASS: TestHTTPTool_Execute_OutputTransformation_XML (0.00s)
+=== CONT  TestHTTPTool_Execute_InputTransformation_Webhook
+=== CONT  TestManager_ExecuteTool_Hooks_Coverage
+=== CONT  TestHTTPTool_Execute_PathParameterEncoding
+=== CONT  TestHTTPTool_Execute_OutputTransformation_JQ
+=== CONT  TestHTTPTool_Execute_OutputTransformation_RawBytes
+--- PASS: TestManager_ClearToolsForService_Coverage (0.00s)
+--- PASS: TestManager_ExecuteTool_Hooks_Coverage (0.00s)
+--- PASS: TestManager_AddTool_WithMCPServer_Coverage (0.00s)
+--- PASS: TestHTTPTool_Execute_InputTransformation (0.00s)
+--- PASS: TestHTTPTool_Execute_OutputTransformation_RawBytes (0.00s)
+=== CONT  TestHTTPTool_Execute_Errors/pool_not_found
+=== CONT  TestHTTPTool_Execute_WithRetry/retry_succeeds
+--- PASS: TestHTTPTool_Execute_OutputTransformation_JQ (0.00s)
+--- PASS: TestHTTPTool_Execute_PathParameterEncoding (0.00s)
+=== CONT  TestHTTPTool_Execute_Errors/upstream_error
+=== CONT  TestHTTPTool_Execute_Errors/optional_path_parameter
+=== CONT  TestHTTPTool_Execute_Errors/delete_method_with_params
+--- PASS: TestHTTPTool_Execute_InputTransformation_Webhook (0.00s)
+=== CONT  TestHTTPTool_Execute_Errors/non_json_response
+=== CONT  TestHTTPTool_Execute_Errors/output_transformation_parse_error
+=== CONT  TestHTTPTool_Execute_Errors/input_transformation_render_error
+=== CONT  TestHTTPTool_Execute_Errors/output_transformation_template_error
+=== CONT  TestHTTPTool_Execute_Errors/path_parameter_mapping
+=== CONT  TestHTTPTool_Execute_Errors/auth_failure
+=== CONT  TestHTTPTool_Execute_WithRetry/non_retriable_error
+=== CONT  TestHTTPTool_Execute_WithRetry/retry_post_succeeds
+=== CONT  TestHTTPTool_Execute_Errors/invalid_method_fqn
+=== CONT  TestHTTPTool_Execute_Errors/bad_tool_input_json
+=== CONT  TestHTTPTool_Execute_Errors/pool_get_error
+=== CONT  TestHTTPTool_Execute_WithRetry/retry_fails
+--- PASS: TestHTTPTool_Execute_Errors (0.00s)
+    --- PASS: TestHTTPTool_Execute_Errors/pool_not_found (0.00s)
+    --- PASS: TestHTTPTool_Execute_Errors/optional_path_parameter (0.00s)
+    --- PASS: TestHTTPTool_Execute_Errors/upstream_error (0.00s)
+    --- PASS: TestHTTPTool_Execute_Errors/delete_method_with_params (0.00s)
+    --- PASS: TestHTTPTool_Execute_Errors/non_json_response (0.00s)
+    --- PASS: TestHTTPTool_Execute_Errors/output_transformation_parse_error (0.00s)
+    --- PASS: TestHTTPTool_Execute_Errors/auth_failure (0.00s)
+    --- PASS: TestHTTPTool_Execute_Errors/input_transformation_render_error (0.00s)
+    --- PASS: TestHTTPTool_Execute_Errors/output_transformation_template_error (0.00s)
+    --- PASS: TestHTTPTool_Execute_Errors/invalid_method_fqn (0.00s)
+    --- PASS: TestHTTPTool_Execute_Errors/path_parameter_mapping (0.00s)
+    --- PASS: TestHTTPTool_Execute_Errors/bad_tool_input_json (0.00s)
+    --- PASS: TestHTTPTool_Execute_Errors/pool_get_error (0.00s)
+=== CONT  TestCommandTool_Execute/successful_execution
+=== CONT  TestCommandTool_Execute/argument_substitution
+=== CONT  TestCommandTool_Execute/json_communication_protocol
+--- PASS: TestHTTPTool_Execute_WithRetry (0.00s)
+    --- PASS: TestHTTPTool_Execute_WithRetry/retry_succeeds (0.00s)
+    --- PASS: TestHTTPTool_Execute_WithRetry/non_retriable_error (0.00s)
+    --- PASS: TestHTTPTool_Execute_WithRetry/retry_post_succeeds (0.00s)
+    --- PASS: TestHTTPTool_Execute_WithRetry/retry_fails (0.00s)
+=== CONT  TestCommandTool_Execute/malformed_tool_inputs
+=== CONT  TestCommandTool_Execute/non-zero_exit_code
+=== CONT  TestCommandTool_Execute/execution_with_environment_variables
+=== CONT  TestCommandTool_Execute/command_not_found
+--- PASS: TestCommandTool_Execute (0.00s)
+    --- PASS: TestCommandTool_Execute/malformed_tool_inputs (0.00s)
+    --- PASS: TestCommandTool_Execute/argument_substitution (0.00s)
+    --- PASS: TestCommandTool_Execute/json_communication_protocol (0.00s)
+    --- PASS: TestCommandTool_Execute/command_not_found (0.00s)
+    --- PASS: TestCommandTool_Execute/non-zero_exit_code (0.00s)
+    --- PASS: TestCommandTool_Execute/successful_execution (0.00s)
+    --- PASS: TestCommandTool_Execute/execution_with_environment_variables (0.00s)
+FAIL
+FAIL	github.com/mcpany/core/pkg/tool	2.295s
+FAIL
