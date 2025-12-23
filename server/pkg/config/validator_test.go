@@ -811,7 +811,7 @@ func TestValidate(t *testing.T) {
 								ContainerEnvironment: &configv1.ContainerEnvironment{
 									Image: proto.String("alpine"),
 									Volumes: map[string]string{
-										"../../etc/passwd": "/passwd",
+										"/passwd": "../../etc/passwd",
 									},
 								},
 							},
@@ -836,7 +836,7 @@ func TestValidate(t *testing.T) {
 								ContainerEnvironment: &configv1.ContainerEnvironment{
 									Image: proto.String("alpine"),
 									Volumes: map[string]string{
-										"host/path": "/container/path",
+										"/container/path": "host/path",
 									},
 								},
 							},
@@ -860,7 +860,7 @@ func TestValidate(t *testing.T) {
 								ContainerEnvironment: &configv1.ContainerEnvironment{
 									Image: proto.String("alpine"),
 									Volumes: map[string]string{
-										"/host/path": "/container/path",
+										"/container/path": "/host/path",
 									},
 								},
 							},

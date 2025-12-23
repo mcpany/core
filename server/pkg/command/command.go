@@ -176,8 +176,8 @@ func (e *dockerExecutor) Execute(ctx context.Context, command string, args []str
 		for dest, src := range e.containerEnv.GetVolumes() {
 			hostConfig.Mounts = append(hostConfig.Mounts, mount.Mount{
 				Type:   mount.TypeBind,
-				Source: dest,
-				Target: src,
+				Source: src,
+				Target: dest,
 			})
 		}
 	}
@@ -270,8 +270,8 @@ func (e *dockerExecutor) ExecuteWithStdIO(ctx context.Context, command string, a
 		for dest, src := range e.containerEnv.GetVolumes() {
 			hostConfig.Mounts = append(hostConfig.Mounts, mount.Mount{
 				Type:   mount.TypeBind,
-				Source: dest,
-				Target: src,
+				Source: src,
+				Target: dest,
 			})
 		}
 	}
