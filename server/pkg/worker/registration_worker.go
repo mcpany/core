@@ -58,57 +58,60 @@ func (w *ServiceRegistrationWorker) Start(ctx context.Context) {
 	}
 
 	unsubscribe := requestBus.Subscribe(ctx, "request", func(req *bus.ServiceRegistrationRequest) {
-		start := time.Now()
-		metrics.IncrCounter([]string{"worker", "registration", "request", "total"}, 1)
-		defer metrics.MeasureSince([]string{"worker", "registration", "request", "latency"}, start)
+		// Process registration in a separate goroutine to prevent blocking other registrations
+		go func() {
+			start := time.Now()
+			metrics.IncrCounter([]string{"worker", "registration", "request", "total"}, 1)
+			defer metrics.MeasureSince([]string{"worker", "registration", "request", "latency"}, start)
 
-		// Panic recovery for registration request processing
-		defer func() {
-			if r := recover(); r != nil {
-				metrics.IncrCounter([]string{"worker", "registration", "request", "panics"}, 1)
-				log.Error("Panic during service registration", "panic", r, "stack", string(debug.Stack()))
-				// Publish failure result so caller is not hanging if waiting (though this is fire-and-forget mostly)
+			// Panic recovery for registration request processing
+			defer func() {
+				if r := recover(); r != nil {
+					metrics.IncrCounter([]string{"worker", "registration", "request", "panics"}, 1)
+					log.Error("Panic during service registration", "panic", r, "stack", string(debug.Stack()))
+					// Publish failure result so caller is not hanging if waiting (though this is fire-and-forget mostly)
+					res := &bus.ServiceRegistrationResult{
+						Error: fmt.Errorf("panic during registration: %v", r),
+					}
+					res.SetCorrelationID(req.CorrelationID())
+					_ = resultBus.Publish(ctx, req.CorrelationID(), res)
+				}
+			}()
+
+			log.Info("Received service registration request", "correlationID", req.CorrelationID())
+
+			requestCtx := req.Context
+			if requestCtx == nil {
+				requestCtx = context.Background()
+			}
+
+			if req.Config.GetDisable() {
+				log.Info("Unregistering disabled service", "service", req.Config.GetName())
+				err := w.serviceRegistry.UnregisterService(requestCtx, req.Config.GetName())
 				res := &bus.ServiceRegistrationResult{
-					Error: fmt.Errorf("panic during registration: %v", r),
+					Error: err,
 				}
 				res.SetCorrelationID(req.CorrelationID())
 				_ = resultBus.Publish(ctx, req.CorrelationID(), res)
+				return
 			}
-		}()
 
-		log.Info("Received service registration request", "correlationID", req.CorrelationID())
+			serviceID, discoveredTools, discoveredResources, err := w.serviceRegistry.RegisterService(requestCtx, req.Config)
 
-		requestCtx := req.Context
-		if requestCtx == nil {
-			requestCtx = context.Background()
-		}
-
-		if req.Config.GetDisable() {
-			log.Info("Unregistering disabled service", "service", req.Config.GetName())
-			err := w.serviceRegistry.UnregisterService(requestCtx, req.Config.GetName())
 			res := &bus.ServiceRegistrationResult{
-				Error: err,
+				ServiceKey:          serviceID,
+				DiscoveredTools:     discoveredTools,
+				DiscoveredResources: discoveredResources,
+				Error:               err,
+			}
+			if err != nil {
+				metrics.IncrCounter([]string{"worker", "registration", "request", "error"}, 1)
+			} else {
+				metrics.IncrCounter([]string{"worker", "registration", "request", "success"}, 1)
 			}
 			res.SetCorrelationID(req.CorrelationID())
 			_ = resultBus.Publish(ctx, req.CorrelationID(), res)
-			return
-		}
-
-		serviceID, discoveredTools, discoveredResources, err := w.serviceRegistry.RegisterService(requestCtx, req.Config)
-
-		res := &bus.ServiceRegistrationResult{
-			ServiceKey:          serviceID,
-			DiscoveredTools:     discoveredTools,
-			DiscoveredResources: discoveredResources,
-			Error:               err,
-		}
-		if err != nil {
-			metrics.IncrCounter([]string{"worker", "registration", "request", "error"}, 1)
-		} else {
-			metrics.IncrCounter([]string{"worker", "registration", "request", "success"}, 1)
-		}
-		res.SetCorrelationID(req.CorrelationID())
-		_ = resultBus.Publish(ctx, req.CorrelationID(), res)
+		}()
 	})
 
 	listRequestBus, err := bus.GetBus[*bus.ServiceListRequest](w.bus, bus.ServiceListRequestTopic)
