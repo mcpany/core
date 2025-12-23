@@ -125,6 +125,10 @@ func (w *smartGzipResponseWriter) Close() error {
 
 func isCompressible(contentType string) bool {
 	ct := strings.ToLower(contentType)
+	// SSE streams can hang with gzip buffering, so we disable compression for them.
+	if strings.Contains(ct, "text/event-stream") {
+		return false
+	}
 	if strings.Contains(ct, "text/") ||
 		strings.Contains(ct, "application/json") ||
 		strings.Contains(ct, "application/javascript") ||

@@ -102,7 +102,7 @@ func TestGzipMiddleware(t *testing.T) {
 		}
 	})
 
-	t.Run("Flushes response", func(t *testing.T) {
+	t.Run("Does not compress SSE but flushes", func(t *testing.T) {
 		handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			w.Header().Set("Content-Type", "text/event-stream")
 			w.WriteHeader(http.StatusOK)
@@ -116,6 +116,9 @@ func TestGzipMiddleware(t *testing.T) {
 
 		gzipHandler.ServeHTTP(rec, req)
 
+		if rec.Header().Get("Content-Encoding") == "gzip" {
+			t.Error("Expected Content-Encoding NOT to be gzip for SSE")
+		}
 		if !rec.Flushed {
 			t.Error("Expected response to be flushed")
 		}
