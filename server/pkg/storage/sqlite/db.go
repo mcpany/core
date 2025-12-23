@@ -38,11 +38,6 @@ func NewDB(path string) (*DB, error) {
 	if _, err := db.Exec("PRAGMA journal_mode=WAL;"); err != nil {
 		return nil, fmt.Errorf("failed to set WAL mode: %w", err)
 	}
-	// synchronous=NORMAL is safe in WAL mode and significantly faster than FULL (default)
-	// It only risks database corruption if the OS crashes or loses power, not on app crash.
-	if _, err := db.Exec("PRAGMA synchronous=NORMAL;"); err != nil {
-		return nil, fmt.Errorf("failed to set synchronous=NORMAL: %w", err)
-	}
 	if _, err := db.Exec("PRAGMA busy_timeout=5000;"); err != nil {
 		return nil, fmt.Errorf("failed to set busy_timeout: %w", err)
 	}

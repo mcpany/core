@@ -57,25 +57,6 @@ func resolveSecretRecursive(ctx context.Context, secret *configv1.SecretValue, d
 		return secret.GetPlainText(), nil
 	case configv1.SecretValue_EnvironmentVariable_case:
 		envVar := secret.GetEnvironmentVariable()
-
-		// Check allow list
-		if allowList, ok := os.LookupEnv("MCPANY_ENV_VAR_ALLOW_LIST"); ok {
-			allowed := false
-			// If allowList is explicitly empty string, allowed remains false (deny all).
-			if allowList != "" {
-				parts := strings.Split(allowList, ",")
-				for _, part := range parts {
-					if strings.TrimSpace(part) == envVar {
-						allowed = true
-						break
-					}
-				}
-			}
-			if !allowed {
-				return "", fmt.Errorf("access to environment variable %q is not allowed by MCPANY_ENV_VAR_ALLOW_LIST", envVar)
-			}
-		}
-
 		value := os.Getenv(envVar)
 		if value == "" {
 			return "", fmt.Errorf("environment variable %q is not set", envVar)
