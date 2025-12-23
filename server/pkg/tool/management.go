@@ -5,8 +5,11 @@ package tool
 
 import (
 	"context"
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"sort"
+	"strconv"
 	"sync"
 	"time"
 
@@ -36,6 +39,8 @@ type ManagerInterface interface {
 	GetTool(toolName string) (Tool, bool)
 	// ListTools returns all registered tools.
 	ListTools() []Tool
+	// ListToolsPaginated returns a paginated list of tools, optionally filtered by profile.
+	ListToolsPaginated(ctx context.Context, cursor string, pageSize int, profileID string) ([]Tool, string, error)
 	// ClearToolsForService removes all tools for a given service.
 	ClearToolsForService(serviceID string)
 	// ExecuteTool executes a tool with the given request.
@@ -538,8 +543,94 @@ func (tm *Manager) ListTools() []Tool {
 		tools = append(tools, value)
 		return true
 	})
+
+	// Sort tools by ServiceID then Name to ensure stable order
+	sort.Slice(tools, func(i, j int) bool {
+		ti := tools[i].Tool()
+		tj := tools[j].Tool()
+		if ti.GetServiceId() != tj.GetServiceId() {
+			return ti.GetServiceId() < tj.GetServiceId()
+		}
+		return ti.GetName() < tj.GetName()
+	})
+
 	tm.cachedTools = tools
 	return tools
+}
+
+// ListToolsPaginated returns a paginated list of tools, optionally filtered by profile.
+func (tm *Manager) ListToolsPaginated(ctx context.Context, cursor string, pageSize int, profileID string) ([]Tool, string, error) {
+	allTools := tm.ListTools() // This is sorted and cached
+
+	// Filter by profile first
+	var filteredTools []Tool
+	if profileID == "" {
+		filteredTools = allTools
+	} else {
+		// Service-level access cache
+		serviceAccessCache := make(map[string]bool)
+
+		for _, t := range allTools {
+			serviceID := t.Tool().GetServiceId()
+			allowed, cached := serviceAccessCache[serviceID]
+			if !cached {
+				allowed = true // Default to allowed
+				if info, ok := tm.GetServiceInfo(serviceID); ok && info.Config != nil {
+					// Check profiles in config
+					if len(info.Config.GetProfiles()) > 0 {
+						hasAccess := false
+						for _, p := range info.Config.GetProfiles() {
+							if p.GetId() == profileID {
+								hasAccess = true
+								break
+							}
+						}
+						allowed = hasAccess
+					}
+				}
+				serviceAccessCache[serviceID] = allowed
+			}
+			if allowed {
+				filteredTools = append(filteredTools, t)
+			}
+		}
+	}
+
+	// Parse cursor
+	offset := 0
+	if cursor != "" {
+		decoded, err := base64.StdEncoding.DecodeString(cursor)
+		if err != nil {
+			return nil, "", fmt.Errorf("invalid cursor: %w", err)
+		}
+		if i, err := strconv.Atoi(string(decoded)); err == nil {
+			offset = i
+		} else {
+			return nil, "", fmt.Errorf("invalid cursor format: %w", err)
+		}
+	}
+
+	if offset < 0 {
+		offset = 0
+	}
+
+	if offset >= len(filteredTools) {
+		return []Tool{}, "", nil
+	}
+
+	end := offset + pageSize
+	if end > len(filteredTools) {
+		end = len(filteredTools)
+	}
+
+	result := filteredTools[offset:end]
+
+	var nextCursor string
+	if end < len(filteredTools) {
+		nextCursor = base64.StdEncoding.EncodeToString([]byte(strconv.Itoa(end)))
+	}
+
+	return result, nextCursor, nil
 }
 
 // ClearToolsForService removes all tools associated with a given service key from

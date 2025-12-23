@@ -963,6 +963,37 @@ func (m *smartToolManager) SetMCPServer(_ tool.MCPServerProvider)    {}
 func (m *smartToolManager) AddTool(_ tool.Tool) error                { return nil }
 func (m *smartToolManager) ClearToolsForService(_ string)            {}
 
+func (m *smartToolManager) ListToolsPaginated(ctx context.Context, cursor string, pageSize int, profileID string) ([]tool.Tool, string, error) {
+	allTools := m.ListTools()
+	var filteredTools []tool.Tool
+
+	if profileID == "" {
+		filteredTools = allTools
+	} else {
+		for _, t := range allTools {
+			serviceID := t.Tool().GetServiceId()
+			info, ok := m.GetServiceInfo(serviceID)
+
+			allowed := true
+			if ok && info.Config != nil {
+				if len(info.Config.GetProfiles()) > 0 {
+					allowed = false
+					for _, p := range info.Config.GetProfiles() {
+						if p.GetId() == profileID {
+							allowed = true
+							break
+						}
+					}
+				}
+			}
+
+			if allowed {
+				filteredTools = append(filteredTools, t)
+			}
+		}
+	}
+	return filteredTools, "", nil
+}
 
 func TestServer_MiddlewareChain(t *testing.T) {
 	poolManager := pool.NewManager()

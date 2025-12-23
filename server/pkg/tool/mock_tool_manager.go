@@ -164,6 +164,22 @@ func (mr *MockManagerInterfaceMockRecorder) ListTools() *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListTools", reflect.TypeOf((*MockManagerInterface)(nil).ListTools))
 }
 
+// ListToolsPaginated mocks base method.
+func (m *MockManagerInterface) ListToolsPaginated(ctx context.Context, cursor string, pageSize int, profileID string) ([]Tool, string, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ListToolsPaginated", ctx, cursor, pageSize, profileID)
+	ret0, _ := ret[0].([]Tool)
+	ret1, _ := ret[1].(string)
+	ret2, _ := ret[2].(error)
+	return ret0, ret1, ret2
+}
+
+// ListToolsPaginated indicates an expected call of ListToolsPaginated.
+func (mr *MockManagerInterfaceMockRecorder) ListToolsPaginated(ctx, cursor, pageSize, profileID any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListToolsPaginated", reflect.TypeOf((*MockManagerInterface)(nil).ListToolsPaginated), ctx, cursor, pageSize, profileID)
+}
+
 // SetMCPServer mocks base method.
 func (m *MockManagerInterface) SetMCPServer(mcpServer MCPServerProvider) {
 	m.ctrl.T.Helper()

@@ -232,57 +232,23 @@ func (s *Server) toolListFilteringMiddleware(next mcp.MethodHandler) mcp.MethodH
 		req mcp.Request,
 	) (mcp.Result, error) {
 		if method == consts.MethodToolsList {
-			// The tool manager is the authoritative source of tools. We iterate over the
-			// tools in the manager to ensure that the list is always up-to-date and
-			// reflects the current state of the system.
-			managedTools := s.toolManager.ListTools()
-			refreshedTools := make([]*mcp.Tool, 0, len(managedTools))
-
-			profileID, hasProfile := auth.ProfileIDFromContext(ctx)
-
-			// Cache service access decisions to avoid repeated lookups
-			var serviceAccessCache map[string]bool
-			if hasProfile {
-				serviceAccessCache = make(map[string]bool)
+			var cursor string
+			if r, ok := req.(*mcp.ListToolsRequest); ok && r.Params != nil {
+				cursor = r.Params.Cursor
 			}
 
-			for _, toolInstance := range managedTools {
-				// Profile-based filtering
-				if hasProfile {
-					serviceID := toolInstance.Tool().GetServiceId()
-					allowed, cached := serviceAccessCache[serviceID]
-					if !cached {
-						allowed = true // Default to allowed
-						if info, ok := s.GetServiceInfo(serviceID); ok && info.Config != nil {
-							// If service has profiles defined, we must match one
-							// If service has NO profiles defined, does it mean "all" or "none"?
-							// Usually "none" or "default".
-							// Let's assume if profiles are listed, we restrict.
-							// If no profiles listed, maybe it's globally available?
-							// Or better: if user has access to profile X, they only see services attached to profile X.
+			// Default page size 100 to avoid large payloads, but allow scrolling.
+			pageSize := 100
 
-							hasAccess := false
-							if len(info.Config.GetProfiles()) == 0 {
-								// If service belongs to NO profiles, it might be legacy or global.
-								// Let's include it for now to avoid breaking legacy services.
-								hasAccess = true
-							} else {
-								for _, p := range info.Config.GetProfiles() {
-									if p.GetId() == profileID {
-										hasAccess = true
-										break
-									}
-								}
-							}
-							allowed = hasAccess
-						}
-						serviceAccessCache[serviceID] = allowed
-					}
-					if !allowed {
-						continue
-					}
-				}
+			profileID, _ := auth.ProfileIDFromContext(ctx)
 
+			tools, nextCursor, err := s.toolManager.ListToolsPaginated(ctx, cursor, pageSize, profileID)
+			if err != nil {
+				return nil, err
+			}
+
+			refreshedTools := make([]*mcp.Tool, 0, len(tools))
+			for _, toolInstance := range tools {
 				mcpTool := toolInstance.MCPTool()
 				if mcpTool != nil {
 					refreshedTools = append(refreshedTools, mcpTool)
@@ -294,7 +260,7 @@ func (s *Server) toolListFilteringMiddleware(next mcp.MethodHandler) mcp.MethodH
 					return nil, fmt.Errorf("failed to convert tool %q to MCP format", toolInstance.Tool().GetName())
 				}
 			}
-			return &mcp.ListToolsResult{Tools: refreshedTools}, nil
+			return &mcp.ListToolsResult{Tools: refreshedTools, NextCursor: nextCursor}, nil
 		}
 		return next(ctx, method, req)
 	}
