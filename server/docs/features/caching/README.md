@@ -12,6 +12,15 @@ Caching can be configured at the **service level** (applying to all tools in the
 | ------------ | -------- | -------------------------------------------------------------- |
 | `is_enabled` | `bool`   | Whether caching is enabled for this service.                   |
 | `ttl`        | `string` | The time-to-live for cached entries (e.g., "10s", "5m", "1h"). |
+| `type`       | `enum`   | The caching strategy: `STRATEGY_EXACT` (default) or `STRATEGY_SEMANTIC`. |
+| `semantic_config` | `object` | Configuration for semantic caching. |
+
+### Semantic Cache Config
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `similarity_threshold` | `float` | Threshold (0.0 - 1.0) for considering a match. Higher is stricter. |
+| `embedding_provider` | `string` | Provider for embeddings (currently internal "bag-of-words"). |
 
 ### Configuration Snippet
 
@@ -49,6 +58,12 @@ upstream_services:
 Imagine you have a weather service that users query frequently. The weather forecast doesn't change every second, so querying the upstream API for every user request is inefficient and might consume your API rate limits.
 
 By enabling caching with a TTL of 5 minutes, MCP Any will serve repeated requests for the same location from its internal memory, significantly reducing latency and upstream load.
+
+## Semantic Caching
+
+Semantic caching uses vector embeddings to understand the "meaning" of a query rather than relying on exact string matching. This is particularly useful for LLM-driven tools where prompts can vary slightly (e.g., "What is the weather?" vs "How is the weather?").
+
+When enabled, MCP Any calculates a vector embedding for the input and searches its local vector store for similar previous requests. If a match is found within the `similarity_threshold`, the cached result is returned.
 
 ## Public API Example
 

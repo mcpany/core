@@ -281,9 +281,28 @@ message CommandLineParameterMapping {
   SecretValue secret = 2;
 }
 
-// CacheConfig is a dummy message for now.
+// CacheConfig defines the caching strategy for a tool or call.
 message CacheConfig {
   bool is_enabled = 1 [json_name = "is_enabled"];
   google.protobuf.Duration ttl = 2;
-  string strategy = 3;
+  // Deprecated: use type instead.
+  string strategy = 3 [deprecated = true];
+
+  enum Strategy {
+    STRATEGY_UNSPECIFIED = 0;
+    STRATEGY_EXACT = 1;
+    STRATEGY_SEMANTIC = 2;
+  }
+  Strategy type = 4;
+  SemanticCacheConfig semantic_config = 5 [json_name = "semantic_config"];
+}
+
+message SemanticCacheConfig {
+  // Similarity threshold (0.0 to 1.0). Higher means stricter matching.
+  // Default typically 0.8 or 0.9.
+  float similarity_threshold = 1 [json_name = "similarity_threshold"];
+
+  // The embedding model provider to use.
+  // "mock" for testing, "local" for simple word-vector, or provider names.
+  string embedding_provider = 2 [json_name = "embedding_provider"];
 }
