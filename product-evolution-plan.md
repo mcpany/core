@@ -42,14 +42,13 @@ The following roadmap reflects the reconciled state of the project, with impleme
 - [x] Message Bus
 - [x] [Structured Output Transformation](docs/features/transformation.md)
 - [x] [Dynamic Web UI](docs/features/web_ui.md) (Beta)
-- [x] Admin Management API (Partial)
+- [x] [Admin Management API](docs/features/admin_api.md) (Partial)
 
 ### Planned Features (Backlog)
 1.  **WASM Plugins**: For sandboxed custom logic.
 2.  **File System Provider**: Safe local file access.
 3.  **Cost & Quota Management**: User-level limits.
 4.  **Client SDKs (Python/TS)**: Idiomatic client libraries.
-5.  **Admin API Expansion**: Full CRUD for all resources.
 
 ---
 
