@@ -10,6 +10,7 @@ import "google/protobuf/duration.proto";
 
 import "proto/config/v1/auth.proto";
 import "proto/config/v1/webhook.proto";
+import "proto/bus/bus.proto";
 
 option go_package = "github.com/mcpany/core/proto/config/v1";
 
@@ -281,9 +282,19 @@ message CommandLineParameterMapping {
   SecretValue secret = 2;
 }
 
-// CacheConfig is a dummy message for now.
+// CacheConfig defines caching behavior for tool execution.
 message CacheConfig {
   bool is_enabled = 1 [json_name = "is_enabled"];
   google.protobuf.Duration ttl = 2;
   string strategy = 3;
+
+  enum Storage {
+    STORAGE_UNSPECIFIED = 0;
+    STORAGE_MEMORY = 1;
+    STORAGE_REDIS = 2;
+  }
+  Storage storage = 4;
+
+  // Redis configuration if storage is set to STORAGE_REDIS.
+  bus.RedisBus redis = 5;
 }

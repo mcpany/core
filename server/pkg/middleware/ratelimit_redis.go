@@ -19,6 +19,11 @@ func SetRedisClientCreatorForTests(creator func(opts *redis.Options) *redis.Clie
 	redisClientCreator = creator
 }
 
+// GetRedisClientCreatorForTests returns the current redis client creator.
+func GetRedisClientCreatorForTests() func(opts *redis.Options) *redis.Client {
+	return redisClientCreator
+}
+
 var timeNow = time.Now
 
 // SetTimeNowForTests sets the time.Now function for tests.
