@@ -24,6 +24,20 @@ func TestGetBus_NatsError(t *testing.T) {
 	assert.Error(t, err)
 }
 
+func TestGetBus_KafkaError(t *testing.T) {
+	msgBus := bus.MessageBus_builder{}.Build()
+	kafkaBus := bus.KafkaBus_builder{}.Build()
+	// No brokers set
+	msgBus.SetKafka(kafkaBus)
+
+	provider, err := NewProvider(msgBus)
+	assert.NoError(t, err)
+
+	_, err = GetBus[string](provider, "test-topic")
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), "kafka brokers are missing")
+}
+
 func TestGetBus_NatsSuccess(t *testing.T) {
 	// Configure NATS with empty URL to trigger embedded server
 	msgBus := bus.MessageBus_builder{}.Build()
