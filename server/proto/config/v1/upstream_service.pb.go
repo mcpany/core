@@ -5512,7 +5512,7 @@ type ContainerEnvironment struct {
 	Name *string `protobuf:"bytes,1,opt,name=name" json:"name,omitempty"`
 	// The image to use for the container.
 	Image *string `protobuf:"bytes,2,opt,name=image" json:"image,omitempty"`
-	// The volumes to mount into the container, with destination as key and source as value.
+	// The volumes to mount into the container, with host path as key and container path as value.
 	Volumes map[string]string `protobuf:"bytes,3,rep,name=volumes" json:"volumes,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
 	// Environment variables to set in the container (supports secrets).
 	Env           map[string]*SecretValue `protobuf:"bytes,4,rep,name=env" json:"env,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
@@ -5618,7 +5618,7 @@ type ContainerEnvironment_builder struct {
 	Name *string
 	// The image to use for the container.
 	Image *string
-	// The volumes to mount into the container, with destination as key and source as value.
+	// The volumes to mount into the container, with host path as key and container path as value.
 	Volumes map[string]string
 	// Environment variables to set in the container (supports secrets).
 	Env map[string]*SecretValue
