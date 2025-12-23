@@ -57,6 +57,7 @@ func (e *BagOfWordsEmbedder) Embed(text string) ([]float32, error) {
 		hash := sha256.Sum256([]byte(token))
 		// Use first 8 bytes as uint64 to determine index
 		val := binary.BigEndian.Uint64(hash[:8])
+		//nolint:gosec // dimension is always positive
 		index := int(val % uint64(e.dimension))
 
 		vector[index] += 1.0
