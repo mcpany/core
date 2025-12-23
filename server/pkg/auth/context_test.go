@@ -44,4 +44,21 @@ func TestContextHelpers(t *testing.T) {
 		_, ok = ProfileIDFromContext(context.Background())
 		assert.False(t, ok)
 	})
+
+	t.Run("api_key", func(t *testing.T) {
+		ctx := context.Background()
+		apiKey := "test-api-key"
+
+		// Test ContextWithAPIKey
+		ctx = ContextWithAPIKey(ctx, apiKey)
+
+		// Test APIKeyFromContext
+		got, ok := APIKeyFromContext(ctx)
+		assert.True(t, ok)
+		assert.Equal(t, apiKey, got)
+
+		// Test missing api key
+		_, ok = APIKeyFromContext(context.Background())
+		assert.False(t, ok)
+	})
 }
