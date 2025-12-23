@@ -49,14 +49,18 @@ func RedactJSON(input []byte) []byte {
 	switch firstByte {
 	case '{':
 		var m map[string]interface{}
-		if err := json.Unmarshal(input, &m); err == nil {
+		decoder := json.NewDecoder(bytes.NewReader(input))
+		decoder.UseNumber()
+		if err := decoder.Decode(&m); err == nil {
 			redactMapInPlace(m)
 			b, _ := json.Marshal(m)
 			return b
 		}
 	case '[':
 		var s []interface{}
-		if err := json.Unmarshal(input, &s); err == nil {
+		decoder := json.NewDecoder(bytes.NewReader(input))
+		decoder.UseNumber()
+		if err := decoder.Decode(&s); err == nil {
 			redactSliceInPlace(s)
 			b, _ := json.Marshal(s)
 			return b
@@ -64,13 +68,17 @@ func RedactJSON(input []byte) []byte {
 	default:
 		// Try both if we can't determine (e.g. unknown format), though unlikely for valid JSON
 		var m map[string]interface{}
-		if err := json.Unmarshal(input, &m); err == nil {
+		decoder := json.NewDecoder(bytes.NewReader(input))
+		decoder.UseNumber()
+		if err := decoder.Decode(&m); err == nil {
 			redactMapInPlace(m)
 			b, _ := json.Marshal(m)
 			return b
 		}
 		var s []interface{}
-		if err := json.Unmarshal(input, &s); err == nil {
+		decoder2 := json.NewDecoder(bytes.NewReader(input))
+		decoder2.UseNumber()
+		if err := decoder2.Decode(&s); err == nil {
 			redactSliceInPlace(s)
 			b, _ := json.Marshal(s)
 			return b
@@ -160,22 +168,33 @@ func containsFold(s, substr string) bool {
 		return true
 	}
 
-	// Brute force case-insensitive search
+	// Optimized case-insensitive search
+	// We first check the first character to avoid setting up the inner loop for mismatches.
+	// Since sensitiveKeys are all lowercase, we can safely assume substr[0] is lowercase.
+	first := substr[0]
 	end := len(s) - len(substr)
+
 	for i := 0; i <= end; i++ {
-		match := true
-		for j := 0; j < len(substr); j++ {
-			charS := s[i+j]
-			if charS >= 'A' && charS <= 'Z' {
-				charS += 32 // to lower
-			}
-			if charS != substr[j] {
-				match = false
-				break
-			}
+		c := s[i]
+		if c >= 'A' && c <= 'Z' {
+			c += 32 // to lower
 		}
-		if match {
-			return true
+		if c == first {
+			// First character matches, check the rest
+			match := true
+			for j := 1; j < len(substr); j++ {
+				charS := s[i+j]
+				if charS >= 'A' && charS <= 'Z' {
+					charS += 32 // to lower
+				}
+				if charS != substr[j] {
+					match = false
+					break
+				}
+			}
+			if match {
+				return true
+			}
 		}
 	}
 	return false

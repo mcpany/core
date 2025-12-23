@@ -140,22 +140,24 @@ func (m *CachingMiddleware) getCacheConfig(t tool.Tool) *configv1.CacheConfig {
 }
 
 func (m *CachingMiddleware) getCacheKey(req *tool.ExecutionRequest) string {
-	// Canonicalize JSON inputs
-	var canonicalInputs []byte
+	// Normalize ToolInputs if they are JSON
+	var normalizedInputs []byte
 	if len(req.ToolInputs) > 0 {
-		var inputs interface{}
-		if err := json.Unmarshal(req.ToolInputs, &inputs); err == nil {
-			if marshaled, err := json.Marshal(inputs); err == nil {
-				canonicalInputs = marshaled
+		var input any
+		// We use standard json.Unmarshal which sorts map keys when Marshaling back.
+		if err := json.Unmarshal(req.ToolInputs, &input); err == nil {
+			if marshaled, err := json.Marshal(input); err == nil {
+				normalizedInputs = marshaled
 			}
 		}
 	}
 
-	if canonicalInputs == nil {
-		canonicalInputs = req.ToolInputs
+	// Fallback to raw bytes if unmarshal fails or empty
+	if normalizedInputs == nil {
+		normalizedInputs = req.ToolInputs
 	}
 
-	return fmt.Sprintf("%s:%s", req.ToolName, canonicalInputs)
+	return fmt.Sprintf("%s:%s", req.ToolName, normalizedInputs)
 }
 
 // Clear clears the cache.
