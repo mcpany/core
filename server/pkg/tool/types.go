@@ -15,6 +15,7 @@ import (
 	"net/url"
 	"os"
 	"path"
+	"path/filepath"
 	"strconv"
 	"strings"
 	"sync"
@@ -1850,6 +1851,14 @@ func checkForPathTraversal(val string) error {
 	}
 	if strings.Contains(val, "/../") || strings.Contains(val, "\\..\\") || strings.Contains(val, "/..\\") || strings.Contains(val, "\\../") {
 		return fmt.Errorf("path traversal attempt detected")
+	}
+	// Check for absolute paths
+	if filepath.IsAbs(val) {
+		return fmt.Errorf("absolute path not allowed")
+	}
+	// Additional check for common absolute path indicators to be safe across platforms
+	if strings.HasPrefix(val, "/") || strings.HasPrefix(val, "\\") {
+		return fmt.Errorf("absolute path not allowed")
 	}
 	return nil
 }

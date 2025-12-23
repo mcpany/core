@@ -37,7 +37,7 @@ func TestLocalCommandTool_ArgumentInjection_Prevention(t *testing.T) {
 	reqSafe := &ExecutionRequest{
 		ToolName: "test-tool-cat",
 		Arguments: map[string]interface{}{
-			"file": "/etc/hosts",
+			"file": "security_test.go",
 		},
 	}
 	reqSafe.ToolInputs, _ = json.Marshal(reqSafe.Arguments)
