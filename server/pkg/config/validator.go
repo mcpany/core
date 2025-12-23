@@ -133,6 +133,9 @@ func validateGlobalSettings(gs *configv1.GlobalSettings, binaryType BinaryType) 
 				return fmt.Errorf("invalid mcp_listen_address: %w", err)
 			}
 		}
+		if gs.GetApiKey() != "" && len(gs.GetApiKey()) < 16 {
+			return fmt.Errorf("API key must be at least 16 characters long")
+		}
 	case Client:
 		if gs.GetApiKey() != "" && len(gs.GetApiKey()) < 16 {
 			return fmt.Errorf("API key must be at least 16 characters long")
