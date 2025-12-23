@@ -123,7 +123,7 @@ func (p *mcpPrompt) Get(ctx context.Context, args json.RawMessage) (*mcp.GetProm
 			if s, ok := v.(string); ok {
 				arguments[k] = s
 			} else {
-				arguments[k] = fmt.Sprintf("%v", v)
+				arguments[k] = util.ToString(v)
 			}
 		}
 	}

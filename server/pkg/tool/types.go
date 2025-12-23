@@ -480,14 +480,7 @@ func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 		} else if schema := param.GetSchema(); schema != nil {
 			placeholder := t.cachedPlaceholders[schema.GetName()]
 			if val, ok := inputs[schema.GetName()]; ok {
-				var valStr string
-				// Optimization: avoid fmt.Sprintf for strings
-				switch v := val.(type) {
-				case string:
-					valStr = v
-				default:
-					valStr = fmt.Sprintf("%v", v)
-				}
+				valStr := util.ToString(val)
 
 				if param.GetDisableEscape() {
 					// Check for path traversal if in path
@@ -647,7 +640,7 @@ func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 		if method == http.MethodGet || method == http.MethodDelete {
 			q := httpReq.URL.Query()
 			for key, value := range inputs {
-				q.Add(key, fmt.Sprintf("%v", value))
+				q.Add(key, util.ToString(value))
 			}
 			httpReq.URL.RawQuery = q.Encode()
 		}
@@ -1032,7 +1025,7 @@ func (t *OpenAPITool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 	url := t.url
 	for paramName, paramValue := range inputs {
 		if t.parameterDefs[paramName] == "path" {
-			url = strings.ReplaceAll(url, "{{"+paramName+"}}", fmt.Sprintf("%v", paramValue))
+			url = strings.ReplaceAll(url, "{{"+paramName+"}}", util.ToString(paramValue))
 			delete(inputs, paramName)
 		}
 	}
@@ -1099,10 +1092,10 @@ func (t *OpenAPITool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 			if t.parameterDefs[paramName] == "query" {
 				if slice, ok := paramValue.([]interface{}); ok {
 					for _, v := range slice {
-						q.Add(paramName, fmt.Sprintf("%v", v))
+						q.Add(paramName, util.ToString(v))
 					}
 				} else {
-					q.Add(paramName, fmt.Sprintf("%v", paramValue))
+					q.Add(paramName, util.ToString(paramValue))
 				}
 			}
 		}
@@ -1313,7 +1306,7 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 			for k, v := range inputs {
 				placeholder := "{{" + k + "}}"
 				if strings.Contains(arg, placeholder) {
-					val := fmt.Sprintf("%v", v)
+					val := util.ToString(v)
 					if err := checkForPathTraversal(val); err != nil {
 						return nil, fmt.Errorf("parameter %q: %w", k, err)
 					}
@@ -1398,7 +1391,7 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 			}
 			env = append(env, fmt.Sprintf("%s=%s", name, secretValue))
 		} else if val, ok := inputs[name]; ok {
-			valStr := fmt.Sprintf("%v", val)
+			valStr := util.ToString(val)
 			if err := checkForPathTraversal(valStr); err != nil {
 				return nil, fmt.Errorf("parameter %q: %w", name, err)
 			}
@@ -1555,7 +1548,7 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 			for k, v := range inputs {
 				placeholder := "{{" + k + "}}"
 				if strings.Contains(arg, placeholder) {
-					val := fmt.Sprintf("%v", v)
+					val := util.ToString(v)
 					if err := checkForPathTraversal(val); err != nil {
 						return nil, fmt.Errorf("parameter %q: %w", k, err)
 					}
@@ -1655,7 +1648,7 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 			}
 			env = append(env, fmt.Sprintf("%s=%s", name, secretValue))
 		} else if val, ok := inputs[name]; ok {
-			valStr := fmt.Sprintf("%v", val)
+			valStr := util.ToString(val)
 			if err := checkForPathTraversal(valStr); err != nil {
 				return nil, fmt.Errorf("parameter %q: %w", name, err)
 			}
