@@ -69,7 +69,6 @@ message UpstreamServiceConfig {
     WebrtcUpstreamService webrtc_service = 17 [json_name = "webrtc_service"];
     GraphQLUpstreamService graphql_service = 21 [json_name = "graphql_service"];
     SqlUpstreamService sql_service = 31 [json_name = "sql_service"];
-    FilesystemUpstreamService filesystem_service = 32 [json_name = "filesystem_service"];
   }
 
   // The version of the upstream service, if known (e.g., "v1.2.3").
@@ -459,7 +458,7 @@ message ContainerEnvironment {
   string name = 1;
   // The image to use for the container.
   string image = 2;
-  // The volumes to mount into the container, with host path as key and container path as value.
+  // The volumes to mount into the container, with destination as key and source as value.
   map<string, string> volumes = 3;
   // Environment variables to set in the container (supports secrets).
   map<string, SecretValue> env = 4;

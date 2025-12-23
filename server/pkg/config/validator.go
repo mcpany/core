@@ -298,18 +298,18 @@ func validateContainerEnvironment(env *configv1.ContainerEnvironment) error {
 	}
 	// We only validate volumes if an image is specified, as they are only used with Docker execution.
 	if env.GetImage() != "" {
-		for hostPath, containerPath := range env.GetVolumes() {
-			if hostPath == "" {
+		for dest, src := range env.GetVolumes() {
+			if dest == "" {
 				return fmt.Errorf("container environment volume host path is empty")
 			}
-			if containerPath == "" {
+			if src == "" {
 				return fmt.Errorf("container environment volume container path is empty")
 			}
-			// hostPath is the key (Host Path), containerPath is the value (Container Path).
-			// We must validate the Host Path (hostPath) to ensure it is secure.
+			// dest is the key (Host Path), src is the value (Container Path).
+			// We must validate the Host Path (dest) to ensure it is secure.
 			// It must be either relative to the CWD or in the allowed list.
-			if err := validation.IsRelativePath(hostPath); err != nil {
-				return fmt.Errorf("container environment volume host path %q is not a secure path: %w", hostPath, err)
+			if err := validation.IsRelativePath(dest); err != nil {
+				return fmt.Errorf("container environment volume host path %q is not a secure path: %w", dest, err)
 			}
 		}
 	}

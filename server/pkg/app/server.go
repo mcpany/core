@@ -313,10 +313,6 @@ func (a *Application) Run(
 		return a.ReloadConfig(fs, configPaths)
 	})
 
-	if cfg.GetGlobalSettings().GetSamplingCache() != nil {
-		mcpSrv.SetSamplingCacheConfig(cfg.GetGlobalSettings().GetSamplingCache())
-	}
-
 	a.ToolManager.SetMCPServer(mcpSrv)
 
 	if cfg.GetUpstreamServices() != nil {

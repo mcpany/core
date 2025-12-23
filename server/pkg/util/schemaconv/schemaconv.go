@@ -18,7 +18,6 @@ const (
 	TypeNumber  = "number"
 	TypeInteger = "integer"
 	TypeBoolean = "boolean"
-	TypeObject  = "object"
 )
 
 // MethodDescriptorToProtoProperties converts the fields of a method's input
@@ -43,15 +42,6 @@ func MethodDescriptorToProtoProperties(methodDesc protoreflect.MethodDescriptor)
 			schema["type"] = TypeInteger
 		case protoreflect.BoolKind:
 			schema["type"] = TypeBoolean
-		case protoreflect.MessageKind:
-			schema["type"] = TypeObject
-		}
-
-		if field.IsList() {
-			schema = map[string]interface{}{
-				"type":  "array",
-				"items": schema,
-			}
 		}
 
 		structValue, err := structpb.NewStruct(schema)
@@ -86,15 +76,6 @@ func MethodOutputDescriptorToProtoProperties(methodDesc protoreflect.MethodDescr
 			schema["type"] = TypeInteger
 		case protoreflect.BoolKind:
 			schema["type"] = TypeBoolean
-		case protoreflect.MessageKind:
-			schema["type"] = TypeObject
-		}
-
-		if field.IsList() {
-			schema = map[string]interface{}{
-				"type":  "array",
-				"items": schema,
-			}
 		}
 
 		structValue, err := structpb.NewStruct(schema)
