@@ -69,6 +69,7 @@ message UpstreamServiceConfig {
     WebrtcUpstreamService webrtc_service = 17 [json_name = "webrtc_service"];
     GraphQLUpstreamService graphql_service = 21 [json_name = "graphql_service"];
     SqlUpstreamService sql_service = 31 [json_name = "sql_service"];
+    FilesystemUpstreamService filesystem_service = 32 [json_name = "filesystem_service"];
   }
 
   // The version of the upstream service, if known (e.g., "v1.2.3").
@@ -338,6 +339,25 @@ message SqlUpstreamService {
   map<string, SqlCallDefinition> calls = 3;
 }
 
+// FilesystemUpstreamService defines a service that exposes a local filesystem safely.
+message FilesystemUpstreamService {
+  // The root directories that are allowed to be accessed.
+  // The key is the virtual path (how it appears to the LLM) and the value is the actual local path.
+  // Example: {"/workspace": "/home/user/projects/myproject"}
+  map<string, string> root_paths = 1 [json_name = "root_paths"];
+
+  // If true, file operations are read-only.
+  bool read_only = 2 [json_name = "read_only"];
+
+  // Manually defined mappings (usually not needed as we auto-register FS tools).
+  repeated ToolDefinition tools = 3;
+
+  // Resources (files) that are statically or dynamically exposed.
+  repeated ResourceDefinition resources = 4;
+
+  // Prompts that are exposed.
+  repeated PromptDefinition prompts = 5;
+}
 
 // McpUpstreamService defines an upstream that is already an MCP-compliant service.
 message McpUpstreamService {
