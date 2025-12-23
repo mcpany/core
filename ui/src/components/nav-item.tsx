@@ -1,3 +1,8 @@
+/**
+ * Copyright 2025 Author(s) of MCP Any
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 
 import { cn } from "@/lib/utils"
 import { LucideIcon } from "lucide-react"
