@@ -105,7 +105,7 @@ func TestRunServerMode_Auth(t *testing.T) {
 
 	errChan := make(chan error, 1)
 	go func() {
-		errChan <- app.runServerMode(ctx, mcpSrv, busProvider, bindAddress, grpcPort, 5*time.Second, users, nil, nil, nil, nil)
+		errChan <- app.runServerMode(ctx, mcpSrv, busProvider, bindAddress, grpcPort, 5*time.Second, users, nil, nil, nil, nil, 5<<20)
 	}()
 
 	// Wait for server to be ready

@@ -433,6 +433,7 @@ type GlobalSettings struct {
 	xxx_hidden_LogFormat          GlobalSettings_LogFormat `protobuf:"varint,10,opt,name=log_format,enum=mcpany.config.v1.GlobalSettings_LogFormat"`
 	xxx_hidden_DbPath             *string                  `protobuf:"bytes,11,opt,name=db_path"`
 	xxx_hidden_Middlewares        *[]*Middleware           `protobuf:"bytes,12,rep,name=middlewares"`
+	xxx_hidden_MaxRequestBodySize int64                    `protobuf:"varint,13,opt,name=max_request_body_size"`
 	XXX_raceDetectHookData        protoimpl.RaceDetectHookData
 	XXX_presence                  [1]uint32
 	unknownFields                 protoimpl.UnknownFields
@@ -558,14 +559,21 @@ func (x *GlobalSettings) GetMiddlewares() []*Middleware {
 	return nil
 }
 
+func (x *GlobalSettings) GetMaxRequestBodySize() int64 {
+	if x != nil {
+		return x.xxx_hidden_MaxRequestBodySize
+	}
+	return 0
+}
+
 func (x *GlobalSettings) SetMcpListenAddress(v string) {
 	x.xxx_hidden_McpListenAddress = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 11)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 12)
 }
 
 func (x *GlobalSettings) SetLogLevel(v GlobalSettings_LogLevel) {
 	x.xxx_hidden_LogLevel = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 11)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 12)
 }
 
 func (x *GlobalSettings) SetMessageBus(v *bus.MessageBus) {
@@ -574,7 +582,7 @@ func (x *GlobalSettings) SetMessageBus(v *bus.MessageBus) {
 
 func (x *GlobalSettings) SetApiKey(v string) {
 	x.xxx_hidden_ApiKey = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 3, 11)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 3, 12)
 }
 
 func (x *GlobalSettings) SetProfiles(v []string) {
@@ -595,16 +603,21 @@ func (x *GlobalSettings) SetProfileDefinitions(v []*ProfileDefinition) {
 
 func (x *GlobalSettings) SetLogFormat(v GlobalSettings_LogFormat) {
 	x.xxx_hidden_LogFormat = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 8, 11)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 8, 12)
 }
 
 func (x *GlobalSettings) SetDbPath(v string) {
 	x.xxx_hidden_DbPath = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 9, 11)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 9, 12)
 }
 
 func (x *GlobalSettings) SetMiddlewares(v []*Middleware) {
 	x.xxx_hidden_Middlewares = &v
+}
+
+func (x *GlobalSettings) SetMaxRequestBodySize(v int64) {
+	x.xxx_hidden_MaxRequestBodySize = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 11, 12)
 }
 
 func (x *GlobalSettings) HasMcpListenAddress() bool {
@@ -656,6 +669,13 @@ func (x *GlobalSettings) HasDbPath() bool {
 	return protoimpl.X.Present(&(x.XXX_presence[0]), 9)
 }
 
+func (x *GlobalSettings) HasMaxRequestBodySize() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 11)
+}
+
 func (x *GlobalSettings) ClearMcpListenAddress() {
 	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
 	x.xxx_hidden_McpListenAddress = nil
@@ -689,6 +709,11 @@ func (x *GlobalSettings) ClearDbPath() {
 	x.xxx_hidden_DbPath = nil
 }
 
+func (x *GlobalSettings) ClearMaxRequestBodySize() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 11)
+	x.xxx_hidden_MaxRequestBodySize = 0
+}
+
 type GlobalSettings_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
@@ -714,6 +739,8 @@ type GlobalSettings_builder struct {
 	DbPath *string
 	// The list of middlewares to enable and their configuration.
 	Middlewares []*Middleware
+	// The maximum size of the request body in bytes.
+	MaxRequestBodySize *int64
 }
 
 func (b0 GlobalSettings_builder) Build() *GlobalSettings {
@@ -721,16 +748,16 @@ func (b0 GlobalSettings_builder) Build() *GlobalSettings {
 	b, x := &b0, m0
 	_, _ = b, x
 	if b.McpListenAddress != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 11)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 12)
 		x.xxx_hidden_McpListenAddress = b.McpListenAddress
 	}
 	if b.LogLevel != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 11)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 12)
 		x.xxx_hidden_LogLevel = *b.LogLevel
 	}
 	x.xxx_hidden_MessageBus = b.MessageBus
 	if b.ApiKey != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 3, 11)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 3, 12)
 		x.xxx_hidden_ApiKey = b.ApiKey
 	}
 	x.xxx_hidden_Profiles = b.Profiles
@@ -738,14 +765,18 @@ func (b0 GlobalSettings_builder) Build() *GlobalSettings {
 	x.xxx_hidden_Audit = b.Audit
 	x.xxx_hidden_ProfileDefinitions = &b.ProfileDefinitions
 	if b.LogFormat != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 8, 11)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 8, 12)
 		x.xxx_hidden_LogFormat = *b.LogFormat
 	}
 	if b.DbPath != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 9, 11)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 9, 12)
 		x.xxx_hidden_DbPath = b.DbPath
 	}
 	x.xxx_hidden_Middlewares = &b.Middlewares
+	if b.MaxRequestBodySize != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 11, 12)
+		x.xxx_hidden_MaxRequestBodySize = *b.MaxRequestBodySize
+	}
 	return m0
 }
 
@@ -1300,7 +1331,7 @@ const file_proto_config_v1_config_proto_rawDesc = "" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12N\n" +
 	"\x0eauthentication\x18\x02 \x01(\v2&.mcpany.config.v1.AuthenticationConfigR\x0eauthentication\x12 \n" +
 	"\vprofile_ids\x18\x03 \x03(\tR\vprofile_ids\x12\x14\n" +
-	"\x05roles\x18\x04 \x03(\tR\x05roles\"\x98\x06\n" +
+	"\x05roles\x18\x04 \x03(\tR\x05roles\"\xce\x06\n" +
 	"\x0eGlobalSettings\x12.\n" +
 	"\x12mcp_listen_address\x18\x01 \x01(\tR\x12mcp_listen_address\x12G\n" +
 	"\tlog_level\x18\x03 \x01(\x0e2).mcpany.config.v1.GlobalSettings.LogLevelR\tlog_level\x121\n" +
@@ -1315,7 +1346,8 @@ const file_proto_config_v1_config_proto_rawDesc = "" +
 	" \x01(\x0e2*.mcpany.config.v1.GlobalSettings.LogFormatR\n" +
 	"log_format\x12\x18\n" +
 	"\adb_path\x18\v \x01(\tR\adb_path\x12>\n" +
-	"\vmiddlewares\x18\f \x03(\v2\x1c.mcpany.config.v1.MiddlewareR\vmiddlewares\"w\n" +
+	"\vmiddlewares\x18\f \x03(\v2\x1c.mcpany.config.v1.MiddlewareR\vmiddlewares\x124\n" +
+	"\x15max_request_body_size\x18\r \x01(\x03R\x15max_request_body_size\"w\n" +
 	"\bLogLevel\x12\x19\n" +
 	"\x15LOG_LEVEL_UNSPECIFIED\x10\x00\x12\x12\n" +
 	"\x0eLOG_LEVEL_INFO\x10\x01\x12\x12\n" +

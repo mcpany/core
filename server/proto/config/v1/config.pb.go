@@ -435,9 +435,11 @@ type GlobalSettings struct {
 	// The path to the database file.
 	DbPath *string `protobuf:"bytes,11,opt,name=db_path" json:"db_path,omitempty"`
 	// The list of middlewares to enable and their configuration.
-	Middlewares   []*Middleware `protobuf:"bytes,12,rep,name=middlewares" json:"middlewares,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	Middlewares []*Middleware `protobuf:"bytes,12,rep,name=middlewares" json:"middlewares,omitempty"`
+	// The maximum size of the request body in bytes.
+	MaxRequestBodySize *int64 `protobuf:"varint,13,opt,name=max_request_body_size" json:"max_request_body_size,omitempty"`
+	unknownFields      protoimpl.UnknownFields
+	sizeCache          protoimpl.SizeCache
 }
 
 func (x *GlobalSettings) Reset() {
@@ -542,6 +544,13 @@ func (x *GlobalSettings) GetMiddlewares() []*Middleware {
 	return nil
 }
 
+func (x *GlobalSettings) GetMaxRequestBodySize() int64 {
+	if x != nil && x.MaxRequestBodySize != nil {
+		return *x.MaxRequestBodySize
+	}
+	return 0
+}
+
 func (x *GlobalSettings) SetMcpListenAddress(v string) {
 	x.McpListenAddress = &v
 }
@@ -584,6 +593,10 @@ func (x *GlobalSettings) SetDbPath(v string) {
 
 func (x *GlobalSettings) SetMiddlewares(v []*Middleware) {
 	x.Middlewares = v
+}
+
+func (x *GlobalSettings) SetMaxRequestBodySize(v int64) {
+	x.MaxRequestBodySize = &v
 }
 
 func (x *GlobalSettings) HasMcpListenAddress() bool {
@@ -635,6 +648,13 @@ func (x *GlobalSettings) HasDbPath() bool {
 	return x.DbPath != nil
 }
 
+func (x *GlobalSettings) HasMaxRequestBodySize() bool {
+	if x == nil {
+		return false
+	}
+	return x.MaxRequestBodySize != nil
+}
+
 func (x *GlobalSettings) ClearMcpListenAddress() {
 	x.McpListenAddress = nil
 }
@@ -663,6 +683,10 @@ func (x *GlobalSettings) ClearDbPath() {
 	x.DbPath = nil
 }
 
+func (x *GlobalSettings) ClearMaxRequestBodySize() {
+	x.MaxRequestBodySize = nil
+}
+
 type GlobalSettings_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
@@ -688,6 +712,8 @@ type GlobalSettings_builder struct {
 	DbPath *string
 	// The list of middlewares to enable and their configuration.
 	Middlewares []*Middleware
+	// The maximum size of the request body in bytes.
+	MaxRequestBodySize *int64
 }
 
 func (b0 GlobalSettings_builder) Build() *GlobalSettings {
@@ -705,6 +731,7 @@ func (b0 GlobalSettings_builder) Build() *GlobalSettings {
 	x.LogFormat = b.LogFormat
 	x.DbPath = b.DbPath
 	x.Middlewares = b.Middlewares
+	x.MaxRequestBodySize = b.MaxRequestBodySize
 	return m0
 }
 
@@ -1208,7 +1235,7 @@ const file_proto_config_v1_config_proto_rawDesc = "" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12N\n" +
 	"\x0eauthentication\x18\x02 \x01(\v2&.mcpany.config.v1.AuthenticationConfigR\x0eauthentication\x12 \n" +
 	"\vprofile_ids\x18\x03 \x03(\tR\vprofile_ids\x12\x14\n" +
-	"\x05roles\x18\x04 \x03(\tR\x05roles\"\x98\x06\n" +
+	"\x05roles\x18\x04 \x03(\tR\x05roles\"\xce\x06\n" +
 	"\x0eGlobalSettings\x12.\n" +
 	"\x12mcp_listen_address\x18\x01 \x01(\tR\x12mcp_listen_address\x12G\n" +
 	"\tlog_level\x18\x03 \x01(\x0e2).mcpany.config.v1.GlobalSettings.LogLevelR\tlog_level\x121\n" +
@@ -1223,7 +1250,8 @@ const file_proto_config_v1_config_proto_rawDesc = "" +
 	" \x01(\x0e2*.mcpany.config.v1.GlobalSettings.LogFormatR\n" +
 	"log_format\x12\x18\n" +
 	"\adb_path\x18\v \x01(\tR\adb_path\x12>\n" +
-	"\vmiddlewares\x18\f \x03(\v2\x1c.mcpany.config.v1.MiddlewareR\vmiddlewares\"w\n" +
+	"\vmiddlewares\x18\f \x03(\v2\x1c.mcpany.config.v1.MiddlewareR\vmiddlewares\x124\n" +
+	"\x15max_request_body_size\x18\r \x01(\x03R\x15max_request_body_size\"w\n" +
 	"\bLogLevel\x12\x19\n" +
 	"\x15LOG_LEVEL_UNSPECIFIED\x10\x00\x12\x12\n" +
 	"\x0eLOG_LEVEL_INFO\x10\x01\x12\x12\n" +

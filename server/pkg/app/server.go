@@ -408,7 +408,12 @@ func (a *Application) Run(
 		allowedIPs = cfg.GetGlobalSettings().GetAllowedIps()
 	}
 
-	return a.runServerMode(ctx, mcpSrv, busProvider, bindAddress, grpcPort, shutdownTimeout, cfg.GetUsers(), cfg.GetGlobalSettings().GetProfileDefinitions(), allowedIPs, cachingMiddleware, sqliteStore)
+	maxBodySize := cfg.GetGlobalSettings().GetMaxRequestBodySize()
+	if maxBodySize <= 0 {
+		maxBodySize = 5 << 20 // 5MB default
+	}
+
+	return a.runServerMode(ctx, mcpSrv, busProvider, bindAddress, grpcPort, shutdownTimeout, cfg.GetUsers(), cfg.GetGlobalSettings().GetProfileDefinitions(), allowedIPs, cachingMiddleware, sqliteStore, maxBodySize)
 }
 
 // ReloadConfig reloads the configuration from the given paths and updates the
@@ -596,6 +601,7 @@ func (a *Application) runServerMode(
 	allowedIPs []string,
 	cachingMiddleware *middleware.CachingMiddleware,
 	store *sqlite.Store,
+	maxRequestBodySize int64,
 ) error {
 	ipMiddleware, err := middleware.NewIPAllowlistMiddleware(allowedIPs)
 	if err != nil {
@@ -834,7 +840,7 @@ func (a *Application) runServerMode(
 		delegate := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			logging.GetLogger().Info("Delegate Handler", "method", r.Method, "path", r.URL.Path)
 			// Support stateless JSON-RPC for simple clients
-			if handleStatelessJSONRPC(mcpSrv, w, r) {
+			if handleStatelessJSONRPC(mcpSrv, w, r, maxRequestBodySize) {
 				return
 			}
 			httpHandler.ServeHTTP(w, r)
@@ -1036,7 +1042,7 @@ func startHTTPServer(
 	}()
 }
 
-func handleStatelessJSONRPC(mcpSrv *mcpserver.Server, w http.ResponseWriter, r *http.Request) bool {
+func handleStatelessJSONRPC(mcpSrv *mcpserver.Server, w http.ResponseWriter, r *http.Request, maxBodySize int64) bool {
 	if !(r.Method == http.MethodPost && (r.URL.Path == "/" || r.URL.Path == "")) {
 		return false
 	}
@@ -1048,8 +1054,8 @@ func handleStatelessJSONRPC(mcpSrv *mcpserver.Server, w http.ResponseWriter, r *
 		Params  json.RawMessage `json:"params"`
 	}
 
-	// Limit request body to 5MB to prevent DoS via large payloads
-	r.Body = http.MaxBytesReader(w, r.Body, 5<<20)
+	// Limit request body to configured size to prevent DoS via large payloads
+	r.Body = http.MaxBytesReader(w, r.Body, maxBodySize)
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
 		if strings.Contains(err.Error(), "too large") {

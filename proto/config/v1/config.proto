@@ -77,6 +77,8 @@ message GlobalSettings {
   string db_path = 11 [json_name = "db_path"];
   // The list of middlewares to enable and their configuration.
   repeated Middleware middlewares = 12 [json_name = "middlewares"];
+  // The maximum size of the request body in bytes.
+  int64 max_request_body_size = 13 [json_name = "max_request_body_size"];
 }
 
 message AuditConfig {

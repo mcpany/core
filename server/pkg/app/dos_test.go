@@ -67,8 +67,8 @@ func TestHandleStatelessJSONRPC_DoS(t *testing.T) {
 	req := httptest.NewRequest("POST", "/", bytes.NewReader(bodyBytes))
 	w := httptest.NewRecorder()
 
-	// Call the function
-	handled := handleStatelessJSONRPC(mcpSrv, w, req)
+	// Call the function with 5MB limit
+	handled := handleStatelessJSONRPC(mcpSrv, w, req, 5<<20)
 
 	if !handled {
 		t.Errorf("Expected request to be handled")
@@ -122,8 +122,8 @@ func TestHandleStatelessJSONRPC_Normal(t *testing.T) {
 	req := httptest.NewRequest("POST", "/", bytes.NewReader(bodyBytes))
 	w := httptest.NewRecorder()
 
-	// Call the function
-	handled := handleStatelessJSONRPC(mcpSrv, w, req)
+	// Call the function with 5MB limit
+	handled := handleStatelessJSONRPC(mcpSrv, w, req, 5<<20)
 
 	if !handled {
 		t.Errorf("Expected request to be handled")
