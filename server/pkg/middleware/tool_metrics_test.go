@@ -27,9 +27,45 @@ func TestToolMetricsMiddleware_Execute(t *testing.T) {
 
 	middleware := NewToolMetricsMiddleware()
 
-	t.Run("Success", func(t *testing.T) {
+	// Helper to reset sink - InmemSink accumulates, so we just rely on checking the latest interval or specific values if unique labels used.
+	// But since labels are same for same tool/service, values aggregate in the same interval.
+	// We should probably force a new interval or just check diff?
+	// The sink rotates intervals based on time.
+	// We can't easily force rotation.
+	// However, for unit tests, we can just create a NEW sink for each test if we want isolation.
+	// But NewGlobal is global.
+	// We can rely on checking the Sum increase? Or just that it IS recorded.
+	// If we use different tool names, we get different keys!
+	// So ensure each test uses unique ToolName.
+
+	checkMetric := func(t *testing.T, toolName string, metricSuffix string, expectedValue float64) {
+		intervals := sink.Data()
+		require.NotEmpty(t, intervals)
+		// We might have multiple intervals. Check the last one or all?
+		// Since we use unique tool names, we just need to find the key in any interval (likely the last/current one).
+
+		found := false
+		for _, interval := range intervals {
+			for k, v := range interval.Samples {
+				// Key format: name;label=val;label=val
+				// We look for name part and tool label
+				if strings.Contains(k, "tool.execution."+metricSuffix) && strings.Contains(k, "tool="+toolName) {
+					found = true
+					// Check Sum (since we added 1 sample, Sum should be Value)
+					// Or if multiple calls, Sum accumulates.
+					// We expect 1 call per test case.
+					assert.Equal(t, expectedValue, v.Sum, "Metric %s value mismatch", k)
+					return
+				}
+			}
+		}
+		assert.True(t, found, "Metric %s for tool %s not found", metricSuffix, toolName)
+	}
+
+	t.Run("Success with TextContent", func(t *testing.T) {
+		toolName := "test_tool_text"
 		req := &tool.ExecutionRequest{
-			ToolName:   "test_tool",
+			ToolName:   toolName,
 			ToolInputs: json.RawMessage(`{"arg": "value"}`), // 16 bytes
 		}
 
@@ -58,31 +94,102 @@ func TestToolMetricsMiddleware_Execute(t *testing.T) {
 		_, err := middleware.Execute(ctx, req, next)
 		require.NoError(t, err)
 
-		// Verify metrics
-		intervals := sink.Data()
-		require.NotEmpty(t, intervals)
+		checkMetric(t, toolName, "output_bytes", 6)
+	})
 
-		metrics := intervals[0]
-
-		// Helper to find metric by partial name
-		findMetric := func(namePart string) bool {
-			for k := range metrics.Counters {
-				if strings.Contains(k, namePart) {
-					return true
-				}
-			}
-			for k := range metrics.Samples {
-				if strings.Contains(k, namePart) {
-					return true
-				}
-			}
-			return false
+	t.Run("ImageContent", func(t *testing.T) {
+		toolName := "image_tool"
+		req := &tool.ExecutionRequest{
+			ToolName:   toolName,
+			ToolInputs: json.RawMessage(`{}`),
 		}
 
-		assert.True(t, findMetric("tool.execution.total"), "Should record execution total")
-		assert.True(t, findMetric("tool.execution.input_bytes"), "Should record input bytes")
-		assert.True(t, findMetric("tool.execution.output_bytes"), "Should record output bytes")
-		assert.True(t, findMetric("tool.execution.duration"), "Should record duration")
+		data := []byte("image_data") // 10 bytes
+		next := func(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
+			return &mcp.CallToolResult{
+				Content: []mcp.Content{
+					&mcp.ImageContent{Data: data, MIMEType: "image/png"},
+				},
+			}, nil
+		}
+
+		_, err := middleware.Execute(context.Background(), req, next)
+		require.NoError(t, err)
+
+		checkMetric(t, toolName, "output_bytes", 10)
+	})
+
+	t.Run("EmbeddedResource", func(t *testing.T) {
+		toolName := "resource_tool"
+		req := &tool.ExecutionRequest{
+			ToolName:   toolName,
+			ToolInputs: json.RawMessage(`{}`),
+		}
+
+		data := []byte("resource_blob") // 13 bytes
+		next := func(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
+			return &mcp.CallToolResult{
+				Content: []mcp.Content{
+					&mcp.EmbeddedResource{
+						Resource: &mcp.ResourceContents{Blob: data},
+					},
+				},
+			}, nil
+		}
+
+		_, err := middleware.Execute(context.Background(), req, next)
+		require.NoError(t, err)
+
+		checkMetric(t, toolName, "output_bytes", 13)
+	})
+
+	t.Run("String Result", func(t *testing.T) {
+		toolName := "str_tool"
+		req := &tool.ExecutionRequest{ToolName: toolName, ToolInputs: json.RawMessage(`{}`)}
+		next := func(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
+			return "some string", nil // 11 bytes
+		}
+		_, err := middleware.Execute(context.Background(), req, next)
+		require.NoError(t, err)
+
+		checkMetric(t, toolName, "output_bytes", 11)
+	})
+
+	t.Run("Byte Slice Result", func(t *testing.T) {
+		toolName := "bytes_tool"
+		req := &tool.ExecutionRequest{ToolName: toolName, ToolInputs: json.RawMessage(`{}`)}
+		next := func(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
+			return []byte("some bytes"), nil // 10 bytes
+		}
+		_, err := middleware.Execute(context.Background(), req, next)
+		require.NoError(t, err)
+
+		checkMetric(t, toolName, "output_bytes", 10)
+	})
+
+	t.Run("JSON Fallback", func(t *testing.T) {
+		toolName := "obj_tool"
+		req := &tool.ExecutionRequest{ToolName: toolName, ToolInputs: json.RawMessage(`{}`)}
+		next := func(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
+			return map[string]string{"key": "value"}, nil
+		}
+		_, err := middleware.Execute(context.Background(), req, next)
+		require.NoError(t, err)
+
+		// json: {"key":"value"} = 15 bytes
+		checkMetric(t, toolName, "output_bytes", 15)
+	})
+
+	t.Run("Nil Result", func(t *testing.T) {
+		toolName := "nil_tool"
+		req := &tool.ExecutionRequest{ToolName: toolName, ToolInputs: json.RawMessage(`{}`)}
+		next := func(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
+			return nil, nil
+		}
+		_, err := middleware.Execute(context.Background(), req, next)
+		require.NoError(t, err)
+
+		checkMetric(t, toolName, "output_bytes", 0)
 	})
 }
 

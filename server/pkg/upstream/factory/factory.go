@@ -10,6 +10,7 @@ import (
 	"github.com/mcpany/core/pkg/pool"
 	"github.com/mcpany/core/pkg/upstream"
 	"github.com/mcpany/core/pkg/upstream/command"
+	"github.com/mcpany/core/pkg/upstream/filesystem"
 	"github.com/mcpany/core/pkg/upstream/graphql"
 	"github.com/mcpany/core/pkg/upstream/grpc"
 	"github.com/mcpany/core/pkg/upstream/http"
@@ -82,6 +83,8 @@ func (f *UpstreamServiceFactory) NewUpstream(config *configv1.UpstreamServiceCon
 		return graphql.NewGraphQLUpstream(), nil
 	case configv1.UpstreamServiceConfig_SqlService_case:
 		return sql.NewUpstream(), nil
+	case configv1.UpstreamServiceConfig_FilesystemService_case:
+		return filesystem.NewUpstream(), nil
 	default:
 		return nil, fmt.Errorf("unknown service config type: %T", config.WhichServiceConfig())
 	}

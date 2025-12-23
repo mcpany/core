@@ -8,6 +8,7 @@ package mcpany.config.v1;
 import "proto/bus/bus.proto";
 import "proto/config/v1/upstream_service.proto";
 import "proto/config/v1/auth.proto";
+import "proto/config/v1/call.proto";
 
 option go_package = "github.com/mcpany/core/proto/config/v1";
 option java_outer_classname = "ConfigProto";
@@ -77,6 +78,8 @@ message GlobalSettings {
   string db_path = 11 [json_name = "db_path"];
   // The list of middlewares to enable and their configuration.
   repeated Middleware middlewares = 12 [json_name = "middlewares"];
+  // Sampling cache configuration.
+  CacheConfig sampling_cache = 13 [json_name = "sampling_cache"];
 }
 
 message AuditConfig {
