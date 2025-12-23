@@ -5,7 +5,6 @@
 package app
 
 import (
-	"bytes"
 	"context"
 	"crypto/subtle"
 	"encoding/json"
@@ -835,76 +834,7 @@ func (a *Application) runServerMode(
 		delegate := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			logging.GetLogger().Info("Delegate Handler", "method", r.Method, "path", r.URL.Path)
 			// Support stateless JSON-RPC for simple clients
-			if r.Method == http.MethodPost && (r.URL.Path == "/" || r.URL.Path == "") {
-				var req struct {
-					JSONRPC string          `json:"jsonrpc"`
-					ID      any             `json:"id"`
-					Method  string          `json:"method"`
-					Params  json.RawMessage `json:"params"`
-				}
-				body, _ := io.ReadAll(r.Body)
-				r.Body = io.NopCloser(bytes.NewBuffer(body)) // Restore body just in case
-				if err := json.Unmarshal(body, &req); err != nil {
-					http.Error(w, "Invalid JSON", http.StatusBadRequest)
-					return
-				}
-
-				if req.Method == "tools/list" {
-					tools := mcpSrv.ListTools()
-					var responseTools []map[string]any
-					for _, t := range tools {
-						v1Tool := t.Tool()
-						serviceID := v1Tool.GetServiceId()
-						info, ok := mcpSrv.GetServiceInfo(serviceID)
-						if !ok {
-							continue
-						}
-
-						// Check profiles
-						allowed := false
-						if len(info.Config.GetProfiles()) == 0 {
-							allowed = true
-						} else {
-							// Check if current profileID matches any allowed profile
-							for _, p := range info.Config.GetProfiles() {
-								if p.GetId() == profileID {
-									allowed = true
-									break
-								}
-							}
-						}
-
-						if !allowed {
-							continue
-						}
-
-						responseTools = append(responseTools, map[string]any{
-							"name":        v1Tool.GetName(),
-							"description": v1Tool.GetDescription(),
-						})
-					}
-
-					// Ensure we return an empty list if no tools are found/allowed, not nil?
-					// JSON encoding nil slice as null is usually fine, but empty list [] is better for clients.
-					if responseTools == nil {
-						responseTools = []map[string]any{}
-					}
-
-					resp := map[string]any{
-						"jsonrpc": "2.0",
-						"id":      req.ID,
-						"result": map[string]any{
-							"tools": responseTools,
-						},
-					}
-					w.Header().Set("Content-Type", "application/json")
-					_ = json.NewEncoder(w).Encode(resp)
-					return
-				}
-
-				// Add logging to see unsupported methods
-				logging.GetLogger().Info("Unsupported stateless method", "method", req.Method)
-				http.Error(w, "Method not supported", http.StatusMethodNotAllowed)
+			if handleStatelessJSONRPC(mcpSrv, w, r) {
 				return
 			}
 			httpHandler.ServeHTTP(w, r)
@@ -1104,6 +1034,94 @@ func startHTTPServer(
 		<-shutdownComplete
 		serverLog.Info("Server shut down.")
 	}()
+}
+
+func handleStatelessJSONRPC(mcpSrv *mcpserver.Server, w http.ResponseWriter, r *http.Request) bool {
+	if !(r.Method == http.MethodPost && (r.URL.Path == "/" || r.URL.Path == "")) {
+		return false
+	}
+
+	var req struct {
+		JSONRPC string          `json:"jsonrpc"`
+		ID      any             `json:"id"`
+		Method  string          `json:"method"`
+		Params  json.RawMessage `json:"params"`
+	}
+
+	// Limit request body to 5MB to prevent DoS via large payloads
+	r.Body = http.MaxBytesReader(w, r.Body, 5<<20)
+	body, err := io.ReadAll(r.Body)
+	if err != nil {
+		if strings.Contains(err.Error(), "too large") {
+			http.Error(w, "Request body too large", http.StatusRequestEntityTooLarge)
+		} else {
+			http.Error(w, "Failed to read request body", http.StatusInternalServerError)
+		}
+		return true
+	}
+
+	if err := json.Unmarshal(body, &req); err != nil {
+		http.Error(w, "Invalid JSON", http.StatusBadRequest)
+		return true
+	}
+
+	if req.Method == "tools/list" {
+		tools := mcpSrv.ListTools()
+		var responseTools []map[string]any
+		profileID, _ := auth.ProfileIDFromContext(r.Context())
+
+		for _, t := range tools {
+			v1Tool := t.Tool()
+			serviceID := v1Tool.GetServiceId()
+			info, ok := mcpSrv.GetServiceInfo(serviceID)
+			if !ok {
+				continue
+			}
+
+			// Check profiles
+			allowed := false
+			if len(info.Config.GetProfiles()) == 0 {
+				allowed = true
+			} else {
+				// Check if current profileID matches any allowed profile
+				for _, p := range info.Config.GetProfiles() {
+					if p.GetId() == profileID {
+						allowed = true
+						break
+					}
+				}
+			}
+
+			if !allowed {
+				continue
+			}
+
+			responseTools = append(responseTools, map[string]any{
+				"name":        v1Tool.GetName(),
+				"description": v1Tool.GetDescription(),
+			})
+		}
+
+		if responseTools == nil {
+			responseTools = []map[string]any{}
+		}
+
+		resp := map[string]any{
+			"jsonrpc": "2.0",
+			"id":      req.ID,
+			"result": map[string]any{
+				"tools": responseTools,
+			},
+		}
+		w.Header().Set("Content-Type", "application/json")
+		_ = json.NewEncoder(w).Encode(resp)
+		return true
+	}
+
+	// Add logging to see unsupported methods
+	logging.GetLogger().Info("Unsupported stateless method", "method", req.Method)
+	http.Error(w, "Method not supported", http.StatusMethodNotAllowed)
+	return true
 }
 
 // startGrpcServer starts a gRPC server in a new goroutine. It handles graceful
