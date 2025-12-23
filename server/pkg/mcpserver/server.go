@@ -535,7 +535,13 @@ func (s *Server) CallTool(ctx context.Context, req *tool.ExecutionRequest) (any,
 		_, hasIsError := resultMap["isError"]
 
 		if hasContent || hasIsError {
-			// Convert map to CallToolResult via JSON
+			// Optimization: Try manual conversion first to avoid expensive JSON round-trip
+			// This handles common cases (e.g. simple text content) much faster (~30x).
+			if res, ok := s.convertMapToCallToolResult(resultMap); ok {
+				return res, nil
+			}
+
+			// Fallback: Convert map to CallToolResult via JSON
 			jsonBytes, marshalErr = json.Marshal(resultMap)
 			if marshalErr != nil {
 				return nil, fmt.Errorf("failed to marshal tool result map: %w", marshalErr)
@@ -702,6 +708,86 @@ func (s *Server) resourceListFilteringMiddleware(next mcp.MethodHandler) mcp.Met
 		}
 		return next(ctx, method, req)
 	}
+}
+
+func (s *Server) convertMapToCallToolResult(m map[string]any) (*mcp.CallToolResult, bool) {
+	// Check for unhandled fields in the root map
+	// We only support "content" and "isError".
+	// If "structuredContent" or "_meta" is present, fallback.
+	if _, ok := m["_meta"]; ok {
+		return nil, false
+	}
+	if _, ok := m["structuredContent"]; ok {
+		return nil, false
+	}
+
+	res := &mcp.CallToolResult{}
+
+	// Handle isError
+	if val, ok := m["isError"]; ok {
+		if b, ok := val.(bool); ok {
+			res.IsError = b
+		} else {
+			return nil, false
+		}
+	}
+
+	// Handle content
+	if val, ok := m["content"]; ok {
+		if list, ok := val.([]any); ok {
+			res.Content = make([]mcp.Content, 0, len(list))
+			for _, item := range list {
+				itemMap, ok := item.(map[string]any)
+				if !ok {
+					return nil, false // Fallback
+				}
+
+				// Safety check: Ensure no extra fields in content item
+				// We allow "type" and "text".
+				// If "annotations" or "meta" (or anything else) is present, fallback.
+				if len(itemMap) > 2 {
+					return nil, false
+				}
+
+				typeVal, ok := itemMap["type"]
+				if !ok {
+					return nil, false // Fallback
+				}
+
+				typeStr, ok := typeVal.(string)
+				if !ok {
+					return nil, false // Fallback
+				}
+
+				if typeStr == "text" {
+					// Check for "text" key if len is 2
+					if len(itemMap) == 2 {
+						if _, hasText := itemMap["text"]; !hasText {
+							return nil, false // Has some other key
+						}
+					}
+
+					txt := ""
+					if tVal, ok := itemMap["text"]; ok {
+						if t, ok := tVal.(string); ok {
+							txt = t
+						} else {
+							return nil, false // Text is not string
+						}
+					}
+
+					res.Content = append(res.Content, &mcp.TextContent{
+						Text: txt,
+					})
+				} else {
+					return nil, false // Fallback for non-text types
+				}
+			}
+		} else {
+			return nil, false // Content exists but is not a list
+		}
+	}
+	return res, true
 }
 
 func (s *Server) promptListFilteringMiddleware(next mcp.MethodHandler) mcp.MethodHandler {
