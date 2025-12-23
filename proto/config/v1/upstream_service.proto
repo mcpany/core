@@ -411,7 +411,7 @@ message ContainerEnvironment {
   string name = 1;
   // The image to use for the container.
   string image = 2;
-  // The volumes to mount into the container, with destination as key and source as value.
+  // The volumes to mount into the container, with host path as key and container path as value.
   map<string, string> volumes = 3;
   // Environment variables to set in the container (supports secrets).
   map<string, SecretValue> env = 4;
