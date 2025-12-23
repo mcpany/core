@@ -82,6 +82,8 @@ func TestHttpMethodToString(t *testing.T) {
 }
 
 func TestHTTPUpstream_Register_InsecureSkipVerify(t *testing.T) {
+	t.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "true")
+
 	// Create a test HTTPS server with a self-signed certificate
 	server := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		_, _ = w.Write([]byte("OK")) // This implicitly sets status to 200 OK if not already set

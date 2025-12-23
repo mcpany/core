@@ -19,6 +19,8 @@ import (
 )
 
 func TestBugRepro_QueryParamInjection(t *testing.T) {
+	t.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "true")
+
 	// Create a test server that checks the query parameter
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// We expect q to be "hello&world" (decoded)
