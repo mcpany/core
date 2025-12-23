@@ -565,7 +565,7 @@ func TestPool_ConcurrentGetAndClose(t *testing.T) {
 
 	wg.Wait()
 
-	assert.True(t, p.(*poolImpl[*mockClient]).closed, "Pool should be closed")
+	assert.True(t, p.(*poolImpl[*mockClient]).closed.Load(), "Pool should be closed")
 	_, err = p.Get(context.Background())
 	assert.Equal(t, ErrPoolClosed, err, "Getting from a closed pool should return ErrPoolClosed")
 }
