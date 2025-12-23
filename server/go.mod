@@ -1,6 +1,6 @@
 module github.com/mcpany/core
 
-go 1.25
+go 1.24.0
 
 replace github.com/mcpany/core => ./
 
@@ -21,7 +21,7 @@ require (
 	github.com/coder/websocket v1.8.14
 	github.com/coreos/go-oidc/v3 v3.13.0
 	github.com/docker/docker v28.5.0+incompatible
-	github.com/eko/gocache/lib/v4 v4.2.3
+	github.com/eko/gocache/lib/v4 v4.2.0
 	github.com/eko/gocache/store/go_cache/v4 v4.2.0
 	github.com/eko/gocache/store/redis/v4 v4.2.0
 	github.com/fsnotify/fsnotify v1.9.0
