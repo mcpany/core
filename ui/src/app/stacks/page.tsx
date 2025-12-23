@@ -30,22 +30,40 @@ export default function StacksPage() {
         <p className="text-muted-foreground">Manage your MCP Any configuration stacks.</p>
       </div>
 
-      <div className="grid gap-4">
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {stacks.map((stack) => (
           <Link key={stack.id} href={`/stacks/${stack.id}`}>
-             <Card className="hover:bg-muted/50 transition-colors cursor-pointer border-l-4 border-l-blue-500">
-               <CardHeader className="flex flex-row items-center gap-4 py-4">
-                  <div className="p-2 bg-blue-100 dark:bg-blue-900 rounded-lg">
-                    <Layers className="h-6 w-6 text-blue-600 dark:text-blue-400" />
-                  </div>
-                  <div className="flex-1">
-                    <CardTitle className="text-lg">{stack.name}</CardTitle>
-                    <CardDescription>Total Services: {stack.services}</CardDescription>
-                  </div>
-                   <Badge variant="secondary" className="bg-green-100 text-green-800 hover:bg-green-100 dark:bg-green-900 dark:text-green-300">
-                      {stack.status}
-                   </Badge>
+             <Card className="hover:shadow-md transition-all cursor-pointer group border-transparent shadow-sm bg-card hover:bg-muted/50">
+               <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
+                  <CardTitle className="text-sm font-medium text-muted-foreground">
+                    Stack
+                  </CardTitle>
+                  <Cuboid className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors" />
                </CardHeader>
+               <CardContent>
+                 <div className="flex items-center gap-3 mb-4">
+                    <div className="p-2.5 bg-primary/10 rounded-lg group-hover:scale-105 transition-transform">
+                        <Layers className="h-6 w-6 text-primary" />
+                    </div>
+                    <div>
+                        <div className="text-2xl font-bold tracking-tight">{stack.name}</div>
+                        <div className="text-xs text-muted-foreground font-mono">{stack.id}</div>
+                    </div>
+                 </div>
+
+                 <div className="flex items-center justify-between text-xs text-muted-foreground mt-4 pt-4 border-t">
+                    <div className="flex items-center gap-1.5">
+                        <span className="relative flex h-2 w-2">
+                          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                          <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+                        </span>
+                        Online
+                    </div>
+                    <div>
+                        {stack.services} Services
+                    </div>
+                 </div>
+               </CardContent>
              </Card>
           </Link>
         ))}

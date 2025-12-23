@@ -5,6 +5,6 @@ global:
   scrape_interval: 15s
 
 scrape_configs:
-  - job_name: 'mcpany'
+  - job_name: "mcpany-server"
     static_configs:
-      - targets: ['mcpany-server:50050']
+      - targets: ["mcpany-server:50051"]

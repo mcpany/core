@@ -53,23 +53,22 @@ export function Sidebar({ className }: SidebarProps) {
   ];
 
   return (
-    <div className={cn("pb-12 bg-[#2c3e50] text-white transition-all duration-300", collapsed ? "w-16" : "w-64", className)}>
+    <div className={cn("pb-12 bg-sidebar-background text-sidebar-foreground transition-all duration-300 border-r border-border/10", collapsed ? "w-16" : "w-64", className)}>
       <div className="space-y-4 py-4">
-        <div className="px-4 py-2 flex items-center justify-between">
+        <div className="px-4 py-3 flex items-center justify-between">
           {!collapsed && (
-             <div className="flex items-center gap-2 font-bold text-xl truncate">
-                <div className="bg-blue-500 rounded-full p-1">
-                    <LayoutGrid className="h-5 w-5 text-white" />
+             <div className="flex items-center gap-3 font-semibold text-lg tracking-tight">
+                <div className="bg-primary/20 p-2 rounded-lg">
+                    <LayoutGrid className="h-5 w-5 text-primary" />
                 </div>
                 <span>MCP Any</span>
              </div>
           )}
            {collapsed && (
-             <div className="mx-auto bg-blue-500 rounded-full p-1">
-                <LayoutGrid className="h-5 w-5 text-white" />
+             <div className="mx-auto bg-primary/20 p-2 rounded-lg">
+                <LayoutGrid className="h-5 w-5 text-primary" />
              </div>
            )}
-           {/* Mobile toggle or specialized toggle could go here, for now just a simple logic if needed */}
         </div>
         <div className="px-3 py-2">
           <div className="space-y-1">
@@ -80,13 +79,14 @@ export function Sidebar({ className }: SidebarProps) {
                   key={item.href}
                   href={item.href}
                   className={cn(
-                    "flex items-center rounded-md px-3 py-2 text-sm font-medium hover:bg-white/10 transition-colors",
-                    isActive ? "bg-blue-600 text-white" : "transparent text-gray-300",
+                    "flex items-center rounded-lg px-3 py-2.5 text-sm font-medium transition-all group relative",
+                    isActive ? "text-primary bg-primary/10" : "text-muted-foreground hover:text-foreground hover:bg-white/5",
                     collapsed ? "justify-center" : "justify-start"
                   )}
                   title={item.title}
                 >
-                  <item.icon className={cn("h-5 w-5", collapsed ? "mr-0" : "mr-2")} />
+                  {isActive && !collapsed && <div className="absolute left-0 top-1/2 -translate-y-1/2 h-8 w-1 bg-primary rounded-r-md" />}
+                  <item.icon className={cn("h-5 w-5", collapsed ? "mr-0" : "mr-3")} />
                   {!collapsed && <span>{item.title}</span>}
                 </Link>
               );
@@ -98,7 +98,7 @@ export function Sidebar({ className }: SidebarProps) {
             <Button
                 variant="ghost"
                 size="icon"
-                className="w-full text-gray-400 hover:bg-white/10 hover:text-white"
+                className="w-full text-muted-foreground hover:text-foreground hover:bg-white/5"
                 onClick={() => setCollapsed(!collapsed)}
             >
                 <Menu className="h-5 w-5" />

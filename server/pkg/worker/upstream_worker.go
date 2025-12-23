@@ -6,6 +6,7 @@ package worker
 import (
 	"context"
 	"encoding/json"
+	"sync"
 	"time"
 
 	"github.com/mcpany/core/pkg/bus"
@@ -21,6 +22,7 @@ import (
 type UpstreamWorker struct {
 	bus         *bus.Provider
 	toolManager tool.ManagerInterface
+	wg          sync.WaitGroup
 }
 
 // NewUpstreamWorker creates a new UpstreamWorker.
@@ -40,6 +42,7 @@ func NewUpstreamWorker(bus *bus.Provider, toolManager tool.ManagerInterface) *Up
 //
 // ctx is the context that controls the lifecycle of the worker.
 func (w *UpstreamWorker) Start(ctx context.Context) {
+	w.wg.Add(1)
 	log := logging.GetLogger().With("component", "UpstreamWorker")
 	log.Info("Upstream worker started")
 
@@ -82,8 +85,14 @@ func (w *UpstreamWorker) Start(ctx context.Context) {
 	})
 
 	go func() {
+		defer w.wg.Done()
 		<-ctx.Done()
 		log.Info("Upstream worker stopping")
 		unsubscribe()
 	}()
+}
+
+// Stop waits for the worker to stop.
+func (w *UpstreamWorker) Stop() {
+	w.wg.Wait()
 }

@@ -8,6 +8,7 @@ import (
 	"context"
 	"fmt"
 	"runtime/debug"
+	"sync"
 	"time"
 
 	"github.com/mcpany/core/pkg/bus"
@@ -24,6 +25,7 @@ import (
 type ServiceRegistrationWorker struct {
 	bus             *bus.Provider
 	serviceRegistry serviceregistry.ServiceRegistryInterface
+	wg              sync.WaitGroup
 }
 
 // NewServiceRegistrationWorker creates a new ServiceRegistrationWorker.
@@ -43,6 +45,7 @@ func NewServiceRegistrationWorker(bus *bus.Provider, serviceRegistry serviceregi
 //
 // ctx is the context that controls the lifecycle of the worker.
 func (w *ServiceRegistrationWorker) Start(ctx context.Context) {
+	w.wg.Add(1)
 	log := logging.GetLogger().With("component", "ServiceRegistrationWorker")
 	log.Info("Service registration worker started")
 
@@ -201,10 +204,16 @@ func (w *ServiceRegistrationWorker) Start(ctx context.Context) {
 	})
 
 	go func() {
+		defer w.wg.Done()
 		<-ctx.Done()
 		log.Info("Service registration worker stopping")
 		unsubscribe()
 		listUnsubscribe()
 		getUnsubscribe()
 	}()
+}
+
+// Stop waits for the worker to stop.
+func (w *ServiceRegistrationWorker) Stop() {
+	w.wg.Wait()
 }

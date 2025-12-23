@@ -31,7 +31,7 @@ export default function RootLayout({
         <link href="https://fonts.googleapis.com/css2?family=Inter&display=swap" rel="stylesheet" />
         <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono&display=swap" rel="stylesheet" />
       </head>
-      <body className="font-body antialiased bg-gray-50 dark:bg-gray-900">
+      <body className="font-body antialiased">
         <ThemeProvider
             attribute="class"
             defaultTheme="system"
