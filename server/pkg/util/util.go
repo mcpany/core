@@ -297,7 +297,13 @@ func replacePlaceholders(input string, params map[string]interface{}, noEscapePa
 		if !ok {
 			sb.WriteString(input[absoluteIdx : absoluteEnd+2])
 		} else {
-			val := fmt.Sprintf("%v", v)
+			var val string
+			// Optimization: avoid fmt.Sprintf for strings
+			if s, ok := v.(string); ok {
+				val = s
+			} else {
+				val = fmt.Sprintf("%v", v)
+			}
 			if noEscapeParams == nil || !noEscapeParams[key] {
 				val = escapeFunc(val)
 			}
