@@ -42,6 +42,9 @@ func TestFilesystemUpstream_Register_And_Execute(t *testing.T) {
 					"/data": tempDir,
 				},
 				ReadOnly: proto.Bool(false),
+				FilesystemType: &configv1.FilesystemUpstreamService_Os{
+					Os: &configv1.OsFs{},
+				},
 			},
 		},
 	}
@@ -221,4 +224,83 @@ func TestFilesystemUpstream_Register_And_Execute(t *testing.T) {
 		assert.Error(t, err)
 		assert.Contains(t, err.Error(), "access denied")
 	})
+}
+
+func TestFilesystemUpstream_MemMapFs(t *testing.T) {
+	// Configure the upstream with MemMapFs
+	config := &configv1.UpstreamServiceConfig{
+		Name: proto.String("test_memfs"),
+		ServiceConfig: &configv1.UpstreamServiceConfig_FilesystemService{
+			FilesystemService: &configv1.FilesystemUpstreamService{
+				// RootPaths are not strictly used for MemMapFs logic, but config validation requires it currently?
+				// Let's check upstream.go logic.
+				// "if len(fsService.RootPaths) == 0 ... fmt.Errorf("no root paths defined..."
+				// We should relax this check if not using OsFs, or provide a dummy one.
+				// But wait, MemMapFs is a new filesystem, so it's empty initially.
+				// We need to write to it.
+				// For MemMapFs, we might want to skip root path validation in Register if we modify Register.
+				// But Register still checks `if len(fsService.RootPaths) == 0`.
+				// I should fix that in upstream.go first.
+				// But for now let's provide a dummy root path to pass validation.
+				RootPaths: map[string]string{
+					"/": "/",
+				},
+				FilesystemType: &configv1.FilesystemUpstreamService_Tmpfs{
+					Tmpfs: &configv1.MemMapFs{},
+				},
+			},
+		},
+	}
+
+	u := NewUpstream()
+	b, _ := bus.NewProvider(nil)
+	tm := tool.NewManager(b)
+
+	id, _, _, err := u.Register(context.Background(), config, tm, nil, nil, false)
+	require.NoError(t, err)
+
+	findTool := func(name string) tool.Tool {
+		tool, ok := tm.GetTool(id + "." + name)
+		if ok {
+			return tool
+		}
+		return nil
+	}
+
+	// Write a file to MemMapFs
+	writeTool := findTool("write_file")
+	_, err = writeTool.Execute(context.Background(), &tool.ExecutionRequest{
+		ToolName: "write_file",
+		Arguments: map[string]interface{}{
+			"path":    "/hello.txt",
+			"content": "memory content",
+		},
+	})
+	require.NoError(t, err)
+
+	// Read it back
+	readTool := findTool("read_file")
+	res, err := readTool.Execute(context.Background(), &tool.ExecutionRequest{
+		ToolName: "read_file",
+		Arguments: map[string]interface{}{
+			"path": "/hello.txt",
+		},
+	})
+	require.NoError(t, err)
+	resMap := res.(map[string]interface{})
+	assert.Equal(t, "memory content", resMap["content"])
+
+	// List directory
+	lsTool := findTool("list_directory")
+	res, err = lsTool.Execute(context.Background(), &tool.ExecutionRequest{
+		ToolName: "list_directory",
+		Arguments: map[string]interface{}{
+			"path": "/",
+		},
+	})
+	require.NoError(t, err)
+	resMap = res.(map[string]interface{})
+	entries := resMap["entries"].([]interface{})
+	assert.Len(t, entries, 1)
+	assert.Equal(t, "hello.txt", entries[0].(map[string]interface{})["name"])
 }
