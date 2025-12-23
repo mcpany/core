@@ -240,7 +240,7 @@ global_settings:
 	assert.Contains(t, err.Error(), "unknown field")
 }
 
-func TestReadURL_Localhost(t *testing.T) {
+func TestReadURL_Localhost_Blocked(t *testing.T) {
 	// Start a local HTTP server
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/yaml")
@@ -256,7 +256,8 @@ func TestReadURL_Localhost(t *testing.T) {
 
 	cfg, err := store.Load()
 
-	require.NoError(t, err)
-	require.NotNil(t, cfg)
-	assert.Equal(t, configv1.GlobalSettings_LOG_LEVEL_INFO, cfg.GlobalSettings.GetLogLevel())
+	// We expect an error because localhost is blocked
+	require.Error(t, err)
+	assert.Nil(t, cfg)
+	assert.Contains(t, err.Error(), "no valid IP address found")
 }
