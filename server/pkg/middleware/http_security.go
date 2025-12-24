@@ -12,6 +12,14 @@ func HTTPSecurityHeadersMiddleware(next http.Handler) http.Handler {
 		w.Header().Set("X-Frame-Options", "SAMEORIGIN")
 		w.Header().Set("X-XSS-Protection", "1; mode=block")
 		w.Header().Set("Referrer-Policy", "strict-origin-when-cross-origin")
+
+		// Defense in Depth: Content Security Policy
+		// We allow 'unsafe-inline' for styles because the simple UI uses them.
+		w.Header().Set("Content-Security-Policy", "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; frame-ancestors 'self'; object-src 'none'; base-uri 'self'; form-action 'self';")
+
+		// Force HTTPS behavior (even if currently on HTTP, for future proofing/proxies)
+		w.Header().Set("Strict-Transport-Security", "max-age=63072000; includeSubDomains")
+
 		next.ServeHTTP(w, r)
 	})
 }
