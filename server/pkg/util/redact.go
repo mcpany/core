@@ -10,12 +10,18 @@ import (
 
 const redactedPlaceholder = "[REDACTED]"
 
-var sensitiveKeysBytes [][]byte
+var (
+	sensitiveKeysBytes [][]byte
+	redactedValue      json.RawMessage
+)
 
 func init() {
 	for _, k := range sensitiveKeys {
 		sensitiveKeysBytes = append(sensitiveKeysBytes, []byte(k))
 	}
+	// Pre-marshal the redacted placeholder to ensure valid JSON and avoid repeated work.
+	b, _ := json.Marshal(redactedPlaceholder)
+	redactedValue = json.RawMessage(b)
 }
 
 // RedactJSON parses a JSON byte slice and redacts sensitive keys.
@@ -48,40 +54,36 @@ func RedactJSON(input []byte) []byte {
 
 	switch firstByte {
 	case '{':
-		var m map[string]interface{}
-		decoder := json.NewDecoder(bytes.NewReader(input))
-		decoder.UseNumber()
-		if err := decoder.Decode(&m); err == nil {
-			redactMapInPlace(m)
-			b, _ := json.Marshal(m)
-			return b
+		var m map[string]json.RawMessage
+		if err := json.Unmarshal(input, &m); err == nil {
+			if redactMapRaw(m) {
+				b, _ := json.Marshal(m)
+				return b
+			}
 		}
 	case '[':
-		var s []interface{}
-		decoder := json.NewDecoder(bytes.NewReader(input))
-		decoder.UseNumber()
-		if err := decoder.Decode(&s); err == nil {
-			redactSliceInPlace(s)
-			b, _ := json.Marshal(s)
-			return b
+		var s []json.RawMessage
+		if err := json.Unmarshal(input, &s); err == nil {
+			if redactSliceRaw(s) {
+				b, _ := json.Marshal(s)
+				return b
+			}
 		}
 	default:
-		// Try both if we can't determine (e.g. unknown format), though unlikely for valid JSON
-		var m map[string]interface{}
-		decoder := json.NewDecoder(bytes.NewReader(input))
-		decoder.UseNumber()
-		if err := decoder.Decode(&m); err == nil {
-			redactMapInPlace(m)
-			b, _ := json.Marshal(m)
-			return b
+		// Try both if we can't determine (e.g. unknown format)
+		var m map[string]json.RawMessage
+		if err := json.Unmarshal(input, &m); err == nil {
+			if redactMapRaw(m) {
+				b, _ := json.Marshal(m)
+				return b
+			}
 		}
-		var s []interface{}
-		decoder2 := json.NewDecoder(bytes.NewReader(input))
-		decoder2.UseNumber()
-		if err := decoder2.Decode(&s); err == nil {
-			redactSliceInPlace(s)
-			b, _ := json.Marshal(s)
-			return b
+		var s []json.RawMessage
+		if err := json.Unmarshal(input, &s); err == nil {
+			if redactSliceRaw(s) {
+				b, _ := json.Marshal(s)
+				return b
+			}
 		}
 	}
 
@@ -122,28 +124,77 @@ func redactSlice(s []interface{}) []interface{} {
 	return newSlice
 }
 
-func redactMapInPlace(m map[string]interface{}) {
+// redactMapRaw operates on map[string]json.RawMessage to avoid full decoding.
+// It returns true if any modification was made.
+func redactMapRaw(m map[string]json.RawMessage) bool {
+	changed := false
 	for k, v := range m {
 		if IsSensitiveKey(k) {
-			m[k] = redactedPlaceholder
+			m[k] = redactedValue
+			changed = true
 		} else {
-			if nestedMap, ok := v.(map[string]interface{}); ok {
-				redactMapInPlace(nestedMap)
-			} else if nestedSlice, ok := v.([]interface{}); ok {
-				redactSliceInPlace(nestedSlice)
+			// Check if we need to recurse
+			// Only recurse if the value looks like an object or array
+			trimmed := bytes.TrimSpace(v)
+			if len(trimmed) > 0 {
+				if trimmed[0] == '{' {
+					var nested map[string]json.RawMessage
+					if err := json.Unmarshal(trimmed, &nested); err == nil {
+						if redactMapRaw(nested) {
+							if result, err := json.Marshal(nested); err == nil {
+								m[k] = result
+								changed = true
+							}
+						}
+					}
+				} else if trimmed[0] == '[' {
+					var nested []json.RawMessage
+					if err := json.Unmarshal(trimmed, &nested); err == nil {
+						if redactSliceRaw(nested) {
+							if result, err := json.Marshal(nested); err == nil {
+								m[k] = result
+								changed = true
+							}
+						}
+					}
+				}
 			}
 		}
 	}
+	return changed
 }
 
-func redactSliceInPlace(s []interface{}) {
-	for _, v := range s {
-		if nestedMap, ok := v.(map[string]interface{}); ok {
-			redactMapInPlace(nestedMap)
-		} else if nestedSlice, ok := v.([]interface{}); ok {
-			redactSliceInPlace(nestedSlice)
+// redactSliceRaw operates on []json.RawMessage to avoid full decoding.
+// It returns true if any modification was made.
+func redactSliceRaw(s []json.RawMessage) bool {
+	changed := false
+	for i, v := range s {
+		trimmed := bytes.TrimSpace(v)
+		if len(trimmed) > 0 {
+			if trimmed[0] == '{' {
+				var nested map[string]json.RawMessage
+				if err := json.Unmarshal(trimmed, &nested); err == nil {
+					if redactMapRaw(nested) {
+						if result, err := json.Marshal(nested); err == nil {
+							s[i] = result
+							changed = true
+						}
+					}
+				}
+			} else if trimmed[0] == '[' {
+				var nested []json.RawMessage
+				if err := json.Unmarshal(trimmed, &nested); err == nil {
+					if redactSliceRaw(nested) {
+						if result, err := json.Marshal(nested); err == nil {
+							s[i] = result
+							changed = true
+						}
+					}
+				}
+			}
 		}
 	}
+	return changed
 }
 
 // sensitiveKeys is a list of substrings that suggest a key contains sensitive information.
