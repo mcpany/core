@@ -31,10 +31,11 @@ type CachingMiddleware struct {
 	toolManager     tool.ManagerInterface
 	semanticCaches  sync.Map
 	providerFactory ProviderFactory
+	dbPath          string
 }
 
 // NewCachingMiddleware creates a new CachingMiddleware.
-func NewCachingMiddleware(toolManager tool.ManagerInterface) *CachingMiddleware {
+func NewCachingMiddleware(toolManager tool.ManagerInterface, dbPath string) *CachingMiddleware {
 	goCacheStore := gocache_store.NewGoCache(go_cache.New(5*time.Minute, 10*time.Minute))
 	cacheManager := cache.New[any](goCacheStore)
 	return &CachingMiddleware{
@@ -46,6 +47,7 @@ func NewCachingMiddleware(toolManager tool.ManagerInterface) *CachingMiddleware 
 			}
 			return nil, fmt.Errorf("unknown provider: %s", providerType)
 		},
+		dbPath: dbPath,
 	}
 }
 
@@ -156,7 +158,19 @@ func (m *CachingMiddleware) executeSemantic(ctx context.Context, req *tool.Execu
 			return next(ctx, req)
 		}
 
-		newCache := NewSemanticCache(provider, semConfig.GetSimilarityThreshold())
+		var vectorStore VectorStore
+		if m.dbPath != "" {
+			var storeErr error
+			vectorStore, storeErr = NewSQLiteVectorStore(m.dbPath)
+			if storeErr != nil {
+				logging.GetLogger().Warn("Failed to create persistent vector store, falling back to memory", "error", storeErr)
+				vectorStore = NewMemoryVectorStore()
+			}
+		} else {
+			vectorStore = NewMemoryVectorStore()
+		}
+
+		newCache := NewSemanticCache(provider, semConfig.GetSimilarityThreshold(), vectorStore)
 		val, _ = m.semanticCaches.LoadOrStore(serviceID, newCache)
 	}
 

@@ -20,21 +20,31 @@ type EmbeddingProvider interface {
 	Embed(ctx context.Context, text string) ([]float32, error)
 }
 
+// VectorStore defines the interface for storing and searching vectors.
+type VectorStore interface {
+	Add(key string, vector []float32, result any, ttl time.Duration) error
+	Search(key string, query []float32) (any, float32, bool)
+	Clear(ctx context.Context) error
+}
+
 // SemanticCache implements a semantic cache using embeddings and cosine similarity.
 type SemanticCache struct {
 	provider  EmbeddingProvider
-	store     *SimpleVectorStore
+	store     VectorStore
 	threshold float32
 }
 
 // NewSemanticCache creates a new SemanticCache.
-func NewSemanticCache(provider EmbeddingProvider, threshold float32) *SemanticCache {
+func NewSemanticCache(provider EmbeddingProvider, threshold float32, store VectorStore) *SemanticCache {
 	if threshold <= 0 {
 		threshold = 0.9 // Default high threshold
 	}
+	if store == nil {
+		store = NewMemoryVectorStore()
+	}
 	return &SemanticCache{
 		provider:  provider,
-		store:     NewSimpleVectorStore(),
+		store:     store,
 		threshold: threshold,
 	}
 }
@@ -56,12 +66,11 @@ func (c *SemanticCache) Get(ctx context.Context, key string, input string) (any,
 
 // Set adds a result to the cache using the provided embedding.
 func (c *SemanticCache) Set(ctx context.Context, key string, embedding []float32, result any, ttl time.Duration) error {
-	c.store.Add(key, embedding, result, ttl)
-	return nil
+	return c.store.Add(key, embedding, result, ttl)
 }
 
-// SimpleVectorStore is a naive in-memory vector store.
-type SimpleVectorStore struct {
+// MemoryVectorStore is a naive in-memory vector store.
+type MemoryVectorStore struct {
 	mu         sync.RWMutex
 	items      map[string][]*VectorEntry
 	maxEntries int
@@ -74,14 +83,14 @@ type VectorEntry struct {
 	Norm      float32
 }
 
-func NewSimpleVectorStore() *SimpleVectorStore {
-	return &SimpleVectorStore{
+func NewMemoryVectorStore() *MemoryVectorStore {
+	return &MemoryVectorStore{
 		items:      make(map[string][]*VectorEntry),
 		maxEntries: 100, // Limit per key to prevent OOM
 	}
 }
 
-func (s *SimpleVectorStore) Add(key string, vector []float32, result any, ttl time.Duration) {
+func (s *MemoryVectorStore) Add(key string, vector []float32, result any, ttl time.Duration) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
@@ -100,9 +109,10 @@ func (s *SimpleVectorStore) Add(key string, vector []float32, result any, ttl ti
 		Norm:      vectorNorm(vector),
 	}
 	s.items[key] = append(entries, entry)
+	return nil
 }
 
-func (s *SimpleVectorStore) Search(key string, query []float32) (any, float32, bool) {
+func (s *MemoryVectorStore) Search(key string, query []float32) (any, float32, bool) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
 
@@ -134,7 +144,14 @@ func (s *SimpleVectorStore) Search(key string, query []float32) (any, float32, b
 	return bestResult, bestScore, true
 }
 
-func (s *SimpleVectorStore) cleanup(key string) {
+func (s *MemoryVectorStore) Clear(ctx context.Context) error {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	s.items = make(map[string][]*VectorEntry)
+	return nil
+}
+
+func (s *MemoryVectorStore) cleanup(key string) {
 	entries, ok := s.items[key]
 	if !ok {
 		return
