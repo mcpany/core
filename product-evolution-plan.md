@@ -2,7 +2,7 @@
 
 ## 1. Updated Roadmap
 
-### Status: Active Development
+The following roadmap reflects the current state of the codebase and the strategic direction for MCP Any.
 
 ### Implemented Features
 
@@ -16,8 +16,9 @@
 - [x] [WebSocket](docs/features/service_types.md)
 - [x] [WebRTC](docs/features/service_types.md)
 - [x] [SQL](docs/features/service_types.md)
+- [x] [File System Provider](docs/features/filesystem.md)
 
-#### Authentication & Authorization
+#### Authentication
 - [x] [API Key](docs/features/auth.md)
 - [x] [Bearer Token](docs/features/auth.md)
 - [x] [OAuth 2.0](docs/features/auth.md)
@@ -25,11 +26,11 @@
 
 #### Policies
 - [x] [Caching](docs/features/policies.md)
-- [x] [Rate Limiting](docs/features/policies.md)
-- [x] [Resilience](docs/features/policies.md)
+- [x] [Rate Limiting](docs/features/policies.md) (Memory & Redis)
+- [x] [Resilience](docs/features/policies.md) (Circuit Breakers & Retries)
 
 #### Observability
-- [x] [Distributed Tracing](docs/features/observability.md)
+- [x] [Distributed Tracing](docs/features/observability.md) (OpenTelemetry)
 - [x] [Metrics](docs/features/observability.md)
 - [x] [Structured Logging](docs/features/observability.md)
 - [x] [Audit Logging](docs/features/observability.md)
@@ -42,39 +43,48 @@
 #### Core
 - [x] Dynamic Tool Registration
 - [x] Message Bus (NATS, Kafka)
-- [x] [Structured Output Transformation](docs/features/transformation.md)
+- [x] [Structured Output Transformation](docs/features/transformation.md) (JQ/JSONPath)
 - [x] [Admin Management API](docs/features/admin_api.md)
 - [x] [Dynamic Web UI](docs/features/web_ui.md) (Beta)
 
----
+### Upcoming Features (High Priority)
+
+1.  **Client SDKs (Python/TS)**
+2.  **WASM Plugins**
+3.  **Cloud Storage Support (S3, GCS)**
+4.  **Cost & Quota Management**
 
 ## 2. Top 10 Recommended Features
 
-| Rank | Feature Name | Why it matters | Difficulty |
+These recommendations are based on a gap analysis of the current product capabilities vs. industry standards for enterprise-grade API gateways and LLM infrastructure.
+
+| Rank | Feature Name | Why it matters | Implementation Difficulty |
 | :--- | :--- | :--- | :--- |
-| 1 | **WASM Plugin System** | **Extensibility**: Allows users to write custom transformations/validations safely without recompiling the core server. | High |
-| 2 | **Cost & Quota Management** | **Scalability/Business**: Essential for SaaS/multi-tenant deployments to track and limit usage. | Medium |
-| 3 | **Client SDKs (Python/TS)** | **UX/Adoption**: Simplifies integration for developers building AI agents and apps. | Medium |
-| 4 | **File System Provider** | **Utility**: Provides safe, controlled access to local files, highly requested for local agent workflows. | Low |
-| 5 | **Interactive Tool Playground** | **UX**: Allows users to test and debug tools directly within the Web UI before exposing them to agents. | Medium |
-| 6 | **External Secrets Integration** | **Security**: Integration with enterprise vaults (HashiCorp Vault, AWS Secrets Manager) instead of just env vars. | Medium |
-| 7 | **Audit Log Streaming** | **Compliance**: Stream audit logs to external systems (Splunk, CloudWatch, S3) rather than just local storage. | Medium |
-| 8 | **Traffic Splitting / Canary** | **Reliability**: Enable A/B testing of tool backends by splitting traffic between versions. | High |
-| 9 | **Service Mesh Integration** | **Scalability**: Native mTLS and observability integration with Istio/Linkerd. | High |
-| 10 | **Policy-as-Code (OPA)** | **Security**: Fine-grained, logic-based authorization policies using Open Policy Agent. | High |
+| 1 | **Client SDKs (Python/TypeScript)** | Accelerates adoption by providing developers with idiomatic, typed wrappers for interacting with MCP Any. Critical for DX. | Medium |
+| 2 | **WASM Plugins** | Enables users to extend functionality (transformations, validators) safely without recompiling the server. Key for extensibility. | High |
+| 3 | **Cloud Storage Support (S3, GCS)** | Extends the Filesystem provider to support cloud storage, allowing LLMs to interact with enterprise data lakes. | Medium |
+| 4 | **Cost & Quota Management** | Essential for SaaS / multi-tenant deployments to control costs and monetize usage (tokens/requests per tenant). | Medium |
+| 5 | **Vector Database Integration** | Enables RAG (Retrieval-Augmented Generation) workflows directly within the gateway, turning it into a "Semantic Gateway". | Medium |
+| 6 | **Advanced Identity Federation** | Support for OIDC and SAML 2.0 to integrate with enterprise Identity Providers (Okta, Entra ID) beyond simple OAuth2. | Medium |
+| 7 | **Human-in-the-Loop Workflows** | Adds a layer of safety by requiring human approval for sensitive tool executions (e.g., database writes, emails). | Medium |
+| 8 | **Code Sandbox / Remote Code Execution** | Allows LLMs to execute code snippets (Python/JS) safely. High value for data analysis agents but requires strict isolation. | High |
+| 9 | **Terraform / IaC Provider** | Allows infrastructure teams to manage MCP Any configuration (services, policies) using GitOps and Infrastructure as Code. | Medium |
+| 10 | **Prompt Management Registry** | A centralized store for managing and versioning system prompts and agent instructions, decoupled from code. | Low |
 
----
+## 3. Codebase Health Report
 
-## 3. Codebase Health
+### Overview
+The codebase appears robust, following standard Go project layouts (`server/pkg/...`). The separation of concerns between `upstream`, `transformer`, and `middleware` is clean.
 
-### Strengths
-- **Structure**: The project follows standard Go project layout (`pkg/`, `cmd/`, `internal/`).
-- **Testing**: Good foundation with `make test` covering unit, integration, and E2E scenarios.
-- **Linting**: Comprehensive linting setup with `golangci-lint` and `pre-commit` hooks.
-- **Documentation**: `docs/` folder is well-organized, and feature coverage is decent.
+### Key Observations
+*   **Dependency Management**: The project uses `go.work`, indicating a multi-module workspace. This is good for separation but requires careful management of dependency versions.
+*   **Filesystem Provider**: The recent implementation of `server/pkg/upstream/filesystem` correctly uses `spf13/afero` for filesystem abstraction. This is a best practice and significantly eases the path to adding Cloud Storage (S3/GCS) support later.
+*   **Testing**: There is a significant number of tests (`grep -r "test" server/pkg | wc -l` returned ~4500 lines). `upstream_test.go` exists in most packages, which is a good sign.
+*   **TODOs**: There are a moderate number of `TODO` comments in the codebase. These should be reviewed, particularly those in critical paths like `upstream` and `auth`.
+*   **Documentation**: The `docs/` folder is well-structured. Keeping `ROADMAP.md` and `features/` in sync with code is crucial, as addressed in this update.
+*   **Python Virtual Environment**: There are traces of a Python virtual environment in `build/venv`, likely for testing or pre-commit hooks. Ensure these do not leak into production builds.
 
-### Areas for Improvement
-- **Test Coverage**: While tests exist, ensure coverage metrics are monitored and improved, especially for new features like RBAC.
-- **Code Comments**: Some complex logic could benefit from more inline documentation (e.g., in `middleware/`).
-- **TODOs**: A scan revealed a few `TODO` items (e.g., in `server/pkg/prompt/service.go`) that should be addressed or tracked in issues.
-- **Dependency Management**: Ensure `go.mod` and `package.json` dependencies are kept up-to-date to avoid security vulnerabilities.
+### Recommendations for Refactoring
+*   **Consolidate Upstream Interfaces**: Ensure all upstreams strictly adhere to the `Upstream` interface. As more types (like SQL, Filesystem) are added, verify that the interface abstraction holds up without excessive type casting.
+*   **Standardize Error Handling**: Review error returns across upstreams to ensure consistent error codes/types are returned to the client (e.g., distinguishing between "upstream unavailable" vs "invalid arguments").
+*   **Audit "Planned" Stubs**: The code contains several stubs or comments for planned features (e.g., in filesystem). These should either be implemented or clearly marked as "Not Implemented" in the API responses to avoid user confusion.

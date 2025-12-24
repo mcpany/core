@@ -17,6 +17,7 @@ This document outlines the current status and future plans for MCP Any.
 - [x] [WebSocket](features/service_types.md)
 - [x] [WebRTC](features/service_types.md)
 - [x] [SQL](features/service_types.md)
+- [x] [File System Provider](features/filesystem.md)
 
 ### Authentication
 
@@ -63,9 +64,9 @@ This document outlines the current status and future plans for MCP Any.
 **Why:** Allow users to deploy safe, sandboxed custom logic for transformations or validations.
 **Status:** Planned
 
-### 2. File System Provider
+### 2. Cloud Storage Support (S3, GCS)
 
-**Why:** Safe, controlled access to the local file system as an MCP tool source.
+**Why:** Extend filesystem capabilities to cloud object storage.
 **Status:** Planned
 
 ### 3. Cost & Quota Management
