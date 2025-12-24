@@ -25,7 +25,7 @@ func RedactJSON(input []byte) []byte {
 	// If not, we can skip the expensive unmarshal/marshal process.
 	hasSensitiveKey := false
 	for _, k := range sensitiveKeysBytes {
-		if bytes.Contains(input, k) {
+		if containsFoldBytes(input, k) {
 			hasSensitiveKey = true
 			break
 		}
@@ -154,6 +154,48 @@ func IsSensitiveKey(key string) bool {
 	for _, s := range sensitiveKeys {
 		if containsFold(key, s) {
 			return true
+		}
+	}
+	return false
+}
+
+// containsFoldBytes reports whether substr is within s, interpreting ASCII characters case-insensitively.
+// substr must be all lowercase.
+func containsFoldBytes(s, substr []byte) bool {
+	if len(substr) > len(s) {
+		return false
+	}
+	if len(substr) == 0 {
+		return true
+	}
+
+	// Optimized case-insensitive search
+	// We first check the first character to avoid setting up the inner loop for mismatches.
+	// Since sensitiveKeys are all lowercase, we can safely assume substr[0] is lowercase.
+	first := substr[0]
+	end := len(s) - len(substr)
+
+	for i := 0; i <= end; i++ {
+		c := s[i]
+		if c >= 'A' && c <= 'Z' {
+			c += 32 // to lower
+		}
+		if c == first {
+			// First character matches, check the rest
+			match := true
+			for j := 1; j < len(substr); j++ {
+				charS := s[i+j]
+				if charS >= 'A' && charS <= 'Z' {
+					charS += 32 // to lower
+				}
+				if charS != substr[j] {
+					match = false
+					break
+				}
+			}
+			if match {
+				return true
+			}
 		}
 	}
 	return false
