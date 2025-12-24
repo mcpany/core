@@ -200,7 +200,7 @@ func (u *Upstream) Register(
 					return nil, err
 				}
 
-				if err := afero.WriteFile(fs, resolvedPath, []byte(content), 0644); err != nil {
+				if err := afero.WriteFile(fs, resolvedPath, []byte(content), 0600); err != nil {
 					return nil, err
 				}
 				return map[string]interface{}{"success": true}, nil
