@@ -370,6 +370,7 @@ func TestCallPolicyExecution(t *testing.T) {
 	assert.Contains(t, err.Error(), "unknown tool")
 }
 
+func TestExportPolicyForPromptsAndResources(t *testing.T) {
 	mockServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		w.WriteHeader(http.StatusOK)
 	}))

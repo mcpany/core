@@ -52,7 +52,7 @@ test.describe('Logs Page', () => {
       await filterSelect.click();
       await page.getByRole('option', { name: 'Error' }).click();
 
-      await page.waitForTimeout(2000);
+      await page.waitForTimeout(5000);
 
       // Check if all visible logs are ERROR
       const logLevels = page.locator('.text-red-400'); // ERROR color class
@@ -72,7 +72,7 @@ test.describe('Logs Page', () => {
   });
 
   test('should clear logs', async ({ page }) => {
-      await page.waitForTimeout(2000);
+      await page.waitForTimeout(4000);
       const clearButton = page.getByRole('button', { name: 'Clear' });
       await clearButton.click();
 

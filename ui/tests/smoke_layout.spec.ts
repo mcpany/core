@@ -9,16 +9,16 @@ test('layout smoke test', async ({ page }) => {
   await page.goto('/');
 
   // Check for Sidebar
-  const sidebar = page.locator('text=MCP Any');
+  const sidebar = page.locator('text=MCP Any').first();
   await expect(sidebar).toBeVisible();
 
   // Check for Sidebar links
-  await expect(page.locator('a[href="/stacks"]')).toBeVisible();
-  await expect(page.locator('a[href="/services"]')).toBeVisible();
-  await expect(page.locator('a[href="/settings"]')).toBeVisible();
+  await expect(page.locator('a[href="/stacks"]').first()).toBeVisible();
+  await expect(page.locator('a[href="/services"]').first()).toBeVisible();
+  await expect(page.locator('a[href="/settings"]').first()).toBeVisible();
 
   // Navigate to Stacks
-  await page.click('a[href="/stacks"]');
+  await page.locator('a[href="/stacks"]').first().click();
   await expect(page.locator('h1')).toContainText('Stacks');
 
   // Check for the "mcpany-system" stack

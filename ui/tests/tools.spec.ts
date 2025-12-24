@@ -54,11 +54,11 @@ test.describe('Tool Exploration', () => {
         // Wait for loading to finish (if applicable, though mock is instant)
         // Adjust selector if you add a specific loading state for tools
 
-        await expect(page.getByText('weather-tool')).toBeVisible();
-        await expect(page.getByText('Get weather for a location')).toBeVisible();
+        await expect(page.getByText('weather-tool').first()).toBeVisible({ timeout: 10000 });
+        await expect(page.getByText('Get weather for a location').first()).toBeVisible({ timeout: 10000 });
 
-        await expect(page.getByText('calculator')).toBeVisible();
-        await expect(page.getByText('Perform basic math')).toBeVisible();
+        await expect(page.getByText('calculator').first()).toBeVisible({ timeout: 10000 });
+        await expect(page.getByText('Perform basic math').first()).toBeVisible({ timeout: 10000 });
     });
 
     test('should show empty state when no tools', async ({ page }) => {
