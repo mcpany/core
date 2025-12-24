@@ -163,7 +163,6 @@ func (u *Upstream) Register(
 					return nil, fmt.Errorf("path is a directory")
 				}
 
-				//nolint:gosec // G304: Path is validated by validatePath
 				content, err := afero.ReadFile(fs, resolvedPath)
 				if err != nil {
 					return nil, err
