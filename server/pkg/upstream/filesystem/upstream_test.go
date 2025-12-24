@@ -58,7 +58,7 @@ func TestFilesystemUpstream_Register_And_Execute(t *testing.T) {
 	id, tools, resources, err := u.Register(context.Background(), config, tm, nil, nil, false)
 	require.NoError(t, err)
 	assert.NotEmpty(t, id)
-	assert.Len(t, tools, 5) // list, read, write, get_info, list_roots
+	assert.Len(t, tools, 7) // list, read, write, delete, search, get_info, list_roots
 	assert.Empty(t, resources)
 
 	// Helper to find a tool by name
@@ -223,6 +223,85 @@ func TestFilesystemUpstream_Register_And_Execute(t *testing.T) {
 		})
 		assert.Error(t, err)
 		assert.Contains(t, err.Error(), "access denied")
+	})
+
+	// Test search_files
+	t.Run("search_files", func(t *testing.T) {
+		config.GetFilesystemService().ReadOnly = proto.Bool(false)
+		tm.ClearToolsForService(id)
+		u.Register(context.Background(), config, tm, nil, nil, false)
+
+		searchTool := findTool("search_files")
+		require.NotNil(t, searchTool)
+
+		// Create file to search
+		writeTool := findTool("write_file")
+		_, err := writeTool.Execute(context.Background(), &tool.ExecutionRequest{
+			ToolName: "write_file",
+			Arguments: map[string]interface{}{
+				"path":    "/data/searchable.txt",
+				"content": "line one\nfind me here\nline three",
+			},
+		})
+		require.NoError(t, err)
+
+		// Search
+		res, err := searchTool.Execute(context.Background(), &tool.ExecutionRequest{
+			ToolName: "search_files",
+			Arguments: map[string]interface{}{
+				"path":    "/data",
+				"pattern": "find me",
+			},
+		})
+		require.NoError(t, err)
+		resMap := res.(map[string]interface{})
+		// matches is []map[string]interface{}, not []interface{} because it was constructed that way in Go code.
+		// However, when passing through structure conversion or JSON, it might change.
+		// In upstream.go: matches := []map[string]interface{}{}
+		// So it is of type []map[string]interface{}
+		matches := resMap["matches"].([]map[string]interface{})
+		assert.Len(t, matches, 1)
+
+		match := matches[0]
+		assert.Equal(t, "searchable.txt", match["file"])
+		assert.Equal(t, "find me here", match["line_content"])
+		assert.Equal(t, 2, match["line_number"])
+	})
+
+	// Test delete_file
+	t.Run("delete_file", func(t *testing.T) {
+		config.GetFilesystemService().ReadOnly = proto.Bool(false)
+		tm.ClearToolsForService(id)
+		u.Register(context.Background(), config, tm, nil, nil, false)
+
+		deleteTool := findTool("delete_file")
+		require.NotNil(t, deleteTool)
+
+		// Create file to delete
+		writeTool := findTool("write_file")
+		_, err := writeTool.Execute(context.Background(), &tool.ExecutionRequest{
+			ToolName: "write_file",
+			Arguments: map[string]interface{}{
+				"path":    "/data/deleteme.txt",
+				"content": "bye",
+			},
+		})
+		require.NoError(t, err)
+
+		// Delete
+		res, err := deleteTool.Execute(context.Background(), &tool.ExecutionRequest{
+			ToolName: "delete_file",
+			Arguments: map[string]interface{}{
+				"path": "/data/deleteme.txt",
+			},
+		})
+		require.NoError(t, err)
+		resMap := res.(map[string]interface{})
+		assert.Equal(t, true, resMap["success"])
+
+		// Verify deletion
+		_, err = os.Stat(filepath.Join(tempDir, "deleteme.txt"))
+		assert.True(t, os.IsNotExist(err))
 	})
 }
 
