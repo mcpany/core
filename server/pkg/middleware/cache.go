@@ -27,16 +27,28 @@ type ProviderFactory func(providerType, apiKey, model string) (EmbeddingProvider
 // CachingMiddleware is a tool execution middleware that provides caching
 // functionality.
 type CachingMiddleware struct {
-	cache           *cache.Cache[any]
-	toolManager     tool.ManagerInterface
-	semanticCaches  sync.Map
-	providerFactory ProviderFactory
+	cache             *cache.Cache[any]
+	toolManager       tool.ManagerInterface
+	semanticCaches    sync.Map
+	providerFactory   ProviderFactory
+	sharedVectorStore VectorStore
 }
 
 // NewCachingMiddleware creates a new CachingMiddleware.
-func NewCachingMiddleware(toolManager tool.ManagerInterface) *CachingMiddleware {
+// If dbPath is provided, it will use SQLite for vector storage.
+func NewCachingMiddleware(toolManager tool.ManagerInterface, dbPath string) *CachingMiddleware {
 	goCacheStore := gocache_store.NewGoCache(go_cache.New(5*time.Minute, 10*time.Minute))
 	cacheManager := cache.New[any](goCacheStore)
+
+	var sharedVectorStore VectorStore
+	if dbPath != "" {
+		var err error
+		sharedVectorStore, err = NewSQLiteVectorStore(dbPath)
+		if err != nil {
+			logging.GetLogger().Error("Failed to initialize SQLite vector store, falling back to in-memory", "error", err)
+		}
+	}
+
 	return &CachingMiddleware{
 		cache:       cacheManager,
 		toolManager: toolManager,
@@ -46,6 +58,7 @@ func NewCachingMiddleware(toolManager tool.ManagerInterface) *CachingMiddleware 
 			}
 			return nil, fmt.Errorf("unknown provider: %s", providerType)
 		},
+		sharedVectorStore: sharedVectorStore,
 	}
 }
 
@@ -156,7 +169,10 @@ func (m *CachingMiddleware) executeSemantic(ctx context.Context, req *tool.Execu
 			return next(ctx, req)
 		}
 
-		newCache := NewSemanticCache(provider, semConfig.GetSimilarityThreshold())
+		// Check for SQLite store config, otherwise default to in-memory
+		store := m.sharedVectorStore
+
+		newCache := NewSemanticCache(provider, store, semConfig.GetSimilarityThreshold())
 		val, _ = m.semanticCaches.LoadOrStore(serviceID, newCache)
 	}
 

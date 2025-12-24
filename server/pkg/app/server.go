@@ -345,7 +345,15 @@ func (a *Application) Run(
 	}
 
 	// Initialize standard middlewares in registry
-	cachingMiddleware := middleware.NewCachingMiddleware(a.ToolManager)
+	// Pass dbPath for persistent semantic caching if configured
+	dbPath := ""
+	if cfg.GetGlobalSettings().GetDbPath() != "" {
+		dbPath = cfg.GetGlobalSettings().GetDbPath()
+	} else {
+		// Fallback to default if not set
+		dbPath = "mcpany.db"
+	}
+	cachingMiddleware := middleware.NewCachingMiddleware(a.ToolManager, dbPath)
 	auditCleanup, err := middleware.InitStandardMiddlewares(mcpSrv.AuthManager(), a.ToolManager, cfg.GetGlobalSettings().GetAudit(), cachingMiddleware)
 	if err != nil {
 		return fmt.Errorf("failed to init standard middlewares: %w", err)

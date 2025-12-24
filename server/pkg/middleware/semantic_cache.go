@@ -23,18 +23,21 @@ type EmbeddingProvider interface {
 // SemanticCache implements a semantic cache using embeddings and cosine similarity.
 type SemanticCache struct {
 	provider  EmbeddingProvider
-	store     *SimpleVectorStore
+	store     VectorStore
 	threshold float32
 }
 
 // NewSemanticCache creates a new SemanticCache.
-func NewSemanticCache(provider EmbeddingProvider, threshold float32) *SemanticCache {
+func NewSemanticCache(provider EmbeddingProvider, store VectorStore, threshold float32) *SemanticCache {
 	if threshold <= 0 {
 		threshold = 0.9 // Default high threshold
 	}
+	if store == nil {
+		store = NewSimpleVectorStore()
+	}
 	return &SemanticCache{
 		provider:  provider,
-		store:     NewSimpleVectorStore(),
+		store:     store,
 		threshold: threshold,
 	}
 }
@@ -47,7 +50,10 @@ func (c *SemanticCache) Get(ctx context.Context, key string, input string) (any,
 		return nil, nil, false, err
 	}
 
-	result, score, found := c.store.Search(key, embedding)
+	result, score, found, err := c.store.Search(ctx, key, embedding)
+	if err != nil {
+		return nil, embedding, false, err
+	}
 	if found && score >= c.threshold {
 		return result, embedding, true, nil
 	}
@@ -56,8 +62,7 @@ func (c *SemanticCache) Get(ctx context.Context, key string, input string) (any,
 
 // Set adds a result to the cache using the provided embedding.
 func (c *SemanticCache) Set(ctx context.Context, key string, embedding []float32, result any, ttl time.Duration) error {
-	c.store.Add(key, embedding, result, ttl)
-	return nil
+	return c.store.Add(ctx, key, embedding, result, ttl)
 }
 
 // SimpleVectorStore is a naive in-memory vector store.
@@ -81,7 +86,7 @@ func NewSimpleVectorStore() *SimpleVectorStore {
 	}
 }
 
-func (s *SimpleVectorStore) Add(key string, vector []float32, result any, ttl time.Duration) {
+func (s *SimpleVectorStore) Add(ctx context.Context, key string, vector []float32, result any, ttl time.Duration) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
@@ -100,15 +105,16 @@ func (s *SimpleVectorStore) Add(key string, vector []float32, result any, ttl ti
 		Norm:      vectorNorm(vector),
 	}
 	s.items[key] = append(entries, entry)
+	return nil
 }
 
-func (s *SimpleVectorStore) Search(key string, query []float32) (any, float32, bool) {
+func (s *SimpleVectorStore) Search(ctx context.Context, key string, query []float32) (any, float32, bool, error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
 
 	entries, ok := s.items[key]
 	if !ok {
-		return nil, 0, false
+		return nil, 0, false, nil
 	}
 
 	now := time.Now()
@@ -128,10 +134,14 @@ func (s *SimpleVectorStore) Search(key string, query []float32) (any, float32, b
 	}
 
 	if bestScore == -1.0 {
-		return nil, 0, false
+		return nil, 0, false, nil
 	}
 
-	return bestResult, bestScore, true
+	return bestResult, bestScore, true, nil
+}
+
+func (s *SimpleVectorStore) Close() error {
+	return nil
 }
 
 func (s *SimpleVectorStore) cleanup(key string) {
