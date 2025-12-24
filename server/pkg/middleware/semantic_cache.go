@@ -71,6 +71,7 @@ type VectorEntry struct {
 	Vector    []float32
 	Result    any
 	ExpiresAt time.Time
+	Norm      float32
 }
 
 func NewSimpleVectorStore() *SimpleVectorStore {
@@ -96,6 +97,7 @@ func (s *SimpleVectorStore) Add(key string, vector []float32, result any, ttl ti
 		Vector:    vector,
 		Result:    result,
 		ExpiresAt: time.Now().Add(ttl),
+		Norm:      vectorNorm(vector),
 	}
 	s.items[key] = append(entries, entry)
 }
@@ -112,12 +114,13 @@ func (s *SimpleVectorStore) Search(key string, query []float32) (any, float32, b
 	now := time.Now()
 	var bestResult any
 	var bestScore float32 = -1.0
+	queryNorm := vectorNorm(query)
 
 	for _, entry := range entries {
 		if now.After(entry.ExpiresAt) {
 			continue
 		}
-		score := cosineSimilarity(query, entry.Vector)
+		score := cosineSimilarityOptimized(query, entry.Vector, queryNorm, entry.Norm)
 		if score > bestScore {
 			bestScore = score
 			bestResult = entry.Result
@@ -152,22 +155,27 @@ func (s *SimpleVectorStore) cleanup(key string) {
 	s.items[key] = entries[:n]
 }
 
-func cosineSimilarity(a, b []float32) float32 {
+func vectorNorm(v []float32) float32 {
+	var sum float32
+	for _, x := range v {
+		sum += x * x
+	}
+	return float32(math.Sqrt(float64(sum)))
+}
+
+func cosineSimilarityOptimized(a, b []float32, normA, normB float32) float32 {
 	if len(a) != len(b) || len(a) == 0 {
 		return 0
-	}
-	var dotProduct, normA, normB float32
-	for i := range a {
-		vA := a[i]
-		vB := b[i]
-		dotProduct += vA * vB
-		normA += vA * vA
-		normB += vB * vB
 	}
 	if normA == 0 || normB == 0 {
 		return 0
 	}
-	return dotProduct / (float32(math.Sqrt(float64(normA))) * float32(math.Sqrt(float64(normB))))
+
+	var dotProduct float32
+	for i := range a {
+		dotProduct += a[i] * b[i]
+	}
+	return dotProduct / (normA * normB)
 }
 
 // OpenAIEmbeddingProvider implements EmbeddingProvider for OpenAI.
