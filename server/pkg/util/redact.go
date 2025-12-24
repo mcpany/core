@@ -12,12 +12,6 @@ const redactedPlaceholder = "[REDACTED]"
 
 var sensitiveKeysBytes [][]byte
 
-func init() {
-	for _, k := range sensitiveKeys {
-		sensitiveKeysBytes = append(sensitiveKeysBytes, []byte(k))
-	}
-}
-
 // RedactJSON parses a JSON byte slice and redacts sensitive keys.
 // If the input is not valid JSON object or array, it returns the input as is.
 func RedactJSON(input []byte) []byte {
@@ -147,10 +141,27 @@ func redactSliceInPlace(s []interface{}) {
 }
 
 // sensitiveKeys is a list of substrings that suggest a key contains sensitive information.
-var sensitiveKeys = []string{"api_key", "apikey", "access_token", "token", "secret", "password", "passwd", "credential", "auth", "private_key", "client_secret"}
+// Note: "access_token" is redundant because it contains "token".
+// Note: "client_secret" is redundant because it contains "secret".
+var sensitiveKeys = []string{"api_key", "apikey", "token", "secret", "password", "passwd", "credential", "auth", "private_key"}
+
+var minSensitiveLen int
+
+func init() {
+	minSensitiveLen = 1000
+	for _, k := range sensitiveKeys {
+		sensitiveKeysBytes = append(sensitiveKeysBytes, []byte(k))
+		if len(k) < minSensitiveLen {
+			minSensitiveLen = len(k)
+		}
+	}
+}
 
 // IsSensitiveKey checks if a key name suggests it contains sensitive information.
 func IsSensitiveKey(key string) bool {
+	if len(key) < minSensitiveLen {
+		return false
+	}
 	for _, s := range sensitiveKeys {
 		if containsFold(key, s) {
 			return true
