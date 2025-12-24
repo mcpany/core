@@ -62,7 +62,7 @@ test.describe('Logs Page', () => {
       // but filtered view should only show matching logs.
       // We check if text content of visible logs contains "ERROR"
       // Filter out sidebar items that might match '.group' if reusing classes or simply scope to log area
-      const logArea = page.locator('.space-y-1');
+      const logArea = page.getByTestId('log-rows-container');
       const logRows = logArea.locator('.group');
 
       const logTexts = await logRows.allInnerTexts();
@@ -76,9 +76,15 @@ test.describe('Logs Page', () => {
       const clearButton = page.getByRole('button', { name: 'Clear' });
       await clearButton.click();
 
-      const logs = page.locator('.group');
-      // Might strictly be 0, or 1 if a new log arrived just now.
-      const count = await logs.count();
-      expect(count).toBeLessThan(3);
+      await clearButton.click();
+
+      const logArea = page.getByTestId('log-rows-container');
+      const logRows = logArea.locator('.group');
+
+      // Wait for logs to be cleared (count should drop)
+      await expect(async () => {
+        const count = await logRows.count();
+        expect(count).toBeLessThan(3);
+      }).toPass({ timeout: 2000 });
   });
 });

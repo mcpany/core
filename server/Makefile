@@ -414,7 +414,10 @@ e2e-sequential: build build-examples build-e2e-mocks build-e2e-timeserver-docker
 
 test-fast: build build-examples build-e2e-mocks build-e2e-timeserver-docker
 	@echo "Running fast Go tests locally with a 300s timeout..."
-	@GEMINI_API_KEY=$(GEMINI_API_KEY) MCPANY_DEBUG=true CGO_ENABLED=1 USE_SUDO_FOR_DOCKER=$(NEEDS_SUDO_FOR_DOCKER) $(GO_CMD) test -race -count=1 -timeout 300s -cover -coverprofile=$(COVERAGE_FILE) $(shell go list ./cmd/... ./pkg/... ./proto/... ./tests/... ./examples/upstream_service_demo/... | grep -v /tests/public_api | grep -v /build | grep -v /tests/e2e | grep -v /tests/e2e_sequential | grep -v "^github.com/mcpany/core$$")
+	@TEST_PKGS=$$(go list ./cmd/... ./pkg/... ./proto/... ./tests/... ./examples/upstream_service_demo/... | grep -v /tests/public_api | grep -v /build | grep -v /tests/e2e | grep -v /tests/e2e_sequential | grep -v "^github.com/mcpany/core$$"); \
+	echo "Testing packages: $$TEST_PKGS"; \
+	if [ -z "$$TEST_PKGS" ]; then echo "No packages to test!"; exit 1; fi; \
+	GEMINI_API_KEY=$(GEMINI_API_KEY) MCPANY_DEBUG=true CGO_ENABLED=1 USE_SUDO_FOR_DOCKER=$(NEEDS_SUDO_FOR_DOCKER) $(GO_CMD) test -race -count=1 -timeout 300s -cover -coverprofile=$(COVERAGE_FILE) $$TEST_PKGS
 
 .PHONY: test-public-api
 test-public-api: build build-mock-server

@@ -15,15 +15,13 @@ let services = [
     connection_pool: { max_connections: 100 },
     disable: false,
     version: "v1.2.0",
-    service_config: {
-        http_service: {
-            address: "https://api.stripe.com",
-            tools: [
-                { name: "process_refund", description: "Process a refund for a transaction" },
-                { name: "get_transaction", description: "Get transaction details" }
-            ],
-            resources: []
-        }
+    http_service: {
+        address: "https://api.stripe.com",
+        tools: [
+            { name: "process_refund", description: "Process a refund for a transaction" },
+            { name: "get_transaction", description: "Get transaction details" }
+        ],
+        resources: []
     }
   },
   {
@@ -32,17 +30,15 @@ let services = [
     connection_pool: { max_connections: 50 },
     disable: false,
     version: "v2.1.0",
-    service_config: {
-        grpc_service: {
-            address: "localhost:50051",
-            tools: [
-                { name: "get_user_profile", description: "Get user profile by ID" },
-                { name: "update_user_email", description: "Update user email address" }
-            ],
-            resources: [
-                { name: "User Database Dump", description: "Daily dump of user database", mimeType: "application/sql", type: "file" }
-            ]
-        }
+    grpc_service: {
+        address: "localhost:50051",
+        tools: [
+            { name: "get_user_profile", description: "Get user profile by ID" },
+            { name: "update_user_email", description: "Update user email address" }
+        ],
+        resources: [
+            { name: "User Database Dump", description: "Daily dump of user database", mimeType: "application/sql", type: "file" }
+        ]
     }
   },
   {
@@ -51,14 +47,12 @@ let services = [
       connection_pool: { max_connections: 10 },
       disable: true,
       version: "v0.5.0",
-      service_config: {
-          http_service: {
-              address: "http://legacy-auth:8080",
-              tools: [],
-              resources: [
-                 { name: "Legacy Logs", description: "Logs from legacy system", mimeType: "text/plain", type: "logs" }
-              ]
-          }
+      http_service: {
+          address: "http://legacy-auth:8080",
+          tools: [],
+          resources: [
+             { name: "Legacy Logs", description: "Logs from legacy system", mimeType: "text/plain", type: "logs" }
+          ]
       }
   },
   {
@@ -67,14 +61,12 @@ let services = [
       connection_pool: { max_connections: 20 },
       disable: false,
       version: "v1.0.0",
-      service_config: {
-          http_service: {
-              address: "http://weather-api",
-              tools: [
-                  { name: "get_weather", description: "Get weather for a location" } // Required by E2E
-              ],
-              resources: []
-          }
+      http_service: {
+          address: "http://weather-api",
+          tools: [
+              { name: "get_weather", description: "Get weather for a location" } // Required by E2E
+          ],
+          resources: []
       }
   },
   {
@@ -83,14 +75,12 @@ let services = [
       connection_pool: { max_connections: 5 },
       disable: false,
       version: "v1.0.0",
-      service_config: {
-          http_service: {
-              address: "http://monitor",
-              tools: [],
-              resources: [
-                  { name: "Application Logs", description: "Main application logs", mimeType: "text/plain", type: "logs" } // Required by E2E
-              ]
-          }
+      http_service: {
+          address: "http://monitor",
+          tools: [],
+          resources: [
+              { name: "Application Logs", description: "Main application logs", mimeType: "text/plain", type: "logs" } // Required by E2E
+          ]
       }
   }
 ];
