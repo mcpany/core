@@ -10,8 +10,11 @@ test('settings page loads', async ({ page }) => {
   await page.goto('/settings');
   await expect(page.getByRole('heading', { name: 'Settings' })).toBeVisible();
 
-  // Check tabs
-  await expect(page.getByRole('tab', { name: 'Profiles' })).toBeVisible();
-  await expect(page.getByRole('tab', { name: 'Webhooks' })).toBeVisible();
-  await expect(page.getByRole('tab', { name: 'Middleware' })).toBeVisible();
+  // Updated expectations: Check for Card titles
+  // CardTitle uses a 'div' by default in the shadcn implementation provided.
+  // We can just search for the text.
+
+  await expect(page.getByText('Profiles', { exact: true })).toBeVisible();
+  await expect(page.getByText('Webhooks', { exact: true })).toBeVisible();
+  await expect(page.getByText('Middleware', { exact: true })).toBeVisible();
 });
