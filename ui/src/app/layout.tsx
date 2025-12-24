@@ -7,6 +7,8 @@ import type {Metadata} from 'next';
 import './globals.css';
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { CommandMenu } from "@/components/command-menu";
+import { Sidebar } from "@/components/sidebar";
 
 export const metadata: Metadata = {
   title: 'MCPAny Manager',
@@ -34,7 +36,13 @@ export default function RootLayout({
       </head>
       <body className="font-body antialiased">
         <TooltipProvider>
-          {children}
+           <div className="flex min-h-screen w-full flex-col bg-muted/40 md:flex-row">
+            <Sidebar />
+            <div className="flex-1 min-w-0">
+               {children}
+            </div>
+          </div>
+          <CommandMenu />
           <Toaster />
         </TooltipProvider>
       </body>
