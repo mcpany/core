@@ -6689,7 +6689,7 @@ type ContainerEnvironment_builder struct {
 	Name *string
 	// The image to use for the container.
 	Image *string
-	// The volumes to mount into the container, with host path as key and container path as value.
+	// The volumes to mount into the container, with destination as key and source as value.
 	Volumes map[string]string
 	// Environment variables to set in the container (supports secrets).
 	Env map[string]*SecretValue
