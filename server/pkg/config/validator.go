@@ -336,6 +336,9 @@ func validateMcpService(mcpService *configv1.McpUpstreamService) error {
 		if bundleConn.GetBundlePath() == "" {
 			return fmt.Errorf("mcp service with bundle_connection has empty bundle_path")
 		}
+		if err := validation.IsRelativePath(bundleConn.GetBundlePath()); err != nil {
+			return fmt.Errorf("mcp service with bundle_connection has insecure bundle_path %q: %w", bundleConn.GetBundlePath(), err)
+		}
 	default:
 		return fmt.Errorf("mcp service has no connection_type")
 	}
