@@ -43,6 +43,8 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 }
 
 // Register processes the configuration for a filesystem service.
+//
+//nolint:gocyclo
 func (u *Upstream) Register(
 	ctx context.Context,
 	serviceConfig *configv1.UpstreamServiceConfig,
@@ -307,7 +309,7 @@ func (u *Upstream) Register(
 					if err != nil {
 						return nil
 					}
-					defer f.Close()
+					defer func() { _ = f.Close() }()
 
 					// Check for binary
 					// Read first 512 bytes
