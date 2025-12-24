@@ -1,49 +1,64 @@
-# Mini-Design Doc: SQL Database Provider
+# Mini Design Doc: Filesystem Search & Delete
 
-## Goal
-Enable MCP Any to connect to SQL databases (Postgres, SQLite, MySQL) and expose SQL queries as MCP tools. This allows LLMs to query databases directly using pre-defined safe queries.
+## Objective
+Enhance the Filesystem Provider with `search_files` and `delete_file` capabilities to improve utility for AI agents.
 
-## Changes
+## New Tools
 
-### 1. Protocol Buffers (`proto/config/v1`)
-*   **`upstream_service.proto`**:
-    *   Add `SqlUpstreamService` message:
-        *   `driver`: Driver name (e.g., "postgres", "sqlite").
-        *   `dsn`: Data Source Name (connection string).
-        *   `calls`: Map of `SqlCallDefinition`.
-    *   Update `UpstreamServiceConfig` oneof to include `SqlUpstreamService`.
-*   **`call.proto`**:
-    *   Add `SqlCallDefinition` message:
-        *   `id`: Unique identifier.
-        *   `query`: The SQL query string (e.g., `SELECT * FROM users WHERE id = $1`).
-        *   `parameter_order`: List of input property names that map to query parameters in order.
-        *   `input_schema`: JSON schema for the tool input.
-        *   `output_schema`: JSON schema for the tool output.
-        *   `cache`: Cache configuration.
+### 1. `search_files`
+**Description**: Recursively search for a text pattern in files within a directory.
 
-### 2. Implementation (`server/pkg/upstream/sql`)
-*   **`Upstream`**: Implements `upstream.Upstream`.
-    *   `Register`: Connects to the database using `database/sql`.
-    *   Iterates over configured `calls`.
-    *   Registers a `SQLTool` for each call.
-*   **`SQLTool`**: Implements `tool.Tool`.
-    *   `Execute`:
-        *   Extracts arguments from `ExecutionRequest` based on `parameter_order`.
-        *   Executes the prepared statement/query.
-        *   Scans rows into a map/slice structure.
-        *   Returns JSON-serializable result.
+**Input**:
+- `path` (string): The root directory to start searching from.
+- `pattern` (string): The regular expression pattern to search for.
+- `recursive` (boolean, optional): Whether to search recursively. Default: `true`. (Wait, strict recursiveness might be expensive. Let's make it optional but default false for safety? Or default true but limited depth? Let's say default true but we limit total matches).
+- `exclude_patterns` (array of strings, optional): Patterns to exclude (e.g., `node_modules`, `.git`).
 
-### 3. Factory (`server/pkg/upstream/factory`)
-*   Update `NewUpstream` to handle `SqlService` case.
+**Output**:
+- `matches`: Array of objects:
+  - `file`: File path relative to root.
+  - `line_number`: Line number.
+  - `line_content`: Content of the matching line (trimmed).
 
-### 4. Dependencies
-*   Add `github.com/lib/pq` for Postgres support.
-*   Use existing `modernc.org/sqlite` for SQLite support.
+**Constraints**:
+- Max matches limit (e.g., 100).
+- Max file size to read (e.g., 10MB).
+- Binary file detection (skip binary files).
 
-## Data Flow
-User/LLM -> MCP Server (ExecuteTool) -> SQLTool -> database/sql -> DB -> Result -> MCP Server -> LLM.
+**Edge Cases**:
+- Invalid regex.
+- Permission denied on subdirectories.
+- Symlink loops (afero `Walk` should handle or we need to be careful).
 
-## Edge Cases
-*   **SQL Injection**: Prevented by using parameterized queries (e.g. `$1` in Postgres, `?` in SQLite/MySQL). `parameter_order` maps inputs to these placeholders.
-*   **Type Conversion**: `database/sql` handles most types. Complex types might need explicit handling (e.g. JSONB), but for now standard types are supported.
-*   **Connection Errors**: Handled gracefully, returning error to caller.
+### 2. `delete_file`
+**Description**: Delete a file or empty directory.
+
+**Input**:
+- `path` (string): The path to delete.
+
+**Output**:
+- `success` (boolean).
+
+**Constraints**:
+- Respect `ReadOnly` flag in `FilesystemUpstreamService`.
+- Recursive delete? Maybe safer to only allow single file or empty dir for now. Or add `recursive` flag for directories. Let's stick to `fs.Remove` which is non-recursive for directories usually, or `RemoveAll` if we want recursive. Let's do `Remove` for safety first, or maybe `delete_file` implies file.
+- `afero.Fs.Remove` removes a file or an empty directory. `RemoveAll` removes path and any children.
+- Let's expose `delete_file` (using `Remove`) and maybe `delete_tree` later.
+
+## Implementation Details
+
+- **File**: `server/pkg/upstream/filesystem/upstream.go`
+- **Dependencies**: `regexp`, `bufio`, `unicode/utf8` (for binary check).
+
+### Binary Check
+Read first 512 bytes. If `http.DetectContentType` says "application/octet-stream" or if we find null bytes, skip.
+
+### Search Logic
+1. Resolve path.
+2. `afero.Walk`.
+3. Check exclusions.
+4. If file, check size.
+5. Read file. Check binary.
+6. Scan lines. Match regex.
+7. Collect matches. Stop if limit reached.
+
