@@ -21,12 +21,16 @@ import (
 	go_cache "github.com/patrickmn/go-cache"
 )
 
+// ProviderFactory is a function that creates an EmbeddingProvider.
+type ProviderFactory func(providerType, apiKey, model string) (EmbeddingProvider, error)
+
 // CachingMiddleware is a tool execution middleware that provides caching
 // functionality.
 type CachingMiddleware struct {
-	cache          *cache.Cache[any]
-	toolManager    tool.ManagerInterface
-	semanticCaches sync.Map
+	cache           *cache.Cache[any]
+	toolManager     tool.ManagerInterface
+	semanticCaches  sync.Map
+	providerFactory ProviderFactory
 }
 
 // NewCachingMiddleware creates a new CachingMiddleware.
@@ -36,7 +40,18 @@ func NewCachingMiddleware(toolManager tool.ManagerInterface) *CachingMiddleware 
 	return &CachingMiddleware{
 		cache:       cacheManager,
 		toolManager: toolManager,
+		providerFactory: func(providerType, apiKey, model string) (EmbeddingProvider, error) {
+			if providerType == "openai" {
+				return NewOpenAIEmbeddingProvider(apiKey, model), nil
+			}
+			return nil, fmt.Errorf("unknown provider: %s", providerType)
+		},
 	}
+}
+
+// SetProviderFactory allows overriding the default provider factory for testing.
+func (m *CachingMiddleware) SetProviderFactory(factory ProviderFactory) {
+	m.providerFactory = factory
 }
 
 // Execute executes the caching middleware.
@@ -128,19 +143,19 @@ func (m *CachingMiddleware) executeSemantic(ctx context.Context, req *tool.Execu
 
 	val, ok := m.semanticCaches.Load(serviceID)
 	if !ok {
-		// Create provider
-		var provider EmbeddingProvider
-		if semConfig.GetProvider() == "openai" {
-			apiKey, err := util.ResolveSecret(ctx, semConfig.GetApiKey())
-			if err != nil {
-				logging.GetLogger().Error("Failed to resolve semantic cache API key", "error", err)
-				return next(ctx, req)
-			}
-			provider = NewOpenAIEmbeddingProvider(apiKey, semConfig.GetModel())
-		} else {
-			logging.GetLogger().Warn("Unknown embedding provider", "provider", semConfig.GetProvider())
+		apiKey, err := util.ResolveSecret(ctx, semConfig.GetApiKey())
+		if err != nil {
+			logging.GetLogger().Error("Failed to resolve semantic cache API key", "error", err)
 			return next(ctx, req)
 		}
+
+		// Use factory to create provider
+		provider, err := m.providerFactory(semConfig.GetProvider(), apiKey, semConfig.GetModel())
+		if err != nil {
+			logging.GetLogger().Warn("Failed to create embedding provider", "error", err)
+			return next(ctx, req)
+		}
+
 		newCache := NewSemanticCache(provider, semConfig.GetSimilarityThreshold())
 		val, _ = m.semanticCaches.LoadOrStore(serviceID, newCache)
 	}
