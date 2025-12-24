@@ -163,6 +163,7 @@ func (u *Upstream) Register(
 					return nil, fmt.Errorf("path is a directory")
 				}
 
+				// #nosec G304 -- realPath is sanitized by validatePath which prevents traversal
 				content, err := os.ReadFile(realPath)
 				if err != nil {
 					return nil, err
@@ -204,6 +205,7 @@ func (u *Upstream) Register(
 					return nil, err
 				}
 
+				// #nosec G306 -- We explicitly want 0644 for files written by the tool
 				if err := os.WriteFile(realPath, []byte(content), 0644); err != nil {
 					return nil, err
 				}

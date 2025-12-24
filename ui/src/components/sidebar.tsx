@@ -1,3 +1,8 @@
+/**
+ * Copyright 2025 Author(s) of MCP Any
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 
 import { NavItem } from "./nav-item"
 import { LayoutDashboard, Server, Wrench, Database, MessageSquare, Settings, Activity, GitBranch } from "lucide-react"
