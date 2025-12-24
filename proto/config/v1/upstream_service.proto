@@ -69,6 +69,7 @@ message UpstreamServiceConfig {
     WebrtcUpstreamService webrtc_service = 17 [json_name = "webrtc_service"];
     GraphQLUpstreamService graphql_service = 21 [json_name = "graphql_service"];
     SqlUpstreamService sql_service = 31 [json_name = "sql_service"];
+    FilesystemUpstreamService filesystem_service = 32 [json_name = "filesystem_service"];
   }
 
   // The version of the upstream service, if known (e.g., "v1.2.3").
