@@ -4,7 +4,9 @@
 package util
 
 import (
+	"bytes"
 	"encoding/json"
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -121,4 +123,60 @@ func TestRedactJSON(t *testing.T) {
 		assert.Contains(t, string(output), "1234567890123456789")
 		assert.Contains(t, string(output), "[REDACTED]")
 	})
+}
+
+func TestRedactJSON_SmartDetection(t *testing.T) {
+	// Case 1: False positive - sensitive key text in VALUE.
+	// Should NOT redact (and more importantly, should skip parsing in our optimization)
+	// But we can verify output is identical.
+	inputFalsePositive := `{"description": "this contains api_key but not as a key"}`
+	outputFP := RedactJSON([]byte(inputFalsePositive))
+	if !bytes.Equal(outputFP, []byte(inputFalsePositive)) {
+		t.Errorf("False positive case modified input: got %s, want %s", outputFP, inputFalsePositive)
+	}
+
+	// Case 2: True positive - sensitive key IS a key.
+	// Should redact.
+	inputTruePositive := `{"api_key": "secret"}`
+	expectedTP := `"[REDACTED]"`
+	outputTP := RedactJSON([]byte(inputTruePositive))
+	if !strings.Contains(string(outputTP), expectedTP) {
+		t.Errorf("True positive case failed: got %s, want to contain %s", outputTP, expectedTP)
+	}
+
+	// Case 3: True positive - sensitive key IS a key (with spaces).
+	inputTPSpaces := `{"api_key" : "secret"}`
+	expectedTPSpaces := `"[REDACTED]"`
+	outputTPSpaces := RedactJSON([]byte(inputTPSpaces))
+	if !strings.Contains(string(outputTPSpaces), expectedTPSpaces) {
+		t.Errorf("True positive with spaces case failed: got %s, want to contain %s", outputTPSpaces, expectedTPSpaces)
+	}
+
+	// Case 4: True positive - nested key.
+	inputNested := `{"config": {"token": "secret"}}`
+	expectedNested := `"[REDACTED]"`
+	outputNested := RedactJSON([]byte(inputNested))
+	if !strings.Contains(string(outputNested), expectedNested) {
+		t.Errorf("Nested case failed: got %s, want to contain %s", outputNested, expectedNested)
+	}
+
+	// Case 5: Edge case - escaped quotes in value.
+	// "description": "some \"api_key\" in quotes"
+	// This is a VALUE. Should NOT redact.
+	inputEscaped := `{"description": "some \"api_key\" in quotes"}`
+	outputEscaped := RedactJSON([]byte(inputEscaped))
+	if !bytes.Equal(outputEscaped, []byte(inputEscaped)) {
+		t.Errorf("Escaped quote case modified input: got %s, want %s", outputEscaped, inputEscaped)
+	}
+
+	// Case 6: Edge case - "key": "value", "api_key": "secret"
+	// Ensure we don't stop at first non-match.
+	inputMultiple := `{"name": "test", "api_key": "secret"}`
+	outputMultiple := RedactJSON([]byte(inputMultiple))
+	if !strings.Contains(string(outputMultiple), `"[REDACTED]"`) {
+		t.Errorf("Multiple keys case failed to redact: got %s", outputMultiple)
+	}
+	if !strings.Contains(string(outputMultiple), `"name":"test"`) {
+		t.Errorf("Multiple keys case missing other fields: got %s", outputMultiple)
+	}
 }

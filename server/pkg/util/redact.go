@@ -21,22 +21,40 @@ func init() {
 // RedactJSON parses a JSON byte slice and redacts sensitive keys.
 // If the input is not valid JSON object or array, it returns the input as is.
 func RedactJSON(input []byte) []byte {
-	// Optimization: Check if any sensitive key is present in the input.
+	// Optimization: Check if any sensitive key is present as a JSON key in the input.
 	// If not, we can skip the expensive unmarshal/marshal process.
+	// We verify that the match is actually a key (followed by ":") to avoid false positives
+	// where the sensitive word appears in a value.
 	hasSensitiveKey := false
 	for _, k := range sensitiveKeysBytes {
-		if bytes.Contains(input, k) {
-			hasSensitiveKey = true
+		start := 0
+		for {
+			idx := bytes.Index(input[start:], k)
+			if idx == -1 {
+				break
+			}
+			realIdx := start + idx
+
+			// Check if this occurrence is actually a key
+			if isKeyMatch(input, realIdx+len(k)) {
+				hasSensitiveKey = true
+				break
+			}
+
+			// Move past this match
+			start = realIdx + 1
+		}
+		if hasSensitiveKey {
 			break
 		}
 	}
+
 	if !hasSensitiveKey {
 		return input
 	}
 
 	// Optimization: Determine if input is an object or array to avoid unnecessary Unmarshal calls.
 	// We only need to check the first non-whitespace character.
-	// bytes.TrimSpace scans the whole slice (left and right), which is O(N). We only need O(Whitespace).
 	var firstByte byte
 	for i := 0; i < len(input); i++ {
 		b := input[i]
@@ -86,6 +104,44 @@ func RedactJSON(input []byte) []byte {
 	}
 
 	return input
+}
+
+// isKeyMatch checks if the match ending at matchEnd is part of a JSON key.
+// It scans forward for a closing quote and then a colon.
+func isKeyMatch(input []byte, matchEnd int) bool {
+	i := matchEnd
+	escaped := false
+	for i < len(input) {
+		b := input[i]
+		if escaped {
+			escaped = false
+			i++
+			continue
+		}
+		if b == '\\' {
+			escaped = true
+			i++
+			continue
+		}
+		if b == '"' {
+			// Found closing quote of the string containing the match
+			// Now check if it is followed by a colon (ignoring whitespace)
+			return isFollowedByColon(input, i+1)
+		}
+		i++
+	}
+	return false
+}
+
+func isFollowedByColon(input []byte, start int) bool {
+	for i := start; i < len(input); i++ {
+		b := input[i]
+		if b == ' ' || b == '\t' || b == '\n' || b == '\r' {
+			continue
+		}
+		return b == ':'
+	}
+	return false
 }
 
 // RedactMap recursively redacts sensitive keys in a map.
@@ -147,7 +203,8 @@ func redactSliceInPlace(s []interface{}) {
 }
 
 // sensitiveKeys is a list of substrings that suggest a key contains sensitive information.
-var sensitiveKeys = []string{"api_key", "apikey", "access_token", "token", "secret", "password", "passwd", "credential", "auth", "private_key", "client_secret"}
+// Redundant keys (e.g., "access_token" covered by "token") have been removed to improve performance.
+var sensitiveKeys = []string{"api_key", "apikey", "token", "secret", "password", "passwd", "credential", "auth", "private_key"}
 
 // IsSensitiveKey checks if a key name suggests it contains sensitive information.
 func IsSensitiveKey(key string) bool {
