@@ -623,7 +623,7 @@ ifdef HAS_DOCKER
 	@$(DOCKER_BUILD_CMD) -t mcpany-ui -f ../ui/Dockerfile ../ui
 	@echo "Running UI smoke test..."
 	@chmod +x tests/smoke_test_ui.sh
-	@./tests/smoke_test_ui.sh mcpany-ui
+	@./tests/smoke_test_ui.sh mcpany-ui 3333
 else
 	@echo "Docker not found. Cannot run UI smoke test."
 	@exit 1
