@@ -166,3 +166,20 @@ func TestSubscribeOnce(t *testing.T) {
 
 	time.Sleep(100 * time.Millisecond)
 }
+
+func TestBus_Close(t *testing.T) {
+	mockWriter := new(MockWriter)
+	config := &bus.KafkaBus{}
+	config.SetBrokers([]string{"localhost:9092"})
+
+	b, err := New[string](config)
+	assert.NoError(t, err)
+
+	b.writer = mockWriter // Inject mock
+
+	mockWriter.On("Close").Return(nil)
+
+	err = b.Close()
+	assert.NoError(t, err)
+	mockWriter.AssertExpectations(t)
+}

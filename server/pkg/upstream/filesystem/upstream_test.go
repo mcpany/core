@@ -383,3 +383,9 @@ func TestFilesystemUpstream_MemMapFs(t *testing.T) {
 	assert.Len(t, entries, 1)
 	assert.Equal(t, "hello.txt", entries[0].(map[string]interface{})["name"])
 }
+
+func TestUpstream_Shutdown(t *testing.T) {
+	u := NewUpstream()
+	err := u.Shutdown(context.Background())
+	assert.NoError(t, err)
+}

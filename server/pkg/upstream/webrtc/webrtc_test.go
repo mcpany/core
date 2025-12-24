@@ -687,3 +687,10 @@ func TestUpstream_Register_CornerCases(t *testing.T) {
 		assert.Empty(t, promptManager.ListPrompts())
 	})
 }
+
+func TestUpstream_Shutdown(t *testing.T) {
+	poolManager := pool.NewManager()
+	upstream := NewUpstream(poolManager)
+	err := upstream.Shutdown(context.Background())
+	require.NoError(t, err)
+}
