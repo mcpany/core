@@ -4,6 +4,8 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { SidebarProvider, SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
+import { GlobalSearch } from "@/components/global-search";
+import { ThemeProvider } from "@/components/theme-provider";
 
 export const metadata: Metadata = {
   title: 'MCPAny Manager',
@@ -16,29 +18,39 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="dark">
+    <html lang="en" suppressHydrationWarning>
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link href="https://fonts.googleapis.com/css2?family=Inter&display=swap" rel="stylesheet" />
       </head>
       <body className="font-body antialiased">
-        <TooltipProvider>
-          <SidebarProvider>
-            <AppSidebar />
-            <SidebarInset>
-              <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12 border-b px-4">
-                <div className="flex items-center gap-2">
-                  <SidebarTrigger className="-ml-1" />
-                </div>
-              </header>
-              <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
-                  {children}
-              </div>
-            </SidebarInset>
-            <Toaster />
-          </SidebarProvider>
-        </TooltipProvider>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="dark"
+            enableSystem
+            disableTransitionOnChange
+          >
+            <TooltipProvider>
+              <SidebarProvider>
+                <AppSidebar />
+                <SidebarInset>
+                  <header className="flex h-16 shrink-0 items-center justify-between gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12 border-b px-4">
+                    <div className="flex items-center gap-2">
+                      <SidebarTrigger className="-ml-1" />
+                    </div>
+                    <div className="flex items-center gap-2">
+                        <GlobalSearch />
+                    </div>
+                  </header>
+                  <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
+                      {children}
+                  </div>
+                </SidebarInset>
+                <Toaster />
+              </SidebarProvider>
+            </TooltipProvider>
+        </ThemeProvider>
       </body>
     </html>
   );
