@@ -187,3 +187,17 @@ func (mr *MockManagerInterfaceMockRecorder) SetProfiles(enabled, defs any) *gomo
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SetProfiles", reflect.TypeOf((*MockManagerInterface)(nil).SetProfiles), enabled, defs)
 }
+
+// GetToolsVersion mocks base method.
+func (m *MockManagerInterface) GetToolsVersion() int64 {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetToolsVersion")
+	ret0, _ := ret[0].(int64)
+	return ret0
+}
+
+// GetToolsVersion indicates an expected call of GetToolsVersion.
+func (mr *MockManagerInterfaceMockRecorder) GetToolsVersion() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetToolsVersion", reflect.TypeOf((*MockManagerInterface)(nil).GetToolsVersion))
+}

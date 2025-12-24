@@ -23,6 +23,7 @@ import (
 	"github.com/mcpany/core/pkg/util"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
+	xsync "github.com/puzpuzpuz/xsync/v4"
 )
 
 // AddReceivingMiddlewareHook is a hook for adding receiving middleware.
@@ -45,6 +46,12 @@ type Server struct {
 	reloadFunc          func() error
 	debug               bool
 	samplingCacheConfig *configv1.CacheConfig
+	toolListCache       *xsync.Map[string, *toolListCacheEntry]
+}
+
+type toolListCacheEntry struct {
+	version int64
+	tools   []*mcp.Tool
 }
 
 // Server returns the underlying *mcp.Server instance, which provides access to
@@ -96,6 +103,7 @@ func NewServer(
 		serviceRegistry: serviceRegistry,
 		bus:             bus,
 		debug:           debug,
+		toolListCache:   xsync.NewMap[string, *toolListCacheEntry](),
 	}
 
 	s.router.Register(
@@ -237,13 +245,25 @@ func (s *Server) toolListFilteringMiddleware(next mcp.MethodHandler) mcp.MethodH
 		req mcp.Request,
 	) (mcp.Result, error) {
 		if method == consts.MethodToolsList {
+			profileID, hasProfile := auth.ProfileIDFromContext(ctx)
+			cacheKey := ""
+			if hasProfile {
+				cacheKey = profileID
+			}
+
+			// Check version and cache
+			currentVersion := s.toolManager.GetToolsVersion()
+			if entry, ok := s.toolListCache.Load(cacheKey); ok {
+				if entry.version == currentVersion {
+					return &mcp.ListToolsResult{Tools: entry.tools}, nil
+				}
+			}
+
 			// The tool manager is the authoritative source of tools. We iterate over the
 			// tools in the manager to ensure that the list is always up-to-date and
 			// reflects the current state of the system.
 			managedTools := s.toolManager.ListTools()
 			refreshedTools := make([]*mcp.Tool, 0, len(managedTools))
-
-			profileID, hasProfile := auth.ProfileIDFromContext(ctx)
 
 			// Cache service access decisions to avoid repeated lookups
 			var serviceAccessCache map[string]bool
@@ -299,6 +319,13 @@ func (s *Server) toolListFilteringMiddleware(next mcp.MethodHandler) mcp.MethodH
 					return nil, fmt.Errorf("failed to convert tool %q to MCP format", toolInstance.Tool().GetName())
 				}
 			}
+
+			// Update cache
+			s.toolListCache.Store(cacheKey, &toolListCacheEntry{
+				version: currentVersion,
+				tools:   refreshedTools,
+			})
+
 			return &mcp.ListToolsResult{Tools: refreshedTools}, nil
 		}
 		return next(ctx, method, req)

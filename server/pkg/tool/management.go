@@ -52,6 +52,8 @@ type ManagerInterface interface {
 	ListServices() []*ServiceInfo
 	// SetProfiles sets the enabled profiles and their definitions.
 	SetProfiles(enabled []string, defs []*configv1.ProfileDefinition)
+	// GetToolsVersion returns the current version of the tool list.
+	GetToolsVersion() int64
 }
 
 // ExecutionMiddleware defines the interface for tool execution middleware.
@@ -62,14 +64,15 @@ type ExecutionMiddleware interface {
 
 // Manager is a thread-safe manager for registering tooling.
 type Manager struct {
-	tools       *xsync.Map[string, Tool]
-	serviceInfo *xsync.Map[string, *ServiceInfo]
-	mcpServer   MCPServerProvider
-	bus         *bus.Provider
-	mu          sync.RWMutex
-	middlewares []ExecutionMiddleware
-	cachedTools []Tool
-	toolsMutex  sync.RWMutex
+	tools           *xsync.Map[string, Tool]
+	serviceInfo     *xsync.Map[string, *ServiceInfo]
+	mcpServer       MCPServerProvider
+	bus             *bus.Provider
+	mu              sync.RWMutex
+	middlewares     []ExecutionMiddleware
+	cachedTools     []Tool
+	toolsMutex      sync.RWMutex
+	toolListVersion int64
 
 	enabledProfiles []string
 	profileDefs     map[string]*configv1.ProfileDefinition
@@ -397,6 +400,7 @@ func (tm *Manager) AddTool(tool Tool) error {
 
 	tm.toolsMutex.Lock()
 	tm.cachedTools = nil
+	tm.toolListVersion++
 	tm.toolsMutex.Unlock()
 
 	if tm.mcpServer != nil {
@@ -564,7 +568,16 @@ func (tm *Manager) ClearToolsForService(serviceID string) {
 	if deletedCount > 0 {
 		tm.toolsMutex.Lock()
 		tm.cachedTools = nil
+		tm.toolListVersion++
 		tm.toolsMutex.Unlock()
 	}
 	log.Debug("Cleared tools for serviceID", "count", deletedCount)
+}
+
+// GetToolsVersion returns the current version of the tool list.
+// The version is incremented whenever tools are added or removed.
+func (tm *Manager) GetToolsVersion() int64 {
+	tm.toolsMutex.RLock()
+	defer tm.toolsMutex.RUnlock()
+	return tm.toolListVersion
 }
