@@ -91,22 +91,29 @@ func newRootCmd() *cobra.Command {
 			}()
 
 			// Start file watcher
-			if !cfg.Stdio() {
+			if !cfg.Stdio() && len(configPaths) > 0 {
 				watcher, err := config.NewWatcher()
 				if err != nil {
 					return fmt.Errorf("failed to create file watcher: %w", err)
 				}
 				defer watcher.Close()
 
-				go func() {
-					if err := watcher.Watch(configPaths, func() {
-						if err := appRunner.ReloadConfig(osFs, configPaths); err != nil {
-							log.Error("Failed to reload config", "error", err)
-						}
-					}); err != nil {
-						log.Error("Watcher failed", "error", err)
+				for _, path := range configPaths {
+					if err := watcher.Add(path); err != nil {
+						// Don't fail if one path is bad, but log it
+						log.Warn("Failed to watch config path", "path", path, "error", err)
 					}
-				}()
+				}
+
+				watcher.Start(ctx, 500*time.Millisecond, func() error {
+					log.Info("Config change detected, reloading...")
+					if err := appRunner.ReloadConfig(osFs, configPaths); err != nil {
+						log.Error("Failed to reload config", "error", err)
+						return err
+					}
+					log.Info("Config reloaded successfully")
+					return nil
+				})
 			}
 
 			shutdownTimeout := cfg.ShutdownTimeout()

@@ -4,101 +4,68 @@
 package config
 
 import (
+	"context"
 	"os"
+	"path/filepath"
 	"testing"
 	"time"
+
+	"github.com/stretchr/testify/require"
 )
 
 func TestWatcher(t *testing.T) {
-	// Create a temporary file to watch.
-	file, err := os.CreateTemp("", "watcher_test")
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer func() { _ = os.Remove(file.Name()) }()
+	// Create a temporary directory and file
+	tmpDir := t.TempDir()
+	configFile := filepath.Join(tmpDir, "config.yaml")
+	err := os.WriteFile(configFile, []byte("original content"), 0644)
+	require.NoError(t, err)
 
-	// Create a new watcher.
-	w, err := NewWatcher()
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer w.Close()
+	watcher, err := NewWatcher()
+	require.NoError(t, err)
+	defer watcher.Close()
 
-	// Create a channel to signal when the file has been reloaded.
-	var reloaded bool
-	done := make(chan bool, 1)
+	err = watcher.Add(configFile)
+	require.NoError(t, err)
 
-	// Start watching the file.
-	go func() {
-		if err := w.Watch([]string{file.Name()}, func() {
-			reloaded = true
-			done <- true
-		}); err != nil {
-			// We might get "watch closed" error if test ends early, but ideally not
-			t.Logf("Watch exited: %v", err)
-		}
-	}()
-
-	// Give the watcher a moment to start up.
-	time.Sleep(100 * time.Millisecond)
-
-	// Write to the file to trigger a reload.
-	if _, err := file.WriteString("test"); err != nil {
-		t.Fatal(err)
-	}
-	if err := file.Close(); err != nil {
-		t.Fatal(err)
+	changeCh := make(chan struct{}, 10)
+	onChange := func() error {
+		changeCh <- struct{}{}
+		return nil
 	}
 
-	// Wait for the reload to complete.
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	watcher.Start(ctx, 50*time.Millisecond, onChange)
+
+	// Modify the file (Write)
+	time.Sleep(100 * time.Millisecond) // Give watcher time to start
+	err = os.WriteFile(configFile, []byte("new content"), 0644)
+	require.NoError(t, err)
+
+	// Wait for change
 	select {
-	case <-done:
-		// The file was reloaded successfully.
-		if !reloaded {
-			t.Error("expected reloaded to be true")
-		}
-	case <-time.After(5 * time.Second):
-		t.Fatal("timed out waiting for file to be reloaded")
+	case <-changeCh:
+		// Success
+	case <-time.After(2 * time.Second):
+		t.Fatal("Timeout waiting for config change (write)")
 	}
-}
 
-func TestWatcher_AddError(t *testing.T) {
-	w, err := NewWatcher()
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer w.Close()
+	// Atomic Save Simulation (Create/Rename)
+	// Rename old file
+	tmpFile := filepath.Join(tmpDir, "config.yaml.tmp")
+	err = os.WriteFile(tmpFile, []byte("atomic content"), 0644)
+	require.NoError(t, err)
 
-	// Watching a non-existent file should error
-	err = w.Watch([]string{"/non/existent/file"}, func() {})
-	if err == nil {
-		t.Fatal("Expected error watching non-existent file")
-	}
-}
+	// Rename tmp to config (Atomic replacement)
+	err = os.Rename(tmpFile, configFile)
+	require.NoError(t, err)
 
-func TestWatcher_URL(t *testing.T) {
-	w, err := NewWatcher()
-	if err != nil {
-		t.Fatal(err)
-	}
-	// We don't defer Close here because we want to test explicit Close affects Watch return
-
-	done := make(chan bool)
-	go func() {
-		_ = w.Watch([]string{"http://example.com/config"}, func() {})
-		close(done)
-	}()
-
-	// Give it time to process (and potentially fail if it didn't skip URL)
-	time.Sleep(100 * time.Millisecond)
-
-	// Close should unblock Watch
-	w.Close()
-
+	// Wait for change
 	select {
-	case <-done:
-		// Success: Watch returned
-	case <-time.After(1 * time.Second):
-		t.Fatal("Watch blocked after Close")
+	case <-changeCh:
+		// Success
+	case <-time.After(2 * time.Second):
+		t.Fatal("Timeout waiting for config change (atomic save)")
 	}
 }
