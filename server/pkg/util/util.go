@@ -56,23 +56,22 @@ func SanitizeID(ids []string, alwaysAppendHash bool, maxSanitizedPrefixLength, h
 		// Optimization: Use manual byte scan instead of regex to improve performance (~7x faster for valid IDs)
 		var sanitizedPrefix string
 
-		// Check if needs sanitization
-		isDirty := false
+		// Check if needs sanitization and find first dirty char
+		dirtyIdx := -1
 		for i := 0; i < len(id); i++ {
-			c := id[i]
-			if !((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9') || c == '_' || c == '-') { //nolint:staticcheck
-				isDirty = true
+			if !allowedSanitizeIDChars[id[i]] {
+				dirtyIdx = i
 				break
 			}
 		}
 
-		if isDirty {
+		if dirtyIdx != -1 {
 			var sb strings.Builder
 			sb.Grow(len(id))
-			for i := 0; i < len(id); i++ {
-				c := id[i]
-				if (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9') || c == '_' || c == '-' {
-					sb.WriteByte(c)
+			sb.WriteString(id[:dirtyIdx])
+			for i := dirtyIdx + 1; i < len(id); i++ {
+				if allowedSanitizeIDChars[id[i]] {
+					sb.WriteByte(id[i])
 				}
 			}
 			sanitizedPrefix = sb.String()
@@ -135,6 +134,10 @@ var (
 	// allowedIDChars is a lookup table for allowed characters in an operation ID.
 	// It corresponds to the regex `[a-zA-Z0-9-._~:/?#\[\]@!$&'()*+,;=]`.
 	allowedIDChars [256]bool
+
+	// allowedSanitizeIDChars is a lookup table for allowed characters in SanitizeID.
+	// It corresponds to `[a-zA-Z0-9_-]`.
+	allowedSanitizeIDChars [256]bool
 )
 
 func init() {
@@ -144,6 +147,14 @@ func init() {
 		"-._~:/?#[]@!$&'()*+,;="
 	for i := 0; i < len(allowed); i++ {
 		allowedIDChars[allowed[i]] = true
+	}
+
+	const allowedSanitize = "abcdefghijklmnopqrstuvwxyz" +
+		"ABCDEFGHIJKLMNOPQRSTUVWXYZ" +
+		"0123456789" +
+		"-_"
+	for i := 0; i < len(allowedSanitize); i++ {
+		allowedSanitizeIDChars[allowedSanitize[i]] = true
 	}
 }
 
