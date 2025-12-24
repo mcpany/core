@@ -31,15 +31,29 @@ type CachingMiddleware struct {
 	toolManager     tool.ManagerInterface
 	semanticCaches  sync.Map
 	providerFactory ProviderFactory
+	vectorStore     VectorStore
 }
 
 // NewCachingMiddleware creates a new CachingMiddleware.
-func NewCachingMiddleware(toolManager tool.ManagerInterface) *CachingMiddleware {
+func NewCachingMiddleware(toolManager tool.ManagerInterface, vectorStorePath string) *CachingMiddleware {
 	goCacheStore := gocache_store.NewGoCache(go_cache.New(5*time.Minute, 10*time.Minute))
 	cacheManager := cache.New[any](goCacheStore)
+
+	var vectorStore VectorStore
+	if vectorStorePath != "" {
+		var err error
+		vectorStore, err = NewSQLiteVectorStore(vectorStorePath)
+		if err != nil {
+			logging.GetLogger().Error("Failed to initialize SQLite vector store, falling back to in-memory", "error", err)
+		} else {
+			logging.GetLogger().Info("Initialized SQLite vector store", "path", vectorStorePath)
+		}
+	}
+
 	return &CachingMiddleware{
 		cache:       cacheManager,
 		toolManager: toolManager,
+		vectorStore: vectorStore,
 		providerFactory: func(providerType, apiKey, model string) (EmbeddingProvider, error) {
 			if providerType == "openai" {
 				return NewOpenAIEmbeddingProvider(apiKey, model), nil
@@ -156,7 +170,8 @@ func (m *CachingMiddleware) executeSemantic(ctx context.Context, req *tool.Execu
 			return next(ctx, req)
 		}
 
-		newCache := NewSemanticCache(provider, semConfig.GetSimilarityThreshold())
+		// Check for SQLite store config, otherwise default to in-memory
+		newCache := NewSemanticCache(provider, m.vectorStore, semConfig.GetSimilarityThreshold())
 		val, _ = m.semanticCaches.LoadOrStore(serviceID, newCache)
 	}
 
