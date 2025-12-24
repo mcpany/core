@@ -31,7 +31,12 @@ func TestAuthMiddleware(t *testing.T) {
 		}
 
 		handler := mw(nextHandler)
-		_, err := handler(context.Background(), "test.method", nil)
+
+		// Create dummy request
+		httpReq, _ := http.NewRequest("POST", "/", nil)
+		ctx := context.WithValue(context.Background(), "http.request", httpReq)
+
+		_, err := handler(ctx, "test.method", nil)
 		require.NoError(t, err)
 		assert.True(t, nextCalled, "next handler should be called")
 	})
@@ -194,5 +199,44 @@ func TestAuthMiddleware(t *testing.T) {
 		require.Error(t, err)
 		assert.Contains(t, err.Error(), "unauthorized")
 		assert.False(t, nextCalled)
+	})
+
+	t.Run("should enforce global API key even if service has no authenticator", func(t *testing.T) {
+		authManager := auth.NewManager()
+		authManager.SetAPIKey("global-secret")
+
+		mw := middleware.AuthMiddleware(authManager)
+
+		// Mock next handler
+		var nextCalled bool
+		nextHandler := func(_ context.Context, _ string, _ mcp.Request) (mcp.Result, error) {
+			nextCalled = true
+			return &mcp.CallToolResult{}, nil
+		}
+
+		handler := mw(nextHandler)
+
+		// Request WITHOUT API Key
+		httpReq, _ := http.NewRequest("POST", "/", nil)
+		ctx := context.WithValue(context.Background(), "http.request", httpReq)
+
+		// "public" service has no authenticator registered
+		_, err := handler(ctx, "public.method", nil)
+
+		// Should Fail
+		require.Error(t, err)
+		assert.Contains(t, err.Error(), "unauthorized")
+		assert.False(t, nextCalled)
+
+		// Request WITH API Key
+		httpReqWithKey, _ := http.NewRequest("POST", "/", nil)
+		httpReqWithKey.Header.Set("X-API-Key", "global-secret")
+		ctxWithKey := context.WithValue(context.Background(), "http.request", httpReqWithKey)
+
+		_, err = handler(ctxWithKey, "public.method", nil)
+
+		// Should Pass
+		require.NoError(t, err)
+		assert.True(t, nextCalled)
 	})
 }
