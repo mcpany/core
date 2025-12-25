@@ -6,11 +6,55 @@ package middleware
 import (
 	"context"
 	"encoding/json"
+	"errors"
+	"sync"
 	"time"
 
-	"github.com/mcpany/core/pkg/metrics"
 	"github.com/mcpany/core/pkg/tool"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
+	"github.com/prometheus/client_golang/prometheus"
+)
+
+var (
+	registerMetricsOnce sync.Once
+
+	// Define Prometheus metrics
+	toolExecutionDuration = prometheus.NewHistogramVec(
+		prometheus.HistogramOpts{
+			Name:    "tool_execution_duration_seconds",
+			Help:    "Histogram of tool execution duration in seconds.",
+			Buckets: prometheus.DefBuckets, // Use default buckets or customize
+		},
+		[]string{"tool", "service_id", "status", "error_type"},
+	)
+
+	toolExecutionTotal = prometheus.NewCounterVec(
+		prometheus.CounterOpts{
+			Name: "tool_executions_total",
+			Help: "Total number of tool executions.",
+		},
+		[]string{"tool", "service_id", "status", "error_type"},
+	)
+
+	toolExecutionInputBytes = prometheus.NewHistogramVec(
+		prometheus.HistogramOpts{
+			Name: "tool_execution_input_bytes",
+			Help: "Histogram of tool input size in bytes.",
+			// Buckets from 100B to 10MB
+			Buckets: prometheus.ExponentialBuckets(100, 10, 6),
+		},
+		[]string{"tool", "service_id"},
+	)
+
+	toolExecutionOutputBytes = prometheus.NewHistogramVec(
+		prometheus.HistogramOpts{
+			Name: "tool_execution_output_bytes",
+			Help: "Histogram of tool output size in bytes.",
+			// Buckets from 100B to 10MB
+			Buckets: prometheus.ExponentialBuckets(100, 10, 6),
+		},
+		[]string{"tool", "service_id"},
+	)
 )
 
 // ToolMetricsMiddleware provides detailed metrics for tool executions.
@@ -18,6 +62,13 @@ type ToolMetricsMiddleware struct{}
 
 // NewToolMetricsMiddleware creates a new ToolMetricsMiddleware.
 func NewToolMetricsMiddleware() *ToolMetricsMiddleware {
+	registerMetricsOnce.Do(func() {
+		// Register metrics with the default registry (which server/pkg/metrics also uses/exposes)
+		prometheus.MustRegister(toolExecutionDuration)
+		prometheus.MustRegister(toolExecutionTotal)
+		prometheus.MustRegister(toolExecutionInputBytes)
+		prometheus.MustRegister(toolExecutionOutputBytes)
+	})
 	return &ToolMetricsMiddleware{}
 }
 
@@ -36,27 +87,45 @@ func (m *ToolMetricsMiddleware) Execute(ctx context.Context, req *tool.Execution
 
 	result, err := next(ctx, req)
 
+	duration := time.Since(start).Seconds()
+
 	status := "success"
 	errorType := "none"
 	if err != nil {
 		status = "error"
 		errorType = "execution_failed"
+
+		if errors.Is(err, context.Canceled) {
+			errorType = "context_canceled"
+		} else if errors.Is(err, context.DeadlineExceeded) {
+			errorType = "deadline_exceeded"
+		} else {
+			// Check for other error types if available
+			// e.g. if we had a typed error for user vs internal
+			// For now, simple check
+		}
 	}
 
-	labels := []metrics.Label{
-		{Name: "tool", Value: req.ToolName},
-		{Name: "service_id", Value: serviceID},
-		{Name: "status", Value: status},
-		{Name: "error_type", Value: errorType},
+	labels := prometheus.Labels{
+		"tool":       req.ToolName,
+		"service_id": serviceID,
+		"status":     status,
+		"error_type": errorType,
 	}
 
-	metrics.IncrCounterWithLabels([]string{"tool", "execution", "total"}, 1, labels)
-	metrics.MeasureSinceWithLabels([]string{"tool", "execution", "duration"}, start, labels)
-	metrics.AddSampleWithLabels([]string{"tool", "execution", "input_bytes"}, float32(inputSize), labels)
+	toolExecutionTotal.With(labels).Inc()
+	toolExecutionDuration.With(labels).Observe(duration)
+
+	// Byte metrics usually don't need status/error_type, just tool/service
+	byteLabels := prometheus.Labels{
+		"tool":       req.ToolName,
+		"service_id": serviceID,
+	}
+	toolExecutionInputBytes.With(byteLabels).Observe(float64(inputSize))
 
 	// Calculate output size
 	outputSize := calculateOutputSize(result)
-	metrics.AddSampleWithLabels([]string{"tool", "execution", "output_bytes"}, float32(outputSize), labels)
+	toolExecutionOutputBytes.With(byteLabels).Observe(float64(outputSize))
 
 	return result, err
 }
