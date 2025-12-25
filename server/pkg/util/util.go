@@ -51,6 +51,27 @@ import (
 //
 //	A single string representing the sanitized and joined identifier.
 func SanitizeID(ids []string, alwaysAppendHash bool, maxSanitizedPrefixLength, hashLength int) (string, error) { //nolint:gocyclo
+	// Fast path for single ID (common case)
+	if len(ids) == 1 && !alwaysAppendHash {
+		id := ids[0]
+		if id == "" {
+			return "", fmt.Errorf("id cannot be empty")
+		}
+		// If the ID is short enough, check if it's already clean
+		if len(id) <= maxSanitizedPrefixLength {
+			isClean := true
+			for i := 0; i < len(id); i++ {
+				if !validSanitizeChars[id[i]] {
+					isClean = false
+					break
+				}
+			}
+			if isClean {
+				return id, nil
+			}
+		}
+	}
+
 	// Optimization: Pre-calculate total length to avoid multiple allocations
 	totalLen := 0
 	for i, id := range ids {
@@ -138,7 +159,7 @@ func sanitizePart(sb *strings.Builder, id string, alwaysAppendHash bool, maxSani
 }
 
 func isValidChar(c byte) bool {
-	return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9') || c == '_' || c == '-'
+	return validSanitizeChars[c]
 }
 
 // SanitizeServiceName sanitizes the given service name.
@@ -167,6 +188,10 @@ var (
 	// allowedIDChars is a lookup table for allowed characters in an operation ID.
 	// It corresponds to the regex `[a-zA-Z0-9-._~:/?#\[\]@!$&'()*+,;=]`.
 	allowedIDChars [256]bool
+
+	// validSanitizeChars is a lookup table for allowed characters in SanitizeID.
+	// It corresponds to the regex `[a-zA-Z0-9_-]`.
+	validSanitizeChars [256]bool
 )
 
 func init() {
@@ -176,6 +201,14 @@ func init() {
 		"-._~:/?#[]@!$&'()*+,;="
 	for i := 0; i < len(allowed); i++ {
 		allowedIDChars[allowed[i]] = true
+	}
+
+	const valid = "abcdefghijklmnopqrstuvwxyz" +
+		"ABCDEFGHIJKLMNOPQRSTUVWXYZ" +
+		"0123456789" +
+		"_-"
+	for i := 0; i < len(valid); i++ {
+		validSanitizeChars[valid[i]] = true
 	}
 }
 

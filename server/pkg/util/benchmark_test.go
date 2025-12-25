@@ -10,6 +10,17 @@ import (
 
 func BenchmarkSanitizeID(b *testing.B) {
 	// Common case: valid ID, no sanitization needed, no hash appended
+    // The previous benchmark used 2 IDs, so it didn't trigger my fast path
+    // I will add a single ID benchmark to verify my optimization
+    b.Run("SingleValidID_NoHash", func(b *testing.B) {
+        ids := []string{"valid_service_name"}
+        b.ReportAllocs()
+        b.ResetTimer()
+        for i := 0; i < b.N; i++ {
+            SanitizeID(ids, false, 53, 8)
+        }
+    })
+
 	b.Run("ValidID_NoHash", func(b *testing.B) {
 		ids := []string{"valid_service_name", "valid_tool_name"}
 		b.ReportAllocs()
