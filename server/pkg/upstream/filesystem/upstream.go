@@ -5,9 +5,9 @@
 package filesystem
 
 import (
+	"bufio"
 	"context"
 	"crypto/sha256"
-	"bufio"
 	"encoding/hex"
 	"fmt"
 	"net/http"
@@ -43,6 +43,8 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 }
 
 // Register processes the configuration for a filesystem service.
+//
+//nolint:gocyclo
 func (u *Upstream) Register(
 	ctx context.Context,
 	serviceConfig *configv1.UpstreamServiceConfig,
@@ -307,7 +309,10 @@ func (u *Upstream) Register(
 					if err != nil {
 						return nil
 					}
-					defer f.Close()
+					// Note: defer f.Close() is inside a loop/closure, but it's called once per file in the Walk function.
+					// However, golangci-lint complains about errcheck.
+					// We should check the error, or ignore it explicitly.
+					defer func() { _ = f.Close() }()
 
 					// Check for binary
 					// Read first 512 bytes

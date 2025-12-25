@@ -16,9 +16,6 @@ import (
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
-func ptr[T any](v T) *T {
-	return &v
-}
 
 func TestPolicyHook_ExecutePre(t *testing.T) {
 	tests := []struct {

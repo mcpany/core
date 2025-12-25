@@ -180,9 +180,10 @@ func cosineSimilarityOptimized(a, b []float32, normA, normB float32) float32 {
 
 // OpenAIEmbeddingProvider implements EmbeddingProvider for OpenAI.
 type OpenAIEmbeddingProvider struct {
-	apiKey string
-	model  string
-	client *http.Client
+	apiKey  string
+	model   string
+	baseURL string
+	client  *http.Client
 }
 
 func NewOpenAIEmbeddingProvider(apiKey, model string) *OpenAIEmbeddingProvider {
@@ -190,9 +191,10 @@ func NewOpenAIEmbeddingProvider(apiKey, model string) *OpenAIEmbeddingProvider {
 		model = "text-embedding-3-small"
 	}
 	return &OpenAIEmbeddingProvider{
-		apiKey: apiKey,
-		model:  model,
-		client: &http.Client{Timeout: 10 * time.Second},
+		apiKey:  apiKey,
+		model:   model,
+		baseURL: "https://api.openai.com/v1/embeddings",
+		client:  &http.Client{Timeout: 10 * time.Second},
 	}
 }
 
@@ -222,7 +224,7 @@ func (p *OpenAIEmbeddingProvider) Embed(ctx context.Context, text string) ([]flo
 		return nil, fmt.Errorf("failed to marshal request: %w", err)
 	}
 
-	req, err := http.NewRequestWithContext(ctx, "POST", "https://api.openai.com/v1/embeddings", bytes.NewBuffer(bodyBytes))
+	req, err := http.NewRequestWithContext(ctx, "POST", p.baseURL, bytes.NewBuffer(bodyBytes))
 	if err != nil {
 		return nil, fmt.Errorf("failed to create request: %w", err)
 	}

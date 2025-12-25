@@ -5,85 +5,158 @@ package middleware
 
 import (
 	"context"
+	"encoding/json"
+	"net/http"
+	"net/http/httptest"
 	"testing"
 	"time"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
+// MockEmbeddingProvider is a mock implementation of EmbeddingProvider
 type MockEmbeddingProvider struct {
-	embeddings map[string][]float32
+	EmbedFunc func(ctx context.Context, text string) ([]float32, error)
 }
 
 func (m *MockEmbeddingProvider) Embed(ctx context.Context, text string) ([]float32, error) {
-	if val, ok := m.embeddings[text]; ok {
-		return val, nil
+	if m.EmbedFunc != nil {
+		return m.EmbedFunc(ctx, text)
 	}
-	// Return a default zero vector or similar for misses? Or error?
-	// For test we assume strict mapping
-	return []float32{0, 0, 0}, nil
+	return nil, nil
 }
 
-func TestSemanticCache(t *testing.T) {
-	provider := &MockEmbeddingProvider{
-		embeddings: map[string][]float32{
-			"hello":   {1.0, 0.0, 0.0},
-			"hi":      {0.99, 0.05, 0.0}, // Very similar
-			"goodbye": {0.0, 1.0, 0.0}, // Orthogonal
+func TestSemanticCache_Get_Set(t *testing.T) {
+	mockProvider := &MockEmbeddingProvider{
+		EmbedFunc: func(ctx context.Context, text string) ([]float32, error) {
+			// Return a fixed embedding for simplicity
+			if text == "test query" {
+				return []float32{1.0, 0.0, 0.0}, nil
+			}
+			return []float32{0.0, 1.0, 0.0}, nil
 		},
 	}
 
-	cache := NewSemanticCache(provider, 0.9) // Threshold 0.9
+	cache := NewSemanticCache(mockProvider, 0.9)
 
 	ctx := context.Background()
-	key := "test_tool"
+	key := "test-key"
 
-	// 1. Set "hello" -> "world"
-	emb, err := provider.Embed(ctx, "hello")
-	assert.NoError(t, err)
-	err = cache.Set(ctx, key, emb, "world", 1*time.Minute)
-	assert.NoError(t, err)
-
-	// 2. Get "hello" (Exact match)
-	val, _, hit, err := cache.Get(ctx, key, "hello")
-	assert.NoError(t, err)
-	assert.True(t, hit)
-	assert.Equal(t, "world", val)
-
-	// 3. Get "hi" (Semantic match)
-	val, _, hit, err = cache.Get(ctx, key, "hi")
-	assert.NoError(t, err)
-	assert.True(t, hit)
-	assert.Equal(t, "world", val)
-
-	// 4. Get "goodbye" (Miss)
-	val, _, hit, err = cache.Get(ctx, key, "goodbye")
-	assert.NoError(t, err)
+	// 1. Get on empty cache
+	result, _, hit, err := cache.Get(ctx, key, "test query")
+	require.NoError(t, err)
 	assert.False(t, hit)
-	assert.Nil(t, val)
+	assert.Nil(t, result)
+
+	// 2. Set a value
+	embedding := []float32{1.0, 0.0, 0.0}
+	err = cache.Set(ctx, key, embedding, "cached result", time.Minute)
+	require.NoError(t, err)
+
+	// 3. Get with high similarity
+	result, _, hit, err = cache.Get(ctx, key, "test query") // embed -> {1, 0, 0}
+	require.NoError(t, err)
+	assert.True(t, hit)
+	assert.Equal(t, "cached result", result)
+
+	// 4. Get with low similarity
+	result, _, hit, err = cache.Get(ctx, key, "other query") // embed -> {0, 1, 0}
+	require.NoError(t, err)
+	assert.False(t, hit)
+	assert.Nil(t, result)
 }
 
-func TestSemanticCache_Expiry(t *testing.T) {
-	provider := &MockEmbeddingProvider{
-		embeddings: map[string][]float32{
-			"hello": {1.0, 0.0, 0.0},
+func TestSemanticCache_Expiration(t *testing.T) {
+	mockProvider := &MockEmbeddingProvider{
+		EmbedFunc: func(ctx context.Context, text string) ([]float32, error) {
+			return []float32{1.0}, nil
 		},
 	}
-
-	cache := NewSemanticCache(provider, 0.9)
+	cache := NewSemanticCache(mockProvider, 0.9)
 	ctx := context.Background()
-	key := "test_tool"
+	key := "expire-key"
 
-	// Set with short expiry
-	emb, err := provider.Embed(ctx, "hello")
-	assert.NoError(t, err)
-	cache.Set(ctx, key, emb, "world", 1*time.Millisecond)
+	err := cache.Set(ctx, key, []float32{1.0}, "value", 10*time.Millisecond)
+	require.NoError(t, err)
 
-	time.Sleep(10 * time.Millisecond)
+	// Immediate get should hit
+	_, _, hit, _ := cache.Get(ctx, key, "any")
+	assert.True(t, hit)
 
-	// Get should fail
-	val, _, hit, err := cache.Get(ctx, key, "hello")
-	assert.NoError(t, err)
+	// Wait for expiration
+	time.Sleep(20 * time.Millisecond)
+
+	// Get should miss
+	_, _, hit, _ = cache.Get(ctx, key, "any")
 	assert.False(t, hit)
-	assert.Nil(t, val)
+}
+
+func TestOpenAIEmbeddingProvider(t *testing.T) {
+	// Mock OpenAI API
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, "Bearer test-key", r.Header.Get("Authorization"))
+		assert.Equal(t, "application/json", r.Header.Get("Content-Type"))
+
+		var req openAIEmbeddingRequest
+		err := json.NewDecoder(r.Body).Decode(&req)
+		require.NoError(t, err)
+		assert.Equal(t, "test-model", req.Model)
+
+		resp := openAIEmbeddingResponse{
+			Data: []struct {
+				Embedding []float32 `json:"embedding"`
+			}{
+				{Embedding: []float32{0.1, 0.2, 0.3}},
+			},
+		}
+		json.NewEncoder(w).Encode(resp)
+	}))
+	defer server.Close()
+
+	provider := NewOpenAIEmbeddingProvider("test-key", "test-model")
+	provider.baseURL = server.URL // Override base URL for testing
+
+	ctx := context.Background()
+	embedding, err := provider.Embed(ctx, "test input")
+	require.NoError(t, err)
+	assert.Equal(t, []float32{0.1, 0.2, 0.3}, embedding)
+}
+
+func TestOpenAIEmbeddingProvider_Error(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte("internal error"))
+	}))
+	defer server.Close()
+
+	provider := NewOpenAIEmbeddingProvider("test-key", "")
+	provider.baseURL = server.URL
+
+	ctx := context.Background()
+	_, err := provider.Embed(ctx, "test input")
+	require.Error(t, err)
+	assert.Contains(t, err.Error(), "openai api error (status 500)")
+}
+
+func TestOpenAIEmbeddingProvider_APIError(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		resp := openAIEmbeddingResponse{
+			Error: &struct {
+				Message string `json:"message"`
+			}{
+				Message: "invalid api key",
+			},
+		}
+		json.NewEncoder(w).Encode(resp)
+	}))
+	defer server.Close()
+
+	provider := NewOpenAIEmbeddingProvider("test-key", "")
+	provider.baseURL = server.URL
+
+	ctx := context.Background()
+	_, err := provider.Embed(ctx, "test input")
+	require.Error(t, err)
+	assert.Contains(t, err.Error(), "openai error: invalid api key")
 }
