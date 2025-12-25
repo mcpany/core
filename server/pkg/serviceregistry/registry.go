@@ -197,6 +197,24 @@ func (r *ServiceRegistry) UnregisterService(ctx context.Context, serviceName str
 	return nil
 }
 
+// Close gracefully shuts down all registered services.
+func (r *ServiceRegistry) Close(ctx context.Context) error {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+
+	var errs []error
+	for serviceName, u := range r.upstreams {
+		if err := u.Shutdown(ctx); err != nil {
+			errs = append(errs, fmt.Errorf("failed to shutdown service %s: %w", serviceName, err))
+		}
+	}
+
+	if len(errs) > 0 {
+		return fmt.Errorf("failed to shutdown some services: %v", errs)
+	}
+	return nil
+}
+
 // GetAllServices returns a list of all registered services.
 func (r *ServiceRegistry) GetAllServices() ([]*config.UpstreamServiceConfig, error) {
 	r.mu.RLock()

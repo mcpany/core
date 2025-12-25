@@ -1,3 +1,8 @@
+/**
+ * Copyright 2025 Author(s) of MCP Any
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 "use client"
 
 import {
@@ -34,6 +39,11 @@ const items = [
     title: "Services",
     url: "/services",
     icon: Server,
+  },
+  {
+    title: "Logs",
+    url: "/logs",
+    icon: Terminal,
   },
   {
     title: "Playground",

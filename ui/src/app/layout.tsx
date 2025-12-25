@@ -1,15 +1,25 @@
+/**
+ * Copyright 2025 Author(s) of MCP Any
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 import type {Metadata} from 'next';
 import './globals.css';
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { SidebarProvider, SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
-import { AppSidebar } from "@/components/app-sidebar";
 
 export const metadata: Metadata = {
   title: 'MCPAny Manager',
   description: 'A server management UI for the MCP Any server.',
 };
 
+/**
+ * Root layout component for the application.
+ *
+ * @param props - The component props.
+ * @param props.children - The child components to render.
+ * @returns The root HTML structure.
+ */
 export default function RootLayout({
   children,
 }: Readonly<{

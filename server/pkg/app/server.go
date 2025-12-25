@@ -409,7 +409,7 @@ func (a *Application) Run(
 		allowedIPs = cfg.GetGlobalSettings().GetAllowedIps()
 	}
 
-	return a.runServerMode(ctx, mcpSrv, busProvider, bindAddress, grpcPort, shutdownTimeout, cfg.GetUsers(), cfg.GetGlobalSettings().GetProfileDefinitions(), allowedIPs, cachingMiddleware, sqliteStore)
+	return a.runServerMode(ctx, mcpSrv, busProvider, bindAddress, grpcPort, shutdownTimeout, cfg.GetUsers(), cfg.GetGlobalSettings().GetProfileDefinitions(), allowedIPs, cachingMiddleware, sqliteStore, serviceRegistry)
 }
 
 // ReloadConfig reloads the configuration from the given paths and updates the
@@ -597,6 +597,7 @@ func (a *Application) runServerMode(
 	allowedIPs []string,
 	cachingMiddleware *middleware.CachingMiddleware,
 	store *sqlite.Store,
+	serviceRegistry *serviceregistry.ServiceRegistry,
 ) error {
 	ipMiddleware, err := middleware.NewIPAllowlistMiddleware(allowedIPs)
 	if err != nil {
@@ -939,7 +940,17 @@ func (a *Application) runServerMode(
 		httpBindAddress = ":" + httpBindAddress
 	}
 
-	startHTTPServer(localCtx, &wg, errChan, "MCP Any HTTP", httpBindAddress, otelhttp.NewHandler(middleware.HTTPSecurityHeadersMiddleware(ipMiddleware.Handler(mux)), "mcp-server"), shutdownTimeout)
+	// Apply Global Rate Limit: 20 RPS with a burst of 50.
+	// This helps prevent basic DoS attacks on all HTTP endpoints, including /upload.
+	rateLimiter := middleware.NewHTTPRateLimitMiddleware(20, 50)
+	// Middleware order: SecurityHeaders -> IPAllowList -> RateLimit -> Mux
+	handler := middleware.HTTPSecurityHeadersMiddleware(
+		ipMiddleware.Handler(
+			rateLimiter.Handler(mux),
+		),
+	)
+
+	startHTTPServer(localCtx, &wg, errChan, "MCP Any HTTP", httpBindAddress, otelhttp.NewHandler(handler, "mcp-server"), shutdownTimeout)
 
 	grpcBindAddress := grpcPort
 	if grpcBindAddress != "" {
@@ -1024,6 +1035,15 @@ func (a *Application) runServerMode(
 	logging.GetLogger().Info("Waiting for HTTP and gRPC servers to shut down...")
 	wg.Wait()
 	logging.GetLogger().Info("All servers have shut down.")
+
+	// Shutdown all upstreams
+	if serviceRegistry != nil {
+		shutdownCtx, shutdownCancel := context.WithTimeout(context.Background(), shutdownTimeout)
+		defer shutdownCancel()
+		if err := serviceRegistry.Close(shutdownCtx); err != nil {
+			logging.GetLogger().Error("Failed to shutdown services", "error", err)
+		}
+	}
 
 	return startupErr
 }

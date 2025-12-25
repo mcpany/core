@@ -27,14 +27,14 @@ func TestUpstreamService_MCP_Playwright_Stdio(t *testing.T) {
 			const serviceID = "playwright"
 			env := map[string]string{
 				"HOME":                             "/tmp",
-				"NPM_CONFIG_LOGLEVEL":              "silent",
+				"NPM_CONFIG_LOGLEVEL":              "warn",
 				"PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD": "1",
 				"NPM_CONFIG_YES":                   "true",
 			}
-			cmd := "npm" // Use npm to find the binary
-			args := []string{"exec", "mcp-server-playwright", "--", "--console-level", "debug"}
+			cmd := "node"
+			args := []string{"./node_modules/.bin/mcp-server-playwright", "--", "--console-level", "debug"}
 			setupCommands := []string{
-				"timeout -s 9 20s npm install @playwright/mcp", // Install local package
+				"npm install --no-optional @playwright/mcp",
 			}
 			integration.RegisterStdioServiceWithSetup(t, registrationClient, serviceID, cmd, true, "/tmp", "mcr.microsoft.com/playwright:v1.50.0-jammy", setupCommands, env, args...)
 

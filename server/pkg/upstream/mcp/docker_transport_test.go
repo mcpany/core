@@ -23,6 +23,7 @@ import (
 	"github.com/modelcontextprotocol/go-sdk/jsonrpc"
 	v1 "github.com/opencontainers/image-spec/specs-go/v1"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/proto"
 )
 
@@ -198,7 +199,7 @@ func TestDockerTransport_Connect_ContainerStartError(t *testing.T) {
 }
 
 func TestDockerTransport_Connect_Integration(t *testing.T) {
-	t.Skip("Skipping integration test")
+
 	if !util.IsDockerSocketAccessible() {
 		t.Skip("Docker socket not accessible, skipping integration test.")
 	}
@@ -217,7 +218,7 @@ func TestDockerTransport_Connect_Integration(t *testing.T) {
 
 	msg, err := conn.Read(ctx)
 	assert.NoError(t, err)
-	assert.NotNil(t, msg)
+	require.NotNil(t, msg) // Prevent panic
 
 	resp, ok := msg.(*jsonrpc.Response)
 	assert.True(t, ok)

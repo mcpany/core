@@ -930,6 +930,9 @@ func StartMCPANYServerWithClock(t *testing.T, testName string, healthCheck bool,
 	var grpcRegConn *grpc.ClientConn
 	var registrationClient apiv1.RegistrationServiceClient
 
+	// Create a random Session ID for this server instance (client side ID)
+	sessionID := fmt.Sprintf("test-session-%d", time.Now().UnixNano())
+
 	if healthCheck && jsonrpcPort != 0 { // Only check health if we have a port
 		t.Logf("MCPANY server health check target URL: %s", mcpRequestURL)
 
@@ -975,7 +978,7 @@ func StartMCPANYServerWithClock(t *testing.T, testName string, healthCheck bool,
 		mcpProcess.WaitForText(t, "MCPANY server is ready", McpAnyServerStartupTimeout) // Assumption or skipped?
 	}
 
-	t.Logf("MCPANY Server process started. MCP Endpoint Base: %s, gRPC Reg: %s", jsonrpcEndpoint, grpcRegEndpoint)
+	t.Logf("MCPANY Server process started. MCP Endpoint Base: %s, gRPC Reg: %s, SessionID: %s", jsonrpcEndpoint, grpcRegEndpoint, sessionID)
 
 	return &MCPANYTestServerInfo{
 		Process:                  mcpProcess,
@@ -986,6 +989,7 @@ func StartMCPANYServerWithClock(t *testing.T, testName string, healthCheck bool,
 		GRPCRegConn:              grpcRegConn,
 		RegistrationClient:       registrationClient,
 		NatsURL:                  natsURL,
+		SessionID:                sessionID,
 		CleanupFunc: func() {
 			t.Logf("Cleaning up MCPANYTestServerInfo for %s...", testName)
 			if grpcRegConn != nil {
@@ -996,6 +1000,215 @@ func StartMCPANYServerWithClock(t *testing.T, testName string, healthCheck bool,
 		},
 		T: t,
 	}
+}
+
+
+
+// Initialize performs the MCP initialization handshake.
+func (s *MCPANYTestServerInfo) Initialize(ctx context.Context) error {
+	// 1. Send initialize request
+	initReq := map[string]interface{}{
+		"jsonrpc": "2.0",
+		"method":  "initialize",
+		"params": map[string]interface{}{
+			"protocolVersion": "2024-11-05",
+			"capabilities":    map[string]interface{}{},
+			"clientInfo": map[string]interface{}{
+				"name":    "test-client",
+				"version": "1.0.0",
+			},
+		},
+		"id": 1,
+	}
+
+	reqBody, _ := json.Marshal(initReq)
+	httpReq, err := http.NewRequestWithContext(ctx, "POST", s.HTTPEndpoint, bytes.NewBuffer(reqBody))
+	if err != nil {
+		return err
+	}
+	httpReq.Header.Set("Content-Type", "application/json")
+	httpReq.Header.Set("Accept", "application/json, text/event-stream")
+	// Do NOT set Mcp-Session-Id for initialize, let server generate it if needed.
+	// Or maybe we need to support both modes?
+	// If we send it, server says 404 session not found. So we shouldn't send it for new session?
+
+	resp, err := s.HTTPClient.Do(httpReq)
+	if err != nil {
+		return err
+	}
+	defer func() { _ = resp.Body.Close() }()
+
+	if resp.StatusCode != http.StatusOK {
+		body, _ := io.ReadAll(resp.Body)
+		return fmt.Errorf("initialize failed: status=%d, body=%s", resp.StatusCode, string(body))
+	}
+
+	// Capture Session ID from response header
+	if sid := resp.Header.Get("Mcp-Session-Id"); sid != "" {
+		s.SessionID = sid
+		// Update T.Log to show we got a session ID
+		if s.T != nil {
+			s.T.Logf("Obtained Session ID from server: %s", s.SessionID)
+		}
+	}
+
+	// We don't strictly need to parse result for tests unless we use capabilities,
+	// but we MUST send initialized notification.
+
+	// 2. Send initialized notification
+	notifyReq := map[string]interface{}{
+		"jsonrpc": "2.0",
+		"method":  "notifications/initialized",
+		"params":  map[string]interface{}{},
+	}
+	reqBody, _ = json.Marshal(notifyReq)
+	httpReq, err = http.NewRequestWithContext(ctx, "POST", s.HTTPEndpoint, bytes.NewBuffer(reqBody))
+	if err != nil {
+		return err
+	}
+	httpReq.Header.Set("Content-Type", "application/json")
+	httpReq.Header.Set("Accept", "application/json, text/event-stream")
+	httpReq.Header.Set("Mcp-Session-Id", s.SessionID)
+
+	respNotify, err := s.HTTPClient.Do(httpReq)
+	if err != nil {
+		return err
+	}
+	defer func() { _ = respNotify.Body.Close() }()
+
+	if respNotify.StatusCode != http.StatusOK && respNotify.StatusCode != http.StatusAccepted {
+		body, _ := io.ReadAll(respNotify.Body)
+		return fmt.Errorf("initialized notification failed: status=%d, body=%s", respNotify.StatusCode, string(body))
+	}
+	return nil
+}
+
+// parseMCPResponse parses the response body, handling both JSON and SSE formats.
+func parseMCPResponse(t *testing.T, resp *http.Response) ([]byte, error) {
+	bodyBytes, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, fmt.Errorf("failed to read body: %w", err)
+	}
+
+	contentType := resp.Header.Get("Content-Type")
+	if contentType == "text/event-stream" || bytes.HasPrefix(bodyBytes, []byte("event: ")) {
+		// Simple SSE parser
+		lines := bytes.Split(bodyBytes, []byte("\n"))
+		for _, line := range lines {
+			if bytes.HasPrefix(line, []byte("data: ")) {
+				data := bytes.TrimPrefix(line, []byte("data: "))
+				return data, nil
+			}
+		}
+		return nil, fmt.Errorf("failed to find valid JSON in SSE response. Body: %s", string(bodyBytes))
+	}
+	return bodyBytes, nil
+}
+
+// ListTools calls tools/list via JSON-RPC.
+func (s *MCPANYTestServerInfo) ListTools(ctx context.Context) (*mcp.ListToolsResult, error) {
+	reqBody, err := json.Marshal(map[string]interface{}{
+		"jsonrpc": "2.0",
+		"method":  "tools/list",
+		"params":  map[string]interface{}{},
+		"id":      1,
+	})
+	if err != nil {
+		return nil, fmt.Errorf("failed to marshal request: %w", err)
+	}
+
+	httpReq, err := http.NewRequestWithContext(ctx, "POST", s.HTTPEndpoint, bytes.NewBuffer(reqBody))
+	if err != nil {
+		return nil, fmt.Errorf("failed to create request: %w", err)
+	}
+	httpReq.Header.Set("Content-Type", "application/json")
+	httpReq.Header.Set("Accept", "application/json, text/event-stream")
+	if s.SessionID != "" {
+		httpReq.Header.Set("Mcp-Session-Id", s.SessionID)
+	}
+
+	resp, err := s.HTTPClient.Do(httpReq)
+	if err != nil {
+		return nil, fmt.Errorf("failed to send request: %w", err)
+	}
+	defer func() { _ = resp.Body.Close() }()
+
+	if resp.StatusCode != http.StatusOK {
+		body, _ := io.ReadAll(resp.Body)
+		return nil, fmt.Errorf("unexpected status code: %d, body: %s", resp.StatusCode, string(body))
+	}
+
+	data, err := parseMCPResponse(s.T, resp)
+	if err != nil {
+		return nil, err
+	}
+
+	var rpcResp struct {
+		Result *mcp.ListToolsResult `json:"result"`
+		Error  *MCPJSONRPCError     `json:"error"`
+	}
+	if err := json.Unmarshal(data, &rpcResp); err != nil {
+		return nil, fmt.Errorf("failed to decode response: %w. Body: %s", err, string(data))
+	}
+
+	if rpcResp.Error != nil {
+		return nil, rpcResp.Error
+	}
+
+	return rpcResp.Result, nil
+}
+
+// CallTool calls tools/call via JSON-RPC.
+func (s *MCPANYTestServerInfo) CallTool(ctx context.Context, params *mcp.CallToolParams) (*mcp.CallToolResult, error) {
+	reqBody, err := json.Marshal(map[string]interface{}{
+		"jsonrpc": "2.0",
+		"method":  "tools/call",
+		"params":  params,
+		"id":      1,
+	})
+	if err != nil {
+		return nil, fmt.Errorf("failed to marshal request: %w", err)
+	}
+
+	httpReq, err := http.NewRequestWithContext(ctx, "POST", s.HTTPEndpoint, bytes.NewBuffer(reqBody))
+	if err != nil {
+		return nil, fmt.Errorf("failed to create request: %w", err)
+	}
+	httpReq.Header.Set("Content-Type", "application/json")
+	httpReq.Header.Set("Accept", "application/json, text/event-stream")
+	if s.SessionID != "" {
+		httpReq.Header.Set("Mcp-Session-Id", s.SessionID)
+	}
+
+	resp, err := s.HTTPClient.Do(httpReq)
+	if err != nil {
+		return nil, fmt.Errorf("failed to send request: %w", err)
+	}
+	defer func() { _ = resp.Body.Close() }()
+
+	if resp.StatusCode != http.StatusOK {
+		body, _ := io.ReadAll(resp.Body)
+		return nil, fmt.Errorf("unexpected status code: %d, body: %s", resp.StatusCode, string(body))
+	}
+
+	data, err := parseMCPResponse(s.T, resp)
+	if err != nil {
+		return nil, err
+	}
+
+	var rpcResp struct {
+		Result *mcp.CallToolResult `json:"result"`
+		Error  *MCPJSONRPCError    `json:"error"`
+	}
+	if err := json.Unmarshal(data, &rpcResp); err != nil {
+		return nil, fmt.Errorf("failed to decode response: %w", err)
+	}
+
+	if rpcResp.Error != nil {
+		return nil, rpcResp.Error
+	}
+
+	return rpcResp.Result, nil
 }
 
 // RegisterServiceViaAPI registers a service using the gRPC API.
@@ -1358,112 +1571,10 @@ func RegisterHTTPServiceWithJSONRPC(t *testing.T, mcpanyEndpoint, serviceID, bas
 	t.Logf("HTTP Service '%s' registration request sent via JSON-RPC successfully.", serviceID)
 }
 
-// MCPJSONRPCError represents a JSON-RPC error.
-type MCPJSONRPCError struct {
-	Code    int         `json:"code"`
-	Message string      `json:"message"`
-	Data    interface{} `json:"data,omitempty"`
-}
 
-// Error returns the string representation of the JSON-RPC error.
-// It implements the error interface.
-//
-// Returns:
-//   string: The formatted error message.
-func (e *MCPJSONRPCError) Error() string {
-	return fmt.Sprintf("JSON-RPC Error: Code=%d, Message=%s, Data=%v", e.Code, e.Message, e.Data)
-}
 
-// ListTools calls tools/list via JSON-RPC.
-func (s *MCPANYTestServerInfo) ListTools(ctx context.Context) (*mcp.ListToolsResult, error) {
-	reqBody, err := json.Marshal(map[string]interface{}{
-		"jsonrpc": "2.0",
-		"method":  "tools/list",
-		"params":  map[string]interface{}{},
-		"id":      1,
-	})
-	if err != nil {
-		return nil, fmt.Errorf("failed to marshal request: %w", err)
-	}
 
-	httpReq, err := http.NewRequestWithContext(ctx, "POST", s.HTTPEndpoint, bytes.NewBuffer(reqBody))
-	if err != nil {
-		return nil, fmt.Errorf("failed to create request: %w", err)
-	}
-	httpReq.Header.Set("Content-Type", "application/json")
-	httpReq.Header.Set("Accept", "application/json, text/event-stream")
 
-	resp, err := s.HTTPClient.Do(httpReq)
-	if err != nil {
-		return nil, fmt.Errorf("failed to send request: %w", err)
-	}
-	defer func() { _ = resp.Body.Close() }()
-
-	if resp.StatusCode != http.StatusOK {
-		body, _ := io.ReadAll(resp.Body)
-		return nil, fmt.Errorf("unexpected status code: %d, body: %s", resp.StatusCode, string(body))
-	}
-
-	var rpcResp struct {
-		Result *mcp.ListToolsResult `json:"result"`
-		Error  *MCPJSONRPCError     `json:"error"`
-	}
-	bodyBytes, _ := io.ReadAll(resp.Body)
-	if err := json.Unmarshal(bodyBytes, &rpcResp); err != nil {
-		return nil, fmt.Errorf("failed to decode response: %w. Body: %s", err, string(bodyBytes))
-	}
-
-	if rpcResp.Error != nil {
-		return nil, rpcResp.Error
-	}
-
-	return rpcResp.Result, nil
-}
-
-// CallTool calls tools/call via JSON-RPC.
-func (s *MCPANYTestServerInfo) CallTool(ctx context.Context, params *mcp.CallToolParams) (*mcp.CallToolResult, error) {
-	reqBody, err := json.Marshal(map[string]interface{}{
-		"jsonrpc": "2.0",
-		"method":  "tools/call",
-		"params":  params,
-		"id":      1,
-	})
-	if err != nil {
-		return nil, fmt.Errorf("failed to marshal request: %w", err)
-	}
-
-	httpReq, err := http.NewRequestWithContext(ctx, "POST", s.HTTPEndpoint, bytes.NewBuffer(reqBody))
-	if err != nil {
-		return nil, fmt.Errorf("failed to create request: %w", err)
-	}
-	httpReq.Header.Set("Content-Type", "application/json")
-	httpReq.Header.Set("Accept", "application/json, text/event-stream")
-
-	resp, err := s.HTTPClient.Do(httpReq)
-	if err != nil {
-		return nil, fmt.Errorf("failed to send request: %w", err)
-	}
-	defer func() { _ = resp.Body.Close() }()
-
-	if resp.StatusCode != http.StatusOK {
-		body, _ := io.ReadAll(resp.Body)
-		return nil, fmt.Errorf("unexpected status code: %d, body: %s", resp.StatusCode, string(body))
-	}
-
-	var rpcResp struct {
-		Result *mcp.CallToolResult `json:"result"`
-		Error  *MCPJSONRPCError    `json:"error"`
-	}
-	if err := json.NewDecoder(resp.Body).Decode(&rpcResp); err != nil {
-		return nil, fmt.Errorf("failed to decode response: %w", err)
-	}
-
-	if rpcResp.Error != nil {
-		return nil, rpcResp.Error
-	}
-
-	return rpcResp.Result, nil
-}
 
 // WaitForPortFromLogs waits for a log line indicating the server is listening and extracts the address.
 func WaitForPortFromLogs(t *testing.T, mp *ManagedProcess, serverName string) (string, error) {
@@ -1495,4 +1606,15 @@ func WaitForPortFromLogs(t *testing.T, mp *ManagedProcess, serverName string) (s
 
 	require.Eventually(t, checkLog, McpAnyServerStartupTimeout, 100*time.Millisecond, "Failed to find listening port for %s in logs.\nStdout:\n%s", serverName, mp.StdoutString())
 	return port, nil
+}
+
+// MCPJSONRPCError represents a JSON-RPC error.
+type MCPJSONRPCError struct {
+	Code    int         `json:"code"`
+	Message string      `json:"message"`
+	Data    interface{} `json:"data,omitempty"`
+}
+
+func (e *MCPJSONRPCError) Error() string {
+	return fmt.Sprintf("JSON-RPC Error: Code=%d, Message=%s, Data=%v", e.Code, e.Message, e.Data)
 }

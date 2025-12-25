@@ -8,6 +8,7 @@ replace github.com/mcpany/core => ./
 
 require (
 	al.essio.dev/pkg/shellescape v1.6.0
+	github.com/DATA-DOG/go-sqlmock v1.5.2
 	github.com/JohannesKaufmann/html-to-markdown v1.6.0
 	github.com/Masterminds/semver/v3 v3.4.0
 	github.com/alexliesenfeld/health v0.8.1
@@ -54,7 +55,7 @@ require (
 	github.com/samber/lo v1.51.0
 	github.com/santhosh-tekuri/jsonschema/v5 v5.3.1
 	github.com/segmentio/kafka-go v0.4.49
-	github.com/spf13/afero v1.14.0
+	github.com/spf13/afero v1.15.0
 	github.com/spf13/cobra v1.9.1
 	github.com/spf13/pflag v1.0.6
 	github.com/spf13/viper v1.18.2

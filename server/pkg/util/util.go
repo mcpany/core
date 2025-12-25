@@ -8,9 +8,11 @@ package util
 import (
 	"crypto/sha256"
 	"encoding/hex"
+	"encoding/json"
 	"fmt"
 	"net/url"
 	"os"
+	"strconv"
 	"strings"
 
 	"github.com/google/uuid"
@@ -297,7 +299,7 @@ func replacePlaceholders(input string, params map[string]interface{}, noEscapePa
 		if !ok {
 			sb.WriteString(input[absoluteIdx : absoluteEnd+2])
 		} else {
-			val := fmt.Sprintf("%v", v)
+			val := ToString(v)
 			if noEscapeParams == nil || !noEscapeParams[key] {
 				val = escapeFunc(val)
 			}
@@ -306,4 +308,31 @@ func replacePlaceholders(input string, params map[string]interface{}, noEscapePa
 		start = absoluteEnd + 2
 	}
 	return sb.String()
+}
+
+// ToString converts a value to a string representation efficiently.
+// It handles common types like string, json.Number, int, float, and bool
+// without using reflection when possible.
+func ToString(v any) string {
+	switch val := v.(type) {
+	case string:
+		return val
+	case json.Number:
+		return val.String()
+	case bool:
+		if val {
+			return "true"
+		}
+		return "false"
+	case int:
+		return strconv.Itoa(val)
+	case int64:
+		return strconv.FormatInt(val, 10)
+	case float64:
+		return strconv.FormatFloat(val, 'g', -1, 64)
+	case fmt.Stringer:
+		return val.String()
+	default:
+		return fmt.Sprintf("%v", v)
+	}
 }

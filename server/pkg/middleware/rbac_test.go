@@ -12,92 +12,92 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestRBACMiddleware_RequireRole(t *testing.T) {
-	m := NewRBACMiddleware()
-	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.WriteHeader(http.StatusOK)
+func TestRBACMiddleware(t *testing.T) {
+	mw := NewRBACMiddleware()
+
+	t.Run("RequireRole success", func(t *testing.T) {
+		handler := mw.RequireRole("admin")(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.WriteHeader(http.StatusOK)
+		}))
+
+		req := httptest.NewRequest("GET", "/", nil)
+		// Inject role into context
+		ctx := auth.ContextWithRoles(req.Context(), []string{"admin"})
+		req = req.WithContext(ctx)
+
+		w := httptest.NewRecorder()
+		handler.ServeHTTP(w, req)
+
+		assert.Equal(t, http.StatusOK, w.Code)
 	})
 
-	tests := []struct {
-		name          string
-		userRoles     []string
-		requiredRole  string
-		expectedCode  int
-	}{
-		{
-			name:          "User has role",
-			userRoles:     []string{"admin", "editor"},
-			requiredRole:  "admin",
-			expectedCode:  http.StatusOK,
-		},
-		{
-			name:          "User missing role",
-			userRoles:     []string{"editor"},
-			requiredRole:  "admin",
-			expectedCode:  http.StatusForbidden,
-		},
-		{
-			name:          "No roles",
-			userRoles:     nil,
-			requiredRole:  "admin",
-			expectedCode:  http.StatusForbidden,
-		},
-	}
+	t.Run("RequireRole forbidden", func(t *testing.T) {
+		handler := mw.RequireRole("admin")(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.WriteHeader(http.StatusOK)
+		}))
 
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			req := httptest.NewRequest("GET", "/", nil)
-			if tt.userRoles != nil {
-				req = req.WithContext(auth.ContextWithRoles(req.Context(), tt.userRoles))
-			}
+		req := httptest.NewRequest("GET", "/", nil)
+		// Inject different role
+		ctx := auth.ContextWithRoles(req.Context(), []string{"user"})
+		req = req.WithContext(ctx)
 
-			rr := httptest.NewRecorder()
-			middleware := m.RequireRole(tt.requiredRole)
-			middleware(handler).ServeHTTP(rr, req)
+		w := httptest.NewRecorder()
+		handler.ServeHTTP(w, req)
 
-			assert.Equal(t, tt.expectedCode, rr.Code)
-		})
-	}
-}
-
-func TestRBACMiddleware_RequireAnyRole(t *testing.T) {
-	m := NewRBACMiddleware()
-	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.WriteHeader(http.StatusOK)
+		assert.Equal(t, http.StatusForbidden, w.Code)
 	})
 
-	tests := []struct {
-		name          string
-		userRoles     []string
-		requiredRoles []string
-		expectedCode  int
-	}{
-		{
-			name:          "User has one of the roles",
-			userRoles:     []string{"editor"},
-			requiredRoles: []string{"admin", "editor"},
-			expectedCode:  http.StatusOK,
-		},
-		{
-			name:          "User has none of the roles",
-			userRoles:     []string{"viewer"},
-			requiredRoles: []string{"admin", "editor"},
-			expectedCode:  http.StatusForbidden,
-		},
-	}
+	t.Run("RequireRole no roles", func(t *testing.T) {
+		handler := mw.RequireRole("admin")(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.WriteHeader(http.StatusOK)
+		}))
 
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			req := httptest.NewRequest("GET", "/", nil)
-			if tt.userRoles != nil {
-				req = req.WithContext(auth.ContextWithRoles(req.Context(), tt.userRoles))
-			}
+		req := httptest.NewRequest("GET", "/", nil)
+		w := httptest.NewRecorder()
+		handler.ServeHTTP(w, req)
 
-			rr := httptest.NewRecorder()
-			middleware := m.RequireAnyRole(tt.requiredRoles...)
-			middleware(handler).ServeHTTP(rr, req)
+		assert.Equal(t, http.StatusForbidden, w.Code)
+	})
 
-			assert.Equal(t, tt.expectedCode, rr.Code)
-		})
-	}
+	t.Run("RequireAnyRole success", func(t *testing.T) {
+		handler := mw.RequireAnyRole("admin", "editor")(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.WriteHeader(http.StatusOK)
+		}))
+
+		req := httptest.NewRequest("GET", "/", nil)
+		ctx := auth.ContextWithRoles(req.Context(), []string{"editor"})
+		req = req.WithContext(ctx)
+
+		w := httptest.NewRecorder()
+		handler.ServeHTTP(w, req)
+
+		assert.Equal(t, http.StatusOK, w.Code)
+	})
+
+	t.Run("RequireAnyRole forbidden", func(t *testing.T) {
+		handler := mw.RequireAnyRole("admin", "editor")(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.WriteHeader(http.StatusOK)
+		}))
+
+		req := httptest.NewRequest("GET", "/", nil)
+		ctx := auth.ContextWithRoles(req.Context(), []string{"user"})
+		req = req.WithContext(ctx)
+
+		w := httptest.NewRecorder()
+		handler.ServeHTTP(w, req)
+
+		assert.Equal(t, http.StatusForbidden, w.Code)
+	})
+
+	t.Run("EnforcePolicy NotImplemented", func(t *testing.T) {
+		handler := mw.EnforcePolicy(nil)(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.WriteHeader(http.StatusOK)
+		}))
+
+		req := httptest.NewRequest("GET", "/", nil)
+		w := httptest.NewRecorder()
+		handler.ServeHTTP(w, req)
+
+		assert.Equal(t, http.StatusNotImplemented, w.Code)
+	})
 }

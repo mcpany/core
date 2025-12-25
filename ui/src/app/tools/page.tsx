@@ -1,8 +1,11 @@
+/**
+ * Copyright 2025 Author(s) of MCP Any
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
-import { Sidebar } from "@/components/sidebar"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+"use client";
+
+import { useEffect, useState } from "react";
 import {
   Table,
   TableBody,
@@ -10,80 +13,69 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table"
-import { mockTools } from "@/lib/mock-data"
-import { Tool } from "@/proto/config/v1/tool"
-import { MoreHorizontal } from "lucide-react"
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuLabel,
-    DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+} from "@/components/ui/table";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+
+interface Tool {
+    name: string;
+    description: string;
+    service: string;
+    type: string;
+}
 
 export default function ToolsPage() {
+  const [tools, setTools] = useState<Tool[]>([]);
+
+  useEffect(() => {
+    async function fetchTools() {
+        const res = await fetch("/api/tools");
+        if (res.ok) {
+            setTools(await res.json());
+        }
+    }
+    fetchTools();
+  }, []);
+
   return (
-    <div className="flex min-h-screen w-full flex-col bg-muted/40 md:flex-row">
-      <Sidebar />
-      <div className="flex flex-col sm:gap-4 sm:py-4 sm:pl-14 w-full">
-        <main className="grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8">
-            <div className="flex items-center">
-                <h1 className="text-lg font-semibold md:text-2xl">Tools</h1>
-            </div>
-          <Card x-chunk="dashboard-06-chunk-0">
-            <CardHeader>
-              <CardTitle>Tools</CardTitle>
+    <div className="flex-1 space-y-4 p-8 pt-6">
+      <div className="flex items-center justify-between space-y-2">
+        <h2 className="text-3xl font-bold tracking-tight">Tools</h2>
+      </div>
+      <Card className="backdrop-blur-sm bg-background/50">
+          <CardHeader>
+              <CardTitle>Available Tools</CardTitle>
               <CardDescription>
-                Discover and manage tools provided by upstream services.
+                  List of all tools exposed by the connected services.
               </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Table>
+          </CardHeader>
+          <CardContent>
+            <div className="rounded-md border">
+                <Table>
                 <TableHeader>
-                  <TableRow>
+                    <TableRow>
                     <TableHead>Name</TableHead>
                     <TableHead>Description</TableHead>
-                    <TableHead>
-                      <span className="sr-only">Actions</span>
-                    </TableHead>
-                  </TableRow>
+                    <TableHead>Service</TableHead>
+                    <TableHead>Type</TableHead>
+                    </TableRow>
                 </TableHeader>
                 <TableBody>
-                    {mockTools.map((tool: Tool, index: number) => (
-                        <TableRow key={index}>
-                            <TableCell className="font-medium">
-                                {tool.name}
-                            </TableCell>
-                            <TableCell>
-                                {tool.description}
-                            </TableCell>
-                            <TableCell>
-                                <DropdownMenu>
-                                    <DropdownMenuTrigger asChild>
-                                        <Button
-                                            aria-haspopup="true"
-                                            size="icon"
-                                            variant="ghost"
-                                        >
-                                            <MoreHorizontal className="h-4 w-4" />
-                                            <span className="sr-only">Toggle menu</span>
-                                        </Button>
-                                    </DropdownMenuTrigger>
-                                    <DropdownMenuContent align="end">
-                                        <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                                        <DropdownMenuItem>View Details</DropdownMenuItem>
-                                    </DropdownMenuContent>
-                                </DropdownMenu>
-                            </TableCell>
-                        </TableRow>
+                    {tools.map((tool) => (
+                    <TableRow key={tool.name}>
+                        <TableCell className="font-medium">{tool.name}</TableCell>
+                        <TableCell>{tool.description}</TableCell>
+                        <TableCell>{tool.service}</TableCell>
+                        <TableCell>
+                            <Badge variant="secondary">{tool.type}</Badge>
+                        </TableCell>
+                    </TableRow>
                     ))}
                 </TableBody>
-              </Table>
-            </CardContent>
-          </Card>
-        </main>
-      </div>
+                </Table>
+            </div>
+          </CardContent>
+      </Card>
     </div>
-  )
+  );
 }

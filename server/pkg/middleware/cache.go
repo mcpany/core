@@ -7,6 +7,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"sync"
 	"time"
 
 	"github.com/eko/gocache/lib/v4/cache"
@@ -15,15 +16,21 @@ import (
 	"github.com/mcpany/core/pkg/logging"
 	"github.com/mcpany/core/pkg/metrics"
 	"github.com/mcpany/core/pkg/tool"
+	"github.com/mcpany/core/pkg/util"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	go_cache "github.com/patrickmn/go-cache"
 )
 
+// ProviderFactory is a function that creates an EmbeddingProvider.
+type ProviderFactory func(providerType, apiKey, model string) (EmbeddingProvider, error)
+
 // CachingMiddleware is a tool execution middleware that provides caching
 // functionality.
 type CachingMiddleware struct {
-	cache       *cache.Cache[any]
-	toolManager tool.ManagerInterface
+	cache           *cache.Cache[any]
+	toolManager     tool.ManagerInterface
+	semanticCaches  sync.Map
+	providerFactory ProviderFactory
 }
 
 // NewCachingMiddleware creates a new CachingMiddleware.
@@ -33,7 +40,18 @@ func NewCachingMiddleware(toolManager tool.ManagerInterface) *CachingMiddleware 
 	return &CachingMiddleware{
 		cache:       cacheManager,
 		toolManager: toolManager,
+		providerFactory: func(providerType, apiKey, model string) (EmbeddingProvider, error) {
+			if providerType == "openai" {
+				return NewOpenAIEmbeddingProvider(apiKey, model), nil
+			}
+			return nil, fmt.Errorf("unknown provider: %s", providerType)
+		},
 	}
+}
+
+// SetProviderFactory allows overriding the default provider factory for testing.
+func (m *CachingMiddleware) SetProviderFactory(factory ProviderFactory) {
+	m.providerFactory = factory
 }
 
 // Execute executes the caching middleware.
@@ -62,6 +80,10 @@ func (m *CachingMiddleware) Execute(ctx context.Context, req *tool.ExecutionRequ
 	labels := []metrics.Label{
 		{Name: "service", Value: serviceID},
 		{Name: "tool", Value: toolName},
+	}
+
+	if cacheConfig.GetStrategy() == "semantic" {
+		return m.executeSemantic(ctx, req, next, t, cacheConfig, labels)
 	}
 
 	// Inject CacheControl if not present
@@ -108,6 +130,86 @@ func (m *CachingMiddleware) Execute(ctx context.Context, req *tool.ExecutionRequ
 		metrics.IncrCounterWithLabels([]string{"cache", "errors"}, 1, labels)
 		logging.GetLogger().Error("Failed to set cache", "error", err, "tool", toolName)
 	}
+	return result, nil
+}
+
+func (m *CachingMiddleware) executeSemantic(ctx context.Context, req *tool.ExecutionRequest, next tool.ExecutionFunc, t tool.Tool, config *configv1.CacheConfig, labels []metrics.Label) (any, error) {
+	serviceID := t.Tool().GetServiceId()
+	semConfig := config.GetSemanticConfig()
+	if semConfig == nil {
+		logging.GetLogger().Warn("Semantic cache strategy selected but no semantic config provided", "tool", t.Tool().GetName())
+		return next(ctx, req)
+	}
+
+	val, ok := m.semanticCaches.Load(serviceID)
+	if !ok {
+		apiKey, err := util.ResolveSecret(ctx, semConfig.GetApiKey())
+		if err != nil {
+			logging.GetLogger().Error("Failed to resolve semantic cache API key", "error", err)
+			return next(ctx, req)
+		}
+
+		// Use factory to create provider
+		provider, err := m.providerFactory(semConfig.GetProvider(), apiKey, semConfig.GetModel())
+		if err != nil {
+			logging.GetLogger().Warn("Failed to create embedding provider", "error", err)
+			return next(ctx, req)
+		}
+
+		newCache := NewSemanticCache(provider, semConfig.GetSimilarityThreshold())
+		val, _ = m.semanticCaches.LoadOrStore(serviceID, newCache)
+	}
+
+	semCache := val.(*SemanticCache)
+	inputStr := string(req.ToolInputs)
+
+	// Inject CacheControl if not present
+	var cacheControl *tool.CacheControl
+	if cc, ok := tool.GetCacheControl(ctx); ok {
+		cacheControl = cc
+	} else {
+		cacheControl = &tool.CacheControl{Action: tool.ActionAllow}
+		ctx = tool.NewContextWithCacheControl(ctx, cacheControl)
+	}
+
+	var cached any
+	var hit bool
+	var embedding []float32
+	var err error
+
+	// Check cache ONLY if action is not DeleteCache
+	if cacheControl.Action != tool.ActionDeleteCache {
+		cached, embedding, hit, err = semCache.Get(ctx, req.ToolName, inputStr)
+		if err == nil && hit {
+			metrics.IncrCounterWithLabels([]string{"cache", "hits"}, 1, labels)
+			return cached, nil
+		} else if err != nil {
+			logging.GetLogger().Error("Semantic cache error", "error", err)
+		}
+		if !hit {
+			metrics.IncrCounterWithLabels([]string{"cache", "misses"}, 1, labels)
+		}
+	} else {
+		metrics.IncrCounterWithLabels([]string{"cache", "skips"}, 1, labels)
+	}
+
+	result, err := next(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+
+	if cacheControl.Action == tool.ActionDeleteCache {
+		// Deletion not supported for semantic cache yet
+		return result, nil
+	}
+
+	// Set cache if we have embedding
+	if embedding != nil {
+		if err := semCache.Set(ctx, req.ToolName, embedding, result, config.GetTtl().AsDuration()); err != nil {
+			logging.GetLogger().Error("Failed to set semantic cache", "error", err)
+		}
+	}
+
 	return result, nil
 }
 

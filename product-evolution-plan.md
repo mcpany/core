@@ -2,7 +2,7 @@
 
 ## 1. Updated Roadmap
 
-The following roadmap reflects the reconciled state of the project, with implemented features marked and linked to their documentation.
+The following roadmap reflects the current state of the codebase and the strategic direction for MCP Any.
 
 ### Implemented Features
 
@@ -16,81 +16,75 @@ The following roadmap reflects the reconciled state of the project, with impleme
 - [x] [WebSocket](docs/features/service_types.md)
 - [x] [WebRTC](docs/features/service_types.md)
 - [x] [SQL](docs/features/service_types.md)
+- [x] [File System Provider](docs/features/filesystem.md)
 
-#### Authentication & Security
+#### Authentication
 - [x] [API Key](docs/features/auth.md)
 - [x] [Bearer Token](docs/features/auth.md)
 - [x] [OAuth 2.0](docs/features/auth.md)
-- [x] [Secrets Management](docs/features/security.md)
-- [x] [IP Allowlisting](docs/features/security.md)
-- [x] [Webhooks](docs/features/security.md)
 - [x] [Role-Based Access Control (RBAC)](docs/features/auth.md)
 
 #### Policies
 - [x] [Caching](docs/features/policies.md)
-- [x] [Rate Limiting](docs/features/policies.md)
-- [x] [Resilience](docs/features/policies.md)
+- [x] [Rate Limiting](docs/features/policies.md) (Memory & Redis)
+- [x] [Resilience](docs/features/policies.md) (Circuit Breakers & Retries)
 
 #### Observability
-- [x] [Distributed Tracing](docs/features/observability.md)
+- [x] [Distributed Tracing](docs/features/observability.md) (OpenTelemetry)
 - [x] [Metrics](docs/features/observability.md)
 - [x] [Structured Logging](docs/features/observability.md)
 - [x] [Audit Logging](docs/features/observability.md)
 
-#### Core & UI
+#### Security
+- [x] [Secrets Management](docs/features/security.md)
+- [x] [IP Allowlisting](docs/features/security.md)
+- [x] [Webhooks](docs/features/security.md)
+
+#### Core
 - [x] Dynamic Tool Registration
-- [x] Message Bus
-- [x] [Structured Output Transformation](docs/features/transformation.md)
+- [x] Message Bus (NATS, Kafka)
+- [x] [Structured Output Transformation](docs/features/transformation.md) (JQ/JSONPath)
+- [x] [Admin Management API](docs/features/admin_api.md)
 - [x] [Dynamic Web UI](docs/features/web_ui.md) (Beta)
-- [x] Admin Management API (Partial)
 
-### Planned Features (Backlog)
-1.  **WASM Plugins**: For sandboxed custom logic.
-2.  **File System Provider**: Safe local file access.
-3.  **Cost & Quota Management**: User-level limits.
-4.  **Client SDKs (Python/TS)**: Idiomatic client libraries.
-5.  **Admin API Expansion**: Full CRUD for all resources.
+### Upcoming Features (High Priority)
 
----
+1.  **Client SDKs (Python/TS)**
+2.  **WASM Plugins**
+3.  **Cloud Storage Support (S3, GCS)**
+4.  **Cost & Quota Management**
 
 ## 2. Top 10 Recommended Features
 
-These recommendations focus on enabling enterprise adoption, developer experience, and extensibility.
+These recommendations are based on a gap analysis of the current product capabilities vs. industry standards for enterprise-grade API gateways and LLM infrastructure.
 
-| #  | Feature Name | Why it matters | Difficulty |
-| -- | :--- | :--- | :--- |
-| 1  | **Client SDKs (Python/TypeScript)** | **UX**: Drastically reduces friction for developers integrating MCP Any into their apps. Essential for ecosystem growth. | Medium |
-| 2  | **Advanced Cost & Quota Management** | **Scalability/Business**: Critical for SaaS/Enterprise use cases to prevent abuse and enable monetization (tier-based access). | Medium |
-| 3  | **WASM Plugin System** | **Extensibility**: Allows users to write custom transformations/validations safely without recompiling the core server. | High |
-| 4  | **File System Provider (Sandboxed)** | **UX/Utility**: Enables "Agentic" workflows where LLMs can read/write files locally in a controlled manner. | Medium |
-| 5  | **Configuration Versioning & GitOps** | **Ops/Scalability**: Treat configuration as code. Auto-reload from Git repositories. | Medium |
-| 6  | **Interactive Playground** | **UX**: A UI component to test tools immediately after registration, debugging inputs/outputs visually. | Low |
-| 7  | **Cloud Provider Identity Federation** | **Security**: Support AWS SigV4, GCP OIDC, and Azure AD natively to avoid managing long-lived keys. | High |
-| 8  | **Comprehensive E2E Testing Framework** | **Reliability**: A framework for users to write tests for their *configurations* to ensure upstream changes don't break tools. | Medium |
-| 9  | **Policy-as-Code (OPA/Rego)** | **Security**: More expressive than simple RBAC. Allow complex rules like "User X can only call Tool Y if argument Z < 100". | High |
-| 10 | **Marketplace / Config Hub** | **UX**: A centralized registry or CLI command to pull community-maintained configs for popular services (e.g., `mcpany pull github`). | Medium |
+| Rank | Feature Name | Why it matters | Implementation Difficulty |
+| :--- | :--- | :--- | :--- |
+| 1 | **Client SDKs (Python/TypeScript)** | Accelerates adoption by providing developers with idiomatic, typed wrappers for interacting with MCP Any. Critical for DX. | Medium |
+| 2 | **WASM Plugins** | Enables users to extend functionality (transformations, validators) safely without recompiling the server. Key for extensibility. | High |
+| 3 | **Cloud Storage Support (S3, GCS)** | Extends the Filesystem provider to support cloud storage, allowing LLMs to interact with enterprise data lakes. | Medium |
+| 4 | **Cost & Quota Management** | Essential for SaaS / multi-tenant deployments to control costs and monetize usage (tokens/requests per tenant). | Medium |
+| 5 | **Vector Database Integration** | Enables RAG (Retrieval-Augmented Generation) workflows directly within the gateway, turning it into a "Semantic Gateway". | Medium |
+| 6 | **Advanced Identity Federation** | Support for OIDC and SAML 2.0 to integrate with enterprise Identity Providers (Okta, Entra ID) beyond simple OAuth2. | Medium |
+| 7 | **Human-in-the-Loop Workflows** | Adds a layer of safety by requiring human approval for sensitive tool executions (e.g., database writes, emails). | Medium |
+| 8 | **Code Sandbox / Remote Code Execution** | Allows LLMs to execute code snippets (Python/JS) safely. High value for data analysis agents but requires strict isolation. | High |
+| 9 | **Terraform / IaC Provider** | Allows infrastructure teams to manage MCP Any configuration (services, policies) using GitOps and Infrastructure as Code. | Medium |
+| 10 | **Prompt Management Registry** | A centralized store for managing and versioning system prompts and agent instructions, decoupled from code. | Low |
 
----
+## 3. Codebase Health Report
 
-## 3. Codebase Health & Refactoring
+### Overview
+The codebase appears robust, following standard Go project layouts (`server/pkg/...`). The separation of concerns between `upstream`, `transformer`, and `middleware` is clean.
 
-### Current State
-The codebase is well-structured with clear separation of concerns (`upstream`, `auth`, `transformer`, `ui`). The use of interfaces for `Upstream` and `Tool` is robust.
+### Key Observations
+*   **Dependency Management**: The project uses `go.work`, indicating a multi-module workspace. This is good for separation but requires careful management of dependency versions.
+*   **Filesystem Provider**: The recent implementation of `server/pkg/upstream/filesystem` correctly uses `spf13/afero` for filesystem abstraction. This is a best practice and significantly eases the path to adding Cloud Storage (S3/GCS) support later.
+*   **Testing**: There is a significant number of tests (`grep -r "test" server/pkg | wc -l` returned ~4500 lines). `upstream_test.go` exists in most packages, which is a good sign.
+*   **TODOs**: There are a moderate number of `TODO` comments in the codebase. These should be reviewed, particularly those in critical paths like `upstream` and `auth`.
+*   **Documentation**: The `docs/` folder is well-structured. Keeping `ROADMAP.md` and `features/` in sync with code is crucial, as addressed in this update.
+*   **Python Virtual Environment**: There are traces of a Python virtual environment in `build/venv`, likely for testing or pre-commit hooks. Ensure these do not leak into production builds.
 
-### Areas for Improvement
-
-1.  **RBAC Integration**:
-    *   **Issue**: `server/pkg/auth/rbac.go` contains the logic, but it needs to be consistently applied across all access points (gRPC, HTTP, Admin API).
-    *   **Action**: Implement a unified RBAC middleware that intercepts all incoming requests and enforces policy based on the user context.
-
-2.  **Admin API Completeness**:
-    *   **Issue**: `server/pkg/admin/server.go` currently implements read-only operations and cache clearing. Registration is handled separately via `serviceregistry`.
-    *   **Action**: Consolidate management into a RESTful Admin API that supports full CRUD (Create, Read, Update, Delete) for services, policies, and users.
-
-3.  **UI/Backend Coupling**:
-    *   **Issue**: The UI is a separate Next.js app. Ensure the API contract between the UI and the Backend is stable and versioned (e.g., using the Admin API).
-    *   **Action**: Formalize the "Management API" spec (OpenAPI/Protobuf) used by the UI.
-
-4.  **Error Handling & Validation**:
-    *   **Issue**: Transformation errors or upstream failures need to be propagated clearly to the LLM/Client.
-    *   **Action**: Standardize error responses (MCP standard error codes) and improve validation feedback for configuration files.
+### Recommendations for Refactoring
+*   **Consolidate Upstream Interfaces**: Ensure all upstreams strictly adhere to the `Upstream` interface. As more types (like SQL, Filesystem) are added, verify that the interface abstraction holds up without excessive type casting.
+*   **Standardize Error Handling**: Review error returns across upstreams to ensure consistent error codes/types are returned to the client (e.g., distinguishing between "upstream unavailable" vs "invalid arguments").
+*   **Audit "Planned" Stubs**: The code contains several stubs or comments for planned features (e.g., in filesystem). These should either be implemented or clearly marked as "Not Implemented" in the API responses to avoid user confusion.

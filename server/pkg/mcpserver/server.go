@@ -163,7 +163,7 @@ func NewServer(
 				return &mcp.CallToolResult{
 					Content: []mcp.Content{
 						&mcp.TextContent{
-							Text: fmt.Sprintf("%v", res),
+							Text: util.ToString(res),
 						},
 					},
 				}, nil
@@ -557,7 +557,7 @@ func (s *Server) CallTool(ctx context.Context, req *tool.ExecutionRequest) (any,
 	}
 	text := string(jsonBytes)
 	if marshalErr != nil {
-		text = fmt.Sprintf("%v", result)
+		text = util.ToString(result)
 	}
 
 	return &mcp.CallToolResult{
