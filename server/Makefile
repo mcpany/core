@@ -456,8 +456,9 @@ build-ui:
 
 .PHONY: test-ui
 test-ui:
-	@echo "Running UI tests..."
-	@cd ../ui && mkdir -p .next/standalone/.next && cp -r .next/static .next/standalone/.next/ && (cp -r public .next/standalone/ || true) && npx playwright test
+	@echo "Running UI tests (Playwright)..."
+	@cd ../ui && npm install && npx playwright test
+
 
 .PHONY: e2e
 e2e: e2e-local

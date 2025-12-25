@@ -2,6 +2,10 @@
  * Copyright 2025 Author(s) of MCP Any
  * SPDX-License-Identifier: Apache-2.0
  */
+<<<<<<< HEAD
+=======
+
+>>>>>>> 4f4bb883 (chore: verification fixes (lint, tests, ui, dep updates))
 
 
 import { NextResponse } from 'next/server';
