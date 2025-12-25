@@ -12,6 +12,46 @@ const AUDIT_DIR = path.join(__dirname, `../../.audit/ui/${DATE}`);
 
 test.describe('MCP Any UI E2E Tests', () => {
 
+  test.beforeEach(async ({ page }) => {
+    // Mock services
+    await page.route('**/v1/services', async (route) => {
+      await route.fulfill({
+        json: {
+          services: [
+            {
+              id: "svc_01",
+              name: "Payment Gateway",
+              connection_pool: { max_connections: 100 },
+              disable: false,
+              version: "v1.2.0",
+              http_service: { address: "https://stripe.com", tools: [], resources: [] }
+            },
+            {
+               id: "svc_02",
+               name: "User Service",
+               disable: false,
+               version: "v1.0",
+               grpc_service: { address: "localhost:50051", tools: [], resources: [] }
+            }
+          ]
+        }
+      });
+    });
+    // Mock tools for Dashboard/Tools page checks
+    await page.route('**/api/tools', async (route) => {
+         await route.fulfill({
+              json: [
+                   { name: "calculator", description: "calc", source: "discovered", service: "Math" },
+                   { name: "weather_lookup", description: "weather", source: "configured", service: "Weather" }
+              ]
+         });
+    });
+    // Mock resources for Dashboard checks (if needed) or explicit page visits
+    await page.route('**/api/resources', async (route) => {
+         await route.fulfill({ json: [] });
+    });
+  });
+
   test('Dashboard loads correctly', async ({ page }) => {
     await page.goto('/');
     // Check for metrics
@@ -29,8 +69,9 @@ test.describe('MCP Any UI E2E Tests', () => {
     await expect(page.locator('h2')).toContainText('Services');
 
     // Check for list of services
-    await expect(page.locator('text=Payment Service')).toBeVisible();
-    // await expect(page.locator('text=Auth Service')).toBeVisible(); // Might be flaky if mock changes
+    await expect(page.locator('text=Payment Gateway')).toBeVisible();
+    await expect(page.locator('text=User Service')).toBeVisible();
+
 
     // Test toggle
     const switchElement = page.locator('button[role="switch"]').first();

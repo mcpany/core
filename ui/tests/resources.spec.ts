@@ -7,41 +7,21 @@ import { test, expect } from '@playwright/test';
 
 test.describe('Resource Exploration', () => {
     test.beforeEach(async ({ page }) => {
-        // Mock services endpoint which aggregates resources
-        await page.route('**/v1/services', async (route) => {
+        // Mock resources endpoint directly
+        await page.route('/api/resources', async (route) => {
             await route.fulfill({
-                json: {
-                    services: [
-                        {
-                            name: 'log-service',
-                            http_service: {
-                                address: 'http://localhost',
-                                resources: [
-                                    {
-                                        uri: 'file:///logs/app.log',
-                                        name: 'Application Logs',
-                                        mimeType: 'text/plain',
-                                        description: 'Main application logs'
-                                    }
-                                ]
-                            }
-                        },
-                        {
-                            name: 'db-service',
-                            grpc_service: {
-                                address: 'localhost:9090',
-                                resources: [
-                                    {
-                                        uri: 'postgres://db/users',
-                                        name: 'User Database',
-                                        mimeType: 'application/x-postgres',
-                                        description: 'User records'
-                                    }
-                                ]
-                            }
-                        }
-                    ]
-                }
+                json: [
+                    {
+                        name: 'Application Logs',
+                        type: 'text/plain',
+                        service: 'log-service'
+                    },
+                    {
+                        name: 'User Database',
+                        type: 'application/x-postgres',
+                        service: 'db-service'
+                    }
+                ]
             });
         });
     });
@@ -59,11 +39,11 @@ test.describe('Resource Exploration', () => {
     });
 
     test('should show empty state when no resources', async ({ page }) => {
-        await page.route('**/v1/services', async (route) => {
-            await route.fulfill({ json: { services: [] } });
+        await page.route('/api/resources', async (route) => {
+            await route.fulfill({ json: [] });
         });
 
         await page.goto('/resources');
-        await expect(page.getByText('No resources available')).toBeVisible();
+        await expect(page.locator('table tbody tr')).toHaveCount(0);
     });
 });

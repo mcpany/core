@@ -16,7 +16,7 @@ import {
   UnregisterServiceResponse
 } from "./types";
 
-const API_base = process.env.NEXT_PUBLIC_API_URL || "http://localhost:50050";
+const API_base = process.env.NEXT_PUBLIC_API_URL || "/api";
 
 /**
  * API client for interacting with the MCP Any server.
@@ -28,6 +28,7 @@ export const apiClient = {
    * @returns A promise resolving to the list of services response.
    */
   listServices: async (): Promise<ListServicesResponse> => {
+    console.log("Fetching services from:", `${API_base}/v1/services`);
     const res = await fetch(`${API_base}/v1/services`);
     if (!res.ok) {
       throw new Error(`Failed to list services: ${res.statusText}`);
