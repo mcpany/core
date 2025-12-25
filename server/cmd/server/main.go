@@ -113,7 +113,7 @@ func newRootCmd() *cobra.Command {
 
 			if metricsListenAddress := cfg.MetricsListenAddress(); metricsListenAddress != "" {
 				go func() {
-					log.Info("Starting metrics server", "address", metricsListenAddress)
+					log.Info("Starting Prometheus metrics server", "address", metricsListenAddress)
 					if err := metrics.StartServer(metricsListenAddress); err != nil {
 						log.Error("Metrics server failed", "error", err)
 					}
