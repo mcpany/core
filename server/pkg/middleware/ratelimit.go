@@ -194,25 +194,31 @@ func (m *RateLimitMiddleware) getPartitionKey(ctx context.Context, keyBy configv
 		return "user:anonymous"
 	case configv1.RateLimitConfig_KEY_BY_API_KEY:
 		if apiKey, ok := auth.APIKeyFromContext(ctx); ok {
-			hash := sha256.Sum256([]byte(apiKey))
-			return "apikey:" + hex.EncodeToString(hash[:])
+			return hashKey("apikey:", apiKey)
 		}
 		// Fallback to extraction from HTTP request if available
 		if req, ok := ctx.Value("http.request").(*http.Request); ok {
 			if key := req.Header.Get("X-API-Key"); key != "" {
-				hash := sha256.Sum256([]byte(key))
-				return "apikey:" + hex.EncodeToString(hash[:])
+				return hashKey("apikey:", key)
 			}
 			if key := req.Header.Get("Authorization"); key != "" {
 				// Use hash of token to avoid storing sensitive data in cache keys
-				hash := sha256.Sum256([]byte(key))
-				return "auth:" + hex.EncodeToString(hash[:])
+				return hashKey("auth:", key)
 			}
 		}
 		return ""
 	default:
 		return ""
 	}
+}
+
+func hashKey(prefix, key string) string {
+	hash := sha256.Sum256([]byte(key))
+	// Pre-allocate buffer for prefix + hex encoded hash (32 bytes -> 64 hex chars)
+	buf := make([]byte, len(prefix)+hex.EncodedLen(len(hash)))
+	copy(buf, prefix)
+	hex.Encode(buf[len(prefix):], hash[:])
+	return string(buf)
 }
 
 func (m *RateLimitMiddleware) getRedisClient(serviceID string, config *bus.RedisBus) (*redis.Client, error) {
