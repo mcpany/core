@@ -43,6 +43,8 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 }
 
 // Register processes the configuration for a filesystem service.
+//
+//nolint:gocyclo
 func (u *Upstream) Register(
 	ctx context.Context,
 	serviceConfig *configv1.UpstreamServiceConfig,
@@ -203,6 +205,12 @@ func (u *Upstream) Register(
 					return nil, err
 				}
 
+				// Ensure parent directory exists
+				parentDir := filepath.Dir(resolvedPath)
+				if err := fs.MkdirAll(parentDir, 0755); err != nil {
+					return nil, fmt.Errorf("failed to create parent directory: %w", err)
+				}
+
 				if err := afero.WriteFile(fs, resolvedPath, []byte(content), 0600); err != nil {
 					return nil, err
 				}
@@ -307,7 +315,7 @@ func (u *Upstream) Register(
 					if err != nil {
 						return nil
 					}
-					defer f.Close()
+					defer func() { _ = f.Close() }()
 
 					// Check for binary
 					// Read first 512 bytes
@@ -600,13 +608,44 @@ func (u *Upstream) validatePath(virtualPath string, rootPaths map[string]string)
 	targetPathCanonical, err := filepath.EvalSymlinks(targetPathAbs)
 	if err != nil {
 		if os.IsNotExist(err) {
-			// If file doesn't exist, we check the parent directory
-			parent := filepath.Dir(targetPathAbs)
-			parentCanonical, err := filepath.EvalSymlinks(parent)
-			if err != nil {
-				return "", fmt.Errorf("failed to resolve parent path symlinks: %w", err)
+			// If file doesn't exist, we need to find the deepest existing ancestor
+			// to ensure that no symlinks in the path point outside the root.
+			currentPath := targetPathAbs
+			var existingPath string
+			var remainingPath string
+
+			for {
+				dir := filepath.Dir(currentPath)
+				if dir == currentPath {
+					// Reached root without finding existing path (should not happen if realRoot exists)
+					return "", fmt.Errorf("failed to resolve path (root not found): %s", targetPathAbs)
+				}
+
+				// Check if dir exists
+				if _, err := os.Stat(dir); err == nil {
+					existingPath = dir
+					var relErr error
+					remainingPath, relErr = filepath.Rel(existingPath, targetPathAbs)
+					if relErr != nil {
+						return "", fmt.Errorf("failed to calculate relative path: %w", relErr)
+					}
+					break
+				}
+				currentPath = dir
 			}
-			targetPathCanonical = filepath.Join(parentCanonical, filepath.Base(targetPathAbs))
+
+			// Resolve symlinks for the existing ancestor
+			existingPathCanonical, err := filepath.EvalSymlinks(existingPath)
+			if err != nil {
+				return "", fmt.Errorf("failed to resolve ancestor path symlinks: %w", err)
+			}
+
+			// Construct the canonical path
+			targetPathCanonical = filepath.Join(existingPathCanonical, remainingPath)
+
+			// Note: We don't check if the "remainingPath" contains ".." because filepath.Rel and Join should handle it,
+			// and we are constructing it from absolute paths.
+			// However, since the intermediate directories don't exist, they can't be symlinks pointing elsewhere.
 		} else {
 			return "", fmt.Errorf("failed to resolve target path symlinks: %w", err)
 		}
