@@ -53,12 +53,17 @@ func (u *Upstream) Register(
 	resourceManager resource.ManagerInterface,
 	isReload bool,
 ) (string, []*configv1.ToolDefinition, []*configv1.ResourceDefinition, error) {
+	if serviceConfig == nil {
+		return "", nil, nil, fmt.Errorf("service config is nil")
+	}
 	log := logging.GetLogger()
 
 	// Calculate SHA256 for the ID
 	h := sha256.New()
-	h.Write([]byte(serviceConfig.GetName()))
-	serviceConfig.SetId(hex.EncodeToString(h.Sum(nil)))
+	if serviceConfig.GetName() != "" {
+		h.Write([]byte(serviceConfig.GetName()))
+		serviceConfig.SetId(hex.EncodeToString(h.Sum(nil)))
+	}
 
 	// Sanitize the service name
 	sanitizedName, err := util.SanitizeServiceName(serviceConfig.GetName())

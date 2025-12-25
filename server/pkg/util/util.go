@@ -68,62 +68,68 @@ func SanitizeID(ids []string, alwaysAppendHash bool, maxSanitizedPrefixLength, h
 		if i > 0 {
 			sb.WriteByte('.')
 		}
-
-		// Pass 1: Scan for dirty chars and count clean length
-		dirtyCount := 0
-		for j := 0; j < len(id); j++ {
-			c := id[j]
-			if !((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9') || c == '_' || c == '-') { //nolint:staticcheck
-				dirtyCount++
-			}
-		}
-
-		rawSanitizedLen := len(id) - dirtyCount
-		appendHash := alwaysAppendHash || dirtyCount > 0 || rawSanitizedLen > maxSanitizedPrefixLength
-
-		finalSanitizedLen := rawSanitizedLen
-		if finalSanitizedLen > maxSanitizedPrefixLength {
-			finalSanitizedLen = maxSanitizedPrefixLength
-		}
-
-		if appendHash {
-			if finalSanitizedLen == 0 {
-				sb.WriteString("id")
-			} else {
-				// Write up to finalSanitizedLen clean chars
-				written := 0
-				for j := 0; j < len(id) && written < finalSanitizedLen; j++ {
-					c := id[j]
-					if (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9') || c == '_' || c == '-' {
-						sb.WriteByte(c)
-						written++
-					}
-				}
-			}
-
-			// Append Hash
-			// Optimization: Use sha256.Sum256 to avoid heap allocation of hash.Hash
-			sum := sha256.Sum256([]byte(id))
-
-			// Avoid hex.EncodeToString allocation
-			var hashBuf [64]byte // sha256 hex is 64 chars
-			hex.Encode(hashBuf[:], sum[:])
-
-			sb.WriteByte('_')
-			if hashLength > 0 && hashLength < 64 {
-				sb.Write(hashBuf[:hashLength])
-			} else {
-				sb.Write(hashBuf[:])
-			}
-
-		} else {
-			// appendHash is false, so dirtyCount == 0 and len(id) <= maxSanitizedPrefixLength
-			// We can just write id
-			sb.WriteString(id)
-		}
+		processID(&sb, id, alwaysAppendHash, maxSanitizedPrefixLength, hashLength)
 	}
 
 	return sb.String(), nil
+}
+
+func processID(sb *strings.Builder, id string, alwaysAppendHash bool, maxSanitizedPrefixLength, hashLength int) {
+	// Scan for dirty chars and count clean length
+	dirtyCount := 0
+	for j := 0; j < len(id); j++ {
+		c := id[j]
+		if !((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9') || c == '_' || c == '-') { //nolint:staticcheck
+			dirtyCount++
+		}
+	}
+
+	rawSanitizedLen := len(id) - dirtyCount
+	appendHash := alwaysAppendHash || dirtyCount > 0 || rawSanitizedLen > maxSanitizedPrefixLength
+
+	finalSanitizedLen := rawSanitizedLen
+	if finalSanitizedLen > maxSanitizedPrefixLength {
+		finalSanitizedLen = maxSanitizedPrefixLength
+	}
+
+	if appendHash {
+		appendHashedID(sb, id, finalSanitizedLen, hashLength)
+	} else {
+		// appendHash is false, so dirtyCount == 0 and len(id) <= maxSanitizedPrefixLength
+		// We can just write id
+		sb.WriteString(id)
+	}
+}
+
+func appendHashedID(sb *strings.Builder, id string, finalSanitizedLen, hashLength int) {
+	if finalSanitizedLen == 0 {
+		sb.WriteString("id")
+	} else {
+		// Write up to finalSanitizedLen clean chars
+		written := 0
+		for j := 0; j < len(id) && written < finalSanitizedLen; j++ {
+			c := id[j]
+			if (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9') || c == '_' || c == '-' {
+				sb.WriteByte(c)
+				written++
+			}
+		}
+	}
+
+	// Append Hash
+	// Optimization: Use sha256.Sum256 to avoid heap allocation of hash.Hash
+	sum := sha256.Sum256([]byte(id))
+
+	// Avoid hex.EncodeToString allocation
+	var hashBuf [64]byte // sha256 hex is 64 chars
+	hex.Encode(hashBuf[:], sum[:])
+
+	sb.WriteByte('_')
+	if hashLength > 0 && hashLength < 64 {
+		sb.Write(hashBuf[:hashLength])
+	} else {
+		sb.Write(hashBuf[:])
+	}
 }
 
 // SanitizeServiceName sanitizes the given service name.
