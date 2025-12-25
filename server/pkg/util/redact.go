@@ -6,6 +6,7 @@ package util //nolint:revive
 import (
 	"bytes"
 	"encoding/json"
+	"strings"
 )
 
 const redactedPlaceholder = "[REDACTED]"
@@ -173,13 +174,83 @@ func bytesContainsFold(s, substr []byte) bool {
 	firstUpper := firstLower - 32 // sensitiveKeys are all lowercase ASCII
 
 	i := 0
-	max := len(s) - len(substr)
+	for {
+		// Find the next occurrence of the first character (either case)
+		rest := s[i:]
+		idx1 := bytes.IndexByte(rest, firstLower)
+		idx2 := bytes.IndexByte(rest, firstUpper)
 
-	for i <= max {
-		c := s[i]
-		if c != firstLower && c != firstUpper {
-			i++
-			continue
+		var offset int
+		if idx1 < 0 && idx2 < 0 {
+			return false
+		}
+
+		if idx1 >= 0 && (idx2 < 0 || idx1 < idx2) {
+			offset = idx1
+		} else {
+			offset = idx2
+		}
+
+		i += offset
+
+		if len(s)-i < len(substr) {
+			return false
+		}
+
+		// First character matches (at s[i]), check the rest
+		match := true
+		for j := 1; j < len(substr); j++ {
+			cc := s[i+j]
+			if cc >= 'A' && cc <= 'Z' {
+				cc += 32
+			}
+			if cc != substr[j] {
+				match = false
+				break
+			}
+		}
+		if match {
+			return true
+		}
+		i++
+	}
+}
+
+// containsFold reports whether substr is within s, interpreting ASCII characters case-insensitively.
+// substr must be lower-case.
+func containsFold(s, substr string) bool {
+	if len(substr) == 0 {
+		return true
+	}
+	if len(s) < len(substr) {
+		return false
+	}
+
+	firstLower := substr[0]
+	firstUpper := firstLower - 32 // sensitiveKeys are all lowercase ASCII
+
+	i := 0
+	for {
+		// Find the next occurrence of the first character (either case)
+		rest := s[i:]
+		idx1 := strings.IndexByte(rest, firstLower)
+		idx2 := strings.IndexByte(rest, firstUpper)
+
+		var offset int
+		if idx1 < 0 && idx2 < 0 {
+			return false
+		}
+
+		if idx1 >= 0 && (idx2 < 0 || idx1 < idx2) {
+			offset = idx1
+		} else {
+			offset = idx2
+		}
+
+		i += offset
+
+		if len(s)-i < len(substr) {
+			return false
 		}
 
 		// First character matches, check the rest
@@ -199,46 +270,4 @@ func bytesContainsFold(s, substr []byte) bool {
 		}
 		i++
 	}
-	return false
-}
-
-// containsFold reports whether substr is within s, interpreting ASCII characters case-insensitively.
-func containsFold(s, substr string) bool {
-	if len(substr) > len(s) {
-		return false
-	}
-	if len(substr) == 0 {
-		return true
-	}
-
-	// Optimized case-insensitive search
-	// We first check the first character to avoid setting up the inner loop for mismatches.
-	// Since sensitiveKeys are all lowercase, we can safely assume substr[0] is lowercase.
-	first := substr[0]
-	end := len(s) - len(substr)
-
-	for i := 0; i <= end; i++ {
-		c := s[i]
-		if c >= 'A' && c <= 'Z' {
-			c += 32 // to lower
-		}
-		if c == first {
-			// First character matches, check the rest
-			match := true
-			for j := 1; j < len(substr); j++ {
-				charS := s[i+j]
-				if charS >= 'A' && charS <= 'Z' {
-					charS += 32 // to lower
-				}
-				if charS != substr[j] {
-					match = false
-					break
-				}
-			}
-			if match {
-				return true
-			}
-		}
-	}
-	return false
 }
