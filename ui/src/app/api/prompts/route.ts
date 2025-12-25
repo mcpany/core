@@ -4,13 +4,12 @@
  */
 
 
-import { NextResponse } from "next/server";
-
-const prompts = [
-  { name: "code_review", description: "Review code for best practices", service: "Code Assistant" },
-  { name: "summarize_email", description: "Summarize a long email thread", service: "Email Service" },
-];
+import { NextResponse } from 'next/server';
 
 export async function GET() {
+  const prompts = [
+    { name: "summarize_text", description: "Summarizes the given text", service: "LLMService" },
+    { name: "code_review", description: "Reviews code for bugs", service: "LLMService" },
+  ];
   return NextResponse.json(prompts);
 }

@@ -1,39 +1,35 @@
-/**
- * Copyright 2025 Author(s) of MCP Any
- * SPDX-License-Identifier: Apache-2.0
- */
-
 
 import { NextResponse } from 'next/server';
 
 export async function GET() {
-  // Simulate backend data
+  // Mock data for dashboard metrics
+  // In a real scenario, this would aggregate data from the backend
   const metrics = [
     {
       label: "Total Requests",
-      value: "1.2M",
-      change: "+12.5%",
+      value: "2,345",
+      change: "+20.1%",
       trend: "up",
       icon: "Activity",
     },
     {
       label: "Active Services",
-      value: "14",
+      value: "12",
       change: "+2",
       trend: "up",
       icon: "Server",
     },
     {
-      label: "Avg Latency",
-      value: "45ms",
-      change: "-5ms",
-      trend: "down",
+      label: "Connected Tools",
+      value: "573",
+      change: "+201",
+      trend: "up",
       icon: "Zap",
     },
     {
       label: "Active Users",
-      value: "573",
-      change: "+201",
+      value: "45",
+      change: "+12%",
       trend: "up",
       icon: "Users",
     },
