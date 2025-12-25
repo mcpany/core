@@ -290,12 +290,38 @@ message CacheConfig {
 }
 
 message SemanticCacheConfig {
-  // Provider for embeddings (e.g., "openai", "vertexai")
+  // Provider for embeddings (e.g., "openai", "vertexai", "ollama", "http")
+  // Deprecated: Use provider_config instead.
   string provider = 1;
   // Model name (e.g., "text-embedding-3-small")
+  // Deprecated: Use provider_config instead.
   string model = 2;
   // API Key (can be a reference to environment variable or secret)
+  // Deprecated: Use provider_config instead.
   SecretValue api_key = 3 [json_name = "api_key"];
   // Similarity threshold (0.0 to 1.0). Higher means stricter matching.
   float similarity_threshold = 4 [json_name = "similarity_threshold"];
+
+  oneof provider_config {
+    OpenAIEmbeddingProviderConfig openai = 5 [json_name = "openai"];
+    OllamaEmbeddingProviderConfig ollama = 6 [json_name = "ollama"];
+    HttpEmbeddingProviderConfig http = 7 [json_name = "http"];
+  }
+}
+
+message OpenAIEmbeddingProviderConfig {
+  string model = 1;
+  SecretValue api_key = 2 [json_name = "api_key"];
+}
+
+message OllamaEmbeddingProviderConfig {
+  string model = 1;
+  string base_url = 2 [json_name = "base_url"];
+}
+
+message HttpEmbeddingProviderConfig {
+  string url = 1;
+  map<string, string> headers = 2;
+  string body_template = 3 [json_name = "body_template"];
+  string response_json_path = 4 [json_name = "response_json_path"];
 }
