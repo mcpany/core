@@ -50,7 +50,7 @@ import (
 // Returns:
 //
 //	A single string representing the sanitized and joined identifier.
-func SanitizeID(ids []string, alwaysAppendHash bool, maxSanitizedPrefixLength, hashLength int) (string, error) {
+func SanitizeID(ids []string, alwaysAppendHash bool, maxSanitizedPrefixLength, hashLength int) (string, error) { //nolint:gocyclo
 	// Optimization: Pre-calculate total length to avoid multiple allocations
 	totalLen := 0
 	for i, id := range ids {
