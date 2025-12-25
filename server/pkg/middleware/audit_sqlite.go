@@ -145,6 +145,16 @@ func (s *SQLiteAuditStore) Write(entry AuditEntry) error {
 }
 
 func computeHash(timestamp, toolName, userID, profileID, args, result, errorMsg string, durationMs int64, prevHash string) string {
+	// Use JSON array for unambiguous serialization
+	fields := []any{timestamp, toolName, userID, profileID, args, result, errorMsg, durationMs, prevHash}
+	data, _ := json.Marshal(fields) // Error ignored as primitive types/strings should always marshal
+	h := sha256.Sum256(data)
+	return "v1:" + hex.EncodeToString(h[:])
+}
+
+// computeHashV0 computes the hash using the legacy method (vulnerable to collision).
+// Kept for backward compatibility verification.
+func computeHashV0(timestamp, toolName, userID, profileID, args, result, errorMsg string, durationMs int64, prevHash string) string {
 	data := fmt.Sprintf("%s|%s|%s|%s|%s|%s|%s|%d|%s",
 		timestamp, toolName, userID, profileID, args, result, errorMsg, durationMs, prevHash)
 	h := sha256.Sum256([]byte(data))
@@ -178,7 +188,15 @@ func (s *SQLiteAuditStore) Verify() (bool, error) {
 			return false, fmt.Errorf("integrity violation at id %d: prev_hash mismatch (expected %q, got %q)", id, expectedPrevHash, prevHash)
 		}
 
-		calculatedHash := computeHash(ts, toolName, userID, profileID, args, result, errorMsg, durationMs, prevHash)
+		// Check hash version
+		var calculatedHash string
+		if len(hash) > 3 && hash[:3] == "v1:" {
+			calculatedHash = computeHash(ts, toolName, userID, profileID, args, result, errorMsg, durationMs, prevHash)
+		} else {
+			// Fallback to legacy
+			calculatedHash = computeHashV0(ts, toolName, userID, profileID, args, result, errorMsg, durationMs, prevHash)
+		}
+
 		if calculatedHash != hash {
 			return false, fmt.Errorf("integrity violation at id %d: hash mismatch (calculated %q, got %q)", id, calculatedHash, hash)
 		}
