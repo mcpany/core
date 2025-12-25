@@ -583,3 +583,52 @@ func (u *Upstream) validatePath(virtualPath string, rootPaths map[string]string)
 
 	return targetPathCanonical, nil
 }
+
+func (u *Upstream) toolListDirectory(fsService *configv1.FilesystemUpstreamService, fs afero.Fs) *fsTool {
+	return &fsTool{
+		Name:        "list_directory",
+		Description: "List files and directories in a given path.",
+		Input: map[string]interface{}{
+			"path": map[string]interface{}{"type": "string", "description": "The path to list."},
+		},
+		Output: map[string]interface{}{
+			"entries": map[string]interface{}{
+				"type": "array",
+				"items": map[string]interface{}{
+					"type": "object",
+					"properties": map[string]interface{}{
+						"name":   map[string]interface{}{"type": "string"},
+						"is_dir": map[string]interface{}{"type": "boolean"},
+						"size":   map[string]interface{}{"type": "integer"},
+					},
+				},
+			},
+		},
+		Handler: func(args map[string]interface{}) (map[string]interface{}, error) {
+			path, ok := args["path"].(string)
+			if !ok {
+				return nil, fmt.Errorf("path is required")
+			}
+
+			resolvedPath, err := u.resolvePath(path, fsService)
+			if err != nil {
+				return nil, err
+			}
+
+			entries, err := afero.ReadDir(fs, resolvedPath)
+			if err != nil {
+				return nil, err
+			}
+
+			resultList := []interface{}{}
+			for _, entry := range entries {
+				resultList = append(resultList, map[string]interface{}{
+					"name":   entry.Name(),
+					"is_dir": entry.IsDir(),
+					"size":   entry.Size(),
+				})
+			}
+			return map[string]interface{}{"entries": resultList}, nil
+		},
+	}
+}

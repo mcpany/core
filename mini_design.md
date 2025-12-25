@@ -61,4 +61,3 @@ Read first 512 bytes. If `http.DetectContentType` says "application/octet-stream
 5. Read file. Check binary.
 6. Scan lines. Match regex.
 7. Collect matches. Stop if limit reached.
-
