@@ -253,6 +253,8 @@ func (a *Application) Run(
 	a.ToolManager = tool.NewManager(busProvider)
 	// Add Tool Metrics Middleware
 	a.ToolManager.AddMiddleware(middleware.NewToolMetricsMiddleware())
+	// Add Resilience Middleware
+	a.ToolManager.AddMiddleware(middleware.NewResilienceMiddleware(a.ToolManager))
 
 	a.PromptManager = prompt.NewManager()
 	a.ResourceManager = resource.NewManager()
