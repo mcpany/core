@@ -1,8 +1,6 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
-// Package util provides utility functions.
-
 package util
 
 import (
@@ -19,14 +17,21 @@ import (
 	"github.com/mcpany/core/pkg/consts"
 )
 
-// SanitizeID sanitizes a slice of strings to create a single valid identifier.
+// SanitizeID sanitizes a slice of strings to form a valid ID.
+// It performs the following operations:
+//  1. Joining the strings with a "." separator.
+//  2. Removing any characters that are not allowed (alphanumerics, "_", "-").
+//     Allowed characters are: `[a-zA-Z0-9_-]`.
+//     Wait, checking the implementation:
+//     It allows a-z, A-Z, 0-9, _, -
+//     It seems to replace invalid chars with nothing.
+//     Actually it calculates `dirtyCount`.
+//     If `dirtyCount > 0`, it means we need to "sanitize" by removing them?
+//     Yes, `rawSanitizedLen := len(id) - dirtyCount`.
+//     And later it only writes if valid char.
 //
-// It processes each string in the input slice `ids` to make it conform to a set of rules,
-// ensuring that the resulting identifier is safe and consistent for use in various contexts.
-// The sanitization process involves:
-//  1. Removing any characters that are not alphanumeric, underscore, or hyphen.
-//  2. Truncating the string if it exceeds a specified maximum length.
-//  3. Optionally, appending a hash of the original string to ensure uniqueness,
+//  3. Truncating the result to the specified maximum length.
+//  4. Optionally, appending a hash of the original string to ensure uniqueness,
 //     especially when truncation occurs or when illegal characters are present.
 //
 // After sanitizing each string individually, it joins them with a "." separator to form
@@ -69,61 +74,71 @@ func SanitizeID(ids []string, alwaysAppendHash bool, maxSanitizedPrefixLength, h
 			sb.WriteByte('.')
 		}
 
-		// Pass 1: Scan for dirty chars and count clean length
-		dirtyCount := 0
-		for j := 0; j < len(id); j++ {
-			c := id[j]
-			if !((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9') || c == '_' || c == '-') { //nolint:staticcheck
-				dirtyCount++
-			}
-		}
-
-		rawSanitizedLen := len(id) - dirtyCount
-		appendHash := alwaysAppendHash || dirtyCount > 0 || rawSanitizedLen > maxSanitizedPrefixLength
-
-		finalSanitizedLen := rawSanitizedLen
-		if finalSanitizedLen > maxSanitizedPrefixLength {
-			finalSanitizedLen = maxSanitizedPrefixLength
-		}
-
-		if appendHash {
-			if finalSanitizedLen == 0 {
-				sb.WriteString("id")
-			} else {
-				// Write up to finalSanitizedLen clean chars
-				written := 0
-				for j := 0; j < len(id) && written < finalSanitizedLen; j++ {
-					c := id[j]
-					if (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9') || c == '_' || c == '-' {
-						sb.WriteByte(c)
-						written++
-					}
-				}
-			}
-
-			// Append Hash
-			// Optimization: Use sha256.Sum256 to avoid heap allocation of hash.Hash
-			sum := sha256.Sum256([]byte(id))
-
-			// Avoid hex.EncodeToString allocation
-			var hashBuf [64]byte // sha256 hex is 64 chars
-			hex.Encode(hashBuf[:], sum[:])
-
-			sb.WriteByte('_')
-			if hashLength > 0 && hashLength < 64 {
-				sb.Write(hashBuf[:hashLength])
-			} else {
-				sb.Write(hashBuf[:])
-			}
-
-		} else {
-			// appendHash is false, so dirtyCount == 0 and len(id) <= maxSanitizedPrefixLength
-			// We can just write id
-			sb.WriteString(id)
+		if err := sanitizePart(&sb, id, alwaysAppendHash, maxSanitizedPrefixLength, hashLength); err != nil {
+			return "", err
 		}
 	}
 
 	return sb.String(), nil
+}
+
+func sanitizePart(sb *strings.Builder, id string, alwaysAppendHash bool, maxSanitizedPrefixLength, hashLength int) error {
+	// Pass 1: Scan for dirty chars and count clean length
+	dirtyCount := 0
+	for j := 0; j < len(id); j++ {
+		if !isValidChar(id[j]) {
+			dirtyCount++
+		}
+	}
+
+	rawSanitizedLen := len(id) - dirtyCount
+	appendHash := alwaysAppendHash || dirtyCount > 0 || rawSanitizedLen > maxSanitizedPrefixLength
+
+	finalSanitizedLen := rawSanitizedLen
+	if finalSanitizedLen > maxSanitizedPrefixLength {
+		finalSanitizedLen = maxSanitizedPrefixLength
+	}
+
+	if appendHash {
+		if finalSanitizedLen == 0 {
+			sb.WriteString("id")
+		} else {
+			// Write up to finalSanitizedLen clean chars
+			written := 0
+			for j := 0; j < len(id) && written < finalSanitizedLen; j++ {
+				c := id[j]
+				if isValidChar(c) {
+					sb.WriteByte(c)
+					written++
+				}
+			}
+		}
+
+		// Append Hash
+		// Optimization: Use sha256.Sum256 to avoid heap allocation of hash.Hash
+		sum := sha256.Sum256([]byte(id))
+
+		// Avoid hex.EncodeToString allocation
+		var hashBuf [64]byte // sha256 hex is 64 chars
+		hex.Encode(hashBuf[:], sum[:])
+
+		sb.WriteByte('_')
+		if hashLength > 0 && hashLength < 64 {
+			sb.Write(hashBuf[:hashLength])
+		} else {
+			sb.Write(hashBuf[:])
+		}
+
+	} else {
+		// appendHash is false, so dirtyCount == 0 and len(id) <= maxSanitizedPrefixLength
+		// We can just write id
+		sb.WriteString(id)
+	}
+	return nil
+}
+
+func isValidChar(c byte) bool {
+	return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9') || c == '_' || c == '-'
 }
 
 // SanitizeServiceName sanitizes the given service name.
