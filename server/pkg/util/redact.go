@@ -6,6 +6,7 @@ package util //nolint:revive
 import (
 	"bytes"
 	"encoding/json"
+	"strings"
 )
 
 const redactedPlaceholder = "[REDACTED]"
@@ -172,17 +173,35 @@ func bytesContainsFold(s, substr []byte) bool {
 	firstLower := substr[0]
 	firstUpper := firstLower - 32 // sensitiveKeys are all lowercase ASCII
 
-	i := 0
-	max := len(s) - len(substr)
-
-	for i <= max {
+	for i := 0; i <= len(s)-len(substr); {
 		c := s[i]
 		if c != firstLower && c != firstUpper {
-			i++
-			continue
+			// Optimization: Use IndexByte to skip ahead.
+			// This uses vector instructions (assembly) which is much faster than byte-by-byte loop in Go.
+			idxL := bytes.IndexByte(s[i:], firstLower)
+			idxU := bytes.IndexByte(s[i:], firstUpper)
+
+			if idxL == -1 && idxU == -1 {
+				return false
+			}
+
+			minIdx := -1
+			if idxL != -1 {
+				minIdx = idxL
+			}
+			if idxU != -1 {
+				if minIdx == -1 || idxU < minIdx {
+					minIdx = idxU
+				}
+			}
+
+			i += minIdx
+			if i > len(s)-len(substr) {
+				return false
+			}
 		}
 
-		// First character matches, check the rest
+		// First character matches (or we jumped to it), check the rest
 		match := true
 		for j := 1; j < len(substr); j++ {
 			cc := s[i+j]
@@ -214,31 +233,60 @@ func containsFold(s, substr string) bool {
 	// Optimized case-insensitive search
 	// We first check the first character to avoid setting up the inner loop for mismatches.
 	// Since sensitiveKeys are all lowercase, we can safely assume substr[0] is lowercase.
-	first := substr[0]
-	end := len(s) - len(substr)
+	firstLower := substr[0]
+	firstUpper := firstLower
+	if firstLower >= 'a' && firstLower <= 'z' {
+		firstUpper = firstLower - 32
+	}
 
-	for i := 0; i <= end; i++ {
+	for i := 0; i <= len(s)-len(substr); {
 		c := s[i]
-		if c >= 'A' && c <= 'Z' {
-			c += 32 // to lower
-		}
-		if c == first {
-			// First character matches, check the rest
-			match := true
-			for j := 1; j < len(substr); j++ {
-				charS := s[i+j]
-				if charS >= 'A' && charS <= 'Z' {
-					charS += 32 // to lower
-				}
-				if charS != substr[j] {
-					match = false
-					break
+		matchFirst := (c == firstLower) || (c == firstUpper)
+
+		if !matchFirst {
+			// Optimization: Use strings.IndexByte to skip ahead
+			idxL := strings.IndexByte(s[i:], firstLower)
+			idxU := -1
+			if firstLower != firstUpper {
+				idxU = strings.IndexByte(s[i:], firstUpper)
+			}
+
+			if idxL == -1 && idxU == -1 {
+				return false
+			}
+
+			minIdx := -1
+			if idxL != -1 {
+				minIdx = idxL
+			}
+			if idxU != -1 {
+				if minIdx == -1 || idxU < minIdx {
+					minIdx = idxU
 				}
 			}
-			if match {
-				return true
+
+			i += minIdx
+			if i > len(s)-len(substr) {
+				return false
 			}
 		}
+
+		// First character matches, check the rest
+		match := true
+		for j := 1; j < len(substr); j++ {
+			charS := s[i+j]
+			if charS >= 'A' && charS <= 'Z' {
+				charS += 32 // to lower
+			}
+			if charS != substr[j] {
+				match = false
+				break
+			}
+		}
+		if match {
+			return true
+		}
+		i++
 	}
 	return false
 }
