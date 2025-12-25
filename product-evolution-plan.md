@@ -2,89 +2,108 @@
 
 ## 1. Updated Roadmap
 
-The following roadmap reflects the current state of the codebase and the strategic direction for MCP Any.
+The following is the reconciled roadmap as of today. Completed items have been verified against the codebase.
 
-### Implemented Features
+### Current Status
 
-#### Service Types
-- [x] [gRPC](docs/features/service_types.md)
-- [x] [HTTP](docs/features/service_types.md)
-- [x] [OpenAPI](docs/features/service_types.md)
-- [x] [GraphQL](docs/features/service_types.md)
-- [x] [Stdio](docs/features/service_types.md)
-- [x] [MCP-to-MCP Proxy](docs/features/service_types.md)
-- [x] [WebSocket](docs/features/service_types.md)
-- [x] [WebRTC](docs/features/service_types.md)
-- [x] [SQL](docs/features/service_types.md)
-- [x] [File System Provider](docs/features/filesystem.md)
+#### Implemented Features
+- [x] [**Service Types**](./server/docs/features/service-types.md): gRPC, HTTP, OpenAPI, GraphQL, Stdio, WebSocket, WebRTC.
+- [x] [**Dynamic UI**](./server/docs/features/dynamic-ui.md): Web-based interface for managing services (`ui/`).
+- [x] [**RBAC**](./server/docs/features/rbac.md): Role-Based Access Control (`server/pkg/middleware/rbac.go`).
+- [x] [**Transport Protocols (Kafka)**](./server/docs/features/kafka.md): Add support for asynchronous communication via Kafka.
+- [x] [**Transport Protocols (NATS)**](./server/docs/features/nats.md): Support for NATS as a message bus.
+- [x] [**Caching**](./server/docs/features/caching/README.md).
+- [x] [**Rate Limiting**](./server/docs/features/rate-limiting/README.md).
+- [x] [**Resilience**](./server/docs/features/resilience/README.md).
+- [x] [**Health Checks**](./server/docs/features/health-checks.md).
+- [x] [**Schema Validation**](./server/docs/features/schema-validation.md).
+- [x] [**Service Profiles**](./server/docs/features/profiles_and_policies/README.md).
+- [x] [**Secrets Management**](./server/docs/features/security.md).
+- [x] [**Distributed Tracing**](./server/docs/features/tracing/README.md).
+- [x] [**Automated Documentation Generation**](./server/docs/features/documentation_generation.md).
+- [x] [**IP Allowlisting**](./server/docs/features/security.md).
+- [x] [**Webhooks**](./server/docs/features/webhooks/README.md).
+- [x] [**Advanced Authentication**](./server/docs/features/authentication/README.md).
 
-#### Authentication
-- [x] [API Key](docs/features/auth.md)
-- [x] [Bearer Token](docs/features/auth.md)
-- [x] [OAuth 2.0](docs/features/auth.md)
-- [x] [Role-Based Access Control (RBAC)](docs/features/auth.md)
+#### Ongoing Goals
+- [ ] **Expand Test Coverage**: Unit tests are failing in some packages (`pkg/tool`, `pkg/upstream/grpc/protobufparser`).
+- [ ] **Improve Error Handling**.
 
-#### Policies
-- [x] [Caching](docs/features/policies.md)
-- [x] [Rate Limiting](docs/features/policies.md) (Memory & Redis)
-- [x] [Resilience](docs/features/policies.md) (Circuit Breakers & Retries)
+#### Long-Term Goals
+- [ ] **WASM Plugin Support**.
+- [ ] **More Service Types**.
+- [ ] **Config Registry**.
+- [ ] **Client SDKs** (End-user facing).
 
-#### Observability
-- [x] [Distributed Tracing](docs/features/observability.md) (OpenTelemetry)
-- [x] [Metrics](docs/features/observability.md)
-- [x] [Structured Logging](docs/features/observability.md)
-- [x] [Audit Logging](docs/features/observability.md)
-
-#### Security
-- [x] [Secrets Management](docs/features/security.md)
-- [x] [IP Allowlisting](docs/features/security.md)
-- [x] [Webhooks](docs/features/security.md)
-
-#### Core
-- [x] Dynamic Tool Registration
-- [x] Message Bus (NATS, Kafka)
-- [x] [Structured Output Transformation](docs/features/transformation.md) (JQ/JSONPath)
-- [x] [Admin Management API](docs/features/admin_api.md)
-- [x] [Dynamic Web UI](docs/features/web_ui.md) (Beta)
-
-### Upcoming Features (High Priority)
-
-1.  **Client SDKs (Python/TS)**
-2.  **WASM Plugins**
-3.  **Cloud Storage Support (S3, GCS)**
-4.  **Cost & Quota Management**
+---
 
 ## 2. Top 10 Recommended Features
 
-These recommendations are based on a gap analysis of the current product capabilities vs. industry standards for enterprise-grade API gateways and LLM infrastructure.
+Based on the analysis of current capabilities and industry standards for AI/Infrastructure tools, here are the top 10 recommended features to prioritize:
 
-| Rank | Feature Name | Why it matters | Implementation Difficulty |
-| :--- | :--- | :--- | :--- |
-| 1 | **Client SDKs (Python/TypeScript)** | Accelerates adoption by providing developers with idiomatic, typed wrappers for interacting with MCP Any. Critical for DX. | Medium |
-| 2 | **WASM Plugins** | Enables users to extend functionality (transformations, validators) safely without recompiling the server. Key for extensibility. | High |
-| 3 | **Cloud Storage Support (S3, GCS)** | Extends the Filesystem provider to support cloud storage, allowing LLMs to interact with enterprise data lakes. | Medium |
-| 4 | **Cost & Quota Management** | Essential for SaaS / multi-tenant deployments to control costs and monetize usage (tokens/requests per tenant). | Medium |
-| 5 | **Vector Database Integration** | Enables RAG (Retrieval-Augmented Generation) workflows directly within the gateway, turning it into a "Semantic Gateway". | Medium |
-| 6 | **Advanced Identity Federation** | Support for OIDC and SAML 2.0 to integrate with enterprise Identity Providers (Okta, Entra ID) beyond simple OAuth2. | Medium |
-| 7 | **Human-in-the-Loop Workflows** | Adds a layer of safety by requiring human approval for sensitive tool executions (e.g., database writes, emails). | Medium |
-| 8 | **Code Sandbox / Remote Code Execution** | Allows LLMs to execute code snippets (Python/JS) safely. High value for data analysis agents but requires strict isolation. | High |
-| 9 | **Terraform / IaC Provider** | Allows infrastructure teams to manage MCP Any configuration (services, policies) using GitOps and Infrastructure as Code. | Medium |
-| 10 | **Prompt Management Registry** | A centralized store for managing and versioning system prompts and agent instructions, decoupled from code. | Low |
+1.  **Vector Search Integration (RAG Support)**
+    *   *Why*: Retrieval-Augmented Generation is the primary use case for MCP. Supporting vector databases (Pinecone, Weaviate, pgvector) as first-class citizens will exponentially increase utility.
+    *   *Difficulty*: Medium
 
-## 3. Codebase Health Report
+2.  **OIDC / SSO Support (Incoming Auth)**
+    *   *Why*: Enterprise adoption requires integration with existing identity providers (Google, Okta, Azure AD) rather than just API keys.
+    *   *Difficulty*: Medium
+
+3.  **Kubernetes Operator**
+    *   *Why*: To truly be "Ops Friendly", we need a native way to manage MCP Any instances and configurations via CRDs in K8s environments.
+    *   *Difficulty*: High
+
+4.  **S3 / Blob Storage Adapter**
+    *   *Why*: A generic file operations tool (Upload/Download/List) for S3-compatible storage is a very common requirement for AI agents.
+    *   *Difficulty*: Low
+
+5.  **PII Redaction / Data Masking**
+    *   *Why*: Security and compliance (GDPR/CCPA). Automatically redact sensitive info (emails, credit cards) from logs and traces.
+    *   *Difficulty*: Medium
+
+6.  **Interactive Tool Playground (UI)**
+    *   *Why*: Improve Developer Experience (DX). Allow users to test tools directly from the UI (like Swagger UI) before connecting an agent.
+    *   *Difficulty*: Medium
+
+7.  **Cost / Token Usage Analytics**
+    *   *Why*: Business intelligence. Track token usage per user/profile to enable chargeback or quota management.
+    *   *Difficulty*: Medium
+
+8.  **Structured Log Streaming**
+    *   *Why*: Production readiness. Direct integration with Splunk, Datadog, or CloudWatch for logs (beyond just file/stdout).
+    *   *Difficulty*: Low
+
+9.  **Declarative Config Validation CLI**
+    *   *Why*: CI/CD. A standalone CLI command to validate `config.yaml` syntax and schema without starting the server.
+    *   *Difficulty*: Low
+
+10. **Webhooks Sink (Event Source)**
+    *   *Why*: Enable event-driven workflows. Allow external services to trigger MCP tools via webhooks (reverse of current Webhooks feature).
+    *   *Difficulty*: Medium
+
+---
+
+## 3. Codebase Health
 
 ### Overview
-The codebase appears robust, following standard Go project layouts (`server/pkg/...`). The separation of concerns between `upstream`, `transformer`, and `middleware` is clean.
+The codebase is well-structured and modular (`pkg/` layout). However, there are some areas requiring attention.
 
-### Key Observations
-*   **Dependency Management**: The project uses `go.work`, indicating a multi-module workspace. This is good for separation but requires careful management of dependency versions.
-*   **Filesystem Provider**: The recent implementation of `server/pkg/upstream/filesystem` correctly uses `spf13/afero` for filesystem abstraction. This is a best practice and significantly eases the path to adding Cloud Storage (S3/GCS) support later.
-*   **Testing**: There is a significant number of tests (`grep -r "test" server/pkg | wc -l` returned ~4500 lines). `upstream_test.go` exists in most packages, which is a good sign.
-*   **TODOs**: There are a moderate number of `TODO` comments in the codebase. These should be reviewed, particularly those in critical paths like `upstream` and `auth`.
-*   **Documentation**: The `docs/` folder is well-structured. Keeping `ROADMAP.md` and `features/` in sync with code is crucial, as addressed in this update.
-*   **Python Virtual Environment**: There are traces of a Python virtual environment in `build/venv`, likely for testing or pre-commit hooks. Ensure these do not leak into production builds.
+### Issues
+1.  **Test Failures**:
+    *   `github.com/mcpany/core/pkg/tool`: `TestNewGRPCTool`, `TestGRPCTool_Execute` are failing.
+    *   `github.com/mcpany/core/pkg/upstream/grpc/protobufparser`: `TestExtractMcpDefinitions` is failing.
+    *   *Recommendation*: Immediate priority to fix these tests to ensure stability.
 
-### Recommendations for Refactoring
-*   **Consolidate Upstream Interfaces**: Ensure all upstreams strictly adhere to the `Upstream` interface. As more types (like SQL, Filesystem) are added, verify that the interface abstraction holds up without excessive type casting.
-*   **Standardize Error Handling**: Review error returns across upstreams to ensure consistent error codes/types are returned to the client (e.g., distinguishing between "upstream unavailable" vs "invalid arguments").
-*   **Audit "Planned" Stubs**: The code contains several stubs or comments for planned features (e.g., in filesystem). These should either be implemented or clearly marked as "Not Implemented" in the API responses to avoid user confusion.
+2.  **Linting**:
+    *   There are ~103 `nolint` directives. While sometimes necessary, excessive use can hide real issues. A review is recommended.
+
+3.  **TODOs**:
+    *   Only 1 TODO found in `server/pkg`. This is surprisingly low, which might indicate either very clean code or a lack of inline tracking for tech debt.
+    *   A massive amount of TODOs (1900+) were found in `build/` (dependencies), which is expected and fine, but we should ensure our own code is tracked.
+
+### Refactoring Candidates
+*   **Protobuf Parser**: The failing tests in `protobufparser` suggest this area might be brittle. It's a complex component (reflecting on proto files) and critical for gRPC support.
+*   **Tool Execution Logic**: Failures in `pkg/tool` suggest the core execution engine might have regressions.
+
+### Conclusion
+The project is in a strong position feature-wise, but stability (tests) needs to be addressed before embarking on the "Kubernetes Operator" or "WASM" features.

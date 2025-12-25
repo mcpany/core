@@ -46,14 +46,11 @@ The following features are fully implemented and tested:
 - [x] [**Advanced Authentication**](./features/authentication/README.md):
   - Standardized `AuthenticationConfig` for Users and Profiles.
   - Priority-based authentication (Profile > User > Global).
+- [x] [**Dynamic UI**](./features/dynamic-ui.md): Build a web-based UI for managing upstream services dynamically.
+- [x] [**RBAC**](./features/rbac.md): Role-Based Access Control for managing user permissions.
+- [x] [**Transport Protocols (Kafka)**](./features/kafka.md): Add support for asynchronous communication via Kafka.
 
 For a complete list of all available configuration options, please see the [Configuration Reference](./reference/configuration.md).
-
-## High Priority (Next 1-3 Months)
-
-- [ ] **Dynamic UI**: Build a web-based UI for managing upstream services dynamically.
-- [ ] **RBAC**: Role-Based Access Control for managing user permissions.
-- [ ] **Transport Protocols (Kafka)**: Add support for asynchronous communication via Kafka.
 
 ## Ongoing Goals
 
