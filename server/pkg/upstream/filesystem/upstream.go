@@ -42,6 +42,15 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 	return nil
 }
 
+// toolDefStruct helper struct for defining tools
+type toolDefStruct struct {
+	Name        string
+	Description string
+	Input       map[string]interface{}
+	Output      map[string]interface{}
+	Handler     func(args map[string]interface{}) (map[string]interface{}, error)
+}
+
 // Register processes the configuration for a filesystem service.
 func (u *Upstream) Register(
 	ctx context.Context,
@@ -51,8 +60,6 @@ func (u *Upstream) Register(
 	resourceManager resource.ManagerInterface,
 	isReload bool,
 ) (string, []*configv1.ToolDefinition, []*configv1.ResourceDefinition, error) {
-	log := logging.GetLogger()
-
 	// Calculate SHA256 for the ID
 	h := sha256.New()
 	h.Write([]byte(serviceConfig.GetName()))
@@ -84,333 +91,24 @@ func (u *Upstream) Register(
 	toolManager.AddServiceInfo(serviceID, info)
 
 	// Define built-in tools
-	tools := []*struct {
-		Name        string
-		Description string
-		Input       map[string]interface{}
-		Output      map[string]interface{}
-		Handler     func(args map[string]interface{}) (map[string]interface{}, error)
-	}{
-		{
-			Name:        "list_directory",
-			Description: "List files and directories in a given path.",
-			Input: map[string]interface{}{
-				"path": map[string]interface{}{"type": "string", "description": "The path to list."},
-			},
-			Output: map[string]interface{}{
-				"entries": map[string]interface{}{
-					"type": "array",
-					"items": map[string]interface{}{
-						"type": "object",
-						"properties": map[string]interface{}{
-							"name":   map[string]interface{}{"type": "string"},
-							"is_dir": map[string]interface{}{"type": "boolean"},
-							"size":   map[string]interface{}{"type": "integer"},
-						},
-					},
-				},
-			},
-			Handler: func(args map[string]interface{}) (map[string]interface{}, error) {
-				path, ok := args["path"].(string)
-				if !ok {
-					return nil, fmt.Errorf("path is required")
-				}
+	tools := u.getTools(fs, fsService)
 
-				resolvedPath, err := u.resolvePath(path, fsService)
-				if err != nil {
-					return nil, err
-				}
-
-				entries, err := afero.ReadDir(fs, resolvedPath)
-				if err != nil {
-					return nil, err
-				}
-
-				resultList := []interface{}{}
-				for _, entry := range entries {
-					resultList = append(resultList, map[string]interface{}{
-						"name":   entry.Name(),
-						"is_dir": entry.IsDir(),
-						"size":   entry.Size(),
-					})
-				}
-				return map[string]interface{}{"entries": resultList}, nil
-			},
-		},
-		{
-			Name:        "read_file",
-			Description: "Read the content of a file.",
-			Input: map[string]interface{}{
-				"path": map[string]interface{}{"type": "string", "description": "The path to the file."},
-			},
-			Output: map[string]interface{}{
-				"content": map[string]interface{}{"type": "string", "description": "The file content."},
-			},
-			Handler: func(args map[string]interface{}) (map[string]interface{}, error) {
-				path, ok := args["path"].(string)
-				if !ok {
-					return nil, fmt.Errorf("path is required")
-				}
-
-				resolvedPath, err := u.resolvePath(path, fsService)
-				if err != nil {
-					return nil, err
-				}
-
-				// Check if it's a directory
-				info, err := fs.Stat(resolvedPath)
-				if err != nil {
-					return nil, err
-				}
-				if info.IsDir() {
-					return nil, fmt.Errorf("path is a directory")
-				}
-
-				content, err := afero.ReadFile(fs, resolvedPath)
-				if err != nil {
-					return nil, err
-				}
-				return map[string]interface{}{"content": string(content)}, nil
-			},
-		},
-		{
-			Name:        "write_file",
-			Description: "Write content to a file.",
-			Input: map[string]interface{}{
-				"path":    map[string]interface{}{"type": "string", "description": "The path to the file."},
-				"content": map[string]interface{}{"type": "string", "description": "The content to write."},
-			},
-			Output: map[string]interface{}{
-				"success": map[string]interface{}{"type": "boolean"},
-			},
-			Handler: func(args map[string]interface{}) (map[string]interface{}, error) {
-				if fsService.GetReadOnly() {
-					return nil, fmt.Errorf("filesystem is read-only")
-				}
-				path, ok := args["path"].(string)
-				if !ok {
-					return nil, fmt.Errorf("path is required")
-				}
-				content, ok := args["content"].(string)
-				if !ok {
-					return nil, fmt.Errorf("content is required")
-				}
-
-				resolvedPath, err := u.resolvePath(path, fsService)
-				if err != nil {
-					// Check if parent directory is allowed if file doesn't exist yet
-					// resolvePath usually checks validity of prefix.
-					return nil, err
-				}
-
-				if err := afero.WriteFile(fs, resolvedPath, []byte(content), 0600); err != nil {
-					return nil, err
-				}
-				return map[string]interface{}{"success": true}, nil
-			},
-		},
-		{
-			Name:        "delete_file",
-			Description: "Delete a file or empty directory.",
-			Input: map[string]interface{}{
-				"path": map[string]interface{}{"type": "string", "description": "The path to delete."},
-			},
-			Output: map[string]interface{}{
-				"success": map[string]interface{}{"type": "boolean"},
-			},
-			Handler: func(args map[string]interface{}) (map[string]interface{}, error) {
-				if fsService.GetReadOnly() {
-					return nil, fmt.Errorf("filesystem is read-only")
-				}
-				path, ok := args["path"].(string)
-				if !ok {
-					return nil, fmt.Errorf("path is required")
-				}
-
-				resolvedPath, err := u.resolvePath(path, fsService)
-				if err != nil {
-					return nil, err
-				}
-
-				if err := fs.Remove(resolvedPath); err != nil {
-					return nil, err
-				}
-				return map[string]interface{}{"success": true}, nil
-			},
-		},
-		{
-			Name:        "search_files",
-			Description: "Search for a text pattern in files within a directory.",
-			Input: map[string]interface{}{
-				"path":    map[string]interface{}{"type": "string", "description": "The root directory to search."},
-				"pattern": map[string]interface{}{"type": "string", "description": "The regular expression to search for."},
-			},
-			Output: map[string]interface{}{
-				"matches": map[string]interface{}{
-					"type": "array",
-					"items": map[string]interface{}{
-						"type": "object",
-						"properties": map[string]interface{}{
-							"file":         map[string]interface{}{"type": "string"},
-							"line_number":  map[string]interface{}{"type": "integer"},
-							"line_content": map[string]interface{}{"type": "string"},
-						},
-					},
-				},
-			},
-			Handler: func(args map[string]interface{}) (map[string]interface{}, error) {
-				path, ok := args["path"].(string)
-				if !ok {
-					return nil, fmt.Errorf("path is required")
-				}
-				patternStr, ok := args["pattern"].(string)
-				if !ok {
-					return nil, fmt.Errorf("pattern is required")
-				}
-
-				re, err := regexp.Compile(patternStr)
-				if err != nil {
-					return nil, fmt.Errorf("invalid regex pattern: %w", err)
-				}
-
-				resolvedPath, err := u.resolvePath(path, fsService)
-				if err != nil {
-					return nil, err
-				}
-
-				matches := []map[string]interface{}{}
-				maxMatches := 100
-				matchCount := 0
-
-				err = afero.Walk(fs, resolvedPath, func(filePath string, info os.FileInfo, err error) error {
-					if err != nil {
-						// Skip unreadable files
-						return nil
-					}
-					if matchCount >= maxMatches {
-						return filepath.SkipDir
-					}
-					if info.IsDir() {
-						// Skip hidden directories like .git
-						if strings.HasPrefix(info.Name(), ".") && info.Name() != "." && info.Name() != ".." {
-							return filepath.SkipDir
-						}
-						return nil
-					}
-					// Skip large files (e.g., > 10MB)
-					if info.Size() > 10*1024*1024 {
-						return nil
-					}
-
-					// Read file
-					f, err := fs.Open(filePath)
-					if err != nil {
-						return nil
-					}
-					defer f.Close()
-
-					// Check for binary
-					// Read first 512 bytes
-					buffer := make([]byte, 512)
-					n, _ := f.Read(buffer)
-					if n > 0 {
-						contentType := http.DetectContentType(buffer[:n])
-						if contentType == "application/octet-stream" {
-							return nil
-						}
-						// Reset seeker
-						if _, err := f.Seek(0, 0); err != nil {
-							return nil
-						}
-					}
-
-					scanner := bufio.NewScanner(f)
-					lineNum := 0
-					for scanner.Scan() {
-						lineNum++
-						line := scanner.Text()
-						if re.MatchString(line) {
-							// Relativize path
-							relPath, _ := filepath.Rel(resolvedPath, filePath)
-							if relPath == "" {
-								relPath = filepath.Base(filePath)
-							}
-
-							matches = append(matches, map[string]interface{}{
-								"file":         relPath,
-								"line_number":  lineNum,
-								"line_content": strings.TrimSpace(line),
-							})
-							matchCount++
-							if matchCount >= maxMatches {
-								return filepath.SkipDir
-							}
-						}
-					}
-					return nil
-				})
-
-				if err != nil && err != filepath.SkipDir {
-					return nil, err
-				}
-
-				return map[string]interface{}{"matches": matches}, nil
-			},
-		},
-		{
-			Name:        "get_file_info",
-			Description: "Get information about a file or directory.",
-			Input: map[string]interface{}{
-				"path": map[string]interface{}{"type": "string", "description": "The path."},
-			},
-			Output: map[string]interface{}{
-				"name":     map[string]interface{}{"type": "string"},
-				"is_dir":   map[string]interface{}{"type": "boolean"},
-				"size":     map[string]interface{}{"type": "integer"},
-				"mod_time": map[string]interface{}{"type": "string"},
-			},
-			Handler: func(args map[string]interface{}) (map[string]interface{}, error) {
-				path, ok := args["path"].(string)
-				if !ok {
-					return nil, fmt.Errorf("path is required")
-				}
-
-				resolvedPath, err := u.resolvePath(path, fsService)
-				if err != nil {
-					return nil, err
-				}
-
-				info, err := fs.Stat(resolvedPath)
-				if err != nil {
-					return nil, err
-				}
-				return map[string]interface{}{
-					"name":     info.Name(),
-					"is_dir":   info.IsDir(),
-					"size":     info.Size(),
-					"mod_time": info.ModTime().Format(time.RFC3339),
-				}, nil
-			},
-		},
-		{
-			Name:        "list_allowed_directories",
-			Description: "List the allowed root directories. (Deprecated with afero usage)",
-			Input:       map[string]interface{}{},
-			Output: map[string]interface{}{
-				"roots": map[string]interface{}{"type": "array", "items": map[string]interface{}{"type": "string"}},
-			},
-			Handler: func(args map[string]interface{}) (map[string]interface{}, error) {
-				// With afero, we might just have one root or multiple mounts.
-				// For backward compatibility, we can list keys from RootPaths if available.
-				roots := []string{}
-				for k := range fsService.RootPaths {
-					roots = append(roots, k)
-				}
-				return map[string]interface{}{"roots": roots}, nil
-			},
-		},
+	discoveredTools, err := u.registerTools(tools, toolManager, serviceConfig, serviceID)
+	if err != nil {
+		return "", nil, nil, err
 	}
 
+	logging.GetLogger().Info("Registered filesystem service", "serviceID", serviceID, "tools", len(discoveredTools))
+	return serviceID, discoveredTools, nil, nil
+}
+
+func (u *Upstream) registerTools(
+	tools []*toolDefStruct,
+	toolManager tool.ManagerInterface,
+	serviceConfig *configv1.UpstreamServiceConfig,
+	serviceID string,
+) ([]*configv1.ToolDefinition, error) {
+	log := logging.GetLogger()
 	discoveredTools := make([]*configv1.ToolDefinition, 0)
 
 	for _, t := range tools {
@@ -456,9 +154,362 @@ func (u *Upstream) Register(
 
 		discoveredTools = append(discoveredTools, toolDef)
 	}
+	return discoveredTools, nil
+}
 
-	log.Info("Registered filesystem service", "serviceID", serviceID, "tools", len(discoveredTools))
-	return serviceID, discoveredTools, nil, nil
+func (u *Upstream) getTools(fs afero.Fs, fsService *configv1.FilesystemUpstreamService) []*toolDefStruct {
+	return []*toolDefStruct{
+		u.toolListDirectory(fs, fsService),
+		u.toolReadFile(fs, fsService),
+		u.toolWriteFile(fs, fsService),
+		u.toolDeleteFile(fs, fsService),
+		u.toolSearchFiles(fs, fsService),
+		u.toolGetFileInfo(fs, fsService),
+		u.toolListAllowedDirectories(fsService),
+	}
+}
+
+func (u *Upstream) toolListDirectory(fs afero.Fs, fsService *configv1.FilesystemUpstreamService) *toolDefStruct {
+	return &toolDefStruct{
+		Name:        "list_directory",
+		Description: "List files and directories in a given path.",
+		Input: map[string]interface{}{
+			"path": map[string]interface{}{"type": "string", "description": "The path to list."},
+		},
+		Output: map[string]interface{}{
+			"entries": map[string]interface{}{
+				"type": "array",
+				"items": map[string]interface{}{
+					"type": "object",
+					"properties": map[string]interface{}{
+						"name":   map[string]interface{}{"type": "string"},
+						"is_dir": map[string]interface{}{"type": "boolean"},
+						"size":   map[string]interface{}{"type": "integer"},
+					},
+				},
+			},
+		},
+		Handler: func(args map[string]interface{}) (map[string]interface{}, error) {
+			path, ok := args["path"].(string)
+			if !ok {
+				return nil, fmt.Errorf("path is required")
+			}
+
+			resolvedPath, err := u.resolvePath(path, fsService)
+			if err != nil {
+				return nil, err
+			}
+
+			entries, err := afero.ReadDir(fs, resolvedPath)
+			if err != nil {
+				return nil, err
+			}
+
+			resultList := []interface{}{}
+			for _, entry := range entries {
+				resultList = append(resultList, map[string]interface{}{
+					"name":   entry.Name(),
+					"is_dir": entry.IsDir(),
+					"size":   entry.Size(),
+				})
+			}
+			return map[string]interface{}{"entries": resultList}, nil
+		},
+	}
+}
+
+func (u *Upstream) toolReadFile(fs afero.Fs, fsService *configv1.FilesystemUpstreamService) *toolDefStruct {
+	return &toolDefStruct{
+		Name:        "read_file",
+		Description: "Read the content of a file.",
+		Input: map[string]interface{}{
+			"path": map[string]interface{}{"type": "string", "description": "The path to the file."},
+		},
+		Output: map[string]interface{}{
+			"content": map[string]interface{}{"type": "string", "description": "The file content."},
+		},
+		Handler: func(args map[string]interface{}) (map[string]interface{}, error) {
+			path, ok := args["path"].(string)
+			if !ok {
+				return nil, fmt.Errorf("path is required")
+			}
+
+			resolvedPath, err := u.resolvePath(path, fsService)
+			if err != nil {
+				return nil, err
+			}
+
+			// Check if it's a directory
+			info, err := fs.Stat(resolvedPath)
+			if err != nil {
+				return nil, err
+			}
+			if info.IsDir() {
+				return nil, fmt.Errorf("path is a directory")
+			}
+
+			content, err := afero.ReadFile(fs, resolvedPath)
+			if err != nil {
+				return nil, err
+			}
+			return map[string]interface{}{"content": string(content)}, nil
+		},
+	}
+}
+
+func (u *Upstream) toolWriteFile(fs afero.Fs, fsService *configv1.FilesystemUpstreamService) *toolDefStruct {
+	return &toolDefStruct{
+		Name:        "write_file",
+		Description: "Write content to a file.",
+		Input: map[string]interface{}{
+			"path":    map[string]interface{}{"type": "string", "description": "The path to the file."},
+			"content": map[string]interface{}{"type": "string", "description": "The content to write."},
+		},
+		Output: map[string]interface{}{
+			"success": map[string]interface{}{"type": "boolean"},
+		},
+		Handler: func(args map[string]interface{}) (map[string]interface{}, error) {
+			if fsService.GetReadOnly() {
+				return nil, fmt.Errorf("filesystem is read-only")
+			}
+			path, ok := args["path"].(string)
+			if !ok {
+				return nil, fmt.Errorf("path is required")
+			}
+			content, ok := args["content"].(string)
+			if !ok {
+				return nil, fmt.Errorf("content is required")
+			}
+
+			resolvedPath, err := u.resolvePath(path, fsService)
+			if err != nil {
+				// Check if parent directory is allowed if file doesn't exist yet
+				// resolvePath usually checks validity of prefix.
+				return nil, err
+			}
+
+			if err := afero.WriteFile(fs, resolvedPath, []byte(content), 0600); err != nil {
+				return nil, err
+			}
+			return map[string]interface{}{"success": true}, nil
+		},
+	}
+}
+
+func (u *Upstream) toolDeleteFile(fs afero.Fs, fsService *configv1.FilesystemUpstreamService) *toolDefStruct {
+	return &toolDefStruct{
+		Name:        "delete_file",
+		Description: "Delete a file or empty directory.",
+		Input: map[string]interface{}{
+			"path": map[string]interface{}{"type": "string", "description": "The path to delete."},
+		},
+		Output: map[string]interface{}{
+			"success": map[string]interface{}{"type": "boolean"},
+		},
+		Handler: func(args map[string]interface{}) (map[string]interface{}, error) {
+			if fsService.GetReadOnly() {
+				return nil, fmt.Errorf("filesystem is read-only")
+			}
+			path, ok := args["path"].(string)
+			if !ok {
+				return nil, fmt.Errorf("path is required")
+			}
+
+			resolvedPath, err := u.resolvePath(path, fsService)
+			if err != nil {
+				return nil, err
+			}
+
+			if err := fs.Remove(resolvedPath); err != nil {
+				return nil, err
+			}
+			return map[string]interface{}{"success": true}, nil
+		},
+	}
+}
+
+func (u *Upstream) toolSearchFiles(fs afero.Fs, fsService *configv1.FilesystemUpstreamService) *toolDefStruct {
+	return &toolDefStruct{
+		Name:        "search_files",
+		Description: "Search for a text pattern in files within a directory.",
+		Input: map[string]interface{}{
+			"path":    map[string]interface{}{"type": "string", "description": "The root directory to search."},
+			"pattern": map[string]interface{}{"type": "string", "description": "The regular expression to search for."},
+		},
+		Output: map[string]interface{}{
+			"matches": map[string]interface{}{
+				"type": "array",
+				"items": map[string]interface{}{
+					"type": "object",
+					"properties": map[string]interface{}{
+						"file":         map[string]interface{}{"type": "string"},
+						"line_number":  map[string]interface{}{"type": "integer"},
+						"line_content": map[string]interface{}{"type": "string"},
+					},
+				},
+			},
+		},
+		Handler: func(args map[string]interface{}) (map[string]interface{}, error) {
+			path, ok := args["path"].(string)
+			if !ok {
+				return nil, fmt.Errorf("path is required")
+			}
+			patternStr, ok := args["pattern"].(string)
+			if !ok {
+				return nil, fmt.Errorf("pattern is required")
+			}
+
+			re, err := regexp.Compile(patternStr)
+			if err != nil {
+				return nil, fmt.Errorf("invalid regex pattern: %w", err)
+			}
+
+			resolvedPath, err := u.resolvePath(path, fsService)
+			if err != nil {
+				return nil, err
+			}
+
+			matches := []map[string]interface{}{}
+			maxMatches := 100
+			matchCount := 0
+
+			err = afero.Walk(fs, resolvedPath, func(filePath string, info os.FileInfo, err error) error {
+				if err != nil {
+					// Skip unreadable files
+					return nil
+				}
+				if matchCount >= maxMatches {
+					return filepath.SkipDir
+				}
+				if info.IsDir() {
+					// Skip hidden directories like .git
+					if strings.HasPrefix(info.Name(), ".") && info.Name() != "." && info.Name() != ".." {
+						return filepath.SkipDir
+					}
+					return nil
+				}
+				// Skip large files (e.g., > 10MB)
+				if info.Size() > 10*1024*1024 {
+					return nil
+				}
+
+				// Read file
+				f, err := fs.Open(filePath)
+				if err != nil {
+					return nil
+				}
+				// defer closing handled by wrapper, but here we are in Walk.
+				// We need to be careful with defer in a loop, but Walk calls the function once per file.
+				defer func() {
+					_ = f.Close()
+				}()
+
+				// Check for binary
+				// Read first 512 bytes
+				buffer := make([]byte, 512)
+				n, _ := f.Read(buffer)
+				if n > 0 {
+					contentType := http.DetectContentType(buffer[:n])
+					if contentType == "application/octet-stream" {
+						return nil
+					}
+					// Reset seeker
+					if _, err := f.Seek(0, 0); err != nil {
+						return nil
+					}
+				}
+
+				scanner := bufio.NewScanner(f)
+				lineNum := 0
+				for scanner.Scan() {
+					lineNum++
+					line := scanner.Text()
+					if re.MatchString(line) {
+						// Relativize path
+						relPath, _ := filepath.Rel(resolvedPath, filePath)
+						if relPath == "" {
+							relPath = filepath.Base(filePath)
+						}
+
+						matches = append(matches, map[string]interface{}{
+							"file":         relPath,
+							"line_number":  lineNum,
+							"line_content": strings.TrimSpace(line),
+						})
+						matchCount++
+						if matchCount >= maxMatches {
+							return filepath.SkipDir
+						}
+					}
+				}
+				return nil
+			})
+
+			if err != nil && err != filepath.SkipDir {
+				return nil, err
+			}
+
+			return map[string]interface{}{"matches": matches}, nil
+		},
+	}
+}
+
+func (u *Upstream) toolGetFileInfo(fs afero.Fs, fsService *configv1.FilesystemUpstreamService) *toolDefStruct {
+	return &toolDefStruct{
+		Name:        "get_file_info",
+		Description: "Get information about a file or directory.",
+		Input: map[string]interface{}{
+			"path": map[string]interface{}{"type": "string", "description": "The path."},
+		},
+		Output: map[string]interface{}{
+			"name":     map[string]interface{}{"type": "string"},
+			"is_dir":   map[string]interface{}{"type": "boolean"},
+			"size":     map[string]interface{}{"type": "integer"},
+			"mod_time": map[string]interface{}{"type": "string"},
+		},
+		Handler: func(args map[string]interface{}) (map[string]interface{}, error) {
+			path, ok := args["path"].(string)
+			if !ok {
+				return nil, fmt.Errorf("path is required")
+			}
+
+			resolvedPath, err := u.resolvePath(path, fsService)
+			if err != nil {
+				return nil, err
+			}
+
+			info, err := fs.Stat(resolvedPath)
+			if err != nil {
+				return nil, err
+			}
+			return map[string]interface{}{
+				"name":     info.Name(),
+				"is_dir":   info.IsDir(),
+				"size":     info.Size(),
+				"mod_time": info.ModTime().Format(time.RFC3339),
+			}, nil
+		},
+	}
+}
+
+func (u *Upstream) toolListAllowedDirectories(fsService *configv1.FilesystemUpstreamService) *toolDefStruct {
+	return &toolDefStruct{
+		Name:        "list_allowed_directories",
+		Description: "List the allowed root directories. (Deprecated with afero usage)",
+		Input:       map[string]interface{}{},
+		Output: map[string]interface{}{
+			"roots": map[string]interface{}{"type": "array", "items": map[string]interface{}{"type": "string"}},
+		},
+		Handler: func(args map[string]interface{}) (map[string]interface{}, error) {
+			// With afero, we might just have one root or multiple mounts.
+			// For backward compatibility, we can list keys from RootPaths if available.
+			roots := []string{}
+			for k := range fsService.RootPaths {
+				roots = append(roots, k)
+			}
+			return map[string]interface{}{"roots": roots}, nil
+		},
+	}
 }
 
 type fsCallable struct {

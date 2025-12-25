@@ -11,6 +11,28 @@ MCP Any includes comprehensive observability features to monitor and debug your 
 
 ## Configuration
 
-Observability settings are configured in the global `observability` section.
+Observability settings are configured in the global `observability` and `audit` sections of the configuration.
 
-See `docs/monitoring.md` for more details.
+### Metrics
+
+To enable metrics, set the `metrics-listen-address` flag or environment variable `MCPANY_METRICS_LISTEN_ADDRESS` (e.g., `:9090`).
+
+### Audit Logging
+
+Audit logging can be configured in the global settings.
+
+```yaml
+global:
+  audit:
+    enabled: true
+    output_path: "/var/log/mcpany/audit.log"
+    storage_type: "FILE" # or "SQLITE"
+    log_arguments: true
+    log_results: false
+```
+
+*   `enabled`: Enable or disable audit logging.
+*   `output_path`: Path to the log file or SQLite database.
+*   `storage_type`: `FILE` or `SQLITE`.
+*   `log_arguments`: Whether to include tool arguments in the log (careful with sensitive data).
+*   `log_results`: Whether to include tool results in the log.

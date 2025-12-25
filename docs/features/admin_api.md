@@ -14,7 +14,40 @@ The Admin Management API allows for runtime configuration and management of the 
 
 - `POST /v1/services/register`: Register a new service.
 - `POST /v1/services/unregister`: Unregister a service.
+- `GET /v1/services`: List all registered services.
+- `GET /v1/services/{service_name}`: Get details of a specific service.
+- `GET /v1/services/{service_name}/status`: Get the status (tools, metrics) of a specific service.
 
 ## Usage
 
-(Documentation in progress)
+### Register a Service
+
+```bash
+curl -X POST http://localhost:8080/v1/services/register \
+  -H "Content-Type: application/json" \
+  -d '{
+    "config": {
+      "name": "my-service",
+      "type": "http",
+      "http": {
+        "base_url": "https://api.example.com"
+      }
+    }
+  }'
+```
+
+### Unregister a Service
+
+```bash
+curl -X POST http://localhost:8080/v1/services/unregister \
+  -H "Content-Type: application/json" \
+  -d '{
+    "service_name": "my-service"
+  }'
+```
+
+### Get Service Status
+
+```bash
+curl http://localhost:8080/v1/services/my-service/status
+```
