@@ -68,7 +68,7 @@ func ensureColumns(db *sql.DB) error {
 	// Helper to check and add column
 	addColumn := func(colName string) error {
 		// Check if column exists
-		//nolint:gosec // colName is trusted input from this function
+		//nolint:gosec // colName is hardcoded internally
 		query := fmt.Sprintf("SELECT %s FROM audit_logs LIMIT 1", colName)
 		if _, err := db.Exec(query); err == nil {
 			return nil
