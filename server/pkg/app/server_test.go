@@ -61,6 +61,15 @@ upstream_services:
 		err := afero.WriteFile(fs, "/config.yaml", []byte(configContent), 0o644)
 		require.NoError(t, err)
 
+		// Initialize ServiceRegistry (needed by ReloadConfig)
+		app.ServiceRegistry = serviceregistry.New(
+			app.UpstreamFactory,
+			app.ToolManager,
+			app.PromptManager,
+			app.ResourceManager,
+			auth.NewManager(),
+		)
+
 		err = app.ReloadConfig(fs, []string{"/config.yaml"})
 		require.NoError(t, err)
 
@@ -72,6 +81,14 @@ upstream_services:
 	t.Run("malformed config", func(t *testing.T) {
 		fs := afero.NewMemMapFs()
 		app := NewApplication()
+		// Initialize ServiceRegistry
+		app.ServiceRegistry = serviceregistry.New(
+			app.UpstreamFactory,
+			app.ToolManager,
+			app.PromptManager,
+			app.ResourceManager,
+			auth.NewManager(),
+		)
 
 		err := afero.WriteFile(fs, "/config.yaml", []byte("malformed yaml:"), 0o644)
 		require.NoError(t, err)
@@ -83,6 +100,14 @@ upstream_services:
 	t.Run("disabled service", func(t *testing.T) {
 		fs := afero.NewMemMapFs()
 		app := NewApplication()
+		// Initialize ServiceRegistry
+		app.ServiceRegistry = serviceregistry.New(
+			app.UpstreamFactory,
+			app.ToolManager,
+			app.PromptManager,
+			app.ResourceManager,
+			auth.NewManager(),
+		)
 
 		configContent := `
 upstream_services:
@@ -113,6 +138,14 @@ upstream_services:
 	t.Run("unknown service type", func(t *testing.T) {
 		fs := afero.NewMemMapFs()
 		app := NewApplication()
+		// Initialize ServiceRegistry
+		app.ServiceRegistry = serviceregistry.New(
+			app.UpstreamFactory,
+			app.ToolManager,
+			app.PromptManager,
+			app.ResourceManager,
+			auth.NewManager(),
+		)
 
 		configContent := `
 upstream_services:

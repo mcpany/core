@@ -143,6 +143,7 @@ type Application struct {
 	ToolManager      tool.ManagerInterface
 	ResourceManager  resource.ManagerInterface
 	UpstreamFactory  factory.Factory
+	ServiceRegistry  *serviceregistry.ServiceRegistry
 	configFiles      map[string]string
 	fs               afero.Fs
 	configPaths      []string
@@ -267,7 +268,7 @@ func (a *Application) Run(
 		cfg.GetGlobalSettings().GetProfileDefinitions(),
 	)
 
-	serviceRegistry := serviceregistry.New(
+	a.ServiceRegistry = serviceregistry.New(
 		upstreamFactory,
 		a.ToolManager,
 		a.PromptManager,
@@ -277,7 +278,7 @@ func (a *Application) Run(
 
 	// New message bus and workers
 	upstreamWorker := worker.NewUpstreamWorker(busProvider, a.ToolManager)
-	registrationWorker := worker.NewServiceRegistrationWorker(busProvider, serviceRegistry)
+	registrationWorker := worker.NewServiceRegistrationWorker(busProvider, a.ServiceRegistry)
 
 	// Start background workers
 	upstreamWorker.Start(ctx)
@@ -301,7 +302,7 @@ func (a *Application) Run(
 		a.PromptManager,
 		a.ResourceManager,
 		authManager,
-		serviceRegistry,
+		a.ServiceRegistry,
 		busProvider,
 		config.GlobalSettings().IsDebug(),
 	)
@@ -409,7 +410,7 @@ func (a *Application) Run(
 		allowedIPs = cfg.GetGlobalSettings().GetAllowedIps()
 	}
 
-	return a.runServerMode(ctx, mcpSrv, busProvider, bindAddress, grpcPort, shutdownTimeout, cfg.GetUsers(), cfg.GetGlobalSettings().GetProfileDefinitions(), allowedIPs, cachingMiddleware, sqliteStore, serviceRegistry)
+	return a.runServerMode(ctx, mcpSrv, busProvider, bindAddress, grpcPort, shutdownTimeout, cfg.GetUsers(), cfg.GetGlobalSettings().GetProfileDefinitions(), allowedIPs, cachingMiddleware, sqliteStore, a.ServiceRegistry)
 }
 
 // ReloadConfig reloads the configuration from the given paths and updates the
@@ -431,38 +432,60 @@ func (a *Application) ReloadConfig(fs afero.Fs, configPaths []string) error {
 		cfg.GetGlobalSettings().GetProfileDefinitions(),
 	)
 
-	// Clear existing services
-	// We iterate over all currently registered services and clear them.
-	// This handles cases where a service was removed or renamed in the new config.
-	for _, svcInfo := range a.ToolManager.ListServices() {
-		serviceID := svcInfo.Name
-		a.ToolManager.ClearToolsForService(serviceID)
-		a.ResourceManager.ClearResourcesForService(serviceID)
-		a.PromptManager.ClearPromptsForService(serviceID)
+	// Get all currently registered services
+	currentServices, err := a.ServiceRegistry.GetAllServices()
+	if err != nil {
+		return fmt.Errorf("failed to get current services: %w", err)
+	}
+	currentServiceMap := make(map[string]*config_v1.UpstreamServiceConfig)
+	for _, s := range currentServices {
+		// Use sanitized name (service ID) as key
+		id, _ := util.SanitizeServiceName(s.GetName())
+		currentServiceMap[id] = s
 	}
 
+	// Identify new and updated services
+	newServices := make(map[string]*config_v1.UpstreamServiceConfig)
 	if cfg.GetUpstreamServices() != nil {
 		for _, serviceConfig := range cfg.GetUpstreamServices() {
 			if serviceConfig.GetDisable() {
 				log.Info("Skipping disabled service", "service", serviceConfig.GetName())
 				continue
 			}
+			id, _ := util.SanitizeServiceName(serviceConfig.GetName())
+			newServices[id] = serviceConfig
+		}
+	}
 
-			// Reload tools, prompts, and resources
-			upstream, err := a.UpstreamFactory.NewUpstream(serviceConfig)
-			if err != nil {
-				log.Error("Failed to get upstream service", "error", err)
-				continue
+	// 1. Unregister removed or updated services
+	// We unregister updated services too, to re-register them with new config.
+	for id, s := range currentServiceMap {
+		if _, exists := newServices[id]; !exists {
+			// Service removed
+			log.Info("Unregistering removed service", "service", s.GetName())
+			if err := a.ServiceRegistry.UnregisterService(context.Background(), id); err != nil {
+				log.Error("Failed to unregister service", "service", s.GetName(), "error", err)
 			}
-			if upstream != nil {
-				_, _, _, err = upstream.Register(context.Background(), serviceConfig, a.ToolManager, a.PromptManager, a.ResourceManager, false)
-				if err != nil {
-					log.Error("Failed to register upstream service", "error", err)
-					continue
-				}
+		} else {
+			// Service exists in new config. For now, we assume simple re-registration.
+			// TODO: Implement smarter diff to avoid restarting if config hasn't changed.
+			log.Info("Unregistering service for update", "service", s.GetName())
+			if err := a.ServiceRegistry.UnregisterService(context.Background(), id); err != nil {
+				log.Error("Failed to unregister service", "service", s.GetName(), "error", err)
 			}
 		}
 	}
+
+	// 2. Register new and updated services
+	for _, serviceConfig := range newServices {
+		log.Info("Registering service", "service", serviceConfig.GetName())
+		_, _, _, err := a.ServiceRegistry.RegisterService(context.Background(), serviceConfig)
+		if err != nil {
+			log.Error("Failed to register service", "service", serviceConfig.GetName(), "error", err)
+			// Continue with other services
+		}
+	}
+
 	log.Info("Tools", "tools", a.ToolManager.ListTools())
 	log.Info("Prompts", "prompts", a.PromptManager.ListPrompts())
 	log.Info("Resources", "resources", a.ResourceManager.ListResources())
