@@ -6,60 +6,49 @@ package middleware
 import (
 	"context"
 	"encoding/json"
-	"strings"
 	"testing"
 	"time"
 
-	armonmetrics "github.com/armon/go-metrics"
 	"github.com/mcpany/core/pkg/tool"
 	v1 "github.com/mcpany/core/proto/mcp_router/v1"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
+	"github.com/prometheus/client_golang/prometheus"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
 func TestToolMetricsMiddleware_Execute(t *testing.T) {
-	// Setup InmemSink
-	sink := armonmetrics.NewInmemSink(10*time.Second, 10*time.Minute)
-	// Replace global metrics instance
-	_, err := armonmetrics.NewGlobal(armonmetrics.DefaultConfig("test"), sink)
-	require.NoError(t, err)
-
+	// Ensure metrics are registered
 	middleware := NewToolMetricsMiddleware()
 
-	// Helper to reset sink - InmemSink accumulates, so we just rely on checking the latest interval or specific values if unique labels used.
-	// But since labels are same for same tool/service, values aggregate in the same interval.
-	// We should probably force a new interval or just check diff?
-	// The sink rotates intervals based on time.
-	// We can't easily force rotation.
-	// However, for unit tests, we can just create a NEW sink for each test if we want isolation.
-	// But NewGlobal is global.
-	// We can rely on checking the Sum increase? Or just that it IS recorded.
-	// If we use different tool names, we get different keys!
-	// So ensure each test uses unique ToolName.
-
-	checkMetric := func(t *testing.T, toolName string, metricSuffix string, expectedValue float64) {
-		intervals := sink.Data()
-		require.NotEmpty(t, intervals)
-		// We might have multiple intervals. Check the last one or all?
-		// Since we use unique tool names, we just need to find the key in any interval (likely the last/current one).
+	checkMetric := func(t *testing.T, toolName string, metricName string, expectedValue float64, checkType string) {
+		metrics, err := prometheus.DefaultGatherer.Gather()
+		require.NoError(t, err)
 
 		found := false
-		for _, interval := range intervals {
-			for k, v := range interval.Samples {
-				// Key format: name;label=val;label=val
-				// We look for name part and tool label
-				if strings.Contains(k, "tool.execution."+metricSuffix) && strings.Contains(k, "tool="+toolName) {
-					found = true
-					// Check Sum (since we added 1 sample, Sum should be Value)
-					// Or if multiple calls, Sum accumulates.
-					// We expect 1 call per test case.
-					assert.Equal(t, expectedValue, v.Sum, "Metric %s value mismatch", k)
-					return
+		for _, mf := range metrics {
+			if mf.GetName() == metricName {
+				for _, m := range mf.GetMetric() {
+					// Check label "tool"
+					currentTool := ""
+					for _, pair := range m.GetLabel() {
+						if pair.GetName() == "tool" {
+							currentTool = pair.GetValue()
+							break
+						}
+					}
+					if currentTool == toolName {
+						found = true
+						if checkType == "counter" {
+							assert.Equal(t, expectedValue, m.GetCounter().GetValue(), "Counter %s mismatch", metricName)
+						} else if checkType == "histogram_sum" {
+							assert.Equal(t, expectedValue, m.GetHistogram().GetSampleSum(), "Histogram sum %s mismatch", metricName)
+						}
+					}
 				}
 			}
 		}
-		assert.True(t, found, "Metric %s for tool %s not found", metricSuffix, toolName)
+		assert.True(t, found, "Metric %s for tool %s not found", metricName, toolName)
 	}
 
 	t.Run("Success with TextContent", func(t *testing.T) {
@@ -94,7 +83,7 @@ func TestToolMetricsMiddleware_Execute(t *testing.T) {
 		_, err := middleware.Execute(ctx, req, next)
 		require.NoError(t, err)
 
-		checkMetric(t, toolName, "output_bytes", 6)
+		checkMetric(t, toolName, "tool_execution_output_bytes", 6, "histogram_sum")
 	})
 
 	t.Run("ImageContent", func(t *testing.T) {
@@ -116,7 +105,7 @@ func TestToolMetricsMiddleware_Execute(t *testing.T) {
 		_, err := middleware.Execute(context.Background(), req, next)
 		require.NoError(t, err)
 
-		checkMetric(t, toolName, "output_bytes", 10)
+		checkMetric(t, toolName, "tool_execution_output_bytes", 10, "histogram_sum")
 	})
 
 	t.Run("EmbeddedResource", func(t *testing.T) {
@@ -140,7 +129,7 @@ func TestToolMetricsMiddleware_Execute(t *testing.T) {
 		_, err := middleware.Execute(context.Background(), req, next)
 		require.NoError(t, err)
 
-		checkMetric(t, toolName, "output_bytes", 13)
+		checkMetric(t, toolName, "tool_execution_output_bytes", 13, "histogram_sum")
 	})
 
 	t.Run("String Result", func(t *testing.T) {
@@ -152,7 +141,7 @@ func TestToolMetricsMiddleware_Execute(t *testing.T) {
 		_, err := middleware.Execute(context.Background(), req, next)
 		require.NoError(t, err)
 
-		checkMetric(t, toolName, "output_bytes", 11)
+		checkMetric(t, toolName, "tool_execution_output_bytes", 11, "histogram_sum")
 	})
 
 	t.Run("Byte Slice Result", func(t *testing.T) {
@@ -164,7 +153,7 @@ func TestToolMetricsMiddleware_Execute(t *testing.T) {
 		_, err := middleware.Execute(context.Background(), req, next)
 		require.NoError(t, err)
 
-		checkMetric(t, toolName, "output_bytes", 10)
+		checkMetric(t, toolName, "tool_execution_output_bytes", 10, "histogram_sum")
 	})
 
 	t.Run("JSON Fallback", func(t *testing.T) {
@@ -177,7 +166,7 @@ func TestToolMetricsMiddleware_Execute(t *testing.T) {
 		require.NoError(t, err)
 
 		// json: {"key":"value"} = 15 bytes
-		checkMetric(t, toolName, "output_bytes", 15)
+		checkMetric(t, toolName, "tool_execution_output_bytes", 15, "histogram_sum")
 	})
 
 	t.Run("Nil Result", func(t *testing.T) {
@@ -189,15 +178,59 @@ func TestToolMetricsMiddleware_Execute(t *testing.T) {
 		_, err := middleware.Execute(context.Background(), req, next)
 		require.NoError(t, err)
 
-		checkMetric(t, toolName, "output_bytes", 0)
+		checkMetric(t, toolName, "tool_execution_output_bytes", 0, "histogram_sum")
+	})
+
+	t.Run("ContextCanceled Error", func(t *testing.T) {
+		toolName := "test_tool_canceled"
+		req := &tool.ExecutionRequest{
+			ToolName:   toolName,
+			ToolInputs: json.RawMessage(`{}`),
+		}
+
+		next := func(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
+			return nil, context.Canceled
+		}
+
+		serviceID := "test_service"
+		mockProtoTool := &v1.Tool{ServiceId: &serviceID}
+		mockTool := &tool.MockTool{ToolFunc: func() *v1.Tool { return mockProtoTool }}
+		ctx := tool.NewContextWithTool(context.Background(), mockTool)
+
+		_, err := middleware.Execute(ctx, req, next)
+		require.Error(t, err)
+		assert.Equal(t, context.Canceled, err)
+
+		// Verify error_type label
+		metrics, err := prometheus.DefaultGatherer.Gather()
+		require.NoError(t, err)
+
+		foundError := false
+		for _, mf := range metrics {
+			if mf.GetName() == "tool_executions_total" {
+				for _, m := range mf.GetMetric() {
+					toolLabel := ""
+					errorTypeLabel := ""
+					for _, l := range m.GetLabel() {
+						if l.GetName() == "tool" {
+							toolLabel = l.GetValue()
+						}
+						if l.GetName() == "error_type" {
+							errorTypeLabel = l.GetValue()
+						}
+					}
+					if toolLabel == toolName && errorTypeLabel == "context_canceled" {
+						foundError = true
+						assert.Equal(t, float64(1), m.GetCounter().GetValue())
+					}
+				}
+			}
+		}
+		assert.True(t, foundError, "tool_executions_total with error_type=context_canceled not found")
 	})
 }
 
 func BenchmarkToolMetricsMiddleware_Execute(b *testing.B) {
-	// Setup (Global metrics mock might be slow, so do it once)
-	sink := armonmetrics.NewInmemSink(10*time.Second, 10*time.Minute)
-	_, _ = armonmetrics.NewGlobal(armonmetrics.DefaultConfig("bench"), sink)
-
 	middleware := NewToolMetricsMiddleware()
 	req := &tool.ExecutionRequest{
 		ToolName:   "bench_tool",
