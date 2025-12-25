@@ -24,7 +24,7 @@ import (
 )
 
 // ProviderFactory is a function that creates an EmbeddingProvider.
-type ProviderFactory func(providerType, apiKey, model string) (EmbeddingProvider, error)
+type ProviderFactory func(config *configv1.SemanticCacheConfig, apiKey string) (EmbeddingProvider, error)
 
 // CachingMiddleware is a tool execution middleware that provides caching
 // functionality.
@@ -42,7 +42,35 @@ func NewCachingMiddleware(toolManager tool.ManagerInterface) *CachingMiddleware 
 	return &CachingMiddleware{
 		cache:       cacheManager,
 		toolManager: toolManager,
-		providerFactory: func(providerType, apiKey, model string) (EmbeddingProvider, error) {
+		providerFactory: func(conf *configv1.SemanticCacheConfig, apiKey string) (EmbeddingProvider, error) {
+			// Check OneOf provider_config first
+			if conf.GetOpenai() != nil {
+				openaiConf := conf.GetOpenai()
+				key := apiKey
+				if key == "" {
+					// Fallback to config provided key if not resolved
+					// Note: resolving happens outside usually, but here apiKey is passed resolved.
+					// Ideally we resolve here again if needed?
+					// The apiKey arg is resolved from semConfig.GetApiKey() which is deprecated.
+					// We should resolve from openaiConf.GetApiKey() if present.
+					// But executeSemantic resolves before calling factory.
+					// Let's rely on caller or handle deprecated path.
+				}
+				return NewOpenAIEmbeddingProvider(key, openaiConf.GetModel()), nil
+			}
+			if conf.GetOllama() != nil {
+				ollamaConf := conf.GetOllama()
+				return NewOllamaEmbeddingProvider(ollamaConf.GetBaseUrl(), ollamaConf.GetModel()), nil
+			}
+			if conf.GetHttp() != nil {
+				httpConf := conf.GetHttp()
+				return NewHttpEmbeddingProvider(httpConf.GetUrl(), httpConf.GetHeaders(), httpConf.GetBodyTemplate(), httpConf.GetResponseJsonPath())
+			}
+
+			// Legacy/Deprecated path
+			providerType := conf.GetProvider()
+			model := conf.GetModel()
+
 			if providerType == "openai" {
 				return NewOpenAIEmbeddingProvider(apiKey, model), nil
 			}
@@ -145,14 +173,25 @@ func (m *CachingMiddleware) executeSemantic(ctx context.Context, req *tool.Execu
 
 	val, ok := m.semanticCaches.Load(serviceID)
 	if !ok {
-		apiKey, err := util.ResolveSecret(ctx, semConfig.GetApiKey())
+		// Resolve API Key
+		// Priority:
+		// 1. OpenAI Config Secret
+		// 2. Deprecated API Key Secret
+		var secret *configv1.SecretValue
+		if semConfig.GetOpenai() != nil {
+			secret = semConfig.GetOpenai().GetApiKey()
+		} else {
+			secret = semConfig.GetApiKey()
+		}
+
+		apiKey, err := util.ResolveSecret(ctx, secret)
 		if err != nil {
 			logging.GetLogger().Error("Failed to resolve semantic cache API key", "error", err)
 			return next(ctx, req)
 		}
 
 		// Use factory to create provider
-		provider, err := m.providerFactory(semConfig.GetProvider(), apiKey, semConfig.GetModel())
+		provider, err := m.providerFactory(semConfig, apiKey)
 		if err != nil {
 			logging.GetLogger().Warn("Failed to create embedding provider", "error", err)
 			return next(ctx, req)

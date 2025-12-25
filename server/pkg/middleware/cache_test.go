@@ -410,7 +410,7 @@ type MockProviderFactory struct {
 	embeddings map[string][]float32
 }
 
-func (m *MockProviderFactory) Create(providerType, apiKey, model string) (middleware.EmbeddingProvider, error) {
+func (m *MockProviderFactory) Create(conf *configv1.SemanticCacheConfig, apiKey string) (middleware.EmbeddingProvider, error) {
 	return &MockEmbeddingProvider{embeddings: m.embeddings}, nil
 }
 
