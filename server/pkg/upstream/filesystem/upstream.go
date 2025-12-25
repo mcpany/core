@@ -5,9 +5,9 @@
 package filesystem
 
 import (
+	"bufio"
 	"context"
 	"crypto/sha256"
-	"bufio"
 	"encoding/hex"
 	"fmt"
 	"net/http"
@@ -40,6 +40,14 @@ func NewUpstream() upstream.Upstream {
 // Shutdown implements the upstream.Upstream interface.
 func (u *Upstream) Shutdown(_ context.Context) error {
 	return nil
+}
+
+type fsTool struct {
+	Name        string
+	Description string
+	Input       map[string]interface{}
+	Output      map[string]interface{}
+	Handler     func(args map[string]interface{}) (map[string]interface{}, error)
 }
 
 // Register processes the configuration for a filesystem service.
@@ -84,59 +92,8 @@ func (u *Upstream) Register(
 	toolManager.AddServiceInfo(serviceID, info)
 
 	// Define built-in tools
-	tools := []*struct {
-		Name        string
-		Description string
-		Input       map[string]interface{}
-		Output      map[string]interface{}
-		Handler     func(args map[string]interface{}) (map[string]interface{}, error)
-	}{
-		{
-			Name:        "list_directory",
-			Description: "List files and directories in a given path.",
-			Input: map[string]interface{}{
-				"path": map[string]interface{}{"type": "string", "description": "The path to list."},
-			},
-			Output: map[string]interface{}{
-				"entries": map[string]interface{}{
-					"type": "array",
-					"items": map[string]interface{}{
-						"type": "object",
-						"properties": map[string]interface{}{
-							"name":   map[string]interface{}{"type": "string"},
-							"is_dir": map[string]interface{}{"type": "boolean"},
-							"size":   map[string]interface{}{"type": "integer"},
-						},
-					},
-				},
-			},
-			Handler: func(args map[string]interface{}) (map[string]interface{}, error) {
-				path, ok := args["path"].(string)
-				if !ok {
-					return nil, fmt.Errorf("path is required")
-				}
-
-				resolvedPath, err := u.resolvePath(path, fsService)
-				if err != nil {
-					return nil, err
-				}
-
-				entries, err := afero.ReadDir(fs, resolvedPath)
-				if err != nil {
-					return nil, err
-				}
-
-				resultList := []interface{}{}
-				for _, entry := range entries {
-					resultList = append(resultList, map[string]interface{}{
-						"name":   entry.Name(),
-						"is_dir": entry.IsDir(),
-						"size":   entry.Size(),
-					})
-				}
-				return map[string]interface{}{"entries": resultList}, nil
-			},
-		},
+	tools := []*fsTool{
+		u.toolListDirectory(fsService, fs),
 		{
 			Name:        "read_file",
 			Description: "Read the content of a file.",
@@ -238,125 +195,7 @@ func (u *Upstream) Register(
 				return map[string]interface{}{"success": true}, nil
 			},
 		},
-		{
-			Name:        "search_files",
-			Description: "Search for a text pattern in files within a directory.",
-			Input: map[string]interface{}{
-				"path":    map[string]interface{}{"type": "string", "description": "The root directory to search."},
-				"pattern": map[string]interface{}{"type": "string", "description": "The regular expression to search for."},
-			},
-			Output: map[string]interface{}{
-				"matches": map[string]interface{}{
-					"type": "array",
-					"items": map[string]interface{}{
-						"type": "object",
-						"properties": map[string]interface{}{
-							"file":         map[string]interface{}{"type": "string"},
-							"line_number":  map[string]interface{}{"type": "integer"},
-							"line_content": map[string]interface{}{"type": "string"},
-						},
-					},
-				},
-			},
-			Handler: func(args map[string]interface{}) (map[string]interface{}, error) {
-				path, ok := args["path"].(string)
-				if !ok {
-					return nil, fmt.Errorf("path is required")
-				}
-				patternStr, ok := args["pattern"].(string)
-				if !ok {
-					return nil, fmt.Errorf("pattern is required")
-				}
-
-				re, err := regexp.Compile(patternStr)
-				if err != nil {
-					return nil, fmt.Errorf("invalid regex pattern: %w", err)
-				}
-
-				resolvedPath, err := u.resolvePath(path, fsService)
-				if err != nil {
-					return nil, err
-				}
-
-				matches := []map[string]interface{}{}
-				maxMatches := 100
-				matchCount := 0
-
-				err = afero.Walk(fs, resolvedPath, func(filePath string, info os.FileInfo, err error) error {
-					if err != nil {
-						// Skip unreadable files
-						return nil
-					}
-					if matchCount >= maxMatches {
-						return filepath.SkipDir
-					}
-					if info.IsDir() {
-						// Skip hidden directories like .git
-						if strings.HasPrefix(info.Name(), ".") && info.Name() != "." && info.Name() != ".." {
-							return filepath.SkipDir
-						}
-						return nil
-					}
-					// Skip large files (e.g., > 10MB)
-					if info.Size() > 10*1024*1024 {
-						return nil
-					}
-
-					// Read file
-					f, err := fs.Open(filePath)
-					if err != nil {
-						return nil
-					}
-					defer f.Close()
-
-					// Check for binary
-					// Read first 512 bytes
-					buffer := make([]byte, 512)
-					n, _ := f.Read(buffer)
-					if n > 0 {
-						contentType := http.DetectContentType(buffer[:n])
-						if contentType == "application/octet-stream" {
-							return nil
-						}
-						// Reset seeker
-						if _, err := f.Seek(0, 0); err != nil {
-							return nil
-						}
-					}
-
-					scanner := bufio.NewScanner(f)
-					lineNum := 0
-					for scanner.Scan() {
-						lineNum++
-						line := scanner.Text()
-						if re.MatchString(line) {
-							// Relativize path
-							relPath, _ := filepath.Rel(resolvedPath, filePath)
-							if relPath == "" {
-								relPath = filepath.Base(filePath)
-							}
-
-							matches = append(matches, map[string]interface{}{
-								"file":         relPath,
-								"line_number":  lineNum,
-								"line_content": strings.TrimSpace(line),
-							})
-							matchCount++
-							if matchCount >= maxMatches {
-								return filepath.SkipDir
-							}
-						}
-					}
-					return nil
-				})
-
-				if err != nil && err != filepath.SkipDir {
-					return nil, err
-				}
-
-				return map[string]interface{}{"matches": matches}, nil
-			},
-		},
+		u.toolSearchFiles(fsService, fs),
 		{
 			Name:        "get_file_info",
 			Description: "Get information about a file or directory.",
@@ -459,6 +298,131 @@ func (u *Upstream) Register(
 
 	log.Info("Registered filesystem service", "serviceID", serviceID, "tools", len(discoveredTools))
 	return serviceID, discoveredTools, nil, nil
+}
+
+func (u *Upstream) toolSearchFiles(fsService *configv1.FilesystemUpstreamService, fs afero.Fs) *fsTool {
+	return &fsTool{
+		Name:        "search_files",
+		Description: "Search for a text pattern in files within a directory.",
+		Input: map[string]interface{}{
+			"path":    map[string]interface{}{"type": "string", "description": "The root directory to search."},
+			"pattern": map[string]interface{}{"type": "string", "description": "The regular expression to search for."},
+		},
+		Output: map[string]interface{}{
+			"matches": map[string]interface{}{
+				"type": "array",
+				"items": map[string]interface{}{
+					"type": "object",
+					"properties": map[string]interface{}{
+						"file":         map[string]interface{}{"type": "string"},
+						"line_number":  map[string]interface{}{"type": "integer"},
+						"line_content": map[string]interface{}{"type": "string"},
+					},
+				},
+			},
+		},
+		Handler: func(args map[string]interface{}) (map[string]interface{}, error) {
+			path, ok := args["path"].(string)
+			if !ok {
+				return nil, fmt.Errorf("path is required")
+			}
+			patternStr, ok := args["pattern"].(string)
+			if !ok {
+				return nil, fmt.Errorf("pattern is required")
+			}
+
+			re, err := regexp.Compile(patternStr)
+			if err != nil {
+				return nil, fmt.Errorf("invalid regex pattern: %w", err)
+			}
+
+			resolvedPath, err := u.resolvePath(path, fsService)
+			if err != nil {
+				return nil, err
+			}
+
+			matches := []map[string]interface{}{}
+			maxMatches := 100
+			matchCount := 0
+
+			err = afero.Walk(fs, resolvedPath, func(filePath string, info os.FileInfo, err error) error {
+				if err != nil {
+					// Skip unreadable files
+					return nil
+				}
+				if matchCount >= maxMatches {
+					return filepath.SkipDir
+				}
+				if info.IsDir() {
+					// Skip hidden directories like .git
+					if strings.HasPrefix(info.Name(), ".") && info.Name() != "." && info.Name() != ".." {
+						return filepath.SkipDir
+					}
+					return nil
+				}
+				// Skip large files (e.g., > 10MB)
+				if info.Size() > 10*1024*1024 {
+					return nil
+				}
+
+				// Read file
+				f, err := fs.Open(filePath)
+				if err != nil {
+					return nil
+				}
+				defer func() { _ = f.Close() }()
+
+				// Check for binary
+				// Read first 512 bytes
+				buffer := make([]byte, 512)
+				n, _ := f.Read(buffer)
+				if n > 0 {
+					contentType := http.DetectContentType(buffer[:n])
+					if contentType == "application/octet-stream" {
+						return nil
+					}
+					// Reset seeker
+					if _, err := f.Seek(0, 0); err != nil {
+						return nil
+					}
+				}
+
+				scanner := bufio.NewScanner(f)
+				lineNum := 0
+				for scanner.Scan() {
+					lineNum++
+					line := scanner.Text()
+					if re.MatchString(line) {
+						// Relativize path
+						relPath, _ := filepath.Rel(resolvedPath, filePath)
+						if relPath == "" {
+							relPath = filepath.Base(filePath)
+						}
+
+						matches = append(matches, map[string]interface{}{
+							"file":         relPath,
+							"line_number":  lineNum,
+							"line_content": strings.TrimSpace(line),
+						})
+						matchCount++
+						if matchCount >= maxMatches {
+							return filepath.SkipDir
+						}
+					}
+				}
+				if err := scanner.Err(); err != nil {
+					return err
+				}
+				return nil
+			})
+
+			if err != nil && err != filepath.SkipDir {
+				return nil, err
+			}
+
+			return map[string]interface{}{"matches": matches}, nil
+		},
+	}
 }
 
 type fsCallable struct {
