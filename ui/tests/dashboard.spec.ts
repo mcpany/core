@@ -1,22 +1,18 @@
-/**
- * Copyright 2025 Author(s) of MCP Any
- * SPDX-License-Identifier: Apache-2.0
- */
-
 
 import { test, expect } from '@playwright/test';
 
-test('dashboard loads and displays metrics', async ({ page }) => {
+test('Dashboard loads and displays metrics', async ({ page }) => {
   await page.goto('/');
 
-  // Check for title
+  // Expect a title "to contain" a substring.
+  await expect(page).toHaveTitle(/MCPAny Manager/);
+
+  // Check for Dashboard header
   await expect(page.getByRole('heading', { name: 'Dashboard' })).toBeVisible();
 
-  // Check for metrics
+  // Check for metrics cards
   await expect(page.getByText('Total Requests')).toBeVisible();
   await expect(page.getByText('Active Services')).toBeVisible();
-
-  // Check for service health widget
-  await expect(page.getByText('Service Health')).toBeVisible();
-  await expect(page.getByText('Payment Gateway')).toBeVisible();
+  await expect(page.getByText('Avg Latency')).toBeVisible();
+  await expect(page.getByText('Active Users')).toBeVisible();
 });
