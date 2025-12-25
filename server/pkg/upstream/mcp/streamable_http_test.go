@@ -675,7 +675,6 @@ func TestWithMCPClientSession_NoTransport(t *testing.T) {
 }
 
 func TestUpstream_Register_HTTP_Integration(t *testing.T) {
-	t.Skip("Skipping failing test for now")
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		var req jsonrpc.Request
 		err := json.NewDecoder(r.Body).Decode(&req)
@@ -733,6 +732,7 @@ func TestUpstream_Register_HTTP_Integration(t *testing.T) {
 
 	config := &configv1.UpstreamServiceConfig{}
 	config.SetName("test-service-http-integration")
+	config.SetAutoDiscoverTool(true)
 	mcpService := &configv1.McpUpstreamService{}
 	httpConnection := &configv1.McpStreamableHttpConnection{}
 	httpConnection.SetHttpAddress(server.URL)
@@ -750,8 +750,7 @@ func TestUpstream_Register_HTTP_Integration(t *testing.T) {
 	assert.Equal(t, "test-resource-http", discoveredResources[0].GetUri())
 
 	sanitizedToolName, _ := util.SanitizeToolName("test-tool-http")
-	toolID := serviceID + "/" + sanitizedToolName
-	_, ok := toolManager.GetTool(toolID)
+	_, ok := toolManager.GetTool(sanitizedToolName)
 	assert.True(t, ok)
 
 	_, ok = promptManager.GetPrompt("test-prompt-http")

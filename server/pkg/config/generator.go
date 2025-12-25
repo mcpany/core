@@ -43,7 +43,7 @@ func (g *Generator) Generate() ([]byte, error) {
 	}
 
 	switch strings.ToLower(serviceType) {
-	case "http": //nolint:goconst
+	case "http":
 		return g.generateHTTPService()
 	case "grpc":
 		return g.generateGRPCService()
@@ -59,7 +59,7 @@ func (g *Generator) Generate() ([]byte, error) {
 func (g *Generator) prompt(prompt string) (string, error) {
 	fmt.Print(prompt)
 	input, err := g.Reader.ReadString('\n')
-	if err != nil {
+	if err != nil && len(input) == 0 {
 		return "", err
 	}
 	return strings.TrimSpace(input), nil
@@ -113,15 +113,15 @@ const httpServiceTemplate = `upstreamServices:
 // It is used as the data context for the httpServiceTemplate.
 type HTTPServiceData struct {
 	// Name is the name of the service.
-	Name         string
+	Name string
 	// Address is the base URL/address of the service.
-	Address      string
+	Address string
 	// OperationID is the unique identifier for the operation.
-	OperationID  string
+	OperationID string
 	// Description is a human-readable description of the service operation.
-	Description  string
+	Description string
 	// Method is the HTTP method to use (e.g., "GET", "POST").
-	Method       string
+	Method string
 	// EndpointPath is the path of the endpoint (e.g., "/api/v1/users").
 	EndpointPath string
 }
@@ -185,9 +185,9 @@ const grpcServiceTemplate = `upstreamServices:
 // It is used as the data context for the grpcServiceTemplate.
 type GRPCServiceData struct {
 	// Name is the name of the service.
-	Name              string
+	Name string
 	// Address is the address of the gRPC service (host:port).
-	Address           string
+	Address string
 	// ReflectionEnabled indicates whether gRPC reflection should be enabled.
 	ReflectionEnabled bool
 }
@@ -235,7 +235,7 @@ const openapiServiceTemplate = `upstreamServices:
 // It is used as the data context for the openapiServiceTemplate.
 type OpenAPIServiceData struct {
 	// Name is the name of the service.
-	Name     string
+	Name string
 	// SpecPath is the path or URL to the OpenAPI specification file.
 	SpecPath string
 }
@@ -280,11 +280,11 @@ const graphqlServiceTemplate = `upstreamServices:
 // It is used as the data context for the graphqlServiceTemplate.
 type GraphQLServiceData struct {
 	// Name is the name of the service.
-	Name         string
+	Name string
 	// Address is the URL of the GraphQL endpoint.
-	Address      string
+	Address string
 	// CallName is the name of the GraphQL query or mutation to expose.
-	CallName     string
+	CallName string
 	// SelectionSet is the GraphQL selection set for the operation.
 	SelectionSet string
 }

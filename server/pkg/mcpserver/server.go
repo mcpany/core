@@ -144,6 +144,13 @@ func NewServer(
 					ToolName:   r.Params.Name,
 					ToolInputs: r.Params.Arguments,
 				}
+
+				session := req.GetSession()
+				if serverSession, ok := session.(*mcp.ServerSession); ok {
+					sampler := NewMCPSampler(serverSession)
+					ctx = tool.NewContextWithSampler(ctx, sampler)
+				}
+
 				res, err := s.CallTool(ctx, execReq)
 				if err != nil {
 					return nil, err
@@ -156,7 +163,7 @@ func NewServer(
 				return &mcp.CallToolResult{
 					Content: []mcp.Content{
 						&mcp.TextContent{
-							Text: fmt.Sprintf("%v", res),
+							Text: util.ToString(res),
 						},
 					},
 				}, nil
@@ -550,7 +557,7 @@ func (s *Server) CallTool(ctx context.Context, req *tool.ExecutionRequest) (any,
 	}
 	text := string(jsonBytes)
 	if marshalErr != nil {
-		text = fmt.Sprintf("%v", result)
+		text = util.ToString(result)
 	}
 
 	return &mcp.CallToolResult{

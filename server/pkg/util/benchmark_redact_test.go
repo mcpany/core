@@ -35,6 +35,11 @@ func BenchmarkRedactJSON(b *testing.B) {
 	dirtyLargeBytes, _ := json.Marshal(dirtyLargeMap)
 	dirtyLarge := string(dirtyLargeBytes)
 
+	// Array benchmarks
+	cleanArray := `[{"name": "test", "value": 123}, {"name": "test2", "value": 456}]`
+	// Dirty Array - actually contains sensitive key in one of the objects
+	dirtyArray := `[{"name": "test", "api_key": "secret"}, {"name": "test2", "value": 456}]`
+
 	b.Run("CleanSmall", func(b *testing.B) {
 		input := []byte(cleanSmall)
 		b.ReportAllocs()
@@ -64,6 +69,24 @@ func BenchmarkRedactJSON(b *testing.B) {
 
 	b.Run("DirtyLarge", func(b *testing.B) {
 		input := []byte(dirtyLarge)
+		b.ReportAllocs()
+		b.ResetTimer()
+		for i := 0; i < b.N; i++ {
+			RedactJSON(input)
+		}
+	})
+
+	b.Run("CleanArray", func(b *testing.B) {
+		input := []byte(cleanArray)
+		b.ReportAllocs()
+		b.ResetTimer()
+		for i := 0; i < b.N; i++ {
+			RedactJSON(input)
+		}
+	})
+
+	b.Run("DirtyArray", func(b *testing.B) {
+		input := []byte(dirtyArray)
 		b.ReportAllocs()
 		b.ResetTimer()
 		for i := 0; i < b.N; i++ {

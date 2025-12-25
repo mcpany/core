@@ -22,7 +22,20 @@ const (
 	UserContextKey authContextKey = "user_id"
 	// ProfileIDContextKey is the context key for the profile ID.
 	ProfileIDContextKey authContextKey = "profile_id"
+	// APIKeyContextKey is the context key for the API Key.
+	APIKeyContextKey authContextKey = "api_key"
 )
+
+// ContextWithAPIKey returns a new context with the API Key.
+func ContextWithAPIKey(ctx context.Context, apiKey string) context.Context {
+	return context.WithValue(ctx, APIKeyContextKey, apiKey)
+}
+
+// APIKeyFromContext returns the API Key from the context.
+func APIKeyFromContext(ctx context.Context) (string, bool) {
+	val, ok := ctx.Value(APIKeyContextKey).(string)
+	return val, ok
+}
 
 // ContextWithUser returns a new context with the user ID.
 func ContextWithUser(ctx context.Context, userID string) context.Context {
@@ -110,7 +123,7 @@ func (a *APIKeyAuthenticator) Authenticate(ctx context.Context, r *http.Request)
 	}
 
 	if subtle.ConstantTimeCompare([]byte(receivedKey), []byte(a.Value)) == 1 {
-		return ctx, nil
+		return ContextWithAPIKey(ctx, receivedKey), nil
 	}
 	return ctx, fmt.Errorf("unauthorized")
 }
@@ -178,6 +191,7 @@ func (am *Manager) Authenticate(ctx context.Context, serviceID string, r *http.R
 		if subtle.ConstantTimeCompare([]byte(r.Header.Get("X-API-Key")), []byte(am.apiKey)) != 1 {
 			return ctx, fmt.Errorf("unauthorized: invalid API key")
 		}
+		ctx = ContextWithAPIKey(ctx, r.Header.Get("X-API-Key"))
 	}
 
 	if authenticator, ok := am.authenticators.Load(serviceID); ok {

@@ -10,6 +10,7 @@ import (
 	"io"
 	"reflect"
 	"sync"
+	"sync/atomic"
 	"time"
 
 	"github.com/mcpany/core/pkg/logging"
@@ -60,7 +61,7 @@ type poolImpl[T ClosableClient] struct {
 	factory            func(context.Context) (T, error)
 	sem                *semaphore.Weighted
 	mu                 sync.Mutex
-	closed             bool
+	closed             atomic.Bool
 	disableHealthCheck bool
 }
 
@@ -159,21 +160,22 @@ func (p *poolImpl[T]) Get(ctx context.Context) (T, error) {
 	default:
 	}
 
-	p.mu.Lock()
-	if p.closed {
-		p.mu.Unlock()
+	if p.closed.Load() {
 		return zero, ErrPoolClosed
 	}
-	p.mu.Unlock()
 
 	// Loop to ensure we return a healthy client
 	for {
 		// First, try a non-blocking retrieval of an existing client.
 		select {
-		case client := <-p.clients:
+		case client, ok := <-p.clients:
+			if !ok {
+				return zero, ErrPoolClosed
+			}
 			v := reflect.ValueOf(client)
 			if (v.Kind() == reflect.Ptr || v.Kind() == reflect.Interface) && v.IsNil() {
-				return zero, ErrPoolClosed
+				// Nil received: permit released, retry creation
+				continue
 			}
 			if p.disableHealthCheck || client.IsHealthy(ctx) {
 				return client, nil
@@ -190,12 +192,16 @@ func (p *poolImpl[T]) Get(ctx context.Context) (T, error) {
 			// Acquired a permit, but double-check for a race condition where
 			// a client was returned just before we acquired the permit.
 			select {
-			case client := <-p.clients:
+			case client, ok := <-p.clients:
 				// A client was available, so we use it and release the permit.
 				p.sem.Release(1)
+				if !ok {
+					return zero, ErrPoolClosed
+				}
 				v := reflect.ValueOf(client)
 				if (v.Kind() == reflect.Ptr || v.Kind() == reflect.Interface) && v.IsNil() {
-					return zero, ErrPoolClosed
+					// Nil received: permit released, retry creation
+					continue
 				}
 				if p.disableHealthCheck || client.IsHealthy(ctx) {
 					return client, nil
@@ -206,10 +212,7 @@ func (p *poolImpl[T]) Get(ctx context.Context) (T, error) {
 			default:
 				// No client, so create a new one.
 				// We must check if the pool was closed *after* we acquired the permit.
-				p.mu.Lock()
-				closed := p.closed
-				p.mu.Unlock()
-				if closed {
+				if p.closed.Load() {
 					p.sem.Release(1) // Don't leak the permit
 					return zero, ErrPoolClosed
 				}
@@ -220,14 +223,11 @@ func (p *poolImpl[T]) Get(ctx context.Context) (T, error) {
 				}
 
 				// Check again if the pool was closed while we were creating a client.
-				p.mu.Lock()
-				if p.closed {
-					p.mu.Unlock()
+				if p.closed.Load() {
 					_ = lo.Try(client.Close)
 					p.sem.Release(1)
 					return zero, ErrPoolClosed
 				}
-				p.mu.Unlock()
 
 				return client, nil
 			}
@@ -235,10 +235,14 @@ func (p *poolImpl[T]) Get(ctx context.Context) (T, error) {
 
 		// Pool is full, so we must wait for a client to be returned.
 		select {
-		case client := <-p.clients:
+		case client, ok := <-p.clients:
+			if !ok {
+				return zero, ErrPoolClosed
+			}
 			v := reflect.ValueOf(client)
 			if (v.Kind() == reflect.Ptr || v.Kind() == reflect.Interface) && v.IsNil() {
-				return zero, ErrPoolClosed
+				// Nil received: permit released, retry creation
+				continue
 			}
 			if p.disableHealthCheck || client.IsHealthy(ctx) {
 				return client, nil
@@ -267,9 +271,7 @@ func (p *poolImpl[T]) Put(client T) {
 		return
 	}
 
-	p.mu.Lock()
-	if p.closed {
-		p.mu.Unlock()
+	if p.closed.Load() {
 		_ = lo.Try(client.Close)
 		p.sem.Release(1) // Release permit as the client is discarded
 		return
@@ -277,6 +279,23 @@ func (p *poolImpl[T]) Put(client T) {
 
 	// Use a background context for health checks in Put to avoid blocking.
 	if !p.disableHealthCheck && !client.IsHealthy(context.Background()) {
+		_ = lo.Try(client.Close)
+		p.sem.Release(1)
+		// Notify waiting Get routines
+		var zero T
+		p.mu.Lock()
+		if !p.closed.Load() {
+			select {
+			case p.clients <- zero:
+			default:
+			}
+		}
+		p.mu.Unlock()
+		return
+	}
+
+	p.mu.Lock()
+	if p.closed.Load() {
 		p.mu.Unlock()
 		_ = lo.Try(client.Close)
 		p.sem.Release(1)
@@ -300,17 +319,23 @@ func (p *poolImpl[T]) Put(client T) {
 // Close shuts down the pool, closing all idle clients and preventing any new
 // operations. Any subsequent calls to `Get` will return `ErrPoolClosed`.
 func (p *poolImpl[T]) Close() error {
+	// We use the mutex here to ensure that we don't close the channel multiple times
+	// or have races with other Close calls. Get/Put check p.closed via atomic which is fast.
 	p.mu.Lock()
-	if p.closed {
+	if p.closed.Load() {
 		p.mu.Unlock()
 		return nil
 	}
-	p.closed = true
+	p.closed.Store(true)
 	close(p.clients)
 	p.mu.Unlock()
 
 	// Drain the channel and close all idle clients
 	for client := range p.clients {
+		v := reflect.ValueOf(client)
+		if (v.Kind() == reflect.Ptr || v.Kind() == reflect.Interface) && v.IsNil() {
+			continue
+		}
 		_ = lo.Try(client.Close)
 		p.sem.Release(1)
 	}

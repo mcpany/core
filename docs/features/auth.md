@@ -24,4 +24,13 @@ MCP Any implements a core RBAC engine to manage user permissions.
 *   **Users**: Assigned one or more roles.
 *   **Enforcement**: The `RBACEnforcer` checks if a user has the required role to access a resource or perform an action.
 
-Currently, RBAC logic is implemented in the core `auth` package, allowing for granular control over tool execution and admin API access.
+### Middleware
+
+A unified RBAC middleware is available in `pkg/middleware/rbac.go` to enforce role requirements on HTTP endpoints.
+
+```go
+rbac := middleware.NewRBACMiddleware()
+mux.Handle("/admin", rbac.RequireRole("admin")(adminHandler))
+```
+
+This middleware relies on the request context having roles populated (e.g., via `auth.ContextWithRoles`).

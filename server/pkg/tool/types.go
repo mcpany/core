@@ -21,7 +21,6 @@ import (
 	"time"
 
 	"github.com/mcpany/core/pkg/auth"
-	"github.com/mcpany/core/pkg/cli"
 	"github.com/mcpany/core/pkg/client"
 	"github.com/mcpany/core/pkg/command"
 	"github.com/mcpany/core/pkg/consts"
@@ -185,10 +184,15 @@ type GRPCTool struct {
 
 // NewGRPCTool creates a new GRPCTool.
 //
-// tool is the protobuf definition of the tool.
-// poolManager is used to get a gRPC client from the connection pool.
-// serviceID identifies the specific gRPC service connection pool.
-// method is the protobuf descriptor for the gRPC method to be called.
+// Parameters:
+//   tool: The protobuf definition of the tool.
+//   poolManager: The connection pool manager.
+//   serviceID: The identifier for the service.
+//   method: The gRPC method descriptor.
+//   callDefinition: The configuration for the gRPC call.
+//
+// Returns:
+//   *GRPCTool: The created GRPCTool.
 func NewGRPCTool(tool *v1.Tool, poolManager *pool.Manager, serviceID string, method protoreflect.MethodDescriptor, callDefinition *configv1.GrpcCallDefinition) *GRPCTool {
 	return &GRPCTool{
 		tool:           tool,
@@ -306,12 +310,18 @@ type HTTPTool struct {
 
 // NewHTTPTool creates a new HTTPTool.
 //
-// tool is the protobuf definition of the tool.
-// poolManager is used to get an HTTP client from the connection pool.
-// serviceID identifies the specific HTTP service connection pool.
-// authenticator handles adding authentication credentials to the request.
-// callDefinition contains the configuration for the HTTP call, such as
-// parameter mappings and transformers.
+// Parameters:
+//   tool: The protobuf definition of the tool.
+//   poolManager: The connection pool manager.
+//   serviceID: The identifier for the service.
+//   authenticator: The authenticator for upstream requests.
+//   callDefinition: The configuration for the HTTP call.
+//   cfg: The resilience configuration.
+//   policies: The security policies for the call.
+//   callID: The unique identifier for the call.
+//
+// Returns:
+//   *HTTPTool: The created HTTPTool.
 func NewHTTPTool(tool *v1.Tool, poolManager *pool.Manager, serviceID string, authenticator auth.UpstreamAuthenticator, callDefinition *configv1.HttpCallDefinition, cfg *configv1.ResilienceConfig, policies []*configv1.CallPolicy, callID string) *HTTPTool {
 	var webhookClient *WebhookClient
 	if it := callDefinition.GetInputTransformer(); it != nil && it.GetWebhook() != nil {
@@ -470,14 +480,7 @@ func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 		} else if schema := param.GetSchema(); schema != nil {
 			placeholder := t.cachedPlaceholders[schema.GetName()]
 			if val, ok := inputs[schema.GetName()]; ok {
-				var valStr string
-				// Optimization: avoid fmt.Sprintf for strings
-				switch v := val.(type) {
-				case string:
-					valStr = v
-				default:
-					valStr = fmt.Sprintf("%v", v)
-				}
+				valStr := util.ToString(val)
 
 				if param.GetDisableEscape() {
 					// Check for path traversal if in path
@@ -637,7 +640,7 @@ func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 		if method == http.MethodGet || method == http.MethodDelete {
 			q := httpReq.URL.Query()
 			for key, value := range inputs {
-				q.Add(key, fmt.Sprintf("%v", value))
+				q.Add(key, util.ToString(value))
 			}
 			httpReq.URL.RawQuery = q.Encode()
 		}
@@ -777,9 +780,13 @@ type MCPTool struct {
 
 // NewMCPTool creates a new MCPTool.
 //
-// tool is the protobuf definition of the tool.
-// client is the MCP client used to communicate with the downstream service.
-// callDefinition contains configuration for input/output transformations.
+// Parameters:
+//   tool: The protobuf definition of the tool.
+//   client: The MCP client for downstream communication.
+//   callDefinition: The configuration for the MCP call.
+//
+// Returns:
+//   *MCPTool: The created MCPTool.
 func NewMCPTool(tool *v1.Tool, client client.MCPClient, callDefinition *configv1.MCPCallDefinition) *MCPTool {
 	var webhookClient *WebhookClient
 	if it := callDefinition.GetInputTransformer(); it != nil && it.GetWebhook() != nil {
@@ -948,13 +955,17 @@ type OpenAPITool struct {
 
 // NewOpenAPITool creates a new OpenAPITool.
 //
-// tool is the protobuf definition of the tool.
-// client is the HTTP client used to make the request.
-// parameterDefs maps parameter names to their location (e.g., "path", "query").
-// method is the HTTP method for the operation.
-// url is the URL template for the endpoint.
-// authenticator handles adding authentication credentials to the request.
-// callDefinition contains configuration for input/output transformations.
+// Parameters:
+//   tool: The protobuf definition of the tool.
+//   client: The HTTP client for requests.
+//   parameterDefs: Mapping of parameter names to their locations (path, query, etc.).
+//   method: The HTTP method.
+//   url: The URL template.
+//   authenticator: The authenticator for requests.
+//   callDefinition: The configuration for the OpenAPI call.
+//
+// Returns:
+//   *OpenAPITool: The created OpenAPITool.
 func NewOpenAPITool(tool *v1.Tool, client client.HTTPClient, parameterDefs map[string]string, method, url string, authenticator auth.UpstreamAuthenticator, callDefinition *configv1.OpenAPICallDefinition) *OpenAPITool {
 	var webhookClient *WebhookClient
 	if it := callDefinition.GetInputTransformer(); it != nil && it.GetWebhook() != nil {
@@ -1014,7 +1025,7 @@ func (t *OpenAPITool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 	url := t.url
 	for paramName, paramValue := range inputs {
 		if t.parameterDefs[paramName] == "path" {
-			url = strings.ReplaceAll(url, "{{"+paramName+"}}", fmt.Sprintf("%v", paramValue))
+			url = strings.ReplaceAll(url, "{{"+paramName+"}}", util.ToString(paramValue))
 			delete(inputs, paramName)
 		}
 	}
@@ -1081,10 +1092,10 @@ func (t *OpenAPITool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 			if t.parameterDefs[paramName] == "query" {
 				if slice, ok := paramValue.([]interface{}); ok {
 					for _, v := range slice {
-						q.Add(paramName, fmt.Sprintf("%v", v))
+						q.Add(paramName, util.ToString(v))
 					}
 				} else {
-					q.Add(paramName, fmt.Sprintf("%v", paramValue))
+					q.Add(paramName, util.ToString(paramValue))
 				}
 			}
 		}
@@ -1160,8 +1171,15 @@ type CommandTool struct {
 
 // NewCommandTool creates a new CommandTool.
 //
-// tool is the protobuf definition of the tool.
-// command is the command to be executed.
+// Parameters:
+//   tool: The protobuf definition of the tool.
+//   service: The configuration of the command-line service.
+//   callDefinition: The configuration for the command-line call.
+//   policies: The security policies.
+//   callID: The unique identifier for the call.
+//
+// Returns:
+//   Tool: The created CommandTool.
 func NewCommandTool(
 	tool *v1.Tool,
 	service *configv1.CommandLineUpstreamService,
@@ -1199,8 +1217,15 @@ type LocalCommandTool struct {
 
 // NewLocalCommandTool creates a new LocalCommandTool.
 //
-// tool is the protobuf definition of the tool.
-// command is the command to be executed.
+// Parameters:
+//   tool: The protobuf definition of the tool.
+//   service: The configuration of the command-line service.
+//   callDefinition: The configuration for the command-line call.
+//   policies: The security policies.
+//   callID: The unique identifier for the call.
+//
+// Returns:
+//   Tool: The created LocalCommandTool.
 func NewLocalCommandTool(
 	tool *v1.Tool,
 	service *configv1.CommandLineUpstreamService,
@@ -1281,7 +1306,7 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 			for k, v := range inputs {
 				placeholder := "{{" + k + "}}"
 				if strings.Contains(arg, placeholder) {
-					val := fmt.Sprintf("%v", v)
+					val := util.ToString(v)
 					if err := checkForPathTraversal(val); err != nil {
 						return nil, fmt.Errorf("parameter %q: %w", k, err)
 					}
@@ -1313,6 +1338,9 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 				for _, arg := range argsList {
 					if argStr, ok := arg.(string); ok {
 						if err := checkForPathTraversal(argStr); err != nil {
+							return nil, fmt.Errorf("args parameter: %w", err)
+						}
+						if err := checkForArgumentInjection(argStr); err != nil {
 							return nil, fmt.Errorf("args parameter: %w", err)
 						}
 						args = append(args, argStr)
@@ -1363,7 +1391,7 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 			}
 			env = append(env, fmt.Sprintf("%s=%s", name, secretValue))
 		} else if val, ok := inputs[name]; ok {
-			valStr := fmt.Sprintf("%v", val)
+			valStr := util.ToString(val)
 			if err := checkForPathTraversal(valStr); err != nil {
 				return nil, fmt.Errorf("parameter %q: %w", name, err)
 			}
@@ -1380,23 +1408,36 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 		if err != nil {
 			return nil, fmt.Errorf("failed to execute command with stdio: %w", err)
 		}
-		defer func() { _ = stdin.Close() }()
+		// We don't defer stdin.Close() here because we close it in the writer goroutine
 
+		var stderrBuf bytes.Buffer
+		stderrDone := make(chan struct{})
 		go func() {
+			defer close(stderrDone)
 			defer func() { _ = stderr.Close() }()
-			_, _ = io.Copy(io.Discard, io.LimitReader(stderr, limit))
+			_, _ = io.Copy(&stderrBuf, io.LimitReader(stderr, limit))
 		}()
 
-		cliExecutor := cli.NewJSONExecutor(stdin, io.LimitReader(stdout, limit))
-		var result map[string]interface{}
 		var unmarshaledInputs map[string]interface{}
 		decoder := json.NewDecoder(bytes.NewReader(req.ToolInputs))
 		decoder.UseNumber()
 		if err := decoder.Decode(&unmarshaledInputs); err != nil {
+			_ = stdin.Close()
 			return nil, fmt.Errorf("failed to unmarshal tool inputs: %w", err)
 		}
-		if err := cliExecutor.Execute(unmarshaledInputs, &result); err != nil {
-			return nil, fmt.Errorf("failed to execute JSON CLI command: %w", err)
+
+		// Write inputs to stdin in a separate goroutine to avoid deadlock if the command crashes
+		go func() {
+			defer func() { _ = stdin.Close() }()
+			if err := json.NewEncoder(stdin).Encode(unmarshaledInputs); err != nil {
+				logging.GetLogger().Warn("Failed to encode inputs to stdin", "error", err)
+			}
+		}()
+
+		var result map[string]interface{}
+		if err := json.NewDecoder(io.LimitReader(stdout, limit)).Decode(&result); err != nil {
+			<-stderrDone
+			return nil, fmt.Errorf("failed to execute JSON CLI command: %w. Stderr: %s", err, stderrBuf.String())
 		}
 		return result, nil
 	}
@@ -1507,7 +1548,7 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 			for k, v := range inputs {
 				placeholder := "{{" + k + "}}"
 				if strings.Contains(arg, placeholder) {
-					val := fmt.Sprintf("%v", v)
+					val := util.ToString(v)
 					if err := checkForPathTraversal(val); err != nil {
 						return nil, fmt.Errorf("parameter %q: %w", k, err)
 					}
@@ -1540,6 +1581,9 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 				for _, arg := range argsList {
 					if argStr, ok := arg.(string); ok {
 						if err := checkForPathTraversal(argStr); err != nil {
+							return nil, fmt.Errorf("args parameter: %w", err)
+						}
+						if err := checkForArgumentInjection(argStr); err != nil {
 							return nil, fmt.Errorf("args parameter: %w", err)
 						}
 						args = append(args, argStr)
@@ -1604,7 +1648,7 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 			}
 			env = append(env, fmt.Sprintf("%s=%s", name, secretValue))
 		} else if val, ok := inputs[name]; ok {
-			valStr := fmt.Sprintf("%v", val)
+			valStr := util.ToString(val)
 			if err := checkForPathTraversal(valStr); err != nil {
 				return nil, fmt.Errorf("parameter %q: %w", name, err)
 			}
@@ -1621,23 +1665,36 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 		if err != nil {
 			return nil, fmt.Errorf("failed to execute command with stdio: %w", err)
 		}
-		defer func() { _ = stdin.Close() }()
+		// We don't defer stdin.Close() here because we close it in the writer goroutine
 
+		var stderrBuf bytes.Buffer
+		stderrDone := make(chan struct{})
 		go func() {
+			defer close(stderrDone)
 			defer func() { _ = stderr.Close() }()
-			_, _ = io.Copy(io.Discard, io.LimitReader(stderr, limit))
+			_, _ = io.Copy(&stderrBuf, io.LimitReader(stderr, limit))
 		}()
 
-		cliExecutor := cli.NewJSONExecutor(stdin, io.LimitReader(stdout, limit))
-		var result map[string]interface{}
 		var unmarshaledInputs map[string]interface{}
 		decoder := json.NewDecoder(bytes.NewReader(req.ToolInputs))
 		decoder.UseNumber()
 		if err := decoder.Decode(&unmarshaledInputs); err != nil {
+			_ = stdin.Close()
 			return nil, fmt.Errorf("failed to unmarshal tool inputs: %w", err)
 		}
-		if err := cliExecutor.Execute(unmarshaledInputs, &result); err != nil {
-			return nil, fmt.Errorf("failed to execute JSON CLI command: %w", err)
+
+		// Write inputs to stdin in a separate goroutine to avoid deadlock if the command crashes
+		go func() {
+			defer func() { _ = stdin.Close() }()
+			if err := json.NewEncoder(stdin).Encode(unmarshaledInputs); err != nil {
+				logging.GetLogger().Warn("Failed to encode inputs to stdin", "error", err)
+			}
+		}()
+
+		var result map[string]interface{}
+		if err := json.NewDecoder(io.LimitReader(stdout, limit)).Decode(&result); err != nil {
+			<-stderrDone
+			return nil, fmt.Errorf("failed to execute JSON CLI command: %w. Stderr: %s", err, stderrBuf.String())
 		}
 		return result, nil
 	}

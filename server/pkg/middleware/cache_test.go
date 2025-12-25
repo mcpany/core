@@ -279,34 +279,210 @@ func TestCachingMiddleware_ActionDeleteCache(t *testing.T) {
 	require.NoError(t, err)
 	assert.Equal(t, successResult, res)
 	assert.Equal(t, 2, testTool.executeCount, "Tool should be executed again when ActionDeleteCache is used")
+}
 
-	// WAIT. If DeleteCache is set, we probably want to FORCE execution?
-	// Current middleware logical flow:
-	// 1. Check Cache.
-	// 2. If hit, return.
-	// 3. If miss, run next.
-	// 4. If DeleteCache, delete.
+func TestCachingMiddleware_DeterministicKeys(t *testing.T) {
+	// Setup
+	tm := &mockToolManager{}
+	cacheMiddleware := middleware.NewCachingMiddleware(tm)
 
-	// If the user sets `DELETE_CACHE`, they probably intend "Run this tool and remove the old cache entry".
-	// They might expect it to run fresh.
-	// BUT per my implementation, if there is a cache entry, it returns it!
-	// And then returns result.
-	// `ActionDeleteCache` check is at step 4 (after execution).
-	// If step 2 returns, step 4 is NOT reached!
-	// This means `DELETE_CACHE` action is IGNORED if cache hit!
+	testTool := &mockTool{
+		tool: v1.Tool_builder{
+			Name:      proto.String(testToolName),
+			ServiceId: proto.String(testServiceName),
+		}.Build(),
+		cacheConfig: configv1.CacheConfig_builder{
+			IsEnabled: proto.Bool(true),
+			Ttl:       durationpb.New(1 * time.Hour),
+		}.Build(),
+	}
 
-	// If `ActionDeleteCache` is present, we should probably SKIP cache lookup?
-	// Or proceed to delete AFTER returning cached value? (Doesn't make sense to delete if we just used it).
-	// "User converts parameter transformer to webhook based system... add SAVE_CACHE and DELETE_CACHE actions".
-	// Usually DELETE means INVALIDATE.
-	// If INVALIDATE, we should verify invalidation.
-	// If I want to invalidate, I might call the tool?
-	// If I want to invalidate WITHOUT execution, that's different. But this is a Call Policy on a Call.
-	// If `DELETE_CACHE` is returned, we should probably SKIP CACHE and then DELETE IT (to ensure freshness next time)?
-	// Or maybe "Execute, then delete"? meaning 1-time execution that clears cache?
-	// If I want to force refresh, I would use `DELETE_CACHE`?
-	// If so, I should SKIP cache check.
+	// Two requests with same content but different key order
+	req1 := &tool.ExecutionRequest{
+		ToolName:   testServiceToolName,
+		ToolInputs: []byte(`{"a": 1, "b": 2}`),
+	}
+	req2 := &tool.ExecutionRequest{
+		ToolName:   testServiceToolName,
+		ToolInputs: []byte(`{"b": 2, "a": 1}`),
+	}
 
-	// I will update Validated Logic in CacheMiddleware:
-	// If Action == DeleteCache, SKIP cache check.
+	ctx := tool.NewContextWithTool(context.Background(), testTool)
+	nextFunc := func(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
+		t, _ := tool.GetFromContext(ctx)
+		return t.Execute(ctx, req)
+	}
+
+	// 1. Call with req1 - miss, execute
+	res1, err := cacheMiddleware.Execute(ctx, req1, nextFunc)
+	require.NoError(t, err)
+	assert.Equal(t, successResult, res1)
+	assert.Equal(t, 1, testTool.executeCount)
+
+	// 2. Call with req2 - should hit cache
+	res2, err := cacheMiddleware.Execute(ctx, req2, nextFunc)
+	require.NoError(t, err)
+	assert.Equal(t, successResult, res2)
+	assert.Equal(t, 1, testTool.executeCount, "Should be cache hit despite different key order")
+}
+
+func TestCachingMiddleware_Clear(t *testing.T) {
+	// Setup
+	tm := &mockToolManager{}
+	cacheMiddleware := middleware.NewCachingMiddleware(tm)
+
+	testTool := &mockTool{
+		tool: v1.Tool_builder{
+			Name:      proto.String(testToolName),
+			ServiceId: proto.String(testServiceName),
+		}.Build(),
+		cacheConfig: configv1.CacheConfig_builder{
+			IsEnabled: proto.Bool(true),
+			Ttl:       durationpb.New(1 * time.Hour),
+		}.Build(),
+	}
+	req := &tool.ExecutionRequest{ToolName: testServiceToolName}
+	ctx := tool.NewContextWithTool(context.Background(), testTool)
+	nextFunc := func(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
+		t, _ := tool.GetFromContext(ctx)
+		return t.Execute(ctx, req)
+	}
+
+	// 1. Populate cache
+	_, err := cacheMiddleware.Execute(ctx, req, nextFunc)
+	require.NoError(t, err)
+	assert.Equal(t, 1, testTool.executeCount)
+
+	// 2. Clear cache
+	err = cacheMiddleware.Clear(context.Background())
+	require.NoError(t, err)
+
+	// 3. Call again - should execute (miss)
+	_, err = cacheMiddleware.Execute(ctx, req, nextFunc)
+	require.NoError(t, err)
+	assert.Equal(t, 2, testTool.executeCount, "Tool should be executed again after cache clear")
+}
+
+func TestCachingMiddleware_ActionDeleteCache_VerifyDeletion(t *testing.T) {
+	// Setup
+	tm := &mockToolManager{}
+	cacheMiddleware := middleware.NewCachingMiddleware(tm)
+
+	testTool := &mockTool{
+		tool: v1.Tool_builder{
+			Name:      proto.String(testToolName),
+			ServiceId: proto.String(testServiceName),
+		}.Build(),
+		cacheConfig: configv1.CacheConfig_builder{
+			IsEnabled: proto.Bool(true),
+			Ttl:       durationpb.New(1 * time.Hour),
+		}.Build(),
+	}
+	req := &tool.ExecutionRequest{ToolName: testServiceToolName}
+	ctx := tool.NewContextWithTool(context.Background(), testTool)
+	nextFunc := func(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
+		t, _ := tool.GetFromContext(ctx)
+		return t.Execute(ctx, req)
+	}
+
+	// 1. Populate cache
+	_, err := cacheMiddleware.Execute(ctx, req, nextFunc)
+	require.NoError(t, err)
+	assert.Equal(t, 1, testTool.executeCount)
+
+	// 2. Call with DeleteCache
+	cacheControl := &tool.CacheControl{Action: tool.ActionDeleteCache}
+	ctxWithDelete := tool.NewContextWithCacheControl(ctx, cacheControl)
+
+	_, err = cacheMiddleware.Execute(ctxWithDelete, req, nextFunc)
+	require.NoError(t, err)
+	assert.Equal(t, 2, testTool.executeCount, "Should execute due to skip cache")
+
+	// 3. Call again with Normal Allow
+	// If cache was deleted in step 2, this should be a MISS -> Execute -> count=3
+	_, err = cacheMiddleware.Execute(ctx, req, nextFunc)
+	require.NoError(t, err)
+	assert.Equal(t, 3, testTool.executeCount, "Should execute again because cache was deleted and not repopulated in step 2")
+}
+
+// MockProviderFactory mocks the EmbeddingProvider creation.
+type MockProviderFactory struct {
+	embeddings map[string][]float32
+}
+
+func (m *MockProviderFactory) Create(providerType, apiKey, model string) (middleware.EmbeddingProvider, error) {
+	return &MockEmbeddingProvider{embeddings: m.embeddings}, nil
+}
+
+type MockEmbeddingProvider struct {
+	embeddings map[string][]float32
+}
+
+func (m *MockEmbeddingProvider) Embed(ctx context.Context, text string) ([]float32, error) {
+	if val, ok := m.embeddings[text]; ok {
+		return val, nil
+	}
+	return []float32{0, 0, 0}, nil
+}
+
+func TestCachingMiddleware_SemanticCache(t *testing.T) {
+	// Setup
+	tm := &mockToolManager{}
+	cacheMiddleware := middleware.NewCachingMiddleware(tm)
+
+	// Override factory
+	mockFactory := &MockProviderFactory{
+		embeddings: map[string][]float32{
+			"hello": {1.0, 0.0, 0.0},
+			"hi":    {0.99, 0.05, 0.0},
+		},
+	}
+	cacheMiddleware.SetProviderFactory(mockFactory.Create)
+
+	testTool := &mockTool{
+		tool: v1.Tool_builder{
+			Name:      proto.String(testToolName),
+			ServiceId: proto.String(testServiceName),
+		}.Build(),
+		cacheConfig: configv1.CacheConfig_builder{
+			IsEnabled: proto.Bool(true),
+			Strategy:  proto.String("semantic"),
+			SemanticConfig: configv1.SemanticCacheConfig_builder{
+				Provider: proto.String("openai"),
+				ApiKey: configv1.SecretValue_builder{
+					PlainText: proto.String("test-api-key"),
+				}.Build(),
+				Model:               proto.String("test-model"),
+				SimilarityThreshold: proto.Float32(0.9),
+			}.Build(),
+			Ttl: durationpb.New(1 * time.Hour),
+		}.Build(),
+	}
+
+	req := &tool.ExecutionRequest{
+		ToolName:   testServiceToolName,
+		ToolInputs: []byte("hello"),
+	}
+
+	ctx := tool.NewContextWithTool(context.Background(), testTool)
+	nextFunc := func(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
+		t, _ := tool.GetFromContext(ctx)
+		return t.Execute(ctx, req)
+	}
+
+	// 1. First call - should execute (miss, but sets cache)
+	res1, err := cacheMiddleware.Execute(ctx, req, nextFunc)
+	require.NoError(t, err)
+	assert.Equal(t, successResult, res1)
+	assert.Equal(t, 1, testTool.executeCount)
+
+	// 2. Second call with "hi" (should match "hello")
+	req2 := &tool.ExecutionRequest{
+		ToolName:   testServiceToolName,
+		ToolInputs: []byte("hi"),
+	}
+	res2, err := cacheMiddleware.Execute(ctx, req2, nextFunc)
+	require.NoError(t, err)
+	assert.Equal(t, successResult, res2)
+	assert.Equal(t, 1, testTool.executeCount, "Should be semantic cache hit")
 }

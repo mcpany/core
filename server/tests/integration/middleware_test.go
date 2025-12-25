@@ -20,7 +20,7 @@ import (
 )
 
 func TestCacheMiddleware_CacheHit(t *testing.T) {
-	t.Skip("Skipping flaky test: tool registration times out intermittently.")
+	// t.Skip("Skipping flaky test: tool registration times out intermittently.")
 	var requestCount int32
 	upstream := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		atomic.AddInt32(&requestCount, 1)
@@ -49,16 +49,22 @@ upstream_services:
 	serverInfo := integration.StartMCPANYServerWithConfig(t, "cache-hit-test", configContent)
 	defer serverInfo.CleanupFunc()
 
+	require.NoError(t, serverInfo.Initialize(context.Background()))
+
 	require.Eventually(t, func() bool {
 		listToolsResult, err := serverInfo.ListTools(context.Background())
 		if err != nil {
+			t.Logf("ListTools failed: %v", err)
 			return false
 		}
+		var names []string
 		for _, tool := range listToolsResult.Tools {
+			names = append(names, tool.Name)
 			if tool.Name == "test-service.test-tool" {
 				return true
 			}
 		}
+		t.Logf("Tool not found. Found: %v", names)
 		return false
 	}, 15*time.Second, 500*time.Millisecond, "tool was not registered")
 
@@ -76,7 +82,7 @@ upstream_services:
 }
 
 func TestCacheMiddleware_CacheExpires(t *testing.T) {
-	t.Skip("Skipping flaky test: tool registration times out intermittently.")
+	// t.Skip("Skipping flaky test: tool registration times out intermittently.")
 	var requestCount int32
 	upstream := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		atomic.AddInt32(&requestCount, 1)
@@ -105,16 +111,22 @@ upstream_services:
 	serverInfo := integration.StartMCPANYServerWithConfig(t, "cache-expires-test", configContent)
 	defer serverInfo.CleanupFunc()
 
+	require.NoError(t, serverInfo.Initialize(context.Background()))
+
 	require.Eventually(t, func() bool {
 		listToolsResult, err := serverInfo.ListTools(context.Background())
 		if err != nil {
+			t.Logf("ListTools error: %v", err)
 			return false
 		}
+		var names []string
 		for _, tool := range listToolsResult.Tools {
+			names = append(names, tool.Name)
 			if tool.Name == "test-service.test-tool" {
 				return true
 			}
 		}
+		t.Logf("Tool not found. Found: %v", names)
 		return false
 	}, 15*time.Second, 500*time.Millisecond, "tool was not registered")
 

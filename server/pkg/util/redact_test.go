@@ -108,4 +108,17 @@ func TestRedactJSON(t *testing.T) {
 		output := RedactJSON([]byte(input))
 		assert.Equal(t, []byte(input), output)
 	})
+
+	t.Run("large number precision", func(t *testing.T) {
+		// A large integer that loses precision when converted to float64
+		// 1234567890123456789 is large enough.
+		input := `{"id": 1234567890123456789, "api_key": "secret"}`
+
+		// We expect "api_key" to be redacted, but "id" to remain unchanged.
+		// Note: we can't rely on key order so we parse it back
+		output := RedactJSON([]byte(input))
+
+		assert.Contains(t, string(output), "1234567890123456789")
+		assert.Contains(t, string(output), "[REDACTED]")
+	})
 }

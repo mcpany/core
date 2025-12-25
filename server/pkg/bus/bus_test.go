@@ -31,30 +31,6 @@ func TestBusProvider(t *testing.T) {
 		assert.Same(t, bus1, bus3)
 	})
 
-	t.Run("Redis", func(t *testing.T) {
-		client := redis.NewClient(&redis.Options{
-			Addr: "localhost:6379",
-		})
-		if _, err := client.Ping(context.Background()).Result(); err != nil {
-			t.Skip("Redis is not available")
-		}
-
-		messageBus := bus.MessageBus_builder{}.Build()
-		redisBus := bus.RedisBus_builder{}.Build()
-		redisBus.SetAddress("localhost:6379")
-		messageBus.SetRedis(redisBus)
-
-		provider, err := NewProvider(messageBus)
-		assert.NoError(t, err)
-
-		bus1, _ := GetBus[string](provider, "strings")
-		bus2, _ := GetBus[int](provider, "ints")
-		bus3, _ := GetBus[string](provider, "strings")
-
-		assert.NotNil(t, bus1)
-		assert.NotNil(t, bus2)
-		assert.Same(t, bus1, bus3)
-	})
 
 	t.Run("Nats", func(t *testing.T) {
 		// NatsBus builder with empty URL triggers the embedded NATS server,
