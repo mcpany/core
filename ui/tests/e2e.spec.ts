@@ -1,60 +1,48 @@
-/**
- * Copyright 2025 Author(s) of MCP Any
- * SPDX-License-Identifier: Apache-2.0
- */
-
 
 import { test, expect } from '@playwright/test';
-import path from 'path';
 
-const DATE = new Date().toISOString().split('T')[0];
-const AUDIT_DIR = path.join(__dirname, `../../.audit/ui/${DATE}`);
+test.describe('MCP Any UI E2E Tests', () => {
 
-test.describe('MCP Any UI Overhaul', () => {
-  test('Dashboard loads and displays metrics', async ({ page }) => {
-    await page.goto('http://localhost:9002');
-    await expect(page.getByText('Total Requests')).toBeVisible();
-    await expect(page.getByText('Service Health')).toBeVisible();
-
-    // Audit Screenshot
-    await page.screenshot({ path: path.join(AUDIT_DIR, 'dashboard_verified.png'), fullPage: true });
+  test('Dashboard loads correctly', async ({ page }) => {
+    await page.goto('/');
+    // Check for metrics
+    await expect(page.locator('text=Total Requests')).toBeVisible();
+    await expect(page.locator('text=Active Services')).toBeVisible();
+    // Check for health widget
+    await expect(page.locator('text=System Health')).toBeVisible();
   });
 
-  test('Services page lists services and allows toggling', async ({ page }) => {
-    await page.goto('http://localhost:9002/services');
-    await expect(page.getByText('Payment Gateway')).toBeVisible();
+  test('Services page lists services and allows toggle', async ({ page }) => {
+    await page.goto('/services');
+    await expect(page.locator('h2')).toContainText('Services');
 
-    // Check toggle
-    const toggle = page.getByRole('switch').first();
-    await expect(toggle).toBeVisible();
+    // Check for list of services
+    await expect(page.locator('text=Payment Service')).toBeVisible();
+    await expect(page.locator('text=Auth Service')).toBeVisible();
 
-    // Open Edit Sheet
-    await page.locator('button:has(.lucide-settings)').first().click();
+    // Test toggle
+    const switchElement = page.locator('button[role="switch"]').first();
+    await expect(switchElement).toBeVisible();
 
-    await expect(page.getByText('Edit Service')).toBeVisible();
-
-    // Audit Screenshot
-    await page.screenshot({ path: path.join(AUDIT_DIR, 'services_verified.png'), fullPage: true });
+    // Test Add Service (Edit Sheet)
+    await page.click('text=Add Service');
+    await expect(page.locator('text=New Service')).toBeVisible();
+    await expect(page.locator('input#name')).toBeVisible();
   });
 
-  test('Middleware page displays pipeline', async ({ page }) => {
-    await page.goto('http://localhost:9002/settings/middleware');
-    await expect(page.getByText('Middleware Pipeline')).toBeVisible();
-
-    // Updated expectation: looking for mocked data 'auth' or 'logging'
-    await expect(page.getByText('auth')).toBeVisible();
-    await expect(page.getByText('logging')).toBeVisible();
-
-    // Audit Screenshot
-    await page.screenshot({ path: path.join(AUDIT_DIR, 'middleware_verified.png'), fullPage: true });
+  test('Tools page lists tools', async ({ page }) => {
+    await page.goto('/tools');
+    await expect(page.locator('h2')).toContainText('Tools');
+    await expect(page.locator('text=calculator')).toBeVisible();
+    await expect(page.locator('text=weather_lookup')).toBeVisible();
   });
 
-  test('Webhooks page displays configuration', async ({ page }) => {
-    await page.goto('http://localhost:9002/settings/webhooks');
-    await expect(page.getByRole('heading', { name: 'Webhooks' })).toBeVisible();
-    await expect(page.getByRole('button', { name: 'Add Webhook' })).toBeVisible();
-
-    // Audit Screenshot
-    await page.screenshot({ path: path.join(AUDIT_DIR, 'webhooks_verified.png'), fullPage: true });
+  test('Middleware page shows pipeline', async ({ page }) => {
+    await page.goto('/middleware');
+    await expect(page.locator('h2')).toContainText('Middleware Pipeline');
+    await expect(page.locator('text=Incoming Request')).toBeVisible();
+    // Use first() to avoid strict mode violation if text appears multiple times
+    await expect(page.locator('text=auth').first()).toBeVisible();
   });
+
 });

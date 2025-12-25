@@ -1,45 +1,38 @@
-/**
- * Copyright 2025 Author(s) of MCP Any
- * SPDX-License-Identifier: Apache-2.0
- */
-
 
 import { NextResponse } from 'next/server';
 
 export async function GET() {
-  // Simulate backend data
-  const services = [
+  // Mock data for service health
+  const health = [
     {
-      name: "Payment Gateway",
-      version: "v1.2.0",
-      uptime: "99.99%",
+      id: "svc-1",
+      name: "Payment Service",
       status: "healthy",
+      latency: "45ms",
+      uptime: "99.9%",
     },
     {
-      name: "User Service",
-      version: "v2.1.0",
-      uptime: "99.95%",
-      status: "healthy",
-    },
-    {
-      name: "Notification Service",
-      version: "v1.0.1",
-      uptime: "98.50%",
+      id: "svc-2",
+      name: "Auth Service",
       status: "degraded",
+      latency: "150ms",
+      uptime: "99.5%",
     },
     {
-      name: "Search Indexer",
-      version: "v0.9.0",
-      uptime: "85.00%",
-      status: "unhealthy",
-    },
-    {
-      name: "Analytics Engine",
-      version: "v3.0.0",
-      uptime: "99.90%",
+      id: "svc-3",
+      name: "Notification Service",
       status: "healthy",
+      latency: "32ms",
+      uptime: "99.99%",
     },
+    {
+        id: "svc-4",
+        name: "Data Processor",
+        status: "unhealthy",
+        latency: "Timeout",
+        uptime: "95.0%",
+    }
   ];
 
-  return NextResponse.json(services);
+  return NextResponse.json(health);
 }
