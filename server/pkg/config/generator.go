@@ -150,10 +150,11 @@ func (g *Generator) generateHTTPService() ([]byte, error) {
 		return nil, err
 	}
 
-	data.Method, err = g.prompt("📡 Enter HTTP method (e.g., HTTP_METHOD_GET): ")
+	methodInput, err := g.prompt("📡 Enter HTTP method (e.g., HTTP_METHOD_GET): ")
 	if err != nil {
 		return nil, err
 	}
+	data.Method = normalizeHTTPMethod(methodInput)
 
 	data.EndpointPath, err = g.prompt("🛣️  Enter endpoint path: ")
 	if err != nil {
