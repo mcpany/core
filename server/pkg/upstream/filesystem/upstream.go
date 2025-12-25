@@ -307,7 +307,9 @@ func (u *Upstream) Register(
 					if err != nil {
 						return nil
 					}
-					defer f.Close()
+					defer func() {
+						_ = f.Close()
+					}()
 
 					// Check for binary
 					// Read first 512 bytes

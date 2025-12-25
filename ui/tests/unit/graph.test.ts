@@ -1,7 +1,7 @@
 
 import { describe, it, expect } from 'vitest';
-import { transformServicesToGraph } from '../src/lib/graph-utils';
-import { Service } from '../src/types/service';
+import { transformServicesToGraph } from '../../src/lib/graph-utils';
+import { Service } from '../../src/types/service';
 
 describe('transformServicesToGraph', () => {
   it('should create a central node and service nodes', () => {
