@@ -5,6 +5,8 @@ package middleware
 
 import (
 	"context"
+	"crypto/sha256"
+	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"sync"
@@ -244,7 +246,12 @@ func (m *CachingMiddleware) getCacheKey(req *tool.ExecutionRequest) string {
 		normalizedInputs = req.ToolInputs
 	}
 
-	return fmt.Sprintf("%s:%s", req.ToolName, normalizedInputs)
+	// Optimization: Hash the normalized inputs to keep the cache key short and fixed length.
+	// This avoids using potentially large JSON strings as map keys.
+	hash := sha256.Sum256(normalizedInputs)
+	hashStr := hex.EncodeToString(hash[:])
+
+	return fmt.Sprintf("%s:%s", req.ToolName, hashStr)
 }
 
 // Clear clears the cache.
