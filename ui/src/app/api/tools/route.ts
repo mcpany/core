@@ -1,12 +1,11 @@
 
-import { NextResponse } from "next/server";
-
-const tools = [
-  { name: "stripe_charge", description: "Create a charge on Stripe", service: "Payment Gateway", type: "function" },
-  { name: "get_user", description: "Retrieve user details", service: "User Service", type: "function" },
-  { name: "search_docs", description: "Search internal documentation", service: "Search Indexer", type: "read" },
-];
+import { NextResponse } from 'next/server';
 
 export async function GET() {
+  const tools = [
+    { name: "calculator", description: "Performs basic arithmetic", source: "discovered", service: "MathService" },
+    { name: "weather_lookup", description: "Gets weather for a location", source: "configured", service: "WeatherService" },
+    { name: "db_query", description: "Executes SQL queries", source: "configured", service: "DBService" },
+  ];
   return NextResponse.json(tools);
 }

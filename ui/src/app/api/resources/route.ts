@@ -1,11 +1,10 @@
 
-import { NextResponse } from "next/server";
-
-const resources = [
-  { id: "res_01", name: "Project Guidelines", type: "text/plain", service: "Documentation Service" },
-  { id: "res_02", name: "Logo Assets", type: "application/zip", service: "Asset Store" },
-];
+import { NextResponse } from 'next/server';
 
 export async function GET() {
+  const resources = [
+    { name: "users_db", type: "postgresql", service: "DBService" },
+    { name: "logs_bucket", type: "s3", service: "LogService" },
+  ];
   return NextResponse.json(resources);
 }
