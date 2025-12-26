@@ -33,3 +33,6 @@ build/
 *.db-wal
 data/
 mcpany.db
+
+.audits/
+.audit/
