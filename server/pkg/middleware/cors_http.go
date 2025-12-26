@@ -50,7 +50,6 @@ func (m *HTTPCORSMiddleware) Handler(next http.Handler) http.Handler {
 		}
 
 		// Set CORS headers
-		// Set CORS headers
 		// If we want to allow all with credentials, we must echo the origin.
 		w.Header().Set("Access-Control-Allow-Origin", origin)
 		w.Header().Set("Vary", "Origin")
