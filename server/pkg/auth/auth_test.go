@@ -114,9 +114,10 @@ func TestAuthManager(t *testing.T) {
 
 	t.Run("authenticate_with_unregistered_service", func(t *testing.T) {
 		req := httptest.NewRequest("GET", "/", nil)
-		// No headers, but should pass as no authenticator is configured
+		// No authenticator is configured, so it should fail securely
 		_, err := authManager.Authenticate(context.Background(), "unregistered-service", req)
-		assert.NoError(t, err)
+		assert.Error(t, err)
+		assert.Contains(t, err.Error(), "unauthorized: no authenticator configured")
 	})
 
 	t.Run("add_nil_authenticator", func(t *testing.T) {
@@ -135,7 +136,8 @@ func TestAuthManager(t *testing.T) {
 		// We will just ensure that authenticating with a non-existent service does not panic.
 		assert.NotPanics(t, func() {
 			_, err := authManager.Authenticate(context.Background(), "nil-service", req)
-			assert.NoError(t, err)
+			assert.Error(t, err)
+			assert.Contains(t, err.Error(), "unauthorized: no authenticator configured")
 		})
 	})
 

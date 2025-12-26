@@ -184,6 +184,7 @@ func (am *Manager) AddAuthenticator(serviceID string, authenticator Authenticato
 // Returns a potentially modified context on success, or an error if
 // authentication fails.
 func (am *Manager) Authenticate(ctx context.Context, serviceID string, r *http.Request) (context.Context, error) {
+	globalAuthPassed := false
 	if am.apiKey != "" {
 		if r.Header.Get("X-API-Key") == "" {
 			return ctx, fmt.Errorf("unauthorized: missing API key")
@@ -192,13 +193,23 @@ func (am *Manager) Authenticate(ctx context.Context, serviceID string, r *http.R
 			return ctx, fmt.Errorf("unauthorized: invalid API key")
 		}
 		ctx = ContextWithAPIKey(ctx, r.Header.Get("X-API-Key"))
+		globalAuthPassed = true
 	}
 
 	if authenticator, ok := am.authenticators.Load(serviceID); ok {
 		return authenticator.Authenticate(ctx, r)
 	}
-	// If no authenticator is configured for the service, we'll allow the request to proceed.
-	return ctx, nil
+
+	// If global authentication passed, we allow the request even if no service-specific
+	// authenticator is configured. This maintains the "Admin Mode" behavior where
+	// a global key unlocks everything.
+	if globalAuthPassed {
+		return ctx, nil
+	}
+
+	// If no authenticator is configured for the service, deny the request.
+	// This ensures secure-by-default behavior.
+	return ctx, fmt.Errorf("unauthorized: no authenticator configured for service %s", serviceID)
 }
 
 // GetAuthenticator retrieves the authenticator registered for a specific
