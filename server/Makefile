@@ -391,11 +391,13 @@ build-mock-server: gen
 	@$(GO_CMD) build $(LDFLAGS) -buildvcs=false -o $(BUILD_DIR)/bin/mock_server ./cmd/mock_mcp_server
 
 ifdef SHOULD_PROXY_TO_DOCKER
-test:
+test-server:
 	@$(DOCKER_PROXY_CMD) test
 else
-test: test-fast e2e-local test-public-api
+test-server: test-fast e2e-local test-public-api
 endif
+
+test: test-server test-ui
 
 COVERAGE_FILE ?= coverage.out
 
