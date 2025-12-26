@@ -303,6 +303,12 @@ func TestFilesystemUpstream_Register_And_Execute(t *testing.T) {
 		_, err = os.Stat(filepath.Join(tempDir, "deleteme.txt"))
 		assert.True(t, os.IsNotExist(err))
 	})
+
+	// Test Shutdown
+	t.Run("Shutdown", func(t *testing.T) {
+		err := u.Shutdown(context.Background())
+		assert.NoError(t, err)
+	})
 }
 
 func TestFilesystemUpstream_MemMapFs(t *testing.T) {
