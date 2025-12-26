@@ -307,6 +307,10 @@ message SemanticCacheConfig {
     OllamaEmbeddingProviderConfig ollama = 6 [json_name = "ollama"];
     HttpEmbeddingProviderConfig http = 7 [json_name = "http"];
   }
+
+  // Path to SQLite database file for persistent storage.
+  // If empty, the cache will be in-memory only.
+  string persistence_path = 8 [json_name = "persistence_path"];
 }
 
 message OpenAIEmbeddingProviderConfig {
