@@ -6,14 +6,16 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { apiClient } from "@/lib/client";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 
 interface Resource {
   name: string;
-  type: string;
-  service: string;
+  type?: string;
+  service?: string;
+  description?: string;
 }
 
 export default function ResourcesPage() {
@@ -21,9 +23,11 @@ export default function ResourcesPage() {
 
   useEffect(() => {
     async function fetchResources() {
-      const res = await fetch("/api/resources");
-      if (res.ok) {
-        setResources(await res.json());
+      try {
+        const { resources } = await apiClient.listResources();
+        setResources(resources);
+      } catch (e) {
+        console.error("Failed to fetch resources", e);
       }
     }
     fetchResources();

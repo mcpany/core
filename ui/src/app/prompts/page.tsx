@@ -6,14 +6,15 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { apiClient } from "@/lib/client";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 
 interface Prompt {
   name: string;
-  description: string;
-  service: string;
+  description?: string;
+  service?: string;
 }
 
 export default function PromptsPage() {
@@ -21,9 +22,19 @@ export default function PromptsPage() {
 
   useEffect(() => {
     async function fetchPrompts() {
-      const res = await fetch("/api/prompts");
-      if (res.ok) {
-        setPrompts(await res.json());
+      // Need to aggregate prompts from services as there is no direct listPrompts API yet
+      try {
+        const { services } = await apiClient.listServices();
+        const allPrompts = services.flatMap(s =>
+            (s.grpc_service?.prompts ||
+             s.http_service?.prompts ||
+             s.command_line_service?.prompts ||
+             s.mcp_service?.prompts ||
+             [])
+        );
+        setPrompts(allPrompts);
+      } catch (e) {
+         console.error("Failed to fetch prompts", e);
       }
     }
     fetchPrompts();
