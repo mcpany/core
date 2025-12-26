@@ -222,8 +222,22 @@ func (s *Settings) Middlewares() []*configv1.Middleware {
 // containing comma-separated values (which happens with environment variables).
 func getStringSlice(key string) []string {
 	res := viper.GetStringSlice(key)
-	if len(res) == 1 && strings.Contains(res[0], ",") {
-		return strings.Split(res[0], ",")
+	var final []string
+	for _, item := range res {
+		if strings.Contains(item, ",") {
+			parts := strings.Split(item, ",")
+			for _, p := range parts {
+				p = strings.TrimSpace(p)
+				if p != "" {
+					final = append(final, p)
+				}
+			}
+		} else {
+			item = strings.TrimSpace(item)
+			if item != "" {
+				final = append(final, item)
+			}
+		}
 	}
-	return res
+	return final
 }
