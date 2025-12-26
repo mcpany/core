@@ -6,7 +6,6 @@ package config
 import (
 	"context"
 	"fmt"
-	"strings"
 
 	"github.com/mcpany/core/pkg/logging"
 	configv1 "github.com/mcpany/core/proto/config/v1"
@@ -101,12 +100,29 @@ func LoadServices(store Store, binaryType string) (*configv1.McpAnyServerConfig,
 	}
 
 	if validationErrors := Validate(context.Background(), fileConfig, bt); len(validationErrors) > 0 {
-		var errorMessages []string
+		invalidServices := make(map[string]bool)
 		for _, e := range validationErrors {
-			log.Error("Config validation error", "service", e.ServiceName, "error", e.Err)
-			errorMessages = append(errorMessages, fmt.Sprintf("service '%s': %s", e.ServiceName, e.Err.Error()))
+			// Some validation errors might not have a service name (e.g. global settings)
+			// In that case, we should probably fail.
+			if e.ServiceName == "global_settings" || e.ServiceName == "" {
+				log.Error("Critical config validation error", "error", e.Err)
+				return nil, fmt.Errorf("critical config validation failed: %s", e.Err.Error())
+			}
+
+			log.Error("Config validation error, skipping service", "service", e.ServiceName, "error", e.Err)
+			invalidServices[e.ServiceName] = true
 		}
-		return nil, fmt.Errorf("config validation failed: %s", strings.Join(errorMessages, "; "))
+
+		// Filter out invalid services
+		if len(invalidServices) > 0 {
+			var validServices []*configv1.UpstreamServiceConfig
+			for _, svc := range fileConfig.GetUpstreamServices() {
+				if !invalidServices[svc.GetName()] {
+					validServices = append(validServices, svc)
+				}
+			}
+			fileConfig.UpstreamServices = validServices
+		}
 	}
 
 	if len(fileConfig.GetUpstreamServices()) > 0 {
