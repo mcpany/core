@@ -61,7 +61,7 @@ export function ServiceHealthWidget() {
   };
 
   return (
-    <Card className="col-span-4 backdrop-blur-sm bg-background/50">
+    <Card className="col-span-1 md:col-span-2 lg:col-span-3 backdrop-blur-sm bg-background/50">
       <CardHeader>
         <CardTitle>System Health</CardTitle>
         <CardDescription>

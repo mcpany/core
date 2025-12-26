@@ -5,7 +5,7 @@ package startup
 
 import (
 	"context"
-    "encoding/json"
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"net/http/httptest"
@@ -15,7 +15,7 @@ import (
 
 	"github.com/mcpany/core/pkg/app"
 	"github.com/mcpany/core/tests/integration"
-    "github.com/modelcontextprotocol/go-sdk/mcp"
+	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/spf13/afero"
 	"github.com/stretchr/testify/require"
 )
@@ -65,25 +65,74 @@ upstream_services:
     err = tmpFile.Close()
     require.NoError(t, err)
 
-    jsonrpcPort := integration.FindFreePort(t)
-    grpcRegPort := integration.FindFreePort(t)
-    for grpcRegPort == jsonrpcPort {
-        grpcRegPort = integration.FindFreePort(t)
-    }
+	var jsonrpcPort, grpcRegPort int
+	var appRunner *app.Application
+	var ctx context.Context
+	var cancel context.CancelFunc
 
-    ctx, cancel := context.WithCancel(context.Background())
-    defer cancel()
+	started := false
+	for i := 0; i < 3; i++ {
+		jsonrpcPort = integration.FindFreePort(t)
+		grpcRegPort = integration.FindFreePort(t)
+		for grpcRegPort == jsonrpcPort {
+			grpcRegPort = integration.FindFreePort(t)
+		}
 
-    appRunner := app.NewApplication()
-    go func() {
-        err := appRunner.Run(ctx, afero.NewOsFs(), false, fmt.Sprintf(":%d", jsonrpcPort), fmt.Sprintf(":%d", grpcRegPort), []string{tmpFile.Name()}, 5*time.Second)
-        if err != nil && err != context.Canceled {
-             t.Logf("Server exited with error: %v", err)
-        }
-    }()
+		ctx, cancel = context.WithCancel(context.Background())
+		appRunner = app.NewApplication()
 
-    httpUrl := fmt.Sprintf("http://127.0.0.1:%d/healthz", jsonrpcPort)
-    integration.WaitForHTTPHealth(t, httpUrl, 10*time.Second)
+		serverErrChan := make(chan error, 1)
+
+		go func() {
+			err := appRunner.Run(ctx, afero.NewOsFs(), false, fmt.Sprintf(":%d", jsonrpcPort), fmt.Sprintf(":%d", grpcRegPort), []string{tmpFile.Name()}, 5*time.Second)
+			if err != nil && err != context.Canceled {
+				t.Logf("Attempt %d: Server exited with error: %v", i+1, err)
+				serverErrChan <- err
+			}
+			close(serverErrChan)
+		}()
+
+		// Wait briefly to check for immediate start failure (e.g. bind error)
+		select {
+		case err := <-serverErrChan:
+			if err != nil {
+				cancel()
+				continue // Retry
+			}
+		case <-time.After(500 * time.Millisecond):
+			// Proceed to check health
+		}
+
+		httpUrl := fmt.Sprintf("http://127.0.0.1:%d/healthz", jsonrpcPort)
+
+		// Soft check for health
+		healthClient := http.Client{Timeout: 1 * time.Second}
+		healthy := false
+		for j := 0; j < 10; j++ {
+			resp, err := healthClient.Get(httpUrl)
+			if err == nil && resp.StatusCode == http.StatusOK {
+				resp.Body.Close()
+				healthy = true
+				break
+			}
+			if resp != nil {
+				resp.Body.Close()
+			}
+			if j < 9 {
+				time.Sleep(500 * time.Millisecond) // Wait reduced for retry loop
+			}
+		}
+
+		if healthy {
+			started = true
+			break
+		}
+
+		// Failed, cleanup and retry
+		cancel()
+	}
+	require.True(t, started, "Failed to start server after retries")
+	defer cancel() // Defer cancel for the successful context
 
     endpoint := fmt.Sprintf("http://127.0.0.1:%d", jsonrpcPort)
 

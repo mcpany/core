@@ -95,14 +95,11 @@ func (m *ToolMetricsMiddleware) Execute(ctx context.Context, req *tool.Execution
 		status = "error"
 		errorType = "execution_failed"
 
-		if errors.Is(err, context.Canceled) {
+		switch {
+		case errors.Is(err, context.Canceled):
 			errorType = "context_canceled"
-		} else if errors.Is(err, context.DeadlineExceeded) {
+		case errors.Is(err, context.DeadlineExceeded):
 			errorType = "deadline_exceeded"
-		} else {
-			// Check for other error types if available
-			// e.g. if we had a typed error for user vs internal
-			// For now, simple check
 		}
 	}
 
