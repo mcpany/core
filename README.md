@@ -166,68 +166,35 @@ Once the server is running, you can interact with it using its JSON-RPC API.
 
 ## 🛠️ Development Guide
 
+We welcome contributions to MCP Any! This section provides a brief overview of how to set up your development environment. For more detailed information, including code structure, service registration, and debugging tips, please refer to the [**Developer Guide**](server/docs/developer_guide.md).
+
 ### Prerequisites
 
 - **Go**: Version 1.23+
 - **Docker**: For running tests and building images.
-- **Protoc**: For generating protobuf files (handled by `make prepare`).
+- **Make**: For running build automation scripts.
 
-### Setup
+### Quick Setup
 
-Run the following command to set up the development environment, including installing tools and dependencies:
+1.  **Clone the repository:**
+    ```bash
+    git clone https://github.com/mcpany/core.git
+    cd core
+    ```
 
-```bash
-make prepare
-```
+2.  **Install dependencies and tools:**
+    Run the following command to set up your environment (installs `protoc`, linters, etc.):
+    ```bash
+    make prepare
+    ```
 
-### Building
+### Common Commands
 
-To build the server binary locally:
-
-```bash
-make build
-```
-
-The binary will be located at `build/bin/server`.
-
-### Testing
-
-To run the test suite:
-
-```bash
-make test
-```
-
-This includes unit tests, integration tests, and end-to-end (E2E) tests.
-
-### Linting
-
-To run linters:
-
-```bash
-make lint
-```
-
-We use `golangci-lint` and `pre-commit` hooks.
-
-### Project Structure
-
-- **`server/cmd/`**: Entry points for the applications (server, worker, webhooks).
-- **`server/pkg/`**: Core library code.
-    - **`config/`**: Configuration loading and validation.
-    - **`mcpserver/`**: Core MCP server implementation.
-    - **`tool/`**: Tool management and execution logic.
-    - **`upstream/`**: Upstream service integrations (gRPC, HTTP, etc.).
-    - **`util/`**: Utility functions.
-- **`proto/`**: Protocol Buffer definitions.
-- **`server/examples/`**: Example configurations.
-- **`server/docs/`**: Detailed documentation.
-
-### Code Standards
-
-- **Documentation**: All public functions, methods, and types must be documented. Use `go run server/tools/check_doc.go server/` to verify documentation coverage.
-- **Linting**: Ensure `make lint` passes before submitting code.
-- **Testing**: Ensure `make test` passes.
+- **Build**: `make build` (Binary will be at `build/bin/server`)
+- **Test**: `make test` (Runs unit, integration, and E2E tests)
+- **Lint**: `make lint` (Runs `golangci-lint` and other checks)
+- **Generate**: `make gen` (Regenerates code from Protocol Buffers)
+- **Clean**: `make clean` (Removes build artifacts)
 
 ### Running Locally
 
@@ -236,6 +203,21 @@ After building, you can run the server locally:
 ```bash
 ./build/bin/server run --config-path server/examples/popular_services/wttr.in/config.yaml
 ```
+
+### Project Structure
+
+- **`server/cmd/`**: Application entry points (e.g., `server`).
+- **`server/pkg/`**: Core library code.
+    - **`config/`**: Configuration loading/validation.
+    - **`mcpserver/`**: Core MCP server logic.
+    - **`upstream/`**: Integrations for gRPC, HTTP, OpenAPI, etc.
+- **`proto/`**: Protocol Buffer definitions.
+- **`server/examples/`**: Example configuration files.
+
+### Code Standards
+
+- **Documentation**: All public symbols must be documented. Verify with: `go run server/tools/check_doc.go server/`
+- **Quality**: Ensure `make test` and `make lint` pass before submitting.
 
 ## 🤝 Contributing
 
