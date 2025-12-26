@@ -10,18 +10,20 @@ test.describe('Resource Exploration', () => {
         // Mock resources endpoint directly
         await page.route('/api/resources', async (route) => {
             await route.fulfill({
-                json: [
-                    {
-                        name: 'Application Logs',
-                        type: 'text/plain',
-                        service: 'log-service'
-                    },
-                    {
-                        name: 'User Database',
-                        type: 'application/x-postgres',
-                        service: 'db-service'
-                    }
-                ]
+                json: {
+                    resources: [
+                        {
+                            name: 'Application Logs',
+                            mimeType: 'text/plain',
+                            service: 'log-service'
+                        },
+                        {
+                            name: 'User Database',
+                            mimeType: 'application/x-postgres',
+                            service: 'db-service'
+                        }
+                    ]
+                }
             });
         });
     });
@@ -40,7 +42,7 @@ test.describe('Resource Exploration', () => {
 
     test('should show empty state when no resources', async ({ page }) => {
         await page.route('/api/resources', async (route) => {
-            await route.fulfill({ json: [] });
+            await route.fulfill({ json: { resources: [] } });
         });
 
         await page.goto('/resources');

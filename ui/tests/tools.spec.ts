@@ -10,20 +10,22 @@ test.describe('Tool Exploration', () => {
         // Mock tools endpoint directly (matching ToolsPage fetch)
         await page.route('/api/tools', async (route) => {
             await route.fulfill({
-                json: [
-                    {
-                        name: 'weather-tool',
-                        description: 'Get weather for a location',
-                        source: 'configured',
-                        service: 'weather-service'
-                    },
-                    {
-                        name: 'calculator',
-                        description: 'Perform basic math',
-                        source: 'discovered',
-                        service: 'math-service'
-                    }
-                ]
+                json: {
+                    tools: [
+                        {
+                            name: 'weather-tool',
+                            description: 'Get weather for a location',
+                            source: 'configured',
+                            service: 'weather-service'
+                        },
+                        {
+                            name: 'calculator',
+                            description: 'Perform basic math',
+                            source: 'discovered',
+                            service: 'math-service'
+                        }
+                    ]
+                }
             });
         });
     });
@@ -42,7 +44,7 @@ test.describe('Tool Exploration', () => {
 
     test('should show empty state when no tools', async ({ page }) => {
         await page.route('/api/tools', async (route) => {
-            await route.fulfill({ json: [] });
+            await route.fulfill({ json: { tools: [] } });
         });
 
         await page.goto('/tools');
