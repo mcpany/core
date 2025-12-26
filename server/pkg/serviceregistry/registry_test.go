@@ -272,6 +272,49 @@ func TestServiceRegistry_UnregisterService(t *testing.T) {
 	assert.Contains(t, err.Error(), `service "non-existent-service" not found`)
 }
 
+func TestServiceRegistry_Close(t *testing.T) {
+	mockUpstream := &mockUpstream{
+		registerFunc: func(serviceName string) (string, []*configv1.ToolDefinition, []*configv1.ResourceDefinition, error) {
+			serviceID, err := util.SanitizeServiceName(serviceName)
+			if err != nil {
+				return "", nil, nil, err
+			}
+			return serviceID, nil, nil, nil
+		},
+	}
+	f := &mockFactory{
+		newUpstreamFunc: func() (upstream.Upstream, error) {
+			return mockUpstream, nil
+		},
+	}
+	tm := &mockToolManager{}
+	registry := New(f, tm, prompt.NewManager(), resource.NewManager(), auth.NewManager())
+
+	// Register a service
+	serviceConfig := &configv1.UpstreamServiceConfig{}
+	serviceConfig.SetName("test-service")
+	_, _, _, err := registry.RegisterService(context.Background(), serviceConfig)
+	require.NoError(t, err)
+
+	// Successful Close
+	err = registry.Close(context.Background())
+	require.NoError(t, err)
+
+	// Close with error
+	mockUpstream.shutdownFunc = func() error {
+		return errors.New("shutdown error")
+	}
+	// Register another service to test error
+	serviceConfig2 := &configv1.UpstreamServiceConfig{}
+	serviceConfig2.SetName("test-service-2")
+	_, _, _, err = registry.RegisterService(context.Background(), serviceConfig2)
+	require.NoError(t, err)
+
+	err = registry.Close(context.Background())
+	require.Error(t, err)
+	assert.Contains(t, err.Error(), "shutdown error")
+}
+
 func TestServiceRegistry_GetAllServices(t *testing.T) {
 	f := &mockFactory{
 		newUpstreamFunc: func() (upstream.Upstream, error) {
