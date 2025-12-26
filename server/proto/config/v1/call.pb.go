@@ -3200,8 +3200,11 @@ type SemanticCacheConfig struct {
 	//	*SemanticCacheConfig_Ollama
 	//	*SemanticCacheConfig_Http
 	ProviderConfig isSemanticCacheConfig_ProviderConfig `protobuf_oneof:"provider_config"`
-	unknownFields  protoimpl.UnknownFields
-	sizeCache      protoimpl.SizeCache
+	// Path to SQLite database file for persistent storage.
+	// If empty, the cache will be in-memory only.
+	PersistencePath *string `protobuf:"bytes,8,opt,name=persistence_path" json:"persistence_path,omitempty"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
 }
 
 func (x *SemanticCacheConfig) Reset() {
@@ -3291,6 +3294,13 @@ func (x *SemanticCacheConfig) GetHttp() *HttpEmbeddingProviderConfig {
 	return nil
 }
 
+func (x *SemanticCacheConfig) GetPersistencePath() string {
+	if x != nil && x.PersistencePath != nil {
+		return *x.PersistencePath
+	}
+	return ""
+}
+
 func (x *SemanticCacheConfig) SetProvider(v string) {
 	x.Provider = &v
 }
@@ -3329,6 +3339,10 @@ func (x *SemanticCacheConfig) SetHttp(v *HttpEmbeddingProviderConfig) {
 		return
 	}
 	x.ProviderConfig = &SemanticCacheConfig_Http{v}
+}
+
+func (x *SemanticCacheConfig) SetPersistencePath(v string) {
+	x.PersistencePath = &v
 }
 
 func (x *SemanticCacheConfig) HasProvider() bool {
@@ -3390,6 +3404,13 @@ func (x *SemanticCacheConfig) HasHttp() bool {
 	return ok
 }
 
+func (x *SemanticCacheConfig) HasPersistencePath() bool {
+	if x == nil {
+		return false
+	}
+	return x.PersistencePath != nil
+}
+
 func (x *SemanticCacheConfig) ClearProvider() {
 	x.Provider = nil
 }
@@ -3426,6 +3447,10 @@ func (x *SemanticCacheConfig) ClearHttp() {
 	if _, ok := x.ProviderConfig.(*SemanticCacheConfig_Http); ok {
 		x.ProviderConfig = nil
 	}
+}
+
+func (x *SemanticCacheConfig) ClearPersistencePath() {
+	x.PersistencePath = nil
 }
 
 const SemanticCacheConfig_ProviderConfig_not_set_case case_SemanticCacheConfig_ProviderConfig = 0
@@ -3468,6 +3493,9 @@ type SemanticCacheConfig_builder struct {
 	Ollama *OllamaEmbeddingProviderConfig
 	Http   *HttpEmbeddingProviderConfig
 	// -- end of ProviderConfig
+	// Path to SQLite database file for persistent storage.
+	// If empty, the cache will be in-memory only.
+	PersistencePath *string
 }
 
 func (b0 SemanticCacheConfig_builder) Build() *SemanticCacheConfig {
@@ -3487,6 +3515,7 @@ func (b0 SemanticCacheConfig_builder) Build() *SemanticCacheConfig {
 	if b.Http != nil {
 		x.ProviderConfig = &SemanticCacheConfig_Http{b.Http}
 	}
+	x.PersistencePath = b.PersistencePath
 	return m0
 }
 
@@ -3974,7 +4003,7 @@ const file_proto_config_v1_call_proto_rawDesc = "" +
 	"is_enabled\x12+\n" +
 	"\x03ttl\x18\x02 \x01(\v2\x19.google.protobuf.DurationR\x03ttl\x12\x1a\n" +
 	"\bstrategy\x18\x03 \x01(\tR\bstrategy\x12O\n" +
-	"\x0fsemantic_config\x18\x04 \x01(\v2%.mcpany.config.v1.SemanticCacheConfigR\x0fsemantic_config\"\xa2\x03\n" +
+	"\x0fsemantic_config\x18\x04 \x01(\v2%.mcpany.config.v1.SemanticCacheConfigR\x0fsemantic_config\"\xce\x03\n" +
 	"\x13SemanticCacheConfig\x12\x1a\n" +
 	"\bprovider\x18\x01 \x01(\tR\bprovider\x12\x14\n" +
 	"\x05model\x18\x02 \x01(\tR\x05model\x127\n" +
@@ -3982,7 +4011,8 @@ const file_proto_config_v1_call_proto_rawDesc = "" +
 	"\x14similarity_threshold\x18\x04 \x01(\x02R\x14similarity_threshold\x12I\n" +
 	"\x06openai\x18\x05 \x01(\v2/.mcpany.config.v1.OpenAIEmbeddingProviderConfigH\x00R\x06openai\x12I\n" +
 	"\x06ollama\x18\x06 \x01(\v2/.mcpany.config.v1.OllamaEmbeddingProviderConfigH\x00R\x06ollama\x12C\n" +
-	"\x04http\x18\a \x01(\v2-.mcpany.config.v1.HttpEmbeddingProviderConfigH\x00R\x04httpB\x11\n" +
+	"\x04http\x18\a \x01(\v2-.mcpany.config.v1.HttpEmbeddingProviderConfigH\x00R\x04http\x12*\n" +
+	"\x10persistence_path\x18\b \x01(\tR\x10persistence_pathB\x11\n" +
 	"\x0fprovider_config\"n\n" +
 	"\x1dOpenAIEmbeddingProviderConfig\x12\x14\n" +
 	"\x05model\x18\x01 \x01(\tR\x05model\x127\n" +
