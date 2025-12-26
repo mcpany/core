@@ -10,6 +10,7 @@ import (
 	"github.com/mcpany/core/pkg/upstream"
 	config_v1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/spf13/afero"
+	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 )
 
@@ -28,11 +29,12 @@ func (m *mockFactory) NewUpstream(config *config_v1.UpstreamServiceConfig) (upst
 func TestReloadConfig_FactoryError(t *testing.T) {
 	fs := afero.NewMemMapFs()
 	app := NewApplication()
-	app.UpstreamFactory = &mockFactory{
-		NewUpstreamFunc: func(_ *config_v1.UpstreamServiceConfig) (upstream.Upstream, error) {
-			return nil, fmt.Errorf("factory error")
-		},
-	}
+
+	// We don't need UpstreamFactory mock anymore because ReloadConfig uses ServiceRegistry.
+	// We mock ServiceRegistry to return an error.
+
+	mockRegistry := new(MockServiceRegistry)
+	app.serviceRegistry = mockRegistry
 
 	configContent := `
 upstream_services:
@@ -43,6 +45,11 @@ upstream_services:
 	err := afero.WriteFile(fs, "/config.yaml", []byte(configContent), 0o644)
 	require.NoError(t, err)
 
+	mockRegistry.On("GetAllServices").Return([]*config_v1.UpstreamServiceConfig{}, nil)
+	mockRegistry.On("RegisterService", mock.Anything, mock.Anything).Return("", nil, nil, fmt.Errorf("factory error"))
+
 	err = app.ReloadConfig(fs, []string{"/config.yaml"})
 	require.NoError(t, err) // Logs error but returns nil
+
+	mockRegistry.AssertExpectations(t)
 }

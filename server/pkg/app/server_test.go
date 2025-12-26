@@ -34,9 +34,12 @@ import (
 	"github.com/spf13/afero"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 	gogrpc "google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
+
+	config_v1 "github.com/mcpany/core/proto/config/v1"
 )
 
 func TestReloadConfig(t *testing.T) {
@@ -61,17 +64,24 @@ upstream_services:
 		err := afero.WriteFile(fs, "/config.yaml", []byte(configContent), 0o644)
 		require.NoError(t, err)
 
+		mockRegistry := new(MockServiceRegistry)
+		app.serviceRegistry = mockRegistry
+
+		// Mock expectations
+		mockRegistry.On("GetAllServices").Return([]*config_v1.UpstreamServiceConfig{}, nil)
+		mockRegistry.On("RegisterService", mock.Anything, mock.Anything).Return("test-service", []*config_v1.ToolDefinition{}, []*config_v1.ResourceDefinition{}, nil)
+
 		err = app.ReloadConfig(fs, []string{"/config.yaml"})
 		require.NoError(t, err)
 
-		// Verify that the tool was loaded
-		_, ok := app.ToolManager.GetTool("test-service.test-tool")
-		assert.True(t, ok, "tool should be loaded after reload")
+		// Verify calls
+		mockRegistry.AssertExpectations(t)
 	})
 
 	t.Run("malformed config", func(t *testing.T) {
 		fs := afero.NewMemMapFs()
 		app := NewApplication()
+		// No registry needed as it should fail before using it
 
 		err := afero.WriteFile(fs, "/config.yaml", []byte("malformed yaml:"), 0o644)
 		require.NoError(t, err)
@@ -102,17 +112,23 @@ upstream_services:
 		err := afero.WriteFile(fs, "/config.yaml", []byte(configContent), 0o644)
 		require.NoError(t, err)
 
+		mockRegistry := new(MockServiceRegistry)
+		app.serviceRegistry = mockRegistry
+
+		mockRegistry.On("GetAllServices").Return([]*config_v1.UpstreamServiceConfig{}, nil)
+		// RegisterService should NOT be called for disabled service
+
 		err = app.ReloadConfig(fs, []string{"/config.yaml"})
 		require.NoError(t, err)
 
-
-		_, ok := app.ToolManager.GetTool("test-tool")
-		assert.False(t, ok, "tool from disabled service should not be loaded")
+		mockRegistry.AssertExpectations(t)
 	})
 
 	t.Run("unknown service type", func(t *testing.T) {
 		fs := afero.NewMemMapFs()
 		app := NewApplication()
+		mockRegistry := new(MockServiceRegistry)
+		app.serviceRegistry = mockRegistry
 
 		configContent := `
 upstream_services:
@@ -121,6 +137,10 @@ upstream_services:
 		err := afero.WriteFile(fs, "/config.yaml", []byte(configContent), 0o644)
 		require.NoError(t, err)
 
+		// It fails during config load validation, so registry is used but not for registration?
+		// Actually config.LoadServices validates before returning.
+		// So it should fail early. But let's check if GetAllServices is called if config load partially succeeds?
+		// No, config.LoadServices returns error if validation fails.
 
 		err = app.ReloadConfig(fs, []string{"/config.yaml"})
 		require.Error(t, err)
