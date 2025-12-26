@@ -6,6 +6,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { apiClient } from "@/lib/client";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -14,9 +15,9 @@ import { Search } from "lucide-react";
 
 interface Tool {
   name: string;
-  description: string;
-  source: string;
-  service: string;
+  description?: string;
+  source?: string;
+  service?: string; // Enhanced to be derived
 }
 
 export default function ToolsPage() {
@@ -25,9 +26,11 @@ export default function ToolsPage() {
 
   useEffect(() => {
     async function fetchTools() {
-      const res = await fetch("/api/tools");
-      if (res.ok) {
-        setTools(await res.json());
+      try {
+        const { tools } = await apiClient.listTools();
+        setTools(tools);
+      } catch (e) {
+        console.error("Failed to fetch tools", e);
       }
     }
     fetchTools();
@@ -35,7 +38,7 @@ export default function ToolsPage() {
 
   const filteredTools = tools.filter(t =>
     t.name.toLowerCase().includes(search.toLowerCase()) ||
-    t.description.toLowerCase().includes(search.toLowerCase())
+    (t.description || "").toLowerCase().includes(search.toLowerCase())
   );
 
   return (

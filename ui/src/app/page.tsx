@@ -5,6 +5,7 @@
 
 import { MetricsOverview } from "@/components/dashboard/metrics-overview";
 import { ServiceHealthWidget } from "@/components/dashboard/service-health-widget";
+import { RequestVolumeChart } from "@/components/dashboard/request-volume-chart";
 import { Button } from "@/components/ui/button";
 
 export default function DashboardPage() {
@@ -20,12 +21,7 @@ export default function DashboardPage() {
         <MetricsOverview />
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
           <ServiceHealthWidget />
-          <div className="col-span-3">
-             {/* Placeholder for a chart */}
-             <div className="rounded-xl border bg-card text-card-foreground shadow h-full flex items-center justify-center text-muted-foreground bg-background/50 backdrop-blur-sm">
-                Request Volume Chart (Coming Soon)
-             </div>
-          </div>
+          <RequestVolumeChart />
         </div>
       </div>
     </div>
