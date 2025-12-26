@@ -3,176 +3,122 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import {
-  ListServicesResponse,
-  GetServiceResponse,
-  GetServiceStatusResponse,
-  UpstreamServiceConfig,
-  RegisterServiceRequest,
-  RegisterServiceResponse,
-  UpdateServiceRequest,
-  UpdateServiceResponse,
-  UnregisterServiceRequest,
-  UnregisterServiceResponse
-} from "./types";
+export interface UpstreamServiceConfig {
+    id?: string;
+    name: string;
+    version?: string;
+    disable?: boolean;
+    http_service?: { address: string };
+    grpc_service?: { address: string };
+    command_line_service?: { command: string; args?: string[]; env?: Record<string, string> };
+    mcp_service?: { http_connection?: { http_address: string }; sse_connection?: { sse_address: string }; stdio_connection?: { command: string } };
+}
 
-const API_base = process.env.NEXT_PUBLIC_API_URL || "/api";
+export interface ToolDefinition {
+    name: string;
+    description: string;
+    schema?: any;
+    enabled?: boolean;
+    serviceName?: string;
+}
 
-/**
- * API client for interacting with the MCP Any server.
- */
+export interface ResourceDefinition {
+    uri: string;
+    name: string;
+    mimeType?: string;
+    description?: string;
+    enabled?: boolean;
+    serviceName?: string;
+}
+
+export interface PromptDefinition {
+    name: string;
+    description?: string;
+    arguments?: any[];
+    enabled?: boolean;
+    serviceName?: string;
+}
+
 export const apiClient = {
-  /**
-   * Lists all registered upstream services.
-   *
-   * @returns A promise resolving to the list of services response.
-   */
-  listServices: async (): Promise<ListServicesResponse> => {
-    console.log("Fetching services from:", `${API_base}/v1/services`);
-    const res = await fetch(`${API_base}/v1/services`);
-    if (!res.ok) {
-      throw new Error(`Failed to list services: ${res.statusText}`);
-    }
-    return res.json();
-  },
+    // Services
+    listServices: async () => {
+        const res = await fetch('/api/services');
+        if (!res.ok) throw new Error('Failed to fetch services');
+        return res.json();
+    },
+    setServiceStatus: async (name: string, disable: boolean) => {
+        const res = await fetch('/api/services', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ action: 'toggle', name, disable })
+        });
+        if (!res.ok) throw new Error('Failed to update service status');
+        return res.json();
+    },
+    registerService: async (config: UpstreamServiceConfig) => {
+        const res = await fetch('/api/services', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(config)
+        });
+        if (!res.ok) throw new Error('Failed to register service');
+        return res.json();
+    },
+    updateService: async (config: UpstreamServiceConfig) => {
+         const res = await fetch('/api/services', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(config)
+        });
+        if (!res.ok) throw new Error('Failed to update service');
+        return res.json();
+    },
 
-  /**
-   * Retrieves a single service configuration by name.
-   *
-   * @param name - The name of the service to retrieve.
-   * @returns A promise resolving to the service details response.
-   */
-  getService: async (name: string): Promise<GetServiceResponse> => {
-    // According to proto: GET /v1/services/{service_name}
-    const res = await fetch(`${API_base}/v1/services/${encodeURIComponent(name)}`);
-    if (!res.ok) {
-      throw new Error(`Service not found or error: ${res.statusText}`);
-    }
-    return res.json();
-  },
+    // Tools
+    listTools: async () => {
+        const res = await fetch('/api/tools');
+        if (!res.ok) throw new Error('Failed to fetch tools');
+        return res.json();
+    },
+    setToolStatus: async (name: string, enabled: boolean) => {
+        const res = await fetch('/api/tools', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name, enabled })
+        });
+        if (!res.ok) throw new Error('Failed to update tool status');
+        return res.json();
+    },
 
-  /**
-   * Registers a new upstream service.
-   *
-   * @param config - The configuration of the service to register.
-   * @returns A promise resolving to the registration response.
-   */
-  registerService: async (config: UpstreamServiceConfig): Promise<RegisterServiceResponse> => {
-    const payload: RegisterServiceRequest = { config };
-    const res = await fetch(`${API_base}/v1/services/register`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
-    });
-    if (!res.ok) {
-       const errorData = await res.json().catch(() => ({}));
-       throw new Error(errorData.message || `Failed to register service: ${res.statusText}`);
-    }
-    return res.json();
-  },
+    // Resources
+    listResources: async () => {
+        const res = await fetch('/api/resources');
+        if (!res.ok) throw new Error('Failed to fetch resources');
+        return res.json();
+    },
+    setResourceStatus: async (uri: string, enabled: boolean) => {
+         const res = await fetch('/api/resources', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ uri, enabled })
+        });
+        if (!res.ok) throw new Error('Failed to update resource status');
+        return res.json();
+    },
 
-  /**
-   * Updates an existing upstream service configuration.
-   *
-   * @param config - The new configuration for the service.
-   * @returns A promise resolving to the update response.
-   */
-  updateService: async (config: UpstreamServiceConfig): Promise<UpdateServiceResponse> => {
-    const payload: UpdateServiceRequest = { config };
-     const res = await fetch(`${API_base}/v1/services/update`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
-    });
-    if (!res.ok) {
-       const errorData = await res.json().catch(() => ({}));
-       throw new Error(errorData.message || `Failed to update service: ${res.statusText}`);
-    }
-    return res.json();
-  },
-
-  /**
-   * Unregisters an upstream service.
-   *
-   * @param serviceName - The name of the service to unregister.
-   * @returns A promise resolving to the unregistration response.
-   */
-  unregisterService: async (serviceName: string): Promise<UnregisterServiceResponse> => {
-      const payload: UnregisterServiceRequest = { service_name: serviceName };
-      const res = await fetch(`${API_base}/v1/services/unregister`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
-      });
-      if (!res.ok) {
-         const errorData = await res.json().catch(() => ({}));
-         throw new Error(errorData.message || `Failed to unregister service: ${res.statusText}`);
-      }
-      return res.json();
-  },
-
-  /**
-   * Helper function to toggle the disabled status of a service.
-   *
-   * @param name - The name of the service.
-   * @param disabled - Whether the service should be disabled.
-   * @returns A promise resolving to the update response.
-   */
-  setServiceStatus: async (name: string, disabled: boolean): Promise<UpdateServiceResponse> => {
-      const { service } = await apiClient.getService(name);
-      // We need to send the full config back.
-      const updatedService: UpstreamServiceConfig = { ...service, disable: disabled };
-      return apiClient.updateService(updatedService);
-  },
-
-  /**
-   * Retrieves the runtime status and metrics of a service.
-   *
-   * @param name - The name of the service.
-   * @returns A promise resolving to the service status response.
-   */
-  getServiceStatus: async (name: string): Promise<GetServiceStatusResponse> => {
-      const res = await fetch(`${API_base}/v1/services/${encodeURIComponent(name)}/status`);
-       if (!res.ok) {
-        console.error(`Failed to get status for ${name}: ${res.statusText}`);
-        return { metrics: {} };
-      }
-      return res.json();
-  },
-
-  /**
-   * Lists all tools from all registered services (aggregated).
-   */
-  listTools: async (): Promise<{ tools: import("./types").Tool[] }> => {
-      const { services } = await apiClient.listServices();
-      const tools = services.flatMap(s =>
-          (s.grpc_service?.tools ||
-           s.http_service?.tools ||
-           s.command_line_service?.tools ||
-           s.openapi_service?.tools ||
-           s.websocket_service?.tools ||
-           s.webrtc_service?.tools ||
-           s.mcp_service?.tools ||
-           [])
-      );
-      return { tools };
-  },
-
-  /**
-   * Lists all resources from all registered services (aggregated).
-   */
-  listResources: async (): Promise<{ resources: import("./types").Resource[] }> => {
-      const { services } = await apiClient.listServices();
-      const resources = services.flatMap(s =>
-          (s.grpc_service?.resources ||
-           s.http_service?.resources ||
-           s.command_line_service?.resources ||
-           s.openapi_service?.resources ||
-           s.websocket_service?.resources ||
-           s.webrtc_service?.resources ||
-           s.mcp_service?.resources ||
-           [])
-      );
-      return { resources };
-  }
+    // Prompts
+    listPrompts: async () => {
+        const res = await fetch('/api/prompts');
+        if (!res.ok) throw new Error('Failed to fetch prompts');
+        return res.json();
+    },
+    setPromptStatus: async (name: string, enabled: boolean) => {
+        const res = await fetch('/api/prompts', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name, enabled })
+        });
+        if (!res.ok) throw new Error('Failed to update prompt status');
+        return res.json();
+    },
 };
