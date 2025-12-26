@@ -348,8 +348,6 @@ func replacePlaceholders(input string, params map[string]interface{}, noEscapePa
 // ToString converts a value to a string representation efficiently.
 // It handles common types like string, json.Number, int, float, and bool
 // without using reflection when possible.
-// Optimization: We manually handle all standard Go numeric types to avoid the overhead
-// of reflection (fmt.Sprintf) which is significantly slower and generates more allocations.
 func ToString(v any) string {
 	switch val := v.(type) {
 	case string:
@@ -363,26 +361,8 @@ func ToString(v any) string {
 		return "false"
 	case int:
 		return strconv.Itoa(val)
-	case int8:
-		return strconv.FormatInt(int64(val), 10)
-	case int16:
-		return strconv.FormatInt(int64(val), 10)
-	case int32:
-		return strconv.FormatInt(int64(val), 10)
 	case int64:
 		return strconv.FormatInt(val, 10)
-	case uint:
-		return strconv.FormatUint(uint64(val), 10)
-	case uint8:
-		return strconv.FormatUint(uint64(val), 10)
-	case uint16:
-		return strconv.FormatUint(uint64(val), 10)
-	case uint32:
-		return strconv.FormatUint(uint64(val), 10)
-	case uint64:
-		return strconv.FormatUint(val, 10)
-	case float32:
-		return strconv.FormatFloat(float64(val), 'g', -1, 32)
 	case float64:
 		return strconv.FormatFloat(val, 'g', -1, 64)
 	case fmt.Stringer:

@@ -34,8 +34,6 @@ type ServiceRegistryInterface interface { //nolint:revive
 	GetServiceInfo(serviceID string) (*tool.ServiceInfo, bool)
 	// GetServiceConfig returns the configuration for a given service key.
 	GetServiceConfig(serviceID string) (*config.UpstreamServiceConfig, bool)
-	// GetServiceError returns the registration error for a service, if any.
-	GetServiceError(serviceID string) (string, bool)
 }
 
 // ServiceRegistry is responsible for managing the lifecycle of upstream
@@ -47,7 +45,6 @@ type ServiceRegistry struct {
 	mu              sync.RWMutex
 	serviceConfigs  map[string]*config.UpstreamServiceConfig
 	serviceInfo     map[string]*tool.ServiceInfo
-	serviceErrors   map[string]string
 	upstreams       map[string]upstream.Upstream
 	factory         factory.Factory
 	toolManager     tool.ManagerInterface
@@ -71,7 +68,6 @@ func New(factory factory.Factory, toolManager tool.ManagerInterface, promptManag
 	return &ServiceRegistry{
 		serviceConfigs:  make(map[string]*config.UpstreamServiceConfig),
 		serviceInfo:     make(map[string]*tool.ServiceInfo),
-		serviceErrors:   make(map[string]string),
 		upstreams:       make(map[string]upstream.Upstream),
 		factory:         factory,
 		toolManager:     toolManager,
@@ -107,25 +103,18 @@ func (r *ServiceRegistry) RegisterService(ctx context.Context, serviceConfig *co
 		return "", nil, nil, fmt.Errorf("service with name %q already registered", serviceConfig.GetName())
 	}
 
-	// Register the config and clear error
-	r.serviceConfigs[serviceID] = serviceConfig
-	delete(r.serviceErrors, serviceID)
-
 	u, err := r.factory.NewUpstream(serviceConfig)
 	if err != nil {
-		errMsg := fmt.Sprintf("failed to create upstream for service %s: %v", serviceConfig.GetName(), err)
-		r.serviceErrors[serviceID] = errMsg
-		return "", nil, nil, fmt.Errorf("%s", errMsg)
+		return "", nil, nil, fmt.Errorf("failed to create upstream for service %s: %w", serviceConfig.GetName(), err)
 	}
 
-	// Store the upstream immediately so we can close it if needed, although it might be partially initialized
-	r.upstreams[serviceID] = u
-
-	_, discoveredTools, discoveredResources, err := u.Register(ctx, serviceConfig, r.toolManager, r.promptManager, r.resourceManager, false)
+	serviceID, discoveredTools, discoveredResources, err := u.Register(ctx, serviceConfig, r.toolManager, r.promptManager, r.resourceManager, false)
 	if err != nil {
-		r.serviceErrors[serviceID] = err.Error()
 		return "", nil, nil, err
 	}
+
+	r.serviceConfigs[serviceID] = serviceConfig
+	r.upstreams[serviceID] = u
 
 	if authConfig := serviceConfig.GetAuthentication(); authConfig != nil {
 		if apiKeyConfig := authConfig.GetApiKey(); apiKeyConfig != nil {
@@ -201,20 +190,11 @@ func (r *ServiceRegistry) UnregisterService(ctx context.Context, serviceName str
 
 	delete(r.serviceConfigs, serviceName)
 	delete(r.serviceInfo, serviceName)
-	delete(r.serviceErrors, serviceName)
 	r.toolManager.ClearToolsForService(serviceName)
 	r.promptManager.ClearPromptsForService(serviceName)
 	r.resourceManager.ClearResourcesForService(serviceName)
 	r.authManager.RemoveAuthenticator(serviceName)
 	return nil
-}
-
-// GetServiceError returns the registration error for a service, if any.
-func (r *ServiceRegistry) GetServiceError(serviceID string) (string, bool) {
-	r.mu.RLock()
-	defer r.mu.RUnlock()
-	err, ok := r.serviceErrors[serviceID]
-	return err, ok
 }
 
 // Close gracefully shuts down all registered services.
