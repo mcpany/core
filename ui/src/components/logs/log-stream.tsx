@@ -82,33 +82,73 @@ export function LogStream() {
   const [searchQuery, setSearchQuery] = React.useState("")
   const scrollRef = React.useRef<HTMLDivElement>(null)
 
-  // Mock log generation
+  // Connect to WebSocket
   React.useEffect(() => {
     if (isPaused) return
 
-    const interval = setInterval(() => {
-      const levels: LogLevel[] = ["INFO", "INFO", "INFO", "WARN", "DEBUG", "ERROR"]
-      const level = levels[Math.floor(Math.random() * levels.length)]
-      const messages = SAMPLE_MESSAGES[level]
-      const message = messages[Math.floor(Math.random() * messages.length)]
-      const source = SOURCES[Math.floor(Math.random() * SOURCES.length)]
+    // Determine WebSocket URL based on current window location
+    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:'
+    const host = window.location.host
+    const wsUrl = `${protocol}//${host}/logs/stream`
 
-      const newLog: LogEntry = {
-        id: Math.random().toString(36).substring(7),
-        timestamp: new Date().toISOString(),
-        level,
-        message,
-        source
-      }
+    // In local development, we might need to point to port 8080 if frontend is on 3000
+    // and proxy isn't set up. But usually setup implies same origin or proxy.
+    // If running in the provided environment, assume same origin or configured proxy.
 
-      setLogs((prev) => {
-        const newLogs = [...prev, newLog]
-        if (newLogs.length > 1000) return newLogs.slice(newLogs.length - 1000)
-        return newLogs
-      })
-    }, 800)
+    // Fallback for demo/dev if WS fails?
+    // Let's try to connect.
+    let ws: WebSocket | null = null;
+    let reconnectTimeout: NodeJS.Timeout;
 
-    return () => clearInterval(interval)
+    const connect = () => {
+        try {
+            // For development when Next.js is 3000 and Go is 8080
+            const url = window.location.port === "3000" ? "ws://localhost:8080/logs/stream" : wsUrl
+
+            ws = new WebSocket(url)
+
+            ws.onmessage = (event) => {
+                if (isPaused) return
+                try {
+                    const data = JSON.parse(event.data)
+                    const newLog: LogEntry = {
+                        id: data.id || Math.random().toString(36).substring(7),
+                        timestamp: data.timestamp || new Date().toISOString(),
+                        level: (data.level as LogLevel) || "INFO",
+                        message: data.message,
+                        source: data.source || "server"
+                    }
+                     setLogs((prev) => {
+                        const newLogs = [...prev, newLog]
+                        if (newLogs.length > 1000) return newLogs.slice(newLogs.length - 1000)
+                        return newLogs
+                    })
+                } catch (e) {
+                    console.error("Failed to parse log entry", e)
+                }
+            }
+
+            ws.onclose = () => {
+                // Try to reconnect after 2 seconds
+                reconnectTimeout = setTimeout(connect, 2000)
+            }
+
+            ws.onerror = (e) => {
+                 console.error("WebSocket error", e)
+                 ws?.close()
+            }
+        } catch (e) {
+             console.error("Failed to connect WebSocket", e)
+             reconnectTimeout = setTimeout(connect, 2000)
+        }
+    }
+
+    connect()
+
+    return () => {
+        if (ws) ws.close()
+        clearTimeout(reconnectTimeout)
+    }
   }, [isPaused])
 
   // Auto-scroll

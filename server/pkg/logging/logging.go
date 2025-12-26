@@ -10,6 +10,7 @@ import (
 	"os"
 	"sync"
 
+	"github.com/mcpany/core/pkg/logging/stream"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 )
 
@@ -55,7 +56,11 @@ func Init(level slog.Level, output io.Writer, format ...string) {
 			handler = slog.NewTextHandler(output, opts)
 		}
 
-		defaultLogger = slog.New(handler)
+		// Wrap with stream handler
+		broadcaster := stream.GetBroadcaster()
+		streamHandler := stream.NewSlogHandler(handler, broadcaster)
+
+		defaultLogger = slog.New(streamHandler)
 	})
 }
 

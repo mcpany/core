@@ -8,16 +8,65 @@ import (
 	"net/http"
 	"strings"
 
+	"encoding/json"
+	"time"
+
+	"github.com/gorilla/websocket"
 	"github.com/mcpany/core/pkg/logging"
+	"github.com/mcpany/core/pkg/logging/stream"
 	"github.com/mcpany/core/pkg/storage/sqlite"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 )
 
+var upgrader = websocket.Upgrader{
+	ReadBufferSize:  1024,
+	WriteBufferSize: 1024,
+	CheckOrigin: func(r *http.Request) bool {
+		return true // Allow all origins for now
+	},
+}
+
 // createAPIHandler creates a http.Handler for the config API.
 func (a *Application) createAPIHandler(store *sqlite.Store) http.Handler {
 	mux := http.NewServeMux()
+
+	mux.HandleFunc("/logs/stream", func(w http.ResponseWriter, r *http.Request) {
+		conn, err := upgrader.Upgrade(w, r, nil)
+		if err != nil {
+			logging.GetLogger().Error("failed to upgrade websocket", "error", err)
+			return
+		}
+		defer func() {
+			_ = conn.Close()
+		}()
+
+		broadcaster := stream.GetBroadcaster()
+		ch := broadcaster.Subscribe()
+		defer broadcaster.Unsubscribe(ch)
+
+		// Send ping to keep connection alive
+		go func() {
+			ticker := time.NewTicker(30 * time.Second)
+			defer ticker.Stop()
+			for range ticker.C {
+				if err := conn.WriteMessage(websocket.PingMessage, []byte{}); err != nil {
+					return
+				}
+			}
+		}()
+
+		for entry := range ch {
+			data, err := json.Marshal(entry)
+			if err != nil {
+				continue
+			}
+			if err := conn.WriteMessage(websocket.TextMessage, data); err != nil {
+				break
+			}
+		}
+	})
 
 	mux.HandleFunc("/services", func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {

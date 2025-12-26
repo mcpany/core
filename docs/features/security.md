@@ -8,7 +8,7 @@ Security is a core design principle of MCP Any.
 *   **IP Allowlisting**: Restrict access to the server based on IP address.
 *   **Webhooks**: Trigger external actions on specific events.
 *   **Fine-grained Policies**: Control which tools and resources are accessible.
-*   **Role-Based Access Control (RBAC)**: (Planned) Manage user permissions.
+*   **Role-Based Access Control (RBAC)**: Manage user permissions and roles.
 
 ## Configuration
 
