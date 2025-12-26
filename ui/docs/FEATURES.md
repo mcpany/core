@@ -5,6 +5,7 @@ This document outlines the features implemented in the MCP Any UI Overhaul.
 
 ## 1. Dashboard
 **Path:** `/`
+**Status:** Implemented
 
 The dashboard provides a high-level overview of the system's health and performance.
 
@@ -15,6 +16,7 @@ The dashboard provides a high-level overview of the system's health and performa
 
 ## 2. Services Management
 **Path:** `/services`
+**Status:** Implemented
 
 Manage upstream services connected to MCP Any.
 
@@ -26,6 +28,7 @@ Manage upstream services connected to MCP Any.
 
 ## 3. Tools, Resources, & Prompts
 **Paths:** `/tools`, `/resources`, `/prompts`
+**Status:** Implemented
 
 Explore the capabilities exposed by the connected MCP servers.
 
@@ -37,6 +40,7 @@ Explore the capabilities exposed by the connected MCP servers.
 
 ## 4. Settings & Advanced Configuration
 **Path:** `/settings`
+**Status:** Implemented
 
 Configure system-wide behaviors.
 

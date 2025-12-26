@@ -71,6 +71,17 @@ Most "popular" MCP servers today are bespoke binaries. If the upstream API chang
 - **Advanced Configuration**: Customize tool behavior with [Merge Strategies and Profile Filtering](server/docs/feature/merge_strategy.md).
 - **Extensible**: Designed to be easily extended with new service types and capabilities.
 
+## 🖥️ UI Manager
+
+MCP Any includes a comprehensive UI Manager for easy administration.
+
+- **Dashboard**: Real-time metrics and system health.
+- **Services Management**: Toggle and configure upstream services.
+- **Tools, Resources, & Prompts**: Explore available capabilities.
+- **Middleware & Webhooks**: Visual pipeline management and event configuration.
+
+For more details, see [UI Features](ui/docs/FEATURES.md).
+
 ## ⚡ Quick Start (5 Minutes)
 
 Ready to give your AI access to real-time data? Let's connect a public Weather API to **Gemini CLI** (or any MCP client) using MCP Any.

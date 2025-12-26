@@ -1,9 +1,23 @@
+/**
+ * Copyright 2025 Author(s) of MCP Any
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+
+/**
+ * End-to-end tests for the MCP Manager UI.
+ * Verifies critical user flows including dashboard metrics, service management,
+ * and tools/resources/prompts exploration.
+ */
 
 import { test, expect } from '@playwright/test';
 import * as path from 'path';
 
 test.describe('MCP Manager E2E', () => {
 
+  /**
+   * Verifies that the dashboard loads correctly and displays key metrics and the system health widget.
+   */
   test('Dashboard loads with metrics and health widget', async ({ page }) => {
     await page.goto('/');
 
@@ -30,6 +44,9 @@ test.describe('MCP Manager E2E', () => {
     await page.screenshot({ path: '.audit/ui/2025-05-23/dashboard.png', fullPage: true });
   });
 
+  /**
+   * Verifies that the services page lists registered services and allows toggling their status.
+   */
   test('Services page lists services and allows toggling', async ({ page }) => {
     await page.goto('/services');
 
@@ -51,6 +68,9 @@ test.describe('MCP Manager E2E', () => {
     await page.screenshot({ path: '.audit/ui/2025-05-23/services.png', fullPage: true });
   });
 
+  /**
+   * Verifies that the tools page lists available tools.
+   */
   test('Tools page lists tools', async ({ page }) => {
     await page.goto('/tools');
 
@@ -62,6 +82,9 @@ test.describe('MCP Manager E2E', () => {
     await page.screenshot({ path: '.audit/ui/2025-05-23/tools.png', fullPage: true });
   });
 
+  /**
+   * Verifies that the resources page lists available resources.
+   */
   test('Resources page lists resources', async ({ page }) => {
     await page.goto('/resources');
 
@@ -75,6 +98,9 @@ test.describe('MCP Manager E2E', () => {
     await page.screenshot({ path: '.audit/ui/2025-05-23/resources.png', fullPage: true });
   });
 
+  /**
+   * Verifies that the prompts page lists available prompt templates.
+   */
   test('Prompts page lists prompts', async ({ page }) => {
     await page.goto('/prompts');
 
@@ -86,6 +112,9 @@ test.describe('MCP Manager E2E', () => {
     await page.screenshot({ path: '.audit/ui/2025-05-23/prompts.png', fullPage: true });
   });
 
+  /**
+   * Verifies that the middleware page loads and displays the pipeline visualization.
+   */
   test('Middleware page interaction', async ({ page }) => {
       await page.goto('/middleware');
 
@@ -99,6 +128,9 @@ test.describe('MCP Manager E2E', () => {
       await page.screenshot({ path: '.audit/ui/2025-05-23/middleware.png', fullPage: true });
   });
 
+  /**
+   * Verifies that the webhooks page loads and allows opening the "New Webhook" modal.
+   */
   test('Webhooks page interaction', async ({ page }) => {
       await page.goto('/webhooks');
 

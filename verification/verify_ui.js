@@ -1,4 +1,13 @@
+/**
+ * Copyright 2025 Author(s) of MCP Any
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
+
+/**
+ * Verification script for the UI.
+ * Captures screenshots of key pages (Dashboard, Services, Middleware) to verify visual integrity.
+ */
 const { chromium } = require('playwright');
 const fs = require('fs');
 

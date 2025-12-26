@@ -10,6 +10,8 @@ import (
 )
 
 // SimpleVectorStore is a naive in-memory vector store.
+// It stores vectors in memory and supports searching by cosine similarity.
+// It also handles expiration of entries based on a TTL.
 type SimpleVectorStore struct {
 	mu         sync.RWMutex
 	items      map[string][]*VectorEntry
@@ -17,6 +19,7 @@ type SimpleVectorStore struct {
 }
 
 // VectorEntry represents a single entry in the vector store.
+// It contains the vector embedding, the cached result, and metadata for expiration and similarity calculation.
 type VectorEntry struct {
 	// Vector is the embedding vector.
 	Vector []float32
@@ -30,6 +33,9 @@ type VectorEntry struct {
 
 // NewSimpleVectorStore creates a new SimpleVectorStore.
 // It initializes the store with a default configuration.
+//
+// Returns:
+//   - A pointer to a new SimpleVectorStore instance.
 func NewSimpleVectorStore() *SimpleVectorStore {
 	return &SimpleVectorStore{
 		items:      make(map[string][]*VectorEntry),
@@ -39,6 +45,15 @@ func NewSimpleVectorStore() *SimpleVectorStore {
 
 // Add adds a new entry to the vector store.
 // It evicts the oldest entry if the store exceeds the maximum number of entries for the key.
+//
+// Parameters:
+//   - key: The identifier for the group of entries.
+//   - vector: The embedding vector associated with the result.
+//   - result: The data to be cached.
+//   - ttl: The time-to-live duration for the entry.
+//
+// Returns:
+//   - An error if the operation fails (currently always returns nil).
 func (s *SimpleVectorStore) Add(key string, vector []float32, result any, ttl time.Duration) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -62,7 +77,15 @@ func (s *SimpleVectorStore) Add(key string, vector []float32, result any, ttl ti
 }
 
 // Search searches for the most similar entry in the vector store for the given key and query vector.
-// It returns the result, the similarity score, and a boolean indicating if a match was found.
+//
+// Parameters:
+//   - key: The identifier for the group of entries to search.
+//   - query: The query vector to compare against stored vectors.
+//
+// Returns:
+//   - The cached result if a match is found, otherwise nil.
+//   - The cosine similarity score (between -1 and 1).
+//   - A boolean indicating if a valid match was found (true) or not (false).
 func (s *SimpleVectorStore) Search(key string, query []float32) (any, float32, bool) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
@@ -95,6 +118,9 @@ func (s *SimpleVectorStore) Search(key string, query []float32) (any, float32, b
 	return bestResult, bestScore, true
 }
 
+// Prune removes expired entries for the specified key from the vector store.
+//
+// key is the identifier for the group of entries to prune.
 func (s *SimpleVectorStore) Prune(key string) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
