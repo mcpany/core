@@ -187,6 +187,9 @@ func expand(b []byte) []byte {
 		if len(parts) > 1 {
 			return []byte(parts[1])
 		}
+		if ok {
+			return []byte(val)
+		}
 		return match
 	})
 }

@@ -163,6 +163,15 @@ func TestExpand(t *testing.T) {
 	out = expand(inNoEnv)
 	assert.Equal(t, "val: ${MISSING}", string(out)) // Or empty? regex matches ${...}
 	// expand function logic: if LookupEnv fails AND no default part -> returns match (unchanged).
+
+	// Case: Variable set to empty string, no default
+	err = os.Setenv("EMPTY_VAR", "")
+	assert.NoError(t, err)
+	defer func() { _ = os.Unsetenv("EMPTY_VAR") }()
+
+	inEmpty := []byte("val: ${EMPTY_VAR}")
+	out = expand(inEmpty)
+	assert.Equal(t, "val: ", string(out), "Expected empty string for set but empty env var")
 }
 
 func TestYamlEngine_LogLevelFix(t *testing.T) {
