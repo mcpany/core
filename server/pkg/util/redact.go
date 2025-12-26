@@ -137,7 +137,8 @@ func redactMapRaw(m map[string]json.RawMessage) bool {
 			// Only recurse if the value looks like an object or array
 			trimmed := bytes.TrimSpace(v)
 			if len(trimmed) > 0 {
-				if trimmed[0] == '{' {
+				switch trimmed[0] {
+				case '{':
 					var nested map[string]json.RawMessage
 					if err := json.Unmarshal(trimmed, &nested); err == nil {
 						if redactMapRaw(nested) {
@@ -147,7 +148,7 @@ func redactMapRaw(m map[string]json.RawMessage) bool {
 							}
 						}
 					}
-				} else if trimmed[0] == '[' {
+				case '[':
 					var nested []json.RawMessage
 					if err := json.Unmarshal(trimmed, &nested); err == nil {
 						if redactSliceRaw(nested) {
@@ -171,7 +172,8 @@ func redactSliceRaw(s []json.RawMessage) bool {
 	for i, v := range s {
 		trimmed := bytes.TrimSpace(v)
 		if len(trimmed) > 0 {
-			if trimmed[0] == '{' {
+			switch trimmed[0] {
+			case '{':
 				var nested map[string]json.RawMessage
 				if err := json.Unmarshal(trimmed, &nested); err == nil {
 					if redactMapRaw(nested) {
@@ -181,7 +183,7 @@ func redactSliceRaw(s []json.RawMessage) bool {
 						}
 					}
 				}
-			} else if trimmed[0] == '[' {
+			case '[':
 				var nested []json.RawMessage
 				if err := json.Unmarshal(trimmed, &nested); err == nil {
 					if redactSliceRaw(nested) {
