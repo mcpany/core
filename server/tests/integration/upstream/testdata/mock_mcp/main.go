@@ -77,6 +77,30 @@ func main() {
 							"type": "object",
 						},
 					},
+					{
+						"name":        "list_directory",
+						"description": "Lists files in a directory",
+						"inputSchema": map[string]interface{}{
+							"type": "object",
+							"properties": map[string]interface{}{
+								"path": map[string]interface{}{
+									"type": "string",
+								},
+							},
+						},
+					},
+					{
+						"name":        "read_file",
+						"description": "Reads a file",
+						"inputSchema": map[string]interface{}{
+							"type": "object",
+							"properties": map[string]interface{}{
+								"path": map[string]interface{}{
+									"type": "string",
+								},
+							},
+						},
+					},
 				},
 			}
 		case "tools/call", "mcp.callTool":

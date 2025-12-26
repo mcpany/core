@@ -31,7 +31,7 @@ func TestCallPolicy_Enforcement(t *testing.T) {
 
 	// Case 1: Deny All
 	// Case 1: Deny All
-	mockServerPath, _ := filepath.Abs("../../../build/bin/mock_server")
+	mockServerPath, _ := filepath.Abs("../../../build/bin/mock_mcp")
 	configDenyAll := fmt.Sprintf(`
 upstream_services:
   - id: "deny-service"
