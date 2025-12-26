@@ -1,0 +1,4 @@
+
+global_settings:
+  mcp_listen_address: ":8070"
+  log_level: "DEBUG"

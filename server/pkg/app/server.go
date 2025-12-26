@@ -372,6 +372,19 @@ func (a *Application) Run(
 		}()
 	}
 
+	// Add MCP Metrics Middleware (always enabled, wraps everything else)
+	// We add it here so it is the last added receiving middleware (which means outermost in execution order if using chain wrapping or interception logic).
+	// However, if AddReceivingMiddleware appends to a list and executed in order, we want it FIRST.
+	// But `mcp.Server` execution order depends on implementation.
+	// Looking at `middleware.GetMCPMiddlewares`, it seems `InitStandardMiddlewares` puts middlewares into a registry.
+	// Let's manually add this one to `mcpSrv.Server()` directly.
+	// Since we want metrics for EVERYTHING, it should be the "outermost" middleware.
+	// If middlewares are wrappers, adding it LAST makes it OUTERMOST (m3(m2(m1(handler)))).
+	// Let's assume AddReceivingMiddleware wraps the existing handler.
+	// So we should add it LAST.
+	mcpMetricsMiddleware := middleware.NewMCPMetricsMiddleware()
+	mcpSrv.Server().AddReceivingMiddleware(mcpMetricsMiddleware.Middleware)
+
 	// Get configured middlewares
 	middlewares := config.GlobalSettings().Middlewares()
 	if len(middlewares) == 0 {

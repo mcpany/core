@@ -60,6 +60,7 @@ Most "popular" MCP servers today are bespoke binaries. If the upstream API chang
   - **Performance**: Configure [Caching](server/docs/caching.md) and Rate Limiting to optimize performance and protect upstream services.
   - **Semantic Caching**: Intelligent caching using vector embeddings to serve similar requests from cache. Now supports **SQLite persistence** to survive restarts.
   - **Audit Logging**: Keep a tamper-evident record of all tool executions in a JSON file or **SQLite database** (using SHA-256 hash chaining) for compliance and security auditing.
+  - **Prometheus Metrics**: Built-in Prometheus exporter for monitoring server performance, request duration, error rates, and payload sizes.
 - **MCP Any Proxy**: Proxy and re-expose tools from another MCP Any instance.
 - **Upstream Authentication**: Securely connect to your backend services using:
   - **API Keys**
