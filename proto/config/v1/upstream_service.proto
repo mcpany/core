@@ -70,6 +70,7 @@ message UpstreamServiceConfig {
     GraphQLUpstreamService graphql_service = 21 [json_name = "graphql_service"];
     SqlUpstreamService sql_service = 31 [json_name = "sql_service"];
     FilesystemUpstreamService filesystem_service = 32 [json_name = "filesystem_service"];
+    S3UpstreamService s3_service = 33 [json_name = "s3_service"];
   }
 
   // The version of the upstream service, if known (e.g., "v1.2.3").
@@ -337,6 +338,30 @@ message SqlUpstreamService {
   string dsn = 2;
   // A map of call definitions, keyed by their unique ID.
   map<string, SqlCallDefinition> calls = 3;
+}
+
+// S3UpstreamService defines an upstream service that connects to S3-compatible storage.
+message S3UpstreamService {
+  // The AWS region (e.g., "us-east-1").
+  string region = 1;
+  // The name of the S3 bucket.
+  string bucket = 2;
+  // Optional: The endpoint URL (for non-AWS S3 compatible services like MinIO).
+  string endpoint = 3;
+  // Optional: The access key ID (if not using env vars or IAM roles).
+  string access_key_id = 4 [json_name = "access_key_id"];
+  // Optional: The secret access key.
+  string secret_access_key = 5 [json_name = "secret_access_key"];
+  // Optional: Limit access to objects with this prefix.
+  string prefix = 6;
+  // If true, file operations are read-only.
+  bool read_only = 7 [json_name = "read_only"];
+  // Manually defined mappings.
+  repeated ToolDefinition tools = 8;
+  // Resources (files) that are statically or dynamically exposed.
+  repeated ResourceDefinition resources = 9;
+  // Prompts that are exposed.
+  repeated PromptDefinition prompts = 10;
 }
 
 // FilesystemUpstreamService defines a service that exposes a local filesystem safely.
