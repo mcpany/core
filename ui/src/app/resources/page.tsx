@@ -6,58 +6,86 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { apiClient } from "@/lib/client";
+import { apiClient, ResourceDefinition } from "@/lib/client";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Switch } from "@/components/ui/switch";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-
-interface Resource {
-  name: string;
-  type?: string;
-  service?: string;
-  description?: string;
-}
+import { FileText, Database } from "lucide-react";
 
 export default function ResourcesPage() {
-  const [resources, setResources] = useState<Resource[]>([]);
+  const [resources, setResources] = useState<ResourceDefinition[]>([]);
 
   useEffect(() => {
-    async function fetchResources() {
-      try {
-        const { resources } = await apiClient.listResources();
-        setResources(resources);
-      } catch (e) {
-        console.error("Failed to fetch resources", e);
-      }
-    }
     fetchResources();
   }, []);
+
+  const fetchResources = async () => {
+    try {
+      const res = await apiClient.listResources();
+      setResources(res.resources || []);
+    } catch (e) {
+      console.error("Failed to fetch resources", e);
+    }
+  };
+
+  const toggleResource = async (uri: string, currentStatus: boolean) => {
+    // Optimistic update
+    setResources(resources.map(r => r.uri === uri ? { ...r, enabled: !currentStatus } : r));
+
+    try {
+        await apiClient.setResourceStatus(uri, !currentStatus);
+    } catch (e) {
+        console.error("Failed to toggle resource", e);
+        fetchResources(); // Revert
+    }
+  };
 
   return (
     <div className="flex-1 space-y-4 p-8 pt-6">
       <div className="flex items-center justify-between">
         <h2 className="text-3xl font-bold tracking-tight">Resources</h2>
       </div>
+
       <Card className="backdrop-blur-sm bg-background/50">
         <CardHeader>
-          <CardTitle>Resources</CardTitle>
-          <CardDescription>Managed resources available to the system.</CardDescription>
+          <CardTitle>Managed Resources</CardTitle>
+          <CardDescription>View and control access to resources.</CardDescription>
         </CardHeader>
         <CardContent>
-           <Table>
+          <Table>
             <TableHeader>
               <TableRow>
                 <TableHead>Name</TableHead>
-                <TableHead>Type</TableHead>
+                <TableHead>URI</TableHead>
+                <TableHead>MIME Type</TableHead>
                 <TableHead>Service</TableHead>
+                <TableHead>Status</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {resources.map((res) => (
-                <TableRow key={res.name}>
-                  <TableCell className="font-medium">{res.name}</TableCell>
-                  <TableCell>{res.type}</TableCell>
-                  <TableCell><Badge variant="outline">{res.service}</Badge></TableCell>
+              {resources.map((resource) => (
+                <TableRow key={resource.uri}>
+                  <TableCell className="font-medium flex items-center">
+                    <FileText className="h-4 w-4 mr-2 text-muted-foreground" />
+                    {resource.name}
+                  </TableCell>
+                  <TableCell className="font-mono text-xs text-muted-foreground">{resource.uri}</TableCell>
+                  <TableCell>{resource.mimeType}</TableCell>
+                  <TableCell>
+                      <Badge variant="outline">{resource.serviceName}</Badge>
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex items-center space-x-2">
+                        <Switch
+                            checked={!!resource.enabled}
+                            onCheckedChange={() => toggleResource(resource.uri, !!resource.enabled)}
+                        />
+                        <span className="text-sm text-muted-foreground w-16">
+                            {resource.enabled ? "Enabled" : "Disabled"}
+                        </span>
+                    </div>
+                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>
