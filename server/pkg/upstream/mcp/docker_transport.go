@@ -18,6 +18,7 @@ import (
 	"github.com/docker/docker/api/types/network"
 	"github.com/docker/docker/client"
 	"github.com/docker/docker/pkg/stdcopy"
+	"al.essio.dev/pkg/shellescape"
 	"github.com/mcpany/core/pkg/logging"
 	"github.com/mcpany/core/pkg/util"
 	configv1 "github.com/mcpany/core/proto/config/v1"
@@ -71,8 +72,12 @@ func (t *DockerTransport) Connect(ctx context.Context) (mcp.Connection, error) {
 
 	var scriptCommands []string
 	scriptCommands = append(scriptCommands, t.StdioConfig.GetSetupCommands()...)
-	mainCommandParts := []string{"exec", t.StdioConfig.GetCommand()}
-	mainCommandParts = append(mainCommandParts, t.StdioConfig.GetArgs()...)
+
+	// Add the main command. `exec` is used to replace the shell process with the main command.
+	mainCommandParts := []string{"exec", shellescape.Quote(t.StdioConfig.GetCommand())}
+	for _, arg := range t.StdioConfig.GetArgs() {
+		mainCommandParts = append(mainCommandParts, shellescape.Quote(arg))
+	}
 	scriptCommands = append(scriptCommands, strings.Join(mainCommandParts, " "))
 	script := strings.Join(scriptCommands, " && ")
 
