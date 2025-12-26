@@ -5,7 +5,7 @@
 
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, memo } from "react";
 import {
   Users,
   Activity,
@@ -40,6 +40,64 @@ const iconMap: Record<string, any> = {
   AlertCircle
 };
 
+// Memoized component to prevent re-renders when data hasn't changed
+// Optimization: Dashboard polls every 5s, but many metrics (like Active Services) change infrequently.
+// This prevents React from re-rendering the Card DOM for stable metrics.
+const MetricItem = memo(({ metric }: { metric: Metric }) => {
+    const Icon = iconMap[metric.icon] || Activity;
+    const isPositiveTrend = metric.trend === "up";
+    // For latency and errors, down is usually good (green), up is bad (red)
+    const isReverseTrend = metric.label.includes("Latency") || metric.label.includes("Error");
+
+    let trendColor = isPositiveTrend ? "text-green-500" : "text-red-500";
+    if (isReverseTrend) {
+        trendColor = isPositiveTrend ? "text-red-500" : "text-green-500";
+    }
+
+    return (
+      <Card className="backdrop-blur-xl bg-background/60 border border-white/20 shadow-sm hover:shadow-lg transition-all duration-300">
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <CardTitle className="text-sm font-medium text-muted-foreground">
+            {metric.label}
+          </CardTitle>
+          <Icon className="h-4 w-4 text-muted-foreground opacity-70" />
+        </CardHeader>
+        <CardContent>
+          <div className="text-2xl font-bold tracking-tight">{metric.value}</div>
+          <div className="flex items-center justify-between mt-1">
+             {metric.change && (
+            <p className={`text-xs flex items-center ${trendColor}`}>
+              {metric.trend === "up" ? (
+                <ArrowUpRight className="h-3 w-3 mr-1" />
+              ) : (
+                <ArrowDownRight className="h-3 w-3 mr-1" />
+              )}
+              <span>
+                {metric.change}
+              </span>
+            </p>
+          )}
+           {metric.subLabel && (
+              <span className="text-xs text-muted-foreground opacity-80">{metric.subLabel}</span>
+           )}
+          </div>
+        </CardContent>
+      </Card>
+    );
+}, (prev, next) => {
+    // Custom comparison because fetch returns new objects every time
+    return (
+        prev.metric.value === next.metric.value &&
+        prev.metric.change === next.metric.change &&
+        prev.metric.trend === next.metric.trend &&
+        prev.metric.label === next.metric.label &&
+        prev.metric.icon === next.metric.icon &&
+        prev.metric.subLabel === next.metric.subLabel
+    );
+});
+
+MetricItem.displayName = "MetricItem";
+
 export function MetricsOverview() {
   const [metrics, setMetrics] = useState<Metric[]>([]);
 
@@ -67,48 +125,9 @@ export function MetricsOverview() {
 
   return (
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-      {metrics.map((metric) => {
-        const Icon = iconMap[metric.icon] || Activity;
-        const isPositiveTrend = metric.trend === "up";
-        // For latency and errors, down is usually good (green), up is bad (red)
-        const isReverseTrend = metric.label.includes("Latency") || metric.label.includes("Error");
-
-        let trendColor = isPositiveTrend ? "text-green-500" : "text-red-500";
-        if (isReverseTrend) {
-            trendColor = isPositiveTrend ? "text-red-500" : "text-green-500";
-        }
-
-        return (
-          <Card key={metric.label} className="backdrop-blur-xl bg-background/60 border border-white/20 shadow-sm hover:shadow-lg transition-all duration-300">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">
-                {metric.label}
-              </CardTitle>
-              <Icon className="h-4 w-4 text-muted-foreground opacity-70" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold tracking-tight">{metric.value}</div>
-              <div className="flex items-center justify-between mt-1">
-                 {metric.change && (
-                <p className={`text-xs flex items-center ${trendColor}`}>
-                  {metric.trend === "up" ? (
-                    <ArrowUpRight className="h-3 w-3 mr-1" />
-                  ) : (
-                    <ArrowDownRight className="h-3 w-3 mr-1" />
-                  )}
-                  <span>
-                    {metric.change}
-                  </span>
-                </p>
-              )}
-               {metric.subLabel && (
-                  <span className="text-xs text-muted-foreground opacity-80">{metric.subLabel}</span>
-               )}
-              </div>
-            </CardContent>
-          </Card>
-        );
-      })}
+      {metrics.map((metric) => (
+        <MetricItem key={metric.label} metric={metric} />
+      ))}
     </div>
   );
 }
