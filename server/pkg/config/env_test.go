@@ -89,3 +89,31 @@ func TestEnvVarProfilesMultiple(t *testing.T) {
 	// We expect the value to be []string{"profile1", "profile2"}
 	assert.Equal(t, []string{"profile1", "profile2"}, val)
 }
+
+func TestEnvVarConfigPathWithSpaces(t *testing.T) {
+	// Reset viper
+	viper.Reset()
+
+	cmd := &cobra.Command{}
+	BindRootFlags(cmd)
+
+	// Set environment variable with multiple paths and spaces
+	// Note: pflag/viper might parse "env-config1.yaml, env-config2.yaml" weirdly.
+	// If it splits by space, it might be ["env-config1.yaml,", "env-config2.yaml"]
+	os.Setenv("MCPANY_CONFIG_PATH", "env-config1.yaml, env-config2.yaml")
+	defer os.Unsetenv("MCPANY_CONFIG_PATH")
+
+	settings := &Settings{
+		proto: &configv1.GlobalSettings{},
+	}
+	fs := afero.NewMemMapFs()
+	_ = afero.WriteFile(fs, "env-config1.yaml", []byte("upstream_services: []"), 0644)
+	_ = afero.WriteFile(fs, "env-config2.yaml", []byte("upstream_services: []"), 0644)
+
+	_ = settings.Load(cmd, fs)
+
+	val := settings.ConfigPaths()
+
+	// We expect the value to be clean paths
+	assert.Equal(t, []string{"env-config1.yaml", "env-config2.yaml"}, val)
+}
