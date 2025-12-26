@@ -3,41 +3,46 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-
 import { NextResponse } from 'next/server';
 
 export async function GET() {
-  // Mock data for service health
-  const health = [
+  const services = [
     {
-      id: "svc-1",
-      name: "Payment Service",
+      id: "srv-001",
+      name: "Core API Gateway",
       status: "healthy",
-      latency: "45ms",
-      uptime: "99.9%",
-    },
-    {
-      id: "svc-2",
-      name: "Auth Service",
-      status: "degraded",
-      latency: "150ms",
-      uptime: "99.5%",
-    },
-    {
-      id: "svc-3",
-      name: "Notification Service",
-      status: "healthy",
-      latency: "32ms",
+      latency: "24ms",
       uptime: "99.99%",
     },
     {
-        id: "svc-4",
-        name: "Data Processor",
-        status: "unhealthy",
-        latency: "Timeout",
-        uptime: "95.0%",
-    }
+      id: "srv-002",
+      name: "Authentication Service",
+      status: "healthy",
+      latency: "45ms",
+      uptime: "99.95%",
+    },
+    {
+      id: "srv-003",
+      name: "Vector Database",
+      status: "degraded",
+      latency: "150ms",
+      uptime: "99.00%",
+    },
+    {
+      id: "srv-004",
+      name: "LLM Orchestrator",
+      status: "healthy",
+      latency: "320ms",
+      uptime: "99.99%",
+    },
+     {
+      id: "srv-005",
+      name: "Webhook Processor",
+      status: "healthy",
+      latency: "12ms",
+      uptime: "100%",
+    },
   ];
 
-  return NextResponse.json(health);
+  return NextResponse.json(services);
 }

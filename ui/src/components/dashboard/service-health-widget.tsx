@@ -8,7 +8,8 @@
 import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { CheckCircle2, AlertTriangle, XCircle } from "lucide-react";
+import { CheckCircle2, AlertTriangle, XCircle, Activity } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface ServiceHealth {
   id: string;
@@ -20,6 +21,7 @@ interface ServiceHealth {
 
 export function ServiceHealthWidget() {
   const [services, setServices] = useState<ServiceHealth[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     async function fetchHealth() {
@@ -31,6 +33,8 @@ export function ServiceHealthWidget() {
         }
       } catch (error) {
         console.error("Failed to fetch health data", error);
+      } finally {
+        setIsLoading(false);
       }
     }
     fetchHealth();
@@ -43,50 +47,73 @@ export function ServiceHealthWidget() {
       case "healthy":
         return <CheckCircle2 className="h-4 w-4 text-green-500" />;
       case "degraded":
-        return <AlertTriangle className="h-4 w-4 text-yellow-500" />;
+        return <AlertTriangle className="h-4 w-4 text-amber-500" />;
       case "unhealthy":
         return <XCircle className="h-4 w-4 text-red-500" />;
       default:
-        return <AlertTriangle className="h-4 w-4 text-gray-500" />;
+        return <Activity className="h-4 w-4 text-muted-foreground" />;
     }
   };
 
   const getStatusColor = (status: string) => {
       switch (status) {
-        case "healthy": return "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300";
-        case "degraded": return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300";
-        case "unhealthy": return "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300";
-        default: return "bg-gray-100 text-gray-800";
+        case "healthy": return "border-green-200 bg-green-50 text-green-700 dark:border-green-900/30 dark:bg-green-900/20 dark:text-green-400";
+        case "degraded": return "border-amber-200 bg-amber-50 text-amber-700 dark:border-amber-900/30 dark:bg-amber-900/20 dark:text-amber-400";
+        case "unhealthy": return "border-red-200 bg-red-50 text-red-700 dark:border-red-900/30 dark:bg-red-900/20 dark:text-red-400";
+        default: return "border-gray-200 bg-gray-50 text-gray-700 dark:border-gray-800 dark:bg-gray-800/50 dark:text-gray-400";
       }
   };
 
+  if (isLoading) {
+    return (
+        <Card className="col-span-4 backdrop-blur-xl bg-background/60 border border-white/20 shadow-sm">
+             <CardHeader>
+                <CardTitle>System Health</CardTitle>
+             </CardHeader>
+             <CardContent>
+                 <div className="flex items-center justify-center h-48">
+                     <p className="text-muted-foreground animate-pulse">Checking system status...</p>
+                 </div>
+             </CardContent>
+        </Card>
+    )
+  }
+
   return (
-    <Card className="col-span-4 backdrop-blur-sm bg-background/50">
+    <Card className="col-span-4 backdrop-blur-xl bg-background/60 border border-white/20 shadow-sm transition-all duration-300">
       <CardHeader>
         <CardTitle>System Health</CardTitle>
         <CardDescription>
-          Real-time status of critical services.
+          Live health checks for {services.length} connected services.
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <div className="space-y-4">
+        <div className="space-y-1">
           {services.map((service) => (
             <div
               key={service.id}
-              className="flex items-center justify-between space-x-4 border-b pb-4 last:border-0 last:pb-0"
+              className="group flex items-center justify-between p-3 hover:bg-muted/50 rounded-lg transition-colors"
             >
               <div className="flex items-center space-x-4">
-                {getStatusIcon(service.status)}
+                <div className={cn("p-2 rounded-full bg-background shadow-sm border", getStatusColor(service.status).split(" ")[0])}>
+                    {getStatusIcon(service.status)}
+                </div>
                 <div>
-                  <p className="text-sm font-medium leading-none">{service.name}</p>
-                  <p className="text-sm text-muted-foreground">Latency: {service.latency}</p>
+                  <p className="text-sm font-medium leading-none mb-1">{service.name}</p>
+                  <p className="text-xs text-muted-foreground flex items-center">
+                    <Activity className="h-3 w-3 mr-1" />
+                    Latency: <span className="font-mono ml-1">{service.latency}</span>
+                  </p>
                 </div>
               </div>
-              <div className="flex items-center space-x-2">
-                 <Badge variant="outline" className={getStatusColor(service.status)}>
+              <div className="flex items-center space-x-4">
+                 <div className="text-right hidden sm:block">
+                     <p className="text-xs text-muted-foreground">Uptime</p>
+                     <p className="text-sm font-medium">{service.uptime}</p>
+                 </div>
+                 <Badge variant="outline" className={cn("capitalize shadow-none", getStatusColor(service.status))}>
                     {service.status}
                  </Badge>
-                 <span className="text-xs text-muted-foreground w-12 text-right">{service.uptime}</span>
               </div>
             </div>
           ))}
