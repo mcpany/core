@@ -1610,11 +1610,15 @@ func WaitForPortFromLogs(t *testing.T, mp *ManagedProcess, serverName string) (s
 
 // MCPJSONRPCError represents a JSON-RPC error.
 type MCPJSONRPCError struct {
-	Code    int         `json:"code"`
-	Message string      `json:"message"`
-	Data    interface{} `json:"data,omitempty"`
+	// Code is the error code.
+	Code int `json:"code"`
+	// Message is the error message.
+	Message string `json:"message"`
+	// Data is optional additional error data.
+	Data interface{} `json:"data,omitempty"`
 }
 
+// Error implements the error interface.
 func (e *MCPJSONRPCError) Error() string {
 	return fmt.Sprintf("JSON-RPC Error: Code=%d, Message=%s, Data=%v", e.Code, e.Message, e.Data)
 }
