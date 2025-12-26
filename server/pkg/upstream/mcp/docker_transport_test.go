@@ -205,10 +205,20 @@ func TestDockerTransport_Connect_Integration(t *testing.T) {
 	}
 
 	ctx := context.Background()
+	// We use "printf" and pass the JSON string as an argument.
+	// We DON'T quote it here manually because the transport should handle quoting now.
+	// If we quote it manually, it will be double quoted by shellescape.
+	// The original test had `Args: []string{`'{"jsonrpc": "2.0", "id": "1", "result": "hello"}'`}` which included single quotes.
+	// The new transport will wrap this in single quotes: `' ... '` -> `'... '\'' ... '\'' ... '`
+	// So `printf` will see the single quotes as part of the string.
+	// But `printf %s` prints the string.
+	// If we want `printf` to print valid JSON, we should pass the JSON raw string, and let transport quote it.
+
+	jsonPayload := `{"jsonrpc": "2.0", "id": "1", "result": "hello"}`
 	stdioConfig := configv1.McpStdioConnection_builder{
 		ContainerImage: proto.String("alpine:latest"),
 		Command:        proto.String("printf"),
-		Args:           []string{`'{"jsonrpc": "2.0", "id": "1", "result": "hello"}'`},
+		Args:           []string{jsonPayload},
 	}.Build()
 	transport := &DockerTransport{StdioConfig: stdioConfig}
 
