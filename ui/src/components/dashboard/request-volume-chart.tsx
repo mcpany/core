@@ -1,0 +1,121 @@
+/**
+ * Copyright 2025 Author(s) of MCP Any
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+"use client";
+
+import { useEffect, useState } from "react";
+import { Area, AreaChart, ResponsiveContainer, Tooltip, XAxis, YAxis, CartesianGrid } from "recharts";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+
+const data = [
+  {
+    name: "Jan",
+    total: Math.floor(Math.random() * 5000) + 1000,
+  },
+  {
+    name: "Feb",
+    total: Math.floor(Math.random() * 5000) + 1000,
+  },
+  {
+    name: "Mar",
+    total: Math.floor(Math.random() * 5000) + 1000,
+  },
+  {
+    name: "Apr",
+    total: Math.floor(Math.random() * 5000) + 1000,
+  },
+  {
+    name: "May",
+    total: Math.floor(Math.random() * 5000) + 1000,
+  },
+  {
+    name: "Jun",
+    total: Math.floor(Math.random() * 5000) + 1000,
+  },
+  {
+    name: "Jul",
+    total: Math.floor(Math.random() * 5000) + 1000,
+  },
+  {
+    name: "Aug",
+    total: Math.floor(Math.random() * 5000) + 1000,
+  },
+  {
+    name: "Sep",
+    total: Math.floor(Math.random() * 5000) + 1000,
+  },
+  {
+    name: "Oct",
+    total: Math.floor(Math.random() * 5000) + 1000,
+  },
+  {
+    name: "Nov",
+    total: Math.floor(Math.random() * 5000) + 1000,
+  },
+  {
+    name: "Dec",
+    total: Math.floor(Math.random() * 5000) + 1000,
+  },
+];
+
+export function RequestVolumeChart() {
+    const [isMounted, setIsMounted] = useState(false);
+
+    useEffect(() => {
+        setIsMounted(true);
+    }, []);
+
+    if (!isMounted) return null;
+
+  return (
+    <Card className="col-span-3 backdrop-blur-sm bg-background/50 h-full">
+      <CardHeader>
+        <CardTitle>Request Volume</CardTitle>
+        <CardDescription>
+          Requests handled over the last 12 months.
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="pl-2">
+        <div className="h-[300px] w-full">
+            <ResponsiveContainer width="100%" height="100%">
+            <AreaChart data={data}>
+                <defs>
+                    <linearGradient id="colorTotal" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor="#8884d8" stopOpacity={0.8}/>
+                        <stop offset="95%" stopColor="#8884d8" stopOpacity={0}/>
+                    </linearGradient>
+                </defs>
+                <XAxis
+                dataKey="name"
+                stroke="#888888"
+                fontSize={12}
+                tickLine={false}
+                axisLine={false}
+                />
+                <YAxis
+                stroke="#888888"
+                fontSize={12}
+                tickLine={false}
+                axisLine={false}
+                tickFormatter={(value) => `$${value}`} // Should likely be raw numbers, removing $ later
+                />
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--muted))" />
+                <Tooltip
+                    contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
+                />
+                <Area
+                    type="monotone"
+                    dataKey="total"
+                    stroke="#8884d8"
+                    fillOpacity={1}
+                    fill="url(#colorTotal)"
+                />
+            </AreaChart>
+            </ResponsiveContainer>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}

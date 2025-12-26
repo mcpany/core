@@ -25,17 +25,19 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
-interface Service {
-  id: string;
-  name: string;
-  version: string;
-  disable: boolean;
-  service_config?: any;
-}
+import { UpstreamServiceConfig } from "@/lib/types";
+
+// interface Service {
+//   id: string;
+//   name: string;
+//   version: string;
+//   disable: boolean;
+//   service_config?: any;
+// }
 
 export default function ServicesPage() {
-  const [services, setServices] = useState<Service[]>([]);
-  const [selectedService, setSelectedService] = useState<Service | null>(null);
+  const [services, setServices] = useState<UpstreamServiceConfig[]>([]);
+  const [selectedService, setSelectedService] = useState<UpstreamServiceConfig | null>(null);
   const [isSheetOpen, setIsSheetOpen] = useState(false);
 
   useEffect(() => {
@@ -45,36 +47,56 @@ export default function ServicesPage() {
   const fetchServices = async () => {
     try {
       const res = await apiClient.listServices();
-      setServices((res.services || []) as unknown as Service[]);
+      setServices(res.services || []);
     } catch (e) {
       console.error("Failed to fetch services", e);
     }
   };
 
-  const toggleService = async (id: string, currentStatus: boolean) => {
+  const toggleService = async (name: string, currentStatus: boolean) => {
     // Optimistic update
-    setServices(services.map(s => s.id === id ? { ...s, disable: !currentStatus } : s));
+    setServices(services.map(s => s.name === name ? { ...s, disable: !currentStatus } : s));
 
     try {
-        await fetch("/api/v1/services", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ id, disable: !currentStatus })
-        });
+        await apiClient.setServiceStatus(name, !currentStatus);
     } catch (e) {
         console.error("Failed to toggle service", e);
         fetchServices(); // Revert
     }
   };
 
-  const openEdit = (service: Service) => {
+  const openEdit = (service: UpstreamServiceConfig) => {
       setSelectedService(service);
       setIsSheetOpen(true);
   };
 
   const openNew = () => {
-      setSelectedService({ id: "", name: "", version: "1.0.0", disable: false, service_config: {} });
+      setSelectedService({ id: "", name: "", version: "1.0.0", disable: false, http_service: { address: "" } });
       setIsSheetOpen(true);
+  };
+
+  const handleSave = async (e: React.FormEvent) => {
+      e.preventDefault();
+      if (!selectedService) return;
+
+      try {
+          if (services.find(s => s.name === selectedService.name && s.id !== selectedService.id)) {
+             // Logic for handling duplicate names or editing existing
+          }
+
+          if (selectedService.id) {
+               // Update
+               // Note: Real implementation would align fields carefully
+               await apiClient.updateService(selectedService as any);
+          } else {
+              // Create
+              await apiClient.registerService(selectedService as any);
+          }
+          setIsSheetOpen(false);
+          fetchServices();
+      } catch (err) {
+          console.error("Failed to save service", err);
+      }
   };
 
   return (
@@ -104,13 +126,14 @@ export default function ServicesPage() {
             </TableHeader>
             <TableBody>
               {services.map((service) => (
-                <TableRow key={service.id}>
+                <TableRow key={service.name}>
                   <TableCell className="font-medium">{service.name}</TableCell>
                   <TableCell>
                       <Badge variant="secondary">
-                      {service.service_config?.http_service ? "HTTP" :
-                       service.service_config?.grpc_service ? "gRPC" :
-                       service.service_config?.command_line_service ? "CMD" : "Other"}
+                      {service.http_service ? "HTTP" :
+                       service.grpc_service ? "gRPC" :
+                       service.command_line_service ? "CMD" :
+                       service.mcp_service ? "MCP" : "Other"}
                       </Badge>
                   </TableCell>
                   <TableCell>{service.version}</TableCell>
@@ -118,7 +141,7 @@ export default function ServicesPage() {
                     <div className="flex items-center space-x-2">
                         <Switch
                             checked={!service.disable}
-                            onCheckedChange={() => toggleService(service.id, service.disable)}
+                            onCheckedChange={() => toggleService(service.name, !!service.disable)}
                         />
                         <span className="text-sm text-muted-foreground w-16">
                             {!service.disable ? "Active" : "Inactive"}
@@ -146,15 +169,35 @@ export default function ServicesPage() {
                 </SheetDescription>
             </SheetHeader>
             {selectedService && (
-                <div className="grid gap-6 py-4">
+                <form onSubmit={handleSave} className="grid gap-6 py-4">
                     <div className="grid grid-cols-4 items-center gap-4">
                         <Label htmlFor="name" className="text-right">Name</Label>
-                        <Input id="name" defaultValue={selectedService.name} className="col-span-3" />
+                        <Input
+                            id="name"
+                            value={selectedService.name}
+                            onChange={(e) => setSelectedService({...selectedService, name: e.target.value})}
+                            className="col-span-3"
+                        />
                     </div>
                     <div className="grid grid-cols-4 items-center gap-4">
                         <Label htmlFor="type" className="text-right">Type</Label>
                         <div className="col-span-3">
-                             <Select defaultValue={selectedService.service_config?.http_service ? "http" : "grpc"}>
+                             <Select
+                                value={selectedService.http_service ? "http" : selectedService.grpc_service ? "grpc" : selectedService.command_line_service ? "cmd" : "mcp"}
+                                onValueChange={(val) => {
+                                    const newService = { ...selectedService };
+                                    delete newService.http_service;
+                                    delete newService.grpc_service;
+                                    delete newService.command_line_service;
+                                    delete newService.mcp_service;
+
+                                    if (val === 'http') newService.http_service = { address: "" };
+                                    if (val === 'grpc') newService.grpc_service = { address: "" };
+                                    if (val === 'cmd') newService.command_line_service = { command: "" };
+                                    if (val === 'mcp') newService.mcp_service = { http_connection: { http_address: "" } };
+                                    setSelectedService(newService);
+                                }}
+                             >
                                 <SelectTrigger>
                                     <SelectValue placeholder="Select type" />
                                 </SelectTrigger>
@@ -167,16 +210,50 @@ export default function ServicesPage() {
                             </Select>
                         </div>
                     </div>
-                    <div className="grid grid-cols-4 items-center gap-4">
-                         <Label htmlFor="endpoint" className="text-right">Endpoint</Label>
-                         <Input id="endpoint" placeholder="http://localhost:8080" className="col-span-3" />
+
+                    {selectedService.http_service && (
+                         <div className="grid grid-cols-4 items-center gap-4">
+                             <Label htmlFor="endpoint" className="text-right">Endpoint</Label>
+                             <Input
+                                id="endpoint"
+                                value={selectedService.http_service.address}
+                                onChange={(e) => setSelectedService({...selectedService, http_service: { ...selectedService.http_service, address: e.target.value }})}
+                                placeholder="http://localhost:8080"
+                                className="col-span-3"
+                            />
+                        </div>
+                    )}
+                     {selectedService.grpc_service && (
+                         <div className="grid grid-cols-4 items-center gap-4">
+                             <Label htmlFor="grpc-endpoint" className="text-right">Address</Label>
+                             <Input
+                                id="grpc-endpoint"
+                                value={selectedService.grpc_service.address}
+                                onChange={(e) => setSelectedService({...selectedService, grpc_service: { ...selectedService.grpc_service, address: e.target.value }})}
+                                placeholder="localhost:9090"
+                                className="col-span-3"
+                            />
+                        </div>
+                    )}
+                     {selectedService.command_line_service && (
+                         <div className="grid grid-cols-4 items-center gap-4">
+                             <Label htmlFor="command" className="text-right">Command</Label>
+                             <Input
+                                id="command"
+                                value={selectedService.command_line_service.command}
+                                onChange={(e) => setSelectedService({...selectedService, command_line_service: { ...selectedService.command_line_service, command: e.target.value }})}
+                                placeholder="docker run ..."
+                                className="col-span-3"
+                            />
+                        </div>
+                    )}
+
+                    <div className="flex justify-end gap-2 pt-4">
+                        <Button type="button" variant="outline" onClick={() => setIsSheetOpen(false)}>Cancel</Button>
+                        <Button type="submit">Save Changes</Button>
                     </div>
-                </div>
+                </form>
             )}
-            <div className="flex justify-end gap-2">
-                 <Button variant="outline" onClick={() => setIsSheetOpen(false)}>Cancel</Button>
-                <Button type="submit">Save Changes</Button>
-            </div>
         </SheetContent>
     </Sheet>
     </div>
