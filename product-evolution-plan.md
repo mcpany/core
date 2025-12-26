@@ -26,7 +26,7 @@ The following is the reconciled roadmap as of today. Completed items have been v
 - [x] [**Advanced Authentication**](./server/docs/features/authentication/README.md).
 
 #### Ongoing Goals
-- [ ] **Expand Test Coverage**: Unit tests are failing in some packages (`pkg/tool`, `pkg/upstream/grpc/protobufparser`).
+- [ ] **Expand Test Coverage**: Increase unit and integration test coverage for all existing and new features.
 - [ ] **Improve Error Handling**.
 
 #### Long-Term Goals
@@ -89,21 +89,16 @@ Based on the analysis of current capabilities and industry standards for AI/Infr
 The codebase is well-structured and modular (`pkg/` layout). However, there are some areas requiring attention.
 
 ### Issues
-1.  **Test Failures**:
-    *   `github.com/mcpany/core/pkg/tool`: `TestNewGRPCTool`, `TestGRPCTool_Execute` are failing.
-    *   `github.com/mcpany/core/pkg/upstream/grpc/protobufparser`: `TestExtractMcpDefinitions` is failing.
-    *   *Recommendation*: Immediate priority to fix these tests to ensure stability.
+1.  **Linting**:
+    *   There are ~102 `nolint` directives. While sometimes necessary, excessive use can hide real issues. A review is recommended.
 
-2.  **Linting**:
-    *   There are ~103 `nolint` directives. While sometimes necessary, excessive use can hide real issues. A review is recommended.
-
-3.  **TODOs**:
-    *   Only 1 TODO found in `server/pkg`. This is surprisingly low, which might indicate either very clean code or a lack of inline tracking for tech debt.
+2.  **TODOs**:
+    *   Only 2 TODOs found in `server/pkg`. This is surprisingly low, which might indicate either very clean code or a lack of inline tracking for tech debt.
     *   A massive amount of TODOs (1900+) were found in `build/` (dependencies), which is expected and fine, but we should ensure our own code is tracked.
 
 ### Refactoring Candidates
-*   **Protobuf Parser**: The failing tests in `protobufparser` suggest this area might be brittle. It's a complex component (reflecting on proto files) and critical for gRPC support.
-*   **Tool Execution Logic**: Failures in `pkg/tool` suggest the core execution engine might have regressions.
+*   **Protobuf Parser**: This area is complex (reflecting on proto files) and critical for gRPC support.
+*   **Tool Execution Logic**: The core execution engine is a critical path and should be kept clean.
 
 ### Conclusion
 The project is in a strong position feature-wise, but stability (tests) needs to be addressed before embarking on the "Kubernetes Operator" or "WASM" features.
