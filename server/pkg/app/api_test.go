@@ -11,6 +11,8 @@ import (
 	"path/filepath"
 	"testing"
 
+	"github.com/mcpany/core/pkg/auth"
+	"github.com/mcpany/core/pkg/serviceregistry"
 	"github.com/mcpany/core/pkg/storage/sqlite"
 	"github.com/spf13/afero"
 	"github.com/stretchr/testify/assert"
@@ -30,6 +32,13 @@ func TestCreateAPIHandler(t *testing.T) {
 	// Setup Application
 	app := NewApplication()
 	app.fs = afero.NewMemMapFs() // Use in-memory FS to avoid side effects in ReloadConfig
+	app.ServiceRegistry = serviceregistry.New(
+		app.UpstreamFactory,
+		app.ToolManager,
+		app.PromptManager,
+		app.ResourceManager,
+		auth.NewManager(),
+	)
 
 	handler := app.createAPIHandler(store)
 	ts := httptest.NewServer(handler)

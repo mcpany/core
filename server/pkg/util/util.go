@@ -19,7 +19,9 @@ import (
 
 // SanitizeID sanitizes a slice of strings to form a valid ID.
 // It performs the following operations:
+//
 //  1. Joining the strings with a "." separator.
+//
 //  2. Removing any characters that are not allowed (alphanumerics, "_", "-").
 //     Allowed characters are: `[a-zA-Z0-9_-]`.
 //     Wait, checking the implementation:
@@ -31,6 +33,7 @@ import (
 //     And later it only writes if valid char.
 //
 //  3. Truncating the result to the specified maximum length.
+//
 //  4. Optionally, appending a hash of the original string to ensure uniqueness,
 //     especially when truncation occurs or when illegal characters are present.
 //
@@ -50,7 +53,7 @@ import (
 // Returns:
 //
 //	A single string representing the sanitized and joined identifier.
-func SanitizeID(ids []string, alwaysAppendHash bool, maxSanitizedPrefixLength, hashLength int) (string, error) { //nolint:gocyclo
+func SanitizeID(ids []string, alwaysAppendHash bool, maxSanitizedPrefixLength, hashLength int) (string, error) {
 	// Optimization: Pre-calculate total length to avoid multiple allocations
 	totalLen := 0
 	for i, id := range ids {
