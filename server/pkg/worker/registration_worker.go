@@ -81,7 +81,7 @@ func (w *ServiceRegistrationWorker) Start(ctx context.Context) {
 				}
 			}()
 
-			log.Info("Received service registration request", "correlationID", req.CorrelationID())
+			log.Info("Received service registration request", "correlationID", req.CorrelationID(), "service", req.Config.GetName(), "retry", req.RetryCount)
 
 			requestCtx := req.Context
 			if requestCtx == nil {
@@ -101,16 +101,36 @@ func (w *ServiceRegistrationWorker) Start(ctx context.Context) {
 
 			serviceID, discoveredTools, discoveredResources, err := w.serviceRegistry.RegisterService(requestCtx, req.Config)
 
+			if err != nil {
+				metrics.IncrCounter([]string{"worker", "registration", "request", "error"}, 1)
+				log.Error("Failed to register service", "service", req.Config.GetName(), "error", err)
+
+				// Retry logic
+				// We retry up to 10 times, with exponential backoff capped at 30 seconds.
+				const MaxRetries = 10
+				if req.RetryCount < MaxRetries {
+					req.RetryCount++
+					delay := time.Duration(1<<uint(req.RetryCount)) * time.Second
+					if delay > 30*time.Second {
+						delay = 30 * time.Second
+					}
+					log.Info("Retrying service registration", "service", req.Config.GetName(), "retry", req.RetryCount, "delay", delay)
+
+					time.Sleep(delay)
+					if err := requestBus.Publish(ctx, "request", req); err != nil {
+						log.Error("Failed to republish registration request", "error", err)
+					}
+					return // Return early, don't publish failure result yet
+				}
+			} else {
+				metrics.IncrCounter([]string{"worker", "registration", "request", "success"}, 1)
+			}
+
 			res := &bus.ServiceRegistrationResult{
 				ServiceKey:          serviceID,
 				DiscoveredTools:     discoveredTools,
 				DiscoveredResources: discoveredResources,
 				Error:               err,
-			}
-			if err != nil {
-				metrics.IncrCounter([]string{"worker", "registration", "request", "error"}, 1)
-			} else {
-				metrics.IncrCounter([]string{"worker", "registration", "request", "success"}, 1)
 			}
 			res.SetCorrelationID(req.CorrelationID())
 			_ = resultBus.Publish(ctx, req.CorrelationID(), res)
