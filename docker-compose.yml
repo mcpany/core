@@ -13,7 +13,7 @@ services:
     image: mcpany/server:latest
     build:
       context: .
-      dockerfile: docker/Dockerfile.server
+      dockerfile: server/docker/Dockerfile.server
     ports:
       # Exposes the JSON-RPC port (for tool calls) to the host.
       - "50050:50050"
@@ -21,7 +21,7 @@ services:
       - "50051:50051"
     volumes:
       # Mounts the production config file.
-      - ./docker/config.production.yaml:/etc/mcpany/config.yaml
+      - ./server/docker/config.production.yaml:/etc/mcpany/config.yaml
     environment:
       # Allows overriding Redis address if needed (defaults to redis:6379 in config.production.yaml)
       - REDIS_ADDRESS=redis:6379
@@ -58,7 +58,7 @@ services:
   prometheus:
     image: mirror.gcr.io/prom/prometheus:latest
     volumes:
-      - ./docker/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./server/docker/prometheus.yml:/etc/prometheus/prometheus.yml
     ports:
       - "9099:9090"
     networks:

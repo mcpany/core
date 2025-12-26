@@ -6,6 +6,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { apiClient } from "@/lib/client";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
@@ -42,9 +43,11 @@ export default function ServicesPage() {
   }, []);
 
   const fetchServices = async () => {
-    const res = await fetch("/api/services");
-    if (res.ok) {
-      setServices(await res.json());
+    try {
+      const res = await apiClient.listServices();
+      setServices((res.services || []) as unknown as Service[]);
+    } catch (e) {
+      console.error("Failed to fetch services", e);
     }
   };
 
@@ -53,7 +56,7 @@ export default function ServicesPage() {
     setServices(services.map(s => s.id === id ? { ...s, disable: !currentStatus } : s));
 
     try {
-        await fetch("/api/services", {
+        await fetch("/api/v1/services", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ id, disable: !currentStatus })

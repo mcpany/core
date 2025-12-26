@@ -16,7 +16,7 @@ import {
   UnregisterServiceResponse
 } from "./types";
 
-const API_base = process.env.NEXT_PUBLIC_API_URL || "http://localhost:50050";
+const API_base = process.env.NEXT_PUBLIC_API_URL || "/api";
 
 /**
  * API client for interacting with the MCP Any server.
@@ -28,6 +28,7 @@ export const apiClient = {
    * @returns A promise resolving to the list of services response.
    */
   listServices: async (): Promise<ListServicesResponse> => {
+    console.log("Fetching services from:", `${API_base}/v1/services`);
     const res = await fetch(`${API_base}/v1/services`);
     if (!res.ok) {
       throw new Error(`Failed to list services: ${res.statusText}`);
@@ -137,5 +138,41 @@ export const apiClient = {
         return { metrics: {} };
       }
       return res.json();
+  },
+
+  /**
+   * Lists all tools from all registered services (aggregated).
+   */
+  listTools: async (): Promise<{ tools: import("./types").Tool[] }> => {
+      const { services } = await apiClient.listServices();
+      const tools = services.flatMap(s =>
+          (s.grpc_service?.tools ||
+           s.http_service?.tools ||
+           s.command_line_service?.tools ||
+           s.openapi_service?.tools ||
+           s.websocket_service?.tools ||
+           s.webrtc_service?.tools ||
+           s.mcp_service?.tools ||
+           [])
+      );
+      return { tools };
+  },
+
+  /**
+   * Lists all resources from all registered services (aggregated).
+   */
+  listResources: async (): Promise<{ resources: import("./types").Resource[] }> => {
+      const { services } = await apiClient.listServices();
+      const resources = services.flatMap(s =>
+          (s.grpc_service?.resources ||
+           s.http_service?.resources ||
+           s.command_line_service?.resources ||
+           s.openapi_service?.resources ||
+           s.websocket_service?.resources ||
+           s.webrtc_service?.resources ||
+           s.mcp_service?.resources ||
+           [])
+      );
+      return { resources };
   }
 };
