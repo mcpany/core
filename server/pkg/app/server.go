@@ -36,8 +36,8 @@ import (
 	"github.com/mcpany/core/pkg/storage/sqlite"
 	"github.com/mcpany/core/pkg/telemetry"
 	"github.com/mcpany/core/pkg/tool"
-	"github.com/mcpany/core/pkg/util"
 	"github.com/mcpany/core/pkg/upstream/factory"
+	"github.com/mcpany/core/pkg/util"
 	"github.com/mcpany/core/pkg/worker"
 	pb_admin "github.com/mcpany/core/proto/admin/v1"
 	v1 "github.com/mcpany/core/proto/api/v1"
@@ -281,9 +281,12 @@ func (a *Application) Run(
 	upstreamWorker := worker.NewUpstreamWorker(busProvider, a.ToolManager)
 	registrationWorker := worker.NewServiceRegistrationWorker(busProvider, serviceRegistry)
 
+	// Create a context for workers that we can cancel on shutdown
+	workerCtx, workerCancel := context.WithCancel(ctx)
+
 	// Start background workers
-	upstreamWorker.Start(ctx)
-	registrationWorker.Start(ctx)
+	upstreamWorker.Start(workerCtx)
+	registrationWorker.Start(workerCtx)
 
 	// If we're using an in-memory bus, start the in-process worker
 	if busConfig == nil || busConfig.GetInMemory() != nil {
@@ -292,7 +295,7 @@ func (a *Application) Run(
 			MaxQueueSize: 100,
 		}
 		inProcessWorker := worker.New(busProvider, workerCfg)
-		inProcessWorker.Start(ctx)
+		inProcessWorker.Start(workerCtx)
 		defer inProcessWorker.Stop()
 	}
 
@@ -308,6 +311,9 @@ func (a *Application) Run(
 		config.GlobalSettings().IsDebug(),
 	)
 	if err != nil {
+		workerCancel()
+		upstreamWorker.Stop()
+		registrationWorker.Stop()
 		return fmt.Errorf("failed to create mcp server: %w", err)
 	}
 
@@ -324,6 +330,9 @@ func (a *Application) Run(
 			"service_registration_requests",
 		)
 		if err != nil {
+			workerCancel()
+			upstreamWorker.Stop()
+			registrationWorker.Stop()
 			return fmt.Errorf("failed to get registration bus: %w", err)
 		}
 		for _, serviceConfig := range cfg.GetUpstreamServices() {
@@ -350,6 +359,9 @@ func (a *Application) Run(
 	cachingMiddleware := middleware.NewCachingMiddleware(a.ToolManager)
 	auditCleanup, err := middleware.InitStandardMiddlewares(mcpSrv.AuthManager(), a.ToolManager, cfg.GetGlobalSettings().GetAudit(), cachingMiddleware)
 	if err != nil {
+		workerCancel()
+		upstreamWorker.Stop()
+		registrationWorker.Stop()
 		return fmt.Errorf("failed to init standard middlewares: %w", err)
 	}
 	if auditCleanup != nil {
@@ -398,7 +410,11 @@ func (a *Application) Run(
 	}
 
 	if stdio {
-		return a.runStdioModeFunc(ctx, mcpSrv)
+		err := a.runStdioModeFunc(ctx, mcpSrv)
+		workerCancel()
+		upstreamWorker.Stop()
+		registrationWorker.Stop()
+		return err
 	}
 
 	bindAddress := jsonrpcPort
@@ -419,7 +435,14 @@ func (a *Application) Run(
 		allowedOrigins = []string{"*"}
 	}
 
-	return a.runServerMode(ctx, mcpSrv, busProvider, bindAddress, grpcPort, shutdownTimeout, cfg.GetUsers(), cfg.GetGlobalSettings().GetProfileDefinitions(), allowedIPs, allowedOrigins, cachingMiddleware, sqliteStore, serviceRegistry)
+	runErr := a.runServerMode(ctx, mcpSrv, busProvider, bindAddress, grpcPort, shutdownTimeout, cfg.GetUsers(), cfg.GetGlobalSettings().GetProfileDefinitions(), allowedIPs, allowedOrigins, cachingMiddleware, sqliteStore, serviceRegistry)
+
+	// Stop workers
+	workerCancel()
+	upstreamWorker.Stop()
+	registrationWorker.Stop()
+
+	return runErr
 }
 
 // ReloadConfig reloads the configuration from the given paths and updates the

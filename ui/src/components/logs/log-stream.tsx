@@ -221,7 +221,7 @@ export function LogStream() {
         </CardHeader>
         <CardContent className="flex-1 p-0 overflow-hidden bg-black/90 font-mono text-sm relative">
              <ScrollArea className="h-full w-full p-4" ref={scrollRef}>
-                <div className="space-y-1">
+                <div className="space-y-1" data-testid="log-rows-container">
                     {filteredLogs.length === 0 && (
                         <div className="text-muted-foreground text-center py-10 italic">
                             No logs found matching your criteria...

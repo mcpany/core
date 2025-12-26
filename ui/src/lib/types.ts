@@ -36,6 +36,10 @@ export interface ResourceDefinition {
   name: string;
   /** The type of the resource. */
   type?: string;
+  /** A description of the resource. */
+  description?: string;
+  /** The MIME type of the resource. */
+  mimeType?: string;
 }
 
 /**
@@ -399,4 +403,14 @@ export interface UnregisterServiceRequest {
 export interface UnregisterServiceResponse {
   /** A message indicating the result of the unregistration. */
   message: string;
+}
+export type Tool = ToolDefinition;
+export type Resource = ResourceDefinition;
+
+export interface ListToolsResponse {
+    tools: Tool[];
+}
+
+export interface ListResourcesResponse {
+    resources: Resource[];
 }
