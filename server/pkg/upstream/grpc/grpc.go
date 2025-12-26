@@ -63,6 +63,9 @@ func NewUpstream(poolManager *pool.Manager) upstream.Upstream {
 // associated connection pool.
 func (u *Upstream) Shutdown(_ context.Context) error {
 	u.poolManager.Deregister(u.serviceID)
+	if u.reflectionCache != nil {
+		u.reflectionCache.Stop()
+	}
 	return nil
 }
 

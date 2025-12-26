@@ -146,6 +146,7 @@ type Application struct {
 	configFiles      map[string]string
 	fs               afero.Fs
 	configPaths      []string
+	serviceRegistry  serviceregistry.ServiceRegistryInterface
 }
 
 // NewApplication creates a new Application with default dependencies.
@@ -276,6 +277,7 @@ func (a *Application) Run(
 		a.ResourceManager,
 		authManager,
 	)
+	a.serviceRegistry = serviceRegistry
 
 	// New message bus and workers
 	upstreamWorker := worker.NewUpstreamWorker(busProvider, a.ToolManager)
@@ -484,54 +486,16 @@ func (a *Application) ReloadConfig(fs afero.Fs, configPaths []string) error {
 	for name := range currentServices {
 		if _, exists := newServices[name]; !exists {
 			log.Info("Removing service", "service", name)
-			// TODO: We should probably call Shutdown on the upstream if possible,
-			// but we only have access to ToolManager here which doesn't hold the upstream instance directly?
-			// The UpstreamFactory/Registry handles upstreams.
-			// Wait, if we use ServiceRegistry (which is passed to McpServer), we should probably use that.
-			// However, this `ReloadConfig` method is on `Application` which holds `ToolManager`.
-			// `Application` DOES NOT hold `ServiceRegistry` directly as a field, but `NewApplication` creates it inside `Run`.
-			// This is an architectural issue: `ReloadConfig` operates on `ToolManager` but `ServiceRegistry` owns the Upstreams.
-			// Ideally, `ReloadConfig` should interact with `ServiceRegistry`.
-			// But `ServiceRegistry` is created in `Run`.
-			// Solution: `ReloadConfig` currently implements a poor-man's reload by re-registering tools.
-			// It leaves the old upstreams (connections) dangling if they were created via `serviceRegistry.RegisterService` inside `Run`.
-			// Actually `Run` iterates `cfg.GetUpstreamServices()` and queues them for `registrationWorker`?
-			// No, `Run` creates `serviceRegistry`, then queues requests to `registrationBus`.
-			// But `ReloadConfig` manually calls `a.UpstreamFactory.NewUpstream`. This is a dual path!
-			// If `ReloadConfig` creates upstreams directly, they are not managed by `ServiceRegistry`?
-			//
-			// Let's look at `Application` struct. It doesn't have `ServiceRegistry`.
-			// And `mcpSrv` (passed to `runServerMode`) has `ServiceRegistry`.
-			//
-			// To fix this properly, we need to access `ServiceRegistry`.
-			// `mcpSrv.ServiceRegistry()` exists.
-			// `a.ToolManager.SetMCPServer(mcpSrv)` is called in `Run`.
-			// The `MCPServerProvider` interface has `ServiceRegistry()`.
-			//
-			// Let's use `a.ToolManager.GetMCPServer().ServiceRegistry()` if possible.
-			// `ToolManager` interface: `SetMCPServer(MCPServerProvider)`.
-			// `MCPServerProvider` interface? Let's check `pkg/tool/interfaces.go` (inferred).
-			// `SetMCPServer` takes `MCPServerProvider`.
-			//
-			// If I can't access `ServiceRegistry` easily, I might stick to the existing approach but it is leaky.
-			// The existing approach in `ReloadConfig` creates NEW upstreams but never shuts down old ones? YES. Memory leak.
-			//
-			// We MUST access ServiceRegistry to shut down old upstreams.
-			// `ToolManager` doesn't seem to expose `GetMCPServer`.
-			//
-			// However, `mcpSrv` calls `SetReloadFunc` which calls `a.ReloadConfig`.
-			// Maybe we can pass `ServiceRegistry` to `ReloadConfig`?
-			// Or store `ServiceRegistry` in `Application` struct.
-			// `Application` is created in `NewApplication`, `ServiceRegistry` in `Run`.
-			// We can store it in `Run`.
-
-			// For now, let's assume we proceed with the current logic (clearing tools) but try to minimize churn.
-			// But we really should fix the leak.
-			//
-			// Let's implement diffing first.
-			a.ToolManager.ClearToolsForService(name)
-			a.ResourceManager.ClearResourcesForService(name)
-			a.PromptManager.ClearPromptsForService(name)
+			if a.serviceRegistry != nil {
+				if err := a.serviceRegistry.UnregisterService(context.Background(), name); err != nil {
+					log.Error("Failed to unregister service", "service", name, "error", err)
+				}
+			} else {
+				// Fallback if ServiceRegistry is not available (e.g. tests without full init)
+				a.ToolManager.ClearToolsForService(name)
+				a.ResourceManager.ClearResourcesForService(name)
+				a.PromptManager.ClearPromptsForService(name)
+			}
 		}
 	}
 
@@ -570,20 +534,31 @@ func (a *Application) ReloadConfig(fs afero.Fs, configPaths []string) error {
 		}
 
 		if needsUpdate {
-			upstream, err := a.UpstreamFactory.NewUpstream(newSvc)
-			if err != nil {
-				log.Error("Failed to get upstream service", "error", err)
-				continue
-			}
-			if upstream != nil {
-				// Note: This still creates a new Upstream instance without explicitly shutting down the old one if it existed.
-				// This confirms the leak hypothesis. Fixing it requires architectural change to expose ServiceRegistry to Application.
-				// Given the constraints, I will implement the diffing logic to reduce impact,
-				// and mark the leak as a known issue or try to fix it if time permits.
-				_, _, _, err = upstream.Register(context.Background(), newSvc, a.ToolManager, a.PromptManager, a.ResourceManager, false)
+			if a.serviceRegistry != nil {
+				// Unregister old version if it exists
+				if err := a.serviceRegistry.UnregisterService(context.Background(), name); err != nil {
+					// We log but continue, hoping to overwrite or register new one
+					log.Warn("Failed to unregister old service version", "service", name, "error", err)
+				}
+				// Register new version
+				// We don't have access to discoveredTools return here easily, but ServiceRegistry logs internally if needed.
+				_, _, _, err := a.serviceRegistry.RegisterService(context.Background(), newSvc)
 				if err != nil {
-					log.Error("Failed to register upstream service", "error", err)
+					log.Error("Failed to register updated service", "service", name, "error", err)
+				}
+			} else {
+				// Fallback logic
+				upstream, err := a.UpstreamFactory.NewUpstream(newSvc)
+				if err != nil {
+					log.Error("Failed to get upstream service", "error", err)
 					continue
+				}
+				if upstream != nil {
+					_, _, _, err = upstream.Register(context.Background(), newSvc, a.ToolManager, a.PromptManager, a.ResourceManager, false)
+					if err != nil {
+						log.Error("Failed to register upstream service", "error", err)
+						continue
+					}
 				}
 			}
 		} else {
