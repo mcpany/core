@@ -484,54 +484,38 @@ func (a *Application) ReloadConfig(fs afero.Fs, configPaths []string) error {
 	for name := range currentServices {
 		if _, exists := newServices[name]; !exists {
 			log.Info("Removing service", "service", name)
-			// TODO: We should probably call Shutdown on the upstream if possible,
-			// but we only have access to ToolManager here which doesn't hold the upstream instance directly?
-			// The UpstreamFactory/Registry handles upstreams.
-			// Wait, if we use ServiceRegistry (which is passed to McpServer), we should probably use that.
-			// However, this `ReloadConfig` method is on `Application` which holds `ToolManager`.
-			// `Application` DOES NOT hold `ServiceRegistry` directly as a field, but `NewApplication` creates it inside `Run`.
-			// This is an architectural issue: `ReloadConfig` operates on `ToolManager` but `ServiceRegistry` owns the Upstreams.
-			// Ideally, `ReloadConfig` should interact with `ServiceRegistry`.
-			// But `ServiceRegistry` is created in `Run`.
-			// Solution: `ReloadConfig` currently implements a poor-man's reload by re-registering tools.
-			// It leaves the old upstreams (connections) dangling if they were created via `serviceRegistry.RegisterService` inside `Run`.
-			// Actually `Run` iterates `cfg.GetUpstreamServices()` and queues them for `registrationWorker`?
-			// No, `Run` creates `serviceRegistry`, then queues requests to `registrationBus`.
-			// But `ReloadConfig` manually calls `a.UpstreamFactory.NewUpstream`. This is a dual path!
-			// If `ReloadConfig` creates upstreams directly, they are not managed by `ServiceRegistry`?
-			//
-			// Let's look at `Application` struct. It doesn't have `ServiceRegistry`.
-			// And `mcpSrv` (passed to `runServerMode`) has `ServiceRegistry`.
-			//
-			// To fix this properly, we need to access `ServiceRegistry`.
-			// `mcpSrv.ServiceRegistry()` exists.
-			// `a.ToolManager.SetMCPServer(mcpSrv)` is called in `Run`.
-			// The `MCPServerProvider` interface has `ServiceRegistry()`.
-			//
-			// Let's use `a.ToolManager.GetMCPServer().ServiceRegistry()` if possible.
-			// `ToolManager` interface: `SetMCPServer(MCPServerProvider)`.
-			// `MCPServerProvider` interface? Let's check `pkg/tool/interfaces.go` (inferred).
-			// `SetMCPServer` takes `MCPServerProvider`.
-			//
-			// If I can't access `ServiceRegistry` easily, I might stick to the existing approach but it is leaky.
-			// The existing approach in `ReloadConfig` creates NEW upstreams but never shuts down old ones? YES. Memory leak.
-			//
-			// We MUST access ServiceRegistry to shut down old upstreams.
-			// `ToolManager` doesn't seem to expose `GetMCPServer`.
-			//
-			// However, `mcpSrv` calls `SetReloadFunc` which calls `a.ReloadConfig`.
-			// Maybe we can pass `ServiceRegistry` to `ReloadConfig`?
-			// Or store `ServiceRegistry` in `Application` struct.
-			// `Application` is created in `NewApplication`, `ServiceRegistry` in `Run`.
-			// We can store it in `Run`.
 
-			// For now, let's assume we proceed with the current logic (clearing tools) but try to minimize churn.
-			// But we really should fix the leak.
-			//
-			// Let's implement diffing first.
+			// Clean up tools, resources, and prompts
 			a.ToolManager.ClearToolsForService(name)
 			a.ResourceManager.ClearResourcesForService(name)
 			a.PromptManager.ClearPromptsForService(name)
+
+			// Shutdown upstream connection pool via UpstreamFactory
+			// Note: This relies on the convention that the service name (or sanitized version)
+			// is used as the pool key. This assumes sanitize(name) is stable.
+			// We should ideally sanitize it here to match registration, but UpstreamFactory handles that?
+			// No, UpstreamFactory.ShutdownUpstream takes the name directly and deregisters it.
+			// However, http.Upstream registers with a SANITIZED name.
+			// "u.poolManager.Register(serviceID, httpPool)" where serviceID = sanitizedName.
+			//
+			// So we must sanitize the name before passing it to ShutdownUpstream,
+			// OR Update ShutdownUpstream to sanitize it.
+			// Since ShutdownUpstream is in factory.go which doesn't seem to import util/sanitize (let's check),
+			// and Register logic is in http.go which DOES sanitize.
+			//
+			// Let's check `http.go` again:
+			// sanitizedName, err := util.SanitizeServiceName(serviceConfig.GetName())
+			// ... u.poolManager.Register(sanitizedName, ...)
+			//
+			// So we need to pass sanitizedName to ShutdownUpstream.
+			sanitizedName, err := util.SanitizeServiceName(name)
+			if err != nil {
+				log.Error("Failed to sanitize service name for shutdown", "service", name, "error", err)
+				continue
+			}
+			if err := a.UpstreamFactory.ShutdownUpstream(sanitizedName); err != nil {
+				log.Error("Failed to shutdown upstream", "service", name, "error", err)
+			}
 		}
 	}
 

@@ -25,6 +25,10 @@ func (m *mockFactory) NewUpstream(config *config_v1.UpstreamServiceConfig) (upst
 	return nil, fmt.Errorf("mock factory: NewUpstreamFunc not set")
 }
 
+func (m *mockFactory) ShutdownUpstream(_ string) error {
+	return nil
+}
+
 func TestReloadConfig_FactoryError(t *testing.T) {
 	fs := afero.NewMemMapFs()
 	app := NewApplication()

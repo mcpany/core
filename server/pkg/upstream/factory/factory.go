@@ -27,6 +27,9 @@ type Factory interface {
 	// NewUpstream creates a new upstream service instance based on the provided
 	// configuration.
 	NewUpstream(config *configv1.UpstreamServiceConfig) (upstream.Upstream, error)
+
+	// ShutdownUpstream shuts down the upstream service with the given name.
+	ShutdownUpstream(serviceName string) error
 }
 
 // UpstreamServiceFactory is a concrete implementation of the Factory interface.
@@ -48,6 +51,13 @@ func NewUpstreamServiceFactory(poolManager *pool.Manager) Factory {
 	return &UpstreamServiceFactory{
 		poolManager: poolManager,
 	}
+}
+
+// ShutdownUpstream shuts down the upstream service with the given name by deregistering
+// its connection pool.
+func (f *UpstreamServiceFactory) ShutdownUpstream(serviceName string) error {
+	f.poolManager.Deregister(serviceName)
+	return nil
 }
 
 // NewUpstream creates and returns an appropriate upstream.Upstream implementation
