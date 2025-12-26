@@ -3338,6 +3338,7 @@ type SemanticCacheConfig struct {
 	xxx_hidden_ApiKey              *SecretValue                         `protobuf:"bytes,3,opt,name=api_key"`
 	xxx_hidden_SimilarityThreshold float32                              `protobuf:"fixed32,4,opt,name=similarity_threshold"`
 	xxx_hidden_ProviderConfig      isSemanticCacheConfig_ProviderConfig `protobuf_oneof:"provider_config"`
+	xxx_hidden_PersistencePath     *string                              `protobuf:"bytes,8,opt,name=persistence_path"`
 	XXX_raceDetectHookData         protoimpl.RaceDetectHookData
 	XXX_presence                   [1]uint32
 	unknownFields                  protoimpl.UnknownFields
@@ -3430,14 +3431,24 @@ func (x *SemanticCacheConfig) GetHttp() *HttpEmbeddingProviderConfig {
 	return nil
 }
 
+func (x *SemanticCacheConfig) GetPersistencePath() string {
+	if x != nil {
+		if x.xxx_hidden_PersistencePath != nil {
+			return *x.xxx_hidden_PersistencePath
+		}
+		return ""
+	}
+	return ""
+}
+
 func (x *SemanticCacheConfig) SetProvider(v string) {
 	x.xxx_hidden_Provider = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 5)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 6)
 }
 
 func (x *SemanticCacheConfig) SetModel(v string) {
 	x.xxx_hidden_Model = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 5)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 6)
 }
 
 func (x *SemanticCacheConfig) SetApiKey(v *SecretValue) {
@@ -3446,7 +3457,7 @@ func (x *SemanticCacheConfig) SetApiKey(v *SecretValue) {
 
 func (x *SemanticCacheConfig) SetSimilarityThreshold(v float32) {
 	x.xxx_hidden_SimilarityThreshold = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 3, 5)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 3, 6)
 }
 
 func (x *SemanticCacheConfig) SetOpenai(v *OpenAIEmbeddingProviderConfig) {
@@ -3471,6 +3482,11 @@ func (x *SemanticCacheConfig) SetHttp(v *HttpEmbeddingProviderConfig) {
 		return
 	}
 	x.xxx_hidden_ProviderConfig = &semanticCacheConfig_Http{v}
+}
+
+func (x *SemanticCacheConfig) SetPersistencePath(v string) {
+	x.xxx_hidden_PersistencePath = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 5, 6)
 }
 
 func (x *SemanticCacheConfig) HasProvider() bool {
@@ -3532,6 +3548,13 @@ func (x *SemanticCacheConfig) HasHttp() bool {
 	return ok
 }
 
+func (x *SemanticCacheConfig) HasPersistencePath() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 5)
+}
+
 func (x *SemanticCacheConfig) ClearProvider() {
 	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
 	x.xxx_hidden_Provider = nil
@@ -3571,6 +3594,11 @@ func (x *SemanticCacheConfig) ClearHttp() {
 	if _, ok := x.xxx_hidden_ProviderConfig.(*semanticCacheConfig_Http); ok {
 		x.xxx_hidden_ProviderConfig = nil
 	}
+}
+
+func (x *SemanticCacheConfig) ClearPersistencePath() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 5)
+	x.xxx_hidden_PersistencePath = nil
 }
 
 const SemanticCacheConfig_ProviderConfig_not_set_case case_SemanticCacheConfig_ProviderConfig = 0
@@ -3613,6 +3641,9 @@ type SemanticCacheConfig_builder struct {
 	Ollama *OllamaEmbeddingProviderConfig
 	Http   *HttpEmbeddingProviderConfig
 	// -- end of xxx_hidden_ProviderConfig
+	// Path to SQLite database file for persistent storage.
+	// If empty, the cache will be in-memory only.
+	PersistencePath *string
 }
 
 func (b0 SemanticCacheConfig_builder) Build() *SemanticCacheConfig {
@@ -3620,16 +3651,16 @@ func (b0 SemanticCacheConfig_builder) Build() *SemanticCacheConfig {
 	b, x := &b0, m0
 	_, _ = b, x
 	if b.Provider != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 5)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 6)
 		x.xxx_hidden_Provider = b.Provider
 	}
 	if b.Model != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 5)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 6)
 		x.xxx_hidden_Model = b.Model
 	}
 	x.xxx_hidden_ApiKey = b.ApiKey
 	if b.SimilarityThreshold != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 3, 5)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 3, 6)
 		x.xxx_hidden_SimilarityThreshold = *b.SimilarityThreshold
 	}
 	if b.Openai != nil {
@@ -3640,6 +3671,10 @@ func (b0 SemanticCacheConfig_builder) Build() *SemanticCacheConfig {
 	}
 	if b.Http != nil {
 		x.xxx_hidden_ProviderConfig = &semanticCacheConfig_Http{b.Http}
+	}
+	if b.PersistencePath != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 5, 6)
+		x.xxx_hidden_PersistencePath = b.PersistencePath
 	}
 	return m0
 }
@@ -4182,7 +4217,7 @@ const file_proto_config_v1_call_proto_rawDesc = "" +
 	"is_enabled\x12+\n" +
 	"\x03ttl\x18\x02 \x01(\v2\x19.google.protobuf.DurationR\x03ttl\x12\x1a\n" +
 	"\bstrategy\x18\x03 \x01(\tR\bstrategy\x12O\n" +
-	"\x0fsemantic_config\x18\x04 \x01(\v2%.mcpany.config.v1.SemanticCacheConfigR\x0fsemantic_config\"\xa2\x03\n" +
+	"\x0fsemantic_config\x18\x04 \x01(\v2%.mcpany.config.v1.SemanticCacheConfigR\x0fsemantic_config\"\xce\x03\n" +
 	"\x13SemanticCacheConfig\x12\x1a\n" +
 	"\bprovider\x18\x01 \x01(\tR\bprovider\x12\x14\n" +
 	"\x05model\x18\x02 \x01(\tR\x05model\x127\n" +
@@ -4190,7 +4225,8 @@ const file_proto_config_v1_call_proto_rawDesc = "" +
 	"\x14similarity_threshold\x18\x04 \x01(\x02R\x14similarity_threshold\x12I\n" +
 	"\x06openai\x18\x05 \x01(\v2/.mcpany.config.v1.OpenAIEmbeddingProviderConfigH\x00R\x06openai\x12I\n" +
 	"\x06ollama\x18\x06 \x01(\v2/.mcpany.config.v1.OllamaEmbeddingProviderConfigH\x00R\x06ollama\x12C\n" +
-	"\x04http\x18\a \x01(\v2-.mcpany.config.v1.HttpEmbeddingProviderConfigH\x00R\x04httpB\x11\n" +
+	"\x04http\x18\a \x01(\v2-.mcpany.config.v1.HttpEmbeddingProviderConfigH\x00R\x04http\x12*\n" +
+	"\x10persistence_path\x18\b \x01(\tR\x10persistence_pathB\x11\n" +
 	"\x0fprovider_config\"n\n" +
 	"\x1dOpenAIEmbeddingProviderConfig\x12\x14\n" +
 	"\x05model\x18\x01 \x01(\tR\x05model\x127\n" +

@@ -198,7 +198,20 @@ func (m *CachingMiddleware) executeSemantic(ctx context.Context, req *tool.Execu
 			return next(ctx, req)
 		}
 
-		newCache := NewSemanticCache(provider, semConfig.GetSimilarityThreshold())
+		var vectorStore VectorStore
+		if persistencePath := semConfig.GetPersistencePath(); persistencePath != "" {
+			var err error
+			vectorStore, err = NewSQLiteVectorStore(persistencePath)
+			if err != nil {
+				logging.GetLogger().Error("Failed to create SQLite vector store", "error", err, "path", persistencePath)
+				// Fallback to in-memory
+				vectorStore = NewSimpleVectorStore()
+			}
+		} else {
+			vectorStore = NewSimpleVectorStore()
+		}
+
+		newCache := NewSemanticCache(provider, vectorStore, semConfig.GetSimilarityThreshold())
 		val, _ = m.semanticCaches.LoadOrStore(serviceID, newCache)
 	}
 

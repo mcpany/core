@@ -33,7 +33,7 @@ func TestSemanticCache(t *testing.T) {
 		},
 	}
 
-	cache := NewSemanticCache(provider, 0.9) // Threshold 0.9
+	cache := NewSemanticCache(provider, nil, 0.9) // Threshold 0.9
 
 	ctx := context.Background()
 	key := "test_tool"
@@ -70,7 +70,7 @@ func TestSemanticCache_Expiry(t *testing.T) {
 		},
 	}
 
-	cache := NewSemanticCache(provider, 0.9)
+	cache := NewSemanticCache(provider, nil, 0.9)
 	ctx := context.Background()
 	key := "test_tool"
 
