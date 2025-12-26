@@ -409,7 +409,15 @@ func (a *Application) Run(
 		allowedIPs = cfg.GetGlobalSettings().GetAllowedIps()
 	}
 
-	return a.runServerMode(ctx, mcpSrv, busProvider, bindAddress, grpcPort, shutdownTimeout, cfg.GetUsers(), cfg.GetGlobalSettings().GetProfileDefinitions(), allowedIPs, cachingMiddleware, sqliteStore, serviceRegistry)
+	// Determine allowed origins for CORS
+	// Default to empty (Strict) to prevent insecure defaults.
+	// If LogLevel is DEBUG, we allow "*" to facilitate local development.
+	var allowedOrigins []string
+	if cfg.GetGlobalSettings().GetLogLevel() == config_v1.GlobalSettings_LOG_LEVEL_DEBUG {
+		allowedOrigins = []string{"*"}
+	}
+
+	return a.runServerMode(ctx, mcpSrv, busProvider, bindAddress, grpcPort, shutdownTimeout, cfg.GetUsers(), cfg.GetGlobalSettings().GetProfileDefinitions(), allowedIPs, allowedOrigins, cachingMiddleware, sqliteStore, serviceRegistry)
 }
 
 // ReloadConfig reloads the configuration from the given paths and updates the
@@ -595,6 +603,7 @@ func (a *Application) runServerMode(
 	users []*config_v1.User,
 	profileDefinitions []*config_v1.ProfileDefinition,
 	allowedIPs []string,
+	allowedOrigins []string,
 	cachingMiddleware *middleware.CachingMiddleware,
 	store *sqlite.Store,
 	serviceRegistry *serviceregistry.ServiceRegistry,
@@ -943,10 +952,16 @@ func (a *Application) runServerMode(
 	// Apply Global Rate Limit: 20 RPS with a burst of 50.
 	// This helps prevent basic DoS attacks on all HTTP endpoints, including /upload.
 	rateLimiter := middleware.NewHTTPRateLimitMiddleware(20, 50)
-	// Middleware order: SecurityHeaders -> IPAllowList -> RateLimit -> Mux
+
+	// Apply CORS Middleware
+	corsMiddleware := middleware.NewHTTPCORSMiddleware(allowedOrigins)
+
+	// Middleware order: SecurityHeaders -> CORS -> IPAllowList -> RateLimit -> Mux
 	handler := middleware.HTTPSecurityHeadersMiddleware(
-		ipMiddleware.Handler(
-			rateLimiter.Handler(mux),
+		corsMiddleware.Handler(
+			ipMiddleware.Handler(
+				rateLimiter.Handler(mux),
+			),
 		),
 	)
 
