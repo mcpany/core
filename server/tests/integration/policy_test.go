@@ -371,11 +371,16 @@ func TestCallPolicyExecution(t *testing.T) {
 }
 
 func TestExportPolicyForPromptsAndResources(t *testing.T) {
+	mockServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+		w.WriteHeader(http.StatusOK)
+	}))
+	defer mockServer.Close()
+
 	config := &configv1.UpstreamServiceConfig{
 		Name: proto.String("export-policy-misc"),
 		ServiceConfig: &configv1.UpstreamServiceConfig_HttpService{
 			HttpService: &configv1.HttpUpstreamService{
-				Address: proto.String("http://localhost:1234"),
+				Address: proto.String(mockServer.URL),
 				Prompts: []*configv1.PromptDefinition{
 					{Name: proto.String("public_prompt")},
 					{Name: proto.String("private_prompt")},

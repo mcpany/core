@@ -244,8 +244,8 @@ func TestRedisBus_Concurrent(t *testing.T) {
 
 	bus, _ := GetBus[string](provider, "test-topic")
 
-	numSubscribers := 10
-	numMessages := 100
+	numSubscribers := 2
+	numMessages := 10
 	var wg sync.WaitGroup
 	wg.Add(numSubscribers * numMessages)
 

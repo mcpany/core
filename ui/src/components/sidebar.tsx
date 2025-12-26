@@ -3,39 +3,107 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+"use client";
 
-import { NavItem } from "./nav-item"
-import { LayoutDashboard, Server, Wrench, Database, MessageSquare, Settings, Activity, GitBranch } from "lucide-react"
-import Link from "next/link"
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { cn } from "@/lib/utils";
+import {
+  LayoutGrid,
+  Layers,
+  Box,
+  Settings,
+  Menu,
+  Home
+} from "lucide-react";
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
 
-export function Sidebar() {
+interface SidebarProps extends React.HTMLAttributes<HTMLDivElement> {}
+
+export function Sidebar({ className }: SidebarProps) {
+  const pathname = usePathname();
+  const [collapsed, setCollapsed] = useState(false);
+
+  const navItems = [
+    {
+      title: "Home",
+      href: "/dashboard", // Assuming we might move Home there, or logic to redirect "/"
+      icon: Home,
+      matches: ["/dashboard", "/"] // Matches "/" too for now
+    },
+    {
+      title: "Stacks",
+      href: "/stacks",
+      icon: Layers,
+      matches: ["/stacks"]
+    },
+    {
+      title: "Services",
+      href: "/services",
+      icon: Box,
+      matches: ["/services"]
+    },
+    {
+      title: "Settings",
+      href: "/settings",
+      icon: Settings,
+      matches: ["/settings"]
+    },
+  ];
+
   return (
-    <div className="hidden border-r bg-muted/40 md:block min-h-screen w-[220px] lg:w-[280px]">
-      <div className="flex h-full max-h-screen flex-col gap-2">
-        <div className="flex h-14 items-center border-b px-4 lg:h-[60px] lg:px-6">
-          <Link href="/" className="flex items-center gap-2 font-semibold">
-            <Activity className="h-6 w-6 text-primary" />
-            <span className="">MCP Any</span>
-          </Link>
+    <div className={cn("pb-12 bg-sidebar-background text-sidebar-foreground transition-all duration-300 border-r border-border/10", collapsed ? "w-16" : "w-64", className)}>
+      <div className="space-y-4 py-4">
+        <div className="px-4 py-3 flex items-center justify-between">
+          {!collapsed && (
+             <div className="flex items-center gap-3 font-semibold text-lg tracking-tight">
+                <div className="bg-primary/20 p-2 rounded-lg">
+                    <LayoutGrid className="h-5 w-5 text-primary" />
+                </div>
+                <span>MCP Any</span>
+             </div>
+          )}
+           {collapsed && (
+             <div className="mx-auto bg-primary/20 p-2 rounded-lg">
+                <LayoutGrid className="h-5 w-5 text-primary" />
+             </div>
+           )}
         </div>
-        <div className="flex-1">
-          <nav className="grid items-start px-2 text-sm font-medium lg:px-4">
-            <NavItem href="/" icon={LayoutDashboard} title="Dashboard" isActive={true} />
-            <NavItem href="/services" icon={Server} title="Services" />
-            <NavItem href="/tools" icon={Wrench} title="Tools" />
-            <NavItem href="/resources" icon={Database} title="Resources" />
-            <NavItem href="/prompts" icon={MessageSquare} title="Prompts" />
-            <div className="my-2 border-t" />
-             <NavItem href="/middleware" icon={GitBranch} title="Middleware" />
-            <NavItem href="/settings" icon={Settings} title="Settings" />
-          </nav>
-        </div>
-        <div className="mt-auto p-4">
-            <div className="text-xs text-muted-foreground text-center">
-                v1.0.0
-            </div>
+        <div className="px-3 py-2">
+          <div className="space-y-1">
+            {navItems.map((item) => {
+               const isActive = item.matches.some(m => pathname === m || (m !== '/' && pathname.startsWith(m)));
+               return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={cn(
+                    "flex items-center rounded-lg px-3 py-2.5 text-sm font-medium transition-all group relative",
+                    isActive ? "text-primary bg-primary/10" : "text-muted-foreground hover:text-foreground hover:bg-white/5",
+                    collapsed ? "justify-center" : "justify-start"
+                  )}
+                  title={item.title}
+                >
+                  {isActive && !collapsed && <div className="absolute left-0 top-1/2 -translate-y-1/2 h-8 w-1 bg-primary rounded-r-md" />}
+                  <item.icon className={cn("h-5 w-5", collapsed ? "mr-0" : "mr-3")} />
+                  {!collapsed && <span>{item.title}</span>}
+                </Link>
+              );
+            })}
+          </div>
         </div>
       </div>
+       <div className="absolute bottom-4 left-0 right-0 px-3">
+            <Button
+                variant="ghost"
+                size="icon"
+                className="w-full text-muted-foreground hover:text-foreground hover:bg-white/5"
+                onClick={() => setCollapsed(!collapsed)}
+            >
+                <Menu className="h-5 w-5" />
+            </Button>
+       </div>
     </div>
-  )
+  );
 }

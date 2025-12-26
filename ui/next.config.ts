@@ -36,6 +36,19 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  experimental: {
+    turbopack: {
+      resolveAlias: {
+        'canvas': './empty-module.ts',
+      },
+      rules: {
+        '*.node': {
+          loaders: ['node-loader'],
+          as: '*.js',
+        },
+      },
+    },
+  },
 };
 
 export default nextConfig;

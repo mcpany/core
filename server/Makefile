@@ -391,11 +391,13 @@ build-mock-server: gen
 	@$(GO_CMD) build $(LDFLAGS) -buildvcs=false -o $(BUILD_DIR)/bin/mock_server ./cmd/mock_mcp_server
 
 ifdef SHOULD_PROXY_TO_DOCKER
-test:
+test-server:
 	@$(DOCKER_PROXY_CMD) test
 else
-test: test-fast e2e-local test-public-api
+test-server: test-fast e2e-local test-public-api
 endif
+
+test: test-server test-ui
 
 COVERAGE_FILE ?= coverage.out
 
@@ -414,7 +416,10 @@ e2e-sequential: build build-examples build-e2e-mocks build-e2e-timeserver-docker
 
 test-fast: build build-examples build-e2e-mocks build-e2e-timeserver-docker
 	@echo "Running fast Go tests locally with a 300s timeout..."
-	@GEMINI_API_KEY=$(GEMINI_API_KEY) MCPANY_DEBUG=true CGO_ENABLED=1 USE_SUDO_FOR_DOCKER=$(NEEDS_SUDO_FOR_DOCKER) $(GO_CMD) test -race -count=1 -timeout 300s -cover -coverprofile=$(COVERAGE_FILE) $(shell go list ./cmd/... ./pkg/... ./proto/... ./tests/... ./examples/upstream_service_demo/... | grep -v /tests/public_api | grep -v /build | grep -v /tests/e2e | grep -v /tests/e2e_sequential | grep -v "^github.com/mcpany/core$$")
+	@TEST_PKGS=$$(go list ./cmd/... ./pkg/... ./proto/... ./tests/... ./examples/upstream_service_demo/... | grep -v /tests/public_api | grep -v /build | grep -v /tests/e2e | grep -v /tests/e2e_sequential | grep -v "^github.com/mcpany/core$$"); \
+	echo "Testing packages: $$TEST_PKGS"; \
+	if [ -z "$$TEST_PKGS" ]; then echo "No packages to test!"; exit 1; fi; \
+	GEMINI_API_KEY=$(GEMINI_API_KEY) MCPANY_DEBUG=true CGO_ENABLED=1 USE_SUDO_FOR_DOCKER=$(NEEDS_SUDO_FOR_DOCKER) $(GO_CMD) test -race -count=1 -timeout 300s -cover -coverprofile=$(COVERAGE_FILE) $$TEST_PKGS
 
 .PHONY: test-public-api
 test-public-api: build build-mock-server
@@ -453,8 +458,9 @@ build-ui:
 
 .PHONY: test-ui
 test-ui:
-	@echo "Running UI tests..."
-	@cd ../ui && mkdir -p .next/standalone/.next && cp -r .next/static .next/standalone/.next/ && (cp -r public .next/standalone/ || true) && npx playwright test
+	@echo "Running UI tests (Playwright)..."
+	@cd ../ui && npm install && npx playwright test
+
 
 .PHONY: e2e
 e2e: e2e-local
@@ -472,7 +478,7 @@ else
 	export GOLANGCI_LINT_CACHE=$(BUILD_DIR)/.cache/golangci-lint && \
 	export GOWORK=off && \
 	$(GOLANGCI_LINT_BIN) run --fix ./cmd/... ./pkg/... ./tests/... ./examples/... && \
-	pre-commit run --all-files
+	cd .. && pre-commit run --config server/.pre-commit-config.yaml --all-files
 endif
 
 clean-pre-commit:
@@ -620,7 +626,7 @@ ifdef HAS_DOCKER
 	@$(DOCKER_BUILD_CMD) -t mcpany-ui -f ../ui/Dockerfile ../ui
 	@echo "Running UI smoke test..."
 	@chmod +x tests/smoke_test_ui.sh
-	@./tests/smoke_test_ui.sh mcpany-ui
+	@./tests/smoke_test_ui.sh mcpany-ui 3333
 else
 	@echo "Docker not found. Cannot run UI smoke test."
 	@exit 1

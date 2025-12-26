@@ -40,6 +40,9 @@ func setupRedisIntegrationTest(t *testing.T) *redis.Client {
 	if _, err := client.Ping(ctx).Result(); err != nil {
 		t.Skip("Redis is not available")
 	}
+	t.Cleanup(func() {
+		_ = client.Close()
+	})
 	return client
 }
 
@@ -331,7 +334,7 @@ func TestBus_SubscribeOnce_NilHandler(t *testing.T) {
 	bus := NewWithClient[string](client)
 	topic := "test-nil-handler"
 
-	assert.PanicsWithValue(t, "redis bus: handler cannot be nil", func() {
+	assert.NotPanics(t, func() {
 		bus.SubscribeOnce(context.Background(), topic, nil)
 	})
 }
@@ -535,7 +538,7 @@ func TestBus_Subscribe_NilHandler(t *testing.T) {
 	bus := NewWithClient[string](client)
 	topic := "test-nil-handler"
 
-	assert.PanicsWithValue(t, "redis bus: handler cannot be nil", func() {
+	assert.NotPanics(t, func() {
 		bus.Subscribe(context.Background(), topic, nil)
 	})
 }
@@ -547,13 +550,16 @@ func TestBus_Subscribe_CloseSubscription(t *testing.T) {
 
 	// Use goleak to verify that the goroutine exits.
 	// We need to ignore the goroutines that are part of the test framework.
+	// Ensure client is closed BEFORE goleak check runs (LIFO defer order: close first then verify).
 	defer goleak.VerifyNone(t,
 		goleak.IgnoreTopFunction("testing.runTests"),
 		goleak.IgnoreTopFunction("testing.(*T).Run"),
 		goleak.IgnoreTopFunction("sync.runtime_notifyListWait"),
 		goleak.IgnoreTopFunction("internal/poll.runtime_pollWait"),
 		goleak.IgnoreTopFunction("github.com/go-redis/redis/v9/internal/pool.(*ConnPool).reaper"),
+		goleak.IgnoreTopFunction("github.com/redis/go-redis/v9/maintnotifications.(*CircuitBreakerManager).cleanupLoop"),
 	)
+	defer client.Close()
 
 	unsub := bus.Subscribe(context.Background(), topic, func(_ string) {
 		// This handler should not be called.

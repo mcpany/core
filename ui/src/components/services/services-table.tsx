@@ -3,7 +3,6 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-
 "use client";
 
 import {
@@ -17,7 +16,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
-import { MoreHorizontal, Settings, Trash } from "lucide-react";
+import { MoreHorizontal, Settings, Trash, RefreshCw } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -26,18 +25,21 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { mockServices } from "@/lib/mock-data";
-import { useState } from "react";
 import Link from "next/link";
+import { UpstreamServiceConfig } from "@/lib/types";
 
-export function ServicesTable() {
-  const [services, setServices] = useState(mockServices);
+interface ServicesTableProps {
+    services: UpstreamServiceConfig[];
+    loading: boolean;
+    onToggle: (service: UpstreamServiceConfig) => void;
+    onDelete: (service: UpstreamServiceConfig) => void;
+}
 
-  const toggleService = (id: string) => {
-    setServices(services.map(s =>
-      s.id === id ? { ...s, disable: !s.disable } : s
-    ));
-  };
+export function ServicesTable({ services, loading, onToggle, onDelete }: ServicesTableProps) {
+  console.log('ServicesTable Services:', JSON.stringify(services, null, 2));
+  if (loading) {
+      return <div className="p-4 text-center text-muted-foreground">Loading services...</div>;
+  }
 
   return (
     <div className="rounded-md border">
@@ -53,31 +55,41 @@ export function ServicesTable() {
           </TableRow>
         </TableHeader>
         <TableBody>
+          {services.length === 0 && (
+              <TableRow>
+                  <TableCell colSpan={6} className="text-center h-24 text-muted-foreground">
+                      No services registered.
+                  </TableCell>
+              </TableRow>
+          )}
           {services.map((service) => (
-            <TableRow key={service.id}>
+            <TableRow key={service.id || service.name}>
               <TableCell className="font-medium">
-                <Link href={`/services/${service.id}`} className="hover:underline">
+                <Link href={`/services/${service.name}`} className="hover:underline">
                     {service.name}
                 </Link>
               </TableCell>
               <TableCell>
                 <Badge variant="outline">
-                    {service.serviceConfig?.case?.replace('Service', '') || 'Unknown'}
+                    {service.grpc_service ? "gRPC" :
+                     service.http_service ? "HTTP" :
+                     service.command_line_service ? "CMD" :
+                     service.openapi_service ? "OpenAPI" : "Unknown"}
                 </Badge>
               </TableCell>
-              <TableCell>{service.version}</TableCell>
+              <TableCell>{service.version || '-'}</TableCell>
               <TableCell>
                 <div className="flex items-center space-x-2">
                     <Switch
                         checked={!service.disable}
-                        onCheckedChange={() => toggleService(service.id)}
+                        onCheckedChange={() => onToggle(service)}
                     />
                     <span className="text-sm text-muted-foreground">
                         {!service.disable ? 'Enabled' : 'Disabled'}
                     </span>
                 </div>
               </TableCell>
-              <TableCell>{service.priority}</TableCell>
+              <TableCell>{service.priority || 0}</TableCell>
               <TableCell className="text-right">
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
@@ -92,7 +104,7 @@ export function ServicesTable() {
                       <Settings className="mr-2 h-4 w-4" /> Configure
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
-                    <DropdownMenuItem className="text-red-600">
+                    <DropdownMenuItem className="text-red-600" onClick={() => onDelete(service)}>
                       <Trash className="mr-2 h-4 w-4" /> Delete
                     </DropdownMenuItem>
                   </DropdownMenuContent>
