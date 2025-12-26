@@ -17,6 +17,8 @@ import (
 
 // EmbeddingProvider defines the interface for fetching text embeddings.
 type EmbeddingProvider interface {
+	// Embed generates an embedding vector for the given text.
+	// It returns the embedding as a slice of float32 and any error encountered.
 	Embed(ctx context.Context, text string) ([]float32, error)
 }
 
@@ -67,13 +69,20 @@ type SimpleVectorStore struct {
 	maxEntries int
 }
 
+// VectorEntry represents a single entry in the vector store.
 type VectorEntry struct {
-	Vector    []float32
-	Result    any
+	// Vector is the embedding vector.
+	Vector []float32
+	// Result is the cached result associated with the vector.
+	Result any
+	// ExpiresAt is the timestamp when this entry expires.
 	ExpiresAt time.Time
-	Norm      float32
+	// Norm is the precomputed Euclidean norm of the vector.
+	Norm float32
 }
 
+// NewSimpleVectorStore creates a new SimpleVectorStore.
+// It initializes the store with a default configuration.
 func NewSimpleVectorStore() *SimpleVectorStore {
 	return &SimpleVectorStore{
 		items:      make(map[string][]*VectorEntry),
@@ -81,6 +90,8 @@ func NewSimpleVectorStore() *SimpleVectorStore {
 	}
 }
 
+// Add adds a new entry to the vector store.
+// It evicts the oldest entry if the store exceeds the maximum number of entries for the key.
 func (s *SimpleVectorStore) Add(key string, vector []float32, result any, ttl time.Duration) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -102,6 +113,8 @@ func (s *SimpleVectorStore) Add(key string, vector []float32, result any, ttl ti
 	s.items[key] = append(entries, entry)
 }
 
+// Search searches for the most similar entry in the vector store for the given key and query vector.
+// It returns the result, the similarity score, and a boolean indicating if a match was found.
 func (s *SimpleVectorStore) Search(key string, query []float32) (any, float32, bool) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
@@ -186,6 +199,8 @@ type OpenAIEmbeddingProvider struct {
 	client  *http.Client
 }
 
+// NewOpenAIEmbeddingProvider creates a new OpenAIEmbeddingProvider.
+// It accepts an API key and a model name (defaults to "text-embedding-3-small" if empty).
 func NewOpenAIEmbeddingProvider(apiKey, model string) *OpenAIEmbeddingProvider {
 	if model == "" {
 		model = "text-embedding-3-small"
@@ -213,6 +228,8 @@ type openAIEmbeddingResponse struct {
 	} `json:"error,omitempty"`
 }
 
+// Embed generates an embedding vector for the given text using the OpenAI API.
+// It returns the embedding as a slice of float32 and any error encountered.
 func (p *OpenAIEmbeddingProvider) Embed(ctx context.Context, text string) ([]float32, error) {
 	reqBody := openAIEmbeddingRequest{
 		Input:          text,
