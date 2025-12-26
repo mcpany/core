@@ -473,6 +473,8 @@ type fsCallable struct {
 	handler func(args map[string]interface{}) (map[string]interface{}, error)
 }
 
+// Call executes the filesystem tool with the provided request arguments.
+// It returns the result of the tool execution or an error.
 func (c *fsCallable) Call(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
 	return c.handler(req.Arguments)
 }
