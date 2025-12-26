@@ -486,3 +486,171 @@ func TestCachingMiddleware_SemanticCache(t *testing.T) {
 	assert.Equal(t, successResult, res2)
 	assert.Equal(t, 1, testTool.executeCount, "Should be semantic cache hit")
 }
+
+func TestCachingMiddleware_Execute_NextError(t *testing.T) {
+	tm := &mockToolManager{}
+	cacheMiddleware := middleware.NewCachingMiddleware(tm)
+
+	testTool := &mockTool{
+		tool: v1.Tool_builder{
+			Name:      proto.String(testToolName),
+			ServiceId: proto.String(testServiceName),
+		}.Build(),
+		cacheConfig: configv1.CacheConfig_builder{
+			IsEnabled: proto.Bool(true),
+			Ttl:       durationpb.New(1 * time.Hour),
+		}.Build(),
+	}
+
+	req := &tool.ExecutionRequest{ToolName: testServiceToolName}
+	ctx := tool.NewContextWithTool(context.Background(), testTool)
+	expectedErr := assert.AnError
+	nextFunc := func(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
+		return nil, expectedErr
+	}
+
+	_, err := cacheMiddleware.Execute(ctx, req, nextFunc)
+	assert.ErrorIs(t, err, expectedErr)
+}
+
+func TestCachingMiddleware_ExecuteSemantic_NextError(t *testing.T) {
+	tm := &mockToolManager{}
+	cacheMiddleware := middleware.NewCachingMiddleware(tm)
+
+	mockFactory := &MockProviderFactory{
+		embeddings: map[string][]float32{},
+	}
+	cacheMiddleware.SetProviderFactory(mockFactory.Create)
+
+	testTool := &mockTool{
+		tool: v1.Tool_builder{
+			Name:      proto.String(testToolName),
+			ServiceId: proto.String(testServiceName),
+		}.Build(),
+		cacheConfig: configv1.CacheConfig_builder{
+			IsEnabled: proto.Bool(true),
+			Strategy:  proto.String("semantic"),
+			SemanticConfig: configv1.SemanticCacheConfig_builder{
+				Provider: proto.String("openai"),
+			}.Build(),
+			Ttl: durationpb.New(1 * time.Hour),
+		}.Build(),
+	}
+
+	req := &tool.ExecutionRequest{ToolName: testServiceToolName}
+	ctx := tool.NewContextWithTool(context.Background(), testTool)
+	expectedErr := assert.AnError
+	nextFunc := func(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
+		return nil, expectedErr
+	}
+
+	_, err := cacheMiddleware.Execute(ctx, req, nextFunc)
+	assert.ErrorIs(t, err, expectedErr)
+}
+
+func TestCachingMiddleware_ExecuteSemantic_NoSemanticConfig(t *testing.T) {
+	tm := &mockToolManager{}
+	cacheMiddleware := middleware.NewCachingMiddleware(tm)
+
+	testTool := &mockTool{
+		tool: v1.Tool_builder{
+			Name:      proto.String(testToolName),
+			ServiceId: proto.String(testServiceName),
+		}.Build(),
+		cacheConfig: configv1.CacheConfig_builder{
+			IsEnabled: proto.Bool(true),
+			Strategy:  proto.String("semantic"),
+			SemanticConfig: nil, // Intentionally nil
+		}.Build(),
+	}
+
+	req := &tool.ExecutionRequest{ToolName: testServiceToolName}
+	ctx := tool.NewContextWithTool(context.Background(), testTool)
+	nextFunc := func(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
+		return successResult, nil
+	}
+
+	res, err := cacheMiddleware.Execute(ctx, req, nextFunc)
+	require.NoError(t, err)
+	assert.Equal(t, successResult, res)
+}
+
+func TestCachingMiddleware_ExecuteSemantic_ResolveSecretError(t *testing.T) {
+	tm := &mockToolManager{}
+	cacheMiddleware := middleware.NewCachingMiddleware(tm)
+
+	testTool := &mockTool{
+		tool: v1.Tool_builder{
+			Name:      proto.String(testToolName),
+			ServiceId: proto.String(testServiceName),
+		}.Build(),
+		cacheConfig: configv1.CacheConfig_builder{
+			IsEnabled: proto.Bool(true),
+			Strategy:  proto.String("semantic"),
+			SemanticConfig: configv1.SemanticCacheConfig_builder{
+				ApiKey: configv1.SecretValue_builder{
+					EnvironmentVariable: proto.String("NON_EXISTENT_ENV_VAR_FOR_TESTING_12345"),
+				}.Build(),
+				Provider: proto.String("openai"),
+			}.Build(),
+		}.Build(),
+	}
+
+	req := &tool.ExecutionRequest{ToolName: testServiceToolName}
+	ctx := tool.NewContextWithTool(context.Background(), testTool)
+	nextFunc := func(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
+		return successResult, nil
+	}
+
+	// Should fallback to next() on secret resolution error
+	// Note: We assume ResolveSecret returns an error for non-existent env var if configured strictly,
+	// but here we just rely on the fact that if it returns empty or error, the flow might continue or log error.
+	// Actually ResolveSecret returns empty string if env var not found, unless we can force an error.
+	// Let's use a file path that doesn't exist to force error.
+
+	testTool.cacheConfig.SemanticConfig.ApiKey = &configv1.SecretValue{
+		Value: &configv1.SecretValue_FilePath{
+			FilePath: "/non/existent/file",
+		},
+	}
+
+	res, err := cacheMiddleware.Execute(ctx, req, nextFunc)
+	require.NoError(t, err)
+	assert.Equal(t, successResult, res)
+}
+
+func TestCachingMiddleware_ExecuteSemantic_FactoryError(t *testing.T) {
+	tm := &mockToolManager{}
+	cacheMiddleware := middleware.NewCachingMiddleware(tm)
+
+	// Factory that returns error
+	factory := func(config *configv1.SemanticCacheConfig, apiKey string) (middleware.EmbeddingProvider, error) {
+		return nil, assert.AnError
+	}
+	cacheMiddleware.SetProviderFactory(factory)
+
+	testTool := &mockTool{
+		tool: v1.Tool_builder{
+			Name:      proto.String(testToolName),
+			ServiceId: proto.String(testServiceName),
+		}.Build(),
+		cacheConfig: configv1.CacheConfig_builder{
+			IsEnabled: proto.Bool(true),
+			Strategy:  proto.String("semantic"),
+			SemanticConfig: configv1.SemanticCacheConfig_builder{
+				Provider: proto.String("openai"),
+			}.Build(),
+		}.Build(),
+	}
+
+	req := &tool.ExecutionRequest{ToolName: testServiceToolName}
+	ctx := tool.NewContextWithTool(context.Background(), testTool)
+	nextFunc := func(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
+		return successResult, nil
+	}
+
+	// Should fallback to next() on factory error
+	res, err := cacheMiddleware.Execute(ctx, req, nextFunc)
+	require.NoError(t, err)
+	assert.Equal(t, successResult, res)
+}

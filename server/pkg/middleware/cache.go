@@ -47,15 +47,15 @@ func NewCachingMiddleware(toolManager tool.ManagerInterface) *CachingMiddleware 
 			if conf.GetOpenai() != nil {
 				openaiConf := conf.GetOpenai()
 				key := apiKey
-				if key == "" {
-					// Fallback to config provided key if not resolved
-					// Note: resolving happens outside usually, but here apiKey is passed resolved.
-					// Ideally we resolve here again if needed?
-					// The apiKey arg is resolved from semConfig.GetApiKey() which is deprecated.
-					// We should resolve from openaiConf.GetApiKey() if present.
-					// But executeSemantic resolves before calling factory.
-					// Let's rely on caller or handle deprecated path.
-				}
+				// if key == "" {
+				// 	// Fallback to config provided key if not resolved
+				// 	// Note: resolving happens outside usually, but here apiKey is passed resolved.
+				// 	// Ideally we resolve here again if needed?
+				// 	// The apiKey arg is resolved from semConfig.GetApiKey() which is deprecated.
+				// 	// We should resolve from openaiConf.GetApiKey() if present.
+				// 	// But executeSemantic resolves before calling factory.
+				// 	// Let's rely on caller or handle deprecated path.
+				// }
 				return NewOpenAIEmbeddingProvider(key, openaiConf.GetModel()), nil
 			}
 			if conf.GetOllama() != nil {
