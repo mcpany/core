@@ -1,25 +1,23 @@
-# Copyright 2025 Author(s) of MCP Any
-# SPDX-License-Identifier: Apache-2.0
-
-
 from playwright.sync_api import Page, expect, sync_playwright
 
 def verify_dashboard(page: Page):
-    print("Navigating to Dashboard...")
-    page.goto("http://localhost:9002")
+  # 1. Go to dashboard
+  page.goto("http://localhost:9002")
 
-    print("Verifying Dashboard elements...")
-    expect(page.get_by_text("Total Requests")).to_be_visible()
-    expect(page.get_by_text("Service Health")).to_be_visible()
+  # 2. Assert dashboard title is visible
+  expect(page.get_by_role("heading", name="Dashboard")).to_be_visible()
 
-    print("Taking screenshot...")
-    page.screenshot(path="verification/dashboard_verified.png", full_page=True)
+  # 3. Assert metrics are visible (assuming mock data loads)
+  expect(page.get_by_text("Total Requests")).to_be_visible()
+
+  # 4. Take screenshot
+  page.screenshot(path="verification/dashboard_verify.png")
 
 if __name__ == "__main__":
-    with sync_playwright() as p:
-        browser = p.chromium.launch(headless=True)
-        page = browser.new_page()
-        try:
-            verify_dashboard(page)
-        finally:
-            browser.close()
+  with sync_playwright() as p:
+    browser = p.chromium.launch(headless=True)
+    page = browser.new_page()
+    try:
+      verify_dashboard(page)
+    finally:
+      browser.close()

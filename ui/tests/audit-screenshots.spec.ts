@@ -7,7 +7,9 @@
 import { test, expect } from '@playwright/test';
 import path from 'path';
 
-const AUDIT_DIR = path.join(__dirname, '../.audit/ui/2025-05-15');
+// Use current date for audit directory
+const date = new Date().toISOString().split('T')[0];
+const AUDIT_DIR = path.join(__dirname, `../.audit/ui/${date}`);
 
 test.describe('Audit Screenshots', () => {
 
@@ -29,14 +31,32 @@ test.describe('Audit Screenshots', () => {
     await page.screenshot({ path: path.join(AUDIT_DIR, 'tools.png'), fullPage: true });
   });
 
+  test('Capture Resources', async ({ page }) => {
+    await page.goto('/resources');
+    await page.waitForLoadState('networkidle');
+    await page.screenshot({ path: path.join(AUDIT_DIR, 'resources.png'), fullPage: true });
+  });
+
+  test('Capture Prompts', async ({ page }) => {
+    await page.goto('/prompts');
+    await page.waitForLoadState('networkidle');
+    await page.screenshot({ path: path.join(AUDIT_DIR, 'prompts.png'), fullPage: true });
+  });
+
+  test('Capture Profiles', async ({ page }) => {
+    await page.goto('/dashboard/profiles');
+    await page.waitForLoadState('networkidle');
+    await page.screenshot({ path: path.join(AUDIT_DIR, 'profiles.png'), fullPage: true });
+  });
+
   test('Capture Middleware', async ({ page }) => {
-    await page.goto('/middleware');
+    await page.goto('/dashboard/middleware');
     await page.waitForLoadState('networkidle');
     await page.screenshot({ path: path.join(AUDIT_DIR, 'middleware.png'), fullPage: true });
   });
 
     test('Capture Webhooks', async ({ page }) => {
-    await page.goto('/webhooks');
+    await page.goto('/dashboard/webhooks');
     await page.waitForLoadState('networkidle');
     await page.screenshot({ path: path.join(AUDIT_DIR, 'webhooks.png'), fullPage: true });
   });

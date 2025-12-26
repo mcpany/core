@@ -13,6 +13,9 @@ import {
   Wrench,
   Bot,
   Settings,
+  Users,
+  Workflow,
+  Webhook
 } from "lucide-react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
@@ -41,19 +44,9 @@ const items = [
     icon: Server,
   },
   {
-    title: "Logs",
-    url: "/logs",
-    icon: Terminal,
-  },
-  {
-    title: "Playground",
-    url: "/playground",
-    icon: Bot,
-  },
-  {
-    title: "Prompts",
-    url: "/prompts",
-    icon: Terminal,
+    title: "Tools",
+    url: "/tools",
+    icon: Wrench,
   },
   {
     title: "Resources",
@@ -61,9 +54,34 @@ const items = [
     icon: FileText,
   },
   {
-    title: "Tools",
-    url: "/tools",
-    icon: Wrench,
+    title: "Prompts",
+    url: "/prompts",
+    icon: Terminal,
+  },
+  {
+    title: "Profiles",
+    url: "/dashboard/profiles",
+    icon: Users,
+  },
+  {
+    title: "Middleware",
+    url: "/dashboard/middleware",
+    icon: Workflow,
+  },
+  {
+    title: "Webhooks",
+    url: "/dashboard/webhooks",
+    icon: Webhook,
+  },
+  {
+    title: "Playground",
+    url: "/playground",
+    icon: Bot,
+  },
+  {
+    title: "Logs",
+    url: "/logs",
+    icon: Terminal,
   },
   {
     title: "Settings",
