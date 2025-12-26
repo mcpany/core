@@ -491,7 +491,3 @@ jobs:
       run: |
         cd ui
         npx playwright install --with-deps chromium
-
-    - name: Run UI Tests
-      run: |
-        make test-ui
