@@ -6,6 +6,7 @@ package tool
 import (
 	"bytes"
 	"context"
+	"encoding/base64"
 	"encoding/json"
 	"io"
 	"net/http"
@@ -32,10 +33,11 @@ func TestNewWebhookHook(t *testing.T) {
 func TestSigningRoundTripper_RoundTrip(t *testing.T) {
 	// "secret" in base64 is c2VjcmV0, but specific library might require more.
 	// "test-secret-valid-base64" -> "dGVzdC1zZWNyZXQtdmFsaWQtYmFzZTY0"
-	validSecret := "dGVzdC1zZWNyZXQtdmFsaWQtYmFzZTY0" //nolint:gosec
+	validSecret := "test-secret-valid-base64"
+	encodedSecret := base64.StdEncoding.EncodeToString([]byte(validSecret))
 	config := &configv1.WebhookConfig{
 		Url:           "http://example.com",
-		WebhookSecret: validSecret,
+		WebhookSecret: encodedSecret,
 	}
 	hook := NewWebhookHook(config)
 
@@ -61,7 +63,11 @@ func TestSigningRoundTripper_RoundTrip(t *testing.T) {
 
 	resp, err := rt.RoundTrip(req)
 	if err == nil {
-		defer resp.Body.Close() //nolint:errcheck
+		defer func() {
+			if err := resp.Body.Close(); err != nil {
+				t.Logf("failed to close response body: %v", err)
+			}
+		}()
 	}
 	require.NoError(t, err)
 	assert.Equal(t, 200, resp.StatusCode)
@@ -90,7 +96,9 @@ func TestWebhookHook_ExecutePre(t *testing.T) {
 		data := map[string]any{
 			"allowed": true,
 		}
-		_ = json.NewEncoder(w).Encode(data)
+		if err := json.NewEncoder(w).Encode(data); err != nil {
+			t.Logf("failed to encode response: %v", err)
+		}
 	}))
 	defer server.Close()
 

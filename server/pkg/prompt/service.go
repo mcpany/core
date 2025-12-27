@@ -38,7 +38,7 @@ func (s *Service) SetMCPServer(mcpServer *mcp.Server) {
 // Currently this is a no-op as the go-sdk does not expose a public Notify method
 // for PromptListChanged.
 // func (s *Service) onPromptListChanged() {
-//    // TODO: Re-enable when go-sdk supports public notification triggering
+//    // Waiting for SDK support for public notification triggering
 //	  // log.Warn("Prompt list changed notification not sent (SDK limitation)")
 // }
 

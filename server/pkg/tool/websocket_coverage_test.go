@@ -29,14 +29,21 @@ func TestWebsocketTool_Execute_Success(t *testing.T) {
 		if err != nil {
 			return
 		}
-		defer c.Close() //nolint:errcheck
+		defer func() {
+			if err := c.Close(); err != nil {
+				t.Logf("failed to close connection: %v", err)
+			}
+		}()
 		for {
 			mt, message, err := c.ReadMessage()
 			if err != nil {
 				break
 			}
 			// Echo back
-			_ = c.WriteMessage(mt, message)
+			if err := c.WriteMessage(mt, message); err != nil {
+				t.Logf("failed to write message: %v", err)
+				break
+			}
 		}
 	}))
 	defer s.Close()
@@ -45,7 +52,11 @@ func TestWebsocketTool_Execute_Success(t *testing.T) {
 		url := "ws" + strings.TrimPrefix(s.URL, "http")
 		c, resp, err := websocket.DefaultDialer.Dial(url, nil)
 		if resp != nil {
-			defer resp.Body.Close() //nolint:errcheck
+			defer func() {
+				if err := resp.Body.Close(); err != nil {
+					t.Logf("failed to close response body: %v", err)
+				}
+			}()
 		}
 		if err != nil {
 			return nil, err
@@ -55,7 +66,11 @@ func TestWebsocketTool_Execute_Success(t *testing.T) {
 
 	p, err := pool.New(factory, 1, 1, 0, false)
 	require.NoError(t, err)
-	defer p.Close() //nolint:errcheck
+	defer func() {
+		if err := p.Close(); err != nil {
+			t.Logf("failed to close pool: %v", err)
+		}
+	}()
 
 	pm := pool.NewManager()
 	pm.Register("s1", p)
@@ -129,13 +144,17 @@ func TestWebsocketTool_Execute_WriteError(t *testing.T) {
 		url := "ws" + strings.TrimPrefix(s.URL, "http")
 		c, resp, err := websocket.DefaultDialer.Dial(url, nil)
 		if resp != nil {
-			defer resp.Body.Close() //nolint:errcheck
+			defer func() {
+				_ = resp.Body.Close()
+			}()
 		}
 		return &client.WebsocketClientWrapper{Conn: c}, err
 	}
 	p, err := pool.New(factory, 1, 1, 0, true)
 	require.NoError(t, err)
-	defer p.Close() //nolint:errcheck
+	defer func() {
+		_ = p.Close()
+	}()
 
 	pm := pool.NewManager()
 	pm.Register("s3", p)
@@ -156,7 +175,9 @@ func TestWebsocketTool_Execute_Transformer(t *testing.T) {
 	upgrader := websocket.Upgrader{}
 	s := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		c, _ := upgrader.Upgrade(w, r, nil)
-		defer c.Close() //nolint:errcheck
+		defer func() {
+			_ = c.Close()
+		}()
 		_, _, _ = c.ReadMessage()
 		_ = c.WriteMessage(websocket.TextMessage, []byte(`raw text response`))
 	}))
@@ -166,12 +187,16 @@ func TestWebsocketTool_Execute_Transformer(t *testing.T) {
 		url := "ws" + strings.TrimPrefix(s.URL, "http")
 		c, resp, err := websocket.DefaultDialer.Dial(url, nil)
 		if resp != nil {
-			defer resp.Body.Close() //nolint:errcheck
+			defer func() {
+				_ = resp.Body.Close()
+			}()
 		}
 		return &client.WebsocketClientWrapper{Conn: c}, err
 	}
 	p, _ := pool.New(factory, 1, 1, 0, false)
-	defer p.Close() //nolint:errcheck
+	defer func() {
+		_ = p.Close()
+	}()
 	pm := pool.NewManager()
 	pm.Register("s4", p)
 
@@ -220,7 +245,9 @@ func TestWebsocketTool_Execute_MalformedInputs(t *testing.T) {
 		url := "ws" + strings.TrimPrefix(s.URL, "http")
 		c, resp, err := websocket.DefaultDialer.Dial(url, nil)
 		if resp != nil {
-			defer resp.Body.Close() //nolint:errcheck
+			defer func() {
+				_ = resp.Body.Close()
+			}()
 		}
 		return &client.WebsocketClientWrapper{Conn: c}, err
 	}

@@ -336,7 +336,6 @@ func TestExtractMcpOperationsFromOpenAPI(t *testing.T) {
 	}
 }
 
-//nolint:gocyclo
 func TestConvertMcpOperationsToTools(t *testing.T) {
 	doc := loadTestSpec(t)
 	ops := extractMcpOperationsFromOpenAPI(doc)
@@ -353,18 +352,29 @@ func TestConvertMcpOperationsToTools(t *testing.T) {
 		toolsMap[tool.GetName()] = tool
 	}
 
-	// --- Assertions for "listPets" tool ---
-	expectedListPetsName := opListPets
-	toolListPets, ok := toolsMap[expectedListPetsName]
-	if !ok {
-		t.Fatalf("Tool '%s' not found in converted tools", expectedListPetsName)
+	t.Run("listPets", func(t *testing.T) {
+		verifyListPetsTool(t, toolsMap[opListPets], mcpServerServiceKey)
+	})
+
+	t.Run("createPet", func(t *testing.T) {
+		verifyCreatePetTool(t, toolsMap[opCreatePet])
+	})
+
+	t.Run("showPetById", func(t *testing.T) {
+		verifyShowPetByIDTool(t, toolsMap[opShowPetByID])
+	})
+}
+
+func verifyListPetsTool(t *testing.T, toolListPets *v1.Tool, serviceID string) {
+	if toolListPets == nil {
+		t.Fatalf("Tool 'listPets' not found")
 	}
 
 	if toolListPets.GetDisplayName() != listAllPetsSummary {
 		t.Errorf("Expected listPets DisplayName 'List all pets', got '%s'", toolListPets.GetDisplayName())
 	}
-	if toolListPets.GetServiceId() != mcpServerServiceKey {
-		t.Errorf("Expected listPets ServiceId '%s', got '%s'", mcpServerServiceKey, toolListPets.GetServiceId())
+	if toolListPets.GetServiceId() != serviceID {
+		t.Errorf("Expected listPets ServiceId '%s', got '%s'", serviceID, toolListPets.GetServiceId())
 	}
 	if toolListPets.GetUnderlyingMethodFqn() != "GET /pets" {
 		t.Errorf("Expected listPets UnderlyingMethodFqn 'GET /pets', got '%s'", toolListPets.GetUnderlyingMethodFqn())
@@ -394,12 +404,11 @@ func TestConvertMcpOperationsToTools(t *testing.T) {
 	if len(propertiesListPets.GetFields()) != 0 {
 		t.Errorf("listPets InputSchema.Properties should be empty, got %v", propertiesListPets.GetFields())
 	}
+}
 
-	// --- Assertions for "createPet" tool ---
-	expectedCreatePetName := opCreatePet
-	toolCreatePet, ok := toolsMap[expectedCreatePetName]
-	if !ok {
-		t.Fatalf("Tool '%s' not found in converted tools", expectedCreatePetName)
+func verifyCreatePetTool(t *testing.T, toolCreatePet *v1.Tool) {
+	if toolCreatePet == nil {
+		t.Fatalf("Tool 'createPet' not found")
 	}
 	if toolCreatePet.GetDisplayName() != createPetSummary {
 		t.Errorf("Expected createPet DisplayName 'Create a pet', got '%s'", toolCreatePet.GetDisplayName())
@@ -445,12 +454,11 @@ func TestConvertMcpOperationsToTools(t *testing.T) {
 	if enumVal == nil || len(enumVal.Values) != 3 {
 		t.Errorf("createPet 'status' property enum: expected 3 values, got %v", enumVal)
 	}
+}
 
-	// --- Assertions for "showPetById" tool ---
-	expectedShowPetByIDName := opShowPetByID
-	toolShowPetByID, ok := toolsMap[expectedShowPetByIDName]
-	if !ok {
-		t.Fatalf("Tool '%s' not found in converted tools", expectedShowPetByIDName)
+func verifyShowPetByIDTool(t *testing.T, toolShowPetByID *v1.Tool) {
+	if toolShowPetByID == nil {
+		t.Fatalf("Tool 'showPetById' not found")
 	}
 	if toolShowPetByID.GetDisplayName() != "Info for a specific pet" {
 		t.Errorf("Expected showPetById DisplayName 'Info for a specific pet', got '%s'", toolShowPetByID.GetDisplayName())
@@ -478,6 +486,7 @@ func TestConvertMcpOperationsToTools(t *testing.T) {
 	if propPetID.GetStructValue().GetFields()["type"].GetStringValue() != stringType {
 		t.Errorf("showPetById 'petId' property type: got %s, want string", propPetID.GetStructValue().GetFields()["type"].GetStringValue())
 	}
+
 	if propPetID.GetStructValue().GetFields()["description"].GetStringValue() != "The id of the pet to retrieve" {
 		t.Errorf("showPetById 'petId' property description: got '%s', want 'The id of the pet to retrieve'", propPetID.GetStructValue().GetFields()["description"].GetStringValue())
 	}

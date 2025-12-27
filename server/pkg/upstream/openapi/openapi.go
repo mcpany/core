@@ -216,7 +216,7 @@ func (c *httpClientImpl) Do(req *http.Request) (*http.Response, error) {
 
 // addOpenAPIToolsToIndex iterates through a list of protobuf tool definitions,
 // creates an OpenAPITool for each, and registers it with the tool manager.
-func (u *OpenAPIUpstream) addOpenAPIToolsToIndex(_ context.Context, pbTools []*pb.Tool, serviceID string, toolManager tool.ManagerInterface, resourceManager resource.ManagerInterface, isReload bool, doc *openapi3.T, serviceConfig *configv1.UpstreamServiceConfig) int { //nolint:gocyclo
+func (u *OpenAPIUpstream) addOpenAPIToolsToIndex(_ context.Context, pbTools []*pb.Tool, serviceID string, toolManager tool.ManagerInterface, resourceManager resource.ManagerInterface, isReload bool, doc *openapi3.T, serviceConfig *configv1.UpstreamServiceConfig) int {
 	log := logging.GetLogger()
 	numToolsForThisService := 0
 
@@ -348,11 +348,43 @@ func (u *OpenAPIUpstream) addOpenAPIToolsToIndex(_ context.Context, pbTools []*p
 		log.Info("Registered OpenAPI tool", "tool_id", toolName, "is_reload", isReload)
 	}
 
+	u.registerDynamicResources(serviceID, definitions, openapiService.GetResources(), resourceManager, toolManager)
+
+	return numToolsForThisService
+}
+
+func (u *OpenAPIUpstream) createAndRegisterPrompts(
+	_ context.Context,
+	serviceID string,
+	serviceConfig *configv1.UpstreamServiceConfig,
+	promptManager prompt.ManagerInterface,
+	isReload bool,
+) {
+	log := logging.GetLogger()
+	openapiService := serviceConfig.GetOpenapiService()
+	for _, promptDef := range openapiService.GetPrompts() {
+		if promptDef.GetDisable() {
+			log.Info("Skipping disabled prompt", "promptName", promptDef.GetName())
+			continue
+		}
+		newPrompt := prompt.NewTemplatedPrompt(promptDef, serviceID)
+		promptManager.AddPrompt(newPrompt)
+		log.Info("Registered prompt", "prompt_name", newPrompt.Prompt().Name, "is_reload", isReload)
+	}
+}
+func (u *OpenAPIUpstream) registerDynamicResources(
+	serviceID string,
+	definitions []*configv1.ToolDefinition,
+	resources []*configv1.ResourceDefinition,
+	resourceManager resource.ManagerInterface,
+	toolManager tool.ManagerInterface,
+) {
+	log := logging.GetLogger()
 	callIDToName := make(map[string]string)
 	for _, d := range definitions {
 		callIDToName[d.GetCallId()] = d.GetName()
 	}
-	for _, resourceDef := range openapiService.GetResources() {
+	for _, resourceDef := range resources {
 		if resourceDef.GetDisable() {
 			log.Info("Skipping disabled resource", "resourceName", resourceDef.GetName())
 			continue
@@ -384,27 +416,5 @@ func (u *OpenAPIUpstream) addOpenAPIToolsToIndex(_ context.Context, pbTools []*p
 			}
 			resourceManager.AddResource(dynamicResource)
 		}
-	}
-
-	return numToolsForThisService
-}
-
-func (u *OpenAPIUpstream) createAndRegisterPrompts(
-	_ context.Context,
-	serviceID string,
-	serviceConfig *configv1.UpstreamServiceConfig,
-	promptManager prompt.ManagerInterface,
-	isReload bool,
-) {
-	log := logging.GetLogger()
-	openapiService := serviceConfig.GetOpenapiService()
-	for _, promptDef := range openapiService.GetPrompts() {
-		if promptDef.GetDisable() {
-			log.Info("Skipping disabled prompt", "promptName", promptDef.GetName())
-			continue
-		}
-		newPrompt := prompt.NewTemplatedPrompt(promptDef, serviceID)
-		promptManager.AddPrompt(newPrompt)
-		log.Info("Registered prompt", "prompt_name", newPrompt.Prompt().Name, "is_reload", isReload)
 	}
 }

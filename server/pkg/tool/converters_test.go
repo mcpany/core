@@ -89,7 +89,7 @@ func TestConvertJSONSchemaToStruct(t *testing.T) {
 
 func TestGetJSONSchemaForScalarType(t *testing.T) {
 	t.Run("unsupported type", func(t *testing.T) {
-		_, err := getJSONSchemaForScalarType("unsupported", "description")
+		_, err := GetJSONSchemaForScalarType("unsupported", "description")
 		assert.Error(t, err)
 		assert.Contains(t, err.Error(), "unsupported scalar type: unsupported")
 	})
@@ -118,7 +118,7 @@ func TestGetJSONSchemaForScalarType(t *testing.T) {
 
 		for _, tc := range testCases {
 			t.Run(tc.scalarType, func(t *testing.T) {
-				schema, err := getJSONSchemaForScalarType(tc.scalarType, "description")
+				schema, err := GetJSONSchemaForScalarType(tc.scalarType, "description")
 				assert.NoError(t, err)
 				assert.Equal(t, tc.jsonType, schema.Type)
 				assert.Equal(t, "description", schema.Description)
@@ -126,6 +126,9 @@ func TestGetJSONSchemaForScalarType(t *testing.T) {
 		}
 	})
 }
+// ... (skip others if needed or replace block)
+// I will just replace the TestGetJSONSchemaForScalarType block first
+
 
 func TestConvertMCPToolToProto(t *testing.T) {
 	t.Run("nil tool", func(t *testing.T) {
@@ -190,7 +193,7 @@ func TestConvertMCPToolToProto(t *testing.T) {
 
 func TestConvertMcpFieldsToInputSchemaProperties(t *testing.T) {
 	t.Run("empty fields", func(t *testing.T) {
-		properties, err := convertMcpFieldsToInputSchemaProperties(nil)
+		properties, err := ConvertMcpFieldsToInputSchemaProperties(nil)
 		assert.NoError(t, err)
 		assert.NotNil(t, properties)
 		assert.Empty(t, properties.Fields)
@@ -210,7 +213,7 @@ func TestConvertMcpFieldsToInputSchemaProperties(t *testing.T) {
 			},
 		}
 
-		properties, err := convertMcpFieldsToInputSchemaProperties(fields)
+		properties, err := ConvertMcpFieldsToInputSchemaProperties(fields)
 		assert.NoError(t, err)
 		assert.NotNil(t, properties)
 		assert.Len(t, properties.Fields, 2)

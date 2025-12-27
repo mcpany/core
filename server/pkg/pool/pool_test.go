@@ -61,7 +61,8 @@ func TestPool_New(t *testing.T) {
 		require.NoError(t, err)
 		assert.NotNil(t, p)
 		assert.Equal(t, 1, p.Len())
-		_ = p.Close()
+		err = p.Close()
+		require.NoError(t, err)
 	})
 	t.Run("invalid config", func(t *testing.T) {
 		t.Parallel()
@@ -111,7 +112,10 @@ func TestPool_GetPut(t *testing.T) {
 	t.Parallel()
 	p, err := New(newMockClientFactory(true), 1, 2, 100, false)
 	require.NoError(t, err)
-	defer func() { _ = p.Close() }()
+	defer func() {
+		err := p.Close()
+		require.NoError(t, err)
+	}()
 	// Get initial client
 	c1, err := p.Get(context.Background())
 	require.NoError(t, err)
@@ -138,7 +142,10 @@ func TestPool_Get_Unhealthy(t *testing.T) {
 	// Create pool with minSize=1, so it starts with one (unhealthy) client.
 	p, err := New(factory, 1, 2, 100, false)
 	require.NoError(t, err)
-	defer func() { _ = p.Close() }()
+	defer func() {
+		err := p.Close()
+		require.NoError(t, err)
+	}()
 	// Get should discard the initial unhealthy client and create a new, healthy one.
 	c, err := p.Get(context.Background())
 	require.NoError(t, err)
@@ -149,7 +156,10 @@ func TestPool_Put_Unhealthy(t *testing.T) {
 	t.Parallel()
 	p, err := New(newMockClientFactory(true), 0, 2, 100, false)
 	require.NoError(t, err)
-	defer func() { _ = p.Close() }()
+	defer func() {
+		err := p.Close()
+		require.NoError(t, err)
+	}()
 	// Get a client. This will acquire a semaphore.
 	c, err := p.Get(context.Background())
 	require.NoError(t, err)
@@ -176,7 +186,10 @@ func TestPool_Full(t *testing.T) {
 	t.Parallel()
 	p, err := New(newMockClientFactory(true), 0, 1, 100, false)
 	require.NoError(t, err)
-	defer func() { _ = p.Close() }()
+	defer func() {
+		err := p.Close()
+		require.NoError(t, err)
+	}()
 	// Get one client, pool should now be at max capacity
 	c1, err := p.Get(context.Background())
 	require.NoError(t, err)
@@ -196,7 +209,8 @@ func TestPool_Close(t *testing.T) {
 	}
 	p, err := New(factory, 1, 1, 100, false)
 	require.NoError(t, err)
-	_ = p.Close()
+	err = p.Close()
+	require.NoError(t, err)
 	assert.True(t, client.isClosed)
 }
 
@@ -260,7 +274,10 @@ func TestPool_Put_UnhealthyClientDoesNotLeakSemaphore(t *testing.T) {
 	const maxSize = 2
 	p, err := New(newMockClientFactory(true), 0, maxSize, 100, false)
 	require.NoError(t, err)
-	defer func() { _ = p.Close() }()
+	defer func() {
+		err := p.Close()
+		require.NoError(t, err)
+	}()
 	// Cycle through clients, marking them as unhealthy before returning them.
 	// This should not exhaust the pool's semaphore.
 	for i := 0; i < maxSize+1; i++ {
@@ -295,7 +312,8 @@ func TestPool_PutOnClosedPool(t *testing.T) {
 	require.NoError(t, err)
 	require.NotNil(t, c)
 	// Close the pool while the client is checked out
-	_ = p.Close()
+	err = p.Close()
+	require.NoError(t, err)
 	// Now, put the client back into the closed pool.
 	// This is where the semaphore leak occurs in the original code.
 	p.Put(c)
@@ -318,7 +336,10 @@ func TestPool_ConcurrentGetPut(t *testing.T) {
 	)
 	p, err := New(newMockClientFactory(true), 10, maxSize, 100, false)
 	require.NoError(t, err)
-	defer func() { _ = p.Close() }()
+	defer func() {
+		err := p.Close()
+		require.NoError(t, err)
+	}()
 	var wg sync.WaitGroup
 	wg.Add(numClients)
 	for i := 0; i < numClients; i++ {
@@ -403,7 +424,10 @@ func TestPool_New_DisableHealthCheck_WithUnhealthyClient(t *testing.T) {
 	factory := newMockClientFactory(false) // Creates unhealthy clients
 	p, err := New(factory, 1, 1, 0, true)  // disableHealthCheck = true
 	require.NoError(t, err)
-	defer func() { _ = p.Close() }()
+	defer func() {
+		err := p.Close()
+		require.NoError(t, err)
+	}()
 
 	// The pool should contain the unhealthy client.
 	assert.Equal(t, 1, p.Len())
@@ -426,7 +450,10 @@ func TestPool_Get_FactoryError(t *testing.T) {
 
 	p, err := New(factory, 1, 2, 0, false)
 	require.NoError(t, err)
-	defer func() { _ = p.Close() }()
+	defer func() {
+		err := p.Close()
+		require.NoError(t, err)
+	}()
 
 	// Get the first client, which should succeed.
 	c1, err := p.Get(context.Background())
@@ -442,7 +469,10 @@ func TestPool_DisableHealthCheck(t *testing.T) {
 	factory := newMockClientFactory(false) // Creates unhealthy clients
 	p, err := New(factory, 1, 1, 0, true)  // disableHealthCheck = true
 	require.NoError(t, err)
-	defer func() { _ = p.Close() }()
+	defer func() {
+		err := p.Close()
+		require.NoError(t, err)
+	}()
 
 	// Get a client. Since health checks are disabled, it should return the unhealthy one.
 	c, err := p.Get(context.Background())
@@ -460,7 +490,10 @@ func TestPool_DisableHealthCheck(t *testing.T) {
 func TestPool_GetWithAlreadyCanceledContext(t *testing.T) {
 	p, err := New(newMockClientFactory(true), 0, 1, 0, false)
 	require.NoError(t, err)
-	defer func() { _ = p.Close() }()
+	defer func() {
+		err := p.Close()
+		require.NoError(t, err)
+	}()
 
 	ctx, cancel := context.WithCancel(context.Background())
 	cancel()
@@ -472,7 +505,10 @@ func TestPool_GetWithAlreadyCanceledContext(t *testing.T) {
 func TestPool_PutToFullPool(t *testing.T) {
 	p, err := New(newMockClientFactory(true), 1, 1, 0, false)
 	require.NoError(t, err)
-	defer func() { _ = p.Close() }()
+	defer func() {
+		err := p.Close()
+		require.NoError(t, err)
+	}()
 
 	// The pool is now full with one idle client.
 	require.Equal(t, 1, p.Len())
@@ -516,7 +552,10 @@ func TestPool_GetPrefersIdleClientsOverCreatingNew(t *testing.T) {
 
 	p, err := New(factory, 0, maxSize, 0, false)
 	require.NoError(t, err)
-	defer func() { _ = p.Close() }()
+	defer func() {
+		err := p.Close()
+		require.NoError(t, err)
+	}()
 
 	// 1. Fill the pool up to its max size.
 	clients := make([]*mockClient, maxSize)
@@ -557,7 +596,10 @@ func TestPool_ConcurrentGetAndClose(t *testing.T) {
 	// Start a goroutine to close the pool after a short delay.
 	go func() {
 		time.Sleep(10 * time.Millisecond)
-		_ = p.Close()
+		err := p.Close()
+		if err != nil {
+			// Ignore error in async close during test if it's already closed
+		}
 	}()
 
 	for i := 0; i < numGetters; i++ {
@@ -588,7 +630,10 @@ func TestPool_PutNilClientReleasesSemaphore(t *testing.T) {
 	const maxSize = 1
 	p, err := New(newMockClientFactory(true), 0, maxSize, 100, false)
 	require.NoError(t, err)
-	defer func() { _ = p.Close() }()
+	defer func() {
+		err := p.Close()
+		require.NoError(t, err)
+	}()
 
 	// Get the only client, acquiring the only permit.
 	client, err := p.Get(context.Background())
@@ -654,7 +699,10 @@ func TestPool_GetWithUnhealthyClients(t *testing.T) {
 func TestPool_GetRetriesWhenClientIsNil(t *testing.T) {
 	p, err := New(newMockClientFactory(true), 0, 1, 0, false)
 	require.NoError(t, err)
-	defer func() { _ = p.Close() }()
+	defer func() {
+		err := p.Close()
+		require.NoError(t, err)
+	}()
 
 	// Use reflection to access the internal channel and insert a nil client.
 	poolImpl := p.(*poolImpl[*mockClient])
@@ -693,7 +741,8 @@ func TestPool_Get_RaceWithClose(t *testing.T) {
 
 	// At this point, the semaphore is acquired, but the client is not created yet.
 	// Now, close the pool.
-	_ = p.Close()
+	err = p.Close()
+	require.NoError(t, err)
 
 	// Allow the factory to proceed. The Get call should now fail because the pool is closed.
 	close(factoryProceed)
@@ -725,7 +774,10 @@ func TestPool_Get_RaceWithPut(t *testing.T) {
 
 	p, err := New(factory, 0, maxSize, 0, false)
 	require.NoError(t, err)
-	defer func() { _ = p.Close() }()
+	defer func() {
+		err := p.Close()
+		require.NoError(t, err)
+	}()
 
 	var wg sync.WaitGroup
 	wg.Add(2)
@@ -769,7 +821,10 @@ func TestPool_Get_RaceWithPut(t *testing.T) {
 func TestPool_Get_Full_ContextCanceled(t *testing.T) {
 	p, err := New(newMockClientFactory(true), 0, 1, 0, false)
 	require.NoError(t, err)
-	defer func() { _ = p.Close() }()
+	defer func() {
+		err := p.Close()
+		require.NoError(t, err)
+	}()
 
 	// Get the only client to make the pool full.
 	c, err := p.Get(context.Background())
@@ -798,7 +853,10 @@ func TestPool_Get_Full_ContextCanceled(t *testing.T) {
 func TestPool_Get_WaitsForClientThenGetsUnhealthy(t *testing.T) {
 	p, err := New(newMockClientFactory(true), 0, 1, 0, false)
 	require.NoError(t, err)
-	defer func() { _ = p.Close() }()
+	defer func() {
+		err := p.Close()
+		require.NoError(t, err)
+	}()
 
 	// Goroutine 1: Tries to get a client, will wait because the pool is empty.
 	var wg sync.WaitGroup

@@ -191,7 +191,6 @@ func (u *Upstream) Register(
 // contain tool definitions extracted from protobuf options. For each tool, it
 // constructs a GRPCTool and registers it with the tool manager.
 //
-//nolint:gocyclo
 func (u *Upstream) createAndRegisterGRPCTools(
 	_ context.Context,
 	serviceID string,
@@ -332,46 +331,7 @@ func (u *Upstream) createAndRegisterGRPCTools(
 		log.Info("Registered gRPC tool", "tool_id", newToolProto.GetName(), "is_reload", isReload)
 	}
 
-	definitions := grpcService.GetTools()
-	callIDToName := make(map[string]string)
-	for _, d := range definitions {
-		if d != nil {
-			callIDToName[d.GetCallId()] = d.GetName()
-		}
-	}
-	for _, resourceDef := range grpcService.GetResources() {
-		if resourceDef.GetDisable() {
-			log.Info("Skipping disabled resource", "resourceName", resourceDef.GetName())
-			continue
-		}
-		if resourceDef.GetDynamic() != nil {
-			call := resourceDef.GetDynamic().GetGrpcCall()
-			if call == nil {
-				continue
-			}
-			toolName, ok := callIDToName[call.GetId()]
-			if !ok {
-				log.Error("tool not found for dynamic resource", "call_id", call.GetId())
-				continue
-			}
-			sanitizedToolName, err := util.SanitizeToolName(toolName)
-			if err != nil {
-				log.Error("Failed to sanitize tool name", "error", err)
-				continue
-			}
-			tool, ok := tm.GetTool(serviceID + "." + sanitizedToolName)
-			if !ok {
-				log.Error("Tool not found for dynamic resource", "toolName", toolName)
-				continue
-			}
-			dynamicResource, err := resource.NewDynamicResource(resourceDef, tool)
-			if err != nil {
-				log.Error("Failed to create dynamic resource", "error", err)
-				continue
-			}
-			resourceManager.AddResource(dynamicResource)
-		}
-	}
+	u.registerDynamicResources(serviceID, grpcService, resourceManager, tm)
 
 	return discoveredTools, nil
 }
@@ -551,4 +511,52 @@ func (u *Upstream) createAndRegisterPromptsFromConfig(
 	}
 
 	return nil
+}
+func (u *Upstream) registerDynamicResources(
+	serviceID string,
+	grpcService *configv1.GrpcUpstreamService,
+	rm resource.ManagerInterface,
+	tm tool.ManagerInterface,
+) {
+	log := logging.GetLogger()
+	definitions := grpcService.GetTools()
+	callIDToName := make(map[string]string)
+	for _, d := range definitions {
+		if d != nil {
+			callIDToName[d.GetCallId()] = d.GetName()
+		}
+	}
+	for _, resourceDef := range grpcService.GetResources() {
+		if resourceDef.GetDisable() {
+			log.Info("Skipping disabled resource", "resourceName", resourceDef.GetName())
+			continue
+		}
+		if resourceDef.GetDynamic() != nil {
+			call := resourceDef.GetDynamic().GetGrpcCall()
+			if call == nil {
+				continue
+			}
+			toolName, ok := callIDToName[call.GetId()]
+			if !ok {
+				log.Error("tool not found for dynamic resource", "call_id", call.GetId())
+				continue
+			}
+			sanitizedToolName, err := util.SanitizeToolName(toolName)
+			if err != nil {
+				log.Error("Failed to sanitize tool name", "error", err)
+				continue
+			}
+			tool, ok := tm.GetTool(serviceID + "." + sanitizedToolName)
+			if !ok {
+				log.Error("Tool not found for dynamic resource", "toolName", toolName)
+				continue
+			}
+			dynamicResource, err := resource.NewDynamicResource(resourceDef, tool)
+			if err != nil {
+				log.Error("Failed to create dynamic resource", "error", err)
+				continue
+			}
+			rm.AddResource(dynamicResource)
+		}
+	}
 }
