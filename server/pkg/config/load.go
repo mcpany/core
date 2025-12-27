@@ -6,7 +6,6 @@ package config
 import (
 	"context"
 	"fmt"
-	"strings"
 
 	"github.com/mcpany/core/pkg/logging"
 	configv1 "github.com/mcpany/core/proto/config/v1"
@@ -101,12 +100,27 @@ func LoadServices(store Store, binaryType string) (*configv1.McpAnyServerConfig,
 	}
 
 	if validationErrors := Validate(context.Background(), fileConfig, bt); len(validationErrors) > 0 {
-		var errorMessages []string
+		invalidServices := make(map[string]bool)
 		for _, e := range validationErrors {
-			log.Error("Config validation error", "service", e.ServiceName, "error", e.Err)
-			errorMessages = append(errorMessages, fmt.Sprintf("service '%s': %s", e.ServiceName, e.Err.Error()))
+			log.Error("Config validation error, disabling service", "service", e.ServiceName, "error", e.Err)
+			invalidServices[e.ServiceName] = true
 		}
-		return nil, fmt.Errorf("config validation failed: %s", strings.Join(errorMessages, "; "))
+
+		// Filter out invalid services
+		validServices := make([]*configv1.UpstreamServiceConfig, 0, len(fileConfig.GetUpstreamServices()))
+		for _, svc := range fileConfig.GetUpstreamServices() {
+			if !invalidServices[svc.GetName()] {
+				validServices = append(validServices, svc)
+			}
+		}
+		fileConfig.UpstreamServices = validServices
+
+		// If all services are invalid, we might want to return an error, or just start empty.
+		// Starting empty is consistent with "doesn't crash", but user might be confused.
+		// However, logging the error above should be enough.
+		if len(validServices) == 0 && len(fileConfig.GetUpstreamServices()) > 0 {
+			log.Warn("All configured services failed validation.")
+		}
 	}
 
 	if len(fileConfig.GetUpstreamServices()) > 0 {
