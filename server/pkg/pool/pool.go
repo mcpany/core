@@ -110,7 +110,9 @@ func New[T ClosableClient](
 		for i := 0; i < minSize; i++ {
 			client, err := factory(context.Background())
 			if err != nil {
-				_ = p.Close()
+				if closeErr := p.Close(); closeErr != nil {
+					logging.GetLogger().Error("Failed to close pool after factory error", "error", closeErr)
+				}
 				return nil, fmt.Errorf("factory failed to create initial client: %w", err)
 			}
 			v := reflect.ValueOf(client)
@@ -130,7 +132,9 @@ func New[T ClosableClient](
 	for i := 0; i < minSize; i++ {
 		client, err := factory(context.Background())
 		if err != nil {
-			_ = p.Close()
+			if closeErr := p.Close(); closeErr != nil {
+				logging.GetLogger().Error("Failed to close pool after factory error", "error", closeErr)
+			}
 			return nil, fmt.Errorf("factory failed to create initial client: %w", err)
 		}
 		v := reflect.ValueOf(client)
@@ -195,7 +199,9 @@ func (p *poolImpl[T]) Get(ctx context.Context) (T, error) {
 			if p.disableHealthCheck || client.IsHealthy(ctx) {
 				return client, nil
 			}
-			_ = lo.Try(client.Close)
+			_ = lo.Try(func() error {
+				return client.Close()
+			})
 			p.sem.Release(1)
 			continue // Retry.
 		default:
@@ -221,7 +227,9 @@ func (p *poolImpl[T]) Get(ctx context.Context) (T, error) {
 				if p.disableHealthCheck || client.IsHealthy(ctx) {
 					return client, nil
 				}
-				_ = lo.Try(client.Close)
+				_ = lo.Try(func() error {
+					return client.Close()
+				})
 				p.sem.Release(1)
 				continue // Retry.
 			default:
@@ -239,7 +247,9 @@ func (p *poolImpl[T]) Get(ctx context.Context) (T, error) {
 
 				// Check again if the pool was closed while we were creating a client.
 				if p.closed.Load() {
-					_ = lo.Try(client.Close)
+					_ = lo.Try(func() error {
+						return client.Close()
+					})
 					p.sem.Release(1)
 					return zero, ErrPoolClosed
 				}
@@ -262,7 +272,9 @@ func (p *poolImpl[T]) Get(ctx context.Context) (T, error) {
 			if p.disableHealthCheck || client.IsHealthy(ctx) {
 				return client, nil
 			}
-			_ = lo.Try(client.Close)
+			_ = lo.Try(func() error {
+				return client.Close()
+			})
 			p.sem.Release(1)
 			continue // Retry.
 		case <-ctx.Done():
@@ -287,7 +299,9 @@ func (p *poolImpl[T]) Put(client T) {
 	}
 
 	if p.closed.Load() {
-		_ = lo.Try(client.Close)
+		_ = lo.Try(func() error {
+			return client.Close()
+		})
 		p.sem.Release(1) // Release permit as the client is discarded
 		return
 	}
@@ -343,7 +357,9 @@ func (p *poolImpl[T]) Close() error {
 		if (v.Kind() == reflect.Ptr || v.Kind() == reflect.Interface) && v.IsNil() {
 			continue
 		}
-		_ = lo.Try(client.Close)
+		_ = lo.Try(func() error {
+			return client.Close()
+		})
 		p.sem.Release(1)
 	}
 	return nil
@@ -394,7 +410,9 @@ func (m *Manager) Register(name string, pool any) {
 	if oldPool, ok := m.pools[name]; ok {
 		if p, isCloser := oldPool.(io.Closer); isCloser {
 			logging.GetLogger().Info("Closing old entry", "name", name)
-			_ = lo.Try(p.Close)
+			if err := p.Close(); err != nil {
+				logging.GetLogger().Warn("Failed to close old pool", "name", name, "error", err)
+			}
 		}
 	}
 	m.pools[name] = pool
@@ -445,7 +463,9 @@ func (m *Manager) CloseAll() {
 	for name, untypedPool := range m.pools {
 		logging.GetLogger().Info("Closing pool", "name", name)
 		if p, ok := untypedPool.(io.Closer); ok {
-			_ = lo.Try(p.Close)
+			if err := p.Close(); err != nil {
+				logging.GetLogger().Warn("Failed to close pool in CloseAll", "name", name, "error", err)
+			}
 		}
 	}
 }
