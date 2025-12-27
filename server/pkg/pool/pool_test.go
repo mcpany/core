@@ -644,7 +644,7 @@ func TestPool_GetRetriesWhenClientIsNil(t *testing.T) {
 
 	// Use reflection to access the internal channel and insert a nil client.
 	poolImpl := p.(*poolImpl[*mockClient])
-	poolImpl.clients <- nil
+	poolImpl.clients <- poolItem[*mockClient]{client: nil, retry: true}
 
 	// Now, try to get a client. It should NOT return error, but retry and create a new one.
 	c, err := p.Get(context.Background())

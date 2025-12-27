@@ -53,11 +53,16 @@ type Pool[T ClosableClient] interface {
 	Len() int
 }
 
+type poolItem[T any] struct {
+	client T
+	retry  bool
+}
+
 // poolImpl is the internal implementation of the Pool interface. It manages a
 // channel of clients, a factory for creating new clients, and a semaphore for
 // controlling the pool size.
 type poolImpl[T ClosableClient] struct {
-	clients            chan T
+	clients            chan poolItem[T]
 	factory            func(context.Context) (T, error)
 	sem                *semaphore.Weighted
 	mu                 sync.Mutex
@@ -94,7 +99,7 @@ func New[T ClosableClient](
 	}
 
 	p := &poolImpl[T]{
-		clients:            make(chan T, maxSize),
+		clients:            make(chan poolItem[T], maxSize),
 		factory:            factory,
 		sem:                semaphore.NewWeighted(int64(maxSize)),
 		disableHealthCheck: disableHealthCheck,
@@ -108,7 +113,12 @@ func New[T ClosableClient](
 				_ = p.Close()
 				return nil, fmt.Errorf("factory failed to create initial client: %w", err)
 			}
-			p.clients <- client
+			v := reflect.ValueOf(client)
+			if (v.Kind() == reflect.Ptr || v.Kind() == reflect.Interface) && v.IsNil() {
+				_ = p.Close()
+				return nil, fmt.Errorf("factory returned nil client")
+			}
+			p.clients <- poolItem[T]{client: client}
 		}
 		if !p.sem.TryAcquire(int64(minSize)) {
 			return nil, fmt.Errorf("failed to acquire permits for initial clients")
@@ -123,7 +133,12 @@ func New[T ClosableClient](
 			_ = p.Close()
 			return nil, fmt.Errorf("factory failed to create initial client: %w", err)
 		}
-		p.clients <- client
+		v := reflect.ValueOf(client)
+		if (v.Kind() == reflect.Ptr || v.Kind() == reflect.Interface) && v.IsNil() {
+			_ = p.Close()
+			return nil, fmt.Errorf("factory returned nil client")
+		}
+		p.clients <- poolItem[T]{client: client}
 	}
 	// Take permits for the initial clients
 	if !p.sem.TryAcquire(int64(minSize)) {
@@ -168,15 +183,15 @@ func (p *poolImpl[T]) Get(ctx context.Context) (T, error) {
 	for {
 		// First, try a non-blocking retrieval of an existing client.
 		select {
-		case client, ok := <-p.clients:
+		case item, ok := <-p.clients:
 			if !ok {
 				return zero, ErrPoolClosed
 			}
-			v := reflect.ValueOf(client)
-			if (v.Kind() == reflect.Ptr || v.Kind() == reflect.Interface) && v.IsNil() {
-				// Nil received: permit released, retry creation
+			if item.retry {
 				continue
 			}
+			client := item.client
+
 			if p.disableHealthCheck || client.IsHealthy(ctx) {
 				return client, nil
 			}
@@ -192,17 +207,17 @@ func (p *poolImpl[T]) Get(ctx context.Context) (T, error) {
 			// Acquired a permit, but double-check for a race condition where
 			// a client was returned just before we acquired the permit.
 			select {
-			case client, ok := <-p.clients:
+			case item, ok := <-p.clients:
 				// A client was available, so we use it and release the permit.
 				p.sem.Release(1)
 				if !ok {
 					return zero, ErrPoolClosed
 				}
-				v := reflect.ValueOf(client)
-				if (v.Kind() == reflect.Ptr || v.Kind() == reflect.Interface) && v.IsNil() {
-					// Nil received: permit released, retry creation
+				if item.retry {
 					continue
 				}
+				client := item.client
+
 				if p.disableHealthCheck || client.IsHealthy(ctx) {
 					return client, nil
 				}
@@ -235,15 +250,15 @@ func (p *poolImpl[T]) Get(ctx context.Context) (T, error) {
 
 		// Pool is full, so we must wait for a client to be returned.
 		select {
-		case client, ok := <-p.clients:
+		case item, ok := <-p.clients:
 			if !ok {
 				return zero, ErrPoolClosed
 			}
-			v := reflect.ValueOf(client)
-			if (v.Kind() == reflect.Ptr || v.Kind() == reflect.Interface) && v.IsNil() {
-				// Nil received: permit released, retry creation
+			if item.retry {
 				continue
 			}
+			client := item.client
+
 			if p.disableHealthCheck || client.IsHealthy(ctx) {
 				return client, nil
 			}
@@ -282,11 +297,10 @@ func (p *poolImpl[T]) Put(client T) {
 		_ = lo.Try(client.Close)
 		p.sem.Release(1)
 		// Notify waiting Get routines
-		var zero T
 		p.mu.Lock()
 		if !p.closed.Load() {
 			select {
-			case p.clients <- zero:
+			case p.clients <- poolItem[T]{retry: true}:
 			default:
 			}
 		}
@@ -303,7 +317,7 @@ func (p *poolImpl[T]) Put(client T) {
 	}
 
 	select {
-	case p.clients <- client:
+	case p.clients <- poolItem[T]{client: client}:
 		p.mu.Unlock()
 	default:
 		// Idle pool is full, discard client. The permit for this client is
@@ -331,7 +345,11 @@ func (p *poolImpl[T]) Close() error {
 	p.mu.Unlock()
 
 	// Drain the channel and close all idle clients
-	for client := range p.clients {
+	for item := range p.clients {
+		if item.retry {
+			continue
+		}
+		client := item.client
 		v := reflect.ValueOf(client)
 		if (v.Kind() == reflect.Ptr || v.Kind() == reflect.Interface) && v.IsNil() {
 			continue
