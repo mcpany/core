@@ -12,6 +12,8 @@ import { AppSidebar } from "@/components/app-sidebar";
 import { ThemeProvider } from "@/components/theme-provider"
 import { ThemeToggle } from "@/components/theme-toggle"
 import { Sidebar } from "@/components/sidebar"
+import { CommandPalette } from "@/components/command-palette"
+import { SearchTrigger } from "@/components/search-trigger"
 
 export const metadata: Metadata = {
   title: 'MCPAny Manager',
@@ -49,6 +51,7 @@ export default function RootLayout({
                             Dashboard
                          </div>
                         <div className="flex items-center gap-2">
+                             <SearchTrigger />
                              <ThemeToggle />
                         </div>
                     </header>
@@ -57,6 +60,7 @@ export default function RootLayout({
                     </main>
                 </div>
             </div>
+            <CommandPalette />
             <Toaster />
           </TooltipProvider>
         </ThemeProvider>
