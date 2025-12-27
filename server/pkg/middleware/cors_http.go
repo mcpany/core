@@ -32,9 +32,11 @@ func (m *HTTPCORSMiddleware) Handler(next http.Handler) http.Handler {
 		}
 
 		allowed := false
+		allowAny := false
 		for _, o := range m.allowedOrigins {
 			if o == "*" {
 				allowed = true
+				allowAny = true
 				break
 			}
 			if o == origin {
@@ -50,11 +52,20 @@ func (m *HTTPCORSMiddleware) Handler(next http.Handler) http.Handler {
 		}
 
 		// Set CORS headers
-		// If we want to allow all with credentials, we must echo the origin.
-		w.Header().Set("Access-Control-Allow-Origin", origin)
-		w.Header().Set("Vary", "Origin")
+		if allowAny {
+			// If "*" is configured, we set Origin to "*" and do NOT allow credentials.
+			// This is the secure configuration for public APIs.
+			// If you need credentials, you must explicitly list the origin.
+			w.Header().Set("Access-Control-Allow-Origin", "*")
+			// Remove Credentials header if it was set (though it shouldn't be yet)
+			w.Header().Del("Access-Control-Allow-Credentials")
+		} else if allowed {
+			// Specific origin match
+			w.Header().Set("Access-Control-Allow-Origin", origin)
+			w.Header().Set("Vary", "Origin")
+			w.Header().Set("Access-Control-Allow-Credentials", "true")
+		}
 
-		w.Header().Set("Access-Control-Allow-Credentials", "true")
 		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS, PATCH")
 		w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization, X-API-Key, X-Requested-With")
 
