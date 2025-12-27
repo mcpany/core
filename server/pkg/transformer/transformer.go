@@ -60,7 +60,14 @@ func (t *Transformer) Transform(templateStr string, data any) ([]byte, error) {
 					if i > 0 {
 						sb.WriteString(sep)
 					}
-					fmt.Fprint(&sb, v)
+					switch val := v.(type) {
+					case string:
+						sb.WriteString(val)
+					case fmt.Stringer:
+						sb.WriteString(val.String())
+					default:
+						fmt.Fprint(&sb, v)
+					}
 				}
 				return sb.String()
 			},
@@ -72,13 +79,8 @@ func (t *Transformer) Transform(templateStr string, data any) ([]byte, error) {
 	}
 
 	// Use pool to reduce allocations
-	bufPtr := t.pool.Get()
-	var buf *bytes.Buffer
-	if bufPtr == nil {
-		buf = new(bytes.Buffer)
-	} else {
-		buf = bufPtr.(*bytes.Buffer)
-	}
+	// Safe to type assert because New is defined in NewTransformer
+	buf := t.pool.Get().(*bytes.Buffer)
 	defer func() {
 		buf.Reset()
 		t.pool.Put(buf)
