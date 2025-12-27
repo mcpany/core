@@ -7,6 +7,7 @@ import (
 	"context"
 	"crypto/sha256"
 	"encoding/hex"
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"sync"
@@ -28,6 +29,8 @@ import (
 type Limiter interface {
 	// Allow checks if the request is allowed.
 	Allow(ctx context.Context) (bool, error)
+	// AllowN checks if the request is allowed with a specific cost.
+	AllowN(ctx context.Context, n int) (bool, error)
 	// Update updates the limiter configuration.
 	Update(rps float64, burst int)
 }
@@ -37,9 +40,14 @@ type LocalLimiter struct {
 	*rate.Limiter
 }
 
-// Allow checks if the request is allowed.
+// Allow checks if the request is allowed (cost 1).
 func (l *LocalLimiter) Allow(_ context.Context) (bool, error) {
 	return l.Limiter.Allow(), nil
+}
+
+// AllowN checks if the request is allowed with a specific cost.
+func (l *LocalLimiter) AllowN(_ context.Context, n int) (bool, error) {
+	return l.Limiter.AllowN(time.Now(), n), nil
 }
 
 // Update updates the limiter configuration.
@@ -98,7 +106,13 @@ func (m *RateLimitMiddleware) Execute(ctx context.Context, req *tool.ExecutionRe
 		return next(ctx, req)
 	}
 
-	allowed, err := limiter.Allow(ctx)
+	// Calculate cost
+	cost := 1
+	if rateLimitConfig.GetCostMetric() == configv1.RateLimitConfig_COST_METRIC_TOKENS {
+		cost = m.estimateTokenCost(req)
+	}
+
+	allowed, err := limiter.AllowN(ctx, cost)
 	if err != nil {
 		// If check fails (e.g. redis connection error).
 		// Fail open.
@@ -119,6 +133,58 @@ func (m *RateLimitMiddleware) Execute(ctx context.Context, req *tool.ExecutionRe
 	})
 
 	return next(ctx, req)
+}
+
+func (m *RateLimitMiddleware) estimateTokenCost(req *tool.ExecutionRequest) int {
+	// Use Arguments map if available, otherwise try to unmarshal ToolInputs
+	var args map[string]interface{}
+
+	if req.Arguments != nil {
+		args = req.Arguments
+	} else if len(req.ToolInputs) > 0 {
+		if err := json.Unmarshal(req.ToolInputs, &args); err != nil {
+			// If unmarshal fails, we can't estimate properly. Return default cost.
+			return 1
+		}
+	} else {
+		return 1
+	}
+
+	// Crude estimation: 1 token ~= 4 chars
+	// Sum up all string arguments
+	charCount := 0
+	for _, v := range args {
+		charCount += countChars(v)
+	}
+
+	// At least 1 token
+	tokens := charCount / 4
+	if tokens < 1 {
+		tokens = 1
+	}
+	return tokens
+}
+
+func countChars(v interface{}) int {
+	switch val := v.(type) {
+	case string:
+		return len(val)
+	case []interface{}:
+		count := 0
+		for _, item := range val {
+			count += countChars(item)
+		}
+		return count
+	case map[string]interface{}:
+		count := 0
+		for _, item := range val {
+			count += countChars(item)
+		}
+		return count
+	default:
+		// Best effort for other types
+		return len(fmt.Sprintf("%v", val))
+	}
 }
 
 func (m *RateLimitMiddleware) getLimiter(ctx context.Context, serviceID string, config *configv1.RateLimitConfig) (Limiter, error) {
