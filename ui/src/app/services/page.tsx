@@ -25,15 +25,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
-import { UpstreamServiceConfig } from "@/lib/types";
-
-// interface Service {
-//   id: string;
-//   name: string;
-//   version: string;
-//   disable: boolean;
-//   service_config?: any;
-// }
+import { UpstreamServiceConfig } from "@/lib/client";
 
 export default function ServicesPage() {
   const [services, setServices] = useState<UpstreamServiceConfig[]>([]);
