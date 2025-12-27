@@ -48,7 +48,7 @@ test.describe('Logs Page', () => {
 
   test('should filter logs', async ({ page }) => {
       // Set filter to ERROR
-      const filterSelect = page.getByText('All Levels'); // Trigger
+      const filterSelect = page.getByRole('combobox');
       await filterSelect.click();
       await page.getByRole('option', { name: 'Error' }).click();
 
