@@ -15,6 +15,7 @@ import (
 	"net/url"
 	"os"
 	"path"
+	"path/filepath"
 	"strconv"
 	"strings"
 	"sync"
@@ -1310,6 +1311,9 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 					if err := checkForPathTraversal(val); err != nil {
 						return nil, fmt.Errorf("parameter %q: %w", k, err)
 					}
+					if err := checkForAbsolutePath(val); err != nil {
+						return nil, fmt.Errorf("parameter %q: %w", k, err)
+					}
 					if err := checkForArgumentInjection(val); err != nil {
 						return nil, fmt.Errorf("parameter %q: %w", k, err)
 					}
@@ -1338,6 +1342,9 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 				for _, arg := range argsList {
 					if argStr, ok := arg.(string); ok {
 						if err := checkForPathTraversal(argStr); err != nil {
+							return nil, fmt.Errorf("args parameter: %w", err)
+						}
+						if err := checkForAbsolutePath(argStr); err != nil {
 							return nil, fmt.Errorf("args parameter: %w", err)
 						}
 						if err := checkForArgumentInjection(argStr); err != nil {
@@ -1393,6 +1400,9 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 		} else if val, ok := inputs[name]; ok {
 			valStr := util.ToString(val)
 			if err := checkForPathTraversal(valStr); err != nil {
+				return nil, fmt.Errorf("parameter %q: %w", name, err)
+			}
+			if err := checkForAbsolutePath(valStr); err != nil {
 				return nil, fmt.Errorf("parameter %q: %w", name, err)
 			}
 			env = append(env, fmt.Sprintf("%s=%s", name, valStr))
@@ -1542,6 +1552,9 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 		args = append(args, t.callDefinition.GetArgs()...)
 	}
 
+	// Determine execution environment early for validation
+	isDocker := t.service.GetContainerEnvironment() != nil && t.service.GetContainerEnvironment().GetImage() != ""
+
 	// Substitute placeholders in args with input values
 	if inputs != nil {
 		for i, arg := range args {
@@ -1551,6 +1564,11 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 					val := util.ToString(v)
 					if err := checkForPathTraversal(val); err != nil {
 						return nil, fmt.Errorf("parameter %q: %w", k, err)
+					}
+					if !isDocker {
+						if err := checkForAbsolutePath(val); err != nil {
+							return nil, fmt.Errorf("parameter %q: %w", k, err)
+						}
 					}
 					if err := checkForArgumentInjection(val); err != nil {
 						return nil, fmt.Errorf("parameter %q: %w", k, err)
@@ -1583,6 +1601,11 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 						if err := checkForPathTraversal(argStr); err != nil {
 							return nil, fmt.Errorf("args parameter: %w", err)
 						}
+						if !isDocker {
+							if err := checkForAbsolutePath(argStr); err != nil {
+								return nil, fmt.Errorf("args parameter: %w", err)
+							}
+						}
 						if err := checkForArgumentInjection(argStr); err != nil {
 							return nil, fmt.Errorf("args parameter: %w", err)
 						}
@@ -1610,7 +1633,6 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 	env := []string{}
 	// Only inherit safe environment variables from host for local execution
 	// For Docker execution, we should not inherit host environment variables at all
-	isDocker := t.service.GetContainerEnvironment() != nil && t.service.GetContainerEnvironment().GetImage() != ""
 	if !isDocker {
 		// We strictly only preserve PATH and system identifiers to avoid leaking secrets
 		allowedEnvVars := []string{"PATH", "HOME", "USER", "SHELL", "TMPDIR", "SYSTEMROOT", "WINDIR"}
@@ -1651,6 +1673,11 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 			valStr := util.ToString(val)
 			if err := checkForPathTraversal(valStr); err != nil {
 				return nil, fmt.Errorf("parameter %q: %w", name, err)
+			}
+			if !isDocker {
+				if err := checkForAbsolutePath(valStr); err != nil {
+					return nil, fmt.Errorf("parameter %q: %w", name, err)
+				}
 			}
 			env = append(env, fmt.Sprintf("%s=%s", name, valStr))
 		}
@@ -1843,6 +1870,13 @@ func checkForPathTraversal(val string) error {
 	}
 	if strings.Contains(val, "/../") || strings.Contains(val, "\\..\\") || strings.Contains(val, "/..\\") || strings.Contains(val, "\\../") {
 		return fmt.Errorf("path traversal attempt detected")
+	}
+	return nil
+}
+
+func checkForAbsolutePath(val string) error {
+	if filepath.IsAbs(val) {
+		return fmt.Errorf("absolute path detected: %s (only relative paths are allowed for local execution)", val)
 	}
 	return nil
 }
