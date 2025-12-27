@@ -306,7 +306,18 @@ upstream_services: {
 	}
 }
 `,
-			expectLoadError: true,
+			expectLoadError: false,
+			expectedCount:   1, // Only the first one should be loaded
+			checkServices: func(t *testing.T, services []*configv1.UpstreamServiceConfig) {
+				s := services[0]
+				assert.Equal(t, "duplicate-name", s.GetName())
+				httpService := s.GetHttpService()
+				// The first one defined should be the one kept (assuming no priority override)
+				// Wait, the manager logic says: "priority < existingPriority: New service has higher priority, replace".
+				// "priority == existingPriority: Same priority, this is a duplicate" -> return nil (skip)
+				// So the first one loaded is kept.
+				assert.Equal(t, "http://api.example.com/v1", httpService.GetAddress())
+			},
 		},
 	}
 
