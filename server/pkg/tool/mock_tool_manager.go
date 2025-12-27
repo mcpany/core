@@ -14,6 +14,7 @@ import (
 	reflect "reflect"
 
 	v1 "github.com/mcpany/core/proto/config/v1"
+	"github.com/modelcontextprotocol/go-sdk/mcp"
 	gomock "go.uber.org/mock/gomock"
 )
 
@@ -162,6 +163,20 @@ func (m *MockManagerInterface) ListTools() []Tool {
 func (mr *MockManagerInterfaceMockRecorder) ListTools() *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListTools", reflect.TypeOf((*MockManagerInterface)(nil).ListTools))
+}
+
+// ListMCPTools mocks base method.
+func (m *MockManagerInterface) ListMCPTools() []*mcp.Tool {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ListMCPTools")
+	ret0, _ := ret[0].([]*mcp.Tool)
+	return ret0
+}
+
+// ListMCPTools indicates an expected call of ListMCPTools.
+func (mr *MockManagerInterfaceMockRecorder) ListMCPTools() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListMCPTools", reflect.TypeOf((*MockManagerInterface)(nil).ListMCPTools))
 }
 
 // SetMCPServer mocks base method.

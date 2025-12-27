@@ -36,6 +36,8 @@ type ManagerInterface interface {
 	GetTool(toolName string) (Tool, bool)
 	// ListTools returns all registered tools.
 	ListTools() []Tool
+	// ListMCPTools returns all registered tools converted to MCP format.
+	ListMCPTools() []*mcp.Tool
 	// ClearToolsForService removes all tools for a given service.
 	ClearToolsForService(serviceID string)
 	// ExecuteTool executes a tool with the given request.
@@ -69,7 +71,9 @@ type Manager struct {
 	mu          sync.RWMutex
 	middlewares []ExecutionMiddleware
 	cachedTools []Tool
-	toolsMutex  sync.RWMutex
+	// cachedMCPTools stores the converted MCP tools to avoid re-conversion and allocation.
+	cachedMCPTools []*mcp.Tool
+	toolsMutex     sync.RWMutex
 
 	enabledProfiles []string
 	profileDefs     map[string]*configv1.ProfileDefinition
@@ -397,6 +401,7 @@ func (tm *Manager) AddTool(tool Tool) error {
 
 	tm.toolsMutex.Lock()
 	tm.cachedTools = nil
+	tm.cachedMCPTools = nil
 	tm.toolsMutex.Unlock()
 
 	if tm.mcpServer != nil {
@@ -542,6 +547,53 @@ func (tm *Manager) ListTools() []Tool {
 	return tools
 }
 
+// ListMCPTools returns a slice containing all the tools currently registered with
+// the manager, converted to the MCP SDK format.
+func (tm *Manager) ListMCPTools() []*mcp.Tool {
+	tm.toolsMutex.RLock()
+	if tm.cachedMCPTools != nil {
+		defer tm.toolsMutex.RUnlock()
+		return tm.cachedMCPTools
+	}
+	tm.toolsMutex.RUnlock()
+
+	tm.toolsMutex.Lock()
+	defer tm.toolsMutex.Unlock()
+	if tm.cachedMCPTools != nil {
+		return tm.cachedMCPTools
+	}
+
+	// We can reuse ListTools to get the internal tools
+	// WARNING: We must NOT call ListTools() directly because it acquires the lock we already hold.
+	// Instead, we access the underlying data directly or via a lock-free helper if available.
+	// In this case, since we hold the lock, we can safely populate cachedTools if needed,
+	// or iterate the map if cachedTools is nil.
+
+	var tools []Tool
+	if tm.cachedTools != nil {
+		tools = tm.cachedTools
+	} else {
+		// Populate cachedTools while we are here
+		tm.tools.Range(func(_ string, value Tool) bool {
+			tools = append(tools, value)
+			return true
+		})
+		tm.cachedTools = tools
+	}
+
+	mcpTools := make([]*mcp.Tool, 0, len(tools))
+	for _, t := range tools {
+		if mt := t.MCPTool(); mt != nil {
+			mcpTools = append(mcpTools, mt)
+		} else {
+			logging.GetLogger().Error("Failed to convert tool to MCP format", "toolName", t.Tool().GetName())
+		}
+	}
+
+	tm.cachedMCPTools = mcpTools
+	return mcpTools
+}
+
 // ClearToolsForService removes all tools associated with a given service key from
 // the manager. This is useful when a service is being re-registered or
 // unregistered.
@@ -564,6 +616,7 @@ func (tm *Manager) ClearToolsForService(serviceID string) {
 	if deletedCount > 0 {
 		tm.toolsMutex.Lock()
 		tm.cachedTools = nil
+		tm.cachedMCPTools = nil
 		tm.toolsMutex.Unlock()
 	}
 	log.Debug("Cleared tools for serviceID", "count", deletedCount)

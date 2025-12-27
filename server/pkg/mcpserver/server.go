@@ -232,13 +232,18 @@ func (s *Server) toolListFilteringMiddleware(next mcp.MethodHandler) mcp.MethodH
 		req mcp.Request,
 	) (mcp.Result, error) {
 		if method == consts.MethodToolsList {
+			profileID, hasProfile := auth.ProfileIDFromContext(ctx)
+
+			// Fast path: if no profile filtering is needed, return cached MCP tools directly.
+			if !hasProfile {
+				return &mcp.ListToolsResult{Tools: s.toolManager.ListMCPTools()}, nil
+			}
+
 			// The tool manager is the authoritative source of tools. We iterate over the
 			// tools in the manager to ensure that the list is always up-to-date and
 			// reflects the current state of the system.
 			managedTools := s.toolManager.ListTools()
 			refreshedTools := make([]*mcp.Tool, 0, len(managedTools))
-
-			profileID, hasProfile := auth.ProfileIDFromContext(ctx)
 
 			// Cache service access decisions to avoid repeated lookups
 			var serviceAccessCache map[string]bool
@@ -469,7 +474,7 @@ func (s *Server) GetTool(toolName string) (tool.Tool, bool) {
 // Returns:
 //   - A slice of all available tools.
 func (s *Server) ListTools() []tool.Tool {
-	logging.GetLogger().Info("Listing tools...")
+	logging.GetLogger().Debug("Listing tools...")
 	metrics.IncrCounter([]string{"tools", "list", "total"}, 1)
 	return s.toolManager.ListTools()
 }
