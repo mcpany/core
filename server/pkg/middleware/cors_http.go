@@ -46,17 +46,17 @@ func (m *HTTPCORSMiddleware) Handler(next http.Handler) http.Handler {
 			}
 		}
 
-		if !allowed && wildcardAllowed {
+		switch {
+		case !allowed && wildcardAllowed:
 			// Wildcard match
 			w.Header().Set("Access-Control-Allow-Origin", "*")
 			// Do NOT set Access-Control-Allow-Credentials for wildcard
-			// w.Header().Set("Access-Control-Allow-Credentials", "true")
-		} else if allowed {
+		case allowed:
 			// Specific match
 			w.Header().Set("Access-Control-Allow-Origin", origin)
 			w.Header().Set("Vary", "Origin")
 			w.Header().Set("Access-Control-Allow-Credentials", "true")
-		} else {
+		default:
 			// CORS check failed
 			next.ServeHTTP(w, r)
 			return
