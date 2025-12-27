@@ -292,21 +292,10 @@ func (p *poolImpl[T]) Put(client T) {
 		return
 	}
 
-	// Use a background context for health checks in Put to avoid blocking.
-	if !p.disableHealthCheck && !client.IsHealthy(context.Background()) {
-		_ = lo.Try(client.Close)
-		p.sem.Release(1)
-		// Notify waiting Get routines
-		p.mu.Lock()
-		if !p.closed.Load() {
-			select {
-			case p.clients <- poolItem[T]{retry: true}:
-			default:
-			}
-		}
-		p.mu.Unlock()
-		return
-	}
+	// We do NOT check health here to avoid blocking the caller.
+	// IsHealthy() can be slow (network calls), and Put is often used in defer.
+	// Any unhealthy client returned here will be detected and discarded by Get()
+	// when it is next retrieved.
 
 	p.mu.Lock()
 	if p.closed.Load() {
