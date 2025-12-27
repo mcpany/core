@@ -6,8 +6,14 @@
 
 import { test, expect } from '@playwright/test';
 import path from 'path';
+import fs from 'fs';
 
 const AUDIT_DIR = path.join(__dirname, '../.audit/ui/2025-05-15');
+
+// Ensure audit dir exists
+if (!fs.existsSync(AUDIT_DIR)){
+    fs.mkdirSync(AUDIT_DIR, { recursive: true });
+}
 
 test.describe('Audit Screenshots', () => {
 
