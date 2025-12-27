@@ -144,14 +144,15 @@ func (m *RateLimitMiddleware) estimateTokenCost(req *tool.ExecutionRequest) int 
 	// Use Arguments map if available, otherwise try to unmarshal ToolInputs
 	var args map[string]interface{}
 
-	if req.Arguments != nil {
+	switch {
+	case req.Arguments != nil:
 		args = req.Arguments
-	} else if len(req.ToolInputs) > 0 {
+	case len(req.ToolInputs) > 0:
 		if err := json.Unmarshal(req.ToolInputs, &args); err != nil {
 			// If unmarshal fails, we can't estimate properly. Return default cost.
 			return 1
 		}
-	} else {
+	default:
 		return 1
 	}
 

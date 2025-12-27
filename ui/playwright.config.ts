@@ -12,10 +12,15 @@ export default defineConfig({
   retries: process.env.CI ? 2 : 0,
   workers: process.env.CI ? 1 : undefined,
   reporter: 'html',
+  timeout: 60000, // 60s per test
+  expect: {
+    timeout: 15000, // 15s per assertion
+  },
   use: {
     baseURL: process.env.PLAYWRIGHT_BASE_URL || 'http://localhost:9002',
     trace: 'on-first-retry',
     colorScheme: 'dark',
+    actionTimeout: 15000,
   },
   projects: [
     {
