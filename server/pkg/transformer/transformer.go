@@ -7,6 +7,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"strconv"
 	"strings"
 	"sync"
 	"text/template"
@@ -56,11 +57,26 @@ func (t *Transformer) Transform(templateStr string, data any) ([]byte, error) {
 			},
 			"join": func(sep string, a []any) string {
 				var sb strings.Builder
+				// Heuristic: estimate 5 chars per item plus separator
+				if n := len(a); n > 0 {
+					sb.Grow(n * (5 + len(sep)))
+				}
 				for i, v := range a {
 					if i > 0 {
 						sb.WriteString(sep)
 					}
-					fmt.Fprint(&sb, v)
+					switch val := v.(type) {
+					case string:
+						sb.WriteString(val)
+					case int:
+						sb.WriteString(strconv.Itoa(val))
+					case int64:
+						sb.WriteString(strconv.FormatInt(val, 10))
+					case float64:
+						sb.WriteString(strconv.FormatFloat(val, 'g', -1, 64))
+					default:
+						fmt.Fprint(&sb, v)
+					}
 				}
 				return sb.String()
 			},
