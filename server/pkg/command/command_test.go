@@ -209,7 +209,7 @@ func TestDockerExecutor(t *testing.T) {
 		containerEnv := &configv1.ContainerEnvironment{}
 		containerEnv.SetImage("alpine:latest")
 		containerEnv.SetVolumes(map[string]string{
-			absPath: "/mnt/test",
+			"/mnt/test": absPath,
 		})
 		executor := NewExecutor(containerEnv)
 		ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
@@ -601,7 +601,7 @@ func TestDockerExecutorWithStdIO(t *testing.T) {
 		containerEnv := &configv1.ContainerEnvironment{}
 		containerEnv.SetImage("alpine:latest")
 		containerEnv.SetVolumes(map[string]string{
-			"/host/path": "/container/path",
+			"/container/path": "/host/path",
 		})
 		executor := newDockerExecutor(containerEnv).(*dockerExecutor)
 
@@ -621,7 +621,7 @@ func TestDockerExecutorWithStdIO(t *testing.T) {
 
 		require.NotNil(t, capturedHostConfig)
 		require.Len(t, capturedHostConfig.Mounts, 1)
-		// With the fix, Key is Source, Value is Target
+		// With the fix, Key is Destination/Target, Value is Source
 		assert.Equal(t, "/host/path", capturedHostConfig.Mounts[0].Source)
 		assert.Equal(t, "/container/path", capturedHostConfig.Mounts[0].Target)
 	})
@@ -782,7 +782,7 @@ func TestDockerExecutor_Mocked(t *testing.T) {
 		containerEnv := &configv1.ContainerEnvironment{}
 		containerEnv.SetImage("alpine:latest")
 		containerEnv.SetVolumes(map[string]string{
-			"/host/path": "/container/path",
+			"/container/path": "/host/path",
 		})
 		executor := newDockerExecutor(containerEnv).(*dockerExecutor)
 
