@@ -7,6 +7,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"strconv"
 	"strings"
 	"sync"
 	"text/template"
@@ -56,6 +57,7 @@ func (t *Transformer) Transform(templateStr string, data any) ([]byte, error) {
 			},
 			"join": func(sep string, a []any) string {
 				var sb strings.Builder
+				var scratch [64]byte
 				for i, v := range a {
 					if i > 0 {
 						sb.WriteString(sep)
@@ -63,6 +65,16 @@ func (t *Transformer) Transform(templateStr string, data any) ([]byte, error) {
 					switch val := v.(type) {
 					case string:
 						sb.WriteString(val)
+					case int:
+						sb.Write(strconv.AppendInt(scratch[:0], int64(val), 10))
+					case int64:
+						sb.Write(strconv.AppendInt(scratch[:0], val, 10))
+					case int32:
+						sb.Write(strconv.AppendInt(scratch[:0], int64(val), 10))
+					case float64:
+						sb.Write(strconv.AppendFloat(scratch[:0], val, 'g', -1, 64))
+					case bool:
+						sb.Write(strconv.AppendBool(scratch[:0], val))
 					case fmt.Stringer:
 						sb.WriteString(val.String())
 					default:
