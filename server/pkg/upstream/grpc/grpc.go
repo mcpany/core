@@ -62,6 +62,9 @@ func NewUpstream(poolManager *pool.Manager) upstream.Upstream {
 // Shutdown gracefully terminates the gRPC upstream service by shutting down the
 // associated connection pool.
 func (u *Upstream) Shutdown(_ context.Context) error {
+	if u.reflectionCache != nil {
+		u.reflectionCache.Stop()
+	}
 	u.poolManager.Deregister(u.serviceID)
 	return nil
 }
