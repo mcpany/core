@@ -10,6 +10,7 @@ import (
 	"io"
 	"net"
 	"os/exec"
+	"sync"
 
 	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/api/types/image"
@@ -197,15 +198,24 @@ func (e *dockerExecutor) Execute(ctx context.Context, command string, args []str
 		return nil, nil, nil, fmt.Errorf("failed to start container: %w", err)
 	}
 
-	out, err := cli.ContainerLogs(ctx, resp.ID, container.LogsOptions{ShowStdout: true, ShowStderr: true})
+	out, err := cli.ContainerLogs(ctx, resp.ID, container.LogsOptions{ShowStdout: true, ShowStderr: true, Follow: true})
 	if err != nil {
 		_ = cli.Close()
 		return nil, nil, nil, fmt.Errorf("failed to get container logs: %w", err)
 	}
 
+	var wg sync.WaitGroup
+	wg.Add(2)
+
+	// Goroutine to wait for container exit and close client when everything is done
+	go func() {
+		wg.Wait()
+		_ = cli.Close()
+	}()
+
 	exitCodeChan := make(chan int, 1)
 	go func() {
-		defer func() { _ = cli.Close() }() // Close client when monitoring is done
+		defer wg.Done()
 		defer close(exitCodeChan)
 		defer func() {
 			if rmErr := cli.ContainerRemove(context.Background(), resp.ID, container.RemoveOptions{Force: true}); rmErr != nil {
@@ -228,6 +238,7 @@ func (e *dockerExecutor) Execute(ctx context.Context, command string, args []str
 	stderrReader, stderrWriter := io.Pipe()
 
 	go func() {
+		defer wg.Done()
 		defer func() { _ = out.Close() }()
 		_, err = stdcopy.StdCopy(stdoutWriter, stderrWriter, out)
 		if err != nil {
@@ -342,6 +353,7 @@ func (e *dockerExecutor) ExecuteWithStdIO(ctx context.Context, command string, a
 
 	return &closeWriter{conn: attachResp.Conn}, stdoutReader, stderrReader, exitCodeChan, nil
 }
+
 type closeWriter struct {
 	conn net.Conn
 }
