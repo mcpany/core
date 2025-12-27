@@ -1,74 +1,70 @@
-# MCP Any Manager Features
+# MCP Any UI Features
 
-This document outlines the features implemented in the MCP Any Manager interface.
+This document describes the new features implemented in the MCP Any UI Overhaul.
 
-## Dashboard & Observability
-**Status**: Implemented
+## Design Philosophy
 
-The dashboard provides a real-time overview of the system's health and performance.
+The new UI follows a "Premium" design aesthetic inspired by Apple and Ubiquiti/Unifi. It features:
+- **Clean Lines & Whitespace:** Generous spacing to reduce cognitive load.
+- **Glassmorphism:** Subtle translucency and blur effects (`backdrop-blur-xl`) on cards and sidebars.
+- **High-Contrast Typography:** Using the Inter font family for readability and a modern look.
+- **Interactive Elements:** Hover effects, smooth transitions, and immediate feedback (toasts).
 
-*   **Real-time Metrics**: Displays key performance indicators for Services, Tools, Resources, and Prompts.
-*   **System Health**: Shows live health status (Healthy, Degraded, Unhealthy) for all connected upstream services.
-*   **Aesthetics**: Designed with a glassmorphism effect and clean layout for a premium feel.
+## Features
 
-![Dashboard](.audit/ui/2025-05-23/dashboard.png)
+### 1. Dashboard (`/`)
+The dashboard provides a high-level overview of the MCP infrastructure.
+- **Real-time Metrics:** Visualizes "Requests per Second" using an area chart.
+- **Key Indicators:** Cards for Total Requests, Active Services, Latency, and Error Rates with trend indicators.
+- **Service Status:** A live list of connected services with uptime and status badges.
 
-## Core Management
+![Dashboard Audit](../.audit/ui/2025-05-20/dashboard.png)
 
-### Services
-**Status**: Implemented
+### 2. Services Management (`/services`)
+Manage upstream MCP services.
+- **List View:** Displays services with their type, version, and status.
+- **Toggle:** One-click enable/disable switch for each service.
+- **CRUD Operations:**
+    - **Add Service:** Form to register new HTTP, gRPC, or Command Line services.
+    - **Edit Service:** Modify existing configurations.
+    - **Delete:** Remove a service (via dropdown menu).
 
-Manage connected upstream services (HTTP, gRPC, Command Line, MCP Proxy).
-*   **List View**: View all services with their type, version, and status.
-*   **Toggle**: Enable/Disable services with a single click.
-*   **Edit**: Configure service details.
+![Services Audit](../.audit/ui/2025-05-20/services.png)
 
-![Services](.audit/ui/2025-05-23/services.png)
+### 3. Resource Management
+Dedicated views for different MCP primitives.
 
-### Tools
-**Status**: Implemented
+#### Tools (`/tools`)
+- List all discoverable tools from connected services.
+- Toggle availability of individual tools.
+- Search/Filter by name.
 
-View and manage tools exposed by connected services.
-*   **Discovery**: Automatically lists tools from registered services.
-*   **Control**: Enable or disable specific tools.
+![Tools Audit](../.audit/ui/2025-05-20/tools.png)
 
-![Tools](.audit/ui/2025-05-23/tools.png)
+#### Resources (`/resources`)
+- View exposed file paths, database tables, and other resources.
+- Toggle access to specific resources.
 
-### Resources
-**Status**: Implemented
+![Resources Audit](../.audit/ui/2025-05-20/resources.png)
 
-Manage access to resources (files, databases, etc.).
-*   **Inventory**: View all available resources and their MIME types.
-*   **Access Control**: Toggle access to specific resources.
+#### Prompts (`/prompts`)
+- Manage reusable prompts and templates.
+- View arguments and descriptions.
 
-![Resources](.audit/ui/2025-05-23/resources.png)
+![Prompts Audit](../.audit/ui/2025-05-20/prompts.png)
 
-### Prompts
-**Status**: Implemented
+### 4. Advanced Features
 
-Manage prompt templates.
-*   **Library**: View available prompts.
-*   **Availability**: Enable or disable prompts for LLM use.
+#### Middleware (`/middleware`)
+- Visual pipeline editor for global request processing.
+- Reorder middleware (visualized order).
+- Toggle specific middleware components (Auth, Rate Limiting, Logging).
 
-![Prompts](.audit/ui/2025-05-23/prompts.png)
+![Middleware Audit](../.audit/ui/2025-05-20/middleware.png)
 
-## Advanced Features
+#### Webhooks (`/webhooks`)
+- Configure external event notifications.
+- Add new webhook endpoints.
+- List active subscriptions.
 
-### Middleware Pipeline
-**Status**: Implemented
-
-Visual management of the request processing pipeline.
-*   **Drag & Drop**: Reorder middleware components (Auth, Rate Limit, Logging, etc.).
-*   **Visualization**: See the flow of requests from ingress to service.
-
-![Middleware](.audit/ui/2025-05-23/middleware.png)
-
-### Webhooks
-**Status**: Implemented
-
-Configure outbound webhooks for system events.
-*   **Configuration**: Add new webhook endpoints.
-*   **Event Filtering**: Subscribe to specific events (e.g., service.registered, error.occurred).
-*   **Testing**: Trigger test events to verify delivery.
-
-![Webhooks](.audit/ui/2025-05-23/webhooks.png)
+![Webhooks Audit](../.audit/ui/2025-05-20/webhooks.png)

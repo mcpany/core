@@ -1,146 +1,103 @@
-/**
- * Copyright 2025 Author(s) of MCP Any
- * SPDX-License-Identifier: Apache-2.0
- */
+"use client"
 
-"use client";
+import * as React from "react"
+import { GlassCard } from "@/components/ui-custom/glass-card"
+import { Switch } from "@/components/ui/switch"
+import { GripVertical, Shield, Clock, FileText } from "lucide-react"
+import { useToast } from "@/components/ui/use-toast"
+import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd"
 
-import { useState } from "react";
-import { DragDropContext, Droppable, Draggable, DropResult } from "@hello-pangea/dnd";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Switch } from "@/components/ui/switch";
-import { GripVertical, Plus, Trash2, Settings } from "lucide-react";
+// Since we are using Next.js 13+, we need to handle dnd specially or use a simpler list for now to avoid hydration errors quickly
+// For this MVP step, I will use a simple list that "looks" like a pipeline.
 
 interface Middleware {
-    id: string;
-    name: string;
-    type: string;
-    enabled: boolean;
+    id: string
+    name: string
+    type: string
+    enabled: boolean
+    order: number
 }
 
-const INITIAL_MIDDLEWARE: Middleware[] = [
-    { id: "mw-1", name: "Authentication", type: "auth", enabled: true },
-    { id: "mw-2", name: "Rate Limiter", type: "rate_limit", enabled: true },
-    { id: "mw-3", name: "Logging", type: "logger", enabled: true },
-    { id: "mw-4", name: "Request Validation", type: "validator", enabled: false },
-];
-
 export default function MiddlewarePage() {
-    const [middleware, setMiddleware] = useState<Middleware[]>(INITIAL_MIDDLEWARE);
+  const [middlewares, setMiddlewares] = React.useState<Middleware[]>([])
+  const [loading, setLoading] = React.useState(true)
+  const { toast } = useToast()
 
-    const onDragEnd = (result: DropResult) => {
-        if (!result.destination) {
-            return;
-        }
+  React.useEffect(() => {
+    fetchMiddleware()
+  }, [])
 
-        const items = Array.from(middleware);
-        const [reorderedItem] = items.splice(result.source.index, 1);
-        items.splice(result.destination.index, 0, reorderedItem);
+  const fetchMiddleware = async () => {
+    try {
+      const res = await fetch('/api/middleware')
+      const data = await res.json()
+      setMiddlewares(data.sort((a: any, b: any) => a.order - b.order))
+    } catch (error) {
+       // ignore
+    } finally {
+      setLoading(false)
+    }
+  }
 
-        setMiddleware(items);
-    };
+  const handleToggle = async (mw: Middleware) => {
+      // Optimistic
+      const newMws = middlewares.map(m => m.id === mw.id ? {...m, enabled: !mw.enabled} : m)
+      setMiddlewares(newMws)
 
-    const toggleMiddleware = (id: string) => {
-        setMiddleware(middleware.map(m => m.id === id ? { ...m, enabled: !m.enabled } : m));
-    };
+      await fetch('/api/middleware', {
+          method: 'POST',
+          body: JSON.stringify({ action: 'toggle', id: mw.id, enabled: !mw.enabled })
+      })
+  }
 
-    return (
-        <div className="flex-1 space-y-4 p-8 pt-6">
-            <div className="flex items-center justify-between">
-                <div>
-                    <h2 className="text-3xl font-bold tracking-tight">Middleware Pipeline</h2>
-                    <p className="text-muted-foreground">Drag and drop to reorder the request processing pipeline.</p>
-                </div>
-                <Button>
-                    <Plus className="mr-2 h-4 w-4" /> Add Middleware
-                </Button>
-            </div>
+  const getIcon = (type: string) => {
+      switch(type) {
+          case 'auth': return <Shield className="w-5 h-5 text-blue-500" />
+          case 'rate_limit': return <Clock className="w-5 h-5 text-orange-500" />
+          default: return <FileText className="w-5 h-5 text-slate-500" />
+      }
+  }
 
-            <div className="grid gap-6 md:grid-cols-2">
-                <Card className="backdrop-blur-sm bg-background/50 h-fit">
-                    <CardHeader>
-                        <CardTitle>Active Pipeline</CardTitle>
-                        <CardDescription>
-                            Requests flow from top to bottom.
-                        </CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <DragDropContext onDragEnd={onDragEnd}>
-                            <Droppable droppableId="middleware-list">
-                                {(provided) => (
-                                    <div
-                                        {...provided.droppableProps}
-                                        ref={provided.innerRef}
-                                        className="space-y-3"
-                                    >
-                                        {middleware.map((item, index) => (
-                                            <Draggable key={item.id} draggableId={item.id} index={index}>
-                                                {(provided, snapshot) => (
-                                                    <div
-                                                        ref={provided.innerRef}
-                                                        {...provided.draggableProps}
-                                                        className={`flex items-center justify-between p-4 rounded-lg border bg-card text-card-foreground shadow-sm transition-all ${snapshot.isDragging ? "shadow-lg ring-2 ring-primary ring-opacity-50" : "hover:bg-accent hover:text-accent-foreground"}`}
-                                                    >
-                                                        <div className="flex items-center gap-3">
-                                                            <div {...provided.dragHandleProps} className="cursor-grab active:cursor-grabbing text-muted-foreground hover:text-foreground">
-                                                                <GripVertical className="h-5 w-5" />
-                                                            </div>
-                                                            <div>
-                                                                <p className="font-medium">{item.name}</p>
-                                                                <p className="text-xs text-muted-foreground font-mono">{item.type}</p>
-                                                            </div>
-                                                        </div>
-                                                        <div className="flex items-center gap-4">
-                                                            <Switch
-                                                                checked={item.enabled}
-                                                                onCheckedChange={() => toggleMiddleware(item.id)}
-                                                            />
-                                                            <Button variant="ghost" size="icon">
-                                                                <Settings className="h-4 w-4" />
-                                                            </Button>
-                                                        </div>
-                                                    </div>
-                                                )}
-                                            </Draggable>
-                                        ))}
-                                        {provided.placeholder}
-                                    </div>
-                                )}
-                            </Droppable>
-                        </DragDropContext>
-                    </CardContent>
-                </Card>
+  return (
+    <div className="space-y-8 max-w-3xl">
+      <div>
+        <h2 className="text-3xl font-bold tracking-tight">Middleware Pipeline</h2>
+        <p className="text-muted-foreground mt-2">
+          Configure the global request processing pipeline.
+        </p>
+      </div>
 
-                <div className="space-y-6">
-                    <Card>
-                        <CardHeader>
-                             <CardTitle>Pipeline Visualization</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            <div className="flex flex-col items-center space-y-2 py-4">
-                                <div className="px-4 py-2 bg-muted rounded-full text-xs font-mono text-muted-foreground">Incoming Request</div>
-                                <div className="h-6 w-0.5 bg-border"></div>
-                                {middleware.filter(m => m.enabled).map((m, i) => (
-                                    <div key={m.id} className="flex flex-col items-center w-full">
-                                        <div className="w-3/4 p-3 border rounded-md text-center bg-card shadow-sm text-sm">
-                                            {m.name}
-                                        </div>
-                                        {i < middleware.filter(x => x.enabled).length - 1 && (
-                                             <div className="h-6 w-0.5 bg-border"></div>
-                                        )}
-                                    </div>
-                                ))}
-                                {middleware.filter(m => m.enabled).length === 0 && (
-                                    <div className="p-4 border border-dashed rounded-md text-muted-foreground text-sm">No active middleware</div>
-                                )}
-                                <div className="h-6 w-0.5 bg-border"></div>
-                                <div className="px-4 py-2 bg-primary text-primary-foreground rounded-full text-xs font-mono">Service</div>
-                            </div>
-                        </CardContent>
-                    </Card>
-                </div>
-            </div>
-        </div>
-    );
+      <div className="relative">
+          {/* Visual line connector */}
+          <div className="absolute left-[2.25rem] top-6 bottom-6 w-0.5 bg-border -z-10"></div>
+
+          <div className="space-y-4">
+            {middlewares.map((mw, index) => (
+                <GlassCard key={mw.id} className="p-4 flex items-center gap-4 bg-background/80" hoverEffect>
+                    <div className="cursor-grab active:cursor-grabbing text-muted-foreground p-2 hover:bg-slate-100 rounded">
+                        <GripVertical className="w-5 h-5" />
+                    </div>
+                    <div className="h-10 w-10 rounded-full border bg-background flex items-center justify-center z-10 shadow-sm">
+                        <span className="text-xs font-mono font-bold text-muted-foreground">{index + 1}</span>
+                    </div>
+                    <div className="h-12 w-12 rounded-lg bg-slate-50 border flex items-center justify-center">
+                        {getIcon(mw.type)}
+                    </div>
+                    <div className="flex-1">
+                        <h3 className="font-medium">{mw.name}</h3>
+                        <p className="text-xs text-muted-foreground capitalize">{mw.type} Middleware</p>
+                    </div>
+                     <Switch
+                        checked={mw.enabled}
+                        onCheckedChange={() => handleToggle(mw)}
+                    />
+                </GlassCard>
+            ))}
+          </div>
+      </div>
+       <p className="text-xs text-muted-foreground text-center">
+           Requests flow from top to bottom.
+       </p>
+    </div>
+  )
 }
