@@ -502,6 +502,12 @@ message RateLimitConfig {
     KEY_BY_API_KEY = 4;
   }
   KeyBy key_by = 6 [json_name = "key_by"];
+
+  enum CostMetric {
+    COST_METRIC_REQUESTS = 0;
+    COST_METRIC_TOKENS = 1;
+  }
+  CostMetric cost_metric = 7 [json_name = "cost_metric"];
 }
 
 
