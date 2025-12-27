@@ -43,6 +43,17 @@ func TestReloadConfig(t *testing.T) {
 	t.Run("successful reload", func(t *testing.T) {
 		fs := afero.NewMemMapFs()
 		app := NewApplication()
+		// Mock ServiceRegistry because NewApplication doesn't initialize it (it happens in Run)
+		// We can use a real one for this test
+		poolManager := pool.NewManager()
+		upstreamFactory := factory.NewUpstreamServiceFactory(poolManager)
+		app.ServiceRegistry = serviceregistry.New(
+			upstreamFactory,
+			app.ToolManager,
+			app.PromptManager,
+			app.ResourceManager,
+			auth.NewManager(),
+		)
 
 		configContent := `
 upstream_services:
