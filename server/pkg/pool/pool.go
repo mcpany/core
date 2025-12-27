@@ -134,6 +134,19 @@ func New[T ClosableClient](
 	return p, nil
 }
 
+// isNil checks if the generic client is nil.
+// If T is an interface, it checks if the value is nil or if the underlying concrete value is nil.
+// If T is a pointer, it checks if it is nil.
+func isNil[T any](client T) bool {
+	// Fast path for simple nil check
+	if any(client) == nil {
+		return true
+	}
+	// Slow path for interface holding nil pointer
+	v := reflect.ValueOf(client)
+	return (v.Kind() == reflect.Ptr || v.Kind() == reflect.Interface) && v.IsNil()
+}
+
 // Get retrieves a client from the pool. It first attempts to fetch an idle
 // client from the channel. If none are available and the pool has not reached
 // its maximum size, it creates a new client using the pool's factory.
@@ -172,15 +185,16 @@ func (p *poolImpl[T]) Get(ctx context.Context) (T, error) {
 			if !ok {
 				return zero, ErrPoolClosed
 			}
-			v := reflect.ValueOf(client)
-			if (v.Kind() == reflect.Ptr || v.Kind() == reflect.Interface) && v.IsNil() {
+
+			if isNil(client) {
 				// Nil received: permit released, retry creation
 				continue
 			}
+
 			if p.disableHealthCheck || client.IsHealthy(ctx) {
 				return client, nil
 			}
-			_ = lo.Try(client.Close)
+			_ = client.Close()
 			p.sem.Release(1)
 			continue // Retry.
 		default:
@@ -198,15 +212,14 @@ func (p *poolImpl[T]) Get(ctx context.Context) (T, error) {
 				if !ok {
 					return zero, ErrPoolClosed
 				}
-				v := reflect.ValueOf(client)
-				if (v.Kind() == reflect.Ptr || v.Kind() == reflect.Interface) && v.IsNil() {
+				if isNil(client) {
 					// Nil received: permit released, retry creation
 					continue
 				}
 				if p.disableHealthCheck || client.IsHealthy(ctx) {
 					return client, nil
 				}
-				_ = lo.Try(client.Close)
+				_ = client.Close()
 				p.sem.Release(1)
 				continue // Retry.
 			default:
@@ -224,7 +237,7 @@ func (p *poolImpl[T]) Get(ctx context.Context) (T, error) {
 
 				// Check again if the pool was closed while we were creating a client.
 				if p.closed.Load() {
-					_ = lo.Try(client.Close)
+					_ = client.Close()
 					p.sem.Release(1)
 					return zero, ErrPoolClosed
 				}
@@ -239,15 +252,14 @@ func (p *poolImpl[T]) Get(ctx context.Context) (T, error) {
 			if !ok {
 				return zero, ErrPoolClosed
 			}
-			v := reflect.ValueOf(client)
-			if (v.Kind() == reflect.Ptr || v.Kind() == reflect.Interface) && v.IsNil() {
+			if isNil(client) {
 				// Nil received: permit released, retry creation
 				continue
 			}
 			if p.disableHealthCheck || client.IsHealthy(ctx) {
 				return client, nil
 			}
-			_ = lo.Try(client.Close)
+			_ = client.Close()
 			p.sem.Release(1)
 			continue // Retry.
 		case <-ctx.Done():
@@ -265,21 +277,20 @@ func (p *poolImpl[T]) Get(ctx context.Context) (T, error) {
 // Parameters:
 //   - client: The client to return to the pool.
 func (p *poolImpl[T]) Put(client T) {
-	v := reflect.ValueOf(client)
-	if (v.Kind() == reflect.Ptr || v.Kind() == reflect.Interface) && v.IsNil() {
+	if isNil(client) {
 		p.sem.Release(1)
 		return
 	}
 
 	if p.closed.Load() {
-		_ = lo.Try(client.Close)
+		_ = client.Close()
 		p.sem.Release(1) // Release permit as the client is discarded
 		return
 	}
 
 	// Use a background context for health checks in Put to avoid blocking.
 	if !p.disableHealthCheck && !client.IsHealthy(context.Background()) {
-		_ = lo.Try(client.Close)
+		_ = client.Close()
 		p.sem.Release(1)
 		// Notify waiting Get routines
 		var zero T
@@ -297,7 +308,7 @@ func (p *poolImpl[T]) Put(client T) {
 	p.mu.Lock()
 	if p.closed.Load() {
 		p.mu.Unlock()
-		_ = lo.Try(client.Close)
+		_ = client.Close()
 		p.sem.Release(1)
 		return
 	}
@@ -312,7 +323,7 @@ func (p *poolImpl[T]) Put(client T) {
 		// maxSize, and we can't tell if this client came from the pool
 		// in the first place.
 		p.mu.Unlock()
-		_ = lo.Try(client.Close)
+		_ = client.Close()
 	}
 }
 
@@ -332,11 +343,10 @@ func (p *poolImpl[T]) Close() error {
 
 	// Drain the channel and close all idle clients
 	for client := range p.clients {
-		v := reflect.ValueOf(client)
-		if (v.Kind() == reflect.Ptr || v.Kind() == reflect.Interface) && v.IsNil() {
+		if isNil(client) {
 			continue
 		}
-		_ = lo.Try(client.Close)
+		_ = client.Close()
 		p.sem.Release(1)
 	}
 	return nil
