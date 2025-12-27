@@ -14,7 +14,6 @@ import (
 	"time"
 
 	"github.com/mcpany/core/pkg/logging"
-	"github.com/samber/lo"
 	"golang.org/x/sync/semaphore"
 )
 
@@ -172,15 +171,22 @@ func (p *poolImpl[T]) Get(ctx context.Context) (T, error) {
 			if !ok {
 				return zero, ErrPoolClosed
 			}
-			v := reflect.ValueOf(client)
-			if (v.Kind() == reflect.Ptr || v.Kind() == reflect.Interface) && v.IsNil() {
-				// Nil received: permit released, retry creation
+			// We skip the reflection check here. If a nil interface was pushed,
+			// it means we need to retry creation (likely a signal).
+			if any(client) == nil {
+				// Nil received: permit released by Put, retry creation
 				continue
 			}
+			v := reflect.ValueOf(client)
+			if v.Kind() == reflect.Ptr && v.IsNil() {
+				// Nil pointer received: permit released by Put, retry creation
+				continue
+			}
+
 			if p.disableHealthCheck || client.IsHealthy(ctx) {
 				return client, nil
 			}
-			_ = lo.Try(client.Close)
+			_ = client.Close()
 			p.sem.Release(1)
 			continue // Retry.
 		default:
@@ -198,15 +204,21 @@ func (p *poolImpl[T]) Get(ctx context.Context) (T, error) {
 				if !ok {
 					return zero, ErrPoolClosed
 				}
-				v := reflect.ValueOf(client)
-				if (v.Kind() == reflect.Ptr || v.Kind() == reflect.Interface) && v.IsNil() {
+
+				if any(client) == nil {
 					// Nil received: permit released, retry creation
 					continue
 				}
+				v := reflect.ValueOf(client)
+				if v.Kind() == reflect.Ptr && v.IsNil() {
+					// Nil pointer received
+					continue
+				}
+
 				if p.disableHealthCheck || client.IsHealthy(ctx) {
 					return client, nil
 				}
-				_ = lo.Try(client.Close)
+				_ = client.Close()
 				p.sem.Release(1)
 				continue // Retry.
 			default:
@@ -224,7 +236,7 @@ func (p *poolImpl[T]) Get(ctx context.Context) (T, error) {
 
 				// Check again if the pool was closed while we were creating a client.
 				if p.closed.Load() {
-					_ = lo.Try(client.Close)
+					_ = client.Close()
 					p.sem.Release(1)
 					return zero, ErrPoolClosed
 				}
@@ -239,15 +251,21 @@ func (p *poolImpl[T]) Get(ctx context.Context) (T, error) {
 			if !ok {
 				return zero, ErrPoolClosed
 			}
-			v := reflect.ValueOf(client)
-			if (v.Kind() == reflect.Ptr || v.Kind() == reflect.Interface) && v.IsNil() {
+
+			if any(client) == nil {
 				// Nil received: permit released, retry creation
 				continue
 			}
+			v := reflect.ValueOf(client)
+			if v.Kind() == reflect.Ptr && v.IsNil() {
+				// Nil pointer received
+				continue
+			}
+
 			if p.disableHealthCheck || client.IsHealthy(ctx) {
 				return client, nil
 			}
-			_ = lo.Try(client.Close)
+			_ = client.Close()
 			p.sem.Release(1)
 			continue // Retry.
 		case <-ctx.Done():
@@ -265,21 +283,25 @@ func (p *poolImpl[T]) Get(ctx context.Context) (T, error) {
 // Parameters:
 //   - client: The client to return to the pool.
 func (p *poolImpl[T]) Put(client T) {
+	if any(client) == nil {
+		p.sem.Release(1)
+		return
+	}
 	v := reflect.ValueOf(client)
-	if (v.Kind() == reflect.Ptr || v.Kind() == reflect.Interface) && v.IsNil() {
+	if v.Kind() == reflect.Ptr && v.IsNil() {
 		p.sem.Release(1)
 		return
 	}
 
 	if p.closed.Load() {
-		_ = lo.Try(client.Close)
+		_ = client.Close()
 		p.sem.Release(1) // Release permit as the client is discarded
 		return
 	}
 
 	// Use a background context for health checks in Put to avoid blocking.
 	if !p.disableHealthCheck && !client.IsHealthy(context.Background()) {
-		_ = lo.Try(client.Close)
+		_ = client.Close()
 		p.sem.Release(1)
 		// Notify waiting Get routines
 		var zero T
@@ -297,7 +319,7 @@ func (p *poolImpl[T]) Put(client T) {
 	p.mu.Lock()
 	if p.closed.Load() {
 		p.mu.Unlock()
-		_ = lo.Try(client.Close)
+		_ = client.Close()
 		p.sem.Release(1)
 		return
 	}
@@ -312,7 +334,7 @@ func (p *poolImpl[T]) Put(client T) {
 		// maxSize, and we can't tell if this client came from the pool
 		// in the first place.
 		p.mu.Unlock()
-		_ = lo.Try(client.Close)
+		_ = client.Close()
 	}
 }
 
@@ -332,11 +354,14 @@ func (p *poolImpl[T]) Close() error {
 
 	// Drain the channel and close all idle clients
 	for client := range p.clients {
-		v := reflect.ValueOf(client)
-		if (v.Kind() == reflect.Ptr || v.Kind() == reflect.Interface) && v.IsNil() {
+		if any(client) == nil {
 			continue
 		}
-		_ = lo.Try(client.Close)
+		v := reflect.ValueOf(client)
+		if v.Kind() == reflect.Ptr && v.IsNil() {
+			continue
+		}
+		_ = client.Close()
 		p.sem.Release(1)
 	}
 	return nil
@@ -387,7 +412,7 @@ func (m *Manager) Register(name string, pool any) {
 	if oldPool, ok := m.pools[name]; ok {
 		if p, isCloser := oldPool.(io.Closer); isCloser {
 			logging.GetLogger().Info("Closing old entry", "name", name)
-			_ = lo.Try(p.Close)
+			_ = p.Close()
 		}
 	}
 	m.pools[name] = pool
@@ -438,7 +463,7 @@ func (m *Manager) CloseAll() {
 	for name, untypedPool := range m.pools {
 		logging.GetLogger().Info("Closing pool", "name", name)
 		if p, ok := untypedPool.(io.Closer); ok {
-			_ = lo.Try(p.Close)
+			_ = p.Close()
 		}
 	}
 }
