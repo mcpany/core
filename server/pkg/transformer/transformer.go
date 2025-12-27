@@ -56,6 +56,34 @@ func (t *Transformer) Transform(templateStr string, data any) ([]byte, error) {
 			},
 			"join": func(sep string, a []any) string {
 				var sb strings.Builder
+				// Try to pre-allocate if all elements are strings to reduce allocations
+				var totalLen int
+				allStrings := true
+				sepLen := len(sep)
+
+				for i, v := range a {
+					if s, ok := v.(string); ok {
+						totalLen += len(s)
+						if i > 0 {
+							totalLen += sepLen
+						}
+					} else {
+						allStrings = false
+						break
+					}
+				}
+
+				if allStrings {
+					sb.Grow(totalLen)
+					for i, v := range a {
+						if i > 0 {
+							sb.WriteString(sep)
+						}
+						sb.WriteString(v.(string))
+					}
+					return sb.String()
+				}
+
 				for i, v := range a {
 					if i > 0 {
 						sb.WriteString(sep)
