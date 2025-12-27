@@ -535,19 +535,33 @@ func (s *Server) CallTool(ctx context.Context, req *tool.ExecutionRequest) (any,
 		_, hasIsError := resultMap["isError"]
 
 		if hasContent || hasIsError {
-			// Convert map to CallToolResult via JSON
-			jsonBytes, marshalErr = json.Marshal(resultMap)
-			if marshalErr != nil {
-				return nil, fmt.Errorf("failed to marshal tool result map: %w", marshalErr)
+			// Heuristic Refinement: If content is present, it MUST be a slice to be a valid CallToolResult.
+			// If it's a string (or anything else), we skip the unmarshal attempt and avoid the warning.
+			shouldTryUnmarshal := true
+			if hasContent {
+				switch resultMap["content"].(type) {
+				case []any, []map[string]any:
+					// Likely valid content array
+				default:
+					shouldTryUnmarshal = false
+				}
 			}
 
-			var callToolRes mcp.CallToolResult
-			if err := json.Unmarshal(jsonBytes, &callToolRes); err == nil {
-				return &callToolRes, nil
+			if shouldTryUnmarshal {
+				// Convert map to CallToolResult via JSON
+				jsonBytes, marshalErr = json.Marshal(resultMap)
+				if marshalErr != nil {
+					return nil, fmt.Errorf("failed to marshal tool result map: %w", marshalErr)
+				}
+
+				var callToolRes mcp.CallToolResult
+				if err := json.Unmarshal(jsonBytes, &callToolRes); err == nil {
+					return &callToolRes, nil
+				}
+				// If unmarshal fails (e.g. content is string instead of array), fall through to default behavior
+				// and treat it as raw data.
+				logging.GetLogger().Warn("Failed to unmarshal potential CallToolResult map, treating as raw data", "toolName", req.ToolName)
 			}
-			// If unmarshal fails (e.g. content is string instead of array), fall through to default behavior
-			// and treat it as raw data.
-			logging.GetLogger().Warn("Failed to unmarshal potential CallToolResult map, treating as raw data", "toolName", req.ToolName)
 		}
 	}
 
