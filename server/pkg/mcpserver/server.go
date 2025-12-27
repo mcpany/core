@@ -39,7 +39,7 @@ type Server struct {
 	promptManager   prompt.ManagerInterface
 	resourceManager resource.ManagerInterface
 	authManager     *auth.Manager
-	serviceRegistry *serviceregistry.ServiceRegistry
+	serviceRegistry serviceregistry.ServiceRegistryInterface
 	bus             *bus.Provider
 	reloadFunc      func() error
 	debug           bool
@@ -81,7 +81,7 @@ func NewServer(
 	promptManager prompt.ManagerInterface,
 	resourceManager resource.ManagerInterface,
 	authManager *auth.Manager,
-	serviceRegistry *serviceregistry.ServiceRegistry,
+	serviceRegistry serviceregistry.ServiceRegistryInterface,
 	bus *bus.Provider,
 	debug bool,
 ) (*Server, error) {
@@ -439,7 +439,7 @@ func (s *Server) ResourceManager() resource.ManagerInterface {
 //
 // Returns:
 //   - The service registry instance.
-func (s *Server) ServiceRegistry() *serviceregistry.ServiceRegistry {
+func (s *Server) ServiceRegistry() serviceregistry.ServiceRegistryInterface {
 	return s.serviceRegistry
 }
 

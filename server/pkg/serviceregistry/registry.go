@@ -36,6 +36,8 @@ type ServiceRegistryInterface interface { //nolint:revive
 	GetServiceConfig(serviceID string) (*config.UpstreamServiceConfig, bool)
 	// GetServiceError returns the registration error for a service, if any.
 	GetServiceError(serviceID string) (string, bool)
+	// Close gracefully shuts down all registered services.
+	Close(ctx context.Context) error
 }
 
 // ServiceRegistry is responsible for managing the lifecycle of upstream
