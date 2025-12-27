@@ -5,7 +5,6 @@ package mcpserver_test
 
 import (
 	"context"
-	"encoding/json"
 	"testing"
 
 	"github.com/mcpany/core/pkg/auth"
@@ -143,10 +142,7 @@ func TestServer_CallTool_ResultHandling(t *testing.T) {
 		textContent, ok := result.Content[0].(*mcp.TextContent)
 		require.True(t, ok)
 
-		// It should be the JSON representation of the map (fallback behavior)
-		var resultMap map[string]any
-		err = json.Unmarshal([]byte(textContent.Text), &resultMap)
-		require.NoError(t, err, "Should be valid JSON")
-		assert.Equal(t, "some raw text content", resultMap["content"])
+		// It should be the content text directly (improved fallback behavior)
+		assert.Equal(t, "some raw text content", textContent.Text)
 	})
 }
