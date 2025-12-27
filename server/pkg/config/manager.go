@@ -324,7 +324,8 @@ func (m *UpstreamServiceManager) addService(service *configv1.UpstreamServiceCon
 			m.log.Info("Replaced service due to higher priority", "service_name", serviceName, "old_priority", existingPriority, "new_priority", priority)
 		case priority == existingPriority:
 			// Same priority, this is a duplicate
-			return fmt.Errorf("duplicate service name found: %s", serviceName)
+			m.log.Warn("Duplicate service name found, skipping", "service_name", serviceName)
+			return nil
 		default:
 			// lower priority, do nothing
 			m.log.Info("Ignoring service due to lower priority", "service_name", serviceName, "existing_priority", existingPriority, "new_priority", priority)
