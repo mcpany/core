@@ -5,10 +5,10 @@ package mcpserver
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"time"
 
+	jsoniter "github.com/json-iterator/go"
 	"github.com/mcpany/core/pkg/appconsts"
 	"github.com/mcpany/core/pkg/auth"
 
@@ -344,6 +344,8 @@ func (s *Server) GetPrompt(
 		return nil, prompt.ErrPromptNotFound
 	}
 
+	// Use json-iterator for faster JSON marshaling
+	var json = jsoniter.ConfigCompatibleWithStandardLibrary
 	argsBytes, err := json.Marshal(req.Params.Arguments)
 	if err != nil {
 		return nil, fmt.Errorf("failed to marshal prompt arguments: %w", err)
@@ -527,6 +529,9 @@ func (s *Server) CallTool(ctx context.Context, req *tool.ExecutionRequest) (any,
 	// Handle map[string]any result (e.g. from HTTP tools)
 	var jsonBytes []byte
 	var marshalErr error
+
+	// Use json-iterator for faster JSON operations
+	var json = jsoniter.ConfigCompatibleWithStandardLibrary
 
 	if resultMap, ok := result.(map[string]any); ok {
 		// Heuristic: If map looks like CallToolResult (has "content" or "isError"),
