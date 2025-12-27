@@ -17,6 +17,7 @@ import (
 	"github.com/docker/docker/client"
 	"github.com/docker/docker/pkg/stdcopy"
 	"github.com/mcpany/core/pkg/logging"
+	"github.com/mcpany/core/pkg/validation"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 )
 
@@ -174,6 +175,10 @@ func (e *dockerExecutor) Execute(ctx context.Context, command string, args []str
 	hostConfig := &container.HostConfig{}
 	if e.containerEnv.GetVolumes() != nil {
 		for dest, src := range e.containerEnv.GetVolumes() {
+			// Validate host path (dest) before mounting
+			if err := validation.IsRelativePath(dest); err != nil {
+				return nil, nil, nil, fmt.Errorf("insecure volume mount %q: %w", dest, err)
+			}
 			hostConfig.Mounts = append(hostConfig.Mounts, mount.Mount{
 				Type:   mount.TypeBind,
 				Source: dest,
@@ -268,6 +273,10 @@ func (e *dockerExecutor) ExecuteWithStdIO(ctx context.Context, command string, a
 	hostConfig := &container.HostConfig{}
 	if e.containerEnv.GetVolumes() != nil {
 		for dest, src := range e.containerEnv.GetVolumes() {
+			// Validate host path (dest) before mounting
+			if err := validation.IsRelativePath(dest); err != nil {
+				return nil, nil, nil, nil, fmt.Errorf("insecure volume mount %q: %w", dest, err)
+			}
 			hostConfig.Mounts = append(hostConfig.Mounts, mount.Mount{
 				Type:   mount.TypeBind,
 				Source: dest,

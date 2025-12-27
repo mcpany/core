@@ -598,10 +598,19 @@ func TestDockerExecutorWithStdIO(t *testing.T) {
 	})
 
 	t.Run("Execute_VolumeMounts", func(t *testing.T) {
+		// We need to use a valid relative path for the test, or mock IsRelativePath.
+		// Here we use a temp dir.
+		tmpDir, err := os.MkdirTemp("", "docker-mount-test")
+		require.NoError(t, err)
+		defer os.RemoveAll(tmpDir)
+
+		// Add to allow list to be safe if running in restricted env
+		t.Setenv("MCPANY_FILE_PATH_ALLOW_LIST", tmpDir)
+
 		containerEnv := &configv1.ContainerEnvironment{}
 		containerEnv.SetImage("alpine:latest")
 		containerEnv.SetVolumes(map[string]string{
-			"/host/path": "/container/path",
+			tmpDir: "/container/path",
 		})
 		executor := newDockerExecutor(containerEnv).(*dockerExecutor)
 
@@ -616,13 +625,13 @@ func TestDockerExecutorWithStdIO(t *testing.T) {
 			return mockClient, nil
 		}
 
-		_, _, _, err := executor.Execute(context.Background(), "echo", nil, "", nil)
+		_, _, _, err = executor.Execute(context.Background(), "echo", nil, "", nil)
 		require.NoError(t, err)
 
 		require.NotNil(t, capturedHostConfig)
 		require.Len(t, capturedHostConfig.Mounts, 1)
 		// With the fix, Key is Source, Value is Target
-		assert.Equal(t, "/host/path", capturedHostConfig.Mounts[0].Source)
+		assert.Equal(t, tmpDir, capturedHostConfig.Mounts[0].Source)
 		assert.Equal(t, "/container/path", capturedHostConfig.Mounts[0].Target)
 	})
 }
@@ -779,10 +788,19 @@ func TestDockerExecutor_Mocked(t *testing.T) {
 	})
 
 	t.Run("Execute_VolumeMounts", func(t *testing.T) {
+		// We need to use a valid relative path for the test, or mock IsRelativePath.
+		// Here we use a temp dir.
+		tmpDir, err := os.MkdirTemp("", "docker-mount-test-mocked")
+		require.NoError(t, err)
+		defer os.RemoveAll(tmpDir)
+
+		// Add to allow list to be safe if running in restricted env
+		t.Setenv("MCPANY_FILE_PATH_ALLOW_LIST", tmpDir)
+
 		containerEnv := &configv1.ContainerEnvironment{}
 		containerEnv.SetImage("alpine:latest")
 		containerEnv.SetVolumes(map[string]string{
-			"/host/path": "/container/path",
+			tmpDir: "/container/path",
 		})
 		executor := newDockerExecutor(containerEnv).(*dockerExecutor)
 
@@ -797,12 +815,12 @@ func TestDockerExecutor_Mocked(t *testing.T) {
 			return mockClient, nil
 		}
 
-		_, _, _, err := executor.Execute(context.Background(), "echo", nil, "", nil)
+		_, _, _, err = executor.Execute(context.Background(), "echo", nil, "", nil)
 		require.NoError(t, err)
 
 		require.NotNil(t, capturedHostConfig)
 		require.Len(t, capturedHostConfig.Mounts, 1)
-		assert.Equal(t, "/host/path", capturedHostConfig.Mounts[0].Source)
+		assert.Equal(t, tmpDir, capturedHostConfig.Mounts[0].Source)
 		assert.Equal(t, "/container/path", capturedHostConfig.Mounts[0].Target)
 	})
 }
