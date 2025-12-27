@@ -16,7 +16,12 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
-    const body = await request.json();
+    let body;
+    try {
+        body = await request.json();
+    } catch (e) {
+        return NextResponse.json({ error: "Invalid request body" }, { status: 400 });
+    }
 
     // Toggle status
     if (body.action === 'toggle' && body.name) {
