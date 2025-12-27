@@ -8,22 +8,24 @@ import { test, expect } from '@playwright/test';
 test.describe('Tool Exploration', () => {
     test.beforeEach(async ({ page }) => {
         // Mock tools endpoint directly (matching ToolsPage fetch)
-        await page.route('/api/tools', async (route) => {
+        await page.route((url) => url.pathname.includes('/api/tools'), async (route) => {
             await route.fulfill({
-                json: [
-                    {
-                        name: 'weather-tool',
-                        description: 'Get weather for a location',
-                        source: 'configured',
-                        service: 'weather-service'
-                    },
-                    {
-                        name: 'calculator',
-                        description: 'Perform basic math',
-                        source: 'discovered',
-                        service: 'math-service'
-                    }
-                ]
+                json: {
+                    tools: [
+                        {
+                            name: 'weather-tool',
+                            description: 'Get weather for a location',
+                            source: 'configured',
+                            service: 'weather-service'
+                        },
+                        {
+                            name: 'calculator',
+                            description: 'Perform basic math',
+                            source: 'discovered',
+                            service: 'math-service'
+                        }
+                    ]
+                }
             });
         });
     });
@@ -41,7 +43,7 @@ test.describe('Tool Exploration', () => {
     });
 
     test('should show empty state when no tools', async ({ page }) => {
-        await page.route('/api/tools', async (route) => {
+        await page.route((url) => url.pathname.includes('/api/tools'), async (route) => {
             await route.fulfill({ json: [] });
         });
 

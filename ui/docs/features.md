@@ -1,74 +1,51 @@
-# MCP Any Manager Features
 
-This document outlines the features implemented in the MCP Any Manager interface.
+# MCP Any UI Features
 
-## Dashboard & Observability
-**Status**: Implemented
+This document outlines the features implemented in the MCP Any UI Overhaul.
 
-The dashboard provides a real-time overview of the system's health and performance.
+## 1. Dashboard
+**Path:** `/`
 
-*   **Real-time Metrics**: Displays key performance indicators for Services, Tools, Resources, and Prompts.
-*   **System Health**: Shows live health status (Healthy, Degraded, Unhealthy) for all connected upstream services.
-*   **Aesthetics**: Designed with a glassmorphism effect and clean layout for a premium feel.
+The dashboard provides a high-level overview of the system's health and performance.
 
-![Dashboard](.audit/ui/2025-05-23/dashboard.png)
+*   **Real-time Metrics:** Displays Total Requests, Active Services, Average Latency, and Active Users.
+*   **Service Health:** Lists connected upstream services with their status (Healthy, Degraded, Unhealthy), uptime, and version.
 
-## Core Management
+![Dashboard Audit](../../.audits/ui/2025-12-21/dashboard.png)
 
-### Services
-**Status**: Implemented
+## 2. Services Management
+**Path:** `/services`
 
-Manage connected upstream services (HTTP, gRPC, Command Line, MCP Proxy).
-*   **List View**: View all services with their type, version, and status.
-*   **Toggle**: Enable/Disable services with a single click.
-*   **Edit**: Configure service details.
+Manage upstream services connected to MCP Any.
 
-![Services](.audit/ui/2025-05-23/services.png)
+*   **List View:** detailed table of services including Type, Version, Status, and Priority.
+*   **Toggle:** Enable/Disable services directly from the list.
+*   **Actions:** Configure or Delete services via the dropdown menu.
 
-### Tools
-**Status**: Implemented
+![Services Audit](../../.audits/ui/2025-12-21/services.png)
 
-View and manage tools exposed by connected services.
-*   **Discovery**: Automatically lists tools from registered services.
-*   **Control**: Enable or disable specific tools.
+## 3. Tools, Resources, & Prompts
+**Paths:** `/tools`, `/resources`, `/prompts`
 
-![Tools](.audit/ui/2025-05-23/tools.png)
+Explore the capabilities exposed by the connected MCP servers.
 
-### Resources
-**Status**: Implemented
+*   **Tools:** List of available tools (functions) with descriptions and types.
+*   **Resources:** List of static resources (files, blobs) available for access.
+*   **Prompts:** Pre-defined prompts and their arguments.
 
-Manage access to resources (files, databases, etc.).
-*   **Inventory**: View all available resources and their MIME types.
-*   **Access Control**: Toggle access to specific resources.
+![Tools Audit](../../.audits/ui/2025-12-21/tools.png)
 
-![Resources](.audit/ui/2025-05-23/resources.png)
+## 4. Settings & Advanced Configuration
+**Path:** `/settings`
 
-### Prompts
-**Status**: Implemented
+Configure system-wide behaviors.
 
-Manage prompt templates.
-*   **Library**: View available prompts.
-*   **Availability**: Enable or disable prompts for LLM use.
+*   **Profiles:** Manage execution environments (Development, Production).
+*   **Webhooks:** Configure event notifications.
+*   **Middleware:** Visualize the request processing pipeline.
 
-![Prompts](.audit/ui/2025-05-23/prompts.png)
+![Settings Audit](../../.audits/ui/2025-12-21/settings.png)
 
-## Advanced Features
-
-### Middleware Pipeline
-**Status**: Implemented
-
-Visual management of the request processing pipeline.
-*   **Drag & Drop**: Reorder middleware components (Auth, Rate Limit, Logging, etc.).
-*   **Visualization**: See the flow of requests from ingress to service.
-
-![Middleware](.audit/ui/2025-05-23/middleware.png)
-
-### Webhooks
-**Status**: Implemented
-
-Configure outbound webhooks for system events.
-*   **Configuration**: Add new webhook endpoints.
-*   **Event Filtering**: Subscribe to specific events (e.g., service.registered, error.occurred).
-*   **Testing**: Trigger test events to verify delivery.
-
-![Webhooks](.audit/ui/2025-05-23/webhooks.png)
+## Testing Strategy
+All features are verified using Playwright E2E tests.
+Run tests with: `cd ui && npx playwright test`

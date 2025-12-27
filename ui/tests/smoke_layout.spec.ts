@@ -19,7 +19,8 @@ test('layout smoke test', async ({ page }) => {
 
   // Navigate to Stacks
   await page.locator('a[href="/stacks"]').first().click();
-  await expect(page.locator('h1')).toContainText('Stacks');
+  await page.waitForURL('**/stacks');
+  await expect(page.getByRole('heading', { name: 'Stacks' })).toBeVisible({ timeout: 10000 });
 
   // Check for the "mcpany-system" stack
   await expect(page.locator('text=mcpany-system')).toBeVisible();

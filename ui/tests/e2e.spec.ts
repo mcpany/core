@@ -14,7 +14,7 @@ test.describe('MCP Any UI E2E Tests', () => {
 
   test.beforeEach(async ({ page }) => {
     // Mock services
-    await page.route('**/v1/services', async (route) => {
+    await page.route((url) => url.pathname.includes('/api/services'), async (route) => {
       await route.fulfill({
         json: {
           services: [
@@ -40,10 +40,12 @@ test.describe('MCP Any UI E2E Tests', () => {
     // Mock tools for Dashboard/Tools page checks
     await page.route('**/api/tools', async (route) => {
          await route.fulfill({
-              json: [
-                   { name: "calculator", description: "calc", source: "discovered", service: "Math" },
-                   { name: "weather_lookup", description: "weather", source: "configured", service: "Weather" }
-              ]
+             json: {
+                  tools: [
+                       { name: "calculator", description: "calc", source: "discovered", service: "Math" },
+                       { name: "weather_lookup", description: "weather", source: "configured", service: "Weather" }
+                  ]
+             }
          });
     });
     // Mock resources for Dashboard checks (if needed) or explicit page visits
