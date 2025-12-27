@@ -42,8 +42,8 @@ test.describe('MCP Any UI E2E Tests', () => {
          await route.fulfill({
              json: {
                   tools: [
-                       { name: "calculator", description: "calc", source: "discovered", service: "Math" },
-                       { name: "weather_lookup", description: "weather", source: "configured", service: "Weather" }
+                       { name: "calculator", description: "calc", source: "discovered", serviceName: "Math" },
+                       { name: "weather_lookup", description: "weather", source: "configured", serviceName: "Weather" }
                   ]
              }
          });
@@ -103,8 +103,9 @@ test.describe('MCP Any UI E2E Tests', () => {
   test('Tools page lists tools', async ({ page }) => {
     await page.goto('/tools');
     await expect(page.locator('h2')).toContainText('Tools');
-    await expect(page.locator('text=calculator')).toBeVisible();
-    await expect(page.locator('text=weather_lookup')).toBeVisible();
+    // Use accessible selectors looking for cell content
+    await expect(page.getByRole('cell', { name: 'calculator' })).toBeVisible();
+    await expect(page.getByRole('cell', { name: 'weather_lookup' })).toBeVisible();
 
     // Audit Screenshot
     await page.screenshot({ path: path.join(AUDIT_DIR, 'tools.png'), fullPage: true });
