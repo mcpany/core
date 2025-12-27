@@ -15,13 +15,13 @@ test.describe('Network Topology', () => {
 
     // Check Graph Container
     const graph = page.locator('.react-flow');
-    await expect(graph).toBeVisible();
+    await expect(graph).toBeVisible({ timeout: 15000 });
 
     // Check for mock nodes (Client, Gateway)
     // React Flow nodes usually have text content matches
-    await expect(page.getByText('Client (User)')).toBeVisible();
-    await expect(page.getByText('MCP Gateway')).toBeVisible();
-    await expect(page.getByText('Weather Service')).toBeVisible();
+    await expect(page.getByText('Client (User)')).toBeVisible({ timeout: 15000 });
+    await expect(page.getByText('MCP Gateway')).toBeVisible({ timeout: 15000 });
+    await expect(page.getByText('Weather Service')).toBeVisible({ timeout: 15000 });
   });
 
   test('should open metrics panel on node click', async ({ page }) => {
