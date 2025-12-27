@@ -13,6 +13,7 @@ MCP Any supports a wide range of service types to expose various backends as MCP
 *   **WebSocket**: Connect to WebSocket endpoints.
 *   **WebRTC**: Connect via WebRTC.
 *   **SQL**: (Beta) Connect to SQL databases and expose queries as tools.
+*   **Bundle**: Register a bundled MCP service (e.g. a zip file containing a Python script and dependencies).
 
 ## Configuration
 
