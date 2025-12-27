@@ -553,6 +553,18 @@ func (s *Server) CallTool(ctx context.Context, req *tool.ExecutionRequest) (any,
 			// If unmarshal fails (e.g. content is string instead of array), fall through to default behavior
 			// and treat it as raw data.
 			logging.GetLogger().Warn("Failed to unmarshal potential CallToolResult map, treating as raw data", "toolName", req.ToolName)
+
+			// Heuristic: If content is a string, wrap it in a TextContent
+			if content, ok := resultMap["content"].(string); ok {
+				return &mcp.CallToolResult{
+					Content: []mcp.Content{
+						&mcp.TextContent{
+							Text: content,
+						},
+					},
+					IsError: callToolRes.IsError,
+				}, nil
+			}
 		}
 	}
 
