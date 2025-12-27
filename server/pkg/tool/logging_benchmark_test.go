@@ -38,7 +38,8 @@ func BenchmarkHTTPToolExecute_LoggingOverhead(b *testing.B) {
 	// We don't register anything, so it will return "no http pool found" error immediately after logging.
 
 	toolProto := &v1.Tool{}
-	toolProto.SetUnderlyingMethodFqn("GET http://example.com")
+	fqn := "GET http://example.com"
+	toolProto.UnderlyingMethodFqn = &fqn
 
 	httpTool := NewHTTPTool(toolProto, poolManager, "service-id", nil, &configv1.HttpCallDefinition{}, nil, nil, "")
 

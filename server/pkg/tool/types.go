@@ -14,6 +14,7 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+
 	// "path"
 	"path/filepath"
 	"strconv"
@@ -425,8 +426,6 @@ func (t *HTTPTool) GetCacheConfig() *configv1.CacheConfig {
 // Execute handles the execution of the HTTP tool. It builds an HTTP request by
 // mapping input parameters to the path, query, and body, applies any
 // configured transformations, sends the request, and processes the response.
-//
-//nolint:gocyclo
 func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
 	if logging.GetLogger().Enabled(ctx, slog.LevelDebug) {
 		logging.GetLogger().Debug("executing tool", "tool", req.ToolName, "inputs", prettyPrint(req.ToolInputs, contentTypeJSON))
@@ -455,173 +454,14 @@ func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 		return nil, t.initError
 	}
 
-	method := t.cachedMethod
-	u := t.cachedURL
-	pathStr := t.cachedPath
-	queryStr := t.cachedQuery
-
-	var inputs map[string]any
-	if len(req.ToolInputs) > 0 {
-		decoder := json.NewDecoder(bytes.NewReader(req.ToolInputs))
-		decoder.UseNumber()
-		if err := decoder.Decode(&inputs); err != nil {
-			return nil, fmt.Errorf("failed to unmarshal tool inputs: %w", err)
-		}
-	}
-
-	for i, param := range t.parameters {
-		if secret := param.GetSecret(); secret != nil {
-			secretValue, err := util.ResolveSecret(ctx, secret)
-			if err != nil {
-				return nil, fmt.Errorf("failed to resolve secret for parameter %q: %w", param.GetSchema().GetName(), err)
-			}
-			placeholder := t.cachedPlaceholders[param.GetSchema().GetName()]
-			if t.paramInPath[i] {
-				pathStr = strings.ReplaceAll(pathStr, placeholder, secretValue)
-			}
-			if t.paramInQuery[i] {
-				queryStr = strings.ReplaceAll(queryStr, placeholder, secretValue)
-			}
-		} else if schema := param.GetSchema(); schema != nil {
-			placeholder := t.cachedPlaceholders[schema.GetName()]
-			if val, ok := inputs[schema.GetName()]; ok {
-				valStr := util.ToString(val)
-
-				if param.GetDisableEscape() {
-					// Check for path traversal if in path
-					if t.paramInPath[i] {
-						// Check the raw value first
-						if err := checkForPathTraversal(valStr); err != nil {
-							return nil, fmt.Errorf("path traversal attempt detected in parameter %q: %w", schema.GetName(), err)
-						}
-
-						// Check the decoded value to prevent bypasses like %2e%2e
-						if decodedVal, err := url.QueryUnescape(valStr); err == nil {
-							if err := checkForPathTraversal(decodedVal); err != nil {
-								return nil, fmt.Errorf("path traversal attempt detected in parameter %q (decoded): %w", schema.GetName(), err)
-							}
-						}
-
-						pathStr = strings.ReplaceAll(pathStr, placeholder, valStr)
-					}
-					if t.paramInQuery[i] {
-						queryStr = strings.ReplaceAll(queryStr, placeholder, valStr)
-					}
-				} else {
-					if t.paramInPath[i] {
-						pathStr = strings.ReplaceAll(pathStr, placeholder, url.PathEscape(valStr))
-					}
-					if t.paramInQuery[i] {
-						queryStr = strings.ReplaceAll(queryStr, placeholder, url.QueryEscape(valStr))
-					}
-				}
-				delete(inputs, schema.GetName())
-			} else {
-				if t.paramInPath[i] {
-					pathStr = strings.ReplaceAll(pathStr, "/"+placeholder, "")
-				}
-				if t.paramInQuery[i] {
-					queryStr = strings.ReplaceAll(queryStr, "/"+placeholder, "")
-				}
-			}
-		}
-	}
-
-	// Clean the path to resolve . and .. and //
-	// We do this on the encoded string to treat %2F as opaque characters
-	// This prevents path.Clean from treating encoded slashes as separators
-	// and messing up the re-encoding later (which would convert %2F to /).
-	//
-	// We do NOT use path.Clean here because it might mess up encoded slashes or other special characters
-	// if we are not careful. Since we are building a URL, we should rely on URL parsing/building logic.
-	// However, to support "." and ".." resolution which path.Clean provides, we need to be careful.
-	// The problem is that path.Clean doesn't know about URL encoding.
-	//
-	// If we skip path.Clean, we might leave "." and ".." in the path which might be what we want
-	// if the upstream handles it, or not if we want to canonicalize locally.
-	//
-	// Given the bug report implies we are stripping/messing up encoded slashes, let's try
-	// to avoid path.Clean if it's causing issues, or implement a safer version.
-	//
-	// Ideally, we should only clean if there are dot segments.
-	//
-	// Note: We are modifying pathStr which contains encoded values.
-
-	// hadTrailingSlash := strings.HasSuffix(pathStr, "/")
-	// pathStr = path.Clean(pathStr)
-	// if hadTrailingSlash && pathStr != "/" {
-	// 	pathStr += "/"
-	// }
-
-	// Reconstruct URL string manually to avoid re-encoding
-	var buf strings.Builder
-	buf.WriteString(u.Scheme)
-	buf.WriteString("://")
-	if u.User != nil {
-		buf.WriteString(u.User.String())
-		buf.WriteString("@")
-	}
-	buf.WriteString(u.Host)
-	if pathStr != "" && !strings.HasPrefix(pathStr, "/") {
-		buf.WriteString("/")
-	}
-	buf.WriteString(pathStr)
-	if queryStr != "" {
-		buf.WriteString("?")
-		buf.WriteString(queryStr)
-	}
-	urlString := buf.String()
-
-	parsedURL, err := url.Parse(urlString)
+	inputs, urlString, err := t.prepareInputsAndURL(ctx, req)
 	if err != nil {
-		return nil, fmt.Errorf("failed to parse URL: %w", err)
+		return nil, err
 	}
-	urlString = parsedURL.String()
 
-	var body io.Reader
-	var contentType string
-	if inputs != nil {
-		if method == http.MethodPost || method == http.MethodPut {
-			switch {
-			case t.webhookClient != nil:
-				// Use webhook for transformation
-				data := map[string]any{
-					"kind":      configv1.WebhookKind_WEBHOOK_KIND_TRANSFORM_INPUT,
-					"tool_name": req.ToolName,
-					"inputs":    inputs,
-				}
-				respEvent, err := t.webhookClient.Call(ctx, "com.mcpany.tool.transform_input", data)
-				if err != nil {
-					return nil, fmt.Errorf("transformation webhook failed: %w", err)
-				}
-				// We expect the data to be the transformed body
-				respData := respEvent.Data()
-				if len(respData) > 0 {
-					body = bytes.NewReader(respData)
-					// Verify if it looks like JSON?
-					if json.Valid(respData) {
-						contentType = contentTypeJSON
-					}
-				}
-			case t.inputTransformer != nil && t.inputTransformer.GetTemplate() != "": //nolint:staticcheck
-				tpl, err := transformer.NewTemplate(t.inputTransformer.GetTemplate(), "{{", "}}") //nolint:staticcheck
-				if err != nil {
-					return nil, fmt.Errorf("failed to create input template: %w", err)
-				}
-				renderedBody, err := tpl.Render(inputs)
-				if err != nil {
-					return nil, fmt.Errorf("failed to render input template: %w", err)
-				}
-				body = strings.NewReader(renderedBody)
-			default:
-				jsonBytes, err := json.Marshal(inputs)
-				if err != nil {
-					return "", fmt.Errorf("failed to marshal tool inputs to json: %w", err)
-				}
-				body = bytes.NewReader(jsonBytes)
-				contentType = contentTypeJSON
-			}
-		}
+	body, contentType, err := t.prepareBody(ctx, inputs, t.cachedMethod, req.ToolName)
+	if err != nil {
+		return nil, err
 	}
 
 	var resp *http.Response
@@ -638,7 +478,7 @@ func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 			}
 		}
 
-		httpReq, err := http.NewRequestWithContext(ctx, method, urlString, bodyForAttempt)
+		httpReq, err := http.NewRequestWithContext(ctx, t.cachedMethod, urlString, bodyForAttempt)
 		if err != nil {
 			return &resilience.PermanentError{Err: fmt.Errorf("failed to create http request: %w", err)}
 		}
@@ -658,7 +498,7 @@ func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 			logging.GetLogger().Debug("No authenticator configured")
 		}
 
-		if method == http.MethodGet || method == http.MethodDelete {
+		if t.cachedMethod == http.MethodGet || t.cachedMethod == http.MethodDelete {
 			q := httpReq.URL.Query()
 			for key, value := range inputs {
 				q.Add(key, util.ToString(value))
@@ -721,6 +561,177 @@ func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 	defer func() { _ = resp.Body.Close() }()
 	metrics.IncrCounter([]string{"http", "request", "success"}, 1)
 
+	return t.processResponse(ctx, resp)
+}
+
+func (t *HTTPTool) prepareInputsAndURL(ctx context.Context, req *ExecutionRequest) (map[string]any, string, error) {
+	pathStr := t.cachedPath
+	queryStr := t.cachedQuery
+
+	var inputs map[string]any
+	if len(req.ToolInputs) > 0 {
+		decoder := json.NewDecoder(bytes.NewReader(req.ToolInputs))
+		decoder.UseNumber()
+		if err := decoder.Decode(&inputs); err != nil {
+			return nil, "", fmt.Errorf("failed to unmarshal tool inputs: %w", err)
+		}
+	}
+
+	for i, param := range t.parameters {
+		if secret := param.GetSecret(); secret != nil {
+			secretValue, err := util.ResolveSecret(ctx, secret)
+			if err != nil {
+				return nil, "", fmt.Errorf("failed to resolve secret for parameter %q: %w", param.GetSchema().GetName(), err)
+			}
+			placeholder := t.cachedPlaceholders[param.GetSchema().GetName()]
+			if t.paramInPath[i] {
+				pathStr = strings.ReplaceAll(pathStr, placeholder, secretValue)
+			}
+			if t.paramInQuery[i] {
+				queryStr = strings.ReplaceAll(queryStr, placeholder, secretValue)
+			}
+		} else if schema := param.GetSchema(); schema != nil {
+			placeholder := t.cachedPlaceholders[schema.GetName()]
+			if val, ok := inputs[schema.GetName()]; ok {
+				valStr := util.ToString(val)
+
+				if param.GetDisableEscape() {
+					// Check for path traversal if in path
+					if t.paramInPath[i] {
+						// Check the raw value first
+						if err := checkForPathTraversal(valStr); err != nil {
+							return nil, "", fmt.Errorf("path traversal attempt detected in parameter %q: %w", schema.GetName(), err)
+						}
+
+						// Check the decoded value to prevent bypasses like %2e%2e
+						if decodedVal, err := url.QueryUnescape(valStr); err == nil {
+							if err := checkForPathTraversal(decodedVal); err != nil {
+								return nil, "", fmt.Errorf("path traversal attempt detected in parameter %q (decoded): %w", schema.GetName(), err)
+							}
+						}
+
+						pathStr = strings.ReplaceAll(pathStr, placeholder, valStr)
+					}
+					if t.paramInQuery[i] {
+						queryStr = strings.ReplaceAll(queryStr, placeholder, valStr)
+					}
+				} else {
+					if t.paramInPath[i] {
+						pathStr = strings.ReplaceAll(pathStr, placeholder, url.PathEscape(valStr))
+					}
+					if t.paramInQuery[i] {
+						queryStr = strings.ReplaceAll(queryStr, placeholder, url.QueryEscape(valStr))
+					}
+				}
+				delete(inputs, schema.GetName())
+			} else {
+				if t.paramInPath[i] {
+					pathStr = strings.ReplaceAll(pathStr, "/"+placeholder, "")
+				}
+				if t.paramInQuery[i] {
+					queryStr = strings.ReplaceAll(queryStr, "/"+placeholder, "")
+				}
+			}
+		}
+	}
+
+	// Clean the path to resolve . and .. and //
+	// We do this on the encoded string to treat %2F as opaque characters
+	// This prevents path.Clean from treating encoded slashes as separators
+	// and messing up the re-encoding later (which would convert %2F to /).
+	// Clean the path to resolve . and .. and //
+	// We do this on the encoded string to treat %2F as opaque characters
+	// This prevents path.Clean from treating encoded slashes as separators
+	// and messing up the re-encoding later (which would convert %2F to /).
+	// hadTrailingSlash := strings.HasSuffix(pathStr, "/")
+	// pathStr = path.Clean(pathStr)
+	// if hadTrailingSlash && pathStr != "/" {
+	// 	pathStr += "/"
+	// }
+
+	// Reconstruct URL string manually to avoid re-encoding
+	var buf strings.Builder
+	buf.WriteString(t.cachedURL.Scheme)
+	buf.WriteString("://")
+	if t.cachedURL.User != nil {
+		buf.WriteString(t.cachedURL.User.String())
+		buf.WriteString("@")
+	}
+	buf.WriteString(t.cachedURL.Host)
+	if pathStr != "" && !strings.HasPrefix(pathStr, "/") {
+		buf.WriteString("/")
+	}
+	buf.WriteString(pathStr)
+	if queryStr != "" {
+		buf.WriteString("?")
+		buf.WriteString(queryStr)
+	}
+	urlString := buf.String()
+
+	parsedURL, err := url.Parse(urlString)
+	if err != nil {
+		return nil, "", fmt.Errorf("failed to parse URL: %w", err)
+	}
+	urlString = parsedURL.String()
+
+	return inputs, urlString, nil
+}
+
+func (t *HTTPTool) prepareBody(ctx context.Context, inputs map[string]any, method string, toolName string) (io.Reader, string, error) {
+	if inputs == nil {
+		return nil, "", nil
+	}
+	if method != http.MethodPost && method != http.MethodPut {
+		return nil, "", nil
+	}
+
+	var body io.Reader
+	var contentType string
+
+	switch {
+	case t.webhookClient != nil:
+		// Use webhook for transformation
+		data := map[string]any{
+			"kind":      configv1.WebhookKind_WEBHOOK_KIND_TRANSFORM_INPUT,
+			"tool_name": toolName,
+			"inputs":    inputs,
+		}
+		respEvent, err := t.webhookClient.Call(ctx, "com.mcpany.tool.transform_input", data)
+		if err != nil {
+			return nil, "", fmt.Errorf("transformation webhook failed: %w", err)
+		}
+		// We expect the data to be the transformed body
+		respData := respEvent.Data()
+		if len(respData) > 0 {
+			body = bytes.NewReader(respData)
+			// Verify if it looks like JSON?
+			if json.Valid(respData) {
+				contentType = contentTypeJSON
+			}
+		}
+	case t.inputTransformer != nil && t.inputTransformer.GetTemplate() != "": //nolint:staticcheck
+		tpl, err := transformer.NewTemplate(t.inputTransformer.GetTemplate(), "{{", "}}") //nolint:staticcheck
+		if err != nil {
+			return nil, "", fmt.Errorf("failed to create input template: %w", err)
+		}
+		renderedBody, err := tpl.Render(inputs)
+		if err != nil {
+			return nil, "", fmt.Errorf("failed to render input template: %w", err)
+		}
+		body = strings.NewReader(renderedBody)
+	default:
+		jsonBytes, err := json.Marshal(inputs)
+		if err != nil {
+			return nil, "", fmt.Errorf("failed to marshal tool inputs to json: %w", err)
+		}
+		body = bytes.NewReader(jsonBytes)
+		contentType = contentTypeJSON
+	}
+
+	return body, contentType, nil
+}
+
+func (t *HTTPTool) processResponse(ctx context.Context, resp *http.Response) (any, error) {
 	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, fmt.Errorf("failed to read http response body: %w", err)
@@ -742,9 +753,6 @@ func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 		// Log body
 		contentType := resp.Header.Get("Content-Type")
 		logging.GetLogger().DebugContext(ctx, "received http response body", "body", prettyPrint(respBody, contentType))
-
-		// Restore body for subsequent processing
-		resp.Body = io.NopCloser(bytes.NewBuffer(respBody))
 	}
 
 	if t.outputTransformer != nil {

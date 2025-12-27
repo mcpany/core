@@ -290,7 +290,7 @@ func TestDockerExecutor(t *testing.T) {
 		cli, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
 		require.NoError(t, err)
 		_, err = cli.ContainerInspect(context.Background(), "test-container-removal")
-		assert.True(t, dockererrdefs.IsNotFound(err), "Expected container to be removed") //nolint:staticcheck
+		assert.True(t, dockererrdefs.IsNotFound(err), "Expected container to be removed")
 	})
 }
 

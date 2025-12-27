@@ -100,13 +100,13 @@ func convertJSONSchemaToStruct(schema any) (*structpb.Struct, error) {
 	return structpb.NewStruct(schemaMap)
 }
 
-// convertMcpFieldsToInputSchemaProperties converts a slice of McpField, which
+// ConvertMcpFieldsToInputSchemaProperties converts a slice of McpField, which
 // represent fields from a protobuf message, into a structpb.Struct that can be
 // used as the `properties` field in a JSON schema.
-func convertMcpFieldsToInputSchemaProperties(fields []*protobufparser.McpField) (*structpb.Struct, error) { //nolint:unused
+func ConvertMcpFieldsToInputSchemaProperties(fields []*protobufparser.McpField) (*structpb.Struct, error) {
 	properties := &structpb.Struct{Fields: make(map[string]*structpb.Value)}
 	for _, field := range fields {
-		schema, err := getJSONSchemaForScalarType(field.Type, field.Description)
+		schema, err := GetJSONSchemaForScalarType(field.Type, field.Description)
 		if err != nil {
 			return nil, err
 		}
@@ -125,6 +125,7 @@ func convertMcpFieldsToInputSchemaProperties(fields []*protobufparser.McpField) 
 	}
 	return properties, nil
 }
+
 
 // ConvertToolDefinitionToProto transforms a *configv1.ToolDefinition into a
 // *pb.Tool.
@@ -160,10 +161,10 @@ func ConvertToolDefinitionToProto(toolDef *configv1.ToolDefinition, inputSchema,
 	return pbTool, nil
 }
 
-// getJSONSchemaForScalarType maps a protobuf scalar type (e.g., "TYPE_STRING",
+// GetJSONSchemaForScalarType maps a protobuf scalar type (e.g., "TYPE_STRING",
 // "TYPE_INT32") to its corresponding JSON schema type ("string", "integer"). It
 // is a helper function for building JSON schemas from protobuf definitions.
-func getJSONSchemaForScalarType(scalarType, description string) (*jsonschema.Schema, error) { //nolint:unused
+func GetJSONSchemaForScalarType(scalarType, description string) (*jsonschema.Schema, error) {
 	s := &jsonschema.Schema{
 		Description: description,
 	}
@@ -186,6 +187,7 @@ func getJSONSchemaForScalarType(scalarType, description string) (*jsonschema.Sch
 
 	return s, nil
 }
+
 
 // ConvertProtoToMCPTool transforms a protobuf-defined *pb.Tool into an
 // *mcp.Tool. This is the reverse of convertMCPToolToProto and is used when

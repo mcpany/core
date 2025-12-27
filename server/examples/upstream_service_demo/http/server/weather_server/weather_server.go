@@ -96,14 +96,16 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 	for {
 		_, msg, err := conn.ReadMessage()
 		if err != nil {
-			log.Println(err)
-			return
+			if websocket.IsUnexpectedCloseError(err, websocket.CloseGoingAway, websocket.CloseAbnormalClosure) {
+				log.Printf("error: %v", err)
+			}
+			break
 		}
 
 		var reqBody map[string]string
 		if err := json.Unmarshal(msg, &reqBody); err != nil {
-			log.Println(err)
-			return
+			log.Printf("json error: %v", err)
+			break
 		}
 
 		location := reqBody["location"]
@@ -119,7 +121,7 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 
 		if err := conn.WriteJSON(response); err != nil {
 			log.Println(err)
-			return
+			break
 		}
 	}
 }
