@@ -14,7 +14,7 @@ test.describe('MCP Any UI E2E Tests', () => {
 
   test.beforeEach(async ({ page }) => {
     // Mock services
-    await page.route('**/v1/services', async (route) => {
+    await page.route('**/api/services', async (route) => {
       await route.fulfill({
         json: {
           services: [
@@ -40,15 +40,28 @@ test.describe('MCP Any UI E2E Tests', () => {
     // Mock tools for Dashboard/Tools page checks
     await page.route('**/api/tools', async (route) => {
          await route.fulfill({
-              json: [
-                   { name: "calculator", description: "calc", source: "discovered", service: "Math" },
-                   { name: "weather_lookup", description: "weather", source: "configured", service: "Weather" }
-              ]
+             json: {
+                  tools: [
+                       { name: "calculator", description: "calc", source: "discovered", service: "Math" },
+                       { name: "weather_lookup", description: "weather", source: "configured", service: "Weather" }
+                  ]
+             }
          });
     });
     // Mock resources for Dashboard checks (if needed) or explicit page visits
     await page.route('**/api/resources', async (route) => {
          await route.fulfill({ json: [] });
+    });
+    // Mock dashboard metrics
+    await page.route('**/api/dashboard/metrics', async (route) => {
+        await route.fulfill({
+            json: [
+                { label: "Total Requests", value: "1,234", icon: "Activity", change: "+12%", trend: "up" },
+                { label: "Active Services", value: "5", icon: "Server", change: "0", trend: "neutral" },
+                { label: "System Health", value: "98%", icon: "Zap", change: "+1%", trend: "up" },
+                { label: "Error Rate", value: "0.1%", icon: "AlertCircle", change: "-0.5%", trend: "up" }
+            ]
+        });
     });
   });
 
@@ -58,7 +71,8 @@ test.describe('MCP Any UI E2E Tests', () => {
     await expect(page.locator('text=Total Requests')).toBeVisible();
     await expect(page.locator('text=Active Services')).toBeVisible();
     // Check for health widget
-    await expect(page.locator('text=System Health')).toBeVisible();
+    // Use .first() because "System Health" might be in metrics and widget title
+    await expect(page.locator('text=System Health').first()).toBeVisible();
 
     // Audit Screenshot
     await page.screenshot({ path: path.join(AUDIT_DIR, 'dashboard_verified.png'), fullPage: true });
