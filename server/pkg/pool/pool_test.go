@@ -155,12 +155,21 @@ func TestPool_Put_Unhealthy(t *testing.T) {
 	require.NoError(t, err)
 	// Make it unhealthy.
 	c.isHealthy = false
-	// Put it back. This will release the semaphore.
+	// Put it back.
 	p.Put(c)
-	// Pool should not store the unhealthy client, but may store a retry token.
-	// In the improved implementation, we push a nil token to wake up waiters.
+	// Pool should store the client, even if unhealthy, because Put doesn't check health anymore.
 	assert.Equal(t, 1, p.Len())
+	// Client is NOT closed yet. It will be closed when retrieved by Get.
+	assert.False(t, c.isClosed)
+
+	// Verify Get closes it
+	c2, err := p.Get(context.Background())
+	require.NoError(t, err)
+	// The bad client should have been closed during this Get call
 	assert.True(t, c.isClosed)
+	// And we should have received a new healthy client
+	assert.NotEqual(t, c, c2)
+	assert.True(t, c2.isHealthy)
 }
 
 func TestPool_Full(t *testing.T) {
@@ -259,16 +268,21 @@ func TestPool_Put_UnhealthyClientDoesNotLeakSemaphore(t *testing.T) {
 		c, err := p.Get(context.Background())
 		require.NoError(t, err, "Pool should not be exhausted on iteration %d", i)
 		require.NotNil(t, c)
-		// Mark it as unhealthy.
+
+		// If we retrieved an unhealthy client (from previous iteration), Get should have closed it.
+		// The current 'c' should be a new, healthy one (because factory makes healthy ones).
+		assert.True(t, c.isHealthy)
+
+		// Mark it as unhealthy for the next iteration.
 		c.isHealthy = false
-		// Put it back. This should release the semaphore permit.
-		// The bug is that it doesn't, leading to a leak.
+
+		// Put it back.
 		p.Put(c)
-		// The unhealthy client should have been closed.
-		assert.True(t, c.isClosed, "Client should be closed after being put back as unhealthy")
-		// The pool should not store the unhealthy client.
-		// However, it stores a nil token to signal waiters.
-		assert.Equal(t, 1, p.Len(), "Pool should contain a retry token")
+
+		// Client should NOT be closed yet.
+		assert.False(t, c.isClosed)
+		// The pool should store the unhealthy client.
+		assert.Equal(t, 1, p.Len())
 	}
 }
 

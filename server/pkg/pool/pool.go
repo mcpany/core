@@ -65,7 +65,7 @@ type poolImpl[T ClosableClient] struct {
 	clients            chan poolItem[T]
 	factory            func(context.Context) (T, error)
 	sem                *semaphore.Weighted
-	mu                 sync.RWMutex
+	mu                 sync.Mutex
 	closed             atomic.Bool
 	disableHealthCheck bool
 }
@@ -292,29 +292,14 @@ func (p *poolImpl[T]) Put(client T) {
 		return
 	}
 
-	// Use a background context for health checks in Put to avoid blocking.
-	if !p.disableHealthCheck && !client.IsHealthy(context.Background()) {
-		_ = lo.Try(client.Close)
-		p.sem.Release(1)
-		// Notify waiting Get routines
-		// We use RLock here because we only need to ensure the pool isn't closed
-		// while we send to the channel.
-		p.mu.RLock()
-		if !p.closed.Load() {
-			select {
-			case p.clients <- poolItem[T]{retry: true}:
-			default:
-			}
-		}
-		p.mu.RUnlock()
-		return
-	}
+	// We do NOT check health here to avoid blocking the caller.
+	// IsHealthy() can be slow (network calls), and Put is often used in defer.
+	// Any unhealthy client returned here will be detected and discarded by Get()
+	// when it is next retrieved.
 
-	// We use RLock to allow concurrent Puts. The mutex protects against
-	// the pool being closed (and thus the channel being closed) while we are sending.
-	p.mu.RLock()
+	p.mu.Lock()
 	if p.closed.Load() {
-		p.mu.RUnlock()
+		p.mu.Unlock()
 		_ = lo.Try(client.Close)
 		p.sem.Release(1)
 		return
@@ -322,14 +307,14 @@ func (p *poolImpl[T]) Put(client T) {
 
 	select {
 	case p.clients <- poolItem[T]{client: client}:
-		p.mu.RUnlock()
+		p.mu.Unlock()
 	default:
 		// Idle pool is full, discard client. The permit for this client is
 		// effectively leaked, but this is the only safe option. Releasing
 		// the permit would allow the pool to create more clients than
 		// maxSize, and we can't tell if this client came from the pool
 		// in the first place.
-		p.mu.RUnlock()
+		p.mu.Unlock()
 		_ = lo.Try(client.Close)
 	}
 }

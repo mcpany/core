@@ -14,8 +14,7 @@ import {
   Box,
   Settings,
   Menu,
-  Home,
-  Network
+  Home
 } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -44,12 +43,6 @@ export function Sidebar({ className }: SidebarProps) {
       href: "/services",
       icon: Box,
       matches: ["/services"]
-    },
-    {
-      title: "Topology",
-      href: "/topology",
-      icon: Network,
-      matches: ["/topology"]
     },
     {
       title: "Settings",
