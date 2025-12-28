@@ -197,6 +197,8 @@ func (p *poolImpl[T]) Get(ctx context.Context) (T, error) {
 			}
 			_ = lo.Try(client.Close)
 			p.sem.Release(1)
+			// Small backoff to prevent tight loops when service is down
+			time.Sleep(100 * time.Millisecond)
 			continue // Retry.
 		default:
 			// Channel is empty, proceed.
@@ -223,6 +225,8 @@ func (p *poolImpl[T]) Get(ctx context.Context) (T, error) {
 				}
 				_ = lo.Try(client.Close)
 				p.sem.Release(1)
+				// Small backoff to prevent tight loops when service is down
+				time.Sleep(100 * time.Millisecond)
 				continue // Retry.
 			default:
 				// No client, so create a new one.
@@ -264,6 +268,8 @@ func (p *poolImpl[T]) Get(ctx context.Context) (T, error) {
 			}
 			_ = lo.Try(client.Close)
 			p.sem.Release(1)
+			// Small backoff to prevent tight loops when service is down
+			time.Sleep(100 * time.Millisecond)
 			continue // Retry.
 		case <-ctx.Done():
 			return zero, ctx.Err()

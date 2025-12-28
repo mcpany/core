@@ -76,6 +76,7 @@ func NewChecker(uc *configv1.UpstreamServiceConfig) health.Checker {
 	}
 
 	opts := []health.CheckerOption{
+		health.WithCacheDuration(1 * time.Second), // Cache results for 1 second to prevent excessive checks
 		health.WithStatusListener(func(_ context.Context, state health.CheckerState) {
 			status := float32(0.0)
 			if state.Status == health.StatusUp {
