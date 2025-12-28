@@ -284,7 +284,14 @@ func (m *CachingMiddleware) getCacheConfig(t tool.Tool) *configv1.CacheConfig {
 func (m *CachingMiddleware) getCacheKey(req *tool.ExecutionRequest) string {
 	// Normalize ToolInputs if they are JSON
 	var normalizedInputs []byte
-	if len(req.ToolInputs) > 0 {
+	inputLen := len(req.ToolInputs)
+
+	// Optimization: Skip canonicalization for large inputs (> 4KB) to avoid expensive
+	// Unmarshal/Marshal operations. The probability of key reordering being the only difference
+	// is acceptable to ignore for performance gain on large payloads.
+	const maxCanonicalizationSize = 4096
+
+	if inputLen > 0 && inputLen < maxCanonicalizationSize {
 		// Optimization: Check if it looks like a JSON object or array before unmarshaling
 		// Skip leading whitespace (simplified check)
 		var firstChar byte
@@ -306,7 +313,7 @@ func (m *CachingMiddleware) getCacheKey(req *tool.ExecutionRequest) string {
 		}
 	}
 
-	// Fallback to raw bytes if unmarshal fails or empty
+	// Fallback to raw bytes if unmarshal fails, empty, or too large
 	if normalizedInputs == nil {
 		normalizedInputs = req.ToolInputs
 	}
@@ -316,7 +323,7 @@ func (m *CachingMiddleware) getCacheKey(req *tool.ExecutionRequest) string {
 	hash := sha256.Sum256(normalizedInputs)
 	hashStr := hex.EncodeToString(hash[:])
 
-	return fmt.Sprintf("%s:%s", req.ToolName, hashStr)
+	return req.ToolName + ":" + hashStr
 }
 
 // Clear clears the cache.
