@@ -12,6 +12,7 @@ import { AppSidebar } from "@/components/app-sidebar";
 import { ThemeProvider } from "@/components/theme-provider"
 import { ThemeToggle } from "@/components/theme-toggle"
 import { Sidebar } from "@/components/sidebar"
+import { GlobalSearch } from "@/components/global-search"
 
 export const metadata: Metadata = {
   title: 'MCPAny Manager',
@@ -49,6 +50,7 @@ export default function RootLayout({
                             Dashboard
                          </div>
                         <div className="flex items-center gap-2">
+                             <GlobalSearch />
                              <ThemeToggle />
                         </div>
                     </header>
