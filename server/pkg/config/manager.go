@@ -290,6 +290,7 @@ func (m *UpstreamServiceManager) addService(service *configv1.UpstreamServiceCon
 	if len(serviceProfiles) == 0 {
 		// Default to "default" profile if none specified
 		serviceProfiles = []*configv1.Profile{{Name: "default"}}
+		service.Profiles = serviceProfiles
 	}
 
 	allowed := false
