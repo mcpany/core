@@ -12,6 +12,7 @@ import { AppSidebar } from "@/components/app-sidebar";
 import { ThemeProvider } from "@/components/theme-provider"
 import { ThemeToggle } from "@/components/theme-toggle"
 import { Sidebar } from "@/components/sidebar"
+import { GlobalSearch } from "@/components/global-search"
 
 export const metadata: Metadata = {
   title: 'MCPAny Manager',
@@ -39,6 +40,7 @@ export default function RootLayout({
             disableTransitionOnChange
           >
           <TooltipProvider>
+            <GlobalSearch />
             <div className="flex min-h-screen">
                 <Sidebar className="flex-shrink-0" />
                 <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
