@@ -384,3 +384,37 @@ upstream_services: {
 	// This should pass now with my fix
 	assert.Contains(t, defaultUser.GetProfileIds(), "dev", "Default user should have access to 'dev' profile even if ID is not explicitly set")
 }
+
+func TestLoadServices_DefaultUser_ImplicitProfile(t *testing.T) {
+	// Configuration with one service that has NO explicit profiles.
+	// It should default to "default" profile.
+	// No users defined, so a default user should be created.
+	// The default user should have access to the "default" profile.
+	content := `
+upstream_services: {
+	name: "service-implicit-profile"
+	http_service: {
+		address: "http://api.example.com"
+	}
+}
+`
+	filePath := createTempConfigFile(t, content)
+	fs := afero.NewOsFs()
+	fileStore := NewFileStore(fs, []string{filePath})
+
+	// We use "server" binary type, and since we don't pass specific profiles via env/flags in this test helper directly,
+	// GlobalSettings defaults might be used, but LoadServices internally initializes UpstreamServiceManager.
+	// By default UpstreamServiceManager enables "default" profile if none provided.
+
+	cfg, err := LoadServices(fileStore, "server")
+	require.NoError(t, err)
+	require.NotNil(t, cfg)
+
+	// Check if default user was created
+	require.Len(t, cfg.GetUsers(), 1)
+	defaultUser := cfg.GetUsers()[0]
+	assert.Equal(t, "default", defaultUser.GetId())
+
+	// Check if default user has access to "default" profile
+	assert.Contains(t, defaultUser.GetProfileIds(), "default", "Default user should have access to 'default' profile")
+}
