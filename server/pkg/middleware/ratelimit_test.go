@@ -353,9 +353,10 @@ func TestRateLimitMiddleware(t *testing.T) {
 		// Mock Redis calls
 		// The script returns 1 (allowed)
 		s := redis.NewScript(middleware.RedisRateLimitScript)
+		// Updated expectation: key now includes "service" scope suffix "service:service"
 		mockRedis.ExpectEvalSha(
 			s.Hash(),
-			[]string{"ratelimit:service"},
+			[]string{"ratelimit:service:service"},
 			10.0,
 			10,
 			fixedTime.UnixMicro(),
