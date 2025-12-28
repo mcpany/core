@@ -284,7 +284,15 @@ func (m *CachingMiddleware) getCacheConfig(t tool.Tool) *configv1.CacheConfig {
 func (m *CachingMiddleware) getCacheKey(req *tool.ExecutionRequest) string {
 	// Normalize ToolInputs if they are JSON
 	var normalizedInputs []byte
-	if len(req.ToolInputs) > 0 {
+
+	// Optimization: Use parsed Arguments if available to avoid redundant Unmarshal
+	if req.Arguments != nil {
+		if marshaled, err := json.Marshal(req.Arguments); err == nil {
+			normalizedInputs = marshaled
+		}
+	}
+
+	if normalizedInputs == nil && len(req.ToolInputs) > 0 {
 		// Optimization: Check if it looks like a JSON object or array before unmarshaling
 		// Skip leading whitespace (simplified check)
 		var firstChar byte
