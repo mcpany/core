@@ -107,8 +107,9 @@ func LoadServices(store Store, binaryType string) (*configv1.McpAnyServerConfig,
 		}
 
 		// Filter out invalid services
-		validServices := make([]*configv1.UpstreamServiceConfig, 0, len(fileConfig.GetUpstreamServices()))
-		for _, svc := range fileConfig.GetUpstreamServices() {
+		originalServices := fileConfig.GetUpstreamServices()
+		validServices := make([]*configv1.UpstreamServiceConfig, 0, len(originalServices))
+		for _, svc := range originalServices {
 			if !invalidServices[svc.GetName()] {
 				validServices = append(validServices, svc)
 			}
@@ -118,7 +119,7 @@ func LoadServices(store Store, binaryType string) (*configv1.McpAnyServerConfig,
 		// If all services are invalid, we might want to return an error, or just start empty.
 		// Starting empty is consistent with "doesn't crash", but user might be confused.
 		// However, logging the error above should be enough.
-		if len(validServices) == 0 && len(fileConfig.GetUpstreamServices()) > 0 {
+		if len(validServices) == 0 && len(originalServices) > 0 {
 			log.Warn("All configured services failed validation.")
 		}
 	}
