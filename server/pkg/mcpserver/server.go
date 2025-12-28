@@ -186,10 +186,8 @@ func NewServer(
 	s.promptManager.SetMCPServer(prompt.NewMCPServerProvider(s.Server()))
 
 	// Register built-in tools
-	if err := s.toolManager.AddTool(NewRootsTool()); err != nil {
-		// Log error but don't fail startup if duplicate (e.g. reload)
-		// Assuming logging is initialized
-	}
+	// Log error but don't fail startup if duplicate (e.g. reload)
+	_ = s.toolManager.AddTool(NewRootsTool())
 
 	s.resourceManager.OnListChanged(func() {
 		if s.server != nil {
@@ -320,9 +318,11 @@ func (s *Server) ListPrompts(
 	_ *mcp.ListPromptsRequest,
 ) (*mcp.ListPromptsResult, error) {
 	prompts := s.promptManager.ListPrompts()
-	mcpPrompts := make([]*mcp.Prompt, len(prompts))
-	for i, p := range prompts {
-		mcpPrompts[i] = p.Prompt()
+	mcpPrompts := make([]*mcp.Prompt, 0, len(prompts))
+	for _, p := range prompts {
+		if prompt := p.Prompt(); prompt != nil {
+			mcpPrompts = append(mcpPrompts, prompt)
+		}
 	}
 	return &mcp.ListPromptsResult{
 		Prompts: mcpPrompts,
@@ -374,9 +374,11 @@ func (s *Server) ListResources(
 	_ *mcp.ListResourcesRequest,
 ) (*mcp.ListResourcesResult, error) {
 	resources := s.resourceManager.ListResources()
-	mcpResources := make([]*mcp.Resource, len(resources))
-	for i, r := range resources {
-		mcpResources[i] = r.Resource()
+	mcpResources := make([]*mcp.Resource, 0, len(resources))
+	for _, r := range resources {
+		if resource := r.Resource(); resource != nil {
+			mcpResources = append(mcpResources, resource)
+		}
 	}
 	return &mcp.ListResourcesResult{
 		Resources: mcpResources,
@@ -719,7 +721,9 @@ func (s *Server) resourceListFilteringMiddleware(next mcp.MethodHandler) mcp.Met
 						continue
 					}
 				}
-				refreshedResources = append(refreshedResources, resourceInstance.Resource())
+				if res := resourceInstance.Resource(); res != nil {
+					refreshedResources = append(refreshedResources, res)
+				}
 			}
 			return &mcp.ListResourcesResult{Resources: refreshedResources}, nil
 		}
@@ -772,7 +776,9 @@ func (s *Server) promptListFilteringMiddleware(next mcp.MethodHandler) mcp.Metho
 						continue
 					}
 				}
-				refreshedPrompts = append(refreshedPrompts, promptInstance.Prompt())
+				if prompt := promptInstance.Prompt(); prompt != nil {
+					refreshedPrompts = append(refreshedPrompts, prompt)
+				}
 			}
 			return &mcp.ListPromptsResult{Prompts: refreshedPrompts}, nil
 		}
