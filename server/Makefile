@@ -458,8 +458,13 @@ build-ui:
 
 .PHONY: test-ui
 test-ui:
-	@echo "Running UI tests (Playwright)..."
-	@cd ../ui && npm install && npx playwright test
+	@echo "Running UI tests (Playwright) in Docker..."
+	@docker run --rm --ipc=host --network=host \
+		-v $(abspath ../ui):/work/ui \
+		-v $(abspath ../proto):/work/proto \
+		-w /work/ui \
+		mcr.microsoft.com/playwright:v1.48.0-jammy \
+		/bin/bash -c "npm ci && npx playwright test"
 
 
 .PHONY: e2e
