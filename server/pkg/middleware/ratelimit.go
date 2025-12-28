@@ -71,6 +71,11 @@ type RateLimitMiddleware struct {
 	redisClients sync.Map
 }
 
+type cachedRedisClient struct {
+	client     *redis.Client
+	configHash string
+}
+
 // NewRateLimitMiddleware creates a new RateLimitMiddleware.
 func NewRateLimitMiddleware(toolManager tool.ManagerInterface) *RateLimitMiddleware {
 	return &RateLimitMiddleware{
@@ -208,7 +213,15 @@ func (m *RateLimitMiddleware) getLimiter(ctx context.Context, serviceID string, 
 		// Verify type matches config
 		validType := false
 		if isRedis {
-			_, validType = limiter.(*RedisLimiter)
+			rl, ok := limiter.(*RedisLimiter)
+			validType = ok
+			// Check if Redis config changed
+			if ok && config.GetRedis() != nil {
+				newConfigHash := fmt.Sprintf("%s|%s|%d", config.GetRedis().GetAddress(), config.GetRedis().GetPassword(), config.GetRedis().GetDb())
+				if rl.GetConfigHash() != newConfigHash {
+					validType = false // Force creation of new limiter
+				}
+			}
 		} else {
 			_, validType = limiter.(*LocalLimiter)
 		}
@@ -218,7 +231,7 @@ func (m *RateLimitMiddleware) getLimiter(ctx context.Context, serviceID string, 
 			limiter.Update(rps, burst)
 			return limiter, nil
 		}
-		// Type mismatch, fall through to create new
+		// Type mismatch or config changed, fall through to create new
 	}
 
 	// Create new limiter
@@ -288,8 +301,20 @@ func hashKey(prefix, key string) string {
 }
 
 func (m *RateLimitMiddleware) getRedisClient(serviceID string, config *bus.RedisBus) (*redis.Client, error) {
+	configHash := fmt.Sprintf("%s|%s|%d", config.GetAddress(), config.GetPassword(), config.GetDb())
+
 	if val, ok := m.redisClients.Load(serviceID); ok {
-		return val.(*redis.Client), nil
+		// handle both legacy *redis.Client (if any) and new *cachedRedisClient
+		// Though in this code path we probably only have new ones if we restart.
+		// But sync.Map is persistent in memory.
+		if cached, ok := val.(*cachedRedisClient); ok {
+			if cached.configHash == configHash {
+				return cached.client, nil
+			}
+		} else if _, ok := val.(*redis.Client); ok {
+			// Legacy fallback or type mismatch, treat as miss
+			_ = ok
+		}
 	}
 
 	opts := &redis.Options{
@@ -298,6 +323,9 @@ func (m *RateLimitMiddleware) getRedisClient(serviceID string, config *bus.Redis
 		DB:       int(config.GetDb()),
 	}
 	client := redisClientCreator(opts)
-	m.redisClients.Store(serviceID, client)
+	m.redisClients.Store(serviceID, &cachedRedisClient{
+		client:     client,
+		configHash: configHash,
+	})
 	return client, nil
 }

@@ -28,10 +28,11 @@ func SetTimeNowForTests(nowFunc func() time.Time) {
 
 // RedisLimiter implements rate limiting using Redis.
 type RedisLimiter struct {
-	client *redis.Client
-	key    string
-	rps    float64
-	burst  int
+	client     *redis.Client
+	key        string
+	rps        float64
+	burst      int
+	configHash string
 }
 
 // NewRedisLimiter creates a new RedisLimiter.
@@ -72,11 +73,18 @@ func NewRedisLimiterWithClient(client *redis.Client, serviceID, partitionKey str
 	if partitionKey != "" {
 		key = fmt.Sprintf("%s:%s", key, partitionKey)
 	}
+	// Calculate config hash
+	redisConfig := config.GetRedis()
+	configHash := ""
+	if redisConfig != nil {
+		configHash = fmt.Sprintf("%s|%s|%d", redisConfig.GetAddress(), redisConfig.GetPassword(), redisConfig.GetDb())
+	}
 	return &RedisLimiter{
-		client: client,
-		key:    key,
-		rps:    config.GetRequestsPerSecond(),
-		burst:  int(config.GetBurst()),
+		client:     client,
+		key:        key,
+		rps:        config.GetRequestsPerSecond(),
+		burst:      int(config.GetBurst()),
+		configHash: configHash,
 	}
 }
 
@@ -145,6 +153,11 @@ func (l *RedisLimiter) AllowN(ctx context.Context, n int) (bool, error) {
 func (l *RedisLimiter) Update(rps float64, burst int) {
 	l.rps = rps
 	l.burst = burst
+}
+
+// GetConfigHash returns the hash of the Redis configuration.
+func (l *RedisLimiter) GetConfigHash() string {
+	return l.configHash
 }
 
 // Close closes the Redis client.
