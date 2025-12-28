@@ -125,6 +125,8 @@ const RedisRateLimitScript = `
     return 0
     `
 
+var redisRateLimitScript = redis.NewScript(RedisRateLimitScript)
+
 // Allow checks if the request is allowed.
 func (l *RedisLimiter) Allow(ctx context.Context) (bool, error) {
 	return l.AllowN(ctx, 1)
@@ -135,7 +137,8 @@ func (l *RedisLimiter) AllowN(ctx context.Context, n int) (bool, error) {
 	now := timeNow().UnixMicro()
 
 	// Use float64 for rate to handle fractional rates
-	cmd := l.client.Eval(ctx, RedisRateLimitScript, []string{l.key}, l.rps, l.burst, now, n)
+	// Use Run (EVALSHA) for better performance
+	cmd := redisRateLimitScript.Run(ctx, l.client, []string{l.key}, l.rps, l.burst, now, n)
 	if cmd.Err() != nil {
 		return false, cmd.Err()
 	}

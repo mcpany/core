@@ -352,8 +352,9 @@ func TestRateLimitMiddleware(t *testing.T) {
 
 		// Mock Redis calls
 		// The script returns 1 (allowed)
-		mockRedis.ExpectEval(
-			middleware.RedisRateLimitScript,
+		s := redis.NewScript(middleware.RedisRateLimitScript)
+		mockRedis.ExpectEvalSha(
+			s.Hash(),
 			[]string{"ratelimit:service"},
 			10.0,
 			10,
