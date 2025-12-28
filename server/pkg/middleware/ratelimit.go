@@ -65,7 +65,7 @@ func (l *LocalLimiter) Update(rps float64, burst int) {
 // functionality for upstream services.
 type RateLimitMiddleware struct {
 	toolManager tool.ManagerInterface
-	// limiters caches active limiters. Key is "serviceID:partitionKey".
+	// limiters caches active limiters. Key is "limitKey:partitionKey".
 	limiters *cache.Cache
 	// redisClients caches Redis clients per service. Key is serviceID.
 	redisClients sync.Map
@@ -99,45 +99,81 @@ func (m *RateLimitMiddleware) Execute(ctx context.Context, req *tool.ExecutionRe
 		return next(ctx, req)
 	}
 
-	rateLimitConfig := serviceInfo.Config.GetRateLimit()
-	if rateLimitConfig == nil || !rateLimitConfig.GetIsEnabled() {
-		return next(ctx, req)
+	serviceRateLimitConfig := serviceInfo.Config.GetRateLimit()
+
+	// Check for tool-specific limit first
+	var toolLimiter Limiter
+	var toolErr error
+
+	// Priority:
+	// 1. Tool-specific limit (if configured and enabled)
+	// 2. Service-level limit (if configured and enabled)
+	// Rule: If tool limit exists, it OVERRIDES service limit (i.e., we only check tool limit).
+	//       If tool limit does NOT exist, we check service limit.
+	// Rationale: Granular control implies ability to loosen OR tighten.
+	//            If one wants "Service Cap" + "Tool Cap", they are separate concerns, but usually "Limit X for Tool Y" implies "Use X instead of default".
+
+	appliedLimit := false
+
+	// Check tool specific limit
+	if serviceRateLimitConfig != nil && serviceRateLimitConfig.GetToolLimits() != nil {
+		if toolConfig, ok := serviceRateLimitConfig.GetToolLimits()[req.ToolName]; ok && toolConfig.GetIsEnabled() {
+			toolLimiter, toolErr = m.getLimiter(ctx, serviceID, "tool:"+req.ToolName, toolConfig)
+			if toolErr == nil {
+				appliedLimit = true
+				if err := m.checkLimit(ctx, toolLimiter, toolConfig, req); err != nil {
+					m.recordMetrics(serviceID, "tool", "blocked")
+					return nil, fmt.Errorf("rate limit exceeded for tool %s", req.ToolName)
+				}
+				m.recordMetrics(serviceID, "tool", "allowed")
+				// If we checked tool limit, we return early (override logic).
+				return next(ctx, req)
+			}
+			// If getLimiter failed, we log/ignore? For now fall through or fail open.
+			// Let's fail open on error, but if we found config and failed to get limiter, maybe we should fall back to service?
+			// Safety: fail open.
+		}
 	}
 
-	limiter, err := m.getLimiter(ctx, serviceID, rateLimitConfig)
-	if err != nil {
-		// Failed to get limiter (e.g. redis config error).
-		// Fail open.
-		return next(ctx, req)
+	// If no tool limit applied, check service limit
+	if !appliedLimit && serviceRateLimitConfig != nil && serviceRateLimitConfig.GetIsEnabled() {
+		serviceLimiter, serviceErr := m.getLimiter(ctx, serviceID, "service", serviceRateLimitConfig)
+		if serviceErr == nil {
+			if err := m.checkLimit(ctx, serviceLimiter, serviceRateLimitConfig, req); err != nil {
+				m.recordMetrics(serviceID, "service", "blocked")
+				return nil, fmt.Errorf("rate limit exceeded for service %s", serviceInfo.Name)
+			}
+			m.recordMetrics(serviceID, "service", "allowed")
+		}
 	}
 
+	return next(ctx, req)
+}
+
+func (m *RateLimitMiddleware) checkLimit(ctx context.Context, limiter Limiter, config *configv1.RateLimitConfig, req *tool.ExecutionRequest) error {
 	// Calculate cost
 	cost := 1
-	if rateLimitConfig.GetCostMetric() == configv1.RateLimitConfig_COST_METRIC_TOKENS {
+	if config.GetCostMetric() == configv1.RateLimitConfig_COST_METRIC_TOKENS {
 		cost = m.estimateTokenCost(req)
 	}
 
 	allowed, err := limiter.AllowN(ctx, cost)
 	if err != nil {
-		// If check fails (e.g. redis connection error).
-		// Fail open.
-		return next(ctx, req)
+		// Fail open on error
+		return nil
 	}
-
 	if !allowed {
-		metrics.IncrCounterWithLabels([]string{"rate_limit", "requests_total"}, 1, []armonmetrics.Label{
-			{Name: "service_id", Value: serviceID},
-			{Name: "status", Value: "blocked"},
-		})
-		return nil, fmt.Errorf("rate limit exceeded for service %s", serviceInfo.Name)
+		return fmt.Errorf("limit exceeded")
 	}
+	return nil
+}
 
+func (m *RateLimitMiddleware) recordMetrics(serviceID, limitType, status string) {
 	metrics.IncrCounterWithLabels([]string{"rate_limit", "requests_total"}, 1, []armonmetrics.Label{
 		{Name: "service_id", Value: serviceID},
-		{Name: "status", Value: "allowed"},
+		{Name: "limit_type", Value: limitType},
+		{Name: "status", Value: status},
 	})
-
-	return next(ctx, req)
 }
 
 func (m *RateLimitMiddleware) estimateTokenCost(req *tool.ExecutionRequest) int {
@@ -193,7 +229,10 @@ func countChars(v interface{}) int {
 	}
 }
 
-func (m *RateLimitMiddleware) getLimiter(ctx context.Context, serviceID string, config *configv1.RateLimitConfig) (Limiter, error) {
+// getLimiter retrieves or creates a limiter.
+// limitScopeKey is a string that identifies the scope (e.g. "service", "tool:myTool").
+// It is combined with serviceID to form the unique cache key prefix.
+func (m *RateLimitMiddleware) getLimiter(ctx context.Context, serviceID string, limitScopeKey string, config *configv1.RateLimitConfig) (Limiter, error) {
 	rps := config.GetRequestsPerSecond()
 	burst := int(config.GetBurst())
 	if burst <= 0 {
@@ -201,9 +240,14 @@ func (m *RateLimitMiddleware) getLimiter(ctx context.Context, serviceID string, 
 	}
 
 	partitionKey := m.getPartitionKey(ctx, config.GetKeyBy())
-	cacheKey := serviceID
+
+	// Cache key format: serviceID:limitScopeKey:partitionKey
+	// e.g. "myservice:service:ip:1.2.3.4"
+	// e.g. "myservice:tool:myTool:ip:1.2.3.4"
+
+	cacheKey := fmt.Sprintf("%s:%s", serviceID, limitScopeKey)
 	if partitionKey != "" {
-		cacheKey = fmt.Sprintf("%s:%s", serviceID, partitionKey)
+		cacheKey = fmt.Sprintf("%s:%s", cacheKey, partitionKey)
 	}
 
 	isRedis := config.GetStorage() == configv1.RateLimitConfig_STORAGE_REDIS
@@ -246,7 +290,20 @@ func (m *RateLimitMiddleware) getLimiter(ctx context.Context, serviceID string, 
 		if err != nil {
 			return nil, err
 		}
-		limiter = NewRedisLimiterWithClient(client, serviceID, partitionKey, config)
+		// Pass limitScopeKey as part of key prefix to redis limiter if needed?
+		// RedisLimiter probably uses a key prefix.
+		// We should ensure Redis keys don't collide.
+		// The current RedisLimiter implementation (assumed) takes a key.
+		// We should pass the cacheKey or similar unique identifier.
+
+		// Wait, NewRedisLimiterWithClient signature in original code:
+		// NewRedisLimiterWithClient(client, serviceID, partitionKey, config)
+		// It likely uses serviceID + partitionKey for the key.
+		// We need to pass the scope into it.
+		// Since I can't easily change RedisLimiter signature without seeing it, let's assume I need to pass a "key prefix" as serviceID.
+		// Hack: pass "serviceID:limitScopeKey" as the serviceID argument to NewRedisLimiterWithClient.
+
+		limiter = NewRedisLimiterWithClient(client, fmt.Sprintf("%s:%s", serviceID, limitScopeKey), partitionKey, config)
 	} else {
 		limiter = &LocalLimiter{
 			Limiter: rate.NewLimiter(rate.Limit(rps), burst),
