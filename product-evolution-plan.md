@@ -2,103 +2,44 @@
 
 ## 1. Updated Roadmap
 
-The following is the reconciled roadmap as of today. Completed items have been verified against the codebase.
+The [Roadmap](docs/roadmap.md) has been synchronized with the current codebase state.
 
-### Current Status
-
-#### Implemented Features
-- [x] [**Service Types**](./server/docs/features/service-types.md): gRPC, HTTP, OpenAPI, GraphQL, Stdio, WebSocket, WebRTC.
-- [x] [**Dynamic UI**](./server/docs/features/dynamic-ui.md): Web-based interface for managing services (`ui/`).
-- [x] [**RBAC**](./server/docs/features/rbac.md): Role-Based Access Control (`server/pkg/middleware/rbac.go`).
-- [x] [**Transport Protocols (Kafka)**](./server/docs/features/kafka.md): Add support for asynchronous communication via Kafka.
-- [x] [**Transport Protocols (NATS)**](./server/docs/features/nats.md): Support for NATS as a message bus.
-- [x] [**Caching**](./server/docs/features/caching/README.md).
-- [x] [**Rate Limiting**](./server/docs/features/rate-limiting/README.md).
-- [x] [**Resilience**](./server/docs/features/resilience/README.md).
-- [x] [**Health Checks**](./server/docs/features/health-checks.md).
-- [x] [**Schema Validation**](./server/docs/features/schema-validation.md).
-- [x] [**Service Profiles**](./server/docs/features/profiles_and_policies/README.md).
-- [x] [**Secrets Management**](./server/docs/features/security.md).
-- [x] [**Distributed Tracing**](./server/docs/features/tracing/README.md).
-- [x] [**Automated Documentation Generation**](./server/docs/features/documentation_generation.md).
-- [x] [**IP Allowlisting**](./server/docs/features/security.md).
-- [x] [**Webhooks**](./server/docs/features/webhooks/README.md).
-- [x] [**Advanced Authentication**](./server/docs/features/authentication/README.md).
-
-#### Ongoing Goals
-- [ ] **Expand Test Coverage**: Increase unit and integration test coverage for all existing and new features.
-- [ ] **Improve Error Handling**.
-
-#### Long-Term Goals
-- [ ] **WASM Plugin Support**.
-- [ ] **More Service Types**.
-- [ ] **Config Registry**.
-- [ ] **Client SDKs** (End-user facing).
-
----
+### Key Updates:
+- **Completed Items**: Health Checks, Schema Validation, Service Profiles, Message Bus (NATS/Kafka), and Dynamic Registration have been marked as completed and linked to documentation.
+- **New Entries**: Semantic Caching and Upstream mTLS have been added to the implemented features list.
+- **Clarifications**: Distinctions made between Rate Limiting (Implemented) and Token-Based Quota Management (Planned).
 
 ## 2. Top 10 Recommended Features
 
-Based on the analysis of current capabilities and industry standards for AI/Infrastructure tools, here are the top 10 recommended features to prioritize:
+These recommendations focus on moving MCP Any from a powerful tool to an enterprise-grade platform.
 
-1.  **Vector Search Integration (RAG Support)**
-    *   *Why*: Retrieval-Augmented Generation is the primary use case for MCP. Supporting vector databases (Pinecone, Weaviate, pgvector) as first-class citizens will exponentially increase utility.
-    *   *Difficulty*: Medium
-
-2.  **OIDC / SSO Support (Incoming Auth)**
-    *   *Why*: Enterprise adoption requires integration with existing identity providers (Google, Okta, Azure AD) rather than just API keys.
-    *   *Difficulty*: Medium
-
-3.  **Kubernetes Operator**
-    *   *Why*: To truly be "Ops Friendly", we need a native way to manage MCP Any instances and configurations via CRDs in K8s environments.
-    *   *Difficulty*: High
-
-4.  **S3 / Blob Storage Adapter**
-    *   *Why*: A generic file operations tool (Upload/Download/List) for S3-compatible storage is a very common requirement for AI agents.
-    *   *Difficulty*: Low
-
-5.  **PII Redaction / Data Masking**
-    *   *Why*: Security and compliance (GDPR/CCPA). Automatically redact sensitive info (emails, credit cards) from logs and traces.
-    *   *Difficulty*: Medium
-
-6.  **Interactive Tool Playground (UI)**
-    *   *Why*: Improve Developer Experience (DX). Allow users to test tools directly from the UI (like Swagger UI) before connecting an agent.
-    *   *Difficulty*: Medium
-
-7.  **Cost / Token Usage Analytics**
-    *   *Why*: Business intelligence. Track token usage per user/profile to enable chargeback or quota management.
-    *   *Difficulty*: Medium
-
-8.  **Structured Log Streaming**
-    *   *Why*: Production readiness. Direct integration with Splunk, Datadog, or CloudWatch for logs (beyond just file/stdout).
-    *   *Difficulty*: Low
-
-9.  **Declarative Config Validation CLI**
-    *   *Why*: CI/CD. A standalone CLI command to validate `config.yaml` syntax and schema without starting the server.
-    *   *Difficulty*: Low
-
-10. **Webhooks Sink (Event Source)**
-    *   *Why*: Enable event-driven workflows. Allow external services to trigger MCP tools via webhooks (reverse of current Webhooks feature).
-    *   *Difficulty*: Medium
-
----
+| Priority | Feature Name | Why it matters | Implementation Difficulty |
+| :--- | :--- | :--- | :--- |
+| 1 | **Kubernetes Operator** | Enables GitOps, automated scaling, and simplified lifecycle management in production environments. Critical for enterprise adoption. | High |
+| 2 | **WASM Plugin Support** | Allows users to extend functionality (custom transformations, validators) safely without recompiling the server. Key for a flexible ecosystem. | High |
+| 3 | **Cloud Storage Support (S3/GCS)** | Extends the Filesystem provider to cloud buckets. This allows agents to manipulate cloud assets directly, a massive use-case unlock. | Medium |
+| 4 | **Token-Based Quota Management** | Rate limiting protects the server, but Quotas protect the *wallet*. Essential for managing costs when using LLMs. | Medium |
+| 5 | **Redis/PgVector for Semantic Cache** | Current SQLite/Memory semantic cache is good for single instances. Redis/PgVector support is needed for distributed, high-scale deployments. | Medium |
+| 6 | **Terraform Provider** | "Configuration as Code" is a core philosophy. A Terraform provider allows managing MCP Any resources using standard IaC tools. | Medium |
+| 7 | **Downstream mTLS Authentication** | While upstream mTLS is supported, fully enforcing mTLS for *clients* (AI agents) connecting to MCP Any ensures end-to-end zero-trust security. | Medium |
+| 8 | **CI/CD Config Validator CLI** | A standalone binary to validate `config.yaml` and `.proto` files in CI pipelines before deployment preventing bad configs from reaching production. | Low |
+| 9 | **Streaming Response Support (SSE)** | Ensure full support for Server-Sent Events across all providers to enable real-time feedback from long-running tools to the AI. | Medium |
+| 10 | **Data Loss Prevention (DLP)** | Middleware to automatically redact PII (emails, credit cards) from tool inputs/outputs and logs, ensuring compliance. | Medium |
 
 ## 3. Codebase Health
 
-### Overview
-The codebase is well-structured and modular (`pkg/` layout). However, there are some areas requiring attention.
+### Observations
 
-### Issues
-1.  **Linting**:
-    *   There are ~102 `nolint` directives. While sometimes necessary, excessive use can hide real issues. A review is recommended.
+- **Structure**: The codebase is well-structured with clear separation of concerns (`server/pkg/upstream`, `server/pkg/middleware`, etc.).
+- **Documentation**: Documentation is extensive but was slightly fragmented between `docs/` and `server/docs/`. This has been partially reconciled, but a full merge of documentation trees is recommended in the future.
+- **Testing**:
+    - There is evidence of integration tests (`server/tests/integration`) and unit tests.
+    - **Gap**: Coverage for the `filesystem` provider suggests it relies on `afero`, but cloud backend implementations (S3/GCS) are explicitly "not yet supported" in the code, matching the roadmap update.
+- **Dependencies**: The project manages dependencies well (`go.work`, `go.mod`).
+- **Standardization**: Use of Protocol Buffers (`proto/`) for config definition is a strong architectural choice, ensuring type safety and schema validation.
 
-2.  **TODOs**:
-    *   Only 2 TODOs found in `server/pkg`. This is surprisingly low, which might indicate either very clean code or a lack of inline tracking for tech debt.
-    *   A massive amount of TODOs (1900+) were found in `build/` (dependencies), which is expected and fine, but we should ensure our own code is tracked.
+### Recommendations for Health
 
-### Refactoring Candidates
-*   **Protobuf Parser**: This area is complex (reflecting on proto files) and critical for gRPC support.
-*   **Tool Execution Logic**: The core execution engine is a critical path and should be kept clean.
-
-### Conclusion
-The project is in a strong position feature-wise, but stability (tests) needs to be addressed before embarking on the "Kubernetes Operator" or "WASM" features.
+1.  **Unify Documentation**: Merge `docs/` and `server/docs/` into a single hierarchy to avoid confusion and drift.
+2.  **E2E Testing Suite**: Expand the `server/tests/integration` to cover complex scenarios like "Auth + Rate Limit + Tool Execution" in a single flow.
+3.  **Linter Strictness**: Ensure `golangci-lint` is running with a strict ruleset in CI to maintain code quality as the team scales.
