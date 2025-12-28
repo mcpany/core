@@ -1,0 +1,439 @@
+make -C server test
+make[1]: Entering directory '/app/server'
+Cleaning generated protobuf files...
+Preparing development environment...
+protoc version v33.1 is already installed.
+Installing Go protobuf plugins...
+Checking for Go protobuf plugins...
+Go protobuf plugins installation check complete.
+Checking for Python to install dependencies and pre-commit hooks...
+Python found. Installing/updating pre-commit and fastmcp locally...
+pre-commit installed at .git/hooks/pre-commit
+Installing Node.js dependencies for integration tests...
+Found package.json, running npm install...
+
+up to date, audited 615 packages in 1s
+
+152 packages are looking for funding
+  run `npm fund` for details
+
+found 0 vulnerabilities
+Installing Playwright browsers (skipping system deps)...
+Playwright Host validation warning:
+╔══════════════════════════════════════════════════════╗
+║ Host system is missing dependencies to run browsers. ║
+║ Missing libraries:                                   ║
+║     libgtk-4.so.1                                    ║
+║     libgraphene-1.0.so.0                             ║
+║     libxslt.so.1                                     ║
+║     libwoff2dec.so.1.0.2                             ║
+║     libvpx.so.9                                      ║
+║     libevent-2.1.so.7                                ║
+║     libopus.so.0                                     ║
+║     libgstallocators-1.0.so.0                        ║
+║     libgstapp-1.0.so.0                               ║
+║     libgstpbutils-1.0.so.0                           ║
+║     libgstaudio-1.0.so.0                             ║
+║     libgsttag-1.0.so.0                               ║
+║     libgstvideo-1.0.so.0                             ║
+║     libgstgl-1.0.so.0                                ║
+║     libgstcodecparsers-1.0.so.0                      ║
+║     libgstfft-1.0.so.0                               ║
+║     libflite.so.1                                    ║
+║     libflite_usenglish.so.1                          ║
+║     libflite_cmu_grapheme_lang.so.1                  ║
+║     libflite_cmu_grapheme_lex.so.1                   ║
+║     libflite_cmu_indic_lang.so.1                     ║
+║     libflite_cmu_indic_lex.so.1                      ║
+║     libflite_cmulex.so.1                             ║
+║     libflite_cmu_time_awb.so.1                       ║
+║     libflite_cmu_us_awb.so.1                         ║
+║     libflite_cmu_us_kal16.so.1                       ║
+║     libflite_cmu_us_kal.so.1                         ║
+║     libflite_cmu_us_rms.so.1                         ║
+║     libflite_cmu_us_slt.so.1                         ║
+║     libwebpdemux.so.2                                ║
+║     libavif.so.16                                    ║
+║     libharfbuzz-icu.so.0                             ║
+║     libwebpmux.so.3                                  ║
+║     libenchant-2.so.2                                ║
+║     libsecret-1.so.0                                 ║
+║     libhyphen.so.0                                   ║
+║     libmanette-0.2.so.0                              ║
+║     libx264.so                                       ║
+╚══════════════════════════════════════════════════════╝
+    at validateDependenciesLinux (/app/server/tests/integration/upstream/node_modules/playwright-core/lib/server/registry/dependencies.js:269:9)
+    at async Registry._validateHostRequirements (/app/server/tests/integration/upstream/node_modules/playwright-core/lib/server/registry/index.js:961:14)
+    at async Registry._validateHostRequirementsForExecutableIfNeeded (/app/server/tests/integration/upstream/node_modules/playwright-core/lib/server/registry/index.js:1083:7)
+    at async Registry.validateHostRequirementsForExecutablesIfNeeded (/app/server/tests/integration/upstream/node_modules/playwright-core/lib/server/registry/index.js:1072:7)
+    at async i.<anonymous> (/app/server/tests/integration/upstream/node_modules/playwright-core/lib/cli/program.js:217:7)
+Checking for Helm...
+Helm is already installed.
+Checking for ShellCheck...
+ShellCheck is already installed.
+Checking for nats-server...
+nats-server is already installed.
+Checking for golangci-lint...
+Installing golangci-lint v2.7.2 to /app/build/env/bin...
+golangci/golangci-lint info checking GitHub for tag 'v2.7.2'
+golangci/golangci-lint info found version: 2.7.2 for v2.7.2/linux/amd64
+golangci/golangci-lint info installed /app/build/env/bin/golangci-lint
+golangci-lint installed successfully.
+Downloading go modules...
+Preparation complete.
+Removing old protobuf files...
+Generating protobuf files...
+Using protoc: libprotoc 33.1
+Protobuf generation complete.
+Building Go project locally...
+Building weather server example...
+make[2]: Entering directory '/app/server'
+make[2]: '/app/build/test/bin/http_echo_server' is up to date.
+make[2]: '/app/build/test/bin/http_authed_echo_server' is up to date.
+make[2]: '/app/build/test/bin/grpc_weather_server' is up to date.
+make[2]: '/app/build/test/bin/grpc_authed_weather_server' is up to date.
+make[2]: '/app/build/test/bin/openapi_weather_server' is up to date.
+make[2]: '/app/build/test/bin/webrtc_weather_server' is up to date.
+make[2]: '/app/build/test/bin/command-tester' is up to date.
+make[2]: '/app/build/test/bin/prompt-server' is up to date.
+make[2]: Leaving directory '/app/server'
+make[2]: Entering directory '/app/server'
+Building file upload server example...
+make[2]: Leaving directory '/app/server'
+Building E2E time server Docker image (mcpany-e2e-time-server)...
+#0 building with "default" instance using docker driver
+
+#1 [internal] load build definition from Dockerfile.timeserver
+#1 transferring dockerfile: 864B done
+#1 DONE 0.0s
+
+#2 [internal] load metadata for mirror.gcr.io/library/python:3.11-slim
+#2 DONE 0.1s
+
+#3 [internal] load .dockerignore
+#3 transferring context: 2B done
+#3 DONE 0.0s
+
+#4 [1/5] FROM mirror.gcr.io/library/python:3.11-slim@sha256:158caf0e080e2cd74ef2879ed3c4e697792ee65251c8208b7afb56683c32ea6c
+#4 DONE 0.0s
+
+#5 [internal] load build context
+#5 transferring context: 134B done
+#5 DONE 0.0s
+
+#6 [3/5] COPY timeserver_patch/requirements.txt .
+#6 CACHED
+
+#7 [4/5] RUN pip install -r requirements.txt
+#7 CACHED
+
+#8 [2/5] WORKDIR /app
+#8 CACHED
+
+#9 [5/5] COPY timeserver_patch/main.py /app/main.py
+#9 CACHED
+
+#10 exporting to image
+#10 exporting layers done
+#10 writing image sha256:6fedcad3843c564f08d699298d8652d73d87dc7b68f72dd8ff3f4cb00a526bd0 done
+#10 naming to docker.io/library/mcpany-e2e-time-server done
+#10 DONE 0.0s
+Running fast Go tests locally with a 300s timeout...
+Testing packages: github.com/mcpany/core/cmd/mock_mcp_server
+github.com/mcpany/core/cmd/server
+github.com/mcpany/core/cmd/webhooks
+github.com/mcpany/core/cmd/webhooks/hooks
+github.com/mcpany/core/cmd/worker
+github.com/mcpany/core/pkg/admin
+github.com/mcpany/core/pkg/app
+github.com/mcpany/core/pkg/appconsts
+github.com/mcpany/core/pkg/auth
+github.com/mcpany/core/pkg/bus
+github.com/mcpany/core/pkg/bus/kafka
+github.com/mcpany/core/pkg/bus/memory
+github.com/mcpany/core/pkg/bus/nats
+github.com/mcpany/core/pkg/bus/redis
+github.com/mcpany/core/pkg/cli
+github.com/mcpany/core/pkg/client
+github.com/mcpany/core/pkg/command
+github.com/mcpany/core/pkg/config
+github.com/mcpany/core/pkg/consts
+github.com/mcpany/core/pkg/health
+github.com/mcpany/core/pkg/logging
+github.com/mcpany/core/pkg/mcpserver
+github.com/mcpany/core/pkg/metrics
+github.com/mcpany/core/pkg/middleware
+github.com/mcpany/core/pkg/pool
+github.com/mcpany/core/pkg/prompt
+github.com/mcpany/core/pkg/resilience
+github.com/mcpany/core/pkg/resource
+github.com/mcpany/core/pkg/service
+github.com/mcpany/core/pkg/serviceregistry
+github.com/mcpany/core/pkg/storage/sqlite
+github.com/mcpany/core/pkg/telemetry
+github.com/mcpany/core/pkg/testutil
+github.com/mcpany/core/pkg/tool
+github.com/mcpany/core/pkg/transformer
+github.com/mcpany/core/pkg/update
+github.com/mcpany/core/pkg/upstream
+github.com/mcpany/core/pkg/upstream/command
+github.com/mcpany/core/pkg/upstream/factory
+github.com/mcpany/core/pkg/upstream/filesystem
+github.com/mcpany/core/pkg/upstream/graphql
+github.com/mcpany/core/pkg/upstream/grpc
+github.com/mcpany/core/pkg/upstream/grpc/protobufparser
+github.com/mcpany/core/pkg/upstream/http
+github.com/mcpany/core/pkg/upstream/mcp
+github.com/mcpany/core/pkg/upstream/openapi
+github.com/mcpany/core/pkg/upstream/sql
+github.com/mcpany/core/pkg/upstream/webrtc
+github.com/mcpany/core/pkg/upstream/websocket
+github.com/mcpany/core/pkg/util
+github.com/mcpany/core/pkg/util/schemaconv
+github.com/mcpany/core/pkg/util/testutil
+github.com/mcpany/core/pkg/validation
+github.com/mcpany/core/pkg/worker
+github.com/mcpany/core/proto/admin/v1
+github.com/mcpany/core/proto/api/v1
+github.com/mcpany/core/proto/bus
+github.com/mcpany/core/proto/config/v1
+github.com/mcpany/core/proto/examples/userservice/v1
+github.com/mcpany/core/proto/examples/weather/v1
+github.com/mcpany/core/proto/mcp_options/v1
+github.com/mcpany/core/proto/mcp_router/v1
+github.com/mcpany/core/tests/framework
+github.com/mcpany/core/tests/integration
+github.com/mcpany/core/tests/integration/cmd
+github.com/mcpany/core/tests/integration/cmd/command-tester
+github.com/mcpany/core/tests/integration/cmd/mocks/grpc_authed_weather_server
+github.com/mcpany/core/tests/integration/cmd/mocks/grpc_weather_server
+github.com/mcpany/core/tests/integration/cmd/mocks/http_authed_echo_server
+github.com/mcpany/core/tests/integration/cmd/mocks/http_caching_server
+github.com/mcpany/core/tests/integration/cmd/mocks/http_echo_server
+github.com/mcpany/core/tests/integration/cmd/mocks/openapi_weather_server
+github.com/mcpany/core/tests/integration/cmd/mocks/prompt-server
+github.com/mcpany/core/tests/integration/cmd/mocks/webrtc_weather_server
+github.com/mcpany/core/tests/integration/cmd/mocks/websocket_echo_server
+github.com/mcpany/core/tests/integration/examples
+github.com/mcpany/core/tests/integration/resilience
+github.com/mcpany/core/tests/integration/startup
+github.com/mcpany/core/tests/integration/upstream
+github.com/mcpany/core/examples/upstream_service_demo/file-upload
+github.com/mcpany/core/examples/upstream_service_demo/graphql/server
+github.com/mcpany/core/examples/upstream_service_demo/http/client
+github.com/mcpany/core/examples/upstream_service_demo/http/server
+github.com/mcpany/core/examples/upstream_service_demo/http/server/weather_server
+github.com/mcpany/core/examples/upstream_service_demo/openapi/client
+github.com/mcpany/core/examples/upstream_service_demo/openapi/server
+github.com/mcpany/core/examples/upstream_service_demo/webrtc/client
+github.com/mcpany/core/examples/upstream_service_demo/webrtc/server
+github.com/mcpany/core/examples/upstream_service_demo/websocket
+github.com/mcpany/core/examples/upstream_service_demo/websocket/client
+github.com/mcpany/core/examples/upstream_service_demo/websocket/echo_server/server
+	github.com/mcpany/core/cmd/mock_mcp_server		coverage: 0.0% of statements
+ok  	github.com/mcpany/core/cmd/server	4.469s	coverage: 34.9% of statements
+	github.com/mcpany/core/cmd/webhooks		coverage: 0.0% of statements
+ok  	github.com/mcpany/core/cmd/webhooks/hooks	1.065s	coverage: 84.7% of statements
+ok  	github.com/mcpany/core/cmd/worker	1.219s	coverage: 92.9% of statements
+ok  	github.com/mcpany/core/pkg/admin	1.093s	coverage: 92.6% of statements
+ok  	github.com/mcpany/core/pkg/app	25.888s	coverage: 81.7% of statements
+ok  	github.com/mcpany/core/pkg/appconsts	1.022s	coverage: [no statements]
+ok  	github.com/mcpany/core/pkg/auth	3.012s	coverage: 94.7% of statements
+ok  	github.com/mcpany/core/pkg/bus	9.704s	coverage: 75.8% of statements
+ok  	github.com/mcpany/core/pkg/bus/kafka	1.250s	coverage: 91.4% of statements
+ok  	github.com/mcpany/core/pkg/bus/memory	1.070s	coverage: 100.0% of statements
+ok  	github.com/mcpany/core/pkg/bus/nats	1.835s	coverage: 86.8% of statements
+ok  	github.com/mcpany/core/pkg/bus/redis	3.776s	coverage: 76.5% of statements
+ok  	github.com/mcpany/core/pkg/cli	1.025s	coverage: 100.0% of statements
+ok  	github.com/mcpany/core/pkg/client	2.087s	coverage: 94.1% of statements
+ok  	github.com/mcpany/core/pkg/command	4.162s	coverage: 92.3% of statements
+ok  	github.com/mcpany/core/pkg/config	2.677s	coverage: 89.8% of statements
+ok  	github.com/mcpany/core/pkg/consts	1.024s	coverage: [no statements]
+ok  	github.com/mcpany/core/pkg/health	1.149s	coverage: 90.1% of statements
+ok  	github.com/mcpany/core/pkg/logging	1.032s	coverage: 90.5% of statements
+ok  	github.com/mcpany/core/pkg/mcpserver	1.777s	coverage: 93.6% of statements
+ok  	github.com/mcpany/core/pkg/metrics	1.231s	coverage: 93.5% of statements
+ok  	github.com/mcpany/core/pkg/middleware	2.448s	coverage: 81.9% of statements
+ok  	github.com/mcpany/core/pkg/pool	6.297s	coverage: 80.1% of statements
+ok  	github.com/mcpany/core/pkg/prompt	1.098s	coverage: 98.3% of statements
+ok  	github.com/mcpany/core/pkg/resilience	1.155s	coverage: 94.2% of statements
+ok  	github.com/mcpany/core/pkg/resource	1.109s	coverage: 98.2% of statements
+ok  	github.com/mcpany/core/pkg/service	1.240s	coverage: 85.7% of statements
+ok  	github.com/mcpany/core/pkg/serviceregistry	1.292s	coverage: 94.7% of statements
+ok  	github.com/mcpany/core/pkg/storage/sqlite	1.159s	coverage: 88.6% of statements
+ok  	github.com/mcpany/core/pkg/telemetry	1.036s	coverage: 87.0% of statements
+	github.com/mcpany/core/pkg/testutil		coverage: 0.0% of statements
+ok  	github.com/mcpany/core/pkg/tool	5.762s	coverage: 81.1% of statements
+ok  	github.com/mcpany/core/pkg/transformer	1.059s	coverage: 87.2% of statements
+ok  	github.com/mcpany/core/pkg/update	1.064s	coverage: 84.0% of statements
+ok  	github.com/mcpany/core/pkg/upstream	1.122s	coverage: [no statements]
+ok  	github.com/mcpany/core/pkg/upstream/command	1.132s	coverage: 83.5% of statements
+ok  	github.com/mcpany/core/pkg/upstream/factory	1.107s	coverage: 85.7% of statements
+ok  	github.com/mcpany/core/pkg/upstream/filesystem	1.122s	coverage: 83.7% of statements
+ok  	github.com/mcpany/core/pkg/upstream/graphql	1.134s	coverage: 92.1% of statements
+ok  	github.com/mcpany/core/pkg/upstream/grpc	11.313s	coverage: 82.3% of statements
+ok  	github.com/mcpany/core/pkg/upstream/grpc/protobufparser	11.142s	coverage: 85.3% of statements
+ok  	github.com/mcpany/core/pkg/upstream/http	1.277s	coverage: 87.7% of statements
+ok  	github.com/mcpany/core/pkg/upstream/mcp	2.322s	coverage: 86.4% of statements
+ok  	github.com/mcpany/core/pkg/upstream/openapi	1.203s	coverage: 82.5% of statements
+ok  	github.com/mcpany/core/pkg/upstream/sql	1.150s	coverage: 89.9% of statements
+ok  	github.com/mcpany/core/pkg/upstream/webrtc	1.170s	coverage: 91.1% of statements
+ok  	github.com/mcpany/core/pkg/upstream/websocket	1.115s	coverage: 90.7% of statements
+ok  	github.com/mcpany/core/pkg/util	18.150s	coverage: 83.1% of statements
+ok  	github.com/mcpany/core/pkg/util/schemaconv	1.038s	coverage: 90.6% of statements
+ok  	github.com/mcpany/core/pkg/util/testutil	1.043s	coverage: 100.0% of statements
+ok  	github.com/mcpany/core/pkg/validation	1.040s	coverage: 93.2% of statements
+ok  	github.com/mcpany/core/pkg/worker	1.539s	coverage: 84.3% of statements
+ok  	github.com/mcpany/core/proto/admin/v1	1.035s	coverage: 4.4% of statements
+ok  	github.com/mcpany/core/proto/api/v1	1.042s	coverage: 1.6% of statements
+ok  	github.com/mcpany/core/proto/bus	1.028s	coverage: 5.3% of statements
+ok  	github.com/mcpany/core/proto/config/v1	1.124s	coverage: 3.3% of statements
+	github.com/mcpany/core/proto/examples/userservice/v1		coverage: 0.0% of statements
+ok  	github.com/mcpany/core/proto/examples/weather/v1	1.031s	coverage: 18.6% of statements
+	github.com/mcpany/core/proto/mcp_options/v1		coverage: 0.0% of statements
+	github.com/mcpany/core/proto/mcp_router/v1		coverage: 0.0% of statements
+ok  	github.com/mcpany/core/tests/framework	7.616s	coverage: 6.5% of statements
+ok  	github.com/mcpany/core/tests/integration	43.294s	coverage: 57.0% of statements
+ok  	github.com/mcpany/core/tests/integration/cmd	1.023s	coverage: [no statements]
+	github.com/mcpany/core/tests/integration/cmd/command-tester		coverage: 0.0% of statements
+	github.com/mcpany/core/tests/integration/cmd/mocks/grpc_authed_weather_server		coverage: 0.0% of statements
+	github.com/mcpany/core/tests/integration/cmd/mocks/grpc_weather_server		coverage: 0.0% of statements
+	github.com/mcpany/core/tests/integration/cmd/mocks/http_authed_echo_server		coverage: 0.0% of statements
+	github.com/mcpany/core/tests/integration/cmd/mocks/http_caching_server		coverage: 0.0% of statements
+	github.com/mcpany/core/tests/integration/cmd/mocks/http_echo_server		coverage: 0.0% of statements
+	github.com/mcpany/core/tests/integration/cmd/mocks/openapi_weather_server		coverage: 0.0% of statements
+	github.com/mcpany/core/tests/integration/cmd/mocks/prompt-server		coverage: 0.0% of statements
+	github.com/mcpany/core/tests/integration/cmd/mocks/webrtc_weather_server		coverage: 0.0% of statements
+	github.com/mcpany/core/tests/integration/cmd/mocks/websocket_echo_server		coverage: 0.0% of statements
+ok  	github.com/mcpany/core/tests/integration/examples	1.782s	coverage: [no statements]
+ok  	github.com/mcpany/core/tests/integration/resilience	1.157s	coverage: [no statements]
+ok  	github.com/mcpany/core/tests/integration/startup	1.409s	coverage: [no statements]
+ok  	github.com/mcpany/core/tests/integration/upstream	47.245s	coverage: 90.9% of statements
+	github.com/mcpany/core/examples/upstream_service_demo/file-upload		coverage: 0.0% of statements
+	github.com/mcpany/core/examples/upstream_service_demo/graphql/server		coverage: 0.0% of statements
+	github.com/mcpany/core/examples/upstream_service_demo/http/client		coverage: 0.0% of statements
+	github.com/mcpany/core/examples/upstream_service_demo/http/server		coverage: 0.0% of statements
+ok  	github.com/mcpany/core/examples/upstream_service_demo/http/server/weather_server	1.084s	coverage: 56.6% of statements
+	github.com/mcpany/core/examples/upstream_service_demo/openapi/client		coverage: 0.0% of statements
+	github.com/mcpany/core/examples/upstream_service_demo/openapi/server		coverage: 0.0% of statements
+	github.com/mcpany/core/examples/upstream_service_demo/webrtc/client		coverage: 0.0% of statements
+	github.com/mcpany/core/examples/upstream_service_demo/webrtc/server		coverage: 0.0% of statements
+	github.com/mcpany/core/examples/upstream_service_demo/websocket		coverage: 0.0% of statements
+	github.com/mcpany/core/examples/upstream_service_demo/websocket/client		coverage: 0.0% of statements
+	github.com/mcpany/core/examples/upstream_service_demo/websocket/echo_server/server		coverage: 0.0% of statements
+Running parallel E2E Go tests locally with a 300s timeout...
+make[1]: [Makefile:408: e2e-parallel] Terminated (ignored)
+Server started on :8081
+	github.com/mcpany/core/cmd/mock_mcp_server		coverage: 0.0% of statements
+ok  	github.com/mcpany/core/cmd/server	4.721s	coverage: 34.9% of statements
+	github.com/mcpany/core/cmd/webhooks		coverage: 0.0% of statements
+ok  	github.com/mcpany/core/cmd/webhooks/hooks	1.057s	coverage: 84.7% of statements
+ok  	github.com/mcpany/core/cmd/worker	1.242s	coverage: 92.9% of statements
+ok  	github.com/mcpany/core/pkg/admin	1.098s	coverage: 92.6% of statements
+ok  	github.com/mcpany/core/pkg/app	26.108s	coverage: 81.7% of statements
+ok  	github.com/mcpany/core/pkg/appconsts	1.022s	coverage: [no statements]
+ok  	github.com/mcpany/core/pkg/auth	4.191s	coverage: 94.7% of statements
+ok  	github.com/mcpany/core/pkg/bus	9.742s	coverage: 75.8% of statements
+ok  	github.com/mcpany/core/pkg/bus/kafka	1.253s	coverage: 89.7% of statements
+ok  	github.com/mcpany/core/pkg/bus/memory	1.090s	coverage: 100.0% of statements
+ok  	github.com/mcpany/core/pkg/bus/nats	1.870s	coverage: 86.8% of statements
+ok  	github.com/mcpany/core/pkg/bus/redis	3.800s	coverage: 76.5% of statements
+ok  	github.com/mcpany/core/pkg/cli	1.026s	coverage: 100.0% of statements
+ok  	github.com/mcpany/core/pkg/client	2.089s	coverage: 94.1% of statements
+ok  	github.com/mcpany/core/pkg/config	3.011s	coverage: 89.8% of statements
+ok  	github.com/mcpany/core/pkg/consts	1.031s	coverage: [no statements]
+ok  	github.com/mcpany/core/pkg/health	1.144s	coverage: 90.1% of statements
+ok  	github.com/mcpany/core/pkg/logging	1.030s	coverage: 90.5% of statements
+ok  	github.com/mcpany/core/pkg/mcpserver	1.744s	coverage: 93.6% of statements
+ok  	github.com/mcpany/core/pkg/metrics	1.178s	coverage: 93.5% of statements
+ok  	github.com/mcpany/core/pkg/middleware	2.482s	coverage: 81.9% of statements
+ok  	github.com/mcpany/core/pkg/pool	6.405s	coverage: 80.1% of statements
+ok  	github.com/mcpany/core/pkg/prompt	1.094s	coverage: 98.3% of statements
+ok  	github.com/mcpany/core/pkg/resilience	1.152s	coverage: 94.2% of statements
+ok  	github.com/mcpany/core/pkg/resource	1.117s	coverage: 98.2% of statements
+ok  	github.com/mcpany/core/pkg/service	1.191s	coverage: 85.7% of statements
+ok  	github.com/mcpany/core/pkg/serviceregistry	1.285s	coverage: 94.7% of statements
+ok  	github.com/mcpany/core/pkg/storage/sqlite	1.132s	coverage: 88.6% of statements
+ok  	github.com/mcpany/core/pkg/telemetry	1.036s	coverage: 87.0% of statements
+	github.com/mcpany/core/pkg/testutil		coverage: 0.0% of statements
+ok  	github.com/mcpany/core/pkg/tool	6.288s	coverage: 81.1% of statements
+ok  	github.com/mcpany/core/pkg/transformer	1.045s	coverage: 87.2% of statements
+ok  	github.com/mcpany/core/pkg/update	1.047s	coverage: 84.0% of statements
+ok  	github.com/mcpany/core/pkg/upstream	1.101s	coverage: [no statements]
+ok  	github.com/mcpany/core/pkg/upstream/command	1.099s	coverage: 83.5% of statements
+ok  	github.com/mcpany/core/pkg/upstream/factory	1.110s	coverage: 85.7% of statements
+ok  	github.com/mcpany/core/pkg/upstream/filesystem	1.112s	coverage: 83.7% of statements
+ok  	github.com/mcpany/core/pkg/upstream/graphql	1.153s	coverage: 92.1% of statements
+ok  	github.com/mcpany/core/pkg/upstream/grpc	11.289s	coverage: 82.3% of statements
+ok  	github.com/mcpany/core/pkg/upstream/grpc/protobufparser	11.108s	coverage: 85.3% of statements
+ok  	github.com/mcpany/core/pkg/upstream/http	1.265s	coverage: 87.7% of statements
+ok  	github.com/mcpany/core/pkg/upstream/mcp	2.285s	coverage: 86.4% of statements
+ok  	github.com/mcpany/core/pkg/upstream/openapi	1.200s	coverage: 82.5% of statements
+ok  	github.com/mcpany/core/pkg/upstream/sql	1.177s	coverage: 89.9% of statements
+ok  	github.com/mcpany/core/pkg/upstream/webrtc	1.166s	coverage: 91.1% of statements
+ok  	github.com/mcpany/core/pkg/upstream/websocket	1.114s	coverage: 90.7% of statements
+ok  	github.com/mcpany/core/pkg/util	18.161s	coverage: 83.1% of statements
+ok  	github.com/mcpany/core/pkg/util/schemaconv	1.037s	coverage: 90.6% of statements
+ok  	github.com/mcpany/core/pkg/util/testutil	1.038s	coverage: 100.0% of statements
+ok  	github.com/mcpany/core/pkg/validation	1.037s	coverage: 93.2% of statements
+ok  	github.com/mcpany/core/pkg/worker	1.538s	coverage: 84.3% of statements
+ok  	github.com/mcpany/core/proto/admin/v1	1.037s	coverage: 4.4% of statements
+ok  	github.com/mcpany/core/proto/api/v1	1.045s	coverage: 1.6% of statements
+ok  	github.com/mcpany/core/proto/bus	1.033s	coverage: 5.3% of statements
+ok  	github.com/mcpany/core/proto/config/v1	1.122s	coverage: 3.3% of statements
+	github.com/mcpany/core/proto/examples/userservice/v1		coverage: 0.0% of statements
+ok  	github.com/mcpany/core/proto/examples/weather/v1	1.030s	coverage: 18.6% of statements
+	github.com/mcpany/core/proto/mcp_options/v1		coverage: 0.0% of statements
+	github.com/mcpany/core/proto/mcp_router/v1		coverage: 0.0% of statements
+ok  	github.com/mcpany/core/tests/framework	7.496s	coverage: 6.5% of statements
+ok  	github.com/mcpany/core/tests/integration	32.620s	coverage: 57.0% of statements
+ok  	github.com/mcpany/core/tests/integration/cmd	1.025s	coverage: [no statements]
+	github.com/mcpany/core/tests/integration/cmd/command-tester		coverage: 0.0% of statements
+	github.com/mcpany/core/tests/integration/cmd/mocks/grpc_authed_weather_server		coverage: 0.0% of statements
+	github.com/mcpany/core/tests/integration/cmd/mocks/grpc_weather_server		coverage: 0.0% of statements
+	github.com/mcpany/core/tests/integration/cmd/mocks/http_authed_echo_server		coverage: 0.0% of statements
+	github.com/mcpany/core/tests/integration/cmd/mocks/http_caching_server		coverage: 0.0% of statements
+	github.com/mcpany/core/tests/integration/cmd/mocks/http_echo_server		coverage: 0.0% of statements
+	github.com/mcpany/core/tests/integration/cmd/mocks/openapi_weather_server		coverage: 0.0% of statements
+	github.com/mcpany/core/tests/integration/cmd/mocks/prompt-server		coverage: 0.0% of statements
+	github.com/mcpany/core/tests/integration/cmd/mocks/webrtc_weather_server		coverage: 0.0% of statements
+	github.com/mcpany/core/tests/integration/cmd/mocks/websocket_echo_server		coverage: 0.0% of statements
+ok  	github.com/mcpany/core/tests/integration/examples	1.579s	coverage: [no statements]
+ok  	github.com/mcpany/core/tests/integration/resilience	1.157s	coverage: [no statements]
+ok  	github.com/mcpany/core/tests/integration/startup	1.448s	coverage: [no statements]
+ok  	github.com/mcpany/core/tests/integration/upstream	47.115s	coverage: 90.9% of statements
+	github.com/mcpany/core/examples/upstream_service_demo/file-upload		coverage: 0.0% of statements
+	github.com/mcpany/core/examples/upstream_service_demo/graphql/server		coverage: 0.0% of statements
+	github.com/mcpany/core/examples/upstream_service_demo/http/client		coverage: 0.0% of statements
+	github.com/mcpany/core/examples/upstream_service_demo/http/server		coverage: 0.0% of statements
+ok  	github.com/mcpany/core/examples/upstream_service_demo/http/server/weather_server	1.038s	coverage: 56.6% of statements
+	github.com/mcpany/core/examples/upstream_service_demo/openapi/client		coverage: 0.0% of statements
+	github.com/mcpany/core/examples/upstream_service_demo/openapi/server		coverage: 0.0% of statements
+	github.com/mcpany/core/examples/upstream_service_demo/webrtc/client		coverage: 0.0% of statements
+	github.com/mcpany/core/examples/upstream_service_demo/webrtc/server		coverage: 0.0% of statements
+	github.com/mcpany/core/examples/upstream_service_demo/websocket		coverage: 0.0% of statements
+	github.com/mcpany/core/examples/upstream_service_demo/websocket/client		coverage: 0.0% of statements
+	github.com/mcpany/core/examples/upstream_service_demo/websocket/echo_server/server		coverage: 0.0% of statements
+ok  	github.com/mcpany/core/docs/features/authentication	1.139s	coverage: [no statements]
+ok  	github.com/mcpany/core/docs/features/connection-pooling	1.179s	coverage: [no statements]
+ok  	github.com/mcpany/core/docs/features/monitoring	1.123s	coverage: [no statements]
+ok  	github.com/mcpany/core/docs/features/profiles_and_policies/examples/agent_profiles	1.312s	coverage: [no statements]
+ok  	github.com/mcpany/core/docs/features/profiles_and_policies/examples/restricted_api	1.965s	coverage: [no statements]
+ok  	github.com/mcpany/core/docs/features/prompts	1.131s	coverage: [no statements]
+ok  	github.com/mcpany/core/docs/features/rate-limiting	1.117s	coverage: [no statements]
+ok  	github.com/mcpany/core/docs/features/resilience	1.119s	coverage: [no statements]
+Running sequential E2E Go tests locally with a 300s timeout...
+ok  	github.com/mcpany/core/tests/e2e_sequential	1.027s	coverage: [no statements]
+Building mock server...
+Running public API E2E Go tests with a 300s timeout...
+ok  	github.com/mcpany/core/tests/public_api	14.939s	coverage: [no statements]
+Running UI tests (Playwright)...
+npm warn deprecated node-domexception@1.0.0: Use your platform's native DOMException instead
+npm warn deprecated @opentelemetry/exporter-jaeger@1.30.1: Package no longer supported. Contact Support at https://www.npmjs.com/support for more info.
+make[1]: *** wait: No child processes.  Stop.
+make[1]: *** Waiting for unfinished jobs....
+make[1]: *** wait: No child processes.  Stop.
+make: *** [Makefile:6: test] Error 2
+npm error process terminated
+npm error signal SIGHUP
+npm error A complete log of this run can be found in: /home/jules/.npm/_logs/2025-12-28T02_19_07_888Z-debug-0.log
