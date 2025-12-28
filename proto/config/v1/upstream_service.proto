@@ -508,6 +508,9 @@ message RateLimitConfig {
     COST_METRIC_TOKENS = 1;
   }
   CostMetric cost_metric = 7 [json_name = "cost_metric"];
+
+  // Tool-specific rate limits. Key is the tool name.
+  map<string, RateLimitConfig> tool_limits = 8 [json_name = "tool_limits"];
 }
 
 
