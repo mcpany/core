@@ -8,7 +8,6 @@ import (
 	"net/http/httptest"
 	"os"
 	"testing"
-	"time"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/spf13/afero"
@@ -186,16 +185,8 @@ func TestYamlEngine_ValidationFail(_ *testing.T) {
 }
 
 func TestReadURL_Redirect(t *testing.T) {
-	// Override httpClient to allow loopback and keep CheckRedirect behavior
-	originalClient := httpClient
-	defer func() { httpClient = originalClient }()
-
-	httpClient = &http.Client{
-		Timeout: 5 * time.Second,
-		CheckRedirect: func(_ *http.Request, _ []*http.Request) error {
-			return http.ErrUseLastResponse
-		},
-	}
+	// Enable loopback for testing
+	t.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "true")
 
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/other", http.StatusFound)
@@ -241,6 +232,9 @@ global_settings:
 }
 
 func TestReadURL_Localhost(t *testing.T) {
+	// Enable loopback for testing
+	t.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "true")
+
 	// Start a local HTTP server
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/yaml")
