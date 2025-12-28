@@ -25,6 +25,7 @@ This document outlines the current status and future plans for MCP Any.
 - [x] [Bearer Token](features/auth.md)
 - [x] [OAuth 2.0](features/auth.md)
 - [x] [Role-Based Access Control (RBAC)](features/auth.md)
+- [x] [Upstream mTLS](../server/docs/features/security.md) (Client Certificate Authentication)
 
 ### Policies
 
@@ -47,36 +48,41 @@ This document outlines the current status and future plans for MCP Any.
 
 ### Core
 
-- [x] Dynamic Tool Registration
-- [x] Message Bus (NATS, Kafka)
+- [x] [Dynamic Tool Registration & Auto-Discovery](features/dynamic_registration.md)
+- [x] [Message Bus (NATS, Kafka)](features/message_bus.md)
 - [x] [Structured Output Transformation](features/transformation.md) (JQ/JSONPath)
 - [x] [Admin Management API](features/admin_api.md)
 - [x] [Dynamic Web UI](features/web_ui.md) (Beta)
-
-### Transformation
-
-- [x] Structured Output Transformation (JQ/JSONPath)
+- [x] [Health Checks](features/health_checks.md)
+- [x] [Schema Validation](features/schema_validation.md)
+- [x] [Service Profiles](features/service_profiles.md)
+- [x] [Semantic Caching](../server/docs/caching.md) (SQLite/Memory with Vector Embeddings)
 
 ## Upcoming Features (High Priority)
 
 ### 1. WASM Plugins
 
-**Why:** Allow users to deploy safe, sandboxed custom logic for transformations or validations.
+**Why:** Allow users to deploy safe, sandboxed custom logic for transformations or validations without recompiling the server.
 **Status:** Planned
 
 ### 2. Cloud Storage Support (S3, GCS)
 
-**Why:** Extend filesystem capabilities to cloud object storage.
+**Why:** Extend the filesystem provider to support cloud object storage, allowing AI agents to interact with S3/GCS buckets as if they were local directories.
 **Status:** Planned
 
-### 3. Cost & Quota Management
+### 3. Token-Based Quota Management
 
-**Why:** Track token usage or call counts per user/profile and enforce strict quotas.
+**Why:** While Rate Limiting is implemented, "Cost" tracking (token usage accounting) and strict token quotas per user/tenant are needed for enterprise billing controls.
 **Status:** Planned
 
-### 4. Client SDKs (Python/TS)
+### 4. Kubernetes Operator
 
-**Why:** Provide idiomatic wrappers for connecting to MCP Any.
+**Why:** Simplify deployment and lifecycle management of MCP Any instances in Kubernetes environments, enabling GitOps workflows.
+**Status:** Recommended
+
+### 5. Client SDKs (Python/TS)
+
+**Why:** Provide idiomatic wrappers for connecting to MCP Any, simplifying integration for developers building custom AI agents.
 **Status:** Planned
 
 ## Deprecated / Obsolete
