@@ -51,7 +51,8 @@ func TestRedisLimiter(t *testing.T) {
 
 		l.Update(20, 20)
 
-		mockRedis.ExpectEval(middleware.RedisRateLimitScript, []string{"ratelimit:service"}, 20.0, 20, fixedTime.UnixMicro(), 1).SetVal(int64(1))
+		s := redis.NewScript(middleware.RedisRateLimitScript)
+		mockRedis.ExpectEvalSha(s.Hash(), []string{"ratelimit:service"}, 20.0, 20, fixedTime.UnixMicro(), 1).SetVal(int64(1))
 		allowed, err := l.Allow(context.Background())
 		assert.NoError(t, err)
 		assert.True(t, allowed)
@@ -66,8 +67,9 @@ func TestRedisLimiter(t *testing.T) {
 		}.Build()
 		l, _ := middleware.NewRedisLimiter("service", config)
 
-		mockRedis.ExpectEval(
-			middleware.RedisRateLimitScript,
+		s := redis.NewScript(middleware.RedisRateLimitScript)
+		mockRedis.ExpectEvalSha(
+			s.Hash(),
 			[]string{"ratelimit:service"},
 			10.0,
 			10,
@@ -87,8 +89,9 @@ func TestRedisLimiter(t *testing.T) {
 		}.Build()
 		l, _ := middleware.NewRedisLimiter("service", config)
 
-		mockRedis.ExpectEval(
-			middleware.RedisRateLimitScript,
+		s := redis.NewScript(middleware.RedisRateLimitScript)
+		mockRedis.ExpectEvalSha(
+			s.Hash(),
 			[]string{"ratelimit:service"},
 			10.0,
 			10,
