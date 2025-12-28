@@ -404,7 +404,18 @@ func isURL(path string) bool {
 // to the configuration map. It supports nested structure via "__" separator.
 // Example: MCPANY__GLOBAL_SETTINGS__MCP_LISTEN_ADDRESS -> global_settings.mcp_listen_address
 func applyEnvVars(m map[string]interface{}) {
-	for _, env := range os.Environ() {
+	applyEnvVarsFromSlice(m, os.Environ())
+}
+
+// applyEnvVarsFromSlice is the logic for applyEnvVars, separated for testing.
+func applyEnvVarsFromSlice(m map[string]interface{}, environ []string) {
+	// Sort the environment variables to ensure deterministic application order.
+	// We make a copy to avoid modifying the input slice.
+	sortedEnv := make([]string, len(environ))
+	copy(sortedEnv, environ)
+	sort.Strings(sortedEnv)
+
+	for _, env := range sortedEnv {
 		if !strings.HasPrefix(env, "MCPANY__") {
 			continue
 		}
