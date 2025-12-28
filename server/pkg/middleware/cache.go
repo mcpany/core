@@ -289,7 +289,7 @@ func (m *CachingMiddleware) getCacheKey(req *tool.ExecutionRequest) string {
 		// Skip leading whitespace (simplified check)
 		var firstChar byte
 		for _, b := range req.ToolInputs {
-			if b != ' ' && b != '\t' && b != '\n' && b != '\r' {
+			if b > ' ' {
 				firstChar = b
 				break
 			}
@@ -316,7 +316,7 @@ func (m *CachingMiddleware) getCacheKey(req *tool.ExecutionRequest) string {
 	hash := sha256.Sum256(normalizedInputs)
 	hashStr := hex.EncodeToString(hash[:])
 
-	return fmt.Sprintf("%s:%s", req.ToolName, hashStr)
+	return req.ToolName + ":" + hashStr
 }
 
 // Clear clears the cache.
