@@ -284,21 +284,24 @@ func (m *CachingMiddleware) getCacheConfig(t tool.Tool) *configv1.CacheConfig {
 func (m *CachingMiddleware) getCacheKey(req *tool.ExecutionRequest) string {
 	// Normalize ToolInputs if they are JSON
 	var normalizedInputs []byte
-	if len(req.ToolInputs) > 0 {
-		// Optimization: Check if it looks like a JSON object or array before unmarshaling
-		// Skip leading whitespace (simplified check)
-		var firstChar byte
-		for _, b := range req.ToolInputs {
-			if b != ' ' && b != '\t' && b != '\n' && b != '\r' {
-				firstChar = b
-				break
-			}
-		}
+	inputs := req.ToolInputs
 
+	// Optimization: Skip leading whitespace to check for JSON object/array
+	start := 0
+	for start < len(inputs) {
+		b := inputs[start]
+		if b != ' ' && b != '\t' && b != '\n' && b != '\r' {
+			break
+		}
+		start++
+	}
+
+	if start < len(inputs) {
+		firstChar := inputs[start]
 		if firstChar == '{' || firstChar == '[' {
 			var input any
 			// We use standard json.Unmarshal which sorts map keys when Marshaling back.
-			if err := json.Unmarshal(req.ToolInputs, &input); err == nil {
+			if err := json.Unmarshal(inputs, &input); err == nil {
 				if marshaled, err := json.Marshal(input); err == nil {
 					normalizedInputs = marshaled
 				}
@@ -314,9 +317,16 @@ func (m *CachingMiddleware) getCacheKey(req *tool.ExecutionRequest) string {
 	// Optimization: Hash the normalized inputs to keep the cache key short and fixed length.
 	// This avoids using potentially large JSON strings as map keys.
 	hash := sha256.Sum256(normalizedInputs)
-	hashStr := hex.EncodeToString(hash[:])
 
-	return fmt.Sprintf("%s:%s", req.ToolName, hashStr)
+	// Optimization: Pre-allocate buffer for the final key string to reduce allocations.
+	// ToolName + ":" + 64 chars hex (SHA256 is 32 bytes, hex is 64 chars)
+	l := len(req.ToolName) + 1 + 64
+	buf := make([]byte, l)
+	copy(buf, req.ToolName)
+	buf[len(req.ToolName)] = ':'
+	hex.Encode(buf[len(req.ToolName)+1:], hash[:])
+
+	return string(buf)
 }
 
 // Clear clears the cache.
