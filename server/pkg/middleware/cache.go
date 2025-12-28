@@ -285,11 +285,23 @@ func (m *CachingMiddleware) getCacheKey(req *tool.ExecutionRequest) string {
 	// Normalize ToolInputs if they are JSON
 	var normalizedInputs []byte
 	if len(req.ToolInputs) > 0 {
-		var input any
-		// We use standard json.Unmarshal which sorts map keys when Marshaling back.
-		if err := json.Unmarshal(req.ToolInputs, &input); err == nil {
-			if marshaled, err := json.Marshal(input); err == nil {
-				normalizedInputs = marshaled
+		// Optimization: Check if it looks like a JSON object or array before unmarshaling
+		// Skip leading whitespace (simplified check)
+		var firstChar byte
+		for _, b := range req.ToolInputs {
+			if b != ' ' && b != '\t' && b != '\n' && b != '\r' {
+				firstChar = b
+				break
+			}
+		}
+
+		if firstChar == '{' || firstChar == '[' {
+			var input any
+			// We use standard json.Unmarshal which sorts map keys when Marshaling back.
+			if err := json.Unmarshal(req.ToolInputs, &input); err == nil {
+				if marshaled, err := json.Marshal(input); err == nil {
+					normalizedInputs = marshaled
+				}
 			}
 		}
 	}
