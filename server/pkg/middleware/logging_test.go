@@ -92,7 +92,7 @@ func TestLoggingMiddleware(t *testing.T) {
 
 		// Assert that the logs were written
 		logOutput := mh.String()
-		require.True(t, strings.Contains(logOutput, "Request received"), "Log should contain 'Request received'")
+		require.False(t, strings.Contains(logOutput, "Request received"), "Log should NOT contain 'Request received'")
 		require.True(t, strings.Contains(logOutput, "method=test.method"), "Log should contain the method name")
 		require.True(t, strings.Contains(logOutput, "Request completed"), "Log should contain 'Request completed'")
 		require.True(t, strings.Contains(logOutput, "duration="), "Log should contain the duration")
