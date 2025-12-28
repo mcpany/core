@@ -11,23 +11,37 @@ import (
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
-// MCPSampler wraps an MCP session to provide sampling capabilities.
-type MCPSampler struct {
+// MCPSession wraps an MCP session to provide client interaction capabilities like sampling and roots.
+type MCPSession struct {
 	session *mcp.ServerSession
 }
 
-// NewMCPSampler creates a new MCPSampler.
-func NewMCPSampler(session *mcp.ServerSession) *MCPSampler {
-	return &MCPSampler{session: session}
+// NewMCPSession creates a new MCPSession.
+func NewMCPSession(session *mcp.ServerSession) *MCPSession {
+	return &MCPSession{session: session}
+}
+
+// NewMCPSampler is a deprecated alias for NewMCPSession.
+func NewMCPSampler(session *mcp.ServerSession) *MCPSession {
+	return NewMCPSession(session)
 }
 
 // CreateMessage requests a message creation from the client (sampling).
-func (s *MCPSampler) CreateMessage(ctx context.Context, params *mcp.CreateMessageParams) (*mcp.CreateMessageResult, error) {
+func (s *MCPSession) CreateMessage(ctx context.Context, params *mcp.CreateMessageParams) (*mcp.CreateMessageResult, error) {
 	if s.session == nil {
 		return nil, fmt.Errorf("no active session available for sampling")
 	}
 	return s.session.CreateMessage(ctx, params)
 }
 
-// Verify that MCPSampler implements tool.Sampler
-var _ tool.Sampler = (*MCPSampler)(nil)
+// ListRoots requests the list of roots from the client.
+func (s *MCPSession) ListRoots(ctx context.Context) (*mcp.ListRootsResult, error) {
+	if s.session == nil {
+		return nil, fmt.Errorf("no active session available for roots inspection")
+	}
+	// The SDK exposes ListRoots on ServerSession
+	return s.session.ListRoots(ctx, nil)
+}
+
+// Verify that MCPSession implements tool.Session
+var _ tool.Session = (*MCPSession)(nil)
