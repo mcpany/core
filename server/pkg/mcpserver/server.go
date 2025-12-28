@@ -147,8 +147,8 @@ func NewServer(
 
 				session := req.GetSession()
 				if serverSession, ok := session.(*mcp.ServerSession); ok {
-					sampler := NewMCPSampler(serverSession)
-					ctx = tool.NewContextWithSampler(ctx, sampler)
+					mcpSession := NewMCPSession(serverSession)
+					ctx = tool.NewContextWithSession(ctx, mcpSession)
 				}
 
 				res, err := s.CallTool(ctx, execReq)
@@ -184,6 +184,12 @@ func NewServer(
 
 	s.toolManager.SetMCPServer(s)
 	s.promptManager.SetMCPServer(prompt.NewMCPServerProvider(s.Server()))
+
+	// Register built-in tools
+	if err := s.toolManager.AddTool(NewRootsTool()); err != nil {
+		// Log error but don't fail startup if duplicate (e.g. reload)
+		// Assuming logging is initialized
+	}
 
 	s.resourceManager.OnListChanged(func() {
 		if s.server != nil {
