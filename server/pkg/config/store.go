@@ -8,7 +8,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"net"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -17,6 +16,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/mcpany/core/pkg/util"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/spf13/afero"
 	"google.golang.org/protobuf/encoding/protojson"
@@ -297,44 +297,18 @@ func (s *FileStore) Load() (*configv1.McpAnyServerConfig, error) {
 	return mergedConfig, nil
 }
 
-var httpClient = &http.Client{
-	Timeout: 5 * time.Second,
-	Transport: &http.Transport{
-		DialContext: func(ctx context.Context, network, addr string) (net.Conn, error) {
-			host, port, err := net.SplitHostPort(addr)
-			if err != nil {
-				return nil, err
-			}
-
-			ips, err := net.LookupIP(host)
-			if err != nil {
-				return nil, err
-			}
-
-			var dialAddr string
-			for _, ip := range ips {
-				// Use the first valid IP address for the connection.
-				if dialAddr == "" {
-					dialAddr = net.JoinHostPort(ip.String(), port)
-				}
-			}
-
-			if dialAddr == "" {
-				return nil, fmt.Errorf("no valid IP address found for host: %s", host)
-			}
-
-			return (&net.Dialer{}).DialContext(ctx, network, dialAddr)
-		},
-	},
-	CheckRedirect: func(_ *http.Request, _ []*http.Request) error {
-		return http.ErrUseLastResponse
-	},
-}
-
 func readURL(url string) ([]byte, error) {
-	req, err := http.NewRequest("GET", url, nil)
+	req, err := http.NewRequestWithContext(context.Background(), "GET", url, nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create request for url %s: %w", url, err)
+	}
+
+	httpClient := util.NewSafeHTTPClient()
+	// Override default timeout if needed, but util.NewSafeHTTPClient has a reasonable default (10s)
+	httpClient.Timeout = 5 * time.Second
+	// Disable redirects
+	httpClient.CheckRedirect = func(_ *http.Request, _ []*http.Request) error {
+		return http.ErrUseLastResponse
 	}
 
 	resp, err := httpClient.Do(req)
