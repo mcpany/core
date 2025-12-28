@@ -174,9 +174,11 @@ type McpAnyServerConfig struct {
 	// A list of upstream service collections to load from.
 	UpstreamServiceCollections []*UpstreamServiceCollection `protobuf:"bytes,3,rep,name=upstream_service_collections" json:"upstream_service_collections,omitempty"`
 	// A list of users authorized to access the server.
-	Users         []*User `protobuf:"bytes,4,rep,name=users" json:"users,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	Users []*User `protobuf:"bytes,4,rep,name=users" json:"users,omitempty"`
+	// A list of system webhooks (incoming).
+	SystemWebhooks []*SystemWebhookConfig `protobuf:"bytes,5,rep,name=system_webhooks" json:"system_webhooks,omitempty"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
 }
 
 func (x *McpAnyServerConfig) Reset() {
@@ -232,6 +234,13 @@ func (x *McpAnyServerConfig) GetUsers() []*User {
 	return nil
 }
 
+func (x *McpAnyServerConfig) GetSystemWebhooks() []*SystemWebhookConfig {
+	if x != nil {
+		return x.SystemWebhooks
+	}
+	return nil
+}
+
 func (x *McpAnyServerConfig) SetGlobalSettings(v *GlobalSettings) {
 	x.GlobalSettings = v
 }
@@ -246,6 +255,10 @@ func (x *McpAnyServerConfig) SetUpstreamServiceCollections(v []*UpstreamServiceC
 
 func (x *McpAnyServerConfig) SetUsers(v []*User) {
 	x.Users = v
+}
+
+func (x *McpAnyServerConfig) SetSystemWebhooks(v []*SystemWebhookConfig) {
+	x.SystemWebhooks = v
 }
 
 func (x *McpAnyServerConfig) HasGlobalSettings() bool {
@@ -270,6 +283,8 @@ type McpAnyServerConfig_builder struct {
 	UpstreamServiceCollections []*UpstreamServiceCollection
 	// A list of users authorized to access the server.
 	Users []*User
+	// A list of system webhooks (incoming).
+	SystemWebhooks []*SystemWebhookConfig
 }
 
 func (b0 McpAnyServerConfig_builder) Build() *McpAnyServerConfig {
@@ -280,6 +295,7 @@ func (b0 McpAnyServerConfig_builder) Build() *McpAnyServerConfig {
 	x.UpstreamServices = b.UpstreamServices
 	x.UpstreamServiceCollections = b.UpstreamServiceCollections
 	x.Users = b.Users
+	x.SystemWebhooks = b.SystemWebhooks
 	return m0
 }
 
@@ -1198,12 +1214,13 @@ var File_proto_config_v1_config_proto protoreflect.FileDescriptor
 
 const file_proto_config_v1_config_proto_rawDesc = "" +
 	"\n" +
-	"\x1cproto/config/v1/config.proto\x12\x10mcpany.config.v1\x1a\x13proto/bus/bus.proto\x1a&proto/config/v1/upstream_service.proto\x1a\x1aproto/config/v1/auth.proto\"\xd6\x02\n" +
+	"\x1cproto/config/v1/config.proto\x12\x10mcpany.config.v1\x1a\x13proto/bus/bus.proto\x1a&proto/config/v1/upstream_service.proto\x1a\x1aproto/config/v1/auth.proto\x1a\x1dproto/config/v1/webhook.proto\"\xa7\x03\n" +
 	"\x12McpAnyServerConfig\x12J\n" +
 	"\x0fglobal_settings\x18\x01 \x01(\v2 .mcpany.config.v1.GlobalSettingsR\x0fglobal_settings\x12U\n" +
 	"\x11upstream_services\x18\x02 \x03(\v2'.mcpany.config.v1.UpstreamServiceConfigR\x11upstream_services\x12o\n" +
 	"\x1cupstream_service_collections\x18\x03 \x03(\v2+.mcpany.config.v1.UpstreamServiceCollectionR\x1cupstream_service_collections\x12,\n" +
-	"\x05users\x18\x04 \x03(\v2\x16.mcpany.config.v1.UserR\x05users\"\x9e\x01\n" +
+	"\x05users\x18\x04 \x03(\v2\x16.mcpany.config.v1.UserR\x05users\x12O\n" +
+	"\x0fsystem_webhooks\x18\x05 \x03(\v2%.mcpany.config.v1.SystemWebhookConfigR\x0fsystem_webhooks\"\x9e\x01\n" +
 	"\x04User\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12N\n" +
 	"\x0eauthentication\x18\x02 \x01(\v2&.mcpany.config.v1.AuthenticationConfigR\x0eauthentication\x12 \n" +
@@ -1276,29 +1293,31 @@ var file_proto_config_v1_config_proto_goTypes = []any{
 	nil,                               // 10: mcpany.config.v1.ProfileSelector.ToolPropertiesEntry
 	(*UpstreamServiceConfig)(nil),     // 11: mcpany.config.v1.UpstreamServiceConfig
 	(*UpstreamServiceCollection)(nil), // 12: mcpany.config.v1.UpstreamServiceCollection
-	(*AuthenticationConfig)(nil),      // 13: mcpany.config.v1.AuthenticationConfig
-	(*bus.MessageBus)(nil),            // 14: bus.MessageBus
+	(*SystemWebhookConfig)(nil),       // 13: mcpany.config.v1.SystemWebhookConfig
+	(*AuthenticationConfig)(nil),      // 14: mcpany.config.v1.AuthenticationConfig
+	(*bus.MessageBus)(nil),            // 15: bus.MessageBus
 }
 var file_proto_config_v1_config_proto_depIdxs = []int32{
 	5,  // 0: mcpany.config.v1.McpAnyServerConfig.global_settings:type_name -> mcpany.config.v1.GlobalSettings
 	11, // 1: mcpany.config.v1.McpAnyServerConfig.upstream_services:type_name -> mcpany.config.v1.UpstreamServiceConfig
 	12, // 2: mcpany.config.v1.McpAnyServerConfig.upstream_service_collections:type_name -> mcpany.config.v1.UpstreamServiceCollection
 	4,  // 3: mcpany.config.v1.McpAnyServerConfig.users:type_name -> mcpany.config.v1.User
-	13, // 4: mcpany.config.v1.User.authentication:type_name -> mcpany.config.v1.AuthenticationConfig
-	0,  // 5: mcpany.config.v1.GlobalSettings.log_level:type_name -> mcpany.config.v1.GlobalSettings.LogLevel
-	14, // 6: mcpany.config.v1.GlobalSettings.message_bus:type_name -> bus.MessageBus
-	6,  // 7: mcpany.config.v1.GlobalSettings.audit:type_name -> mcpany.config.v1.AuditConfig
-	7,  // 8: mcpany.config.v1.GlobalSettings.profile_definitions:type_name -> mcpany.config.v1.ProfileDefinition
-	1,  // 9: mcpany.config.v1.GlobalSettings.log_format:type_name -> mcpany.config.v1.GlobalSettings.LogFormat
-	9,  // 10: mcpany.config.v1.GlobalSettings.middlewares:type_name -> mcpany.config.v1.Middleware
-	2,  // 11: mcpany.config.v1.AuditConfig.storage_type:type_name -> mcpany.config.v1.AuditConfig.StorageType
-	8,  // 12: mcpany.config.v1.ProfileDefinition.selector:type_name -> mcpany.config.v1.ProfileSelector
-	10, // 13: mcpany.config.v1.ProfileSelector.tool_properties:type_name -> mcpany.config.v1.ProfileSelector.ToolPropertiesEntry
-	14, // [14:14] is the sub-list for method output_type
-	14, // [14:14] is the sub-list for method input_type
-	14, // [14:14] is the sub-list for extension type_name
-	14, // [14:14] is the sub-list for extension extendee
-	0,  // [0:14] is the sub-list for field type_name
+	13, // 4: mcpany.config.v1.McpAnyServerConfig.system_webhooks:type_name -> mcpany.config.v1.SystemWebhookConfig
+	14, // 5: mcpany.config.v1.User.authentication:type_name -> mcpany.config.v1.AuthenticationConfig
+	0,  // 6: mcpany.config.v1.GlobalSettings.log_level:type_name -> mcpany.config.v1.GlobalSettings.LogLevel
+	15, // 7: mcpany.config.v1.GlobalSettings.message_bus:type_name -> bus.MessageBus
+	6,  // 8: mcpany.config.v1.GlobalSettings.audit:type_name -> mcpany.config.v1.AuditConfig
+	7,  // 9: mcpany.config.v1.GlobalSettings.profile_definitions:type_name -> mcpany.config.v1.ProfileDefinition
+	1,  // 10: mcpany.config.v1.GlobalSettings.log_format:type_name -> mcpany.config.v1.GlobalSettings.LogFormat
+	9,  // 11: mcpany.config.v1.GlobalSettings.middlewares:type_name -> mcpany.config.v1.Middleware
+	2,  // 12: mcpany.config.v1.AuditConfig.storage_type:type_name -> mcpany.config.v1.AuditConfig.StorageType
+	8,  // 13: mcpany.config.v1.ProfileDefinition.selector:type_name -> mcpany.config.v1.ProfileSelector
+	10, // 14: mcpany.config.v1.ProfileSelector.tool_properties:type_name -> mcpany.config.v1.ProfileSelector.ToolPropertiesEntry
+	15, // [15:15] is the sub-list for method output_type
+	15, // [15:15] is the sub-list for method input_type
+	15, // [15:15] is the sub-list for extension type_name
+	15, // [15:15] is the sub-list for extension extendee
+	0,  // [0:15] is the sub-list for field type_name
 }
 
 func init() { file_proto_config_v1_config_proto_init() }
@@ -1308,6 +1327,7 @@ func file_proto_config_v1_config_proto_init() {
 	}
 	file_proto_config_v1_upstream_service_proto_init()
 	file_proto_config_v1_auth_proto_init()
+	file_proto_config_v1_webhook_proto_init()
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{

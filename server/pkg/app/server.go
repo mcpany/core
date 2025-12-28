@@ -38,6 +38,7 @@ import (
 	"github.com/mcpany/core/pkg/tool"
 	"github.com/mcpany/core/pkg/upstream/factory"
 	"github.com/mcpany/core/pkg/util"
+	"github.com/mcpany/core/pkg/webhook"
 	"github.com/mcpany/core/pkg/worker"
 	pb_admin "github.com/mcpany/core/proto/admin/v1"
 	v1 "github.com/mcpany/core/proto/api/v1"
@@ -144,6 +145,7 @@ type Application struct {
 	ResourceManager  resource.ManagerInterface
 	ServiceRegistry  serviceregistry.ServiceRegistryInterface
 	UpstreamFactory  factory.Factory
+	WebhookManager   *webhook.Manager
 	configFiles      map[string]string
 	fs               afero.Fs
 	configPaths      []string
@@ -165,6 +167,8 @@ func NewApplication() *Application {
 		UpstreamFactory: factory.NewUpstreamServiceFactory(pool.NewManager()),
 		configFiles:     make(map[string]string),
 	}
+	a.WebhookManager = webhook.NewManager(a.ToolManager)
+	return a
 }
 
 // Run starts the MCP Any server and all its components. It initializes the core
@@ -263,6 +267,10 @@ func (a *Application) Run(
 	if cfg.GetGlobalSettings().GetApiKey() != "" {
 		authManager.SetAPIKey(cfg.GetGlobalSettings().GetApiKey())
 	}
+
+	// Initialize Webhook Manager
+	a.WebhookManager = webhook.NewManager(a.ToolManager)
+	a.WebhookManager.UpdateConfig(cfg.GetSystemWebhooks())
 
 	// Set profiles for tool filtering
 	a.ToolManager.SetProfiles(
@@ -1003,6 +1011,10 @@ func (a *Application) runServerMode(
 	})))
 	mux.Handle("/metrics", authMiddleware(metrics.Handler()))
 	mux.Handle("/upload", authMiddleware(http.HandlerFunc(a.uploadFile)))
+	// Webhook handler is typically public or secured via its own mechanism (secrets/headers)
+	// We do NOT wrap it in authMiddleware because webhooks from external services (GitHub/Stripe)
+	// won't have our internal API Key.
+	mux.Handle("/webhooks/", a.WebhookManager.Handler())
 
 	if grpcPort != "" {
 		gwmux := runtime.NewServeMux()

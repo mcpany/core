@@ -8,6 +8,7 @@ package mcpany.config.v1;
 import "proto/bus/bus.proto";
 import "proto/config/v1/upstream_service.proto";
 import "proto/config/v1/auth.proto";
+import "proto/config/v1/webhook.proto";
 
 option go_package = "github.com/mcpany/core/proto/config/v1";
 option java_outer_classname = "ConfigProto";
@@ -26,6 +27,8 @@ message McpAnyServerConfig {
   repeated UpstreamServiceCollection upstream_service_collections = 3 [json_name = "upstream_service_collections"];
   // A list of users authorized to access the server.
   repeated User users = 4 [json_name = "users"];
+  // A list of system webhooks (incoming).
+  repeated SystemWebhookConfig system_webhooks = 5 [json_name = "system_webhooks"];
 }
 
 message User {

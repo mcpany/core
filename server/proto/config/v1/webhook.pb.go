@@ -383,11 +383,16 @@ func (b0 WebhookConfig_builder) Build() *WebhookConfig {
 }
 
 type SystemWebhookConfig struct {
-	state         protoimpl.MessageState `protogen:"hybrid.v1"`
-	Name          string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	Description   string                 `protobuf:"bytes,2,opt,name=description,proto3" json:"description,omitempty"`
-	UrlPath       string                 `protobuf:"bytes,3,opt,name=url_path,json=urlPath,proto3" json:"url_path,omitempty"`
-	Disabled      bool                   `protobuf:"varint,4,opt,name=disabled,proto3" json:"disabled,omitempty"`
+	state       protoimpl.MessageState `protogen:"hybrid.v1"`
+	Name        string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	Description string                 `protobuf:"bytes,2,opt,name=description,proto3" json:"description,omitempty"`
+	UrlPath     string                 `protobuf:"bytes,3,opt,name=url_path,json=urlPath,proto3" json:"url_path,omitempty"`
+	Disabled    bool                   `protobuf:"varint,4,opt,name=disabled,proto3" json:"disabled,omitempty"`
+	Secret      string                 `protobuf:"bytes,5,opt,name=secret,proto3" json:"secret,omitempty"`
+	// Types that are valid to be assigned to Action:
+	//
+	//	*SystemWebhookConfig_TriggerTool
+	Action        isSystemWebhookConfig_Action `protobuf_oneof:"action"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -445,6 +450,29 @@ func (x *SystemWebhookConfig) GetDisabled() bool {
 	return false
 }
 
+func (x *SystemWebhookConfig) GetSecret() string {
+	if x != nil {
+		return x.Secret
+	}
+	return ""
+}
+
+func (x *SystemWebhookConfig) GetAction() isSystemWebhookConfig_Action {
+	if x != nil {
+		return x.Action
+	}
+	return nil
+}
+
+func (x *SystemWebhookConfig) GetTriggerTool() string {
+	if x != nil {
+		if x, ok := x.Action.(*SystemWebhookConfig_TriggerTool); ok {
+			return x.TriggerTool
+		}
+	}
+	return ""
+}
+
 func (x *SystemWebhookConfig) SetName(v string) {
 	x.Name = v
 }
@@ -461,6 +489,54 @@ func (x *SystemWebhookConfig) SetDisabled(v bool) {
 	x.Disabled = v
 }
 
+func (x *SystemWebhookConfig) SetSecret(v string) {
+	x.Secret = v
+}
+
+func (x *SystemWebhookConfig) SetTriggerTool(v string) {
+	x.Action = &SystemWebhookConfig_TriggerTool{v}
+}
+
+func (x *SystemWebhookConfig) HasAction() bool {
+	if x == nil {
+		return false
+	}
+	return x.Action != nil
+}
+
+func (x *SystemWebhookConfig) HasTriggerTool() bool {
+	if x == nil {
+		return false
+	}
+	_, ok := x.Action.(*SystemWebhookConfig_TriggerTool)
+	return ok
+}
+
+func (x *SystemWebhookConfig) ClearAction() {
+	x.Action = nil
+}
+
+func (x *SystemWebhookConfig) ClearTriggerTool() {
+	if _, ok := x.Action.(*SystemWebhookConfig_TriggerTool); ok {
+		x.Action = nil
+	}
+}
+
+const SystemWebhookConfig_Action_not_set_case case_SystemWebhookConfig_Action = 0
+const SystemWebhookConfig_TriggerTool_case case_SystemWebhookConfig_Action = 6
+
+func (x *SystemWebhookConfig) WhichAction() case_SystemWebhookConfig_Action {
+	if x == nil {
+		return SystemWebhookConfig_Action_not_set_case
+	}
+	switch x.Action.(type) {
+	case *SystemWebhookConfig_TriggerTool:
+		return SystemWebhookConfig_TriggerTool_case
+	default:
+		return SystemWebhookConfig_Action_not_set_case
+	}
+}
+
 type SystemWebhookConfig_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
@@ -468,6 +544,10 @@ type SystemWebhookConfig_builder struct {
 	Description string
 	UrlPath     string
 	Disabled    bool
+	Secret      string
+	// Fields of oneof Action:
+	TriggerTool *string
+	// -- end of Action
 }
 
 func (b0 SystemWebhookConfig_builder) Build() *SystemWebhookConfig {
@@ -478,8 +558,32 @@ func (b0 SystemWebhookConfig_builder) Build() *SystemWebhookConfig {
 	x.Description = b.Description
 	x.UrlPath = b.UrlPath
 	x.Disabled = b.Disabled
+	x.Secret = b.Secret
+	if b.TriggerTool != nil {
+		x.Action = &SystemWebhookConfig_TriggerTool{*b.TriggerTool}
+	}
 	return m0
 }
+
+type case_SystemWebhookConfig_Action protoreflect.FieldNumber
+
+func (x case_SystemWebhookConfig_Action) String() string {
+	md := file_proto_config_v1_webhook_proto_msgTypes[3].Descriptor()
+	if x == 0 {
+		return "not set"
+	}
+	return protoimpl.X.MessageFieldStringOf(md, protoreflect.FieldNumber(x))
+}
+
+type isSystemWebhookConfig_Action interface {
+	isSystemWebhookConfig_Action()
+}
+
+type SystemWebhookConfig_TriggerTool struct {
+	TriggerTool string `protobuf:"bytes,6,opt,name=trigger_tool,json=triggerTool,proto3,oneof"`
+}
+
+func (*SystemWebhookConfig_TriggerTool) isSystemWebhookConfig_Action() {}
 
 type WebhookResponse struct {
 	state protoimpl.MessageState `protogen:"hybrid.v1"`
@@ -697,12 +801,15 @@ const file_proto_config_v1_webhook_proto_rawDesc = "" +
 	"\rWebhookConfig\x12\x10\n" +
 	"\x03url\x18\x01 \x01(\tR\x03url\x123\n" +
 	"\atimeout\x18\x02 \x01(\v2\x19.google.protobuf.DurationR\atimeout\x12%\n" +
-	"\x0ewebhook_secret\x18\x03 \x01(\tR\rwebhookSecret\"\x82\x01\n" +
+	"\x0ewebhook_secret\x18\x03 \x01(\tR\rwebhookSecret\"\xc9\x01\n" +
 	"\x13SystemWebhookConfig\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12 \n" +
 	"\vdescription\x18\x02 \x01(\tR\vdescription\x12\x19\n" +
 	"\burl_path\x18\x03 \x01(\tR\aurlPath\x12\x1a\n" +
-	"\bdisabled\x18\x04 \x01(\bR\bdisabled\"\xbe\x01\n" +
+	"\bdisabled\x18\x04 \x01(\bR\bdisabled\x12\x16\n" +
+	"\x06secret\x18\x05 \x01(\tR\x06secret\x12#\n" +
+	"\ftrigger_tool\x18\x06 \x01(\tH\x00R\vtriggerToolB\b\n" +
+	"\x06action\"\xbe\x01\n" +
 	"\x0fWebhookResponse\x12\x10\n" +
 	"\x03uid\x18\x01 \x01(\tR\x03uid\x12\x18\n" +
 	"\aallowed\x18\x02 \x01(\bR\aallowed\x127\n" +
@@ -749,6 +856,9 @@ func init() { file_proto_config_v1_webhook_proto_init() }
 func file_proto_config_v1_webhook_proto_init() {
 	if File_proto_config_v1_webhook_proto != nil {
 		return
+	}
+	file_proto_config_v1_webhook_proto_msgTypes[3].OneofWrappers = []any{
+		(*SystemWebhookConfig_TriggerTool)(nil),
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{

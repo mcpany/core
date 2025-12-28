@@ -45,6 +45,10 @@ message SystemWebhookConfig {
   string description = 2;
   string url_path = 3;
   bool disabled = 4;
+  string secret = 5;
+  oneof action {
+      string trigger_tool = 6;
+  }
 }
 
 message WebhookResponse {
