@@ -9,6 +9,7 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
+	"strings"
 	"sync"
 	"time"
 
@@ -314,9 +315,20 @@ func (m *CachingMiddleware) getCacheKey(req *tool.ExecutionRequest) string {
 	// Optimization: Hash the normalized inputs to keep the cache key short and fixed length.
 	// This avoids using potentially large JSON strings as map keys.
 	hash := sha256.Sum256(normalizedInputs)
-	hashStr := hex.EncodeToString(hash[:])
 
-	return fmt.Sprintf("%s:%s", req.ToolName, hashStr)
+	// Pre-allocate the string builder for the cache key to avoid allocations
+	// 64 bytes for hex + len(req.ToolName) + 1 for ':'
+	var sb strings.Builder
+	sb.Grow(len(req.ToolName) + 1 + 64)
+	sb.WriteString(req.ToolName)
+	sb.WriteByte(':')
+
+	// Efficient hex encoding into the builder
+	var hashBuf [64]byte
+	hex.Encode(hashBuf[:], hash[:])
+	sb.Write(hashBuf[:])
+
+	return sb.String()
 }
 
 // Clear clears the cache.
