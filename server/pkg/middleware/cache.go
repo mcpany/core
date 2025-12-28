@@ -26,6 +26,13 @@ import (
 // ProviderFactory is a function that creates an EmbeddingProvider.
 type ProviderFactory func(config *configv1.SemanticCacheConfig, apiKey string) (EmbeddingProvider, error)
 
+var (
+	metricCacheHits   = []string{"cache", "hits"}
+	metricCacheMisses = []string{"cache", "misses"}
+	metricCacheSkips  = []string{"cache", "skips"}
+	metricCacheErrors = []string{"cache", "errors"}
+)
+
 // CachingMiddleware is a tool execution middleware that provides caching
 // functionality.
 type CachingMiddleware struct {
@@ -133,14 +140,14 @@ func (m *CachingMiddleware) Execute(ctx context.Context, req *tool.ExecutionRequ
 		// If normal allow (0), check cache.
 		if cached, err := m.cache.Get(ctx, cacheKey); err == nil {
 			// Found in cache
-			metrics.IncrCounterWithLabels([]string{"cache", "hits"}, 1, labels)
+			metrics.IncrCounterWithLabels(metricCacheHits, 1, labels)
 			return cached, nil
 		}
 		// Not found in cache
-		metrics.IncrCounterWithLabels([]string{"cache", "misses"}, 1, labels)
+		metrics.IncrCounterWithLabels(metricCacheMisses, 1, labels)
 	} else {
 		// If DeleteCache, we skip cache lookup (force miss)
-		metrics.IncrCounterWithLabels([]string{"cache", "skips"}, 1, labels)
+		metrics.IncrCounterWithLabels(metricCacheSkips, 1, labels)
 	}
 
 	result, err := next(ctx, req)
@@ -151,14 +158,14 @@ func (m *CachingMiddleware) Execute(ctx context.Context, req *tool.ExecutionRequ
 	// Check CacheControl
 	if cacheControl.Action == tool.ActionDeleteCache {
 		if err := m.cache.Delete(ctx, cacheKey); err != nil {
-			metrics.IncrCounterWithLabels([]string{"cache", "errors"}, 1, labels)
+			metrics.IncrCounterWithLabels(metricCacheErrors, 1, labels)
 			logging.GetLogger().Error("Failed to delete cache", "error", err, "tool", toolName)
 		}
 		return result, nil
 	}
 
 	if err := m.cache.Set(ctx, cacheKey, result, store.WithExpiration(cacheConfig.GetTtl().AsDuration())); err != nil {
-		metrics.IncrCounterWithLabels([]string{"cache", "errors"}, 1, labels)
+		metrics.IncrCounterWithLabels(metricCacheErrors, 1, labels)
 		logging.GetLogger().Error("Failed to set cache", "error", err, "tool", toolName)
 	}
 	return result, nil
@@ -236,16 +243,16 @@ func (m *CachingMiddleware) executeSemantic(ctx context.Context, req *tool.Execu
 	if cacheControl.Action != tool.ActionDeleteCache {
 		cached, embedding, hit, err = semCache.Get(ctx, req.ToolName, inputStr)
 		if err == nil && hit {
-			metrics.IncrCounterWithLabels([]string{"cache", "hits"}, 1, labels)
+			metrics.IncrCounterWithLabels(metricCacheHits, 1, labels)
 			return cached, nil
 		} else if err != nil {
 			logging.GetLogger().Error("Semantic cache error", "error", err)
 		}
 		if !hit {
-			metrics.IncrCounterWithLabels([]string{"cache", "misses"}, 1, labels)
+			metrics.IncrCounterWithLabels(metricCacheMisses, 1, labels)
 		}
 	} else {
-		metrics.IncrCounterWithLabels([]string{"cache", "skips"}, 1, labels)
+		metrics.IncrCounterWithLabels(metricCacheSkips, 1, labels)
 	}
 
 	result, err := next(ctx, req)
@@ -316,7 +323,7 @@ func (m *CachingMiddleware) getCacheKey(req *tool.ExecutionRequest) string {
 	hash := sha256.Sum256(normalizedInputs)
 	hashStr := hex.EncodeToString(hash[:])
 
-	return fmt.Sprintf("%s:%s", req.ToolName, hashStr)
+	return req.ToolName + ":" + hashStr
 }
 
 // Clear clears the cache.
