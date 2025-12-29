@@ -82,6 +82,7 @@ func (a *Application) uploadFile(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "failed to create temporary file", http.StatusInternalServerError)
 		return
 	}
+	defer func() { _ = tmpfile.Close() }()           // close the file handle
 	defer func() { _ = os.Remove(tmpfile.Name()) }() // clean up
 
 	// Copy the uploaded file to the temporary file
