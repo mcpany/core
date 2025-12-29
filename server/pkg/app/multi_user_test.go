@@ -93,8 +93,13 @@ upstream_services:
           endpoint_path: "/secure"
           method: "HTTP_METHOD_POST"
   - name: "shared-service"
-    # No profiles defined -> global? Or we need to define it.
-    # Logic in server.go: if len(profiles) == 0, allow all.
+    # No profiles defined -> defaults to "default".
+    # Since we want it shared, we add it to the profiles used by test users.
+    profiles:
+      - name: "dev"
+        id: "dev-profile"
+      - name: "prod"
+        id: "prod-profile"
     http_service:
       address: "http://localhost:8083"
       tools:
