@@ -8,6 +8,7 @@
 import {
   LayoutDashboard,
   Server,
+  Network,
   Terminal,
   FileText,
   Wrench,
@@ -39,6 +40,11 @@ const items = [
     title: "Services",
     url: "/services",
     icon: Server,
+  },
+  {
+    title: "Network",
+    url: "/network",
+    icon: Network,
   },
   {
     title: "Logs",
