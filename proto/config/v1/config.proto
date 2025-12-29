@@ -77,6 +77,16 @@ message GlobalSettings {
   string db_path = 11 [json_name = "db_path"];
   // The list of middlewares to enable and their configuration.
   repeated Middleware middlewares = 12 [json_name = "middlewares"];
+  // DLP configuration.
+  DLPConfig dlp = 13 [json_name = "dlp"];
+}
+
+message DLPConfig {
+  // Whether DLP is enabled.
+  bool enabled = 1 [json_name = "enabled"];
+  // Additional regex patterns to redact.
+  // Default patterns (Email, Credit Card, SSN) are always enabled if DLP is enabled.
+  repeated string custom_patterns = 2 [json_name = "custom_patterns"];
 }
 
 message AuditConfig {

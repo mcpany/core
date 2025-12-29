@@ -433,6 +433,7 @@ type GlobalSettings struct {
 	xxx_hidden_LogFormat          GlobalSettings_LogFormat `protobuf:"varint,10,opt,name=log_format,enum=mcpany.config.v1.GlobalSettings_LogFormat"`
 	xxx_hidden_DbPath             *string                  `protobuf:"bytes,11,opt,name=db_path"`
 	xxx_hidden_Middlewares        *[]*Middleware           `protobuf:"bytes,12,rep,name=middlewares"`
+	xxx_hidden_Dlp                *DLPConfig               `protobuf:"bytes,13,opt,name=dlp"`
 	XXX_raceDetectHookData        protoimpl.RaceDetectHookData
 	XXX_presence                  [1]uint32
 	unknownFields                 protoimpl.UnknownFields
@@ -558,14 +559,21 @@ func (x *GlobalSettings) GetMiddlewares() []*Middleware {
 	return nil
 }
 
+func (x *GlobalSettings) GetDlp() *DLPConfig {
+	if x != nil {
+		return x.xxx_hidden_Dlp
+	}
+	return nil
+}
+
 func (x *GlobalSettings) SetMcpListenAddress(v string) {
 	x.xxx_hidden_McpListenAddress = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 11)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 12)
 }
 
 func (x *GlobalSettings) SetLogLevel(v GlobalSettings_LogLevel) {
 	x.xxx_hidden_LogLevel = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 11)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 12)
 }
 
 func (x *GlobalSettings) SetMessageBus(v *bus.MessageBus) {
@@ -574,7 +582,7 @@ func (x *GlobalSettings) SetMessageBus(v *bus.MessageBus) {
 
 func (x *GlobalSettings) SetApiKey(v string) {
 	x.xxx_hidden_ApiKey = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 3, 11)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 3, 12)
 }
 
 func (x *GlobalSettings) SetProfiles(v []string) {
@@ -595,16 +603,20 @@ func (x *GlobalSettings) SetProfileDefinitions(v []*ProfileDefinition) {
 
 func (x *GlobalSettings) SetLogFormat(v GlobalSettings_LogFormat) {
 	x.xxx_hidden_LogFormat = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 8, 11)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 8, 12)
 }
 
 func (x *GlobalSettings) SetDbPath(v string) {
 	x.xxx_hidden_DbPath = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 9, 11)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 9, 12)
 }
 
 func (x *GlobalSettings) SetMiddlewares(v []*Middleware) {
 	x.xxx_hidden_Middlewares = &v
+}
+
+func (x *GlobalSettings) SetDlp(v *DLPConfig) {
+	x.xxx_hidden_Dlp = v
 }
 
 func (x *GlobalSettings) HasMcpListenAddress() bool {
@@ -656,6 +668,13 @@ func (x *GlobalSettings) HasDbPath() bool {
 	return protoimpl.X.Present(&(x.XXX_presence[0]), 9)
 }
 
+func (x *GlobalSettings) HasDlp() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_Dlp != nil
+}
+
 func (x *GlobalSettings) ClearMcpListenAddress() {
 	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
 	x.xxx_hidden_McpListenAddress = nil
@@ -689,6 +708,10 @@ func (x *GlobalSettings) ClearDbPath() {
 	x.xxx_hidden_DbPath = nil
 }
 
+func (x *GlobalSettings) ClearDlp() {
+	x.xxx_hidden_Dlp = nil
+}
+
 type GlobalSettings_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
@@ -714,6 +737,8 @@ type GlobalSettings_builder struct {
 	DbPath *string
 	// The list of middlewares to enable and their configuration.
 	Middlewares []*Middleware
+	// DLP configuration.
+	Dlp *DLPConfig
 }
 
 func (b0 GlobalSettings_builder) Build() *GlobalSettings {
@@ -721,16 +746,16 @@ func (b0 GlobalSettings_builder) Build() *GlobalSettings {
 	b, x := &b0, m0
 	_, _ = b, x
 	if b.McpListenAddress != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 11)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 12)
 		x.xxx_hidden_McpListenAddress = b.McpListenAddress
 	}
 	if b.LogLevel != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 11)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 12)
 		x.xxx_hidden_LogLevel = *b.LogLevel
 	}
 	x.xxx_hidden_MessageBus = b.MessageBus
 	if b.ApiKey != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 3, 11)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 3, 12)
 		x.xxx_hidden_ApiKey = b.ApiKey
 	}
 	x.xxx_hidden_Profiles = b.Profiles
@@ -738,14 +763,107 @@ func (b0 GlobalSettings_builder) Build() *GlobalSettings {
 	x.xxx_hidden_Audit = b.Audit
 	x.xxx_hidden_ProfileDefinitions = &b.ProfileDefinitions
 	if b.LogFormat != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 8, 11)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 8, 12)
 		x.xxx_hidden_LogFormat = *b.LogFormat
 	}
 	if b.DbPath != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 9, 11)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 9, 12)
 		x.xxx_hidden_DbPath = b.DbPath
 	}
 	x.xxx_hidden_Middlewares = &b.Middlewares
+	x.xxx_hidden_Dlp = b.Dlp
+	return m0
+}
+
+type DLPConfig struct {
+	state                     protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Enabled        bool                   `protobuf:"varint,1,opt,name=enabled"`
+	xxx_hidden_CustomPatterns []string               `protobuf:"bytes,2,rep,name=custom_patterns"`
+	XXX_raceDetectHookData    protoimpl.RaceDetectHookData
+	XXX_presence              [1]uint32
+	unknownFields             protoimpl.UnknownFields
+	sizeCache                 protoimpl.SizeCache
+}
+
+func (x *DLPConfig) Reset() {
+	*x = DLPConfig{}
+	mi := &file_proto_config_v1_config_proto_msgTypes[3]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DLPConfig) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DLPConfig) ProtoMessage() {}
+
+func (x *DLPConfig) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_config_v1_config_proto_msgTypes[3]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+func (x *DLPConfig) GetEnabled() bool {
+	if x != nil {
+		return x.xxx_hidden_Enabled
+	}
+	return false
+}
+
+func (x *DLPConfig) GetCustomPatterns() []string {
+	if x != nil {
+		return x.xxx_hidden_CustomPatterns
+	}
+	return nil
+}
+
+func (x *DLPConfig) SetEnabled(v bool) {
+	x.xxx_hidden_Enabled = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 2)
+}
+
+func (x *DLPConfig) SetCustomPatterns(v []string) {
+	x.xxx_hidden_CustomPatterns = v
+}
+
+func (x *DLPConfig) HasEnabled() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
+}
+
+func (x *DLPConfig) ClearEnabled() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
+	x.xxx_hidden_Enabled = false
+}
+
+type DLPConfig_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// Whether DLP is enabled.
+	Enabled *bool
+	// Additional regex patterns to redact.
+	// Default patterns (Email, Credit Card, SSN) are always enabled if DLP is enabled.
+	CustomPatterns []string
+}
+
+func (b0 DLPConfig_builder) Build() *DLPConfig {
+	m0 := &DLPConfig{}
+	b, x := &b0, m0
+	_, _ = b, x
+	if b.Enabled != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 2)
+		x.xxx_hidden_Enabled = *b.Enabled
+	}
+	x.xxx_hidden_CustomPatterns = b.CustomPatterns
 	return m0
 }
 
@@ -764,7 +882,7 @@ type AuditConfig struct {
 
 func (x *AuditConfig) Reset() {
 	*x = AuditConfig{}
-	mi := &file_proto_config_v1_config_proto_msgTypes[3]
+	mi := &file_proto_config_v1_config_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -776,7 +894,7 @@ func (x *AuditConfig) String() string {
 func (*AuditConfig) ProtoMessage() {}
 
 func (x *AuditConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_config_proto_msgTypes[3]
+	mi := &file_proto_config_v1_config_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -967,7 +1085,7 @@ type ProfileDefinition struct {
 
 func (x *ProfileDefinition) Reset() {
 	*x = ProfileDefinition{}
-	mi := &file_proto_config_v1_config_proto_msgTypes[4]
+	mi := &file_proto_config_v1_config_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -979,7 +1097,7 @@ func (x *ProfileDefinition) String() string {
 func (*ProfileDefinition) ProtoMessage() {}
 
 func (x *ProfileDefinition) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_config_proto_msgTypes[4]
+	mi := &file_proto_config_v1_config_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1084,7 +1202,7 @@ type ProfileSelector struct {
 
 func (x *ProfileSelector) Reset() {
 	*x = ProfileSelector{}
-	mi := &file_proto_config_v1_config_proto_msgTypes[5]
+	mi := &file_proto_config_v1_config_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1096,7 +1214,7 @@ func (x *ProfileSelector) String() string {
 func (*ProfileSelector) ProtoMessage() {}
 
 func (x *ProfileSelector) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_config_proto_msgTypes[5]
+	mi := &file_proto_config_v1_config_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1158,7 +1276,7 @@ type Middleware struct {
 
 func (x *Middleware) Reset() {
 	*x = Middleware{}
-	mi := &file_proto_config_v1_config_proto_msgTypes[6]
+	mi := &file_proto_config_v1_config_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1170,7 +1288,7 @@ func (x *Middleware) String() string {
 func (*Middleware) ProtoMessage() {}
 
 func (x *Middleware) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_config_proto_msgTypes[6]
+	mi := &file_proto_config_v1_config_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1300,7 +1418,7 @@ const file_proto_config_v1_config_proto_rawDesc = "" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12N\n" +
 	"\x0eauthentication\x18\x02 \x01(\v2&.mcpany.config.v1.AuthenticationConfigR\x0eauthentication\x12 \n" +
 	"\vprofile_ids\x18\x03 \x03(\tR\vprofile_ids\x12\x14\n" +
-	"\x05roles\x18\x04 \x03(\tR\x05roles\"\x98\x06\n" +
+	"\x05roles\x18\x04 \x03(\tR\x05roles\"\xc7\x06\n" +
 	"\x0eGlobalSettings\x12.\n" +
 	"\x12mcp_listen_address\x18\x01 \x01(\tR\x12mcp_listen_address\x12G\n" +
 	"\tlog_level\x18\x03 \x01(\x0e2).mcpany.config.v1.GlobalSettings.LogLevelR\tlog_level\x121\n" +
@@ -1315,7 +1433,8 @@ const file_proto_config_v1_config_proto_rawDesc = "" +
 	" \x01(\x0e2*.mcpany.config.v1.GlobalSettings.LogFormatR\n" +
 	"log_format\x12\x18\n" +
 	"\adb_path\x18\v \x01(\tR\adb_path\x12>\n" +
-	"\vmiddlewares\x18\f \x03(\v2\x1c.mcpany.config.v1.MiddlewareR\vmiddlewares\"w\n" +
+	"\vmiddlewares\x18\f \x03(\v2\x1c.mcpany.config.v1.MiddlewareR\vmiddlewares\x12-\n" +
+	"\x03dlp\x18\r \x01(\v2\x1b.mcpany.config.v1.DLPConfigR\x03dlp\"w\n" +
 	"\bLogLevel\x12\x19\n" +
 	"\x15LOG_LEVEL_UNSPECIFIED\x10\x00\x12\x12\n" +
 	"\x0eLOG_LEVEL_INFO\x10\x01\x12\x12\n" +
@@ -1325,7 +1444,10 @@ const file_proto_config_v1_config_proto_rawDesc = "" +
 	"\tLogFormat\x12\x1a\n" +
 	"\x16LOG_FORMAT_UNSPECIFIED\x10\x00\x12\x13\n" +
 	"\x0fLOG_FORMAT_TEXT\x10\x01\x12\x13\n" +
-	"\x0fLOG_FORMAT_JSON\x10\x02J\x04\b\x02\x10\x03\"\xbd\x02\n" +
+	"\x0fLOG_FORMAT_JSON\x10\x02J\x04\b\x02\x10\x03\"O\n" +
+	"\tDLPConfig\x12\x18\n" +
+	"\aenabled\x18\x01 \x01(\bR\aenabled\x12(\n" +
+	"\x0fcustom_patterns\x18\x02 \x03(\tR\x0fcustom_patterns\"\xbd\x02\n" +
 	"\vAuditConfig\x12\x18\n" +
 	"\aenabled\x18\x01 \x01(\bR\aenabled\x12 \n" +
 	"\voutput_path\x18\x02 \x01(\tR\voutput_path\x12$\n" +
@@ -1353,7 +1475,7 @@ const file_proto_config_v1_config_proto_rawDesc = "" +
 	"\bdisabled\x18\x03 \x01(\bR\bdisabledB5B\vConfigProtoZ&github.com/mcpany/core/proto/config/v1b\beditionsp\xe8\a"
 
 var file_proto_config_v1_config_proto_enumTypes = make([]protoimpl.EnumInfo, 3)
-var file_proto_config_v1_config_proto_msgTypes = make([]protoimpl.MessageInfo, 8)
+var file_proto_config_v1_config_proto_msgTypes = make([]protoimpl.MessageInfo, 9)
 var file_proto_config_v1_config_proto_goTypes = []any{
 	(GlobalSettings_LogLevel)(0),      // 0: mcpany.config.v1.GlobalSettings.LogLevel
 	(GlobalSettings_LogFormat)(0),     // 1: mcpany.config.v1.GlobalSettings.LogFormat
@@ -1361,36 +1483,38 @@ var file_proto_config_v1_config_proto_goTypes = []any{
 	(*McpAnyServerConfig)(nil),        // 3: mcpany.config.v1.McpAnyServerConfig
 	(*User)(nil),                      // 4: mcpany.config.v1.User
 	(*GlobalSettings)(nil),            // 5: mcpany.config.v1.GlobalSettings
-	(*AuditConfig)(nil),               // 6: mcpany.config.v1.AuditConfig
-	(*ProfileDefinition)(nil),         // 7: mcpany.config.v1.ProfileDefinition
-	(*ProfileSelector)(nil),           // 8: mcpany.config.v1.ProfileSelector
-	(*Middleware)(nil),                // 9: mcpany.config.v1.Middleware
-	nil,                               // 10: mcpany.config.v1.ProfileSelector.ToolPropertiesEntry
-	(*UpstreamServiceConfig)(nil),     // 11: mcpany.config.v1.UpstreamServiceConfig
-	(*UpstreamServiceCollection)(nil), // 12: mcpany.config.v1.UpstreamServiceCollection
-	(*AuthenticationConfig)(nil),      // 13: mcpany.config.v1.AuthenticationConfig
-	(*bus.MessageBus)(nil),            // 14: bus.MessageBus
+	(*DLPConfig)(nil),                 // 6: mcpany.config.v1.DLPConfig
+	(*AuditConfig)(nil),               // 7: mcpany.config.v1.AuditConfig
+	(*ProfileDefinition)(nil),         // 8: mcpany.config.v1.ProfileDefinition
+	(*ProfileSelector)(nil),           // 9: mcpany.config.v1.ProfileSelector
+	(*Middleware)(nil),                // 10: mcpany.config.v1.Middleware
+	nil,                               // 11: mcpany.config.v1.ProfileSelector.ToolPropertiesEntry
+	(*UpstreamServiceConfig)(nil),     // 12: mcpany.config.v1.UpstreamServiceConfig
+	(*UpstreamServiceCollection)(nil), // 13: mcpany.config.v1.UpstreamServiceCollection
+	(*AuthenticationConfig)(nil),      // 14: mcpany.config.v1.AuthenticationConfig
+	(*bus.MessageBus)(nil),            // 15: bus.MessageBus
 }
 var file_proto_config_v1_config_proto_depIdxs = []int32{
 	5,  // 0: mcpany.config.v1.McpAnyServerConfig.global_settings:type_name -> mcpany.config.v1.GlobalSettings
-	11, // 1: mcpany.config.v1.McpAnyServerConfig.upstream_services:type_name -> mcpany.config.v1.UpstreamServiceConfig
-	12, // 2: mcpany.config.v1.McpAnyServerConfig.upstream_service_collections:type_name -> mcpany.config.v1.UpstreamServiceCollection
+	12, // 1: mcpany.config.v1.McpAnyServerConfig.upstream_services:type_name -> mcpany.config.v1.UpstreamServiceConfig
+	13, // 2: mcpany.config.v1.McpAnyServerConfig.upstream_service_collections:type_name -> mcpany.config.v1.UpstreamServiceCollection
 	4,  // 3: mcpany.config.v1.McpAnyServerConfig.users:type_name -> mcpany.config.v1.User
-	13, // 4: mcpany.config.v1.User.authentication:type_name -> mcpany.config.v1.AuthenticationConfig
+	14, // 4: mcpany.config.v1.User.authentication:type_name -> mcpany.config.v1.AuthenticationConfig
 	0,  // 5: mcpany.config.v1.GlobalSettings.log_level:type_name -> mcpany.config.v1.GlobalSettings.LogLevel
-	14, // 6: mcpany.config.v1.GlobalSettings.message_bus:type_name -> bus.MessageBus
-	6,  // 7: mcpany.config.v1.GlobalSettings.audit:type_name -> mcpany.config.v1.AuditConfig
-	7,  // 8: mcpany.config.v1.GlobalSettings.profile_definitions:type_name -> mcpany.config.v1.ProfileDefinition
+	15, // 6: mcpany.config.v1.GlobalSettings.message_bus:type_name -> bus.MessageBus
+	7,  // 7: mcpany.config.v1.GlobalSettings.audit:type_name -> mcpany.config.v1.AuditConfig
+	8,  // 8: mcpany.config.v1.GlobalSettings.profile_definitions:type_name -> mcpany.config.v1.ProfileDefinition
 	1,  // 9: mcpany.config.v1.GlobalSettings.log_format:type_name -> mcpany.config.v1.GlobalSettings.LogFormat
-	9,  // 10: mcpany.config.v1.GlobalSettings.middlewares:type_name -> mcpany.config.v1.Middleware
-	2,  // 11: mcpany.config.v1.AuditConfig.storage_type:type_name -> mcpany.config.v1.AuditConfig.StorageType
-	8,  // 12: mcpany.config.v1.ProfileDefinition.selector:type_name -> mcpany.config.v1.ProfileSelector
-	10, // 13: mcpany.config.v1.ProfileSelector.tool_properties:type_name -> mcpany.config.v1.ProfileSelector.ToolPropertiesEntry
-	14, // [14:14] is the sub-list for method output_type
-	14, // [14:14] is the sub-list for method input_type
-	14, // [14:14] is the sub-list for extension type_name
-	14, // [14:14] is the sub-list for extension extendee
-	0,  // [0:14] is the sub-list for field type_name
+	10, // 10: mcpany.config.v1.GlobalSettings.middlewares:type_name -> mcpany.config.v1.Middleware
+	6,  // 11: mcpany.config.v1.GlobalSettings.dlp:type_name -> mcpany.config.v1.DLPConfig
+	2,  // 12: mcpany.config.v1.AuditConfig.storage_type:type_name -> mcpany.config.v1.AuditConfig.StorageType
+	9,  // 13: mcpany.config.v1.ProfileDefinition.selector:type_name -> mcpany.config.v1.ProfileSelector
+	11, // 14: mcpany.config.v1.ProfileSelector.tool_properties:type_name -> mcpany.config.v1.ProfileSelector.ToolPropertiesEntry
+	15, // [15:15] is the sub-list for method output_type
+	15, // [15:15] is the sub-list for method input_type
+	15, // [15:15] is the sub-list for extension type_name
+	15, // [15:15] is the sub-list for extension extendee
+	0,  // [0:15] is the sub-list for field type_name
 }
 
 func init() { file_proto_config_v1_config_proto_init() }
@@ -1406,7 +1530,7 @@ func file_proto_config_v1_config_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_proto_config_v1_config_proto_rawDesc), len(file_proto_config_v1_config_proto_rawDesc)),
 			NumEnums:      3,
-			NumMessages:   8,
+			NumMessages:   9,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

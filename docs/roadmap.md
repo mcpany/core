@@ -96,7 +96,7 @@ This document outlines the current status and future plans for MCP Any.
 5.  **Active-Active High Availability**: Support leaderless clustering for zero-downtime upgrades and failure tolerance.
 6.  **Disaster Recovery Playbook**: Automated backup/restore of state and configuration to S3/GCS.
 7.  **Dynamic Secret Rotation**: Integration with HashiCorp Vault / AWS Secrets Manager for zero-touch secret handling.
-8.  **CI/CD Config Validator CLI**: A standalone binary to validate `config.yaml` in pipelines before deployment.
+8.  **[x] CI/CD Config Validator CLI**: A standalone binary to validate `config.yaml` in pipelines before deployment.
 9.  **Automated Dependency Updates**: "Dependabot" for MCP Tools - auto-update tool definitions when upstreams change.
 10. **Service Mesh Sidecar Mode**: Run MCP Any as a lightweight sidecar for application pods.
 
