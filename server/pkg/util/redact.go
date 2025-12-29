@@ -138,23 +138,29 @@ func redactMapRaw(m map[string]json.RawMessage) bool {
 			trimmed := bytes.TrimSpace(v)
 			if len(trimmed) > 0 {
 				switch trimmed[0] {
-				case '{':
-					var nested map[string]json.RawMessage
-					if err := json.Unmarshal(trimmed, &nested); err == nil {
-						if redactMapRaw(nested) {
-							if result, err := json.Marshal(nested); err == nil {
-								m[k] = result
-								changed = true
+				case '{', '[':
+					if !shouldScanRaw(v) {
+						continue
+					}
+
+					if trimmed[0] == '{' {
+						var nested map[string]json.RawMessage
+						if err := json.Unmarshal(trimmed, &nested); err == nil {
+							if redactMapRaw(nested) {
+								if result, err := json.Marshal(nested); err == nil {
+									m[k] = result
+									changed = true
+								}
 							}
 						}
-					}
-				case '[':
-					var nested []json.RawMessage
-					if err := json.Unmarshal(trimmed, &nested); err == nil {
-						if redactSliceRaw(nested) {
-							if result, err := json.Marshal(nested); err == nil {
-								m[k] = result
-								changed = true
+					} else {
+						var nested []json.RawMessage
+						if err := json.Unmarshal(trimmed, &nested); err == nil {
+							if redactSliceRaw(nested) {
+								if result, err := json.Marshal(nested); err == nil {
+									m[k] = result
+									changed = true
+								}
 							}
 						}
 					}
@@ -173,23 +179,29 @@ func redactSliceRaw(s []json.RawMessage) bool {
 		trimmed := bytes.TrimSpace(v)
 		if len(trimmed) > 0 {
 			switch trimmed[0] {
-			case '{':
-				var nested map[string]json.RawMessage
-				if err := json.Unmarshal(trimmed, &nested); err == nil {
-					if redactMapRaw(nested) {
-						if result, err := json.Marshal(nested); err == nil {
-							s[i] = result
-							changed = true
+			case '{', '[':
+				if !shouldScanRaw(v) {
+					continue
+				}
+
+				if trimmed[0] == '{' {
+					var nested map[string]json.RawMessage
+					if err := json.Unmarshal(trimmed, &nested); err == nil {
+						if redactMapRaw(nested) {
+							if result, err := json.Marshal(nested); err == nil {
+								s[i] = result
+								changed = true
+							}
 						}
 					}
-				}
-			case '[':
-				var nested []json.RawMessage
-				if err := json.Unmarshal(trimmed, &nested); err == nil {
-					if redactSliceRaw(nested) {
-						if result, err := json.Marshal(nested); err == nil {
-							s[i] = result
-							changed = true
+				} else {
+					var nested []json.RawMessage
+					if err := json.Unmarshal(trimmed, &nested); err == nil {
+						if redactSliceRaw(nested) {
+							if result, err := json.Marshal(nested); err == nil {
+								s[i] = result
+								changed = true
+							}
 						}
 					}
 				}
@@ -197,6 +209,26 @@ func redactSliceRaw(s []json.RawMessage) bool {
 		}
 	}
 	return changed
+}
+
+// shouldScanRaw returns true if the raw JSON value might contain sensitive keys.
+// It is a heuristic to avoid expensive unmarshaling for clean values.
+func shouldScanRaw(v []byte) bool {
+	// Optimization: Check if any sensitive key is present in the value.
+	// If not, we can skip the expensive unmarshal/marshal process.
+	// Note: This optimization assumes that if a sensitive key is present in the nested JSON,
+	// the key string (e.g. "password") must be present in the raw bytes.
+	// Security Note: We also check for backslashes to ensure no escaped keys are present.
+	// If backslashes are present, we conservatively fallback to unmarshaling.
+	if bytes.IndexByte(v, '\\') != -1 {
+		return true
+	}
+	for _, sk := range sensitiveKeysBytes {
+		if bytesContainsFold(v, sk) {
+			return true
+		}
+	}
+	return false
 }
 
 // sensitiveKeys is a list of substrings that suggest a key contains sensitive information.
