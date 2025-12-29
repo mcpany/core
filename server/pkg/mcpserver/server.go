@@ -11,11 +11,12 @@ import (
 	jsoniter "github.com/json-iterator/go"
 	"github.com/mcpany/core/pkg/appconsts"
 	"github.com/mcpany/core/pkg/auth"
-
 	"github.com/mcpany/core/pkg/bus"
+	"github.com/mcpany/core/pkg/config"
 	"github.com/mcpany/core/pkg/consts"
 	"github.com/mcpany/core/pkg/logging"
 	"github.com/mcpany/core/pkg/metrics"
+	"github.com/mcpany/core/pkg/middleware"
 	"github.com/mcpany/core/pkg/prompt"
 	"github.com/mcpany/core/pkg/resource"
 	"github.com/mcpany/core/pkg/serviceregistry"
@@ -210,6 +211,10 @@ func NewServer(
 			)
 		}
 	})
+
+	// Register DLP middleware
+	// Note: config.GlobalSettings() returns *configv1.GlobalSettings
+	s.server.AddReceivingMiddleware(middleware.DLPMiddleware(config.GlobalSettings().GetDlp(), logging.GetLogger()))
 
 	s.server.AddReceivingMiddleware(s.routerMiddleware)
 	s.server.AddReceivingMiddleware(s.toolListFilteringMiddleware)
