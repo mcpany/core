@@ -65,7 +65,16 @@ func NewCachingMiddleware(toolManager tool.ManagerInterface) *CachingMiddleware 
 			}
 			if conf.GetHttp() != nil {
 				httpConf := conf.GetHttp()
-				return NewHttpEmbeddingProvider(httpConf.GetUrl(), httpConf.GetHeaders(), httpConf.GetBodyTemplate(), httpConf.GetResponseJsonPath())
+				provider, err := NewHTTPEmbeddingProvider(
+					httpConf.GetUrl(),
+					httpConf.GetHeaders(),
+					httpConf.GetBodyTemplate(),
+					httpConf.GetResponseJsonPath(),
+				)
+				if err != nil {
+					return nil, err
+				}
+				return provider, nil
 			}
 
 			// Legacy/Deprecated path

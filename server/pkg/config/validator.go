@@ -198,7 +198,7 @@ func validateServiceConfig(service *configv1.UpstreamServiceConfig) error {
 	} else if mcpService := service.GetMcpService(); mcpService != nil {
 		return validateMcpService(mcpService)
 	} else if sqlService := service.GetSqlService(); sqlService != nil {
-		return validateSqlService(sqlService)
+		return validateSQLService(sqlService)
 	} else if graphqlService := service.GetGraphqlService(); graphqlService != nil {
 		return validateGraphQLService(graphqlService)
 	} else if webrtcService := service.GetWebrtcService(); webrtcService != nil {
@@ -354,7 +354,7 @@ func validateMcpService(mcpService *configv1.McpUpstreamService) error {
 	return nil
 }
 
-func validateSqlService(sqlService *configv1.SqlUpstreamService) error {
+func validateSQLService(sqlService *configv1.SqlUpstreamService) error {
 	if sqlService.GetDriver() == "" {
 		return fmt.Errorf("sql service has empty driver")
 	}

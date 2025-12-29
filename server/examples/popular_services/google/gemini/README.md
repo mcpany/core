@@ -1,10 +1,17 @@
-# Gemini API
+# Google Gemini Service
 
-This configuration connects to the Gemini API.
+This service provides access to Google's Gemini models.
 
-## Prerequisites
+## Configuration
 
-- You need a Google Cloud project with the Gemini API enabled.
-- You need to create an API key.
-- You need to set the following environment variable:
-  - `GEMINI_API_KEY`: Your Gemini API key.
+```yaml
+google_gemini:
+  api_key: "your-api-key"
+```
+
+## Running
+
+```bash
+export GEMINI_API_KEY=your-key
+./build/bin/server run --config-path server/examples/popular_services/google/gemini/config.yaml
+```

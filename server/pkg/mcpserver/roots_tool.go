@@ -55,7 +55,7 @@ func (t *RootsTool) MCPTool() *mcp.Tool {
 }
 
 // Execute executes the tool.
-func (t *RootsTool) Execute(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
+func (t *RootsTool) Execute(ctx context.Context, _ *tool.ExecutionRequest) (any, error) {
 	session, ok := tool.GetSession(ctx)
 	if !ok {
 		return nil, fmt.Errorf("no active session available")

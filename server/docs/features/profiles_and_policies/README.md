@@ -104,14 +104,15 @@ When starting the MCP Any server, you specify which profiles are active. This ca
 - **Development Agent**:
 
   ```bash
-  mcp-server run --config config.yaml --profiles=dev
+  server run --config config.yaml --profiles=dev
   ```
 
   _Sees: `debug-tool`_
 
-- **Production Agent**:
-  ```bash
-  mcp-server run --config config.yaml --profiles=prod
+- **To run with a specific configuration:
+```bash
+./build/bin/server run --config config.yaml
+``` --profiles=prod
   ```
   _Sees: `payment-processor`_
 
