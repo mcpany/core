@@ -12,6 +12,7 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"path"
 	"path/filepath"
 	"regexp"
 	"strings"
@@ -24,6 +25,10 @@ import (
 	"github.com/mcpany/core/pkg/upstream"
 	"github.com/mcpany/core/pkg/util"
 	configv1 "github.com/mcpany/core/proto/config/v1"
+	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/credentials"
+	"github.com/aws/aws-sdk-go/aws/session"
+	"github.com/fclairamb/afero-s3"
 	"github.com/spf13/afero"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/structpb"
@@ -173,6 +178,37 @@ func (u *Upstream) createFilesystem(config *configv1.FilesystemUpstreamService) 
 		// Requires external package sftpfs
 		return nil, fmt.Errorf("sftp filesystem is not yet supported")
 
+	case *configv1.FilesystemUpstreamService_S3:
+		s3Config := config.GetS3()
+		awsConfig := aws.NewConfig()
+
+		if s3Config.GetRegion() != "" {
+			awsConfig.WithRegion(s3Config.GetRegion())
+		}
+
+		if s3Config.GetAccessKeyId() != "" && s3Config.GetSecretAccessKey() != "" {
+			awsConfig.WithCredentials(credentials.NewStaticCredentials(
+				s3Config.GetAccessKeyId(),
+				s3Config.GetSecretAccessKey(),
+				s3Config.GetSessionToken(),
+			))
+		}
+
+		if s3Config.GetEndpoint() != "" {
+			awsConfig.WithEndpoint(s3Config.GetEndpoint())
+			// Needed for MinIO and some S3 compatible services
+			awsConfig.WithS3ForcePathStyle(true)
+		}
+
+		sess, err := session.NewSession(awsConfig)
+		if err != nil {
+			return nil, fmt.Errorf("failed to create AWS session: %w", err)
+		}
+
+		// Create S3 filesystem
+		// Note: afero-s3 uses the bucket name as the root
+		baseFs = s3.NewFs(s3Config.GetBucket(), sess)
+
 	case *configv1.FilesystemUpstreamService_Os:
 		baseFs = afero.NewOsFs()
 
@@ -198,6 +234,21 @@ func (u *Upstream) resolvePath(virtualPath string, config *configv1.FilesystemUp
 	case *configv1.FilesystemUpstreamService_Tmpfs:
 		// For MemMapFs, just clean the path. It's virtual.
 		return filepath.Clean(virtualPath), nil
+
+	case *configv1.FilesystemUpstreamService_S3:
+		// For S3, just clean the path. It's virtual relative to the bucket.
+		// Join with "/" to ensure we resolve relative paths against a root, preventing ".." traversal
+		// effectively sandboxing to the bucket root.
+		// Use path package (not filepath) because S3 keys always use '/' separator.
+		cleanPath := path.Clean("/" + virtualPath)
+
+		// Strip the leading slash because S3 keys don't usually start with /
+		cleanPath = strings.TrimPrefix(cleanPath, "/")
+
+		if cleanPath == "" || cleanPath == "." {
+			return "", fmt.Errorf("invalid path")
+		}
+		return cleanPath, nil
 
 	case *configv1.FilesystemUpstreamService_Os:
 		return u.validatePath(virtualPath, config.RootPaths)

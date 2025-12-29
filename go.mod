@@ -15,13 +15,7 @@ require (
 )
 
 require (
+	github.com/fclairamb/afero-s3 v0.3.1
+	github.com/aws/aws-sdk-go v1.55.8
 	github.com/google/jsonschema-go v0.3.0 // indirect
-	github.com/yosida95/uritemplate/v3 v3.0.2 // indirect
-	go.opentelemetry.io/otel v1.39.0 // indirect
-	go.opentelemetry.io/otel/sdk/metric v1.39.0 // indirect
-	golang.org/x/net v0.48.0 // indirect
-	golang.org/x/oauth2 v0.30.0 // indirect
-	golang.org/x/sys v0.39.0 // indirect
-	golang.org/x/text v0.32.0 // indirect
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20251103181224-f26f9409b101 // indirect
 )
