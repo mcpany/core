@@ -121,4 +121,43 @@ export const apiClient = {
         if (!res.ok) throw new Error('Failed to update prompt status');
         return res.json();
     },
+
+    // Secrets (Mock)
+    listSecrets: async () => {
+        // Mock delay
+        await new Promise(resolve => setTimeout(resolve, 500));
+        const stored = localStorage.getItem('mcp-secrets');
+        return stored ? JSON.parse(stored) : [];
+    },
+    saveSecret: async (secret: SecretDefinition) => {
+        await new Promise(resolve => setTimeout(resolve, 500));
+        const stored = localStorage.getItem('mcp-secrets');
+        const secrets: SecretDefinition[] = stored ? JSON.parse(stored) : [];
+        const index = secrets.findIndex(s => s.id === secret.id);
+        if (index >= 0) {
+            secrets[index] = secret;
+        } else {
+            secrets.push(secret);
+        }
+        localStorage.setItem('mcp-secrets', JSON.stringify(secrets));
+        return secret;
+    },
+    deleteSecret: async (id: string) => {
+        await new Promise(resolve => setTimeout(resolve, 500));
+        const stored = localStorage.getItem('mcp-secrets');
+        if (!stored) return;
+        const secrets: SecretDefinition[] = JSON.parse(stored);
+        const filtered = secrets.filter(s => s.id !== id);
+        localStorage.setItem('mcp-secrets', JSON.stringify(filtered));
+    }
 };
+
+export interface SecretDefinition {
+    id: string;
+    name: string;
+    key: string; // The environment variable key or usage key
+    value: string; // The actual secret
+    provider?: 'openai' | 'anthropic' | 'aws' | 'gcp' | 'custom';
+    lastUsed?: string;
+    createdAt: string;
+}
