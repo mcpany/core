@@ -45,9 +45,6 @@ const (
 	// DefaultMaxCommandOutputBytes is the default maximum size of the command output (stdout + stderr) in bytes.
 	// 10MB should be enough for most use cases while preventing OOM.
 	DefaultMaxCommandOutputBytes = 10 * 1024 * 1024
-
-	// ContextKeyRemoteAddr is the context key for the remote address
-	ContextKeyRemoteAddr = "remote_addr"
 )
 
 const (

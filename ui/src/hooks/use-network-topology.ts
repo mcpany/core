@@ -4,12 +4,21 @@
  */
 
 import { useState, useCallback, useEffect } from 'react';
-import { Node, Edge, useNodesState, useEdgesState, addEdge, Connection, MarkerType, Position } from '@xyflow/react';
-import dagre from 'dagre';
-import { Graph, Node as TopologyNode, NodeType, NodeStatus } from '../types/topology';
+import { Node, Edge, useNodesState, useEdgesState, addEdge, Connection, MarkerType } from '@xyflow/react';
+import { apiClient } from '@/lib/client';
+
+export type NodeType = 'mcp-server' | 'upstream' | 'agent';
+
+export interface NodeData {
+    label: string;
+    type: NodeType;
+    status: 'active' | 'inactive' | 'error';
+    details?: Record<string, unknown>;
+    [key: string]: unknown;
+}
 
 export interface NetworkGraphState {
-    nodes: Node[];
+    nodes: Node<NodeData>[];
     edges: Edge[];
     onNodesChange: any;
     onEdgesChange: any;
@@ -18,138 +27,89 @@ export interface NetworkGraphState {
     autoLayout: () => void;
 }
 
-const nodeWidth = 220;
-const nodeHeight = 60;
+// Static nodes (Agents + Core)
+const staticNodes: Node<NodeData>[] = [
+  // Center: MCP Any
+  {
+      id: 'mcp-core',
+      position: { x: 400, y: 300 },
+      data: { label: 'MCP Any', type: 'mcp-server', status: 'active' },
+      type: 'default',
+      style: { background: '#fff', border: '2px solid #000', borderRadius: '8px', padding: '10px', width: 150, textAlign: 'center', fontWeight: 'bold' }
+  },
+  // Left: Agents
+  {
+      id: 'agent-claude',
+      position: { x: 100, y: 200 },
+      data: { label: 'Claude Desktop', type: 'agent', status: 'active' },
+      type: 'input',
+      style: { background: '#f0fdf4', border: '1px solid #22c55e', borderRadius: '8px', padding: '10px' }
+  },
+  {
+      id: 'agent-cursor',
+      position: { x: 100, y: 400 },
+      data: { label: 'Cursor', type: 'agent', status: 'inactive' },
+      type: 'input',
+      style: { background: '#fef2f2', border: '1px solid #ef4444', borderRadius: '8px', padding: '10px' }
+  },
+];
 
-const getLayoutedElements = (nodes: Node[], edges: Edge[], direction = 'TB') => {
-    const dagreGraph = new dagre.graphlib.Graph();
-    dagreGraph.setDefaultEdgeLabel(() => ({}));
-
-    dagreGraph.setGraph({ rankdir: direction });
-
-    nodes.forEach((node) => {
-        dagreGraph.setNode(node.id, { width: nodeWidth, height: nodeHeight });
-    });
-
-    edges.forEach((edge) => {
-        dagreGraph.setEdge(edge.source, edge.target);
-    });
-
-    dagre.layout(dagreGraph);
-
-    const layoutedNodes = nodes.map((node) => {
-        const nodeWithPosition = dagreGraph.node(node.id);
-
-        // Dagre returns center coordinates, React Flow needs top-left
-        return {
-            ...node,
-            targetPosition: direction === 'TB' ? Position.Top : Position.Left,
-            sourcePosition: direction === 'TB' ? Position.Bottom : Position.Right,
-            position: {
-                x: nodeWithPosition.x - nodeWidth / 2,
-                y: nodeWithPosition.y - nodeHeight / 2,
-            },
-        };
-    });
-
-    return { nodes: layoutedNodes, edges };
-};
+const staticEdges: Edge[] = [
+  // Agents -> MCP Any
+  { id: 'e-claude-core', source: 'agent-claude', target: 'mcp-core', animated: true, markerEnd: { type: MarkerType.ArrowClosed } },
+  { id: 'e-cursor-core', source: 'agent-cursor', target: 'mcp-core', animated: false, style: { strokeDasharray: 5, stroke: '#9ca3af' }, markerEnd: { type: MarkerType.ArrowClosed, color: '#9ca3af' } },
+];
 
 export function useNetworkTopology() {
-    const [nodes, setNodes, onNodesChange] = useNodesState<Node>([]);
-    const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
+    const [nodes, setNodes, onNodesChange] = useNodesState<Node<NodeData>>(staticNodes);
+    const [edges, setEdges, onEdgesChange] = useEdgesState(staticEdges);
 
     const fetchData = useCallback(async () => {
         try {
-            const res = await fetch('/api/v1/topology');
-            if (!res.ok) throw new Error('Failed to fetch topology');
-            const graph: Graph = await res.json();
+            const servicesData = await apiClient.listServices();
+            const toolsData = await apiClient.listTools();
 
-            const newNodes: Node[] = [];
-            const newEdges: Edge[] = [];
-
-            // Helper to add node
-            const addNode = (tNode: TopologyNode, parentId?: string) => {
-                const isGroup = !!tNode.children?.length;
-                // We flatten the graph for Dagre but visually we might use Groups?
-                // For now, let's just make them all top-level nodes connected by edges
-                // to simplify the 5-layer layout request.
-                // Groups in React Flow are for containment.
-                // "Unifi Topology" usually connects them with lines, not boxes inside boxes.
-
-                const flowNode: Node = {
-                    id: tNode.id,
-                    data: {
-                        label: tNode.label,
-                        type: tNode.type,
-                        status: tNode.status,
-                        metrics: tNode.metrics
-                    },
-                    position: { x: 0, y: 0 }, // Set by layout
-                    style: getNodeStyle(tNode),
-                    type: 'default', // Custom types in future
-                };
-
-                newNodes.push(flowNode);
-
-                if (parentId) {
-                    newEdges.push({
-                        id: `e-${parentId}-${tNode.id}`,
-                        source: parentId,
-                        target: tNode.id,
-                        animated: tNode.status === 'NODE_STATUS_ACTIVE',
-                        style: { stroke: '#b1b1b7' },
-                        markerEnd: { type: MarkerType.ArrowClosed, color: '#b1b1b7' },
-                        label: tNode.metrics ? `${tNode.metrics.qps?.toFixed(1) || 0} QPS` : undefined
-                    });
+            // Map services to nodes
+            const serviceNodes: Node<NodeData>[] = (servicesData.services || []).map((svc: any, index: number) => ({
+                id: `svc-${svc.id || svc.name}`,
+                position: { x: 700, y: 100 + (index * 150) }, // Simple vertical stacking for now
+                data: {
+                    label: svc.name,
+                    type: 'upstream',
+                    status: svc.disable ? 'inactive' : 'active',
+                    details: svc
+                },
+                type: 'output',
+                style: {
+                    background: svc.disable ? '#f3f4f6' : '#f0f9ff',
+                    border: svc.disable ? '1px solid #9ca3af' : '1px solid #0ea5e9',
+                    borderRadius: '8px',
+                    padding: '10px'
                 }
+            }));
 
-                // Process Children with Truncation
-                if (tNode.children && tNode.children.length > 0) {
-                     // Collapsing logic: Show first 3, then "Show More"
-                     // We need state to track expanded nodes?
-                     // For now, let's hardcode active/visible for all or implement truncation.
-                     // The user asked for "Collapsing levels with many elements, showing only the first three".
-                     // This implies "Expanded" state.
-                     // Let's show all for now to verify layout, then add suppression?
-                     // Or just implement the "Show More" node static first.
+            // Map services to edges (MCP Any -> Service)
+            const serviceEdges: Edge[] = (servicesData.services || []).map((svc: any) => ({
+                id: `e-core-${svc.id || svc.name}`,
+                source: 'mcp-core',
+                target: `svc-${svc.id || svc.name}`,
+                animated: !svc.disable,
+                style: svc.disable ? { stroke: '#9ca3af', strokeDasharray: 5 } : undefined,
+                markerEnd: { type: MarkerType.ArrowClosed, color: svc.disable ? '#9ca3af' : undefined }
+            }));
 
-                     // Optimization: Just show everything for MVP verification of Protos,
-                     // adding "Show More" logic requires handling click events and state.
-                     // I will implement "Show 3" logic for Services/Tools if count > 3.
+            setNodes((prevNodes) => {
+                // Merge static nodes with fetched service nodes
+                // Preserve positions of existing nodes if they exist?
+                // For now, simpler to just replace upstream nodes but keep static ones.
+                // Or better: Re-create the full list to ensure freshness.
+                // To avoid jumping, we could check if id exists and keep position, but "autoLayout" exists for that.
 
-                     const limit = (tNode.type === 'NODE_TYPE_CORE' || tNode.type === 'NODE_TYPE_SERVICE') ? 100 : 100; // Disable limit for now to see all
+                // Let's just append/replace.
+                return [...staticNodes, ...serviceNodes];
+            });
 
-                     tNode.children.slice(0, limit).forEach(child => addNode(child, tNode.id));
-                }
-            };
-
-            // 1. Clients
-            if (graph.clients) {
-                graph.clients.forEach(client => {
-                    addNode(client);
-                    // Connect Client to Core
-                    if (graph.core) {
-                        newEdges.push({
-                            id: `e-${client.id}-${graph.core.id}`,
-                            source: client.id,
-                            target: graph.core.id,
-                            animated: true,
-                            style: { stroke: '#22c55e' },
-                            markerEnd: { type: MarkerType.ArrowClosed, color: '#22c55e' }
-                        });
-                    }
-                });
-            }
-
-            // 2. Core (and its children: Services -> Tools -> API)
-            if (graph.core) {
-                addNode(graph.core);
-            }
-
-            const layouted = getLayoutedElements(newNodes, newEdges);
-            setNodes(layouted.nodes);
-            setEdges(layouted.edges);
+            setEdges([...staticEdges, ...serviceEdges]);
 
         } catch (error) {
             console.error("Failed to fetch topology data:", error);
@@ -159,6 +119,7 @@ export function useNetworkTopology() {
     // Fetch on mount
     useEffect(() => {
         fetchData();
+        // Poll every 5 seconds
         const interval = setInterval(fetchData, 5000);
         return () => clearInterval(interval);
     }, [fetchData]);
@@ -173,7 +134,7 @@ export function useNetworkTopology() {
     }, [fetchData]);
 
     const autoLayout = useCallback(() => {
-         fetchData();
+         fetchData(); // Reset to default positions defined in fetchData
     }, [fetchData]);
 
     return {
@@ -185,38 +146,4 @@ export function useNetworkTopology() {
         refreshTopology,
         autoLayout
     };
-}
-
-function getNodeStyle(node: TopologyNode) {
-    const base = {
-        borderRadius: '8px',
-        padding: '10px',
-        fontSize: '12px',
-        width: nodeWidth,
-        display: 'flex',
-        flexDirection: 'column' as const,
-        alignItems: 'center',
-        justifyContent: 'center',
-        borderWidth: '1px',
-        borderStyle: 'solid',
-    };
-
-    switch (node.type) {
-        case 'NODE_TYPE_CLIENT':
-            return { ...base, background: '#f0fdf4', borderColor: '#22c55e' };
-        case 'NODE_TYPE_CORE':
-            return { ...base, background: '#ffffff', borderColor: '#000000', borderWidth: '2px', fontWeight: 'bold', fontSize: '14px' };
-        case 'NODE_TYPE_SERVICE':
-            return { ...base, background: '#eff6ff', borderColor: '#3b82f6' };
-        case 'NODE_TYPE_TOOL':
-            return { ...base, background: '#fdf4ff', borderColor: '#d946ef' };
-        case 'NODE_TYPE_API_CALL':
-            return { ...base, background: '#fafafa', borderColor: '#71717a', borderStyle: 'dashed' };
-        case 'NODE_TYPE_MIDDLEWARE':
-            return { ...base, background: '#fff7ed', borderColor: '#f97316' };
-        case 'NODE_TYPE_WEBHOOK':
-            return { ...base, background: '#fdf2f8', borderColor: '#ec4899' };
-        default:
-            return { ...base, background: '#ffffff', borderColor: '#e5e7eb' };
-    }
 }

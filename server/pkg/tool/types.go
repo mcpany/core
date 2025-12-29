@@ -1828,24 +1828,12 @@ type threadSafeBuffer struct {
 	mu sync.Mutex
 }
 
-// Write writes bytes to the buffer in a thread-safe manner.
-//
-// Parameters:
-//   - p: The slice of bytes to write.
-//
-// Returns:
-//   - n: The number of bytes written.
-//   - err: An error if one occurred.
 func (tsb *threadSafeBuffer) Write(p []byte) (n int, err error) {
 	tsb.mu.Lock()
 	defer tsb.mu.Unlock()
 	return tsb.b.Write(p)
 }
 
-// String returns the contents of the buffer as a string in a thread-safe manner.
-//
-// Returns:
-//   - string: The contents of the buffer.
 func (tsb *threadSafeBuffer) String() string {
 	tsb.mu.Lock()
 	defer tsb.mu.Unlock()

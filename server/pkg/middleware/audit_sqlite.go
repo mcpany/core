@@ -53,20 +53,6 @@ func NewSQLiteAuditStore(path string) (*SQLiteAuditStore, error) {
 		return nil, fmt.Errorf("failed to create audit_logs table: %w", err)
 	}
 
-	// Set pragmas for performance
-	if _, err := db.Exec("PRAGMA journal_mode=WAL;"); err != nil {
-		_ = db.Close()
-		return nil, fmt.Errorf("failed to set WAL mode: %w", err)
-	}
-	if _, err := db.Exec("PRAGMA synchronous=NORMAL;"); err != nil {
-		_ = db.Close()
-		return nil, fmt.Errorf("failed to set synchronous mode: %w", err)
-	}
-	if _, err := db.Exec("PRAGMA busy_timeout=5000;"); err != nil {
-		_ = db.Close()
-		return nil, fmt.Errorf("failed to set busy_timeout: %w", err)
-	}
-
 	// Ensure columns exist (for migration)
 	if err := ensureColumns(db); err != nil {
 		_ = db.Close()
