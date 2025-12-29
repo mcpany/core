@@ -121,4 +121,34 @@ func TestRedactJSON(t *testing.T) {
 		assert.Contains(t, string(output), "1234567890123456789")
 		assert.Contains(t, string(output), "[REDACTED]")
 	})
+
+	t.Run("deeply nested json raw", func(t *testing.T) {
+		// Test redactMapRaw recursive behavior with RawMessage
+		// Note: redactMapRaw only recurses if value looks like object/array.
+
+		// recurses into actual JSON objects/arrays.
+		input2 := `{"nested": {"api_key": "secret", "deep": {"password": "pwd"}}}`
+		output := RedactJSON([]byte(input2))
+
+		var m map[string]interface{}
+		err := json.Unmarshal(output, &m)
+		assert.NoError(t, err)
+
+		nested := m["nested"].(map[string]interface{})
+		assert.Equal(t, "[REDACTED]", nested["api_key"])
+		deep := nested["deep"].(map[string]interface{})
+		assert.Equal(t, "[REDACTED]", deep["password"])
+	})
+
+	t.Run("array in object", func(t *testing.T) {
+		input := `{"list": [{"password": "pwd"}]}`
+		output := RedactJSON([]byte(input))
+		assert.Contains(t, string(output), "[REDACTED]")
+	})
+
+	t.Run("object in array", func(t *testing.T) {
+		input := `[{"nested": {"password": "pwd"}}]`
+		output := RedactJSON([]byte(input))
+		assert.Contains(t, string(output), "[REDACTED]")
+	})
 }
