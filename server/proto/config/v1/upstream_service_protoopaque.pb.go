@@ -3281,6 +3281,7 @@ func (b0 ProtoCollection_builder) Build() *ProtoCollection {
 type HttpUpstreamService struct {
 	state                  protoimpl.MessageState         `protogen:"opaque.v1"`
 	xxx_hidden_Address     *string                        `protobuf:"bytes,1,opt,name=address"`
+	xxx_hidden_Addresses   []string                       `protobuf:"bytes,8,rep,name=addresses"`
 	xxx_hidden_Tools       *[]*ToolDefinition             `protobuf:"bytes,2,rep,name=tools"`
 	xxx_hidden_Calls       map[string]*HttpCallDefinition `protobuf:"bytes,6,rep,name=calls" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
 	xxx_hidden_HealthCheck *HttpHealthCheck               `protobuf:"bytes,3,opt,name=health_check"`
@@ -3326,6 +3327,13 @@ func (x *HttpUpstreamService) GetAddress() string {
 		return ""
 	}
 	return ""
+}
+
+func (x *HttpUpstreamService) GetAddresses() []string {
+	if x != nil {
+		return x.xxx_hidden_Addresses
+	}
+	return nil
 }
 
 func (x *HttpUpstreamService) GetTools() []*ToolDefinition {
@@ -3378,7 +3386,11 @@ func (x *HttpUpstreamService) GetPrompts() []*PromptDefinition {
 
 func (x *HttpUpstreamService) SetAddress(v string) {
 	x.xxx_hidden_Address = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 7)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 8)
+}
+
+func (x *HttpUpstreamService) SetAddresses(v []string) {
+	x.xxx_hidden_Addresses = v
 }
 
 func (x *HttpUpstreamService) SetTools(v []*ToolDefinition) {
@@ -3444,6 +3456,8 @@ type HttpUpstreamService_builder struct {
 
 	// The base URL of the HTTP service (e.g., "https://api.example.com").
 	Address *string
+	// A list of alternative base URLs for load balancing.
+	Addresses []string
 	// Manually defined mappings from MCP tools to HTTP calls.
 	Tools []*ToolDefinition
 	// A map of call definitions, keyed by their unique ID.
@@ -3463,9 +3477,10 @@ func (b0 HttpUpstreamService_builder) Build() *HttpUpstreamService {
 	b, x := &b0, m0
 	_, _ = b, x
 	if b.Address != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 7)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 8)
 		x.xxx_hidden_Address = b.Address
 	}
+	x.xxx_hidden_Addresses = b.Addresses
 	x.xxx_hidden_Tools = &b.Tools
 	x.xxx_hidden_Calls = b.Calls
 	x.xxx_hidden_HealthCheck = b.HealthCheck
@@ -7782,9 +7797,10 @@ const file_proto_config_v1_upstream_service_proto_rawDesc = "" +
 	"\x0fProtoCollection\x12\x1c\n" +
 	"\troot_path\x18\x01 \x01(\tR\troot_path\x12*\n" +
 	"\x10path_match_regex\x18\x02 \x01(\tR\x10path_match_regex\x12\"\n" +
-	"\fis_recursive\x18\x03 \x01(\bR\fis_recursive\"\x95\x04\n" +
+	"\fis_recursive\x18\x03 \x01(\bR\fis_recursive\"\xb3\x04\n" +
 	"\x13HttpUpstreamService\x12\x18\n" +
-	"\aaddress\x18\x01 \x01(\tR\aaddress\x126\n" +
+	"\aaddress\x18\x01 \x01(\tR\aaddress\x12\x1c\n" +
+	"\taddresses\x18\b \x03(\tR\taddresses\x126\n" +
 	"\x05tools\x18\x02 \x03(\v2 .mcpany.config.v1.ToolDefinitionR\x05tools\x12F\n" +
 	"\x05calls\x18\x06 \x03(\v20.mcpany.config.v1.HttpUpstreamService.CallsEntryR\x05calls\x12E\n" +
 	"\fhealth_check\x18\x03 \x01(\v2!.mcpany.config.v1.HttpHealthCheckR\fhealth_check\x12;\n" +

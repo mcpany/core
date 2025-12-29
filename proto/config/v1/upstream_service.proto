@@ -212,6 +212,8 @@ message ProtoCollection {
 message HttpUpstreamService {
   // The base URL of the HTTP service (e.g., "https://api.example.com").
   string address = 1;
+  // A list of alternative base URLs for load balancing.
+  repeated string addresses = 8 [json_name = "addresses"];
   // Manually defined mappings from MCP tools to HTTP calls.
   repeated ToolDefinition tools = 2;
   // A map of call definitions, keyed by their unique ID.

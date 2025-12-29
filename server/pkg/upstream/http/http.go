@@ -15,6 +15,7 @@ import (
 	"time"
 
 	"github.com/mcpany/core/pkg/auth"
+	"github.com/mcpany/core/pkg/balancer"
 	"github.com/mcpany/core/pkg/logging"
 	"github.com/mcpany/core/pkg/pool"
 	"github.com/mcpany/core/pkg/prompt"
@@ -115,12 +116,24 @@ func (u *Upstream) Register(
 	}
 
 	address := httpService.GetAddress()
-	if address == "" {
+	addresses := httpService.GetAddresses()
+	if len(addresses) == 0 && address != "" {
+		addresses = []string{address}
+	}
+
+	if len(addresses) == 0 {
 		return "", nil, nil, fmt.Errorf("http service address is required")
 	}
-	if _, err := url.ParseRequestURI(address); err != nil {
-		return "", nil, nil, fmt.Errorf("invalid http service address: %w", err)
+
+	for _, addr := range addresses {
+		if _, err := url.ParseRequestURI(addr); err != nil {
+			return "", nil, nil, fmt.Errorf("invalid http service address %q: %w", addr, err)
+		}
 	}
+	// Use the first address as the primary one for creating the pool
+	// Note: The pool handles connections to any host, so strictly speaking
+	// we just need to ensure the pool is created correctly.
+	address = addresses[0]
 
 	poolConfig := serviceConfig.GetConnectionPool()
 	maxConnections := 100
@@ -178,7 +191,7 @@ func (u *Upstream) Register(
 		}
 	}
 
-	discoveredTools := u.createAndRegisterHTTPTools(ctx, serviceID, address, serviceConfig, toolManager, resourceManager, isReload)
+	discoveredTools := u.createAndRegisterHTTPTools(ctx, serviceID, addresses, serviceConfig, toolManager, resourceManager, isReload)
 	u.createAndRegisterPrompts(ctx, serviceID, serviceConfig, promptManager, isReload)
 	log.Info("Registered HTTP service", "serviceID", serviceID, "toolsAdded", len(discoveredTools))
 
@@ -188,7 +201,7 @@ func (u *Upstream) Register(
 // createAndRegisterHTTPTools iterates through the HTTP call definitions in the
 // service configuration, creates a new HTTPTool for each, and registers it
 // with the tool manager.
-func (u *Upstream) createAndRegisterHTTPTools(ctx context.Context, serviceID, address string, serviceConfig *configv1.UpstreamServiceConfig, toolManager tool.ManagerInterface, resourceManager resource.ManagerInterface, _ bool) []*configv1.ToolDefinition { //nolint:gocyclo // High complexity due to tool discovery logic
+func (u *Upstream) createAndRegisterHTTPTools(ctx context.Context, serviceID string, addresses []string, serviceConfig *configv1.UpstreamServiceConfig, toolManager tool.ManagerInterface, resourceManager resource.ManagerInterface, _ bool) []*configv1.ToolDefinition { //nolint:gocyclo // High complexity due to tool discovery logic
 	log := logging.GetLogger()
 	httpService := serviceConfig.GetHttpService()
 	discoveredTools := make([]*configv1.ToolDefinition, 0, len(httpService.GetTools()))
@@ -213,10 +226,19 @@ func (u *Upstream) createAndRegisterHTTPTools(ctx context.Context, serviceID, ad
 
 	callPolicies := serviceConfig.GetCallPolicies()
 
-	// Optimization: Parse baseURL once outside the loop to avoid redundant parsing for each call.
-	baseURL, err := url.Parse(address)
+	// Initialize balancer
+	var lb balancer.Balancer
+	if len(addresses) > 1 {
+		// Currently only RoundRobin is implemented
+		lb = balancer.NewRoundRobinBalancer(addresses)
+	}
+
+	// Optimization: Parse first baseURL for tool definition metadata.
+	// Actual execution will use the balancer to pick an address.
+	primaryAddress := addresses[0]
+	baseURL, err := url.Parse(primaryAddress)
 	if err != nil {
-		log.Error("Failed to parse base URL", "address", address, "error", err)
+		log.Error("Failed to parse base URL", "address", primaryAddress, "error", err)
 		return nil
 	}
 
@@ -367,6 +389,9 @@ func (u *Upstream) createAndRegisterHTTPTools(ctx context.Context, serviceID, ad
 		log.DebugContext(ctx, "Tool protobuf is generated", "toolProto", newToolProto)
 
 		httpTool := tool.NewHTTPTool(newToolProto, u.poolManager, serviceID, authenticator, httpDef, serviceConfig.GetResilience(), callPolicies, callID)
+		if lb != nil {
+			httpTool.SetBalancer(lb)
+		}
 		if err := toolManager.AddTool(httpTool); err != nil {
 			log.Error("Failed to add tool", "error", err)
 			continue

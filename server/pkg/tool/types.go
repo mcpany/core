@@ -23,6 +23,7 @@ import (
 	"time"
 
 	"github.com/mcpany/core/pkg/auth"
+	"github.com/mcpany/core/pkg/balancer"
 	"github.com/mcpany/core/pkg/client"
 	"github.com/mcpany/core/pkg/command"
 	"github.com/mcpany/core/pkg/consts"
@@ -300,6 +301,7 @@ type HTTPTool struct {
 	resilienceManager *resilience.Manager
 	policies          []*CompiledCallPolicy
 	callID            string
+	balancer          balancer.Balancer
 
 	// Cached fields for performance
 	initError          error
@@ -416,6 +418,11 @@ func (t *HTTPTool) MCPTool() *mcp.Tool {
 		}
 	})
 	return t.mcpTool
+}
+
+// SetBalancer sets the load balancer for the tool.
+func (t *HTTPTool) SetBalancer(lb balancer.Balancer) {
+	t.balancer = lb
 }
 
 // GetCacheConfig returns the cache configuration for the HTTP tool.
@@ -650,14 +657,27 @@ func (t *HTTPTool) prepareInputsAndURL(ctx context.Context, req *ExecutionReques
 	// }
 
 	// Reconstruct URL string manually to avoid re-encoding
+	// Use load balancer if available to pick the base URL
+	var baseURL *url.URL
+	if t.balancer != nil {
+		nextAddr := t.balancer.Next()
+		u, err := url.Parse(nextAddr)
+		if err != nil {
+			return nil, "", fmt.Errorf("failed to parse balanced URL: %w", err)
+		}
+		baseURL = u
+	} else {
+		baseURL = t.cachedURL
+	}
+
 	var buf strings.Builder
-	buf.WriteString(t.cachedURL.Scheme)
+	buf.WriteString(baseURL.Scheme)
 	buf.WriteString("://")
-	if t.cachedURL.User != nil {
-		buf.WriteString(t.cachedURL.User.String())
+	if baseURL.User != nil {
+		buf.WriteString(baseURL.User.String())
 		buf.WriteString("@")
 	}
-	buf.WriteString(t.cachedURL.Host)
+	buf.WriteString(baseURL.Host)
 	if pathStr != "" && !strings.HasPrefix(pathStr, "/") {
 		buf.WriteString("/")
 	}
