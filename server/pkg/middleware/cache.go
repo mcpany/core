@@ -7,7 +7,6 @@ import (
 	"context"
 	"crypto/sha256"
 	"encoding/hex"
-	"encoding/json"
 	"fmt"
 	"sync"
 	"time"
@@ -15,6 +14,7 @@ import (
 	"github.com/eko/gocache/lib/v4/cache"
 	"github.com/eko/gocache/lib/v4/store"
 	gocache_store "github.com/eko/gocache/store/go_cache/v4"
+	jsoniter "github.com/json-iterator/go"
 	"github.com/mcpany/core/pkg/logging"
 	"github.com/mcpany/core/pkg/metrics"
 	"github.com/mcpany/core/pkg/tool"
@@ -283,6 +283,7 @@ func (m *CachingMiddleware) getCacheConfig(t tool.Tool) *configv1.CacheConfig {
 
 func (m *CachingMiddleware) getCacheKey(req *tool.ExecutionRequest) string {
 	var normalizedInputs []byte
+	var json = jsoniter.ConfigCompatibleWithStandardLibrary
 
 	// Optimization: Use Arguments map if available to avoid unnecessary unmarshal/marshal cycle.
 	// json.Marshal sorts map keys, so it produces a canonical representation for caching.

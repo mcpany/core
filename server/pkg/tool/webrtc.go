@@ -6,7 +6,6 @@ package tool
 import (
 	"bytes"
 	"context"
-	"encoding/json"
 	"fmt"
 	"net/http"
 	"os"
@@ -14,6 +13,7 @@ import (
 	"sync"
 	"time"
 
+	jsoniter "github.com/json-iterator/go"
 	"github.com/mcpany/core/pkg/auth"
 	"github.com/mcpany/core/pkg/logging"
 	"github.com/mcpany/core/pkg/pool"
@@ -172,6 +172,7 @@ func (t *WebrtcTool) executeWithoutPool(ctx context.Context, req *ExecutionReque
 }
 
 func (t *WebrtcTool) executeWithPeerConnection(ctx context.Context, req *ExecutionRequest, pc *webrtc.PeerConnection) (any, error) {
+	var json = jsoniter.ConfigCompatibleWithStandardLibrary
 	var inputs map[string]any
 	if err := json.Unmarshal(req.ToolInputs, &inputs); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal tool inputs: %w", err)
