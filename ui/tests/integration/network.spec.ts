@@ -14,9 +14,14 @@ test('Network page loads and displays graph', async ({ page }) => {
 
   // Check for graph components
   await expect(page.locator('text=Network Topology')).toBeVisible();
-  await expect(page.locator('text=MCP Any Core')).toBeVisible();
+  // Check for graph components
+  await expect(page.locator('text=Network Topology')).toBeVisible();
+
+  // Use a more specific selector for the node to avoid ambiguity or visibility issues
+  const coreNode = page.locator('.react-flow__node').filter({ hasText: 'MCP Any' });
+  await expect(coreNode).toBeVisible();
 
   // Check interaction
-  await page.locator('text=MCP Any Core').click();
+  await coreNode.click();
   await expect(page.locator('text=ID: mcp-core')).toBeVisible();
 });
