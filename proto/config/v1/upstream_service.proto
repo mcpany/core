@@ -101,6 +101,10 @@ message UpstreamServiceConfig {
 
   // If true, automatically convert all API calls to tools.
   bool auto_discover_tool = 30 [json_name = "auto_discover_tool"];
+
+  // Rate limits per profile. Key is the profile ID.
+  // These limits override the service-level rate_limit if the user belongs to the profile.
+  map<string, RateLimitConfig> profile_limits = 33 [json_name = "profile_limits"];
 }
 
 message CallPolicy {
