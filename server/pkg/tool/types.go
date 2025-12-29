@@ -2017,8 +2017,8 @@ func checkForShellInjection(val string, template string, placeholder string) err
 	}
 
 	// Unquoted (or unknown quoting): strict check
-	// Block common shell metacharacters
-	dangerousChars := []string{";", "|", "&", "$", "`", "(", ")", "{", "}", "<", ">", "!", "\n"}
+	// Block common shell metacharacters and globbing/expansion characters
+	dangerousChars := []string{";", "|", "&", "$", "`", "(", ")", "{", "}", "<", ">", "!", "\n", "*", "?", "[", "]", "~", "#"}
 	for _, char := range dangerousChars {
 		if strings.Contains(val, char) {
 			return fmt.Errorf("shell injection detected: value contains dangerous character %q", char)
