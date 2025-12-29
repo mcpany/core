@@ -486,3 +486,78 @@ func TestCachingMiddleware_SemanticCache(t *testing.T) {
 	assert.Equal(t, successResult, res2)
 	assert.Equal(t, 1, testTool.executeCount, "Should be semantic cache hit")
 }
+
+func TestCachingMiddleware_ProviderFactory(t *testing.T) {
+	// Setup
+	tm := &mockToolManager{}
+	cacheMiddleware := middleware.NewCachingMiddleware(tm)
+
+	// Helper to trigger factory
+	triggerFactory := func(conf *configv1.SemanticCacheConfig) error {
+		testTool := &mockTool{
+			tool: v1.Tool_builder{
+				Name:      proto.String(testToolName),
+				ServiceId: proto.String("test-service-factory"),
+			}.Build(),
+			cacheConfig: configv1.CacheConfig_builder{
+				IsEnabled:      proto.Bool(true),
+				Strategy:       proto.String("semantic"),
+				SemanticConfig: conf,
+				Ttl:            durationpb.New(1 * time.Hour),
+			}.Build(),
+		}
+		req := &tool.ExecutionRequest{
+			ToolName:   "test-service-factory.test-tool",
+			ToolInputs: []byte("hello"),
+		}
+		ctx := tool.NewContextWithTool(context.Background(), testTool)
+		nextFunc := func(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
+			return successResult, nil
+		}
+
+		// Execute triggers executeSemantic -> providerFactory
+		_, err := cacheMiddleware.Execute(ctx, req, nextFunc)
+		return err
+	}
+
+	// Test 1: OpenAI Config
+	err := triggerFactory(configv1.SemanticCacheConfig_builder{
+		Openai: configv1.OpenAIEmbeddingProviderConfig_builder{
+			ApiKey: configv1.SecretValue_builder{PlainText: proto.String("sk-test")}.Build(),
+			Model:  proto.String("text-embedding-3-small"),
+		}.Build(),
+	}.Build())
+	assert.NoError(t, err)
+
+	// Test 2: Ollama Config
+	err = triggerFactory(configv1.SemanticCacheConfig_builder{
+		Ollama: configv1.OllamaEmbeddingProviderConfig_builder{
+			BaseUrl: proto.String("http://localhost:11434"),
+			Model:   proto.String("nomic-embed-text"),
+		}.Build(),
+	}.Build())
+	assert.NoError(t, err)
+
+	// Test 3: HTTP Config
+	err = triggerFactory(configv1.SemanticCacheConfig_builder{
+		Http: configv1.HttpEmbeddingProviderConfig_builder{
+			Url:              proto.String("http://localhost:8080"),
+			ResponseJsonPath: proto.String("$.embedding"),
+		}.Build(),
+	}.Build())
+	assert.NoError(t, err)
+
+	// Test 4: Legacy OpenAI
+	err = triggerFactory(configv1.SemanticCacheConfig_builder{
+		Provider: proto.String("openai"),
+		ApiKey:   configv1.SecretValue_builder{PlainText: proto.String("sk-test")}.Build(),
+		Model:    proto.String("text-embedding-ada-002"),
+	}.Build())
+	assert.NoError(t, err)
+
+	// Test 5: Unknown Provider
+	err = triggerFactory(configv1.SemanticCacheConfig_builder{
+		Provider: proto.String("unknown"),
+	}.Build())
+	assert.NoError(t, err)
+}
