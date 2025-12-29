@@ -24,6 +24,11 @@ import (
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
+var (
+	idValueIntRegex = regexp.MustCompile(`value:(\d+)`)
+	idValueStrRegex = regexp.MustCompile(`value:([^}]+)`)
+)
+
 // transportError implements the error interface for JSON-RPC errors.
 type transportError struct {
 	Code    int    `json:"code"`
@@ -329,15 +334,13 @@ func fixID(id interface{}) interface{} {
 	// If it's the broken struct, print it and parse
 	s := fmt.Sprintf("%+v", id)
 	// Expect {value:1}
-	re := regexp.MustCompile(`value:(\d+)`)
-	matches := re.FindStringSubmatch(s)
+	matches := idValueIntRegex.FindStringSubmatch(s)
 	if len(matches) > 1 {
 		if i, err := strconv.Atoi(matches[1]); err == nil {
 			return i
 		}
 	}
-	reStr := regexp.MustCompile(`value:([^}]+)`)
-	matchesStr := reStr.FindStringSubmatch(s)
+	matchesStr := idValueStrRegex.FindStringSubmatch(s)
 	if len(matchesStr) > 1 {
 		return matchesStr[1]
 	}
