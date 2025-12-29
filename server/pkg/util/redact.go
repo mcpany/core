@@ -1,7 +1,7 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
-package util //nolint:revive
+package util
 
 import (
 	"bytes"
@@ -326,9 +326,9 @@ func containsFold(s, substr string) bool {
 	// We first check the first character to avoid setting up the inner loop for mismatches.
 	// Since sensitiveKeys are all lowercase, we can safely assume substr[0] is lowercase.
 	first := substr[0]
-	end := len(s) - len(substr)
+	maxLen := len(s) - len(substr)
 
-	for i := 0; i <= end; i++ {
+	for i := 0; i <= maxLen; i++ {
 		c := s[i]
 		if c >= 'A' && c <= 'Z' {
 			c += 32 // to lower

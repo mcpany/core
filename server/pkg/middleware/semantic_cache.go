@@ -63,6 +63,6 @@ func (c *SemanticCache) Get(ctx context.Context, key string, input string) (any,
 }
 
 // Set adds a result to the cache using the provided embedding.
-func (c *SemanticCache) Set(ctx context.Context, key string, embedding []float32, result any, ttl time.Duration) error {
+func (c *SemanticCache) Set(_ context.Context, key string, embedding []float32, result any, ttl time.Duration) error {
 	return c.store.Add(key, embedding, result, ttl)
 }

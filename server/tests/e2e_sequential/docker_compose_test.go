@@ -69,7 +69,7 @@ func TestDockerComposeE2E(t *testing.T) {
 
 		// 3. Verify Health
 		t.Log("Verifying mcpany-server health...")
-		verifyEndpoint(t, "http://localhost:50050/healthz", 200, 30*time.Second)
+		verifyEndpoint(t, "http://localhost:51234/healthz", 200, 30*time.Second)
 
 		// 4. Verify Prometheus Metrics
 		t.Log("Verifying Prometheus metrics...")
@@ -91,14 +91,14 @@ func TestDockerComposeE2E(t *testing.T) {
 	// 6. Verify Example Health
 	t.Log("Verifying example mcpany-server health...")
 	// Example server is also exposed on host 50050
-	verifyEndpoint(t, "http://localhost:50050/healthz", 200, 30*time.Second)
+	verifyEndpoint(t, "http://localhost:51234/healthz", 200, 30*time.Second)
 
 	// 7. Functional Test: Simulate Gemini CLI & Verify Metrics
 	t.Log("Simulating Gemini CLI interaction with echo tool...")
-	simulateGeminiCLI(t, "http://localhost:50050")
+	simulateGeminiCLI(t, "http://localhost:51234")
 
 	t.Log("Verifying tool execution metrics...")
-	verifyToolMetricDirect(t, "http://localhost:50050/metrics", "docker-http-echo.echo")
+	verifyToolMetricDirect(t, "http://localhost:51234/metrics", "docker-http-echo.echo")
 
 	// 8. Functional Test: Weather Service (Real external call)
 	t.Log("Starting Weather Service functional test...")

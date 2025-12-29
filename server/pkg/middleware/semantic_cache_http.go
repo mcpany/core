@@ -17,7 +17,7 @@ import (
 )
 
 // HttpEmbeddingProvider implements a generic HTTP EmbeddingProvider.
-type HttpEmbeddingProvider struct {
+type HTTPEmbeddingProvider struct {
 	url              string
 	headers          map[string]string
 	bodyTemplate     *template.Template
@@ -26,7 +26,7 @@ type HttpEmbeddingProvider struct {
 }
 
 // NewHttpEmbeddingProvider creates a new HttpEmbeddingProvider.
-func NewHttpEmbeddingProvider(url string, headers map[string]string, bodyTemplateStr, responseJSONPath string) (*HttpEmbeddingProvider, error) {
+func NewHTTPEmbeddingProvider(url string, headers map[string]string, bodyTemplateStr, responseJSONPath string) (*HTTPEmbeddingProvider, error) {
 	if url == "" {
 		return nil, fmt.Errorf("url is required")
 	}
@@ -36,7 +36,7 @@ func NewHttpEmbeddingProvider(url string, headers map[string]string, bodyTemplat
 		return nil, fmt.Errorf("invalid body template: %w", err)
 	}
 
-	return &HttpEmbeddingProvider{
+	return &HTTPEmbeddingProvider{
 		url:              url,
 		headers:          headers,
 		bodyTemplate:     tmpl,
@@ -45,18 +45,19 @@ func NewHttpEmbeddingProvider(url string, headers map[string]string, bodyTemplat
 	}, nil
 }
 
-type httpTemplateData struct {
-	Input string
-}
 
-// Embed generates an embedding for the given text using a generic HTTP request.
-func (p *HttpEmbeddingProvider) Embed(ctx context.Context, text string) ([]float32, error) {
-	var body bytes.Buffer
-	if err := p.bodyTemplate.Execute(&body, httpTemplateData{Input: text}); err != nil {
+
+// Embed generates an embedding for the given text.
+func (p *HTTPEmbeddingProvider) Embed(ctx context.Context, text string) ([]float32, error) {
+	// Simple template replacement.
+	// We assume formatting is handled by the caller or configuration?
+	// Actually, bodyTemplate is a go template.
+	var bodyBuffer bytes.Buffer
+	if err := p.bodyTemplate.Execute(&bodyBuffer, map[string]string{"input": text}); err != nil {
 		return nil, fmt.Errorf("failed to execute body template: %w", err)
 	}
 
-	req, err := http.NewRequestWithContext(ctx, "POST", p.url, &body)
+	req, err := http.NewRequestWithContext(ctx, "POST", p.url, &bodyBuffer)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create request: %w", err)
 	}

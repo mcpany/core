@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"time"
 
+	// modernc.org/sqlite is a pure Go SQLite driver.
 	_ "modernc.org/sqlite"
 )
 

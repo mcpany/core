@@ -412,8 +412,9 @@ func TestExportPolicyForPromptsAndResources(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	// Verify Prompts
+	// Verify Prompts and Resources with Eventually to allow for async registration
 	assert.Eventually(t, func() bool {
+		// Verify Prompts
 		promptsResult, err := client.ListPrompts(ctx)
 		if err != nil {
 			return false
@@ -428,11 +429,8 @@ func TestExportPolicyForPromptsAndResources(t *testing.T) {
 		if promptNames["export-policy-misc.private_prompt"] {
 			return false
 		}
-		return true
-	}, 10*time.Second, 100*time.Millisecond, "Expected prompts to be discovered and hidden prompts to be excluded")
 
-	// Verify Resources
-	assert.Eventually(t, func() bool {
+		// Verify Resources
 		resourcesResult, err := client.ListResources(ctx)
 		if err != nil {
 			return false
@@ -447,6 +445,7 @@ func TestExportPolicyForPromptsAndResources(t *testing.T) {
 		if resNames["private_resource"] {
 			return false
 		}
+
 		return true
-	}, 10*time.Second, 100*time.Millisecond, "Expected resources to be discovered and hidden resources to be excluded")
+	}, 10*time.Second, 100*time.Millisecond, "Expected prompts and resources to be exported/unexported correctly")
 }

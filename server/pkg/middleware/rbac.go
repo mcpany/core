@@ -73,9 +73,9 @@ func (m *RBACMiddleware) RequireAnyRole(roles ...string) func(http.Handler) http
 }
 
 // EnforcePolicy allows passing a custom policy function.
-func (m *RBACMiddleware) EnforcePolicy(policyFunc func(user *configv1.User) bool) func(http.Handler) http.Handler {
-	return func(next http.Handler) http.Handler {
-		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+func (m *RBACMiddleware) EnforcePolicy(_ func(user *configv1.User) bool) func(http.Handler) http.Handler {
+	return func(_ http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 			// We need the user object here.
 			// Assuming it's in context? `server.go` doesn't seem to put the full User struct in a standard key that is exported.
 			// It puts UID.

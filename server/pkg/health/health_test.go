@@ -44,12 +44,10 @@ func (s *mockHealthServer) Watch(
 }
 
 // newMockGRPCHealthServer starts a gRPC server with the mock health service.
-func newMockGRPCHealthServer(
-	status grpc_health_v1.HealthCheckResponse_ServingStatus,
-) (*grpc.Server, net.Listener) {
+func newMockGRPCHealthServer(t *testing.T, status grpc_health_v1.HealthCheckResponse_ServingStatus) (*grpc.Server, net.Listener) {
 	lis, err := net.Listen("tcp", "localhost:0")
 	if err != nil {
-		panic(err)
+		t.Fatalf("failed to listen: %v", err)
 	}
 	s := grpc.NewServer()
 	grpc_health_v1.RegisterHealthServer(s, &mockHealthServer{status: status})
@@ -206,7 +204,7 @@ func TestCheckGRPCHealth(t *testing.T) {
 	ctx := context.Background()
 
 	t.Run("Serving", func(t *testing.T) {
-		server, lis := newMockGRPCHealthServer(grpc_health_v1.HealthCheckResponse_SERVING)
+		server, lis := newMockGRPCHealthServer(t, grpc_health_v1.HealthCheckResponse_SERVING)
 		defer server.Stop()
 
 		upstreamConfig := configv1.UpstreamServiceConfig_builder{
@@ -225,7 +223,7 @@ func TestCheckGRPCHealth(t *testing.T) {
 	})
 
 	t.Run("NotServing", func(t *testing.T) {
-		server, lis := newMockGRPCHealthServer(grpc_health_v1.HealthCheckResponse_NOT_SERVING)
+		server, lis := newMockGRPCHealthServer(t, grpc_health_v1.HealthCheckResponse_NOT_SERVING)
 		defer server.Stop()
 
 		upstreamConfig := configv1.UpstreamServiceConfig_builder{
