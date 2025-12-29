@@ -1062,11 +1062,13 @@ func (a *Application) runServerMode(
 	// Apply CORS Middleware
 	corsMiddleware := middleware.NewHTTPCORSMiddleware(allowedOrigins)
 
-	// Middleware order: SecurityHeaders -> CORS -> IPAllowList -> RateLimit -> Mux
+	// Middleware order: SecurityHeaders -> CORS -> JSONRPCCompliance -> IPAllowList -> RateLimit -> Mux
 	handler := middleware.HTTPSecurityHeadersMiddleware(
 		corsMiddleware.Handler(
-			ipMiddleware.Handler(
-				rateLimiter.Handler(mux),
+			middleware.JSONRPCComplianceMiddleware(
+				ipMiddleware.Handler(
+					rateLimiter.Handler(mux),
+				),
 			),
 		),
 	)
