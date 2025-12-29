@@ -20,8 +20,13 @@ type HTTPRateLimitMiddleware struct {
 }
 
 // NewHTTPRateLimitMiddleware creates a new HTTPRateLimitMiddleware.
-// rps: requests per second per IP
-// burst: maximum burst size per IP
+//
+// Parameters:
+//   - rps: Requests per second allowed per IP.
+//   - burst: Maximum burst size allowed per IP.
+//
+// Returns:
+//   - *HTTPRateLimitMiddleware: A new instance of HTTPRateLimitMiddleware.
 func NewHTTPRateLimitMiddleware(rps float64, burst int) *HTTPRateLimitMiddleware {
 	// Cleanup limiters every 10 minutes, expire after 5 minutes of inactivity
 	return &HTTPRateLimitMiddleware{
@@ -32,6 +37,12 @@ func NewHTTPRateLimitMiddleware(rps float64, burst int) *HTTPRateLimitMiddleware
 }
 
 // Handler wraps an http.Handler with rate limiting.
+//
+// Parameters:
+//   - next: The next http.Handler in the chain.
+//
+// Returns:
+//   - http.Handler: An http.Handler that enforces rate limiting.
 func (m *HTTPRateLimitMiddleware) Handler(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		ip := util.ExtractIP(r.RemoteAddr)

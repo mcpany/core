@@ -30,6 +30,9 @@ type VectorEntry struct {
 
 // NewSimpleVectorStore creates a new SimpleVectorStore.
 // It initializes the store with a default configuration.
+//
+// Returns:
+//   - *SimpleVectorStore: A pointer to the newly created SimpleVectorStore.
 func NewSimpleVectorStore() *SimpleVectorStore {
 	return &SimpleVectorStore{
 		items:      make(map[string][]*VectorEntry),
@@ -39,6 +42,15 @@ func NewSimpleVectorStore() *SimpleVectorStore {
 
 // Add adds a new entry to the vector store.
 // It evicts the oldest entry if the store exceeds the maximum number of entries for the key.
+//
+// Parameters:
+//   - key: The key associated with the entry.
+//   - vector: The embedding vector.
+//   - result: The result to cache.
+//   - ttl: The time-to-live for the entry.
+//
+// Returns:
+//   - error: An error if the operation fails (currently always nil).
 func (s *SimpleVectorStore) Add(key string, vector []float32, result any, ttl time.Duration) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -63,6 +75,15 @@ func (s *SimpleVectorStore) Add(key string, vector []float32, result any, ttl ti
 
 // Search searches for the most similar entry in the vector store for the given key and query vector.
 // It returns the result, the similarity score, and a boolean indicating if a match was found.
+//
+// Parameters:
+//   - key: The key to search for.
+//   - query: The query vector.
+//
+// Returns:
+//   - any: The cached result if found.
+//   - float32: The similarity score (cosine similarity).
+//   - bool: True if a match was found, false otherwise.
 func (s *SimpleVectorStore) Search(key string, query []float32) (any, float32, bool) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
@@ -95,6 +116,10 @@ func (s *SimpleVectorStore) Search(key string, query []float32) (any, float32, b
 	return bestResult, bestScore, true
 }
 
+// Prune removes expired entries from the vector store for the given key.
+//
+// Parameters:
+//   - key: The key to prune entries for.
 func (s *SimpleVectorStore) Prune(key string) {
 	s.mu.Lock()
 	defer s.mu.Unlock()

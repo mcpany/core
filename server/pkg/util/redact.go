@@ -223,25 +223,45 @@ func bytesContainsFold(s, substr []byte) bool {
 	}
 
 	firstLower := substr[0]
-	// firstUpper := firstLower - 32 // sensitiveKeys are all lowercase ASCII
+	firstUpper := firstLower - 32 // sensitiveKeys are all lowercase ASCII
 
-	i := 0
-	max := len(s) - len(substr)
+	offset := 0
+	// We only need to search up to this point
+	maxSearch := len(s) - len(substr)
 
-	for i <= max {
-		c := s[i]
-		// Optimization: (c | 0x20) converts uppercase to lowercase (for letters)
-		// This works because firstLower is always a lowercase letter (from sensitiveKeys).
-		// Performance: Reduces branching in the hot loop, approx 30-40% faster for clean inputs.
-		if (c | 0x20) != firstLower {
-			i++
-			continue
+	for offset <= maxSearch {
+		// Optimization: Use IndexByte which is assembly optimized (SIMD)
+		// Scan for either lowercase or uppercase first char
+		slice := s[offset:]
+		idxL := bytes.IndexByte(slice, firstLower)
+		idxU := bytes.IndexByte(slice, firstUpper)
+
+		var idx int
+		if idxL == -1 && idxU == -1 {
+			return false
+		} else if idxL == -1 {
+			idx = idxU
+		} else if idxU == -1 {
+			idx = idxL
+		} else {
+			if idxL < idxU {
+				idx = idxL
+			} else {
+				idx = idxU
+			}
 		}
 
-		// First character matches, check the rest
+		// Found a match at offset + idx
+		// Check if it's within bounds (IndexByte searches the whole slice, but we only care if it fits)
+		if offset+idx > maxSearch {
+			return false
+		}
+
+		// Check the rest of the string
 		match := true
+		matchStart := offset + idx
 		for j := 1; j < len(substr); j++ {
-			cc := s[i+j]
+			cc := s[matchStart+j]
 			if cc >= 'A' && cc <= 'Z' {
 				cc += 32
 			}
@@ -253,7 +273,9 @@ func bytesContainsFold(s, substr []byte) bool {
 		if match {
 			return true
 		}
-		i++
+
+		// Move past this match
+		offset += idx + 1
 	}
 	return false
 }
