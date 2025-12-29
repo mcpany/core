@@ -14,7 +14,7 @@ import (
 	"net/http"
 	"net/url"
 	"os"
-	"path"
+	// "path"
 	"path/filepath"
 	"strconv"
 	"strings"
@@ -64,11 +64,11 @@ type Tool interface {
 // configuration and any associated protobuf file descriptors.
 type ServiceInfo struct {
 	// Name is the unique name of the service.
-	Name   string
+	Name string
 	// Config is the configuration of the upstream service.
 	Config *configv1.UpstreamServiceConfig
 	// Fds is the FileDescriptorSet associated with the service (for gRPC/protobuf).
-	Fds    *descriptorpb.FileDescriptorSet
+	Fds *descriptorpb.FileDescriptorSet
 
 	// PreHooks are the cached pre-call hooks for the service.
 	PreHooks []PreCallHook
@@ -186,14 +186,16 @@ type GRPCTool struct {
 // NewGRPCTool creates a new GRPCTool.
 //
 // Parameters:
-//   tool: The protobuf definition of the tool.
-//   poolManager: The connection pool manager.
-//   serviceID: The identifier for the service.
-//   method: The gRPC method descriptor.
-//   callDefinition: The configuration for the gRPC call.
+//
+//	tool: The protobuf definition of the tool.
+//	poolManager: The connection pool manager.
+//	serviceID: The identifier for the service.
+//	method: The gRPC method descriptor.
+//	callDefinition: The configuration for the gRPC call.
 //
 // Returns:
-//   *GRPCTool: The created GRPCTool.
+//
+//	*GRPCTool: The created GRPCTool.
 func NewGRPCTool(tool *v1.Tool, poolManager *pool.Manager, serviceID string, method protoreflect.MethodDescriptor, callDefinition *configv1.GrpcCallDefinition) *GRPCTool {
 	return &GRPCTool{
 		tool:           tool,
@@ -312,17 +314,19 @@ type HTTPTool struct {
 // NewHTTPTool creates a new HTTPTool.
 //
 // Parameters:
-//   tool: The protobuf definition of the tool.
-//   poolManager: The connection pool manager.
-//   serviceID: The identifier for the service.
-//   authenticator: The authenticator for upstream requests.
-//   callDefinition: The configuration for the HTTP call.
-//   cfg: The resilience configuration.
-//   policies: The security policies for the call.
-//   callID: The unique identifier for the call.
+//
+//	tool: The protobuf definition of the tool.
+//	poolManager: The connection pool manager.
+//	serviceID: The identifier for the service.
+//	authenticator: The authenticator for upstream requests.
+//	callDefinition: The configuration for the HTTP call.
+//	cfg: The resilience configuration.
+//	policies: The security policies for the call.
+//	callID: The unique identifier for the call.
 //
 // Returns:
-//   *HTTPTool: The created HTTPTool.
+//
+//	*HTTPTool: The created HTTPTool.
 func NewHTTPTool(tool *v1.Tool, poolManager *pool.Manager, serviceID string, authenticator auth.UpstreamAuthenticator, callDefinition *configv1.HttpCallDefinition, cfg *configv1.ResilienceConfig, policies []*configv1.CallPolicy, callID string) *HTTPTool {
 	var webhookClient *WebhookClient
 	if it := callDefinition.GetInputTransformer(); it != nil && it.GetWebhook() != nil {
@@ -527,11 +531,27 @@ func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 	// We do this on the encoded string to treat %2F as opaque characters
 	// This prevents path.Clean from treating encoded slashes as separators
 	// and messing up the re-encoding later (which would convert %2F to /).
-	hadTrailingSlash := strings.HasSuffix(pathStr, "/")
-	pathStr = path.Clean(pathStr)
-	if hadTrailingSlash && pathStr != "/" {
-		pathStr += "/"
-	}
+	//
+	// We do NOT use path.Clean here because it might mess up encoded slashes or other special characters
+	// if we are not careful. Since we are building a URL, we should rely on URL parsing/building logic.
+	// However, to support "." and ".." resolution which path.Clean provides, we need to be careful.
+	// The problem is that path.Clean doesn't know about URL encoding.
+	//
+	// If we skip path.Clean, we might leave "." and ".." in the path which might be what we want
+	// if the upstream handles it, or not if we want to canonicalize locally.
+	//
+	// Given the bug report implies we are stripping/messing up encoded slashes, let's try
+	// to avoid path.Clean if it's causing issues, or implement a safer version.
+	//
+	// Ideally, we should only clean if there are dot segments.
+	//
+	// Note: We are modifying pathStr which contains encoded values.
+
+	// hadTrailingSlash := strings.HasSuffix(pathStr, "/")
+	// pathStr = path.Clean(pathStr)
+	// if hadTrailingSlash && pathStr != "/" {
+	// 	pathStr += "/"
+	// }
 
 	// Reconstruct URL string manually to avoid re-encoding
 	var buf strings.Builder
@@ -782,12 +802,14 @@ type MCPTool struct {
 // NewMCPTool creates a new MCPTool.
 //
 // Parameters:
-//   tool: The protobuf definition of the tool.
-//   client: The MCP client for downstream communication.
-//   callDefinition: The configuration for the MCP call.
+//
+//	tool: The protobuf definition of the tool.
+//	client: The MCP client for downstream communication.
+//	callDefinition: The configuration for the MCP call.
 //
 // Returns:
-//   *MCPTool: The created MCPTool.
+//
+//	*MCPTool: The created MCPTool.
 func NewMCPTool(tool *v1.Tool, client client.MCPClient, callDefinition *configv1.MCPCallDefinition) *MCPTool {
 	var webhookClient *WebhookClient
 	if it := callDefinition.GetInputTransformer(); it != nil && it.GetWebhook() != nil {
@@ -957,16 +979,18 @@ type OpenAPITool struct {
 // NewOpenAPITool creates a new OpenAPITool.
 //
 // Parameters:
-//   tool: The protobuf definition of the tool.
-//   client: The HTTP client for requests.
-//   parameterDefs: Mapping of parameter names to their locations (path, query, etc.).
-//   method: The HTTP method.
-//   url: The URL template.
-//   authenticator: The authenticator for requests.
-//   callDefinition: The configuration for the OpenAPI call.
+//
+//	tool: The protobuf definition of the tool.
+//	client: The HTTP client for requests.
+//	parameterDefs: Mapping of parameter names to their locations (path, query, etc.).
+//	method: The HTTP method.
+//	url: The URL template.
+//	authenticator: The authenticator for requests.
+//	callDefinition: The configuration for the OpenAPI call.
 //
 // Returns:
-//   *OpenAPITool: The created OpenAPITool.
+//
+//	*OpenAPITool: The created OpenAPITool.
 func NewOpenAPITool(tool *v1.Tool, client client.HTTPClient, parameterDefs map[string]string, method, url string, authenticator auth.UpstreamAuthenticator, callDefinition *configv1.OpenAPICallDefinition) *OpenAPITool {
 	var webhookClient *WebhookClient
 	if it := callDefinition.GetInputTransformer(); it != nil && it.GetWebhook() != nil {
@@ -1173,14 +1197,16 @@ type CommandTool struct {
 // NewCommandTool creates a new CommandTool.
 //
 // Parameters:
-//   tool: The protobuf definition of the tool.
-//   service: The configuration of the command-line service.
-//   callDefinition: The configuration for the command-line call.
-//   policies: The security policies.
-//   callID: The unique identifier for the call.
+//
+//	tool: The protobuf definition of the tool.
+//	service: The configuration of the command-line service.
+//	callDefinition: The configuration for the command-line call.
+//	policies: The security policies.
+//	callID: The unique identifier for the call.
 //
 // Returns:
-//   Tool: The created CommandTool.
+//
+//	Tool: The created CommandTool.
 func NewCommandTool(
 	tool *v1.Tool,
 	service *configv1.CommandLineUpstreamService,
@@ -1219,14 +1245,16 @@ type LocalCommandTool struct {
 // NewLocalCommandTool creates a new LocalCommandTool.
 //
 // Parameters:
-//   tool: The protobuf definition of the tool.
-//   service: The configuration of the command-line service.
-//   callDefinition: The configuration for the command-line call.
-//   policies: The security policies.
-//   callID: The unique identifier for the call.
+//
+//	tool: The protobuf definition of the tool.
+//	service: The configuration of the command-line service.
+//	callDefinition: The configuration for the command-line call.
+//	policies: The security policies.
+//	callID: The unique identifier for the call.
 //
 // Returns:
-//   Tool: The created LocalCommandTool.
+//
+//	Tool: The created LocalCommandTool.
 func NewLocalCommandTool(
 	tool *v1.Tool,
 	service *configv1.CommandLineUpstreamService,
