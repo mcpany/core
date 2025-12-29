@@ -60,37 +60,56 @@ func TestMetricNamingConsistency(t *testing.T) {
 	tm := server.ToolManager().(*tool.Manager)
 
 	// Add success tool
-	successTool := &mockTool{
-		tool: v1.Tool_builder{
-			Name:      proto.String("success-tool"),
-			ServiceId: proto.String("test-service"),
-			Annotations: v1.ToolAnnotations_builder{
-				InputSchema: &structpb.Struct{
-					Fields: map[string]*structpb.Value{
-						"type":       structpb.NewStringValue("object"),
-						"properties": structpb.NewStructValue(&structpb.Struct{}),
+	successTool := &tool.MockTool{
+		ToolFunc: func() *v1.Tool {
+			return v1.Tool_builder{
+				Name:      proto.String("success-tool"),
+				ServiceId: proto.String("test-service"),
+				Annotations: v1.ToolAnnotations_builder{
+					InputSchema: &structpb.Struct{
+						Fields: map[string]*structpb.Value{
+							"type":       structpb.NewStringValue("object"),
+							"properties": structpb.NewStructValue(&structpb.Struct{}),
+						},
 					},
-				},
-			}.Build(),
-		}.Build(),
+				}.Build(),
+			}.Build()
+		},
+		MCPToolFunc: func() *mcp.Tool {
+			return &mcp.Tool{
+				Name: "test-service.success-tool",
+			}
+		},
+		ExecuteFunc: func(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
+			return "success", nil
+		},
 	}
 	_ = tm.AddTool(successTool)
 
-	// Add error tool (we define it inline to avoid dependency on other test files if mockErrorTool is not available)
-	// Actually mockErrorTool IS in server_test.go which is in same package mcpserver_test
-	errorTool := &mockErrorTool{
-		tool: v1.Tool_builder{
-			Name:      proto.String("error-tool"),
-			ServiceId: proto.String("test-service"),
-			Annotations: v1.ToolAnnotations_builder{
-				InputSchema: &structpb.Struct{
-					Fields: map[string]*structpb.Value{
-						"type":       structpb.NewStringValue("object"),
-						"properties": structpb.NewStructValue(&structpb.Struct{}),
+	// Add error tool
+	errorTool := &tool.MockTool{
+		ToolFunc: func() *v1.Tool {
+			return v1.Tool_builder{
+				Name:      proto.String("error-tool"),
+				ServiceId: proto.String("test-service"),
+				Annotations: v1.ToolAnnotations_builder{
+					InputSchema: &structpb.Struct{
+						Fields: map[string]*structpb.Value{
+							"type":       structpb.NewStringValue("object"),
+							"properties": structpb.NewStructValue(&structpb.Struct{}),
+						},
 					},
-				},
-			}.Build(),
-		}.Build(),
+				}.Build(),
+			}.Build()
+		},
+		MCPToolFunc: func() *mcp.Tool {
+			return &mcp.Tool{
+				Name: "test-service.error-tool",
+			}
+		},
+		ExecuteFunc: func(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
+			return nil, fmt.Errorf("execution error")
+		},
 	}
 	_ = tm.AddTool(errorTool)
 

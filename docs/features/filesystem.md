@@ -10,8 +10,10 @@ The Filesystem provider allows MCP Any to expose a local directory as an MCP ser
     *   `list_directory`: List files and subdirectories.
     *   `read_file`: Read the content of a file.
     *   `write_file`: Write content to a file.
+    *   `delete_file`: Delete a file or empty directory.
+    *   `search_files`: Search for a text pattern in files within a directory.
     *   `get_file_info`: Get metadata about a file or directory.
-*   **Virtual File Systems**: Supports `os` (local operating system) and `tmpfs` (in-memory). Future support planned for cloud storage.
+*   **Virtual File Systems**: Supports `os` (local operating system) and `tmpfs` (in-memory). Future support planned for cloud storage (S3, GCS).
 
 ## Configuration
 

@@ -4,11 +4,9 @@
 package config
 
 import (
-	"context"
 	"encoding/json"
 	"fmt"
 	"io"
-	"net"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -17,6 +15,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/mcpany/core/pkg/util"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/spf13/afero"
 	"google.golang.org/protobuf/encoding/protojson"
@@ -297,39 +296,17 @@ func (s *FileStore) Load() (*configv1.McpAnyServerConfig, error) {
 	return mergedConfig, nil
 }
 
-var httpClient = &http.Client{
-	Timeout: 5 * time.Second,
-	Transport: &http.Transport{
-		DialContext: func(ctx context.Context, network, addr string) (net.Conn, error) {
-			host, port, err := net.SplitHostPort(addr)
-			if err != nil {
-				return nil, err
-			}
-
-			ips, err := net.LookupIP(host)
-			if err != nil {
-				return nil, err
-			}
-
-			var dialAddr string
-			for _, ip := range ips {
-				// Use the first valid IP address for the connection.
-				if dialAddr == "" {
-					dialAddr = net.JoinHostPort(ip.String(), port)
-				}
-			}
-
-			if dialAddr == "" {
-				return nil, fmt.Errorf("no valid IP address found for host: %s", host)
-			}
-
-			return (&net.Dialer{}).DialContext(ctx, network, dialAddr)
-		},
-	},
-	CheckRedirect: func(_ *http.Request, _ []*http.Request) error {
+// httpClient is a safe http client for loading configurations.
+// It uses SafeDialer to prevent SSRF by blocking access to private and link-local IPs.
+// It also disables redirects.
+var httpClient = func() *http.Client {
+	client := util.NewSafeHTTPClient()
+	client.Timeout = 5 * time.Second
+	client.CheckRedirect = func(_ *http.Request, _ []*http.Request) error {
 		return http.ErrUseLastResponse
-	},
-}
+	}
+	return client
+}()
 
 func readURL(url string) ([]byte, error) {
 	req, err := http.NewRequest("GET", url, nil)

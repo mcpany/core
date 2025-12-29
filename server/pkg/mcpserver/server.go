@@ -189,7 +189,7 @@ func NewServer(
 	if err := s.toolManager.AddTool(NewRootsTool()); err != nil {
 		// Log error but don't fail startup if duplicate (e.g. reload)
 		// Assuming logging is initialized
-		logging.GetLogger().Warn("Failed to register built-in tools", "error", err)
+		logging.GetLogger().Error("Failed to register built-in tools", "error", err)
 	}
 
 	s.resourceManager.OnListChanged(func() {

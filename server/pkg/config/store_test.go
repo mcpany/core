@@ -186,7 +186,9 @@ func TestYamlEngine_ValidationFail(_ *testing.T) {
 }
 
 func TestReadURL_Redirect(t *testing.T) {
-	// Override httpClient to allow loopback and keep CheckRedirect behavior
+	// Verify that redirects are disabled.
+	// We mock the global httpClient for this test to allow localhost connections
+	// while maintaining the CheckRedirect logic we want to test.
 	originalClient := httpClient
 	defer func() { httpClient = originalClient }()
 
@@ -241,6 +243,15 @@ global_settings:
 }
 
 func TestReadURL_Localhost(t *testing.T) {
+	// Verify we can read from localhost if the client is configured to allow it.
+	// We mock the global httpClient to simulate a SafeHTTPClient with loopback enabled.
+	originalClient := httpClient
+	defer func() { httpClient = originalClient }()
+
+	httpClient = &http.Client{
+		Timeout: 5 * time.Second,
+	}
+
 	// Start a local HTTP server
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/yaml")
