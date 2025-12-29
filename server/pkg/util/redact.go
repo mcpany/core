@@ -237,13 +237,14 @@ func bytesContainsFold(s, substr []byte) bool {
 		idxU := bytes.IndexByte(slice, firstUpper)
 
 		var idx int
-		if idxL == -1 && idxU == -1 {
+		switch {
+		case idxL == -1 && idxU == -1:
 			return false
-		} else if idxL == -1 {
+		case idxL == -1:
 			idx = idxU
-		} else if idxU == -1 {
+		case idxU == -1:
 			idx = idxL
-		} else {
+		default:
 			if idxL < idxU {
 				idx = idxL
 			} else {
