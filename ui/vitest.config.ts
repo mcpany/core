@@ -1,3 +1,8 @@
+/**
+ * Copyright 2025 Author(s) of MCP Any
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 
 import { defineConfig } from 'vitest/config'
 import react from '@vitejs/plugin-react'
