@@ -30,6 +30,7 @@ import (
 	"github.com/aws/aws-sdk-go/aws"
 	//nolint:staticcheck // afero-s3 requires aws-sdk-go v1
 	"github.com/aws/aws-sdk-go/aws/credentials"
+	//nolint:staticcheck // afero-s3 requires aws-sdk-go v1
 	"github.com/aws/aws-sdk-go/aws/session"
 	s3 "github.com/fclairamb/afero-s3"
 	"github.com/spf13/afero"
