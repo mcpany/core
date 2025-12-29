@@ -121,14 +121,26 @@ func TestToolListFiltering(t *testing.T) {
 	// Test tools/list
 	listResult, err := clientSession.ListTools(ctx, &mcp.ListToolsParams{})
 	assert.NoError(t, err)
-	assert.Len(t, listResult.Tools, 1)
-	assert.Equal(t, compositeName, listResult.Tools[0].Name)
+	// We expect 2 tools: the test tool and the built-in roots tool
+	assert.Len(t, listResult.Tools, 2)
+
+	// Verify test tool presence
+	found := false
+	for _, tool := range listResult.Tools {
+		if tool.Name == compositeName {
+			found = true
+			break
+		}
+	}
+	assert.True(t, found, "Test tool should be present")
 
 	// Remove the tool and test tools/list again
 	tm.ClearToolsForService(serviceID)
 	listResult, err = clientSession.ListTools(ctx, &mcp.ListToolsParams{})
 	assert.NoError(t, err)
-	assert.Len(t, listResult.Tools, 0)
+	// Only roots tool should remain
+	assert.Len(t, listResult.Tools, 1)
+	assert.Equal(t, "builtin.mcp:list_roots", listResult.Tools[0].Name)
 }
 
 func TestToolListFilteringServiceId(t *testing.T) {
@@ -193,8 +205,16 @@ func TestToolListFilteringServiceId(t *testing.T) {
 
 	listResult, err := clientSession.ListTools(ctx, &mcp.ListToolsParams{})
 	assert.NoError(t, err)
-	assert.Len(t, listResult.Tools, 1)
-	assert.Equal(t, compositeName, listResult.Tools[0].Name)
+	assert.Len(t, listResult.Tools, 2)
+
+	found := false
+	for _, tool := range listResult.Tools {
+		if tool.Name == compositeName {
+			found = true
+			break
+		}
+	}
+	assert.True(t, found, "Test tool should be present")
 }
 
 type mockErrorTool struct {
@@ -657,13 +677,20 @@ func TestToolListFilteringIsAuthoritative(t *testing.T) {
 	assert.NoError(t, err)
 
 	// The bug is that the middleware iterates the list from the underlying server,
-	// which is empty, so this assertion will fail.
-	assert.Len(t, listResult.Tools, 1, "The tool list should be authoritative from the ToolManager")
-	if len(listResult.Tools) > 0 {
+	// which is empty (except for builtin), so this assertion will fail if it relies on underlying server.
+	// But since NewServer adds builtin, expectation is 2.
+	assert.Len(t, listResult.Tools, 2, "The tool list should be authoritative from the ToolManager")
+
+	found := false
+	for _, tool := range listResult.Tools {
 		sanitizedToolName, _ := util.SanitizeToolName("pre-existing-tool")
 		expectedToolName := "test-service" + "." + sanitizedToolName
-		assert.Equal(t, expectedToolName, listResult.Tools[0].Name)
+		if tool.Name == expectedToolName {
+			found = true
+			break
+		}
 	}
+	assert.True(t, found, "Pre-existing tool should be present")
 }
 
 func TestToolListFiltering_ErrorCase(t *testing.T) {
@@ -712,10 +739,10 @@ func TestToolListFiltering_ErrorCase(t *testing.T) {
 	_ = toolManager.AddTool(testTool)
 
 	// The middleware should still return the tool from the tool manager, even if the
-	// underlying mcp.Server's ListTools method returns an error.
+	// underlying mcp.Server's ListTools method returns an error (or just builtin).
 	listResult, err := clientSession.ListTools(ctx, &mcp.ListToolsParams{})
 	assert.NoError(t, err)
-	assert.Len(t, listResult.Tools, 1)
+	assert.Len(t, listResult.Tools, 2)
 }
 
 func TestToolListFilteringConversionError(t *testing.T) {

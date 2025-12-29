@@ -25,13 +25,17 @@ func NewRootsTool() *RootsTool {
 	name := "mcp:list_roots"
 	displayName := "List Roots"
 	description := "Lists the roots available on the client side."
+	serviceID := "builtin"
 	t := &v1.Tool{
 		Name:        &name,
 		DisplayName: &displayName,
 		Description: &description,
 		InputSchema: &structpb.Struct{
-			Fields: map[string]*structpb.Value{},
+			Fields: map[string]*structpb.Value{
+				"type": structpb.NewStringValue("object"),
+			},
 		},
+		ServiceId: &serviceID,
 	}
 	mcpTool, _ := tool.ConvertProtoToMCPTool(t)
 	return &RootsTool{

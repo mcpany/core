@@ -463,7 +463,7 @@ test-ui:
 		-v $(abspath ../ui):/work/ui \
 		-v $(abspath ../proto):/work/proto \
 		-w /work/ui \
-		mcr.microsoft.com/playwright:v1.48.0-jammy \
+		mcr.microsoft.com/playwright:v1.57.0-jammy \
 		/bin/bash -c "npm ci && npx playwright test"
 
 
