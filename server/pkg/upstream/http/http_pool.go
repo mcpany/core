@@ -18,6 +18,19 @@ import (
 	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 )
 
+type httpPool struct {
+	pool.Pool[*client.HTTPClientWrapper]
+	transport *http.Transport
+}
+
+func (p *httpPool) Close() error {
+	if err := p.Pool.Close(); err != nil {
+		return err
+	}
+	p.transport.CloseIdleConnections()
+	return nil
+}
+
 // NewHTTPPool creates a new connection pool for HTTP clients. It is defined as
 // a variable to allow for easy mocking in tests.
 //
@@ -54,15 +67,17 @@ var NewHTTPPool = func(
 		tlsConfig.RootCAs = caCertPool
 	}
 
+	baseTransport := &http.Transport{
+		TLSClientConfig: tlsConfig,
+		DialContext: (&net.Dialer{
+			Timeout: 30 * time.Second,
+		}).DialContext,
+		MaxIdleConns:        maxSize,
+		MaxIdleConnsPerHost: maxSize,
+	}
+
 	sharedClient := &http.Client{
-		Transport: otelhttp.NewTransport(&http.Transport{
-			TLSClientConfig: tlsConfig,
-			DialContext: (&net.Dialer{
-				Timeout: 30 * time.Second,
-			}).DialContext,
-			MaxIdleConns:        maxSize,
-			MaxIdleConnsPerHost: maxSize,
-		}),
+		Transport: otelhttp.NewTransport(baseTransport),
 	}
 
 	factory := func(_ context.Context) (*client.HTTPClientWrapper, error) {
@@ -71,5 +86,13 @@ var NewHTTPPool = func(
 			config,
 		), nil
 	}
-	return pool.New(factory, minSize, maxSize, idleTimeout, false)
+	basePool, err := pool.New(factory, minSize, maxSize, idleTimeout, false)
+	if err != nil {
+		return nil, err
+	}
+
+	return &httpPool{
+		Pool:      basePool,
+		transport: baseTransport,
+	}, nil
 }
