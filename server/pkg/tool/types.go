@@ -1974,7 +1974,7 @@ func checkForArgumentInjection(val string) error {
 }
 
 func isShellCommand(cmd string) bool {
-	shells := []string{"sh", "bash", "zsh", "dash", "ash", "ksh", "csh", "tcsh"}
+	shells := []string{"sh", "bash", "zsh", "dash", "ash", "ksh", "csh", "tcsh", "fish", "pwsh", "powershell", "powershell.exe", "pwsh.exe", "cmd", "cmd.exe"}
 	base := filepath.Base(cmd)
 	for _, shell := range shells {
 		if base == shell {
