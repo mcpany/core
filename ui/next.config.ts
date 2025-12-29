@@ -49,6 +49,15 @@ const nextConfig: NextConfig = {
     //   },
     // },
   },
+  async redirects() {
+    return [
+      {
+        source: '/topology',
+        destination: '/network',
+        permanent: true,
+      },
+    ];
+  },
 };
 
 export default nextConfig;
