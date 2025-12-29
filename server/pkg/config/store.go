@@ -4,11 +4,9 @@
 package config
 
 import (
-	"context"
 	"encoding/json"
 	"fmt"
 	"io"
-	"net"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -18,6 +16,9 @@ import (
 	"time"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
+	"sync"
+
+	"github.com/mcpany/core/pkg/util"
 	"github.com/spf13/afero"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/encoding/prototext"
@@ -297,38 +298,29 @@ func (s *FileStore) Load() (*configv1.McpAnyServerConfig, error) {
 	return mergedConfig, nil
 }
 
-var httpClient = &http.Client{
-	Timeout: 5 * time.Second,
-	Transport: &http.Transport{
-		DialContext: func(ctx context.Context, network, addr string) (net.Conn, error) {
-			host, port, err := net.SplitHostPort(addr)
-			if err != nil {
-				return nil, err
-			}
+// httpClient is a shared client for fetching configuration from URLs.
+// It is initialized lazily or used directly if no specific SSRF protection is needed.
+// However, for config loading, we MUST enforce SSRF protection.
+// We use util.NewSafeHTTPClient() which respects MCPANY_ALLOW_LOOPBACK_RESOURCES and
+// MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES environment variables.
+var (
+	httpClient     *http.Client
+	httpClientOnce sync.Once
+)
 
-			ips, err := net.LookupIP(host)
-			if err != nil {
-				return nil, err
-			}
-
-			var dialAddr string
-			for _, ip := range ips {
-				// Use the first valid IP address for the connection.
-				if dialAddr == "" {
-					dialAddr = net.JoinHostPort(ip.String(), port)
-				}
-			}
-
-			if dialAddr == "" {
-				return nil, fmt.Errorf("no valid IP address found for host: %s", host)
-			}
-
-			return (&net.Dialer{}).DialContext(ctx, network, dialAddr)
-		},
-	},
-	CheckRedirect: func(_ *http.Request, _ []*http.Request) error {
-		return http.ErrUseLastResponse
-	},
+func getHTTPClient() *http.Client {
+	httpClientOnce.Do(func() {
+		// Use SafeHTTPClient to prevent SSRF
+		client := util.NewSafeHTTPClient()
+		// Set a shorter timeout for config loading
+		client.Timeout = 5 * time.Second
+		// Disable redirects for security
+		client.CheckRedirect = func(_ *http.Request, _ []*http.Request) error {
+			return http.ErrUseLastResponse
+		}
+		httpClient = client
+	})
+	return httpClient
 }
 
 func readURL(url string) ([]byte, error) {
@@ -337,7 +329,7 @@ func readURL(url string) ([]byte, error) {
 		return nil, fmt.Errorf("failed to create request for url %s: %w", url, err)
 	}
 
-	resp, err := httpClient.Do(req)
+	resp, err := getHTTPClient().Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get config from url %s: %w", url, err)
 	}
