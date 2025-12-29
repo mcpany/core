@@ -651,8 +651,10 @@ func (t *HTTPTool) prepareInputsAndURL(ctx context.Context, req *ExecutionReques
 
 	// Reconstruct URL string manually to avoid re-encoding
 	var buf strings.Builder
-	buf.WriteString(t.cachedURL.Scheme)
-	buf.WriteString("://")
+	if t.cachedURL.Scheme != "" {
+		buf.WriteString(t.cachedURL.Scheme)
+		buf.WriteString("://")
+	}
 	if t.cachedURL.User != nil {
 		buf.WriteString(t.cachedURL.User.String())
 		buf.WriteString("@")
@@ -1828,12 +1830,24 @@ type threadSafeBuffer struct {
 	mu sync.Mutex
 }
 
+// Write writes bytes to the buffer in a thread-safe manner.
+//
+// Parameters:
+//   - p: The slice of bytes to write.
+//
+// Returns:
+//   - n: The number of bytes written.
+//   - err: An error if one occurred.
 func (tsb *threadSafeBuffer) Write(p []byte) (n int, err error) {
 	tsb.mu.Lock()
 	defer tsb.mu.Unlock()
 	return tsb.b.Write(p)
 }
 
+// String returns the contents of the buffer as a string in a thread-safe manner.
+//
+// Returns:
+//   - string: The contents of the buffer.
 func (tsb *threadSafeBuffer) String() string {
 	tsb.mu.Lock()
 	defer tsb.mu.Unlock()
@@ -2005,8 +2019,8 @@ func checkForShellInjection(val string, template string, placeholder string) err
 	}
 
 	// Unquoted (or unknown quoting): strict check
-	// Block common shell metacharacters
-	dangerousChars := []string{";", "|", "&", "$", "`", "(", ")", "{", "}", "<", ">", "!", "\n"}
+	// Block common shell metacharacters and globbing/expansion characters
+	dangerousChars := []string{";", "|", "&", "$", "`", "(", ")", "{", "}", "<", ">", "!", "\n", "*", "?", "[", "]", "~", "#"}
 	for _, char := range dangerousChars {
 		if strings.Contains(val, char) {
 			return fmt.Errorf("shell injection detected: value contains dangerous character %q", char)

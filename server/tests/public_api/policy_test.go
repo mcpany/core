@@ -17,34 +17,28 @@ import (
 )
 
 func TestCallPolicy_Enforcement(t *testing.T) {
-	// We use the "chrome" config structure (command_line) but simple echo command.
-	// We deny "echo_deny" if we can map it.
-	// Alternatively, we use generic tool_name_regex on the ServiceName.ToolName
+	// We use the "chrome" config structure (command_line) but use @modelcontextprotocol/server-filesystem
+	// This ensures we have a real MCP server that supports stdio.
 
-	// Since we might not be able to easily map multiple tools in command_line without knowing ToolDefinition,
-	// We can use a simpler approach:
-	// Create a service "policy-service" with a basic command.
-	// And a policy that defines a regex that matches the tool name.
-	// The generated tool name is usually "serviceId" or "serviceId.toolName".
-	// For command_line without manual tools, it might default to one tool named after service or "default"?
-	// We'll rely on ListTools to find the name, and then call it, ensuring it is blocked or allowed based on policy.
+	// Path to the filesystem server script
+	fsServerPath, _ := filepath.Abs("../integration/upstream/node_modules/@modelcontextprotocol/server-filesystem/dist/index.js")
 
 	// Case 1: Deny All
-	// Case 1: Deny All
-	mockServerPath, _ := filepath.Abs("../../../build/bin/mock_server")
+	// We configure a policy that DENIES everything by default.
+	// We use the filesystem server, so it should expose tools like list_directory.
 	configDenyAll := fmt.Sprintf(`
 upstream_services:
   - id: "deny-service"
     name: "deny-service"
     mcp_service:
       stdio_connection:
-        command: "%s"
-        args: []
+        command: "node"
+        args: ["%s", "."]
     call_policies:
       - default_action: DENY
         rules: []
     auto_discover_tool: true
-`, mockServerPath)
+`, fsServerPath)
 
 	t.Run("DenyAll", func(t *testing.T) {
 		serverInfo := integration.StartMCPANYServerWithConfig(t, "PolicyDenyAll", configDenyAll)
@@ -86,22 +80,23 @@ upstream_services:
 		assert.Contains(t, err.Error(), "denied by default policy")
 	})
 
-	// Use @modelcontextprotocol/server-filesystem via npx (requires Node.js and internet)
+	// Case 2: Allow specific, deny specific
+	// Default ALLOW, but DENY "read_file"
 	configFs := fmt.Sprintf(`
 upstream_services:
   - id: "fs-service"
     name: "fs-service"
     mcp_service:
       stdio_connection:
-        command: "%s"
-        args: []
+        command: "node"
+        args: ["%s", "."]
     call_policies:
       - default_action: ALLOW
         rules:
           - action: DENY
             name_regex: "read_file"
     auto_discover_tool: true
-`, mockServerPath)
+`, fsServerPath)
 	t.Run("Filesystem_Policy", func(t *testing.T) {
 		serverInfo := integration.StartMCPANYServerWithConfig(t, "PolicyTestFs", configFs)
 		defer serverInfo.CleanupFunc()

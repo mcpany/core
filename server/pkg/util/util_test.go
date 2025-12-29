@@ -4,6 +4,7 @@
 package util //nolint:revive,nolintlint // Package name 'util' is common in this codebase
 
 import (
+	"encoding/json"
 	"regexp"
 	"strings"
 	"testing"
@@ -98,6 +99,48 @@ func TestSanitizeID(t *testing.T) {
 					t.Errorf("Expected %q, but got %q", tc.expected, actual)
 				}
 			}
+		})
+	}
+}
+
+type StringerStruct struct {
+	val string
+}
+
+func (s StringerStruct) String() string {
+	return s.val
+}
+
+func TestToString(t *testing.T) {
+	tests := []struct {
+		name     string
+		input    interface{}
+		expected string
+	}{
+		{"string", "hello", "hello"},
+		{"json.Number", json.Number("123.45"), "123.45"},
+		{"bool true", true, "true"},
+		{"bool false", false, "false"},
+		{"int", 123, "123"},
+		{"int8", int8(123), "123"},
+		{"int16", int16(123), "123"},
+		{"int32", int32(123), "123"},
+		{"int64", int64(123), "123"},
+		{"uint", uint(123), "123"},
+		{"uint8", uint8(123), "123"},
+		{"uint16", uint16(123), "123"},
+		{"uint32", uint32(123), "123"},
+		{"uint64", uint64(123), "123"},
+		{"float32", float32(123.456), "123.456"},
+		{"float64", float64(123.456), "123.456"},
+		{"fmt.Stringer", StringerStruct{"stringer"}, "stringer"},
+		{"default (struct)", struct{ A int }{A: 1}, "{1}"},
+		{"default (nil)", nil, "<nil>"},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			assert.Equal(t, tt.expected, ToString(tt.input))
 		})
 	}
 }
