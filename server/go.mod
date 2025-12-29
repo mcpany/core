@@ -17,6 +17,7 @@ require (
 	github.com/antchfx/xmlquery v1.4.4
 	github.com/antchfx/xpath v1.3.5
 	github.com/armon/go-metrics v0.4.1
+	github.com/aws/aws-sdk-go v1.55.8
 	github.com/aws/aws-sdk-go-v2 v1.41.0
 	github.com/aws/aws-sdk-go-v2/config v1.32.6
 	github.com/aws/aws-sdk-go-v2/service/secretsmanager v1.41.0
@@ -27,6 +28,7 @@ require (
 	github.com/docker/docker v28.5.0+incompatible
 	github.com/eko/gocache/lib/v4 v4.2.0
 	github.com/eko/gocache/store/go_cache/v4 v4.2.0
+	github.com/fclairamb/afero-s3 v0.3.1
 	github.com/fsnotify/fsnotify v1.9.0
 	github.com/getkin/kin-openapi v0.131.0
 	github.com/go-jose/go-jose/v4 v4.1.1
@@ -138,6 +140,7 @@ require (
 	github.com/hashicorp/hcl v1.0.1-vault-7 // indirect
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
 	github.com/itchyny/timefmt-go v0.1.7 // indirect
+	github.com/jmespath/go-jmespath v0.4.0 // indirect
 	github.com/josharian/intern v1.0.0 // indirect
 	github.com/klauspost/compress v1.18.0 // indirect
 	github.com/magiconair/properties v1.8.7 // indirect
