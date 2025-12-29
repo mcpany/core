@@ -651,8 +651,10 @@ func (t *HTTPTool) prepareInputsAndURL(ctx context.Context, req *ExecutionReques
 
 	// Reconstruct URL string manually to avoid re-encoding
 	var buf strings.Builder
-	buf.WriteString(t.cachedURL.Scheme)
-	buf.WriteString("://")
+	if t.cachedURL.Scheme != "" {
+		buf.WriteString(t.cachedURL.Scheme)
+		buf.WriteString("://")
+	}
 	if t.cachedURL.User != nil {
 		buf.WriteString(t.cachedURL.User.String())
 		buf.WriteString("@")
