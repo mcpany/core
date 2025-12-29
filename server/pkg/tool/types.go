@@ -1317,6 +1317,12 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 					if err := checkForArgumentInjection(val); err != nil {
 						return nil, fmt.Errorf("parameter %q: %w", k, err)
 					}
+					// If running a shell, validate that inputs are safe for shell execution
+					if isShellCommand(t.service.GetCommand()) {
+						if err := checkForShellInjection(val, arg, placeholder); err != nil {
+							return nil, fmt.Errorf("parameter %q: %w", k, err)
+						}
+					}
 					args[i] = strings.ReplaceAll(arg, placeholder, val)
 				}
 			}
@@ -1349,6 +1355,12 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 						}
 						if err := checkForArgumentInjection(argStr); err != nil {
 							return nil, fmt.Errorf("args parameter: %w", err)
+						}
+						// If running a shell, args passed dynamically should also be checked
+						if isShellCommand(t.service.GetCommand()) {
+							if err := checkForShellInjection(argStr, "", ""); err != nil {
+								return nil, fmt.Errorf("args parameter: %w", err)
+							}
 						}
 						args = append(args, argStr)
 					} else {
@@ -1457,7 +1469,8 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 		return nil, fmt.Errorf("failed to execute command: %w", err)
 	}
 
-	var stdoutBuf, stderrBuf, combinedBuf bytes.Buffer
+	var stdoutBuf, stderrBuf bytes.Buffer
+	var combinedBuf threadSafeBuffer
 	var wg sync.WaitGroup
 	wg.Add(2)
 
@@ -1731,7 +1744,8 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 		return nil, fmt.Errorf("failed to execute command: %w", err)
 	}
 
-	var stdoutBuf, stderrBuf, combinedBuf bytes.Buffer
+	var stdoutBuf, stderrBuf bytes.Buffer
+	var combinedBuf threadSafeBuffer
 	var wg sync.WaitGroup
 	wg.Add(2)
 
@@ -1771,6 +1785,23 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 	}
 
 	return result, nil
+}
+
+type threadSafeBuffer struct {
+	b  bytes.Buffer
+	mu sync.Mutex
+}
+
+func (tsb *threadSafeBuffer) Write(p []byte) (n int, err error) {
+	tsb.mu.Lock()
+	defer tsb.mu.Unlock()
+	return tsb.b.Write(p)
+}
+
+func (tsb *threadSafeBuffer) String() string {
+	tsb.mu.Lock()
+	defer tsb.mu.Unlock()
+	return tsb.b.String()
 }
 
 // prettyPrint formats the input based on content type for better readability.
@@ -1888,6 +1919,62 @@ func checkForArgumentInjection(val string) error {
 			return nil
 		}
 		return fmt.Errorf("argument injection detected: value starts with '-'")
+	}
+	return nil
+}
+
+func isShellCommand(cmd string) bool {
+	shells := []string{"sh", "bash", "zsh", "dash", "ash", "ksh", "csh", "tcsh"}
+	base := filepath.Base(cmd)
+	for _, shell := range shells {
+		if base == shell {
+			return true
+		}
+	}
+	return false
+}
+
+func checkForShellInjection(val string, template string, placeholder string) error {
+	// If the template quotes the placeholder, we can allow more characters
+	// assuming the user knows what they are doing. We still need to prevent escaping the quotes.
+
+	isSingleQuoted := false
+	isDoubleQuoted := false
+
+	if template != "" && placeholder != "" {
+		if strings.Contains(template, "'"+placeholder+"'") {
+			isSingleQuoted = true
+		} else if strings.Contains(template, "\""+placeholder+"\"") {
+			isDoubleQuoted = true
+		}
+	}
+
+	if isSingleQuoted {
+		// In single quotes, the only dangerous character is single quote itself
+		if strings.Contains(val, "'") {
+			return fmt.Errorf("shell injection detected: value contains single quote which breaks out of single-quoted argument")
+		}
+		return nil
+	}
+
+	if isDoubleQuoted {
+		// In double quotes, dangerous characters are double quote, $, and backtick
+		dangerousChars := []string{"\"", "$", "`"}
+		for _, char := range dangerousChars {
+			if strings.Contains(val, char) {
+				return fmt.Errorf("shell injection detected: value contains dangerous character %q inside double-quoted argument", char)
+			}
+		}
+		return nil
+	}
+
+	// Unquoted (or unknown quoting): strict check
+	// Block common shell metacharacters
+	dangerousChars := []string{";", "|", "&", "$", "`", "(", ")", "{", "}", "<", ">", "!", "\n"}
+	for _, char := range dangerousChars {
+		if strings.Contains(val, char) {
+			return fmt.Errorf("shell injection detected: value contains dangerous character %q", char)
+		}
 	}
 	return nil
 }
