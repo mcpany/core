@@ -282,9 +282,18 @@ func (m *CachingMiddleware) getCacheConfig(t tool.Tool) *configv1.CacheConfig {
 }
 
 func (m *CachingMiddleware) getCacheKey(req *tool.ExecutionRequest) string {
-	// Normalize ToolInputs if they are JSON
 	var normalizedInputs []byte
-	if len(req.ToolInputs) > 0 {
+
+	// Optimization: Use Arguments map if available to avoid unnecessary unmarshal/marshal cycle.
+	// json.Marshal sorts map keys, so it produces a canonical representation for caching.
+	if req.Arguments != nil {
+		if marshaled, err := json.Marshal(req.Arguments); err == nil {
+			normalizedInputs = marshaled
+		}
+	}
+
+	// Normalize ToolInputs if they are JSON and we couldn't use Arguments
+	if normalizedInputs == nil && len(req.ToolInputs) > 0 {
 		// Optimization: Check if it looks like a JSON object or array before unmarshaling
 		// Skip leading whitespace (simplified check)
 		var firstChar byte
