@@ -85,6 +85,73 @@ This document outlines the current status and future plans for MCP Any.
 **Why:** Provide idiomatic wrappers for connecting to MCP Any, simplifying integration for developers building custom AI agents.
 **Status:** Planned
 
+## Critical User Journeys (Upcoming)
+
+### Enterprise & Operations
+
+1.  **Kubernetes Operator**: Automate deployment, scaling, and lifecycle management of MCP Any instances in K8s.
+2.  **Terraform Provider**: Manage MCP resources (Sources, Tools, Policies) via "Configuration as Code".
+3.  **Helm Chart Official Support**: Provide a production-ready Helm chart with auto-scaling and monitoring presets.
+4.  **Multi-Region Federation**: Link multiple MCP Any instances across regions for low-latency tool access.
+5.  **Active-Active High Availability**: Support leaderless clustering for zero-downtime upgrades and failure tolerance.
+6.  **Disaster Recovery Playbook**: Automated backup/restore of state and configuration to S3/GCS.
+7.  **Dynamic Secret Rotation**: Integration with HashiCorp Vault / AWS Secrets Manager for zero-touch secret handling.
+8.  **CI/CD Config Validator CLI**: A standalone binary to validate `config.yaml` in pipelines before deployment.
+9.  **Automated Dependency Updates**: "Dependabot" for MCP Tools - auto-update tool definitions when upstreams change.
+10. **Service Mesh Sidecar Mode**: Run MCP Any as a lightweight sidecar for application pods.
+
+### Security & Compliance
+
+11. **Data Loss Prevention (DLP)**: Middleware to redact PII (emails, SSNs) from logs and tool inputs/outputs.
+12. **Downstream mTLS**: Enforce mutual TLS for agents collecting to MCP Any (Zero Trust).
+13. **SSO with SAML/OIDC**: Enterprise identity integration for the Admin UI and RBAC.
+14. **Just-In-Time (JIT) Access**: Temporary elevation of privileges for specific tools (e.g., "Grant Write access for 1 hour").
+15. **Audit Log Export**: Push audit logs to Splunk, Datadog to Cloud Logging in real-time.
+16. **Fine-Grained ABAC**: Attribute-Based Access Control (e.g. "Only allow production tools during business hours").
+17. **Tool Signature Verification**: Enforce that loaded WASM/Binary tools are signed by a trusted key.
+18. **Vulnerability Scanning Integration**: Auto-scan registered tool container images for CVEs.
+19. **Policy dry-run mode**: Test new security policies on traffic without blocking (shadow mode).
+20. **Compliance Reports**: Generate PDF reports of user activity for SOC2/ISO audits.
+
+### Observability & Insights
+
+21. **Custom Dashboards**: Drag-and-drop UI to create dashboards from MCP metrics.
+22. **Cost Attribution**: Track token usage and "cost" per user/team/project.
+23. **Alerting Rules Integration**: Built-in Prometheus alerting rules for high error rates or latency.
+24. **Request/Response Replay**: "TiVo" for tool interactions - replay past requests for debugging.
+25. **Distributed Tracing Sampling Control**: Dynamic sampling rates based on tenant or error-rate.
+26. **SLO Management**: Define and track Service Level Objectives (availability, latency) within the UI.
+27. **Semantic Search over Logs**: Use embeddings to search audit logs (e.g., "Show me all database drops").
+28. **Tool Usage Analytics**: Heatmaps of most used tools and arguments.
+29. **Anomaly Detection**: ML-based detection of unusual tool usage patterns.
+30. **Webhook Notifications**: Slack/PagerDuty alerts for critical system events.
+
+### Developer Experience & Core
+
+31. **WASM Plugin System**: Safe, sandboxed custom transformers and checkers.
+32. **Cloud Storage Provider (S3/GCS)**: Treat buckets as filesystems for agents.
+33. **Interactive Playground 2.0**: Enhanced UI to test tools with auto-generated forms and mock data.
+34. **Client SDKs (Python/TS)**: Idiomatic client libraries for agents.
+35. **Local Emulator**: CLI command to run a lightweight in-memory MCP server for dev.
+36. **Language Server Protocol (LSP)**: IDE support for `config.yaml` editing (auto-complete tools).
+37. **Hot Reload**: Reload configuration without restarting the server process.
+38. **Type-Safe Tool Chaining**: Define "Workflows" where output of Tool A feeds Tool B (Server-side).
+39. **Mock Provider**: A built-in provider that returns static responses for testing agents.
+40. **Doc Generator**: Generate static HTML documentation site from registered tools.
+
+### Connectivity & Integration
+
+41. **Database Connectors (SQL)**: Native support for PostgreSQL/MySQL as "Sources" (RAG included).
+42. **Salesforce Integration**: Official connector for CRM data.
+43. **Jira/Confluence Connector**: Read/Write tickets and docs.
+44. **Slack/Discord Bot Gateway**: Expose tools directly as chat commands.
+45. **Email Server Gateway**: Trigger tools via inbound email (SMTP/IMAP).
+46. **Browser Automation Provider**: Headless browser tool for "Read Webpage" capabilities.
+47. **GraphQL Subscriptions**: Support real-time data push from GraphQL upstreams.
+48. **Binary Protocol Support**: Protobuf over WebSocket for high-performance low-bandwidth agents.
+49. **Edge Computing Support**: Optimized build for Cloudflare Workers / AWS Lambda.
+50. **Air-Gapped Mode**: Full offline operation with bundled dependencies and local docs.
+
 ## Deprecated / Obsolete
 
 - (None currently identified)
