@@ -93,14 +93,20 @@ export function useNetworkTopology() {
                 newNodes.push(flowNode);
 
                 if (parentId) {
+                    const isError = tNode.status === 'NODE_STATUS_ERROR';
+                    const edgeColor = isError ? '#ef4444' : '#b1b1b7';
+                    // Only show QPS on Core -> Service edges to reduce noise
+                    const showLabel = tNode.type === 'NODE_TYPE_SERVICE';
+
                     newEdges.push({
                         id: `e-${parentId}-${tNode.id}`,
                         source: parentId,
                         target: tNode.id,
                         animated: tNode.status === 'NODE_STATUS_ACTIVE',
-                        style: { stroke: '#b1b1b7' },
-                        markerEnd: { type: MarkerType.ArrowClosed, color: '#b1b1b7' },
-                        label: tNode.metrics ? `${tNode.metrics.qps?.toFixed(1) || 0} QPS` : undefined
+                        style: { stroke: edgeColor },
+                        markerEnd: { type: MarkerType.ArrowClosed, color: edgeColor },
+                        label: showLabel && tNode.metrics ? `${tNode.metrics.qps?.toFixed(1) || 0} QPS` : undefined,
+                        labelStyle: { fill: edgeColor, fontWeight: 700 }
                     });
                 }
 
