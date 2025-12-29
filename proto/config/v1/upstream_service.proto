@@ -370,6 +370,7 @@ message FilesystemUpstreamService {
     ZipFs zip = 13;
     GcsFs gcs = 14;
     SftpFs sftp = 15;
+    S3Fs s3 = 16;
   }
 }
 
@@ -383,6 +384,14 @@ message ZipFs {
 }
 message GcsFs {
   string bucket = 1;
+}
+message S3Fs {
+  string bucket = 1;
+  string region = 2;
+  string access_key_id = 3;
+  string secret_access_key = 4;
+  string session_token = 5;
+  string endpoint = 6;
 }
 message SftpFs {
   string address = 1;
