@@ -121,6 +121,7 @@ func (m *RateLimitMiddleware) Execute(ctx context.Context, req *tool.ExecutionRe
 			toolLimiter, toolErr = m.getLimiter(ctx, serviceID, "tool:"+req.ToolName, toolConfig)
 			if toolErr == nil {
 				appliedLimit = true
+				_ = appliedLimit
 				if err := m.checkLimit(ctx, toolLimiter, toolConfig, req); err != nil {
 					m.recordMetrics(serviceID, "tool", "blocked")
 					return nil, fmt.Errorf("rate limit exceeded for tool %s", req.ToolName)
