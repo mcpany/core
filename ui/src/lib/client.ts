@@ -127,17 +127,29 @@ export const apiClient = {
         // Mock delay
         await new Promise(resolve => setTimeout(resolve, 500));
         const stored = localStorage.getItem('mcp-secrets');
-        return stored ? JSON.parse(stored) : [];
+        const secrets: SecretDefinition[] = stored ? JSON.parse(stored) : [];
+        // Decrypt values for display/use
+        return secrets.map(s => ({
+            ...s,
+            value: MockVault.decrypt(s.value)
+        }));
     },
     saveSecret: async (secret: SecretDefinition) => {
         await new Promise(resolve => setTimeout(resolve, 500));
         const stored = localStorage.getItem('mcp-secrets');
         const secrets: SecretDefinition[] = stored ? JSON.parse(stored) : [];
+
+        // Encrypt value before storage
+        const safeSecret = {
+            ...secret,
+            value: MockVault.encrypt(secret.value)
+        };
+
         const index = secrets.findIndex(s => s.id === secret.id);
         if (index >= 0) {
-            secrets[index] = secret;
+            secrets[index] = safeSecret;
         } else {
-            secrets.push(secret);
+            secrets.push(safeSecret);
         }
         localStorage.setItem('mcp-secrets', JSON.stringify(secrets));
         return secret;
@@ -149,6 +161,23 @@ export const apiClient = {
         const secrets: SecretDefinition[] = JSON.parse(stored);
         const filtered = secrets.filter(s => s.id !== id);
         localStorage.setItem('mcp-secrets', JSON.stringify(filtered));
+    }
+};
+
+// Simple mock vault to simulate encryption at rest
+// In production, this would happen on the backend
+const MockVault = {
+    encrypt: (text: string) => {
+        // Simple base64 encoding to obfuscate for demo purposes
+        // TODO: Replace with real encryption
+        return btoa(text);
+    },
+    decrypt: (text: string) => {
+        try {
+            return atob(text);
+        } catch {
+            return text;
+        }
     }
 };
 
