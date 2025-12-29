@@ -4,6 +4,7 @@
 package util //nolint:revive,nolintlint // Package name 'util' is common in this codebase
 
 import (
+	"encoding/json"
 	"regexp"
 	"strings"
 	"testing"
@@ -117,7 +118,7 @@ func TestToString(t *testing.T) {
 		expected string
 	}{
 		{"string", "hello", "hello"},
-		// {"json.Number", json.Number("123.45"), "123.45"}, // Need encoding/json imported if enabling this
+		{"json.Number", json.Number("123.45"), "123.45"},
 		{"bool true", true, "true"},
 		{"bool false", false, "false"},
 		{"int", 123, "123"},

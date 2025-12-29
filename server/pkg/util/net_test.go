@@ -62,6 +62,16 @@ func TestNewSafeHTTPClient(t *testing.T) {
 		_, err := transport.DialContext(ctx, "tcp", "127.0.0.1:80")
 		require.Error(t, err)
 		assert.Contains(t, err.Error(), "ssrf attempt blocked")
+
+		// 0.0.0.0 is unspecified/loopback-ish
+		_, err = transport.DialContext(ctx, "tcp", "0.0.0.0:80")
+		require.Error(t, err)
+		assert.Contains(t, err.Error(), "ssrf attempt blocked")
+
+		// [::] is unspecified/loopback-ish
+		_, err = transport.DialContext(ctx, "tcp", "[::]:80")
+		require.Error(t, err)
+		assert.Contains(t, err.Error(), "ssrf attempt blocked")
 	})
 
 	t.Run("Allow loopback", func(t *testing.T) {
