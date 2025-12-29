@@ -458,11 +458,11 @@ func TestReplaceURLQuery(t *testing.T) {
 			expected: "q=a%26b", // QueryEscape encodes &
 		},
 		{
-			name:     "no escape param",
-			urlQuery: "q={{query}}",
-			params:   map[string]interface{}{"query": "a&b"},
+			name:           "no escape param",
+			urlQuery:       "q={{query}}",
+			params:         map[string]interface{}{"query": "a&b"},
 			noEscapeParams: map[string]bool{"query": true},
-			expected: "q=a&b",
+			expected:       "q=a&b",
 		},
 	}
 

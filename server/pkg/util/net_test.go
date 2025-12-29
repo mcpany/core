@@ -94,7 +94,7 @@ func TestNewSafeHTTPClient(t *testing.T) {
 		}
 	})
 
-    t.Run("Allow private", func(t *testing.T) {
+	t.Run("Allow private", func(t *testing.T) {
 		os.Unsetenv("MCPANY_ALLOW_LOOPBACK_RESOURCES")
 		os.Setenv("MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES", "true")
 		client := util.NewSafeHTTPClient()
