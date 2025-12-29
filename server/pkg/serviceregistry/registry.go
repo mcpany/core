@@ -124,8 +124,8 @@ func (r *ServiceRegistry) RegisterService(ctx context.Context, serviceConfig *co
 	_, discoveredTools, discoveredResources, err := u.Register(ctx, serviceConfig, r.toolManager, r.promptManager, r.resourceManager, false)
 	if err != nil {
 		r.serviceErrors[serviceID] = err.Error()
-		// Clean up the service from registry so it's not considered "active"
-		delete(r.serviceConfigs, serviceID)
+		// We keep the service in serviceConfigs so that we know it exists (preventing config drift),
+		// but we remove it from upstreams so that we don't try to use it.
 		if u, ok := r.upstreams[serviceID]; ok {
 			// We try to shutdown, though it might be partially initialized
 			_ = u.Shutdown(ctx)
