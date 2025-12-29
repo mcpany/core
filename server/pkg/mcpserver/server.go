@@ -567,20 +567,13 @@ func (s *Server) CallTool(ctx context.Context, req *tool.ExecutionRequest) (any,
 
 			// Heuristic: If content is a string, wrap it in a TextContent
 			if content, ok := resultMap["content"].(string); ok {
-				isError := callToolRes.IsError
-				// If IsError is false, it might be because Unmarshal failed (defaulting to false).
-				// Check the raw map to see if it was explicitly set.
-				if val, ok := resultMap["isError"].(bool); ok {
-					isError = val
-				}
-
 				return &mcp.CallToolResult{
 					Content: []mcp.Content{
 						&mcp.TextContent{
 							Text: content,
 						},
 					},
-					IsError: isError,
+					IsError: callToolRes.IsError,
 				}, nil
 			}
 		}
