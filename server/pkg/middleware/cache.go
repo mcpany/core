@@ -314,9 +314,15 @@ func (m *CachingMiddleware) getCacheKey(req *tool.ExecutionRequest) string {
 	// Optimization: Hash the normalized inputs to keep the cache key short and fixed length.
 	// This avoids using potentially large JSON strings as map keys.
 	hash := sha256.Sum256(normalizedInputs)
-	hashStr := hex.EncodeToString(hash[:])
 
-	return fmt.Sprintf("%s:%s", req.ToolName, hashStr)
+	// Pre-allocate buffer: len(toolName) + 1 (separator) + 64 (hex hash)
+	// This reduces allocations compared to fmt.Sprintf and hex.EncodeToString
+	buf := make([]byte, len(req.ToolName)+1+hex.EncodedLen(len(hash)))
+	n := copy(buf, req.ToolName)
+	buf[n] = ':'
+	hex.Encode(buf[n+1:], hash[:])
+
+	return string(buf)
 }
 
 // Clear clears the cache.
