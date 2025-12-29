@@ -12,19 +12,21 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
+import { SecretsManager } from "@/components/settings/secrets-manager";
 
 export default function SettingsPage() {
   const [activeProfile, setActiveProfile] = useState("development");
 
   return (
-    <div className="flex-1 space-y-4 p-8 pt-6">
+    <div className="flex-1 space-y-4 p-8 pt-6 h-[calc(100vh-4rem)] flex flex-col">
       <div className="flex items-center justify-between">
         <h2 className="text-3xl font-bold tracking-tight">Settings</h2>
       </div>
 
-      <Tabs defaultValue="profiles" className="space-y-4">
+      <Tabs defaultValue="profiles" className="space-y-4 flex-1 flex flex-col">
         <TabsList>
           <TabsTrigger value="profiles">Profiles</TabsTrigger>
+          <TabsTrigger value="secrets">Secrets & Keys</TabsTrigger>
           <TabsTrigger value="general">General</TabsTrigger>
         </TabsList>
         <TabsContent value="profiles" className="space-y-4">
@@ -70,6 +72,9 @@ ALLOWED_HOSTS=*`} />
                     </CardContent>
                 </Card>
             </div>
+        </TabsContent>
+        <TabsContent value="secrets" className="flex-1 h-full">
+            <SecretsManager />
         </TabsContent>
         <TabsContent value="general">
              <Card>
