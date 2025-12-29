@@ -86,7 +86,10 @@ export function useNetworkTopology() {
                         metrics: tNode.metrics
                     },
                     position: { x: 0, y: 0 }, // Set by layout
-                    style: getNodeStyle(tNode),
+                    // Layout styles remain in style
+                    style: getNodeLayout(tNode),
+                    // Colors and visuals move to className for dark mode support
+                    className: getNodeClassName(tNode),
                     type: 'default', // Custom types in future
                 };
 
@@ -106,20 +109,7 @@ export function useNetworkTopology() {
 
                 // Process Children with Truncation
                 if (tNode.children && tNode.children.length > 0) {
-                     // Collapsing logic: Show first 3, then "Show More"
-                     // We need state to track expanded nodes?
-                     // For now, let's hardcode active/visible for all or implement truncation.
-                     // The user asked for "Collapsing levels with many elements, showing only the first three".
-                     // This implies "Expanded" state.
-                     // Let's show all for now to verify layout, then add suppression?
-                     // Or just implement the "Show More" node static first.
-
-                     // Optimization: Just show everything for MVP verification of Protos,
-                     // adding "Show More" logic requires handling click events and state.
-                     // I will implement "Show 3" logic for Services/Tools if count > 3.
-
                      const limit = (tNode.type === 'NODE_TYPE_CORE' || tNode.type === 'NODE_TYPE_SERVICE') ? 100 : 100; // Disable limit for now to see all
-
                      tNode.children.slice(0, limit).forEach(child => addNode(child, tNode.id));
                 }
             };
@@ -187,8 +177,8 @@ export function useNetworkTopology() {
     };
 }
 
-function getNodeStyle(node: TopologyNode) {
-    const base = {
+function getNodeLayout(node: TopologyNode) {
+    return {
         borderRadius: '8px',
         padding: '10px',
         fontSize: '12px',
@@ -197,26 +187,30 @@ function getNodeStyle(node: TopologyNode) {
         flexDirection: 'column' as const,
         alignItems: 'center',
         justifyContent: 'center',
-        borderWidth: '1px',
-        borderStyle: 'solid',
+        borderWidth: node.type === 'NODE_TYPE_CORE' ? '2px' : '1px',
+        borderStyle: node.type === 'NODE_TYPE_API_CALL' ? 'dashed' : 'solid',
     };
+}
+
+function getNodeClassName(node: TopologyNode): string {
+    const base = "transition-all duration-200 shadow-sm hover:shadow-md";
 
     switch (node.type) {
         case 'NODE_TYPE_CLIENT':
-            return { ...base, background: '#f0fdf4', borderColor: '#22c55e' };
+            return `${base} bg-green-50 border-green-500 text-green-900 dark:bg-green-950/40 dark:border-green-600 dark:text-green-100`;
         case 'NODE_TYPE_CORE':
-            return { ...base, background: '#ffffff', borderColor: '#000000', borderWidth: '2px', fontWeight: 'bold', fontSize: '14px' };
+            return `${base} bg-white border-black text-black font-bold text-sm dark:bg-slate-900 dark:border-white dark:text-white`;
         case 'NODE_TYPE_SERVICE':
-            return { ...base, background: '#eff6ff', borderColor: '#3b82f6' };
+            return `${base} bg-blue-50 border-blue-500 text-blue-900 dark:bg-blue-950/40 dark:border-blue-600 dark:text-blue-100`;
         case 'NODE_TYPE_TOOL':
-            return { ...base, background: '#fdf4ff', borderColor: '#d946ef' };
+            return `${base} bg-fuchsia-50 border-fuchsia-500 text-fuchsia-900 dark:bg-fuchsia-950/40 dark:border-fuchsia-600 dark:text-fuchsia-100`;
         case 'NODE_TYPE_API_CALL':
-            return { ...base, background: '#fafafa', borderColor: '#71717a', borderStyle: 'dashed' };
+            return `${base} bg-zinc-50 border-zinc-500 text-zinc-900 dark:bg-zinc-900/40 dark:border-zinc-400 dark:text-zinc-300`;
         case 'NODE_TYPE_MIDDLEWARE':
-            return { ...base, background: '#fff7ed', borderColor: '#f97316' };
+            return `${base} bg-orange-50 border-orange-500 text-orange-900 dark:bg-orange-950/40 dark:border-orange-600 dark:text-orange-100`;
         case 'NODE_TYPE_WEBHOOK':
-            return { ...base, background: '#fdf2f8', borderColor: '#ec4899' };
+            return `${base} bg-pink-50 border-pink-500 text-pink-900 dark:bg-pink-950/40 dark:border-pink-600 dark:text-pink-100`;
         default:
-            return { ...base, background: '#ffffff', borderColor: '#e5e7eb' };
+            return `${base} bg-white border-gray-300 text-gray-900 dark:bg-gray-900 dark:border-gray-600 dark:text-gray-100`;
     }
 }
