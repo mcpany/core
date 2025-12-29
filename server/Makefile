@@ -412,11 +412,11 @@ e2e-parallel: build build-examples build-e2e-mocks build-e2e-timeserver-docker
 
 e2e-sequential: build build-examples build-e2e-mocks build-e2e-timeserver-docker
 	@echo "Running sequential E2E Go tests locally with a 300s timeout..."
-	@GEMINI_API_KEY=$(GEMINI_API_KEY) MCPANY_DEBUG=true CGO_ENABLED=1 USE_SUDO_FOR_DOCKER=$(NEEDS_SUDO_FOR_DOCKER) $(GO_CMD) test -p 1 -parallel 1 -race -count=1 -timeout 300s -tags=e2e -cover -coverprofile=$(BUILD_DIR)/coverage.e2e-sequential.out ./tests/e2e_sequential/...
+	@GEMINI_API_KEY=$(GEMINI_API_KEY) MCPANY_DEBUG=true CGO_ENABLED=1 USE_SUDO_FOR_DOCKER=$(NEEDS_SUDO_FOR_DOCKER) E2E_DOCKER=true $(GO_CMD) test -p 1 -parallel 1 -race -count=1 -timeout 300s -tags=e2e -cover -coverprofile=$(BUILD_DIR)/coverage.e2e-sequential.out ./tests/e2e_sequential/...
 
 test-fast: build build-examples build-e2e-mocks build-e2e-timeserver-docker
 	@echo "Running fast Go tests locally with a 300s timeout..."
-	@TEST_PKGS=$$(go list ./cmd/... ./pkg/... ./proto/... ./tests/... ./examples/upstream_service_demo/... | grep -v /tests/public_api | grep -v /build | grep -v /tests/e2e | grep -v /tests/e2e_sequential | grep -v "^github.com/mcpany/core$$"); \
+	@TEST_PKGS=$$(go list ./... | grep -v /tests/e2e | grep -v /tests/e2e_sequential | grep -v /tests/integration | grep -v /tests/public_api | grep -v /build | grep -v /vendor); \
 	echo "Testing packages: $$TEST_PKGS"; \
 	if [ -z "$$TEST_PKGS" ]; then echo "No packages to test!"; exit 1; fi; \
 	GEMINI_API_KEY=$(GEMINI_API_KEY) MCPANY_DEBUG=true CGO_ENABLED=1 USE_SUDO_FOR_DOCKER=$(NEEDS_SUDO_FOR_DOCKER) $(GO_CMD) test -race -count=1 -timeout 300s -cover -coverprofile=$(COVERAGE_FILE) $$TEST_PKGS
@@ -459,12 +459,13 @@ build-ui:
 .PHONY: test-ui
 test-ui:
 	@echo "Running UI tests (Playwright) in Docker..."
+	@if [ -n "$(PLAYWRIGHT_ARGS)" ]; then echo "Running with args: $(PLAYWRIGHT_ARGS)"; fi
 	@docker run --rm --ipc=host --network=host \
 		-v $(abspath ../ui):/work/ui \
 		-v $(abspath ../proto):/work/proto \
 		-w /work/ui \
 		mcr.microsoft.com/playwright:v1.57.0-jammy \
-		/bin/bash -c "npm ci && npx playwright test"
+		/bin/bash -c "npm ci && npx playwright test $(PLAYWRIGHT_ARGS)"
 
 
 .PHONY: e2e
