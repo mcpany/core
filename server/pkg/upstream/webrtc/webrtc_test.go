@@ -209,6 +209,14 @@ func TestUpstream(t *testing.T) {
 	assert.IsType(t, &Upstream{}, upstream)
 }
 
+func TestWebrtcUpstream_Shutdown(t *testing.T) {
+	u := NewUpstream(nil)
+	assert.NotNil(t, u)
+
+	err := u.Shutdown(context.Background())
+	assert.NoError(t, err)
+}
+
 func TestUpstream_Register(t *testing.T) {
 	t.Run("successful registration", func(t *testing.T) {
 		toolManager := NewMockToolManager()
