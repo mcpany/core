@@ -11,6 +11,7 @@ module.exports = {
   },
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/src/$1',
+    '^lucide-react$': '<rootDir>/node_modules/lucide-react/dist/cjs/lucide-react.js',
   },
   transformIgnorePatterns: [
     '/node_modules/(?!lucide-react|next-themes)'
