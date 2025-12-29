@@ -5,17 +5,20 @@
 package filesystem
 
 import (
+	"archive/zip"
 	"bufio"
 	"context"
 	"crypto/sha256"
 	"encoding/hex"
 	"fmt"
+	"io"
 	"net/http"
 	"os"
 	"path"
 	"path/filepath"
 	"regexp"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/mcpany/core/pkg/logging"
@@ -34,20 +37,32 @@ import (
 	"github.com/aws/aws-sdk-go/aws/session"
 	s3 "github.com/fclairamb/afero-s3"
 	"github.com/spf13/afero"
+	"github.com/spf13/afero/zipfs"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
 // Upstream implements the upstream.Upstream interface for filesystem services.
-type Upstream struct{}
+type Upstream struct {
+	mu      sync.Mutex
+	closers []io.Closer
+}
 
 // NewUpstream creates a new instance of FilesystemUpstream.
 func NewUpstream() upstream.Upstream {
-	return &Upstream{}
+	return &Upstream{
+		closers: make([]io.Closer, 0),
+	}
 }
 
 // Shutdown implements the upstream.Upstream interface.
 func (u *Upstream) Shutdown(_ context.Context) error {
+	u.mu.Lock()
+	defer u.mu.Unlock()
+	for _, c := range u.closers {
+		_ = c.Close()
+	}
+	u.closers = nil
 	return nil
 }
 
@@ -81,7 +96,7 @@ func (u *Upstream) Register(
 	}
 
 	// Create the filesystem backend
-	fs, err := u.createFilesystem(fsService)
+	fs, err := u.createFilesystem(ctx, fsService)
 	if err != nil {
 		return "", nil, nil, fmt.Errorf("failed to create filesystem: %w", err)
 	}
@@ -155,7 +170,7 @@ func (c *fsCallable) Call(_ context.Context, req *tool.ExecutionRequest) (any, e
 	return c.handler(req.Arguments)
 }
 
-func (u *Upstream) createFilesystem(config *configv1.FilesystemUpstreamService) (afero.Fs, error) {
+func (u *Upstream) createFilesystem(ctx context.Context, config *configv1.FilesystemUpstreamService) (afero.Fs, error) {
 	var baseFs afero.Fs
 
 	// Determine the backend filesystem
@@ -171,15 +186,36 @@ func (u *Upstream) createFilesystem(config *configv1.FilesystemUpstreamService) 
 		// import "github.com/spf13/afero/zipfs"
 		// zipfs.New(zipReader)
 		// This requires opening the file first.
-		return nil, fmt.Errorf("zip filesystem is not yet supported")
+		zipConfig := config.GetZip()
+		f, err := os.Open(zipConfig.GetFilePath())
+		if err != nil {
+			return nil, fmt.Errorf("failed to open zip file: %w", err)
+		}
+
+		fi, err := f.Stat()
+		if err != nil {
+			_ = f.Close()
+			return nil, fmt.Errorf("failed to stat zip file: %w", err)
+		}
+
+		zr, err := zip.NewReader(f, fi.Size())
+		if err != nil {
+			_ = f.Close()
+			return nil, fmt.Errorf("failed to create zip reader: %w", err)
+		}
+
+		baseFs = zipfs.New(zr)
+
+		// Register closer
+		u.mu.Lock()
+		u.closers = append(u.closers, f)
+		u.mu.Unlock()
 
 	case *configv1.FilesystemUpstreamService_Gcs:
-		// Requires external package gcsfs
-		return nil, fmt.Errorf("gcs filesystem is not yet supported")
+		return u.createGcsFilesystem(ctx, config.GetGcs())
 
 	case *configv1.FilesystemUpstreamService_Sftp:
-		// Requires external package sftpfs
-		return nil, fmt.Errorf("sftp filesystem is not yet supported")
+		return u.createSftpFilesystem(config.GetSftp())
 
 	case *configv1.FilesystemUpstreamService_S3:
 		s3Config := config.GetS3()
