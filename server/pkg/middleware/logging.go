@@ -35,7 +35,8 @@ func LoggingMiddleware(log *slog.Logger) mcp.Middleware {
 			metrics.IncrCounter([]string{"middleware", "request", "total"}, 1)
 			defer metrics.MeasureSince([]string{"middleware", "request", "latency"}, start)
 
-			log.Info("Request received", "method", method)
+			// Optimization: Removed redundant "Request received" log to reduce I/O and noise.
+			// We log completion/failure below which is sufficient.
 			result, err := next(ctx, method, req)
 			if err != nil {
 				metrics.IncrCounter([]string{"middleware", "request", "error"}, 1)

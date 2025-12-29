@@ -1497,7 +1497,8 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 		return nil, fmt.Errorf("failed to execute command: %w", err)
 	}
 
-	var stdoutBuf, stderrBuf, combinedBuf bytes.Buffer
+	var stdoutBuf, stderrBuf bytes.Buffer
+	var combinedBuf threadSafeBuffer
 	var wg sync.WaitGroup
 	wg.Add(2)
 
@@ -1771,7 +1772,8 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 		return nil, fmt.Errorf("failed to execute command: %w", err)
 	}
 
-	var stdoutBuf, stderrBuf, combinedBuf bytes.Buffer
+	var stdoutBuf, stderrBuf bytes.Buffer
+	var combinedBuf threadSafeBuffer
 	var wg sync.WaitGroup
 	wg.Add(2)
 
@@ -1811,6 +1813,23 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 	}
 
 	return result, nil
+}
+
+type threadSafeBuffer struct {
+	b  bytes.Buffer
+	mu sync.Mutex
+}
+
+func (tsb *threadSafeBuffer) Write(p []byte) (n int, err error) {
+	tsb.mu.Lock()
+	defer tsb.mu.Unlock()
+	return tsb.b.Write(p)
+}
+
+func (tsb *threadSafeBuffer) String() string {
+	tsb.mu.Lock()
+	defer tsb.mu.Unlock()
+	return tsb.b.String()
 }
 
 // prettyPrint formats the input based on content type for better readability.
