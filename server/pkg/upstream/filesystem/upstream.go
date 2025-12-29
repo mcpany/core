@@ -45,12 +45,12 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 // Register processes the configuration for a filesystem service.
 //
 func (u *Upstream) Register(
-	ctx context.Context,
+	_ context.Context,
 	serviceConfig *configv1.UpstreamServiceConfig,
 	toolManager tool.ManagerInterface,
-	promptManager prompt.ManagerInterface,
-	resourceManager resource.ManagerInterface,
-	isReload bool,
+	_ prompt.ManagerInterface,
+	_ resource.ManagerInterface,
+	_ bool,
 ) (string, []*configv1.ToolDefinition, []*configv1.ResourceDefinition, error) {
 	log := logging.GetLogger()
 
@@ -143,7 +143,7 @@ type fsCallable struct {
 
 // Call executes the filesystem tool with the provided request arguments.
 // It returns the result of the tool execution or an error.
-func (c *fsCallable) Call(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
+func (c *fsCallable) Call(_ context.Context, req *tool.ExecutionRequest) (any, error) {
 	return c.handler(req.Arguments)
 }
 
@@ -653,7 +653,7 @@ func (u *Upstream) getSupportedTools(fsService *configv1.FilesystemUpstreamServi
 			Output: map[string]interface{}{
 				"roots": map[string]interface{}{"type": "array", "items": map[string]interface{}{"type": "string"}},
 			},
-			Handler: func(args map[string]interface{}) (map[string]interface{}, error) {
+			Handler: func(_ map[string]interface{}) (map[string]interface{}, error) {
 				// With afero, we might just have one root or multiple mounts.
 				// For backward compatibility, we can list keys from RootPaths if available.
 				roots := []string{}

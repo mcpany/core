@@ -59,7 +59,7 @@ func TestOllamaEmbeddingProvider_Embed(t *testing.T) {
 func TestHttpEmbeddingProvider_Embed(t *testing.T) {
 	// Mock HTTP Server
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if r.Header.Get("X-API-Key") != "secret" {
+		if r.Header.Get("Authorization") != "Bearer test" {
 			http.Error(w, "Unauthorized", http.StatusUnauthorized)
 			return
 		}
@@ -75,13 +75,12 @@ func TestHttpEmbeddingProvider_Embed(t *testing.T) {
 	}))
 	defer server.Close()
 
-	headers := map[string]string{"X-API-Key": "secret"}
-	// Template for standard JSON body
-	bodyTemplate := `{"input": "{{.Input}}"}`
-	// JSONPath to extract embedding
-	jsonPath := "$.data[0].embedding"
-
-	provider, err := NewHttpEmbeddingProvider(server.URL, headers, bodyTemplate, jsonPath)
+	provider, err := NewHTTPEmbeddingProvider(
+		server.URL,
+		map[string]string{"Authorization": "Bearer test"},
+		`{"input": "{{.input}}"}`,
+		"data[0].embedding",
+	)
 	assert.NoError(t, err)
 
 	// Test Success

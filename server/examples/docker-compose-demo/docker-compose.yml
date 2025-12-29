@@ -11,7 +11,7 @@ services:
     image: ghcr.io/mcpany/server:latest
     ports:
       # Exposes the JSON-RPC port (for tool calls) to the host.
-      - "50050:50050"
+      - "51234:50050"
       # Exposes the gRPC registration port to the host.
       - "50051:50051"
     volumes:

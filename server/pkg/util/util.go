@@ -132,8 +132,7 @@ func sanitizePart(sb *strings.Builder, id string, alwaysAppendHash bool, maxSani
 			sb.Write(hashBuf[:])
 		}
 
-	} else {
-		// appendHash is false, so dirtyCount == 0 and len(id) <= maxSanitizedPrefixLength
+	} else {		// appendHash is false, so dirtyCount == 0 and len(id) <= maxSanitizedPrefixLength
 		// We can just write id
 		sb.WriteString(id)
 	}

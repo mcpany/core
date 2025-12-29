@@ -58,7 +58,7 @@ func (a *Application) createAPIHandler(store *sqlite.Store) http.Handler {
 				http.Error(w, "name is required", http.StatusBadRequest)
 				return
 			}
-			// Auto-generate ID if missing? Store handles it if we pass emtpy ID (fallback to name).
+			// Auto-generate ID if missing? Store handles it if we pass empty ID (fallback to name).
 			// But creating UUID here might be better? For now name fallback is fine.
 
 			if err := store.SaveService(&svc); err != nil {

@@ -1,6 +1,7 @@
 # Authentication
 
-MCP Any supports comprehensive authentication mechanisms for both incoming requests (securing your MCP server) and outgoing requests (authenticating with upstream services). These are configured **per upstream service**.
+The `mcpany` server supports flexible authentication mechanisms.
+ for both incoming requests (securing your MCP server) and outgoing requests (authenticating with upstream services). These are configured **per upstream service**.
 
 ## Configuration
 

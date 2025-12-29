@@ -41,9 +41,7 @@ export IPINFO_API_TOKEN=YOUR_IPINFO_API_TOKEN_VALUE
 
 In a separate terminal:
 
-```bash
-gemini mcp add --transport http --trust ipinfo.io http://localhost:50050
-```
+Access the service at your server's address (default `http://localhost:50050` or as configured).
 
 ### 3. Example Query
 
