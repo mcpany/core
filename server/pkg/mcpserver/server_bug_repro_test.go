@@ -60,19 +60,29 @@ func TestServer_CallTool_Metrics_Repro(t *testing.T) {
 	tm := server.ToolManager().(*tool.Manager)
 
 	// Add test tool
-	successTool := &mockTool{
-		tool: v1.Tool_builder{
-			Name:      proto.String("success-tool"),
-			ServiceId: proto.String("test-service"),
-			Annotations: v1.ToolAnnotations_builder{
-				InputSchema: &structpb.Struct{
-					Fields: map[string]*structpb.Value{
-						"type":       structpb.NewStringValue("object"),
-						"properties": structpb.NewStructValue(&structpb.Struct{}),
+	successTool := &tool.MockTool{
+		ToolFunc: func() *v1.Tool {
+			return v1.Tool_builder{
+				Name:      proto.String("success-tool"),
+				ServiceId: proto.String("test-service"),
+				Annotations: v1.ToolAnnotations_builder{
+					InputSchema: &structpb.Struct{
+						Fields: map[string]*structpb.Value{
+							"type":       structpb.NewStringValue("object"),
+							"properties": structpb.NewStructValue(&structpb.Struct{}),
+						},
 					},
-				},
-			}.Build(),
-		}.Build(),
+				}.Build(),
+			}.Build()
+		},
+		MCPToolFunc: func() *mcp.Tool {
+			return &mcp.Tool{
+				Name: "test-service.success-tool",
+			}
+		},
+		ExecuteFunc: func(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
+			return "success", nil
+		},
 	}
 	_ = tm.AddTool(successTool)
 
