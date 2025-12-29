@@ -25,13 +25,13 @@ import (
 	"github.com/mcpany/core/pkg/upstream"
 	"github.com/mcpany/core/pkg/util"
 	configv1 "github.com/mcpany/core/proto/config/v1"
+
 	//nolint:staticcheck // afero-s3 requires aws-sdk-go v1
 	"github.com/aws/aws-sdk-go/aws"
 	//nolint:staticcheck // afero-s3 requires aws-sdk-go v1
 	"github.com/aws/aws-sdk-go/aws/credentials"
-	//nolint:staticcheck // afero-s3 requires aws-sdk-go v1
 	"github.com/aws/aws-sdk-go/aws/session"
-	"github.com/fclairamb/afero-s3"
+	s3 "github.com/fclairamb/afero-s3"
 	"github.com/spf13/afero"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/structpb"
@@ -51,7 +51,6 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 }
 
 // Register processes the configuration for a filesystem service.
-//
 func (u *Upstream) Register(
 	_ context.Context,
 	serviceConfig *configv1.UpstreamServiceConfig,
@@ -382,6 +381,7 @@ func (u *Upstream) validatePath(virtualPath string, rootPaths map[string]string)
 
 	return targetPathCanonical, nil
 }
+
 type filesystemToolDef struct {
 	Name        string
 	Description string
