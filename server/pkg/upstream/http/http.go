@@ -304,8 +304,9 @@ func (u *Upstream) createAndRegisterHTTPTools(ctx context.Context, serviceID, ad
 
 		// Construct a relative URL using RawPath to preserve encoding
 		relURL := &url.URL{
-			Path:    relPath,
-			RawPath: relRawPath,
+			Path:     relPath,
+			RawPath:  relRawPath,
+			Fragment: endpointURL.Fragment,
 		}
 
 		resolvedURL := baseForJoin.ResolveReference(relURL)
