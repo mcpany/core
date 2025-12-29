@@ -120,12 +120,12 @@ export function NetworkGraphClient() {
         <Background variant={BackgroundVariant.Dots} gap={12} size={1} />
 
         <Panel position="bottom-center" className="bg-background/80 p-2 rounded-full border shadow-sm backdrop-blur text-xs text-muted-foreground flex gap-4">
-            <div className="flex items-center gap-1"><div className="w-2 h-2 rounded-full bg-white border border-black"></div> Core</div>
-            <div className="flex items-center gap-1"><div className="w-2 h-2 rounded-full bg-blue-50 border border-blue-500"></div> Service</div>
-            <div className="flex items-center gap-1"><div className="w-2 h-2 rounded-full bg-green-50 border border-green-500"></div> Client</div>
-            <div className="flex items-center gap-1"><div className="w-2 h-2 rounded-full bg-purple-50 border border-purple-500"></div> Tool</div>
-            <div className="flex items-center gap-1"><div className="w-2 h-2 rounded-full bg-orange-50 border border-orange-500"></div> Middleware</div>
-            <div className="flex items-center gap-1"><div className="w-2 h-2 rounded-full bg-pink-50 border border-pink-500"></div> Webhook</div>
+            <div className="flex items-center gap-1"><div className="w-2 h-2 rounded-full bg-white border border-black dark:bg-slate-900 dark:border-white"></div> Core</div>
+            <div className="flex items-center gap-1"><div className="w-2 h-2 rounded-full bg-blue-50 border border-blue-500 dark:bg-blue-950 dark:border-blue-600"></div> Service</div>
+            <div className="flex items-center gap-1"><div className="w-2 h-2 rounded-full bg-green-50 border border-green-500 dark:bg-green-950 dark:border-green-600"></div> Client</div>
+            <div className="flex items-center gap-1"><div className="w-2 h-2 rounded-full bg-fuchsia-50 border border-fuchsia-500 dark:bg-fuchsia-950 dark:border-fuchsia-600"></div> Tool</div>
+            <div className="flex items-center gap-1"><div className="w-2 h-2 rounded-full bg-orange-50 border border-orange-500 dark:bg-orange-950 dark:border-orange-600"></div> Middleware</div>
+            <div className="flex items-center gap-1"><div className="w-2 h-2 rounded-full bg-pink-50 border border-pink-500 dark:bg-pink-950 dark:border-pink-600"></div> Webhook</div>
         </Panel>
       </ReactFlow>
 
