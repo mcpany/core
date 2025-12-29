@@ -129,4 +129,66 @@ test.describe('MCP Any UI E2E Tests', () => {
     await page.screenshot({ path: path.join(AUDIT_DIR, 'webhooks_verified.png'), fullPage: true });
   });
 
+  test('Network page visualizes topology', async ({ page }) => {
+    // Mock Topology API
+    await page.route('**/api/v1/topology', async (route) => {
+        await route.fulfill({
+            json: {
+                clients: [
+                    { id: "client-1", label: "Claude Desktop", type: "NODE_TYPE_CLIENT", status: "NODE_STATUS_ACTIVE" }
+                ],
+                core: {
+                    id: "mcp-core",
+                    label: "MCP Any",
+                    type: "NODE_TYPE_CORE",
+                    status: "NODE_STATUS_ACTIVE",
+                    children: [
+                        {
+                            id: "svc-1",
+                            label: "Payment Service",
+                            type: "NODE_TYPE_SERVICE",
+                            status: "NODE_STATUS_ACTIVE",
+                            metrics: { qps: 5.2, latencyMs: 45, errorRate: 0.01 },
+                            children: [
+                                { id: "tool-1", label: "process_payment", type: "NODE_TYPE_TOOL", status: "NODE_STATUS_ACTIVE" }
+                            ]
+                        },
+                        {
+                            id: "middleware-pipeline",
+                            label: "Middleware Pipeline",
+                            type: "NODE_TYPE_MIDDLEWARE",
+                            status: "NODE_STATUS_ACTIVE",
+                            children: [
+                                { id: "mw-auth", label: "Authentication", type: "NODE_TYPE_MIDDLEWARE", status: "NODE_STATUS_ACTIVE" }
+                            ]
+                        },
+                        {
+                            id: "webhooks",
+                            label: "Webhooks",
+                            type: "NODE_TYPE_WEBHOOK",
+                            status: "NODE_STATUS_ACTIVE",
+                            children: [
+                                { id: "wh-1", label: "event-logger", type: "NODE_TYPE_WEBHOOK", status: "NODE_STATUS_ACTIVE" }
+                            ]
+                        }
+                    ]
+                }
+            }
+        });
+    });
+
+    await page.goto('/network');
+    await expect(page.locator('body')).toBeVisible();
+    await expect(page.locator(':has-text("Network Topology")').first()).toBeVisible();
+    await expect(page.locator('text=MCP Any')).toBeVisible();
+    await expect(page.locator('text=Payment Service')).toBeVisible();
+    await expect(page.locator('text=Claude Desktop')).toBeVisible();
+    await expect(page.locator('text=Middleware Pipeline')).toBeVisible();
+    await expect(page.locator('text=Authentication')).toBeVisible();
+    await expect(page.locator('text=Webhooks')).toBeVisible();
+
+    // Audit Screenshot
+    await page.screenshot({ path: path.join(__dirname, 'network_topology_verified.png'), fullPage: true });
+  });
+
 });

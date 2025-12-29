@@ -1,0 +1,52 @@
+// Copyright 2025 Author(s) of MCP Any
+// SPDX-License-Identifier: Apache-2.0
+
+package topology
+
+import (
+	"context"
+
+	"github.com/mcpany/core/pkg/auth"
+	"github.com/mcpany/core/pkg/consts"
+	"github.com/modelcontextprotocol/go-sdk/mcp"
+)
+
+// Middleware returns a middleware function to track session activity.
+func (m *Manager) Middleware(next mcp.MethodHandler) mcp.MethodHandler {
+	return func(
+		ctx context.Context,
+		method string,
+		req mcp.Request,
+	) (mcp.Result, error) {
+		// Identify Client Session
+		// In standard MCP, the JSON-RPC connection usually corresponds to a session.
+		// `req.GetSession()` from SDK likely returns the connection/session object.
+		// However, we want a persistent ID if possible.
+		// If using `mcp.StdioTransport`, there might be one session.
+		// If using `mcp.SSEServerTransport`, session ID exists.
+
+		sessionID := "unknown"
+		meta := make(map[string]interface{})
+
+		// Extract session ID
+		// The SDK Request object has GetSession() but it returns an interface.
+		// We'll rely on our auth context or custom logic if available.
+		// For now, let's use a "default" session if not found, or try to cast.
+
+		// Fallback: Check Auth Context (API Key / User ID)
+		if uid, ok := auth.UserFromContext(ctx); ok {
+			sessionID = "user-" + uid
+			meta["type"] = "authenticated_user"
+		} else {
+			// Check for generic remote address
+			if ip, ok := ctx.Value(consts.ContextKeyRemoteAddr).(string); ok {
+				sessionID = "ip-" + ip
+				meta["type"] = "anonymous_ip"
+			}
+		}
+
+		m.RecordActivity(sessionID, meta)
+
+		return next(ctx, method, req)
+	}
+}
