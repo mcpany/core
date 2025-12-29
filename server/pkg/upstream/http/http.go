@@ -133,7 +133,7 @@ func (u *Upstream) Register(
 	// Use the first address as the primary one for creating the pool
 	// Note: The pool handles connections to any host, so strictly speaking
 	// we just need to ensure the pool is created correctly.
-	address = addresses[0]
+	// address = addresses[0] // Removed unused assignment
 
 	poolConfig := serviceConfig.GetConnectionPool()
 	maxConnections := 100
@@ -165,7 +165,7 @@ func (u *Upstream) Register(
 	log.Debug("Registering HTTP service", "serviceID", serviceID, "info", info)
 	toolManager.AddServiceInfo(serviceID, info)
 
-	address = httpService.GetAddress()
+	// address = httpService.GetAddress() // Removed unused assignment
 
 	// Auto-discovery of tools from calls
 	if serviceConfig.GetAutoDiscoverTool() {
