@@ -8,7 +8,9 @@ MCP Any supports dynamic registration of tools from upstream services. This mean
 
 ## Runtime Registration
 
-Services can be registered at runtime without restarting the server using the **gRPC Registration API**.
+Services can be registered at runtime without restarting the server using the **Admin API**. This allows for dynamic reconfiguration of the server.
+
+The Admin API is a gRPC service defined in `proto/admin/v1/admin.proto`.
 
 For more details on configuring these services, see:
 

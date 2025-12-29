@@ -66,3 +66,29 @@ func TestEnvVarInjectionWithoutConfig(t *testing.T) {
 	require.NotNil(t, cfg.GlobalSettings.McpListenAddress)
 	assert.Equal(t, "0.0.0.0:7000", *cfg.GlobalSettings.McpListenAddress)
 }
+
+func TestEnvVarOverrideLowercase(t *testing.T) {
+	// Create a temporary config file
+	fs := afero.NewMemMapFs()
+	configContent := `
+global_settings:
+  log_level: INFO
+`
+	err := afero.WriteFile(fs, "/config.yaml", []byte(configContent), 0644)
+	require.NoError(t, err)
+
+	// Set environment variables to override settings with lowercase
+	_ = os.Setenv("MCPANY__GLOBAL_SETTINGS__LOG_LEVEL", "debug")
+	defer func() {
+		_ = os.Unsetenv("MCPANY__GLOBAL_SETTINGS__LOG_LEVEL")
+	}()
+
+	// Load the config
+	store := config.NewFileStore(fs, []string{"/config.yaml"})
+	cfg, err := store.Load()
+	require.NoError(t, err)
+
+	// Verify overrides
+	require.NotNil(t, cfg.GlobalSettings.LogLevel)
+	assert.Equal(t, configv1.GlobalSettings_LOG_LEVEL_DEBUG, *cfg.GlobalSettings.LogLevel)
+}

@@ -79,7 +79,7 @@ func (e *yamlEngine) Unmarshal(b []byte, v proto.Message) error {
 	if gs, ok := yamlMap["global_settings"].(map[string]interface{}); ok {
 		if ll, ok := gs["log_level"].(string); ok {
 			if !strings.HasPrefix(ll, "LOG_LEVEL_") {
-				gs["log_level"] = "LOG_LEVEL_" + ll
+				gs["log_level"] = "LOG_LEVEL_" + strings.ToUpper(ll)
 			}
 		}
 	}
