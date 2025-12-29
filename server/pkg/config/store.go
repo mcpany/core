@@ -313,6 +313,9 @@ var httpClient = &http.Client{
 
 			var dialAddr string
 			for _, ip := range ips {
+				if isPrivateIP(ip) {
+					continue
+				}
 				// Use the first valid IP address for the connection.
 				if dialAddr == "" {
 					dialAddr = net.JoinHostPort(ip.String(), port)
@@ -320,7 +323,7 @@ var httpClient = &http.Client{
 			}
 
 			if dialAddr == "" {
-				return nil, fmt.Errorf("no valid IP address found for host: %s", host)
+				return nil, fmt.Errorf("no valid public IP address found for host: %s", host)
 			}
 
 			return (&net.Dialer{}).DialContext(ctx, network, dialAddr)
@@ -452,6 +455,14 @@ func applyEnvVarsFromSlice(m map[string]interface{}, environ []string) {
 			}
 		}
 	}
+}
+
+// isPrivateIP checks if an IP address is private or loopback.
+func isPrivateIP(ip net.IP) bool {
+	if ip.IsLoopback() || ip.IsPrivate() || ip.IsUnspecified() || ip.IsLinkLocalUnicast() || ip.IsLinkLocalMulticast() {
+		return true
+	}
+	return false
 }
 
 // MultiStore implements the Store interface for loading configurations from multiple stores.

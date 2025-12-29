@@ -240,7 +240,7 @@ global_settings:
 	assert.Contains(t, err.Error(), "unknown field")
 }
 
-func TestReadURL_Localhost(t *testing.T) {
+func TestReadURL_Localhost_Blocked(t *testing.T) {
 	// Start a local HTTP server
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/yaml")
@@ -254,9 +254,10 @@ func TestReadURL_Localhost(t *testing.T) {
 	fs := afero.NewMemMapFs()
 	store := NewFileStore(fs, []string{configURL})
 
+	// Localhost should now be blocked by SSRF protection
 	cfg, err := store.Load()
 
-	require.NoError(t, err)
-	require.NotNil(t, cfg)
-	assert.Equal(t, configv1.GlobalSettings_LOG_LEVEL_INFO, cfg.GlobalSettings.GetLogLevel())
+	require.Error(t, err)
+	assert.Nil(t, cfg)
+	assert.Contains(t, err.Error(), "no valid public IP address found")
 }
