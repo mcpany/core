@@ -56,6 +56,7 @@ func TestDockerComposeE2E(t *testing.T) {
 
 		_ = exec.Command("docker", "compose", "down", "-v").Run()
 		_ = exec.Command("docker", "compose", "-f", "examples/docker-compose-demo/docker-compose.yml", "down", "-v").Run()
+		_ = exec.Command("docker", "rm", "-f", "mcpany-weather-test").Run()
 		time.Sleep(5 * time.Second)
 	}
 	defer cleanup()
