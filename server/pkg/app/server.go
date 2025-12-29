@@ -41,9 +41,6 @@ import (
 	"github.com/mcpany/core/pkg/worker"
 	pb_admin "github.com/mcpany/core/proto/admin/v1"
 	v1 "github.com/mcpany/core/proto/api/v1"
-
-	// config_v1 "github.com/mcpany/core/proto/config/v1"
-	"github.com/mcpany/core/pkg/topology"
 	config_v1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/spf13/afero"
@@ -54,7 +51,6 @@ import (
 	"google.golang.org/grpc/peer"
 	"google.golang.org/grpc/reflection"
 	"google.golang.org/grpc/status"
-	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 )
 
@@ -148,7 +144,6 @@ type Application struct {
 	ToolManager      tool.ManagerInterface
 	ResourceManager  resource.ManagerInterface
 	ServiceRegistry  serviceregistry.ServiceRegistryInterface
-	TopologyManager  *topology.Manager
 	UpstreamFactory  factory.Factory
 	configFiles      map[string]string
 	fs               afero.Fs
@@ -307,9 +302,6 @@ func (a *Application) Run(
 		defer inProcessWorker.Stop()
 	}
 
-	// Initialize Topology Manager
-	a.TopologyManager = topology.NewManager(serviceRegistry, a.ToolManager)
-
 	// Initialize servers with the message bus
 	mcpSrv, err := mcpserver.NewServer(
 		ctx,
@@ -419,9 +411,6 @@ func (a *Application) Run(
 	for _, m := range chain {
 		mcpSrv.Server().AddReceivingMiddleware(m)
 	}
-
-	// Add Topology Middleware (Always Active)
-	mcpSrv.Server().AddReceivingMiddleware(a.TopologyManager.Middleware)
 
 	if stdio {
 		err := a.runStdioModeFunc(ctx, mcpSrv)
@@ -752,25 +741,6 @@ func (a *Application) runServerMode(
 	// Protected by auth middleware
 	apiHandler := http.StripPrefix("/api/v1", a.createAPIHandler(store))
 	mux.Handle("/api/v1/", authMiddleware(apiHandler))
-
-	// Topology API
-	mux.HandleFunc("/api/v1/topology", func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Content-Type", "application/json")
-		graph := a.TopologyManager.GetGraph(r.Context())
-
-		// Use protojson for correct Enum serialization (strings instead of ints)
-		marshaler := protojson.MarshalOptions{
-			UseProtoNames:   true, // Use snake_case as per proto definition
-			EmitUnpopulated: false,
-		}
-		data, err := marshaler.Marshal(graph)
-		if err != nil {
-			logging.GetLogger().Error("Failed to marshal topology", "error", err)
-			http.Error(w, "Failed to encode topology", http.StatusInternalServerError)
-			return
-		}
-		_, _ = w.Write(data)
-	})
 
 	logging.GetLogger().Info("DEBUG: Registering /mcp/u/ handler")
 	// Multi-user handler

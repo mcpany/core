@@ -16,11 +16,13 @@ import {
     Shield,
     Search,
     Lock,
-    RefreshCw
+    RefreshCw,
+    AlertTriangle
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import {
     Dialog,
     DialogContent,
@@ -169,6 +171,13 @@ export function SecretsManager() {
                             </DialogDescription>
                         </DialogHeader>
                         <div className="grid gap-4 py-4">
+                            <Alert variant="destructive" className="py-2">
+                                <AlertTriangle className="h-4 w-4" />
+                                <AlertTitle>Security Warning</AlertTitle>
+                                <AlertDescription>
+                                    Secrets are currently stored in your browser&apos;s local storage. Do not use for production secrets.
+                                </AlertDescription>
+                            </Alert>
                             <div className="grid gap-2">
                                 <Label htmlFor="provider">Provider</Label>
                                 <Select value={newSecretProvider} onValueChange={setNewSecretProvider}>

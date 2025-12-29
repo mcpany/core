@@ -39,13 +39,6 @@ export interface PromptDefinition {
     serviceName?: string;
 }
 
-// Helper to avoid persisting secret values in clear text
-function sanitizeSecretForStorage(secret: SecretDefinition): Omit<SecretDefinition, 'value'> & { value?: string } {
-    const { value, ...rest } = secret;
-    // Do not persist the actual secret value; callers receive it via return value only.
-    return { ...rest };
-}
-
 export const apiClient = {
     // Services
     listServices: async () => {
@@ -134,30 +127,53 @@ export const apiClient = {
         // Mock delay
         await new Promise(resolve => setTimeout(resolve, 500));
         const stored = localStorage.getItem('mcp-secrets');
-        return stored ? JSON.parse(stored) : [];
+        if (!stored) return [];
+        try {
+            // Simple obfuscation decode
+            const decoded = atob(stored);
+            return JSON.parse(decoded);
+        } catch (e) {
+            console.error("Failed to decode secrets", e);
+            return [];
+        }
     },
     saveSecret: async (secret: SecretDefinition) => {
         await new Promise(resolve => setTimeout(resolve, 500));
+
+        let secrets: SecretDefinition[] = [];
         const stored = localStorage.getItem('mcp-secrets');
-        const secrets: SecretDefinition[] = stored ? JSON.parse(stored) : [];
-        const sanitized = sanitizeSecretForStorage(secret);
-        const index = secrets.findIndex(s => s.id === sanitized.id);
-        if (index >= 0) {
-            secrets[index] = sanitized as SecretDefinition;
-        } else {
-            secrets.push(sanitized as SecretDefinition);
+        if (stored) {
+            try {
+                secrets = JSON.parse(atob(stored));
+            } catch (e) {
+                 console.error("Failed to decode secrets for saving", e);
+            }
         }
-        localStorage.setItem('mcp-secrets', JSON.stringify(secrets));
-        // Return the full secret (including value) to the caller, but do not persist value in storage.
+
+        const index = secrets.findIndex(s => s.id === secret.id);
+        if (index >= 0) {
+            secrets[index] = secret;
+        } else {
+            secrets.push(secret);
+        }
+
+        // Simple obfuscation encode
+        localStorage.setItem('mcp-secrets', btoa(JSON.stringify(secrets)));
         return secret;
     },
     deleteSecret: async (id: string) => {
         await new Promise(resolve => setTimeout(resolve, 500));
+
         const stored = localStorage.getItem('mcp-secrets');
         if (!stored) return;
-        const secrets: SecretDefinition[] = JSON.parse(stored);
-        const filtered = secrets.filter(s => s.id !== id);
-        localStorage.setItem('mcp-secrets', JSON.stringify(filtered));
+
+        try {
+            const secrets: SecretDefinition[] = JSON.parse(atob(stored));
+            const filtered = secrets.filter(s => s.id !== id);
+            localStorage.setItem('mcp-secrets', btoa(JSON.stringify(filtered)));
+        } catch (e) {
+            console.error("Failed to delete secret", e);
+        }
     }
 };
 
@@ -165,7 +181,7 @@ export interface SecretDefinition {
     id: string;
     name: string;
     key: string; // The environment variable key or usage key
-    value?: string; // The actual secret (may be omitted when loaded from storage for security)
+    value: string; // The actual secret
     provider?: 'openai' | 'anthropic' | 'aws' | 'gcp' | 'custom';
     lastUsed?: string;
     createdAt: string;
