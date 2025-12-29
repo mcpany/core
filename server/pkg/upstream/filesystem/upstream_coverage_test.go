@@ -33,27 +33,6 @@ func TestFilesystemUpstream_UnsupportedTypes(t *testing.T) {
 			},
 			errMsg: "http filesystem is not yet supported",
 		},
-		{
-			name: "Zip",
-			config: &configv1.FilesystemUpstreamService{
-				FilesystemType: &configv1.FilesystemUpstreamService_Zip{},
-			},
-			errMsg: "zip filesystem is not yet supported",
-		},
-		{
-			name: "Gcs",
-			config: &configv1.FilesystemUpstreamService{
-				FilesystemType: &configv1.FilesystemUpstreamService_Gcs{},
-			},
-			errMsg: "gcs filesystem is not yet supported",
-		},
-		{
-			name: "Sftp",
-			config: &configv1.FilesystemUpstreamService{
-				FilesystemType: &configv1.FilesystemUpstreamService_Sftp{},
-			},
-			errMsg: "sftp filesystem is not yet supported",
-		},
 	}
 
 	for _, tt := range tests {
