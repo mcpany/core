@@ -39,6 +39,13 @@ export interface PromptDefinition {
     serviceName?: string;
 }
 
+// Helper to avoid persisting secret values in clear text
+function sanitizeSecretForStorage(secret: SecretDefinition): Omit<SecretDefinition, 'value'> & { value?: string } {
+    const { value, ...rest } = secret;
+    // Do not persist the actual secret value; callers receive it via return value only.
+    return { ...rest };
+}
+
 export const apiClient = {
     // Services
     listServices: async () => {
@@ -133,13 +140,15 @@ export const apiClient = {
         await new Promise(resolve => setTimeout(resolve, 500));
         const stored = localStorage.getItem('mcp-secrets');
         const secrets: SecretDefinition[] = stored ? JSON.parse(stored) : [];
-        const index = secrets.findIndex(s => s.id === secret.id);
+        const sanitized = sanitizeSecretForStorage(secret);
+        const index = secrets.findIndex(s => s.id === sanitized.id);
         if (index >= 0) {
-            secrets[index] = secret;
+            secrets[index] = sanitized as SecretDefinition;
         } else {
-            secrets.push(secret);
+            secrets.push(sanitized as SecretDefinition);
         }
         localStorage.setItem('mcp-secrets', JSON.stringify(secrets));
+        // Return the full secret (including value) to the caller, but do not persist value in storage.
         return secret;
     },
     deleteSecret: async (id: string) => {
@@ -156,7 +165,7 @@ export interface SecretDefinition {
     id: string;
     name: string;
     key: string; // The environment variable key or usage key
-    value: string; // The actual secret
+    value?: string; // The actual secret (may be omitted when loaded from storage for security)
     provider?: 'openai' | 'anthropic' | 'aws' | 'gcp' | 'custom';
     lastUsed?: string;
     createdAt: string;
