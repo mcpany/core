@@ -1,7 +1,7 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
-package sqlite
+package postgres
 
 import (
 	"database/sql"
@@ -11,12 +11,12 @@ import (
 	"google.golang.org/protobuf/encoding/protojson"
 )
 
-// Store implements config.Store using SQLite.
+// Store implements config.Store using PostgreSQL.
 type Store struct {
 	db *DB
 }
 
-// NewStore creates a new SQLite store.
+// NewStore creates a new PostgreSQL store.
 func NewStore(db *DB) *Store {
 	return &Store{db: db}
 }
@@ -73,7 +73,7 @@ func (s *Store) SaveService(service *configv1.UpstreamServiceConfig) error {
 
 	query := `
 	INSERT INTO upstream_services (id, name, config_json, updated_at)
-	VALUES (?, ?, ?, CURRENT_TIMESTAMP)
+	VALUES ($1, $2, $3, CURRENT_TIMESTAMP)
 	ON CONFLICT(name) DO UPDATE SET
 		config_json = excluded.config_json,
 		updated_at = excluded.updated_at;
@@ -92,7 +92,7 @@ func (s *Store) SaveService(service *configv1.UpstreamServiceConfig) error {
 
 // GetService retrieves an upstream service configuration by name.
 func (s *Store) GetService(name string) (*configv1.UpstreamServiceConfig, error) {
-	query := "SELECT config_json FROM upstream_services WHERE name = ?"
+	query := "SELECT config_json FROM upstream_services WHERE name = $1"
 	row := s.db.QueryRow(query, name)
 
 	var configJSON string
@@ -121,7 +121,7 @@ func (s *Store) ListServices() ([]*configv1.UpstreamServiceConfig, error) {
 
 // DeleteService deletes an upstream service configuration by name.
 func (s *Store) DeleteService(name string) error {
-	_, err := s.db.Exec("DELETE FROM upstream_services WHERE name = ?", name)
+	_, err := s.db.Exec("DELETE FROM upstream_services WHERE name = $1", name)
 	if err != nil {
 		return fmt.Errorf("failed to delete service: %w", err)
 	}
