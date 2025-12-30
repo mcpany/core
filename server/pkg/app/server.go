@@ -33,6 +33,8 @@ import (
 	"github.com/mcpany/core/pkg/prompt"
 	"github.com/mcpany/core/pkg/resource"
 	"github.com/mcpany/core/pkg/serviceregistry"
+	"github.com/mcpany/core/pkg/storage"
+	"github.com/mcpany/core/pkg/storage/postgres"
 	"github.com/mcpany/core/pkg/storage/sqlite"
 	"github.com/mcpany/core/pkg/telemetry"
 	"github.com/mcpany/core/pkg/tool"
@@ -222,23 +224,48 @@ func (a *Application) Run(
 
 	log.Info("Starting MCP Any Service...")
 
-	// Load initial services from config files and SQLite
-	dbPath := config.GlobalSettings().DBPath()
-	if dbPath == "" {
-		dbPath = "mcpany.db"
+	// Load initial services from config files and Storage
+	var storageStore config.Store
+	var storageCloser func() error
+
+	// Default to SQLite if not specified or explicitly sqlite
+	dbDriver := config.GlobalSettings().GetDbDriver()
+	if dbDriver == "" || dbDriver == "sqlite" {
+		dbPath := config.GlobalSettings().DBPath()
+		if dbPath == "" {
+			dbPath = "mcpany.db"
+		}
+		sqliteDB, err := sqlite.NewDB(dbPath)
+		if err != nil {
+			return fmt.Errorf("failed to initialize sqlite db: %w", err)
+		}
+		storageCloser = sqliteDB.Close
+		storageStore = sqlite.NewStore(sqliteDB)
+	} else if dbDriver == "postgres" {
+		dsn := config.GlobalSettings().GetDbDsn()
+		if dsn == "" {
+			return fmt.Errorf("postgres driver selected but db_dsn is empty")
+		}
+		pgDB, err := postgres.NewDB(dsn)
+		if err != nil {
+			return fmt.Errorf("failed to initialize postgres db: %w", err)
+		}
+		storageCloser = func() error { return pgDB.Close() }
+		storageStore = postgres.NewStore(pgDB)
+	} else {
+		return fmt.Errorf("unsupported db driver: %s", dbDriver)
 	}
-	sqliteDB, err := sqlite.NewDB(dbPath)
-	if err != nil {
-		return fmt.Errorf("failed to initialize sqlite db: %w", err)
-	}
-	defer func() { _ = sqliteDB.Close() }()
-	sqliteStore := sqlite.NewStore(sqliteDB)
+	defer func() {
+		if storageCloser != nil {
+			_ = storageCloser()
+		}
+	}()
 
 	var stores []config.Store
 	if len(configPaths) > 0 {
 		stores = append(stores, config.NewFileStore(fs, configPaths))
 	}
-	stores = append(stores, sqliteStore)
+	stores = append(stores, storageStore)
 	multiStore := config.NewMultiStore(stores...)
 
 	var cfg *config_v1.McpAnyServerConfig
@@ -449,7 +476,22 @@ func (a *Application) Run(
 		allowedOrigins = []string{"*"}
 	}
 
-	runErr := a.runServerMode(ctx, mcpSrv, busProvider, bindAddress, grpcPort, shutdownTimeout, cfg.GetUsers(), cfg.GetGlobalSettings().GetProfileDefinitions(), allowedIPs, allowedOrigins, cachingMiddleware, sqliteStore, serviceRegistry)
+	// Use storageStore which is initialized as either sqlite or postgres
+	// We need to assert it to storage.Storage. Both implement it.
+	// But stores[...] is config.Store. storageStore is config.Store.
+	// However, we know storageStore implements storage.Storage because we created it as such.
+
+	// Wait, storageStore is declared as config.Store in my previous edit.
+	// I should cast it or change its type declaration.
+	// Let's change declaration in previous step, but since I can't undo easily without reset,
+	// I'll cast it here.
+	s, ok := storageStore.(storage.Storage)
+	if !ok {
+		// Should not happen if code is correct
+		return fmt.Errorf("storage store does not implement storage.Storage")
+	}
+
+	runErr := a.runServerMode(ctx, mcpSrv, busProvider, bindAddress, grpcPort, shutdownTimeout, cfg.GetUsers(), cfg.GetGlobalSettings().GetProfileDefinitions(), allowedIPs, allowedOrigins, cachingMiddleware, s, serviceRegistry)
 
 	// Stop workers
 	workerCancel()
@@ -692,7 +734,7 @@ func (a *Application) runServerMode(
 	allowedIPs []string,
 	allowedOrigins []string,
 	cachingMiddleware *middleware.CachingMiddleware,
-	store *sqlite.Store,
+	store storage.Storage,
 	serviceRegistry *serviceregistry.ServiceRegistry,
 ) error {
 	ipMiddleware, err := middleware.NewIPAllowlistMiddleware(allowedIPs)

@@ -108,6 +108,14 @@ func (s *Settings) Load(cmd *cobra.Command, fs afero.Fs) error {
 	s.proto.SetLogFormat(s.LogFormat())
 	s.proto.SetApiKey(s.APIKey())
 
+	// Set DB settings from config file if available, otherwise viper defaults (flags/env)
+	if s.proto.GetDbDsn() == "" {
+		s.proto.SetDbDsn(viper.GetString("db-dsn"))
+	}
+	if s.proto.GetDbDriver() == "" {
+		s.proto.SetDbDriver(viper.GetString("db-driver"))
+	}
+
 	return nil
 }
 
@@ -210,6 +218,16 @@ func (s *Settings) LogLevel() configv1.GlobalSettings_LogLevel {
 // DBPath returns the path to the SQLite database.
 func (s *Settings) DBPath() string {
 	return s.dbPath
+}
+
+// GetDbDsn returns the database DSN.
+func (s *Settings) GetDbDsn() string {
+	return s.proto.GetDbDsn()
+}
+
+// GetDbDriver returns the database driver.
+func (s *Settings) GetDbDriver() string {
+	return s.proto.GetDbDriver()
 }
 
 // Middlewares returns the configured middlewares.
