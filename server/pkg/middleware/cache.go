@@ -5,9 +5,10 @@ package middleware
 
 import (
 	"context"
-	"crypto/sha256"
 	"encoding/hex"
 	"fmt"
+	"hash"
+	"hash/fnv"
 	"sync"
 	"time"
 
@@ -33,6 +34,7 @@ type CachingMiddleware struct {
 	toolManager     tool.ManagerInterface
 	semanticCaches  sync.Map
 	providerFactory ProviderFactory
+	hasherPool      *sync.Pool
 }
 
 // NewCachingMiddleware creates a new CachingMiddleware.
@@ -42,6 +44,11 @@ func NewCachingMiddleware(toolManager tool.ManagerInterface) *CachingMiddleware 
 	return &CachingMiddleware{
 		cache:       cacheManager,
 		toolManager: toolManager,
+		hasherPool: &sync.Pool{
+			New: func() any {
+				return fnv.New128a()
+			},
+		},
 		providerFactory: func(conf *configv1.SemanticCacheConfig, apiKey string) (EmbeddingProvider, error) {
 			// Check OneOf provider_config first
 			if conf.GetOpenai() != nil {
@@ -332,14 +339,21 @@ func (m *CachingMiddleware) getCacheKey(req *tool.ExecutionRequest) string {
 
 	// Optimization: Hash the normalized inputs to keep the cache key short and fixed length.
 	// This avoids using potentially large JSON strings as map keys.
-	hash := sha256.Sum256(normalizedInputs)
+	// We use FNV-1a 128-bit hash which is significantly faster than SHA256 (>2x)
+	// and produces a shorter key (32 hex chars vs 64), saving memory.
+	// We use a sync.Pool to reuse hashers and avoid heap allocations.
+	h := m.hasherPool.Get().(hash.Hash)
+	defer m.hasherPool.Put(h)
+	h.Reset()
+	_, _ = h.Write(normalizedInputs)
+	hashBytes := h.Sum(nil) // Allocates a small slice, unavoidable without copying impl
 
-	// Pre-allocate buffer: len(toolName) + 1 (separator) + 64 (hex hash)
+	// Pre-allocate buffer: len(toolName) + 1 (separator) + 32 (hex hash)
 	// This reduces allocations compared to fmt.Sprintf and hex.EncodeToString
-	buf := make([]byte, len(req.ToolName)+1+hex.EncodedLen(len(hash)))
+	buf := make([]byte, len(req.ToolName)+1+hex.EncodedLen(len(hashBytes)))
 	n := copy(buf, req.ToolName)
 	buf[n] = ':'
-	hex.Encode(buf[n+1:], hash[:])
+	hex.Encode(buf[n+1:], hashBytes)
 
 	return string(buf)
 }
