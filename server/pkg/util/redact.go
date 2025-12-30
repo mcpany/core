@@ -6,6 +6,7 @@ package util //nolint:revive
 import (
 	"bytes"
 	"encoding/json"
+	"strings"
 )
 
 const redactedPlaceholder = "[REDACTED]"
@@ -322,34 +323,63 @@ func containsFold(s, substr string) bool {
 		return true
 	}
 
-	// Optimized case-insensitive search
-	// We first check the first character to avoid setting up the inner loop for mismatches.
+	// Optimized case-insensitive search using IndexByte
 	// Since sensitiveKeys are all lowercase, we can safely assume substr[0] is lowercase.
-	first := substr[0]
-	end := len(s) - len(substr)
+	firstLower := substr[0]
+	firstUpper := firstLower
+	if firstLower >= 'a' && firstLower <= 'z' {
+		firstUpper -= 32 // sensitiveKeys are all lowercase ASCII
+	}
 
-	for i := 0; i <= end; i++ {
-		c := s[i]
-		if c >= 'A' && c <= 'Z' {
-			c += 32 // to lower
-		}
-		if c == first {
-			// First character matches, check the rest
-			match := true
-			for j := 1; j < len(substr); j++ {
-				charS := s[i+j]
-				if charS >= 'A' && charS <= 'Z' {
-					charS += 32 // to lower
-				}
-				if charS != substr[j] {
-					match = false
-					break
-				}
+	offset := 0
+	maxSearch := len(s) - len(substr)
+
+	for offset <= maxSearch {
+		// Use strings.IndexByte which is assembly optimized (SIMD)
+		slice := s[offset:]
+		idxL := strings.IndexByte(slice, firstLower)
+		idxU := strings.IndexByte(slice, firstUpper)
+
+		var idx int
+		switch {
+		case idxL == -1 && idxU == -1:
+			return false
+		case idxL == -1:
+			idx = idxU
+		case idxU == -1:
+			idx = idxL
+		default:
+			if idxL < idxU {
+				idx = idxL
+			} else {
+				idx = idxU
 			}
-			if match {
-				return true
+		}
+
+		// Found a match at offset + idx
+		if offset+idx > maxSearch {
+			return false
+		}
+
+		// Check the rest of the string
+		match := true
+		matchStart := offset + idx
+		for j := 1; j < len(substr); j++ {
+			cc := s[matchStart+j]
+			if cc >= 'A' && cc <= 'Z' {
+				cc += 32
+			}
+			if cc != substr[j] {
+				match = false
+				break
 			}
 		}
+		if match {
+			return true
+		}
+
+		// Move past this match
+		offset += idx + 1
 	}
 	return false
 }
