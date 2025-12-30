@@ -16,13 +16,13 @@ import (
 	kafkago "github.com/segmentio/kafka-go"
 )
 
-// writerInterface allows mocking kafka.Writer
+// writerInterface allows mocking kafka.Writer.
 type writerInterface interface {
 	WriteMessages(ctx context.Context, msgs ...kafkago.Message) error
 	Close() error
 }
 
-// readerInterface allows mocking kafka.Reader
+// readerInterface allows mocking kafka.Reader.
 type readerInterface interface {
 	ReadMessage(ctx context.Context) (kafkago.Message, error)
 	Close() error

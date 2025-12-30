@@ -20,12 +20,25 @@ linters:
     - govet
     - nolintlint
     - prealloc
-    #- revive
+    - revive
     - gosec
     - staticcheck
     - tparallel
     - unconvert
     - unused
+    - misspell
+    - whitespace
+    - godot
+    - unparam
+    - nakedret
+    - dogsled
+    - asciicheck
+    - makezero
+    - nilerr
+    - noctx
+    - rowserrcheck
+    - sqlclosecheck
+    - wastedassign
 
 issues:
   exclude-dirs:
@@ -38,3 +51,8 @@ issues:
         - "errcheck"
   skip-files:
     - '.*\.pb\.go$'
+    - lll
+    - funlen
+    - wsl
+    - gci
+    - gofumpt

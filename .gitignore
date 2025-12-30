@@ -39,3 +39,8 @@ mcpany.db
 .audits/
 .audit/
 *.txt
+
+# Lint reports
+lint_report.*
+.last-run
+**/.last-run.json

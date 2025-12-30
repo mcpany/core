@@ -9,7 +9,7 @@ import (
 	"fmt"
 	"sync"
 
-	// Import drivers for SQL upstream
+	// Import drivers for SQL upstream.
 	_ "github.com/lib/pq"
 	_ "modernc.org/sqlite"
 

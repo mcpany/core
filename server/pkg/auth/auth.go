@@ -243,7 +243,7 @@ func (am *Manager) AddOAuth2Authenticator(ctx context.Context, serviceID string,
 }
 
 var (
-	// oauthAuthenticatorCache stores *OAuth2Authenticator keyed by IssuerURL + Audience
+	// oauthAuthenticatorCache stores *OAuth2Authenticator keyed by IssuerURL + Audience.
 	oauthAuthenticatorCache = xsync.NewMap[string, *OAuth2Authenticator]()
 )
 

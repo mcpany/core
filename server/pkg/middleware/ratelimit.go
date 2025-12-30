@@ -193,7 +193,7 @@ func (m *RateLimitMiddleware) checkLimit(ctx context.Context, limiter Limiter, c
 	allowed, err := limiter.AllowN(ctx, cost)
 	if err != nil {
 		// Fail open on error
-		return nil
+		return nil //nolint:nilerr
 	}
 	if !allowed {
 		return fmt.Errorf("limit exceeded")

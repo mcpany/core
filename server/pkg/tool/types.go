@@ -15,7 +15,7 @@ import (
 	"net/url"
 	"os"
 
-	// "path"
+	// "path".
 	"path/filepath"
 	"strconv"
 	"strings"
@@ -792,7 +792,7 @@ func (t *HTTPTool) processResponse(ctx context.Context, resp *http.Response) (an
 
 	var result any
 	if err := json.Unmarshal(respBody, &result); err != nil {
-		return string(respBody), nil
+		return string(respBody), nil //nolint:nilerr
 	}
 
 	return result, nil

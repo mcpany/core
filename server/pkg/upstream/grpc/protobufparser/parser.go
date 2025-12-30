@@ -533,7 +533,6 @@ func ExtractMcpDefinitions(fds *descriptorpb.FileDescriptorSet) (*ParsedMcpAnnot
 					IdempotentHint:  idempotentHint,
 					OpenWorldHint:   openWorldHint,
 				})
-
 			}
 		}
 		return true

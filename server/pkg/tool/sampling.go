@@ -19,7 +19,7 @@ type Session interface {
 	ListRoots(ctx context.Context) (*mcp.ListRootsResult, error)
 }
 
-// Sampler is an alias for Session for backward compatibility
+// Sampler is an alias for Session for backward compatibility.
 type Sampler = Session
 
 type sessionContextKey struct{}
