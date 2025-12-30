@@ -286,17 +286,28 @@ func (u *Upstream) createAndRegisterHTTPTools(ctx context.Context, serviceID, ad
 			continue
 		}
 
-		// Ensure baseURL has a trailing slash so ResolveReference appends to it
+		// Ensure baseURL has a trailing slash so ResolveReference appends to it,
+		// BUT ONLY IF we are actually appending a path segment.
 		baseForJoin := *baseURL
-		if !strings.HasSuffix(baseForJoin.Path, "/") {
-			baseForJoin.Path += "/"
-			if baseForJoin.RawPath != "" {
-				baseForJoin.RawPath += "/"
-			}
-		}
 
 		// Make endpoint path relative
 		relPath := strings.TrimPrefix(endpointURL.Path, "/")
+
+		// If the endpoint path has segments (not empty and not just /), force slash on base.
+		// If endpoint path is empty, we DON'T want to force a slash on base, because
+		// we want http://host/api + "" -> http://host/api
+		// But ResolveReference behavior is:
+		// Base: http://host/api, Rel: foo -> http://host/foo (Replaces last segment!)
+		// Base: http://host/api/, Rel: foo -> http://host/api/foo
+		// So if we have a relPath, we MUST ensure base has slash.
+		if relPath != "" {
+			if !strings.HasSuffix(baseForJoin.Path, "/") {
+				baseForJoin.Path += "/"
+				if baseForJoin.RawPath != "" {
+					baseForJoin.RawPath += "/"
+				}
+			}
+		}
 		relRawPath := ""
 		if endpointURL.RawPath != "" {
 			relRawPath = strings.TrimPrefix(endpointURL.RawPath, "/")
