@@ -8,6 +8,7 @@ import (
 	"encoding/json"
 	"testing"
 
+	"github.com/mcpany/core/pkg/tokenizer"
 	"github.com/mcpany/core/pkg/tool"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	v1 "github.com/mcpany/core/proto/mcp_router/v1"
@@ -75,7 +76,8 @@ type github_com_modelcontextprotocol_go_sdk_mcp_Tool struct{}
 
 
 func TestRateLimitMiddleware_EstimateTokenCost(t *testing.T) {
-	m := &RateLimitMiddleware{}
+	// Default SimpleTokenizer (4 chars/token)
+	m := NewRateLimitMiddleware(&MockToolManagerForCost{})
 
 	tests := []struct {
 		name     string
@@ -115,6 +117,47 @@ func TestRateLimitMiddleware_EstimateTokenCost(t *testing.T) {
 				"arg1": 12345, // "12345" -> 5 chars
 			},
 			expected: 1, // 5 / 4 = 1
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			req := &tool.ExecutionRequest{
+				ToolInputs: func() json.RawMessage {
+					b, _ := json.Marshal(tt.inputs)
+					return b
+				}(),
+				Arguments: tt.inputs,
+			}
+			cost := m.estimateTokenCost(req)
+			assert.Equal(t, tt.expected, cost)
+		})
+	}
+}
+
+func TestRateLimitMiddleware_EstimateTokenCost_WordTokenizer(t *testing.T) {
+	// WordTokenizer (1.3 * words)
+	wt := tokenizer.NewWordTokenizer()
+	m := NewRateLimitMiddleware(&MockToolManagerForCost{}, WithTokenizer(wt))
+
+	tests := []struct {
+		name     string
+		inputs   map[string]any
+		expected int
+	}{
+		{
+			name: "hello world",
+			inputs: map[string]any{
+				"arg1": "hello world", // 2 words * 1.3 = 2.6 -> 2
+			},
+			expected: 2,
+		},
+		{
+			name: "sentence",
+			inputs: map[string]any{
+				"arg1": "this is a test sentence", // 5 words * 1.3 = 6.5 -> 6
+			},
+			expected: 6,
 		},
 	}
 
