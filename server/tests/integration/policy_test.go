@@ -413,22 +413,40 @@ func TestExportPolicyForPromptsAndResources(t *testing.T) {
 	defer cancel()
 
 	// Verify Prompts
-	promptsResult, err := client.ListPrompts(ctx)
-	require.NoError(t, err)
-	promptNames := make(map[string]bool)
-	for _, p := range promptsResult.Prompts {
-		promptNames[p.Name] = true
-	}
-	assert.Contains(t, promptNames, "export-policy-misc.public_prompt")
-	assert.NotContains(t, promptNames, "export-policy-misc.private_prompt")
+	assert.Eventually(t, func() bool {
+		promptsResult, err := client.ListPrompts(ctx)
+		if err != nil {
+			return false
+		}
+		promptNames := make(map[string]bool)
+		for _, p := range promptsResult.Prompts {
+			promptNames[p.Name] = true
+		}
+		if !promptNames["export-policy-misc.public_prompt"] {
+			return false
+		}
+		if promptNames["export-policy-misc.private_prompt"] {
+			return false
+		}
+		return true
+	}, 10*time.Second, 100*time.Millisecond, "Expected prompts to be discovered and hidden prompts to be excluded")
 
 	// Verify Resources
-	resourcesResult, err := client.ListResources(ctx)
-	require.NoError(t, err)
-	resNames := make(map[string]bool)
-	for _, r := range resourcesResult.Resources {
-		resNames[r.Name] = true
-	}
-	assert.Contains(t, resNames, "public_resource")
-	assert.NotContains(t, resNames, "private_resource")
+	assert.Eventually(t, func() bool {
+		resourcesResult, err := client.ListResources(ctx)
+		if err != nil {
+			return false
+		}
+		resNames := make(map[string]bool)
+		for _, r := range resourcesResult.Resources {
+			resNames[r.Name] = true
+		}
+		if !resNames["public_resource"] {
+			return false
+		}
+		if resNames["private_resource"] {
+			return false
+		}
+		return true
+	}, 10*time.Second, 100*time.Millisecond, "Expected resources to be discovered and hidden resources to be excluded")
 }
