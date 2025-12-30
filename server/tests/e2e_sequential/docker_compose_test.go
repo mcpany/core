@@ -13,6 +13,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strconv"
 	"strings"
 	"testing"
 	"time"
@@ -68,7 +69,7 @@ func TestDockerComposeE2E(t *testing.T) {
 		t.Log("Starting root docker-compose...")
 		runCommand(t, rootDir, "docker", "compose", "up", "-d", "--wait")
 
-		// 3. Verify Health
+	// 3. Verify Health
 		t.Log("Verifying mcpany-server health...")
 		verifyEndpoint(t, "http://localhost:51234/healthz", 200, 30*time.Second)
 
@@ -86,20 +87,26 @@ func TestDockerComposeE2E(t *testing.T) {
 	// Stop root to avoid conflicts
 	runCommand(t, rootDir, "docker", "compose", "down")
 
+	// Allocate a free port for the example server
+	port, err := getFreePort()
+	require.NoError(t, err, "Failed to get free port")
+	t.Setenv("HOST_PORT", strconv.Itoa(port))
+	t.Logf("Using ephemeral port: %d", port)
+
 	exampleDir := "examples/docker-compose-demo"
 	runCommand(t, rootDir, "docker", "compose", "-f", fmt.Sprintf("%s/docker-compose.yml", exampleDir), "up", "-d", "--wait")
 
 	// 6. Verify Example Health
 	t.Log("Verifying example mcpany-server health...")
-	// Example server is also exposed on host 50050
-	verifyEndpoint(t, "http://localhost:51234/healthz", 200, 30*time.Second)
+	// Example server is also exposed on host port
+	verifyEndpoint(t, fmt.Sprintf("http://localhost:%d/healthz", port), 200, 30*time.Second)
 
 	// 7. Functional Test: Simulate Gemini CLI & Verify Metrics
 	t.Log("Simulating Gemini CLI interaction with echo tool...")
-	simulateGeminiCLI(t, "http://localhost:51234")
+	simulateGeminiCLI(t, fmt.Sprintf("http://localhost:%d", port))
 
 	t.Log("Verifying tool execution metrics...")
-	verifyToolMetricDirect(t, "http://localhost:51234/metrics", "docker-http-echo.echo")
+	verifyToolMetricDirect(t, fmt.Sprintf("http://localhost:%d/metrics", port), "docker-http-echo.echo")
 
 	// 8. Functional Test: Weather Service (Real external call)
 	t.Log("Starting Weather Service functional test...")
@@ -112,47 +119,48 @@ func testFunctionalWeather(t *testing.T, rootDir string) {
 	// 1. Start mcpany-server with wttr.in config
 	// We run it on a different port to avoid conflict with previous steps if they didn't clean up fully,
 	// or just to be isolated.
-	// 1. Start mcpany-server with wttr.in config
-	// We run it on a dynamic port to avoid conflict with previous steps or other processes.
+	port, err := getFreePort()
+	require.NoError(t, err, "Failed to get free port for weather test")
+
+	// Use local config file instead of remote URL to ensure reliability
 	configPath := fmt.Sprintf("%s/examples/popular_services/wttr.in/config.yaml", rootDir)
+    t.Logf("rootDir: %s", rootDir)
+    t.Logf("configPath: %s", configPath)
     if _, err := os.Stat(configPath); err != nil {
         t.Fatalf("Config file not found at %s: %v", configPath, err)
     }
 
-	t.Log("Starting mcpany-server for weather test on dynamic port...")
+	t.Logf("Starting mcpany-server for weather test on port %d...", port)
 
+    // Read and log config file content to be sure
+    content, rErr := os.ReadFile(configPath)
+    if rErr == nil {
+        t.Logf("Config file content:\n%s", string(content))
+    } else {
+        t.Logf("Failed to read config file: %v", rErr)
+    }
+
+	// Note: We use the same internal port 50050 in container, but map it to dynamic host port.
+	// The config uses 0.0.0.0:50050 which is fine inside container.
 	cmd := exec.Command("docker", "run", "-d", "--name", "mcpany-weather-test",
-		"-p", "0:50050", // Dynamic port
+		"-p", fmt.Sprintf("%d:50050", port),
 		"-v", fmt.Sprintf("%s:/config.yaml", configPath),
 		"ghcr.io/mcpany/server:latest",
 		"run", "--config-path", "/config.yaml", "--mcp-listen-address", ":50050",
 	)
+    t.Logf("Running command: %s", cmd.String())
 
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
-	err := cmd.Run()
+	err = cmd.Run()
 	require.NoError(t, err, "Failed to start weather server container")
 
 	// Cleanup
 	defer func() {
-		_ = exec.Command("docker", "rm", "-f", "mcpany-weather-test").Run()
+		_ = exec.Command("docker", "kill", "mcpany-weather-test").Run()
 	}()
 
-    // Get assigned port
-    out, err := exec.Command("docker", "port", "mcpany-weather-test", "50050/tcp").Output()
-    require.NoError(t, err, "Failed to get assigned port")
-    // Output example: 0.0.0.0:32768
-    portBinding := strings.TrimSpace(string(out))
-    // If multiple bindings (IPv4/IPv6), take the first line
-    if idx := strings.Index(portBinding, "\n"); idx != -1 {
-        portBinding = portBinding[:idx]
-    }
-
-    // Parse the port
-    _, portStr, err := net.SplitHostPort(portBinding)
-    require.NoError(t, err, "Failed to parse port from %s", portBinding)
-
-	baseURL := fmt.Sprintf("http://localhost:%s", portStr)
+	baseURL := fmt.Sprintf("http://localhost:%d", port)
 
 	// 2. Wait for health
 	verifyEndpoint(t, fmt.Sprintf("%s/healthz", baseURL), 200, 30*time.Second)
@@ -176,7 +184,7 @@ func testFunctionalWeather(t *testing.T, rootDir string) {
 }
 
 func simulateGeminiCLIWeather(t *testing.T, baseURL string) string {
-	ctx, cancel := context.WithTimeout(context.Background(), 60*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 
 	client := mcp.NewClient(&mcp.Implementation{Name: "test-weather-client", Version: "1.0"}, nil)
@@ -402,4 +410,18 @@ func verifyToolMetricDirect(t *testing.T, metricsURL, toolName string) {
 	t.Logf("Metrics output:\n%s", body)
 	require.Contains(t, body, "mcpany_tools_call_total", "Metric name not found")
 	require.Contains(t, body, fmt.Sprintf("tool=\"%s\"", toolName), "Tool label not found")
+}
+
+func getFreePort() (int, error) {
+	addr, err := net.ResolveTCPAddr("tcp", "localhost:0")
+	if err != nil {
+		return 0, err
+	}
+
+	l, err := net.ListenTCP("tcp", addr)
+	if err != nil {
+		return 0, err
+	}
+	defer l.Close()
+	return l.Addr().(*net.TCPAddr).Port, nil
 }
