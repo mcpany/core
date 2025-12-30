@@ -8,6 +8,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"net"
 	"net/http"
 	"os"
 	"os/exec"
@@ -111,32 +112,21 @@ func testFunctionalWeather(t *testing.T, rootDir string) {
 	// 1. Start mcpany-server with wttr.in config
 	// We run it on a different port to avoid conflict with previous steps if they didn't clean up fully,
 	// or just to be isolated.
-	port := 50060
-	// Use local config file instead of remote URL to ensure reliability
+	// 1. Start mcpany-server with wttr.in config
+	// We run it on a dynamic port to avoid conflict with previous steps or other processes.
 	configPath := fmt.Sprintf("%s/examples/popular_services/wttr.in/config.yaml", rootDir)
-    t.Logf("rootDir: %s", rootDir)
-    t.Logf("configPath: %s", configPath)
     if _, err := os.Stat(configPath); err != nil {
         t.Fatalf("Config file not found at %s: %v", configPath, err)
     }
 
-	t.Logf("Starting mcpany-server for weather test on port %d...", port)
-
-    // Read and log config file content to be sure
-    content, rErr := os.ReadFile(configPath)
-    if rErr == nil {
-        t.Logf("Config file content:\n%s", string(content))
-    } else {
-        t.Logf("Failed to read config file: %v", rErr)
-    }
+	t.Log("Starting mcpany-server for weather test on dynamic port...")
 
 	cmd := exec.Command("docker", "run", "-d", "--name", "mcpany-weather-test",
-		"-p", fmt.Sprintf("%d:50050", port),
+		"-p", "0:50050", // Dynamic port
 		"-v", fmt.Sprintf("%s:/config.yaml", configPath),
 		"ghcr.io/mcpany/server:latest",
 		"run", "--config-path", "/config.yaml", "--mcp-listen-address", ":50050",
 	)
-    t.Logf("Running command: %s", cmd.String())
 
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
@@ -145,10 +135,24 @@ func testFunctionalWeather(t *testing.T, rootDir string) {
 
 	// Cleanup
 	defer func() {
-		_ = exec.Command("docker", "kill", "mcpany-weather-test").Run()
+		_ = exec.Command("docker", "rm", "-f", "mcpany-weather-test").Run()
 	}()
 
-	baseURL := fmt.Sprintf("http://localhost:%d", port)
+    // Get assigned port
+    out, err := exec.Command("docker", "port", "mcpany-weather-test", "50050/tcp").Output()
+    require.NoError(t, err, "Failed to get assigned port")
+    // Output example: 0.0.0.0:32768
+    portBinding := strings.TrimSpace(string(out))
+    // If multiple bindings (IPv4/IPv6), take the first line
+    if idx := strings.Index(portBinding, "\n"); idx != -1 {
+        portBinding = portBinding[:idx]
+    }
+
+    // Parse the port
+    _, portStr, err := net.SplitHostPort(portBinding)
+    require.NoError(t, err, "Failed to parse port from %s", portBinding)
+
+	baseURL := fmt.Sprintf("http://localhost:%s", portStr)
 
 	// 2. Wait for health
 	verifyEndpoint(t, fmt.Sprintf("%s/healthz", baseURL), 200, 30*time.Second)
