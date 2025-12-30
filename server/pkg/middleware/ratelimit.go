@@ -16,6 +16,7 @@ import (
 	armonmetrics "github.com/armon/go-metrics"
 	"github.com/mcpany/core/pkg/auth"
 	"github.com/mcpany/core/pkg/metrics"
+	"github.com/mcpany/core/pkg/tokenizer"
 	"github.com/mcpany/core/pkg/tool"
 	"github.com/mcpany/core/pkg/util"
 	"github.com/mcpany/core/proto/bus"
@@ -65,6 +66,7 @@ func (l *LocalLimiter) Update(rps float64, burst int) {
 // functionality for upstream services.
 type RateLimitMiddleware struct {
 	toolManager tool.ManagerInterface
+	tokenizer   tokenizer.Tokenizer
 	// limiters caches active limiters. Key is "limitKey:partitionKey".
 	limiters *cache.Cache
 	// redisClients caches Redis clients per service. Key is serviceID.
@@ -76,12 +78,29 @@ type cachedRedisClient struct {
 	configHash string
 }
 
+// Option defines a functional option for RateLimitMiddleware.
+type Option func(*RateLimitMiddleware)
+
+// WithTokenizer sets a custom tokenizer for the middleware.
+func WithTokenizer(t tokenizer.Tokenizer) Option {
+	return func(m *RateLimitMiddleware) {
+		m.tokenizer = t
+	}
+}
+
 // NewRateLimitMiddleware creates a new RateLimitMiddleware.
-func NewRateLimitMiddleware(toolManager tool.ManagerInterface) *RateLimitMiddleware {
-	return &RateLimitMiddleware{
+func NewRateLimitMiddleware(toolManager tool.ManagerInterface, opts ...Option) *RateLimitMiddleware {
+	m := &RateLimitMiddleware{
 		toolManager: toolManager,
 		limiters:    cache.New(1*time.Hour, 10*time.Minute),
 	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	if m.tokenizer == nil {
+		m.tokenizer = tokenizer.NewSimpleTokenizer()
+	}
+	return m
 }
 
 // Execute executes the rate limiting middleware.
@@ -206,41 +225,14 @@ func (m *RateLimitMiddleware) estimateTokenCost(req *tool.ExecutionRequest) int 
 		return 1
 	}
 
-	// Crude estimation: 1 token ~= 4 chars
-	// Sum up all string arguments
-	charCount := 0
-	for _, v := range args {
-		charCount += countChars(v)
+	tokens, err := tokenizer.CountTokensInValue(m.tokenizer, args)
+	if err != nil {
+		return 1
 	}
-
-	// At least 1 token
-	tokens := charCount / 4
 	if tokens < 1 {
-		tokens = 1
+		return 1
 	}
 	return tokens
-}
-
-func countChars(v interface{}) int {
-	switch val := v.(type) {
-	case string:
-		return len(val)
-	case []interface{}:
-		count := 0
-		for _, item := range val {
-			count += countChars(item)
-		}
-		return count
-	case map[string]interface{}:
-		count := 0
-		for _, item := range val {
-			count += countChars(item)
-		}
-		return count
-	default:
-		// Best effort for other types
-		return len(fmt.Sprintf("%v", val))
-	}
 }
 
 // getLimiter retrieves or creates a limiter.

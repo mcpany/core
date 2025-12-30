@@ -1,0 +1,90 @@
+// Copyright 2025 Author(s) of MCP Any
+// SPDX-License-Identifier: Apache-2.0
+
+// Package tokenizer provides interfaces and implementations for counting tokens in text.
+package tokenizer
+
+import (
+	"fmt"
+	"strings"
+)
+
+// Tokenizer defines the interface for counting tokens in a given text.
+type Tokenizer interface {
+	// CountTokens estimates or calculates the number of tokens in the input text.
+	CountTokens(text string) (int, error)
+}
+
+// SimpleTokenizer implements a character-based heuristic.
+// Logic: ~4 characters per token.
+type SimpleTokenizer struct{}
+
+// NewSimpleTokenizer creates a new SimpleTokenizer.
+func NewSimpleTokenizer() *SimpleTokenizer {
+	return &SimpleTokenizer{}
+}
+
+func (t *SimpleTokenizer) CountTokens(text string) (int, error) {
+	if len(text) == 0 {
+		return 0, nil
+	}
+	count := len(text) / 4
+	if count < 1 {
+		count = 1
+	}
+	return count, nil
+}
+
+// WordTokenizer implements a word-based heuristic.
+// Logic: Count words (split by space) and multiply by a factor (e.g. 1.3) to account for subwords/punctuation.
+type WordTokenizer struct {
+	Factor float64
+}
+
+// NewWordTokenizer creates a new WordTokenizer with a default factor of 1.3.
+func NewWordTokenizer() *WordTokenizer {
+	return &WordTokenizer{Factor: 1.3}
+}
+
+func (t *WordTokenizer) CountTokens(text string) (int, error) {
+	if len(text) == 0 {
+		return 0, nil
+	}
+	words := strings.Fields(text)
+	count := int(float64(len(words)) * t.Factor)
+	if count < 1 && len(text) > 0 {
+		count = 1
+	}
+	return count, nil
+}
+
+// helper to recursively count tokens in arbitrary structures
+func CountTokensInValue(t Tokenizer, v interface{}) (int, error) {
+	switch val := v.(type) {
+	case string:
+		return t.CountTokens(val)
+	case []interface{}:
+		count := 0
+		for _, item := range val {
+			c, err := CountTokensInValue(t, item)
+			if err != nil {
+				return 0, err
+			}
+			count += c
+		}
+		return count, nil
+	case map[string]interface{}:
+		count := 0
+		for _, item := range val {
+			c, err := CountTokensInValue(t, item)
+			if err != nil {
+				return 0, err
+			}
+			count += c
+		}
+		return count, nil
+	default:
+		// Convert to string representation
+		return t.CountTokens(fmt.Sprintf("%v", val))
+	}
+}
