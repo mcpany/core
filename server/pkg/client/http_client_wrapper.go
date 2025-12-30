@@ -40,9 +40,12 @@ func (w *HTTPClientWrapper) IsHealthy(ctx context.Context) bool {
 	return w.checker.Check(ctx).Status == health.StatusUp
 }
 
-// Close is a no-op for the `*http.Client` wrapper. The underlying transport
-// manages the connections, and closing the client itself is not typically
-// necessary.
+// Close closes any idle connections associated with the client.
 func (w *HTTPClientWrapper) Close() error {
+	if w.Client != nil {
+		if t, ok := w.Client.Transport.(interface{ CloseIdleConnections() }); ok {
+			t.CloseIdleConnections()
+		}
+	}
 	return nil
 }
