@@ -432,6 +432,8 @@ type GlobalSettings struct {
 	xxx_hidden_ProfileDefinitions *[]*ProfileDefinition    `protobuf:"bytes,9,rep,name=profile_definitions"`
 	xxx_hidden_LogFormat          GlobalSettings_LogFormat `protobuf:"varint,10,opt,name=log_format,enum=mcpany.config.v1.GlobalSettings_LogFormat"`
 	xxx_hidden_DbPath             *string                  `protobuf:"bytes,11,opt,name=db_path"`
+	xxx_hidden_DbDsn              *string                  `protobuf:"bytes,14,opt,name=db_dsn"`
+	xxx_hidden_DbDriver           *string                  `protobuf:"bytes,15,opt,name=db_driver"`
 	xxx_hidden_Middlewares        *[]*Middleware           `protobuf:"bytes,12,rep,name=middlewares"`
 	xxx_hidden_Dlp                *DLPConfig               `protobuf:"bytes,13,opt,name=dlp"`
 	XXX_raceDetectHookData        protoimpl.RaceDetectHookData
@@ -550,6 +552,26 @@ func (x *GlobalSettings) GetDbPath() string {
 	return ""
 }
 
+func (x *GlobalSettings) GetDbDsn() string {
+	if x != nil {
+		if x.xxx_hidden_DbDsn != nil {
+			return *x.xxx_hidden_DbDsn
+		}
+		return ""
+	}
+	return ""
+}
+
+func (x *GlobalSettings) GetDbDriver() string {
+	if x != nil {
+		if x.xxx_hidden_DbDriver != nil {
+			return *x.xxx_hidden_DbDriver
+		}
+		return ""
+	}
+	return ""
+}
+
 func (x *GlobalSettings) GetMiddlewares() []*Middleware {
 	if x != nil {
 		if x.xxx_hidden_Middlewares != nil {
@@ -568,12 +590,12 @@ func (x *GlobalSettings) GetDlp() *DLPConfig {
 
 func (x *GlobalSettings) SetMcpListenAddress(v string) {
 	x.xxx_hidden_McpListenAddress = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 12)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 14)
 }
 
 func (x *GlobalSettings) SetLogLevel(v GlobalSettings_LogLevel) {
 	x.xxx_hidden_LogLevel = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 12)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 14)
 }
 
 func (x *GlobalSettings) SetMessageBus(v *bus.MessageBus) {
@@ -582,7 +604,7 @@ func (x *GlobalSettings) SetMessageBus(v *bus.MessageBus) {
 
 func (x *GlobalSettings) SetApiKey(v string) {
 	x.xxx_hidden_ApiKey = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 3, 12)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 3, 14)
 }
 
 func (x *GlobalSettings) SetProfiles(v []string) {
@@ -603,12 +625,22 @@ func (x *GlobalSettings) SetProfileDefinitions(v []*ProfileDefinition) {
 
 func (x *GlobalSettings) SetLogFormat(v GlobalSettings_LogFormat) {
 	x.xxx_hidden_LogFormat = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 8, 12)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 8, 14)
 }
 
 func (x *GlobalSettings) SetDbPath(v string) {
 	x.xxx_hidden_DbPath = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 9, 12)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 9, 14)
+}
+
+func (x *GlobalSettings) SetDbDsn(v string) {
+	x.xxx_hidden_DbDsn = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 10, 14)
+}
+
+func (x *GlobalSettings) SetDbDriver(v string) {
+	x.xxx_hidden_DbDriver = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 11, 14)
 }
 
 func (x *GlobalSettings) SetMiddlewares(v []*Middleware) {
@@ -668,6 +700,20 @@ func (x *GlobalSettings) HasDbPath() bool {
 	return protoimpl.X.Present(&(x.XXX_presence[0]), 9)
 }
 
+func (x *GlobalSettings) HasDbDsn() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 10)
+}
+
+func (x *GlobalSettings) HasDbDriver() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 11)
+}
+
 func (x *GlobalSettings) HasDlp() bool {
 	if x == nil {
 		return false
@@ -708,6 +754,16 @@ func (x *GlobalSettings) ClearDbPath() {
 	x.xxx_hidden_DbPath = nil
 }
 
+func (x *GlobalSettings) ClearDbDsn() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 10)
+	x.xxx_hidden_DbDsn = nil
+}
+
+func (x *GlobalSettings) ClearDbDriver() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 11)
+	x.xxx_hidden_DbDriver = nil
+}
+
 func (x *GlobalSettings) ClearDlp() {
 	x.xxx_hidden_Dlp = nil
 }
@@ -735,6 +791,10 @@ type GlobalSettings_builder struct {
 	LogFormat *GlobalSettings_LogFormat
 	// The path to the database file.
 	DbPath *string
+	// The database connection string (DSN).
+	DbDsn *string
+	// The database driver (sqlite, postgres).
+	DbDriver *string
 	// The list of middlewares to enable and their configuration.
 	Middlewares []*Middleware
 	// DLP configuration.
@@ -746,16 +806,16 @@ func (b0 GlobalSettings_builder) Build() *GlobalSettings {
 	b, x := &b0, m0
 	_, _ = b, x
 	if b.McpListenAddress != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 12)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 14)
 		x.xxx_hidden_McpListenAddress = b.McpListenAddress
 	}
 	if b.LogLevel != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 12)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 14)
 		x.xxx_hidden_LogLevel = *b.LogLevel
 	}
 	x.xxx_hidden_MessageBus = b.MessageBus
 	if b.ApiKey != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 3, 12)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 3, 14)
 		x.xxx_hidden_ApiKey = b.ApiKey
 	}
 	x.xxx_hidden_Profiles = b.Profiles
@@ -763,12 +823,20 @@ func (b0 GlobalSettings_builder) Build() *GlobalSettings {
 	x.xxx_hidden_Audit = b.Audit
 	x.xxx_hidden_ProfileDefinitions = &b.ProfileDefinitions
 	if b.LogFormat != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 8, 12)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 8, 14)
 		x.xxx_hidden_LogFormat = *b.LogFormat
 	}
 	if b.DbPath != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 9, 12)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 9, 14)
 		x.xxx_hidden_DbPath = b.DbPath
+	}
+	if b.DbDsn != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 10, 14)
+		x.xxx_hidden_DbDsn = b.DbDsn
+	}
+	if b.DbDriver != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 11, 14)
+		x.xxx_hidden_DbDriver = b.DbDriver
 	}
 	x.xxx_hidden_Middlewares = &b.Middlewares
 	x.xxx_hidden_Dlp = b.Dlp
@@ -1418,7 +1486,7 @@ const file_proto_config_v1_config_proto_rawDesc = "" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12N\n" +
 	"\x0eauthentication\x18\x02 \x01(\v2&.mcpany.config.v1.AuthenticationConfigR\x0eauthentication\x12 \n" +
 	"\vprofile_ids\x18\x03 \x03(\tR\vprofile_ids\x12\x14\n" +
-	"\x05roles\x18\x04 \x03(\tR\x05roles\"\xc7\x06\n" +
+	"\x05roles\x18\x04 \x03(\tR\x05roles\"\xfd\x06\n" +
 	"\x0eGlobalSettings\x12.\n" +
 	"\x12mcp_listen_address\x18\x01 \x01(\tR\x12mcp_listen_address\x12G\n" +
 	"\tlog_level\x18\x03 \x01(\x0e2).mcpany.config.v1.GlobalSettings.LogLevelR\tlog_level\x121\n" +
@@ -1432,7 +1500,9 @@ const file_proto_config_v1_config_proto_rawDesc = "" +
 	"log_format\x18\n" +
 	" \x01(\x0e2*.mcpany.config.v1.GlobalSettings.LogFormatR\n" +
 	"log_format\x12\x18\n" +
-	"\adb_path\x18\v \x01(\tR\adb_path\x12>\n" +
+	"\adb_path\x18\v \x01(\tR\adb_path\x12\x16\n" +
+	"\x06db_dsn\x18\x0e \x01(\tR\x06db_dsn\x12\x1c\n" +
+	"\tdb_driver\x18\x0f \x01(\tR\tdb_driver\x12>\n" +
 	"\vmiddlewares\x18\f \x03(\v2\x1c.mcpany.config.v1.MiddlewareR\vmiddlewares\x12-\n" +
 	"\x03dlp\x18\r \x01(\v2\x1b.mcpany.config.v1.DLPConfigR\x03dlp\"w\n" +
 	"\bLogLevel\x12\x19\n" +

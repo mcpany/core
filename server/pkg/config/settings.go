@@ -212,6 +212,16 @@ func (s *Settings) DBPath() string {
 	return s.dbPath
 }
 
+// DBDriver returns the database driver.
+func (s *Settings) DBDriver() string {
+	return viper.GetString("db-driver")
+}
+
+// DBDsn returns the database connection string.
+func (s *Settings) DBDsn() string {
+	return viper.GetString("db-dsn")
+}
+
 // Middlewares returns the configured middlewares.
 func (s *Settings) Middlewares() []*configv1.Middleware {
 	return s.proto.GetMiddlewares()

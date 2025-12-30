@@ -33,6 +33,8 @@ import (
 	"github.com/mcpany/core/pkg/prompt"
 	"github.com/mcpany/core/pkg/resource"
 	"github.com/mcpany/core/pkg/serviceregistry"
+	"github.com/mcpany/core/pkg/storage"
+	"github.com/mcpany/core/pkg/storage/postgres"
 	"github.com/mcpany/core/pkg/storage/sqlite"
 	"github.com/mcpany/core/pkg/telemetry"
 	"github.com/mcpany/core/pkg/tool"
@@ -222,23 +224,42 @@ func (a *Application) Run(
 
 	log.Info("Starting MCP Any Service...")
 
-	// Load initial services from config files and SQLite
-	dbPath := config.GlobalSettings().DBPath()
-	if dbPath == "" {
-		dbPath = "mcpany.db"
+	// Load initial services from config files and Storage
+	var dbStore storage.Storage
+
+	dbDriver := config.GlobalSettings().DBDriver()
+	if dbDriver == "" {
+		dbDriver = "sqlite"
 	}
-	sqliteDB, err := sqlite.NewDB(dbPath)
-	if err != nil {
-		return fmt.Errorf("failed to initialize sqlite db: %w", err)
+
+	if dbDriver == "postgres" {
+		dsn := config.GlobalSettings().DBDsn()
+		if dsn == "" {
+			return fmt.Errorf("postgres driver selected but db_dsn is empty")
+		}
+		pgDB, err := postgres.NewDB(dsn)
+		if err != nil {
+			return fmt.Errorf("failed to initialize postgres db: %w", err)
+		}
+		dbStore = postgres.NewStore(pgDB)
+	} else {
+		dbPath := config.GlobalSettings().DBPath()
+		if dbPath == "" {
+			dbPath = "mcpany.db"
+		}
+		sqliteDB, err := sqlite.NewDB(dbPath)
+		if err != nil {
+			return fmt.Errorf("failed to initialize sqlite db: %w", err)
+		}
+		dbStore = sqlite.NewStore(sqliteDB)
 	}
-	defer func() { _ = sqliteDB.Close() }()
-	sqliteStore := sqlite.NewStore(sqliteDB)
+	defer func() { _ = dbStore.Close() }()
 
 	var stores []config.Store
 	if len(configPaths) > 0 {
 		stores = append(stores, config.NewFileStore(fs, configPaths))
 	}
-	stores = append(stores, sqliteStore)
+	stores = append(stores, dbStore)
 	multiStore := config.NewMultiStore(stores...)
 
 	var cfg *config_v1.McpAnyServerConfig
@@ -449,7 +470,7 @@ func (a *Application) Run(
 		allowedOrigins = []string{"*"}
 	}
 
-	runErr := a.runServerMode(ctx, mcpSrv, busProvider, bindAddress, grpcPort, shutdownTimeout, cfg.GetUsers(), cfg.GetGlobalSettings().GetProfileDefinitions(), allowedIPs, allowedOrigins, cachingMiddleware, sqliteStore, serviceRegistry)
+	runErr := a.runServerMode(ctx, mcpSrv, busProvider, bindAddress, grpcPort, shutdownTimeout, cfg.GetUsers(), cfg.GetGlobalSettings().GetProfileDefinitions(), allowedIPs, allowedOrigins, cachingMiddleware, dbStore, serviceRegistry)
 
 	// Stop workers
 	workerCancel()
@@ -692,7 +713,7 @@ func (a *Application) runServerMode(
 	allowedIPs []string,
 	allowedOrigins []string,
 	cachingMiddleware *middleware.CachingMiddleware,
-	store *sqlite.Store,
+	store storage.Storage,
 	serviceRegistry *serviceregistry.ServiceRegistry,
 ) error {
 	ipMiddleware, err := middleware.NewIPAllowlistMiddleware(allowedIPs)
