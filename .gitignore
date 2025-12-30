@@ -25,6 +25,8 @@ __pycache__/
 coverage.html
 .cache/
 build/
+
+# Jules Agent
 .[Jj][Uu][Ll][Ee][Ss]/
 
 # Database
