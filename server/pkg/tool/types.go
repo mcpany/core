@@ -75,6 +75,9 @@ type ServiceInfo struct {
 	PreHooks []PreCallHook
 	// PostHooks are the cached post-call hooks for the service.
 	PostHooks []PostCallHook
+
+	// CompiledPolicies are the pre-compiled call policies for the service.
+	CompiledPolicies []*CompiledCallPolicy
 }
 
 // ExecutionRequest represents a request to execute a specific tool, including

@@ -320,6 +320,13 @@ func (tm *Manager) AddServiceInfo(serviceID string, info *ServiceInfo) {
 		for _, policy := range info.Config.GetCallPolicies() {
 			preHooks = append(preHooks, NewPolicyHook(policy))
 		}
+
+		// Compile call policies for the middleware
+		if compiled, err := CompileCallPolicies(info.Config.GetCallPolicies()); err == nil {
+			info.CompiledPolicies = compiled
+		} else {
+			logging.GetLogger().Error("Failed to compile call policies", "error", err)
+		}
 		// 2. PreCallHooks
 		for _, hCfg := range info.Config.GetPreCallHooks() {
 			if p := hCfg.GetCallPolicy(); p != nil {

@@ -86,11 +86,13 @@ func TestCallPolicyMiddleware(t *testing.T) {
 		}
 		mockTool := &callPolicyMockTool{toolProto: toolProto}
 
+		compiledPolicies, _ := tool.CompileCallPolicies(policies)
 		serviceInfo := &tool.ServiceInfo{
 			Name: "test-service",
 			Config: &configv1.UpstreamServiceConfig{
 				CallPolicies: policies,
 			},
+			CompiledPolicies: compiledPolicies,
 		}
 
 		mockToolManager.On("GetTool", mock.Anything).Return(mockTool, true)
@@ -226,7 +228,7 @@ func TestCallPolicyMiddleware(t *testing.T) {
 
 		_, err := cpMiddleware.Execute(ctx, req, next)
 		assert.Error(t, err)
-		assert.Contains(t, err.Error(), "execution denied by default policy")
+		assert.Contains(t, err.Error(), "execution denied by policy")
 	})
 
 	t.Run("default deny but allowed by rule -> allowed", func(t *testing.T) {
