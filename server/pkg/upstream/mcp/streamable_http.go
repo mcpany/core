@@ -803,17 +803,6 @@ func (u *Upstream) createAndRegisterMCPItemsFromStreamableHTTP(
 	}
 	var mcpSdkClient *mcp.Client
 
-	createMessageHandler := func(ctx context.Context, req *mcp.ClientRequest[*mcp.CreateMessageParams]) (*mcp.CreateMessageResult, error) {
-		session := req.GetSession()
-		if session == nil {
-			return nil, fmt.Errorf("no session associated with request")
-		}
-		if toolSession, ok := u.sessionRegistry.Get(session); ok {
-			return toolSession.CreateMessage(ctx, req.Params)
-		}
-		return nil, fmt.Errorf("no downstream session found for upstream session")
-	}
-
 	if newClientForTesting != nil {
 		mcpSdkClient = newClientForTesting(&mcp.Implementation{
 			Name:    "mcpany",
@@ -824,7 +813,7 @@ func (u *Upstream) createAndRegisterMCPItemsFromStreamableHTTP(
 			Name:    "mcpany",
 			Version: "0.1.0",
 		}, &mcp.ClientOptions{
-			CreateMessageHandler: createMessageHandler,
+			CreateMessageHandler: u.handleCreateMessage,
 		})
 	}
 
@@ -946,21 +935,21 @@ func (u *Upstream) createMCPClient(ctx context.Context) (*mcp.Client, error) {
 		}), nil
 	}
 
-	createMessageHandler := func(ctx context.Context, req *mcp.ClientRequest[*mcp.CreateMessageParams]) (*mcp.CreateMessageResult, error) {
-		session := req.GetSession()
-		if session == nil {
-			return nil, fmt.Errorf("no session associated with request")
-		}
-		if toolSession, ok := u.sessionRegistry.Get(session); ok {
-			return toolSession.CreateMessage(ctx, req.Params)
-		}
-		return nil, fmt.Errorf("no downstream session found for upstream session")
-	}
-
 	return mcp.NewClient(&mcp.Implementation{
 		Name:    "mcpany",
 		Version: "0.1.0",
 	}, &mcp.ClientOptions{
-		CreateMessageHandler: createMessageHandler,
+		CreateMessageHandler: u.handleCreateMessage,
 	}), nil
+}
+
+func (u *Upstream) handleCreateMessage(ctx context.Context, req *mcp.ClientRequest[*mcp.CreateMessageParams]) (*mcp.CreateMessageResult, error) {
+	session := req.Session
+	if session == nil {
+		return nil, fmt.Errorf("no session associated with request")
+	}
+	if toolSession, ok := u.sessionRegistry.Get(session); ok {
+		return toolSession.CreateMessage(ctx, req.Params)
+	}
+	return nil, fmt.Errorf("no downstream session found for upstream session")
 }
