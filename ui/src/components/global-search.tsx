@@ -139,7 +139,7 @@ export function GlobalSearch() {
           {services.length > 0 && (
              <CommandGroup heading="Services">
                {services.map((service) => (
-                 <CommandItem key={service.id || service.name} onSelect={() => runCommand(() => router.push(`/services?id=${service.id}`))}>
+                 <CommandItem key={service.id || service.name} value={`service ${service.name}`} onSelect={() => runCommand(() => router.push(`/services?id=${service.id}`))}>
                    <Database className="mr-2 h-4 w-4" />
                    <span>{service.name}</span>
                    {service.version && <span className="ml-2 text-xs text-muted-foreground">v{service.version}</span>}
@@ -151,7 +151,7 @@ export function GlobalSearch() {
           {tools.length > 0 && (
              <CommandGroup heading="Tools">
                {tools.map((tool) => (
-                 <CommandItem key={tool.name} onSelect={() => runCommand(() => router.push(`/tools?name=${tool.name}`))}>
+                 <CommandItem key={tool.name} value={`tool ${tool.name}`} onSelect={() => runCommand(() => router.push(`/tools?name=${tool.name}`))}>
                    <Calculator className="mr-2 h-4 w-4" />
                    <span>{tool.name}</span>
                    <span className="ml-2 text-xs text-muted-foreground truncate max-w-[200px]">{tool.description}</span>
@@ -163,7 +163,7 @@ export function GlobalSearch() {
            {resources.length > 0 && (
              <CommandGroup heading="Resources">
                {resources.map((resource) => (
-                 <CommandItem key={resource.uri} onSelect={() => runCommand(() => router.push(`/resources?uri=${encodeURIComponent(resource.uri)}`))}>
+                 <CommandItem key={resource.uri} value={`resource ${resource.name}`} onSelect={() => runCommand(() => router.push(`/resources?uri=${encodeURIComponent(resource.uri)}`))}>
                    <FileBox className="mr-2 h-4 w-4" />
                    <span>{resource.name}</span>
                  </CommandItem>
@@ -174,7 +174,7 @@ export function GlobalSearch() {
            {prompts.length > 0 && (
              <CommandGroup heading="Prompts">
                {prompts.map((prompt) => (
-                 <CommandItem key={prompt.name} onSelect={() => runCommand(() => router.push(`/prompts?name=${prompt.name}`))}>
+                 <CommandItem key={prompt.name} value={`prompt ${prompt.name}`} onSelect={() => runCommand(() => router.push(`/prompts?name=${prompt.name}`))}>
                    <MessageSquare className="mr-2 h-4 w-4" />
                    <span>{prompt.name}</span>
                  </CommandItem>
