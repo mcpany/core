@@ -67,8 +67,10 @@ func TestHTTPCORSMiddleware(t *testing.T) {
 			},
 			expectedStatus: http.StatusOK,
 			expectHeaders: map[string]string{
-				"Access-Control-Allow-Origin":      "http://anywhere.com",
-				"Access-Control-Allow-Credentials": "true",
+				"Access-Control-Allow-Origin": "*",
+			},
+			expectNoHeaders: []string{
+				"Access-Control-Allow-Credentials",
 			},
 		},
 		{
