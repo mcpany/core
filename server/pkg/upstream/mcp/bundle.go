@@ -192,17 +192,9 @@ func (u *Upstream) createAndRegisterMCPItemsFromBundle(
 	}
 
 	// 5. Connect and Register
-	var mcpSdkClient *mcp.Client
-	if newClientForTesting != nil {
-		mcpSdkClient = newClientForTesting(&mcp.Implementation{
-			Name:    "mcpany",
-			Version: "0.1.0",
-		})
-	} else {
-		mcpSdkClient = mcp.NewClient(&mcp.Implementation{
-			Name:    "mcpany",
-			Version: "0.1.0",
-		}, nil)
+	mcpSdkClient, err := u.createMCPClient(ctx)
+	if err != nil {
+		return nil, nil, err
 	}
 
 	var cs ClientSession
@@ -225,6 +217,7 @@ func (u *Upstream) createAndRegisterMCPItemsFromBundle(
 	bundleConn := &mcpConnection{
 		client:          mcpSdkClient,
 		bundleTransport: transport,
+		sessionRegistry: u.sessionRegistry,
 	}
 
 	return u.processMCPItems(ctx, serviceID, listToolsResult, bundleConn, bundleConn, cs, toolManager, promptManager, resourceManager, serviceConfig)
