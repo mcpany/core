@@ -68,7 +68,7 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 
 // Register processes the configuration for a filesystem service.
 func (u *Upstream) Register(
-	_ context.Context,
+	ctx context.Context,
 	serviceConfig *configv1.UpstreamServiceConfig,
 	toolManager tool.ManagerInterface,
 	_ prompt.ManagerInterface,
