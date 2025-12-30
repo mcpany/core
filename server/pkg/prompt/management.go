@@ -30,9 +30,10 @@ type ManagerInterface interface {
 
 // Manager is a thread-safe manager for registering and retrieving prompts.
 type Manager struct {
-	prompts   *xsync.Map[string, Prompt]
-	mcpServer MCPServerProvider
-	mu        sync.RWMutex
+	prompts       *xsync.Map[string, Prompt]
+	mcpServer     MCPServerProvider
+	mu            sync.RWMutex
+	cachedPrompts []Prompt
 }
 
 // NewManager creates and returns a new, empty Manager.
@@ -60,12 +61,18 @@ func (pm *Manager) AddPrompt(prompt Prompt) {
 			existingPrompt.Service(),
 		))
 	}
+	pm.mu.Lock()
+	pm.cachedPrompts = nil
+	pm.mu.Unlock()
 }
 
 // UpdatePrompt updates an existing prompt in the manager. If the prompt does not
 // exist, it will be added.
 func (pm *Manager) UpdatePrompt(prompt Prompt) {
 	pm.prompts.Store(prompt.Prompt().Name, prompt)
+	pm.mu.Lock()
+	pm.cachedPrompts = nil
+	pm.mu.Unlock()
 }
 
 // GetPrompt retrieves a prompt from the manager by its name.
@@ -76,20 +83,57 @@ func (pm *Manager) GetPrompt(name string) (Prompt, bool) {
 
 // ListPrompts returns a slice containing all the prompts currently registered.
 func (pm *Manager) ListPrompts() []Prompt {
-	var prompts []Prompt
+	// ⚡ Bolt: Use a read-through cache to avoid repeated map iteration and slice allocation.
+	// The cache is invalidated on any write operation (Add/Update/Clear).
+	// We use double-checked locking to safely upgrade from RLock to Lock.
+	pm.mu.RLock()
+	if pm.cachedPrompts != nil {
+		// Return a copy to ensure thread safety
+		result := make([]Prompt, len(pm.cachedPrompts))
+		copy(result, pm.cachedPrompts)
+		pm.mu.RUnlock()
+		return result
+	}
+	pm.mu.RUnlock()
+
+	pm.mu.Lock()
+	defer pm.mu.Unlock()
+
+	// Double-check after acquiring the write lock
+	if pm.cachedPrompts != nil {
+		// Return a copy to ensure thread safety
+		result := make([]Prompt, len(pm.cachedPrompts))
+		copy(result, pm.cachedPrompts)
+		return result
+	}
+
+	prompts := make([]Prompt, 0)
 	pm.prompts.Range(func(_ string, value Prompt) bool {
 		prompts = append(prompts, value)
 		return true
 	})
-	return prompts
+	pm.cachedPrompts = prompts
+
+	// Return a copy to ensure thread safety
+	result := make([]Prompt, len(prompts))
+	copy(result, prompts)
+	return result
 }
 
 // ClearPromptsForService removes all prompts associated with a given service.
 func (pm *Manager) ClearPromptsForService(serviceID string) {
+	changed := false
 	pm.prompts.Range(func(key string, value Prompt) bool {
 		if value.Service() == serviceID {
 			pm.prompts.Delete(key)
+			changed = true
 		}
 		return true
 	})
+
+	if changed {
+		pm.mu.Lock()
+		pm.cachedPrompts = nil
+		pm.mu.Unlock()
+	}
 }
