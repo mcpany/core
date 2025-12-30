@@ -226,6 +226,26 @@ func (s *Settings) GetDlp() *configv1.DLPConfig {
 // It handles the case where viper returns a slice with a single element
 // containing comma-separated values (which happens with environment variables).
 func getStringSlice(key string) []string {
+	// Check the raw value to distinguish between a string (Env var) and a slice (YAML/JSON).
+	raw := viper.Get(key)
+	if val, ok := raw.(string); ok && val != "" {
+		// It's a string, so it likely comes from an environment variable or flag.
+		// We handle comma separation manually to avoid splitting by spaces within paths.
+		if strings.Contains(val, ",") {
+			parts := strings.Split(val, ",")
+			var final []string
+			for _, p := range parts {
+				p = strings.TrimSpace(p)
+				if p != "" {
+					final = append(final, p)
+				}
+			}
+			return final
+		}
+		return []string{strings.TrimSpace(val)}
+	}
+
+	// Fallback for slices (from config files) or empty values.
 	res := viper.GetStringSlice(key)
 	var final []string
 	for _, item := range res {
