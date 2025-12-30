@@ -288,6 +288,7 @@ func (a *Application) Run(
 	// New message bus and workers
 	upstreamWorker := worker.NewUpstreamWorker(busProvider, a.ToolManager)
 	registrationWorker := worker.NewServiceRegistrationWorker(busProvider, serviceRegistry)
+	prCheckWorker := worker.NewPRCheckWorker(cfg.GetGlobalSettings().GetPrCheckWorker())
 
 	// Create a context for workers that we can cancel on shutdown
 	workerCtx, workerCancel := context.WithCancel(ctx)
@@ -295,6 +296,7 @@ func (a *Application) Run(
 	// Start background workers
 	upstreamWorker.Start(workerCtx)
 	registrationWorker.Start(workerCtx)
+	prCheckWorker.Start(workerCtx)
 
 	// If we're using an in-memory bus, start the in-process worker
 	if busConfig == nil || busConfig.GetInMemory() != nil {
@@ -455,6 +457,7 @@ func (a *Application) Run(
 	workerCancel()
 	upstreamWorker.Stop()
 	registrationWorker.Stop()
+	prCheckWorker.Stop()
 
 	return runErr
 }

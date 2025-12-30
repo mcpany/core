@@ -79,6 +79,21 @@ message GlobalSettings {
   repeated Middleware middlewares = 12 [json_name = "middlewares"];
   // DLP configuration.
   DLPConfig dlp = 13 [json_name = "dlp"];
+  // PR check worker configuration.
+  PRCheckWorkerConfig pr_check_worker = 14 [json_name = "pr_check_worker"];
+}
+
+message PRCheckWorkerConfig {
+  // Whether the PR check worker is enabled.
+  bool enabled = 1 [json_name = "enabled"];
+  // The interval at which the worker runs (e.g., "10m").
+  string interval = 2 [json_name = "interval"];
+  // The repository owner.
+  string repo_owner = 3 [json_name = "repo_owner"];
+  // The repository name.
+  string repo_name = 4 [json_name = "repo_name"];
+  // The GitHub token to use for API requests.
+  string github_token = 5 [json_name = "github_token"];
 }
 
 message DLPConfig {
