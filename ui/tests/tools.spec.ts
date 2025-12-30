@@ -16,13 +16,13 @@ test.describe('Tool Exploration', () => {
                             name: 'weather-tool',
                             description: 'Get weather for a location',
                             source: 'configured',
-                            service: 'weather-service'
+                            serviceName: 'weather-service'
                         },
                         {
                             name: 'calculator',
                             description: 'Perform basic math',
                             source: 'discovered',
-                            service: 'math-service'
+                            serviceName: 'math-service'
                         }
                     ]
                 }
