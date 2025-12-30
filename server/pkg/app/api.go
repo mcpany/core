@@ -25,7 +25,7 @@ func (a *Application) createAPIHandler(store *sqlite.Store) http.Handler {
 			services, err := store.ListServices()
 			if err != nil {
 				logging.GetLogger().Error("failed to list services", "error", err)
-				http.Error(w, err.Error(), http.StatusInternalServerError)
+				http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 				return
 			}
 
@@ -62,7 +62,8 @@ func (a *Application) createAPIHandler(store *sqlite.Store) http.Handler {
 			// But creating UUID here might be better? For now name fallback is fine.
 
 			if err := store.SaveService(&svc); err != nil {
-				http.Error(w, err.Error(), http.StatusInternalServerError)
+				logging.GetLogger().Error("failed to save service", "error", err)
+				http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 				return
 			}
 
@@ -89,7 +90,8 @@ func (a *Application) createAPIHandler(store *sqlite.Store) http.Handler {
 		case http.MethodGet:
 			svc, err := store.GetService(name)
 			if err != nil {
-				http.Error(w, err.Error(), http.StatusInternalServerError)
+				logging.GetLogger().Error("failed to get service", "name", name, "error", err)
+				http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 				return
 			}
 			if svc == nil {
@@ -109,7 +111,8 @@ func (a *Application) createAPIHandler(store *sqlite.Store) http.Handler {
 			}
 			svc.Name = proto.String(name) // Force name match
 			if err := store.SaveService(&svc); err != nil {
-				http.Error(w, err.Error(), http.StatusInternalServerError)
+				logging.GetLogger().Error("failed to save service", "name", name, "error", err)
+				http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 				return
 			}
 			if err := a.ReloadConfig(a.fs, a.configPaths); err != nil {
@@ -118,7 +121,8 @@ func (a *Application) createAPIHandler(store *sqlite.Store) http.Handler {
 			w.WriteHeader(http.StatusOK)
 		case http.MethodDelete:
 			if err := store.DeleteService(name); err != nil {
-				http.Error(w, err.Error(), http.StatusInternalServerError)
+				logging.GetLogger().Error("failed to delete service", "name", name, "error", err)
+				http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 				return
 			}
 			if err := a.ReloadConfig(a.fs, a.configPaths); err != nil {
