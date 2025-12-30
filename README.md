@@ -63,6 +63,7 @@ Most "popular" MCP servers today are bespoke binaries. If the upstream API chang
 - **Network Topology Visualization**: Visualizes your entire MCP ecosystem (Clients, Core, Services, Tools, API Calls) in a 5-level hierarchical interactive graph with real-time QPS and Latency metrics.
   ![Network Topology](server/docs/images/network_topology.png)
 - **MCP Any Proxy**: Proxy and re-expose tools from another MCP Any instance.
+- **MCP Sampling Support**: Enables upstream tools to request sampling (LLM generation) from the connected client, fully supported via `mcp.Client` options.
 - **Upstream Authentication**: Securely connect to your backend services using:
   - **API Keys**
   - **Bearer Tokens**
