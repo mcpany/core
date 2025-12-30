@@ -1,10 +1,20 @@
-# Message Bus Integration (NATS / Kafka)
+# Message Bus Integration
 
-MCP Any supports integrating with message buses to enable asynchronous communication and event-driven architectures. This allows the server to consume messages and trigger tools, or publish events based on tool execution.
+MCP Any supports integration with message brokers to enable asynchronous communication and event-driven architectures. This allows MCP Any to act as a bridge between AI agents and your messaging infrastructure.
 
-## Supported Protocols
+## Supported Brokers
 
-- **[NATS](../../server/docs/features/nats.md)**: High-performance messaging system.
-- **[Kafka](../../server/docs/features/kafka.md)**: Distributed event streaming platform.
+- [**NATS**](nats.md): Lightweight, high-performance messaging system.
+- [**Kafka**](kafka.md): Distributed event streaming platform.
 
-See the linked documents for configuration examples and usage patterns.
+## Common Use Cases
+
+1.  **Event Triggers**: Agents can "subscribe" to topics and receive notifications when messages arrive (via Tool calls or future "Server-Sent Events").
+2.  **Asynchronous Actions**: Agents can publish messages to a topic to trigger background jobs (e.g., "Process this order").
+3.  **Log Streaming**: Stream audit logs or operational events to a central bus for analysis.
+
+## Configuration
+
+Message bus configuration is typically handled at the service level or global settings depending on the use case.
+
+See the specific documentation for [NATS](nats.md) and [Kafka](kafka.md) for detailed configuration examples.

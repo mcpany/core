@@ -1,43 +1,30 @@
 # Structured Output Transformation
 
-MCP Any provides powerful capabilities to transform the output of upstream services before sending it back to the client. This allows you to normalize data formats, extract specific fields, or reshape complex JSON/XML responses into something more consumable by LLMs.
+MCP Any provides powerful capabilities to transform the output of upstream services before sending it back to the client. This is useful for reshaping complex JSON responses, filtering sensitive data, or converting formats.
 
-## Supported Transformation Engines
+## Features
 
-*   **Go Templates**: Use standard Go text templates to format output.
-*   **JSONPath**: Extract data from JSON responses using JSONPath syntax.
-*   **JQ**: Use the powerful `jq` query language for advanced JSON processing.
-*   **XPath**: Extract data from XML responses.
-*   **Regex**: Extract data from plain text using regular expressions.
+- **JQ Support**: Use the powerful `jq` query language to filter and reshape JSON data.
+- **JSONPath**: Support for standard JSONPath expressions for simpler extractions.
+- **Templates**: Combine multiple fields into a single text output using Go templates.
 
 ## Configuration
 
-Transformations are defined in the tool configuration.
-
-### Example: JQ Transformation
+Transformations are configured as part of the tool definition or service configuration.
 
 ```yaml
-tools:
-  - name: get_user_summary
-    http:
-      url: https://api.example.com/users/{id}
-    transform:
-      type: jq
-      query: "{ name: .name, email: .email, role: .roles[0] }"
+services:
+  - id: "weather-api"
+    # ...
+    tools:
+      - name: "get_current_weather"
+        # ...
+        transform:
+          jq: ".main | {temp: .temp, humidity: .humidity}" # Extract only specific fields
 ```
 
-### Example: Go Template
+## Why use Transformations?
 
-```yaml
-tools:
-  - name: weather_report
-    http:
-      url: https://api.weather.com/current
-    transform:
-      type: template
-      template: "The weather in {{.location.name}} is {{.current.temp_c}}°C."
-```
-
-## Parsing
-
-The `TextParser` component supports parsing raw text/JSON/XML inputs into structured maps, which can then be further transformed.
+1.  **Token Efficiency**: Reduce the amount of data sent to the LLM, saving context window and cost.
+2.  **Privacy**: Remove fields that the LLM shouldn't see (internal IDs, PII not caught by DLP).
+3.  **Usability**: Present data in a format that is easier for the LLM to understand (e.g., flattening nested structures).
