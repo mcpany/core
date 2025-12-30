@@ -1,48 +1,30 @@
-# Filesystem Provider
+# File System Provider
 
-The Filesystem provider allows MCP Any to expose a local directory as an MCP server. This enables LLMs to list directories, read files, write files, and get file information within a controlled scope.
-
-## Features
-
-*   **Sandboxed Access**: Restrict access to specific root directories.
-*   **Read/Write Control**: Configure read-only or read-write access.
-*   **File Operations**:
-    *   `list_directory`: List files and subdirectories.
-    *   `read_file`: Read the content of a file.
-    *   `write_file`: Write content to a file.
-    *   `delete_file`: Delete a file or empty directory.
-    *   `search_files`: Search for a text pattern in files within a directory.
-    *   `get_file_info`: Get metadata about a file or directory.
-*   **Virtual File Systems**: Supports `os` (local operating system) and `tmpfs` (in-memory). Future support planned for cloud storage (S3, GCS).
+MCP Any allows you to expose local file systems as MCP resources. This enables AI agents to read, write, and list files within allowed directories.
 
 ## Configuration
 
-To use the filesystem provider, add a `filesystem` entry to your `upstream_services` configuration.
+To configure a file system service, use the `filesystem` type in your `services` configuration.
 
 ```yaml
-upstream_services:
-  - name: "local-files"
+services:
+  - id: "local-files"
+    name: "Local Files"
     type: "filesystem"
-    filesystem:
-      filesystem_type: "os" # or "tmpfs"
-      read_only: false
-      root_paths:
-        "/data": "/var/lib/my-app/data"
-        "/logs": "/var/log/my-app"
+    config:
+      path: "/var/data"  # The root directory to expose
+      read_only: false   # Set to true to prevent write operations
 ```
 
-### Parameters
+## Features
 
-*   `filesystem_type`:
-    *   `os`: Maps to the local operating system's filesystem.
-    *   `tmpfs`: Creates a temporary in-memory filesystem (useful for testing or ephemeral scratchpads).
-*   `read_only`: If `true`, write operations will be disabled.
-*   `root_paths`: A map of virtual paths to real paths.
-    *   Key: The virtual path exposed to the LLM (e.g., `/data`).
-    *   Value: The actual path on the server (e.g., `/mnt/data`).
-    *   This provides a chroot-like environment where the LLM can only access files under the specified real paths.
+- **List Directory**: Agents can list files and subdirectories.
+- **Read File**: Read the content of files (text or binary).
+- **Write File**: Create or overwrite files (if `read_only` is false).
+- **Delete File**: Remove files (if `read_only` is false).
+- **Sandboxing**: Access is restricted to the configured `path`. Agents cannot access files outside this directory (e.g., via `..`).
 
 ## Security
 
-*   **Path Traversal Protection**: The provider resolves all paths and ensures they stay within the configured `root_paths`. Symlinks are resolved to check the final destination.
-*   **Access Control**: Use `read_only` to prevent modification of sensitive files.
+- **Path Traversal Prevention**: The server validates all paths to ensure they stay within the root directory.
+- **Read-Only Mode**: Recommended for most use cases where agents only need to consume data.
