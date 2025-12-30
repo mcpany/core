@@ -75,6 +75,10 @@ message GlobalSettings {
   LogFormat log_format = 10 [json_name = "log_format"];
   // The path to the database file.
   string db_path = 11 [json_name = "db_path"];
+  // The database connection string (DSN).
+  string db_dsn = 14 [json_name = "db_dsn"];
+  // The database driver (sqlite, postgres).
+  string db_driver = 15 [json_name = "db_driver"];
   // The list of middlewares to enable and their configuration.
   repeated Middleware middlewares = 12 [json_name = "middlewares"];
   // DLP configuration.

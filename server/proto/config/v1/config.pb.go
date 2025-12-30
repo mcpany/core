@@ -434,6 +434,10 @@ type GlobalSettings struct {
 	LogFormat *GlobalSettings_LogFormat `protobuf:"varint,10,opt,name=log_format,enum=mcpany.config.v1.GlobalSettings_LogFormat" json:"log_format,omitempty"`
 	// The path to the database file.
 	DbPath *string `protobuf:"bytes,11,opt,name=db_path" json:"db_path,omitempty"`
+	// The database connection string (DSN).
+	DbDsn *string `protobuf:"bytes,14,opt,name=db_dsn" json:"db_dsn,omitempty"`
+	// The database driver (sqlite, postgres).
+	DbDriver *string `protobuf:"bytes,15,opt,name=db_driver" json:"db_driver,omitempty"`
 	// The list of middlewares to enable and their configuration.
 	Middlewares []*Middleware `protobuf:"bytes,12,rep,name=middlewares" json:"middlewares,omitempty"`
 	// DLP configuration.
@@ -537,6 +541,20 @@ func (x *GlobalSettings) GetDbPath() string {
 	return ""
 }
 
+func (x *GlobalSettings) GetDbDsn() string {
+	if x != nil && x.DbDsn != nil {
+		return *x.DbDsn
+	}
+	return ""
+}
+
+func (x *GlobalSettings) GetDbDriver() string {
+	if x != nil && x.DbDriver != nil {
+		return *x.DbDriver
+	}
+	return ""
+}
+
 func (x *GlobalSettings) GetMiddlewares() []*Middleware {
 	if x != nil {
 		return x.Middlewares
@@ -589,6 +607,14 @@ func (x *GlobalSettings) SetLogFormat(v GlobalSettings_LogFormat) {
 
 func (x *GlobalSettings) SetDbPath(v string) {
 	x.DbPath = &v
+}
+
+func (x *GlobalSettings) SetDbDsn(v string) {
+	x.DbDsn = &v
+}
+
+func (x *GlobalSettings) SetDbDriver(v string) {
+	x.DbDriver = &v
 }
 
 func (x *GlobalSettings) SetMiddlewares(v []*Middleware) {
@@ -648,6 +674,20 @@ func (x *GlobalSettings) HasDbPath() bool {
 	return x.DbPath != nil
 }
 
+func (x *GlobalSettings) HasDbDsn() bool {
+	if x == nil {
+		return false
+	}
+	return x.DbDsn != nil
+}
+
+func (x *GlobalSettings) HasDbDriver() bool {
+	if x == nil {
+		return false
+	}
+	return x.DbDriver != nil
+}
+
 func (x *GlobalSettings) HasDlp() bool {
 	if x == nil {
 		return false
@@ -683,6 +723,14 @@ func (x *GlobalSettings) ClearDbPath() {
 	x.DbPath = nil
 }
 
+func (x *GlobalSettings) ClearDbDsn() {
+	x.DbDsn = nil
+}
+
+func (x *GlobalSettings) ClearDbDriver() {
+	x.DbDriver = nil
+}
+
 func (x *GlobalSettings) ClearDlp() {
 	x.Dlp = nil
 }
@@ -710,6 +758,10 @@ type GlobalSettings_builder struct {
 	LogFormat *GlobalSettings_LogFormat
 	// The path to the database file.
 	DbPath *string
+	// The database connection string (DSN).
+	DbDsn *string
+	// The database driver (sqlite, postgres).
+	DbDriver *string
 	// The list of middlewares to enable and their configuration.
 	Middlewares []*Middleware
 	// DLP configuration.
@@ -730,6 +782,8 @@ func (b0 GlobalSettings_builder) Build() *GlobalSettings {
 	x.ProfileDefinitions = b.ProfileDefinitions
 	x.LogFormat = b.LogFormat
 	x.DbPath = b.DbPath
+	x.DbDsn = b.DbDsn
+	x.DbDriver = b.DbDriver
 	x.Middlewares = b.Middlewares
 	x.Dlp = b.Dlp
 	return m0
@@ -1323,7 +1377,7 @@ const file_proto_config_v1_config_proto_rawDesc = "" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12N\n" +
 	"\x0eauthentication\x18\x02 \x01(\v2&.mcpany.config.v1.AuthenticationConfigR\x0eauthentication\x12 \n" +
 	"\vprofile_ids\x18\x03 \x03(\tR\vprofile_ids\x12\x14\n" +
-	"\x05roles\x18\x04 \x03(\tR\x05roles\"\xc7\x06\n" +
+	"\x05roles\x18\x04 \x03(\tR\x05roles\"\xfd\x06\n" +
 	"\x0eGlobalSettings\x12.\n" +
 	"\x12mcp_listen_address\x18\x01 \x01(\tR\x12mcp_listen_address\x12G\n" +
 	"\tlog_level\x18\x03 \x01(\x0e2).mcpany.config.v1.GlobalSettings.LogLevelR\tlog_level\x121\n" +
@@ -1337,7 +1391,9 @@ const file_proto_config_v1_config_proto_rawDesc = "" +
 	"log_format\x18\n" +
 	" \x01(\x0e2*.mcpany.config.v1.GlobalSettings.LogFormatR\n" +
 	"log_format\x12\x18\n" +
-	"\adb_path\x18\v \x01(\tR\adb_path\x12>\n" +
+	"\adb_path\x18\v \x01(\tR\adb_path\x12\x16\n" +
+	"\x06db_dsn\x18\x0e \x01(\tR\x06db_dsn\x12\x1c\n" +
+	"\tdb_driver\x18\x0f \x01(\tR\tdb_driver\x12>\n" +
 	"\vmiddlewares\x18\f \x03(\v2\x1c.mcpany.config.v1.MiddlewareR\vmiddlewares\x12-\n" +
 	"\x03dlp\x18\r \x01(\v2\x1b.mcpany.config.v1.DLPConfigR\x03dlp\"w\n" +
 	"\bLogLevel\x12\x19\n" +

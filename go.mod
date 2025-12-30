@@ -14,8 +14,10 @@ require (
 	google.golang.org/protobuf v1.36.10
 )
 
+require github.com/DATA-DOG/go-sqlmock v1.5.2 // indirect
+
 require (
-	github.com/fclairamb/afero-s3 v0.3.1
 	github.com/aws/aws-sdk-go v1.55.8
+	github.com/fclairamb/afero-s3 v0.3.1
 	github.com/google/jsonschema-go v0.3.0 // indirect
 )
