@@ -77,7 +77,7 @@ upstream_services:
 			},
 		})
 		assert.Error(t, err, "Should be denied by default policy")
-		assert.Contains(t, err.Error(), "denied by default policy")
+		assert.Contains(t, err.Error(), "execution denied by policy")
 	})
 
 	// Case 2: Allow specific, deny specific
