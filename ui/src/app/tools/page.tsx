@@ -9,12 +9,16 @@ import { useState, useEffect } from "react";
 import { apiClient, ToolDefinition } from "@/lib/client";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Switch } from "@/components/ui/switch";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Wrench } from "lucide-react";
+import { Wrench, Play } from "lucide-react";
+import { ToolInspector } from "@/components/tools/tool-inspector";
 
 export default function ToolsPage() {
   const [tools, setTools] = useState<ToolDefinition[]>([]);
+  const [selectedTool, setSelectedTool] = useState<ToolDefinition | null>(null);
+  const [inspectorOpen, setInspectorOpen] = useState(false);
 
   useEffect(() => {
     fetchTools();
@@ -41,6 +45,11 @@ export default function ToolsPage() {
     }
   };
 
+  const openInspector = (tool: ToolDefinition) => {
+      setSelectedTool(tool);
+      setInspectorOpen(true);
+  };
+
   return (
     <div className="flex-1 space-y-4 p-8 pt-6">
       <div className="flex items-center justify-between">
@@ -60,11 +69,12 @@ export default function ToolsPage() {
                 <TableHead>Description</TableHead>
                 <TableHead>Service</TableHead>
                 <TableHead>Status</TableHead>
+                <TableHead className="text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {tools.map((tool) => (
-                <TableRow key={tool.name}>
+                <TableRow key={tool.name} className="group">
                   <TableCell className="font-medium flex items-center">
                     <Wrench className="h-4 w-4 mr-2 text-muted-foreground" />
                     {tool.name}
@@ -84,12 +94,23 @@ export default function ToolsPage() {
                         </span>
                     </div>
                   </TableCell>
+                  <TableCell className="text-right">
+                      <Button variant="outline" size="sm" onClick={() => openInspector(tool)}>
+                          <Play className="h-3 w-3 mr-1" /> Inspect
+                      </Button>
+                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>
           </Table>
         </CardContent>
       </Card>
+
+      <ToolInspector
+        tool={selectedTool}
+        open={inspectorOpen}
+        onOpenChange={setInspectorOpen}
+      />
     </div>
   );
 }
