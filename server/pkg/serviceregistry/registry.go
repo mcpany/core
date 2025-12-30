@@ -199,9 +199,10 @@ func (r *ServiceRegistry) UnregisterService(ctx context.Context, serviceName str
 		return fmt.Errorf("service %q not found", serviceName)
 	}
 
+	var shutdownErr error
 	if u, ok := r.upstreams[serviceName]; ok {
 		if err := u.Shutdown(ctx); err != nil {
-			return fmt.Errorf("failed to shutdown upstream for service %s: %w", serviceName, err)
+			shutdownErr = fmt.Errorf("failed to shutdown upstream for service %s: %w", serviceName, err)
 		}
 		delete(r.upstreams, serviceName)
 	}
@@ -213,7 +214,7 @@ func (r *ServiceRegistry) UnregisterService(ctx context.Context, serviceName str
 	r.promptManager.ClearPromptsForService(serviceName)
 	r.resourceManager.ClearResourcesForService(serviceName)
 	r.authManager.RemoveAuthenticator(serviceName)
-	return nil
+	return shutdownErr
 }
 
 // GetServiceError returns the registration error for a service, if any.
