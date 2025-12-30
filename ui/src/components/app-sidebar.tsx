@@ -14,6 +14,7 @@ import {
   Wrench,
   Bot,
   Settings,
+  Activity,
 } from "lucide-react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
@@ -70,6 +71,11 @@ const items = [
     title: "Tools",
     url: "/tools",
     icon: Wrench,
+  },
+  {
+    title: "Stats",
+    url: "/stats",
+    icon: Activity,
   },
   {
     title: "Settings",
