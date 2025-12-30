@@ -300,7 +300,12 @@ func (u *Upstream) createAndRegisterHTTPTools(ctx context.Context, serviceID, ad
 		// Base: http://host/api, Rel: foo -> http://host/foo (Replaces last segment!)
 		// Base: http://host/api/, Rel: foo -> http://host/api/foo
 		// So if we have a relPath, we MUST ensure base has slash.
-		if relPath != "" {
+		//
+		// Special case: If endpointURL.Path is exactly "/", we want to treat it as a slash
+		// relative to the base, effectively forcing a trailing slash on the base.
+		// But TrimPrefix(..., "/") makes it empty string.
+		// So we check if relPath is NOT empty OR if endpointURL.Path ended with a slash.
+		if relPath != "" || strings.HasSuffix(endpointURL.Path, "/") {
 			if !strings.HasSuffix(baseForJoin.Path, "/") {
 				baseForJoin.Path += "/"
 				if baseForJoin.RawPath != "" {
