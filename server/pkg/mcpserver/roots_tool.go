@@ -74,5 +74,5 @@ func (t *RootsTool) GetCacheConfig() *configv1.CacheConfig {
 	return nil
 }
 
-// Verify that RootsTool implements tool.Tool
+// Verify that RootsTool implements tool.Tool.
 var _ tool.Tool = (*RootsTool)(nil)

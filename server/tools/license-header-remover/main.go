@@ -10,7 +10,7 @@ import (
 	"strings"
 )
 
-// Split the regex pattern to avoid matching this source file
+// Split the regex pattern to avoid matching this source file.
 var (
 	copyrightPattern = `(?i)copyright`
 	copyrightRegex   = regexp.MustCompile(copyrightPattern)
@@ -73,7 +73,6 @@ func isSourceFile(path string) bool {
 }
 
 func processFile(path string) {
-
 	content, err := os.ReadFile(path) //nolint:gosec // CLI tool
 	if err != nil {
 		fmt.Printf("Failed to read %s: %v\n", path, err)

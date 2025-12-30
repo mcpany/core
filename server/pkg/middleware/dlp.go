@@ -15,7 +15,7 @@ import (
 )
 
 var (
-	// Common PII patterns
+	// Common PII patterns.
 	emailRegex      = regexp.MustCompile(`(?i)[a-z0-9._%+\-]+@[a-z0-9.\-]+\.[a-z]{2,}`)
 	creditCardRegex = regexp.MustCompile(`(?:\d{4}[-\s]?){3}\d{4}`)
 	ssnRegex        = regexp.MustCompile(`\d{3}-\d{2}-\d{4}`)

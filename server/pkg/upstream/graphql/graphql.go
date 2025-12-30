@@ -127,7 +127,7 @@ func (c *Callable) Call(ctx context.Context, req *tool.ExecutionRequest) (any, e
 		graphqlReq.Var(key, value)
 	}
 	if c.authenticator != nil {
-		dummyReq, err := http.NewRequest("POST", c.address, nil)
+		dummyReq, err := http.NewRequestWithContext(ctx, "POST", c.address, nil)
 		if err != nil {
 			return nil, fmt.Errorf("failed to create dummy request: %w", err)
 		}
@@ -166,7 +166,7 @@ func (g *graphqlUpstream) Register(
 
 	req := graphql.NewRequest(introspectionQuery)
 	if authenticator != nil {
-		dummyReq, err := http.NewRequest("POST", graphqlConfig.GetAddress(), nil)
+		dummyReq, err := http.NewRequestWithContext(ctx, "POST", graphqlConfig.GetAddress(), nil)
 		if err != nil {
 			return "", nil, nil, fmt.Errorf("failed to create dummy request: %w", err)
 		}

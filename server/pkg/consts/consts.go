@@ -46,7 +46,7 @@ const (
 	// 10MB should be enough for most use cases while preventing OOM.
 	DefaultMaxCommandOutputBytes = 10 * 1024 * 1024
 
-	// ContextKeyRemoteAddr is the context key for the remote address
+	// ContextKeyRemoteAddr is the context key for the remote address.
 	ContextKeyRemoteAddr = "remote_addr"
 )
 

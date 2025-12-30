@@ -463,5 +463,4 @@ func (u *Upstream) createAndRegisterPrompts(_ context.Context, serviceID string,
 		promptManager.AddPrompt(newPrompt)
 		log.Info("Registered prompt", "prompt_name", newPrompt.Prompt().Name, "is_reload", isReload)
 	}
-
 }
