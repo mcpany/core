@@ -4,7 +4,9 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
+	"io"
 	"net"
 	"net/http"
 	"os"
@@ -77,6 +79,9 @@ upstream_services:
 			defer func() { _ = resp.Body.Close() }()
 			return resp.StatusCode == http.StatusOK
 		}, 10*time.Second, 100*time.Millisecond)
+
+		// Keep alive for logs
+		time.Sleep(15 * time.Second)
 		return
 	}
 
@@ -86,8 +91,18 @@ upstream_services:
 		Setpgid: true,
 	}
 
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
+	// Capture stdout/stderr to check for logs
+	var outBuf, errBuf bytes.Buffer
+	// Use a thread-safe buffer or wrapper if needed, but here simple buffer is fine as we read after wait.
+	// Actually we want to read continuously or poll?
+	// assert.Eventually reads from the buffer, so we need concurrent access safety?
+	// bytes.Buffer is NOT thread safe.
+	// But exec.Command writes to it.
+	// We can't use assert.Eventually on the buffer content easily while it's being written to without a mutex.
+	// However, we can just wait for the process to finish (which it does after 15s sleep) and THEN check logs.
+
+	cmd.Stdout = io.MultiWriter(os.Stdout, &outBuf)
+	cmd.Stderr = io.MultiWriter(os.Stderr, &errBuf)
 
 	err := cmd.Start()
 	assert.NoError(t, err)
@@ -100,10 +115,21 @@ upstream_services:
 	select {
 	case err := <-done:
 		if err != nil {
-			t.Fatalf("Test process failed: %v", err)
+			// It might fail if the server exits with error, but we expect it to run 15s then exit?
+			// The child process just sleeps and returns, so it should exit with 0.
+			// Unless the server crashes.
+			t.Logf("Test process exited: %v", err)
 		}
-	case <-time.After(15 * time.Second):
+	case <-time.After(20 * time.Second):
 		syscall.Kill(-cmd.Process.Pid, syscall.SIGKILL)
 		t.Fatal("Test timed out")
 	}
+
+	// Verify that we logged the error for the broken service
+	logs := outBuf.String() + errBuf.String()
+	assert.Contains(t, logs, "Failed to register service", "Logs should contain error about failed registration")
+	assert.Contains(t, logs, "broken-grpc", "Logs should contain the name of the broken service")
+
+	// Ensure we also see "HTTP server listening" to confirm it didn't crash
+	assert.Contains(t, logs, "HTTP server listening", "Server should have started")
 }

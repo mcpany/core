@@ -108,8 +108,10 @@ func (w *ServiceRegistrationWorker) Start(ctx context.Context) {
 				Error:               err,
 			}
 			if err != nil {
+				log.Error("Failed to register service", "service", req.Config.GetName(), "error", err)
 				metrics.IncrCounter([]string{"worker", "registration", "request", "error"}, 1)
 			} else {
+				log.Info("Successfully registered service", "service", req.Config.GetName(), "tools_count", len(discoveredTools), "resources_count", len(discoveredResources))
 				metrics.IncrCounter([]string{"worker", "registration", "request", "success"}, 1)
 			}
 			res.SetCorrelationID(req.CorrelationID())
