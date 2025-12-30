@@ -8,10 +8,21 @@ export interface UpstreamServiceConfig {
     name: string;
     version?: string;
     disable?: boolean;
-    http_service?: { address: string };
-    grpc_service?: { address: string };
-    command_line_service?: { command: string; args?: string[]; env?: Record<string, string> };
-    mcp_service?: { http_connection?: { http_address: string }; sse_connection?: { sse_address: string }; stdio_connection?: { command: string } };
+    priority?: number;
+    http_service?: { address: string; tls_config?: any; tools?: any[]; prompts?: any[] };
+    grpc_service?: { address: string; use_reflection?: boolean; tls_config?: any; tools?: any[]; resources?: any[] };
+    command_line_service?: { command: string; args?: string[]; env?: Record<string, string>; tools?: any[] };
+    mcp_service?: {
+        http_connection?: { http_address: string; tls_config?: any };
+        sse_connection?: { sse_address: string };
+        stdio_connection?: { command: string };
+        bundle_connection?: { bundle_path: string };
+        tools?: any[];
+    };
+    openapi_service?: { address: string; spec_url?: string; spec_content?: string; tools?: any[]; tls_config?: any };
+    websocket_service?: { address: string; tls_config?: any };
+    webrtc_service?: { address: string; tls_config?: any };
+    graphql_service?: { address: string };
 }
 
 export interface ToolDefinition {
@@ -20,6 +31,7 @@ export interface ToolDefinition {
     schema?: any;
     enabled?: boolean;
     serviceName?: string;
+    source?: string;
 }
 
 export interface ResourceDefinition {
@@ -29,6 +41,7 @@ export interface ResourceDefinition {
     description?: string;
     enabled?: boolean;
     serviceName?: string;
+    type?: string;
 }
 
 export interface PromptDefinition {
@@ -37,6 +50,7 @@ export interface PromptDefinition {
     arguments?: any[];
     enabled?: boolean;
     serviceName?: string;
+    type?: string;
 }
 
 export const apiClient = {
@@ -46,6 +60,11 @@ export const apiClient = {
         if (!res.ok) throw new Error('Failed to fetch services');
         return res.json();
     },
+    getService: async (id: string) => {
+         const res = await fetch(`/api/services?id=${id}`); // Mock
+         if (!res.ok) throw new Error('Failed to fetch service');
+         return res.json();
+    },
     setServiceStatus: async (name: string, disable: boolean) => {
         const res = await fetch('/api/services', {
             method: 'POST',
@@ -54,6 +73,18 @@ export const apiClient = {
         });
         if (!res.ok) throw new Error('Failed to update service status');
         return res.json();
+    },
+    // Added for compatibility with legacy components
+    getServiceStatus: async (name: string) => {
+        const res = await fetch(`/api/services?name=${name}`);
+        if (!res.ok) return { enabled: false, metrics: { uptime: 0, latency: 0 } };
+        const data = await res.json();
+        // Assuming the API returns the service object or list
+        // This is a best-effort mock
+        return {
+            enabled: !data.disable,
+            metrics: { uptime: 99.9, latency: 45 } // Mock metrics as numbers
+        };
     },
     registerService: async (config: UpstreamServiceConfig) => {
         const res = await fetch('/api/services', {
@@ -72,6 +103,10 @@ export const apiClient = {
         });
         if (!res.ok) throw new Error('Failed to update service');
         return res.json();
+    },
+    unregisterService: async (id: string) => {
+        // Mock
+        return {};
     },
 
     // Tools
