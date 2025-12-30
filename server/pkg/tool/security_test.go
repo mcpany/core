@@ -213,6 +213,17 @@ func TestLocalCommandTool_ShellInjection_Prevention(t *testing.T) {
 		reqBreakout.ToolInputs, _ = json.Marshal(reqBreakout.Arguments)
 		_, err = localTool.Execute(context.Background(), reqBreakout)
 		assert.Error(t, err) // Should block "
+
+		// Backslash escape attempt (to escape closing quote)
+		reqBackslash := &ExecutionRequest{
+			ToolName: "test-tool-sh-dquoted",
+			Arguments: map[string]interface{}{
+				"msg": "foo\\",
+			},
+		}
+		reqBackslash.ToolInputs, _ = json.Marshal(reqBackslash.Arguments)
+		_, err = localTool.Execute(context.Background(), reqBackslash)
+		assert.Error(t, err) // Should block \
 	})
 
 	// Test Case 4: Non-Shell Command
