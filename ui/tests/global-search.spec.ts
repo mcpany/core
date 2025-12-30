@@ -14,6 +14,7 @@ test.describe('Global Search', () => {
 
     // Press Cmd+K (Meta+K on Mac, Control+K on Windows/Linux)
     // Try both meta and control to be safe in CI environment
+    await page.waitForTimeout(1000);
     if (process.platform === 'darwin') {
         await page.keyboard.press('Meta+K');
     } else {

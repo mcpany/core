@@ -42,8 +42,8 @@ test.describe('MCP Any UI E2E Tests', () => {
          await route.fulfill({
              json: {
                   tools: [
-                       { name: "calculator", description: "calc", source: "discovered", service: "Math" },
-                       { name: "weather_lookup", description: "weather", source: "configured", service: "Weather" }
+                       { name: "calculator", description: "calc", source: "discovered", serviceName: "Math" },
+                       { name: "weather_lookup", description: "weather", source: "configured", serviceName: "Weather" }
                   ]
              }
          });
