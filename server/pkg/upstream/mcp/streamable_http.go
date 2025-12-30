@@ -77,7 +77,9 @@ func SetConnectForTesting(f func(client *mcp.Client, ctx context.Context, transp
 // themselves MCP-compliant. It connects to the downstream MCP service, discovers
 // its tools, prompts, and resources, and registers them with the current server,
 // effectively acting as a proxy or aggregator.
-type Upstream struct{}
+type Upstream struct {
+	sessionRegistry *SessionRegistry
+}
 
 // Shutdown is a no-op for the MCP upstream, as the connections it manages are
 // transient and established on a per-call basis. There are no persistent
@@ -88,7 +90,9 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 
 // NewUpstream creates a new instance of Upstream.
 func NewUpstream() upstream.Upstream {
-	return &Upstream{}
+	return &Upstream{
+		sessionRegistry: NewSessionRegistry(),
+	}
 }
 
 // mcpPrompt is a wrapper around the standard mcp.Prompt that associates it with
@@ -243,6 +247,7 @@ type mcpConnection struct {
 	bundleTransport *BundleDockerTransport
 	httpAddress     string
 	httpClient      *http.Client
+	sessionRegistry *SessionRegistry
 }
 
 // withMCPClientSession is a helper function that abstracts the process of
@@ -291,7 +296,24 @@ func (c *mcpConnection) withMCPClientSession(ctx context.Context, f func(cs Clie
 	if err != nil {
 		return fmt.Errorf("failed to connect to MCP server: %w", err)
 	}
-	defer func() { _ = cs.Close() }()
+	defer func() {
+		// Unregister session if registry is present
+		if c.sessionRegistry != nil {
+			if mcpSession, ok := cs.(mcp.Session); ok {
+				c.sessionRegistry.Unregister(mcpSession)
+			}
+		}
+		_ = cs.Close()
+	}()
+
+	// Register session if downstream session is available in context and registry is present
+	if c.sessionRegistry != nil {
+		if downstreamSession, ok := tool.GetSession(ctx); ok {
+			if mcpSession, ok := cs.(mcp.Session); ok {
+				c.sessionRegistry.Register(mcpSession, downstreamSession)
+			}
+		}
+	}
 
 	return f(cs)
 }
@@ -396,17 +418,9 @@ func (u *Upstream) createAndRegisterMCPItemsFromStdio(
 		return nil, nil, err
 	}
 
-	var mcpSdkClient *mcp.Client
-	if newClientForTesting != nil {
-		mcpSdkClient = newClientForTesting(&mcp.Implementation{
-			Name:    "mcpany",
-			Version: "0.1.0",
-		})
-	} else {
-		mcpSdkClient = mcp.NewClient(&mcp.Implementation{
-			Name:    "mcpany",
-			Version: "0.1.0",
-		}, nil)
+	mcpSdkClient, err := u.createMCPClient(ctx)
+	if err != nil {
+		return nil, nil, err
 	}
 
 	var cs ClientSession
@@ -432,13 +446,15 @@ func (u *Upstream) createAndRegisterMCPItemsFromStdio(
 	if newClientImplForTesting != nil {
 		toolClient = newClientImplForTesting(mcpSdkClient, stdio, "", nil)
 		promptConnection = &mcpConnection{
-			client:      mcpSdkClient,
-			stdioConfig: stdio,
+			client:          mcpSdkClient,
+			stdioConfig:     stdio,
+			sessionRegistry: u.sessionRegistry,
 		}
 	} else {
 		conn := &mcpConnection{
-			client:      mcpSdkClient,
-			stdioConfig: stdio,
+			client:          mcpSdkClient,
+			stdioConfig:     stdio,
+			sessionRegistry: u.sessionRegistry,
 		}
 		toolClient = conn
 		promptConnection = conn
@@ -786,6 +802,18 @@ func (u *Upstream) createAndRegisterMCPItemsFromStreamableHTTP(
 		HTTPClient: httpClient,
 	}
 	var mcpSdkClient *mcp.Client
+
+	createMessageHandler := func(ctx context.Context, req *mcp.ClientRequest[*mcp.CreateMessageParams]) (*mcp.CreateMessageResult, error) {
+		session := req.GetSession()
+		if session == nil {
+			return nil, fmt.Errorf("no session associated with request")
+		}
+		if toolSession, ok := u.sessionRegistry.Get(session); ok {
+			return toolSession.CreateMessage(ctx, req.Params)
+		}
+		return nil, fmt.Errorf("no downstream session found for upstream session")
+	}
+
 	if newClientForTesting != nil {
 		mcpSdkClient = newClientForTesting(&mcp.Implementation{
 			Name:    "mcpany",
@@ -795,7 +823,9 @@ func (u *Upstream) createAndRegisterMCPItemsFromStreamableHTTP(
 		mcpSdkClient = mcp.NewClient(&mcp.Implementation{
 			Name:    "mcpany",
 			Version: "0.1.0",
-		}, nil)
+		}, &mcp.ClientOptions{
+			CreateMessageHandler: createMessageHandler,
+		})
 	}
 
 	var cs ClientSession
@@ -824,12 +854,14 @@ func (u *Upstream) createAndRegisterMCPItemsFromStreamableHTTP(
 			client:      mcpSdkClient,
 			httpAddress: httpAddress,
 			httpClient:  httpClient,
+			sessionRegistry: u.sessionRegistry,
 		}
 	} else {
 		conn := &mcpConnection{
 			client:      mcpSdkClient,
 			httpAddress: httpAddress,
 			httpClient:  httpClient,
+			sessionRegistry: u.sessionRegistry,
 		}
 		toolClient = conn
 		promptConnection = conn
@@ -904,4 +936,31 @@ func mergeStructs(dst, src *structpb.Struct) {
 		// Otherwise replace
 		dst.Fields[k] = v
 	}
+}
+
+func (u *Upstream) createMCPClient(ctx context.Context) (*mcp.Client, error) {
+	if newClientForTesting != nil {
+		return newClientForTesting(&mcp.Implementation{
+			Name:    "mcpany",
+			Version: "0.1.0",
+		}), nil
+	}
+
+	createMessageHandler := func(ctx context.Context, req *mcp.ClientRequest[*mcp.CreateMessageParams]) (*mcp.CreateMessageResult, error) {
+		session := req.GetSession()
+		if session == nil {
+			return nil, fmt.Errorf("no session associated with request")
+		}
+		if toolSession, ok := u.sessionRegistry.Get(session); ok {
+			return toolSession.CreateMessage(ctx, req.Params)
+		}
+		return nil, fmt.Errorf("no downstream session found for upstream session")
+	}
+
+	return mcp.NewClient(&mcp.Implementation{
+		Name:    "mcpany",
+		Version: "0.1.0",
+	}, &mcp.ClientOptions{
+		CreateMessageHandler: createMessageHandler,
+	}), nil
 }
