@@ -266,21 +266,24 @@ func bytesContainsFold(s, substr []byte) bool {
 		// Scan for either lowercase or uppercase first char
 		slice := s[offset:]
 		idxL := bytes.IndexByte(slice, firstLower)
-		idxU := bytes.IndexByte(slice, firstUpper)
 
 		var idx int
-		switch {
-		case idxL == -1 && idxU == -1:
-			return false
-		case idxL == -1:
-			idx = idxU
-		case idxU == -1:
-			idx = idxL
-		default:
-			if idxL < idxU {
-				idx = idxL
-			} else {
+		if idxL == -1 {
+			// Lowercase not found, must search for uppercase
+			idx = bytes.IndexByte(slice, firstUpper)
+			if idx == -1 {
+				return false
+			}
+		} else {
+			// Lowercase found at idxL.
+			// Check if uppercase appears *before* idxL.
+			// We only need to search in slice[:idxL] because if we find it there, it's the winner.
+			// If we don't find it there, idxL is the winner (even if uppercase appears later).
+			idxU := bytes.IndexByte(slice[:idxL], firstUpper)
+			if idxU != -1 {
 				idx = idxU
+			} else {
+				idx = idxL
 			}
 		}
 
