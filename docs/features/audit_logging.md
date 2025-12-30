@@ -36,7 +36,8 @@ global_settings:
 | Option | Type | Default | Description |
 | :--- | :--- | :--- | :--- |
 | `enabled` | `bool` | `false` | Enables or disables audit logging. |
-| `output_path` | `string` | `""` | Path to the log file. If empty, logs are written to stdout. |
+| `output_path` | `string` | `""` | Path to the log file (or SQLite DB file). If empty, logs are written to stdout. |
+| `storage_type` | `enum` | `FILE` | Storage backend. Options: `FILE`, `SQLITE`. |
 | `log_arguments` | `bool` | `false` | If true, logs the input arguments. **Warning:** May log sensitive data. |
 | `log_results` | `bool` | `false` | If true, logs the execution result. **Warning:** May log sensitive data. |
 

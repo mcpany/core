@@ -805,9 +805,6 @@ func (u *Upstream) createAndRegisterMCPItemsFromStreamableHTTP(
 
 	createMessageHandler := func(ctx context.Context, req *mcp.ClientRequest[*mcp.CreateMessageParams]) (*mcp.CreateMessageResult, error) {
 		session := req.GetSession()
-		if session == nil {
-			return nil, fmt.Errorf("no session associated with request")
-		}
 		if toolSession, ok := u.sessionRegistry.Get(session); ok {
 			return toolSession.CreateMessage(ctx, req.Params)
 		}
@@ -948,9 +945,6 @@ func (u *Upstream) createMCPClient(ctx context.Context) (*mcp.Client, error) {
 
 	createMessageHandler := func(ctx context.Context, req *mcp.ClientRequest[*mcp.CreateMessageParams]) (*mcp.CreateMessageResult, error) {
 		session := req.GetSession()
-		if session == nil {
-			return nil, fmt.Errorf("no session associated with request")
-		}
 		if toolSession, ok := u.sessionRegistry.Get(session); ok {
 			return toolSession.CreateMessage(ctx, req.Params)
 		}

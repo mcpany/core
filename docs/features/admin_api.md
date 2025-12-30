@@ -55,8 +55,27 @@ service RegistrationService {
     rpc ListServices(ListServicesRequest) returns (ListServicesResponse);
     rpc GetService(GetServiceRequest) returns (GetServiceResponse);
     rpc GetServiceStatus(GetServiceStatusRequest) returns (GetServiceStatusResponse);
+    rpc RegisterTools(RegisterToolsRequest) returns (RegisterToolsResponse);
+    rpc InitiateOAuth2Flow(InitiateOAuth2FlowRequest) returns (InitiateOAuth2FlowResponse);
 }
 ```
+
+## Additional Endpoints
+
+*   **Register Tools**
+    *   `POST /v1/services/tools/register`
+    *   **Body**: `RegisterToolsRequest`
+        *   `service_name`: Name of the service.
+        *   `namespace`: Namespace of the service.
+        *   `tools`: Array of `ToolDefinition`.
+    *   **Description**: Registers tools for an existing service.
+
+*   **Initiate OAuth2 Flow**
+    *   `POST /v1/services/oauth2/initiate`
+    *   **Body**: `InitiateOAuth2FlowRequest`
+        *   `service_id`: ID of the service.
+        *   `namespace`: Namespace.
+    *   **Description**: Initiates an OAuth2 flow for a service.
 
 ## Usage
 
