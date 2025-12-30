@@ -2009,7 +2009,8 @@ func checkForShellInjection(val string, template string, placeholder string) err
 
 	if isDoubleQuoted {
 		// In double quotes, dangerous characters are double quote, $, and backtick
-		dangerousChars := []string{"\"", "$", "`"}
+		// We also need to block backslash because it can be used to escape the closing quote
+		dangerousChars := []string{"\"", "$", "`", "\\"}
 		for _, char := range dangerousChars {
 			if strings.Contains(val, char) {
 				return fmt.Errorf("shell injection detected: value contains dangerous character %q inside double-quoted argument", char)
