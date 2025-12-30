@@ -197,19 +197,23 @@ function getNodeClassName(node: TopologyNode): string {
 
     switch (node.type) {
         case 'NODE_TYPE_CLIENT':
-            return `${base} bg-green-50 border-green-500 text-green-900 dark:bg-green-950/40 dark:border-green-600 dark:text-green-100`;
+            return `${base} bg-green-50 border-green-500 text-green-900 dark:bg-green-900 dark:border-green-600 dark:text-green-100`;
         case 'NODE_TYPE_CORE':
-            return `${base} bg-white border-black text-black font-bold text-sm dark:bg-slate-900 dark:border-white dark:text-white`;
+            return `${base} bg-white border-black text-black font-bold text-sm dark:bg-slate-800 dark:border-white dark:text-white`;
         case 'NODE_TYPE_SERVICE':
-            return `${base} bg-blue-50 border-blue-500 text-blue-900 dark:bg-blue-950/40 dark:border-blue-600 dark:text-blue-100`;
+            return `${base} bg-blue-50 border-blue-500 text-blue-900 dark:bg-blue-900 dark:border-blue-600 dark:text-blue-100`;
         case 'NODE_TYPE_TOOL':
-            return `${base} bg-fuchsia-50 border-fuchsia-500 text-fuchsia-900 dark:bg-fuchsia-950/40 dark:border-fuchsia-600 dark:text-fuchsia-100`;
+            return `${base} bg-fuchsia-50 border-fuchsia-500 text-fuchsia-900 dark:bg-fuchsia-900 dark:border-fuchsia-600 dark:text-fuchsia-100`;
+        case 'NODE_TYPE_RESOURCE':
+            return `${base} bg-indigo-50 border-indigo-500 text-indigo-900 dark:bg-indigo-900 dark:border-indigo-600 dark:text-indigo-100`;
+        case 'NODE_TYPE_PROMPT':
+            return `${base} bg-violet-50 border-violet-500 text-violet-900 dark:bg-violet-900 dark:border-violet-600 dark:text-violet-100`;
         case 'NODE_TYPE_API_CALL':
-            return `${base} bg-zinc-50 border-zinc-500 text-zinc-900 dark:bg-zinc-900/40 dark:border-zinc-400 dark:text-zinc-300`;
+            return `${base} bg-zinc-50 border-zinc-500 text-zinc-900 dark:bg-zinc-800 dark:border-zinc-400 dark:text-zinc-300`;
         case 'NODE_TYPE_MIDDLEWARE':
-            return `${base} bg-orange-50 border-orange-500 text-orange-900 dark:bg-orange-950/40 dark:border-orange-600 dark:text-orange-100`;
+            return `${base} bg-orange-50 border-orange-500 text-orange-900 dark:bg-orange-900 dark:border-orange-600 dark:text-orange-100`;
         case 'NODE_TYPE_WEBHOOK':
-            return `${base} bg-pink-50 border-pink-500 text-pink-900 dark:bg-pink-950/40 dark:border-pink-600 dark:text-pink-100`;
+            return `${base} bg-pink-50 border-pink-500 text-pink-900 dark:bg-pink-900 dark:border-pink-600 dark:text-pink-100`;
         default:
             return `${base} bg-white border-gray-300 text-gray-900 dark:bg-gray-900 dark:border-gray-600 dark:text-gray-100`;
     }
