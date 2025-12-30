@@ -73,16 +73,18 @@ func JSONRPCComplianceMiddleware(next http.Handler) http.Handler {
 					message = http.StatusText(bufRec.statusCode)
 				}
 
-				if strings.Contains(strings.ToLower(message), "parse error") || strings.Contains(strings.ToLower(message), "malformed") || strings.Contains(strings.ToLower(message), "invalid character") {
+				messageLower := strings.ToLower(message)
+				switch {
+				case strings.Contains(messageLower, "parse error") || strings.Contains(messageLower, "malformed") || strings.Contains(messageLower, "invalid character"):
 					code = -32700
 					message = "Parse error"
-				} else if strings.Contains(strings.ToLower(message), "invalid request") || message == "Bad Request" {
+				case strings.Contains(messageLower, "invalid request") || message == "Bad Request":
 					code = -32600
 					message = "Invalid Request"
-				} else if strings.Contains(strings.ToLower(message), "method not found") || strings.Contains(strings.ToLower(message), "not handled") || strings.Contains(strings.ToLower(message), "unsupported") {
+				case strings.Contains(messageLower, "method not found") || strings.Contains(messageLower, "not handled") || strings.Contains(messageLower, "unsupported"):
 					code = -32601
 					message = "Method not found"
-				} else if strings.Contains(strings.ToLower(message), "invalid params") {
+				case strings.Contains(messageLower, "invalid params"):
 					code = -32602
 					message = "Invalid params"
 				}
@@ -105,7 +107,7 @@ func JSONRPCComplianceMiddleware(next http.Handler) http.Handler {
 
 				w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(bufRec.statusCode) // Keep original status code (e.g. 400)
-				json.NewEncoder(w).Encode(resp)
+				_ = json.NewEncoder(w).Encode(resp)
 				return
 			}
 		}
@@ -117,7 +119,7 @@ func JSONRPCComplianceMiddleware(next http.Handler) http.Handler {
 			}
 		}
 		w.WriteHeader(bufRec.statusCode)
-		w.Write(bufRec.body.Bytes())
+		_, _ = w.Write(bufRec.body.Bytes())
 	})
 }
 
