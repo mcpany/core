@@ -217,7 +217,7 @@ func GetProjectRoot() (string, error) {
 	return filepath.Abs(projectRoot)
 }
 
-// --- Helper: Find Free Port ---
+// --- Helper: Find Free Port ---.
 var portMutex sync.Mutex
 
 // FindFreePort finds a free TCP port on localhost.
@@ -317,7 +317,7 @@ func (mp *ManagedProcess) Start() error {
 	return nil
 }
 
-// Allow patching for testing
+// Allow patching for testing.
 var syscallKill = syscall.Kill
 
 // Stop stops the process, attempting graceful shutdown then force kill.
@@ -1002,8 +1002,6 @@ func StartMCPANYServerWithClock(t *testing.T, testName string, healthCheck bool,
 	}
 }
 
-
-
 // Initialize performs the MCP initialization handshake.
 func (s *MCPANYTestServerInfo) Initialize(ctx context.Context) error {
 	// 1. Send initialize request
@@ -1570,11 +1568,6 @@ func RegisterHTTPServiceWithJSONRPC(t *testing.T, mcpanyEndpoint, serviceID, bas
 
 	t.Logf("HTTP Service '%s' registration request sent via JSON-RPC successfully.", serviceID)
 }
-
-
-
-
-
 
 // WaitForPortFromLogs waits for a log line indicating the server is listening and extracts the address.
 func WaitForPortFromLogs(t *testing.T, mp *ManagedProcess, serverName string) (string, error) {

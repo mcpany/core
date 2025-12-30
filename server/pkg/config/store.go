@@ -379,7 +379,7 @@ func isURL(path string) bool {
 
 // applyEnvVars iterates over environment variables and applies those starting with "MCPANY__"
 // to the configuration map. It supports nested structure via "__" separator.
-// Example: MCPANY__GLOBAL_SETTINGS__MCP_LISTEN_ADDRESS -> global_settings.mcp_listen_address
+// Example: MCPANY__GLOBAL_SETTINGS__MCP_LISTEN_ADDRESS -> global_settings.mcp_listen_address.
 func applyEnvVars(m map[string]interface{}) {
 	applyEnvVarsFromSlice(m, os.Environ())
 }

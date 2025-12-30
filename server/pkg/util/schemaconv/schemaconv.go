@@ -13,7 +13,7 @@ import (
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
-// JSON schema types
+// JSON schema types.
 const (
 	TypeNumber  = "number"
 	TypeInteger = "integer"
@@ -88,13 +88,13 @@ func MethodOutputDescriptorToProtoProperties(methodDesc protoreflect.MethodDescr
 	return properties, nil
 }
 
-// ConfigParameter an interface for config parameter schemas
+// ConfigParameter an interface for config parameter schemas.
 type ConfigParameter interface {
 	// GetSchema returns the parameter schema.
 	GetSchema() *configv1.ParameterSchema
 }
 
-// McpFieldParameter an interface for McpField parameter schemas
+// McpFieldParameter an interface for McpField parameter schemas.
 type McpFieldParameter interface {
 	// GetName returns the name of the parameter.
 	GetName() string

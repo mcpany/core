@@ -41,6 +41,7 @@ test.describe('Global Search', () => {
 
     // Screenshot for audit
     await page.goto('/');
+    await page.waitForTimeout(500); // Wait for hydration
     await page.keyboard.press('Control+K');
     await expect(commandDialog).toBeVisible();
     await input.fill(''); // Clear input to show all options

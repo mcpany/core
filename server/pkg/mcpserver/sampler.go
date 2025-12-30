@@ -43,5 +43,5 @@ func (s *MCPSession) ListRoots(ctx context.Context) (*mcp.ListRootsResult, error
 	return s.session.ListRoots(ctx, nil)
 }
 
-// Verify that MCPSession implements tool.Session
+// Verify that MCPSession implements tool.Session.
 var _ tool.Session = (*MCPSession)(nil)

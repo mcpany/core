@@ -112,7 +112,14 @@ func (u *OpenAPIUpstream) Register(
 			client := &http.Client{
 				Timeout: 30 * time.Second,
 			}
-			resp, err := client.Get(specURL)
+			req, err := http.NewRequestWithContext(ctx, "GET", specURL, nil)
+			if err != nil {
+				logging.GetLogger().Warn("Failed to create request for OpenAPI spec", "url", specURL, "error", err)
+			}
+			var resp *http.Response
+			if err == nil {
+				resp, err = client.Do(req)
+			}
 			if err != nil {
 				logging.GetLogger().Warn("Failed to fetch OpenAPI spec from url (continuing without tools)", "url", specURL, "error", err)
 			} else {

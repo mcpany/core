@@ -18,7 +18,7 @@ import (
 var (
 	registerMetricsOnce sync.Once
 
-	// Define Prometheus metrics
+	// Define Prometheus metrics.
 	toolExecutionDuration = prometheus.NewHistogramVec(
 		prometheus.HistogramOpts{
 			Name:    "tool_execution_duration_seconds",
@@ -100,7 +100,6 @@ func (m *ToolMetricsMiddleware) Execute(ctx context.Context, req *tool.Execution
 			errorType = "context_canceled"
 		case errors.Is(err, context.DeadlineExceeded):
 			errorType = "deadline_exceeded"
-
 		}
 	}
 

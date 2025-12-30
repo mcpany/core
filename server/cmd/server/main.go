@@ -27,7 +27,7 @@ import (
 )
 
 var (
-	// Version is set at build time
+	// Version is set at build time.
 	Version              = "dev"
 	appRunner app.Runner = app.NewApplication()
 )

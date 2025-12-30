@@ -12,7 +12,7 @@ import (
 )
 
 var (
-	// Files to skip
+	// Files to skip.
 	skipDirs = map[string]bool{
 		"build":        true,
 		"vendor":       true,
@@ -22,7 +22,7 @@ var (
 		".vscode":      true,
 	}
 
-	// Extensions to process
+	// Extensions to process.
 	validExts = map[string]string{
 		".go":    "//",
 		".py":    "#",

@@ -4,6 +4,7 @@
 package middleware
 
 import (
+	"context"
 	"database/sql"
 	"encoding/json"
 	"fmt"
@@ -47,21 +48,21 @@ func NewSQLiteAuditStore(path string) (*SQLiteAuditStore, error) {
 		hash TEXT
 	);
 	`
-	if _, err := db.Exec(schema); err != nil {
+	if _, err := db.ExecContext(context.TODO(), schema); err != nil {
 		_ = db.Close() // Best effort close
 		return nil, fmt.Errorf("failed to create audit_logs table: %w", err)
 	}
 
 	// Set pragmas for performance
-	if _, err := db.Exec("PRAGMA journal_mode=WAL;"); err != nil {
+	if _, err := db.ExecContext(context.TODO(), "PRAGMA journal_mode=WAL;"); err != nil {
 		_ = db.Close()
 		return nil, fmt.Errorf("failed to set WAL mode: %w", err)
 	}
-	if _, err := db.Exec("PRAGMA synchronous=NORMAL;"); err != nil {
+	if _, err := db.ExecContext(context.TODO(), "PRAGMA synchronous=NORMAL;"); err != nil {
 		_ = db.Close()
 		return nil, fmt.Errorf("failed to set synchronous mode: %w", err)
 	}
-	if _, err := db.Exec("PRAGMA busy_timeout=5000;"); err != nil {
+	if _, err := db.ExecContext(context.TODO(), "PRAGMA busy_timeout=5000;"); err != nil {
 		_ = db.Close()
 		return nil, fmt.Errorf("failed to set busy_timeout: %w", err)
 	}
@@ -83,13 +84,13 @@ func ensureColumns(db *sql.DB) error {
 		// Check if column exists
 		//nolint:gosec // colName is trusted (internal constant)
 		query := fmt.Sprintf("SELECT %s FROM audit_logs LIMIT 1", colName)
-		if _, err := db.Exec(query); err == nil {
+		if _, err := db.ExecContext(context.TODO(), query); err == nil {
 			return nil
 		}
 		// Add column
 
 		query = fmt.Sprintf("ALTER TABLE audit_logs ADD COLUMN %s TEXT DEFAULT ''", colName)
-		_, err := db.Exec(query)
+		_, err := db.ExecContext(context.TODO(), query)
 		return err
 	}
 
@@ -125,7 +126,7 @@ func (s *SQLiteAuditStore) Write(entry AuditEntry) error {
 	// Get previous hash
 	var prevHash string
 	// Order by ID desc to get the last entry
-	err := s.db.QueryRow("SELECT hash FROM audit_logs ORDER BY id DESC LIMIT 1").Scan(&prevHash)
+	err := s.db.QueryRowContext(context.TODO(), "SELECT hash FROM audit_logs ORDER BY id DESC LIMIT 1").Scan(&prevHash)
 	if err != nil && err != sql.ErrNoRows {
 		return fmt.Errorf("failed to get previous hash: %w", err)
 	}
@@ -142,7 +143,7 @@ func (s *SQLiteAuditStore) Write(entry AuditEntry) error {
 	) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 	`
 
-	_, err = s.db.Exec(query,
+	_, err = s.db.ExecContext(context.TODO(), query,
 		ts,
 		entry.ToolName,
 		entry.UserID,
@@ -164,7 +165,7 @@ func (s *SQLiteAuditStore) Verify() (bool, error) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
-	rows, err := s.db.Query("SELECT id, timestamp, tool_name, user_id, profile_id, arguments, result, error, duration_ms, prev_hash, hash FROM audit_logs ORDER BY id ASC")
+	rows, err := s.db.QueryContext(context.TODO(), "SELECT id, timestamp, tool_name, user_id, profile_id, arguments, result, error, duration_ms, prev_hash, hash FROM audit_logs ORDER BY id ASC")
 	if err != nil {
 		return false, err
 	}

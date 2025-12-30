@@ -358,7 +358,7 @@ func (c *bundleDockerConn) SessionID() string {
 	return "bundle-docker"
 }
 
-// bundleSlogWriter duplicates slogWriter from docker_transport.go
+// bundleSlogWriter duplicates slogWriter from docker_transport.go.
 type bundleSlogWriter struct {
 	log   *slog.Logger
 	level slog.Level
