@@ -9,11 +9,7 @@ import * as React from "react"
 import { useRouter } from "next/navigation"
 import { useTheme } from "next-themes"
 import {
-  Calendar,
-  CreditCard,
   Settings,
-  Smile,
-  User,
   Calculator,
   LayoutDashboard,
   Server,
@@ -21,7 +17,11 @@ import {
   Terminal,
   Moon,
   Sun,
-  Laptop
+  Laptop,
+  Database,
+  Wrench,
+  FileBox,
+  MessageSquare
 } from "lucide-react"
 
 import {
@@ -32,13 +32,21 @@ import {
   CommandItem,
   CommandList,
   CommandSeparator,
-  CommandShortcut,
 } from "@/components/ui/command"
+
+import { apiClient, ToolDefinition, ResourceDefinition, PromptDefinition, UpstreamServiceConfig } from "@/lib/client"
 
 export function GlobalSearch() {
   const [open, setOpen] = React.useState(false)
+  const [query, setQuery] = React.useState("")
   const router = useRouter()
   const { setTheme } = useTheme()
+
+  const [services, setServices] = React.useState<UpstreamServiceConfig[]>([])
+  const [tools, setTools] = React.useState<ToolDefinition[]>([])
+  const [resources, setResources] = React.useState<ResourceDefinition[]>([])
+  const [prompts, setPrompts] = React.useState<PromptDefinition[]>([])
+  const [loading, setLoading] = React.useState(false)
 
   React.useEffect(() => {
     const down = (e: KeyboardEvent) => {
@@ -51,6 +59,25 @@ export function GlobalSearch() {
     document.addEventListener("keydown", down)
     return () => document.removeEventListener("keydown", down)
   }, [])
+
+  React.useEffect(() => {
+    if (open) {
+      setLoading(true)
+      Promise.all([
+        apiClient.listServices().catch(() => ({ services: [] })),
+        apiClient.listTools().catch(() => ({ tools: [] })),
+        apiClient.listResources().catch(() => ({ resources: [] })),
+        apiClient.listPrompts().catch(() => ({ prompts: [] }))
+      ]).then(([servicesData, toolsData, resourcesData, promptsData]) => {
+         setServices(servicesData.services || [])
+         setTools(toolsData.tools || [])
+         setResources(resourcesData.resources || [])
+         setPrompts(promptsData.prompts || [])
+      }).finally(() => {
+        setLoading(false)
+      })
+    }
+  }, [open])
 
   const runCommand = React.useCallback((command: () => unknown) => {
     setOpen(false)
@@ -70,7 +97,7 @@ export function GlobalSearch() {
         </kbd>
       </button>
       <CommandDialog open={open} onOpenChange={setOpen}>
-        <CommandInput placeholder="Type a command or search..." />
+        <CommandInput placeholder="Type a command or search..." value={query} onValueChange={setQuery} />
         <CommandList>
           <CommandEmpty>No results found.</CommandEmpty>
           <CommandGroup heading="Suggestions">
@@ -81,6 +108,18 @@ export function GlobalSearch() {
             <CommandItem onSelect={() => runCommand(() => router.push("/services"))}>
               <Server className="mr-2 h-4 w-4" />
               <span>Services</span>
+            </CommandItem>
+            <CommandItem onSelect={() => runCommand(() => router.push("/tools"))}>
+              <Wrench className="mr-2 h-4 w-4" />
+              <span>Tools</span>
+            </CommandItem>
+             <CommandItem onSelect={() => runCommand(() => router.push("/resources"))}>
+              <FileBox className="mr-2 h-4 w-4" />
+              <span>Resources</span>
+            </CommandItem>
+             <CommandItem onSelect={() => runCommand(() => router.push("/prompts"))}>
+              <MessageSquare className="mr-2 h-4 w-4" />
+              <span>Prompts</span>
             </CommandItem>
             <CommandItem onSelect={() => runCommand(() => router.push("/logs"))}>
               <FileText className="mr-2 h-4 w-4" />
@@ -96,13 +135,54 @@ export function GlobalSearch() {
             </CommandItem>
           </CommandGroup>
           <CommandSeparator />
-          <CommandGroup heading="Tools">
-             <CommandItem onSelect={() => runCommand(() => {})}>
-              <Calculator className="mr-2 h-4 w-4" />
-              <span>Calculate</span>
-            </CommandItem>
-          </CommandGroup>
-           <CommandSeparator />
+
+          {services.length > 0 && (
+             <CommandGroup heading="Services">
+               {services.map((service) => (
+                 <CommandItem key={service.id || service.name} onSelect={() => runCommand(() => router.push(`/services?id=${service.id}`))}>
+                   <Database className="mr-2 h-4 w-4" />
+                   <span>{service.name}</span>
+                   {service.version && <span className="ml-2 text-xs text-muted-foreground">v{service.version}</span>}
+                 </CommandItem>
+               ))}
+             </CommandGroup>
+          )}
+
+          {tools.length > 0 && (
+             <CommandGroup heading="Tools">
+               {tools.map((tool) => (
+                 <CommandItem key={tool.name} onSelect={() => runCommand(() => router.push(`/tools?name=${tool.name}`))}>
+                   <Calculator className="mr-2 h-4 w-4" />
+                   <span>{tool.name}</span>
+                   <span className="ml-2 text-xs text-muted-foreground truncate max-w-[200px]">{tool.description}</span>
+                 </CommandItem>
+               ))}
+             </CommandGroup>
+          )}
+
+           {resources.length > 0 && (
+             <CommandGroup heading="Resources">
+               {resources.map((resource) => (
+                 <CommandItem key={resource.uri} onSelect={() => runCommand(() => router.push(`/resources?uri=${encodeURIComponent(resource.uri)}`))}>
+                   <FileBox className="mr-2 h-4 w-4" />
+                   <span>{resource.name}</span>
+                 </CommandItem>
+               ))}
+             </CommandGroup>
+          )}
+
+           {prompts.length > 0 && (
+             <CommandGroup heading="Prompts">
+               {prompts.map((prompt) => (
+                 <CommandItem key={prompt.name} onSelect={() => runCommand(() => router.push(`/prompts?name=${prompt.name}`))}>
+                   <MessageSquare className="mr-2 h-4 w-4" />
+                   <span>{prompt.name}</span>
+                 </CommandItem>
+               ))}
+             </CommandGroup>
+          )}
+
+          <CommandSeparator />
           <CommandGroup heading="Theme">
             <CommandItem onSelect={() => runCommand(() => setTheme("light"))}>
               <Sun className="mr-2 h-4 w-4" />
