@@ -5,7 +5,7 @@
 
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, memo } from "react";
 import {
   Users,
   Activity,
@@ -40,7 +40,10 @@ const iconMap: Record<string, any> = {
   AlertCircle
 };
 
-export function MetricsOverview() {
+// Memoized to prevent unnecessary re-renders when parent components update.
+// This component manages its own state and data fetching, so it only needs to re-render
+// when its own state changes, not when the parent re-renders.
+export const MetricsOverview = memo(function MetricsOverview() {
   const [metrics, setMetrics] = useState<Metric[]>([]);
 
   useEffect(() => {
@@ -111,4 +114,4 @@ export function MetricsOverview() {
       })}
     </div>
   );
-}
+});
