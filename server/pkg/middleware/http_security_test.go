@@ -31,5 +31,6 @@ func TestHTTPSecurityHeadersMiddleware(t *testing.T) {
 	assert.Equal(t, "strict-origin-when-cross-origin", resp.Header.Get("Referrer-Policy"))
 	assert.Equal(t, "default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; script-src 'self'; connect-src 'self'", resp.Header.Get("Content-Security-Policy"))
 	assert.Equal(t, "max-age=63072000; includeSubDomains", resp.Header.Get("Strict-Transport-Security"))
+	assert.Equal(t, "geolocation=(), camera=(), microphone=(), payment=(), usb=(), vr=()", resp.Header.Get("Permissions-Policy"))
 	assert.Equal(t, http.StatusOK, resp.StatusCode)
 }
