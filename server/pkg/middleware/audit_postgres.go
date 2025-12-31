@@ -4,6 +4,7 @@
 package middleware
 
 import (
+	"context"
 	"database/sql"
 	"encoding/json"
 	"fmt"
@@ -30,7 +31,7 @@ func NewPostgresAuditStore(dsn string) (*PostgresAuditStore, error) {
 		return nil, fmt.Errorf("failed to open postgres database: %w", err)
 	}
 
-	if err := db.Ping(); err != nil {
+	if err := db.PingContext(context.TODO()); err != nil {
 		_ = db.Close()
 		return nil, fmt.Errorf("failed to ping postgres database: %w", err)
 	}
@@ -57,7 +58,7 @@ func NewPostgresAuditStore(dsn string) (*PostgresAuditStore, error) {
 		hash TEXT
 	);
 	`
-	if _, err := db.Exec(schema); err != nil {
+	if _, err := db.ExecContext(context.TODO(), schema); err != nil {
 		_ = db.Close()
 		return nil, fmt.Errorf("failed to create audit_logs table: %w", err)
 	}
@@ -85,7 +86,7 @@ func (s *PostgresAuditStore) Write(entry AuditEntry) error {
 		}
 	}
 
-	tx, err := s.db.Begin()
+	tx, err := s.db.BeginTx(context.TODO(), nil)
 	if err != nil {
 		return fmt.Errorf("failed to begin transaction: %w", err)
 	}
@@ -106,11 +107,11 @@ func (s *PostgresAuditStore) Write(entry AuditEntry) error {
 	// Better approach: Lock the table in EXCLUSIVE mode which allows reads but blocks writes.
 	// Or use `LOCK TABLE audit_logs IN SHARE ROW EXCLUSIVE MODE;`
 	// Let's use `LOCK TABLE audit_logs IN EXCLUSIVE MODE` for safety to ensure strict ordering.
-	if _, err := tx.Exec("LOCK TABLE audit_logs IN EXCLUSIVE MODE"); err != nil {
+	if _, err := tx.ExecContext(context.TODO(), "LOCK TABLE audit_logs IN EXCLUSIVE MODE"); err != nil {
 		return fmt.Errorf("failed to lock table: %w", err)
 	}
 
-	err = tx.QueryRow("SELECT hash FROM audit_logs ORDER BY id DESC LIMIT 1").Scan(&prevHash)
+	err = tx.QueryRowContext(context.TODO(), "SELECT hash FROM audit_logs ORDER BY id DESC LIMIT 1").Scan(&prevHash)
 	if err != nil && err != sql.ErrNoRows {
 		return fmt.Errorf("failed to get previous hash: %w", err)
 	}
@@ -129,7 +130,7 @@ func (s *PostgresAuditStore) Write(entry AuditEntry) error {
 	) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
 	`
 
-	_, err = tx.Exec(query,
+	_, err = tx.ExecContext(context.TODO(), query,
 		entry.Timestamp, // Postgres driver handles time.Time
 		entry.ToolName,
 		entry.UserID,
@@ -153,7 +154,7 @@ func (s *PostgresAuditStore) Verify() (bool, error) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
-	rows, err := s.db.Query("SELECT id, timestamp, tool_name, user_id, profile_id, arguments, result, error, duration_ms, prev_hash, hash FROM audit_logs ORDER BY id ASC")
+	rows, err := s.db.QueryContext(context.TODO(), "SELECT id, timestamp, tool_name, user_id, profile_id, arguments, result, error, duration_ms, prev_hash, hash FROM audit_logs ORDER BY id ASC")
 	if err != nil {
 		return false, err
 	}
@@ -203,6 +204,9 @@ func (s *PostgresAuditStore) Verify() (bool, error) {
 		}
 
 		expectedPrevHash = hash
+	}
+	if err := rows.Err(); err != nil {
+		return false, err
 	}
 	return true, nil
 }
