@@ -340,6 +340,63 @@ func (u *Upstream) createAndRegisterHTTPTools(ctx context.Context, serviceID, ad
 		var inputSchema *structpb.Struct
 		if httpDef.GetInputSchema() != nil && len(httpDef.GetInputSchema().GetFields()) > 0 {
 			inputSchema = httpDef.GetInputSchema()
+
+			// Ensure properties from 'parameters' are in 'inputSchema.properties'
+			if properties != nil {
+				var existingProps map[string]*structpb.Value
+				if propsVal, ok := inputSchema.Fields["properties"]; ok {
+					if structVal := propsVal.GetStructValue(); structVal != nil {
+						existingProps = structVal.Fields
+					}
+				}
+
+				if existingProps == nil {
+					existingProps = make(map[string]*structpb.Value)
+					inputSchema.Fields["properties"] = structpb.NewStructValue(&structpb.Struct{Fields: existingProps})
+				}
+
+				for k, v := range properties.Fields {
+					if _, ok := existingProps[k]; !ok {
+						existingProps[k] = v
+					}
+				}
+			}
+
+			// Ensure required parameters from 'parameters' are also in 'inputSchema.required'
+			if len(requiredParams) > 0 {
+				var existingRequired []any
+				if reqVal, ok := inputSchema.Fields["required"]; ok {
+					if listVal := reqVal.GetListValue(); listVal != nil {
+						for _, v := range listVal.Values {
+							existingRequired = append(existingRequired, v.GetStringValue())
+						}
+					}
+				}
+
+				// Merge requiredParams into existingRequired
+				for _, reqParam := range requiredParams {
+					exists := false
+					for _, existing := range existingRequired {
+						if existingStr, ok := existing.(string); ok && existingStr == reqParam {
+							exists = true
+							break
+						}
+					}
+					if !exists {
+						existingRequired = append(existingRequired, reqParam)
+					}
+				}
+
+				// Write back to inputSchema
+				if len(existingRequired) > 0 {
+					requiredValue, err := structpb.NewList(existingRequired)
+					if err != nil {
+						log.Error("Failed to create required params list", "error", err)
+					} else {
+						inputSchema.Fields["required"] = structpb.NewListValue(requiredValue)
+					}
+				}
+			}
 		} else {
 			if properties == nil {
 				properties = &structpb.Struct{Fields: make(map[string]*structpb.Value)}
