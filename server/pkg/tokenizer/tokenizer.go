@@ -6,6 +6,7 @@ package tokenizer
 
 import (
 	"fmt"
+	"strconv"
 	"strings"
 )
 
@@ -85,6 +86,19 @@ func CountTokensInValue(t Tokenizer, v interface{}) (int, error) {
 			count += c
 		}
 		return count, nil
+	case int:
+		return t.CountTokens(strconv.Itoa(val))
+	case int64:
+		return t.CountTokens(strconv.FormatInt(val, 10))
+	case float64:
+		return t.CountTokens(strconv.FormatFloat(val, 'g', -1, 64))
+	case bool:
+		if val {
+			return t.CountTokens("true")
+		}
+		return t.CountTokens("false")
+	case nil:
+		return t.CountTokens("null")
 	default:
 		// Convert to string representation
 		return t.CountTokens(fmt.Sprintf("%v", val))
