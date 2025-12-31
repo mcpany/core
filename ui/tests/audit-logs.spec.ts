@@ -15,6 +15,6 @@ test.describe('Feature Screenshot', () => {
     await page.goto('/logs');
     // Wait for some logs to appear
     await page.waitForTimeout(3000);
-    await page.screenshot({ path: path.join(auditDir, 'log_stream.png'), fullPage: true });
+    await page.screenshot({ path: path.join(auditDir, 'log_stream.png') });
   });
 });
