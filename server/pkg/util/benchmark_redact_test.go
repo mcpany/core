@@ -93,4 +93,27 @@ func BenchmarkRedactJSON(b *testing.B) {
 			RedactJSON(input)
 		}
 	})
+
+	// Large string value benchmark
+	// This simulates a large log entry or similar that might be passed through
+	// where one field is very large but not an object/array.
+	// We want to see if we waste time scanning it.
+	largeStringMap := map[string]string{
+		"short": "val",
+		// 1MB string
+		"large": string(make([]byte, 1024*1024)),
+	}
+	// Make it "dirty" so we actually parse the map
+	largeStringMap["api_key"] = "secret"
+
+	largeStringBytes, _ := json.Marshal(largeStringMap)
+
+	b.Run("LargeStringValue", func(b *testing.B) {
+		input := largeStringBytes
+		b.ReportAllocs()
+		b.ResetTimer()
+		for i := 0; i < b.N; i++ {
+			RedactJSON(input)
+		}
+	})
 }
