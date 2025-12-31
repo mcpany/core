@@ -179,7 +179,7 @@ test.describe('MCP Any UI E2E Tests', () => {
 
     await page.goto('/network');
     await expect(page.locator('body')).toBeVisible();
-    await expect(page.locator(':has-text("Network Topology")').first()).toBeVisible();
+    await expect(page.getByText('Network Graph').first()).toBeVisible();
     await expect(page.getByTestId('rf__node-mcp-core')).toBeVisible();
     // Child nodes seem flaky or collapsed in test environment
     // await expect(page.getByTestId('rf__node-svc-1')).toBeVisible();
