@@ -22,6 +22,11 @@ var (
 	// sensitiveKeyGroups maps a starting character (lowercase) to the list of sensitive keys starting with it.
 	// Optimization: Use array instead of map for faster lookup.
 	sensitiveKeyGroups [256][][]byte
+
+	// sensitiveNextCharMask maps a starting character to a bitmask of allowed second characters.
+	// Bit 0 = 'a', Bit 1 = 'b', etc.
+	// Used to quickly filter out false positives based on the second character.
+	sensitiveNextCharMask [256]uint32
 )
 
 func init() {
@@ -37,6 +42,24 @@ func init() {
 			sensitiveKeyGroups[first] = append(sensitiveKeyGroups[first], kb)
 		}
 	}
+
+	// Build next char masks
+	for start, keys := range sensitiveKeyGroups {
+		if len(keys) == 0 {
+			continue
+		}
+		var mask uint32
+		for _, k := range keys {
+			if len(k) > 1 {
+				second := k[1] // k is lowercase
+				if second >= 'a' && second <= 'z' {
+					mask |= 1 << (second - 'a')
+				}
+			}
+		}
+		sensitiveNextCharMask[start] = mask
+	}
+
 	// Pre-marshal the redacted placeholder to ensure valid JSON and avoid repeated work.
 	b, _ := json.Marshal(redactedPlaceholder)
 	redactedValue = json.RawMessage(b)
@@ -143,35 +166,35 @@ func redactMapRaw(m map[string]json.RawMessage) bool {
 		if IsSensitiveKey(k) {
 			m[k] = redactedValue
 			changed = true
-		} else {
+		} else if len(v) > 0 {
 			// Check if we need to recurse
 			// Only recurse if the value looks like an object or array
-			trimmed := bytes.TrimSpace(v)
-			if len(trimmed) > 0 {
-				switch trimmed[0] {
-				case '{', '[':
-					if !shouldScanRaw(v) {
-						continue
-					}
+			// Optimization: json.RawMessage from Unmarshal already contains the value bytes without
+			// leading/trailing whitespace (unless the value itself is a string with spaces).
+			// We can check v[0] directly instead of scanning with bytes.TrimSpace(v) which is O(N).
+			switch v[0] {
+			case '{', '[':
+				if !shouldScanRaw(v) {
+					continue
+				}
 
-					if trimmed[0] == '{' {
-						var nested map[string]json.RawMessage
-						if err := json.Unmarshal(trimmed, &nested); err == nil {
-							if redactMapRaw(nested) {
-								if result, err := json.Marshal(nested); err == nil {
-									m[k] = result
-									changed = true
-								}
+				if v[0] == '{' {
+					var nested map[string]json.RawMessage
+					if err := json.Unmarshal(v, &nested); err == nil {
+						if redactMapRaw(nested) {
+							if result, err := json.Marshal(nested); err == nil {
+								m[k] = result
+								changed = true
 							}
 						}
-					} else {
-						var nested []json.RawMessage
-						if err := json.Unmarshal(trimmed, &nested); err == nil {
-							if redactSliceRaw(nested) {
-								if result, err := json.Marshal(nested); err == nil {
-									m[k] = result
-									changed = true
-								}
+					}
+				} else {
+					var nested []json.RawMessage
+					if err := json.Unmarshal(v, &nested); err == nil {
+						if redactSliceRaw(nested) {
+							if result, err := json.Marshal(nested); err == nil {
+								m[k] = result
+								changed = true
 							}
 						}
 					}
@@ -187,17 +210,16 @@ func redactMapRaw(m map[string]json.RawMessage) bool {
 func redactSliceRaw(s []json.RawMessage) bool {
 	changed := false
 	for i, v := range s {
-		trimmed := bytes.TrimSpace(v)
-		if len(trimmed) > 0 {
-			switch trimmed[0] {
+		if len(v) > 0 {
+			switch v[0] {
 			case '{', '[':
 				if !shouldScanRaw(v) {
 					continue
 				}
 
-				if trimmed[0] == '{' {
+				if v[0] == '{' {
 					var nested map[string]json.RawMessage
-					if err := json.Unmarshal(trimmed, &nested); err == nil {
+					if err := json.Unmarshal(v, &nested); err == nil {
 						if redactMapRaw(nested) {
 							if result, err := json.Marshal(nested); err == nil {
 								s[i] = result
@@ -207,7 +229,7 @@ func redactSliceRaw(s []json.RawMessage) bool {
 					}
 				} else {
 					var nested []json.RawMessage
-					if err := json.Unmarshal(trimmed, &nested); err == nil {
+					if err := json.Unmarshal(v, &nested); err == nil {
 						if redactSliceRaw(nested) {
 							if result, err := json.Marshal(nested); err == nil {
 								s[i] = result
@@ -284,6 +306,22 @@ func scanForSensitiveKeys(input []byte, checkEscape bool) bool {
 			}
 			// Found candidate start at offset + idx
 			matchStart := offset + idx
+
+			// Optimization: Check second character
+			if matchStart+1 < len(input) {
+				second := input[matchStart+1] | 0x20
+				if second >= 'a' && second <= 'z' {
+					mask := sensitiveNextCharMask[startChar]
+					if (mask&(1<<(second-'a'))) == 0 {
+						// Second character doesn't match any key in this group
+						offset = matchStart + 1
+						continue
+					}
+				}
+			} else {
+				// Not enough bytes for any key
+				break
+			}
 
 			// Check all keys in this group against input starting at matchStart
 			for _, key := range keys {
