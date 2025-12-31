@@ -4,6 +4,7 @@
 package middleware
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"os"
@@ -32,7 +33,7 @@ func NewFileAuditStore(path string) (*FileAuditStore, error) {
 }
 
 // Write writes an audit entry to the file.
-func (s *FileAuditStore) Write(entry AuditEntry) error {
+func (s *FileAuditStore) Write(_ context.Context, entry AuditEntry) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 

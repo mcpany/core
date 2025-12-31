@@ -4,6 +4,7 @@
 package sqlite
 
 import (
+	"context"
 	"os"
 	"path/filepath"
 	"testing"
@@ -34,11 +35,11 @@ func TestStore(t *testing.T) {
 			Id:      proto.String("test-id"),
 			Version: proto.String("1.0.0"),
 		}
-		if err := store.SaveService(svc); err != nil {
+		if err := store.SaveService(context.Background(), svc); err != nil {
 			t.Fatalf("failed to save service: %v", err)
 		}
 
-		loaded, err := store.GetService("test-service")
+		loaded, err := store.GetService(context.Background(), "test-service")
 		if err != nil {
 			t.Fatalf("failed to get service: %v", err)
 		}
@@ -51,7 +52,7 @@ func TestStore(t *testing.T) {
 	})
 
 	t.Run("List", func(t *testing.T) {
-		services, err := store.ListServices()
+		services, err := store.ListServices(context.Background())
 		if err != nil {
 			t.Fatalf("failed to list services: %v", err)
 		}
@@ -61,22 +62,22 @@ func TestStore(t *testing.T) {
 	})
 
 	t.Run("Update", func(t *testing.T) {
-		svc, _ := store.GetService("test-service")
+		svc, _ := store.GetService(context.Background(), "test-service")
 		svc.Version = proto.String("1.0.1")
-		if err := store.SaveService(svc); err != nil {
+		if err := store.SaveService(context.Background(), svc); err != nil {
 			t.Fatalf("failed to update service: %v", err)
 		}
-		loaded, _ := store.GetService("test-service")
+		loaded, _ := store.GetService(context.Background(), "test-service")
 		if loaded.GetVersion() != "1.0.1" {
 			t.Errorf("expected version 1.0.1, got %s", loaded.GetVersion())
 		}
 	})
 
 	t.Run("Delete", func(t *testing.T) {
-		if err := store.DeleteService("test-service"); err != nil {
+		if err := store.DeleteService(context.Background(), "test-service"); err != nil {
 			t.Fatalf("failed to delete service: %v", err)
 		}
-		loaded, err := store.GetService("test-service")
+		loaded, err := store.GetService(context.Background(), "test-service")
 		if err != nil {
 			t.Fatalf("failed to get service after delete: %v", err)
 		}

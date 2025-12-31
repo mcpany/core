@@ -28,8 +28,8 @@ func (s *Store) Close() error {
 }
 
 // Load implements config.Store interface.
-func (s *Store) Load() (*configv1.McpAnyServerConfig, error) {
-	rows, err := s.db.QueryContext(context.TODO(), "SELECT config_json FROM upstream_services")
+func (s *Store) Load(ctx context.Context) (*configv1.McpAnyServerConfig, error) {
+	rows, err := s.db.QueryContext(ctx, "SELECT config_json FROM upstream_services")
 	if err != nil {
 		return nil, fmt.Errorf("failed to query upstream_services: %w", err)
 	}
@@ -61,7 +61,7 @@ func (s *Store) Load() (*configv1.McpAnyServerConfig, error) {
 }
 
 // SaveService saves an upstream service configuration.
-func (s *Store) SaveService(service *configv1.UpstreamServiceConfig) error {
+func (s *Store) SaveService(ctx context.Context, service *configv1.UpstreamServiceConfig) error {
 	if service.GetName() == "" {
 		return fmt.Errorf("service name is required")
 	}
@@ -84,7 +84,7 @@ func (s *Store) SaveService(service *configv1.UpstreamServiceConfig) error {
 		id = service.GetName() // fallback
 	}
 
-	_, err = s.db.ExecContext(context.TODO(), query, id, service.GetName(), string(configJSON))
+	_, err = s.db.ExecContext(ctx, query, id, service.GetName(), string(configJSON))
 	if err != nil {
 		return fmt.Errorf("failed to save service: %w", err)
 	}
@@ -92,9 +92,9 @@ func (s *Store) SaveService(service *configv1.UpstreamServiceConfig) error {
 }
 
 // GetService retrieves an upstream service configuration by name.
-func (s *Store) GetService(name string) (*configv1.UpstreamServiceConfig, error) {
+func (s *Store) GetService(ctx context.Context, name string) (*configv1.UpstreamServiceConfig, error) {
 	query := "SELECT config_json FROM upstream_services WHERE name = ?"
-	row := s.db.QueryRowContext(context.TODO(), query, name)
+	row := s.db.QueryRowContext(ctx, query, name)
 
 	var configJSON string
 	if err := row.Scan(&configJSON); err != nil {
@@ -112,8 +112,8 @@ func (s *Store) GetService(name string) (*configv1.UpstreamServiceConfig, error)
 }
 
 // ListServices lists all upstream service configurations.
-func (s *Store) ListServices() ([]*configv1.UpstreamServiceConfig, error) {
-	cfg, err := s.Load()
+func (s *Store) ListServices(ctx context.Context) ([]*configv1.UpstreamServiceConfig, error) {
+	cfg, err := s.Load(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -121,8 +121,8 @@ func (s *Store) ListServices() ([]*configv1.UpstreamServiceConfig, error) {
 }
 
 // DeleteService deletes an upstream service configuration by name.
-func (s *Store) DeleteService(name string) error {
-	_, err := s.db.ExecContext(context.TODO(), "DELETE FROM upstream_services WHERE name = ?", name)
+func (s *Store) DeleteService(ctx context.Context, name string) error {
+	_, err := s.db.ExecContext(ctx, "DELETE FROM upstream_services WHERE name = ?", name)
 	if err != nil {
 		return fmt.Errorf("failed to delete service: %w", err)
 	}

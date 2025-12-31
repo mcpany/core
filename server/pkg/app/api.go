@@ -22,7 +22,7 @@ func (a *Application) createAPIHandler(store storage.Storage) http.Handler {
 	mux.HandleFunc("/services", func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case http.MethodGet:
-			services, err := store.ListServices()
+			services, err := store.ListServices(r.Context())
 			if err != nil {
 				logging.GetLogger().Error("failed to list services", "error", err)
 				http.Error(w, "Internal Server Error", http.StatusInternalServerError)
@@ -61,7 +61,7 @@ func (a *Application) createAPIHandler(store storage.Storage) http.Handler {
 			// Auto-generate ID if missing? Store handles it if we pass empty ID (fallback to name).
 			// But creating UUID here might be better? For now name fallback is fine.
 
-			if err := store.SaveService(&svc); err != nil {
+			if err := store.SaveService(r.Context(), &svc); err != nil {
 				logging.GetLogger().Error("failed to save service", "error", err)
 				http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 				return
@@ -88,7 +88,7 @@ func (a *Application) createAPIHandler(store storage.Storage) http.Handler {
 
 		switch r.Method {
 		case http.MethodGet:
-			svc, err := store.GetService(name)
+			svc, err := store.GetService(r.Context(), name)
 			if err != nil {
 				logging.GetLogger().Error("failed to get service", "name", name, "error", err)
 				http.Error(w, "Internal Server Error", http.StatusInternalServerError)
@@ -110,7 +110,7 @@ func (a *Application) createAPIHandler(store storage.Storage) http.Handler {
 				return
 			}
 			svc.Name = proto.String(name) // Force name match
-			if err := store.SaveService(&svc); err != nil {
+			if err := store.SaveService(r.Context(), &svc); err != nil {
 				logging.GetLogger().Error("failed to save service", "name", name, "error", err)
 				http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 				return
@@ -120,7 +120,7 @@ func (a *Application) createAPIHandler(store storage.Storage) http.Handler {
 			}
 			w.WriteHeader(http.StatusOK)
 		case http.MethodDelete:
-			if err := store.DeleteService(name); err != nil {
+			if err := store.DeleteService(r.Context(), name); err != nil {
 				logging.GetLogger().Error("failed to delete service", "name", name, "error", err)
 				http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 				return

@@ -4,6 +4,7 @@
 package config
 
 import (
+	"context"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -118,7 +119,7 @@ func TestFileStore_CollectFilePaths_WalkError(_ *testing.T) {
 func TestFileStore_Load_Error(t *testing.T) {
 	fs := afero.NewMemMapFs()
 	store := NewFileStore(fs, []string{"/missing"})
-	_, err := store.Load()
+	_, err := store.Load(context.Background())
 	assert.Error(t, err)
 	assert.Contains(t, err.Error(), "failed to collect config file paths")
 }
@@ -137,7 +138,7 @@ func TestFileStore_Load_Engines(t *testing.T) {
 	require.NoError(t, afero.WriteFile(fs, "/config/3.textproto", []byte(`global_settings { api_key: "proto-key" }`), 0644))
 
 	store := NewFileStore(fs, []string{"/config"})
-	cfg, err := store.Load()
+	cfg, err := store.Load(context.Background())
 	require.NoError(t, err)
 	// Last one wins (alphabetic order 1,2,3) -> 3.textproto
 	// But merge behavior?
@@ -173,7 +174,7 @@ global_settings:
 `), 0644))
 
 	store := NewFileStore(fs, []string{"/config/log.yaml"})
-	cfg, err := store.Load()
+	cfg, err := store.Load(context.Background())
 	require.NoError(t, err)
 	assert.Equal(t, configv1.GlobalSettings_LOG_LEVEL_INFO, cfg.GetGlobalSettings().GetLogLevel())
 }
@@ -204,7 +205,7 @@ func TestReadURL_Redirect(t *testing.T) {
 	}))
 	defer server.Close()
 
-	_, err := readURL(server.URL)
+	_, err := readURL(context.Background(), server.URL)
 	assert.Error(t, err)
 	assert.Contains(t, err.Error(), "redirects are disabled")
 }
@@ -222,7 +223,7 @@ upstream_services:
 `), 0644))
 
 	store := NewFileStore(fs, []string{"/config/multi.yaml"})
-	_, err := store.Load()
+	_, err := store.Load(context.Background())
 	assert.Error(t, err)
 	// We expect the custom error message about multiple service types
 	assert.Contains(t, err.Error(), "has multiple service types defined")
@@ -236,7 +237,7 @@ global_settings:
 `), 0644))
 
 	store := NewFileStore(fs, []string{"/config/unknown.yaml"})
-	_, err := store.Load()
+	_, err := store.Load(context.Background())
 	assert.Error(t, err)
 	// protojson unmarshal errors on unknown fields by default
 	assert.Contains(t, err.Error(), "unknown field")
@@ -265,7 +266,7 @@ func TestReadURL_Localhost(t *testing.T) {
 	fs := afero.NewMemMapFs()
 	store := NewFileStore(fs, []string{configURL})
 
-	cfg, err := store.Load()
+	cfg, err := store.Load(context.Background())
 
 	require.NoError(t, err)
 	require.NotNil(t, cfg)

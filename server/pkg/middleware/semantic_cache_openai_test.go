@@ -107,9 +107,9 @@ func TestSimpleVectorStore_Eviction(t *testing.T) {
 	v2 := []float32{0, 1, 0}
 	v3 := []float32{0, 0, 1}
 
-	store.Add(key, v1, "result1", time.Minute)
-	store.Add(key, v2, "result2", time.Minute)
-	store.Add(key, v3, "result3", time.Minute)
+	store.Add(context.Background(), key, v1, "result1", time.Minute)
+	store.Add(context.Background(), key, v2, "result2", time.Minute)
+	store.Add(context.Background(), key, v3, "result3", time.Minute)
 
 	// Verify internal state directly to ensure eviction happened
 	store.mu.RLock()
@@ -123,18 +123,18 @@ func TestSimpleVectorStore_Eviction(t *testing.T) {
 	// Verify that v1 is effectively evicted (or returns a very low score if found)
 	// Since we are using orthogonal vectors, searching for v1 (which is no longer in the store)
 	// should either return false or a result with score 0.
-	res, score, found := store.Search(key, v1)
+	res, score, found := store.Search(context.Background(), key, v1)
 	if found {
 		assert.Equal(t, float32(0), score)
 	}
 
 	// Verify that v2 is still present and matches perfectly
-	res, score, found = store.Search(key, v2)
+	res, score, found = store.Search(context.Background(), key, v2)
 	assert.True(t, found)
 	assert.InDelta(t, float32(1.0), score, 0.0001)
 	assert.Equal(t, "result2", res)
 
-	res, score, found = store.Search(key, v3)
+	res, score, found = store.Search(context.Background(), key, v3)
 	assert.True(t, found)
 	assert.InDelta(t, float32(1.0), score, 0.0001)
 	assert.Equal(t, "result3", res)
@@ -145,12 +145,12 @@ func TestSimpleVectorStore_Cleanup(t *testing.T) {
 	key := "test-key"
 
 	// Add item that expires quickly
-	store.Add(key, []float32{0.1}, "result1", 1*time.Millisecond)
+	store.Add(context.Background(), key, []float32{0.1}, "result1", 1*time.Millisecond)
 
 	time.Sleep(10 * time.Millisecond)
 
 	// Add another item - this should trigger cleanup of the first one
-	store.Add(key, []float32{0.2}, "result2", time.Minute)
+	store.Add(context.Background(), key, []float32{0.2}, "result2", time.Minute)
 
 	// Check internal storage - should only have 1 item
 	store.mu.RLock()
@@ -158,7 +158,7 @@ func TestSimpleVectorStore_Cleanup(t *testing.T) {
 	store.mu.RUnlock()
 
 	// Verify the remaining item is result2
-	res, _, found := store.Search(key, []float32{0.2})
+	res, _, found := store.Search(context.Background(), key, []float32{0.2})
 	assert.True(t, found)
 	assert.Equal(t, "result2", res)
 }

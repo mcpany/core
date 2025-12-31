@@ -39,17 +39,17 @@ func (m *MockToolManager) GetServiceInfo(id string) (*tool.ServiceInfo, bool) {
 }
 
 // Implement other interface methods as no-ops or panics if needed
-func (m *MockToolManager) ListTools() []tool.Tool { return nil }
-func (m *MockToolManager) AddTool(t tool.Tool) error { return nil }
+func (m *MockToolManager) ListTools() []tool.Tool                           { return nil }
+func (m *MockToolManager) AddTool(t tool.Tool) error                        { return nil }
 func (m *MockToolManager) AddServiceInfo(id string, info *tool.ServiceInfo) {}
-func (m *MockToolManager) ClearToolsForService(id string) {}
+func (m *MockToolManager) ClearToolsForService(id string)                   {}
 func (m *MockToolManager) ExecuteTool(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
 	return nil, nil
 }
-func (m *MockToolManager) SetMCPServer(s tool.MCPServerProvider) {}
+func (m *MockToolManager) SetMCPServer(s tool.MCPServerProvider)                                   {}
 func (m *MockToolManager) SetProfiles(enabled []string, definitions []*configv1.ProfileDefinition) {}
-func (m *MockToolManager) AddMiddleware(mw tool.ExecutionMiddleware) {}
-func (m *MockToolManager) ListServices() []*tool.ServiceInfo { return nil }
+func (m *MockToolManager) AddMiddleware(mw tool.ExecutionMiddleware)                               {}
+func (m *MockToolManager) ListServices() []*tool.ServiceInfo                                       { return nil }
 
 type MockTool struct {
 	name      string

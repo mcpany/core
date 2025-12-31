@@ -67,10 +67,10 @@ func (m *mockToolManager) AddMiddleware(_ tool.ExecutionMiddleware) {}
 func (m *mockToolManager) ExecuteTool(_ context.Context, _ *tool.ExecutionRequest) (interface{}, error) {
 	return nil, nil
 }
-func (m *mockToolManager) SetMCPServer(_ tool.MCPServerProvider)        {}
-func (m *mockToolManager) AddServiceInfo(_ string, _ *tool.ServiceInfo) {}
+func (m *mockToolManager) SetMCPServer(_ tool.MCPServerProvider)                   {}
+func (m *mockToolManager) AddServiceInfo(_ string, _ *tool.ServiceInfo)            {}
 func (m *mockToolManager) SetProfiles(_ []string, _ []*configv1.ProfileDefinition) {}
-func (m *mockToolManager) ClearToolsForService(_ string)                {}
+func (m *mockToolManager) ClearToolsForService(_ string)                           {}
 
 func TestCachingMiddleware_ExecutionAndCacheHit(t *testing.T) {
 	// Setup

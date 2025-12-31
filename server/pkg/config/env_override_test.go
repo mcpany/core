@@ -4,6 +4,7 @@
 package config_test
 
 import (
+	"context"
 	"os"
 	"testing"
 
@@ -35,7 +36,7 @@ global_settings:
 
 	// Load the config
 	store := config.NewFileStore(fs, []string{"/config.yaml"})
-	cfg, err := store.Load()
+	cfg, err := store.Load(context.Background())
 	require.NoError(t, err)
 
 	// Verify overrides
@@ -60,7 +61,7 @@ func TestEnvVarInjectionWithoutConfig(t *testing.T) {
 
 	// Load the config
 	store := config.NewFileStore(fs, []string{"/minimal.yaml"})
-	cfg, err := store.Load()
+	cfg, err := store.Load(context.Background())
 	require.NoError(t, err)
 
 	require.NotNil(t, cfg.GlobalSettings.McpListenAddress)
@@ -85,7 +86,7 @@ global_settings:
 
 	// Load the config
 	store := config.NewFileStore(fs, []string{"/config.yaml"})
-	cfg, err := store.Load()
+	cfg, err := store.Load(context.Background())
 	require.NoError(t, err)
 
 	// Verify overrides

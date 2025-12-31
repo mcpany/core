@@ -4,6 +4,7 @@
 package config
 
 import (
+	"context"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -31,7 +32,7 @@ func TestStore_SSRF_Protection(t *testing.T) {
 	store := NewFileStore(fs, []string{configURL})
 
 	// Attempt to load from localhost
-	_, err := store.Load()
+	_, err := store.Load(context.Background())
 
 	// Assert that we get an error due to SSRF protection
 	require.Error(t, err, "Should be blocked by SSRF protection")

@@ -44,7 +44,7 @@ func newRootCmd() *cobra.Command {
 			}
 
 			store := config.NewFileStore(osFs, cfg.ConfigPaths())
-			configs, err := config.LoadServices(store, "server")
+			configs, err := config.LoadServices(context.Background(), store, "server")
 			if err != nil {
 				return fmt.Errorf("failed to load configurations from %v: %w", cfg.ConfigPaths(), err)
 			}

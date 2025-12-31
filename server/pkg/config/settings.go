@@ -4,6 +4,7 @@
 package config
 
 import (
+	"context"
 	"fmt"
 	"io"
 	"log/slog"
@@ -95,7 +96,7 @@ func (s *Settings) Load(cmd *cobra.Command, fs afero.Fs) error {
 	mcpListenAddress := viper.GetString("mcp-listen-address")
 	if !cmd.Flags().Changed("mcp-listen-address") && len(s.configPaths) > 0 {
 		store := NewFileStore(fs, s.configPaths)
-		cfg, err := LoadServices(store, "server")
+		cfg, err := LoadServices(context.Background(), store, "server")
 		if err != nil {
 			return fmt.Errorf("failed to load services from config: %w", err)
 		}

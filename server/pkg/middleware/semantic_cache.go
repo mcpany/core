@@ -18,11 +18,11 @@ type EmbeddingProvider interface {
 // VectorStore defines the interface for storing and searching vectors.
 type VectorStore interface {
 	// Add adds a new entry to the vector store.
-	Add(key string, vector []float32, result any, ttl time.Duration) error
+	Add(ctx context.Context, key string, vector []float32, result any, ttl time.Duration) error
 	// Search searches for the most similar entry in the vector store.
-	Search(key string, query []float32) (any, float32, bool)
+	Search(ctx context.Context, key string, query []float32) (any, float32, bool)
 	// Prune removes expired entries.
-	Prune(key string)
+	Prune(ctx context.Context, key string)
 }
 
 // SemanticCache implements a semantic cache using embeddings and cosine similarity.
@@ -55,7 +55,7 @@ func (c *SemanticCache) Get(ctx context.Context, key string, input string) (any,
 		return nil, nil, false, err
 	}
 
-	result, score, found := c.store.Search(key, embedding)
+	result, score, found := c.store.Search(ctx, key, embedding)
 	if found && score >= c.threshold {
 		return result, embedding, true, nil
 	}
@@ -63,6 +63,6 @@ func (c *SemanticCache) Get(ctx context.Context, key string, input string) (any,
 }
 
 // Set adds a result to the cache using the provided embedding.
-func (c *SemanticCache) Set(_ context.Context, key string, embedding []float32, result any, ttl time.Duration) error {
-	return c.store.Add(key, embedding, result, ttl)
+func (c *SemanticCache) Set(ctx context.Context, key string, embedding []float32, result any, ttl time.Duration) error {
+	return c.store.Add(ctx, key, embedding, result, ttl)
 }

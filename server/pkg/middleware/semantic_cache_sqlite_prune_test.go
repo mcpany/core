@@ -4,6 +4,7 @@
 package middleware_test
 
 import (
+	"context"
 	"os"
 	"testing"
 	"time"
@@ -30,12 +31,12 @@ func TestSQLiteVectorStore_Prune(t *testing.T) {
 	vector1 := []float32{0.1, 0.2, 0.3}
 	result1 := "result1"
 	ttl1 := 1 * time.Hour
-	err = store.Add(key1, vector1, result1, ttl1)
+	err = store.Add(context.Background(), key1, vector1, result1, ttl1)
 	require.NoError(t, err)
 
 	// Prune shouldn't remove unexpired entries
-	store.Prune(key1)
-	res, _, found := store.Search(key1, vector1)
+	store.Prune(context.Background(), key1)
+	res, _, found := store.Search(context.Background(), key1, vector1)
 	assert.True(t, found)
 	assert.Equal(t, result1, res)
 
@@ -44,11 +45,11 @@ func TestSQLiteVectorStore_Prune(t *testing.T) {
 	vector2 := []float32{0.4, 0.5, 0.6}
 	result2 := "result2"
 	ttl2 := 50 * time.Millisecond // Slightly longer to ensure it's valid when added
-	err = store.Add(key2, vector2, result2, ttl2)
+	err = store.Add(context.Background(), key2, vector2, result2, ttl2)
 	require.NoError(t, err)
 
 	// Verify it exists initially
-	res2, _, found2 := store.Search(key2, vector2)
+	res2, _, found2 := store.Search(context.Background(), key2, vector2)
 	assert.True(t, found2)
 	assert.Equal(t, result2, res2)
 
@@ -56,10 +57,10 @@ func TestSQLiteVectorStore_Prune(t *testing.T) {
 	time.Sleep(100 * time.Millisecond)
 
 	// Trigger Prune
-	store.Prune(key2)
+	store.Prune(context.Background(), key2)
 
 	// Search should return false (it would return false even without Prune due to lazy check, but we verify consistency)
-	_, _, found3 := store.Search(key2, vector2)
+	_, _, found3 := store.Search(context.Background(), key2, vector2)
 	assert.False(t, found3)
 
 	// Now verify it is gone from DB by creating a new store from the same DB file
@@ -89,11 +90,11 @@ func TestSQLiteVectorStore_Prune(t *testing.T) {
 	// we will trust that if the code executes the DELETE statement (covered by line coverage), it works.
 	// The test ensures no regression in behavior (it disappears).
 
-	_, _, found4 := store2.Search(key2, vector2)
+	_, _, found4 := store2.Search(context.Background(), key2, vector2)
 	assert.False(t, found4, "Expired entry should not be present in new store")
 
 	// Verify key1 is still there (since it was not expired)
-	res5, _, found5 := store2.Search(key1, vector1)
+	res5, _, found5 := store2.Search(context.Background(), key1, vector1)
 	assert.True(t, found5)
 	assert.Equal(t, result1, res5)
 }

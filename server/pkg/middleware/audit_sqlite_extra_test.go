@@ -4,6 +4,7 @@
 package middleware
 
 import (
+	"context"
 	"database/sql"
 	"fmt"
 	"os"
@@ -109,10 +110,10 @@ func TestSQLiteAuditStore_Write_Errors(t *testing.T) {
 
 	entry := AuditEntry{
 		Timestamp: time.Now(),
-		ToolName: "test",
+		ToolName:  "test",
 	}
 
-	err = store.Write(entry)
+	err = store.Write(context.Background(), entry)
 	assert.Error(t, err)
 }
 
@@ -137,125 +138,125 @@ func TestSQLiteAuditStore_Verify_Errors(t *testing.T) {
 }
 
 func TestSQLiteAuditStore_ComplexWrite(t *testing.T) {
-    // Tests writing with complex arguments and results (nil, non-nil, etc.)
-    f, err := os.CreateTemp("", "audit_complex_*.db")
-    require.NoError(t, err)
-    dbPath := f.Name()
-    f.Close()
-    defer os.Remove(dbPath)
+	// Tests writing with complex arguments and results (nil, non-nil, etc.)
+	f, err := os.CreateTemp("", "audit_complex_*.db")
+	require.NoError(t, err)
+	dbPath := f.Name()
+	f.Close()
+	defer os.Remove(dbPath)
 
-    store, err := NewSQLiteAuditStore(dbPath)
-    require.NoError(t, err)
-    defer store.Close()
+	store, err := NewSQLiteAuditStore(dbPath)
+	require.NoError(t, err)
+	defer store.Close()
 
-    entry := AuditEntry{
-        Timestamp:  time.Now(),
-        ToolName:   "complex_tool",
-        Arguments:  nil, // Should become "{}"
-        Result:     nil, // Should become "{}"
-        DurationMs: 50,
-    }
+	entry := AuditEntry{
+		Timestamp:  time.Now(),
+		ToolName:   "complex_tool",
+		Arguments:  nil, // Should become "{}"
+		Result:     nil, // Should become "{}"
+		DurationMs: 50,
+	}
 
-    err = store.Write(entry)
-    assert.NoError(t, err)
+	err = store.Write(context.Background(), entry)
+	assert.NoError(t, err)
 
-    // Verify it was stored as "{}"
-    db, err := sql.Open("sqlite", dbPath)
-    require.NoError(t, err)
-    defer db.Close()
+	// Verify it was stored as "{}"
+	db, err := sql.Open("sqlite", dbPath)
+	require.NoError(t, err)
+	defer db.Close()
 
-    var args, res string
-    err = db.QueryRow("SELECT arguments, result FROM audit_logs").Scan(&args, &res)
-    require.NoError(t, err)
-    assert.Equal(t, "{}", args)
-    assert.Equal(t, "{}", res)
+	var args, res string
+	err = db.QueryRow("SELECT arguments, result FROM audit_logs").Scan(&args, &res)
+	require.NoError(t, err)
+	assert.Equal(t, "{}", args)
+	assert.Equal(t, "{}", res)
 }
 
 func TestSQLiteAuditStore_IntegrityViolation_PrevHash(t *testing.T) {
-     f, err := os.CreateTemp("", "audit_integrity_*.db")
-    require.NoError(t, err)
-    dbPath := f.Name()
-    f.Close()
-    defer os.Remove(dbPath)
+	f, err := os.CreateTemp("", "audit_integrity_*.db")
+	require.NoError(t, err)
+	dbPath := f.Name()
+	f.Close()
+	defer os.Remove(dbPath)
 
-    store, err := NewSQLiteAuditStore(dbPath)
-    require.NoError(t, err)
+	store, err := NewSQLiteAuditStore(dbPath)
+	require.NoError(t, err)
 
-    // Write 2 entries
-    require.NoError(t, store.Write(AuditEntry{Timestamp: time.Now(), ToolName: "1"}))
-    require.NoError(t, store.Write(AuditEntry{Timestamp: time.Now(), ToolName: "2"}))
-    store.Close()
+	// Write 2 entries
+	require.NoError(t, store.Write(context.Background(), AuditEntry{Timestamp: time.Now(), ToolName: "1"}))
+	require.NoError(t, store.Write(context.Background(), AuditEntry{Timestamp: time.Now(), ToolName: "2"}))
+	store.Close()
 
-    // Manually tamper prev_hash of second entry
-    db, err := sql.Open("sqlite", dbPath)
-    require.NoError(t, err)
-    _, err = db.Exec("UPDATE audit_logs SET prev_hash = 'tampered' WHERE id = 2")
-    require.NoError(t, err)
-    db.Close()
+	// Manually tamper prev_hash of second entry
+	db, err := sql.Open("sqlite", dbPath)
+	require.NoError(t, err)
+	_, err = db.Exec("UPDATE audit_logs SET prev_hash = 'tampered' WHERE id = 2")
+	require.NoError(t, err)
+	db.Close()
 
-    store, err = NewSQLiteAuditStore(dbPath)
-    require.NoError(t, err)
-    defer store.Close()
+	store, err = NewSQLiteAuditStore(dbPath)
+	require.NoError(t, err)
+	defer store.Close()
 
-    valid, err := store.Verify()
-    assert.False(t, valid)
-    assert.Error(t, err)
-    assert.Contains(t, err.Error(), "prev_hash mismatch")
+	valid, err := store.Verify()
+	assert.False(t, valid)
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), "prev_hash mismatch")
 }
 
 func TestEnsureColumns_AlreadyExists(t *testing.T) {
-    // Test that ensureColumns doesn't fail if columns already exist
-    f, err := os.CreateTemp("", "audit_exists_*.db")
-    require.NoError(t, err)
-    dbPath := f.Name()
-    f.Close()
-    defer os.Remove(dbPath)
+	// Test that ensureColumns doesn't fail if columns already exist
+	f, err := os.CreateTemp("", "audit_exists_*.db")
+	require.NoError(t, err)
+	dbPath := f.Name()
+	f.Close()
+	defer os.Remove(dbPath)
 
-    // Create DB and columns manually
-    db, err := sql.Open("sqlite", dbPath)
-    require.NoError(t, err)
-    _, err = db.Exec("CREATE TABLE audit_logs (id INTEGER PRIMARY KEY, hash TEXT, prev_hash TEXT)")
-    require.NoError(t, err)
-    db.Close()
+	// Create DB and columns manually
+	db, err := sql.Open("sqlite", dbPath)
+	require.NoError(t, err)
+	_, err = db.Exec("CREATE TABLE audit_logs (id INTEGER PRIMARY KEY, hash TEXT, prev_hash TEXT)")
+	require.NoError(t, err)
+	db.Close()
 
-    // Should succeed
-    store, err := NewSQLiteAuditStore(dbPath)
-    assert.NoError(t, err)
-    if store != nil {
-        store.Close()
-    }
+	// Should succeed
+	store, err := NewSQLiteAuditStore(dbPath)
+	assert.NoError(t, err)
+	if store != nil {
+		store.Close()
+	}
 }
 
 func TestSQLiteAuditStore_ConcurrentWrites(t *testing.T) {
-    f, err := os.CreateTemp("", "audit_concurrent_*.db")
-    require.NoError(t, err)
-    dbPath := f.Name()
-    f.Close()
-    defer os.Remove(dbPath)
+	f, err := os.CreateTemp("", "audit_concurrent_*.db")
+	require.NoError(t, err)
+	dbPath := f.Name()
+	f.Close()
+	defer os.Remove(dbPath)
 
-    store, err := NewSQLiteAuditStore(dbPath)
-    require.NoError(t, err)
-    defer store.Close()
+	store, err := NewSQLiteAuditStore(dbPath)
+	require.NoError(t, err)
+	defer store.Close()
 
-    concurrency := 10
-    done := make(chan bool)
+	concurrency := 10
+	done := make(chan bool)
 
-    for i := 0; i < concurrency; i++ {
-        go func(idx int) {
-            err := store.Write(AuditEntry{
-                Timestamp: time.Now(),
-                ToolName:  fmt.Sprintf("tool_%d", idx),
-            })
-            assert.NoError(t, err)
-            done <- true
-        }(i)
-    }
+	for i := 0; i < concurrency; i++ {
+		go func(idx int) {
+			err := store.Write(context.Background(), AuditEntry{
+				Timestamp: time.Now(),
+				ToolName:  fmt.Sprintf("tool_%d", idx),
+			})
+			assert.NoError(t, err)
+			done <- true
+		}(i)
+	}
 
-    for i := 0; i < concurrency; i++ {
-        <-done
-    }
+	for i := 0; i < concurrency; i++ {
+		<-done
+	}
 
-    valid, err := store.Verify()
-    assert.NoError(t, err)
-    assert.True(t, valid)
+	valid, err := store.Verify()
+	assert.NoError(t, err)
+	assert.True(t, valid)
 }

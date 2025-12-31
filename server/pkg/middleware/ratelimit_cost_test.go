@@ -41,15 +41,18 @@ func (m *MockToolManagerForCost) GetServiceInfo(id string) (*tool.ServiceInfo, b
 	return args.Get(0).(*tool.ServiceInfo), args.Bool(1)
 }
 
-func (m *MockToolManagerForCost) ListTools() []tool.Tool { return nil }
-func (m *MockToolManagerForCost) AddTool(t tool.Tool) error { return nil }
+func (m *MockToolManagerForCost) ListTools() []tool.Tool                           { return nil }
+func (m *MockToolManagerForCost) AddTool(t tool.Tool) error                        { return nil }
 func (m *MockToolManagerForCost) AddServiceInfo(id string, info *tool.ServiceInfo) {}
-func (m *MockToolManagerForCost) ExecuteTool(ctx context.Context, req *tool.ExecutionRequest) (any, error) { return nil, nil }
-func (m *MockToolManagerForCost) SetMCPServer(s tool.MCPServerProvider) {}
+func (m *MockToolManagerForCost) ExecuteTool(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
+	return nil, nil
+}
+func (m *MockToolManagerForCost) SetMCPServer(s tool.MCPServerProvider)  {}
 func (m *MockToolManagerForCost) ClearToolsForService(serviceKey string) {}
-func (m *MockToolManagerForCost) SetProfiles(profiles []string, definitions []*configv1.ProfileDefinition) {}
+func (m *MockToolManagerForCost) SetProfiles(profiles []string, definitions []*configv1.ProfileDefinition) {
+}
 func (m *MockToolManagerForCost) AddMiddleware(middleware tool.ExecutionMiddleware) {}
-func (m *MockToolManagerForCost) ListServices() []*tool.ServiceInfo { return nil }
+func (m *MockToolManagerForCost) ListServices() []*tool.ServiceInfo                 { return nil }
 
 // MockToolForCost is a mock for tool.Tool
 type MockToolForCost struct {
@@ -67,13 +70,13 @@ func (m *MockToolForCost) Execute(ctx context.Context, req *tool.ExecutionReques
 func (m *MockToolForCost) Service() string {
 	return "service1"
 }
+
 // Return concrete type instead of interface proxy
 func (m *MockToolForCost) MCPTool() *github_com_modelcontextprotocol_go_sdk_mcp.Tool { return nil }
-func (m *MockToolForCost) GetCacheConfig() *configv1.CacheConfig { return nil }
+func (m *MockToolForCost) GetCacheConfig() *configv1.CacheConfig                     { return nil }
 
 // Need dummy type for MCPTool return to satisfy interface
 type github_com_modelcontextprotocol_go_sdk_mcp_Tool struct{}
-
 
 func TestRateLimitMiddleware_EstimateTokenCost(t *testing.T) {
 	// Default SimpleTokenizer (4 chars/token)
@@ -200,7 +203,7 @@ func TestRateLimitMiddleware_AllowN(t *testing.T) {
 	config.Storage = configv1.RateLimitConfig_STORAGE_MEMORY.Enum()
 
 	mockManager.On("GetServiceInfo", serviceID).Return(&tool.ServiceInfo{
-		Name:   "Test Service",
+		Name: "Test Service",
 		Config: &configv1.UpstreamServiceConfig{
 			RateLimit: config,
 		},
@@ -214,7 +217,7 @@ func TestRateLimitMiddleware_AllowN(t *testing.T) {
 		"arg": "small input",
 	}
 	req1 := &tool.ExecutionRequest{
-		ToolName: toolName,
+		ToolName:  toolName,
 		Arguments: args1,
 	}
 	b1, _ := json.Marshal(args1)
@@ -235,13 +238,15 @@ func TestRateLimitMiddleware_AllowN(t *testing.T) {
 	// We want to consume > 18 tokens. 18 * 4 = 72 chars.
 	// Let's use 100 chars -> 25 tokens.
 	longString := make([]byte, 100)
-	for i := range longString { longString[i] = 'a' }
+	for i := range longString {
+		longString[i] = 'a'
+	}
 
 	args2 := map[string]any{
 		"arg": string(longString),
 	}
 	req2 := &tool.ExecutionRequest{
-		ToolName: toolName,
+		ToolName:  toolName,
 		Arguments: args2,
 	}
 	b2, _ := json.Marshal(args2)

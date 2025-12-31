@@ -45,21 +45,26 @@ func NewSQLiteVectorStore(path string) (*SQLiteVectorStore, error) {
 	CREATE INDEX IF NOT EXISTS idx_key ON semantic_cache_entries(key);
 	CREATE INDEX IF NOT EXISTS idx_expires_at ON semantic_cache_entries(expires_at);
 	`
-	if _, err := db.ExecContext(context.TODO(), schema); err != nil {
+	ctxSchema, cancelSchema := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancelSchema()
+	if _, err := db.ExecContext(ctxSchema, schema); err != nil {
 		_ = db.Close()
 		return nil, fmt.Errorf("failed to create semantic_cache_entries table: %w", err)
 	}
 
 	// Optimize SQLite performance
-	if _, err := db.ExecContext(context.TODO(), "PRAGMA journal_mode=WAL;"); err != nil {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	if _, err := db.ExecContext(ctx, "PRAGMA journal_mode=WAL;"); err != nil {
 		_ = db.Close()
 		return nil, fmt.Errorf("failed to set WAL mode: %w", err)
 	}
-	if _, err := db.ExecContext(context.TODO(), "PRAGMA synchronous=NORMAL;"); err != nil {
+	if _, err := db.ExecContext(ctx, "PRAGMA synchronous=NORMAL;"); err != nil {
 		_ = db.Close()
 		return nil, fmt.Errorf("failed to set synchronous mode: %w", err)
 	}
-	if _, err := db.ExecContext(context.TODO(), "PRAGMA busy_timeout=5000;"); err != nil {
+	if _, err := db.ExecContext(ctx, "PRAGMA busy_timeout=5000;"); err != nil {
 		_ = db.Close()
 		return nil, fmt.Errorf("failed to set busy_timeout: %w", err)
 	}
@@ -69,7 +74,7 @@ func NewSQLiteVectorStore(path string) (*SQLiteVectorStore, error) {
 		db:          db,
 	}
 
-	if err := store.loadFromDB(); err != nil {
+	if err := store.loadFromDB(ctx); err != nil {
 		_ = db.Close()
 		return nil, fmt.Errorf("failed to load cache entries from db: %w", err)
 	}
@@ -78,13 +83,16 @@ func NewSQLiteVectorStore(path string) (*SQLiteVectorStore, error) {
 }
 
 // loadFromDB loads unexpired entries from DB to memory.
-func (s *SQLiteVectorStore) loadFromDB() error {
+func (s *SQLiteVectorStore) loadFromDB(ctx context.Context) error {
 	now := time.Now().UnixNano()
 	// Order by ID ASC to maintain insertion order, helping SimpleVectorStore's FIFO eviction policy
 	// work consistently with the persistent state.
 	// Order by ID ASC to maintain insertion order, helping SimpleVectorStore's FIFO eviction policy
 	// work consistently with the persistent state.
-	rows, err := s.db.QueryContext(context.TODO(), "SELECT key, vector, result, expires_at FROM semantic_cache_entries WHERE expires_at > ? ORDER BY id ASC", now)
+	ctx, cancel := context.WithTimeout(ctx, 30*time.Second)
+	defer cancel()
+
+	rows, err := s.db.QueryContext(ctx, "SELECT key, vector, result, expires_at FROM semantic_cache_entries WHERE expires_at > ? ORDER BY id ASC", now)
 	if err != nil {
 		return err
 	}
@@ -112,7 +120,7 @@ func (s *SQLiteVectorStore) loadFromDB() error {
 		ttl := time.Duration(expiresAtNano - time.Now().UnixNano())
 		if ttl > 0 {
 			// Add to memory store without writing back to DB
-			_ = s.memoryStore.Add(key, vector, result, ttl)
+			_ = s.memoryStore.Add(ctx, key, vector, result, ttl)
 		}
 	}
 
@@ -124,9 +132,9 @@ func (s *SQLiteVectorStore) loadFromDB() error {
 }
 
 // Add adds a new entry to both memory and DB.
-func (s *SQLiteVectorStore) Add(key string, vector []float32, result any, ttl time.Duration) error {
+func (s *SQLiteVectorStore) Add(ctx context.Context, key string, vector []float32, result any, ttl time.Duration) error {
 	// Add to memory first
-	if err := s.memoryStore.Add(key, vector, result, ttl); err != nil {
+	if err := s.memoryStore.Add(ctx, key, vector, result, ttl); err != nil {
 		return err
 	}
 
@@ -143,7 +151,7 @@ func (s *SQLiteVectorStore) Add(key string, vector []float32, result any, ttl ti
 
 	expiresAt := time.Now().Add(ttl).UnixNano()
 
-	_, err = s.db.ExecContext(context.TODO(), "INSERT INTO semantic_cache_entries (key, vector, result, expires_at) VALUES (?, ?, ?, ?)",
+	_, err = s.db.ExecContext(ctx, "INSERT INTO semantic_cache_entries (key, vector, result, expires_at) VALUES (?, ?, ?, ?)",
 		key, string(vectorJSON), string(resultJSON), expiresAt)
 	if err != nil {
 		return err
@@ -155,7 +163,11 @@ func (s *SQLiteVectorStore) Add(key string, vector []float32, result any, ttl ti
 		go func() {
 			// Best effort prune
 			now := time.Now().UnixNano()
-			_, _ = s.db.ExecContext(context.TODO(), "DELETE FROM semantic_cache_entries WHERE expires_at <= ?", now)
+			// Use background context with short timeout for async cleanup so it doesn't block unrelated things,
+			// but also doesn't hang forever.
+			ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+			defer cancel()
+			_, _ = s.db.ExecContext(ctx, "DELETE FROM semantic_cache_entries WHERE expires_at <= ?", now)
 		}()
 	}
 
@@ -163,16 +175,16 @@ func (s *SQLiteVectorStore) Add(key string, vector []float32, result any, ttl ti
 }
 
 // Search searches in memory.
-func (s *SQLiteVectorStore) Search(key string, query []float32) (any, float32, bool) {
-	return s.memoryStore.Search(key, query)
+func (s *SQLiteVectorStore) Search(ctx context.Context, key string, query []float32) (any, float32, bool) {
+	return s.memoryStore.Search(ctx, key, query)
 }
 
 // Prune removes expired entries from both memory and DB.
-func (s *SQLiteVectorStore) Prune(key string) {
-	s.memoryStore.Prune(key)
+func (s *SQLiteVectorStore) Prune(ctx context.Context, key string) {
+	s.memoryStore.Prune(ctx, key)
 
 	now := time.Now().UnixNano()
-	_, _ = s.db.ExecContext(context.TODO(), "DELETE FROM semantic_cache_entries WHERE expires_at <= ?", now)
+	_, _ = s.db.ExecContext(ctx, "DELETE FROM semantic_cache_entries WHERE expires_at <= ?", now)
 }
 
 // Close closes the database connection.

@@ -58,7 +58,7 @@ func (u *Updater) CheckForUpdate(ctx context.Context, owner, repo, currentVersio
 }
 
 // UpdateTo downloads the new release, verifies its checksum, and replaces the current executable.
-func (u *Updater) UpdateTo(fs afero.Fs, executablePath string, release *github.RepositoryRelease, assetName, checksumsAssetName string) error {
+func (u *Updater) UpdateTo(ctx context.Context, fs afero.Fs, executablePath string, release *github.RepositoryRelease, assetName, checksumsAssetName string) error {
 	var asset *github.ReleaseAsset
 	for _, a := range release.Assets {
 		if a.GetName() == assetName {
@@ -82,7 +82,7 @@ func (u *Updater) UpdateTo(fs afero.Fs, executablePath string, release *github.R
 	}
 
 	// Download the checksums file
-	req, err := http.NewRequestWithContext(context.TODO(), "GET", checksumsAsset.GetBrowserDownloadURL(), nil)
+	req, err := http.NewRequestWithContext(ctx, "GET", checksumsAsset.GetBrowserDownloadURL(), nil)
 	if err != nil {
 		return fmt.Errorf("failed to create request for checksums: %w", err)
 	}
@@ -105,7 +105,7 @@ func (u *Updater) UpdateTo(fs afero.Fs, executablePath string, release *github.R
 	}
 
 	// Download the release asset
-	req, err = http.NewRequestWithContext(context.TODO(), "GET", asset.GetBrowserDownloadURL(), nil)
+	req, err = http.NewRequestWithContext(ctx, "GET", asset.GetBrowserDownloadURL(), nil)
 	if err != nil {
 		return fmt.Errorf("failed to create request for asset: %w", err)
 	}

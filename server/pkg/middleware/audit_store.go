@@ -4,6 +4,7 @@
 package middleware
 
 import (
+	"context"
 	"encoding/json"
 	"time"
 )
@@ -24,7 +25,7 @@ type AuditEntry struct {
 // AuditStore defines the interface for audit log storage.
 type AuditStore interface {
 	// Write writes an audit entry to the store.
-	Write(entry AuditEntry) error
+	Write(ctx context.Context, entry AuditEntry) error
 	// Close closes the store.
 	Close() error
 }

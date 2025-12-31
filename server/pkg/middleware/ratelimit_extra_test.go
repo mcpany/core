@@ -47,104 +47,104 @@ func TestRateLimitMiddleware_Partitioning(t *testing.T) {
 		mockToolManager.On("GetTool", "service.test-tool").Return(mockTool, true)
 		mockToolManager.On("GetServiceInfo", "service").Return(serviceInfo, true)
 
-        return rlMiddleware, mockToolManager, mockTool
-    }
+		return rlMiddleware, mockToolManager, mockTool
+	}
 
 	t.Run("partition by ip", func(t *testing.T) {
-        rlMiddleware, _, mockTool := setupMiddleware(configv1.RateLimitConfig_KEY_BY_IP)
+		rlMiddleware, _, mockTool := setupMiddleware(configv1.RateLimitConfig_KEY_BY_IP)
 
-        execute := func(ip string) error {
-            req := &tool.ExecutionRequest{
-                ToolName:   "service.test-tool",
-                ToolInputs: json.RawMessage(`{}`),
-            }
-            ctx := context.Background()
-            if ip != "" {
-                ctx = util.ContextWithRemoteIP(ctx, ip)
-            }
-            ctx = tool.NewContextWithTool(ctx, mockTool)
+		execute := func(ip string) error {
+			req := &tool.ExecutionRequest{
+				ToolName:   "service.test-tool",
+				ToolInputs: json.RawMessage(`{}`),
+			}
+			ctx := context.Background()
+			if ip != "" {
+				ctx = util.ContextWithRemoteIP(ctx, ip)
+			}
+			ctx = tool.NewContextWithTool(ctx, mockTool)
 
-            next := func(_ context.Context, _ *tool.ExecutionRequest) (any, error) {
-                return successResult, nil
-            }
-            _, err := rlMiddleware.Execute(ctx, req, next)
-            return err
-        }
+			next := func(_ context.Context, _ *tool.ExecutionRequest) (any, error) {
+				return successResult, nil
+			}
+			_, err := rlMiddleware.Execute(ctx, req, next)
+			return err
+		}
 
-        // IP 1: Request 1 -> Allow
-        assert.NoError(t, execute("1.1.1.1"))
+		// IP 1: Request 1 -> Allow
+		assert.NoError(t, execute("1.1.1.1"))
 
-        // IP 1: Request 2 -> Block (1 RPS exceeded)
-        assert.Error(t, execute("1.1.1.1"))
+		// IP 1: Request 2 -> Block (1 RPS exceeded)
+		assert.Error(t, execute("1.1.1.1"))
 
-        // IP 2: Request 1 -> Allow (Different bucket)
-        assert.NoError(t, execute("2.2.2.2"))
+		// IP 2: Request 1 -> Allow (Different bucket)
+		assert.NoError(t, execute("2.2.2.2"))
 	})
 
-    t.Run("partition by user", func(t *testing.T) {
-        rlMiddleware, _, mockTool := setupMiddleware(configv1.RateLimitConfig_KEY_BY_USER_ID)
+	t.Run("partition by user", func(t *testing.T) {
+		rlMiddleware, _, mockTool := setupMiddleware(configv1.RateLimitConfig_KEY_BY_USER_ID)
 
-        execute := func(user string) error {
-            req := &tool.ExecutionRequest{
-                ToolName:   "service.test-tool",
-                ToolInputs: json.RawMessage(`{}`),
-            }
-            ctx := context.Background()
-            if user != "" {
-                ctx = auth.ContextWithUser(ctx, user)
-            }
-            ctx = tool.NewContextWithTool(ctx, mockTool)
+		execute := func(user string) error {
+			req := &tool.ExecutionRequest{
+				ToolName:   "service.test-tool",
+				ToolInputs: json.RawMessage(`{}`),
+			}
+			ctx := context.Background()
+			if user != "" {
+				ctx = auth.ContextWithUser(ctx, user)
+			}
+			ctx = tool.NewContextWithTool(ctx, mockTool)
 
-            next := func(_ context.Context, _ *tool.ExecutionRequest) (any, error) {
-                return successResult, nil
-            }
-            _, err := rlMiddleware.Execute(ctx, req, next)
-            return err
-        }
+			next := func(_ context.Context, _ *tool.ExecutionRequest) (any, error) {
+				return successResult, nil
+			}
+			_, err := rlMiddleware.Execute(ctx, req, next)
+			return err
+		}
 
-        // User A: Request 1 -> Allow
-        assert.NoError(t, execute("userA"))
+		// User A: Request 1 -> Allow
+		assert.NoError(t, execute("userA"))
 
-        // User A: Request 2 -> Block
-        assert.Error(t, execute("userA"))
+		// User A: Request 2 -> Block
+		assert.Error(t, execute("userA"))
 
-        // User B: Request 1 -> Allow
-        assert.NoError(t, execute("userB"))
+		// User B: Request 1 -> Allow
+		assert.NoError(t, execute("userB"))
 	})
 
-    t.Run("partition by api key header", func(t *testing.T) {
-        rlMiddleware, _, mockTool := setupMiddleware(configv1.RateLimitConfig_KEY_BY_API_KEY)
+	t.Run("partition by api key header", func(t *testing.T) {
+		rlMiddleware, _, mockTool := setupMiddleware(configv1.RateLimitConfig_KEY_BY_API_KEY)
 
-        execute := func(apiKey string) error {
-            req := &tool.ExecutionRequest{
-                ToolName:   "service.test-tool",
-                ToolInputs: json.RawMessage(`{}`),
-            }
-            ctx := context.Background()
+		execute := func(apiKey string) error {
+			req := &tool.ExecutionRequest{
+				ToolName:   "service.test-tool",
+				ToolInputs: json.RawMessage(`{}`),
+			}
+			ctx := context.Background()
 
-            // Inject HTTP request with header
-            httpReq, _ := http.NewRequest("POST", "/", nil)
-            if apiKey != "" {
-                httpReq.Header.Set("X-API-Key", apiKey)
-            }
-            ctx = context.WithValue(ctx, "http.request", httpReq)
+			// Inject HTTP request with header
+			httpReq, _ := http.NewRequest("POST", "/", nil)
+			if apiKey != "" {
+				httpReq.Header.Set("X-API-Key", apiKey)
+			}
+			ctx = context.WithValue(ctx, "http.request", httpReq)
 
-            ctx = tool.NewContextWithTool(ctx, mockTool)
+			ctx = tool.NewContextWithTool(ctx, mockTool)
 
-            next := func(_ context.Context, _ *tool.ExecutionRequest) (any, error) {
-                return successResult, nil
-            }
-            _, err := rlMiddleware.Execute(ctx, req, next)
-            return err
-        }
+			next := func(_ context.Context, _ *tool.ExecutionRequest) (any, error) {
+				return successResult, nil
+			}
+			_, err := rlMiddleware.Execute(ctx, req, next)
+			return err
+		}
 
-        // Key A: Request 1 -> Allow
-        assert.NoError(t, execute("keyA"))
+		// Key A: Request 1 -> Allow
+		assert.NoError(t, execute("keyA"))
 
-        // Key A: Request 2 -> Block
-        assert.Error(t, execute("keyA"))
+		// Key A: Request 2 -> Block
+		assert.Error(t, execute("keyA"))
 
-        // Key B: Request 1 -> Allow
-        assert.NoError(t, execute("keyB"))
+		// Key B: Request 1 -> Allow
+		assert.NoError(t, execute("keyB"))
 	})
 }

@@ -42,9 +42,9 @@ func TestRedisLimiter(t *testing.T) {
 
 	t.Run("Update", func(t *testing.T) {
 		config := configv1.RateLimitConfig_builder{
-			Redis: busproto.RedisBus_builder{Address: proto.String("addr")}.Build(),
+			Redis:             busproto.RedisBus_builder{Address: proto.String("addr")}.Build(),
 			RequestsPerSecond: proto.Float64(10),
-			Burst: proto.Int64(10),
+			Burst:             proto.Int64(10),
 		}.Build()
 		l, err := middleware.NewRedisLimiter("service", config)
 		assert.NoError(t, err)
@@ -61,7 +61,7 @@ func TestRedisLimiter(t *testing.T) {
 
 	t.Run("Allow error", func(t *testing.T) {
 		config := configv1.RateLimitConfig_builder{
-			Redis: busproto.RedisBus_builder{Address: proto.String("addr")}.Build(),
+			Redis:             busproto.RedisBus_builder{Address: proto.String("addr")}.Build(),
 			RequestsPerSecond: proto.Float64(10),
 			Burst:             proto.Int64(10),
 		}.Build()
@@ -83,7 +83,7 @@ func TestRedisLimiter(t *testing.T) {
 
 	t.Run("Allow unexpected type", func(t *testing.T) {
 		config := configv1.RateLimitConfig_builder{
-			Redis: busproto.RedisBus_builder{Address: proto.String("addr")}.Build(),
+			Redis:             busproto.RedisBus_builder{Address: proto.String("addr")}.Build(),
 			RequestsPerSecond: proto.Float64(10),
 			Burst:             proto.Int64(10),
 		}.Build()
@@ -102,15 +102,15 @@ func TestRedisLimiter(t *testing.T) {
 		assert.Error(t, err)
 		assert.Contains(t, err.Error(), "unexpected return type")
 		assert.False(t, allowed)
-    })
+	})
 
-    t.Run("Close", func(t *testing.T) {
-        config := configv1.RateLimitConfig_builder{
+	t.Run("Close", func(t *testing.T) {
+		config := configv1.RateLimitConfig_builder{
 			Redis: busproto.RedisBus_builder{Address: proto.String("addr")}.Build(),
 		}.Build()
 		l, _ := middleware.NewRedisLimiter("service", config)
 
-        err := l.Close()
-        assert.NoError(t, err)
-    })
+		err := l.Close()
+		assert.NoError(t, err)
+	})
 }

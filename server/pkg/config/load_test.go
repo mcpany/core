@@ -51,7 +51,7 @@ upstream_services: {
 
 		fs := afero.NewOsFs()
 		fileStore := NewFileStore(fs, []string{server.URL + "/config.textproto"})
-		cfg, err := LoadServices(fileStore, "server")
+		cfg, err := LoadServices(context.Background(), fileStore, "server")
 		require.NoError(t, err)
 		require.NotNil(t, cfg)
 		assert.Len(t, cfg.GetUpstreamServices(), 1)
@@ -76,7 +76,7 @@ upstream_services: {
 
 		fs := afero.NewOsFs()
 		fileStore := NewFileStore(fs, []string{server.URL + "/config.textproto"})
-		_, err := LoadServices(fileStore, "server")
+		_, err := LoadServices(context.Background(), fileStore, "server")
 		require.Error(t, err)
 		assert.Contains(t, err.Error(), "status code 404")
 	})
@@ -101,13 +101,13 @@ upstream_services: {
 		fs := afero.NewOsFs()
 		// Test with default NewFileStore (should error)
 		fileStore := NewFileStore(fs, []string{server.URL + "/config.textproto"})
-		_, err := LoadServices(fileStore, "server")
+		_, err := LoadServices(context.Background(), fileStore, "server")
 		require.Error(t, err)
 		assert.Contains(t, err.Error(), "failed to unmarshal config")
 
 		// Test with NewFileStoreWithSkipErrors (should succeed with empty config)
 		resilientStore := NewFileStoreWithSkipErrors(fs, []string{server.URL + "/config.textproto"})
-		cfg, err := LoadServices(resilientStore, "server")
+		cfg, err := LoadServices(context.Background(), resilientStore, "server")
 		require.NoError(t, err)
 		require.NotNil(t, cfg)
 		assert.Empty(t, cfg.GetUpstreamServices())
@@ -128,7 +128,7 @@ upstream_services: {
 
 		fs := afero.NewOsFs()
 		fileStore := NewFileStore(fs, []string{server.URL + "/config.textproto"})
-		_, err := LoadServices(fileStore, "server")
+		_, err := LoadServices(context.Background(), fileStore, "server")
 		require.Error(t, err)
 		assert.Contains(t, err.Error(), "request body too large")
 	})
@@ -137,7 +137,7 @@ upstream_services: {
 		filePath := createTempConfigFile(t, "")
 		fs := afero.NewOsFs()
 		fileStore := NewFileStore(fs, []string{filePath})
-		_, err := LoadServices(fileStore, "unknown")
+		_, err := LoadServices(context.Background(), fileStore, "unknown")
 		assert.Error(t, err)
 		assert.Contains(t, err.Error(), "unknown binary type: unknown")
 	})
@@ -334,7 +334,7 @@ upstream_services: {
 			filePath := createTempConfigFile(t, tt.textprotoContent)
 			fs := afero.NewOsFs()
 			fileStore := NewFileStore(fs, []string{filePath})
-			cfg, err := LoadServices(fileStore, "server")
+			cfg, err := LoadServices(context.Background(), fileStore, "server")
 
 			if tt.expectLoadError {
 				assert.Error(t, err)
@@ -381,7 +381,7 @@ upstream_services: {
 	require.NoError(t, f.Close())
 
 	fileStore := NewFileStore(fs, []string{filePath})
-	cfg, err := LoadServices(fileStore, "server")
+	cfg, err := LoadServices(context.Background(), fileStore, "server")
 	require.NoError(t, err)
 	require.NotNil(t, cfg)
 
@@ -414,7 +414,7 @@ upstream_services: {
 	// GlobalSettings defaults might be used, but LoadServices internally initializes UpstreamServiceManager.
 	// By default UpstreamServiceManager enables "default" profile if none provided.
 
-	cfg, err := LoadServices(fileStore, "server")
+	cfg, err := LoadServices(context.Background(), fileStore, "server")
 	require.NoError(t, err)
 	require.NotNil(t, cfg)
 

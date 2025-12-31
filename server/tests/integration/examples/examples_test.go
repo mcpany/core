@@ -50,7 +50,7 @@ func validateConfig(t *testing.T, configPath string) {
 
 	// Load services
 	// The second argument "server" matches what the CLI uses for validation context if any
-	configs, err := config.LoadServices(store, "server")
+	configs, err := config.LoadServices(context.Background(), store, "server")
 	if err != nil {
 		// Some configs might require env vars which validly fail if missing.
 		// However, LoadServices typically parses the YAML/Proto.
