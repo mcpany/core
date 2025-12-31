@@ -113,10 +113,11 @@ func TestOAuth2Authenticator_Authenticate(t *testing.T) {
 
 	t.Run("successful_authentication", func(t *testing.T) {
 		claims := jwt.MapClaims{
-			"iss":   server.URL,
-			"aud":   "test-audience",
-			"exp":   time.Now().Add(time.Hour).Unix(),
-			"email": "test@example.com",
+			"iss":            server.URL,
+			"aud":            "test-audience",
+			"exp":            time.Now().Add(time.Hour).Unix(),
+			"email":          "test@example.com",
+			"email_verified": true,
 		}
 		token := newIDToken(t, privateKey, claims)
 
