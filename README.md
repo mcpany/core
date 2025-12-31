@@ -210,18 +210,35 @@ After building, you can run the server locally:
 
 ### Project Structure
 
-- **`server/cmd/`**: Application entry points (e.g., `server`).
+The project is organized as follows:
+
+- **`server/cmd/`**: Application entry points.
+  - `server/`: The main MCP Any server binary.
 - **`server/pkg/`**: Core library code.
-    - **`config/`**: Configuration loading/validation.
-    - **`mcpserver/`**: Core MCP server logic.
-    - **`upstream/`**: Integrations for gRPC, HTTP, OpenAPI, etc.
-- **`proto/`**: Protocol Buffer definitions.
-- **`server/examples/`**: Example configuration files.
+  - **`app/`**: Application lifecycle and wiring.
+  - **`config/`**: Configuration loading and validation.
+  - **`mcpserver/`**: Core MCP protocol implementation.
+  - **`upstream/`**: Adapters for upstream services (gRPC, HTTP, OpenAPI, Filesystem, etc.).
+- **`proto/`**: Protocol Buffer definitions for configuration and internal APIs.
+- **`server/examples/`**: Example configuration files and demo services.
+- **`server/docs/`**: Detailed documentation and guides.
 
 ### Code Standards
 
-- **Documentation**: All public symbols must be documented. Verify with: `go run server/tools/check_doc.go server/`
-- **Quality**: Ensure `make test` and `make lint` pass before submitting.
+We strive for high code quality. Please ensure the following before submitting a PR:
+
+- **Documentation**: All public functions, methods, and types must have comments explaining their purpose, parameters, and return values. You can verify coverage with:
+  ```bash
+  go run server/tools/check_doc.go server/
+  ```
+- **Testing**: Add unit tests for new functionality. Run all tests with:
+  ```bash
+  make test
+  ```
+- **Linting**: Ensure the code is linted and formatted correctly:
+  ```bash
+  make lint
+  ```
 
 ## 🤝 Contributing
 
