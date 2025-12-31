@@ -156,6 +156,7 @@ type Application struct {
 	configFiles      map[string]string
 	fs               afero.Fs
 	configPaths      []string
+	Storage          storage.Storage
 }
 
 // NewApplication creates a new Application with default dependencies.
@@ -516,6 +517,7 @@ func (a *Application) Run(
 		// Should not happen if code is correct
 		return fmt.Errorf("storage store does not implement storage.Storage")
 	}
+	a.Storage = s
 
 	runErr := a.runServerMode(ctx, mcpSrv, busProvider, bindAddress, grpcPort, shutdownTimeout, cfg.GetUsers(), cfg.GetGlobalSettings().GetProfileDefinitions(), allowedIPs, allowedOrigins, cachingMiddleware, s, serviceRegistry)
 
@@ -533,8 +535,15 @@ func (a *Application) ReloadConfig(fs afero.Fs, configPaths []string) error {
 	log := logging.GetLogger()
 	log.Info("Reloading configuration...")
 	metrics.IncrCounter([]string{"config", "reload", "total"}, 1)
-	// Do not skip errors during reload to prevent configuration drift/wiping.
-	store := config.NewFileStore(fs, configPaths)
+	var stores []config.Store
+	if len(configPaths) > 0 {
+		stores = append(stores, config.NewFileStore(fs, configPaths))
+	}
+	if a.Storage != nil {
+		stores = append(stores, a.Storage)
+	}
+
+	store := config.NewMultiStore(stores...)
 	cfg, err := config.LoadServices(context.Background(), store, "server")
 	if err != nil {
 		metrics.IncrCounter([]string{"config", "reload", "errors"}, 1)

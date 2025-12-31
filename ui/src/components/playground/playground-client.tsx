@@ -5,6 +5,8 @@
 
 "use client";
 
+import { apiClient } from "@/lib/client";
+
 import { useState, useRef, useEffect } from "react";
 import { Send, Bot, User, Terminal, Loader2, Sparkles, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -74,60 +76,68 @@ export function PlaygroundClient() {
     }, 1000);
   };
 
-  const processResponse = (userInput: string) => {
-      // Simple mock logic
-      const lowerInput = userInput.toLowerCase();
 
-      if (lowerInput.includes("list file") || lowerInput.includes("ls")) {
-          // Simulate tool call
-          const toolCallMsg: Message = {
-              id: Date.now().toString() + "-tool",
-              type: "tool-call",
-              toolName: "list_files",
-              toolArgs: { path: "./" },
-              timestamp: new Date(),
-          };
-          setMessages(prev => [...prev, toolCallMsg]);
+  const processResponse = async (userInput: string) => {
+      // Parse input as "tool_name {json_args}"
+      const firstSpaceIndex = userInput.indexOf(' ');
+      let toolName = userInput;
+      let toolArgs = {};
 
-          // Simulate tool execution delay
-          setTimeout(() => {
-              const toolResultMsg: Message = {
-                  id: Date.now().toString() + "-result",
-                  type: "tool-result",
-                  toolName: "list_files",
-                  toolResult: { files: ["server.go", "config.yaml", "README.md", "src/"] },
+      if (firstSpaceIndex > 0) {
+          toolName = userInput.substring(0, firstSpaceIndex);
+          try {
+              toolArgs = JSON.parse(userInput.substring(firstSpaceIndex + 1));
+          } catch (e) {
+              // If not JSON, treat as string arg? Or just error.
+              // For now simpler: assume JSON
+              setMessages(prev => [...prev, {
+                  id: Date.now().toString(),
+                  type: "error",
+                  content: "Invalid arguments format. Use: tool_name {\"arg\": \"val\"}",
                   timestamp: new Date(),
-              };
-              setMessages(prev => [...prev, toolResultMsg]);
+              }]);
+              setIsLoading(false);
+              return;
+          }
+      }
 
-              // Final assistant response
-              setTimeout(() => {
-                  setMessages(prev => [...prev, {
-                      id: Date.now().toString() + "-final",
-                      type: "assistant",
-                      content: "I've listed the files for you. There are configuration files and source code present.",
-                      timestamp: new Date(),
-                  }]);
-                  setIsLoading(false);
-              }, 800);
-          }, 1500);
+      setMessages(prev => [...prev, {
+          id: Date.now().toString() + "-tool",
+          type: "tool-call",
+          toolName: toolName,
+          toolArgs: toolArgs,
+          timestamp: new Date(),
+      }]);
 
-      } else if (lowerInput.includes("error")) {
+      try {
+          const result = await apiClient.executeTool({
+              tool_name: toolName,
+              arguments: toolArgs
+          });
+
+          setMessages(prev => [...prev, {
+              id: Date.now().toString() + "-result",
+              type: "tool-result",
+              toolName: toolName,
+              toolResult: result,
+              timestamp: new Date(),
+          }]);
+
            setMessages(prev => [...prev, {
+              id: Date.now().toString() + "-assistant",
+              type: "assistant",
+              content: "Tool executed successfully.",
+              timestamp: new Date(),
+          }]);
+
+      } catch (err: any) {
+          setMessages(prev => [...prev, {
               id: Date.now().toString(),
               type: "error",
-              content: "Failed to connect to MCP server: Connection refused.",
+              content: err.message || "Tool execution failed",
               timestamp: new Date(),
           }]);
-          setIsLoading(false);
-      } else {
-          // Generic response
-           setMessages(prev => [...prev, {
-              id: Date.now().toString(),
-              type: "assistant",
-              content: "I received your message. I can help you use tools like `list_files` or `read_file`. Just ask!",
-              timestamp: new Date(),
-          }]);
+      } finally {
           setIsLoading(false);
       }
   };
