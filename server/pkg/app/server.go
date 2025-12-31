@@ -195,6 +195,7 @@ func NewApplication() *Application {
 //     forcing termination.
 //
 // Returns an error if any part of the startup or execution fails.
+//
 //nolint:gocyclo // Run is the main entry point and setup function, expected to be complex
 func (a *Application) Run(
 	ctx context.Context,
