@@ -1,1 +1,7 @@
-.next\nnode_modules\n.audits\n.git
+.next
+node_modules
+.audits
+.git
+test-results
+playwright-report
+**/node_modules

@@ -456,16 +456,24 @@ build-ui:
 	@echo "Building UI..."
 	@cd ../ui && npm install && npm run build
 
+# Target to build the UI test Docker image
+# Set CACHE_TO and CACHE_FROM to enable caching (e.g., for CI)
+.PHONY: build-test-ui-docker
+build-test-ui-docker:
+	@echo "Building UI test Docker image (mcpany-ui-e2e)..."
+	@$(DOCKER_BUILD_CMD) -t mcpany-ui-e2e -f ../ui/Dockerfile.e2e $(if $(CACHE_TO),--cache-to=$(CACHE_TO)) $(if $(CACHE_FROM),--cache-from=$(CACHE_FROM)) ../ui
+
 .PHONY: test-ui
-test-ui:
-	@echo "Running UI tests (Playwright) in Docker..."
+test-ui: $(if $(SKIP_BUILD),,build-test-ui-docker)
+	@echo "Running UI tests (Playwright) via Docker image (mcpany-ui-e2e)..."
 	@if [ -n "$(PLAYWRIGHT_ARGS)" ]; then echo "Running with args: $(PLAYWRIGHT_ARGS)"; fi
 	@docker run --rm --ipc=host --network=host \
 		-v $(abspath ../ui):/work/ui \
 		-v $(abspath ../proto):/work/proto \
 		-w /work/ui \
-		mcr.microsoft.com/playwright:v1.57.0-jammy \
-		/bin/bash -c "npm ci && npx playwright test $(PLAYWRIGHT_ARGS)"
+		-e CI=true \
+		mcpany-ui-e2e \
+		/bin/bash -c "npx playwright test $(PLAYWRIGHT_ARGS)"
 
 
 .PHONY: e2e
