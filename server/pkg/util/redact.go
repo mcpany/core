@@ -6,6 +6,7 @@ package util
 import (
 	"bytes"
 	"encoding/json"
+	"unsafe"
 )
 
 const redactedPlaceholder = "[REDACTED]"
@@ -13,11 +14,28 @@ const redactedPlaceholder = "[REDACTED]"
 var (
 	sensitiveKeysBytes [][]byte
 	redactedValue      json.RawMessage
+
+	// sensitiveStartChars contains the lowercase starting characters of all sensitive keys.
+	// Used for optimized scanning.
+	sensitiveStartChars []byte
+
+	// sensitiveKeyGroups maps a starting character (lowercase) to the list of sensitive keys starting with it.
+	// Optimization: Use array instead of map for faster lookup.
+	sensitiveKeyGroups [256][][]byte
 )
 
 func init() {
 	for _, k := range sensitiveKeys {
-		sensitiveKeysBytes = append(sensitiveKeysBytes, []byte(k))
+		kb := []byte(k)
+		sensitiveKeysBytes = append(sensitiveKeysBytes, kb)
+
+		if len(kb) > 0 {
+			first := kb[0] // sensitiveKeys are lowercase
+			if len(sensitiveKeyGroups[first]) == 0 {
+				sensitiveStartChars = append(sensitiveStartChars, first)
+			}
+			sensitiveKeyGroups[first] = append(sensitiveKeyGroups[first], kb)
+		}
 	}
 	// Pre-marshal the redacted placeholder to ensure valid JSON and avoid repeated work.
 	b, _ := json.Marshal(redactedPlaceholder)
@@ -29,14 +47,7 @@ func init() {
 func RedactJSON(input []byte) []byte {
 	// Optimization: Check if any sensitive key is present in the input.
 	// If not, we can skip the expensive unmarshal/marshal process.
-	hasSensitiveKey := false
-	for _, k := range sensitiveKeysBytes {
-		if bytesContainsFold(input, k) {
-			hasSensitiveKey = true
-			break
-		}
-	}
-	if !hasSensitiveKey {
+	if !scanForSensitiveKeys(input, false) {
 		return input
 	}
 
@@ -216,19 +227,9 @@ func redactSliceRaw(s []json.RawMessage) bool {
 func shouldScanRaw(v []byte) bool {
 	// Optimization: Check if any sensitive key is present in the value.
 	// If not, we can skip the expensive unmarshal/marshal process.
-	// Note: This optimization assumes that if a sensitive key is present in the nested JSON,
-	// the key string (e.g. "password") must be present in the raw bytes.
 	// Security Note: We also check for backslashes to ensure no escaped keys are present.
 	// If backslashes are present, we conservatively fallback to unmarshaling.
-	if bytes.IndexByte(v, '\\') != -1 {
-		return true
-	}
-	for _, sk := range sensitiveKeysBytes {
-		if bytesContainsFold(v, sk) {
-			return true
-		}
-	}
-	return false
+	return scanForSensitiveKeys(v, true)
 }
 
 // sensitiveKeys is a list of substrings that suggest a key contains sensitive information.
@@ -236,16 +237,91 @@ var sensitiveKeys = []string{"api_key", "apikey", "access_token", "token", "secr
 
 // IsSensitiveKey checks if a key name suggests it contains sensitive information.
 func IsSensitiveKey(key string) bool {
-	for _, s := range sensitiveKeys {
-		if containsFold(key, s) {
+	// Use the optimized byte-based scanner for keys as well.
+	// Avoid allocation using zero-copy conversion.
+	return scanForSensitiveKeys(unsafe.Slice(unsafe.StringData(key), len(key)), false)
+}
+
+// scanForSensitiveKeys checks if input contains any sensitive key.
+// If checkEscape is true, it also returns true if a backslash is found.
+// This function replaces the old linear scan (O(N*M)) with a more optimized scan
+// that uses SIMD-accelerated IndexByte for grouped start characters.
+func scanForSensitiveKeys(input []byte, checkEscape bool) bool {
+	if checkEscape {
+		if bytes.IndexByte(input, '\\') != -1 {
 			return true
+		}
+	}
+
+	for _, startChar := range sensitiveStartChars {
+		keys := sensitiveKeyGroups[startChar]
+		// startChar is lowercase. We need to check for uppercase too.
+		// Optimized loop: skip directly to the next occurrence of startChar or startChar-32
+		upperChar := startChar - 32
+
+		offset := 0
+		for offset < len(input) {
+			slice := input[offset:]
+
+			// Find first occurrence of startChar or upperChar
+			idxL := bytes.IndexByte(slice, startChar)
+			idxU := bytes.IndexByte(slice, upperChar)
+
+			var idx int
+			if idxL == -1 && idxU == -1 {
+				break // No more matches for this char
+			} else if idxL == -1 {
+				idx = idxU
+			} else if idxU == -1 {
+				idx = idxL
+			} else {
+				if idxL < idxU {
+					idx = idxL
+				} else {
+					idx = idxU
+				}
+			}
+
+			// Found candidate start at offset + idx
+			matchStart := offset + idx
+
+			// Check all keys in this group against input starting at matchStart
+			for _, key := range keys {
+				if matchFoldRest(input[matchStart:], key) {
+					return true
+				}
+			}
+
+			// Move past this match
+			offset = matchStart + 1
 		}
 	}
 	return false
 }
 
+// matchFoldRest checks if s starts with key (case-insensitive).
+// It assumes the first character already matched (case-insensitive).
+func matchFoldRest(s, key []byte) bool {
+	if len(s) < len(key) {
+		return false
+	}
+	// Skip index 0 as it was already matched
+	for i := 1; i < len(key); i++ {
+		c := s[i]
+		k := key[i] // k is lowercase
+		if c != k {
+			// Check if c is the uppercase version of k
+			if c < 'A' || c > 'Z' || c+32 != k {
+				return false
+			}
+		}
+	}
+	return true
+}
+
 // bytesContainsFold reports whether substr is within s, interpreting ASCII characters case-insensitively.
 // substr must be lower-case.
+// Deprecated: Use scanForSensitiveKeys instead for batched checks.
 func bytesContainsFold(s, substr []byte) bool {
 	if len(substr) == 0 {
 		return true
