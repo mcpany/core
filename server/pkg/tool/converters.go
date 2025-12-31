@@ -4,7 +4,6 @@
 package tool
 
 import (
-	"encoding/json"
 	"fmt"
 	"strings"
 
@@ -13,7 +12,6 @@ import (
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	pb "github.com/mcpany/core/proto/mcp_router/v1"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
-	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/structpb"
 )
@@ -111,14 +109,14 @@ func ConvertMcpFieldsToInputSchemaProperties(fields []*protobufparser.McpField) 
 			return nil, err
 		}
 
-		jsonBytes, err := json.Marshal(schema)
-		if err != nil {
-			return nil, fmt.Errorf("failed to marshal schema to json: %w", err)
+		fieldsMap := map[string]interface{}{
+			"type":        schema.Type,
+			"description": schema.Description,
 		}
 
-		value := &structpb.Value{}
-		if err := protojson.Unmarshal(jsonBytes, value); err != nil {
-			return nil, fmt.Errorf("failed to unmarshal schema from json: %w", err)
+		value, err := structpb.NewValue(fieldsMap)
+		if err != nil {
+			return nil, fmt.Errorf("failed to create structpb value: %w", err)
 		}
 
 		properties.Fields[field.Name] = value
