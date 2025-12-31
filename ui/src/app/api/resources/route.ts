@@ -6,8 +6,9 @@
 import { NextResponse } from 'next/server';
 
 let resources = [
-    { uri: "file:///users/me/docs/notes.txt", name: "notes.txt", mimeType: "text/plain", serviceName: "local-files", enabled: true },
-    { uri: "weather://current/sf", name: "SF Weather", mimeType: "application/json", serviceName: "weather-service", enabled: true },
+    { name: "System Logs", uri: "file:///var/log/syslog", mimeType: "text/plain", enabled: true, serviceName: "local-files" },
+    { name: "Project Config", uri: "file:///app/config.json", mimeType: "application/json", enabled: true, serviceName: "local-files" },
+    { name: "Knowledge Base", uri: "postgres://db/knowledge", mimeType: "application/x-postgres", enabled: true, serviceName: "memory-store" },
 ];
 
 export async function GET() {
@@ -16,7 +17,7 @@ export async function GET() {
 
 export async function POST(request: Request) {
     const body = await request.json();
-    if (body.uri && typeof body.enabled === 'boolean') {
+    if (body.uri) {
         resources = resources.map(r => r.uri === body.uri ? { ...r, enabled: body.enabled } : r);
         return NextResponse.json({ message: "Updated" });
     }
