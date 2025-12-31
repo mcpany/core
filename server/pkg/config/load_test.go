@@ -99,10 +99,18 @@ upstream_services: {
 		httpClient = server.Client()
 
 		fs := afero.NewOsFs()
+		// Test with default NewFileStore (should error)
 		fileStore := NewFileStore(fs, []string{server.URL + "/config.textproto"})
 		_, err := LoadServices(fileStore, "server")
 		require.Error(t, err)
 		assert.Contains(t, err.Error(), "failed to unmarshal config")
+
+		// Test with NewFileStoreWithSkipErrors (should succeed with empty config)
+		resilientStore := NewFileStoreWithSkipErrors(fs, []string{server.URL + "/config.textproto"})
+		cfg, err := LoadServices(resilientStore, "server")
+		require.NoError(t, err)
+		require.NotNil(t, cfg)
+		assert.Empty(t, cfg.GetUpstreamServices())
 	})
 
 	t.Run("Load from URL with response larger than 1MB", func(t *testing.T) {
