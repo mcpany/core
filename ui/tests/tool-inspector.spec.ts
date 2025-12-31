@@ -42,4 +42,7 @@ test('Tools page loads and inspector opens', async ({ page }) => {
   await expect(page.getByRole('heading', { name: 'Result' })).toBeVisible();
   await expect(page.getByText('"temperature": 22')).toBeVisible();
   await expect(page.getByText('"location": "New York"')).toBeVisible();
+
+  // Take screenshot of the inspector to match python script coverage
+  await page.screenshot({ path: '../.audit/ui/2025-02-18/tool_inspector_sheet_ts.png' });
 });
