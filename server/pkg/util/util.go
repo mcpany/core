@@ -262,7 +262,7 @@ func SanitizeOperationID(input string) string {
 // stringToBytes converts a string to a byte slice without allocation.
 // IMPORTANT: The returned byte slice must not be modified.
 func stringToBytes(s string) []byte {
-	return unsafe.Slice(unsafe.StringData(s), len(s))
+	return unsafe.Slice(unsafe.StringData(s), len(s)) //nolint:gosec // Standard zero-copy conversion
 }
 
 // GetDockerCommand returns the command and base arguments for running Docker.
