@@ -74,11 +74,16 @@ func (a *OAuth2Authenticator) Authenticate(ctx context.Context, r *http.Request)
 	}
 
 	var claims struct {
-		Email string `json:"email"`
+		Email         string `json:"email"`
+		EmailVerified bool   `json:"email_verified"`
 		// Add other claims as needed
 	}
 	if err := idToken.Claims(&claims); err != nil {
 		return ctx, fmt.Errorf("failed to extract claims: %w", err)
+	}
+
+	if !claims.EmailVerified {
+		return ctx, fmt.Errorf("email not verified")
 	}
 
 	return context.WithValue(ctx, UserContextKey, claims.Email), nil
