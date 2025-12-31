@@ -13,3 +13,13 @@ Security is a core design principle of MCP Any.
 ## Configuration
 
 Security features are configured in the global `security` section and per-service policies.
+
+### UI Configuration
+
+Global security settings like DLP (Data Loss Prevention) can be managed via the UI:
+
+1. Navigate to **Settings > General**.
+2. Toggle the **Enable DLP** switch.
+3. Click **Save Changes**.
+
+![Security Settings UI](../ui/screenshots/settings_general.png)

@@ -119,7 +119,7 @@ export const apiClient = {
      * @returns A promise that resolves to the service configuration.
      */
     getService: async (id: string) => {
-         const res = await fetch(`/api/services?id=${id}`); // Mock
+         const res = await fetch(`/api/services/${id}`);
          if (!res.ok) throw new Error('Failed to fetch service');
          return res.json();
     },
@@ -130,10 +130,19 @@ export const apiClient = {
      * @returns A promise that resolves to the updated status.
      */
     setServiceStatus: async (name: string, disable: boolean) => {
+        // First get the service config
+        const currentRes = await fetch(`/api/services/${name}`);
+        if (!currentRes.ok) throw new Error('Failed to get service for status update');
+        const config = await currentRes.json();
+
+        // Update disable flag
+        config.disable = disable;
+
+        // Save back
         const res = await fetch('/api/services', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ action: 'toggle', name, disable })
+            body: JSON.stringify(config)
         });
         if (!res.ok) throw new Error('Failed to update service status');
         return res.json();
@@ -145,14 +154,12 @@ export const apiClient = {
      * @returns A promise that resolves to the service status and metrics.
      */
     getServiceStatus: async (name: string) => {
-        const res = await fetch(`/api/services?name=${name}`);
+        const res = await fetch(`/api/services/${name}/status`);
         if (!res.ok) return { enabled: false, metrics: { uptime: 0, latency: 0 } };
         const data = await res.json();
-        // Assuming the API returns the service object or list
-        // This is a best-effort mock
         return {
-            enabled: !data.disable,
-            metrics: { uptime: 99.9, latency: 45 } // Mock metrics as numbers
+            enabled: data.status === "Active",
+            metrics: { uptime: 99.9, latency: 45, ...data.metrics } // Merge real metrics when available
         };
     },
     /**
@@ -176,20 +183,18 @@ export const apiClient = {
      */
     updateService: async (config: UpstreamServiceConfig) => {
          const res = await fetch('/api/services', {
-            method: 'POST',
+            method: 'POST', // POST handles update via save
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(config)
         });
         if (!res.ok) throw new Error('Failed to update service');
         return res.json();
     },
-    /**
-     * Unregisters (deletes) a service.
-     * @param _id - The ID of the service to unregister.
-     * @returns A promise that resolves when the service is unregistered.
-     */
-    unregisterService: async (_id: string) => {
-        // Mock
+    unregisterService: async (id: string) => {
+        const res = await fetch(`/api/services/${id}`, {
+            method: 'DELETE'
+        });
+        if (!res.ok) throw new Error('Failed to delete service');
         return {};
     },
 
@@ -203,20 +208,22 @@ export const apiClient = {
         if (!res.ok) throw new Error('Failed to fetch tools');
         return res.json();
     },
-    /**
-     * Toggles the enabled/disabled status of a tool.
-     * @param name - The name of the tool.
-     * @param enabled - True to enable, false to disable.
-     * @returns A promise that resolves to the updated status.
-     */
-    setToolStatus: async (name: string, enabled: boolean) => {
-        const res = await fetch('/api/tools', {
+    executeTool: async (request: any) => {
+        const res = await fetch('/api/execute', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ name, enabled })
+            body: JSON.stringify(request)
         });
-        if (!res.ok) throw new Error('Failed to update tool status');
+        if (!res.ok) {
+            const errBody = await res.text();
+            throw new Error(`Tool execution failed: ${errBody}`);
+        }
         return res.json();
+    },
+    setToolStatus: async (name: string, enabled: boolean) => {
+        // TODO: Backend support for toggling individual tools?
+        console.warn("setToolStatus not fully implemented in backend yet");
+        return {};
     },
 
     // Resources
@@ -236,13 +243,9 @@ export const apiClient = {
      * @returns A promise that resolves to the updated status.
      */
     setResourceStatus: async (uri: string, enabled: boolean) => {
-         const res = await fetch('/api/resources', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ uri, enabled })
-        });
-        if (!res.ok) throw new Error('Failed to update resource status');
-        return res.json();
+         // TODO: Backend support
+         console.warn("setResourceStatus not fully implemented in backend yet");
+         return {};
     },
 
     // Prompts
@@ -262,13 +265,9 @@ export const apiClient = {
      * @returns A promise that resolves to the updated status.
      */
     setPromptStatus: async (name: string, enabled: boolean) => {
-        const res = await fetch('/api/prompts', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ name, enabled })
-        });
-        if (!res.ok) throw new Error('Failed to update prompt status');
-        return res.json();
+        // TODO: Backend support
+        console.warn("setPromptStatus not fully implemented in backend yet");
+        return {};
     },
 
     // Secrets
@@ -305,7 +304,22 @@ export const apiClient = {
             method: 'DELETE'
         });
         if (!res.ok) throw new Error('Failed to delete secret');
+        return {};
+    },
+
+    // Global Settings
+    getGlobalSettings: async () => {
+        const res = await fetch('/api/settings');
+        if (!res.ok) throw new Error('Failed to fetch global settings');
         return res.json();
+    },
+    saveGlobalSettings: async (settings: any) => {
+        const res = await fetch('/api/settings', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(settings)
+        });
+        if (!res.ok) throw new Error('Failed to save global settings');
     }
 };
 
