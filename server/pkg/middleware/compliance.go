@@ -130,14 +130,17 @@ type bufferedResponseWriter struct {
 	body       *bytes.Buffer
 }
 
+// Header returns the map of header fields to be sent by WriteHeader.
 func (w *bufferedResponseWriter) Header() http.Header {
 	return w.header
 }
 
+// WriteHeader sends an HTTP response header with the provided status code.
 func (w *bufferedResponseWriter) WriteHeader(code int) {
 	w.statusCode = code
 }
 
+// Write writes the data to the connection as part of an HTTP reply.
 func (w *bufferedResponseWriter) Write(b []byte) (int, error) {
 	return w.body.Write(b)
 }

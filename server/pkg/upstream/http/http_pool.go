@@ -23,6 +23,7 @@ type httpPool struct {
 	transport *http.Transport
 }
 
+// Close closes the connection pool and the idle connections.
 func (p *httpPool) Close() error {
 	if err := p.Pool.Close(); err != nil {
 		return err
