@@ -7,13 +7,30 @@ MCP Any allows you to expose local file systems as MCP resources. This enables A
 To configure a file system service, use the `filesystem` type in your `services` configuration.
 
 ```yaml
-services:
-  - id: "local-files"
-    name: "Local Files"
-    type: "filesystem"
-    config:
-      path: "/var/data"  # The root directory to expose
+upstream_services:
+  - name: "Local Files"
+    filesystem_service:
+      os:
+        root_paths:
+           "/data": "/var/data" # Map virtual /data to local /var/data
       read_only: false   # Set to true to prevent write operations
+```
+
+### S3 Configuration
+
+You can also configure an S3 bucket as a filesystem.
+
+```yaml
+upstream_services:
+  - name: "My Bucket"
+    filesystem_service:
+      s3:
+        bucket: "my-bucket"
+        region: "us-east-1"
+        # Optional: Credentials (if not using env vars or instance profile)
+        # access_key_id: "..."
+        # secret_access_key: "..."
+      read_only: true
 ```
 
 ## Features

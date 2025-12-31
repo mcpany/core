@@ -17,7 +17,7 @@ This document outlines the current status and future plans for MCP Any.
 - [x] [WebSocket](features/service-types.md)
 - [x] [WebRTC](features/service-types.md)
 - [x] [SQL](features/sql_upstream.md)
-- [x] [File System Provider](features/filesystem.md)
+- [x] [File System Provider](features/filesystem.md) (Local, S3, GCS)
 
 ### Authentication
 
@@ -76,7 +76,7 @@ This document outlines the current status and future plans for MCP Any.
 ### 2. Cloud Storage Support (S3, GCS)
 
 **Why:** Extend the filesystem provider to support cloud object storage, allowing AI agents to interact with S3/GCS buckets as if they were local directories.
-**Status:** Planned
+**Status:** Implemented
 
 ### 3. Token-Based Quota Management
 
@@ -137,7 +137,7 @@ This document outlines the current status and future plans for MCP Any.
 ### Developer Experience & Core
 
 31. **WASM Plugin System**: Safe, sandboxed custom transformers and checkers.
-32. **Cloud Storage Provider (S3/GCS)**: Treat buckets as filesystems for agents.
+32. **[x] Cloud Storage Provider (S3/GCS)**: Treat buckets as filesystems for agents.
 33. **Interactive Playground 2.0**: Enhanced UI to test tools with auto-generated forms and mock data.
 34. **Client SDKs (Python/TS)**: Idiomatic client libraries for agents.
 35. **Local Emulator**: CLI command to run a lightweight in-memory MCP server for dev.
