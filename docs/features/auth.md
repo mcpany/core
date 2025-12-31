@@ -19,7 +19,7 @@ When MCP Any connects to upstream services, it can use the following methods:
 To secure access to the MCP Any server:
 
 *   **API Key**: Clients must provide an API key in a header or query parameter.
-*   **OAuth 2.0**: Validate JWT tokens from an issuer.
+*   **OAuth 2.0 / OIDC**: Validate JWT tokens from an OIDC issuer. This leverages OIDC Discovery to configure the provider.
 
 ## Configuration
 
