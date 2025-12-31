@@ -232,7 +232,9 @@ func shouldScanRaw(v []byte) bool {
 }
 
 // sensitiveKeys is a list of substrings that suggest a key contains sensitive information.
-var sensitiveKeys = []string{"api_key", "apikey", "access_token", "token", "secret", "password", "passwd", "credential", "auth", "private_key", "client_secret"}
+// Note: Shorter keys that are substrings of longer keys (e.g. "token" vs "access_token") cover the longer cases,
+// so we only include the shorter ones to optimize performance.
+var sensitiveKeys = []string{"api_key", "apikey", "token", "secret", "password", "passwd", "credential", "auth", "private_key"}
 
 // IsSensitiveKey checks if a key name suggests it contains sensitive information.
 func IsSensitiveKey(key string) bool {
