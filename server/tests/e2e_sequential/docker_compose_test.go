@@ -489,8 +489,8 @@ func createDynamicCompose(t *testing.T, originalPath string) string {
 	// We want to replace any HostPort with 0.
 
 	// Pattern: any whitespace - "digits:digits"
-	// mcpany-server: 51234:50050 -> 0:50050
-	re1 := regexp.MustCompile(`"51234:50050"`)
+	// mcpany-server: "${HOST_PORT:-50050}:50050" -> 0:50050
+	re1 := regexp.MustCompile(`"\$\{HOST_PORT:-50050\}:50050"`)
 	re2 := regexp.MustCompile(`"50051:50051"`)
 	re3 := regexp.MustCompile(`"8080:8080"`)
 	re4 := regexp.MustCompile(`"9099:9090"`)

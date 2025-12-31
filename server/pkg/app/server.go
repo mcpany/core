@@ -195,6 +195,7 @@ func NewApplication() *Application {
 //     forcing termination.
 //
 // Returns an error if any part of the startup or execution fails.
+//nolint:gocyclo // Run is the main entry point and setup function, expected to be complex
 func (a *Application) Run(
 	ctx context.Context,
 	fs afero.Fs,
@@ -203,6 +204,7 @@ func (a *Application) Run(
 	configPaths []string,
 	shutdownTimeout time.Duration,
 ) error {
+
 	log := logging.GetLogger()
 	fs, err := setup(fs)
 	if err != nil {
@@ -230,7 +232,8 @@ func (a *Application) Run(
 
 	// Default to SQLite if not specified or explicitly sqlite
 	dbDriver := config.GlobalSettings().GetDbDriver()
-	if dbDriver == "" || dbDriver == "sqlite" {
+	switch dbDriver {
+	case "", "sqlite":
 		dbPath := config.GlobalSettings().DBPath()
 		if dbPath == "" {
 			dbPath = "mcpany.db"
@@ -241,7 +244,7 @@ func (a *Application) Run(
 		}
 		storageCloser = sqliteDB.Close
 		storageStore = sqlite.NewStore(sqliteDB)
-	} else if dbDriver == "postgres" {
+	case "postgres":
 		dsn := config.GlobalSettings().GetDbDsn()
 		if dsn == "" {
 			return fmt.Errorf("postgres driver selected but db_dsn is empty")
@@ -252,7 +255,7 @@ func (a *Application) Run(
 		}
 		storageCloser = func() error { return pgDB.Close() }
 		storageStore = postgres.NewStore(pgDB)
-	} else {
+	default:
 		return fmt.Errorf("unsupported db driver: %s", dbDriver)
 	}
 	defer func() {
@@ -318,6 +321,7 @@ func (a *Application) Run(
 
 	// Create a context for workers that we can cancel on shutdown
 	workerCtx, workerCancel := context.WithCancel(ctx)
+	defer workerCancel()
 
 	// Start background workers
 	upstreamWorker.Start(workerCtx)

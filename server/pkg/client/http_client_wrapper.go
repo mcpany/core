@@ -43,7 +43,7 @@ func (w *HTTPClientWrapper) IsHealthy(ctx context.Context) bool {
 // Close closes any idle connections associated with the client.
 func (w *HTTPClientWrapper) Close() error {
 	if w.Client != nil {
-		if t, ok := w.Client.Transport.(interface{ CloseIdleConnections() }); ok {
+		if t, ok := w.Transport.(interface{ CloseIdleConnections() }); ok {
 			t.CloseIdleConnections()
 		}
 	}
