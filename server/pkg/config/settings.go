@@ -31,6 +31,8 @@ type Settings struct {
 	shutdownTimeout time.Duration
 	profiles        []string
 	dbPath          string
+	dbDSN           string
+	dbDriver        string
 	fs              afero.Fs
 	cmd             *cobra.Command
 }
@@ -90,6 +92,8 @@ func (s *Settings) Load(cmd *cobra.Command, fs afero.Fs) error {
 	s.shutdownTimeout = viper.GetDuration("shutdown-timeout")
 	s.profiles = getStringSlice("profiles")
 	s.dbPath = viper.GetString("db-path")
+	s.dbDSN = viper.GetString("db-dsn")
+	s.dbDriver = viper.GetString("db-driver")
 
 	// Special handling for MCPListenAddress to respect config file precedence
 	mcpListenAddress := viper.GetString("mcp-listen-address")
@@ -99,6 +103,20 @@ func (s *Settings) Load(cmd *cobra.Command, fs afero.Fs) error {
 		if err != nil {
 			return fmt.Errorf("failed to load services from config: %w", err)
 		}
+		// If config file has settings, they override defaults but NOT CLI flags?
+		// Usually Config File < Environment < CLI.
+		// Here we are manually implementing precedence for specific fields if needed.
+		// For DB settings, let's also respect config file if present.
+		if cfg.GetGlobalSettings().GetDbPath() != "" {
+			s.dbPath = cfg.GetGlobalSettings().GetDbPath()
+		}
+		if cfg.GetGlobalSettings().GetDbDsn() != "" {
+			s.dbDSN = cfg.GetGlobalSettings().GetDbDsn()
+		}
+		if cfg.GetGlobalSettings().GetDbDriver() != "" {
+			s.dbDriver = cfg.GetGlobalSettings().GetDbDriver()
+		}
+
 		if cfg.GetGlobalSettings().GetMcpListenAddress() != "" {
 			mcpListenAddress = cfg.GetGlobalSettings().GetMcpListenAddress()
 		}
@@ -207,9 +225,19 @@ func (s *Settings) LogLevel() configv1.GlobalSettings_LogLevel {
 	return configv1.GlobalSettings_LOG_LEVEL_INFO
 }
 
-// DBPath returns the path to the SQLite database.
-func (s *Settings) DBPath() string {
+// GetDbPath returns the path to the SQLite database.
+func (s *Settings) GetDbPath() string {
 	return s.dbPath
+}
+
+// GetDbDsn returns the database connection string.
+func (s *Settings) GetDbDsn() string {
+	return s.dbDSN
+}
+
+// GetDbDriver returns the database driver.
+func (s *Settings) GetDbDriver() string {
+	return s.dbDriver
 }
 
 // Middlewares returns the configured middlewares.
