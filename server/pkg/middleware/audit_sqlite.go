@@ -200,6 +200,9 @@ func (s *SQLiteAuditStore) Verify() (bool, error) {
 
 		expectedPrevHash = hash
 	}
+	if err := rows.Err(); err != nil {
+		return false, err
+	}
 	return true, nil
 }
 

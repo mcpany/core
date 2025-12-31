@@ -262,7 +262,7 @@ func (m *RateLimitMiddleware) getLimiter(ctx context.Context, serviceID string, 
 	if val, found := m.limiters.Get(cacheKey); found {
 		limiter := val.(Limiter)
 		// Verify type matches config
-		validType := false
+		var validType bool
 		if isRedis {
 			rl, ok := limiter.(*RedisLimiter)
 			validType = ok
@@ -364,7 +364,7 @@ func hashKey(prefix, key string) string {
 	return string(buf)
 }
 
-func (m *RateLimitMiddleware) getRedisClient(serviceID string, config *bus.RedisBus) (*redis.Client, error) {
+func (m *RateLimitMiddleware) getRedisClient(serviceID string, config *bus.RedisBus) (*redis.Client, error) { //nolint:unparam
 	configHash := fmt.Sprintf("%s|%s|%d", config.GetAddress(), config.GetPassword(), config.GetDb())
 
 	if val, ok := m.redisClients.Load(serviceID); ok {

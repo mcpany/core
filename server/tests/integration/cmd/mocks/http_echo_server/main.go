@@ -47,7 +47,7 @@ func main() {
 	flag.Parse()
 
 	addr := fmt.Sprintf(":%d", *port)
-	listener, err := net.Listen("tcp", addr)
+	listener, err := (&net.ListenConfig{}).Listen(context.Background(), "tcp", addr)
 	if err != nil {
 		slog.Error("http_echo_server: Failed to listen on a port", "error", err)
 		os.Exit(1)

@@ -5,6 +5,8 @@ package framework
 
 import (
 	"bytes"
+	"context"
+
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -65,7 +67,10 @@ func callTool(t *testing.T, mcpanyEndpoint, toolName string) {
 	})
 	require.NoError(t, err)
 
-	resp, err := http.Post(mcpanyEndpoint, "application/json", bytes.NewBuffer(requestBody)) //nolint:gosec
+	req, err := http.NewRequestWithContext(context.Background(), "POST", mcpanyEndpoint, bytes.NewBuffer(requestBody))
+	require.NoError(t, err)
+	req.Header.Set("Content-Type", "application/json")
+	resp, err := http.DefaultClient.Do(req)
 	require.NoError(t, err)
 	defer func() { _ = resp.Body.Close() }()
 
@@ -75,7 +80,9 @@ func callTool(t *testing.T, mcpanyEndpoint, toolName string) {
 // ValidateCaching validates that caching is working correctly.
 func ValidateCaching(t *testing.T, mcpanyEndpoint, upstreamEndpoint string) {
 	// 1. Reset the upstream server's counter.
-	resp, err := http.Post(fmt.Sprintf("http://%s/reset", upstreamEndpoint), "", nil)
+	req, err := http.NewRequestWithContext(context.Background(), "POST", fmt.Sprintf("http://%s/reset", upstreamEndpoint), nil)
+	require.NoError(t, err)
+	resp, err := http.DefaultClient.Do(req)
 	require.NoError(t, err)
 	defer func() { _ = resp.Body.Close() }()
 	require.Equal(t, http.StatusOK, resp.StatusCode)
@@ -103,7 +110,9 @@ func ValidateCaching(t *testing.T, mcpanyEndpoint, upstreamEndpoint string) {
 }
 
 func getUpstreamMetrics(t *testing.T, upstreamEndpoint string) map[string]int64 {
-	resp, err := http.Get(fmt.Sprintf("http://%s/metrics", upstreamEndpoint))
+	req, err := http.NewRequestWithContext(context.Background(), "GET", fmt.Sprintf("http://%s/metrics", upstreamEndpoint), nil)
+	require.NoError(t, err)
+	resp, err := http.DefaultClient.Do(req)
 	require.NoError(t, err)
 	defer func() { _ = resp.Body.Close() }()
 

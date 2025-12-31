@@ -4,6 +4,7 @@
 package framework
 
 import (
+	"context"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -32,7 +33,7 @@ func (g *GeminiCLI) Install() {
 	g.t.Helper()
 	root, err := integration.GetProjectRoot()
 	require.NoError(g.t, err)
-	cmd := exec.Command("npm", "install")
+	cmd := exec.CommandContext(context.Background(), "npm", "install")
 	cmd.Dir = filepath.Join(root, "tests", "integration", "upstream")
 	err = cmd.Run()
 	require.NoError(g.t, err, "failed to install gemini-cli")
@@ -43,7 +44,7 @@ func (g *GeminiCLI) geminiCommand(args ...string) *exec.Cmd {
 	root, err := integration.GetProjectRoot()
 	require.NoError(g.t, err)
 	geminiPath := filepath.Join(root, "tests", "integration", "upstream", "node_modules", ".bin", "gemini")
-	return exec.Command(geminiPath, args...) //nolint:gosec // Test utility
+	return exec.CommandContext(context.Background(), geminiPath, args...) //nolint:gosec // Test utility
 }
 
 // AddMCP adds an MCP server to the Gemini CLI configuration.

@@ -95,7 +95,7 @@ func NewChecker(uc *configv1.UpstreamServiceConfig) health.Checker {
 
 func httpCheckFunc(ctx context.Context, address string, hc *configv1.HttpHealthCheck) error {
 	if hc == nil {
-		return checkConnection(address)
+		return checkConnection(ctx, address)
 	}
 
 	client := &http.Client{
@@ -157,7 +157,7 @@ func webrtcCheck(name string, c *configv1.WebrtcUpstreamService) health.Check {
 					return websocketCheckFunc(ctx, c.GetAddress(), wsCheck)
 				}
 			}
-			return checkConnection(c.GetAddress())
+			return checkConnection(ctx, c.GetAddress())
 		},
 	}
 }
@@ -174,7 +174,7 @@ func websocketCheck(name string, c *configv1.WebsocketUpstreamService) health.Ch
 
 func websocketCheckFunc(ctx context.Context, address string, hc *configv1.WebsocketHealthCheck) error {
 	if hc == nil {
-		return checkConnection(address)
+		return checkConnection(ctx, address)
 	}
 
 	healthCheckURL := hc.GetUrl()
@@ -239,7 +239,7 @@ func grpcCheck(name string, c *configv1.GrpcUpstreamService) health.Check {
 		Timeout: 5 * time.Second,
 		Check: func(ctx context.Context) error {
 			if c.GetHealthCheck() == nil {
-				return checkConnection(c.GetAddress())
+				return checkConnection(ctx, c.GetAddress())
 			}
 
 			conn, err := grpc.NewClient(
@@ -323,9 +323,9 @@ func commandLineCheck(name string, c *configv1.CommandLineUpstreamService) healt
 func mcpCheck(name string, c *configv1.McpUpstreamService) health.Check {
 	return health.Check{
 		Name: name,
-		Check: func(_ context.Context) error {
+		Check: func(ctx context.Context) error {
 			if conn := c.GetHttpConnection(); conn != nil {
-				return checkConnection(conn.GetHttpAddress())
+				return checkConnection(ctx, conn.GetHttpAddress())
 			}
 			if c.GetStdioConnection() != nil {
 				return nil // Assume healthy
@@ -335,7 +335,7 @@ func mcpCheck(name string, c *configv1.McpUpstreamService) health.Check {
 	}
 }
 
-func checkConnection(address string) error {
+func checkConnection(ctx context.Context, address string) error {
 	var target string
 	if strings.Contains(address, "://") {
 		u, err := url.Parse(address)
@@ -364,7 +364,8 @@ func checkConnection(address string) error {
 		target = net.JoinHostPort(host, port)
 	}
 
-	conn, err := net.DialTimeout("tcp", target, 5*time.Second)
+	d := net.Dialer{Timeout: 5 * time.Second}
+	conn, err := d.DialContext(ctx, "tcp", target)
 	if err != nil {
 		logging.GetLogger().Error("checkConnection failed", "address", target, "error", err)
 		return fmt.Errorf("failed to connect to address %s: %w", target, err)
