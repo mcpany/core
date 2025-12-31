@@ -205,7 +205,6 @@ func (a *Application) Run(
 	configPaths []string,
 	shutdownTimeout time.Duration,
 ) error {
-
 	log := logging.GetLogger()
 	fs, err := setup(fs)
 	if err != nil {
