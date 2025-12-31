@@ -118,15 +118,29 @@ func (b *Bus[T]) SubscribeOnce(ctx context.Context, topic string, handler func(T
 		return func() {}
 	}
 	var once sync.Once
-	var unsub func()
+	// Use a channel to ensure regularUnsub is set before we try to call it
+	ready := make(chan struct{})
+	var regularUnsub func()
 
-	unsub = b.Subscribe(ctx, topic, func(msg T) {
+	// proxyUnsub waits for the real unsubscribe function to be available
+	proxyUnsub := func() {
+		<-ready
+		if regularUnsub != nil {
+			regularUnsub()
+		}
+	}
+
+	regularUnsub = b.Subscribe(ctx, topic, func(msg T) {
 		once.Do(func() {
 			handler(msg)
-			unsub()
+			proxyUnsub()
 		})
 	})
-	return unsub
+
+	// Signal that regularUnsub is set
+	close(ready)
+
+	return proxyUnsub
 }
 
 // Close closes the Redis client and all pubsub connections.
