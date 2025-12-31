@@ -18,7 +18,7 @@ import (
 	"google.golang.org/api/iterator"
 )
 
-func (u *Upstream) createGcsFilesystem(ctx context.Context, config *configv1.GcsFs) (afero.Fs, error) {
+func (u *Upstream) createGcsFilesystem(_ context.Context, config *configv1.GcsFs) (afero.Fs, error) {
 	if config == nil {
 		return nil, fmt.Errorf("gcs config is nil")
 	}
@@ -45,11 +45,11 @@ func (fs *gcsFs) Create(name string) (afero.File, error) {
 	return fs.OpenFile(name, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0666)
 }
 
-func (fs *gcsFs) Mkdir(name string, perm os.FileMode) error {
+func (fs *gcsFs) Mkdir(_ string, _ os.FileMode) error {
 	return nil // Flat namespace
 }
 
-func (fs *gcsFs) MkdirAll(path string, perm os.FileMode) error {
+func (fs *gcsFs) MkdirAll(_ string, _ os.FileMode) error {
 	return nil // Flat namespace
 }
 
@@ -57,7 +57,7 @@ func (fs *gcsFs) Open(name string) (afero.File, error) {
 	return fs.OpenFile(name, os.O_RDONLY, 0)
 }
 
-func (fs *gcsFs) OpenFile(name string, flag int, perm os.FileMode) (afero.File, error) {
+func (fs *gcsFs) OpenFile(name string, flag int, _ os.FileMode) (afero.File, error) {
 	f := &gcsFile{
 		fs:   fs,
 		name: name,
@@ -134,15 +134,15 @@ func (fs *gcsFs) Name() string {
 	return "gcs"
 }
 
-func (fs *gcsFs) Chmod(name string, mode os.FileMode) error {
+func (fs *gcsFs) Chmod(_ string, _ os.FileMode) error {
 	return nil // Not supported
 }
 
-func (fs *gcsFs) Chown(name string, uid, gid int) error {
+func (fs *gcsFs) Chown(_ string, _, _ int) error {
 	return nil // Not supported
 }
 
-func (fs *gcsFs) Chtimes(name string, atime time.Time, mtime time.Time) error {
+func (fs *gcsFs) Chtimes(_ string, _, _ time.Time) error {
 	return nil // Not supported
 }
 
@@ -182,7 +182,7 @@ func (f *gcsFile) ReadAt(p []byte, off int64) (n int, err error) {
 	return io.ReadFull(rc, p)
 }
 
-func (f *gcsFile) Seek(offset int64, whence int) (int64, error) {
+func (f *gcsFile) Seek(_ int64, _ int) (int64, error) {
 	return 0, fmt.Errorf("seek not supported")
 }
 
@@ -193,7 +193,7 @@ func (f *gcsFile) Write(p []byte) (n int, err error) {
 	return f.writer.Write(p)
 }
 
-func (f *gcsFile) WriteAt(p []byte, off int64) (n int, err error) {
+func (f *gcsFile) WriteAt(_ []byte, _ int64) (n int, err error) {
 	return 0, fmt.Errorf("writeat not supported")
 }
 
@@ -201,7 +201,7 @@ func (f *gcsFile) Name() string {
 	return f.name
 }
 
-func (f *gcsFile) Readdir(count int) ([]os.FileInfo, error) {
+func (f *gcsFile) Readdir(_ int) ([]os.FileInfo, error) {
 	// List objects with prefix name/
 	prefix := f.name
 	if !strings.HasSuffix(prefix, "/") && prefix != "" {
@@ -281,7 +281,7 @@ func (f *gcsFile) Sync() error {
 	return nil
 }
 
-func (f *gcsFile) Truncate(size int64) error {
+func (f *gcsFile) Truncate(_ int64) error {
 	return fmt.Errorf("truncate not supported")
 }
 

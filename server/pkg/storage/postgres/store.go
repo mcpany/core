@@ -4,6 +4,7 @@
 package postgres
 
 import (
+	"context"
 	"database/sql"
 	"fmt"
 
@@ -26,9 +27,9 @@ func (s *Store) Close() error {
 	return s.db.Close()
 }
 
-// Load implements config.Store interface
+// Load implements config.Store interface.
 func (s *Store) Load() (*configv1.McpAnyServerConfig, error) {
-	rows, err := s.db.Query("SELECT config_json FROM upstream_services")
+	rows, err := s.db.QueryContext(context.TODO(), "SELECT config_json FROM upstream_services")
 	if err != nil {
 		return nil, fmt.Errorf("failed to query upstream_services: %w", err)
 	}
@@ -83,7 +84,7 @@ func (s *Store) SaveService(service *configv1.UpstreamServiceConfig) error {
 		id = service.GetName() // fallback
 	}
 
-	_, err = s.db.Exec(query, id, service.GetName(), string(configJSON))
+	_, err = s.db.ExecContext(context.TODO(), query, id, service.GetName(), string(configJSON))
 	if err != nil {
 		return fmt.Errorf("failed to save service: %w", err)
 	}
@@ -93,7 +94,7 @@ func (s *Store) SaveService(service *configv1.UpstreamServiceConfig) error {
 // GetService retrieves an upstream service configuration by name.
 func (s *Store) GetService(name string) (*configv1.UpstreamServiceConfig, error) {
 	query := "SELECT config_json FROM upstream_services WHERE name = $1"
-	row := s.db.QueryRow(query, name)
+	row := s.db.QueryRowContext(context.TODO(), query, name)
 
 	var configJSON string
 	if err := row.Scan(&configJSON); err != nil {
@@ -121,7 +122,7 @@ func (s *Store) ListServices() ([]*configv1.UpstreamServiceConfig, error) {
 
 // DeleteService deletes an upstream service configuration by name.
 func (s *Store) DeleteService(name string) error {
-	_, err := s.db.Exec("DELETE FROM upstream_services WHERE name = $1", name)
+	_, err := s.db.ExecContext(context.TODO(), "DELETE FROM upstream_services WHERE name = $1", name)
 	if err != nil {
 		return fmt.Errorf("failed to delete service: %w", err)
 	}

@@ -6,46 +6,65 @@
 
 import { test, expect } from '@playwright/test';
 
-test('Global Search (Cmd+K) should open and display dynamic content', async ({ page }) => {
-  // Navigate to the dashboard
-  await page.goto('/');
+test.describe('Global Search', () => {
+  test('should open and display dynamic content via keyboard shortcut', async ({ page }) => {
+    // Navigate to the dashboard
+    await page.goto('/');
 
-  // Wait for the page to load using a more specific selector
-  await expect(page.locator('h2:has-text("Dashboard")')).toBeVisible();
+    // Wait for the page to load using a more specific selector
+    await expect(page.locator('h2:has-text("Dashboard")')).toBeVisible();
 
-  // Simulate Cmd+K to open the search
-  await page.keyboard.press('Meta+k');
+    // Simulate Cmd+K (Meta+K on Mac, Control+K on Windows/Linux)
+    if (process.platform === 'darwin') {
+      await page.keyboard.press('Meta+k');
+    } else {
+      await page.keyboard.press('Control+k');
+    }
 
-  // Verify the dialog is open
-  await expect(page.locator('div[role="dialog"]')).toBeVisible();
-  await expect(page.locator('input[placeholder="Type a command or search..."]')).toBeVisible();
+    // Verify the dialog is open
+    await expect(page.locator('div[role="dialog"]')).toBeVisible();
+    await expect(page.locator('input[placeholder="Type a command or search..."]')).toBeVisible();
 
-  // Wait for data to load
+    // Wait for data to load
 
-  // Check for Suggestions
-  await expect(page.getByText('Suggestions')).toBeVisible();
+    // Check for Suggestions
+    await expect(page.getByText('Suggestions')).toBeVisible();
 
-  // Check for dynamic content
-  // Services
-  await expect(page.getByText('weather-service').first()).toBeVisible();
+    // Check for dynamic content
+    // Services
+    await expect(page.getByText('weather-service').first()).toBeVisible();
 
-  // Tools
-  await expect(page.getByText('get_weather').first()).toBeVisible();
+    // Tools
+    await expect(page.getByText('get_weather').first()).toBeVisible();
 
-  // Resources
-  await expect(page.getByText('notes.txt').first()).toBeVisible();
+    // Resources
+    await expect(page.getByText('notes.txt').first()).toBeVisible();
 
-  // Prompts
-  await expect(page.getByText('summarize_file').first()).toBeVisible();
+    // Prompts
+    await expect(page.getByText('summarize_file').first()).toBeVisible();
 
-  // Type in the search box to filter
-  await page.fill('input[placeholder="Type a command or search..."]', 'weather');
+    // Type in the search box to filter
+    const input = page.locator('input[placeholder="Type a command or search..."]');
+    await input.fill('weather');
 
-  // Verify filtering works
-  await expect(page.getByText('weather-service').first()).toBeVisible();
-  await expect(page.getByText('get_weather').first()).toBeVisible();
-  await expect(page.getByText('local-files')).not.toBeVisible();
+    // Verify filtering works
+    await expect(page.getByText('weather-service').first()).toBeVisible();
+    await expect(page.getByText('get_weather').first()).toBeVisible();
+    await expect(page.getByText('local-files')).not.toBeVisible();
 
-  // Take a screenshot for audit
-  await page.screenshot({ path: '.audit/ui/2025-05-18/global_search_audit.png' });
+    // Take a screenshot for audit
+    await page.screenshot({ path: '.audit/ui/global_search_audit.png' });
+  });
+
+  test('should open command palette by clicking the search button', async ({ page }) => {
+     await page.goto('/');
+
+     // Find the button with text "Search" or similar
+     // The button text changes based on screen size ("Search feature..." vs "Search...")
+     const searchButton = page.locator('button').filter({ hasText: /Search/ }).first();
+     await searchButton.click();
+
+     const commandDialog = page.locator('[role="dialog"]');
+     await expect(commandDialog).toBeVisible();
+  });
 });
