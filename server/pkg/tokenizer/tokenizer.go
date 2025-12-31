@@ -5,7 +5,9 @@
 package tokenizer
 
 import (
+	"encoding/json"
 	"fmt"
+	"strconv"
 	"strings"
 )
 
@@ -85,6 +87,37 @@ func CountTokensInValue(t Tokenizer, v interface{}) (int, error) {
 			count += c
 		}
 		return count, nil
+	case int:
+		return t.CountTokens(strconv.Itoa(val))
+	case int8:
+		return t.CountTokens(strconv.FormatInt(int64(val), 10))
+	case int16:
+		return t.CountTokens(strconv.FormatInt(int64(val), 10))
+	case int32:
+		return t.CountTokens(strconv.FormatInt(int64(val), 10))
+	case int64:
+		return t.CountTokens(strconv.FormatInt(val, 10))
+	case uint:
+		return t.CountTokens(strconv.FormatUint(uint64(val), 10))
+	case uint8:
+		return t.CountTokens(strconv.FormatUint(uint64(val), 10))
+	case uint16:
+		return t.CountTokens(strconv.FormatUint(uint64(val), 10))
+	case uint32:
+		return t.CountTokens(strconv.FormatUint(uint64(val), 10))
+	case uint64:
+		return t.CountTokens(strconv.FormatUint(val, 10))
+	case float32:
+		return t.CountTokens(strconv.FormatFloat(float64(val), 'g', -1, 32))
+	case float64:
+		return t.CountTokens(strconv.FormatFloat(val, 'g', -1, 64))
+	case bool:
+		if val {
+			return t.CountTokens("true")
+		}
+		return t.CountTokens("false")
+	case json.Number:
+		return t.CountTokens(val.String())
 	default:
 		// Convert to string representation
 		return t.CountTokens(fmt.Sprintf("%v", val))
