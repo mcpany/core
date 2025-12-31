@@ -126,6 +126,7 @@ const (
 	AuditConfig_STORAGE_TYPE_UNSPECIFIED AuditConfig_StorageType = 0
 	AuditConfig_STORAGE_TYPE_FILE        AuditConfig_StorageType = 1
 	AuditConfig_STORAGE_TYPE_SQLITE      AuditConfig_StorageType = 2
+	AuditConfig_STORAGE_TYPE_POSTGRES    AuditConfig_StorageType = 3
 )
 
 // Enum value maps for AuditConfig_StorageType.
@@ -134,11 +135,13 @@ var (
 		0: "STORAGE_TYPE_UNSPECIFIED",
 		1: "STORAGE_TYPE_FILE",
 		2: "STORAGE_TYPE_SQLITE",
+		3: "STORAGE_TYPE_POSTGRES",
 	}
 	AuditConfig_StorageType_value = map[string]int32{
 		"STORAGE_TYPE_UNSPECIFIED": 0,
 		"STORAGE_TYPE_FILE":        1,
 		"STORAGE_TYPE_SQLITE":      2,
+		"STORAGE_TYPE_POSTGRES":    3,
 	}
 )
 
@@ -1517,17 +1520,18 @@ const file_proto_config_v1_config_proto_rawDesc = "" +
 	"\x0fLOG_FORMAT_JSON\x10\x02J\x04\b\x02\x10\x03\"O\n" +
 	"\tDLPConfig\x12\x18\n" +
 	"\aenabled\x18\x01 \x01(\bR\aenabled\x12(\n" +
-	"\x0fcustom_patterns\x18\x02 \x03(\tR\x0fcustom_patterns\"\xbd\x02\n" +
+	"\x0fcustom_patterns\x18\x02 \x03(\tR\x0fcustom_patterns\"\xd8\x02\n" +
 	"\vAuditConfig\x12\x18\n" +
 	"\aenabled\x18\x01 \x01(\bR\aenabled\x12 \n" +
 	"\voutput_path\x18\x02 \x01(\tR\voutput_path\x12$\n" +
 	"\rlog_arguments\x18\x03 \x01(\bR\rlog_arguments\x12 \n" +
 	"\vlog_results\x18\x04 \x01(\bR\vlog_results\x12M\n" +
-	"\fstorage_type\x18\x05 \x01(\x0e2).mcpany.config.v1.AuditConfig.StorageTypeR\fstorage_type\"[\n" +
+	"\fstorage_type\x18\x05 \x01(\x0e2).mcpany.config.v1.AuditConfig.StorageTypeR\fstorage_type\"v\n" +
 	"\vStorageType\x12\x1c\n" +
 	"\x18STORAGE_TYPE_UNSPECIFIED\x10\x00\x12\x15\n" +
 	"\x11STORAGE_TYPE_FILE\x10\x01\x12\x17\n" +
-	"\x13STORAGE_TYPE_SQLITE\x10\x02\"\x8e\x01\n" +
+	"\x13STORAGE_TYPE_SQLITE\x10\x02\x12\x19\n" +
+	"\x15STORAGE_TYPE_POSTGRES\x10\x03\"\x8e\x01\n" +
 	"\x11ProfileDefinition\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12=\n" +
 	"\bselector\x18\x02 \x01(\v2!.mcpany.config.v1.ProfileSelectorR\bselector\x12&\n" +

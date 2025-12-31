@@ -98,6 +98,7 @@ message AuditConfig {
     STORAGE_TYPE_UNSPECIFIED = 0;
     STORAGE_TYPE_FILE = 1;
     STORAGE_TYPE_SQLITE = 2;
+    STORAGE_TYPE_POSTGRES = 3;
   }
 
   // Whether audit logging is enabled.

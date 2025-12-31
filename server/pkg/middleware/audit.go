@@ -39,6 +39,8 @@ func NewAuditMiddleware(config *configv1.AuditConfig) (*AuditMiddleware, error) 
 		}
 
 		switch storageType {
+		case configv1.AuditConfig_STORAGE_TYPE_POSTGRES:
+			store, err = NewPostgresAuditStore(config.GetOutputPath())
 		case configv1.AuditConfig_STORAGE_TYPE_SQLITE:
 			store, err = NewSQLiteAuditStore(config.GetOutputPath())
 		case configv1.AuditConfig_STORAGE_TYPE_FILE:
