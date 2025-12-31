@@ -15,6 +15,26 @@ export async function GET() {
     metrics: { qps: 120, latencyMs: 5, errorRate: 0.001 },
     children: [
         {
+            id: "middleware-pipeline",
+            label: "Middleware Pipeline",
+            type: "NODE_TYPE_MIDDLEWARE",
+            status: "NODE_STATUS_ACTIVE",
+            children: [
+                {
+                    id: "mw-auth",
+                    label: "Authentication",
+                    type: "NODE_TYPE_MIDDLEWARE",
+                    status: "NODE_STATUS_ACTIVE",
+                },
+                {
+                    id: "mw-log",
+                    label: "Logging",
+                    type: "NODE_TYPE_MIDDLEWARE",
+                    status: "NODE_STATUS_ACTIVE",
+                }
+            ]
+        },
+        {
             id: "srv-1",
             label: "weather-service",
             type: "NODE_TYPE_SERVICE",
@@ -26,6 +46,14 @@ export async function GET() {
                     label: "get_weather",
                     type: "NODE_TYPE_TOOL",
                     status: "NODE_STATUS_ACTIVE",
+                    children: [
+                        {
+                            id: "api-get-weather",
+                            label: "GET /api.weather.gov",
+                            type: "NODE_TYPE_API_CALL",
+                            status: "NODE_STATUS_ACTIVE",
+                        }
+                    ]
                 },
                 {
                     id: "res-weather-sf",
@@ -68,6 +96,14 @@ export async function GET() {
                     label: "list_files",
                     type: "NODE_TYPE_TOOL",
                     status: "NODE_STATUS_ACTIVE",
+                    children: [
+                        {
+                            id: "api-list-files",
+                            label: "OS: ls -la",
+                            type: "NODE_TYPE_API_CALL",
+                            status: "NODE_STATUS_ACTIVE",
+                        }
+                    ]
                 },
                 {
                     id: "tool-read-file",
@@ -82,6 +118,49 @@ export async function GET() {
                     status: "NODE_STATUS_ACTIVE",
                 }
             ]
+        },
+        {
+            id: "srv-4",
+            label: "slack-integration",
+            type: "NODE_TYPE_SERVICE",
+            status: "NODE_STATUS_ERROR",
+            metrics: { qps: 2, latencyMs: 5000, errorRate: 0.8 },
+            children: [
+                {
+                    id: "tool-send-msg",
+                    label: "send_message",
+                    type: "NODE_TYPE_TOOL",
+                    status: "NODE_STATUS_ERROR",
+                    children: [
+                        {
+                            id: "api-slack-post",
+                            label: "POST /chat.postMessage",
+                            type: "NODE_TYPE_API_CALL",
+                            status: "NODE_STATUS_ERROR",
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            id: "webhooks",
+            label: "Webhooks",
+            type: "NODE_TYPE_WEBHOOK",
+            status: "NODE_STATUS_ACTIVE",
+            children: [
+                {
+                    id: "wh-github",
+                    label: "github-push",
+                    type: "NODE_TYPE_WEBHOOK",
+                    status: "NODE_STATUS_ACTIVE",
+                },
+                {
+                    id: "wh-stripe",
+                    label: "stripe-payment",
+                    type: "NODE_TYPE_WEBHOOK",
+                    status: "NODE_STATUS_INACTIVE",
+                }
+            ]
         }
     ]
   };
@@ -89,15 +168,24 @@ export async function GET() {
   const clients: Node[] = [
       {
           id: "client-web",
-          label: "Web Dashboard",
+          label: "Web Dashboard (Admin)",
           type: "NODE_TYPE_CLIENT",
           status: "NODE_STATUS_ACTIVE",
+          metadata: { ip: "192.168.1.1", userAgent: "Chrome 122" }
       },
       {
           id: "client-cli",
           label: "MCP CLI",
           type: "NODE_TYPE_CLIENT",
           status: "NODE_STATUS_ACTIVE",
+           metadata: { ip: "10.0.0.5", userAgent: "mcp-cli/1.0" }
+      },
+       {
+          id: "client-claude",
+          label: "Claude Desktop",
+          type: "NODE_TYPE_CLIENT",
+          status: "NODE_STATUS_ACTIVE",
+           metadata: { ip: "127.0.0.1", userAgent: "Claude/3.5" }
       }
   ];
 
