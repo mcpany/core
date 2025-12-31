@@ -16,6 +16,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/mcpany/core/pkg/logging"
 	"github.com/mcpany/core/pkg/util"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/spf13/afero"
@@ -196,8 +197,9 @@ func expand(b []byte) []byte {
 // formats (JSON, YAML, and textproto) and merges the configurations into a
 // single `McpAnyServerConfig`.
 type FileStore struct {
-	fs    afero.Fs
-	paths []string
+	fs         afero.Fs
+	paths      []string
+	skipErrors bool
 }
 
 // NewFileStore creates a new FileStore with the given filesystem and a list of
@@ -211,6 +213,12 @@ type FileStore struct {
 // Returns a new instance of `FileStore`.
 func NewFileStore(fs afero.Fs, paths []string) *FileStore {
 	return &FileStore{fs: fs, paths: paths}
+}
+
+// NewFileStoreWithSkipErrors creates a new FileStore that skips malformed config files
+// instead of returning an error.
+func NewFileStoreWithSkipErrors(fs afero.Fs, paths []string) *FileStore {
+	return &FileStore{fs: fs, paths: paths, skipErrors: true}
 }
 
 // Load scans the configured paths for supported configuration files (JSON,
@@ -254,11 +262,16 @@ func (s *FileStore) Load() (*configv1.McpAnyServerConfig, error) {
 
 		engine, err := NewEngine(path)
 		if err != nil {
+			if s.skipErrors {
+				logging.GetLogger().Error("Failed to determine config engine, skipping file", "path", path, "error", err)
+				continue
+			}
 			return nil, err
 		}
 
 		cfg := &configv1.McpAnyServerConfig{}
 		if err := engine.Unmarshal(b, cfg); err != nil {
+			logErr := fmt.Errorf("failed to unmarshal config from %s: %w", path, err)
 			if strings.Contains(err.Error(), "is already set") {
 				// Find the service name
 				var raw map[string]interface{}
@@ -276,7 +289,7 @@ func (s *FileStore) Load() (*configv1.McpAnyServerConfig, error) {
 										}
 									}
 									if keys > 1 {
-										return nil, fmt.Errorf("failed to unmarshal config from %s: service %q has multiple service types defined", path, name)
+										logErr = fmt.Errorf("failed to unmarshal config from %s: service %q has multiple service types defined", path, name)
 									}
 								}
 							}
@@ -284,7 +297,11 @@ func (s *FileStore) Load() (*configv1.McpAnyServerConfig, error) {
 					}
 				}
 			}
-			return nil, fmt.Errorf("failed to unmarshal config from %s: %w", path, err)
+			if s.skipErrors {
+				logging.GetLogger().Error("Failed to parse config file, skipping", "path", path, "error", logErr)
+				continue
+			}
+			return nil, logErr
 		}
 
 		if mergedConfig == nil {

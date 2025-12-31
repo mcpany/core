@@ -266,7 +266,8 @@ func (a *Application) Run(
 
 	var stores []config.Store
 	if len(configPaths) > 0 {
-		stores = append(stores, config.NewFileStore(fs, configPaths))
+		// Use NewFileStoreWithSkipErrors to tolerate partial config failures during startup
+		stores = append(stores, config.NewFileStoreWithSkipErrors(fs, configPaths))
 	}
 	stores = append(stores, storageStore)
 	multiStore := config.NewMultiStore(stores...)
@@ -511,6 +512,7 @@ func (a *Application) ReloadConfig(fs afero.Fs, configPaths []string) error {
 	log := logging.GetLogger()
 	log.Info("Reloading configuration...")
 	metrics.IncrCounter([]string{"config", "reload", "total"}, 1)
+	// Do not skip errors during reload to prevent configuration drift/wiping.
 	store := config.NewFileStore(fs, configPaths)
 	cfg, err := config.LoadServices(store, "server")
 	if err != nil {

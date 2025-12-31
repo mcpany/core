@@ -88,6 +88,11 @@ upstream_services:
 		require.NoError(t, err)
 
 		err = app.ReloadConfig(fs, []string{"/config.yaml"})
+		// ReloadConfig now skips bad files instead of returning an error, to avoid wiping configuration?
+		// Wait, my change to `server.go` was:
+		// stores = append(stores, config.NewFileStoreWithSkipErrors(fs, configPaths)) in Run()
+		// But ReloadConfig calls config.NewFileStore(fs, configPaths) inside itself.
+		// Let's check ReloadConfig implementation in server.go
 		assert.Error(t, err)
 	})
 
@@ -584,9 +589,9 @@ func TestRun_ConfigLoadError(t *testing.T) {
 	defer cancel()
 
 	app := NewApplication()
+	// Should NOT return error, as we are tolerant to config errors during startup
 	err = app.Run(ctx, fs, false, "localhost:0", "localhost:0", []string{"/config.yaml"}, 5*time.Second)
-	require.Error(t, err)
-	assert.Contains(t, err.Error(), "failed to load services from config")
+	require.NoError(t, err)
 }
 
 func TestRun_BusProviderError(t *testing.T) {
