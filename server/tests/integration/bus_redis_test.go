@@ -15,7 +15,16 @@ import (
 	bustypes "github.com/mcpany/core/proto/bus"
 	goredis "github.com/redis/go-redis/v9"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
+
+func waitForSubscribers(t *testing.T, client *goredis.Client, topic string, expected int) {
+	require.Eventually(t, func() bool {
+		subs := client.PubSubNumSub(context.Background(), topic).Val()
+		// Check that the subscriber count is at least the expected number
+		return subs[topic] >= int64(expected)
+	}, 5*time.Second, 100*time.Millisecond, "timed out waiting for subscribers on topic %s", topic)
+}
 
 func TestRedisBus_Integration_Subscribe(t *testing.T) {
 	if testing.Short() {
@@ -48,8 +57,8 @@ func TestRedisBus_Integration_Subscribe(t *testing.T) {
 	unsubscribe := bus.Subscribe(ctx, topic, handler)
 	defer unsubscribe()
 
-	// Give subscriber a moment to connect
-	time.Sleep(1 * time.Second)
+	// Wait for subscriber to connect
+	waitForSubscribers(t, client, topic, 1)
 
 	err := bus.Publish(ctx, topic, msg)
 	assert.NoError(t, err)
@@ -155,8 +164,8 @@ func TestRedisBus_Integration_Unsubscribe(t *testing.T) {
 
 	unsubscribe := redisBus.Subscribe(ctx, topic, handler)
 
-	// Give subscriber a moment to connect
-	time.Sleep(1 * time.Second)
+	// Wait for subscriber to connect
+	waitForSubscribers(t, client, topic, 1)
 
 	err := redisBus.Publish(ctx, topic, msg1)
 	assert.NoError(t, err)

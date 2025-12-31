@@ -24,7 +24,25 @@ import (
 func (a *Application) createAPIHandler(store storage.Storage) http.Handler {
 	mux := http.NewServeMux()
 
-	mux.HandleFunc("/services", func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc("/services", a.handleServices(store))
+	mux.HandleFunc("/services/", a.handleServiceDetail(store))
+	mux.HandleFunc("/health", func(w http.ResponseWriter, _ *http.Request) {
+		w.WriteHeader(http.StatusOK)
+		_, _ = w.Write([]byte("OK"))
+	})
+	mux.HandleFunc("/settings", a.handleSettings(store))
+	mux.HandleFunc("/tools", a.handleTools())
+	mux.HandleFunc("/execute", a.handleExecute())
+	mux.HandleFunc("/prompts", a.handlePrompts())
+	mux.HandleFunc("/resources", a.handleResources())
+	mux.HandleFunc("/secrets", a.handleSecrets(store))
+	mux.HandleFunc("/secrets/", a.handleSecretDetail(store))
+
+	return mux
+}
+
+func (a *Application) handleServices(store storage.Storage) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case http.MethodGet:
 			services, err := store.ListServices(r.Context())
@@ -93,16 +111,17 @@ func (a *Application) createAPIHandler(store storage.Storage) http.Handler {
 			// Trigger reload
 			if err := a.ReloadConfig(a.fs, a.configPaths); err != nil {
 				logging.GetLogger().Error("failed to reload config after save", "error", err)
-				// Don't fail the request, but log error
 			}
 
 			w.WriteHeader(http.StatusCreated)
 		default:
 			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
 		}
-	})
+	}
+}
 
-	mux.HandleFunc("/services/", func(w http.ResponseWriter, r *http.Request) {
+func (a *Application) handleServiceDetail(store storage.Storage) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
 		path := strings.TrimPrefix(r.URL.Path, "/services/")
 		parts := strings.Split(path, "/")
 		if len(parts) < 1 || parts[0] == "" {
@@ -112,45 +131,7 @@ func (a *Application) createAPIHandler(store storage.Storage) http.Handler {
 		name := parts[0]
 
 		if len(parts) == 2 && parts[1] == "status" {
-			// Get Service Status
-			if r.Method != http.MethodGet {
-				http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
-				return
-			}
-
-			// For now, check if service exists in store and return active if so.
-			// TODO: Hook into real metrics/health check.
-			svc, err := store.GetService(name)
-			if err != nil {
-				http.Error(w, "Internal Server Error", http.StatusInternalServerError)
-				return
-			}
-			if svc == nil {
-				http.NotFound(w, r)
-				return
-			}
-
-			// Mock status for now, or check real connection if possible.
-			// We can check if it's in a.ToolManager.ListServices() which implies it's loaded.
-			loaded := false
-			for _, info := range a.ToolManager.ListServices() {
-				if info.Name == name {
-					loaded = true
-					break
-				}
-			}
-
-			status := "Inactive"
-			if loaded {
-				status = "Active"
-			}
-
-			w.Header().Set("Content-Type", "application/json")
-			_ = json.NewEncoder(w).Encode(map[string]any{
-				"name":    name,
-				"status":  status,
-				"metrics": map[string]any{}, // TODO: Populate with real metrics
-			})
+			a.handleServiceStatus(w, r, name, store)
 			return
 		}
 
@@ -159,7 +140,6 @@ func (a *Application) createAPIHandler(store storage.Storage) http.Handler {
 			return
 		}
 
-		// ... existing logic for /services/{name} ...
 		switch r.Method {
 		case http.MethodGet:
 			svc, err := store.GetService(r.Context(), name)
@@ -224,14 +204,48 @@ func (a *Application) createAPIHandler(store storage.Storage) http.Handler {
 		default:
 			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
 		}
-	})
+	}
+}
 
-	mux.HandleFunc("/health", func(w http.ResponseWriter, _ *http.Request) {
-		w.WriteHeader(http.StatusOK)
-		_, _ = w.Write([]byte("OK"))
-	})
+func (a *Application) handleServiceStatus(w http.ResponseWriter, r *http.Request, name string, store storage.Storage) {
+	if r.Method != http.MethodGet {
+		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
 
-	mux.HandleFunc("/settings", func(w http.ResponseWriter, r *http.Request) {
+	svc, err := store.GetService(name)
+	if err != nil {
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		return
+	}
+	if svc == nil {
+		http.NotFound(w, r)
+		return
+	}
+
+	loaded := false
+	for _, info := range a.ToolManager.ListServices() {
+		if info.Name == name {
+			loaded = true
+			break
+		}
+	}
+
+	status := "Inactive"
+	if loaded {
+		status = "Active"
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	_ = json.NewEncoder(w).Encode(map[string]any{
+		"name":    name,
+		"status":  status,
+		"metrics": map[string]any{},
+	})
+}
+
+func (a *Application) handleSettings(store storage.Storage) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case http.MethodGet:
 			settings, err := store.GetGlobalSettings()
@@ -241,7 +255,6 @@ func (a *Application) createAPIHandler(store storage.Storage) http.Handler {
 				return
 			}
 			if settings == nil {
-				// Return default empty settings if not found
 				settings = &configv1.GlobalSettings{}
 			}
 			w.Header().Set("Content-Type", "application/json")
@@ -261,27 +274,25 @@ func (a *Application) createAPIHandler(store storage.Storage) http.Handler {
 				http.Error(w, err.Error(), http.StatusBadRequest)
 				return
 			}
-			// Hardcode ID to 1? Or just pass it to store which handles it.
 			if err := store.SaveGlobalSettings(&settings); err != nil {
 				logging.GetLogger().Error("failed to save global settings", "error", err)
 				http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 				return
 			}
 
-			// Trigger reload
 			if err := a.ReloadConfig(a.fs, a.configPaths); err != nil {
 				logging.GetLogger().Error("failed to reload config after settings save", "error", err)
-				// Don't fail the request, but log
 			}
 
 			w.WriteHeader(http.StatusOK)
 		default:
 			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
 		}
-	})
+	}
+}
 
-	// Tools
-	mux.HandleFunc("/tools", func(w http.ResponseWriter, r *http.Request) {
+func (a *Application) handleTools() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case http.MethodGet:
 			tools := a.ToolManager.ListTools()
@@ -294,10 +305,11 @@ func (a *Application) createAPIHandler(store storage.Storage) http.Handler {
 		default:
 			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
 		}
-	})
+	}
+}
 
-	// Execute Tool
-	mux.HandleFunc("/execute", func(w http.ResponseWriter, r *http.Request) {
+func (a *Application) handleExecute() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != http.MethodPost {
 			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
 			return
@@ -308,8 +320,6 @@ func (a *Application) createAPIHandler(store storage.Storage) http.Handler {
 			return
 		}
 
-		// If ToolInputs is not set but Arguments is, marshal Arguments to ToolInputs
-		// The tool manager expects ToolInputs (json.RawMessage)
 		if len(req.ToolInputs) == 0 && len(req.Arguments) > 0 {
 			b, err := json.Marshal(req.Arguments)
 			if err != nil {
@@ -327,10 +337,11 @@ func (a *Application) createAPIHandler(store storage.Storage) http.Handler {
 		}
 		w.Header().Set("Content-Type", "application/json")
 		_ = json.NewEncoder(w).Encode(result)
-	})
+	}
+}
 
-	// Prompts
-	mux.HandleFunc("/prompts", func(w http.ResponseWriter, r *http.Request) {
+func (a *Application) handlePrompts() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case http.MethodGet:
 			prompts := a.PromptManager.ListPrompts()
@@ -339,10 +350,11 @@ func (a *Application) createAPIHandler(store storage.Storage) http.Handler {
 		default:
 			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
 		}
-	})
+	}
+}
 
-	// Resources
-	mux.HandleFunc("/resources", func(w http.ResponseWriter, r *http.Request) {
+func (a *Application) handleResources() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case http.MethodGet:
 			resources := a.ResourceManager.ListResources()
@@ -351,10 +363,11 @@ func (a *Application) createAPIHandler(store storage.Storage) http.Handler {
 		default:
 			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
 		}
-	})
+	}
+}
 
-	// Secrets
-	mux.HandleFunc("/secrets", func(w http.ResponseWriter, r *http.Request) {
+func (a *Application) handleSecrets(store storage.Storage) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case http.MethodGet:
 			secrets, err := store.ListSecrets()
@@ -368,9 +381,6 @@ func (a *Application) createAPIHandler(store storage.Storage) http.Handler {
 			}
 			w.Header().Set("Content-Type", "application/json")
 			opts := protojson.MarshalOptions{UseProtoNames: true}
-			// Client expects array, let's just write array manually or use Gateway behavior if possible.
-			// protojson doesn't support marshaling slice directly.
-			// Let's construct a JSON array manually using the partials.
 			var buf []byte
 			buf = append(buf, '[')
 			for i, s := range secrets {
@@ -390,15 +400,6 @@ func (a *Application) createAPIHandler(store storage.Storage) http.Handler {
 				http.Error(w, err.Error(), http.StatusBadRequest)
 				return
 			}
-			if secret.GetId() == "" {
-				// Generate ID if missing (or use UUID)
-				// For now error if missing
-				// http.Error(w, "id is required", http.StatusBadRequest)
-				// actually client might send without ID for new
-				// let's verify if store handles it? No store checks ID.
-				// Client should likely generate ID or we do it here.
-				// For now assume client sends ID.
-			}
 			if err := store.SaveSecret(&secret); err != nil {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 				return
@@ -407,9 +408,11 @@ func (a *Application) createAPIHandler(store storage.Storage) http.Handler {
 		default:
 			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
 		}
-	})
+	}
+}
 
-	mux.HandleFunc("/secrets/", func(w http.ResponseWriter, r *http.Request) {
+func (a *Application) handleSecretDetail(store storage.Storage) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
 		id := strings.TrimPrefix(r.URL.Path, "/secrets/")
 		if id == "" {
 			http.Error(w, "id required", http.StatusBadRequest)
@@ -426,7 +429,5 @@ func (a *Application) createAPIHandler(store storage.Storage) http.Handler {
 		default:
 			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
 		}
-	})
-
-	return mux
+	}
 }

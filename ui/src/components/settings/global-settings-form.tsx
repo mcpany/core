@@ -80,17 +80,17 @@ export function GlobalSettingsForm() {
                 <div className="grid gap-2">
                     <Label htmlFor="log-level">Log Level</Label>
                     <Select
-                        value={settings.log_level || "INFO"}
+                        value={settings.log_level || "LOG_LEVEL_INFO"}
                         onValueChange={v => setSettings({...settings, log_level: v})}
                     >
                         <SelectTrigger>
                             <SelectValue placeholder="Select log level" />
                         </SelectTrigger>
                         <SelectContent>
-                            <SelectItem value="DEBUG">DEBUG</SelectItem>
-                            <SelectItem value="INFO">INFO</SelectItem>
-                            <SelectItem value="WARN">WARN</SelectItem>
-                            <SelectItem value="ERROR">ERROR</SelectItem>
+                            <SelectItem value="LOG_LEVEL_DEBUG">DEBUG</SelectItem>
+                            <SelectItem value="LOG_LEVEL_INFO">INFO</SelectItem>
+                            <SelectItem value="LOG_LEVEL_WARN">WARN</SelectItem>
+                            <SelectItem value="LOG_LEVEL_ERROR">ERROR</SelectItem>
                         </SelectContent>
                     </Select>
                 </div>
