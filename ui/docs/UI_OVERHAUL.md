@@ -63,3 +63,14 @@ Configure outbound webhooks for system events.
 *   **Management:** Add new webhooks, test delivery, and view status.
 
 ![Webhooks Audit](../.audit/ui/2025-12-30/webhooks.png)
+
+## 5. User Preferences Persistence
+
+All UI settings and customizations must be persisted in the backend database (SQLite). This ensures that user configurations are preserved across sessions (login/logout) and cognition modes.
+
+### Persisted Settings Include:
+- **Dashboard Layout:** Widget positions and visibility.
+- **Theme Preferences:** Dark/Light mode, high contrast.
+- **Chart Settings:** Timeframes (e.g., 24h vs 7d), metrics selection.
+- **Table Preferences:** Column visibility, sorting, filtering.
+- **Profile Selection:** Last active profile.
