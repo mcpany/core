@@ -157,7 +157,7 @@ func getDockerCommand() (string, []string) {
 
 		// First, try running docker directly.
 		if _, err := exec.LookPath("docker"); err == nil {
-			cmd := exec.Command(dockerCmd, "info")
+			cmd := exec.CommandContext(context.Background(), dockerCmd, "info")
 			if err := cmd.Run(); err == nil {
 				dockerCommand = dockerCmd
 				dockerArgs = []string{}
@@ -167,7 +167,7 @@ func getDockerCommand() (string, []string) {
 
 		// If direct access fails, check for passwordless sudo.
 		if _, err := exec.LookPath(sudoCmd); err == nil {
-			cmd := exec.Command(sudoCmd, "-n", dockerCmd, "info")
+			cmd := exec.CommandContext(context.Background(), sudoCmd, "-n", dockerCmd, "info")
 			if err := cmd.Run(); err == nil {
 				dockerCommand = sudoCmd
 				dockerArgs = []string{dockerCmd}
@@ -257,7 +257,7 @@ type ManagedProcess struct {
 // NewManagedProcess creates a new ManagedProcess instance.
 func NewManagedProcess(t *testing.T, label, command string, args []string, env []string) *ManagedProcess {
 	t.Helper()
-	cmd := exec.Command(command, args...)
+	cmd := exec.CommandContext(context.Background(), command, args...)
 	cmd.SysProcAttr = &syscall.SysProcAttr{Setpgid: true}
 	if env != nil {
 		cmd.Env = append(os.Environ(), env...)
@@ -415,7 +415,8 @@ func (mp *ManagedProcess) WaitForText(t *testing.T, text string, timeout time.Du
 func WaitForTCPPort(t *testing.T, port int, timeout time.Duration) {
 	t.Helper()
 	require.Eventually(t, func() bool {
-		conn, err := net.DialTimeout("tcp", fmt.Sprintf("127.0.0.1:%d", port), 100*time.Millisecond)
+		d := net.Dialer{Timeout: 100 * time.Millisecond}
+		conn, err := d.DialContext(context.Background(), "tcp", fmt.Sprintf("127.0.0.1:%d", port))
 		if err != nil {
 			return false // Port is not open yet
 		}
@@ -479,7 +480,11 @@ func WaitForHTTPHealth(t *testing.T, url string, timeout time.Duration) {
 		Timeout: 2 * time.Second,
 	}
 	require.Eventually(t, func() bool {
-		resp, err := client.Get(url)
+		req, err := http.NewRequestWithContext(context.Background(), "GET", url, nil)
+		if err != nil {
+			return false
+		}
+		resp, err := client.Do(req)
 		if err != nil {
 			return false
 		}
@@ -492,7 +497,7 @@ func WaitForHTTPHealth(t *testing.T, url string, timeout time.Duration) {
 func IsDockerSocketAccessible() bool {
 	dockerExe, dockerArgs := getDockerCommand()
 
-	cmd := exec.Command(dockerExe, append(dockerArgs, "info")...) //nolint:gosec // Test helper
+	cmd := exec.CommandContext(context.Background(), dockerExe, append(dockerArgs, "info")...) //nolint:gosec // Test helper
 	if err := cmd.Run(); err != nil {
 		return false
 	}
@@ -519,10 +524,10 @@ func StartDockerContainer(t *testing.T, imageName, containerName string, runArgs
 
 	// Ensure the container is not already running from a previous failed run
 
-	stopCmd := exec.Command(dockerExe, buildArgs("stop", containerName)...) //nolint:gosec // Test helper
+	stopCmd := exec.CommandContext(context.Background(), dockerExe, buildArgs("stop", containerName)...) //nolint:gosec // Test helper
 	_ = stopCmd.Run()                                                       // Ignore error, it might not be running
 
-	rmCmd := exec.Command(dockerExe, buildArgs("rm", containerName)...) //nolint:gosec // Test helper
+	rmCmd := exec.CommandContext(context.Background(), dockerExe, buildArgs("rm", containerName)...) //nolint:gosec // Test helper
 	_ = rmCmd.Run()                                                     // Ignore error, it might not exist
 
 	dockerRunArgs := []string{"run", "--name", containerName, "--rm"}
@@ -530,7 +535,7 @@ func StartDockerContainer(t *testing.T, imageName, containerName string, runArgs
 	dockerRunArgs = append(dockerRunArgs, imageName)
 	dockerRunArgs = append(dockerRunArgs, command...)
 
-	startCmd := exec.Command(dockerExe, buildArgs(dockerRunArgs...)...) //nolint:gosec // Test helper
+	startCmd := exec.CommandContext(context.Background(), dockerExe, buildArgs(dockerRunArgs...)...) //nolint:gosec // Test helper
 	// Capture stderr for better error reporting
 	var stderr bytes.Buffer
 	startCmd.Stderr = &stderr
@@ -543,7 +548,7 @@ func StartDockerContainer(t *testing.T, imageName, containerName string, runArgs
 	cleanupFunc = func() {
 		t.Logf("Stopping and removing docker container: %s", containerName)
 
-		stopCleanupCmd := exec.Command(dockerExe, buildArgs("stop", containerName)...) //nolint:gosec // Test helper
+		stopCleanupCmd := exec.CommandContext(context.Background(), dockerExe, buildArgs("stop", containerName)...) //nolint:gosec // Test helper
 		err := stopCleanupCmd.Run()
 		if err != nil {
 			// Log as error, but don't fail the test, as cleanup failure is secondary.
@@ -767,7 +772,7 @@ func StartNatsServer(t *testing.T) (string, func()) {
 	natsPort := FindFreePort(t)
 	natsURL := fmt.Sprintf("nats://127.0.0.1:%d", natsPort)
 
-	cmd := exec.Command(natsServerBin, "-p", fmt.Sprintf("%d", natsPort)) //nolint:gosec // Test helper
+	cmd := exec.CommandContext(context.Background(), natsServerBin, "-p", fmt.Sprintf("%d", natsPort)) //nolint:gosec // Test helper
 	err = cmd.Start()
 	require.NoError(t, err)
 	WaitForTCPPort(t, natsPort, 10*time.Second) // Wait for NATS server to be ready
@@ -803,7 +808,7 @@ func StartRedisContainer(t *testing.T) (redisAddr string, cleanupFunc func()) {
 		// Use redis-cli to ping the server
 		dockerExe, dockerBaseArgs := getDockerCommand()
 		pingArgs := append(dockerBaseArgs, "exec", containerName, "redis-cli", "ping") //nolint:gocritic // Helper
-		cmd := exec.Command(dockerExe, pingArgs...)                                    //nolint:gosec // Test helper
+		cmd := exec.CommandContext(context.Background(), dockerExe, pingArgs...)       //nolint:gosec // Test helper
 		output, err := cmd.CombinedOutput()
 		if err != nil {
 			t.Logf("redis-cli ping failed: %v, output: %s", err, string(output))
@@ -1082,7 +1087,7 @@ func (s *MCPANYTestServerInfo) Initialize(ctx context.Context) error {
 }
 
 // parseMCPResponse parses the response body, handling both JSON and SSE formats.
-func parseMCPResponse(t *testing.T, resp *http.Response) ([]byte, error) {
+func parseMCPResponse(_ *testing.T, resp *http.Response) ([]byte, error) {
 	bodyBytes, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, fmt.Errorf("failed to read body: %w", err)
@@ -1552,7 +1557,10 @@ func RegisterHTTPServiceWithJSONRPC(t *testing.T, mcpanyEndpoint, serviceID, bas
 	reqBody, err := json.Marshal(jsonRPCReq)
 	require.NoError(t, err)
 
-	resp, err := http.Post(mcpanyEndpoint, "application/json", bytes.NewBuffer(reqBody)) //nolint:gosec
+	httpReq, err := http.NewRequestWithContext(context.Background(), "POST", mcpanyEndpoint, bytes.NewBuffer(reqBody))
+	require.NoError(t, err)
+	httpReq.Header.Set("Content-Type", "application/json")
+	resp, err := http.DefaultClient.Do(httpReq)
 	require.NoError(t, err)
 	defer func() { _ = resp.Body.Close() }()
 

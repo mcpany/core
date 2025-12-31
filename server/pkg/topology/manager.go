@@ -1,6 +1,7 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
+// Package topology manages the network topology visualization and state.
 package topology
 
 import (
@@ -21,6 +22,7 @@ type Manager struct {
 	toolManager     tool.ManagerInterface
 }
 
+// SessionStats contains statistics about a topology session.
 type SessionStats struct {
 	ID           string
 	Metadata     map[string]string
@@ -61,7 +63,7 @@ func (m *Manager) RecordActivity(sessionID string, meta map[string]interface{}) 
 }
 
 // GetGraph generates the current topology graph.
-func (m *Manager) GetGraph(ctx context.Context) *topologyv1.Graph {
+func (m *Manager) GetGraph(_ context.Context) *topologyv1.Graph {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
 

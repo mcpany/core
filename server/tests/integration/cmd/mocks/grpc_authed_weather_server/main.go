@@ -5,7 +5,7 @@
 package main
 
 import (
-	"context"
+	"context" //nolint:gci
 	"flag"
 	"fmt"
 	"log"
@@ -89,7 +89,7 @@ func main() {
 		log.Fatal("port is required")
 	}
 
-	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", *port))
+	lis, err := (&net.ListenConfig{}).Listen(context.Background(), "tcp", fmt.Sprintf(":%d", *port))
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}

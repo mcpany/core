@@ -5,6 +5,7 @@
 package sqlite
 
 import (
+	"context"
 	"database/sql"
 	"fmt"
 	"os"
@@ -35,16 +36,16 @@ func NewDB(path string) (*DB, error) {
 	}
 
 	// Set pragmas
-	if _, err := db.Exec("PRAGMA journal_mode=WAL;"); err != nil {
+	if _, err := db.ExecContext(context.Background(), "PRAGMA journal_mode=WAL;"); err != nil {
 		return nil, fmt.Errorf("failed to set WAL mode: %w", err)
 	}
 	// Enable synchronous=NORMAL for better performance.
 	// In WAL mode, this is safe and provides a good balance between durability and performance.
 	// It significantly reduces fsync operations (e.g. from ~700ms to ~380ms per operation).
-	if _, err := db.Exec("PRAGMA synchronous=NORMAL;"); err != nil {
+	if _, err := db.ExecContext(context.Background(), "PRAGMA synchronous=NORMAL;"); err != nil {
 		return nil, fmt.Errorf("failed to set synchronous mode: %w", err)
 	}
-	if _, err := db.Exec("PRAGMA busy_timeout=5000;"); err != nil {
+	if _, err := db.ExecContext(context.Background(), "PRAGMA busy_timeout=5000;"); err != nil {
 		return nil, fmt.Errorf("failed to set busy_timeout: %w", err)
 	}
 
@@ -62,7 +63,7 @@ func initSchema(db *sql.DB) error {
 		updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
 	);
 	`
-	_, err := db.Exec(query)
+	_, err := db.ExecContext(context.Background(), query)
 	if err != nil {
 		return fmt.Errorf("failed to create tables: %w", err)
 	}

@@ -965,7 +965,7 @@ func (t *MCPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, erro
 	var resultMap map[string]any
 	if err := json.Unmarshal(responseBytes, &resultMap); err != nil {
 		// If unmarshalling to a map fails, return the raw string content
-		return string(responseBytes), nil
+		return "", fmt.Errorf("failed to unmarshal response: %w", err)
 	}
 
 	return resultMap, nil

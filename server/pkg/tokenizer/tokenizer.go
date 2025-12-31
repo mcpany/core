@@ -24,6 +24,7 @@ func NewSimpleTokenizer() *SimpleTokenizer {
 	return &SimpleTokenizer{}
 }
 
+// CountTokens counts tokens in text using the simple heuristic.
 func (t *SimpleTokenizer) CountTokens(text string) (int, error) {
 	if len(text) == 0 {
 		return 0, nil
@@ -46,6 +47,7 @@ func NewWordTokenizer() *WordTokenizer {
 	return &WordTokenizer{Factor: 1.3}
 }
 
+// CountTokens counts tokens in text using the word-based heuristic.
 func (t *WordTokenizer) CountTokens(text string) (int, error) {
 	if len(text) == 0 {
 		return 0, nil
@@ -58,7 +60,7 @@ func (t *WordTokenizer) CountTokens(text string) (int, error) {
 	return count, nil
 }
 
-// helper to recursively count tokens in arbitrary structures
+// CountTokensInValue recursively counts tokens in arbitrary structures.
 func CountTokensInValue(t Tokenizer, v interface{}) (int, error) {
 	switch val := v.(type) {
 	case string:

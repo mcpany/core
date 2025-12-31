@@ -897,7 +897,7 @@ func (a *Application) runServerMode(
 		// 2. User Authentication
 		// 3. Global Authentication
 
-		isAuthenticated := false
+		var isAuthenticated bool
 
 		// 1. Profile Auth
 		if profileAuthConfig != nil {
@@ -1126,7 +1126,7 @@ func (a *Application) runServerMode(
 		if !strings.Contains(grpcBindAddress, ":") {
 			grpcBindAddress = ":" + grpcBindAddress
 		}
-		lis, err := net.Listen("tcp", grpcBindAddress)
+		lis, err := (&net.ListenConfig{}).Listen(context.Background(), "tcp", grpcBindAddress)
 		if err != nil {
 			errChan <- fmt.Errorf("gRPC server failed to listen: %w", err)
 		} else {
@@ -1238,7 +1238,7 @@ func startHTTPServer(
 	go func() {
 		defer wg.Done()
 		serverLog := logging.GetLogger().With("server", name)
-		lis, err := net.Listen("tcp", addr)
+		lis, err := (&net.ListenConfig{}).Listen(context.Background(), "tcp", addr)
 		if err != nil {
 			errChan <- fmt.Errorf("[%s] server failed to listen: %w", name, err)
 			return

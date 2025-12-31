@@ -338,7 +338,7 @@ func (u *OpenAPIUpstream) addOpenAPIToolsToIndex(_ context.Context, pbTools []*p
 			}
 		}
 
-		serverURL := ""
+		var serverURL string
 		if len(doc.Servers) > 0 {
 			serverURL = doc.Servers[0].URL
 		} else {

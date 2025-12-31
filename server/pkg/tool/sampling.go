@@ -35,14 +35,16 @@ func GetSession(ctx context.Context) (Session, bool) {
 	return s, ok
 }
 
+// NewContextWithSampler creates a new context with the given Sampler.
+//
 // Deprecated: Use NewContextWithSession instead.
-// NewContextWithSampler returns a new context with the given sampler attached.
 func NewContextWithSampler(ctx context.Context, s Sampler) context.Context {
 	return NewContextWithSession(ctx, s)
 }
 
+// GetSampler retrieves the Sampler from the context.
+//
 // Deprecated: Use GetSession instead.
-// GetSampler retrieves the sampler from the context if it exists.
 func GetSampler(ctx context.Context) (Sampler, bool) {
 	return GetSession(ctx)
 }

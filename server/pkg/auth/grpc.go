@@ -37,13 +37,13 @@ func NewPerRPCCredentials(authenticator UpstreamAuthenticator) credentials.PerRP
 //
 // ctx is the context for the request.
 // uri is the URI of the gRPC service being called.
-func (c *PerRPCCredentials) GetRequestMetadata(_ context.Context, _ ...string) (map[string]string, error) {
+func (c *PerRPCCredentials) GetRequestMetadata(ctx context.Context, _ ...string) (map[string]string, error) {
 	if c.authenticator == nil {
 		return nil, nil
 	}
 
 	// Create a dummy http.Request to leverage the existing Authenticate method.
-	dummyReq, err := http.NewRequest("POST", "", nil)
+	dummyReq, err := http.NewRequestWithContext(ctx, "POST", "", nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create dummy request for grpc auth: %w", err)
 	}

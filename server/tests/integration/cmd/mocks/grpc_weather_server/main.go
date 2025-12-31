@@ -5,7 +5,7 @@
 package main
 
 import (
-	"context"
+	"context" //nolint:gci
 	"flag"
 	"fmt"
 	"log/slog"
@@ -47,7 +47,7 @@ func main() {
 	flag.Parse()
 
 	address := fmt.Sprintf(":%d", *port)
-	lis, err := net.Listen("tcp", address)
+	lis, err := (&net.ListenConfig{}).Listen(context.Background(), "tcp", address)
 	if err != nil {
 		slog.Error("grpc_weather_server: Failed to listen", "error", err)
 		os.Exit(1)
