@@ -16,7 +16,7 @@ This document outlines the current status and future plans for MCP Any.
 - [x] [MCP-to-MCP Proxy](features/service-types.md)
 - [x] [WebSocket](features/service-types.md)
 - [x] [WebRTC](features/service-types.md)
-- [x] [SQL](features/service-types.md)
+- [x] [SQL](features/sql_upstream.md)
 - [x] [File System Provider](features/filesystem.md)
 
 ### Authentication
@@ -59,6 +59,13 @@ This document outlines the current status and future plans for MCP Any.
 - [x] [Service Profiles](features/profiles_and_policies/README.md)
 - [x] [Semantic Caching](features/caching/README.md) (SQLite/Memory with Vector Embeddings)
 
+## Developer Experience & Tooling
+
+- [x] [CI/CD Config Validator CLI](features/mcpctl.md)
+- [x] [Doc Generator](features/doc_generator.md)
+- [x] [Hot Reload](features/hot_reload.md)
+- [x] [Helm Chart Official Support](features/helm.md)
+
 ## Upcoming Features (High Priority)
 
 ### 1. WASM Plugins
@@ -92,7 +99,7 @@ This document outlines the current status and future plans for MCP Any.
 
 1.  **Kubernetes Operator**: Automate deployment, scaling, and lifecycle management of MCP Any instances in K8s.
 2.  **Terraform Provider**: Manage MCP resources (Sources, Tools, Policies) via "Configuration as Code".
-3.  **Helm Chart Official Support**: Provide a production-ready Helm chart with auto-scaling and monitoring presets. (Helm Chart exists, need verification of full support).
+3.  **[x] Helm Chart Official Support**: Provide a production-ready Helm chart with auto-scaling and monitoring presets.
 4.  **Multi-Region Federation**: Link multiple MCP Any instances across regions for low-latency tool access.
 5.  **Active-Active High Availability**: Support leaderless clustering for zero-downtime upgrades and failure tolerance.
 6.  **Disaster Recovery Playbook**: Automated backup/restore of state and configuration to S3/GCS.
@@ -135,14 +142,14 @@ This document outlines the current status and future plans for MCP Any.
 34. **Client SDKs (Python/TS)**: Idiomatic client libraries for agents.
 35. **Local Emulator**: CLI command to run a lightweight in-memory MCP server for dev.
 36. **Language Server Protocol (LSP)**: IDE support for `config.yaml` editing (auto-complete tools).
-37. **Hot Reload**: Reload configuration without restarting the server process.
+37. **[x] Hot Reload**: Reload configuration without restarting the server process.
 38. **Type-Safe Tool Chaining**: Define "Workflows" where output of Tool A feeds Tool B (Server-side).
 39. **Mock Provider**: A built-in provider that returns static responses for testing agents.
-40. **Doc Generator**: Generate static HTML documentation site from registered tools.
+40. **[x] Doc Generator**: Generate static HTML documentation site from registered tools.
 
 ### Connectivity & Integration
 
-41. **Database Connectors (SQL)**: Native support for PostgreSQL/MySQL as "Sources" (RAG included).
+41. **[x] Database Connectors (SQL)**: Native support for PostgreSQL/MySQL as "Sources" (RAG included).
 42. **Salesforce Integration**: Official connector for CRM data.
 43. **Jira/Confluence Connector**: Read/Write tickets and docs.
 44. **Slack/Discord Bot Gateway**: Expose tools directly as chat commands.
