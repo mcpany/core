@@ -12,6 +12,7 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"unsafe"
 
 	"github.com/google/uuid"
 	"github.com/mcpany/core/pkg/consts"
@@ -119,7 +120,7 @@ func sanitizePart(sb *strings.Builder, id string, alwaysAppendHash bool, maxSani
 
 		// Append Hash
 		// Optimization: Use sha256.Sum256 to avoid heap allocation of hash.Hash
-		sum := sha256.Sum256([]byte(id))
+		sum := sha256.Sum256(stringToBytes(id))
 
 		// Avoid hex.EncodeToString allocation
 		var hashBuf [64]byte // sha256 hex is 64 chars
@@ -245,7 +246,8 @@ func SanitizeOperationID(input string) string {
 			badChunk := input[start:i]
 
 			// Optimization: Use sha256.Sum256 to avoid heap allocation of hash.Hash
-			sum := sha256.Sum256([]byte(badChunk))
+			// Use zero-copy string to byte conversion
+			sum := sha256.Sum256(stringToBytes(badChunk))
 			var hashBuf [64]byte
 			hex.Encode(hashBuf[:], sum[:])
 
@@ -255,6 +257,12 @@ func SanitizeOperationID(input string) string {
 		}
 	}
 	return sb.String()
+}
+
+// stringToBytes converts a string to a byte slice without allocation.
+// IMPORTANT: The returned byte slice must not be modified.
+func stringToBytes(s string) []byte {
+	return unsafe.Slice(unsafe.StringData(s), len(s))
 }
 
 // GetDockerCommand returns the command and base arguments for running Docker.
