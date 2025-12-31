@@ -18,31 +18,14 @@ test('Tools page loads and inspector opens', async ({ page }) => {
   // Check if inspector sheet is open
   await expect(page.getByRole('heading', { name: 'get_weather' })).toBeVisible();
 
-  // Check if tabs exist
-  await expect(page.getByRole('tab', { name: 'Test Tool' })).toBeVisible();
-  await expect(page.getByRole('tab', { name: 'Schema Definition' })).toBeVisible();
+  // Check if schema is displayed (using the new Sheet layout)
+  await expect(page.getByText('Schema')).toBeVisible();
 
-  // Switch to Schema tab
-  await page.getByRole('tab', { name: 'Schema Definition' }).click();
+  // The schema content from mock: { type: "object", properties: { location: { type: "string" } } }
+  // We can check if "location" is visible in the pre block
+  await expect(page.getByText('"location"')).toBeVisible();
   await expect(page.getByText('"type": "object"')).toBeVisible();
 
-  // Switch back to Test tab
-  await page.getByRole('tab', { name: 'Test Tool' }).click();
-
-  // Fill in the form
-  await page.getByLabel('location').fill('New York');
-  await page.getByRole('combobox').click();
-  await page.getByRole('option', { name: 'celsius' }).click();
-
-  // Execute tool
-  await page.getByRole('button', { name: 'Execute Tool' }).click();
-
-  // Check for result
-  // Use a more specific locator or header for "Result"
-  await expect(page.getByRole('heading', { name: 'Result' })).toBeVisible();
-  await expect(page.getByText('"temperature": 22')).toBeVisible();
-  await expect(page.getByText('"location": "New York"')).toBeVisible();
-
-  // Take screenshot of the inspector to match python script coverage
-  await page.screenshot({ path: '../.audit/ui/2025-02-18/tool_inspector_sheet_ts.png' });
+  // Verify service name is shown in details (Scoped to the sheet)
+  await expect(page.locator('div[role="dialog"]').getByText('weather-service')).toBeVisible();
 });
