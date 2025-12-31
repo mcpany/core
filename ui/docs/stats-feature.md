@@ -9,7 +9,7 @@ The Stats/Analytics feature provides real-time insights into the MCP infrastruct
 ## Components
 - **AnalyticsDashboard:** The main component that renders the dashboard. It uses `recharts` for data visualization.
 - **Charts:**
-  - **Request Volume:** An AreaChart showing traffic over time.
+  - **Request Volume:** An AreaChart showing traffic over the last 24 hours (configurable timeframe).
   - **Tool Usage Distribution:** A PieChart showing the most frequently used tools.
   - **Latency Trend:** A BarChart showing average response time.
   - **Error Trend:** A LineChart showing the number of failed requests.
