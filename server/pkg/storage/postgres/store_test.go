@@ -4,6 +4,7 @@
 package postgres
 
 import (
+	"context"
 	"testing"
 
 	"github.com/DATA-DOG/go-sqlmock"
@@ -33,7 +34,7 @@ func TestPostgresStore(t *testing.T) {
 			WithArgs("test-id", "test-service", sqlmock.AnyArg()).
 			WillReturnResult(sqlmock.NewResult(1, 1))
 
-		err := store.SaveService(svc)
+		err := store.SaveService(context.Background(), svc)
 		if err != nil {
 			t.Errorf("error was not expected while updating stats: %s", err)
 		}
@@ -57,7 +58,7 @@ func TestPostgresStore(t *testing.T) {
 			WithArgs("test-service").
 			WillReturnRows(rows)
 
-		got, err := store.GetService("test-service")
+		got, err := store.GetService(context.Background(), "test-service")
 		if err != nil {
 			t.Errorf("error was not expected while getting service: %s", err)
 		}
@@ -75,7 +76,7 @@ func TestPostgresStore(t *testing.T) {
 			WithArgs("test-service").
 			WillReturnResult(sqlmock.NewResult(1, 1))
 
-		err := store.DeleteService("test-service")
+		err := store.DeleteService(context.Background(), "test-service")
 		if err != nil {
 			t.Errorf("error was not expected while deleting service: %s", err)
 		}
@@ -93,7 +94,7 @@ func TestPostgresStore(t *testing.T) {
 		mock.ExpectQuery("SELECT config_json FROM upstream_services").
 			WillReturnRows(rows)
 
-		got, err := store.ListServices()
+		got, err := store.ListServices(context.Background())
 		if err != nil {
 			t.Errorf("error was not expected while listing services: %s", err)
 		}

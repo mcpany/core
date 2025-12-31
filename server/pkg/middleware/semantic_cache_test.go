@@ -29,7 +29,7 @@ func TestSemanticCache(t *testing.T) {
 		embeddings: map[string][]float32{
 			"hello":   {1.0, 0.0, 0.0},
 			"hi":      {0.99, 0.05, 0.0}, // Very similar
-			"goodbye": {0.0, 1.0, 0.0}, // Orthogonal
+			"goodbye": {0.0, 1.0, 0.0},   // Orthogonal
 		},
 	}
 

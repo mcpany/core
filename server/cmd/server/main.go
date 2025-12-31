@@ -182,7 +182,7 @@ func newRootCmd() *cobra.Command {
 				}
 			}
 
-			if err := updater.UpdateTo(fs, executablePath, release, assetName, checksumsAssetName); err != nil {
+			if err := updater.UpdateTo(context.Background(), fs, executablePath, release, assetName, checksumsAssetName); err != nil {
 				return fmt.Errorf("failed to update: %w", err)
 			}
 
@@ -250,7 +250,7 @@ func newRootCmd() *cobra.Command {
 			}
 
 			store := config.NewFileStore(osFs, cfgSettings.ConfigPaths())
-			cfg, err := config.LoadServices(store, "server")
+			cfg, err := config.LoadServices(context.Background(), store, "server")
 			if err != nil {
 				return fmt.Errorf("failed to load configuration: %w", err)
 			}
@@ -276,7 +276,7 @@ func newRootCmd() *cobra.Command {
 				return fmt.Errorf("configuration validation failed: %w", err)
 			}
 			store := config.NewFileStore(osFs, cfg.ConfigPaths())
-			configs, err := config.LoadServices(store, "server")
+			configs, err := config.LoadServices(context.Background(), store, "server")
 			if err != nil {
 				return fmt.Errorf("failed to load configurations for validation: %w", err)
 			}

@@ -4,6 +4,7 @@
 package sqlite
 
 import (
+	"context"
 	"os"
 	"path/filepath"
 	"testing"
@@ -30,10 +31,10 @@ func TestSaveServiceValidation(t *testing.T) {
 
 	// Test case: Empty name
 	svc := &configv1.UpstreamServiceConfig{
-		Name:    proto.String(""),
-		Id:      proto.String("test-id"),
+		Name: proto.String(""),
+		Id:   proto.String("test-id"),
 	}
-	err = store.SaveService(svc)
+	err = store.SaveService(context.Background(), svc)
 	if err == nil {
 		t.Error("expected error for empty service name, got nil")
 	} else if err.Error() != "service name is required" {
@@ -87,7 +88,7 @@ func TestLoadInvalidData(t *testing.T) {
 	}
 
 	// Try to load
-	_, err = store.Load()
+	_, err = store.Load(context.Background())
 	if err == nil {
 		t.Error("expected error when loading invalid JSON, got nil")
 	} else {
@@ -96,7 +97,7 @@ func TestLoadInvalidData(t *testing.T) {
 	}
 
 	// Try GetService
-	_, err = store.GetService("bad-service")
+	_, err = store.GetService(context.Background(), "bad-service")
 	if err == nil {
 		t.Error("expected error when getting service with invalid JSON, got nil")
 	}
@@ -120,7 +121,7 @@ func TestDBErrors(t *testing.T) {
 	db.Close()
 
 	// Test Load
-	_, err = store.Load()
+	_, err = store.Load(context.Background())
 	if err == nil {
 		t.Error("expected error on Load with closed DB, got nil")
 	}
@@ -129,19 +130,19 @@ func TestDBErrors(t *testing.T) {
 	svc := &configv1.UpstreamServiceConfig{
 		Name: proto.String("test-service"),
 	}
-	err = store.SaveService(svc)
+	err = store.SaveService(context.Background(), svc)
 	if err == nil {
 		t.Error("expected error on SaveService with closed DB, got nil")
 	}
 
 	// Test GetService
-	_, err = store.GetService("test-service")
+	_, err = store.GetService(context.Background(), "test-service")
 	if err == nil {
 		t.Error("expected error on GetService with closed DB, got nil")
 	}
 
 	// Test DeleteService
-	err = store.DeleteService("test-service")
+	err = store.DeleteService(context.Background(), "test-service")
 	if err == nil {
 		t.Error("expected error on DeleteService with closed DB, got nil")
 	}

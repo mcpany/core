@@ -4,6 +4,7 @@
 package middleware
 
 import (
+	"context"
 	"math"
 	"sync"
 	"time"
@@ -51,7 +52,7 @@ func NewSimpleVectorStore() *SimpleVectorStore {
 //
 // Returns:
 //   - error: An error if the operation fails (currently always nil).
-func (s *SimpleVectorStore) Add(key string, vector []float32, result any, ttl time.Duration) error {
+func (s *SimpleVectorStore) Add(_ context.Context, key string, vector []float32, result any, ttl time.Duration) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
@@ -84,7 +85,7 @@ func (s *SimpleVectorStore) Add(key string, vector []float32, result any, ttl ti
 //   - any: The cached result if found.
 //   - float32: The similarity score (cosine similarity).
 //   - bool: True if a match was found, false otherwise.
-func (s *SimpleVectorStore) Search(key string, query []float32) (any, float32, bool) {
+func (s *SimpleVectorStore) Search(_ context.Context, key string, query []float32) (any, float32, bool) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
 
@@ -120,7 +121,7 @@ func (s *SimpleVectorStore) Search(key string, query []float32) (any, float32, b
 //
 // Parameters:
 //   - key: The key to prune entries for.
-func (s *SimpleVectorStore) Prune(key string) {
+func (s *SimpleVectorStore) Prune(_ context.Context, key string) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	s.cleanup(key)

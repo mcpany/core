@@ -273,7 +273,7 @@ func (a *Application) Run(
 	multiStore := config.NewMultiStore(stores...)
 
 	var cfg *config_v1.McpAnyServerConfig
-	cfg, err = config.LoadServices(multiStore, "server")
+	cfg, err = config.LoadServices(ctx, multiStore, "server")
 	if err != nil {
 		return fmt.Errorf("failed to load services from config: %w", err)
 	}
@@ -514,7 +514,7 @@ func (a *Application) ReloadConfig(fs afero.Fs, configPaths []string) error {
 	metrics.IncrCounter([]string{"config", "reload", "total"}, 1)
 	// Do not skip errors during reload to prevent configuration drift/wiping.
 	store := config.NewFileStore(fs, configPaths)
-	cfg, err := config.LoadServices(store, "server")
+	cfg, err := config.LoadServices(context.Background(), store, "server")
 	if err != nil {
 		metrics.IncrCounter([]string{"config", "reload", "errors"}, 1)
 		return fmt.Errorf("failed to load services from config: %w", err)

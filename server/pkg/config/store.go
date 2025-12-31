@@ -138,7 +138,7 @@ func (e *jsonEngine) Unmarshal(b []byte, v proto.Message) error {
 // server configuration from a source, such as a file or a remote service.
 type Store interface {
 	// Load retrieves and returns the McpAnyServerConfig.
-	Load() (*configv1.McpAnyServerConfig, error)
+	Load(ctx context.Context) (*configv1.McpAnyServerConfig, error)
 }
 
 // ServiceStore extends Store to provide CRUD operations for UpstreamServices.
@@ -150,7 +150,7 @@ type ServiceStore interface {
 	//   - service: The service configuration to save.
 	//
 	// Returns an error if the operation fails.
-	SaveService(service *configv1.UpstreamServiceConfig) error
+	SaveService(ctx context.Context, service *configv1.UpstreamServiceConfig) error
 
 	// GetService retrieves a service configuration by name.
 	//
@@ -158,12 +158,12 @@ type ServiceStore interface {
 	//   - name: The name of the service to retrieve.
 	//
 	// Returns the service configuration, or an error if not found or the operation fails.
-	GetService(name string) (*configv1.UpstreamServiceConfig, error)
+	GetService(ctx context.Context, name string) (*configv1.UpstreamServiceConfig, error)
 
 	// ListServices retrieves all stored service configurations.
 	//
 	// Returns a slice of service configurations, or an error if the operation fails.
-	ListServices() ([]*configv1.UpstreamServiceConfig, error)
+	ListServices(ctx context.Context) ([]*configv1.UpstreamServiceConfig, error)
 
 	// DeleteService removes a service configuration by name.
 	//
@@ -171,7 +171,7 @@ type ServiceStore interface {
 	//   - name: The name of the service to delete.
 	//
 	// Returns an error if the operation fails.
-	DeleteService(name string) error
+	DeleteService(ctx context.Context, name string) error
 }
 
 var envVarRegex = regexp.MustCompile(`\${([^{}]+)}`)
@@ -231,7 +231,7 @@ func NewFileStoreWithSkipErrors(fs afero.Fs, paths []string) *FileStore {
 //
 // Returns the merged `McpAnyServerConfig` or an error if any part of the process
 // fails.
-func (s *FileStore) Load() (*configv1.McpAnyServerConfig, error) {
+func (s *FileStore) Load(ctx context.Context) (*configv1.McpAnyServerConfig, error) {
 	var mergedConfig *configv1.McpAnyServerConfig
 
 	filePaths, err := s.collectFilePaths()
@@ -243,7 +243,7 @@ func (s *FileStore) Load() (*configv1.McpAnyServerConfig, error) {
 		var b []byte
 		var err error
 		if isURL(path) {
-			b, err = readURL(path)
+			b, err = readURL(ctx, path)
 			if err != nil {
 				return nil, fmt.Errorf("failed to read config from URL %s: %w", path, err)
 			}
@@ -326,8 +326,8 @@ var httpClient = func() *http.Client {
 	return client
 }()
 
-func readURL(url string) ([]byte, error) {
-	req, err := http.NewRequestWithContext(context.Background(), "GET", url, nil)
+func readURL(ctx context.Context, url string) ([]byte, error) {
+	req, err := http.NewRequestWithContext(ctx, "GET", url, nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create request for url %s: %w", url, err)
 	}
@@ -461,10 +461,10 @@ func NewMultiStore(stores ...Store) *MultiStore {
 }
 
 // Load loads configurations from all stores and merges them into a single config.
-func (ms *MultiStore) Load() (*configv1.McpAnyServerConfig, error) {
+func (ms *MultiStore) Load(ctx context.Context) (*configv1.McpAnyServerConfig, error) {
 	mergedConfig := &configv1.McpAnyServerConfig{}
 	for _, s := range ms.stores {
-		cfg, err := s.Load()
+		cfg, err := s.Load(ctx)
 		if err != nil {
 			return nil, err
 		}

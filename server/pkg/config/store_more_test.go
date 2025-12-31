@@ -4,6 +4,7 @@
 package config
 
 import (
+	"context"
 	"testing"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
@@ -18,7 +19,7 @@ func TestYamlEngine_Unmarshal_Error(t *testing.T) {
 	require.NoError(t, afero.WriteFile(fs, "/config/invalid.yaml", []byte("\tinvalid: yaml"), 0644))
 
 	store := NewFileStore(fs, []string{"/config/invalid.yaml"})
-	_, err := store.Load()
+	_, err := store.Load(context.Background())
 	assert.Error(t, err)
 	assert.Contains(t, err.Error(), "failed to unmarshal YAML")
 }

@@ -102,16 +102,16 @@ func (m *AuditMiddleware) Execute(ctx context.Context, req *tool.ExecutionReques
 	}
 
 	// Write log
-	m.writeLog(entry)
+	m.writeLog(ctx, entry)
 
 	return result, err
 }
 
-func (m *AuditMiddleware) writeLog(entry AuditEntry) {
+func (m *AuditMiddleware) writeLog(ctx context.Context, entry AuditEntry) {
 	if m.store == nil {
 		return
 	}
-	if err := m.store.Write(entry); err != nil {
+	if err := m.store.Write(ctx, entry); err != nil {
 		fmt.Fprintf(os.Stderr, "Failed to write audit log: %v\n", err)
 	}
 }

@@ -5,6 +5,7 @@ package app
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
@@ -62,14 +63,14 @@ func TestCreateAPIHandler(t *testing.T) {
 		}
 		bodyBytes, _ := json.Marshal(body)
 
-		resp, err := http.Post(ts.URL + "/services", "application/json", bytes.NewReader(bodyBytes))
+		resp, err := http.Post(ts.URL+"/services", "application/json", bytes.NewReader(bodyBytes))
 		require.NoError(t, err)
 		defer resp.Body.Close()
 
 		assert.Equal(t, http.StatusCreated, resp.StatusCode)
 
 		// Verify it was stored
-		stored, err := store.GetService("test-service")
+		stored, err := store.GetService(context.Background(), "test-service")
 		require.NoError(t, err)
 		assert.Equal(t, "test-service", stored.GetName())
 		assert.Equal(t, "http://localhost:8080", stored.GetMcpService().GetHttpConnection().GetHttpAddress())
@@ -110,7 +111,7 @@ func TestCreateAPIHandler(t *testing.T) {
 		assert.Equal(t, http.StatusOK, resp.StatusCode)
 
 		// Verify update
-		stored, err := store.GetService("test-service")
+		stored, err := store.GetService(context.Background(), "test-service")
 		require.NoError(t, err)
 		assert.Equal(t, "http://localhost:9090", stored.GetMcpService().GetHttpConnection().GetHttpAddress())
 	})
@@ -126,7 +127,7 @@ func TestCreateAPIHandler(t *testing.T) {
 		assert.Equal(t, http.StatusNoContent, resp.StatusCode)
 
 		// Verify deletion
-		stored, err := store.GetService("test-service")
+		stored, err := store.GetService(context.Background(), "test-service")
 		require.NoError(t, err)
 		assert.Nil(t, stored)
 	})

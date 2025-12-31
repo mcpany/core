@@ -117,7 +117,7 @@ func TestDebugMiddleware_RequestMarshalError(t *testing.T) {
 		ListToolsRequest: mcp.ListToolsRequest{},
 	}
 	_, err := handler(context.Background(), "test", req)
-    // The handler should still succeed, just log error
+	// The handler should still succeed, just log error
 	assert.NoError(t, err)
 
 	logStr := logOutput.String()

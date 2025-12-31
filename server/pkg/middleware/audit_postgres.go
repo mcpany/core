@@ -31,7 +31,9 @@ func NewPostgresAuditStore(dsn string) (*PostgresAuditStore, error) {
 		return nil, fmt.Errorf("failed to open postgres database: %w", err)
 	}
 
-	if err := db.PingContext(context.TODO()); err != nil {
+	ctxPing, cancelPing := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancelPing()
+	if err := db.PingContext(ctxPing); err != nil {
 		_ = db.Close()
 		return nil, fmt.Errorf("failed to ping postgres database: %w", err)
 	}
@@ -58,7 +60,9 @@ func NewPostgresAuditStore(dsn string) (*PostgresAuditStore, error) {
 		hash TEXT
 	);
 	`
-	if _, err := db.ExecContext(context.TODO(), schema); err != nil {
+	ctxSchema, cancelSchema := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancelSchema()
+	if _, err := db.ExecContext(ctxSchema, schema); err != nil {
 		_ = db.Close()
 		return nil, fmt.Errorf("failed to create audit_logs table: %w", err)
 	}
@@ -69,7 +73,7 @@ func NewPostgresAuditStore(dsn string) (*PostgresAuditStore, error) {
 }
 
 // Write writes an audit entry to the database.
-func (s *PostgresAuditStore) Write(entry AuditEntry) error {
+func (s *PostgresAuditStore) Write(ctx context.Context, entry AuditEntry) error {
 	// We don't need mutex here because we use database transaction for concurrency control.
 	// s.mu.Lock() // removed
 
@@ -86,7 +90,7 @@ func (s *PostgresAuditStore) Write(entry AuditEntry) error {
 		}
 	}
 
-	tx, err := s.db.BeginTx(context.TODO(), nil)
+	tx, err := s.db.BeginTx(ctx, nil)
 	if err != nil {
 		return fmt.Errorf("failed to begin transaction: %w", err)
 	}
@@ -107,11 +111,11 @@ func (s *PostgresAuditStore) Write(entry AuditEntry) error {
 	// Better approach: Lock the table in EXCLUSIVE mode which allows reads but blocks writes.
 	// Or use `LOCK TABLE audit_logs IN SHARE ROW EXCLUSIVE MODE;`
 	// Let's use `LOCK TABLE audit_logs IN EXCLUSIVE MODE` for safety to ensure strict ordering.
-	if _, err := tx.ExecContext(context.TODO(), "LOCK TABLE audit_logs IN EXCLUSIVE MODE"); err != nil {
+	if _, err := tx.ExecContext(ctx, "LOCK TABLE audit_logs IN EXCLUSIVE MODE"); err != nil {
 		return fmt.Errorf("failed to lock table: %w", err)
 	}
 
-	err = tx.QueryRowContext(context.TODO(), "SELECT hash FROM audit_logs ORDER BY id DESC LIMIT 1").Scan(&prevHash)
+	err = tx.QueryRowContext(ctx, "SELECT hash FROM audit_logs ORDER BY id DESC LIMIT 1").Scan(&prevHash)
 	if err != nil && err != sql.ErrNoRows {
 		return fmt.Errorf("failed to get previous hash: %w", err)
 	}
@@ -130,7 +134,7 @@ func (s *PostgresAuditStore) Write(entry AuditEntry) error {
 	) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
 	`
 
-	_, err = tx.ExecContext(context.TODO(), query,
+	_, err = tx.ExecContext(ctx, query,
 		entry.Timestamp, // Postgres driver handles time.Time
 		entry.ToolName,
 		entry.UserID,
@@ -154,7 +158,9 @@ func (s *PostgresAuditStore) Verify() (bool, error) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
-	rows, err := s.db.QueryContext(context.TODO(), "SELECT id, timestamp, tool_name, user_id, profile_id, arguments, result, error, duration_ms, prev_hash, hash FROM audit_logs ORDER BY id ASC")
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel()
+	rows, err := s.db.QueryContext(ctx, "SELECT id, timestamp, tool_name, user_id, profile_id, arguments, result, error, duration_ms, prev_hash, hash FROM audit_logs ORDER BY id ASC")
 	if err != nil {
 		return false, err
 	}

@@ -54,6 +54,11 @@ func TestMetricLatencyConsistency(t *testing.T) {
 	upstreamWorker := worker.NewUpstreamWorker(busProvider, toolManager)
 	upstreamWorker.Start(ctx)
 
+	// Set a very short flush interval for testing
+	conf.TimerGranularity = 10 * time.Millisecond
+	_, err = metrics.NewGlobal(conf, sink)
+	require.NoError(t, err)
+
 	server, err := mcpserver.NewServer(ctx, toolManager, promptManager, resourceManager, authManager, serviceRegistry, busProvider, false)
 	require.NoError(t, err)
 
@@ -92,6 +97,9 @@ func TestMetricLatencyConsistency(t *testing.T) {
 	require.NoError(t, err)
 
 	// Check metrics
+	// Wait for metrics flush (TimerInterval is 50ms)
+	time.Sleep(100 * time.Millisecond)
+
 	data := sink.Data()
 
     // Debug print

@@ -27,10 +27,10 @@ import (
 // Returns:
 //   - A validated `McpAnyServerConfig` object.
 //   - An error if loading or validation fails.
-func LoadServices(store Store, binaryType string) (*configv1.McpAnyServerConfig, error) {
+func LoadServices(ctx context.Context, store Store, binaryType string) (*configv1.McpAnyServerConfig, error) {
 	log := logging.GetLogger().With("component", "configLoader")
 
-	fileConfig, err := store.Load()
+	fileConfig, err := store.Load(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("failed to load config from store: %w", err)
 	}
@@ -47,7 +47,7 @@ func LoadServices(store Store, binaryType string) (*configv1.McpAnyServerConfig,
 	}
 
 	manager := NewUpstreamServiceManager(profiles)
-	services, err := manager.LoadAndMergeServices(context.Background(), fileConfig)
+	services, err := manager.LoadAndMergeServices(ctx, fileConfig)
 	if err != nil {
 		return nil, fmt.Errorf("failed to load and merge services: %w", err)
 	}
@@ -100,7 +100,7 @@ func LoadServices(store Store, binaryType string) (*configv1.McpAnyServerConfig,
 		return nil, fmt.Errorf("unknown binary type: %s", binaryType)
 	}
 
-	if validationErrors := Validate(context.Background(), fileConfig, bt); len(validationErrors) > 0 {
+	if validationErrors := Validate(ctx, fileConfig, bt); len(validationErrors) > 0 {
 		var errorMessages []string
 		for _, e := range validationErrors {
 			log.Error("Config validation error", "service", e.ServiceName, "error", e.Err)

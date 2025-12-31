@@ -4,6 +4,7 @@
 package middleware
 
 import (
+	"context"
 	"database/sql"
 	"encoding/json"
 	"os"
@@ -41,7 +42,7 @@ func TestSQLiteAuditStore(t *testing.T) {
 	}
 
 	// Write entry
-	err = store.Write(entry)
+	err = store.Write(context.Background(), entry)
 	assert.NoError(t, err)
 
 	// Verify data in DB
@@ -89,7 +90,7 @@ func TestSQLiteAuditStore_TamperEvident(t *testing.T) {
 			ToolName:   "test_tool",
 			DurationMs: int64(i),
 		}
-		require.NoError(t, store.Write(entry))
+		require.NoError(t, store.Write(context.Background(), entry))
 	}
 
 	// Verify - should be valid
@@ -243,7 +244,7 @@ func TestSQLiteAuditStore_BackwardCompatibility(t *testing.T) {
 		ToolName:   "new_tool",
 		DurationMs: 200,
 	}
-	err = store.Write(newEntry)
+	err = store.Write(context.Background(), newEntry)
 	assert.NoError(t, err)
 
 	// Verify again - both old and new should be valid

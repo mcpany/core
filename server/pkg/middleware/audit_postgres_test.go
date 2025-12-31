@@ -4,6 +4,7 @@
 package middleware
 
 import (
+	"context"
 	"testing"
 	"time"
 
@@ -73,7 +74,7 @@ func TestPostgresAuditStore_Write(t *testing.T) {
 
 	mock.ExpectCommit()
 
-	err = store.Write(entry)
+	err = store.Write(context.Background(), entry)
 	assert.NoError(t, err)
 	assert.NoError(t, mock.ExpectationsWereMet())
 }

@@ -148,9 +148,9 @@ func TestInitStandardMiddlewares_AuditError(t *testing.T) {
 	// Invalid audit config to force error
 	st := configv1.AuditConfig_STORAGE_TYPE_SQLITE
 	auditConfig := &configv1.AuditConfig{
-		Enabled: proto.Bool(true),
+		Enabled:     proto.Bool(true),
 		StorageType: &st,
-		OutputPath: proto.String("/invalid/path/that/does/not/exist/audit.db"),
+		OutputPath:  proto.String("/invalid/path/that/does/not/exist/audit.db"),
 	}
 	cachingMiddleware := &CachingMiddleware{}
 

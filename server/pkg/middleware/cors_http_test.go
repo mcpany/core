@@ -14,12 +14,12 @@ import (
 
 func TestHTTPCORSMiddleware(t *testing.T) {
 	tests := []struct {
-		name           string
-		allowedOrigins []string
-		requestMethod  string
-		requestHeaders map[string]string
-		expectedStatus int
-		expectHeaders  map[string]string
+		name            string
+		allowedOrigins  []string
+		requestMethod   string
+		requestHeaders  map[string]string
+		expectedStatus  int
+		expectHeaders   map[string]string
 		expectNoHeaders []string
 	}{
 		{
@@ -80,9 +80,9 @@ func TestHTTPCORSMiddleware(t *testing.T) {
 			},
 			expectedStatus: http.StatusOK,
 			expectHeaders: map[string]string{
-				"Access-Control-Allow-Origin":      "http://example.com",
-				"Access-Control-Allow-Methods":     "GET, POST, PUT, DELETE, OPTIONS, PATCH",
-				"Access-Control-Allow-Headers":     "Content-Type, Authorization, X-API-Key, X-Requested-With",
+				"Access-Control-Allow-Origin":  "http://example.com",
+				"Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS, PATCH",
+				"Access-Control-Allow-Headers": "Content-Type, Authorization, X-API-Key, X-Requested-With",
 			},
 		},
 	}

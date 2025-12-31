@@ -49,7 +49,7 @@ func TestLoadAllPopularServices(t *testing.T) {
 	store := config.NewFileStore(fs, configs)
 
 	// Load the config
-	cfg, err := config.LoadServices(store, "server")
+	cfg, err := config.LoadServices(context.Background(), store, "server")
 	require.NoError(t, err)
 
 	// Get the expected tool names

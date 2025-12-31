@@ -102,7 +102,7 @@ func TestCachingMiddleware_Clear(t *testing.T) {
 	// Set something in cache
 	ctx := context.Background()
 	req := &tool.ExecutionRequest{
-		ToolName: "test_tool",
+		ToolName:   "test_tool",
 		ToolInputs: []byte("{}"),
 	}
 	key := m.getCacheKey(req)

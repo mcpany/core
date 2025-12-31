@@ -5,6 +5,8 @@
 package storage
 
 import (
+	"context"
+
 	configv1 "github.com/mcpany/core/proto/config/v1"
 )
 
@@ -12,19 +14,21 @@ import (
 type Storage interface {
 	// Load retrieves the full server configuration.
 	// Note: Currently it mostly returns UpstreamServices.
-	Load() (*configv1.McpAnyServerConfig, error)
+	// Load retrieves the full server configuration.
+	// Note: Currently it mostly returns UpstreamServices.
+	Load(ctx context.Context) (*configv1.McpAnyServerConfig, error)
 
 	// SaveService saves a single upstream service configuration.
-	SaveService(service *configv1.UpstreamServiceConfig) error
+	SaveService(ctx context.Context, service *configv1.UpstreamServiceConfig) error
 
 	// GetService retrieves a single upstream service configuration by name.
-	GetService(name string) (*configv1.UpstreamServiceConfig, error)
+	GetService(ctx context.Context, name string) (*configv1.UpstreamServiceConfig, error)
 
 	// ListServices lists all upstream service configurations.
-	ListServices() ([]*configv1.UpstreamServiceConfig, error)
+	ListServices(ctx context.Context) ([]*configv1.UpstreamServiceConfig, error)
 
 	// DeleteService deletes an upstream service configuration by name.
-	DeleteService(name string) error
+	DeleteService(ctx context.Context, name string) error
 
 	// Close closes the underlying storage connection.
 	Close() error

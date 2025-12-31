@@ -59,7 +59,7 @@ func TestUpdater(t *testing.T) {
 			require.NoError(t, err)
 
 			updater := NewUpdater(nil)
-			err = updater.UpdateTo(fs, executablePath, release, assetName, "checksums.txt")
+			err = updater.UpdateTo(context.Background(), fs, executablePath, release, assetName, "checksums.txt")
 			assert.NoError(t, err)
 
 			content, err := afero.ReadFile(fs, executablePath)
@@ -78,7 +78,7 @@ func TestUpdater(t *testing.T) {
 			require.NoError(t, err)
 
 			updater := NewUpdater(nil)
-			err = updater.UpdateTo(fs, executablePath, release, assetName, "checksums.txt")
+			err = updater.UpdateTo(context.Background(), fs, executablePath, release, assetName, "checksums.txt")
 			assert.Error(t, err)
 			assert.Contains(t, err.Error(), "asset")
 			assert.Contains(t, err.Error(), "not found")
@@ -100,7 +100,7 @@ func TestUpdater(t *testing.T) {
 			require.NoError(t, err)
 
 			updater := NewUpdater(nil)
-			err = updater.UpdateTo(fs, executablePath, release, assetName, "checksums.txt")
+			err = updater.UpdateTo(context.Background(), fs, executablePath, release, assetName, "checksums.txt")
 			assert.Error(t, err)
 			assert.Contains(t, err.Error(), "checksums")
 			assert.Contains(t, err.Error(), "not found")
@@ -134,7 +134,7 @@ func TestUpdater(t *testing.T) {
 			defer badChecksumsServer.Close()
 			release.Assets[1].BrowserDownloadURL = github.String(badChecksumsServer.URL)
 
-			err = updater.UpdateTo(fs, executablePath, release, assetName, "checksums.txt")
+			err = updater.UpdateTo(context.Background(), fs, executablePath, release, assetName, "checksums.txt")
 			assert.Error(t, err)
 			assert.Contains(t, err.Error(), "checksum mismatch")
 		})
@@ -159,7 +159,7 @@ func TestUpdater(t *testing.T) {
 			require.NoError(t, err)
 
 			updater := NewUpdater(nil)
-			err = updater.UpdateTo(fs, executablePath, release, assetName, "checksums.txt")
+			err = updater.UpdateTo(context.Background(), fs, executablePath, release, assetName, "checksums.txt")
 			assert.Error(t, err)
 			assert.Contains(t, err.Error(), "failed to download asset")
 		})
@@ -184,7 +184,7 @@ func TestUpdater(t *testing.T) {
 			require.NoError(t, err)
 
 			updater := NewUpdater(nil)
-			err = updater.UpdateTo(fs, executablePath, release, assetName, "checksums.txt")
+			err = updater.UpdateTo(context.Background(), fs, executablePath, release, assetName, "checksums.txt")
 			assert.Error(t, err)
 			assert.Contains(t, err.Error(), "failed to download checksums")
 		})
@@ -213,7 +213,7 @@ func TestUpdater(t *testing.T) {
 			require.NoError(t, err)
 
 			updater := NewUpdater(nil)
-			err = updater.UpdateTo(fs, executablePath, release, assetName, "checksums.txt")
+			err = updater.UpdateTo(context.Background(), fs, executablePath, release, assetName, "checksums.txt")
 			assert.Error(t, err)
 			assert.Contains(t, err.Error(), "checksum for asset")
 		})

@@ -245,7 +245,7 @@ var sensitiveKeys = []string{"api_key", "apikey", "token", "secret", "password",
 func IsSensitiveKey(key string) bool {
 	// Use the optimized byte-based scanner for keys as well.
 	// Avoid allocation using zero-copy conversion.
-	return scanForSensitiveKeys(unsafe.Slice(unsafe.StringData(key), len(key)), false)
+	return scanForSensitiveKeys(unsafe.Slice(unsafe.StringData(key), len(key)), false) //nolint:gosec // Zero-copy optimization
 }
 
 // scanForSensitiveKeys checks if input contains any sensitive key.
@@ -276,18 +276,12 @@ func scanForSensitiveKeys(input []byte, checkEscape bool) bool {
 			var idx int
 			if idxL == -1 && idxU == -1 {
 				break // No more matches for this char
-			} else if idxL == -1 {
-				idx = idxU
-			} else if idxU == -1 {
+			}
+			if idxL != -1 && (idxU == -1 || idxL < idxU) {
 				idx = idxL
 			} else {
-				if idxL < idxU {
-					idx = idxL
-				} else {
-					idx = idxU
-				}
+				idx = idxU
 			}
-
 			// Found candidate start at offset + idx
 			matchStart := offset + idx
 
@@ -323,147 +317,4 @@ func matchFoldRest(s, key []byte) bool {
 		}
 	}
 	return true
-}
-
-// bytesContainsFold reports whether substr is within s, interpreting ASCII characters case-insensitively.
-// substr must be lower-case.
-// Deprecated: Use scanForSensitiveKeys instead for batched checks.
-func bytesContainsFold(s, substr []byte) bool {
-	if len(substr) == 0 {
-		return true
-	}
-	if len(s) < len(substr) {
-		return false
-	}
-
-	firstLower := substr[0]
-	firstUpper := firstLower - 32 // sensitiveKeys are all lowercase ASCII
-
-	offset := 0
-	// We only need to search up to this point
-	maxSearch := len(s) - len(substr)
-
-	for offset <= maxSearch {
-		// Optimization: Use IndexByte which is assembly optimized (SIMD)
-		// Scan for either lowercase or uppercase first char
-		slice := s[offset:]
-		idxL := bytes.IndexByte(slice, firstLower)
-
-		// If firstLower is not found, we only need to look for firstUpper.
-		if idxL == -1 {
-			idx := bytes.IndexByte(slice, firstUpper)
-			if idx == -1 {
-				return false
-			}
-			offset += idx
-			goto CHECK
-		}
-
-		// If firstLower IS found, we check if firstUpper appears *before* it.
-		// Optimization: If firstUpper == firstLower (not possible for letters), handled implicitly.
-		// We use a small optimization: usually we are looking for lowercase keys in lowercase text.
-		// So idxL is likely the one. We only check for Upper if it's closer.
-		{
-			idxU := bytes.IndexByte(slice[:idxL], firstUpper)
-			if idxU != -1 {
-				offset += idxU
-			} else {
-				offset += idxL
-			}
-		}
-
-	CHECK:
-
-		// Check if we are past the maxSearch limit.
-		// Note: offset was updated to point to the potential match start.
-		if offset > maxSearch {
-			return false
-		}
-
-		// Optimization: Check the last character of the substring first.
-		// This is a simplified Boyer-Moore idea. If the last character doesn't match,
-		// we can fail immediately.
-		lastChar := substr[len(substr)-1]
-		lastCharS := s[offset+len(substr)-1]
-		if lastCharS >= 'A' && lastCharS <= 'Z' {
-			lastCharS += 32
-		}
-		if lastCharS != lastChar {
-			offset++
-			continue
-		}
-
-		// Check the rest of the string
-		match := true
-		matchStart := offset
-		for j := 1; j < len(substr); j++ {
-			cc := s[matchStart+j]
-			// Optimized ASCII lowercase check:
-			// If we know sensitive keys are only letters/digits, we can use a faster check.
-			// But for general correctness, we stick to [A-Z] -> +32.
-			// We can use a branchless trick: cc | 0x20.
-			// However, this affects non-alpha characters too (e.g. '[' -> '{').
-			// Since sensitiveKeys contains only [a-z_], we can verify if this optimization is safe.
-			// Currently sensitiveKeys are: "api_key", "apikey", "access_token", ...
-			// They are all [a-z_].
-			// If substr[j] is '_', then s[matchStart+j] must be '_'. '_' is 0x5F.
-			// '_' | 0x20 is 0x7F (DEL). So '_' != ('_' | 0x20).
-			// So | 0x20 is ONLY safe if we know s[matchStart+j] is a letter.
-			if cc >= 'A' && cc <= 'Z' {
-				cc += 32
-			}
-			if cc != substr[j] {
-				match = false
-				break
-			}
-		}
-		if match {
-			return true
-		}
-
-		// Move past this match
-		offset++
-	}
-	return false
-}
-
-// containsFold reports whether substr is within s, interpreting ASCII characters case-insensitively.
-func containsFold(s, substr string) bool {
-	if len(substr) > len(s) {
-		return false
-	}
-	if len(substr) == 0 {
-		return true
-	}
-
-	// Optimized case-insensitive search
-	// We first check the first character to avoid setting up the inner loop for mismatches.
-	// Since sensitiveKeys are all lowercase, we can safely assume substr[0] is lowercase.
-	first := substr[0]
-	maxLen := len(s) - len(substr)
-
-	for i := 0; i <= maxLen; i++ {
-		c := s[i]
-		if c >= 'A' && c <= 'Z' {
-			c += 32 // to lower
-		}
-		if c == first {
-			// First character matches, check the rest
-			match := true
-			for j := 1; j < len(substr); j++ {
-				charS := s[i+j]
-				if charS >= 'A' && charS <= 'Z' {
-					charS += 32 // to lower
-				}
-				if charS != substr[j] {
-					match = false
-					break
-				}
-			}
-			if match {
-				return true
-			}
-		}
-	}
-	return false
 }

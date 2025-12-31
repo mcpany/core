@@ -4,6 +4,7 @@
 package config
 
 import (
+	"context"
 	"errors"
 	"testing"
 
@@ -17,8 +18,31 @@ type MockStore struct {
 	Err    error
 }
 
-func (m *MockStore) Load() (*configv1.McpAnyServerConfig, error) {
+func (m *MockStore) Load(ctx context.Context) (*configv1.McpAnyServerConfig, error) {
 	return m.Config, m.Err
+}
+
+func (m *MockStore) SaveService(ctx context.Context, service *configv1.UpstreamServiceConfig) error {
+	return m.Err
+}
+
+func (m *MockStore) GetService(ctx context.Context, name string) (*configv1.UpstreamServiceConfig, error) {
+	return nil, m.Err
+}
+
+func (m *MockStore) ListServices(ctx context.Context) ([]*configv1.UpstreamServiceConfig, error) {
+	if m.Config != nil {
+		return m.Config.UpstreamServices, nil
+	}
+	return nil, m.Err
+}
+
+func (m *MockStore) DeleteService(ctx context.Context, name string) error {
+	return m.Err
+}
+
+func (m *MockStore) Close() error {
+	return nil
 }
 
 func TestMultiStore(t *testing.T) {
@@ -39,7 +63,7 @@ func TestMultiStore(t *testing.T) {
 		}
 
 		ms := NewMultiStore(s1, s2)
-		cfg, err := ms.Load()
+		cfg, err := ms.Load(context.Background())
 		assert.NoError(t, err)
 
 		assert.Equal(t, "key1", cfg.GetGlobalSettings().GetApiKey())
@@ -63,7 +87,7 @@ func TestMultiStore(t *testing.T) {
 		}
 
 		ms := NewMultiStore(s1, s2)
-		cfg, err := ms.Load()
+		cfg, err := ms.Load(context.Background())
 		assert.NoError(t, err)
 
 		assert.Equal(t, "key2", cfg.GetGlobalSettings().GetApiKey())
@@ -78,7 +102,7 @@ func TestMultiStore(t *testing.T) {
 		}
 
 		ms := NewMultiStore(s1, s2)
-		_, err := ms.Load()
+		_, err := ms.Load(context.Background())
 		assert.Error(t, err)
 		assert.Equal(t, "load error", err.Error())
 	})
@@ -100,7 +124,7 @@ func TestMultiStore(t *testing.T) {
 		}
 
 		ms := NewMultiStore(s1, s2)
-		cfg, err := ms.Load()
+		cfg, err := ms.Load(context.Background())
 		assert.NoError(t, err)
 
 		assert.Len(t, cfg.UpstreamServices, 2)
@@ -121,7 +145,7 @@ func TestMultiStore(t *testing.T) {
 		}
 
 		ms := NewMultiStore(s1, s2)
-		cfg, err := ms.Load()
+		cfg, err := ms.Load(context.Background())
 		assert.NoError(t, err)
 
 		assert.Equal(t, "key2", cfg.GetGlobalSettings().GetApiKey())

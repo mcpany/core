@@ -122,7 +122,7 @@ upstream_services:
 
 	fs := afero.NewOsFs()
 	store := config.NewFileStore(fs, []string{configPath})
-	cfg, err := config.LoadServices(store, "server")
+	cfg, err := config.LoadServices(context.Background(), store, "server")
 	require.NoError(t, err)
 
 	busProvider, err := bus.NewProvider(nil)
