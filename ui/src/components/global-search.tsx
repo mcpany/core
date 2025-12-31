@@ -99,6 +99,11 @@ export function GlobalSearch() {
       <CommandDialog open={open} onOpenChange={setOpen}>
         <CommandInput placeholder="Type a command or search..." value={query} onValueChange={setQuery} />
         <CommandList>
+          {loading && (
+             <div className="py-6 text-center text-sm text-muted-foreground">
+               Loading...
+             </div>
+          )}
           <CommandEmpty>No results found.</CommandEmpty>
           <CommandGroup heading="Suggestions">
             <CommandItem onSelect={() => runCommand(() => router.push("/"))}>
