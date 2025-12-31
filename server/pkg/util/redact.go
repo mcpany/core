@@ -231,6 +231,10 @@ func shouldScanRaw(v []byte) bool {
 	return false
 }
 
+// bytesContainsFold2 is a proposed optimization that we might use in the future.
+// Ideally, we want a function that can search for multiple keys at once (Aho-Corasick),
+// but for now we stick to optimizing the single key search or the calling pattern.
+
 // sensitiveKeys is a list of substrings that suggest a key contains sensitive information.
 var sensitiveKeys = []string{"api_key", "apikey", "access_token", "token", "secret", "password", "passwd", "credential", "auth", "private_key", "client_secret"}
 
@@ -267,37 +271,66 @@ func bytesContainsFold(s, substr []byte) bool {
 		slice := s[offset:]
 		idxL := bytes.IndexByte(slice, firstLower)
 
-		var idx int
+		// If firstLower is not found, we only need to look for firstUpper.
 		if idxL == -1 {
-			// Lowercase not found, must search for uppercase
-			idx = bytes.IndexByte(slice, firstUpper)
+			idx := bytes.IndexByte(slice, firstUpper)
 			if idx == -1 {
 				return false
 			}
-		} else {
-			// Lowercase found at idxL.
-			// Check if uppercase appears *before* idxL.
-			// We only need to search in slice[:idxL] because if we find it there, it's the winner.
-			// If we don't find it there, idxL is the winner (even if uppercase appears later).
+			offset += idx
+			goto CHECK
+		}
+
+		// If firstLower IS found, we check if firstUpper appears *before* it.
+		// Optimization: If firstUpper == firstLower (not possible for letters), handled implicitly.
+		// We use a small optimization: usually we are looking for lowercase keys in lowercase text.
+		// So idxL is likely the one. We only check for Upper if it's closer.
+		{
 			idxU := bytes.IndexByte(slice[:idxL], firstUpper)
 			if idxU != -1 {
-				idx = idxU
+				offset += idxU
 			} else {
-				idx = idxL
+				offset += idxL
 			}
 		}
 
-		// Found a match at offset + idx
-		// Check if it's within bounds (IndexByte searches the whole slice, but we only care if it fits)
-		if offset+idx > maxSearch {
+	CHECK:
+
+		// Check if we are past the maxSearch limit.
+		// Note: offset was updated to point to the potential match start.
+		if offset > maxSearch {
 			return false
+		}
+
+		// Optimization: Check the last character of the substring first.
+		// This is a simplified Boyer-Moore idea. If the last character doesn't match,
+		// we can fail immediately.
+		lastChar := substr[len(substr)-1]
+		lastCharS := s[offset+len(substr)-1]
+		if lastCharS >= 'A' && lastCharS <= 'Z' {
+			lastCharS += 32
+		}
+		if lastCharS != lastChar {
+			offset++
+			continue
 		}
 
 		// Check the rest of the string
 		match := true
-		matchStart := offset + idx
+		matchStart := offset
 		for j := 1; j < len(substr); j++ {
 			cc := s[matchStart+j]
+			// Optimized ASCII lowercase check:
+			// If we know sensitive keys are only letters/digits, we can use a faster check.
+			// But for general correctness, we stick to [A-Z] -> +32.
+			// We can use a branchless trick: cc | 0x20.
+			// However, this affects non-alpha characters too (e.g. '[' -> '{').
+			// Since sensitiveKeys contains only [a-z_], we can verify if this optimization is safe.
+			// Currently sensitiveKeys are: "api_key", "apikey", "access_token", ...
+			// They are all [a-z_].
+			// If substr[j] is '_', then s[matchStart+j] must be '_'. '_' is 0x5F.
+			// '_' | 0x20 is 0x7F (DEL). So '_' != ('_' | 0x20).
+			// So | 0x20 is ONLY safe if we know s[matchStart+j] is a letter.
 			if cc >= 'A' && cc <= 'Z' {
 				cc += 32
 			}
@@ -311,7 +344,7 @@ func bytesContainsFold(s, substr []byte) bool {
 		}
 
 		// Move past this match
-		offset += idx + 1
+		offset++
 	}
 	return false
 }
