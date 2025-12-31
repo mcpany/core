@@ -501,7 +501,7 @@ clean: clean-protos
 
 run: build
 	@echo "Starting MCP Any server locally..."
-	@$(BUILD_DIR)/bin/server
+	@$(BUILD_DIR)/bin/server run --config-path=$(abspath config.minimal.yaml)
 
 # ==============================================================================
 # E2E Test Related Builds
