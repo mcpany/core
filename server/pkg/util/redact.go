@@ -267,7 +267,8 @@ var sensitiveKeys = []string{"api_key", "apikey", "token", "secret", "password",
 func IsSensitiveKey(key string) bool {
 	// Use the optimized byte-based scanner for keys as well.
 	// Avoid allocation using zero-copy conversion.
-	return scanForSensitiveKeys(unsafe.Slice(unsafe.StringData(key), len(key)), false) //nolint:gosec // Zero-copy optimization
+	//nolint:gosec // Zero-copy conversion for optimization
+	return scanForSensitiveKeys(unsafe.Slice(unsafe.StringData(key), len(key)), false)
 }
 
 // scanForSensitiveKeys checks if input contains any sensitive key.
@@ -299,10 +300,25 @@ func scanForSensitiveKeys(input []byte, checkEscape bool) bool {
 			if idxL == -1 && idxU == -1 {
 				break // No more matches for this char
 			}
+<<<<<<< HEAD
 			if idxL != -1 && (idxU == -1 || idxL < idxU) {
 				idx = idxL
 			} else {
 				idx = idxU
+=======
+
+			switch {
+			case idxL == -1:
+				idx = idxU
+			case idxU == -1:
+				idx = idxL
+			default:
+				if idxL < idxU {
+					idx = idxL
+				} else {
+					idx = idxU
+				}
+>>>>>>> 7491286f (style: lint fixes)
 			}
 			// Found candidate start at offset + idx
 			matchStart := offset + idx
@@ -371,7 +387,6 @@ func matchFoldRest(s, key []byte) bool {
 	}
 	return true
 }
-
 // isKey checks if the string segment starting at startOffset is followed by a closing quote and a colon,
 // indicating it is likely a JSON key.
 // It conservatively returns true if it hits the scan limit or encounters ambiguity (like escapes).
