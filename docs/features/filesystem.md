@@ -33,6 +33,19 @@ upstream_services:
       read_only: true
 ```
 
+### GCS Configuration
+
+You can configure a Google Cloud Storage bucket as a filesystem.
+
+```yaml
+upstream_services:
+  - name: "My GCS Bucket"
+    filesystem_service:
+      gcs:
+        bucket: "my-gcs-bucket"
+      read_only: true
+```
+
 ## Features
 
 - **List Directory**: Agents can list files and subdirectories.
