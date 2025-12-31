@@ -5,6 +5,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"io"
 	"log"
@@ -12,7 +13,11 @@ import (
 )
 
 func main() {
-	resp, err := http.Get("http://localhost:8080")
+	req, err := http.NewRequestWithContext(context.Background(), "GET", "http://localhost:8080", nil)
+	if err != nil {
+		log.Fatal(err)
+	}
+	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
 		log.Fatal(err)
 	}

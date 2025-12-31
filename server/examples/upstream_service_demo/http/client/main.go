@@ -5,6 +5,7 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -24,7 +25,11 @@ func main() {
 }
 
 func run() error {
-	resp, err := client.Get("http://localhost:8080")
+	req, err := http.NewRequestWithContext(context.Background(), "GET", "http://localhost:8080", nil)
+	if err != nil {
+		return fmt.Errorf("failed to create request: %w", err)
+	}
+	resp, err := client.Do(req)
 	if err != nil {
 		return fmt.Errorf("failed to make request: %w", err)
 	}

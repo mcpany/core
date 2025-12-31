@@ -16,7 +16,7 @@ import (
 	"github.com/PaesslerAG/jsonpath"
 )
 
-// HttpEmbeddingProvider implements a generic HTTP EmbeddingProvider.
+// HTTPEmbeddingProvider implements a generic HTTP EmbeddingProvider.
 type HTTPEmbeddingProvider struct {
 	url              string
 	headers          map[string]string
@@ -25,7 +25,7 @@ type HTTPEmbeddingProvider struct {
 	client           *http.Client
 }
 
-// NewHttpEmbeddingProvider creates a new HttpEmbeddingProvider.
+// NewHTTPEmbeddingProvider creates a new HTTPEmbeddingProvider.
 func NewHTTPEmbeddingProvider(url string, headers map[string]string, bodyTemplateStr, responseJSONPath string) (*HTTPEmbeddingProvider, error) {
 	if url == "" {
 		return nil, fmt.Errorf("url is required")

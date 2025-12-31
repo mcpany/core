@@ -85,7 +85,7 @@ func SanitizeID(ids []string, alwaysAppendHash bool, maxSanitizedPrefixLength, h
 	return sb.String(), nil
 }
 
-func sanitizePart(sb *strings.Builder, id string, alwaysAppendHash bool, maxSanitizedPrefixLength, hashLength int) error {
+func sanitizePart(sb *strings.Builder, id string, alwaysAppendHash bool, maxSanitizedPrefixLength, hashLength int) error { //nolint:unparam
 	// Pass 1: Scan for dirty chars and count clean length
 	dirtyCount := 0
 	for j := 0; j < len(id); j++ {

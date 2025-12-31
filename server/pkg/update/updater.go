@@ -82,7 +82,11 @@ func (u *Updater) UpdateTo(fs afero.Fs, executablePath string, release *github.R
 	}
 
 	// Download the checksums file
-	resp, err := u.httpClient.Get(checksumsAsset.GetBrowserDownloadURL())
+	req, err := http.NewRequestWithContext(context.TODO(), "GET", checksumsAsset.GetBrowserDownloadURL(), nil)
+	if err != nil {
+		return fmt.Errorf("failed to create request for checksums: %w", err)
+	}
+	resp, err := u.httpClient.Do(req)
 	if err != nil {
 		return fmt.Errorf("failed to download checksums: %w", err)
 	}
@@ -101,7 +105,11 @@ func (u *Updater) UpdateTo(fs afero.Fs, executablePath string, release *github.R
 	}
 
 	// Download the release asset
-	resp, err = u.httpClient.Get(asset.GetBrowserDownloadURL())
+	req, err = http.NewRequestWithContext(context.TODO(), "GET", asset.GetBrowserDownloadURL(), nil)
+	if err != nil {
+		return fmt.Errorf("failed to create request for asset: %w", err)
+	}
+	resp, err = u.httpClient.Do(req)
 	if err != nil {
 		return fmt.Errorf("failed to download asset: %w", err)
 	}

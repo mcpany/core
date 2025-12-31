@@ -5,6 +5,7 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"flag"
 	"fmt"
@@ -135,7 +136,7 @@ func main() {
 	flag.Parse()
 
 	addr := fmt.Sprintf(":%d", *port)
-	listener, err := net.Listen("tcp", addr)
+	listener, err := (&net.ListenConfig{}).Listen(context.Background(), "tcp", addr)
 	if err != nil {
 		slog.Error("webrtc_weather_server: Failed to listen on a port", "error", err)
 		os.Exit(1)

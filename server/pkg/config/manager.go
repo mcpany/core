@@ -280,7 +280,7 @@ func (m *UpstreamServiceManager) applyAuthentication(req *http.Request, auth *co
 	return nil
 }
 
-func (m *UpstreamServiceManager) addService(service *configv1.UpstreamServiceConfig, priority int32) error {
+func (m *UpstreamServiceManager) addService(service *configv1.UpstreamServiceConfig, priority int32) error { //nolint:unparam
 	if service == nil {
 		return nil
 	}

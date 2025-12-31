@@ -496,7 +496,7 @@ func (u *Upstream) processMCPItems(
 	promptManager prompt.ManagerInterface,
 	resourceManager resource.ManagerInterface,
 	serviceConfig *configv1.UpstreamServiceConfig,
-) ([]*configv1.ToolDefinition, []*configv1.ResourceDefinition, error) {
+) ([]*configv1.ToolDefinition, []*configv1.ResourceDefinition, error) { //nolint:unparam
 	mcpService := serviceConfig.GetMcpService()
 
 	discoveredTools := u.registerTools(serviceID, mcpService, listToolsResult, toolClient, toolManager, serviceConfig)
@@ -927,7 +927,7 @@ func mergeStructs(dst, src *structpb.Struct) {
 	}
 }
 
-func (u *Upstream) createMCPClient(ctx context.Context) (*mcp.Client, error) {
+func (u *Upstream) createMCPClient(_ context.Context) (*mcp.Client, error) { //nolint:unparam
 	if newClientForTesting != nil {
 		return newClientForTesting(&mcp.Implementation{
 			Name:    "mcpany",

@@ -39,7 +39,7 @@ func (d *SafeDialer) DialContext(ctx context.Context, network, addr string) (net
 		return nil, fmt.Errorf("failed to split host and port: %w", err)
 	}
 
-	ips, err := net.LookupIP(host)
+	ips, err := net.DefaultResolver.LookupIP(ctx, "ip", host)
 	if err != nil {
 		return nil, fmt.Errorf("dns lookup failed for host %s: %w", host, err)
 	}
