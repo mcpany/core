@@ -97,13 +97,14 @@ func New(factory factory.Factory, toolManager tool.ManagerInterface, promptManag
 // an error if the registration fails.
 func (r *ServiceRegistry) RegisterService(ctx context.Context, serviceConfig *config.UpstreamServiceConfig) (string, []*config.ToolDefinition, []*config.ResourceDefinition, error) {
 	r.mu.Lock()
-	defer r.mu.Unlock()
 
 	serviceID, err := util.SanitizeServiceName(serviceConfig.GetName())
 	if err != nil {
+		r.mu.Unlock()
 		return "", nil, nil, fmt.Errorf("failed to generate service key: %w", err)
 	}
 	if _, ok := r.serviceConfigs[serviceID]; ok {
+		r.mu.Unlock()
 		return "", nil, nil, fmt.Errorf("service with name %q already registered", serviceConfig.GetName())
 	}
 
@@ -115,13 +116,38 @@ func (r *ServiceRegistry) RegisterService(ctx context.Context, serviceConfig *co
 	if err != nil {
 		errMsg := fmt.Sprintf("failed to create upstream for service %s: %v", serviceConfig.GetName(), err)
 		r.serviceErrors[serviceID] = errMsg
+		r.mu.Unlock()
 		return "", nil, nil, fmt.Errorf("%s", errMsg)
 	}
 
 	// Store the upstream immediately so we can close it if needed, although it might be partially initialized
 	r.upstreams[serviceID] = u
+	r.mu.Unlock()
 
+	// Perform registration without holding the lock to avoid blocking other services
 	_, discoveredTools, discoveredResources, err := u.Register(ctx, serviceConfig, r.toolManager, r.promptManager, r.resourceManager, false)
+
+	r.mu.Lock()
+	defer r.mu.Unlock()
+
+	// Check if the service is still registered (it might have been removed while we were registering)
+	if _, ok := r.serviceConfigs[serviceID]; !ok {
+		// The service was removed concurrently. We need to clean up what we just created.
+		// Note: UnregisterService would have called Shutdown, but it might have run before u.Register completed.
+		// So we should try to clean up again.
+		_ = u.Shutdown(ctx)
+		r.toolManager.ClearToolsForService(serviceID)
+		r.promptManager.ClearPromptsForService(serviceID)
+		r.resourceManager.ClearResourcesForService(serviceID)
+		r.authManager.RemoveAuthenticator(serviceID)
+
+		// If Register failed anyway, return that error, but wrap it to indicate what happened.
+		if err != nil {
+			return "", nil, nil, fmt.Errorf("service %q was unregistered during registration failure: %w", serviceConfig.GetName(), err)
+		}
+		return "", nil, nil, fmt.Errorf("service %q was unregistered during registration", serviceConfig.GetName())
+	}
+
 	if err != nil {
 		r.serviceErrors[serviceID] = err.Error()
 		// We keep the service in serviceConfigs so that we know it exists (preventing config drift),
