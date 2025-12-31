@@ -224,6 +224,17 @@ func TestLocalCommandTool_ShellInjection_Prevention(t *testing.T) {
 		reqBackslash.ToolInputs, _ = json.Marshal(reqBackslash.Arguments)
 		_, err = localTool.Execute(context.Background(), reqBackslash)
 		assert.Error(t, err) // Should block \
+
+		// Windows CMD injection attempt (dangerous in double quotes on Windows)
+		reqWinCmd := &ExecutionRequest{
+			ToolName: "test-tool-sh-dquoted",
+			Arguments: map[string]interface{}{
+				"msg": "%PATH%",
+			},
+		}
+		reqWinCmd.ToolInputs, _ = json.Marshal(reqWinCmd.Arguments)
+		_, err = localTool.Execute(context.Background(), reqWinCmd)
+		assert.Error(t, err) // Should block %
 	})
 
 	// Test Case 4: Non-Shell Command
