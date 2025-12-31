@@ -13,7 +13,16 @@ import (
 	"github.com/mcpany/core/proto/bus"
 	"github.com/redis/go-redis/v9"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
+
+func waitForSubscribers(t *testing.T, client *redis.Client, topic string, expected int) {
+	require.Eventually(t, func() bool {
+		subs := client.PubSubNumSub(context.Background(), topic).Val()
+		t.Logf("Waiting for subscribers on %s: have %d, want >= %d", topic, subs[topic], expected)
+		return subs[topic] >= int64(expected)
+	}, 5*time.Second, 500*time.Millisecond, "timed out waiting for subscribers on topic %s", topic)
+}
 
 func TestBusProvider(t *testing.T) {
 	t.Run("InMemory", func(t *testing.T) {
@@ -182,6 +191,9 @@ func TestRedisBus_SubscribeOnce(t *testing.T) {
 		wg.Done()
 	})
 
+	// Wait for subscription to be active
+	waitForSubscribers(t, client, "test-message", 1)
+
 	_ = bus.Publish(context.Background(), "test-message", "hello")
 	_ = bus.Publish(context.Background(), "test-message", "world")
 
@@ -209,19 +221,35 @@ func TestRedisBus_Unsubscribe(t *testing.T) {
 
 	bus, _ := GetBus[string](provider, "test-topic")
 
+	var mu sync.Mutex
 	var receivedMessages []string
+	var wg sync.WaitGroup
+	wg.Add(1)
+
 	unsubscribe := bus.Subscribe(context.Background(), "test-message", func(msg string) {
+		mu.Lock()
+		defer mu.Unlock()
 		receivedMessages = append(receivedMessages, msg)
+		if msg == "hello" {
+			wg.Done()
+		}
 	})
 
+	// Wait for subscription to be active
+	waitForSubscribers(t, client, "test-message", 1)
+
 	_ = bus.Publish(context.Background(), "test-message", "hello")
-	time.Sleep(100 * time.Millisecond) // Allow time for the message to be processed
+
+	// Wait for the first message to be processed
+	wg.Wait()
 
 	unsubscribe()
 
 	_ = bus.Publish(context.Background(), "test-message", "world")
-	time.Sleep(100 * time.Millisecond) // Allow time for the message to be processed
+	time.Sleep(100 * time.Millisecond) // Allow time for the potential message to be processed (should not be)
 
+	mu.Lock()
+	defer mu.Unlock()
 	assert.Len(t, receivedMessages, 1)
 	assert.Equal(t, "hello", receivedMessages[0])
 }
@@ -253,12 +281,20 @@ func TestRedisBus_Concurrent(t *testing.T) {
 	for i := 0; i < numSubscribers; i++ {
 		receivedMessages = append(receivedMessages, []string{})
 		go func(i int) {
-			bus.Subscribe(context.Background(), "test-message", func(msg string) {
+			// Create a new provider for each subscriber to simulate distributed nodes
+			// This ensures we have distinct Bus instances and distinct Redis subscriptions
+			localProvider, _ := NewProvider(messageBus)
+			localBus, _ := GetBus[string](localProvider, "test-message")
+
+			localBus.Subscribe(context.Background(), "test-message", func(msg string) {
 				receivedMessages[i] = append(receivedMessages[i], msg)
 				wg.Done()
 			})
 		}(i)
 	}
+
+	// Wait for subscriptions to be active
+	waitForSubscribers(t, client, "test-message", numSubscribers)
 
 	for i := 0; i < numMessages; i++ {
 		_ = bus.Publish(context.Background(), "test-message", "hello")
