@@ -79,11 +79,11 @@ func (s *sftpFs) Create(name string) (afero.File, error) {
 	return &sftpFile{f: f, client: s.client}, nil
 }
 
-func (s *sftpFs) Mkdir(name string, perm os.FileMode) error {
+func (s *sftpFs) Mkdir(name string, _ os.FileMode) error {
 	return s.client.Mkdir(name)
 }
 
-func (s *sftpFs) MkdirAll(path string, perm os.FileMode) error {
+func (s *sftpFs) MkdirAll(path string, _ os.FileMode) error {
 	return s.client.MkdirAll(path)
 }
 
@@ -95,7 +95,7 @@ func (s *sftpFs) Open(name string) (afero.File, error) {
 	return &sftpFile{f: f, client: s.client}, nil
 }
 
-func (s *sftpFs) OpenFile(name string, flag int, perm os.FileMode) (afero.File, error) {
+func (s *sftpFs) OpenFile(name string, flag int, _ os.FileMode) (afero.File, error) {
 	f, err := s.client.OpenFile(name, flag)
 	if err != nil {
 		return nil, err
@@ -168,7 +168,7 @@ func (f *sftpFile) Name() string {
 	return f.f.Name()
 }
 
-func (f *sftpFile) Readdir(count int) ([]os.FileInfo, error) {
+func (f *sftpFile) Readdir(_ int) ([]os.FileInfo, error) {
 	return f.client.ReadDir(f.f.Name())
 }
 

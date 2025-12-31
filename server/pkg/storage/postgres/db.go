@@ -5,6 +5,7 @@
 package postgres
 
 import (
+	"context"
 	"database/sql"
 	"fmt"
 
@@ -23,7 +24,7 @@ func NewDB(dsn string) (*DB, error) {
 		return nil, fmt.Errorf("failed to open postgres db: %w", err)
 	}
 
-	if err := db.Ping(); err != nil {
+	if err := db.PingContext(context.TODO()); err != nil {
 		_ = db.Close()
 		return nil, fmt.Errorf("failed to ping postgres db: %w", err)
 	}
@@ -46,7 +47,7 @@ func initSchema(db *sql.DB) error {
 		updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
 	);
 	`
-	_, err := db.Exec(query)
+	_, err := db.ExecContext(context.TODO(), query)
 	if err != nil {
 		return fmt.Errorf("failed to create tables: %w", err)
 	}
