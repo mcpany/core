@@ -114,6 +114,7 @@ func (a *Application) handleServices(store storage.Storage) http.HandlerFunc {
 			}
 
 			w.WriteHeader(http.StatusCreated)
+			_, _ = w.Write([]byte("{}"))
 		default:
 			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
 		}
@@ -191,6 +192,7 @@ func (a *Application) handleServiceDetail(store storage.Storage) http.HandlerFun
 				logging.GetLogger().Error("failed to reload config after update", "error", err)
 			}
 			w.WriteHeader(http.StatusOK)
+			_, _ = w.Write([]byte("{}"))
 		case http.MethodDelete:
 			if err := store.DeleteService(r.Context(), name); err != nil {
 				logging.GetLogger().Error("failed to delete service", "name", name, "error", err)
@@ -213,7 +215,7 @@ func (a *Application) handleServiceStatus(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	svc, err := store.GetService(name)
+	svc, err := store.GetService(r.Context(), name)
 	if err != nil {
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
@@ -285,6 +287,7 @@ func (a *Application) handleSettings(store storage.Storage) http.HandlerFunc {
 			}
 
 			w.WriteHeader(http.StatusOK)
+			_, _ = w.Write([]byte("{}"))
 		default:
 			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
 		}
@@ -405,6 +408,7 @@ func (a *Application) handleSecrets(store storage.Storage) http.HandlerFunc {
 				return
 			}
 			w.WriteHeader(http.StatusOK)
+			_, _ = w.Write([]byte("{}"))
 		default:
 			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
 		}
