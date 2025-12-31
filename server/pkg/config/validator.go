@@ -331,6 +331,11 @@ func validateMcpService(mcpService *configv1.McpUpstreamService) error {
 		if len(stdioConn.GetCommand()) == 0 {
 			return fmt.Errorf("mcp service with stdio_connection has empty command")
 		}
+		if stdioConn.GetWorkingDirectory() != "" {
+			if err := validation.IsRelativePath(stdioConn.GetWorkingDirectory()); err != nil {
+				return fmt.Errorf("mcp service with stdio_connection has insecure working_directory %q: %w", stdioConn.GetWorkingDirectory(), err)
+			}
+		}
 	case configv1.McpUpstreamService_BundleConnection_case:
 		bundleConn := mcpService.GetBundleConnection()
 		if bundleConn.GetBundlePath() == "" {
