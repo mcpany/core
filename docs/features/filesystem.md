@@ -10,9 +10,9 @@ To configure a file system service, use the `filesystem` type in your `services`
 upstream_services:
   - name: "Local Files"
     filesystem_service:
-      os:
-        root_paths:
-           "/data": "/var/data" # Map virtual /data to local /var/data
+      root_paths:
+        "/data": "/var/data" # Map virtual /data to local /var/data
+      os: {}
       read_only: false   # Set to true to prevent write operations
 ```
 
@@ -52,6 +52,8 @@ upstream_services:
 - **Read File**: Read the content of files (text or binary).
 - **Write File**: Create or overwrite files (if `read_only` is false).
 - **Delete File**: Remove files (if `read_only` is false).
+- **Search Files**: Search for a text pattern (regex) in files within a directory.
+- **Get File Info**: Get metadata (size, mod time, is_dir) about a file or directory.
 - **Sandboxing**: Access is restricted to the configured `path`. Agents cannot access files outside this directory (e.g., via `..`).
 
 ## Security
