@@ -1,59 +1,72 @@
 # Product Evolution Plan
 
-## Phase 1: Roadmap Reconciliation
+## 1. Updated Roadmap
 
-The `docs/roadmap.md` file has been synchronized with the current state of the codebase. We have identified several key features that were implemented but not marked as such, including the CLI validator, DLP, and Hot Reload.
+The following is the reconciled roadmap as of today. Completed items are marked with `[x]` and linked to their documentation.
 
-### Completed Items (Moved to "Implemented")
-*   **CI/CD Config Validator CLI**: `server/cmd/mcpctl`
-*   **Data Loss Prevention (DLP)**: `server/pkg/middleware/dlp.go`
-*   **Hot Reload**: `server/pkg/config/watcher.go`
-*   **Doc Generator**: `server/pkg/config/doc_generator.go`
-*   **SQL Upstream**: `server/pkg/upstream/sql`
-*   **Helm Chart**: `server/helm`
+### Service Types (Implemented)
+- [x] [gRPC](features/service-types.md)
+- [x] [HTTP](features/service-types.md)
+- [x] [OpenAPI](features/service-types.md)
+- [x] [GraphQL](features/service-types.md)
+- [x] [Stdio](features/service-types.md)
+- [x] [MCP-to-MCP Proxy](features/service-types.md)
+- [x] [WebSocket](features/service-types.md)
+- [x] [WebRTC](features/service-types.md)
+- [x] [SQL](features/sql_upstream.md)
+- [x] [File System Provider](features/filesystem.md) (Local, S3, GCS)
 
-## Phase 2: Strategic Feature Extraction
+### Authentication (Implemented)
+- [x] [API Key](features/authentication/README.md)
+- [x] [Bearer Token](features/authentication/README.md)
+- [x] [OAuth 2.0](features/authentication/README.md)
+- [x] [Role-Based Access Control (RBAC)](features/rbac.md)
+- [x] [Upstream mTLS](features/security.md)
 
-Based on the current architecture and industry standards for AI Gateway/MCP tools, here are the Top 10 Recommended Features for the next development cycle.
+### Policies (Implemented)
+- [x] [Caching](features/caching/README.md)
+- [x] [Rate Limiting](features/rate-limiting/README.md) (Memory & Redis, Token-based)
+- [x] [Resilience](features/resilience/README.md)
 
-### Top 10 New Features
+### Observability (Implemented)
+- [x] [Distributed Tracing](features/tracing/README.md)
+- [x] [Metrics](features/monitoring/README.md)
+- [x] [Structured Logging](features/monitoring/README.md)
+- [x] [Audit Logging](features/audit_logging.md)
 
-| Priority | Feature Name | Why it matters | Difficulty |
+### Security (Implemented)
+- [x] [Secrets Management](features/security.md)
+- [x] [IP Allowlisting](features/security.md)
+- [x] [Webhooks](features/webhooks/README.md) (Pre/Post call)
+- [x] [Data Loss Prevention (DLP)](features/security.md)
+
+## 2. Top 10 Recommended Features
+
+Based on the current architecture and market needs, the following features should be prioritized immediately.
+
+| Rank | Feature Name | Why it matters | Implementation Difficulty |
 | :--- | :--- | :--- | :--- |
-| 1 | **Kubernetes Operator** | **Scalability/Ops**: Simplifies Day 2 operations (upgrades, backups, scaling) and enables GitOps. Critical for enterprise adoption. | High |
-| 2 | **Client SDKs (Python/TS)** | **UX**: Reducing friction for developers integrating agents is vital. Current raw API/gRPC usage is cumbersome. | Medium |
-| 3 | **Cloud Storage Provider (S3/GCS)** | **UX/Capability**: Agents frequently need to read/write files. Extending the filesystem provider to cloud buckets unlocks massive utility. | Medium |
-| 4 | **SSO with OIDC/SAML** | **Security**: Enterprise customers require integration with Okta/AzureAD for the Admin UI and RBAC. | Medium |
-| 5 | **Token-Based Quota Management** | **Security/Business**: Rate limiting is not enough. Managing "spend" (LLM tokens or API calls) is required for cost control and billing. | Medium |
-| 6 | **Browser Automation Provider** | **Capability**: Giving agents the ability to "see" and "interact" with the web is a top user request (Headless Chrome/Playwright). | High |
-| 7 | **Interactive Playground 2.0** | **UX**: The current UI is basic. A rich debugger with form generation for tools and history replay will speed up prompt engineering. | Medium |
-| 8 | **WASM Plugin System** | **Extensibility**: Allowing users to write custom logic in Rust/Go/TS and run it safely (sandboxed) prevents "middleware sprawl" in the core. | High |
-| 9 | **Vector Database Connectors** | **Capability**: While we have semantic caching, direct tools to query Pinecone/Weaviate/Milvus are needed for RAG agents. | Medium |
-| 10 | **Audit Log Exporters** | **Observability**: Built-in logging is good, but enterprises need native push support to Splunk, Datadog, or CloudWatch Logs. | Low |
+| 1 | **Python & TypeScript Client SDKs** | **UX/Adoption**: Developers need idiomatic libraries to easily integrate agents with MCP Any. Currently only Go is supported internally. | Medium |
+| 2 | **Kubernetes Operator** | **Scalability/Ops**: Essential for enterprise adoption to manage deployment, scaling, and configuration via GitOps. | High |
+| 3 | **SSO Integration (OIDC/SAML)** | **Security**: Enterprise requirement for managing access to the Admin UI and RBAC without shared credentials. | Medium |
+| 4 | **Audit Log Export (Splunk/Datadog)** | **Security/Compliance**: Enterprises need to ship logs to their SIEM. Current SQLite/Postgres audit is good but needs export capabilities. | Low |
+| 5 | **Interactive Playground 2.0** | **UX**: The current UI is "Beta". A robust playground with auto-generated forms for tools will significantly improve developer experience. | Medium |
+| 6 | **WASM Plugin System** | **Extensibility/Security**: Allows safe extension of transformation and validation logic without recompiling the server. | High |
+| 7 | **Terraform Provider** | **Ops**: "Configuration as Code" for managing MCP resources (Sources, Tools, Policies). | High |
+| 8 | **Vector Database Connector** | **Feature**: Native support for vector stores (Pinecone, Milvus, Weaviate) to enable RAG workflows directly via MCP. | Medium |
+| 9 | **Multi-Region Federation** | **Scalability**: Link multiple MCP instances to reduce latency and improve availability for global deployments. | High |
+| 10 | **Browser Automation Provider** | **Feature**: A high-demand tool capability for agents to read/interact with websites (headless browser). | High |
 
-## Phase 3: Codebase Health
+## 3. Codebase Health Report
 
-### Areas for Improvement
+### Critical Areas
+*   **Rate Limiting Complexity**: The `server/pkg/middleware/ratelimit.go` file contains complex logic mixing local and Redis implementations. Refactoring into cleaner interfaces would improve maintainability.
+*   **Filesystem Provider Monolith**: `server/pkg/upstream/filesystem/upstream.go` is becoming large. S3, GCS, and Local logic should be separated into distinct providers or packages to avoid "god objects".
+*   **Documentation Scatter**: Documentation is spread across `docs/features/` and `README.md`. A unified documentation site generator (using the existing `doc_generator` feature) should be standard.
+*   **Test Coverage**: While unit tests exist, end-to-end integration tests for cloud providers (S3/GCS) are likely mocked or missing in CI due to credential requirements. Ensuring hermetic tests for these is crucial.
+*   **Webhooks "Test" Code**: `server/cmd/webhooks` appears to be a test server but is referenced in examples. It should be clarified if this is a production-ready component or just for testing.
 
-1.  **Upstream Factory Complexity**:
-    *   **Location**: `server/pkg/upstream/factory/factory.go`
-    *   **Issue**: The factory is a growing switch statement. As we add more providers (S3, Browser, Vectors), this will become a bottleneck and violation of Open/Closed Principle.
-    *   **Recommendation**: Implement a dynamic registry pattern for upstream providers similar to how tools are registered.
-
-2.  **Configuration Monolith**:
-    *   **Location**: `server/pkg/config`
-    *   **Issue**: The configuration loading logic handles files, env vars, GitHub, and more. It is becoming complex to test and maintain.
-    *   **Recommendation**: Refactor into distinct `Source` providers and a cleaner merging strategy.
-
-3.  **Documentation Structure**:
-    *   **Location**: `docs/features/`
-    *   **Issue**: The folder is becoming flat and cluttered.
-    *   **Recommendation**: Group by category (e.g., `docs/features/security/`, `docs/features/connectivity/`).
-
-4.  **Testing Strategy**:
-    *   **Observation**: We have good "bug repro" tests in `mcpserver`, which is excellent. However, integration tests for complex upstreams (like SQL) rely on specific drivers.
-    *   **Recommendation**: Introduce Docker-based integration tests (Testcontainers) to verify SQL, Redis, and other external dependencies reliably in CI.
-
-## Updated Roadmap
-
-Please refer to `docs/roadmap.md` for the live, reconciled roadmap.
+### Recommendations
+1.  **Refactor Filesystem Upstream**: Split `upstream.go` into `s3.go`, `gcs.go`, `local.go` with a common interface.
+2.  **Consolidate SDKs**: Move `server/pkg/client` to a separate repository (e.g., `mcp-go-sdk`) to encourage public usage and versioning independent of the server.
+3.  **Formalize Webhook Server**: If the webhook server is intended for use, move it to `server/cmd/mcp-webhook-sidecar` and polish it.
