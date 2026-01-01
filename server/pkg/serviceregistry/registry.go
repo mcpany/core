@@ -104,8 +104,13 @@ func (r *ServiceRegistry) RegisterService(ctx context.Context, serviceConfig *co
 		return "", nil, nil, fmt.Errorf("failed to generate service key: %w", err)
 	}
 	if _, ok := r.serviceConfigs[serviceID]; ok {
-		r.mu.Unlock()
-		return "", nil, nil, fmt.Errorf("service with name %q already registered", serviceConfig.GetName())
+		// If the service is already registered, check if it's currently active (in upstreams).
+		// If it's NOT in upstreams, it means it failed previously, so we allow re-registration (retry).
+		if _, isActive := r.upstreams[serviceID]; isActive {
+			r.mu.Unlock()
+			return "", nil, nil, fmt.Errorf("service with name %q already registered", serviceConfig.GetName())
+		}
+		// Proceed to overwrite the config and try again
 	}
 
 	// Register the config and clear error
