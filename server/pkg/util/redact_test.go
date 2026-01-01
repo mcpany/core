@@ -152,3 +152,50 @@ func TestRedactJSON(t *testing.T) {
 		assert.Contains(t, string(output), "[REDACTED]")
 	})
 }
+
+func TestRedactJSON_FalsePositives(t *testing.T) {
+	// These tests verify that innocent words sharing a prefix with sensitive keys
+	// are NOT redacted, unless they appear to be part of a composite key (CamelCase/PascalCase).
+
+	tests := []struct {
+		name     string
+		input    string
+		shouldRedact bool
+	}{
+		// False positives that should NOT be redacted
+		{"author", `{"author": "John Doe"}`, false},        // "auth" + "or" (lowercase continuation)
+		{"authority", `{"authority": "admin"}`, false},     // "auth" + "ority"
+		{"authentic", `{"authentic": "true"}`, false},      // "auth" + "entic"
+		{"tokens", `{"tokens": ["abc"]}`, false},           // "token" + "s" (lowercase continuation)
+
+		// True positives (Substring matching logic)
+		{"CamelCase", `{"authToken": "123"}`, true},        // "auth" + "Token" (Uppercase boundary)
+		{"PascalCase", `{"AuthToken": "123"}`, true},       // "Auth" + "Token"
+		{"snake_case", `{"auth_token": "123"}`, true},      // "auth" + "_" (non-letter boundary)
+		{"end of string", `{"user_auth": "123"}`, true},    // "auth" at end
+		{"API_KEY", `{"API_KEY": "123"}`, true},            // exact upper
+		{"api_key_val", `{"api_key_val": "123"}`, true},    // "api_key" + "_"
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			output := RedactJSON([]byte(tt.input))
+			var m map[string]interface{}
+			err := json.Unmarshal(output, &m)
+			assert.NoError(t, err)
+
+			// Find the single key in the map
+			var val interface{}
+			for _, v := range m {
+				val = v
+				break
+			}
+
+			if tt.shouldRedact {
+				assert.Equal(t, "[REDACTED]", val, "Expected redaction for input: %s", tt.input)
+			} else {
+				assert.NotEqual(t, "[REDACTED]", val, "Expected NO redaction for input: %s", tt.input)
+			}
+		})
+	}
+}
