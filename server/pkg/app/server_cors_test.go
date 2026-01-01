@@ -59,8 +59,8 @@ upstream_services: []
 	resp.Body.Close()
 
 	// Should allow
-	assert.Equal(t, origin, resp.Header.Get("Access-Control-Allow-Origin"), "CORS header should reflect origin when * allowed")
-	assert.Equal(t, "true", resp.Header.Get("Access-Control-Allow-Credentials"))
+	assert.Equal(t, "*", resp.Header.Get("Access-Control-Allow-Origin"), "CORS header should be * when * allowed")
+	assert.Empty(t, resp.Header.Get("Access-Control-Allow-Credentials"))
 
 	// 2. Verify POST
 	req, err = http.NewRequest("POST", "http://"+addr+"/upload", nil)
@@ -70,7 +70,7 @@ upstream_services: []
 	require.NoError(t, err)
 	resp.Body.Close()
 
-	assert.Equal(t, origin, resp.Header.Get("Access-Control-Allow-Origin"))
+	assert.Equal(t, "*", resp.Header.Get("Access-Control-Allow-Origin"))
 
 	cancel()
 	err = <-errChan
