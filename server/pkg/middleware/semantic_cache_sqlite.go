@@ -101,10 +101,11 @@ func (s *SQLiteVectorStore) loadFromDB(ctx context.Context) error {
 	for rows.Next() {
 		var key string
 		var vectorRaw []byte // Can be JSON string (legacy) or binary (new)
-		var resultJSON string
+		var resultJSON []byte
 		var expiresAtNano int64
 
 		// We scan vector into []byte to handle both TEXT and BLOB column types
+		// Scanning resultJSON into []byte avoids allocating a string if it's large.
 		if err := rows.Scan(&key, &vectorRaw, &resultJSON, &expiresAtNano); err != nil {
 			return err
 		}
@@ -136,7 +137,7 @@ func (s *SQLiteVectorStore) loadFromDB(ctx context.Context) error {
 		}
 
 		var result any
-		if err := json.Unmarshal([]byte(resultJSON), &result); err != nil {
+		if err := json.Unmarshal(resultJSON, &result); err != nil {
 			continue // Skip malformed
 		}
 
