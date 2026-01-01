@@ -38,7 +38,7 @@ func NewSQLiteVectorStore(path string) (*SQLiteVectorStore, error) {
 	CREATE TABLE IF NOT EXISTS semantic_cache_entries (
 		id INTEGER PRIMARY KEY AUTOINCREMENT,
 		key TEXT,
-		vector TEXT,
+		vector BLOB,
 		result TEXT,
 		expires_at INTEGER
 	);
@@ -100,16 +100,39 @@ func (s *SQLiteVectorStore) loadFromDB(ctx context.Context) error {
 
 	for rows.Next() {
 		var key string
-		var vectorJSON, resultJSON string
+		var vectorRaw []byte // Can be JSON string (legacy) or binary (new)
+		var resultJSON string
 		var expiresAtNano int64
 
-		if err := rows.Scan(&key, &vectorJSON, &resultJSON, &expiresAtNano); err != nil {
+		// We scan vector into []byte to handle both TEXT and BLOB column types
+		if err := rows.Scan(&key, &vectorRaw, &resultJSON, &expiresAtNano); err != nil {
 			return err
 		}
 
 		var vector []float32
-		if err := json.Unmarshal([]byte(vectorJSON), &vector); err != nil {
-			continue // Skip malformed
+
+		// Handle legacy JSON and new Binary formats.
+		// Heuristic: Check if it looks like JSON.
+		isJSON := len(vectorRaw) > 0 && vectorRaw[0] == '['
+		if isJSON {
+			if err := json.Unmarshal(vectorRaw, &vector); err != nil {
+				// If JSON parsing fails, it might be a binary blob that happened to start with '['
+				// (unlikely but possible).
+				if len(vectorRaw)%4 == 0 {
+					vector = bytesToFloat32(vectorRaw)
+				} else {
+					continue // Skip malformed
+				}
+			}
+		} else {
+			// Not JSON, assume binary
+			if len(vectorRaw)%4 == 0 {
+				vector = bytesToFloat32(vectorRaw)
+			}
+			// If not a multiple of 4, it's corrupt or unsupported format, so we skip.
+			if vector == nil {
+				continue
+			}
 		}
 
 		var result any
@@ -139,10 +162,8 @@ func (s *SQLiteVectorStore) Add(ctx context.Context, key string, vector []float3
 	}
 
 	// Add to DB
-	vectorJSON, err := json.Marshal(vector)
-	if err != nil {
-		return fmt.Errorf("failed to marshal vector: %w", err)
-	}
+	// We store vector as binary for performance
+	vectorBytes := float32ToBytes(vector)
 
 	resultJSON, err := json.Marshal(result)
 	if err != nil {
@@ -152,7 +173,7 @@ func (s *SQLiteVectorStore) Add(ctx context.Context, key string, vector []float3
 	expiresAt := time.Now().Add(ttl).UnixNano()
 
 	_, err = s.db.ExecContext(ctx, "INSERT INTO semantic_cache_entries (key, vector, result, expires_at) VALUES (?, ?, ?, ?)",
-		key, string(vectorJSON), string(resultJSON), expiresAt)
+		key, vectorBytes, string(resultJSON), expiresAt)
 	if err != nil {
 		return err
 	}
