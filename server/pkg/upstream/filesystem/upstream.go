@@ -161,13 +161,13 @@ func (u *Upstream) Register(
 }
 
 type fsCallable struct {
-	handler func(args map[string]interface{}) (map[string]interface{}, error)
+	handler func(ctx context.Context, args map[string]interface{}) (map[string]interface{}, error)
 }
 
 // Call executes the filesystem tool with the provided request arguments.
 // It returns the result of the tool execution or an error.
-func (c *fsCallable) Call(_ context.Context, req *tool.ExecutionRequest) (any, error) {
-	return c.handler(req.Arguments)
+func (c *fsCallable) Call(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
+	return c.handler(ctx, req.Arguments)
 }
 
 func (u *Upstream) createFilesystem(ctx context.Context, config *configv1.FilesystemUpstreamService) (afero.Fs, error) {
@@ -424,7 +424,7 @@ type filesystemToolDef struct {
 	Description string
 	Input       map[string]interface{}
 	Output      map[string]interface{}
-	Handler     func(args map[string]interface{}) (map[string]interface{}, error)
+	Handler     func(ctx context.Context, args map[string]interface{}) (map[string]interface{}, error)
 }
 
 //nolint:gocyclo
@@ -449,7 +449,7 @@ func (u *Upstream) getSupportedTools(fsService *configv1.FilesystemUpstreamServi
 					},
 				},
 			},
-			Handler: func(args map[string]interface{}) (map[string]interface{}, error) {
+			Handler: func(_ context.Context, args map[string]interface{}) (map[string]interface{}, error) {
 				path, ok := args["path"].(string)
 				if !ok {
 					return nil, fmt.Errorf("path is required")
@@ -485,7 +485,7 @@ func (u *Upstream) getSupportedTools(fsService *configv1.FilesystemUpstreamServi
 			Output: map[string]interface{}{
 				"content": map[string]interface{}{"type": "string", "description": "The file content."},
 			},
-			Handler: func(args map[string]interface{}) (map[string]interface{}, error) {
+			Handler: func(_ context.Context, args map[string]interface{}) (map[string]interface{}, error) {
 				path, ok := args["path"].(string)
 				if !ok {
 					return nil, fmt.Errorf("path is required")
@@ -505,6 +505,12 @@ func (u *Upstream) getSupportedTools(fsService *configv1.FilesystemUpstreamServi
 					return nil, fmt.Errorf("path is a directory")
 				}
 
+				// Check file size to prevent memory exhaustion (limit to 10MB)
+				const maxFileSize = 10 * 1024 * 1024 // 10MB
+				if info.Size() > maxFileSize {
+					return nil, fmt.Errorf("file size exceeds limit of %d bytes", maxFileSize)
+				}
+
 				content, err := afero.ReadFile(fs, resolvedPath)
 				if err != nil {
 					return nil, err
@@ -522,7 +528,7 @@ func (u *Upstream) getSupportedTools(fsService *configv1.FilesystemUpstreamServi
 			Output: map[string]interface{}{
 				"success": map[string]interface{}{"type": "boolean"},
 			},
-			Handler: func(args map[string]interface{}) (map[string]interface{}, error) {
+			Handler: func(_ context.Context, args map[string]interface{}) (map[string]interface{}, error) {
 				if fsService.GetReadOnly() {
 					return nil, fmt.Errorf("filesystem is read-only")
 				}
@@ -563,7 +569,7 @@ func (u *Upstream) getSupportedTools(fsService *configv1.FilesystemUpstreamServi
 			Output: map[string]interface{}{
 				"success": map[string]interface{}{"type": "boolean"},
 			},
-			Handler: func(args map[string]interface{}) (map[string]interface{}, error) {
+			Handler: func(_ context.Context, args map[string]interface{}) (map[string]interface{}, error) {
 				if fsService.GetReadOnly() {
 					return nil, fmt.Errorf("filesystem is read-only")
 				}
@@ -603,7 +609,7 @@ func (u *Upstream) getSupportedTools(fsService *configv1.FilesystemUpstreamServi
 					},
 				},
 			},
-			Handler: func(args map[string]interface{}) (map[string]interface{}, error) {
+			Handler: func(ctx context.Context, args map[string]interface{}) (map[string]interface{}, error) {
 				path, ok := args["path"].(string)
 				if !ok {
 					return nil, fmt.Errorf("path is required")
@@ -632,6 +638,12 @@ func (u *Upstream) getSupportedTools(fsService *configv1.FilesystemUpstreamServi
 						// Skip unreadable files
 						return nil
 					}
+
+					// Check context cancellation
+					if ctx.Err() != nil {
+						return ctx.Err()
+					}
+
 					if matchCount >= maxMatches {
 						return filepath.SkipDir
 					}
@@ -672,6 +684,10 @@ func (u *Upstream) getSupportedTools(fsService *configv1.FilesystemUpstreamServi
 					scanner := bufio.NewScanner(f)
 					lineNum := 0
 					for scanner.Scan() {
+						// Check context inside scanning loop for large files
+						if ctx.Err() != nil {
+							return ctx.Err()
+						}
 						lineNum++
 						line := scanner.Text()
 						if re.MatchString(line) {
@@ -714,7 +730,7 @@ func (u *Upstream) getSupportedTools(fsService *configv1.FilesystemUpstreamServi
 				"size":     map[string]interface{}{"type": "integer"},
 				"mod_time": map[string]interface{}{"type": "string"},
 			},
-			Handler: func(args map[string]interface{}) (map[string]interface{}, error) {
+			Handler: func(_ context.Context, args map[string]interface{}) (map[string]interface{}, error) {
 				path, ok := args["path"].(string)
 				if !ok {
 					return nil, fmt.Errorf("path is required")
@@ -744,7 +760,7 @@ func (u *Upstream) getSupportedTools(fsService *configv1.FilesystemUpstreamServi
 			Output: map[string]interface{}{
 				"roots": map[string]interface{}{"type": "array", "items": map[string]interface{}{"type": "string"}},
 			},
-			Handler: func(_ map[string]interface{}) (map[string]interface{}, error) {
+			Handler: func(_ context.Context, _ map[string]interface{}) (map[string]interface{}, error) {
 				// With afero, we might just have one root or multiple mounts.
 				// For backward compatibility, we can list keys from RootPaths if available.
 				roots := []string{}
