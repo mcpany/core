@@ -691,9 +691,27 @@ func StartInProcessMCPANYServer(t *testing.T, _ string) *MCPANYTestServerInfo {
 
 	ctx, cancel := context.WithCancel(context.Background())
 
+	// Create a unique DB path for this test instance to avoid locking issues
+	dbPath := filepath.Join(t.TempDir(), "mcpany_test.db")
+	dbPathPtr := &dbPath
+
+	// Create a minimal config with this DB path
+	config := configv1.McpAnyServerConfig_builder{
+		GlobalSettings: configv1.GlobalSettings_builder{
+			DbPath: dbPathPtr,
+		}.Build(),
+	}.Build()
+
+	configBytes, err := protojson.Marshal(config)
+	require.NoError(t, err)
+
+	configFile := filepath.Join(t.TempDir(), "config.json")
+	err = os.WriteFile(configFile, configBytes, 0600)
+	require.NoError(t, err)
+
 	go func() {
 		appRunner := app.NewApplication()
-		err := appRunner.Run(ctx, afero.NewOsFs(), false, jsonrpcAddress, grpcRegAddress, []string{}, 5*time.Second)
+		err := appRunner.Run(ctx, afero.NewOsFs(), false, jsonrpcAddress, grpcRegAddress, []string{configFile}, 5*time.Second)
 		require.NoError(t, err)
 	}()
 

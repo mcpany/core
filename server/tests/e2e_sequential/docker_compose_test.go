@@ -27,6 +27,11 @@ func TestDockerComposeE2E(t *testing.T) {
 		t.Skip("Skipping E2E Docker test. Set E2E_DOCKER=true to run.")
 	}
 
+	// Check if docker is actually available and accessible
+	if err := exec.Command("docker", "info").Run(); err != nil {
+		t.Skipf("Skipping E2E Docker test: docker info failed (permission denied or not running): %v", err)
+	}
+
 	rootDir, err := os.Getwd()
 	require.NoError(t, err)
 
