@@ -4,6 +4,7 @@
 package app
 
 import (
+	"errors"
 	"io"
 	"net/http"
 	"strings"
@@ -48,8 +49,19 @@ func (a *Application) createAPIHandler(store storage.Storage) http.Handler {
 			_, _ = w.Write(buf)
 
 		case http.MethodPost:
+			// Limit request body to 1MB
+			r.Body = http.MaxBytesReader(w, r.Body, 1048576)
 			var svc configv1.UpstreamServiceConfig
-			body, _ := io.ReadAll(r.Body)
+			body, err := io.ReadAll(r.Body)
+			if err != nil {
+				var maxBytesErr *http.MaxBytesError
+				if errors.As(err, &maxBytesErr) {
+					http.Error(w, "request body too large", http.StatusRequestEntityTooLarge)
+					return
+				}
+				http.Error(w, "failed to read body", http.StatusBadRequest)
+				return
+			}
 			if err := protojson.Unmarshal(body, &svc); err != nil {
 				http.Error(w, err.Error(), http.StatusBadRequest)
 				return
@@ -103,8 +115,19 @@ func (a *Application) createAPIHandler(store storage.Storage) http.Handler {
 			w.Header().Set("Content-Type", "application/json")
 			_, _ = w.Write(b)
 		case http.MethodPut:
+			// Limit request body to 1MB
+			r.Body = http.MaxBytesReader(w, r.Body, 1048576)
 			var svc configv1.UpstreamServiceConfig
-			body, _ := io.ReadAll(r.Body)
+			body, err := io.ReadAll(r.Body)
+			if err != nil {
+				var maxBytesErr *http.MaxBytesError
+				if errors.As(err, &maxBytesErr) {
+					http.Error(w, "request body too large", http.StatusRequestEntityTooLarge)
+					return
+				}
+				http.Error(w, "failed to read body", http.StatusBadRequest)
+				return
+			}
 			if err := protojson.Unmarshal(body, &svc); err != nil {
 				http.Error(w, err.Error(), http.StatusBadRequest)
 				return
