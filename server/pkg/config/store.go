@@ -182,7 +182,10 @@ func expand(b []byte) []byte {
 		parts := strings.SplitN(s, ":", 2)
 		varName := parts[0]
 		val, ok := os.LookupEnv(varName)
-		if ok && val != "" {
+		if ok {
+			if val == "" && len(parts) > 1 {
+				return []byte(parts[1])
+			}
 			return []byte(val)
 		}
 		if len(parts) > 1 {
