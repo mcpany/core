@@ -10,6 +10,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strconv"
 	"sync"
 	"time"
 
@@ -251,9 +252,9 @@ func (m *RateLimitMiddleware) getLimiter(ctx context.Context, serviceID string, 
 	// e.g. "myservice:service:ip:1.2.3.4"
 	// e.g. "myservice:tool:myTool:ip:1.2.3.4"
 
-	cacheKey := fmt.Sprintf("%s:%s", serviceID, limitScopeKey)
+	cacheKey := serviceID + ":" + limitScopeKey
 	if partitionKey != "" {
-		cacheKey = fmt.Sprintf("%s:%s", cacheKey, partitionKey)
+		cacheKey = cacheKey + ":" + partitionKey
 	}
 
 	isRedis := config.GetStorage() == configv1.RateLimitConfig_STORAGE_REDIS
@@ -268,7 +269,7 @@ func (m *RateLimitMiddleware) getLimiter(ctx context.Context, serviceID string, 
 			validType = ok
 			// Check if Redis config changed
 			if ok && config.GetRedis() != nil {
-				newConfigHash := fmt.Sprintf("%s|%s|%d", config.GetRedis().GetAddress(), config.GetRedis().GetPassword(), config.GetRedis().GetDb())
+				newConfigHash := config.GetRedis().GetAddress() + "|" + config.GetRedis().GetPassword() + "|" + strconv.Itoa(int(config.GetRedis().GetDb()))
 				if rl.GetConfigHash() != newConfigHash {
 					validType = false // Force creation of new limiter
 				}
@@ -309,7 +310,7 @@ func (m *RateLimitMiddleware) getLimiter(ctx context.Context, serviceID string, 
 		// Since I can't easily change RedisLimiter signature without seeing it, let's assume I need to pass a "key prefix" as serviceID.
 		// Hack: pass "serviceID:limitScopeKey" as the serviceID argument to NewRedisLimiterWithClient.
 
-		limiter = NewRedisLimiterWithClient(client, fmt.Sprintf("%s:%s", serviceID, limitScopeKey), partitionKey, config)
+		limiter = NewRedisLimiterWithClient(client, serviceID+":"+limitScopeKey, partitionKey, config)
 	} else {
 		limiter = &LocalLimiter{
 			Limiter: rate.NewLimiter(rate.Limit(rps), burst),
@@ -365,7 +366,7 @@ func hashKey(prefix, key string) string {
 }
 
 func (m *RateLimitMiddleware) getRedisClient(serviceID string, config *bus.RedisBus) (*redis.Client, error) { //nolint:unparam
-	configHash := fmt.Sprintf("%s|%s|%d", config.GetAddress(), config.GetPassword(), config.GetDb())
+	configHash := config.GetAddress() + "|" + config.GetPassword() + "|" + strconv.Itoa(int(config.GetDb()))
 
 	if val, ok := m.redisClients.Load(serviceID); ok {
 		// handle both legacy *redis.Client (if any) and new *cachedRedisClient
