@@ -7,7 +7,7 @@ package tokenizer
 import (
 	"fmt"
 	"strconv"
-	"strings"
+	"unicode"
 )
 
 // Tokenizer defines the interface for counting tokens in a given text.
@@ -53,8 +53,21 @@ func (t *WordTokenizer) CountTokens(text string) (int, error) {
 	if len(text) == 0 {
 		return 0, nil
 	}
-	words := strings.Fields(text)
-	count := int(float64(len(words)) * t.Factor)
+
+	// Count words by iterating through the string and counting transitions
+	// from whitespace to non-whitespace. This avoids allocating a slice of strings.
+	wordCount := 0
+	inWord := false
+	for _, r := range text {
+		if unicode.IsSpace(r) {
+			inWord = false
+		} else if !inWord {
+			inWord = true
+			wordCount++
+		}
+	}
+
+	count := int(float64(wordCount) * t.Factor)
 	if count < 1 && len(text) > 0 {
 		count = 1
 	}
