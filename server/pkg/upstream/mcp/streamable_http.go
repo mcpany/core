@@ -11,6 +11,7 @@ import (
 	"net/http"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"strings"
 
 	"al.essio.dev/pkg/shellescape"
@@ -79,12 +80,21 @@ func SetConnectForTesting(f func(client *mcp.Client, ctx context.Context, transp
 // effectively acting as a proxy or aggregator.
 type Upstream struct {
 	sessionRegistry *SessionRegistry
+	serviceID       string
 }
 
-// Shutdown is a no-op for the MCP upstream, as the connections it manages are
-// transient and established on a per-call basis. There are no persistent
-// connections to tear down.
+// Shutdown cleans up any temporary resources associated with the upstream, such
+// as extracted bundle directories.
 func (u *Upstream) Shutdown(_ context.Context) error {
+	if u.serviceID != "" {
+		tempDir := filepath.Join(os.TempDir(), "mcp-bundles", u.serviceID)
+		if _, err := os.Stat(tempDir); err == nil {
+			logging.GetLogger().Info("Cleaning up bundle temp directory", "dir", tempDir)
+			if err := os.RemoveAll(tempDir); err != nil {
+				return fmt.Errorf("failed to remove bundle temp directory: %w", err)
+			}
+		}
+	}
 	return nil
 }
 
@@ -200,6 +210,7 @@ func (u *Upstream) Register(
 	if err != nil {
 		return "", nil, nil, err
 	}
+	u.serviceID = serviceID
 
 	mcpService := serviceConfig.GetMcpService()
 	if mcpService == nil {
