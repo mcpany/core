@@ -573,5 +573,7 @@ func (tm *Manager) ClearToolsForService(serviceID string) {
 		tm.cachedTools = nil
 		tm.toolsMutex.Unlock()
 	}
+	// Also clear service info
+	tm.serviceInfo.Delete(serviceID)
 	log.Debug("Cleared tools for serviceID", "count", deletedCount)
 }

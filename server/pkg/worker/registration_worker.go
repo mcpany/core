@@ -99,6 +99,10 @@ func (w *ServiceRegistrationWorker) Start(ctx context.Context) {
 				return
 			}
 
+			// Ensure we start with a clean state, especially for retries
+			// We ignore the error as the service might not exist yet
+			_ = w.serviceRegistry.UnregisterService(requestCtx, req.Config.GetName())
+
 			serviceID, discoveredTools, discoveredResources, err := w.serviceRegistry.RegisterService(requestCtx, req.Config)
 
 			res := &bus.ServiceRegistrationResult{
@@ -110,6 +114,22 @@ func (w *ServiceRegistrationWorker) Start(ctx context.Context) {
 			if err != nil {
 				log.Error("Failed to register service", "service", req.Config.GetName(), "error", err)
 				metrics.IncrCounter([]string{"worker", "registration", "request", "error"}, 1)
+
+				// Retry logic: If registration failed, we retry after a delay.
+				// We don't distinguish between transient and permanent errors easily here,
+				// so we opt for robustness (Docker Compose style).
+				go func() {
+					retryDelay := 5 * time.Second
+					log.Info("Scheduling retry for service registration", "service", req.Config.GetName(), "delay", retryDelay)
+					select {
+					case <-ctx.Done():
+						return
+					case <-time.After(retryDelay):
+						if err := requestBus.Publish(ctx, "request", req); err != nil {
+							log.Error("Failed to publish retry request", "service", req.Config.GetName(), "error", err)
+						}
+					}
+				}()
 			} else {
 				log.Info("Successfully registered service", "service", req.Config.GetName(), "tools_count", len(discoveredTools), "resources_count", len(discoveredResources))
 				metrics.IncrCounter([]string{"worker", "registration", "request", "success"}, 1)

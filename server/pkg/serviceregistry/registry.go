@@ -157,6 +157,11 @@ func (r *ServiceRegistry) RegisterService(ctx context.Context, serviceConfig *co
 			_ = u.Shutdown(ctx)
 			delete(r.upstreams, serviceID)
 		}
+		// Cleanup partial registration
+		r.toolManager.ClearToolsForService(serviceID)
+		r.promptManager.ClearPromptsForService(serviceID)
+		r.resourceManager.ClearResourcesForService(serviceID)
+		r.authManager.RemoveAuthenticator(serviceID)
 		return "", nil, nil, err
 	}
 
