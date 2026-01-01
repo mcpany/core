@@ -14,6 +14,7 @@ import (
 )
 
 var (
+	mu            sync.Mutex
 	once          sync.Once
 	defaultLogger *slog.Logger
 )
@@ -22,6 +23,8 @@ var (
 // mechanism. This allows the global logger to be re-initialized in different
 // test cases. This function should not be used in production code.
 func ForTestsOnlyResetLogger() {
+	mu.Lock()
+	defer mu.Unlock()
 	once = sync.Once{}
 	defaultLogger = nil
 }
@@ -37,6 +40,8 @@ func ForTestsOnlyResetLogger() {
 //     `os.Stdout`).
 //   - format: Optional format string ("json" or "text"). Defaults to "text".
 func Init(level slog.Level, output io.Writer, format ...string) {
+	mu.Lock()
+	defer mu.Unlock()
 	once.Do(func() {
 		fmtStr := "text"
 		if len(format) > 0 {
@@ -66,6 +71,8 @@ func Init(level slog.Level, output io.Writer, format ...string) {
 // Returns:
 //   - The global `*slog.Logger` instance.
 func GetLogger() *slog.Logger {
+	mu.Lock()
+	defer mu.Unlock()
 	once.Do(func() {
 		defaultLogger = slog.New(slog.NewTextHandler(os.Stderr, &slog.HandlerOptions{
 			Level:     slog.LevelInfo,
