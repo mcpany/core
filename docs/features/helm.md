@@ -18,5 +18,5 @@ The Helm chart is located in `server/helm/`.
 ## Installation
 
 ```bash
-helm install mcp-any ./server/helm
+helm install mcp-any ./server/helm/mcpany
 ```

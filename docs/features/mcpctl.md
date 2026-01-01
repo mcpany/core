@@ -19,7 +19,7 @@ go build -o mcpctl ./server/cmd/mcpctl
 The primary command is `validate`, which checks your configuration files for syntax errors and schema validity.
 
 ```bash
-./mcpctl validate --config ./config.yaml
+./mcpctl validate --config-path ./config.yaml
 ```
 
 If the configuration is valid, it prints "Configuration is valid." and exits with code 0.
@@ -40,5 +40,5 @@ jobs:
       - name: Build mcpctl
         run: go build -o mcpctl ./server/cmd/mcpctl
       - name: Validate Config
-        run: ./mcpctl validate --config config/production.yaml
+        run: ./mcpctl validate --config-path config/production.yaml
 ```
