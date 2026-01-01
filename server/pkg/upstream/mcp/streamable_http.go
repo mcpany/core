@@ -87,6 +87,7 @@ type Upstream struct {
 // as extracted bundle directories.
 func (u *Upstream) Shutdown(_ context.Context) error {
 	if u.serviceID != "" {
+		untrackBundle(u.serviceID)
 		tempDir := filepath.Join(os.TempDir(), "mcp-bundles", u.serviceID)
 		if _, err := os.Stat(tempDir); err == nil {
 			logging.GetLogger().Info("Cleaning up bundle temp directory", "dir", tempDir)
@@ -244,6 +245,10 @@ func (u *Upstream) Register(
 	default:
 		return "", nil, nil, fmt.Errorf("MCPService definition requires stdio_connection, http_connection, or bundle_connection")
 	}
+
+	trackBundle(serviceID)
+	// Trigger GC lazily
+	triggerGC()
 
 	log.Info("Registered MCP service", "serviceID", serviceID, "toolsAdded", len(discoveredTools))
 	return serviceID, discoveredTools, discoveredResources, nil
