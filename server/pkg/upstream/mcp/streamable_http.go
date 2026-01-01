@@ -968,7 +968,8 @@ func (u *Upstream) createMCPClient(_ context.Context) (*mcp.Client, error) { //n
 
 func (u *Upstream) handleCreateMessage(ctx context.Context, req *mcp.ClientRequest[*mcp.CreateMessageParams]) (*mcp.CreateMessageResult, error) {
 	session := req.Session
-	if session == nil {
+	// Check for nil interface value
+	if util.IsNil(session) {
 		return nil, fmt.Errorf("no session associated with request")
 	}
 	if toolSession, ok := u.sessionRegistry.Get(session); ok {
