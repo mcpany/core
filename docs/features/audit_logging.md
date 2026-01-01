@@ -26,6 +26,7 @@ Audit logging is configured in the `GlobalSettings` section of your MCP Any conf
 global_settings:
   audit:
     enabled: true
+    storage_type: "STORAGE_TYPE_FILE" # or STORAGE_TYPE_SQLITE, STORAGE_TYPE_POSTGRES
     output_path: "audit.log"
     log_arguments: true
     log_results: false
@@ -36,13 +37,15 @@ global_settings:
 | Option | Type | Default | Description |
 | :--- | :--- | :--- | :--- |
 | `enabled` | `bool` | `false` | Enables or disables audit logging. |
-| `output_path` | `string` | `""` | Path to the log file. If empty, logs are written to stdout. |
+| `storage_type` | `string` | `STORAGE_TYPE_FILE` | The storage backend to use: `STORAGE_TYPE_FILE`, `STORAGE_TYPE_SQLITE`, or `STORAGE_TYPE_POSTGRES`. |
+| `output_path` | `string` | `""` | Path to the log file or database connection string. |
 | `log_arguments` | `bool` | `false` | If true, logs the input arguments. **Warning:** May log sensitive data. |
 | `log_results` | `bool` | `false` | If true, logs the execution result. **Warning:** May log sensitive data. |
 
 ## Log Format
 
-Audit logs are written as newline-delimited JSON (NDJSON). Each line represents a single tool execution event.
+If `storage_type` is `STORAGE_TYPE_FILE`, audit logs are written as newline-delimited JSON (NDJSON). Each line represents a single tool execution event.
+If using SQLite or Postgres, logs are written to an `audit_logs` table.
 
 ### Example Log Entry
 
