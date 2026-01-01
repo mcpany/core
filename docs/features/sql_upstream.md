@@ -16,12 +16,14 @@ upstream_services:
       dsn: "postgres://user:pass@localhost:5432/mydb?sslmode=disable"
       calls:
         get_user_by_email:
-          parameters:
+          input_schema:
             type: object
             properties:
               email:
                 type: string
-          template: "SELECT * FROM users WHERE email = :email"
+          query: "SELECT * FROM users WHERE email = $1"
+          parameter_order:
+            - "email"
           output_schema:
             type: array
             items:
