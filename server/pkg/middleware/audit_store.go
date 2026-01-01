@@ -20,6 +20,8 @@ type AuditEntry struct {
 	Error      string          `json:"error,omitempty"`
 	Duration   string          `json:"duration"`
 	DurationMs int64           `json:"duration_ms"`
+	PrevHash   string          `json:"prev_hash,omitempty"` // Hash of the previous entry
+	Hash       string          `json:"hash,omitempty"`      // Hash of this entry (including PrevHash)
 }
 
 // AuditStore defines the interface for audit log storage.

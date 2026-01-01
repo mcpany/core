@@ -183,18 +183,17 @@ func TestComputeHash_Collision(t *testing.T) {
 	prevHash := "0000000000000000000000000000000000000000000000000000000000000000"
 
 	// Entry 1: Tool="A", User="B|C"
-	// Sprintf string was: "ts|A|B|C|..."
 	hash1 := computeHash(ts, "A", "B|C", "profile", "{}", "{}", "", 100, prevHash)
 
 	// Entry 2: Tool="A|B", User="C"
-	// Sprintf string was: "ts|A|B|C|..."
 	hash2 := computeHash(ts, "A|B", "C", "profile", "{}", "{}", "", 100, prevHash)
 
-	// With JSON serialization, "A" and "B|C" becomes ["A", "B|C"]
-	// "A|B" and "C" becomes ["A|B", "C"]
-	// These are distinct JSON arrays, so hashes should differ.
+	// Using JSON serialization:
+	// ["A", "B|C"] vs ["A|B", "C"]
+	// These are distinct JSON arrays, so hashes MUST differ.
 	assert.NotEqual(t, hash1, hash2, "Hash collision detected! Different inputs produced the same hash.")
 }
+
 func TestSQLiteAuditStore_BackwardCompatibility(t *testing.T) {
 	// Create a temporary database file
 	f, err := os.CreateTemp("", "audit_compat_*.db")
