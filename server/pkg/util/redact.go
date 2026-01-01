@@ -326,7 +326,11 @@ func scanForSensitiveKeys(input []byte, checkEscape bool) bool {
 			// Check all keys in this group against input starting at matchStart
 			for _, key := range keys {
 				if matchFoldRest(input[matchStart:], key) {
-					return true
+					// Optimization: check if it looks like a key (followed by quote and colon)
+					// This reduces false positives when sensitive words appear in values.
+					if isKey(input, matchStart+len(key)) {
+						return true
+					}
 				}
 			}
 
@@ -354,5 +358,41 @@ func matchFoldRest(s, key []byte) bool {
 			}
 		}
 	}
+	return true
+}
+
+// isKey checks if the string segment starting at startOffset is followed by a closing quote and a colon,
+// indicating it is likely a JSON key.
+// It conservatively returns true if it hits the scan limit or encounters ambiguity (like escapes).
+func isKey(input []byte, startOffset int) bool {
+	// Optimization: limit the scan to avoid O(N^2) behavior in pathological cases.
+	const maxScan = 256
+	endLimit := startOffset + maxScan
+	if endLimit > len(input) {
+		endLimit = len(input)
+	}
+
+	for i := startOffset; i < endLimit; i++ {
+		b := input[i]
+		if b == '\\' {
+			// Found escape sequence. To be safe/conservative, assume it might be a key.
+			// properly handling escapes would require tracking state which is complex.
+			return true
+		}
+		if b == '"' {
+			// Found potential closing quote.
+			// Check if followed by colon (ignoring whitespace).
+			for j := i + 1; j < len(input); j++ {
+				c := input[j]
+				if c == ' ' || c == '\t' || c == '\n' || c == '\r' {
+					continue
+				}
+				return c == ':'
+			}
+			return false // EOF before finding colon
+		}
+	}
+	// Limit reached or EOF without finding quote.
+	// Conservative: assume it might be a key.
 	return true
 }
