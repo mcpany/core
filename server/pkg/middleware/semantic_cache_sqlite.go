@@ -101,7 +101,7 @@ func (s *SQLiteVectorStore) loadFromDB(ctx context.Context) error {
 	for rows.Next() {
 		var key string
 		var vectorRaw []byte // Can be JSON string (legacy) or binary (new)
-		var resultJSON string
+		var resultJSON []byte
 		var expiresAtNano int64
 
 		// We scan vector into []byte to handle both TEXT and BLOB column types
@@ -136,7 +136,7 @@ func (s *SQLiteVectorStore) loadFromDB(ctx context.Context) error {
 		}
 
 		var result any
-		if err := json.Unmarshal([]byte(resultJSON), &result); err != nil {
+		if err := json.Unmarshal(resultJSON, &result); err != nil {
 			continue // Skip malformed
 		}
 
@@ -173,7 +173,7 @@ func (s *SQLiteVectorStore) Add(ctx context.Context, key string, vector []float3
 	expiresAt := time.Now().Add(ttl).UnixNano()
 
 	_, err = s.db.ExecContext(ctx, "INSERT INTO semantic_cache_entries (key, vector, result, expires_at) VALUES (?, ?, ?, ?)",
-		key, vectorBytes, string(resultJSON), expiresAt)
+		key, vectorBytes, resultJSON, expiresAt)
 	if err != nil {
 		return err
 	}
