@@ -125,6 +125,40 @@ func validateUpstreamServiceCollection(ctx context.Context, collection *configv1
 	return nil
 }
 
+func validateSecretMap(secrets map[string]*configv1.SecretValue) error {
+	for key, secret := range secrets {
+		if err := validateSecretValue(secret); err != nil {
+			return fmt.Errorf("%q: %w", key, err)
+		}
+	}
+	return nil
+}
+
+func validateSecretValue(secret *configv1.SecretValue) error {
+	if secret == nil {
+		return nil
+	}
+	switch secret.WhichValue() {
+	case configv1.SecretValue_FilePath_case:
+		if err := validation.IsRelativePath(secret.GetFilePath()); err != nil {
+			return fmt.Errorf("invalid secret file path %q: %w", secret.GetFilePath(), err)
+		}
+	case configv1.SecretValue_RemoteContent_case:
+		remote := secret.GetRemoteContent()
+		if remote.GetHttpUrl() == "" {
+			return fmt.Errorf("remote secret has empty http_url")
+		}
+		if !validation.IsValidURL(remote.GetHttpUrl()) {
+			return fmt.Errorf("remote secret has invalid http_url: %s", remote.GetHttpUrl())
+		}
+		u, _ := url.Parse(remote.GetHttpUrl())
+		if u.Scheme != schemeHTTP && u.Scheme != schemeHTTPS {
+			return fmt.Errorf("remote secret has invalid http_url scheme: %s", u.Scheme)
+		}
+	}
+	return nil
+}
+
 func validateGlobalSettings(gs *configv1.GlobalSettings, binaryType BinaryType) error {
 	switch binaryType {
 	case Server:
@@ -146,6 +180,7 @@ func validateGlobalSettings(gs *configv1.GlobalSettings, binaryType BinaryType) 
 			}
 		}
 	}
+
 	return nil
 }
 
@@ -313,6 +348,7 @@ func validateContainerEnvironment(env *configv1.ContainerEnvironment) error {
 			}
 		}
 	}
+
 	return nil
 }
 
@@ -336,6 +372,9 @@ func validateMcpService(mcpService *configv1.McpUpstreamService) error {
 				return fmt.Errorf("mcp service with stdio_connection has insecure working_directory %q: %w", stdioConn.GetWorkingDirectory(), err)
 			}
 		}
+		if err := validateSecretMap(stdioConn.GetEnv()); err != nil {
+			return fmt.Errorf("mcp service with stdio_connection has invalid secret environment variable: %w", err)
+		}
 	case configv1.McpUpstreamService_BundleConnection_case:
 		bundleConn := mcpService.GetBundleConnection()
 		if bundleConn.GetBundlePath() == "" {
@@ -343,6 +382,9 @@ func validateMcpService(mcpService *configv1.McpUpstreamService) error {
 		}
 		if err := validation.IsRelativePath(bundleConn.GetBundlePath()); err != nil {
 			return fmt.Errorf("mcp service with bundle_connection has insecure bundle_path %q: %w", bundleConn.GetBundlePath(), err)
+		}
+		if err := validateSecretMap(bundleConn.GetEnv()); err != nil {
+			return fmt.Errorf("mcp service with bundle_connection has invalid secret environment variable: %w", err)
 		}
 	default:
 		return fmt.Errorf("mcp service has no connection_type")
