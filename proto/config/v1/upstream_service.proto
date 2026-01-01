@@ -444,6 +444,8 @@ message McpStreamableHttpConnection {
   string http_address = 1 [json_name = "http_address"];
   // TLS configuration, applicable if using an http_address.
   TLSConfig tls_config = 5 [json_name = "tls_config"];
+  // If true, the client will follow HTTP redirects. Default is false (security hardening).
+  bool allow_http_redirect = 6 [json_name = "allow_http_redirect"];
 }
 
 // McpBundleConnection defines the parameters for a bundle-based connection.

@@ -792,9 +792,11 @@ func (u *Upstream) createAndRegisterMCPItemsFromStreamableHTTP(
 	if err != nil {
 		return nil, nil, fmt.Errorf("failed to create http client with tls config: %w", err)
 	}
-	// Disable redirects to prevent credential leakage.
-	httpClient.CheckRedirect = func(req *http.Request, via []*http.Request) error {
-		return http.ErrUseLastResponse
+	// Disable redirects to prevent credential leakage, unless explicitly allowed.
+	if !httpConnection.GetAllowHttpRedirect() {
+		httpClient.CheckRedirect = func(req *http.Request, via []*http.Request) error {
+			return http.ErrUseLastResponse
+		}
 	}
 	httpClient.Transport = &authenticatedRoundTripper{
 		authenticator: authenticator,

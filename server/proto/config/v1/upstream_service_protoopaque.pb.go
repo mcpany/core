@@ -6545,13 +6545,14 @@ func (b0 McpStdioConnection_builder) Build() *McpStdioConnection {
 }
 
 type McpStreamableHttpConnection struct {
-	state                  protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_HttpAddress *string                `protobuf:"bytes,1,opt,name=http_address"`
-	xxx_hidden_TlsConfig   *TLSConfig             `protobuf:"bytes,5,opt,name=tls_config"`
-	XXX_raceDetectHookData protoimpl.RaceDetectHookData
-	XXX_presence           [1]uint32
-	unknownFields          protoimpl.UnknownFields
-	sizeCache              protoimpl.SizeCache
+	state                        protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_HttpAddress       *string                `protobuf:"bytes,1,opt,name=http_address"`
+	xxx_hidden_TlsConfig         *TLSConfig             `protobuf:"bytes,5,opt,name=tls_config"`
+	xxx_hidden_AllowHttpRedirect bool                   `protobuf:"varint,6,opt,name=allow_http_redirect"`
+	XXX_raceDetectHookData       protoimpl.RaceDetectHookData
+	XXX_presence                 [1]uint32
+	unknownFields                protoimpl.UnknownFields
+	sizeCache                    protoimpl.SizeCache
 }
 
 func (x *McpStreamableHttpConnection) Reset() {
@@ -6596,13 +6597,25 @@ func (x *McpStreamableHttpConnection) GetTlsConfig() *TLSConfig {
 	return nil
 }
 
+func (x *McpStreamableHttpConnection) GetAllowHttpRedirect() bool {
+	if x != nil {
+		return x.xxx_hidden_AllowHttpRedirect
+	}
+	return false
+}
+
 func (x *McpStreamableHttpConnection) SetHttpAddress(v string) {
 	x.xxx_hidden_HttpAddress = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 2)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 3)
 }
 
 func (x *McpStreamableHttpConnection) SetTlsConfig(v *TLSConfig) {
 	x.xxx_hidden_TlsConfig = v
+}
+
+func (x *McpStreamableHttpConnection) SetAllowHttpRedirect(v bool) {
+	x.xxx_hidden_AllowHttpRedirect = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 3)
 }
 
 func (x *McpStreamableHttpConnection) HasHttpAddress() bool {
@@ -6619,6 +6632,13 @@ func (x *McpStreamableHttpConnection) HasTlsConfig() bool {
 	return x.xxx_hidden_TlsConfig != nil
 }
 
+func (x *McpStreamableHttpConnection) HasAllowHttpRedirect() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 2)
+}
+
 func (x *McpStreamableHttpConnection) ClearHttpAddress() {
 	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
 	x.xxx_hidden_HttpAddress = nil
@@ -6628,6 +6648,11 @@ func (x *McpStreamableHttpConnection) ClearTlsConfig() {
 	x.xxx_hidden_TlsConfig = nil
 }
 
+func (x *McpStreamableHttpConnection) ClearAllowHttpRedirect() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 2)
+	x.xxx_hidden_AllowHttpRedirect = false
+}
+
 type McpStreamableHttpConnection_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
@@ -6635,6 +6660,8 @@ type McpStreamableHttpConnection_builder struct {
 	HttpAddress *string
 	// TLS configuration, applicable if using an http_address.
 	TlsConfig *TLSConfig
+	// If true, the client will follow HTTP redirects. Default is false (security hardening).
+	AllowHttpRedirect *bool
 }
 
 func (b0 McpStreamableHttpConnection_builder) Build() *McpStreamableHttpConnection {
@@ -6642,10 +6669,14 @@ func (b0 McpStreamableHttpConnection_builder) Build() *McpStreamableHttpConnecti
 	b, x := &b0, m0
 	_, _ = b, x
 	if b.HttpAddress != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 2)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 3)
 		x.xxx_hidden_HttpAddress = b.HttpAddress
 	}
 	x.xxx_hidden_TlsConfig = b.TlsConfig
+	if b.AllowHttpRedirect != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 3)
+		x.xxx_hidden_AllowHttpRedirect = *b.AllowHttpRedirect
+	}
 	return m0
 }
 
@@ -8253,12 +8284,13 @@ const file_proto_config_v1_upstream_service_proto_rawDesc = "" +
 	"\x03env\x18\a \x03(\v2-.mcpany.config.v1.McpStdioConnection.EnvEntryR\x03env\x1aU\n" +
 	"\bEnvEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x123\n" +
-	"\x05value\x18\x02 \x01(\v2\x1d.mcpany.config.v1.SecretValueR\x05value:\x028\x01J\x04\b\x06\x10\a\"~\n" +
+	"\x05value\x18\x02 \x01(\v2\x1d.mcpany.config.v1.SecretValueR\x05value:\x028\x01J\x04\b\x06\x10\a\"\xb0\x01\n" +
 	"\x1bMcpStreamableHttpConnection\x12\"\n" +
 	"\fhttp_address\x18\x01 \x01(\tR\fhttp_address\x12;\n" +
 	"\n" +
 	"tls_config\x18\x05 \x01(\v2\x1b.mcpany.config.v1.TLSConfigR\n" +
-	"tls_config\"\x80\x02\n" +
+	"tls_config\x120\n" +
+	"\x13allow_http_redirect\x18\x06 \x01(\bR\x13allow_http_redirect\"\x80\x02\n" +
 	"\x13McpBundleConnection\x12 \n" +
 	"\vbundle_path\x18\x01 \x01(\tR\vbundle_path\x12(\n" +
 	"\x0fcontainer_image\x18\x02 \x01(\tR\x0fcontainer_image\x12@\n" +
