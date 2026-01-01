@@ -52,16 +52,16 @@ func TestCountTokensInValue(t *testing.T) {
 	tokenizer := NewSimpleTokenizer()
 
 	val := map[string]interface{}{
-		"key": "abcdefgh", // 2
-		"list": []interface{}{
+		"key": "abcdefgh", // key "key" (1) + val "abcdefgh" (2) = 3
+		"list": []interface{}{ // key "list" (1) + val list...
 			"abcd", // 1
 			"1234", // 1
 		},
 	}
-	// Total: 2 + 1 + 1 = 4
+	// Total: 3 (key:value) + 1 (list key) + 1 (abcd) + 1 (1234) = 6
 
 	got, _ := CountTokensInValue(tokenizer, val)
-	if got != 4 {
-		t.Errorf("CountTokensInValue = %d, want 4", got)
+	if got != 6 {
+		t.Errorf("CountTokensInValue = %d, want 6", got)
 	}
 }
