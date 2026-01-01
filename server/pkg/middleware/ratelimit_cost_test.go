@@ -97,14 +97,14 @@ func TestRateLimitMiddleware_EstimateTokenCost(t *testing.T) {
 			inputs: map[string]any{
 				"arg1": "hello",
 			},
-			expected: 1, // 5 chars / 4 = 1
+			expected: 2, // key "arg1" (1) + val "hello" (1) = 2
 		},
 		{
 			name: "long string",
 			inputs: map[string]any{
 				"arg1": "this is a longer string that should cost more tokens",
 			},
-			expected: 13, // 52 chars / 4 = 13
+			expected: 14, // key "arg1" (1) + val (13) = 14
 		},
 		{
 			name: "multiple args",
@@ -112,14 +112,14 @@ func TestRateLimitMiddleware_EstimateTokenCost(t *testing.T) {
 				"arg1": "hello",
 				"arg2": "world",
 			},
-			expected: 2, // 10 chars / 4 = 2.5 -> 2
+			expected: 4, // "arg1"(1)+"hello"(1) + "arg2"(1)+"world"(1) = 4
 		},
 		{
 			name: "non-string args",
 			inputs: map[string]any{
 				"arg1": 12345, // "12345" -> 5 chars
 			},
-			expected: 1, // 5 / 4 = 1
+			expected: 2, // key "arg1"(1) + val (1) = 2
 		},
 	}
 
@@ -151,16 +151,16 @@ func TestRateLimitMiddleware_EstimateTokenCost_WordTokenizer(t *testing.T) {
 		{
 			name: "hello world",
 			inputs: map[string]any{
-				"arg1": "hello world", // 2 words * 1.3 = 2.6 -> 2
+				"arg1": "hello world", // key "arg1" (1) + val (2) = 3
 			},
-			expected: 2,
+			expected: 3,
 		},
 		{
 			name: "sentence",
 			inputs: map[string]any{
-				"arg1": "this is a test sentence", // 5 words * 1.3 = 6.5 -> 6
+				"arg1": "this is a test sentence", // key "arg1" (1) + val (6) = 7
 			},
-			expected: 6,
+			expected: 7,
 		},
 	}
 
