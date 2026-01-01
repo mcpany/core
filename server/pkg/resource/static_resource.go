@@ -66,9 +66,22 @@ func (r *StaticResource) Read(ctx context.Context) (*mcp.ReadResourceResult, err
 		return nil, fmt.Errorf("failed to fetch resource, status: %d", resp.StatusCode)
 	}
 
-	data, err := io.ReadAll(resp.Body)
+	// Limit the size of the resource to prevent DoS attacks (OOM).
+	// Default to 10MB if not specified.
+	const defaultMaxResourceSize = 10 * 1024 * 1024 // 10MB
+	limit := int64(defaultMaxResourceSize)
+	if r.resource.Size > 0 {
+		limit = r.resource.Size
+	}
+
+	// Read up to limit + 1 to detect if the resource exceeds the limit
+	data, err := io.ReadAll(io.LimitReader(resp.Body, limit+1))
 	if err != nil {
 		return nil, fmt.Errorf("failed to read resource body: %w", err)
+	}
+
+	if int64(len(data)) > limit {
+		return nil, fmt.Errorf("resource size exceeds limit of %d bytes", limit)
 	}
 
 	return &mcp.ReadResourceResult{
