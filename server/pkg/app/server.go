@@ -1263,6 +1263,9 @@ func startHTTPServer(
 				}
 			},
 			ReadHeaderTimeout: 10 * time.Second,
+			ReadTimeout:       30 * time.Second,
+			WriteTimeout:      30 * time.Second,
+			IdleTimeout:       120 * time.Second,
 		}
 
 		// localCtx is used to signal the shutdown goroutine to exit.
