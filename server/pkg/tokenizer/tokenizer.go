@@ -78,12 +78,20 @@ func CountTokensInValue(t Tokenizer, v interface{}) (int, error) {
 		return count, nil
 	case map[string]interface{}:
 		count := 0
-		for _, item := range val {
-			c, err := CountTokensInValue(t, item)
+		for key, item := range val {
+			// Count the key
+			kc, err := t.CountTokens(key)
 			if err != nil {
 				return 0, err
 			}
-			count += c
+			count += kc
+
+			// Count the value
+			vc, err := CountTokensInValue(t, item)
+			if err != nil {
+				return 0, err
+			}
+			count += vc
 		}
 		return count, nil
 	case int:
