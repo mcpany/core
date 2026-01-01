@@ -148,22 +148,64 @@ func TestFileStore_Load_Engines(t *testing.T) {
 }
 
 func TestExpand(t *testing.T) {
-	err := os.Setenv("FOO", "bar")
-	assert.NoError(t, err)
-	defer func() { _ = os.Unsetenv("FOO") }()
+	tests := []struct {
+		name     string
+		input    string
+		env      map[string]string
+		expected string
+	}{
+		{
+			name:     "Variable set",
+			input:    "Hello ${NAME}",
+			env:      map[string]string{"NAME": "World"},
+			expected: "Hello World",
+		},
+		{
+			name:     "Variable unset",
+			input:    "Hello ${NAME}",
+			env:      map[string]string{},
+			expected: "Hello ${NAME}",
+		},
+		{
+			name:     "Variable set to empty",
+			input:    "Hello ${NAME}",
+			env:      map[string]string{"NAME": ""},
+			expected: "Hello ",
+		},
+		{
+			name:     "Variable with default, unset",
+			input:    "Hello ${NAME:World}",
+			env:      map[string]string{},
+			expected: "Hello World",
+		},
+		{
+			name:     "Variable with default, set",
+			input:    "Hello ${NAME:World}",
+			env:      map[string]string{"NAME": "Universe"},
+			expected: "Hello Universe",
+		},
+		{
+			name:     "Variable with default, set to empty",
+			input:    "Hello ${NAME:World}",
+			env:      map[string]string{"NAME": ""},
+			expected: "Hello World",
+		},
+	}
 
-	in := []byte("val: ${FOO}")
-	out := expand(in)
-	assert.Equal(t, "val: bar", string(out))
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			for k, v := range tt.env {
+				os.Setenv(k, v)
+			}
 
-	inDefault := []byte("val: ${MISSING:default}")
-	out = expand(inDefault)
-	assert.Equal(t, "val: default", string(out))
+			got := string(expand([]byte(tt.input)))
+			assert.Equal(t, tt.expected, got)
 
-	inNoEnv := []byte("val: ${MISSING}")
-	out = expand(inNoEnv)
-	assert.Equal(t, "val: ${MISSING}", string(out)) // Or empty? regex matches ${...}
-	// expand function logic: if LookupEnv fails AND no default part -> returns match (unchanged).
+			for k := range tt.env {
+				os.Unsetenv(k)
+			}
+		})
+	}
 }
 
 func TestYamlEngine_LogLevelFix(t *testing.T) {
