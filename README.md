@@ -46,6 +46,7 @@ Most "popular" MCP servers today are bespoke binaries. If the upstream API chang
 
 ## ✨ Key Features
 
+- **Dynamic Config Reloading**: Automatically detects changes to configuration files (including atomic saves) and hot-swaps the registry without restarting the server.
 - **Dynamic Tool Registration & Auto-Discovery**: Automatically discover and register tools from various backend services. For gRPC and OpenAPI, simply provide the server URL or spec URL—MCP Any handles the rest (no manual tool definition required).
 - **Multiple Service Types**: Supports a wide range of service types, including:
   - **gRPC**: Register services from `.proto` files or by using gRPC reflection.

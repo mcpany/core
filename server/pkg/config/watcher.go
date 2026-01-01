@@ -5,6 +5,8 @@ package config
 
 import (
 	"log"
+	"path/filepath"
+	"strings"
 	"sync"
 	"time"
 
@@ -12,6 +14,8 @@ import (
 )
 
 // Watcher monitors configuration files for changes and triggers a reload.
+// It watches the parent directory of specified files to handle atomic saves (rename/move)
+// commonly used by text editors.
 type Watcher struct {
 	watcher *fsnotify.Watcher
 	done    chan bool
@@ -45,6 +49,29 @@ func NewWatcher() (*Watcher, error) {
 // Returns:
 //   - An error if watching fails.
 func (w *Watcher) Watch(paths []string, reloadFunc func()) error {
+	// Map of parent directory -> list of filenames to watch in that directory
+	watchedFiles := make(map[string][]string)
+
+	for _, path := range paths {
+		if isURL(path) {
+			continue
+		}
+		absPath, err := filepath.Abs(path)
+		if err != nil {
+			log.Printf("Failed to get absolute path for %s: %v", path, err)
+			continue
+		}
+
+		// Since we want to handle atomic saves (rename), we MUST watch the parent directory of files.
+		parent := filepath.Dir(absPath)
+		filename := filepath.Base(absPath)
+
+		if _, exists := watchedFiles[parent]; !exists {
+			watchedFiles[parent] = []string{}
+		}
+		watchedFiles[parent] = append(watchedFiles[parent], filename)
+	}
+
 	go func() {
 		for {
 			select {
@@ -52,17 +79,66 @@ func (w *Watcher) Watch(paths []string, reloadFunc func()) error {
 				if !ok {
 					return
 				}
-				if event.Op&fsnotify.Write == fsnotify.Write {
-					w.mu.Lock()
-					if w.timer != nil {
-						w.timer.Stop()
+
+				// Check if this event is relevant
+				relevant := false
+
+				// Logic:
+				// 1. If we are watching the directory of this event
+				// 2. And the event name matches one of the files we are interested in.
+
+				parent := filepath.Dir(event.Name)
+				filename := filepath.Base(event.Name)
+
+				if files, ok := watchedFiles[parent]; ok {
+					for _, f := range files {
+						if f == filename {
+							relevant = true
+							break
+						}
 					}
-					w.timer = time.AfterFunc(1*time.Second, func() {
-						log.Println("Reloading configuration...")
-						reloadFunc()
-					})
-					w.mu.Unlock()
 				}
+
+				// Also check absolute path matching
+				if !relevant {
+					absName, _ := filepath.Abs(event.Name)
+					parent = filepath.Dir(absName)
+					filename = filepath.Base(absName)
+					if files, ok := watchedFiles[parent]; ok {
+						for _, f := range files {
+							if f == filename {
+								relevant = true
+								break
+							}
+						}
+					}
+				}
+
+				// Handle Vim backup files (ends with ~)
+				if strings.HasSuffix(filename, "~") {
+					relevant = false
+				}
+
+				if relevant {
+					// Trigger on Write, Create, Rename, Chmod
+					// Atomic save: Create (new file) -> Rename (to old file).
+					// So we get Create (tmp) -> Rename (tmp->target).
+					// Or Rename (target->backup).
+					// If we see any change to the target filename, we reload.
+					if event.Op&(fsnotify.Write|fsnotify.Create|fsnotify.Rename|fsnotify.Chmod) != 0 {
+						w.mu.Lock()
+						if w.timer != nil {
+							w.timer.Stop()
+						}
+						// Debounce for 500ms to avoid multiple reloads for a single save event
+						w.timer = time.AfterFunc(500*time.Millisecond, func() {
+							log.Println("Reloading configuration...")
+							reloadFunc()
+						})
+						w.mu.Unlock()
+					}
+				}
+
 			case err, ok := <-w.watcher.Errors:
 				if !ok {
 					return
@@ -74,12 +150,8 @@ func (w *Watcher) Watch(paths []string, reloadFunc func()) error {
 		}
 	}()
 
-	for _, path := range paths {
-		if isURL(path) {
-			continue
-		}
-		err := w.watcher.Add(path)
-		if err != nil {
+	for parent := range watchedFiles {
+		if err := w.watcher.Add(parent); err != nil {
 			return err
 		}
 	}
