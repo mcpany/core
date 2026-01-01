@@ -6,6 +6,7 @@ package middleware
 import (
 	"context"
 	"fmt"
+	"strconv"
 	"time"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
@@ -54,9 +55,9 @@ func NewRedisLimiterWithPartition(serviceID, partitionKey string, config *config
 	}
 	client := redisClientCreator(opts)
 
-	key := fmt.Sprintf("ratelimit:%s", serviceID)
+	key := "ratelimit:" + serviceID
 	if partitionKey != "" {
-		key = fmt.Sprintf("%s:%s", key, partitionKey)
+		key = key + ":" + partitionKey
 	}
 
 	return &RedisLimiter{
@@ -69,15 +70,15 @@ func NewRedisLimiterWithPartition(serviceID, partitionKey string, config *config
 
 // NewRedisLimiterWithClient creates a new RedisLimiter with an existing client.
 func NewRedisLimiterWithClient(client *redis.Client, serviceID, partitionKey string, config *configv1.RateLimitConfig) *RedisLimiter {
-	key := fmt.Sprintf("ratelimit:%s", serviceID)
+	key := "ratelimit:" + serviceID
 	if partitionKey != "" {
-		key = fmt.Sprintf("%s:%s", key, partitionKey)
+		key = key + ":" + partitionKey
 	}
 	// Calculate config hash
 	redisConfig := config.GetRedis()
 	configHash := ""
 	if redisConfig != nil {
-		configHash = fmt.Sprintf("%s|%s|%d", redisConfig.GetAddress(), redisConfig.GetPassword(), redisConfig.GetDb())
+		configHash = redisConfig.GetAddress() + "|" + redisConfig.GetPassword() + "|" + strconv.Itoa(int(redisConfig.GetDb()))
 	}
 	return &RedisLimiter{
 		client:     client,
