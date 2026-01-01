@@ -1,3 +1,8 @@
+/**
+ * Copyright 2026 Author(s) of MCP Any
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 import { test, expect } from '@playwright/test';
 
 test('network topology loads and displays nodes', async ({ page }) => {
