@@ -1,97 +1,71 @@
-/**
- * Copyright 2025 Author(s) of MCP Any
- * SPDX-License-Identifier: Apache-2.0
- */
+"use client"
 
-"use client";
+import { useState } from "react"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table"
+import { Search, FileText } from "lucide-react"
 
-import { useState, useEffect } from "react";
-import { apiClient, ResourceDefinition } from "@/lib/client";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Switch } from "@/components/ui/switch";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { FileText, Database } from "lucide-react";
+const initialResources = [
+  { id: "res-1", name: "system-logs", description: "System logs for the last 24h", type: "text/plain", service: "system" },
+  { id: "res-2", name: "api-schema", description: "OpenAPI schema for the legacy API", type: "application/json", service: "legacy-api" },
+]
 
 export default function ResourcesPage() {
-  const [resources, setResources] = useState<ResourceDefinition[]>([]);
-
-  useEffect(() => {
-    fetchResources();
-  }, []);
-
-  const fetchResources = async () => {
-    try {
-      const res = await apiClient.listResources();
-      setResources(res.resources || []);
-    } catch (e) {
-      console.error("Failed to fetch resources", e);
-    }
-  };
-
-  const toggleResource = async (uri: string, currentStatus: boolean) => {
-    // Optimistic update
-    setResources(resources.map(r => r.uri === uri ? { ...r, enabled: !currentStatus } : r));
-
-    try {
-        await apiClient.setResourceStatus(uri, !currentStatus);
-    } catch (e) {
-        console.error("Failed to toggle resource", e);
-        fetchResources(); // Revert
-    }
-  };
+  const [resources] = useState(initialResources)
 
   return (
-    <div className="flex-1 space-y-4 p-8 pt-6">
+    <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h2 className="text-3xl font-bold tracking-tight">Resources</h2>
+        <div>
+          <h2 className="text-2xl font-bold tracking-tight">Resources</h2>
+          <p className="text-muted-foreground">Manage and view resources.</p>
+        </div>
       </div>
 
-      <Card className="backdrop-blur-sm bg-background/50">
-        <CardHeader>
-          <CardTitle>Managed Resources</CardTitle>
-          <CardDescription>View and control access to resources.</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Name</TableHead>
-                <TableHead>URI</TableHead>
-                <TableHead>MIME Type</TableHead>
-                <TableHead>Service</TableHead>
-                <TableHead>Status</TableHead>
+      <div className="flex items-center gap-2">
+        <div className="relative flex-1 max-w-sm">
+          <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+          <Input placeholder="Search resources..." className="pl-8" />
+        </div>
+      </div>
+
+      <div className="rounded-md border bg-card">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Name</TableHead>
+              <TableHead>Description</TableHead>
+              <TableHead>Type</TableHead>
+              <TableHead>Service</TableHead>
+              <TableHead className="text-right">Action</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {resources.map((res) => (
+              <TableRow key={res.id}>
+                <TableCell className="font-medium flex items-center gap-2">
+                    <FileText className="h-4 w-4 text-muted-foreground" />
+                    {res.name}
+                </TableCell>
+                <TableCell className="text-muted-foreground">{res.description}</TableCell>
+                <TableCell className="font-mono text-xs">{res.type}</TableCell>
+                <TableCell>{res.service}</TableCell>
+                <TableCell className="text-right">
+                    <Button variant="outline" size="sm">View</Button>
+                </TableCell>
               </TableRow>
-            </TableHeader>
-            <TableBody>
-              {resources.map((resource) => (
-                <TableRow key={resource.uri}>
-                  <TableCell className="font-medium flex items-center">
-                    <FileText className="h-4 w-4 mr-2 text-muted-foreground" />
-                    {resource.name}
-                  </TableCell>
-                  <TableCell className="font-mono text-xs text-muted-foreground">{resource.uri}</TableCell>
-                  <TableCell>{resource.mimeType}</TableCell>
-                  <TableCell>
-                      <Badge variant="outline">{resource.serviceName}</Badge>
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex items-center space-x-2">
-                        <Switch
-                            checked={!!resource.enabled}
-                            onCheckedChange={() => toggleResource(resource.uri, !!resource.enabled)}
-                        />
-                        <span className="text-sm text-muted-foreground w-16">
-                            {resource.enabled ? "Enabled" : "Disabled"}
-                        </span>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
+            ))}
+          </TableBody>
+        </Table>
+      </div>
     </div>
-  );
+  )
 }

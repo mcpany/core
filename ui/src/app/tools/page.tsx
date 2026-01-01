@@ -1,116 +1,95 @@
-/**
- * Copyright 2025 Author(s) of MCP Any
- * SPDX-License-Identifier: Apache-2.0
- */
+"use client"
 
-"use client";
+import { useState } from "react"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table"
+import { Badge } from "@/components/ui/badge"
+import { Search, Filter, Wrench } from "lucide-react"
 
-import { useState, useEffect } from "react";
-import { apiClient, ToolDefinition } from "@/lib/client";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Switch } from "@/components/ui/switch";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Wrench, Play } from "lucide-react";
-import { ToolInspector } from "@/components/tools/tool-inspector";
+// Mock Data
+const initialTools = [
+  { id: "tool-1", name: "github-service/list_repos", description: "List repositories for a user", service: "github-service", tags: ["git", "source-control"] },
+  { id: "tool-2", name: "github-service/create_issue", description: "Create a new issue", service: "github-service", tags: ["git", "issue-tracking"] },
+  { id: "tool-3", name: "postgres-db/query", description: "Execute a SQL query", service: "postgres-db", tags: ["database", "sql"] },
+  { id: "tool-4", name: "slack-integration/send_message", description: "Send a message to a channel", service: "slack-integration", tags: ["communication"] },
+]
 
 export default function ToolsPage() {
-  const [tools, setTools] = useState<ToolDefinition[]>([]);
-  const [selectedTool, setSelectedTool] = useState<ToolDefinition | null>(null);
-  const [inspectorOpen, setInspectorOpen] = useState(false);
+  const [tools] = useState(initialTools)
+  const [filter, setFilter] = useState("")
 
-  useEffect(() => {
-    fetchTools();
-  }, []);
-
-  const fetchTools = async () => {
-    try {
-      const res = await apiClient.listTools();
-      setTools(res.tools || []);
-    } catch (e) {
-      console.error("Failed to fetch tools", e);
-    }
-  };
-
-  const toggleTool = async (name: string, currentStatus: boolean) => {
-    // Optimistic update
-    setTools(tools.map(t => t.name === name ? { ...t, enabled: !currentStatus } : t));
-
-    try {
-        await apiClient.setToolStatus(name, !currentStatus);
-    } catch (e) {
-        console.error("Failed to toggle tool", e);
-        fetchTools(); // Revert
-    }
-  };
-
-  const openInspector = (tool: ToolDefinition) => {
-      setSelectedTool(tool);
-      setInspectorOpen(true);
-  };
+  const filteredTools = tools.filter(t =>
+    t.name.toLowerCase().includes(filter.toLowerCase()) ||
+    t.description.toLowerCase().includes(filter.toLowerCase())
+  )
 
   return (
-    <div className="flex-1 space-y-4 p-8 pt-6">
+    <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h2 className="text-3xl font-bold tracking-tight">Tools</h2>
+        <div>
+          <h2 className="text-2xl font-bold tracking-tight">Tools</h2>
+          <p className="text-muted-foreground">Explore available MCP tools.</p>
+        </div>
       </div>
 
-      <Card className="backdrop-blur-sm bg-background/50">
-        <CardHeader>
-          <CardTitle>Available Tools</CardTitle>
-          <CardDescription>Manage exposed tools from connected services.</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Name</TableHead>
-                <TableHead>Description</TableHead>
-                <TableHead>Service</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {tools.map((tool) => (
-                <TableRow key={tool.name} className="group">
-                  <TableCell className="font-medium flex items-center">
-                    <Wrench className="h-4 w-4 mr-2 text-muted-foreground" />
-                    {tool.name}
-                  </TableCell>
-                  <TableCell>{tool.description}</TableCell>
-                  <TableCell>
-                      <Badge variant="outline">{tool.serviceName}</Badge>
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex items-center space-x-2">
-                        <Switch
-                            checked={!!tool.enabled}
-                            onCheckedChange={() => toggleTool(tool.name, !!tool.enabled)}
-                        />
-                        <span className="text-sm text-muted-foreground w-16">
-                            {tool.enabled ? "Enabled" : "Disabled"}
-                        </span>
-                    </div>
-                  </TableCell>
-                  <TableCell className="text-right">
-                      <Button variant="outline" size="sm" onClick={() => openInspector(tool)}>
-                          <Play className="h-3 w-3 mr-1" /> Inspect
-                      </Button>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
+      <div className="flex items-center gap-2">
+        <div className="relative flex-1 max-w-sm">
+          <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+          <Input
+            placeholder="Search tools..."
+            className="pl-8"
+            value={filter}
+            onChange={(e) => setFilter(e.target.value)}
+          />
+        </div>
+        <Button variant="outline" size="icon">
+            <Filter className="h-4 w-4" />
+        </Button>
+      </div>
 
-      <ToolInspector
-        tool={selectedTool}
-        open={inspectorOpen}
-        onOpenChange={setInspectorOpen}
-      />
+      <div className="rounded-md border bg-card">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Name</TableHead>
+              <TableHead>Description</TableHead>
+              <TableHead>Service</TableHead>
+              <TableHead>Tags</TableHead>
+              <TableHead className="text-right">Action</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {filteredTools.map((tool) => (
+              <TableRow key={tool.id}>
+                <TableCell className="font-medium flex items-center gap-2">
+                    <Wrench className="h-4 w-4 text-muted-foreground" />
+                    {tool.name}
+                </TableCell>
+                <TableCell className="text-muted-foreground">{tool.description}</TableCell>
+                <TableCell>{tool.service}</TableCell>
+                <TableCell>
+                    <div className="flex gap-1 flex-wrap">
+                        {tool.tags.map(tag => (
+                            <Badge key={tag} variant="secondary" className="text-xs">{tag}</Badge>
+                        ))}
+                    </div>
+                </TableCell>
+                <TableCell className="text-right">
+                    <Button variant="outline" size="sm">Test</Button>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </div>
     </div>
-  );
+  )
 }
