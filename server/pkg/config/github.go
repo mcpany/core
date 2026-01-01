@@ -25,7 +25,11 @@ var (
 )
 
 const (
-	githubURLRegex = `^https://github\.com/([^/]+)/([^/]+)/?(tree/|blob/)?([^/]+)?/?(.*)?`
+	githubURLRegexStr = `^https://github\.com/([^/]+)/([^/]+)/?(tree/|blob/)?([^/]+)?/?(.*)?`
+)
+
+var (
+	githubURLRe = regexp.MustCompile(githubURLRegexStr)
 )
 
 // GitHub represents a client for interacting with the GitHub API to fetch
@@ -58,8 +62,7 @@ func NewGitHub(_ context.Context, rawURL string) (*GitHub, error) {
 		return nil, fmt.Errorf("failed to parse URL: %w", err)
 	}
 
-	re := regexp.MustCompile(githubURLRegex)
-	matches := re.FindStringSubmatch(parsedURL.String())
+	matches := githubURLRe.FindStringSubmatch(parsedURL.String())
 
 	if len(matches) < 6 {
 		return nil, fmt.Errorf("invalid GitHub URL format")
@@ -93,8 +96,7 @@ func NewGitHub(_ context.Context, rawURL string) (*GitHub, error) {
 }
 
 func isGitHubURL(rawURL string) bool {
-	re := regexp.MustCompile(githubURLRegex)
-	return re.MatchString(rawURL)
+	return githubURLRe.MatchString(rawURL)
 }
 
 // ToRawContentURL constructs the raw content URL for the configured GitHub path.
