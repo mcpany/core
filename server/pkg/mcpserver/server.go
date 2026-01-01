@@ -337,6 +337,17 @@ func (s *Server) ListPrompts(
 	}, nil
 }
 
+// CreateMessage requests a message creation from the client (sampling).
+// This method exposes sampling to the Server instance if a session is available.
+// Note: In a stateless request context without a persistent session, this might fail.
+func (s *Server) CreateMessage(ctx context.Context, params *mcp.CreateMessageParams) (*mcp.CreateMessageResult, error) {
+	// Attempt to retrieve session from context, which is populated during request handling
+	if session, ok := tool.GetSession(ctx); ok {
+		return session.CreateMessage(ctx, params)
+	}
+	return nil, fmt.Errorf("no active session found in context")
+}
+
 // GetPrompt handles the "prompts/get" MCP request. It retrieves a specific
 // prompt by name from the PromptManager and executes it with the provided
 // arguments, returning the result. If the prompt is not found, it returns a
