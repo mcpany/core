@@ -796,6 +796,13 @@ func (u *Upstream) createAndRegisterMCPItemsFromStreamableHTTP(
 		authenticator: authenticator,
 		base:          httpClient.Transport,
 	}
+
+	// Prevent credential leakage by disabling redirects.
+	// Upstream MCP services should be reachable directly.
+	httpClient.CheckRedirect = func(_ *http.Request, _ []*http.Request) error {
+		return http.ErrUseLastResponse
+	}
+
 	httpAddress := httpConnection.GetHttpAddress()
 	transport := &mcp.StreamableClientTransport{
 		Endpoint:   httpAddress,
