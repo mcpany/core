@@ -105,6 +105,7 @@ func (s *SQLiteVectorStore) loadFromDB(ctx context.Context) error {
 		var expiresAtNano int64
 
 		// We scan vector into []byte to handle both TEXT and BLOB column types
+		// Scanning resultJSON into []byte avoids allocating a string if it's large.
 		if err := rows.Scan(&key, &vectorRaw, &resultJSON, &expiresAtNano); err != nil {
 			return err
 		}
