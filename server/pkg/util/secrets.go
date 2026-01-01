@@ -305,6 +305,11 @@ func ResolveSecretMap(ctx context.Context, secretMap map[string]*configv1.Secret
 // It also resolves the IP before dialing to prevent DNS rebinding attacks.
 var safeSecretClient = &http.Client{
 	Timeout: 10 * time.Second,
+	CheckRedirect: func(_ *http.Request, _ []*http.Request) error {
+		// Prevent redirects to avoid leaking sensitive headers (like Authorization or X-API-Key)
+		// to untrusted third parties.
+		return http.ErrUseLastResponse
+	},
 	Transport: &http.Transport{
 		DialContext: func(ctx context.Context, network, addr string) (net.Conn, error) {
 			dialer := NewSafeDialer()
