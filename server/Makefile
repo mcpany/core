@@ -473,7 +473,7 @@ test-ui: $(if $(SKIP_BUILD),,build-test-ui-docker)
 		-w /work/ui \
 		-e CI=true \
 		mcpany-ui-e2e \
-		/bin/bash -c "npx playwright test $(PLAYWRIGHT_ARGS)"
+		/bin/bash -c "npm install && npx playwright test $(PLAYWRIGHT_ARGS)"
 
 
 .PHONY: e2e
