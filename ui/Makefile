@@ -18,17 +18,10 @@ endif
 
 .PHONY: test test-local build-test-docker
 
-# Default test target (runs in Docker)
-test: build-test-docker
-	@echo "Running UI tests (Playwright) via Docker image (mcpany-ui-e2e)..."
-	@if [ -n "$(PLAYWRIGHT_ARGS)" ]; then echo "Running with args: $(PLAYWRIGHT_ARGS)"; fi
-	@$(DOCKER_CMD) run --rm --ipc=host --network=host \
-		-v $(abspath .):/work/ui \
-		-v $(abspath ../proto):/work/proto \
-		-w /work/ui \
-		-e CI=$(CI) \
-		mcpany-ui-e2e \
-		/bin/bash -c "npm install && npx playwright test $(PLAYWRIGHT_ARGS)"
+# Default test target (runs tests in Docker Compose)
+test:
+	docker compose -f ../docker/docker-compose.test-ui.yml up --build --abort-on-container-exit --exit-code-from ui-tests
+	docker compose -f ../docker/docker-compose.test-ui.yml down -v
 
 # Local test target (runs natively)
 test-local:

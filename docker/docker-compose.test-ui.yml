@@ -1,0 +1,43 @@
+# Copyright 2026 Author(s) of MCP Any
+# SPDX-License-Identifier: Apache-2.0
+
+services:
+  server:
+    build:
+      context: ../server
+      dockerfile: docker/Dockerfile.server
+    ports:
+      - "51235:50050"
+    command:
+      [
+        "run",
+        "--config-path=config.minimal.yaml",
+        "--mcp-listen-address=:50050",
+      ]
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:50050/healthz"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - ../server/config.minimal.yaml:/app/config.minimal.yaml
+
+  ui-tests:
+    build:
+      context: ../ui
+      dockerfile: Dockerfile.e2e
+    environment:
+      - BACKEND_URL=http://server:50050
+      - BASE_URL=http://localhost:9002
+      - NEXT_PUBLIC_API_URL=http://server:50050
+      - CI=true
+    volumes:
+      - ../ui/test-results:/work/ui/test-results
+      - ../ui/playwright-report:/work/ui/playwright-report
+      - ../ui/.audit:/work/ui/.audit
+      - ../ui/docs:/work/ui/docs
+    depends_on:
+      server:
+        condition: service_healthy
+    ipc: host
+    command: ["npx", "playwright", "test"]

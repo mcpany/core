@@ -63,18 +63,31 @@ interface NodeData extends Record<string, unknown> {
     metadata?: Record<string, string>;
 }
 
+const getStatusColor = (status: NodeStatus) => {
+  switch (status) {
+    case 'NODE_STATUS_ACTIVE':
+      return 'text-emerald-500 dark:text-emerald-400';
+    case 'NODE_STATUS_ERROR':
+      return 'text-rose-500 dark:text-rose-400';
+    case 'NODE_STATUS_INACTIVE': // Assuming 'connecting' maps to inactive or a new state
+      return 'text-amber-500 dark:text-amber-400';
+    default:
+      return 'text-slate-400 dark:text-slate-500';
+  }
+};
+
 const NodeIcon = ({ type }: { type: NodeType }) => {
     switch (type) {
-        case 'NODE_TYPE_CORE': return <Cpu className="h-4 w-4 text-blue-500" />;
-        case 'NODE_TYPE_SERVICE': return <Server className="h-4 w-4 text-indigo-500" />;
-        case 'NODE_TYPE_CLIENT': return <Users className="h-4 w-4 text-green-500" />;
-        case 'NODE_TYPE_TOOL': return <Zap className="h-4 w-4 text-amber-500" />;
-        case 'NODE_TYPE_API_CALL': return <LinkIcon className="h-4 w-4 text-slate-500" />;
-        case 'NODE_TYPE_MIDDLEWARE': return <Layers className="h-4 w-4 text-orange-500" />;
-        case 'NODE_TYPE_WEBHOOK': return <Webhook className="h-4 w-4 text-pink-500" />;
-        case 'NODE_TYPE_RESOURCE': return <Database className="h-4 w-4 text-cyan-500" />;
-        case 'NODE_TYPE_PROMPT': return <MessageSquare className="h-4 w-4 text-purple-500" />;
-        default: return <Activity className="h-4 w-4 text-gray-500" />;
+        case 'NODE_TYPE_CORE': return <Cpu className="h-4 w-4 text-blue-500 dark:text-blue-400" />;
+        case 'NODE_TYPE_SERVICE': return <Server className="h-4 w-4 text-indigo-500 dark:text-indigo-400" />;
+        case 'NODE_TYPE_CLIENT': return <Users className="h-4 w-4 text-green-500 dark:text-green-400" />;
+        case 'NODE_TYPE_TOOL': return <Zap className="h-4 w-4 text-amber-500 dark:text-amber-400" />;
+        case 'NODE_TYPE_API_CALL': return <LinkIcon className="h-4 w-4 text-slate-500 dark:text-slate-400" />;
+        case 'NODE_TYPE_MIDDLEWARE': return <Layers className="h-4 w-4 text-orange-500 dark:text-orange-400" />;
+        case 'NODE_TYPE_WEBHOOK': return <Webhook className="h-4 w-4 text-pink-500 dark:text-pink-400" />;
+        case 'NODE_TYPE_RESOURCE': return <Database className="h-4 w-4 text-cyan-500 dark:text-cyan-400" />;
+        case 'NODE_TYPE_PROMPT': return <MessageSquare className="h-4 w-4 text-purple-500 dark:text-purple-400" />;
+        default: return <Activity className="h-4 w-4 text-gray-500 dark:text-gray-400" />;
     }
 };
 
