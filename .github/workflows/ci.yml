@@ -571,8 +571,8 @@ jobs:
 
       - name: Build UI (Next.js)
         run: |
-          make build-ui
+          make -C ui build
 
       - name: Test UI
         run: |
-          make test-ui SKIP_BUILD=true PLAYWRIGHT_ARGS="--shard=${{ matrix.shardIndex }}/${{ matrix.shardTotal }}"
+          make -C ui test SKIP_BUILD=true PLAYWRIGHT_ARGS="--shard=${{ matrix.shardIndex }}/${{ matrix.shardTotal }}"

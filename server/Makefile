@@ -397,7 +397,7 @@ else
 test-server: test-fast e2e-local test-public-api
 endif
 
-test: test-server test-ui
+test: test-server
 
 COVERAGE_FILE ?= coverage.out
 
@@ -448,33 +448,7 @@ build-file-upload-server:
 	@mkdir -p $(EXAMPLE_BIN_DIR)
 	@$(GO_CMD) build -buildvcs=false -o $(EXAMPLE_BIN_DIR)/file-upload-server examples/upstream_service_demo/file-upload/main.go
 
-# ==============================================================================
-# UI Build
-# ==============================================================================
-.PHONY: build-ui
-build-ui:
-	@echo "Building UI..."
-	@cd ../ui && npm install && npm run build
-
-# Target to build the UI test Docker image
-# Set CACHE_TO and CACHE_FROM to enable caching (e.g., for CI)
-.PHONY: build-test-ui-docker
-build-test-ui-docker:
-	@echo "Building UI test Docker image (mcpany-ui-e2e)..."
-	@$(DOCKER_BUILD_CMD) -t mcpany-ui-e2e -f ../ui/Dockerfile.e2e $(if $(CACHE_TO),--cache-to=$(CACHE_TO)) $(if $(CACHE_FROM),--cache-from=$(CACHE_FROM)) ../ui
-
-.PHONY: test-ui
-test-ui: $(if $(SKIP_BUILD),,build-test-ui-docker)
-	@echo "Running UI tests (Playwright) via Docker image (mcpany-ui-e2e)..."
-	@if [ -n "$(PLAYWRIGHT_ARGS)" ]; then echo "Running with args: $(PLAYWRIGHT_ARGS)"; fi
-	@docker run --rm --ipc=host --network=host \
-		-v $(abspath ../ui):/work/ui \
-		-v $(abspath ../proto):/work/proto \
-		-w /work/ui \
-		-e CI=$(CI) \
-		mcpany-ui-e2e \
-		/bin/bash -c "npm install && npx playwright test $(PLAYWRIGHT_ARGS)"
-
+# UI targets removed (moved to ui/Makefile)
 
 .PHONY: e2e
 e2e: e2e-local
