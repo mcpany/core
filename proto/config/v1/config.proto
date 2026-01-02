@@ -83,6 +83,21 @@ message GlobalSettings {
   repeated Middleware middlewares = 12 [json_name = "middlewares"];
   // DLP configuration.
   DLPConfig dlp = 13 [json_name = "dlp"];
+  // Garbage Collection configuration.
+  GCSettings gc_settings = 16 [json_name = "gc_settings"];
+}
+
+message GCSettings {
+  // Whether the global GC worker is enabled.
+  bool enabled = 1 [json_name = "enabled"];
+  // How often the GC worker runs (e.g., "1h", "10m").
+  string interval = 2 [json_name = "interval"];
+  // The time-to-live for temporary files (e.g., "24h").
+  // Files older than this duration will be deleted.
+  string ttl = 3 [json_name = "ttl"];
+  // A list of absolute paths to directories that should be scanned for cleanup.
+  // The worker will not traverse outside these directories.
+  repeated string paths = 4 [json_name = "paths"];
 }
 
 message DLPConfig {

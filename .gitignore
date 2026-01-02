@@ -44,3 +44,7 @@ mcpany.db
 lint_report.*
 .last-run
 **/.last-run.json
+
+# Secrets
+ui/secrets-master.key
+ui/secrets-store.json
