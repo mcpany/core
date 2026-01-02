@@ -8,7 +8,7 @@
 import React, { useState, useMemo } from 'react';
 import {
   ReactFlow,
-  MiniMap,
+
   Controls,
   Background,
   BackgroundVariant,
@@ -200,17 +200,8 @@ function Flow() {
             style: { strokeWidth: 2 }
         }}
       >
-        <Controls showInteractive={false} className="bg-background/80 backdrop-blur border-muted shadow-sm" />
-        <MiniMap
-            className="bg-background/80 backdrop-blur border-muted shadow-sm rounded-lg overflow-hidden"
-            nodeColor={(n) => {
-                switch(n.data.type) {
-                    case 'NODE_TYPE_CORE': return '#3b82f6';
-                    case 'NODE_TYPE_ERROR': return '#ef4444';
-                    default: return '#e2e8f0';
-                }
-            }}
-        />
+        <Controls showInteractive={false} className="bg-background/80 backdrop-blur border-muted shadow-sm dark:bg-slate-900/80 dark:border-slate-800 dark:text-slate-200 [&>button]:!border-muted [&>button]:!bg-transparent hover:[&>button]:!bg-muted" />
+
         <Background variant={BackgroundVariant.Dots} gap={24} size={1} color="currentColor" className="text-muted-foreground/20" />
 
         <Panel position="bottom-center" className="mb-8">
