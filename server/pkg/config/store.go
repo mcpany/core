@@ -479,16 +479,15 @@ func resolveEnvValue(root proto.Message, path []string, value string) interface{
 				md = currentFd.Message()
 				currentFd = nil // Reset, we are now inside the message
 				continue
-			} else {
-				// Scalar list. 'part' is the index.
-				// If this is the last part, we are setting the value of this element.
-				if i == len(path)-1 {
-					// Convert value based on currentFd.Kind()
-					return convertKind(currentFd.Kind(), value)
-				}
-				// If not last part, mismatch? Scalar list doesn't have fields.
-				return value
 			}
+			// Scalar list. 'part' is the index.
+			// If this is the last part, we are setting the value of this element.
+			if i == len(path)-1 {
+				// Convert value based on currentFd.Kind()
+				return convertKind(currentFd.Kind(), value)
+			}
+			// If not last part, mismatch? Scalar list doesn't have fields.
+			return value
 		}
 
 		fd := findField(md, part)
@@ -508,17 +507,18 @@ func resolveEnvValue(root proto.Message, path []string, value string) interface{
 		}
 
 		// Navigate deeper
-		if fd.Kind() == protoreflect.MessageKind {
+		switch {
+		case fd.Kind() == protoreflect.MessageKind:
 			if fd.IsList() {
 				// Next iteration will handle index
 				continue
 			}
 			md = fd.Message()
 			currentFd = nil
-		} else if fd.IsList() {
+		case fd.IsList():
 			// Scalar list. Next iteration will handle index.
 			continue
-		} else {
+		default:
 			// Path continues but field is not a message? mismatch.
 			return value
 		}
@@ -569,7 +569,6 @@ func fixTypes(m map[string]interface{}, md protoreflect.MessageDescriptor) {
 					}
 				}
 			}
-
 		} else if fd.Kind() == protoreflect.MessageKind && !fd.IsMap() {
 			// Recurse
 			if valMap, ok := val.(map[string]interface{}); ok {
