@@ -45,6 +45,8 @@ func NewAuditMiddleware(config *configv1.AuditConfig) (*AuditMiddleware, error) 
 			store, err = NewSQLiteAuditStore(config.GetOutputPath())
 		case configv1.AuditConfig_STORAGE_TYPE_FILE:
 			store, err = NewFileAuditStore(config.GetOutputPath())
+		case configv1.AuditConfig_STORAGE_TYPE_WEBHOOK:
+			store = NewWebhookAuditStore(config.GetWebhookUrl(), config.GetWebhookHeaders())
 		default:
 			store, err = NewFileAuditStore(config.GetOutputPath())
 		}
