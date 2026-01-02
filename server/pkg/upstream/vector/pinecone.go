@@ -1,6 +1,7 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
+// Package vector implements the upstream vector database service.
 package vector
 
 import (
@@ -23,6 +24,7 @@ type PineconeClient struct {
 	baseURL string
 }
 
+// NewPineconeClient creates a new instance of PineconeClient.
 func NewPineconeClient(config *configv1.PineconeVectorDB) (*PineconeClient, error) {
 	if config.GetApiKey() == "" {
 		return nil, fmt.Errorf("api_key is required for Pinecone")
@@ -50,7 +52,7 @@ func NewPineconeClient(config *configv1.PineconeVectorDB) (*PineconeClient, erro
 	}, nil
 }
 
-func (c *PineconeClient) doRequest(ctx context.Context, method, path string, body interface{}) (map[string]interface{}, error) {
+func (c *PineconeClient) doRequest(ctx context.Context, path string, body interface{}) (map[string]interface{}, error) {
 	var bodyReader io.Reader
 	if body != nil {
 		data, err := json.Marshal(body)
@@ -65,7 +67,7 @@ func (c *PineconeClient) doRequest(ctx context.Context, method, path string, bod
 		return nil, err
 	}
 
-	req, err := http.NewRequestWithContext(ctx, method, u, bodyReader)
+	req, err := http.NewRequestWithContext(ctx, "POST", u, bodyReader)
 	if err != nil {
 		return nil, err
 	}
@@ -78,7 +80,7 @@ func (c *PineconeClient) doRequest(ctx context.Context, method, path string, bod
 	if err != nil {
 		return nil, err
 	}
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 
 	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {
@@ -99,6 +101,7 @@ func (c *PineconeClient) doRequest(ctx context.Context, method, path string, bod
 	return result, nil
 }
 
+// Query queries the vector database for similar vectors.
 func (c *PineconeClient) Query(ctx context.Context, vector []float32, topK int64, filter map[string]interface{}, namespace string) (map[string]interface{}, error) {
 	req := map[string]interface{}{
 		"vector": vector,
@@ -113,9 +116,10 @@ func (c *PineconeClient) Query(ctx context.Context, vector []float32, topK int64
 		req["namespace"] = namespace
 	}
 
-	return c.doRequest(ctx, "POST", "/query", req)
+	return c.doRequest(ctx, "/query", req)
 }
 
+// Upsert upserts vectors into the database.
 func (c *PineconeClient) Upsert(ctx context.Context, vectors []map[string]interface{}, namespace string) (map[string]interface{}, error) {
 	req := map[string]interface{}{
 		"vectors": vectors,
@@ -124,9 +128,10 @@ func (c *PineconeClient) Upsert(ctx context.Context, vectors []map[string]interf
 		req["namespace"] = namespace
 	}
 
-	return c.doRequest(ctx, "POST", "/vectors/upsert", req)
+	return c.doRequest(ctx, "/vectors/upsert", req)
 }
 
+// Delete deletes vectors from the database.
 func (c *PineconeClient) Delete(ctx context.Context, ids []string, namespace string, filter map[string]interface{}) (map[string]interface{}, error) {
 	req := map[string]interface{}{}
 	if len(ids) > 0 {
@@ -143,14 +148,15 @@ func (c *PineconeClient) Delete(ctx context.Context, ids []string, namespace str
 		req["namespace"] = namespace
 	}
 
-	return c.doRequest(ctx, "POST", "/vectors/delete", req)
+	return c.doRequest(ctx, "/vectors/delete", req)
 }
 
+// DescribeIndexStats gets statistics about the index.
 func (c *PineconeClient) DescribeIndexStats(ctx context.Context, filter map[string]interface{}) (map[string]interface{}, error) {
 	req := map[string]interface{}{}
 	if filter != nil {
 		req["filter"] = filter
 	}
 	// DescribeIndexStats is usually a POST for Pinecone with optional filter
-	return c.doRequest(ctx, "POST", "/describe_index_stats", req)
+	return c.doRequest(ctx, "/describe_index_stats", req)
 }

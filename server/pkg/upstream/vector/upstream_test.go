@@ -108,6 +108,63 @@ func TestVectorTools(t *testing.T) {
 		assert.NoError(t, err)
 		assert.Equal(t, expectedResult, result)
 	})
+
+	t.Run("delete_vectors", func(t *testing.T) {
+		// Find delete_vectors tool
+		var deleteTool *vectorToolDef
+		for _, tool := range tools {
+			if tool.Name == "delete_vectors" {
+				deleteTool = &tool
+				break
+			}
+		}
+		assert.NotNil(t, deleteTool)
+
+		// Mock response
+		expectedResult := map[string]interface{}{
+			"success": true,
+		}
+
+		ids := []string{"vec1", "vec2"}
+		mockClient.On("Delete", ctx, ids, "ns1", map[string]interface{}(nil)).Return(expectedResult, nil)
+
+		// Call handler
+		args := map[string]interface{}{
+			"ids":       []interface{}{"vec1", "vec2"},
+			"namespace": "ns1",
+		}
+		result, err := deleteTool.Handler(ctx, args)
+		assert.NoError(t, err)
+		assert.Equal(t, expectedResult, result)
+	})
+
+	t.Run("describe_index_stats", func(t *testing.T) {
+		// Find describe_index_stats tool
+		var describeTool *vectorToolDef
+		for _, tool := range tools {
+			if tool.Name == "describe_index_stats" {
+				describeTool = &tool
+				break
+			}
+		}
+		assert.NotNil(t, describeTool)
+
+		// Mock response
+		expectedResult := map[string]interface{}{
+			"totalVectorCount": 100,
+		}
+
+		filter := map[string]interface{}{"foo": "bar"}
+		mockClient.On("DescribeIndexStats", ctx, filter).Return(expectedResult, nil)
+
+		// Call handler
+		args := map[string]interface{}{
+			"filter": map[string]interface{}{"foo": "bar"},
+		}
+		result, err := describeTool.Handler(ctx, args)
+		assert.NoError(t, err)
+		assert.Equal(t, expectedResult, result)
+	})
 }
 
 // MockToolManager is a simple mock for tool.ManagerInterface
@@ -135,4 +192,15 @@ func TestRegister(t *testing.T) {
 	_, _, _, err := u.Register(context.Background(), cfg, &MockToolManager{}, nil, nil, false)
 	assert.Error(t, err)
 	assert.Contains(t, err.Error(), "vector service config is nil")
+
+	// Test with Pinecone config but no tool manager interaction needed because client creation might fail if not careful or real
+	// But let's check basic unsupported type
+	cfg.ServiceConfig = &configv1.UpstreamServiceConfig_VectorService{
+		VectorService: &configv1.VectorUpstreamService{
+			VectorDbType: nil,
+		},
+	}
+	_, _, _, err = u.Register(context.Background(), cfg, &MockToolManager{}, nil, nil, false)
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), "unsupported vector database type")
 }
