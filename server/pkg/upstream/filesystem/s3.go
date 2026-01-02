@@ -8,9 +8,9 @@ import (
 	"path"
 	"strings"
 
-	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/aws/credentials"
-	"github.com/aws/aws-sdk-go/aws/session"
+	"github.com/aws/aws-sdk-go/aws"             //nolint:staticcheck // SA1019: deprecation known
+	"github.com/aws/aws-sdk-go/aws/credentials" //nolint:staticcheck // SA1019: deprecation known
+	"github.com/aws/aws-sdk-go/aws/session"     //nolint:staticcheck // SA1019: deprecation known
 	s3 "github.com/fclairamb/afero-s3"
 	"github.com/spf13/afero"
 	configv1 "github.com/mcpany/core/proto/config/v1"
