@@ -41,14 +41,14 @@ func (m *MockToolManager) GetServiceInfo(id string) (*tool.ServiceInfo, bool) {
 // Implement other interface methods as no-ops or panics if needed
 func (m *MockToolManager) ListTools() []tool.Tool                           { return nil }
 func (m *MockToolManager) AddTool(t tool.Tool) error                        { return nil }
-func (m *MockToolManager) AddServiceInfo(id string, info *tool.ServiceInfo) {}
-func (m *MockToolManager) ClearToolsForService(id string)                   {}
-func (m *MockToolManager) ExecuteTool(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
+func (m *MockToolManager) AddServiceInfo(_ string, _ *tool.ServiceInfo) {}
+func (m *MockToolManager) ClearToolsForService(_ string)                   {}
+func (m *MockToolManager) ExecuteTool(_ context.Context, _ *tool.ExecutionRequest) (any, error) {
 	return nil, nil
 }
-func (m *MockToolManager) SetMCPServer(s tool.MCPServerProvider)                                   {}
-func (m *MockToolManager) SetProfiles(enabled []string, definitions []*configv1.ProfileDefinition) {}
-func (m *MockToolManager) AddMiddleware(mw tool.ExecutionMiddleware)                               {}
+func (m *MockToolManager) SetMCPServer(_ tool.MCPServerProvider)                                   {}
+func (m *MockToolManager) SetProfiles(_ []string, _ []*configv1.ProfileDefinition) {}
+func (m *MockToolManager) AddMiddleware(_ tool.ExecutionMiddleware)                               {}
 func (m *MockToolManager) ListServices() []*tool.ServiceInfo                                       { return nil }
 
 type MockTool struct {
@@ -60,7 +60,7 @@ func (t *MockTool) Tool() *v1.Tool {
 	return &v1.Tool{Name: &t.name, ServiceId: &t.serviceID}
 }
 func (t *MockTool) MCPTool() *mcp.Tool { return &mcp.Tool{Name: t.name} }
-func (t *MockTool) Execute(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
+func (t *MockTool) Execute(_ context.Context, _ *tool.ExecutionRequest) (any, error) {
 	return nil, nil
 }
 func (t *MockTool) GetCacheConfig() *configv1.CacheConfig { return nil }

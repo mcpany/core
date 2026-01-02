@@ -183,7 +183,7 @@ func TestServiceRegistrationWorker_Panic_Get(t *testing.T) {
 
 	registry := &extendedMockServiceRegistry{
 		mockServiceRegistry: &mockServiceRegistry{},
-		getServiceConfigFunc: func(name string) (*configv1.UpstreamServiceConfig, bool) {
+		getServiceConfigFunc: func(_ string) (*configv1.UpstreamServiceConfig, bool) {
 			panic("simulated get panic")
 		},
 	}

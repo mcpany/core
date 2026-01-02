@@ -43,15 +43,15 @@ func (m *MockToolManagerForCost) GetServiceInfo(id string) (*tool.ServiceInfo, b
 
 func (m *MockToolManagerForCost) ListTools() []tool.Tool                           { return nil }
 func (m *MockToolManagerForCost) AddTool(t tool.Tool) error                        { return nil }
-func (m *MockToolManagerForCost) AddServiceInfo(id string, info *tool.ServiceInfo) {}
-func (m *MockToolManagerForCost) ExecuteTool(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
+func (m *MockToolManagerForCost) AddServiceInfo(_ string, _ *tool.ServiceInfo) {}
+func (m *MockToolManagerForCost) ExecuteTool(_ context.Context, _ *tool.ExecutionRequest) (any, error) {
 	return nil, nil
 }
-func (m *MockToolManagerForCost) SetMCPServer(s tool.MCPServerProvider)  {}
-func (m *MockToolManagerForCost) ClearToolsForService(serviceKey string) {}
-func (m *MockToolManagerForCost) SetProfiles(profiles []string, definitions []*configv1.ProfileDefinition) {
+func (m *MockToolManagerForCost) SetMCPServer(_ tool.MCPServerProvider)  {}
+func (m *MockToolManagerForCost) ClearToolsForService(_ string) {}
+func (m *MockToolManagerForCost) SetProfiles(_ []string, _ []*configv1.ProfileDefinition) {
 }
-func (m *MockToolManagerForCost) AddMiddleware(middleware tool.ExecutionMiddleware) {}
+func (m *MockToolManagerForCost) AddMiddleware(_ tool.ExecutionMiddleware) {}
 func (m *MockToolManagerForCost) ListServices() []*tool.ServiceInfo                 { return nil }
 
 // MockToolForCost is a mock for tool.Tool
@@ -64,7 +64,7 @@ func (m *MockToolForCost) Tool() *v1.Tool {
 	return args.Get(0).(*v1.Tool)
 }
 
-func (m *MockToolForCost) Execute(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
+func (m *MockToolForCost) Execute(_ context.Context, _ *tool.ExecutionRequest) (any, error) {
 	return nil, nil
 }
 func (m *MockToolForCost) Service() string {

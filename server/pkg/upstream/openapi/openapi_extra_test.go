@@ -46,7 +46,7 @@ func TestHttpClientImpl_Do(t *testing.T) {
 
 type mockTransport struct{}
 
-func (m *mockTransport) RoundTrip(req *http.Request) (*http.Response, error) {
+func (m *mockTransport) RoundTrip(_ *http.Request) (*http.Response, error) {
 	return &http.Response{
 		StatusCode: 200,
 	}, nil
