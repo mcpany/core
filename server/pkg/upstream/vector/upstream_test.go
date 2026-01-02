@@ -108,6 +108,89 @@ func TestVectorTools(t *testing.T) {
 		assert.NoError(t, err)
 		assert.Equal(t, expectedResult, result)
 	})
+
+	t.Run("delete_vectors", func(t *testing.T) {
+		// Find delete_vectors tool
+		var deleteTool *vectorToolDef
+		for _, tool := range tools {
+			if tool.Name == "delete_vectors" {
+				deleteTool = &tool
+				break
+			}
+		}
+		assert.NotNil(t, deleteTool)
+
+		// Mock response
+		expectedResult := map[string]interface{}{
+			"success": true,
+		}
+
+		ids := []string{"id1", "id2"}
+		mockClient.On("Delete", ctx, ids, "ns1", map[string]interface{}(nil)).Return(expectedResult, nil)
+
+		// Call handler
+		args := map[string]interface{}{
+			"ids":       []interface{}{"id1", "id2"},
+			"namespace": "ns1",
+		}
+		result, err := deleteTool.Handler(ctx, args)
+		assert.NoError(t, err)
+		assert.Equal(t, expectedResult, result)
+	})
+
+	t.Run("describe_index_stats", func(t *testing.T) {
+		// Find describe_index_stats tool
+		var statsTool *vectorToolDef
+		for _, tool := range tools {
+			if tool.Name == "describe_index_stats" {
+				statsTool = &tool
+				break
+			}
+		}
+		assert.NotNil(t, statsTool)
+
+		// Mock response
+		expectedResult := map[string]interface{}{
+			"totalVectorCount": 100,
+		}
+
+		filter := map[string]interface{}{"foo": "bar"}
+		mockClient.On("DescribeIndexStats", ctx, filter).Return(expectedResult, nil)
+
+		// Call handler
+		args := map[string]interface{}{
+			"filter": map[string]interface{}{"foo": "bar"},
+		}
+		result, err := statsTool.Handler(ctx, args)
+		assert.NoError(t, err)
+		assert.Equal(t, expectedResult, result)
+	})
+
+	t.Run("input_validation", func(t *testing.T) {
+		// Test query_vectors validation
+		var queryTool *vectorToolDef
+		for _, tool := range tools {
+			if tool.Name == "query_vectors" {
+				queryTool = &tool
+				break
+			}
+		}
+		_, err := queryTool.Handler(ctx, map[string]interface{}{})
+		assert.Error(t, err)
+		assert.Contains(t, err.Error(), "vector is required")
+
+		// Test upsert_vectors validation
+		var upsertTool *vectorToolDef
+		for _, tool := range tools {
+			if tool.Name == "upsert_vectors" {
+				upsertTool = &tool
+				break
+			}
+		}
+		_, err = upsertTool.Handler(ctx, map[string]interface{}{})
+		assert.Error(t, err)
+		assert.Contains(t, err.Error(), "vectors is required")
+	})
 }
 
 // MockToolManager is a simple mock for tool.ManagerInterface
@@ -130,9 +213,35 @@ func TestRegister(t *testing.T) {
 	name := "test-vector"
 	cfg := &configv1.UpstreamServiceConfig{
 		Name: &name,
+		// ServiceConfig is nil, so GetVectorService() will return nil
 	}
 	// Missing VectorService config
 	_, _, _, err := u.Register(context.Background(), cfg, &MockToolManager{}, nil, nil, false)
 	assert.Error(t, err)
 	assert.Contains(t, err.Error(), "vector service config is nil")
+
+	// Test Register failure with unsupported vector type
+	cfgUnsupported := &configv1.UpstreamServiceConfig{
+		Name: &name,
+		ServiceConfig: &configv1.UpstreamServiceConfig_VectorService{
+			VectorService: &configv1.VectorUpstreamService{
+				// VectorDbType is nil
+			},
+		},
+	}
+	_, _, _, err = u.Register(context.Background(), cfgUnsupported, &MockToolManager{}, nil, nil, false)
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), "unsupported vector database type")
+}
+
+func TestVectorCallable(t *testing.T) {
+	called := false
+	handler := func(ctx context.Context, args map[string]interface{}) (map[string]interface{}, error) {
+		called = true
+		return map[string]interface{}{"ok": true}, nil
+	}
+	callable := &vectorCallable{handler: handler}
+	_, err := callable.Call(context.Background(), &tool.ExecutionRequest{})
+	assert.NoError(t, err)
+	assert.True(t, called)
 }
