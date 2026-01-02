@@ -801,8 +801,8 @@ func (a *Application) runServerMode(
 	apiHandler := http.StripPrefix("/api/v1", a.createAPIHandler(store))
 	mux.Handle("/api/v1/", authMiddleware(apiHandler))
 
-	// Topology API
-	mux.HandleFunc("/api/v1/topology", func(w http.ResponseWriter, r *http.Request) {
+	// Topology API - Protected by auth middleware
+	mux.Handle("/api/v1/topology", authMiddleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		graph := a.TopologyManager.GetGraph(r.Context())
 
@@ -818,7 +818,7 @@ func (a *Application) runServerMode(
 			return
 		}
 		_, _ = w.Write(data)
-	})
+	})))
 
 	logging.GetLogger().Info("DEBUG: Registering /mcp/u/ handler")
 	// Multi-user handler
