@@ -471,7 +471,7 @@ test-ui: $(if $(SKIP_BUILD),,build-test-ui-docker)
 		-v $(abspath ../ui):/work/ui \
 		-v $(abspath ../proto):/work/proto \
 		-w /work/ui \
-		-e CI=true \
+		-e CI=$(CI) \
 		mcpany-ui-e2e \
 		/bin/bash -c "npm install && npx playwright test $(PLAYWRIGHT_ARGS)"
 
