@@ -46,7 +46,6 @@ import (
 	v1 "github.com/mcpany/core/proto/api/v1"
 
 	// config_v1 "github.com/mcpany/core/proto/config/v1".
-	"github.com/mcpany/core/pkg/gc"
 	"github.com/mcpany/core/pkg/topology"
 	config_v1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
