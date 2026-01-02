@@ -99,6 +99,7 @@ message AuditConfig {
     STORAGE_TYPE_FILE = 1;
     STORAGE_TYPE_SQLITE = 2;
     STORAGE_TYPE_POSTGRES = 3;
+    STORAGE_TYPE_WEBHOOK = 4;
   }
 
   // Whether audit logging is enabled.
@@ -111,6 +112,10 @@ message AuditConfig {
   bool log_results = 4 [json_name = "log_results"];
   // The storage type to use.
   StorageType storage_type = 5 [json_name = "storage_type"];
+  // The webhook URL for STORAGE_TYPE_WEBHOOK.
+  string webhook_url = 6 [json_name = "webhook_url"];
+  // Additional headers to send with the webhook.
+  map<string, string> webhook_headers = 7 [json_name = "webhook_headers"];
 }
 
 message ProfileDefinition {
