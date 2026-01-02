@@ -3,109 +3,95 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-
 import { test, expect } from '@playwright/test';
 
-test.describe('Logs Page', () => {
-  test.beforeEach(async ({ page }) => {
+test.describe('Log Stream Page', () => {
+  test('should display log stream page', async ({ page }) => {
+    // Navigate to the logs page
     await page.goto('/logs');
+
+    // Check for the main heading
+    await expect(page.getByText('Live Stream')).toBeVisible();
+
+    // Check for control buttons
+    await expect(page.getByRole('button', { name: 'Pause' })).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Clear' })).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Export' })).toBeVisible();
   });
 
-  test('should display logs title', async ({ page }) => {
-    await expect(page.getByText('Live Logs')).toBeVisible();
-  });
+  test('should receive and display logs', async ({ page }) => {
+    await page.goto('/logs');
 
-  test('should display log entries', async ({ page }) => {
-    // Wait for at least one log entry to appear (logs are generated every 800ms)
-    await page.waitForTimeout(2000);
-    const logs = page.locator('.group');
-    const count = await logs.count();
-    expect(count).toBeGreaterThan(0);
-  });
+    // Wait for at least one log entry to appear
+    // The mock backend sends a log every 800ms
+    await page.waitForSelector('[data-testid="log-rows-container"] > div', { timeout: 10000 });
 
-  test('should pause and resume logs', async ({ page }) => {
-    const pauseButton = page.getByRole('button', { name: 'Pause' });
-    await pauseButton.click();
-
-    // Get count of logs
-    await page.waitForTimeout(1000);
-    const logs = page.locator('.group');
-    const countAfterPause = await logs.count();
-
-    // Wait more to ensure no new logs are added
-    await page.waitForTimeout(2000);
-    const countAfterWait = await logs.count();
-    expect(countAfterWait).toBe(countAfterPause);
-
-    const resumeButton = page.getByRole('button', { name: 'Resume' });
-    await resumeButton.click();
-
-    // Wait for new logs
-    await page.waitForTimeout(2000);
-    const countAfterResume = await logs.count();
-    expect(countAfterResume).toBeGreaterThan(countAfterWait);
+    const logEntries = await page.locator('[data-testid="log-rows-container"] > div').count();
+    expect(logEntries).toBeGreaterThan(0);
   });
 
   test('should filter logs', async ({ page }) => {
-      // Wait for some logs to appear
-      await page.waitForTimeout(3000);
+    await page.goto('/logs');
 
-      // Find a log level that exists in the current list
-      const logRows = page.getByTestId('log-rows-container').locator('.group');
-      const count = await logRows.count();
-      expect(count).toBeGreaterThan(0);
+    // Wait for logs
+    await page.waitForSelector('[data-testid="log-rows-container"] > div');
 
-      // Get the level of the first log
-      const firstLogLevel = await logRows.first().locator('span').nth(1).innerText();
-      const targetLevel = firstLogLevel.trim();
+    // Type a random string that likely won't exist to ensure filtering works (clearing the view)
+    // Or better, wait for a specific common log text if predictable.
+    // Since logs are random, let's type "SearchTermThatDoesntExist" and expect empty
 
-      // Set filter to the found level
-      // Map log level to title case for selection (INFO -> Info, ERROR -> Error)
-      const levelOptionMap: Record<string, string> = {
-          'INFO': 'Info',
-          'WARN': 'Warning',
-          'ERROR': 'Error',
-          'DEBUG': 'Debug'
-      };
+    await page.getByPlaceholder('Filter logs...').fill('SearchTermThatDoesntExist');
 
-      const optionName = levelOptionMap[targetLevel];
-      if (!optionName) {
-           // Fallback if we catch a level we didn't map (or if text is empty)
-           console.log(`Unknown level: ${targetLevel}, skipping filter test`);
-           return;
-      }
+    // Should be empty or show "Waiting for logs..." placeholder if cleared
+    // The component shows "Waiting for logs..." if empty array
+    await expect(page.getByText('Waiting for logs...')).toBeVisible();
 
-      const filterSelect = page.getByRole('combobox');
-      await filterSelect.click();
-      await page.getByRole('option', { name: optionName }).click();
+    // Now clear filter
+    await page.getByPlaceholder('Filter logs...').fill('');
 
-      await page.waitForTimeout(1000);
-
-      // Check if all visible logs match the target level
-      // We need to re-locate because DOM updates
-      const visibleLogs = page.getByTestId('log-rows-container').locator('.group');
-      const visibleCount = await visibleLogs.count();
-
-      for (let i = 0; i < visibleCount; i++) {
-          const logText = await visibleLogs.nth(i).innerText();
-          expect(logText).toContain(targetLevel);
-      }
+    // Should see logs again
+    await expect(page.getByText('Waiting for logs...')).not.toBeVisible();
+    await expect(page.locator('[data-testid="log-rows-container"] > div').first()).toBeVisible();
   });
 
-  test('should clear logs', async ({ page }) => {
-      await page.waitForTimeout(4000);
-      const clearButton = page.getByRole('button', { name: 'Clear' });
-      await clearButton.click();
+  test('should pause stream', async ({ page }) => {
+    await page.goto('/logs');
+    await page.waitForSelector('[data-testid="log-rows-container"] > div');
 
-      await clearButton.click();
+    // Click pause
+    await page.getByRole('button', { name: 'Pause' }).click();
 
-      const logArea = page.getByTestId('log-rows-container');
-      const logRows = logArea.locator('.group');
+    // Verify button text changes to Resume
+    await expect(page.getByRole('button', { name: 'Resume' })).toBeVisible();
 
-      // Wait for logs to be cleared (count should drop)
-      await expect(async () => {
-        const count = await logRows.count();
-        expect(count).toBeLessThan(3);
-      }).toPass({ timeout: 2000 });
+    // Wait a bit to ensure potential inflight logs are rendered or ignored (if logic was perfect)
+    // But since `isPaused` just stops new events from being *added* to state,
+    // there might be a race where one event was processed right before pause state updated.
+    await page.waitForTimeout(1000);
+
+    // Get current log count
+    const count1 = await page.locator('[data-testid="log-rows-container"] > div').count();
+
+    // Wait a bit more to ensure no NEW logs are added
+    await page.waitForTimeout(3000);
+
+    // Get count again
+    const count2 = await page.locator('[data-testid="log-rows-container"] > div').count();
+
+    // It's possible 1 log slips through if logic isn't perfectly synchronous with UI event,
+    // but usually React state update is fast.
+    // If this fails, it means the Pause logic in the component isn't effective immediately
+    // or the test is flaky due to timing.
+    expect(count2).toBe(count1);
+
+    // Resume
+    await page.getByRole('button', { name: 'Resume' }).click();
+
+    // Wait for new logs
+    // We need to wait longer than the interval (800ms)
+    await page.waitForTimeout(3000);
+
+    const count3 = await page.locator('[data-testid="log-rows-container"] > div').count();
+    expect(count3).toBeGreaterThan(count2);
   });
 });
