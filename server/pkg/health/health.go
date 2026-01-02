@@ -20,6 +20,7 @@ import (
 	"github.com/mcpany/core/pkg/command"
 	"github.com/mcpany/core/pkg/logging"
 	"github.com/mcpany/core/pkg/metrics"
+	"github.com/mcpany/core/pkg/util"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/samber/lo"
 	"google.golang.org/grpc"
@@ -100,6 +101,9 @@ func httpCheckFunc(ctx context.Context, address string, hc *configv1.HttpHealthC
 
 	client := &http.Client{
 		Timeout: lo.Ternary(hc.GetTimeout() != nil, hc.GetTimeout().AsDuration(), 5*time.Second),
+		Transport: &http.Transport{
+			DialContext: util.SafeDialContext,
+		},
 	}
 
 	method := lo.Ternary(hc.GetMethod() != "", hc.GetMethod(), http.MethodGet)

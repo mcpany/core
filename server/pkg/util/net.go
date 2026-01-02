@@ -66,7 +66,8 @@ func (d *SafeDialer) DialContext(ctx context.Context, network, addr string) (net
 
 	// All IPs are safe. Dial the first one.
 	dialAddr := net.JoinHostPort(ips[0].String(), port)
-	return (&net.Dialer{}).DialContext(ctx, network, dialAddr)
+	// Use a 30 second timeout for the dialer to prevent hanging
+	return (&net.Dialer{Timeout: 30 * time.Second}).DialContext(ctx, network, dialAddr)
 }
 
 // SafeDialContext creates a connection to the given address, but strictly prevents

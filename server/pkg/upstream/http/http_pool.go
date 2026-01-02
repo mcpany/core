@@ -7,13 +7,13 @@ import (
 	"context"
 	"crypto/tls"
 	"crypto/x509"
-	"net"
 	"net/http"
 	"os"
 	"time"
 
 	"github.com/mcpany/core/pkg/client"
 	"github.com/mcpany/core/pkg/pool"
+	"github.com/mcpany/core/pkg/util"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 )
@@ -69,10 +69,8 @@ var NewHTTPPool = func(
 	}
 
 	baseTransport := &http.Transport{
-		TLSClientConfig: tlsConfig,
-		DialContext: (&net.Dialer{
-			Timeout: 30 * time.Second,
-		}).DialContext,
+		TLSClientConfig:     tlsConfig,
+		DialContext:         util.SafeDialContext,
 		MaxIdleConns:        maxSize,
 		MaxIdleConnsPerHost: maxSize,
 	}
