@@ -405,6 +405,9 @@ func isURL(path string) bool {
 // Example: MCPANY__GLOBAL_SETTINGS__MCP_LISTEN_ADDRESS -> global_settings.mcp_listen_address.
 func applyEnvVars(m map[string]interface{}, v proto.Message) {
 	applyEnvVarsFromSlice(m, os.Environ(), v)
+	if v != nil {
+		fixTypes(m, v.ProtoReflect().Descriptor())
+	}
 }
 
 // applyEnvVarsFromSlice is the logic for applyEnvVars, separated for testing.
@@ -462,38 +465,139 @@ func resolveEnvValue(root proto.Message, path []string, value string) interface{
 		return value
 	}
 	md := root.ProtoReflect().Descriptor()
+	var currentFd protoreflect.FieldDescriptor
 
-	for i, part := range path {
-		section := strings.ToLower(part)
-		fd := findField(md, section)
+	for i := 0; i < len(path); i++ {
+		part := strings.ToLower(path[i])
+
+		if currentFd != nil && currentFd.IsList() {
+			// We are inside a list. 'part' should be an index.
+			// If element is Message, we switch 'md' to that message.
+			// If element is Scalar, we are done (or expecting this to be leaf).
+
+			if currentFd.Kind() == protoreflect.MessageKind {
+				md = currentFd.Message()
+				currentFd = nil // Reset, we are now inside the message
+				continue
+			} else {
+				// Scalar list. 'part' is the index.
+				// If this is the last part, we are setting the value of this element.
+				if i == len(path)-1 {
+					// Convert value based on currentFd.Kind()
+					return convertKind(currentFd.Kind(), value)
+				}
+				// If not last part, mismatch? Scalar list doesn't have fields.
+				return value
+			}
+		}
+
+		fd := findField(md, part)
 		if fd == nil {
 			// Can't resolve, return string
 			return value
 		}
+		currentFd = fd
 
 		if i == len(path)-1 {
 			// We found the leaf field. Check its kind.
-			kind := fd.Kind()
-			if kind == protoreflect.BoolKind {
-				b, err := strconv.ParseBool(value)
-				if err == nil {
-					return b
-				}
+			if fd.IsList() {
+				// Setting the whole list via one string? Not supported usually.
+				return value
 			}
-			// For numbers, we can also convert, but strings are accepted by protojson for numbers (except maybe for some specific cases).
-			// Bool is the main one that fails if passed as string.
-			return value
+			return convertKind(fd.Kind(), value)
 		}
 
 		// Navigate deeper
 		if fd.Kind() == protoreflect.MessageKind {
+			if fd.IsList() {
+				// Next iteration will handle index
+				continue
+			}
 			md = fd.Message()
+			currentFd = nil
+		} else if fd.IsList() {
+			// Scalar list. Next iteration will handle index.
+			continue
 		} else {
 			// Path continues but field is not a message? mismatch.
 			return value
 		}
 	}
 	return value
+}
+
+func convertKind(kind protoreflect.Kind, value string) interface{} {
+	if kind == protoreflect.BoolKind {
+		b, err := strconv.ParseBool(value)
+		if err == nil {
+			return b
+		}
+	}
+	// For numbers, we can also convert, but strings are accepted by protojson for numbers.
+	// However, if we want strict typing for ints/floats, we could do it here.
+	// protojson is usually permissive with strings for numbers.
+	return value
+}
+
+// fixTypes traverses the map and converts maps to slices where appropriate based on the protobuf schema.
+// This is necessary because environment variables might create maps for list fields (using indices as keys),
+// but protojson expects slices.
+func fixTypes(m map[string]interface{}, md protoreflect.MessageDescriptor) {
+	for key, val := range m {
+		fd := findField(md, key)
+		if fd == nil {
+			continue
+		}
+
+		if fd.IsList() {
+			// If it's a map, convert to slice
+			if valMap, ok := val.(map[string]interface{}); ok {
+				newSlice := convertMapToSlice(valMap)
+				m[key] = newSlice
+				// Re-assign val for recursive step
+				val = newSlice
+			}
+
+			// If it is a slice (either originally or converted), recurse if it contains messages
+			if valSlice, ok := val.([]interface{}); ok {
+				if fd.Kind() == protoreflect.MessageKind {
+					msgDesc := fd.Message()
+					for _, item := range valSlice {
+						if itemMap, ok := item.(map[string]interface{}); ok {
+							fixTypes(itemMap, msgDesc)
+						}
+					}
+				}
+			}
+
+		} else if fd.Kind() == protoreflect.MessageKind && !fd.IsMap() {
+			// Recurse
+			if valMap, ok := val.(map[string]interface{}); ok {
+				fixTypes(valMap, fd.Message())
+			}
+		}
+	}
+}
+
+func convertMapToSlice(m map[string]interface{}) []interface{} {
+	type entry struct {
+		idx int
+		val interface{}
+	}
+	var entries []entry
+	for k, v := range m {
+		idx, err := strconv.Atoi(k)
+		if err == nil {
+			entries = append(entries, entry{idx, v})
+		}
+	}
+	sort.Slice(entries, func(i, j int) bool { return entries[i].idx < entries[j].idx })
+
+	res := make([]interface{}, len(entries))
+	for i, e := range entries {
+		res[i] = e.val
+	}
+	return res
 }
 
 func findField(md protoreflect.MessageDescriptor, name string) protoreflect.FieldDescriptor {
