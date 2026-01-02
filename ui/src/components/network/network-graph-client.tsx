@@ -55,14 +55,28 @@ import { Separator } from "@/components/ui/separator";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 
+/**
+ * Data associated with a network node.
+ */
 interface NodeData extends Record<string, unknown> {
+    /** Label displayed on the node. */
     label: string;
+    /** Type of the node (e.g., CORE, SERVICE, TOOL). */
     type: NodeType;
+    /** Current status of the node (ACTIVE, INACTIVE, ERROR). */
     status: NodeStatus;
+    /** Real-time metrics for the node. */
     metrics?: { qps?: number; latencyMs?: number; errorRate?: number };
+    /** Additional metadata for the node. */
     metadata?: Record<string, string>;
 }
 
+/**
+ * Component to render the icon for a node based on its type.
+ *
+ * @param props - Component props.
+ * @param props.type - The type of the node.
+ */
 const NodeIcon = ({ type }: { type: NodeType }) => {
     switch (type) {
         case 'NODE_TYPE_CORE': return <Cpu className="h-4 w-4 text-blue-500" />;
@@ -78,6 +92,12 @@ const NodeIcon = ({ type }: { type: NodeType }) => {
     }
 };
 
+/**
+ * Component to render the status icon for a node.
+ *
+ * @param props - Component props.
+ * @param props.status - The status of the node.
+ */
 const StatusIcon = ({ status }: { status: NodeStatus }) => {
     switch (status) {
         case 'NODE_STATUS_ACTIVE': return <CheckCircle2 className="h-4 w-4 text-green-500" />;
@@ -87,6 +107,11 @@ const StatusIcon = ({ status }: { status: NodeStatus }) => {
     }
 };
 
+/**
+ * Internal component that renders the React Flow graph.
+ *
+ * Handles node selection, filtering, and interactions.
+ */
 function Flow() {
   const { nodes, edges, onNodesChange, onEdgesChange, onConnect, refreshTopology, autoLayout } = useNetworkTopology();
   const [selectedNode, setSelectedNode] = useState<Node<NodeData> | null>(null);
@@ -298,6 +323,15 @@ function Flow() {
   );
 }
 
+/**
+ * Displays a single metric in a card.
+ *
+ * @param props - Component props.
+ * @param props.label - The label of the metric.
+ * @param props.value - The value of the metric.
+ * @param props.unit - The unit of the metric.
+ * @param props.intent - The visual intent (neutral, danger, success).
+ */
 function MetricCard({ label, value, unit, intent = "neutral" }: { label: string, value?: string, unit: string, intent?: "neutral" | "danger" | "success" }) {
     return (
         <Card className={`p-3 bg-card/50 ${intent === 'danger' ? 'border-red-200 bg-red-50 dark:bg-red-900/10 dark:border-red-900' : ''}`}>
@@ -309,6 +343,11 @@ function MetricCard({ label, value, unit, intent = "neutral" }: { label: string,
     )
 }
 
+/**
+ * Main Network Topology Graph component.
+ *
+ * Wraps the Flow component with ReactFlowProvider.
+ */
 export function NetworkGraphClient() {
     return (
         <ReactFlowProvider>

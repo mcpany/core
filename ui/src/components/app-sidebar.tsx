@@ -84,6 +84,12 @@ const items = [
   },
 ]
 
+/**
+ * The main application sidebar component.
+ *
+ * Renders the navigation menu with links to different sections of the application.
+ * Highlights the active link based on the current pathname.
+ */
 export function AppSidebar() {
   const pathname = usePathname()
 

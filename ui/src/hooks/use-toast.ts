@@ -16,10 +16,17 @@ import type {
 const TOAST_LIMIT = 1
 const TOAST_REMOVE_DELAY = 1000000
 
+/**
+ * Represents a toast notification.
+ */
 type ToasterToast = ToastProps & {
+  /** Unique ID for the toast. */
   id: string
+  /** Title of the toast. */
   title?: React.ReactNode
+  /** Description/content of the toast. */
   description?: React.ReactNode
+  /** Action button for the toast. */
   action?: ToastActionElement
 }
 
@@ -147,6 +154,12 @@ function dispatch(action: Action) {
 
 type Toast = Omit<ToasterToast, "id">
 
+/**
+ * Helper function to create a toast.
+ *
+ * @param props - The properties of the toast.
+ * @returns An object to control the created toast.
+ */
 function toast({ ...props }: Toast) {
   const id = genId()
 
@@ -176,6 +189,11 @@ function toast({ ...props }: Toast) {
   }
 }
 
+/**
+ * Hook to manage toasts.
+ *
+ * @returns An object containing the current toasts and functions to manage them.
+ */
 function useToast() {
   const [state, setState] = React.useState<State>(memoryState)
 

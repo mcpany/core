@@ -8,19 +8,37 @@ import { Node, Edge, useNodesState, useEdgesState, addEdge, Connection, MarkerTy
 import dagre from 'dagre';
 import { Graph, Node as TopologyNode } from '../types/topology';
 
+/**
+ * State and handlers for the network topology graph.
+ */
 export interface NetworkGraphState {
+    /** The list of nodes in the graph. */
     nodes: Node[];
+    /** The list of edges in the graph. */
     edges: Edge[];
+    /** Handler for node changes (drag, selection, etc.). */
     onNodesChange: any;
+    /** Handler for edge changes. */
     onEdgesChange: any;
+    /** Handler for creating new connections between nodes. */
     onConnect: (params: Connection) => void;
+    /** Function to force a refresh of the topology data from the backend. */
     refreshTopology: () => void;
+    /** Function to re-run the auto-layout algorithm. */
     autoLayout: () => void;
 }
 
 const nodeWidth = 220;
 const nodeHeight = 60;
 
+/**
+ * Computes the layout of nodes and edges using Dagre.
+ *
+ * @param nodes - The nodes to layout.
+ * @param edges - The edges connecting the nodes.
+ * @param direction - The direction of the layout ('TB' for Top-Bottom, 'LR' for Left-Right).
+ * @returns An object containing the layouted nodes and edges.
+ */
 const getLayoutedElements = (nodes: Node[], edges: Edge[], direction = 'TB') => {
     const dagreGraph = new dagre.graphlib.Graph();
     dagreGraph.setDefaultEdgeLabel(() => ({}));
@@ -55,6 +73,14 @@ const getLayoutedElements = (nodes: Node[], edges: Edge[], direction = 'TB') => 
     return { nodes: layoutedNodes, edges };
 };
 
+/**
+ * Hook to manage the network topology graph.
+ *
+ * It fetches the topology data from the backend, processes it into React Flow nodes and edges,
+ * and handles layout and updates.
+ *
+ * @returns The current state and handlers for the network graph.
+ */
 export function useNetworkTopology() {
     const [nodes, setNodes, onNodesChange] = useNodesState<Node>([]);
     const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);

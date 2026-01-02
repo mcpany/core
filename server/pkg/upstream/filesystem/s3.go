@@ -8,8 +8,11 @@ import (
 	"path"
 	"strings"
 
+	//nolint:staticcheck // Legacy support
 	"github.com/aws/aws-sdk-go/aws"
+	//nolint:staticcheck // Legacy support
 	"github.com/aws/aws-sdk-go/aws/credentials"
+	//nolint:staticcheck // Legacy support
 	"github.com/aws/aws-sdk-go/aws/session"
 	s3 "github.com/fclairamb/afero-s3"
 	"github.com/spf13/afero"
