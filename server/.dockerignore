@@ -31,3 +31,4 @@ node_modules/
 
 # Large test data (not needed for binary build)
 tests/
+!tests/integration/cmd/mocks
