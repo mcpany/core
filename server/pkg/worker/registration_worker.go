@@ -7,6 +7,7 @@ package worker
 import (
 	"context"
 	"fmt"
+	"math"
 	"runtime/debug"
 	"sync"
 	"time"
@@ -16,6 +17,15 @@ import (
 	"github.com/mcpany/core/pkg/metrics"
 	"github.com/mcpany/core/pkg/serviceregistry"
 	"github.com/mcpany/core/pkg/util"
+)
+
+var (
+	// maxRegistrationRetries is the maximum number of times to retry service registration
+	maxRegistrationRetries = 10
+	// baseRetryDelay is the initial delay for registration retries
+	baseRetryDelay = 1 * time.Second
+	// maxRetryDelay is the maximum delay for registration retries
+	maxRetryDelay = 30 * time.Second
 )
 
 // ServiceRegistrationWorker is a background worker responsible for handling
@@ -81,7 +91,7 @@ func (w *ServiceRegistrationWorker) Start(ctx context.Context) {
 				}
 			}()
 
-			log.Info("Received service registration request", "correlationID", req.CorrelationID())
+			log.Info("Received service registration request", "correlationID", req.CorrelationID(), "retryCount", req.RetryCount)
 
 			requestCtx := req.Context
 			if requestCtx == nil {
@@ -108,26 +118,44 @@ func (w *ServiceRegistrationWorker) Start(ctx context.Context) {
 				Error:               err,
 			}
 			if err != nil {
-				log.Error("Failed to register service", "service", req.Config.GetName(), "error", err)
+				log.Error("Failed to register service", "service", req.Config.GetName(), "error", err, "retryCount", req.RetryCount)
 				metrics.IncrCounter([]string{"worker", "registration", "request", "error"}, 1)
 
-				// Schedule a retry
-				// Simple fixed delay for now. In a robust system, we would track retry counts and apply backoff.
-				// Since we don't have a place to store retry count in the request without modifying proto,
-				// we just retry indefinitely every 5 seconds until success or cancellation.
-				retryDelay := 5 * time.Second
-				log.Info("Scheduling retry for service registration", "service", req.Config.GetName(), "delay", retryDelay)
-
-				go func() {
-					select {
-					case <-ctx.Done():
-						return
-					case <-time.After(retryDelay):
-						if err := requestBus.Publish(ctx, "request", req); err != nil {
-							log.Error("Failed to publish retry request", "service", req.Config.GetName(), "error", err)
-						}
+				if req.RetryCount < maxRegistrationRetries {
+					// Exponential backoff with jitter
+					backoff := float64(baseRetryDelay) * math.Pow(2, float64(req.RetryCount))
+					if backoff > float64(maxRetryDelay) {
+						backoff = float64(maxRetryDelay)
 					}
-				}()
+					// Add jitter? For now, simple backoff.
+					retryDelay := time.Duration(backoff)
+
+					log.Info("Scheduling retry for service registration", "service", req.Config.GetName(), "delay", retryDelay, "retryCount", req.RetryCount+1)
+
+					// Create a copy of the request to avoid side effects
+					retryReq := &bus.ServiceRegistrationRequest{
+						BaseMessage: bus.BaseMessage{CID: req.CID},
+						Context:     req.Context,
+						Config:      req.Config,
+						RetryCount:  req.RetryCount + 1,
+					}
+
+					go func() {
+						select {
+						case <-ctx.Done():
+							return
+						case <-time.After(retryDelay):
+							if err := requestBus.Publish(ctx, "request", retryReq); err != nil {
+								log.Error("Failed to publish retry request", "service", retryReq.Config.GetName(), "error", err)
+							}
+						}
+					}()
+				} else {
+					log.Error("Max retries reached for service registration", "service", req.Config.GetName())
+					metrics.IncrCounter([]string{"worker", "registration", "request", "max_retries_exceeded"}, 1)
+					// We don't need to do anything else, the service remains in the registry as failed (in serviceConfigs but not upstreams)
+					// so GetServiceError will return the error.
+				}
 			} else {
 				log.Info("Successfully registered service", "service", req.Config.GetName(), "tools_count", len(discoveredTools), "resources_count", len(discoveredResources))
 				metrics.IncrCounter([]string{"worker", "registration", "request", "success"}, 1)

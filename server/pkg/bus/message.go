@@ -45,8 +45,9 @@ func (m *BaseMessage) SetCorrelationID(id string) {
 // configuration and the context for the request.
 type ServiceRegistrationRequest struct {
 	BaseMessage
-	Context context.Context
-	Config  *configv1.UpstreamServiceConfig
+	Context    context.Context
+	Config     *configv1.UpstreamServiceConfig
+	RetryCount int
 }
 
 // ServiceRegistrationResult is a message published in response to a
