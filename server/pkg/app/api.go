@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/mcpany/core/pkg/config"
 	"github.com/mcpany/core/pkg/logging"
 	"github.com/mcpany/core/pkg/storage"
 	configv1 "github.com/mcpany/core/proto/config/v1"
@@ -70,6 +71,13 @@ func (a *Application) createAPIHandler(store storage.Storage) http.Handler {
 				http.Error(w, "name is required", http.StatusBadRequest)
 				return
 			}
+
+			// Validate service configuration before saving
+			if err := config.ValidateOrError(r.Context(), &svc); err != nil {
+				http.Error(w, "invalid service configuration: "+err.Error(), http.StatusBadRequest)
+				return
+			}
+
 			// Auto-generate ID if missing? Store handles it if we pass empty ID (fallback to name).
 			// But creating UUID here might be better? For now name fallback is fine.
 
@@ -133,6 +141,13 @@ func (a *Application) createAPIHandler(store storage.Storage) http.Handler {
 				return
 			}
 			svc.Name = proto.String(name) // Force name match
+
+			// Validate service configuration before saving
+			if err := config.ValidateOrError(r.Context(), &svc); err != nil {
+				http.Error(w, "invalid service configuration: "+err.Error(), http.StatusBadRequest)
+				return
+			}
+
 			if err := store.SaveService(r.Context(), &svc); err != nil {
 				logging.GetLogger().Error("failed to save service", "name", name, "error", err)
 				http.Error(w, "Internal Server Error", http.StatusInternalServerError)

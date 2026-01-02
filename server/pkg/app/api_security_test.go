@@ -7,57 +7,70 @@ import (
 	"bytes"
 	"net/http"
 	"net/http/httptest"
-	"path/filepath"
 	"testing"
 
-	"github.com/mcpany/core/pkg/storage/sqlite"
-	"github.com/spf13/afero"
+	"github.com/mcpany/core/pkg/storage/memory"
+	"github.com/mcpany/core/pkg/tool"
+	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
+	"google.golang.org/protobuf/encoding/protojson"
+	"google.golang.org/protobuf/proto"
 )
 
-func TestCreateAPIHandler_LargeBody(t *testing.T) {
-	// Setup SQLite DB
-	tempDir := t.TempDir()
-	dbPath := filepath.Join(tempDir, "test.db")
-	db, err := sqlite.NewDB(dbPath)
-	require.NoError(t, err)
-	defer db.Close()
-
-	store := sqlite.NewStore(db)
-
-	// Setup Application
-	app := NewApplication()
-	app.fs = afero.NewMemMapFs()
+func TestAPIHandler_SecurityValidation(t *testing.T) {
+	// Create a memory store
+	store := memory.NewStore()
+	app := &Application{
+		ToolManager: tool.NewManager(nil), // Need ToolManager to avoid panic in ReloadConfig log
+	}
 
 	handler := app.createAPIHandler(store)
-	ts := httptest.NewServer(handler)
-	defer ts.Close()
 
-	// Create a large body (2MB)
-	largeBody := make([]byte, 2*1024*1024)
-	// Fill with some valid-ish JSON structure if needed, but for size limit check,
-	// just the size matters. However, io.ReadAll will read it all before protojson fails on invalid JSON.
-	// If we want to test that it fails *because* of size, we should expect 413 or similar.
-	// But current implementation just reads it.
+	// Test case: Invalid URL scheme in http_service
+	t.Run("Invalid URL Scheme", func(t *testing.T) {
+		svc := &configv1.UpstreamServiceConfig{
+			Name: proto.String("malicious-service"),
+			ServiceConfig: &configv1.UpstreamServiceConfig_HttpService{
+				HttpService: &configv1.HttpUpstreamService{
+					Address: proto.String("gopher://malicious.com"),
+				},
+			},
+		}
+		body, _ := protojson.Marshal(svc)
 
-	req, err := http.NewRequest(http.MethodPost, ts.URL+"/services", bytes.NewReader(largeBody))
-	require.NoError(t, err)
+		req := httptest.NewRequest("POST", "/services", bytes.NewReader(body))
+		w := httptest.NewRecorder()
 
-	resp, err := http.DefaultClient.Do(req)
-	require.NoError(t, err)
-	defer resp.Body.Close()
+		handler.ServeHTTP(w, req)
 
-	// Before fix: it might return 400 because the body is not valid JSON, but it READS the whole body.
-	// After fix: it should reject reading the body or fail with a specific error if we check it.
-	// The key is that `http.MaxBytesReader` will prevent reading more than N bytes.
+		// Assert that the request is rejected with Bad Request (400)
+		assert.Equal(t, http.StatusBadRequest, w.Code)
+		assert.Contains(t, w.Body.String(), "invalid service configuration")
+	})
 
-	// For now, we just assert that we CAN send it and get a response (it doesn't crash).
-	// With the fix, we want to ensure we get a specific behavior, but detecting "read too much"
-	// is easiest by checking if the server protected itself.
+	// Test case: Absolute path in bundle_path (path traversal/security risk)
+	t.Run("Absolute Bundle Path", func(t *testing.T) {
+		svc := &configv1.UpstreamServiceConfig{
+			Name: proto.String("absolute-path-service"),
+			ServiceConfig: &configv1.UpstreamServiceConfig_McpService{
+				McpService: &configv1.McpUpstreamService{
+					ConnectionType: &configv1.McpUpstreamService_BundleConnection{
+						BundleConnection: &configv1.McpBundleConnection{
+							BundlePath: proto.String("/etc/passwd"),
+						},
+					},
+				},
+			},
+		}
+		body, _ := protojson.Marshal(svc)
 
-	// In a real exploit, this would consume memory.
-	// Here we just verify the test runs.
-	// Now that we've implemented the fix, we expect 413 Payload Too Large
-	assert.Equal(t, http.StatusRequestEntityTooLarge, resp.StatusCode)
+		req := httptest.NewRequest("POST", "/services", bytes.NewReader(body))
+		w := httptest.NewRecorder()
+
+		handler.ServeHTTP(w, req)
+
+		// Assert that the request is rejected with Bad Request (400)
+		assert.Equal(t, http.StatusBadRequest, w.Code)
+		assert.Contains(t, w.Body.String(), "invalid service configuration")
+	})
 }
