@@ -408,6 +408,18 @@ func validateSQLService(sqlService *configv1.SqlUpstreamService) error {
 	if sqlService.GetDsn() == "" {
 		return fmt.Errorf("sql service has empty dsn")
 	}
+
+	for name, call := range sqlService.GetCalls() {
+		if call.GetQuery() == "" {
+			return fmt.Errorf("sql call %q query is empty", name)
+		}
+		if err := validateSchema(call.GetInputSchema()); err != nil {
+			return fmt.Errorf("sql call %q input_schema error: %w", name, err)
+		}
+		if err := validateSchema(call.GetOutputSchema()); err != nil {
+			return fmt.Errorf("sql call %q output_schema error: %w", name, err)
+		}
+	}
 	return nil
 }
 
