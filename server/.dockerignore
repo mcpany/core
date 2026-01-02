@@ -1,0 +1,33 @@
+# Git
+.git
+.gitignore
+
+# Go build artifacts
+bin/
+build/
+*.exe
+*.test
+*.out
+coverage.out
+
+# Logs
+*.log
+test_output*.txt
+lint_output*.txt
+
+# Temporary files
+tmp/
+.tmp/
+
+# Dependency directories (if any local copies exist)
+vendor/
+node_modules/
+
+# Editor/IDE files
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Large test data (not needed for binary build)
+tests/
