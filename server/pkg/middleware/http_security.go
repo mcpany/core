@@ -3,7 +3,10 @@
 
 package middleware
 
-import "net/http"
+import (
+	"net/http"
+	"strings"
+)
 
 // HTTPSecurityHeadersMiddleware adds security headers to HTTP responses.
 func HTTPSecurityHeadersMiddleware(next http.Handler) http.Handler {
@@ -15,6 +18,14 @@ func HTTPSecurityHeadersMiddleware(next http.Handler) http.Handler {
 		w.Header().Set("Content-Security-Policy", "default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; script-src 'self'; connect-src 'self'")
 		w.Header().Set("Strict-Transport-Security", "max-age=63072000; includeSubDomains")
 		w.Header().Set("Permissions-Policy", "geolocation=(), camera=(), microphone=(), payment=(), usb=(), vr=()")
+
+		// Prevent caching for API routes to protect sensitive data.
+		// We allow caching for UI resources to improve performance.
+		if !strings.HasPrefix(r.URL.Path, "/ui/") && !strings.HasPrefix(r.URL.Path, "/static/") {
+			w.Header().Set("Cache-Control", "no-store")
+			w.Header().Set("Pragma", "no-cache")
+		}
+
 		next.ServeHTTP(w, r)
 	})
 }
