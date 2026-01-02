@@ -189,7 +189,7 @@ paths:
 	}
 
 	// Service Info
-	mockToolManager.EXPECT().AddServiceInfo(gomock.Any(), gomock.Any()).Do(func(id string, info *tool.ServiceInfo) {
+	mockToolManager.EXPECT().AddServiceInfo(gomock.Any(), gomock.Any()).Do(func(_ string, info *tool.ServiceInfo) {
 		assert.Equal(t, "test-service", info.Name)
 	})
 
@@ -207,7 +207,7 @@ paths:
 	})
 
 	// Resource Registration
-	mockToolManager.EXPECT().GetTool("test-service.getTest").Return(nil, false).DoAndReturn(func(name string) (tool.Tool, bool) {
+	mockToolManager.EXPECT().GetTool("test-service.getTest").Return(nil, false).DoAndReturn(func(_ string) (tool.Tool, bool) {
 		return registeredTool, true
 	})
 

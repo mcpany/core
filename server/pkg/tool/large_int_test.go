@@ -72,7 +72,7 @@ func TestLargeIntPrecisionLoss(t *testing.T) {
 		tool:           toolDef,
 		service:        service,
 		callDefinition: callDef,
-		executorFactory: func(env *configv1.ContainerEnvironment) command.Executor {
+		executorFactory: func(_ *configv1.ContainerEnvironment) command.Executor {
 			return mockExec
 		},
 	}

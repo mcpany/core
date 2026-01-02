@@ -42,7 +42,7 @@ func TestHTTPTool_Execute_LogsSensitiveHeaders(t *testing.T) {
 	var logBuf bytes.Buffer
 	logging.Init(slog.LevelDebug, &logBuf)
 
-	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	handler := http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		w.WriteHeader(http.StatusOK)
 		_, _ = w.Write([]byte(`{"status": "ok"}`))
 	})

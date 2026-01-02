@@ -20,7 +20,7 @@ import (
 
 func TestRedisLimiter(t *testing.T) {
 	db, mockRedis := redismock.NewClientMock()
-	middleware.SetRedisClientCreatorForTests(func(opts *redis.Options) *redis.Client {
+	middleware.SetRedisClientCreatorForTests(func(_ *redis.Options) *redis.Client {
 		return db
 	})
 	defer middleware.SetRedisClientCreatorForTests(func(opts *redis.Options) *redis.Client {

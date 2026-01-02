@@ -28,7 +28,7 @@ func TestHTTPPoolConnectionLeak(t *testing.T) {
 	}))
 
 	// We use the server's ConnState hook to track connections
-	server.Config.ConnState = func(c net.Conn, state http.ConnState) {
+	server.Config.ConnState = func(_ net.Conn, state http.ConnState) {
 		switch state {
 		case http.StateNew:
 			connectionCount++

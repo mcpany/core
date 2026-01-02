@@ -17,7 +17,7 @@ func TestStaticResource_SSRFProtection(t *testing.T) {
 	// Ensure loopback is BLOCKED (default behavior)
 	t.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "false")
 
-	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		w.WriteHeader(http.StatusOK)
 		_, _ = w.Write([]byte("secret data"))
 	}))

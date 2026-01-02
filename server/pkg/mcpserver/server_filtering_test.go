@@ -40,11 +40,11 @@ func (m *mockResource) Service() string {
 	return m.service
 }
 
-func (m *mockResource) Read(ctx context.Context) (*mcp.ReadResourceResult, error) {
+func (m *mockResource) Read(_ context.Context) (*mcp.ReadResourceResult, error) {
 	return nil, nil
 }
 
-func (m *mockResource) Subscribe(ctx context.Context) error {
+func (m *mockResource) Subscribe(_ context.Context) error {
 	return nil
 }
 
@@ -69,9 +69,9 @@ func (m *mockResourceManager) AddResource(r resource.Resource) {
 	m.resources = append(m.resources, r)
 }
 
-func (m *mockResourceManager) RemoveResource(uri string) {}
+func (m *mockResourceManager) RemoveResource(_ string) {}
 func (m *mockResourceManager) OnListChanged(f func())    {}
-func (m *mockResourceManager) ClearResourcesForService(serviceID string) {
+func (m *mockResourceManager) ClearResourcesForService(_ string) {
 }
 
 type mockPrompt struct {
@@ -116,9 +116,9 @@ func (m *mockPromptManager) UpdatePrompt(p prompt.Prompt) {
 	m.prompts = append(m.prompts, p)
 }
 
-func (m *mockPromptManager) RemovePrompt(name string) {}
-func (m *mockPromptManager) SetMCPServer(s prompt.MCPServerProvider) {}
-func (m *mockPromptManager) ClearPromptsForService(serviceID string) {}
+func (m *mockPromptManager) RemovePrompt(_ string) {}
+func (m *mockPromptManager) SetMCPServer(_ prompt.MCPServerProvider) {}
+func (m *mockPromptManager) ClearPromptsForService(_ string) {}
 
 
 // reuse smartToolManager concept for GetServiceInfo
