@@ -31,12 +31,12 @@ func TestApplyEnvVarsFromSlice_Determinism(t *testing.T) {
 
 	// Case 1: Already sorted input
 	m1 := make(map[string]interface{})
-	applyEnvVarsFromSlice(m1, env1)
+	applyEnvVarsFromSlice(m1, env1, nil)
 	assert.Equal(t, expected, m1, "Expected m1 to match sorted result")
 
 	// Case 2: Reverse sorted input
 	m2 := make(map[string]interface{})
-	applyEnvVarsFromSlice(m2, env2)
+	applyEnvVarsFromSlice(m2, env2, nil)
 	assert.Equal(t, expected, m2, "Expected m2 to match sorted result (A processed before A__B)")
 
 	// Final verification: determinism
