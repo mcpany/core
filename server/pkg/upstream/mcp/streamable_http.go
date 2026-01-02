@@ -81,6 +81,8 @@ func SetConnectForTesting(f func(client *mcp.Client, ctx context.Context, transp
 type Upstream struct {
 	sessionRegistry *SessionRegistry
 	serviceID       string
+	// BundleBaseDir is the directory where bundles are extracted.
+	BundleBaseDir string
 }
 
 // Shutdown cleans up any temporary resources associated with the upstream, such
@@ -88,7 +90,7 @@ type Upstream struct {
 func (u *Upstream) Shutdown(_ context.Context) error {
 	if u.serviceID != "" {
 		untrackBundle(u.serviceID)
-		tempDir := filepath.Join(bundleBaseDir, u.serviceID)
+		tempDir := filepath.Join(u.BundleBaseDir, u.serviceID)
 		if _, err := os.Stat(tempDir); err == nil {
 			logging.GetLogger().Info("Cleaning up bundle temp directory", "dir", tempDir)
 			if err := os.RemoveAll(tempDir); err != nil {
@@ -103,6 +105,7 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 func NewUpstream() upstream.Upstream {
 	return &Upstream{
 		sessionRegistry: NewSessionRegistry(),
+		BundleBaseDir:   bundleBaseDir,
 	}
 }
 

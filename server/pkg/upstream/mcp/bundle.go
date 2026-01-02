@@ -76,7 +76,7 @@ func (u *Upstream) createAndRegisterMCPItemsFromBundle(
 		return nil, nil, fmt.Errorf("bundle_path is required")
 	}
 
-	tempDir := filepath.Join(bundleBaseDir, serviceID)
+	tempDir := filepath.Join(u.BundleBaseDir, serviceID)
 	// Clean up old dir if exists
 	_ = os.RemoveAll(tempDir)
 	if err := unzipBundle(bundlePath, tempDir); err != nil {
