@@ -14,7 +14,6 @@ import (
 	"io"
 	"net/http"
 	"os"
-	"path"
 	"path/filepath"
 	"regexp"
 	"strings"
@@ -29,13 +28,6 @@ import (
 	"github.com/mcpany/core/pkg/util"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 
-	//nolint:staticcheck // afero-s3 requires aws-sdk-go v1
-	"github.com/aws/aws-sdk-go/aws"
-	//nolint:staticcheck // afero-s3 requires aws-sdk-go v1
-	"github.com/aws/aws-sdk-go/aws/credentials"
-	//nolint:staticcheck // afero-s3 requires aws-sdk-go v1
-	"github.com/aws/aws-sdk-go/aws/session"
-	s3 "github.com/fclairamb/afero-s3"
 	"github.com/spf13/afero"
 	"github.com/spf13/afero/zipfs"
 	"google.golang.org/protobuf/proto"
@@ -218,35 +210,7 @@ func (u *Upstream) createFilesystem(ctx context.Context, config *configv1.Filesy
 		return u.createSftpFilesystem(config.GetSftp())
 
 	case *configv1.FilesystemUpstreamService_S3:
-		s3Config := config.GetS3()
-		awsConfig := aws.NewConfig()
-
-		if s3Config.GetRegion() != "" {
-			awsConfig.WithRegion(s3Config.GetRegion())
-		}
-
-		if s3Config.GetAccessKeyId() != "" && s3Config.GetSecretAccessKey() != "" {
-			awsConfig.WithCredentials(credentials.NewStaticCredentials(
-				s3Config.GetAccessKeyId(),
-				s3Config.GetSecretAccessKey(),
-				s3Config.GetSessionToken(),
-			))
-		}
-
-		if s3Config.GetEndpoint() != "" {
-			awsConfig.WithEndpoint(s3Config.GetEndpoint())
-			// Needed for MinIO and some S3 compatible services
-			awsConfig.WithS3ForcePathStyle(true)
-		}
-
-		sess, err := session.NewSession(awsConfig)
-		if err != nil {
-			return nil, fmt.Errorf("failed to create AWS session: %w", err)
-		}
-
-		// Create S3 filesystem
-		// Note: afero-s3 uses the bucket name as the root
-		baseFs = s3.NewFs(s3Config.GetBucket(), sess)
+		return u.createS3Filesystem(config.GetS3())
 
 	case *configv1.FilesystemUpstreamService_Os:
 		baseFs = afero.NewOsFs()
@@ -275,148 +239,15 @@ func (u *Upstream) resolvePath(virtualPath string, config *configv1.FilesystemUp
 		return filepath.Clean(virtualPath), nil
 
 	case *configv1.FilesystemUpstreamService_S3:
-		// For S3, just clean the path. It's virtual relative to the bucket.
-		// Join with "/" to ensure we resolve relative paths against a root, preventing ".." traversal
-		// effectively sandboxing to the bucket root.
-		// Use path package (not filepath) because S3 keys always use '/' separator.
-		cleanPath := path.Clean("/" + virtualPath)
-
-		// Strip the leading slash because S3 keys don't usually start with /
-		cleanPath = strings.TrimPrefix(cleanPath, "/")
-
-		if cleanPath == "" || cleanPath == "." {
-			return "", fmt.Errorf("invalid path")
-		}
-		return cleanPath, nil
+		return u.resolveS3Path(virtualPath)
 
 	case *configv1.FilesystemUpstreamService_Os:
-		return u.validatePath(virtualPath, config.RootPaths)
+		return u.validateLocalPath(virtualPath, config.RootPaths)
 
 	default:
 		// Default (legacy) uses OsFs and validatePath
-		return u.validatePath(virtualPath, config.RootPaths)
+		return u.validateLocalPath(virtualPath, config.RootPaths)
 	}
-}
-
-// validatePath checks if the given virtual path resolves to a safe local path
-// within one of the allowed root paths.
-// This is used ONLY when we are mapping virtual paths to local OS paths (Legacy/OsFs mode).
-func (u *Upstream) validatePath(virtualPath string, rootPaths map[string]string) (string, error) {
-	if len(rootPaths) == 0 {
-		return "", fmt.Errorf("no root paths defined")
-	}
-
-	// 1. Find the best matching root path (longest prefix match)
-	var bestMatchVirtual string
-	var bestMatchReal string
-
-	for vRoot, rRoot := range rootPaths {
-		// Ensure vRoot has a clean format
-		cleanVRoot := vRoot
-		if !strings.HasPrefix(cleanVRoot, "/") {
-			cleanVRoot = "/" + cleanVRoot
-		}
-
-		// Ensure virtualPath starts with /
-		checkPath := virtualPath
-		if !strings.HasPrefix(checkPath, "/") {
-			checkPath = "/" + checkPath
-		}
-
-		if strings.HasPrefix(checkPath, cleanVRoot) {
-			if len(cleanVRoot) > len(bestMatchVirtual) {
-				bestMatchVirtual = cleanVRoot
-				bestMatchReal = rRoot
-			}
-		}
-	}
-
-	if bestMatchVirtual == "" {
-		// Try fallback: if rootPaths has "/" key, use it.
-		if val, ok := rootPaths["/"]; ok {
-			bestMatchVirtual = "/"
-			bestMatchReal = val
-		} else {
-			return "", fmt.Errorf("path %s is not allowed (no matching root)", virtualPath)
-		}
-	}
-
-	// 2. Resolve the path
-	relativePath := strings.TrimPrefix(virtualPath, bestMatchVirtual)
-	// handle case where virtualPath matched exactly or with trailing slash
-	relativePath = strings.TrimPrefix(relativePath, "/")
-
-	realRootAbs, err := filepath.Abs(bestMatchReal)
-	if err != nil {
-		return "", fmt.Errorf("failed to resolve root path: %w", err)
-	}
-
-	// Resolve symlinks in the root path to ensure we have the canonical path
-	realRootCanonical, err := filepath.EvalSymlinks(realRootAbs)
-	if err != nil {
-		// If root doesn't exist, we can't really secure it, so error out.
-		return "", fmt.Errorf("failed to resolve root path symlinks: %w", err)
-	}
-
-	targetPath := filepath.Join(realRootCanonical, relativePath)
-	targetPathAbs, err := filepath.Abs(targetPath)
-	if err != nil {
-		return "", fmt.Errorf("failed to resolve target path: %w", err)
-	}
-
-	// Resolve symlinks for the target path too
-	targetPathCanonical, err := filepath.EvalSymlinks(targetPathAbs)
-	if err != nil {
-		if os.IsNotExist(err) {
-			// If file doesn't exist, we need to find the deepest existing ancestor
-			// to ensure that no symlinks in the path point outside the root.
-			currentPath := targetPathAbs
-			var existingPath string
-			var remainingPath string
-
-			for {
-				dir := filepath.Dir(currentPath)
-				if dir == currentPath {
-					// Reached root without finding existing path (should not happen if realRoot exists)
-					return "", fmt.Errorf("failed to resolve path (root not found): %s", targetPathAbs)
-				}
-
-				// Check if dir exists
-				if _, err := os.Stat(dir); err == nil {
-					existingPath = dir
-					var relErr error
-					remainingPath, relErr = filepath.Rel(existingPath, targetPathAbs)
-					if relErr != nil {
-						return "", fmt.Errorf("failed to calculate relative path: %w", relErr)
-					}
-					break
-				}
-				currentPath = dir
-			}
-
-			// Resolve symlinks for the existing ancestor
-			existingPathCanonical, err := filepath.EvalSymlinks(existingPath)
-			if err != nil {
-				return "", fmt.Errorf("failed to resolve ancestor path symlinks: %w", err)
-			}
-
-			// Construct the canonical path
-			targetPathCanonical = filepath.Join(existingPathCanonical, remainingPath)
-
-			// Note: We don't check if the "remainingPath" contains ".." because filepath.Rel and Join should handle it,
-			// and we are constructing it from absolute paths.
-			// However, since the intermediate directories don't exist, they can't be symlinks pointing elsewhere.
-		} else {
-			return "", fmt.Errorf("failed to resolve target path symlinks: %w", err)
-		}
-	}
-
-	// 3. Security Check: Ensure targetPathCanonical starts with realRootCanonical
-	if !strings.HasPrefix(targetPathCanonical, realRootCanonical+string(os.PathSeparator)) && targetPathCanonical != realRootCanonical {
-		return "", fmt.Errorf("access denied: path traversal detected")
-	}
-
-	return targetPathCanonical, nil
 }
 
 type filesystemToolDef struct {
