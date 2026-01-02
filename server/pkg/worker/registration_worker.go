@@ -20,11 +20,11 @@ import (
 )
 
 var (
-	// maxRegistrationRetries is the maximum number of times to retry service registration
+	// maxRegistrationRetries is the maximum number of times to retry service registration.
 	maxRegistrationRetries = 10
-	// baseRetryDelay is the initial delay for registration retries
+	// baseRetryDelay is the initial delay for registration retries.
 	baseRetryDelay = 1 * time.Second
-	// maxRetryDelay is the maximum delay for registration retries
+	// maxRetryDelay is the maximum delay for registration retries.
 	maxRetryDelay = 30 * time.Second
 )
 
