@@ -88,7 +88,7 @@ type Upstream struct {
 func (u *Upstream) Shutdown(_ context.Context) error {
 	if u.serviceID != "" {
 		untrackBundle(u.serviceID)
-		tempDir := filepath.Join(os.TempDir(), "mcp-bundles", u.serviceID)
+		tempDir := filepath.Join(bundleBaseDir, u.serviceID)
 		if _, err := os.Stat(tempDir); err == nil {
 			logging.GetLogger().Info("Cleaning up bundle temp directory", "dir", tempDir)
 			if err := os.RemoveAll(tempDir); err != nil {
@@ -213,9 +213,20 @@ func (u *Upstream) Register(
 	}
 	u.serviceID = serviceID
 
+	// Track bundle potential usage early to prevent GC race during setup
+	trackBundle(serviceID)
+	// Trigger GC lazily, but after we are safe
+	triggerGC()
+	defer func() {
+		if err != nil {
+			untrackBundle(serviceID)
+		}
+	}()
+
 	mcpService := serviceConfig.GetMcpService()
 	if mcpService == nil {
-		return "", nil, nil, fmt.Errorf("mcp service config is nil")
+		err = fmt.Errorf("mcp service config is nil")
+		return "", nil, nil, err
 	}
 
 	info := &tool.ServiceInfo{
@@ -243,12 +254,9 @@ func (u *Upstream) Register(
 			return "", nil, nil, err
 		}
 	default:
-		return "", nil, nil, fmt.Errorf("MCPService definition requires stdio_connection, http_connection, or bundle_connection")
+		err = fmt.Errorf("MCPService definition requires stdio_connection, http_connection, or bundle_connection")
+		return "", nil, nil, err
 	}
-
-	trackBundle(serviceID)
-	// Trigger GC lazily
-	triggerGC()
 
 	log.Info("Registered MCP service", "serviceID", serviceID, "toolsAdded", len(discoveredTools))
 	return serviceID, discoveredTools, discoveredResources, nil

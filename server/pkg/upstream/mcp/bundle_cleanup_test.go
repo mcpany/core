@@ -101,7 +101,7 @@ func TestBundleCleanup(t *testing.T) {
 	assert.NoError(t, err)
 
 	// Verify temp dir exists
-	expectedTempDir := filepath.Join(os.TempDir(), "mcp-bundles", serviceID)
+	expectedTempDir := filepath.Join(bundleBaseDir, serviceID)
 	_, err = os.Stat(expectedTempDir)
 	assert.NoError(t, err, "Temp dir should exist after registration")
 

@@ -7,7 +7,6 @@ import (
 	"os"
 	"path/filepath"
 	"testing"
-	"time"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -17,19 +16,6 @@ func TestBundleGC(t *testing.T) {
 	tmpDir, err := os.MkdirTemp("", "gc-test")
 	assert.NoError(t, err)
 	defer os.RemoveAll(tmpDir)
-
-	// Override bundleBaseDir
-	origBaseDir := bundleBaseDir
-	bundleBaseDir = tmpDir
-	defer func() { bundleBaseDir = origBaseDir }()
-
-	// Override gcInterval
-	origInterval := gcInterval
-	gcInterval = 10 * time.Millisecond
-	defer func() { gcInterval = origInterval }()
-
-	// Reset lastGCTimestamp
-	lastGCTimestamp.Store(0)
 
 	// 1. Create orphaned directory
 	orphanedDir := filepath.Join(tmpDir, "orphaned-service")
@@ -44,11 +30,8 @@ func TestBundleGC(t *testing.T) {
 	trackBundle(activeID)
 	defer untrackBundle(activeID)
 
-	// 3. Trigger GC
-	triggerGC()
-
-	// Wait for GC (it runs in background)
-	time.Sleep(100 * time.Millisecond)
+	// 3. Run GC directly (avoiding global variable overrides and async races)
+	runGC(tmpDir)
 
 	// 4. Verify results
 	_, err = os.Stat(orphanedDir)
