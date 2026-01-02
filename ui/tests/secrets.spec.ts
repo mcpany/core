@@ -1,41 +1,36 @@
-/**
- * Copyright 2025 Author(s) of MCP Any
- * SPDX-License-Identifier: Apache-2.0
- */
 
 import { test, expect } from '@playwright/test';
 
 test.describe('Secrets Manager', () => {
-    test('should allow creating and deleting a secret', async ({ page }) => {
-        // Go to settings page
-        await page.goto('http://localhost:9002/settings');
+  test('should allow adding and deleting secrets', async ({ page }) => {
+    await page.goto('/secrets');
 
-        // Click on Secrets tab
-        await page.click('text=Secrets & Keys');
+    // Check if title is present
+    await expect(page.locator('h1')).toContainText('API Key Vault');
 
-        // Check if "Add Secret" button exists
-        await expect(page.locator('button:has-text("Add Secret")')).toBeVisible();
+    // Add a new secret
+    await page.click('text=Add Secret');
+    await page.fill('#name', 'E2E Test Secret');
+    await page.fill('#key', 'TEST_KEY');
+    await page.fill('#value', 'test-secret-value');
+    await page.click('button:has-text("Save Secret")');
 
-        // Open add dialog
-        await page.click('button:has-text("Add Secret")');
+    // Verify it appears in the list
+    await expect(page.locator('table')).toContainText('E2E Test Secret');
+    await expect(page.locator('table')).toContainText('TEST_KEY');
 
-        // Fill form
-        await page.fill('input[placeholder="e.g. Production OpenAI Key"]', 'E2E Test Secret');
-        await page.fill('input[placeholder="e.g. OPENAI_API_KEY"]', 'E2E_KEY');
-        await page.fill('input[placeholder="sk-..."]', 'sk-test-value-123');
+    // Verify mask
+    await expect(page.locator('table')).toContainText('••••••••');
 
-        // Save
-        await page.click('button:has-text("Save Secret")');
+    // Toggle visibility
+    await page.locator('tr:has-text("E2E Test Secret") button').nth(0).click();
+    await expect(page.locator('table')).toContainText('test-secret-value');
 
-        // Verify toast or list update
-        await expect(page.locator('text=E2E Test Secret')).toBeVisible();
-        await expect(page.locator('text=E2E_KEY')).toBeVisible();
+    // Delete the secret
+    page.on('dialog', dialog => dialog.accept());
+    await page.locator('tr:has-text("E2E Test Secret") button').last().click();
 
-        // Verify delete
-        const deleteButton = page.locator('button[aria-label="Delete secret"]').last();
-        await deleteButton.click();
-
-        // Verify it's gone
-        await expect(page.locator('text=E2E Test Secret')).not.toBeVisible();
-    });
+    // Verify it's gone
+    await expect(page.locator('table')).not.toContainText('E2E Test Secret');
+  });
 });
