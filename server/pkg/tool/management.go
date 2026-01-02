@@ -9,7 +9,7 @@ import (
 	"sync"
 	"time"
 
-	// Use json-iterator for faster JSON operations
+	// Use json-iterator for faster JSON operations.
 	json "github.com/json-iterator/go"
 
 	"github.com/google/uuid"
