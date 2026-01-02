@@ -18,6 +18,13 @@ import (
 	"github.com/mcpany/core/pkg/util"
 )
 
+const (
+	// maxRetries defines the maximum number of times to retry service registration.
+	maxRetries = 5
+	// baseRetryDelay is the initial delay for exponential backoff.
+	baseRetryDelay = 1 * time.Second
+)
+
 // ServiceRegistrationWorker is a background worker responsible for handling
 // service registration requests. It listens for ServiceRegistrationRequest
 // messages on the event bus, processes them using the service registry, and
@@ -111,23 +118,30 @@ func (w *ServiceRegistrationWorker) Start(ctx context.Context) {
 				log.Error("Failed to register service", "service", req.Config.GetName(), "error", err)
 				metrics.IncrCounter([]string{"worker", "registration", "request", "error"}, 1)
 
-				// Schedule a retry
-				// Simple fixed delay for now. In a robust system, we would track retry counts and apply backoff.
-				// Since we don't have a place to store retry count in the request without modifying proto,
-				// we just retry indefinitely every 5 seconds until success or cancellation.
-				retryDelay := 5 * time.Second
-				log.Info("Scheduling retry for service registration", "service", req.Config.GetName(), "delay", retryDelay)
+				if req.RetryCount < maxRetries {
+					// Exponential backoff
+					retryDelay := baseRetryDelay * time.Duration(1<<req.RetryCount)
+					req.RetryCount++
+					log.Info("Scheduling retry for service registration",
+						"service", req.Config.GetName(),
+						"retry_count", req.RetryCount,
+						"max_retries", maxRetries,
+						"delay", retryDelay)
 
-				go func() {
-					select {
-					case <-ctx.Done():
-						return
-					case <-time.After(retryDelay):
-						if err := requestBus.Publish(ctx, "request", req); err != nil {
-							log.Error("Failed to publish retry request", "service", req.Config.GetName(), "error", err)
+					go func() {
+						select {
+						case <-ctx.Done():
+							return
+						case <-time.After(retryDelay):
+							if err := requestBus.Publish(ctx, "request", req); err != nil {
+								log.Error("Failed to publish retry request", "service", req.Config.GetName(), "error", err)
+							}
 						}
-					}
-				}()
+					}()
+				} else {
+					log.Error("Max retries reached for service registration", "service", req.Config.GetName())
+					metrics.IncrCounter([]string{"worker", "registration", "request", "failed_max_retries"}, 1)
+				}
 			} else {
 				log.Info("Successfully registered service", "service", req.Config.GetName(), "tools_count", len(discoveredTools), "resources_count", len(discoveredResources))
 				metrics.IncrCounter([]string{"worker", "registration", "request", "success"}, 1)
