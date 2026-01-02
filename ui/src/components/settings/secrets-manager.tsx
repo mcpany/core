@@ -107,7 +107,7 @@ export function SecretsManager() {
             setIsAddDialogOpen(false);
             resetForm();
             loadSecrets();
-        } catch (error) {
+        } catch (_error) {
             toast({
                 title: "Error",
                 description: "Failed to save secret.",
@@ -124,7 +124,7 @@ export function SecretsManager() {
                 description: "Secret deleted successfully.",
             });
             loadSecrets();
-        } catch (error) {
+        } catch (_error) {
             toast({
                 title: "Error",
                 description: "Failed to delete secret.",

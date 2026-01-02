@@ -41,8 +41,8 @@ export function ToolDetail({ serviceId, toolName }: { serviceId: string, toolNam
             serviceDetails.graphql_service ||
             serviceDetails.mcp_service;
 
-        // @ts-ignore
-        const foundTool = serviceData?.tools?.find(t => t.name === toolName);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const foundTool = (serviceData as any)?.tools?.find((t: any) => t.name === toolName);
 
         if (foundTool) {
           setTool(foundTool);
