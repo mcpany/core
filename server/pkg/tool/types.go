@@ -1983,6 +1983,8 @@ func isShellCommand(cmd string) bool {
 		"sh", "bash", "zsh", "dash", "ash", "ksh", "csh", "tcsh", "fish",
 		"pwsh", "powershell", "powershell.exe", "pwsh.exe", "cmd", "cmd.exe",
 		"ssh", "scp", "su", "sudo", "env",
+		"python", "python3", "ruby", "perl", "node", "php",
+		"python.exe", "python3.exe", "ruby.exe", "perl.exe", "node.exe", "php.exe",
 	}
 	base := filepath.Base(cmd)
 	for _, shell := range shells {
