@@ -8,9 +8,9 @@ import (
 	"path"
 	"strings"
 
-	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/aws/credentials"
-	"github.com/aws/aws-sdk-go/aws/session"
+	"github.com/aws/aws-sdk-go/aws" //nolint:staticcheck // deprecated but needed for afero-s3
+	"github.com/aws/aws-sdk-go/aws/credentials" //nolint:staticcheck // deprecated but needed for afero-s3
+	"github.com/aws/aws-sdk-go/aws/session" //nolint:staticcheck // deprecated but needed for afero-s3
 	s3 "github.com/fclairamb/afero-s3"
 	"github.com/spf13/afero"
 	configv1 "github.com/mcpany/core/proto/config/v1"

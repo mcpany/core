@@ -8,7 +8,6 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"fmt"
-	"sync"
 
 	"github.com/mcpany/core/pkg/logging"
 	"github.com/mcpany/core/pkg/prompt"
@@ -23,7 +22,7 @@ import (
 
 // Upstream implements the upstream.Upstream interface for vector database services.
 type Upstream struct {
-	mu      sync.Mutex
+	// mu sync.Mutex
 }
 
 // NewUpstream creates a new instance of VectorUpstream.
@@ -38,7 +37,7 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 
 // Register processes the configuration for a vector service.
 func (u *Upstream) Register(
-	ctx context.Context,
+	_ context.Context,
 	serviceConfig *configv1.UpstreamServiceConfig,
 	toolManager tool.ManagerInterface,
 	_ prompt.ManagerInterface,
@@ -65,7 +64,7 @@ func (u *Upstream) Register(
 		return "", nil, nil, fmt.Errorf("vector service config is nil")
 	}
 
-	var client VectorClient
+	var client Client
 	switch t := vectorService.VectorDbType.(type) {
 	case *configv1.VectorUpstreamService_Pinecone:
 		client, err = NewPineconeClient(t.Pinecone)
@@ -110,8 +109,8 @@ func (u *Upstream) Register(
 		}
 
 		toolDef := configv1.ToolDefinition_builder{
-			Name:      proto.String(toolName),
-			ServiceId: proto.String(serviceID),
+			Name:        proto.String(toolName),
+			ServiceId:   proto.String(serviceID),
 			Description: proto.String(t.Description),
 		}.Build()
 
@@ -153,27 +152,27 @@ type vectorToolDef struct {
 	Handler     func(ctx context.Context, args map[string]interface{}) (map[string]interface{}, error)
 }
 
-// VectorClient interface for different vector DB implementations
-type VectorClient interface {
+// Client interface for different vector DB implementations.
+type Client interface {
 	Query(ctx context.Context, vector []float32, topK int64, filter map[string]interface{}, namespace string) (map[string]interface{}, error)
 	Upsert(ctx context.Context, vectors []map[string]interface{}, namespace string) (map[string]interface{}, error)
 	Delete(ctx context.Context, ids []string, namespace string, filter map[string]interface{}) (map[string]interface{}, error)
 	DescribeIndexStats(ctx context.Context, filter map[string]interface{}) (map[string]interface{}, error)
 }
 
-func (u *Upstream) getTools(client VectorClient) []vectorToolDef {
+func (u *Upstream) getTools(client Client) []vectorToolDef {
 	return []vectorToolDef{
 		{
 			Name:        "query_vectors",
 			Description: "Query the vector database for similar vectors.",
 			Input: map[string]interface{}{
 				"vector": map[string]interface{}{
-					"type": "array",
-					"items": map[string]interface{}{"type": "number"},
+					"type":        "array",
+					"items":       map[string]interface{}{"type": "number"},
 					"description": "The query vector.",
 				},
-				"top_k": map[string]interface{}{"type": "integer", "description": "Number of results to return."},
-				"filter": map[string]interface{}{"type": "object", "description": "Metadata filter."},
+				"top_k":     map[string]interface{}{"type": "integer", "description": "Number of results to return."},
+				"filter":    map[string]interface{}{"type": "object", "description": "Metadata filter."},
 				"namespace": map[string]interface{}{"type": "string", "description": "Namespace to query."},
 			},
 			Output: map[string]interface{}{
@@ -217,8 +216,8 @@ func (u *Upstream) getTools(client VectorClient) []vectorToolDef {
 					"items": map[string]interface{}{
 						"type": "object",
 						"properties": map[string]interface{}{
-							"id": map[string]interface{}{"type": "string"},
-							"values": map[string]interface{}{"type": "array", "items": map[string]interface{}{"type": "number"}},
+							"id":       map[string]interface{}{"type": "string"},
+							"values":   map[string]interface{}{"type": "array", "items": map[string]interface{}{"type": "number"}},
 							"metadata": map[string]interface{}{"type": "object"},
 						},
 						"required": []string{"id", "values"},
@@ -254,12 +253,12 @@ func (u *Upstream) getTools(client VectorClient) []vectorToolDef {
 			Description: "Delete vectors from the database.",
 			Input: map[string]interface{}{
 				"ids": map[string]interface{}{
-					"type": "array",
-					"items": map[string]interface{}{"type": "string"},
+					"type":        "array",
+					"items":       map[string]interface{}{"type": "string"},
 					"description": "List of IDs to delete.",
 				},
 				"namespace": map[string]interface{}{"type": "string", "description": "Namespace to delete from."},
-				"filter": map[string]interface{}{"type": "object", "description": "Metadata filter (optional, if IDs not provided)."},
+				"filter":    map[string]interface{}{"type": "object", "description": "Metadata filter (optional, if IDs not provided)."},
 				"deleteAll": map[string]interface{}{"type": "boolean", "description": "Delete all vectors in namespace."},
 			},
 			Output: map[string]interface{}{
@@ -285,15 +284,15 @@ func (u *Upstream) getTools(client VectorClient) []vectorToolDef {
 			},
 		},
 		{
-			Name: "describe_index_stats",
+			Name:        "describe_index_stats",
 			Description: "Get statistics about the index.",
 			Input: map[string]interface{}{
 				"filter": map[string]interface{}{"type": "object", "description": "Filter stats by metadata."},
 			},
 			Output: map[string]interface{}{
-				"namespaces": map[string]interface{}{"type": "object"},
-				"dimension": map[string]interface{}{"type": "integer"},
-				"indexFullness": map[string]interface{}{"type": "number"},
+				"namespaces":       map[string]interface{}{"type": "object"},
+				"dimension":        map[string]interface{}{"type": "integer"},
+				"indexFullness":    map[string]interface{}{"type": "number"},
 				"totalVectorCount": map[string]interface{}{"type": "integer"},
 			},
 			Handler: func(ctx context.Context, args map[string]interface{}) (map[string]interface{}, error) {
