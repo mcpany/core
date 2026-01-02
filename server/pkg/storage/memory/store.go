@@ -1,6 +1,7 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
+// Package memory provides an in-memory storage implementation for testing.
 package memory
 
 import (
@@ -25,11 +26,15 @@ func NewStore() *Store {
 }
 
 // Load retrieves the full server configuration.
-func (s *Store) Load(ctx context.Context) (*configv1.McpAnyServerConfig, error) {
+func (s *Store) Load(_ context.Context) (*configv1.McpAnyServerConfig, error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
 
 	cfg := &configv1.McpAnyServerConfig{}
+	// Pre-allocate slice if we knew the size, but here we iterate map.
+	// We can count map keys.
+	cfg.UpstreamServices = make([]*configv1.UpstreamServiceConfig, 0, len(s.services))
+
 	for _, svc := range s.services {
 		cfg.UpstreamServices = append(cfg.UpstreamServices, proto.Clone(svc).(*configv1.UpstreamServiceConfig))
 	}
@@ -37,7 +42,7 @@ func (s *Store) Load(ctx context.Context) (*configv1.McpAnyServerConfig, error) 
 }
 
 // SaveService saves a single upstream service configuration.
-func (s *Store) SaveService(ctx context.Context, service *configv1.UpstreamServiceConfig) error {
+func (s *Store) SaveService(_ context.Context, service *configv1.UpstreamServiceConfig) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	s.services[service.GetName()] = proto.Clone(service).(*configv1.UpstreamServiceConfig)
@@ -45,7 +50,7 @@ func (s *Store) SaveService(ctx context.Context, service *configv1.UpstreamServi
 }
 
 // GetService retrieves a single upstream service configuration by name.
-func (s *Store) GetService(ctx context.Context, name string) (*configv1.UpstreamServiceConfig, error) {
+func (s *Store) GetService(_ context.Context, name string) (*configv1.UpstreamServiceConfig, error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
 	if svc, ok := s.services[name]; ok {
@@ -55,10 +60,10 @@ func (s *Store) GetService(ctx context.Context, name string) (*configv1.Upstream
 }
 
 // ListServices lists all upstream service configurations.
-func (s *Store) ListServices(ctx context.Context) ([]*configv1.UpstreamServiceConfig, error) {
+func (s *Store) ListServices(_ context.Context) ([]*configv1.UpstreamServiceConfig, error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
-	var list []*configv1.UpstreamServiceConfig
+	list := make([]*configv1.UpstreamServiceConfig, 0, len(s.services))
 	for _, svc := range s.services {
 		list = append(list, proto.Clone(svc).(*configv1.UpstreamServiceConfig))
 	}
@@ -66,7 +71,7 @@ func (s *Store) ListServices(ctx context.Context) ([]*configv1.UpstreamServiceCo
 }
 
 // DeleteService deletes an upstream service configuration by name.
-func (s *Store) DeleteService(ctx context.Context, name string) error {
+func (s *Store) DeleteService(_ context.Context, name string) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	delete(s.services, name)
