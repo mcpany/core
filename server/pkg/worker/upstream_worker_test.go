@@ -19,19 +19,19 @@ import (
 // MockToolManager is a simple mock for tool.ManagerInterface
 type MockToolManager struct{}
 
-func (m *MockToolManager) AddTool(t tool.Tool) error { return nil }
-func (m *MockToolManager) GetTool(toolName string) (tool.Tool, bool) { return nil, false }
+func (m *MockToolManager) AddTool(_ tool.Tool) error { return nil }
+func (m *MockToolManager) GetTool(_ string) (tool.Tool, bool) { return nil, false }
 func (m *MockToolManager) ListTools() []tool.Tool { return nil }
-func (m *MockToolManager) ClearToolsForService(serviceID string) {}
+func (m *MockToolManager) ClearToolsForService(_ string) {}
 func (m *MockToolManager) ExecuteTool(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
 	return nil, nil
 }
-func (m *MockToolManager) SetMCPServer(mcpServer tool.MCPServerProvider) {}
-func (m *MockToolManager) AddMiddleware(middleware tool.ExecutionMiddleware) {}
-func (m *MockToolManager) AddServiceInfo(serviceID string, info *tool.ServiceInfo) {}
-func (m *MockToolManager) GetServiceInfo(serviceID string) (*tool.ServiceInfo, bool) { return nil, false }
+func (m *MockToolManager) SetMCPServer(_ tool.MCPServerProvider) {}
+func (m *MockToolManager) AddMiddleware(_ tool.ExecutionMiddleware) {}
+func (m *MockToolManager) AddServiceInfo(_ string, _ *tool.ServiceInfo) {}
+func (m *MockToolManager) GetServiceInfo(_ string) (*tool.ServiceInfo, bool) { return nil, false }
 func (m *MockToolManager) ListServices() []*tool.ServiceInfo { return nil }
-func (m *MockToolManager) SetProfiles(enabled []string, defs []*configv1.ProfileDefinition) {}
+func (m *MockToolManager) SetProfiles(_ []string, _ []*configv1.ProfileDefinition) {}
 
 func TestUpstreamWorker_Stop(t *testing.T) {
 	// Setup bus

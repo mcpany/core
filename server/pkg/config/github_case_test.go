@@ -51,7 +51,7 @@ services:
 	m := NewUpstreamServiceManager(nil)
 	m.httpClient = ts.Client()
 
-	m.newGitHub = func(_ context.Context, rawURL string) (*GitHub, error) {
+	m.newGitHub = func(_ context.Context, _ string) (*GitHub, error) {
 		return &GitHub{
 			Owner:         "owner",
 			Repo:          "repo",

@@ -21,7 +21,7 @@ func TestRegistry_HTTPMiddlewares(t *testing.T) {
 	mwHeaderKey := "X-Test-Middleware"
 	mwHeaderVal := "executed"
 
-	Register(mwName, func(config *configv1.Middleware) func(http.Handler) http.Handler {
+	Register(mwName, func(_ *configv1.Middleware) func(http.Handler) http.Handler {
 		return func(next http.Handler) http.Handler {
 			return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.Header().Set(mwHeaderKey, mwHeaderVal)
@@ -56,7 +56,7 @@ func TestRegistry_HTTPMiddlewares(t *testing.T) {
 
 	t.Run("middleware_priority", func(t *testing.T) {
 		mwName2 := "test-http-middleware-2"
-		Register(mwName2, func(config *configv1.Middleware) func(http.Handler) http.Handler {
+		Register(mwName2, func(_ *configv1.Middleware) func(http.Handler) http.Handler {
 			return func(next http.Handler) http.Handler {
 				return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 					w.Header().Add("X-Order", "2")
@@ -66,7 +66,7 @@ func TestRegistry_HTTPMiddlewares(t *testing.T) {
 		})
 
 		// Re-register mwName to add X-Order header
-		Register(mwName, func(config *configv1.Middleware) func(http.Handler) http.Handler {
+		Register(mwName, func(_ *configv1.Middleware) func(http.Handler) http.Handler {
 			return func(next http.Handler) http.Handler {
 				return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 					w.Header().Add("X-Order", "1")
@@ -116,7 +116,7 @@ func TestRegistry_HTTPMiddlewares(t *testing.T) {
 
 func TestRegistry_MCPMiddlewares(t *testing.T) {
 	mwName := "test-mcp-middleware"
-	RegisterMCP(mwName, func(config *configv1.Middleware) func(mcp.MethodHandler) mcp.MethodHandler {
+	RegisterMCP(mwName, func(_ *configv1.Middleware) func(mcp.MethodHandler) mcp.MethodHandler {
 		return func(next mcp.MethodHandler) mcp.MethodHandler {
 			return func(ctx context.Context, method string, req mcp.Request) (mcp.Result, error) {
 				// Decorate context or do something
