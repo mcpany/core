@@ -42,10 +42,15 @@ describe('LogStream', () => {
 
   beforeEach(() => {
     // Correctly mock global EventSource as a class
+    // We cannot change the prototype of the global EventSource if it doesn't exist in jsdom,
+    // but we can assign a new class to window.EventSource and global.EventSource.
+
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     global.EventSource = class extends MockEventSource {
         constructor(url: string) {
             super(url);
+            // eslint-disable-next-line @typescript-eslint/no-this-alias
             mockEventSource = this;
         }
     };
