@@ -146,3 +146,48 @@ global_settings:
 
 	assert.Equal(t, "localhost:9091", settings.MCPListenAddress())
 }
+
+func TestSettings_GetDbDsn(t *testing.T) {
+	viper.Reset()
+	fs := afero.NewMemMapFs()
+	cmd := &cobra.Command{}
+
+	viper.Set("db-dsn", "postgres://user:pass@localhost:5432/db")
+
+	settings := &Settings{
+		proto: &configv1.GlobalSettings{},
+	}
+	err := settings.Load(cmd, fs)
+	require.NoError(t, err)
+
+	assert.Equal(t, "postgres://user:pass@localhost:5432/db", settings.GetDbDsn())
+}
+
+func TestSettings_GetDbDriver(t *testing.T) {
+	viper.Reset()
+	fs := afero.NewMemMapFs()
+	cmd := &cobra.Command{}
+
+	viper.Set("db-driver", "postgres")
+
+	settings := &Settings{
+		proto: &configv1.GlobalSettings{},
+	}
+	err := settings.Load(cmd, fs)
+	require.NoError(t, err)
+
+	assert.Equal(t, "postgres", settings.GetDbDriver())
+}
+
+func TestSettings_GetDlp(t *testing.T) {
+	enabled := true
+	settings := &Settings{
+		proto: &configv1.GlobalSettings{
+			Dlp: &configv1.DLPConfig{
+				Enabled: &enabled,
+			},
+		},
+	}
+	assert.NotNil(t, settings.GetDlp())
+	assert.True(t, settings.GetDlp().GetEnabled())
+}

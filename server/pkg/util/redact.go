@@ -312,7 +312,7 @@ func scanForSensitiveKeys(input []byte, checkEscape bool) bool {
 				second := input[matchStart+1] | 0x20
 				if second >= 'a' && second <= 'z' {
 					mask := sensitiveNextCharMask[startChar]
-					if (mask&(1<<(second-'a'))) == 0 {
+					if (mask & (1 << (second - 'a'))) == 0 {
 						// Second character doesn't match any key in this group
 						offset = matchStart + 1
 						continue
