@@ -31,6 +31,6 @@ export default [
     }
   },
   {
-    ignores: [".next/**", "node_modules/**", "eslint.config.mjs"]
+    ignores: [".next/**", "node_modules/**", "eslint.config.mjs", "next-env.d.ts"]
   }
 ];
