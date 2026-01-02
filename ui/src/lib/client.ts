@@ -104,7 +104,7 @@ export const apiClient = {
         if (!res.ok) throw new Error('Failed to update service');
         return res.json();
     },
-    unregisterService: async (id: string) => {
+    unregisterService: async (_id: string) => {
         // Mock
         return {};
     },

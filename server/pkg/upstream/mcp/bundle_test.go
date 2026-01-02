@@ -105,7 +105,7 @@ func TestUpstream_Register_Bundle(t *testing.T) {
 	// We check mount
 	require.Len(t, bd.Mounts, 1)
 	assert.Equal(t, "/app/bundle", bd.Mounts[0].Target)
-	assert.Contains(t, bd.Mounts[0].Source, "mcp-bundles")
+	assert.Equal(t, filepath.Join(bundleBaseDir, serviceID), bd.Mounts[0].Source)
 }
 
 func TestUpstream_Register_Bundle_Failures(t *testing.T) {

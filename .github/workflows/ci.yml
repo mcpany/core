@@ -259,20 +259,6 @@ jobs:
           echo "week=$(/bin/date -u "+%V")" >> $GITHUB_OUTPUT
         shell: bash
 
-      - name: Docker Cache
-        uses: actions/cache@v4
-        with:
-          path: build/buildx-cache
-          key: ${{ runner.os }}-buildx-${{ steps.get-date.outputs.week }}-${{ hashFiles('tests/integration/examples/Dockerfile.timeserver', 'tests/integration/examples/timeserver_patch/**') }}
-          restore-keys: |
-            ${{ runner.os }}-buildx-${{ steps.get-date.outputs.week }}-${{ hashFiles('tests/integration/examples/Dockerfile.timeserver', 'tests/integration/examples/timeserver_patch/**') }}-
-            ${{ runner.os }}-buildx-${{ steps.get-date.outputs.week }}-
-
-      - name: Cache Docker images
-        uses: ScribeMD/docker-cache@0.5.0
-        with:
-          key: docker-images-${{ runner.os }}-${{ steps.get-date.outputs.week }}
-
       - name: Cache Tools
         uses: actions/cache@v4
         with:
@@ -283,11 +269,11 @@ jobs:
             ${{ runner.os }}-build-env-bin-${{ steps.get-date.outputs.week }}-
 
       - name: Prepare environment
-        run: make prepare CACHE_TO=type=local,dest=build/buildx-cache CACHE_FROM=type=local,src=build/buildx-cache
+        run: make prepare
 
       - name: run parallel e2e
         run: |
-          make e2e-parallel CACHE_TO=type=local,dest=build/buildx-cache CACHE_FROM=type=local,src=build/buildx-cache COVERAGE_FILE=coverage-e2e-parallel.out
+          make e2e-parallel CACHE_TO=type=gha,mode=max CACHE_FROM=type=gha COVERAGE_FILE=coverage-e2e-parallel.out
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v5
@@ -362,20 +348,6 @@ jobs:
           echo "week=$(/bin/date -u "+%V")" >> $GITHUB_OUTPUT
         shell: bash
 
-      - name: Docker Cache
-        uses: actions/cache@v4
-        with:
-          path: build/buildx-cache
-          key: ${{ runner.os }}-buildx-${{ steps.get-date.outputs.week }}-${{ hashFiles('tests/integration/examples/Dockerfile.timeserver', 'tests/integration/examples/timeserver_patch/**') }}
-          restore-keys: |
-            ${{ runner.os }}-buildx-${{ steps.get-date.outputs.week }}-${{ hashFiles('tests/integration/examples/Dockerfile.timeserver', 'tests/integration/examples/timeserver_patch/**') }}-
-            ${{ runner.os }}-buildx-${{ steps.get-date.outputs.week }}-
-
-      - name: Cache Docker images
-        uses: ScribeMD/docker-cache@0.5.0
-        with:
-          key: docker-images-${{ runner.os }}-${{ steps.get-date.outputs.week }}
-
       - name: Cache Tools
         uses: actions/cache@v4
         with:
@@ -386,11 +358,11 @@ jobs:
             ${{ runner.os }}-build-env-bin-${{ steps.get-date.outputs.week }}-
 
       - name: Prepare environment
-        run: make prepare CACHE_TO=type=local,dest=build/buildx-cache CACHE_FROM=type=local,src=build/buildx-cache
+        run: make prepare
 
       - name: run sequential e2e
         run: |
-          make e2e-sequential CACHE_TO=type=local,dest=build/buildx-cache CACHE_FROM=type=local,src=build/buildx-cache COVERAGE_FILE=coverage-e2e-sequential.out
+          make e2e-sequential CACHE_TO=type=gha,mode=max CACHE_FROM=type=gha COVERAGE_FILE=coverage-e2e-sequential.out
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v5
@@ -465,20 +437,6 @@ jobs:
           echo "week=$(/bin/date -u "+%V")" >> $GITHUB_OUTPUT
         shell: bash
 
-      - name: Docker Cache
-        uses: actions/cache@v4
-        with:
-          path: build/buildx-cache
-          key: ${{ runner.os }}-buildx-${{ steps.get-date.outputs.week }}-${{ hashFiles('tests/integration/examples/Dockerfile.timeserver', 'tests/integration/examples/timeserver_patch/**') }}
-          restore-keys: |
-            ${{ runner.os }}-buildx-${{ steps.get-date.outputs.week }}-${{ hashFiles('tests/integration/examples/Dockerfile.timeserver', 'tests/integration/examples/timeserver_patch/**') }}-
-            ${{ runner.os }}-buildx-${{ steps.get-date.outputs.week }}-
-
-      - name: Cache Docker images
-        uses: ScribeMD/docker-cache@0.5.0
-        with:
-          key: docker-images-${{ runner.os }}-${{ steps.get-date.outputs.week }}
-
       - name: Cache Tools
         uses: actions/cache@v4
         with:
@@ -489,11 +447,11 @@ jobs:
             ${{ runner.os }}-build-env-bin-${{ steps.get-date.outputs.week }}-
 
       - name: Prepare environment
-        run: make prepare CACHE_TO=type=local,dest=build/buildx-cache CACHE_FROM=type=local,src=build/buildx-cache
+        run: make prepare
 
       - name: test public api
         run: |
-          make test-public-api CACHE_TO=type=local,dest=build/buildx-cache CACHE_FROM=type=local,src=build/buildx-cache COVERAGE_FILE=coverage-public-api.out
+          make test-public-api CACHE_TO=type=gha,mode=max CACHE_FROM=type=gha COVERAGE_FILE=coverage-public-api.out
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v5

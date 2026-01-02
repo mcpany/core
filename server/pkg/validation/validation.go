@@ -81,7 +81,7 @@ var IsRelativePath = func(path string) error {
 		if err != nil {
 			return false
 		}
-		return !strings.HasPrefix(rel, "..") && rel != ".."
+		return !strings.HasPrefix(rel, ".."+string(os.PathSeparator)) && rel != ".."
 	}
 
 	// 3. Check if inside CWD

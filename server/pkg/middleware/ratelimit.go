@@ -222,6 +222,8 @@ func (m *RateLimitMiddleware) estimateTokenCost(req *tool.ExecutionRequest) int 
 			// If unmarshal fails, we can't estimate properly. Return default cost.
 			return 1
 		}
+		// Cache the parsed arguments to avoid re-parsing in subsequent middleware
+		req.Arguments = args
 	default:
 		return 1
 	}
