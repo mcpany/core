@@ -118,7 +118,7 @@ export function useNetworkTopology() {
                         animated: tNode.status === 'NODE_STATUS_ACTIVE',
                         style: { stroke: '#b1b1b7' },
                         markerEnd: { type: MarkerType.ArrowClosed, color: '#b1b1b7' },
-                        label: tNode.metrics ? `${tNode.metrics.qps?.toFixed(1) || 0} QPS` : undefined
+                        label: tNode.metrics ? `${tNode.metrics.qps?.toFixed(1) || 0} RPS` : undefined
                     });
                 }
 
