@@ -11,6 +11,10 @@ ifeq ($(shell docker info >/dev/null 2>&1 && echo 1 || echo 0), 0)
 endif
 
 DOCKER_BUILD_CMD := $(DOCKER_BUILDX_CMD) build --load
+# Check if buildx exists, otherwise fallback to standard build
+ifeq ($(shell $(DOCKER_CMD) buildx version >/dev/null 2>&1 && echo 1 || echo 0), 0)
+	DOCKER_BUILD_CMD := $(DOCKER_CMD) build
+endif
 
 .PHONY: test test-local build-test-docker
 
