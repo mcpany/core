@@ -13,6 +13,7 @@ import (
 	"path/filepath"
 	"regexp"
 	"sort"
+	"strconv"
 	"strings"
 	"time"
 
@@ -429,27 +430,137 @@ func applyEnvVarsFromSlice(m map[string]interface{}, environ []string) {
 		trimmedKey := strings.TrimPrefix(key, "MCPANY__")
 		path := strings.Split(trimmedKey, "__")
 
-		// Walk the map and create nested maps as needed
-		current := m
-		for i, originalSection := range path {
-			section := strings.ToLower(originalSection) // Normalize to snake_case/lowercase
-			if i == len(path)-1 {
-				// We are at the leaf, set the value.
-				// We overwrite whatever is there.
-				current[section] = value
-			} else {
-				// We need to go deeper
-				if next, ok := current[section].(map[string]interface{}); ok {
-					current = next
-				} else {
-					// Create new map if it doesn't exist or isn't a map
-					next := make(map[string]interface{})
-					current[section] = next
-					current = next
-				}
+		// Walk the structure.
+		// We use a helper function to recursively set the value.
+		// We need to start with the root map, which we treat as a generic interface{}.
+		// Note: The root is definitely a map[string]interface{}, but inside it can be maps or slices.
+		setInStructure(m, path, value)
+	}
+}
+
+func setInStructure(current interface{}, path []string, value string) interface{} {
+	if len(path) == 0 {
+		return value
+	}
+
+	head := strings.ToLower(path[0])
+	tail := path[1:]
+
+	// Case 1: current is a map
+	if m, ok := current.(map[string]interface{}); ok {
+		// Check if next part is an index (for slice) or key (for map)
+		// We peek at the next element in path (head) which is the key for the current map.
+		// But we need to know what to put *at* that key.
+
+		if len(tail) == 0 {
+			// Leaf node in the path, just set the value
+			m[head] = value
+			return m
+		}
+
+		// We need to traverse deeper.
+		// Does the key exist?
+		existingVal, exists := m[head]
+
+		// Determine if the *next* segment in the path (tail[0]) looks like an array index.
+		// If it does, we should expect a slice at m[head].
+		// If it doesn't, we expect a map.
+		nextIsIndex := false
+		if len(tail) > 0 {
+			if _, err := strconv.Atoi(tail[0]); err == nil {
+				nextIsIndex = true
 			}
 		}
+
+		if !exists {
+			// Create new structure
+			if nextIsIndex {
+				// We need a slice.
+				// Since we don't know the size, we'll start with an empty one or expanding one?
+				// Actually, we can't easily sparse-populate a slice.
+				// If index is 0, we make a slice of size 1.
+				// But wait, if we are creating it, we must ensure capacity.
+				// Simplification: We only support creating slices if index is 0 or sequential?
+				// Or we just use a slice and expand it.
+				m[head] = setInStructure([]interface{}{}, tail, value)
+			} else {
+				m[head] = setInStructure(map[string]interface{}{}, tail, value)
+			}
+		} else {
+			// Recurse on existing value
+			m[head] = setInStructure(existingVal, tail, value)
+		}
+		return m
 	}
+
+	// Case 2: current is a slice
+	if s, ok := current.([]interface{}); ok {
+		// head must be an integer index
+		index, err := strconv.Atoi(head)
+		if err != nil {
+			// We have a slice, but the path asks for a non-integer key.
+			// This is a type mismatch (config structure conflict).
+			// We can't really recover gracefully, so we might return current as is or log error?
+			// For now, let's assume the user knows what they are doing and maybe the structure is wrong.
+			// Returning current means ignoring the override.
+			return current
+		}
+
+		// Extend slice if needed
+		if index >= len(s) {
+			newS := make([]interface{}, index+1)
+			copy(newS, s)
+			s = newS
+		}
+
+		// If we are at the leaf (which shouldn't happen if value is string, unless slice of strings?)
+		if len(tail) == 0 {
+			s[index] = value
+		} else {
+			// We need to go deeper.
+			// Similar to map: what do we expect next?
+			nextIsIndex := false
+			if len(tail) > 0 {
+				if _, err := strconv.Atoi(tail[0]); err == nil {
+					nextIsIndex = true
+				}
+			}
+
+			existingVal := s[index]
+			if existingVal == nil {
+				if nextIsIndex {
+					s[index] = setInStructure([]interface{}{}, tail, value)
+				} else {
+					s[index] = setInStructure(map[string]interface{}{}, tail, value)
+				}
+			} else {
+				s[index] = setInStructure(existingVal, tail, value)
+			}
+		}
+		return s
+	}
+
+	// If current is neither map nor slice (e.g. primitive), but we still have path...
+	// It implies we are trying to treat a primitive as a container. Overwrite it?
+	// E.g. config was "foo: bar" and env var is "FOO__BAZ=1".
+	// We convert "bar" to a map {"baz": 1}?
+	// This might break things if the schema expects a string.
+	// But let's support it for flexibility or assume schema validation handles it later.
+	// Actually, if we are here, we probably need to create a new container.
+
+	// Check next path segment
+	nextIsIndex := false
+	if _, err := strconv.Atoi(head); err == nil {
+		nextIsIndex = true
+	}
+
+	if nextIsIndex {
+		// We need a slice
+		return setInStructure([]interface{}{}, path, value)
+	}
+
+	// We need a map
+	return setInStructure(map[string]interface{}{}, path, value)
 }
 
 // MultiStore implements the Store interface for loading configurations from multiple stores.
