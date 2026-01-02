@@ -29,20 +29,27 @@ func LoggingMiddleware(log *slog.Logger) mcp.Middleware {
 	if log == nil {
 		log = logging.GetLogger()
 	}
+
+	// Pre-allocate metric names to avoid allocation on every request
+	metricRequestTotal := []string{"middleware", "request", "total"}
+	metricRequestLatency := []string{"middleware", "request", "latency"}
+	metricRequestError := []string{"middleware", "request", "error"}
+	metricRequestSuccess := []string{"middleware", "request", "success"}
+
 	return func(next mcp.MethodHandler) mcp.MethodHandler {
 		return func(ctx context.Context, method string, req mcp.Request) (mcp.Result, error) {
 			start := time.Now()
-			metrics.IncrCounter([]string{"middleware", "request", "total"}, 1)
-			defer metrics.MeasureSince([]string{"middleware", "request", "latency"}, start)
+			metrics.IncrCounter(metricRequestTotal, 1)
+			defer metrics.MeasureSince(metricRequestLatency, start)
 
 			// Optimization: Removed redundant "Request received" log to reduce I/O and noise.
 			// We log completion/failure below which is sufficient.
 			result, err := next(ctx, method, req)
 			if err != nil {
-				metrics.IncrCounter([]string{"middleware", "request", "error"}, 1)
+				metrics.IncrCounter(metricRequestError, 1)
 				log.Error("Request failed", "method", method, "duration", time.Since(start), "error", err)
 			} else {
-				metrics.IncrCounter([]string{"middleware", "request", "success"}, 1)
+				metrics.IncrCounter(metricRequestSuccess, 1)
 				log.Info("Request completed", "method", method, "duration", time.Since(start))
 			}
 			return result, err
