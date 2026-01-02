@@ -86,7 +86,7 @@ func TestServiceRegistrationWorker_RetryLogic_Backoff(t *testing.T) {
     // Initial call (t=0)
     // Retry 1 (t=1s)
     // Retry 2 (t=1s + 2s = 3s)
-	assert.GreaterOrEqual(t, len(mockRegistry.Calls), 3, "Should have retried at least twice")
+	mockRegistry.AssertNumberOfCalls(t, "RegisterService", 3)
 }
 
 func TestServiceRegistrationWorker_RetryLogic_MaxRetries(t *testing.T) {
@@ -127,7 +127,7 @@ func TestServiceRegistrationWorker_RetryLogic_MaxRetries(t *testing.T) {
 
     // So we verify that it was called ONCE immediately.
     time.Sleep(100 * time.Millisecond)
-    assert.Equal(t, 1, len(mockRegistry.Calls), "Should have called once immediately")
+	mockRegistry.AssertNumberOfCalls(t, "RegisterService", 1)
 
     // We can't verify the retry happens without waiting 16s or mocking time.
 }
@@ -169,5 +169,5 @@ func TestServiceRegistrationWorker_RetryLogic_StopAfterMax(t *testing.T) {
 
 	// Verify calls
     // Should be called once.
-	assert.Equal(t, 1, len(mockRegistry.Calls), "Should have tried once and stopped")
+	mockRegistry.AssertNumberOfCalls(t, "RegisterService", 1)
 }
