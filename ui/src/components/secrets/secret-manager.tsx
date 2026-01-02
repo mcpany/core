@@ -13,9 +13,7 @@ import {
     Eye,
     EyeOff,
     Copy,
-    Check,
     Search,
-    ShieldAlert,
     ShieldCheck,
     Lock,
     RefreshCw
@@ -40,9 +38,7 @@ import {
 import {
     Card,
     CardContent,
-    CardDescription,
     CardHeader,
-    CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -82,7 +78,7 @@ export function SecretManager() {
         try {
             const data = await apiClient.listSecrets();
             setSecrets(data);
-        } catch (error) {
+        } catch (_error) {
             toast.error("Failed to load secrets");
         } finally {
             setIsLoading(false);
@@ -105,7 +101,7 @@ export function SecretManager() {
             await apiClient.deleteSecret(id);
             toast.success("Secret deleted successfully");
             loadSecrets();
-        } catch (error) {
+        } catch (_error) {
             toast.error("Failed to delete secret");
         }
     };
@@ -123,7 +119,7 @@ export function SecretManager() {
                 name: newName,
                 key: newKey,
                 value: newValue,
-                provider: newProvider as any,
+                provider: newProvider as 'openai' | 'anthropic' | 'aws' | 'gcp' | 'custom',
                 createdAt: "",
                 lastUsed: ""
             });
@@ -131,7 +127,7 @@ export function SecretManager() {
             setIsAddDialogOpen(false);
             resetForm();
             loadSecrets();
-        } catch (error) {
+        } catch (_error) {
             toast.error("Failed to save secret");
         } finally {
             setIsSubmitting(false);
