@@ -20,6 +20,13 @@ import (
 )
 
 // createS3Filesystem creates an afero.Fs backed by S3.
+//
+// Parameters:
+//   - config: The S3 configuration.
+//
+// Returns:
+//   - afero.Fs: The S3 filesystem.
+//   - error: An error if the filesystem cannot be created.
 func (u *Upstream) createS3Filesystem(config *configv1.S3Fs) (afero.Fs, error) {
 	awsConfig := aws.NewConfig()
 
@@ -52,6 +59,13 @@ func (u *Upstream) createS3Filesystem(config *configv1.S3Fs) (afero.Fs, error) {
 }
 
 // resolveS3Path resolves a virtual path for S3.
+//
+// Parameters:
+//   - virtualPath: The virtual path to resolve.
+//
+// Returns:
+//   - string: The resolved S3 key.
+//   - error: An error if the path is invalid.
 func (u *Upstream) resolveS3Path(virtualPath string) (string, error) {
 	// For S3, just clean the path. It's virtual relative to the bucket.
 	// Join with "/" to ensure we resolve relative paths against a root, preventing ".." traversal

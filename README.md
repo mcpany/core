@@ -241,6 +241,8 @@ We strive for high code quality. Please ensure the following before submitting a
   make lint
   ```
 
+For more details on setting up your environment and contributing, see the [Developer Guide](server/docs/developer_guide.md).
+
 ## 🤝 Contributing
 
 Contributions are welcome! Please feel free to open an issue or submit a pull request.
