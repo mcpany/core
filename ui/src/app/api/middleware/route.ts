@@ -6,6 +6,10 @@
 
 import { NextResponse } from 'next/server';
 
+/**
+ * Handles GET requests to retrieve the list of configured middlewares.
+ * @returns A JSON response containing an array of middleware configurations.
+ */
 export async function GET() {
   const middlewares = [
     { name: "auth", priority: 1, disabled: false, description: "Authenticates requests" },

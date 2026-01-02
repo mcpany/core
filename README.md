@@ -228,10 +228,13 @@ The project is organized as follows:
 
 We strive for high code quality. Please ensure the following before submitting a PR:
 
-- **Documentation**: All public functions, methods, and types must have comments explaining their purpose, parameters, and return values. You can verify coverage with:
-  ```bash
-  go run server/tools/check_doc.go server/
-  ```
+- **Documentation**:
+  - **Go**: All exported functions, methods, types, and constants must have complete docstrings (GoDoc style). This includes a description of the purpose, parameters, and return values.
+  - **TypeScript/React**: All exported components, functions, interfaces, and types must have JSDoc comments explaining their usage, props/parameters, and return values.
+  - You can verify Go documentation coverage with:
+    ```bash
+    go run server/tools/check_doc.go server/
+    ```
 - **Testing**: Add unit tests for new functionality. Run all tests with:
   ```bash
   make test
