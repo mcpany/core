@@ -48,3 +48,7 @@ firestore-debug.log
 /playwright-report/
 /test-results/
 tests/*.png
+
+# Secrets
+secrets-master.key
+secrets-store.json
