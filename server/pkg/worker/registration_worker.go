@@ -128,7 +128,6 @@ func (w *ServiceRegistrationWorker) Start(ctx context.Context) {
 						}
 					}
 				}()
-
 			} else {
 				log.Info("Successfully registered service", "service", req.Config.GetName(), "tools_count", len(discoveredTools), "resources_count", len(discoveredResources))
 				metrics.IncrCounter([]string{"worker", "registration", "request", "success"}, 1)

@@ -632,7 +632,7 @@ func (t *HTTPTool) prepareInputsAndURL(ctx context.Context, req *ExecutionReques
 					pathStr = strings.ReplaceAll(pathStr, "/"+placeholder, "")
 				}
 				if t.paramInQuery[i] {
-					queryStr = strings.ReplaceAll(queryStr, "/"+placeholder, "")
+					queryStr = strings.ReplaceAll(queryStr, placeholder, "")
 				}
 			}
 		}
