@@ -127,6 +127,7 @@ const (
 	AuditConfig_STORAGE_TYPE_FILE        AuditConfig_StorageType = 1
 	AuditConfig_STORAGE_TYPE_SQLITE      AuditConfig_StorageType = 2
 	AuditConfig_STORAGE_TYPE_POSTGRES    AuditConfig_StorageType = 3
+	AuditConfig_STORAGE_TYPE_WEBHOOK     AuditConfig_StorageType = 4
 )
 
 // Enum value maps for AuditConfig_StorageType.
@@ -136,12 +137,14 @@ var (
 		1: "STORAGE_TYPE_FILE",
 		2: "STORAGE_TYPE_SQLITE",
 		3: "STORAGE_TYPE_POSTGRES",
+		4: "STORAGE_TYPE_WEBHOOK",
 	}
 	AuditConfig_StorageType_value = map[string]int32{
 		"STORAGE_TYPE_UNSPECIFIED": 0,
 		"STORAGE_TYPE_FILE":        1,
 		"STORAGE_TYPE_SQLITE":      2,
 		"STORAGE_TYPE_POSTGRES":    3,
+		"STORAGE_TYPE_WEBHOOK":     4,
 	}
 )
 
@@ -891,9 +894,13 @@ type AuditConfig struct {
 	// Whether to log output results (caution: might contain sensitive data).
 	LogResults *bool `protobuf:"varint,4,opt,name=log_results" json:"log_results,omitempty"`
 	// The storage type to use.
-	StorageType   *AuditConfig_StorageType `protobuf:"varint,5,opt,name=storage_type,enum=mcpany.config.v1.AuditConfig_StorageType" json:"storage_type,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	StorageType *AuditConfig_StorageType `protobuf:"varint,5,opt,name=storage_type,enum=mcpany.config.v1.AuditConfig_StorageType" json:"storage_type,omitempty"`
+	// The webhook URL for STORAGE_TYPE_WEBHOOK.
+	WebhookUrl *string `protobuf:"bytes,6,opt,name=webhook_url" json:"webhook_url,omitempty"`
+	// Additional headers to send with the webhook.
+	WebhookHeaders map[string]string `protobuf:"bytes,7,rep,name=webhook_headers" json:"webhook_headers,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
 }
 
 func (x *AuditConfig) Reset() {
@@ -956,6 +963,20 @@ func (x *AuditConfig) GetStorageType() AuditConfig_StorageType {
 	return AuditConfig_STORAGE_TYPE_UNSPECIFIED
 }
 
+func (x *AuditConfig) GetWebhookUrl() string {
+	if x != nil && x.WebhookUrl != nil {
+		return *x.WebhookUrl
+	}
+	return ""
+}
+
+func (x *AuditConfig) GetWebhookHeaders() map[string]string {
+	if x != nil {
+		return x.WebhookHeaders
+	}
+	return nil
+}
+
 func (x *AuditConfig) SetEnabled(v bool) {
 	x.Enabled = &v
 }
@@ -974,6 +995,14 @@ func (x *AuditConfig) SetLogResults(v bool) {
 
 func (x *AuditConfig) SetStorageType(v AuditConfig_StorageType) {
 	x.StorageType = &v
+}
+
+func (x *AuditConfig) SetWebhookUrl(v string) {
+	x.WebhookUrl = &v
+}
+
+func (x *AuditConfig) SetWebhookHeaders(v map[string]string) {
+	x.WebhookHeaders = v
 }
 
 func (x *AuditConfig) HasEnabled() bool {
@@ -1011,6 +1040,13 @@ func (x *AuditConfig) HasStorageType() bool {
 	return x.StorageType != nil
 }
 
+func (x *AuditConfig) HasWebhookUrl() bool {
+	if x == nil {
+		return false
+	}
+	return x.WebhookUrl != nil
+}
+
 func (x *AuditConfig) ClearEnabled() {
 	x.Enabled = nil
 }
@@ -1031,6 +1067,10 @@ func (x *AuditConfig) ClearStorageType() {
 	x.StorageType = nil
 }
 
+func (x *AuditConfig) ClearWebhookUrl() {
+	x.WebhookUrl = nil
+}
+
 type AuditConfig_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
@@ -1044,6 +1084,10 @@ type AuditConfig_builder struct {
 	LogResults *bool
 	// The storage type to use.
 	StorageType *AuditConfig_StorageType
+	// The webhook URL for STORAGE_TYPE_WEBHOOK.
+	WebhookUrl *string
+	// Additional headers to send with the webhook.
+	WebhookHeaders map[string]string
 }
 
 func (b0 AuditConfig_builder) Build() *AuditConfig {
@@ -1055,6 +1099,8 @@ func (b0 AuditConfig_builder) Build() *AuditConfig {
 	x.LogArguments = b.LogArguments
 	x.LogResults = b.LogResults
 	x.StorageType = b.StorageType
+	x.WebhookUrl = b.WebhookUrl
+	x.WebhookHeaders = b.WebhookHeaders
 	return m0
 }
 
@@ -1411,18 +1457,24 @@ const file_proto_config_v1_config_proto_rawDesc = "" +
 	"\x0fLOG_FORMAT_JSON\x10\x02J\x04\b\x02\x10\x03\"O\n" +
 	"\tDLPConfig\x12\x18\n" +
 	"\aenabled\x18\x01 \x01(\bR\aenabled\x12(\n" +
-	"\x0fcustom_patterns\x18\x02 \x03(\tR\x0fcustom_patterns\"\xd8\x02\n" +
+	"\x0fcustom_patterns\x18\x02 \x03(\tR\x0fcustom_patterns\"\xb5\x04\n" +
 	"\vAuditConfig\x12\x18\n" +
 	"\aenabled\x18\x01 \x01(\bR\aenabled\x12 \n" +
 	"\voutput_path\x18\x02 \x01(\tR\voutput_path\x12$\n" +
 	"\rlog_arguments\x18\x03 \x01(\bR\rlog_arguments\x12 \n" +
 	"\vlog_results\x18\x04 \x01(\bR\vlog_results\x12M\n" +
-	"\fstorage_type\x18\x05 \x01(\x0e2).mcpany.config.v1.AuditConfig.StorageTypeR\fstorage_type\"v\n" +
+	"\fstorage_type\x18\x05 \x01(\x0e2).mcpany.config.v1.AuditConfig.StorageTypeR\fstorage_type\x12 \n" +
+	"\vwebhook_url\x18\x06 \x01(\tR\vwebhook_url\x12[\n" +
+	"\x0fwebhook_headers\x18\a \x03(\v21.mcpany.config.v1.AuditConfig.WebhookHeadersEntryR\x0fwebhook_headers\x1aA\n" +
+	"\x13WebhookHeadersEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\x90\x01\n" +
 	"\vStorageType\x12\x1c\n" +
 	"\x18STORAGE_TYPE_UNSPECIFIED\x10\x00\x12\x15\n" +
 	"\x11STORAGE_TYPE_FILE\x10\x01\x12\x17\n" +
 	"\x13STORAGE_TYPE_SQLITE\x10\x02\x12\x19\n" +
-	"\x15STORAGE_TYPE_POSTGRES\x10\x03\"\x8e\x01\n" +
+	"\x15STORAGE_TYPE_POSTGRES\x10\x03\x12\x18\n" +
+	"\x14STORAGE_TYPE_WEBHOOK\x10\x04\"\x8e\x01\n" +
 	"\x11ProfileDefinition\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12=\n" +
 	"\bselector\x18\x02 \x01(\v2!.mcpany.config.v1.ProfileSelectorR\bselector\x12&\n" +
@@ -1440,7 +1492,7 @@ const file_proto_config_v1_config_proto_rawDesc = "" +
 	"\bdisabled\x18\x03 \x01(\bR\bdisabledB5B\vConfigProtoZ&github.com/mcpany/core/proto/config/v1b\beditionsp\xe8\a"
 
 var file_proto_config_v1_config_proto_enumTypes = make([]protoimpl.EnumInfo, 3)
-var file_proto_config_v1_config_proto_msgTypes = make([]protoimpl.MessageInfo, 9)
+var file_proto_config_v1_config_proto_msgTypes = make([]protoimpl.MessageInfo, 10)
 var file_proto_config_v1_config_proto_goTypes = []any{
 	(GlobalSettings_LogLevel)(0),      // 0: mcpany.config.v1.GlobalSettings.LogLevel
 	(GlobalSettings_LogFormat)(0),     // 1: mcpany.config.v1.GlobalSettings.LogFormat
@@ -1453,33 +1505,35 @@ var file_proto_config_v1_config_proto_goTypes = []any{
 	(*ProfileDefinition)(nil),         // 8: mcpany.config.v1.ProfileDefinition
 	(*ProfileSelector)(nil),           // 9: mcpany.config.v1.ProfileSelector
 	(*Middleware)(nil),                // 10: mcpany.config.v1.Middleware
-	nil,                               // 11: mcpany.config.v1.ProfileSelector.ToolPropertiesEntry
-	(*UpstreamServiceConfig)(nil),     // 12: mcpany.config.v1.UpstreamServiceConfig
-	(*UpstreamServiceCollection)(nil), // 13: mcpany.config.v1.UpstreamServiceCollection
-	(*AuthenticationConfig)(nil),      // 14: mcpany.config.v1.AuthenticationConfig
-	(*bus.MessageBus)(nil),            // 15: bus.MessageBus
+	nil,                               // 11: mcpany.config.v1.AuditConfig.WebhookHeadersEntry
+	nil,                               // 12: mcpany.config.v1.ProfileSelector.ToolPropertiesEntry
+	(*UpstreamServiceConfig)(nil),     // 13: mcpany.config.v1.UpstreamServiceConfig
+	(*UpstreamServiceCollection)(nil), // 14: mcpany.config.v1.UpstreamServiceCollection
+	(*AuthenticationConfig)(nil),      // 15: mcpany.config.v1.AuthenticationConfig
+	(*bus.MessageBus)(nil),            // 16: bus.MessageBus
 }
 var file_proto_config_v1_config_proto_depIdxs = []int32{
 	5,  // 0: mcpany.config.v1.McpAnyServerConfig.global_settings:type_name -> mcpany.config.v1.GlobalSettings
-	12, // 1: mcpany.config.v1.McpAnyServerConfig.upstream_services:type_name -> mcpany.config.v1.UpstreamServiceConfig
-	13, // 2: mcpany.config.v1.McpAnyServerConfig.upstream_service_collections:type_name -> mcpany.config.v1.UpstreamServiceCollection
+	13, // 1: mcpany.config.v1.McpAnyServerConfig.upstream_services:type_name -> mcpany.config.v1.UpstreamServiceConfig
+	14, // 2: mcpany.config.v1.McpAnyServerConfig.upstream_service_collections:type_name -> mcpany.config.v1.UpstreamServiceCollection
 	4,  // 3: mcpany.config.v1.McpAnyServerConfig.users:type_name -> mcpany.config.v1.User
-	14, // 4: mcpany.config.v1.User.authentication:type_name -> mcpany.config.v1.AuthenticationConfig
+	15, // 4: mcpany.config.v1.User.authentication:type_name -> mcpany.config.v1.AuthenticationConfig
 	0,  // 5: mcpany.config.v1.GlobalSettings.log_level:type_name -> mcpany.config.v1.GlobalSettings.LogLevel
-	15, // 6: mcpany.config.v1.GlobalSettings.message_bus:type_name -> bus.MessageBus
+	16, // 6: mcpany.config.v1.GlobalSettings.message_bus:type_name -> bus.MessageBus
 	7,  // 7: mcpany.config.v1.GlobalSettings.audit:type_name -> mcpany.config.v1.AuditConfig
 	8,  // 8: mcpany.config.v1.GlobalSettings.profile_definitions:type_name -> mcpany.config.v1.ProfileDefinition
 	1,  // 9: mcpany.config.v1.GlobalSettings.log_format:type_name -> mcpany.config.v1.GlobalSettings.LogFormat
 	10, // 10: mcpany.config.v1.GlobalSettings.middlewares:type_name -> mcpany.config.v1.Middleware
 	6,  // 11: mcpany.config.v1.GlobalSettings.dlp:type_name -> mcpany.config.v1.DLPConfig
 	2,  // 12: mcpany.config.v1.AuditConfig.storage_type:type_name -> mcpany.config.v1.AuditConfig.StorageType
-	9,  // 13: mcpany.config.v1.ProfileDefinition.selector:type_name -> mcpany.config.v1.ProfileSelector
-	11, // 14: mcpany.config.v1.ProfileSelector.tool_properties:type_name -> mcpany.config.v1.ProfileSelector.ToolPropertiesEntry
-	15, // [15:15] is the sub-list for method output_type
-	15, // [15:15] is the sub-list for method input_type
-	15, // [15:15] is the sub-list for extension type_name
-	15, // [15:15] is the sub-list for extension extendee
-	0,  // [0:15] is the sub-list for field type_name
+	11, // 13: mcpany.config.v1.AuditConfig.webhook_headers:type_name -> mcpany.config.v1.AuditConfig.WebhookHeadersEntry
+	9,  // 14: mcpany.config.v1.ProfileDefinition.selector:type_name -> mcpany.config.v1.ProfileSelector
+	12, // 15: mcpany.config.v1.ProfileSelector.tool_properties:type_name -> mcpany.config.v1.ProfileSelector.ToolPropertiesEntry
+	16, // [16:16] is the sub-list for method output_type
+	16, // [16:16] is the sub-list for method input_type
+	16, // [16:16] is the sub-list for extension type_name
+	16, // [16:16] is the sub-list for extension extendee
+	0,  // [0:16] is the sub-list for field type_name
 }
 
 func init() { file_proto_config_v1_config_proto_init() }
@@ -1495,7 +1549,7 @@ func file_proto_config_v1_config_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_proto_config_v1_config_proto_rawDesc), len(file_proto_config_v1_config_proto_rawDesc)),
 			NumEnums:      3,
-			NumMessages:   9,
+			NumMessages:   10,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

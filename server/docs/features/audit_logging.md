@@ -31,14 +31,35 @@ global_settings:
     log_results: false
 ```
 
+### Webhook Configuration
+
+You can also configure audit logs to be sent to a webhook endpoint.
+
+```yaml
+global_settings:
+  audit:
+    enabled: true
+    storage_type: "STORAGE_TYPE_WEBHOOK"
+    webhook_url: "https://audit-collector.example.com/v1/logs"
+    webhook_headers:
+      Authorization: "Bearer my-token"
+      X-Environment: "production"
+    log_arguments: true
+```
+
 ### Configuration Options
 
 | Option | Type | Default | Description |
 | :--- | :--- | :--- | :--- |
 | `enabled` | `bool` | `false` | Enables or disables audit logging. |
-| `output_path` | `string` | `""` | Path to the log file. If empty, logs are written to stdout. |
+| `storage_type` | `enum` | `FILE` | The storage backend to use: `FILE`, `SQLITE`, `POSTGRES`, or `WEBHOOK`. |
+| `output_path` | `string` | `""` | Path to the log file (for `FILE`) or database connection string/path (for `SQLITE`/`POSTGRES`). |
+| `webhook_url` | `string` | `""` | The URL to send POST requests to (for `WEBHOOK`). |
+| `webhook_headers` | `map` | `{}` | HTTP headers to include in the webhook request (for `WEBHOOK`). |
 | `log_arguments` | `bool` | `false` | If true, logs the input arguments. **Warning:** May log sensitive data. |
 | `log_results` | `bool` | `false` | If true, logs the execution result. **Warning:** May log sensitive data. |
+
+**Note on Webhook Performance:** The webhook storage makes a synchronous HTTP call for every audit log entry. To prevent slowing down tool execution, a short timeout (3 seconds) is applied. Ensure your webhook endpoint is performant.
 
 ## Log Format
 
