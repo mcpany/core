@@ -1977,7 +1977,13 @@ func checkForArgumentInjection(val string) error {
 }
 
 func isShellCommand(cmd string) bool {
-	shells := []string{"sh", "bash", "zsh", "dash", "ash", "ksh", "csh", "tcsh", "fish", "pwsh", "powershell", "powershell.exe", "pwsh.exe", "cmd", "cmd.exe"}
+	// Shells and commands that invoke a shell or execute code remotely/locally via shell.
+	// We treat them as shells to enforce strict argument validation.
+	shells := []string{
+		"sh", "bash", "zsh", "dash", "ash", "ksh", "csh", "tcsh", "fish",
+		"pwsh", "powershell", "powershell.exe", "pwsh.exe", "cmd", "cmd.exe",
+		"ssh", "scp", "su", "sudo", "env",
+	}
 	base := filepath.Base(cmd)
 	for _, shell := range shells {
 		if base == shell {
