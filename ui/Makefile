@@ -37,3 +37,7 @@ build-test-docker:
 build:
 	@echo "Building UI..."
 	npm install && npm run build
+
+update-screenshots:
+	@echo "Updating screenshots..."
+	docker compose -f ../docker/docker-compose.test-ui.yml run --rm ui-tests npx playwright test --config playwright.screenshots.config.ts

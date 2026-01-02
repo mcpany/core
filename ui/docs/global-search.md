@@ -1,19 +1,30 @@
-# Global Search Feature
+# Global Search (Command Palette)
 
 ## Overview
-The **Global Search** feature provides a unified command palette for quick navigation and resource access within the MCP Any UI. Inspired by modern developer tools, it allows users to jump to any page, service, tool, resource, or prompt using the keyboard.
 
-## Key Capabilities
-- **Universal Access:** Press `Cmd+K` (or `Ctrl+K` on Windows/Linux) to open the palette from anywhere.
-- **Search:** Quickly filter through Services, Tools, Resources, and Prompts.
-- **Navigation:** Jump directly to specific resource details.
-- **Theme Switching:** Toggle between Light, Dark, and System themes instantly.
-- **Glassmorphism Design:** Matches the premium "Apple" aesthetic of the application.
+The Global Search (also known as Command Palette) is a powerful navigation and action tool inspired by modern developer interfaces (like Vercel, Linear, VS Code). It allows users to quickly jump to any resource, tool, or page, and perform actions without taking their hands off the keyboard.
 
-## Usage
-1. Click the "Search feature..." button in the top navigation bar or press `Cmd+K`.
-2. Type to filter results.
-3. Use the arrow keys to navigate and `Enter` to select.
+## Features
+
+- **Keyboard Shortcut:** Triggered by `Cmd+K` (macOS) or `Ctrl+K` (Windows/Linux).
+- **Navigation:** Quickly jump to Dashboard, Services, Logs, Playground, Settings.
+- **Tools:** Search and execute registered tools (extensible).
+- **Theme Switching:** Toggle between Light, Dark, and System themes directly from the palette.
+- **Glassmorphism:** Matches the "Premium Enterprise" aesthetic with blurred backdrops and refined typography.
 
 ## Screenshot
-![Global Search](../../.audit/ui/2025-12-30/global_search.png)
+
+![Global Search](./screenshots/global_search.png)
+
+## Implementation Details
+
+- **Component:** `ui/src/components/global-search.tsx`
+- **Library:** Built on top of `cmdk` and `shadcn/ui` primitives.
+- **Integration:** Embedded in the `Layout` to be accessible from any page.
+
+## Usage
+
+1. Press `Cmd+K` or click the "Search" input in the header.
+2. Type to filter results.
+3. Use `Up/Down` arrows to navigate.
+4. Press `Enter` to select an action.

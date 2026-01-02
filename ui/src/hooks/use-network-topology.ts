@@ -118,7 +118,12 @@ export function useNetworkTopology() {
                         animated: tNode.status === 'NODE_STATUS_ACTIVE',
                         style: { stroke: '#b1b1b7' },
                         markerEnd: { type: MarkerType.ArrowClosed, color: '#b1b1b7' },
-                        label: tNode.metrics ? `${tNode.metrics.qps?.toFixed(1) || 0} RPS` : undefined
+                        label: tNode.metrics ? `${tNode.metrics.qps?.toFixed(1) || 0} RPS` : undefined,
+                        labelStyle: { fill: '#94a3b8', fontWeight: 600, fontSize: 10 },
+                        labelShowBg: true,
+                        labelBgStyle: { fill: '#1e293b', fillOpacity: 0.85, rx: 4, ry: 4 },
+                        labelBgPadding: [4, 2],
+                        labelBgBorderRadius: 4,
                     });
                 }
 
