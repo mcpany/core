@@ -15,6 +15,10 @@ import (
 )
 
 func TestStore_SSRF_Protection(t *testing.T) {
+	// Ensure env vars are unset for this test to verify blocking behavior
+	t.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "")
+	t.Setenv("MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES", "")
+
 	// This test confirms that the SSRF protection blocks access to localhost.
 	// It relies on the default configuration of the secure http client.
 
