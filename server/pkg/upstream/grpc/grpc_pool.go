@@ -14,6 +14,7 @@ import (
 	"time"
 
 	"github.com/mcpany/core/pkg/client"
+	healthChecker "github.com/mcpany/core/pkg/health"
 	"github.com/mcpany/core/pkg/pool"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"google.golang.org/grpc"
@@ -49,6 +50,9 @@ func NewGrpcPool(
 	if config.GetGrpcService().GetAddress() == "" {
 		return nil, fmt.Errorf("grpc service address is empty")
 	}
+
+	// Create a shared health checker for all clients in this pool
+	checker := healthChecker.NewChecker(config)
 
 	factory := func(_ context.Context) (*client.GrpcClientWrapper, error) {
 		var transportCreds credentials.TransportCredentials
@@ -88,7 +92,7 @@ func NewGrpcPool(
 		if err != nil {
 			return nil, err
 		}
-		return client.NewGrpcClientWrapper(conn, config), nil
+		return client.NewGrpcClientWrapper(conn, config, checker), nil
 	}
 	return pool.New(factory, minSize, maxSize, idleTimeout, disableHealthCheck)
 }

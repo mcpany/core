@@ -39,6 +39,28 @@ message User {
   repeated string roles = 4 [json_name = "roles"];
 }
 
+// Secret defines a secret value.
+message Secret {
+  // id is the unique identifier for the secret.
+  string id = 1;
+  // name is the human-readable name of the secret.
+  string name = 2;
+  // key is the key used to reference the secret (e.g. env var name).
+  string key = 3;
+  // value is the secret value (encrypted or raw depending on context).
+  string value = 4;
+  // provider is the source of the secret (e.g. "openai", "aws").
+  string provider = 5;
+  // last_used is the timestamp when the secret was last used using RFC3339 format.
+  string last_used = 6;
+  // created_at is the timestamp when the secret was created using RFC3339 format.
+  string created_at = 7;
+}
+
+message SecretList {
+  repeated Secret secrets = 1;
+}
+
 message GlobalSettings {
   enum LogLevel {
     LOG_LEVEL_UNSPECIFIED = 0;

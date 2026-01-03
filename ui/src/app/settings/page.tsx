@@ -12,6 +12,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
+import { GlobalSettingsForm } from "@/components/settings/global-settings-form";
 import { SecretsManager } from "@/components/settings/secrets-manager";
 
 export default function SettingsPage() {
@@ -77,14 +78,7 @@ ALLOWED_HOSTS=*`} />
             <SecretsManager />
         </TabsContent>
         <TabsContent value="general">
-             <Card>
-                <CardHeader>
-                    <CardTitle>General Settings</CardTitle>
-                </CardHeader>
-                <CardContent>
-                    <p className="text-muted-foreground">Global application settings.</p>
-                </CardContent>
-            </Card>
+             <GlobalSettingsForm />
         </TabsContent>
       </Tabs>
     </div>

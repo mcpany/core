@@ -835,23 +835,36 @@ func StartMCPANYServerWithClock(t *testing.T, testName string, healthCheck bool,
 	grpcRegPortArg := "127.0.0.1:0"
 	natsURL, natsCleanup := StartNatsServer(t)
 
+	// Use unique DB path
+	dbFile, err := os.CreateTemp(t.TempDir(), "mcpany-db-*.db")
+	require.NoError(t, err)
+	dbPath := dbFile.Name()
+	_ = dbFile.Close()
+
 	args := []string{
 		"run",
 		"--mcp-listen-address", jsonrpcPortArg,
 		"--grpc-port", grpcRegPortArg,
+		"--db-path", dbPath,
 	}
 	args = append(args, extraArgs...)
 	env := []string{"MCPANY_LOG_LEVEL=debug", "NATS_URL=" + natsURL}
 	if sudo, ok := os.LookupEnv("USE_SUDO_FOR_DOCKER"); ok {
 		env = append(env, "USE_SUDO_FOR_DOCKER="+sudo)
 	}
-	if metricsAddr, ok := os.LookupEnv("MCPANY_METRICS_LISTEN_ADDRESS"); ok {
-		t.Logf("Found MCPANY_METRICS_LISTEN_ADDRESS=%s in env, creating server with it", metricsAddr)
-		env = append(env, "MCPANY_METRICS_LISTEN_ADDRESS="+metricsAddr)
-	} else {
-		// Fallback for tests if env var propagation fails
-		t.Logf("MCPANY_METRICS_LISTEN_ADDRESS not found in env, using default localhost:19091")
-		env = append(env, "MCPANY_METRICS_LISTEN_ADDRESS=localhost:19091")
+	// Metrics port
+	metricsPort := FindFreePort(t)
+	metricsAddrArg := fmt.Sprintf("127.0.0.1:%d", metricsPort)
+	env = append(env, "MCPANY_METRICS_LISTEN_ADDRESS="+metricsAddrArg)
+	t.Logf("Using metrics address: %s", metricsAddrArg)
+
+	// Deprecated: explicit env check logic removed in favor of always randomizing for tests to ensure isolation.
+	// If user provided MCPANY_METRICS_LISTEN_ADDRESS, it might be ignored here, but for E2E tests we want isolation usually.
+	// If we truly want to support override, we can check env first.
+	if override, ok := os.LookupEnv("MCPANY_METRICS_LISTEN_ADDRESS"); ok && override != "" {
+		// Actually, if parallel tests run, we MUST NOT use the same port.
+		// So ignoring env is safer for t.Parallel().
+		t.Logf("Ignoring env MCPANY_METRICS_LISTEN_ADDRESS=%s in favor of random port %d for isolation", override, metricsPort)
 	}
 
 	absMcpAnyBinaryPath, err := filepath.Abs(mcpanyBinary)
