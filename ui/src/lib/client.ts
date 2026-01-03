@@ -322,6 +322,7 @@ export const apiClient = {
         if (!res.ok) throw new Error('Failed to save global settings');
     }
 };
+// End of client definition
 
 /**
  * Definition of a secret used for sensitive configuration.
