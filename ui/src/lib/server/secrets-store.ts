@@ -32,7 +32,7 @@ function getMasterKey(): Buffer {
         try {
             const keyHex = fs.readFileSync(MASTER_KEY_FILE, 'utf-8').trim();
             return Buffer.from(keyHex, 'hex');
-        } catch (e) {
+        } catch (_e) {
             // Fallback to generating a new one if file is corrupt
             console.error('Failed to read master key file, generating new one. WARNING: Existing secrets will be lost.');
         }
@@ -42,8 +42,8 @@ function getMasterKey(): Buffer {
     const newKey = crypto.randomBytes(32);
     try {
         fs.writeFileSync(MASTER_KEY_FILE, newKey.toString('hex'), { mode: 0o600 });
-    } catch (e) {
-        console.error('Failed to write master key file:', e);
+    } catch (_e) {
+        console.error('Failed to write master key file:', _e);
     }
     return newKey;
 }
@@ -88,8 +88,8 @@ function decrypt(text: string): string {
             let decrypted = decipher.update(encrypted, 'hex', 'utf8');
             decrypted += decipher.final('utf8');
             return decrypted;
-        } catch (e) {
-            console.error('Decryption failed:', e);
+        } catch (_e) {
+            console.error('Decryption failed:', _e);
             return '[Decryption Failed]';
         }
     }
@@ -100,7 +100,7 @@ function decrypt(text: string): string {
         // Simple heuristic: if it looks like garbage or fails, we might return error,
         // but since we are migrating from Base64, we assume valid Base64 string if not v1.
         return decoded;
-    } catch (e) {
+    } catch (_e) {
         return '[Invalid Secret]';
     }
 }
@@ -111,7 +111,7 @@ export const SecretsStore = {
         try {
             const data = fs.readFileSync(STORAGE_FILE, 'utf-8');
             return JSON.parse(data);
-        } catch (e) {
+        } catch (_e) {
             return [];
         }
     },
@@ -173,7 +173,7 @@ export const SecretsStore = {
             // Note: decryptedSecrets has `value` and `undefined` encryptedValue, so we can't save it directly.
             // We need to save the `secrets` array which we modified in place above.
             SecretsStore.saveAll(secrets);
-            console.log('Migrated legacy secrets to secure encryption.');
+
         }
 
         return decryptedSecrets;

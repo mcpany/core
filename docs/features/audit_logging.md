@@ -42,6 +42,18 @@ global_settings:
 | `log_arguments` | `bool` | `false` | If true, logs the input arguments. **Warning:** May log sensitive data. |
 | `log_results` | `bool` | `false` | If true, logs the execution result. **Warning:** May log sensitive data. |
 
+| `log_results` | `bool` | `false` | If true, logs the execution result. **Warning:** May log sensitive data. |
+
+### UI Configuration
+
+You can also enable or disable audit logging directly from the UI:
+
+1. Navigate to **Settings > General**.
+2. Toggle the **Enable Audit Logging** switch.
+3. Click **Save Changes**.
+
+![Audit Logging UI](../ui/screenshots/settings_general.png)
+
 ## Log Format
 
 If `storage_type` is `STORAGE_TYPE_FILE`, audit logs are written as newline-delimited JSON (NDJSON). Each line represents a single tool execution event.

@@ -84,13 +84,13 @@ type ServiceInfo struct {
 // its name and input arguments as a raw JSON message.
 type ExecutionRequest struct {
 	// ToolName is the name of the tool to be executed.
-	ToolName string
+	ToolName string `json:"name"`
 	// ToolInputs is the raw JSON message of the tool inputs. It is used by
 	// tools that need to unmarshal the inputs into a specific struct.
-	ToolInputs json.RawMessage
+	ToolInputs json.RawMessage `json:"toolInputs"`
 	// Arguments is a map of the tool inputs. It is used by tools that need to
 	// access the inputs as a map.
-	Arguments map[string]interface{}
+	Arguments map[string]interface{} `json:"arguments"`
 }
 
 // ServiceRegistry defines an interface for a component that can look up tools

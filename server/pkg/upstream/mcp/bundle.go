@@ -14,6 +14,7 @@ import (
 	"strings"
 
 	"github.com/docker/docker/api/types/mount"
+	"github.com/mcpany/core/pkg/logging"
 	"github.com/mcpany/core/pkg/prompt"
 	"github.com/mcpany/core/pkg/resource"
 	"github.com/mcpany/core/pkg/tool"
@@ -75,7 +76,7 @@ func (u *Upstream) createAndRegisterMCPItemsFromBundle(
 		return nil, nil, fmt.Errorf("bundle_path is required")
 	}
 
-	tempDir := filepath.Join(os.TempDir(), "mcp-bundles", serviceID)
+	tempDir := filepath.Join(u.BundleBaseDir, serviceID)
 	// Clean up old dir if exists
 	_ = os.RemoveAll(tempDir)
 	if err := unzipBundle(bundlePath, tempDir); err != nil {
@@ -175,6 +176,11 @@ func (u *Upstream) createAndRegisterMCPItemsFromBundle(
 	}
 
 	// 4. Construct Transport
+	if stat, err := os.Stat(tempDir); err != nil {
+		logging.GetLogger().Error("Bundle temp dir check failed", "path", tempDir, "error", err)
+	} else {
+		logging.GetLogger().Info("Bundle temp dir exists", "path", tempDir, "mode", stat.Mode())
+	}
 	transport := &BundleDockerTransport{
 		Image:      imageName,
 		Command:    command,

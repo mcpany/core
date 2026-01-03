@@ -7,6 +7,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"strconv"
 	"strings"
 	"sync"
 	"text/template"
@@ -84,6 +85,9 @@ func (t *Transformer) Transform(templateStr string, data any) ([]byte, error) {
 					return sb.String()
 				}
 
+				// Scratch buffer for number conversion to avoid allocations
+				var scratch [64]byte
+
 				for i, v := range a {
 					if i > 0 {
 						sb.WriteString(sep)
@@ -93,6 +97,33 @@ func (t *Transformer) Transform(templateStr string, data any) ([]byte, error) {
 						sb.WriteString(val)
 					case fmt.Stringer:
 						sb.WriteString(val.String())
+					case int:
+						sb.Write(strconv.AppendInt(scratch[:0], int64(val), 10))
+					case int64:
+						sb.Write(strconv.AppendInt(scratch[:0], val, 10))
+					case int32:
+						sb.Write(strconv.AppendInt(scratch[:0], int64(val), 10))
+					case int16:
+						sb.Write(strconv.AppendInt(scratch[:0], int64(val), 10))
+					case int8:
+						sb.Write(strconv.AppendInt(scratch[:0], int64(val), 10))
+					case uint:
+						sb.Write(strconv.AppendUint(scratch[:0], uint64(val), 10))
+					case uint64:
+						sb.Write(strconv.AppendUint(scratch[:0], val, 10))
+					case uint32:
+						sb.Write(strconv.AppendUint(scratch[:0], uint64(val), 10))
+					case uint16:
+						sb.Write(strconv.AppendUint(scratch[:0], uint64(val), 10))
+					case uint8:
+						sb.Write(strconv.AppendUint(scratch[:0], uint64(val), 10))
+					case float64:
+						// Use -1 to behave like %v / %g
+						sb.Write(strconv.AppendFloat(scratch[:0], val, 'g', -1, 64))
+					case float32:
+						sb.Write(strconv.AppendFloat(scratch[:0], float64(val), 'g', -1, 32))
+					case bool:
+						sb.Write(strconv.AppendBool(scratch[:0], val))
 					default:
 						fmt.Fprint(&sb, v)
 					}

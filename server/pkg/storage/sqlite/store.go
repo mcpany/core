@@ -128,3 +128,131 @@ func (s *Store) DeleteService(ctx context.Context, name string) error {
 	}
 	return nil
 }
+
+// GetGlobalSettings retrieves the global configuration.
+func (s *Store) GetGlobalSettings() (*configv1.GlobalSettings, error) {
+	query := "SELECT config_json FROM global_settings WHERE id = 1"
+	row := s.db.QueryRowContext(context.TODO(), query)
+
+	var configJSON string
+	if err := row.Scan(&configJSON); err != nil {
+		if err == sql.ErrNoRows {
+			return nil, nil // Not found
+		}
+		return nil, fmt.Errorf("failed to scan global settings: %w", err)
+	}
+
+	var settings configv1.GlobalSettings
+	if err := protojson.Unmarshal([]byte(configJSON), &settings); err != nil {
+		return nil, fmt.Errorf("failed to unmarshal global settings: %w", err)
+	}
+	return &settings, nil
+}
+
+// SaveGlobalSettings saves the global configuration.
+func (s *Store) SaveGlobalSettings(settings *configv1.GlobalSettings) error {
+	opts := protojson.MarshalOptions{UseProtoNames: true}
+	configJSON, err := opts.Marshal(settings)
+	if err != nil {
+		return fmt.Errorf("failed to marshal global settings: %w", err)
+	}
+
+	query := `
+	INSERT INTO global_settings (id, config_json, updated_at)
+	VALUES (1, ?, CURRENT_TIMESTAMP)
+	ON CONFLICT(id) DO UPDATE SET
+		config_json = excluded.config_json,
+		updated_at = excluded.updated_at;
+	`
+	_, err = s.db.ExecContext(context.TODO(), query, string(configJSON))
+	if err != nil {
+		return fmt.Errorf("failed to save global settings: %w", err)
+	}
+	return nil
+}
+
+// Secrets
+
+// ListSecrets retrieves all secrets.
+func (s *Store) ListSecrets() ([]*configv1.Secret, error) {
+	rows, err := s.db.QueryContext(context.TODO(), "SELECT config_json FROM secrets")
+	if err != nil {
+		return nil, fmt.Errorf("failed to query secrets: %w", err)
+	}
+	defer func() { _ = rows.Close() }()
+
+	var secrets []*configv1.Secret
+	for rows.Next() {
+		var configJSON string
+		if err := rows.Scan(&configJSON); err != nil {
+			return nil, fmt.Errorf("failed to scan config_json: %w", err)
+		}
+
+		var secret configv1.Secret
+		if err := protojson.Unmarshal([]byte(configJSON), &secret); err != nil {
+			return nil, fmt.Errorf("failed to unmarshal secret: %w", err)
+		}
+		secrets = append(secrets, &secret)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, fmt.Errorf("error iterating rows: %w", err)
+	}
+	return secrets, nil
+}
+
+// GetSecret retrieves a secret by ID.
+func (s *Store) GetSecret(id string) (*configv1.Secret, error) {
+	query := "SELECT config_json FROM secrets WHERE id = ?"
+	row := s.db.QueryRowContext(context.TODO(), query, id)
+
+	var configJSON string
+	if err := row.Scan(&configJSON); err != nil {
+		if err == sql.ErrNoRows {
+			return nil, nil // Not found
+		}
+		return nil, fmt.Errorf("failed to scan secret: %w", err)
+	}
+
+	var secret configv1.Secret
+	if err := protojson.Unmarshal([]byte(configJSON), &secret); err != nil {
+		return nil, fmt.Errorf("failed to unmarshal secret: %w", err)
+	}
+	return &secret, nil
+}
+
+// SaveSecret saves a secret.
+func (s *Store) SaveSecret(secret *configv1.Secret) error {
+	if secret.GetId() == "" {
+		return fmt.Errorf("secret id is required")
+	}
+
+	opts := protojson.MarshalOptions{UseProtoNames: true}
+	configJSON, err := opts.Marshal(secret)
+	if err != nil {
+		return fmt.Errorf("failed to marshal secret: %w", err)
+	}
+
+	query := `
+	INSERT INTO secrets (id, name, key, config_json, updated_at)
+	VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP)
+	ON CONFLICT(id) DO UPDATE SET
+		name = excluded.name,
+		key = excluded.key,
+		config_json = excluded.config_json,
+		updated_at = excluded.updated_at;
+	`
+	_, err = s.db.ExecContext(context.TODO(), query, secret.GetId(), secret.GetName(), secret.GetKey(), string(configJSON))
+	if err != nil {
+		return fmt.Errorf("failed to save secret: %w", err)
+	}
+	return nil
+}
+
+// DeleteSecret deletes a secret by ID.
+func (s *Store) DeleteSecret(id string) error {
+	_, err := s.db.ExecContext(context.TODO(), "DELETE FROM secrets WHERE id = ?", id)
+	if err != nil {
+		return fmt.Errorf("failed to delete secret: %w", err)
+	}
+	return nil
+}

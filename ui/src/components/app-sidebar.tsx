@@ -15,6 +15,7 @@ import {
   Bot,
   Settings,
   Activity,
+  Key,
 } from "lucide-react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
@@ -76,6 +77,11 @@ const items = [
     title: "Stats",
     url: "/stats",
     icon: Activity,
+  },
+  {
+    title: "Secrets",
+    url: "/secrets",
+    icon: Key,
   },
   {
     title: "Settings",
