@@ -154,12 +154,18 @@ export function LogStream() {
     }
   }, [logs, isPaused])
 
-  const filteredLogs = logs.filter((log) => {
-    const matchesLevel = filterLevel === "ALL" || log.level === filterLevel
-    const matchesSearch = log.message.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         log.source?.toLowerCase().includes(searchQuery.toLowerCase())
-    return matchesLevel && matchesSearch
-  })
+  // Optimization: Memoize filtered logs and pre-calculate lowercase search query
+  // to avoid O(N) redundant string operations during filtering
+  const filteredLogs = React.useMemo(() => {
+    const lowerSearchQuery = searchQuery.toLowerCase()
+    return logs.filter((log) => {
+      const matchesLevel = filterLevel === "ALL" || log.level === filterLevel
+      const matchesSearch =
+        log.message.toLowerCase().includes(lowerSearchQuery) ||
+        log.source?.toLowerCase().includes(lowerSearchQuery)
+      return matchesLevel && matchesSearch
+    })
+  }, [logs, filterLevel, searchQuery])
 
   const clearLogs = () => setLogs([])
 
