@@ -60,6 +60,15 @@ export function PlaygroundClient() {
     apiClient.listTools()
         .then(data => setAvailableTools(data.tools || []))
         .catch(err => console.error("Failed to load tools:", err));
+
+    // Check URL params for tool
+    if (typeof window !== "undefined") {
+        const params = new URLSearchParams(window.location.search);
+        const toolName = params.get("tool");
+        if (toolName) {
+            setInput(`${toolName} {}`);
+        }
+    }
   }, []);
 
   // Auto-scroll to bottom

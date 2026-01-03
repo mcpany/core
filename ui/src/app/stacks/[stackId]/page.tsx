@@ -5,14 +5,37 @@
 
 "use client";
 
-import { use, useState } from "react";
+import { use, useState, useEffect } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { McpAnyManager } from "@/components/mcpany-manager";
+import { ServiceList } from "@/components/services/service-list";
 import { StackEditor } from "@/components/stacks/stack-editor";
 import { FileText, List, Box } from "lucide-react";
+import { apiClient, UpstreamServiceConfig } from "@/lib/client";
 
 export default function StackDetailPage({ params }: { params: Promise<{ stackId: string }> }) {
   const { stackId } = use(params);
+  const [services, setServices] = useState<UpstreamServiceConfig[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    // In a real app, we might filter services by stackId
+    const fetchServices = async () => {
+        try {
+            setLoading(true);
+            const res = await apiClient.listServices();
+            if (Array.isArray(res)) {
+                setServices(res);
+            } else {
+                setServices(res.services || []);
+            }
+        } catch (e) {
+            console.error(e);
+        } finally {
+            setLoading(false);
+        }
+    };
+    fetchServices();
+  }, [stackId]);
 
   return (
     <div className="space-y-6">
@@ -34,8 +57,9 @@ export default function StackDetailPage({ params }: { params: Promise<{ stackId:
                 </TabsTrigger>
             </TabsList>
             <TabsContent value="services" className="space-y-4">
-                 {/* Reusing existing manager but maybe we want to wrap it or refactor it to fit better */}
-                 <McpAnyManager />
+                 <div className="border rounded-md p-4 bg-background">
+                     <ServiceList services={services} isLoading={loading} />
+                 </div>
             </TabsContent>
             <TabsContent value="editor">
                 <StackEditor stackId={stackId} />
