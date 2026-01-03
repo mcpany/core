@@ -267,8 +267,7 @@ var sensitiveKeys = []string{"api_key", "apikey", "token", "secret", "password",
 func IsSensitiveKey(key string) bool {
 	// Use the optimized byte-based scanner for keys as well.
 	// Avoid allocation using zero-copy conversion.
-	//nolint:gosec // Zero-copy conversion for optimization
-	return scanForSensitiveKeys(unsafe.Slice(unsafe.StringData(key), len(key)), false)
+	return scanForSensitiveKeys(unsafe.Slice(unsafe.StringData(key), len(key)), false) //nolint:gosec // Zero-copy optimization
 }
 
 // scanForSensitiveKeys checks if input contains any sensitive key.
@@ -300,18 +299,10 @@ func scanForSensitiveKeys(input []byte, checkEscape bool) bool {
 			if idxL == -1 && idxU == -1 {
 				break // No more matches for this char
 			}
-
-			switch {
-			case idxL == -1:
-				idx = idxU
-			case idxU == -1:
+			if idxL != -1 && (idxU == -1 || idxL < idxU) {
 				idx = idxL
-			default:
-				if idxL < idxU {
-					idx = idxL
-				} else {
-					idx = idxU
-				}
+			} else {
+				idx = idxU
 			}
 			// Found candidate start at offset + idx
 			matchStart := offset + idx

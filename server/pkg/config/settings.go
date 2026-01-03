@@ -200,13 +200,7 @@ func (s *Settings) LogLevel() configv1.GlobalSettings_LogLevel {
 		return configv1.GlobalSettings_LOG_LEVEL_DEBUG
 	}
 
-	logLevel := strings.ToUpper(s.logLevel)
-	// Handle "warning" as an alias for "WARN"
-	if logLevel == "WARNING" {
-		logLevel = "WARN"
-	}
-
-	key := "LOG_LEVEL_" + logLevel
+	key := "LOG_LEVEL_" + strings.ToUpper(s.logLevel)
 	if val, ok := configv1.GlobalSettings_LogLevel_value[key]; ok {
 		return configv1.GlobalSettings_LogLevel(val)
 	}

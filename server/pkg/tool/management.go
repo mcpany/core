@@ -5,12 +5,10 @@ package tool
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"sync"
 	"time"
-
-	// Use json-iterator for faster JSON operations.
-	json "github.com/json-iterator/go"
 
 	"github.com/google/uuid"
 	"github.com/mcpany/core/pkg/bus"

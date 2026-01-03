@@ -266,7 +266,7 @@ func TestGRPCTool_Execute_Success(t *testing.T) {
 	mockConn.On("GetState").Return(connectivity.Ready)
 
 	grpcPool, _ := pool.New[*client.GrpcClientWrapper](func(_ context.Context) (*client.GrpcClientWrapper, error) {
-		return client.NewGrpcClientWrapper(mockConn, &configv1.UpstreamServiceConfig{}, nil), nil
+		return client.NewGrpcClientWrapper(mockConn, &configv1.UpstreamServiceConfig{}), nil
 	}, 1, 1, 0, false)
 	poolManager.Register("grpc-service", grpcPool)
 
@@ -396,7 +396,7 @@ func TestGRPCTool_Execute_UnmarshalError(t *testing.T) {
 	mockConn.On("GetState").Return(connectivity.Ready)
 
 	grpcPool, _ := pool.New[*client.GrpcClientWrapper](func(_ context.Context) (*client.GrpcClientWrapper, error) {
-		return client.NewGrpcClientWrapper(mockConn, &configv1.UpstreamServiceConfig{}, nil), nil
+		return client.NewGrpcClientWrapper(mockConn, &configv1.UpstreamServiceConfig{}), nil
 	}, 1, 1, 0, false)
 	poolManager.Register("grpc-error", grpcPool)
 
@@ -422,7 +422,7 @@ func TestGRPCTool_Execute_InvokeError(t *testing.T) {
 	mockConn.On("Invoke", mock.Anything, mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return(fmt.Errorf("rpc error"))
 
 	grpcPool, _ := pool.New[*client.GrpcClientWrapper](func(_ context.Context) (*client.GrpcClientWrapper, error) {
-		return client.NewGrpcClientWrapper(mockConn, &configv1.UpstreamServiceConfig{}, nil), nil
+		return client.NewGrpcClientWrapper(mockConn, &configv1.UpstreamServiceConfig{}), nil
 	}, 1, 1, 0, false)
 	poolManager.Register("grpc-error", grpcPool)
 

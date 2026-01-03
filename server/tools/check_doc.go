@@ -1,7 +1,6 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
-// Package main checks for missing documentation on exported symbols.
 package main
 
 import (
@@ -43,61 +42,58 @@ func main() {
 			return nil
 		}
 
-		checkFile(f, fset, path)
+		ast.Inspect(f, func(n ast.Node) bool {
+			switch x := n.(type) {
+			case *ast.FuncDecl:
+				if x.Name.IsExported() {
+					if x.Doc == nil {
+						fmt.Printf("%s:%d: missing doc for function %s\n", path, fset.Position(x.Pos()).Line, x.Name.Name)
+					}
+				}
+			case *ast.GenDecl:
+				if x.Tok == token.TYPE || x.Tok == token.CONST || x.Tok == token.VAR {
+					for _, s := range x.Specs {
+						switch ts := s.(type) {
+						case *ast.TypeSpec:
+							if ts.Name.IsExported() {
+								if x.Doc == nil && ts.Doc == nil {
+									fmt.Printf("%s:%d: missing doc for type %s\n", path, fset.Position(ts.Pos()).Line, ts.Name.Name)
+								}
+								// Check methods in interface
+								if iface, ok := ts.Type.(*ast.InterfaceType); ok {
+									for _, field := range iface.Methods.List {
+										if len(field.Names) > 0 && field.Names[0].IsExported() {
+											if field.Doc == nil {
+												fmt.Printf("%s:%d: missing doc for interface method %s.%s\n", path, fset.Position(field.Pos()).Line, ts.Name.Name, field.Names[0].Name)
+											}
+										}
+									}
+								}
+								// Check fields in struct? The prompt says "every single public function, method, and class".
+								// "class" usually maps to struct/interface in Go.
+								// It doesn't explicitly say "every exported field of a struct", but it's good practice.
+								// I'll stick to types and functions first.
+							}
+						case *ast.ValueSpec:
+							for _, name := range ts.Names {
+								if name.IsExported() {
+									if x.Doc == nil && ts.Doc == nil {
+										fmt.Printf("%s:%d: missing doc for var/const %s\n", path, fset.Position(name.Pos()).Line, name.Name)
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+			return true
+		})
+
 		return nil
 	})
 
 	if err != nil {
 		fmt.Printf("Error walking path: %v\n", err)
 		os.Exit(1)
-	}
-}
-
-func checkFile(f *ast.File, fset *token.FileSet, path string) {
-	ast.Inspect(f, func(n ast.Node) bool {
-		switch x := n.(type) {
-		case *ast.FuncDecl:
-			if x.Name.IsExported() {
-				if x.Doc == nil {
-					fmt.Printf("%s:%d: missing doc for function %s\n", path, fset.Position(x.Pos()).Line, x.Name.Name)
-				}
-			}
-		case *ast.GenDecl:
-			checkGenDecl(x, fset, path)
-		}
-		return true
-	})
-}
-
-func checkGenDecl(x *ast.GenDecl, fset *token.FileSet, path string) {
-	if x.Tok == token.TYPE || x.Tok == token.CONST || x.Tok == token.VAR {
-		for _, s := range x.Specs {
-			switch ts := s.(type) {
-			case *ast.TypeSpec:
-				if ts.Name.IsExported() {
-					if x.Doc == nil && ts.Doc == nil {
-						fmt.Printf("%s:%d: missing doc for type %s\n", path, fset.Position(ts.Pos()).Line, ts.Name.Name)
-					}
-					// Check methods in interface
-					if iface, ok := ts.Type.(*ast.InterfaceType); ok {
-						for _, field := range iface.Methods.List {
-							if len(field.Names) > 0 && field.Names[0].IsExported() {
-								if field.Doc == nil {
-									fmt.Printf("%s:%d: missing doc for interface method %s.%s\n", path, fset.Position(field.Pos()).Line, ts.Name.Name, field.Names[0].Name)
-								}
-							}
-						}
-					}
-				}
-			case *ast.ValueSpec:
-				for _, name := range ts.Names {
-					if name.IsExported() {
-						if x.Doc == nil && ts.Doc == nil {
-							fmt.Printf("%s:%d: missing doc for var/const %s\n", path, fset.Position(name.Pos()).Line, name.Name)
-						}
-					}
-				}
-			}
-		}
 	}
 }

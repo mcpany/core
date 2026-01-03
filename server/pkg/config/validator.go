@@ -8,9 +8,6 @@ import (
 	"fmt"
 	"net/url"
 	"os"
-	"path/filepath"
-	"regexp"
-	"time"
 
 	"github.com/mcpany/core/pkg/util"
 	"github.com/mcpany/core/pkg/validation"
@@ -71,31 +68,6 @@ func Validate(ctx context.Context, config *configv1.McpAnyServerConfig, binaryTy
 		if err := validateGlobalSettings(gs, binaryType); err != nil {
 			validationErrors = append(validationErrors, ValidationError{
 				ServiceName: "global_settings",
-				Err:         err,
-			})
-		}
-	}
-
-	userIDs := make(map[string]bool)
-	for _, user := range config.GetUsers() {
-		if user.GetId() == "" {
-			validationErrors = append(validationErrors, ValidationError{
-				ServiceName: "user",
-				Err:         fmt.Errorf("user has empty id"),
-			})
-			continue
-		}
-		if userIDs[user.GetId()] {
-			validationErrors = append(validationErrors, ValidationError{
-				ServiceName: fmt.Sprintf("user:%s", user.GetId()),
-				Err:         fmt.Errorf("duplicate user id"),
-			})
-		}
-		userIDs[user.GetId()] = true
-
-		if err := validateUser(user); err != nil {
-			validationErrors = append(validationErrors, ValidationError{
-				ServiceName: fmt.Sprintf("user:%s", user.GetId()),
 				Err:         err,
 			})
 		}
@@ -206,32 +178,6 @@ func validateGlobalSettings(gs *configv1.GlobalSettings, binaryType BinaryType) 
 			if redis.GetAddress() == "" {
 				return fmt.Errorf("redis message bus address is empty")
 			}
-		}
-	}
-
-	if err := validateAuditConfig(gs.GetAudit()); err != nil {
-		return fmt.Errorf("audit config error: %w", err)
-	}
-
-	if err := validateDLPConfig(gs.GetDlp()); err != nil {
-		return fmt.Errorf("dlp config error: %w", err)
-	}
-
-	if err := validateGCSettings(gs.GetGcSettings()); err != nil {
-		return fmt.Errorf("gc settings error: %w", err)
-	}
-
-	profileNames := make(map[string]bool)
-	for _, profile := range gs.GetProfileDefinitions() {
-		if profile.GetName() == "" {
-			return fmt.Errorf("profile definition has empty name")
-		}
-		if profileNames[profile.GetName()] {
-			return fmt.Errorf("duplicate profile definition name: %s", profile.GetName())
-		}
-		profileNames[profile.GetName()] = true
-		if err := validateProfileDefinition(profile); err != nil {
-			return fmt.Errorf("profile definition %q error: %w", profile.GetName(), err)
 		}
 	}
 
@@ -611,110 +557,5 @@ func validateSchema(s *structpb.Struct) error {
 			return fmt.Errorf("schema 'type' must be a string")
 		}
 	}
-	return nil
-}
-
-func validateUser(user *configv1.User) error {
-	if user.GetAuthentication() == nil {
-		return nil // No auth config means no authentication required (Open Access)
-	}
-	if err := validateAuthenticationConfig(user.GetAuthentication()); err != nil {
-		return err
-	}
-	return nil
-}
-
-func validateAuthenticationConfig(auth *configv1.AuthenticationConfig) error {
-	switch auth.WhichAuthMethod() {
-	case configv1.AuthenticationConfig_ApiKey_case:
-		apiKey := auth.GetApiKey()
-		if apiKey.GetParamName() == "" {
-			return fmt.Errorf("api_key param_name is empty")
-		}
-		if apiKey.GetKeyValue() == "" {
-			return fmt.Errorf("api_key key_value is empty")
-		}
-	case configv1.AuthenticationConfig_Oauth2_case:
-		oauth2 := auth.GetOauth2()
-		if oauth2.GetTokenUrl() == "" {
-			return fmt.Errorf("oauth2 token_url is empty")
-		}
-		if !validation.IsValidURL(oauth2.GetTokenUrl()) {
-			return fmt.Errorf("invalid oauth2 token_url: %s", oauth2.GetTokenUrl())
-		}
-	case configv1.AuthenticationConfig_AuthMethod_not_set_case:
-		return nil // No auth method set means no authentication required
-	}
-	return nil
-}
-
-func validateAuditConfig(audit *configv1.AuditConfig) error {
-	if audit == nil {
-		return nil
-	}
-	if !audit.GetEnabled() {
-		return nil
-	}
-	switch audit.GetStorageType() {
-	case configv1.AuditConfig_STORAGE_TYPE_FILE:
-		if audit.GetOutputPath() == "" {
-			return fmt.Errorf("output_path is required for file storage")
-		}
-	case configv1.AuditConfig_STORAGE_TYPE_WEBHOOK:
-		if audit.GetWebhookUrl() == "" {
-			return fmt.Errorf("webhook_url is required for webhook storage")
-		}
-		if !validation.IsValidURL(audit.GetWebhookUrl()) {
-			return fmt.Errorf("invalid webhook_url: %s", audit.GetWebhookUrl())
-		}
-	}
-	return nil
-}
-
-func validateDLPConfig(dlp *configv1.DLPConfig) error {
-	if dlp == nil {
-		return nil
-	}
-	for _, pattern := range dlp.GetCustomPatterns() {
-		if _, err := regexp.Compile(pattern); err != nil {
-			return fmt.Errorf("invalid regex pattern %q: %w", pattern, err)
-		}
-	}
-	return nil
-}
-
-func validateGCSettings(gc *configv1.GCSettings) error {
-	if gc == nil {
-		return nil
-	}
-	if gc.GetInterval() != "" {
-		if _, err := time.ParseDuration(gc.GetInterval()); err != nil {
-			return fmt.Errorf("invalid interval: %w", err)
-		}
-	}
-	if gc.GetTtl() != "" {
-		if _, err := time.ParseDuration(gc.GetTtl()); err != nil {
-			return fmt.Errorf("invalid ttl: %w", err)
-		}
-	}
-	if gc.GetEnabled() {
-		for _, path := range gc.GetPaths() {
-			if path == "" {
-				return fmt.Errorf("empty gc path")
-			}
-			if err := validation.IsSecurePath(path); err != nil {
-				return fmt.Errorf("gc path %q is not secure: %w", path, err)
-			}
-			// We might also checking if it's absolute?
-			if !filepath.IsAbs(path) {
-				return fmt.Errorf("gc path %q must be absolute", path)
-			}
-		}
-	}
-	return nil
-}
-
-func validateProfileDefinition(_ *configv1.ProfileDefinition) error {
-	// Add specific profile validation if needed.
 	return nil
 }

@@ -19,3 +19,4 @@ The Stats/Analytics feature provides real-time insights into the MCP infrastruct
 The dashboard currently uses mock data generated on the client side to simulate a realistic environment.
 
 ## Screenshots
+![Stats Dashboard](stats_analytics.png)

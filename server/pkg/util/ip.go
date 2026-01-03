@@ -1,7 +1,7 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
-//
-//nolint:revive // util is a common name, legacy
+
+// Package util provides utility functions.
 package util
 
 import (

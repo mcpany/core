@@ -212,11 +212,6 @@ func (u *Upstream) createAndRegisterHTTPTools(ctx context.Context, serviceID, ad
 	sort.Strings(sortedCallIDs)
 
 	callPolicies := serviceConfig.GetCallPolicies()
-	compiledCallPolicies, err := tool.CompileCallPolicies(callPolicies)
-	if err != nil {
-		log.Error("Failed to compile call policies", "error", err)
-		return nil
-	}
 
 	// Optimization: Parse baseURL once outside the loop to avoid redundant parsing for each call.
 	baseURL, err := url.Parse(address)
@@ -255,7 +250,7 @@ func (u *Upstream) createAndRegisterHTTPTools(ctx context.Context, serviceID, ad
 			continue
 		}
 
-		allowed, err := tool.EvaluateCompiledCallPolicy(compiledCallPolicies, toolNamePart, callID, nil)
+		allowed, err := tool.EvaluateCallPolicy(callPolicies, toolNamePart, callID, nil)
 		if err != nil {
 			log.Error("Failed to evaluate call policy", "error", err)
 			continue

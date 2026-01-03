@@ -10,7 +10,6 @@ import (
 	"fmt"
 	"net/url"
 	"os"
-	"reflect"
 	"strconv"
 	"strings"
 	"unsafe"
@@ -350,18 +349,6 @@ func replacePlaceholders(input string, params map[string]interface{}, noEscapePa
 		start = absoluteEnd + 2
 	}
 	return sb.String()
-}
-
-// IsNil checks if an interface value is nil or holds a nil pointer.
-func IsNil(i any) bool {
-	if i == nil {
-		return true
-	}
-	switch reflect.TypeOf(i).Kind() {
-	case reflect.Ptr, reflect.Map, reflect.Array, reflect.Chan, reflect.Slice, reflect.Func:
-		return reflect.ValueOf(i).IsNil()
-	}
-	return false
 }
 
 // ToString converts a value to a string representation efficiently.

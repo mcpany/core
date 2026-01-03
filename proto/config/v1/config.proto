@@ -39,28 +39,6 @@ message User {
   repeated string roles = 4 [json_name = "roles"];
 }
 
-// Secret defines a secret value.
-message Secret {
-  // id is the unique identifier for the secret.
-  string id = 1;
-  // name is the human-readable name of the secret.
-  string name = 2;
-  // key is the key used to reference the secret (e.g. env var name).
-  string key = 3;
-  // value is the secret value (encrypted or raw depending on context).
-  string value = 4;
-  // provider is the source of the secret (e.g. "openai", "aws").
-  string provider = 5;
-  // last_used is the timestamp when the secret was last used using RFC3339 format.
-  string last_used = 6;
-  // created_at is the timestamp when the secret was created using RFC3339 format.
-  string created_at = 7;
-}
-
-message SecretList {
-  repeated Secret secrets = 1;
-}
-
 message GlobalSettings {
   enum LogLevel {
     LOG_LEVEL_UNSPECIFIED = 0;
@@ -105,21 +83,6 @@ message GlobalSettings {
   repeated Middleware middlewares = 12 [json_name = "middlewares"];
   // DLP configuration.
   DLPConfig dlp = 13 [json_name = "dlp"];
-  // Garbage Collection configuration.
-  GCSettings gc_settings = 16 [json_name = "gc_settings"];
-}
-
-message GCSettings {
-  // Whether the global GC worker is enabled.
-  bool enabled = 1 [json_name = "enabled"];
-  // How often the GC worker runs (e.g., "1h", "10m").
-  string interval = 2 [json_name = "interval"];
-  // The time-to-live for temporary files (e.g., "24h").
-  // Files older than this duration will be deleted.
-  string ttl = 3 [json_name = "ttl"];
-  // A list of absolute paths to directories that should be scanned for cleanup.
-  // The worker will not traverse outside these directories.
-  repeated string paths = 4 [json_name = "paths"];
 }
 
 message DLPConfig {

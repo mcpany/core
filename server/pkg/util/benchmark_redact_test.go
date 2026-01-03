@@ -15,7 +15,7 @@ func BenchmarkRedactJSON(b *testing.B) {
 	// Large clean JSON
 	cleanLargeMap := make(map[string]interface{})
 	for i := 0; i < 100; i++ {
-		cleanLargeMap["key"+string(rune(i))] = "value" + string(rune(i))
+		cleanLargeMap["key" + string(rune(i))] = "value" + string(rune(i))
 	}
 	cleanLargeBytes, _ := json.Marshal(cleanLargeMap)
 	cleanLarge := string(cleanLargeBytes)
@@ -29,7 +29,7 @@ func BenchmarkRedactJSON(b *testing.B) {
 		if i == 50 {
 			dirtyLargeMap["api_key"] = "secret"
 		} else {
-			dirtyLargeMap["key"+string(rune(i))] = "value" + string(rune(i))
+			dirtyLargeMap["key" + string(rune(i))] = "value" + string(rune(i))
 		}
 	}
 	dirtyLargeBytes, _ := json.Marshal(dirtyLargeMap)
@@ -93,6 +93,7 @@ func BenchmarkRedactJSON(b *testing.B) {
 			RedactJSON(input)
 		}
 	})
+
 	// Large string value benchmark
 	// This simulates a large log entry or similar that might be passed through
 	// where one field is very large but not an object/array.

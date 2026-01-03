@@ -12,13 +12,13 @@ services:
   mcpany-server:
     image: mcpany/server:latest
     build:
-      context: ./server
-      dockerfile: docker/Dockerfile.server
+      context: .
+      dockerfile: server/docker/Dockerfile.server
     ports:
       # Exposes the JSON-RPC port (for tool calls) to the host.
-      - "50055:50050"
+      - "50050:50050"
       # Exposes the gRPC registration port to the host.
-      - "50056:50051"
+      - "50051:50051"
     volumes:
       # Mounts the production config file.
       - ./server/docker/config.production.yaml:/etc/mcpany/config.yaml
@@ -71,7 +71,7 @@ services:
     ports:
       - "3000:3000"
     environment:
-      - NEXT_PUBLIC_API_URL=http://localhost:50055
+      - NEXT_PUBLIC_API_URL=http://localhost:50050
     depends_on:
       mcpany-server:
         condition: service_started

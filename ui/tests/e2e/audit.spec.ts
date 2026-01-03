@@ -4,7 +4,7 @@
  */
 
 
-import { test } from '@playwright/test';
+import { test, expect } from '@playwright/test';
 import * as fs from 'fs';
 import * as path from 'path';
 

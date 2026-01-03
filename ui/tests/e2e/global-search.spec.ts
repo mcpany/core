@@ -7,12 +7,12 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('Global Search', () => {
-  test.skip('should open and display dynamic content via keyboard shortcut', async ({ page }) => {
+  test('should open and display dynamic content via keyboard shortcut', async ({ page }) => {
     // Navigate to the dashboard
     await page.goto('/');
 
     // Wait for the page to load using a more specific selector
-    await expect(page.locator('h1:has-text("Dashboard")')).toBeVisible();
+    await expect(page.locator('h2:has-text("Dashboard")')).toBeVisible();
 
     // Simulate Cmd+K (Meta+K on Mac, Control+K on Windows/Linux)
     if (process.platform === 'darwin') {

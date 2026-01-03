@@ -11,7 +11,6 @@ import (
 	"net/http"
 	"os"
 	"os/exec"
-	"path/filepath"
 	"strings"
 
 	"al.essio.dev/pkg/shellescape"
@@ -80,24 +79,12 @@ func SetConnectForTesting(f func(client *mcp.Client, ctx context.Context, transp
 // effectively acting as a proxy or aggregator.
 type Upstream struct {
 	sessionRegistry *SessionRegistry
-	serviceID       string
-	// BundleBaseDir is the directory where bundles are extracted.
-	BundleBaseDir string
 }
 
-// Shutdown cleans up any temporary resources associated with the upstream, such
-// as extracted bundle directories.
+// Shutdown is a no-op for the MCP upstream, as the connections it manages are
+// transient and established on a per-call basis. There are no persistent
+// connections to tear down.
 func (u *Upstream) Shutdown(_ context.Context) error {
-	if u.serviceID != "" {
-		untrackBundle(u.serviceID)
-		tempDir := filepath.Join(u.BundleBaseDir, u.serviceID)
-		if _, err := os.Stat(tempDir); err == nil {
-			logging.GetLogger().Info("Cleaning up bundle temp directory", "dir", tempDir)
-			if err := os.RemoveAll(tempDir); err != nil {
-				return fmt.Errorf("failed to remove bundle temp directory: %w", err)
-			}
-		}
-	}
 	return nil
 }
 
@@ -105,7 +92,6 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 func NewUpstream() upstream.Upstream {
 	return &Upstream{
 		sessionRegistry: NewSessionRegistry(),
-		BundleBaseDir:   bundleBaseDir,
 	}
 }
 
@@ -214,22 +200,10 @@ func (u *Upstream) Register(
 	if err != nil {
 		return "", nil, nil, err
 	}
-	u.serviceID = serviceID
-
-	// Track bundle potential usage early to prevent GC race during setup
-	trackBundle(serviceID)
-	// Trigger GC lazily, but after we are safe
-	triggerGC()
-	defer func() {
-		if err != nil {
-			untrackBundle(serviceID)
-		}
-	}()
 
 	mcpService := serviceConfig.GetMcpService()
 	if mcpService == nil {
-		err = fmt.Errorf("mcp service config is nil")
-		return "", nil, nil, err
+		return "", nil, nil, fmt.Errorf("mcp service config is nil")
 	}
 
 	info := &tool.ServiceInfo{
@@ -257,8 +231,7 @@ func (u *Upstream) Register(
 			return "", nil, nil, err
 		}
 	default:
-		err = fmt.Errorf("MCPService definition requires stdio_connection, http_connection, or bundle_connection")
-		return "", nil, nil, err
+		return "", nil, nil, fmt.Errorf("MCPService definition requires stdio_connection, http_connection, or bundle_connection")
 	}
 
 	log.Info("Registered MCP service", "serviceID", serviceID, "toolsAdded", len(discoveredTools))
@@ -979,8 +952,7 @@ func (u *Upstream) createMCPClient(_ context.Context) (*mcp.Client, error) { //n
 
 func (u *Upstream) handleCreateMessage(ctx context.Context, req *mcp.ClientRequest[*mcp.CreateMessageParams]) (*mcp.CreateMessageResult, error) {
 	session := req.Session
-	// Check for nil interface value
-	if util.IsNil(session) {
+	if session == nil {
 		return nil, fmt.Errorf("no session associated with request")
 	}
 	if toolSession, ok := u.sessionRegistry.Get(session); ok {

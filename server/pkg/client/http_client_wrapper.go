@@ -24,16 +24,11 @@ type HTTPClientWrapper struct {
 }
 
 // NewHTTPClientWrapper creates a new HTTPClientWrapper.
-// It accepts a shared health checker to avoid creating a new one for every client.
-func NewHTTPClientWrapper(client *http.Client, config *configv1.UpstreamServiceConfig, checker health.Checker) *HTTPClientWrapper {
-	// If no checker is provided, create a new one (backward compatibility or standalone usage).
-	if checker == nil {
-		checker = healthChecker.NewChecker(config)
-	}
+func NewHTTPClientWrapper(client *http.Client, config *configv1.UpstreamServiceConfig) *HTTPClientWrapper {
 	return &HTTPClientWrapper{
 		Client:  client,
 		config:  config,
-		checker: checker,
+		checker: healthChecker.NewChecker(config),
 	}
 }
 

@@ -11,20 +11,10 @@ let services = [
     { name: "local-files", version: "1.0.0", disable: false, command_line_service: { command: "npx", args: ["-y", "@modelcontextprotocol/server-filesystem", "/users/me/docs"] }, id: "srv-3" },
 ];
 
-/**
- * Handles GET requests to list all registered services.
- * @returns A JSON response containing an object with a 'services' array.
- */
 export async function GET() {
   return NextResponse.json({ services });
 }
 
-/**
- * Handles POST requests to register, update, or toggle services.
- * Supports 'toggle' action to enable/disable services, or registration of new/updated services.
- * @param request - The incoming HTTP request containing the JSON body.
- * @returns A JSON response indicating success or error.
- */
 export async function POST(request: Request) {
     let body;
     try {

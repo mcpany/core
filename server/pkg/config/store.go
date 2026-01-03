@@ -13,7 +13,6 @@ import (
 	"path/filepath"
 	"regexp"
 	"sort"
-	"strconv"
 	"strings"
 	"time"
 
@@ -24,7 +23,6 @@ import (
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/encoding/prototext"
 	"google.golang.org/protobuf/proto"
-	"google.golang.org/protobuf/reflect/protoreflect"
 	"gopkg.in/yaml.v3"
 )
 
@@ -77,7 +75,7 @@ func (e *yamlEngine) Unmarshal(b []byte, v proto.Message) error {
 
 	// Apply environment variable overrides: MCPANY__SECTION__KEY -> section.key
 	// This allows overriding any configuration value using environment variables.
-	applyEnvVars(yamlMap, v)
+	applyEnvVars(yamlMap)
 
 	// Helper to fix log level if it was set via env vars or file without prefix
 	if gs, ok := yamlMap["global_settings"].(map[string]interface{}); ok {
@@ -403,12 +401,12 @@ func isURL(path string) bool {
 // applyEnvVars iterates over environment variables and applies those starting with "MCPANY__"
 // to the configuration map. It supports nested structure via "__" separator.
 // Example: MCPANY__GLOBAL_SETTINGS__MCP_LISTEN_ADDRESS -> global_settings.mcp_listen_address.
-func applyEnvVars(m map[string]interface{}, v proto.Message) {
-	applyEnvVarsFromSlice(m, os.Environ(), v)
+func applyEnvVars(m map[string]interface{}) {
+	applyEnvVarsFromSlice(m, os.Environ())
 }
 
 // applyEnvVarsFromSlice is the logic for applyEnvVars, separated for testing.
-func applyEnvVarsFromSlice(m map[string]interface{}, environ []string, v proto.Message) {
+func applyEnvVarsFromSlice(m map[string]interface{}, environ []string) {
 	// Sort the environment variables to ensure deterministic application order.
 	// We make a copy to avoid modifying the input slice.
 	sortedEnv := make([]string, len(environ))
@@ -438,8 +436,7 @@ func applyEnvVarsFromSlice(m map[string]interface{}, environ []string, v proto.M
 			if i == len(path)-1 {
 				// We are at the leaf, set the value.
 				// We overwrite whatever is there.
-				resolvedValue := resolveEnvValue(v, path, value)
-				current[section] = resolvedValue
+				current[section] = value
 			} else {
 				// We need to go deeper
 				if next, ok := current[section].(map[string]interface{}); ok {
@@ -453,82 +450,6 @@ func applyEnvVarsFromSlice(m map[string]interface{}, environ []string, v proto.M
 			}
 		}
 	}
-}
-
-// resolveEnvValue attempts to determine the correct type for the environment variable
-// by traversing the protobuf message descriptor.
-func resolveEnvValue(root proto.Message, path []string, value string) interface{} {
-	if root == nil {
-		return value
-	}
-	md := root.ProtoReflect().Descriptor()
-
-	for i, part := range path {
-		section := strings.ToLower(part)
-		fd := findField(md, section)
-		if fd == nil {
-			// Can't resolve, return string
-			return value
-		}
-
-		if i == len(path)-1 {
-			// We found the leaf field. Check its kind.
-			kind := fd.Kind()
-
-			if fd.IsList() {
-				// Repeated field: split by comma
-				parts := strings.Split(value, ",")
-				var list []interface{}
-				for _, part := range parts {
-					part = strings.TrimSpace(part)
-					if kind == protoreflect.BoolKind {
-						b, err := strconv.ParseBool(part)
-						if err == nil {
-							list = append(list, b)
-						} else {
-							list = append(list, part)
-						}
-					} else {
-						list = append(list, part)
-					}
-				}
-				return list
-			}
-
-			if kind == protoreflect.BoolKind {
-				b, err := strconv.ParseBool(value)
-				if err == nil {
-					return b
-				}
-			}
-			// For numbers, we can also convert, but strings are accepted by protojson for numbers (except maybe for some specific cases).
-			// Bool is the main one that fails if passed as string.
-			return value
-		}
-
-		// Navigate deeper
-		if fd.Kind() == protoreflect.MessageKind {
-			md = fd.Message()
-		} else {
-			// Path continues but field is not a message? mismatch.
-			return value
-		}
-	}
-	return value
-}
-
-func findField(md protoreflect.MessageDescriptor, name string) protoreflect.FieldDescriptor {
-	// Try ByName (snake_case usually)
-	fd := md.Fields().ByName(protoreflect.Name(name))
-	if fd != nil {
-		return fd
-	}
-	// Try ByJSONName (camelCase)
-	fd = md.Fields().ByJSONName(name)
-	if fd != nil {
-		return fd
-	}
-	return nil
 }
 
 // MultiStore implements the Store interface for loading configurations from multiple stores.

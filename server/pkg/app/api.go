@@ -4,18 +4,14 @@
 package app
 
 import (
-	"encoding/json"
 	"errors"
 	"io"
 	"net/http"
 	"strings"
 
-	"github.com/mcpany/core/pkg/config"
 	"github.com/mcpany/core/pkg/logging"
 	"github.com/mcpany/core/pkg/storage"
-	"github.com/mcpany/core/pkg/tool"
 	configv1 "github.com/mcpany/core/proto/config/v1"
-	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 )
@@ -24,25 +20,7 @@ import (
 func (a *Application) createAPIHandler(store storage.Storage) http.Handler {
 	mux := http.NewServeMux()
 
-	mux.HandleFunc("/services", a.handleServices(store))
-	mux.HandleFunc("/services/", a.handleServiceDetail(store))
-	mux.HandleFunc("/health", func(w http.ResponseWriter, _ *http.Request) {
-		w.WriteHeader(http.StatusOK)
-		_, _ = w.Write([]byte("OK"))
-	})
-	mux.HandleFunc("/settings", a.handleSettings(store))
-	mux.HandleFunc("/tools", a.handleTools())
-	mux.HandleFunc("/execute", a.handleExecute())
-	mux.HandleFunc("/prompts", a.handlePrompts())
-	mux.HandleFunc("/resources", a.handleResources())
-	mux.HandleFunc("/secrets", a.handleSecrets(store))
-	mux.HandleFunc("/secrets/", a.handleSecretDetail(store))
-
-	return mux
-}
-
-func (a *Application) handleServices(store storage.Storage) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc("/services", func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case http.MethodGet:
 			services, err := store.ListServices(r.Context())
@@ -92,13 +70,6 @@ func (a *Application) handleServices(store storage.Storage) http.HandlerFunc {
 				http.Error(w, "name is required", http.StatusBadRequest)
 				return
 			}
-
-			// Validate service configuration before saving
-			if err := config.ValidateOrError(r.Context(), &svc); err != nil {
-				http.Error(w, "invalid service configuration: "+err.Error(), http.StatusBadRequest)
-				return
-			}
-
 			// Auto-generate ID if missing? Store handles it if we pass empty ID (fallback to name).
 			// But creating UUID here might be better? For now name fallback is fine.
 
@@ -111,33 +82,19 @@ func (a *Application) handleServices(store storage.Storage) http.HandlerFunc {
 			// Trigger reload
 			if err := a.ReloadConfig(a.fs, a.configPaths); err != nil {
 				logging.GetLogger().Error("failed to reload config after save", "error", err)
+				// Don't fail the request, but log error
 			}
 
 			w.WriteHeader(http.StatusCreated)
-			_, _ = w.Write([]byte("{}"))
 		default:
 			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
 		}
-	}
-}
+	})
 
-func (a *Application) handleServiceDetail(store storage.Storage) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		path := strings.TrimPrefix(r.URL.Path, "/services/")
-		parts := strings.Split(path, "/")
-		if len(parts) < 1 || parts[0] == "" {
+	mux.HandleFunc("/services/", func(w http.ResponseWriter, r *http.Request) {
+		name := strings.TrimPrefix(r.URL.Path, "/services/")
+		if name == "" {
 			http.Error(w, "name required", http.StatusBadRequest)
-			return
-		}
-		name := parts[0]
-
-		if len(parts) == 2 && parts[1] == "status" {
-			a.handleServiceStatus(w, r, name, store)
-			return
-		}
-
-		if len(parts) > 1 {
-			http.NotFound(w, r)
 			return
 		}
 
@@ -176,13 +133,6 @@ func (a *Application) handleServiceDetail(store storage.Storage) http.HandlerFun
 				return
 			}
 			svc.Name = proto.String(name) // Force name match
-
-			// Validate service configuration before saving
-			if err := config.ValidateOrError(r.Context(), &svc); err != nil {
-				http.Error(w, "invalid service configuration: "+err.Error(), http.StatusBadRequest)
-				return
-			}
-
 			if err := store.SaveService(r.Context(), &svc); err != nil {
 				logging.GetLogger().Error("failed to save service", "name", name, "error", err)
 				http.Error(w, "Internal Server Error", http.StatusInternalServerError)
@@ -192,7 +142,6 @@ func (a *Application) handleServiceDetail(store storage.Storage) http.HandlerFun
 				logging.GetLogger().Error("failed to reload config after update", "error", err)
 			}
 			w.WriteHeader(http.StatusOK)
-			_, _ = w.Write([]byte("{}"))
 		case http.MethodDelete:
 			if err := store.DeleteService(r.Context(), name); err != nil {
 				logging.GetLogger().Error("failed to delete service", "name", name, "error", err)
@@ -206,232 +155,12 @@ func (a *Application) handleServiceDetail(store storage.Storage) http.HandlerFun
 		default:
 			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
 		}
-	}
-}
-
-func (a *Application) handleServiceStatus(w http.ResponseWriter, r *http.Request, name string, store storage.Storage) {
-	if r.Method != http.MethodGet {
-		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
-		return
-	}
-
-	svc, err := store.GetService(r.Context(), name)
-	if err != nil {
-		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
-		return
-	}
-	if svc == nil {
-		http.NotFound(w, r)
-		return
-	}
-
-	loaded := false
-	for _, info := range a.ToolManager.ListServices() {
-		if info.Name == name {
-			loaded = true
-			break
-		}
-	}
-
-	status := "Inactive"
-	if loaded {
-		status = "Active"
-	}
-
-	w.Header().Set("Content-Type", "application/json")
-	_ = json.NewEncoder(w).Encode(map[string]any{
-		"name":    name,
-		"status":  status,
-		"metrics": map[string]any{},
 	})
-}
 
-func (a *Application) handleSettings(store storage.Storage) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		switch r.Method {
-		case http.MethodGet:
-			settings, err := store.GetGlobalSettings()
-			if err != nil {
-				logging.GetLogger().Error("failed to get global settings", "error", err)
-				http.Error(w, "Internal Server Error", http.StatusInternalServerError)
-				return
-			}
-			if settings == nil {
-				settings = &configv1.GlobalSettings{}
-			}
-			w.Header().Set("Content-Type", "application/json")
-			opts := protojson.MarshalOptions{UseProtoNames: true, EmitUnpopulated: true}
-			b, err := opts.Marshal(settings)
-			if err != nil {
-				logging.GetLogger().Error("failed to marshal settings", "error", err)
-				http.Error(w, "Internal Server Error", http.StatusInternalServerError)
-				return
-			}
-			_, _ = w.Write(b)
+	mux.HandleFunc("/health", func(w http.ResponseWriter, _ *http.Request) {
+		w.WriteHeader(http.StatusOK)
+		_, _ = w.Write([]byte("OK"))
+	})
 
-		case http.MethodPost:
-			var settings configv1.GlobalSettings
-			body, _ := io.ReadAll(r.Body)
-			if err := protojson.Unmarshal(body, &settings); err != nil {
-				http.Error(w, err.Error(), http.StatusBadRequest)
-				return
-			}
-			if err := store.SaveGlobalSettings(&settings); err != nil {
-				logging.GetLogger().Error("failed to save global settings", "error", err)
-				http.Error(w, "Internal Server Error", http.StatusInternalServerError)
-				return
-			}
-
-			if err := a.ReloadConfig(a.fs, a.configPaths); err != nil {
-				logging.GetLogger().Error("failed to reload config after settings save", "error", err)
-			}
-
-			w.WriteHeader(http.StatusOK)
-			_, _ = w.Write([]byte("{}"))
-		default:
-			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
-		}
-	}
-}
-
-func (a *Application) handleTools() http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		switch r.Method {
-		case http.MethodGet:
-			tools := a.ToolManager.ListTools()
-			var toolList []*mcp.Tool
-			for _, t := range tools {
-				toolList = append(toolList, t.MCPTool())
-			}
-			w.Header().Set("Content-Type", "application/json")
-			_ = json.NewEncoder(w).Encode(toolList)
-		default:
-			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
-		}
-	}
-}
-
-func (a *Application) handleExecute() http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		if r.Method != http.MethodPost {
-			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
-			return
-		}
-		var req tool.ExecutionRequest
-		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-			http.Error(w, err.Error(), http.StatusBadRequest)
-			return
-		}
-
-		if len(req.ToolInputs) == 0 && len(req.Arguments) > 0 {
-			b, err := json.Marshal(req.Arguments)
-			if err != nil {
-				http.Error(w, "failed to marshal arguments", http.StatusBadRequest)
-				return
-			}
-			req.ToolInputs = b
-		}
-
-		result, err := a.ToolManager.ExecuteTool(r.Context(), &req)
-		if err != nil {
-			logging.GetLogger().Error("failed to execute tool", "error", err)
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-		w.Header().Set("Content-Type", "application/json")
-		_ = json.NewEncoder(w).Encode(result)
-	}
-}
-
-func (a *Application) handlePrompts() http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		switch r.Method {
-		case http.MethodGet:
-			prompts := a.PromptManager.ListPrompts()
-			w.Header().Set("Content-Type", "application/json")
-			_ = json.NewEncoder(w).Encode(prompts)
-		default:
-			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
-		}
-	}
-}
-
-func (a *Application) handleResources() http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		switch r.Method {
-		case http.MethodGet:
-			resources := a.ResourceManager.ListResources()
-			w.Header().Set("Content-Type", "application/json")
-			_ = json.NewEncoder(w).Encode(resources)
-		default:
-			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
-		}
-	}
-}
-
-func (a *Application) handleSecrets(store storage.Storage) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		switch r.Method {
-		case http.MethodGet:
-			secrets, err := store.ListSecrets()
-			if err != nil {
-				http.Error(w, err.Error(), http.StatusInternalServerError)
-				return
-			}
-			// Redact sensitive values
-			for _, s := range secrets {
-				s.Value = proto.String("[REDACTED]")
-			}
-			w.Header().Set("Content-Type", "application/json")
-			opts := protojson.MarshalOptions{UseProtoNames: true}
-			var buf []byte
-			buf = append(buf, '[')
-			for i, s := range secrets {
-				if i > 0 {
-					buf = append(buf, ',')
-				}
-				b, _ := opts.Marshal(s)
-				buf = append(buf, b...)
-			}
-			buf = append(buf, ']')
-			_, _ = w.Write(buf)
-
-		case http.MethodPost:
-			var secret configv1.Secret
-			body, _ := io.ReadAll(r.Body)
-			if err := protojson.Unmarshal(body, &secret); err != nil {
-				http.Error(w, err.Error(), http.StatusBadRequest)
-				return
-			}
-			if err := store.SaveSecret(&secret); err != nil {
-				http.Error(w, err.Error(), http.StatusInternalServerError)
-				return
-			}
-			w.WriteHeader(http.StatusOK)
-			_, _ = w.Write([]byte("{}"))
-		default:
-			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
-		}
-	}
-}
-
-func (a *Application) handleSecretDetail(store storage.Storage) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		id := strings.TrimPrefix(r.URL.Path, "/secrets/")
-		if id == "" {
-			http.Error(w, "id required", http.StatusBadRequest)
-			return
-		}
-
-		switch r.Method {
-		case http.MethodDelete:
-			if err := store.DeleteSecret(id); err != nil {
-				http.Error(w, err.Error(), http.StatusInternalServerError)
-				return
-			}
-			w.WriteHeader(http.StatusNoContent)
-		default:
-			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
-		}
-	}
+	return mux
 }

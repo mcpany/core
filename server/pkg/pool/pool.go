@@ -65,7 +65,7 @@ type poolImpl[T ClosableClient] struct {
 	clients            chan poolItem[T]
 	factory            func(context.Context) (T, error)
 	sem                *semaphore.Weighted
-	mu                 sync.RWMutex
+	mu                 sync.Mutex
 	closed             atomic.Bool
 	disableHealthCheck bool
 }
@@ -311,11 +311,9 @@ func (p *poolImpl[T]) Put(client T) {
 	// Any unhealthy client returned here will be detected and discarded by Get()
 	// when it is next retrieved.
 
-	// Use RLock to allow concurrent Puts. We only need to ensure the pool isn't closed
-	// *during* the send. Close() takes a Write lock.
-	p.mu.RLock()
+	p.mu.Lock()
 	if p.closed.Load() {
-		p.mu.RUnlock()
+		p.mu.Unlock()
 		_ = lo.Try(client.Close)
 		p.sem.Release(1)
 		return
@@ -323,14 +321,14 @@ func (p *poolImpl[T]) Put(client T) {
 
 	select {
 	case p.clients <- poolItem[T]{client: client}:
-		p.mu.RUnlock()
+		p.mu.Unlock()
 	default:
 		// Idle pool is full, discard client. The permit for this client is
 		// effectively leaked, but this is the only safe option. Releasing
 		// the permit would allow the pool to create more clients than
 		// maxSize, and we can't tell if this client came from the pool
 		// in the first place.
-		p.mu.RUnlock()
+		p.mu.Unlock()
 		_ = lo.Try(client.Close)
 	}
 }

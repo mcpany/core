@@ -39,11 +39,7 @@ export default function ServicesPage() {
   const fetchServices = async () => {
     try {
       const res = await apiClient.listServices();
-      if (Array.isArray(res)) {
-          setServices(res);
-      } else {
-          setServices(res.services || []);
-      }
+      setServices(res.services || []);
     } catch (e) {
       console.error("Failed to fetch services", e);
     }

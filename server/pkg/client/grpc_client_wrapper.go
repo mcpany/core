@@ -34,16 +34,11 @@ type GrpcClientWrapper struct {
 }
 
 // NewGrpcClientWrapper creates a new GrpcClientWrapper.
-// It accepts a shared health checker to avoid creating a new one for every client.
-func NewGrpcClientWrapper(conn Conn, config *configv1.UpstreamServiceConfig, checker health.Checker) *GrpcClientWrapper {
-	// If no checker is provided, create a new one (backward compatibility or standalone usage).
-	if checker == nil {
-		checker = healthChecker.NewChecker(config)
-	}
+func NewGrpcClientWrapper(conn Conn, config *configv1.UpstreamServiceConfig) *GrpcClientWrapper {
 	return &GrpcClientWrapper{
 		Conn:    conn,
 		config:  config,
-		checker: checker,
+		checker: healthChecker.NewChecker(config),
 	}
 }
 

@@ -88,9 +88,6 @@ func NewChecker(uc *configv1.UpstreamServiceConfig) health.Checker {
 		// tests are reliable. Periodic checks can be re-introduced later if needed,
 		// likely controlled by a configuration option.
 		health.WithCheck(check),
-		// Cache the health check result for a short duration to avoid spamming the upstream
-		// if IsHealthy is called frequently (e.g. by the pool).
-		health.WithCacheDuration(1 * time.Second),
 	}
 
 	return health.NewChecker(opts...)

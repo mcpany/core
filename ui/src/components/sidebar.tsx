@@ -19,7 +19,7 @@ import {
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 
-type SidebarProps = React.HTMLAttributes<HTMLDivElement>;
+interface SidebarProps extends React.HTMLAttributes<HTMLDivElement> {}
 
 export function Sidebar({ className }: SidebarProps) {
   const pathname = usePathname();

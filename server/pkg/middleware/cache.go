@@ -29,12 +29,6 @@ type ProviderFactory func(config *configv1.SemanticCacheConfig, apiKey string) (
 
 // CachingMiddleware is a tool execution middleware that provides caching
 // functionality.
-var (
-	metricCacheHits   = []string{"cache", "hits"}
-	metricCacheMisses = []string{"cache", "misses"}
-	metricCacheSkips  = []string{"cache", "skips"}
-	metricCacheErrors = []string{"cache", "errors"}
-)
 type CachingMiddleware struct {
 	cache           *cache.Cache[any]
 	toolManager     tool.ManagerInterface
@@ -155,14 +149,14 @@ func (m *CachingMiddleware) Execute(ctx context.Context, req *tool.ExecutionRequ
 		// If normal allow (0), check cache.
 		if cached, err := m.cache.Get(ctx, cacheKey); err == nil {
 			// Found in cache
-			metrics.IncrCounterWithLabels(metricCacheHits, 1, labels)
+			metrics.IncrCounterWithLabels([]string{"cache", "hits"}, 1, labels)
 			return cached, nil
 		}
 		// Not found in cache
-		metrics.IncrCounterWithLabels(metricCacheMisses, 1, labels)
+		metrics.IncrCounterWithLabels([]string{"cache", "misses"}, 1, labels)
 	} else {
 		// If DeleteCache, we skip cache lookup (force miss)
-		metrics.IncrCounterWithLabels(metricCacheSkips, 1, labels)
+		metrics.IncrCounterWithLabels([]string{"cache", "skips"}, 1, labels)
 	}
 
 	result, err := next(ctx, req)
@@ -173,14 +167,14 @@ func (m *CachingMiddleware) Execute(ctx context.Context, req *tool.ExecutionRequ
 	// Check CacheControl
 	if cacheControl.Action == tool.ActionDeleteCache {
 		if err := m.cache.Delete(ctx, cacheKey); err != nil {
-			metrics.IncrCounterWithLabels(metricCacheErrors, 1, labels)
+			metrics.IncrCounterWithLabels([]string{"cache", "errors"}, 1, labels)
 			logging.GetLogger().Error("Failed to delete cache", "error", err, "tool", toolName)
 		}
 		return result, nil
 	}
 
 	if err := m.cache.Set(ctx, cacheKey, result, store.WithExpiration(cacheConfig.GetTtl().AsDuration())); err != nil {
-		metrics.IncrCounterWithLabels(metricCacheErrors, 1, labels)
+		metrics.IncrCounterWithLabels([]string{"cache", "errors"}, 1, labels)
 		logging.GetLogger().Error("Failed to set cache", "error", err, "tool", toolName)
 	}
 	return result, nil
@@ -258,16 +252,16 @@ func (m *CachingMiddleware) executeSemantic(ctx context.Context, req *tool.Execu
 	if cacheControl.Action != tool.ActionDeleteCache {
 		cached, embedding, hit, err = semCache.Get(ctx, req.ToolName, inputStr)
 		if err == nil && hit {
-			metrics.IncrCounterWithLabels(metricCacheHits, 1, labels)
+			metrics.IncrCounterWithLabels([]string{"cache", "hits"}, 1, labels)
 			return cached, nil
 		} else if err != nil {
 			logging.GetLogger().Error("Semantic cache error", "error", err)
 		}
 		if !hit {
-			metrics.IncrCounterWithLabels(metricCacheMisses, 1, labels)
+			metrics.IncrCounterWithLabels([]string{"cache", "misses"}, 1, labels)
 		}
 	} else {
-		metrics.IncrCounterWithLabels(metricCacheSkips, 1, labels)
+		metrics.IncrCounterWithLabels([]string{"cache", "skips"}, 1, labels)
 	}
 
 	result, err := next(ctx, req)
@@ -352,10 +346,7 @@ func (m *CachingMiddleware) getCacheKey(req *tool.ExecutionRequest) string {
 	defer m.hasherPool.Put(h)
 	h.Reset()
 	_, _ = h.Write(normalizedInputs)
-
-	// FNV-1a 128-bit hash is 16 bytes. Use stack buffer to avoid allocation.
-	var hashBuf [16]byte
-	hashBytes := h.Sum(hashBuf[:0])
+	hashBytes := h.Sum(nil) // Allocates a small slice, unavoidable without copying impl
 
 	// Pre-allocate buffer: len(toolName) + 1 (separator) + 32 (hex hash)
 	// This reduces allocations compared to fmt.Sprintf and hex.EncodeToString

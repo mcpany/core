@@ -8,6 +8,7 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"fmt"
+	"sync"
 
 	"github.com/mcpany/core/pkg/logging"
 	"github.com/mcpany/core/pkg/prompt"
@@ -22,7 +23,7 @@ import (
 
 // Upstream implements the upstream.Upstream interface for vector database services.
 type Upstream struct {
-	// mu sync.Mutex
+	_ sync.Mutex
 }
 
 // NewUpstream creates a new instance of VectorUpstream.
@@ -140,9 +141,6 @@ type vectorCallable struct {
 	handler func(ctx context.Context, args map[string]interface{}) (map[string]interface{}, error)
 }
 
-// Call executes the vector tool with the given arguments.
-// It accepts a context and an execution request containing arguments,
-// and returns the result of the tool execution or an error.
 func (c *vectorCallable) Call(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
 	return c.handler(ctx, req.Arguments)
 }
@@ -157,25 +155,9 @@ type vectorToolDef struct {
 
 // Client interface for different vector DB implementations.
 type Client interface {
-	// Query searches for the nearest vectors in the database.
-	// It accepts a context, a query vector, the number of results to return (topK),
-	// a metadata filter, and a namespace.
-	// It returns a map containing the search results or an error.
 	Query(ctx context.Context, vector []float32, topK int64, filter map[string]interface{}, namespace string) (map[string]interface{}, error)
-
-	// Upsert inserts or updates vectors in the database.
-	// It accepts a context, a list of vectors (each as a map), and a namespace.
-	// It returns a map containing the operation result (e.g., upserted count) or an error.
 	Upsert(ctx context.Context, vectors []map[string]interface{}, namespace string) (map[string]interface{}, error)
-
-	// Delete removes vectors from the database.
-	// It accepts a context, a list of IDs to delete, a namespace, and an optional metadata filter.
-	// It returns a map containing the operation result or an error.
 	Delete(ctx context.Context, ids []string, namespace string, filter map[string]interface{}) (map[string]interface{}, error)
-
-	// DescribeIndexStats retrieves statistics about the vector index.
-	// It accepts a context and an optional metadata filter.
-	// It returns a map containing the index statistics or an error.
 	DescribeIndexStats(ctx context.Context, filter map[string]interface{}) (map[string]interface{}, error)
 }
 

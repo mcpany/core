@@ -25,7 +25,6 @@ import (
 	"github.com/mcpany/core/pkg/auth"
 	"github.com/mcpany/core/pkg/bus"
 	"github.com/mcpany/core/pkg/config"
-	"github.com/mcpany/core/pkg/gc"
 	"github.com/mcpany/core/pkg/logging"
 	"github.com/mcpany/core/pkg/mcpserver"
 	"github.com/mcpany/core/pkg/metrics"
@@ -156,7 +155,6 @@ type Application struct {
 	configFiles      map[string]string
 	fs               afero.Fs
 	configPaths      []string
-	Storage          storage.Storage
 }
 
 // NewApplication creates a new Application with default dependencies.
@@ -341,26 +339,6 @@ func (a *Application) Run(
 		defer inProcessWorker.Stop()
 	}
 
-	// Initialize and start Global GC Worker
-	gcSettings := cfg.GetGlobalSettings().GetGcSettings()
-	if gcSettings != nil && gcSettings.GetEnabled() {
-		interval, _ := time.ParseDuration(gcSettings.GetInterval())
-		ttl, _ := time.ParseDuration(gcSettings.GetTtl())
-
-		gpPaths := gcSettings.GetPaths()
-		// Always include the bundle directory if it's set in env (which we did for config)
-		// Or we can rely on config.
-		// For now, respect config exactly.
-
-		gcWorker := gc.New(gc.Config{
-			Enabled:  true,
-			Interval: interval,
-			TTL:      ttl,
-			Paths:    gpPaths,
-		})
-		gcWorker.Start(workerCtx)
-	}
-
 	// Initialize Topology Manager
 	a.TopologyManager = topology.NewManager(serviceRegistry, a.ToolManager)
 
@@ -517,7 +495,6 @@ func (a *Application) Run(
 		// Should not happen if code is correct
 		return fmt.Errorf("storage store does not implement storage.Storage")
 	}
-	a.Storage = s
 
 	runErr := a.runServerMode(ctx, mcpSrv, busProvider, bindAddress, grpcPort, shutdownTimeout, cfg.GetUsers(), cfg.GetGlobalSettings().GetProfileDefinitions(), allowedIPs, allowedOrigins, cachingMiddleware, s, serviceRegistry)
 
@@ -535,15 +512,8 @@ func (a *Application) ReloadConfig(fs afero.Fs, configPaths []string) error {
 	log := logging.GetLogger()
 	log.Info("Reloading configuration...")
 	metrics.IncrCounter([]string{"config", "reload", "total"}, 1)
-	var stores []config.Store
-	if len(configPaths) > 0 {
-		stores = append(stores, config.NewFileStore(fs, configPaths))
-	}
-	if a.Storage != nil {
-		stores = append(stores, a.Storage)
-	}
-
-	store := config.NewMultiStore(stores...)
+	// Do not skip errors during reload to prevent configuration drift/wiping.
+	store := config.NewFileStore(fs, configPaths)
 	cfg, err := config.LoadServices(context.Background(), store, "server")
 	if err != nil {
 		metrics.IncrCounter([]string{"config", "reload", "errors"}, 1)

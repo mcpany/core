@@ -4,6 +4,7 @@
 package redis
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"log/slog"
@@ -207,7 +208,7 @@ func TestBus_SubscribeOnce_ConcurrentPublish(t *testing.T) {
 	}, 1*time.Second, 10*time.Millisecond, "subscriber did not disappear after message")
 
 	assert.Len(t, handlerCalled, 1, "handler should have been called exactly once")
-	// close(handlerCalled) - unsafe to close as handler might race if PubSubNumSub returned 0 prematurely
+	close(handlerCalled)
 }
 
 func TestBus_Subscribe_UnmarshalError(t *testing.T) {
@@ -215,7 +216,7 @@ func TestBus_Subscribe_UnmarshalError(t *testing.T) {
 	bus := NewWithClient[string](client)
 
 	// Capture log output
-	var logBuffer ThreadSafeBuffer
+	var logBuffer bytes.Buffer
 	logging.ForTestsOnlyResetLogger()
 	logging.Init(slog.LevelDebug, &logBuffer)
 	defer logging.ForTestsOnlyResetLogger()

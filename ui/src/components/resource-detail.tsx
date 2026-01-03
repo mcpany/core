@@ -41,8 +41,8 @@ export function ResourceDetail({ serviceId, resourceName }: { serviceId: string,
             serviceDetails.graphql_service ||
             serviceDetails.mcp_service;
 
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const foundResource = (serviceData as any)?.resources?.find((r: any) => r.name === resourceName);
+        // @ts-ignore
+        const foundResource = serviceData?.resources?.find(r => r.name === resourceName);
 
         if (foundResource) {
           setResource(foundResource);

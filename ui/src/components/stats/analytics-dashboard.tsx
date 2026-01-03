@@ -5,7 +5,7 @@
 
 "use client";
 
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo } from "react";
 import {
     Area,
     AreaChart,
@@ -31,7 +31,7 @@ import {
     AlertTriangle,
     CheckCircle2,
     Calendar,
-    Download
+    Filter
 } from "lucide-react";
 import {
     Card,
@@ -48,7 +48,7 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-
+import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 // Mock Data Generators
@@ -87,21 +87,11 @@ export function AnalyticsDashboard() {
     const [timeRange, setTimeRange] = useState("1h");
     const [activeTab, setActiveTab] = useState("overview");
 
-    const [trafficData, setTrafficData] = useState<any[]>([]);
-    const [isMounted, setIsMounted] = useState(false);
-
-    useEffect(() => {
-        setIsMounted(true);
-        setTrafficData(generateTimeData(20));
-    }, [timeRange]);
+    const trafficData = useMemo(() => generateTimeData(20), [timeRange]);
 
     const totalRequests = trafficData.reduce((acc, cur) => acc + cur.requests, 0);
-    const avgLatency = trafficData.length ? Math.floor(trafficData.reduce((acc, cur) => acc + cur.latency, 0) / trafficData.length) : 0;
-    const errorRate = totalRequests ? (trafficData.reduce((acc, cur) => acc + cur.errors, 0) / totalRequests * 100).toFixed(2) : "0.00";
-    // Assuming 1 minute per data point
-    const avgRps = (trafficData.length && totalRequests) ? (totalRequests / (trafficData.length * 60)).toFixed(2) : "0.00";
-
-    if (!isMounted) return null; // Prevent server mapping issues or return skeleton
+    const avgLatency = Math.floor(trafficData.reduce((acc, cur) => acc + cur.latency, 0) / trafficData.length);
+    const errorRate = (trafficData.reduce((acc, cur) => acc + cur.errors, 0) / totalRequests * 100).toFixed(2);
 
     return (
         <div className="flex-1 space-y-4 p-8 pt-6 h-full overflow-y-auto">
@@ -155,21 +145,6 @@ export function AnalyticsDashboard() {
                         </Card>
                         <Card>
                             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                                <CardTitle className="text-sm font-medium">Avg Throughput</CardTitle>
-                                <Activity className="h-4 w-4 text-muted-foreground" />
-                            </CardHeader>
-                            <CardContent>
-                                <div className="text-2xl font-bold">{avgRps} rps</div>
-                                <p className="text-xs text-muted-foreground">
-                                    <span className="text-emerald-500 flex items-center">
-                                        +12.5% <ArrowUpRight className="h-3 w-3 ml-1" />
-                                    </span>
-                                    improvement
-                                </p>
-                            </CardContent>
-                        </Card>
-                        <Card>
-                            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                                 <CardTitle className="text-sm font-medium">Avg Latency</CardTitle>
                                 <Clock className="h-4 w-4 text-muted-foreground" />
                             </CardHeader>
@@ -198,6 +173,18 @@ export function AnalyticsDashboard() {
                                 </p>
                             </CardContent>
                         </Card>
+                        <Card>
+                            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                                <CardTitle className="text-sm font-medium">Active Services</CardTitle>
+                                <CheckCircle2 className="h-4 w-4 text-muted-foreground" />
+                            </CardHeader>
+                            <CardContent>
+                                <div className="text-2xl font-bold">12</div>
+                                <p className="text-xs text-muted-foreground">
+                                    All systems operational
+                                </p>
+                            </CardContent>
+                        </Card>
                     </div>
 
                     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
@@ -214,33 +201,33 @@ export function AnalyticsDashboard() {
                                         <AreaChart data={trafficData}>
                                             <defs>
                                                 <linearGradient id="colorRequests" x1="0" y1="0" x2="0" y2="1">
-                                                    <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.3} />
-                                                    <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0} />
+                                                    <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3} />
+                                                    <stop offset="95%" stopColor="#3b82f6" stopOpacity={0} />
                                                 </linearGradient>
                                             </defs>
                                             <XAxis
                                                 dataKey="time"
-                                                stroke="hsl(var(--muted-foreground))"
+                                                stroke="#888888"
                                                 fontSize={12}
                                                 tickLine={false}
                                                 axisLine={false}
                                             />
                                             <YAxis
-                                                stroke="hsl(var(--muted-foreground))"
+                                                stroke="#888888"
                                                 fontSize={12}
                                                 tickLine={false}
                                                 axisLine={false}
                                                 tickFormatter={(value) => `${value}`}
                                             />
                                             <Tooltip
-                                                contentStyle={{ backgroundColor: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', color: 'hsl(var(--foreground))' }}
+                                                contentStyle={{ backgroundColor: 'hsl(var(--background))', border: '1px solid hsl(var(--border))' }}
                                                 labelStyle={{ color: 'hsl(var(--foreground))' }}
                                             />
                                             <CartesianGrid strokeDasharray="3 3" strokeOpacity={0.1} vertical={false} />
                                             <Area
                                                 type="monotone"
                                                 dataKey="requests"
-                                                stroke="hsl(var(--primary))"
+                                                stroke="#3b82f6"
                                                 strokeWidth={2}
                                                 fillOpacity={1}
                                                 fill="url(#colorRequests)"
@@ -275,7 +262,7 @@ export function AnalyticsDashboard() {
                                                 ))}
                                             </Pie>
                                             <Tooltip
-                                                contentStyle={{ backgroundColor: 'hsl(var(--card))', border: '1px solid hsl(var(--border))' }}
+                                                contentStyle={{ backgroundColor: 'hsl(var(--background))', border: '1px solid hsl(var(--border))' }}
                                                 itemStyle={{ color: 'hsl(var(--foreground))' }}
                                             />
                                             <Legend />
@@ -299,13 +286,13 @@ export function AnalyticsDashboard() {
                                     <BarChart data={trafficData}>
                                         <XAxis
                                             dataKey="time"
-                                            stroke="hsl(var(--muted-foreground))"
+                                            stroke="#888888"
                                             fontSize={12}
                                             tickLine={false}
                                             axisLine={false}
                                         />
                                         <YAxis
-                                            stroke="hsl(var(--muted-foreground))"
+                                            stroke="#888888"
                                             fontSize={12}
                                             tickLine={false}
                                             axisLine={false}
@@ -313,10 +300,9 @@ export function AnalyticsDashboard() {
                                         />
                                         <Tooltip
                                             cursor={{fill: 'transparent'}}
-                                            contentStyle={{ backgroundColor: 'hsl(var(--card))', border: '1px solid hsl(var(--border))' }}
-                                            labelStyle={{ color: 'hsl(var(--foreground))' }}
+                                            contentStyle={{ backgroundColor: 'hsl(var(--background))', border: '1px solid hsl(var(--border))' }}
                                         />
-                                        <Bar dataKey="latency" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
+                                        <Bar dataKey="latency" fill="#f59e0b" radius={[4, 4, 0, 0]} />
                                     </BarChart>
                                 </ResponsiveContainer>
                             </div>
@@ -337,22 +323,21 @@ export function AnalyticsDashboard() {
                                         <LineChart data={trafficData}>
                                             <XAxis
                                                 dataKey="time"
-                                                stroke="hsl(var(--muted-foreground))"
+                                                stroke="#888888"
                                                 fontSize={12}
                                                 tickLine={false}
                                                 axisLine={false}
                                             />
                                             <YAxis
-                                                stroke="hsl(var(--muted-foreground))"
+                                                stroke="#888888"
                                                 fontSize={12}
                                                 tickLine={false}
                                                 axisLine={false}
                                             />
                                             <Tooltip
-                                                contentStyle={{ backgroundColor: 'hsl(var(--card))', border: '1px solid hsl(var(--border))' }}
-                                                labelStyle={{ color: 'hsl(var(--foreground))' }}
+                                                contentStyle={{ backgroundColor: 'hsl(var(--background))', border: '1px solid hsl(var(--border))' }}
                                             />
-                                            <Line type="monotone" dataKey="errors" stroke="hsl(var(--destructive))" strokeWidth={2} dot={false} />
+                                            <Line type="monotone" dataKey="errors" stroke="#ef4444" strokeWidth={2} dot={false} />
                                         </LineChart>
                                     </ResponsiveContainer>
                                 </div>
