@@ -11,8 +11,8 @@ import { SidebarProvider, SidebarInset, SidebarTrigger } from "@/components/ui/s
 import { AppSidebar } from "@/components/app-sidebar";
 import { ThemeProvider } from "@/components/theme-provider"
 import { ThemeToggle } from "@/components/theme-toggle"
-import { Sidebar } from "@/components/sidebar"
 import { GlobalSearch } from "@/components/global-search"
+import { Separator } from "@/components/ui/separator"
 
 export const metadata: Metadata = {
   title: 'MCPAny Manager',
@@ -40,25 +40,27 @@ export default function RootLayout({
             disableTransitionOnChange
           >
           <TooltipProvider>
-            <div className="flex min-h-screen">
-                <Sidebar className="flex-shrink-0" />
-                <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
-                    <header className="flex items-center justify-between h-14 px-4 border-b bg-background/95 backdrop-blur z-40">
-                         {/* Breadcrumbs or Title could go here */}
-                         <div className="flex items-center font-medium">
-                            {/* Placeholder for Breadcrumbs */}
-                            Dashboard
-                         </div>
-                        <div className="flex items-center gap-2">
-                             <GlobalSearch />
-                             <ThemeToggle />
-                        </div>
-                    </header>
-                    <main className="flex-1 overflow-auto p-4 md:p-6 lg:p-8">
-                        {children}
-                    </main>
-                </div>
-            </div>
+            <SidebarProvider>
+              <AppSidebar />
+              <SidebarInset>
+                <header className="flex h-14 shrink-0 items-center gap-2 border-b bg-background/95 backdrop-blur px-4 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">
+                  <SidebarTrigger className="-ml-1" />
+                  <Separator orientation="vertical" className="mr-2 h-4" />
+                   <div className="flex-1 flex items-center justify-between">
+                       <div className="font-medium text-sm">
+                           MCP Any
+                       </div>
+                       <div className="flex items-center gap-2">
+                           <GlobalSearch />
+                           <ThemeToggle />
+                       </div>
+                   </div>
+                </header>
+                <main className="flex-1 overflow-auto p-4 md:p-6 lg:p-8">
+                  {children}
+                </main>
+              </SidebarInset>
+            </SidebarProvider>
             <Toaster />
           </TooltipProvider>
         </ThemeProvider>
