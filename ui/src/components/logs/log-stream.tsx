@@ -75,6 +75,39 @@ const SAMPLE_MESSAGES = {
 
 const SOURCES = ["gateway", "auth-service", "db-worker", "api-server", "scheduler"]
 
+const getLevelColor = (level: LogLevel) => {
+  switch (level) {
+    case "INFO": return "text-blue-400"
+    case "WARN": return "text-yellow-400"
+    case "ERROR": return "text-red-400"
+    case "DEBUG": return "text-gray-400"
+    default: return "text-foreground"
+  }
+}
+
+// Optimization: Memoize LogRow to prevent unnecessary re-renders when list updates
+const LogRow = React.memo(({ log }: { log: LogEntry }) => {
+  return (
+    <div className="group flex items-start gap-3 hover:bg-white/5 p-1 rounded transition-colors break-words">
+      <span className="text-muted-foreground whitespace-nowrap opacity-50 text-xs mt-0.5">
+        {new Date(log.timestamp).toLocaleTimeString()}
+      </span>
+      <span className={cn("font-bold w-12 text-xs mt-0.5", getLevelColor(log.level))}>
+        {log.level}
+      </span>
+      {log.source && (
+        <span className="text-cyan-600 dark:text-cyan-400 hidden sm:inline-block w-24 truncate text-xs mt-0.5" title={log.source}>
+          [{log.source}]
+        </span>
+      )}
+      <span className="text-gray-300 flex-1">
+        {log.message}
+      </span>
+    </div>
+  )
+})
+LogRow.displayName = 'LogRow'
+
 export function LogStream() {
   const [logs, setLogs] = React.useState<LogEntry[]>([])
   const [isPaused, setIsPaused] = React.useState(false)
@@ -138,16 +171,6 @@ export function LogStream() {
     a.href = url
     a.download = `logs-${new Date().toISOString()}.txt`
     a.click()
-  }
-
-  const getLevelColor = (level: LogLevel) => {
-    switch (level) {
-      case "INFO": return "text-blue-400"
-      case "WARN": return "text-yellow-400"
-      case "ERROR": return "text-red-400"
-      case "DEBUG": return "text-gray-400"
-      default: return "text-foreground"
-    }
   }
 
   const getLevelBadgeVariant = (level: LogLevel) => {
@@ -228,22 +251,7 @@ export function LogStream() {
                         </div>
                     )}
                     {filteredLogs.map((log) => (
-                        <div key={log.id} className="group flex items-start gap-3 hover:bg-white/5 p-1 rounded transition-colors break-words">
-                            <span className="text-muted-foreground whitespace-nowrap opacity-50 text-xs mt-0.5">
-                                {new Date(log.timestamp).toLocaleTimeString()}
-                            </span>
-                            <span className={cn("font-bold w-12 text-xs mt-0.5", getLevelColor(log.level))}>
-                                {log.level}
-                            </span>
-                            {log.source && (
-                                <span className="text-cyan-600 dark:text-cyan-400 hidden sm:inline-block w-24 truncate text-xs mt-0.5" title={log.source}>
-                                    [{log.source}]
-                                </span>
-                            )}
-                            <span className="text-gray-300 flex-1">
-                                {log.message}
-                            </span>
-                        </div>
+                      <LogRow key={log.id} log={log} />
                     ))}
                     {/* Invisible element to help auto-scroll if needed, though scroll logic handles viewport */}
                 </div>
