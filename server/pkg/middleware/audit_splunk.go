@@ -79,7 +79,7 @@ func (e *SplunkAuditStore) worker() {
 }
 
 // Write implements the AuditStore interface.
-func (e *SplunkAuditStore) Write(ctx context.Context, entry AuditEntry) error {
+func (e *SplunkAuditStore) Write(_ context.Context, entry AuditEntry) error {
 	select {
 	case e.queue <- entry:
 		return nil
@@ -122,7 +122,7 @@ func (e *SplunkAuditStore) send(entry AuditEntry) {
 		fmt.Fprintf(os.Stderr, "Failed to send event to splunk: %v\n", err)
 		return
 	}
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 
 	if resp.StatusCode != http.StatusOK {
 		fmt.Fprintf(os.Stderr, "Splunk HEC returned status: %d\n", resp.StatusCode)

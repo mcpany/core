@@ -10,6 +10,9 @@ test:
 	$(MAKE) -C server test
 	$(MAKE) -C ui test
 
+k8s-e2e:
+	./tests/k8s/test_operator.sh
+
 lint:
 	$(MAKE) -C server lint
 
