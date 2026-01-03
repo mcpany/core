@@ -1014,7 +1014,9 @@ func (a *Application) runServerMode(
 				}
 			}
 			if !hasRole {
-				http.Error(w, fmt.Sprintf("Forbidden: Profile %s requires roles %v", profileID, def.RequiredRoles), http.StatusForbidden)
+				// Don't leak required roles to the client
+				logging.GetLogger().Warn("Forbidden access to profile", "profile", profileID, "user", uid, "required_roles", def.RequiredRoles, "user_roles", user.GetRoles())
+				http.Error(w, "Forbidden", http.StatusForbidden)
 				return
 			}
 		}
