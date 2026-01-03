@@ -30,18 +30,15 @@ type APIKeyAuth_Location int32
 
 const (
 	APIKeyAuth_HEADER APIKeyAuth_Location = 0
-	APIKeyAuth_QUERY  APIKeyAuth_Location = 1
 )
 
 // Enum value maps for APIKeyAuth_Location.
 var (
 	APIKeyAuth_Location_name = map[int32]string{
 		0: "HEADER",
-		1: "QUERY",
 	}
 	APIKeyAuth_Location_value = map[string]int32{
 		"HEADER": 0,
-		"QUERY":  1,
 	}
 )
 
@@ -2566,18 +2563,17 @@ const file_proto_config_v1_auth_proto_rawDesc = "" +
 	"\x14AuthenticationConfig\x128\n" +
 	"\aapi_key\x18\x01 \x01(\v2\x1c.mcpany.config.v1.APIKeyAuthH\x00R\aapi_key\x126\n" +
 	"\x06oauth2\x18\x02 \x01(\v2\x1c.mcpany.config.v1.OAuth2AuthH\x00R\x06oauth2B\r\n" +
-	"\vauth_method\"\xa4\x01\n" +
+	"\vauth_method\"\x99\x01\n" +
 	"\n" +
 	"APIKeyAuth\x12\x1e\n" +
 	"\n" +
 	"param_name\x18\x01 \x01(\tR\n" +
 	"param_name\x125\n" +
 	"\x02in\x18\x02 \x01(\x0e2%.mcpany.config.v1.APIKeyAuth.LocationR\x02in\x12\x1c\n" +
-	"\tkey_value\x18\x03 \x01(\tR\tkey_value\"!\n" +
+	"\tkey_value\x18\x03 \x01(\tR\tkey_value\"\x16\n" +
 	"\bLocation\x12\n" +
 	"\n" +
-	"\x06HEADER\x10\x00\x12\t\n" +
-	"\x05QUERY\x10\x01\"\xa9\x01\n" +
+	"\x06HEADER\x10\x00\"\xa9\x01\n" +
 	"\n" +
 	"OAuth2Auth\x12\x1b\n" +
 	"\ttoken_url\x18\x03 \x01(\tR\btokenUrl\x12+\n" +

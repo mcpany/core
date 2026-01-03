@@ -235,28 +235,6 @@ func TestAddOAuth2Authenticator(t *testing.T) {
 	})
 }
 
-func TestAPIKeyAuthenticator_Query(t *testing.T) {
-	config := configv1.APIKeyAuth_builder{
-		ParamName: proto.String("api_key"),
-		KeyValue:  proto.String("secret"),
-		In:        configv1.APIKeyAuth_QUERY.Enum(),
-	}.Build()
-
-	authenticator := NewAPIKeyAuthenticator(config)
-	require.NotNil(t, authenticator)
-
-	t.Run("successful_query_auth", func(t *testing.T) {
-		req := httptest.NewRequest("GET", "/?api_key=secret", nil)
-		_, err := authenticator.Authenticate(context.Background(), req)
-		assert.NoError(t, err)
-	})
-
-	t.Run("failed_query_auth", func(t *testing.T) {
-		req := httptest.NewRequest("GET", "/?api_key=wrong", nil)
-		_, err := authenticator.Authenticate(context.Background(), req)
-		assert.Error(t, err)
-	})
-}
 
 func TestValidateAuthentication(t *testing.T) {
 	t.Run("nil_config", func(t *testing.T) {

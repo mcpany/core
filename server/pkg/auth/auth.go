@@ -116,8 +116,6 @@ func (a *APIKeyAuthenticator) Authenticate(ctx context.Context, r *http.Request)
 	switch a.In {
 	case configv1.APIKeyAuth_HEADER:
 		receivedKey = r.Header.Get(a.ParamName)
-	case configv1.APIKeyAuth_QUERY:
-		receivedKey = r.URL.Query().Get(a.ParamName)
 	default:
 		receivedKey = r.Header.Get(a.ParamName)
 	}
