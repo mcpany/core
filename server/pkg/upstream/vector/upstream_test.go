@@ -108,6 +108,112 @@ func TestVectorTools(t *testing.T) {
 		assert.NoError(t, err)
 		assert.Equal(t, expectedResult, result)
 	})
+
+	t.Run("delete_vectors", func(t *testing.T) {
+		// Find delete_vectors tool
+		var deleteTool *vectorToolDef
+		for _, tool := range tools {
+			if tool.Name == "delete_vectors" {
+				deleteTool = &tool
+				break
+			}
+		}
+		assert.NotNil(t, deleteTool)
+
+		// Mock response
+		expectedResult := map[string]interface{}{
+			"success": true,
+		}
+
+		ids := []string{"vec1", "vec2"}
+		mockClient.On("Delete", ctx, ids, "ns1", map[string]interface{}(nil)).Return(expectedResult, nil)
+
+		// Call handler
+		args := map[string]interface{}{
+			"ids":       []interface{}{"vec1", "vec2"},
+			"namespace": "ns1",
+		}
+		result, err := deleteTool.Handler(ctx, args)
+		assert.NoError(t, err)
+		assert.Equal(t, expectedResult, result)
+	})
+
+	t.Run("describe_index_stats", func(t *testing.T) {
+		// Find describe_index_stats tool
+		var statsTool *vectorToolDef
+		for _, tool := range tools {
+			if tool.Name == "describe_index_stats" {
+				statsTool = &tool
+				break
+			}
+		}
+		assert.NotNil(t, statsTool)
+
+		// Mock response
+		expectedResult := map[string]interface{}{
+			"totalVectorCount": int64(100),
+		}
+
+		mockClient.On("DescribeIndexStats", ctx, map[string]interface{}(nil)).Return(expectedResult, nil)
+
+		// Call handler
+		args := map[string]interface{}{}
+		result, err := statsTool.Handler(ctx, args)
+		assert.NoError(t, err)
+		assert.Equal(t, expectedResult, result)
+	})
+
+	t.Run("query_vectors_error_invalid_vector", func(t *testing.T) {
+		var queryTool *vectorToolDef
+		for _, tool := range tools {
+			if tool.Name == "query_vectors" {
+				queryTool = &tool
+				break
+			}
+		}
+		assert.NotNil(t, queryTool)
+
+		// Invalid vector type (not array)
+		args := map[string]interface{}{
+			"vector": "invalid",
+		}
+		_, err := queryTool.Handler(ctx, args)
+		assert.Error(t, err)
+		assert.Contains(t, err.Error(), "vector is required and must be an array")
+
+		// Invalid vector elements
+		args = map[string]interface{}{
+			"vector": []interface{}{"not-a-number"},
+		}
+		_, err = queryTool.Handler(ctx, args)
+		assert.Error(t, err)
+		assert.Contains(t, err.Error(), "vector elements must be numbers")
+	})
+
+	t.Run("upsert_vectors_error_invalid_input", func(t *testing.T) {
+		var upsertTool *vectorToolDef
+		for _, tool := range tools {
+			if tool.Name == "upsert_vectors" {
+				upsertTool = &tool
+				break
+			}
+		}
+		assert.NotNil(t, upsertTool)
+
+		// Missing vectors
+		args := map[string]interface{}{}
+		_, err := upsertTool.Handler(ctx, args)
+		assert.Error(t, err)
+		assert.Contains(t, err.Error(), "vectors is required")
+
+		// Invalid vectors format
+		args = map[string]interface{}{
+			"vectors": []interface{}{"not-a-map"},
+		}
+		_, err = upsertTool.Handler(ctx, args)
+		assert.Error(t, err)
+		assert.Contains(t, err.Error(), "vectors must be objects")
+	})
 }
 
 // MockToolManager is a simple mock for tool.ManagerInterface

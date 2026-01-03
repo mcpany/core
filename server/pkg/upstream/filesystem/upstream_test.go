@@ -4,6 +4,7 @@
 package filesystem
 
 import (
+	"archive/zip"
 	"context"
 	"os"
 	"path/filepath"
@@ -309,6 +310,163 @@ func TestFilesystemUpstream_Register_And_Execute(t *testing.T) {
 		err := u.Shutdown(context.Background())
 		assert.NoError(t, err)
 	})
+}
+
+func TestFilesystemUpstream_ZipFs(t *testing.T) {
+	// Create a temporary zip file
+	tempDir, err := os.MkdirTemp("", "zipfs_test")
+	require.NoError(t, err)
+	defer os.RemoveAll(tempDir)
+
+	zipFilePath := filepath.Join(tempDir, "test.zip")
+	zipFile, err := os.Create(zipFilePath)
+	require.NoError(t, err)
+
+	archive := zip.NewWriter(zipFile)
+
+	// Add a file to zip
+	f1, err := archive.Create("hello.txt")
+	require.NoError(t, err)
+	_, err = f1.Write([]byte("hello zip"))
+	require.NoError(t, err)
+
+	// Add a directory (implicit in zip, but let's add a file in subdir)
+	f2, err := archive.Create("subdir/world.txt")
+	require.NoError(t, err)
+	_, err = f2.Write([]byte("world zip"))
+	require.NoError(t, err)
+
+	err = archive.Close()
+	require.NoError(t, err)
+	zipFile.Close()
+
+	// Configure upstream with Zip
+	config := &configv1.UpstreamServiceConfig{
+		Name: proto.String("test_zip"),
+		ServiceConfig: &configv1.UpstreamServiceConfig_FilesystemService{
+			FilesystemService: &configv1.FilesystemUpstreamService{
+				FilesystemType: &configv1.FilesystemUpstreamService_Zip{
+					Zip: &configv1.ZipFs{
+						FilePath: proto.String(zipFilePath),
+					},
+				},
+				// Assuming root path logic might be bypassed or we set root
+				RootPaths: map[string]string{"/": "/"},
+			},
+		},
+	}
+
+	u := NewUpstream()
+	b, _ := bus.NewProvider(nil)
+	tm := tool.NewManager(b)
+
+	id, _, _, err := u.Register(context.Background(), config, tm, nil, nil, false)
+	require.NoError(t, err)
+	defer u.Shutdown(context.Background())
+
+	findTool := func(name string) tool.Tool {
+		tool, ok := tm.GetTool(id + "." + name)
+		if ok {
+			return tool
+		}
+		return nil
+	}
+
+	// List directory
+	lsTool := findTool("list_directory")
+	require.NotNil(t, lsTool)
+	res, err := lsTool.Execute(context.Background(), &tool.ExecutionRequest{
+		ToolName: "list_directory",
+		Arguments: map[string]interface{}{
+			"path": "/",
+		},
+	})
+	require.NoError(t, err)
+	resMap := res.(map[string]interface{})
+	entries := resMap["entries"].([]interface{})
+	// zipfs behavior can be tricky with root, let's see.
+	// Depending on implementation, might show hello.txt and subdir.
+	// We'll just assert it's not empty for now or check specific content.
+	assert.NotEmpty(t, entries)
+
+	// Read file
+	readTool := findTool("read_file")
+	require.NotNil(t, readTool)
+	res, err = readTool.Execute(context.Background(), &tool.ExecutionRequest{
+		ToolName: "read_file",
+		Arguments: map[string]interface{}{
+			"path": "/hello.txt",
+		},
+	})
+	require.NoError(t, err)
+	resMap = res.(map[string]interface{})
+	assert.Equal(t, "hello zip", resMap["content"])
+
+	// Try write (should fail as zipfs is typically read-only or at least opened as read-only logic might apply)
+	// The implementation in upstream.go opens zip with zip.NewReader which is read-only.
+	writeTool := findTool("write_file")
+	require.NotNil(t, writeTool)
+	_, err = writeTool.Execute(context.Background(), &tool.ExecutionRequest{
+		ToolName: "write_file",
+		Arguments: map[string]interface{}{
+			"path":    "/new.txt",
+			"content": "fail",
+		},
+	})
+	// afero zipfs is read only
+	assert.Error(t, err)
+}
+
+func TestFilesystemUpstream_ErrorCases(t *testing.T) {
+	// Setup MemMapFs
+	config := &configv1.UpstreamServiceConfig{
+		Name: proto.String("test_error"),
+		ServiceConfig: &configv1.UpstreamServiceConfig_FilesystemService{
+			FilesystemService: &configv1.FilesystemUpstreamService{
+				RootPaths: map[string]string{"/": "/"},
+				FilesystemType: &configv1.FilesystemUpstreamService_Tmpfs{
+					Tmpfs: &configv1.MemMapFs{},
+				},
+			},
+		},
+	}
+	u := NewUpstream()
+	b, _ := bus.NewProvider(nil)
+	tm := tool.NewManager(b)
+	id, _, _, err := u.Register(context.Background(), config, tm, nil, nil, false)
+	require.NoError(t, err)
+
+	findTool := func(name string) tool.Tool {
+		tool, ok := tm.GetTool(id + "." + name)
+		if ok {
+			return tool
+		}
+		return nil
+	}
+
+	// read_file on directory
+	// First create a dir
+	writeTool := findTool("write_file")
+	writeTool.Execute(context.Background(), &tool.ExecutionRequest{
+		ToolName: "write_file",
+		Arguments: map[string]interface{}{"path": "/adir/file.txt", "content": "x"},
+	})
+
+	readTool := findTool("read_file")
+	_, err = readTool.Execute(context.Background(), &tool.ExecutionRequest{
+		ToolName: "read_file",
+		Arguments: map[string]interface{}{"path": "/adir"},
+	})
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), "path is a directory")
+
+	// Missing arguments
+	_, err = readTool.Execute(context.Background(), &tool.ExecutionRequest{
+		ToolName: "read_file",
+		Arguments: map[string]interface{}{},
+	})
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), "path is required")
 }
 
 func TestFilesystemUpstream_MemMapFs(t *testing.T) {
