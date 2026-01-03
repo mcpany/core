@@ -7,13 +7,12 @@
 
 import { use, useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { McpAnyManager } from "@/components/mcpany-manager";
+import { StackEditor } from "@/components/stacks/stack-editor";
 import { FileText, List, Box } from "lucide-react";
 
 export default function StackDetailPage({ params }: { params: Promise<{ stackId: string }> }) {
   const { stackId } = use(params);
-  const [activeTab, setActiveTab] = useState("services");
 
   return (
     <div className="space-y-6">
@@ -39,23 +38,7 @@ export default function StackDetailPage({ params }: { params: Promise<{ stackId:
                  <McpAnyManager />
             </TabsContent>
             <TabsContent value="editor">
-                <Card>
-                    <CardHeader>
-                        <CardTitle>Web Editor</CardTitle>
-                        <CardDescription>
-                            Edit the configuration for this stack (YAML/JSON).
-                        </CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="border border-muted rounded-md p-4 bg-muted/20 font-mono text-sm min-h-[400px]">
-                            {/* Placeholder for Editor */}
-                            # Configuration for {stackId} <br/>
-                            # Work in progress... <br/>
-                            <br/>
-                            # This feature will allow direct editing of config.yaml
-                        </div>
-                    </CardContent>
-                </Card>
+                <StackEditor stackId={stackId} />
             </TabsContent>
         </Tabs>
     </div>

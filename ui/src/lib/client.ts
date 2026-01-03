@@ -320,8 +320,25 @@ export const apiClient = {
             body: JSON.stringify(settings)
         });
         if (!res.ok) throw new Error('Failed to save global settings');
+    },
+
+    // Stack Management
+    getStackConfig: async (stackId: string) => {
+        const res = await fetch(`/api/v1/stacks/${stackId}/config`);
+        if (!res.ok) throw new Error('Failed to fetch stack config');
+        return res.text(); // Config is likely raw YAML/JSON text
+    },
+    saveStackConfig: async (stackId: string, config: string) => {
+        const res = await fetch(`/api/v1/stacks/${stackId}/config`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'text/plain' }, // Or application/yaml
+            body: config
+        });
+        if (!res.ok) throw new Error('Failed to save stack config');
+        return res.json();
     }
 };
+// End of client definition
 
 /**
  * Definition of a secret used for sensitive configuration.
