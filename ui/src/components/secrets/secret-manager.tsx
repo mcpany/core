@@ -61,6 +61,7 @@ export function SecretManager() {
     const [searchQuery, setSearchQuery] = useState("");
     const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
     const [visibleSecrets, setVisibleSecrets] = useState<Record<string, boolean>>({});
+    const [fetchedSecrets, setFetchedSecrets] = useState<Record<string, string>>({});
 
     // Form State
     const [newName, setNewName] = useState("");
@@ -90,8 +91,24 @@ export function SecretManager() {
         toast.success("Secret copied to clipboard");
     };
 
-    const toggleVisibility = (id: string) => {
-        setVisibleSecrets(prev => ({ ...prev, [id]: !prev[id] }));
+    const toggleVisibility = async (id: string) => {
+        if (visibleSecrets[id]) {
+            setVisibleSecrets(prev => ({ ...prev, [id]: false }));
+            return;
+        }
+
+        if (fetchedSecrets[id]) {
+            setVisibleSecrets(prev => ({ ...prev, [id]: true }));
+            return;
+        }
+
+        try {
+            const s = await apiClient.getSecret(id);
+            setFetchedSecrets(prev => ({ ...prev, [id]: s.value }));
+            setVisibleSecrets(prev => ({ ...prev, [id]: true }));
+        } catch (_error) {
+            toast.error("Failed to fetch secret value");
+        }
     };
 
     const handleDelete = async (id: string) => {
@@ -298,7 +315,7 @@ export function SecretManager() {
                                     <TableCell>
                                         <div className="flex items-center gap-2 max-w-[300px]">
                                             <code className="bg-black/5 dark:bg-black/30 px-2 py-1 rounded font-mono text-sm truncate flex-1 block border border-transparent hover:border-muted transition-colors">
-                                                {visibleSecrets[secret.id] ? secret.value : "••••••••••••••••••••••••"}
+                                                {visibleSecrets[secret.id] ? (fetchedSecrets[secret.id] || secret.value) : "••••••••••••••••••••••••"}
                                             </code>
                                             <Button
                                                 variant="ghost"
@@ -312,7 +329,7 @@ export function SecretManager() {
                                                 variant="ghost"
                                                 size="icon"
                                                 className="h-8 w-8 text-muted-foreground hover:text-foreground"
-                                                onClick={() => handleCopy(secret.value)}
+                                                onClick={() => handleCopy(fetchedSecrets[secret.id] || secret.value)}
                                             >
                                                 <Copy className="w-3 h-3" />
                                             </Button>
@@ -330,6 +347,7 @@ export function SecretManager() {
                                             size="icon"
                                             className="h-8 w-8 text-destructive opacity-0 group-hover:opacity-100 transition-opacity"
                                             onClick={() => handleDelete(secret.id)}
+                                            aria-label="Delete secret"
                                         >
                                             <Trash2 className="w-4 h-4" />
                                         </Button>

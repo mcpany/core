@@ -10,6 +10,7 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/google/uuid"
 	"github.com/mcpany/core/pkg/config"
 	"github.com/mcpany/core/pkg/logging"
 	"github.com/mcpany/core/pkg/storage"
@@ -387,6 +388,7 @@ func (a *Application) handleSecrets(store storage.Storage) http.HandlerFunc {
 				redactedSecrets[i] = configv1.Secret_builder{
 					Id:        proto.String(s.GetId()),
 					Name:      proto.String(s.GetName()),
+					Key:       proto.String(s.GetKey()),
 					Value:     proto.String("[REDACTED]"),
 					CreatedAt: proto.String(s.GetCreatedAt()),
 				}.Build()
@@ -412,6 +414,9 @@ func (a *Application) handleSecrets(store storage.Storage) http.HandlerFunc {
 				http.Error(w, err.Error(), http.StatusBadRequest)
 				return
 			}
+			if secret.GetId() == "" {
+				secret.Id = proto.String(uuid.NewString())
+			}
 			if err := store.SaveSecret(&secret); err != nil {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 				return
@@ -433,6 +438,21 @@ func (a *Application) handleSecretDetail(store storage.Storage) http.HandlerFunc
 		}
 
 		switch r.Method {
+		case http.MethodGet:
+			secret, err := store.GetSecret(id)
+			if err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
+			if secret == nil {
+				http.NotFound(w, r)
+				return
+			}
+			w.Header().Set("Content-Type", "application/json")
+			opts := protojson.MarshalOptions{UseProtoNames: true}
+			b, _ := opts.Marshal(secret)
+			_, _ = w.Write(b)
+
 		case http.MethodDelete:
 			if err := store.DeleteSecret(id); err != nil {
 				http.Error(w, err.Error(), http.StatusInternalServerError)

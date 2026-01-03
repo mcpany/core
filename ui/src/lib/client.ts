@@ -281,6 +281,16 @@ export const apiClient = {
         return res.json();
     },
     /**
+     * Retrieves a single secret details (including value).
+     * @param id - The ID of the secret.
+     * @returns A promise that resolves to the secret.
+     */
+    getSecret: async (id: string) => {
+        const res = await fetch(`/api/v1/secrets/${id}`);
+        if (!res.ok) throw new Error('Failed to fetch secret');
+        return res.json();
+    },
+    /**
      * Saves a new or updated secret.
      * @param secret - The secret definition to save.
      * @returns A promise that resolves to the saved secret.
