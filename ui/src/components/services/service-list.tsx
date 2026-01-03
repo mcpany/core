@@ -125,12 +125,12 @@ function ServiceRow({ service, onToggle, onEdit, onDelete }: {
              <TableCell className="text-right">
                  <div className="flex justify-end gap-2">
                     {onEdit && (
-                        <Button variant="ghost" size="icon" onClick={() => onEdit(service)}>
+                        <Button variant="ghost" size="icon" onClick={() => onEdit(service)} aria-label="Edit">
                             <Settings className="h-4 w-4" />
                         </Button>
                     )}
                     {onDelete && (
-                        <Button variant="ghost" size="icon" onClick={() => onDelete(service.name)} className="text-destructive hover:text-destructive">
+                        <Button variant="ghost" size="icon" onClick={() => onDelete(service.name)} className="text-destructive hover:text-destructive" aria-label="Delete">
                              <Trash2 className="h-4 w-4" />
                         </Button>
                     )}

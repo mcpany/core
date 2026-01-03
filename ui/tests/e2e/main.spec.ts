@@ -12,7 +12,7 @@ test.describe('MCP Any UI E2E', () => {
     await page.goto('/');
     // Updated title expectation
     await expect(page).toHaveTitle(/MCPAny Manager/);
-    await expect(page.locator('h2')).toContainText('Dashboard');
+    await expect(page.locator('h1')).toContainText('Dashboard');
     // Check for metrics cards
     await expect(page.locator('text=Total Requests')).toBeVisible();
     await expect(page.locator('text=System Health')).toBeVisible();
@@ -26,6 +26,7 @@ test.describe('MCP Any UI E2E', () => {
     await page.click('button:has-text("Add Service")');
     await expect(page.locator('div[role="dialog"]')).toBeVisible();
     await page.fill('input#name', 'test-service-e2e');
+    await page.fill('input#endpoint', 'https://example.com');
     await page.click('text=Save Changes');
 
     // Check if added

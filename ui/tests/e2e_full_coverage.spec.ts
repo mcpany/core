@@ -75,7 +75,7 @@ test.describe('E2E Full Coverage', () => {
     // Or target by icon presence if possible, but identifying by order is easier here if robust
     // The switch has role="switch". The settings button likely doesn't have a role or is generic button.
     const row = page.locator('tr').filter({ hasText: 'e2e-test-service' });
-    await row.getByRole('button').filter({ hasNot: page.getByRole('switch') }).click();
+    await row.getByLabel('Edit').click();
 
     await expect(page.locator('input[id="name"]')).toHaveValue('e2e-test-service');
     // Cancel
