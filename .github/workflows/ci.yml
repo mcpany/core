@@ -612,7 +612,7 @@ jobs:
     if: always()
     steps:
       - run: |
-          if [[ "${{ contains(needs.*.result, "failure") || contains(needs.*.result, "cancelled") }}" == "true" ]]; then
+          if [[ "${{ contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled') }}" == "true" ]]; then
             echo "One or more dependent jobs failed."
             exit 1
           fi
