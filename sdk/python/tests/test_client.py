@@ -2,10 +2,11 @@
 # SPDX-License-Identifier: Apache-2.0
 
 import pytest
-from unittest.mock import AsyncMock, patch, MagicMock
+from unittest.mock import AsyncMock, patch
 from mcpany.client import Client
 from mcpany.exceptions import ConnectionError, ToolExecutionError
 from mcp.types import CallToolResult, TextContent, Tool
+from mcp import StdioServerParameters
 
 @pytest.mark.asyncio
 async def test_client_connect_sse():
@@ -26,6 +27,33 @@ async def test_client_connect_sse():
             pass
 
         mock_sse.assert_called_once_with("http://localhost:8080/sse", headers={"Authorization": "Bearer test-token"})
+        session_instance.initialize.assert_awaited_once()
+
+@pytest.mark.asyncio
+async def test_client_connect_stdio():
+    with patch("mcpany.client.stdio_client") as mock_stdio, \
+         patch("mcpany.client.ClientSession") as mock_session:
+
+        # Mock Stdio client context manager
+        mock_stdio.return_value.__aenter__.return_value = (AsyncMock(), AsyncMock())
+        mock_stdio.return_value.__aexit__.return_value = None
+
+        # Mock Session context manager
+        session_instance = AsyncMock()
+        mock_session.return_value.__aenter__.return_value = session_instance
+        mock_session.return_value.__aexit__.return_value = None
+
+        client = Client("mcpany", args=["run"])
+        async with client:
+            pass
+
+        # Verify stdio_client called with correct params
+        expected_params = StdioServerParameters(command="mcpany", args=["run"], env=None)
+        mock_stdio.assert_called_once()
+        call_args = mock_stdio.call_args[0][0]
+        assert call_args.command == "mcpany"
+        assert call_args.args == ["run"]
+
         session_instance.initialize.assert_awaited_once()
 
 @pytest.mark.asyncio
