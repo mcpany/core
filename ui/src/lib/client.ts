@@ -338,6 +338,7 @@ export const apiClient = {
         return res.json();
     }
 };
+// End of client definition
 
 /**
  * Definition of a secret used for sensitive configuration.
