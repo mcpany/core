@@ -16,11 +16,15 @@ ifeq ($(shell $(DOCKER_CMD) buildx version >/dev/null 2>&1 && echo 1 || echo 0),
 	DOCKER_BUILD_CMD := $(DOCKER_CMD) build
 endif
 
-.PHONY: test test-local build-test-docker
+.PHONY: test test-local build-test-docker audit
 
-# Default test target (runs tests in Docker Compose)
-test:
-	docker compose -f ../docker/docker-compose.test-ui.yml up --build --abort-on-container-exit --exit-code-from ui-tests
+# Default test target# Run the tests in a docker container
+test: build-test-docker
+	docker compose -f ../docker/docker-compose.test-ui.yml up --abort-on-container-exit --exit-code-from ui-tests
+
+# Run audit tests (generate screenshots)
+audit: build-test-docker
+	CAPTURE_SCREENSHOTS=true docker compose -f ../docker/docker-compose.test-ui.yml up --abort-on-container-exit --exit-code-from ui-tests
 	docker compose -f ../docker/docker-compose.test-ui.yml down -v
 
 test-ci:
