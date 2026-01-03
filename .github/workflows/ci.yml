@@ -559,6 +559,7 @@ jobs:
 
   ui-test:
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     needs: [build-ui-test-image]
     strategy:
       fail-fast: false
@@ -582,7 +583,9 @@ jobs:
         with:
           name: ui-test-image
       - name: Load Docker Image
-        run: docker load -i ui-test-image.tar
+        run: |
+          docker load -i ui-test-image.tar
+          rm ui-test-image.tar
       - name: Test UI
         run: |
           make -C ui test-ci PLAYWRIGHT_ARGS="--shard=${{ matrix.shard }}"
