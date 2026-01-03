@@ -15,6 +15,7 @@ The following is the reconciled roadmap as of today. Completed items are marked 
 - [x] [WebRTC](features/service-types.md)
 - [x] [SQL](features/sql_upstream.md)
 - [x] [File System Provider](features/filesystem.md) (Local, S3, GCS)
+- [x] [Vector Database Connector](features/vector_database.md) (Pinecone)
 
 ### Authentication (Implemented)
 - [x] [API Key](features/authentication/README.md)
