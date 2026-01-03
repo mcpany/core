@@ -77,6 +77,9 @@ func StartServer(addr string) error {
 		Addr:              addr,
 		Handler:           mux,
 		ReadHeaderTimeout: 3 * time.Second,
+		ReadTimeout:       5 * time.Second,
+		WriteTimeout:      10 * time.Second,
+		IdleTimeout:       15 * time.Second,
 	}
 	return server.ListenAndServe()
 }
