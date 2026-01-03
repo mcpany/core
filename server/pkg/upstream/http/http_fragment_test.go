@@ -29,6 +29,18 @@ func TestHTTPUpstream_URLConstruction_FragmentBug(t *testing.T) {
 			endpointPath: "/api/v1/test#frag",
 			expectedFqn:  "GET http://localhost:8080/api/v1/test#frag",
 		},
+		{
+			name:         "base fragment should be preserved when endpoint has no fragment",
+			address:      "http://example.com/api#base",
+			endpointPath: "/foo",
+			expectedFqn:  "GET http://example.com/api/foo#base",
+		},
+		{
+			name:         "endpoint fragment should override base fragment",
+			address:      "http://example.com/api#base",
+			endpointPath: "/foo#endpoint",
+			expectedFqn:  "GET http://example.com/api/foo#endpoint",
+		},
 	}
 
 	for _, tc := range testCases {
