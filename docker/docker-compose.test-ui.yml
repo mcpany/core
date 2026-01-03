@@ -32,6 +32,7 @@ services:
       - BASE_URL=http://localhost:9002
       - NEXT_PUBLIC_API_URL=http://server:50050
       - CI=true
+      - CAPTURE_SCREENSHOTS=${CAPTURE_SCREENSHOTS}
     volumes:
       - ../ui/test-results:/work/ui/test-results
       - ../ui/playwright-report:/work/ui/playwright-report

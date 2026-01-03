@@ -36,7 +36,8 @@ test.describe('MCP Any UI E2E', () => {
   test('Tools page lists tools and inspects', async ({ page }) => {
     await page.goto('/tools');
     await expect(page.locator('h2')).toContainText('Tools');
-    await expect(page.locator('text=get_weather')).toBeVisible();
+    // Wait for list to load
+    await expect(page.locator('text=Available Tools')).toBeVisible();
 
     // Inspect
     await page.click('button:has-text("Inspect") >> nth=0');

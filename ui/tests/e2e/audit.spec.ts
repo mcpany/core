@@ -9,6 +9,8 @@ import * as fs from 'fs';
 import * as path from 'path';
 
 test.describe('MCP Any Audit Screenshots', () => {
+  // Skip these tests unless explicitly requested to avoid polluting git history
+  test.skip(process.env.CAPTURE_SCREENSHOTS !== 'true', 'Skipping audit screenshots unless CAPTURE_SCREENSHOTS=true');
 
   const date = new Date().toISOString().split('T')[0];
   const auditDir = path.join(process.cwd(), '..', '.audit/ui', date);
