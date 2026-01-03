@@ -18,8 +18,8 @@ describe('StackEditor', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    (apiClient.getStackConfig as any).mockResolvedValue(mockConfig);
-    (apiClient.saveStackConfig as any).mockResolvedValue({});
+    vi.mocked(apiClient.getStackConfig).mockResolvedValue(mockConfig);
+    vi.mocked(apiClient.saveStackConfig).mockResolvedValue({});
   });
 
   it('renders correctly and loads config', async () => {
