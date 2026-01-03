@@ -46,16 +46,15 @@ Based on the current architecture and market needs, the following features shoul
 
 | Rank | Feature Name | Why it matters | Implementation Difficulty |
 | :--- | :--- | :--- | :--- |
-| 1 | **Python & TypeScript Client SDKs** | **UX/Adoption**: Developers need idiomatic libraries to easily integrate agents with MCP Any. Currently only Go is supported internally. | Medium |
-| 2 | **Kubernetes Operator** | **Scalability/Ops**: Essential for enterprise adoption to manage deployment, scaling, and configuration via GitOps. | High |
-| 3 | **SSO Integration (OIDC/SAML)** | **Security**: Enterprise requirement for managing access to the Admin UI and RBAC without shared credentials. | Medium |
-| 4 | **Audit Log Export (Splunk/Datadog)** | **Security/Compliance**: Enterprises need to ship logs to their SIEM. Current SQLite/Postgres audit is good but needs export capabilities. | Low |
-| 5 | **Interactive Playground 2.0** | **UX**: The current UI is "Beta". A robust playground with auto-generated forms for tools will significantly improve developer experience. | Medium |
-| 6 | **WASM Plugin System** | **Extensibility/Security**: Allows safe extension of transformation and validation logic without recompiling the server. | High |
-| 7 | **Terraform Provider** | **Ops**: "Configuration as Code" for managing MCP resources (Sources, Tools, Policies). | High |
-| 8 | **Vector Database Connector** | **Feature**: Native support for vector stores (Pinecone, Milvus, Weaviate) to enable RAG workflows directly via MCP. | Medium |
-| 9 | **Multi-Region Federation** | **Scalability**: Link multiple MCP instances to reduce latency and improve availability for global deployments. | High |
-| 10 | **Browser Automation Provider** | **Feature**: A high-demand tool capability for agents to read/interact with websites (headless browser). | High |
+| 1 | **Kubernetes Operator** | **Scalability/Ops**: Essential for enterprise adoption to manage deployment, scaling, and configuration via GitOps. | High |
+| 2 | **SSO Integration (OIDC/SAML)** | **Security**: Enterprise requirement for managing access to the Admin UI and RBAC without shared credentials. | Medium |
+| 3 | **Audit Log Export (Splunk/Datadog)** | **Security/Compliance**: Enterprises need to ship logs to their SIEM. Current SQLite/Postgres audit is good but needs export capabilities. | Low |
+| 4 | **Interactive Playground 2.0** | **UX**: The current UI is "Beta". A robust playground with auto-generated forms for tools will significantly improve developer experience. | Medium |
+| 5 | **WASM Plugin System** | **Extensibility/Security**: Allows safe extension of transformation and validation logic without recompiling the server. | High |
+| 6 | **Terraform Provider** | **Ops**: "Configuration as Code" for managing MCP resources (Sources, Tools, Policies). | High |
+| 7 | **Vector Database Connector** | **Feature**: Native support for vector stores (Pinecone, Milvus, Weaviate) to enable RAG workflows directly via MCP. | Medium |
+| 8 | **Multi-Region Federation** | **Scalability**: Link multiple MCP instances to reduce latency and improve availability for global deployments. | High |
+| 9 | **Browser Automation Provider** | **Feature**: A high-demand tool capability for agents to read/interact with websites (headless browser). | High |
 
 ## 3. Codebase Health Report
 
