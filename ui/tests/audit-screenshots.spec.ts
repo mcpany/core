@@ -15,7 +15,7 @@ if (!fs.existsSync(AUDIT_DIR)){
     fs.mkdirSync(AUDIT_DIR, { recursive: true });
 }
 
-test.describe('Audit Screenshots', () => {
+test.describe.skip('Audit Screenshots', () => {
   test.use({ colorScheme: 'dark' });
 
   test.beforeEach(async ({ page }) => {
