@@ -1129,6 +1129,23 @@ func (a *Application) runServerMode(
 	mux.Handle("/metrics", authMiddleware(metrics.Handler()))
 	mux.Handle("/upload", authMiddleware(http.HandlerFunc(a.uploadFile)))
 
+	// OIDC Routes
+	oidcConfig := config.GlobalSettings().GetOidc()
+	if oidcConfig != nil {
+		provider, err := auth.NewOIDCProvider(localCtx, auth.OIDCConfig{
+			Issuer:       oidcConfig.GetIssuer(),
+			ClientID:     oidcConfig.GetClientId(),
+			ClientSecret: oidcConfig.GetClientSecret(),
+			RedirectURL:  oidcConfig.GetRedirectUrl(),
+		})
+		if err != nil {
+			logging.GetLogger().Error("Failed to initialize OIDC provider", "error", err)
+		} else {
+			mux.HandleFunc("/auth/login", provider.HandleLogin)
+			mux.HandleFunc("/auth/callback", provider.HandleCallback)
+		}
+	}
+
 	if grpcPort != "" {
 		gwmux := runtime.NewServeMux()
 		opts := []gogrpc.DialOption{gogrpc.WithTransportCredentials(insecure.NewCredentials())}

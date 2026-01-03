@@ -247,6 +247,11 @@ func (s *Settings) GetDlp() *configv1.DLPConfig {
 	return s.proto.GetDlp()
 }
 
+// GetOidc returns the OIDC configuration.
+func (s *Settings) GetOidc() *configv1.OIDCConfig {
+	return s.proto.GetOidc()
+}
+
 // getStringSlice is a helper function to get a string slice from viper.
 // It handles the case where viper returns a slice with a single element
 // containing comma-separated values (which happens with environment variables).
