@@ -1,4 +1,28 @@
 # Copyright 2025 Author(s) of MCP Any
 # SPDX-License-Identifier: Apache-2.0
 
-upstream_services: []
+global_settings:
+  profile_definitions:
+    - name: "Default Dev"
+      selector:
+        tags: ["dev"]
+  middlewares:
+    - name: "auth"
+      priority: 1
+      disabled: true
+
+upstream_services:
+  - id: "weather-service"
+    name: "weather-service"
+    command_line_service:
+      command: "true"
+      tools:
+        - name: "get_weather"
+          description: "Get current weather"
+      resources:
+        - uri: "system://logs"
+          name: "System Logs"
+          mime_type: "text/plain"
+      prompts:
+        - name: "summarize_text"
+          description: "Summarize text"

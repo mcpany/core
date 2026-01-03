@@ -13,17 +13,14 @@ import {
   Layers,
   Box,
   Settings,
-  Menu,
   Home
 } from "lucide-react";
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
 
 type SidebarProps = React.HTMLAttributes<HTMLDivElement>;
 
 export function Sidebar({ className }: SidebarProps) {
   const pathname = usePathname();
-  const [collapsed, setCollapsed] = useState(false);
+  const collapsed = false;
 
   const navItems = [
     {
@@ -94,16 +91,6 @@ export function Sidebar({ className }: SidebarProps) {
           </div>
         </div>
       </div>
-       <div className="absolute bottom-4 left-0 right-0 px-3">
-            <Button
-                variant="ghost"
-                size="icon"
-                className="w-full text-muted-foreground hover:text-foreground hover:bg-white/5"
-                onClick={() => setCollapsed(!collapsed)}
-            >
-                <Menu className="h-5 w-5" />
-            </Button>
-       </div>
     </div>
   );
 }
