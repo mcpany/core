@@ -36,7 +36,8 @@ var (
 	metricCacheErrors = []string{"cache", "errors"}
 )
 
-// CachingMiddleware handles caching of tool execution results.
+// CachingMiddleware is a tool execution middleware that provides caching
+// functionality.
 type CachingMiddleware struct {
 	cache           *cache.Cache[any]
 	toolManager     tool.ManagerInterface
