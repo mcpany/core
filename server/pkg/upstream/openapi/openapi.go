@@ -144,9 +144,9 @@ func (u *OpenAPIUpstream) Register(
 			return "", nil, nil, fmt.Errorf("OpenAPI spec content is missing")
 		}
 		// If spec_url was provided but failed to load, we warned above.
-		// We return no error so the service can at least register (with no tools).
-		logging.GetLogger().Warn("OpenAPI spec content is missing or failed to load. Service will have no tools.", "serviceID", serviceID)
-		return serviceID, []*configv1.ToolDefinition{}, []*configv1.ResourceDefinition{}, nil
+		// We return an error so that the registration worker can retry later.
+		// This is critical for startup reliability when upstream services might not be ready yet.
+		return "", nil, nil, fmt.Errorf("OpenAPI spec content is missing or failed to load from %s", openapiService.GetSpecUrl())
 	}
 
 	hash := sha256.Sum256([]byte(specContent))
