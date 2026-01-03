@@ -5,7 +5,7 @@
 
 import { MetricsOverview } from "@/components/dashboard/metrics-overview";
 import { ServiceHealthWidget } from "@/components/dashboard/service-health-widget";
-import { RequestVolumeChart } from "@/components/dashboard/request-volume-chart";
+import { RequestVolumeChart } from "@/components/dashboard/async-charts";
 import { Button } from "@/components/ui/button";
 
 export default function DashboardPage() {
