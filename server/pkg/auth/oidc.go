@@ -64,11 +64,13 @@ func (p *OIDCProvider) HandleLogin(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// In a real app, store state in a secure cookie to verify later
+	isSecure := r.TLS != nil || r.Header.Get("X-Forwarded-Proto") == "https"
 	http.SetCookie(w, &http.Cookie{
 		Name:     "oauth_state",
 		Value:    state,
 		HttpOnly: true,
-		Secure:   r.TLS != nil, // Approximation
+		Secure:   isSecure,
+		SameSite: http.SameSiteLaxMode,
 		Path:     "/",
 		MaxAge:   300, // 5 minutes
 	})
