@@ -213,7 +213,7 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: .
-          file: docker/Dockerfile.server
+          file: server/docker/Dockerfile.server
           platforms: ${{ matrix.platform }}
           tags: |
             ${{ env.DOCKERHUB_IMAGE }}
