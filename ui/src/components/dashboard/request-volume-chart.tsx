@@ -9,56 +9,10 @@ import { useEffect, useState } from "react";
 import { Area, AreaChart, ResponsiveContainer, Tooltip, XAxis, YAxis, CartesianGrid } from "recharts";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
-const data = [
-  {
-    name: "Jan",
-    total: Math.floor(Math.random() * 5000) + 1000,
-  },
-  {
-    name: "Feb",
-    total: Math.floor(Math.random() * 5000) + 1000,
-  },
-  {
-    name: "Mar",
-    total: Math.floor(Math.random() * 5000) + 1000,
-  },
-  {
-    name: "Apr",
-    total: Math.floor(Math.random() * 5000) + 1000,
-  },
-  {
-    name: "May",
-    total: Math.floor(Math.random() * 5000) + 1000,
-  },
-  {
-    name: "Jun",
-    total: Math.floor(Math.random() * 5000) + 1000,
-  },
-  {
-    name: "Jul",
-    total: Math.floor(Math.random() * 5000) + 1000,
-  },
-  {
-    name: "Aug",
-    total: Math.floor(Math.random() * 5000) + 1000,
-  },
-  {
-    name: "Sep",
-    total: Math.floor(Math.random() * 5000) + 1000,
-  },
-  {
-    name: "Oct",
-    total: Math.floor(Math.random() * 5000) + 1000,
-  },
-  {
-    name: "Nov",
-    total: Math.floor(Math.random() * 5000) + 1000,
-  },
-  {
-    name: "Dec",
-    total: Math.floor(Math.random() * 5000) + 1000,
-  },
-];
+const data = Array.from({ length: 24 }, (_, i) => ({
+  name: `${i.toString().padStart(2, '0')}:00`,
+  total: Math.floor(Math.random() * 5000) + 1000,
+}));
 
 export function RequestVolumeChart() {
     const [isMounted, setIsMounted] = useState(false);
@@ -74,7 +28,7 @@ export function RequestVolumeChart() {
       <CardHeader>
         <CardTitle>Request Volume</CardTitle>
         <CardDescription>
-          Requests handled over the last 12 months.
+          Requests handled over the last 24 hours.
         </CardDescription>
       </CardHeader>
       <CardContent className="pl-2">
@@ -99,7 +53,7 @@ export function RequestVolumeChart() {
                 fontSize={12}
                 tickLine={false}
                 axisLine={false}
-                tickFormatter={(value) => `$${value}`} // Should likely be raw numbers, removing $ later
+                tickFormatter={(value) => `${value}`}
                 />
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--muted))" />
                 <Tooltip
