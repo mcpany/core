@@ -5,13 +5,13 @@
 
 "use client";
 
-import { apiClient } from "@/lib/client";
+import { apiClient, ToolDefinition } from "@/lib/client";
 
 import { useState, useRef, useEffect } from "react";
-import { Send, Bot, User, Terminal, Loader2, Sparkles, AlertCircle } from "lucide-react";
+import { Send, Bot, User, Terminal, Loader2, Sparkles, AlertCircle, Trash2, Command, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
@@ -20,6 +20,14 @@ import {
     CollapsibleContent,
     CollapsibleTrigger,
 } from "@/components/ui/collapsible"
+import {
+    Sheet,
+    SheetContent,
+    SheetHeader,
+    SheetTitle,
+    SheetDescription,
+    SheetTrigger
+} from "@/components/ui/sheet";
 
 type MessageType = "user" | "assistant" | "tool-call" | "tool-result" | "error";
 
@@ -38,13 +46,21 @@ export function PlaygroundClient() {
       {
           id: "1",
           type: "assistant",
-          content: "Hello! I am your MCP Assistant. I can help you interact with your registered tools. Try asking me to list files or analyze something.",
+          content: "Hello! I am your MCP Assistant. I can help you interact with your registered tools. Try executing a tool like 'calculator' or 'weather'.",
           timestamp: new Date(),
       }
   ]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [availableTools, setAvailableTools] = useState<ToolDefinition[]>([]);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    // Load tools on mount
+    apiClient.listTools()
+        .then(data => setAvailableTools(data.tools || []))
+        .catch(err => console.error("Failed to load tools:", err));
+  }, []);
 
   // Auto-scroll to bottom
   useEffect(() => {
@@ -70,34 +86,38 @@ export function PlaygroundClient() {
     setInput("");
     setIsLoading(true);
 
-    // Mock AI delay
-    setTimeout(() => {
-        processResponse(input);
-    }, 1000);
+    // Process immediately
+    processResponse(input);
   };
-
 
   const processResponse = async (userInput: string) => {
       // Parse input as "tool_name {json_args}"
+      // Logic: First word is tool name. Rest is JSON args.
+      // If no JSON args provided, assume empty object {}
+
       const firstSpaceIndex = userInput.indexOf(' ');
       let toolName = userInput;
       let toolArgs = {};
 
       if (firstSpaceIndex > 0) {
-          toolName = userInput.substring(0, firstSpaceIndex);
-          try {
-              toolArgs = JSON.parse(userInput.substring(firstSpaceIndex + 1));
-          } catch (e) {
-              // If not JSON, treat as string arg? Or just error.
-              // For now simpler: assume JSON
-              setMessages(prev => [...prev, {
-                  id: Date.now().toString(),
-                  type: "error",
-                  content: "Invalid arguments format. Use: tool_name {\"arg\": \"val\"}",
-                  timestamp: new Date(),
-              }]);
-              setIsLoading(false);
-              return;
+          toolName = userInput.substring(0, firstSpaceIndex).trim();
+          const argsStr = userInput.substring(firstSpaceIndex + 1).trim();
+          if (argsStr) {
+             try {
+                // Try to be lenient: if it doesn't look like JSON, wrap it in a default key?
+                // No, strict JSON for "Engineering Rigor".
+                // But we can support simplified syntax later.
+                toolArgs = JSON.parse(argsStr);
+            } catch (e) {
+                 setMessages(prev => [...prev, {
+                    id: Date.now().toString(),
+                    type: "error",
+                    content: "Invalid JSON arguments. Use format: tool_name {\"key\": \"value\"}",
+                    timestamp: new Date(),
+                }]);
+                setIsLoading(false);
+                return;
+            }
           }
       }
 
@@ -123,13 +143,6 @@ export function PlaygroundClient() {
               timestamp: new Date(),
           }]);
 
-           setMessages(prev => [...prev, {
-              id: Date.now().toString() + "-assistant",
-              type: "assistant",
-              content: "Tool executed successfully.",
-              timestamp: new Date(),
-          }]);
-
       } catch (err: any) {
           setMessages(prev => [...prev, {
               id: Date.now().toString(),
@@ -142,45 +155,105 @@ export function PlaygroundClient() {
       }
   };
 
+  const clearChat = () => {
+      setMessages([{
+          id: Date.now().toString(),
+          type: "assistant",
+          content: "Chat cleared. Ready for new commands.",
+          timestamp: new Date(),
+      }]);
+  };
+
   return (
     <div className="flex flex-col h-full gap-4">
       <div className="flex items-center justify-between">
           <h2 className="text-2xl font-bold tracking-tight flex items-center gap-2">
               <Bot className="text-primary" /> Playground
           </h2>
-          <Badge variant="outline" className="text-muted-foreground">
-              Connected to Localhost
-          </Badge>
+          <div className="flex items-center gap-2">
+            <Sheet>
+                <SheetTrigger asChild>
+                    <Button variant="outline" size="sm" className="gap-2">
+                        <Command className="size-4" /> Available Tools
+                    </Button>
+                </SheetTrigger>
+                <SheetContent>
+                    <SheetHeader>
+                        <SheetTitle>Available Tools</SheetTitle>
+                        <SheetDescription>
+                            List of tools currently registered and available for execution.
+                        </SheetDescription>
+                    </SheetHeader>
+                    <div className="py-4 space-y-4 overflow-y-auto max-h-[calc(100vh-100px)]">
+                        {availableTools.map((tool) => (
+                            <div key={tool.name} className="border rounded-lg p-3 space-y-2 bg-muted/20">
+                                <div className="flex items-center justify-between">
+                                    <span className="font-semibold font-mono text-sm text-primary">{tool.name}</span>
+                                    <Badge variant="secondary" className="text-[10px]">{tool.serviceName || 'builtin'}</Badge>
+                                </div>
+                                <p className="text-xs text-muted-foreground">{tool.description}</p>
+                                {tool.schema && (
+                                    <div className="bg-muted p-2 rounded text-[10px] font-mono overflow-x-auto">
+                                        {Object.keys(tool.schema.properties || {}).map(prop => (
+                                            <div key={prop} className="flex gap-1">
+                                                <span className="text-blue-500">{prop}</span>
+                                                <span className="text-muted-foreground">: {tool.schema.properties[prop].type}</span>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+                                <Button size="sm" variant="ghost" className="w-full h-6 text-xs" onClick={() => setInput(tool.name + " ")}>
+                                    Use Tool <ChevronRight className="ml-1 size-3" />
+                                </Button>
+                            </div>
+                        ))}
+                        {availableTools.length === 0 && (
+                            <div className="text-center text-muted-foreground text-sm">No tools found.</div>
+                        )}
+                    </div>
+                </SheetContent>
+            </Sheet>
+            <Button variant="ghost" size="sm" onClick={clearChat} title="Clear Chat">
+                <Trash2 className="size-4 text-muted-foreground hover:text-destructive" />
+            </Button>
+          </div>
       </div>
 
       <Card className="flex-1 flex flex-col overflow-hidden border-muted/50 shadow-sm bg-background/50 backdrop-blur-sm">
         <CardContent className="flex-1 p-0 overflow-hidden flex flex-col">
             <ScrollArea className="flex-1 p-4" ref={scrollAreaRef}>
-                <div className="space-y-4 max-w-3xl mx-auto">
+                <div className="space-y-6 max-w-3xl mx-auto pb-4">
                     {messages.map((msg) => (
                         <MessageItem key={msg.id} message={msg} />
                     ))}
                     {isLoading && (
-                        <div className="flex items-center gap-2 text-muted-foreground text-sm animate-pulse ml-10">
-                            <Sparkles className="size-4" /> Thinking...
+                        <div className="flex items-center gap-2 text-muted-foreground text-sm animate-pulse ml-12">
+                            <Sparkles className="size-4 text-amber-500" />
+                            <span className="italic">Executing tool...</span>
                         </div>
                     )}
                 </div>
             </ScrollArea>
             <div className="p-4 bg-muted/20 border-t">
-                <div className="max-w-3xl mx-auto flex gap-2">
+                <div className="max-w-3xl mx-auto flex gap-2 relative">
                     <Input
-                        placeholder="Type a message to interact with your tools..."
+                        placeholder="e.g. calculator { &quot;operation&quot;: &quot;add&quot;, &quot;a&quot;: 5, &quot;b&quot;: 3 }"
                         value={input}
                         onChange={(e) => setInput(e.target.value)}
                         onKeyDown={(e) => e.key === "Enter" && handleSend()}
                         disabled={isLoading}
-                        className="bg-background shadow-sm"
+                        className="bg-background shadow-sm pr-20 font-mono text-sm"
+                        autoFocus
                     />
-                    <Button onClick={handleSend} disabled={isLoading || !input.trim()}>
-                        {isLoading ? <Loader2 className="size-4 animate-spin" /> : <Send className="size-4" />}
-                        <span className="sr-only">Send</span>
-                    </Button>
+                    <div className="absolute right-1 top-1">
+                        <Button size="sm" className="h-8" onClick={handleSend} disabled={isLoading || !input.trim()}>
+                            {isLoading ? <Loader2 className="size-4 animate-spin" /> : <Send className="size-4" />}
+                            <span className="sr-only">Send</span>
+                        </Button>
+                    </div>
+                </div>
+                <div className="text-[10px] text-center mt-2 text-muted-foreground">
+                    Format: <code className="bg-muted px-1 rounded">tool_name {"{args}"}</code>
                 </div>
             </div>
         </CardContent>
@@ -192,11 +265,11 @@ export function PlaygroundClient() {
 function MessageItem({ message }: { message: Message }) {
     if (message.type === "user") {
         return (
-            <div className="flex justify-end gap-3">
-                 <div className="bg-primary text-primary-foreground rounded-2xl rounded-tr-sm px-4 py-2 max-w-[80%] shadow-md">
-                    {message.content}
+            <div className="flex justify-end gap-3 pl-10">
+                 <div className="bg-primary/90 text-primary-foreground rounded-2xl rounded-tr-sm px-4 py-2 shadow-md">
+                    <p className="whitespace-pre-wrap font-mono text-sm">{message.content}</p>
                 </div>
-                 <Avatar className="size-8 mt-1 border">
+                 <Avatar className="size-8 mt-1 border shadow-sm">
                     <AvatarFallback><User className="size-4" /></AvatarFallback>
                 </Avatar>
             </div>
@@ -205,12 +278,12 @@ function MessageItem({ message }: { message: Message }) {
 
     if (message.type === "assistant") {
         return (
-            <div className="flex justify-start gap-3">
-                <Avatar className="size-8 mt-1 border bg-muted">
+            <div className="flex justify-start gap-3 pr-10">
+                <Avatar className="size-8 mt-1 border bg-muted shadow-sm">
                     <AvatarFallback><Bot className="size-4 text-primary" /></AvatarFallback>
                 </Avatar>
-                <div className="bg-muted/50 rounded-2xl rounded-tl-sm px-4 py-2 max-w-[80%] shadow-sm border">
-                    {message.content}
+                <div className="bg-muted/50 rounded-2xl rounded-tl-sm px-4 py-2 shadow-sm border">
+                     <p className="whitespace-pre-wrap text-sm">{message.content}</p>
                 </div>
             </div>
         );
@@ -218,13 +291,15 @@ function MessageItem({ message }: { message: Message }) {
 
     if (message.type === "tool-call") {
         return (
-            <div className="flex justify-start gap-3 pl-11 w-full">
-                <Card className="w-full max-w-[80%] border-dashed border-primary/30 bg-primary/5">
-                    <CardHeader className="p-3 pb-1 flex flex-row items-center gap-2 space-y-0">
-                         <Terminal className="size-4 text-primary" />
-                         <span className="font-mono text-sm font-medium text-primary">Calling Tool: {message.toolName}</span>
+            <div className="flex justify-start gap-3 pl-11 w-full pr-10">
+                <Card className="w-full border-dashed border-primary/30 bg-primary/5 shadow-none">
+                    <CardHeader className="p-2 pb-1 flex flex-row items-center gap-2 space-y-0">
+                         <div className="bg-primary/10 p-1 rounded">
+                             <Terminal className="size-3 text-primary" />
+                         </div>
+                         <span className="font-mono text-xs font-medium text-primary">Calling: {message.toolName}</span>
                     </CardHeader>
-                    <CardContent className="p-3 pt-1">
+                    <CardContent className="p-2 pt-1">
                         <pre className="text-xs bg-background/50 p-2 rounded border font-mono text-muted-foreground overflow-x-auto">
                             {JSON.stringify(message.toolArgs, null, 2)}
                         </pre>
@@ -236,22 +311,22 @@ function MessageItem({ message }: { message: Message }) {
 
     if (message.type === "tool-result") {
          return (
-            <div className="flex justify-start gap-3 pl-11 w-full">
-                 <Collapsible className="w-full max-w-[80%] group">
-                    <div className="flex items-center justify-between rounded-md border bg-muted/30 px-4 py-2 text-sm shadow-sm">
+            <div className="flex justify-start gap-3 pl-11 w-full pr-10">
+                 <Collapsible className="w-full group" defaultOpen>
+                    <div className="flex items-center justify-between rounded-t-md border border-b-0 bg-muted/30 px-3 py-2 text-xs shadow-sm">
                         <div className="flex items-center gap-2 text-muted-foreground">
-                            <Sparkles className="size-4 text-green-500" />
-                            <span>Tool Output ({message.toolName})</span>
+                            <Sparkles className="size-3 text-green-500" />
+                            <span className="font-medium">Result ({message.toolName})</span>
                         </div>
                         <CollapsibleTrigger asChild>
-                            <Button variant="ghost" size="sm" className="w-9 p-0">
+                            <Button variant="ghost" size="sm" className="h-6 w-6 p-0">
                                 <span className="sr-only">Toggle</span>
-                                <span className="text-xs underline group-data-[state=open]:no-underline">View</span>
+                                <span className="text-[10px] underline group-data-[state=open]:no-underline">+/-</span>
                             </Button>
                         </CollapsibleTrigger>
                     </div>
-                    <CollapsibleContent className="mt-2">
-                        <pre className="text-xs bg-black text-green-400 p-3 rounded-md border border-green-900/50 font-mono overflow-x-auto">
+                    <CollapsibleContent className="">
+                        <pre className="text-xs bg-black text-green-400 p-3 rounded-b-md border border-t-0 border-green-900/30 font-mono overflow-x-auto shadow-inner">
                             {JSON.stringify(message.toolResult, null, 2)}
                         </pre>
                     </CollapsibleContent>
@@ -262,8 +337,8 @@ function MessageItem({ message }: { message: Message }) {
 
     if (message.type === "error") {
         return (
-             <div className="flex justify-start gap-3 pl-11 w-full">
-                <div className="flex items-center gap-2 text-destructive bg-destructive/10 px-4 py-2 rounded-md text-sm border border-destructive/20">
+             <div className="flex justify-start gap-3 pl-11 w-full pr-10">
+                <div className="flex items-center gap-2 text-destructive bg-red-50 dark:bg-red-900/10 px-4 py-2 rounded-md text-sm border border-red-200 dark:border-red-900/50 shadow-sm">
                     <AlertCircle className="size-4" />
                     {message.content}
                 </div>
