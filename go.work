@@ -5,3 +5,5 @@ use (
 	./operator
 	./server
 )
+
+replace github.com/mcpany/core => ./server

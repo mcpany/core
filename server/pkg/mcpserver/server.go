@@ -543,7 +543,20 @@ func (s *Server) CallTool(ctx context.Context, req *tool.ExecutionRequest) (any,
 			{Name: "service_id", Value: serviceID},
 		})
 	}
-	logging.GetLogger().Info("Tool execution completed", "result_type", fmt.Sprintf("%T", result), "result_value", result)
+
+	// Redact the result before logging
+	// Use json-iterator for faster JSON operations
+	var json = jsoniter.ConfigCompatibleWithStandardLibrary
+	var redactedResult string
+	resultJSON, err := json.Marshal(result)
+	if err != nil {
+		logging.GetLogger().Warn("Failed to marshal result for logging", "error", err)
+		redactedResult = fmt.Sprintf("%+v", result)
+	} else {
+		redactedResult = string(util.RedactJSON(resultJSON))
+	}
+
+	logging.GetLogger().Info("Tool execution completed", "result_type", fmt.Sprintf("%T", result), "result_value", redactedResult)
 
 	if err != nil {
 		return nil, err
@@ -556,9 +569,6 @@ func (s *Server) CallTool(ctx context.Context, req *tool.ExecutionRequest) (any,
 	// Handle map[string]any result (e.g. from HTTP tools)
 	var jsonBytes []byte
 	var marshalErr error
-
-	// Use json-iterator for faster JSON operations
-	var json = jsoniter.ConfigCompatibleWithStandardLibrary
 
 	if resultMap, ok := result.(map[string]any); ok {
 		// Heuristic: If map looks like CallToolResult (has "content" or "isError"),
