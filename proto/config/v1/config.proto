@@ -107,6 +107,15 @@ message GlobalSettings {
   DLPConfig dlp = 13 [json_name = "dlp"];
   // Garbage Collection configuration.
   GCSettings gc_settings = 16 [json_name = "gc_settings"];
+  // OIDC Configuration.
+  OIDCConfig oidc = 17 [json_name = "oidc"];
+}
+
+message OIDCConfig {
+  string issuer = 1 [json_name = "issuer"];
+  string client_id = 2 [json_name = "client_id"];
+  string client_secret = 3 [json_name = "client_secret"];
+  string redirect_url = 4 [json_name = "redirect_url"];
 }
 
 message GCSettings {
@@ -137,6 +146,8 @@ message AuditConfig {
     STORAGE_TYPE_SQLITE = 2;
     STORAGE_TYPE_POSTGRES = 3;
     STORAGE_TYPE_WEBHOOK = 4;
+    STORAGE_TYPE_SPLUNK = 5;
+    STORAGE_TYPE_DATADOG = 6;
   }
 
   // Whether audit logging is enabled.
@@ -153,6 +164,25 @@ message AuditConfig {
   string webhook_url = 6 [json_name = "webhook_url"];
   // Additional headers to send with the webhook.
   map<string, string> webhook_headers = 7 [json_name = "webhook_headers"];
+  // Splunk configuration.
+  SplunkConfig splunk = 8 [json_name = "splunk"];
+  // Datadog configuration.
+  DatadogConfig datadog = 9 [json_name = "datadog"];
+}
+
+message SplunkConfig {
+  string hec_url = 1 [json_name = "hec_url"];
+  string token = 2 [json_name = "token"];
+  string index = 3 [json_name = "index"];
+  string source = 4 [json_name = "source"];
+  string sourcetype = 5 [json_name = "sourcetype"];
+}
+
+message DatadogConfig {
+  string api_key = 1 [json_name = "api_key"];
+  string site = 2 [json_name = "site"];
+  string service = 3 [json_name = "service"];
+  string tags = 4 [json_name = "tags"];
 }
 
 message ProfileDefinition {

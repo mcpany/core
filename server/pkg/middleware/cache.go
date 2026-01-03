@@ -35,6 +35,8 @@ var (
 	metricCacheSkips  = []string{"cache", "skips"}
 	metricCacheErrors = []string{"cache", "errors"}
 )
+
+// CachingMiddleware handles caching of tool execution results.
 type CachingMiddleware struct {
 	cache           *cache.Cache[any]
 	toolManager     tool.ManagerInterface
