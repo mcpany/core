@@ -365,9 +365,11 @@ else
 	@-find proto pkg cmd -name "*.pb.go" -delete
 	@echo "Generating protobuf files..."
 	@export PATH=$(TOOL_INSTALL_DIR):$$PATH; \
-		echo "Using protoc: $$(protoc --version)"; \
+	echo "Using protoc: $$(protoc --version)"; \
 		mkdir -p $(BUILD_DIR); \
-		find ../proto -name "*.proto" -exec protoc \
+		echo "Generating Config/Examples protobuf files (to all.protoset)..."; \
+		PROTO_FILES_OPAQUE=$$(find ../proto -path ../proto/api -prune -o -name "*.proto" -print); \
+		protoc \
 			--proto_path=.. \
 			--proto_path=. \
 			--proto_path=$(BUILD_DIR)/grpc-gateway \
@@ -378,9 +380,23 @@ else
 			--go_opt=module=github.com/mcpany/core,default_api_level=API_HYBRID \
 			--go-grpc_out=. \
 			--go-grpc_opt=module=github.com/mcpany/core \
+			$$PROTO_FILES_OPAQUE; \
+		echo "Generating API protobuf files (to api.protoset)..."; \
+		PROTO_FILES_API=$$(find ../proto/api -name "*.proto" -print); \
+		protoc \
+			--proto_path=.. \
+			--proto_path=. \
+			--proto_path=$(BUILD_DIR)/grpc-gateway \
+			--proto_path=$(BUILD_DIR)/googleapis \
+			--descriptor_set_out=$(BUILD_DIR)/api.protoset \
+			--include_imports \
+			--go_out=. \
+			--go_opt=module=github.com/mcpany/core,default_api_level=API_HYBRID \
+			--go-grpc_out=. \
+			--go-grpc_opt=module=github.com/mcpany/core \
 			--grpc-gateway_out=. \
-			--grpc-gateway_opt=module=github.com/mcpany/core \
-			{} +
+			--grpc-gateway_opt=module=github.com/mcpany/core,default_api_level=API_HYBRID \
+			$$PROTO_FILES_API
 	@echo "Protobuf generation complete."
 endif
 

@@ -166,14 +166,14 @@ func (u *Upstream) createFilesystem(ctx context.Context, config *configv1.Filesy
 	var baseFs afero.Fs
 
 	// Determine the backend filesystem
-	switch config.FilesystemType.(type) {
-	case *configv1.FilesystemUpstreamService_Tmpfs:
+	switch config.WhichFilesystemType() {
+	case configv1.FilesystemUpstreamService_Tmpfs_case:
 		baseFs = afero.NewMemMapFs()
 
-	case *configv1.FilesystemUpstreamService_Http:
+	case configv1.FilesystemUpstreamService_Http_case:
 		return nil, fmt.Errorf("http filesystem is not yet supported")
 
-	case *configv1.FilesystemUpstreamService_Zip:
+	case configv1.FilesystemUpstreamService_Zip_case:
 		// To support zipfs, we need the file path. But zipfs in afero is separate.
 		// import "github.com/spf13/afero/zipfs"
 		// zipfs.New(zipReader)
@@ -203,16 +203,16 @@ func (u *Upstream) createFilesystem(ctx context.Context, config *configv1.Filesy
 		u.closers = append(u.closers, f)
 		u.mu.Unlock()
 
-	case *configv1.FilesystemUpstreamService_Gcs:
+	case configv1.FilesystemUpstreamService_Gcs_case:
 		return u.createGcsFilesystem(ctx, config.GetGcs())
 
-	case *configv1.FilesystemUpstreamService_Sftp:
+	case configv1.FilesystemUpstreamService_Sftp_case:
 		return u.createSftpFilesystem(config.GetSftp())
 
-	case *configv1.FilesystemUpstreamService_S3:
+	case configv1.FilesystemUpstreamService_S3_case:
 		return u.createS3Filesystem(config.GetS3())
 
-	case *configv1.FilesystemUpstreamService_Os:
+	case configv1.FilesystemUpstreamService_Os_case:
 		baseFs = afero.NewOsFs()
 
 	default:
@@ -233,20 +233,20 @@ func (u *Upstream) createFilesystem(ctx context.Context, config *configv1.Filesy
 // For OsFs, it resolves virtual path to real OS path using root_paths.
 // For others, it uses the virtual path directly (cleaned).
 func (u *Upstream) resolvePath(virtualPath string, config *configv1.FilesystemUpstreamService) (string, error) {
-	switch config.FilesystemType.(type) {
-	case *configv1.FilesystemUpstreamService_Tmpfs:
+	switch config.WhichFilesystemType() {
+	case configv1.FilesystemUpstreamService_Tmpfs_case:
 		// For MemMapFs, just clean the path. It's virtual.
 		return filepath.Clean(virtualPath), nil
 
-	case *configv1.FilesystemUpstreamService_S3:
+	case configv1.FilesystemUpstreamService_S3_case:
 		return u.resolveS3Path(virtualPath)
 
-	case *configv1.FilesystemUpstreamService_Os:
-		return u.validateLocalPath(virtualPath, config.RootPaths)
+	case configv1.FilesystemUpstreamService_Os_case:
+		return u.validateLocalPath(virtualPath, config.GetRootPaths())
 
 	default:
 		// Default (legacy) uses OsFs and validatePath
-		return u.validateLocalPath(virtualPath, config.RootPaths)
+		return u.validateLocalPath(virtualPath, config.GetRootPaths())
 	}
 }
 
@@ -595,7 +595,7 @@ func (u *Upstream) getSupportedTools(fsService *configv1.FilesystemUpstreamServi
 				// With afero, we might just have one root or multiple mounts.
 				// For backward compatibility, we can list keys from RootPaths if available.
 				roots := []string{}
-				for k := range fsService.RootPaths {
+				for k := range fsService.GetRootPaths() {
 					roots = append(roots, k)
 				}
 				return map[string]interface{}{"roots": roots}, nil

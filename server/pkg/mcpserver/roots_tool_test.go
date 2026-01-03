@@ -96,7 +96,7 @@ func TestRootsTool_Metadata(t *testing.T) {
 
 	assert.NotNil(t, rootsTool.Tool())
 	assert.NotNil(t, rootsTool.MCPTool())
-	assert.Equal(t, "mcp:list_roots", *rootsTool.Tool().Name)
+	assert.Equal(t, "mcp:list_roots", rootsTool.Tool().GetName())
 	assert.Nil(t, rootsTool.GetCacheConfig())
 }
 

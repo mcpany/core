@@ -67,83 +67,83 @@ func (m *Manager) GetGraph(_ context.Context) *topologyv1.Graph {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
 
-	coreNode := &topologyv1.Node{
+	coreNode := topologyv1.Node_builder{
 		Id:       "mcp-core",
 		Label:    "MCP Any",
 		Type:     topologyv1.NodeType_NODE_TYPE_CORE,
 		Status:   topologyv1.NodeStatus_NODE_STATUS_ACTIVE,
 		Children: []*topologyv1.Node{},
-	}
+	}.Build()
 
 	// Build Service -> Tool subtree
 	services, err := m.serviceRegistry.GetAllServices()
 	if err == nil {
 		for _, svc := range services {
-			svcNode := &topologyv1.Node{
+			svcNode := topologyv1.Node_builder{
 				Id:     "svc-" + svc.GetName(),
 				Label:  svc.GetName(),
 				Type:   topologyv1.NodeType_NODE_TYPE_SERVICE,
 				Status: topologyv1.NodeStatus_NODE_STATUS_ACTIVE,
-			}
+			}.Build()
 			if svc.GetDisable() {
-				svcNode.Status = topologyv1.NodeStatus_NODE_STATUS_INACTIVE
+				svcNode.SetStatus(topologyv1.NodeStatus_NODE_STATUS_INACTIVE)
 			}
 
 			// Add Tools
 			tools := m.toolManager.ListTools()
 			for _, t := range tools {
 				if t.Tool().GetServiceId() == svc.GetName() {
-					toolNode := &topologyv1.Node{
+					toolNode := topologyv1.Node_builder{
 						Id:     "tool-" + t.Tool().GetName(),
 						Label:  t.Tool().GetName(),
 						Type:   topologyv1.NodeType_NODE_TYPE_TOOL,
 						Status: topologyv1.NodeStatus_NODE_STATUS_ACTIVE,
-					}
+					}.Build()
 
 					// Mock API Call node
-					apiNode := &topologyv1.Node{
+					apiNode := topologyv1.Node_builder{
 						Id:     "api-" + t.Tool().GetName(),
 						Label:  "POST /" + t.Tool().GetName(),
 						Type:   topologyv1.NodeType_NODE_TYPE_API_CALL,
 						Status: topologyv1.NodeStatus_NODE_STATUS_ACTIVE,
-					}
-					toolNode.Children = append(toolNode.Children, apiNode)
+					}.Build()
+					toolNode.SetChildren(append(toolNode.GetChildren(), apiNode))
 
-					svcNode.Children = append(svcNode.Children, toolNode)
+					svcNode.SetChildren(append(svcNode.GetChildren(), toolNode))
 				}
 			}
 
-			coreNode.Children = append(coreNode.Children, svcNode)
+			coreNode.SetChildren(append(coreNode.GetChildren(), svcNode))
 		}
 	}
 
 	// Add Middleware Nodes (Static or Dynamic)
 	// For now, these are static infrastructure components in the pipeline
-	middlewareNode := &topologyv1.Node{
+	middlewareNode := topologyv1.Node_builder{
 		Id:     "middleware-pipeline",
 		Label:  "Middleware Pipeline",
 		Type:   topologyv1.NodeType_NODE_TYPE_MIDDLEWARE,
 		Status: topologyv1.NodeStatus_NODE_STATUS_ACTIVE,
 		Children: []*topologyv1.Node{
-			{Id: "mw-auth", Label: "Authentication", Type: topologyv1.NodeType_NODE_TYPE_MIDDLEWARE, Status: topologyv1.NodeStatus_NODE_STATUS_ACTIVE},
-			{Id: "mw-log", Label: "Logging", Type: topologyv1.NodeType_NODE_TYPE_MIDDLEWARE, Status: topologyv1.NodeStatus_NODE_STATUS_ACTIVE},
+			topologyv1.Node_builder{Id: "mw-auth", Label: "Authentication", Type: topologyv1.NodeType_NODE_TYPE_MIDDLEWARE, Status: topologyv1.NodeStatus_NODE_STATUS_ACTIVE}.Build(),
+			topologyv1.Node_builder{Id: "mw-log", Label: "Logging", Type: topologyv1.NodeType_NODE_TYPE_MIDDLEWARE, Status: topologyv1.NodeStatus_NODE_STATUS_ACTIVE}.Build(),
 		},
-	}
-	coreNode.Children = append(coreNode.Children, middlewareNode)
+	}.Build()
+	coreNode.SetChildren(append(coreNode.GetChildren(), middlewareNode))
 
 	// Add Webhooks Node
 	// This would ideally come from the WebhookManager
-	webhookNode := &topologyv1.Node{
+	webhookNode := topologyv1.Node_builder{
 		Id:     "webhooks",
 		Label:  "Webhooks",
 		Type:   topologyv1.NodeType_NODE_TYPE_WEBHOOK,
 		Status: topologyv1.NodeStatus_NODE_STATUS_ACTIVE,
 		// Example configured webhook
 		Children: []*topologyv1.Node{
-			{Id: "wh-1", Label: "event-logger", Type: topologyv1.NodeType_NODE_TYPE_WEBHOOK, Status: topologyv1.NodeStatus_NODE_STATUS_ACTIVE},
+			topologyv1.Node_builder{Id: "wh-1", Label: "event-logger", Type: topologyv1.NodeType_NODE_TYPE_WEBHOOK, Status: topologyv1.NodeStatus_NODE_STATUS_ACTIVE}.Build(),
 		},
-	}
-	coreNode.Children = append(coreNode.Children, webhookNode)
+	}.Build()
+	coreNode.SetChildren(append(coreNode.GetChildren(), webhookNode))
 
 	// Build Clients list from active sessions
 	clients := make([]*topologyv1.Node, 0, len(m.sessions))
@@ -158,18 +158,18 @@ func (m *Manager) GetGraph(_ context.Context) *topologyv1.Graph {
 			label = name
 		}
 
-		clientNode := &topologyv1.Node{
+		clientNode := topologyv1.Node_builder{
 			Id:     "client-" + session.ID,
 			Label:  label,
 			Type:   topologyv1.NodeType_NODE_TYPE_CLIENT,
 			Status: topologyv1.NodeStatus_NODE_STATUS_ACTIVE,
 			// Clients rely on UI to draw link to Core
-		}
+		}.Build()
 		clients = append(clients, clientNode)
 	}
 
-	return &topologyv1.Graph{
+	return topologyv1.Graph_builder{
 		Clients: clients,
 		Core:    coreNode,
-	}
+	}.Build()
 }

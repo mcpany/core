@@ -156,13 +156,13 @@ func TestResourceListFilteringMiddleware(t *testing.T) {
 	require.NoError(t, err)
 
 	// Services config
-	srvGlobal := &tool.ServiceInfo{Config: &configv1.UpstreamServiceConfig{}}
-	srvProfile := &tool.ServiceInfo{Config: &configv1.UpstreamServiceConfig{
-		Profiles: []*configv1.Profile{{Id: "p1"}},
-	}}
-	srvOther := &tool.ServiceInfo{Config: &configv1.UpstreamServiceConfig{
-		Profiles: []*configv1.Profile{{Id: "p2"}},
-	}}
+	srvGlobal := &tool.ServiceInfo{Config: configv1.UpstreamServiceConfig_builder{}.Build()}
+	srvProfile := &tool.ServiceInfo{Config: configv1.UpstreamServiceConfig_builder{
+		Profiles: []*configv1.Profile{configv1.Profile_builder{Id: "p1"}.Build()},
+	}.Build()}
+	srvOther := &tool.ServiceInfo{Config: configv1.UpstreamServiceConfig_builder{
+		Profiles: []*configv1.Profile{configv1.Profile_builder{Id: "p2"}.Build()},
+	}.Build()}
 
 	tm := &serviceInfoProviderToolManager{
 		services: map[string]*tool.ServiceInfo{
@@ -240,13 +240,13 @@ func TestPromptListFilteringMiddleware(t *testing.T) {
 	require.NoError(t, err)
 
 	// Services config
-	srvGlobal := &tool.ServiceInfo{Config: &configv1.UpstreamServiceConfig{}}
-	srvProfile := &tool.ServiceInfo{Config: &configv1.UpstreamServiceConfig{
-		Profiles: []*configv1.Profile{{Id: "p1"}},
-	}}
-	srvOther := &tool.ServiceInfo{Config: &configv1.UpstreamServiceConfig{
-		Profiles: []*configv1.Profile{{Id: "p2"}},
-	}}
+	srvGlobal := &tool.ServiceInfo{Config: configv1.UpstreamServiceConfig_builder{}.Build()}
+	srvProfile := &tool.ServiceInfo{Config: configv1.UpstreamServiceConfig_builder{
+		Profiles: []*configv1.Profile{configv1.Profile_builder{Id: "p1"}.Build()},
+	}.Build()}
+	srvOther := &tool.ServiceInfo{Config: configv1.UpstreamServiceConfig_builder{
+		Profiles: []*configv1.Profile{configv1.Profile_builder{Id: "p2"}.Build()},
+	}.Build()}
 
 	tm := &serviceInfoProviderToolManager{
 		services: map[string]*tool.ServiceInfo{

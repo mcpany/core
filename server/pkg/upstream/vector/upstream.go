@@ -65,9 +65,9 @@ func (u *Upstream) Register(
 	}
 
 	var client Client
-	switch t := vectorService.VectorDbType.(type) {
-	case *configv1.VectorUpstreamService_Pinecone:
-		client, err = NewPineconeClient(t.Pinecone)
+	switch vectorService.WhichVectorDbType() {
+	case configv1.VectorUpstreamService_Pinecone_case:
+		client, err = NewPineconeClient(vectorService.GetPinecone())
 	default:
 		return "", nil, nil, fmt.Errorf("unsupported vector database type")
 	}

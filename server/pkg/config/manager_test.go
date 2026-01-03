@@ -19,10 +19,10 @@ import (
 
 func TestUpstreamServiceManager_LoadAndMergeServices(t *testing.T) {
 	// Local service definitions
-	localService1 := &configv1.UpstreamServiceConfig{}
+	localService1 := configv1.UpstreamServiceConfig_builder{}.Build()
 	localService1.SetName("service1")
 	localService1.SetVersion("1.0")
-	localService2 := &configv1.UpstreamServiceConfig{}
+	localService2 := configv1.UpstreamServiceConfig_builder{}.Build()
 	localService2.SetName("service2")
 	localService2.SetVersion("1.0")
 
@@ -304,26 +304,29 @@ services:
 }
 
 func TestLoadAndMergeServices_Profiles(t *testing.T) {
-	config := &configv1.McpAnyServerConfig{
+	config := configv1.McpAnyServerConfig_builder{
 		UpstreamServices: []*configv1.UpstreamServiceConfig{
-			{
+			configv1.UpstreamServiceConfig_builder{
 				Name:     proto.String("default-service"),
 				Profiles: []*configv1.Profile{}, // Should default to "default"
-			},
-			{
+			}.Build(),
+			configv1.UpstreamServiceConfig_builder{
 				Name:     proto.String("dev-service"),
-				Profiles: []*configv1.Profile{{Name: "dev"}},
-			},
-			{
+				Profiles: []*configv1.Profile{configv1.Profile_builder{Name: "dev"}.Build()},
+			}.Build(),
+			configv1.UpstreamServiceConfig_builder{
 				Name:     proto.String("prod-service"),
-				Profiles: []*configv1.Profile{{Name: "prod"}},
-			},
-			{
+				Profiles: []*configv1.Profile{configv1.Profile_builder{Name: "prod"}.Build()},
+			}.Build(),
+			configv1.UpstreamServiceConfig_builder{
 				Name:     proto.String("mixed-service"),
-				Profiles: []*configv1.Profile{{Name: "dev"}, {Name: "prod"}},
-			},
+				Profiles: []*configv1.Profile{
+					configv1.Profile_builder{Name: "dev"}.Build(),
+					configv1.Profile_builder{Name: "prod"}.Build(),
+				},
+			}.Build(),
 		},
-	}
+	}.Build()
 
 	tests := []struct {
 		name            string
@@ -382,11 +385,11 @@ func TestUnmarshalServices(t *testing.T) {
 	})
 
 	t.Run("unmarshal service list from protobuf", func(t *testing.T) {
-		service := &configv1.UpstreamServiceConfig{}
+		service := configv1.UpstreamServiceConfig_builder{}.Build()
 		service.SetName("proto-service")
 		service.SetVersion("1.0")
 
-		serviceList := &configv1.UpstreamServiceCollectionShare{}
+		serviceList := configv1.UpstreamServiceCollectionShare_builder{}.Build()
 		serviceList.SetServices([]*configv1.UpstreamServiceConfig{service})
 		protoData, err := prototext.Marshal(serviceList)
 		require.NoError(t, err)
@@ -399,11 +402,11 @@ func TestUnmarshalServices(t *testing.T) {
 	})
 
 	t.Run("unmarshal service list with text/plain content type", func(t *testing.T) {
-		service := &configv1.UpstreamServiceConfig{}
+		service := configv1.UpstreamServiceConfig_builder{}.Build()
 		service.SetName("text-service")
 		service.SetVersion("1.0")
 
-		serviceList := &configv1.UpstreamServiceCollectionShare{}
+		serviceList := configv1.UpstreamServiceCollectionShare_builder{}.Build()
 		serviceList.SetServices([]*configv1.UpstreamServiceConfig{service})
 
 		protoData, err := prototext.Marshal(serviceList)
@@ -447,31 +450,28 @@ func TestUpstreamServiceManager_ProfilesBehavior(t *testing.T) {
 	// 1. dev-service (profile: dev)
 	// 2. prod-service (profile: prod)
 	// 3. common-service (profile: dev, prod)
-	cfg := &configv1.McpAnyServerConfig{
+	cfg := configv1.McpAnyServerConfig_builder{
 		UpstreamServices: []*configv1.UpstreamServiceConfig{
-			{
+			configv1.UpstreamServiceConfig_builder{
 				Name:     proto.String("dev-service"),
-				Profiles: []*configv1.Profile{{Name: "dev"}},
-				ServiceConfig: &configv1.UpstreamServiceConfig_HttpService{
-					HttpService: &configv1.HttpUpstreamService{Address: proto.String("http://dev")},
-				},
-			},
-			{
+				Profiles: []*configv1.Profile{configv1.Profile_builder{Name: "dev"}.Build()},
+				HttpService: configv1.HttpUpstreamService_builder{Address: proto.String("http://dev")}.Build(),
+			}.Build(),
+			configv1.UpstreamServiceConfig_builder{
 				Name:     proto.String("prod-service"),
-				Profiles: []*configv1.Profile{{Name: "prod"}},
-				ServiceConfig: &configv1.UpstreamServiceConfig_HttpService{
-					HttpService: &configv1.HttpUpstreamService{Address: proto.String("http://prod")},
-				},
-			},
-			{
+				Profiles: []*configv1.Profile{configv1.Profile_builder{Name: "prod"}.Build()},
+				HttpService: configv1.HttpUpstreamService_builder{Address: proto.String("http://prod")}.Build(),
+			}.Build(),
+			configv1.UpstreamServiceConfig_builder{
 				Name:     proto.String("common-service"),
-				Profiles: []*configv1.Profile{{Name: "dev"}, {Name: "prod"}},
-				ServiceConfig: &configv1.UpstreamServiceConfig_HttpService{
-					HttpService: &configv1.HttpUpstreamService{Address: proto.String("http://common")},
+				Profiles: []*configv1.Profile{
+					configv1.Profile_builder{Name: "dev"}.Build(),
+					configv1.Profile_builder{Name: "prod"}.Build(),
 				},
-			},
+				HttpService: configv1.HttpUpstreamService_builder{Address: proto.String("http://common")}.Build(),
+			}.Build(),
 		},
-	}
+	}.Build()
 
 	// Case 1: Run with 'dev' profile
 	mgrDev := NewUpstreamServiceManager([]string{"dev"})
@@ -502,14 +502,14 @@ func TestUpstreamServiceManager_LoadFromURLErrors(t *testing.T) {
 	mgr.httpClient = server.Client() // Use server client
 
 	t.Run("404 error", func(t *testing.T) {
-		config := &configv1.McpAnyServerConfig{
+		config := configv1.McpAnyServerConfig_builder{
 			UpstreamServiceCollections: []*configv1.UpstreamServiceCollection{
-				{
+				configv1.UpstreamServiceCollection_builder{
 					Name:    proto.String("404-collection"),
 					HttpUrl: proto.String(server.URL + "/404"),
-				},
+				}.Build(),
 			},
-		}
+		}.Build()
 		// Errors are logged and suppressed for individual collections
 		services, err := mgr.LoadAndMergeServices(context.Background(), config)
 		assert.NoError(t, err)
@@ -518,14 +518,14 @@ func TestUpstreamServiceManager_LoadFromURLErrors(t *testing.T) {
 
 	t.Run("connection error", func(t *testing.T) {
 		// Use a closed port for connection refused
-		config := &configv1.McpAnyServerConfig{
+		config := configv1.McpAnyServerConfig_builder{
 			UpstreamServiceCollections: []*configv1.UpstreamServiceCollection{
-				{
+				configv1.UpstreamServiceCollection_builder{
 					Name:    proto.String("connection-error"),
 					HttpUrl: proto.String("http://127.0.0.1:0/invalid"),
-				},
+				}.Build(),
 			},
-		}
+		}.Build()
 		// Errors are logged and suppressed
 		services, err := mgr.LoadAndMergeServices(context.Background(), config)
 		assert.NoError(t, err)
@@ -533,26 +533,22 @@ func TestUpstreamServiceManager_LoadFromURLErrors(t *testing.T) {
 	})
 
 	t.Run("auth error", func(t *testing.T) {
-		config := &configv1.McpAnyServerConfig{
+		config := configv1.McpAnyServerConfig_builder{
 			UpstreamServiceCollections: []*configv1.UpstreamServiceCollection{
-				{
+				configv1.UpstreamServiceCollection_builder{
 					Name:    proto.String("auth-error"),
 					HttpUrl: proto.String(server.URL + "/auth-error"),
-					Authentication: &configv1.UpstreamAuthentication{
-						AuthMethod: &configv1.UpstreamAuthentication_ApiKey{
-							ApiKey: &configv1.UpstreamAPIKeyAuth{
-								HeaderName: proto.String("X-API-Key"),
-								ApiKey: &configv1.SecretValue{
-									Value: &configv1.SecretValue_PlainText{
-										PlainText: "file:nonexistent-secret",
-									},
-								},
-							},
-						},
-					},
-				},
+					Authentication: configv1.UpstreamAuthentication_builder{
+						ApiKey: configv1.UpstreamAPIKeyAuth_builder{
+							HeaderName: proto.String("X-API-Key"),
+							ApiKey: configv1.SecretValue_builder{
+								PlainText: strPtr("file:nonexistent-secret"),
+							}.Build(),
+						}.Build(),
+					}.Build(),
+				}.Build(),
 			},
-		}
+		}.Build()
 		// Should fail to apply auth -> Log warning -> 0 services
 		services, err := mgr.LoadAndMergeServices(context.Background(), config)
 		assert.NoError(t, err)
@@ -560,14 +556,14 @@ func TestUpstreamServiceManager_LoadFromURLErrors(t *testing.T) {
 	})
 
 	t.Run("invalid url chars", func(t *testing.T) {
-		config := &configv1.McpAnyServerConfig{
+		config := configv1.McpAnyServerConfig_builder{
 			UpstreamServiceCollections: []*configv1.UpstreamServiceCollection{
-				{
+				configv1.UpstreamServiceCollection_builder{
 					Name:    proto.String("invalid-url"),
 					HttpUrl: proto.String("http://invalid\x7furl"),
-				},
+				}.Build(),
 			},
-		}
+		}.Build()
 		// Should fail to create request -> Log warning -> 0 services
 		services, err := mgr.LoadAndMergeServices(context.Background(), config)
 		assert.NoError(t, err)
@@ -576,22 +572,20 @@ func TestUpstreamServiceManager_LoadFromURLErrors(t *testing.T) {
 }
 
 func TestUpstreamServiceManager_ProfileMatching_ByID(t *testing.T) {
-	config := &configv1.McpAnyServerConfig{
+	config := configv1.McpAnyServerConfig_builder{
 		UpstreamServices: []*configv1.UpstreamServiceConfig{
-			{
+			configv1.UpstreamServiceConfig_builder{
 				Name: proto.String("id-only-service"),
 				Profiles: []*configv1.Profile{
-					{
+					configv1.Profile_builder{
 						Id:   "prod-id",
 						Name: "Production",
-					},
+					}.Build(),
 				},
-				ServiceConfig: &configv1.UpstreamServiceConfig_HttpService{
-					HttpService: &configv1.HttpUpstreamService{Address: proto.String("http://prod")},
-				},
-			},
+				HttpService: configv1.HttpUpstreamService_builder{Address: proto.String("http://prod")}.Build(),
+			}.Build(),
 		},
-	}
+	}.Build()
 
 	// Case: Run with 'prod-id' profile.
 	// Expected: The service should be loaded because its profile ID matches "prod-id".

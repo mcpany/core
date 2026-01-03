@@ -175,7 +175,10 @@ func (a *Application) handleServiceDetail(store storage.Storage) http.HandlerFun
 				http.Error(w, err.Error(), http.StatusBadRequest)
 				return
 			}
-			svc.Name = proto.String(name) // Force name match
+			if svc.GetName() != name {
+				http.Error(w, "service name in body must match URL", http.StatusBadRequest)
+				return
+			}
 
 			// Validate service configuration before saving
 			if err := config.ValidateOrError(r.Context(), &svc); err != nil {
@@ -379,14 +382,20 @@ func (a *Application) handleSecrets(store storage.Storage) http.HandlerFunc {
 				return
 			}
 			// Redact sensitive values
-			for _, s := range secrets {
-				s.Value = proto.String("[REDACTED]")
+			redactedSecrets := make([]*configv1.Secret, len(secrets))
+			for i, s := range secrets {
+				redactedSecrets[i] = configv1.Secret_builder{
+					Id:        proto.String(s.GetId()),
+					Name:      proto.String(s.GetName()),
+					Value:     proto.String("[REDACTED]"),
+					CreatedAt: proto.String(s.GetCreatedAt()),
+				}.Build()
 			}
 			w.Header().Set("Content-Type", "application/json")
 			opts := protojson.MarshalOptions{UseProtoNames: true}
 			var buf []byte
 			buf = append(buf, '[')
-			for i, s := range secrets {
+			for i, s := range redactedSecrets {
 				if i > 0 {
 					buf = append(buf, ',')
 				}

@@ -34,67 +34,55 @@ func TestValidateSecretValue(t *testing.T) {
 		},
 		{
 			name: "Valid file path",
-			secret: &configv1.SecretValue{
-				Value: &configv1.SecretValue_FilePath{
-					FilePath: "secrets.txt",
-				},
-			},
+			secret: configv1.SecretValue_builder{
+				FilePath: strPtr("secrets.txt"),
+			}.Build(),
 			expectErr: false,
 		},
 		{
 			name: "Invalid file path (absolute)",
-			secret: &configv1.SecretValue{
-				Value: &configv1.SecretValue_FilePath{
-					FilePath: "/etc/passwd",
-				},
-			},
+			secret: configv1.SecretValue_builder{
+				FilePath: strPtr("/etc/passwd"),
+			}.Build(),
 			expectErr: true,
 			errMsg:    "invalid secret file path",
 		},
 		{
 			name: "Valid remote content",
-			secret: &configv1.SecretValue{
-				Value: &configv1.SecretValue_RemoteContent{
-					RemoteContent: &configv1.RemoteContent{
-						HttpUrl: strPtr("https://example.com/secret"),
-					},
-				},
-			},
+			secret: configv1.SecretValue_builder{
+				RemoteContent: configv1.RemoteContent_builder{
+					HttpUrl: strPtr("https://example.com/secret"),
+				}.Build(),
+			}.Build(),
 			expectErr: false,
 		},
 		{
 			name: "Remote content empty URL",
-			secret: &configv1.SecretValue{
-				Value: &configv1.SecretValue_RemoteContent{
-					RemoteContent: &configv1.RemoteContent{
-						HttpUrl: strPtr(""),
-					},
-				},
-			},
+			secret: configv1.SecretValue_builder{
+				RemoteContent: configv1.RemoteContent_builder{
+					HttpUrl: strPtr(""),
+				}.Build(),
+			}.Build(),
 			expectErr: true,
 			errMsg:    "remote secret has empty http_url",
 		},
 		{
 			name: "Remote content invalid URL",
-			secret: &configv1.SecretValue{
-				Value: &configv1.SecretValue_RemoteContent{
-					RemoteContent: &configv1.RemoteContent{
-						HttpUrl: strPtr("not-a-url"),
-					},
-				},
-			},
+			secret: configv1.SecretValue_builder{
+				RemoteContent: configv1.RemoteContent_builder{
+					HttpUrl: strPtr("not-a-url"),
+				}.Build(),
+			}.Build(),
 			expectErr: true,
 			errMsg:    "remote secret has invalid http_url",
 		},
 		{
 			name: "Remote content invalid scheme",
-			secret: &configv1.SecretValue{
-				Value: &configv1.SecretValue_RemoteContent{
-					RemoteContent: &configv1.RemoteContent{
-						HttpUrl: strPtr("ftp://example.com/secret"),
-					},
-				},
-			},
+			secret: configv1.SecretValue_builder{
+				RemoteContent: configv1.RemoteContent_builder{
+					HttpUrl: strPtr("ftp://example.com/secret"),
+				}.Build(),
+			}.Build(),
 			expectErr: true,
 			errMsg:    "remote secret has invalid http_url scheme",
 		},
@@ -127,23 +115,21 @@ func TestValidateSecretMap(t *testing.T) {
 		{
 			name: "Valid secrets",
 			secrets: map[string]*configv1.SecretValue{
-				"KEY1": {
-					Value: &configv1.SecretValue_FilePath{FilePath: "secret1.txt"},
-				},
-				"KEY2": {
-					Value: &configv1.SecretValue_RemoteContent{
-						RemoteContent: &configv1.RemoteContent{HttpUrl: strPtr("https://example.com")},
-					},
-				},
+				"KEY1": configv1.SecretValue_builder{
+					FilePath: strPtr("secret1.txt"),
+				}.Build(),
+				"KEY2": configv1.SecretValue_builder{
+					RemoteContent: configv1.RemoteContent_builder{HttpUrl: strPtr("https://example.com")}.Build(),
+				}.Build(),
 			},
 			expectErr: false,
 		},
 		{
 			name: "Invalid secret",
 			secrets: map[string]*configv1.SecretValue{
-				"KEY1": {
-					Value: &configv1.SecretValue_FilePath{FilePath: "/abs/path"},
-				},
+				"KEY1": configv1.SecretValue_builder{
+					FilePath: strPtr("/abs/path"),
+				}.Build(),
 			},
 			expectErr: true,
 		},
@@ -170,55 +156,55 @@ func TestValidateContainerEnvironment_Volumes(t *testing.T) {
 	}{
 		{
 			name: "Valid volume",
-			env: &configv1.ContainerEnvironment{
+			env: configv1.ContainerEnvironment_builder{
 				Image: strPtr("alpine"),
 				Volumes: map[string]string{
 					"./data": "/data",
 				},
-			},
+			}.Build(),
 			expectErr: false,
 		},
 		{
 			name: "Empty host path",
-			env: &configv1.ContainerEnvironment{
+			env: configv1.ContainerEnvironment_builder{
 				Image: strPtr("alpine"),
 				Volumes: map[string]string{
 					"": "/data",
 				},
-			},
+			}.Build(),
 			expectErr: true,
 			errMsg:    "container environment volume host path is empty",
 		},
 		{
 			name: "Empty container path",
-			env: &configv1.ContainerEnvironment{
+			env: configv1.ContainerEnvironment_builder{
 				Image: strPtr("alpine"),
 				Volumes: map[string]string{
 					"./data": "",
 				},
-			},
+			}.Build(),
 			expectErr: true,
 			errMsg:    "container environment volume container path is empty",
 		},
 		{
 			name: "Insecure host path",
-			env: &configv1.ContainerEnvironment{
+			env: configv1.ContainerEnvironment_builder{
 				Image: strPtr("alpine"),
 				Volumes: map[string]string{
 					"/etc": "/data",
 				},
-			},
+			}.Build(),
 			expectErr: true,
 			errMsg:    "not a secure path",
 		},
 		{
 			name: "No image (skip validation)",
-			env: &configv1.ContainerEnvironment{
+			env: configv1.ContainerEnvironment_builder{
 				Image: strPtr(""), // No image
 				Volumes: map[string]string{
 					"/etc": "/data", // Would be invalid if image was set
 				},
-			},
+			}.Build(),
 			expectErr: false,
 		},
 	}
@@ -246,52 +232,44 @@ func TestValidateMcpService_StdioConnection(t *testing.T) {
 	}{
 		{
 			name: "Valid Stdio",
-			service: &configv1.McpUpstreamService{
-				ConnectionType: &configv1.McpUpstreamService_StdioConnection{
-					StdioConnection: &configv1.McpStdioConnection{
-						Command: strPtr("ls"),
-					},
-				},
-			},
+			service: configv1.McpUpstreamService_builder{
+				StdioConnection: configv1.McpStdioConnection_builder{
+					Command: strPtr("ls"),
+				}.Build(),
+			}.Build(),
 			expectErr: false,
 		},
 		{
 			name: "Empty Command",
-			service: &configv1.McpUpstreamService{
-				ConnectionType: &configv1.McpUpstreamService_StdioConnection{
-					StdioConnection: &configv1.McpStdioConnection{
-						Command: strPtr(""),
-					},
-				},
-			},
+			service: configv1.McpUpstreamService_builder{
+				StdioConnection: configv1.McpStdioConnection_builder{
+					Command: strPtr(""),
+				}.Build(),
+			}.Build(),
 			expectErr: true,
 			errMsg:    "has empty command",
 		},
 		{
 			name: "Insecure Working Directory",
-			service: &configv1.McpUpstreamService{
-				ConnectionType: &configv1.McpUpstreamService_StdioConnection{
-					StdioConnection: &configv1.McpStdioConnection{
-						Command:          strPtr("ls"),
-						WorkingDirectory: strPtr("/etc"),
-					},
-				},
-			},
+			service: configv1.McpUpstreamService_builder{
+				StdioConnection: configv1.McpStdioConnection_builder{
+					Command:          strPtr("ls"),
+					WorkingDirectory: strPtr("/etc"),
+				}.Build(),
+			}.Build(),
 			expectErr: true,
 			errMsg:    "insecure working_directory",
 		},
 		{
 			name: "Invalid Env",
-			service: &configv1.McpUpstreamService{
-				ConnectionType: &configv1.McpUpstreamService_StdioConnection{
-					StdioConnection: &configv1.McpStdioConnection{
-						Command: strPtr("ls"),
-						Env: map[string]*configv1.SecretValue{
-							"BAD": {Value: &configv1.SecretValue_FilePath{FilePath: "/bad"}},
-						},
+			service: configv1.McpUpstreamService_builder{
+				StdioConnection: configv1.McpStdioConnection_builder{
+					Command: strPtr("ls"),
+					Env: map[string]*configv1.SecretValue{
+						"BAD": configv1.SecretValue_builder{FilePath: strPtr("/bad")}.Build(),
 					},
-				},
-			},
+				}.Build(),
+			}.Build(),
 			expectErr: true,
 			errMsg:    "invalid secret environment variable",
 		},
@@ -319,36 +297,30 @@ func TestValidateMcpService_BundleConnection(t *testing.T) {
 	}{
 		{
 			name: "Valid Bundle",
-			service: &configv1.McpUpstreamService{
-				ConnectionType: &configv1.McpUpstreamService_BundleConnection{
-					BundleConnection: &configv1.McpBundleConnection{
-						BundlePath: strPtr("bundle.tar.gz"),
-					},
-				},
-			},
+			service: configv1.McpUpstreamService_builder{
+				BundleConnection: configv1.McpBundleConnection_builder{
+					BundlePath: strPtr("bundle.tar.gz"),
+				}.Build(),
+			}.Build(),
 			expectErr: false,
 		},
 		{
 			name: "Empty Bundle Path",
-			service: &configv1.McpUpstreamService{
-				ConnectionType: &configv1.McpUpstreamService_BundleConnection{
-					BundleConnection: &configv1.McpBundleConnection{
-						BundlePath: strPtr(""),
-					},
-				},
-			},
+			service: configv1.McpUpstreamService_builder{
+				BundleConnection: configv1.McpBundleConnection_builder{
+					BundlePath: strPtr(""),
+				}.Build(),
+			}.Build(),
 			expectErr: true,
 			errMsg:    "empty bundle_path",
 		},
 		{
 			name: "Insecure Bundle Path",
-			service: &configv1.McpUpstreamService{
-				ConnectionType: &configv1.McpUpstreamService_BundleConnection{
-					BundleConnection: &configv1.McpBundleConnection{
-						BundlePath: strPtr("/etc/passwd"),
-					},
-				},
-			},
+			service: configv1.McpUpstreamService_builder{
+				BundleConnection: configv1.McpBundleConnection_builder{
+					BundlePath: strPtr("/etc/passwd"),
+				}.Build(),
+			}.Build(),
 			expectErr: true,
 			errMsg:    "insecure bundle_path",
 		},
@@ -402,19 +374,17 @@ func TestValidateUpstreamAuthentication(t *testing.T) {
 			return nil
 		}
 
-		mtls := &configv1.UpstreamAuthentication{
-			AuthMethod: &configv1.UpstreamAuthentication_Mtls{
-				Mtls: &configv1.UpstreamMTLSAuth{
-					ClientCertPath: strPtr("cert.pem"),
-					ClientKeyPath:  strPtr("key.pem"),
-				},
-			},
-		}
+		mtls := configv1.UpstreamAuthentication_builder{
+			Mtls: configv1.UpstreamMTLSAuth_builder{
+				ClientCertPath: strPtr("cert.pem"),
+				ClientKeyPath:  strPtr("key.pem"),
+			}.Build(),
+		}.Build()
 		err := validateUpstreamAuthentication(ctx, mtls)
 		require.NoError(t, err)
 
 		// Test insecure path
-		mtls.GetMtls().ClientCertPath = strPtr("/etc/cert.pem")
+		mtls.GetMtls().SetClientCertPath("/etc/cert.pem")
 		err = validateUpstreamAuthentication(ctx, mtls)
 		require.Error(t, err)
 		assert.Contains(t, err.Error(), "not a secure path")

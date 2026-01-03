@@ -29,14 +29,14 @@ func TestUpstreamServiceManager_LoadAndMergeServices_Errors(t *testing.T) {
 	defer server.Close()
 
 	t.Run("HTTP Non-200 Error", func(t *testing.T) {
-		config := &configv1.McpAnyServerConfig{
+		config := configv1.McpAnyServerConfig_builder{
 			UpstreamServiceCollections: []*configv1.UpstreamServiceCollection{
-				{
+				configv1.UpstreamServiceCollection_builder{
 					Name:    proto.String("error-collection"),
 					HttpUrl: proto.String(server.URL + "/error"),
-				},
+				}.Build(),
 			},
-		}
+		}.Build()
 		manager := NewUpstreamServiceManager(nil)
 		manager.httpClient = &http.Client{}
 

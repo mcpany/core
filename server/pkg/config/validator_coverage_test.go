@@ -23,64 +23,52 @@ func TestValidateSecretValue_Coverage(t *testing.T) {
 		},
 		{
 			name: "valid file path",
-			secret: &configv1.SecretValue{
-				Value: &configv1.SecretValue_FilePath{
-					FilePath: "secrets/key.txt",
-				},
-			},
+			secret: configv1.SecretValue_builder{
+				FilePath: ptr("secrets/key.txt"),
+			}.Build(),
 			wantErr: false, // assuming "secrets/key.txt" is considered relative and secure
 		},
 		{
 			name: "invalid file path (absolute)",
-			secret: &configv1.SecretValue{
-				Value: &configv1.SecretValue_FilePath{
-					FilePath: "/etc/passwd",
-				},
-			},
+			secret: configv1.SecretValue_builder{
+				FilePath: ptr("/etc/passwd"),
+			}.Build(),
 			wantErr: true,
 		},
 		{
 			name: "valid remote content",
-			secret: &configv1.SecretValue{
-				Value: &configv1.SecretValue_RemoteContent{
-					RemoteContent: &configv1.RemoteContent{
-						HttpUrl: ptr("https://example.com/secret"),
-					},
-				},
-			},
+			secret: configv1.SecretValue_builder{
+				RemoteContent: configv1.RemoteContent_builder{
+					HttpUrl: ptr("https://example.com/secret"),
+				}.Build(),
+			}.Build(),
 			wantErr: false,
 		},
 		{
 			name: "remote content empty url",
-			secret: &configv1.SecretValue{
-				Value: &configv1.SecretValue_RemoteContent{
-					RemoteContent: &configv1.RemoteContent{
-						HttpUrl: ptr(""),
-					},
-				},
-			},
+			secret: configv1.SecretValue_builder{
+				RemoteContent: configv1.RemoteContent_builder{
+					HttpUrl: ptr(""),
+				}.Build(),
+			}.Build(),
 			wantErr: true,
 		},
 		{
 			name: "remote content invalid url",
-			secret: &configv1.SecretValue{
-				Value: &configv1.SecretValue_RemoteContent{
-					RemoteContent: &configv1.RemoteContent{
-						HttpUrl: ptr("://invalid"),
-					},
-				},
-			},
+			secret: configv1.SecretValue_builder{
+				RemoteContent: configv1.RemoteContent_builder{
+					HttpUrl: ptr("://invalid"),
+				}.Build(),
+			}.Build(),
 			wantErr: true,
 		},
 		{
 			name: "remote content invalid scheme",
-			secret: &configv1.SecretValue{
-				Value: &configv1.SecretValue_RemoteContent{
-					RemoteContent: &configv1.RemoteContent{
-						HttpUrl: ptr("ftp://example.com/secret"),
-					},
-				},
-			},
+			secret: configv1.SecretValue_builder{
+				RemoteContent: configv1.RemoteContent_builder{
+					HttpUrl: ptr("ftp://example.com/secret"),
+				}.Build(),
+			}.Build(),
 			wantErr: true,
 		},
 	}
@@ -111,29 +99,23 @@ func TestValidateSecretMap_Coverage(t *testing.T) {
 		{
 			name: "valid map",
 			secrets: map[string]*configv1.SecretValue{
-				"KEY1": {
-					Value: &configv1.SecretValue_FilePath{
-						FilePath: "secret1.txt",
-					},
-				},
-				"KEY2": {
-					Value: &configv1.SecretValue_RemoteContent{
-						RemoteContent: &configv1.RemoteContent{
-							HttpUrl: ptr("https://example.com"),
-						},
-					},
-				},
+				"KEY1": configv1.SecretValue_builder{
+					FilePath: ptr("secret1.txt"),
+				}.Build(),
+				"KEY2": configv1.SecretValue_builder{
+					RemoteContent: configv1.RemoteContent_builder{
+						HttpUrl: ptr("https://example.com"),
+					}.Build(),
+				}.Build(),
 			},
 			wantErr: false,
 		},
 		{
 			name: "invalid map entry",
 			secrets: map[string]*configv1.SecretValue{
-				"KEY1": {
-					Value: &configv1.SecretValue_FilePath{
-						FilePath: "/absolute/path",
-					},
-				},
+				"KEY1": configv1.SecretValue_builder{
+					FilePath: ptr("/absolute/path"),
+				}.Build(),
 			},
 			wantErr: true,
 		},

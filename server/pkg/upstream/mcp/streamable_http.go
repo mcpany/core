@@ -583,52 +583,51 @@ func (u *Upstream) registerTools(
 
 		// Apply overrides from config
 		if hasConfig {
-			strategy := configTool.GetMergeStrategy()
-			if strategy == configv1.ToolDefinition_MERGE_STRATEGY_OVERRIDE {
+			if configTool.GetMergeStrategy() == configv1.ToolDefinition_MERGE_STRATEGY_OVERRIDE {
 				// Override means we prefer the config definition, but we still keep the discovered
 				// name and service ID to maintain connectivity.
 				// We still fall back to discovered schema/description if not provided in config
 				// to avoid breaking the tool unless the user explicitly wants to partial-override.
 				// (Actually, a true override might want to replace schema too, which we do if provided).
 				if configTool.GetDescription() != "" {
-					pbTool.Description = proto.String(configTool.GetDescription())
+					pbTool.SetDescription(configTool.GetDescription())
 				}
 				if configTool.GetTitle() != "" {
-					pbTool.DisplayName = proto.String(configTool.GetTitle())
+					pbTool.SetDisplayName(configTool.GetTitle())
 				}
 				// If InputSchema is provided in config, use it.
 				if configTool.GetInputSchema() != nil {
 					// Override input schema
-					pbTool.InputSchema = configTool.GetInputSchema()
+					pbTool.SetInputSchema(configTool.GetInputSchema())
 				}
 			} else {
 				// Merge Strategy (Default)
 				if configTool.GetDescription() != "" {
-					pbTool.Description = proto.String(configTool.GetDescription())
+					pbTool.SetDescription(configTool.GetDescription())
 				}
 				if configTool.GetTitle() != "" {
-					pbTool.DisplayName = proto.String(configTool.GetTitle())
+					pbTool.SetDisplayName(configTool.GetTitle())
 				}
 				if configTool.GetInputSchema() != nil {
-					if pbTool.InputSchema == nil {
-						pbTool.InputSchema = configTool.GetInputSchema()
+					if pbTool.GetInputSchema() == nil {
+						pbTool.SetInputSchema(configTool.GetInputSchema())
 					} else {
-						mergeStructs(pbTool.InputSchema, configTool.GetInputSchema())
+						mergeStructs(pbTool.GetInputSchema(), configTool.GetInputSchema())
 					}
 				}
 			}
 
 			// Always apply tags from config
 			if len(configTool.GetTags()) > 0 {
-				pbTool.Tags = configTool.GetTags()
+				pbTool.SetTags(configTool.GetTags())
 			}
 
 			// Apply other annotations/hints
-			if pbTool.Annotations == nil {
-				pbTool.Annotations = &v1.ToolAnnotations{}
+			if pbTool.GetAnnotations() == nil {
+				pbTool.SetAnnotations(&v1.ToolAnnotations{})
 			}
 			if configTool.GetReadOnlyHint() { // Only override if true? Or if set? Proto bool is false by default.
-				pbTool.Annotations.ReadOnlyHint = proto.Bool(configTool.GetReadOnlyHint())
+				pbTool.GetAnnotations().SetReadOnlyHint(configTool.GetReadOnlyHint())
 			}
 			// Note: We might want headers/properties check for destructive/idempotent/open_world too
 

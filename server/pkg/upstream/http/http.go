@@ -167,13 +167,13 @@ func (u *Upstream) Register(
 			}
 			if !exists {
 				// Create a default tool definition
-				newTool := &configv1.ToolDefinition{
+				newTool := configv1.ToolDefinition_builder{
 					Name:        proto.String(callID),
 					CallId:      proto.String(callID),
 					Description: proto.String(fmt.Sprintf("Auto-discovered tool for call %s", callID)),
-				}
+				}.Build()
 				// Append to tools list so it gets picked up in createAndRegisterHTTPTools
-				httpService.Tools = append(httpService.Tools, newTool)
+				httpService.SetTools(append(httpService.GetTools(), newTool))
 			}
 		}
 	}

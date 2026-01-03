@@ -289,15 +289,15 @@ func (m *UpstreamServiceManager) addService(service *configv1.UpstreamServiceCon
 	serviceProfiles := service.GetProfiles()
 	if len(serviceProfiles) == 0 {
 		// Default to "default" profile if none specified
-		serviceProfiles = []*configv1.Profile{{Name: "default"}}
-		service.Profiles = serviceProfiles
+		serviceProfiles = []*configv1.Profile{configv1.Profile_builder{Name: "default"}.Build()}
+		service.SetProfiles(serviceProfiles)
 	}
 
 	allowed := false
 	for _, sp := range serviceProfiles {
 		// Normalize profile: default ID to Name if missing
 		if sp.GetId() == "" && sp.GetName() != "" {
-			sp.Id = sp.GetName()
+			sp.SetId(sp.GetName())
 		}
 		for _, ep := range m.enabledProfiles {
 			if sp.GetName() == ep || sp.GetId() == ep {

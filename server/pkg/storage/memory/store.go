@@ -33,20 +33,20 @@ func (s *Store) Load(_ context.Context) (*configv1.McpAnyServerConfig, error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
 
-	cfg := &configv1.McpAnyServerConfig{}
-	// Pre-allocate slice if we knew the size, but here we iterate map.
-	// We can count map keys.
-	cfg.UpstreamServices = make([]*configv1.UpstreamServiceConfig, 0, len(s.services))
-
+	services := make([]*configv1.UpstreamServiceConfig, 0, len(s.services))
 	for _, svc := range s.services {
-		cfg.UpstreamServices = append(cfg.UpstreamServices, proto.Clone(svc).(*configv1.UpstreamServiceConfig))
+		services = append(services, proto.Clone(svc).(*configv1.UpstreamServiceConfig))
+	}
+
+	builder := configv1.McpAnyServerConfig_builder{
+		UpstreamServices: services,
 	}
 
 	if s.globalSettings != nil {
-		cfg.GlobalSettings = proto.Clone(s.globalSettings).(*configv1.GlobalSettings)
+		builder.GlobalSettings = proto.Clone(s.globalSettings).(*configv1.GlobalSettings)
 	}
 
-	return cfg, nil
+	return builder.Build(), nil
 }
 
 // SaveService saves a single upstream service configuration.

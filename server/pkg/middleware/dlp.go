@@ -25,7 +25,7 @@ var (
 
 // DLPMiddleware creates a middleware that redacts PII from request arguments and result content.
 func DLPMiddleware(config *configv1.DLPConfig, log *slog.Logger) mcp.Middleware {
-	if config == nil || config.Enabled == nil || !*config.Enabled {
+	if config == nil || !config.GetEnabled() {
 		return noOpMiddleware
 	}
 
@@ -35,7 +35,7 @@ func DLPMiddleware(config *configv1.DLPConfig, log *slog.Logger) mcp.Middleware 
 		ssnRegex,
 	}
 
-	for _, p := range config.CustomPatterns {
+	for _, p := range config.GetCustomPatterns() {
 		if r, err := regexp.Compile(p); err == nil {
 			patterns = append(patterns, r)
 		} else {

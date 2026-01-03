@@ -24,17 +24,15 @@ import (
 	go_cache "github.com/patrickmn/go-cache"
 )
 
-// ProviderFactory is a function that creates an EmbeddingProvider.
-type ProviderFactory func(config *configv1.SemanticCacheConfig, apiKey string) (EmbeddingProvider, error)
-
-// CachingMiddleware is a tool execution middleware that provides caching
-// functionality.
 var (
 	metricCacheHits   = []string{"cache", "hits"}
 	metricCacheMisses = []string{"cache", "misses"}
 	metricCacheSkips  = []string{"cache", "skips"}
 	metricCacheErrors = []string{"cache", "errors"}
 )
+
+// ProviderFactory is a function that creates an EmbeddingProvider.
+type ProviderFactory func(config *configv1.SemanticCacheConfig, apiKey string) (EmbeddingProvider, error)
 
 // CachingMiddleware is a tool execution middleware that provides caching
 // functionality.

@@ -32,10 +32,10 @@ func TestRegistry_HTTPMiddlewares(t *testing.T) {
 
 	t.Run("get_registered_middleware", func(t *testing.T) {
 		configs := []*configv1.Middleware{
-			{
+			configv1.Middleware_builder{
 				Name:     proto.String(mwName),
 				Priority: proto.Int32(10),
-			},
+			}.Build(),
 		}
 
 		mws := GetHTTPMiddlewares(configs)
@@ -76,14 +76,14 @@ func TestRegistry_HTTPMiddlewares(t *testing.T) {
 		})
 
 		configs := []*configv1.Middleware{
-			{
+			configv1.Middleware_builder{
 				Name:     proto.String(mwName2), // Priority 20
 				Priority: proto.Int32(20),
-			},
-			{
+			}.Build(),
+			configv1.Middleware_builder{
 				Name:     proto.String(mwName), // Priority 10 (should come first)
 				Priority: proto.Int32(10),
-			},
+			}.Build(),
 		}
 
 		mws := GetHTTPMiddlewares(configs)
@@ -92,10 +92,10 @@ func TestRegistry_HTTPMiddlewares(t *testing.T) {
 
 	t.Run("ignore_disabled_middleware", func(t *testing.T) {
 		configs := []*configv1.Middleware{
-			{
+			configv1.Middleware_builder{
 				Name:     proto.String(mwName),
 				Disabled: proto.Bool(true),
-			},
+			}.Build(),
 		}
 
 		mws := GetHTTPMiddlewares(configs)
@@ -104,9 +104,9 @@ func TestRegistry_HTTPMiddlewares(t *testing.T) {
 
 	t.Run("ignore_unregistered_middleware", func(t *testing.T) {
 		configs := []*configv1.Middleware{
-			{
+			configv1.Middleware_builder{
 				Name: proto.String("non-existent-middleware"),
-			},
+			}.Build(),
 		}
 
 		mws := GetHTTPMiddlewares(configs)
@@ -127,10 +127,10 @@ func TestRegistry_MCPMiddlewares(t *testing.T) {
 
 	t.Run("get_registered_mcp_middleware", func(t *testing.T) {
 		configs := []*configv1.Middleware{
-			{
+			configv1.Middleware_builder{
 				Name:     proto.String(mwName),
 				Priority: proto.Int32(10),
-			},
+			}.Build(),
 		}
 
 		mws := GetMCPMiddlewares(configs)
@@ -139,10 +139,10 @@ func TestRegistry_MCPMiddlewares(t *testing.T) {
 
 	t.Run("ignore_disabled_mcp_middleware", func(t *testing.T) {
 		configs := []*configv1.Middleware{
-			{
+			configv1.Middleware_builder{
 				Name:     proto.String(mwName),
 				Disabled: proto.Bool(true),
-			},
+			}.Build(),
 		}
 
 		mws := GetMCPMiddlewares(configs)

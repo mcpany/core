@@ -67,26 +67,22 @@ func TestResolveSecret_RemoteContent_OAuth2(t *testing.T) {
 	defer secretServer.Close()
 
 	// 3. Configure SecretValue
-	secret := &configv1.SecretValue{
-		Value: &configv1.SecretValue_RemoteContent{
-			RemoteContent: &configv1.RemoteContent{
-				HttpUrl: proto.String(secretServer.URL),
-				Auth: &configv1.Authentication{
-					AuthMethod: &configv1.Authentication_Oauth2{
-						Oauth2: &configv1.UpstreamOAuth2Auth{
-							TokenUrl: proto.String(tokenServer.URL),
-							ClientId: &configv1.SecretValue{
-								Value: &configv1.SecretValue_PlainText{PlainText: "test-client-id"},
-							},
-							ClientSecret: &configv1.SecretValue{
-								Value: &configv1.SecretValue_PlainText{PlainText: "test-client-secret"},
-							},
-						},
-					},
-				},
-			},
-		},
-	}
+	secret := configv1.SecretValue_builder{
+		RemoteContent: configv1.RemoteContent_builder{
+			HttpUrl: proto.String(secretServer.URL),
+			Auth: configv1.Authentication_builder{
+				Oauth2: configv1.UpstreamOAuth2Auth_builder{
+					TokenUrl: proto.String(tokenServer.URL),
+					ClientId: configv1.SecretValue_builder{
+						PlainText: proto.String("test-client-id"),
+					}.Build(),
+					ClientSecret: configv1.SecretValue_builder{
+						PlainText: proto.String("test-client-secret"),
+					}.Build(),
+				}.Build(),
+			}.Build(),
+		}.Build(),
+	}.Build()
 
 	// 4. Resolve Secret
 	val, err := util.ResolveSecret(context.Background(), secret)

@@ -442,13 +442,13 @@ func (a *Application) Run(
 	if len(middlewares) == 0 {
 		// Default chain if none configured
 		middlewares = []*config_v1.Middleware{
-			{Name: proto.String("debug"), Priority: proto.Int32(10)},
-			{Name: proto.String("auth"), Priority: proto.Int32(20)},
-			{Name: proto.String("logging"), Priority: proto.Int32(30)},
-			{Name: proto.String("audit"), Priority: proto.Int32(40)},
-			{Name: proto.String("call_policy"), Priority: proto.Int32(50)},
-			{Name: proto.String("caching"), Priority: proto.Int32(60)},
-			{Name: proto.String("ratelimit"), Priority: proto.Int32(70)},
+			config_v1.Middleware_builder{Name: proto.String("debug"), Priority: proto.Int32(10)}.Build(),
+			config_v1.Middleware_builder{Name: proto.String("auth"), Priority: proto.Int32(20)}.Build(),
+			config_v1.Middleware_builder{Name: proto.String("logging"), Priority: proto.Int32(30)}.Build(),
+			config_v1.Middleware_builder{Name: proto.String("audit"), Priority: proto.Int32(40)}.Build(),
+			config_v1.Middleware_builder{Name: proto.String("call_policy"), Priority: proto.Int32(50)}.Build(),
+			config_v1.Middleware_builder{Name: proto.String("caching"), Priority: proto.Int32(60)}.Build(),
+			config_v1.Middleware_builder{Name: proto.String("ratelimit"), Priority: proto.Int32(70)}.Build(),
 			// CORS is typically 0 or negative to be outermost, but AddReceivingMiddleware adds in order.
 			// The SDK executes them in reverse order of addition?
 			// Wait, mcp.Server implementation:
@@ -459,7 +459,7 @@ func (a *Application) Run(
 			// Helper `AddReceivingMiddleware` usually appends.
 			// Let's assume standard "wrap" logic.
 			// We want CORS outer.
-			{Name: proto.String("cors"), Priority: proto.Int32(0)},
+			config_v1.Middleware_builder{Name: proto.String("cors"), Priority: proto.Int32(0)}.Build(),
 		}
 	}
 
@@ -603,10 +603,10 @@ func (a *Application) ReloadConfig(fs afero.Fs, configPaths []string) error {
 			// We create a clone of the old config and strip these fields to compare with the new fresh config.
 			newSvcCopy := proto.Clone(newSvc).(*config_v1.UpstreamServiceConfig)
 			if newSvcCopy.GetId() == "" {
-				newSvcCopy.Id = oldConfig.Id
+				newSvcCopy.SetId(oldConfig.GetId())
 			}
 			if newSvcCopy.GetSanitizedName() == "" {
-				newSvcCopy.SanitizedName = oldConfig.SanitizedName
+				newSvcCopy.SetSanitizedName(oldConfig.GetSanitizedName())
 			}
 
 			if !proto.Equal(oldConfig, newSvcCopy) {
@@ -999,10 +999,10 @@ func (a *Application) runServerMode(
 		}
 
 		// RBAC Check: Check if profile requires specific roles
-		if def, ok := profileDefMap[profileID]; ok && len(def.RequiredRoles) > 0 {
+		if def, ok := profileDefMap[profileID]; ok && len(def.GetRequiredRoles()) > 0 {
 			hasRole := false
 			// Check if user has any of the required roles
-			for _, requiredRole := range def.RequiredRoles {
+			for _, requiredRole := range def.GetRequiredRoles() {
 				for _, userRole := range user.GetRoles() {
 					if userRole == requiredRole {
 						hasRole = true
@@ -1014,7 +1014,7 @@ func (a *Application) runServerMode(
 				}
 			}
 			if !hasRole {
-				http.Error(w, fmt.Sprintf("Forbidden: Profile %s requires roles %v", profileID, def.RequiredRoles), http.StatusForbidden)
+				http.Error(w, fmt.Sprintf("Forbidden: Profile %s requires roles %v", profileID, def.GetRequiredRoles()), http.StatusForbidden)
 				return
 			}
 		}

@@ -72,13 +72,13 @@ func TestServer_CallTool_ProfileBypass_Repro(t *testing.T) {
 
 	serviceInfo := &tool.ServiceInfo{
 		Name: restrictedServiceID,
-		Config: &configv1.UpstreamServiceConfig{
+		Config: configv1.UpstreamServiceConfig_builder{
 			Profiles: []*configv1.Profile{
-				{
-					Id:   restrictedProfileID,
-				},
+				configv1.Profile_builder{
+					Id: restrictedProfileID,
+				}.Build(),
 			},
-		},
+		}.Build(),
 	}
 	tm.AddServiceInfo(restrictedServiceID, serviceInfo)
 

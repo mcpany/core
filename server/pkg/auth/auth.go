@@ -261,16 +261,16 @@ func ValidateAuthentication(ctx context.Context, config *configv1.Authentication
 		return nil // No auth configured implies allowed
 	}
 
-	switch method := config.AuthMethod.(type) {
-	case *configv1.AuthenticationConfig_ApiKey:
-		authenticator := NewAPIKeyAuthenticator(method.ApiKey)
+	switch config.WhichAuthMethod() {
+	case configv1.AuthenticationConfig_ApiKey_case:
+		authenticator := NewAPIKeyAuthenticator(config.GetApiKey())
 		if authenticator == nil {
 			return fmt.Errorf("invalid API key configuration")
 		}
 		_, err := authenticator.Authenticate(ctx, r)
 		return err
-	case *configv1.AuthenticationConfig_Oauth2:
-		cfg := method.Oauth2
+	case configv1.AuthenticationConfig_Oauth2_case:
+		cfg := config.GetOauth2()
 		if cfg.GetIssuerUrl() == "" {
 			return fmt.Errorf("invalid OAuth2 configuration: missing issuer_url")
 		}

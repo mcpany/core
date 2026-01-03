@@ -35,22 +35,21 @@ func TestSQLUpstream_Register_Execute(t *testing.T) {
 	defer u.Shutdown(context.Background())
 
 	// Config
-	config := &configv1.UpstreamServiceConfig{
+	// Config
+	config := configv1.UpstreamServiceConfig_builder{
 		Id: ptrTest("test-sql-service"),
-		ServiceConfig: &configv1.UpstreamServiceConfig_SqlService{
-			SqlService: &configv1.SqlUpstreamService{
-				Driver: ptrTest("sqlite"),
-				Dsn:    ptrTest("file::memory:?cache=shared"),
-				Calls: map[string]*configv1.SqlCallDefinition{
-					"get_users": {
-						Id:             ptrTest("get_users"),
-						Query:          ptrTest("SELECT id, name FROM users WHERE active = ?"),
-						ParameterOrder: []string{"active"},
-					},
-				},
+		SqlService: configv1.SqlUpstreamService_builder{
+			Driver: ptrTest("sqlite"),
+			Dsn:    ptrTest("file::memory:?cache=shared"),
+			Calls: map[string]*configv1.SqlCallDefinition{
+				"get_users": configv1.SqlCallDefinition_builder{
+					Id:             ptrTest("get_users"),
+					Query:          ptrTest("SELECT id, name FROM users WHERE active = ?"),
+					ParameterOrder: []string{"active"},
+				}.Build(),
 			},
-		},
-	}
+		}.Build(),
+	}.Build()
 
 	// Expect AddTool to be called
 	var capturedTool tool.Tool

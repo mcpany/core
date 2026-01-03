@@ -312,5 +312,5 @@ func TestReadURL_Localhost(t *testing.T) {
 
 	require.NoError(t, err)
 	require.NotNil(t, cfg)
-	assert.Equal(t, configv1.GlobalSettings_LOG_LEVEL_INFO, cfg.GlobalSettings.GetLogLevel())
+	assert.Equal(t, configv1.GlobalSettings_LOG_LEVEL_INFO, cfg.GetGlobalSettings().GetLogLevel())
 }

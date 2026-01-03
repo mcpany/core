@@ -17,10 +17,10 @@ import (
 func TestDLPMiddleware(t *testing.T) {
 	logger := logging.GetLogger()
 	enabled := true
-	cfg := &configv1.DLPConfig{
+	cfg := configv1.DLPConfig_builder{
 		Enabled:        &enabled,
 		CustomPatterns: []string{`secret-\d+`},
-	}
+	}.Build()
 
 	mw := DLPMiddleware(cfg, logger)
 
@@ -83,9 +83,9 @@ func TestDLPMiddleware(t *testing.T) {
 
 	t.Run("Disabled", func(t *testing.T) {
 		disabled := false
-		cfg := &configv1.DLPConfig{
+		cfg := configv1.DLPConfig_builder{
 			Enabled: &disabled,
-		}
+		}.Build()
 		mwDisabled := DLPMiddleware(cfg, logger)
 
 		handler := func(ctx context.Context, method string, req mcp.Request) (mcp.Result, error) {

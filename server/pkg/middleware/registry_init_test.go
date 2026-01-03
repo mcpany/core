@@ -81,9 +81,9 @@ func TestInitStandardMiddlewares(t *testing.T) {
 	// Setup dependencies
 	authManager := auth.NewManager()
 	mockToolManager := new(MockToolManagerForRegistry)
-	auditConfig := &configv1.AuditConfig{
+	auditConfig := configv1.AuditConfig_builder{
 		Enabled: proto.Bool(false), // Disable to avoid file creation issues in test
-	}
+	}.Build()
 	cachingMiddleware := &CachingMiddleware{}
 
 	// Call InitStandardMiddlewares
@@ -147,11 +147,11 @@ func TestInitStandardMiddlewares_AuditError(t *testing.T) {
 
 	// Invalid audit config to force error
 	st := configv1.AuditConfig_STORAGE_TYPE_SQLITE
-	auditConfig := &configv1.AuditConfig{
+	auditConfig := configv1.AuditConfig_builder{
 		Enabled:     proto.Bool(true),
-		StorageType: &st,
+		StorageType: st.Enum(),
 		OutputPath:  proto.String("/invalid/path/that/does/not/exist/audit.db"),
-	}
+	}.Build()
 	cachingMiddleware := &CachingMiddleware{}
 
 	// Call InitStandardMiddlewares

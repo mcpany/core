@@ -13,14 +13,14 @@ import (
 )
 
 func TestValidate_UpstreamServiceCollection_InvalidURL(t *testing.T) {
-	config := &configv1.McpAnyServerConfig{
+	config := configv1.McpAnyServerConfig_builder{
 		UpstreamServiceCollections: []*configv1.UpstreamServiceCollection{
-			{
+			configv1.UpstreamServiceCollection_builder{
 				Name:    proto.String("invalid-collection"),
 				HttpUrl: proto.String("not-a-url"),
-			},
+			}.Build(),
 		},
-	}
+	}.Build()
 
 	errs := Validate(context.Background(), config, Server)
 
@@ -29,14 +29,14 @@ func TestValidate_UpstreamServiceCollection_InvalidURL(t *testing.T) {
 }
 
 func TestValidate_UpstreamServiceCollection_EmptyURL(t *testing.T) {
-	config := &configv1.McpAnyServerConfig{
+	config := configv1.McpAnyServerConfig_builder{
 		UpstreamServiceCollections: []*configv1.UpstreamServiceCollection{
-			{
+			configv1.UpstreamServiceCollection_builder{
 				Name:    proto.String("empty-url-collection"),
 				HttpUrl: proto.String(""),
-			},
+			}.Build(),
 		},
-	}
+	}.Build()
 
 	errs := Validate(context.Background(), config, Server)
 

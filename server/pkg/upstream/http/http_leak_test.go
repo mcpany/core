@@ -42,22 +42,21 @@ func TestHTTPPoolConnectionLeak(t *testing.T) {
 	initialGoroutines := runtime.NumGoroutine()
 
 	// Config for the pool
-	config := &configv1.UpstreamServiceConfig{
+	// Config for the pool
+	config := configv1.UpstreamServiceConfig_builder{
 		Name: proto.String("test-service"),
-		ServiceConfig: &configv1.UpstreamServiceConfig_HttpService{
-			HttpService: &configv1.HttpUpstreamService{
-				Address: proto.String(server.URL),
-				TlsConfig: &configv1.TLSConfig{
-					InsecureSkipVerify: proto.Bool(true),
-				},
-			},
-		},
-		ConnectionPool: &configv1.ConnectionPoolConfig{
+		HttpService: configv1.HttpUpstreamService_builder{
+			Address: proto.String(server.URL),
+			TlsConfig: configv1.TLSConfig_builder{
+				InsecureSkipVerify: proto.Bool(true),
+			}.Build(),
+		}.Build(),
+		ConnectionPool: configv1.ConnectionPoolConfig_builder{
 			MaxConnections:     proto.Int32(10),
 			MaxIdleConnections: proto.Int32(10),
 			IdleTimeout:        durationpb.New(time.Second),
-		},
-	}
+		}.Build(),
+	}.Build()
 
 	for i := 0; i < 20; i++ {
 		// Create a new pool

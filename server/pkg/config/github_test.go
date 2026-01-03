@@ -146,10 +146,11 @@ func TestGitHub_List(t *testing.T) {
 		httpClient: &http.Client{},
 	}
 
-	auth := &configv1.UpstreamAuthentication{}
-	secret := &configv1.SecretValue{}
-	secret.SetPlainText("my-secret-token")
-	bearer := &configv1.UpstreamBearerTokenAuth{}
+	auth := configv1.UpstreamAuthentication_builder{}.Build()
+	secret := configv1.SecretValue_builder{
+		PlainText: strPtr("my-secret-token"),
+	}.Build()
+	bearer := configv1.UpstreamBearerTokenAuth_builder{}.Build()
 	bearer.SetToken(secret)
 	auth.SetBearerToken(bearer)
 
@@ -275,9 +276,11 @@ func TestGitHub_List_Auth_Variants(t *testing.T) {
 	ctx := context.Background()
 
 	t.Run("APIKey", func(t *testing.T) {
-		auth := &configv1.UpstreamAuthentication{}
-		apiKey := &configv1.UpstreamAPIKeyAuth{}
-		apiKey.SetApiKey(&configv1.SecretValue{Value: &configv1.SecretValue_PlainText{PlainText: "my-api-key"}})
+		auth := configv1.UpstreamAuthentication_builder{}.Build()
+		apiKey := configv1.UpstreamAPIKeyAuth_builder{}.Build()
+		apiKey.SetApiKey(configv1.SecretValue_builder{
+			PlainText: strPtr("my-api-key"),
+		}.Build())
 		apiKey.SetHeaderName("X-API-Key")
 		auth.SetApiKey(apiKey)
 
@@ -288,10 +291,12 @@ func TestGitHub_List_Auth_Variants(t *testing.T) {
 	})
 
 	t.Run("BasicAuth", func(t *testing.T) {
-		auth := &configv1.UpstreamAuthentication{}
-		basic := &configv1.UpstreamBasicAuth{}
+		auth := configv1.UpstreamAuthentication_builder{}.Build()
+		basic := configv1.UpstreamBasicAuth_builder{}.Build()
 		basic.SetUsername("user")
-		basic.SetPassword(&configv1.SecretValue{Value: &configv1.SecretValue_PlainText{PlainText: "pass"}})
+		basic.SetPassword(configv1.SecretValue_builder{
+			PlainText: strPtr("pass"),
+		}.Build())
 		auth.SetBasicAuth(basic)
 
 		_, err := g.List(ctx, auth)

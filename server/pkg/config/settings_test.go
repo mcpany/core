@@ -51,7 +51,7 @@ upstream_services: []
 	require.NoError(t, err)
 
 	settings := &Settings{
-		proto: &configv1.GlobalSettings{},
+		proto: configv1.GlobalSettings_builder{}.Build(),
 	}
 	err = settings.Load(cmd, fs)
 	require.NoError(t, err)
@@ -76,7 +76,7 @@ func TestSettings_Defaults(t *testing.T) {
 	cmd := &cobra.Command{}
 
 	settings := &Settings{
-		proto: &configv1.GlobalSettings{},
+		proto: configv1.GlobalSettings_builder{}.Build(),
 	}
 	err := settings.Load(cmd, fs)
 	require.NoError(t, err)
@@ -91,7 +91,7 @@ func TestSettings_SetAPIKey(t *testing.T) {
 	// But `GlobalSettings` returns singleton.
 	// Let's use a fresh instance.
 	s := &Settings{
-		proto: &configv1.GlobalSettings{},
+		proto: configv1.GlobalSettings_builder{}.Build(),
 	}
 	s.SetAPIKey("new-key")
 	assert.Equal(t, "new-key", s.APIKey())
@@ -111,7 +111,7 @@ func TestSettings_LoggingInit(t *testing.T) {
 	viper.Set("logfile", tmpFile.Name())
 
 	settings := &Settings{
-		proto: &configv1.GlobalSettings{},
+		proto: configv1.GlobalSettings_builder{}.Build(),
 	}
 	// We can't Mock os.OpenFile easily without separate function.
 	// So we tested with a real file path.
@@ -140,7 +140,7 @@ global_settings:
 	require.NoError(t, err)
 
 	settings := &Settings{
-		proto: &configv1.GlobalSettings{},
+		proto: configv1.GlobalSettings_builder{}.Build(),
 	}
 	err = settings.Load(cmd, fs)
 	require.NoError(t, err)
@@ -156,7 +156,7 @@ func TestSettings_GetDbDsn(t *testing.T) {
 	viper.Set("db-dsn", "postgres://user:pass@localhost:5432/db")
 
 	settings := &Settings{
-		proto: &configv1.GlobalSettings{},
+		proto: configv1.GlobalSettings_builder{}.Build(),
 	}
 	err := settings.Load(cmd, fs)
 	require.NoError(t, err)
@@ -172,7 +172,7 @@ func TestSettings_GetDbDriver(t *testing.T) {
 	viper.Set("db-driver", "postgres")
 
 	settings := &Settings{
-		proto: &configv1.GlobalSettings{},
+		proto: configv1.GlobalSettings_builder{}.Build(),
 	}
 	err := settings.Load(cmd, fs)
 	require.NoError(t, err)
@@ -183,11 +183,11 @@ func TestSettings_GetDbDriver(t *testing.T) {
 func TestSettings_GetDlp(t *testing.T) {
 	enabled := true
 	settings := &Settings{
-		proto: &configv1.GlobalSettings{
-			Dlp: &configv1.DLPConfig{
+		proto: configv1.GlobalSettings_builder{
+			Dlp: configv1.DLPConfig_builder{
 				Enabled: &enabled,
-			},
-		},
+			}.Build(),
+		}.Build(),
 	}
 	assert.NotNil(t, settings.GetDlp())
 	assert.True(t, settings.GetDlp().GetEnabled())

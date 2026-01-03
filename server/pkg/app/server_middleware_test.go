@@ -37,8 +37,8 @@ func TestMiddlewareRegistry(t *testing.T) {
 
 	t.Run("GetMCPMiddlewares sorts by priority", func(t *testing.T) {
 		configs := []*configv1.Middleware{
-			{Name: proto.String("test_middleware"), Priority: proto.Int32(100)},
-			{Name: proto.String("logging"), Priority: proto.Int32(10)}, // Assume logging is registered
+			configv1.Middleware_builder{Name: proto.String("test_middleware"), Priority: proto.Int32(100)}.Build(),
+			configv1.Middleware_builder{Name: proto.String("logging"), Priority: proto.Int32(10)}.Build(), // Assume logging is registered
 		}
 
 		// Ensure logging is registered (it is standard)
@@ -62,7 +62,7 @@ func TestMiddlewareRegistry(t *testing.T) {
 
 	t.Run("GetMCPMiddlewares filters disabled", func(t *testing.T) {
 		configs := []*configv1.Middleware{
-			{Name: proto.String("test_middleware"), Disabled: proto.Bool(true)},
+			configv1.Middleware_builder{Name: proto.String("test_middleware"), Disabled: proto.Bool(true)}.Build(),
 		}
 		chain := middleware.GetMCPMiddlewares(configs)
 		assert.Empty(t, chain)

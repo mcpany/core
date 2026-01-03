@@ -11,6 +11,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/golang/protobuf/proto"
 	"github.com/mcpany/core/pkg/bus"
 	"github.com/mcpany/core/pkg/serviceregistry"
 	"github.com/mcpany/core/pkg/tool"
@@ -147,7 +148,7 @@ func TestServiceRegistrationWorker(t *testing.T) {
 		})
 		defer unsubscribe()
 
-		req := &bus.ServiceRegistrationRequest{Config: &configv1.UpstreamServiceConfig{}}
+		req := &bus.ServiceRegistrationRequest{Config: configv1.UpstreamServiceConfig_builder{}.Build()}
 		req.SetCorrelationID("test")
 		err = requestBus.Publish(ctx, "request", req)
 		require.NoError(t, err)
@@ -187,7 +188,7 @@ func TestServiceRegistrationWorker(t *testing.T) {
 		})
 		defer unsubscribe()
 
-		req := &bus.ServiceRegistrationRequest{Config: &configv1.UpstreamServiceConfig{}}
+		req := &bus.ServiceRegistrationRequest{Config: configv1.UpstreamServiceConfig_builder{}.Build()}
 		req.SetCorrelationID("test-fail")
 		err = requestBus.Publish(ctx, "request", req)
 		require.NoError(t, err)
@@ -240,7 +241,7 @@ func TestServiceRegistrationWorker(t *testing.T) {
 		reqCtx := context.Background()
 		req := &bus.ServiceRegistrationRequest{
 			Context: reqCtx,
-			Config:  &configv1.UpstreamServiceConfig{},
+			Config:  configv1.UpstreamServiceConfig_builder{}.Build(),
 		}
 		req.SetCorrelationID("test-req-ctx")
 		err = requestBus.Publish(ctx, "request", req)
@@ -462,7 +463,7 @@ func TestServiceRegistrationWorker_Concurrent(t *testing.T) {
 	for i := 0; i < numRequests; i++ {
 		go func(i int) {
 			defer wg.Done()
-			req := &bus.ServiceRegistrationRequest{Config: &configv1.UpstreamServiceConfig{}}
+			req := &bus.ServiceRegistrationRequest{Config: configv1.UpstreamServiceConfig_builder{}.Build()}
 			correlationID := fmt.Sprintf("test-%d", i)
 			req.SetCorrelationID(correlationID)
 
@@ -623,7 +624,7 @@ func TestServiceRegistrationWorker_ListRequest(t *testing.T) {
 		require.NoError(t, err)
 
 		expectedServices := []*configv1.UpstreamServiceConfig{
-			{Name: ptr("service1")},
+			configv1.UpstreamServiceConfig_builder{Name: proto.String("service1")}.Build(),
 		}
 
 		registry := &mockServiceRegistry{

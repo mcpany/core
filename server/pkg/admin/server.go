@@ -39,7 +39,7 @@ func (s *Server) ClearCache(ctx context.Context, _ *pb.ClearCacheRequest) (*pb.C
 	if err := s.cache.Clear(ctx); err != nil {
 		return nil, err
 	}
-	return &pb.ClearCacheResponse{}, nil
+	return pb.ClearCacheResponse_builder{}.Build(), nil
 }
 
 // ListServices returns all registered services.
@@ -51,7 +51,7 @@ func (s *Server) ListServices(_ context.Context, _ *pb.ListServicesRequest) (*pb
 			services = append(services, info.Config)
 		}
 	}
-	return &pb.ListServicesResponse{Services: services}, nil
+	return pb.ListServicesResponse_builder{Services: services}.Build(), nil
 }
 
 // GetService returns a specific service by ID.
@@ -63,7 +63,7 @@ func (s *Server) GetService(_ context.Context, req *pb.GetServiceRequest) (*pb.G
 	if info.Config == nil {
 		return nil, status.Error(codes.Internal, "service config not found")
 	}
-	return &pb.GetServiceResponse{Service: info.Config}, nil
+	return pb.GetServiceResponse_builder{Service: info.Config}.Build(), nil
 }
 
 // ListTools returns all registered tools.
@@ -73,7 +73,7 @@ func (s *Server) ListTools(_ context.Context, _ *pb.ListToolsRequest) (*pb.ListT
 	for _, t := range tools {
 		responseTools = append(responseTools, t.Tool())
 	}
-	return &pb.ListToolsResponse{Tools: responseTools}, nil
+	return pb.ListToolsResponse_builder{Tools: responseTools}.Build(), nil
 }
 
 // GetTool returns a specific tool by name.
@@ -82,5 +82,5 @@ func (s *Server) GetTool(_ context.Context, req *pb.GetToolRequest) (*pb.GetTool
 	if !ok {
 		return nil, status.Error(codes.NotFound, "tool not found")
 	}
-	return &pb.GetToolResponse{Tool: t.Tool()}, nil
+	return pb.GetToolResponse_builder{Tool: t.Tool()}.Build(), nil
 }

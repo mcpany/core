@@ -94,10 +94,10 @@ services:
 		}, nil
 	}
 
-	collection := &configv1.UpstreamServiceCollection{
+	collection := configv1.UpstreamServiceCollection_builder{
 		Name:    proto.String("test-collection"),
 		HttpUrl: proto.String("https://github.com/owner/repo/tree/main/path"),
-	}
+	}.Build()
 
 	err := m.loadAndMergeCollection(context.Background(), collection)
 	require.NoError(t, err)
@@ -113,10 +113,10 @@ func TestUpstreamServiceManager_LoadAndMergeCollection_GitHub_Error(t *testing.T
 		return nil, fmt.Errorf("mock setup error")
 	}
 
-	collection := &configv1.UpstreamServiceCollection{
+	collection := configv1.UpstreamServiceCollection_builder{
 		Name:    proto.String("test-collection"),
 		HttpUrl: proto.String("https://github.com/owner/repo/tree/main/path"),
-	}
+	}.Build()
 
 	err := m.loadAndMergeCollection(context.Background(), collection)
 	assert.Error(t, err)
@@ -141,9 +141,9 @@ func TestUpstreamServiceManager_LoadAndMergeCollection_GitHub_ListError(t *testi
 		}, nil
 	}
 
-	collection := &configv1.UpstreamServiceCollection{
+	collection := configv1.UpstreamServiceCollection_builder{
 		HttpUrl: proto.String("https://github.com/owner/repo/tree/main/path"),
-	}
+	}.Build()
 
 	err := m.loadAndMergeCollection(context.Background(), collection)
 	assert.Error(t, err)

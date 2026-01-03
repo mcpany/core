@@ -70,9 +70,9 @@ func TestToolMetricsMiddleware_Execute(t *testing.T) {
 
 		// Mock Tool for Service ID
 		serviceID := "test_service"
-		mockProtoTool := &v1.Tool{
+		mockProtoTool := v1.Tool_builder{
 			ServiceId: &serviceID,
-		}
+		}.Build()
 		mockTool := &tool.MockTool{
 			ToolFunc: func() *v1.Tool {
 				return mockProtoTool

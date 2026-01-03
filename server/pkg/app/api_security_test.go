@@ -28,14 +28,12 @@ func TestAPIHandler_SecurityValidation(t *testing.T) {
 
 	// Test case: Invalid URL scheme in http_service
 	t.Run("Invalid URL Scheme", func(t *testing.T) {
-		svc := &configv1.UpstreamServiceConfig{
+		svc := configv1.UpstreamServiceConfig_builder{
 			Name: proto.String("malicious-service"),
-			ServiceConfig: &configv1.UpstreamServiceConfig_HttpService{
-				HttpService: &configv1.HttpUpstreamService{
-					Address: proto.String("gopher://malicious.com"),
-				},
-			},
-		}
+			HttpService: configv1.HttpUpstreamService_builder{
+				Address: proto.String("gopher://malicious.com"),
+			}.Build(),
+		}.Build()
 		body, _ := protojson.Marshal(svc)
 
 		req := httptest.NewRequest("POST", "/services", bytes.NewReader(body))
@@ -50,18 +48,14 @@ func TestAPIHandler_SecurityValidation(t *testing.T) {
 
 	// Test case: Absolute path in bundle_path (path traversal/security risk)
 	t.Run("Absolute Bundle Path", func(t *testing.T) {
-		svc := &configv1.UpstreamServiceConfig{
+		svc := configv1.UpstreamServiceConfig_builder{
 			Name: proto.String("absolute-path-service"),
-			ServiceConfig: &configv1.UpstreamServiceConfig_McpService{
-				McpService: &configv1.McpUpstreamService{
-					ConnectionType: &configv1.McpUpstreamService_BundleConnection{
-						BundleConnection: &configv1.McpBundleConnection{
-							BundlePath: proto.String("/etc/passwd"),
-						},
-					},
-				},
-			},
-		}
+			McpService: configv1.McpUpstreamService_builder{
+				BundleConnection: configv1.McpBundleConnection_builder{
+					BundlePath: proto.String("/etc/passwd"),
+				}.Build(),
+			}.Build(),
+		}.Build()
 		body, _ := protojson.Marshal(svc)
 
 		req := httptest.NewRequest("POST", "/services", bytes.NewReader(body))

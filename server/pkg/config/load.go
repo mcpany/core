@@ -70,23 +70,21 @@ func LoadServices(ctx context.Context, store Store, binaryType string) (*configv
 		}
 
 		apiKey := GlobalSettings().APIKey()
-		defaultUser := &configv1.User{
+		defaultUserBuilder := configv1.User_builder{
 			Id:         proto.String("default"),
 			ProfileIds: profileIDs,
 		}
 		if apiKey != "" {
 			headerLoc := configv1.APIKeyAuth_HEADER
-			defaultUser.Authentication = &configv1.AuthenticationConfig{
-				AuthMethod: &configv1.AuthenticationConfig_ApiKey{
-					ApiKey: &configv1.APIKeyAuth{
-						ParamName: proto.String("X-API-Key"),
-						KeyValue:  proto.String(apiKey),
-						In:        &headerLoc,
-					},
-				},
-			}
+			defaultUserBuilder.Authentication = configv1.AuthenticationConfig_builder{
+				ApiKey: configv1.APIKeyAuth_builder{
+					ParamName: proto.String("X-API-Key"),
+					KeyValue:  proto.String(apiKey),
+					In:        &headerLoc,
+				}.Build(),
+			}.Build()
 		}
-		fileConfig.Users = []*configv1.User{defaultUser}
+		fileConfig.SetUsers([]*configv1.User{defaultUserBuilder.Build()})
 	}
 
 	var bt BinaryType

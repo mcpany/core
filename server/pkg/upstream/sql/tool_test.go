@@ -24,12 +24,12 @@ func TestTool_Execute(t *testing.T) {
 	require.NoError(t, err)
 	defer db.Close()
 
-	callDef := &configv1.SqlCallDefinition{
+	callDef := configv1.SqlCallDefinition_builder{
 		Query:          proto.String("SELECT id, name FROM users WHERE age > ?"),
 		ParameterOrder: []string{"age"},
-	}
+	}.Build()
 
-	toolInstance := NewTool(&v1.Tool{Name: proto.String("get_users")}, db, callDef)
+	toolInstance := NewTool(v1.Tool_builder{Name: proto.String("get_users")}.Build(), db, callDef)
 
 	t.Run("success", func(t *testing.T) {
 		rows := sqlmock.NewRows([]string{"id", "name"}).
@@ -99,12 +99,12 @@ func TestTool_Execute(t *testing.T) {
 		assert.Nil(t, toolInstance.GetCacheConfig())
 
 		// Test with cache config
-		cachedCallDef := &configv1.SqlCallDefinition{
-			Cache: &configv1.CacheConfig{
+		cachedCallDef := configv1.SqlCallDefinition_builder{
+			Cache: configv1.CacheConfig_builder{
 				Ttl: durationpb.New(60 * time.Second),
-			},
-		}
-		cachedTool := NewTool(&v1.Tool{Name: proto.String("cached_tool")}, db, cachedCallDef)
+			}.Build(),
+		}.Build()
+		cachedTool := NewTool(v1.Tool_builder{Name: proto.String("cached_tool")}.Build(), db, cachedCallDef)
 		assert.NotNil(t, cachedTool.GetCacheConfig())
 		assert.Equal(t, int64(60), cachedTool.GetCacheConfig().GetTtl().GetSeconds())
 	})

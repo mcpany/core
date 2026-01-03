@@ -14,22 +14,18 @@ import (
 
 func TestValidate_McpBundleConnection_Security(t *testing.T) {
 	t.Run("invalid bundle connection - insecure path with ..", func(t *testing.T) {
-		cfg := &configv1.McpAnyServerConfig{
+		cfg := configv1.McpAnyServerConfig_builder{
 			UpstreamServices: []*configv1.UpstreamServiceConfig{
-				{
+				configv1.UpstreamServiceConfig_builder{
 					Name: proto.String("mcp-bundle-svc-insecure-dotdot"),
-					ServiceConfig: &configv1.UpstreamServiceConfig_McpService{
-						McpService: &configv1.McpUpstreamService{
-							ConnectionType: &configv1.McpUpstreamService_BundleConnection{
-								BundleConnection: &configv1.McpBundleConnection{
-									BundlePath: proto.String("../insecure.bundle"),
-								},
-							},
-						},
-					},
-				},
+					McpService: configv1.McpUpstreamService_builder{
+						BundleConnection: configv1.McpBundleConnection_builder{
+							BundlePath: proto.String("../insecure.bundle"),
+						}.Build(),
+					}.Build(),
+				}.Build(),
 			},
-		}
+		}.Build()
 
 		validationErrors := Validate(context.Background(), cfg, Server)
 		assert.NotEmpty(t, validationErrors, "Should return validation error for insecure path")
@@ -39,22 +35,18 @@ func TestValidate_McpBundleConnection_Security(t *testing.T) {
 	})
 
 	t.Run("invalid bundle connection - absolute path not in allowed list", func(t *testing.T) {
-		cfg := &configv1.McpAnyServerConfig{
+		cfg := configv1.McpAnyServerConfig_builder{
 			UpstreamServices: []*configv1.UpstreamServiceConfig{
-				{
+				configv1.UpstreamServiceConfig_builder{
 					Name: proto.String("mcp-bundle-svc-absolute"),
-					ServiceConfig: &configv1.UpstreamServiceConfig_McpService{
-						McpService: &configv1.McpUpstreamService{
-							ConnectionType: &configv1.McpUpstreamService_BundleConnection{
-								BundleConnection: &configv1.McpBundleConnection{
-									BundlePath: proto.String("/etc/passwd"),
-								},
-							},
-						},
-					},
-				},
+					McpService: configv1.McpUpstreamService_builder{
+						BundleConnection: configv1.McpBundleConnection_builder{
+							BundlePath: proto.String("/etc/passwd"),
+						}.Build(),
+					}.Build(),
+				}.Build(),
 			},
-		}
+		}.Build()
 
 		validationErrors := Validate(context.Background(), cfg, Server)
 		assert.NotEmpty(t, validationErrors, "Should return validation error for absolute path")

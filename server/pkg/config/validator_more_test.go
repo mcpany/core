@@ -38,108 +38,88 @@ func TestValidate_MoreServices(t *testing.T) {
 	}{
 		{
 			name: "MTLS Auth Client Key Path Not Secure",
-			config: &configv1.McpAnyServerConfig{
+			config: configv1.McpAnyServerConfig_builder{
 				UpstreamServices: []*configv1.UpstreamServiceConfig{
-					{
+					configv1.UpstreamServiceConfig_builder{
 						Name: proto.String("mtls-service-insecure-key"),
-						ServiceConfig: &configv1.UpstreamServiceConfig_HttpService{
-							HttpService: &configv1.HttpUpstreamService{
-								Address: proto.String("http://example.com"),
-							},
-						},
-						UpstreamAuthentication: &configv1.UpstreamAuthentication{
-							AuthMethod: &configv1.UpstreamAuthentication_Mtls{
-								Mtls: &configv1.UpstreamMTLSAuth{
-									ClientCertPath: proto.String(insecurePath),
-									ClientKeyPath:  proto.String(insecurePath), // Insecure path
-								},
-							},
-						},
-					},
+						HttpService: configv1.HttpUpstreamService_builder{
+							Address: proto.String("http://example.com"),
+						}.Build(),
+						UpstreamAuthentication: configv1.UpstreamAuthentication_builder{
+							Mtls: configv1.UpstreamMTLSAuth_builder{
+								ClientCertPath: proto.String(insecurePath),
+								ClientKeyPath:  proto.String(insecurePath), // Insecure path
+							}.Build(),
+						}.Build(),
+					}.Build(),
 				},
-			},
+			}.Build(),
 			expectedErrorCount:  0,
 			expectedErrorString: "",
 		},
 		{
 			name: "MTLS Auth File Not Found",
-			config: &configv1.McpAnyServerConfig{
+			config: configv1.McpAnyServerConfig_builder{
 				UpstreamServices: []*configv1.UpstreamServiceConfig{
-					{
+					configv1.UpstreamServiceConfig_builder{
 						Name: proto.String("mtls-service-missing-file"),
-						ServiceConfig: &configv1.UpstreamServiceConfig_HttpService{
-							HttpService: &configv1.HttpUpstreamService{
-								Address: proto.String("http://example.com"),
-							},
-						},
-						UpstreamAuthentication: &configv1.UpstreamAuthentication{
-							AuthMethod: &configv1.UpstreamAuthentication_Mtls{
-								Mtls: &configv1.UpstreamMTLSAuth{
-									ClientCertPath: proto.String("/non/existent/cert.pem"),
-									ClientKeyPath:  proto.String("/non/existent/key.pem"),
-								},
-							},
-						},
-					},
+						HttpService: configv1.HttpUpstreamService_builder{
+							Address: proto.String("http://example.com"),
+						}.Build(),
+						UpstreamAuthentication: configv1.UpstreamAuthentication_builder{
+							Mtls: configv1.UpstreamMTLSAuth_builder{
+								ClientCertPath: proto.String("/non/existent/cert.pem"),
+								ClientKeyPath:  proto.String("/non/existent/key.pem"),
+							}.Build(),
+						}.Build(),
+					}.Build(),
 				},
-			},
+			}.Build(),
 			expectedErrorCount:  1,
 			expectedErrorString: "mtls 'client_cert_path' not found",
 		},
 		{
 			name: "Basic Auth Unset Env",
-			config: &configv1.McpAnyServerConfig{
+			config: configv1.McpAnyServerConfig_builder{
 				UpstreamServices: []*configv1.UpstreamServiceConfig{
-					{
+					configv1.UpstreamServiceConfig_builder{
 						Name: proto.String("basic-auth-unset-env"),
-						ServiceConfig: &configv1.UpstreamServiceConfig_HttpService{
-							HttpService: &configv1.HttpUpstreamService{
-								Address: proto.String("http://example.com"),
-							},
-						},
-						UpstreamAuthentication: &configv1.UpstreamAuthentication{
-							AuthMethod: &configv1.UpstreamAuthentication_BasicAuth{
-								BasicAuth: &configv1.UpstreamBasicAuth{
-									Username: proto.String("user"),
-									Password: &configv1.SecretValue{
-										Value: &configv1.SecretValue_EnvironmentVariable{
-											EnvironmentVariable: "UNSET_ENV_VAR_FOR_TEST",
-										},
-									},
-								},
-							},
-						},
-					},
+						HttpService: configv1.HttpUpstreamService_builder{
+							Address: proto.String("http://example.com"),
+						}.Build(),
+						UpstreamAuthentication: configv1.UpstreamAuthentication_builder{
+							BasicAuth: configv1.UpstreamBasicAuth_builder{
+								Username: proto.String("user"),
+								Password: configv1.SecretValue_builder{
+									EnvironmentVariable: proto.String("UNSET_ENV_VAR_FOR_TEST"),
+								}.Build(),
+							}.Build(),
+						}.Build(),
+					}.Build(),
 				},
-			},
+			}.Build(),
 			expectedErrorCount:  1,
 			expectedErrorString: "failed to resolve basic auth password secret",
 		},
 		{
 			name: "Bearer Token Unset Env",
-			config: &configv1.McpAnyServerConfig{
+			config: configv1.McpAnyServerConfig_builder{
 				UpstreamServices: []*configv1.UpstreamServiceConfig{
-					{
+					configv1.UpstreamServiceConfig_builder{
 						Name: proto.String("bearer-auth-unset-env"),
-						ServiceConfig: &configv1.UpstreamServiceConfig_HttpService{
-							HttpService: &configv1.HttpUpstreamService{
-								Address: proto.String("http://example.com"),
-							},
-						},
-						UpstreamAuthentication: &configv1.UpstreamAuthentication{
-							AuthMethod: &configv1.UpstreamAuthentication_BearerToken{
-								BearerToken: &configv1.UpstreamBearerTokenAuth{
-									Token: &configv1.SecretValue{
-										Value: &configv1.SecretValue_EnvironmentVariable{
-											EnvironmentVariable: "UNSET_ENV_VAR_FOR_TEST",
-										},
-									},
-								},
-							},
-						},
-					},
+						HttpService: configv1.HttpUpstreamService_builder{
+							Address: proto.String("http://example.com"),
+						}.Build(),
+						UpstreamAuthentication: configv1.UpstreamAuthentication_builder{
+							BearerToken: configv1.UpstreamBearerTokenAuth_builder{
+								Token: configv1.SecretValue_builder{
+									EnvironmentVariable: proto.String("UNSET_ENV_VAR_FOR_TEST"),
+								}.Build(),
+							}.Build(),
+						}.Build(),
+					}.Build(),
 				},
-			},
+			}.Build(),
 			expectedErrorCount:  1,
 			expectedErrorString: "failed to resolve bearer token secret",
 		},

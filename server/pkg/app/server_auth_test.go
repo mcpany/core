@@ -79,28 +79,26 @@ func TestRunServerMode_Auth(t *testing.T) {
 
 	// Users Setup
 	users := []*config_v1.User{
-		{
+		config_v1.User_builder{
 			Id: proto.String("user_with_auth"),
-			Authentication: &config_v1.AuthenticationConfig{
-				AuthMethod: &config_v1.AuthenticationConfig_ApiKey{
-					ApiKey: &config_v1.APIKeyAuth{
-						KeyValue:  ptr("user-secret"),
-						In:        ptr(config_v1.APIKeyAuth_HEADER),
-						ParamName: ptr("X-API-Key"),
-					},
-				},
-			},
+			Authentication: config_v1.AuthenticationConfig_builder{
+				ApiKey: config_v1.APIKeyAuth_builder{
+					KeyValue:  ptr("user-secret"),
+					In:        config_v1.APIKeyAuth_HEADER.Enum(),
+					ParamName: ptr("X-API-Key"),
+				}.Build(),
+			}.Build(),
 			ProfileIds: []string{"profileA"},
-		},
-		{
+		}.Build(),
+		config_v1.User_builder{
 			Id: proto.String("user_no_auth"),
 			// No auth config, falls back to global
 			ProfileIds: []string{"profileB"},
-		},
-		{
+		}.Build(),
+		config_v1.User_builder{
 			Id:         proto.String("user_blocked"),
 			ProfileIds: []string{}, // No access to any profile
-		},
+		}.Build(),
 	}
 
 	errChan := make(chan error, 1)

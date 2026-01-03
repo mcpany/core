@@ -21,13 +21,13 @@ func ptr[T any](v T) *T {
 
 func TestSettings_Getters(t *testing.T) {
 	s := &Settings{
-		proto: &configv1.GlobalSettings{
+		proto: configv1.GlobalSettings_builder{
 			DbDsn:    ptr("postgres://user:pass@localhost:5432/db"),
 			DbDriver: ptr("postgres"),
-			Dlp: &configv1.DLPConfig{
+			Dlp: configv1.DLPConfig_builder{
 				Enabled: ptr(true),
-			},
-		},
+			}.Build(),
+		}.Build(),
 	}
 
 	assert.Equal(t, "postgres://user:pass@localhost:5432/db", s.GetDbDsn())
@@ -45,7 +45,7 @@ func TestSettings_Load_DbSettings(t *testing.T) {
 	viper.Set("db-driver", "sqlite3")
 
 	settings := &Settings{
-		proto: &configv1.GlobalSettings{},
+		proto: configv1.GlobalSettings_builder{}.Build(),
 	}
 	err := settings.Load(cmd, fs)
 	require.NoError(t, err)
@@ -137,7 +137,7 @@ func TestSettings_Load_StringSliceEnv(t *testing.T) {
 	viper.Set("logfile", tmpLog.Name())
 
 	settings := &Settings{
-		proto: &configv1.GlobalSettings{},
+		proto: configv1.GlobalSettings_builder{}.Build(),
 	}
 
 	err = settings.Load(cmd, fs)

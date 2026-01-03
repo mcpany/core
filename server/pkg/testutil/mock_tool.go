@@ -20,7 +20,7 @@ type MockTool struct {
 // Tool returns a basic tool definition for the mock tool.
 func (m *MockTool) Tool() *v1.Tool {
 	name := "mock-tool"
-	return &v1.Tool{Name: &name}
+	return v1.Tool_builder{Name: &name}.Build()
 }
 
 // Execute calls the mock ExecuteFunc if set, otherwise returns nil.

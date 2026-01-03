@@ -17,10 +17,10 @@ func TestMemoryStore(t *testing.T) {
 	ctx := context.Background()
 
 	t.Run("Save and Get", func(t *testing.T) {
-		svc := &configv1.UpstreamServiceConfig{
+		svc := configv1.UpstreamServiceConfig_builder{
 			Name: proto.String("test-service"),
 			Id:   proto.String("id-1"),
-		}
+		}.Build()
 		err := s.SaveService(ctx, svc)
 		assert.NoError(t, err)
 
@@ -48,8 +48,8 @@ func TestMemoryStore(t *testing.T) {
 		cfg, err := s.Load(ctx)
 		assert.NoError(t, err)
 		assert.NotNil(t, cfg)
-		assert.Len(t, cfg.UpstreamServices, 1)
-		assert.Equal(t, "test-service", cfg.UpstreamServices[0].GetName())
+		assert.Len(t, cfg.GetUpstreamServices(), 1)
+		assert.Equal(t, "test-service", cfg.GetUpstreamServices()[0].GetName())
 	})
 
 	t.Run("Delete", func(t *testing.T) {

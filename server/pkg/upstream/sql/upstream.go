@@ -88,14 +88,14 @@ func (u *Upstream) Register(
 			return "", nil, nil, fmt.Errorf("invalid tool name %s: %w", toolName, err)
 		}
 
-		t := &v1.Tool{
+		t := v1.Tool_builder{
 			Name:         ptr(sanitizedToolName),
 			Description:  ptr(fmt.Sprintf("Execute SQL query: %s", id)),
 			InputSchema:  callDef.GetInputSchema(),
 			OutputSchema: callDef.GetOutputSchema(),
 			ServiceId:    ptr(serviceConfig.GetId()),
 			Tags:         []string{"upstream:sql"},
-		}
+		}.Build()
 
 		sqlTool := NewTool(t, u.db, callDef)
 
@@ -103,13 +103,13 @@ func (u *Upstream) Register(
 			return "", nil, nil, fmt.Errorf("failed to add tool %s: %w", toolName, err)
 		}
 
-		toolDefs = append(toolDefs, &configv1.ToolDefinition{
+		toolDefs = append(toolDefs, configv1.ToolDefinition_builder{
 			Name:        ptr(sanitizedToolName),
-			Description: ptr(*t.Description),
+			Description: ptr(t.GetDescription()),
 			ServiceId:   ptr(serviceConfig.GetId()),
 			InputSchema: callDef.GetInputSchema(),
 			CallId:      ptr(id),
-		})
+		}.Build())
 	}
 
 	return serviceConfig.GetId(), toolDefs, nil, nil

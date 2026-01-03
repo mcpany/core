@@ -209,41 +209,39 @@ func TestAutoDiscoverAndExportPolicy(t *testing.T) {
 	call2 := "call2"
 	call3 := "hidden_call"
 
-	config := &configv1.UpstreamServiceConfig{
+	config := configv1.UpstreamServiceConfig_builder{
 		Name:             proto.String("auto-discover-test"),
 		AutoDiscoverTool: proto.Bool(true),
-		ServiceConfig: &configv1.UpstreamServiceConfig_HttpService{
-			HttpService: &configv1.HttpUpstreamService{
-				Address: proto.String(mockServer.URL),
-				Calls: map[string]*configv1.HttpCallDefinition{
-					call1: {
-						Id:           proto.String(call1),
-						Method:       configv1.HttpCallDefinition_HTTP_METHOD_GET.Enum(),
-						EndpointPath: proto.String("/call1"),
-					},
-					call2: {
-						Id:           proto.String(call2),
-						Method:       configv1.HttpCallDefinition_HTTP_METHOD_GET.Enum(),
-						EndpointPath: proto.String("/call2"),
-					},
-					call3: {
-						Id:           proto.String(call3),
-						Method:       configv1.HttpCallDefinition_HTTP_METHOD_GET.Enum(),
-						EndpointPath: proto.String("/call3"),
-					},
-				},
+		HttpService: configv1.HttpUpstreamService_builder{
+			Address: proto.String(mockServer.URL),
+			Calls: map[string]*configv1.HttpCallDefinition{
+				call1: configv1.HttpCallDefinition_builder{
+					Id:           proto.String(call1),
+					Method:       configv1.HttpCallDefinition_HTTP_METHOD_GET.Enum(),
+					EndpointPath: proto.String("/call1"),
+				}.Build(),
+				call2: configv1.HttpCallDefinition_builder{
+					Id:           proto.String(call2),
+					Method:       configv1.HttpCallDefinition_HTTP_METHOD_GET.Enum(),
+					EndpointPath: proto.String("/call2"),
+				}.Build(),
+				call3: configv1.HttpCallDefinition_builder{
+					Id:           proto.String(call3),
+					Method:       configv1.HttpCallDefinition_HTTP_METHOD_GET.Enum(),
+					EndpointPath: proto.String("/call3"),
+				}.Build(),
 			},
-		},
-		ToolExportPolicy: &configv1.ExportPolicy{
+		}.Build(),
+		ToolExportPolicy: configv1.ExportPolicy_builder{
 			DefaultAction: configv1.ExportPolicy_UNEXPORT.Enum(),
 			Rules: []*configv1.ExportRule{
-				{
+				configv1.ExportRule_builder{
 					NameRegex: proto.String("^call.*"),
 					Action:    configv1.ExportPolicy_EXPORT.Enum(),
-				},
+				}.Build(),
 			},
-		},
-	}
+		}.Build(),
+	}.Build()
 
 	configFile := CreateTempConfigFile(t, config)
 	client, cleanup := StartStdioServer(t, configFile)
@@ -291,50 +289,48 @@ func TestCallPolicyExecution(t *testing.T) {
 	}))
 	defer mockServer.Close()
 
-	config := &configv1.UpstreamServiceConfig{
+	config := configv1.UpstreamServiceConfig_builder{
 		Name: proto.String("call-policy-test"),
-		ServiceConfig: &configv1.UpstreamServiceConfig_HttpService{
-			HttpService: &configv1.HttpUpstreamService{
-				Address: proto.String(mockServer.URL),
-				Calls: map[string]*configv1.HttpCallDefinition{
-					"allowed_call": {
-						Id:           proto.String("allowed_call"),
-						Method:       configv1.HttpCallDefinition_HTTP_METHOD_GET.Enum(),
-						EndpointPath: proto.String("/allowed"),
-					},
-					"denied_call": {
-						Id:           proto.String("denied_call"),
-						Method:       configv1.HttpCallDefinition_HTTP_METHOD_GET.Enum(),
-						EndpointPath: proto.String("/denied"),
-					},
-				},
-				Tools: []*configv1.ToolDefinition{
-					{
-						Name:   proto.String("allowed_tool"),
-						CallId: proto.String("allowed_call"),
-					},
-					{
-						Name:   proto.String("denied_tool"),
-						CallId: proto.String("denied_call"),
-					},
-				},
+		HttpService: configv1.HttpUpstreamService_builder{
+			Address: proto.String(mockServer.URL),
+			Calls: map[string]*configv1.HttpCallDefinition{
+				"allowed_call": configv1.HttpCallDefinition_builder{
+					Id:           proto.String("allowed_call"),
+					Method:       configv1.HttpCallDefinition_HTTP_METHOD_GET.Enum(),
+					EndpointPath: proto.String("/allowed"),
+				}.Build(),
+				"denied_call": configv1.HttpCallDefinition_builder{
+					Id:           proto.String("denied_call"),
+					Method:       configv1.HttpCallDefinition_HTTP_METHOD_GET.Enum(),
+					EndpointPath: proto.String("/denied"),
+				}.Build(),
 			},
-		},
+			Tools: []*configv1.ToolDefinition{
+				configv1.ToolDefinition_builder{
+					Name:   proto.String("allowed_tool"),
+					CallId: proto.String("allowed_call"),
+				}.Build(),
+				configv1.ToolDefinition_builder{
+					Name:   proto.String("denied_tool"),
+					CallId: proto.String("denied_call"),
+				}.Build(),
+			},
+		}.Build(),
 		CallPolicies: []*configv1.CallPolicy{
-			{
+			configv1.CallPolicy_builder{
 				DefaultAction: configv1.CallPolicy_ALLOW.Enum(),
 				Rules: []*configv1.CallPolicyRule{
-					{
+					configv1.CallPolicyRule_builder{
 						Action:    configv1.CallPolicy_DENY.Enum(),
 						NameRegex: proto.String("denied.*"),
-					},
+					}.Build(),
 				},
-			},
+			}.Build(),
 		},
-		ToolExportPolicy: &configv1.ExportPolicy{
+		ToolExportPolicy: configv1.ExportPolicy_builder{
 			DefaultAction: configv1.ExportPolicy_EXPORT.Enum(),
-		},
-	}
+		}.Build(),
+	}.Build()
 
 	configFile := CreateTempConfigFile(t, config)
 	client, cleanup := StartStdioServer(t, configFile)
@@ -376,34 +372,32 @@ func TestExportPolicyForPromptsAndResources(t *testing.T) {
 	}))
 	defer mockServer.Close()
 
-	config := &configv1.UpstreamServiceConfig{
+	config := configv1.UpstreamServiceConfig_builder{
 		Name: proto.String("export-policy-misc"),
-		ServiceConfig: &configv1.UpstreamServiceConfig_HttpService{
-			HttpService: &configv1.HttpUpstreamService{
-				Address: proto.String(mockServer.URL),
-				Prompts: []*configv1.PromptDefinition{
-					{Name: proto.String("public_prompt")},
-					{Name: proto.String("private_prompt")},
-				},
-				Resources: []*configv1.ResourceDefinition{
-					{Name: proto.String("public_resource"), Uri: proto.String("http://resource/public")},
-					{Name: proto.String("private_resource"), Uri: proto.String("http://resource/private")},
-				},
+		HttpService: configv1.HttpUpstreamService_builder{
+			Address: proto.String(mockServer.URL),
+			Prompts: []*configv1.PromptDefinition{
+				configv1.PromptDefinition_builder{Name: proto.String("public_prompt")}.Build(),
+				configv1.PromptDefinition_builder{Name: proto.String("private_prompt")}.Build(),
 			},
-		},
-		PromptExportPolicy: &configv1.ExportPolicy{
+			Resources: []*configv1.ResourceDefinition{
+				configv1.ResourceDefinition_builder{Name: proto.String("public_resource"), Uri: proto.String("http://resource/public")}.Build(),
+				configv1.ResourceDefinition_builder{Name: proto.String("private_resource"), Uri: proto.String("http://resource/private")}.Build(),
+			},
+		}.Build(),
+		PromptExportPolicy: configv1.ExportPolicy_builder{
 			DefaultAction: configv1.ExportPolicy_UNEXPORT.Enum(),
 			Rules: []*configv1.ExportRule{
-				{NameRegex: proto.String("^public.*"), Action: configv1.ExportPolicy_EXPORT.Enum()},
+				configv1.ExportRule_builder{NameRegex: proto.String("^public.*"), Action: configv1.ExportPolicy_EXPORT.Enum()}.Build(),
 			},
-		},
-		ResourceExportPolicy: &configv1.ExportPolicy{
+		}.Build(),
+		ResourceExportPolicy: configv1.ExportPolicy_builder{
 			DefaultAction: configv1.ExportPolicy_UNEXPORT.Enum(),
 			Rules: []*configv1.ExportRule{
-				{NameRegex: proto.String("^public.*"), Action: configv1.ExportPolicy_EXPORT.Enum()},
+				configv1.ExportRule_builder{NameRegex: proto.String("^public.*"), Action: configv1.ExportPolicy_EXPORT.Enum()}.Build(),
 			},
-		},
-	}
+		}.Build(),
+	}.Build()
 
 	configFile := CreateTempConfigFile(t, config)
 	client, cleanup := StartStdioServer(t, configFile)
