@@ -7,15 +7,15 @@ import { defineConfig, devices } from '@playwright/test';
 
 export default defineConfig({
   testDir: './tests',
-  testMatch: ['**/e2e_full_coverage.spec.ts', '**/audit-screenshots.spec.ts'],
+  testMatch: ['**/playground.spec.ts', '**/e2e_full_coverage.spec.ts', '**/audit-screenshots.spec.ts'],
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
   workers: process.env.CI ? 1 : undefined,
   reporter: 'html',
-  timeout: 60000, // 60s per test
+  timeout: 60000,
   expect: {
-    timeout: 15000, // 15s per assertion
+    timeout: 15000,
   },
   use: {
     baseURL: process.env.PLAYWRIGHT_BASE_URL || 'http://localhost:9002',
