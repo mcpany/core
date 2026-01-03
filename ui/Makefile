@@ -28,7 +28,8 @@ audit: build-test-docker
 	docker compose -f ../docker/docker-compose.test-ui.yml down -v
 
 test-ci:
-	docker compose -f ../docker/docker-compose.test-ui.yml up --no-build --abort-on-container-exit --exit-code-from ui-tests
+	docker compose -f ../docker/docker-compose.test-ui.yml build
+	docker compose -f ../docker/docker-compose.test-ui.yml up --abort-on-container-exit --exit-code-from ui-tests
 	docker compose -f ../docker/docker-compose.test-ui.yml down -v
 
 # Local test target (runs natively)
