@@ -200,7 +200,13 @@ func (s *Settings) LogLevel() configv1.GlobalSettings_LogLevel {
 		return configv1.GlobalSettings_LOG_LEVEL_DEBUG
 	}
 
-	key := "LOG_LEVEL_" + strings.ToUpper(s.logLevel)
+	logLevel := strings.ToUpper(s.logLevel)
+	// Handle "warning" as an alias for "WARN"
+	if logLevel == "WARNING" {
+		logLevel = "WARN"
+	}
+
+	key := "LOG_LEVEL_" + logLevel
 	if val, ok := configv1.GlobalSettings_LogLevel_value[key]; ok {
 		return configv1.GlobalSettings_LogLevel(val)
 	}
@@ -239,6 +245,11 @@ func (s *Settings) Middlewares() []*configv1.Middleware {
 // GetDlp returns the DLP configuration.
 func (s *Settings) GetDlp() *configv1.DLPConfig {
 	return s.proto.GetDlp()
+}
+
+// GetOidc returns the OIDC configuration.
+func (s *Settings) GetOidc() *configv1.OIDCConfig {
+	return s.proto.GetOidc()
 }
 
 // getStringSlice is a helper function to get a string slice from viper.

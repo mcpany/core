@@ -128,6 +128,8 @@ const (
 	AuditConfig_STORAGE_TYPE_SQLITE      AuditConfig_StorageType = 2
 	AuditConfig_STORAGE_TYPE_POSTGRES    AuditConfig_StorageType = 3
 	AuditConfig_STORAGE_TYPE_WEBHOOK     AuditConfig_StorageType = 4
+	AuditConfig_STORAGE_TYPE_SPLUNK      AuditConfig_StorageType = 5
+	AuditConfig_STORAGE_TYPE_DATADOG     AuditConfig_StorageType = 6
 )
 
 // Enum value maps for AuditConfig_StorageType.
@@ -138,6 +140,8 @@ var (
 		2: "STORAGE_TYPE_SQLITE",
 		3: "STORAGE_TYPE_POSTGRES",
 		4: "STORAGE_TYPE_WEBHOOK",
+		5: "STORAGE_TYPE_SPLUNK",
+		6: "STORAGE_TYPE_DATADOG",
 	}
 	AuditConfig_StorageType_value = map[string]int32{
 		"STORAGE_TYPE_UNSPECIFIED": 0,
@@ -145,6 +149,8 @@ var (
 		"STORAGE_TYPE_SQLITE":      2,
 		"STORAGE_TYPE_POSTGRES":    3,
 		"STORAGE_TYPE_WEBHOOK":     4,
+		"STORAGE_TYPE_SPLUNK":      5,
+		"STORAGE_TYPE_DATADOG":     6,
 	}
 )
 
@@ -418,6 +424,296 @@ func (b0 User_builder) Build() *User {
 	return m0
 }
 
+// Secret defines a secret value.
+type Secret struct {
+	state protoimpl.MessageState `protogen:"hybrid.v1"`
+	// id is the unique identifier for the secret.
+	Id *string `protobuf:"bytes,1,opt,name=id" json:"id,omitempty"`
+	// name is the human-readable name of the secret.
+	Name *string `protobuf:"bytes,2,opt,name=name" json:"name,omitempty"`
+	// key is the key used to reference the secret (e.g. env var name).
+	Key *string `protobuf:"bytes,3,opt,name=key" json:"key,omitempty"`
+	// value is the secret value (encrypted or raw depending on context).
+	Value *string `protobuf:"bytes,4,opt,name=value" json:"value,omitempty"`
+	// provider is the source of the secret (e.g. "openai", "aws").
+	Provider *string `protobuf:"bytes,5,opt,name=provider" json:"provider,omitempty"`
+	// last_used is the timestamp when the secret was last used using RFC3339 format.
+	LastUsed *string `protobuf:"bytes,6,opt,name=last_used,json=lastUsed" json:"last_used,omitempty"`
+	// created_at is the timestamp when the secret was created using RFC3339 format.
+	CreatedAt     *string `protobuf:"bytes,7,opt,name=created_at,json=createdAt" json:"created_at,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *Secret) Reset() {
+	*x = Secret{}
+	mi := &file_proto_config_v1_config_proto_msgTypes[2]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Secret) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Secret) ProtoMessage() {}
+
+func (x *Secret) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_config_v1_config_proto_msgTypes[2]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+func (x *Secret) GetId() string {
+	if x != nil && x.Id != nil {
+		return *x.Id
+	}
+	return ""
+}
+
+func (x *Secret) GetName() string {
+	if x != nil && x.Name != nil {
+		return *x.Name
+	}
+	return ""
+}
+
+func (x *Secret) GetKey() string {
+	if x != nil && x.Key != nil {
+		return *x.Key
+	}
+	return ""
+}
+
+func (x *Secret) GetValue() string {
+	if x != nil && x.Value != nil {
+		return *x.Value
+	}
+	return ""
+}
+
+func (x *Secret) GetProvider() string {
+	if x != nil && x.Provider != nil {
+		return *x.Provider
+	}
+	return ""
+}
+
+func (x *Secret) GetLastUsed() string {
+	if x != nil && x.LastUsed != nil {
+		return *x.LastUsed
+	}
+	return ""
+}
+
+func (x *Secret) GetCreatedAt() string {
+	if x != nil && x.CreatedAt != nil {
+		return *x.CreatedAt
+	}
+	return ""
+}
+
+func (x *Secret) SetId(v string) {
+	x.Id = &v
+}
+
+func (x *Secret) SetName(v string) {
+	x.Name = &v
+}
+
+func (x *Secret) SetKey(v string) {
+	x.Key = &v
+}
+
+func (x *Secret) SetValue(v string) {
+	x.Value = &v
+}
+
+func (x *Secret) SetProvider(v string) {
+	x.Provider = &v
+}
+
+func (x *Secret) SetLastUsed(v string) {
+	x.LastUsed = &v
+}
+
+func (x *Secret) SetCreatedAt(v string) {
+	x.CreatedAt = &v
+}
+
+func (x *Secret) HasId() bool {
+	if x == nil {
+		return false
+	}
+	return x.Id != nil
+}
+
+func (x *Secret) HasName() bool {
+	if x == nil {
+		return false
+	}
+	return x.Name != nil
+}
+
+func (x *Secret) HasKey() bool {
+	if x == nil {
+		return false
+	}
+	return x.Key != nil
+}
+
+func (x *Secret) HasValue() bool {
+	if x == nil {
+		return false
+	}
+	return x.Value != nil
+}
+
+func (x *Secret) HasProvider() bool {
+	if x == nil {
+		return false
+	}
+	return x.Provider != nil
+}
+
+func (x *Secret) HasLastUsed() bool {
+	if x == nil {
+		return false
+	}
+	return x.LastUsed != nil
+}
+
+func (x *Secret) HasCreatedAt() bool {
+	if x == nil {
+		return false
+	}
+	return x.CreatedAt != nil
+}
+
+func (x *Secret) ClearId() {
+	x.Id = nil
+}
+
+func (x *Secret) ClearName() {
+	x.Name = nil
+}
+
+func (x *Secret) ClearKey() {
+	x.Key = nil
+}
+
+func (x *Secret) ClearValue() {
+	x.Value = nil
+}
+
+func (x *Secret) ClearProvider() {
+	x.Provider = nil
+}
+
+func (x *Secret) ClearLastUsed() {
+	x.LastUsed = nil
+}
+
+func (x *Secret) ClearCreatedAt() {
+	x.CreatedAt = nil
+}
+
+type Secret_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// id is the unique identifier for the secret.
+	Id *string
+	// name is the human-readable name of the secret.
+	Name *string
+	// key is the key used to reference the secret (e.g. env var name).
+	Key *string
+	// value is the secret value (encrypted or raw depending on context).
+	Value *string
+	// provider is the source of the secret (e.g. "openai", "aws").
+	Provider *string
+	// last_used is the timestamp when the secret was last used using RFC3339 format.
+	LastUsed *string
+	// created_at is the timestamp when the secret was created using RFC3339 format.
+	CreatedAt *string
+}
+
+func (b0 Secret_builder) Build() *Secret {
+	m0 := &Secret{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.Id = b.Id
+	x.Name = b.Name
+	x.Key = b.Key
+	x.Value = b.Value
+	x.Provider = b.Provider
+	x.LastUsed = b.LastUsed
+	x.CreatedAt = b.CreatedAt
+	return m0
+}
+
+type SecretList struct {
+	state         protoimpl.MessageState `protogen:"hybrid.v1"`
+	Secrets       []*Secret              `protobuf:"bytes,1,rep,name=secrets" json:"secrets,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *SecretList) Reset() {
+	*x = SecretList{}
+	mi := &file_proto_config_v1_config_proto_msgTypes[3]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SecretList) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SecretList) ProtoMessage() {}
+
+func (x *SecretList) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_config_v1_config_proto_msgTypes[3]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+func (x *SecretList) GetSecrets() []*Secret {
+	if x != nil {
+		return x.Secrets
+	}
+	return nil
+}
+
+func (x *SecretList) SetSecrets(v []*Secret) {
+	x.Secrets = v
+}
+
+type SecretList_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	Secrets []*Secret
+}
+
+func (b0 SecretList_builder) Build() *SecretList {
+	m0 := &SecretList{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.Secrets = b.Secrets
+	return m0
+}
+
 type GlobalSettings struct {
 	state protoimpl.MessageState `protogen:"hybrid.v1"`
 	// The address the MCP server listens on.
@@ -449,14 +745,16 @@ type GlobalSettings struct {
 	// DLP configuration.
 	Dlp *DLPConfig `protobuf:"bytes,13,opt,name=dlp" json:"dlp,omitempty"`
 	// Garbage Collection configuration.
-	GcSettings    *GCSettings `protobuf:"bytes,16,opt,name=gc_settings" json:"gc_settings,omitempty"`
+	GcSettings *GCSettings `protobuf:"bytes,16,opt,name=gc_settings" json:"gc_settings,omitempty"`
+	// OIDC Configuration.
+	Oidc          *OIDCConfig `protobuf:"bytes,17,opt,name=oidc" json:"oidc,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *GlobalSettings) Reset() {
 	*x = GlobalSettings{}
-	mi := &file_proto_config_v1_config_proto_msgTypes[2]
+	mi := &file_proto_config_v1_config_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -468,7 +766,7 @@ func (x *GlobalSettings) String() string {
 func (*GlobalSettings) ProtoMessage() {}
 
 func (x *GlobalSettings) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_config_proto_msgTypes[2]
+	mi := &file_proto_config_v1_config_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -584,6 +882,13 @@ func (x *GlobalSettings) GetGcSettings() *GCSettings {
 	return nil
 }
 
+func (x *GlobalSettings) GetOidc() *OIDCConfig {
+	if x != nil {
+		return x.Oidc
+	}
+	return nil
+}
+
 func (x *GlobalSettings) SetMcpListenAddress(v string) {
 	x.McpListenAddress = &v
 }
@@ -642,6 +947,10 @@ func (x *GlobalSettings) SetDlp(v *DLPConfig) {
 
 func (x *GlobalSettings) SetGcSettings(v *GCSettings) {
 	x.GcSettings = v
+}
+
+func (x *GlobalSettings) SetOidc(v *OIDCConfig) {
+	x.Oidc = v
 }
 
 func (x *GlobalSettings) HasMcpListenAddress() bool {
@@ -721,6 +1030,13 @@ func (x *GlobalSettings) HasGcSettings() bool {
 	return x.GcSettings != nil
 }
 
+func (x *GlobalSettings) HasOidc() bool {
+	if x == nil {
+		return false
+	}
+	return x.Oidc != nil
+}
+
 func (x *GlobalSettings) ClearMcpListenAddress() {
 	x.McpListenAddress = nil
 }
@@ -765,6 +1081,10 @@ func (x *GlobalSettings) ClearGcSettings() {
 	x.GcSettings = nil
 }
 
+func (x *GlobalSettings) ClearOidc() {
+	x.Oidc = nil
+}
+
 type GlobalSettings_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
@@ -798,6 +1118,8 @@ type GlobalSettings_builder struct {
 	Dlp *DLPConfig
 	// Garbage Collection configuration.
 	GcSettings *GCSettings
+	// OIDC Configuration.
+	Oidc *OIDCConfig
 }
 
 func (b0 GlobalSettings_builder) Build() *GlobalSettings {
@@ -819,6 +1141,150 @@ func (b0 GlobalSettings_builder) Build() *GlobalSettings {
 	x.Middlewares = b.Middlewares
 	x.Dlp = b.Dlp
 	x.GcSettings = b.GcSettings
+	x.Oidc = b.Oidc
+	return m0
+}
+
+type OIDCConfig struct {
+	state         protoimpl.MessageState `protogen:"hybrid.v1"`
+	Issuer        *string                `protobuf:"bytes,1,opt,name=issuer" json:"issuer,omitempty"`
+	ClientId      *string                `protobuf:"bytes,2,opt,name=client_id" json:"client_id,omitempty"`
+	ClientSecret  *string                `protobuf:"bytes,3,opt,name=client_secret" json:"client_secret,omitempty"`
+	RedirectUrl   *string                `protobuf:"bytes,4,opt,name=redirect_url" json:"redirect_url,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *OIDCConfig) Reset() {
+	*x = OIDCConfig{}
+	mi := &file_proto_config_v1_config_proto_msgTypes[5]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *OIDCConfig) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*OIDCConfig) ProtoMessage() {}
+
+func (x *OIDCConfig) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_config_v1_config_proto_msgTypes[5]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+func (x *OIDCConfig) GetIssuer() string {
+	if x != nil && x.Issuer != nil {
+		return *x.Issuer
+	}
+	return ""
+}
+
+func (x *OIDCConfig) GetClientId() string {
+	if x != nil && x.ClientId != nil {
+		return *x.ClientId
+	}
+	return ""
+}
+
+func (x *OIDCConfig) GetClientSecret() string {
+	if x != nil && x.ClientSecret != nil {
+		return *x.ClientSecret
+	}
+	return ""
+}
+
+func (x *OIDCConfig) GetRedirectUrl() string {
+	if x != nil && x.RedirectUrl != nil {
+		return *x.RedirectUrl
+	}
+	return ""
+}
+
+func (x *OIDCConfig) SetIssuer(v string) {
+	x.Issuer = &v
+}
+
+func (x *OIDCConfig) SetClientId(v string) {
+	x.ClientId = &v
+}
+
+func (x *OIDCConfig) SetClientSecret(v string) {
+	x.ClientSecret = &v
+}
+
+func (x *OIDCConfig) SetRedirectUrl(v string) {
+	x.RedirectUrl = &v
+}
+
+func (x *OIDCConfig) HasIssuer() bool {
+	if x == nil {
+		return false
+	}
+	return x.Issuer != nil
+}
+
+func (x *OIDCConfig) HasClientId() bool {
+	if x == nil {
+		return false
+	}
+	return x.ClientId != nil
+}
+
+func (x *OIDCConfig) HasClientSecret() bool {
+	if x == nil {
+		return false
+	}
+	return x.ClientSecret != nil
+}
+
+func (x *OIDCConfig) HasRedirectUrl() bool {
+	if x == nil {
+		return false
+	}
+	return x.RedirectUrl != nil
+}
+
+func (x *OIDCConfig) ClearIssuer() {
+	x.Issuer = nil
+}
+
+func (x *OIDCConfig) ClearClientId() {
+	x.ClientId = nil
+}
+
+func (x *OIDCConfig) ClearClientSecret() {
+	x.ClientSecret = nil
+}
+
+func (x *OIDCConfig) ClearRedirectUrl() {
+	x.RedirectUrl = nil
+}
+
+type OIDCConfig_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	Issuer       *string
+	ClientId     *string
+	ClientSecret *string
+	RedirectUrl  *string
+}
+
+func (b0 OIDCConfig_builder) Build() *OIDCConfig {
+	m0 := &OIDCConfig{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.Issuer = b.Issuer
+	x.ClientId = b.ClientId
+	x.ClientSecret = b.ClientSecret
+	x.RedirectUrl = b.RedirectUrl
 	return m0
 }
 
@@ -840,7 +1306,7 @@ type GCSettings struct {
 
 func (x *GCSettings) Reset() {
 	*x = GCSettings{}
-	mi := &file_proto_config_v1_config_proto_msgTypes[3]
+	mi := &file_proto_config_v1_config_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -852,7 +1318,7 @@ func (x *GCSettings) String() string {
 func (*GCSettings) ProtoMessage() {}
 
 func (x *GCSettings) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_config_proto_msgTypes[3]
+	mi := &file_proto_config_v1_config_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -979,7 +1445,7 @@ type DLPConfig struct {
 
 func (x *DLPConfig) Reset() {
 	*x = DLPConfig{}
-	mi := &file_proto_config_v1_config_proto_msgTypes[4]
+	mi := &file_proto_config_v1_config_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -991,7 +1457,7 @@ func (x *DLPConfig) String() string {
 func (*DLPConfig) ProtoMessage() {}
 
 func (x *DLPConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_config_proto_msgTypes[4]
+	mi := &file_proto_config_v1_config_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1070,13 +1536,17 @@ type AuditConfig struct {
 	WebhookUrl *string `protobuf:"bytes,6,opt,name=webhook_url" json:"webhook_url,omitempty"`
 	// Additional headers to send with the webhook.
 	WebhookHeaders map[string]string `protobuf:"bytes,7,rep,name=webhook_headers" json:"webhook_headers,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
-	unknownFields  protoimpl.UnknownFields
-	sizeCache      protoimpl.SizeCache
+	// Splunk configuration.
+	Splunk *SplunkConfig `protobuf:"bytes,8,opt,name=splunk" json:"splunk,omitempty"`
+	// Datadog configuration.
+	Datadog       *DatadogConfig `protobuf:"bytes,9,opt,name=datadog" json:"datadog,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *AuditConfig) Reset() {
 	*x = AuditConfig{}
-	mi := &file_proto_config_v1_config_proto_msgTypes[5]
+	mi := &file_proto_config_v1_config_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1088,7 +1558,7 @@ func (x *AuditConfig) String() string {
 func (*AuditConfig) ProtoMessage() {}
 
 func (x *AuditConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_config_proto_msgTypes[5]
+	mi := &file_proto_config_v1_config_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1148,6 +1618,20 @@ func (x *AuditConfig) GetWebhookHeaders() map[string]string {
 	return nil
 }
 
+func (x *AuditConfig) GetSplunk() *SplunkConfig {
+	if x != nil {
+		return x.Splunk
+	}
+	return nil
+}
+
+func (x *AuditConfig) GetDatadog() *DatadogConfig {
+	if x != nil {
+		return x.Datadog
+	}
+	return nil
+}
+
 func (x *AuditConfig) SetEnabled(v bool) {
 	x.Enabled = &v
 }
@@ -1174,6 +1658,14 @@ func (x *AuditConfig) SetWebhookUrl(v string) {
 
 func (x *AuditConfig) SetWebhookHeaders(v map[string]string) {
 	x.WebhookHeaders = v
+}
+
+func (x *AuditConfig) SetSplunk(v *SplunkConfig) {
+	x.Splunk = v
+}
+
+func (x *AuditConfig) SetDatadog(v *DatadogConfig) {
+	x.Datadog = v
 }
 
 func (x *AuditConfig) HasEnabled() bool {
@@ -1218,6 +1710,20 @@ func (x *AuditConfig) HasWebhookUrl() bool {
 	return x.WebhookUrl != nil
 }
 
+func (x *AuditConfig) HasSplunk() bool {
+	if x == nil {
+		return false
+	}
+	return x.Splunk != nil
+}
+
+func (x *AuditConfig) HasDatadog() bool {
+	if x == nil {
+		return false
+	}
+	return x.Datadog != nil
+}
+
 func (x *AuditConfig) ClearEnabled() {
 	x.Enabled = nil
 }
@@ -1242,6 +1748,14 @@ func (x *AuditConfig) ClearWebhookUrl() {
 	x.WebhookUrl = nil
 }
 
+func (x *AuditConfig) ClearSplunk() {
+	x.Splunk = nil
+}
+
+func (x *AuditConfig) ClearDatadog() {
+	x.Datadog = nil
+}
+
 type AuditConfig_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
@@ -1259,6 +1773,10 @@ type AuditConfig_builder struct {
 	WebhookUrl *string
 	// Additional headers to send with the webhook.
 	WebhookHeaders map[string]string
+	// Splunk configuration.
+	Splunk *SplunkConfig
+	// Datadog configuration.
+	Datadog *DatadogConfig
 }
 
 func (b0 AuditConfig_builder) Build() *AuditConfig {
@@ -1272,6 +1790,319 @@ func (b0 AuditConfig_builder) Build() *AuditConfig {
 	x.StorageType = b.StorageType
 	x.WebhookUrl = b.WebhookUrl
 	x.WebhookHeaders = b.WebhookHeaders
+	x.Splunk = b.Splunk
+	x.Datadog = b.Datadog
+	return m0
+}
+
+type SplunkConfig struct {
+	state         protoimpl.MessageState `protogen:"hybrid.v1"`
+	HecUrl        *string                `protobuf:"bytes,1,opt,name=hec_url" json:"hec_url,omitempty"`
+	Token         *string                `protobuf:"bytes,2,opt,name=token" json:"token,omitempty"`
+	Index         *string                `protobuf:"bytes,3,opt,name=index" json:"index,omitempty"`
+	Source        *string                `protobuf:"bytes,4,opt,name=source" json:"source,omitempty"`
+	Sourcetype    *string                `protobuf:"bytes,5,opt,name=sourcetype" json:"sourcetype,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *SplunkConfig) Reset() {
+	*x = SplunkConfig{}
+	mi := &file_proto_config_v1_config_proto_msgTypes[9]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SplunkConfig) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SplunkConfig) ProtoMessage() {}
+
+func (x *SplunkConfig) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_config_v1_config_proto_msgTypes[9]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+func (x *SplunkConfig) GetHecUrl() string {
+	if x != nil && x.HecUrl != nil {
+		return *x.HecUrl
+	}
+	return ""
+}
+
+func (x *SplunkConfig) GetToken() string {
+	if x != nil && x.Token != nil {
+		return *x.Token
+	}
+	return ""
+}
+
+func (x *SplunkConfig) GetIndex() string {
+	if x != nil && x.Index != nil {
+		return *x.Index
+	}
+	return ""
+}
+
+func (x *SplunkConfig) GetSource() string {
+	if x != nil && x.Source != nil {
+		return *x.Source
+	}
+	return ""
+}
+
+func (x *SplunkConfig) GetSourcetype() string {
+	if x != nil && x.Sourcetype != nil {
+		return *x.Sourcetype
+	}
+	return ""
+}
+
+func (x *SplunkConfig) SetHecUrl(v string) {
+	x.HecUrl = &v
+}
+
+func (x *SplunkConfig) SetToken(v string) {
+	x.Token = &v
+}
+
+func (x *SplunkConfig) SetIndex(v string) {
+	x.Index = &v
+}
+
+func (x *SplunkConfig) SetSource(v string) {
+	x.Source = &v
+}
+
+func (x *SplunkConfig) SetSourcetype(v string) {
+	x.Sourcetype = &v
+}
+
+func (x *SplunkConfig) HasHecUrl() bool {
+	if x == nil {
+		return false
+	}
+	return x.HecUrl != nil
+}
+
+func (x *SplunkConfig) HasToken() bool {
+	if x == nil {
+		return false
+	}
+	return x.Token != nil
+}
+
+func (x *SplunkConfig) HasIndex() bool {
+	if x == nil {
+		return false
+	}
+	return x.Index != nil
+}
+
+func (x *SplunkConfig) HasSource() bool {
+	if x == nil {
+		return false
+	}
+	return x.Source != nil
+}
+
+func (x *SplunkConfig) HasSourcetype() bool {
+	if x == nil {
+		return false
+	}
+	return x.Sourcetype != nil
+}
+
+func (x *SplunkConfig) ClearHecUrl() {
+	x.HecUrl = nil
+}
+
+func (x *SplunkConfig) ClearToken() {
+	x.Token = nil
+}
+
+func (x *SplunkConfig) ClearIndex() {
+	x.Index = nil
+}
+
+func (x *SplunkConfig) ClearSource() {
+	x.Source = nil
+}
+
+func (x *SplunkConfig) ClearSourcetype() {
+	x.Sourcetype = nil
+}
+
+type SplunkConfig_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	HecUrl     *string
+	Token      *string
+	Index      *string
+	Source     *string
+	Sourcetype *string
+}
+
+func (b0 SplunkConfig_builder) Build() *SplunkConfig {
+	m0 := &SplunkConfig{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.HecUrl = b.HecUrl
+	x.Token = b.Token
+	x.Index = b.Index
+	x.Source = b.Source
+	x.Sourcetype = b.Sourcetype
+	return m0
+}
+
+type DatadogConfig struct {
+	state         protoimpl.MessageState `protogen:"hybrid.v1"`
+	ApiKey        *string                `protobuf:"bytes,1,opt,name=api_key" json:"api_key,omitempty"`
+	Site          *string                `protobuf:"bytes,2,opt,name=site" json:"site,omitempty"`
+	Service       *string                `protobuf:"bytes,3,opt,name=service" json:"service,omitempty"`
+	Tags          *string                `protobuf:"bytes,4,opt,name=tags" json:"tags,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *DatadogConfig) Reset() {
+	*x = DatadogConfig{}
+	mi := &file_proto_config_v1_config_proto_msgTypes[10]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DatadogConfig) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DatadogConfig) ProtoMessage() {}
+
+func (x *DatadogConfig) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_config_v1_config_proto_msgTypes[10]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+func (x *DatadogConfig) GetApiKey() string {
+	if x != nil && x.ApiKey != nil {
+		return *x.ApiKey
+	}
+	return ""
+}
+
+func (x *DatadogConfig) GetSite() string {
+	if x != nil && x.Site != nil {
+		return *x.Site
+	}
+	return ""
+}
+
+func (x *DatadogConfig) GetService() string {
+	if x != nil && x.Service != nil {
+		return *x.Service
+	}
+	return ""
+}
+
+func (x *DatadogConfig) GetTags() string {
+	if x != nil && x.Tags != nil {
+		return *x.Tags
+	}
+	return ""
+}
+
+func (x *DatadogConfig) SetApiKey(v string) {
+	x.ApiKey = &v
+}
+
+func (x *DatadogConfig) SetSite(v string) {
+	x.Site = &v
+}
+
+func (x *DatadogConfig) SetService(v string) {
+	x.Service = &v
+}
+
+func (x *DatadogConfig) SetTags(v string) {
+	x.Tags = &v
+}
+
+func (x *DatadogConfig) HasApiKey() bool {
+	if x == nil {
+		return false
+	}
+	return x.ApiKey != nil
+}
+
+func (x *DatadogConfig) HasSite() bool {
+	if x == nil {
+		return false
+	}
+	return x.Site != nil
+}
+
+func (x *DatadogConfig) HasService() bool {
+	if x == nil {
+		return false
+	}
+	return x.Service != nil
+}
+
+func (x *DatadogConfig) HasTags() bool {
+	if x == nil {
+		return false
+	}
+	return x.Tags != nil
+}
+
+func (x *DatadogConfig) ClearApiKey() {
+	x.ApiKey = nil
+}
+
+func (x *DatadogConfig) ClearSite() {
+	x.Site = nil
+}
+
+func (x *DatadogConfig) ClearService() {
+	x.Service = nil
+}
+
+func (x *DatadogConfig) ClearTags() {
+	x.Tags = nil
+}
+
+type DatadogConfig_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	ApiKey  *string
+	Site    *string
+	Service *string
+	Tags    *string
+}
+
+func (b0 DatadogConfig_builder) Build() *DatadogConfig {
+	m0 := &DatadogConfig{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.ApiKey = b.ApiKey
+	x.Site = b.Site
+	x.Service = b.Service
+	x.Tags = b.Tags
 	return m0
 }
 
@@ -1289,7 +2120,7 @@ type ProfileDefinition struct {
 
 func (x *ProfileDefinition) Reset() {
 	*x = ProfileDefinition{}
-	mi := &file_proto_config_v1_config_proto_msgTypes[6]
+	mi := &file_proto_config_v1_config_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1301,7 +2132,7 @@ func (x *ProfileDefinition) String() string {
 func (*ProfileDefinition) ProtoMessage() {}
 
 func (x *ProfileDefinition) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_config_proto_msgTypes[6]
+	mi := &file_proto_config_v1_config_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1398,7 +2229,7 @@ type ProfileSelector struct {
 
 func (x *ProfileSelector) Reset() {
 	*x = ProfileSelector{}
-	mi := &file_proto_config_v1_config_proto_msgTypes[7]
+	mi := &file_proto_config_v1_config_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1410,7 +2241,7 @@ func (x *ProfileSelector) String() string {
 func (*ProfileSelector) ProtoMessage() {}
 
 func (x *ProfileSelector) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_config_proto_msgTypes[7]
+	mi := &file_proto_config_v1_config_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1473,7 +2304,7 @@ type Middleware struct {
 
 func (x *Middleware) Reset() {
 	*x = Middleware{}
-	mi := &file_proto_config_v1_config_proto_msgTypes[8]
+	mi := &file_proto_config_v1_config_proto_msgTypes[13]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1485,7 +2316,7 @@ func (x *Middleware) String() string {
 func (*Middleware) ProtoMessage() {}
 
 func (x *Middleware) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_config_proto_msgTypes[8]
+	mi := &file_proto_config_v1_config_proto_msgTypes[13]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1597,7 +2428,19 @@ const file_proto_config_v1_config_proto_rawDesc = "" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12N\n" +
 	"\x0eauthentication\x18\x02 \x01(\v2&.mcpany.config.v1.AuthenticationConfigR\x0eauthentication\x12 \n" +
 	"\vprofile_ids\x18\x03 \x03(\tR\vprofile_ids\x12\x14\n" +
-	"\x05roles\x18\x04 \x03(\tR\x05roles\"\xbd\a\n" +
+	"\x05roles\x18\x04 \x03(\tR\x05roles\"\xac\x01\n" +
+	"\x06Secret\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\x12\x12\n" +
+	"\x04name\x18\x02 \x01(\tR\x04name\x12\x10\n" +
+	"\x03key\x18\x03 \x01(\tR\x03key\x12\x14\n" +
+	"\x05value\x18\x04 \x01(\tR\x05value\x12\x1a\n" +
+	"\bprovider\x18\x05 \x01(\tR\bprovider\x12\x1b\n" +
+	"\tlast_used\x18\x06 \x01(\tR\blastUsed\x12\x1d\n" +
+	"\n" +
+	"created_at\x18\a \x01(\tR\tcreatedAt\"@\n" +
+	"\n" +
+	"SecretList\x122\n" +
+	"\asecrets\x18\x01 \x03(\v2\x18.mcpany.config.v1.SecretR\asecrets\"\xef\a\n" +
 	"\x0eGlobalSettings\x12.\n" +
 	"\x12mcp_listen_address\x18\x01 \x01(\tR\x12mcp_listen_address\x12G\n" +
 	"\tlog_level\x18\x03 \x01(\x0e2).mcpany.config.v1.GlobalSettings.LogLevelR\tlog_level\x121\n" +
@@ -1616,7 +2459,8 @@ const file_proto_config_v1_config_proto_rawDesc = "" +
 	"\tdb_driver\x18\x0f \x01(\tR\tdb_driver\x12>\n" +
 	"\vmiddlewares\x18\f \x03(\v2\x1c.mcpany.config.v1.MiddlewareR\vmiddlewares\x12-\n" +
 	"\x03dlp\x18\r \x01(\v2\x1b.mcpany.config.v1.DLPConfigR\x03dlp\x12>\n" +
-	"\vgc_settings\x18\x10 \x01(\v2\x1c.mcpany.config.v1.GCSettingsR\vgc_settings\"w\n" +
+	"\vgc_settings\x18\x10 \x01(\v2\x1c.mcpany.config.v1.GCSettingsR\vgc_settings\x120\n" +
+	"\x04oidc\x18\x11 \x01(\v2\x1c.mcpany.config.v1.OIDCConfigR\x04oidc\"w\n" +
 	"\bLogLevel\x12\x19\n" +
 	"\x15LOG_LEVEL_UNSPECIFIED\x10\x00\x12\x12\n" +
 	"\x0eLOG_LEVEL_INFO\x10\x01\x12\x12\n" +
@@ -1626,7 +2470,13 @@ const file_proto_config_v1_config_proto_rawDesc = "" +
 	"\tLogFormat\x12\x1a\n" +
 	"\x16LOG_FORMAT_UNSPECIFIED\x10\x00\x12\x13\n" +
 	"\x0fLOG_FORMAT_TEXT\x10\x01\x12\x13\n" +
-	"\x0fLOG_FORMAT_JSON\x10\x02J\x04\b\x02\x10\x03\"j\n" +
+	"\x0fLOG_FORMAT_JSON\x10\x02J\x04\b\x02\x10\x03\"\x8c\x01\n" +
+	"\n" +
+	"OIDCConfig\x12\x16\n" +
+	"\x06issuer\x18\x01 \x01(\tR\x06issuer\x12\x1c\n" +
+	"\tclient_id\x18\x02 \x01(\tR\tclient_id\x12$\n" +
+	"\rclient_secret\x18\x03 \x01(\tR\rclient_secret\x12\"\n" +
+	"\fredirect_url\x18\x04 \x01(\tR\fredirect_url\"j\n" +
 	"\n" +
 	"GCSettings\x12\x18\n" +
 	"\aenabled\x18\x01 \x01(\bR\aenabled\x12\x1a\n" +
@@ -1635,7 +2485,7 @@ const file_proto_config_v1_config_proto_rawDesc = "" +
 	"\x05paths\x18\x04 \x03(\tR\x05paths\"O\n" +
 	"\tDLPConfig\x12\x18\n" +
 	"\aenabled\x18\x01 \x01(\bR\aenabled\x12(\n" +
-	"\x0fcustom_patterns\x18\x02 \x03(\tR\x0fcustom_patterns\"\xb5\x04\n" +
+	"\x0fcustom_patterns\x18\x02 \x03(\tR\x0fcustom_patterns\"\xdb\x05\n" +
 	"\vAuditConfig\x12\x18\n" +
 	"\aenabled\x18\x01 \x01(\bR\aenabled\x12 \n" +
 	"\voutput_path\x18\x02 \x01(\tR\voutput_path\x12$\n" +
@@ -1643,16 +2493,33 @@ const file_proto_config_v1_config_proto_rawDesc = "" +
 	"\vlog_results\x18\x04 \x01(\bR\vlog_results\x12M\n" +
 	"\fstorage_type\x18\x05 \x01(\x0e2).mcpany.config.v1.AuditConfig.StorageTypeR\fstorage_type\x12 \n" +
 	"\vwebhook_url\x18\x06 \x01(\tR\vwebhook_url\x12[\n" +
-	"\x0fwebhook_headers\x18\a \x03(\v21.mcpany.config.v1.AuditConfig.WebhookHeadersEntryR\x0fwebhook_headers\x1aA\n" +
+	"\x0fwebhook_headers\x18\a \x03(\v21.mcpany.config.v1.AuditConfig.WebhookHeadersEntryR\x0fwebhook_headers\x126\n" +
+	"\x06splunk\x18\b \x01(\v2\x1e.mcpany.config.v1.SplunkConfigR\x06splunk\x129\n" +
+	"\adatadog\x18\t \x01(\v2\x1f.mcpany.config.v1.DatadogConfigR\adatadog\x1aA\n" +
 	"\x13WebhookHeadersEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\x90\x01\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\xc3\x01\n" +
 	"\vStorageType\x12\x1c\n" +
 	"\x18STORAGE_TYPE_UNSPECIFIED\x10\x00\x12\x15\n" +
 	"\x11STORAGE_TYPE_FILE\x10\x01\x12\x17\n" +
 	"\x13STORAGE_TYPE_SQLITE\x10\x02\x12\x19\n" +
 	"\x15STORAGE_TYPE_POSTGRES\x10\x03\x12\x18\n" +
-	"\x14STORAGE_TYPE_WEBHOOK\x10\x04\"\x8e\x01\n" +
+	"\x14STORAGE_TYPE_WEBHOOK\x10\x04\x12\x17\n" +
+	"\x13STORAGE_TYPE_SPLUNK\x10\x05\x12\x18\n" +
+	"\x14STORAGE_TYPE_DATADOG\x10\x06\"\x8c\x01\n" +
+	"\fSplunkConfig\x12\x18\n" +
+	"\ahec_url\x18\x01 \x01(\tR\ahec_url\x12\x14\n" +
+	"\x05token\x18\x02 \x01(\tR\x05token\x12\x14\n" +
+	"\x05index\x18\x03 \x01(\tR\x05index\x12\x16\n" +
+	"\x06source\x18\x04 \x01(\tR\x06source\x12\x1e\n" +
+	"\n" +
+	"sourcetype\x18\x05 \x01(\tR\n" +
+	"sourcetype\"k\n" +
+	"\rDatadogConfig\x12\x18\n" +
+	"\aapi_key\x18\x01 \x01(\tR\aapi_key\x12\x12\n" +
+	"\x04site\x18\x02 \x01(\tR\x04site\x12\x18\n" +
+	"\aservice\x18\x03 \x01(\tR\aservice\x12\x12\n" +
+	"\x04tags\x18\x04 \x01(\tR\x04tags\"\x8e\x01\n" +
 	"\x11ProfileDefinition\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12=\n" +
 	"\bselector\x18\x02 \x01(\v2!.mcpany.config.v1.ProfileSelectorR\bselector\x12&\n" +
@@ -1670,50 +2537,59 @@ const file_proto_config_v1_config_proto_rawDesc = "" +
 	"\bdisabled\x18\x03 \x01(\bR\bdisabledB5B\vConfigProtoZ&github.com/mcpany/core/proto/config/v1b\beditionsp\xe8\a"
 
 var file_proto_config_v1_config_proto_enumTypes = make([]protoimpl.EnumInfo, 3)
-var file_proto_config_v1_config_proto_msgTypes = make([]protoimpl.MessageInfo, 11)
+var file_proto_config_v1_config_proto_msgTypes = make([]protoimpl.MessageInfo, 16)
 var file_proto_config_v1_config_proto_goTypes = []any{
 	(GlobalSettings_LogLevel)(0),      // 0: mcpany.config.v1.GlobalSettings.LogLevel
 	(GlobalSettings_LogFormat)(0),     // 1: mcpany.config.v1.GlobalSettings.LogFormat
 	(AuditConfig_StorageType)(0),      // 2: mcpany.config.v1.AuditConfig.StorageType
 	(*McpAnyServerConfig)(nil),        // 3: mcpany.config.v1.McpAnyServerConfig
 	(*User)(nil),                      // 4: mcpany.config.v1.User
-	(*GlobalSettings)(nil),            // 5: mcpany.config.v1.GlobalSettings
-	(*GCSettings)(nil),                // 6: mcpany.config.v1.GCSettings
-	(*DLPConfig)(nil),                 // 7: mcpany.config.v1.DLPConfig
-	(*AuditConfig)(nil),               // 8: mcpany.config.v1.AuditConfig
-	(*ProfileDefinition)(nil),         // 9: mcpany.config.v1.ProfileDefinition
-	(*ProfileSelector)(nil),           // 10: mcpany.config.v1.ProfileSelector
-	(*Middleware)(nil),                // 11: mcpany.config.v1.Middleware
-	nil,                               // 12: mcpany.config.v1.AuditConfig.WebhookHeadersEntry
-	nil,                               // 13: mcpany.config.v1.ProfileSelector.ToolPropertiesEntry
-	(*UpstreamServiceConfig)(nil),     // 14: mcpany.config.v1.UpstreamServiceConfig
-	(*UpstreamServiceCollection)(nil), // 15: mcpany.config.v1.UpstreamServiceCollection
-	(*AuthenticationConfig)(nil),      // 16: mcpany.config.v1.AuthenticationConfig
-	(*bus.MessageBus)(nil),            // 17: bus.MessageBus
+	(*Secret)(nil),                    // 5: mcpany.config.v1.Secret
+	(*SecretList)(nil),                // 6: mcpany.config.v1.SecretList
+	(*GlobalSettings)(nil),            // 7: mcpany.config.v1.GlobalSettings
+	(*OIDCConfig)(nil),                // 8: mcpany.config.v1.OIDCConfig
+	(*GCSettings)(nil),                // 9: mcpany.config.v1.GCSettings
+	(*DLPConfig)(nil),                 // 10: mcpany.config.v1.DLPConfig
+	(*AuditConfig)(nil),               // 11: mcpany.config.v1.AuditConfig
+	(*SplunkConfig)(nil),              // 12: mcpany.config.v1.SplunkConfig
+	(*DatadogConfig)(nil),             // 13: mcpany.config.v1.DatadogConfig
+	(*ProfileDefinition)(nil),         // 14: mcpany.config.v1.ProfileDefinition
+	(*ProfileSelector)(nil),           // 15: mcpany.config.v1.ProfileSelector
+	(*Middleware)(nil),                // 16: mcpany.config.v1.Middleware
+	nil,                               // 17: mcpany.config.v1.AuditConfig.WebhookHeadersEntry
+	nil,                               // 18: mcpany.config.v1.ProfileSelector.ToolPropertiesEntry
+	(*UpstreamServiceConfig)(nil),     // 19: mcpany.config.v1.UpstreamServiceConfig
+	(*UpstreamServiceCollection)(nil), // 20: mcpany.config.v1.UpstreamServiceCollection
+	(*AuthenticationConfig)(nil),      // 21: mcpany.config.v1.AuthenticationConfig
+	(*bus.MessageBus)(nil),            // 22: bus.MessageBus
 }
 var file_proto_config_v1_config_proto_depIdxs = []int32{
-	5,  // 0: mcpany.config.v1.McpAnyServerConfig.global_settings:type_name -> mcpany.config.v1.GlobalSettings
-	14, // 1: mcpany.config.v1.McpAnyServerConfig.upstream_services:type_name -> mcpany.config.v1.UpstreamServiceConfig
-	15, // 2: mcpany.config.v1.McpAnyServerConfig.upstream_service_collections:type_name -> mcpany.config.v1.UpstreamServiceCollection
+	7,  // 0: mcpany.config.v1.McpAnyServerConfig.global_settings:type_name -> mcpany.config.v1.GlobalSettings
+	19, // 1: mcpany.config.v1.McpAnyServerConfig.upstream_services:type_name -> mcpany.config.v1.UpstreamServiceConfig
+	20, // 2: mcpany.config.v1.McpAnyServerConfig.upstream_service_collections:type_name -> mcpany.config.v1.UpstreamServiceCollection
 	4,  // 3: mcpany.config.v1.McpAnyServerConfig.users:type_name -> mcpany.config.v1.User
-	16, // 4: mcpany.config.v1.User.authentication:type_name -> mcpany.config.v1.AuthenticationConfig
-	0,  // 5: mcpany.config.v1.GlobalSettings.log_level:type_name -> mcpany.config.v1.GlobalSettings.LogLevel
-	17, // 6: mcpany.config.v1.GlobalSettings.message_bus:type_name -> bus.MessageBus
-	8,  // 7: mcpany.config.v1.GlobalSettings.audit:type_name -> mcpany.config.v1.AuditConfig
-	9,  // 8: mcpany.config.v1.GlobalSettings.profile_definitions:type_name -> mcpany.config.v1.ProfileDefinition
-	1,  // 9: mcpany.config.v1.GlobalSettings.log_format:type_name -> mcpany.config.v1.GlobalSettings.LogFormat
-	11, // 10: mcpany.config.v1.GlobalSettings.middlewares:type_name -> mcpany.config.v1.Middleware
-	7,  // 11: mcpany.config.v1.GlobalSettings.dlp:type_name -> mcpany.config.v1.DLPConfig
-	6,  // 12: mcpany.config.v1.GlobalSettings.gc_settings:type_name -> mcpany.config.v1.GCSettings
-	2,  // 13: mcpany.config.v1.AuditConfig.storage_type:type_name -> mcpany.config.v1.AuditConfig.StorageType
-	12, // 14: mcpany.config.v1.AuditConfig.webhook_headers:type_name -> mcpany.config.v1.AuditConfig.WebhookHeadersEntry
-	10, // 15: mcpany.config.v1.ProfileDefinition.selector:type_name -> mcpany.config.v1.ProfileSelector
-	13, // 16: mcpany.config.v1.ProfileSelector.tool_properties:type_name -> mcpany.config.v1.ProfileSelector.ToolPropertiesEntry
-	17, // [17:17] is the sub-list for method output_type
-	17, // [17:17] is the sub-list for method input_type
-	17, // [17:17] is the sub-list for extension type_name
-	17, // [17:17] is the sub-list for extension extendee
-	0,  // [0:17] is the sub-list for field type_name
+	21, // 4: mcpany.config.v1.User.authentication:type_name -> mcpany.config.v1.AuthenticationConfig
+	5,  // 5: mcpany.config.v1.SecretList.secrets:type_name -> mcpany.config.v1.Secret
+	0,  // 6: mcpany.config.v1.GlobalSettings.log_level:type_name -> mcpany.config.v1.GlobalSettings.LogLevel
+	22, // 7: mcpany.config.v1.GlobalSettings.message_bus:type_name -> bus.MessageBus
+	11, // 8: mcpany.config.v1.GlobalSettings.audit:type_name -> mcpany.config.v1.AuditConfig
+	14, // 9: mcpany.config.v1.GlobalSettings.profile_definitions:type_name -> mcpany.config.v1.ProfileDefinition
+	1,  // 10: mcpany.config.v1.GlobalSettings.log_format:type_name -> mcpany.config.v1.GlobalSettings.LogFormat
+	16, // 11: mcpany.config.v1.GlobalSettings.middlewares:type_name -> mcpany.config.v1.Middleware
+	10, // 12: mcpany.config.v1.GlobalSettings.dlp:type_name -> mcpany.config.v1.DLPConfig
+	9,  // 13: mcpany.config.v1.GlobalSettings.gc_settings:type_name -> mcpany.config.v1.GCSettings
+	8,  // 14: mcpany.config.v1.GlobalSettings.oidc:type_name -> mcpany.config.v1.OIDCConfig
+	2,  // 15: mcpany.config.v1.AuditConfig.storage_type:type_name -> mcpany.config.v1.AuditConfig.StorageType
+	17, // 16: mcpany.config.v1.AuditConfig.webhook_headers:type_name -> mcpany.config.v1.AuditConfig.WebhookHeadersEntry
+	12, // 17: mcpany.config.v1.AuditConfig.splunk:type_name -> mcpany.config.v1.SplunkConfig
+	13, // 18: mcpany.config.v1.AuditConfig.datadog:type_name -> mcpany.config.v1.DatadogConfig
+	15, // 19: mcpany.config.v1.ProfileDefinition.selector:type_name -> mcpany.config.v1.ProfileSelector
+	18, // 20: mcpany.config.v1.ProfileSelector.tool_properties:type_name -> mcpany.config.v1.ProfileSelector.ToolPropertiesEntry
+	21, // [21:21] is the sub-list for method output_type
+	21, // [21:21] is the sub-list for method input_type
+	21, // [21:21] is the sub-list for extension type_name
+	21, // [21:21] is the sub-list for extension extendee
+	0,  // [0:21] is the sub-list for field type_name
 }
 
 func init() { file_proto_config_v1_config_proto_init() }
@@ -1729,7 +2605,7 @@ func file_proto_config_v1_config_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_proto_config_v1_config_proto_rawDesc), len(file_proto_config_v1_config_proto_rawDesc)),
 			NumEnums:      3,
-			NumMessages:   11,
+			NumMessages:   16,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

@@ -7,11 +7,15 @@ import { NextResponse } from 'next/server';
 import { SecretsStore } from '@/lib/server/secrets-store';
 
 export async function DELETE(
-  request: Request,
-  { params }: { params: Promise<{ id: string }> }
+    request: Request,
+    { params }: { params: Promise<{ id: string }> }
 ) {
     try {
         const id = (await params).id;
+        if (!id) {
+            return NextResponse.json({ error: 'Missing ID' }, { status: 400 });
+        }
+
         SecretsStore.delete(id);
         return NextResponse.json({ success: true });
     } catch (error) {

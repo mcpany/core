@@ -13,6 +13,7 @@ import (
 	"path/filepath"
 	"regexp"
 	"sort"
+	"strconv"
 	"strings"
 	"time"
 
@@ -23,6 +24,7 @@ import (
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/encoding/prototext"
 	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/reflect/protoreflect"
 	"gopkg.in/yaml.v3"
 )
 
@@ -75,7 +77,7 @@ func (e *yamlEngine) Unmarshal(b []byte, v proto.Message) error {
 
 	// Apply environment variable overrides: MCPANY__SECTION__KEY -> section.key
 	// This allows overriding any configuration value using environment variables.
-	applyEnvVars(yamlMap)
+	applyEnvVars(yamlMap, v)
 
 	// Helper to fix log level if it was set via env vars or file without prefix
 	if gs, ok := yamlMap["global_settings"].(map[string]interface{}); ok {
@@ -401,12 +403,15 @@ func isURL(path string) bool {
 // applyEnvVars iterates over environment variables and applies those starting with "MCPANY__"
 // to the configuration map. It supports nested structure via "__" separator.
 // Example: MCPANY__GLOBAL_SETTINGS__MCP_LISTEN_ADDRESS -> global_settings.mcp_listen_address.
-func applyEnvVars(m map[string]interface{}) {
-	applyEnvVarsFromSlice(m, os.Environ())
+func applyEnvVars(m map[string]interface{}, v proto.Message) {
+	applyEnvVarsFromSlice(m, os.Environ(), v)
+	if v != nil {
+		fixTypes(m, v.ProtoReflect().Descriptor())
+	}
 }
 
 // applyEnvVarsFromSlice is the logic for applyEnvVars, separated for testing.
-func applyEnvVarsFromSlice(m map[string]interface{}, environ []string) {
+func applyEnvVarsFromSlice(m map[string]interface{}, environ []string, v proto.Message) {
 	// Sort the environment variables to ensure deterministic application order.
 	// We make a copy to avoid modifying the input slice.
 	sortedEnv := make([]string, len(environ))
@@ -436,7 +441,8 @@ func applyEnvVarsFromSlice(m map[string]interface{}, environ []string) {
 			if i == len(path)-1 {
 				// We are at the leaf, set the value.
 				// We overwrite whatever is there.
-				current[section] = value
+				resolvedValue := resolveEnvValue(v, path, value)
+				current[section] = resolvedValue
 			} else {
 				// We need to go deeper
 				if next, ok := current[section].(map[string]interface{}); ok {
@@ -450,6 +456,185 @@ func applyEnvVarsFromSlice(m map[string]interface{}, environ []string) {
 			}
 		}
 	}
+}
+
+// resolveEnvValue attempts to determine the correct type for the environment variable
+// by traversing the protobuf message descriptor.
+func resolveEnvValue(root proto.Message, path []string, value string) interface{} {
+	if root == nil {
+		return value
+	}
+	md := root.ProtoReflect().Descriptor()
+	var currentFd protoreflect.FieldDescriptor
+
+	for i := 0; i < len(path); i++ {
+		part := strings.ToLower(path[i])
+
+		if currentFd != nil && currentFd.IsList() {
+			// We are inside a list. 'part' should be an index.
+			// If element is Message, we switch 'md' to that message.
+			// If element is Scalar, we are done (or expecting this to be leaf).
+
+			if currentFd.Kind() == protoreflect.MessageKind {
+				md = currentFd.Message()
+				currentFd = nil // Reset, we are now inside the message
+				continue
+			}
+			// Scalar list. 'part' is the index.
+			// If this is the last part, we are setting the value of this element.
+			if i == len(path)-1 {
+				// Convert value based on currentFd.Kind()
+				return convertKind(currentFd.Kind(), value)
+			}
+			// If not last part, mismatch? Scalar list doesn't have fields.
+			return value
+		}
+
+		fd := findField(md, part)
+		if fd == nil {
+			// Can't resolve, return string
+			return value
+		}
+		currentFd = fd
+
+		if i == len(path)-1 {
+			// We found the leaf field. Check its kind.
+			kind := fd.Kind()
+
+			if fd.IsList() {
+				// Repeated field: split by comma
+				parts := strings.Split(value, ",")
+				var list []interface{}
+				for _, part := range parts {
+					part = strings.TrimSpace(part)
+					if kind == protoreflect.BoolKind {
+						b, err := strconv.ParseBool(part)
+						if err == nil {
+							list = append(list, b)
+						} else {
+							list = append(list, part)
+						}
+					} else {
+						list = append(list, part)
+					}
+				}
+				return list
+			}
+
+			if kind == protoreflect.BoolKind {
+				b, err := strconv.ParseBool(value)
+				if err == nil {
+					return b
+				}
+			}
+			return convertKind(fd.Kind(), value)
+		}
+
+		// Navigate deeper
+		switch {
+		case fd.Kind() == protoreflect.MessageKind:
+			if fd.IsList() {
+				// Next iteration will handle index
+				continue
+			}
+			md = fd.Message()
+			currentFd = nil
+		case fd.IsList():
+			// Scalar list. Next iteration will handle index.
+			continue
+		default:
+			// Path continues but field is not a message? mismatch.
+			return value
+		}
+	}
+	return value
+}
+
+func convertKind(kind protoreflect.Kind, value string) interface{} {
+	if kind == protoreflect.BoolKind {
+		b, err := strconv.ParseBool(value)
+		if err == nil {
+			return b
+		}
+	}
+	// For numbers, we can also convert, but strings are accepted by protojson for numbers.
+	// However, if we want strict typing for ints/floats, we could do it here.
+	// protojson is usually permissive with strings for numbers.
+	return value
+}
+
+// fixTypes traverses the map and converts maps to slices where appropriate based on the protobuf schema.
+// This is necessary because environment variables might create maps for list fields (using indices as keys),
+// but protojson expects slices.
+func fixTypes(m map[string]interface{}, md protoreflect.MessageDescriptor) {
+	for key, val := range m {
+		fd := findField(md, key)
+		if fd == nil {
+			continue
+		}
+
+		if fd.IsList() {
+			// If it's a map, convert to slice
+			if valMap, ok := val.(map[string]interface{}); ok {
+				newSlice := convertMapToSlice(valMap)
+				m[key] = newSlice
+				// Re-assign val for recursive step
+				val = newSlice
+			}
+
+			// If it is a slice (either originally or converted), recurse if it contains messages
+			if valSlice, ok := val.([]interface{}); ok {
+				if fd.Kind() == protoreflect.MessageKind {
+					msgDesc := fd.Message()
+					for _, item := range valSlice {
+						if itemMap, ok := item.(map[string]interface{}); ok {
+							fixTypes(itemMap, msgDesc)
+						}
+					}
+				}
+			}
+		} else if fd.Kind() == protoreflect.MessageKind && !fd.IsMap() {
+			// Recurse
+			if valMap, ok := val.(map[string]interface{}); ok {
+				fixTypes(valMap, fd.Message())
+			}
+		}
+	}
+}
+
+func convertMapToSlice(m map[string]interface{}) []interface{} {
+	type entry struct {
+		idx int
+		val interface{}
+	}
+	var entries []entry
+	for k, v := range m {
+		idx, err := strconv.Atoi(k)
+		if err == nil {
+			entries = append(entries, entry{idx, v})
+		}
+	}
+	sort.Slice(entries, func(i, j int) bool { return entries[i].idx < entries[j].idx })
+
+	res := make([]interface{}, len(entries))
+	for i, e := range entries {
+		res[i] = e.val
+	}
+	return res
+}
+
+func findField(md protoreflect.MessageDescriptor, name string) protoreflect.FieldDescriptor {
+	// Try ByName (snake_case usually)
+	fd := md.Fields().ByName(protoreflect.Name(name))
+	if fd != nil {
+		return fd
+	}
+	// Try ByJSONName (camelCase)
+	fd = md.Fields().ByJSONName(name)
+	if fd != nil {
+		return fd
+	}
+	return nil
 }
 
 // MultiStore implements the Store interface for loading configurations from multiple stores.

@@ -8,7 +8,6 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"fmt"
-	"sync"
 
 	"github.com/mcpany/core/pkg/logging"
 	"github.com/mcpany/core/pkg/prompt"
@@ -38,7 +37,7 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 
 // Register processes the configuration for a vector service.
 func (u *Upstream) Register(
-	ctx context.Context,
+	_ context.Context,
 	serviceConfig *configv1.UpstreamServiceConfig,
 	toolManager tool.ManagerInterface,
 	_ prompt.ManagerInterface,
@@ -65,7 +64,7 @@ func (u *Upstream) Register(
 		return "", nil, nil, fmt.Errorf("vector service config is nil")
 	}
 
-	var client VectorClient
+	var client Client
 	switch t := vectorService.VectorDbType.(type) {
 	case *configv1.VectorUpstreamService_Pinecone:
 		client, err = NewPineconeClient(t.Pinecone)
@@ -141,6 +140,9 @@ type vectorCallable struct {
 	handler func(ctx context.Context, args map[string]interface{}) (map[string]interface{}, error)
 }
 
+// Call executes the vector tool with the given arguments.
+// It accepts a context and an execution request containing arguments,
+// and returns the result of the tool execution or an error.
 func (c *vectorCallable) Call(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
 	return c.handler(ctx, req.Arguments)
 }
@@ -156,12 +158,24 @@ type vectorToolDef struct {
 // VectorClient interface for different vector DB implementations.
 type VectorClient interface {
 	Query(ctx context.Context, vector []float32, topK int64, filter map[string]interface{}, namespace string) (map[string]interface{}, error)
+
+	// Upsert inserts or updates vectors in the database.
+	// It accepts a context, a list of vectors (each as a map), and a namespace.
+	// It returns a map containing the operation result (e.g., upserted count) or an error.
 	Upsert(ctx context.Context, vectors []map[string]interface{}, namespace string) (map[string]interface{}, error)
+
+	// Delete removes vectors from the database.
+	// It accepts a context, a list of IDs to delete, a namespace, and an optional metadata filter.
+	// It returns a map containing the operation result or an error.
 	Delete(ctx context.Context, ids []string, namespace string, filter map[string]interface{}) (map[string]interface{}, error)
+
+	// DescribeIndexStats retrieves statistics about the vector index.
+	// It accepts a context and an optional metadata filter.
+	// It returns a map containing the index statistics or an error.
 	DescribeIndexStats(ctx context.Context, filter map[string]interface{}) (map[string]interface{}, error)
 }
 
-func (u *Upstream) getTools(client VectorClient) []vectorToolDef {
+func (u *Upstream) getTools(client Client) []vectorToolDef {
 	return []vectorToolDef{
 		{
 			Name:        "query_vectors",

@@ -62,6 +62,21 @@ func initSchema(db *sql.DB) error {
 		created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
 		updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
 	);
+
+	CREATE TABLE IF NOT EXISTS global_settings (
+		id INTEGER PRIMARY KEY CHECK (id = 1),
+		config_json TEXT NOT NULL,
+		updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+	);
+
+	CREATE TABLE IF NOT EXISTS secrets (
+		id TEXT PRIMARY KEY,
+		name TEXT NOT NULL,
+		key TEXT NOT NULL,
+		config_json TEXT NOT NULL,
+		created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+		updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+	);
 	`
 	_, err := db.ExecContext(context.Background(), query)
 	if err != nil {

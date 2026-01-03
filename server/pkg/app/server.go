@@ -156,6 +156,7 @@ type Application struct {
 	configFiles      map[string]string
 	fs               afero.Fs
 	configPaths      []string
+	Storage          storage.Storage
 }
 
 // NewApplication creates a new Application with default dependencies.
@@ -516,6 +517,7 @@ func (a *Application) Run(
 		// Should not happen if code is correct
 		return fmt.Errorf("storage store does not implement storage.Storage")
 	}
+	a.Storage = s
 
 	runErr := a.runServerMode(ctx, mcpSrv, busProvider, bindAddress, grpcPort, shutdownTimeout, cfg.GetUsers(), cfg.GetGlobalSettings().GetProfileDefinitions(), allowedIPs, allowedOrigins, cachingMiddleware, s, serviceRegistry)
 
@@ -533,8 +535,15 @@ func (a *Application) ReloadConfig(fs afero.Fs, configPaths []string) error {
 	log := logging.GetLogger()
 	log.Info("Reloading configuration...")
 	metrics.IncrCounter([]string{"config", "reload", "total"}, 1)
-	// Do not skip errors during reload to prevent configuration drift/wiping.
-	store := config.NewFileStore(fs, configPaths)
+	var stores []config.Store
+	if len(configPaths) > 0 {
+		stores = append(stores, config.NewFileStore(fs, configPaths))
+	}
+	if a.Storage != nil {
+		stores = append(stores, a.Storage)
+	}
+
+	store := config.NewMultiStore(stores...)
 	cfg, err := config.LoadServices(context.Background(), store, "server")
 	if err != nil {
 		metrics.IncrCounter([]string{"config", "reload", "errors"}, 1)
@@ -1018,6 +1027,10 @@ func (a *Application) runServerMode(
 		// Strip the prefix so the underlying handler sees the relative path
 		prefix := fmt.Sprintf("/mcp/u/%s/profile/%s", uid, profileID)
 		delegate := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			// Limit request body size to 5MB to prevent DoS attacks via large payloads.
+			// This applies to both the stateless JSON-RPC handler and the underlying MCP handler.
+			r.Body = http.MaxBytesReader(w, r.Body, 5<<20)
+
 			logging.GetLogger().Info("Delegate Handler", "method", r.Method, "path", r.URL.Path)
 			// Support stateless JSON-RPC for simple clients
 			if r.Method == http.MethodPost && (r.URL.Path == "/" || r.URL.Path == "") {
@@ -1027,7 +1040,19 @@ func (a *Application) runServerMode(
 					Method  string          `json:"method"`
 					Params  json.RawMessage `json:"params"`
 				}
-				body, _ := io.ReadAll(r.Body)
+				body, err := io.ReadAll(r.Body)
+				if err != nil {
+					// http.MaxBytesReader returns an error if the limit is exceeded.
+					// We should log it and return an appropriate error.
+					logging.GetLogger().Error("Failed to read request body", "error", err)
+					if strings.Contains(err.Error(), "request body too large") {
+						http.Error(w, "Request body too large", http.StatusRequestEntityTooLarge)
+						return
+					}
+					http.Error(w, "Failed to read request body", http.StatusInternalServerError)
+					return
+				}
+
 				r.Body = io.NopCloser(bytes.NewBuffer(body)) // Restore body just in case
 				if err := json.Unmarshal(body, &req); err != nil {
 					http.Error(w, "Invalid JSON", http.StatusBadRequest)
@@ -1103,6 +1128,23 @@ func (a *Application) runServerMode(
 	})))
 	mux.Handle("/metrics", authMiddleware(metrics.Handler()))
 	mux.Handle("/upload", authMiddleware(http.HandlerFunc(a.uploadFile)))
+
+	// OIDC Routes
+	oidcConfig := config.GlobalSettings().GetOidc()
+	if oidcConfig != nil {
+		provider, err := auth.NewOIDCProvider(localCtx, auth.OIDCConfig{
+			Issuer:       oidcConfig.GetIssuer(),
+			ClientID:     oidcConfig.GetClientId(),
+			ClientSecret: oidcConfig.GetClientSecret(),
+			RedirectURL:  oidcConfig.GetRedirectUrl(),
+		})
+		if err != nil {
+			logging.GetLogger().Error("Failed to initialize OIDC provider", "error", err)
+		} else {
+			mux.HandleFunc("/auth/login", provider.HandleLogin)
+			mux.HandleFunc("/auth/callback", provider.HandleCallback)
+		}
+	}
 
 	if grpcPort != "" {
 		gwmux := runtime.NewServeMux()

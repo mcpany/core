@@ -1,4 +1,4 @@
-// Copyright 2025 Author(s) of MCP Any
+// Copyright 2026 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
 package tool
@@ -63,7 +63,7 @@ func TestLocalCommandTool_Execute(t *testing.T) {
 
 func TestLocalCommandTool_Execute_WithEnv(t *testing.T) {
 	tool := &v1.Tool{
-		Name:        proto.String("test-tool-env"),
+		Name: proto.String("test-tool-env"),
 	}
 	service := &configv1.CommandLineUpstreamService{
 		Command: proto.String("sh"),
@@ -83,7 +83,7 @@ func TestLocalCommandTool_Execute_WithEnv(t *testing.T) {
 	localTool := NewLocalCommandTool(tool, service, callDef, nil, "call-id")
 
 	req := &ExecutionRequest{
-		ToolName: "test-tool-env",
+		ToolName:  "test-tool-env",
 		Arguments: map[string]interface{}{},
 	}
 	req.ToolInputs, _ = json.Marshal(req.Arguments)
@@ -127,4 +127,38 @@ func TestLocalCommandTool_Execute_BlockedByPolicy(t *testing.T) {
 	assert.Error(t, err)
 	assert.Contains(t, err.Error(), "tool execution blocked by policy")
 	assert.Nil(t, result)
+}
+
+// Copyright 2025 Author(s) of MCP Any
+// SPDX-License-Identifier: Apache-2.0
+
+func TestLocalCommandTool_Execute_JSONProtocol_StderrCapture(t *testing.T) {
+	tool := &v1.Tool{
+		Name:        proto.String("test-tool-json-stderr"),
+		Description: proto.String("A test tool that fails"),
+	}
+	// Command that writes to stderr and exits with error, producing invalid JSON (empty stdout)
+	service := &configv1.CommandLineUpstreamService{
+		Command:               proto.String("sh"),
+		Local:                 proto.Bool(true),
+		CommunicationProtocol: configv1.CommandLineUpstreamService_COMMUNICATION_PROTOCOL_JSON.Enum(),
+	}
+
+	callDef := &configv1.CommandLineCallDefinition{
+		Args: []string{"-c", "echo 'something went wrong' >&2; exit 1"},
+	}
+
+	localTool := NewLocalCommandTool(tool, service, callDef, nil, "call-id")
+
+	req := &ExecutionRequest{
+		ToolName:  "test-tool-json-stderr",
+		Arguments: map[string]interface{}{},
+	}
+	req.ToolInputs, _ = json.Marshal(req.Arguments)
+
+	_, err := localTool.Execute(context.Background(), req)
+	assert.Error(t, err)
+
+	// This assertion should fail before fix
+	assert.Contains(t, err.Error(), "something went wrong")
 }
