@@ -88,10 +88,7 @@ This document outlines the current status and future plans for MCP Any.
 **Why:** Simplify deployment and lifecycle management of MCP Any instances in Kubernetes environments, enabling GitOps workflows.
 **Status:** Recommended
 
-### 5. Client SDKs (Python/TS)
 
-**Why:** Provide idiomatic wrappers for connecting to MCP Any, simplifying integration for developers building custom AI agents.
-**Status:** Planned
 
 ## Critical User Journeys (Upcoming)
 
@@ -139,7 +136,7 @@ This document outlines the current status and future plans for MCP Any.
 31. **WASM Plugin System**: Safe, sandboxed custom transformers and checkers.
 32. **[x] Cloud Storage Provider (S3/GCS)**: Treat buckets as filesystems for agents.
 33. **Interactive Playground 2.0**: Enhanced UI to test tools with auto-generated forms and mock data.
-34. **Client SDKs (Python/TS)**: Idiomatic client libraries for agents.
+
 35. **Local Emulator**: CLI command to run a lightweight in-memory MCP server for dev.
 36. **Language Server Protocol (LSP)**: IDE support for `config.yaml` editing (auto-complete tools).
 37. **[x] Hot Reload**: Reload configuration without restarting the server process.

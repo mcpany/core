@@ -87,7 +87,7 @@ func (e *DatadogAuditStore) worker() {
 }
 
 // Write implements the AuditStore interface.
-func (e *DatadogAuditStore) Write(ctx context.Context, entry AuditEntry) error {
+func (e *DatadogAuditStore) Write(_ context.Context, entry AuditEntry) error {
 	select {
 	case e.queue <- entry:
 		return nil
@@ -128,7 +128,7 @@ func (e *DatadogAuditStore) send(entry AuditEntry) {
 		fmt.Fprintf(os.Stderr, "Failed to send log to datadog: %v\n", err)
 		return
 	}
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 
 	if resp.StatusCode != http.StatusAccepted && resp.StatusCode != http.StatusOK {
 		fmt.Fprintf(os.Stderr, "Datadog API returned status: %d\n", resp.StatusCode)
