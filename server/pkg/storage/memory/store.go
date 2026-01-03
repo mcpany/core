@@ -14,14 +14,17 @@ import (
 
 // Store implements storage.Storage in memory.
 type Store struct {
-	mu       sync.RWMutex
-	services map[string]*configv1.UpstreamServiceConfig
+	mu             sync.RWMutex
+	services       map[string]*configv1.UpstreamServiceConfig
+	secrets        map[string]*configv1.Secret
+	globalSettings *configv1.GlobalSettings
 }
 
 // NewStore creates a new memory store.
 func NewStore() *Store {
 	return &Store{
 		services: make(map[string]*configv1.UpstreamServiceConfig),
+		secrets:  make(map[string]*configv1.Secret),
 	}
 }
 
@@ -38,6 +41,11 @@ func (s *Store) Load(_ context.Context) (*configv1.McpAnyServerConfig, error) {
 	for _, svc := range s.services {
 		cfg.UpstreamServices = append(cfg.UpstreamServices, proto.Clone(svc).(*configv1.UpstreamServiceConfig))
 	}
+
+	if s.globalSettings != nil {
+		cfg.GlobalSettings = proto.Clone(s.globalSettings).(*configv1.GlobalSettings)
+	}
+
 	return cfg, nil
 }
 
@@ -80,5 +88,60 @@ func (s *Store) DeleteService(_ context.Context, name string) error {
 
 // Close closes the underlying storage connection.
 func (s *Store) Close() error {
+	return nil
+}
+
+// GetGlobalSettings retrieves the global configuration.
+func (s *Store) GetGlobalSettings() (*configv1.GlobalSettings, error) {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+	if s.globalSettings == nil {
+		return &configv1.GlobalSettings{}, nil
+	}
+	return proto.Clone(s.globalSettings).(*configv1.GlobalSettings), nil
+}
+
+// SaveGlobalSettings saves the global configuration.
+func (s *Store) SaveGlobalSettings(settings *configv1.GlobalSettings) error {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	s.globalSettings = proto.Clone(settings).(*configv1.GlobalSettings)
+	return nil
+}
+
+// ListSecrets retrieves all secrets.
+func (s *Store) ListSecrets() ([]*configv1.Secret, error) {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+	list := make([]*configv1.Secret, 0, len(s.secrets))
+	for _, secret := range s.secrets {
+		list = append(list, proto.Clone(secret).(*configv1.Secret))
+	}
+	return list, nil
+}
+
+// GetSecret retrieves a secret by ID.
+func (s *Store) GetSecret(id string) (*configv1.Secret, error) {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+	if secret, ok := s.secrets[id]; ok {
+		return proto.Clone(secret).(*configv1.Secret), nil
+	}
+	return nil, nil
+}
+
+// SaveSecret saves a secret.
+func (s *Store) SaveSecret(secret *configv1.Secret) error {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	s.secrets[secret.GetId()] = proto.Clone(secret).(*configv1.Secret)
+	return nil
+}
+
+// DeleteSecret deletes a secret by ID.
+func (s *Store) DeleteSecret(id string) error {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	delete(s.secrets, id)
 	return nil
 }
