@@ -59,7 +59,7 @@ const generateTimeData = (points: number) => {
     for (let i = 0; i < points; i++) {
         const time = new Date(now.getTime() - (points - i) * 60000);
         data.push({
-            time: time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+            time: time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false }),
             requests: Math.floor(Math.random() * 100) + 50,
             errors: Math.floor(Math.random() * 10),
             latency: Math.floor(Math.random() * 200) + 50

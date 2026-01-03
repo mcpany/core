@@ -530,39 +530,15 @@ jobs:
           chmod +x server/tests/smoke_test.sh
           ./server/tests/smoke_test.sh mcpany/server:test
 
-  ui-test:
+  build-ui-test-image:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
-    strategy:
-      fail-fast: false
-      matrix:
-        shardIndex: [1, 2, 3, 4]
-        shardTotal: [4]
+    needs: [lint]
     steps:
-      - name: Free Disk Space (Ubuntu)
-        uses: jlumbroso/free-disk-space@main
-        with:
-          # this might remove tools that are actually needed,
-          # if set to "true" but frees about 6GB
-          tool-cache: false
-
-          # all of these default to true, but feel free to set to
-          # "false" if necessary for your workflow
-          android: true
-          dotnet: true
-          haskell: true
-          large-packages: true
-          docker-images: true
-          swap-storage: true
-
       - uses: actions/checkout@v5
-
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
-
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
-
       - name: Build UI Test Image
         uses: docker/build-push-action@v5
         with:
@@ -573,11 +549,44 @@ jobs:
           tags: mcpany-ui-e2e:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
+      - name: Save Docker Image
+        run: docker save mcpany-ui-e2e:latest -o ui-test-image.tar
+      - name: Upload Docker Image
+        uses: actions/upload-artifact@v4
+        with:
+          name: ui-test-image
+          path: ui-test-image.tar
+          retention-days: 1
 
+  ui-test:
+    runs-on: ubuntu-latest
+    needs: [build-ui-test-image]
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1/2, 2/2]
+    steps:
+      - name: Free Disk Space (Ubuntu)
+        uses: jlumbroso/free-disk-space@main
+        with:
+          tool-cache: false
+          android: true
+          dotnet: true
+          haskell: true
+          large-packages: true
+          docker-images: false
+          swap-storage: true
 
+      - uses: actions/checkout@v5
+      - name: Download Docker Image
+        uses: actions/download-artifact@v4
+        with:
+          name: ui-test-image
+      - name: Load Docker Image
+        run: docker load -i ui-test-image.tar
       - name: Test UI
         run: |
-          make -C ui test SKIP_BUILD=true PLAYWRIGHT_ARGS="--shard=${{ matrix.shardIndex }}/${{ matrix.shardTotal }}"
+          make -C ui test-ci PLAYWRIGHT_ARGS="--shard=${{ matrix.shard }}"
 
   k8s-e2e:
     runs-on: ubuntu-latest

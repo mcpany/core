@@ -16,6 +16,8 @@ import {
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 interface ToolInspectorProps {
   tool: ToolDefinition | null;
@@ -37,6 +39,13 @@ export function ToolInspector({ tool, open, onOpenChange }: ToolInspectorProps) 
             </Badge>
           </SheetTitle>
           <SheetDescription>{tool.description}</SheetDescription>
+          <div className="mt-2">
+              <Link href={`/playground?tool=${encodeURIComponent(tool.name)}`}>
+                  <Button size="sm" variant="secondary">
+                      Run in Playground
+                  </Button>
+              </Link>
+          </div>
         </SheetHeader>
 
         <div className="mt-6 space-y-6">

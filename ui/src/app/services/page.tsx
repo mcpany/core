@@ -7,38 +7,40 @@
 
 import { useState, useEffect } from "react";
 import { apiClient } from "@/lib/client";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Settings, Plus } from "lucide-react";
+import { Plus } from "lucide-react";
 import {
     Sheet,
     SheetContent,
     SheetDescription,
     SheetHeader,
     SheetTitle,
-    SheetTrigger,
 } from "@/components/ui/sheet"
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useToast } from "@/hooks/use-toast";
 
 import { UpstreamServiceConfig } from "@/lib/client";
+import { ServiceList } from "@/components/services/service-list";
 
 export default function ServicesPage() {
   const [services, setServices] = useState<UpstreamServiceConfig[]>([]);
   const [selectedService, setSelectedService] = useState<UpstreamServiceConfig | null>(null);
   const [isSheetOpen, setIsSheetOpen] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const { toast } = useToast();
 
   useEffect(() => {
     fetchServices();
   }, []);
 
   const fetchServices = async () => {
+    setLoading(true);
     try {
       const res = await apiClient.listServices();
+      // Handle both array and object response formats for robustness
       if (Array.isArray(res)) {
           setServices(res);
       } else {
@@ -46,20 +48,57 @@ export default function ServicesPage() {
       }
     } catch (e) {
       console.error("Failed to fetch services", e);
+      toast({
+          variant: "destructive",
+          title: "Error",
+          description: "Failed to load services."
+      });
+    } finally {
+        setLoading(false);
     }
   };
 
-  const toggleService = async (name: string, currentStatus: boolean) => {
+  const toggleService = async (name: string, enabled: boolean) => {
     // Optimistic update
-    setServices(services.map(s => s.name === name ? { ...s, disable: !currentStatus } : s));
+    setServices(services.map(s => s.name === name ? { ...s, disable: !enabled } : s));
 
     try {
-        await apiClient.setServiceStatus(name, !currentStatus);
+        await apiClient.setServiceStatus(name, !enabled);
+        toast({
+            title: enabled ? "Service Enabled" : "Service Disabled",
+            description: `Service ${name} has been ${enabled ? "enabled" : "disabled"}.`
+        });
     } catch (e) {
         console.error("Failed to toggle service", e);
         fetchServices(); // Revert
+        toast({
+            variant: "destructive",
+            title: "Error",
+            description: "Failed to update service status."
+        });
     }
   };
+
+  const deleteService = async (name: string) => {
+    if (!confirm(`Are you sure you want to delete service "${name}"?`)) return;
+
+    try {
+        await apiClient.unregisterService(name);
+        setServices(prev => prev.filter(s => s.name !== name));
+        toast({
+            title: "Service Deleted",
+            description: `Service ${name} has been removed.`
+        });
+    } catch (e) {
+         console.error("Failed to delete service", e);
+         fetchServices();
+         toast({
+            variant: "destructive",
+            title: "Error",
+            description: "Failed to delete service."
+        });
+    }
+  }
 
   const openEdit = (service: UpstreamServiceConfig) => {
       setSelectedService(service);
@@ -76,22 +115,24 @@ export default function ServicesPage() {
       if (!selectedService) return;
 
       try {
-          if (services.find(s => s.name === selectedService.name && s.id !== selectedService.id)) {
-             // Logic for handling duplicate names or editing existing
-          }
-
           if (selectedService.id) {
                // Update
-               // Note: Real implementation would align fields carefully
                await apiClient.updateService(selectedService as any);
+               toast({ title: "Service Updated", description: "Service configuration saved." });
           } else {
               // Create
               await apiClient.registerService(selectedService as any);
+              toast({ title: "Service Created", description: "New service registered successfully." });
           }
           setIsSheetOpen(false);
           fetchServices();
       } catch (err) {
           console.error("Failed to save service", err);
+          toast({
+              variant: "destructive",
+              title: "Error",
+              description: "Failed to save service configuration."
+          });
       }
   };
 
@@ -110,49 +151,13 @@ export default function ServicesPage() {
           <CardDescription>Manage your connected upstream services.</CardDescription>
         </CardHeader>
         <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Name</TableHead>
-                <TableHead>Type</TableHead>
-                <TableHead>Version</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {services.map((service) => (
-                <TableRow key={service.name}>
-                  <TableCell className="font-medium">{service.name}</TableCell>
-                  <TableCell>
-                      <Badge variant="secondary">
-                      {service.http_service ? "HTTP" :
-                       service.grpc_service ? "gRPC" :
-                       service.command_line_service ? "CMD" :
-                       service.mcp_service ? "MCP" : "Other"}
-                      </Badge>
-                  </TableCell>
-                  <TableCell>{service.version}</TableCell>
-                  <TableCell>
-                    <div className="flex items-center space-x-2">
-                        <Switch
-                            checked={!service.disable}
-                            onCheckedChange={() => toggleService(service.name, !!service.disable)}
-                        />
-                        <span className="text-sm text-muted-foreground w-16">
-                            {!service.disable ? "Active" : "Inactive"}
-                        </span>
-                    </div>
-                  </TableCell>
-                  <TableCell className="text-right">
-                        <Button variant="ghost" size="icon" onClick={() => openEdit(service)}>
-                            <Settings className="h-4 w-4" />
-                        </Button>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+             <ServiceList
+                services={services}
+                isLoading={loading}
+                onToggle={toggleService}
+                onEdit={openEdit}
+                onDelete={deleteService}
+             />
         </CardContent>
       </Card>
 
@@ -251,7 +256,7 @@ export default function ServicesPage() {
                 </form>
             )}
         </SheetContent>
-    </Sheet>
+      </Sheet>
     </div>
   );
 }
