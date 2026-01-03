@@ -107,6 +107,15 @@ message GlobalSettings {
   DLPConfig dlp = 13 [json_name = "dlp"];
   // Garbage Collection configuration.
   GCSettings gc_settings = 16 [json_name = "gc_settings"];
+  // OIDC Configuration.
+  OIDCConfig oidc = 17 [json_name = "oidc"];
+}
+
+message OIDCConfig {
+  string issuer = 1 [json_name = "issuer"];
+  string client_id = 2 [json_name = "client_id"];
+  string client_secret = 3 [json_name = "client_secret"];
+  string redirect_url = 4 [json_name = "redirect_url"];
 }
 
 message GCSettings {

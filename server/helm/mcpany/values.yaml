@@ -64,17 +64,17 @@ service:
 # Configuration for mcpany. This will be mounted as a ConfigMap.
 # You can define your upstream services here.
 config: |
-  upstreamServices:
+  upstream_services:
     - name: "k8s-http-echo"
-      httpService:
+      http_service:
         # This assumes you have a service named 'http-echo-server' in the same namespace.
         # You would need to deploy such a service separately.
         address: "http://http-echo-server:8080"
         calls:
-          - operationId: "echo"
-            description: "Echoes back the request body."
+          echo:
+            id: "echo"
             method: "HTTP_METHOD_POST"
-            endpointPath: "/echo"
+            endpoint_path: "/echo"
 
 resources: {}
   # We usually recommend not to specify default resources and to leave this as a conscious
