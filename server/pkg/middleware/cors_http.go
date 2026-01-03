@@ -55,7 +55,7 @@ func (m *HTTPCORSMiddleware) Handler(next http.Handler) http.Handler {
 		if wildcardMatched {
 			// If wildcard matched, we allow all but CANNOT allow credentials
 			w.Header().Set("Access-Control-Allow-Origin", "*")
-		} else {
+		} else if allowed {
 			// If specific origin matched, we echo it and can allow credentials
 			w.Header().Set("Access-Control-Allow-Origin", origin)
 			w.Header().Set("Vary", "Origin")
