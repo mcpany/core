@@ -546,7 +546,16 @@ func (s *Server) CallTool(ctx context.Context, req *tool.ExecutionRequest) (any,
 	logging.GetLogger().Info("Tool execution completed", "result_type", fmt.Sprintf("%T", result), "result_value", result)
 
 	if err != nil {
-		return nil, err
+		// Instead of returning a JSON-RPC error, we return a CallToolResult with IsError=true.
+		// This allows the LLM to see the error message and context.
+		return &mcp.CallToolResult{
+			Content: []mcp.Content{
+				&mcp.TextContent{
+					Text: err.Error(),
+				},
+			},
+			IsError: true,
+		}, nil
 	}
 
 	if ctr, ok := result.(*mcp.CallToolResult); ok {
