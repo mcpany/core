@@ -1,4 +1,4 @@
-// Copyright 2025 Author(s) of MCP Any
+// Copyright 2026 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
 package config
@@ -14,6 +14,7 @@ import (
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"google.golang.org/protobuf/proto"
 )
 
 func TestSettings_Load(t *testing.T) {
@@ -190,4 +191,26 @@ func TestSettings_GetDlp(t *testing.T) {
 	}
 	assert.NotNil(t, settings.GetDlp())
 	assert.True(t, settings.GetDlp().GetEnabled())
+}
+
+// Copyright 2025 Author(s) of MCP Any
+// SPDX-License-Identifier: Apache-2.0
+
+func TestSettings_ExtraGetters(t *testing.T) {
+	// Create a Settings instance manually with populated fields
+	middlewares := []*configv1.Middleware{
+		{
+			Name: proto.String("test-middleware"),
+		},
+	}
+
+	s := &Settings{
+		dbPath: "/path/to/db.sqlite",
+		proto: &configv1.GlobalSettings{
+			Middlewares: middlewares,
+		},
+	}
+
+	assert.Equal(t, "/path/to/db.sqlite", s.DBPath())
+	assert.Equal(t, middlewares, s.Middlewares())
 }
