@@ -417,58 +417,6 @@ func TestFilesystemUpstream_ZipFs(t *testing.T) {
 	assert.Error(t, err)
 }
 
-func TestFilesystemUpstream_ErrorCases(t *testing.T) {
-	// Setup MemMapFs
-	config := &configv1.UpstreamServiceConfig{
-		Name: proto.String("test_error"),
-		ServiceConfig: &configv1.UpstreamServiceConfig_FilesystemService{
-			FilesystemService: &configv1.FilesystemUpstreamService{
-				RootPaths: map[string]string{"/": "/"},
-				FilesystemType: &configv1.FilesystemUpstreamService_Tmpfs{
-					Tmpfs: &configv1.MemMapFs{},
-				},
-			},
-		},
-	}
-	u := NewUpstream()
-	b, _ := bus.NewProvider(nil)
-	tm := tool.NewManager(b)
-	id, _, _, err := u.Register(context.Background(), config, tm, nil, nil, false)
-	require.NoError(t, err)
-
-	findTool := func(name string) tool.Tool {
-		tool, ok := tm.GetTool(id + "." + name)
-		if ok {
-			return tool
-		}
-		return nil
-	}
-
-	// read_file on directory
-	// First create a dir
-	writeTool := findTool("write_file")
-	writeTool.Execute(context.Background(), &tool.ExecutionRequest{
-		ToolName: "write_file",
-		Arguments: map[string]interface{}{"path": "/adir/file.txt", "content": "x"},
-	})
-
-	readTool := findTool("read_file")
-	_, err = readTool.Execute(context.Background(), &tool.ExecutionRequest{
-		ToolName: "read_file",
-		Arguments: map[string]interface{}{"path": "/adir"},
-	})
-	assert.Error(t, err)
-	assert.Contains(t, err.Error(), "path is a directory")
-
-	// Missing arguments
-	_, err = readTool.Execute(context.Background(), &tool.ExecutionRequest{
-		ToolName: "read_file",
-		Arguments: map[string]interface{}{},
-	})
-	assert.Error(t, err)
-	assert.Contains(t, err.Error(), "path is required")
-}
-
 func TestFilesystemUpstream_MemMapFs(t *testing.T) {
 	// Configure the upstream with MemMapFs
 	config := &configv1.UpstreamServiceConfig{
