@@ -47,10 +47,6 @@ func NewAuditMiddleware(config *configv1.AuditConfig) (*AuditMiddleware, error) 
 			store, err = NewFileAuditStore(config.GetOutputPath())
 		case configv1.AuditConfig_STORAGE_TYPE_WEBHOOK:
 			store = NewWebhookAuditStore(config.GetWebhookUrl(), config.GetWebhookHeaders())
-		case configv1.AuditConfig_STORAGE_TYPE_SPLUNK:
-			store = NewSplunkAuditStore(config.GetSplunk())
-		case configv1.AuditConfig_STORAGE_TYPE_DATADOG:
-			store = NewDatadogAuditStore(config.GetDatadog())
 		default:
 			store, err = NewFileAuditStore(config.GetOutputPath())
 		}

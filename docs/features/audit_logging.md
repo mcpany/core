@@ -26,21 +26,10 @@ Audit logging is configured in the `GlobalSettings` section of your MCP Any conf
 global_settings:
   audit:
     enabled: true
-    storage_type: "STORAGE_TYPE_FILE" # or STORAGE_TYPE_SQLITE, STORAGE_TYPE_POSTGRES, STORAGE_TYPE_SPLUNK, STORAGE_TYPE_DATADOG
+    storage_type: "STORAGE_TYPE_FILE" # or STORAGE_TYPE_SQLITE, STORAGE_TYPE_POSTGRES
     output_path: "audit.log"
     log_arguments: true
     log_results: false
-    splunk:
-      hec_url: "https://splunk.example.com:8088/services/collector/event"
-      token: "your-splunk-hec-token"
-      index: "main"
-      source: "mcpany"
-      sourcetype: "_json"
-    datadog:
-      api_key: "your-datadog-api-key"
-      site: "datadoghq.com"
-      service: "mcpany"
-      tags: "env:prod,region:us-east-1"
 ```
 
 ### Configuration Options
@@ -48,31 +37,12 @@ global_settings:
 | Option | Type | Default | Description |
 | :--- | :--- | :--- | :--- |
 | `enabled` | `bool` | `false` | Enables or disables audit logging. |
-| `storage_type` | `string` | `STORAGE_TYPE_FILE` | The storage backend to use: `STORAGE_TYPE_FILE`, `STORAGE_TYPE_SQLITE`, `STORAGE_TYPE_POSTGRES`, `STORAGE_TYPE_SPLUNK`, or `STORAGE_TYPE_DATADOG`. |
-| `output_path` | `string` | `""` | Path to the log file or database connection string (for File/SQL). |
+| `storage_type` | `string` | `STORAGE_TYPE_FILE` | The storage backend to use: `STORAGE_TYPE_FILE`, `STORAGE_TYPE_SQLITE`, or `STORAGE_TYPE_POSTGRES`. |
+| `output_path` | `string` | `""` | Path to the log file or database connection string. |
 | `log_arguments` | `bool` | `false` | If true, logs the input arguments. **Warning:** May log sensitive data. |
 | `log_results` | `bool` | `false` | If true, logs the execution result. **Warning:** May log sensitive data. |
-| `splunk` | `object` | `nil` | Configuration for Splunk HEC. |
-| `datadog` | `object` | `nil` | Configuration for Datadog Logs. |
 
-### Splunk Configuration
-
-To use Splunk, set `storage_type` to `STORAGE_TYPE_SPLUNK` and provide the `splunk` configuration:
-
-- `hec_url`: The full URL to the Splunk HTTP Event Collector (e.g., `https://splunk.example.com:8088/services/collector/event`).
-- `token`: Your Splunk HEC token.
-- `index`: The Splunk index to send events to.
-- `source`: The source value for the events.
-- `sourcetype`: The sourcetype value for the events.
-
-### Datadog Configuration
-
-To use Datadog, set `storage_type` to `STORAGE_TYPE_DATADOG` and provide the `datadog` configuration:
-
-- `api_key`: Your Datadog API Key.
-- `site`: The Datadog site (e.g., `datadoghq.com` or `datadoghq.eu`).
-- `service`: The service name to attach to logs.
-- `tags`: A comma-separated list of tags (e.g., `env:prod,version:1.0`).
+| `log_results` | `bool` | `false` | If true, logs the execution result. **Warning:** May log sensitive data. |
 
 ### UI Configuration
 

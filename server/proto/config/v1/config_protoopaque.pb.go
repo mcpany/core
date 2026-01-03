@@ -128,8 +128,6 @@ const (
 	AuditConfig_STORAGE_TYPE_SQLITE      AuditConfig_StorageType = 2
 	AuditConfig_STORAGE_TYPE_POSTGRES    AuditConfig_StorageType = 3
 	AuditConfig_STORAGE_TYPE_WEBHOOK     AuditConfig_StorageType = 4
-	AuditConfig_STORAGE_TYPE_SPLUNK      AuditConfig_StorageType = 5
-	AuditConfig_STORAGE_TYPE_DATADOG     AuditConfig_StorageType = 6
 )
 
 // Enum value maps for AuditConfig_StorageType.
@@ -140,8 +138,6 @@ var (
 		2: "STORAGE_TYPE_SQLITE",
 		3: "STORAGE_TYPE_POSTGRES",
 		4: "STORAGE_TYPE_WEBHOOK",
-		5: "STORAGE_TYPE_SPLUNK",
-		6: "STORAGE_TYPE_DATADOG",
 	}
 	AuditConfig_StorageType_value = map[string]int32{
 		"STORAGE_TYPE_UNSPECIFIED": 0,
@@ -149,8 +145,6 @@ var (
 		"STORAGE_TYPE_SQLITE":      2,
 		"STORAGE_TYPE_POSTGRES":    3,
 		"STORAGE_TYPE_WEBHOOK":     4,
-		"STORAGE_TYPE_SPLUNK":      5,
-		"STORAGE_TYPE_DATADOG":     6,
 	}
 )
 
@@ -1486,8 +1480,6 @@ type AuditConfig struct {
 	xxx_hidden_StorageType    AuditConfig_StorageType `protobuf:"varint,5,opt,name=storage_type,enum=mcpany.config.v1.AuditConfig_StorageType"`
 	xxx_hidden_WebhookUrl     *string                 `protobuf:"bytes,6,opt,name=webhook_url"`
 	xxx_hidden_WebhookHeaders map[string]string       `protobuf:"bytes,7,rep,name=webhook_headers" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
-	xxx_hidden_Splunk         *SplunkConfig           `protobuf:"bytes,8,opt,name=splunk"`
-	xxx_hidden_Datadog        *DatadogConfig          `protobuf:"bytes,9,opt,name=datadog"`
 	XXX_raceDetectHookData    protoimpl.RaceDetectHookData
 	XXX_presence              [1]uint32
 	unknownFields             protoimpl.UnknownFields
@@ -1576,60 +1568,38 @@ func (x *AuditConfig) GetWebhookHeaders() map[string]string {
 	return nil
 }
 
-func (x *AuditConfig) GetSplunk() *SplunkConfig {
-	if x != nil {
-		return x.xxx_hidden_Splunk
-	}
-	return nil
-}
-
-func (x *AuditConfig) GetDatadog() *DatadogConfig {
-	if x != nil {
-		return x.xxx_hidden_Datadog
-	}
-	return nil
-}
-
 func (x *AuditConfig) SetEnabled(v bool) {
 	x.xxx_hidden_Enabled = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 9)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 7)
 }
 
 func (x *AuditConfig) SetOutputPath(v string) {
 	x.xxx_hidden_OutputPath = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 9)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 7)
 }
 
 func (x *AuditConfig) SetLogArguments(v bool) {
 	x.xxx_hidden_LogArguments = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 9)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 7)
 }
 
 func (x *AuditConfig) SetLogResults(v bool) {
 	x.xxx_hidden_LogResults = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 3, 9)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 3, 7)
 }
 
 func (x *AuditConfig) SetStorageType(v AuditConfig_StorageType) {
 	x.xxx_hidden_StorageType = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 4, 9)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 4, 7)
 }
 
 func (x *AuditConfig) SetWebhookUrl(v string) {
 	x.xxx_hidden_WebhookUrl = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 5, 9)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 5, 7)
 }
 
 func (x *AuditConfig) SetWebhookHeaders(v map[string]string) {
 	x.xxx_hidden_WebhookHeaders = v
-}
-
-func (x *AuditConfig) SetSplunk(v *SplunkConfig) {
-	x.xxx_hidden_Splunk = v
-}
-
-func (x *AuditConfig) SetDatadog(v *DatadogConfig) {
-	x.xxx_hidden_Datadog = v
 }
 
 func (x *AuditConfig) HasEnabled() bool {
@@ -1674,20 +1644,6 @@ func (x *AuditConfig) HasWebhookUrl() bool {
 	return protoimpl.X.Present(&(x.XXX_presence[0]), 5)
 }
 
-func (x *AuditConfig) HasSplunk() bool {
-	if x == nil {
-		return false
-	}
-	return x.xxx_hidden_Splunk != nil
-}
-
-func (x *AuditConfig) HasDatadog() bool {
-	if x == nil {
-		return false
-	}
-	return x.xxx_hidden_Datadog != nil
-}
-
 func (x *AuditConfig) ClearEnabled() {
 	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
 	x.xxx_hidden_Enabled = false
@@ -1718,14 +1674,6 @@ func (x *AuditConfig) ClearWebhookUrl() {
 	x.xxx_hidden_WebhookUrl = nil
 }
 
-func (x *AuditConfig) ClearSplunk() {
-	x.xxx_hidden_Splunk = nil
-}
-
-func (x *AuditConfig) ClearDatadog() {
-	x.xxx_hidden_Datadog = nil
-}
-
 type AuditConfig_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
@@ -1743,10 +1691,6 @@ type AuditConfig_builder struct {
 	WebhookUrl *string
 	// Additional headers to send with the webhook.
 	WebhookHeaders map[string]string
-	// Splunk configuration.
-	Splunk *SplunkConfig
-	// Datadog configuration.
-	Datadog *DatadogConfig
 }
 
 func (b0 AuditConfig_builder) Build() *AuditConfig {
@@ -1754,419 +1698,30 @@ func (b0 AuditConfig_builder) Build() *AuditConfig {
 	b, x := &b0, m0
 	_, _ = b, x
 	if b.Enabled != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 9)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 7)
 		x.xxx_hidden_Enabled = *b.Enabled
 	}
 	if b.OutputPath != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 9)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 7)
 		x.xxx_hidden_OutputPath = b.OutputPath
 	}
 	if b.LogArguments != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 9)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 7)
 		x.xxx_hidden_LogArguments = *b.LogArguments
 	}
 	if b.LogResults != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 3, 9)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 3, 7)
 		x.xxx_hidden_LogResults = *b.LogResults
 	}
 	if b.StorageType != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 4, 9)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 4, 7)
 		x.xxx_hidden_StorageType = *b.StorageType
 	}
 	if b.WebhookUrl != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 5, 9)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 5, 7)
 		x.xxx_hidden_WebhookUrl = b.WebhookUrl
 	}
 	x.xxx_hidden_WebhookHeaders = b.WebhookHeaders
-	x.xxx_hidden_Splunk = b.Splunk
-	x.xxx_hidden_Datadog = b.Datadog
-	return m0
-}
-
-type SplunkConfig struct {
-	state                  protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_HecUrl      *string                `protobuf:"bytes,1,opt,name=hec_url"`
-	xxx_hidden_Token       *string                `protobuf:"bytes,2,opt,name=token"`
-	xxx_hidden_Index       *string                `protobuf:"bytes,3,opt,name=index"`
-	xxx_hidden_Source      *string                `protobuf:"bytes,4,opt,name=source"`
-	xxx_hidden_Sourcetype  *string                `protobuf:"bytes,5,opt,name=sourcetype"`
-	XXX_raceDetectHookData protoimpl.RaceDetectHookData
-	XXX_presence           [1]uint32
-	unknownFields          protoimpl.UnknownFields
-	sizeCache              protoimpl.SizeCache
-}
-
-func (x *SplunkConfig) Reset() {
-	*x = SplunkConfig{}
-	mi := &file_proto_config_v1_config_proto_msgTypes[8]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *SplunkConfig) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*SplunkConfig) ProtoMessage() {}
-
-func (x *SplunkConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_config_proto_msgTypes[8]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-func (x *SplunkConfig) GetHecUrl() string {
-	if x != nil {
-		if x.xxx_hidden_HecUrl != nil {
-			return *x.xxx_hidden_HecUrl
-		}
-		return ""
-	}
-	return ""
-}
-
-func (x *SplunkConfig) GetToken() string {
-	if x != nil {
-		if x.xxx_hidden_Token != nil {
-			return *x.xxx_hidden_Token
-		}
-		return ""
-	}
-	return ""
-}
-
-func (x *SplunkConfig) GetIndex() string {
-	if x != nil {
-		if x.xxx_hidden_Index != nil {
-			return *x.xxx_hidden_Index
-		}
-		return ""
-	}
-	return ""
-}
-
-func (x *SplunkConfig) GetSource() string {
-	if x != nil {
-		if x.xxx_hidden_Source != nil {
-			return *x.xxx_hidden_Source
-		}
-		return ""
-	}
-	return ""
-}
-
-func (x *SplunkConfig) GetSourcetype() string {
-	if x != nil {
-		if x.xxx_hidden_Sourcetype != nil {
-			return *x.xxx_hidden_Sourcetype
-		}
-		return ""
-	}
-	return ""
-}
-
-func (x *SplunkConfig) SetHecUrl(v string) {
-	x.xxx_hidden_HecUrl = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 5)
-}
-
-func (x *SplunkConfig) SetToken(v string) {
-	x.xxx_hidden_Token = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 5)
-}
-
-func (x *SplunkConfig) SetIndex(v string) {
-	x.xxx_hidden_Index = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 5)
-}
-
-func (x *SplunkConfig) SetSource(v string) {
-	x.xxx_hidden_Source = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 3, 5)
-}
-
-func (x *SplunkConfig) SetSourcetype(v string) {
-	x.xxx_hidden_Sourcetype = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 4, 5)
-}
-
-func (x *SplunkConfig) HasHecUrl() bool {
-	if x == nil {
-		return false
-	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
-}
-
-func (x *SplunkConfig) HasToken() bool {
-	if x == nil {
-		return false
-	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 1)
-}
-
-func (x *SplunkConfig) HasIndex() bool {
-	if x == nil {
-		return false
-	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 2)
-}
-
-func (x *SplunkConfig) HasSource() bool {
-	if x == nil {
-		return false
-	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 3)
-}
-
-func (x *SplunkConfig) HasSourcetype() bool {
-	if x == nil {
-		return false
-	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 4)
-}
-
-func (x *SplunkConfig) ClearHecUrl() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
-	x.xxx_hidden_HecUrl = nil
-}
-
-func (x *SplunkConfig) ClearToken() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 1)
-	x.xxx_hidden_Token = nil
-}
-
-func (x *SplunkConfig) ClearIndex() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 2)
-	x.xxx_hidden_Index = nil
-}
-
-func (x *SplunkConfig) ClearSource() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 3)
-	x.xxx_hidden_Source = nil
-}
-
-func (x *SplunkConfig) ClearSourcetype() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 4)
-	x.xxx_hidden_Sourcetype = nil
-}
-
-type SplunkConfig_builder struct {
-	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
-
-	HecUrl     *string
-	Token      *string
-	Index      *string
-	Source     *string
-	Sourcetype *string
-}
-
-func (b0 SplunkConfig_builder) Build() *SplunkConfig {
-	m0 := &SplunkConfig{}
-	b, x := &b0, m0
-	_, _ = b, x
-	if b.HecUrl != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 5)
-		x.xxx_hidden_HecUrl = b.HecUrl
-	}
-	if b.Token != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 5)
-		x.xxx_hidden_Token = b.Token
-	}
-	if b.Index != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 5)
-		x.xxx_hidden_Index = b.Index
-	}
-	if b.Source != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 3, 5)
-		x.xxx_hidden_Source = b.Source
-	}
-	if b.Sourcetype != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 4, 5)
-		x.xxx_hidden_Sourcetype = b.Sourcetype
-	}
-	return m0
-}
-
-type DatadogConfig struct {
-	state                  protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_ApiKey      *string                `protobuf:"bytes,1,opt,name=api_key"`
-	xxx_hidden_Site        *string                `protobuf:"bytes,2,opt,name=site"`
-	xxx_hidden_Service     *string                `protobuf:"bytes,3,opt,name=service"`
-	xxx_hidden_Tags        *string                `protobuf:"bytes,4,opt,name=tags"`
-	XXX_raceDetectHookData protoimpl.RaceDetectHookData
-	XXX_presence           [1]uint32
-	unknownFields          protoimpl.UnknownFields
-	sizeCache              protoimpl.SizeCache
-}
-
-func (x *DatadogConfig) Reset() {
-	*x = DatadogConfig{}
-	mi := &file_proto_config_v1_config_proto_msgTypes[9]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *DatadogConfig) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*DatadogConfig) ProtoMessage() {}
-
-func (x *DatadogConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_config_proto_msgTypes[9]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-func (x *DatadogConfig) GetApiKey() string {
-	if x != nil {
-		if x.xxx_hidden_ApiKey != nil {
-			return *x.xxx_hidden_ApiKey
-		}
-		return ""
-	}
-	return ""
-}
-
-func (x *DatadogConfig) GetSite() string {
-	if x != nil {
-		if x.xxx_hidden_Site != nil {
-			return *x.xxx_hidden_Site
-		}
-		return ""
-	}
-	return ""
-}
-
-func (x *DatadogConfig) GetService() string {
-	if x != nil {
-		if x.xxx_hidden_Service != nil {
-			return *x.xxx_hidden_Service
-		}
-		return ""
-	}
-	return ""
-}
-
-func (x *DatadogConfig) GetTags() string {
-	if x != nil {
-		if x.xxx_hidden_Tags != nil {
-			return *x.xxx_hidden_Tags
-		}
-		return ""
-	}
-	return ""
-}
-
-func (x *DatadogConfig) SetApiKey(v string) {
-	x.xxx_hidden_ApiKey = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 4)
-}
-
-func (x *DatadogConfig) SetSite(v string) {
-	x.xxx_hidden_Site = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 4)
-}
-
-func (x *DatadogConfig) SetService(v string) {
-	x.xxx_hidden_Service = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 4)
-}
-
-func (x *DatadogConfig) SetTags(v string) {
-	x.xxx_hidden_Tags = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 3, 4)
-}
-
-func (x *DatadogConfig) HasApiKey() bool {
-	if x == nil {
-		return false
-	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
-}
-
-func (x *DatadogConfig) HasSite() bool {
-	if x == nil {
-		return false
-	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 1)
-}
-
-func (x *DatadogConfig) HasService() bool {
-	if x == nil {
-		return false
-	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 2)
-}
-
-func (x *DatadogConfig) HasTags() bool {
-	if x == nil {
-		return false
-	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 3)
-}
-
-func (x *DatadogConfig) ClearApiKey() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
-	x.xxx_hidden_ApiKey = nil
-}
-
-func (x *DatadogConfig) ClearSite() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 1)
-	x.xxx_hidden_Site = nil
-}
-
-func (x *DatadogConfig) ClearService() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 2)
-	x.xxx_hidden_Service = nil
-}
-
-func (x *DatadogConfig) ClearTags() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 3)
-	x.xxx_hidden_Tags = nil
-}
-
-type DatadogConfig_builder struct {
-	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
-
-	ApiKey  *string
-	Site    *string
-	Service *string
-	Tags    *string
-}
-
-func (b0 DatadogConfig_builder) Build() *DatadogConfig {
-	m0 := &DatadogConfig{}
-	b, x := &b0, m0
-	_, _ = b, x
-	if b.ApiKey != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 4)
-		x.xxx_hidden_ApiKey = b.ApiKey
-	}
-	if b.Site != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 4)
-		x.xxx_hidden_Site = b.Site
-	}
-	if b.Service != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 4)
-		x.xxx_hidden_Service = b.Service
-	}
-	if b.Tags != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 3, 4)
-		x.xxx_hidden_Tags = b.Tags
-	}
 	return m0
 }
 
@@ -2183,7 +1738,7 @@ type ProfileDefinition struct {
 
 func (x *ProfileDefinition) Reset() {
 	*x = ProfileDefinition{}
-	mi := &file_proto_config_v1_config_proto_msgTypes[10]
+	mi := &file_proto_config_v1_config_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2195,7 +1750,7 @@ func (x *ProfileDefinition) String() string {
 func (*ProfileDefinition) ProtoMessage() {}
 
 func (x *ProfileDefinition) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_config_proto_msgTypes[10]
+	mi := &file_proto_config_v1_config_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2300,7 +1855,7 @@ type ProfileSelector struct {
 
 func (x *ProfileSelector) Reset() {
 	*x = ProfileSelector{}
-	mi := &file_proto_config_v1_config_proto_msgTypes[11]
+	mi := &file_proto_config_v1_config_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2312,7 +1867,7 @@ func (x *ProfileSelector) String() string {
 func (*ProfileSelector) ProtoMessage() {}
 
 func (x *ProfileSelector) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_config_proto_msgTypes[11]
+	mi := &file_proto_config_v1_config_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2374,7 +1929,7 @@ type Middleware struct {
 
 func (x *Middleware) Reset() {
 	*x = Middleware{}
-	mi := &file_proto_config_v1_config_proto_msgTypes[12]
+	mi := &file_proto_config_v1_config_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2386,7 +1941,7 @@ func (x *Middleware) String() string {
 func (*Middleware) ProtoMessage() {}
 
 func (x *Middleware) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_config_proto_msgTypes[12]
+	mi := &file_proto_config_v1_config_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2566,7 +2121,7 @@ const file_proto_config_v1_config_proto_rawDesc = "" +
 	"\x05paths\x18\x04 \x03(\tR\x05paths\"O\n" +
 	"\tDLPConfig\x12\x18\n" +
 	"\aenabled\x18\x01 \x01(\bR\aenabled\x12(\n" +
-	"\x0fcustom_patterns\x18\x02 \x03(\tR\x0fcustom_patterns\"\xdb\x05\n" +
+	"\x0fcustom_patterns\x18\x02 \x03(\tR\x0fcustom_patterns\"\xb5\x04\n" +
 	"\vAuditConfig\x12\x18\n" +
 	"\aenabled\x18\x01 \x01(\bR\aenabled\x12 \n" +
 	"\voutput_path\x18\x02 \x01(\tR\voutput_path\x12$\n" +
@@ -2574,33 +2129,16 @@ const file_proto_config_v1_config_proto_rawDesc = "" +
 	"\vlog_results\x18\x04 \x01(\bR\vlog_results\x12M\n" +
 	"\fstorage_type\x18\x05 \x01(\x0e2).mcpany.config.v1.AuditConfig.StorageTypeR\fstorage_type\x12 \n" +
 	"\vwebhook_url\x18\x06 \x01(\tR\vwebhook_url\x12[\n" +
-	"\x0fwebhook_headers\x18\a \x03(\v21.mcpany.config.v1.AuditConfig.WebhookHeadersEntryR\x0fwebhook_headers\x126\n" +
-	"\x06splunk\x18\b \x01(\v2\x1e.mcpany.config.v1.SplunkConfigR\x06splunk\x129\n" +
-	"\adatadog\x18\t \x01(\v2\x1f.mcpany.config.v1.DatadogConfigR\adatadog\x1aA\n" +
+	"\x0fwebhook_headers\x18\a \x03(\v21.mcpany.config.v1.AuditConfig.WebhookHeadersEntryR\x0fwebhook_headers\x1aA\n" +
 	"\x13WebhookHeadersEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\xc3\x01\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\x90\x01\n" +
 	"\vStorageType\x12\x1c\n" +
 	"\x18STORAGE_TYPE_UNSPECIFIED\x10\x00\x12\x15\n" +
 	"\x11STORAGE_TYPE_FILE\x10\x01\x12\x17\n" +
 	"\x13STORAGE_TYPE_SQLITE\x10\x02\x12\x19\n" +
 	"\x15STORAGE_TYPE_POSTGRES\x10\x03\x12\x18\n" +
-	"\x14STORAGE_TYPE_WEBHOOK\x10\x04\x12\x17\n" +
-	"\x13STORAGE_TYPE_SPLUNK\x10\x05\x12\x18\n" +
-	"\x14STORAGE_TYPE_DATADOG\x10\x06\"\x8c\x01\n" +
-	"\fSplunkConfig\x12\x18\n" +
-	"\ahec_url\x18\x01 \x01(\tR\ahec_url\x12\x14\n" +
-	"\x05token\x18\x02 \x01(\tR\x05token\x12\x14\n" +
-	"\x05index\x18\x03 \x01(\tR\x05index\x12\x16\n" +
-	"\x06source\x18\x04 \x01(\tR\x06source\x12\x1e\n" +
-	"\n" +
-	"sourcetype\x18\x05 \x01(\tR\n" +
-	"sourcetype\"k\n" +
-	"\rDatadogConfig\x12\x18\n" +
-	"\aapi_key\x18\x01 \x01(\tR\aapi_key\x12\x12\n" +
-	"\x04site\x18\x02 \x01(\tR\x04site\x12\x18\n" +
-	"\aservice\x18\x03 \x01(\tR\aservice\x12\x12\n" +
-	"\x04tags\x18\x04 \x01(\tR\x04tags\"\x8e\x01\n" +
+	"\x14STORAGE_TYPE_WEBHOOK\x10\x04\"\x8e\x01\n" +
 	"\x11ProfileDefinition\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12=\n" +
 	"\bselector\x18\x02 \x01(\v2!.mcpany.config.v1.ProfileSelectorR\bselector\x12&\n" +
@@ -2618,7 +2156,7 @@ const file_proto_config_v1_config_proto_rawDesc = "" +
 	"\bdisabled\x18\x03 \x01(\bR\bdisabledB5B\vConfigProtoZ&github.com/mcpany/core/proto/config/v1b\beditionsp\xe8\a"
 
 var file_proto_config_v1_config_proto_enumTypes = make([]protoimpl.EnumInfo, 3)
-var file_proto_config_v1_config_proto_msgTypes = make([]protoimpl.MessageInfo, 15)
+var file_proto_config_v1_config_proto_msgTypes = make([]protoimpl.MessageInfo, 13)
 var file_proto_config_v1_config_proto_goTypes = []any{
 	(GlobalSettings_LogLevel)(0),      // 0: mcpany.config.v1.GlobalSettings.LogLevel
 	(GlobalSettings_LogFormat)(0),     // 1: mcpany.config.v1.GlobalSettings.LogFormat
@@ -2631,44 +2169,40 @@ var file_proto_config_v1_config_proto_goTypes = []any{
 	(*GCSettings)(nil),                // 8: mcpany.config.v1.GCSettings
 	(*DLPConfig)(nil),                 // 9: mcpany.config.v1.DLPConfig
 	(*AuditConfig)(nil),               // 10: mcpany.config.v1.AuditConfig
-	(*SplunkConfig)(nil),              // 11: mcpany.config.v1.SplunkConfig
-	(*DatadogConfig)(nil),             // 12: mcpany.config.v1.DatadogConfig
-	(*ProfileDefinition)(nil),         // 13: mcpany.config.v1.ProfileDefinition
-	(*ProfileSelector)(nil),           // 14: mcpany.config.v1.ProfileSelector
-	(*Middleware)(nil),                // 15: mcpany.config.v1.Middleware
-	nil,                               // 16: mcpany.config.v1.AuditConfig.WebhookHeadersEntry
-	nil,                               // 17: mcpany.config.v1.ProfileSelector.ToolPropertiesEntry
-	(*UpstreamServiceConfig)(nil),     // 18: mcpany.config.v1.UpstreamServiceConfig
-	(*UpstreamServiceCollection)(nil), // 19: mcpany.config.v1.UpstreamServiceCollection
-	(*AuthenticationConfig)(nil),      // 20: mcpany.config.v1.AuthenticationConfig
-	(*bus.MessageBus)(nil),            // 21: bus.MessageBus
+	(*ProfileDefinition)(nil),         // 11: mcpany.config.v1.ProfileDefinition
+	(*ProfileSelector)(nil),           // 12: mcpany.config.v1.ProfileSelector
+	(*Middleware)(nil),                // 13: mcpany.config.v1.Middleware
+	nil,                               // 14: mcpany.config.v1.AuditConfig.WebhookHeadersEntry
+	nil,                               // 15: mcpany.config.v1.ProfileSelector.ToolPropertiesEntry
+	(*UpstreamServiceConfig)(nil),     // 16: mcpany.config.v1.UpstreamServiceConfig
+	(*UpstreamServiceCollection)(nil), // 17: mcpany.config.v1.UpstreamServiceCollection
+	(*AuthenticationConfig)(nil),      // 18: mcpany.config.v1.AuthenticationConfig
+	(*bus.MessageBus)(nil),            // 19: bus.MessageBus
 }
 var file_proto_config_v1_config_proto_depIdxs = []int32{
 	7,  // 0: mcpany.config.v1.McpAnyServerConfig.global_settings:type_name -> mcpany.config.v1.GlobalSettings
-	18, // 1: mcpany.config.v1.McpAnyServerConfig.upstream_services:type_name -> mcpany.config.v1.UpstreamServiceConfig
-	19, // 2: mcpany.config.v1.McpAnyServerConfig.upstream_service_collections:type_name -> mcpany.config.v1.UpstreamServiceCollection
+	16, // 1: mcpany.config.v1.McpAnyServerConfig.upstream_services:type_name -> mcpany.config.v1.UpstreamServiceConfig
+	17, // 2: mcpany.config.v1.McpAnyServerConfig.upstream_service_collections:type_name -> mcpany.config.v1.UpstreamServiceCollection
 	4,  // 3: mcpany.config.v1.McpAnyServerConfig.users:type_name -> mcpany.config.v1.User
-	20, // 4: mcpany.config.v1.User.authentication:type_name -> mcpany.config.v1.AuthenticationConfig
+	18, // 4: mcpany.config.v1.User.authentication:type_name -> mcpany.config.v1.AuthenticationConfig
 	5,  // 5: mcpany.config.v1.SecretList.secrets:type_name -> mcpany.config.v1.Secret
 	0,  // 6: mcpany.config.v1.GlobalSettings.log_level:type_name -> mcpany.config.v1.GlobalSettings.LogLevel
-	21, // 7: mcpany.config.v1.GlobalSettings.message_bus:type_name -> bus.MessageBus
+	19, // 7: mcpany.config.v1.GlobalSettings.message_bus:type_name -> bus.MessageBus
 	10, // 8: mcpany.config.v1.GlobalSettings.audit:type_name -> mcpany.config.v1.AuditConfig
-	13, // 9: mcpany.config.v1.GlobalSettings.profile_definitions:type_name -> mcpany.config.v1.ProfileDefinition
+	11, // 9: mcpany.config.v1.GlobalSettings.profile_definitions:type_name -> mcpany.config.v1.ProfileDefinition
 	1,  // 10: mcpany.config.v1.GlobalSettings.log_format:type_name -> mcpany.config.v1.GlobalSettings.LogFormat
-	15, // 11: mcpany.config.v1.GlobalSettings.middlewares:type_name -> mcpany.config.v1.Middleware
+	13, // 11: mcpany.config.v1.GlobalSettings.middlewares:type_name -> mcpany.config.v1.Middleware
 	9,  // 12: mcpany.config.v1.GlobalSettings.dlp:type_name -> mcpany.config.v1.DLPConfig
 	8,  // 13: mcpany.config.v1.GlobalSettings.gc_settings:type_name -> mcpany.config.v1.GCSettings
 	2,  // 14: mcpany.config.v1.AuditConfig.storage_type:type_name -> mcpany.config.v1.AuditConfig.StorageType
-	16, // 15: mcpany.config.v1.AuditConfig.webhook_headers:type_name -> mcpany.config.v1.AuditConfig.WebhookHeadersEntry
-	11, // 16: mcpany.config.v1.AuditConfig.splunk:type_name -> mcpany.config.v1.SplunkConfig
-	12, // 17: mcpany.config.v1.AuditConfig.datadog:type_name -> mcpany.config.v1.DatadogConfig
-	14, // 18: mcpany.config.v1.ProfileDefinition.selector:type_name -> mcpany.config.v1.ProfileSelector
-	17, // 19: mcpany.config.v1.ProfileSelector.tool_properties:type_name -> mcpany.config.v1.ProfileSelector.ToolPropertiesEntry
-	20, // [20:20] is the sub-list for method output_type
-	20, // [20:20] is the sub-list for method input_type
-	20, // [20:20] is the sub-list for extension type_name
-	20, // [20:20] is the sub-list for extension extendee
-	0,  // [0:20] is the sub-list for field type_name
+	14, // 15: mcpany.config.v1.AuditConfig.webhook_headers:type_name -> mcpany.config.v1.AuditConfig.WebhookHeadersEntry
+	12, // 16: mcpany.config.v1.ProfileDefinition.selector:type_name -> mcpany.config.v1.ProfileSelector
+	15, // 17: mcpany.config.v1.ProfileSelector.tool_properties:type_name -> mcpany.config.v1.ProfileSelector.ToolPropertiesEntry
+	18, // [18:18] is the sub-list for method output_type
+	18, // [18:18] is the sub-list for method input_type
+	18, // [18:18] is the sub-list for extension type_name
+	18, // [18:18] is the sub-list for extension extendee
+	0,  // [0:18] is the sub-list for field type_name
 }
 
 func init() { file_proto_config_v1_config_proto_init() }
@@ -2684,7 +2218,7 @@ func file_proto_config_v1_config_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_proto_config_v1_config_proto_rawDesc), len(file_proto_config_v1_config_proto_rawDesc)),
 			NumEnums:      3,
-			NumMessages:   15,
+			NumMessages:   13,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

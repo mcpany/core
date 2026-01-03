@@ -285,25 +285,10 @@ func (u *Upstream) createAndRegisterHTTPTools(ctx context.Context, serviceID, ad
 			continue
 		}
 
-		rawEndpointPath := httpDef.GetEndpointPath()
-		endpointURL, err := url.Parse(rawEndpointPath)
+		endpointURL, err := url.Parse(httpDef.GetEndpointPath())
 		if err != nil {
-			log.Error("Failed to parse endpoint path", "path", rawEndpointPath, "error", err)
+			log.Error("Failed to parse endpoint path", "path", httpDef.GetEndpointPath(), "error", err)
 			continue
-		}
-
-		// Fix for double slash bug (e.g., //foo).
-		// If the endpoint path starts with double slashes but has no scheme (e.g., //foo),
-		// url.Parse treats it as a scheme-relative URL (host="foo", path="").
-		// We want to treat it as a path relative to the base URL.
-		if endpointURL.Scheme == "" && strings.HasPrefix(rawEndpointPath, "//") {
-			// Trim all leading slashes to ensure it's treated as a relative path
-			trimmed := strings.TrimLeft(rawEndpointPath, "/")
-			endpointURL, err = url.Parse(trimmed)
-			if err != nil {
-				log.Error("Failed to parse corrected endpoint path", "path", trimmed, "error", err)
-				continue
-			}
 		}
 
 		// Ensure baseURL has a trailing slash so ResolveReference appends to it,
@@ -325,9 +310,7 @@ func (u *Upstream) createAndRegisterHTTPTools(ctx context.Context, serviceID, ad
 		// relative to the base, effectively forcing a trailing slash on the base.
 		// But TrimPrefix(..., "/") makes it empty string.
 		// So we check if relPath is NOT empty OR if endpointURL.Path ended with a slash.
-		// We also check rawEndpointPath because if we trimmed slashes from //, endpointURL.Path
-		// might be empty, but we want to preserve the trailing slash implied by the original input.
-		if relPath != "" || strings.HasSuffix(endpointURL.Path, "/") || strings.HasSuffix(rawEndpointPath, "/") {
+		if relPath != "" || strings.HasSuffix(endpointURL.Path, "/") {
 			if !strings.HasSuffix(baseForJoin.Path, "/") {
 				baseForJoin.Path += "/"
 				if baseForJoin.RawPath != "" {
