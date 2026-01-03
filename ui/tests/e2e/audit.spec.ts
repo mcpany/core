@@ -32,28 +32,28 @@ test.describe('MCP Any Audit Screenshots', () => {
   test('Capture Services', async ({ page }) => {
     await page.goto('/services');
     await page.waitForSelector('text=Upstream Services');
-    await page.waitForSelector('text=weather-service'); // Wait for list
+    await page.waitForSelector('text=Name'); // Wait for list headers
     await page.screenshot({ path: path.join(auditDir, 'services.png'), fullPage: true });
   });
 
   test('Capture Tools', async ({ page }) => {
     await page.goto('/tools');
     await page.waitForSelector('text=Available Tools');
-    await page.waitForSelector('text=get_weather'); // Wait for list
+    await page.waitForSelector('text=Name'); // Wait for list headers
     await page.screenshot({ path: path.join(auditDir, 'tools.png'), fullPage: true });
   });
 
   test('Capture Resources', async ({ page }) => {
     await page.goto('/resources');
     await page.waitForSelector('text=Managed Resources');
-    await page.waitForSelector('text=System Logs'); // Wait for list
+    await page.waitForSelector('text=Name'); // Wait for list headers
     await page.screenshot({ path: path.join(auditDir, 'resources.png'), fullPage: true });
   });
 
   test('Capture Prompts', async ({ page }) => {
     await page.goto('/prompts');
     await page.waitForSelector('text=Prompt Templates');
-    await page.waitForSelector('text=summarize_text'); // Wait for list
+    await page.waitForSelector('text=Name'); // Wait for list headers
     await page.screenshot({ path: path.join(auditDir, 'prompts.png'), fullPage: true });
   });
 

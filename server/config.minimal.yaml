@@ -15,10 +15,14 @@ upstream_services:
   - id: "weather-service"
     name: "weather-service"
     command_line_service:
-      command: "true"
+      command: "sleep 3600"
       tools:
         - name: "get_weather"
           description: "Get current weather"
+          call_id: "get_weather"
+      calls:
+        get_weather:
+          args: []
       resources:
         - uri: "system://logs"
           name: "System Logs"
