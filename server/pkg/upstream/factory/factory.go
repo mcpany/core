@@ -14,10 +14,8 @@ import (
 	"github.com/mcpany/core/pkg/upstream/grpc"
 	"github.com/mcpany/core/pkg/upstream/http"
 	"github.com/mcpany/core/pkg/upstream/mcp"
-	"github.com/mcpany/core/pkg/upstream/filesystem"
 	"github.com/mcpany/core/pkg/upstream/openapi"
 	"github.com/mcpany/core/pkg/upstream/sql"
-	"github.com/mcpany/core/pkg/upstream/vector"
 	"github.com/mcpany/core/pkg/upstream/webrtc"
 	"github.com/mcpany/core/pkg/upstream/websocket"
 	configv1 "github.com/mcpany/core/proto/config/v1"
@@ -84,10 +82,6 @@ func (f *UpstreamServiceFactory) NewUpstream(config *configv1.UpstreamServiceCon
 		return graphql.NewGraphQLUpstream(), nil
 	case configv1.UpstreamServiceConfig_SqlService_case:
 		return sql.NewUpstream(), nil
-	case configv1.UpstreamServiceConfig_FilesystemService_case:
-		return filesystem.NewUpstream(), nil
-	case configv1.UpstreamServiceConfig_VectorService_case:
-		return vector.NewUpstream(), nil
 	default:
 		return nil, fmt.Errorf("unknown service config type: %T", config.WhichServiceConfig())
 	}

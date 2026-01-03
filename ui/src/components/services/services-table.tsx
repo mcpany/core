@@ -36,7 +36,7 @@ interface ServicesTableProps {
 }
 
 export function ServicesTable({ services, loading, onToggle, onDelete }: ServicesTableProps) {
-
+  console.log('ServicesTable Services:', JSON.stringify(services, null, 2));
   if (loading) {
       return <div className="p-4 text-center text-muted-foreground">Loading services...</div>;
   }

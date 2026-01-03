@@ -19,12 +19,7 @@ type DB struct {
 
 // NewDB opens a PostgreSQL database connection.
 func NewDB(dsn string) (*DB, error) {
-	return NewDBWithDriver("postgres", dsn)
-}
-
-// NewDBWithDriver opens a database connection with the specified driver.
-func NewDBWithDriver(driver, dsn string) (*DB, error) {
-	db, err := sql.Open(driver, dsn)
+	db, err := sql.Open("postgres", dsn)
 	if err != nil {
 		return nil, fmt.Errorf("failed to open postgres db: %w", err)
 	}
@@ -36,19 +31,6 @@ func NewDBWithDriver(driver, dsn string) (*DB, error) {
 
 	if err := initSchema(db); err != nil {
 		_ = db.Close()
-		return nil, fmt.Errorf("failed to init schema: %w", err)
-	}
-
-	return &DB{db}, nil
-}
-
-// NewDBFromSQLDB creates a new DB wrapper from an existing sql.DB connection.
-func NewDBFromSQLDB(db *sql.DB) (*DB, error) {
-	if err := db.PingContext(context.TODO()); err != nil {
-		return nil, fmt.Errorf("failed to ping db: %w", err)
-	}
-
-	if err := initSchema(db); err != nil {
 		return nil, fmt.Errorf("failed to init schema: %w", err)
 	}
 

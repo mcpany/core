@@ -70,7 +70,6 @@ message UpstreamServiceConfig {
     GraphQLUpstreamService graphql_service = 21 [json_name = "graphql_service"];
     SqlUpstreamService sql_service = 31 [json_name = "sql_service"];
     FilesystemUpstreamService filesystem_service = 32 [json_name = "filesystem_service"];
-    VectorUpstreamService vector_service = 34 [json_name = "vector_service"];
   }
 
   // The version of the upstream service, if known (e.g., "v1.2.3").
@@ -399,32 +398,6 @@ message SftpFs {
   string username = 2;
   string password = 3;
   string key_path = 4;
-}
-
-// VectorUpstreamService defines a service that connects to a vector database.
-message VectorUpstreamService {
-  // The specific configuration for the vector database type.
-  oneof vector_db_type {
-    PineconeVectorDB pinecone = 1;
-    // Add other providers here (e.g., Milvus, Weaviate)
-  }
-
-  // Manually defined mappings (usually not needed as we auto-register Vector tools).
-  repeated ToolDefinition tools = 2;
-
-  // Resources that are exposed.
-  repeated ResourceDefinition resources = 3;
-
-  // Prompts that are exposed.
-  repeated PromptDefinition prompts = 4;
-}
-
-message PineconeVectorDB {
-  string api_key = 1 [json_name = "api_key"];
-  string environment = 2; // e.g., "us-west1-gcp-free" (Legacy) or empty for serverless
-  string index_name = 3 [json_name = "index_name"];
-  string project_id = 4 [json_name = "project_id"]; // Optional, might be needed for URL construction
-  string host = 5; // Optional: The full host URL (https://index-project.svc.pinecone.io)
 }
 
 // McpUpstreamService defines an upstream that is already an MCP-compliant service.

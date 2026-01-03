@@ -1,66 +1,105 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
-package middleware
+package middleware_test
 
 import (
 	"context"
-	"net/http"
-	"net/http/httptest"
+	"encoding/json"
+	"os"
 	"testing"
 
-	"github.com/DATA-DOG/go-sqlmock"
+	"github.com/mcpany/core/pkg/auth"
+	"github.com/mcpany/core/pkg/middleware"
+	"github.com/mcpany/core/pkg/tool"
+	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
-func TestPostgresAuditStore_Close(t *testing.T) {
-	// Create a mock DB
-	db, mock, err := sqlmock.New()
+func TestAuditMiddleware(t *testing.T) {
+	// Create temp file for logs
+	tmpFile, err := os.CreateTemp("", "audit_test_*.log")
 	require.NoError(t, err)
-	defer db.Close() // In real usage, store.Close() will close it.
+	defer os.Remove(tmpFile.Name())
+	tmpFile.Close() // AuditMiddleware will open it
 
-	mock.ExpectClose()
+	enabled := true
+	logArgs := true
+	logRes := true
+	path := tmpFile.Name()
 
-	store := &PostgresAuditStore{
-		db: db,
+	cfg := &configv1.AuditConfig{
+		Enabled:      &enabled,
+		OutputPath:   &path,
+		LogArguments: &logArgs,
+		LogResults:   &logRes,
 	}
 
-	err = store.Close()
+	m, err := middleware.NewAuditMiddleware(cfg)
 	require.NoError(t, err)
-	require.NoError(t, mock.ExpectationsWereMet())
+	defer func() { _ = m.Close() }()
+
+	ctx := context.Background()
+	ctx = auth.ContextWithUser(ctx, "user1")
+	ctx = auth.ContextWithProfileID(ctx, "profileA")
+
+	inputs := map[string]any{"arg1": "val1"}
+	inputsBytes, _ := json.Marshal(inputs)
+
+	req := &tool.ExecutionRequest{
+		ToolName:   "test_tool",
+		ToolInputs: json.RawMessage(inputsBytes),
+	}
+
+	mockNext := func(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
+		return map[string]any{"status": "ok"}, nil
+	}
+
+	result, err := m.Execute(ctx, req, mockNext)
+	require.NoError(t, err)
+	assert.Equal(t, map[string]any{"status": "ok"}, result)
+
+	// Verify log file content
+	content, err := os.ReadFile(tmpFile.Name())
+	require.NoError(t, err)
+
+	var entry middleware.AuditEntry
+	err = json.Unmarshal(content, &entry)
+	require.NoError(t, err)
+
+	assert.Equal(t, "test_tool", entry.ToolName)
+	assert.Equal(t, "user1", entry.UserID)
+	assert.Equal(t, "profileA", entry.ProfileID)
+	assert.NotEmpty(t, entry.Duration)
+
+	// Check args
+	var args map[string]any
+	err = json.Unmarshal(entry.Arguments, &args)
+	require.NoError(t, err)
+	assert.Equal(t, "val1", args["arg1"])
+
+	// Check result
+	resMap, ok := entry.Result.(map[string]any)
+	require.True(t, ok)
+	assert.Equal(t, "ok", resMap["status"])
 }
 
-func TestWebhookAuditStore_Close(t *testing.T) {
-	store := &WebhookAuditStore{}
-	err := store.Close()
+func TestAuditMiddleware_Disabled(t *testing.T) {
+	enabled := false
+	cfg := &configv1.AuditConfig{
+		Enabled: &enabled,
+	}
+	m, err := middleware.NewAuditMiddleware(cfg)
 	require.NoError(t, err)
-}
 
-func TestWebhookAuditStore_Write(t *testing.T) {
-	// Setup a mock server
-	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		assert.Equal(t, "/webhook", r.URL.Path)
-		assert.Equal(t, "POST", r.Method)
-		assert.Equal(t, "application/json", r.Header.Get("Content-Type"))
-		assert.Equal(t, "bar", r.Header.Get("X-Foo"))
-		w.WriteHeader(http.StatusOK)
-	}))
-	defer ts.Close()
+	// mockNext called
+	called := false
+	mockNext := func(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
+		called = true
+		return nil, nil
+	}
 
-	store := NewWebhookAuditStore(ts.URL+"/webhook", map[string]string{"X-Foo": "bar"})
-	err := store.Write(context.Background(), AuditEntry{ToolName: "test"})
-	require.NoError(t, err)
-}
-
-func TestWebhookAuditStore_Write_Error(t *testing.T) {
-	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.WriteHeader(http.StatusInternalServerError)
-	}))
-	defer ts.Close()
-
-	store := NewWebhookAuditStore(ts.URL, nil)
-	err := store.Write(context.Background(), AuditEntry{})
-	require.Error(t, err)
-	assert.Contains(t, err.Error(), "webhook returned status")
+	_, _ = m.Execute(context.Background(), nil, mockNext)
+	assert.True(t, called)
 }

@@ -8,7 +8,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"log"
 	"net/http"
 	"time"
 )
@@ -25,7 +24,9 @@ func NewWebhookAuditStore(webhookURL string, headers map[string]string) *Webhook
 	return &WebhookAuditStore{
 		webhookURL: webhookURL,
 		headers:    headers,
-		client:     &http.Client{Timeout: 3 * time.Second},
+		client: &http.Client{
+			Timeout: 3 * time.Second,
+		},
 	}
 }
 
@@ -51,9 +52,7 @@ func (s *WebhookAuditStore) Write(ctx context.Context, entry AuditEntry) error {
 		return fmt.Errorf("failed to send webhook: %w", err)
 	}
 	defer func() {
-		if err := resp.Body.Close(); err != nil {
-			log.Printf("Failed to close response body: %v", err)
-		}
+		_ = resp.Body.Close()
 	}()
 
 	if resp.StatusCode >= 400 {

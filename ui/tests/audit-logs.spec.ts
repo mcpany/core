@@ -4,7 +4,7 @@
  */
 
 
-import { test } from '@playwright/test';
+import { test, expect } from '@playwright/test';
 import * as path from 'path';
 
 test.describe('Feature Screenshot', () => {

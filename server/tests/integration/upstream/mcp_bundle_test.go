@@ -248,16 +248,6 @@ func TestE2E_Bundle_Filesystem(t *testing.T) {
 	promptManager := prompt.NewManager()
 	resourceManager := resource.NewManager()
 	upstreamService := mcp.NewUpstream()
-	if impl, ok := upstreamService.(*mcp.Upstream); ok {
-		// Use a test-specific temp directory for bundles to ensure isolation
-		// and avoid conflicts with global state or other tests.
-		// We use a subdirectory "bundles" inside t.TempDir() to keep it clean.
-		impl.BundleBaseDir = filepath.Join(t.TempDir(), "bundles")
-		if err := os.MkdirAll(impl.BundleBaseDir, 0755); err != nil {
-			t.Fatalf("Failed to create test bundle dir: %v", err)
-		}
-		t.Logf("Using BundleBaseDir: %s", impl.BundleBaseDir)
-	}
 	ctx := context.Background()
 
 	// Usage of real implementation is default, so no need to touch connectForTesting

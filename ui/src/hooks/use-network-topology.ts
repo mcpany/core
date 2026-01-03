@@ -3,10 +3,10 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { Node, Edge, useNodesState, useEdgesState, addEdge, Connection, MarkerType, Position } from '@xyflow/react';
 import dagre from 'dagre';
-import { Graph, Node as TopologyNode } from '../types/topology';
+import { Graph, Node as TopologyNode, NodeType, NodeStatus } from '../types/topology';
 
 export interface NetworkGraphState {
     nodes: Node[];
@@ -70,7 +70,7 @@ export function useNetworkTopology() {
 
             // Helper to add node
             const addNode = (tNode: TopologyNode, parentId?: string) => {
-                // isGroup removed as unused
+                const isGroup = !!tNode.children?.length;
                 // We flatten the graph for Dagre but visually we might use Groups?
                 // For now, let's just make them all top-level nodes connected by edges
                 // to simplify the 5-layer layout request.

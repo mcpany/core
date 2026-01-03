@@ -25,7 +25,6 @@ import (
 	"github.com/mcpany/core/pkg/auth"
 	"github.com/mcpany/core/pkg/bus"
 	"github.com/mcpany/core/pkg/config"
-	"github.com/mcpany/core/pkg/gc"
 	"github.com/mcpany/core/pkg/logging"
 	"github.com/mcpany/core/pkg/mcpserver"
 	"github.com/mcpany/core/pkg/metrics"
@@ -338,26 +337,6 @@ func (a *Application) Run(
 		inProcessWorker := worker.New(busProvider, workerCfg)
 		inProcessWorker.Start(workerCtx)
 		defer inProcessWorker.Stop()
-	}
-
-	// Initialize and start Global GC Worker
-	gcSettings := cfg.GetGlobalSettings().GetGcSettings()
-	if gcSettings != nil && gcSettings.GetEnabled() {
-		interval, _ := time.ParseDuration(gcSettings.GetInterval())
-		ttl, _ := time.ParseDuration(gcSettings.GetTtl())
-
-		gpPaths := gcSettings.GetPaths()
-		// Always include the bundle directory if it's set in env (which we did for config)
-		// Or we can rely on config.
-		// For now, respect config exactly.
-
-		gcWorker := gc.New(gc.Config{
-			Enabled:  true,
-			Interval: interval,
-			TTL:      ttl,
-			Paths:    gpPaths,
-		})
-		gcWorker.Start(workerCtx)
 	}
 
 	// Initialize Topology Manager
