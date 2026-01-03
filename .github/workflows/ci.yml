@@ -9,6 +9,13 @@ on:
   pull_request:
     branches: [main]
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
 jobs:
   lint:
     runs-on: ubuntu-latest
@@ -485,6 +492,7 @@ jobs:
 
   docker-smoke-test:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v5
 
@@ -524,6 +532,7 @@ jobs:
 
   ui-test:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     strategy:
       fail-fast: false
       matrix:
@@ -565,9 +574,6 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-      - name: Build UI (Next.js)
-        run: |
-          make -C ui build
 
       - name: Test UI
         run: |
@@ -575,6 +581,7 @@ jobs:
 
   k8s-e2e:
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v5
 
@@ -598,3 +605,15 @@ jobs:
       - name: Run K8s E2E Tests
         run: |
           ./tests/k8s/test_operator.sh
+
+  ci-success:
+    runs-on: ubuntu-latest
+    needs: [lint, e2e-sequential, e2e-public-api, docker-smoke-test, ui-test, k8s-e2e]
+    if: always()
+    steps:
+      - run: |
+          if [[ "${{ contains(needs.*.result, "failure") || contains(needs.*.result, "cancelled") }}" == "true" ]]; then
+            echo "One or more dependent jobs failed."
+            exit 1
+          fi
+          echo "All jobs passed."
