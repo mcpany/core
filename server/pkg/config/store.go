@@ -474,6 +474,27 @@ func resolveEnvValue(root proto.Message, path []string, value string) interface{
 		if i == len(path)-1 {
 			// We found the leaf field. Check its kind.
 			kind := fd.Kind()
+
+			if fd.IsList() {
+				// Repeated field: split by comma
+				parts := strings.Split(value, ",")
+				var list []interface{}
+				for _, part := range parts {
+					part = strings.TrimSpace(part)
+					if kind == protoreflect.BoolKind {
+						b, err := strconv.ParseBool(part)
+						if err == nil {
+							list = append(list, b)
+						} else {
+							list = append(list, part)
+						}
+					} else {
+						list = append(list, part)
+					}
+				}
+				return list
+			}
+
 			if kind == protoreflect.BoolKind {
 				b, err := strconv.ParseBool(value)
 				if err == nil {
