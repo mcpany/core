@@ -350,6 +350,11 @@ func (u *Upstream) createAndRegisterHTTPTools(ctx context.Context, serviceID, ad
 		resolvedURL := baseForJoin.ResolveReference(relURL)
 		// ResolveReference discards the base query, so we restore it
 		resolvedURL.RawQuery = baseURL.RawQuery
+		// ResolveReference also discards the base fragment if the reference has none (empty string).
+		// If the endpoint URL didn't specify a fragment, we should preserve the base fragment.
+		if endpointURL.Fragment == "" && baseURL.Fragment != "" {
+			resolvedURL.Fragment = baseURL.Fragment
+		}
 		// Merge query parameters, allowing endpoint parameters to override base parameters
 		query := resolvedURL.Query()
 		endpointQuery := endpointURL.Query()
