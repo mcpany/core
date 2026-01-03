@@ -52,7 +52,7 @@ test.describe('E2E Full Coverage', () => {
     await page.fill('input[id="name"]', 'e2e-test-service');
 
     // Fill Endpoint
-    await page.fill('input[id="endpoint"]', 'http://localhost:8081');
+    await page.fill('input[name="address"]', 'http://localhost:8081');
 
     // Wait for the response to ensure persistence
     const responsePromise = page.waitForResponse(response =>

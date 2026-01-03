@@ -26,6 +26,7 @@ test.describe('MCP Any UI E2E', () => {
     await page.click('button:has-text("Add Service")');
     await expect(page.locator('div[role="dialog"]')).toBeVisible();
     await page.fill('input#name', 'test-service-e2e');
+    await page.fill('input[name="address"]', 'http://example.com');
     await page.click('text=Save Changes');
 
     // Check if added
