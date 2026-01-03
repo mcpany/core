@@ -40,15 +40,21 @@ test.describe('E2E Full Coverage', () => {
     await expect(page.locator('h2')).toContainText('Resources');
   });
 
-  test.skip('should register and manage a service', async ({ page }) => {
+  test('should register and manage a service', async ({ page }) => {
     await page.goto('/services');
     await page.click('button:has-text("Add Service")');
 
     // Fill form (Basic HTTP Service)
     await page.fill('input[id="name"]', 'e2e-test-service');
 
-    // Fill Endpoint
-    await page.fill('input[id="endpoint"]', 'http://localhost:8081');
+    // Fill Endpointe
+    console.log("TEST UPDATE: Filling Address");
+    const addressInput = page.locator('input[name="address"]');
+    await addressInput.click();
+    await addressInput.fill('http://http-echo-server:8080');
+    await addressInput.blur();
+    await page.waitForTimeout(500); // Wait for state update
+    await expect(addressInput).toHaveValue('http://http-echo-server:8080');
 
     const responsePromise = page.waitForResponse(response =>
       response.url().includes('/api/services') &&
