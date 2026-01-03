@@ -839,7 +839,7 @@ func StartMCPANYServerWithClock(t *testing.T, testName string, healthCheck bool,
 	dbFile, err := os.CreateTemp(t.TempDir(), "mcpany-db-*.db")
 	require.NoError(t, err)
 	dbPath := dbFile.Name()
-	dbFile.Close()
+	_ = dbFile.Close()
 
 	args := []string{
 		"run",
