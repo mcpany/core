@@ -10,10 +10,9 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Settings, Trash2, Power, PowerOff, CheckCircle, XCircle } from "lucide-react";
+import { Settings, Trash2, CheckCircle, XCircle } from "lucide-react";
 import { UpstreamServiceConfig } from "@/lib/client";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import Link from "next/link";
+
 
 interface ServiceListProps {
   services: UpstreamServiceConfig[];
