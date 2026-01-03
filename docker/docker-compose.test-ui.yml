@@ -23,6 +23,7 @@ services:
       - ../server/config.minimal.yaml:/app/config.minimal.yaml
 
   ui-tests:
+    image: mcpany-ui-e2e:latest
     build:
       context: ../ui
       dockerfile: Dockerfile.e2e

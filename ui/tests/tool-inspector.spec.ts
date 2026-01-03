@@ -7,6 +7,28 @@
 import { test, expect } from '@playwright/test';
 
 test('Tools page loads and inspector opens', async ({ page }) => {
+  // Mock tools endpoint
+  await page.route((url) => url.pathname.includes('/api/tools'), async (route) => {
+    await route.fulfill({
+      json: {
+        tools: [
+          {
+            name: 'get_weather',
+            description: 'Get weather for a location',
+            source: 'configured',
+            serviceName: 'weather-service',
+            inputSchema: {
+               type: "object",
+               properties: {
+                 location: { type: "string" }
+               }
+            }
+          }
+        ]
+      }
+    });
+  });
+
   await page.goto('/tools');
 
   // Check if tools are listed
