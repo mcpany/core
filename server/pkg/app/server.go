@@ -1018,6 +1018,10 @@ func (a *Application) runServerMode(
 		// Strip the prefix so the underlying handler sees the relative path
 		prefix := fmt.Sprintf("/mcp/u/%s/profile/%s", uid, profileID)
 		delegate := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			// Limit request body size to 5MB to prevent DoS attacks via large payloads.
+			// This applies to both the stateless JSON-RPC handler and the underlying MCP handler.
+			r.Body = http.MaxBytesReader(w, r.Body, 5<<20)
+
 			logging.GetLogger().Info("Delegate Handler", "method", r.Method, "path", r.URL.Path)
 			// Support stateless JSON-RPC for simple clients
 			if r.Method == http.MethodPost && (r.URL.Path == "/" || r.URL.Path == "") {
@@ -1027,7 +1031,19 @@ func (a *Application) runServerMode(
 					Method  string          `json:"method"`
 					Params  json.RawMessage `json:"params"`
 				}
-				body, _ := io.ReadAll(r.Body)
+				body, err := io.ReadAll(r.Body)
+				if err != nil {
+					// http.MaxBytesReader returns an error if the limit is exceeded.
+					// We should log it and return an appropriate error.
+					logging.GetLogger().Error("Failed to read request body", "error", err)
+					if strings.Contains(err.Error(), "request body too large") {
+						http.Error(w, "Request body too large", http.StatusRequestEntityTooLarge)
+						return
+					}
+					http.Error(w, "Failed to read request body", http.StatusInternalServerError)
+					return
+				}
+
 				r.Body = io.NopCloser(bytes.NewBuffer(body)) // Restore body just in case
 				if err := json.Unmarshal(body, &req); err != nil {
 					http.Error(w, "Invalid JSON", http.StatusBadRequest)
