@@ -13,10 +13,6 @@ import {
   Search,
   Download,
   Filter,
-  AlertCircle,
-  Info,
-  AlertTriangle,
-  Bug,
   Terminal
 } from "lucide-react"
 
@@ -32,7 +28,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardHeader } from "@/components/ui/card"
 
 export type LogLevel = "INFO" | "WARN" | "ERROR" | "DEBUG"
 
