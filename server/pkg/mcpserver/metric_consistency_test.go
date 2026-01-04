@@ -131,8 +131,9 @@ func TestMetricNamingConsistency(t *testing.T) {
 	// 2. Call error tool
 	sanitizedErrorName, _ := util.SanitizeToolName("error-tool")
 	errorID := "test-service" + "." + sanitizedErrorName
-	_, err = clientSession.CallTool(ctx, &mcp.CallToolParams{Name: errorID})
-	require.Error(t, err)
+	result, err := clientSession.CallTool(ctx, &mcp.CallToolParams{Name: errorID})
+	require.NoError(t, err)
+	assert.True(t, result.IsError)
 
 	// Check metrics
 	data := sink.Data()
