@@ -23,7 +23,7 @@ interface ToolFormProps {
 
 export function ToolForm({ tool, onSubmit, onCancel }: ToolFormProps) {
   const { register, control, handleSubmit, formState: { errors } } = useForm();
-  const schema = tool.schema || {};
+  const schema: any = tool.inputSchema || {};
   const properties = schema.properties || {};
   const required = schema.required || [];
 

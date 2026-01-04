@@ -28,7 +28,7 @@ export function SecretManager() {
 
   const fetchSecrets = async () => {
     try {
-      const res = await apiClient.listSecrets();
+      const res: any = await apiClient.listSecrets();
       setSecrets(res.secrets || []);
     } catch (e) {
       console.error("Failed to fetch secrets", e);

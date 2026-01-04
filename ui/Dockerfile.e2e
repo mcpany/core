@@ -3,16 +3,19 @@
 
 FROM mcr.microsoft.com/playwright:v1.57.0-jammy
 
-WORKDIR /work/ui
+WORKDIR /work
 
 # Copy package files first for caching
-COPY package.json package-lock.json ./
+COPY ui/package.json ui/package-lock.json ui/
 
 # Install dependencies
-RUN npm ci
+RUN cd ui && npm ci
 
-# Copy the rest of the UI code
-COPY . .
+# Copy the rest of the code
+COPY proto proto/
+COPY ui ui/
+
+WORKDIR /work/ui
 
 # Default command (can be overridden)
 CMD ["npx", "playwright", "test"]

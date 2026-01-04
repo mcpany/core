@@ -17,7 +17,7 @@ export default function ToolDetailPage({ params: paramsPromise }: { params: Prom
     const [service, setService] = useState<UpstreamServiceConfig | null>(null);
 
     useEffect(() => {
-        apiClient.getService(params.id).then(res => setService(res.service));
+        apiClient.getService(params.id).then(res => setService(res));
     }, [params.id]);
 
     const breadcrumbItems: BreadcrumbItem[] = service ? [

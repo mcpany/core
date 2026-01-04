@@ -39,7 +39,7 @@ export default function ServicesPage() {
   const fetchServices = async () => {
     setLoading(true);
     try {
-      const res = await apiClient.listServices();
+      const res: any = await apiClient.listServices();
       // Handle both array and object response formats for robustness
       if (Array.isArray(res)) {
           setServices(res);
@@ -106,10 +106,9 @@ export default function ServicesPage() {
   };
 
   const openNew = () => {
-      setSelectedService({ id: "", name: "", version: "1.0.0", disable: false, http_service: { address: "" } });
+      setSelectedService({ id: "", name: "", version: "1.0.0", disable: false, httpService: { address: "" } } as any);
       setIsSheetOpen(true);
   };
-
   const handleSave = async (e: React.FormEvent) => {
       e.preventDefault();
       if (!selectedService) return;
@@ -120,9 +119,9 @@ export default function ServicesPage() {
                await apiClient.updateService(selectedService as any);
                toast({ title: "Service Updated", description: "Service configuration saved." });
           } else {
-              // Create
-              await apiClient.registerService(selectedService as any);
-              toast({ title: "Service Created", description: "New service registered successfully." });
+               // Create
+               await apiClient.registerService(selectedService as any);
+               toast({ title: "Service Created", description: "New service registered successfully." });
           }
           setIsSheetOpen(false);
           fetchServices();
@@ -184,18 +183,18 @@ export default function ServicesPage() {
                         <Label htmlFor="type" className="text-right">Type</Label>
                         <div className="col-span-3">
                              <Select
-                                value={selectedService.http_service ? "http" : selectedService.grpc_service ? "grpc" : selectedService.command_line_service ? "cmd" : "mcp"}
+                                value={selectedService.httpService ? "http" : selectedService.grpcService ? "grpc" : selectedService.commandLineService ? "cmd" : "mcp"}
                                 onValueChange={(val) => {
                                     const newService = { ...selectedService };
-                                    delete newService.http_service;
-                                    delete newService.grpc_service;
-                                    delete newService.command_line_service;
-                                    delete newService.mcp_service;
+                                    delete newService.httpService;
+                                    delete newService.grpcService;
+                                    delete newService.commandLineService;
+                                    delete newService.mcpService;
 
-                                    if (val === 'http') newService.http_service = { address: "" };
-                                    if (val === 'grpc') newService.grpc_service = { address: "" };
-                                    if (val === 'cmd') newService.command_line_service = { command: "" };
-                                    if (val === 'mcp') newService.mcp_service = { http_connection: { http_address: "" } };
+                                    if (val === 'http') newService.httpService = { address: "" } as any;
+                                    if (val === 'grpc') newService.grpcService = { address: "" } as any;
+                                    if (val === 'cmd') newService.commandLineService = { command: "" } as any;
+                                    if (val === 'mcp') newService.mcpService = { httpConnection: { httpAddress: "" } } as any;
                                     setSelectedService(newService);
                                 }}
                              >
@@ -212,37 +211,37 @@ export default function ServicesPage() {
                         </div>
                     </div>
 
-                    {selectedService.http_service && (
+                    {selectedService.httpService && (
                          <div className="grid grid-cols-4 items-center gap-4">
                              <Label htmlFor="endpoint" className="text-right">Endpoint</Label>
                              <Input
                                 id="endpoint"
-                                value={selectedService.http_service.address}
-                                onChange={(e) => setSelectedService({...selectedService, http_service: { ...selectedService.http_service, address: e.target.value }})}
+                                value={selectedService.httpService.address}
+                                onChange={(e) => setSelectedService({...selectedService, httpService: { ...selectedService.httpService, address: e.target.value } as any})}
                                 placeholder="http://localhost:8080"
                                 className="col-span-3"
                             />
                         </div>
                     )}
-                     {selectedService.grpc_service && (
+                     {selectedService.grpcService && (
                          <div className="grid grid-cols-4 items-center gap-4">
                              <Label htmlFor="grpc-endpoint" className="text-right">Address</Label>
                              <Input
                                 id="grpc-endpoint"
-                                value={selectedService.grpc_service.address}
-                                onChange={(e) => setSelectedService({...selectedService, grpc_service: { ...selectedService.grpc_service, address: e.target.value }})}
+                                value={selectedService.grpcService.address}
+                                onChange={(e) => setSelectedService({...selectedService, grpcService: { ...selectedService.grpcService, address: e.target.value } as any})}
                                 placeholder="localhost:9090"
                                 className="col-span-3"
                             />
                         </div>
                     )}
-                     {selectedService.command_line_service && (
+                     {selectedService.commandLineService && (
                          <div className="grid grid-cols-4 items-center gap-4">
                              <Label htmlFor="command" className="text-right">Command</Label>
                              <Input
                                 id="command"
-                                value={selectedService.command_line_service.command}
-                                onChange={(e) => setSelectedService({...selectedService, command_line_service: { ...selectedService.command_line_service, command: e.target.value }})}
+                                value={selectedService.commandLineService.command}
+                                onChange={(e) => setSelectedService({...selectedService, commandLineService: { ...selectedService.commandLineService, command: e.target.value } as any})}
                                 placeholder="docker run ..."
                                 className="col-span-3"
                             />

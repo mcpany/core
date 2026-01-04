@@ -22,8 +22,12 @@ export default function ResourcesPage() {
 
   const fetchResources = async () => {
     try {
-      const res = await apiClient.listResources();
-      setResources(res.resources || []);
+      const res: any = await apiClient.listResources();
+      if (Array.isArray(res)) {
+          setResources(res);
+      } else {
+          setResources(res.resources || []);
+      }
     } catch (e) {
       console.error("Failed to fetch resources", e);
     }
@@ -31,7 +35,7 @@ export default function ResourcesPage() {
 
   const toggleResource = async (uri: string, currentStatus: boolean) => {
     // Optimistic update
-    setResources(resources.map(r => r.uri === uri ? { ...r, enabled: !currentStatus } : r));
+    setResources(resources.map(r => r.uri === uri ? { ...r, disable: !currentStatus } : r));
 
     try {
         await apiClient.setResourceStatus(uri, !currentStatus);
@@ -73,16 +77,16 @@ export default function ResourcesPage() {
                   <TableCell className="font-mono text-xs text-muted-foreground">{resource.uri}</TableCell>
                   <TableCell>{resource.mimeType}</TableCell>
                   <TableCell>
-                      <Badge variant="outline">{resource.serviceName}</Badge>
+                      <Badge variant="outline">{(resource as any).serviceId}</Badge>
                   </TableCell>
                   <TableCell>
                     <div className="flex items-center space-x-2">
                         <Switch
-                            checked={!!resource.enabled}
-                            onCheckedChange={() => toggleResource(resource.uri, !!resource.enabled)}
+                            checked={!resource.disable}
+                            onCheckedChange={() => toggleResource(resource.uri, !resource.disable)}
                         />
                         <span className="text-sm text-muted-foreground w-16">
-                            {resource.enabled ? "Enabled" : "Disabled"}
+                            {!resource.disable ? "Enabled" : "Disabled"}
                         </span>
                     </div>
                   </TableCell>

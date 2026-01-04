@@ -42,19 +42,19 @@ export function RegisterServiceDialog({ onSuccess, trigger, serviceToEdit }: Reg
 
   const defaultValues = serviceToEdit ? {
       name: serviceToEdit.name,
-      type: (serviceToEdit.grpc_service ? "grpc" :
-            serviceToEdit.http_service ? "http" :
-            serviceToEdit.command_line_service ? "command_line" :
-            serviceToEdit.openapi_service ? "openapi" : "other") as "grpc" | "http" | "command_line" | "openapi" | "other",
-      address: serviceToEdit.grpc_service?.address || serviceToEdit.http_service?.address || serviceToEdit.openapi_service?.address || "",
-      command: serviceToEdit.command_line_service?.command || "",
+      type: (serviceToEdit.grpcService ? "grpc" :
+            serviceToEdit.httpService ? "http" :
+            serviceToEdit.commandLineService ? "command_line" :
+            serviceToEdit.openapiService ? "openapi" : "other") as "grpc" | "http" | "command_line" | "openapi" | "other",
+      address: serviceToEdit.grpcService?.address || serviceToEdit.httpService?.address || serviceToEdit.openapiService?.address || "",
+      command: serviceToEdit.commandLineService?.command || "",
       configJson: JSON.stringify(serviceToEdit, null, 2),
   } : {
       name: "",
       type: "http" as const,
       address: "",
       command: "",
-      configJson: "{\n  \"name\": \"my-service\",\n  \"http_service\": {\n    \"address\": \"https://api.example.com\"\n  }\n}",
+      configJson: "{\n  \"name\": \"my-service\",\n  \"httpService\": {\n    \"address\": \"https://api.example.com\"\n  }\n}",
   };
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -88,24 +88,24 @@ export function RegisterServiceDialog({ onSuccess, trigger, serviceToEdit }: Reg
           config = {
               name: values.name,
               id: serviceToEdit?.id,
-          };
+          } as any;
 
           if (values.type === 'grpc') {
-              config.grpc_service = { address: values.address || "" };
+              (config as any).grpcService = { address: values.address || "" };
           } else if (values.type === 'http') {
-              config.http_service = { address: values.address || "" };
+              (config as any).httpService = { address: values.address || "" };
           } else if (values.type === 'command_line') {
-              config.command_line_service = { command: values.command || "" };
+              (config as any).commandLineService = { command: values.command || "" };
           } else if (values.type === 'openapi') {
-               config.openapi_service = { address: values.address || "" };
+               (config as any).openapiService = { address: values.address || "" };
           }
       }
 
       if (isEditing) {
-          await apiClient.updateService(config);
+          await apiClient.updateService(config as any);
            toast({ title: "Service Updated", description: `${values.name} updated successfully.` });
       } else {
-          await apiClient.registerService(config);
+          await apiClient.registerService(config as any);
           toast({ title: "Service Registered", description: `${values.name} registered successfully.` });
       }
 
