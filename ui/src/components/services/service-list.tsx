@@ -7,6 +7,7 @@
 
 import { useMemo } from "react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import Link from "next/link";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -108,7 +109,9 @@ function ServiceRow({ service, onToggle, onEdit, onDelete }: {
                  </div>
              </TableCell>
              <TableCell className="font-medium">
-                 {service.name}
+                 <Link href={`/service/${service.id}`} className="hover:underline">
+                     {service.name}
+                 </Link>
              </TableCell>
              <TableCell>
                  <Badge variant="outline">{type}</Badge>

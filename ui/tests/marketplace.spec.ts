@@ -33,7 +33,7 @@ test.describe('Marketplace', () => {
     // Or just "Install" if unique? There are multiple "Install" buttons.
     // Use .group as reliable selector based on component code
     const fsCard = page.locator('.group').filter({ hasText: 'Filesystem' });
-    await fsCard.getByRole('button', { name: 'Install' }).click();
+    await fsCard.locator('button', { hasText: 'Install' }).click();
 
     // Confirm installation in dialog
     await page.getByRole('button', { name: 'Install Service' }).click();
