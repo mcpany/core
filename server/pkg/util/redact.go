@@ -336,12 +336,12 @@ func scanForSensitiveKeys(input []byte, checkEscape bool) bool {
 			for _, key := range keys {
 				if matchFoldRest(input[matchStart:], key) {
 					endIdx := matchStart + len(key)
-					// Check boundary: if the next character is a lowercase letter,
-					// it's likely a continuation of a word (e.g. "auth" in "author"), so we skip it.
-					// We allow uppercase letters (CamelCase) and other characters (snake_case, end of string).
+					// Check boundary: if the next character is a letter (lowercase or uppercase),
+					// it's likely a continuation of a word (e.g. "auth" in "author" or "AUTHORITY"), so we skip it.
+					// We allow other characters (snake_case, end of string).
 					if endIdx < len(input) {
 						next := input[endIdx]
-						if next >= 'a' && next <= 'z' {
+						if (next >= 'a' && next <= 'z') || (next >= 'A' && next <= 'Z') {
 							continue
 						}
 					}
