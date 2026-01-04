@@ -238,6 +238,10 @@ func (u *Upstream) resolvePath(virtualPath string, config *configv1.FilesystemUp
 		// For MemMapFs, just clean the path. It's virtual.
 		return filepath.Clean(virtualPath), nil
 
+	case *configv1.FilesystemUpstreamService_Zip:
+		// For ZipFs, just clean the path. It's virtual (based on zip contents).
+		return filepath.Clean(virtualPath), nil
+
 	case *configv1.FilesystemUpstreamService_S3:
 		return u.resolveS3Path(virtualPath)
 
