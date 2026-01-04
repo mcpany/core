@@ -42,7 +42,7 @@ if kind get clusters | grep -q "^$CLUSTER_NAME$"; then
     echo "Cluster $CLUSTER_NAME already exists."
 else
     echo "Creating Kind cluster $CLUSTER_NAME..."
-    kind create cluster --name "$CLUSTER_NAME" --image "$KIND_IMAGE" --config tests/k8s/kind-config.yaml --wait 2m
+    kind create cluster --name "$CLUSTER_NAME" --image "$KIND_IMAGE" --config k8s/tests/kind-config.yaml --wait 2m
 fi
 
 # Ensure kubectl context is set
@@ -52,7 +52,7 @@ kubectl cluster-info --context "kind-$CLUSTER_NAME"
 echo "Building Docker images with tag $TAG..."
 # We assume we are in the root of the repo
 docker build -t mcpany/server:$TAG -f server/docker/Dockerfile.server .
-docker build -t mcpany/operator:$TAG -f operator/Dockerfile .
+docker build -t mcpany/operator:$TAG -f k8s/operator/Dockerfile .
 
 # 5. Load Images into Kind
 echo "Loading images into Kind..."
@@ -65,7 +65,7 @@ echo "Installing Helm chart..."
 kubectl create namespace "$NAMESPACE" --dry-run=client -o yaml | kubectl apply -f -
 
 # Upgrade/Install using the local image (Never pull)
-helm upgrade --install mcpany server/helm/mcpany \
+helm upgrade --install mcpany k8s/helm/mcpany \
     --namespace "$NAMESPACE" \
     --set image.repository=mcpany/server \
     --set image.tag=$TAG \

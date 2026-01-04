@@ -572,10 +572,15 @@ func (t *HTTPTool) prepareInputsAndURL(ctx context.Context, req *ExecutionReques
 
 	var inputs map[string]any
 	if len(req.ToolInputs) > 0 {
+		// Trim whitespace to avoid EOF errors on empty/whitespace-only inputs
+		req.ToolInputs = bytes.TrimSpace(req.ToolInputs)
+	}
+
+	if len(req.ToolInputs) > 0 {
 		decoder := json.NewDecoder(bytes.NewReader(req.ToolInputs))
 		decoder.UseNumber()
 		if err := decoder.Decode(&inputs); err != nil {
-			return nil, "", fmt.Errorf("failed to unmarshal tool inputs: %w", err)
+			return nil, "", fmt.Errorf("failed to unmarshal tool inputs: %w (inputs: %q)", err, string(req.ToolInputs))
 		}
 	}
 
