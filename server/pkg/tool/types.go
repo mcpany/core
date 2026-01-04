@@ -14,8 +14,7 @@ import (
 	"net/http"
 	"net/url"
 	"os"
-
-	// "path".
+	"path"
 	"path/filepath"
 	"strconv"
 	"strings"
@@ -595,44 +594,46 @@ func (t *HTTPTool) prepareInputsAndURL(ctx context.Context, req *ExecutionReques
 			}
 		} else if schema := param.GetSchema(); schema != nil {
 			placeholder := t.cachedPlaceholders[schema.GetName()]
-			if val, ok := inputs[schema.GetName()]; ok {
-				valStr := util.ToString(val)
-
-				if param.GetDisableEscape() {
-					// Check for path traversal if in path
-					if t.paramInPath[i] {
-						// Check the raw value first
-						if err := checkForPathTraversal(valStr); err != nil {
-							return nil, "", fmt.Errorf("path traversal attempt detected in parameter %q: %w", schema.GetName(), err)
-						}
-
-						// Check the decoded value to prevent bypasses like %2e%2e
-						if decodedVal, err := url.QueryUnescape(valStr); err == nil {
-							if err := checkForPathTraversal(decodedVal); err != nil {
-								return nil, "", fmt.Errorf("path traversal attempt detected in parameter %q (decoded): %w", schema.GetName(), err)
-							}
-						}
-
-						pathStr = strings.ReplaceAll(pathStr, placeholder, valStr)
-					}
-					if t.paramInQuery[i] {
-						queryStr = strings.ReplaceAll(queryStr, placeholder, valStr)
-					}
-				} else {
-					if t.paramInPath[i] {
-						pathStr = strings.ReplaceAll(pathStr, placeholder, url.PathEscape(valStr))
-					}
-					if t.paramInQuery[i] {
-						queryStr = strings.ReplaceAll(queryStr, placeholder, url.QueryEscape(valStr))
-					}
+			val, ok := inputs[schema.GetName()]
+			if !ok {
+				if schema.GetIsRequired() {
+					return nil, "", fmt.Errorf("missing required parameter: %s", schema.GetName())
 				}
-				delete(inputs, schema.GetName())
+				// If optional and missing, treat as empty string
+				val = ""
 			} else {
+				// Only delete from inputs if it was present
+				delete(inputs, schema.GetName())
+			}
+
+			valStr := util.ToString(val)
+
+			if param.GetDisableEscape() {
+				// Check for path traversal if in path
 				if t.paramInPath[i] {
-					pathStr = strings.ReplaceAll(pathStr, "/"+placeholder, "")
+					// Check the raw value first
+					if err := checkForPathTraversal(valStr); err != nil {
+						return nil, "", fmt.Errorf("path traversal attempt detected in parameter %q: %w", schema.GetName(), err)
+					}
+
+					// Check the decoded value to prevent bypasses like %2e%2e
+					if decodedVal, err := url.QueryUnescape(valStr); err == nil {
+						if err := checkForPathTraversal(decodedVal); err != nil {
+							return nil, "", fmt.Errorf("path traversal attempt detected in parameter %q (decoded): %w", schema.GetName(), err)
+						}
+					}
+
+					pathStr = strings.ReplaceAll(pathStr, placeholder, valStr)
 				}
 				if t.paramInQuery[i] {
-					queryStr = strings.ReplaceAll(queryStr, placeholder, "")
+					queryStr = strings.ReplaceAll(queryStr, placeholder, valStr)
+				}
+			} else {
+				if t.paramInPath[i] {
+					pathStr = strings.ReplaceAll(pathStr, placeholder, url.PathEscape(valStr))
+				}
+				if t.paramInQuery[i] {
+					queryStr = strings.ReplaceAll(queryStr, placeholder, url.QueryEscape(valStr))
 				}
 			}
 		}
@@ -642,15 +643,11 @@ func (t *HTTPTool) prepareInputsAndURL(ctx context.Context, req *ExecutionReques
 	// We do this on the encoded string to treat %2F as opaque characters
 	// This prevents path.Clean from treating encoded slashes as separators
 	// and messing up the re-encoding later (which would convert %2F to /).
-	// Clean the path to resolve . and .. and //
-	// We do this on the encoded string to treat %2F as opaque characters
-	// This prevents path.Clean from treating encoded slashes as separators
-	// and messing up the re-encoding later (which would convert %2F to /).
-	// hadTrailingSlash := strings.HasSuffix(pathStr, "/")
-	// pathStr = path.Clean(pathStr)
-	// if hadTrailingSlash && pathStr != "/" {
-	// 	pathStr += "/"
-	// }
+	hadTrailingSlash := strings.HasSuffix(pathStr, "/")
+	pathStr = path.Clean(pathStr)
+	if hadTrailingSlash && pathStr != "/" {
+		pathStr += "/"
+	}
 
 	// Reconstruct URL string manually to avoid re-encoding
 	var buf strings.Builder
