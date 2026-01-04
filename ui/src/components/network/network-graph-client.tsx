@@ -5,7 +5,7 @@
 
 "use client";
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import {
   ReactFlow,
 
@@ -76,7 +76,7 @@ const getStatusColor = (status: NodeStatus) => {
   }
 };
 
-const NodeIcon = ({ type }: { type: NodeType }) => {
+const NodeIcon = React.memo(({ type }: { type: NodeType }) => {
     switch (type) {
         case 'NODE_TYPE_CORE': return <Cpu className="h-4 w-4 text-blue-500 dark:text-blue-400" />;
         case 'NODE_TYPE_SERVICE': return <Server className="h-4 w-4 text-indigo-500 dark:text-indigo-400" />;
@@ -89,15 +89,24 @@ const NodeIcon = ({ type }: { type: NodeType }) => {
         case 'NODE_TYPE_PROMPT': return <MessageSquare className="h-4 w-4 text-purple-500 dark:text-purple-400" />;
         default: return <Activity className="h-4 w-4 text-gray-500 dark:text-gray-400" />;
     }
-};
+});
+NodeIcon.displayName = 'NodeIcon';
 
-const StatusIcon = ({ status }: { status: NodeStatus }) => {
+const StatusIcon = React.memo(({ status }: { status: NodeStatus }) => {
     switch (status) {
         case 'NODE_STATUS_ACTIVE': return <CheckCircle2 className="h-4 w-4 text-green-500" />;
         case 'NODE_STATUS_INACTIVE': return <XCircle className="h-4 w-4 text-slate-400" />;
         case 'NODE_STATUS_ERROR': return <AlertTriangle className="h-4 w-4 text-destructive" />;
         default: return <div className="h-4 w-4 rounded-full border-2 border-slate-300" />;
     }
+});
+StatusIcon.displayName = 'StatusIcon';
+
+// Optimization: Memoize defaultEdgeOptions to prevent re-renders in ReactFlow
+const defaultEdgeOptions = {
+    type: 'smoothstep',
+    animated: true,
+    style: { strokeWidth: 2 }
 };
 
 function Flow() {
@@ -124,10 +133,11 @@ function Flow() {
       return edges.filter(e => nodeIds.has(e.source) && nodeIds.has(e.target));
   }, [edges, filteredNodes]);
 
-  const onNodeClick = (event: React.MouseEvent, node: Node) => {
+  // Optimization: Memoize onNodeClick to prevent unnecessary re-renders in ReactFlow
+  const onNodeClick = useCallback((event: React.MouseEvent, node: Node) => {
       setSelectedNode(node as Node<NodeData>);
       setIsSheetOpen(true);
-  };
+  }, []);
 
   const getStatusBadgeVariant = (status: NodeStatus) => {
       switch (status) {
@@ -194,11 +204,7 @@ function Flow() {
         className="bg-background"
         minZoom={0.1}
         maxZoom={1.5}
-        defaultEdgeOptions={{
-            type: 'smoothstep',
-            animated: true,
-            style: { strokeWidth: 2 }
-        }}
+        defaultEdgeOptions={defaultEdgeOptions}
       >
         <Controls showInteractive={false} className="bg-background/80 backdrop-blur border-muted shadow-sm dark:bg-slate-900/80 dark:border-slate-800 dark:text-slate-200 [&>button]:!border-muted [&>button]:!bg-transparent hover:[&>button]:!bg-muted" />
 
