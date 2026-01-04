@@ -3,16 +3,19 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-
 import { NextResponse } from 'next/server';
+import { MockDB } from '@/lib/server/mock-db';
 
 export async function GET() {
-  const settings = {
-    mcp_listen_address: ":8080",
-    log_level: "LOG_LEVEL_INFO",
-    api_key: "****************",
-    profiles: ["default", "dev"],
-    allowed_ips: ["127.0.0.1", "10.0.0.0/8"]
-  };
-  return NextResponse.json(settings);
+  return NextResponse.json(MockDB.settings);
+}
+
+export async function POST(request: Request) {
+    try {
+        const body = await request.json();
+        MockDB.settings = { ...MockDB.settings, ...body };
+        return NextResponse.json(MockDB.settings);
+    } catch (e) {
+        return NextResponse.json({ error: "Invalid request" }, { status: 400 });
+    }
 }
