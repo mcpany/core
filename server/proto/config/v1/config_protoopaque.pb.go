@@ -793,6 +793,7 @@ type GlobalSettings struct {
 	xxx_hidden_Dlp                *DLPConfig               `protobuf:"bytes,13,opt,name=dlp"`
 	xxx_hidden_GcSettings         *GCSettings              `protobuf:"bytes,16,opt,name=gc_settings"`
 	xxx_hidden_Oidc               *OIDCConfig              `protobuf:"bytes,17,opt,name=oidc"`
+	xxx_hidden_RateLimit          *RateLimitConfig         `protobuf:"bytes,18,opt,name=rate_limit"`
 	XXX_raceDetectHookData        protoimpl.RaceDetectHookData
 	XXX_presence                  [1]uint32
 	unknownFields                 protoimpl.UnknownFields
@@ -959,14 +960,21 @@ func (x *GlobalSettings) GetOidc() *OIDCConfig {
 	return nil
 }
 
+func (x *GlobalSettings) GetRateLimit() *RateLimitConfig {
+	if x != nil {
+		return x.xxx_hidden_RateLimit
+	}
+	return nil
+}
+
 func (x *GlobalSettings) SetMcpListenAddress(v string) {
 	x.xxx_hidden_McpListenAddress = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 16)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 17)
 }
 
 func (x *GlobalSettings) SetLogLevel(v GlobalSettings_LogLevel) {
 	x.xxx_hidden_LogLevel = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 16)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 17)
 }
 
 func (x *GlobalSettings) SetMessageBus(v *bus.MessageBus) {
@@ -975,7 +983,7 @@ func (x *GlobalSettings) SetMessageBus(v *bus.MessageBus) {
 
 func (x *GlobalSettings) SetApiKey(v string) {
 	x.xxx_hidden_ApiKey = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 3, 16)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 3, 17)
 }
 
 func (x *GlobalSettings) SetProfiles(v []string) {
@@ -996,22 +1004,22 @@ func (x *GlobalSettings) SetProfileDefinitions(v []*ProfileDefinition) {
 
 func (x *GlobalSettings) SetLogFormat(v GlobalSettings_LogFormat) {
 	x.xxx_hidden_LogFormat = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 8, 16)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 8, 17)
 }
 
 func (x *GlobalSettings) SetDbPath(v string) {
 	x.xxx_hidden_DbPath = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 9, 16)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 9, 17)
 }
 
 func (x *GlobalSettings) SetDbDsn(v string) {
 	x.xxx_hidden_DbDsn = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 10, 16)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 10, 17)
 }
 
 func (x *GlobalSettings) SetDbDriver(v string) {
 	x.xxx_hidden_DbDriver = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 11, 16)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 11, 17)
 }
 
 func (x *GlobalSettings) SetMiddlewares(v []*Middleware) {
@@ -1028,6 +1036,10 @@ func (x *GlobalSettings) SetGcSettings(v *GCSettings) {
 
 func (x *GlobalSettings) SetOidc(v *OIDCConfig) {
 	x.xxx_hidden_Oidc = v
+}
+
+func (x *GlobalSettings) SetRateLimit(v *RateLimitConfig) {
+	x.xxx_hidden_RateLimit = v
 }
 
 func (x *GlobalSettings) HasMcpListenAddress() bool {
@@ -1114,6 +1126,13 @@ func (x *GlobalSettings) HasOidc() bool {
 	return x.xxx_hidden_Oidc != nil
 }
 
+func (x *GlobalSettings) HasRateLimit() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_RateLimit != nil
+}
+
 func (x *GlobalSettings) ClearMcpListenAddress() {
 	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
 	x.xxx_hidden_McpListenAddress = nil
@@ -1169,6 +1188,10 @@ func (x *GlobalSettings) ClearOidc() {
 	x.xxx_hidden_Oidc = nil
 }
 
+func (x *GlobalSettings) ClearRateLimit() {
+	x.xxx_hidden_RateLimit = nil
+}
+
 type GlobalSettings_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
@@ -1204,6 +1227,8 @@ type GlobalSettings_builder struct {
 	GcSettings *GCSettings
 	// OIDC Configuration.
 	Oidc *OIDCConfig
+	// Rate limiting configuration for the server.
+	RateLimit *RateLimitConfig
 }
 
 func (b0 GlobalSettings_builder) Build() *GlobalSettings {
@@ -1211,16 +1236,16 @@ func (b0 GlobalSettings_builder) Build() *GlobalSettings {
 	b, x := &b0, m0
 	_, _ = b, x
 	if b.McpListenAddress != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 16)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 17)
 		x.xxx_hidden_McpListenAddress = b.McpListenAddress
 	}
 	if b.LogLevel != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 16)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 17)
 		x.xxx_hidden_LogLevel = *b.LogLevel
 	}
 	x.xxx_hidden_MessageBus = b.MessageBus
 	if b.ApiKey != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 3, 16)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 3, 17)
 		x.xxx_hidden_ApiKey = b.ApiKey
 	}
 	x.xxx_hidden_Profiles = b.Profiles
@@ -1228,25 +1253,26 @@ func (b0 GlobalSettings_builder) Build() *GlobalSettings {
 	x.xxx_hidden_Audit = b.Audit
 	x.xxx_hidden_ProfileDefinitions = &b.ProfileDefinitions
 	if b.LogFormat != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 8, 16)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 8, 17)
 		x.xxx_hidden_LogFormat = *b.LogFormat
 	}
 	if b.DbPath != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 9, 16)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 9, 17)
 		x.xxx_hidden_DbPath = b.DbPath
 	}
 	if b.DbDsn != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 10, 16)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 10, 17)
 		x.xxx_hidden_DbDsn = b.DbDsn
 	}
 	if b.DbDriver != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 11, 16)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 11, 17)
 		x.xxx_hidden_DbDriver = b.DbDriver
 	}
 	x.xxx_hidden_Middlewares = &b.Middlewares
 	x.xxx_hidden_Dlp = b.Dlp
 	x.xxx_hidden_GcSettings = b.GcSettings
 	x.xxx_hidden_Oidc = b.Oidc
+	x.xxx_hidden_RateLimit = b.RateLimit
 	return m0
 }
 
@@ -2731,7 +2757,7 @@ const file_proto_config_v1_config_proto_rawDesc = "" +
 	"created_at\x18\a \x01(\tR\tcreatedAt\"@\n" +
 	"\n" +
 	"SecretList\x122\n" +
-	"\asecrets\x18\x01 \x03(\v2\x18.mcpany.config.v1.SecretR\asecrets\"\xef\a\n" +
+	"\asecrets\x18\x01 \x03(\v2\x18.mcpany.config.v1.SecretR\asecrets\"\xb2\b\n" +
 	"\x0eGlobalSettings\x12.\n" +
 	"\x12mcp_listen_address\x18\x01 \x01(\tR\x12mcp_listen_address\x12G\n" +
 	"\tlog_level\x18\x03 \x01(\x0e2).mcpany.config.v1.GlobalSettings.LogLevelR\tlog_level\x121\n" +
@@ -2751,7 +2777,10 @@ const file_proto_config_v1_config_proto_rawDesc = "" +
 	"\vmiddlewares\x18\f \x03(\v2\x1c.mcpany.config.v1.MiddlewareR\vmiddlewares\x12-\n" +
 	"\x03dlp\x18\r \x01(\v2\x1b.mcpany.config.v1.DLPConfigR\x03dlp\x12>\n" +
 	"\vgc_settings\x18\x10 \x01(\v2\x1c.mcpany.config.v1.GCSettingsR\vgc_settings\x120\n" +
-	"\x04oidc\x18\x11 \x01(\v2\x1c.mcpany.config.v1.OIDCConfigR\x04oidc\"w\n" +
+	"\x04oidc\x18\x11 \x01(\v2\x1c.mcpany.config.v1.OIDCConfigR\x04oidc\x12A\n" +
+	"\n" +
+	"rate_limit\x18\x12 \x01(\v2!.mcpany.config.v1.RateLimitConfigR\n" +
+	"rate_limit\"w\n" +
 	"\bLogLevel\x12\x19\n" +
 	"\x15LOG_LEVEL_UNSPECIFIED\x10\x00\x12\x12\n" +
 	"\x0eLOG_LEVEL_INFO\x10\x01\x12\x12\n" +
@@ -2853,6 +2882,7 @@ var file_proto_config_v1_config_proto_goTypes = []any{
 	(*UpstreamServiceCollection)(nil), // 20: mcpany.config.v1.UpstreamServiceCollection
 	(*AuthenticationConfig)(nil),      // 21: mcpany.config.v1.AuthenticationConfig
 	(*bus.MessageBus)(nil),            // 22: bus.MessageBus
+	(*RateLimitConfig)(nil),           // 23: mcpany.config.v1.RateLimitConfig
 }
 var file_proto_config_v1_config_proto_depIdxs = []int32{
 	7,  // 0: mcpany.config.v1.McpAnyServerConfig.global_settings:type_name -> mcpany.config.v1.GlobalSettings
@@ -2870,17 +2900,18 @@ var file_proto_config_v1_config_proto_depIdxs = []int32{
 	10, // 12: mcpany.config.v1.GlobalSettings.dlp:type_name -> mcpany.config.v1.DLPConfig
 	9,  // 13: mcpany.config.v1.GlobalSettings.gc_settings:type_name -> mcpany.config.v1.GCSettings
 	8,  // 14: mcpany.config.v1.GlobalSettings.oidc:type_name -> mcpany.config.v1.OIDCConfig
-	2,  // 15: mcpany.config.v1.AuditConfig.storage_type:type_name -> mcpany.config.v1.AuditConfig.StorageType
-	17, // 16: mcpany.config.v1.AuditConfig.webhook_headers:type_name -> mcpany.config.v1.AuditConfig.WebhookHeadersEntry
-	12, // 17: mcpany.config.v1.AuditConfig.splunk:type_name -> mcpany.config.v1.SplunkConfig
-	13, // 18: mcpany.config.v1.AuditConfig.datadog:type_name -> mcpany.config.v1.DatadogConfig
-	15, // 19: mcpany.config.v1.ProfileDefinition.selector:type_name -> mcpany.config.v1.ProfileSelector
-	18, // 20: mcpany.config.v1.ProfileSelector.tool_properties:type_name -> mcpany.config.v1.ProfileSelector.ToolPropertiesEntry
-	21, // [21:21] is the sub-list for method output_type
-	21, // [21:21] is the sub-list for method input_type
-	21, // [21:21] is the sub-list for extension type_name
-	21, // [21:21] is the sub-list for extension extendee
-	0,  // [0:21] is the sub-list for field type_name
+	23, // 15: mcpany.config.v1.GlobalSettings.rate_limit:type_name -> mcpany.config.v1.RateLimitConfig
+	2,  // 16: mcpany.config.v1.AuditConfig.storage_type:type_name -> mcpany.config.v1.AuditConfig.StorageType
+	17, // 17: mcpany.config.v1.AuditConfig.webhook_headers:type_name -> mcpany.config.v1.AuditConfig.WebhookHeadersEntry
+	12, // 18: mcpany.config.v1.AuditConfig.splunk:type_name -> mcpany.config.v1.SplunkConfig
+	13, // 19: mcpany.config.v1.AuditConfig.datadog:type_name -> mcpany.config.v1.DatadogConfig
+	15, // 20: mcpany.config.v1.ProfileDefinition.selector:type_name -> mcpany.config.v1.ProfileSelector
+	18, // 21: mcpany.config.v1.ProfileSelector.tool_properties:type_name -> mcpany.config.v1.ProfileSelector.ToolPropertiesEntry
+	22, // [22:22] is the sub-list for method output_type
+	22, // [22:22] is the sub-list for method input_type
+	22, // [22:22] is the sub-list for extension type_name
+	22, // [22:22] is the sub-list for extension extendee
+	0,  // [0:22] is the sub-list for field type_name
 }
 
 func init() { file_proto_config_v1_config_proto_init() }

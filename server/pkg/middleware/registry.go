@@ -103,6 +103,7 @@ func InitStandardMiddlewares(
 	toolManager tool.ManagerInterface,
 	auditConfig *configv1.AuditConfig,
 	cachingMiddleware *CachingMiddleware,
+	globalRateLimitConfig *configv1.RateLimitConfig,
 ) (func() error, error) {
 	// 1. Logging
 	RegisterMCP("logging", func(_ *configv1.Middleware) func(mcp.MethodHandler) mcp.MethodHandler {
@@ -229,6 +230,16 @@ func InitStandardMiddlewares(
 					}
 				}
 				return next(ctx, method, req)
+			}
+		}
+	})
+
+	// Global Rate Limit
+	globalRateLimit := NewGlobalRateLimitMiddleware(globalRateLimitConfig)
+	RegisterMCP("global_ratelimit", func(_ *configv1.Middleware) func(mcp.MethodHandler) mcp.MethodHandler {
+		return func(next mcp.MethodHandler) mcp.MethodHandler {
+			return func(ctx context.Context, method string, req mcp.Request) (mcp.Result, error) {
+				return globalRateLimit.Execute(ctx, method, req, next)
 			}
 		}
 	})

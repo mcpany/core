@@ -109,6 +109,8 @@ message GlobalSettings {
   GCSettings gc_settings = 16 [json_name = "gc_settings"];
   // OIDC Configuration.
   OIDCConfig oidc = 17 [json_name = "oidc"];
+  // Rate limiting configuration for the server.
+  RateLimitConfig rate_limit = 18 [json_name = "rate_limit"];
 }
 
 message OIDCConfig {
