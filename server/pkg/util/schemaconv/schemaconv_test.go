@@ -113,8 +113,9 @@ func TestMcpFieldsToProtoProperties(t *testing.T) {
 // mockFieldDescriptor is a mock implementation of protoreflect.FieldDescriptor for testing.
 type mockFieldDescriptor struct {
 	protoreflect.FieldDescriptor
-	kind protoreflect.Kind
-	name string
+	kind        protoreflect.Kind
+	name        string
+	cardinality protoreflect.Cardinality
 }
 
 func (m *mockFieldDescriptor) Kind() protoreflect.Kind {
@@ -123,6 +124,14 @@ func (m *mockFieldDescriptor) Kind() protoreflect.Kind {
 
 func (m *mockFieldDescriptor) Name() protoreflect.Name {
 	return protoreflect.Name(m.name)
+}
+
+func (m *mockFieldDescriptor) Cardinality() protoreflect.Cardinality {
+	return m.cardinality
+}
+
+func (m *mockFieldDescriptor) IsList() bool {
+	return m.cardinality == protoreflect.Repeated
 }
 
 // mockFieldDescriptors is a mock implementation of protoreflect.FieldDescriptors for testing.
@@ -222,6 +231,36 @@ func TestMethodDescriptorToProtoProperties(t *testing.T) {
 				assert.Equal(t, tc.expectedType, s.Fields["type"].GetStringValue())
 			})
 		}
+	})
+
+	t.Run("with repeated fields", func(t *testing.T) {
+		mockMethod := &mockMethodDescriptor{
+			output: &mockMessageDescriptor{
+				fields: &mockFieldDescriptors{
+					fields: []protoreflect.FieldDescriptor{
+						&mockFieldDescriptor{
+							name:        "tags",
+							kind:        protoreflect.StringKind,
+							cardinality: protoreflect.Repeated,
+						},
+					},
+				},
+			},
+		}
+
+		properties, err := MethodOutputDescriptorToProtoProperties(mockMethod)
+		require.NoError(t, err)
+		require.Len(t, properties.Fields, 1)
+
+		tagsField, ok := properties.Fields["tags"]
+		require.True(t, ok)
+		s := tagsField.GetStructValue()
+		require.NotNil(t, s)
+
+		assert.Equal(t, "array", s.Fields["type"].GetStringValue())
+		items := s.Fields["items"].GetStructValue()
+		require.NotNil(t, items)
+		assert.Equal(t, "string", items.Fields["type"].GetStringValue())
 	})
 }
 
