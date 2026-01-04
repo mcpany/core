@@ -336,13 +336,25 @@ func scanForSensitiveKeys(input []byte, checkEscape bool) bool {
 			for _, key := range keys {
 				if matchFoldRest(input[matchStart:], key) {
 					endIdx := matchStart + len(key)
-					// Check boundary: if the next character is a letter (lowercase or uppercase),
-					// it's likely a continuation of a word (e.g. "auth" in "author" or "AUTHORITY"), so we skip it.
-					// We allow other characters (snake_case, end of string).
+					// Check boundary: if the next character is a lowercase letter,
+					// it's likely a continuation of a word (e.g. "auth" in "author"), so we skip it.
+					// We allow uppercase letters (CamelCase) and other characters (snake_case, end of string).
 					if endIdx < len(input) {
 						next := input[endIdx]
-						if (next >= 'a' && next <= 'z') || (next >= 'A' && next <= 'Z') {
+						if next >= 'a' && next <= 'z' {
 							continue
+						}
+						// Special handling for uppercase keys (e.g. "AUTH" in "AUTHORITY")
+						// If the matched key was uppercase, and the next char is uppercase, it's a continuation.
+						// However, if the matched key was lowercase (e.g. "auth" in "authToken"), it's CamelCase (boundary).
+						if next >= 'A' && next <= 'Z' {
+							// Check if the matched key was uppercase.
+							// We know input[matchStart] matched the key start.
+							// If input[matchStart] is uppercase, assume the whole key match was uppercase (or case-insensitive matching logic holds).
+							firstChar := input[matchStart]
+							if firstChar >= 'A' && firstChar <= 'Z' {
+								continue
+							}
 						}
 					}
 
