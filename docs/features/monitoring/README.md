@@ -29,20 +29,22 @@ You want to alert if the error rate of your "weather-service" exceeds 5% or if t
 
 ## Available Metrics
 
-- `mcpany_tools_call_total`: Total number of tool calls (global).
-- `mcpany_tool_<tool_name>_call_total`: Total number of tool calls for a specific tool.
-- `mcpany_tools_call_latency`: Latency of tool calls (global).
-- `mcpany_tool_<tool_name>_call_latency`: Latency of tool calls for a specific tool.
-- `mcpany_tools_list_total`: Total number of tools/list requests.
-- `mcpany_config_reload_total`: Configuration reload events.
-- `mcpany_grpc_connections_opened_total`: Total number of opened gRPC connections.
-- `mcpany_grpc_connections_closed_total`: Total number of closed gRPC connections.
-- `mcpany_grpc_rpc_started_total`: Total number of started gRPC RPCs.
-- `mcpany_grpc_rpc_finished_total`: Total number of finished gRPC RPCs.
-- `mcpany_tool_execution_total`: Total number of tool executions (labels: tool, service_id, status, error_type).
-- `mcpany_tool_execution_duration`: Histogram of tool execution duration.
-- `mcpany_tool_execution_input_bytes`: Histogram of input payload sizes in bytes.
-- `mcpany_tool_execution_output_bytes`: Histogram of output payload sizes in bytes.
+The following metrics are exposed by the server. Note that the prefix `mcpany_` is applied by default.
+
+| Metric Name | Type | Labels | Description |
+| :--- | :--- | :--- | :--- |
+| `mcpany_tools_call_total` | Counter | `tool`, `service_id` | Total number of tool calls initiated. |
+| `mcpany_tools_call_errors` | Counter | `tool`, `service_id` | Total number of tool calls that resulted in an error. |
+| `mcpany_tools_call_latency` | Histogram | `tool`, `service_id` | Latency of tool calls (in seconds/microseconds depending on sink config). |
+| `mcpany_tools_list_total` | Counter | none | Total number of tools/list requests received. |
+| `mcpany_config_reload_total` | Counter | none | Total number of configuration reload events. |
+| `mcpany_config_reload_errors` | Counter | none | Total number of configuration reload failures. |
+| `mcpany_grpc_connections_opened_total` | Counter | none | Total number of opened gRPC connections. |
+| `mcpany_grpc_connections_closed_total` | Counter | none | Total number of closed gRPC connections. |
+| `mcpany_grpc_rpc_started_total` | Counter | none | Total number of started gRPC RPCs. |
+| `mcpany_grpc_rpc_finished_total` | Counter | none | Total number of finished gRPC RPCs. |
+| `mcpany_http_connections_opened_total` | Counter | none | Total number of opened HTTP connections. |
+| `mcpany_http_connections_closed_total` | Counter | none | Total number of closed HTTP connections. |
 
 ## Public API Example
 

@@ -34,6 +34,7 @@ The following is the reconciled roadmap as of today. Completed items are marked 
 - [x] [Metrics](features/monitoring/README.md)
 - [x] [Structured Logging](features/monitoring/README.md)
 - [x] [Audit Logging](features/audit_logging.md)
+- [x] [Audit Log Export](features/audit_logging.md) (Splunk/Datadog)
 
 ### Security (Implemented)
 - [x] [Secrets Management](features/security.md)
@@ -49,13 +50,12 @@ Based on the current architecture and market needs, the following features shoul
 | :--- | :--- | :--- | :--- |
 | 1 | **Kubernetes Operator** | **Scalability/Ops**: Essential for enterprise adoption to manage deployment, scaling, and configuration via GitOps. | High |
 | 2 | **SSO Integration (OIDC/SAML)** | **Security**: Enterprise requirement for managing access to the Admin UI and RBAC without shared credentials. | Medium |
-| 3 | **Audit Log Export (Splunk/Datadog)** | **Security/Compliance**: Enterprises need to ship logs to their SIEM. Current SQLite/Postgres audit is good but needs export capabilities. | Low |
-| 4 | **Interactive Playground 2.0** | **UX**: The current UI is "Beta". A robust playground with auto-generated forms for tools will significantly improve developer experience. | Medium |
-| 5 | **WASM Plugin System** | **Extensibility/Security**: Allows safe extension of transformation and validation logic without recompiling the server. | High |
-| 6 | **Terraform Provider** | **Ops**: "Configuration as Code" for managing MCP resources (Sources, Tools, Policies). | High |
-| 7 | **Vector Database Connector** | **Feature**: Native support for vector stores (Pinecone, Milvus, Weaviate) to enable RAG workflows directly via MCP. | Medium |
-| 8 | **Multi-Region Federation** | **Scalability**: Link multiple MCP instances to reduce latency and improve availability for global deployments. | High |
-| 9 | **Browser Automation Provider** | **Feature**: A high-demand tool capability for agents to read/interact with websites (headless browser). | High |
+| 3 | **Interactive Playground 2.0** | **UX**: The current UI is "Beta". A robust playground with auto-generated forms for tools will significantly improve developer experience. | Medium |
+| 4 | **WASM Plugin System** | **Extensibility/Security**: Allows safe extension of transformation and validation logic without recompiling the server. | High |
+| 5 | **Terraform Provider** | **Ops**: "Configuration as Code" for managing MCP resources (Sources, Tools, Policies). | High |
+| 6 | **Additional Vector Connectors** | **Feature**: Support for Milvus and Weaviate to enable RAG workflows (Pinecone is already implemented). | Medium |
+| 7 | **Multi-Region Federation** | **Scalability**: Link multiple MCP instances to reduce latency and improve availability for global deployments. | High |
+| 8 | **Browser Automation Provider** | **Feature**: A high-demand tool capability for agents to read/interact with websites (headless browser). | High |
 
 ## 3. Codebase Health Report
 
