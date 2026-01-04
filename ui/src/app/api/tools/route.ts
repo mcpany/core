@@ -1,26 +1,30 @@
-/**
- * Copyright 2025 Author(s) of MCP Any
- * SPDX-License-Identifier: Apache-2.0
- */
 
-import { NextResponse } from 'next/server';
-
-let tools = [
-    { name: "get_weather", description: "Get current weather for a location", enabled: true, serviceName: "weather-service", schema: { type: "object", properties: { location: { type: "string" } } } },
-    { name: "read_file", description: "Read file from filesystem", enabled: true, serviceName: "local-files", schema: { type: "object", properties: { path: { type: "string" } } } },
-    { name: "list_directory", description: "List directory contents", enabled: false, serviceName: "local-files", schema: { type: "object", properties: { path: { type: "string" } } } },
-    { name: "search_memory", description: "Search vector memory", enabled: true, serviceName: "memory-store", schema: { type: "object", properties: { query: { type: "string" } } } },
-];
+import { NextResponse } from "next/server";
+import { db } from "@/lib/mock-data";
 
 export async function GET() {
-  return NextResponse.json({ tools });
+  return NextResponse.json({ tools: db.tools });
 }
 
 export async function POST(request: Request) {
-    const body = await request.json();
-    if (body.name) {
-        tools = tools.map(t => t.name === body.name ? { ...t, enabled: body.enabled } : t);
-        return NextResponse.json({ message: "Updated" });
-    }
-    return NextResponse.json({ error: "Invalid request" }, { status: 400 });
+  try {
+      const text = await request.text();
+      if (!text) {
+         return NextResponse.json({ error: "Empty body" }, { status: 400 });
+      }
+      const body = JSON.parse(text);
+
+      // Toggle status
+      if (body.hasOwnProperty('enabled')) {
+         const index = db.tools.findIndex(t => t.name === body.name);
+         if (index >= 0) {
+             db.tools[index].enabled = body.enabled;
+         }
+         return NextResponse.json({ success: true });
+      }
+
+      return NextResponse.json({ success: false });
+  } catch (e) {
+      return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+  }
 }

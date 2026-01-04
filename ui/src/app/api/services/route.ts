@@ -1,39 +1,44 @@
-/**
- * Copyright 2025 Author(s) of MCP Any
- * SPDX-License-Identifier: Apache-2.0
- */
 
-import { NextResponse } from 'next/server';
-import { MockDB } from '@/lib/server/mock-db';
+import { NextResponse } from "next/server";
+import { db } from "@/lib/mock-data";
 
 export async function GET() {
-  return NextResponse.json({ services: MockDB.services });
+  return NextResponse.json(db.services);
 }
 
 export async function POST(request: Request) {
-    let body;
-    try {
-        body = await request.json();
-    } catch (e) {
-        return NextResponse.json({ error: "Invalid request body" }, { status: 400 });
+  try {
+    const text = await request.text();
+    if (!text) {
+        return NextResponse.json({ error: "Empty body" }, { status: 400 });
     }
+    const body = JSON.parse(text);
 
-    // Toggle status
-    if (body.action === 'toggle' && body.name) {
-        MockDB.services = MockDB.services.map(s => s.name === body.name ? { ...s, disable: body.disable } : s);
-        return NextResponse.json({ message: "Updated" });
-    }
-
-    // Register/Update
-    if (body.name) {
-        const existing = MockDB.services.find(s => s.name === body.name);
-        if (existing) {
-             MockDB.services = MockDB.services.map(s => s.name === body.name ? { ...body, id: s.id } : s);
-        } else {
-            MockDB.services.push({ ...body, id: `srv-${Date.now()}` });
+    if (body.action === 'toggle') {
+        const index = db.services.findIndex(s => s.name === body.name || s.id === body.name);
+        if (index >= 0) {
+             db.services[index].disable = body.disable;
+             // Also update the dashboard/health by implication since they share the same db object
         }
-        return NextResponse.json({ message: "Saved" });
+        return NextResponse.json({ success: true });
     }
 
-    return NextResponse.json({ error: "Invalid request" }, { status: 400 });
+    // Create or Update
+    const newService = {
+        id: body.id || `svc-${db.services.length + 1}`,
+        ...body,
+    };
+
+    const index = db.services.findIndex(s => s.id === newService.id);
+    if (index >= 0) {
+        db.services[index] = newService;
+    } else {
+        db.services.push(newService);
+    }
+
+    return NextResponse.json(newService);
+  } catch (e) {
+      console.error("API Error", e);
+      return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+  }
 }
