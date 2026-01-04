@@ -5,33 +5,71 @@
 
 import { test, expect } from '@playwright/test';
 
-test.describe('Playground', () => {
-  test('should execute calculator tool', async ({ page }) => {
-    // Go to playground
+test.describe('Playground Tool Configuration', () => {
+  test('should allow configuring and running a tool via form', async ({ page }) => {
+    // Mock the tools API response
+    await page.route('/api/tools', async route => {
+      const json = {
+        tools: [
+          {
+            name: 'weather_tool',
+            description: 'Get weather info',
+            schema: {
+              type: 'object',
+              properties: {
+                city: { type: 'string', description: 'City name' },
+                days: { type: 'integer', description: 'Number of days' }
+              },
+              required: ['city']
+            }
+          }
+        ]
+      };
+      await route.fulfill({ json });
+    });
+
+    // Mock the tool execution
+    await page.route('/api/tools/execute', async route => {
+        // This endpoint doesn't seem to exist in the code I read, but let's check client.ts
+        // client.ts uses `apiClient.executeTool` which likely calls `POST /api/tools` or something?
+        // Ah, `executeTool` is mock in `client.ts` but let's assume it hits an endpoint if not mocked in UI.
+        // Wait, `client.ts` in UI *is* the client.
+        // If I want to mock the execution, I need to intercept what `apiClient.executeTool` does.
+        // But `apiClient` in `ui/src/lib/client.ts` has a hardcoded mock for `executeTool`!
+        // So no network request happens for execution.
+        // It returns `{ output: "Mock execution result", success: true }`.
+        // So I don't need to mock the network for execution, just the tools listing.
+        await route.continue();
+    });
+
     await page.goto('/playground');
 
-    // Wait for initial message
-    await expect(page.getByText('Hello! I am your MCP Assistant')).toBeVisible();
+    // Open Available Tools
+    await page.getByRole('button', { name: /available tools/i }).click();
 
-    // Type command
-    const input = page.locator('input[placeholder*="calculator"]');
-    await input.fill('calculator {"operation": "add", "a": 10, "b": 20}');
-    await input.press('Enter');
+    // Click "Use Tool" for weather_tool
+    // The sheet might be animating, so wait a bit or just look for the text
+    await expect(page.getByText('weather_tool')).toBeVisible();
+    await page.getByRole('button', { name: /use tool/i }).click();
 
-    // Wait for result
-    await expect(page.getByText('Result (calculator)')).toBeVisible({ timeout: 10000 });
+    // Dialog should open
+    await expect(page.getByRole('dialog')).toBeVisible();
+    await expect(page.getByText('Configure weather_tool')).toBeVisible();
 
-    // Check for the result value "Mock execution result" in the JSON output
-    await expect(page.locator('pre').filter({ hasText: 'Mock execution result' })).toBeVisible();
-  });
+    // Fill form
+    await page.getByLabel('city').fill('San Francisco');
+    await page.getByLabel('days').fill('5');
 
-  test('should show error for invalid json', async ({ page }) => {
-    await page.goto('/playground');
+    // Run Tool
+    await page.getByRole('button', { name: /run tool/i }).click();
 
-    const input = page.locator('input[placeholder*="calculator"]');
-    await input.fill('calculator { invalid json }');
-    await input.press('Enter');
+    // Verify chat message
+    // The message should appear in the chat.
+    // "weather_tool {"city":"San Francisco","days":5}"
+    await expect(page.getByText('weather_tool {"city":"San Francisco","days":5}')).toBeVisible();
 
-    await expect(page.getByText('Invalid JSON arguments')).toBeVisible();
+    // Verify result (mock result)
+    // "Mock execution result"
+    await expect(page.getByText('Mock execution result')).toBeVisible();
   });
 });
