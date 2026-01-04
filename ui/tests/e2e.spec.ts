@@ -14,7 +14,7 @@ test.describe('MCP Any UI E2E Tests', () => {
 
   test.beforeEach(async ({ page }) => {
     // Mock services
-    await page.route('**/api/services', async (route) => {
+    await page.route('**/api/v1/services', async (route) => {
       await route.fulfill({
         json: {
           services: [
@@ -38,7 +38,7 @@ test.describe('MCP Any UI E2E Tests', () => {
       });
     });
     // Mock tools for Dashboard/Tools page checks
-    await page.route('**/api/tools', async (route) => {
+    await page.route('**/api/v1/tools', async (route) => {
          await route.fulfill({
              json: {
                   tools: [
@@ -49,11 +49,11 @@ test.describe('MCP Any UI E2E Tests', () => {
          });
     });
     // Mock resources for Dashboard checks (if needed) or explicit page visits
-    await page.route('**/api/resources', async (route) => {
+    await page.route('**/api/v1/resources', async (route) => {
          await route.fulfill({ json: [] });
     });
     // Mock dashboard metrics
-    await page.route('**/api/dashboard/metrics', async (route) => {
+    await page.route('**/api/v1/dashboard/metrics', async (route) => {
         await route.fulfill({
             json: [
                 { label: "Total Requests", value: "1,234", icon: "Activity", change: "+12%", trend: "up" },
@@ -131,7 +131,7 @@ test.describe('MCP Any UI E2E Tests', () => {
 
   test('Network page visualizes topology', async ({ page }) => {
     // Mock Topology API
-    await page.route('**/api/topology', async (route) => {
+    await page.route('**/api/v1/topology', async (route) => {
         await route.fulfill({
             json: {
                 clients: [

@@ -1,7 +1,6 @@
 
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { ServiceMarketplace } from './service-marketplace';
-import { MARKETPLACE_ITEMS } from '@/lib/marketplace-data';
 import { apiClient } from '@/lib/client';
 import { toast } from 'sonner';
 
@@ -77,6 +76,7 @@ describe('ServiceMarketplace', () => {
         });
 
         // Verify the arguments passed to registerService
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const calledArg = (apiClient.registerService as any).mock.calls[0][0];
         expect(calledArg.command_line_service.args).toContain('/tmp/test.db');
         expect(calledArg.command_line_service.env).toEqual({ DB_PATH: '/tmp/test.db' });

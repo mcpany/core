@@ -124,11 +124,11 @@ export default function ServicesPage() {
       try {
           if (selectedService.id) {
                // Update
-               await apiClient.updateService(selectedService as any);
+               await apiClient.updateService(selectedService);
                toast({ title: "Service Updated", description: "Service configuration saved." });
           } else {
               // Create
-              await apiClient.registerService(selectedService as any);
+              await apiClient.registerService(selectedService);
               toast({ title: "Service Created", description: "New service registered successfully." });
           }
           setIsSheetOpen(false);
