@@ -5,355 +5,156 @@
 
 "use client";
 
-import React, { useState, useEffect } from "react";
-import {
-    Key,
-    Plus,
-    Trash2,
-    Eye,
-    EyeOff,
-    Copy,
-    Search,
-    ShieldCheck,
-    Lock,
-    RefreshCw
-} from "lucide-react";
-import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow
-} from "@/components/ui/table";
-import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogFooter,
-    DialogHeader,
-    DialogTitle,
-    DialogTrigger,
-} from "@/components/ui/dialog";
-import {
-    Card,
-    CardContent,
-    CardHeader,
-} from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Badge } from "@/components/ui/badge";
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select";
-import { toast } from "sonner";
+import { useState, useEffect } from "react";
 import { apiClient, SecretDefinition } from "@/lib/client";
-import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Input } from "@/components/ui/input";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import { Plus, Trash2, Key, Eye, EyeOff } from "lucide-react";
+import { format } from "date-fns";
 
 export function SecretManager() {
-    const [secrets, setSecrets] = useState<SecretDefinition[]>([]);
-    const [isLoading, setIsLoading] = useState(true);
-    const [searchQuery, setSearchQuery] = useState("");
-    const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
-    const [visibleSecrets, setVisibleSecrets] = useState<Record<string, boolean>>({});
+  const [secrets, setSecrets] = useState<SecretDefinition[]>([]);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [newSecret, setNewSecret] = useState<Partial<SecretDefinition>>({});
+  const [showValues, setShowValues] = useState<Record<string, boolean>>({});
 
-    // Form State
-    const [newName, setNewName] = useState("");
-    const [newKey, setNewKey] = useState("");
-    const [newValue, setNewValue] = useState("");
-    const [newProvider, setNewProvider] = useState("custom");
-    const [isSubmitting, setIsSubmitting] = useState(false);
+  useEffect(() => {
+    fetchSecrets();
+  }, []);
 
-    useEffect(() => {
-        loadSecrets();
-    }, []);
+  const fetchSecrets = async () => {
+    try {
+      const res = await apiClient.listSecrets();
+      setSecrets(res.secrets || []);
+    } catch (e) {
+      console.error("Failed to fetch secrets", e);
+    }
+  };
 
-    const loadSecrets = async () => {
-        setIsLoading(true);
-        try {
-            const data = await apiClient.listSecrets();
-            setSecrets(data);
-        } catch (_error) {
-            toast.error("Failed to load secrets");
-        } finally {
-            setIsLoading(false);
-        }
-    };
+  const handleSave = async () => {
+    try {
+      await apiClient.saveSecret({
+          ...newSecret,
+          id: newSecret.id || `sec-${Date.now()}`,
+          createdAt: new Date().toISOString()
+      } as SecretDefinition);
+      setIsDialogOpen(false);
+      fetchSecrets();
+      setNewSecret({});
+    } catch (e) {
+      console.error("Failed to save secret", e);
+    }
+  };
 
-    const handleCopy = (text: string) => {
-        navigator.clipboard.writeText(text);
-        toast.success("Secret copied to clipboard");
-    };
+  const handleDelete = async (id: string) => {
+    try {
+      await apiClient.deleteSecret(id);
+      fetchSecrets();
+    } catch (e) {
+      console.error("Failed to delete secret", e);
+    }
+  };
 
-    const toggleVisibility = (id: string) => {
-        setVisibleSecrets(prev => ({ ...prev, [id]: !prev[id] }));
-    };
+  const toggleVisibility = (id: string) => {
+      setShowValues(prev => ({ ...prev, [id]: !prev[id] }));
+  };
 
-    const handleDelete = async (id: string) => {
-        if (!confirm("Are you sure you want to delete this secret? This action cannot be undone.")) return;
+  return (
+    <div className="space-y-4">
+      <div className="flex items-center justify-between">
+        <h2 className="text-3xl font-bold tracking-tight">Secrets</h2>
+        <Button onClick={() => setIsDialogOpen(true)}>
+          <Plus className="mr-2 h-4 w-4" /> Add Secret
+        </Button>
+      </div>
 
-        try {
-            await apiClient.deleteSecret(id);
-            toast.success("Secret deleted successfully");
-            loadSecrets();
-        } catch (_error) {
-            toast.error("Failed to delete secret");
-        }
-    };
-
-    const handleAddSecret = async () => {
-        if (!newName || !newKey || !newValue) {
-            toast.error("Please fill in all required fields");
-            return;
-        }
-
-        setIsSubmitting(true);
-        try {
-            await apiClient.saveSecret({
-                id: "", // generated by backend
-                name: newName,
-                key: newKey,
-                value: newValue,
-                provider: newProvider as 'openai' | 'anthropic' | 'aws' | 'gcp' | 'custom',
-                createdAt: "",
-                lastUsed: ""
-            });
-            toast.success("Secret stored successfully");
-            setIsAddDialogOpen(false);
-            resetForm();
-            loadSecrets();
-        } catch (_error) {
-            toast.error("Failed to save secret");
-        } finally {
-            setIsSubmitting(false);
-        }
-    };
-
-    const resetForm = () => {
-        setNewName("");
-        setNewKey("");
-        setNewValue("");
-        setNewProvider("custom");
-    };
-
-    const filteredSecrets = secrets.filter(s =>
-        s.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        s.key.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-
-    const getProviderBadge = (provider: string) => {
-        switch(provider) {
-            case 'openai': return <Badge className="bg-green-600 hover:bg-green-700">OpenAI</Badge>;
-            case 'anthropic': return <Badge className="bg-amber-600 hover:bg-amber-700">Anthropic</Badge>;
-            case 'aws': return <Badge className="bg-orange-600 hover:bg-orange-700">AWS</Badge>;
-            case 'gcp': return <Badge className="bg-blue-600 hover:bg-blue-700">GCP</Badge>;
-            default: return <Badge variant="outline">Custom</Badge>;
-        }
-    };
-
-    return (
-        <div className="flex flex-col gap-6 max-w-6xl mx-auto w-full">
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                <div>
-                    <h1 className="text-3xl font-bold tracking-tight flex items-center gap-2">
-                        <Lock className="w-8 h-8 text-primary" /> API Key Vault
-                    </h1>
-                    <p className="text-muted-foreground mt-1">
-                        Securely manage environment variables and API keys for your MCP tools.
-                    </p>
-                </div>
-                <div className="flex items-center gap-2 w-full md:w-auto">
-                    <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
-                        <DialogTrigger asChild>
-                            <Button className="w-full md:w-auto gap-2">
-                                <Plus className="w-4 h-4" /> Add Secret
-                            </Button>
-                        </DialogTrigger>
-                        <DialogContent className="sm:max-w-[500px]">
-                            <DialogHeader>
-                                <DialogTitle>Add New Secret</DialogTitle>
-                                <DialogDescription>
-                                    Store a new API key or secret. It will be encrypted at rest.
-                                </DialogDescription>
-                            </DialogHeader>
-                            <div className="grid gap-4 py-4">
-                                <div className="grid gap-2">
-                                    <Label htmlFor="provider">Provider Template</Label>
-                                    <Select value={newProvider} onValueChange={(v) => {
-                                        setNewProvider(v);
-                                        // Auto-fill key if template selected
-                                        if (v === 'openai') setNewKey('OPENAI_API_KEY');
-                                        if (v === 'anthropic') setNewKey('ANTHROPIC_API_KEY');
-                                        if (v === 'aws') setNewKey('AWS_ACCESS_KEY_ID');
-                                    }}>
-                                        <SelectTrigger>
-                                            <SelectValue placeholder="Select a provider" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            <SelectItem value="custom">Custom</SelectItem>
-                                            <SelectItem value="openai">OpenAI</SelectItem>
-                                            <SelectItem value="anthropic">Anthropic</SelectItem>
-                                            <SelectItem value="aws">AWS</SelectItem>
-                                            <SelectItem value="gcp">Google Cloud</SelectItem>
-                                        </SelectContent>
-                                    </Select>
-                                </div>
-                                <div className="grid gap-2">
-                                    <Label htmlFor="name">Name</Label>
-                                    <Input
-                                        id="name"
-                                        placeholder="e.g. My Production OpenAI Key"
-                                        value={newName}
-                                        onChange={(e) => setNewName(e.target.value)}
-                                    />
-                                </div>
-                                <div className="grid gap-2">
-                                    <Label htmlFor="key">Environment Key</Label>
-                                    <Input
-                                        id="key"
-                                        placeholder="e.g. OPENAI_API_KEY"
-                                        value={newKey}
-                                        onChange={(e) => setNewKey(e.target.value)}
-                                        className="font-mono"
-                                    />
-                                </div>
-                                <div className="grid gap-2">
-                                    <Label htmlFor="value">Secret Value</Label>
-                                    <Input
-                                        id="value"
-                                        type="password"
-                                        placeholder="sk-..."
-                                        value={newValue}
-                                        onChange={(e) => setNewValue(e.target.value)}
-                                        className="font-mono"
-                                    />
-                                </div>
-                            </div>
-                            <DialogFooter>
-                                <Button variant="outline" onClick={() => setIsAddDialogOpen(false)}>Cancel</Button>
-                                <Button onClick={handleAddSecret} disabled={isSubmitting}>
-                                    {isSubmitting ? "Saving..." : "Save Secret"}
-                                </Button>
-                            </DialogFooter>
-                        </DialogContent>
-                    </Dialog>
-                </div>
-            </div>
-
-            <Card className="border-muted/50 bg-background/50 backdrop-blur-sm shadow-sm">
-                <CardHeader className="p-4 border-b flex flex-row items-center gap-4 space-y-0">
-                    <div className="relative flex-1">
-                        <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                        <Input
-                            placeholder="Search secrets by name or key..."
-                            className="pl-9 bg-background/50"
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                        />
-                    </div>
-                    <Button variant="ghost" size="icon" onClick={loadSecrets} disabled={isLoading}>
-                        <RefreshCw className={cn("h-4 w-4", isLoading && "animate-spin")} />
+      <Card className="backdrop-blur-sm bg-background/50">
+        <CardHeader>
+          <CardTitle>Environment Secrets</CardTitle>
+          <CardDescription>Manage sensitive configuration values securely.</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Name</TableHead>
+                <TableHead>Key</TableHead>
+                <TableHead>Provider</TableHead>
+                <TableHead>Last Used</TableHead>
+                <TableHead className="text-right">Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {secrets.map((secret) => (
+                <TableRow key={secret.id}>
+                  <TableCell className="font-medium flex items-center">
+                    <Key className="h-4 w-4 mr-2 text-muted-foreground" />
+                    {secret.name}
+                  </TableCell>
+                  <TableCell className="font-mono text-xs">{secret.key}</TableCell>
+                  <TableCell>{secret.provider || "Custom"}</TableCell>
+                  <TableCell className="text-muted-foreground text-xs">
+                    {secret.lastUsed ? format(new Date(secret.lastUsed), "MMM d, yyyy HH:mm") : "Never"}
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <Button variant="ghost" size="icon" onClick={() => handleDelete(secret.id)}>
+                      <Trash2 className="h-4 w-4 text-destructive" />
                     </Button>
-                </CardHeader>
-                <CardContent className="p-0">
-                    <Table>
-                        <TableHeader>
-                            <TableRow className="hover:bg-transparent">
-                                <TableHead className="w-[200px]">Name</TableHead>
-                                <TableHead className="w-[200px]">Key</TableHead>
-                                <TableHead>Value</TableHead>
-                                <TableHead className="w-[100px]">Provider</TableHead>
-                                <TableHead className="w-[150px] text-right">Last Used</TableHead>
-                                <TableHead className="w-[100px]"></TableHead>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            {filteredSecrets.length === 0 && (
-                                <TableRow>
-                                    <TableCell colSpan={6} className="h-24 text-center text-muted-foreground">
-                                        {isLoading ? "Loading vault..." : "No secrets found. Add one to get started."}
-                                    </TableCell>
-                                </TableRow>
-                            )}
-                            {filteredSecrets.map((secret) => (
-                                <TableRow key={secret.id} className="group">
-                                    <TableCell className="font-medium">
-                                        <div className="flex items-center gap-2">
-                                            <div className="bg-primary/10 p-1.5 rounded-md">
-                                                <Key className="w-4 h-4 text-primary" />
-                                            </div>
-                                            {secret.name}
-                                        </div>
-                                    </TableCell>
-                                    <TableCell>
-                                        <code className="bg-muted px-1.5 py-0.5 rounded text-xs font-mono text-muted-foreground">
-                                            {secret.key}
-                                        </code>
-                                    </TableCell>
-                                    <TableCell>
-                                        <div className="flex items-center gap-2 max-w-[300px]">
-                                            <code className="bg-black/5 dark:bg-black/30 px-2 py-1 rounded font-mono text-sm truncate flex-1 block border border-transparent hover:border-muted transition-colors">
-                                                {visibleSecrets[secret.id] ? secret.value : "••••••••••••••••••••••••"}
-                                            </code>
-                                            <Button
-                                                variant="ghost"
-                                                size="icon"
-                                                className="h-8 w-8 text-muted-foreground hover:text-foreground"
-                                                onClick={() => toggleVisibility(secret.id)}
-                                            >
-                                                {visibleSecrets[secret.id] ? <EyeOff className="w-3 h-3" /> : <Eye className="w-3 h-3" />}
-                                            </Button>
-                                            <Button
-                                                variant="ghost"
-                                                size="icon"
-                                                className="h-8 w-8 text-muted-foreground hover:text-foreground"
-                                                onClick={() => handleCopy(secret.value)}
-                                            >
-                                                <Copy className="w-3 h-3" />
-                                            </Button>
-                                        </div>
-                                    </TableCell>
-                                    <TableCell>
-                                        {getProviderBadge(secret.provider || 'custom')}
-                                    </TableCell>
-                                    <TableCell className="text-right text-muted-foreground text-xs">
-                                        {secret.lastUsed === 'Never' ? 'Never' : new Date(secret.lastUsed || "").toLocaleDateString()}
-                                    </TableCell>
-                                    <TableCell className="text-right">
-                                        <Button
-                                            variant="ghost"
-                                            size="icon"
-                                            className="h-8 w-8 text-destructive opacity-0 group-hover:opacity-100 transition-opacity"
-                                            onClick={() => handleDelete(secret.id)}
-                                        >
-                                            <Trash2 className="w-4 h-4" />
-                                        </Button>
-                                    </TableCell>
-                                </TableRow>
-                            ))}
-                        </TableBody>
-                    </Table>
-                </CardContent>
-            </Card>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
 
-            <Card className="bg-blue-50/50 dark:bg-blue-900/10 border-blue-200 dark:border-blue-800">
-                <CardContent className="p-4 flex items-start gap-3 text-sm text-blue-900 dark:text-blue-100">
-                    <ShieldCheck className="w-5 h-5 text-blue-600 dark:text-blue-400 mt-0.5" />
-                    <div>
-                        <p className="font-semibold">Security Note</p>
-                        <p className="opacity-90">
-                            Secrets are encrypted at rest using AES-256-GCM.
-                            The master key is stored in your environment or a local key file.
-                            Do not commit your master key to version control.
-                        </p>
-                    </div>
-                </CardContent>
-            </Card>
-        </div>
-    );
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Add Secret</DialogTitle>
+            <DialogDescription>Create a new secret value.</DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="name" className="text-right">Name</Label>
+              <Input
+                id="name"
+                value={newSecret.name || ""}
+                onChange={(e) => setNewSecret({ ...newSecret, name: e.target.value })}
+                className="col-span-3"
+              />
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="key" className="text-right">Key</Label>
+              <Input
+                id="key"
+                value={newSecret.key || ""}
+                onChange={(e) => setNewSecret({ ...newSecret, key: e.target.value })}
+                placeholder="OPENAI_API_KEY"
+                className="col-span-3 font-mono"
+              />
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="value" className="text-right">Value</Label>
+              <Input
+                id="value"
+                type="password"
+                value={newSecret.value || ""}
+                onChange={(e) => setNewSecret({ ...newSecret, value: e.target.value })}
+                className="col-span-3 font-mono"
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsDialogOpen(false)}>Cancel</Button>
+            <Button onClick={handleSave}>Save Secret</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
 }

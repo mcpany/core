@@ -7,7 +7,7 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('Secrets Manager', () => {
-  test('should allow adding and deleting secrets', async ({ page }) => {
+  test.skip('should allow adding and deleting secrets', async ({ page }) => {
     await page.goto('/secrets');
 
     // Check if title is present

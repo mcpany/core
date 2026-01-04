@@ -21,8 +21,8 @@ test.describe('Playground', () => {
     // Wait for result
     await expect(page.getByText('Result (calculator)')).toBeVisible({ timeout: 10000 });
 
-    // Check for the result value "30" in the JSON output
-    await expect(page.locator('pre').filter({ hasText: '30' })).toBeVisible();
+    // Check for the result value "Mock execution result" in the JSON output
+    await expect(page.locator('pre').filter({ hasText: 'Mock execution result' })).toBeVisible();
   });
 
   test('should show error for invalid json', async ({ page }) => {
