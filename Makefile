@@ -10,13 +10,14 @@ test:
 	$(MAKE) -C server test
 	$(MAKE) -C ui test
 	$(MAKE) test-proto
+	$(MAKE) -C k8s test
 
 test-proto:
 	@echo "Running proto tests..."
 	@go test ./proto/...
 
 k8s-e2e:
-	./k8s/tests/test_operator.sh
+	$(MAKE) -C k8s test
 
 k8s-test: k8s-e2e
 

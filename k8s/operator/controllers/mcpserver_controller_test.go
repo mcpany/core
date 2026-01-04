@@ -34,7 +34,6 @@ func TestMCPServerReconciler_Reconcile(t *testing.T) {
 			Replicas:    &replicas,
 			Image:       "mcpany/server:latest",
 			ServiceType: "ClusterIP",
-			ConfigMap:   "my-config-map",
 		},
 	}
 
@@ -86,6 +85,10 @@ func TestMCPServerReconciler_Reconcile(t *testing.T) {
 		t.Errorf("expected replicas %d, got %d", replicas, *found.Spec.Replicas)
 	}
 
+	// Check container image
+	if len(found.Spec.Template.Spec.Containers) == 0 {
+		t.Fatal("no containers found in deployment")
+	}
 	container := found.Spec.Template.Spec.Containers[0]
 	if container.Image != "mcpany/server:latest" {
 		t.Errorf("expected image mcpany/server:latest, got %s", container.Image)
@@ -153,4 +156,5 @@ func TestMCPServerReconciler_Reconcile(t *testing.T) {
 	if foundService.Spec.Selector["app"] != "mcp-server" {
 		t.Errorf("expected selector app=mcp-server, got %s", foundService.Spec.Selector["app"])
 	}
+
 }
