@@ -305,6 +305,59 @@ func TestFilesystemUpstream_Register_And_Execute(t *testing.T) {
 		assert.True(t, os.IsNotExist(err))
 	})
 
+	// Test read_file binary check
+	t.Run("read_file_binary", func(t *testing.T) {
+		// Create a binary file
+		binFile := filepath.Join(tempDir, "binary.bin")
+		// Write null bytes
+		err = os.WriteFile(binFile, []byte{0x00, 0x01, 0x02, 0x03}, 0644)
+		require.NoError(t, err)
+
+		// Note: The current read_file implementation uses afero.ReadFile which reads everything.
+		// It doesn't explicitly block binary files, but search_files does.
+		// Let's test search_files with binary.
+		searchTool := findTool("search_files")
+		res, err := searchTool.Execute(context.Background(), &tool.ExecutionRequest{
+			ToolName: "search_files",
+			Arguments: map[string]interface{}{
+				"path":    "/data",
+				"pattern": ".*",
+			},
+		})
+		require.NoError(t, err)
+		resMap := res.(map[string]interface{})
+		matches := resMap["matches"].([]map[string]interface{})
+
+		// Should not match binary file
+		for _, m := range matches {
+			assert.NotEqual(t, "binary.bin", m["file"])
+		}
+	})
+
+	// Test read_file size limit
+	t.Run("read_file_size_limit", func(t *testing.T) {
+		// Create a large file (> 10MB)
+		largeFile := filepath.Join(tempDir, "large.txt")
+		f, err := os.Create(largeFile)
+		require.NoError(t, err)
+		// Write 10MB + 1 byte
+		if err := f.Truncate(10*1024*1024 + 1); err != nil {
+			f.Close()
+			t.Fatal(err)
+		}
+		f.Close()
+
+		readTool := findTool("read_file")
+		_, err = readTool.Execute(context.Background(), &tool.ExecutionRequest{
+			ToolName: "read_file",
+			Arguments: map[string]interface{}{
+				"path": "/data/large.txt",
+			},
+		})
+		assert.Error(t, err)
+		assert.Contains(t, err.Error(), "exceeds limit")
+	})
+
 	// Test Shutdown
 	t.Run("Shutdown", func(t *testing.T) {
 		err := u.Shutdown(context.Background())
