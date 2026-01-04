@@ -126,6 +126,21 @@ func (r *MCPServerReconciler) deploymentForMCPServer(m *mcpv1alpha1.MCPServer) *
 							ContainerPort: 8080,
 							Name:          "http",
 						}},
+						Args: []string{"run", "--config-path", "/etc/mcp/config.yaml"},
+						VolumeMounts: []corev1.VolumeMount{{
+							Name:      "config-volume",
+							MountPath: "/etc/mcp",
+						}},
+					}},
+					Volumes: []corev1.Volume{{
+						Name: "config-volume",
+						VolumeSource: corev1.VolumeSource{
+							ConfigMap: &corev1.ConfigMapVolumeSource{
+								LocalObjectReference: corev1.LocalObjectReference{
+									Name: m.Spec.ConfigMap,
+								},
+							},
+						},
 					}},
 				},
 			},
