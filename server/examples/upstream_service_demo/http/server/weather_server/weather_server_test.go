@@ -77,7 +77,7 @@ func TestWeatherHandler_POST(t *testing.T) {
 
 func TestWeatherHandler_POST_InvalidJSON(t *testing.T) {
 	// Send invalid JSON
-	req, err := http.NewRequest("POST", "/weather", bytes.NewBufferString("{invalid_json"))
+	req, err := http.NewRequest("POST", "/weather", strings.NewReader("{invalid_json"))
 	require.NoError(t, err)
 	req.Header.Set("Content-Type", "application/json")
 
@@ -193,7 +193,7 @@ func TestWSHandler_InvalidJSON(t *testing.T) {
 	// Since the handler breaks the loop on error, the connection might close or just stop sending data.
 	// We check if the connection is closed by trying to read from it.
 	// We use a deadline to avoid hanging if the server doesn't close the connection.
-	err = conn.SetReadDeadline(time.Now().Add(100 * time.Millisecond))
+	err = conn.SetReadDeadline(time.Now().Add(1 * time.Second))
 	require.NoError(t, err)
 
 	_, _, err = conn.ReadMessage()
