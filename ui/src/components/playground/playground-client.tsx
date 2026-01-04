@@ -28,6 +28,14 @@ import {
     SheetDescription,
     SheetTrigger
 } from "@/components/ui/sheet";
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+    DialogDescription
+} from "@/components/ui/dialog";
+import { ToolForm } from "@/components/playground/tool-form";
 
 type MessageType = "user" | "assistant" | "tool-call" | "tool-result" | "error";
 
@@ -53,6 +61,7 @@ export function PlaygroundClient() {
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [availableTools, setAvailableTools] = useState<ToolDefinition[]>([]);
+  const [toolToConfigure, setToolToConfigure] = useState<ToolDefinition | null>(null);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -97,6 +106,36 @@ export function PlaygroundClient() {
 
     // Process immediately
     processResponse(input);
+  };
+
+  const handleToolFormSubmit = (data: any) => {
+    if (!toolToConfigure) return;
+
+    // Construct the command string from the form data
+    const command = `${toolToConfigure.name} ${JSON.stringify(data)}`;
+
+    setToolToConfigure(null);
+    setInput(command);
+
+    // We need to wait for state update before sending?
+    // Actually simpler to just call process logic directly or simulate send
+    // But handleSend depends on `input` state if we call it.
+    // Let's just set the input and call a version of handleSend that accepts input
+
+    // Better: update input, close dialog, and let user hit enter?
+    // Or execute immediately? The requirement said "Run".
+    // Let's execute immediately for better UX.
+
+    const userMsg: Message = {
+      id: Date.now().toString(),
+      type: "user",
+      content: command,
+      timestamp: new Date(),
+    };
+
+    setMessages((prev) => [...prev, userMsg]);
+    setIsLoading(true);
+    processResponse(command);
   };
 
   const processResponse = async (userInput: string) => {
@@ -211,7 +250,13 @@ export function PlaygroundClient() {
                                         ))}
                                     </div>
                                 )}
-                                <Button size="sm" variant="ghost" className="w-full h-6 text-xs" onClick={() => setInput(tool.name + " ")}>
+                                <Button size="sm" variant="ghost" className="w-full h-6 text-xs" onClick={() => {
+                                    setToolToConfigure(tool);
+                                    // Close sheet by... actually we can leave it open or close it.
+                                    // Usually selecting a tool from a "picker" closes the picker.
+                                    // But Sheet is controlled by SheetTrigger. We might need controlled state for Sheet if we want to close it.
+                                    // For now, let's just open the Dialog on top.
+                                }}>
                                     Use Tool <ChevronRight className="ml-1 size-3" />
                                 </Button>
                             </div>
@@ -267,6 +312,27 @@ export function PlaygroundClient() {
             </div>
         </CardContent>
       </Card>
+
+      <Dialog open={!!toolToConfigure} onOpenChange={(open) => !open && setToolToConfigure(null)}>
+        <DialogContent className="sm:max-w-[500px]">
+            <DialogHeader>
+                <DialogTitle className="flex items-center gap-2">
+                    <Terminal className="w-5 h-5 text-primary" />
+                    Configure {toolToConfigure?.name}
+                </DialogTitle>
+                <DialogDescription>
+                    {toolToConfigure?.description}
+                </DialogDescription>
+            </DialogHeader>
+            {toolToConfigure && (
+                <ToolForm
+                    tool={toolToConfigure}
+                    onSubmit={handleToolFormSubmit}
+                    onCancel={() => setToolToConfigure(null)}
+                />
+            )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
