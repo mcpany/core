@@ -5,6 +5,7 @@ package mcpserver
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"time"
 
@@ -546,7 +547,19 @@ func (s *Server) CallTool(ctx context.Context, req *tool.ExecutionRequest) (any,
 	logging.GetLogger().Info("Tool execution completed", "result_type", fmt.Sprintf("%T", result), "result_value", result)
 
 	if err != nil {
-		return nil, err
+		if errors.Is(err, tool.ErrToolNotFound) {
+			return nil, err
+		}
+
+		// Return error as a tool result so the LLM knows what went wrong
+		return &mcp.CallToolResult{
+			Content: []mcp.Content{
+				&mcp.TextContent{
+					Text: fmt.Sprintf("Tool execution failed: %v", err),
+				},
+			},
+			IsError: true,
+		}, nil
 	}
 
 	if ctr, ok := result.(*mcp.CallToolResult); ok {
