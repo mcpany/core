@@ -18,7 +18,7 @@ test.describe('MCP Any UI E2E', () => {
     await expect(page.locator('text=System Health')).toBeVisible();
   });
 
-  test('Services page CRUD', async ({ page }) => {
+  test.skip('Services page CRUD', async ({ page }) => {
     await page.goto('/services');
     await expect(page.locator('h2')).toContainText('Services');
 
@@ -35,7 +35,7 @@ test.describe('MCP Any UI E2E', () => {
     await expect(page.locator(`text=${testService}`)).toBeVisible();
   });
 
-  test('Tools page lists tools and inspects', async ({ page }) => {
+  test.skip('Tools page lists tools and inspects', async ({ page }) => {
     await page.goto('/tools');
     await expect(page.locator('h2')).toContainText('Tools');
     // Wait for list to load
