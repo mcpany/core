@@ -85,6 +85,76 @@ func TestStore(t *testing.T) {
 			t.Errorf("expected service to be nil, got %v", loaded)
 		}
 	})
+
+	t.Run("GlobalSettings", func(t *testing.T) {
+		level := configv1.GlobalSettings_LOG_LEVEL_DEBUG
+		settings := &configv1.GlobalSettings{
+			LogLevel: &level,
+		}
+		err := store.SaveGlobalSettings(settings)
+		if err != nil {
+			t.Fatalf("failed to save global settings: %v", err)
+		}
+
+		loaded, err := store.GetGlobalSettings()
+		if err != nil {
+			t.Fatalf("failed to get global settings: %v", err)
+		}
+		if loaded.GetLogLevel() != configv1.GlobalSettings_LOG_LEVEL_DEBUG {
+			t.Errorf("expected level debug, got %v", loaded.GetLogLevel())
+		}
+	})
+
+	t.Run("Secrets", func(t *testing.T) {
+		secret := &configv1.Secret{
+			Id:   proto.String("sec-1"),
+			Name: proto.String("my-secret"),
+			Key:  proto.String("api_key"),
+		}
+		err := store.SaveSecret(secret)
+		if err != nil {
+			t.Fatalf("failed to save secret: %v", err)
+		}
+
+		// List
+		secrets, err := store.ListSecrets()
+		if err != nil {
+			t.Fatalf("failed to list secrets: %v", err)
+		}
+		if len(secrets) != 1 {
+			t.Errorf("expected 1 secret, got %d", len(secrets))
+		}
+
+		// Get
+		loaded, err := store.GetSecret("sec-1")
+		if err != nil {
+			t.Fatalf("failed to get secret: %v", err)
+		}
+		if loaded.GetName() != "my-secret" {
+			t.Errorf("expected name my-secret, got %s", loaded.GetName())
+		}
+
+		// Update
+		secret.Name = proto.String("updated-secret")
+		err = store.SaveSecret(secret)
+		if err != nil {
+			t.Fatalf("failed to update secret: %v", err)
+		}
+		loaded, _ = store.GetSecret("sec-1")
+		if loaded.GetName() != "updated-secret" {
+			t.Errorf("expected name updated-secret, got %s", loaded.GetName())
+		}
+
+		// Delete
+		err = store.DeleteSecret("sec-1")
+		if err != nil {
+			t.Fatalf("failed to delete secret: %v", err)
+		}
+		loaded, _ = store.GetSecret("sec-1")
+		if loaded != nil {
+			t.Errorf("expected secret to be nil after delete, got %v", loaded)
+		}
+	})
 }
 
 // Copyright 2025 Author(s) of MCP Any

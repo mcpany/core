@@ -49,6 +49,10 @@ issues:
     - path: "_test.go"
       linters:
         - "errcheck"
+    - path: "pkg/util/"
+      linters:
+        - "revive"
+      text: "var-naming: avoid meaningless package names"
   skip-files:
     - '.*\.pb\.go$'
     - lll
