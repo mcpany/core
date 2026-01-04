@@ -9,7 +9,7 @@ import { useState, useEffect } from "react";
 import { apiClient } from "@/lib/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Plus } from "lucide-react";
+import { Plus, LayoutGrid, List } from "lucide-react";
 import {
     Sheet,
     SheetContent,
@@ -17,6 +17,12 @@ import {
     SheetHeader,
     SheetTitle,
 } from "@/components/ui/sheet"
+import {
+    Tabs,
+    TabsContent,
+    TabsList,
+    TabsTrigger,
+} from "@/components/ui/tabs"
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -24,6 +30,7 @@ import { useToast } from "@/hooks/use-toast";
 
 import { UpstreamServiceConfig } from "@/lib/client";
 import { ServiceList } from "@/components/services/service-list";
+import { ServiceMarketplace } from "@/components/services/service-marketplace";
 
 export default function ServicesPage() {
   const [services, setServices] = useState<UpstreamServiceConfig[]>([]);
@@ -141,25 +148,53 @@ export default function ServicesPage() {
       <div className="flex items-center justify-between">
         <h2 className="text-3xl font-bold tracking-tight">Services</h2>
         <Button onClick={openNew}>
-            <Plus className="mr-2 h-4 w-4" /> Add Service
+            <Plus className="mr-2 h-4 w-4" /> Custom Service
         </Button>
       </div>
 
-      <Card className="backdrop-blur-sm bg-background/50">
-        <CardHeader>
-          <CardTitle>Upstream Services</CardTitle>
-          <CardDescription>Manage your connected upstream services.</CardDescription>
-        </CardHeader>
-        <CardContent>
-             <ServiceList
-                services={services}
-                isLoading={loading}
-                onToggle={toggleService}
-                onEdit={openEdit}
-                onDelete={deleteService}
-             />
-        </CardContent>
-      </Card>
+      <Tabs defaultValue="installed" className="space-y-4">
+        <TabsList>
+            <TabsTrigger value="installed" className="flex items-center gap-2">
+                <List className="h-4 w-4" /> Installed
+            </TabsTrigger>
+            <TabsTrigger value="marketplace" className="flex items-center gap-2">
+                <LayoutGrid className="h-4 w-4" /> Marketplace
+            </TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="installed" className="space-y-4">
+            <Card className="backdrop-blur-sm bg-background/50">
+                <CardHeader>
+                    <CardTitle>Upstream Services</CardTitle>
+                    <CardDescription>Manage your connected upstream services.</CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <ServiceList
+                        services={services}
+                        isLoading={loading}
+                        onToggle={toggleService}
+                        onEdit={openEdit}
+                        onDelete={deleteService}
+                    />
+                </CardContent>
+            </Card>
+        </TabsContent>
+
+        <TabsContent value="marketplace" className="space-y-4">
+             <Card className="backdrop-blur-sm bg-background/50 border-dashed border-2">
+                <CardHeader>
+                    <CardTitle>Service Marketplace</CardTitle>
+                    <CardDescription>Discover and install 1-click MCP servers.</CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <ServiceMarketplace onInstallComplete={() => {
+                        fetchServices();
+                        toast({ title: "Installation Complete", description: "The service is now available in your list." });
+                    }} />
+                </CardContent>
+            </Card>
+        </TabsContent>
+      </Tabs>
 
       <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
         <SheetContent className="w-[400px] sm:w-[540px]">
