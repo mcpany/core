@@ -59,7 +59,7 @@ func TestHTTPCORSMiddleware(t *testing.T) {
 			},
 		},
 		{
-			name:           "Wildcard Origin",
+			name:           "Wildcard Origin (Secure Behavior)",
 			allowedOrigins: []string{"*"},
 			requestMethod:  "GET",
 			requestHeaders: map[string]string{
@@ -67,7 +67,22 @@ func TestHTTPCORSMiddleware(t *testing.T) {
 			},
 			expectedStatus: http.StatusOK,
 			expectHeaders: map[string]string{
-				"Access-Control-Allow-Origin":      "http://anywhere.com",
+				"Access-Control-Allow-Origin": "*",
+			},
+			expectNoHeaders: []string{
+				"Access-Control-Allow-Credentials",
+			},
+		},
+		{
+			name:           "Wildcard and Specific Origin (Specific Match)",
+			allowedOrigins: []string{"*", "http://example.com"},
+			requestMethod:  "GET",
+			requestHeaders: map[string]string{
+				"Origin": "http://example.com",
+			},
+			expectedStatus: http.StatusOK,
+			expectHeaders: map[string]string{
+				"Access-Control-Allow-Origin":      "http://example.com",
 				"Access-Control-Allow-Credentials": "true",
 			},
 		},
