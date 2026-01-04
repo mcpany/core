@@ -14,7 +14,6 @@ import {
   BackgroundVariant,
   Panel,
   Node,
-  useReactFlow,
   ReactFlowProvider,
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
@@ -27,7 +26,6 @@ import {
     SheetHeader,
     SheetTitle,
     SheetDescription,
-    SheetFooter
 } from "@/components/ui/sheet";
 import {
     RefreshCcw,
@@ -38,7 +36,6 @@ import {
     Activity,
     Webhook,
     Layers,
-    FileText,
     MessageSquare,
     Link as LinkIcon,
     AlertTriangle,
@@ -46,12 +43,10 @@ import {
     XCircle,
     Cpu,
     Filter,
-    ArrowRight
 } from "lucide-react";
 
 import { useNetworkTopology } from "@/hooks/use-network-topology";
 import { NodeType, NodeStatus } from "@/types/topology";
-import { Separator } from "@/components/ui/separator";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 
@@ -62,19 +57,6 @@ interface NodeData extends Record<string, unknown> {
     metrics?: { qps?: number; latencyMs?: number; errorRate?: number };
     metadata?: Record<string, string>;
 }
-
-const getStatusColor = (status: NodeStatus) => {
-  switch (status) {
-    case 'NODE_STATUS_ACTIVE':
-      return 'text-emerald-500 dark:text-emerald-400';
-    case 'NODE_STATUS_ERROR':
-      return 'text-rose-500 dark:text-rose-400';
-    case 'NODE_STATUS_INACTIVE': // Assuming 'connecting' maps to inactive or a new state
-      return 'text-amber-500 dark:text-amber-400';
-    default:
-      return 'text-slate-400 dark:text-slate-500';
-  }
-};
 
 const NodeIcon = React.memo(({ type }: { type: NodeType }) => {
     switch (type) {
@@ -113,7 +95,6 @@ function Flow() {
   const { nodes, edges, onNodesChange, onEdgesChange, onConnect, refreshTopology, autoLayout } = useNetworkTopology();
   const [selectedNode, setSelectedNode] = useState<Node<NodeData> | null>(null);
   const [isSheetOpen, setIsSheetOpen] = useState(false);
-  const [filterActive, setFilterActive] = useState(false);
 
   // Basic filtering state
   const [showSystem, setShowSystem] = useState(true);
