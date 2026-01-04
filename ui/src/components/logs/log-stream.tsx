@@ -192,28 +192,40 @@ export function LogStream() {
   return (
     <div className="flex flex-col h-full gap-4">
       <div className="flex flex-col gap-4 md:flex-row md:items-center justify-between">
-        <div className="flex items-center gap-2">
-            <h1 className="text-2xl font-bold tracking-tight flex items-center gap-2">
-                <Terminal className="w-6 h-6" /> Live Logs
-            </h1>
-            <Badge variant="outline" className="font-mono text-xs">
-                {logs.length} events
-            </Badge>
+        <div className="flex items-center justify-between md:justify-start gap-2">
+            <div className="flex items-center gap-2">
+                <h1 className="text-2xl font-bold tracking-tight flex items-center gap-2">
+                    <Terminal className="w-6 h-6" /> Live Logs
+                </h1>
+                <Badge variant="outline" className="font-mono text-xs">
+                    {logs.length} events
+                </Badge>
+            </div>
+            {/* Mobile-only pause/resume for better access */}
+            <div className="md:hidden">
+               <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setIsPaused(!isPaused)}
+              >
+                {isPaused ? <Play className="h-4 w-4" /> : <Pause className="h-4 w-4" />}
+              </Button>
+            </div>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 justify-end">
            <Button
             variant="outline"
             size="sm"
             onClick={() => setIsPaused(!isPaused)}
-            className="w-24"
+            className="w-24 hidden md:flex"
           >
             {isPaused ? <><Play className="mr-2 h-4 w-4" /> Resume</> : <><Pause className="mr-2 h-4 w-4" /> Pause</>}
           </Button>
-          <Button variant="outline" size="sm" onClick={clearLogs}>
+          <Button variant="outline" size="sm" onClick={clearLogs} className="flex-1 md:flex-none">
             <Trash2 className="mr-2 h-4 w-4" /> Clear
           </Button>
-          <Button variant="outline" size="sm" onClick={downloadLogs}>
+          <Button variant="outline" size="sm" onClick={downloadLogs} className="flex-1 md:flex-none">
             <Download className="mr-2 h-4 w-4" /> Export
           </Button>
         </div>
@@ -222,16 +234,16 @@ export function LogStream() {
       <Card className="flex-1 flex flex-col overflow-hidden border-muted/50 shadow-sm bg-background/50 backdrop-blur-sm">
         <CardHeader className="p-4 border-b bg-muted/20">
              <div className="flex flex-col md:flex-row gap-4 justify-between">
-                <div className="relative flex-1 max-w-sm">
+                <div className="relative flex-1 max-w-sm w-full">
                     <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
                     <Input
                     placeholder="Search logs..."
-                    className="pl-8 bg-background"
+                    className="pl-8 bg-background w-full"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     />
                 </div>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 justify-end">
                     <Filter className="h-4 w-4 text-muted-foreground" />
                     <Select value={filterLevel} onValueChange={setFilterLevel}>
                         <SelectTrigger className="w-[120px] bg-background">
