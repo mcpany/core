@@ -4,6 +4,7 @@
 package filesystem
 
 import (
+	"archive/zip"
 	"context"
 	"os"
 	"path/filepath"
@@ -388,4 +389,103 @@ func TestFilesystemUpstream_MemMapFs(t *testing.T) {
 	entries := resMap["entries"].([]interface{})
 	assert.Len(t, entries, 1)
 	assert.Equal(t, "hello.txt", entries[0].(map[string]interface{})["name"])
+}
+
+func TestFilesystemUpstream_ZipFs(t *testing.T) {
+	// Create a temporary zip file
+	tempDir, err := os.MkdirTemp("", "zip_test")
+	require.NoError(t, err)
+	defer os.RemoveAll(tempDir)
+
+	zipPath := filepath.Join(tempDir, "test.zip")
+	f, err := os.Create(zipPath)
+	require.NoError(t, err)
+
+	w := zip.NewWriter(f)
+
+	// Add file to zip
+	f1, err := w.Create("hello.txt")
+	require.NoError(t, err)
+	_, err = f1.Write([]byte("zip content"))
+	require.NoError(t, err)
+
+	// Add subdir to zip
+	_, err = w.Create("subdir/")
+	require.NoError(t, err)
+
+	err = w.Close()
+	require.NoError(t, err)
+	f.Close()
+
+	// Configure the upstream with ZipFs
+	config := &configv1.UpstreamServiceConfig{
+		Name: proto.String("test_zipfs"),
+		ServiceConfig: &configv1.UpstreamServiceConfig_FilesystemService{
+			FilesystemService: &configv1.FilesystemUpstreamService{
+				RootPaths: map[string]string{
+					"/": "/",
+				},
+				ReadOnly: proto.Bool(true), // Zip is typically read-only or we treat it as such for now
+				FilesystemType: &configv1.FilesystemUpstreamService_Zip{
+					Zip: &configv1.ZipFs{
+						FilePath: proto.String(zipPath),
+					},
+				},
+			},
+		},
+	}
+
+	u := NewUpstream()
+	b, _ := bus.NewProvider(nil)
+	tm := tool.NewManager(b)
+
+	id, _, _, err := u.Register(context.Background(), config, tm, nil, nil, false)
+	require.NoError(t, err)
+
+	findTool := func(name string) tool.Tool {
+		tool, ok := tm.GetTool(id + "." + name)
+		if ok {
+			return tool
+		}
+		return nil
+	}
+
+	// Read file from zip
+	readTool := findTool("read_file")
+	res, err := readTool.Execute(context.Background(), &tool.ExecutionRequest{
+		ToolName: "read_file",
+		Arguments: map[string]interface{}{
+			"path": "/hello.txt",
+		},
+	})
+	require.NoError(t, err)
+	resMap := res.(map[string]interface{})
+	assert.Equal(t, "zip content", resMap["content"])
+
+	// List directory
+	lsTool := findTool("list_directory")
+	res, err = lsTool.Execute(context.Background(), &tool.ExecutionRequest{
+		ToolName: "list_directory",
+		Arguments: map[string]interface{}{
+			"path": "/",
+		},
+	})
+	require.NoError(t, err)
+	resMap = res.(map[string]interface{})
+	entries := resMap["entries"].([]interface{})
+	assert.Len(t, entries, 2) // hello.txt, subdir
+
+	// Verify we can't write (it's registered as read-only, and zipfs via afero might be readonly too)
+	writeTool := findTool("write_file")
+	_, err = writeTool.Execute(context.Background(), &tool.ExecutionRequest{
+		ToolName: "write_file",
+		Arguments: map[string]interface{}{
+			"path":    "/new.txt",
+			"content": "fail",
+		},
+	})
+	assert.Error(t, err)
+
+	// Clean up
+	u.Shutdown(context.Background())
 }
