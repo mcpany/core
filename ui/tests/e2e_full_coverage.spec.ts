@@ -97,7 +97,7 @@ test.describe('E2E Full Coverage', () => {
     // The Settings button is the second button in the row (Switch is first)
     // Or target by icon presence if possible, but identifying by order is easier here if robust
     // The switch has role="switch". The settings button likely doesn't have a role or is generic button.
-    await row.getByRole('link', { name: 'e2e-test-service' }).click();
+    await row.getByText('e2e-test-service').click();
     await page.getByRole('button', { name: 'Edit Config' }).click();
 
     await expect(page.locator('input[id="name"]')).toHaveValue('e2e-test-service');

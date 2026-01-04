@@ -92,8 +92,8 @@ test.describe('MCP Any UI E2E Tests', () => {
     await expect(switchElement).toBeVisible();
 
     // Test Add Service (Edit Sheet)
-    await page.click('text=Add Service');
-    await expect(page.locator('text=New Service')).toBeVisible();
+    await page.getByRole('button', { name: 'Custom Service' }).click();
+    await expect(page.getByRole('dialog')).toBeVisible();
     await expect(page.locator('input#name')).toBeVisible();
 
     // Audit Screenshot
