@@ -13,10 +13,6 @@ import {
   Search,
   Download,
   Filter,
-  AlertCircle,
-  Info,
-  AlertTriangle,
-  Bug,
   Terminal
 } from "lucide-react"
 
@@ -32,7 +28,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardHeader } from "@/components/ui/card"
 
 export type LogLevel = "INFO" | "WARN" | "ERROR" | "DEBUG"
 
@@ -177,16 +173,6 @@ export function LogStream() {
     a.href = url
     a.download = `logs-${new Date().toISOString()}.txt`
     a.click()
-  }
-
-  const getLevelBadgeVariant = (level: LogLevel) => {
-      switch (level) {
-        case "INFO": return "secondary"
-        case "WARN": return "outline" // Use default variant styles but we'll override text color
-        case "ERROR": return "destructive"
-        case "DEBUG": return "outline"
-        default: return "outline"
-      }
   }
 
   return (

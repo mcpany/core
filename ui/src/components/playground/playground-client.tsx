@@ -11,7 +11,7 @@ import { useState, useRef, useEffect } from "react";
 import { Send, Bot, User, Terminal, Loader2, Sparkles, AlertCircle, Trash2, Command, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
@@ -44,8 +44,8 @@ interface Message {
   type: MessageType;
   content?: string;
   toolName?: string;
-  toolArgs?: any;
-  toolResult?: any;
+  toolArgs?: Record<string, unknown>;
+  toolResult?: unknown;
   timestamp: Date;
 }
 
@@ -108,7 +108,7 @@ export function PlaygroundClient() {
     processResponse(input);
   };
 
-  const handleToolFormSubmit = (data: any) => {
+  const handleToolFormSubmit = (data: Record<string, unknown>) => {
     if (!toolToConfigure) return;
 
     // Construct the command string from the form data
@@ -156,7 +156,7 @@ export function PlaygroundClient() {
                 // No, strict JSON for "Engineering Rigor".
                 // But we can support simplified syntax later.
                 toolArgs = JSON.parse(argsStr);
-            } catch (e) {
+            } catch {
                  setMessages(prev => [...prev, {
                     id: Date.now().toString(),
                     type: "error",
@@ -191,11 +191,11 @@ export function PlaygroundClient() {
               timestamp: new Date(),
           }]);
 
-      } catch (err: any) {
+      } catch (err: unknown) {
           setMessages(prev => [...prev, {
               id: Date.now().toString(),
               type: "error",
-              content: err.message || "Tool execution failed",
+              content: (err instanceof Error ? err.message : String(err)) || "Tool execution failed",
               timestamp: new Date(),
           }]);
       } finally {
