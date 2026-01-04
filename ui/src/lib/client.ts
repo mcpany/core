@@ -336,9 +336,64 @@ export const apiClient = {
         });
         if (!res.ok) throw new Error('Failed to save stack config');
         return res.json();
+    },
+
+    // Marketplace
+    listSubscriptions: async () => {
+        const res = await fetch('/api/v1/marketplace/subscriptions');
+        if (!res.ok) throw new Error('Failed to fetch subscriptions');
+        return res.json();
+    },
+    addSubscription: async (sub: Subscription) => {
+        const res = await fetch('/api/v1/marketplace/subscriptions', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(sub)
+        });
+        if (!res.ok) throw new Error('Failed to add subscription');
+        return res.json();
+    },
+    updateSubscription: async (id: string, sub: Subscription) => {
+        const res = await fetch(`/api/v1/marketplace/subscriptions/${id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(sub)
+        });
+        if (!res.ok) throw new Error('Failed to update subscription');
+        return res.json();
+    },
+    deleteSubscription: async (id: string) => {
+        const res = await fetch(`/api/v1/marketplace/subscriptions/${id}`, {
+            method: 'DELETE'
+        });
+        if (!res.ok) throw new Error('Failed to delete subscription');
+    },
+    syncSubscription: async (id: string) => {
+        const res = await fetch(`/api/v1/marketplace/subscriptions/${id}/sync`, {
+            method: 'POST'
+        });
+        if (!res.ok) throw new Error('Failed to sync subscription');
     }
 };
-// End of client definition
+
+export interface ServiceEntry {
+    name: string;
+    description: string;
+    type: string;
+    config: Record<string, string>;
+}
+
+export interface Subscription {
+    id?: string;
+    name: string;
+    description: string;
+    source_url: string;
+    is_active: boolean;
+    created_at?: string;
+    updated_at?: string;
+    last_synced?: string;
+    services?: ServiceEntry[];
+}
 
 /**
  * Definition of a secret used for sensitive configuration.

@@ -27,6 +27,7 @@ import (
 	"github.com/mcpany/core/pkg/config"
 	"github.com/mcpany/core/pkg/gc"
 	"github.com/mcpany/core/pkg/logging"
+	"github.com/mcpany/core/pkg/marketplace"
 	"github.com/mcpany/core/pkg/mcpserver"
 	"github.com/mcpany/core/pkg/metrics"
 	"github.com/mcpany/core/pkg/middleware"
@@ -157,6 +158,7 @@ type Application struct {
 	fs               afero.Fs
 	configPaths      []string
 	Storage          storage.Storage
+	MarketplaceManager marketplace.Manager
 }
 
 // NewApplication creates a new Application with default dependencies.
@@ -173,6 +175,7 @@ func NewApplication() *Application {
 
 		ResourceManager: resource.NewManager(),
 		UpstreamFactory: factory.NewUpstreamServiceFactory(pool.NewManager()),
+		MarketplaceManager: marketplace.NewManager(),
 		configFiles:     make(map[string]string),
 	}
 }

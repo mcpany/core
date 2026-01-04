@@ -19,7 +19,7 @@ test.describe('E2E Full Coverage', () => {
     // Services
     await page.getByRole('link', { name: 'Services' }).click();
     await expect(page.locator('h2')).toContainText('Services');
-    await expect(page.getByRole('button', { name: 'Add Service' })).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Custom Service' })).toBeVisible();
 
     // Settings
     await page.getByRole('link', { name: 'Settings' }).click();
@@ -46,7 +46,7 @@ test.describe('E2E Full Coverage', () => {
 
   test('should register and manage a service', async ({ page }) => {
     await page.goto('/services');
-    await page.click('button:has-text("Add Service")');
+    await page.click('button:has-text("Custom Service")');
 
     // Wait for dialog to be fully visible
     await expect(page.getByRole('dialog')).toBeVisible();
@@ -63,7 +63,7 @@ test.describe('E2E Full Coverage', () => {
     // Fill Endpoint
     console.log("TEST UPDATE: Filling Address");
     await page.waitForTimeout(500); // Wait for state update
-    const addressInput = page.getByLabel('Address / URL');
+    const addressInput = page.getByLabel('Endpoint');
     await expect(addressInput).toBeVisible();
     await addressInput.click();
     await addressInput.fill('http://http-echo-server:8080');

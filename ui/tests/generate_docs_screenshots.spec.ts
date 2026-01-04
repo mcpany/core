@@ -32,6 +32,7 @@ test.describe('Generate Docs Screenshots and Verify UI', () => {
     { name: 'playground', path: '/playground' },
     { name: 'stats', path: '/stats' },
     { name: 'stacks', path: '/stacks' },
+    { name: 'marketplace', path: '/marketplace' },
   ];
 
   for (const pageInfo of pages) {

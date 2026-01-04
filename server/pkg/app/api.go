@@ -37,6 +37,8 @@ func (a *Application) createAPIHandler(store storage.Storage) http.Handler {
 	mux.HandleFunc("/resources", a.handleResources())
 	mux.HandleFunc("/secrets", a.handleSecrets(store))
 	mux.HandleFunc("/secrets/", a.handleSecretDetail(store))
+	mux.HandleFunc("/marketplace/subscriptions", a.handleMarketplaceSubscriptions())
+	mux.HandleFunc("/marketplace/subscriptions/", a.handleMarketplaceSubscriptionDetail())
 
 	return mux
 }
