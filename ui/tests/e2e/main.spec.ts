@@ -23,11 +23,12 @@ test.describe('MCP Any UI E2E', () => {
     await expect(page.locator('h2')).toContainText('Services');
 
     // Add Service
-    await page.click('button:has-text("Add Service")');
-    await expect(page.locator('div[role="dialog"]')).toBeVisible();
-    await page.fill('input#name', 'test-service-e2e');
-    await page.fill('input#endpoint', 'https://example.com');
-    await page.click('text=Save Changes');
+    // Add Service
+    await page.getByRole('button', { name: 'Custom Service' }).click();
+    await expect(page.getByRole('dialog')).toBeVisible();
+    await page.getByLabel('Name').fill('test-service-e2e');
+    await page.getByLabel('Endpoint').fill('https://example.com');
+    await page.getByRole('button', { name: 'Save Changes' }).click();
 
     // Check if added
     await expect(page.locator('text=test-service-e2e')).toBeVisible();

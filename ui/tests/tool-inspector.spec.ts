@@ -17,7 +17,7 @@ test('Tools page loads and inspector opens', async ({ page }) => {
             description: 'Get weather for a location',
             source: 'configured',
             serviceName: 'weather-service',
-            schema: {
+            inputSchema: {
                type: "object",
                properties: {
                  location: { type: "string" }

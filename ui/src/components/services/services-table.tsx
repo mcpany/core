@@ -65,7 +65,7 @@ export function ServicesTable({ services, loading, onToggle, onDelete }: Service
           {services.map((service) => (
             <TableRow key={service.id || service.name}>
               <TableCell className="font-medium">
-                <Link href={`/services/${service.name}`} className="hover:underline">
+                <Link href={`/service/${service.name}`} className="hover:underline">
                     {service.name}
                 </Link>
               </TableCell>

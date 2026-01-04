@@ -8,7 +8,7 @@ import { test, expect } from '@playwright/test';
 test.describe('Playground Tool Configuration', () => {
   test('should allow configuring and running a tool via form', async ({ page }) => {
     // Mock the tools API response
-    await page.route('/api/tools', async route => {
+    await page.route('/api/v1/tools', async route => {
       const json = {
         tools: [
           {

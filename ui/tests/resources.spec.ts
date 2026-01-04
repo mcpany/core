@@ -8,7 +8,7 @@ import { test, expect } from '@playwright/test';
 test.describe('Resource Exploration', () => {
     test.beforeEach(async ({ page }) => {
         // Mock resources endpoint directly
-        await page.route((url) => url.pathname.includes('/api/resources'), async (route) => {
+        await page.route((url) => url.pathname.includes('/api/v1/resources'), async (route) => {
             await route.fulfill({
                 json: {
                     resources: [
@@ -41,7 +41,7 @@ test.describe('Resource Exploration', () => {
     });
 
     test('should show empty state when no resources', async ({ page }) => {
-        await page.route((url) => url.pathname.includes('/api/resources'), async (route) => {
+        await page.route((url) => url.pathname.includes('/api/v1/resources'), async (route) => {
             await route.fulfill({ json: [] });
         });
 

@@ -5,15 +5,19 @@
 
 "use client";
 
-import { useState } from "react";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
-import { Label } from "@/components/ui/label";
-import { ToolDefinition, apiClient } from "@/lib/client";
+import { ToolDefinition } from "@/lib/client";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { PlayCircle, Loader2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 interface ToolInspectorProps {
   tool: ToolDefinition | null;
@@ -22,79 +26,54 @@ interface ToolInspectorProps {
 }
 
 export function ToolInspector({ tool, open, onOpenChange }: ToolInspectorProps) {
-  const [input, setInput] = useState("{}");
-  const [output, setOutput] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
-
   if (!tool) return null;
 
-  const handleExecute = async () => {
-    setLoading(true);
-    setOutput(null);
-    try {
-      const args = JSON.parse(input);
-      const res = await apiClient.executeTool({
-          toolName: tool.name,
-          arguments: args
-      });
-      setOutput(JSON.stringify(res, null, 2));
-    } catch (e: any) {
-      setOutput(`Error: ${e.message}`);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[700px]">
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-              {tool.name}
-              <Badge variant="outline">{tool.serviceName}</Badge>
-          </DialogTitle>
-          <DialogDescription>
-            {tool.description}
-          </DialogDescription>
-        </DialogHeader>
+    <Sheet open={open} onOpenChange={onOpenChange}>
+      <SheetContent className="w-[500px] sm:w-[600px]">
+        <SheetHeader>
+          <SheetTitle className="flex items-center space-x-2">
+            <span>{tool.name}</span>
+            <Badge variant={tool.enabled ? "default" : "secondary"}>
+              {tool.enabled ? "Enabled" : "Disabled"}
+            </Badge>
+          </SheetTitle>
+          <SheetDescription>{tool.description}</SheetDescription>
+          <div className="mt-2">
+              <Link href={`/playground?tool=${encodeURIComponent(tool.name)}`}>
+                  <Button size="sm" variant="secondary">
+                      Run in Playground
+                  </Button>
+              </Link>
+          </div>
+        </SheetHeader>
 
-        <div className="grid gap-4 py-4">
-            <div className="grid gap-2">
-                <Label>Schema</Label>
-                <ScrollArea className="h-[150px] w-full rounded-md border p-4 bg-muted/50">
-                    <pre className="text-xs">{JSON.stringify(tool.schema, null, 2)}</pre>
-                </ScrollArea>
+        <div className="mt-6 space-y-6">
+          <div>
+            <h4 className="text-sm font-medium mb-2">Schema</h4>
+            <div className="rounded-md border bg-muted/50 p-4">
+              <ScrollArea className="h-[300px]">
+                <pre className="text-xs font-mono">
+                  {JSON.stringify(tool.schema, null, 2)}
+                </pre>
+              </ScrollArea>
             </div>
+          </div>
 
-            <div className="grid gap-2">
-                <Label htmlFor="args">Arguments (JSON)</Label>
-                <Textarea
-                    id="args"
-                    value={input}
-                    onChange={(e) => setInput(e.target.value)}
-                    className="font-mono text-sm"
-                    rows={5}
-                />
-            </div>
+          <Separator />
 
-            {output && (
-                 <div className="grid gap-2">
-                    <Label>Result</Label>
-                    <ScrollArea className="h-[150px] w-full rounded-md border p-4 bg-muted/50">
-                        <pre className="text-xs text-green-600 dark:text-green-400 font-mono">{output}</pre>
-                    </ScrollArea>
-                </div>
-            )}
+          <div className="grid grid-cols-2 gap-4">
+             <div>
+                <h4 className="text-sm font-medium text-muted-foreground">Service</h4>
+                <p className="text-sm">{tool.serviceName}</p>
+             </div>
+             <div>
+                <h4 className="text-sm font-medium text-muted-foreground">Source</h4>
+                <p className="text-sm">{tool.source || "Unknown"}</p>
+             </div>
+          </div>
         </div>
-
-        <DialogFooter>
-          <Button variant="secondary" onClick={() => onOpenChange(false)}>Close</Button>
-          <Button onClick={handleExecute} disabled={loading}>
-            {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <PlayCircle className="mr-2 h-4 w-4" />}
-            Execute
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+      </SheetContent>
+    </Sheet>
   );
 }

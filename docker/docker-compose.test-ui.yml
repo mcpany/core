@@ -40,6 +40,7 @@ services:
       - ../ui/docs:/work/ui/docs
       - ../docs:/work/docs
       - ../ui/playwright.config.ts:/work/ui/playwright.config.ts
+      - ../ui/playwright.screenshots.config.ts:/work/ui/playwright.screenshots.config.ts
       - ../ui/tests:/work/ui/tests
       - ../ui/src:/work/ui/src
     ipc: host
