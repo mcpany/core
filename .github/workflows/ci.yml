@@ -615,7 +615,7 @@ jobs:
 
       - name: Run K8s E2E Tests
         run: |
-          ./tests/k8s/test_operator.sh
+          make k8s-e2e
 
   ci-success:
     runs-on: ubuntu-latest
