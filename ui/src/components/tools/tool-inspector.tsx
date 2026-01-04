@@ -51,7 +51,7 @@ export function ToolInspector({ tool, open, onOpenChange }: ToolInspectorProps) 
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
               {tool.name}
-              <Badge variant="outline">{tool.serviceName}</Badge>
+              <Badge variant="outline">{tool.serviceId}</Badge>
           </DialogTitle>
           <DialogDescription>
             {tool.description}
@@ -62,7 +62,7 @@ export function ToolInspector({ tool, open, onOpenChange }: ToolInspectorProps) 
             <div className="grid gap-2">
                 <Label>Schema</Label>
                 <ScrollArea className="h-[150px] w-full rounded-md border p-4 bg-muted/50">
-                    <pre className="text-xs">{JSON.stringify(tool.schema, null, 2)}</pre>
+                    <pre className="text-xs">{JSON.stringify(tool.inputSchema, null, 2)}</pre>
                 </ScrollArea>
             </div>
 

@@ -26,8 +26,12 @@ export default function ToolsPage() {
 
   const fetchTools = async () => {
     try {
-      const res = await apiClient.listTools();
-      setTools(res.tools || []);
+      const res: any = await apiClient.listTools();
+      if (Array.isArray(res)) {
+          setTools(res);
+      } else {
+        setTools(res.tools || []);
+      }
     } catch (e) {
       console.error("Failed to fetch tools", e);
     }
@@ -35,7 +39,7 @@ export default function ToolsPage() {
 
   const toggleTool = async (name: string, currentStatus: boolean) => {
     // Optimistic update
-    setTools(tools.map(t => t.name === name ? { ...t, enabled: !currentStatus } : t));
+    setTools(tools.map(t => t.name === name ? { ...t, disable: !currentStatus } : t));
 
     try {
         await apiClient.setToolStatus(name, !currentStatus);
@@ -81,16 +85,16 @@ export default function ToolsPage() {
                   </TableCell>
                   <TableCell>{tool.description}</TableCell>
                   <TableCell>
-                      <Badge variant="outline">{tool.serviceName}</Badge>
+                      <Badge variant="outline">{tool.serviceId}</Badge>
                   </TableCell>
                   <TableCell>
                     <div className="flex items-center space-x-2">
                         <Switch
-                            checked={!!tool.enabled}
-                            onCheckedChange={() => toggleTool(tool.name, !!tool.enabled)}
+                            checked={!tool.disable}
+                            onCheckedChange={() => toggleTool(tool.name, !tool.disable)}
                         />
                         <span className="text-sm text-muted-foreground w-16">
-                            {tool.enabled ? "Enabled" : "Disabled"}
+                            {!tool.disable ? "Enabled" : "Disabled"}
                         </span>
                     </div>
                   </TableCell>

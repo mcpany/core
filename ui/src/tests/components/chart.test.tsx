@@ -7,7 +7,7 @@
 import React from 'react';
 import { render } from '@testing-library/react';
 import { ChartContainer, ChartConfig } from '../../components/ui/chart';
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 
 // Mock RechartsResponsiveContainer to avoid issues with Recharts in JSDOM
 // We need to mock the module 'recharts'

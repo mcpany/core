@@ -3,6 +3,13 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+import { UpstreamServiceConfig } from '@proto/config/v1/upstream_service';
+import { ToolDefinition } from '@proto/config/v1/tool';
+import { ResourceDefinition } from '@proto/config/v1/resource';
+import { PromptDefinition } from '@proto/config/v1/prompt';
+import { Secret as SecretDefinition } from '@proto/config/v1/config';
+import { GlobalSettings } from '@proto/config/v1/config';
+
 /**
  * Client for interacting with the MCPAny backend API.
  * Provides methods for managing services, tools, resources, prompts, and secrets.
@@ -11,77 +18,21 @@
 // NOTE: Adjusted to point to local Next.js API routes for this UI overhaul task
 // In a real deployment, these might be /api/v1/... proxied to backend
 
-export interface UpstreamServiceConfig {
-    id?: string;
-    name: string;
-    version?: string;
-    disable?: boolean;
-    priority?: number;
-    http_service?: { address: string; tls_config?: any; tools?: any[]; prompts?: any[] };
-    grpc_service?: { address: string; use_reflection?: boolean; tls_config?: any; tools?: any[]; resources?: any[] };
-    command_line_service?: { command: string; args?: string[]; env?: Record<string, string>; tools?: any[] };
-    mcp_service?: {
-        http_connection?: { http_address: string; tls_config?: any };
-        sse_connection?: { sse_address: string };
-        stdio_connection?: { command: string };
-        bundle_connection?: { bundle_path: string };
-        tools?: any[];
-    };
-    openapi_service?: { address: string; spec_url?: string; spec_content?: string; tools?: any[]; tls_config?: any };
-    websocket_service?: { address: string; tls_config?: any };
-    webrtc_service?: { address: string; tls_config?: any };
-    graphql_service?: { address: string };
-}
-
-export interface ToolDefinition {
-    name: string;
-    description: string;
-    schema?: any;
-    enabled?: boolean;
-    serviceName?: string;
-    source?: string;
-}
-
-export interface ResourceDefinition {
-    uri: string;
-    name: string;
-    mimeType?: string;
-    description?: string;
-    enabled?: boolean;
-    serviceName?: string;
-    type?: string;
-}
-
-export interface PromptDefinition {
-    name: string;
-    description?: string;
-    arguments?: any[];
-    enabled?: boolean;
-    serviceName?: string;
-    type?: string;
-}
-
-export interface SecretDefinition {
-    id: string;
-    name: string;
-    key: string;
-    value: string;
-    provider?: 'openai' | 'anthropic' | 'aws' | 'gcp' | 'custom';
-    lastUsed?: string;
-    createdAt: string;
-}
+// Export generated types for consumption
+export type { UpstreamServiceConfig, ToolDefinition, ResourceDefinition, PromptDefinition, SecretDefinition, GlobalSettings };
 
 export const apiClient = {
     // Services
-    listServices: async () => {
+    listServices: async (): Promise<UpstreamServiceConfig[]> => {
         const res = await fetch('/api/services');
         if (!res.ok) throw new Error('Failed to fetch services');
-        return res.json();
+        const json = await res.json();
+        return json.map((s: any) => UpstreamServiceConfig.fromJSON(s));
     },
-    getService: async (id: string) => {
+    getService: async (id: string): Promise<UpstreamServiceConfig> => {
          const res = await fetch(`/api/services/${id}`);
          if (!res.ok) throw new Error('Failed to fetch service');
-         return res.json();
+         return UpstreamServiceConfig.fromJSON(await res.json());
     },
     setServiceStatus: async (name: string, disable: boolean) => {
         const res = await fetch('/api/services', {
@@ -103,19 +54,19 @@ export const apiClient = {
         const res = await fetch('/api/services', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(config)
+            body: JSON.stringify(UpstreamServiceConfig.toJSON(config))
         });
         if (!res.ok) throw new Error('Failed to register service');
-        return res.json();
+        return UpstreamServiceConfig.fromJSON(await res.json());
     },
     updateService: async (config: UpstreamServiceConfig) => {
          const res = await fetch('/api/services', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(config)
+             body: JSON.stringify(UpstreamServiceConfig.toJSON(config))
         });
         if (!res.ok) throw new Error('Failed to update service');
-        return res.json();
+        return UpstreamServiceConfig.fromJSON(await res.json());
     },
     unregisterService: async (id: string) => {
          // Mock
@@ -123,10 +74,11 @@ export const apiClient = {
     },
 
     // Tools
-    listTools: async () => {
+    listTools: async (): Promise<ToolDefinition[]> => {
         const res = await fetch('/api/tools');
         if (!res.ok) throw new Error('Failed to fetch tools');
-        return res.json();
+        const json = await res.json();
+        return json.map((t: any) => ToolDefinition.fromJSON(t));
     },
     executeTool: async (request: any) => {
         // Mock execution
@@ -136,16 +88,19 @@ export const apiClient = {
         const res = await fetch('/api/tools', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
+            // Note: Tool definition uses 'disable', but API might expect enabled/disabled toggle.
+            // Keeping payload as is for now assuming backend handles 'enabled' for toggle action.
             body: JSON.stringify({ name, enabled })
         });
         return res.json();
     },
 
     // Resources
-    listResources: async () => {
+    listResources: async (): Promise<ResourceDefinition[]> => {
         const res = await fetch('/api/resources');
         if (!res.ok) throw new Error('Failed to fetch resources');
-        return res.json();
+         const json = await res.json();
+        return json.map((r: any) => ResourceDefinition.fromJSON(r));
     },
     setResourceStatus: async (uri: string, enabled: boolean) => {
          const res = await fetch('/api/resources', {
@@ -157,10 +112,11 @@ export const apiClient = {
     },
 
     // Prompts
-    listPrompts: async () => {
+    listPrompts: async (): Promise<PromptDefinition[]> => {
         const res = await fetch('/api/prompts');
         if (!res.ok) throw new Error('Failed to fetch prompts');
-        return res.json();
+        const json = await res.json();
+        return json.map((p: any) => PromptDefinition.fromJSON(p));
     },
     setPromptStatus: async (name: string, enabled: boolean) => {
         const res = await fetch('/api/prompts', {
@@ -172,19 +128,26 @@ export const apiClient = {
     },
 
     // Secrets
-    listSecrets: async () => {
+    listSecrets: async (): Promise<SecretDefinition[]> => {
         const res = await fetch('/api/secrets');
         if (!res.ok) throw new Error('Failed to fetch secrets');
-        return res.json();
+        const json = await res.json();
+        // SecretList wrapper? Or list of secrets?
+        // Checking config.proto: message SecretList { repeated Secret secrets = 1; }
+        // Attempt to parse as list or SecretList
+        if (json.secrets) {
+             return json.secrets.map((s: any) => SecretDefinition.fromJSON(s));
+        }
+        return Array.isArray(json) ? json.map((s: any) => SecretDefinition.fromJSON(s)) : [];
     },
     saveSecret: async (secret: SecretDefinition) => {
         const res = await fetch('/api/secrets', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(secret)
+            body: JSON.stringify(SecretDefinition.toJSON(secret))
         });
         if (!res.ok) throw new Error('Failed to save secret');
-        return res.json();
+        return SecretDefinition.fromJSON(await res.json());
     },
     deleteSecret: async (id: string) => {
         const res = await fetch(`/api/secrets/${id}`, {
@@ -195,16 +158,16 @@ export const apiClient = {
     },
 
     // Global Settings
-    getGlobalSettings: async () => {
+    getGlobalSettings: async (): Promise<GlobalSettings> => {
         const res = await fetch('/api/settings');
         if (!res.ok) throw new Error('Failed to fetch global settings');
-        return res.json();
+        return GlobalSettings.fromJSON(await res.json());
     },
-    saveGlobalSettings: async (settings: any) => {
+    saveGlobalSettings: async (settings: GlobalSettings) => {
         const res = await fetch('/api/settings', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(settings)
+            body: JSON.stringify(GlobalSettings.toJSON(settings))
         });
         if (!res.ok) throw new Error('Failed to save global settings');
     },

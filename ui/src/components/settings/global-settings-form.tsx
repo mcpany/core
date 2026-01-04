@@ -58,12 +58,12 @@ export function GlobalSettingsForm() {
         if (settings) {
             // Map backend enum integers to strings if necessary
             form.reset({
-                mcp_listen_address: settings.mcp_listen_address || ":8080",
-                log_level: settings.log_level === 4 ? "DEBUG" : settings.log_level === 3 ? "ERROR" : settings.log_level === 2 ? "WARN" : "INFO",
-                log_format: settings.log_format === 2 ? "json" : "text",
+                mcp_listen_address: settings.mcpListenAddress || ":8080",
+                log_level: settings.logLevel === 4 ? "DEBUG" : settings.logLevel === 3 ? "ERROR" : settings.logLevel === 2 ? "WARN" : "INFO",
+                log_format: settings.logFormat === 2 ? "json" : "text",
                 audit_enabled: settings.audit?.enabled || false,
                 dlp_enabled: settings.dlp?.enabled || false,
-                gc_interval: settings.gc_settings?.interval || "1h",
+                gc_interval: settings.gcSettings?.interval || "1h",
             });
         }
       } catch (e) {
@@ -78,14 +78,14 @@ export function GlobalSettingsForm() {
     try {
        // Map strings back to backend enums
        const payload = {
-           mcp_listen_address: data.mcp_listen_address,
-           log_level: data.log_level === "DEBUG" ? 4 : data.log_level === "ERROR" ? 3 : data.log_level === "WARN" ? 2 : 1,
-           log_format: data.log_format === "json" ? 2 : 1,
+           mcpListenAddress: data.mcp_listen_address,
+           logLevel: data.log_level === "DEBUG" ? 4 : data.log_level === "ERROR" ? 3 : data.log_level === "WARN" ? 2 : 1,
+           logFormat: data.log_format === "json" ? 2 : 1,
            audit: { enabled: data.audit_enabled },
            dlp: { enabled: data.dlp_enabled },
-           gc_settings: { interval: data.gc_interval }
+           gcSettings: { interval: data.gc_interval }
        };
-       await apiClient.saveGlobalSettings(payload);
+       await apiClient.saveGlobalSettings(payload as any);
     } catch (e) {
       console.error("Failed to save settings", e);
     } finally {

@@ -22,11 +22,11 @@ export default function StackDetailPage({ params }: { params: Promise<{ stackId:
     const fetchServices = async () => {
         try {
             setLoading(true);
-            const res = await apiClient.listServices();
+            const res: any = await apiClient.listServices();
             if (Array.isArray(res)) {
                 setServices(res);
             } else {
-                setServices(res.services || []);
+                setServices(res.services || []); // Fallback
             }
         } catch (e) {
             console.error(e);

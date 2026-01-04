@@ -7,9 +7,9 @@
 
 export const MockDB = {
     services: [
-        { name: "weather-service", version: "1.2.0", disable: false, http_service: { address: "http://weather:8080" }, id: "srv-1" },
-        { name: "memory-store", version: "0.9.5", disable: true, grpc_service: { address: "memory:9090" }, id: "srv-2" },
-        { name: "local-files", version: "1.0.0", disable: false, command_line_service: { command: "npx", args: ["-y", "@modelcontextprotocol/server-filesystem", "/users/me/docs"] }, id: "srv-3" },
+        { name: "weather-service", version: "1.2.0", disable: false, httpService: { address: "http://weather:8080" }, id: "srv-1" },
+        { name: "memory-store", version: "0.9.5", disable: true, grpcService: { address: "memory:9090" }, id: "srv-2" },
+        { name: "local-files", version: "1.0.0", disable: false, commandLineService: { command: "npx", args: ["-y", "@modelcontextprotocol/server-filesystem", "/users/me/docs"] }, id: "srv-3" },
     ],
     settings: {
         mcp_listen_address: ":8080",

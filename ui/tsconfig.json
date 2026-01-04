@@ -19,9 +19,12 @@
       }
     ],
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "@proto/*": ["../proto/*"],
+      "@bufbuild/protobuf/*": ["./node_modules/@bufbuild/protobuf/dist/esm/*"],
+      "@bufbuild/protobuf": ["./node_modules/@bufbuild/protobuf/dist/esm/index"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
   "exclude": ["node_modules"]
 }
