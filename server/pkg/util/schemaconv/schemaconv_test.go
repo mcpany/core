@@ -234,6 +234,7 @@ func TestMethodDescriptorToProtoProperties(t *testing.T) {
 	})
 
 	t.Run("with repeated fields", func(t *testing.T) {
+		// Verify that repeated fields are converted to array type with correct item type
 		mockMethod := &mockMethodDescriptor{
 			output: &mockMessageDescriptor{
 				fields: &mockFieldDescriptors{
