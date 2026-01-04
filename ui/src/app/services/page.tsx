@@ -44,7 +44,8 @@ export default function ServicesPage() {
       if (Array.isArray(res)) {
           setServices(res);
       } else {
-          setServices(res.services || []);
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          setServices((res as any).services || []);
       }
     } catch (e) {
       console.error("Failed to fetch services", e);
@@ -117,11 +118,11 @@ export default function ServicesPage() {
       try {
           if (selectedService.id) {
                // Update
-               await apiClient.updateService(selectedService as any);
+               await apiClient.updateService(selectedService);
                toast({ title: "Service Updated", description: "Service configuration saved." });
           } else {
               // Create
-              await apiClient.registerService(selectedService as any);
+              await apiClient.registerService(selectedService);
               toast({ title: "Service Created", description: "New service registered successfully." });
           }
           setIsSheetOpen(false);

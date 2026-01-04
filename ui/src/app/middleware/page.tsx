@@ -2,7 +2,7 @@
 "use client";
 
 import { useState } from "react";
-import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
+import { DragDropContext, Droppable, Draggable, DropResult } from "@hello-pangea/dnd";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { GripVertical, Plus } from "lucide-react";
@@ -19,7 +19,7 @@ const initialMiddleware = [
 export default function MiddlewarePage() {
   const [middleware, setMiddleware] = useState(initialMiddleware);
 
-  const onDragEnd = (result: any) => {
+  const onDragEnd = (result: DropResult) => {
     if (!result.destination) return;
 
     const items = Array.from(middleware);

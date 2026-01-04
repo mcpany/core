@@ -1,3 +1,4 @@
+
 /**
  * Copyright 2025 Author(s) of MCP Any
  * SPDX-License-Identifier: Apache-2.0
@@ -17,26 +18,29 @@ export interface UpstreamServiceConfig {
     version?: string;
     disable?: boolean;
     priority?: number;
-    http_service?: { address: string; tls_config?: any; tools?: any[]; prompts?: any[] };
-    grpc_service?: { address: string; use_reflection?: boolean; tls_config?: any; tools?: any[]; resources?: any[] };
-    command_line_service?: { command: string; args?: string[]; env?: Record<string, string>; tools?: any[] };
+    http_service?: { address: string; tls_config?: unknown; tools?: unknown[]; prompts?: unknown[] };
+    grpc_service?: { address: string; use_reflection?: boolean; tls_config?: unknown; tools?: unknown[]; resources?: unknown[] };
+    command_line_service?: { command: string; args?: string[]; env?: Record<string, string>; tools?: unknown[] };
     mcp_service?: {
-        http_connection?: { http_address: string; tls_config?: any };
+        http_connection?: { http_address: string; tls_config?: unknown };
         sse_connection?: { sse_address: string };
         stdio_connection?: { command: string };
         bundle_connection?: { bundle_path: string };
-        tools?: any[];
+        tools?: unknown[];
     };
-    openapi_service?: { address: string; spec_url?: string; spec_content?: string; tools?: any[]; tls_config?: any };
-    websocket_service?: { address: string; tls_config?: any };
-    webrtc_service?: { address: string; tls_config?: any };
+    openapi_service?: { address: string; spec_url?: string; spec_content?: string; tools?: unknown[]; tls_config?: unknown };
+    websocket_service?: { address: string; tls_config?: unknown };
+    webrtc_service?: { address: string; tls_config?: unknown };
     graphql_service?: { address: string };
 }
 
 export interface ToolDefinition {
     name: string;
     description: string;
-    schema?: any;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    schema?: any; // Keeping any for schema structure as it's dynamic JSON
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    input_schema?: any; // keeping both for compatibility
     enabled?: boolean;
     serviceName?: string;
     source?: string;
@@ -55,7 +59,7 @@ export interface ResourceDefinition {
 export interface PromptDefinition {
     name: string;
     description?: string;
-    arguments?: any[];
+    arguments?: unknown[];
     enabled?: boolean;
     serviceName?: string;
     type?: string;
@@ -92,7 +96,7 @@ export const apiClient = {
         if (!res.ok) throw new Error('Failed to update service status');
         return res.json();
     },
-    getServiceStatus: async (name: string) => {
+    getServiceStatus: async (_name: string) => {
         // Mock implementation for now
         return {
             enabled: true,
@@ -117,7 +121,7 @@ export const apiClient = {
         if (!res.ok) throw new Error('Failed to update service');
         return res.json();
     },
-    unregisterService: async (id: string) => {
+    unregisterService: async (_id: string) => {
          // Mock
         return {};
     },
@@ -128,7 +132,7 @@ export const apiClient = {
         if (!res.ok) throw new Error('Failed to fetch tools');
         return res.json();
     },
-    executeTool: async (request: any) => {
+    executeTool: async (_request: unknown) => {
         // Mock execution
         return { output: "Mock execution result", success: true };
     },
@@ -200,7 +204,7 @@ export const apiClient = {
         if (!res.ok) throw new Error('Failed to fetch global settings');
         return res.json();
     },
-    saveGlobalSettings: async (settings: any) => {
+    saveGlobalSettings: async (settings: unknown) => {
         const res = await fetch('/api/settings', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },

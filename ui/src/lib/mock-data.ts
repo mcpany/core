@@ -3,12 +3,20 @@ import { UpstreamServiceConfig, ToolDefinition, ResourceDefinition, PromptDefini
 
 // Shared Mock Database
 
+export interface ProfileDefinition {
+    id: string;
+    name: string;
+    description: string;
+    env: Record<string, string>;
+    active: boolean;
+}
+
 export interface MockDB {
     services: UpstreamServiceConfig[];
     tools: ToolDefinition[];
     resources: ResourceDefinition[];
     prompts: PromptDefinition[];
-    profiles: any[];
+    profiles: ProfileDefinition[];
 }
 
 export const db: MockDB = {
