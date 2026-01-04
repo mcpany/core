@@ -13,14 +13,13 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
-import { Plus, Trash2, Key, Eye, EyeOff } from "lucide-react";
+import { Plus, Trash2, Key } from "lucide-react";
 import { format } from "date-fns";
 
 export function SecretManager() {
   const [secrets, setSecrets] = useState<SecretDefinition[]>([]);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [newSecret, setNewSecret] = useState<Partial<SecretDefinition>>({});
-  const [showValues, setShowValues] = useState<Record<string, boolean>>({});
 
   useEffect(() => {
     fetchSecrets();
@@ -57,10 +56,6 @@ export function SecretManager() {
     } catch (e) {
       console.error("Failed to delete secret", e);
     }
-  };
-
-  const toggleVisibility = (id: string) => {
-      setShowValues(prev => ({ ...prev, [id]: !prev[id] }));
   };
 
   return (
