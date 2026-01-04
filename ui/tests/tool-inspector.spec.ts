@@ -15,7 +15,7 @@ test('Tools page loads and inspector opens', async ({ page }) => {
             name: 'get_weather',
             description: 'Get weather for a location',
             source: 'configured',
-            serviceId: 'weather-service',
+            service_id: 'weather-service',
             schema: {
                type: "object",
                properties: {
