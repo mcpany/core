@@ -14,12 +14,16 @@ test.describe('Resource Exploration', () => {
                         {
                             name: 'Application Logs',
                             mimeType: 'text/plain',
-                            service: 'log-service'
+                            mime_type: 'text/plain',
+                            service_id: 'log-service',
+                            serviceId: 'log-service'
                         },
                         {
                             name: 'User Database',
                             mimeType: 'application/x-postgres',
-                            service: 'db-service'
+                            mime_type: 'application/x-postgres',
+                            service_id: 'db-service',
+                            serviceId: 'db-service'
                         }
                     ]
             });
