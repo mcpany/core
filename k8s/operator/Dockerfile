@@ -8,27 +8,27 @@ WORKDIR /workspace
 # Copy the Go Modules manifests
 COPY go.mod go.mod
 COPY go.sum go.sum
-COPY operator/go.mod operator/go.mod
-COPY operator/go.sum operator/go.sum
+COPY k8s/operator/go.mod k8s/operator/go.mod
+COPY k8s/operator/go.sum k8s/operator/go.sum
 
 # cache deps
-WORKDIR /workspace/operator
+WORKDIR /workspace/k8s/operator
 RUN go mod download
 
 # Copy the go source
 WORKDIR /workspace
 COPY server server
-COPY operator operator
+COPY k8s/operator k8s/operator
 
 # Build
-WORKDIR /workspace/operator
+WORKDIR /workspace/k8s/operator
 RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -o manager cmd/main.go
 
 # Use distroless as minimal base image to package the manager binary
 # Refer to https://github.com/GoogleContainerTools/distroless for more details
 FROM gcr.io/distroless/static:nonroot
 WORKDIR /
-COPY --from=builder /workspace/operator/manager .
+COPY --from=builder /workspace/k8s/operator/manager .
 USER 65532:65532
 
 ENTRYPOINT ["/manager"]
