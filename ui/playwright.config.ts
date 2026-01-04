@@ -38,5 +38,6 @@ export default defineConfig({
     command: 'NEXT_PUBLIC_API_URL=/api npm run dev',
     url: 'http://localhost:9002',
     reuseExistingServer: true,
+    timeout: 120 * 1000,
   },
 });

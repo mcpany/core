@@ -28,10 +28,10 @@ export function PromptDetail({ serviceId, promptName }: { serviceId: string, pro
       setIsLoading(true);
       setError(null);
       try {
-        const { service: serviceDetails } = await apiClient.getService(serviceId);
+        const serviceDetails = await apiClient.getService(serviceId);
         setService(serviceDetails);
 
-        const serviceData = serviceDetails.grpc_service || serviceDetails.http_service || serviceDetails.command_line_service;
+        const serviceData = serviceDetails.grpcService || serviceDetails.httpService || serviceDetails.commandLineService;
         const foundPrompt = serviceData?.prompts?.find(p => p.name === promptName);
 
         if (foundPrompt) {

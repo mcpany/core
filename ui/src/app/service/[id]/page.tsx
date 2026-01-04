@@ -23,7 +23,7 @@ export default function ServiceDetailPage({ params: paramsPromise }: { params: P
   const [service, setService] = useState<UpstreamServiceConfig | null>(null);
 
   useEffect(() => {
-    apiClient.getService(params.id).then(res => setService(res.service));
+    apiClient.getService(params.id).then(res => setService(res));
   }, [params.id]);
 
   const breadcrumbItems: BreadcrumbItem[] = service ? [{ label: service.name, href: `/service/${params.id}` }] : [];

@@ -25,8 +25,8 @@ services:
   ui-tests:
     image: mcpany-ui-e2e:latest
     build:
-      context: ../ui
-      dockerfile: Dockerfile.e2e
+      context: ..
+      dockerfile: ui/Dockerfile.e2e
     environment:
       - BACKEND_URL=http://server:50050
       - BASE_URL=http://localhost:9002
@@ -39,6 +39,7 @@ services:
       - ../ui/.audit:/work/ui/.audit
       - ../ui/docs:/work/ui/docs
       - ../docs:/work/docs
+      - ../proto:/work/proto
       - ../ui/playwright.config.ts:/work/ui/playwright.config.ts
       - ../ui/tests:/work/ui/tests
       - ../ui/src:/work/ui/src
