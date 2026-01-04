@@ -46,9 +46,11 @@ import {
 } from "lucide-react";
 
 import { useNetworkTopology } from "@/hooks/use-network-topology";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { NodeType, NodeStatus } from "@/types/topology";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
+import { cn } from "@/lib/utils";
 
 interface NodeData extends Record<string, unknown> {
     label: string;
@@ -95,10 +97,21 @@ function Flow() {
   const { nodes, edges, onNodesChange, onEdgesChange, onConnect, refreshTopology, autoLayout } = useNetworkTopology();
   const [selectedNode, setSelectedNode] = useState<Node<NodeData> | null>(null);
   const [isSheetOpen, setIsSheetOpen] = useState(false);
+  const isMobile = useIsMobile();
+  const [isControlsExpanded, setIsControlsExpanded] = useState(true);
 
   // Basic filtering state
   const [showSystem, setShowSystem] = useState(true);
   const [showTools, setShowTools] = useState(true);
+
+  // Collapse controls by default on mobile
+  React.useEffect(() => {
+    if (isMobile) {
+        setIsControlsExpanded(false);
+    } else {
+        setIsControlsExpanded(true);
+    }
+  }, [isMobile]);
 
   const filteredNodes = useMemo(() => {
     return nodes.filter(n => {
@@ -131,45 +144,61 @@ function Flow() {
 
   return (
     <div className="h-full w-full relative bg-muted/5 group">
-      <div className="absolute top-4 left-4 z-10 space-y-4 pointer-events-none flex flex-col gap-2">
-          <Card className="w-[320px] pointer-events-auto backdrop-blur-md bg-background/80 shadow-lg border-muted/60 transition-all hover:shadow-xl">
-              <CardHeader className="p-4 pb-2">
-                  <CardTitle className="text-lg flex items-center justify-between">
+      <div className={cn("absolute top-4 left-4 right-4 z-10 space-y-4 pointer-events-none flex flex-col gap-2 transition-all", isMobile ? "items-start" : "")}>
+          <Card className={cn(
+              "pointer-events-auto backdrop-blur-md bg-background/80 shadow-lg border-muted/60 transition-all hover:shadow-xl overflow-hidden",
+              isControlsExpanded ? "w-[320px]" : "w-auto"
+          )}>
+              <CardHeader className="p-4 pb-2 cursor-pointer" onClick={() => setIsControlsExpanded(!isControlsExpanded)}>
+                  <CardTitle className="text-lg flex items-center justify-between gap-4">
                       <div className="flex items-center gap-2">
                         <Activity className="h-5 w-5 text-primary" />
-                        <span>Network Graph</span>
+                        <span className={cn(isControlsExpanded ? "block" : "hidden sm:block")}>Network Graph</span>
                       </div>
-                      <Badge variant="outline" className="font-normal text-xs">{filteredNodes.length} Nodes</Badge>
+                      <div className="flex items-center gap-2">
+                        <Badge variant="outline" className="font-normal text-xs">{filteredNodes.length} Nodes</Badge>
+                        {isMobile && (
+                            <Button variant="ghost" size="icon" className="h-6 w-6">
+                                <Filter className="h-3 w-3" />
+                            </Button>
+                        )}
+                      </div>
                   </CardTitle>
-                  <CardDescription className="text-xs">
-                      Live topology of MCP services and tools.
-                  </CardDescription>
+                  {isControlsExpanded && (
+                    <CardDescription className="text-xs">
+                        Live topology of MCP services and tools.
+                    </CardDescription>
+                  )}
               </CardHeader>
-              <CardContent className="p-4 pt-2 flex gap-2">
-                  <Button variant="outline" size="sm" onClick={refreshTopology} className="flex-1 h-8 text-xs">
-                      <RefreshCcw className="mr-2 h-3 w-3" /> Refresh
-                  </Button>
-                  <Button size="sm" onClick={autoLayout} className="flex-1 h-8 text-xs bg-primary/90 hover:bg-primary">
-                      <Zap className="mr-2 h-3 w-3" /> Layout
-                  </Button>
-              </CardContent>
-              <div className="px-4 pb-4">
-                 <div className="flex items-center justify-between">
-                     <span className="text-xs text-muted-foreground font-medium flex items-center gap-1">
-                         <Filter className="h-3 w-3" /> Filters
-                     </span>
-                 </div>
-                 <div className="mt-2 space-y-2">
-                     <div className="flex items-center space-x-2">
-                        <Checkbox id="show-system" checked={showSystem} onCheckedChange={(c) => setShowSystem(!!c)} />
-                        <Label htmlFor="show-system" className="text-xs font-normal cursor-pointer">Show System (Core/Middleware)</Label>
-                     </div>
-                     <div className="flex items-center space-x-2">
-                        <Checkbox id="show-tools" checked={showTools} onCheckedChange={(c) => setShowTools(!!c)} />
-                        <Label htmlFor="show-tools" className="text-xs font-normal cursor-pointer">Show Capability Details (Tools)</Label>
-                     </div>
-                 </div>
-              </div>
+              {isControlsExpanded && (
+                  <>
+                    <CardContent className="p-4 pt-2 flex gap-2">
+                        <Button variant="outline" size="sm" onClick={refreshTopology} className="flex-1 h-8 text-xs">
+                            <RefreshCcw className="mr-2 h-3 w-3" /> Refresh
+                        </Button>
+                        <Button size="sm" onClick={autoLayout} className="flex-1 h-8 text-xs bg-primary/90 hover:bg-primary">
+                            <Zap className="mr-2 h-3 w-3" /> Layout
+                        </Button>
+                    </CardContent>
+                    <div className="px-4 pb-4">
+                        <div className="flex items-center justify-between">
+                            <span className="text-xs text-muted-foreground font-medium flex items-center gap-1">
+                                <Filter className="h-3 w-3" /> Filters
+                            </span>
+                        </div>
+                        <div className="mt-2 space-y-2">
+                            <div className="flex items-center space-x-2">
+                                <Checkbox id="show-system" checked={showSystem} onCheckedChange={(c) => setShowSystem(!!c)} />
+                                <Label htmlFor="show-system" className="text-xs font-normal cursor-pointer">Show System (Core/Middleware)</Label>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                                <Checkbox id="show-tools" checked={showTools} onCheckedChange={(c) => setShowTools(!!c)} />
+                                <Label htmlFor="show-tools" className="text-xs font-normal cursor-pointer">Show Capability Details (Tools)</Label>
+                            </div>
+                        </div>
+                    </div>
+                  </>
+              )}
           </Card>
       </div>
 
@@ -204,7 +233,7 @@ function Flow() {
       </ReactFlow>
 
       <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
-        <SheetContent className="w-[400px] sm:w-[540px] border-l-muted">
+        <SheetContent className="w-full sm:w-[540px] border-l-muted">
             <SheetHeader className="pb-4 border-b">
                 <div className="flex items-center gap-2 text-muted-foreground text-sm uppercase tracking-wider font-mono mb-1">
                     {selectedNode?.data.type.replace('NODE_TYPE_', '')}
