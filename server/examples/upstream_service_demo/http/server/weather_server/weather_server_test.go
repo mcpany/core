@@ -10,6 +10,7 @@ import (
 	"net/http/httptest"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/gorilla/websocket"
 	"github.com/stretchr/testify/assert"
@@ -72,6 +73,21 @@ func TestWeatherHandler_POST(t *testing.T) {
 
 	assert.Equal(t, "tokyo", resp["location"])
 	assert.Equal(t, "Rainy, 20°C", resp["weather"])
+}
+
+func TestWeatherHandler_POST_InvalidJSON(t *testing.T) {
+	// Send invalid JSON
+	req, err := http.NewRequest("POST", "/weather", bytes.NewBufferString("{invalid_json"))
+	require.NoError(t, err)
+	req.Header.Set("Content-Type", "application/json")
+
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(weatherHandler)
+
+	handler.ServeHTTP(rr, req)
+
+	assert.Equal(t, http.StatusBadRequest, rr.Code)
+	assert.Contains(t, rr.Body.String(), "Invalid request body")
 }
 
 func TestWeatherHandler_MissingLocation(t *testing.T) {
@@ -156,4 +172,30 @@ func TestWSHandler_LocationNotFound(t *testing.T) {
 
 	assert.Equal(t, "berlin", resp["location"])
 	assert.Equal(t, "Location not found", resp["weather"])
+}
+
+func TestWSHandler_InvalidJSON(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(wsHandler))
+	defer server.Close()
+
+	wsURL := "ws" + strings.TrimPrefix(server.URL, "http")
+
+	conn, httpResp, err := websocket.DefaultDialer.Dial(wsURL, nil)
+	require.NoError(t, err)
+	defer func() { _ = httpResp.Body.Close() }()
+	defer func() { _ = conn.Close() }()
+
+	// Send invalid JSON as text
+	err = conn.WriteMessage(websocket.TextMessage, []byte("{invalid_json"))
+	require.NoError(t, err)
+
+	// The server should log error and close or stop responding.
+	// Since the handler breaks the loop on error, the connection might close or just stop sending data.
+	// We check if the connection is closed by trying to read from it.
+	// We use a deadline to avoid hanging if the server doesn't close the connection.
+	err = conn.SetReadDeadline(time.Now().Add(100 * time.Millisecond))
+	require.NoError(t, err)
+
+	_, _, err = conn.ReadMessage()
+	require.Error(t, err)
 }
