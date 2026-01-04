@@ -64,7 +64,23 @@ func (r *MCPServerReconciler) Reconcile(ctx context.Context, req ctrl.Request) (
 		return ctrl.Result{}, err
 	}
 
-	// 2. Ensure the deployment size is the same as the spec
+	// 2. Check if the Service already exists, if not create a new one
+	foundService := &corev1.Service{}
+	err = r.Get(ctx, types.NamespacedName{Name: mcpServer.Name, Namespace: mcpServer.Namespace}, foundService)
+	if err != nil && errors.IsNotFound(err) {
+		// Define a new service
+		svc := r.serviceForMCPServer(mcpServer)
+		err = r.Create(ctx, svc)
+		if err != nil {
+			return ctrl.Result{}, err
+		}
+		// Service created successfully - return and requeue
+		return ctrl.Result{Requeue: true}, nil
+	} else if err != nil {
+		return ctrl.Result{}, err
+	}
+
+	// 3. Ensure the deployment size is the same as the spec
 	size := mcpServer.Spec.Replicas
 	if *found.Spec.Replicas != *size {
 		found.Spec.Replicas = size
@@ -97,6 +113,33 @@ func (r *MCPServerReconciler) Reconcile(ctx context.Context, req ctrl.Request) (
 	}
 
 	return ctrl.Result{}, nil
+}
+
+// serviceForMCPServer returns a mcpServer Service object
+func (r *MCPServerReconciler) serviceForMCPServer(m *mcpv1alpha1.MCPServer) *corev1.Service {
+	ls := labelsForMCPServer(m.Name)
+	serviceType := corev1.ServiceTypeClusterIP
+	if m.Spec.ServiceType != "" {
+		serviceType = corev1.ServiceType(m.Spec.ServiceType)
+	}
+
+	svc := &corev1.Service{
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      m.Name,
+			Namespace: m.Namespace,
+		},
+		Spec: corev1.ServiceSpec{
+			Selector: ls,
+			Type:     serviceType,
+			Ports: []corev1.ServicePort{{
+				Port: 8080,
+				Name: "http",
+			}},
+		},
+	}
+	// Set MCPServer instance as the owner and controller
+	ctrl.SetControllerReference(m, svc, r.Scheme)
+	return svc
 }
 
 // deploymentForMCPServer returns a mcpServer Deployment object
@@ -162,5 +205,6 @@ func (r *MCPServerReconciler) SetupWithManager(mgr ctrl.Manager) error {
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&mcpv1alpha1.MCPServer{}).
 		Owns(&appsv1.Deployment{}).
+		Owns(&corev1.Service{}).
 		Complete(r)
 }
