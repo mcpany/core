@@ -16,7 +16,8 @@ ifeq ($(shell $(DOCKER_CMD) buildx version >/dev/null 2>&1 && echo 1 || echo 0),
 	DOCKER_BUILD_CMD := $(DOCKER_CMD) build
 endif
 
-.PHONY: test test-local build-test-docker audit
+.PHONY: test test-local build-test-docker audit gen-proto
+
 
 # Default test target# Run the tests in a docker container
 test: build-test-docker
@@ -40,7 +41,7 @@ test-local:
 # Build the UI test Docker image
 build-test-docker:
 	@echo "Building UI test Docker image (mcpany-ui-e2e)..."
-	@$(DOCKER_BUILD_CMD) -t mcpany-ui-e2e -f Dockerfile.e2e $(if $(CACHE_TO),--cache-to=$(CACHE_TO)) $(if $(CACHE_FROM),--cache-from=$(CACHE_FROM)) .
+	@cd .. && $(DOCKER_BUILD_CMD) -t mcpany-ui-e2e -f ui/Dockerfile.e2e $(if $(CACHE_TO),--cache-to=$(CACHE_TO)) $(if $(CACHE_FROM),--cache-from=$(CACHE_FROM)) .
 
 # Build the UI production build
 build:

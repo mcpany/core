@@ -32,16 +32,16 @@ describe('ToolInspector', () => {
   const mockTool: ToolDefinition = {
     name: 'test_tool',
     description: 'A test tool',
-    serviceName: 'test_service',
-    enabled: true,
-    schema: {
+    serviceId: 'test_service',
+    disable: false,
+    inputSchema: {
         type: 'object',
         properties: {
             arg1: { type: 'string', description: 'Argument 1' }
         },
         required: ['arg1']
     }
-  };
+  } as any;
 
   it('renders nothing when closed', () => {
     const { container } = render(<ToolInspector tool={mockTool} open={false} onOpenChange={() => {}} />);

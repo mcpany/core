@@ -67,7 +67,7 @@ export function PlaygroundClient() {
   useEffect(() => {
     // Load tools on mount
     apiClient.listTools()
-        .then(data => setAvailableTools(data.tools || []))
+        .then(data => setAvailableTools(Array.isArray(data) ? data : (data as any).tools || []))
         .catch(err => console.error("Failed to load tools:", err));
 
     // Check URL params for tool
@@ -237,15 +237,15 @@ export function PlaygroundClient() {
                             <div key={tool.name} className="border rounded-lg p-3 space-y-2 bg-muted/20">
                                 <div className="flex items-center justify-between">
                                     <span className="font-semibold font-mono text-sm text-primary">{tool.name}</span>
-                                    <Badge variant="secondary" className="text-[10px]">{tool.serviceName || 'builtin'}</Badge>
+                                    <Badge variant="secondary" className="text-[10px]">{tool.serviceId || 'builtin'}</Badge>
                                 </div>
                                 <p className="text-xs text-muted-foreground">{tool.description}</p>
-                                {tool.schema && (
+                                {tool.inputSchema && (tool.inputSchema as any).properties && (
                                     <div className="bg-muted p-2 rounded text-[10px] font-mono overflow-x-auto">
-                                        {Object.keys(tool.schema.properties || {}).map(prop => (
+                                        {Object.keys((tool.inputSchema as any).properties || {}).map(prop => (
                                             <div key={prop} className="flex gap-1">
                                                 <span className="text-blue-500">{prop}</span>
-                                                <span className="text-muted-foreground">: {tool.schema.properties[prop].type}</span>
+                                                <span className="text-muted-foreground">: {(tool.inputSchema as any).properties[prop].type}</span>
                                             </div>
                                         ))}
                                     </div>

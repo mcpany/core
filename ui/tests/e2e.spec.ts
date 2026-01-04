@@ -13,56 +13,7 @@ const AUDIT_DIR = path.join(__dirname, `../../.audit/ui/${DATE}`);
 test.describe('MCP Any UI E2E Tests', () => {
 
   test.beforeEach(async ({ page }) => {
-    // Mock services
-    await page.route('**/api/services', async (route) => {
-      await route.fulfill({
-        json: {
-          services: [
-            {
-              id: "svc_01",
-              name: "Payment Gateway",
-              connection_pool: { max_connections: 100 },
-              disable: false,
-              version: "v1.2.0",
-              http_service: { address: "https://stripe.com", tools: [], resources: [] }
-            },
-            {
-               id: "svc_02",
-               name: "User Service",
-               disable: false,
-               version: "v1.0",
-               grpc_service: { address: "localhost:50051", tools: [], resources: [] }
-            }
-          ]
-        }
-      });
-    });
-    // Mock tools for Dashboard/Tools page checks
-    await page.route('**/api/tools', async (route) => {
-         await route.fulfill({
-             json: {
-                  tools: [
-                       { name: "calculator", description: "calc", source: "discovered", serviceName: "Math" },
-                       { name: "weather_lookup", description: "weather", source: "configured", serviceName: "Weather" }
-                  ]
-             }
-         });
-    });
-    // Mock resources for Dashboard checks (if needed) or explicit page visits
-    await page.route('**/api/resources', async (route) => {
-         await route.fulfill({ json: [] });
-    });
-    // Mock dashboard metrics
-    await page.route('**/api/dashboard/metrics', async (route) => {
-        await route.fulfill({
-            json: [
-                { label: "Total Requests", value: "1,234", icon: "Activity", change: "+12%", trend: "up" },
-                { label: "Active Services", value: "5", icon: "Server", change: "0", trend: "neutral" },
-                { label: "System Health", value: "98%", icon: "Zap", change: "+1%", trend: "up" },
-                { label: "Error Rate", value: "0.1%", icon: "AlertCircle", change: "-0.5%", trend: "up" }
-            ]
-        });
-    });
+    // No mocks - we run against the real backend (e2e)
   });
 
   test('Dashboard loads correctly', async ({ page }) => {
@@ -83,8 +34,8 @@ test.describe('MCP Any UI E2E Tests', () => {
     await expect(page.locator('h2')).toContainText('Services');
 
     // Check for list of services
-    await expect(page.locator('text=Payment Gateway')).toBeVisible();
-    await expect(page.locator('text=User Service')).toBeVisible();
+    // Check for list of services
+    await expect(page.locator('text=weather-service')).toBeVisible();
 
 
     // Test toggle
@@ -103,8 +54,7 @@ test.describe('MCP Any UI E2E Tests', () => {
   test('Tools page lists tools', async ({ page }) => {
     await page.goto('/tools');
     await expect(page.locator('h2')).toContainText('Tools');
-    await expect(page.locator('text=calculator')).toBeVisible();
-    await expect(page.locator('text=weather_lookup')).toBeVisible();
+    await expect(page.locator('text=get_weather')).toBeVisible();
 
     // Audit Screenshot
     await page.screenshot({ path: path.join(AUDIT_DIR, 'tools.png'), fullPage: true });

@@ -71,10 +71,10 @@ export function ServicesTable({ services, loading, onToggle, onDelete }: Service
               </TableCell>
               <TableCell>
                 <Badge variant="outline">
-                    {service.grpc_service ? "gRPC" :
-                     service.http_service ? "HTTP" :
-                     service.command_line_service ? "CMD" :
-                     service.openapi_service ? "OpenAPI" : "Unknown"}
+                    {service.grpcService ? "gRPC" :
+                     service.httpService ? "HTTP" :
+                     service.commandLineService ? "CMD" :
+                     service.openapiService ? "OpenAPI" : "Unknown"}
                 </Badge>
               </TableCell>
               <TableCell>{service.version || '-'}</TableCell>

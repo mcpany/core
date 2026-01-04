@@ -10,10 +10,10 @@ import { ToolDefinition } from "@/lib/client";
 import { vi } from "vitest";
 
 // Mock ToolDefinition
-const mockTool: ToolDefinition = {
+const mockTool: any = {
   name: "test-tool",
   description: "A test tool",
-  schema: {
+  inputSchema: {
     type: "object",
     properties: {
       username: { type: "string", description: "The username" },
@@ -22,7 +22,8 @@ const mockTool: ToolDefinition = {
       role: { type: "string", enum: ["admin", "user"], description: "User role" }
     },
     required: ["username", "age"]
-  }
+  },
+  serviceId: "test-service"
 };
 
 describe("ToolForm", () => {

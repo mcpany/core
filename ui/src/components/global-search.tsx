@@ -69,10 +69,11 @@ export function GlobalSearch() {
         apiClient.listResources().catch(() => ({ resources: [] })),
         apiClient.listPrompts().catch(() => ({ prompts: [] }))
       ]).then(([servicesData, toolsData, resourcesData, promptsData]) => {
-         setServices(servicesData.services || [])
-         setTools(toolsData.tools || [])
-         setResources(resourcesData.resources || [])
-         setPrompts(promptsData.prompts || [])
+         // Handle both array (success) and object (catch fallback or wrapped response)
+         setServices(Array.isArray(servicesData) ? servicesData : (servicesData as any).services || [])
+         setTools(Array.isArray(toolsData) ? toolsData : (toolsData as any).tools || [])
+         setResources(Array.isArray(resourcesData) ? resourcesData : (resourcesData as any).resources || [])
+         setPrompts(Array.isArray(promptsData) ? promptsData : (promptsData as any).prompts || [])
       }).finally(() => {
         setLoading(false)
       })

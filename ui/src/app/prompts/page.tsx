@@ -22,8 +22,12 @@ export default function PromptsPage() {
 
   const fetchPrompts = async () => {
     try {
-      const res = await apiClient.listPrompts();
-      setPrompts(res.prompts || []);
+      const res: any = await apiClient.listPrompts();
+      if (Array.isArray(res)) {
+          setPrompts(res);
+      } else {
+          setPrompts(res.prompts || []);
+      }
     } catch (e) {
       console.error("Failed to fetch prompts", e);
     }
@@ -31,7 +35,7 @@ export default function PromptsPage() {
 
   const togglePrompt = async (name: string, currentStatus: boolean) => {
     // Optimistic update
-    setPrompts(prompts.map(p => p.name === name ? { ...p, enabled: !currentStatus } : p));
+    setPrompts(prompts.map(p => p.name === name ? { ...p, disable: !currentStatus } : p));
 
     try {
         await apiClient.setPromptStatus(name, !currentStatus);
@@ -71,16 +75,16 @@ export default function PromptsPage() {
                   </TableCell>
                   <TableCell>{prompt.description}</TableCell>
                   <TableCell>
-                      <Badge variant="outline">{prompt.serviceName}</Badge>
+                      <Badge variant="outline">{(prompt as any).serviceId}</Badge>
                   </TableCell>
                   <TableCell>
                     <div className="flex items-center space-x-2">
                         <Switch
-                            checked={!!prompt.enabled}
-                            onCheckedChange={() => togglePrompt(prompt.name, !!prompt.enabled)}
+                            checked={!prompt.disable}
+                            onCheckedChange={() => togglePrompt(prompt.name, !prompt.disable)}
                         />
                         <span className="text-sm text-muted-foreground w-16">
-                            {prompt.enabled ? "Enabled" : "Disabled"}
+                            {!prompt.disable ? "Enabled" : "Disabled"}
                         </span>
                     </div>
                   </TableCell>

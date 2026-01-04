@@ -3,7 +3,10 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { ListServicesResponse, UpstreamServiceConfig, GetServiceResponse, GetServiceStatusResponse } from "./types";
+import { UpstreamServiceConfig } from "@/lib/client";
+
+// Mock types no longer needed as we match client.ts signatures
+// import { ListServicesResponse, UpstreamServiceConfig, GetServiceResponse, GetServiceStatusResponse } from "./types";
 
 const mockServices: UpstreamServiceConfig[] = [
   {
@@ -11,19 +14,25 @@ const mockServices: UpstreamServiceConfig[] = [
     name: "auth-service",
     version: "1.2.1",
     disable: false,
-    grpc_service: {
+    priority: 0,
+    grpcService: {
       address: "auth.prod.mcpany.io:443",
-      use_reflection: true,
-      tls_config: { server_name: "auth.prod.mcpany.io", insecure_skip_verify: false },
+      useReflection: true,
+      tlsConfig: { serverName: "auth.prod.mcpany.io", insecureSkipVerify: false } as any,
       tools: [
-        { name: "Login", description: "Authenticate a user.", source: 'configured' },
-        { name: "Logout", description: "Log out a user.", source: 'configured' },
-        { name: "CheckStatus", description: "Check authentication status.", source: 'discovered' },
-      ],
+        { name: "Login", description: "Authenticate a user." },
+        { name: "Logout", description: "Log out a user." },
+        { name: "CheckStatus", description: "Check authentication status." },
+      ] as any,
       resources: [
-        { name: "User", type: "UserProfile" },
-        { name: "Session", type: "UserSession" },
-      ]
+        { name: "User", uri: "user://profile" },
+        { name: "Session", uri: "user://session" },
+      ] as any,
+      prompts: [],
+       calls: {},
+       protoDefinitions: [],
+        protoCollection: [],
+       healthCheck: undefined
     }
   },
   {
@@ -31,16 +40,20 @@ const mockServices: UpstreamServiceConfig[] = [
     name: "payment-gateway",
     version: "2.0.0",
     disable: false,
-    http_service: {
+    priority: 0,
+    httpService: {
       address: "https://payments.prod.mcpany.io",
-      tls_config: { server_name: "payments.prod.mcpany.io", insecure_skip_verify: false },
+      tlsConfig: { serverName: "payments.prod.mcpany.io", insecureSkipVerify: false } as any,
       tools: [
-        { name: "CreatePayment", description: "Create a new payment.", source: 'configured' },
-        { name: "GetPaymentStatus", description: "Get the status of a payment.", source: 'configured' },
-      ],
+        { name: "CreatePayment", description: "Create a new payment." },
+        { name: "GetPaymentStatus", description: "Get the status of a payment." },
+      ] as any,
       prompts: [
         { name: "GenerateInvoice", description: "Generate a PDF invoice for a payment." }
-      ]
+      ] as any,
+      resources: [],
+      calls: {},
+      healthCheck: undefined
     }
   },
   {
@@ -48,9 +61,18 @@ const mockServices: UpstreamServiceConfig[] = [
     name: "user-profiles",
     version: "0.5.0-beta",
     disable: true,
-    grpc_service: {
+    priority: 0,
+    grpcService: {
       address: "users.staging.mcpany.io:8080",
-      use_reflection: false,
+      useReflection: false,
+       tools: [],
+       resources: [],
+       prompts: [],
+       calls: {},
+       protoDefinitions: [],
+       protoCollection: [],
+       healthCheck: undefined,
+       tlsConfig: undefined
     }
   },
   {
@@ -58,14 +80,26 @@ const mockServices: UpstreamServiceConfig[] = [
     name: "inventory-service",
     version: "0.1.0-dev",
     disable: false,
-    command_line_service: {
+    priority: 0,
+    commandLineService: {
       command: "go run ./cmd/inventory",
+      workingDirectory: ".",
       tools: [
-        { name: "CheckStock", description: "Check stock levels for an item.", source: 'configured' }
-      ]
+        { name: "CheckStock", description: "Check stock levels for an item." }
+      ] as any,
+      resources: [],
+      prompts: [],
+      calls: {},
+      healthCheck: undefined,
+      cache: undefined,
+      containerEnvironment: undefined,
+      timeout: undefined,
+      local: true,
+      communicationProtocol: 0,
+      env: {}
     }
   },
-];
+] as any;
 
 const mockMetrics: Record<string, Record<string, number>> = {
     "auth-service-prod-123": {
@@ -97,42 +131,69 @@ const updateService = (id: string, update: Partial<UpstreamServiceConfig>): Upst
 
 
 export const apiClient = {
-  listServices: (): Promise<ListServicesResponse> => {
+  listServices: (): Promise<UpstreamServiceConfig[]> => {
     return new Promise((resolve) => {
       setTimeout(() => {
-        resolve({ services: [...mockServices] });
+        resolve([...mockServices]);
       }, 500);
     });
   },
-  getService: (id: string): Promise<GetServiceResponse> => {
+  getService: (id: string): Promise<UpstreamServiceConfig> => {
       return new Promise((resolve, reject) => {
           setTimeout(() => {
               const service = mockServices.find(s => s.id === id);
               if (service) {
-                  resolve({ service: {...service} });
+                  resolve({...service});
               } else {
                   reject(new Error("Service not found"));
               }
           }, 300);
       });
   },
-  setServiceStatus: (id: string, disabled: boolean): Promise<GetServiceResponse> => {
+  setServiceStatus: (id: string, disabled: boolean): Promise<any> => {
       return new Promise((resolve, reject) => {
           setTimeout(() => {
               const updatedService = updateService(id, { disable: disabled });
               if (updatedService) {
-                resolve({ service: updatedService });
+                resolve({ service: updatedService }); // Keep as object for now if UI expects it, or unwrap?
+                // Checking client.ts: setServiceStatus returns res.json().
+                // And in client.ts usage... let's check.
+                // client.ts: return res.json();
+                // usage: does it use the return value?
               } else {
                 reject(new Error("Service not found to update status"));
               }
           }, 200)
       })
   },
-  getServiceStatus: (id: string): Promise<GetServiceStatusResponse> => {
+  getServiceStatus: (id: string): Promise<any> => {
        return new Promise((resolve) => {
           setTimeout(() => {
               resolve({ metrics: mockMetrics[id] || {} });
           }, 400);
       });
-  }
+  },
+    registerService: async (config: UpstreamServiceConfig) => {
+        return config;
+    },
+    updateService: async (config: UpstreamServiceConfig) => {
+        return config;
+    },
+    unregisterService: async (id: string) => {
+        return {};
+    },
+    listTools: async () => Promise.resolve([]),
+    executeTool: async () => Promise.resolve({}),
+    setToolStatus: async () => Promise.resolve({}),
+    listResources: async () => Promise.resolve([]),
+    setResourceStatus: async () => Promise.resolve({}),
+    listPrompts: async () => Promise.resolve([]),
+    setPromptStatus: async () => Promise.resolve({}),
+    listSecrets: async () => Promise.resolve([]),
+    saveSecret: async () => Promise.resolve({} as any),
+    deleteSecret: async () => Promise.resolve({}),
+    getGlobalSettings: async () => Promise.resolve({} as any),
+    saveGlobalSettings: async () => Promise.resolve(),
+    getStackConfig: async () => Promise.resolve(""),
+    saveStackConfig: async () => Promise.resolve({})
 };
