@@ -10,13 +10,12 @@ test('Tools page loads and inspector opens', async ({ page }) => {
   // Mock tools endpoint
   await page.route((url) => url.pathname.includes('/api/tools'), async (route) => {
     await route.fulfill({
-      json: {
-        tools: [
+      json: [
           {
             name: 'get_weather',
             description: 'Get weather for a location',
             source: 'configured',
-            serviceName: 'weather-service',
+            serviceId: 'weather-service',
             schema: {
                type: "object",
                properties: {
@@ -25,7 +24,6 @@ test('Tools page loads and inspector opens', async ({ page }) => {
             }
           }
         ]
-      }
     });
   });
 

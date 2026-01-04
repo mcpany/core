@@ -10,8 +10,7 @@ test.describe('Resource Exploration', () => {
         // Mock resources endpoint directly
         await page.route((url) => url.pathname.includes('/api/resources'), async (route) => {
             await route.fulfill({
-                json: {
-                    resources: [
+                json: [
                         {
                             name: 'Application Logs',
                             mimeType: 'text/plain',
@@ -23,7 +22,6 @@ test.describe('Resource Exploration', () => {
                             service: 'db-service'
                         }
                     ]
-                }
             });
         });
     });

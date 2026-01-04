@@ -10,22 +10,20 @@ test.describe('Tool Exploration', () => {
         // Mock tools endpoint directly (matching ToolsPage fetch)
         await page.route((url) => url.pathname.includes('/api/tools'), async (route) => {
             await route.fulfill({
-                json: {
-                    tools: [
+                json: [
                         {
                             name: 'weather-tool',
                             description: 'Get weather for a location',
                             source: 'configured',
-                            serviceName: 'weather-service'
+                            serviceId: 'weather-service'
                         },
                         {
                             name: 'calculator',
                             description: 'Perform basic math',
                             source: 'discovered',
-                            serviceName: 'math-service'
+                            serviceId: 'math-service'
                         }
                     ]
-                }
             });
         });
     });
