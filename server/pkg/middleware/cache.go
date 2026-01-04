@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"hash"
 	"hash/fnv"
+	"strings"
 	"sync"
 	"time"
 
@@ -41,6 +42,7 @@ type CachingMiddleware struct {
 	cache           *cache.Cache[any]
 	toolManager     tool.ManagerInterface
 	semanticCaches  sync.Map
+	initMu          sync.Mutex // Guards semantic cache initialization
 	providerFactory ProviderFactory
 	hasherPool      *sync.Pool
 }
@@ -198,45 +200,64 @@ func (m *CachingMiddleware) executeSemantic(ctx context.Context, req *tool.Execu
 
 	val, ok := m.semanticCaches.Load(serviceID)
 	if !ok {
-		// Resolve API Key
-		// Priority:
-		// 1. OpenAI Config Secret
-		// 2. Deprecated API Key Secret
-		var secret *configv1.SecretValue
-		if semConfig.GetOpenai() != nil {
-			secret = semConfig.GetOpenai().GetApiKey()
-		} else {
-			secret = semConfig.GetApiKey()
-		}
+		// Double-checked locking to prevent race condition and connection leaks
+		m.initMu.Lock()
+		val, ok = m.semanticCaches.Load(serviceID)
+		if !ok {
+			// Resolve API Key
+			// Priority:
+			// 1. OpenAI Config Secret
+			// 2. Deprecated API Key Secret
+			var secret *configv1.SecretValue
+			if semConfig.GetOpenai() != nil {
+				secret = semConfig.GetOpenai().GetApiKey()
+			} else {
+				secret = semConfig.GetApiKey()
+			}
 
-		apiKey, err := util.ResolveSecret(ctx, secret)
-		if err != nil {
-			logging.GetLogger().Error("Failed to resolve semantic cache API key", "error", err)
-			return next(ctx, req)
-		}
-
-		// Use factory to create provider
-		provider, err := m.providerFactory(semConfig, apiKey)
-		if err != nil {
-			logging.GetLogger().Warn("Failed to create embedding provider", "error", err)
-			return next(ctx, req)
-		}
-
-		var vectorStore VectorStore
-		if persistencePath := semConfig.GetPersistencePath(); persistencePath != "" {
-			var err error
-			vectorStore, err = NewSQLiteVectorStore(persistencePath)
+			apiKey, err := util.ResolveSecret(ctx, secret)
 			if err != nil {
-				logging.GetLogger().Error("Failed to create SQLite vector store", "error", err, "path", persistencePath)
-				// Fallback to in-memory
+				m.initMu.Unlock()
+				logging.GetLogger().Error("Failed to resolve semantic cache API key", "error", err)
+				return next(ctx, req)
+			}
+
+			// Use factory to create provider
+			provider, err := m.providerFactory(semConfig, apiKey)
+			if err != nil {
+				m.initMu.Unlock()
+				logging.GetLogger().Warn("Failed to create embedding provider", "error", err)
+				return next(ctx, req)
+			}
+
+			var vectorStore VectorStore
+			persistencePath := semConfig.GetPersistencePath()
+			if persistencePath != "" {
+				var err error
+				if strings.HasPrefix(persistencePath, "postgres://") || strings.HasPrefix(persistencePath, "postgresql://") {
+					vectorStore, err = NewPostgresVectorStore(persistencePath)
+					if err != nil {
+						logging.GetLogger().Error("Failed to create Postgres vector store", "error", err, "dsn", persistencePath)
+						// Fallback to in-memory
+						vectorStore = NewSimpleVectorStore()
+					}
+				} else {
+					vectorStore, err = NewSQLiteVectorStore(persistencePath)
+					if err != nil {
+						logging.GetLogger().Error("Failed to create SQLite vector store", "error", err, "path", persistencePath)
+						// Fallback to in-memory
+						vectorStore = NewSimpleVectorStore()
+					}
+				}
+			} else {
 				vectorStore = NewSimpleVectorStore()
 			}
-		} else {
-			vectorStore = NewSimpleVectorStore()
-		}
 
-		newCache := NewSemanticCache(provider, vectorStore, semConfig.GetSimilarityThreshold())
-		val, _ = m.semanticCaches.LoadOrStore(serviceID, newCache)
+			newCache := NewSemanticCache(provider, vectorStore, semConfig.GetSimilarityThreshold())
+			m.semanticCaches.Store(serviceID, newCache)
+			val = newCache
+		}
+		m.initMu.Unlock()
 	}
 
 	semCache := val.(*SemanticCache)
