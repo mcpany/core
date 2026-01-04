@@ -10,7 +10,7 @@ import (
 	"fmt"
 	"time"
 
-	// lib/pq is the Postgres driver
+	// lib/pq is the Postgres driver.
 	_ "github.com/lib/pq"
 )
 
@@ -163,5 +163,5 @@ func (s *PostgresVectorStore) Close() error {
 	return s.db.Close()
 }
 
-// Ensure interface compatibility
+// Ensure interface compatibility.
 var _ VectorStore = (*PostgresVectorStore)(nil)
