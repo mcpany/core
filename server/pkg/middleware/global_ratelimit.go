@@ -5,6 +5,8 @@ package middleware
 
 import (
 	"context"
+	"crypto/sha256"
+	"encoding/hex"
 	"fmt"
 	"net/http"
 	"strconv"
@@ -93,8 +95,8 @@ func (m *GlobalRateLimitMiddleware) getLimiter(ctx context.Context, config *conf
 			validType = ok
 			// Check if Redis config changed
 			if ok && config.GetRedis() != nil {
-				newConfigHash := config.GetRedis().GetAddress() + "|" + config.GetRedis().GetPassword() + "|" + strconv.Itoa(int(config.GetRedis().GetDb()))
-				if rl.GetConfigHash() != newConfigHash {
+				configHash := m.calculateConfigHash(config.GetRedis())
+				if rl.GetConfigHash() != configHash {
 					validType = false // Force creation of new limiter
 				}
 			}
@@ -117,10 +119,7 @@ func (m *GlobalRateLimitMiddleware) getLimiter(ctx context.Context, config *conf
 		if config.GetRedis() == nil {
 			return nil, fmt.Errorf("redis config is missing")
 		}
-		client, err := m.getRedisClient(config.GetRedis())
-		if err != nil {
-			return nil, err
-		}
+		client := m.getRedisClient(config.GetRedis())
 		// Pass global identifier
 		limiter = NewRedisLimiterWithClient(client, "global", partitionKey, config)
 	} else {
@@ -170,13 +169,20 @@ func (m *GlobalRateLimitMiddleware) getPartitionKey(ctx context.Context, keyBy c
 	}
 }
 
-func (m *GlobalRateLimitMiddleware) getRedisClient(config *bus.RedisBus) (*redis.Client, error) {
-	configHash := config.GetAddress() + "|" + config.GetPassword() + "|" + strconv.Itoa(int(config.GetDb()))
+func (m *GlobalRateLimitMiddleware) calculateConfigHash(config *bus.RedisBus) string {
+	// Hash the sensitive config to avoid storing passwords in memory as clear text keys if possible
+	data := config.GetAddress() + "|" + config.GetPassword() + "|" + strconv.Itoa(int(config.GetDb()))
+	hash := sha256.Sum256([]byte(data))
+	return hex.EncodeToString(hash[:])
+}
+
+func (m *GlobalRateLimitMiddleware) getRedisClient(config *bus.RedisBus) *redis.Client {
+	configHash := m.calculateConfigHash(config)
 
 	if val, ok := m.redisClients.Load("global"); ok {
 		if cached, ok := val.(*cachedRedisClient); ok {
 			if cached.configHash == configHash {
-				return cached.client, nil
+				return cached.client
 			}
 		}
 	}
@@ -191,5 +197,5 @@ func (m *GlobalRateLimitMiddleware) getRedisClient(config *bus.RedisBus) (*redis
 		client:     client,
 		configHash: configHash,
 	})
-	return client, nil
+	return client
 }
