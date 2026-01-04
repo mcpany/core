@@ -9,7 +9,7 @@ repos:
     -   id: check-case-conflict
     -   id: check-json
     -   id: check-yaml
-        exclude: ^server/helm/
+        exclude: ^k8s/helm/
     -   id: detect-private-key
         exclude: ^server/tests/tls/
     -   id: end-of-file-fixer
@@ -29,9 +29,9 @@ repos:
             )$
     -   id: helm-lint
         name: helm-lint
-        entry: helm lint server/helm/mcpany
+        entry: helm lint k8s/helm/mcpany
         language: system
-        files: ^server/helm/
+        files: ^k8s/helm/
         pass_filenames: false
 -   repo: https://github.com/google/addlicense
     rev: v1.2.0

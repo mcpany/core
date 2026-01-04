@@ -20,30 +20,21 @@ endif
 
 # Default test target# Run the tests in a docker container
 test: build-test-docker
-	# Override command to include args if provided
-	# We can't easily pass args via `up`.
-	# We should use `run` if we want to pass args, but `up` is good for dependencies.
-	# Alternative: Set PLAYWRIGHT_ARGS env var?
-	# Or use `run` but ensure dependencies are up.
-	# Let's try to use PLAYWRIGHT_ARGS env var if we can't change command easily.
-	# But docker-compose.test-ui.yml command is `npx playwright test`.
-	# If we change it to use sh -c "npx playwright test $PLAYWRIGHT_ARGS", it might work.
-	# BUT I prefer to use `run` for targeted tests.
 	if [ -z '$(ARGS)' ]; then \
-		docker compose -f ../docker/docker-compose.test-ui.yml up --abort-on-container-exit --exit-code-from ui-tests; \
+		docker compose -f ./docker-compose.test.yml up --abort-on-container-exit --exit-code-from ui-tests; \
 	else \
-		docker compose -f ../docker/docker-compose.test-ui.yml run --rm --service-ports ui-tests npx playwright test $(ARGS); \
+		docker compose -f ./docker-compose.test.yml run --rm --service-ports ui-tests npx playwright test $(ARGS); \
 	fi
 
 # Run audit tests (generate screenshots)
 audit: build-test-docker
-	CAPTURE_SCREENSHOTS=true docker compose -f ../docker/docker-compose.test-ui.yml up --abort-on-container-exit --exit-code-from ui-tests
-	docker compose -f ../docker/docker-compose.test-ui.yml down -v
+	CAPTURE_SCREENSHOTS=true docker compose -f ./docker-compose.test.yml up --abort-on-container-exit --exit-code-from ui-tests
+	docker compose -f ./docker-compose.test.yml down -v
 
 test-ci:
-	docker compose -f ../docker/docker-compose.test-ui.yml build
-	docker compose -f ../docker/docker-compose.test-ui.yml up --quiet-pull --abort-on-container-exit --exit-code-from ui-tests
-	docker compose -f ../docker/docker-compose.test-ui.yml down -v
+	docker compose -f ./docker-compose.test.yml build
+	docker compose -f ./docker-compose.test.yml up --quiet-pull --abort-on-container-exit --exit-code-from ui-tests
+	docker compose -f ./docker-compose.test.yml down -v
 
 # Local test target (runs natively)
 test-local:
@@ -63,4 +54,4 @@ build:
 
 update-screenshots:
 	@echo "Updating screenshots..."
-	docker compose -f ../docker/docker-compose.test-ui.yml run --rm ui-tests npx playwright test --config playwright.screenshots.config.ts
+	docker compose -f ./docker-compose.test.yml run --rm ui-tests npx playwright test --config playwright.screenshots.config.ts

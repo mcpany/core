@@ -16,7 +16,9 @@ test-proto:
 	@go test ./proto/...
 
 k8s-e2e:
-	./tests/k8s/test_operator.sh
+	./k8s/tests/test_operator.sh
+
+k8s-test: k8s-e2e
 
 lint:
 	$(MAKE) -C server lint
