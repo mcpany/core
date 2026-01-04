@@ -20,11 +20,4 @@ I have implemented mobile responsiveness improvements for the MCP Any dashboard.
 
 ## Screenshots
 
-### Network Graph
-![Network Graph Mobile](mobile_network.png)
-
-### Log Stream
-![Log Stream Mobile](mobile_logs.png)
-
-### Secret Manager
-![Secret Manager Mobile](mobile_secrets.png)
+*(Screenshots are currently unavailable in the documentation)*
