@@ -72,43 +72,55 @@ export function SecretManager() {
         </Button>
       </div>
 
-      <Card className="backdrop-blur-sm bg-background/50">
+      <Card className="backdrop-blur-sm bg-background/50 overflow-hidden">
         <CardHeader>
           <CardTitle>Environment Secrets</CardTitle>
           <CardDescription>Manage sensitive configuration values securely.</CardDescription>
         </CardHeader>
-        <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Name</TableHead>
-                <TableHead>Key</TableHead>
-                <TableHead>Provider</TableHead>
-                <TableHead>Last Used</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {secrets.map((secret) => (
-                <TableRow key={secret.id}>
-                  <TableCell className="font-medium flex items-center">
-                    <Key className="h-4 w-4 mr-2 text-muted-foreground" />
-                    {secret.name}
-                  </TableCell>
-                  <TableCell className="font-mono text-xs">{secret.key}</TableCell>
-                  <TableCell>{secret.provider || "Custom"}</TableCell>
-                  <TableCell className="text-muted-foreground text-xs">
-                    {secret.lastUsed ? format(new Date(secret.lastUsed), "MMM d, yyyy HH:mm") : "Never"}
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <Button variant="ghost" size="icon" onClick={() => handleDelete(secret.id)}>
-                      <Trash2 className="h-4 w-4 text-destructive" />
-                    </Button>
-                  </TableCell>
+        <CardContent className="p-0 sm:p-6">
+          <div className="overflow-x-auto">
+             <Table>
+                <TableHeader>
+                <TableRow>
+                    <TableHead className="w-[150px]">Name</TableHead>
+                    <TableHead>Key</TableHead>
+                    <TableHead className="hidden sm:table-cell">Provider</TableHead>
+                    <TableHead className="hidden md:table-cell">Last Used</TableHead>
+                    <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+                </TableHeader>
+                <TableBody>
+                {secrets.map((secret) => (
+                    <TableRow key={secret.id}>
+                    <TableCell className="font-medium">
+                        <div className="flex items-center">
+                           <Key className="h-4 w-4 mr-2 text-muted-foreground shrink-0" />
+                           <span className="truncate max-w-[120px] sm:max-w-none">{secret.name}</span>
+                        </div>
+                        {/* Mobile-only sub-info */}
+                        <div className="sm:hidden text-[10px] text-muted-foreground mt-1">
+                             {secret.provider || "Custom"} • {secret.lastUsed ? format(new Date(secret.lastUsed), "MMM d") : "Never"}
+                        </div>
+                    </TableCell>
+                    <TableCell className="font-mono text-xs">
+                        <span className="truncate max-w-[100px] inline-block sm:max-w-none" title={secret.key}>
+                            {secret.key}
+                        </span>
+                    </TableCell>
+                    <TableCell className="hidden sm:table-cell">{secret.provider || "Custom"}</TableCell>
+                    <TableCell className="text-muted-foreground text-xs hidden md:table-cell">
+                        {secret.lastUsed ? format(new Date(secret.lastUsed), "MMM d, yyyy HH:mm") : "Never"}
+                    </TableCell>
+                    <TableCell className="text-right">
+                        <Button variant="ghost" size="icon" onClick={() => handleDelete(secret.id)}>
+                        <Trash2 className="h-4 w-4 text-destructive" />
+                        </Button>
+                    </TableCell>
+                    </TableRow>
+                ))}
+                </TableBody>
+             </Table>
+          </div>
         </CardContent>
       </Card>
 
@@ -119,33 +131,33 @@ export function SecretManager() {
             <DialogDescription>Create a new secret value.</DialogDescription>
           </DialogHeader>
           <div className="grid gap-4 py-4">
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="name" className="text-right">Name</Label>
+            <div className="grid grid-cols-1 sm:grid-cols-4 items-center gap-2 sm:gap-4">
+              <Label htmlFor="name" className="text-left sm:text-right">Name</Label>
               <Input
                 id="name"
                 value={newSecret.name || ""}
                 onChange={(e) => setNewSecret({ ...newSecret, name: e.target.value })}
-                className="col-span-3"
+                className="col-span-1 sm:col-span-3"
               />
             </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="key" className="text-right">Key</Label>
+            <div className="grid grid-cols-1 sm:grid-cols-4 items-center gap-2 sm:gap-4">
+              <Label htmlFor="key" className="text-left sm:text-right">Key</Label>
               <Input
                 id="key"
                 value={newSecret.key || ""}
                 onChange={(e) => setNewSecret({ ...newSecret, key: e.target.value })}
                 placeholder="OPENAI_API_KEY"
-                className="col-span-3 font-mono"
+                className="col-span-1 sm:col-span-3 font-mono"
               />
             </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="value" className="text-right">Value</Label>
+            <div className="grid grid-cols-1 sm:grid-cols-4 items-center gap-2 sm:gap-4">
+              <Label htmlFor="value" className="text-left sm:text-right">Value</Label>
               <Input
                 id="value"
                 type="password"
                 value={newSecret.value || ""}
                 onChange={(e) => setNewSecret({ ...newSecret, value: e.target.value })}
-                className="col-span-3 font-mono"
+                className="col-span-1 sm:col-span-3 font-mono"
               />
             </div>
           </div>
