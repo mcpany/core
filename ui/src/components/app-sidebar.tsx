@@ -19,7 +19,8 @@ import {
   Database,
   User,
   ChevronsUpDown,
-  LogOut
+  LogOut,
+  Layers
 } from "lucide-react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
@@ -63,6 +64,11 @@ const platformItems = [
     title: "Live Logs",
     url: "/logs",
     icon: Terminal,
+  },
+  {
+    title: "Stacks",
+    url: "/stacks",
+    icon: Layers,
   },
   {
     title: "Analytics",

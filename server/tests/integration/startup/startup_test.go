@@ -5,17 +5,18 @@ package startup
 
 import (
 	"context"
-    "encoding/json"
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"os"
+	"strings"
 	"testing"
 	"time"
 
 	"github.com/mcpany/core/pkg/app"
 	"github.com/mcpany/core/tests/integration"
-    "github.com/modelcontextprotocol/go-sdk/mcp"
+	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/spf13/afero"
 	"github.com/stretchr/testify/require"
 )
@@ -65,22 +66,49 @@ upstream_services:
     err = tmpFile.Close()
     require.NoError(t, err)
 
-    jsonrpcPort := integration.FindFreePort(t)
-    grpcRegPort := integration.FindFreePort(t)
-    for grpcRegPort == jsonrpcPort {
-        grpcRegPort = integration.FindFreePort(t)
-    }
+	var jsonrpcPort int
+	var ctx context.Context
+	var cancel context.CancelFunc
+	var appRunner *app.Application
 
-    ctx, cancel := context.WithCancel(context.Background())
-    defer cancel()
+	// Retry loop to handle "address already in use" race conditions from FindFreePort
+	for attempt := 0; attempt < 3; attempt++ {
+		jsonrpcPort = integration.FindFreePort(t)
+		grpcRegPort := integration.FindFreePort(t)
+		for grpcRegPort == jsonrpcPort {
+			grpcRegPort = integration.FindFreePort(t)
+		}
 
-    appRunner := app.NewApplication()
-    go func() {
-        err := appRunner.Run(ctx, afero.NewOsFs(), false, fmt.Sprintf(":%d", jsonrpcPort), fmt.Sprintf(":%d", grpcRegPort), []string{tmpFile.Name()}, 5*time.Second)
-        if err != nil && err != context.Canceled {
-             t.Logf("Server exited with error: %v", err)
-        }
-    }()
+		ctx, cancel = context.WithCancel(context.Background())
+
+		appRunner = app.NewApplication()
+
+		errChan := make(chan error, 1)
+		go func() {
+			err := appRunner.Run(ctx, afero.NewOsFs(), false, fmt.Sprintf(":%d", jsonrpcPort), fmt.Sprintf(":%d", grpcRegPort), []string{tmpFile.Name()}, 5*time.Second)
+			if err != nil && err != context.Canceled {
+				errChan <- err
+			}
+		}()
+
+		// Wait briefly to check for immediate startup errors (like port conflicts)
+		select {
+		case err := <-errChan:
+			cancel() // Clean up failed attempt
+			if err != nil && (strings.Contains(err.Error(), "address already in use") || strings.Contains(err.Error(), "bind")) {
+				t.Logf("Port conflict detected on attempt %d, retrying...", attempt+1)
+				continue
+			}
+			t.Fatalf("Server failed to start: %v", err)
+		case <-time.After(500 * time.Millisecond):
+			// Server started successfully (or didn't fail immediately)
+			goto ServerStarted
+		}
+	}
+	t.Fatal("Failed to find free ports after multiple attempts")
+
+ServerStarted:
+	defer cancel()
 
     httpUrl := fmt.Sprintf("http://127.0.0.1:%d/healthz", jsonrpcPort)
     integration.WaitForHTTPHealth(t, httpUrl, 10*time.Second)
