@@ -20,17 +20,17 @@ endif
 
 # Default test target# Run the tests in a docker container
 test: build-test-docker
-	docker compose -f ../docker/docker-compose.test-ui.yml up --abort-on-container-exit --exit-code-from ui-tests
+	docker compose -f ./docker-compose.test.yml up --abort-on-container-exit --exit-code-from ui-tests
 
 # Run audit tests (generate screenshots)
 audit: build-test-docker
-	CAPTURE_SCREENSHOTS=true docker compose -f ../docker/docker-compose.test-ui.yml up --abort-on-container-exit --exit-code-from ui-tests
-	docker compose -f ../docker/docker-compose.test-ui.yml down -v
+	CAPTURE_SCREENSHOTS=true docker compose -f ./docker-compose.test.yml up --abort-on-container-exit --exit-code-from ui-tests
+	docker compose -f ./docker-compose.test.yml down -v
 
 test-ci:
-	docker compose -f ../docker/docker-compose.test-ui.yml build
-	docker compose -f ../docker/docker-compose.test-ui.yml up --quiet-pull --abort-on-container-exit --exit-code-from ui-tests
-	docker compose -f ../docker/docker-compose.test-ui.yml down -v
+	docker compose -f ./docker-compose.test.yml build
+	docker compose -f ./docker-compose.test.yml up --quiet-pull --abort-on-container-exit --exit-code-from ui-tests
+	docker compose -f ./docker-compose.test.yml down -v
 
 # Local test target (runs natively)
 test-local:
@@ -49,4 +49,4 @@ build:
 
 update-screenshots:
 	@echo "Updating screenshots..."
-	docker compose -f ../docker/docker-compose.test-ui.yml run --rm ui-tests npx playwright test --config playwright.screenshots.config.ts
+	docker compose -f ./docker-compose.test.yml run --rm ui-tests npx playwright test --config playwright.screenshots.config.ts
