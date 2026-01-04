@@ -87,13 +87,13 @@ func TestInitStandardMiddlewares(t *testing.T) {
 	cachingMiddleware := &CachingMiddleware{}
 
 	// Call InitStandardMiddlewares
-	cleanup, err := InitStandardMiddlewares(authManager, mockToolManager, auditConfig, cachingMiddleware)
+	cleanup, err := InitStandardMiddlewares(authManager, mockToolManager, auditConfig, cachingMiddleware, nil)
 	assert.NoError(t, err)
 	assert.NotNil(t, cleanup)
 	defer cleanup()
 
 	// Verify standard middlewares are registered in MCP registry
-	expectedMiddlewares := []string{"logging", "auth", "debug", "cors", "caching", "ratelimit", "call_policy", "audit"}
+	expectedMiddlewares := []string{"logging", "auth", "debug", "cors", "caching", "ratelimit", "call_policy", "audit", "global_ratelimit"}
 
 	globalRegistry.mu.RLock()
 	for _, name := range expectedMiddlewares {
@@ -138,6 +138,12 @@ func TestInitStandardMiddlewares(t *testing.T) {
 		handler := factory(&configv1.Middleware{})(dummyNext)
 		assert.NotNil(t, handler)
 	})
+
+	t.Run("global_ratelimit_execution", func(t *testing.T) {
+		factory := globalRegistry.mcpFactories["global_ratelimit"]
+		handler := factory(&configv1.Middleware{})(dummyNext)
+		assert.NotNil(t, handler)
+	})
 }
 
 func TestInitStandardMiddlewares_AuditError(t *testing.T) {
@@ -155,7 +161,7 @@ func TestInitStandardMiddlewares_AuditError(t *testing.T) {
 	cachingMiddleware := &CachingMiddleware{}
 
 	// Call InitStandardMiddlewares
-	cleanup, err := InitStandardMiddlewares(authManager, mockToolManager, auditConfig, cachingMiddleware)
+	cleanup, err := InitStandardMiddlewares(authManager, mockToolManager, auditConfig, cachingMiddleware, nil)
 	assert.Error(t, err)
 	assert.Nil(t, cleanup)
 }

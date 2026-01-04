@@ -1,0 +1,195 @@
+// Copyright 2025 Author(s) of MCP Any
+// SPDX-License-Identifier: Apache-2.0
+
+package middleware
+
+import (
+	"context"
+	"fmt"
+	"net/http"
+	"strconv"
+	"sync"
+	"time"
+
+	"github.com/mcpany/core/pkg/auth"
+	"github.com/mcpany/core/pkg/metrics"
+	"github.com/mcpany/core/pkg/util"
+	"github.com/mcpany/core/proto/bus"
+	configv1 "github.com/mcpany/core/proto/config/v1"
+	"github.com/modelcontextprotocol/go-sdk/mcp"
+	"github.com/patrickmn/go-cache"
+	"github.com/redis/go-redis/v9"
+	"golang.org/x/time/rate"
+)
+
+// GlobalRateLimitMiddleware provides rate limiting functionality for all MCP requests.
+type GlobalRateLimitMiddleware struct {
+	config *configv1.RateLimitConfig
+	// limiters caches active limiters. Key is "partitionKey".
+	limiters *cache.Cache
+	// redisClients caches Redis clients. Key is "global".
+	redisClients sync.Map
+}
+
+// NewGlobalRateLimitMiddleware creates a new GlobalRateLimitMiddleware.
+func NewGlobalRateLimitMiddleware(config *configv1.RateLimitConfig) *GlobalRateLimitMiddleware {
+	return &GlobalRateLimitMiddleware{
+		config:   config,
+		limiters: cache.New(1*time.Hour, 10*time.Minute),
+	}
+}
+
+// Execute executes the rate limiting middleware.
+func (m *GlobalRateLimitMiddleware) Execute(ctx context.Context, method string, req mcp.Request, next mcp.MethodHandler) (mcp.Result, error) {
+	if m.config == nil || !m.config.GetIsEnabled() {
+		return next(ctx, method, req)
+	}
+
+	limiter, err := m.getLimiter(ctx, m.config)
+	if err == nil {
+		allowed, err := limiter.Allow(ctx)
+		if err != nil {
+			// Fail open on error
+			return next(ctx, method, req)
+		}
+		if !allowed {
+			m.recordMetrics("blocked")
+			return nil, fmt.Errorf("global rate limit exceeded")
+		}
+		m.recordMetrics("allowed")
+	}
+
+	return next(ctx, method, req)
+}
+
+func (m *GlobalRateLimitMiddleware) recordMetrics(status string) {
+	metrics.IncrCounterWithLabels([]string{"global_rate_limit", "requests_total"}, 1, []metrics.Label{
+		{Name: "status", Value: status},
+	})
+}
+
+// getLimiter retrieves or creates a limiter.
+func (m *GlobalRateLimitMiddleware) getLimiter(ctx context.Context, config *configv1.RateLimitConfig) (Limiter, error) {
+	rps := config.GetRequestsPerSecond()
+	burst := int(config.GetBurst())
+	if burst <= 0 {
+		burst = 1 // Ensure at least 1 request can be made
+	}
+
+	partitionKey := m.getPartitionKey(ctx, config.GetKeyBy())
+
+	// Cache key: partitionKey
+	cacheKey := partitionKey
+
+	isRedis := config.GetStorage() == configv1.RateLimitConfig_STORAGE_REDIS
+
+	// Try to get from cache
+	if val, found := m.limiters.Get(cacheKey); found {
+		limiter := val.(Limiter)
+		// Verify type matches config
+		var validType bool
+		if isRedis {
+			rl, ok := limiter.(*RedisLimiter)
+			validType = ok
+			// Check if Redis config changed
+			if ok && config.GetRedis() != nil {
+				newConfigHash := config.GetRedis().GetAddress() + "|" + config.GetRedis().GetPassword() + "|" + strconv.Itoa(int(config.GetRedis().GetDb()))
+				if rl.GetConfigHash() != newConfigHash {
+					validType = false // Force creation of new limiter
+				}
+			}
+		} else {
+			_, validType = limiter.(*LocalLimiter)
+		}
+
+		if validType {
+			// Update config in case it changed
+			limiter.Update(rps, burst)
+			return limiter, nil
+		}
+		// Type mismatch or config changed, fall through to create new
+	}
+
+	// Create new limiter
+	var limiter Limiter
+
+	if isRedis {
+		if config.GetRedis() == nil {
+			return nil, fmt.Errorf("redis config is missing")
+		}
+		client, err := m.getRedisClient(config.GetRedis())
+		if err != nil {
+			return nil, err
+		}
+		// Pass global identifier
+		limiter = NewRedisLimiterWithClient(client, "global", partitionKey, config)
+	} else {
+		limiter = &LocalLimiter{
+			Limiter: rate.NewLimiter(rate.Limit(rps), burst),
+		}
+	}
+
+	// Cache it
+	m.limiters.Set(cacheKey, limiter, cache.DefaultExpiration)
+
+	return limiter, nil
+}
+
+func (m *GlobalRateLimitMiddleware) getPartitionKey(ctx context.Context, keyBy configv1.RateLimitConfig_KeyBy) string {
+	switch keyBy {
+	case configv1.RateLimitConfig_KEY_BY_IP:
+		if ip, ok := util.RemoteIPFromContext(ctx); ok {
+			return "ip:" + ip
+		}
+		return "ip:unknown"
+	case configv1.RateLimitConfig_KEY_BY_USER_ID:
+		if uid, ok := auth.UserFromContext(ctx); ok {
+			return "user:" + uid
+		}
+		return "user:anonymous"
+	case configv1.RateLimitConfig_KEY_BY_API_KEY:
+		if apiKey, ok := auth.APIKeyFromContext(ctx); ok {
+			return hashKey("apikey:", apiKey)
+		}
+		// Fallback to extraction from HTTP request if available
+		if req, ok := ctx.Value("http.request").(*http.Request); ok {
+			if key := req.Header.Get("X-API-Key"); key != "" {
+				return hashKey("apikey:", key)
+			}
+			if key := req.Header.Get("Authorization"); key != "" {
+				// Use hash of token to avoid storing sensitive data in cache keys
+				return hashKey("auth:", key)
+			}
+		}
+		return "apikey:none"
+	case configv1.RateLimitConfig_KEY_BY_GLOBAL:
+		return "global"
+	default:
+		// Default to global
+		return "global"
+	}
+}
+
+func (m *GlobalRateLimitMiddleware) getRedisClient(config *bus.RedisBus) (*redis.Client, error) {
+	configHash := config.GetAddress() + "|" + config.GetPassword() + "|" + strconv.Itoa(int(config.GetDb()))
+
+	if val, ok := m.redisClients.Load("global"); ok {
+		if cached, ok := val.(*cachedRedisClient); ok {
+			if cached.configHash == configHash {
+				return cached.client, nil
+			}
+		}
+	}
+
+	opts := &redis.Options{
+		Addr:     config.GetAddress(),
+		Password: config.GetPassword(),
+		DB:       int(config.GetDb()),
+	}
+	client := redisClientCreator(opts)
+	m.redisClients.Store("global", &cachedRedisClient{
+		client:     client,
+		configHash: configHash,
+	})
+	return client, nil
+}

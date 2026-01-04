@@ -747,7 +747,9 @@ type GlobalSettings struct {
 	// Garbage Collection configuration.
 	GcSettings *GCSettings `protobuf:"bytes,16,opt,name=gc_settings" json:"gc_settings,omitempty"`
 	// OIDC Configuration.
-	Oidc          *OIDCConfig `protobuf:"bytes,17,opt,name=oidc" json:"oidc,omitempty"`
+	Oidc *OIDCConfig `protobuf:"bytes,17,opt,name=oidc" json:"oidc,omitempty"`
+	// Rate limiting configuration for the server.
+	RateLimit     *RateLimitConfig `protobuf:"bytes,18,opt,name=rate_limit" json:"rate_limit,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -889,6 +891,13 @@ func (x *GlobalSettings) GetOidc() *OIDCConfig {
 	return nil
 }
 
+func (x *GlobalSettings) GetRateLimit() *RateLimitConfig {
+	if x != nil {
+		return x.RateLimit
+	}
+	return nil
+}
+
 func (x *GlobalSettings) SetMcpListenAddress(v string) {
 	x.McpListenAddress = &v
 }
@@ -951,6 +960,10 @@ func (x *GlobalSettings) SetGcSettings(v *GCSettings) {
 
 func (x *GlobalSettings) SetOidc(v *OIDCConfig) {
 	x.Oidc = v
+}
+
+func (x *GlobalSettings) SetRateLimit(v *RateLimitConfig) {
+	x.RateLimit = v
 }
 
 func (x *GlobalSettings) HasMcpListenAddress() bool {
@@ -1037,6 +1050,13 @@ func (x *GlobalSettings) HasOidc() bool {
 	return x.Oidc != nil
 }
 
+func (x *GlobalSettings) HasRateLimit() bool {
+	if x == nil {
+		return false
+	}
+	return x.RateLimit != nil
+}
+
 func (x *GlobalSettings) ClearMcpListenAddress() {
 	x.McpListenAddress = nil
 }
@@ -1085,6 +1105,10 @@ func (x *GlobalSettings) ClearOidc() {
 	x.Oidc = nil
 }
 
+func (x *GlobalSettings) ClearRateLimit() {
+	x.RateLimit = nil
+}
+
 type GlobalSettings_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
@@ -1120,6 +1144,8 @@ type GlobalSettings_builder struct {
 	GcSettings *GCSettings
 	// OIDC Configuration.
 	Oidc *OIDCConfig
+	// Rate limiting configuration for the server.
+	RateLimit *RateLimitConfig
 }
 
 func (b0 GlobalSettings_builder) Build() *GlobalSettings {
@@ -1142,6 +1168,7 @@ func (b0 GlobalSettings_builder) Build() *GlobalSettings {
 	x.Dlp = b.Dlp
 	x.GcSettings = b.GcSettings
 	x.Oidc = b.Oidc
+	x.RateLimit = b.RateLimit
 	return m0
 }
 
@@ -2440,7 +2467,7 @@ const file_proto_config_v1_config_proto_rawDesc = "" +
 	"created_at\x18\a \x01(\tR\tcreatedAt\"@\n" +
 	"\n" +
 	"SecretList\x122\n" +
-	"\asecrets\x18\x01 \x03(\v2\x18.mcpany.config.v1.SecretR\asecrets\"\xef\a\n" +
+	"\asecrets\x18\x01 \x03(\v2\x18.mcpany.config.v1.SecretR\asecrets\"\xb2\b\n" +
 	"\x0eGlobalSettings\x12.\n" +
 	"\x12mcp_listen_address\x18\x01 \x01(\tR\x12mcp_listen_address\x12G\n" +
 	"\tlog_level\x18\x03 \x01(\x0e2).mcpany.config.v1.GlobalSettings.LogLevelR\tlog_level\x121\n" +
@@ -2460,7 +2487,10 @@ const file_proto_config_v1_config_proto_rawDesc = "" +
 	"\vmiddlewares\x18\f \x03(\v2\x1c.mcpany.config.v1.MiddlewareR\vmiddlewares\x12-\n" +
 	"\x03dlp\x18\r \x01(\v2\x1b.mcpany.config.v1.DLPConfigR\x03dlp\x12>\n" +
 	"\vgc_settings\x18\x10 \x01(\v2\x1c.mcpany.config.v1.GCSettingsR\vgc_settings\x120\n" +
-	"\x04oidc\x18\x11 \x01(\v2\x1c.mcpany.config.v1.OIDCConfigR\x04oidc\"w\n" +
+	"\x04oidc\x18\x11 \x01(\v2\x1c.mcpany.config.v1.OIDCConfigR\x04oidc\x12A\n" +
+	"\n" +
+	"rate_limit\x18\x12 \x01(\v2!.mcpany.config.v1.RateLimitConfigR\n" +
+	"rate_limit\"w\n" +
 	"\bLogLevel\x12\x19\n" +
 	"\x15LOG_LEVEL_UNSPECIFIED\x10\x00\x12\x12\n" +
 	"\x0eLOG_LEVEL_INFO\x10\x01\x12\x12\n" +
@@ -2562,6 +2592,7 @@ var file_proto_config_v1_config_proto_goTypes = []any{
 	(*UpstreamServiceCollection)(nil), // 20: mcpany.config.v1.UpstreamServiceCollection
 	(*AuthenticationConfig)(nil),      // 21: mcpany.config.v1.AuthenticationConfig
 	(*bus.MessageBus)(nil),            // 22: bus.MessageBus
+	(*RateLimitConfig)(nil),           // 23: mcpany.config.v1.RateLimitConfig
 }
 var file_proto_config_v1_config_proto_depIdxs = []int32{
 	7,  // 0: mcpany.config.v1.McpAnyServerConfig.global_settings:type_name -> mcpany.config.v1.GlobalSettings
@@ -2579,17 +2610,18 @@ var file_proto_config_v1_config_proto_depIdxs = []int32{
 	10, // 12: mcpany.config.v1.GlobalSettings.dlp:type_name -> mcpany.config.v1.DLPConfig
 	9,  // 13: mcpany.config.v1.GlobalSettings.gc_settings:type_name -> mcpany.config.v1.GCSettings
 	8,  // 14: mcpany.config.v1.GlobalSettings.oidc:type_name -> mcpany.config.v1.OIDCConfig
-	2,  // 15: mcpany.config.v1.AuditConfig.storage_type:type_name -> mcpany.config.v1.AuditConfig.StorageType
-	17, // 16: mcpany.config.v1.AuditConfig.webhook_headers:type_name -> mcpany.config.v1.AuditConfig.WebhookHeadersEntry
-	12, // 17: mcpany.config.v1.AuditConfig.splunk:type_name -> mcpany.config.v1.SplunkConfig
-	13, // 18: mcpany.config.v1.AuditConfig.datadog:type_name -> mcpany.config.v1.DatadogConfig
-	15, // 19: mcpany.config.v1.ProfileDefinition.selector:type_name -> mcpany.config.v1.ProfileSelector
-	18, // 20: mcpany.config.v1.ProfileSelector.tool_properties:type_name -> mcpany.config.v1.ProfileSelector.ToolPropertiesEntry
-	21, // [21:21] is the sub-list for method output_type
-	21, // [21:21] is the sub-list for method input_type
-	21, // [21:21] is the sub-list for extension type_name
-	21, // [21:21] is the sub-list for extension extendee
-	0,  // [0:21] is the sub-list for field type_name
+	23, // 15: mcpany.config.v1.GlobalSettings.rate_limit:type_name -> mcpany.config.v1.RateLimitConfig
+	2,  // 16: mcpany.config.v1.AuditConfig.storage_type:type_name -> mcpany.config.v1.AuditConfig.StorageType
+	17, // 17: mcpany.config.v1.AuditConfig.webhook_headers:type_name -> mcpany.config.v1.AuditConfig.WebhookHeadersEntry
+	12, // 18: mcpany.config.v1.AuditConfig.splunk:type_name -> mcpany.config.v1.SplunkConfig
+	13, // 19: mcpany.config.v1.AuditConfig.datadog:type_name -> mcpany.config.v1.DatadogConfig
+	15, // 20: mcpany.config.v1.ProfileDefinition.selector:type_name -> mcpany.config.v1.ProfileSelector
+	18, // 21: mcpany.config.v1.ProfileSelector.tool_properties:type_name -> mcpany.config.v1.ProfileSelector.ToolPropertiesEntry
+	22, // [22:22] is the sub-list for method output_type
+	22, // [22:22] is the sub-list for method input_type
+	22, // [22:22] is the sub-list for extension type_name
+	22, // [22:22] is the sub-list for extension extendee
+	0,  // [0:22] is the sub-list for field type_name
 }
 
 func init() { file_proto_config_v1_config_proto_init() }
