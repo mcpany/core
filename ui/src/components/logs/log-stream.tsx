@@ -84,7 +84,12 @@ const getLevelColor = (level: LogLevel) => {
 // Optimization: Memoize LogRow to prevent unnecessary re-renders when list updates
 const LogRow = React.memo(({ log }: { log: LogEntry }) => {
   return (
-    <div className="group flex flex-col sm:flex-row sm:items-start gap-1 sm:gap-3 hover:bg-white/5 p-2 sm:p-1 rounded transition-colors break-words border-b border-white/5 sm:border-0">
+    <div
+      className="group flex flex-col sm:flex-row sm:items-start gap-1 sm:gap-3 hover:bg-white/5 p-2 sm:p-1 rounded transition-colors break-words border-b border-white/5 sm:border-0"
+      // Optimization: content-visibility allows the browser to skip rendering work for off-screen rows.
+      // This significantly improves performance when the log list grows large.
+      style={{ contentVisibility: 'auto', containIntrinsicSize: '0 32px' } as React.CSSProperties}
+    >
       <div className="flex items-center gap-2 sm:contents">
           <span className="text-muted-foreground whitespace-nowrap opacity-50 text-[10px] sm:text-xs sm:mt-0.5">
             {new Date(log.timestamp).toLocaleTimeString()}
