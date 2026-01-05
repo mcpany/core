@@ -23,7 +23,6 @@ import (
 )
 
 func TestDockerComposeE2E(t *testing.T) {
-	t.Skip("Skipping E2E test as requested by user to unblock merge")
 	if os.Getenv("E2E_DOCKER") != "true" {
 		t.Skip("Skipping E2E Docker test. Set E2E_DOCKER=true to run.")
 	}
@@ -42,11 +41,15 @@ func TestDockerComposeE2E(t *testing.T) {
 	rootDir, err = filepath.Abs(rootDir)
 	require.NoError(t, err)
 
-	imageName := "ghcr.io/mcpany/server:latest"
+	imageName := getImageName(t)
 
 	// 1. Build Docker Image
-	t.Log("Building mcpany/server image...")
-	runCommand(t, rootDir, "docker", "build", "-t", imageName, "-f", "server/docker/Dockerfile.server", ".")
+	if os.Getenv("CI") == "" {
+		t.Log("Building mcpany/server image...")
+		runCommand(t, rootDir, "docker", "build", "-t", imageName, "-f", "server/docker/Dockerfile.server", ".")
+	} else {
+		t.Log("CI environment, skipping docker build")
+	}
 
 	// Use a unique project name for isolation
 	projectName := fmt.Sprintf("e2e_seq_%d", time.Now().UnixNano())
@@ -516,4 +519,13 @@ func createDynamicCompose(t *testing.T, originalPath string) string {
 	tmpFile.Close()
 
 	return tmpFile.Name()
+}
+
+func getImageName(t *testing.T) string {
+	imageName := "ghcr.io/mcpany/server:latest"
+	if os.Getenv("CI") != "" {
+		t.Log("CI environment, using pre-built image")
+		imageName = "mcpany/server:latest"
+	}
+	return imageName
 }
