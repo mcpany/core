@@ -798,9 +798,21 @@ func (a *Application) runServerMode(
 			ctx := util.ContextWithRemoteIP(r.Context(), ip)
 			r = r.WithContext(ctx)
 
+			// If API key is set, enforce it.
 			if apiKey != "" {
 				if subtle.ConstantTimeCompare([]byte(r.Header.Get("X-API-Key")), []byte(apiKey)) != 1 {
 					http.Error(w, "Unauthorized", http.StatusUnauthorized)
+					return
+				}
+			} else {
+				// If no API key is configured, block access to sensitive endpoints.
+				// This prevents accidental exposure of admin/upload APIs when running with default insecure config.
+				// We allow the root MCP endpoint "/" (if unauthenticated access is desired for development)
+				// and health/metrics.
+				path := r.URL.Path
+				if strings.HasPrefix(path, "/api/v1/") || path == "/upload" {
+					logging.GetLogger().Warn("Blocked unauthenticated access to sensitive endpoint. Configure 'global_settings.api_key' to enable access.", "path", path, "ip", ip)
+					http.Error(w, "Unauthorized: API Key configuration required for this endpoint", http.StatusUnauthorized)
 					return
 				}
 			}
