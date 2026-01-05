@@ -4,8 +4,8 @@
 services:
   server:
     build:
-      context: ../server
-      dockerfile: docker/Dockerfile.server
+      context: ..
+      dockerfile: server/docker/Dockerfile.server
     ports:
       - "51235:50050"
     command:
@@ -53,8 +53,8 @@ services:
 
   http-echo-server:
     build:
-      context: ../server
-      dockerfile: docker/Dockerfile.http-echo-server
+      context: ..
+      dockerfile: server/docker/Dockerfile.http-echo-server
     ports:
       - "8081:8080"
     healthcheck:
