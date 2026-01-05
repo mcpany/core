@@ -357,38 +357,15 @@ prepare:
 
 
 
-gen: $(if $(SHOULD_PROXY_TO_DOCKER),,clean-protos prepare)
-ifdef SHOULD_PROXY_TO_DOCKER
-	@$(DOCKER_PROXY_CMD) gen
-else
-	@echo "Removing old protobuf files..."
-	@-find proto pkg cmd -name "*.pb.go" -delete
-	@echo "Generating protobuf files..."
-	@export PATH=$(TOOL_INSTALL_DIR):$$PATH; \
-		echo "Using protoc: $$(protoc --version)"; \
-		mkdir -p $(BUILD_DIR); \
-		find ../proto -name "*.proto" -exec protoc \
-			--proto_path=.. \
-			--proto_path=. \
-			--proto_path=$(BUILD_DIR)/grpc-gateway \
-			--proto_path=$(BUILD_DIR)/googleapis \
-			--descriptor_set_out=$(BUILD_DIR)/all.protoset \
-			--include_imports \
-			--go_out=.. \
-			--go_opt=module=github.com/mcpany/core,default_api_level=API_HYBRID \
-			--go-grpc_out=.. \
-			--go-grpc_opt=module=github.com/mcpany/core \
-			--grpc-gateway_out=.. \
-			--grpc-gateway_opt=module=github.com/mcpany/core \
-			{} +
-	@echo "Protobuf generation complete."
-endif
 
-build: gen
+# gen target removed (moved to root Makefile)
+
+
+build:
 	@echo "Building Go project locally..."
 	@$(GO_CMD) build $(LDFLAGS) -buildvcs=false -o $(BUILD_DIR)/bin/server ./cmd/server
 
-build-mock-server: gen
+build-mock-server:
 	@echo "Building mock server..."
 	@$(GO_CMD) build $(LDFLAGS) -buildvcs=false -o $(BUILD_DIR)/bin/mock_server ./cmd/mock_mcp_server
 
@@ -459,7 +436,7 @@ e2e: e2e-local
 
 
 
-lint: $(if $(SHOULD_PROXY_TO_DOCKER),,gen)
+lint:
 ifdef SHOULD_PROXY_TO_DOCKER
 	@$(DOCKER_PROXY_CMD) lint
 else
