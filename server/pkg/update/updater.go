@@ -120,14 +120,19 @@ func (u *Updater) UpdateTo(ctx context.Context, fs afero.Fs, executablePath stri
 	if err != nil {
 		return fmt.Errorf("failed to create temp file: %w", err)
 	}
-	defer func() { _ = tmpFile.Close() }()
 
 	// Write the downloaded asset to the temp file and calculate the checksum
 	hasher := sha256.New()
 	if _, err := io.Copy(io.MultiWriter(tmpFile, hasher), resp.Body); err != nil {
+		_ = tmpFile.Close() // Close the file on error
 		return fmt.Errorf("failed to write to temp file: %w", err)
 	}
 	actualChecksum := hex.EncodeToString(hasher.Sum(nil))
+
+	// Close the file before renaming it
+	if err := tmpFile.Close(); err != nil {
+		return fmt.Errorf("failed to close temp file: %w", err)
+	}
 
 	// Verify the checksum
 	if actualChecksum != expectedChecksum {
