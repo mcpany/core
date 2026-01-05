@@ -21,6 +21,7 @@ import (
 )
 
 func TestHTTPTool_Execute_MissingAndEmptyParams(t *testing.T) {
+	t.Parallel()
 	// Setup a server that echoes the path
 	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)

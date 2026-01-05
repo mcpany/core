@@ -21,6 +21,7 @@ func ptr[T any](v T) *T {
 }
 
 func TestPolicyHook_ExecutePre(t *testing.T) {
+	t.Parallel()
 	tests := []struct {
 		name       string
 		policy     *configv1.CallPolicy
@@ -163,6 +164,7 @@ func TestPolicyHook_ExecutePre(t *testing.T) {
 
 
 func TestWebhookHook(t *testing.T) {
+	t.Parallel()
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		var req configv1.WebhookRequest
 		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {

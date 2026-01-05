@@ -11,6 +11,7 @@ import (
 )
 
 func TestTextParser_ParseJSON(t *testing.T) {
+	t.Parallel()
 	parser := NewTextParser()
 	jsonInput := []byte(`{"person": {"name": "test", "age": 123}}`)
 	config := map[string]string{
@@ -25,6 +26,7 @@ func TestTextParser_ParseJSON(t *testing.T) {
 }
 
 func TestTextParser_ParseInvalidJSON(t *testing.T) {
+	t.Parallel()
 	parser := NewTextParser()
 	jsonInput := []byte(`{"name": "test"`)
 	_, err := parser.Parse("json", jsonInput, nil, "")
@@ -32,6 +34,7 @@ func TestTextParser_ParseInvalidJSON(t *testing.T) {
 }
 
 func TestTextParser_ParseXML(t *testing.T) {
+	t.Parallel()
 	parser := NewTextParser()
 	xmlInput := []byte(`<root><name>test</name><value>123</value></root>`)
 	config := map[string]string{
@@ -46,6 +49,7 @@ func TestTextParser_ParseXML(t *testing.T) {
 }
 
 func TestTextParser_ParseText(t *testing.T) {
+	t.Parallel()
 	parser := NewTextParser()
 	textInput := []byte(`User ID: 12345, Name: John Doe`)
 	config := map[string]string{
@@ -60,12 +64,14 @@ func TestTextParser_ParseText(t *testing.T) {
 }
 
 func TestTextParser_UnsupportedType(t *testing.T) {
+	t.Parallel()
 	parser := NewTextParser()
 	_, err := parser.Parse("yaml", []byte{}, nil, "")
 	require.Error(t, err)
 }
 
 func TestTextParser_ParseJSON_ErrorCases(t *testing.T) {
+	t.Parallel()
 	parser := NewTextParser()
 	jsonInput := []byte(`{"person": {"name": "test", "age": 123}}`)
 
@@ -85,6 +91,7 @@ func TestTextParser_ParseJSON_ErrorCases(t *testing.T) {
 }
 
 func TestTextParser_ParseXML_ErrorCases(t *testing.T) {
+	t.Parallel()
 	parser := NewTextParser()
 	xmlInput := []byte(`<root><name>test</name><value>123</value></root>`)
 
@@ -96,6 +103,7 @@ func TestTextParser_ParseXML_ErrorCases(t *testing.T) {
 }
 
 func TestTextParser_Transform(t *testing.T) {
+	t.Parallel()
 	parser := NewTextParser()
 	data := map[string]any{
 		"name": "test",
@@ -108,6 +116,7 @@ func TestTextParser_Transform(t *testing.T) {
 }
 
 func TestTextParser_ParseJSON_Complex(t *testing.T) {
+	t.Parallel()
 	parser := NewTextParser()
 	jsonInput := []byte(`{
 		"person": {
@@ -135,6 +144,7 @@ func TestTextParser_ParseJSON_Complex(t *testing.T) {
 }
 
 func TestTextParser_ParseXML_WithNamespaces(t *testing.T) {
+	t.Parallel()
 	parser := NewTextParser()
 	xmlInput := []byte(`
 		<root xmlns:h="http://www.w3.org/TR/html4/">
@@ -158,6 +168,7 @@ func TestTextParser_ParseXML_WithNamespaces(t *testing.T) {
 }
 
 func TestTextParser_ParseText_Complex(t *testing.T) {
+	t.Parallel()
 	parser := NewTextParser()
 	textInput := []byte(`Event: "user_login", Status: "success", User-ID: "user-123@example.com"`)
 	config := map[string]string{
@@ -174,6 +185,7 @@ func TestTextParser_ParseText_Complex(t *testing.T) {
 }
 
 func TestTextParser_ParseText_ErrorCases(t *testing.T) {
+	t.Parallel()
 	parser := NewTextParser()
 	textInput := []byte(`User ID: 12345, Name: John Doe`)
 
@@ -185,6 +197,7 @@ func TestTextParser_ParseText_ErrorCases(t *testing.T) {
 }
 
 func TestTextParser_ParseJQ(t *testing.T) {
+	t.Parallel()
 	parser := NewTextParser()
 	jsonInput := []byte(`{
 		"users": [

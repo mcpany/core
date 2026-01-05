@@ -169,7 +169,7 @@ func TestRedisBus_SubscribeOnce(t *testing.T) {
 		Addr: "localhost:6379",
 	})
 	if _, err := client.Ping(context.Background()).Result(); err != nil {
-		t.Skip("Redis is not available")
+		// t.Skip("Redis is not available")
 	}
 
 	messageBus := bus.MessageBus_builder{}.Build()
@@ -208,7 +208,7 @@ func TestRedisBus_Unsubscribe(t *testing.T) {
 		Addr: "localhost:6379",
 	})
 	if _, err := client.Ping(context.Background()).Result(); err != nil {
-		t.Skip("Redis is not available")
+		// t.Skip("Redis is not available")
 	}
 
 	messageBus := bus.MessageBus_builder{}.Build()
@@ -259,7 +259,7 @@ func TestRedisBus_Concurrent(t *testing.T) {
 		Addr: "localhost:6379",
 	})
 	if _, err := client.Ping(context.Background()).Result(); err != nil {
-		t.Skip("Redis is not available")
+		// t.Skip("Redis is not available")
 	}
 
 	messageBus := bus.MessageBus_builder{}.Build()

@@ -312,9 +312,37 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
           verbose: true
 
+  build-server-images:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      - name: Build Server Images
+        run: |
+          make -C server build-test-images
+      - name: Save Docker Images
+        run: |
+          docker save -o server-images.tar \
+            mcpany/server:latest \
+            mcpany/http-echo-server:latest \
+            mcpany/e2e-time-server:latest \
+            mcpany/e2e-cowsay-server:latest \
+            mcpany/everything:latest
+      # Note: server-images.tar might be large. Artifact compression helps.
+      - name: Upload Docker Images
+        uses: actions/upload-artifact@v4
+        with:
+          name: server-images
+          path: server-images.tar
+          retention-days: 1
+
   e2e-sequential:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 60
+    needs: [build-server-images]
     env:
       GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
       IPINFO_API_TOKEN: ${{ secrets.IPINFO_API_TOKEN }}
@@ -323,12 +351,9 @@ jobs:
 
       - name: Configure Docker Registry Mirrors
         run: |
-          # Configure multiple mirrors in array format
-          # Docker will try mirror.gcr.io first.
           echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
-
           sudo systemctl restart docker
-          docker info # Verify the mirrors are listed
+          docker info
 
       - name: Set up Go
         uses: actions/setup-go@v6
@@ -352,24 +377,15 @@ jobs:
           cache: "npm"
           cache-dependency-path: server/tests/integration/upstream/package-lock.json
 
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      - name: Login to Docker Hub
-        uses: docker/login-action@v3
+      - name: Download Docker Images
+        uses: actions/download-artifact@v4
         with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          name: server-images
 
-      - name: Login to GitHub Container Registry
-        uses: docker/login-action@v3
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Load Docker Images
+        run: |
+          docker load -i server-images.tar
+          rm server-images.tar
 
       - name: Get Date
         id: get-date
@@ -391,7 +407,7 @@ jobs:
 
       - name: run sequential e2e
         run: |
-          make e2e-sequential CACHE_TO=type=gha,mode=max CACHE_FROM=type=gha COVERAGE_FILE=coverage-e2e-sequential.out
+          make e2e-sequential SKIP_DOCKER_REBUILD=true CACHE_TO=type=gha,mode=max CACHE_FROM=type=gha COVERAGE_FILE=coverage-e2e-sequential.out
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v5

@@ -8,7 +8,7 @@
 services:
   # The MCP Any server itself.
   mcpany-server:
-    image: ghcr.io/mcpany/server:latest
+    image: mcpany/server:latest
     ports:
       # Exposes the JSON-RPC port (for tool calls) to the host.
       - "${HOST_PORT:-50050}:50050"
@@ -41,9 +41,7 @@ services:
 
   # A sample upstream HTTP service that mcpany-server will connect to.
   http-echo-server:
-    build:
-      context: ../../
-      dockerfile: docker/Dockerfile.http-echo-server
+    image: mcpany/http-echo-server:latest
     ports:
       - "8080:8080"
     healthcheck:

@@ -60,6 +60,7 @@ func findMethodDescriptor(t *testing.T, serviceName, methodName string) protoref
 }
 
 func TestNewGRPCTool(t *testing.T) {
+	t.Parallel()
 	pm := pool.NewManager()
 	serviceID := "test-service"
 	toolProto := &v1.Tool{}
@@ -130,6 +131,7 @@ func (m *mockGrpcPool) Put(c *client.GrpcClientWrapper) {
 }
 
 func TestGRPCTool_Execute(t *testing.T) {
+	t.Parallel()
 	methodDesc := findMethodDescriptor(t, "WeatherService", "GetWeather")
 	toolProto := &v1.Tool{}
 	toolProto.SetUnderlyingMethodFqn(string(methodDesc.FullName()))

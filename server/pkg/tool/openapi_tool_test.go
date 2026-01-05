@@ -36,6 +36,7 @@ func (m *mockHTTPClient) Do(req *http.Request) (*http.Response, error) {
 }
 
 func TestOpenAPITool_Execute(t *testing.T) {
+	t.Parallel()
 	t.Run("successful execution with path and query params", func(t *testing.T) {
 		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			assert.Equal(t, "/users/123", r.URL.Path)
@@ -119,6 +120,7 @@ func TestOpenAPITool_Execute(t *testing.T) {
 // SPDX-License-Identifier: Apache-2.0
 
 func TestOpenAPITool_Execute_Extended(t *testing.T) {
+	t.Parallel()
 	t.Run("POST with Input Template", func(t *testing.T) {
 		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			body, _ := io.ReadAll(r.Body)

@@ -9,6 +9,7 @@ import (
 )
 
 func TestContextWithRemoteIP(t *testing.T) {
+	t.Parallel()
 	ctx := context.Background()
 	ip := "127.0.0.1"
 
@@ -30,6 +31,7 @@ func TestContextWithRemoteIP(t *testing.T) {
 }
 
 func TestExtractIP(t *testing.T) {
+	t.Parallel()
 	tests := []struct {
 		name     string
 		input    string

@@ -21,6 +21,7 @@ func ptrIntegration[T any](v T) *T {
 }
 
 func TestToolManager_ExecuteTool_WithHooks(t *testing.T) {
+	t.Parallel()
 	// Setup Manager
 	busProvider, err := bus.NewProvider(&busproto.MessageBus{})
 	require.NoError(t, err)

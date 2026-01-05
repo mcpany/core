@@ -11,6 +11,7 @@ import (
 )
 
 func TestTextTemplate_Render(t *testing.T) {
+	t.Parallel()
 	templateString := "Hello, {{name}}! You are {{age}} years old."
 	tpl, err := NewTemplate(templateString, "{{", "}}")
 	require.NoError(t, err)
@@ -26,12 +27,14 @@ func TestTextTemplate_Render(t *testing.T) {
 }
 
 func TestTextTemplate_InvalidTemplate(t *testing.T) {
+	t.Parallel()
 	templateString := "Hello, {{name!"
 	_, err := NewTemplate(templateString, "{{", "}}")
 	require.Error(t, err)
 }
 
 func TestTextTemplate_MissingParameter(t *testing.T) {
+	t.Parallel()
 	templateString := "Hello, {{name}}!"
 	tpl, err := NewTemplate(templateString, "{{", "}}")
 	require.NoError(t, err)
@@ -43,6 +46,7 @@ func TestTextTemplate_MissingParameter(t *testing.T) {
 }
 
 func TestTextTemplate_MultiplePlaceholders(t *testing.T) {
+	t.Parallel()
 	templateString := "User: {{user}}, Role: {{role}}, ID: {{id}}"
 	tpl, err := NewTemplate(templateString, "{{", "}}")
 	require.NoError(t, err)
@@ -58,6 +62,7 @@ func TestTextTemplate_MultiplePlaceholders(t *testing.T) {
 }
 
 func TestTextTemplate_CustomDelimiters(t *testing.T) {
+	t.Parallel()
 	templateString := "Data: [=data=], Value: [=value=]"
 	tpl, err := NewTemplate(templateString, "[=", "=]")
 	require.NoError(t, err)
@@ -72,6 +77,7 @@ func TestTextTemplate_CustomDelimiters(t *testing.T) {
 }
 
 func TestTextTemplate_EmptyTemplate(t *testing.T) {
+	t.Parallel()
 	templateString := ""
 	tpl, err := NewTemplate(templateString, "{{", "}}")
 	require.NoError(t, err)

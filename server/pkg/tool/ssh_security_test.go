@@ -15,6 +15,7 @@ import (
 )
 
 func TestLocalCommandTool_SSHInjection_Prevention(t *testing.T) {
+	t.Parallel()
 	// This test verifies that arguments to 'ssh' command are checked for shell injection.
 
 	tool := &v1.Tool{

@@ -8,6 +8,7 @@ import (
 )
 
 func TestReplaceURLPath_DoubleSubstitution(t *testing.T) {
+	t.Parallel()
 	// Case 1: "a" injects a placeholder for "b".
 	params := map[string]interface{}{
 		"a": "{{b}}",
@@ -34,6 +35,7 @@ func TestReplaceURLPath_DoubleSubstitution(t *testing.T) {
 }
 
 func TestReplaceURLPath_Standard(t *testing.T) {
+	t.Parallel()
 	params := map[string]interface{}{
 		"id": "123",
 		"slug": "hello world",
@@ -49,6 +51,7 @@ func TestReplaceURLPath_Standard(t *testing.T) {
 }
 
 func TestReplaceURLPath_MissingKey(t *testing.T) {
+	t.Parallel()
 	params := map[string]interface{}{
 		"id": "123",
 	}

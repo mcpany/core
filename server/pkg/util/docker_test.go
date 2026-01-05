@@ -14,6 +14,7 @@ import (
 )
 
 func TestIsDockerSocketAccessible(t *testing.T) {
+	// t.Parallel() removed due to global variable modification
 	originalFunc := IsDockerSocketAccessibleFunc
 	defer func() { IsDockerSocketAccessibleFunc = originalFunc }()
 
@@ -33,6 +34,7 @@ func TestIsDockerSocketAccessible(t *testing.T) {
 }
 
 func TestCloseDockerClient(t *testing.T) {
+	// t.Parallel() removed due to global variable modification
 	// This is a smoke test to ensure CloseDockerClient doesn't panic.
 	// A proper test would require refactoring to use interfaces.
 	originalClient := dockerClient
@@ -48,6 +50,7 @@ func TestCloseDockerClient(t *testing.T) {
 }
 
 func TestIsDockerSocketAccessibleDefault(t *testing.T) {
+	// t.Parallel() removed due to global variable modification
 	originalClient := dockerClient
 	originalOnce := once
 	// The instruction provided a syntactically incorrect line: `client := &MockDockerClient{once: originalOnce} := once`.

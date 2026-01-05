@@ -18,7 +18,7 @@ import (
 
 func TestUpstreamService_GoogleCalendar(t *testing.T) {
 	if os.Getenv("GOOGLE_API_KEY") == "" {
-		t.Skip("Skipping test because GOOGLE_API_KEY is not set")
+		// t.Skip("Skipping test because GOOGLE_API_KEY is not set")
 	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), integration.TestWaitTimeShort)

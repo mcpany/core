@@ -10,6 +10,7 @@ import (
 )
 
 func TestParseToolName(t *testing.T) {
+	t.Parallel()
 	testCases := []struct {
 		name          string
 		toolName      string
@@ -75,6 +76,7 @@ func TestParseToolName(t *testing.T) {
 }
 
 func TestGetFullyQualifiedToolName(t *testing.T) {
+	t.Parallel()
 	serviceID := "test-service"
 	methodName := "test-method"
 	expected := "test-service.test-method"

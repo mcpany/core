@@ -11,6 +11,7 @@ import (
 )
 
 func TestIsSensitiveKey(t *testing.T) {
+	t.Parallel()
 	tests := []struct {
 		key      string
 		expected bool
@@ -38,6 +39,7 @@ func TestIsSensitiveKey(t *testing.T) {
 }
 
 func TestRedactMap(t *testing.T) {
+	t.Parallel()
 	input := map[string]interface{}{
 		"username": "user1",
 		"password": "secretpassword",
@@ -79,6 +81,7 @@ func TestRedactMap(t *testing.T) {
 }
 
 func TestRedactJSON(t *testing.T) {
+	t.Parallel()
 	t.Run("valid json object", func(t *testing.T) {
 		input := `{"username": "user1", "password": "secretpassword"}`
 		output := RedactJSON([]byte(input))
@@ -154,6 +157,7 @@ func TestRedactJSON(t *testing.T) {
 }
 
 func TestRedactJSON_FalsePositives(t *testing.T) {
+	t.Parallel()
 	// These tests verify that innocent words sharing a prefix with sensitive keys
 	// are NOT redacted, unless they appear to be part of a composite key (CamelCase/PascalCase).
 

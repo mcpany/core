@@ -36,6 +36,7 @@ func (m *mockExecutor) ExecuteWithStdIO(ctx context.Context, cmd string, args []
 }
 
 func TestLargeIntPrecisionLoss(t *testing.T) {
+	t.Parallel()
 	// Large integer that cannot be represented exactly as float64
 	// 2^63 - 1 = 9223372036854775807
 	// float64 has 53 bits of mantissa.

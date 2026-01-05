@@ -10,6 +10,7 @@ import (
 )
 
 func TestIsNil(t *testing.T) {
+	t.Parallel()
 	tests := []struct {
 		name     string
 		input    any

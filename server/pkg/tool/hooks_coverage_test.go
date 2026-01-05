@@ -20,6 +20,7 @@ import (
 )
 
 func TestNewWebhookHook(t *testing.T) {
+	t.Parallel()
 	config := &configv1.WebhookConfig{
 		Url:           "http://example.com",
 		WebhookSecret: "dGVzdC1zZWNyZXQtdmFsaWQtYmFzZTY0",
@@ -31,6 +32,7 @@ func TestNewWebhookHook(t *testing.T) {
 }
 
 func TestSigningRoundTripper_RoundTrip(t *testing.T) {
+	t.Parallel()
 	// "secret" in base64 is c2VjcmV0, but specific library might require more.
 	// "test-secret-valid-base64" -> "dGVzdC1zZWNyZXQtdmFsaWQtYmFzZTY0"
 	validSecret := "test-secret-valid-base64"
@@ -85,6 +87,7 @@ func (m *MockTransport) RoundTrip(req *http.Request) (*http.Response, error) {
 }
 
 func TestWebhookHook_ExecutePre(t *testing.T) {
+	t.Parallel()
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		// Respond with CloudEvent in Binary Mode
 		w.Header().Set("Ce-Id", "resp-id")
@@ -118,6 +121,7 @@ func TestWebhookHook_ExecutePre(t *testing.T) {
 }
 
 func TestWebhookHook_ExecutePre_Errors(t *testing.T) {
+	t.Parallel()
 	// 1. Unmarshal Inputs Fail
 	hook := NewWebhookHook(&configv1.WebhookConfig{})
 	req := &ExecutionRequest{
@@ -149,6 +153,7 @@ func TestWebhookHook_ExecutePre_Errors(t *testing.T) {
 }
 
 func TestPolicyHook_InvalidRegex(t *testing.T) {
+	t.Parallel()
 	// Case: Invalid Regex (Should skip and log error, not panic)
 	// We verify it falls back to default action (Deny in this case)
 	policy := &configv1.CallPolicy{

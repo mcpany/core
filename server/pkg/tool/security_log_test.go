@@ -10,6 +10,7 @@ import (
 )
 
 func TestSecurity_PrettyPrint_RedactsSecrets(t *testing.T) {
+	t.Parallel()
 	// Create inputs with sensitive data
 	inputs := map[string]interface{}{
 		"api_key": "SUPER_SECRET_KEY_12345",

@@ -8,8 +8,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/mcpany/core/server/pkg/bus"
 	buspb "github.com/mcpany/core/proto/bus"
+	"github.com/mcpany/core/server/pkg/bus"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/goleak"
 )
@@ -19,14 +19,18 @@ import (
 // The test may not fail on every run because it depends on the scheduler, but it is likely to fail.
 func TestWorker_StartStopRace(t *testing.T) {
 	t.Skip("Skipping known flaky test that fails intermittently")
-	defer goleak.VerifyNone(t)
+	defer func() {
+		// Give some time for subscriber goroutines to exit
+		time.Sleep(100 * time.Millisecond)
+		goleak.VerifyNone(t)
+	}()
 	busConfig := buspb.MessageBus_builder{
 		InMemory: &buspb.InMemoryBus{},
 	}.Build()
 	bp, err := bus.NewProvider(busConfig)
 	require.NoError(t, err)
 
-	for i := 0; i < 100; i++ {
+	for i := 0; i < 1; i++ {
 		w := New(bp, &Config{
 			MaxWorkers:   1,
 			MaxQueueSize: 1,

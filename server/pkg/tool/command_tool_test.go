@@ -67,6 +67,7 @@ func newJSONCommandTool(command string, callDef *configv1.CommandLineCallDefinit
 
 func TestCommandTool_Execute(t *testing.T) {
 	t.Parallel()
+
 	t.Run("successful execution", func(t *testing.T) {
 		t.Parallel()
 		callDef := &configv1.CommandLineCallDefinition{
@@ -227,6 +228,7 @@ func TestCommandTool_Execute(t *testing.T) {
 }
 
 func TestCommandTool_GetCacheConfig(t *testing.T) {
+	t.Parallel()
 	cacheConfig := &configv1.CacheConfig{}
 	callDef := &configv1.CommandLineCallDefinition{}
 	callDef.SetCache(cacheConfig)
@@ -235,6 +237,7 @@ func TestCommandTool_GetCacheConfig(t *testing.T) {
 }
 
 func TestCommandTool_Tool(t *testing.T) {
+	t.Parallel()
 	toolProto := &v1.Tool{}
 	toolProto.SetName("test-tool")
 	service := (&configv1.CommandLineUpstreamService_builder{

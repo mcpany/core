@@ -111,7 +111,7 @@ func TestUpstreamService_PokeAPI(t *testing.T) {
 	}
 
 	if err != nil {
-		t.Skipf("Skipping test: all %d retries to pokeapi.co failed with transient errors. Last error: %v", maxRetries, err)
+		// t.Skipf("Skipping test: all %d retries to pokeapi.co failed with transient errors. Last error: %v", maxRetries, err)
 	}
 
 	require.NoError(t, err, "Error calling getPokemon tool")
@@ -224,7 +224,7 @@ func TestUpstreamService_PokeAPI_ParameterSubstitution(t *testing.T) {
 	}
 
 	if err != nil {
-		t.Skipf("Skipping test: all %d retries to pokeapi.co failed with transient errors. Last error: %v", maxRetries, err)
+		// t.Skipf("Skipping test: all %d retries to pokeapi.co failed with transient errors. Last error: %v", maxRetries, err)
 	}
 
 	require.NoError(t, err, "Error calling getPokemon tool")

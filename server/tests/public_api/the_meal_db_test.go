@@ -111,7 +111,7 @@ func TestUpstreamService_TheMealDB(t *testing.T) {
 	}
 
 	if err != nil {
-		t.Skipf("Skipping test: all %d retries to themealdb.com failed with transient errors. Last error: %v", maxRetries, err)
+		// t.Skipf("Skipping test: all %d retries to themealdb.com failed with transient errors. Last error: %v", maxRetries, err)
 	}
 
 	require.NoError(t, err, "Error calling searchMeal tool")
@@ -127,10 +127,10 @@ func TestUpstreamService_TheMealDB(t *testing.T) {
 	require.NoError(t, err, "Failed to unmarshal JSON response")
 
 	if _, ok := theMealDBResponse["meals"].(string); ok {
-		t.Skip("Skipping test, no meals found in response")
+		// t.Skip("Skipping test, no meals found in response")
 	}
 	if theMealDBResponse["meals"] == nil {
-		t.Skip("Skipping test, no meals found in response")
+		// t.Skip("Skipping test, no meals found in response")
 	}
 	meals, ok := theMealDBResponse["meals"].([]interface{})
 	require.True(t, ok, "The meals should be an array")

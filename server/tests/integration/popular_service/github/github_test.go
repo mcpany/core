@@ -19,7 +19,7 @@ import "os"
 
 func TestUpstreamService_GitHub(t *testing.T) {
 	if os.Getenv("GITHUB_TOKEN") == "" {
-		t.Skip("GITHUB_TOKEN is not set")
+		// t.Skip("GITHUB_TOKEN is not set")
 	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), integration.TestWaitTimeShort)

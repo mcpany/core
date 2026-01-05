@@ -24,7 +24,7 @@ func TestUpstreamService_Jira(t *testing.T) {
 	jiraTestIssueSummary := os.Getenv("JIRA_TEST_ISSUE_SUMMARY")
 
 	if jiraDomain == "" || jiraUsername == "" || jiraPat == "" || jiraTestIssueKey == "" || jiraTestIssueSummary == "" {
-		t.Skip("Skipping Jira integration test because one or more of the required environment variables are not set: JIRA_DOMAIN, JIRA_USERNAME, JIRA_PAT, JIRA_TEST_ISSUE_KEY, JIRA_TEST_ISSUE_SUMMARY")
+		// t.Skip("Skipping Jira integration test because one or more of the required environment variables are not set: JIRA_DOMAIN, JIRA_USERNAME, JIRA_PAT, JIRA_TEST_ISSUE_KEY, JIRA_TEST_ISSUE_SUMMARY")
 	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), integration.TestWaitTimeShort)
