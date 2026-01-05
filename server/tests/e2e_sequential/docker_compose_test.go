@@ -63,6 +63,11 @@ func TestDockerComposeE2E(t *testing.T) {
 		// Dump logs from the active compose file if set
 		if currentComposeFile != "" {
 			t.Logf("Dumping logs from %s...", currentComposeFile)
+			// Determine project directory based on the compose file (root or example)
+			// We can't easily know which one it is here without tracking it, but we can try to guess or just use rootDir as base often works,
+			// or better: just don't rely on relative paths for logs if possible, OR, we need to store the projectDir alongside the compose file.
+			// For simplicity in cleanup, we might skip --project-directory for `logs` if it doesn't strictly need it to find container names (it usually searches by project name + service name).
+			// Docker compose V2 usually needs the project name which we set via env.
 			cmd := exec.Command("docker", "compose", "-f", currentComposeFile, "logs")
 			cmd.Stdout = os.Stdout
 			cmd.Stderr = os.Stderr
@@ -98,8 +103,8 @@ func TestDockerComposeE2E(t *testing.T) {
 	cleanup() // Ensure clean start
 
 	// Helper to get dynamic port
-	getServicePort := func(composeFile, service, internalPort string) string {
-		cmd := exec.Command("docker", "compose", "-f", composeFile, "port", service, internalPort)
+	getServicePort := func(composeFile, projectDir, service, internalPort string) string {
+		cmd := exec.Command("docker", "compose", "-f", composeFile, "--project-directory", projectDir, "port", service, internalPort)
 		cmd.Env = os.Environ()
 		out, err := cmd.Output()
 		require.NoError(t, err, "Failed to get port for %s %s", service, internalPort)
@@ -119,15 +124,16 @@ func TestDockerComposeE2E(t *testing.T) {
 	if _, err := os.Stat(rootCompose); err == nil {
 		t.Log("Starting root docker-compose with dynamic ports...")
 		// Create dynamic override
-		dynamicCompose := createDynamicCompose(t, rootCompose)
+		dynamicCompose := createDynamicCompose(t, rootDir, rootCompose)
 		currentComposeFile = dynamicCompose
 		defer os.Remove(dynamicCompose)
 
-		runCommand(t, rootDir, "docker", "compose", "-f", dynamicCompose, "up", "-d", "--wait")
+		// We must pass --project-directory because the dynamic file is in build/
+		runCommand(t, rootDir, "docker", "compose", "-f", dynamicCompose, "--project-directory", rootDir, "up", "-d", "--wait")
 
 		// Discover ports
-		serverPort := getServicePort(dynamicCompose, "mcpany-server", "50050")
-		// prometheusPort := getServicePort(dynamicCompose, "prometheus", "9090")
+		serverPort := getServicePort(dynamicCompose, rootDir, "mcpany-server", "50050")
+		// prometheusPort := getServicePort(dynamicCompose, rootDir, "prometheus", "9090")
 		// We might fallback or skip prometheus if not present.
 
 		t.Logf("Root mcpany-server running on port %s", serverPort)
@@ -136,7 +142,7 @@ func TestDockerComposeE2E(t *testing.T) {
 		// We only verify prometheus if we can find the port.
 		// For now, let's assume we focused on example-compose as the main test.
 		// If root compose is present, we shut it down.
-		runCommand(t, rootDir, "docker", "compose", "-f", dynamicCompose, "down")
+		runCommand(t, rootDir, "docker", "compose", "-f", dynamicCompose, "--project-directory", rootDir, "down")
 	} else {
 		t.Log("Skipping root docker-compose test (docker-compose.yml not found)")
 	}
@@ -146,14 +152,14 @@ func TestDockerComposeE2E(t *testing.T) {
 
 	exampleDir := filepath.Join(rootDir, "examples/docker-compose-demo")
 	originalCompose := filepath.Join(exampleDir, "docker-compose.yml")
-	dynamicCompose := createDynamicCompose(t, originalCompose)
+	dynamicCompose := createDynamicCompose(t, rootDir, originalCompose)
 	currentComposeFile = dynamicCompose
 	defer os.Remove(dynamicCompose)
 
-	runCommand(t, rootDir, "docker", "compose", "-f", dynamicCompose, "up", "-d", "--wait")
+	runCommand(t, rootDir, "docker", "compose", "-f", dynamicCompose, "--project-directory", exampleDir, "up", "-d", "--wait")
 
 	// 6. Verify Example Health
-	serverPort := getServicePort(dynamicCompose, "mcpany-server", "50050")
+	serverPort := getServicePort(dynamicCompose, exampleDir, "mcpany-server", "50050")
 	t.Logf("Example mcpany-server running on port %s", serverPort)
 	verifyEndpoint(t, fmt.Sprintf("http://localhost:%s/healthz", serverPort), 200, 30*time.Second)
 
@@ -483,8 +489,8 @@ func verifyToolMetricDirect(t *testing.T, metricsURL, toolName string) {
 	require.Contains(t, body, fmt.Sprintf("tool=\"%s\"", toolName), "Tool label not found")
 }
 
-// createDynamicCompose creates a temporary docker-compose file with 0 ports
-func createDynamicCompose(t *testing.T, originalPath string) string {
+// createDynamicCompose creates a temporary docker-compose file with 0 ports in the build directory
+func createDynamicCompose(t *testing.T, rootDir, originalPath string) string {
 	content, err := os.ReadFile(originalPath)
 	require.NoError(t, err)
 
@@ -506,9 +512,13 @@ func createDynamicCompose(t *testing.T, originalPath string) string {
 	s = re3.ReplaceAllString(s, `"0:8080"`)
 	s = re4.ReplaceAllString(s, `"0:9090"`)
 
-	// Create temp file in same dir to preserve relative paths
-	dir := filepath.Dir(originalPath)
-	tmpFile, err := os.CreateTemp(dir, "docker-compose-dynamic-*.yml")
+	// Ensure build directory exists
+	buildDir := filepath.Join(rootDir, "build")
+	err = os.MkdirAll(buildDir, 0755)
+	require.NoError(t, err)
+
+	// Create temp file in build dir
+	tmpFile, err := os.CreateTemp(buildDir, "docker-compose-dynamic-*.yml")
 	require.NoError(t, err)
 
 	_, err = tmpFile.WriteString(s)
