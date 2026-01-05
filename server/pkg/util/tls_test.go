@@ -60,6 +60,7 @@ func generateTestCerts(t *testing.T, tempDir string) (certPath, keyPath string) 
 }
 
 func TestNewHTTPClientWithTLS(t *testing.T) {
+	t.Parallel()
 	t.Run("nil config returns client with safe dialer", func(t *testing.T) {
 		client, err := NewHTTPClientWithTLS(nil)
 		require.NoError(t, err)

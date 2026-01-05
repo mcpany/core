@@ -18,6 +18,7 @@ import (
 )
 
 func TestMCPTool_Execute_Bug_OriginalName(t *testing.T) {
+	t.Parallel()
 	// This test demonstrates the fix where MCPTool uses the original name (from tool definition)
 	// instead of the sanitized name (from request parsing) when calling the upstream service.
 

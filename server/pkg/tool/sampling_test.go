@@ -21,6 +21,7 @@ func (m *mockSession) ListRoots(ctx context.Context) (*mcp.ListRootsResult, erro
 }
 
 func TestContextWithSession(t *testing.T) {
+	t.Parallel()
 	ctx := context.Background()
 	s := &mockSession{}
 
@@ -42,6 +43,7 @@ func TestContextWithSession(t *testing.T) {
 }
 
 func TestContextWithSampler_BackwardCompatibility(t *testing.T) {
+	t.Parallel()
 	ctx := context.Background()
 	s := &mockSession{}
 

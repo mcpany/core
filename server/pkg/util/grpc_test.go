@@ -23,6 +23,7 @@ func (m *mockServerStream) Context() context.Context {
 }
 
 func TestWrappedServerStream_Context(t *testing.T) {
+	t.Parallel()
 	baseCtx := context.WithValue(context.Background(), "base", "value")
 	newCtx := context.WithValue(context.Background(), "new", "value")
 

@@ -111,7 +111,7 @@ func TestUpstreamService_Zippopotam(t *testing.T) {
 	}
 
 	if err != nil {
-		t.Skipf("Skipping test: all %d retries to api.zippopotam.us failed with transient errors. Last error: %v", maxRetries, err)
+		// t.Skipf("Skipping test: all %d retries to api.zippopotam.us failed with transient errors. Last error: %v", maxRetries, err)
 	}
 
 	require.NoError(t, err, "Error calling getZipcode tool")

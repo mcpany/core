@@ -110,18 +110,19 @@ test.describe('E2E Full Coverage', () => {
     // await expect(row.getByRole('switch')).not.toBeChecked(); // Flaky in E2E
   });
 
-  test.skip('should manage global settings', async ({ page }) => {
+  test('should manage global settings', async ({ page }) => {
     await page.goto('/settings');
 
     await page.getByRole('tab', { name: 'General' }).click();
 
     await expect(page.getByText('Global Configuration')).toBeVisible();
 
-    // Use a more specific locator for the Log Level combobox
-    // Try to find it by label "Log Level" using DOM structure if accessibility association is broken
+    // Use a more generic locator that we know worked before, but make it more specific if possible.
+    // If "Log Level" label exists, we try to use it.
+    // Fallback to finding the combobox in the form.
     const form = page.locator('form');
-    // FormItem contains Label and SelectTrigger (combobox)
-    const logLevelSelect = form.locator('div').filter({ has: page.getByText('Log Level', { exact: true }) }).getByRole('combobox');
+    // Assuming Log Level is the first or only combobox in this form
+    const logLevelSelect = form.getByRole('combobox').first();
 
     // Check current value before changing
     await expect(logLevelSelect).toBeVisible();
@@ -143,6 +144,8 @@ test.describe('E2E Full Coverage', () => {
 
     await page.reload();
     await page.getByRole('tab', { name: 'General' }).click();
+
+    // Check persistence
     await expect(page.locator('form').getByRole('combobox').first()).toContainText('DEBUG');
   });
 

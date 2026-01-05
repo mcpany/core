@@ -22,7 +22,7 @@ import (
 )
 
 func TestUpstreamService_CatFacts(t *testing.T) {
-	t.Skip("Skipping flaky cat facts test due to rate limiting issues")
+	// t.Skip("Skipping flaky cat facts test due to rate limiting issues")
 	ctx, cancel := context.WithTimeout(context.Background(), integration.TestWaitTimeShort)
 	defer cancel()
 
@@ -104,7 +104,7 @@ func TestUpstreamService_CatFacts(t *testing.T) {
 	}
 
 	if err != nil {
-		t.Skipf("Skipping test: all %d retries to catfact.ninja failed with transient errors. Last error: %v", maxRetries, err)
+		// t.Skipf("Skipping test: all %d retries to catfact.ninja failed with transient errors. Last error: %v", maxRetries, err)
 	}
 
 	require.NoError(t, err, "Error calling getCatFact tool")

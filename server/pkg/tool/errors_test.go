@@ -9,6 +9,7 @@ import (
 )
 
 func TestErrToolNotFound(t *testing.T) {
+	t.Parallel()
 	err := ErrToolNotFound
 	if err == nil {
 		t.Error("Expected ErrToolNotFound to be non-nil")

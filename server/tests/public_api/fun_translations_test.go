@@ -22,7 +22,7 @@ import (
 )
 
 func TestUpstreamService_FunTranslations(t *testing.T) {
-	t.SkipNow()
+	// t.SkipNow()
 	ctx, cancel := context.WithTimeout(context.Background(), integration.TestWaitTimeShort)
 	defer cancel()
 
@@ -112,14 +112,14 @@ func TestUpstreamService_FunTranslations(t *testing.T) {
 			continue
 		}
 		if strings.Contains(err.Error(), "upstream HTTP request failed with status 429") {
-			t.Skipf("Skipping test due to rate limiting from api.funtranslations.com: %v", err)
+			// t.Skipf("Skipping test due to rate limiting from api.funtranslations.com: %v", err)
 		}
 
 		require.NoError(t, err, "unrecoverable error calling translateToYoda tool")
 	}
 
 	if err != nil {
-		t.Skipf("Skipping test: all %d retries to api.funtranslations.com failed with transient errors. Last error: %v", maxRetries, err)
+		// t.Skipf("Skipping test: all %d retries to api.funtranslations.com failed with transient errors. Last error: %v", maxRetries, err)
 	}
 
 	require.NoError(t, err, "Error calling translateToYoda tool")

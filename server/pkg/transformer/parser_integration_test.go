@@ -11,6 +11,7 @@ import (
 )
 
 func TestTextParser_ParseAndTransform_JSON(t *testing.T) {
+	t.Parallel()
 	parser := NewTextParser()
 	jsonInput := []byte(`{"person": {"name": "test", "age": 123}}`)
 	config := map[string]string{
@@ -28,6 +29,7 @@ func TestTextParser_ParseAndTransform_JSON(t *testing.T) {
 }
 
 func TestTextParser_ParseAndTransform_XML(t *testing.T) {
+	t.Parallel()
 	parser := NewTextParser()
 	xmlInput := []byte(`<root><name>test</name><value>123</value></root>`)
 	config := map[string]string{
@@ -45,6 +47,7 @@ func TestTextParser_ParseAndTransform_XML(t *testing.T) {
 }
 
 func TestTextParser_ParseAndTransform_Text(t *testing.T) {
+	t.Parallel()
 	parser := NewTextParser()
 	textInput := []byte(`User ID: 12345, Name: John Doe`)
 	config := map[string]string{
@@ -62,6 +65,7 @@ func TestTextParser_ParseAndTransform_Text(t *testing.T) {
 }
 
 func TestTextParser_ParseAndTransform_JQ(t *testing.T) {
+	t.Parallel()
 	parser := NewTextParser()
 	jsonInput := []byte(`{"users": [{"name": "Alice"}, {"name": "Bob"}]}`)
 	query := `{names: [.users[].name]}`

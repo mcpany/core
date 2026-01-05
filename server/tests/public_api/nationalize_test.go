@@ -22,7 +22,7 @@ import (
 )
 
 func TestUpstreamService_Nationalize(t *testing.T) {
-	t.SkipNow()
+	// t.SkipNow()
 	ctx, cancel := context.WithTimeout(context.Background(), integration.TestWaitTimeShort)
 	defer cancel()
 
@@ -105,7 +105,7 @@ func TestUpstreamService_Nationalize(t *testing.T) {
 	}
 
 	if err != nil {
-		t.Skipf("Skipping test: all %d retries to api.nationalize.io failed with transient errors. Last error: %v", maxRetries, err)
+		// t.Skipf("Skipping test: all %d retries to api.nationalize.io failed with transient errors. Last error: %v", maxRetries, err)
 	}
 
 	require.NoError(t, err, "Error calling getNationality tool")

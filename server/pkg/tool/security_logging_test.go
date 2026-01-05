@@ -35,6 +35,7 @@ func (a *sensitiveAuthenticator) Authenticate(r *http.Request) error {
 var _ auth.UpstreamAuthenticator = &sensitiveAuthenticator{}
 
 func TestHTTPTool_Execute_LogsSensitiveHeaders(t *testing.T) {
+	t.Parallel()
 	// Reset logger to ensure we can set it to DEBUG
 	logging.ForTestsOnlyResetLogger()
 

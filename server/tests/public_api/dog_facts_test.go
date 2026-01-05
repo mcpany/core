@@ -22,7 +22,7 @@ import (
 )
 
 func TestUpstreamService_DogFacts(t *testing.T) {
-	t.SkipNow()
+	// t.SkipNow()
 	ctx, cancel := context.WithTimeout(context.Background(), integration.TestWaitTimeShort)
 	defer cancel()
 
@@ -104,7 +104,7 @@ func TestUpstreamService_DogFacts(t *testing.T) {
 	}
 
 	if err != nil {
-		t.Skipf("Skipping test: all %d retries to dog-api.kinduff.com failed with transient errors. Last error: %v", maxRetries, err)
+		// t.Skipf("Skipping test: all %d retries to dog-api.kinduff.com failed with transient errors. Last error: %v", maxRetries, err)
 	}
 
 	require.NoError(t, err, "Error calling getDogFact tool")
@@ -121,7 +121,7 @@ func TestUpstreamService_DogFacts(t *testing.T) {
 
 	require.NotNil(t, dogFactResponse["facts"], "The facts should not be nil")
 	if !dogFactResponse["success"].(bool) {
-		t.Skipf("Skipping test due to transient error from dog-api.kinduff.com: success is false")
+		// t.Skipf("Skipping test due to transient error from dog-api.kinduff.com: success is false")
 	}
 	require.Equal(t, true, dogFactResponse["success"], "The success should be true")
 	t.Logf("SUCCESS: Received a dog fact: %s", textContent.Text)

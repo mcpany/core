@@ -24,6 +24,7 @@ func (m *MockMCPServerProvider) Server() *mcp.Server {
 }
 
 func TestManager_AddTool_Errors(t *testing.T) {
+	t.Parallel()
 	tm := NewManager(nil)
 
 	// Test empty service ID
@@ -44,6 +45,7 @@ func TestManager_AddTool_Errors(t *testing.T) {
 }
 
 func TestManager_AddTool_WithServer(t *testing.T) {
+	t.Parallel()
 	tm := NewManager(nil)
 
 	// Setup real MCP server
@@ -87,12 +89,14 @@ func TestManager_AddTool_WithServer(t *testing.T) {
 
 // Additional tests for context/execution flow?
 func TestManager_ExecuteTool_NotFound(t *testing.T) {
+	t.Parallel()
 	tm := NewManager(nil)
 	_, err := tm.ExecuteTool(context.Background(), &ExecutionRequest{ToolName: "missing"})
 	assert.Error(t, err)
 }
 
 func TestManager_ExecuteTool_Chain(t *testing.T) {
+	t.Parallel()
 	// Test middleware chain
 	tm := NewManager(nil)
 

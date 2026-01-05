@@ -13,6 +13,7 @@ import (
 )
 
 func TestManager_IsToolAllowed(t *testing.T) {
+	t.Parallel()
 	manager := NewManager(nil)
 
 	// Define profiles
@@ -137,6 +138,7 @@ func TestManager_IsToolAllowed(t *testing.T) {
 // SPDX-License-Identifier: Apache-2.0
 
 func TestMatchesProperties_Extended(t *testing.T) {
+	t.Parallel()
 	tm := NewManager(nil)
 
 	tests := []struct {

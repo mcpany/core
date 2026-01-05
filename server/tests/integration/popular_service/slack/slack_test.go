@@ -18,10 +18,10 @@ import (
 
 func TestUpstreamService_Slack(t *testing.T) {
 	if os.Getenv("SLACK_API_TOKEN") == "" {
-		t.Skip("SLACK_API_TOKEN is not set")
+		// t.Skip("SLACK_API_TOKEN is not set")
 	}
 	if os.Getenv("SLACK_TEST_CHANNEL") == "" {
-		t.Skip("SLACK_TEST_CHANNEL is not set")
+		// t.Skip("SLACK_TEST_CHANNEL is not set")
 	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), integration.TestWaitTimeShort)

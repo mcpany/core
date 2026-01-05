@@ -34,9 +34,9 @@ test.describe('Secrets Manager', () => {
     const secretRow = page.locator('.group').filter({ hasText: secretName }).first();
     await expect(secretRow.getByText('••••••••••••••••••••••••')).toBeVisible();
 
-    /* Flaky in CI/Docker
     // Toggle visibility
     // Click the eye icon button using aria-label
+    // Use force: true because sometimes the button structure might intercept text pointer events
     const toggleButton = secretRow.locator('button[aria-label="Show secret"]');
     await toggleButton.click({ force: true });
     await page.waitForTimeout(500); // Wait for state update/animation
@@ -45,13 +45,8 @@ test.describe('Secrets Manager', () => {
     await expect(secretRow.locator('button[aria-label="Hide secret"]')).toBeVisible();
 
     // Find the span containing the value and check text
-    // The span is the first child of the wrapper which is the first child of the right-side container?
-    // Structure: div(flex) > span.truncate
-    // We can just find the span in the row that contains the value (or dots previously)
-    // But since we expect value now, let's look for the span that is NOT dots
-    const valueSpan = secretRow.locator('span.truncate').first();
-    await expect(valueSpan).toHaveText('test-secret-value');
-    */
+    // The value might take a moment to be revealed/hydrated
+    await expect(secretRow.getByText('test-secret-value')).toBeVisible({ timeout: 5000 });
 
     // Delete the secret
     await secretRow.locator('button[aria-label="Delete secret"]').click();

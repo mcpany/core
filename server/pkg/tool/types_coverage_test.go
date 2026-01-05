@@ -24,6 +24,7 @@ import (
 // --- HTTPTool Tests ---
 
 func TestHTTPTool_Execute_Success(t *testing.T) {
+	t.Parallel()
 	s := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.Method == "GET" {
 			_, _ = w.Write([]byte(`{"status":"ok"}`))
@@ -65,6 +66,7 @@ func TestHTTPTool_Execute_Success(t *testing.T) {
 }
 
 func TestHTTPTool_Execute_Post_WithBody(t *testing.T) {
+	t.Parallel()
 	s := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.Method == "POST" {
 			var body map[string]any
@@ -113,6 +115,7 @@ func TestHTTPTool_Execute_Post_WithBody(t *testing.T) {
 }
 
 func TestHTTPTool_Execute_Auth(t *testing.T) {
+	t.Parallel()
 	s := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.Header.Get("Authorization") == "Bearer token" {
 			_, _ = w.Write([]byte(`{"authed":true}`))
@@ -199,6 +202,7 @@ func (m *MockTypesMCPClient) Close() error                   { return nil }
 func (m *MockTypesMCPClient) Ping(_ context.Context) error { return nil }
 
 func TestMCPTool_Execute(t *testing.T) {
+	t.Parallel()
 	mockClient := &MockTypesMCPClient{
 		CallToolFunc: func(_ context.Context, params *mcp.CallToolParams) (*mcp.CallToolResult, error) {
 			assert.Equal(t, "remote-tool", params.Name)
@@ -250,6 +254,7 @@ func TestMCPTool_Execute(t *testing.T) {
 }
 
 func TestMCPTool_Execute_Errors(t *testing.T) {
+	t.Parallel()
 	mockClient := &MockTypesMCPClient{
 		CallToolFunc: func(_ context.Context, _ *mcp.CallToolParams) (*mcp.CallToolResult, error) {
 			return nil, fmt.Errorf("remote error")
@@ -265,6 +270,7 @@ func TestMCPTool_Execute_Errors(t *testing.T) {
 // --- OpenAPITool Tests ---
 
 func TestOpenAPITool_Execute_Success(t *testing.T) {
+	t.Parallel()
 	s := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.Method == "GET" && r.URL.Path == "/items/123" {
 			_, _ = w.Write([]byte(`{"id":"123","name":"item"}`))
@@ -301,6 +307,7 @@ func TestOpenAPITool_Execute_Success(t *testing.T) {
 }
 
 func TestOpenAPITool_Execute_QueryParam(t *testing.T) {
+	t.Parallel()
 	s := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Query().Get("q") == "search" {
 			_, _ = w.Write([]byte(`{"found":true}`))

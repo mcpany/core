@@ -16,6 +16,7 @@ import (
 )
 
 func TestLocalCommandTool_Execute(t *testing.T) {
+	t.Parallel()
 	inputSchema := &structpb.Struct{
 		Fields: map[string]*structpb.Value{
 			"properties": structpb.NewStructValue(&structpb.Struct{
@@ -62,6 +63,7 @@ func TestLocalCommandTool_Execute(t *testing.T) {
 }
 
 func TestLocalCommandTool_Execute_WithEnv(t *testing.T) {
+	t.Parallel()
 	tool := &v1.Tool{
 		Name: proto.String("test-tool-env"),
 	}
@@ -97,6 +99,7 @@ func TestLocalCommandTool_Execute_WithEnv(t *testing.T) {
 }
 
 func TestLocalCommandTool_Execute_BlockedByPolicy(t *testing.T) {
+	t.Parallel()
 	tool := &v1.Tool{
 		Name:        proto.String("test-tool-blocked"),
 		Description: proto.String("A test tool"),
@@ -133,6 +136,7 @@ func TestLocalCommandTool_Execute_BlockedByPolicy(t *testing.T) {
 // SPDX-License-Identifier: Apache-2.0
 
 func TestLocalCommandTool_Execute_JSONProtocol_StderrCapture(t *testing.T) {
+	t.Parallel()
 	tool := &v1.Tool{
 		Name:        proto.String("test-tool-json-stderr"),
 		Description: proto.String("A test tool that fails"),

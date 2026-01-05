@@ -66,6 +66,7 @@ func setupHTTPToolTest(t *testing.T, handler http.Handler, callDefinition *confi
 
 func TestHTTPTool_Execute_InputTransformation(t *testing.T) {
 	t.Parallel()
+
 	expectedBody := `name=test&age=30`
 	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		body, err := io.ReadAll(r.Body)
@@ -91,6 +92,7 @@ func TestHTTPTool_Execute_InputTransformation(t *testing.T) {
 
 func TestHTTPTool_Execute_OutputTransformation_XML(t *testing.T) {
 	t.Parallel()
+
 	xmlResponse := `<user><id>123</id><name>Test</name></user>`
 	handler := http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		w.Header().Set("Content-Type", "application/xml")
@@ -124,6 +126,7 @@ func TestHTTPTool_Execute_OutputTransformation_XML(t *testing.T) {
 
 func TestHTTPTool_Execute_OutputTransformation_Text(t *testing.T) {
 	t.Parallel()
+
 	textResponse := "User: test-user, Role: admin"
 	handler := http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		w.Header().Set("Content-Type", "text/plain")
@@ -157,6 +160,7 @@ func TestHTTPTool_Execute_OutputTransformation_Text(t *testing.T) {
 
 func TestHTTPTool_Execute_NoTransformation(t *testing.T) {
 	t.Parallel()
+
 	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		assert.Equal(t, "test", r.URL.Query().Get("param"))
 		w.WriteHeader(http.StatusOK)
@@ -184,6 +188,7 @@ func TestHTTPTool_Execute_NoTransformation(t *testing.T) {
 
 func TestHTTPTool_Execute_Errors(t *testing.T) {
 	t.Parallel()
+
 	handler := http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		w.WriteHeader(http.StatusOK)
 		_, _ = w.Write([]byte(`{"status": "ok"}`))
@@ -468,6 +473,7 @@ func TestHTTPTool_Execute_Errors(t *testing.T) {
 
 func TestHTTPTool_Execute_InputTransformation_Webhook(t *testing.T) {
 	t.Parallel()
+
 	webhookServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/cloudevents+json")
 		responseEvent := `{
@@ -510,6 +516,7 @@ func TestHTTPTool_Execute_InputTransformation_Webhook(t *testing.T) {
 
 func TestHTTPTool_Execute_OutputTransformation_RawBytes(t *testing.T) {
 	t.Parallel()
+
 	rawBytesResponse := []byte{0xDE, 0xAD, 0xBE, 0xEF}
 	handler := http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		w.Header().Set("Content-Type", "application/octet-stream")
@@ -538,6 +545,7 @@ func TestHTTPTool_Execute_OutputTransformation_RawBytes(t *testing.T) {
 
 func TestHTTPTool_Execute_OutputTransformation_JQ(t *testing.T) {
 	t.Parallel()
+
 	jsonResponse := `{"users": [{"id": 1, "name": "Alice"}, {"id": 2, "name": "Bob"}]}`
 	handler := http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
@@ -569,6 +577,7 @@ func TestHTTPTool_Execute_OutputTransformation_JQ(t *testing.T) {
 
 func TestHTTPTool_Execute_PathParameterEncoding(t *testing.T) {
 	t.Parallel()
+
 	pathHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		expectedPath := "/users/test%2Fuser"
 		assert.Equal(t, expectedPath, r.URL.RequestURI(), "URL path should be properly escaped")
@@ -609,6 +618,7 @@ func TestHTTPTool_Execute_PathParameterEncoding(t *testing.T) {
 
 func TestHTTPTool_Execute_WithRetry(t *testing.T) {
 	t.Parallel()
+
 	t.Run("retry_succeeds", func(t *testing.T) {
 		t.Parallel()
 		attempt := 0
@@ -754,6 +764,7 @@ func TestHTTPTool_Execute_WithRetry(t *testing.T) {
 
 func TestHTTPTool_Execute_ConsecutiveCalls(t *testing.T) {
 	t.Parallel()
+
 	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		id := r.URL.Query().Get("id")
 		w.WriteHeader(http.StatusOK)
