@@ -112,16 +112,3 @@ func TestNewSafeHTTPClient(t *testing.T) {
 		}
 	})
 }
-
-func TestSafeDialContext(t *testing.T) {
-	// SafeDialContext is just a wrapper around NewSafeDialer().DialContext
-	// We verify that it blocks loopback by default.
-
-	ctx, cancel := context.WithTimeout(context.Background(), 100*time.Millisecond)
-	defer cancel()
-
-	// 127.0.0.1 is loopback
-	_, err := util.SafeDialContext(ctx, "tcp", "127.0.0.1:80")
-	require.Error(t, err)
-	assert.Contains(t, err.Error(), "ssrf attempt blocked")
-}

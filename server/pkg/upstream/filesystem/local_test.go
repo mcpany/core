@@ -1,7 +1,7 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
-package provider
+package filesystem
 
 import (
 	"os"
@@ -44,6 +44,8 @@ func TestValidateLocalPath(t *testing.T) {
 	safeLinkPath := filepath.Join(dataDir, "link_to_test")
 	err = os.Symlink(testFile, safeLinkPath)
 	require.NoError(t, err)
+
+	u := &Upstream{}
 
 	tests := []struct {
 		name        string
@@ -110,8 +112,7 @@ func TestValidateLocalPath(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			p := NewLocalProvider(nil, tt.rootPaths)
-			got, err := p.ResolvePath(tt.virtualPath)
+			got, err := u.validateLocalPath(tt.virtualPath, tt.rootPaths)
 			if tt.wantErr {
 				assert.Error(t, err)
 			} else {

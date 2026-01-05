@@ -7,6 +7,17 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('E2E Full Coverage', () => {
+  test.beforeAll(async ({ request }) => {
+    try {
+        console.log("Checking connectivity to server:50050...");
+        const res = await request.get('http://server:50050/healthz');
+        console.log("Server health check status:", res.status());
+        if (!res.ok()) console.error("Server health check failed:", await res.text());
+    } catch (e) {
+        console.error("Connectivity check failed:", e);
+    }
+  });
+
   test.beforeEach(async ({ page }) => {
     await page.goto('/');
   });
@@ -133,7 +144,7 @@ test.describe('E2E Full Coverage', () => {
 
     await page.reload();
     await page.getByRole('tab', { name: 'General' }).click();
-    await expect(page.locator('form').getByRole('combobox').first()).toContainText('DEBUG');
+    await expect(form.locator('div').filter({ has: page.getByText('Log Level', { exact: true }) }).getByRole('combobox')).toContainText('DEBUG');
   });
 
   test('should execute tools in playground', async ({ page }) => {

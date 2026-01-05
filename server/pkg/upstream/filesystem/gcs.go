@@ -1,4 +1,7 @@
-package provider
+// Copyright 2025 Author(s) of MCP Any
+// SPDX-License-Identifier: Apache-2.0
+
+package filesystem
 
 import (
 	"context"
@@ -15,12 +18,7 @@ import (
 	"google.golang.org/api/iterator"
 )
 
-type GcsProvider struct {
-	fs     afero.Fs
-	client *storage.Client
-}
-
-func NewGcsProvider(_ context.Context, config *configv1.GcsFs) (*GcsProvider, error) {
+func (u *Upstream) createGcsFilesystem(_ context.Context, config *configv1.GcsFs) (afero.Fs, error) {
 	if config == nil {
 		return nil, fmt.Errorf("gcs config is nil")
 	}
@@ -30,35 +28,12 @@ func NewGcsProvider(_ context.Context, config *configv1.GcsFs) (*GcsProvider, er
 		return nil, fmt.Errorf("failed to create gcs client: %w", err)
 	}
 
-	return &GcsProvider{
-		fs:     &gcsFs{client: client, bucket: config.GetBucket(), ctx: context.Background()},
-		client: client,
-	}, nil
+	u.mu.Lock()
+	u.closers = append(u.closers, client)
+	u.mu.Unlock()
+
+	return &gcsFs{client: client, bucket: config.GetBucket(), ctx: context.Background()}, nil
 }
-
-func (p *GcsProvider) GetFs() afero.Fs {
-	return p.fs
-}
-
-func (p *GcsProvider) ResolvePath(virtualPath string) (string, error) {
-	// Same as S3
-	cleanPath := path.Clean("/" + virtualPath)
-	cleanPath = strings.TrimPrefix(cleanPath, "/")
-
-	if cleanPath == "" || cleanPath == "." {
-		return "", fmt.Errorf("invalid path")
-	}
-	return cleanPath, nil
-}
-
-func (p *GcsProvider) Close() error {
-	if p.client != nil {
-		return p.client.Close()
-	}
-	return nil
-}
-
-// gcsFs implementation copy from original gcs.go
 
 type gcsFs struct {
 	client *storage.Client

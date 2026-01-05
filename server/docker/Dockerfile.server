@@ -28,16 +28,16 @@ COPY proto ./proto/
 
 # Set working directory to server for dependency download
 WORKDIR /app/server
-RUN go mod download
+RUN go mod download && go mod verify
 
 # Install GCC for CGO and curl for healthchecks
 RUN apt-get update && apt-get install -y gcc curl
 
-# Copy the rest of the source code
+# Copy source code (from root)
 WORKDIR /app
 COPY . .
 
-# Set the working directory for the build
+# Build the Go application
 WORKDIR /app/server
 
 # Build the Go application for the target platform

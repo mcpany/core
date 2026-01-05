@@ -116,7 +116,7 @@ func RunE2ETest(t *testing.T, testCase *E2ETestCase) {
 			default:
 				mcpanyTestServerInfo = integration.StartMCPANYServer(t, testCase.Name)
 			}
-			t.Cleanup(mcpanyTestServerInfo.CleanupFunc)
+			defer mcpanyTestServerInfo.CleanupFunc()
 
 			// Add a small delay to ensure the server is ready to accept registrations
 			time.Sleep(1 * time.Second)
