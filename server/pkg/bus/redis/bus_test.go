@@ -13,7 +13,7 @@ import (
 	"time"
 
 	"github.com/go-redis/redismock/v9"
-	"github.com/mcpany/core/server/pkg/logging"
+	"github.com/mcpany/core/pkg/logging"
 	bus_pb "github.com/mcpany/core/proto/bus"
 	"github.com/redis/go-redis/v9"
 	"github.com/stretchr/testify/assert"
@@ -1014,6 +1014,10 @@ func TestBus_Subscribe_CloseClient(t *testing.T) {
 	assert.NoError(t, err)
 	time.Sleep(100 * time.Millisecond)
 
+	bus.mu.Lock()
+	_, ok := bus.pubsubs[topic]
+	bus.mu.Unlock()
+	assert.False(t, ok, "subscription should be removed after client is closed")
 }
 
 func TestBus_Subscribe_CloseClient_Race(t *testing.T) {

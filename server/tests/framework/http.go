@@ -11,7 +11,7 @@ import (
 
 	apiv1 "github.com/mcpany/core/proto/api/v1"
 	configv1 "github.com/mcpany/core/proto/config/v1"
-	"github.com/mcpany/core/server/tests/integration"
+	"github.com/mcpany/core/tests/integration"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/proto"
 )

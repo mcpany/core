@@ -4,8 +4,8 @@
 services:
   server:
     build:
-      context: ..
-      dockerfile: server/docker/Dockerfile.server
+      context: ../server
+      dockerfile: docker/Dockerfile.server
     ports:
       - "51235:50050"
     command:
@@ -40,7 +40,6 @@ services:
       - ../ui/docs:/work/ui/docs
       - ../docs:/work/docs
       - ../ui/playwright.config.ts:/work/ui/playwright.config.ts
-      - ../ui/playwright.screenshots.config.ts:/work/ui/playwright.screenshots.config.ts
       - ../ui/tests:/work/ui/tests
       - ../ui/src:/work/ui/src
     ipc: host
@@ -53,8 +52,8 @@ services:
 
   http-echo-server:
     build:
-      context: ..
-      dockerfile: server/docker/Dockerfile.http-echo-server
+      context: ../server
+      dockerfile: docker/Dockerfile.http-echo-server
     ports:
       - "8081:8080"
     healthcheck:

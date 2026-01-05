@@ -298,7 +298,6 @@ function SecretItem({ secret, onDelete }: { secret: SecretDefinition; onDelete: 
                         size="icon"
                         className="h-4 w-4 hover:bg-transparent"
                         onClick={() => setIsVisible(!isVisible)}
-                        aria-label={isVisible ? "Hide secret" : "Show secret"}
                     >
                         {isVisible ? <EyeOff className="h-3 w-3" /> : <Eye className="h-3 w-3" />}
                     </Button>

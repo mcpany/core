@@ -7,7 +7,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/mcpany/core/server/pkg/auth"
+	"github.com/mcpany/core/pkg/auth"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 )
 

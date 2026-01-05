@@ -12,7 +12,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/mcpany/core/server/cmd/webhooks/hooks"
+	"github.com/mcpany/core/cmd/webhooks/hooks"
 	webhook "github.com/standard-webhooks/standard-webhooks/libraries/go"
 )
 

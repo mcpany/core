@@ -7,7 +7,7 @@ import (
 	"context"
 	"testing"
 
-	"github.com/mcpany/core/server/pkg/config"
+	"github.com/mcpany/core/pkg/config"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/stretchr/testify/assert"
 	"google.golang.org/protobuf/proto"

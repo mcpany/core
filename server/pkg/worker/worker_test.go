@@ -11,9 +11,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/mcpany/core/server/pkg/bus"
-	"github.com/mcpany/core/server/pkg/serviceregistry"
-	"github.com/mcpany/core/server/pkg/tool"
+	"github.com/mcpany/core/pkg/bus"
+	"github.com/mcpany/core/pkg/serviceregistry"
+	"github.com/mcpany/core/pkg/tool"
 	bus_pb "github.com/mcpany/core/proto/bus"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/stretchr/testify/assert"

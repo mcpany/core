@@ -7,7 +7,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/mcpany/core/server/pkg/consts"
+	"github.com/mcpany/core/pkg/consts"
 )
 
 // ParseToolName deconstructs a fully qualified tool name into its namespace

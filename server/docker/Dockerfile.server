@@ -14,31 +14,17 @@
 
 # Stage 1: Build the Go binary
 FROM mirror.gcr.io/library/golang:1.24 AS builder
-# Set working directory
 WORKDIR /app
 
-# Copy root modules
+# Copy go.mod and go.sum files to download dependencies first
 COPY go.mod go.sum ./
-
-# Copy server modules
-COPY server/go.mod server/go.sum ./server/
-
-# Copy protos (needed for build)
-COPY proto ./proto/
-
-# Set working directory to server for dependency download
-WORKDIR /app/server
-RUN go mod download
+RUN go mod download && go mod verify
 
 # Install GCC for CGO and curl for healthchecks
 RUN apt-get update && apt-get install -y gcc curl
 
-# Copy the rest of the source code
-WORKDIR /app
+# Copy the rest of the application source code
 COPY . .
-
-# Set the working directory for the build
-WORKDIR /app/server
 
 # Build the Go application for the target platform
 # CGO_ENABLED=1 is required for go-sqlite3

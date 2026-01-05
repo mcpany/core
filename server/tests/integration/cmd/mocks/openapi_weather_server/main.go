@@ -14,7 +14,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/mcpany/core/server/pkg/consts"
+	"github.com/mcpany/core/pkg/consts"
 )
 
 const openAPISpec = `

@@ -14,15 +14,15 @@ import (
 	"strings"
 	"time"
 
-	"github.com/mcpany/core/server/pkg/auth"
-	"github.com/mcpany/core/server/pkg/logging"
-	"github.com/mcpany/core/server/pkg/pool"
-	"github.com/mcpany/core/server/pkg/prompt"
-	"github.com/mcpany/core/server/pkg/resource"
-	"github.com/mcpany/core/server/pkg/tool"
-	"github.com/mcpany/core/server/pkg/upstream"
-	"github.com/mcpany/core/server/pkg/util"
-	"github.com/mcpany/core/server/pkg/util/schemaconv"
+	"github.com/mcpany/core/pkg/auth"
+	"github.com/mcpany/core/pkg/logging"
+	"github.com/mcpany/core/pkg/pool"
+	"github.com/mcpany/core/pkg/prompt"
+	"github.com/mcpany/core/pkg/resource"
+	"github.com/mcpany/core/pkg/tool"
+	"github.com/mcpany/core/pkg/upstream"
+	"github.com/mcpany/core/pkg/util"
+	"github.com/mcpany/core/pkg/util/schemaconv"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	pb "github.com/mcpany/core/proto/mcp_router/v1"
 
@@ -356,14 +356,12 @@ func (u *Upstream) createAndRegisterHTTPTools(ctx context.Context, serviceID, ad
 			resolvedURL.Fragment = baseURL.Fragment
 		}
 		// Merge query parameters, allowing endpoint parameters to override base parameters
+		query := resolvedURL.Query()
 		endpointQuery := endpointURL.Query()
-		if len(endpointQuery) > 0 {
-			query := resolvedURL.Query()
-			for k, v := range endpointQuery {
-				query[k] = v
-			}
-			resolvedURL.RawQuery = query.Encode()
+		for k, v := range endpointQuery {
+			query[k] = v
 		}
+		resolvedURL.RawQuery = query.Encode()
 		fullURL := resolvedURL.String()
 
 		var inputSchema *structpb.Struct

@@ -7,7 +7,7 @@ package framework
 import (
 	"time"
 
-	"github.com/mcpany/core/server/tests/integration"
+	"github.com/mcpany/core/tests/integration"
 )
 
 // Re-exporting these from the integration package so that framework users

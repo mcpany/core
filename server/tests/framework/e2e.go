@@ -17,7 +17,7 @@ import (
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"google.golang.org/protobuf/proto"
 
-	"github.com/mcpany/core/server/tests/integration"
+	"github.com/mcpany/core/tests/integration"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/require"
 )
@@ -116,7 +116,7 @@ func RunE2ETest(t *testing.T, testCase *E2ETestCase) {
 			default:
 				mcpanyTestServerInfo = integration.StartMCPANYServer(t, testCase.Name)
 			}
-			t.Cleanup(mcpanyTestServerInfo.CleanupFunc)
+			defer mcpanyTestServerInfo.CleanupFunc()
 
 			// Add a small delay to ensure the server is ready to accept registrations
 			time.Sleep(1 * time.Second)

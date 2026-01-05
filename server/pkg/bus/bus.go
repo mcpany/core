@@ -8,10 +8,10 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/mcpany/core/server/pkg/bus/kafka"
-	"github.com/mcpany/core/server/pkg/bus/memory"
-	"github.com/mcpany/core/server/pkg/bus/nats"
-	"github.com/mcpany/core/server/pkg/bus/redis"
+	"github.com/mcpany/core/pkg/bus/kafka"
+	"github.com/mcpany/core/pkg/bus/memory"
+	"github.com/mcpany/core/pkg/bus/nats"
+	"github.com/mcpany/core/pkg/bus/redis"
 	"github.com/mcpany/core/proto/bus"
 	xsync "github.com/puzpuzpuz/xsync/v4"
 )

@@ -13,7 +13,7 @@ import (
 	"testing"
 	"time"
 
-	httpupstream "github.com/mcpany/core/server/pkg/upstream/http"
+	httpupstream "github.com/mcpany/core/pkg/upstream/http"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/stretchr/testify/assert"
 	"google.golang.org/protobuf/proto"

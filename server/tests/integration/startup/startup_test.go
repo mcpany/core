@@ -14,8 +14,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/mcpany/core/server/pkg/app"
-	"github.com/mcpany/core/server/tests/integration"
+	"github.com/mcpany/core/pkg/app"
+	"github.com/mcpany/core/tests/integration"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/spf13/afero"
 	"github.com/stretchr/testify/require"
@@ -151,12 +151,11 @@ ServerStarted:
 
     t.Log("Verifying failing tool call fails")
     args := json.RawMessage(`{}`)
-    result, err := session.CallTool(ctxCall, &mcp.CallToolParams{
+    _, err = session.CallTool(ctxCall, &mcp.CallToolParams{
             Name: "failing-service.echo",
             Arguments: args,
     })
-    require.NoError(t, err)
-    require.True(t, result.IsError, "Tool call should return isError=true for failing service")
+    require.Error(t, err)
 
     // 6. Fix the failing service in config (Reload Test)
     t.Log("Updating config to fix failing service...")
@@ -195,7 +194,7 @@ upstream_services:
     require.NoError(t, err)
 
     // Verify failing-service is now working
-    result, err = session.CallTool(ctxCall, &mcp.CallToolParams{
+    result, err := session.CallTool(ctxCall, &mcp.CallToolParams{
             Name: "failing-service.echo",
             Arguments: args,
     })

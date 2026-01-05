@@ -10,14 +10,14 @@ import (
 	"sync"
 
 	"github.com/gorilla/websocket"
+	"github.com/mcpany/core/pkg/auth"
+	"github.com/mcpany/core/pkg/client"
+	"github.com/mcpany/core/pkg/logging"
+	"github.com/mcpany/core/pkg/pool"
+	"github.com/mcpany/core/pkg/transformer"
+	"github.com/mcpany/core/pkg/util"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	v1 "github.com/mcpany/core/proto/mcp_router/v1"
-	"github.com/mcpany/core/server/pkg/auth"
-	"github.com/mcpany/core/server/pkg/client"
-	"github.com/mcpany/core/server/pkg/logging"
-	"github.com/mcpany/core/server/pkg/pool"
-	"github.com/mcpany/core/server/pkg/transformer"
-	"github.com/mcpany/core/server/pkg/util"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 

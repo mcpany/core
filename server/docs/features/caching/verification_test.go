@@ -15,11 +15,11 @@ import (
 	"testing"
 	"time"
 
-	"github.com/mcpany/core/server/pkg/config"
+	"github.com/mcpany/core/pkg/config"
 	adminv1 "github.com/mcpany/core/proto/admin/v1"
 	pb "github.com/mcpany/core/proto/config/v1"
-	"github.com/mcpany/core/server/tests/framework"
-	"github.com/mcpany/core/server/tests/integration"
+	"github.com/mcpany/core/tests/framework"
+	"github.com/mcpany/core/tests/integration"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/grpc"
@@ -54,7 +54,7 @@ func TestCachingConfig(t *testing.T) {
 }
 
 func TestCachingE2E(t *testing.T) {
-	metricsPort := 0 // Use 0 to let the OS assign a random available port
+	metricsPort := 19091
 	os.Setenv("MCPANY_METRICS_LISTEN_ADDRESS", fmt.Sprintf("localhost:%d", metricsPort))
 	defer os.Unsetenv("MCPANY_METRICS_LISTEN_ADDRESS")
 
@@ -114,20 +114,7 @@ global_settings:
 
 			// Helper to get metrics
 			getMetric := func(name string, labelKey, labelValue string) float64 {
-				port := metricsPort
-				if serverInfo != nil && serverInfo.MetricsEndpoint != "" {
-					// Extract port from "host:port"
-					parts := strings.Split(serverInfo.MetricsEndpoint, ":")
-					if len(parts) == 2 {
-						fmt.Sscanf(parts[1], "%d", &port)
-					}
-				}
-				if port == 0 {
-					// Fallback for safety, though it should be set
-					port = 19091
-				}
-
-				resp, err := http.Get(fmt.Sprintf("http://localhost:%d/metrics", port))
+				resp, err := http.Get(fmt.Sprintf("http://localhost:%d/metrics", metricsPort))
 				require.NoError(t, err)
 				defer resp.Body.Close()
 

@@ -19,8 +19,8 @@ import (
 	"github.com/docker/docker/client"
 	"github.com/docker/docker/pkg/stdcopy"
 	"al.essio.dev/pkg/shellescape"
-	"github.com/mcpany/core/server/pkg/logging"
-	"github.com/mcpany/core/server/pkg/util"
+	"github.com/mcpany/core/pkg/logging"
+	"github.com/mcpany/core/pkg/util"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/modelcontextprotocol/go-sdk/jsonrpc"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
@@ -70,14 +70,8 @@ func (t *DockerTransport) Connect(ctx context.Context) (mcp.Connection, error) {
 		log.Info("Successfully pulled docker image", "image", img)
 	}
 
-	setupCmds := t.StdioConfig.GetSetupCommands()
-	// Allocate slice with capacity for setup commands + 1 main command
-	scriptCommands := make([]string, 0, len(setupCmds)+1)
-
-	// Redirect stdout of setup commands to stderr to avoid polluting the JSON-RPC channel
-	for _, cmd := range setupCmds {
-		scriptCommands = append(scriptCommands, fmt.Sprintf("(%s) >&2", cmd))
-	}
+	var scriptCommands []string
+	scriptCommands = append(scriptCommands, t.StdioConfig.GetSetupCommands()...)
 
 	// Add the main command. `exec` is used to replace the shell process with the main command.
 	mainCommandParts := []string{"exec", shellescape.Quote(t.StdioConfig.GetCommand())}

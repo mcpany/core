@@ -16,7 +16,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/mcpany/core/server/pkg/appconsts"
+	"github.com/mcpany/core/pkg/appconsts"
 	"github.com/spf13/afero"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"

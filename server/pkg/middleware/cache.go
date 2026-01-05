@@ -9,7 +9,6 @@ import (
 	"fmt"
 	"hash"
 	"hash/fnv"
-	"strings"
 	"sync"
 	"time"
 
@@ -17,10 +16,10 @@ import (
 	"github.com/eko/gocache/lib/v4/store"
 	gocache_store "github.com/eko/gocache/store/go_cache/v4"
 	jsoniter "github.com/json-iterator/go"
-	"github.com/mcpany/core/server/pkg/logging"
-	"github.com/mcpany/core/server/pkg/metrics"
-	"github.com/mcpany/core/server/pkg/tool"
-	"github.com/mcpany/core/server/pkg/util"
+	"github.com/mcpany/core/pkg/logging"
+	"github.com/mcpany/core/pkg/metrics"
+	"github.com/mcpany/core/pkg/tool"
+	"github.com/mcpany/core/pkg/util"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	go_cache "github.com/patrickmn/go-cache"
 )
@@ -42,7 +41,6 @@ type CachingMiddleware struct {
 	cache           *cache.Cache[any]
 	toolManager     tool.ManagerInterface
 	semanticCaches  sync.Map
-	initMu          sync.Mutex // Guards semantic cache initialization
 	providerFactory ProviderFactory
 	hasherPool      *sync.Pool
 }
@@ -200,64 +198,45 @@ func (m *CachingMiddleware) executeSemantic(ctx context.Context, req *tool.Execu
 
 	val, ok := m.semanticCaches.Load(serviceID)
 	if !ok {
-		// Double-checked locking to prevent race condition and connection leaks
-		m.initMu.Lock()
-		val, ok = m.semanticCaches.Load(serviceID)
-		if !ok {
-			// Resolve API Key
-			// Priority:
-			// 1. OpenAI Config Secret
-			// 2. Deprecated API Key Secret
-			var secret *configv1.SecretValue
-			if semConfig.GetOpenai() != nil {
-				secret = semConfig.GetOpenai().GetApiKey()
-			} else {
-				secret = semConfig.GetApiKey()
-			}
+		// Resolve API Key
+		// Priority:
+		// 1. OpenAI Config Secret
+		// 2. Deprecated API Key Secret
+		var secret *configv1.SecretValue
+		if semConfig.GetOpenai() != nil {
+			secret = semConfig.GetOpenai().GetApiKey()
+		} else {
+			secret = semConfig.GetApiKey()
+		}
 
-			apiKey, err := util.ResolveSecret(ctx, secret)
+		apiKey, err := util.ResolveSecret(ctx, secret)
+		if err != nil {
+			logging.GetLogger().Error("Failed to resolve semantic cache API key", "error", err)
+			return next(ctx, req)
+		}
+
+		// Use factory to create provider
+		provider, err := m.providerFactory(semConfig, apiKey)
+		if err != nil {
+			logging.GetLogger().Warn("Failed to create embedding provider", "error", err)
+			return next(ctx, req)
+		}
+
+		var vectorStore VectorStore
+		if persistencePath := semConfig.GetPersistencePath(); persistencePath != "" {
+			var err error
+			vectorStore, err = NewSQLiteVectorStore(persistencePath)
 			if err != nil {
-				m.initMu.Unlock()
-				logging.GetLogger().Error("Failed to resolve semantic cache API key", "error", err)
-				return next(ctx, req)
-			}
-
-			// Use factory to create provider
-			provider, err := m.providerFactory(semConfig, apiKey)
-			if err != nil {
-				m.initMu.Unlock()
-				logging.GetLogger().Warn("Failed to create embedding provider", "error", err)
-				return next(ctx, req)
-			}
-
-			var vectorStore VectorStore
-			persistencePath := semConfig.GetPersistencePath()
-			if persistencePath != "" {
-				var err error
-				if strings.HasPrefix(persistencePath, "postgres://") || strings.HasPrefix(persistencePath, "postgresql://") {
-					vectorStore, err = NewPostgresVectorStore(persistencePath)
-					if err != nil {
-						logging.GetLogger().Error("Failed to create Postgres vector store", "error", err, "dsn", persistencePath)
-						// Fallback to in-memory
-						vectorStore = NewSimpleVectorStore()
-					}
-				} else {
-					vectorStore, err = NewSQLiteVectorStore(persistencePath)
-					if err != nil {
-						logging.GetLogger().Error("Failed to create SQLite vector store", "error", err, "path", persistencePath)
-						// Fallback to in-memory
-						vectorStore = NewSimpleVectorStore()
-					}
-				}
-			} else {
+				logging.GetLogger().Error("Failed to create SQLite vector store", "error", err, "path", persistencePath)
+				// Fallback to in-memory
 				vectorStore = NewSimpleVectorStore()
 			}
-
-			newCache := NewSemanticCache(provider, vectorStore, semConfig.GetSimilarityThreshold())
-			m.semanticCaches.Store(serviceID, newCache)
-			val = newCache
+		} else {
+			vectorStore = NewSimpleVectorStore()
 		}
-		m.initMu.Unlock()
+
+		newCache := NewSemanticCache(provider, vectorStore, semConfig.GetSimilarityThreshold())
+		val, _ = m.semanticCaches.LoadOrStore(serviceID, newCache)
 	}
 
 	semCache := val.(*SemanticCache)

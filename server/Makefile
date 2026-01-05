@@ -374,11 +374,11 @@ else
 			--proto_path=$(BUILD_DIR)/googleapis \
 			--descriptor_set_out=$(BUILD_DIR)/all.protoset \
 			--include_imports \
-			--go_out=.. \
+			--go_out=. \
 			--go_opt=module=github.com/mcpany/core,default_api_level=API_HYBRID \
-			--go-grpc_out=.. \
+			--go-grpc_out=. \
 			--go-grpc_opt=module=github.com/mcpany/core \
-			--grpc-gateway_out=.. \
+			--grpc-gateway_out=. \
 			--grpc-gateway_opt=module=github.com/mcpany/core \
 			{} +
 	@echo "Protobuf generation complete."
@@ -406,16 +406,16 @@ COVERAGE_FILE ?= coverage.out
 e2e-local: e2e-parallel e2e-sequential
 
 e2e-parallel: build build-examples build-e2e-mocks build-e2e-timeserver-docker
-	@echo "Running parallel E2E Go tests locally with a 600s timeout..."
+	@echo "Running parallel E2E Go tests locally with a 300s timeout..."
 	@-pkill -f file-upload-server || true
 	@$(EXAMPLE_BIN_DIR)/file-upload-server &
 	@mkdir -p $(BUILD_DIR)/bundles
-	@GEMINI_API_KEY=$(GEMINI_API_KEY) MCP_BUNDLE_DIR=$(MCP_BUNDLE_DIR) MCPANY_DEBUG=true CGO_ENABLED=1 USE_SUDO_FOR_DOCKER=$(NEEDS_SUDO_FOR_DOCKER) $(GO_CMD) test -race -count=1 -timeout 600s -tags=e2e -cover -coverprofile=$(BUILD_DIR)/coverage.e2e-parallel.out $(shell go list ./cmd/... ./pkg/... ./tests/... ./examples/upstream_service_demo/... ./docs/... | grep -v /tests/public_api | grep -v /pkg/command | grep -v /build | grep -v /tests/e2e_sequential)
+	@GEMINI_API_KEY=$(GEMINI_API_KEY) MCP_BUNDLE_DIR=$(MCP_BUNDLE_DIR) MCPANY_DEBUG=true CGO_ENABLED=1 USE_SUDO_FOR_DOCKER=$(NEEDS_SUDO_FOR_DOCKER) $(GO_CMD) test -race -count=1 -timeout 300s -tags=e2e -cover -coverprofile=$(BUILD_DIR)/coverage.e2e-parallel.out $(shell go list ./cmd/... ./pkg/... ./proto/... ./tests/... ./examples/upstream_service_demo/... ./docs/... | grep -v /tests/public_api | grep -v /pkg/command | grep -v /build | grep -v /tests/e2e_sequential)
 	@-pkill -f file-upload-server
 
 e2e-sequential: build build-examples build-e2e-mocks build-e2e-timeserver-docker
 	@echo "Running sequential E2E Go tests locally with a 300s timeout..."
-	@GEMINI_API_KEY=$(GEMINI_API_KEY) MCP_BUNDLE_DIR=$(MCP_BUNDLE_DIR) MCPANY_DEBUG=true CGO_ENABLED=1 USE_SUDO_FOR_DOCKER=$(NEEDS_SUDO_FOR_DOCKER) E2E_DOCKER=true $(GO_CMD) test -p 1 -parallel 1 -race -count=1 -timeout 600s -tags=e2e -cover -coverprofile=$(BUILD_DIR)/coverage.e2e-sequential.out ./tests/e2e_sequential/...
+	@GEMINI_API_KEY=$(GEMINI_API_KEY) MCP_BUNDLE_DIR=$(MCP_BUNDLE_DIR) MCPANY_DEBUG=true CGO_ENABLED=1 USE_SUDO_FOR_DOCKER=$(NEEDS_SUDO_FOR_DOCKER) E2E_DOCKER=true $(GO_CMD) test -p 1 -parallel 1 -race -count=1 -timeout 300s -tags=e2e -cover -coverprofile=$(BUILD_DIR)/coverage.e2e-sequential.out ./tests/e2e_sequential/...
 
 test-fast: build build-examples build-e2e-mocks build-e2e-timeserver-docker
 	@echo "Running fast Go tests locally with a 300s timeout..."

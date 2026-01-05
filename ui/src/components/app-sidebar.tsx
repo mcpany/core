@@ -20,8 +20,7 @@ import {
   User,
   ChevronsUpDown,
   LogOut,
-  Layers,
-  ShoppingBag
+  Layers
 } from "lucide-react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
@@ -75,11 +74,6 @@ const platformItems = [
     title: "Analytics",
     url: "/stats",
     icon: Activity,
-  },
-  {
-    title: "Marketplace",
-    url: "/marketplace",
-    icon: ShoppingBag,
   },
 ]
 

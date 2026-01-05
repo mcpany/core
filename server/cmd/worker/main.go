@@ -11,9 +11,9 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/mcpany/core/server/pkg/bus"
-	"github.com/mcpany/core/server/pkg/config"
-	"github.com/mcpany/core/server/pkg/worker"
+	"github.com/mcpany/core/pkg/bus"
+	"github.com/mcpany/core/pkg/config"
+	"github.com/mcpany/core/pkg/worker"
 	buspb "github.com/mcpany/core/proto/bus"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 )

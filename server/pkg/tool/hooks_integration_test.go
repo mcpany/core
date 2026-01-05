@@ -7,7 +7,7 @@ import (
 	"context"
 	"testing"
 
-	"github.com/mcpany/core/server/pkg/bus"
+	"github.com/mcpany/core/pkg/bus"
 	busproto "github.com/mcpany/core/proto/bus"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	v1 "github.com/mcpany/core/proto/mcp_router/v1"

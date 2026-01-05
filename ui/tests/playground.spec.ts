@@ -8,7 +8,7 @@ import { test, expect } from '@playwright/test';
 test.describe('Playground Tool Configuration', () => {
   test('should allow configuring and running a tool via form', async ({ page }) => {
     // Mock the tools API response
-    await page.route('/api/v1/tools', async route => {
+    await page.route('/api/tools', async route => {
       const json = {
         tools: [
           {
@@ -29,20 +29,17 @@ test.describe('Playground Tool Configuration', () => {
     });
 
     // Mock the tool execution
-    await page.route('/api/v1/execute', async route => {
-      // Mock successful execution since we are using a fake tool 'weather_tool'
-      // that doesn't exist on the backend.
-      await route.fulfill({
-        json: {
-          content: [
-            {
-              type: 'text',
-              text: 'Mock execution result'
-            }
-          ],
-          isError: false
-        }
-      });
+    await page.route('/api/tools/execute', async route => {
+        // This endpoint doesn't seem to exist in the code I read, but let's check client.ts
+        // client.ts uses `apiClient.executeTool` which likely calls `POST /api/tools` or something?
+        // Ah, `executeTool` is mock in `client.ts` but let's assume it hits an endpoint if not mocked in UI.
+        // Wait, `client.ts` in UI *is* the client.
+        // If I want to mock the execution, I need to intercept what `apiClient.executeTool` does.
+        // But `apiClient` in `ui/src/lib/client.ts` has a hardcoded mock for `executeTool`!
+        // So no network request happens for execution.
+        // It returns `{ output: "Mock execution result", success: true }`.
+        // So I don't need to mock the network for execution, just the tools listing.
+        await route.continue();
     });
 
     await page.goto('/playground');

@@ -12,7 +12,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/mcpany/core/server/pkg/storage/sqlite"
+	"github.com/mcpany/core/pkg/storage/sqlite"
 	"github.com/spf13/afero"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"

@@ -9,19 +9,19 @@ import (
 	"time"
 
 	jsoniter "github.com/json-iterator/go"
-	"github.com/mcpany/core/server/pkg/appconsts"
-	"github.com/mcpany/core/server/pkg/auth"
-	"github.com/mcpany/core/server/pkg/bus"
-	"github.com/mcpany/core/server/pkg/config"
-	"github.com/mcpany/core/server/pkg/consts"
-	"github.com/mcpany/core/server/pkg/logging"
-	"github.com/mcpany/core/server/pkg/metrics"
-	"github.com/mcpany/core/server/pkg/middleware"
-	"github.com/mcpany/core/server/pkg/prompt"
-	"github.com/mcpany/core/server/pkg/resource"
-	"github.com/mcpany/core/server/pkg/serviceregistry"
-	"github.com/mcpany/core/server/pkg/tool"
-	"github.com/mcpany/core/server/pkg/util"
+	"github.com/mcpany/core/pkg/appconsts"
+	"github.com/mcpany/core/pkg/auth"
+	"github.com/mcpany/core/pkg/bus"
+	"github.com/mcpany/core/pkg/config"
+	"github.com/mcpany/core/pkg/consts"
+	"github.com/mcpany/core/pkg/logging"
+	"github.com/mcpany/core/pkg/metrics"
+	"github.com/mcpany/core/pkg/middleware"
+	"github.com/mcpany/core/pkg/prompt"
+	"github.com/mcpany/core/pkg/resource"
+	"github.com/mcpany/core/pkg/serviceregistry"
+	"github.com/mcpany/core/pkg/tool"
+	"github.com/mcpany/core/pkg/util"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
@@ -154,14 +154,7 @@ func NewServer(
 
 				res, err := s.CallTool(ctx, execReq)
 				if err != nil {
-					return &mcp.CallToolResult{
-						Content: []mcp.Content{
-							&mcp.TextContent{
-								Text: fmt.Sprintf("Tool execution failed: %v", err),
-							},
-						},
-						IsError: true,
-					}, nil
+					return nil, err
 				}
 				if result, ok := res.(mcp.Result); ok {
 					return result, nil

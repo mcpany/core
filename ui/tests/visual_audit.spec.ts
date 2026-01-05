@@ -24,10 +24,8 @@ test.describe('Visual Audit', () => {
       // Additional wait for "hydration" or animations if needed
       await page.waitForTimeout(1000);
 
-      if (process.env.CAPTURE_SCREENSHOTS === 'true') {
-        const screenshotPath = path.resolve(__dirname, `../../.audits/ui/${pageInfo.name}.png`);
-        await page.screenshot({ path: screenshotPath, fullPage: true });
-      }
+      const screenshotPath = path.resolve(__dirname, `../../.audits/ui/${pageInfo.name}.png`);
+      await page.screenshot({ path: screenshotPath, fullPage: true });
     });
   }
 });

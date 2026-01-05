@@ -28,7 +28,6 @@ const (
 	RegistrationService_RegisterTools_FullMethodName      = "/mcpany.api.v1.RegistrationService/RegisterTools"
 	RegistrationService_GetServiceStatus_FullMethodName   = "/mcpany.api.v1.RegistrationService/GetServiceStatus"
 	RegistrationService_ListServices_FullMethodName       = "/mcpany.api.v1.RegistrationService/ListServices"
-	RegistrationService_GetService_FullMethodName         = "/mcpany.api.v1.RegistrationService/GetService"
 )
 
 // RegistrationServiceClient is the client API for RegistrationService service.
@@ -41,7 +40,6 @@ type RegistrationServiceClient interface {
 	RegisterTools(ctx context.Context, in *RegisterToolsRequest, opts ...grpc.CallOption) (*RegisterToolsResponse, error)
 	GetServiceStatus(ctx context.Context, in *GetServiceStatusRequest, opts ...grpc.CallOption) (*GetServiceStatusResponse, error)
 	ListServices(ctx context.Context, in *ListServicesRequest, opts ...grpc.CallOption) (*ListServicesResponse, error)
-	GetService(ctx context.Context, in *GetServiceRequest, opts ...grpc.CallOption) (*GetServiceResponse, error)
 }
 
 type registrationServiceClient struct {
@@ -112,16 +110,6 @@ func (c *registrationServiceClient) ListServices(ctx context.Context, in *ListSe
 	return out, nil
 }
 
-func (c *registrationServiceClient) GetService(ctx context.Context, in *GetServiceRequest, opts ...grpc.CallOption) (*GetServiceResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(GetServiceResponse)
-	err := c.cc.Invoke(ctx, RegistrationService_GetService_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 // RegistrationServiceServer is the server API for RegistrationService service.
 // All implementations must embed UnimplementedRegistrationServiceServer
 // for forward compatibility.
@@ -132,7 +120,6 @@ type RegistrationServiceServer interface {
 	RegisterTools(context.Context, *RegisterToolsRequest) (*RegisterToolsResponse, error)
 	GetServiceStatus(context.Context, *GetServiceStatusRequest) (*GetServiceStatusResponse, error)
 	ListServices(context.Context, *ListServicesRequest) (*ListServicesResponse, error)
-	GetService(context.Context, *GetServiceRequest) (*GetServiceResponse, error)
 	mustEmbedUnimplementedRegistrationServiceServer()
 }
 
@@ -160,9 +147,6 @@ func (UnimplementedRegistrationServiceServer) GetServiceStatus(context.Context, 
 }
 func (UnimplementedRegistrationServiceServer) ListServices(context.Context, *ListServicesRequest) (*ListServicesResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListServices not implemented")
-}
-func (UnimplementedRegistrationServiceServer) GetService(context.Context, *GetServiceRequest) (*GetServiceResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetService not implemented")
 }
 func (UnimplementedRegistrationServiceServer) mustEmbedUnimplementedRegistrationServiceServer() {}
 func (UnimplementedRegistrationServiceServer) testEmbeddedByValue()                             {}
@@ -293,24 +277,6 @@ func _RegistrationService_ListServices_Handler(srv interface{}, ctx context.Cont
 	return interceptor(ctx, in, info, handler)
 }
 
-func _RegistrationService_GetService_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetServiceRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(RegistrationServiceServer).GetService(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: RegistrationService_GetService_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(RegistrationServiceServer).GetService(ctx, req.(*GetServiceRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 // RegistrationService_ServiceDesc is the grpc.ServiceDesc for RegistrationService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -341,10 +307,6 @@ var RegistrationService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ListServices",
 			Handler:    _RegistrationService_ListServices_Handler,
-		},
-		{
-			MethodName: "GetService",
-			Handler:    _RegistrationService_GetService_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

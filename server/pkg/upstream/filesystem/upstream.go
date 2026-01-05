@@ -5,6 +5,7 @@
 package filesystem
 
 import (
+	"archive/zip"
 	"bufio"
 	"context"
 	"crypto/sha256"
@@ -19,16 +20,16 @@ import (
 	"sync"
 	"time"
 
-	"github.com/mcpany/core/server/pkg/logging"
-	"github.com/mcpany/core/server/pkg/prompt"
-	"github.com/mcpany/core/server/pkg/resource"
-	"github.com/mcpany/core/server/pkg/tool"
-	"github.com/mcpany/core/server/pkg/upstream"
-	"github.com/mcpany/core/server/pkg/upstream/filesystem/provider"
-	"github.com/mcpany/core/server/pkg/util"
+	"github.com/mcpany/core/pkg/logging"
+	"github.com/mcpany/core/pkg/prompt"
+	"github.com/mcpany/core/pkg/resource"
+	"github.com/mcpany/core/pkg/tool"
+	"github.com/mcpany/core/pkg/upstream"
+	"github.com/mcpany/core/pkg/util"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 
 	"github.com/spf13/afero"
+	"github.com/spf13/afero/zipfs"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/structpb"
 )
@@ -86,18 +87,11 @@ func (u *Upstream) Register(
 		return "", nil, nil, fmt.Errorf("filesystem service config is nil")
 	}
 
-	// Create the filesystem provider
-	prov, err := u.createProvider(ctx, fsService)
+	// Create the filesystem backend
+	fs, err := u.createFilesystem(ctx, fsService)
 	if err != nil {
-		return "", nil, nil, fmt.Errorf("failed to create filesystem provider: %w", err)
+		return "", nil, nil, fmt.Errorf("failed to create filesystem: %w", err)
 	}
-
-	// Register closer for the provider
-	u.mu.Lock()
-	u.closers = append(u.closers, prov)
-	u.mu.Unlock()
-
-	fs := prov.GetFs()
 
 	info := &tool.ServiceInfo{
 		Name:   serviceConfig.GetName(),
@@ -106,7 +100,7 @@ func (u *Upstream) Register(
 	toolManager.AddServiceInfo(serviceID, info)
 
 	// Define built-in tools
-	tools := u.getSupportedTools(fsService, prov, fs)
+	tools := u.getSupportedTools(fsService, fs)
 
 	discoveredTools := make([]*configv1.ToolDefinition, 0)
 
@@ -168,66 +162,96 @@ func (c *fsCallable) Call(ctx context.Context, req *tool.ExecutionRequest) (any,
 	return c.handler(ctx, req.Arguments)
 }
 
-func (u *Upstream) createProvider(ctx context.Context, config *configv1.FilesystemUpstreamService) (provider.Provider, error) {
-	var prov provider.Provider
-	var err error
+func (u *Upstream) createFilesystem(ctx context.Context, config *configv1.FilesystemUpstreamService) (afero.Fs, error) {
+	var baseFs afero.Fs
 
 	// Determine the backend filesystem
 	switch config.FilesystemType.(type) {
 	case *configv1.FilesystemUpstreamService_Tmpfs:
-		prov = provider.NewTmpfsProvider()
+		baseFs = afero.NewMemMapFs()
 
 	case *configv1.FilesystemUpstreamService_Http:
 		return nil, fmt.Errorf("http filesystem is not yet supported")
 
 	case *configv1.FilesystemUpstreamService_Zip:
-		prov, err = provider.NewZipProvider(config.GetZip())
+		// To support zipfs, we need the file path. But zipfs in afero is separate.
+		// import "github.com/spf13/afero/zipfs"
+		// zipfs.New(zipReader)
+		// This requires opening the file first.
+		zipConfig := config.GetZip()
+		f, err := os.Open(zipConfig.GetFilePath())
 		if err != nil {
-			return nil, err
+			return nil, fmt.Errorf("failed to open zip file: %w", err)
 		}
+
+		fi, err := f.Stat()
+		if err != nil {
+			_ = f.Close()
+			return nil, fmt.Errorf("failed to stat zip file: %w", err)
+		}
+
+		zr, err := zip.NewReader(f, fi.Size())
+		if err != nil {
+			_ = f.Close()
+			return nil, fmt.Errorf("failed to create zip reader: %w", err)
+		}
+
+		baseFs = zipfs.New(zr)
+
+		// Register closer
+		u.mu.Lock()
+		u.closers = append(u.closers, f)
+		u.mu.Unlock()
 
 	case *configv1.FilesystemUpstreamService_Gcs:
-		prov, err = provider.NewGcsProvider(ctx, config.GetGcs())
-		if err != nil {
-			return nil, err
-		}
+		return u.createGcsFilesystem(ctx, config.GetGcs())
 
 	case *configv1.FilesystemUpstreamService_Sftp:
-		prov, err = provider.NewSftpProvider(config.GetSftp())
-		if err != nil {
-			return nil, err
-		}
+		return u.createSftpFilesystem(config.GetSftp())
 
 	case *configv1.FilesystemUpstreamService_S3:
-		prov, err = provider.NewS3Provider(config.GetS3())
-		if err != nil {
-			return nil, err
-		}
+		return u.createS3Filesystem(config.GetS3())
 
 	case *configv1.FilesystemUpstreamService_Os:
-		prov = provider.NewLocalProvider(config.GetOs(), config.RootPaths)
+		baseFs = afero.NewOsFs()
 
 	default:
 		// Fallback to OsFs for backward compatibility if root_paths is set?
 		// Or defaulting to OsFs.
-		prov = provider.NewLocalProvider(nil, config.RootPaths)
+		baseFs = afero.NewOsFs()
 	}
 
-	// Wrap with ReadOnly if requested.
-	// Since ReadOnly is a property of the service config, we might want to wrap the Fs returned by provider.
-	// However, provider interface returns Fs. We can wrap it here?
-	// But the provider methods (ResolvePath) are separate.
-	// We can wrap the provider?
-	// For now, let's wrap the Fs in getSupportedTools usage or create a wrapper provider.
-	// Actually, the simplest way is to handle ReadOnly check in the tools themselves as it was.
-	// But wait, createFilesystem returned a ReadOnlyFs.
-	// If we change the fs returned by provider, we modify the provider's state?
-	// No, provider.GetFs() returns a stored fs. We can't easily change it without casting.
-	// So we should probably handle ReadOnly in the tools (write_file, delete_file).
-	// The original implementation returned `afero.NewReadOnlyFs(baseFs)`.
-	// Let's defer this check to the tools.
+	// Wrap with ReadOnly if requested
+	if config.GetReadOnly() {
+		baseFs = afero.NewReadOnlyFs(baseFs)
+	}
 
-	return prov, nil
+	return baseFs, nil
+}
+
+// resolvePath determines the actual path to access based on the filesystem type.
+// For OsFs, it resolves virtual path to real OS path using root_paths.
+// For others, it uses the virtual path directly (cleaned).
+func (u *Upstream) resolvePath(virtualPath string, config *configv1.FilesystemUpstreamService) (string, error) {
+	switch config.FilesystemType.(type) {
+	case *configv1.FilesystemUpstreamService_Tmpfs:
+		// For MemMapFs, just clean the path. It's virtual.
+		return filepath.Clean(virtualPath), nil
+
+	case *configv1.FilesystemUpstreamService_Zip:
+		// For ZipFs, just clean the path. It's virtual (based on zip contents).
+		return filepath.Clean(virtualPath), nil
+
+	case *configv1.FilesystemUpstreamService_S3:
+		return u.resolveS3Path(virtualPath)
+
+	case *configv1.FilesystemUpstreamService_Os:
+		return u.validateLocalPath(virtualPath, config.RootPaths)
+
+	default:
+		// Default (legacy) uses OsFs and validatePath
+		return u.validateLocalPath(virtualPath, config.RootPaths)
+	}
 }
 
 type filesystemToolDef struct {
@@ -239,11 +263,7 @@ type filesystemToolDef struct {
 }
 
 //nolint:gocyclo
-func (u *Upstream) getSupportedTools(fsService *configv1.FilesystemUpstreamService, prov provider.Provider, fs afero.Fs) []filesystemToolDef {
-	// Wrap fs with ReadOnly if requested
-	if fsService.GetReadOnly() {
-		fs = afero.NewReadOnlyFs(fs)
-	}
+func (u *Upstream) getSupportedTools(fsService *configv1.FilesystemUpstreamService, fs afero.Fs) []filesystemToolDef {
 	return []filesystemToolDef{
 		{
 			Name:        "list_directory",
@@ -270,7 +290,7 @@ func (u *Upstream) getSupportedTools(fsService *configv1.FilesystemUpstreamServi
 					return nil, fmt.Errorf("path is required")
 				}
 
-				resolvedPath, err := prov.ResolvePath(path)
+				resolvedPath, err := u.resolvePath(path, fsService)
 				if err != nil {
 					return nil, err
 				}
@@ -306,7 +326,7 @@ func (u *Upstream) getSupportedTools(fsService *configv1.FilesystemUpstreamServi
 					return nil, fmt.Errorf("path is required")
 				}
 
-				resolvedPath, err := prov.ResolvePath(path)
+				resolvedPath, err := u.resolvePath(path, fsService)
 				if err != nil {
 					return nil, err
 				}
@@ -356,7 +376,7 @@ func (u *Upstream) getSupportedTools(fsService *configv1.FilesystemUpstreamServi
 					return nil, fmt.Errorf("content is required")
 				}
 
-				resolvedPath, err := prov.ResolvePath(path)
+				resolvedPath, err := u.resolvePath(path, fsService)
 				if err != nil {
 					// Check if parent directory is allowed if file doesn't exist yet
 					// resolvePath usually checks validity of prefix.
@@ -393,7 +413,7 @@ func (u *Upstream) getSupportedTools(fsService *configv1.FilesystemUpstreamServi
 					return nil, fmt.Errorf("path is required")
 				}
 
-				resolvedPath, err := prov.ResolvePath(path)
+				resolvedPath, err := u.resolvePath(path, fsService)
 				if err != nil {
 					return nil, err
 				}
@@ -439,7 +459,7 @@ func (u *Upstream) getSupportedTools(fsService *configv1.FilesystemUpstreamServi
 					return nil, fmt.Errorf("invalid regex pattern: %w", err)
 				}
 
-				resolvedPath, err := prov.ResolvePath(path)
+				resolvedPath, err := u.resolvePath(path, fsService)
 				if err != nil {
 					return nil, err
 				}
@@ -551,7 +571,7 @@ func (u *Upstream) getSupportedTools(fsService *configv1.FilesystemUpstreamServi
 					return nil, fmt.Errorf("path is required")
 				}
 
-				resolvedPath, err := prov.ResolvePath(path)
+				resolvedPath, err := u.resolvePath(path, fsService)
 				if err != nil {
 					return nil, err
 				}

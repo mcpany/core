@@ -12,7 +12,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/mcpany/core/server/pkg/app"
+	"github.com/mcpany/core/pkg/app"
 	"github.com/spf13/afero"
 	"github.com/stretchr/testify/require"
 )
@@ -21,11 +21,10 @@ func TestServiceRetry(t *testing.T) {
 	// 1. Create a config file pointing to a non-existent MCP server
 	fs := afero.NewMemMapFs()
 
-    // Get an ephemeral port by listening on port 0
-    l, err := net.Listen("tcp", "127.0.0.1:0")
-    require.NoError(t, err)
-    // The actual address is deferred to the httptest.Server
-    targetURL := fmt.Sprintf("http://%s/mcp", l.Addr().String())
+    // Pick a random port
+    targetPort := 54325
+    targetHost := "127.0.0.1"
+    targetURL := fmt.Sprintf("http://%s:%d/mcp", targetHost, targetPort)
 
 	configContent := fmt.Sprintf(`
 upstream_services:
@@ -35,7 +34,7 @@ upstream_services:
         http_address: "%s"
 `, targetURL)
 
-	err = afero.WriteFile(fs, "config.yaml", []byte(configContent), 0644)
+	err := afero.WriteFile(fs, "config.yaml", []byte(configContent), 0644)
 	require.NoError(t, err)
 
 	// 2. Start the Application
@@ -84,7 +83,13 @@ upstream_services:
         w.Write([]byte(`{"jsonrpc": "2.0", "id": 1, "result": {"protocolVersion": "2024-11-05", "capabilities": {}, "serverInfo": {"name": "mock", "version": "1.0"}}}`))
 	}))
 
-    // Assign the listener with the dynamic port
+    // Force the port and IP to match config
+    l, err := net.Listen("tcp", fmt.Sprintf("%s:%d", targetHost, targetPort))
+    if err != nil {
+        t.Skipf("Port %d busy: %v", targetPort, err)
+        return
+    }
+    ts.Listener.Close()
     ts.Listener = l
 	ts.Start()
 	defer ts.Close()

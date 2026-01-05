@@ -8,7 +8,7 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/mcpany/core/server/pkg/util"
+	"github.com/mcpany/core/pkg/util"
 	"golang.org/x/oauth2/clientcredentials"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"

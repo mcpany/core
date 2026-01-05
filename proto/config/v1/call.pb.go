@@ -2240,205 +2240,6 @@ func (b0 GraphQLCallDefinition_builder) Build() *GraphQLCallDefinition {
 	return m0
 }
 
-// SqlCallDefinition describes how to map an MCP call to a SQL query.
-type SqlCallDefinition struct {
-	state protoimpl.MessageState `protogen:"hybrid.v1"`
-	// The unique identifier for the call.
-	Id *string `protobuf:"bytes,1,opt,name=id" json:"id,omitempty"`
-	// The SQL query to execute. Use placeholders like $1, $2 or ? based on the driver.
-	Query *string `protobuf:"bytes,2,opt,name=query" json:"query,omitempty"`
-	// The order of input properties to map to query parameters.
-	// For example, if the query uses $1 and $2, and this list is ["userId", "active"],
-	// then input.userId will be passed as $1 and input.active as $2.
-	ParameterOrder []string `protobuf:"bytes,3,rep,name=parameter_order" json:"parameter_order,omitempty"`
-	// Caching configuration to improve performance and reduce load on the upstream.
-	Cache *CacheConfig `protobuf:"bytes,4,opt,name=cache" json:"cache,omitempty"`
-	// The schema for the input parameters required by the call.
-	InputSchema *structpb.Struct `protobuf:"bytes,5,opt,name=input_schema" json:"input_schema,omitempty"`
-	// The schema for the output of the call.
-	OutputSchema  *structpb.Struct `protobuf:"bytes,6,opt,name=output_schema" json:"output_schema,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *SqlCallDefinition) Reset() {
-	*x = SqlCallDefinition{}
-	mi := &file_proto_config_v1_call_proto_msgTypes[10]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *SqlCallDefinition) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*SqlCallDefinition) ProtoMessage() {}
-
-func (x *SqlCallDefinition) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_call_proto_msgTypes[10]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-func (x *SqlCallDefinition) GetId() string {
-	if x != nil && x.Id != nil {
-		return *x.Id
-	}
-	return ""
-}
-
-func (x *SqlCallDefinition) GetQuery() string {
-	if x != nil && x.Query != nil {
-		return *x.Query
-	}
-	return ""
-}
-
-func (x *SqlCallDefinition) GetParameterOrder() []string {
-	if x != nil {
-		return x.ParameterOrder
-	}
-	return nil
-}
-
-func (x *SqlCallDefinition) GetCache() *CacheConfig {
-	if x != nil {
-		return x.Cache
-	}
-	return nil
-}
-
-func (x *SqlCallDefinition) GetInputSchema() *structpb.Struct {
-	if x != nil {
-		return x.InputSchema
-	}
-	return nil
-}
-
-func (x *SqlCallDefinition) GetOutputSchema() *structpb.Struct {
-	if x != nil {
-		return x.OutputSchema
-	}
-	return nil
-}
-
-func (x *SqlCallDefinition) SetId(v string) {
-	x.Id = &v
-}
-
-func (x *SqlCallDefinition) SetQuery(v string) {
-	x.Query = &v
-}
-
-func (x *SqlCallDefinition) SetParameterOrder(v []string) {
-	x.ParameterOrder = v
-}
-
-func (x *SqlCallDefinition) SetCache(v *CacheConfig) {
-	x.Cache = v
-}
-
-func (x *SqlCallDefinition) SetInputSchema(v *structpb.Struct) {
-	x.InputSchema = v
-}
-
-func (x *SqlCallDefinition) SetOutputSchema(v *structpb.Struct) {
-	x.OutputSchema = v
-}
-
-func (x *SqlCallDefinition) HasId() bool {
-	if x == nil {
-		return false
-	}
-	return x.Id != nil
-}
-
-func (x *SqlCallDefinition) HasQuery() bool {
-	if x == nil {
-		return false
-	}
-	return x.Query != nil
-}
-
-func (x *SqlCallDefinition) HasCache() bool {
-	if x == nil {
-		return false
-	}
-	return x.Cache != nil
-}
-
-func (x *SqlCallDefinition) HasInputSchema() bool {
-	if x == nil {
-		return false
-	}
-	return x.InputSchema != nil
-}
-
-func (x *SqlCallDefinition) HasOutputSchema() bool {
-	if x == nil {
-		return false
-	}
-	return x.OutputSchema != nil
-}
-
-func (x *SqlCallDefinition) ClearId() {
-	x.Id = nil
-}
-
-func (x *SqlCallDefinition) ClearQuery() {
-	x.Query = nil
-}
-
-func (x *SqlCallDefinition) ClearCache() {
-	x.Cache = nil
-}
-
-func (x *SqlCallDefinition) ClearInputSchema() {
-	x.InputSchema = nil
-}
-
-func (x *SqlCallDefinition) ClearOutputSchema() {
-	x.OutputSchema = nil
-}
-
-type SqlCallDefinition_builder struct {
-	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
-
-	// The unique identifier for the call.
-	Id *string
-	// The SQL query to execute. Use placeholders like $1, $2 or ? based on the driver.
-	Query *string
-	// The order of input properties to map to query parameters.
-	// For example, if the query uses $1 and $2, and this list is ["userId", "active"],
-	// then input.userId will be passed as $1 and input.active as $2.
-	ParameterOrder []string
-	// Caching configuration to improve performance and reduce load on the upstream.
-	Cache *CacheConfig
-	// The schema for the input parameters required by the call.
-	InputSchema *structpb.Struct
-	// The schema for the output of the call.
-	OutputSchema *structpb.Struct
-}
-
-func (b0 SqlCallDefinition_builder) Build() *SqlCallDefinition {
-	m0 := &SqlCallDefinition{}
-	b, x := &b0, m0
-	_, _ = b, x
-	x.Id = b.Id
-	x.Query = b.Query
-	x.ParameterOrder = b.ParameterOrder
-	x.Cache = b.Cache
-	x.InputSchema = b.InputSchema
-	x.OutputSchema = b.OutputSchema
-	return m0
-}
-
 // ParameterSchema defines the schema for a single parameter, following Google's JSON schema.
 type ParameterSchema struct {
 	state protoimpl.MessageState `protogen:"hybrid.v1"`
@@ -2458,7 +2259,7 @@ type ParameterSchema struct {
 
 func (x *ParameterSchema) Reset() {
 	*x = ParameterSchema{}
-	mi := &file_proto_config_v1_call_proto_msgTypes[11]
+	mi := &file_proto_config_v1_call_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2470,7 +2271,7 @@ func (x *ParameterSchema) String() string {
 func (*ParameterSchema) ProtoMessage() {}
 
 func (x *ParameterSchema) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_call_proto_msgTypes[11]
+	mi := &file_proto_config_v1_call_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2633,7 +2434,7 @@ type HttpParameterMapping struct {
 
 func (x *HttpParameterMapping) Reset() {
 	*x = HttpParameterMapping{}
-	mi := &file_proto_config_v1_call_proto_msgTypes[12]
+	mi := &file_proto_config_v1_call_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2645,7 +2446,7 @@ func (x *HttpParameterMapping) String() string {
 func (*HttpParameterMapping) ProtoMessage() {}
 
 func (x *HttpParameterMapping) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_call_proto_msgTypes[12]
+	mi := &file_proto_config_v1_call_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2756,7 +2557,7 @@ type WebsocketParameterMapping struct {
 
 func (x *WebsocketParameterMapping) Reset() {
 	*x = WebsocketParameterMapping{}
-	mi := &file_proto_config_v1_call_proto_msgTypes[13]
+	mi := &file_proto_config_v1_call_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2768,7 +2569,7 @@ func (x *WebsocketParameterMapping) String() string {
 func (*WebsocketParameterMapping) ProtoMessage() {}
 
 func (x *WebsocketParameterMapping) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_call_proto_msgTypes[13]
+	mi := &file_proto_config_v1_call_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2854,7 +2655,7 @@ type WebrtcParameterMapping struct {
 
 func (x *WebrtcParameterMapping) Reset() {
 	*x = WebrtcParameterMapping{}
-	mi := &file_proto_config_v1_call_proto_msgTypes[14]
+	mi := &file_proto_config_v1_call_proto_msgTypes[13]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2866,7 +2667,7 @@ func (x *WebrtcParameterMapping) String() string {
 func (*WebrtcParameterMapping) ProtoMessage() {}
 
 func (x *WebrtcParameterMapping) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_call_proto_msgTypes[14]
+	mi := &file_proto_config_v1_call_proto_msgTypes[13]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2952,7 +2753,7 @@ type CommandLineParameterMapping struct {
 
 func (x *CommandLineParameterMapping) Reset() {
 	*x = CommandLineParameterMapping{}
-	mi := &file_proto_config_v1_call_proto_msgTypes[15]
+	mi := &file_proto_config_v1_call_proto_msgTypes[14]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2964,7 +2765,7 @@ func (x *CommandLineParameterMapping) String() string {
 func (*CommandLineParameterMapping) ProtoMessage() {}
 
 func (x *CommandLineParameterMapping) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_call_proto_msgTypes[15]
+	mi := &file_proto_config_v1_call_proto_msgTypes[14]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3039,18 +2840,17 @@ func (b0 CommandLineParameterMapping_builder) Build() *CommandLineParameterMappi
 
 // CacheConfig is a dummy message for now.
 type CacheConfig struct {
-	state          protoimpl.MessageState `protogen:"hybrid.v1"`
-	IsEnabled      *bool                  `protobuf:"varint,1,opt,name=is_enabled" json:"is_enabled,omitempty"`
-	Ttl            *durationpb.Duration   `protobuf:"bytes,2,opt,name=ttl" json:"ttl,omitempty"`
-	Strategy       *string                `protobuf:"bytes,3,opt,name=strategy" json:"strategy,omitempty"`
-	SemanticConfig *SemanticCacheConfig   `protobuf:"bytes,4,opt,name=semantic_config" json:"semantic_config,omitempty"`
-	unknownFields  protoimpl.UnknownFields
-	sizeCache      protoimpl.SizeCache
+	state         protoimpl.MessageState `protogen:"hybrid.v1"`
+	IsEnabled     *bool                  `protobuf:"varint,1,opt,name=is_enabled" json:"is_enabled,omitempty"`
+	Ttl           *durationpb.Duration   `protobuf:"bytes,2,opt,name=ttl" json:"ttl,omitempty"`
+	Strategy      *string                `protobuf:"bytes,3,opt,name=strategy" json:"strategy,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *CacheConfig) Reset() {
 	*x = CacheConfig{}
-	mi := &file_proto_config_v1_call_proto_msgTypes[16]
+	mi := &file_proto_config_v1_call_proto_msgTypes[15]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3062,7 +2862,7 @@ func (x *CacheConfig) String() string {
 func (*CacheConfig) ProtoMessage() {}
 
 func (x *CacheConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_call_proto_msgTypes[16]
+	mi := &file_proto_config_v1_call_proto_msgTypes[15]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3094,13 +2894,6 @@ func (x *CacheConfig) GetStrategy() string {
 	return ""
 }
 
-func (x *CacheConfig) GetSemanticConfig() *SemanticCacheConfig {
-	if x != nil {
-		return x.SemanticConfig
-	}
-	return nil
-}
-
 func (x *CacheConfig) SetIsEnabled(v bool) {
 	x.IsEnabled = &v
 }
@@ -3111,10 +2904,6 @@ func (x *CacheConfig) SetTtl(v *durationpb.Duration) {
 
 func (x *CacheConfig) SetStrategy(v string) {
 	x.Strategy = &v
-}
-
-func (x *CacheConfig) SetSemanticConfig(v *SemanticCacheConfig) {
-	x.SemanticConfig = v
 }
 
 func (x *CacheConfig) HasIsEnabled() bool {
@@ -3138,13 +2927,6 @@ func (x *CacheConfig) HasStrategy() bool {
 	return x.Strategy != nil
 }
 
-func (x *CacheConfig) HasSemanticConfig() bool {
-	if x == nil {
-		return false
-	}
-	return x.SemanticConfig != nil
-}
-
 func (x *CacheConfig) ClearIsEnabled() {
 	x.IsEnabled = nil
 }
@@ -3157,17 +2939,12 @@ func (x *CacheConfig) ClearStrategy() {
 	x.Strategy = nil
 }
 
-func (x *CacheConfig) ClearSemanticConfig() {
-	x.SemanticConfig = nil
-}
-
 type CacheConfig_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	IsEnabled      *bool
-	Ttl            *durationpb.Duration
-	Strategy       *string
-	SemanticConfig *SemanticCacheConfig
+	IsEnabled *bool
+	Ttl       *durationpb.Duration
+	Strategy  *string
 }
 
 func (b0 CacheConfig_builder) Build() *CacheConfig {
@@ -3177,695 +2954,6 @@ func (b0 CacheConfig_builder) Build() *CacheConfig {
 	x.IsEnabled = b.IsEnabled
 	x.Ttl = b.Ttl
 	x.Strategy = b.Strategy
-	x.SemanticConfig = b.SemanticConfig
-	return m0
-}
-
-type SemanticCacheConfig struct {
-	state protoimpl.MessageState `protogen:"hybrid.v1"`
-	// Provider for embeddings (e.g., "openai", "vertexai", "ollama", "http")
-	// Deprecated: Use provider_config instead.
-	Provider *string `protobuf:"bytes,1,opt,name=provider" json:"provider,omitempty"`
-	// Model name (e.g., "text-embedding-3-small")
-	// Deprecated: Use provider_config instead.
-	Model *string `protobuf:"bytes,2,opt,name=model" json:"model,omitempty"`
-	// API Key (can be a reference to environment variable or secret)
-	// Deprecated: Use provider_config instead.
-	ApiKey *SecretValue `protobuf:"bytes,3,opt,name=api_key" json:"api_key,omitempty"`
-	// Similarity threshold (0.0 to 1.0). Higher means stricter matching.
-	SimilarityThreshold *float32 `protobuf:"fixed32,4,opt,name=similarity_threshold" json:"similarity_threshold,omitempty"`
-	// Types that are valid to be assigned to ProviderConfig:
-	//
-	//	*SemanticCacheConfig_Openai
-	//	*SemanticCacheConfig_Ollama
-	//	*SemanticCacheConfig_Http
-	ProviderConfig isSemanticCacheConfig_ProviderConfig `protobuf_oneof:"provider_config"`
-	// Path to SQLite database file for persistent storage.
-	// If empty, the cache will be in-memory only.
-	PersistencePath *string `protobuf:"bytes,8,opt,name=persistence_path" json:"persistence_path,omitempty"`
-	unknownFields   protoimpl.UnknownFields
-	sizeCache       protoimpl.SizeCache
-}
-
-func (x *SemanticCacheConfig) Reset() {
-	*x = SemanticCacheConfig{}
-	mi := &file_proto_config_v1_call_proto_msgTypes[17]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *SemanticCacheConfig) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*SemanticCacheConfig) ProtoMessage() {}
-
-func (x *SemanticCacheConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_call_proto_msgTypes[17]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-func (x *SemanticCacheConfig) GetProvider() string {
-	if x != nil && x.Provider != nil {
-		return *x.Provider
-	}
-	return ""
-}
-
-func (x *SemanticCacheConfig) GetModel() string {
-	if x != nil && x.Model != nil {
-		return *x.Model
-	}
-	return ""
-}
-
-func (x *SemanticCacheConfig) GetApiKey() *SecretValue {
-	if x != nil {
-		return x.ApiKey
-	}
-	return nil
-}
-
-func (x *SemanticCacheConfig) GetSimilarityThreshold() float32 {
-	if x != nil && x.SimilarityThreshold != nil {
-		return *x.SimilarityThreshold
-	}
-	return 0
-}
-
-func (x *SemanticCacheConfig) GetProviderConfig() isSemanticCacheConfig_ProviderConfig {
-	if x != nil {
-		return x.ProviderConfig
-	}
-	return nil
-}
-
-func (x *SemanticCacheConfig) GetOpenai() *OpenAIEmbeddingProviderConfig {
-	if x != nil {
-		if x, ok := x.ProviderConfig.(*SemanticCacheConfig_Openai); ok {
-			return x.Openai
-		}
-	}
-	return nil
-}
-
-func (x *SemanticCacheConfig) GetOllama() *OllamaEmbeddingProviderConfig {
-	if x != nil {
-		if x, ok := x.ProviderConfig.(*SemanticCacheConfig_Ollama); ok {
-			return x.Ollama
-		}
-	}
-	return nil
-}
-
-func (x *SemanticCacheConfig) GetHttp() *HttpEmbeddingProviderConfig {
-	if x != nil {
-		if x, ok := x.ProviderConfig.(*SemanticCacheConfig_Http); ok {
-			return x.Http
-		}
-	}
-	return nil
-}
-
-func (x *SemanticCacheConfig) GetPersistencePath() string {
-	if x != nil && x.PersistencePath != nil {
-		return *x.PersistencePath
-	}
-	return ""
-}
-
-func (x *SemanticCacheConfig) SetProvider(v string) {
-	x.Provider = &v
-}
-
-func (x *SemanticCacheConfig) SetModel(v string) {
-	x.Model = &v
-}
-
-func (x *SemanticCacheConfig) SetApiKey(v *SecretValue) {
-	x.ApiKey = v
-}
-
-func (x *SemanticCacheConfig) SetSimilarityThreshold(v float32) {
-	x.SimilarityThreshold = &v
-}
-
-func (x *SemanticCacheConfig) SetOpenai(v *OpenAIEmbeddingProviderConfig) {
-	if v == nil {
-		x.ProviderConfig = nil
-		return
-	}
-	x.ProviderConfig = &SemanticCacheConfig_Openai{v}
-}
-
-func (x *SemanticCacheConfig) SetOllama(v *OllamaEmbeddingProviderConfig) {
-	if v == nil {
-		x.ProviderConfig = nil
-		return
-	}
-	x.ProviderConfig = &SemanticCacheConfig_Ollama{v}
-}
-
-func (x *SemanticCacheConfig) SetHttp(v *HttpEmbeddingProviderConfig) {
-	if v == nil {
-		x.ProviderConfig = nil
-		return
-	}
-	x.ProviderConfig = &SemanticCacheConfig_Http{v}
-}
-
-func (x *SemanticCacheConfig) SetPersistencePath(v string) {
-	x.PersistencePath = &v
-}
-
-func (x *SemanticCacheConfig) HasProvider() bool {
-	if x == nil {
-		return false
-	}
-	return x.Provider != nil
-}
-
-func (x *SemanticCacheConfig) HasModel() bool {
-	if x == nil {
-		return false
-	}
-	return x.Model != nil
-}
-
-func (x *SemanticCacheConfig) HasApiKey() bool {
-	if x == nil {
-		return false
-	}
-	return x.ApiKey != nil
-}
-
-func (x *SemanticCacheConfig) HasSimilarityThreshold() bool {
-	if x == nil {
-		return false
-	}
-	return x.SimilarityThreshold != nil
-}
-
-func (x *SemanticCacheConfig) HasProviderConfig() bool {
-	if x == nil {
-		return false
-	}
-	return x.ProviderConfig != nil
-}
-
-func (x *SemanticCacheConfig) HasOpenai() bool {
-	if x == nil {
-		return false
-	}
-	_, ok := x.ProviderConfig.(*SemanticCacheConfig_Openai)
-	return ok
-}
-
-func (x *SemanticCacheConfig) HasOllama() bool {
-	if x == nil {
-		return false
-	}
-	_, ok := x.ProviderConfig.(*SemanticCacheConfig_Ollama)
-	return ok
-}
-
-func (x *SemanticCacheConfig) HasHttp() bool {
-	if x == nil {
-		return false
-	}
-	_, ok := x.ProviderConfig.(*SemanticCacheConfig_Http)
-	return ok
-}
-
-func (x *SemanticCacheConfig) HasPersistencePath() bool {
-	if x == nil {
-		return false
-	}
-	return x.PersistencePath != nil
-}
-
-func (x *SemanticCacheConfig) ClearProvider() {
-	x.Provider = nil
-}
-
-func (x *SemanticCacheConfig) ClearModel() {
-	x.Model = nil
-}
-
-func (x *SemanticCacheConfig) ClearApiKey() {
-	x.ApiKey = nil
-}
-
-func (x *SemanticCacheConfig) ClearSimilarityThreshold() {
-	x.SimilarityThreshold = nil
-}
-
-func (x *SemanticCacheConfig) ClearProviderConfig() {
-	x.ProviderConfig = nil
-}
-
-func (x *SemanticCacheConfig) ClearOpenai() {
-	if _, ok := x.ProviderConfig.(*SemanticCacheConfig_Openai); ok {
-		x.ProviderConfig = nil
-	}
-}
-
-func (x *SemanticCacheConfig) ClearOllama() {
-	if _, ok := x.ProviderConfig.(*SemanticCacheConfig_Ollama); ok {
-		x.ProviderConfig = nil
-	}
-}
-
-func (x *SemanticCacheConfig) ClearHttp() {
-	if _, ok := x.ProviderConfig.(*SemanticCacheConfig_Http); ok {
-		x.ProviderConfig = nil
-	}
-}
-
-func (x *SemanticCacheConfig) ClearPersistencePath() {
-	x.PersistencePath = nil
-}
-
-const SemanticCacheConfig_ProviderConfig_not_set_case case_SemanticCacheConfig_ProviderConfig = 0
-const SemanticCacheConfig_Openai_case case_SemanticCacheConfig_ProviderConfig = 5
-const SemanticCacheConfig_Ollama_case case_SemanticCacheConfig_ProviderConfig = 6
-const SemanticCacheConfig_Http_case case_SemanticCacheConfig_ProviderConfig = 7
-
-func (x *SemanticCacheConfig) WhichProviderConfig() case_SemanticCacheConfig_ProviderConfig {
-	if x == nil {
-		return SemanticCacheConfig_ProviderConfig_not_set_case
-	}
-	switch x.ProviderConfig.(type) {
-	case *SemanticCacheConfig_Openai:
-		return SemanticCacheConfig_Openai_case
-	case *SemanticCacheConfig_Ollama:
-		return SemanticCacheConfig_Ollama_case
-	case *SemanticCacheConfig_Http:
-		return SemanticCacheConfig_Http_case
-	default:
-		return SemanticCacheConfig_ProviderConfig_not_set_case
-	}
-}
-
-type SemanticCacheConfig_builder struct {
-	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
-
-	// Provider for embeddings (e.g., "openai", "vertexai", "ollama", "http")
-	// Deprecated: Use provider_config instead.
-	Provider *string
-	// Model name (e.g., "text-embedding-3-small")
-	// Deprecated: Use provider_config instead.
-	Model *string
-	// API Key (can be a reference to environment variable or secret)
-	// Deprecated: Use provider_config instead.
-	ApiKey *SecretValue
-	// Similarity threshold (0.0 to 1.0). Higher means stricter matching.
-	SimilarityThreshold *float32
-	// Fields of oneof ProviderConfig:
-	Openai *OpenAIEmbeddingProviderConfig
-	Ollama *OllamaEmbeddingProviderConfig
-	Http   *HttpEmbeddingProviderConfig
-	// -- end of ProviderConfig
-	// Path to SQLite database file for persistent storage.
-	// If empty, the cache will be in-memory only.
-	PersistencePath *string
-}
-
-func (b0 SemanticCacheConfig_builder) Build() *SemanticCacheConfig {
-	m0 := &SemanticCacheConfig{}
-	b, x := &b0, m0
-	_, _ = b, x
-	x.Provider = b.Provider
-	x.Model = b.Model
-	x.ApiKey = b.ApiKey
-	x.SimilarityThreshold = b.SimilarityThreshold
-	if b.Openai != nil {
-		x.ProviderConfig = &SemanticCacheConfig_Openai{b.Openai}
-	}
-	if b.Ollama != nil {
-		x.ProviderConfig = &SemanticCacheConfig_Ollama{b.Ollama}
-	}
-	if b.Http != nil {
-		x.ProviderConfig = &SemanticCacheConfig_Http{b.Http}
-	}
-	x.PersistencePath = b.PersistencePath
-	return m0
-}
-
-type case_SemanticCacheConfig_ProviderConfig protoreflect.FieldNumber
-
-func (x case_SemanticCacheConfig_ProviderConfig) String() string {
-	md := file_proto_config_v1_call_proto_msgTypes[17].Descriptor()
-	if x == 0 {
-		return "not set"
-	}
-	return protoimpl.X.MessageFieldStringOf(md, protoreflect.FieldNumber(x))
-}
-
-type isSemanticCacheConfig_ProviderConfig interface {
-	isSemanticCacheConfig_ProviderConfig()
-}
-
-type SemanticCacheConfig_Openai struct {
-	Openai *OpenAIEmbeddingProviderConfig `protobuf:"bytes,5,opt,name=openai,oneof"`
-}
-
-type SemanticCacheConfig_Ollama struct {
-	Ollama *OllamaEmbeddingProviderConfig `protobuf:"bytes,6,opt,name=ollama,oneof"`
-}
-
-type SemanticCacheConfig_Http struct {
-	Http *HttpEmbeddingProviderConfig `protobuf:"bytes,7,opt,name=http,oneof"`
-}
-
-func (*SemanticCacheConfig_Openai) isSemanticCacheConfig_ProviderConfig() {}
-
-func (*SemanticCacheConfig_Ollama) isSemanticCacheConfig_ProviderConfig() {}
-
-func (*SemanticCacheConfig_Http) isSemanticCacheConfig_ProviderConfig() {}
-
-type OpenAIEmbeddingProviderConfig struct {
-	state         protoimpl.MessageState `protogen:"hybrid.v1"`
-	Model         *string                `protobuf:"bytes,1,opt,name=model" json:"model,omitempty"`
-	ApiKey        *SecretValue           `protobuf:"bytes,2,opt,name=api_key" json:"api_key,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *OpenAIEmbeddingProviderConfig) Reset() {
-	*x = OpenAIEmbeddingProviderConfig{}
-	mi := &file_proto_config_v1_call_proto_msgTypes[18]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *OpenAIEmbeddingProviderConfig) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*OpenAIEmbeddingProviderConfig) ProtoMessage() {}
-
-func (x *OpenAIEmbeddingProviderConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_call_proto_msgTypes[18]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-func (x *OpenAIEmbeddingProviderConfig) GetModel() string {
-	if x != nil && x.Model != nil {
-		return *x.Model
-	}
-	return ""
-}
-
-func (x *OpenAIEmbeddingProviderConfig) GetApiKey() *SecretValue {
-	if x != nil {
-		return x.ApiKey
-	}
-	return nil
-}
-
-func (x *OpenAIEmbeddingProviderConfig) SetModel(v string) {
-	x.Model = &v
-}
-
-func (x *OpenAIEmbeddingProviderConfig) SetApiKey(v *SecretValue) {
-	x.ApiKey = v
-}
-
-func (x *OpenAIEmbeddingProviderConfig) HasModel() bool {
-	if x == nil {
-		return false
-	}
-	return x.Model != nil
-}
-
-func (x *OpenAIEmbeddingProviderConfig) HasApiKey() bool {
-	if x == nil {
-		return false
-	}
-	return x.ApiKey != nil
-}
-
-func (x *OpenAIEmbeddingProviderConfig) ClearModel() {
-	x.Model = nil
-}
-
-func (x *OpenAIEmbeddingProviderConfig) ClearApiKey() {
-	x.ApiKey = nil
-}
-
-type OpenAIEmbeddingProviderConfig_builder struct {
-	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
-
-	Model  *string
-	ApiKey *SecretValue
-}
-
-func (b0 OpenAIEmbeddingProviderConfig_builder) Build() *OpenAIEmbeddingProviderConfig {
-	m0 := &OpenAIEmbeddingProviderConfig{}
-	b, x := &b0, m0
-	_, _ = b, x
-	x.Model = b.Model
-	x.ApiKey = b.ApiKey
-	return m0
-}
-
-type OllamaEmbeddingProviderConfig struct {
-	state         protoimpl.MessageState `protogen:"hybrid.v1"`
-	Model         *string                `protobuf:"bytes,1,opt,name=model" json:"model,omitempty"`
-	BaseUrl       *string                `protobuf:"bytes,2,opt,name=base_url" json:"base_url,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *OllamaEmbeddingProviderConfig) Reset() {
-	*x = OllamaEmbeddingProviderConfig{}
-	mi := &file_proto_config_v1_call_proto_msgTypes[19]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *OllamaEmbeddingProviderConfig) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*OllamaEmbeddingProviderConfig) ProtoMessage() {}
-
-func (x *OllamaEmbeddingProviderConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_call_proto_msgTypes[19]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-func (x *OllamaEmbeddingProviderConfig) GetModel() string {
-	if x != nil && x.Model != nil {
-		return *x.Model
-	}
-	return ""
-}
-
-func (x *OllamaEmbeddingProviderConfig) GetBaseUrl() string {
-	if x != nil && x.BaseUrl != nil {
-		return *x.BaseUrl
-	}
-	return ""
-}
-
-func (x *OllamaEmbeddingProviderConfig) SetModel(v string) {
-	x.Model = &v
-}
-
-func (x *OllamaEmbeddingProviderConfig) SetBaseUrl(v string) {
-	x.BaseUrl = &v
-}
-
-func (x *OllamaEmbeddingProviderConfig) HasModel() bool {
-	if x == nil {
-		return false
-	}
-	return x.Model != nil
-}
-
-func (x *OllamaEmbeddingProviderConfig) HasBaseUrl() bool {
-	if x == nil {
-		return false
-	}
-	return x.BaseUrl != nil
-}
-
-func (x *OllamaEmbeddingProviderConfig) ClearModel() {
-	x.Model = nil
-}
-
-func (x *OllamaEmbeddingProviderConfig) ClearBaseUrl() {
-	x.BaseUrl = nil
-}
-
-type OllamaEmbeddingProviderConfig_builder struct {
-	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
-
-	Model   *string
-	BaseUrl *string
-}
-
-func (b0 OllamaEmbeddingProviderConfig_builder) Build() *OllamaEmbeddingProviderConfig {
-	m0 := &OllamaEmbeddingProviderConfig{}
-	b, x := &b0, m0
-	_, _ = b, x
-	x.Model = b.Model
-	x.BaseUrl = b.BaseUrl
-	return m0
-}
-
-type HttpEmbeddingProviderConfig struct {
-	state            protoimpl.MessageState `protogen:"hybrid.v1"`
-	Url              *string                `protobuf:"bytes,1,opt,name=url" json:"url,omitempty"`
-	Headers          map[string]string      `protobuf:"bytes,2,rep,name=headers" json:"headers,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
-	BodyTemplate     *string                `protobuf:"bytes,3,opt,name=body_template" json:"body_template,omitempty"`
-	ResponseJsonPath *string                `protobuf:"bytes,4,opt,name=response_json_path" json:"response_json_path,omitempty"`
-	unknownFields    protoimpl.UnknownFields
-	sizeCache        protoimpl.SizeCache
-}
-
-func (x *HttpEmbeddingProviderConfig) Reset() {
-	*x = HttpEmbeddingProviderConfig{}
-	mi := &file_proto_config_v1_call_proto_msgTypes[20]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *HttpEmbeddingProviderConfig) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*HttpEmbeddingProviderConfig) ProtoMessage() {}
-
-func (x *HttpEmbeddingProviderConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_call_proto_msgTypes[20]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-func (x *HttpEmbeddingProviderConfig) GetUrl() string {
-	if x != nil && x.Url != nil {
-		return *x.Url
-	}
-	return ""
-}
-
-func (x *HttpEmbeddingProviderConfig) GetHeaders() map[string]string {
-	if x != nil {
-		return x.Headers
-	}
-	return nil
-}
-
-func (x *HttpEmbeddingProviderConfig) GetBodyTemplate() string {
-	if x != nil && x.BodyTemplate != nil {
-		return *x.BodyTemplate
-	}
-	return ""
-}
-
-func (x *HttpEmbeddingProviderConfig) GetResponseJsonPath() string {
-	if x != nil && x.ResponseJsonPath != nil {
-		return *x.ResponseJsonPath
-	}
-	return ""
-}
-
-func (x *HttpEmbeddingProviderConfig) SetUrl(v string) {
-	x.Url = &v
-}
-
-func (x *HttpEmbeddingProviderConfig) SetHeaders(v map[string]string) {
-	x.Headers = v
-}
-
-func (x *HttpEmbeddingProviderConfig) SetBodyTemplate(v string) {
-	x.BodyTemplate = &v
-}
-
-func (x *HttpEmbeddingProviderConfig) SetResponseJsonPath(v string) {
-	x.ResponseJsonPath = &v
-}
-
-func (x *HttpEmbeddingProviderConfig) HasUrl() bool {
-	if x == nil {
-		return false
-	}
-	return x.Url != nil
-}
-
-func (x *HttpEmbeddingProviderConfig) HasBodyTemplate() bool {
-	if x == nil {
-		return false
-	}
-	return x.BodyTemplate != nil
-}
-
-func (x *HttpEmbeddingProviderConfig) HasResponseJsonPath() bool {
-	if x == nil {
-		return false
-	}
-	return x.ResponseJsonPath != nil
-}
-
-func (x *HttpEmbeddingProviderConfig) ClearUrl() {
-	x.Url = nil
-}
-
-func (x *HttpEmbeddingProviderConfig) ClearBodyTemplate() {
-	x.BodyTemplate = nil
-}
-
-func (x *HttpEmbeddingProviderConfig) ClearResponseJsonPath() {
-	x.ResponseJsonPath = nil
-}
-
-type HttpEmbeddingProviderConfig_builder struct {
-	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
-
-	Url              *string
-	Headers          map[string]string
-	BodyTemplate     *string
-	ResponseJsonPath *string
-}
-
-func (b0 HttpEmbeddingProviderConfig_builder) Build() *HttpEmbeddingProviderConfig {
-	m0 := &HttpEmbeddingProviderConfig{}
-	b, x := &b0, m0
-	_, _ = b, x
-	x.Url = b.Url
-	x.Headers = b.Headers
-	x.BodyTemplate = b.BodyTemplate
-	x.ResponseJsonPath = b.ResponseJsonPath
 	return m0
 }
 
@@ -3970,14 +3058,7 @@ const file_proto_config_v1_call_proto_rawDesc = "" +
 	"\x05cache\x18\x05 \x01(\v2\x1d.mcpany.config.v1.CacheConfigR\x05cache\x12$\n" +
 	"\rselection_set\x18\x06 \x01(\tR\rselection_set\x12;\n" +
 	"\finput_schema\x18\a \x01(\v2\x17.google.protobuf.StructR\finput_schema\x12=\n" +
-	"\routput_schema\x18\b \x01(\v2\x17.google.protobuf.StructR\routput_schema\"\x94\x02\n" +
-	"\x11SqlCallDefinition\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\tR\x02id\x12\x14\n" +
-	"\x05query\x18\x02 \x01(\tR\x05query\x12(\n" +
-	"\x0fparameter_order\x18\x03 \x03(\tR\x0fparameter_order\x123\n" +
-	"\x05cache\x18\x04 \x01(\v2\x1d.mcpany.config.v1.CacheConfigR\x05cache\x12;\n" +
-	"\finput_schema\x18\x05 \x01(\v2\x17.google.protobuf.StructR\finput_schema\x12=\n" +
-	"\routput_schema\x18\x06 \x01(\v2\x17.google.protobuf.StructR\routput_schema\"\xdc\x01\n" +
+	"\routput_schema\x18\b \x01(\v2\x17.google.protobuf.StructR\routput_schema\"\xdc\x01\n" +
 	"\x0fParameterSchema\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12 \n" +
 	"\vdescription\x18\x02 \x01(\tR\vdescription\x123\n" +
@@ -3996,38 +3077,13 @@ const file_proto_config_v1_call_proto_rawDesc = "" +
 	"\x06secret\x18\x02 \x01(\v2\x1d.mcpany.config.v1.SecretValueR\x06secret\"\x8f\x01\n" +
 	"\x1bCommandLineParameterMapping\x129\n" +
 	"\x06schema\x18\x01 \x01(\v2!.mcpany.config.v1.ParameterSchemaR\x06schema\x125\n" +
-	"\x06secret\x18\x02 \x01(\v2\x1d.mcpany.config.v1.SecretValueR\x06secret\"\xc7\x01\n" +
+	"\x06secret\x18\x02 \x01(\v2\x1d.mcpany.config.v1.SecretValueR\x06secret\"v\n" +
 	"\vCacheConfig\x12\x1e\n" +
 	"\n" +
 	"is_enabled\x18\x01 \x01(\bR\n" +
 	"is_enabled\x12+\n" +
 	"\x03ttl\x18\x02 \x01(\v2\x19.google.protobuf.DurationR\x03ttl\x12\x1a\n" +
-	"\bstrategy\x18\x03 \x01(\tR\bstrategy\x12O\n" +
-	"\x0fsemantic_config\x18\x04 \x01(\v2%.mcpany.config.v1.SemanticCacheConfigR\x0fsemantic_config\"\xce\x03\n" +
-	"\x13SemanticCacheConfig\x12\x1a\n" +
-	"\bprovider\x18\x01 \x01(\tR\bprovider\x12\x14\n" +
-	"\x05model\x18\x02 \x01(\tR\x05model\x127\n" +
-	"\aapi_key\x18\x03 \x01(\v2\x1d.mcpany.config.v1.SecretValueR\aapi_key\x122\n" +
-	"\x14similarity_threshold\x18\x04 \x01(\x02R\x14similarity_threshold\x12I\n" +
-	"\x06openai\x18\x05 \x01(\v2/.mcpany.config.v1.OpenAIEmbeddingProviderConfigH\x00R\x06openai\x12I\n" +
-	"\x06ollama\x18\x06 \x01(\v2/.mcpany.config.v1.OllamaEmbeddingProviderConfigH\x00R\x06ollama\x12C\n" +
-	"\x04http\x18\a \x01(\v2-.mcpany.config.v1.HttpEmbeddingProviderConfigH\x00R\x04http\x12*\n" +
-	"\x10persistence_path\x18\b \x01(\tR\x10persistence_pathB\x11\n" +
-	"\x0fprovider_config\"n\n" +
-	"\x1dOpenAIEmbeddingProviderConfig\x12\x14\n" +
-	"\x05model\x18\x01 \x01(\tR\x05model\x127\n" +
-	"\aapi_key\x18\x02 \x01(\v2\x1d.mcpany.config.v1.SecretValueR\aapi_key\"Q\n" +
-	"\x1dOllamaEmbeddingProviderConfig\x12\x14\n" +
-	"\x05model\x18\x01 \x01(\tR\x05model\x12\x1a\n" +
-	"\bbase_url\x18\x02 \x01(\tR\bbase_url\"\x97\x02\n" +
-	"\x1bHttpEmbeddingProviderConfig\x12\x10\n" +
-	"\x03url\x18\x01 \x01(\tR\x03url\x12T\n" +
-	"\aheaders\x18\x02 \x03(\v2:.mcpany.config.v1.HttpEmbeddingProviderConfig.HeadersEntryR\aheaders\x12$\n" +
-	"\rbody_template\x18\x03 \x01(\tR\rbody_template\x12.\n" +
-	"\x12response_json_path\x18\x04 \x01(\tR\x12response_json_path\x1a:\n" +
-	"\fHeadersEntry\x12\x10\n" +
-	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01*X\n" +
+	"\bstrategy\x18\x03 \x01(\tR\bstrategy*X\n" +
 	"\rParameterType\x12\n" +
 	"\n" +
 	"\x06STRING\x10\x00\x12\n" +
@@ -4040,110 +3096,94 @@ const file_proto_config_v1_call_proto_rawDesc = "" +
 	"\x06OBJECT\x10\x05B(Z&github.com/mcpany/core/proto/config/v1b\beditionsp\xe8\a"
 
 var file_proto_config_v1_call_proto_enumTypes = make([]protoimpl.EnumInfo, 3)
-var file_proto_config_v1_call_proto_msgTypes = make([]protoimpl.MessageInfo, 23)
+var file_proto_config_v1_call_proto_msgTypes = make([]protoimpl.MessageInfo, 17)
 var file_proto_config_v1_call_proto_goTypes = []any{
-	(ParameterType)(0),                    // 0: mcpany.config.v1.ParameterType
-	(HttpCallDefinition_HttpMethod)(0),    // 1: mcpany.config.v1.HttpCallDefinition.HttpMethod
-	(OutputTransformer_OutputFormat)(0),   // 2: mcpany.config.v1.OutputTransformer.OutputFormat
-	(*HttpCallDefinition)(nil),            // 3: mcpany.config.v1.HttpCallDefinition
-	(*WebsocketCallDefinition)(nil),       // 4: mcpany.config.v1.WebsocketCallDefinition
-	(*WebrtcCallDefinition)(nil),          // 5: mcpany.config.v1.WebrtcCallDefinition
-	(*CommandLineCallDefinition)(nil),     // 6: mcpany.config.v1.CommandLineCallDefinition
-	(*InputTransformer)(nil),              // 7: mcpany.config.v1.InputTransformer
-	(*OutputTransformer)(nil),             // 8: mcpany.config.v1.OutputTransformer
-	(*GrpcCallDefinition)(nil),            // 9: mcpany.config.v1.GrpcCallDefinition
-	(*OpenAPICallDefinition)(nil),         // 10: mcpany.config.v1.OpenAPICallDefinition
-	(*MCPCallDefinition)(nil),             // 11: mcpany.config.v1.MCPCallDefinition
-	(*GraphQLCallDefinition)(nil),         // 12: mcpany.config.v1.GraphQLCallDefinition
-	(*SqlCallDefinition)(nil),             // 13: mcpany.config.v1.SqlCallDefinition
-	(*ParameterSchema)(nil),               // 14: mcpany.config.v1.ParameterSchema
-	(*HttpParameterMapping)(nil),          // 15: mcpany.config.v1.HttpParameterMapping
-	(*WebsocketParameterMapping)(nil),     // 16: mcpany.config.v1.WebsocketParameterMapping
-	(*WebrtcParameterMapping)(nil),        // 17: mcpany.config.v1.WebrtcParameterMapping
-	(*CommandLineParameterMapping)(nil),   // 18: mcpany.config.v1.CommandLineParameterMapping
-	(*CacheConfig)(nil),                   // 19: mcpany.config.v1.CacheConfig
-	(*SemanticCacheConfig)(nil),           // 20: mcpany.config.v1.SemanticCacheConfig
-	(*OpenAIEmbeddingProviderConfig)(nil), // 21: mcpany.config.v1.OpenAIEmbeddingProviderConfig
-	(*OllamaEmbeddingProviderConfig)(nil), // 22: mcpany.config.v1.OllamaEmbeddingProviderConfig
-	(*HttpEmbeddingProviderConfig)(nil),   // 23: mcpany.config.v1.HttpEmbeddingProviderConfig
-	nil,                                   // 24: mcpany.config.v1.OutputTransformer.ExtractionRulesEntry
-	nil,                                   // 25: mcpany.config.v1.HttpEmbeddingProviderConfig.HeadersEntry
-	(*structpb.Struct)(nil),               // 26: google.protobuf.Struct
-	(*WebhookConfig)(nil),                 // 27: mcpany.config.v1.WebhookConfig
-	(*structpb.Value)(nil),                // 28: google.protobuf.Value
-	(*SecretValue)(nil),                   // 29: mcpany.config.v1.SecretValue
-	(*durationpb.Duration)(nil),           // 30: google.protobuf.Duration
+	(ParameterType)(0),                  // 0: mcpany.config.v1.ParameterType
+	(HttpCallDefinition_HttpMethod)(0),  // 1: mcpany.config.v1.HttpCallDefinition.HttpMethod
+	(OutputTransformer_OutputFormat)(0), // 2: mcpany.config.v1.OutputTransformer.OutputFormat
+	(*HttpCallDefinition)(nil),          // 3: mcpany.config.v1.HttpCallDefinition
+	(*WebsocketCallDefinition)(nil),     // 4: mcpany.config.v1.WebsocketCallDefinition
+	(*WebrtcCallDefinition)(nil),        // 5: mcpany.config.v1.WebrtcCallDefinition
+	(*CommandLineCallDefinition)(nil),   // 6: mcpany.config.v1.CommandLineCallDefinition
+	(*InputTransformer)(nil),            // 7: mcpany.config.v1.InputTransformer
+	(*OutputTransformer)(nil),           // 8: mcpany.config.v1.OutputTransformer
+	(*GrpcCallDefinition)(nil),          // 9: mcpany.config.v1.GrpcCallDefinition
+	(*OpenAPICallDefinition)(nil),       // 10: mcpany.config.v1.OpenAPICallDefinition
+	(*MCPCallDefinition)(nil),           // 11: mcpany.config.v1.MCPCallDefinition
+	(*GraphQLCallDefinition)(nil),       // 12: mcpany.config.v1.GraphQLCallDefinition
+	(*ParameterSchema)(nil),             // 13: mcpany.config.v1.ParameterSchema
+	(*HttpParameterMapping)(nil),        // 14: mcpany.config.v1.HttpParameterMapping
+	(*WebsocketParameterMapping)(nil),   // 15: mcpany.config.v1.WebsocketParameterMapping
+	(*WebrtcParameterMapping)(nil),      // 16: mcpany.config.v1.WebrtcParameterMapping
+	(*CommandLineParameterMapping)(nil), // 17: mcpany.config.v1.CommandLineParameterMapping
+	(*CacheConfig)(nil),                 // 18: mcpany.config.v1.CacheConfig
+	nil,                                 // 19: mcpany.config.v1.OutputTransformer.ExtractionRulesEntry
+	(*structpb.Struct)(nil),             // 20: google.protobuf.Struct
+	(*WebhookConfig)(nil),               // 21: mcpany.config.v1.WebhookConfig
+	(*structpb.Value)(nil),              // 22: google.protobuf.Value
+	(*SecretValue)(nil),                 // 23: mcpany.config.v1.SecretValue
+	(*durationpb.Duration)(nil),         // 24: google.protobuf.Duration
 }
 var file_proto_config_v1_call_proto_depIdxs = []int32{
 	1,  // 0: mcpany.config.v1.HttpCallDefinition.method:type_name -> mcpany.config.v1.HttpCallDefinition.HttpMethod
-	15, // 1: mcpany.config.v1.HttpCallDefinition.parameters:type_name -> mcpany.config.v1.HttpParameterMapping
+	14, // 1: mcpany.config.v1.HttpCallDefinition.parameters:type_name -> mcpany.config.v1.HttpParameterMapping
 	7,  // 2: mcpany.config.v1.HttpCallDefinition.input_transformer:type_name -> mcpany.config.v1.InputTransformer
 	8,  // 3: mcpany.config.v1.HttpCallDefinition.output_transformer:type_name -> mcpany.config.v1.OutputTransformer
-	19, // 4: mcpany.config.v1.HttpCallDefinition.cache:type_name -> mcpany.config.v1.CacheConfig
-	26, // 5: mcpany.config.v1.HttpCallDefinition.input_schema:type_name -> google.protobuf.Struct
-	26, // 6: mcpany.config.v1.HttpCallDefinition.output_schema:type_name -> google.protobuf.Struct
-	16, // 7: mcpany.config.v1.WebsocketCallDefinition.parameters:type_name -> mcpany.config.v1.WebsocketParameterMapping
+	18, // 4: mcpany.config.v1.HttpCallDefinition.cache:type_name -> mcpany.config.v1.CacheConfig
+	20, // 5: mcpany.config.v1.HttpCallDefinition.input_schema:type_name -> google.protobuf.Struct
+	20, // 6: mcpany.config.v1.HttpCallDefinition.output_schema:type_name -> google.protobuf.Struct
+	15, // 7: mcpany.config.v1.WebsocketCallDefinition.parameters:type_name -> mcpany.config.v1.WebsocketParameterMapping
 	7,  // 8: mcpany.config.v1.WebsocketCallDefinition.input_transformer:type_name -> mcpany.config.v1.InputTransformer
 	8,  // 9: mcpany.config.v1.WebsocketCallDefinition.output_transformer:type_name -> mcpany.config.v1.OutputTransformer
-	19, // 10: mcpany.config.v1.WebsocketCallDefinition.cache:type_name -> mcpany.config.v1.CacheConfig
-	26, // 11: mcpany.config.v1.WebsocketCallDefinition.input_schema:type_name -> google.protobuf.Struct
-	26, // 12: mcpany.config.v1.WebsocketCallDefinition.output_schema:type_name -> google.protobuf.Struct
-	17, // 13: mcpany.config.v1.WebrtcCallDefinition.parameters:type_name -> mcpany.config.v1.WebrtcParameterMapping
+	18, // 10: mcpany.config.v1.WebsocketCallDefinition.cache:type_name -> mcpany.config.v1.CacheConfig
+	20, // 11: mcpany.config.v1.WebsocketCallDefinition.input_schema:type_name -> google.protobuf.Struct
+	20, // 12: mcpany.config.v1.WebsocketCallDefinition.output_schema:type_name -> google.protobuf.Struct
+	16, // 13: mcpany.config.v1.WebrtcCallDefinition.parameters:type_name -> mcpany.config.v1.WebrtcParameterMapping
 	7,  // 14: mcpany.config.v1.WebrtcCallDefinition.input_transformer:type_name -> mcpany.config.v1.InputTransformer
 	8,  // 15: mcpany.config.v1.WebrtcCallDefinition.output_transformer:type_name -> mcpany.config.v1.OutputTransformer
-	19, // 16: mcpany.config.v1.WebrtcCallDefinition.cache:type_name -> mcpany.config.v1.CacheConfig
-	26, // 17: mcpany.config.v1.WebrtcCallDefinition.input_schema:type_name -> google.protobuf.Struct
-	26, // 18: mcpany.config.v1.WebrtcCallDefinition.output_schema:type_name -> google.protobuf.Struct
-	18, // 19: mcpany.config.v1.CommandLineCallDefinition.parameters:type_name -> mcpany.config.v1.CommandLineParameterMapping
-	19, // 20: mcpany.config.v1.CommandLineCallDefinition.cache:type_name -> mcpany.config.v1.CacheConfig
-	26, // 21: mcpany.config.v1.CommandLineCallDefinition.input_schema:type_name -> google.protobuf.Struct
-	26, // 22: mcpany.config.v1.CommandLineCallDefinition.output_schema:type_name -> google.protobuf.Struct
-	27, // 23: mcpany.config.v1.InputTransformer.webhook:type_name -> mcpany.config.v1.WebhookConfig
+	18, // 16: mcpany.config.v1.WebrtcCallDefinition.cache:type_name -> mcpany.config.v1.CacheConfig
+	20, // 17: mcpany.config.v1.WebrtcCallDefinition.input_schema:type_name -> google.protobuf.Struct
+	20, // 18: mcpany.config.v1.WebrtcCallDefinition.output_schema:type_name -> google.protobuf.Struct
+	17, // 19: mcpany.config.v1.CommandLineCallDefinition.parameters:type_name -> mcpany.config.v1.CommandLineParameterMapping
+	18, // 20: mcpany.config.v1.CommandLineCallDefinition.cache:type_name -> mcpany.config.v1.CacheConfig
+	20, // 21: mcpany.config.v1.CommandLineCallDefinition.input_schema:type_name -> google.protobuf.Struct
+	20, // 22: mcpany.config.v1.CommandLineCallDefinition.output_schema:type_name -> google.protobuf.Struct
+	21, // 23: mcpany.config.v1.InputTransformer.webhook:type_name -> mcpany.config.v1.WebhookConfig
 	2,  // 24: mcpany.config.v1.OutputTransformer.format:type_name -> mcpany.config.v1.OutputTransformer.OutputFormat
-	24, // 25: mcpany.config.v1.OutputTransformer.extraction_rules:type_name -> mcpany.config.v1.OutputTransformer.ExtractionRulesEntry
-	19, // 26: mcpany.config.v1.GrpcCallDefinition.cache:type_name -> mcpany.config.v1.CacheConfig
-	26, // 27: mcpany.config.v1.GrpcCallDefinition.input_schema:type_name -> google.protobuf.Struct
-	26, // 28: mcpany.config.v1.GrpcCallDefinition.output_schema:type_name -> google.protobuf.Struct
+	19, // 25: mcpany.config.v1.OutputTransformer.extraction_rules:type_name -> mcpany.config.v1.OutputTransformer.ExtractionRulesEntry
+	18, // 26: mcpany.config.v1.GrpcCallDefinition.cache:type_name -> mcpany.config.v1.CacheConfig
+	20, // 27: mcpany.config.v1.GrpcCallDefinition.input_schema:type_name -> google.protobuf.Struct
+	20, // 28: mcpany.config.v1.GrpcCallDefinition.output_schema:type_name -> google.protobuf.Struct
 	7,  // 29: mcpany.config.v1.OpenAPICallDefinition.input_transformer:type_name -> mcpany.config.v1.InputTransformer
 	8,  // 30: mcpany.config.v1.OpenAPICallDefinition.output_transformer:type_name -> mcpany.config.v1.OutputTransformer
-	19, // 31: mcpany.config.v1.OpenAPICallDefinition.cache:type_name -> mcpany.config.v1.CacheConfig
-	26, // 32: mcpany.config.v1.OpenAPICallDefinition.input_schema:type_name -> google.protobuf.Struct
-	26, // 33: mcpany.config.v1.OpenAPICallDefinition.output_schema:type_name -> google.protobuf.Struct
+	18, // 31: mcpany.config.v1.OpenAPICallDefinition.cache:type_name -> mcpany.config.v1.CacheConfig
+	20, // 32: mcpany.config.v1.OpenAPICallDefinition.input_schema:type_name -> google.protobuf.Struct
+	20, // 33: mcpany.config.v1.OpenAPICallDefinition.output_schema:type_name -> google.protobuf.Struct
 	7,  // 34: mcpany.config.v1.MCPCallDefinition.input_transformer:type_name -> mcpany.config.v1.InputTransformer
 	8,  // 35: mcpany.config.v1.MCPCallDefinition.output_transformer:type_name -> mcpany.config.v1.OutputTransformer
-	19, // 36: mcpany.config.v1.MCPCallDefinition.cache:type_name -> mcpany.config.v1.CacheConfig
-	26, // 37: mcpany.config.v1.MCPCallDefinition.input_schema:type_name -> google.protobuf.Struct
-	26, // 38: mcpany.config.v1.MCPCallDefinition.output_schema:type_name -> google.protobuf.Struct
-	26, // 39: mcpany.config.v1.GraphQLCallDefinition.variables:type_name -> google.protobuf.Struct
-	19, // 40: mcpany.config.v1.GraphQLCallDefinition.cache:type_name -> mcpany.config.v1.CacheConfig
-	26, // 41: mcpany.config.v1.GraphQLCallDefinition.input_schema:type_name -> google.protobuf.Struct
-	26, // 42: mcpany.config.v1.GraphQLCallDefinition.output_schema:type_name -> google.protobuf.Struct
-	19, // 43: mcpany.config.v1.SqlCallDefinition.cache:type_name -> mcpany.config.v1.CacheConfig
-	26, // 44: mcpany.config.v1.SqlCallDefinition.input_schema:type_name -> google.protobuf.Struct
-	26, // 45: mcpany.config.v1.SqlCallDefinition.output_schema:type_name -> google.protobuf.Struct
-	0,  // 46: mcpany.config.v1.ParameterSchema.type:type_name -> mcpany.config.v1.ParameterType
-	28, // 47: mcpany.config.v1.ParameterSchema.default_value:type_name -> google.protobuf.Value
-	14, // 48: mcpany.config.v1.HttpParameterMapping.schema:type_name -> mcpany.config.v1.ParameterSchema
-	29, // 49: mcpany.config.v1.HttpParameterMapping.secret:type_name -> mcpany.config.v1.SecretValue
-	14, // 50: mcpany.config.v1.WebsocketParameterMapping.schema:type_name -> mcpany.config.v1.ParameterSchema
-	29, // 51: mcpany.config.v1.WebsocketParameterMapping.secret:type_name -> mcpany.config.v1.SecretValue
-	14, // 52: mcpany.config.v1.WebrtcParameterMapping.schema:type_name -> mcpany.config.v1.ParameterSchema
-	29, // 53: mcpany.config.v1.WebrtcParameterMapping.secret:type_name -> mcpany.config.v1.SecretValue
-	14, // 54: mcpany.config.v1.CommandLineParameterMapping.schema:type_name -> mcpany.config.v1.ParameterSchema
-	29, // 55: mcpany.config.v1.CommandLineParameterMapping.secret:type_name -> mcpany.config.v1.SecretValue
-	30, // 56: mcpany.config.v1.CacheConfig.ttl:type_name -> google.protobuf.Duration
-	20, // 57: mcpany.config.v1.CacheConfig.semantic_config:type_name -> mcpany.config.v1.SemanticCacheConfig
-	29, // 58: mcpany.config.v1.SemanticCacheConfig.api_key:type_name -> mcpany.config.v1.SecretValue
-	21, // 59: mcpany.config.v1.SemanticCacheConfig.openai:type_name -> mcpany.config.v1.OpenAIEmbeddingProviderConfig
-	22, // 60: mcpany.config.v1.SemanticCacheConfig.ollama:type_name -> mcpany.config.v1.OllamaEmbeddingProviderConfig
-	23, // 61: mcpany.config.v1.SemanticCacheConfig.http:type_name -> mcpany.config.v1.HttpEmbeddingProviderConfig
-	29, // 62: mcpany.config.v1.OpenAIEmbeddingProviderConfig.api_key:type_name -> mcpany.config.v1.SecretValue
-	25, // 63: mcpany.config.v1.HttpEmbeddingProviderConfig.headers:type_name -> mcpany.config.v1.HttpEmbeddingProviderConfig.HeadersEntry
-	64, // [64:64] is the sub-list for method output_type
-	64, // [64:64] is the sub-list for method input_type
-	64, // [64:64] is the sub-list for extension type_name
-	64, // [64:64] is the sub-list for extension extendee
-	0,  // [0:64] is the sub-list for field type_name
+	18, // 36: mcpany.config.v1.MCPCallDefinition.cache:type_name -> mcpany.config.v1.CacheConfig
+	20, // 37: mcpany.config.v1.MCPCallDefinition.input_schema:type_name -> google.protobuf.Struct
+	20, // 38: mcpany.config.v1.MCPCallDefinition.output_schema:type_name -> google.protobuf.Struct
+	20, // 39: mcpany.config.v1.GraphQLCallDefinition.variables:type_name -> google.protobuf.Struct
+	18, // 40: mcpany.config.v1.GraphQLCallDefinition.cache:type_name -> mcpany.config.v1.CacheConfig
+	20, // 41: mcpany.config.v1.GraphQLCallDefinition.input_schema:type_name -> google.protobuf.Struct
+	20, // 42: mcpany.config.v1.GraphQLCallDefinition.output_schema:type_name -> google.protobuf.Struct
+	0,  // 43: mcpany.config.v1.ParameterSchema.type:type_name -> mcpany.config.v1.ParameterType
+	22, // 44: mcpany.config.v1.ParameterSchema.default_value:type_name -> google.protobuf.Value
+	13, // 45: mcpany.config.v1.HttpParameterMapping.schema:type_name -> mcpany.config.v1.ParameterSchema
+	23, // 46: mcpany.config.v1.HttpParameterMapping.secret:type_name -> mcpany.config.v1.SecretValue
+	13, // 47: mcpany.config.v1.WebsocketParameterMapping.schema:type_name -> mcpany.config.v1.ParameterSchema
+	23, // 48: mcpany.config.v1.WebsocketParameterMapping.secret:type_name -> mcpany.config.v1.SecretValue
+	13, // 49: mcpany.config.v1.WebrtcParameterMapping.schema:type_name -> mcpany.config.v1.ParameterSchema
+	23, // 50: mcpany.config.v1.WebrtcParameterMapping.secret:type_name -> mcpany.config.v1.SecretValue
+	13, // 51: mcpany.config.v1.CommandLineParameterMapping.schema:type_name -> mcpany.config.v1.ParameterSchema
+	23, // 52: mcpany.config.v1.CommandLineParameterMapping.secret:type_name -> mcpany.config.v1.SecretValue
+	24, // 53: mcpany.config.v1.CacheConfig.ttl:type_name -> google.protobuf.Duration
+	54, // [54:54] is the sub-list for method output_type
+	54, // [54:54] is the sub-list for method input_type
+	54, // [54:54] is the sub-list for extension type_name
+	54, // [54:54] is the sub-list for extension extendee
+	0,  // [0:54] is the sub-list for field type_name
 }
 
 func init() { file_proto_config_v1_call_proto_init() }
@@ -4153,18 +3193,13 @@ func file_proto_config_v1_call_proto_init() {
 	}
 	file_proto_config_v1_auth_proto_init()
 	file_proto_config_v1_webhook_proto_init()
-	file_proto_config_v1_call_proto_msgTypes[17].OneofWrappers = []any{
-		(*SemanticCacheConfig_Openai)(nil),
-		(*SemanticCacheConfig_Ollama)(nil),
-		(*SemanticCacheConfig_Http)(nil),
-	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_proto_config_v1_call_proto_rawDesc), len(file_proto_config_v1_call_proto_rawDesc)),
 			NumEnums:      3,
-			NumMessages:   23,
+			NumMessages:   17,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

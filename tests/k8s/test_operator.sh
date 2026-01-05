@@ -42,7 +42,7 @@ if kind get clusters | grep -q "^$CLUSTER_NAME$"; then
     echo "Cluster $CLUSTER_NAME already exists."
 else
     echo "Creating Kind cluster $CLUSTER_NAME..."
-    kind create cluster --name "$CLUSTER_NAME" --image "$KIND_IMAGE" --config tests/k8s/kind-config.yaml --wait 2m
+    kind create cluster --name "$CLUSTER_NAME" --image "$KIND_IMAGE" --wait 2m
 fi
 
 # Ensure kubectl context is set
@@ -51,7 +51,7 @@ kubectl cluster-info --context "kind-$CLUSTER_NAME"
 # 4. Build Images (Locally) with Production Tag
 echo "Building Docker images with tag $TAG..."
 # We assume we are in the root of the repo
-docker build -t mcpany/server:$TAG -f server/docker/Dockerfile.server .
+docker build -t mcpany/server:$TAG -f server/docker/Dockerfile.server server
 docker build -t mcpany/operator:$TAG -f operator/Dockerfile .
 
 # 5. Load Images into Kind

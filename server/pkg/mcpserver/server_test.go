@@ -11,18 +11,18 @@ import (
 	"testing"
 	"time"
 
-	"github.com/mcpany/core/server/pkg/auth"
-	"github.com/mcpany/core/server/pkg/bus"
-	"github.com/mcpany/core/server/pkg/consts"
-	"github.com/mcpany/core/server/pkg/mcpserver"
-	"github.com/mcpany/core/server/pkg/pool"
-	"github.com/mcpany/core/server/pkg/prompt"
-	"github.com/mcpany/core/server/pkg/resource"
-	"github.com/mcpany/core/server/pkg/serviceregistry"
-	"github.com/mcpany/core/server/pkg/tool"
-	"github.com/mcpany/core/server/pkg/upstream/factory"
-	"github.com/mcpany/core/server/pkg/util"
-	"github.com/mcpany/core/server/pkg/worker"
+	"github.com/mcpany/core/pkg/auth"
+	"github.com/mcpany/core/pkg/bus"
+	"github.com/mcpany/core/pkg/consts"
+	"github.com/mcpany/core/pkg/mcpserver"
+	"github.com/mcpany/core/pkg/pool"
+	"github.com/mcpany/core/pkg/prompt"
+	"github.com/mcpany/core/pkg/resource"
+	"github.com/mcpany/core/pkg/serviceregistry"
+	"github.com/mcpany/core/pkg/tool"
+	"github.com/mcpany/core/pkg/upstream/factory"
+	"github.com/mcpany/core/pkg/util"
+	"github.com/mcpany/core/pkg/worker"
 	bus_pb "github.com/mcpany/core/proto/bus"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	v1 "github.com/mcpany/core/proto/mcp_router/v1"
@@ -326,15 +326,11 @@ func TestServer_CallTool(t *testing.T) {
 	t.Run("tool call with error", func(t *testing.T) {
 		sanitizedToolName, _ := util.SanitizeToolName("error-tool")
 		toolID := "test-service" + "." + sanitizedToolName
-		result, err := clientSession.CallTool(ctx, &mcp.CallToolParams{
+		_, err := clientSession.CallTool(ctx, &mcp.CallToolParams{
 			Name: toolID,
 		})
-		require.NoError(t, err)
-		assert.True(t, result.IsError)
-		assert.Len(t, result.Content, 1)
-		textContent, ok := result.Content[0].(*mcp.TextContent)
-		require.True(t, ok)
-		assert.Contains(t, textContent.Text, "execution error")
+		require.Error(t, err)
+		assert.Contains(t, err.Error(), "execution error")
 	})
 
 	t.Run("tool call with context timeout", func(t *testing.T) {

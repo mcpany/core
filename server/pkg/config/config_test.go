@@ -9,7 +9,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/mcpany/core/server/pkg/logging"
+	"github.com/mcpany/core/pkg/logging"
 	v1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"

@@ -1,7 +1,6 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
-// Package util provides network and other utility functions.
 package util //nolint:revive,nolintlint // Package name 'util' is common in this codebase
 
 import (

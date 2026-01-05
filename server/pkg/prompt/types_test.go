@@ -8,7 +8,7 @@ import (
 	"encoding/json"
 	"testing"
 
-	"github.com/mcpany/core/server/pkg/prompt"
+	"github.com/mcpany/core/pkg/prompt"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	mcpsdk "github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/assert"
