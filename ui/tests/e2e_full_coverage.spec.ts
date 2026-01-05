@@ -94,12 +94,7 @@ test.describe('E2E Full Coverage', () => {
     // The Settings button is the second button in the row (Switch is first)
     // Or target by icon presence if possible, but identifying by order is easier here if robust
     // The switch has role="switch". The settings button likely doesn't have a role or is generic button.
-<<<<<<< HEAD
     // Link is no longer present in ServiceList, just click Edit
-=======
-    // Click the service name (might not be a link role)
-    await row.getByText(serviceName).click();
->>>>>>> 1d02945c (Fix tests, lint, and port conflicts)
     // Use aria-label 'Edit' from ServiceList
     await row.getByRole('button', { name: 'Edit' }).click();
 
@@ -109,7 +104,7 @@ test.describe('E2E Full Coverage', () => {
 
     await page.waitForLoadState('networkidle');
     await expect(row.getByRole('switch')).toBeChecked();
-    const toggleResponse = page.waitForResponse(response => response.url().includes('services') && response.request().method() === 'POST');
+    const toggleResponse = page.waitForResponse(response => response.url().includes('services') && response.request().method() === 'PUT');
     await row.getByRole('switch').click();
     await toggleResponse;
     // await expect(row.getByRole('switch')).not.toBeChecked(); // Flaky in E2E
