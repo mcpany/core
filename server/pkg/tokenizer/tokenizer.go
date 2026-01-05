@@ -69,7 +69,8 @@ func (t *WordTokenizer) CountTokens(text string) (int, error) {
 		if c < utf8.RuneSelf {
 			// ASCII fast path
 			// unicode.IsSpace for ASCII includes '\t', '\n', '\v', '\f', '\r', ' '.
-			isSpace := c == ' ' || c == '\t' || c == '\n' || c == '\r' || c == '\v' || c == '\f'
+			// Optimization: Check c <= ' ' first to eliminate most non-space chars with one comparison.
+			isSpace := c <= ' ' && (c == ' ' || (c >= '\t' && c <= '\r'))
 			if isSpace {
 				inWord = false
 			} else if !inWord {
