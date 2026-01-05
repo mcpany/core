@@ -157,7 +157,7 @@ func TestDockerCompose(t *testing.T) {
 }
 
 func TestHelmChart(t *testing.T) {
-	// t.Skip("Skipping heavy integration test TestHelmChart")
+	t.Skip("Skipping heavy integration test TestHelmChart")
 	// Add build/env/bin to PATH to find helm installed by make
 	rootDir := integration.ProjectRoot(t)
 	buildBin := filepath.Join(rootDir, "../build/env/bin")

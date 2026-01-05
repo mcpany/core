@@ -1,22 +1,33 @@
-# Git
-.git/
+# Copyright (C) 2025 Author(s) of MCP Any
+# SPDX-License-Identifier: Apache-2.0
 
-# Build artifacts
+# Ignore version control files
+.git
+.gitignore
+
+# Ignore build artifacts
 build/
-dist/
+*.out
+*.so
+*.a
 
-# Node.js
+# Ignore documentation
+docs/
 node_modules/
-npm-debug.log
-yarn-error.log
+node_modules
+**/node_modules
 
-# IDE files
-.idea/
+
+# Ignore vendor directories
+vendor/
+
+# Ignore local development files
 .vscode/
+*.code-workspace
 
-# OS files
+# Ignore test data
+testdata/
+
+# Ignore system files
 .DS_Store
 Thumbs.db
-
-# Logs
-*.log

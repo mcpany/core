@@ -22,11 +22,7 @@ repos:
         entry: shellcheck
         language: system
         types: [shell]
-        exclude: |
-            (?x)^(
-                vendor/|
-                get_helm.sh
-            )$
+        exclude: ^vendor/
     -   id: helm-lint
         name: helm-lint
         entry: helm lint server/helm/mcpany

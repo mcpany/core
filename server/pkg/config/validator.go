@@ -422,11 +422,8 @@ func validateMcpService(mcpService *configv1.McpUpstreamService) error {
 			return fmt.Errorf("mcp service with stdio_connection has empty command")
 		}
 		if stdioConn.GetWorkingDirectory() != "" {
-			// If running in Docker (container_image is set), we don't enforce host path restrictions
-			if stdioConn.GetContainerImage() == "" {
-				if err := validation.IsRelativePath(stdioConn.GetWorkingDirectory()); err != nil {
-					return fmt.Errorf("mcp service with stdio_connection has insecure working_directory %q: %w", stdioConn.GetWorkingDirectory(), err)
-				}
+			if err := validation.IsRelativePath(stdioConn.GetWorkingDirectory()); err != nil {
+				return fmt.Errorf("mcp service with stdio_connection has insecure working_directory %q: %w", stdioConn.GetWorkingDirectory(), err)
 			}
 		}
 		if err := validateSecretMap(stdioConn.GetEnv()); err != nil {

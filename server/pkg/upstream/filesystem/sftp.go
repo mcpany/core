@@ -1,9 +1,11 @@
-package provider
+// Copyright 2025 Author(s) of MCP Any
+// SPDX-License-Identifier: Apache-2.0
+
+package filesystem
 
 import (
 	"fmt"
 	"os"
-	"path/filepath"
 	"strings"
 	"time"
 
@@ -13,13 +15,7 @@ import (
 	"golang.org/x/crypto/ssh"
 )
 
-type SftpProvider struct {
-	fs     afero.Fs
-	client *sftp.Client
-	conn   *ssh.Client
-}
-
-func NewSftpProvider(config *configv1.SftpFs) (*SftpProvider, error) {
+func (u *Upstream) createSftpFilesystem(config *configv1.SftpFs) (afero.Fs, error) {
 	if config == nil {
 		return nil, fmt.Errorf("sftp config is nil")
 	}
@@ -64,37 +60,12 @@ func NewSftpProvider(config *configv1.SftpFs) (*SftpProvider, error) {
 		return nil, fmt.Errorf("failed to create sftp client: %w", err)
 	}
 
-	return &SftpProvider{
-		fs:     &sftpFs{client: client},
-		client: client,
-		conn:   conn,
-	}, nil
-}
+	u.mu.Lock()
+	u.closers = append(u.closers, client, conn)
+	u.mu.Unlock()
 
-func (p *SftpProvider) GetFs() afero.Fs {
-	return p.fs
+	return &sftpFs{client: client}, nil
 }
-
-func (p *SftpProvider) ResolvePath(virtualPath string) (string, error) {
-	// SFTP paths are remote paths. We assume they are absolute or relative to user home.
-	// But `clean` is probably good enough for now.
-	// NOTE: In the original implementation, SFTP falls through to default in resolvePath, which calls validateLocalPath.
-	// THIS WAS LIKELY A BUG as it tried to validate SFTP paths against local root_paths.
-	// Here we fix it by just cleaning the path.
-	return filepath.Clean(virtualPath), nil
-}
-
-func (p *SftpProvider) Close() error {
-	if p.client != nil {
-		_ = p.client.Close()
-	}
-	if p.conn != nil {
-		_ = p.conn.Close()
-	}
-	return nil
-}
-
-// sftpFs implementation copy from original sftp.go
 
 type sftpFs struct {
 	client *sftp.Client
