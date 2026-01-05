@@ -52,14 +52,64 @@ global_settings:
 | Option | Type | Default | Description |
 | :--- | :--- | :--- | :--- |
 | `enabled` | `bool` | `false` | Enables or disables audit logging. |
-| `storage_type` | `enum` | `FILE` | The storage backend to use: `FILE`, `SQLITE`, `POSTGRES`, or `WEBHOOK`. |
+| `storage_type` | `enum` | `FILE` | The storage backend to use: `FILE`, `SQLITE`, `POSTGRES`, `WEBHOOK`, `SPLUNK`, or `DATADOG`. |
 | `output_path` | `string` | `""` | Path to the log file (for `FILE`) or database connection string/path (for `SQLITE`/`POSTGRES`). |
 | `webhook_url` | `string` | `""` | The URL to send POST requests to (for `WEBHOOK`). |
 | `webhook_headers` | `map` | `{}` | HTTP headers to include in the webhook request (for `WEBHOOK`). |
+| `splunk` | `object` | `nil` | Splunk configuration (for `SPLUNK`). |
+| `datadog` | `object` | `nil` | Datadog configuration (for `DATADOG`). |
 | `log_arguments` | `bool` | `false` | If true, logs the input arguments. **Warning:** May log sensitive data. |
 | `log_results` | `bool` | `false` | If true, logs the execution result. **Warning:** May log sensitive data. |
 
 **Note on Webhook Performance:** The webhook storage makes a synchronous HTTP call for every audit log entry. To prevent slowing down tool execution, a short timeout (3 seconds) is applied. Ensure your webhook endpoint is performant.
+
+### Splunk Export
+
+To export audit logs to Splunk HTTP Event Collector (HEC):
+
+```yaml
+global_settings:
+  audit:
+    enabled: true
+    storage_type: "STORAGE_TYPE_SPLUNK"
+    splunk:
+      hec_url: "https://splunk-hec.example.com:8088"
+      token: "${SPLUNK_HEC_TOKEN}"
+      index: "mcp_audit"
+      source: "mcp-any"
+      sourcetype: "_json"
+```
+
+| Field | Description |
+| :--- | :--- |
+| `hec_url` | The URL of the Splunk HEC endpoint. |
+| `token` | The HEC token. |
+| `index` | The Splunk index to send events to. |
+| `source` | The source value for the events. |
+| `sourcetype` | The sourcetype value for the events. |
+
+### Datadog Export
+
+To export audit logs to Datadog Logs:
+
+```yaml
+global_settings:
+  audit:
+    enabled: true
+    storage_type: "STORAGE_TYPE_DATADOG"
+    datadog:
+      api_key: "${DD_API_KEY}"
+      site: "datadoghq.com" # or datadoghq.eu, etc.
+      service: "mcp-any"
+      tags: "env:prod,team:platform"
+```
+
+| Field | Description |
+| :--- | :--- |
+| `api_key` | Your Datadog API Key. |
+| `site` | The Datadog site (default: `datadoghq.com`). |
+| `service` | The service name tag. |
+| `tags` | Comma-separated list of tags. |
 
 ## Log Format
 
