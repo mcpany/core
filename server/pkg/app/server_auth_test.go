@@ -245,7 +245,7 @@ func TestAuthMiddleware_LocalhostSecurity(t *testing.T) {
 		assert.Equal(t, http.StatusOK, rec.Code)
 	})
 
-	t.Run("No Key - External Denied", func(t *testing.T) {
+	t.Run("No Key - Private IP Allowed", func(t *testing.T) {
 		middleware := app.createAuthMiddleware("") // No key
 		handler := middleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusOK)
@@ -253,6 +253,20 @@ func TestAuthMiddleware_LocalhostSecurity(t *testing.T) {
 
 		req, _ := http.NewRequest("GET", "/", nil)
 		req.RemoteAddr = "192.168.1.5:12345"
+		rec := httptest.NewRecorder()
+
+		handler.ServeHTTP(rec, req)
+		assert.Equal(t, http.StatusOK, rec.Code)
+	})
+
+	t.Run("No Key - Public IP Denied", func(t *testing.T) {
+		middleware := app.createAuthMiddleware("") // No key
+		handler := middleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.WriteHeader(http.StatusOK)
+		}))
+
+		req, _ := http.NewRequest("GET", "/", nil)
+		req.RemoteAddr = "8.8.8.8:12345"
 		rec := httptest.NewRecorder()
 
 		handler.ServeHTTP(rec, req)
