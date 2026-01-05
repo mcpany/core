@@ -4,7 +4,6 @@
 package e2e_sequential
 
 import (
-	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
@@ -119,7 +118,7 @@ func TestDockerComposeE2E(t *testing.T) {
 	if _, err := os.Stat(rootCompose); err == nil {
 		t.Log("Starting root docker-compose with dynamic ports...")
 		// Create dynamic override
-		dynamicCompose := createDynamicCompose(t, rootCompose, rootDir)
+		dynamicCompose := createDynamicCompose(t, rootCompose)
 		currentComposeFile = dynamicCompose
 		defer os.Remove(dynamicCompose)
 
@@ -144,9 +143,9 @@ func TestDockerComposeE2E(t *testing.T) {
 	// 5. Start Example Docker Compose
 	t.Log("Switching to example docker-compose...")
 
-	exampleDir := filepath.Join(rootDir, "server", "examples/docker-compose-demo")
+	exampleDir := filepath.Join(rootDir, "examples/docker-compose-demo")
 	originalCompose := filepath.Join(exampleDir, "docker-compose.yml")
-	dynamicCompose := createDynamicCompose(t, originalCompose, rootDir)
+	dynamicCompose := createDynamicCompose(t, originalCompose)
 	currentComposeFile = dynamicCompose
 	defer os.Remove(dynamicCompose)
 
@@ -178,7 +177,7 @@ func TestDockerComposeE2E(t *testing.T) {
 func testFunctionalWeather(t *testing.T, rootDir string) {
 	// 1. Start mcpany-server with wttr.in config
 	// We run it on a dynamic port to avoid conflict with previous steps or other processes.
-	configPath := fmt.Sprintf("%s/server/examples/popular_services/wttr.in/config.yaml", rootDir)
+	configPath := fmt.Sprintf("%s/examples/popular_services/wttr.in/config.yaml", rootDir)
 	t.Logf("rootDir: %s", rootDir)
 	t.Logf("configPath: %s", configPath)
 	if _, err := os.Stat(configPath); err != nil {
@@ -188,7 +187,7 @@ func testFunctionalWeather(t *testing.T, rootDir string) {
 	// We also use a unique container name to avoid conflict
 	containerName := fmt.Sprintf("mcpany-weather-test-%d", time.Now().UnixNano())
 
-	cmd := dockerCommand("run", "-d", "--name", containerName,
+	cmd := exec.Command("docker", "run", "-d", "--name", containerName,
 		"-p", "0:50050", // Dynamic port
 		"-v", fmt.Sprintf("%s:/config.yaml", configPath),
 		"ghcr.io/mcpany/server:latest",
@@ -203,11 +202,11 @@ func testFunctionalWeather(t *testing.T, rootDir string) {
 
 	// Cleanup
 	defer func() {
-		_ = dockerCommand("rm", "-f", containerName).Run()
+		_ = exec.Command("docker", "rm", "-f", containerName).Run()
 	}()
 
 	// Get assigned port
-	out, err := dockerCommand("port", containerName, "50050/tcp").Output()
+	out, err := exec.Command("docker", "port", containerName, "50050/tcp").Output()
 	require.NoError(t, err, "Failed to get assigned port")
 	// Output example: 0.0.0.0:32768
 	portBinding := strings.TrimSpace(string(out))
@@ -348,16 +347,11 @@ func runCommand(t *testing.T, dir string, name string, args ...string) {
 	}
 	cmd.Dir = dir
 	cmd.Env = os.Environ() // Explicitly pass environment to ensure t.Setenv works
-	var stdout, stderr bytes.Buffer
-	cmd.Stdout = &stdout
-	cmd.Stderr = &stderr
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
 	t.Logf("Running: %s (Env: COMPOSE_PROJECT_NAME=%s)", strings.Join(cmd.Args, " "), os.Getenv("COMPOSE_PROJECT_NAME"))
 	err := cmd.Run()
-	if err != nil {
-		t.Logf("STDOUT:\n%s", stdout.String())
-		t.Logf("STDERR:\n%s", stderr.String())
-		require.NoError(t, err, "Command failed: %s", strings.Join(cmd.Args, " "))
-	}
+	require.NoError(t, err, "Command failed: %s", strings.Join(cmd.Args, " "))
 }
 
 func verifyEndpoint(t *testing.T, url string, expectedStatus int, timeout time.Duration) {
@@ -501,7 +495,7 @@ func verifyToolMetricDirect(t *testing.T, metricsURL, toolName string) {
 }
 
 // createDynamicCompose creates a temporary docker-compose file with 0 ports
-func createDynamicCompose(t *testing.T, originalPath string, rootDir string) string {
+func createDynamicCompose(t *testing.T, originalPath string) string {
 	content, err := os.ReadFile(originalPath)
 	require.NoError(t, err)
 
@@ -516,18 +510,12 @@ func createDynamicCompose(t *testing.T, originalPath string, rootDir string) str
 	re2 := regexp.MustCompile(`"50051:50051"`)
 	re3 := regexp.MustCompile(`"8080:8080"`)
 	re4 := regexp.MustCompile(`"9099:9090"`)
-	reHealthcheck := regexp.MustCompile(`"http://localhost:50050/healthz"`)
 
 	s := string(content)
 	s = re1.ReplaceAllString(s, `"0:50050"`)
 	s = re2.ReplaceAllString(s, `"0:50051"`)
 	s = re3.ReplaceAllString(s, `"0:8080"`)
 	s = re4.ReplaceAllString(s, `"0:9090"`)
-	s = reHealthcheck.ReplaceAllString(s, `"http://localhost:50050/healthz"`)
-
-	// Create a dynamic prometheus config
-	prometheusConfigPath := createDynamicPrometheusConfig(t, rootDir)
-	s = strings.Replace(s, "./server/docker/prometheus.yml:/etc/prometheus/prometheus.yml", fmt.Sprintf("%s:/etc/prometheus/prometheus.yml", prometheusConfigPath), 1)
 
 	// Create temp file in same dir to preserve relative paths
 	dir := filepath.Dir(originalPath)
@@ -535,25 +523,6 @@ func createDynamicCompose(t *testing.T, originalPath string, rootDir string) str
 	require.NoError(t, err)
 
 	_, err = tmpFile.WriteString(s)
-	require.NoError(t, err)
-	tmpFile.Close()
-
-	return tmpFile.Name()
-}
-
-func createDynamicPrometheusConfig(t *testing.T, rootDir string) string {
-	content := `
-global:
-  scrape_interval: 15s
-scrape_configs:
-  - job_name: 'prometheus'
-    static_configs:
-      - targets: ['localhost:9090']
-`
-	tmpFile, err := os.CreateTemp("", "prometheus-dynamic-*.yml")
-	require.NoError(t, err)
-
-	_, err = tmpFile.WriteString(content)
 	require.NoError(t, err)
 	tmpFile.Close()
 
