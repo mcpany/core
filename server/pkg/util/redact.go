@@ -19,6 +19,10 @@ var (
 	// Used for optimized scanning.
 	sensitiveStartChars []byte
 
+	// sensitiveStartCharsAny contains all sensitive start characters (both lower and upper case).
+	// Used for fast scanning with bytes.IndexAny.
+	sensitiveStartCharsAny string
+
 	// sensitiveKeyGroups maps a starting character (lowercase) to the list of sensitive keys starting with it.
 	// Optimization: Use array instead of map for faster lookup.
 	sensitiveKeyGroups [256][][]byte
@@ -42,6 +46,16 @@ func init() {
 			sensitiveKeyGroups[first] = append(sensitiveKeyGroups[first], kb)
 		}
 	}
+
+	// Build sensitiveStartCharsAny for fast scanning
+	var startChars []byte
+	for _, c := range sensitiveStartChars {
+		startChars = append(startChars, c)
+		if c >= 'a' && c <= 'z' {
+			startChars = append(startChars, c-32)
+		}
+	}
+	sensitiveStartCharsAny = string(startChars)
 
 	// Build next char masks
 	for start, keys := range sensitiveKeyGroups {
@@ -282,45 +296,27 @@ func scanForSensitiveKeys(input []byte, checkEscape bool) bool {
 		}
 	}
 
-	for _, startChar := range sensitiveStartChars {
-		keys := sensitiveKeyGroups[startChar]
-		// startChar is lowercase. We need to check for uppercase too.
-		// Optimized loop: skip directly to the next occurrence of startChar or startChar-32
-		upperChar := startChar - 32
+	offset := 0
+	for offset < len(input) {
+		// Use IndexAny to find the first occurrence of any start character (case-insensitive)
+		idx := bytes.IndexAny(input[offset:], sensitiveStartCharsAny)
+		if idx == -1 {
+			return false
+		}
+		matchStart := offset + idx
+		char := input[matchStart]
 
-		offset := 0
-		for offset < len(input) {
-			slice := input[offset:]
+		// Normalize to lowercase to find the group
+		lowerChar := char | 0x20
+		keys := sensitiveKeyGroups[lowerChar]
 
-			// Find first occurrence of startChar or upperChar
-			idxL := bytes.IndexByte(slice, startChar)
-			idxU := bytes.IndexByte(slice, upperChar)
-
-			var idx int
-			if idxL == -1 && idxU == -1 {
-				break // No more matches for this char
-			}
-
-			switch {
-			case idxL == -1:
-				idx = idxU
-			case idxU == -1:
-				idx = idxL
-			default:
-				if idxL < idxU {
-					idx = idxL
-				} else {
-					idx = idxU
-				}
-			}
-			// Found candidate start at offset + idx
-			matchStart := offset + idx
-
+		// Ensure we actually found a valid start char (IndexAny guarantees this, but safety check)
+		if len(keys) > 0 {
 			// Optimization: Check second character
 			if matchStart+1 < len(input) {
 				second := input[matchStart+1] | 0x20
 				if second >= 'a' && second <= 'z' {
-					mask := sensitiveNextCharMask[startChar]
+					mask := sensitiveNextCharMask[lowerChar]
 					if (mask & (1 << (second - 'a'))) == 0 {
 						// Second character doesn't match any key in this group
 						offset = matchStart + 1
@@ -365,10 +361,10 @@ func scanForSensitiveKeys(input []byte, checkEscape bool) bool {
 					}
 				}
 			}
-
-			// Move past this match
-			offset = matchStart + 1
 		}
+
+		// Move past this match
+		offset = matchStart + 1
 	}
 	return false
 }
