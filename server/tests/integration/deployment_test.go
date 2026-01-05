@@ -14,30 +14,18 @@ import (
 	"testing"
 	"time"
 
+	"github.com/mcpany/core/server/tests/framework"
 	"github.com/mcpany/core/server/tests/integration"
 	"github.com/stretchr/testify/require"
 )
 
-func commandExists(cmd string) bool {
-	_, err := exec.LookPath(cmd)
-	return err == nil
-}
-
-func getDockerCommand(t *testing.T) []string {
-	t.Helper()
-	if os.Getenv("USE_SUDO_FOR_DOCKER") == "true" {
-		return []string{"sudo", "docker"}
-	}
-	return []string{"docker"}
-}
-
 func TestDockerCompose(t *testing.T) {
-	t.Skip("Skipping heavy integration test TestDockerCompose")
+
 	// t.SkipNow()
 	if !integration.IsDockerSocketAccessible() {
 		t.Skip("Docker socket not accessible, skipping TestDockerCompose.")
 	}
-	if !commandExists("docker") {
+	if !framework.CommandExists("docker") {
 		t.Skip("docker command not found, skipping TestDockerCompose.")
 	}
 
@@ -46,7 +34,7 @@ func TestDockerCompose(t *testing.T) {
 	rootDir := integration.ProjectRoot(t)
 	dockerComposeFile := filepath.Join(rootDir, "examples/docker-compose-demo/docker-compose.yml")
 
-	dockerCmd := getDockerCommand(t)
+	dockerCmd := framework.GetDockerCommand(t)
 
 	// Build the images first to avoid race conditions
 	buildCmdArgs := dockerCmd
@@ -165,7 +153,7 @@ func TestHelmChart(t *testing.T) {
 	os.Setenv("PATH", buildBin+string(os.PathListSeparator)+oldPath)
 	defer os.Setenv("PATH", oldPath)
 
-	if !commandExists("helm") {
+	if !framework.CommandExists("helm") {
 		t.Skip("helm command not found, skipping TestHelmChart.")
 	}
 	t.Parallel()

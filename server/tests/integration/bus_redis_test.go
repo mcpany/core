@@ -23,7 +23,7 @@ func waitForSubscribers(t *testing.T, client *goredis.Client, topic string, expe
 		subs := client.PubSubNumSub(context.Background(), topic).Val()
 		// Check that the subscriber count is at least the expected number
 		return subs[topic] >= int64(expected)
-	}, 5*time.Second, 100*time.Millisecond, "timed out waiting for subscribers on topic %s", topic)
+	}, 15*time.Second, 100*time.Millisecond, "timed out waiting for subscribers on topic %s", topic)
 }
 
 func TestRedisBus_Integration_Subscribe(t *testing.T) {
@@ -67,7 +67,7 @@ func TestRedisBus_Integration_Subscribe(t *testing.T) {
 }
 
 func TestRedisBus_Integration_SubscribeOnce(t *testing.T) {
-	t.Skip("Skipping flaky integration test TestRedisBus_Integration_SubscribeOnce")
+
 	if testing.Short() {
 		t.Skip("skipping integration test in short mode.")
 	}
@@ -190,7 +190,7 @@ func TestRedisBus_Integration_Unsubscribe(t *testing.T) {
 }
 
 func TestRedisBus_Integration_Concurrent(t *testing.T) {
-	t.Skip("Skipping flaky integration test TestRedisBus_Integration_Concurrent")
+
 	if testing.Short() {
 		t.Skip("skipping integration test in short mode.")
 	}

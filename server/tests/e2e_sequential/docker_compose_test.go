@@ -18,12 +18,13 @@ import (
 	"testing"
 	"time"
 
+	"github.com/mcpany/core/server/tests/framework"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/require"
 )
 
 func TestDockerComposeE2E(t *testing.T) {
-	t.Skip("Skipping E2E test as requested by user to unblock merge")
+
 	if os.Getenv("E2E_DOCKER") != "true" {
 		t.Skip("Skipping E2E Docker test. Set E2E_DOCKER=true to run.")
 	}
@@ -46,7 +47,9 @@ func TestDockerComposeE2E(t *testing.T) {
 
 	// 1. Build Docker Image
 	t.Log("Building mcpany/server image...")
-	runCommand(t, rootDir, "docker", "build", "-t", imageName, "-f", "server/docker/Dockerfile.server", ".")
+	dockerBuildCmd := framework.GetDockerCommand(t)
+	dockerBuildCmd = append(dockerBuildCmd, "build", "-t", imageName, "-f", "server/docker/Dockerfile.server", ".")
+	runCommand(t, rootDir, dockerBuildCmd[0], dockerBuildCmd[1:]...)
 
 	// Use a unique project name for isolation
 	projectName := fmt.Sprintf("e2e_seq_%d", time.Now().UnixNano())
@@ -63,14 +66,18 @@ func TestDockerComposeE2E(t *testing.T) {
 		// Dump logs from the active compose file if set
 		if currentComposeFile != "" {
 			t.Logf("Dumping logs from %s...", currentComposeFile)
-			cmd := exec.Command("docker", "compose", "-f", currentComposeFile, "logs")
+			dockerLogsCmd := framework.GetDockerCommand(t)
+			dockerLogsCmd = append(dockerLogsCmd, "compose", "-f", currentComposeFile, "logs")
+			cmd := exec.Command(dockerLogsCmd[0], dockerLogsCmd[1:]...)
 			cmd.Stdout = os.Stdout
 			cmd.Stderr = os.Stderr
 			_ = cmd.Run()
 		}
 
 		// Dump logs from manually run weather container
-		cmd := exec.Command("docker", "logs", "mcpany-weather-test") // Name without random suffix? No, we used random.
+		dockerLogsCmd := framework.GetDockerCommand(t)
+		dockerLogsCmd = append(dockerLogsCmd, "logs", "mcpany-weather-test")
+		cmd := exec.Command(dockerLogsCmd[0], dockerLogsCmd[1:]...)
 		// We need to capture the weather container name too if we want to dump it.
 		// For now, let's skip dumping weather logs or try to capture it too.
 
@@ -80,7 +87,9 @@ func TestDockerComposeE2E(t *testing.T) {
 		// So this main cleanup is just a safety net.
 
 		if currentComposeFile != "" {
-			cmd = exec.Command("docker", "compose", "-f", currentComposeFile, "down", "-v", "--remove-orphans")
+			dockerDownCmd := framework.GetDockerCommand(t)
+			dockerDownCmd = append(dockerDownCmd, "compose", "-f", currentComposeFile, "down", "-v", "--remove-orphans")
+			cmd = exec.Command(dockerDownCmd[0], dockerDownCmd[1:]...)
 			cmd.Env = os.Environ()
 			cmd.Stdout = os.Stdout
 			cmd.Stderr = os.Stderr
@@ -88,7 +97,9 @@ func TestDockerComposeE2E(t *testing.T) {
 		}
 
 		// Also try generic project down just in case
-		cmd = exec.Command("docker", "compose", "down", "-v", "--remove-orphans")
+		dockerDownCmd := framework.GetDockerCommand(t)
+		dockerDownCmd = append(dockerDownCmd, "compose", "down", "-v", "--remove-orphans")
+		cmd = exec.Command(dockerDownCmd[0], dockerDownCmd[1:]...)
 		cmd.Env = os.Environ()
 		_ = cmd.Run()
 
@@ -99,7 +110,9 @@ func TestDockerComposeE2E(t *testing.T) {
 
 	// Helper to get dynamic port
 	getServicePort := func(composeFile, service, internalPort string) string {
-		cmd := exec.Command("docker", "compose", "-f", composeFile, "port", service, internalPort)
+		dockerPortCmd := framework.GetDockerCommand(t)
+		dockerPortCmd = append(dockerPortCmd, "compose", "-f", composeFile, "port", service, internalPort)
+		cmd := exec.Command(dockerPortCmd[0], dockerPortCmd[1:]...)
 		cmd.Env = os.Environ()
 		out, err := cmd.Output()
 		require.NoError(t, err, "Failed to get port for %s %s", service, internalPort)
@@ -123,7 +136,9 @@ func TestDockerComposeE2E(t *testing.T) {
 		currentComposeFile = dynamicCompose
 		defer os.Remove(dynamicCompose)
 
-		runCommand(t, rootDir, "docker", "compose", "-f", dynamicCompose, "up", "-d", "--wait")
+		dockerUpCmd := framework.GetDockerCommand(t)
+		dockerUpCmd = append(dockerUpCmd, "compose", "-f", dynamicCompose, "up", "-d", "--wait")
+		runCommand(t, rootDir, dockerUpCmd[0], dockerUpCmd[1:]...)
 
 		// Discover ports
 		serverPort := getServicePort(dynamicCompose, "mcpany-server", "50050")
@@ -136,7 +151,9 @@ func TestDockerComposeE2E(t *testing.T) {
 		// We only verify prometheus if we can find the port.
 		// For now, let's assume we focused on example-compose as the main test.
 		// If root compose is present, we shut it down.
-		runCommand(t, rootDir, "docker", "compose", "-f", dynamicCompose, "down")
+		dockerDownCmd := framework.GetDockerCommand(t)
+		dockerDownCmd = append(dockerDownCmd, "compose", "-f", dynamicCompose, "down")
+		runCommand(t, rootDir, dockerDownCmd[0], dockerDownCmd[1:]...)
 	} else {
 		t.Log("Skipping root docker-compose test (docker-compose.yml not found)")
 	}
@@ -150,7 +167,9 @@ func TestDockerComposeE2E(t *testing.T) {
 	currentComposeFile = dynamicCompose
 	defer os.Remove(dynamicCompose)
 
-	runCommand(t, rootDir, "docker", "compose", "-f", dynamicCompose, "up", "-d", "--wait")
+	dockerUpCmd := framework.GetDockerCommand(t)
+	dockerUpCmd = append(dockerUpCmd, "compose", "-f", dynamicCompose, "up", "-d", "--wait")
+	runCommand(t, rootDir, dockerUpCmd[0], dockerUpCmd[1:]...)
 
 	// 6. Verify Example Health
 	serverPort := getServicePort(dynamicCompose, "mcpany-server", "50050")
@@ -188,12 +207,14 @@ func testFunctionalWeather(t *testing.T, rootDir string) {
 	// We also use a unique container name to avoid conflict
 	containerName := fmt.Sprintf("mcpany-weather-test-%d", time.Now().UnixNano())
 
-	cmd := exec.Command("docker", "run", "-d", "--name", containerName,
+	dockerRunCmd := framework.GetDockerCommand(t)
+	dockerRunCmd = append(dockerRunCmd, "run", "-d", "--name", containerName,
 		"-p", "0:50050", // Dynamic port
 		"-v", fmt.Sprintf("%s:/config.yaml", configPath),
 		"ghcr.io/mcpany/server:latest",
 		"run", "--config-path", "/config.yaml", "--mcp-listen-address", ":50050",
 	)
+	cmd := exec.Command(dockerRunCmd[0], dockerRunCmd[1:]...)
 	t.Logf("Running command: %s", cmd.String())
 
 	cmd.Stdout = os.Stdout
@@ -203,11 +224,15 @@ func testFunctionalWeather(t *testing.T, rootDir string) {
 
 	// Cleanup
 	defer func() {
-		_ = exec.Command("docker", "rm", "-f", containerName).Run()
+		dockerRmCmd := framework.GetDockerCommand(t)
+		dockerRmCmd = append(dockerRmCmd, "rm", "-f", containerName)
+		_ = exec.Command(dockerRmCmd[0], dockerRmCmd[1:]...).Run()
 	}()
 
 	// Get assigned port
-	out, err := exec.Command("docker", "port", containerName, "50050/tcp").Output()
+	dockerPortCmd := framework.GetDockerCommand(t)
+	dockerPortCmd = append(dockerPortCmd, "port", containerName, "50050/tcp")
+	out, err := exec.Command(dockerPortCmd[0], dockerPortCmd[1:]...).Output()
 	require.NoError(t, err, "Failed to get assigned port")
 	// Output example: 0.0.0.0:32768
 	portBinding := strings.TrimSpace(string(out))
