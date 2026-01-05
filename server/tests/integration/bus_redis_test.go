@@ -67,7 +67,7 @@ func TestRedisBus_Integration_Subscribe(t *testing.T) {
 }
 
 func TestRedisBus_Integration_SubscribeOnce(t *testing.T) {
-	t.Skip("Skipping flaky integration test TestRedisBus_Integration_SubscribeOnce")
+	// t.Skip("Skipping flaky integration test TestRedisBus_Integration_SubscribeOnce")
 	if testing.Short() {
 		t.Skip("skipping integration test in short mode.")
 	}
@@ -190,7 +190,7 @@ func TestRedisBus_Integration_Unsubscribe(t *testing.T) {
 }
 
 func TestRedisBus_Integration_Concurrent(t *testing.T) {
-	t.Skip("Skipping flaky integration test TestRedisBus_Integration_Concurrent")
+	// t.Skip("Skipping flaky integration test TestRedisBus_Integration_Concurrent")
 	if testing.Short() {
 		t.Skip("skipping integration test in short mode.")
 	}

@@ -20,7 +20,6 @@ import (
 )
 
 func TestCacheMiddleware_CacheHit(t *testing.T) {
-	// t.Skip("Skipping flaky test: tool registration times out intermittently.")
 	var requestCount int32
 	upstream := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		atomic.AddInt32(&requestCount, 1)
@@ -66,7 +65,7 @@ upstream_services:
 		}
 		t.Logf("Tool not found. Found: %v", names)
 		return false
-	}, 15*time.Second, 500*time.Millisecond, "tool was not registered")
+	}, 30*time.Second, 500*time.Millisecond, "tool was not registered")
 
 	callToolParams := &mcp.CallToolParams{
 		Name:      "test-service.test-tool",
@@ -82,7 +81,6 @@ upstream_services:
 }
 
 func TestCacheMiddleware_CacheExpires(t *testing.T) {
-	// t.Skip("Skipping flaky test: tool registration times out intermittently.")
 	var requestCount int32
 	upstream := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		atomic.AddInt32(&requestCount, 1)
@@ -128,7 +126,7 @@ upstream_services:
 		}
 		t.Logf("Tool not found. Found: %v", names)
 		return false
-	}, 15*time.Second, 500*time.Millisecond, "tool was not registered")
+	}, 30*time.Second, 500*time.Millisecond, "tool was not registered")
 
 	callToolParams := &mcp.CallToolParams{
 		Name:      "test-service.test-tool",

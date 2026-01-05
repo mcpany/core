@@ -2,8 +2,8 @@
 # UI Makefile
 
 # Variables
-DOCKER_CMD := docker
-DOCKER_BUILDX_CMD := docker buildx
+DOCKER_CMD := sudo docker
+DOCKER_BUILDX_CMD := sudo docker buildx
 # Check if docker needs sudo (simple check)
 ifeq ($(shell docker info >/dev/null 2>&1 && echo 1 || echo 0), 0)
 	DOCKER_CMD := sudo docker
@@ -30,20 +30,20 @@ test: build-test-docker
 	# If we change it to use sh -c "npx playwright test $PLAYWRIGHT_ARGS", it might work.
 	# BUT I prefer to use `run` for targeted tests.
 	if [ -z '$(ARGS)' ]; then \
-		docker compose -f ../docker/docker-compose.test-ui.yml up --abort-on-container-exit --exit-code-from ui-tests; \
+		$(DOCKER_CMD) compose -f ../docker/docker-compose.test-ui.yml up --abort-on-container-exit --exit-code-from ui-tests; \
 	else \
-		docker compose -f ../docker/docker-compose.test-ui.yml run --rm --service-ports ui-tests npx playwright test $(ARGS); \
+		$(DOCKER_CMD) compose -f ../docker/docker-compose.test-ui.yml run --rm --service-ports ui-tests npx playwright test $(ARGS); \
 	fi
 
 # Run audit tests (generate screenshots)
 audit: build-test-docker
-	CAPTURE_SCREENSHOTS=true docker compose -f ../docker/docker-compose.test-ui.yml up --abort-on-container-exit --exit-code-from ui-tests
-	docker compose -f ../docker/docker-compose.test-ui.yml down -v
+	CAPTURE_SCREENSHOTS=true $(DOCKER_CMD) compose -f ../docker/docker-compose.test-ui.yml up --abort-on-container-exit --exit-code-from ui-tests
+	$(DOCKER_CMD) compose -f ../docker/docker-compose.test-ui.yml down -v
 
 test-ci:
-	docker compose -f ../docker/docker-compose.test-ui.yml build
-	docker compose -f ../docker/docker-compose.test-ui.yml up --quiet-pull --abort-on-container-exit --exit-code-from ui-tests
-	docker compose -f ../docker/docker-compose.test-ui.yml down -v
+	$(DOCKER_CMD) compose -f ../docker/docker-compose.test-ui.yml build
+	$(DOCKER_CMD) compose -f ../docker/docker-compose.test-ui.yml up --quiet-pull --abort-on-container-exit --exit-code-from ui-tests
+	$(DOCKER_CMD) compose -f ../docker/docker-compose.test-ui.yml down -v
 
 # Local test target (runs natively)
 test-local:
@@ -62,4 +62,4 @@ build:
 
 update-screenshots:
 	@echo "Updating screenshots..."
-	docker compose -f ../docker/docker-compose.test-ui.yml run --rm ui-tests npx playwright test --config playwright.screenshots.config.ts
+	$(DOCKER_CMD) compose -f ../docker/docker-compose.test-ui.yml run --rm ui-tests npx playwright test --config playwright.screenshots.config.ts

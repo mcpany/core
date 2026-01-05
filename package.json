@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "@playwright/test": "^1.57.0",
     "@radix-ui/react-navigation-menu": "^1.2.14",
     "@radix-ui/react-toolbar": "^1.1.11"
   }

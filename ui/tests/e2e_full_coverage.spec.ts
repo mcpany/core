@@ -114,7 +114,7 @@ test.describe('E2E Full Coverage', () => {
     await expect(row.getByRole('switch')).toHaveAttribute('data-state', 'unchecked');
   });
 
-  test.skip('should manage global settings', async ({ page }) => {
+  test('should manage global settings', async ({ page }) => {
     await page.goto('/settings');
 
     await page.getByRole('tab', { name: 'General' }).click();

@@ -120,7 +120,15 @@ func (u *Updater) UpdateTo(ctx context.Context, fs afero.Fs, executablePath stri
 	if err != nil {
 		return fmt.Errorf("failed to create temp file: %w", err)
 	}
-	defer func() { _ = tmpFile.Close() }()
+	// It is crucial to close the file before renaming it, especially on Windows.
+	// We handle the cleanup of the temp file manually in case of errors.
+	defer func(name string) {
+		_ = tmpFile.Close()
+		// In case of an error before rename, the temp file should be cleaned up.
+		if _, err := fs.Stat(name); err == nil {
+			_ = fs.Remove(name)
+		}
+	}(tmpFile.Name())
 
 	// Write the downloaded asset to the temp file and calculate the checksum
 	hasher := sha256.New()
@@ -132,6 +140,11 @@ func (u *Updater) UpdateTo(ctx context.Context, fs afero.Fs, executablePath stri
 	// Verify the checksum
 	if actualChecksum != expectedChecksum {
 		return fmt.Errorf("checksum mismatch: expected %s, got %s", expectedChecksum, actualChecksum)
+	}
+
+	// Close the file before renaming it.
+	if err := tmpFile.Close(); err != nil {
+		return fmt.Errorf("failed to close temp file: %w", err)
 	}
 
 	if err := fs.Chmod(tmpFile.Name(), 0o755); err != nil {
