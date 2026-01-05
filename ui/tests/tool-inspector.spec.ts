@@ -8,7 +8,7 @@ import { test, expect } from '@playwright/test';
 
 test('Tools page loads and inspector opens', async ({ page }) => {
   // Mock tools endpoint
-  await page.route((url) => url.pathname.includes('/api/tools'), async (route) => {
+  await page.route((url) => url.pathname.includes('/api/v1/tools'), async (route) => {
     await route.fulfill({
       json: {
         tools: [

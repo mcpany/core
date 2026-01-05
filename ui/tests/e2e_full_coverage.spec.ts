@@ -41,7 +41,7 @@ test.describe('E2E Full Coverage', () => {
   });
 
   // TODO: Fix flaky address visibility in CI/Docker environment
-  test.skip('should register and manage a service', async ({ page }) => {
+  test('should register and manage a service', async ({ page }) => {
     await page.goto('/services');
     await page.click('button:has-text("Add Service")');
 
@@ -60,7 +60,7 @@ test.describe('E2E Full Coverage', () => {
     // Fill Endpoint
     console.log("TEST UPDATE: Filling Address");
     await page.waitForTimeout(500); // Wait for state update
-    const addressInput = page.getByLabel('Address / URL');
+    const addressInput = page.getByLabel('Endpoint');
     await expect(addressInput).toBeVisible();
     await addressInput.click();
     await addressInput.fill('http://http-echo-server:8080');
@@ -69,7 +69,7 @@ test.describe('E2E Full Coverage', () => {
     await expect(addressInput).toHaveValue('http://http-echo-server:8080');
 
     const responsePromise = page.waitForResponse(response =>
-      response.url().includes('/api/services') &&
+      response.url().includes('/api/v1/services') &&
       (response.status() === 200 || response.status() === 201)
     );
 
@@ -87,7 +87,8 @@ test.describe('E2E Full Coverage', () => {
     // Or target by icon presence if possible, but identifying by order is easier here if robust
     // The switch has role="switch". The settings button likely doesn't have a role or is generic button.
     await row.getByRole('link', { name: 'e2e-test-service' }).click();
-    await page.getByRole('button', { name: 'Edit Config' }).click();
+    // Use aria-label 'Edit' from ServiceList
+    await page.getByRole('button', { name: 'Edit' }).click();
 
     await expect(page.locator('input[id="name"]')).toHaveValue('e2e-test-service');
     // Cancel
@@ -98,7 +99,7 @@ test.describe('E2E Full Coverage', () => {
     await expect(row).toContainText('Inactive');
   });
 
-  test.skip('should manage global settings', async ({ page }) => {
+  test('should manage global settings', async ({ page }) => {
     await page.goto('/settings');
 
     await page.getByRole('tab', { name: 'General' }).click();
@@ -127,11 +128,11 @@ test.describe('E2E Full Coverage', () => {
     await expect(page.locator('form').getByRole('combobox').nth(0)).toContainText('DEBUG');
   });
 
-  test.skip('should execute tools in playground', async ({ page }) => {
+  test('should execute tools in playground', async ({ page }) => {
     await page.goto('/playground');
 
     // Verify playground is loaded
-    await expect(page.getByText('Playground')).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Playground' })).toBeVisible();
 
     // Type command
     // Wait for hydration/render
@@ -151,7 +152,7 @@ test.describe('E2E Full Coverage', () => {
   });
 
   // TODO: Fix flaky secrets test in CI/Docker environment
-  test.skip('should manage secrets', async ({ page }) => {
+  test('should manage secrets', async ({ page }) => {
     await page.goto('/settings');
     await page.getByRole('tab', { name: 'Secrets & Keys' }).click();
 
@@ -161,7 +162,7 @@ test.describe('E2E Full Coverage', () => {
     await page.fill('input[id="value"]', 'super_secret_value');
 
     const responsePromise = page.waitForResponse(response =>
-        response.url().includes('/api/secrets') &&
+        response.url().includes('/api/v1/secrets') &&
         (response.status() === 200 || response.status() === 201)
     );
 
@@ -174,8 +175,15 @@ test.describe('E2E Full Coverage', () => {
 
     await expect(page.locator('text=e2e_secret')).toBeVisible();
 
-    const row = page.locator('tr').filter({ hasText: 'e2e_secret' });
-    await row.getByRole('button').click();
+    await expect(page.locator('text=e2e_secret')).toBeVisible();
+
+    // SecretsManager uses divs now, not table rows
+    const row = page.locator('div').filter({ hasText: 'e2e_secret' }).last();
+
+    // Delete button has aria-label="Delete secret"
+    page.on('dialog', dialog => dialog.accept());
+    await row.locator('button[aria-label="Delete secret"]').click();
+
     await expect(page.locator('text=e2e_secret')).not.toBeVisible();
   });
 });

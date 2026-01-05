@@ -7,35 +7,41 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('Secrets Manager', () => {
-  test.skip('should allow adding and deleting secrets', async ({ page }) => {
+  test('should allow adding and deleting secrets', async ({ page }) => {
     await page.goto('/secrets');
 
-    // Check if title is present
-    await expect(page.locator('h1')).toContainText('API Key Vault');
+    // Check if title is present (SecretsManager uses h3)
+    // Use getByRole for robustness
+    await expect(page.getByRole('heading', { name: 'API Keys & Secrets' })).toBeVisible();
 
     // Add a new secret
-    await page.click('text=Add Secret');
+    await page.getByRole('button', { name: 'Add Secret' }).click();
+    await expect(page.getByRole('dialog')).toBeVisible();
+
     await page.fill('#name', 'E2E Test Secret');
     await page.fill('#key', 'TEST_KEY');
     await page.fill('#value', 'test-secret-value');
-    await page.click('button:has-text("Save Secret")');
+    await page.getByRole('button', { name: 'Save Secret' }).click();
 
     // Verify it appears in the list
-    await expect(page.locator('table')).toContainText('E2E Test Secret');
-    await expect(page.locator('table')).toContainText('TEST_KEY');
+    await expect(page.getByText('E2E Test Secret')).toBeVisible();
+    await expect(page.getByText('TEST_KEY')).toBeVisible();
 
-    // Verify mask
-    await expect(page.locator('table')).toContainText('••••••••');
+    // Verify mask (24 dots)
+    await expect(page.getByText('••••••••••••••••••••••••')).toBeVisible();
 
     // Toggle visibility
-    await page.locator('tr:has-text("E2E Test Secret") button').nth(0).click();
-    await expect(page.locator('table')).toContainText('test-secret-value');
+    // Find the row-like container for the secret using .group class
+    const secretRow = page.locator('.group').filter({ hasText: 'E2E Test Secret' }).first();
+
+    // Click the eye icon button - assume it is the first button in the row
+    await secretRow.locator('button').first().click();
+    await expect(page.getByText('test-secret-value')).toBeVisible();
 
     // Delete the secret
-    page.on('dialog', dialog => dialog.accept());
-    await page.locator('tr:has-text("E2E Test Secret") button').last().click();
+    await secretRow.locator('button[aria-label="Delete secret"]').click();
 
     // Verify it's gone
-    await expect(page.locator('table')).not.toContainText('E2E Test Secret');
+    await expect(page.getByText('E2E Test Secret')).not.toBeVisible();
   });
 });
