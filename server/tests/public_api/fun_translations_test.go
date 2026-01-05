@@ -22,7 +22,6 @@ import (
 )
 
 func TestUpstreamService_FunTranslations(t *testing.T) {
-	t.SkipNow()
 	ctx, cancel := context.WithTimeout(context.Background(), integration.TestWaitTimeShort)
 	defer cancel()
 
@@ -44,13 +43,9 @@ func TestUpstreamService_FunTranslations(t *testing.T) {
 		Id:           proto.String(callID),
 		EndpointPath: proto.String("/translate/yoda.json"),
 		Method:       configv1.HttpCallDefinition_HttpMethod(configv1.HttpCallDefinition_HttpMethod_value["HTTP_METHOD_POST"]).Enum(),
-		Parameters: []*configv1.HttpParameterMapping{
-			configv1.HttpParameterMapping_builder{
-				Schema: configv1.ParameterSchema_builder{
-					Name: proto.String("text"),
-				}.Build(),
-			}.Build(),
-		},
+		InputTransformer: configv1.InputTransformer_builder{
+			Template: proto.String("{\"text\": \"{{.text}}\"}"),
+		}.Build(),
 	}.Build()
 
 	toolDef := configv1.ToolDefinition_builder{
