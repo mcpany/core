@@ -92,7 +92,7 @@ export function SecretsManager() {
                 name: newSecretName,
                 key: newSecretKey,
                 value: newSecretValue,
-                provider: newSecretProvider as any,
+                provider: newSecretProvider as "custom" | "openai" | "anthropic" | "aws" | "gcp",
                 createdAt: new Date().toISOString(),
                 lastUsed: "Never"
             };

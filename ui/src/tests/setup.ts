@@ -41,6 +41,7 @@ if (!global.PointerEvent) {
       this.width = params.width || 0;
     }
   }
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (global as any).PointerEvent = PointerEvent;
 }
 

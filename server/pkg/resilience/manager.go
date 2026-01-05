@@ -4,16 +4,13 @@
 package resilience
 
 import (
-	"context"
-
 	configv1 "github.com/mcpany/core/proto/config/v1"
 )
 
-// Manager orchestrates resilience features like circuit breakers, retries, and timeouts.
+// Manager orchestrates resilience features like circuit breakers and retries.
 type Manager struct {
 	circuitBreaker *CircuitBreaker
 	retry          *Retry
-	timeout        *Timeout
 }
 
 // NewManager creates a new Manager with the given resilience configuration.
@@ -32,60 +29,35 @@ func NewManager(config *configv1.ResilienceConfig) *Manager {
 		r = NewRetry(config.GetRetryPolicy())
 	}
 
-	var t *Timeout
-	if config.GetTimeout() != nil {
-		t = NewTimeout(config.GetTimeout())
-	}
-
-	if cb == nil && r == nil && t == nil {
+	if cb == nil && r == nil {
 		return nil
 	}
 
 	return &Manager{
 		circuitBreaker: cb,
 		retry:          r,
-		timeout:        t,
 	}
 }
 
 // Execute wraps the given function with resilience features.
-func (m *Manager) Execute(ctx context.Context, work func(context.Context) error) error {
+func (m *Manager) Execute(work func() error) error {
 	if m == nil {
-		return work(ctx)
+		return work()
 	}
 
-	// Order of execution:
-	// 1. Timeout (wraps everything else)
-	// 2. Retry (retries the circuit breaker execution)
-	// 3. Circuit Breaker (protects the actual call)
-	//
-	// Note: Timeout applies to the whole operation including retries.
-	// If you want timeout per retry, the nesting would be different.
-	// Typically, we want an overall timeout.
-
-	// Apply Timeout
-	if m.timeout != nil {
-		return m.timeout.Execute(ctx, func(ctx context.Context) error {
-			return m.executeRetryAndCB(ctx, work)
+	if m.retry != nil && m.circuitBreaker != nil {
+		return m.retry.Execute(func() error {
+			return m.circuitBreaker.Execute(work)
 		})
 	}
 
-	return m.executeRetryAndCB(ctx, work)
-}
-
-func (m *Manager) executeRetryAndCB(ctx context.Context, work func(context.Context) error) error {
 	if m.retry != nil {
-		return m.retry.Execute(ctx, func(ctx context.Context) error {
-			if m.circuitBreaker != nil {
-				return m.circuitBreaker.Execute(ctx, work)
-			}
-			return work(ctx)
-		})
+		return m.retry.Execute(work)
 	}
 
 	if m.circuitBreaker != nil {
-		return m.circuitBreaker.Execute(ctx, work)
+		return m.circuitBreaker.Execute(work)
 	}
 
-	return work(ctx)
+	return work()
 }

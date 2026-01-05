@@ -4,7 +4,6 @@
 package resilience
 
 import (
-	"context"
 	"errors"
 	"testing"
 	"time"
@@ -15,10 +14,9 @@ import (
 )
 
 func TestRetry(t *testing.T) {
-	ctx := context.Background()
 	t.Run("success_on_first_try", func(t *testing.T) {
 		var attempts int
-		work := func(_ context.Context) error {
+		work := func() error {
 			attempts++
 			return nil
 		}
@@ -27,14 +25,14 @@ func TestRetry(t *testing.T) {
 		config := &configv1.RetryConfig{}
 		config.SetNumberOfRetries(retries)
 		retry := NewRetry(config)
-		err := retry.Execute(ctx, work)
+		err := retry.Execute(work)
 		require.NoError(t, err)
 		require.Equal(t, 1, attempts)
 	})
 
 	t.Run("success_after_retries", func(t *testing.T) {
 		var attempts int
-		work := func(_ context.Context) error {
+		work := func() error {
 			attempts++
 			if attempts < 3 {
 				return errors.New("transient error")
@@ -47,14 +45,14 @@ func TestRetry(t *testing.T) {
 		config.SetNumberOfRetries(retries)
 		config.SetBaseBackoff(durationpb.New(1 * time.Millisecond))
 		retry := NewRetry(config)
-		err := retry.Execute(ctx, work)
+		err := retry.Execute(work)
 		require.NoError(t, err)
 		require.Equal(t, 3, attempts)
 	})
 
 	t.Run("failure_after_all_retries", func(t *testing.T) {
 		var attempts int
-		work := func(_ context.Context) error {
+		work := func() error {
 			attempts++
 			return errors.New("persistent error")
 		}
@@ -64,14 +62,14 @@ func TestRetry(t *testing.T) {
 		config.SetNumberOfRetries(retries)
 		config.SetBaseBackoff(durationpb.New(1 * time.Millisecond))
 		retry := NewRetry(config)
-		err := retry.Execute(ctx, work)
+		err := retry.Execute(work)
 		require.Error(t, err)
 		require.Equal(t, 4, attempts)
 	})
 
 	t.Run("permanent_error", func(t *testing.T) {
 		var attempts int
-		work := func(_ context.Context) error {
+		work := func() error {
 			attempts++
 			return &PermanentError{Err: errors.New("permanent error")}
 		}
@@ -81,7 +79,7 @@ func TestRetry(t *testing.T) {
 		config.SetNumberOfRetries(retries)
 		config.SetBaseBackoff(durationpb.New(1 * time.Millisecond))
 		retry := NewRetry(config)
-		err := retry.Execute(ctx, work)
+		err := retry.Execute(work)
 		require.Error(t, err)
 		require.Equal(t, 1, attempts)
 

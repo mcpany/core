@@ -4,7 +4,6 @@
 package resilience
 
 import (
-	"context"
 	"errors"
 	"testing"
 	"time"
@@ -15,13 +14,12 @@ import (
 )
 
 func TestCircuitBreaker(t *testing.T) {
-	ctx := context.Background()
 	t.Run("closed_state", func(t *testing.T) {
 		consecutiveFailures := int32(2)
 		config := &configv1.CircuitBreakerConfig{}
 		config.SetConsecutiveFailures(consecutiveFailures)
 		cb := NewCircuitBreaker(config)
-		err := cb.Execute(ctx, func(_ context.Context) error { return nil })
+		err := cb.Execute(func() error { return nil })
 		require.NoError(t, err)
 		require.Equal(t, StateClosed, cb.state)
 	})
@@ -34,13 +32,13 @@ func TestCircuitBreaker(t *testing.T) {
 		cb := NewCircuitBreaker(config)
 
 		// Fail twice to open the circuit
-		_ = cb.Execute(ctx, func(_ context.Context) error { return errors.New("error") })
-		_ = cb.Execute(ctx, func(_ context.Context) error { return errors.New("error") })
+		_ = cb.Execute(func() error { return errors.New("error") })
+		_ = cb.Execute(func() error { return errors.New("error") })
 
 		require.Equal(t, StateOpen, cb.state)
 
 		// Third request should be blocked
-		err := cb.Execute(ctx, func(_ context.Context) error { return nil })
+		err := cb.Execute(func() error { return nil })
 		require.Error(t, err)
 		require.IsType(t, &CircuitBreakerOpenError{}, err)
 	})
@@ -54,14 +52,14 @@ func TestCircuitBreaker(t *testing.T) {
 		cb := NewCircuitBreaker(config)
 
 		// Fail twice to open the circuit
-		_ = cb.Execute(ctx, func(_ context.Context) error { return errors.New("error") })
-		_ = cb.Execute(ctx, func(_ context.Context) error { return errors.New("error") })
+		_ = cb.Execute(func() error { return errors.New("error") })
+		_ = cb.Execute(func() error { return errors.New("error") })
 
 		// Wait for the open duration to elapse
 		time.Sleep(15 * time.Millisecond)
 
 		// First request in half-open state should be allowed
-		err := cb.Execute(ctx, func(_ context.Context) error { return nil })
+		err := cb.Execute(func() error { return nil })
 		require.NoError(t, err)
 		require.Equal(t, StateClosed, cb.state)
 	})
@@ -76,14 +74,14 @@ func TestCircuitBreaker(t *testing.T) {
 		cb := NewCircuitBreaker(config)
 
 		// Fail twice to open the circuit
-		_ = cb.Execute(ctx, func(_ context.Context) error { return errors.New("error") })
-		_ = cb.Execute(ctx, func(_ context.Context) error { return errors.New("error") })
+		_ = cb.Execute(func() error { return errors.New("error") })
+		_ = cb.Execute(func() error { return errors.New("error") })
 
 		// Wait for the open duration to elapse
 		time.Sleep(15 * time.Millisecond)
 
 		// First request in half-open state should be allowed, but fail
-		err := cb.Execute(ctx, func(_ context.Context) error { return errors.New("error") })
+		err := cb.Execute(func() error { return errors.New("error") })
 		require.Error(t, err)
 		require.Equal(t, StateOpen, cb.state)
 	})
@@ -95,7 +93,7 @@ func TestCircuitBreaker(t *testing.T) {
 		cb := NewCircuitBreaker(config)
 
 		// A permanent error should not affect the circuit breaker state
-		err := cb.Execute(ctx, func(_ context.Context) error { return &PermanentError{Err: errors.New("permanent error")} })
+		err := cb.Execute(func() error { return &PermanentError{Err: errors.New("permanent error")} })
 		require.Error(t, err)
 		require.Equal(t, StateClosed, cb.state)
 		require.Equal(t, 0, cb.failures)
@@ -111,7 +109,7 @@ func TestCircuitBreaker(t *testing.T) {
 		cb := NewCircuitBreaker(config)
 
 		// Fail once to open the circuit
-		_ = cb.Execute(ctx, func(_ context.Context) error { return errors.New("error") })
+		_ = cb.Execute(func() error { return errors.New("error") })
 
 		// Wait for the open duration to elapse
 		time.Sleep(15 * time.Millisecond)
@@ -119,16 +117,16 @@ func TestCircuitBreaker(t *testing.T) {
 		// The circuit is now half-open.
 
 		// First and second requests in half-open state should be allowed
-		err := cb.Execute(ctx, func(_ context.Context) error { return nil })
+		err := cb.Execute(func() error { return nil })
 		require.NoError(t, err)
-		err = cb.Execute(ctx, func(_ context.Context) error { return nil })
+		err = cb.Execute(func() error { return nil })
 		require.NoError(t, err)
 
 		// The circuit should now be closed.
 		require.Equal(t, StateClosed, cb.state)
 
 		// Third request should also be allowed.
-		err = cb.Execute(ctx, func(_ context.Context) error { return nil })
+		err = cb.Execute(func() error { return nil })
 		require.NoError(t, err)
 	})
 
@@ -142,7 +140,7 @@ func TestCircuitBreaker(t *testing.T) {
 		cb := NewCircuitBreaker(config)
 
 		// Fail once to open the circuit
-		_ = cb.Execute(ctx, func(_ context.Context) error { return errors.New("error") })
+		_ = cb.Execute(func() error { return errors.New("error") })
 
 		// Wait for the open duration to elapse
 		time.Sleep(15 * time.Millisecond)
@@ -150,7 +148,7 @@ func TestCircuitBreaker(t *testing.T) {
 		// The circuit is now half-open.
 
 		// First request in half-open state should be allowed, but fail
-		err := cb.Execute(ctx, func(_ context.Context) error { return errors.New("error") })
+		err := cb.Execute(func() error { return errors.New("error") })
 		require.Error(t, err)
 
 		// The circuit should now be open.

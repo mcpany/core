@@ -84,9 +84,10 @@ test.describe('MCP Any UI E2E Tests', () => {
     await page.goto('/services');
     await expect(page.locator('h2')).toContainText('Services');
 
-    // Check for list of services
-    await expect(page.locator('text=Payment Gateway')).toBeVisible();
-    await expect(page.locator('text=User Service')).toBeVisible();
+    // Check for list of services - Scope to Desktop Table view to avoid strict mode violation (duplicate text on mobile cards)
+    const desktopView = page.locator('.hidden.md\\:block');
+    await expect(desktopView.locator('text=Payment Gateway')).toBeVisible();
+    await expect(desktopView.locator('text=User Service')).toBeVisible();
 
 
     // Test toggle

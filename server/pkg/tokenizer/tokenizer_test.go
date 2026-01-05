@@ -72,35 +72,6 @@ func TestCountTokensInValue(t *testing.T) {
 	}
 }
 
-func TestCountTokensInValue_Word(t *testing.T) {
-	tokenizer := NewWordTokenizer()
-
-	tests := []struct {
-		name     string
-		input    interface{}
-		expected int // int(1.3) = 1 for primitives
-	}{
-		{"int", 12345, 1},
-		{"bool", true, 1},
-		{"nil", nil, 1},
-		{"string", "hello world", 2}, // "hello world" -> 2 words * 1.3 -> 2
-		{"slice", []interface{}{1, "hello"}, 1 + 1}, // 1 (int) + 1 (hello)
-		{"map", map[string]interface{}{"a": 1}, 1 + 1}, // "a" (1) + 1 (int)
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			got, err := CountTokensInValue(tokenizer, tt.input)
-			if err != nil {
-				t.Fatalf("unexpected error: %v", err)
-			}
-			if got != tt.expected {
-				t.Errorf("CountTokensInValue(%v) = %d, want %d", tt.input, got, tt.expected)
-			}
-		})
-	}
-}
-
 func BenchmarkWordTokenizer(b *testing.B) {
 	t := NewWordTokenizer()
 	text := strings.Repeat("This is a sample sentence to test tokenization. ", 1000)

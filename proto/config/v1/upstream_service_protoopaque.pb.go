@@ -7803,7 +7803,6 @@ type ResilienceConfig struct {
 	state                     protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_CircuitBreaker *CircuitBreakerConfig  `protobuf:"bytes,1,opt,name=circuit_breaker"`
 	xxx_hidden_RetryPolicy    *RetryConfig           `protobuf:"bytes,2,opt,name=retry_policy"`
-	xxx_hidden_Timeout        *durationpb.Duration   `protobuf:"bytes,3,opt,name=timeout"`
 	unknownFields             protoimpl.UnknownFields
 	sizeCache                 protoimpl.SizeCache
 }
@@ -7847,23 +7846,12 @@ func (x *ResilienceConfig) GetRetryPolicy() *RetryConfig {
 	return nil
 }
 
-func (x *ResilienceConfig) GetTimeout() *durationpb.Duration {
-	if x != nil {
-		return x.xxx_hidden_Timeout
-	}
-	return nil
-}
-
 func (x *ResilienceConfig) SetCircuitBreaker(v *CircuitBreakerConfig) {
 	x.xxx_hidden_CircuitBreaker = v
 }
 
 func (x *ResilienceConfig) SetRetryPolicy(v *RetryConfig) {
 	x.xxx_hidden_RetryPolicy = v
-}
-
-func (x *ResilienceConfig) SetTimeout(v *durationpb.Duration) {
-	x.xxx_hidden_Timeout = v
 }
 
 func (x *ResilienceConfig) HasCircuitBreaker() bool {
@@ -7880,23 +7868,12 @@ func (x *ResilienceConfig) HasRetryPolicy() bool {
 	return x.xxx_hidden_RetryPolicy != nil
 }
 
-func (x *ResilienceConfig) HasTimeout() bool {
-	if x == nil {
-		return false
-	}
-	return x.xxx_hidden_Timeout != nil
-}
-
 func (x *ResilienceConfig) ClearCircuitBreaker() {
 	x.xxx_hidden_CircuitBreaker = nil
 }
 
 func (x *ResilienceConfig) ClearRetryPolicy() {
 	x.xxx_hidden_RetryPolicy = nil
-}
-
-func (x *ResilienceConfig) ClearTimeout() {
-	x.xxx_hidden_Timeout = nil
 }
 
 type ResilienceConfig_builder struct {
@@ -7906,8 +7883,6 @@ type ResilienceConfig_builder struct {
 	CircuitBreaker *CircuitBreakerConfig
 	// Retry policy for failed requests.
 	RetryPolicy *RetryConfig
-	// The maximum duration for a request before it is cancelled.
-	Timeout *durationpb.Duration
 }
 
 func (b0 ResilienceConfig_builder) Build() *ResilienceConfig {
@@ -7916,7 +7891,6 @@ func (b0 ResilienceConfig_builder) Build() *ResilienceConfig {
 	_, _ = b, x
 	x.xxx_hidden_CircuitBreaker = b.CircuitBreaker
 	x.xxx_hidden_RetryPolicy = b.RetryPolicy
-	x.xxx_hidden_Timeout = b.Timeout
 	return m0
 }
 
@@ -8818,11 +8792,10 @@ const file_proto_config_v1_upstream_service_proto_rawDesc = "" +
 	"\n" +
 	"CostMetric\x12\x18\n" +
 	"\x14COST_METRIC_REQUESTS\x10\x00\x12\x16\n" +
-	"\x12COST_METRIC_TOKENS\x10\x01\"\xdc\x01\n" +
+	"\x12COST_METRIC_TOKENS\x10\x01\"\xa7\x01\n" +
 	"\x10ResilienceConfig\x12P\n" +
 	"\x0fcircuit_breaker\x18\x01 \x01(\v2&.mcpany.config.v1.CircuitBreakerConfigR\x0fcircuit_breaker\x12A\n" +
-	"\fretry_policy\x18\x02 \x01(\v2\x1d.mcpany.config.v1.RetryConfigR\fretry_policy\x123\n" +
-	"\atimeout\x18\x03 \x01(\v2\x19.google.protobuf.DurationR\atimeout\"\xf3\x01\n" +
+	"\fretry_policy\x18\x02 \x01(\v2\x1d.mcpany.config.v1.RetryConfigR\fretry_policy\"\xf3\x01\n" +
 	"\x14CircuitBreakerConfig\x126\n" +
 	"\x16failure_rate_threshold\x18\x01 \x01(\x01R\x16failure_rate_threshold\x122\n" +
 	"\x14consecutive_failures\x18\x02 \x01(\x05R\x14consecutive_failures\x12?\n" +
@@ -9056,31 +9029,30 @@ var file_proto_config_v1_upstream_service_proto_depIdxs = []int32{
 	63,  // 114: mcpany.config.v1.RateLimitConfig.tool_limits:type_name -> mcpany.config.v1.RateLimitConfig.ToolLimitsEntry
 	44,  // 115: mcpany.config.v1.ResilienceConfig.circuit_breaker:type_name -> mcpany.config.v1.CircuitBreakerConfig
 	45,  // 116: mcpany.config.v1.ResilienceConfig.retry_policy:type_name -> mcpany.config.v1.RetryConfig
-	77,  // 117: mcpany.config.v1.ResilienceConfig.timeout:type_name -> google.protobuf.Duration
-	77,  // 118: mcpany.config.v1.CircuitBreakerConfig.open_duration:type_name -> google.protobuf.Duration
-	77,  // 119: mcpany.config.v1.RetryConfig.base_backoff:type_name -> google.protobuf.Duration
-	77,  // 120: mcpany.config.v1.RetryConfig.max_backoff:type_name -> google.protobuf.Duration
-	77,  // 121: mcpany.config.v1.RetryConfig.max_elapsed_time:type_name -> google.protobuf.Duration
-	42,  // 122: mcpany.config.v1.UpstreamServiceConfig.ProfileLimitsEntry.value:type_name -> mcpany.config.v1.RateLimitConfig
-	79,  // 123: mcpany.config.v1.GrpcUpstreamService.CallsEntry.value:type_name -> mcpany.config.v1.GrpcCallDefinition
-	80,  // 124: mcpany.config.v1.HttpUpstreamService.CallsEntry.value:type_name -> mcpany.config.v1.HttpCallDefinition
-	81,  // 125: mcpany.config.v1.WebsocketUpstreamService.CallsEntry.value:type_name -> mcpany.config.v1.WebsocketCallDefinition
-	82,  // 126: mcpany.config.v1.WebrtcUpstreamService.CallsEntry.value:type_name -> mcpany.config.v1.WebrtcCallDefinition
-	83,  // 127: mcpany.config.v1.OpenapiUpstreamService.CallsEntry.value:type_name -> mcpany.config.v1.OpenAPICallDefinition
-	84,  // 128: mcpany.config.v1.CommandLineUpstreamService.CallsEntry.value:type_name -> mcpany.config.v1.CommandLineCallDefinition
-	85,  // 129: mcpany.config.v1.CommandLineUpstreamService.EnvEntry.value:type_name -> mcpany.config.v1.SecretValue
-	86,  // 130: mcpany.config.v1.GraphQLUpstreamService.CallsEntry.value:type_name -> mcpany.config.v1.GraphQLCallDefinition
-	87,  // 131: mcpany.config.v1.SqlUpstreamService.CallsEntry.value:type_name -> mcpany.config.v1.SqlCallDefinition
-	88,  // 132: mcpany.config.v1.McpUpstreamService.CallsEntry.value:type_name -> mcpany.config.v1.MCPCallDefinition
-	85,  // 133: mcpany.config.v1.McpStdioConnection.EnvEntry.value:type_name -> mcpany.config.v1.SecretValue
-	85,  // 134: mcpany.config.v1.McpBundleConnection.EnvEntry.value:type_name -> mcpany.config.v1.SecretValue
-	85,  // 135: mcpany.config.v1.ContainerEnvironment.EnvEntry.value:type_name -> mcpany.config.v1.SecretValue
-	42,  // 136: mcpany.config.v1.RateLimitConfig.ToolLimitsEntry.value:type_name -> mcpany.config.v1.RateLimitConfig
-	137, // [137:137] is the sub-list for method output_type
-	137, // [137:137] is the sub-list for method input_type
-	137, // [137:137] is the sub-list for extension type_name
-	137, // [137:137] is the sub-list for extension extendee
-	0,   // [0:137] is the sub-list for field type_name
+	77,  // 117: mcpany.config.v1.CircuitBreakerConfig.open_duration:type_name -> google.protobuf.Duration
+	77,  // 118: mcpany.config.v1.RetryConfig.base_backoff:type_name -> google.protobuf.Duration
+	77,  // 119: mcpany.config.v1.RetryConfig.max_backoff:type_name -> google.protobuf.Duration
+	77,  // 120: mcpany.config.v1.RetryConfig.max_elapsed_time:type_name -> google.protobuf.Duration
+	42,  // 121: mcpany.config.v1.UpstreamServiceConfig.ProfileLimitsEntry.value:type_name -> mcpany.config.v1.RateLimitConfig
+	79,  // 122: mcpany.config.v1.GrpcUpstreamService.CallsEntry.value:type_name -> mcpany.config.v1.GrpcCallDefinition
+	80,  // 123: mcpany.config.v1.HttpUpstreamService.CallsEntry.value:type_name -> mcpany.config.v1.HttpCallDefinition
+	81,  // 124: mcpany.config.v1.WebsocketUpstreamService.CallsEntry.value:type_name -> mcpany.config.v1.WebsocketCallDefinition
+	82,  // 125: mcpany.config.v1.WebrtcUpstreamService.CallsEntry.value:type_name -> mcpany.config.v1.WebrtcCallDefinition
+	83,  // 126: mcpany.config.v1.OpenapiUpstreamService.CallsEntry.value:type_name -> mcpany.config.v1.OpenAPICallDefinition
+	84,  // 127: mcpany.config.v1.CommandLineUpstreamService.CallsEntry.value:type_name -> mcpany.config.v1.CommandLineCallDefinition
+	85,  // 128: mcpany.config.v1.CommandLineUpstreamService.EnvEntry.value:type_name -> mcpany.config.v1.SecretValue
+	86,  // 129: mcpany.config.v1.GraphQLUpstreamService.CallsEntry.value:type_name -> mcpany.config.v1.GraphQLCallDefinition
+	87,  // 130: mcpany.config.v1.SqlUpstreamService.CallsEntry.value:type_name -> mcpany.config.v1.SqlCallDefinition
+	88,  // 131: mcpany.config.v1.McpUpstreamService.CallsEntry.value:type_name -> mcpany.config.v1.MCPCallDefinition
+	85,  // 132: mcpany.config.v1.McpStdioConnection.EnvEntry.value:type_name -> mcpany.config.v1.SecretValue
+	85,  // 133: mcpany.config.v1.McpBundleConnection.EnvEntry.value:type_name -> mcpany.config.v1.SecretValue
+	85,  // 134: mcpany.config.v1.ContainerEnvironment.EnvEntry.value:type_name -> mcpany.config.v1.SecretValue
+	42,  // 135: mcpany.config.v1.RateLimitConfig.ToolLimitsEntry.value:type_name -> mcpany.config.v1.RateLimitConfig
+	136, // [136:136] is the sub-list for method output_type
+	136, // [136:136] is the sub-list for method input_type
+	136, // [136:136] is the sub-list for extension type_name
+	136, // [136:136] is the sub-list for extension extendee
+	0,   // [0:136] is the sub-list for field type_name
 }
 
 func init() { file_proto_config_v1_upstream_service_proto_init() }

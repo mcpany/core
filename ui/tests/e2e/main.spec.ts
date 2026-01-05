@@ -29,8 +29,9 @@ test.describe('MCP Any UI E2E', () => {
     await page.fill('input#endpoint', 'https://example.com');
     await page.click('text=Save Changes');
 
-    // Check if added
-    await expect(page.locator('text=test-service-e2e')).toBeVisible();
+    // Check if added (Scope to desktop view)
+    const desktopView = page.locator('.hidden.md\\:block');
+    await expect(desktopView.locator('text=test-service-e2e')).toBeVisible();
   });
 
 
