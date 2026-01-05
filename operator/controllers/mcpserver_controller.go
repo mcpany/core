@@ -12,6 +12,7 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/types"
+	"k8s.io/apimachinery/pkg/util/intstr"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/log"
@@ -75,7 +76,50 @@ func (r *MCPServerReconciler) Reconcile(ctx context.Context, req ctrl.Request) (
 		return ctrl.Result{Requeue: true}, nil
 	}
 
-	// 3. Update the MCPServer status with the pod names
+	// 3. Check if the Service already exists, if not create a new one
+	foundService := &corev1.Service{}
+	err = r.Get(ctx, types.NamespacedName{Name: mcpServer.Name, Namespace: mcpServer.Namespace}, foundService)
+	if err != nil && errors.IsNotFound(err) {
+		// Define a new service
+		svc := r.serviceForMCPServer(mcpServer)
+		err = r.Create(ctx, svc)
+		if err != nil {
+			return ctrl.Result{}, err
+		}
+		// Service created successfully - return and requeue
+		return ctrl.Result{Requeue: true}, nil
+	} else if err != nil {
+		return ctrl.Result{}, err
+	}
+
+	// Check if Service Port or Type matches spec
+	expectedPort := int32(8080)
+	if mcpServer.Spec.ServicePort != nil {
+		expectedPort = *mcpServer.Spec.ServicePort
+	}
+	expectedType := corev1.ServiceType(mcpServer.Spec.ServiceType)
+	if expectedType == "" {
+		expectedType = corev1.ServiceTypeClusterIP
+	}
+
+	if len(foundService.Spec.Ports) != 1 ||
+		foundService.Spec.Ports[0].Port != expectedPort ||
+		foundService.Spec.Type != expectedType {
+
+		foundService.Spec.Ports = []corev1.ServicePort{{
+			Port:       expectedPort,
+			TargetPort: intstr.FromInt(8080),
+			Name:       "http",
+		}}
+		foundService.Spec.Type = expectedType
+		err = r.Update(ctx, foundService)
+		if err != nil {
+			return ctrl.Result{}, err
+		}
+		return ctrl.Result{Requeue: true}, nil
+	}
+
+	// 4. Update the MCPServer status with the pod names
 	// List the pods for this mcpServer's deployment
 	// podList := &corev1.PodList{}
 	// listOpts := []client.ListOption{
@@ -151,6 +195,39 @@ func (r *MCPServerReconciler) deploymentForMCPServer(m *mcpv1alpha1.MCPServer) *
 	return dep
 }
 
+// serviceForMCPServer returns a mcpServer Service object
+func (r *MCPServerReconciler) serviceForMCPServer(m *mcpv1alpha1.MCPServer) *corev1.Service {
+	ls := labelsForMCPServer(m.Name)
+	serviceType := corev1.ServiceType(m.Spec.ServiceType)
+	if serviceType == "" {
+		serviceType = corev1.ServiceTypeClusterIP
+	}
+
+	port := int32(8080)
+	if m.Spec.ServicePort != nil {
+		port = *m.Spec.ServicePort
+	}
+
+	svc := &corev1.Service{
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      m.Name,
+			Namespace: m.Namespace,
+		},
+		Spec: corev1.ServiceSpec{
+			Selector: ls,
+			Ports: []corev1.ServicePort{{
+				Port:       port,
+				TargetPort: intstr.FromInt(8080),
+				Name:       "http",
+			}},
+			Type: serviceType,
+		},
+	}
+	// Set MCPServer instance as the owner and controller
+	ctrl.SetControllerReference(m, svc, r.Scheme)
+	return svc
+}
+
 // labelsForMCPServer returns the labels for selecting the resources
 // belonging to the given mcpServer CR name.
 func labelsForMCPServer(name string) map[string]string {
@@ -162,5 +239,6 @@ func (r *MCPServerReconciler) SetupWithManager(mgr ctrl.Manager) error {
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&mcpv1alpha1.MCPServer{}).
 		Owns(&appsv1.Deployment{}).
+		Owns(&corev1.Service{}).
 		Complete(r)
 }

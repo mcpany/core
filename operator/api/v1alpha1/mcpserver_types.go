@@ -15,6 +15,8 @@ type MCPServerSpec struct {
 	Image string `json:"image,omitempty"`
 	// ServiceType is the type of Kubernetes Service to expose (ClusterIP, LoadBalancer, NodePort)
 	ServiceType string `json:"serviceType,omitempty"`
+	// ServicePort is the port to expose the service on. Defaults to 8080.
+	ServicePort *int32 `json:"servicePort,omitempty"`
 	// ConfigMap is the name of the ConfigMap containing config.yaml
 	// +kubebuilder:validation:Required
 	ConfigMap string `json:"configMap"`
