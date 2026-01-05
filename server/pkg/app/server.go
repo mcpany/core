@@ -1130,7 +1130,34 @@ func (a *Application) runServerMode(
 		_, _ = fmt.Fprintln(w, "OK")
 	})))
 	mux.Handle("/metrics", authMiddleware(metrics.Handler()))
-	mux.Handle("/upload", authMiddleware(http.HandlerFunc(a.uploadFile)))
+
+	// Upload endpoint - STRICT Authentication Required
+	// If Global API Key is not configured, we explicitly deny access to /upload to prevent
+	// unauthenticated file uploads.
+	mux.Handle("/upload", authMiddleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// If authentication middleware passed (possibly due to empty apiKey), we double check here.
+		// If no Global API Key is set, we treat it as "Auth Disabled" and DISABLE this sensitive endpoint.
+		// If auth WAS performed (context has API Key or User), we proceed.
+		// BUT, authMiddleware doesn't set context if apiKey is empty.
+
+		// So the logic is:
+		// 1. If Global API Key is configured, authMiddleware handled it (or rejected it).
+		// 2. If Global API Key is NOT configured, authMiddleware passed it through.
+		//    In this case, we want to DENY access because /upload is dangerous without auth.
+
+		// Check if we have any indication of authentication from context
+		_, hasKey := auth.APIKeyFromContext(r.Context())
+		_, hasUser := auth.UserFromContext(r.Context())
+
+		// If we are relying on Global API Key, and it is NOT set, we should block.
+		if apiKey == "" && !hasKey && !hasUser {
+			logging.GetLogger().Warn("Blocked unauthenticated upload request (Auth not configured)")
+			http.Error(w, "File upload requires authentication to be enabled", http.StatusForbidden)
+			return
+		}
+
+		a.uploadFile(w, r)
+	})))
 
 	// OIDC Routes
 	oidcConfig := config.GlobalSettings().GetOidc()

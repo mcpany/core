@@ -12,8 +12,11 @@ import (
 	"testing"
 )
 
-func TestUploadFile_Security(t *testing.T) {
-	app := NewApplication()
+func TestUploadFile_Direct(t *testing.T) {
+    // This tests the underlying handler, which should still work if called.
+    // The security check is in the routing layer now.
+
+    app := NewApplication()
 
 	t.Run("Reflected XSS", func(t *testing.T) {
 		body := &bytes.Buffer{}
@@ -79,7 +82,7 @@ func TestUploadFile_Security(t *testing.T) {
 		resp := w.Result()
 
 		// Vulnerability check: Should NOT succeed for 11MB file if limit is 10MB
-		// Current implementation has no limit, so this will return 200 OK and fail the test.
+		// Current implementation has 10MB limit via http.MaxBytesReader
 		if resp.StatusCode == http.StatusOK {
 			t.Errorf("Size limit vulnerability detected: Uploaded %d bytes successfully (expected rejection)", size)
 		}
