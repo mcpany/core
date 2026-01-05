@@ -36,7 +36,7 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: 'NEXT_PUBLIC_API_URL=/api npm run dev',
+    command: 'BACKEND_URL=http://localhost:50050 NEXT_PUBLIC_API_URL=http://localhost:50050 npm run dev',
     url: 'http://localhost:9002',
     reuseExistingServer: true,
   },
