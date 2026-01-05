@@ -23,7 +23,6 @@ import (
 )
 
 func TestDockerComposeE2E(t *testing.T) {
-	t.Skip("Skipping E2E test as requested by user to unblock merge")
 	if os.Getenv("E2E_DOCKER") != "true" {
 		t.Skip("Skipping E2E Docker test. Set E2E_DOCKER=true to run.")
 	}
@@ -333,14 +332,19 @@ func verifyToolMetricWithService(t *testing.T, metricsURL, toolName, serviceID s
 }
 
 func runCommand(t *testing.T, dir string, name string, args ...string) {
-	cmd := exec.Command(name, args...)
+	command := name
+	if (name == "docker" || name == "docker-compose") && os.Getenv("USE_SUDO_FOR_DOCKER") == "1" {
+		args = append([]string{name}, args...)
+		command = "sudo"
+	}
+	cmd := exec.Command(command, args...)
 	cmd.Dir = dir
 	cmd.Env = os.Environ() // Explicitly pass environment to ensure t.Setenv works
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
-	t.Logf("Running: %s %s (Env: COMPOSE_PROJECT_NAME=%s)", name, strings.Join(args, " "), os.Getenv("COMPOSE_PROJECT_NAME"))
+	t.Logf("Running: %s %s (Env: COMPOSE_PROJECT_NAME=%s)", command, strings.Join(args, " "), os.Getenv("COMPOSE_PROJECT_NAME"))
 	err := cmd.Run()
-	require.NoError(t, err, "Command failed: %s %s", name, strings.Join(args, " "))
+	require.NoError(t, err, "Command failed: %s %s", command, strings.Join(args, " "))
 }
 
 func verifyEndpoint(t *testing.T, url string, expectedStatus int, timeout time.Duration) {
