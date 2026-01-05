@@ -6,6 +6,7 @@ package tool
 import (
 	"context"
 	"fmt"
+	"strings"
 	"sync"
 	"time"
 
@@ -66,6 +67,7 @@ type ExecutionMiddleware interface {
 type Manager struct {
 	tools       *xsync.Map[string, Tool]
 	serviceInfo *xsync.Map[string, *ServiceInfo]
+	nameMap     *xsync.Map[string, string] // Maps client-facing tool name to internal tool ID
 	mcpServer   MCPServerProvider
 	bus         *bus.Provider
 	mu          sync.RWMutex
@@ -83,6 +85,7 @@ func NewManager(bus *bus.Provider) *Manager {
 		bus:         bus,
 		tools:       xsync.NewMap[string, Tool](),
 		serviceInfo: xsync.NewMap[string, *ServiceInfo](),
+		nameMap:     xsync.NewMap[string, string](),
 		profileDefs: make(map[string]*configv1.ProfileDefinition),
 	}
 }
@@ -404,6 +407,12 @@ func (tm *Manager) AddTool(tool Tool) error {
 	log.Debug("Adding tool to Manager")
 	tm.tools.Store(toolID, tool)
 
+	// Map client-facing name to internal ID
+	// Use tool.Tool().GetName() which is the raw name (e.g. "mcp:list_roots")
+	// If the name is scoped (e.g. "service.tool"), this works.
+	// If there are collisions, last one wins.
+	tm.nameMap.Store(tool.Tool().GetName(), toolID)
+
 	tm.toolsMutex.Lock()
 	tm.cachedTools = nil
 	tm.toolsMutex.Unlock()
@@ -516,11 +525,20 @@ func (tm *Manager) AddTool(tool Tool) error {
 // toolName is the name of the tool to retrieve.
 // It returns the tool and a boolean indicating whether the tool was found.
 func (tm *Manager) GetTool(toolName string) (Tool, bool) {
+	// Try direct lookup (if client sends ID)
 	tool, ok := tm.tools.Load(toolName)
-	if !ok {
-		return nil, false
+	if ok {
+		return tool, true
 	}
-	return tool, true
+
+	// Try lookup by name
+	if id, ok := tm.nameMap.Load(toolName); ok {
+		if tool, ok := tm.tools.Load(id); ok {
+			return tool, true
+		}
+	}
+
+	return nil, false
 }
 
 // ListTools returns a slice containing all the tools currently registered with
@@ -566,10 +584,29 @@ func (tm *Manager) ClearToolsForService(serviceID string) {
 	tm.tools.Range(func(key string, value Tool) bool {
 		if value.Tool().GetServiceId() == serviceID {
 			tm.tools.Delete(key)
+			// Also remove from nameMap.
+			// This is inefficient as we have to scan nameMap or store reverse mapping.
+			// Since ClearToolsForService is rare (only on reload), scanning nameMap is acceptable?
+			// OR we assume nameMap is consistent.
+			// Let's scan nameMap to clean up by Value? No Xsync Map doesn't support Range easily for Delete?
+			// It does supports Range.
+			// But deleting while ranging?
 			deletedCount++
 		}
 		return true
 	})
+
+	// Cleanup NameMap
+	tm.nameMap.Range(func(key, value string) bool {
+		// If the ID (value) belongs to the service?
+		// We don't verify serviceID from key easily without parsing.
+		// Value is toolID: "serviceID.sanitizedName".
+		if strings.HasPrefix(value, serviceID+".") {
+			tm.nameMap.Delete(key)
+		}
+		return true
+	})
+
 	if deletedCount > 0 {
 		tm.toolsMutex.Lock()
 		tm.cachedTools = nil

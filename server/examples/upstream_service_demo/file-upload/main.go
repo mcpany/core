@@ -44,9 +44,9 @@ func main() {
 		_, _ = fmt.Fprintf(w, "File '%s' uploaded successfully (size: %d bytes)", header.Filename, header.Size)
 	})
 
-	fmt.Println("Server started on :8081")
+	fmt.Println("Server started on :8082")
 	server := &http.Server{
-		Addr:              ":8081",
+		Addr:              ":8082",
 		ReadHeaderTimeout: 3 * time.Second,
 	}
 	if err := server.ListenAndServe(); err != nil {

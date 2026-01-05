@@ -21,7 +21,7 @@ upstreamServices:
           initialDelay: 5s
   - name: "docker-file-upload"
     httpService:
-      address: "http://file-upload-server:8081"
+      address: "http://file-upload-server:8082"
       calls:
         - operationId: "upload"
           description: "Uploads a file to the server."
