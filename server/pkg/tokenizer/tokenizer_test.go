@@ -3,7 +3,10 @@
 
 package tokenizer
 
-import "testing"
+import (
+	"strings"
+	"testing"
+)
 
 func TestSimpleTokenizer(t *testing.T) {
 	tokenizer := NewSimpleTokenizer()
@@ -38,6 +41,9 @@ func TestWordTokenizer(t *testing.T) {
 		{"hello", 1},
 		{"hello world", 2}, // 2 * 1.3 = 2.6 -> 2
 		{"this is a test sentence", 6}, // 5 * 1.3 = 6.5 -> 6
+		{"hello 🌍", 2}, // 2 * 1.3 = 2.6 -> 2 (ASCII + Emoji)
+		{"你好 世界", 2}, // 2 * 1.3 = 2.6 -> 2 (Chinese + Space + Chinese)
+		{"hello\tworld\n", 2}, // ASCII whitespace
 	}
 
 	for _, tt := range tests {
@@ -63,5 +69,15 @@ func TestCountTokensInValue(t *testing.T) {
 	got, _ := CountTokensInValue(tokenizer, val)
 	if got != 6 {
 		t.Errorf("CountTokensInValue = %d, want 6", got)
+	}
+}
+
+func BenchmarkWordTokenizer(b *testing.B) {
+	t := NewWordTokenizer()
+	text := strings.Repeat("This is a sample sentence to test tokenization. ", 1000)
+
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		_, _ = t.CountTokens(text)
 	}
 }

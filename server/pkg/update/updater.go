@@ -91,6 +91,9 @@ func (u *Updater) UpdateTo(ctx context.Context, fs afero.Fs, executablePath stri
 		return fmt.Errorf("failed to download checksums: %w", err)
 	}
 	defer func(r *http.Response) { _ = r.Body.Close() }(resp)
+	if resp.StatusCode >= 400 {
+		return fmt.Errorf("failed to download checksums: status code %d", resp.StatusCode)
+	}
 	checksumsData, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return fmt.Errorf("failed to read checksums data: %w", err)
@@ -114,20 +117,28 @@ func (u *Updater) UpdateTo(ctx context.Context, fs afero.Fs, executablePath stri
 		return fmt.Errorf("failed to download asset: %w", err)
 	}
 	defer func(r *http.Response) { _ = r.Body.Close() }(resp)
+	if resp.StatusCode >= 400 {
+		return fmt.Errorf("failed to download asset: status code %d", resp.StatusCode)
+	}
 
 	// Create a temporary file to save the downloaded asset
 	tmpFile, err := afero.TempFile(fs, "", "mcpany-update-")
 	if err != nil {
 		return fmt.Errorf("failed to create temp file: %w", err)
 	}
-	defer func() { _ = tmpFile.Close() }()
 
 	// Write the downloaded asset to the temp file and calculate the checksum
 	hasher := sha256.New()
 	if _, err := io.Copy(io.MultiWriter(tmpFile, hasher), resp.Body); err != nil {
+		_ = tmpFile.Close() // Close the file on error
 		return fmt.Errorf("failed to write to temp file: %w", err)
 	}
 	actualChecksum := hex.EncodeToString(hasher.Sum(nil))
+
+	// Close the file before renaming it
+	if err := tmpFile.Close(); err != nil {
+		return fmt.Errorf("failed to close temp file: %w", err)
+	}
 
 	// Verify the checksum
 	if actualChecksum != expectedChecksum {
@@ -138,7 +149,23 @@ func (u *Updater) UpdateTo(ctx context.Context, fs afero.Fs, executablePath stri
 		return fmt.Errorf("failed to set executable permission: %w", err)
 	}
 
+	// On Windows, we cannot replace a running executable.
+	// The workaround is to rename the old executable, move the new one,
+	// and the old one can be cleaned up later.
+	oldPath := executablePath + ".old"
+	if _, err := fs.Stat(executablePath); err == nil {
+		if err := fs.Rename(executablePath, oldPath); err != nil {
+			return fmt.Errorf("failed to rename old executable: %w", err)
+		}
+	}
+
 	if err := fs.Rename(tmpFile.Name(), executablePath); err != nil {
+		// If the rename fails, try to restore the old executable.
+		if _, err := fs.Stat(oldPath); err == nil {
+			if err := fs.Rename(oldPath, executablePath); err != nil {
+				return fmt.Errorf("failed to replace executable and could not restore old version: %w", err)
+			}
+		}
 		return fmt.Errorf("failed to replace executable: %w", err)
 	}
 

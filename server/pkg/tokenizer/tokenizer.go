@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"strconv"
 	"unicode"
+	"unicode/utf8"
 )
 
 // Tokenizer defines the interface for counting tokens in a given text.
@@ -58,12 +59,34 @@ func (t *WordTokenizer) CountTokens(text string) (int, error) {
 	// from whitespace to non-whitespace. This avoids allocating a slice of strings.
 	wordCount := 0
 	inWord := false
-	for _, r := range text {
-		if unicode.IsSpace(r) {
-			inWord = false
-		} else if !inWord {
-			inWord = true
-			wordCount++
+
+	// Iterate by bytes for performance optimization.
+	// For ASCII characters (< 128), we can check directly without decoding runes.
+	i := 0
+	n := len(text)
+	for i < n {
+		c := text[i]
+		if c < utf8.RuneSelf {
+			// ASCII fast path
+			// unicode.IsSpace for ASCII includes '\t', '\n', '\v', '\f', '\r', ' '.
+			isSpace := c == ' ' || c == '\t' || c == '\n' || c == '\r' || c == '\v' || c == '\f'
+			if isSpace {
+				inWord = false
+			} else if !inWord {
+				inWord = true
+				wordCount++
+			}
+			i++
+		} else {
+			// Multibyte character, decode rune
+			r, w := utf8.DecodeRuneInString(text[i:])
+			if unicode.IsSpace(r) {
+				inWord = false
+			} else if !inWord {
+				inWord = true
+				wordCount++
+			}
+			i += w
 		}
 	}
 

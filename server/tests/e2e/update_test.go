@@ -22,9 +22,6 @@ import (
 )
 
 func TestUpdateCommand(t *testing.T) {
-	if runtime.GOOS == "windows" {
-		t.Skip("Skipping update test on Windows due to file locking issues with running executables.")
-	}
 	// Prepare the mock servers
 	assetName := fmt.Sprintf("server-%s-%s", runtime.GOOS, runtime.GOARCH)
 	assetContent := "this is a fake binary"
