@@ -27,10 +27,6 @@ func waitForSubscribers(t *testing.T, client *goredis.Client, topic string, expe
 }
 
 func TestRedisBus_Integration_Subscribe(t *testing.T) {
-	if testing.Short() {
-		t.Skip("skipping integration test in short mode.")
-	}
-
 	redisAddr, cleanup := StartRedisContainer(t)
 	defer cleanup()
 
@@ -67,11 +63,6 @@ func TestRedisBus_Integration_Subscribe(t *testing.T) {
 }
 
 func TestRedisBus_Integration_SubscribeOnce(t *testing.T) {
-	t.Skip("Skipping flaky integration test TestRedisBus_Integration_SubscribeOnce")
-	if testing.Short() {
-		t.Skip("skipping integration test in short mode.")
-	}
-
 	redisAddr, cleanup := StartRedisContainer(t)
 	defer cleanup()
 
@@ -98,8 +89,8 @@ func TestRedisBus_Integration_SubscribeOnce(t *testing.T) {
 	unsubscribe := bus.SubscribeOnce(ctx, topic, handler)
 	defer unsubscribe()
 
-	// Give subscriber a moment to connect
-	time.Sleep(1 * time.Second)
+	// Wait for subscriber to connect
+	waitForSubscribers(t, client, topic, 1)
 
 	err := bus.Publish(ctx, topic, msg)
 	assert.NoError(t, err)
@@ -108,10 +99,6 @@ func TestRedisBus_Integration_SubscribeOnce(t *testing.T) {
 }
 
 func TestBusProvider_Integration_Redis(t *testing.T) {
-	if testing.Short() {
-		t.Skip("skipping integration test in short mode.")
-	}
-
 	redisAddr, cleanup := StartRedisContainer(t)
 	defer cleanup()
 
@@ -133,10 +120,6 @@ func TestBusProvider_Integration_Redis(t *testing.T) {
 }
 
 func TestRedisBus_Integration_Unsubscribe(t *testing.T) {
-	if testing.Short() {
-		t.Skip("skipping integration test in short mode.")
-	}
-
 	redisAddr, cleanup := StartRedisContainer(t)
 	defer cleanup()
 
@@ -190,11 +173,6 @@ func TestRedisBus_Integration_Unsubscribe(t *testing.T) {
 }
 
 func TestRedisBus_Integration_Concurrent(t *testing.T) {
-	t.Skip("Skipping flaky integration test TestRedisBus_Integration_Concurrent")
-	if testing.Short() {
-		t.Skip("skipping integration test in short mode.")
-	}
-
 	redisAddr, cleanup := StartRedisContainer(t)
 	defer cleanup()
 
@@ -233,8 +211,8 @@ func TestRedisBus_Integration_Concurrent(t *testing.T) {
 		}(i)
 	}
 
-	// Give subscribers a moment to connect
-	time.Sleep(500 * time.Millisecond)
+	// Wait for all subscribers to connect
+	waitForSubscribers(t, client, topic, numSubscribers)
 
 	for i := 0; i < numMessages; i++ {
 		err := redisBus.Publish(ctx, topic, "msg")
