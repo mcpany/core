@@ -13,9 +13,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/mcpany/core/pkg/util"
-	"github.com/mcpany/core/tests/framework"
-	"github.com/mcpany/core/tests/integration"
+	"github.com/mcpany/core/server/pkg/util"
+	"github.com/mcpany/core/server/tests/framework"
+	"github.com/mcpany/core/server/tests/integration"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/require"
 )

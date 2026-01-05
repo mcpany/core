@@ -8,7 +8,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/mcpany/core/pkg/logging"
+	"github.com/mcpany/core/server/pkg/logging"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"google.golang.org/protobuf/proto"
 )

@@ -9,8 +9,8 @@ import (
 
 	"al.essio.dev/pkg/shellescape"
 	"github.com/alitto/pond/v2"
-	"github.com/mcpany/core/pkg/bus"
-	"github.com/mcpany/core/pkg/logging"
+	"github.com/mcpany/core/server/pkg/bus"
+	"github.com/mcpany/core/server/pkg/logging"
 )
 
 // Config holds the configuration for the worker.

@@ -12,7 +12,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/mcpany/core/pkg/logging"
+	"github.com/mcpany/core/server/pkg/logging"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/assert"
 )

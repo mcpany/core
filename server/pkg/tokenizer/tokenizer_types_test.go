@@ -6,7 +6,7 @@ package tokenizer_test
 import (
 	"testing"
 
-	"github.com/mcpany/core/pkg/tokenizer"
+	"github.com/mcpany/core/server/pkg/tokenizer"
 )
 
 func TestCountTokensInValue_Types(t *testing.T) {

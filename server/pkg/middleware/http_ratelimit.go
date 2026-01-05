@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/mcpany/core/pkg/util"
+	"github.com/mcpany/core/server/pkg/util"
 	"github.com/patrickmn/go-cache"
 	"golang.org/x/time/rate"
 )

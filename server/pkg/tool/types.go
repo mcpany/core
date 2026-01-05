@@ -21,18 +21,18 @@ import (
 	"sync"
 	"time"
 
-	"github.com/mcpany/core/pkg/auth"
-	"github.com/mcpany/core/pkg/client"
-	"github.com/mcpany/core/pkg/command"
-	"github.com/mcpany/core/pkg/consts"
-	"github.com/mcpany/core/pkg/logging"
-	"github.com/mcpany/core/pkg/metrics"
-	"github.com/mcpany/core/pkg/pool"
-	"github.com/mcpany/core/pkg/resilience"
-	"github.com/mcpany/core/pkg/transformer"
-	"github.com/mcpany/core/pkg/util"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	v1 "github.com/mcpany/core/proto/mcp_router/v1"
+	"github.com/mcpany/core/server/pkg/auth"
+	"github.com/mcpany/core/server/pkg/client"
+	"github.com/mcpany/core/server/pkg/command"
+	"github.com/mcpany/core/server/pkg/consts"
+	"github.com/mcpany/core/server/pkg/logging"
+	"github.com/mcpany/core/server/pkg/metrics"
+	"github.com/mcpany/core/server/pkg/pool"
+	"github.com/mcpany/core/server/pkg/resilience"
+	"github.com/mcpany/core/server/pkg/transformer"
+	"github.com/mcpany/core/server/pkg/util"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/reflect/protoreflect"
@@ -711,8 +711,8 @@ func (t *HTTPTool) prepareBody(ctx context.Context, inputs map[string]any, metho
 				contentType = contentTypeJSON
 			}
 		}
-	case t.inputTransformer != nil && t.inputTransformer.GetTemplate() != "":
-		tpl, err := transformer.NewTemplate(t.inputTransformer.GetTemplate(), "{{", "}}")
+	case t.inputTransformer != nil && t.inputTransformer.GetTemplate() != "": //nolint:staticcheck
+		tpl, err := transformer.NewTemplate(t.inputTransformer.GetTemplate(), "{{", "}}") //nolint:staticcheck //nolint:staticcheck
 		if err != nil {
 			return nil, "", fmt.Errorf("failed to create input template: %w", err)
 		}
@@ -891,8 +891,8 @@ func (t *MCPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, erro
 		if len(respData) > 0 {
 			arguments = json.RawMessage(respData)
 		}
-	case t.inputTransformer != nil && t.inputTransformer.GetTemplate() != "":
-		tpl, err := transformer.NewTemplate(t.inputTransformer.GetTemplate(), "{{", "}}")
+	case t.inputTransformer != nil && t.inputTransformer.GetTemplate() != "": //nolint:staticcheck //nolint:staticcheck
+		tpl, err := transformer.NewTemplate(t.inputTransformer.GetTemplate(), "{{", "}}") //nolint:staticcheck
 		if err != nil {
 			return nil, fmt.Errorf("failed to create input template: %w", err)
 		}
@@ -1086,8 +1086,8 @@ func (t *OpenAPITool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 					contentType = contentTypeJSON
 				}
 			}
-		case t.inputTransformer != nil && t.inputTransformer.GetTemplate() != "":
-			tpl, err := transformer.NewTemplate(t.inputTransformer.GetTemplate(), "{{", "}}")
+		case t.inputTransformer != nil && t.inputTransformer.GetTemplate() != "": //nolint:staticcheck //nolint:staticcheck
+			tpl, err := transformer.NewTemplate(t.inputTransformer.GetTemplate(), "{{", "}}") //nolint:staticcheck //nolint:staticcheck
 			if err != nil {
 				return nil, fmt.Errorf("failed to create input template: %w", err)
 			}

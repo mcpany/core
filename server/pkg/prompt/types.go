@@ -9,8 +9,8 @@ import (
 	"errors"
 	"sort"
 
-	"github.com/mcpany/core/pkg/transformer"
-	"github.com/mcpany/core/pkg/util"
+	"github.com/mcpany/core/server/pkg/transformer"
+	"github.com/mcpany/core/server/pkg/util"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )

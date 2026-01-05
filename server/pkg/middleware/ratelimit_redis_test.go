@@ -10,7 +10,7 @@ import (
 	"time"
 
 	"github.com/go-redis/redismock/v9"
-	"github.com/mcpany/core/pkg/middleware"
+	"github.com/mcpany/core/server/pkg/middleware"
 	busproto "github.com/mcpany/core/proto/bus"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/redis/go-redis/v9"

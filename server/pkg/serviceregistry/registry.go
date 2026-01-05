@@ -9,13 +9,13 @@ import (
 	"fmt"
 	"sync"
 
-	"github.com/mcpany/core/pkg/auth"
-	"github.com/mcpany/core/pkg/prompt"
-	"github.com/mcpany/core/pkg/resource"
-	"github.com/mcpany/core/pkg/tool"
-	"github.com/mcpany/core/pkg/upstream"
-	"github.com/mcpany/core/pkg/upstream/factory"
-	"github.com/mcpany/core/pkg/util"
+	"github.com/mcpany/core/server/pkg/auth"
+	"github.com/mcpany/core/server/pkg/prompt"
+	"github.com/mcpany/core/server/pkg/resource"
+	"github.com/mcpany/core/server/pkg/tool"
+	"github.com/mcpany/core/server/pkg/upstream"
+	"github.com/mcpany/core/server/pkg/upstream/factory"
+	"github.com/mcpany/core/server/pkg/util"
 	config "github.com/mcpany/core/proto/config/v1"
 )
 

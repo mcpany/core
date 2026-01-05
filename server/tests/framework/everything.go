@@ -8,7 +8,7 @@ import (
 	"testing"
 
 	apiv1 "github.com/mcpany/core/proto/api/v1"
-	"github.com/mcpany/core/tests/integration"
+	"github.com/mcpany/core/server/tests/integration"
 )
 
 // BuildEverythingServer builds a server with everything.

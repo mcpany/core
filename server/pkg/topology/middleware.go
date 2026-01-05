@@ -6,8 +6,8 @@ package topology
 import (
 	"context"
 
-	"github.com/mcpany/core/pkg/auth"
-	"github.com/mcpany/core/pkg/consts"
+	"github.com/mcpany/core/server/pkg/auth"
+	"github.com/mcpany/core/server/pkg/consts"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 

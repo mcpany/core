@@ -9,8 +9,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/mcpany/core/pkg/serviceregistry"
-	"github.com/mcpany/core/pkg/tool"
+	"github.com/mcpany/core/server/pkg/serviceregistry"
+	"github.com/mcpany/core/server/pkg/tool"
 	topologyv1 "github.com/mcpany/core/proto/topology/v1"
 )
 

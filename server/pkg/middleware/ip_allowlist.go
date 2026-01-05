@@ -8,7 +8,7 @@ import (
 	"net"
 	"net/http"
 
-	"github.com/mcpany/core/pkg/logging"
+	"github.com/mcpany/core/server/pkg/logging"
 )
 
 // IPAllowlistMiddleware restricts access to allowed IP addresses.

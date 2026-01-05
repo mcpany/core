@@ -34,7 +34,7 @@ import (
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 
-	"github.com/mcpany/core/pkg/app"
+	"github.com/mcpany/core/server/pkg/app"
 	"github.com/spf13/afero"
 )
 

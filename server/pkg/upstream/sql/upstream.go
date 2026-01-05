@@ -14,10 +14,10 @@ import (
 	_ "github.com/lib/pq"
 	_ "modernc.org/sqlite"
 
-	"github.com/mcpany/core/pkg/prompt"
-	"github.com/mcpany/core/pkg/resource"
-	"github.com/mcpany/core/pkg/tool"
-	"github.com/mcpany/core/pkg/util"
+	"github.com/mcpany/core/server/pkg/prompt"
+	"github.com/mcpany/core/server/pkg/resource"
+	"github.com/mcpany/core/server/pkg/tool"
+	"github.com/mcpany/core/server/pkg/util"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	v1 "github.com/mcpany/core/proto/mcp_router/v1"
 )
