@@ -1,3 +1,6 @@
+// Copyright 2026 Author(s) of MCP Any
+// SPDX-License-Identifier: Apache-2.0
+
 package provider
 
 import (
@@ -11,11 +14,13 @@ import (
 	"github.com/spf13/afero/zipfs"
 )
 
+// ZipProvider provides a filesystem interface for ZIP archives.
 type ZipProvider struct {
 	fs     afero.Fs
 	closer *os.File
 }
 
+// NewZipProvider creates a new ZipProvider.
 func NewZipProvider(config *configv1.ZipFs) (*ZipProvider, error) {
 	f, err := os.Open(config.GetFilePath())
 	if err != nil {
@@ -42,15 +47,18 @@ func NewZipProvider(config *configv1.ZipFs) (*ZipProvider, error) {
 	}, nil
 }
 
+// GetFs returns the underlying filesystem.
 func (p *ZipProvider) GetFs() afero.Fs {
 	return p.fs
 }
 
+// ResolvePath resolves a virtual path to a real path on the filesystem.
 func (p *ZipProvider) ResolvePath(virtualPath string) (string, error) {
 	// For ZipFs, just clean the path. It's virtual (based on zip contents).
 	return filepath.Clean(virtualPath), nil
 }
 
+// Close closes the provider.
 func (p *ZipProvider) Close() error {
 	if p.closer != nil {
 		return p.closer.Close()
