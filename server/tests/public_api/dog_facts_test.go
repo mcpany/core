@@ -8,6 +8,7 @@ package public_api
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"strings"
 	"testing"
 	"time"
@@ -90,6 +91,20 @@ func TestUpstreamService_DogFacts(t *testing.T) {
 
 	for i := 0; i < maxRetries; i++ {
 		res, err = cs.CallTool(ctx, &mcp.CallToolParams{Name: toolName, Arguments: json.RawMessage(`{}`)})
+		if err == nil && res != nil && res.IsError {
+			// Extract error message from content
+			var errMsg string
+			if len(res.Content) > 0 {
+				if tc, ok := res.Content[0].(*mcp.TextContent); ok {
+					errMsg = tc.Text
+				}
+			}
+			if errMsg == "" {
+				errMsg = "tool execution failed with unknown error"
+			}
+			err = fmt.Errorf("%s", errMsg)
+		}
+
 		if err == nil {
 			break // Success
 		}
@@ -109,6 +124,7 @@ func TestUpstreamService_DogFacts(t *testing.T) {
 
 	require.NoError(t, err, "Error calling getDogFact tool")
 	require.NotNil(t, res, "Nil response from getDogFact tool")
+	require.False(t, res.IsError, "Tool execution failed")
 
 	// --- 4. Assert Response ---
 	require.Len(t, res.Content, 1, "Expected exactly one content item")

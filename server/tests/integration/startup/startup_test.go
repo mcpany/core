@@ -59,12 +59,12 @@ upstream_services:
           description: "failing tool"
 `, ts.URL, failingPort)
 
-    tmpFile, err := os.CreateTemp(t.TempDir(), "mcpany-config-*.yaml")
-    require.NoError(t, err)
-    _, err = tmpFile.WriteString(configContent)
-    require.NoError(t, err)
-    err = tmpFile.Close()
-    require.NoError(t, err)
+	tmpFile, err := os.CreateTemp(t.TempDir(), "mcpany-config-*.yaml")
+	require.NoError(t, err)
+	_, err = tmpFile.WriteString(configContent)
+	require.NoError(t, err)
+	err = tmpFile.Close()
+	require.NoError(t, err)
 
 	var jsonrpcPort int
 	var ctx context.Context
@@ -110,56 +110,57 @@ upstream_services:
 ServerStarted:
 	defer cancel()
 
-    httpUrl := fmt.Sprintf("http://127.0.0.1:%d/healthz", jsonrpcPort)
-    integration.WaitForHTTPHealth(t, httpUrl, 10*time.Second)
+	httpUrl := fmt.Sprintf("http://127.0.0.1:%d/healthz", jsonrpcPort)
+	integration.WaitForHTTPHealth(t, httpUrl, 10*time.Second)
 
-    endpoint := fmt.Sprintf("http://127.0.0.1:%d", jsonrpcPort)
+	endpoint := fmt.Sprintf("http://127.0.0.1:%d", jsonrpcPort)
 
-    client := mcp.NewClient(&mcp.Implementation{
-        Name: "test-client",
-        Version: "1.0.0",
-    }, nil)
+	client := mcp.NewClient(&mcp.Implementation{
+		Name:    "test-client",
+		Version: "1.0.0",
+	}, nil)
 
-    transport := &mcp.StreamableClientTransport{
-        Endpoint: endpoint,
-    }
+	transport := &mcp.StreamableClientTransport{
+		Endpoint: endpoint,
+	}
 
-    ctxCall, cancelCall := context.WithTimeout(context.Background(), 10*time.Second)
-    defer cancelCall()
+	ctxCall, cancelCall := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancelCall()
 
-    session, err := client.Connect(ctxCall, transport, nil)
-    require.NoError(t, err)
-    defer session.Close()
+	session, err := client.Connect(ctxCall, transport, nil)
+	require.NoError(t, err)
+	defer session.Close()
 
-    listToolsResult, err := session.ListTools(ctxCall, &mcp.ListToolsParams{})
+	listToolsResult, err := session.ListTools(ctxCall, &mcp.ListToolsParams{})
 	require.NoError(t, err)
 
 	workingToolFound := false
 	failingToolFound := false
 
 	for _, tool := range listToolsResult.Tools {
-        if tool.Name == "working-service.hello" {
-            workingToolFound = true
-        }
-        if tool.Name == "failing-service.echo" {
-            failingToolFound = true
-        }
+		if tool.Name == "working-service.hello" {
+			workingToolFound = true
+		}
+		if tool.Name == "failing-service.echo" {
+			failingToolFound = true
+		}
 	}
 
 	require.True(t, workingToolFound, "Working tool should be registered")
-    require.True(t, failingToolFound, "Failing tool should be registered even if service is down")
+	require.True(t, failingToolFound, "Failing tool should be registered even if service is down")
 
-    t.Log("Verifying failing tool call fails")
-    args := json.RawMessage(`{}`)
-    _, err = session.CallTool(ctxCall, &mcp.CallToolParams{
-            Name: "failing-service.echo",
-            Arguments: args,
-    })
-    require.Error(t, err)
+	t.Log("Verifying failing tool call fails")
+	args := json.RawMessage(`{}`)
+	result, err := session.CallTool(ctxCall, &mcp.CallToolParams{
+		Name:      "failing-service.echo",
+		Arguments: args,
+	})
+	require.NoError(t, err, "CallTool should not return a Go error even if the tool execution fails")
+	require.True(t, result.IsError, "Result should indicate an error (IsError=true)")
 
-    // 6. Fix the failing service in config (Reload Test)
-    t.Log("Updating config to fix failing service...")
-    newConfigContent := fmt.Sprintf(`
+	// 6. Fix the failing service in config (Reload Test)
+	t.Log("Updating config to fix failing service...")
+	newConfigContent := fmt.Sprintf(`
 upstream_services:
   - name: "working-service"
     http_service:
@@ -185,19 +186,19 @@ upstream_services:
           description: "now working tool"
 `, ts.URL, ts.URL) // Point failing-service to working URL
 
-    // Overwrite config file
-    err = os.WriteFile(tmpFile.Name(), []byte(newConfigContent), 0644)
-    require.NoError(t, err)
+	// Overwrite config file
+	err = os.WriteFile(tmpFile.Name(), []byte(newConfigContent), 0644)
+	require.NoError(t, err)
 
-    t.Log("Triggering config reload...")
-    err = appRunner.ReloadConfig(afero.NewOsFs(), []string{tmpFile.Name()})
-    require.NoError(t, err)
+	t.Log("Triggering config reload...")
+	err = appRunner.ReloadConfig(afero.NewOsFs(), []string{tmpFile.Name()})
+	require.NoError(t, err)
 
-    // Verify failing-service is now working
-    result, err := session.CallTool(ctxCall, &mcp.CallToolParams{
-            Name: "failing-service.echo",
-            Arguments: args,
-    })
-    require.NoError(t, err)
-    t.Logf("Result from recovered tool: %v", result)
+	// Verify failing-service is now working
+	result, err = session.CallTool(ctxCall, &mcp.CallToolParams{
+		Name:      "failing-service.echo",
+		Arguments: args,
+	})
+	require.NoError(t, err)
+	t.Logf("Result from recovered tool: %v", result)
 }
