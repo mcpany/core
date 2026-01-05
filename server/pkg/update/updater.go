@@ -143,7 +143,23 @@ func (u *Updater) UpdateTo(ctx context.Context, fs afero.Fs, executablePath stri
 		return fmt.Errorf("failed to set executable permission: %w", err)
 	}
 
+	// On Windows, we cannot replace a running executable.
+	// The workaround is to rename the old executable, move the new one,
+	// and the old one can be cleaned up later.
+	oldPath := executablePath + ".old"
+	if _, err := fs.Stat(executablePath); err == nil {
+		if err := fs.Rename(executablePath, oldPath); err != nil {
+			return fmt.Errorf("failed to rename old executable: %w", err)
+		}
+	}
+
 	if err := fs.Rename(tmpFile.Name(), executablePath); err != nil {
+		// If the rename fails, try to restore the old executable.
+		if _, err := fs.Stat(oldPath); err == nil {
+			if err := fs.Rename(oldPath, executablePath); err != nil {
+				return fmt.Errorf("failed to replace executable and could not restore old version: %w", err)
+			}
+		}
 		return fmt.Errorf("failed to replace executable: %w", err)
 	}
 
