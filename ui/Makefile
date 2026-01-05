@@ -30,7 +30,7 @@ test: build-test-docker
 	# If we change it to use sh -c "npx playwright test $PLAYWRIGHT_ARGS", it might work.
 	# BUT I prefer to use `run` for targeted tests.
 	if [ -z '$(ARGS)' ]; then \
-		docker compose -f ../docker/docker-compose.test-ui.yml up --abort-on-container-exit --exit-code-from ui-tests; \
+		docker compose -f ../docker/docker-compose.test-ui.yml up --abort-on-container-exit --exit-code-from ui-tests --timeout 600000; \
 	else \
 		docker compose -f ../docker/docker-compose.test-ui.yml run --rm --service-ports ui-tests npx playwright test $(ARGS); \
 	fi

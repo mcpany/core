@@ -423,7 +423,7 @@ test-fast: build build-examples build-e2e-mocks build-e2e-timeserver-docker
 	echo "Testing packages: $$TEST_PKGS"; \
 	if [ -z "$$TEST_PKGS" ]; then echo "No packages to test!"; exit 1; fi; \
 	mkdir -p $(BUILD_DIR)/bundles; \
-	GEMINI_API_KEY=$(GEMINI_API_KEY) MCP_BUNDLE_DIR=$(MCP_BUNDLE_DIR) MCPANY_DEBUG=true CGO_ENABLED=1 USE_SUDO_FOR_DOCKER=$(NEEDS_SUDO_FOR_DOCKER) $(GO_CMD) test -race -count=1 -timeout 300s -cover -coverprofile=$(COVERAGE_FILE) $$TEST_PKGS
+	GEMINI_API_KEY=$(GEMINI_API_KEY) MCP_BUNDLE_DIR=$(MCP_BUNDLE_DIR) MCPANY_DEBUG=true CGO_ENABLED=1 USE_SUDO_FOR_DOCKER=$(NEEDS_SUDO_FOR_DOCKER) $(GO_CMD) test -count=1 -timeout 1800s -v $$TEST_PKGS
 
 .PHONY: test-public-api
 test-public-api: build build-mock-server

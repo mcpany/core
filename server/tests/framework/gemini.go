@@ -68,9 +68,6 @@ func (g *GeminiCLI) RemoveMCP(name string) {
 // Run executes a prompt against the Gemini CLI using the provided API key.
 func (g *GeminiCLI) Run(apiKey, prompt string) (string, error) {
 	g.t.Helper()
-	if apiKey == "" {
-		g.t.Skip("GEMINI_API_KEY is not set. Please get one from AI Studio.")
-	}
 
 	var outputBuffer strings.Builder
 	cmd := g.geminiCommand("-m", DefaultModel, "-p", prompt)

@@ -42,6 +42,7 @@ if kind get clusters | grep -q "^$CLUSTER_NAME$"; then
     echo "Cluster $CLUSTER_NAME already exists."
 else
     echo "Creating Kind cluster $CLUSTER_NAME..."
+    iptables -P FORWARD ACCEPT
     kind create cluster --name "$CLUSTER_NAME" --image "$KIND_IMAGE" --wait 2m
 fi
 

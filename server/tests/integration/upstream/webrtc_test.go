@@ -18,9 +18,6 @@ func TestUpstreamService_Webrtc(t *testing.T) {
 	gemini.Install()
 
 	apiKey := os.Getenv("GEMINI_API_KEY")
-	if apiKey == "" {
-		t.Skip("GEMINI_API_KEY is not set")
-	}
 
 	testCase := &framework.E2ETestCase{
 		Name:                "WebRTC Weather Server",

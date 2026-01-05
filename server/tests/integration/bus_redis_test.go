@@ -21,7 +21,6 @@ import (
 func waitForSubscribers(t *testing.T, client *goredis.Client, topic string, expected int) {
 	require.Eventually(t, func() bool {
 		subs := client.PubSubNumSub(context.Background(), topic).Val()
-		// Check that the subscriber count is at least the expected number
 		return subs[topic] >= int64(expected)
 	}, 5*time.Second, 100*time.Millisecond, "timed out waiting for subscribers on topic %s", topic)
 }
@@ -57,7 +56,6 @@ func TestRedisBus_Integration_Subscribe(t *testing.T) {
 	unsubscribe := bus.Subscribe(ctx, topic, handler)
 	defer unsubscribe()
 
-	// Wait for subscriber to connect
 	waitForSubscribers(t, client, topic, 1)
 
 	err := bus.Publish(ctx, topic, msg)
@@ -67,7 +65,6 @@ func TestRedisBus_Integration_Subscribe(t *testing.T) {
 }
 
 func TestRedisBus_Integration_SubscribeOnce(t *testing.T) {
-	t.Skip("Skipping flaky integration test TestRedisBus_Integration_SubscribeOnce")
 	if testing.Short() {
 		t.Skip("skipping integration test in short mode.")
 	}
@@ -98,8 +95,7 @@ func TestRedisBus_Integration_SubscribeOnce(t *testing.T) {
 	unsubscribe := bus.SubscribeOnce(ctx, topic, handler)
 	defer unsubscribe()
 
-	// Give subscriber a moment to connect
-	time.Sleep(1 * time.Second)
+	waitForSubscribers(t, client, topic, 1)
 
 	err := bus.Publish(ctx, topic, msg)
 	assert.NoError(t, err)
@@ -164,13 +160,11 @@ func TestRedisBus_Integration_Unsubscribe(t *testing.T) {
 
 	unsubscribe := redisBus.Subscribe(ctx, topic, handler)
 
-	// Wait for subscriber to connect
 	waitForSubscribers(t, client, topic, 1)
 
 	err := redisBus.Publish(ctx, topic, msg1)
 	assert.NoError(t, err)
 
-	// Wait for message 1
 	time.Sleep(100 * time.Millisecond)
 
 	unsubscribe()
@@ -178,7 +172,6 @@ func TestRedisBus_Integration_Unsubscribe(t *testing.T) {
 	err = redisBus.Publish(ctx, topic, msg2)
 	assert.NoError(t, err)
 
-	// Wait for message 2 (should not be received)
 	time.Sleep(100 * time.Millisecond)
 
 	mu.Lock()
@@ -190,7 +183,6 @@ func TestRedisBus_Integration_Unsubscribe(t *testing.T) {
 }
 
 func TestRedisBus_Integration_Concurrent(t *testing.T) {
-	t.Skip("Skipping flaky integration test TestRedisBus_Integration_Concurrent")
 	if testing.Short() {
 		t.Skip("skipping integration test in short mode.")
 	}
@@ -211,37 +203,41 @@ func TestRedisBus_Integration_Concurrent(t *testing.T) {
 	numSubscribers := 10
 	numMessages := 50
 
-	var wg sync.WaitGroup
-	wg.Add(numSubscribers * numMessages)
+	var messagesWg sync.WaitGroup
+	messagesWg.Add(numSubscribers * numMessages)
+
+	var subscribersWg sync.WaitGroup
+	subscribersWg.Add(numSubscribers)
 
 	var receivedMessages [][]string
 	var mu sync.Mutex
 
-    receivedMessages = make([][]string, numSubscribers)
-    for i := 0; i < numSubscribers; i++ {
-        receivedMessages[i] = make([]string, 0, numMessages)
-    }
+	receivedMessages = make([][]string, numSubscribers)
+	for i := 0; i < numSubscribers; i++ {
+		receivedMessages[i] = make([]string, 0, numMessages)
+	}
 
 	for i := 0; i < numSubscribers; i++ {
 		go func(subIdx int) {
-			redisBus.Subscribe(ctx, topic, func(msg string) {
+			unsubscribe := redisBus.Subscribe(ctx, topic, func(msg string) {
 				mu.Lock()
 				receivedMessages[subIdx] = append(receivedMessages[subIdx], msg)
 				mu.Unlock()
-				wg.Done()
+				messagesWg.Done()
 			})
+			defer unsubscribe()
+			subscribersWg.Done()
 		}(i)
 	}
 
-	// Give subscribers a moment to connect
-	time.Sleep(500 * time.Millisecond)
+	subscribersWg.Wait()
 
 	for i := 0; i < numMessages; i++ {
 		err := redisBus.Publish(ctx, topic, "msg")
 		assert.NoError(t, err)
 	}
 
-	wg.Wait()
+	messagesWg.Wait()
 
 	mu.Lock()
 	defer mu.Unlock()
