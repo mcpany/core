@@ -26,6 +26,7 @@ const (
 )
 
 func TestNewWebsocketTool(t *testing.T) {
+	t.Parallel()
 	pm := pool.NewManager()
 	serviceID := testServiceID
 	toolProto := &v1.Tool{}
@@ -78,6 +79,7 @@ func (m *mockWebsocketPool) Len() int {
 }
 
 func TestWebsocketTool_Execute(t *testing.T) {
+	t.Parallel()
 	t.Run("successful execution", func(t *testing.T) {
 		server := mockWebsocketServer(t, func(w http.ResponseWriter, r *http.Request) {
 			conn, err := upgrader.Upgrade(w, r, nil)

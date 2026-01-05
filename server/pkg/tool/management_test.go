@@ -28,6 +28,7 @@ func (p *TestMCPServerProvider) Server() *mcp.Server {
 }
 
 func TestToolManager_AddAndGetTool(t *testing.T) {
+	t.Parallel()
 	tm := NewManager(nil)
 	mockTool := &MockTool{
 		ToolFunc: func() *v1.Tool {
@@ -49,6 +50,7 @@ func TestToolManager_AddAndGetTool(t *testing.T) {
 }
 
 func TestToolManager_ListTools(t *testing.T) {
+	t.Parallel()
 	tm := NewManager(nil)
 	mockTool1 := &MockTool{
 		ToolFunc: func() *v1.Tool {
@@ -75,6 +77,7 @@ func TestToolManager_ListTools(t *testing.T) {
 }
 
 func TestToolManager_ClearToolsForService(t *testing.T) {
+	t.Parallel()
 	tm := NewManager(nil)
 	mockTool1 := &MockTool{
 		ToolFunc: func() *v1.Tool {
@@ -114,6 +117,7 @@ func TestToolManager_ClearToolsForService(t *testing.T) {
 }
 
 func TestToolManager_ExecuteTool(t *testing.T) {
+	t.Parallel()
 	tm := NewManager(nil)
 	sanitizedToolName, _ := util.SanitizeToolName("exec-tool")
 	toolID := "exec-service" + "." + sanitizedToolName
@@ -141,6 +145,7 @@ func TestToolManager_ExecuteTool(t *testing.T) {
 }
 
 func TestToolManager_ExecuteTool_NotFound(t *testing.T) {
+	t.Parallel()
 	tm := NewManager(nil)
 	execReq := &ExecutionRequest{ToolName: "non-existent-tool", ToolInputs: []byte(`{}`)}
 	_, err := tm.ExecuteTool(context.Background(), execReq)
@@ -149,6 +154,7 @@ func TestToolManager_ExecuteTool_NotFound(t *testing.T) {
 }
 
 func TestToolManager_ConcurrentAccess(t *testing.T) {
+	t.Parallel()
 	tm := NewManager(nil)
 	var wg sync.WaitGroup
 	numRoutines := 50
@@ -186,6 +192,7 @@ func TestToolManager_ConcurrentAccess(t *testing.T) {
 }
 
 func TestToolManager_AddTool_NoServiceID(t *testing.T) {
+	t.Parallel()
 	tm := NewManager(nil)
 	mockTool := &MockTool{
 		ToolFunc: func() *v1.Tool {
@@ -202,6 +209,7 @@ func TestToolManager_AddTool_NoServiceID(t *testing.T) {
 }
 
 func TestToolManager_AddTool_EmptyToolName(t *testing.T) {
+	t.Parallel()
 	tm := NewManager(nil)
 	mockTool := &MockTool{
 		ToolFunc: func() *v1.Tool {
@@ -218,6 +226,7 @@ func TestToolManager_AddTool_EmptyToolName(t *testing.T) {
 }
 
 func TestToolManager_AddTool_WithMCPServer(t *testing.T) {
+	t.Parallel()
 	tm := NewManager(nil)
 	mcpServer := mcp.NewServer(&mcp.Implementation{}, nil)
 	provider := &TestMCPServerProvider{server: mcpServer}
@@ -276,6 +285,7 @@ func (m *MockToolExecutionMiddleware) Execute(ctx context.Context, req *Executio
 }
 
 func TestToolManager_AddAndExecuteWithMiddleware(t *testing.T) {
+	t.Parallel()
 	tm := NewManager(nil)
 
 	sanitizedToolName, _ := util.SanitizeToolName("exec-tool")
@@ -325,6 +335,7 @@ func TestToolManager_AddAndExecuteWithMiddleware(t *testing.T) {
 }
 
 func TestToolManager_ClearToolsForService_NoDeletions(t *testing.T) {
+	t.Parallel()
 	tm := NewManager(nil)
 	mockTool1 := &MockTool{
 		ToolFunc: func() *v1.Tool {
@@ -338,6 +349,7 @@ func TestToolManager_ClearToolsForService_NoDeletions(t *testing.T) {
 }
 
 func TestToolManager_AddTool_MCPServerAddToolError(t *testing.T) {
+	t.Parallel()
 	tm := NewManager(nil)
 	// Mock the mcp.Server's AddTool method to return an error.
 	// We can't directly do this, so we'll rely on the fact that a tool
@@ -368,6 +380,7 @@ func TestToolManager_AddTool_MCPServerAddToolError(t *testing.T) {
 }
 
 func TestToolManager_AddTool_WithMCPServerAndBus(t *testing.T) {
+	t.Parallel()
 	busProvider, _ := bus.NewProvider(nil)
 	tm := NewManager(busProvider)
 
@@ -406,6 +419,7 @@ func TestToolManager_AddTool_WithMCPServerAndBus(t *testing.T) {
 }
 
 func TestToolManager_AddTool_WithMCPServer_ErrorCases(t *testing.T) {
+	t.Parallel()
 	tm := NewManager(nil)
 	mcpServer := mcp.NewServer(&mcp.Implementation{}, nil)
 	provider := &TestMCPServerProvider{server: mcpServer}
@@ -439,6 +453,7 @@ func TestToolManager_AddTool_WithMCPServer_ErrorCases(t *testing.T) {
 }
 
 func TestToolManager_AddAndGetServiceInfo(t *testing.T) {
+	t.Parallel()
 	tm := NewManager(nil)
 	serviceID := "test-service"
 	serviceInfo := &ServiceInfo{
@@ -456,6 +471,7 @@ func TestToolManager_AddAndGetServiceInfo(t *testing.T) {
 }
 
 func TestToolManager_SetMCPServer(t *testing.T) {
+	t.Parallel()
 	tm := NewManager(nil)
 	provider := &TestMCPServerProvider{server: nil}
 	tm.SetMCPServer(provider)
@@ -463,6 +479,7 @@ func TestToolManager_SetMCPServer(t *testing.T) {
 }
 
 func TestToolManager_ExecuteTool_ExecutionError(t *testing.T) {
+	t.Parallel()
 	tm := NewManager(nil)
 	sanitizedToolName, _ := util.SanitizeToolName("exec-tool")
 	toolID := "exec-service" + "." + sanitizedToolName
@@ -489,6 +506,7 @@ func TestToolManager_ExecuteTool_ExecutionError(t *testing.T) {
 }
 
 func TestToolManager_ListTools_Caching(t *testing.T) {
+	t.Parallel()
 	tm := NewManager(nil)
 	mockTool1 := &MockTool{
 		ToolFunc: func() *v1.Tool { return &v1.Tool{ServiceId: proto.String("s1"), Name: proto.String("t1")} },
@@ -523,6 +541,7 @@ func TestToolManager_ListTools_Caching(t *testing.T) {
 }
 
 func TestToolManager_AddServiceInfo_WithConfig(t *testing.T) {
+	t.Parallel()
 	tm := NewManager(nil)
 	serviceID := "test-service-config"
 
@@ -564,6 +583,7 @@ func TestToolManager_AddServiceInfo_WithConfig(t *testing.T) {
 }
 
 func TestToolManager_ProfileFiltering(t *testing.T) {
+	t.Parallel()
 	tm := NewManager(nil)
 
 	// Define a profile that selects tools with tag "secure"
@@ -636,6 +656,7 @@ func TestToolManager_ProfileFiltering(t *testing.T) {
 }
 
 func TestToolManager_ProfileFiltering_Properties(t *testing.T) {
+	t.Parallel()
 	tm := NewManager(nil)
 
 	// Profile selecting read_only=true

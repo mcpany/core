@@ -16,6 +16,7 @@ func actionPtr(a configv1.ExportPolicy_Action) *configv1.ExportPolicy_Action {
 }
 
 func TestShouldExport(t *testing.T) {
+	t.Parallel()
 	tests := []struct {
 		name     string
 		toolName string
@@ -135,6 +136,7 @@ func callActionPtr(a configv1.CallPolicy_Action) *configv1.CallPolicy_Action {
 }
 
 func TestEvaluateCallPolicy(t *testing.T) {
+	t.Parallel()
 	tests := []struct {
 		name      string
 		policies  []*configv1.CallPolicy
@@ -253,6 +255,7 @@ func TestEvaluateCallPolicy(t *testing.T) {
 }
 
 func TestEvaluateCompiledCallPolicy(t *testing.T) {
+	t.Parallel()
 	tests := []struct {
 		name      string
 		policies  []*configv1.CallPolicy
@@ -330,6 +333,7 @@ func TestEvaluateCompiledCallPolicy(t *testing.T) {
 }
 
 func TestCompileCallPolicies_InvalidRegex(t *testing.T) {
+	t.Parallel()
 	policies := []*configv1.CallPolicy{
 		{
 			Rules: []*configv1.CallPolicyRule{

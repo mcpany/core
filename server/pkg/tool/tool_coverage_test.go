@@ -13,6 +13,7 @@ import (
 )
 
 func TestCallableTool(t *testing.T) {
+	t.Parallel()
 	// Setup
 	toolDef := &configv1.ToolDefinition{Name: proto.String("test-tool")}
 	serviceConfig := &configv1.UpstreamServiceConfig{Name: proto.String("test-service")}
@@ -45,6 +46,7 @@ func (m *MockCallable) Parameters() map[string]any {
 }
 
 func TestCallableTool_Execute(t *testing.T) {
+	t.Parallel()
 	mockC := &MockCallable{}
 	ct, _ := NewCallableTool(&configv1.ToolDefinition{Name: proto.String("t")}, &configv1.UpstreamServiceConfig{Name: proto.String("s")}, mockC, nil, nil)
 

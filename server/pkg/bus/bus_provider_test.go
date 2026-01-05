@@ -35,7 +35,7 @@ func TestBusProvider_GetBus_Redis(t *testing.T) {
 		Addr: "localhost:6379",
 	})
 	if _, err := client.Ping(context.Background()).Result(); err != nil {
-		t.Skip("Redis is not available")
+		// t.Skip("Redis is not available")
 	}
 
 	messageBus := &bus.MessageBus{}

@@ -32,8 +32,10 @@ ifeq ($(shell docker info >/dev/null 2>&1; echo $$?), 0)
 	DOCKER_BUILDX_CMD := docker buildx
 	ifeq ($(shell docker buildx version >/dev/null 2>&1 && echo 1 || echo 0), 1)
 		DOCKER_BUILD_CMD := docker buildx build --load
+		HAS_BUILDX := 1
 	else
 		DOCKER_BUILD_CMD := docker build
+		HAS_BUILDX := 0
 	endif
 	SUDO_MSG := " (no sudo)"
 	NEEDS_SUDO_FOR_DOCKER := 0
@@ -42,8 +44,10 @@ else
 	DOCKER_BUILDX_CMD := sudo docker buildx
 	ifeq ($(shell sudo docker buildx version >/dev/null 2>&1 && echo 1 || echo 0), 1)
 		DOCKER_BUILD_CMD := sudo docker buildx build --load
+		HAS_BUILDX := 1
 	else
 		DOCKER_BUILD_CMD := sudo docker build
+		HAS_BUILDX := 0
 	endif
 	NEEDS_SUDO_FOR_DOCKER := 1
 endif
@@ -383,7 +387,7 @@ COVERAGE_FILE ?= coverage.out
 
 e2e-local: e2e-parallel e2e-sequential
 
-e2e-parallel: build build-examples build-e2e-mocks build-e2e-timeserver-docker
+e2e-parallel: build-test-images build build-examples build-e2e-mocks
 	@echo "Running parallel E2E Go tests locally with a 600s timeout..."
 	@-pkill -f file-upload-server || true
 	@$(EXAMPLE_BIN_DIR)/file-upload-server &
@@ -391,7 +395,7 @@ e2e-parallel: build build-examples build-e2e-mocks build-e2e-timeserver-docker
 	@GEMINI_API_KEY=$(GEMINI_API_KEY) MCP_BUNDLE_DIR=$(MCP_BUNDLE_DIR) MCPANY_DEBUG=true CGO_ENABLED=1 USE_SUDO_FOR_DOCKER=$(NEEDS_SUDO_FOR_DOCKER) $(GO_CMD) test -race -count=1 -timeout 600s -tags=e2e -cover -coverprofile=$(BUILD_DIR)/coverage.e2e-parallel.out $(shell go list ./cmd/... ./pkg/... ./tests/... ./examples/upstream_service_demo/... ./docs/... | grep -v /tests/public_api | grep -v /pkg/command | grep -v /build | grep -v /tests/e2e_sequential)
 	@-pkill -f file-upload-server
 
-e2e-sequential: build build-examples build-e2e-mocks build-e2e-timeserver-docker
+e2e-sequential: build-test-images build build-examples build-e2e-mocks
 	@echo "Running sequential E2E Go tests locally with a 300s timeout..."
 	@GEMINI_API_KEY=$(GEMINI_API_KEY) MCP_BUNDLE_DIR=$(MCP_BUNDLE_DIR) MCPANY_DEBUG=true CGO_ENABLED=1 USE_SUDO_FOR_DOCKER=$(NEEDS_SUDO_FOR_DOCKER) E2E_DOCKER=true $(GO_CMD) test -p 1 -parallel 1 -race -count=1 -timeout 600s -tags=e2e -cover -coverprofile=$(BUILD_DIR)/coverage.e2e-sequential.out ./tests/e2e_sequential/...
 
@@ -557,17 +561,23 @@ ifdef HAS_DOCKER
 			CACHE_ARGS="$${CACHE_ARGS} --cache-from=$(CACHE_FROM)"; \
 		fi; \
 		TAG_ARGS=$$(echo "$(SERVER_IMAGE_TAGS)" | sed -e 's/ / -t /g' -e 's/^/-t /'); \
-		CMD_ARGS="--platform $${PLATFORMS} $${TAG_ARGS} -f docker/Dockerfile.server"; \
 		if [ "$(PUSH)" = "true" ]; then \
 			echo "Building and pushing image..."; \
+			CMD_ARGS="--platform $${PLATFORMS} $${TAG_ARGS} -f docker/Dockerfile.server"; \
 			$(DOCKER_BUILDX_CMD) build $${CMD_ARGS} $${CACHE_ARGS} --push .; \
 		else \
-			if echo "$${PLATFORMS}" | grep -q ','; then \
-				echo "Building multi-platform image locally (will not be loaded to docker images)..."; \
-				$(DOCKER_BUILDX_CMD) build $${CMD_ARGS} $${CACHE_ARGS} .; \
+			if [ "$(HAS_BUILDX)" = "1" ]; then \
+				CMD_ARGS="--platform $${PLATFORMS} $${TAG_ARGS} -f docker/Dockerfile.server"; \
+				if echo "$${PLATFORMS}" | grep -q ','; then \
+					echo "Building multi-platform image locally (will not be loaded to docker images)..."; \
+					$(DOCKER_BUILDX_CMD) build $${CMD_ARGS} $${CACHE_ARGS} ..; \
+				else \
+					echo "Building single-platform image locally and loading to docker images..."; \
+					$(DOCKER_BUILD_CMD) $${CMD_ARGS} $${CACHE_ARGS} ..; \
+				fi; \
 			else \
-				echo "Building single-platform image locally and loading to docker images..."; \
-				$(DOCKER_BUILDX_CMD) build $${CMD_ARGS} $${CACHE_ARGS} --load .; \
+				echo "Building image using legacy docker build..."; \
+				$(DOCKER_BUILD_CMD) $${TAG_ARGS} -f docker/Dockerfile.server ..; \
 			fi; \
 		fi; \
 	}
@@ -575,6 +585,34 @@ ifdef HAS_DOCKER
 else
 	@echo "Docker not found. Cannot build server image."
 	@exit 1
+endif
+
+# Target to build http-echo-server Docker image
+build-http-echo-docker: docker/Dockerfile.http-echo-server
+ifdef HAS_DOCKER
+	@echo "Building http-echo-server Docker image (mcpany/http-echo-server:latest)..."
+	@$(DOCKER_BUILD_CMD) -t mcpany/http-echo-server:latest -f docker/Dockerfile.http-echo-server ..
+else
+	@echo "Docker not found. Cannot build http-echo-server image."
+	@exit 1
+endif
+
+# Target to build cowsay Docker image for integration tests
+build-cowsay-docker: tests/integration/cmd/mocks/python_cowsay_server/Dockerfile
+ifdef HAS_DOCKER
+	@echo "Building cowsay Docker image (mcpany/e2e-cowsay-server:latest)..."
+	@$(DOCKER_BUILD_CMD) -t mcpany/e2e-cowsay-server:latest -f tests/integration/cmd/mocks/python_cowsay_server/Dockerfile tests/integration/cmd/mocks/python_cowsay_server
+else
+	@echo "Docker not found. Cannot build cowsay image."
+	@exit 1
+endif
+
+# Target to build all test images
+build-test-images:
+ifndef SKIP_DOCKER_REBUILD
+	@$(MAKE) build-docker build-http-echo-docker build-e2e-timeserver-docker build-cowsay-docker build-everything-docker
+else
+	@echo "Skipping Docker image build (SKIP_DOCKER_REBUILD is set)"
 endif
 
 

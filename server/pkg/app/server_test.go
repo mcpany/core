@@ -746,7 +746,7 @@ func TestRun_DefaultBindAddress(t *testing.T) {
 	conn, err := net.DialTimeout("tcp", defaultAddr, 100*time.Millisecond)
 	if err == nil {
 		_ = conn.Close()
-		t.Skipf("port %s is already in use, skipping test", defaultAddr)
+		// t.Skipf("port %s is already in use, skipping test", defaultAddr)
 	}
 
 	fs := afero.NewMemMapFs()

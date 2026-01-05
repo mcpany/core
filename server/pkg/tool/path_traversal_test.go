@@ -21,6 +21,7 @@ import (
 )
 
 func TestHTTPTool_PathTraversal_Vulnerability(t *testing.T) {
+	t.Parallel()
 	// Handler checks where the request lands
 	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Path == "/secret" {

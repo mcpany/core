@@ -15,6 +15,7 @@ import (
 )
 
 func TestConvertToolDefinitionToProto(t *testing.T) {
+	t.Parallel()
 	t.Run("nil tool definition", func(t *testing.T) {
 		pbTool, err := ConvertToolDefinitionToProto(nil, nil, nil)
 		assert.Error(t, err)
@@ -60,6 +61,7 @@ func TestConvertToolDefinitionToProto(t *testing.T) {
 }
 
 func TestConvertJSONSchemaToStruct(t *testing.T) {
+	t.Parallel()
 	t.Run("nil schema", func(t *testing.T) {
 		s, err := convertJSONSchemaToStruct(nil)
 		assert.NoError(t, err)
@@ -88,6 +90,7 @@ func TestConvertJSONSchemaToStruct(t *testing.T) {
 }
 
 func TestGetJSONSchemaForScalarType(t *testing.T) {
+	t.Parallel()
 	t.Run("unsupported type", func(t *testing.T) {
 		_, err := GetJSONSchemaForScalarType("unsupported", "description")
 		assert.Error(t, err)
@@ -131,6 +134,7 @@ func TestGetJSONSchemaForScalarType(t *testing.T) {
 
 
 func TestConvertMCPToolToProto(t *testing.T) {
+	t.Parallel()
 	t.Run("nil tool", func(t *testing.T) {
 		pbTool, err := ConvertMCPToolToProto(nil)
 		assert.Error(t, err)
@@ -192,6 +196,7 @@ func TestConvertMCPToolToProto(t *testing.T) {
 }
 
 func TestConvertMcpFieldsToInputSchemaProperties(t *testing.T) {
+	t.Parallel()
 	t.Run("empty fields", func(t *testing.T) {
 		properties, err := ConvertMcpFieldsToInputSchemaProperties(nil)
 		assert.NoError(t, err)
@@ -221,6 +226,7 @@ func TestConvertMcpFieldsToInputSchemaProperties(t *testing.T) {
 }
 
 func TestConvertMCPToolToProto_NilInputSchema(t *testing.T) {
+	t.Parallel()
 	mcpTool := &mcp.Tool{
 		Name:        "test-tool",
 		Description: "A test tool",
@@ -235,6 +241,7 @@ func TestConvertMCPToolToProto_NilInputSchema(t *testing.T) {
 }
 
 func TestConvertProtoToMCPTool_NilTool(t *testing.T) {
+	t.Parallel()
 	mcpTool, err := ConvertProtoToMCPTool(nil)
 	assert.Error(t, err)
 	assert.Nil(t, mcpTool)
@@ -242,6 +249,7 @@ func TestConvertProtoToMCPTool_NilTool(t *testing.T) {
 }
 
 func TestConvertProtoToMCPTool_EmptyToolName(t *testing.T) {
+	t.Parallel()
 	pbTool := &configv1.ToolDefinition{
 		Name: proto.String(""),
 	}
@@ -255,6 +263,7 @@ func TestConvertProtoToMCPTool_EmptyToolName(t *testing.T) {
 }
 
 func TestConvertProtoToMCPTool(t *testing.T) {
+	t.Parallel()
 	t.Run("valid tool", func(t *testing.T) {
 		pbTool := &configv1.ToolDefinition{
 			Name:        proto.String("test-tool"),

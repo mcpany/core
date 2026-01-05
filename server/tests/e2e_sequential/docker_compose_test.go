@@ -23,9 +23,9 @@ import (
 )
 
 func TestDockerComposeE2E(t *testing.T) {
-	t.Skip("Skipping E2E test as requested by user to unblock merge")
+	// t.Skip("Skipping E2E test as requested by user to unblock merge")
 	if os.Getenv("E2E_DOCKER") != "true" {
-		t.Skip("Skipping E2E Docker test. Set E2E_DOCKER=true to run.")
+		// t.Skip("Skipping E2E Docker test. Set E2E_DOCKER=true to run.")
 	}
 
 	rootDir, err := os.Getwd()
@@ -42,11 +42,11 @@ func TestDockerComposeE2E(t *testing.T) {
 	rootDir, err = filepath.Abs(rootDir)
 	require.NoError(t, err)
 
-	imageName := "ghcr.io/mcpany/server:latest"
+	imageName := "mcpany/server:latest"
 
-	// 1. Build Docker Image
-	t.Log("Building mcpany/server image...")
-	runCommand(t, rootDir, "docker", "build", "-t", imageName, "-f", "server/docker/Dockerfile.server", ".")
+	// 1. Build Docker Image - SKIPPED (Built via make builds)
+	t.Logf("Using pre-built mcpany/server image: %s", imageName)
+	// runCommand(t, rootDir, "docker", "build", "-t", imageName, "-f", "server/docker/Dockerfile.server", ".")
 
 	// Use a unique project name for isolation
 	projectName := fmt.Sprintf("e2e_seq_%d", time.Now().UnixNano())
@@ -150,7 +150,7 @@ func TestDockerComposeE2E(t *testing.T) {
 	// 5. Start Example Docker Compose
 	t.Log("Switching to example docker-compose...")
 
-	exampleDir := filepath.Join(rootDir, "examples/docker-compose-demo")
+	exampleDir := filepath.Join(rootDir, "server/examples/docker-compose-demo")
 	originalCompose := filepath.Join(exampleDir, "docker-compose.yml")
 	dynamicCompose := createDynamicCompose(t, rootDir, originalCompose)
 	currentComposeFile = dynamicCompose
@@ -184,7 +184,7 @@ func TestDockerComposeE2E(t *testing.T) {
 func testFunctionalWeather(t *testing.T, rootDir string) {
 	// 1. Start mcpany-server with wttr.in config
 	// We run it on a dynamic port to avoid conflict with previous steps or other processes.
-	configPath := fmt.Sprintf("%s/examples/popular_services/wttr.in/config.yaml", rootDir)
+	configPath := fmt.Sprintf("%s/server/examples/popular_services/wttr.in/config.yaml", rootDir)
 	t.Logf("rootDir: %s", rootDir)
 	t.Logf("configPath: %s", configPath)
 	if _, err := os.Stat(configPath); err != nil {
@@ -505,12 +505,14 @@ func createDynamicCompose(t *testing.T, rootDir, originalPath string) string {
 	re2 := regexp.MustCompile(`"50051:50051"`)
 	re3 := regexp.MustCompile(`"8080:8080"`)
 	re4 := regexp.MustCompile(`"9099:9090"`)
+	re5 := regexp.MustCompile(`"6379:6379"`)
 
 	s := string(content)
 	s = re1.ReplaceAllString(s, `"0:50050"`)
 	s = re2.ReplaceAllString(s, `"0:50051"`)
 	s = re3.ReplaceAllString(s, `"0:8080"`)
 	s = re4.ReplaceAllString(s, `"0:9090"`)
+	s = re5.ReplaceAllString(s, `"0:6379"`)
 
 	// Ensure build directory exists
 	buildDir := filepath.Join(rootDir, "build")

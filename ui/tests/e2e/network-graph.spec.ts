@@ -5,7 +5,7 @@
 
 import { test, expect } from '@playwright/test';
 
-test.skip('network topology loads and displays nodes', async ({ page }) => {
+test('network topology loads and displays nodes', async ({ page }) => {
   await page.goto('/network');
 
   // Wait for the graph to load

@@ -268,16 +268,16 @@ func RegisterStdioDockerService(t *testing.T, registrationClient apiv1.Registrat
 	const serviceID = "e2e-cowsay-server"
 	command := "python3"
 	args := []string{"-u", "main.py", "--mcp-stdio"}
-	setupCommands := []string{"pip install -q cowsay"}
+	// setupCommands := []string{"pip install -q cowsay"}
 	integration.RegisterStdioServiceWithSetup(
 		t,
 		registrationClient,
 		serviceID,
 		command,
 		true,
-		"/work/tests/integration/cmd/mocks/python_cowsay_server", // working directory
-		"python:3.11-slim", // No explicit container image
-		setupCommands,
+		"/app", // working directory
+		"mcpany/e2e-cowsay-server:latest",
+		nil, // No setup commands needed (pre-built image)
 		nil,
 		args...,
 	)

@@ -64,6 +64,7 @@ func (m *mockMiddleware) Execute(ctx context.Context, req *ExecutionRequest, nex
 
 func TestManager_ExecuteTool_Coverage(t *testing.T) {
 	t.Parallel()
+
 	b, _ := bus.NewProvider(nil)
 	m := NewManager(b)
 
@@ -91,6 +92,7 @@ func TestManager_ExecuteTool_Coverage(t *testing.T) {
 
 func TestManager_ExecuteTool_Hooks_Coverage(t *testing.T) {
 	t.Parallel()
+
 	b, _ := bus.NewProvider(nil)
 	m := NewManager(b)
 	mt := &mockToolSimple{
@@ -130,6 +132,7 @@ func TestManager_ExecuteTool_Hooks_Coverage(t *testing.T) {
 
 func TestManager_ClearToolsForService_Coverage(t *testing.T) {
 	t.Parallel()
+
 	b, _ := bus.NewProvider(nil)
 	m := NewManager(b)
 
@@ -161,6 +164,7 @@ func (m *mockMCPServerProvider) Server() *mcp.Server {
 
 func TestManager_AddTool_WithMCPServer_Coverage(t *testing.T) {
 	t.Parallel()
+
 	b, _ := bus.NewProvider(nil)
 	m := NewManager(b)
 

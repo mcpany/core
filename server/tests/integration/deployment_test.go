@@ -32,13 +32,13 @@ func getDockerCommand(t *testing.T) []string {
 }
 
 func TestDockerCompose(t *testing.T) {
-	t.Skip("Skipping heavy integration test TestDockerCompose")
-	// t.SkipNow()
+	// t.Skip("Skipping heavy integration test TestDockerCompose")
+	// // t.SkipNow()
 	if !integration.IsDockerSocketAccessible() {
-		t.Skip("Docker socket not accessible, skipping TestDockerCompose.")
+		// t.Skip("Docker socket not accessible, skipping TestDockerCompose.")
 	}
 	if !commandExists("docker") {
-		t.Skip("docker command not found, skipping TestDockerCompose.")
+		// t.Skip("docker command not found, skipping TestDockerCompose.")
 	}
 
 	t.Parallel()
@@ -157,7 +157,7 @@ func TestDockerCompose(t *testing.T) {
 }
 
 func TestHelmChart(t *testing.T) {
-	// t.Skip("Skipping heavy integration test TestHelmChart")
+	// // t.Skip("Skipping heavy integration test TestHelmChart")
 	// Add build/env/bin to PATH to find helm installed by make
 	rootDir := integration.ProjectRoot(t)
 	buildBin := filepath.Join(rootDir, "../build/env/bin")
@@ -166,7 +166,7 @@ func TestHelmChart(t *testing.T) {
 	defer os.Setenv("PATH", oldPath)
 
 	if !commandExists("helm") {
-		t.Skip("helm command not found, skipping TestHelmChart.")
+		// t.Skip("helm command not found, skipping TestHelmChart.")
 	}
 	t.Parallel()
 

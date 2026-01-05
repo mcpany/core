@@ -11,6 +11,7 @@ import (
 )
 
 func TestTransformer(t *testing.T) {
+	t.Parallel()
 	transformer := NewTransformer()
 
 	tests := []struct {

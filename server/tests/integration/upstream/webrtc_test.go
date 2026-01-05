@@ -19,7 +19,7 @@ func TestUpstreamService_Webrtc(t *testing.T) {
 
 	apiKey := os.Getenv("GEMINI_API_KEY")
 	if apiKey == "" {
-		t.Skip("GEMINI_API_KEY is not set")
+		// t.Skip("GEMINI_API_KEY is not set")
 	}
 
 	testCase := &framework.E2ETestCase{

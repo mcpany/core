@@ -15,6 +15,7 @@ import (
 )
 
 func TestLocalCommandTool_ArgumentInjection_Prevention(t *testing.T) {
+	t.Parallel()
 	// This test verifies that argument injection via placeholders is prevented.
 
 	tool := &v1.Tool{
@@ -80,6 +81,7 @@ func TestLocalCommandTool_ArgumentInjection_Prevention(t *testing.T) {
 }
 
 func TestLocalCommandTool_ShellInjection_Prevention(t *testing.T) {
+	t.Parallel()
 	// Test Case 1: Unquoted Placeholder (Vulnerable configuration)
 	t.Run("Unquoted Placeholder", func(t *testing.T) {
 		tool := &v1.Tool{Name: proto.String("test-tool-sh")}

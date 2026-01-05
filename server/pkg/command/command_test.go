@@ -164,7 +164,7 @@ func TestLocalExecutor(t *testing.T) {
 
 func TestDockerExecutor(t *testing.T) {
 	if !canConnectToDocker(t) {
-		t.Skip("Cannot connect to Docker daemon, skipping Docker tests")
+		// t.Skip("Cannot connect to Docker daemon, skipping Docker tests")
 	}
 	t.Run("WithoutVolumeMount", func(t *testing.T) {
 		containerEnv := &configv1.ContainerEnvironment{}
@@ -276,7 +276,7 @@ func TestDockerExecutor(t *testing.T) {
 	})
 
 	t.Run("ContainerIsRemoved", func(t *testing.T) {
-		t.Skip("Skipping flaky test: ContainerIsRemoved")
+		// t.Skip("Skipping flaky test: ContainerIsRemoved")
 		containerEnv := &configv1.ContainerEnvironment{}
 		containerEnv.SetImage("alpine:latest")
 		containerEnv.SetName("test-container-removal")
@@ -287,16 +287,29 @@ func TestDockerExecutor(t *testing.T) {
 		<-exitCodeChan
 
 		// Check if container is removed
+		// Check if container is removed
 		cli, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
 		require.NoError(t, err)
-		_, err = cli.ContainerInspect(context.Background(), "test-container-removal")
-		assert.True(t, dockererrdefs.IsNotFound(err), "Expected container to be removed")
+		defer cli.Close() // Ensure client is closed
+
+		// Retry logic for container removal (deferred cleanup might race with this check)
+		var lastErr error
+		for i := 0; i < 20; i++ {
+			_, err = cli.ContainerInspect(context.Background(), "test-container-removal")
+			if dockererrdefs.IsNotFound(err) {
+				lastErr = err
+				break
+			}
+			lastErr = err
+			time.Sleep(100 * time.Millisecond)
+		}
+		assert.True(t, dockererrdefs.IsNotFound(lastErr), "Expected container to be removed, got: %v", lastErr)
 	})
 }
 
 func TestCombinedOutput(t *testing.T) {
 	if !canConnectToDocker(t) {
-		t.Skip("Cannot connect to Docker daemon, skipping Docker tests")
+		// t.Skip("Cannot connect to Docker daemon, skipping Docker tests")
 	}
 	containerEnv := &configv1.ContainerEnvironment{}
 	containerEnv.SetImage("alpine:latest")
@@ -337,7 +350,7 @@ func TestCombinedOutput(t *testing.T) {
 
 func TestNewDockerExecutorSuccess(t *testing.T) {
 	if !canConnectToDocker(t) {
-		t.Skip("Cannot connect to Docker daemon, skipping Docker tests")
+		// t.Skip("Cannot connect to Docker daemon, skipping Docker tests")
 	}
 	containerEnv := &configv1.ContainerEnvironment{}
 	containerEnv.SetImage("alpine:latest")
@@ -551,9 +564,9 @@ func TestLocalExecutorWithStdIO(t *testing.T) {
 }
 
 func TestDockerExecutorWithStdIO(t *testing.T) {
-	t.Skip("Skipping flaky test: TestDockerExecutorWithStdIO")
+	t.Skip("Skipping flaky test: TestDockerExecutorWithStdIO (hangs on stream read)")
 	if !canConnectToDocker(t) {
-		t.Skip("Cannot connect to Docker daemon, skipping Docker tests")
+		// t.Skip("Cannot connect to Docker daemon, skipping Docker tests")
 	}
 
 	t.Run("Success", func(t *testing.T) {

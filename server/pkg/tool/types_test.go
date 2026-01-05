@@ -37,6 +37,7 @@ func (m *MockMCPClient) CallTool(ctx context.Context, req *mcp.CallToolParams) (
 }
 
 func TestContextWithTool(t *testing.T) {
+	t.Parallel()
 	ctx := context.Background()
 	mockTool := new(MockTool)
 	ctx = NewContextWithTool(ctx, mockTool)
@@ -49,6 +50,7 @@ func TestContextWithTool(t *testing.T) {
 }
 
 func TestGRPCTool_Execute_PoolError(t *testing.T) {
+	t.Parallel()
 	poolManager := pool.NewManager()
 	toolProto := &v1.Tool{}
 	mockMethodDesc := new(MockMethodDescriptor)
@@ -61,6 +63,7 @@ func TestGRPCTool_Execute_PoolError(t *testing.T) {
 }
 
 func TestHTTPTool_Execute_PoolError(t *testing.T) {
+	t.Parallel()
 	poolManager := pool.NewManager()
 	toolProto := &v1.Tool{}
 	httpTool := NewHTTPTool(toolProto, poolManager, "non-existent-service", nil, &configv1.HttpCallDefinition{}, nil, nil, "")
@@ -70,6 +73,7 @@ func TestHTTPTool_Execute_PoolError(t *testing.T) {
 }
 
 func TestHTTPTool_Execute_InvalidFQN(t *testing.T) {
+	t.Parallel()
 	poolManager := pool.NewManager()
 	httpPool, _ := pool.New[*client.HTTPClientWrapper](func(_ context.Context) (*client.HTTPClientWrapper, error) {
 		return &client.HTTPClientWrapper{}, nil
@@ -84,6 +88,7 @@ func TestHTTPTool_Execute_InvalidFQN(t *testing.T) {
 }
 
 func TestHTTPTool_Execute_BadURL(t *testing.T) {
+	t.Parallel()
 	poolManager := pool.NewManager()
 	httpPool, _ := pool.New[*client.HTTPClientWrapper](func(_ context.Context) (*client.HTTPClientWrapper, error) {
 		return &client.HTTPClientWrapper{}, nil
@@ -97,6 +102,7 @@ func TestHTTPTool_Execute_BadURL(t *testing.T) {
 }
 
 func TestHTTPTool_Execute_InputTransformerError(t *testing.T) {
+	t.Parallel()
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		w.WriteHeader(http.StatusOK)
 	}))
@@ -120,6 +126,7 @@ func TestHTTPTool_Execute_InputTransformerError(t *testing.T) {
 }
 
 func TestHTTPTool_Execute_OutputTransformerError(t *testing.T) {
+	t.Parallel()
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		w.WriteHeader(http.StatusOK)
 		_, _ = fmt.Fprint(w, `{"key":"value"}`)
@@ -144,6 +151,7 @@ func TestHTTPTool_Execute_OutputTransformerError(t *testing.T) {
 }
 
 func TestMCPTool_Execute_InputTransformerError(t *testing.T) {
+	t.Parallel()
 	toolProto := &v1.Tool{}
 	callDef := &configv1.MCPCallDefinition{}
 	inputTransformer := &configv1.InputTransformer{}
@@ -155,6 +163,7 @@ func TestMCPTool_Execute_InputTransformerError(t *testing.T) {
 }
 
 func TestMCPTool_Execute_OutputTransformerError(t *testing.T) {
+	t.Parallel()
 	mockClient := new(MockMCPClient)
 	mockResult := &mcp.CallToolResult{
 		Content: []mcp.Content{&mcp.TextContent{Text: `{"key":"value"}`}},
@@ -173,6 +182,7 @@ func TestMCPTool_Execute_OutputTransformerError(t *testing.T) {
 }
 
 func TestOpenAPITool_Execute_InputTransformerError(t *testing.T) {
+	t.Parallel()
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		w.WriteHeader(http.StatusOK)
 	}))
@@ -189,6 +199,7 @@ func TestOpenAPITool_Execute_InputTransformerError(t *testing.T) {
 }
 
 func TestOpenAPITool_Execute_OutputTransformerError(t *testing.T) {
+	t.Parallel()
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		w.WriteHeader(http.StatusOK)
 		_, _ = fmt.Fprint(w, `{"key":"value"}`)
@@ -261,6 +272,7 @@ func (m *MockFieldNumbers) Has(_ protoreflect.FieldNumber) bool {
 }
 
 func TestGRPCTool_Execute_Success(t *testing.T) {
+	t.Parallel()
 	poolManager := pool.NewManager()
 
 	mockConn := new(MockConn)
@@ -313,6 +325,7 @@ func (m *MockConn) GetState() connectivity.State {
 }
 
 func TestHTTPTool_Getters(t *testing.T) {
+	t.Parallel()
 	toolProto := &v1.Tool{}
 	toolProto.SetName("http-tool")
 	cacheConfig := &configv1.CacheConfig{}
@@ -326,6 +339,7 @@ func TestHTTPTool_Getters(t *testing.T) {
 }
 
 func TestMCPTool_Getters(t *testing.T) {
+	t.Parallel()
 	toolProto := &v1.Tool{}
 	toolProto.SetName("mcp-tool")
 	cacheConfig := &configv1.CacheConfig{}
@@ -339,6 +353,7 @@ func TestMCPTool_Getters(t *testing.T) {
 }
 
 func TestOpenAPITool_Getters(t *testing.T) {
+	t.Parallel()
 	toolProto := &v1.Tool{}
 	toolProto.SetName("openapi-tool")
 	cacheConfig := &configv1.CacheConfig{}
@@ -352,6 +367,7 @@ func TestOpenAPITool_Getters(t *testing.T) {
 }
 
 func TestGRPCTool_Getters(t *testing.T) {
+	t.Parallel()
 	toolProto := &v1.Tool{}
 	toolProto.SetName("grpc-tool")
 	cacheConfig := &configv1.CacheConfig{}
@@ -367,6 +383,7 @@ func TestGRPCTool_Getters(t *testing.T) {
 }
 
 func TestWebsocketTool_Getters(t *testing.T) {
+	t.Parallel()
 	toolProto := &v1.Tool{}
 	toolProto.SetName("websocket-tool")
 	cacheConfig := &configv1.CacheConfig{}
@@ -380,11 +397,13 @@ func TestWebsocketTool_Getters(t *testing.T) {
 }
 
 func TestOpenAPITool_GetCacheConfig(t *testing.T) {
+	t.Parallel()
 	tool := &OpenAPITool{}
 	assert.Nil(t, tool.GetCacheConfig(), "GetCacheConfig should return nil")
 }
 
 func TestOpenAPITool_Tool(t *testing.T) {
+	t.Parallel()
 	toolProto := &v1.Tool{}
 	toolProto.SetName("test-tool")
 	tool := &OpenAPITool{tool: toolProto}
@@ -392,6 +411,7 @@ func TestOpenAPITool_Tool(t *testing.T) {
 }
 
 func TestGRPCTool_Execute_UnmarshalError(t *testing.T) {
+	t.Parallel()
 	poolManager := pool.NewManager()
 	mockConn := new(MockConn)
 	mockConn.On("GetState").Return(connectivity.Ready)
@@ -417,6 +437,7 @@ func TestGRPCTool_Execute_UnmarshalError(t *testing.T) {
 }
 
 func TestGRPCTool_Execute_InvokeError(t *testing.T) {
+	t.Parallel()
 	poolManager := pool.NewManager()
 	mockConn := new(MockConn)
 	mockConn.On("GetState").Return(connectivity.Ready)
@@ -443,6 +464,7 @@ func TestGRPCTool_Execute_InvokeError(t *testing.T) {
 }
 
 func TestOpenAPITool_Execute_Errors(t *testing.T) {
+	t.Parallel()
 	// Test Input Validation/Unmarshal Error if possible?
 	// Schema validation might be strict?
 
@@ -482,6 +504,7 @@ func TestOpenAPITool_Execute_Errors(t *testing.T) {
 }
 
 func TestOpenAPITool_Execute_StatusError(t *testing.T) {
+	t.Parallel()
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		w.WriteHeader(http.StatusNotFound)
 		_, _ = fmt.Fprint(w, `Not Found`)
@@ -499,6 +522,7 @@ func TestOpenAPITool_Execute_StatusError(t *testing.T) {
 }
 
 func TestHTTPTool_Execute_UnmarshalError(t *testing.T) {
+	t.Parallel()
 	poolManager := pool.NewManager()
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		w.WriteHeader(http.StatusOK)
@@ -523,6 +547,7 @@ func TestHTTPTool_Execute_UnmarshalError(t *testing.T) {
 // SPDX-License-Identifier: Apache-2.0
 
 func TestCheckForPathTraversal(t *testing.T) {
+	t.Parallel()
 	tests := []struct {
 		input    string
 		hasError bool
@@ -560,6 +585,7 @@ func TestCheckForPathTraversal(t *testing.T) {
 }
 
 func TestManager_ListServices(t *testing.T) {
+	t.Parallel()
 	tm := NewManager(nil)
 
 	// Add Service Info
@@ -582,6 +608,7 @@ func TestManager_ListServices(t *testing.T) {
 }
 
 func TestCommandTool_Execute_PathTraversal_Args(t *testing.T) {
+	t.Parallel()
 	// Setup command tool with args injection vulnerability
 	toolProto := &v1.Tool{
 		Name: proto.String("cmd-tool"),
@@ -607,6 +634,7 @@ func TestCommandTool_Execute_PathTraversal_Args(t *testing.T) {
 }
 
 func TestCommandTool_Execute_PathTraversal_Env(t *testing.T) {
+	t.Parallel()
 	// Setup command tool with env injection vulnerability
 	inputSchema, _ := structpb.NewStruct(map[string]interface{}{
 		"properties": map[string]interface{}{

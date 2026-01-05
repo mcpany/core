@@ -32,6 +32,7 @@ func (m *mockMCPClient) CallTool(ctx context.Context, params *mcp.CallToolParams
 }
 
 func TestMCPTool_Execute(t *testing.T) {
+	t.Parallel()
 	t.Run("successful execution", func(t *testing.T) {
 		mockClient := &mockMCPClient{
 			callToolFunc: func(_ context.Context, params *mcp.CallToolParams) (*mcp.CallToolResult, error) {
