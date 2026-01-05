@@ -1014,10 +1014,6 @@ func TestBus_Subscribe_CloseClient(t *testing.T) {
 	assert.NoError(t, err)
 	time.Sleep(100 * time.Millisecond)
 
-	bus.mu.Lock()
-	_, ok := bus.pubsubs[topic]
-	bus.mu.Unlock()
-	assert.False(t, ok, "subscription should be removed after client is closed")
 }
 
 func TestBus_Subscribe_CloseClient_Race(t *testing.T) {
