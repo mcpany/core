@@ -11,13 +11,13 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	configv1 "github.com/mcpany/core/proto/config/v1"
+	v1 "github.com/mcpany/core/proto/mcp_router/v1"
 	"github.com/mcpany/core/server/pkg/auth"
 	"github.com/mcpany/core/server/pkg/client"
 	"github.com/mcpany/core/server/pkg/logging"
 	"github.com/mcpany/core/server/pkg/pool"
 	"github.com/mcpany/core/server/pkg/tool"
-	configv1 "github.com/mcpany/core/proto/config/v1"
-	v1 "github.com/mcpany/core/proto/mcp_router/v1"
 	"github.com/samber/lo"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -35,13 +35,14 @@ func (a *sensitiveAuthenticator) Authenticate(r *http.Request) error {
 var _ auth.UpstreamAuthenticator = &sensitiveAuthenticator{}
 
 func TestHTTPTool_Execute_LogsSensitiveHeaders(t *testing.T) {
-	t.Parallel()
+	// t.Parallel() removed to avoid race on global logger
 	// Reset logger to ensure we can set it to DEBUG
 	logging.ForTestsOnlyResetLogger()
 
 	// Create a buffer to capture logs
 	var logBuf bytes.Buffer
 	logging.Init(slog.LevelDebug, &logBuf)
+	defer logging.ForTestsOnlyResetLogger()
 
 	handler := http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		w.WriteHeader(http.StatusOK)
