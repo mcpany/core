@@ -91,6 +91,9 @@ func (u *Updater) UpdateTo(ctx context.Context, fs afero.Fs, executablePath stri
 		return fmt.Errorf("failed to download checksums: %w", err)
 	}
 	defer func(r *http.Response) { _ = r.Body.Close() }(resp)
+	if resp.StatusCode >= 400 {
+		return fmt.Errorf("failed to download checksums: status code %d", resp.StatusCode)
+	}
 	checksumsData, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return fmt.Errorf("failed to read checksums data: %w", err)
@@ -114,6 +117,9 @@ func (u *Updater) UpdateTo(ctx context.Context, fs afero.Fs, executablePath stri
 		return fmt.Errorf("failed to download asset: %w", err)
 	}
 	defer func(r *http.Response) { _ = r.Body.Close() }(resp)
+	if resp.StatusCode >= 400 {
+		return fmt.Errorf("failed to download asset: status code %d", resp.StatusCode)
+	}
 
 	// Create a temporary file to save the downloaded asset
 	tmpFile, err := afero.TempFile(fs, "", "mcpany-update-")
