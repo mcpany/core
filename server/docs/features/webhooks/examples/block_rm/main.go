@@ -9,6 +9,7 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"os"
 	"strings"
 
 	"github.com/google/uuid"
@@ -36,8 +37,13 @@ type Status struct {
 
 func main() {
 	http.HandleFunc("/validate", validateHandler)
-	log.Println("Starting webhook server on :8081")
-	if err := http.ListenAndServe(":8081", nil); err != nil {
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8081"
+	}
+	addr := ":" + port
+	log.Printf("Starting webhook server on %s", addr)
+	if err := http.ListenAndServe(addr, nil); err != nil {
 		log.Fatal(err)
 	}
 }

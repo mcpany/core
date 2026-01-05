@@ -6,6 +6,8 @@ package main
 import (
 	"context"
 	"encoding/json"
+	"fmt"
+	"net"
 	"net/http"
 	"os"
 	"os/exec"
@@ -36,7 +38,14 @@ func TestBlockRmE2E_Binary(t *testing.T) {
 	require.NoError(t, buildCmd.Run(), "Failed to build webhook server")
 
 	// 2. Start Webhook Server
+	// Find a free port
+	l, err := net.Listen("tcp", "localhost:0")
+	require.NoError(t, err)
+	port := l.Addr().(*net.TCPAddr).Port
+	_ = l.Close()
+
 	cmd := exec.Command(binaryPath)
+	cmd.Env = append(os.Environ(), fmt.Sprintf("PORT=%d", port))
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	require.NoError(t, cmd.Start(), "Failed to start webhook server")
@@ -46,7 +55,7 @@ func TestBlockRmE2E_Binary(t *testing.T) {
 		}
 	}()
 
-	url := "http://localhost:8081/validate"
+	url := fmt.Sprintf("http://localhost:%d/validate", port)
 	waitForServer(t, url)
 
 	// 3. Setup Tool Manager and Upstream
