@@ -1328,6 +1328,9 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 		return nil, fmt.Errorf("tool execution blocked by policy")
 	}
 	var inputs map[string]any
+	if len(bytes.TrimSpace(req.ToolInputs)) == 0 {
+		req.ToolInputs = []byte("{}")
+	}
 	decoder := json.NewDecoder(bytes.NewReader(req.ToolInputs))
 	decoder.UseNumber()
 	if err := decoder.Decode(&inputs); err != nil {
@@ -1592,6 +1595,10 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 		return nil, fmt.Errorf("tool execution blocked by policy")
 	}
 	var inputs map[string]any
+	// Handle empty inputs by treating them as empty JSON object
+	if len(bytes.TrimSpace(req.ToolInputs)) == 0 {
+		req.ToolInputs = []byte("{}")
+	}
 	decoder := json.NewDecoder(bytes.NewReader(req.ToolInputs))
 	decoder.UseNumber()
 	if err := decoder.Decode(&inputs); err != nil {
@@ -1754,6 +1761,9 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 		}()
 
 		var unmarshaledInputs map[string]interface{}
+		if len(req.ToolInputs) == 0 {
+			req.ToolInputs = []byte("{}")
+		}
 		decoder := json.NewDecoder(bytes.NewReader(req.ToolInputs))
 		decoder.UseNumber()
 		if err := decoder.Decode(&unmarshaledInputs); err != nil {

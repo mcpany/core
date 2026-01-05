@@ -1177,6 +1177,7 @@ func (a *Application) runServerMode(
 	corsMiddleware := middleware.NewHTTPCORSMiddleware(allowedOrigins)
 
 	// Middleware order: SecurityHeaders -> CORS -> JSONRPCCompliance -> IPAllowList -> RateLimit -> Mux
+	// We wrap everything with a debug logger to see what's coming in
 	handler := middleware.HTTPSecurityHeadersMiddleware(
 		corsMiddleware.Handler(
 			middleware.JSONRPCComplianceMiddleware(

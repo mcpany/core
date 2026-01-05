@@ -84,10 +84,19 @@ export const apiClient = {
          return res.json();
     },
     setServiceStatus: async (name: string, disable: boolean) => {
-        const res = await fetch('/api/v1/services', {
-            method: 'POST',
+        // First get the service config to get the full object (including ID/Address/etc)
+        const getRes = await fetch(`/api/v1/services/${name}`);
+        if (!getRes.ok) throw new Error('Failed to fetch service for status update');
+        const service = await getRes.json();
+
+        // Update disable status
+        service.disable = disable;
+
+        // Save back
+        const res = await fetch(`/api/v1/services/${name}`, {
+            method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ action: 'toggle', name, disable })
+            body: JSON.stringify(service)
         });
         if (!res.ok) throw new Error('Failed to update service status');
         return res.json();
@@ -135,13 +144,20 @@ export const apiClient = {
         return res.json();
     },
     executeTool: async (request: any) => {
-        const res = await fetch('/api/v1/execute', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(request)
-        });
-        if (!res.ok) throw new Error('Failed to execute tool');
-        return res.json();
+        console.error("DEBUG: Calling executeTool with:", JSON.stringify(request));
+        try {
+            const res = await fetch('/api/v1/execute', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(request)
+            });
+            console.error("DEBUG: fetch returned status:", res.status);
+            if (!res.ok) throw new Error('Failed to execute tool');
+            return res.json();
+        } catch (e) {
+            console.error("DEBUG: fetch failed:", e);
+            throw e;
+        }
     },
     setToolStatus: async (name: string, enabled: boolean) => {
         // Not implemented in backend yet? handleTools only GET

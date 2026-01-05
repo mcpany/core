@@ -19,7 +19,7 @@ This example demonstrates how to upload a file to the MCP Any server.
 2.  **Upload a file:**
 
     ```bash
-    curl -X POST -F "file=@dummy.txt" http://localhost:8081/upload
+    curl -X POST -F "file=@dummy.txt" http://localhost:8082/upload
     ```
 
 3.  **Shut down the services:**
