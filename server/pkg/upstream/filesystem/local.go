@@ -34,10 +34,21 @@ func (u *Upstream) validateLocalPath(virtualPath string, rootPaths map[string]st
 			checkPath = "/" + checkPath
 		}
 
+		// Check for prefix match
+		// The path must either match exactly OR start with "root/"
+		// matching "/datafoo" against "/data" is incorrect
 		if strings.HasPrefix(checkPath, cleanVRoot) {
-			if len(cleanVRoot) > len(bestMatchVirtual) {
-				bestMatchVirtual = cleanVRoot
-				bestMatchReal = rRoot
+			// Check if it's an exact match or a subdirectory
+			// Special handling for root path "/" which is a prefix of everything
+			isExactMatch := len(checkPath) == len(cleanVRoot)
+			isSubDir := len(checkPath) > len(cleanVRoot) && checkPath[len(cleanVRoot)] == '/'
+			isRoot := cleanVRoot == "/"
+
+			if isExactMatch || isSubDir || isRoot {
+				if len(cleanVRoot) > len(bestMatchVirtual) {
+					bestMatchVirtual = cleanVRoot
+					bestMatchReal = rRoot
+				}
 			}
 		}
 	}
