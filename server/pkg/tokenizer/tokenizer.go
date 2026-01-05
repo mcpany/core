@@ -99,6 +99,10 @@ func (t *WordTokenizer) CountTokens(text string) (int, error) {
 
 // CountTokensInValue recursively counts tokens in arbitrary structures.
 func CountTokensInValue(t Tokenizer, v interface{}) (int, error) {
+	if st, ok := t.(*SimpleTokenizer); ok {
+		return countTokensInValueSimple(st, v)
+	}
+
 	switch val := v.(type) {
 	case string:
 		return t.CountTokens(val)
@@ -147,4 +151,101 @@ func CountTokensInValue(t Tokenizer, v interface{}) (int, error) {
 		// Convert to string representation
 		return t.CountTokens(fmt.Sprintf("%v", val))
 	}
+}
+
+func countTokensInValueSimple(t *SimpleTokenizer, v interface{}) (int, error) {
+	switch val := v.(type) {
+	case string:
+		return t.CountTokens(val)
+	case int:
+		return simpleTokenizeInt(val), nil
+	case int64:
+		return simpleTokenizeInt64(val), nil
+	case bool:
+		return 1, nil // "true" (4 chars) or "false" (5 chars) / 4 >= 1. Both result in 1 token.
+	case nil:
+		return 1, nil // "null" (4 chars) / 4 = 1
+	case []interface{}:
+		count := 0
+		for _, item := range val {
+			c, err := countTokensInValueSimple(t, item)
+			if err != nil {
+				return 0, err
+			}
+			count += c
+		}
+		return count, nil
+	case map[string]interface{}:
+		count := 0
+		for key, item := range val {
+			// Count the key
+			kc, err := t.CountTokens(key)
+			if err != nil {
+				return 0, err
+			}
+			count += kc
+
+			// Count the value
+			vc, err := countTokensInValueSimple(t, item)
+			if err != nil {
+				return 0, err
+			}
+			count += vc
+		}
+		return count, nil
+	case float64:
+		return t.CountTokens(strconv.FormatFloat(val, 'g', -1, 64))
+	default:
+		// Convert to string representation
+		return t.CountTokens(fmt.Sprintf("%v", val))
+	}
+}
+
+func simpleTokenizeInt(n int) int {
+	l := 0
+	if n == 0 {
+		l = 1
+	} else {
+		if n < 0 {
+			l = 1 // count the sign
+			// Handle MinInt special case where -n overflows
+			// For int64 (usually int is int64), MinInt is -9223372036854775808
+			// which has 19 digits.
+			// We can just divide by 10 once to make it safe to negate,
+			// or process negative numbers.
+		}
+
+		for n != 0 {
+			l++
+			n /= 10
+		}
+	}
+
+	count := l / 4
+	if count < 1 {
+		return 1
+	}
+	return count
+}
+
+func simpleTokenizeInt64(n int64) int {
+	l := 0
+	if n == 0 {
+		l = 1
+	} else {
+		if n < 0 {
+			l = 1 // count the sign
+		}
+
+		for n != 0 {
+			l++
+			n /= 10
+		}
+	}
+
+	count := l / 4
+	if count < 1 {
+		return 1
+	}
+	return count
 }

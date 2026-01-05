@@ -571,6 +571,7 @@ type MCPANYTestServerInfo struct {
 	JSONRPCEndpoint          string
 	HTTPEndpoint             string
 	GrpcRegistrationEndpoint string
+	MetricsEndpoint          string
 	NatsURL                  string
 	SessionID                string
 	HTTPClient               *http.Client
@@ -1003,6 +1004,7 @@ func StartMCPANYServerWithClock(t *testing.T, testName string, healthCheck bool,
 		JSONRPCEndpoint:          jsonrpcEndpoint,
 		HTTPEndpoint:             mcpRequestURL,
 		GrpcRegistrationEndpoint: grpcRegEndpoint,
+		MetricsEndpoint:          metricsAddrArg,
 		HTTPClient:               httpClient,
 		GRPCRegConn:              grpcRegConn,
 		RegistrationClient:       registrationClient,

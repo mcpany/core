@@ -1,23 +1,23 @@
-// Copyright 2025 Author(s) of MCP Any
-// SPDX-License-Identifier: Apache-2.0
-
-package filesystem
+package provider
 
 import (
 	"fmt"
 	"path"
 	"strings"
 
-	"github.com/aws/aws-sdk-go/aws" //nolint:staticcheck // deprecated but needed for afero-s3
-	"github.com/aws/aws-sdk-go/aws/credentials" //nolint:staticcheck // deprecated but needed for afero-s3
-	"github.com/aws/aws-sdk-go/aws/session" //nolint:staticcheck // deprecated but needed for afero-s3
+	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/credentials"
+	"github.com/aws/aws-sdk-go/aws/session"
 	s3 "github.com/fclairamb/afero-s3"
-	"github.com/spf13/afero"
 	configv1 "github.com/mcpany/core/proto/config/v1"
+	"github.com/spf13/afero"
 )
 
-// createS3Filesystem creates an afero.Fs backed by S3.
-func (u *Upstream) createS3Filesystem(config *configv1.S3Fs) (afero.Fs, error) {
+type S3Provider struct {
+	fs afero.Fs
+}
+
+func NewS3Provider(config *configv1.S3Fs) (*S3Provider, error) {
 	awsConfig := aws.NewConfig()
 
 	if config.GetRegion() != "" {
@@ -45,11 +45,16 @@ func (u *Upstream) createS3Filesystem(config *configv1.S3Fs) (afero.Fs, error) {
 
 	// Create S3 filesystem
 	// Note: afero-s3 uses the bucket name as the root
-	return s3.NewFs(config.GetBucket(), sess), nil
+	fs := s3.NewFs(config.GetBucket(), sess)
+
+	return &S3Provider{fs: fs}, nil
 }
 
-// resolveS3Path resolves a virtual path for S3.
-func (u *Upstream) resolveS3Path(virtualPath string) (string, error) {
+func (p *S3Provider) GetFs() afero.Fs {
+	return p.fs
+}
+
+func (p *S3Provider) ResolvePath(virtualPath string) (string, error) {
 	// For S3, just clean the path. It's virtual relative to the bucket.
 	// Join with "/" to ensure we resolve relative paths against a root, preventing ".." traversal
 	// effectively sandboxing to the bucket root.
@@ -63,4 +68,10 @@ func (u *Upstream) resolveS3Path(virtualPath string) (string, error) {
 		return "", fmt.Errorf("invalid path")
 	}
 	return cleanPath, nil
+}
+
+func (p *S3Provider) Close() error {
+	// S3 provider doesn't hold open connections that need explicit closing typically,
+	// but satisfy the interface.
+	return nil
 }

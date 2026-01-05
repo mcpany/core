@@ -48,7 +48,8 @@ test-ci:
 # Local test target (runs natively)
 test-local:
 	@echo "Running UI tests locally..."
-	npm install && npx playwright test $(PLAYWRIGHT_ARGS)
+	npm install
+	BACKEND_URL=http://localhost:50050 NEXT_PUBLIC_API_URL=http://localhost:50050 npx playwright test $(PLAYWRIGHT_ARGS)
 
 # Build the UI test Docker image
 build-test-docker:

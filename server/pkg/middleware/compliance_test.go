@@ -114,6 +114,34 @@ func TestJSONRPCComplianceMiddleware(t *testing.T) {
 			expectedStatus: http.StatusBadRequest,
 			expectedBody:   `{"jsonrpc":"2.0","error":{"code":-32000,"message":"Custom error"},"id":1}`,
 		},
+		{
+			name:   "Rewrite Parse error",
+			method: http.MethodPost,
+			handler: func(w http.ResponseWriter, r *http.Request) {
+				http.Error(w, "Invalid character 'x' looking for beginning of value", http.StatusBadRequest)
+			},
+			expectedStatus: http.StatusBadRequest,
+			validateJSON: func(t *testing.T, resp *JSONRPCResponse) {
+				assert.Equal(t, "2.0", resp.JSONRPC)
+				require.NotNil(t, resp.Error)
+				assert.Equal(t, -32700, resp.Error.Code)
+				assert.Equal(t, "Parse error", resp.Error.Message)
+			},
+		},
+		{
+			name:   "Rewrite Invalid params",
+			method: http.MethodPost,
+			handler: func(w http.ResponseWriter, r *http.Request) {
+				http.Error(w, "Invalid params: missing argument", http.StatusBadRequest)
+			},
+			expectedStatus: http.StatusBadRequest,
+			validateJSON: func(t *testing.T, resp *JSONRPCResponse) {
+				assert.Equal(t, "2.0", resp.JSONRPC)
+				require.NotNil(t, resp.Error)
+				assert.Equal(t, -32602, resp.Error.Code)
+				assert.Equal(t, "Invalid params", resp.Error.Message)
+			},
+		},
 	}
 
 	for _, tc := range tests {
