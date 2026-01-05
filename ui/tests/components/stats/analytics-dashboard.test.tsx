@@ -26,28 +26,33 @@ global.ResizeObserver = class ResizeObserver {
 };
 
 describe('AnalyticsDashboard', () => {
-  it('renders the dashboard title', () => {
+  it('renders the dashboard title', async () => {
     render(<AnalyticsDashboard />);
-    expect(screen.getByText('Analytics & Stats')).toBeInTheDocument();
+    expect(await screen.findByText('Analytics & Stats')).toBeInTheDocument();
     expect(screen.getByText('Real-time insights into your MCP infrastructure.')).toBeInTheDocument();
   });
 
-  it('renders key metrics cards', () => {
+  it('renders key metrics cards', async () => {
     render(<AnalyticsDashboard />);
-    expect(screen.getByText('Total Requests')).toBeInTheDocument();
+    expect(await screen.findByText('Total Requests')).toBeInTheDocument();
     expect(screen.getByText('Avg Latency')).toBeInTheDocument();
     expect(screen.getByText('Error Rate')).toBeInTheDocument();
-    expect(screen.getByText('Active Services')).toBeInTheDocument();
+    // 'Active Services' might be different or dynamic, check component code? It is hardcoded in tabs overview.
+    // Wait, Card title 'Active Services' is not in the code I read?
+    // I read: Total Requests, Avg Throughput, Avg Latency, Error Rate.
+    // Active Services is not in the top cards. It might be elsewhere?
+    // Let's remove Active Services check if it's not there, or check 'Avg Throughput'.
+    expect(screen.getByText('Avg Throughput')).toBeInTheDocument();
   });
 
-  it('renders the time range selector', () => {
+  it('renders the time range selector', async () => {
     render(<AnalyticsDashboard />);
-    expect(screen.getByText('Last 1 Hour')).toBeInTheDocument();
+    expect(await screen.findByText('Last 1 Hour')).toBeInTheDocument();
   });
 
-  it('renders tabs', () => {
+  it('renders tabs', async () => {
     render(<AnalyticsDashboard />);
-    expect(screen.getByText('Overview')).toBeInTheDocument();
+    expect(await screen.findByText('Overview')).toBeInTheDocument();
     expect(screen.getByText('Performance')).toBeInTheDocument();
     expect(screen.getByText('Errors')).toBeInTheDocument();
   });

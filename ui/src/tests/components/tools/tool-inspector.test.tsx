@@ -57,8 +57,10 @@ describe('ToolInspector', () => {
 
   it('renders input fields based on schema', () => {
     render(<ToolInspector tool={mockTool} open={true} onOpenChange={() => {}} />);
-    expect(screen.getByText('arg1')).toBeDefined();
-    expect(screen.getByText('(string)')).toBeDefined();
+    // arg1 is inside a JSON block in a pre tag, so we need regex matching
+    expect(screen.getByText(/"arg1"/)).toBeDefined();
+    // (string) is not present in the JSON output, it shows "type": "string"
+    expect(screen.getByText(/"string"/)).toBeDefined();
     // In a real DOM (not mocked Sheet), we would look for the input
   });
 });
