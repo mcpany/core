@@ -75,7 +75,54 @@ func (r *MCPServerReconciler) Reconcile(ctx context.Context, req ctrl.Request) (
 		return ctrl.Result{Requeue: true}, nil
 	}
 
-	// 3. Update the MCPServer status with the pod names
+	// 3. Check if the Service already exists, if not create a new one
+	foundService := &corev1.Service{}
+	err = r.Get(ctx, types.NamespacedName{Name: mcpServer.Name, Namespace: mcpServer.Namespace}, foundService)
+	if err != nil && errors.IsNotFound(err) {
+		// Define a new service
+		svc := r.serviceForMCPServer(mcpServer)
+		err = r.Create(ctx, svc)
+		if err != nil {
+			return ctrl.Result{}, err
+		}
+		// Service created successfully - return and requeue
+		return ctrl.Result{Requeue: true}, nil
+	} else if err != nil {
+		return ctrl.Result{}, err
+	}
+
+	// 3.5. Update Service if needed (reconciliation)
+	serviceType := corev1.ServiceTypeClusterIP
+	if mcpServer.Spec.ServiceType != "" {
+		serviceType = corev1.ServiceType(mcpServer.Spec.ServiceType)
+	}
+
+	port := int32(8080)
+	if mcpServer.Spec.ServicePort != nil {
+		port = *mcpServer.Spec.ServicePort
+	}
+
+	needsUpdate := false
+	if foundService.Spec.Type != serviceType {
+		foundService.Spec.Type = serviceType
+		needsUpdate = true
+	}
+
+	if len(foundService.Spec.Ports) > 0 && foundService.Spec.Ports[0].Port != port {
+		foundService.Spec.Ports[0].Port = port
+		needsUpdate = true
+	}
+
+	if needsUpdate {
+		err = r.Update(ctx, foundService)
+		if err != nil {
+			return ctrl.Result{}, err
+		}
+		// Service updated - return and requeue
+		return ctrl.Result{Requeue: true}, nil
+	}
+
+	// 4. Update the MCPServer status with the pod names
 	// List the pods for this mcpServer's deployment
 	// podList := &corev1.PodList{}
 	// listOpts := []client.ListOption{
@@ -149,6 +196,38 @@ func (r *MCPServerReconciler) deploymentForMCPServer(m *mcpv1alpha1.MCPServer) *
 	// Set MCPServer instance as the owner and controller
 	ctrl.SetControllerReference(m, dep, r.Scheme)
 	return dep
+}
+
+// serviceForMCPServer returns a mcpServer Service object
+func (r *MCPServerReconciler) serviceForMCPServer(m *mcpv1alpha1.MCPServer) *corev1.Service {
+	ls := labelsForMCPServer(m.Name)
+	serviceType := corev1.ServiceTypeClusterIP
+	if m.Spec.ServiceType != "" {
+		serviceType = corev1.ServiceType(m.Spec.ServiceType)
+	}
+
+	port := int32(8080)
+	if m.Spec.ServicePort != nil {
+		port = *m.Spec.ServicePort
+	}
+
+	svc := &corev1.Service{
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      m.Name,
+			Namespace: m.Namespace,
+		},
+		Spec: corev1.ServiceSpec{
+			Selector: ls,
+			Ports: []corev1.ServicePort{{
+				Port: port,
+				Name: "http",
+			}},
+			Type: serviceType,
+		},
+	}
+	// Set MCPServer instance as the owner and controller
+	ctrl.SetControllerReference(m, svc, r.Scheme)
+	return svc
 }
 
 // labelsForMCPServer returns the labels for selecting the resources

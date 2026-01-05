@@ -9,6 +9,7 @@ import (
 
 	mcpv1alpha1 "github.com/mcpany/core/operator/api/v1alpha1"
 	appsv1 "k8s.io/api/apps/v1"
+	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/types"
 	"k8s.io/client-go/kubernetes/scheme"
@@ -65,6 +66,15 @@ func TestMCPServerReconciler_Reconcile(t *testing.T) {
 		t.Error("reconcile did not requeue request as expected (Deployment creation)")
 	}
 
+	// Run Reconcile again to trigger Service creation (since the first run requeues after Deployment creation)
+	res, err = r.Reconcile(context.Background(), req)
+	if err != nil {
+		t.Fatalf("reconcile 2: (%v)", err)
+	}
+	if !res.Requeue {
+		t.Error("reconcile 2 did not requeue request as expected (Service creation)")
+	}
+
 	// Check if Deployment was created
 	found := &appsv1.Deployment{}
 	err = cl.Get(context.Background(), types.NamespacedName{Name: "test-mcp-server", Namespace: "default"}, found)
@@ -116,5 +126,85 @@ func TestMCPServerReconciler_Reconcile(t *testing.T) {
 	}
 	if !foundVolume {
 		t.Error("expected config-volume from ConfigMap my-config-map")
+	}
+
+	// Check if Service was created
+	foundService := &corev1.Service{}
+	err = cl.Get(context.Background(), types.NamespacedName{Name: "test-mcp-server", Namespace: "default"}, foundService)
+	if err != nil {
+		t.Fatalf("get service: (%v)", err)
+	}
+
+	// Verify Service Spec
+	if foundService.Spec.Type != corev1.ServiceTypeClusterIP {
+		t.Errorf("expected service type ClusterIP, got %s", foundService.Spec.Type)
+	}
+
+	if len(foundService.Spec.Ports) != 1 {
+		t.Errorf("expected 1 port, got %d", len(foundService.Spec.Ports))
+	}
+
+	if foundService.Spec.Ports[0].Port != 8080 {
+		t.Errorf("expected port 8080, got %d", foundService.Spec.Ports[0].Port)
+	}
+
+	if foundService.Spec.Selector["app"] != "mcp-server" {
+		t.Errorf("expected selector app=mcp-server, got %s", foundService.Spec.Selector["app"])
+	}
+
+	// Update MCPServer Spec to NodePort
+	mcpServer.Spec.ServiceType = "NodePort"
+	err = cl.Update(context.Background(), mcpServer)
+	if err != nil {
+		t.Fatalf("update mcpServer: (%v)", err)
+	}
+
+	// Reconcile again to trigger Service update
+	res, err = r.Reconcile(context.Background(), req)
+	if err != nil {
+		t.Fatalf("reconcile 3: (%v)", err)
+	}
+	if !res.Requeue {
+		t.Error("reconcile 3 did not requeue request as expected (Service update)")
+	}
+
+	// Verify Service is now NodePort
+	err = cl.Get(context.Background(), types.NamespacedName{Name: "test-mcp-server", Namespace: "default"}, foundService)
+	if err != nil {
+		t.Fatalf("get service: (%v)", err)
+	}
+	if foundService.Spec.Type != corev1.ServiceTypeNodePort {
+		t.Errorf("expected service type NodePort, got %s", foundService.Spec.Type)
+	}
+
+	// Update MCPServer Spec to Custom Port using Update
+	// Note: We need to fetch the latest version of mcpServer before updating to avoid conflict
+	err = cl.Get(context.Background(), types.NamespacedName{Name: "test-mcp-server", Namespace: "default"}, mcpServer)
+	if err != nil {
+		t.Fatalf("get mcpServer: (%v)", err)
+	}
+	newPort := int32(9090)
+	mcpServer.Spec.ServicePort = &newPort
+	err = cl.Update(context.Background(), mcpServer)
+	if err != nil {
+		t.Fatalf("update mcpServer port: (%v)", err)
+	}
+
+	// Reconcile again to trigger Service update
+	res, err = r.Reconcile(context.Background(), req)
+	if err != nil {
+		t.Fatalf("reconcile 4: (%v)", err)
+	}
+	if !res.Requeue {
+		t.Error("reconcile 4 did not requeue request as expected (Service port update)")
+	}
+
+	// Verify Service Port is now 9090
+	err = cl.Get(context.Background(), types.NamespacedName{Name: "test-mcp-server", Namespace: "default"}, foundService)
+	if err != nil {
+		t.Fatalf("get service: (%v)", err)
+	}
+	if foundService.Spec.Ports[0].Port != 9090 {
+		t.Errorf("expected service port 9090, got %d", foundService.Spec.Ports[0].Port)
 	}
 }
