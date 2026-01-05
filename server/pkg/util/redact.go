@@ -48,7 +48,7 @@ func init() {
 	}
 
 	// Build sensitiveStartCharsAny for fast scanning
-	var startChars []byte
+	startChars := make([]byte, 0, len(sensitiveStartChars)*2)
 	for _, c := range sensitiveStartChars {
 		startChars = append(startChars, c)
 		if c >= 'a' && c <= 'z' {
@@ -307,7 +307,10 @@ func scanForSensitiveKeys(input []byte, checkEscape bool) bool {
 		char := input[matchStart]
 
 		// Normalize to lowercase to find the group
-		lowerChar := char | 0x20
+		lowerChar := char
+		if lowerChar >= 'A' && lowerChar <= 'Z' {
+			lowerChar |= 0x20
+		}
 		keys := sensitiveKeyGroups[lowerChar]
 
 		// Ensure we actually found a valid start char (IndexAny guarantees this, but safety check)
