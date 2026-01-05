@@ -53,9 +53,9 @@ function SchemaField({ path, schema, value, onChange, errors, required, label, l
     // Primitive Types
     if (schema.enum) {
         return (
-            <FieldWrapper label={label} description={description} required={isRequired} error={errors?.[path]} level={level}>
+            <FieldWrapper label={label} description={description} required={isRequired} error={errors?.[path]} level={level} inputId={path}>
                 <Select value={value} onValueChange={(v) => onChange(path, v)}>
-                    <SelectTrigger className={cn(errors?.[path] && "border-red-500")}>
+                    <SelectTrigger id={path} className={cn(errors?.[path] && "border-red-500")}>
                         <SelectValue placeholder="Select..." />
                     </SelectTrigger>
                     <SelectContent>
@@ -70,8 +70,9 @@ function SchemaField({ path, schema, value, onChange, errors, required, label, l
 
     if (type === "string") {
          return (
-            <FieldWrapper label={label} description={description} required={isRequired} error={errors?.[path]} level={level}>
+            <FieldWrapper label={label} description={description} required={isRequired} error={errors?.[path]} level={level} inputId={path}>
                 <Input
+                    id={path}
                     value={value || ""}
                     onChange={(e) => onChange(path, e.target.value)}
                     placeholder={label || "Enter text"}
@@ -83,8 +84,9 @@ function SchemaField({ path, schema, value, onChange, errors, required, label, l
 
     if (type === "integer" || type === "number") {
         return (
-            <FieldWrapper label={label} description={description} required={isRequired} error={errors?.[path]} level={level}>
+            <FieldWrapper label={label} description={description} required={isRequired} error={errors?.[path]} level={level} inputId={path}>
                 <Input
+                    id={path}
                     type="number"
                     step={type === "integer" ? "1" : "any"}
                     value={value || ""}
@@ -98,9 +100,10 @@ function SchemaField({ path, schema, value, onChange, errors, required, label, l
 
     if (type === "boolean") {
         return (
-            <FieldWrapper label={label} description={description} required={isRequired} error={errors?.[path]} level={level}>
+            <FieldWrapper label={label} description={description} required={isRequired} error={errors?.[path]} level={level} inputId={path}>
                  <div className="flex items-center gap-2">
                     <Switch
+                        id={path}
                         checked={!!value}
                         onCheckedChange={(v) => onChange(path, v)}
                     />
@@ -227,8 +230,9 @@ function SchemaField({ path, schema, value, onChange, errors, required, label, l
 
     // Fallback
     return (
-        <FieldWrapper label={label} description={description} required={isRequired} error={errors?.[path]} level={level}>
+        <FieldWrapper label={label} description={description} required={isRequired} error={errors?.[path]} level={level} inputId={path}>
              <Input
+                id={path}
                 value={value || ""}
                 onChange={(e) => onChange(path, e.target.value)}
                 placeholder="Unknown Type"
@@ -238,15 +242,15 @@ function SchemaField({ path, schema, value, onChange, errors, required, label, l
     );
 }
 
-function FieldWrapper({ children, label, description, required, error, level }: {
-    children: React.ReactNode, label?: string, description?: string, required?: boolean, error?: string, level: number
+function FieldWrapper({ children, label, description, required, error, level, inputId }: {
+    children: React.ReactNode, label?: string, description?: string, required?: boolean, error?: string, level: number, inputId?: string
 }) {
     if (level === 0 && !label) return <>{children}</>;
 
     return (
         <div className="space-y-1">
             {label && (
-                <Label className="flex items-center gap-1">
+                <Label htmlFor={inputId} className="flex items-center gap-1">
                     {label}
                     {required && <span className="text-red-500">*</span>}
                 </Label>
