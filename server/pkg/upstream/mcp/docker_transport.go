@@ -71,7 +71,10 @@ func (t *DockerTransport) Connect(ctx context.Context) (mcp.Connection, error) {
 	}
 
 	var scriptCommands []string
-	scriptCommands = append(scriptCommands, t.StdioConfig.GetSetupCommands()...)
+	// Redirect stdout of setup commands to stderr to avoid polluting the JSON-RPC channel
+	for _, cmd := range t.StdioConfig.GetSetupCommands() {
+		scriptCommands = append(scriptCommands, fmt.Sprintf("(%s) >&2", cmd))
+	}
 
 	// Add the main command. `exec` is used to replace the shell process with the main command.
 	mainCommandParts := []string{"exec", shellescape.Quote(t.StdioConfig.GetCommand())}
