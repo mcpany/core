@@ -358,10 +358,11 @@ prepare:
 
 
 
-# gen target removed (moved to root Makefile)
+# Delegate gen to root Makefile
+gen: prepare
+	$(MAKE) -C .. gen
 
-
-build:
+build: gen
 	@echo "Building Go project locally..."
 	@$(GO_CMD) build $(LDFLAGS) -buildvcs=false -o $(BUILD_DIR)/bin/server ./cmd/server
 
