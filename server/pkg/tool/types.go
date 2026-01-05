@@ -467,7 +467,7 @@ func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 	}
 
 	var resp *http.Response
-	work := func() error {
+	work := func(ctx context.Context) error {
 		var bodyForAttempt io.Reader
 		if body != nil {
 			if seeker, ok := body.(io.Seeker); ok {
@@ -555,7 +555,7 @@ func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 		return nil
 	}
 
-	if err := t.resilienceManager.Execute(work); err != nil {
+	if err := t.resilienceManager.Execute(ctx, work); err != nil {
 		metrics.IncrCounter([]string{"http", "request", "error"}, 1)
 		return nil, err
 	}
