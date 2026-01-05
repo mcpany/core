@@ -1,19 +1,33 @@
-// Copyright 2025 Author(s) of MCP Any
-// SPDX-License-Identifier: Apache-2.0
-
-package filesystem
+package provider
 
 import (
 	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
+
+	configv1 "github.com/mcpany/core/proto/config/v1"
+	"github.com/spf13/afero"
 )
 
-// validateLocalPath checks if the given virtual path resolves to a safe local path
-// within one of the allowed root paths.
-func (u *Upstream) validateLocalPath(virtualPath string, rootPaths map[string]string) (string, error) {
-	if len(rootPaths) == 0 {
+type LocalProvider struct {
+	fs        afero.Fs
+	rootPaths map[string]string
+}
+
+func NewLocalProvider(config *configv1.OsFs, rootPaths map[string]string) *LocalProvider {
+	return &LocalProvider{
+		fs:        afero.NewOsFs(),
+		rootPaths: rootPaths,
+	}
+}
+
+func (p *LocalProvider) GetFs() afero.Fs {
+	return p.fs
+}
+
+func (p *LocalProvider) ResolvePath(virtualPath string) (string, error) {
+	if len(p.rootPaths) == 0 {
 		return "", fmt.Errorf("no root paths defined")
 	}
 
@@ -21,7 +35,7 @@ func (u *Upstream) validateLocalPath(virtualPath string, rootPaths map[string]st
 	var bestMatchVirtual string
 	var bestMatchReal string
 
-	for vRoot, rRoot := range rootPaths {
+	for vRoot, rRoot := range p.rootPaths {
 		// Ensure vRoot has a clean format
 		cleanVRoot := vRoot
 		if !strings.HasPrefix(cleanVRoot, "/") {
@@ -44,7 +58,7 @@ func (u *Upstream) validateLocalPath(virtualPath string, rootPaths map[string]st
 
 	if bestMatchVirtual == "" {
 		// Try fallback: if rootPaths has "/" key, use it.
-		if val, ok := rootPaths["/"]; ok {
+		if val, ok := p.rootPaths["/"]; ok {
 			bestMatchVirtual = "/"
 			bestMatchReal = val
 		} else {
@@ -128,4 +142,8 @@ func (u *Upstream) validateLocalPath(virtualPath string, rootPaths map[string]st
 	}
 
 	return targetPathCanonical, nil
+}
+
+func (p *LocalProvider) Close() error {
+	return nil
 }
