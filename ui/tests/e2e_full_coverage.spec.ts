@@ -127,9 +127,12 @@ test.describe('E2E Full Coverage', () => {
 
     await expect(logLevelSelect).toContainText('DEBUG');
 
+    const responsePromise = page.waitForResponse(response =>
+      response.url().includes('/settings') &&
+      response.status() === 200
+    );
     await page.click('button:has-text("Save Settings")');
-    // Wait for the save operation to likely complete
-    await page.waitForTimeout(1000);
+    await responsePromise;
 
     await page.reload();
     await page.getByRole('tab', { name: 'General' }).click();
