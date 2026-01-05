@@ -874,6 +874,9 @@ func (t *MCPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, erro
 	bareToolName := t.tool.GetName()
 
 	var inputs map[string]any
+	if len(bytes.TrimSpace(req.ToolInputs)) == 0 {
+		req.ToolInputs = []byte("{}")
+	}
 	decoder := json.NewDecoder(bytes.NewReader(req.ToolInputs))
 	decoder.UseNumber()
 	if err := decoder.Decode(&inputs); err != nil {
@@ -1056,6 +1059,9 @@ func (t *OpenAPITool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 		logging.GetLogger().Debug("executing tool", "tool", req.ToolName, "inputs", prettyPrint(req.ToolInputs, contentTypeJSON))
 	}
 	var inputs map[string]any
+	if len(bytes.TrimSpace(req.ToolInputs)) == 0 {
+		req.ToolInputs = []byte("{}")
+	}
 	decoder := json.NewDecoder(bytes.NewReader(req.ToolInputs))
 	decoder.UseNumber()
 	if err := decoder.Decode(&inputs); err != nil {
