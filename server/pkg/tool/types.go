@@ -712,7 +712,7 @@ func (t *HTTPTool) prepareBody(ctx context.Context, inputs map[string]any, metho
 			}
 		}
 	case t.inputTransformer != nil && t.inputTransformer.GetTemplate() != "": //nolint:staticcheck
-		tpl, err := transformer.NewTemplate(t.inputTransformer.GetTemplate(), "{{", "}}") //nolint:staticcheck //nolint:staticcheck
+		tpl, err := transformer.NewTemplate(t.inputTransformer.GetTemplate(), "{{", "}}") //nolint:staticcheck
 		if err != nil {
 			return nil, "", fmt.Errorf("failed to create input template: %w", err)
 		}
@@ -891,7 +891,7 @@ func (t *MCPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, erro
 		if len(respData) > 0 {
 			arguments = json.RawMessage(respData)
 		}
-	case t.inputTransformer != nil && t.inputTransformer.GetTemplate() != "": //nolint:staticcheck //nolint:staticcheck
+	case t.inputTransformer != nil && t.inputTransformer.GetTemplate() != "": //nolint:staticcheck
 		tpl, err := transformer.NewTemplate(t.inputTransformer.GetTemplate(), "{{", "}}") //nolint:staticcheck
 		if err != nil {
 			return nil, fmt.Errorf("failed to create input template: %w", err)
@@ -1086,8 +1086,8 @@ func (t *OpenAPITool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 					contentType = contentTypeJSON
 				}
 			}
-		case t.inputTransformer != nil && t.inputTransformer.GetTemplate() != "": //nolint:staticcheck //nolint:staticcheck
-			tpl, err := transformer.NewTemplate(t.inputTransformer.GetTemplate(), "{{", "}}") //nolint:staticcheck //nolint:staticcheck
+		case t.inputTransformer != nil && t.inputTransformer.GetTemplate() != "": //nolint:staticcheck
+			tpl, err := transformer.NewTemplate(t.inputTransformer.GetTemplate(), "{{", "}}") //nolint:staticcheck
 			if err != nil {
 				return nil, fmt.Errorf("failed to create input template: %w", err)
 			}

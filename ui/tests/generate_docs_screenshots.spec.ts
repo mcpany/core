@@ -8,9 +8,9 @@ import path from 'path';
 import fs from 'fs';
 
 // Defines the output directory for screenshots relative to this file
-// ui/tests/generate_docs_screenshots.spec.ts -> ../../docs/ui/screenshots
-// inside docker, this will be /work/ui/tests/../../docs/ui/screenshots -> /work/docs/ui/screenshots
-const DOCS_SCREENSHOTS_DIR = path.resolve(__dirname, '../../docs/ui/screenshots');
+// ui/tests/generate_docs_screenshots.spec.ts -> ../docs/screenshots
+// inside docker, this will be /work/ui/tests/../docs/screenshots -> /work/ui/docs/screenshots
+const DOCS_SCREENSHOTS_DIR = path.resolve(__dirname, '../docs/screenshots');
 
 // Ensure directory exists
 if (!fs.existsSync(DOCS_SCREENSHOTS_DIR)) {

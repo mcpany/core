@@ -151,11 +151,12 @@ ServerStarted:
 
     t.Log("Verifying failing tool call fails")
     args := json.RawMessage(`{}`)
-    _, err = session.CallTool(ctxCall, &mcp.CallToolParams{
+    result, err := session.CallTool(ctxCall, &mcp.CallToolParams{
             Name: "failing-service.echo",
             Arguments: args,
     })
-    require.Error(t, err)
+    require.NoError(t, err)
+    require.True(t, result.IsError, "Tool call should return isError=true for failing service")
 
     // 6. Fix the failing service in config (Reload Test)
     t.Log("Updating config to fix failing service...")
@@ -194,7 +195,7 @@ upstream_services:
     require.NoError(t, err)
 
     // Verify failing-service is now working
-    result, err := session.CallTool(ctxCall, &mcp.CallToolParams{
+    result, err = session.CallTool(ctxCall, &mcp.CallToolParams{
             Name: "failing-service.echo",
             Arguments: args,
     })

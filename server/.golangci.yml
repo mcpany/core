@@ -9,6 +9,7 @@ run:
   skip-dirs:
     - build
     - vendor
+    - node_modules
 
 linters:
   enable:
@@ -44,6 +45,7 @@ issues:
   exclude-dirs:
     - build
     - vendor
+    - node_modules
     - .cache
   exclude-rules:
     - path: "_test.go"
