@@ -86,6 +86,7 @@
     "jsdom": "^27.4.0",
     "postcss": "^8",
     "tailwindcss": "^3.4.1",
+    "ts-proto": "^2.10.1",
     "typescript": "^5",
     "vitest": "^4.0.16"
   }
