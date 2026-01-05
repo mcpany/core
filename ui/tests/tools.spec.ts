@@ -50,4 +50,16 @@ test.describe('Tool Exploration', () => {
         await page.goto('/tools');
         await expect(page.locator('table tbody tr')).toHaveCount(0);
     });
+
+    test('should allow inspecting a tool', async ({ page }) => {
+        await page.goto('/tools');
+        // Inspection relies on schema being present in the tool definition
+        // The mock in beforeEach includes a basic definition
+        const toolRow = page.locator('tr').filter({ hasText: 'weather-tool' });
+        await toolRow.getByRole('button', { name: 'Inspect' }).click();
+
+        await expect(page.getByRole('dialog')).toBeVisible();
+        await expect(page.getByText('Schema')).toBeVisible();
+        await expect(page.getByRole('dialog').getByText('weather-tool')).toBeVisible();
+    });
 });

@@ -122,10 +122,10 @@ test.describe('E2E Full Coverage', () => {
     await expect(page.getByText('Global Configuration')).toBeVisible();
 
     // Use a more specific locator for the Log Level combobox
-    // Try to find it by label or surrounding text context if possible
+    // Try to find it by label "Log Level" using DOM structure if accessibility association is broken
     const form = page.locator('form');
-    // Assuming Log Level is the first select, but let's try to be robust
-    const logLevelSelect = form.getByRole('combobox').first();
+    // FormItem contains Label and SelectTrigger (combobox)
+    const logLevelSelect = form.locator('div').filter({ has: page.getByText('Log Level', { exact: true }) }).getByRole('combobox');
 
     // Check current value before changing
     await expect(logLevelSelect).toBeVisible();
@@ -168,11 +168,11 @@ test.describe('E2E Full Coverage', () => {
     await expect(page.getByText('sunny')).toBeVisible();
 
     // Verify result
-    await expect(page.getByText('Tool execution result')).toBeVisible({ timeout: 10000 });
+    await expect(page.getByText('Result (weather-service.get_weather)')).toBeVisible({ timeout: 10000 });
   });
 
   // TODO: Fix flaky secrets test in CI/Docker environment
-  test.skip('should manage secrets', async ({ page }) => {
+  test('should manage secrets', async ({ page }) => {
     const secretName = `e2e_secret_${Date.now()}`;
     await page.goto('/settings');
     await page.getByRole('tab', { name: 'Secrets & Keys' }).click();
@@ -201,7 +201,7 @@ test.describe('E2E Full Coverage', () => {
     await expect(page.locator(`text=${secretName}`).first()).toBeVisible();
 
     // SecretsManager uses divs now, not table rows
-    const row = page.locator('div').filter({ hasText: secretName }).first();
+    const row = page.locator('.group').filter({ hasText: secretName }).first();
 
     // Delete button has aria-label="Delete secret"
     page.on('dialog', dialog => dialog.accept());

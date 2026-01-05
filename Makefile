@@ -9,6 +9,11 @@ all:
 test:
 	$(MAKE) -C server test
 	$(MAKE) -C ui test
+	$(MAKE) test-proto
+
+test-proto:
+	@echo "Running proto tests..."
+	@go test ./proto/...
 
 k8s-e2e:
 	./tests/k8s/test_operator.sh
