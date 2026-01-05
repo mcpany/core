@@ -35,7 +35,6 @@ type HttpHealthCheck struct {
 	xxx_hidden_Interval                     *durationpb.Duration   `protobuf:"bytes,4,opt,name=interval"`
 	xxx_hidden_Timeout                      *durationpb.Duration   `protobuf:"bytes,5,opt,name=timeout"`
 	xxx_hidden_Method                       *string                `protobuf:"bytes,6,opt,name=method"`
-	xxx_hidden_Headers                      map[string]string      `protobuf:"bytes,7,rep,name=headers" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
 	XXX_raceDetectHookData                  protoimpl.RaceDetectHookData
 	XXX_presence                            [1]uint32
 	unknownFields                           protoimpl.UnknownFields
@@ -118,26 +117,19 @@ func (x *HttpHealthCheck) GetMethod() string {
 	return ""
 }
 
-func (x *HttpHealthCheck) GetHeaders() map[string]string {
-	if x != nil {
-		return x.xxx_hidden_Headers
-	}
-	return nil
-}
-
 func (x *HttpHealthCheck) SetUrl(v string) {
 	x.xxx_hidden_Url = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 7)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 6)
 }
 
 func (x *HttpHealthCheck) SetExpectedCode(v int32) {
 	x.xxx_hidden_ExpectedCode = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 7)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 6)
 }
 
 func (x *HttpHealthCheck) SetExpectedResponseBodyContains(v string) {
 	x.xxx_hidden_ExpectedResponseBodyContains = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 7)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 6)
 }
 
 func (x *HttpHealthCheck) SetInterval(v *durationpb.Duration) {
@@ -150,11 +142,7 @@ func (x *HttpHealthCheck) SetTimeout(v *durationpb.Duration) {
 
 func (x *HttpHealthCheck) SetMethod(v string) {
 	x.xxx_hidden_Method = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 5, 7)
-}
-
-func (x *HttpHealthCheck) SetHeaders(v map[string]string) {
-	x.xxx_hidden_Headers = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 5, 6)
 }
 
 func (x *HttpHealthCheck) HasUrl() bool {
@@ -242,8 +230,6 @@ type HttpHealthCheck_builder struct {
 	Timeout *durationpb.Duration
 	// The HTTP method to use for the health check. Defaults to "GET".
 	Method *string
-	// Optional headers to include in the health check request.
-	Headers map[string]string
 }
 
 func (b0 HttpHealthCheck_builder) Build() *HttpHealthCheck {
@@ -251,24 +237,23 @@ func (b0 HttpHealthCheck_builder) Build() *HttpHealthCheck {
 	b, x := &b0, m0
 	_, _ = b, x
 	if b.Url != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 7)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 6)
 		x.xxx_hidden_Url = b.Url
 	}
 	if b.ExpectedCode != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 7)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 6)
 		x.xxx_hidden_ExpectedCode = *b.ExpectedCode
 	}
 	if b.ExpectedResponseBodyContains != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 7)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 6)
 		x.xxx_hidden_ExpectedResponseBodyContains = b.ExpectedResponseBodyContains
 	}
 	x.xxx_hidden_Interval = b.Interval
 	x.xxx_hidden_Timeout = b.Timeout
 	if b.Method != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 5, 7)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 5, 6)
 		x.xxx_hidden_Method = b.Method
 	}
-	x.xxx_hidden_Headers = b.Headers
 	return m0
 }
 
@@ -1113,18 +1098,14 @@ var File_proto_config_v1_health_check_proto protoreflect.FileDescriptor
 
 const file_proto_config_v1_health_check_proto_rawDesc = "" +
 	"\n" +
-	"\"proto/config/v1/health_check.proto\x12\x10mcpany.config.v1\x1a\x1egoogle/protobuf/duration.proto\"\x99\x03\n" +
+	"\"proto/config/v1/health_check.proto\x12\x10mcpany.config.v1\x1a\x1egoogle/protobuf/duration.proto\"\x93\x02\n" +
 	"\x0fHttpHealthCheck\x12\x10\n" +
 	"\x03url\x18\x01 \x01(\tR\x03url\x12#\n" +
 	"\rexpected_code\x18\x02 \x01(\x05R\fexpectedCode\x12E\n" +
 	"\x1fexpected_response_body_contains\x18\x03 \x01(\tR\x1cexpectedResponseBodyContains\x125\n" +
 	"\binterval\x18\x04 \x01(\v2\x19.google.protobuf.DurationR\binterval\x123\n" +
 	"\atimeout\x18\x05 \x01(\v2\x19.google.protobuf.DurationR\atimeout\x12\x16\n" +
-	"\x06method\x18\x06 \x01(\tR\x06method\x12H\n" +
-	"\aheaders\x18\a \x03(\v2..mcpany.config.v1.HttpHealthCheck.HeadersEntryR\aheaders\x1a:\n" +
-	"\fHeadersEntry\x12\x10\n" +
-	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\xec\x01\n" +
+	"\x06method\x18\x06 \x01(\tR\x06method\"\xec\x01\n" +
 	"\x14WebsocketHealthCheck\x12\x18\n" +
 	"\amessage\x18\x01 \x01(\tR\amessage\x12<\n" +
 	"\x1aexpected_response_contains\x18\x02 \x01(\tR\x18expectedResponseContains\x125\n" +
@@ -1150,33 +1131,31 @@ const file_proto_config_v1_health_check_proto_rawDesc = "" +
 	"\twebsocket\x18\x02 \x01(\v2&.mcpany.config.v1.WebsocketHealthCheckH\x00R\twebsocketB\x13\n" +
 	"\x11health_check_typeB:B\x10HealthCheckProtoZ&github.com/mcpany/core/proto/config/v1b\beditionsp\xe8\a"
 
-var file_proto_config_v1_health_check_proto_msgTypes = make([]protoimpl.MessageInfo, 6)
+var file_proto_config_v1_health_check_proto_msgTypes = make([]protoimpl.MessageInfo, 5)
 var file_proto_config_v1_health_check_proto_goTypes = []any{
 	(*HttpHealthCheck)(nil),        // 0: mcpany.config.v1.HttpHealthCheck
 	(*WebsocketHealthCheck)(nil),   // 1: mcpany.config.v1.WebsocketHealthCheck
 	(*GrpcHealthCheck)(nil),        // 2: mcpany.config.v1.GrpcHealthCheck
 	(*CommandLineHealthCheck)(nil), // 3: mcpany.config.v1.CommandLineHealthCheck
 	(*WebRTCHealthCheck)(nil),      // 4: mcpany.config.v1.WebRTCHealthCheck
-	nil,                            // 5: mcpany.config.v1.HttpHealthCheck.HeadersEntry
-	(*durationpb.Duration)(nil),    // 6: google.protobuf.Duration
+	(*durationpb.Duration)(nil),    // 5: google.protobuf.Duration
 }
 var file_proto_config_v1_health_check_proto_depIdxs = []int32{
-	6,  // 0: mcpany.config.v1.HttpHealthCheck.interval:type_name -> google.protobuf.Duration
-	6,  // 1: mcpany.config.v1.HttpHealthCheck.timeout:type_name -> google.protobuf.Duration
-	5,  // 2: mcpany.config.v1.HttpHealthCheck.headers:type_name -> mcpany.config.v1.HttpHealthCheck.HeadersEntry
-	6,  // 3: mcpany.config.v1.WebsocketHealthCheck.interval:type_name -> google.protobuf.Duration
-	6,  // 4: mcpany.config.v1.WebsocketHealthCheck.timeout:type_name -> google.protobuf.Duration
-	6,  // 5: mcpany.config.v1.GrpcHealthCheck.interval:type_name -> google.protobuf.Duration
-	6,  // 6: mcpany.config.v1.GrpcHealthCheck.timeout:type_name -> google.protobuf.Duration
-	6,  // 7: mcpany.config.v1.CommandLineHealthCheck.interval:type_name -> google.protobuf.Duration
-	6,  // 8: mcpany.config.v1.CommandLineHealthCheck.timeout:type_name -> google.protobuf.Duration
-	0,  // 9: mcpany.config.v1.WebRTCHealthCheck.http:type_name -> mcpany.config.v1.HttpHealthCheck
-	1,  // 10: mcpany.config.v1.WebRTCHealthCheck.websocket:type_name -> mcpany.config.v1.WebsocketHealthCheck
-	11, // [11:11] is the sub-list for method output_type
-	11, // [11:11] is the sub-list for method input_type
-	11, // [11:11] is the sub-list for extension type_name
-	11, // [11:11] is the sub-list for extension extendee
-	0,  // [0:11] is the sub-list for field type_name
+	5,  // 0: mcpany.config.v1.HttpHealthCheck.interval:type_name -> google.protobuf.Duration
+	5,  // 1: mcpany.config.v1.HttpHealthCheck.timeout:type_name -> google.protobuf.Duration
+	5,  // 2: mcpany.config.v1.WebsocketHealthCheck.interval:type_name -> google.protobuf.Duration
+	5,  // 3: mcpany.config.v1.WebsocketHealthCheck.timeout:type_name -> google.protobuf.Duration
+	5,  // 4: mcpany.config.v1.GrpcHealthCheck.interval:type_name -> google.protobuf.Duration
+	5,  // 5: mcpany.config.v1.GrpcHealthCheck.timeout:type_name -> google.protobuf.Duration
+	5,  // 6: mcpany.config.v1.CommandLineHealthCheck.interval:type_name -> google.protobuf.Duration
+	5,  // 7: mcpany.config.v1.CommandLineHealthCheck.timeout:type_name -> google.protobuf.Duration
+	0,  // 8: mcpany.config.v1.WebRTCHealthCheck.http:type_name -> mcpany.config.v1.HttpHealthCheck
+	1,  // 9: mcpany.config.v1.WebRTCHealthCheck.websocket:type_name -> mcpany.config.v1.WebsocketHealthCheck
+	10, // [10:10] is the sub-list for method output_type
+	10, // [10:10] is the sub-list for method input_type
+	10, // [10:10] is the sub-list for extension type_name
+	10, // [10:10] is the sub-list for extension extendee
+	0,  // [0:10] is the sub-list for field type_name
 }
 
 func init() { file_proto_config_v1_health_check_proto_init() }
@@ -1194,7 +1173,7 @@ func file_proto_config_v1_health_check_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_proto_config_v1_health_check_proto_rawDesc), len(file_proto_config_v1_health_check_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   6,
+			NumMessages:   5,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
