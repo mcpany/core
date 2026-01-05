@@ -1,3 +1,7 @@
+// Copyright 2026 Author(s) of MCP Any
+// SPDX-License-Identifier: Apache-2.0
+
+// Package provider implements filesystem providers.
 package provider
 
 import (
@@ -13,12 +17,14 @@ import (
 	"golang.org/x/crypto/ssh"
 )
 
+// SftpProvider provides an SFTP filesystem.
 type SftpProvider struct {
 	fs     afero.Fs
 	client *sftp.Client
 	conn   *ssh.Client
 }
 
+// NewSftpProvider creates a new SFTP provider.
 func NewSftpProvider(config *configv1.SftpFs) (*SftpProvider, error) {
 	if config == nil {
 		return nil, fmt.Errorf("sftp config is nil")
@@ -71,10 +77,12 @@ func NewSftpProvider(config *configv1.SftpFs) (*SftpProvider, error) {
 	}, nil
 }
 
+// GetFs returns the underlying filesystem.
 func (p *SftpProvider) GetFs() afero.Fs {
 	return p.fs
 }
 
+// ResolvePath resolves a virtual path to a real path.
 func (p *SftpProvider) ResolvePath(virtualPath string) (string, error) {
 	// SFTP paths are remote paths. We assume they are absolute or relative to user home.
 	// But `clean` is probably good enough for now.
@@ -84,6 +92,7 @@ func (p *SftpProvider) ResolvePath(virtualPath string) (string, error) {
 	return filepath.Clean(virtualPath), nil
 }
 
+// Close closes the provider.
 func (p *SftpProvider) Close() error {
 	if p.client != nil {
 		_ = p.client.Close()

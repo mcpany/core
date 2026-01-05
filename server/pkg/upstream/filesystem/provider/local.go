@@ -1,3 +1,6 @@
+// Copyright 2026 Author(s) of MCP Any
+// SPDX-License-Identifier: Apache-2.0
+
 package provider
 
 import (
@@ -10,22 +13,26 @@ import (
 	"github.com/spf13/afero"
 )
 
+// LocalProvider provides a local filesystem.
 type LocalProvider struct {
 	fs        afero.Fs
 	rootPaths map[string]string
 }
 
-func NewLocalProvider(config *configv1.OsFs, rootPaths map[string]string) *LocalProvider {
+// NewLocalProvider creates a new local provider.
+func NewLocalProvider(_ *configv1.OsFs, rootPaths map[string]string) *LocalProvider {
 	return &LocalProvider{
 		fs:        afero.NewOsFs(),
 		rootPaths: rootPaths,
 	}
 }
 
+// GetFs returns the underlying filesystem.
 func (p *LocalProvider) GetFs() afero.Fs {
 	return p.fs
 }
 
+// ResolvePath resolves a virtual path to a real path.
 func (p *LocalProvider) ResolvePath(virtualPath string) (string, error) {
 	if len(p.rootPaths) == 0 {
 		return "", fmt.Errorf("no root paths defined")
@@ -144,6 +151,7 @@ func (p *LocalProvider) ResolvePath(virtualPath string) (string, error) {
 	return targetPathCanonical, nil
 }
 
+// Close closes the provider.
 func (p *LocalProvider) Close() error {
 	return nil
 }
