@@ -3,12 +3,12 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { SecretManager } from "@/components/secrets/secret-manager";
+import { SecretsManager } from "@/components/settings/secrets-manager";
 
 export default function SecretsPage() {
   return (
     <div className="flex flex-col h-[calc(100vh-4rem)] p-8">
-      <SecretManager />
+      <SecretsManager />
     </div>
   );
 }

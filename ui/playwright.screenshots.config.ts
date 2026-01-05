@@ -9,4 +9,5 @@ import baseConfig from './playwright.config';
 export default defineConfig({
   ...baseConfig,
   testMatch: ['**/generate_docs_screenshots.spec.ts'],
+  testIgnore: [], // Explicitly un-ignore for this specific config
 });
