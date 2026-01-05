@@ -119,7 +119,9 @@ func (t *WebsocketTool) Execute(ctx context.Context, req *ExecutionRequest) (any
 	}
 
 	var message []byte
+	//nolint:staticcheck // GetTemplate is deprecated but we still support it for backward compatibility
 	if t.inputTransformer != nil && t.inputTransformer.GetTemplate() != "" {
+		//nolint:staticcheck // GetTemplate is deprecated but we still support it for backward compatibility
 		tpl, err := transformer.NewTemplate(t.inputTransformer.GetTemplate(), "{{", "}}")
 		if err != nil {
 			return nil, fmt.Errorf("failed to create input template: %w", err)

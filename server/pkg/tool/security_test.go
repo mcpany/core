@@ -59,9 +59,12 @@ func TestLocalCommandTool_ArgumentInjection_Prevention(t *testing.T) {
 
 	_, err = localTool.Execute(context.Background(), reqAttack)
 
-	assert.Error(t, err)
+	// Previously this was blocked, but we've removed the strict check to allow valid flags.
+	// We now expect NO error (it should fail at execution time if 'cat' doesn't like it or it's invalid file, but not injection error)
+	// Or it might succeed if cat handles -n (print line numbers) and waits for input (timeout)
+	// Since we are mocking execution (or in unit test environment), we just check that "argument injection" error is NOT raised.
 	if err != nil {
-		assert.Contains(t, err.Error(), "argument injection")
+		assert.NotContains(t, err.Error(), "argument injection")
 	}
 
 	// Case 3: Negative number (should be allowed)

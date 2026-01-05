@@ -147,7 +147,7 @@ func (r *MCPServerReconciler) deploymentForMCPServer(m *mcpv1alpha1.MCPServer) *
 		},
 	}
 	// Set MCPServer instance as the owner and controller
-	ctrl.SetControllerReference(m, dep, r.Scheme)
+	_ = ctrl.SetControllerReference(m, dep, r.Scheme)
 	return dep
 }
 

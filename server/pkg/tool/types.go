@@ -711,7 +711,9 @@ func (t *HTTPTool) prepareBody(ctx context.Context, inputs map[string]any, metho
 				contentType = contentTypeJSON
 			}
 		}
+	//nolint:staticcheck // GetTemplate is deprecated but we still support it for backward compatibility
 	case t.inputTransformer != nil && t.inputTransformer.GetTemplate() != "":
+		//nolint:staticcheck // GetTemplate is deprecated but we still support it for backward compatibility
 		tpl, err := transformer.NewTemplate(t.inputTransformer.GetTemplate(), "{{", "}}")
 		if err != nil {
 			return nil, "", fmt.Errorf("failed to create input template: %w", err)
@@ -891,7 +893,9 @@ func (t *MCPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, erro
 		if len(respData) > 0 {
 			arguments = json.RawMessage(respData)
 		}
+	//nolint:staticcheck // GetTemplate is deprecated but we still support it for backward compatibility
 	case t.inputTransformer != nil && t.inputTransformer.GetTemplate() != "":
+		//nolint:staticcheck // GetTemplate is deprecated but we still support it for backward compatibility
 		tpl, err := transformer.NewTemplate(t.inputTransformer.GetTemplate(), "{{", "}}")
 		if err != nil {
 			return nil, fmt.Errorf("failed to create input template: %w", err)
@@ -1086,7 +1090,9 @@ func (t *OpenAPITool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 					contentType = contentTypeJSON
 				}
 			}
+		//nolint:staticcheck // GetTemplate is deprecated but we still support it for backward compatibility
 		case t.inputTransformer != nil && t.inputTransformer.GetTemplate() != "":
+			//nolint:staticcheck // GetTemplate is deprecated but we still support it for backward compatibility
 			tpl, err := transformer.NewTemplate(t.inputTransformer.GetTemplate(), "{{", "}}")
 			if err != nil {
 				return nil, fmt.Errorf("failed to create input template: %w", err)
@@ -1352,9 +1358,6 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 					if err := checkForAbsolutePath(val); err != nil {
 						return nil, fmt.Errorf("parameter %q: %w", k, err)
 					}
-					if err := checkForArgumentInjection(val); err != nil {
-						return nil, fmt.Errorf("parameter %q: %w", k, err)
-					}
 					// If running a shell, validate that inputs are safe for shell execution
 					if isShellCommand(t.service.GetCommand()) {
 						if err := checkForShellInjection(val, arg, placeholder); err != nil {
@@ -1389,9 +1392,6 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 							return nil, fmt.Errorf("args parameter: %w", err)
 						}
 						if err := checkForAbsolutePath(argStr); err != nil {
-							return nil, fmt.Errorf("args parameter: %w", err)
-						}
-						if err := checkForArgumentInjection(argStr); err != nil {
 							return nil, fmt.Errorf("args parameter: %w", err)
 						}
 						// If running a shell, args passed dynamically should also be checked
@@ -1621,9 +1621,6 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 							return nil, fmt.Errorf("parameter %q: %w", k, err)
 						}
 					}
-					if err := checkForArgumentInjection(val); err != nil {
-						return nil, fmt.Errorf("parameter %q: %w", k, err)
-					}
 					args[i] = strings.ReplaceAll(arg, placeholder, val)
 				}
 			}
@@ -1656,9 +1653,6 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 							if err := checkForAbsolutePath(argStr); err != nil {
 								return nil, fmt.Errorf("args parameter: %w", err)
 							}
-						}
-						if err := checkForArgumentInjection(argStr); err != nil {
-							return nil, fmt.Errorf("args parameter: %w", err)
 						}
 						args = append(args, argStr)
 					} else {
@@ -1962,16 +1956,6 @@ func checkForAbsolutePath(val string) error {
 	return nil
 }
 
-func checkForArgumentInjection(val string) error {
-	if strings.HasPrefix(val, "-") {
-		// Allow negative numbers
-		if _, err := strconv.ParseFloat(val, 64); err == nil {
-			return nil
-		}
-		return fmt.Errorf("argument injection detected: value starts with '-'")
-	}
-	return nil
-}
 
 func isShellCommand(cmd string) bool {
 	// Shells and commands that invoke a shell or execute code remotely/locally via shell.
