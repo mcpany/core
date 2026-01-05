@@ -62,7 +62,9 @@ func TestMCPServerReconciler_Reconcile(t *testing.T) {
 	}
 
 	// Check the result of reconciliation
+	// nolint:staticcheck
 	if !res.Requeue {
+		// Just a simple check, ignoring deprecation for test simplicity
 		t.Error("reconcile did not requeue request as expected (Deployment creation)")
 	}
 
@@ -116,9 +118,12 @@ func TestMCPServerReconciler_Reconcile(t *testing.T) {
 	// Verify Volumes
 	foundVolume := false
 	for _, v := range found.Spec.Template.Spec.Volumes {
-		if v.Name == "config-volume" && v.VolumeSource.ConfigMap != nil && v.VolumeSource.ConfigMap.Name == "my-config-map" {
-			foundVolume = true
-			break
+		// Use simple nil check to satisfy staticcheck QF1008
+		if v.Name == "config-volume" && v.ConfigMap != nil {
+			if v.ConfigMap.Name == "my-config-map" {
+				foundVolume = true
+				break
+			}
 		}
 	}
 	if !foundVolume {
