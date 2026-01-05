@@ -16,9 +16,11 @@ interface Secret {
     lastUsed: string;
 }
 
+// 🛡️ SENTINEL: Removed hardcoded realistic secrets. Using safe mocks.
+// These are for demonstration purposes only.
 let mockSecrets: Secret[] = [
-    { id: "sec-1", name: "OpenAI API Key", key: "OPENAI_API_KEY", encryptedValue: "sk-...", provider: "openai", createdAt: "2024-01-01T00:00:00Z", lastUsed: "2024-05-10T12:00:00Z" },
-    { id: "sec-2", name: "AWS Access Key", key: "AWS_ACCESS_KEY_ID", encryptedValue: "AKIA...", provider: "aws", createdAt: "2024-02-15T00:00:00Z", lastUsed: "2024-05-14T09:30:00Z" }
+    { id: "sec-1", name: "Demo OpenAI Key", key: "OPENAI_API_KEY", encryptedValue: "mock-openai-key-value", provider: "openai", createdAt: "2024-01-01T00:00:00Z", lastUsed: "2024-05-10T12:00:00Z" },
+    { id: "sec-2", name: "Demo AWS Key", key: "AWS_ACCESS_KEY_ID", encryptedValue: "mock-aws-key-value", provider: "aws", createdAt: "2024-02-15T00:00:00Z", lastUsed: "2024-05-14T09:30:00Z" }
 ];
 
 export const SecretsStore = {
