@@ -1,12 +1,14 @@
-module github.com/mcpany/core
+module github.com/mcpany/core/server
 
 go 1.24.0
 
 toolchain go1.24.11
 
-replace github.com/mcpany/core => ./
+replace github.com/mcpany/core => ../
 
 require (
+	github.com/mcpany/core v0.0.0-00010101000000-000000000000
+
 	al.essio.dev/pkg/shellescape v1.6.0
 	cloud.google.com/go/storage v1.58.0
 	github.com/DATA-DOG/go-sqlmock v1.5.2

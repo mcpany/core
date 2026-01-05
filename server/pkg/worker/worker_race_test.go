@@ -8,7 +8,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/mcpany/core/pkg/bus"
+	"github.com/mcpany/core/server/pkg/bus"
 	buspb "github.com/mcpany/core/proto/bus"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/goleak"

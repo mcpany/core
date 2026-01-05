@@ -10,7 +10,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/mcpany/core/pkg/config"
+	"github.com/mcpany/core/server/pkg/config"
 	"github.com/spf13/afero"
 	"github.com/spf13/cobra"
 )

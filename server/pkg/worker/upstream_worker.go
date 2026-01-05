@@ -9,10 +9,10 @@ import (
 	"sync"
 	"time"
 
-	"github.com/mcpany/core/pkg/bus"
-	"github.com/mcpany/core/pkg/logging"
-	"github.com/mcpany/core/pkg/metrics"
-	"github.com/mcpany/core/pkg/tool"
+	"github.com/mcpany/core/server/pkg/bus"
+	"github.com/mcpany/core/server/pkg/logging"
+	"github.com/mcpany/core/server/pkg/metrics"
+	"github.com/mcpany/core/server/pkg/tool"
 )
 
 // UpstreamWorker is a background worker that handles tool execution requests. It

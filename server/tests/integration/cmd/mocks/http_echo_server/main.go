@@ -17,7 +17,7 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/mcpany/core/pkg/consts"
+	"github.com/mcpany/core/server/pkg/consts"
 )
 
 func echoHandler(w http.ResponseWriter, r *http.Request) {

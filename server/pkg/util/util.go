@@ -16,7 +16,7 @@ import (
 	"unsafe"
 
 	"github.com/google/uuid"
-	"github.com/mcpany/core/pkg/consts"
+	"github.com/mcpany/core/server/pkg/consts"
 )
 
 // SanitizeID sanitizes a slice of strings to form a valid ID.

@@ -7,7 +7,7 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/mcpany/core/pkg/upstream"
+	"github.com/mcpany/core/server/pkg/upstream"
 	config_v1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/spf13/afero"
 	"github.com/stretchr/testify/require"

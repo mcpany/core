@@ -11,11 +11,11 @@ import (
 	"sync"
 	"time"
 
-	"github.com/mcpany/core/pkg/bus"
-	"github.com/mcpany/core/pkg/logging"
-	"github.com/mcpany/core/pkg/metrics"
-	"github.com/mcpany/core/pkg/serviceregistry"
-	"github.com/mcpany/core/pkg/util"
+	"github.com/mcpany/core/server/pkg/bus"
+	"github.com/mcpany/core/server/pkg/logging"
+	"github.com/mcpany/core/server/pkg/metrics"
+	"github.com/mcpany/core/server/pkg/serviceregistry"
+	"github.com/mcpany/core/server/pkg/util"
 )
 
 // ServiceRegistrationWorker is a background worker responsible for handling

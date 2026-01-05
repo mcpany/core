@@ -9,8 +9,8 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/mcpany/core/pkg/prompt"
-	"github.com/mcpany/core/pkg/tool"
+	"github.com/mcpany/core/server/pkg/prompt"
+	"github.com/mcpany/core/server/pkg/tool"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"

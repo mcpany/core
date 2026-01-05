@@ -14,8 +14,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/mcpany/core/pkg/app"
-	"github.com/mcpany/core/tests/integration"
+	"github.com/mcpany/core/server/pkg/app"
+	"github.com/mcpany/core/server/tests/integration"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/spf13/afero"
 	"github.com/stretchr/testify/require"

@@ -8,9 +8,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/mcpany/core/pkg/auth"
-	"github.com/mcpany/core/pkg/consts"
-	"github.com/mcpany/core/pkg/tool"
+	"github.com/mcpany/core/server/pkg/auth"
+	"github.com/mcpany/core/server/pkg/consts"
+	"github.com/mcpany/core/server/pkg/tool"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	mcp_router_v1 "github.com/mcpany/core/proto/mcp_router/v1"
 	topologyv1 "github.com/mcpany/core/proto/topology/v1"

@@ -9,7 +9,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/mcpany/core/tests/framework"
+	"github.com/mcpany/core/server/tests/framework"
 	"github.com/stretchr/testify/require"
 )
 

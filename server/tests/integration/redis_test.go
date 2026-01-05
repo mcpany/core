@@ -9,7 +9,7 @@ package integration
 // 	"testing"
 // 	"time"
 
-// 	"github.com/mcpany/core/pkg/bus/redis"
+// 	"github.com/mcpany/core/server/pkg/bus/redis"
 // 	busprotos "github.com/mcpany/core/proto/bus"
 // 	"github.com/stretchr/testify/require"
 // )

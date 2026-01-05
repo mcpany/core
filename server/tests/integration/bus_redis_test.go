@@ -10,8 +10,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/mcpany/core/pkg/bus"
-	"github.com/mcpany/core/pkg/bus/redis"
+	"github.com/mcpany/core/server/pkg/bus"
+	"github.com/mcpany/core/server/pkg/bus/redis"
 	bustypes "github.com/mcpany/core/proto/bus"
 	goredis "github.com/redis/go-redis/v9"
 	"github.com/stretchr/testify/assert"

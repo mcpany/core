@@ -12,9 +12,9 @@ import (
 	"os"
 	"time"
 
-	"github.com/mcpany/core/pkg/client"
-	healthChecker "github.com/mcpany/core/pkg/health"
-	"github.com/mcpany/core/pkg/pool"
+	"github.com/mcpany/core/server/pkg/client"
+	healthChecker "github.com/mcpany/core/server/pkg/health"
+	"github.com/mcpany/core/server/pkg/pool"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 )

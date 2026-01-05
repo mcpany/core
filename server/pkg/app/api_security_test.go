@@ -9,8 +9,8 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/mcpany/core/pkg/storage/memory"
-	"github.com/mcpany/core/pkg/tool"
+	"github.com/mcpany/core/server/pkg/storage/memory"
+	"github.com/mcpany/core/server/pkg/tool"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/stretchr/testify/assert"
 	"google.golang.org/protobuf/encoding/protojson"

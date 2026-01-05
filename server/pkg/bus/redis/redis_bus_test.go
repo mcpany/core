@@ -10,7 +10,7 @@ import (
 	"testing"
 
 	"github.com/go-redis/redismock/v9"
-	"github.com/mcpany/core/pkg/bus/redis"
+	"github.com/mcpany/core/server/pkg/bus/redis"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )

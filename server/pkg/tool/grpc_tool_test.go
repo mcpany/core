@@ -11,9 +11,9 @@ import (
 	"os"
 	"testing"
 
-	"github.com/mcpany/core/pkg/client"
-	"github.com/mcpany/core/pkg/pool"
-	"github.com/mcpany/core/pkg/tool"
+	"github.com/mcpany/core/server/pkg/client"
+	"github.com/mcpany/core/server/pkg/pool"
+	"github.com/mcpany/core/server/pkg/tool"
 	weatherpb "github.com/mcpany/core/proto/examples/weather/v1"
 	v1 "github.com/mcpany/core/proto/mcp_router/v1"
 	"github.com/stretchr/testify/assert"

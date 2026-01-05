@@ -8,7 +8,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/mcpany/core/pkg/middleware"
+	"github.com/mcpany/core/server/pkg/middleware"
 	"github.com/stretchr/testify/assert"
 )
 

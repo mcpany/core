@@ -7,8 +7,8 @@ import (
 	"context"
 	"sync"
 
-	"github.com/mcpany/core/pkg/resilience"
-	"github.com/mcpany/core/pkg/tool"
+	"github.com/mcpany/core/server/pkg/resilience"
+	"github.com/mcpany/core/server/pkg/tool"
 )
 
 // ResilienceMiddleware provides circuit breaker and retry functionality for tool executions.

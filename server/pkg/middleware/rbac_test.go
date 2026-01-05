@@ -8,7 +8,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/mcpany/core/pkg/auth"
+	"github.com/mcpany/core/server/pkg/auth"
 	"github.com/stretchr/testify/assert"
 )
 

@@ -9,7 +9,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/mcpany/core/pkg/logging"
+	"github.com/mcpany/core/server/pkg/logging"
 )
 
 const (

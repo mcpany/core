@@ -12,7 +12,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/mcpany/core/pkg/app"
+	"github.com/mcpany/core/server/pkg/app"
 	"github.com/spf13/afero"
 	"github.com/stretchr/testify/require"
 )

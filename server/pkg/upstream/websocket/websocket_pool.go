@@ -9,8 +9,8 @@ import (
 	"time"
 
 	"github.com/gorilla/websocket"
-	"github.com/mcpany/core/pkg/client"
-	"github.com/mcpany/core/pkg/pool"
+	"github.com/mcpany/core/server/pkg/client"
+	"github.com/mcpany/core/server/pkg/pool"
 )
 
 // Pool is a type alias for a pool of WebSocket client connections.

@@ -8,7 +8,7 @@ import (
 	"fmt"
 	"sync"
 
-	"github.com/mcpany/core/pkg/logging"
+	"github.com/mcpany/core/server/pkg/logging"
 	xsync "github.com/puzpuzpuz/xsync/v4"
 )
 
