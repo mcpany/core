@@ -54,6 +54,7 @@ func (p *testPrompt) Get(_ context.Context, args json.RawMessage) (*mcp.GetPromp
 }
 
 func TestPromptIntegration(t *testing.T) {
+	t.Parallel()
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
@@ -139,6 +140,7 @@ func TestPromptIntegration(t *testing.T) {
 }
 
 func TestPromptLifecycle(t *testing.T) {
+	t.Parallel()
 	// MCP Server Setup
 	serverImpl := &mcp.Implementation{Name: "test-server", Version: "v0.0.1"}
 	serverOpts := &mcp.ServerOptions{HasPrompts: true}

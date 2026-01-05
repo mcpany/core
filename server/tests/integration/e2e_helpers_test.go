@@ -62,8 +62,8 @@ func TestWaitForText(t *testing.T) {
 }
 
 func TestDockerHelpers(t *testing.T) {
-	t.Skip("Skipping test due to DockerHub rate limiting issues")
 	t.Parallel()
+	t.Skip("Skipping test due to DockerHub rate limiting issues")
 	if !IsDockerSocketAccessible() {
 		t.Skip("Docker is not available")
 	}

@@ -21,6 +21,7 @@ import (
 )
 
 func TestMetrics(t *testing.T) {
+	t.Parallel()
 	tempDir, err := os.MkdirTemp("", "mcpany-integration-test")
 	require.NoError(t, err)
 	defer os.RemoveAll(tempDir)

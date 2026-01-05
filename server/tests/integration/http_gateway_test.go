@@ -16,6 +16,7 @@ import (
 )
 
 func TestHTTPGateway_RegisterService(t *testing.T) {
+	t.Parallel()
 	server := StartInProcessMCPANYServer(t, "HTTPGatewayTest")
 	defer server.CleanupFunc()
 

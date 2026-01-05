@@ -199,6 +199,7 @@ func (c *MCPClient) ListResources(ctx context.Context) (*mcp.ListResourcesResult
 }
 
 func TestAutoDiscoverAndExportPolicy(t *testing.T) {
+	t.Parallel()
 	mockServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		w.WriteHeader(http.StatusOK)
 		_, _ = w.Write([]byte(`{"status": "ok"}`))
@@ -277,6 +278,7 @@ func TestAutoDiscoverAndExportPolicy(t *testing.T) {
 }
 
 func TestCallPolicyExecution(t *testing.T) {
+	t.Parallel()
 	mockServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case "/allowed":
@@ -375,6 +377,7 @@ func TestCallPolicyExecution(t *testing.T) {
 }
 
 func TestExportPolicyForPromptsAndResources(t *testing.T) {
+	t.Parallel()
 	mockServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		w.WriteHeader(http.StatusOK)
 	}))

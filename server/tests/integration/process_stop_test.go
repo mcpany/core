@@ -16,6 +16,7 @@ import (
 // correctly falls back to sending SIGINT to the process directly if sending to the
 // process group fails.
 func TestManagedProcess_StopFallback(t *testing.T) {
+	t.Parallel()
 	// This test uses a simple 'sleep' command. We will patch the syscall.Kill
 	// function to simulate a failure when trying to signal the process group.
 	// This will allow us to test the fallback logic in a controlled manner.

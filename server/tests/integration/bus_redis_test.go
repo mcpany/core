@@ -23,10 +23,11 @@ func waitForSubscribers(t *testing.T, client *goredis.Client, topic string, expe
 		subs := client.PubSubNumSub(context.Background(), topic).Val()
 		// Check that the subscriber count is at least the expected number
 		return subs[topic] >= int64(expected)
-	}, 10*time.Second, 100*time.Millisecond, "timed out waiting for subscribers on topic %s", topic)
+	}, 5*time.Second, 100*time.Millisecond, "timed out waiting for subscribers on topic %s", topic)
 }
 
 func TestRedisBus_Integration_Subscribe(t *testing.T) {
+	t.Parallel()
 	if testing.Short() {
 		t.Skip("skipping integration test in short mode.")
 	}
@@ -67,6 +68,7 @@ func TestRedisBus_Integration_Subscribe(t *testing.T) {
 }
 
 func TestRedisBus_Integration_SubscribeOnce(t *testing.T) {
+	t.Parallel()
 	if testing.Short() {
 		t.Skip("skipping integration test in short mode.")
 	}
@@ -107,6 +109,7 @@ func TestRedisBus_Integration_SubscribeOnce(t *testing.T) {
 }
 
 func TestBusProvider_Integration_Redis(t *testing.T) {
+	t.Parallel()
 	if testing.Short() {
 		t.Skip("skipping integration test in short mode.")
 	}
@@ -132,6 +135,7 @@ func TestBusProvider_Integration_Redis(t *testing.T) {
 }
 
 func TestRedisBus_Integration_Unsubscribe(t *testing.T) {
+	t.Parallel()
 	if testing.Short() {
 		t.Skip("skipping integration test in short mode.")
 	}
@@ -189,6 +193,7 @@ func TestRedisBus_Integration_Unsubscribe(t *testing.T) {
 }
 
 func TestRedisBus_Integration_Concurrent(t *testing.T) {
+	t.Parallel()
 	if testing.Short() {
 		t.Skip("skipping integration test in short mode.")
 	}
@@ -221,14 +226,18 @@ func TestRedisBus_Integration_Concurrent(t *testing.T) {
 	}
 
 	for i := 0; i < numSubscribers; i++ {
+		subIdx := i
 		redisBus.Subscribe(ctx, topic, func(msg string) {
 			mu.Lock()
-			receivedMessages[i] = append(receivedMessages[i], msg)
+			receivedMessages[subIdx] = append(receivedMessages[subIdx], msg)
 			mu.Unlock()
 			wg.Done()
 		})
-		waitForSubscribers(t, client, topic, i+1)
 	}
+
+	// The redis bus implementation multiplexes all subscribers for a single topic onto a single redis connection.
+	// Therefore, we only need to wait for a single subscriber to connect to ensure the subscription is active.
+	waitForSubscribers(t, client, topic, 1)
 
 	for i := 0; i < numMessages; i++ {
 		err := redisBus.Publish(ctx, topic, "msg")

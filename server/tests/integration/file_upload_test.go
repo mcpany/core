@@ -17,6 +17,7 @@ import (
 )
 
 func TestFileUpload(t *testing.T) {
+	t.Parallel()
 	// Start the server
 	server := StartInProcessMCPANYServer(t, "FileUploadTest")
 	defer server.CleanupFunc()

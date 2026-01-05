@@ -17,6 +17,7 @@ import (
 const testMessage = "hello"
 
 func TestNatsBus_EmbeddedServer(t *testing.T) {
+	t.Parallel()
 	serverInfo := StartInProcessMCPANYServer(t, "embedded-nats")
 	defer serverInfo.CleanupFunc()
 
@@ -45,6 +46,7 @@ func TestNatsBus_EmbeddedServer(t *testing.T) {
 }
 
 func TestNatsBus_ExternalServer(t *testing.T) {
+	t.Parallel()
 	serverInfo := StartMCPANYServer(t, "external-nats")
 	defer serverInfo.CleanupFunc()
 

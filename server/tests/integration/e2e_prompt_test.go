@@ -19,6 +19,7 @@ import (
 )
 
 func TestE2EPrompt(t *testing.T) {
+	t.Parallel()
 	framework.RunE2ETest(t, &framework.E2ETestCase{
 		Name:                "prompt",
 		UpstreamServiceType: "http",

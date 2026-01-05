@@ -18,6 +18,7 @@ import (
 )
 
 func TestMTLSAuthentication(t *testing.T) {
+	t.Parallel()
 	// Create a mock upstream server that requires mTLS
 	server := httptest.NewUnstartedServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		w.Header().Set("Content-Type", "application/json")

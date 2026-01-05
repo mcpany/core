@@ -20,6 +20,7 @@ import (
 )
 
 func TestCacheMiddleware_CacheHit(t *testing.T) {
+	t.Parallel()
 	// t.Skip("Skipping flaky test: tool registration times out intermittently.")
 	var requestCount int32
 	upstream := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
@@ -82,6 +83,7 @@ upstream_services:
 }
 
 func TestCacheMiddleware_CacheExpires(t *testing.T) {
+	t.Parallel()
 	// t.Skip("Skipping flaky test: tool registration times out intermittently.")
 	var requestCount int32
 	upstream := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
