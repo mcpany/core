@@ -170,7 +170,7 @@ func TestHelmChart(t *testing.T) {
 	}
 	t.Parallel()
 
-	helmChartPath := filepath.Join(integration.ProjectRoot(t), "helm", "mcpany")
+	helmChartPath := filepath.Join(integration.ProjectRoot(t), "../k8s", "helm", "mcpany")
 
 	// 1. Lint the chart
 	lintCmd := exec.Command("helm", "lint", ".")

@@ -46,7 +46,7 @@ func TestOperatorE2E(t *testing.T) {
 	// 3. Create Kind Cluster
 	if !clusterExists(t, ctx, clusterName) {
 		t.Logf("Creating Kind cluster %s...", clusterName)
-		if err := runCommand(t, ctx, rootDir, "kind", "create", "cluster", "--name", clusterName, "--image", kindImage, "--wait", "2m"); err != nil {
+		if err := runCommand(t, ctx, rootDir, "kind", "create", "cluster", "--name", clusterName, "--image", kindImage, "--config", "k8s/tests/kind-config.yaml", "--wait", "2m"); err != nil {
 			t.Fatalf("Failed to create kind cluster: %v", err)
 		}
 	} else {
@@ -55,7 +55,8 @@ func TestOperatorE2E(t *testing.T) {
 
 	// 4. Build Images (Locally)
 	t.Logf("Building Docker images with tag %s...", tag)
-	if err := runCommand(t, ctx, rootDir, "docker", "build", "-t", fmt.Sprintf("mcpany/server:%s", tag), "-f", "server/docker/Dockerfile.server", "server"); err != nil {
+	// Build server with root context because Dockerfile expects it (COPY server/go.mod etc.)
+	if err := runCommand(t, ctx, rootDir, "docker", "build", "-t", fmt.Sprintf("mcpany/server:%s", tag), "-f", "server/docker/Dockerfile.server", "."); err != nil {
 		t.Fatalf("Failed to build server image: %v", err)
 	}
 	if err := runCommand(t, ctx, rootDir, "docker", "build", "-t", fmt.Sprintf("mcpany/operator:%s", tag), "-f", "k8s/operator/Dockerfile", "."); err != nil {
