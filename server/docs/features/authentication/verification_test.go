@@ -8,7 +8,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/mcpany/core/server/pkg/config"
+	"github.com/mcpany/core/pkg/config"
 	pb "github.com/mcpany/core/proto/config/v1"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/encoding/protojson"

@@ -261,10 +261,7 @@ func shouldScanRaw(v []byte) bool {
 // sensitiveKeys is a list of substrings that suggest a key contains sensitive information.
 // Note: Shorter keys that are substrings of longer keys (e.g. "token" vs "access_token") cover the longer cases,
 // so we only include the shorter ones to optimize performance.
-var sensitiveKeys = []string{
-	"api_key", "apikey", "token", "secret", "password", "passwd", "credential", "auth", "private_key",
-	"authorization", "proxy-authorization", "cookie", "set-cookie", "x-api-key",
-}
+var sensitiveKeys = []string{"api_key", "apikey", "token", "secret", "password", "passwd", "credential", "auth", "private_key"}
 
 // IsSensitiveKey checks if a key name suggests it contains sensitive information.
 func IsSensitiveKey(key string) bool {
@@ -346,18 +343,6 @@ func scanForSensitiveKeys(input []byte, checkEscape bool) bool {
 						next := input[endIdx]
 						if next >= 'a' && next <= 'z' {
 							continue
-						}
-						// Special handling for uppercase keys (e.g. "AUTH" in "AUTHORITY")
-						// If the matched key was uppercase, and the next char is uppercase, it's a continuation.
-						// However, if the matched key was lowercase (e.g. "auth" in "authToken"), it's CamelCase (boundary).
-						if next >= 'A' && next <= 'Z' {
-							// Check if the matched key was uppercase.
-							// We know input[matchStart] matched the key start.
-							// If input[matchStart] is uppercase, assume the whole key match was uppercase (or case-insensitive matching logic holds).
-							firstChar := input[matchStart]
-							if firstChar >= 'A' && firstChar <= 'Z' {
-								continue
-							}
 						}
 					}
 

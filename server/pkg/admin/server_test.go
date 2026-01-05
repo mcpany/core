@@ -7,8 +7,8 @@ import (
 	"context"
 	"testing"
 
-	"github.com/mcpany/core/server/pkg/middleware"
-	"github.com/mcpany/core/server/pkg/tool"
+	"github.com/mcpany/core/pkg/middleware"
+	"github.com/mcpany/core/pkg/tool"
 	pb "github.com/mcpany/core/proto/admin/v1"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	mcprouterv1 "github.com/mcpany/core/proto/mcp_router/v1"

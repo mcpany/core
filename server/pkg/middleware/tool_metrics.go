@@ -10,7 +10,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/mcpany/core/server/pkg/tool"
+	"github.com/mcpany/core/pkg/tool"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/prometheus/client_golang/prometheus"
 )

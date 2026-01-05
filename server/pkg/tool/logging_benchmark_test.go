@@ -11,8 +11,8 @@ import (
 	"log/slog"
 	"testing"
 
-	"github.com/mcpany/core/server/pkg/logging"
-	"github.com/mcpany/core/server/pkg/pool"
+	"github.com/mcpany/core/pkg/logging"
+	"github.com/mcpany/core/pkg/pool"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	v1 "github.com/mcpany/core/proto/mcp_router/v1"
 )

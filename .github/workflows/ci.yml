@@ -517,7 +517,7 @@ jobs:
       - name: Build Docker Image
         uses: docker/build-push-action@v5
         with:
-          context: .
+          context: server
           file: server/docker/Dockerfile.server
           push: false
           load: true

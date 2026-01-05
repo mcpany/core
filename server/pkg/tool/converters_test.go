@@ -6,7 +6,7 @@ package tool
 import (
 	"testing"
 
-	"github.com/mcpany/core/server/pkg/upstream/grpc/protobufparser"
+	"github.com/mcpany/core/pkg/upstream/grpc/protobufparser"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/assert"

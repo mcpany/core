@@ -10,17 +10,17 @@ import (
 	"time"
 
 	"github.com/armon/go-metrics"
-	"github.com/mcpany/core/server/pkg/auth"
-	"github.com/mcpany/core/server/pkg/bus"
-	"github.com/mcpany/core/server/pkg/mcpserver"
-	"github.com/mcpany/core/server/pkg/pool"
-	"github.com/mcpany/core/server/pkg/prompt"
-	"github.com/mcpany/core/server/pkg/resource"
-	"github.com/mcpany/core/server/pkg/serviceregistry"
-	"github.com/mcpany/core/server/pkg/tool"
-	"github.com/mcpany/core/server/pkg/upstream/factory"
-	"github.com/mcpany/core/server/pkg/util"
-	"github.com/mcpany/core/server/pkg/worker"
+	"github.com/mcpany/core/pkg/auth"
+	"github.com/mcpany/core/pkg/bus"
+	"github.com/mcpany/core/pkg/mcpserver"
+	"github.com/mcpany/core/pkg/pool"
+	"github.com/mcpany/core/pkg/prompt"
+	"github.com/mcpany/core/pkg/resource"
+	"github.com/mcpany/core/pkg/serviceregistry"
+	"github.com/mcpany/core/pkg/tool"
+	"github.com/mcpany/core/pkg/upstream/factory"
+	"github.com/mcpany/core/pkg/util"
+	"github.com/mcpany/core/pkg/worker"
 	bus_pb "github.com/mcpany/core/proto/bus"
 	v1 "github.com/mcpany/core/proto/mcp_router/v1"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
@@ -131,9 +131,8 @@ func TestMetricNamingConsistency(t *testing.T) {
 	// 2. Call error tool
 	sanitizedErrorName, _ := util.SanitizeToolName("error-tool")
 	errorID := "test-service" + "." + sanitizedErrorName
-	res, err := clientSession.CallTool(ctx, &mcp.CallToolParams{Name: errorID})
-	require.NoError(t, err)
-	assert.True(t, res.IsError, "Expected IsError=true")
+	_, err = clientSession.CallTool(ctx, &mcp.CallToolParams{Name: errorID})
+	require.Error(t, err)
 
 	// Check metrics
 	data := sink.Data()

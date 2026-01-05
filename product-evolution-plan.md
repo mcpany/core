@@ -62,7 +62,7 @@ Based on the current architecture and market needs, the following features shoul
 ### Critical Areas
 *   **Rate Limiting Complexity**: The `server/pkg/middleware/ratelimit.go` file contains complex logic mixing local and Redis implementations. Refactoring into cleaner interfaces would improve maintainability.
 *   **Filesystem Provider Monolith**: `server/pkg/upstream/filesystem/upstream.go` is becoming large. S3, GCS, and Local logic should be separated into distinct providers or packages to avoid "god objects".
-*   **Documentation Scatter**: Documentation is spread across `server/docs/features/` and `README.md`. A unified documentation site generator (using the existing `doc_generator` feature) should be standard.
+*   **Documentation Scatter**: Documentation is spread across `docs/features/` and `README.md`. A unified documentation site generator (using the existing `doc_generator` feature) should be standard.
 *   **Test Coverage**: While unit tests exist, end-to-end integration tests for cloud providers (S3/GCS) are likely mocked or missing in CI due to credential requirements. Ensuring hermetic tests for these is crucial.
 *   **Webhooks "Test" Code**: `server/cmd/webhooks` appears to be a test server but is referenced in examples. It should be clarified if this is a production-ready component or just for testing.
 

@@ -11,7 +11,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/mcpany/core/server/tests/integration"
+	"github.com/mcpany/core/tests/integration"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/require"
 )

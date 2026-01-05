@@ -13,9 +13,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/mcpany/core/server/pkg/client"
-	healthChecker "github.com/mcpany/core/server/pkg/health"
-	"github.com/mcpany/core/server/pkg/pool"
+	"github.com/mcpany/core/pkg/client"
+	healthChecker "github.com/mcpany/core/pkg/health"
+	"github.com/mcpany/core/pkg/pool"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"

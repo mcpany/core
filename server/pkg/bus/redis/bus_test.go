@@ -13,7 +13,7 @@ import (
 	"time"
 
 	"github.com/go-redis/redismock/v9"
-	"github.com/mcpany/core/server/pkg/logging"
+	"github.com/mcpany/core/pkg/logging"
 	bus_pb "github.com/mcpany/core/proto/bus"
 	"github.com/redis/go-redis/v9"
 	"github.com/stretchr/testify/assert"

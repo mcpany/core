@@ -18,7 +18,7 @@ import (
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/secretsmanager"
 	"github.com/hashicorp/vault/api"
-	"github.com/mcpany/core/server/pkg/validation"
+	"github.com/mcpany/core/pkg/validation"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/clientcredentials"

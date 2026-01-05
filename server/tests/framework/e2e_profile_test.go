@@ -10,7 +10,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/mcpany/core/server/tests/integration"
+	"github.com/mcpany/core/tests/integration"
 	"github.com/stretchr/testify/require"
 )
 

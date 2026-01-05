@@ -21,18 +21,18 @@ import (
 	"sync"
 	"time"
 
+	"github.com/mcpany/core/pkg/auth"
+	"github.com/mcpany/core/pkg/client"
+	"github.com/mcpany/core/pkg/command"
+	"github.com/mcpany/core/pkg/consts"
+	"github.com/mcpany/core/pkg/logging"
+	"github.com/mcpany/core/pkg/metrics"
+	"github.com/mcpany/core/pkg/pool"
+	"github.com/mcpany/core/pkg/resilience"
+	"github.com/mcpany/core/pkg/transformer"
+	"github.com/mcpany/core/pkg/util"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	v1 "github.com/mcpany/core/proto/mcp_router/v1"
-	"github.com/mcpany/core/server/pkg/auth"
-	"github.com/mcpany/core/server/pkg/client"
-	"github.com/mcpany/core/server/pkg/command"
-	"github.com/mcpany/core/server/pkg/consts"
-	"github.com/mcpany/core/server/pkg/logging"
-	"github.com/mcpany/core/server/pkg/metrics"
-	"github.com/mcpany/core/server/pkg/pool"
-	"github.com/mcpany/core/server/pkg/resilience"
-	"github.com/mcpany/core/server/pkg/transformer"
-	"github.com/mcpany/core/server/pkg/util"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/reflect/protoreflect"
@@ -1328,9 +1328,6 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 		return nil, fmt.Errorf("tool execution blocked by policy")
 	}
 	var inputs map[string]any
-	if len(bytes.TrimSpace(req.ToolInputs)) == 0 {
-		req.ToolInputs = []byte("{}")
-	}
 	decoder := json.NewDecoder(bytes.NewReader(req.ToolInputs))
 	decoder.UseNumber()
 	if err := decoder.Decode(&inputs); err != nil {
@@ -1595,10 +1592,6 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 		return nil, fmt.Errorf("tool execution blocked by policy")
 	}
 	var inputs map[string]any
-	// Handle empty inputs by treating them as empty JSON object
-	if len(bytes.TrimSpace(req.ToolInputs)) == 0 {
-		req.ToolInputs = []byte("{}")
-	}
 	decoder := json.NewDecoder(bytes.NewReader(req.ToolInputs))
 	decoder.UseNumber()
 	if err := decoder.Decode(&inputs); err != nil {
@@ -1761,9 +1754,6 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 		}()
 
 		var unmarshaledInputs map[string]interface{}
-		if len(req.ToolInputs) == 0 {
-			req.ToolInputs = []byte("{}")
-		}
 		decoder := json.NewDecoder(bytes.NewReader(req.ToolInputs))
 		decoder.UseNumber()
 		if err := decoder.Decode(&unmarshaledInputs); err != nil {

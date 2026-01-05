@@ -9,7 +9,7 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/mcpany/core/server/pkg/logging"
+	"github.com/mcpany/core/pkg/logging"
 )
 
 // JSONRPCError represents a JSON-RPC 2.0 error object.
@@ -27,8 +27,6 @@ type JSONRPCResponse struct {
 }
 
 // JSONRPCComplianceMiddleware ensures that errors are returned as valid JSON-RPC responses.
-// It intercepts non-JSON error responses (4xx, 5xx) and wraps them in a JSON-RPC error format.
-// Successful responses (2xx) and JSON error responses are streamed directly to avoid buffering.
 func JSONRPCComplianceMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// Only intercept POST requests (likely JSON-RPC)
@@ -43,149 +41,106 @@ func JSONRPCComplianceMiddleware(next http.Handler) http.Handler {
 			return
 		}
 
-		rw := &smartResponseWriter{
-			w:      w,
-			header: make(http.Header),
+		// We need to buffer the response to check if it's an error
+		// Note: This might have performance impact for large responses, but errors are usually small.
+
+		// Use a separate buffer for our capture, but we need to prevent writing to the real writer
+		// if we are going to modify the response.
+		// So we can't use the simple wrapper above if we want to REPLACE the body.
+		// We have to NOT write to underlying writer until we decide.
+
+		bufRec := &bufferedResponseWriter{
+			ResponseWriter: w,
+			statusCode:     200, // Default
+			header:         make(http.Header),
+			body:           &bytes.Buffer{},
 		}
 
-		next.ServeHTTP(rw, r)
+		next.ServeHTTP(bufRec, r)
 
-		// If headers weren't written, default to 200 OK
-		if !rw.committed {
-			rw.WriteHeader(http.StatusOK)
+		// Check if we need to modify the response
+		if bufRec.statusCode >= 400 {
+			contentType := bufRec.header.Get("Content-Type")
+			// If it's not JSON, or if it's text/plain, we might need to wrap it.
+			if !strings.Contains(contentType, "application/json") {
+				bodyStr := strings.TrimSpace(bufRec.body.String())
+
+				// Determine error code based on body content or status
+				// This is heuristic-based because we lost the original context.
+				code := -32603 // Internal error default
+				message := bodyStr
+				if message == "" {
+					message = http.StatusText(bufRec.statusCode)
+				}
+
+				messageLower := strings.ToLower(message)
+				switch {
+				case strings.Contains(messageLower, "parse error") || strings.Contains(messageLower, "malformed") || strings.Contains(messageLower, "invalid character"):
+					code = -32700
+					message = "Parse error"
+				case strings.Contains(messageLower, "invalid request") || message == "Bad Request":
+					code = -32600
+					message = "Invalid Request"
+				case strings.Contains(messageLower, "method not found") || strings.Contains(messageLower, "not handled") || strings.Contains(messageLower, "unsupported"):
+					code = -32601
+					message = "Method not found"
+				case strings.Contains(messageLower, "invalid params"):
+					code = -32602
+					message = "Invalid params"
+				}
+
+				// Try to extract ID from request if possible (best effort)
+				// We can read the request body again if we buffered it, but we didn't.
+				// So ID is null.
+
+				resp := JSONRPCResponse{
+					JSONRPC: "2.0",
+					ID:      nil,
+					Error: &JSONRPCError{
+						Code:    code,
+						Message: message,
+						Data:    bodyStr, // Include original message as data
+					},
+				}
+
+				logging.GetLogger().Info("Rewriting error response to JSON-RPC", "original_status", bufRec.statusCode, "original_body", bodyStr, "new_code", code)
+
+				w.Header().Set("Content-Type", "application/json")
+				w.WriteHeader(bufRec.statusCode) // Keep original status code (e.g. 400)
+				_ = json.NewEncoder(w).Encode(resp)
+				return
+			}
 		}
 
-		// If we passed through, we are done
-		if rw.passThrough {
-			return
+		// Write original response
+		for k, v := range bufRec.header {
+			for _, vv := range v {
+				w.Header().Add(k, vv)
+			}
 		}
-
-		// If we are here, we have a buffered error response that needs rewriting
-		rw.rewriteError()
+		w.WriteHeader(bufRec.statusCode)
+		_, _ = w.Write(bufRec.body.Bytes())
 	})
 }
 
-const maxErrorBufferSize = 32 * 1024 // 32KB limit for error buffering
-
-type smartResponseWriter struct {
-	w           http.ResponseWriter
-	header      http.Header
-	statusCode  int
-	body        *bytes.Buffer
-	committed   bool
-	passThrough bool
+type bufferedResponseWriter struct {
+	http.ResponseWriter
+	statusCode int
+	header     http.Header
+	body       *bytes.Buffer
 }
 
-func (w *smartResponseWriter) Header() http.Header {
+// Header returns the map of header fields to be sent by WriteHeader.
+func (w *bufferedResponseWriter) Header() http.Header {
 	return w.header
 }
 
-func (w *smartResponseWriter) WriteHeader(code int) {
-	if w.committed {
-		return
-	}
-	w.committed = true
+// WriteHeader sends an HTTP response header with the provided status code.
+func (w *bufferedResponseWriter) WriteHeader(code int) {
 	w.statusCode = code
-
-	// We pass through if:
-	// 1. Success (code < 400)
-	// 2. Already JSON (Content-Type contains application/json)
-	contentType := w.header.Get("Content-Type")
-	isJSON := strings.Contains(contentType, "application/json")
-
-	if code < 400 || isJSON {
-		w.passThrough = true
-		w.flushHeader()
-	} else {
-		// Buffer for rewriting
-		w.body = &bytes.Buffer{}
-	}
 }
 
-func (w *smartResponseWriter) Write(b []byte) (int, error) {
-	if !w.committed {
-		w.WriteHeader(http.StatusOK)
-	}
-
-	if w.passThrough {
-		return w.w.Write(b)
-	}
-
-	// Check buffer limit
-	if w.body.Len()+len(b) > maxErrorBufferSize {
-		// Too large to rewrite, switch to pass-through
-		logging.GetLogger().Warn("Error response too large for JSON-RPC rewrite, streaming raw response", "size", w.body.Len()+len(b))
-		w.passThrough = true
-		w.flushHeader()
-		// Write what we have so far
-		if w.body.Len() > 0 {
-			_, _ = w.w.Write(w.body.Bytes())
-			w.body.Reset()
-		}
-		return w.w.Write(b)
-	}
-
+// Write writes the data to the connection as part of an HTTP reply.
+func (w *bufferedResponseWriter) Write(b []byte) (int, error) {
 	return w.body.Write(b)
-}
-
-func (w *smartResponseWriter) flushHeader() {
-	// Copy headers
-	for k, v := range w.header {
-		for _, vv := range v {
-			w.w.Header().Add(k, vv)
-		}
-	}
-	w.w.WriteHeader(w.statusCode)
-}
-
-// Flush implements http.Flusher to support streaming.
-func (w *smartResponseWriter) Flush() {
-	if w.passThrough {
-		if f, ok := w.w.(http.Flusher); ok {
-			f.Flush()
-		}
-	}
-}
-
-func (w *smartResponseWriter) rewriteError() {
-	bodyStr := strings.TrimSpace(w.body.String())
-
-	// Determine error code based on body content or status
-	code := -32603 // Internal error default
-	message := bodyStr
-	if message == "" {
-		message = http.StatusText(w.statusCode)
-	}
-
-	messageLower := strings.ToLower(message)
-	switch {
-	case strings.Contains(messageLower, "parse error") || strings.Contains(messageLower, "malformed") || strings.Contains(messageLower, "invalid character"):
-		code = -32700
-		message = "Parse error"
-	case strings.Contains(messageLower, "invalid request") || message == "Bad Request":
-		code = -32600
-		message = "Invalid Request"
-	case strings.Contains(messageLower, "method not found") || strings.Contains(messageLower, "not handled") || strings.Contains(messageLower, "unsupported"):
-		code = -32601
-		message = "Method not found"
-	case strings.Contains(messageLower, "invalid params"):
-		code = -32602
-		message = "Invalid params"
-	}
-
-	resp := JSONRPCResponse{
-		JSONRPC: "2.0",
-		ID:      nil,
-		Error: &JSONRPCError{
-			Code:    code,
-			Message: message,
-			Data:    bodyStr, // Include original message as data
-		},
-	}
-
-	logging.GetLogger().Info("Rewriting error response to JSON-RPC", "original_status", w.statusCode, "original_body", bodyStr, "new_code", code)
-
-	w.w.Header().Set("Content-Type", "application/json")
-	w.w.WriteHeader(w.statusCode) // Keep original status code (e.g. 400)
-	_ = json.NewEncoder(w.w).Encode(resp)
 }

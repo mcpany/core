@@ -11,8 +11,8 @@ import (
 	"time"
 
 	apiv1 "github.com/mcpany/core/proto/api/v1"
-	"github.com/mcpany/core/server/tests/framework"
-	"github.com/mcpany/core/server/tests/integration"
+	"github.com/mcpany/core/tests/framework"
+	"github.com/mcpany/core/tests/integration"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"

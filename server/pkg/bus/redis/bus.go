@@ -9,7 +9,7 @@ import (
 	"encoding/json"
 	"sync"
 
-	"github.com/mcpany/core/server/pkg/logging"
+	"github.com/mcpany/core/pkg/logging"
 	"github.com/mcpany/core/proto/bus"
 	"github.com/redis/go-redis/v9"
 )

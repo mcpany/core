@@ -23,7 +23,6 @@ import (
 )
 
 func TestDockerComposeE2E(t *testing.T) {
-	t.Skip("Skipping E2E test as requested by user to unblock merge")
 	if os.Getenv("E2E_DOCKER") != "true" {
 		t.Skip("Skipping E2E Docker test. Set E2E_DOCKER=true to run.")
 	}
@@ -31,13 +30,9 @@ func TestDockerComposeE2E(t *testing.T) {
 	rootDir, err := os.Getwd()
 	require.NoError(t, err)
 
-	// Navigate up to repo root (core)
-	// tests/e2e_sequential -> server -> core
+	// Navigate up if we are running from inside tests/e2e or tests/e2e_sequential
 	if strings.HasSuffix(rootDir, "tests/e2e") || strings.HasSuffix(rootDir, "tests/e2e_sequential") {
-		rootDir = filepath.Join(rootDir, "../../..")
-	} else if strings.HasSuffix(rootDir, "server") {
-		// If running from server root
-		rootDir = filepath.Join(rootDir, "..")
+		rootDir = filepath.Join(rootDir, "../..")
 	}
 	rootDir, err = filepath.Abs(rootDir)
 	require.NoError(t, err)
@@ -46,7 +41,7 @@ func TestDockerComposeE2E(t *testing.T) {
 
 	// 1. Build Docker Image
 	t.Log("Building mcpany/server image...")
-	runCommand(t, rootDir, "docker", "build", "-t", imageName, "-f", "server/docker/Dockerfile.server", ".")
+	runCommand(t, rootDir, "docker", "build", "-t", imageName, "-f", "docker/Dockerfile.server", ".")
 
 	// Use a unique project name for isolation
 	projectName := fmt.Sprintf("e2e_seq_%d", time.Now().UnixNano())

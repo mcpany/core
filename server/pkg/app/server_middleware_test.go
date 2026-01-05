@@ -7,7 +7,7 @@ import (
 	"context"
 	"testing"
 
-	"github.com/mcpany/core/server/pkg/middleware"
+	"github.com/mcpany/core/pkg/middleware"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/assert"

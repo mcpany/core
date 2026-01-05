@@ -9,7 +9,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/mcpany/core/server/pkg/middleware"
+	"github.com/mcpany/core/pkg/middleware"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )

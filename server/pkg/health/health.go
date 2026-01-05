@@ -17,9 +17,9 @@ import (
 
 	"github.com/alexliesenfeld/health"
 	"github.com/coder/websocket"
-	"github.com/mcpany/core/server/pkg/command"
-	"github.com/mcpany/core/server/pkg/logging"
-	"github.com/mcpany/core/server/pkg/metrics"
+	"github.com/mcpany/core/pkg/command"
+	"github.com/mcpany/core/pkg/logging"
+	"github.com/mcpany/core/pkg/metrics"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/samber/lo"
 	"google.golang.org/grpc"

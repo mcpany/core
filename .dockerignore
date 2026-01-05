@@ -13,10 +13,6 @@ build/
 
 # Ignore documentation
 docs/
-node_modules/
-node_modules
-**/node_modules
-
 
 # Ignore vendor directories
 vendor/

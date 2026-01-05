@@ -1,7 +1,7 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
-package util //nolint:revive,nolintlint // Package name 'util' is common in this codebase
+package util
 
 import (
 	"crypto/sha256"
@@ -16,7 +16,7 @@ import (
 	"unsafe"
 
 	"github.com/google/uuid"
-	"github.com/mcpany/core/server/pkg/consts"
+	"github.com/mcpany/core/pkg/consts"
 )
 
 // SanitizeID sanitizes a slice of strings to form a valid ID.

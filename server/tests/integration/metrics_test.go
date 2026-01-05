@@ -15,7 +15,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/mcpany/core/server/pkg/testutil"
+	"github.com/mcpany/core/pkg/testutil"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )

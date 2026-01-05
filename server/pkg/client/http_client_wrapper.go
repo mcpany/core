@@ -8,7 +8,7 @@ import (
 	"net/http"
 
 	"github.com/alexliesenfeld/health"
-	healthChecker "github.com/mcpany/core/server/pkg/health"
+	healthChecker "github.com/mcpany/core/pkg/health"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 )
 

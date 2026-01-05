@@ -20,20 +20,7 @@ endif
 
 # Default test target# Run the tests in a docker container
 test: build-test-docker
-	# Override command to include args if provided
-	# We can't easily pass args via `up`.
-	# We should use `run` if we want to pass args, but `up` is good for dependencies.
-	# Alternative: Set PLAYWRIGHT_ARGS env var?
-	# Or use `run` but ensure dependencies are up.
-	# Let's try to use PLAYWRIGHT_ARGS env var if we can't change command easily.
-	# But docker-compose.test-ui.yml command is `npx playwright test`.
-	# If we change it to use sh -c "npx playwright test $PLAYWRIGHT_ARGS", it might work.
-	# BUT I prefer to use `run` for targeted tests.
-	if [ -z '$(ARGS)' ]; then \
-		docker compose -f ../docker/docker-compose.test-ui.yml up --abort-on-container-exit --exit-code-from ui-tests; \
-	else \
-		docker compose -f ../docker/docker-compose.test-ui.yml run --rm --service-ports ui-tests npx playwright test $(ARGS); \
-	fi
+	docker compose -f ../docker/docker-compose.test-ui.yml up --abort-on-container-exit --exit-code-from ui-tests
 
 # Run audit tests (generate screenshots)
 audit: build-test-docker

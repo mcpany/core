@@ -8,8 +8,8 @@ import (
 	"fmt"
 
 	"github.com/armon/go-metrics"
-	"github.com/mcpany/core/server/pkg/logging"
-	"github.com/mcpany/core/server/pkg/tool"
+	"github.com/mcpany/core/pkg/logging"
+	"github.com/mcpany/core/pkg/tool"
 )
 
 // CallPolicyMiddleware is a middleware that enforces call policies (allow/deny)

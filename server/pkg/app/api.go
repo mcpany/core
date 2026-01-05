@@ -10,10 +10,10 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/mcpany/core/server/pkg/config"
-	"github.com/mcpany/core/server/pkg/logging"
-	"github.com/mcpany/core/server/pkg/storage"
-	"github.com/mcpany/core/server/pkg/tool"
+	"github.com/mcpany/core/pkg/config"
+	"github.com/mcpany/core/pkg/logging"
+	"github.com/mcpany/core/pkg/storage"
+	"github.com/mcpany/core/pkg/tool"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"google.golang.org/protobuf/encoding/protojson"
@@ -319,7 +319,6 @@ func (a *Application) handleExecute() http.HandlerFunc {
 		}
 		var req tool.ExecutionRequest
 		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-			logging.GetLogger().Error("failed to decode execution request", "error", err)
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}

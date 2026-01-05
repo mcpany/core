@@ -1,8 +1,3 @@
-/**
- * Copyright 2026 Author(s) of MCP Any
- * SPDX-License-Identifier: Apache-2.0
- */
-
 
 import { test, expect } from '@playwright/test';
 
@@ -57,7 +52,7 @@ test.describe('Mobile View Verification', () => {
   test('should render Secret Manager with mobile layout', async ({ page }) => {
     await page.goto('/secrets');
     // Check if table renders
-    await expect(page.locator('text=API Keys & Secrets')).toBeVisible();
+    await expect(page.locator('text=Environment Secrets')).toBeVisible();
 
     // Open dialog
     await page.getByRole('button', { name: 'Add Secret' }).click();
@@ -66,7 +61,7 @@ test.describe('Mobile View Verification', () => {
     await expect(page.getByRole('dialog')).toBeVisible();
 
     // Check inputs stacking (simplified check by visibility)
-    await expect(page.getByLabel('Friendly Name')).toBeVisible();
-    await expect(page.getByLabel('Key Name (Env Var)')).toBeVisible();
+    await expect(page.getByLabel('Name')).toBeVisible();
+    await expect(page.getByLabel('Key')).toBeVisible();
   });
 });

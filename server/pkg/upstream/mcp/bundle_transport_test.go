@@ -18,7 +18,7 @@ import (
 	"github.com/docker/docker/api/types/image"
 	"github.com/docker/docker/api/types/network"
 	"github.com/docker/docker/client"
-	"github.com/mcpany/core/server/pkg/logging"
+	"github.com/mcpany/core/pkg/logging"
 	"github.com/modelcontextprotocol/go-sdk/jsonrpc"
 	v1 "github.com/opencontainers/image-spec/specs-go/v1"
 	"github.com/stretchr/testify/assert"

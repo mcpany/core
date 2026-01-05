@@ -14,7 +14,7 @@ test.describe('MCP Any UI E2E Tests', () => {
 
   test.beforeEach(async ({ page }) => {
     // Mock services
-    await page.route('**/api/v1/services', async (route) => {
+    await page.route('**/api/services', async (route) => {
       await route.fulfill({
         json: {
           services: [
@@ -38,7 +38,7 @@ test.describe('MCP Any UI E2E Tests', () => {
       });
     });
     // Mock tools for Dashboard/Tools page checks
-    await page.route('**/api/v1/tools', async (route) => {
+    await page.route('**/api/tools', async (route) => {
          await route.fulfill({
              json: {
                   tools: [
@@ -49,7 +49,7 @@ test.describe('MCP Any UI E2E Tests', () => {
          });
     });
     // Mock resources for Dashboard checks (if needed) or explicit page visits
-    await page.route('**/api/v1/resources', async (route) => {
+    await page.route('**/api/resources', async (route) => {
          await route.fulfill({ json: [] });
     });
     // Mock dashboard metrics
@@ -75,9 +75,7 @@ test.describe('MCP Any UI E2E Tests', () => {
     await expect(page.locator('text=System Health').first()).toBeVisible();
 
     // Audit Screenshot
-    if (process.env.CAPTURE_SCREENSHOTS === 'true') {
-      await page.screenshot({ path: path.join(AUDIT_DIR, 'dashboard_verified.png'), fullPage: true });
-    }
+    await page.screenshot({ path: path.join(AUDIT_DIR, 'dashboard_verified.png'), fullPage: true });
   });
 
   test('Services page lists services and allows toggle', async ({ page }) => {
@@ -99,9 +97,7 @@ test.describe('MCP Any UI E2E Tests', () => {
     await expect(page.locator('input#name')).toBeVisible();
 
     // Audit Screenshot
-    if (process.env.CAPTURE_SCREENSHOTS === 'true') {
-      await page.screenshot({ path: path.join(AUDIT_DIR, 'services_verified.png'), fullPage: true });
-    }
+    await page.screenshot({ path: path.join(AUDIT_DIR, 'services_verified.png'), fullPage: true });
   });
 
   test('Tools page lists tools', async ({ page }) => {
@@ -111,9 +107,7 @@ test.describe('MCP Any UI E2E Tests', () => {
     await expect(page.locator('text=weather_lookup')).toBeVisible();
 
     // Audit Screenshot
-    if (process.env.CAPTURE_SCREENSHOTS === 'true') {
-      await page.screenshot({ path: path.join(AUDIT_DIR, 'tools.png'), fullPage: true });
-    }
+    await page.screenshot({ path: path.join(AUDIT_DIR, 'tools.png'), fullPage: true });
   });
 
   test('Middleware page shows pipeline', async ({ page }) => {
@@ -124,9 +118,7 @@ test.describe('MCP Any UI E2E Tests', () => {
     await expect(page.locator('text=auth').first()).toBeVisible();
 
     // Audit Screenshot
-    if (process.env.CAPTURE_SCREENSHOTS === 'true') {
-      await page.screenshot({ path: path.join(AUDIT_DIR, 'middleware.png'), fullPage: true });
-    }
+    await page.screenshot({ path: path.join(AUDIT_DIR, 'middleware.png'), fullPage: true });
   });
 
   test('Webhooks page displays configuration', async ({ page }) => {
@@ -134,14 +126,12 @@ test.describe('MCP Any UI E2E Tests', () => {
     await expect(page.getByRole('heading', { name: 'Webhooks' })).toBeVisible();
 
     // Audit Screenshot
-    if (process.env.CAPTURE_SCREENSHOTS === 'true') {
-      await page.screenshot({ path: path.join(AUDIT_DIR, 'webhooks_verified.png'), fullPage: true });
-    }
+    await page.screenshot({ path: path.join(AUDIT_DIR, 'webhooks_verified.png'), fullPage: true });
   });
 
   test('Network page visualizes topology', async ({ page }) => {
     // Mock Topology API
-    await page.route('**/api/v1/topology', async (route) => {
+    await page.route('**/api/topology', async (route) => {
         await route.fulfill({
             json: {
                 clients: [
@@ -199,9 +189,7 @@ test.describe('MCP Any UI E2E Tests', () => {
     // await expect(page.getByTestId('rf__node-webhooks')).toBeVisible();
 
     // Audit Screenshot
-    if (process.env.CAPTURE_SCREENSHOTS === 'true') {
-      await page.screenshot({ path: path.join(__dirname, 'network_topology_verified.png'), fullPage: true });
-    }
+    await page.screenshot({ path: path.join(__dirname, 'network_topology_verified.png'), fullPage: true });
   });
 
 });

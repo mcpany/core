@@ -74,40 +74,33 @@ export interface SecretDefinition {
 export const apiClient = {
     // Services
     listServices: async () => {
-        const res = await fetch('/api/v1/services');
+        const res = await fetch('/api/services');
         if (!res.ok) throw new Error('Failed to fetch services');
         return res.json();
     },
     getService: async (id: string) => {
-         const res = await fetch(`/api/v1/services/${id}`);
+         const res = await fetch(`/api/services/${id}`);
          if (!res.ok) throw new Error('Failed to fetch service');
          return res.json();
     },
     setServiceStatus: async (name: string, disable: boolean) => {
-        // First get the service config to get the full object (including ID/Address/etc)
-        const getRes = await fetch(`/api/v1/services/${name}`);
-        if (!getRes.ok) throw new Error('Failed to fetch service for status update');
-        const service = await getRes.json();
-
-        // Update disable status
-        service.disable = disable;
-
-        // Save back
-        const res = await fetch(`/api/v1/services/${name}`, {
-            method: 'PUT',
+        const res = await fetch('/api/services', {
+            method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(service)
+            body: JSON.stringify({ action: 'toggle', name, disable })
         });
         if (!res.ok) throw new Error('Failed to update service status');
         return res.json();
     },
     getServiceStatus: async (name: string) => {
-        const res = await fetch(`/api/v1/services/${name}/status`);
-        if (!res.ok) return { enabled: false, metrics: {} };
-        return res.json();
+        // Mock implementation for now
+        return {
+            enabled: true,
+            metrics: { uptime: 99.9, latency: 45 }
+        };
     },
     registerService: async (config: UpstreamServiceConfig) => {
-        const res = await fetch('/api/v1/services', {
+        const res = await fetch('/api/services', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(config)
@@ -116,13 +109,8 @@ export const apiClient = {
         return res.json();
     },
     updateService: async (config: UpstreamServiceConfig) => {
-         const res = await fetch('/api/v1/services', {
-            method: 'PUT', // handleServiceDetail uses PUT for updates? No, handleServices POST handles create/update?
-            // handleServices POST calls SaveService.
-            // handleServiceDetail PUT calls SaveService with name forced.
-            // Let's use handleServiceDetail PUT if updating specific service.
-            // But config has ID/Name.
-            // If we use POST /api/v1/services, it saves it.
+         const res = await fetch('/api/services', {
+            method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(config)
         });
@@ -130,40 +118,22 @@ export const apiClient = {
         return res.json();
     },
     unregisterService: async (id: string) => {
-         const res = await fetch(`/api/v1/services/${id}`, {
-             method: 'DELETE'
-         });
-         if (!res.ok) throw new Error('Failed to unregister service');
-         return {};
+         // Mock
+        return {};
     },
 
     // Tools
     listTools: async () => {
-        const res = await fetch('/api/v1/tools');
+        const res = await fetch('/api/tools');
         if (!res.ok) throw new Error('Failed to fetch tools');
         return res.json();
     },
     executeTool: async (request: any) => {
-        console.error("DEBUG: Calling executeTool with:", JSON.stringify(request));
-        try {
-            const res = await fetch('/api/v1/execute', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(request)
-            });
-            console.error("DEBUG: fetch returned status:", res.status);
-            if (!res.ok) throw new Error('Failed to execute tool');
-            return res.json();
-        } catch (e) {
-            console.error("DEBUG: fetch failed:", e);
-            throw e;
-        }
+        // Mock execution
+        return { output: "Mock execution result", success: true };
     },
     setToolStatus: async (name: string, enabled: boolean) => {
-        // Not implemented in backend yet? handleTools only GET
-        // So keeping as mock or throwing?
-        // Let's keep as fetch to /api/v1/tools to fail properly or if I add it later.
-        const res = await fetch('/api/v1/tools', {
+        const res = await fetch('/api/tools', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ name, enabled })
@@ -173,12 +143,12 @@ export const apiClient = {
 
     // Resources
     listResources: async () => {
-        const res = await fetch('/api/v1/resources');
+        const res = await fetch('/api/resources');
         if (!res.ok) throw new Error('Failed to fetch resources');
         return res.json();
     },
     setResourceStatus: async (uri: string, enabled: boolean) => {
-         const res = await fetch('/api/v1/resources', {
+         const res = await fetch('/api/resources', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ uri, enabled })
@@ -188,12 +158,12 @@ export const apiClient = {
 
     // Prompts
     listPrompts: async () => {
-        const res = await fetch('/api/v1/prompts');
+        const res = await fetch('/api/prompts');
         if (!res.ok) throw new Error('Failed to fetch prompts');
         return res.json();
     },
     setPromptStatus: async (name: string, enabled: boolean) => {
-        const res = await fetch('/api/v1/prompts', {
+        const res = await fetch('/api/prompts', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ name, enabled })
@@ -203,12 +173,12 @@ export const apiClient = {
 
     // Secrets
     listSecrets: async () => {
-        const res = await fetch('/api/v1/secrets');
+        const res = await fetch('/api/secrets');
         if (!res.ok) throw new Error('Failed to fetch secrets');
         return res.json();
     },
     saveSecret: async (secret: SecretDefinition) => {
-        const res = await fetch('/api/v1/secrets', {
+        const res = await fetch('/api/secrets', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(secret)
@@ -217,7 +187,7 @@ export const apiClient = {
         return res.json();
     },
     deleteSecret: async (id: string) => {
-        const res = await fetch(`/api/v1/secrets/${id}`, {
+        const res = await fetch(`/api/secrets/${id}`, {
             method: 'DELETE'
         });
         if (!res.ok) throw new Error('Failed to delete secret');
@@ -226,12 +196,12 @@ export const apiClient = {
 
     // Global Settings
     getGlobalSettings: async () => {
-        const res = await fetch('/api/v1/settings');
+        const res = await fetch('/api/settings');
         if (!res.ok) throw new Error('Failed to fetch global settings');
         return res.json();
     },
     saveGlobalSettings: async (settings: any) => {
-        const res = await fetch('/api/v1/settings', {
+        const res = await fetch('/api/settings', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(settings)

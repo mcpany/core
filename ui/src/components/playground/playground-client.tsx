@@ -139,7 +139,6 @@ export function PlaygroundClient() {
   };
 
   const processResponse = async (userInput: string) => {
-      console.log("Processing input:", userInput);
       // Parse input as "tool_name {json_args}"
       // Logic: First word is tool name. Rest is JSON args.
       // If no JSON args provided, assume empty object {}
@@ -180,7 +179,7 @@ export function PlaygroundClient() {
 
       try {
           const result = await apiClient.executeTool({
-              name: toolName,
+              tool_name: toolName,
               arguments: toolArgs
           });
 
@@ -191,7 +190,6 @@ export function PlaygroundClient() {
               toolResult: result,
               timestamp: new Date(),
           }]);
-          console.log("Tool execution result:", result);
 
       } catch (err: unknown) {
           setMessages(prev => [...prev, {
@@ -200,7 +198,6 @@ export function PlaygroundClient() {
               content: (err instanceof Error ? err.message : String(err)) || "Tool execution failed",
               timestamp: new Date(),
           }]);
-          console.error("Tool execution failed:", err);
       } finally {
           setIsLoading(false);
       }

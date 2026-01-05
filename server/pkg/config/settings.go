@@ -13,7 +13,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/mcpany/core/server/pkg/logging"
+	"github.com/mcpany/core/pkg/logging"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/spf13/afero"
 	"github.com/spf13/cobra"
