@@ -1,8 +1,7 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
-// Package upstream contains integration tests
-package upstream
+package test
 
 import (
 	"crypto/rand"
@@ -13,14 +12,14 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 )
 
-type jwksSigner struct { //nolint:unused
+type JwksSigner struct {
 	key    *rsa.PrivateKey
 	keyID  string
 	jwk    jose.JSONWebKey
 	jwkSet jose.JSONWebKeySet
 }
 
-func newJwksSigner() (*jwksSigner, error) { //nolint:unused
+func NewJwksSigner() (*JwksSigner, error) {
 	privateKey, err := rsa.GenerateKey(rand.Reader, 2048)
 	if err != nil {
 		return nil, err
@@ -33,7 +32,7 @@ func newJwksSigner() (*jwksSigner, error) { //nolint:unused
 		Use:       "sig",
 	}
 
-	return &jwksSigner{
+	return &JwksSigner{
 		key:   privateKey,
 		keyID: keyID,
 		jwk:   jwk,
@@ -43,7 +42,7 @@ func newJwksSigner() (*jwksSigner, error) { //nolint:unused
 	}, nil
 }
 
-func (s *jwksSigner) newJWT(issuer string, audience []string) (string, error) { //nolint:unused
+func (s *JwksSigner) NewJWT(issuer string, audience []string) (string, error) {
 	claims := jwt.RegisteredClaims{
 		Issuer:    issuer,
 		Audience:  audience,
@@ -55,6 +54,10 @@ func (s *jwksSigner) newJWT(issuer string, audience []string) (string, error) { 
 	return token.SignedString(s.key)
 }
 
-func (s *jwksSigner) jwks() *jose.JSONWebKeySet { //nolint:unused
+func (s *JwksSigner) Jwks() *jose.JSONWebKeySet {
 	return &s.jwkSet
+}
+
+func (s *JwksSigner) Key() *rsa.PrivateKey {
+	return s.key
 }

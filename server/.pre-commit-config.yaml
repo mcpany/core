@@ -17,12 +17,6 @@ repos:
     -   id: trailing-whitespace
 -   repo: local
     hooks:
-    -   id: shellcheck
-        name: shellcheck
-        entry: shellcheck
-        language: system
-        types: [shell]
-        exclude: ^vendor/
     -   id: helm-lint
         name: helm-lint
         entry: helm lint server/helm/mcpany

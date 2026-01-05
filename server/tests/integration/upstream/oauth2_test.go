@@ -11,6 +11,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/mcpany/core/server/internal/test"
 	"github.com/mcpany/core/server/pkg/util"
 	apiv1 "github.com/mcpany/core/proto/api/v1"
 	configv1 "github.com/mcpany/core/proto/config/v1"
@@ -34,13 +35,13 @@ const (
 type mockOAuth2Server struct {
 	*httptest.Server
 	issuer string
-	signer *jwksSigner
+	signer *test.JwksSigner
 }
 
 func newMockOAuth2Server(t *testing.T) *mockOAuth2Server {
 	t.Helper()
 
-	signer, err := newJwksSigner()
+	signer, err := test.NewJwksSigner()
 	require.NoError(t, err)
 
 	server := &mockOAuth2Server{
@@ -92,7 +93,7 @@ func (s *mockOAuth2Server) handleToken(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	token, err := s.signer.newJWT(s.issuer, []string{"test-audience"})
+	token, err := s.signer.NewJWT(s.issuer, []string{"test-audience"})
 	if err != nil {
 		http.Error(w, fmt.Sprintf("failed to create token: %v", err), http.StatusInternalServerError)
 		return
@@ -111,7 +112,7 @@ func (s *mockOAuth2Server) handleToken(w http.ResponseWriter, r *http.Request) {
 
 func (s *mockOAuth2Server) handleJWKS(w http.ResponseWriter, _ *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
-	err := json.NewEncoder(w).Encode(s.signer.jwks())
+	err := json.NewEncoder(w).Encode(s.signer.Jwks())
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
