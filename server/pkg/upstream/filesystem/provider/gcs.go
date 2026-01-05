@@ -1,3 +1,7 @@
+// Copyright 2026 Author(s) of MCP Any
+// SPDX-License-Identifier: Apache-2.0
+
+// Package provider implements filesystem providers.
 package provider
 
 import (
@@ -15,11 +19,13 @@ import (
 	"google.golang.org/api/iterator"
 )
 
+// GcsProvider provides access to files in a Google Cloud Storage bucket.
 type GcsProvider struct {
 	fs     afero.Fs
 	client *storage.Client
 }
 
+// NewGcsProvider creates a new GcsProvider from the given configuration.
 func NewGcsProvider(_ context.Context, config *configv1.GcsFs) (*GcsProvider, error) {
 	if config == nil {
 		return nil, fmt.Errorf("gcs config is nil")
@@ -36,10 +42,12 @@ func NewGcsProvider(_ context.Context, config *configv1.GcsFs) (*GcsProvider, er
 	}, nil
 }
 
+// GetFs returns the underlying filesystem.
 func (p *GcsProvider) GetFs() afero.Fs {
 	return p.fs
 }
 
+// ResolvePath resolves the virtual path to a real path in the bucket.
 func (p *GcsProvider) ResolvePath(virtualPath string) (string, error) {
 	// Same as S3
 	cleanPath := path.Clean("/" + virtualPath)
@@ -51,6 +59,7 @@ func (p *GcsProvider) ResolvePath(virtualPath string) (string, error) {
 	return cleanPath, nil
 }
 
+// Close closes the GCS client.
 func (p *GcsProvider) Close() error {
 	if p.client != nil {
 		return p.client.Close()
