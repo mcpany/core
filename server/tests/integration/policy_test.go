@@ -362,12 +362,16 @@ func TestCallPolicyExecution(t *testing.T) {
 	})
 	assert.NoError(t, err)
 
-	_, err = client.CallTool(ctx, &mcp.CallToolParams{
+	result, err := client.CallTool(ctx, &mcp.CallToolParams{
 		Name:      "call-policy-test.denied_tool",
 		Arguments: map[string]interface{}{},
 	})
-	assert.Error(t, err)
-	assert.Contains(t, err.Error(), "unknown tool")
+	assert.NoError(t, err)
+	assert.True(t, result.IsError)
+    // Check if content contains the error message
+    // content is usually a list of text/image
+    contentBytes, _ := json.Marshal(result.Content)
+	assert.Contains(t, string(contentBytes), "unknown tool")
 }
 
 func TestExportPolicyForPromptsAndResources(t *testing.T) {
