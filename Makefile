@@ -8,8 +8,6 @@ BUILD_DIR := $(abspath ./build)
 TOOL_INSTALL_DIR := $(BUILD_DIR)/env/bin
 PROTOC_INCLUDE_DIR := $(TOOL_INSTALL_DIR)/include
 GOOGLEAPIS_DIR := $(BUILD_DIR)/googleapis
-# Calculate mappings for all standard protos to point to third_party
-TS_PROTO_MAPPINGS := $(shell find $(PROTOC_INCLUDE_DIR)/google/protobuf $(GOOGLEAPIS_DIR)/google/api -name "*.proto" 2>/dev/null | sed 's|$(PROTOC_INCLUDE_DIR)/||;s|$(GOOGLEAPIS_DIR)/||' | sed 's|\(.*\)\.proto|M\1.proto=github.com/mcpany/core/proto/third_party/\1|' | tr '\n' ',' | sed 's/,$$//')
 
 # Variables for protoc installation
 PROTOC_VERSION_URL := https://api.github.com/repos/protocolbuffers/protobuf/releases/latest
@@ -147,6 +145,7 @@ gen: clean-protos prepare-proto
 	@echo "Generating protobuf files (TypeScript)..."
 	@if [ -f "./ui/node_modules/.bin/protoc-gen-ts_proto" ]; then \
 		export PATH=$(TOOL_INSTALL_DIR):$$PATH; \
+		MAPPINGS=$$(find $(PROTOC_INCLUDE_DIR)/google/protobuf $(GOOGLEAPIS_DIR)/google/api -name "*.proto" 2>/dev/null | sed 's|$(PROTOC_INCLUDE_DIR)/||;s|$(GOOGLEAPIS_DIR)/||' | sed 's|\(.*\)\.proto|M\1.proto=github.com/mcpany/core/proto/third_party/\1|' | tr '\n' ' ' | sed 's/ / --ts_proto_opt=/g'); \
 		find proto -name "*.proto" -exec protoc \
 			--proto_path=. \
 			--proto_path=$(BUILD_DIR)/grpc-gateway \
@@ -154,7 +153,7 @@ gen: clean-protos prepare-proto
 			--plugin=protoc-gen-ts_proto=./ui/node_modules/.bin/protoc-gen-ts_proto \
 			--ts_proto_out=. \
 			--ts_proto_opt=esModuleInterop=true,forceLong=long,useOptionals=messages \
-			$(foreach mapping,$(subst $(comma), ,$(TS_PROTO_MAPPINGS)),--ts_proto_opt=$(mapping)) \
+			--ts_proto_opt=$$MAPPINGS \
 			{} +; \
 		echo "Local TypeScript Protobuf generation complete."; \
 		echo "Generating standard protobuf files (TypeScript)..."; \
