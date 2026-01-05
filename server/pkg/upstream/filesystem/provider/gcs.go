@@ -1,3 +1,4 @@
+// Package provider implements filesystem providers.
 package provider
 
 import (
