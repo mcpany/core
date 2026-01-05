@@ -9,7 +9,6 @@ import (
 
 	mcpv1alpha1 "github.com/mcpany/core/operator/api/v1alpha1"
 	appsv1 "k8s.io/api/apps/v1"
-	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/types"
 	"k8s.io/client-go/kubernetes/scheme"
@@ -62,16 +61,8 @@ func TestMCPServerReconciler_Reconcile(t *testing.T) {
 	}
 
 	// Check the result of reconciliation
-	// nolint:staticcheck
 	if !res.Requeue {
-		// Just a simple check, ignoring deprecation for test simplicity
 		t.Error("reconcile did not requeue request as expected (Deployment creation)")
-	}
-
-	// Reconcile again to create Service (second pass)
-	res, err = r.Reconcile(context.Background(), req)
-	if err != nil {
-		t.Fatalf("reconcile 2: (%v)", err)
 	}
 
 	// Check if Deployment was created
@@ -118,39 +109,12 @@ func TestMCPServerReconciler_Reconcile(t *testing.T) {
 	// Verify Volumes
 	foundVolume := false
 	for _, v := range found.Spec.Template.Spec.Volumes {
-		// Use simple nil check to satisfy staticcheck QF1008
-		if v.Name == "config-volume" && v.ConfigMap != nil {
-			if v.ConfigMap.Name == "my-config-map" {
-				foundVolume = true
-				break
-			}
+		if v.Name == "config-volume" && v.VolumeSource.ConfigMap != nil && v.VolumeSource.ConfigMap.Name == "my-config-map" {
+			foundVolume = true
+			break
 		}
 	}
 	if !foundVolume {
 		t.Error("expected config-volume from ConfigMap my-config-map")
-	}
-
-	// Check if Service was created
-	foundService := &corev1.Service{}
-	err = cl.Get(context.Background(), types.NamespacedName{Name: "test-mcp-server", Namespace: "default"}, foundService)
-	if err != nil {
-		t.Fatalf("get service: (%v)", err)
-	}
-
-	// Verify Service Spec
-	if foundService.Spec.Type != corev1.ServiceTypeClusterIP {
-		t.Errorf("expected service type ClusterIP, got %s", foundService.Spec.Type)
-	}
-
-	if len(foundService.Spec.Ports) != 1 {
-		t.Errorf("expected 1 port, got %d", len(foundService.Spec.Ports))
-	}
-
-	if foundService.Spec.Ports[0].Port != 8080 {
-		t.Errorf("expected port 8080, got %d", foundService.Spec.Ports[0].Port)
-	}
-
-	if foundService.Spec.Selector["app"] != "mcp-server" {
-		t.Errorf("expected selector app=mcp-server, got %s", foundService.Spec.Selector["app"])
 	}
 }

@@ -48,3 +48,6 @@ lint_report.*
 # Secrets
 ui/secrets-master.key
 ui/secrets-store.json
+
+# Temp test files
+docker-compose-dynamic-*.yml

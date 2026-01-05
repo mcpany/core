@@ -45,16 +45,12 @@ func TestUpstreamService_FunTranslations(t *testing.T) {
 		EndpointPath: proto.String("/translate/yoda.json"),
 		Method:       configv1.HttpCallDefinition_HttpMethod(configv1.HttpCallDefinition_HttpMethod_value["HTTP_METHOD_POST"]).Enum(),
 		Parameters: []*configv1.HttpParameterMapping{
-			{
-				Schema: &configv1.ParameterSchema{
+			configv1.HttpParameterMapping_builder{
+				Schema: configv1.ParameterSchema_builder{
 					Name: proto.String("text"),
-					Type: configv1.ParameterType_STRING.Enum(),
-				},
-			},
+				}.Build(),
+			}.Build(),
 		},
-		InputTransformer: configv1.InputTransformer_builder{
-			Template: proto.String("{\"text\": \"{{.input.text}}\"}"),
-		}.Build(),
 	}.Build()
 
 	toolDef := configv1.ToolDefinition_builder{

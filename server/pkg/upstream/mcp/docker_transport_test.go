@@ -199,9 +199,11 @@ func TestDockerTransport_Connect_ContainerStartError(t *testing.T) {
 }
 
 func TestDockerTransport_Connect_Integration(t *testing.T) {
+
 	if !util.IsDockerSocketAccessible() {
 		t.Skip("Docker socket not accessible, skipping integration test.")
 	}
+
 	ctx := context.Background()
 	// We use "printf" and pass the JSON string as an argument.
 	// We DON'T quote it here manually because the transport should handle quoting now.
@@ -241,6 +243,7 @@ func TestDockerTransport_Connect_ImageNotFound(t *testing.T) {
 	if !util.IsDockerSocketAccessible() {
 		t.Skip("Docker socket not accessible, skipping integration test.")
 	}
+
 	ctx := context.Background()
 	stdioConfig := configv1.McpStdioConnection_builder{
 		ContainerImage: proto.String("this-image-does-not-exist-ever:latest"),

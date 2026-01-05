@@ -42,7 +42,7 @@ if kind get clusters | grep -q "^$CLUSTER_NAME$"; then
     echo "Cluster $CLUSTER_NAME already exists."
 else
     echo "Creating Kind cluster $CLUSTER_NAME..."
-    kind create cluster --name "$CLUSTER_NAME" --image "$KIND_IMAGE" --config tests/k8s/kind-config.yaml --wait 2m
+    kind create cluster --name "$CLUSTER_NAME" --image "$KIND_IMAGE" --wait 2m
 fi
 
 # Ensure kubectl context is set

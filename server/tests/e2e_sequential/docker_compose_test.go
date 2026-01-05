@@ -41,14 +41,14 @@ func TestDockerComposeE2E(t *testing.T) {
 	rootDir, err = filepath.Abs(rootDir)
 	require.NoError(t, err)
 
-	imageName := getImageName(t)
+	imageName := "ghcr.io/mcpany/server:latest"
 
 	// 1. Build Docker Image
-	if os.Getenv("CI") == "" {
+	if os.Getenv("CI") != "true" {
 		t.Log("Building mcpany/server image...")
 		runCommand(t, rootDir, "docker", "build", "-t", imageName, "-f", "server/docker/Dockerfile.server", ".")
 	} else {
-		t.Log("CI environment, skipping docker build")
+		t.Log("Skipping docker build in CI environment")
 	}
 
 	// Use a unique project name for isolation
@@ -66,33 +66,26 @@ func TestDockerComposeE2E(t *testing.T) {
 		// Dump logs from the active compose file if set
 		if currentComposeFile != "" {
 			t.Logf("Dumping logs from %s...", currentComposeFile)
-			cmd := exec.Command("docker", "compose", "-f", currentComposeFile, "logs")
+			cmd := dockerCommand("compose", "-f", currentComposeFile, "logs")
 			cmd.Stdout = os.Stdout
 			cmd.Stderr = os.Stderr
 			_ = cmd.Run()
 		}
 
 		// Dump logs from manually run weather container
-		cmd := exec.Command("docker", "logs", "mcpany-weather-test") // Name without random suffix? No, we used random.
-		// We need to capture the weather container name too if we want to dump it.
-		// For now, let's skip dumping weather logs or try to capture it too.
-
-		// Aggressive cleanup
 		// We can't know the weather container name here easily unless we share it.
 		// But we defer cleanup in testFunctionalWeather too.
 		// So this main cleanup is just a safety net.
 
 		if currentComposeFile != "" {
-			cmd = exec.Command("docker", "compose", "-f", currentComposeFile, "down", "-v", "--remove-orphans")
-			cmd.Env = os.Environ()
+			cmd := dockerCommand("compose", "-f", currentComposeFile, "down", "-v", "--remove-orphans")
 			cmd.Stdout = os.Stdout
 			cmd.Stderr = os.Stderr
 			_ = cmd.Run()
 		}
 
 		// Also try generic project down just in case
-		cmd = exec.Command("docker", "compose", "down", "-v", "--remove-orphans")
-		cmd.Env = os.Environ()
+		cmd := dockerCommand("compose", "down", "-v", "--remove-orphans")
 		_ = cmd.Run()
 
 		time.Sleep(2 * time.Second)
@@ -102,8 +95,7 @@ func TestDockerComposeE2E(t *testing.T) {
 
 	// Helper to get dynamic port
 	getServicePort := func(composeFile, service, internalPort string) string {
-		cmd := exec.Command("docker", "compose", "-f", composeFile, "port", service, internalPort)
-		cmd.Env = os.Environ()
+		cmd := dockerCommand("compose", "-f", composeFile, "port", service, internalPort)
 		out, err := cmd.Output()
 		require.NoError(t, err, "Failed to get port for %s %s", service, internalPort)
 		// Output: 0.0.0.0:32xxx
@@ -147,7 +139,7 @@ func TestDockerComposeE2E(t *testing.T) {
 	// 5. Start Example Docker Compose
 	t.Log("Switching to example docker-compose...")
 
-	exampleDir := filepath.Join(rootDir, "examples/docker-compose-demo")
+	exampleDir := filepath.Join(rootDir, "server/examples/docker-compose-demo")
 	originalCompose := filepath.Join(exampleDir, "docker-compose.yml")
 	dynamicCompose := createDynamicCompose(t, originalCompose)
 	currentComposeFile = dynamicCompose
@@ -179,7 +171,6 @@ func TestDockerComposeE2E(t *testing.T) {
 }
 
 func testFunctionalWeather(t *testing.T, rootDir string) {
-	imageName := getImageName(t)
 	// 1. Start mcpany-server with wttr.in config
 	// We run it on a dynamic port to avoid conflict with previous steps or other processes.
 	configPath := fmt.Sprintf("%s/examples/popular_services/wttr.in/config.yaml", rootDir)
@@ -192,10 +183,10 @@ func testFunctionalWeather(t *testing.T, rootDir string) {
 	// We also use a unique container name to avoid conflict
 	containerName := fmt.Sprintf("mcpany-weather-test-%d", time.Now().UnixNano())
 
-	cmd := exec.Command("docker", "run", "-d", "--name", containerName,
+	cmd := dockerCommand("run", "-d", "--name", containerName,
 		"-p", "0:50050", // Dynamic port
 		"-v", fmt.Sprintf("%s:/config.yaml", configPath),
-		imageName,
+		"ghcr.io/mcpany/server:latest",
 		"run", "--config-path", "/config.yaml", "--mcp-listen-address", ":50050",
 	)
 	t.Logf("Running command: %s", cmd.String())
@@ -207,11 +198,11 @@ func testFunctionalWeather(t *testing.T, rootDir string) {
 
 	// Cleanup
 	defer func() {
-		_ = exec.Command("docker", "rm", "-f", containerName).Run()
+		_ = dockerCommand("rm", "-f", containerName).Run()
 	}()
 
 	// Get assigned port
-	out, err := exec.Command("docker", "port", containerName, "50050/tcp").Output()
+	out, err := dockerCommand("port", containerName, "50050/tcp").Output()
 	require.NoError(t, err, "Failed to get assigned port")
 	// Output example: 0.0.0.0:32768
 	portBinding := strings.TrimSpace(string(out))
@@ -337,14 +328,19 @@ func verifyToolMetricWithService(t *testing.T, metricsURL, toolName, serviceID s
 }
 
 func runCommand(t *testing.T, dir string, name string, args ...string) {
-	cmd := exec.Command(name, args...)
+	var cmd *exec.Cmd
+	if name == "docker" {
+		cmd = dockerCommand(args...)
+	} else {
+		cmd = exec.Command(name, args...)
+		cmd.Env = os.Environ() // Explicitly pass environment to ensure t.Setenv works
+	}
 	cmd.Dir = dir
-	cmd.Env = os.Environ() // Explicitly pass environment to ensure t.Setenv works
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
-	t.Logf("Running: %s %s (Env: COMPOSE_PROJECT_NAME=%s)", name, strings.Join(args, " "), os.Getenv("COMPOSE_PROJECT_NAME"))
+	t.Logf("Running: %s (Env: COMPOSE_PROJECT_NAME=%s)", cmd.String(), os.Getenv("COMPOSE_PROJECT_NAME"))
 	err := cmd.Run()
-	require.NoError(t, err, "Command failed: %s %s", name, strings.Join(args, " "))
+	require.NoError(t, err, "Command failed: %s", cmd.String())
 }
 
 func verifyEndpoint(t *testing.T, url string, expectedStatus int, timeout time.Duration) {
@@ -522,11 +518,13 @@ func createDynamicCompose(t *testing.T, originalPath string) string {
 	return tmpFile.Name()
 }
 
-func getImageName(t *testing.T) string {
-	imageName := "ghcr.io/mcpany/server:latest"
-	if os.Getenv("CI") != "" {
-		t.Log("CI environment, using pre-built image")
-		imageName = "mcpany/server:latest"
+func dockerCommand(args ...string) *exec.Cmd {
+	name := "docker"
+	if os.Getenv("USE_SUDO_FOR_DOCKER") == "1" {
+		name = "sudo"
+		args = append([]string{"docker"}, args...)
 	}
-	return imageName
+	cmd := exec.Command(name, args...)
+	cmd.Env = os.Environ()
+	return cmd
 }
