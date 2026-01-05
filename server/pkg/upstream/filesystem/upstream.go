@@ -376,10 +376,56 @@ func (u *Upstream) getSupportedTools(fsService *configv1.FilesystemUpstreamServi
 			},
 		},
 		{
-			Name:        "delete_file",
-			Description: "Delete a file or empty directory.",
+			Name:        "move_file",
+			Description: "Move or rename a file or directory.",
 			Input: map[string]interface{}{
-				"path": map[string]interface{}{"type": "string", "description": "The path to delete."},
+				"source":      map[string]interface{}{"type": "string", "description": "The source path."},
+				"destination": map[string]interface{}{"type": "string", "description": "The destination path."},
+			},
+			Output: map[string]interface{}{
+				"success": map[string]interface{}{"type": "boolean"},
+			},
+			Handler: func(_ context.Context, args map[string]interface{}) (map[string]interface{}, error) {
+				if fsService.GetReadOnly() {
+					return nil, fmt.Errorf("filesystem is read-only")
+				}
+				source, ok := args["source"].(string)
+				if !ok {
+					return nil, fmt.Errorf("source is required")
+				}
+				destination, ok := args["destination"].(string)
+				if !ok {
+					return nil, fmt.Errorf("destination is required")
+				}
+
+				resolvedSource, err := prov.ResolvePath(source)
+				if err != nil {
+					return nil, err
+				}
+
+				resolvedDest, err := prov.ResolvePath(destination)
+				if err != nil {
+					return nil, err
+				}
+
+				// Ensure parent of destination exists
+				parentDir := filepath.Dir(resolvedDest)
+				if err := fs.MkdirAll(parentDir, 0755); err != nil {
+					return nil, fmt.Errorf("failed to create parent directory: %w", err)
+				}
+
+				if err := fs.Rename(resolvedSource, resolvedDest); err != nil {
+					return nil, err
+				}
+				return map[string]interface{}{"success": true}, nil
+			},
+		},
+		{
+			Name:        "delete_file",
+			Description: "Delete a file or directory.",
+			Input: map[string]interface{}{
+				"path":      map[string]interface{}{"type": "string", "description": "The path to delete."},
+				"recursive": map[string]interface{}{"type": "boolean", "description": "Delete recursively if true."},
 			},
 			Output: map[string]interface{}{
 				"success": map[string]interface{}{"type": "boolean"},
@@ -392,14 +438,21 @@ func (u *Upstream) getSupportedTools(fsService *configv1.FilesystemUpstreamServi
 				if !ok {
 					return nil, fmt.Errorf("path is required")
 				}
+				recursive, _ := args["recursive"].(bool)
 
 				resolvedPath, err := prov.ResolvePath(path)
 				if err != nil {
 					return nil, err
 				}
 
-				if err := fs.Remove(resolvedPath); err != nil {
-					return nil, err
+				if recursive {
+					if err := fs.RemoveAll(resolvedPath); err != nil {
+						return nil, err
+					}
+				} else {
+					if err := fs.Remove(resolvedPath); err != nil {
+						return nil, err
+					}
 				}
 				return map[string]interface{}{"success": true}, nil
 			},
@@ -408,8 +461,9 @@ func (u *Upstream) getSupportedTools(fsService *configv1.FilesystemUpstreamServi
 			Name:        "search_files",
 			Description: "Search for a text pattern in files within a directory.",
 			Input: map[string]interface{}{
-				"path":    map[string]interface{}{"type": "string", "description": "The root directory to search."},
-				"pattern": map[string]interface{}{"type": "string", "description": "The regular expression to search for."},
+				"path":             map[string]interface{}{"type": "string", "description": "The root directory to search."},
+				"pattern":          map[string]interface{}{"type": "string", "description": "The regular expression to search for."},
+				"exclude_patterns": map[string]interface{}{"type": "array", "items": map[string]interface{}{"type": "string"}, "description": "Glob patterns to exclude (e.g. *.test.js)."},
 			},
 			Output: map[string]interface{}{
 				"matches": map[string]interface{}{
@@ -439,6 +493,15 @@ func (u *Upstream) getSupportedTools(fsService *configv1.FilesystemUpstreamServi
 					return nil, fmt.Errorf("invalid regex pattern: %w", err)
 				}
 
+				var excludePatterns []string
+				if ep, ok := args["exclude_patterns"].([]interface{}); ok {
+					for _, p := range ep {
+						if ps, ok := p.(string); ok {
+							excludePatterns = append(excludePatterns, ps)
+						}
+					}
+				}
+
 				resolvedPath, err := prov.ResolvePath(path)
 				if err != nil {
 					return nil, err
@@ -462,6 +525,18 @@ func (u *Upstream) getSupportedTools(fsService *configv1.FilesystemUpstreamServi
 					if matchCount >= maxMatches {
 						return filepath.SkipDir
 					}
+
+					// Check exclusions
+					for _, pattern := range excludePatterns {
+						matched, _ := filepath.Match(pattern, info.Name())
+						if matched {
+							if info.IsDir() {
+								return filepath.SkipDir
+							}
+							return nil
+						}
+					}
+
 					if info.IsDir() {
 						// Skip hidden directories like .git
 						if strings.HasPrefix(info.Name(), ".") && info.Name() != "." && info.Name() != ".." {

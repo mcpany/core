@@ -59,7 +59,7 @@ func TestFilesystemUpstream_Register_And_Execute(t *testing.T) {
 	id, tools, resources, err := u.Register(context.Background(), config, tm, nil, nil, false)
 	require.NoError(t, err)
 	assert.NotEmpty(t, id)
-	assert.Len(t, tools, 7) // list, read, write, delete, search, get_info, list_roots
+	assert.Len(t, tools, 8) // list, read, write, move, delete, search, get_info, list_roots
 	assert.Empty(t, resources)
 
 	// Helper to find a tool by name
@@ -303,6 +303,142 @@ func TestFilesystemUpstream_Register_And_Execute(t *testing.T) {
 		// Verify deletion
 		_, err = os.Stat(filepath.Join(tempDir, "deleteme.txt"))
 		assert.True(t, os.IsNotExist(err))
+	})
+
+	// Test recursive delete_file
+	t.Run("recursive_delete_file", func(t *testing.T) {
+		config.GetFilesystemService().ReadOnly = proto.Bool(false)
+		tm.ClearToolsForService(id)
+		u.Register(context.Background(), config, tm, nil, nil, false)
+
+		deleteTool := findTool("delete_file")
+		require.NotNil(t, deleteTool)
+
+		// Create non-empty directory
+		dirPath := filepath.Join(tempDir, "todelete")
+		err := os.Mkdir(dirPath, 0755)
+		require.NoError(t, err)
+		err = os.WriteFile(filepath.Join(dirPath, "child.txt"), []byte("hi"), 0644)
+		require.NoError(t, err)
+
+		// Try non-recursive delete (should fail)
+		_, err = deleteTool.Execute(context.Background(), &tool.ExecutionRequest{
+			ToolName: "delete_file",
+			Arguments: map[string]interface{}{
+				"path":      "/data/todelete",
+				"recursive": false,
+			},
+		})
+		assert.Error(t, err)
+
+		// Try recursive delete
+		res, err := deleteTool.Execute(context.Background(), &tool.ExecutionRequest{
+			ToolName: "delete_file",
+			Arguments: map[string]interface{}{
+				"path":      "/data/todelete",
+				"recursive": true,
+			},
+		})
+		require.NoError(t, err)
+		resMap := res.(map[string]interface{})
+		assert.Equal(t, true, resMap["success"])
+
+		// Verify deletion
+		_, err = os.Stat(dirPath)
+		assert.True(t, os.IsNotExist(err))
+	})
+
+	// Test move_file
+	t.Run("move_file", func(t *testing.T) {
+		config.GetFilesystemService().ReadOnly = proto.Bool(false)
+		tm.ClearToolsForService(id)
+		u.Register(context.Background(), config, tm, nil, nil, false)
+
+		moveTool := findTool("move_file")
+		require.NotNil(t, moveTool)
+
+		// Create file to move
+		src := filepath.Join(tempDir, "move_src.txt")
+		err := os.WriteFile(src, []byte("moving"), 0644)
+		require.NoError(t, err)
+
+		// Move
+		res, err := moveTool.Execute(context.Background(), &tool.ExecutionRequest{
+			ToolName: "move_file",
+			Arguments: map[string]interface{}{
+				"source":      "/data/move_src.txt",
+				"destination": "/data/moved_dest.txt",
+			},
+		})
+		require.NoError(t, err)
+		resMap := res.(map[string]interface{})
+		assert.Equal(t, true, resMap["success"])
+
+		// Verify
+		_, err = os.Stat(src)
+		assert.True(t, os.IsNotExist(err))
+		content, err := os.ReadFile(filepath.Join(tempDir, "moved_dest.txt"))
+		require.NoError(t, err)
+		assert.Equal(t, "moving", string(content))
+	})
+
+	// Test search_files exclusions
+	t.Run("search_files_exclusions", func(t *testing.T) {
+		config.GetFilesystemService().ReadOnly = proto.Bool(false)
+		tm.ClearToolsForService(id)
+		u.Register(context.Background(), config, tm, nil, nil, false)
+
+		searchTool := findTool("search_files")
+		require.NotNil(t, searchTool)
+
+		// Create files
+		// /data/include.txt
+		// /data/exclude.log
+		// /data/node_modules/foo.js
+		// /data/src/foo.js
+
+		require.NoError(t, os.WriteFile(filepath.Join(tempDir, "include.txt"), []byte("match me"), 0644))
+		require.NoError(t, os.WriteFile(filepath.Join(tempDir, "exclude.log"), []byte("match me"), 0644))
+
+		nodeModules := filepath.Join(tempDir, "node_modules")
+		require.NoError(t, os.Mkdir(nodeModules, 0755))
+		require.NoError(t, os.WriteFile(filepath.Join(nodeModules, "foo.js"), []byte("match me"), 0644))
+
+		srcDir := filepath.Join(tempDir, "src")
+		require.NoError(t, os.Mkdir(srcDir, 0755))
+		require.NoError(t, os.WriteFile(filepath.Join(srcDir, "foo.js"), []byte("match me"), 0644))
+
+		// Search with exclusions
+		res, err := searchTool.Execute(context.Background(), &tool.ExecutionRequest{
+			ToolName: "search_files",
+			Arguments: map[string]interface{}{
+				"path":    "/data",
+				"pattern": "match me",
+				"exclude_patterns": []interface{}{
+					"*.log",
+					"node_modules",
+				},
+			},
+		})
+		require.NoError(t, err)
+		resMap := res.(map[string]interface{})
+		matches := resMap["matches"].([]map[string]interface{})
+
+		// Should match include.txt and src/foo.js
+		// Should NOT match exclude.log and node_modules/foo.js
+		foundFiles := make(map[string]bool)
+		for _, m := range matches {
+			foundFiles[m["file"].(string)] = true
+		}
+
+		assert.True(t, foundFiles["include.txt"], "include.txt should be found")
+		// on windows path separator might differ, but tests run on linux usually
+		// filepath.Rel returns OS specific separators.
+		// "src/foo.js" might be "src\foo.js" on windows.
+		// The test environment is linux based on standard tools.
+		assert.True(t, foundFiles[filepath.Join("src", "foo.js")], "src/foo.js should be found")
+		assert.False(t, foundFiles["exclude.log"], "exclude.log should be excluded")
+		assert.False(t, foundFiles[filepath.Join("node_modules", "foo.js")], "node_modules/foo.js should be excluded")
 	})
 
 	// Test read_file binary check
