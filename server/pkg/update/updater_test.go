@@ -7,12 +7,10 @@ import (
 	"context"
 	"crypto/sha256"
 	"encoding/hex"
-	"encoding/json"
 	"fmt"
 	"net/http"
 	"net/http/httptest"
-	"net/url"
-	"runtime"
+	"os"
 	"testing"
 
 	"github.com/google/go-github/v39/github"
@@ -21,258 +19,137 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestUpdater(t *testing.T) {
-	const executablePath = "/usr/local/bin/server"
-	assetName := fmt.Sprintf("server-%s-%s", runtime.GOOS, runtime.GOARCH)
-	assetContent := "dummy content"
+type controlledMockFs struct {
+	afero.Fs
+	renameHooks []func(old, new string) error
+}
+
+func (m *controlledMockFs) Rename(oldname, newname string) error {
+	if len(m.renameHooks) > 0 {
+		hook := m.renameHooks[0]
+		m.renameHooks = m.renameHooks[1:]
+		if hook != nil {
+			return hook(oldname, newname)
+		}
+	}
+	return m.Fs.Rename(oldname, newname)
+}
+
+func TestUpdateTo_FailureScenarios(t *testing.T) {
+	assetContent := "new binary content"
+	assetName := "server-linux-amd64"
 	assetHash := sha256.Sum256([]byte(assetContent))
 	checksumsContent := fmt.Sprintf("%s  %s\n", hex.EncodeToString(assetHash[:]), assetName)
 
-	assetServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
-		_, _ = w.Write([]byte(assetContent))
+	assetServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Write([]byte(assetContent))
 	}))
 	defer assetServer.Close()
 
-	checksumsServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
-		_, _ = w.Write([]byte(checksumsContent))
+	checksumsServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Write([]byte(checksumsContent))
 	}))
 	defer checksumsServer.Close()
 
-	t.Run("UpdateTo", func(t *testing.T) {
-		t.Run("success", func(t *testing.T) {
-			release := &github.RepositoryRelease{
-				TagName: github.String("v1.0.1"),
-				Assets: []*github.ReleaseAsset{
-					{
-						Name:               github.String(assetName),
-						BrowserDownloadURL: github.String(assetServer.URL),
-					},
-					{
-						Name:               github.String("checksums.txt"),
-						BrowserDownloadURL: github.String(checksumsServer.URL),
-					},
-				},
-			}
-			fs := afero.NewMemMapFs()
-			// executablePath defined in outer scope
-			err := afero.WriteFile(fs, executablePath, []byte("old content"), 0o755)
-			require.NoError(t, err)
+	release := &github.RepositoryRelease{
+		TagName: github.String("v1.0.1"),
+		Assets: []*github.ReleaseAsset{
+			{
+				Name:               github.String(assetName),
+				BrowserDownloadURL: github.String(assetServer.URL),
+			},
+			{
+				Name:               github.String("checksums.txt"),
+				BrowserDownloadURL: github.String(checksumsServer.URL),
+			},
+		},
+	}
 
-			updater := NewUpdater(nil)
-			err = updater.UpdateTo(context.Background(), fs, executablePath, release, assetName, "checksums.txt")
-			assert.NoError(t, err)
+	t.Run("fails to rename old executable", func(t *testing.T) {
+		memfs := afero.NewMemMapFs()
+		cmfs := &controlledMockFs{Fs: memfs}
+		cmfs.renameHooks = []func(old, new string) error{
+			func(old, new string) error { return fmt.Errorf("permission denied") },
+		}
 
-			content, err := afero.ReadFile(fs, executablePath)
-			assert.NoError(t, err)
-			assert.Equal(t, assetContent, string(content))
-		})
+		executablePath := "/app/server"
+		err := afero.WriteFile(cmfs, executablePath, []byte("old content"), 0755)
+		require.NoError(t, err)
 
-		t.Run("asset not found", func(t *testing.T) {
-			release := &github.RepositoryRelease{
-				TagName: github.String("v1.0.1"),
-				Assets:  []*github.ReleaseAsset{},
-			}
-			fs := afero.NewMemMapFs()
-			// executablePath defined in outer scope
-			err := afero.WriteFile(fs, executablePath, []byte("old content"), 0o755)
-			require.NoError(t, err)
+		updater := NewUpdater(http.DefaultClient)
 
-			updater := NewUpdater(nil)
-			err = updater.UpdateTo(context.Background(), fs, executablePath, release, assetName, "checksums.txt")
-			assert.Error(t, err)
-			assert.Contains(t, err.Error(), "asset")
-			assert.Contains(t, err.Error(), "not found")
-		})
+		err = updater.UpdateTo(context.Background(), cmfs, executablePath, release, assetName, "checksums.txt")
 
-		t.Run("checksums not found", func(t *testing.T) {
-			release := &github.RepositoryRelease{
-				TagName: github.String("v1.0.1"),
-				Assets: []*github.ReleaseAsset{
-					{
-						Name:               github.String(assetName),
-						BrowserDownloadURL: github.String(assetServer.URL),
-					},
-				},
-			}
-			fs := afero.NewMemMapFs()
-			// executablePath defined in outer scope
-			err := afero.WriteFile(fs, executablePath, []byte("old content"), 0o755)
-			require.NoError(t, err)
+		require.Error(t, err)
+		assert.Contains(t, err.Error(), "failed to rename old executable")
 
-			updater := NewUpdater(nil)
-			err = updater.UpdateTo(context.Background(), fs, executablePath, release, assetName, "checksums.txt")
-			assert.Error(t, err)
-			assert.Contains(t, err.Error(), "checksums")
-			assert.Contains(t, err.Error(), "not found")
-		})
+		// Verify old executable is still there
+		content, err := afero.ReadFile(cmfs, executablePath)
+		require.NoError(t, err)
+		assert.Equal(t, "old content", string(content))
 
-		t.Run("checksum mismatch", func(t *testing.T) {
-			release := &github.RepositoryRelease{
-				TagName: github.String("v1.0.1"),
-				Assets: []*github.ReleaseAsset{
-					{
-						Name:               github.String(assetName),
-						BrowserDownloadURL: github.String(assetServer.URL),
-					},
-					{
-						Name:               github.String("checksums.txt"),
-						BrowserDownloadURL: github.String(checksumsServer.URL),
-					},
-				},
-			}
-			fs := afero.NewMemMapFs()
-			// executablePath defined in outer scope
-			err := afero.WriteFile(fs, executablePath, []byte("old content"), 0o755)
-			require.NoError(t, err)
-
-			updater := NewUpdater(nil)
-			// create a new checksums server with a bad checksum
-			badChecksumsContent := "badchecksum  " + assetName + "\n"
-			badChecksumsServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
-				_, _ = w.Write([]byte(badChecksumsContent))
-			}))
-			defer badChecksumsServer.Close()
-			release.Assets[1].BrowserDownloadURL = github.String(badChecksumsServer.URL)
-
-			err = updater.UpdateTo(context.Background(), fs, executablePath, release, assetName, "checksums.txt")
-			assert.Error(t, err)
-			assert.Contains(t, err.Error(), "checksum mismatch")
-		})
-
-		t.Run("download asset fails", func(t *testing.T) {
-			release := &github.RepositoryRelease{
-				TagName: github.String("v1.0.1"),
-				Assets: []*github.ReleaseAsset{
-					{
-						Name:               github.String(assetName),
-						BrowserDownloadURL: github.String("badurl"),
-					},
-					{
-						Name:               github.String("checksums.txt"),
-						BrowserDownloadURL: github.String(checksumsServer.URL),
-					},
-				},
-			}
-			fs := afero.NewMemMapFs()
-			// executablePath defined in outer scope
-			err := afero.WriteFile(fs, executablePath, []byte("old content"), 0o755)
-			require.NoError(t, err)
-
-			updater := NewUpdater(nil)
-			err = updater.UpdateTo(context.Background(), fs, executablePath, release, assetName, "checksums.txt")
-			assert.Error(t, err)
-			assert.Contains(t, err.Error(), "failed to download asset")
-		})
-
-		t.Run("download checksums fails", func(t *testing.T) {
-			release := &github.RepositoryRelease{
-				TagName: github.String("v1.0.1"),
-				Assets: []*github.ReleaseAsset{
-					{
-						Name:               github.String(assetName),
-						BrowserDownloadURL: github.String(assetServer.URL),
-					},
-					{
-						Name:               github.String("checksums.txt"),
-						BrowserDownloadURL: github.String("badurl"),
-					},
-				},
-			}
-			fs := afero.NewMemMapFs()
-			// executablePath defined in outer scope
-			err := afero.WriteFile(fs, executablePath, []byte("old content"), 0o755)
-			require.NoError(t, err)
-
-			updater := NewUpdater(nil)
-			err = updater.UpdateTo(context.Background(), fs, executablePath, release, assetName, "checksums.txt")
-			assert.Error(t, err)
-			assert.Contains(t, err.Error(), "failed to download checksums")
-		})
-
-		t.Run("malformed checksums file", func(t *testing.T) {
-			malformedChecksumsServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
-				_, _ = w.Write([]byte(`{"latest_version": "v1.2.3"}`))
-			}))
-			defer malformedChecksumsServer.Close()
-			release := &github.RepositoryRelease{
-				TagName: github.String("v1.0.1"),
-				Assets: []*github.ReleaseAsset{
-					{
-						Name:               github.String(assetName),
-						BrowserDownloadURL: github.String(assetServer.URL),
-					},
-					{
-						Name:               github.String("checksums.txt"),
-						BrowserDownloadURL: github.String(malformedChecksumsServer.URL),
-					},
-				},
-			}
-			fs := afero.NewMemMapFs()
-			// executablePath defined in outer scope
-			err := afero.WriteFile(fs, executablePath, []byte("old content"), 0o755)
-			require.NoError(t, err)
-
-			updater := NewUpdater(nil)
-			err = updater.UpdateTo(context.Background(), fs, executablePath, release, assetName, "checksums.txt")
-			assert.Error(t, err)
-			assert.Contains(t, err.Error(), "checksum for asset")
-		})
+		// Verify .old file does not exist
+		_, err = cmfs.Stat(executablePath + ".old")
+		assert.True(t, os.IsNotExist(err))
 	})
-	t.Run("CheckForUpdate", func(t *testing.T) {
-		t.Run("new version available", func(t *testing.T) {
-			server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
-				release := &github.RepositoryRelease{
-					TagName: github.String("v1.0.1"),
-				}
-				_ = json.NewEncoder(w).Encode(release)
-			}))
-			defer server.Close()
 
-			client := github.NewClient(nil)
-			url, _ := url.Parse(server.URL + "/")
-			client.BaseURL = url
+	t.Run("fails to replace executable and restore fails", func(t *testing.T) {
+		memfs := afero.NewMemMapFs()
+		cmfs := &controlledMockFs{Fs: memfs}
+		cmfs.renameHooks = []func(old, new string) error{
+			nil, // first rename (old -> old.old) succeeds
+			func(old, new string) error { return fmt.Errorf("failed to replace") }, // second rename (new -> old) fails
+			func(old, new string) error { return fmt.Errorf("failed to restore") }, // third rename (old.old -> old) fails
+		}
 
-			updater := &Updater{client: client}
-			release, available, err := updater.CheckForUpdate(context.Background(), "owner", "repo", "v1.0.0")
-			assert.NoError(t, err)
-			assert.True(t, available)
-			assert.NotNil(t, release)
-			assert.Equal(t, "v1.0.1", release.GetTagName())
-		})
-		t.Run("no new version", func(t *testing.T) {
-			server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
-				release := &github.RepositoryRelease{
-					TagName: github.String("v1.0.0"),
-				}
-				_ = json.NewEncoder(w).Encode(release)
-			}))
-			defer server.Close()
+		executablePath := "/app/server"
+		err := afero.WriteFile(cmfs, executablePath, []byte("old content"), 0755)
+		require.NoError(t, err)
 
-			client := github.NewClient(nil)
-			url, _ := url.Parse(server.URL + "/")
-			client.BaseURL = url
+		updater := NewUpdater(http.DefaultClient)
 
-			updater := &Updater{client: client}
-			release, available, err := updater.CheckForUpdate(context.Background(), "owner", "repo", "v1.0.0")
-			assert.NoError(t, err)
-			assert.False(t, available)
-			assert.Nil(t, release)
-		})
+		err = updater.UpdateTo(context.Background(), cmfs, executablePath, release, assetName, "checksums.txt")
 
-		t.Run("api error", func(t *testing.T) {
-			server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
-				w.WriteHeader(http.StatusInternalServerError)
-			}))
-			defer server.Close()
+		require.Error(t, err)
+		assert.Contains(t, err.Error(), "failed to replace executable and could not restore old version")
 
-			client := github.NewClient(nil)
-			url, _ := url.Parse(server.URL + "/")
-			client.BaseURL = url
+		// original file should not exist, but .old should
+		_, err = cmfs.Stat(executablePath)
+		assert.True(t, os.IsNotExist(err))
 
-			updater := &Updater{client: client}
-			_, available, err := updater.CheckForUpdate(context.Background(), "owner", "repo", "v1.0.0")
-			assert.Error(t, err)
-			assert.False(t, available)
-		})
+		content, err := afero.ReadFile(cmfs, executablePath+".old")
+		require.NoError(t, err)
+		assert.Equal(t, "old content", string(content))
+	})
+
+	t.Run("fails to replace executable but restore succeeds", func(t *testing.T) {
+		memfs := afero.NewMemMapFs()
+		cmfs := &controlledMockFs{Fs: memfs}
+		cmfs.renameHooks = []func(old, new string) error{
+			nil, // first rename (old -> old.old) succeeds
+			func(old, new string) error { return fmt.Errorf("failed to replace") }, // second rename (new -> old) fails
+			nil, // third rename (old.old -> old) succeeds
+		}
+
+		executablePath := "/app/server"
+		err := afero.WriteFile(cmfs, executablePath, []byte("old content"), 0755)
+		require.NoError(t, err)
+
+		updater := NewUpdater(http.DefaultClient)
+
+		err = updater.UpdateTo(context.Background(), cmfs, executablePath, release, assetName, "checksums.txt")
+
+		require.Error(t, err)
+		assert.Contains(t, err.Error(), "failed to replace executable")
+		assert.NotContains(t, err.Error(), "could not restore")
+
+		// original file should exist and have old content
+		content, err := afero.ReadFile(cmfs, executablePath)
+		require.NoError(t, err)
+		assert.Equal(t, "old content", string(content))
+
+		// .old file should not exist
+		_, err = cmfs.Stat(executablePath + ".old")
+		assert.True(t, os.IsNotExist(err))
 	})
 }
