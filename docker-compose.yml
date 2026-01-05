@@ -11,9 +11,6 @@ services:
   # The MCP Any server itself.
   mcpany-server:
     image: mcpany/server:latest
-    build:
-      context: ./server
-      dockerfile: docker/Dockerfile.server
     ports:
       # Exposes the JSON-RPC port (for tool calls) to the host.
       - "50055:50050"
@@ -65,9 +62,7 @@ services:
       - mcpany-net
 
   ui:
-    build:
-      context: ./ui
-      dockerfile: Dockerfile
+    image: mcpany/ui:latest
     ports:
       - "3000:3000"
     environment:

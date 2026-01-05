@@ -607,6 +607,20 @@ else
 	@exit 1
 endif
 
+# Aliases for consistent naming
+docker-build-server: build-docker
+docker-build-http-echo: build-http-echo-docker
+
+# Target to build dev Docker image
+docker-build-dev: docker/Dockerfile.dev
+ifdef HAS_DOCKER
+	@echo "Building dev Docker image (mcpany/dev:latest)..."
+	@$(DOCKER_BUILD_CMD) -t mcpany/dev:latest -f docker/Dockerfile.dev ..
+else
+	@echo "Docker not found. Cannot build dev image."
+	@exit 1
+endif
+
 # Target to build all test images
 build-test-images:
 ifndef SKIP_DOCKER_REBUILD
