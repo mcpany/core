@@ -23,7 +23,6 @@ import (
 )
 
 func TestDockerComposeE2E(t *testing.T) {
-	t.Skip("Skipping E2E test as requested by user to unblock merge")
 	if os.Getenv("E2E_DOCKER") != "true" {
 		t.Skip("Skipping E2E Docker test. Set E2E_DOCKER=true to run.")
 	}
@@ -99,7 +98,13 @@ func TestDockerComposeE2E(t *testing.T) {
 
 	// Helper to get dynamic port
 	getServicePort := func(composeFile, service, internalPort string) string {
-		cmd := exec.Command("docker", "compose", "-f", composeFile, "port", service, internalPort)
+		commandName := "docker"
+		commandArgs := []string{"compose", "-f", composeFile, "port", service, internalPort}
+		if os.Getenv("USE_SUDO_FOR_DOCKER") == "1" {
+			commandName = "sudo"
+			commandArgs = append([]string{"docker"}, commandArgs...)
+		}
+		cmd := exec.Command(commandName, commandArgs...)
 		cmd.Env = os.Environ()
 		out, err := cmd.Output()
 		require.NoError(t, err, "Failed to get port for %s %s", service, internalPort)
@@ -188,13 +193,20 @@ func testFunctionalWeather(t *testing.T, rootDir string) {
 	// We also use a unique container name to avoid conflict
 	containerName := fmt.Sprintf("mcpany-weather-test-%d", time.Now().UnixNano())
 
-	cmd := exec.Command("docker", "run", "-d", "--name", containerName,
+	commandName := "docker"
+	cmdArgs := []string{"run", "-d", "--name", containerName,
 		"-p", "0:50050", // Dynamic port
 		"-v", fmt.Sprintf("%s:/config.yaml", configPath),
 		"ghcr.io/mcpany/server:latest",
 		"run", "--config-path", "/config.yaml", "--mcp-listen-address", ":50050",
-	)
-	t.Logf("Running command: %s", cmd.String())
+	}
+
+	if os.Getenv("USE_SUDO_FOR_DOCKER") == "1" {
+		commandName = "sudo"
+		cmdArgs = append([]string{"docker"}, cmdArgs...)
+	}
+	cmd := exec.Command(commandName, cmdArgs...)
+	t.Logf("Running command: %s %s", commandName, strings.Join(cmdArgs, " "))
 
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
@@ -203,11 +215,24 @@ func testFunctionalWeather(t *testing.T, rootDir string) {
 
 	// Cleanup
 	defer func() {
-		_ = exec.Command("docker", "rm", "-f", containerName).Run()
+		cleanupCommandName := "docker"
+		cleanupCmdArgs := []string{"rm", "-f", containerName}
+		if os.Getenv("USE_SUDO_FOR_DOCKER") == "1" {
+			cleanupCommandName = "sudo"
+			cleanupCmdArgs = append([]string{"docker"}, cleanupCmdArgs...)
+		}
+		cleanupCmd := exec.Command(cleanupCommandName, cleanupCmdArgs...)
+		cleanupCmd.Run()
 	}()
 
 	// Get assigned port
-	out, err := exec.Command("docker", "port", containerName, "50050/tcp").Output()
+	portCommandName := "docker"
+	portCmdArgs := []string{"port", containerName, "50050/tcp"}
+	if os.Getenv("USE_SUDO_FOR_DOCKER") == "1" {
+		portCommandName = "sudo"
+		portCmdArgs = append([]string{"docker"}, portCmdArgs...)
+	}
+	out, err := exec.Command(portCommandName, portCmdArgs...).Output()
 	require.NoError(t, err, "Failed to get assigned port")
 	// Output example: 0.0.0.0:32768
 	portBinding := strings.TrimSpace(string(out))
@@ -333,14 +358,20 @@ func verifyToolMetricWithService(t *testing.T, metricsURL, toolName, serviceID s
 }
 
 func runCommand(t *testing.T, dir string, name string, args ...string) {
-	cmd := exec.Command(name, args...)
+	commandName := name
+	commandArgs := args
+	if name == "docker" && os.Getenv("USE_SUDO_FOR_DOCKER") == "1" {
+		commandName = "sudo"
+		commandArgs = append([]string{"docker"}, args...)
+	}
+	cmd := exec.Command(commandName, commandArgs...)
 	cmd.Dir = dir
 	cmd.Env = os.Environ() // Explicitly pass environment to ensure t.Setenv works
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
-	t.Logf("Running: %s %s (Env: COMPOSE_PROJECT_NAME=%s)", name, strings.Join(args, " "), os.Getenv("COMPOSE_PROJECT_NAME"))
+	t.Logf("Running: %s %s (Env: COMPOSE_PROJECT_NAME=%s)", commandName, strings.Join(commandArgs, " "), os.Getenv("COMPOSE_PROJECT_NAME"))
 	err := cmd.Run()
-	require.NoError(t, err, "Command failed: %s %s", name, strings.Join(args, " "))
+	require.NoError(t, err, "Command failed: %s %s", commandName, strings.Join(commandArgs, " "))
 }
 
 func verifyEndpoint(t *testing.T, url string, expectedStatus int, timeout time.Duration) {
