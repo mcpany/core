@@ -35,6 +35,52 @@ func (m *controlledMockFs) Rename(oldname, newname string) error {
 	return m.Fs.Rename(oldname, newname)
 }
 
+func TestUpdateTo_Success(t *testing.T) {
+	assetContent := "new binary content"
+	assetName := "server-linux-amd64"
+	assetHash := sha256.Sum256([]byte(assetContent))
+	checksumsContent := fmt.Sprintf("%s  %s\n", hex.EncodeToString(assetHash[:]), assetName)
+
+	assetServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Write([]byte(assetContent))
+	}))
+	defer assetServer.Close()
+
+	checksumsServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Write([]byte(checksumsContent))
+	}))
+	defer checksumsServer.Close()
+
+	release := &github.RepositoryRelease{
+		TagName: github.String("v1.0.1"),
+		Assets: []*github.ReleaseAsset{
+			{
+				Name:               github.String(assetName),
+				BrowserDownloadURL: github.String(assetServer.URL),
+			},
+			{
+				Name:               github.String("checksums.txt"),
+				BrowserDownloadURL: github.String(checksumsServer.URL),
+			},
+		},
+	}
+	t.Run("successfully updates when executable does not exist", func(t *testing.T) {
+		memfs := afero.NewMemMapFs()
+		cmfs := &controlledMockFs{Fs: memfs}
+
+		executablePath := "/app/server"
+
+		updater := NewUpdater(http.DefaultClient)
+
+		err := updater.UpdateTo(context.Background(), cmfs, executablePath, release, assetName, "checksums.txt")
+
+		require.NoError(t, err)
+
+		content, err := afero.ReadFile(cmfs, executablePath)
+		require.NoError(t, err)
+		assert.Equal(t, assetContent, string(content))
+	})
+}
 func TestUpdateTo_FailureScenarios(t *testing.T) {
 	assetContent := "new binary content"
 	assetName := "server-linux-amd64"
@@ -150,6 +196,26 @@ func TestUpdateTo_FailureScenarios(t *testing.T) {
 
 		// .old file should not exist
 		_, err = cmfs.Stat(executablePath + ".old")
+		assert.True(t, os.IsNotExist(err))
+	})
+	t.Run("fails to replace executable and no old file to restore", func(t *testing.T) {
+		memfs := afero.NewMemMapFs()
+		cmfs := &controlledMockFs{Fs: memfs}
+		cmfs.renameHooks = []func(old, new string) error{
+			func(old, new string) error { return fmt.Errorf("failed to replace") }, // rename (new -> old) fails
+		}
+
+		executablePath := "/app/server"
+
+		updater := NewUpdater(http.DefaultClient)
+
+		err := updater.UpdateTo(context.Background(), cmfs, executablePath, release, assetName, "checksums.txt")
+
+		require.Error(t, err)
+		assert.Contains(t, err.Error(), "failed to replace executable")
+
+		// No file should exist
+		_, err = cmfs.Stat(executablePath)
 		assert.True(t, os.IsNotExist(err))
 	})
 }
