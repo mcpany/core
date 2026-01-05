@@ -5,15 +5,10 @@
 
 "use client";
 
-import { useForm, Controller } from "react-hook-form";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
 import { ToolDefinition } from "@/lib/client";
-import { Info } from "lucide-react";
+import { SchemaForm } from "./schema-form";
 
 interface ToolFormProps {
   tool: ToolDefinition;
@@ -22,114 +17,85 @@ interface ToolFormProps {
 }
 
 export function ToolForm({ tool, onSubmit, onCancel }: ToolFormProps) {
-  const { register, control, handleSubmit, formState: { errors } } = useForm();
-  const schema = tool.schema || {};
-  const properties = schema.properties || {};
-  const required = schema.required || [];
+  const [formData, setFormData] = useState<any>({});
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
-  const handleFormSubmit = (data: any) => {
-    // Post-process data to match types
-    const processedData: any = {};
-    Object.keys(data).forEach((key) => {
-      const prop = properties[key];
-      const value = data[key];
+  const validate = (schema: any, data: any, path: string = ""): Record<string, string> => {
+    let newErrors: Record<string, string> = {};
 
-      if (value === "" || value === undefined) return; // Skip empty optional fields
+    if (!schema) return newErrors;
 
-      if (prop.type === "integer" || prop.type === "number") {
-        processedData[key] = Number(value);
-      } else if (prop.type === "boolean") {
-        processedData[key] = Boolean(value);
-      } else {
-        processedData[key] = value;
-      }
-    });
-    onSubmit(processedData);
+    const required = schema.required || [];
+    const properties = schema.properties || {};
+
+    // Check required fields at this level
+    for (const field of required) {
+        const fieldPath = path ? `${path}.${field}` : field;
+        const value = data?.[field];
+        if (value === undefined || value === "" || value === null) {
+            newErrors[fieldPath] = "This field is required";
+        }
+    }
+
+    // Recurse into object properties
+    if (schema.type === "object" && properties) {
+        for (const key of Object.keys(properties)) {
+             const fieldPath = path ? `${path}.${key}` : key;
+             const fieldSchema = properties[key];
+
+             // Validate if field is present (handles optional nested objects correctly)
+             if (data?.[key] !== undefined) {
+                 const childErrors = validate(fieldSchema, data[key], fieldPath);
+                 newErrors = { ...newErrors, ...childErrors };
+             }
+        }
+    }
+
+    // Recurse into array items
+    if (schema.type === "array" && schema.items && Array.isArray(data)) {
+        data.forEach((item, index) => {
+            const itemPath = `${path}[${index}]`;
+            const itemErrors = validate(schema.items, item, itemPath);
+            newErrors = { ...newErrors, ...itemErrors };
+        });
+    }
+
+    return newErrors;
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const validationErrors = validate(tool.schema, formData);
+
+    if (Object.keys(validationErrors).length > 0) {
+        setErrors(validationErrors);
+        return;
+    }
+
+    setErrors({});
+    onSubmit(formData);
   };
 
   return (
-    <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-4 py-2">
-      <div className="space-y-4">
-        {Object.keys(properties).length === 0 && (
-           <div className="text-sm text-muted-foreground italic">
-               This tool takes no arguments.
-           </div>
-        )}
-        {Object.keys(properties).map((key) => {
-          const prop = properties[key];
-          const isRequired = required.includes(key);
-
-          return (
-            <div key={key} className="space-y-2">
-              <Label htmlFor={key} className="flex items-center gap-1">
-                {key}
-                {isRequired && <span className="text-red-500">*</span>}
-                <span className="text-xs font-normal text-muted-foreground ml-2">({prop.type})</span>
-              </Label>
-
-              {prop.description && (
-                  <p className="text-[10px] text-muted-foreground">{prop.description}</p>
-              )}
-
-              {prop.enum ? (
-                <Controller
-                  name={key}
-                  control={control}
-                  rules={{ required: isRequired }}
-                  render={({ field }) => (
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
-                      <SelectTrigger>
-                        <SelectValue placeholder={`Select ${key}`} />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {prop.enum.map((val: string) => (
-                          <SelectItem key={val} value={val}>
-                            {val}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  )}
-                />
-              ) : prop.type === "boolean" ? (
-                 <Controller
-                  name={key}
-                  control={control}
-                  render={({ field }) => (
-                    <div className="flex items-center gap-2">
-                        <Switch
-                            checked={field.value}
-                            onCheckedChange={field.onChange}
-                        />
-                        <span className="text-sm text-muted-foreground">{field.value ? "True" : "False"}</span>
-                    </div>
-                  )}
-                />
-              ) : prop.type === "integer" || prop.type === "number" ? (
-                <Input
-                  id={key}
-                  type="number"
-                  step={prop.type === "integer" ? "1" : "any"}
-                  placeholder={`Enter ${key}`}
-                  {...register(key, { required: isRequired })}
-                />
-              ) : (
-                 <Input // Default to text for string and others
-                  id={key}
-                  placeholder={`Enter ${key}`}
-                  {...register(key, { required: isRequired })}
-                />
-              )}
-
-              {errors[key] && (
-                <span className="text-xs text-red-500">This field is required</span>
-              )}
-            </div>
-          );
-        })}
+    <form onSubmit={handleSubmit} className="space-y-4 py-2 flex flex-col h-[60vh]">
+      <div className="flex-1 overflow-y-auto pr-2">
+         {(!tool.schema || !tool.schema.properties || Object.keys(tool.schema.properties).length === 0) ? (
+             <div className="text-sm text-muted-foreground italic">
+                 This tool takes no arguments.
+             </div>
+         ) : (
+             <SchemaForm
+                schema={tool.schema}
+                value={formData}
+                onChange={(val) => {
+                    setFormData(val);
+                }}
+                errors={errors}
+             />
+         )}
       </div>
 
-      <div className="flex justify-end gap-2 pt-4 border-t mt-4">
+      <div className="flex justify-end gap-2 pt-4 border-t mt-auto">
         <Button type="button" variant="outline" onClick={onCancel}>
           Cancel
         </Button>
