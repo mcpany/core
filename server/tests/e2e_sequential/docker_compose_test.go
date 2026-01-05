@@ -4,6 +4,7 @@
 package e2e_sequential
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
@@ -23,7 +24,6 @@ import (
 )
 
 func TestDockerComposeE2E(t *testing.T) {
-	t.Skip("Skipping E2E test as requested by user to unblock merge")
 	if os.Getenv("E2E_DOCKER") != "true" {
 		t.Skip("Skipping E2E Docker test. Set E2E_DOCKER=true to run.")
 	}
@@ -63,14 +63,14 @@ func TestDockerComposeE2E(t *testing.T) {
 		// Dump logs from the active compose file if set
 		if currentComposeFile != "" {
 			t.Logf("Dumping logs from %s...", currentComposeFile)
-			cmd := exec.Command("docker", "compose", "-f", currentComposeFile, "logs")
+			cmd := dockerCommand("compose", "-f", currentComposeFile, "logs")
 			cmd.Stdout = os.Stdout
 			cmd.Stderr = os.Stderr
 			_ = cmd.Run()
 		}
 
 		// Dump logs from manually run weather container
-		cmd := exec.Command("docker", "logs", "mcpany-weather-test") // Name without random suffix? No, we used random.
+		cmd := dockerCommand("logs", "mcpany-weather-test") // Name without random suffix? No, we used random.
 		// We need to capture the weather container name too if we want to dump it.
 		// For now, let's skip dumping weather logs or try to capture it too.
 
@@ -80,7 +80,7 @@ func TestDockerComposeE2E(t *testing.T) {
 		// So this main cleanup is just a safety net.
 
 		if currentComposeFile != "" {
-			cmd = exec.Command("docker", "compose", "-f", currentComposeFile, "down", "-v", "--remove-orphans")
+			cmd = dockerCommand("compose", "-f", currentComposeFile, "down", "-v", "--remove-orphans")
 			cmd.Env = os.Environ()
 			cmd.Stdout = os.Stdout
 			cmd.Stderr = os.Stderr
@@ -88,7 +88,7 @@ func TestDockerComposeE2E(t *testing.T) {
 		}
 
 		// Also try generic project down just in case
-		cmd = exec.Command("docker", "compose", "down", "-v", "--remove-orphans")
+		cmd = dockerCommand("compose", "down", "-v", "--remove-orphans")
 		cmd.Env = os.Environ()
 		_ = cmd.Run()
 
@@ -99,7 +99,7 @@ func TestDockerComposeE2E(t *testing.T) {
 
 	// Helper to get dynamic port
 	getServicePort := func(composeFile, service, internalPort string) string {
-		cmd := exec.Command("docker", "compose", "-f", composeFile, "port", service, internalPort)
+		cmd := dockerCommand("compose", "-f", composeFile, "port", service, internalPort)
 		cmd.Env = os.Environ()
 		out, err := cmd.Output()
 		require.NoError(t, err, "Failed to get port for %s %s", service, internalPort)
@@ -119,7 +119,7 @@ func TestDockerComposeE2E(t *testing.T) {
 	if _, err := os.Stat(rootCompose); err == nil {
 		t.Log("Starting root docker-compose with dynamic ports...")
 		// Create dynamic override
-		dynamicCompose := createDynamicCompose(t, rootCompose)
+		dynamicCompose := createDynamicCompose(t, rootCompose, rootDir)
 		currentComposeFile = dynamicCompose
 		defer os.Remove(dynamicCompose)
 
@@ -144,9 +144,9 @@ func TestDockerComposeE2E(t *testing.T) {
 	// 5. Start Example Docker Compose
 	t.Log("Switching to example docker-compose...")
 
-	exampleDir := filepath.Join(rootDir, "examples/docker-compose-demo")
+	exampleDir := filepath.Join(rootDir, "server", "examples/docker-compose-demo")
 	originalCompose := filepath.Join(exampleDir, "docker-compose.yml")
-	dynamicCompose := createDynamicCompose(t, originalCompose)
+	dynamicCompose := createDynamicCompose(t, originalCompose, rootDir)
 	currentComposeFile = dynamicCompose
 	defer os.Remove(dynamicCompose)
 
@@ -178,7 +178,7 @@ func TestDockerComposeE2E(t *testing.T) {
 func testFunctionalWeather(t *testing.T, rootDir string) {
 	// 1. Start mcpany-server with wttr.in config
 	// We run it on a dynamic port to avoid conflict with previous steps or other processes.
-	configPath := fmt.Sprintf("%s/examples/popular_services/wttr.in/config.yaml", rootDir)
+	configPath := fmt.Sprintf("%s/server/examples/popular_services/wttr.in/config.yaml", rootDir)
 	t.Logf("rootDir: %s", rootDir)
 	t.Logf("configPath: %s", configPath)
 	if _, err := os.Stat(configPath); err != nil {
@@ -188,7 +188,7 @@ func testFunctionalWeather(t *testing.T, rootDir string) {
 	// We also use a unique container name to avoid conflict
 	containerName := fmt.Sprintf("mcpany-weather-test-%d", time.Now().UnixNano())
 
-	cmd := exec.Command("docker", "run", "-d", "--name", containerName,
+	cmd := dockerCommand("run", "-d", "--name", containerName,
 		"-p", "0:50050", // Dynamic port
 		"-v", fmt.Sprintf("%s:/config.yaml", configPath),
 		"ghcr.io/mcpany/server:latest",
@@ -203,11 +203,11 @@ func testFunctionalWeather(t *testing.T, rootDir string) {
 
 	// Cleanup
 	defer func() {
-		_ = exec.Command("docker", "rm", "-f", containerName).Run()
+		_ = dockerCommand("rm", "-f", containerName).Run()
 	}()
 
 	// Get assigned port
-	out, err := exec.Command("docker", "port", containerName, "50050/tcp").Output()
+	out, err := dockerCommand("port", containerName, "50050/tcp").Output()
 	require.NoError(t, err, "Failed to get assigned port")
 	// Output example: 0.0.0.0:32768
 	portBinding := strings.TrimSpace(string(out))
@@ -332,15 +332,32 @@ func verifyToolMetricWithService(t *testing.T, metricsURL, toolName, serviceID s
 	require.Contains(t, body, fmt.Sprintf("service_id=\"%s\"", serviceID), "Service ID label not found")
 }
 
+func dockerCommand(args ...string) *exec.Cmd {
+	if os.Getenv("USE_SUDO_FOR_DOCKER") == "1" {
+		return exec.Command("sudo", append([]string{"docker"}, args...)...)
+	}
+	return exec.Command("docker", args...)
+}
+
 func runCommand(t *testing.T, dir string, name string, args ...string) {
-	cmd := exec.Command(name, args...)
+	var cmd *exec.Cmd
+	if name == "docker" {
+		cmd = dockerCommand(args...)
+	} else {
+		cmd = exec.Command(name, args...)
+	}
 	cmd.Dir = dir
 	cmd.Env = os.Environ() // Explicitly pass environment to ensure t.Setenv works
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
-	t.Logf("Running: %s %s (Env: COMPOSE_PROJECT_NAME=%s)", name, strings.Join(args, " "), os.Getenv("COMPOSE_PROJECT_NAME"))
+	var stdout, stderr bytes.Buffer
+	cmd.Stdout = &stdout
+	cmd.Stderr = &stderr
+	t.Logf("Running: %s (Env: COMPOSE_PROJECT_NAME=%s)", strings.Join(cmd.Args, " "), os.Getenv("COMPOSE_PROJECT_NAME"))
 	err := cmd.Run()
-	require.NoError(t, err, "Command failed: %s %s", name, strings.Join(args, " "))
+	if err != nil {
+		t.Logf("STDOUT:\n%s", stdout.String())
+		t.Logf("STDERR:\n%s", stderr.String())
+		require.NoError(t, err, "Command failed: %s", strings.Join(cmd.Args, " "))
+	}
 }
 
 func verifyEndpoint(t *testing.T, url string, expectedStatus int, timeout time.Duration) {
@@ -484,7 +501,7 @@ func verifyToolMetricDirect(t *testing.T, metricsURL, toolName string) {
 }
 
 // createDynamicCompose creates a temporary docker-compose file with 0 ports
-func createDynamicCompose(t *testing.T, originalPath string) string {
+func createDynamicCompose(t *testing.T, originalPath string, rootDir string) string {
 	content, err := os.ReadFile(originalPath)
 	require.NoError(t, err)
 
@@ -499,12 +516,18 @@ func createDynamicCompose(t *testing.T, originalPath string) string {
 	re2 := regexp.MustCompile(`"50051:50051"`)
 	re3 := regexp.MustCompile(`"8080:8080"`)
 	re4 := regexp.MustCompile(`"9099:9090"`)
+	reHealthcheck := regexp.MustCompile(`"http://localhost:50050/healthz"`)
 
 	s := string(content)
 	s = re1.ReplaceAllString(s, `"0:50050"`)
 	s = re2.ReplaceAllString(s, `"0:50051"`)
 	s = re3.ReplaceAllString(s, `"0:8080"`)
 	s = re4.ReplaceAllString(s, `"0:9090"`)
+	s = reHealthcheck.ReplaceAllString(s, `"http://localhost:50050/healthz"`)
+
+	// Create a dynamic prometheus config
+	prometheusConfigPath := createDynamicPrometheusConfig(t, rootDir)
+	s = strings.Replace(s, "./server/docker/prometheus.yml:/etc/prometheus/prometheus.yml", fmt.Sprintf("%s:/etc/prometheus/prometheus.yml", prometheusConfigPath), 1)
 
 	// Create temp file in same dir to preserve relative paths
 	dir := filepath.Dir(originalPath)
@@ -512,6 +535,25 @@ func createDynamicCompose(t *testing.T, originalPath string) string {
 	require.NoError(t, err)
 
 	_, err = tmpFile.WriteString(s)
+	require.NoError(t, err)
+	tmpFile.Close()
+
+	return tmpFile.Name()
+}
+
+func createDynamicPrometheusConfig(t *testing.T, rootDir string) string {
+	content := `
+global:
+  scrape_interval: 15s
+scrape_configs:
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+`
+	tmpFile, err := os.CreateTemp("", "prometheus-dynamic-*.yml")
+	require.NoError(t, err)
+
+	_, err = tmpFile.WriteString(content)
 	require.NoError(t, err)
 	tmpFile.Close()
 

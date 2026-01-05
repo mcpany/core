@@ -42,7 +42,7 @@ services:
   # A sample upstream HTTP service that mcpany-server will connect to.
   http-echo-server:
     build:
-      context: ../../
+      context: ../
       dockerfile: docker/Dockerfile.http-echo-server
     ports:
       - "8080:8080"
