@@ -10,6 +10,10 @@ export const MockDB = {
         { name: "weather-service", version: "1.2.0", disable: false, http_service: { address: "http://weather:8080" }, id: "srv-1" },
         { name: "memory-store", version: "0.9.5", disable: true, grpc_service: { address: "memory:9090" }, id: "srv-2" },
         { name: "local-files", version: "1.0.0", disable: false, command_line_service: { command: "npx", args: ["-y", "@modelcontextprotocol/server-filesystem", "/users/me/docs"] }, id: "srv-3" },
+        { name: "postgres-db", version: "15.3", disable: false, http_service: { address: "http://pg-adapter:3000" }, id: "srv-4" },
+        { name: "slack-bot", version: "2.1.0", disable: false, websocket_service: { address: "ws://slack-gateway:8081" }, id: "srv-5" },
+        { name: "github-integration", version: "1.0.1", disable: false, http_service: { address: "https://api.github.com/mcp" }, id: "srv-6" },
+        { name: "legacy-api", version: "0.1.0", disable: true, command_line_service: { command: "./legacy-bin" }, id: "srv-7" }
     ],
     settings: {
         mcp_listen_address: ":8080",

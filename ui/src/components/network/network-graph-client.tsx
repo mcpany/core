@@ -152,7 +152,13 @@ function Flow() {
               <CardHeader className="p-4 pb-2 cursor-pointer" onClick={() => setIsControlsExpanded(!isControlsExpanded)}>
                   <CardTitle className="text-lg flex items-center justify-between gap-4">
                       <div className="flex items-center gap-2">
-                        <Activity className="h-5 w-5 text-primary" />
+                        <div className="relative">
+                             <Activity className="h-5 w-5 text-primary" />
+                             <span className="absolute -top-0.5 -right-0.5 flex h-2 w-2">
+                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                                <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+                             </span>
+                        </div>
                         <span className={cn(isControlsExpanded ? "block" : "hidden sm:block")}>Network Graph</span>
                       </div>
                       <div className="flex items-center gap-2">

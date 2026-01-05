@@ -28,8 +28,9 @@ export interface NetworkGraphState {
     autoLayout: () => void;
 }
 
-const nodeWidth = 220;
-const nodeHeight = 60;
+// Adjusted for a tighter, more cohesive graph layout
+const nodeWidth = 180;
+const nodeHeight = 50;
 
 const getLayoutedElements = (nodes: Node[], edges: Edge[], direction = 'TB') => {
     const dagreGraph = new dagre.graphlib.Graph();
