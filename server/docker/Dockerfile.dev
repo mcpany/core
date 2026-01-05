@@ -48,13 +48,18 @@ RUN apt-get update && apt-get install -y \
 
 WORKDIR /workspace
 
-# Copy necessary files for 'make prepare'
-COPY Makefile go.mod go.sum requirements.txt ./
-COPY tools/ ./tools/
+# Copy root modules
+COPY go.mod go.sum ./
+
+# Copy server files
+COPY server/Makefile server/go.mod server/go.sum server/requirements.txt ./server/
+COPY server/tools/ ./server/tools/
 COPY proto/ ./proto/
 
+WORKDIR /workspace/server
+
 # Run make prepare to install tools
-ENV TOOL_INSTALL_DIR=/tools
+ENV TOOL_INSTALL_DIR=/workspace/server/tools
 # Install pre-commit globally to be available in CI mode
 RUN pip3 install --break-system-packages pre-commit fastmcp
 # Set CI=true to skip venv setup in Makefile
@@ -79,8 +84,8 @@ RUN groupadd -g ${GID} user || true && \
     echo "user ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 
 # Add installed tools to PATH
-ENV PATH="/tools:${PATH}"
-ENV GOPATH="/tools/go"
+ENV PATH="/workspace/server/tools:${PATH}"
+ENV GOPATH="/workspace/server/tools/go"
 ENV PATH="$GOPATH/bin:$PATH"
 
 CMD ["/bin/bash"]
