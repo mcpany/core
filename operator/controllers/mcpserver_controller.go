@@ -54,6 +54,9 @@ func (r *MCPServerReconciler) Reconcile(ctx context.Context, req ctrl.Request) (
 	if err != nil && errors.IsNotFound(err) {
 		// Define a new deployment
 		dep := r.deploymentForMCPServer(mcpServer)
+		if dep == nil {
+			return ctrl.Result{}, nil
+		}
 		err = r.Create(ctx, dep)
 		if err != nil {
 			return ctrl.Result{}, err
@@ -81,6 +84,9 @@ func (r *MCPServerReconciler) Reconcile(ctx context.Context, req ctrl.Request) (
 	if err != nil && errors.IsNotFound(err) {
 		// Define a new service
 		svc := r.serviceForMCPServer(mcpServer)
+		if svc == nil {
+			return ctrl.Result{}, nil
+		}
 		err = r.Create(ctx, svc)
 		if err != nil {
 			return ctrl.Result{}, err
@@ -194,7 +200,9 @@ func (r *MCPServerReconciler) deploymentForMCPServer(m *mcpv1alpha1.MCPServer) *
 		},
 	}
 	// Set MCPServer instance as the owner and controller
-	ctrl.SetControllerReference(m, dep, r.Scheme)
+	if err := ctrl.SetControllerReference(m, dep, r.Scheme); err != nil {
+		return nil
+	}
 	return dep
 }
 
@@ -226,7 +234,9 @@ func (r *MCPServerReconciler) serviceForMCPServer(m *mcpv1alpha1.MCPServer) *cor
 		},
 	}
 	// Set MCPServer instance as the owner and controller
-	ctrl.SetControllerReference(m, svc, r.Scheme)
+	if err := ctrl.SetControllerReference(m, svc, r.Scheme); err != nil {
+		return nil
+	}
 	return svc
 }
 

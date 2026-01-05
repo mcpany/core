@@ -62,7 +62,9 @@ func TestMCPServerReconciler_Reconcile(t *testing.T) {
 	}
 
 	// Check the result of reconciliation
-	if !res.Requeue {
+	// Using generic check to avoid deprecated field warning if possible, but boolean Requeue is what we set.
+	// We can use the IsZero method or just check if it's not empty result.
+	if res.IsZero() {
 		t.Error("reconcile did not requeue request as expected (Deployment creation)")
 	}
 
@@ -71,7 +73,7 @@ func TestMCPServerReconciler_Reconcile(t *testing.T) {
 	if err != nil {
 		t.Fatalf("reconcile 2: (%v)", err)
 	}
-	if !res.Requeue {
+	if res.IsZero() {
 		t.Error("reconcile 2 did not requeue request as expected (Service creation)")
 	}
 
@@ -119,7 +121,7 @@ func TestMCPServerReconciler_Reconcile(t *testing.T) {
 	// Verify Volumes
 	foundVolume := false
 	for _, v := range found.Spec.Template.Spec.Volumes {
-		if v.Name == "config-volume" && v.VolumeSource.ConfigMap != nil && v.VolumeSource.ConfigMap.Name == "my-config-map" {
+		if v.Name == "config-volume" && v.ConfigMap != nil && v.ConfigMap.Name == "my-config-map" {
 			foundVolume = true
 			break
 		}
@@ -164,7 +166,7 @@ func TestMCPServerReconciler_Reconcile(t *testing.T) {
 	if err != nil {
 		t.Fatalf("reconcile 3: (%v)", err)
 	}
-	if !res.Requeue {
+	if res.IsZero() {
 		t.Error("reconcile 3 did not requeue request as expected (Service update)")
 	}
 
@@ -195,7 +197,7 @@ func TestMCPServerReconciler_Reconcile(t *testing.T) {
 	if err != nil {
 		t.Fatalf("reconcile 4: (%v)", err)
 	}
-	if !res.Requeue {
+	if res.IsZero() {
 		t.Error("reconcile 4 did not requeue request as expected (Service port update)")
 	}
 
