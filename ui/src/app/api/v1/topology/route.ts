@@ -7,6 +7,7 @@ import { NextResponse } from 'next/server';
 import { Graph, Node, NodeType, NodeStatus } from '@/types/topology';
 import { MockDB } from '@/lib/server/mock-db';
 import { BuiltInTools } from '@/lib/server/tools';
+import { UpstreamServiceConfig } from '@/lib/client';
 
 export async function GET() {
     // Construct the topology graph dynamically from MockDB and other sources
@@ -153,9 +154,14 @@ export async function GET() {
     return NextResponse.json(graph);
 }
 
-function getServiceAddress(service: any): string {
+function getServiceAddress(service: UpstreamServiceConfig): string {
     if (service.http_service) return service.http_service.address;
     if (service.grpc_service) return service.grpc_service.address;
     if (service.command_line_service) return `cmd: ${service.command_line_service.command}`;
+    if (service.websocket_service) return service.websocket_service.address;
+    if (service.mcp_service) {
+        if (service.mcp_service.sse_connection) return service.mcp_service.sse_connection.sse_address;
+        if (service.mcp_service.http_connection) return service.mcp_service.http_connection.http_address;
+    }
     return 'unknown';
 }

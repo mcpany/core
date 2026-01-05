@@ -5,6 +5,7 @@
 
 /**
  * Represents the type of a node in the topology graph.
+ * Used for visual classification in the graph.
  */
 export type NodeType =
   | 'NODE_TYPE_UNSPECIFIED'
