@@ -41,6 +41,9 @@ func TestWordTokenizer(t *testing.T) {
 		{"hello", 1},
 		{"hello world", 2}, // 2 * 1.3 = 2.6 -> 2
 		{"this is a test sentence", 6}, // 5 * 1.3 = 6.5 -> 6
+		{"hello 🌍", 2}, // 2 * 1.3 = 2.6 -> 2 (ASCII + Emoji)
+		{"你好 世界", 2}, // 2 * 1.3 = 2.6 -> 2 (Chinese + Space + Chinese)
+		{"hello\tworld\n", 2}, // ASCII whitespace
 	}
 
 	for _, tt := range tests {
