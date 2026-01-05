@@ -70,9 +70,12 @@ func (t *DockerTransport) Connect(ctx context.Context) (mcp.Connection, error) {
 		log.Info("Successfully pulled docker image", "image", img)
 	}
 
-	var scriptCommands []string
+	setupCmds := t.StdioConfig.GetSetupCommands()
+	// Allocate slice with capacity for setup commands + 1 main command
+	scriptCommands := make([]string, 0, len(setupCmds)+1)
+
 	// Redirect stdout of setup commands to stderr to avoid polluting the JSON-RPC channel
-	for _, cmd := range t.StdioConfig.GetSetupCommands() {
+	for _, cmd := range setupCmds {
 		scriptCommands = append(scriptCommands, fmt.Sprintf("(%s) >&2", cmd))
 	}
 
