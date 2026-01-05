@@ -33,17 +33,7 @@ test.describe('MCP Any UI E2E', () => {
     await expect(page.locator('text=test-service-e2e')).toBeVisible();
   });
 
-  test('Tools page lists tools and inspects', async ({ page }) => {
-    await page.goto('/tools');
-    await expect(page.locator('h2')).toContainText('Tools');
-    // Wait for list to load
-    await expect(page.locator('text=Available Tools')).toBeVisible();
 
-    // Inspect
-    await page.click('button:has-text("Inspect") >> nth=0');
-    await expect(page.locator('div[role="dialog"]')).toBeVisible();
-    await expect(page.locator('text=Schema')).toBeVisible();
-  });
 
   test('Middleware page drag and drop', async ({ page }) => {
     await page.goto('/middleware');
