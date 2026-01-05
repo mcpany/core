@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"net"
 	"net/http"
+	"net/http/httptest"
 	"testing"
 	"time"
 
@@ -210,4 +211,95 @@ func TestRunServerMode_Auth(t *testing.T) {
 	// Clean up
 	cancel()
 	<-errChan
+}
+
+func TestAuthMiddleware_LocalhostSecurity(t *testing.T) {
+	app := NewApplication()
+
+	// Case 1: No API Key Configured
+	t.Run("No Key - Localhost Allowed", func(t *testing.T) {
+		middleware := app.createAuthMiddleware("") // No key
+		handler := middleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.WriteHeader(http.StatusOK)
+		}))
+
+		req, _ := http.NewRequest("GET", "/", nil)
+		req.RemoteAddr = "127.0.0.1:12345"
+		rec := httptest.NewRecorder()
+
+		handler.ServeHTTP(rec, req)
+		assert.Equal(t, http.StatusOK, rec.Code)
+	})
+
+	t.Run("No Key - IPv6 Localhost Allowed", func(t *testing.T) {
+		middleware := app.createAuthMiddleware("") // No key
+		handler := middleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.WriteHeader(http.StatusOK)
+		}))
+
+		req, _ := http.NewRequest("GET", "/", nil)
+		req.RemoteAddr = "[::1]:12345"
+		rec := httptest.NewRecorder()
+
+		handler.ServeHTTP(rec, req)
+		assert.Equal(t, http.StatusOK, rec.Code)
+	})
+
+	t.Run("No Key - External Denied", func(t *testing.T) {
+		middleware := app.createAuthMiddleware("") // No key
+		handler := middleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.WriteHeader(http.StatusOK)
+		}))
+
+		req, _ := http.NewRequest("GET", "/", nil)
+		req.RemoteAddr = "192.168.1.5:12345"
+		rec := httptest.NewRecorder()
+
+		handler.ServeHTTP(rec, req)
+		assert.Equal(t, http.StatusForbidden, rec.Code)
+	})
+
+	// Case 2: API Key Configured
+	t.Run("With Key - Localhost Needs Key", func(t *testing.T) {
+		middleware := app.createAuthMiddleware("secret")
+		handler := middleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.WriteHeader(http.StatusOK)
+		}))
+
+		req, _ := http.NewRequest("GET", "/", nil)
+		req.RemoteAddr = "127.0.0.1:12345"
+		rec := httptest.NewRecorder()
+
+		handler.ServeHTTP(rec, req)
+		assert.Equal(t, http.StatusUnauthorized, rec.Code)
+	})
+
+	t.Run("With Key - External Needs Key", func(t *testing.T) {
+		middleware := app.createAuthMiddleware("secret")
+		handler := middleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.WriteHeader(http.StatusOK)
+		}))
+
+		req, _ := http.NewRequest("GET", "/", nil)
+		req.RemoteAddr = "192.168.1.5:12345"
+		rec := httptest.NewRecorder()
+
+		handler.ServeHTTP(rec, req)
+		assert.Equal(t, http.StatusUnauthorized, rec.Code)
+	})
+
+	t.Run("With Key - External With Correct Key Allowed", func(t *testing.T) {
+		middleware := app.createAuthMiddleware("secret")
+		handler := middleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.WriteHeader(http.StatusOK)
+		}))
+
+		req, _ := http.NewRequest("GET", "/", nil)
+		req.RemoteAddr = "192.168.1.5:12345"
+		req.Header.Set("X-API-Key", "secret")
+		rec := httptest.NewRecorder()
+
+		handler.ServeHTTP(rec, req)
+		assert.Equal(t, http.StatusOK, rec.Code)
+	})
 }

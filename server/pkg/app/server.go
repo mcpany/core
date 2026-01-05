@@ -792,21 +792,7 @@ func (a *Application) runServerMode(
 	}, nil)
 
 	apiKey := config.GlobalSettings().APIKey()
-	authMiddleware := func(next http.Handler) http.Handler {
-		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			ip := util.ExtractIP(r.RemoteAddr)
-			ctx := util.ContextWithRemoteIP(r.Context(), ip)
-			r = r.WithContext(ctx)
-
-			if apiKey != "" {
-				if subtle.ConstantTimeCompare([]byte(r.Header.Get("X-API-Key")), []byte(apiKey)) != 1 {
-					http.Error(w, "Unauthorized", http.StatusUnauthorized)
-					return
-				}
-			}
-			next.ServeHTTP(w, r)
-		})
-	}
+	authMiddleware := a.createAuthMiddleware(apiKey)
 
 	userMap := make(map[string]*config_v1.User)
 	for _, u := range users {
@@ -1365,6 +1351,41 @@ func startHTTPServer(
 		<-shutdownComplete
 		serverLog.Info("Server shut down.")
 	}()
+}
+
+// createAuthMiddleware creates the authentication middleware.
+func (a *Application) createAuthMiddleware(apiKey string) func(http.Handler) http.Handler {
+	return func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			ip := util.ExtractIP(r.RemoteAddr)
+			ctx := util.ContextWithRemoteIP(r.Context(), ip)
+			r = r.WithContext(ctx)
+
+			if apiKey != "" {
+				if subtle.ConstantTimeCompare([]byte(r.Header.Get("X-API-Key")), []byte(apiKey)) != 1 {
+					http.Error(w, "Unauthorized", http.StatusUnauthorized)
+					return
+				}
+			} else {
+				// Sentinel Security: If no API key is configured, enforce localhost-only access.
+				// This prevents accidental exposure of the server to the public internet (RCE risk).
+				host, _, err := net.SplitHostPort(r.RemoteAddr)
+				if err != nil {
+					// Fallback if RemoteAddr is weird, assume host is the string itself
+					host = r.RemoteAddr
+				}
+
+				// Check if the request is from a loopback address
+				ip := net.ParseIP(host)
+				if !ip.IsLoopback() {
+					logging.GetLogger().Warn("Blocked external request because no API Key is configured", "remote_addr", r.RemoteAddr)
+					http.Error(w, "Forbidden: External access requires an API Key to be configured", http.StatusForbidden)
+					return
+				}
+			}
+			next.ServeHTTP(w, r)
+		})
+	}
 }
 
 // startGrpcServer starts a gRPC server in a new goroutine. It handles graceful
