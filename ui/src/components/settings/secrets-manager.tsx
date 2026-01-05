@@ -270,45 +270,47 @@ function SecretItem({ secret, onDelete }: { secret: SecretDefinition; onDelete: 
     };
 
     return (
-        <div className="flex items-center justify-between p-4 hover:bg-muted/30 transition-colors group">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between p-4 hover:bg-muted/30 transition-colors group gap-4">
             <div className="flex items-center gap-4">
-                <div className="bg-primary/10 p-2 rounded-full text-primary">
+                <div className="bg-primary/10 p-2 rounded-full text-primary shrink-0">
                     <Key className="h-4 w-4" />
                 </div>
-                <div>
-                    <div className="flex items-center gap-2">
-                        <h4 className="font-medium text-sm">{secret.name}</h4>
-                        <Badge variant="outline" className="text-[10px] h-5 font-mono">
+                <div className="min-w-0">
+                    <div className="flex items-center gap-2 flex-wrap">
+                        <h4 className="font-medium text-sm truncate">{secret.name}</h4>
+                        <Badge variant="outline" className="text-[10px] h-5 font-mono shrink-0">
                             {secret.provider}
                         </Badge>
                     </div>
-                    <div className="text-xs text-muted-foreground font-mono mt-1">
+                    <div className="text-xs text-muted-foreground font-mono mt-1 truncate">
                         {secret.key}
                     </div>
                 </div>
             </div>
 
-            <div className="flex items-center gap-2">
-                 <div className="flex items-center gap-2 bg-muted/50 rounded-md px-2 py-1 border font-mono text-xs w-[200px] justify-between">
+            <div className="flex items-center gap-2 justify-end">
+                 <div className="flex items-center gap-2 bg-muted/50 rounded-md px-2 py-1 border font-mono text-xs w-full sm:w-[200px] justify-between">
                     <span className="truncate">
                         {isVisible ? secret.value : "•".repeat(24)}
                     </span>
                     <Button
                         variant="ghost"
                         size="icon"
-                        className="h-4 w-4 hover:bg-transparent"
+                        className="h-4 w-4 hover:bg-transparent shrink-0"
                         onClick={() => setIsVisible(!isVisible)}
                         aria-label={isVisible ? "Hide secret" : "Show secret"}
                     >
                         {isVisible ? <EyeOff className="h-3 w-3" /> : <Eye className="h-3 w-3" />}
                     </Button>
                 </div>
-                <Button variant="ghost" size="icon" className="h-8 w-8" onClick={copyToClipboard} aria-label="Copy secret">
-                    <Copy className="h-4 w-4 text-muted-foreground" />
-                </Button>
-                 <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive/70 hover:text-destructive hover:bg-destructive/10" onClick={() => onDelete(secret.id)} aria-label="Delete secret">
-                    <Trash2 className="h-4 w-4" />
-                </Button>
+                <div className="flex shrink-0">
+                    <Button variant="ghost" size="icon" className="h-8 w-8" onClick={copyToClipboard} aria-label="Copy secret">
+                        <Copy className="h-4 w-4 text-muted-foreground" />
+                    </Button>
+                    <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive/70 hover:text-destructive hover:bg-destructive/10" onClick={() => onDelete(secret.id)} aria-label="Delete secret">
+                        <Trash2 className="h-4 w-4" />
+                    </Button>
+                </div>
             </div>
         </div>
     );

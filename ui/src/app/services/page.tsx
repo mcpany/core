@@ -137,11 +137,11 @@ export default function ServicesPage() {
   };
 
   return (
-    <div className="flex-1 space-y-4 p-8 pt-6">
+    <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
       <div className="flex items-center justify-between">
-        <h2 className="text-3xl font-bold tracking-tight">Services</h2>
-        <Button onClick={openNew}>
-            <Plus className="mr-2 h-4 w-4" /> Add Service
+        <h2 className="text-2xl sm:text-3xl font-bold tracking-tight">Services</h2>
+        <Button onClick={openNew} className="h-9 px-3 sm:h-10 sm:px-4 sm:py-2">
+            <Plus className="mr-2 h-4 w-4" /> <span className="hidden sm:inline">Add Service</span><span className="sm:hidden">Add</span>
         </Button>
       </div>
 
@@ -162,7 +162,7 @@ export default function ServicesPage() {
       </Card>
 
       <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
-        <SheetContent className="w-[400px] sm:w-[540px]">
+        <SheetContent className="w-full sm:w-[540px]">
             <SheetHeader>
                 <SheetTitle>{selectedService?.id ? "Edit Service" : "New Service"}</SheetTitle>
                 <SheetDescription>

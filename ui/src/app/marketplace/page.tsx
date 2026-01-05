@@ -102,15 +102,15 @@ export default function MarketplacePage() {
   };
 
   return (
-    <div className="flex flex-col gap-6 p-8 h-[calc(100vh-4rem)]">
+    <div className="flex flex-col gap-6 p-4 md:p-8 h-[calc(100vh-4rem)] overflow-y-auto">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">Marketplace</h1>
-        <p className="text-muted-foreground mt-2">
+        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Marketplace</h1>
+        <p className="text-sm sm:text-base text-muted-foreground mt-2">
           Discover and install standard MCP servers to extend your capabilities.
         </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
         {MARKETPLACE_ITEMS.map((item) => {
           const Icon = ICON_MAP[item.icon] || Terminal;
           return (

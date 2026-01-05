@@ -39,41 +39,52 @@ export function ServiceList({ services, isLoading, onToggle, onEdit, onDelete }:
   }
 
   return (
-    <div className="rounded-md border">
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Status</TableHead>
-            <TableHead>Name</TableHead>
-            <TableHead>Type</TableHead>
-            <TableHead>Address / Command</TableHead>
-            <TableHead>Version</TableHead>
-            <TableHead className="text-center">Secure</TableHead>
-            <TableHead className="text-right">Actions</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {services.map((service) => (
-             <ServiceRow
-                key={service.name}
-                service={service}
-                onToggle={onToggle}
-                onEdit={onEdit}
-                onDelete={onDelete}
-             />
-          ))}
-        </TableBody>
-      </Table>
-    </div>
+    <>
+      {/* Desktop View */}
+      <div className="hidden md:block rounded-md border">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Status</TableHead>
+              <TableHead>Name</TableHead>
+              <TableHead>Type</TableHead>
+              <TableHead>Address / Command</TableHead>
+              <TableHead>Version</TableHead>
+              <TableHead className="text-center">Secure</TableHead>
+              <TableHead className="text-right">Actions</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {services.map((service) => (
+              <ServiceRow
+                  key={service.name}
+                  service={service}
+                  onToggle={onToggle}
+                  onEdit={onEdit}
+                  onDelete={onDelete}
+              />
+            ))}
+          </TableBody>
+        </Table>
+      </div>
+
+      {/* Mobile View */}
+      <div className="grid grid-cols-1 gap-4 md:hidden">
+        {services.map((service) => (
+            <ServiceCard
+              key={service.name}
+              service={service}
+              onToggle={onToggle}
+              onEdit={onEdit}
+              onDelete={onDelete}
+            />
+        ))}
+      </div>
+    </>
   );
 }
 
-function ServiceRow({ service, onToggle, onEdit, onDelete }: {
-    service: UpstreamServiceConfig,
-    onToggle?: (name: string, enabled: boolean) => void,
-    onEdit?: (service: UpstreamServiceConfig) => void,
-    onDelete?: (name: string) => void
-}) {
+function useServiceDetails(service: UpstreamServiceConfig) {
     const type = useMemo(() => {
         if (service.http_service) return "HTTP";
         if (service.grpc_service) return "gRPC";
@@ -94,6 +105,17 @@ function ServiceRow({ service, onToggle, onEdit, onDelete }: {
     const secure = useMemo(() => {
         return !!(service.grpc_service?.tls_config || service.http_service?.tls_config || service.mcp_service?.http_connection?.tls_config);
     }, [service]);
+
+    return { type, address, secure };
+}
+
+function ServiceRow({ service, onToggle, onEdit, onDelete }: {
+    service: UpstreamServiceConfig,
+    onToggle?: (name: string, enabled: boolean) => void,
+    onEdit?: (service: UpstreamServiceConfig) => void,
+    onDelete?: (name: string) => void
+}) {
+    const { type, address, secure } = useServiceDetails(service);
 
     return (
         <TableRow className={service.disable ? "opacity-60 bg-muted/40" : ""}>
@@ -137,5 +159,65 @@ function ServiceRow({ service, onToggle, onEdit, onDelete }: {
                  </div>
              </TableCell>
         </TableRow>
+    );
+}
+
+function ServiceCard({ service, onToggle, onEdit, onDelete }: {
+    service: UpstreamServiceConfig,
+    onToggle?: (name: string, enabled: boolean) => void,
+    onEdit?: (service: UpstreamServiceConfig) => void,
+    onDelete?: (name: string) => void
+}) {
+    const { type, address, secure } = useServiceDetails(service);
+
+    return (
+      <div className={`p-4 rounded-lg border bg-card text-card-foreground shadow-sm ${service.disable ? "opacity-75 bg-muted/20" : ""}`}>
+          <div className="flex items-start justify-between mb-3">
+              <div>
+                  <h3 className="font-semibold">{service.name}</h3>
+                  <div className="text-xs text-muted-foreground mt-0.5">v{service.version}</div>
+              </div>
+              <Badge variant="outline">{type}</Badge>
+          </div>
+
+          <div className="space-y-2 mb-4">
+              <div className="text-xs font-mono bg-muted p-2 rounded truncate" title={address}>
+                  {address}
+              </div>
+              <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                  {secure ? <CheckCircle className="h-3 w-3 text-green-500" /> : <XCircle className="h-3 w-3 text-slate-400" />}
+                  {secure ? "Secure Connection" : "Insecure Connection"}
+              </div>
+          </div>
+
+          <div className="flex items-center justify-between pt-2 border-t">
+              <div className="flex items-center gap-2">
+                 {onToggle && (
+                    <div className="flex items-center gap-2">
+                        <Switch
+                            id={`mobile-toggle-${service.name}`}
+                            checked={!service.disable}
+                            onCheckedChange={(checked) => onToggle(service.name, checked)}
+                        />
+                        <label htmlFor={`mobile-toggle-${service.name}`} className="text-xs text-muted-foreground">
+                            {service.disable ? "Disabled" : "Enabled"}
+                        </label>
+                    </div>
+                )}
+              </div>
+              <div className="flex gap-1">
+                {onEdit && (
+                    <Button variant="ghost" size="sm" onClick={() => onEdit(service)} className="h-8 w-8 p-0">
+                        <Settings className="h-4 w-4" />
+                    </Button>
+                )}
+                {onDelete && (
+                    <Button variant="ghost" size="sm" onClick={() => onDelete(service.name)} className="h-8 w-8 p-0 text-destructive hover:text-destructive hover:bg-destructive/10">
+                            <Trash2 className="h-4 w-4" />
+                    </Button>
+                )}
+              </div>
+          </div>
+      </div>
     );
 }
