@@ -38,7 +38,7 @@ func (m *ResilienceMiddleware) Execute(ctx context.Context, req *tool.ExecutionR
 	}
 
 	var result any
-	err := manager.Execute(func() error {
+	err := manager.Execute(ctx, func(ctx context.Context) error {
 		var err error
 		result, err = next(ctx, req)
 		return err
@@ -62,7 +62,7 @@ func (m *ResilienceMiddleware) getManager(serviceID string) *resilience.Manager 
 
 	// Double check if config actually has anything enabled
 	config := serviceInfo.Config.GetResilience()
-	if config.GetCircuitBreaker() == nil && config.GetRetryPolicy() == nil {
+	if config.GetCircuitBreaker() == nil && config.GetRetryPolicy() == nil && config.GetTimeout() == nil {
 		return nil
 	}
 

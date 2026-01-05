@@ -4,6 +4,7 @@
 package resilience
 
 import (
+	"context"
 	"errors"
 	"testing"
 	"time"
@@ -14,9 +15,10 @@ import (
 )
 
 func TestManager(t *testing.T) {
+	ctx := context.Background()
 	t.Run("execute_with_retry", func(t *testing.T) {
 		var attempts int
-		work := func() error {
+		work := func(_ context.Context) error {
 			attempts++
 			if attempts < 3 {
 				return errors.New("transient error")
@@ -30,7 +32,7 @@ func TestManager(t *testing.T) {
 		config.GetRetryPolicy().SetNumberOfRetries(retries)
 		config.GetRetryPolicy().SetBaseBackoff(durationpb.New(1 * time.Millisecond))
 		manager := NewManager(config)
-		err := manager.Execute(work)
+		err := manager.Execute(ctx, work)
 		require.NoError(t, err)
 		require.Equal(t, 3, attempts)
 	})
@@ -44,18 +46,18 @@ func TestManager(t *testing.T) {
 		manager := NewManager(config)
 
 		// Fail twice to open the circuit
-		_ = manager.Execute(func() error { return errors.New("error") })
-		_ = manager.Execute(func() error { return errors.New("error") })
+		_ = manager.Execute(ctx, func(_ context.Context) error { return errors.New("error") })
+		_ = manager.Execute(ctx, func(_ context.Context) error { return errors.New("error") })
 
 		// Third request should be blocked
-		err := manager.Execute(func() error { return nil })
+		err := manager.Execute(ctx, func(_ context.Context) error { return nil })
 		require.Error(t, err)
 		require.IsType(t, &CircuitBreakerOpenError{}, err)
 	})
 
 	t.Run("execute_with_retry_and_circuit_breaker", func(t *testing.T) {
 		var attempts int
-		work := func() error {
+		work := func(_ context.Context) error {
 			attempts++
 			return errors.New("persistent error")
 		}
@@ -72,12 +74,12 @@ func TestManager(t *testing.T) {
 		manager := NewManager(config)
 
 		// The circuit breaker will open after 2 failures, halting further retries.
-		err := manager.Execute(work)
+		err := manager.Execute(ctx, work)
 		require.Error(t, err)
 		require.Equal(t, 2, attempts)
 
 		// The circuit breaker should now be open
-		err = manager.Execute(work)
+		err = manager.Execute(ctx, work)
 		require.Error(t, err)
 		require.IsType(t, &CircuitBreakerOpenError{}, err)
 		require.Equal(t, 2, attempts)
@@ -85,7 +87,7 @@ func TestManager(t *testing.T) {
 
 	t.Run("nil_config", func(t *testing.T) {
 		manager := NewManager(nil)
-		err := manager.Execute(func() error { return nil })
+		err := manager.Execute(ctx, func(_ context.Context) error { return nil })
 		require.NoError(t, err)
 	})
 }

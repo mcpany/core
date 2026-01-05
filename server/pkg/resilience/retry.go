@@ -4,6 +4,7 @@
 package resilience
 
 import (
+	"context"
 	"errors"
 	"time"
 
@@ -32,10 +33,15 @@ func NewRetry(config *configv1.RetryConfig) *Retry {
 
 // Execute runs the provided work function, retrying it if it fails according
 // to the configured policy.
-func (r *Retry) Execute(work func() error) error {
+func (r *Retry) Execute(ctx context.Context, work func(context.Context) error) error {
 	var err error
 	for i := 0; i < int(r.config.GetNumberOfRetries())+1; i++ {
-		err = work()
+		// Check context before each attempt
+		if ctx.Err() != nil {
+			return ctx.Err()
+		}
+
+		err = work(ctx)
 		if err == nil {
 			return nil
 		}
@@ -45,7 +51,12 @@ func (r *Retry) Execute(work func() error) error {
 			return err
 		}
 
-		time.Sleep(r.backoff(i))
+		select {
+		case <-ctx.Done():
+			return ctx.Err()
+		case <-time.After(r.backoff(i)):
+			// continue
+		}
 	}
 	return err
 }

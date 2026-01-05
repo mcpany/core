@@ -562,6 +562,8 @@ message ResilienceConfig {
   CircuitBreakerConfig circuit_breaker = 1 [json_name = "circuit_breaker"];
   // Retry policy for failed requests.
   RetryConfig retry_policy = 2 [json_name = "retry_policy"];
+  // The maximum duration for a request before it is cancelled.
+  google.protobuf.Duration timeout = 3 [json_name = "timeout"];
 }
 
 // CircuitBreakerConfig defines the parameters for the circuit breaker pattern.
