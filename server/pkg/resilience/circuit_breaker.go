@@ -4,6 +4,7 @@
 package resilience
 
 import (
+	"context"
 	"errors"
 	"sync"
 	"time"
@@ -47,7 +48,7 @@ func NewCircuitBreaker(config *configv1.CircuitBreakerConfig) *CircuitBreaker {
 // Execute runs the provided work function. If the circuit breaker is open, it
 // returns a CircuitBreakerOpenError immediately. If the work function fails,
 // it tracks the failure and may trip the breaker.
-func (cb *CircuitBreaker) Execute(work func() error) error {
+func (cb *CircuitBreaker) Execute(ctx context.Context, work func(context.Context) error) error {
 	cb.mutex.Lock()
 
 	if cb.state == StateOpen {
@@ -70,7 +71,7 @@ func (cb *CircuitBreaker) Execute(work func() error) error {
 
 	cb.mutex.Unlock()
 
-	err := work()
+	err := work(ctx)
 	if err != nil {
 		var permanentErr *PermanentError
 		if errors.As(err, &permanentErr) {
