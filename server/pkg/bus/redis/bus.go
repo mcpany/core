@@ -17,9 +17,6 @@ import (
 // Bus is a Redis-backed implementation of the Bus interface.
 type Bus[T any] struct {
 	client *redis.Client
-	mu     sync.RWMutex
-	// We need to keep track of pubsub clients to close them
-	pubsubs map[string]*redis.PubSub
 }
 
 // New creates a new RedisBus.
@@ -36,8 +33,7 @@ func New[T any](redisConfig *bus.RedisBus) (*Bus[T], error) {
 // NewWithClient creates a new RedisBus with an existing Redis client.
 func NewWithClient[T any](client *redis.Client) *Bus[T] {
 	return &Bus[T]{
-		client:  client,
-		pubsubs: make(map[string]*redis.PubSub),
+		client: client,
 	}
 }
 
@@ -56,24 +52,13 @@ func (b *Bus[T]) Subscribe(ctx context.Context, topic string, handler func(T)) (
 		logging.GetLogger().Error("redis bus: handler cannot be nil")
 		return func() {}
 	}
-	b.mu.Lock()
-	if ps, ok := b.pubsubs[topic]; ok {
-		_ = ps.Close()
-	}
 
 	pubsub := b.client.Subscribe(ctx, topic)
-	b.pubsubs[topic] = pubsub
-	b.mu.Unlock()
 
 	var unsubscribeOnce sync.Once
 	unsubscribe = func() {
 		unsubscribeOnce.Do(func() {
-			b.mu.Lock()
-			defer b.mu.Unlock()
-			if ps, ok := b.pubsubs[topic]; ok && ps == pubsub {
-				_ = ps.Close()
-				delete(b.pubsubs, topic)
-			}
+			_ = pubsub.Close()
 		})
 	}
 
@@ -143,23 +128,7 @@ func (b *Bus[T]) SubscribeOnce(ctx context.Context, topic string, handler func(T
 	return proxyUnsub
 }
 
-// Close closes the Redis client and all pubsub connections.
+// Close closes the Redis client.
 func (b *Bus[T]) Close() error {
-	b.mu.Lock()
-	defer b.mu.Unlock()
-
-	var lastErr error
-	for topic, ps := range b.pubsubs {
-		if err := ps.Close(); err != nil {
-			lastErr = err
-			// Optionally log the error
-		}
-		delete(b.pubsubs, topic)
-	}
-
-	if err := b.client.Close(); err != nil {
-		lastErr = err
-	}
-
-	return lastErr
+	return b.client.Close()
 }
