@@ -7,18 +7,6 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('E2E Full Coverage', () => {
-  test.beforeAll(async ({ request }) => {
-    try {
-        const backendUrl = process.env.BACKEND_URL || 'http://localhost:50050';
-        console.log(`Checking connectivity to ${backendUrl}...`);
-        const res = await request.get(`${backendUrl}/healthz`);
-        console.log("Server health check status:", res.status());
-        if (!res.ok()) console.error("Server health check failed:", await res.text());
-    } catch (e) {
-        console.error("Connectivity check failed:", e);
-    }
-  });
-
   test.beforeEach(async ({ page }) => {
     await page.goto('/');
   });
