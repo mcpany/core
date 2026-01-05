@@ -9,8 +9,8 @@ import { test, expect } from '@playwright/test';
 test.describe('E2E Full Coverage', () => {
   test.beforeAll(async ({ request }) => {
     try {
-        console.log("Checking connectivity to server:50050...");
-        const res = await request.get('http://server:50050/healthz');
+        console.log("Checking connectivity to localhost:50050...");
+        const res = await request.get('http://localhost:50050/healthz');
         console.log("Server health check status:", res.status());
         if (!res.ok()) console.error("Server health check failed:", await res.text());
     } catch (e) {
