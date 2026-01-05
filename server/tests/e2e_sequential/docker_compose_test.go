@@ -179,6 +179,7 @@ func TestDockerComposeE2E(t *testing.T) {
 }
 
 func testFunctionalWeather(t *testing.T, rootDir string) {
+	imageName := getImageName(t)
 	// 1. Start mcpany-server with wttr.in config
 	// We run it on a dynamic port to avoid conflict with previous steps or other processes.
 	configPath := fmt.Sprintf("%s/examples/popular_services/wttr.in/config.yaml", rootDir)
@@ -194,7 +195,7 @@ func testFunctionalWeather(t *testing.T, rootDir string) {
 	cmd := exec.Command("docker", "run", "-d", "--name", containerName,
 		"-p", "0:50050", // Dynamic port
 		"-v", fmt.Sprintf("%s:/config.yaml", configPath),
-		"ghcr.io/mcpany/server:latest",
+		imageName,
 		"run", "--config-path", "/config.yaml", "--mcp-listen-address", ":50050",
 	)
 	t.Logf("Running command: %s", cmd.String())
