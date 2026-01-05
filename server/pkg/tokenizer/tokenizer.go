@@ -103,6 +103,9 @@ func CountTokensInValue(t Tokenizer, v interface{}) (int, error) {
 	if st, ok := t.(*SimpleTokenizer); ok {
 		return countTokensInValueSimple(st, v)
 	}
+	if wt, ok := t.(*WordTokenizer); ok {
+		return countTokensInValueWord(wt, v)
+	}
 
 	switch val := v.(type) {
 	case string:
@@ -196,6 +199,57 @@ func countTokensInValueSimple(t *SimpleTokenizer, v interface{}) (int, error) {
 		return count, nil
 	case float64:
 		return t.CountTokens(strconv.FormatFloat(val, 'g', -1, 64))
+	default:
+		// Convert to string representation
+		return t.CountTokens(fmt.Sprintf("%v", val))
+	}
+}
+
+func countTokensInValueWord(t *WordTokenizer, v interface{}) (int, error) {
+	// Optimization: For primitive types, WordTokenizer effectively returns
+	// max(1, int(1.0 * t.Factor)) assuming standard string representation
+	// (no spaces).
+	// Note: t.Factor defaults to 1.3. int(1.3) = 1.
+	// If t.Factor is 2.0, int(2.0) = 2.
+	// We assume standard primitives don't have spaces.
+	primitiveCount := int(t.Factor)
+	if primitiveCount < 1 {
+		primitiveCount = 1
+	}
+
+	switch val := v.(type) {
+	case string:
+		return t.CountTokens(val)
+	case int, int64, float64, bool, nil:
+		return primitiveCount, nil
+	case []interface{}:
+		count := 0
+		for _, item := range val {
+			c, err := countTokensInValueWord(t, item)
+			if err != nil {
+				return 0, err
+			}
+			count += c
+		}
+		return count, nil
+	case map[string]interface{}:
+		count := 0
+		for key, item := range val {
+			// Count the key
+			kc, err := t.CountTokens(key)
+			if err != nil {
+				return 0, err
+			}
+			count += kc
+
+			// Count the value
+			vc, err := countTokensInValueWord(t, item)
+			if err != nil {
+				return 0, err
+			}
+			count += vc
+		}
+		return count, nil
 	default:
 		// Convert to string representation
 		return t.CountTokens(fmt.Sprintf("%v", val))
