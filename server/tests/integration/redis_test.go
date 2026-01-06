@@ -15,18 +15,13 @@ import (
 )
 
 func TestRedisBus_ExternalServer(t *testing.T) {
-	if !IsDockerSocketAccessible() {
-		// t.Skip("Docker is not available, skipping test")
-	}
 	redisAddr, redisCleanup := StartRedisContainer(t)
 	defer redisCleanup()
 
-	// Wait for Redis to be ready
-	// The StartRedisContainer helper should ideally ensure readiness, but we can add a small retry loop here if needed
-	// For now assuming StartRedisContainer returns a ready address
+	redisBusConfig := busprotos.RedisBus_builder{
+		Address: &redisAddr,
+	}.Build()
 
-	redisBusConfig := busprotos.RedisBus_builder{}.Build()
-	redisBusConfig.SetAddress(redisAddr)
 	bus, err := redis.New[string](redisBusConfig)
 	require.NoError(t, err)
 
@@ -38,9 +33,6 @@ func TestRedisBus_ExternalServer(t *testing.T) {
 		receivedMsg = msg
 	})
 	defer unsubscribe()
-
-	// Give subscription a moment to propagate
-	time.Sleep(100 * time.Millisecond)
 
 	err = bus.Publish(context.Background(), "test-topic", "hello")
 	require.NoError(t, err)

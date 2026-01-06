@@ -80,29 +80,7 @@ test.describe('MCP Any UI E2E Tests', () => {
     }
   });
 
-  test.skip('Services page lists services and allows toggle', async ({ page }) => {
-    await page.goto('/services');
-    await expect(page.locator('h2')).toContainText('Services');
 
-    // Check for list of services
-    await expect(page.locator('text=Payment Gateway')).toBeVisible();
-    await expect(page.locator('text=User Service')).toBeVisible();
-
-
-    // Test toggle
-    const switchElement = page.locator('button[role="switch"]').first();
-    await expect(switchElement).toBeVisible();
-
-    // Test Add Service (Edit Sheet)
-    await page.click('text=Add Service');
-    await expect(page.locator('text=New Service')).toBeVisible();
-    await expect(page.locator('input#name')).toBeVisible();
-
-    // Audit Screenshot
-    if (process.env.CAPTURE_SCREENSHOTS === 'true') {
-      await page.screenshot({ path: path.join(AUDIT_DIR, 'services_verified.png'), fullPage: true });
-    }
-  });
 
   test('Tools page lists tools', async ({ page }) => {
     await page.goto('/tools');
