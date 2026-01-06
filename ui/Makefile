@@ -31,6 +31,7 @@ export TEST_GID
 # Run the tests in a docker container
 test: build-test-docker build-server-docker
 	mkdir -p test-results .audit ../build/playwright-report
+	chmod -R 777 test-results .audit ../build/playwright-report || true
 	if [ -z '$(ARGS)' ]; then \
 		SERVER_IMAGE=$(SERVER_IMAGE) docker compose -f ./docker-compose.test.yml up --abort-on-container-exit --exit-code-from ui-tests; \
 	else \
