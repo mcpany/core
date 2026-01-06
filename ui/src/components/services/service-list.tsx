@@ -75,24 +75,24 @@ function ServiceRow({ service, onToggle, onEdit, onDelete }: {
     onDelete?: (name: string) => void
 }) {
     const type = useMemo(() => {
-        if (service.http_service) return "HTTP";
-        if (service.grpc_service) return "gRPC";
-        if (service.command_line_service) return "CLI";
-        if (service.mcp_service) return "MCP";
+        if (service.httpService) return "HTTP";
+        if (service.grpcService) return "gRPC";
+        if (service.commandLineService) return "CLI";
+        if (service.mcpService) return "MCP";
         return "Other";
     }, [service]);
 
     const address = useMemo(() => {
-         return service.grpc_service?.address ||
-            service.http_service?.address ||
-            service.command_line_service?.command ||
-            service.mcp_service?.http_connection?.http_address ||
-            service.mcp_service?.stdio_connection?.command ||
+         return service.grpcService?.address ||
+            service.httpService?.address ||
+            service.commandLineService?.command ||
+            service.mcpService?.httpConnection?.httpAddress ||
+            service.mcpService?.stdioConnection?.command ||
             "-";
     }, [service]);
 
     const secure = useMemo(() => {
-        return !!(service.grpc_service?.tls_config || service.http_service?.tls_config || service.mcp_service?.http_connection?.tls_config);
+        return !!(service.grpcService?.tlsConfig || service.httpService?.tlsConfig || service.mcpService?.httpConnection?.tlsConfig);
     }, [service]);
 
     return (

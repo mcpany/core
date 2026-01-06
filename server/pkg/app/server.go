@@ -20,6 +20,9 @@ import (
 	"time"
 
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
+	"github.com/improbable-eng/grpc-web/go/grpcweb"
+	pb_admin "github.com/mcpany/core/proto/admin/v1"
+	v1 "github.com/mcpany/core/proto/api/v1"
 	"github.com/mcpany/core/server/pkg/admin"
 	"github.com/mcpany/core/server/pkg/appconsts"
 	"github.com/mcpany/core/server/pkg/auth"
@@ -42,15 +45,12 @@ import (
 	"github.com/mcpany/core/server/pkg/upstream/factory"
 	"github.com/mcpany/core/server/pkg/util"
 	"github.com/mcpany/core/server/pkg/worker"
-	pb_admin "github.com/mcpany/core/proto/admin/v1"
-	v1 "github.com/mcpany/core/proto/api/v1"
 
 	// config_v1 "github.com/mcpany/core/proto/config/v1".
-	"github.com/mcpany/core/server/pkg/topology"
 	config_v1 "github.com/mcpany/core/proto/config/v1"
+	"github.com/mcpany/core/server/pkg/topology"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/spf13/afero"
-	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 	gogrpc "google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/credentials/insecure"
@@ -118,13 +118,14 @@ type Runner interface {
 	// grpcPort is the port for the gRPC registration server.
 	// configPaths is a slice of paths to configuration files.
 	//
-	// It returns an error if the application fails to start or run.
+	// It returns	// Run starts the application with the given configuration.
 	Run(
 		ctx context.Context,
 		fs afero.Fs,
 		stdio bool,
 		jsonrpcPort, grpcPort string,
 		configPaths []string,
+		apiKey string,
 		shutdownTimeout time.Duration,
 	) error
 
@@ -160,6 +161,9 @@ type Application struct {
 
 	// Middleware handles for dynamic updates
 	standardMiddlewares *middleware.StandardMiddlewares
+	startupCh           chan struct{}
+	startupOnce         sync.Once
+	configMu            sync.Mutex
 }
 
 // NewApplication creates a new Application with default dependencies.
@@ -177,6 +181,7 @@ func NewApplication() *Application {
 		ResourceManager: resource.NewManager(),
 		UpstreamFactory: factory.NewUpstreamServiceFactory(pool.NewManager()),
 		configFiles:     make(map[string]string),
+		startupCh:       make(chan struct{}),
 	}
 }
 
@@ -208,6 +213,7 @@ func (a *Application) Run(
 	stdio bool,
 	jsonrpcPort, grpcPort string,
 	configPaths []string,
+	apiKey string,
 	shutdownTimeout time.Duration,
 ) error {
 	log := logging.GetLogger()
@@ -524,20 +530,71 @@ func (a *Application) Run(
 	}
 	a.Storage = s
 
-	runErr := a.runServerMode(ctx, mcpSrv, busProvider, bindAddress, grpcPort, shutdownTimeout, cfg.GetUsers(), cfg.GetGlobalSettings().GetProfileDefinitions(), allowedIPs, allowedOrigins, cachingMiddleware, s, serviceRegistry)
+	a.Storage = s
+
+	// Signal startup complete
+	a.startupOnce.Do(func() {
+		close(a.startupCh)
+	})
+
+	// Start gRPC server
+
+
+	if apiKey == "" {
+		apiKey = cfg.GetGlobalSettings().GetApiKey()
+	}
+
+	// Start servers
+	if err := a.runServerMode(
+		ctx,
+		mcpSrv,
+		busProvider,
+		// We use cfg values or defaults?
+		// cfg has McpListenAddress?
+		// Run function has bindAddress argument?
+		// Run signature: (ctx, fs, stdio, jsonrpcPort, grpcPort, configPaths, shutdownTimeout)
+		// We have jsonrpcPort from Run args.
+		bindAddress,
+		grpcPort,
+		shutdownTimeout,
+		apiKey,
+		cfg.GetUsers(),
+		cfg.GetGlobalSettings().GetProfileDefinitions(),
+		allowedIPs,
+		allowedOrigins,
+		cachingMiddleware,
+		s,
+		serviceRegistry,
+	); err != nil {
+		workerCancel()
+		upstreamWorker.Stop()
+		registrationWorker.Stop()
+		return err
+	}
 
 	// Stop workers
 	workerCancel()
 	upstreamWorker.Stop()
 	registrationWorker.Stop()
 
-	return runErr
+	return nil
 }
 
 // ReloadConfig reloads the configuration from the given paths and updates the
 // services.
 func (a *Application) ReloadConfig(fs afero.Fs, configPaths []string) error {
 	log := logging.GetLogger()
+	start := time.Now()
+	defer func() {
+		if r := recover(); r != nil {
+			log.Error("ReloadConfig panicked", "panic", r)
+		}
+		log.Info("ReloadConfig completed", "duration", time.Since(start))
+	}()
+
+	a.configMu.Lock()
+	defer a.configMu.Unlock()
+
 	log.Info("Reloading configuration...")
 	metrics.IncrCounter([]string{"config", "reload", "total"}, 1)
 	var stores []config.Store
@@ -657,6 +714,17 @@ func (a *Application) ReloadConfig(fs afero.Fs, configPaths []string) error {
 
 	log.Info("Reload complete", "tools_count", len(a.ToolManager.ListTools()))
 	return nil
+}
+
+// WaitForStartup waits for the application to be fully initialized.
+// It returns nil if startup completes, or context error if context is canceled.
+func (a *Application) WaitForStartup(ctx context.Context) error {
+	select {
+	case <-a.startupCh:
+		return nil
+	case <-ctx.Done():
+		return ctx.Err()
+	}
 }
 
 // setup initializes the filesystem for the server. It ensures that a valid
@@ -782,6 +850,7 @@ func (a *Application) runServerMode(
 	bus *bus.Provider,
 	bindAddress, grpcPort string,
 	shutdownTimeout time.Duration,
+	apiKey string,
 	users []*config_v1.User,
 	profileDefinitions []*config_v1.ProfileDefinition,
 	allowedIPs []string,
@@ -807,8 +876,22 @@ func (a *Application) runServerMode(
 		return mcpSrv.Server()
 	}, nil)
 
-	apiKey := config.GlobalSettings().APIKey()
-	authMiddleware := a.createAuthMiddleware(apiKey)
+	// Check if auth middleware is disabled in config
+	var authDisabled bool
+	for _, m := range config.GlobalSettings().Middlewares() {
+		if m.GetName() == "auth" && m.GetDisabled() {
+			authDisabled = true
+			break
+		}
+	}
+
+	var authMiddleware func(http.Handler) http.Handler
+	if authDisabled {
+		logging.GetLogger().Info("Auth middleware is disabled by config")
+		authMiddleware = func(next http.Handler) http.Handler { return next }
+	} else {
+		authMiddleware = a.createAuthMiddleware(apiKey)
+	}
 
 	userMap := make(map[string]*config_v1.User)
 	for _, u := range users {
@@ -827,7 +910,13 @@ func (a *Application) runServerMode(
 	uiFS := http.FileServer(http.Dir("./ui"))
 	mux.Handle("/ui/", http.StripPrefix("/ui", uiFS))
 
-	mux.Handle("/", authMiddleware(httpHandler))
+	// Handle root path with gRPC-Web support
+	// We defer the decision to the wrapper or the httpHandler
+	// But we need wrappedGrpc to be ready.
+	// Since we are moving gRPC init before this, we can use a closure.
+	// However, we haven't moved it yet in this execution flow relative to lines 1179.
+	// So we need to do the setup HERE or move this Handler registration DOWN?
+	// Moving mux.Handle("/", ...) down is safer.
 
 	// API Routes for Configuration Management
 	// Protected by auth middleware
@@ -835,7 +924,7 @@ func (a *Application) runServerMode(
 	mux.Handle("/api/v1/", authMiddleware(apiHandler))
 
 	// Topology API
-	mux.HandleFunc("/api/v1/topology", func(w http.ResponseWriter, r *http.Request) {
+	mux.Handle("/api/v1/topology", authMiddleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		graph := a.TopologyManager.GetGraph(r.Context())
 
@@ -851,7 +940,7 @@ func (a *Application) runServerMode(
 			return
 		}
 		_, _ = w.Write(data)
-	})
+	})))
 
 	logging.GetLogger().Info("DEBUG: Registering /mcp/u/ handler")
 	// Multi-user handler
@@ -1127,10 +1216,10 @@ func (a *Application) runServerMode(
 		http.StripPrefix(prefix, delegate).ServeHTTP(w, r.WithContext(ctx))
 	})
 
-	mux.Handle("/healthz", authMiddleware(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+	mux.Handle("/healthz", http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		w.WriteHeader(http.StatusOK)
 		_, _ = fmt.Fprintln(w, "OK")
-	})))
+	}))
 	mux.Handle("/metrics", authMiddleware(metrics.Handler()))
 	mux.Handle("/upload", authMiddleware(http.HandlerFunc(a.uploadFile)))
 
@@ -1190,9 +1279,64 @@ func (a *Application) runServerMode(
 		),
 	)
 
-	startHTTPServer(localCtx, &wg, errChan, "MCP Any HTTP", httpBindAddress, otelhttp.NewHandler(handler, "mcp-server"), shutdownTimeout)
+	// gRPC Server Setup
+	var grpcServer *gogrpc.Server
+	var wrappedGrpc *grpcweb.WrappedGrpcServer
 
 	grpcBindAddress := grpcPort
+
+	// Initialize gRPC Interceptors
+	grpcUnaryInterceptor := func(ctx context.Context, req interface{}, _ *gogrpc.UnaryServerInfo, handler gogrpc.UnaryHandler) (interface{}, error) {
+		if p, ok := peer.FromContext(ctx); ok {
+			ip := util.ExtractIP(p.Addr.String())
+			ctx = util.ContextWithRemoteIP(ctx, ip)
+
+			if !ipMiddleware.Allow(p.Addr.String()) {
+				return nil, status.Error(codes.PermissionDenied, "IP not allowed")
+			}
+		}
+		return handler(ctx, req)
+	}
+	grpcStreamInterceptor := func(srv interface{}, ss gogrpc.ServerStream, _ *gogrpc.StreamServerInfo, handler gogrpc.StreamHandler) error {
+		if p, ok := peer.FromContext(ss.Context()); ok {
+			ip := util.ExtractIP(p.Addr.String())
+			// Wrapper to modify context for stream
+			wrappedStream := &util.WrappedServerStream{
+				ServerStream: ss,
+				Ctx:          util.ContextWithRemoteIP(ss.Context(), ip),
+			}
+			if !ipMiddleware.Allow(p.Addr.String()) {
+				return status.Error(codes.PermissionDenied, "IP not allowed")
+			}
+			return handler(srv, wrappedStream)
+		}
+		return handler(srv, ss)
+	}
+	grpcOpts := []gogrpc.ServerOption{
+		gogrpc.UnaryInterceptor(grpcUnaryInterceptor),
+		gogrpc.StreamInterceptor(grpcStreamInterceptor),
+		gogrpc.StatsHandler(&metrics.GrpcStatsHandler{}),
+	}
+
+	grpcServer = gogrpc.NewServer(grpcOpts...)
+	reflection.Register(grpcServer)
+
+	// Register Services
+	registrationServer, err := mcpserver.NewRegistrationServer(bus)
+	if err != nil {
+		return fmt.Errorf("failed to create API server: %w", err)
+	}
+	v1.RegisterRegistrationServiceServer(grpcServer, registrationServer)
+
+	adminServer := admin.NewServer(cachingMiddleware, a.ToolManager)
+	pb_admin.RegisterAdminServiceServer(grpcServer, adminServer)
+
+	// Initialize gRPC-Web wrapper even if gRPC port is not exposed
+	wrappedGrpc = grpcweb.WrapServer(grpcServer,
+		grpcweb.WithOriginFunc(func(_ string) bool { return true }),
+		grpcweb.WithAllowedRequestHeaders([]string{"*"}),
+	)
+
 	if grpcBindAddress != "" {
 		if !strings.Contains(grpcBindAddress, ":") {
 			grpcBindAddress = ":" + grpcBindAddress
@@ -1201,37 +1345,6 @@ func (a *Application) runServerMode(
 		if err != nil {
 			errChan <- fmt.Errorf("gRPC server failed to listen: %w", err)
 		} else {
-			grpcUnaryInterceptor := func(ctx context.Context, req interface{}, _ *gogrpc.UnaryServerInfo, handler gogrpc.UnaryHandler) (interface{}, error) {
-				if p, ok := peer.FromContext(ctx); ok {
-					ip := util.ExtractIP(p.Addr.String())
-					ctx = util.ContextWithRemoteIP(ctx, ip)
-
-					if !ipMiddleware.Allow(p.Addr.String()) {
-						return nil, status.Error(codes.PermissionDenied, "IP not allowed")
-					}
-				}
-				return handler(ctx, req)
-			}
-			grpcStreamInterceptor := func(srv interface{}, ss gogrpc.ServerStream, _ *gogrpc.StreamServerInfo, handler gogrpc.StreamHandler) error {
-				if p, ok := peer.FromContext(ss.Context()); ok {
-					ip := util.ExtractIP(p.Addr.String())
-					// Wrapper to modify context for stream
-					wrappedStream := &util.WrappedServerStream{
-						ServerStream: ss,
-						Ctx:          util.ContextWithRemoteIP(ss.Context(), ip),
-					}
-					if !ipMiddleware.Allow(p.Addr.String()) {
-						return status.Error(codes.PermissionDenied, "IP not allowed")
-					}
-					return handler(srv, wrappedStream)
-				}
-				return handler(srv, ss)
-			}
-			grpcOpts := []gogrpc.ServerOption{
-				gogrpc.UnaryInterceptor(grpcUnaryInterceptor),
-				gogrpc.StreamInterceptor(grpcStreamInterceptor),
-			}
-
 			startGrpcServer(
 				localCtx,
 				&wg,
@@ -1239,24 +1352,21 @@ func (a *Application) runServerMode(
 				"Registration",
 				lis,
 				shutdownTimeout,
-				grpcOpts,
-				func(s *gogrpc.Server) {
-					registrationServer, err := mcpserver.NewRegistrationServer(bus)
-					if err != nil {
-						errChan <- fmt.Errorf("failed to create API server: %w", err)
-						return
-					}
-					v1.RegisterRegistrationServiceServer(s, registrationServer)
-
-					// Register Admin Service
-					adminServer := admin.NewServer(cachingMiddleware, a.ToolManager)
-					pb_admin.RegisterAdminServiceServer(s, adminServer)
-
-					// config_v1.RegisterMcpAnyConfigServiceServer(s, mcpSrv.ConfigServer())
-				},
+				grpcServer,
 			)
 		}
 	}
+
+	// Register Root Handler with gRPC-Web support
+	mux.Handle("/", authMiddleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if wrappedGrpc != nil && wrappedGrpc.IsGrpcWebRequest(r) {
+			wrappedGrpc.ServeHTTP(w, r)
+			return
+		}
+		httpHandler.ServeHTTP(w, r)
+	})))
+
+	startHTTPServer(localCtx, &wg, errChan, "MCP Any HTTP", httpBindAddress, handler, shutdownTimeout)
 
 	var startupErr error
 	select {
@@ -1333,7 +1443,7 @@ func startHTTPServer(
 			},
 			ReadHeaderTimeout: 10 * time.Second,
 			ReadTimeout:       30 * time.Second,
-			WriteTimeout:      30 * time.Second,
+			WriteTimeout:      60 * time.Second,
 			IdleTimeout:       120 * time.Second,
 		}
 
@@ -1378,6 +1488,7 @@ func (a *Application) createAuthMiddleware(apiKey string) func(http.Handler) htt
 			r = r.WithContext(ctx)
 
 			if apiKey != "" {
+				// logging.GetLogger().Info("DEBUG: Checking API Key", "configured", apiKey, "header", r.Header.Get("X-API-Key"))
 				if subtle.ConstantTimeCompare([]byte(r.Header.Get("X-API-Key")), []byte(apiKey)) != 1 {
 					http.Error(w, "Unauthorized", http.StatusUnauthorized)
 					return
@@ -1420,31 +1531,14 @@ func startGrpcServer(
 	name string,
 	lis net.Listener,
 	shutdownTimeout time.Duration,
-	opts []gogrpc.ServerOption,
-	register func(*gogrpc.Server),
+	server *gogrpc.Server,
 ) {
 	wg.Add(1)
 	go func() {
 		defer wg.Done()
 		serverLog := logging.GetLogger().With("server", name)
-		registerSafe := func() *gogrpc.Server {
-			defer func() {
-				if r := recover(); r != nil {
-					serverLog.Error("Panic during gRPC service registration", "panic", r)
-					errChan <- fmt.Errorf("[%s] panic during gRPC service registration: %v", name, r)
-				}
-			}()
-			opts = append(opts, gogrpc.StatsHandler(&metrics.GrpcStatsHandler{}))
-			grpcServer := gogrpc.NewServer(opts...)
-			register(grpcServer)
-			reflection.Register(grpcServer)
-			return grpcServer
-		}
 
-		grpcServer := registerSafe()
-		if grpcServer == nil {
-			// A panic occurred during registration, and the error has been sent to the channel.
-			// We can just return here.
+		if server == nil {
 			return
 		}
 
@@ -1466,7 +1560,7 @@ func startGrpcServer(
 			stopped := make(chan struct{})
 			go func() {
 				defer close(stopped)
-				grpcServer.GracefulStop()
+				server.GracefulStop()
 			}()
 
 			timer := time.NewTimer(shutdownTimeout)
@@ -1477,12 +1571,12 @@ func startGrpcServer(
 			case <-timer.C:
 				// Graceful shutdown timed out.
 				serverLog.Warn("Graceful shutdown timed out, forcing stop.")
-				grpcServer.Stop()
+				server.Stop()
 			}
 		}()
 
 		serverLog.Info("gRPC server listening", "port", lis.Addr().String())
-		if err := grpcServer.Serve(lis); err != nil && err != gogrpc.ErrServerStopped {
+		if err := server.Serve(lis); err != nil && err != gogrpc.ErrServerStopped {
 			errChan <- fmt.Errorf("[%s] server failed to serve: %w", name, err)
 			cancel() // Signal shutdown goroutine to exit
 		}

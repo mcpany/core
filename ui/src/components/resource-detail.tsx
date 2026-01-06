@@ -32,14 +32,14 @@ export function ResourceDetail({ serviceId, resourceName }: { serviceId: string,
         setService(serviceDetails);
 
         const serviceData =
-            serviceDetails.grpc_service ||
-            serviceDetails.http_service ||
-            serviceDetails.command_line_service ||
-            serviceDetails.openapi_service ||
-            serviceDetails.websocket_service ||
-            serviceDetails.webrtc_service ||
-            serviceDetails.graphql_service ||
-            serviceDetails.mcp_service;
+            serviceDetails.grpcService ||
+            serviceDetails.httpService ||
+            serviceDetails.commandLineService ||
+            serviceDetails.openapiService ||
+            serviceDetails.websocketService ||
+            serviceDetails.webrtcService ||
+            serviceDetails.graphqlService ||
+            serviceDetails.mcpService;
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const foundResource = (serviceData as any)?.resources?.find((r: any) => r.name === resourceName);

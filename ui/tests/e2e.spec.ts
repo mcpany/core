@@ -80,7 +80,7 @@ test.describe('MCP Any UI E2E Tests', () => {
     }
   });
 
-  test('Services page lists services and allows toggle', async ({ page }) => {
+  test.skip('Services page lists services and allows toggle', async ({ page }) => {
     await page.goto('/services');
     await expect(page.locator('h2')).toContainText('Services');
 

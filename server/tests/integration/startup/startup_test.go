@@ -85,7 +85,9 @@ upstream_services:
 
 		errChan := make(chan error, 1)
 		go func() {
-			err := appRunner.Run(ctx, afero.NewOsFs(), false, fmt.Sprintf(":%d", jsonrpcPort), fmt.Sprintf(":%d", grpcRegPort), []string{tmpFile.Name()}, 5*time.Second)
+			jsonrpcAddress := fmt.Sprintf(":%d", jsonrpcPort)
+			grpcRegAddress := fmt.Sprintf(":%d", grpcRegPort)
+			err := appRunner.Run(ctx, afero.NewOsFs(), false, jsonrpcAddress, grpcRegAddress, []string{tmpFile.Name()}, "", 5*time.Second)
 			if err != nil && err != context.Canceled {
 				errChan <- err
 			}
