@@ -186,10 +186,10 @@ func (am *Manager) AddAuthenticator(serviceID string, authenticator Authenticato
 func (am *Manager) Authenticate(ctx context.Context, serviceID string, r *http.Request) (context.Context, error) {
 	if am.apiKey != "" {
 		if r.Header.Get("X-API-Key") == "" {
-			return ctx, fmt.Errorf("unauthorized: missing API key")
+			return ctx, fmt.Errorf("unauthorized")
 		}
 		if subtle.ConstantTimeCompare([]byte(r.Header.Get("X-API-Key")), []byte(am.apiKey)) != 1 {
-			return ctx, fmt.Errorf("unauthorized: invalid API key")
+			return ctx, fmt.Errorf("unauthorized")
 		}
 		ctx = ContextWithAPIKey(ctx, r.Header.Get("X-API-Key"))
 	}

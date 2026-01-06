@@ -178,11 +178,13 @@ func TestAuthManager(t *testing.T) {
 		req.Header.Set("X-API-Key", "wrong-key")
 		_, err = authManager.Authenticate(context.Background(), "any-service", req)
 		assert.Error(t, err)
+		assert.Equal(t, "unauthorized", err.Error())
 
 		// Failed authentication (missing key)
 		req = httptest.NewRequest("GET", "/", nil)
 		_, err = authManager.Authenticate(context.Background(), "any-service", req)
 		assert.Error(t, err)
+		assert.Equal(t, "unauthorized", err.Error())
 
 		authManager.SetAPIKey("")
 	})
