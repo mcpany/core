@@ -42,7 +42,7 @@ upstream_services: []
 	errChan := make(chan error, 1)
 	go func() {
 		// Use ephemeral port for HTTP
-		errChan <- app.Run(ctx, fs, false, addr, "", []string{"/config.yaml"}, 5*time.Second)
+		errChan <- app.Run(ctx, fs, false, addr, "", []string{"/config.yaml"}, "", 5*time.Second)
 	}()
 
 	waitForServerReady(t, addr)
@@ -102,7 +102,7 @@ upstream_services: []
 	app := NewApplication()
 	errChan := make(chan error, 1)
 	go func() {
-		errChan <- app.Run(ctx, fs, false, addr, "", []string{"/config.yaml"}, 5*time.Second)
+		errChan <- app.Run(ctx, fs, false, addr, "", []string{"/config.yaml"}, "", 5*time.Second)
 	}()
 
 	waitForServerReady(t, addr)

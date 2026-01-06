@@ -27,6 +27,7 @@ func (m *mockFailingRunner) Run(
 	_ string,
 	_ string,
 	_ []string,
+	_ string,
 	shutdownTimeout time.Duration,
 ) error {
 	if shutdownTimeout != 10*time.Second {

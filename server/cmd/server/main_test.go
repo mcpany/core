@@ -32,7 +32,7 @@ type mockRunner struct {
 	capturedShutdownTimeout  time.Duration
 }
 
-func (m *mockRunner) Run(_ context.Context, _ afero.Fs, stdio bool, mcpListenAddress, grpcPort string, configPaths []string, shutdownTimeout time.Duration) error {
+func (m *mockRunner) Run(_ context.Context, _ afero.Fs, stdio bool, mcpListenAddress, grpcPort string, configPaths []string, apiKey string, shutdownTimeout time.Duration) error {
 	m.called = true
 	m.capturedStdio = stdio
 	m.capturedMcpListenAddress = mcpListenAddress

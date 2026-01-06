@@ -118,13 +118,14 @@ type Runner interface {
 	// grpcPort is the port for the gRPC registration server.
 	// configPaths is a slice of paths to configuration files.
 	//
-	// It returns an error if the application fails to start or run.
+	// It returns	// Run starts the application with the given configuration.
 	Run(
 		ctx context.Context,
 		fs afero.Fs,
 		stdio bool,
 		jsonrpcPort, grpcPort string,
 		configPaths []string,
+		apiKey string,
 		shutdownTimeout time.Duration,
 	) error
 
@@ -212,6 +213,7 @@ func (a *Application) Run(
 	stdio bool,
 	jsonrpcPort, grpcPort string,
 	configPaths []string,
+	apiKey string,
 	shutdownTimeout time.Duration,
 ) error {
 	log := logging.GetLogger()
@@ -535,14 +537,51 @@ func (a *Application) Run(
 		close(a.startupCh)
 	})
 
-	runErr := a.runServerMode(ctx, mcpSrv, busProvider, bindAddress, grpcPort, shutdownTimeout, cfg.GetUsers(), cfg.GetGlobalSettings().GetProfileDefinitions(), allowedIPs, allowedOrigins, cachingMiddleware, s, serviceRegistry)
+	// Start gRPC server
+	if grpcPort != "" {
+		// Pass apiKey to the gRPC server if needed?
+		// Actually runServerMode does everything.
+		// We call runServerMode below.
+	}
+
+	if apiKey == "" {
+		apiKey = cfg.GetGlobalSettings().GetApiKey()
+	}
+
+	// Start servers
+	if err := a.runServerMode(
+		ctx,
+		mcpSrv,
+		busProvider,
+		// We use cfg values or defaults?
+		// cfg has McpListenAddress?
+		// Run function has bindAddress argument?
+		// Run signature: (ctx, fs, stdio, jsonrpcPort, grpcPort, configPaths, shutdownTimeout)
+		// We have jsonrpcPort from Run args.
+		bindAddress,
+		grpcPort,
+		shutdownTimeout,
+		apiKey,
+		cfg.GetUsers(),
+		cfg.GetGlobalSettings().GetProfileDefinitions(),
+		allowedIPs,
+		allowedOrigins,
+		cachingMiddleware,
+		s,
+		serviceRegistry,
+	); err != nil {
+		workerCancel()
+		upstreamWorker.Stop()
+		registrationWorker.Stop()
+		return err
+	}
 
 	// Stop workers
 	workerCancel()
 	upstreamWorker.Stop()
 	registrationWorker.Stop()
 
-	return runErr
+	return nil
 }
 
 // ReloadConfig reloads the configuration from the given paths and updates the
@@ -815,6 +854,7 @@ func (a *Application) runServerMode(
 	bus *bus.Provider,
 	bindAddress, grpcPort string,
 	shutdownTimeout time.Duration,
+	apiKey string,
 	users []*config_v1.User,
 	profileDefinitions []*config_v1.ProfileDefinition,
 	allowedIPs []string,
@@ -840,8 +880,22 @@ func (a *Application) runServerMode(
 		return mcpSrv.Server()
 	}, nil)
 
-	apiKey := config.GlobalSettings().APIKey()
-	authMiddleware := a.createAuthMiddleware(apiKey)
+	// Check if auth middleware is disabled in config
+	var authDisabled bool
+	for _, m := range config.GlobalSettings().Middlewares() {
+		if m.GetName() == "auth" && m.GetDisabled() {
+			authDisabled = true
+			break
+		}
+	}
+
+	var authMiddleware func(http.Handler) http.Handler
+	if authDisabled {
+		logging.GetLogger().Info("Auth middleware is disabled by config")
+		authMiddleware = func(next http.Handler) http.Handler { return next }
+	} else {
+		authMiddleware = a.createAuthMiddleware(apiKey)
+	}
 
 	userMap := make(map[string]*config_v1.User)
 	for _, u := range users {
@@ -1166,10 +1220,10 @@ func (a *Application) runServerMode(
 		http.StripPrefix(prefix, delegate).ServeHTTP(w, r.WithContext(ctx))
 	})
 
-	mux.Handle("/healthz", authMiddleware(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+	mux.Handle("/healthz", http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		w.WriteHeader(http.StatusOK)
 		_, _ = fmt.Fprintln(w, "OK")
-	})))
+	}))
 	mux.Handle("/metrics", authMiddleware(metrics.Handler()))
 	mux.Handle("/upload", authMiddleware(http.HandlerFunc(a.uploadFile)))
 
@@ -1221,9 +1275,11 @@ func (a *Application) runServerMode(
 	// We wrap everything with a debug logger to see what's coming in
 	handler := middleware.HTTPSecurityHeadersMiddleware(
 		corsMiddleware.Handler(
-			middleware.JSONRPCComplianceMiddleware(
-				ipMiddleware.Handler(
-					rateLimiter.Handler(mux),
+			authMiddleware(
+				middleware.JSONRPCComplianceMiddleware(
+					ipMiddleware.Handler(
+						rateLimiter.Handler(mux),
+					),
 				),
 			),
 		),
@@ -1308,13 +1364,13 @@ func (a *Application) runServerMode(
 	}
 
 	// Register Root Handler with gRPC-Web support
-	mux.Handle("/", authMiddleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	mux.Handle("/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if wrappedGrpc != nil && wrappedGrpc.IsGrpcWebRequest(r) {
 			wrappedGrpc.ServeHTTP(w, r)
 			return
 		}
 		httpHandler.ServeHTTP(w, r)
-	})))
+	}))
 
 	startHTTPServer(localCtx, &wg, errChan, "MCP Any HTTP", httpBindAddress, handler, shutdownTimeout)
 
@@ -1438,6 +1494,7 @@ func (a *Application) createAuthMiddleware(apiKey string) func(http.Handler) htt
 			r = r.WithContext(ctx)
 
 			if apiKey != "" {
+				// logging.GetLogger().Info("DEBUG: Checking API Key", "configured", apiKey, "header", r.Header.Get("X-API-Key"))
 				if subtle.ConstantTimeCompare([]byte(r.Header.Get("X-API-Key")), []byte(apiKey)) != 1 {
 					http.Error(w, "Unauthorized", http.StatusUnauthorized)
 					return
