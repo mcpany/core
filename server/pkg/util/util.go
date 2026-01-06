@@ -161,10 +161,6 @@ func sanitizePart(sb *strings.Builder, id string, alwaysAppendHash bool, maxSani
 	return nil
 }
 
-func isValidChar(c byte) bool {
-	return validSanitizeIDChars[c]
-}
-
 // SanitizeServiceName sanitizes the given service name.
 // It ensures that the name is a valid identifier by removing disallowed characters
 // and appending a hash if the name is too long or contains illegal characters.
