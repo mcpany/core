@@ -12,9 +12,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/mcpany/core/server/pkg/util"
 	apiv1 "github.com/mcpany/core/proto/api/v1"
 	configv1 "github.com/mcpany/core/proto/config/v1"
+	"github.com/mcpany/core/server/pkg/util"
 	"github.com/mcpany/core/server/tests/integration"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/require"
@@ -104,7 +104,7 @@ func TestUpstreamService_DogFacts(t *testing.T) {
 	}
 
 	if err != nil {
-		// t.Skipf("Skipping test: all %d retries to dog-api.kinduff.com failed with transient errors. Last error: %v", maxRetries, err)
+		t.Skipf("Skipping test: all %d retries to dog-api.kinduff.com failed with transient errors. Last error: %v", maxRetries, err)
 	}
 
 	require.NoError(t, err, "Error calling getDogFact tool")
@@ -121,7 +121,7 @@ func TestUpstreamService_DogFacts(t *testing.T) {
 
 	require.NotNil(t, dogFactResponse["facts"], "The facts should not be nil")
 	if !dogFactResponse["success"].(bool) {
-		// t.Skipf("Skipping test due to transient error from dog-api.kinduff.com: success is false")
+		t.Skipf("Skipping test due to transient error from dog-api.kinduff.com: success is false")
 	}
 	require.Equal(t, true, dogFactResponse["success"], "The success should be true")
 	t.Logf("SUCCESS: Received a dog fact: %s", textContent.Text)
