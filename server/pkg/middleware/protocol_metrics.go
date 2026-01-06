@@ -68,11 +68,12 @@ func PrometheusMetricsMiddleware() mcp.Middleware {
 			if err != nil {
 				status = "error"
 				errorType = "unknown"
-				if errors.Is(err, context.Canceled) {
+				switch {
+				case errors.Is(err, context.Canceled):
 					errorType = "canceled"
-				} else if errors.Is(err, context.DeadlineExceeded) {
+				case errors.Is(err, context.DeadlineExceeded):
 					errorType = "deadline_exceeded"
-				} else {
+				default:
 					errMsg := err.Error()
 					if len(errMsg) > 0 {
 						errorType = "execution_failed"
