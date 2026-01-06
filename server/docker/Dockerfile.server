@@ -35,7 +35,13 @@ RUN apt-get update && apt-get install -y gcc curl
 
 # Copy the rest of the source code
 WORKDIR /app
-COPY . .
+# Copy only necessary server directories to avoid large context transfer
+COPY server/cmd ./server/cmd/
+COPY server/pkg ./server/pkg/
+COPY server/tools ./server/tools/
+COPY server/api ./server/api/
+COPY server/tests/integration/cmd/mocks ./server/tests/integration/cmd/mocks/
+COPY server/config.minimal.yaml ./server/
 
 # Set the working directory for the build
 WORKDIR /app/server
