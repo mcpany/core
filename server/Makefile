@@ -658,6 +658,17 @@ endif
 
 
 
+
+build-everything-docker: docker/Dockerfile.everything
+ifdef HAS_DOCKER
+	@echo "Building everything server Docker image ($(EVERYTHING_IMAGE_TAG))..."
+	@$(DOCKER_BUILD_CMD) -t $(EVERYTHING_IMAGE_TAG) -f docker/Dockerfile.everything .
+	@echo "Everything server Docker image build complete."
+else
+	@echo "Docker not found. Cannot build everything server image."
+	@exit 1
+endif
+
 BUILD_CONTEXT_DIR := .build-context
 
 prepare-docker-context:
