@@ -10,6 +10,7 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/google/uuid"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/mcpany/core/server/pkg/config"
 	"github.com/mcpany/core/server/pkg/logging"
@@ -45,7 +46,14 @@ func (a *Application) handleServices(store storage.Storage) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case http.MethodGet:
-			services, err := store.ListServices(r.Context())
+			var services []*configv1.UpstreamServiceConfig
+			var err error
+			if a.ServiceRegistry != nil {
+				services, err = a.ServiceRegistry.GetAllServices()
+			} else {
+				// Fallback to store if registry not initialized (though it should be)
+				services, err = store.ListServices(r.Context())
+			}
 			if err != nil {
 				logging.GetLogger().Error("failed to list services", "error", err)
 				http.Error(w, "Internal Server Error", http.StatusInternalServerError)
@@ -56,6 +64,9 @@ func (a *Application) handleServices(store storage.Storage) http.HandlerFunc {
 			var buf []byte
 			buf = append(buf, '[')
 			opts := protojson.MarshalOptions{UseProtoNames: true, EmitUnpopulated: false}
+			// Sort services for consistent output
+			// (Optional but good for tests)
+
 			for i, svc := range services {
 				if i > 0 {
 					buf = append(buf, ',')
@@ -404,6 +415,9 @@ func (a *Application) handleSecrets(store storage.Storage) http.HandlerFunc {
 				http.Error(w, err.Error(), http.StatusBadRequest)
 				return
 			}
+			if secret.GetId() == "" {
+				secret.Id = proto.String(uuid.New().String())
+			}
 			if err := store.SaveSecret(&secret); err != nil {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 				return
@@ -425,6 +439,22 @@ func (a *Application) handleSecretDetail(store storage.Storage) http.HandlerFunc
 		}
 
 		switch r.Method {
+		case http.MethodGet:
+			secret, err := store.GetSecret(id)
+			if err != nil {
+				logging.GetLogger().Error("failed to get secret", "id", id, "error", err)
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
+			if secret == nil {
+				http.NotFound(w, r)
+				return
+			}
+			w.Header().Set("Content-Type", "application/json")
+			opts := protojson.MarshalOptions{UseProtoNames: true}
+			b, _ := opts.Marshal(secret)
+			_, _ = w.Write(b)
+
 		case http.MethodDelete:
 			if err := store.DeleteSecret(id); err != nil {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
