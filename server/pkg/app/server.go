@@ -1377,9 +1377,11 @@ func (a *Application) createAuthMiddleware(apiKey string) func(http.Handler) htt
 
 				// Check if the request is from a loopback address
 				ip := net.ParseIP(host)
-				if !util.IsPrivateIP(ip) {
-					logging.GetLogger().Warn("Blocked public internet request because no API Key is configured", "remote_addr", r.RemoteAddr)
-					http.Error(w, "Forbidden: Public access requires an API Key to be configured", http.StatusForbidden)
+				// Sentinel Security: Strictly enforce loopback check.
+				// util.IsPrivateIP includes RFC1918 addresses which allows bypass via proxies/LBs.
+				if !ip.IsLoopback() {
+					logging.GetLogger().Warn("Blocked non-loopback request because no API Key is configured", "remote_addr", r.RemoteAddr)
+					http.Error(w, "Forbidden: Public access (non-localhost) requires an API Key to be configured", http.StatusForbidden)
 					return
 				}
 			}
