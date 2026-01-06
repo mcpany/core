@@ -2,7 +2,7 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { PromptWorkbench } from '../../src/components/prompts/prompt-workbench';
 import { apiClient } from '../../src/lib/client';
-import { vi } from 'vitest';
+import { vi, MockedFunction } from 'vitest';
 
 // Mock apiClient
 vi.mock('../../src/lib/client', () => ({
@@ -24,6 +24,7 @@ describe('PromptWorkbench', () => {
   const mockPrompts = [
     {
       name: 'test-prompt',
+      title: 'Test Prompt',
       description: 'A test prompt',
       inputSchema: {
           properties: {
@@ -33,13 +34,14 @@ describe('PromptWorkbench', () => {
       },
       disable: false,
       serviceName: 'test-service',
-      messages: []
+      messages: [],
+      profiles: []
     },
   ];
 
   beforeEach(() => {
     vi.clearAllMocks();
-    (apiClient.listPrompts as any).mockResolvedValue({ prompts: mockPrompts });
+    (apiClient.listPrompts as MockedFunction<typeof apiClient.listPrompts>).mockResolvedValue({ prompts: mockPrompts });
   });
 
   it('renders list of prompts', async () => {
@@ -60,7 +62,7 @@ describe('PromptWorkbench', () => {
   });
 
   it('executes a prompt', async () => {
-    (apiClient.executePrompt as any).mockResolvedValue({
+    (apiClient.executePrompt as MockedFunction<typeof apiClient.executePrompt>).mockResolvedValue({
       messages: [{ role: 'user', content: 'test output' }]
     });
 

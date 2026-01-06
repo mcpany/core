@@ -40,6 +40,14 @@ interface ParsedArgument {
     required: boolean;
 }
 
+// Define specific type for Execution Result
+interface ExecutionResult {
+    messages: {
+        role: string;
+        content: string | { type: string; text: string };
+    }[];
+}
+
 const MOCK_PROMPTS: PromptDefinition[] = [
     {
         name: "code_review",
@@ -89,12 +97,14 @@ const MOCK_PROMPTS: PromptDefinition[] = [
     }
 ];
 
-function parseArgumentsFromSchema(schema: any): ParsedArgument[] {
+function parseArgumentsFromSchema(schema: Record<string, unknown> | undefined): ParsedArgument[] {
     if (!schema || !schema.properties) return [];
 
-    const requiredSet = new Set(Array.isArray(schema.required) ? schema.required : []);
+    // Explicitly cast to Record<string, unknown> if we trust the structure or use type guards
+    const props = schema.properties as Record<string, { description?: string }>;
+    const requiredSet = new Set(Array.isArray(schema.required) ? (schema.required as string[]) : []);
 
-    return Object.entries(schema.properties).map(([key, value]: [string, any]) => ({
+    return Object.entries(props).map(([key, value]) => ({
         name: key,
         description: value.description || "",
         required: requiredSet.has(key)
@@ -106,7 +116,7 @@ export function PromptWorkbench({ initialPrompts = [] }: PromptWorkbenchProps) {
   const [selectedPrompt, setSelectedPrompt] = useState<PromptDefinition | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [argumentValues, setArgumentValues] = useState<Record<string, string>>({});
-  const [executionResult, setExecutionResult] = useState<any | null>(null);
+  const [executionResult, setExecutionResult] = useState<ExecutionResult | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   const { toast } = useToast();
@@ -137,7 +147,8 @@ export function PromptWorkbench({ initialPrompts = [] }: PromptWorkbenchProps) {
 
   const parsedArgs = useMemo(() => {
       if (!selectedPrompt) return [];
-      return parseArgumentsFromSchema(selectedPrompt.inputSchema);
+      // Cast to Record<string, unknown> safely as inputSchema is Struct
+      return parseArgumentsFromSchema(selectedPrompt.inputSchema as Record<string, unknown>);
   }, [selectedPrompt]);
 
   const handleSelectPrompt = (prompt: PromptDefinition) => {
@@ -152,7 +163,7 @@ export function PromptWorkbench({ initialPrompts = [] }: PromptWorkbenchProps) {
     setIsLoading(true);
     try {
       const result = await apiClient.executePrompt(selectedPrompt.name, argumentValues);
-      setExecutionResult(result);
+      setExecutionResult(result as ExecutionResult);
 
       toast({
         title: "Prompt Executed",
@@ -237,7 +248,7 @@ export function PromptWorkbench({ initialPrompts = [] }: PromptWorkbenchProps) {
             <div className="flex flex-col p-2 gap-1">
                 {filteredPrompts.map((prompt) => {
                     // Calculate arg count efficiently
-                    const argCount = parseArgumentsFromSchema(prompt.inputSchema).length;
+                    const argCount = parseArgumentsFromSchema(prompt.inputSchema as Record<string, unknown>).length;
                     return (
                         <button
                             key={prompt.name}
@@ -366,7 +377,7 @@ export function PromptWorkbench({ initialPrompts = [] }: PromptWorkbenchProps) {
                                 <CardContent className="flex-1 p-0 overflow-auto">
                                     {executionResult ? (
                                         <div className="p-4 space-y-4">
-                                            {(executionResult.messages || []).map((msg: any, idx: number) => (
+                                            {(executionResult.messages || []).map((msg, idx) => (
                                                 <div key={idx} className="space-y-1">
                                                      <div className="text-[10px] font-mono uppercase text-muted-foreground flex items-center gap-2">
                                                         <span className={cn(
@@ -376,7 +387,11 @@ export function PromptWorkbench({ initialPrompts = [] }: PromptWorkbenchProps) {
                                                         {msg.role}
                                                      </div>
                                                      <div className="bg-background border rounded-md p-3 text-sm whitespace-pre-wrap font-mono">
-                                                        {msg.content?.type === 'text' ? msg.content.text : typeof msg.content === 'string' ? msg.content : JSON.stringify(msg.content)}
+                                                        {/* Handle string or object content safely */}
+                                                        {typeof msg.content === 'string'
+                                                            ? msg.content
+                                                            : (msg.content as { text?: string }).text || JSON.stringify(msg.content)
+                                                        }
                                                      </div>
                                                 </div>
                                             ))}
