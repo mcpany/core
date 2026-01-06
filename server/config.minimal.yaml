@@ -6,6 +6,7 @@ global_settings:
     - name: "Default Dev"
       selector:
         tags: ["dev"]
+  db_path: "/tmp/mcpany.db"
   middlewares:
     - name: "auth"
       priority: 1
@@ -22,7 +23,7 @@ upstream_services:
           call_id: "get_weather"
       calls:
         get_weather:
-          args: ["{\"weather\": \"sunny\"}"]
+          args: ['{"weather": "sunny"}']
       resources:
         - uri: "system://logs"
           name: "System Logs"

@@ -3,7 +3,7 @@
 
 services:
   server:
-    image: mcpany/server:latest
+    image: ${SERVER_IMAGE}
     ports:
       - "51235:50050"
     command:

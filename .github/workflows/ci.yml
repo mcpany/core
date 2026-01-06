@@ -576,7 +576,7 @@ jobs:
   ui-test:
     runs-on: ubuntu-latest
     timeout-minutes: 20
-    needs: [build-ui-test-image]
+    needs: [build-ui-test-image, build-server-images]
     strategy:
       fail-fast: false
       matrix:
@@ -602,9 +602,17 @@ jobs:
         run: |
           docker load -i ui-test-image.tar
           rm ui-test-image.tar
+      - name: Download Server Images
+        uses: actions/download-artifact@v4
+        with:
+          name: server-images
+      - name: Load Server Images
+        run: |
+          docker load -i server-images.tar
+          rm server-images.tar
       - name: Test UI
         run: |
-          make -C ui test-ci PLAYWRIGHT_ARGS="--shard=${{ matrix.shard }}"
+          SERVER_IMAGE=mcpany/server:latest make -C ui test-ci PLAYWRIGHT_ARGS="--shard=${{ matrix.shard }}"
 
   k8s-e2e:
     runs-on: ubuntu-latest

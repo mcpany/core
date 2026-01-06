@@ -18,17 +18,26 @@ endif
 
 .PHONY: test test-local build-test-docker audit
 
-# Default test target# Run the tests in a docker container
-test: build-test-docker
+TIMESTAMP := $(shell date +%s)
+SERVER_IMAGE_TAG := ui-test-$(TIMESTAMP)
+SERVER_IMAGE ?= mcpany/server:$(SERVER_IMAGE_TAG)
+
+# Default test target
+# Run the tests in a docker container
+test: build-test-docker build-server-docker
 	if [ -z '$(ARGS)' ]; then \
-		docker compose -f ./docker-compose.test.yml up --abort-on-container-exit --exit-code-from ui-tests; \
+		SERVER_IMAGE=$(SERVER_IMAGE) docker compose -f ./docker-compose.test.yml up --abort-on-container-exit --exit-code-from ui-tests; \
 	else \
-		docker compose -f ./docker-compose.test.yml run --rm --service-ports ui-tests npx playwright test $(ARGS); \
+		SERVER_IMAGE=$(SERVER_IMAGE) docker compose -f ./docker-compose.test.yml run --rm --service-ports ui-tests npx playwright test $(ARGS); \
 	fi
+
+build-server-docker:
+	@echo "Building Server Docker image ($(SERVER_IMAGE))..."
+	docker build -t $(SERVER_IMAGE) -f ../server/docker/Dockerfile.server ../
 
 # Run audit tests (generate screenshots)
 audit: build-test-docker
-	CAPTURE_SCREENSHOTS=true docker compose -f ./docker-compose.test.yml up --abort-on-container-exit --exit-code-from ui-tests
+	SERVER_IMAGE=$(SERVER_IMAGE) CAPTURE_SCREENSHOTS=true docker compose -f ./docker-compose.test.yml up --abort-on-container-exit --exit-code-from ui-tests
 	docker compose -f ./docker-compose.test.yml down -v
 
 test-ci:
