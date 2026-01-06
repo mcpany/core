@@ -16,9 +16,8 @@ RUN go mod download
 
 # Copy the entire source code
 WORKDIR /app
-# Copy only necessary directories
-COPY server/pkg ./server/pkg/
-COPY server/tests/integration/cmd/mocks ./server/tests/integration/cmd/mocks/
+# Copy full server directory
+COPY server ./server/
 
 # Build the http-echo-server binary statically.
 WORKDIR /app/server
