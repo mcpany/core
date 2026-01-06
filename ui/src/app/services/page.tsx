@@ -5,7 +5,7 @@
 
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { apiClient } from "@/lib/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -32,11 +32,7 @@ export default function ServicesPage() {
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
 
-  useEffect(() => {
-    fetchServices();
-  }, []);
-
-  const fetchServices = async () => {
+  const fetchServices = useCallback(async () => {
     setLoading(true);
     try {
       const res = await apiClient.listServices();
@@ -56,11 +52,15 @@ export default function ServicesPage() {
     } finally {
         setLoading(false);
     }
-  };
+  }, [toast]);
 
-  const toggleService = async (name: string, enabled: boolean) => {
+  useEffect(() => {
+    fetchServices();
+  }, [fetchServices]);
+
+  const toggleService = useCallback(async (name: string, enabled: boolean) => {
     // Optimistic update
-    setServices(services.map(s => s.name === name ? { ...s, disable: !enabled } : s));
+    setServices(prev => prev.map(s => s.name === name ? { ...s, disable: !enabled } : s));
 
     try {
         await apiClient.setServiceStatus(name, !enabled);
@@ -77,9 +77,9 @@ export default function ServicesPage() {
             description: "Failed to update service status."
         });
     }
-  };
+  }, [fetchServices, toast]);
 
-  const deleteService = async (name: string) => {
+  const deleteService = useCallback(async (name: string) => {
     if (!confirm(`Are you sure you want to delete service "${name}"?`)) return;
 
     try {
@@ -98,12 +98,12 @@ export default function ServicesPage() {
             description: "Failed to delete service."
         });
     }
-  }
+  }, [fetchServices, toast]);
 
-  const openEdit = (service: UpstreamServiceConfig) => {
+  const openEdit = useCallback((service: UpstreamServiceConfig) => {
       setSelectedService(service);
       setIsSheetOpen(true);
-  };
+  }, []);
 
   const openNew = () => {
       setSelectedService({ id: "", name: "", version: "1.0.0", disable: false, priority: 0, loadBalancingStrategy: 0, httpService: { address: "" } } as any);
