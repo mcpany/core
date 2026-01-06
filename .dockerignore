@@ -23,4 +23,4 @@ Thumbs.db
 
 ui/
 **/node_modules/
-server/tests
+server/tests/integration/upstream
