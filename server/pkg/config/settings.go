@@ -13,8 +13,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/mcpany/core/server/pkg/logging"
 	configv1 "github.com/mcpany/core/proto/config/v1"
+	"github.com/mcpany/core/server/pkg/logging"
 	"github.com/spf13/afero"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -102,6 +102,9 @@ func (s *Settings) Load(cmd *cobra.Command, fs afero.Fs) error {
 		}
 		if cfg.GetGlobalSettings().GetMcpListenAddress() != "" {
 			mcpListenAddress = cfg.GetGlobalSettings().GetMcpListenAddress()
+		}
+		if len(cfg.GetGlobalSettings().GetMiddlewares()) > 0 {
+			s.proto.SetMiddlewares(cfg.GetGlobalSettings().GetMiddlewares())
 		}
 	}
 	s.proto.SetMcpListenAddress(mcpListenAddress)

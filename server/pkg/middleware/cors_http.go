@@ -5,7 +5,6 @@ package middleware
 
 import (
 	"net/http"
-	"strings"
 )
 
 // HTTPCORSMiddleware handles CORS for HTTP endpoints.
@@ -25,12 +24,7 @@ func NewHTTPCORSMiddleware(allowedOrigins []string) *HTTPCORSMiddleware {
 // Handler wraps an http.Handler with CORS logic.
 func (m *HTTPCORSMiddleware) Handler(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		// If this is a gRPC-Web request, let the gRPC-Web wrapper handle CORS
-		if strings.HasPrefix(r.Header.Get("Content-Type"), "application/grpc-web") ||
-			strings.Contains(r.Header.Get("Access-Control-Request-Headers"), "x-grpc-web") {
-			next.ServeHTTP(w, r)
-			return
-		}
+
 
 		origin := r.Header.Get("Origin")
 		if origin == "" {
