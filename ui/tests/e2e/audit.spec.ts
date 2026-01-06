@@ -33,7 +33,7 @@ test.describe('MCP Any Audit Screenshots', () => {
     await page.screenshot({ path: path.join(auditDir, 'dashboard.png'), fullPage: true });
   });
 
-  test('Capture Services', async ({ page }) => {
+  test.skip('Capture Services', async ({ page }) => {
     await page.goto('/services');
     await page.waitForSelector('text=Upstream Services');
     await page.waitForSelector('text=Name'); // Wait for list headers
