@@ -29,7 +29,7 @@ func TestWebhooksE2E(t *testing.T) {
 	// Build the webhook server
 	rootDir := findRootDir(t)
 	webhookBin := filepath.Join(rootDir, "build", "bin", "webhooks")
-	cmd := exec.Command("go", "build", "-o", webhookBin, "./cmd/webhooks") //nolint:gosec
+	cmd := exec.Command("go", "build", "-o", webhookBin, "./cmd/mcp-webhook-sidecar") //nolint:gosec
 	cmd.Dir = rootDir
 	require.NoError(t, cmd.Run(), "Failed to build webhook server")
 
@@ -134,7 +134,7 @@ func TestFullSystemWebhooks(t *testing.T) {
 	// 1. Build Webhook Server
 	rootDir := findRootDir(t)
 	webhookBin := filepath.Join(rootDir, "build", "bin", "webhooks")
-	cmd := exec.Command("go", "build", "-o", webhookBin, "./cmd/webhooks") //nolint:gosec
+	cmd := exec.Command("go", "build", "-o", webhookBin, "./cmd/mcp-webhook-sidecar") //nolint:gosec
 	cmd.Dir = rootDir
 	require.NoError(t, cmd.Run(), "Failed to build webhook server")
 
