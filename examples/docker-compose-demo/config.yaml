@@ -1,0 +1,22 @@
+# Copyright 2025 Author(s) of MCP Any
+# SPDX-License-Identifier: Apache-2.0
+
+upstream_services:
+  - name: "docker-http-echo"
+    http_service:
+      # The address uses the service name defined in docker-compose.yml,
+      # which Docker's internal DNS will resolve to the correct container.
+      address: "http://http-echo-server:8080"
+      calls:
+        echo:
+          method: "HTTP_METHOD_POST"
+          endpoint_path: "/echo"
+      tools:
+        - name: "echo"
+          description: "Echoes back the request body."
+          call_id: "echo"
+          input_schema: {}
+      health_check:
+        url: "http://http-echo-server:8080/health"
+        interval: "10s"
+        timeout: "2s"

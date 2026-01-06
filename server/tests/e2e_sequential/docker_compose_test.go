@@ -23,7 +23,6 @@ import (
 )
 
 func TestDockerComposeE2E(t *testing.T) {
-	t.Skip("Skipping E2E test as requested by user to unblock merge")
 	if os.Getenv("E2E_DOCKER") != "true" {
 		t.Skip("Skipping E2E Docker test. Set E2E_DOCKER=true to run.")
 	}
@@ -75,7 +74,7 @@ func TestDockerComposeE2E(t *testing.T) {
 		}
 
 		// Dump logs from manually run weather container
-		cmd := exec.Command("docker", "logs", "mcpany-weather-test") // Name without random suffix? No, we used random.
+		cmd := exec.Command("sudo", "docker", "logs", "mcpany-weather-test") // Name without random suffix? No, we used random.
 		// We need to capture the weather container name too if we want to dump it.
 		// For now, let's skip dumping weather logs or try to capture it too.
 
@@ -104,7 +103,7 @@ func TestDockerComposeE2E(t *testing.T) {
 
 	// Helper to get dynamic port
 	getServicePort := func(composeFile, projectDir, service, internalPort string) string {
-		cmd := exec.Command("docker", "compose", "-f", composeFile, "--project-directory", projectDir, "port", service, internalPort)
+		cmd := exec.Command("sudo", "docker", "compose", "-f", composeFile, "--project-directory", projectDir, "port", service, internalPort)
 		cmd.Env = os.Environ()
 		out, err := cmd.Output()
 		require.NoError(t, err, "Failed to get port for %s %s", service, internalPort)
@@ -194,7 +193,7 @@ func testFunctionalWeather(t *testing.T, rootDir string) {
 	// We also use a unique container name to avoid conflict
 	containerName := fmt.Sprintf("mcpany-weather-test-%d", time.Now().UnixNano())
 
-	cmd := exec.Command("docker", "run", "-d", "--name", containerName,
+	cmd := exec.Command("sudo", "docker", "run", "-d", "--name", containerName,
 		"-p", "0:50050", // Dynamic port
 		"-v", fmt.Sprintf("%s:/config.yaml", configPath),
 		"ghcr.io/mcpany/server:latest",
@@ -209,11 +208,11 @@ func testFunctionalWeather(t *testing.T, rootDir string) {
 
 	// Cleanup
 	defer func() {
-		_ = exec.Command("docker", "rm", "-f", containerName).Run()
+		_ = exec.Command("sudo", "docker", "rm", "-f", containerName).Run()
 	}()
 
 	// Get assigned port
-	out, err := exec.Command("docker", "port", containerName, "50050/tcp").Output()
+	out, err := exec.Command("sudo", "docker", "port", containerName, "50050/tcp").Output()
 	require.NoError(t, err, "Failed to get assigned port")
 	// Output example: 0.0.0.0:32768
 	portBinding := strings.TrimSpace(string(out))
@@ -339,6 +338,10 @@ func verifyToolMetricWithService(t *testing.T, metricsURL, toolName, serviceID s
 }
 
 func runCommand(t *testing.T, dir string, name string, args ...string) {
+	if name == "docker" {
+		args = append([]string{name}, args...)
+		name = "sudo"
+	}
 	cmd := exec.Command(name, args...)
 	cmd.Dir = dir
 	cmd.Env = os.Environ() // Explicitly pass environment to ensure t.Setenv works
