@@ -73,17 +73,7 @@ This document outlines the current status and future plans for MCP Any.
 **Why:** Allow users to deploy safe, sandboxed custom logic for transformations or validations without recompiling the server.
 **Status:** Planned
 
-### 2. [Cloud Storage Support (S3, GCS)](features/filesystem.md)
-
-**Why:** Extend the filesystem provider to support cloud object storage, allowing AI agents to interact with S3/GCS buckets as if they were local directories.
-**Status:** Implemented
-
-### 3. [Token-Based Quota Management](features/rate-limiting/README.md)
-
-**Why:** While Rate Limiting is implemented, "Cost" tracking (token usage accounting) and strict token quotas per user/tenant are needed for enterprise billing controls.
-**Status:** Implemented (Token-Based Rate Limiting)
-
-### 4. Kubernetes Operator
+### 2. Kubernetes Operator
 
 **Why:** Simplify deployment and lifecycle management of MCP Any instances in Kubernetes environments, enabling GitOps workflows.
 **Status:** Recommended

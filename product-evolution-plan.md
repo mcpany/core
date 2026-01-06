@@ -5,42 +5,42 @@
 The following is the reconciled roadmap as of today. Completed items are marked with `[x]` and linked to their documentation.
 
 ### Service Types (Implemented)
-- [x] [gRPC](features/service-types.md)
-- [x] [HTTP](features/service-types.md)
-- [x] [OpenAPI](features/service-types.md)
-- [x] [GraphQL](features/service-types.md)
-- [x] [Stdio](features/service-types.md)
-- [x] [MCP-to-MCP Proxy](features/service-types.md)
-- [x] [WebSocket](features/service-types.md)
-- [x] [WebRTC](features/service-types.md)
-- [x] [SQL](features/sql_upstream.md)
-- [x] [File System Provider](features/filesystem.md) (Local, S3, GCS)
-- [x] [Vector Database Connector](features/vector_database.md) (Pinecone)
+- [x] [gRPC](server/docs/features/service-types.md)
+- [x] [HTTP](server/docs/features/service-types.md)
+- [x] [OpenAPI](server/docs/features/service-types.md)
+- [x] [GraphQL](server/docs/features/service-types.md)
+- [x] [Stdio](server/docs/features/service-types.md)
+- [x] [MCP-to-MCP Proxy](server/docs/features/service-types.md)
+- [x] [WebSocket](server/docs/features/service-types.md)
+- [x] [WebRTC](server/docs/features/service-types.md)
+- [x] [SQL](server/docs/features/sql_upstream.md)
+- [x] [File System Provider](server/docs/features/filesystem.md) (Local, S3, GCS)
+- [x] [Vector Database Connector](server/docs/features/vector_database.md) (Pinecone)
 
 ### Authentication (Implemented)
-- [x] [API Key](features/authentication/README.md)
-- [x] [Bearer Token](features/authentication/README.md)
-- [x] [OAuth 2.0](features/authentication/README.md)
-- [x] [Role-Based Access Control (RBAC)](features/rbac.md)
-- [x] [Upstream mTLS](features/security.md)
+- [x] [API Key](server/docs/features/authentication/README.md)
+- [x] [Bearer Token](server/docs/features/authentication/README.md)
+- [x] [OAuth 2.0](server/docs/features/authentication/README.md)
+- [x] [Role-Based Access Control (RBAC)](server/docs/features/rbac.md)
+- [x] [Upstream mTLS](server/docs/features/security.md)
 
 ### Policies (Implemented)
-- [x] [Caching](features/caching/README.md)
-- [x] [Rate Limiting](features/rate-limiting/README.md) (Memory & Redis, Token-based)
-- [x] [Resilience](features/resilience/README.md)
+- [x] [Caching](server/docs/features/caching/README.md)
+- [x] [Rate Limiting](server/docs/features/rate-limiting/README.md) (Memory & Redis, Token-based)
+- [x] [Resilience](server/docs/features/resilience/README.md)
 
 ### Observability (Implemented)
-- [x] [Distributed Tracing](features/tracing/README.md)
-- [x] [Metrics](features/monitoring/README.md)
-- [x] [Structured Logging](features/monitoring/README.md)
-- [x] [Audit Logging](features/audit_logging.md)
-- [x] [Audit Log Export](features/audit_logging.md) (Splunk/Datadog)
+- [x] [Distributed Tracing](server/docs/features/tracing/README.md)
+- [x] [Metrics](server/docs/features/monitoring/README.md)
+- [x] [Structured Logging](server/docs/features/monitoring/README.md)
+- [x] [Audit Logging](server/docs/features/audit_logging.md)
+- [x] [Audit Log Export](server/docs/features/audit_logging.md) (Splunk/Datadog)
 
 ### Security (Implemented)
-- [x] [Secrets Management](features/security.md)
-- [x] [IP Allowlisting](features/security.md)
-- [x] [Webhooks](features/webhooks/README.md) (Pre/Post call)
-- [x] [Data Loss Prevention (DLP)](features/security.md)
+- [x] [Secrets Management](server/docs/features/security.md)
+- [x] [IP Allowlisting](server/docs/features/security.md)
+- [x] [Webhooks](server/docs/features/webhooks/README.md) (Pre/Post call)
+- [x] [Data Loss Prevention (DLP)](server/docs/features/security.md)
 
 ## 2. Top 10 Recommended Features
 
@@ -56,17 +56,20 @@ Based on the current architecture and market needs, the following features shoul
 | 6 | **Additional Vector Connectors** | **Feature**: Support for Milvus and Weaviate to enable RAG workflows (Pinecone is already implemented). | Medium |
 | 7 | **Multi-Region Federation** | **Scalability**: Link multiple MCP instances to reduce latency and improve availability for global deployments. | High |
 | 8 | **Browser Automation Provider** | **Feature**: A high-demand tool capability for agents to read/interact with websites (headless browser). | High |
+| 9 | **Jira/Confluence Connector** | **Feature**: Critical integration for enterprise knowledge management and workflow automation. | Medium |
+| 10 | **Cost Attribution & Billing** | **Business**: Track token usage and API costs per user/team to enable chargeback models. | Medium |
 
 ## 3. Codebase Health Report
 
 ### Critical Areas
-*   **Rate Limiting Complexity**: The `server/pkg/middleware/ratelimit.go` file contains complex logic mixing local and Redis implementations. Refactoring into cleaner interfaces would improve maintainability.
-*   **Filesystem Provider Monolith**: `server/pkg/upstream/filesystem/upstream.go` is becoming large. S3, GCS, and Local logic should be separated into distinct providers or packages to avoid "god objects".
-*   **Documentation Scatter**: Documentation is spread across `server/docs/features/` and `README.md`. A unified documentation site generator (using the existing `doc_generator` feature) should be standard.
-*   **Test Coverage**: While unit tests exist, end-to-end integration tests for cloud providers (S3/GCS) are likely mocked or missing in CI due to credential requirements. Ensuring hermetic tests for these is crucial.
-*   **Webhooks "Test" Code**: `server/cmd/webhooks` appears to be a test server but is referenced in examples. It should be clarified if this is a production-ready component or just for testing.
+*   **Rate Limiting Complexity**: The `server/pkg/middleware/ratelimit.go` file contains complex logic mixing local and Redis implementations, along with cost estimation. Refactoring into cleaner, separate strategies (e.g., `TokenBucketLimiter`, `RedisLimiter`, `MemoryLimiter`) would improve testability and maintainability.
+*   **Filesystem Provider Monolith**: `server/pkg/upstream/filesystem/upstream.go` handles multiple filesystem types (Local, S3, GCS, Zip, SFTP) in a single `createProvider` function. As new providers are added, this will become unmanageable. Splitting these into distinct packages/factories with a common interface is recommended.
+*   **Documentation Scatter**: Documentation is spread across `server/docs/features/` and `README.md`. There is no single source of truth for "How to configure X". A unified documentation structure or site generator (enhancing the existing `doc_generator`) should be prioritized.
+*   **Test Coverage for Cloud Providers**: End-to-end integration tests for S3 and GCS are likely missing or mocked in CI due to credential requirements. Implementing a local emulation layer (e.g., MinIO for S3) for CI tests would ensure robustness.
+*   **Webhooks "Test" Code**: The `server/cmd/webhooks` directory appears to be a test server but is referenced in examples. It should be clarified if this is a production-ready component or just for testing. If for production, it needs proper structure and tests.
 
 ### Recommendations
-1.  **Refactor Filesystem Upstream**: Split `upstream.go` into `s3.go`, `gcs.go`, `local.go` with a common interface.
+1.  **Refactor Filesystem Upstream**: Split `upstream.go` into `s3.go`, `gcs.go`, `local.go`, etc., using a factory pattern.
 2.  **Consolidate SDKs**: Move `server/pkg/client` to a separate repository (e.g., `mcp-go-sdk`) to encourage public usage and versioning independent of the server.
 3.  **Formalize Webhook Server**: If the webhook server is intended for use, move it to `server/cmd/mcp-webhook-sidecar` and polish it.
+4.  **Standardize Configuration**: Ensure all features (like Rate Limiting) have consistent configuration patterns in `config.yaml` and corresponding documentation.
