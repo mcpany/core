@@ -487,6 +487,9 @@ func (a *Application) Run(
 	// Add Topology Middleware (Always Active)
 	mcpSrv.Server().AddReceivingMiddleware(a.TopologyManager.Middleware)
 
+	// Add Prometheus Metrics Middleware (Always Active)
+	mcpSrv.Server().AddReceivingMiddleware(middleware.PrometheusMetricsMiddleware())
+
 	if stdio {
 		err := a.runStdioModeFunc(ctx, mcpSrv)
 		workerCancel()
