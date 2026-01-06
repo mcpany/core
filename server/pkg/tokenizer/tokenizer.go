@@ -150,8 +150,6 @@ func CountTokensInValue(t Tokenizer, v interface{}) (int, error) {
 		return t.CountTokens(strconv.Itoa(val))
 	case int64:
 		return t.CountTokens(strconv.FormatInt(val, 10))
-	case float64:
-		return t.CountTokens(strconv.FormatFloat(val, 'g', -1, 64))
 	case bool:
 		if val {
 			return t.CountTokens("true")
@@ -159,6 +157,8 @@ func CountTokensInValue(t Tokenizer, v interface{}) (int, error) {
 		return t.CountTokens("false")
 	case nil:
 		return t.CountTokens("null")
+	case float64:
+		return t.CountTokens(strconv.FormatFloat(val, 'g', -1, 64))
 	default:
 		// Convert to string representation
 		return t.CountTokens(fmt.Sprintf("%v", val))
@@ -290,19 +290,17 @@ func countTokensInValueWord(t *WordTokenizer, v interface{}) (int, error) {
 			count += vc
 		}
 		return count, nil
-	case int:
-		return t.CountTokens(strconv.Itoa(val))
-	case int64:
-		return t.CountTokens(strconv.FormatInt(val, 10))
+	case int, int64, bool, nil:
+		// Optimization: These types represent a single word (no spaces).
+		// We can calculate the token count directly without converting to string and allocating memory.
+		// logic: int(1 * Factor). If < 1, return 1 (as long as it's not empty, which these aren't).
+		c := int(t.Factor)
+		if c < 1 {
+			c = 1
+		}
+		return c, nil
 	case float64:
 		return t.CountTokens(strconv.FormatFloat(val, 'g', -1, 64))
-	case bool:
-		if val {
-			return t.CountTokens("true")
-		}
-		return t.CountTokens("false")
-	case nil:
-		return t.CountTokens("null")
 	default:
 		return t.CountTokens(fmt.Sprintf("%v", val))
 	}
