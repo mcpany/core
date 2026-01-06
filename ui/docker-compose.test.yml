@@ -14,8 +14,7 @@ services:
         "--config-path=config.minimal.yaml",
         "--mcp-listen-address=:50050",
       ]
-    environment:
-      - MCPANY_API_KEY=test-token
+      # - MCPANY_API_KEY=test-token
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:50050/healthz"]
       interval: 5s
@@ -52,7 +51,7 @@ services:
         condition: service_healthy
       http-echo-server:
         condition: service_healthy
-    command: ["npx", "playwright", "test"]
+    command: ["sh", "-c", "ls -la /work/ui/tests/e2e && cat /work/ui/tests/e2e/main.spec.ts && npx playwright test"]
 
   http-echo-server:
     build:
