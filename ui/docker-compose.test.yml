@@ -39,7 +39,7 @@ services:
       - PLAYWRIGHT_ARGS=${PLAYWRIGHT_ARGS}
     volumes:
       - ../ui/test-results:/work/ui/test-results
-      - ../ui/playwright-report:/work/ui/playwright-report
+      - ../build/playwright-report:/work/ui/playwright-report
       - ../ui/.audit:/work/ui/.audit
       - ../ui/docs:/work/ui/docs
       - ../docs:/work/docs
