@@ -12,6 +12,7 @@ import (
 	"io"
 	"sync"
 
+	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/mcpany/core/server/pkg/logging"
 	"github.com/mcpany/core/server/pkg/prompt"
 	"github.com/mcpany/core/server/pkg/resource"
@@ -19,7 +20,6 @@ import (
 	"github.com/mcpany/core/server/pkg/upstream"
 	"github.com/mcpany/core/server/pkg/upstream/filesystem/provider"
 	"github.com/mcpany/core/server/pkg/util"
-	configv1 "github.com/mcpany/core/proto/config/v1"
 
 	"github.com/spf13/afero"
 	"google.golang.org/protobuf/proto"
@@ -223,7 +223,6 @@ func (u *Upstream) createProvider(ctx context.Context, config *configv1.Filesyst
 	return prov, nil
 }
 
-//nolint:gocyclo
 func (u *Upstream) getSupportedTools(fsService *configv1.FilesystemUpstreamService, prov provider.Provider, fs afero.Fs) []filesystemToolDef {
 	// Wrap fs with ReadOnly if requested
 	if fsService.GetReadOnly() {

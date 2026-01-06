@@ -7,8 +7,6 @@ toolchain go1.24.11
 replace github.com/mcpany/core => ../
 
 require (
-	github.com/mcpany/core v0.0.0-00010101000000-000000000000
-
 	al.essio.dev/pkg/shellescape v1.6.0
 	cloud.google.com/go/storage v1.58.0
 	github.com/DATA-DOG/go-sqlmock v1.5.2
@@ -51,6 +49,7 @@ require (
 	github.com/json-iterator/go v1.1.12
 	github.com/lib/pq v1.10.9
 	github.com/machinebox/graphql v0.2.2
+	github.com/mcpany/core v0.0.0-00010101000000-000000000000
 	github.com/modelcontextprotocol/go-sdk v1.1.0
 	github.com/nats-io/nats-server/v2 v2.12.1
 	github.com/nats-io/nats.go v1.47.0
@@ -83,9 +82,9 @@ require (
 	golang.org/x/sync v0.19.0
 	golang.org/x/time v0.14.0
 	google.golang.org/api v0.256.0
-	google.golang.org/genproto/googleapis/api v0.0.0-20251111163417-95abcf5c77ba
+	google.golang.org/genproto/googleapis/api v0.0.0-20251111163417-95abcf5c77ba // indirect
 	google.golang.org/grpc v1.76.0
-	google.golang.org/protobuf v1.36.10
+	google.golang.org/protobuf v1.36.11
 	gopkg.in/yaml.v2 v2.4.0
 	gopkg.in/yaml.v3 v3.0.1
 	k8s.io/client-go v0.34.1
