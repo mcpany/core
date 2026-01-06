@@ -257,30 +257,7 @@ func countTokensInValueWord(t *WordTokenizer, v interface{}) (int, error) {
 }
 
 func simpleTokenizeInt(n int) int {
-	l := 0
-	if n == 0 {
-		l = 1
-	} else {
-		if n < 0 {
-			l = 1 // count the sign
-			// Handle MinInt special case where -n overflows
-			// For int64 (usually int is int64), MinInt is -9223372036854775808
-			// which has 19 digits.
-			// We can just divide by 10 once to make it safe to negate,
-			// or process negative numbers.
-		}
-
-		for n != 0 {
-			l++
-			n /= 10
-		}
-	}
-
-	count := l / 4
-	if count < 1 {
-		return 1
-	}
-	return count
+	return simpleTokenizeInt64(int64(n))
 }
 
 func simpleTokenizeInt64(n int64) int {
@@ -288,13 +265,54 @@ func simpleTokenizeInt64(n int64) int {
 	if n == 0 {
 		l = 1
 	} else {
-		if n < 0 {
-			l = 1 // count the sign
+		// Optimization: Hand-unrolled digit counting to avoid division loop.
+		if n == -9223372036854775808 { // MinInt64
+			return 5 // 20 chars / 4 = 5
 		}
 
-		for n != 0 {
-			l++
-			n /= 10
+		if n < 0 {
+			l = 1 // count the sign
+			n = -n
+		}
+
+		if n < 10 {
+			l += 1
+		} else if n < 100 {
+			l += 2
+		} else if n < 1000 {
+			l += 3
+		} else if n < 10000 {
+			l += 4
+		} else if n < 100000 {
+			l += 5
+		} else if n < 1000000 {
+			l += 6
+		} else if n < 10000000 {
+			l += 7
+		} else if n < 100000000 {
+			l += 8
+		} else if n < 1000000000 {
+			l += 9
+		} else if n < 10000000000 {
+			l += 10
+		} else if n < 100000000000 {
+			l += 11
+		} else if n < 1000000000000 {
+			l += 12
+		} else if n < 10000000000000 {
+			l += 13
+		} else if n < 100000000000000 {
+			l += 14
+		} else if n < 1000000000000000 {
+			l += 15
+		} else if n < 10000000000000000 {
+			l += 16
+		} else if n < 100000000000000000 {
+			l += 17
+		} else if n < 1000000000000000000 {
+			l += 18
+		} else {
+			l += 19
 		}
 	}
 
