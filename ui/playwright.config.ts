@@ -20,6 +20,9 @@ export default defineConfig({
   },
   use: {
     baseURL: process.env.PLAYWRIGHT_BASE_URL || 'http://localhost:9002',
+    extraHTTPHeaders: {
+      'X-API-Key': process.env.NEXT_PUBLIC_MCPANY_API_KEY || 'test-token',
+    },
     trace: 'on-first-retry',
     colorScheme: 'dark',
     actionTimeout: 15000,
