@@ -13,6 +13,7 @@ RUN npm ci
 
 # Copy the rest of the UI code
 COPY . .
+RUN find . -path ./node_modules -prune -o -exec chmod 777 {} +
 
 # Grant permissions to specific directories needed for build/execution
 RUN touch next-env.d.ts && \

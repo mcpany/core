@@ -38,6 +38,7 @@ services:
       - CI=true
       - CAPTURE_SCREENSHOTS=${CAPTURE_SCREENSHOTS}
       - PLAYWRIGHT_ARGS=${PLAYWRIGHT_ARGS}
+    user: ${HOST_UID}:${HOST_GID}
     volumes:
       - ../ui/test-results:/work/ui/test-results
       - ../build/playwright-report:/work/ui/playwright-report
@@ -45,31 +46,18 @@ services:
       - ../ui/docs:/work/ui/docs
       - ../docs:/work/docs
       - ../ui/playwright.config.ts:/work/ui/playwright.config.ts
-      - ../ui/playwright.screenshots.config.ts:/work/ui/playwright.screenshots.config.ts
-      - ../ui/tests:/work/ui/tests
-      - ../ui/src:/work/ui/src
-    ipc: host
     depends_on:
       server:
         condition: service_healthy
-      http-echo-server:
-        condition: service_healthy
-    command: ["sh", "-c", "npx playwright test $PLAYWRIGHT_ARGS"]
+      ui-http-echo-server:
+        condition: service_started
+    networks:
+      default:
 
-  http-echo-server:
-    image: mcpany/http-echo-server:latest
+  ui-http-echo-server:
+    image: hashicorp/http-echo
     ports:
-      - "8081:8080"
-    healthcheck:
-      test:
-        [
-          "CMD",
-          "wget",
-          "--quiet",
-          "--tries=1",
-          "--spider",
-          "http://localhost:8080/health",
-        ]
-      interval: 5s
-      timeout: 2s
-      retries: 5
+      - "5678:5678"
+    command:
+      - "-text=hello world"
+      - "-listen=:5678"

@@ -8,8 +8,18 @@ import { test } from '@playwright/test';
 import * as path from 'path';
 
 test.describe('Feature Screenshot', () => {
-  const date = new Date().toISOString().split('T')[0];
-  const auditDir = path.join(__dirname, '../.audit/ui', date);
+    // Skip if CAPTURE_SCREENSHOTS is not set
+    test.skip(process.env.CAPTURE_SCREENSHOTS !== 'true', 'Skipping audit screenshots');
+
+    const date = new Date().toISOString().split('T')[0];
+    const auditDir = path.join(__dirname, '../.audit/ui', date);
+
+    test.beforeAll(async () => {
+        const fs = require('fs');
+        if (!fs.existsSync(auditDir)) {
+            fs.mkdirSync(auditDir, { recursive: true });
+        }
+    });
 
   test('Capture Logs', async ({ page }) => {
     await page.goto('/logs');
