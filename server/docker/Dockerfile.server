@@ -40,7 +40,7 @@ COPY server/cmd ./server/cmd/
 COPY server/pkg ./server/pkg/
 COPY server/tools ./server/tools/
 COPY server/api ./server/api/
-COPY server/tests/integration/cmd/mocks ./server/tests/integration/cmd/mocks/
+
 COPY server/config.minimal.yaml ./server/
 
 # Set the working directory for the build
