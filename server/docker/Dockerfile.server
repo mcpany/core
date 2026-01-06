@@ -17,37 +17,32 @@ FROM mirror.gcr.io/library/golang:1.24 AS builder
 # Set working directory
 WORKDIR /app
 
-# Copy root modules
-COPY go.mod go.sum ./
+# Stage 1: Build the Go application
+FROM golang:1.24-alpine AS builder
 
-# Copy server modules
-COPY server/go.mod server/go.sum ./server/
+WORKDIR /app
 
-# Copy protos (needed for build)
-COPY proto ./proto/
+# Copy injected root dependencies from .build-context
+# These are placed here by server/Makefile
+COPY .build-context/core/go.mod .build-context/core/go.sum ./
+COPY .build-context/core/proto ./proto/
 
-# Set working directory to server for dependency download
 WORKDIR /app/server
-RUN go mod download
 
-# Install GCC for CGO and curl for healthchecks
+# Install GCC for CGO
 RUN apt-get update && apt-get install -y gcc curl
 
-# Copy the rest of the source code
-WORKDIR /app
-# Copy full server directory (filtering handled by .dockerignore)
-COPY server ./server/
+# Copy server source (context is server/)
+COPY . .
 
-# Set the working directory for the build
-WORKDIR /app/server
-
-# Build the Go application for the target platform
-# CGO_ENABLED=1 is required for go-sqlite3
+# Build the Go application
 ARG TARGETOS
 ARG TARGETARCH
-RUN CGO_ENABLED=1 GOOS=${TARGETOS:-linux} GOARCH=${TARGETARCH:-amd64} go build -v -o /server cmd/server/main.go
+# CGO_ENABLED=1 is required for go-sqlite3
+RUN --mount=type=cache,target=/root/.cache/go-build \
+    CGO_ENABLED=1 GOOS=${TARGETOS} GOARCH=${TARGETARCH} \
+    go build -o server cmd/server/main.go
 
-# Stage 2: Create the small runtime image
 # Stage 2: Create the small runtime image
 FROM debian:bookworm-slim
 WORKDIR /app
