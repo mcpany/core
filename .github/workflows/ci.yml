@@ -101,6 +101,7 @@ jobs:
   unit-test:
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    needs: [build-images]
     env:
       GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
       IPINFO_API_TOKEN: ${{ secrets.IPINFO_API_TOKEN }}
@@ -215,6 +216,7 @@ jobs:
   e2e-parallel:
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    needs: [build-images]
     env:
       GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
       IPINFO_API_TOKEN: ${{ secrets.IPINFO_API_TOKEN }}
@@ -297,12 +299,24 @@ jobs:
             ${{ runner.os }}-build-env-bin-${{ steps.get-date.outputs.week }}-${{ hashFiles('Makefile') }}-
             ${{ runner.os }}-build-env-bin-${{ steps.get-date.outputs.week }}-
 
+      - name: Download Docker Images
+        uses: actions/download-artifact@v4
+        with:
+          pattern: image-*
+          merge-multiple: true
+
+      - name: Load Docker Images
+        run: |
+          for f in *.tar; do
+            docker load -i "$f"
+          done
+
       - name: Prepare environment
         run: make prepare
 
       - name: run parallel e2e
         run: |
-          make e2e-parallel CACHE_TO=type=gha,mode=max CACHE_FROM=type=gha COVERAGE_FILE=coverage-e2e-parallel.out
+          make e2e-parallel SKIP_DOCKER_REBUILD=true CACHE_TO=type=gha,mode=max CACHE_FROM=type=gha COVERAGE_FILE=coverage-e2e-parallel.out
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v5
@@ -312,37 +326,51 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
           verbose: true
 
-  build-server-images:
+
+  build-images:
+    name: Build ${{ matrix.target }}
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - target: build-docker
+            image: mcpany/server:latest
+            filename: server.tar
+          - target: build-http-echo-docker
+            image: mcpany/http-echo-server:latest
+            filename: http-echo.tar
+          - target: build-e2e-timeserver-docker
+            image: mcpany-e2e-time-server
+            filename: time-server.tar
+          - target: build-cowsay-docker
+            image: mcpany/e2e-cowsay-server:latest
+            filename: cowsay.tar
+          - target: build-everything-docker
+            image: mcpany/everything:latest
+            filename: everything.tar
     steps:
       - uses: actions/checkout@v5
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
-      - name: Build Server Images
+      - name: Build Image
         run: |
-          make -C server build-test-images
-      - name: Save Docker Images
+          make -C server ${{ matrix.target }}
+      - name: Save Image
         run: |
-          docker save -o server-images.tar \
-            mcpany/server:latest \
-            mcpany/http-echo-server:latest \
-            mcpany/e2e-time-server:latest \
-            mcpany/e2e-cowsay-server:latest \
-            mcpany/everything:latest
-      # Note: server-images.tar might be large. Artifact compression helps.
-      - name: Upload Docker Images
+          docker save -o ${{ matrix.filename }} ${{ matrix.image }}
+      - name: Upload Image
         uses: actions/upload-artifact@v4
         with:
-          name: server-images
-          path: server-images.tar
+          name: image-${{ matrix.filename }}
+          path: ${{ matrix.filename }}
           retention-days: 1
-
   e2e-sequential:
     runs-on: ubuntu-latest
     timeout-minutes: 60
-    needs: [build-server-images]
+    needs: [build-images]
     env:
       GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
       IPINFO_API_TOKEN: ${{ secrets.IPINFO_API_TOKEN }}
@@ -377,16 +405,18 @@ jobs:
           cache: "npm"
           cache-dependency-path: server/tests/integration/upstream/package-lock.json
 
+
       - name: Download Docker Images
         uses: actions/download-artifact@v4
         with:
-          name: server-images
+          pattern: image-*
+          merge-multiple: true
 
       - name: Load Docker Images
         run: |
-          docker load -i server-images.tar
-          rm server-images.tar
-
+          for f in *.tar; do
+            docker load -i "$f"
+          done
       - name: Get Date
         id: get-date
         run: |
@@ -420,6 +450,7 @@ jobs:
   e2e-public-api:
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    needs: [build-images]
     env:
       GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
       IPINFO_API_TOKEN: ${{ secrets.IPINFO_API_TOKEN }}
@@ -509,6 +540,7 @@ jobs:
   docker-smoke-test:
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    needs: [build-images]
     steps:
       - uses: actions/checkout@v5
 
@@ -530,21 +562,19 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Build Docker Image
-        uses: docker/build-push-action@v5
+      - name: Download Docker Image
+        uses: actions/download-artifact@v4
         with:
-          context: .
-          file: server/docker/Dockerfile.server
-          push: false
-          load: true
-          tags: mcpany/server:test
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          name: image-server.tar
+
+      - name: Load Docker Image
+        run: |
+          docker load -i server.tar
 
       - name: Smoke Test
         run: |
           chmod +x server/tests/smoke_test.sh
-          ./server/tests/smoke_test.sh mcpany/server:test
+          ./server/tests/smoke_test.sh mcpany/server:latest
 
   build-ui-test-image:
     runs-on: ubuntu-latest
@@ -576,7 +606,7 @@ jobs:
   ui-test:
     runs-on: ubuntu-latest
     timeout-minutes: 20
-    needs: [build-ui-test-image, build-server-images]
+    needs: [build-ui-test-image, build-images]
     strategy:
       fail-fast: false
       matrix:
@@ -602,14 +632,19 @@ jobs:
         run: |
           docker load -i ui-test-image.tar
           rm ui-test-image.tar
-      - name: Download Server Images
+
+      - name: Download Docker Images
         uses: actions/download-artifact@v4
         with:
-          name: server-images
-      - name: Load Server Images
+          pattern: image-*
+          merge-multiple: true
+
+      - name: Load Docker Images
         run: |
-          docker load -i server-images.tar
-          rm server-images.tar
+          for f in *.tar; do
+            docker load -i "$f"
+          done
+
       - name: Test UI
         run: |
           SERVER_IMAGE=mcpany/server:latest make -C ui test-ci PLAYWRIGHT_ARGS="--shard=${{ matrix.shard }}"
@@ -617,6 +652,7 @@ jobs:
   k8s-e2e:
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    needs: [build-images]
     steps:
       - uses: actions/checkout@v5
 
@@ -636,6 +672,25 @@ jobs:
         with:
           cluster_name: mcp-e2e
           wait: 120s
+
+      - name: Download Docker Images
+        uses: actions/download-artifact@v4
+        with:
+          pattern: image-*
+          merge-multiple: true
+
+      - name: Load Docker Images into Kind
+        run: |
+          # Load all tarballs into docker daemon first?
+          # kind load docker-image requires image in docker daemon or archive.
+          # kind load image-archive might be better but let's stick to docker daemon for consistency
+          for f in *.tar; do
+            docker load -i "$f"
+          done
+
+          # Now load specific images into Kind
+          kind load docker-image mcpany/server:latest --name mcp-e2e
+          # Add others if needed? k8s tests probably use server.
 
       - name: Run K8s E2E Tests
         run: |

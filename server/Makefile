@@ -107,7 +107,7 @@ endif
 RELEASE_DIR := $(BUILD_DIR)/release
 # PLATFORMS variable will be used to define the target platforms for the build.
 # Example: PLATFORMS := linux/amd64 linux/arm64
-PLATFORMS ?= linux/amd64 linux/s390x linux/arm64 linux/arm linux/ppc64le
+PLATFORMS ?= linux/amd64 linux/arm64
 
 # Find all .proto files, excluding vendor/cache directories
 PROTO_FILES := $(shell find ../proto -path ./vendor -prune -o -name "*.proto" -print)
@@ -624,7 +624,7 @@ endif
 # Target to build all test images
 build-test-images:
 ifndef SKIP_DOCKER_REBUILD
-	@$(MAKE) build-docker build-http-echo-docker build-e2e-timeserver-docker build-cowsay-docker build-everything-docker
+	@$(MAKE) -j build-docker build-http-echo-docker build-e2e-timeserver-docker build-cowsay-docker build-everything-docker
 else
 	@echo "Skipping Docker image build (SKIP_DOCKER_REBUILD is set)"
 endif

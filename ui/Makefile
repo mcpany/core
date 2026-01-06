@@ -41,7 +41,7 @@ audit: build-test-docker
 	docker compose -f ./docker-compose.test.yml down -v
 
 test-ci:
-	docker compose -f ./docker-compose.test.yml build
+
 	docker compose -f ./docker-compose.test.yml up --quiet-pull --abort-on-container-exit --exit-code-from ui-tests
 	docker compose -f ./docker-compose.test.yml down -v
 
