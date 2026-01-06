@@ -14,5 +14,9 @@ RUN npm ci
 # Copy the rest of the UI code
 COPY . .
 
+# Grant permissions to specific directories needed for build/execution
+RUN mkdir -p .next node_modules/.cache test-results playwright-report && \
+    chmod -R 777 .next node_modules/.cache test-results playwright-report
+
 # Default command (can be overridden)
 CMD ["npx", "playwright", "test"]

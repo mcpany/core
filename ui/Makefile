@@ -22,9 +22,15 @@ TIMESTAMP := $(shell date +%s)
 SERVER_IMAGE_TAG := ui-test-$(TIMESTAMP)
 SERVER_IMAGE ?= mcpany/server:$(SERVER_IMAGE_TAG)
 
+TEST_UID := $(shell id -u)
+TEST_GID := $(shell id -g)
+export TEST_UID
+export TEST_GID
+
 # Default test target
 # Run the tests in a docker container
 test: build-test-docker build-server-docker
+	mkdir -p test-results .audit ../build/playwright-report
 	if [ -z '$(ARGS)' ]; then \
 		SERVER_IMAGE=$(SERVER_IMAGE) docker compose -f ./docker-compose.test.yml up --abort-on-container-exit --exit-code-from ui-tests; \
 	else \

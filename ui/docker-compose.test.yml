@@ -28,6 +28,7 @@ services:
 
   ui-tests:
     image: mcpany-ui-e2e:latest
+    user: "${TEST_UID}:${TEST_GID}"
     environment:
       - MCPANY_LOG_LEVEL=info
       - BACKEND_URL=http://server:50050
