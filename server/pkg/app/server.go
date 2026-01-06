@@ -538,11 +538,7 @@ func (a *Application) Run(
 	})
 
 	// Start gRPC server
-	if grpcPort != "" {
-		// Pass apiKey to the gRPC server if needed?
-		// Actually runServerMode does everything.
-		// We call runServerMode below.
-	}
+
 
 	if apiKey == "" {
 		apiKey = cfg.GetGlobalSettings().GetApiKey()
@@ -928,7 +924,7 @@ func (a *Application) runServerMode(
 	mux.Handle("/api/v1/", authMiddleware(apiHandler))
 
 	// Topology API
-	mux.HandleFunc("/api/v1/topology", func(w http.ResponseWriter, r *http.Request) {
+	mux.Handle("/api/v1/topology", authMiddleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		graph := a.TopologyManager.GetGraph(r.Context())
 
@@ -944,7 +940,7 @@ func (a *Application) runServerMode(
 			return
 		}
 		_, _ = w.Write(data)
-	})
+	})))
 
 	logging.GetLogger().Info("DEBUG: Registering /mcp/u/ handler")
 	// Multi-user handler
@@ -1275,11 +1271,9 @@ func (a *Application) runServerMode(
 	// We wrap everything with a debug logger to see what's coming in
 	handler := middleware.HTTPSecurityHeadersMiddleware(
 		corsMiddleware.Handler(
-			authMiddleware(
-				middleware.JSONRPCComplianceMiddleware(
-					ipMiddleware.Handler(
-						rateLimiter.Handler(mux),
-					),
+			middleware.JSONRPCComplianceMiddleware(
+				ipMiddleware.Handler(
+					rateLimiter.Handler(mux),
 				),
 			),
 		),
@@ -1364,13 +1358,13 @@ func (a *Application) runServerMode(
 	}
 
 	// Register Root Handler with gRPC-Web support
-	mux.Handle("/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	mux.Handle("/", authMiddleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if wrappedGrpc != nil && wrappedGrpc.IsGrpcWebRequest(r) {
 			wrappedGrpc.ServeHTTP(w, r)
 			return
 		}
 		httpHandler.ServeHTTP(w, r)
-	}))
+	})))
 
 	startHTTPServer(localCtx, &wg, errChan, "MCP Any HTTP", httpBindAddress, handler, shutdownTimeout)
 
