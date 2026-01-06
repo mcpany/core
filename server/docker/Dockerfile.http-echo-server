@@ -1,26 +1,19 @@
 # Stage 1: Build the Go application
-# Use the same Go version as the main server for consistency.
 FROM golang:1.24-alpine AS builder
 
 WORKDIR /app
 
-# Copy root modules
-COPY go.mod go.sum ./
+# Copy injected root dependencies
+COPY .build-context/core/go.mod .build-context/core/go.sum ./
+# http-echo-server might not strictly need proto, but good for consistency if deps change
+COPY .build-context/core/proto ./proto/
 
-# Copy server modules
-COPY server/go.mod server/go.sum ./server/
-
-# Download dependencies
 WORKDIR /app/server
-RUN go mod download
 
-# Copy the entire source code
-WORKDIR /app
-# Copy full server directory
-COPY server ./server/
+# Copy server source
+COPY . .
 
-# Build the http-echo-server binary statically.
-WORKDIR /app/server
+# Build the http-echo-server
 RUN CGO_ENABLED=0 go build -o /http-echo-server ./tests/integration/cmd/mocks/http_echo_server
 
 # Stage 2: Create the final, minimal production image
