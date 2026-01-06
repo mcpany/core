@@ -53,8 +53,19 @@ export interface SecretDefinition {
 export const apiClient = {
     // Services (Migrated to gRPC)
     listServices: async () => {
-        const response = await registrationClient.ListServices({});
-        return response.services;
+        // Fallback to REST for E2E reliability until gRPC-Web is stable
+        const res = await fetch('/api/v1/services');
+        if (!res.ok) throw new Error('Failed to fetch services');
+        const services = await res.json();
+        // Map snake_case to camelCase for UI compatibility
+        return services.map((s: any) => ({
+            ...s,
+            connectionPool: s.connection_pool,
+            httpService: s.http_service,
+            grpcService: s.grpc_service,
+            commandLineService: s.command_line_service,
+            mcpService: s.mcp_service
+        }));
     },
     getService: async (id: string) => {
          const response = await registrationClient.GetService({ serviceName: id });

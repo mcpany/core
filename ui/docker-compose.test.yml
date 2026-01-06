@@ -34,6 +34,7 @@ services:
       - NEXT_PUBLIC_API_URL=http://server:50050
       - CI=true
       - CAPTURE_SCREENSHOTS=${CAPTURE_SCREENSHOTS}
+      - PLAYWRIGHT_ARGS=${PLAYWRIGHT_ARGS}
     volumes:
       - ../ui/test-results:/work/ui/test-results
       - ../ui/playwright-report:/work/ui/playwright-report
@@ -50,7 +51,7 @@ services:
         condition: service_healthy
       http-echo-server:
         condition: service_healthy
-    command: ["sh", "-c", "ls -la /work/ui/tests/e2e && cat /work/ui/tests/e2e/main.spec.ts && npx playwright test"]
+    command: ["sh", "-c", "npx playwright test $PLAYWRIGHT_ARGS"]
 
   http-echo-server:
     image: mcpany/http-echo-server:latest
