@@ -47,7 +47,7 @@ func TestRun_UI(t *testing.T) {
 
 	go func() {
 		// Run server
-		errChan <- app.Run(ctx, fs, false, fmt.Sprintf("localhost:%d", port), "localhost:0", nil, 5*time.Second)
+		errChan <- app.Run(ctx, fs, false, fmt.Sprintf("localhost:%d", port), "localhost:0", nil, "", 5*time.Second)
 	}()
 
 	// Verify UI endpoint
