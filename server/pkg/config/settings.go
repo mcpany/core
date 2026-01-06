@@ -186,6 +186,11 @@ func (s *Settings) SetAPIKey(key string) {
 	s.proto.SetApiKey(key)
 }
 
+// SetMiddlewares sets the middlewares for the global settings.
+func (s *Settings) SetMiddlewares(middlewares []*configv1.Middleware) {
+	s.proto.SetMiddlewares(middlewares)
+}
+
 // Profiles returns the active profiles.
 func (s *Settings) Profiles() []string {
 	if viper.IsSet("profiles") {
