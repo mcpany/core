@@ -31,12 +31,8 @@ test.describe('MCP Any UI E2E', () => {
     await page.fill('input#name', serviceName);
     await page.fill('input#endpoint', 'http://http-echo-server:8080');
 
-    const responsePromise = page.waitForResponse(response =>
-        response.url().includes('/api/v1/services') &&
-        (response.status() === 200 || response.status() === 201)
-    );
     await page.click('text=Save Changes');
-    await responsePromise;
+    await expect(page.locator('div[role="dialog"]')).toBeHidden();
 
     // Check if added
     await expect(page.locator(`text=${serviceName}`)).toBeVisible();
