@@ -942,7 +942,11 @@ export interface ResilienceConfig {
     | CircuitBreakerConfig
     | undefined;
   /** Retry policy for failed requests. */
-  retryPolicy?: RetryConfig | undefined;
+  retryPolicy?:
+    | RetryConfig
+    | undefined;
+  /** The maximum duration for a request before it is cancelled. */
+  timeout?: Duration | undefined;
 }
 
 /** CircuitBreakerConfig defines the parameters for the circuit breaker pattern. */
@@ -7683,7 +7687,7 @@ export const RateLimitConfig_ToolLimitsEntry: MessageFns<RateLimitConfig_ToolLim
 };
 
 function createBaseResilienceConfig(): ResilienceConfig {
-  return { circuitBreaker: undefined, retryPolicy: undefined };
+  return { circuitBreaker: undefined, retryPolicy: undefined, timeout: undefined };
 }
 
 export const ResilienceConfig: MessageFns<ResilienceConfig> = {
@@ -7693,6 +7697,9 @@ export const ResilienceConfig: MessageFns<ResilienceConfig> = {
     }
     if (message.retryPolicy !== undefined) {
       RetryConfig.encode(message.retryPolicy, writer.uint32(18).fork()).join();
+    }
+    if (message.timeout !== undefined) {
+      Duration.encode(message.timeout, writer.uint32(26).fork()).join();
     }
     return writer;
   },
@@ -7720,6 +7727,14 @@ export const ResilienceConfig: MessageFns<ResilienceConfig> = {
           message.retryPolicy = RetryConfig.decode(reader, reader.uint32());
           continue;
         }
+        case 3: {
+          if (tag !== 26) {
+            break;
+          }
+
+          message.timeout = Duration.decode(reader, reader.uint32());
+          continue;
+        }
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -7733,6 +7748,7 @@ export const ResilienceConfig: MessageFns<ResilienceConfig> = {
     return {
       circuitBreaker: isSet(object.circuit_breaker) ? CircuitBreakerConfig.fromJSON(object.circuit_breaker) : undefined,
       retryPolicy: isSet(object.retry_policy) ? RetryConfig.fromJSON(object.retry_policy) : undefined,
+      timeout: isSet(object.timeout) ? Duration.fromJSON(object.timeout) : undefined,
     };
   },
 
@@ -7743,6 +7759,9 @@ export const ResilienceConfig: MessageFns<ResilienceConfig> = {
     }
     if (message.retryPolicy !== undefined) {
       obj.retry_policy = RetryConfig.toJSON(message.retryPolicy);
+    }
+    if (message.timeout !== undefined) {
+      obj.timeout = Duration.toJSON(message.timeout);
     }
     return obj;
   },
@@ -7757,6 +7776,9 @@ export const ResilienceConfig: MessageFns<ResilienceConfig> = {
       : undefined;
     message.retryPolicy = (object.retryPolicy !== undefined && object.retryPolicy !== null)
       ? RetryConfig.fromPartial(object.retryPolicy)
+      : undefined;
+    message.timeout = (object.timeout !== undefined && object.timeout !== null)
+      ? Duration.fromPartial(object.timeout)
       : undefined;
     return message;
   },

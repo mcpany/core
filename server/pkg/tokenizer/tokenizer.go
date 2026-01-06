@@ -261,7 +261,6 @@ func countTokensInValueSimple(t *SimpleTokenizer, v interface{}) (int, error) {
 	}
 }
 
-
 func simpleTokenizeInt(n int) int {
 	l := 0
 	if n == 0 {
@@ -309,4 +308,50 @@ func simpleTokenizeInt64(n int64) int {
 		return 1
 	}
 	return count
+}
+func countTokensInValueWord(t *WordTokenizer, v interface{}) (int, error) {
+	switch val := v.(type) {
+	case string:
+		return t.CountTokens(val)
+	case []interface{}:
+		count := 0
+		for _, item := range val {
+			c, err := countTokensInValueWord(t, item)
+			if err != nil {
+				return 0, err
+			}
+			count += c
+		}
+		return count, nil
+	case map[string]interface{}:
+		count := 0
+		for key, item := range val {
+			kc, err := t.CountTokens(key)
+			if err != nil {
+				return 0, err
+			}
+			count += kc
+			vc, err := countTokensInValueWord(t, item)
+			if err != nil {
+				return 0, err
+			}
+			count += vc
+		}
+		return count, nil
+	case int:
+		return t.CountTokens(strconv.Itoa(val))
+	case int64:
+		return t.CountTokens(strconv.FormatInt(val, 10))
+	case float64:
+		return t.CountTokens(strconv.FormatFloat(val, 'g', -1, 64))
+	case bool:
+		if val {
+			return t.CountTokens("true")
+		}
+		return t.CountTokens("false")
+	case nil:
+		return t.CountTokens("null")
+	default:
+		return t.CountTokens(fmt.Sprintf("%v", val))
+	}
 }
