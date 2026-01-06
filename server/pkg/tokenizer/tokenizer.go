@@ -213,7 +213,6 @@ func countTokensInValueSimple(t *SimpleTokenizer, v interface{}) (int, error) {
 	}
 }
 
-
 func simpleTokenizeInt(n int) int {
 	l := 0
 	if n == 0 {
