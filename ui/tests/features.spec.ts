@@ -18,5 +18,5 @@ test('resources page loads', async ({ page }) => {
 
 test('prompts page loads', async ({ page }) => {
   await page.goto('/prompts');
-  await expect(page.getByRole('heading', { name: 'Prompts' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Prompt Library' })).toBeVisible();
 });
