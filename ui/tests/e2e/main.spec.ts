@@ -19,18 +19,27 @@ test.describe('MCP Any UI E2E', () => {
   });
 
   test('Services page CRUD', async ({ page }) => {
+    // Randomized name to avoid collisions
+    const serviceName = `test-service-e2e-${Math.random().toString(36).substring(7)}`;
+
     await page.goto('/services');
     await expect(page.locator('h2')).toContainText('Services');
 
     // Add Service
     await page.click('button:has-text("Add Service")');
     await expect(page.locator('div[role="dialog"]')).toBeVisible();
-    await page.fill('input#name', 'test-service-e2e');
-    await page.fill('input#endpoint', 'https://example.com');
+    await page.fill('input#name', serviceName);
+    await page.fill('input#endpoint', 'http://http-echo-server:8080');
+
+    const responsePromise = page.waitForResponse(response =>
+        response.url().includes('/api/v1/services') &&
+        (response.status() === 200 || response.status() === 201)
+    );
     await page.click('text=Save Changes');
+    await responsePromise;
 
     // Check if added
-    await expect(page.locator('text=test-service-e2e')).toBeVisible();
+    await expect(page.locator(`text=${serviceName}`)).toBeVisible();
   });
 
 
