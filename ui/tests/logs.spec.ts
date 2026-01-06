@@ -27,24 +27,37 @@ test.describe('Logs Page', () => {
   });
 
   test('should pause and resume logs', async ({ page }) => {
+    // Install fake clock to control setInterval
+    await page.clock.install();
+    await page.goto('/logs');
+
+    // Initial accumulation - advance time to generate some logs
+    await page.clock.runFor(2000);
+    const logs = page.locator('.group');
+    const countInitial = await logs.count();
+    expect(countInitial).toBeGreaterThan(0);
+
+    // Click pause
     const pauseButton = page.getByRole('button', { name: 'Pause' });
     await pauseButton.click();
 
-    // Get count of logs
-    await page.waitForTimeout(1000);
-    const logs = page.locator('.group');
+    // Wait for state to update
+    await expect(page.getByRole('button', { name: 'Resume' })).toBeVisible();
+
     const countAfterPause = await logs.count();
 
-    // Wait more to ensure no new logs are added
-    await page.waitForTimeout(2000);
+    // Advance time - NO new logs should be added
+    await page.clock.runFor(4000);
     const countAfterWait = await logs.count();
     expect(countAfterWait).toBe(countAfterPause);
 
+    // Resume
     const resumeButton = page.getByRole('button', { name: 'Resume' });
     await resumeButton.click();
+    await expect(page.getByRole('button', { name: 'Pause' })).toBeVisible();
 
-    // Wait for new logs
-    await page.waitForTimeout(2000);
+    // Advance time - logs SHOULD be added
+    await page.clock.runFor(4000);
     const countAfterResume = await logs.count();
     expect(countAfterResume).toBeGreaterThan(countAfterWait);
   });

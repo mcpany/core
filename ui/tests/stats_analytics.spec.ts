@@ -9,6 +9,11 @@ import path from 'path';
 import fs from 'fs';
 
 test('verify stats page', async ({ page }) => {
+  // Mock all API calls to ensure page loads even if backend is slow/down
+  await page.route('/api/v1/**', async route => {
+    await route.fulfill({ status: 200, contentType: 'application/json', body: '{}' });
+  });
+
   // Go to the stats page
   await page.goto('/stats');
 
@@ -29,13 +34,12 @@ test('verify stats page', async ({ page }) => {
   await page.waitForTimeout(2000);
 
   // Take a screenshot
-  // The python script saved it to .audit/ui/2025-12-30/stats_analytics.png
-  // .audit is in the repo root.
-  // The test file is in ui/tests/stats_analytics.spec.ts
-  // So repo root is ../../
-  const screenshotDir = path.resolve(__dirname, '../.audit/ui/2025-12-30');
-  if (!fs.existsSync(screenshotDir)) {
-      fs.mkdirSync(screenshotDir, { recursive: true });
+  if (process.env.CAPTURE_SCREENSHOTS === 'true') {
+      const date = new Date().toISOString().split('T')[0];
+      const screenshotDir = path.resolve(__dirname, '../.audit/ui', date);
+      if (!fs.existsSync(screenshotDir)) {
+          fs.mkdirSync(screenshotDir, { recursive: true });
+      }
+      await page.screenshot({ path: path.join(screenshotDir, 'stats_analytics.png'), fullPage: true });
   }
-  await page.screenshot({ path: path.join(screenshotDir, 'stats_analytics.png'), fullPage: true });
 });
