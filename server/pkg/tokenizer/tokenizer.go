@@ -165,6 +165,54 @@ func CountTokensInValue(t Tokenizer, v interface{}) (int, error) {
 	}
 }
 
+func countTokensInValueWord(t *WordTokenizer, v interface{}) (int, error) {
+	switch val := v.(type) {
+	case string:
+		return t.CountTokens(val)
+	case []interface{}:
+		count := 0
+		for _, item := range val {
+			c, err := countTokensInValueWord(t, item)
+			if err != nil {
+				return 0, err
+			}
+			count += c
+		}
+		return count, nil
+	case map[string]interface{}:
+		count := 0
+		for key, item := range val {
+			// Count the key
+			kc, err := t.CountTokens(key)
+			if err != nil {
+				return 0, err
+			}
+			count += kc
+
+			// Count the value
+			vc, err := countTokensInValueWord(t, item)
+			if err != nil {
+				return 0, err
+			}
+			count += vc
+		}
+		return count, nil
+	case int, int64, bool, float64, nil:
+		// Optimization: Primitives (int, bool, float, nil) are always single words.
+		// "123", "true", "1.23", "null".
+		// We avoid string formatting and token counting loop.
+		// Result is int(1 * Factor).
+		count := int(t.Factor)
+		if count < 1 {
+			count = 1
+		}
+		return count, nil
+	default:
+		// Fallback for others
+		return t.CountTokens(fmt.Sprintf("%v", val))
+	}
+}
+
 func countTokensInValueSimple(t *SimpleTokenizer, v interface{}) (int, error) {
 	switch val := v.(type) {
 	case string:
