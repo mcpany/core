@@ -115,7 +115,6 @@ func CountTokensInValue(t Tokenizer, v interface{}) (int, error) {
 		return countTokensInValueWord(wt, v)
 	}
 
-
 	switch val := v.(type) {
 	case string:
 		return t.CountTokens(val)
