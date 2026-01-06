@@ -136,7 +136,7 @@ export function AppSidebar() {
               </div>
               <div className="grid flex-1 text-left text-sm leading-tight group-data-[collapsible=icon]:hidden">
                 <span className="truncate font-semibold">MCP Any</span>
-                <span className="truncate text-xs">Enterprise Console</span>
+                <span className="truncate text-xs">Admin Console</span>
               </div>
           </div>
       </SidebarHeader>

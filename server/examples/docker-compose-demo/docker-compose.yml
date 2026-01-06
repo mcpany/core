@@ -30,8 +30,8 @@ services:
       test:
         ["CMD", "curl", "--fail", "--silent", "http://localhost:50050/healthz"]
       interval: 5s
-      timeout: 2s
-      retries: 5
+      timeout: 5s
+      retries: 10
     depends_on:
       # Ensures that the http-echo-server is started before mcpany-server.
       http-echo-server:
@@ -55,8 +55,8 @@ services:
           "http://localhost:8080/health",
         ]
       interval: 5s
-      timeout: 2s
-      retries: 5
+      timeout: 5s
+      retries: 10
     networks:
       - mcpany-net
 

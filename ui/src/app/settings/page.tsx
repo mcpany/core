@@ -15,6 +15,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { GlobalSettingsForm } from "@/components/settings/global-settings-form";
 import { SecretsManager } from "@/components/settings/secrets-manager";
 
+import Link from "next/link";
+
 export default function SettingsPage() {
   const [activeProfile, setActiveProfile] = useState("development");
 
@@ -27,6 +29,9 @@ export default function SettingsPage() {
       <Tabs defaultValue="profiles" className="space-y-4 flex-1 flex flex-col">
         <TabsList>
           <TabsTrigger value="profiles">Profiles</TabsTrigger>
+          <TabsTrigger value="webhooks" asChild>
+            <Link href="/settings/webhooks">Webhooks</Link>
+          </TabsTrigger>
           <TabsTrigger value="secrets">Secrets & Keys</TabsTrigger>
           <TabsTrigger value="general">General</TabsTrigger>
         </TabsList>
