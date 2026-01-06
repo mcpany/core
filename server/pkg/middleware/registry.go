@@ -97,6 +97,13 @@ func GetMCPMiddlewares(configs []*configv1.Middleware) []func(mcp.MethodHandler)
 	return middlewares
 }
 
+// StandardMiddlewares holds the standard middlewares that might need to be updated.
+type StandardMiddlewares struct {
+	Audit           *AuditMiddleware
+	GlobalRateLimit *GlobalRateLimitMiddleware
+	Cleanup         func() error
+}
+
 // InitStandardMiddlewares registers standard middlewares.
 func InitStandardMiddlewares(
 	authManager *auth.Manager,
@@ -104,7 +111,7 @@ func InitStandardMiddlewares(
 	auditConfig *configv1.AuditConfig,
 	cachingMiddleware *CachingMiddleware,
 	globalRateLimitConfig *configv1.RateLimitConfig,
-) (func() error, error) {
+) (*StandardMiddlewares, error) {
 	// 1. Logging
 	RegisterMCP("logging", func(_ *configv1.Middleware) func(mcp.MethodHandler) mcp.MethodHandler {
 		return LoggingMiddleware(nil)
@@ -244,5 +251,9 @@ func InitStandardMiddlewares(
 		}
 	})
 
-	return audit.Close, nil
+	return &StandardMiddlewares{
+		Audit:           audit,
+		GlobalRateLimit: globalRateLimit,
+		Cleanup:         audit.Close,
+	}, nil
 }

@@ -157,6 +157,9 @@ type Application struct {
 	fs               afero.Fs
 	configPaths      []string
 	Storage          storage.Storage
+
+	// Middleware handles for dynamic updates
+	standardMiddlewares *middleware.StandardMiddlewares
 }
 
 // NewApplication creates a new Application with default dependencies.
@@ -422,16 +425,17 @@ func (a *Application) Run(
 
 	// Initialize standard middlewares in registry
 	cachingMiddleware := middleware.NewCachingMiddleware(a.ToolManager)
-	auditCleanup, err := middleware.InitStandardMiddlewares(mcpSrv.AuthManager(), a.ToolManager, cfg.GetGlobalSettings().GetAudit(), cachingMiddleware, cfg.GetGlobalSettings().GetRateLimit())
+	standardMiddlewares, err := middleware.InitStandardMiddlewares(mcpSrv.AuthManager(), a.ToolManager, cfg.GetGlobalSettings().GetAudit(), cachingMiddleware, cfg.GetGlobalSettings().GetRateLimit())
 	if err != nil {
 		workerCancel()
 		upstreamWorker.Stop()
 		registrationWorker.Stop()
 		return fmt.Errorf("failed to init standard middlewares: %w", err)
 	}
-	if auditCleanup != nil {
+	a.standardMiddlewares = standardMiddlewares
+	if standardMiddlewares.Cleanup != nil {
 		defer func() {
-			if err := auditCleanup(); err != nil {
+			if err := standardMiddlewares.Cleanup(); err != nil {
 				log.Error("Failed to close audit middleware", "error", err)
 			}
 		}()
@@ -549,6 +553,18 @@ func (a *Application) ReloadConfig(fs afero.Fs, configPaths []string) error {
 	if err != nil {
 		metrics.IncrCounter([]string{"config", "reload", "errors"}, 1)
 		return fmt.Errorf("failed to load services from config: %w", err)
+	}
+
+	// Update global settings
+	if a.standardMiddlewares != nil {
+		if a.standardMiddlewares.Audit != nil {
+			if err := a.standardMiddlewares.Audit.UpdateConfig(cfg.GetGlobalSettings().GetAudit()); err != nil {
+				log.Error("Failed to update audit middleware config", "error", err)
+			}
+		}
+		if a.standardMiddlewares.GlobalRateLimit != nil {
+			a.standardMiddlewares.GlobalRateLimit.UpdateConfig(cfg.GetGlobalSettings().GetRateLimit())
+		}
 	}
 
 	// Update profiles on reload
