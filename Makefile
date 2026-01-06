@@ -128,7 +128,7 @@ gen: clean-protos prepare-proto
 	@echo "Generating protobuf files (Go)..."
 	@export PATH=$(TOOL_INSTALL_DIR):$$PATH; \
 		mkdir -p $(BUILD_DIR); \
-		find proto -name "*.proto" -exec protoc \
+		find proto -name "*.proto" -not -path "proto/third_party/*" -not -path "proto/google/*" -exec protoc \
 			--proto_path=. \
 			--proto_path=$(BUILD_DIR)/grpc-gateway \
 			--proto_path=$(BUILD_DIR)/googleapis \
@@ -140,7 +140,8 @@ gen: clean-protos prepare-proto
 			--go-grpc_opt=module=github.com/mcpany/core \
 			--grpc-gateway_out=. \
 			--grpc-gateway_opt=module=github.com/mcpany/core \
-			{} +
+			{} +; \
+		rm -rf google
 
 
 	@echo "Generating protobuf files (TypeScript)..."
