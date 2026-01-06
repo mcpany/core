@@ -162,6 +162,7 @@ type Application struct {
 	standardMiddlewares *middleware.StandardMiddlewares
 	startupCh           chan struct{}
 	startupOnce         sync.Once
+	configMu            sync.Mutex
 }
 
 // NewApplication creates a new Application with default dependencies.
@@ -548,6 +549,17 @@ func (a *Application) Run(
 // services.
 func (a *Application) ReloadConfig(fs afero.Fs, configPaths []string) error {
 	log := logging.GetLogger()
+	start := time.Now()
+	defer func() {
+		if r := recover(); r != nil {
+			log.Error("ReloadConfig panicked", "panic", r)
+		}
+		log.Info("ReloadConfig completed", "duration", time.Since(start))
+	}()
+
+	a.configMu.Lock()
+	defer a.configMu.Unlock()
+
 	log.Info("Reloading configuration...")
 	metrics.IncrCounter([]string{"config", "reload", "total"}, 1)
 	var stores []config.Store
@@ -1381,7 +1393,7 @@ func startHTTPServer(
 			},
 			ReadHeaderTimeout: 10 * time.Second,
 			ReadTimeout:       30 * time.Second,
-			WriteTimeout:      30 * time.Second,
+			WriteTimeout:      60 * time.Second,
 			IdleTimeout:       120 * time.Second,
 		}
 
