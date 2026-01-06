@@ -29,6 +29,24 @@ upstream_services:
       address: "https://api.example.com"
 ```
 
+### Token-Based Rate Limiting
+
+In addition to request-based limiting, you can limit based on the number of "tokens" (e.g., words or characters) in the request arguments. This is useful for controlling costs when sending data to LLMs.
+
+To enable token-based limiting, set `cost_metric` to `COST_METRIC_TOKENS`. The system will estimate the token count of the request arguments.
+
+```yaml
+upstream_services:
+  - name: "token-limited-service"
+    rate_limit:
+      is_enabled: true
+      requests_per_second: 1000.0 # Limit in tokens per second
+      burst: 5000
+      cost_metric: COST_METRIC_TOKENS
+    http_service:
+      address: "https://api.example.com"
+```
+
 ### Distributed Rate Limiting (Redis)
 
 By default, rate limiting is handled in-memory. To support distributed deployments (multiple replicas), you can configure a Redis backend.
