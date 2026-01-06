@@ -1249,7 +1249,7 @@ func (a *Application) runServerMode(
 					v1.RegisterRegistrationServiceServer(s, registrationServer)
 
 					// Register Admin Service
-					adminServer := admin.NewServer(cachingMiddleware, a.ToolManager)
+					adminServer := admin.NewServer(cachingMiddleware, a.ToolManager, serviceRegistry, s)
 					pb_admin.RegisterAdminServiceServer(s, adminServer)
 
 					// config_v1.RegisterMcpAnyConfigServiceServer(s, mcpSrv.ConfigServer())

@@ -22,11 +22,13 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	AdminService_ClearCache_FullMethodName   = "/mcpany.admin.v1.AdminService/ClearCache"
-	AdminService_ListServices_FullMethodName = "/mcpany.admin.v1.AdminService/ListServices"
-	AdminService_GetService_FullMethodName   = "/mcpany.admin.v1.AdminService/GetService"
-	AdminService_ListTools_FullMethodName    = "/mcpany.admin.v1.AdminService/ListTools"
-	AdminService_GetTool_FullMethodName      = "/mcpany.admin.v1.AdminService/GetTool"
+	AdminService_ClearCache_FullMethodName        = "/mcpany.admin.v1.AdminService/ClearCache"
+	AdminService_ListServices_FullMethodName      = "/mcpany.admin.v1.AdminService/ListServices"
+	AdminService_GetService_FullMethodName        = "/mcpany.admin.v1.AdminService/GetService"
+	AdminService_ListTools_FullMethodName         = "/mcpany.admin.v1.AdminService/ListTools"
+	AdminService_GetTool_FullMethodName           = "/mcpany.admin.v1.AdminService/GetTool"
+	AdminService_RegisterService_FullMethodName   = "/mcpany.admin.v1.AdminService/RegisterService"
+	AdminService_UnregisterService_FullMethodName = "/mcpany.admin.v1.AdminService/UnregisterService"
 )
 
 // AdminServiceClient is the client API for AdminService service.
@@ -45,6 +47,10 @@ type AdminServiceClient interface {
 	ListTools(ctx context.Context, in *ListToolsRequest, opts ...grpc.CallOption) (*ListToolsResponse, error)
 	// GetTool returns a specific tool by name.
 	GetTool(ctx context.Context, in *GetToolRequest, opts ...grpc.CallOption) (*GetToolResponse, error)
+	// RegisterService registers a new upstream service.
+	RegisterService(ctx context.Context, in *RegisterServiceRequest, opts ...grpc.CallOption) (*RegisterServiceResponse, error)
+	// UnregisterService unregisters an existing upstream service.
+	UnregisterService(ctx context.Context, in *UnregisterServiceRequest, opts ...grpc.CallOption) (*UnregisterServiceResponse, error)
 }
 
 type adminServiceClient struct {
@@ -105,6 +111,26 @@ func (c *adminServiceClient) GetTool(ctx context.Context, in *GetToolRequest, op
 	return out, nil
 }
 
+func (c *adminServiceClient) RegisterService(ctx context.Context, in *RegisterServiceRequest, opts ...grpc.CallOption) (*RegisterServiceResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(RegisterServiceResponse)
+	err := c.cc.Invoke(ctx, AdminService_RegisterService_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *adminServiceClient) UnregisterService(ctx context.Context, in *UnregisterServiceRequest, opts ...grpc.CallOption) (*UnregisterServiceResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(UnregisterServiceResponse)
+	err := c.cc.Invoke(ctx, AdminService_UnregisterService_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // AdminServiceServer is the server API for AdminService service.
 // All implementations must embed UnimplementedAdminServiceServer
 // for forward compatibility.
@@ -121,6 +147,10 @@ type AdminServiceServer interface {
 	ListTools(context.Context, *ListToolsRequest) (*ListToolsResponse, error)
 	// GetTool returns a specific tool by name.
 	GetTool(context.Context, *GetToolRequest) (*GetToolResponse, error)
+	// RegisterService registers a new upstream service.
+	RegisterService(context.Context, *RegisterServiceRequest) (*RegisterServiceResponse, error)
+	// UnregisterService unregisters an existing upstream service.
+	UnregisterService(context.Context, *UnregisterServiceRequest) (*UnregisterServiceResponse, error)
 	mustEmbedUnimplementedAdminServiceServer()
 }
 
@@ -145,6 +175,12 @@ func (UnimplementedAdminServiceServer) ListTools(context.Context, *ListToolsRequ
 }
 func (UnimplementedAdminServiceServer) GetTool(context.Context, *GetToolRequest) (*GetToolResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetTool not implemented")
+}
+func (UnimplementedAdminServiceServer) RegisterService(context.Context, *RegisterServiceRequest) (*RegisterServiceResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RegisterService not implemented")
+}
+func (UnimplementedAdminServiceServer) UnregisterService(context.Context, *UnregisterServiceRequest) (*UnregisterServiceResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UnregisterService not implemented")
 }
 func (UnimplementedAdminServiceServer) mustEmbedUnimplementedAdminServiceServer() {}
 func (UnimplementedAdminServiceServer) testEmbeddedByValue()                      {}
@@ -257,6 +293,42 @@ func _AdminService_GetTool_Handler(srv interface{}, ctx context.Context, dec fun
 	return interceptor(ctx, in, info, handler)
 }
 
+func _AdminService_RegisterService_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RegisterServiceRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AdminServiceServer).RegisterService(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AdminService_RegisterService_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AdminServiceServer).RegisterService(ctx, req.(*RegisterServiceRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AdminService_UnregisterService_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UnregisterServiceRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AdminServiceServer).UnregisterService(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AdminService_UnregisterService_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AdminServiceServer).UnregisterService(ctx, req.(*UnregisterServiceRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // AdminService_ServiceDesc is the grpc.ServiceDesc for AdminService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -283,6 +355,14 @@ var AdminService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetTool",
 			Handler:    _AdminService_GetTool_Handler,
+		},
+		{
+			MethodName: "RegisterService",
+			Handler:    _AdminService_RegisterService_Handler,
+		},
+		{
+			MethodName: "UnregisterService",
+			Handler:    _AdminService_UnregisterService_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

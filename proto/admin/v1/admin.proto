@@ -27,6 +27,12 @@ service AdminService {
 
   // GetTool returns a specific tool by name.
   rpc GetTool(GetToolRequest) returns (GetToolResponse);
+
+  // RegisterService registers a new upstream service.
+  rpc RegisterService(RegisterServiceRequest) returns (RegisterServiceResponse);
+
+  // UnregisterService unregisters an existing upstream service.
+  rpc UnregisterService(UnregisterServiceRequest) returns (UnregisterServiceResponse);
 }
 
 message ClearCacheRequest {}
@@ -60,3 +66,17 @@ message GetToolRequest {
 message GetToolResponse {
   mcpany.mcp_router.v1.Tool tool = 1;
 }
+
+message RegisterServiceRequest {
+  mcpany.config.v1.UpstreamServiceConfig service_config = 1;
+}
+
+message RegisterServiceResponse {
+  string service_id = 1;
+}
+
+message UnregisterServiceRequest {
+  string service_name = 1;
+}
+
+message UnregisterServiceResponse {}

@@ -609,6 +609,273 @@ func (b0 GetToolResponse_builder) Build() *GetToolResponse {
 	return m0
 }
 
+type RegisterServiceRequest struct {
+	state                    protoimpl.MessageState    `protogen:"opaque.v1"`
+	xxx_hidden_ServiceConfig *v1.UpstreamServiceConfig `protobuf:"bytes,1,opt,name=service_config,json=serviceConfig"`
+	unknownFields            protoimpl.UnknownFields
+	sizeCache                protoimpl.SizeCache
+}
+
+func (x *RegisterServiceRequest) Reset() {
+	*x = RegisterServiceRequest{}
+	mi := &file_proto_admin_v1_admin_proto_msgTypes[10]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *RegisterServiceRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RegisterServiceRequest) ProtoMessage() {}
+
+func (x *RegisterServiceRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_admin_v1_admin_proto_msgTypes[10]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+func (x *RegisterServiceRequest) GetServiceConfig() *v1.UpstreamServiceConfig {
+	if x != nil {
+		return x.xxx_hidden_ServiceConfig
+	}
+	return nil
+}
+
+func (x *RegisterServiceRequest) SetServiceConfig(v *v1.UpstreamServiceConfig) {
+	x.xxx_hidden_ServiceConfig = v
+}
+
+func (x *RegisterServiceRequest) HasServiceConfig() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_ServiceConfig != nil
+}
+
+func (x *RegisterServiceRequest) ClearServiceConfig() {
+	x.xxx_hidden_ServiceConfig = nil
+}
+
+type RegisterServiceRequest_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	ServiceConfig *v1.UpstreamServiceConfig
+}
+
+func (b0 RegisterServiceRequest_builder) Build() *RegisterServiceRequest {
+	m0 := &RegisterServiceRequest{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_ServiceConfig = b.ServiceConfig
+	return m0
+}
+
+type RegisterServiceResponse struct {
+	state                  protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_ServiceId   *string                `protobuf:"bytes,1,opt,name=service_id,json=serviceId"`
+	XXX_raceDetectHookData protoimpl.RaceDetectHookData
+	XXX_presence           [1]uint32
+	unknownFields          protoimpl.UnknownFields
+	sizeCache              protoimpl.SizeCache
+}
+
+func (x *RegisterServiceResponse) Reset() {
+	*x = RegisterServiceResponse{}
+	mi := &file_proto_admin_v1_admin_proto_msgTypes[11]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *RegisterServiceResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RegisterServiceResponse) ProtoMessage() {}
+
+func (x *RegisterServiceResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_admin_v1_admin_proto_msgTypes[11]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+func (x *RegisterServiceResponse) GetServiceId() string {
+	if x != nil {
+		if x.xxx_hidden_ServiceId != nil {
+			return *x.xxx_hidden_ServiceId
+		}
+		return ""
+	}
+	return ""
+}
+
+func (x *RegisterServiceResponse) SetServiceId(v string) {
+	x.xxx_hidden_ServiceId = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 1)
+}
+
+func (x *RegisterServiceResponse) HasServiceId() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
+}
+
+func (x *RegisterServiceResponse) ClearServiceId() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
+	x.xxx_hidden_ServiceId = nil
+}
+
+type RegisterServiceResponse_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	ServiceId *string
+}
+
+func (b0 RegisterServiceResponse_builder) Build() *RegisterServiceResponse {
+	m0 := &RegisterServiceResponse{}
+	b, x := &b0, m0
+	_, _ = b, x
+	if b.ServiceId != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 1)
+		x.xxx_hidden_ServiceId = b.ServiceId
+	}
+	return m0
+}
+
+type UnregisterServiceRequest struct {
+	state                  protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_ServiceName *string                `protobuf:"bytes,1,opt,name=service_name,json=serviceName"`
+	XXX_raceDetectHookData protoimpl.RaceDetectHookData
+	XXX_presence           [1]uint32
+	unknownFields          protoimpl.UnknownFields
+	sizeCache              protoimpl.SizeCache
+}
+
+func (x *UnregisterServiceRequest) Reset() {
+	*x = UnregisterServiceRequest{}
+	mi := &file_proto_admin_v1_admin_proto_msgTypes[12]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *UnregisterServiceRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UnregisterServiceRequest) ProtoMessage() {}
+
+func (x *UnregisterServiceRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_admin_v1_admin_proto_msgTypes[12]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+func (x *UnregisterServiceRequest) GetServiceName() string {
+	if x != nil {
+		if x.xxx_hidden_ServiceName != nil {
+			return *x.xxx_hidden_ServiceName
+		}
+		return ""
+	}
+	return ""
+}
+
+func (x *UnregisterServiceRequest) SetServiceName(v string) {
+	x.xxx_hidden_ServiceName = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 1)
+}
+
+func (x *UnregisterServiceRequest) HasServiceName() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
+}
+
+func (x *UnregisterServiceRequest) ClearServiceName() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
+	x.xxx_hidden_ServiceName = nil
+}
+
+type UnregisterServiceRequest_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	ServiceName *string
+}
+
+func (b0 UnregisterServiceRequest_builder) Build() *UnregisterServiceRequest {
+	m0 := &UnregisterServiceRequest{}
+	b, x := &b0, m0
+	_, _ = b, x
+	if b.ServiceName != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 1)
+		x.xxx_hidden_ServiceName = b.ServiceName
+	}
+	return m0
+}
+
+type UnregisterServiceResponse struct {
+	state         protoimpl.MessageState `protogen:"opaque.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *UnregisterServiceResponse) Reset() {
+	*x = UnregisterServiceResponse{}
+	mi := &file_proto_admin_v1_admin_proto_msgTypes[13]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *UnregisterServiceResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UnregisterServiceResponse) ProtoMessage() {}
+
+func (x *UnregisterServiceResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_admin_v1_admin_proto_msgTypes[13]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+type UnregisterServiceResponse_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+}
+
+func (b0 UnregisterServiceResponse_builder) Build() *UnregisterServiceResponse {
+	m0 := &UnregisterServiceResponse{}
+	b, x := &b0, m0
+	_, _ = b, x
+	return m0
+}
+
 var File_proto_admin_v1_admin_proto protoreflect.FileDescriptor
 
 const file_proto_admin_v1_admin_proto_rawDesc = "" +
@@ -630,7 +897,15 @@ const file_proto_admin_v1_admin_proto_rawDesc = "" +
 	"\x0eGetToolRequest\x12\x1b\n" +
 	"\ttool_name\x18\x01 \x01(\tR\btoolName\"A\n" +
 	"\x0fGetToolResponse\x12.\n" +
-	"\x04tool\x18\x01 \x01(\v2\x1a.mcpany.mcp_router.v1.ToolR\x04tool2\xbb\x03\n" +
+	"\x04tool\x18\x01 \x01(\v2\x1a.mcpany.mcp_router.v1.ToolR\x04tool\"h\n" +
+	"\x16RegisterServiceRequest\x12N\n" +
+	"\x0eservice_config\x18\x01 \x01(\v2'.mcpany.config.v1.UpstreamServiceConfigR\rserviceConfig\"8\n" +
+	"\x17RegisterServiceResponse\x12\x1d\n" +
+	"\n" +
+	"service_id\x18\x01 \x01(\tR\tserviceId\"=\n" +
+	"\x18UnregisterServiceRequest\x12!\n" +
+	"\fservice_name\x18\x01 \x01(\tR\vserviceName\"\x1b\n" +
+	"\x19UnregisterServiceResponse2\x8d\x05\n" +
 	"\fAdminService\x12U\n" +
 	"\n" +
 	"ClearCache\x12\".mcpany.admin.v1.ClearCacheRequest\x1a#.mcpany.admin.v1.ClearCacheResponse\x12[\n" +
@@ -638,44 +913,55 @@ const file_proto_admin_v1_admin_proto_rawDesc = "" +
 	"\n" +
 	"GetService\x12\".mcpany.admin.v1.GetServiceRequest\x1a#.mcpany.admin.v1.GetServiceResponse\x12R\n" +
 	"\tListTools\x12!.mcpany.admin.v1.ListToolsRequest\x1a\".mcpany.admin.v1.ListToolsResponse\x12L\n" +
-	"\aGetTool\x12\x1f.mcpany.admin.v1.GetToolRequest\x1a .mcpany.admin.v1.GetToolResponseB3B\n" +
+	"\aGetTool\x12\x1f.mcpany.admin.v1.GetToolRequest\x1a .mcpany.admin.v1.GetToolResponse\x12d\n" +
+	"\x0fRegisterService\x12'.mcpany.admin.v1.RegisterServiceRequest\x1a(.mcpany.admin.v1.RegisterServiceResponse\x12j\n" +
+	"\x11UnregisterService\x12).mcpany.admin.v1.UnregisterServiceRequest\x1a*.mcpany.admin.v1.UnregisterServiceResponseB3B\n" +
 	"AdminProtoZ%github.com/mcpany/core/proto/admin/v1b\beditionsp\xe8\a"
 
-var file_proto_admin_v1_admin_proto_msgTypes = make([]protoimpl.MessageInfo, 10)
+var file_proto_admin_v1_admin_proto_msgTypes = make([]protoimpl.MessageInfo, 14)
 var file_proto_admin_v1_admin_proto_goTypes = []any{
-	(*ClearCacheRequest)(nil),        // 0: mcpany.admin.v1.ClearCacheRequest
-	(*ClearCacheResponse)(nil),       // 1: mcpany.admin.v1.ClearCacheResponse
-	(*ListServicesRequest)(nil),      // 2: mcpany.admin.v1.ListServicesRequest
-	(*ListServicesResponse)(nil),     // 3: mcpany.admin.v1.ListServicesResponse
-	(*GetServiceRequest)(nil),        // 4: mcpany.admin.v1.GetServiceRequest
-	(*GetServiceResponse)(nil),       // 5: mcpany.admin.v1.GetServiceResponse
-	(*ListToolsRequest)(nil),         // 6: mcpany.admin.v1.ListToolsRequest
-	(*ListToolsResponse)(nil),        // 7: mcpany.admin.v1.ListToolsResponse
-	(*GetToolRequest)(nil),           // 8: mcpany.admin.v1.GetToolRequest
-	(*GetToolResponse)(nil),          // 9: mcpany.admin.v1.GetToolResponse
-	(*v1.UpstreamServiceConfig)(nil), // 10: mcpany.config.v1.UpstreamServiceConfig
-	(*v11.Tool)(nil),                 // 11: mcpany.mcp_router.v1.Tool
+	(*ClearCacheRequest)(nil),         // 0: mcpany.admin.v1.ClearCacheRequest
+	(*ClearCacheResponse)(nil),        // 1: mcpany.admin.v1.ClearCacheResponse
+	(*ListServicesRequest)(nil),       // 2: mcpany.admin.v1.ListServicesRequest
+	(*ListServicesResponse)(nil),      // 3: mcpany.admin.v1.ListServicesResponse
+	(*GetServiceRequest)(nil),         // 4: mcpany.admin.v1.GetServiceRequest
+	(*GetServiceResponse)(nil),        // 5: mcpany.admin.v1.GetServiceResponse
+	(*ListToolsRequest)(nil),          // 6: mcpany.admin.v1.ListToolsRequest
+	(*ListToolsResponse)(nil),         // 7: mcpany.admin.v1.ListToolsResponse
+	(*GetToolRequest)(nil),            // 8: mcpany.admin.v1.GetToolRequest
+	(*GetToolResponse)(nil),           // 9: mcpany.admin.v1.GetToolResponse
+	(*RegisterServiceRequest)(nil),    // 10: mcpany.admin.v1.RegisterServiceRequest
+	(*RegisterServiceResponse)(nil),   // 11: mcpany.admin.v1.RegisterServiceResponse
+	(*UnregisterServiceRequest)(nil),  // 12: mcpany.admin.v1.UnregisterServiceRequest
+	(*UnregisterServiceResponse)(nil), // 13: mcpany.admin.v1.UnregisterServiceResponse
+	(*v1.UpstreamServiceConfig)(nil),  // 14: mcpany.config.v1.UpstreamServiceConfig
+	(*v11.Tool)(nil),                  // 15: mcpany.mcp_router.v1.Tool
 }
 var file_proto_admin_v1_admin_proto_depIdxs = []int32{
-	10, // 0: mcpany.admin.v1.ListServicesResponse.services:type_name -> mcpany.config.v1.UpstreamServiceConfig
-	10, // 1: mcpany.admin.v1.GetServiceResponse.service:type_name -> mcpany.config.v1.UpstreamServiceConfig
-	11, // 2: mcpany.admin.v1.ListToolsResponse.tools:type_name -> mcpany.mcp_router.v1.Tool
-	11, // 3: mcpany.admin.v1.GetToolResponse.tool:type_name -> mcpany.mcp_router.v1.Tool
-	0,  // 4: mcpany.admin.v1.AdminService.ClearCache:input_type -> mcpany.admin.v1.ClearCacheRequest
-	2,  // 5: mcpany.admin.v1.AdminService.ListServices:input_type -> mcpany.admin.v1.ListServicesRequest
-	4,  // 6: mcpany.admin.v1.AdminService.GetService:input_type -> mcpany.admin.v1.GetServiceRequest
-	6,  // 7: mcpany.admin.v1.AdminService.ListTools:input_type -> mcpany.admin.v1.ListToolsRequest
-	8,  // 8: mcpany.admin.v1.AdminService.GetTool:input_type -> mcpany.admin.v1.GetToolRequest
-	1,  // 9: mcpany.admin.v1.AdminService.ClearCache:output_type -> mcpany.admin.v1.ClearCacheResponse
-	3,  // 10: mcpany.admin.v1.AdminService.ListServices:output_type -> mcpany.admin.v1.ListServicesResponse
-	5,  // 11: mcpany.admin.v1.AdminService.GetService:output_type -> mcpany.admin.v1.GetServiceResponse
-	7,  // 12: mcpany.admin.v1.AdminService.ListTools:output_type -> mcpany.admin.v1.ListToolsResponse
-	9,  // 13: mcpany.admin.v1.AdminService.GetTool:output_type -> mcpany.admin.v1.GetToolResponse
-	9,  // [9:14] is the sub-list for method output_type
-	4,  // [4:9] is the sub-list for method input_type
-	4,  // [4:4] is the sub-list for extension type_name
-	4,  // [4:4] is the sub-list for extension extendee
-	0,  // [0:4] is the sub-list for field type_name
+	14, // 0: mcpany.admin.v1.ListServicesResponse.services:type_name -> mcpany.config.v1.UpstreamServiceConfig
+	14, // 1: mcpany.admin.v1.GetServiceResponse.service:type_name -> mcpany.config.v1.UpstreamServiceConfig
+	15, // 2: mcpany.admin.v1.ListToolsResponse.tools:type_name -> mcpany.mcp_router.v1.Tool
+	15, // 3: mcpany.admin.v1.GetToolResponse.tool:type_name -> mcpany.mcp_router.v1.Tool
+	14, // 4: mcpany.admin.v1.RegisterServiceRequest.service_config:type_name -> mcpany.config.v1.UpstreamServiceConfig
+	0,  // 5: mcpany.admin.v1.AdminService.ClearCache:input_type -> mcpany.admin.v1.ClearCacheRequest
+	2,  // 6: mcpany.admin.v1.AdminService.ListServices:input_type -> mcpany.admin.v1.ListServicesRequest
+	4,  // 7: mcpany.admin.v1.AdminService.GetService:input_type -> mcpany.admin.v1.GetServiceRequest
+	6,  // 8: mcpany.admin.v1.AdminService.ListTools:input_type -> mcpany.admin.v1.ListToolsRequest
+	8,  // 9: mcpany.admin.v1.AdminService.GetTool:input_type -> mcpany.admin.v1.GetToolRequest
+	10, // 10: mcpany.admin.v1.AdminService.RegisterService:input_type -> mcpany.admin.v1.RegisterServiceRequest
+	12, // 11: mcpany.admin.v1.AdminService.UnregisterService:input_type -> mcpany.admin.v1.UnregisterServiceRequest
+	1,  // 12: mcpany.admin.v1.AdminService.ClearCache:output_type -> mcpany.admin.v1.ClearCacheResponse
+	3,  // 13: mcpany.admin.v1.AdminService.ListServices:output_type -> mcpany.admin.v1.ListServicesResponse
+	5,  // 14: mcpany.admin.v1.AdminService.GetService:output_type -> mcpany.admin.v1.GetServiceResponse
+	7,  // 15: mcpany.admin.v1.AdminService.ListTools:output_type -> mcpany.admin.v1.ListToolsResponse
+	9,  // 16: mcpany.admin.v1.AdminService.GetTool:output_type -> mcpany.admin.v1.GetToolResponse
+	11, // 17: mcpany.admin.v1.AdminService.RegisterService:output_type -> mcpany.admin.v1.RegisterServiceResponse
+	13, // 18: mcpany.admin.v1.AdminService.UnregisterService:output_type -> mcpany.admin.v1.UnregisterServiceResponse
+	12, // [12:19] is the sub-list for method output_type
+	5,  // [5:12] is the sub-list for method input_type
+	5,  // [5:5] is the sub-list for extension type_name
+	5,  // [5:5] is the sub-list for extension extendee
+	0,  // [0:5] is the sub-list for field type_name
 }
 
 func init() { file_proto_admin_v1_admin_proto_init() }
@@ -689,7 +975,7 @@ func file_proto_admin_v1_admin_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_proto_admin_v1_admin_proto_rawDesc), len(file_proto_admin_v1_admin_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   10,
+			NumMessages:   14,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

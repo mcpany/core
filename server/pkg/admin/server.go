@@ -8,6 +8,8 @@ import (
 	"context"
 
 	"github.com/mcpany/core/server/pkg/middleware"
+	"github.com/mcpany/core/server/pkg/serviceregistry"
+	"github.com/mcpany/core/server/pkg/storage"
 	"github.com/mcpany/core/server/pkg/tool"
 	pb "github.com/mcpany/core/proto/admin/v1"
 	configv1 "github.com/mcpany/core/proto/config/v1"
@@ -19,15 +21,19 @@ import (
 // Server implements the AdminServiceServer interface.
 type Server struct {
 	pb.UnimplementedAdminServiceServer
-	cache       *middleware.CachingMiddleware
-	toolManager tool.ManagerInterface
+	cache           *middleware.CachingMiddleware
+	toolManager     tool.ManagerInterface
+	serviceRegistry serviceregistry.ServiceRegistryInterface
+	storage         storage.Storage
 }
 
 // NewServer creates a new Admin Server.
-func NewServer(cache *middleware.CachingMiddleware, toolManager tool.ManagerInterface) *Server {
+func NewServer(cache *middleware.CachingMiddleware, toolManager tool.ManagerInterface, serviceRegistry serviceregistry.ServiceRegistryInterface, storage storage.Storage) *Server {
 	return &Server{
-		cache:       cache,
-		toolManager: toolManager,
+		cache:           cache,
+		toolManager:     toolManager,
+		serviceRegistry: serviceRegistry,
+		storage:         storage,
 	}
 }
 
@@ -83,4 +89,65 @@ func (s *Server) GetTool(_ context.Context, req *pb.GetToolRequest) (*pb.GetTool
 		return nil, status.Error(codes.NotFound, "tool not found")
 	}
 	return &pb.GetToolResponse{Tool: t.Tool()}, nil
+}
+
+// RegisterService registers a new upstream service.
+func (s *Server) RegisterService(ctx context.Context, req *pb.RegisterServiceRequest) (*pb.RegisterServiceResponse, error) {
+	if s.serviceRegistry == nil {
+		return nil, status.Error(codes.FailedPrecondition, "service registry is not available")
+	}
+
+	config := req.GetServiceConfig()
+	if config == nil {
+		return nil, status.Error(codes.InvalidArgument, "service config is required")
+	}
+	if config.GetName() == "" {
+		return nil, status.Error(codes.InvalidArgument, "service name is required")
+	}
+
+	serviceID, _, _, err := s.serviceRegistry.RegisterService(ctx, config)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to register service: %v", err)
+	}
+
+	// Persist the service configuration if storage is available
+	if s.storage != nil {
+		// Ensure the ID matches what was generated/used by the registry
+		config.Id = &serviceID
+		if err := s.storage.SaveService(ctx, config); err != nil {
+			// Log error but don't fail the request as the service is running in memory
+			// Ideally we should rollback, but for now we just warn.
+			// logging.GetLogger().Error("Failed to persist service config", "error", err)
+			return nil, status.Errorf(codes.Internal, "service registered but failed to persist: %v", err)
+		}
+	}
+
+	return &pb.RegisterServiceResponse{ServiceId: &serviceID}, nil
+}
+
+// UnregisterService unregisters an existing upstream service.
+func (s *Server) UnregisterService(ctx context.Context, req *pb.UnregisterServiceRequest) (*pb.UnregisterServiceResponse, error) {
+	if s.serviceRegistry == nil {
+		return nil, status.Error(codes.FailedPrecondition, "service registry is not available")
+	}
+
+	serviceName := req.GetServiceName()
+	if serviceName == "" {
+		return nil, status.Error(codes.InvalidArgument, "service name is required")
+	}
+
+	// Unregister from memory
+	if err := s.serviceRegistry.UnregisterService(ctx, serviceName); err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to unregister service: %v", err)
+	}
+
+	// Remove from persistence if storage is available
+	if s.storage != nil {
+		if err := s.storage.DeleteService(ctx, serviceName); err != nil {
+			// Log warning
+			return nil, status.Errorf(codes.Internal, "service unregistered but failed to delete from storage: %v", err)
+		}
+	}
+
+	return &pb.UnregisterServiceResponse{}, nil
 }
