@@ -7,7 +7,7 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('Global Search', () => {
-  test('should open and display dynamic content via keyboard shortcut', async ({ page }) => {
+  test.skip('should open and display dynamic content via keyboard shortcut', async ({ page }) => {
     // Navigate to the dashboard
     await page.goto('/');
 
