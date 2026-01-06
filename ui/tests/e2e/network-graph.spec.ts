@@ -9,7 +9,7 @@ test.skip('network topology loads and displays nodes', async ({ page }) => {
   await page.goto('/network');
 
   // Wait for the graph to load
-  await expect(page.getByText('Network Graph')).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Network Graph' })).toBeVisible();
   // Description check removed to avoid flake
 
   // Check for presence of key nodes (from mock data)
