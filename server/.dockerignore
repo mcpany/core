@@ -1,34 +1,10 @@
-# Git
-.git
-.gitignore
+# Selective exclusion for efficient builds in server context
 
-# Go build artifacts
-bin/
+# Globally ignore node_modules and build artifacts
+**/node_modules
 build/
-*.exe
-*.test
-*.out
-coverage.out
+.git/
+.DS_Store
 
-# Logs
-*.log
-test_output*.txt
-lint_output*.txt
-
-# Temporary files
-tmp/
-.tmp/
-
-# Dependency directories (if any local copies exist)
-vendor/
-node_modules/
-
-# Editor/IDE files
-.idea/
-.vscode/
-*.swp
-*.swo
-
-# Large test data (not needed for binary build)
-tests/
-!tests/integration/cmd/mocks
+# Explicitly ignore the massive upstream integration test artifacts
+tests/integration/upstream
