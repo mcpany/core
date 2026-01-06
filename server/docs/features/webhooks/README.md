@@ -58,6 +58,11 @@ This example demonstrates a **Pre-Call Hook** that inspects arguments for a comm
     go run main.go
     ```
 
+    Alternatively, you can use the official sidecar binary:
+    ```bash
+    go run server/cmd/mcp-webhook-sidecar/main.go
+    ```
+
     > **Note**: If you prefer to build the binary, we recommend outputting it to a temporary location to avoid committing it: `go build -o /tmp/block_rm_server main.go && /tmp/block_rm_server`
 
 3.  In a separate terminal, start MCP Any with the example config:

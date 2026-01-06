@@ -52,10 +52,14 @@ global_settings:
 | Option | Type | Default | Description |
 | :--- | :--- | :--- | :--- |
 | `enabled` | `bool` | `false` | Enables or disables audit logging. |
-| `storage_type` | `enum` | `FILE` | The storage backend to use: `FILE`, `SQLITE`, `POSTGRES`, or `WEBHOOK`. |
+| `storage_type` | `enum` | `FILE` | The storage backend to use: `FILE`, `SQLITE`, `POSTGRES`, `WEBHOOK`, `SPLUNK`, or `DATADOG`. |
 | `output_path` | `string` | `""` | Path to the log file (for `FILE`) or database connection string/path (for `SQLITE`/`POSTGRES`). |
 | `webhook_url` | `string` | `""` | The URL to send POST requests to (for `WEBHOOK`). |
 | `webhook_headers` | `map` | `{}` | HTTP headers to include in the webhook request (for `WEBHOOK`). |
+| `splunk_host` | `string` | `""` | Splunk HEC host (e.g., `https://splunk.example.com:8088`) (for `SPLUNK`). |
+| `splunk_token` | `string` | `""` | Splunk HEC token (for `SPLUNK`). |
+| `datadog_host` | `string` | `""` | Datadog API host (e.g., `https://http-intake.logs.datadoghq.com`) (for `DATADOG`). |
+| `datadog_api_key` | `string` | `""` | Datadog API Key (for `DATADOG`). |
 | `log_arguments` | `bool` | `false` | If true, logs the input arguments. **Warning:** May log sensitive data. |
 | `log_results` | `bool` | `false` | If true, logs the execution result. **Warning:** May log sensitive data. |
 

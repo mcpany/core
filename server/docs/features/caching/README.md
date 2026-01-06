@@ -111,3 +111,30 @@ The caching middleware exposes the following Prometheus metrics on the configure
 - `mcpany_cache_hits`: Counter of cache hits, labeled by `service` and `tool`.
 - `mcpany_cache_misses`: Counter of cache misses, labeled by `service` and `tool`.
 - `mcpany_cache_errors`: Counter of cache errors, labeled by `service` and `tool`.
+
+## Semantic Caching
+
+In addition to standard TTL-based caching, MCP Any supports **Semantic Caching**. This uses vector embeddings to cache requests based on meaning rather than exact string matching.
+
+### How it works
+
+1.  **Embed**: The user's prompt (tool input) is converted into a vector embedding using an embedding model (e.g., OpenAI `text-embedding-3-small` or Ollama).
+2.  **Search**: We search a vector database (e.g., in-memory or SQLite) for previously cached requests with similar meanings.
+3.  **Serve**: If a similar request is found (similarity score > threshold), the cached result is returned.
+
+### Configuration
+
+Semantic caching is configured globally or per-service.
+
+```yaml
+global_settings:
+  semantic_cache:
+    enabled: true
+    provider: "openai" # or "ollama"
+    model: "text-embedding-3-small"
+    vector_store: "sqlite" # or "memory"
+    similarity_threshold: 0.95
+    api_key: "${OPENAI_API_KEY}" # if using OpenAI
+```
+
+This significantly improves efficiency for LLM interactions where users might ask the same question in slightly different ways (e.g., "What's the weather?" vs "How is the weather?").
