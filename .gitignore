@@ -48,3 +48,4 @@ lint_report.*
 # Secrets
 ui/secrets-master.key
 ui/secrets-store.json
+.build-context/
