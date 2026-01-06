@@ -51,7 +51,10 @@ upstream_services:
 	}()
 
 	// Wait for app to start
-	time.Sleep(2 * time.Second)
+	err = a.WaitForStartup(ctx)
+	if err != nil {
+		t.Fatalf("Failed to wait for startup: %v", err)
+	}
 
 	// Verify service failed to register
     require.Eventually(t, func() bool {
