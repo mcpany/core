@@ -51,11 +51,10 @@ func IsValidBindAddress(s string) error {
 // It is a variable to allow mocking in tests.
 var IsSecurePath = func(path string) error {
 	clean := filepath.Clean(path)
-	parts := strings.Split(clean, string(os.PathSeparator))
-	for _, part := range parts {
-		if part == ".." {
-			return fmt.Errorf("path contains '..', which is not allowed")
-		}
+	// Optimization: check if cleaned path starts with ".." or is exactly ".."
+	// This avoids allocating a slice with strings.Split
+	if clean == ".." || strings.HasPrefix(clean, ".."+string(os.PathSeparator)) {
+		return fmt.Errorf("path contains '..', which is not allowed")
 	}
 	return nil
 }
