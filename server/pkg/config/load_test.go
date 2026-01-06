@@ -296,7 +296,29 @@ upstream_services: {
     }
 }
 `,
-			expectLoadError: true,
+			expectLoadError: false, // Changed: now we skip invalid services instead of erroring
+			expectedCount:   0,     // The service should be skipped
+		},
+		{
+			name: "mixed valid and invalid services",
+			textprotoContent: `
+upstream_services: {
+    name: "valid-service"
+    http_service: {
+        address: "http://valid.example.com"
+    }
+}
+upstream_services: {
+    name: "invalid-service"
+    # Missing service type
+}
+`,
+			expectLoadError: false,
+			expectedCount:   1,
+			checkServices: func(t *testing.T, services []*configv1.UpstreamServiceConfig) {
+				s := services[0]
+				assert.Equal(t, "valid-service", s.GetName())
+			},
 		},
 		{
 			name: "duplicate service names",
