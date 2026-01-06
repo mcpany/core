@@ -11,55 +11,34 @@
 // NOTE: Adjusted to point to local Next.js API routes for this UI overhaul task
 // In a real deployment, these might be /api/v1/... proxied to backend
 
-export interface UpstreamServiceConfig {
-    id?: string;
-    name: string;
-    version?: string;
-    disable?: boolean;
-    priority?: number;
-    http_service?: { address: string; tls_config?: any; tools?: any[]; prompts?: any[] };
-    grpc_service?: { address: string; use_reflection?: boolean; tls_config?: any; tools?: any[]; resources?: any[] };
-    command_line_service?: { command: string; args?: string[]; env?: Record<string, string>; tools?: any[] };
-    mcp_service?: {
-        http_connection?: { http_address: string; tls_config?: any };
-        sse_connection?: { sse_address: string };
-        stdio_connection?: { command: string };
-        bundle_connection?: { bundle_path: string };
-        tools?: any[];
-    };
-    openapi_service?: { address: string; spec_url?: string; spec_content?: string; tools?: any[]; tls_config?: any };
-    websocket_service?: { address: string; tls_config?: any };
-    webrtc_service?: { address: string; tls_config?: any };
-    graphql_service?: { address: string };
-}
+import { GrpcWebImpl, RegistrationServiceClientImpl } from '../proto/api/v1/registration';
+import { UpstreamServiceConfig } from '../proto/config/v1/upstream_service';
+import { ToolDefinition } from '../proto/config/v1/tool';
+import { ResourceDefinition } from '../proto/config/v1/resource';
+import { PromptDefinition } from '../proto/config/v1/prompt';
 
-export interface ToolDefinition {
-    name: string;
-    description: string;
-    schema?: any;
-    enabled?: boolean;
-    serviceName?: string;
-    source?: string;
-}
+// Re-export generated types
+export type { UpstreamServiceConfig, ToolDefinition, ResourceDefinition, PromptDefinition };
 
-export interface ResourceDefinition {
-    uri: string;
-    name: string;
-    mimeType?: string;
-    description?: string;
-    enabled?: boolean;
-    serviceName?: string;
-    type?: string;
-}
+// Initialize gRPC Web Client
+// Note: In development, we use localhost:8081 (envoy) or the Go server port if configured for gRPC-Web?
+// server.go wraps gRPC-Web on the SAME port as HTTP (8080 usually).
+// So we can point to window.location.origin or relative?
+// GrpcWebImpl needs a full URL host usually.
+// If running in browser, we can use empty string or relative?
+// GrpcWebImpl implementation uses `this.host`. If empty?
+// Let's assume we point to the current origin.
+const getBaseUrl = () => {
+    if (typeof window !== 'undefined') {
+        return window.location.origin;
+    }
+    return 'http://localhost:8080'; // Default for SSR
+};
 
-export interface PromptDefinition {
-    name: string;
-    description?: string;
-    arguments?: any[];
-    enabled?: boolean;
-    serviceName?: string;
-    type?: string;
-}
+const rpc = new GrpcWebImpl(getBaseUrl(), {
+  debug: false,
+});
+const registrationClient = new RegistrationServiceClientImpl(rpc);
 
 export interface SecretDefinition {
     id: string;
@@ -72,86 +51,58 @@ export interface SecretDefinition {
 }
 
 export const apiClient = {
-    // Services
+    // Services (Migrated to gRPC)
     listServices: async () => {
-        const res = await fetch('/api/v1/services');
-        if (!res.ok) throw new Error('Failed to fetch services');
-        return res.json();
+        const response = await registrationClient.ListServices({});
+        return response.services;
     },
     getService: async (id: string) => {
-         const res = await fetch(`/api/v1/services/${id}`);
-         if (!res.ok) throw new Error('Failed to fetch service');
-         return res.json();
+         const response = await registrationClient.GetService({ serviceName: id });
+         return response.service;
     },
     setServiceStatus: async (name: string, disable: boolean) => {
-        // First get the service config to get the full object (including ID/Address/etc)
-        const getRes = await fetch(`/api/v1/services/${name}`);
-        if (!getRes.ok) throw new Error('Failed to fetch service for status update');
-        const service = await getRes.json();
+        const response = await registrationClient.GetService({ serviceName: name });
+        const service = response.service;
+        if (!service) throw new Error('Service not found');
 
-        // Update disable status
         service.disable = disable;
-
-        // Save back
-        const res = await fetch(`/api/v1/services/${name}`, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(service)
-        });
-        if (!res.ok) throw new Error('Failed to update service status');
-        return res.json();
+        // RegisterService expects RegisterServiceRequest which has 'config' field
+        await registrationClient.RegisterService({ config: service });
+        return service;
     },
     getServiceStatus: async (name: string) => {
-        const res = await fetch(`/api/v1/services/${name}/status`);
-        if (!res.ok) return { enabled: false, metrics: {} };
-        return res.json();
+        const response = await registrationClient.GetServiceStatus({ serviceName: name, namespace: '' });
+        return response;
     },
     registerService: async (config: UpstreamServiceConfig) => {
-        const res = await fetch('/api/v1/services', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(config)
-        });
-        if (!res.ok) throw new Error('Failed to register service');
-        return res.json();
+        const response = await registrationClient.RegisterService({ config });
+        return response;
     },
     updateService: async (config: UpstreamServiceConfig) => {
-         const res = await fetch('/api/v1/services', {
-            method: 'PUT', // handleServiceDetail uses PUT for updates? No, handleServices POST handles create/update?
-            // handleServices POST calls SaveService.
-            // handleServiceDetail PUT calls SaveService with name forced.
-            // Let's use handleServiceDetail PUT if updating specific service.
-            // But config has ID/Name.
-            // If we use POST /api/v1/services, it saves it.
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(config)
-        });
-        if (!res.ok) throw new Error('Failed to update service');
-        return res.json();
+        // gRPC uses RegisterService for both create and update
+        const response = await registrationClient.RegisterService({ config });
+        return response;
     },
     unregisterService: async (id: string) => {
-         const res = await fetch(`/api/v1/services/${id}`, {
-             method: 'DELETE'
-         });
-         if (!res.ok) throw new Error('Failed to unregister service');
+         await registrationClient.UnregisterService({ serviceName: id, namespace: '' });
          return {};
     },
 
-    // Tools
+    // Tools (Legacy Fetch - Not yet migrated to Admin/Registration Service completely or keeping as is)
+    // admin.proto has ListTools but we are focusing on RegistrationService first.
+    // So keep using fetch for Tools/Secrets/etc for now.
     listTools: async () => {
         const res = await fetch('/api/v1/tools');
         if (!res.ok) throw new Error('Failed to fetch tools');
         return res.json();
     },
     executeTool: async (request: any) => {
-        console.error("DEBUG: Calling executeTool with:", JSON.stringify(request));
         try {
             const res = await fetch('/api/v1/execute', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(request)
             });
-            console.error("DEBUG: fetch returned status:", res.status);
             if (!res.ok) throw new Error('Failed to execute tool');
             return res.json();
         } catch (e) {
@@ -160,9 +111,6 @@ export const apiClient = {
         }
     },
     setToolStatus: async (name: string, enabled: boolean) => {
-        // Not implemented in backend yet? handleTools only GET
-        // So keeping as mock or throwing?
-        // Let's keep as fetch to /api/v1/tools to fail properly or if I add it later.
         const res = await fetch('/api/v1/tools', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
