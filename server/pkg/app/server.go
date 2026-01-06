@@ -57,7 +57,6 @@ import (
 	"google.golang.org/grpc/peer"
 	"google.golang.org/grpc/reflection"
 	"google.golang.org/grpc/status"
-	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 )
 
@@ -923,24 +922,8 @@ func (a *Application) runServerMode(
 	apiHandler := http.StripPrefix("/api/v1", a.createAPIHandler(store))
 	mux.Handle("/api/v1/", authMiddleware(apiHandler))
 
-	// Topology API
-	mux.Handle("/api/v1/topology", authMiddleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Content-Type", "application/json")
-		graph := a.TopologyManager.GetGraph(r.Context())
+	// Topology API is now handled by apiHandler via api.go
 
-		// Use protojson for correct Enum serialization (strings instead of ints)
-		marshaler := protojson.MarshalOptions{
-			UseProtoNames:   true, // Use snake_case as per proto definition
-			EmitUnpopulated: false,
-		}
-		data, err := marshaler.Marshal(graph)
-		if err != nil {
-			logging.GetLogger().Error("Failed to marshal topology", "error", err)
-			http.Error(w, "Failed to encode topology", http.StatusInternalServerError)
-			return
-		}
-		_, _ = w.Write(data)
-	})))
 
 	logging.GetLogger().Info("DEBUG: Registering /mcp/u/ handler")
 	// Multi-user handler
