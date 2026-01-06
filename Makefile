@@ -119,7 +119,8 @@ prepare-proto:
 
 clean-protos:
 	@echo "Cleaning generated protobuf files..."
-	@-find proto -name "*.ts" -delete
+	@-find ui/src/proto -name "*.ts" -delete
+	@-rm -rf ui/src/google
 	@-find proto server/pkg server/cmd -name "*.pb.go" -delete
 	@-find proto -name "*.pb.gw.go" -delete
 
@@ -145,27 +146,24 @@ gen: clean-protos prepare-proto
 	@echo "Generating protobuf files (TypeScript)..."
 	@if [ -f "./ui/node_modules/.bin/protoc-gen-ts_proto" ]; then \
 		export PATH=$(TOOL_INSTALL_DIR):$$PATH; \
-		MAPPINGS=$$(find $(PROTOC_INCLUDE_DIR)/google/protobuf $(GOOGLEAPIS_DIR)/google/api -name "*.proto" 2>/dev/null | sed 's|$(PROTOC_INCLUDE_DIR)/||;s|$(GOOGLEAPIS_DIR)/||' | sed 's|\(.*\)\.proto|M\1.proto=github.com/mcpany/core/proto/third_party/\1|' | tr '\n' ' ' | sed 's/ / --ts_proto_opt=/g'); \
 		find proto -name "*.proto" -exec protoc \
 			--proto_path=. \
 			--proto_path=$(BUILD_DIR)/grpc-gateway \
 			--proto_path=$(GOOGLEAPIS_DIR) \
 			--plugin=protoc-gen-ts_proto=./ui/node_modules/.bin/protoc-gen-ts_proto \
-			--ts_proto_out=. \
-			--ts_proto_opt=esModuleInterop=true,forceLong=long,useOptionals=messages \
-			--ts_proto_opt=$$MAPPINGS \
+			--ts_proto_out=ui/src \
+			--ts_proto_opt=esModuleInterop=true,forceLong=long,useOptionals=messages,outputClientImpl=grpc-web \
 			{} +; \
 		echo "Local TypeScript Protobuf generation complete."; \
 		echo "Generating standard protobuf files (TypeScript)..."; \
 		STANDARD_PROTOS=$$(find $(PROTOC_INCLUDE_DIR)/google/protobuf $(GOOGLEAPIS_DIR)/google/api -name "*.proto" 2>/dev/null); \
 		if [ -n "$$STANDARD_PROTOS" ]; then \
-			mkdir -p proto/third_party; \
 			protoc \
 				--proto_path=$(PROTOC_INCLUDE_DIR) \
 				--proto_path=$(GOOGLEAPIS_DIR) \
 				--plugin=protoc-gen-ts_proto=./ui/node_modules/.bin/protoc-gen-ts_proto \
-				--ts_proto_out=proto/third_party \
-				--ts_proto_opt=esModuleInterop=true,forceLong=long,useOptionals=messages \
+				--ts_proto_out=ui/src \
+				--ts_proto_opt=esModuleInterop=true,forceLong=long,useOptionals=messages,outputClientImpl=grpc-web \
 				$$STANDARD_PROTOS; \
 		fi; \
 		echo "Standard TypeScript Protobuf generation complete."; \
