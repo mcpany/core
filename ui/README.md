@@ -60,6 +60,13 @@ npx playwright test
 - **`src/lib`**: Utility functions and client SDKs.
 - **`docs`**: Documentation for UI features.
 
+## ✨ Features
+
+- **Network Topology**: Visualize your MCP ecosystem.
+- **Service Management**: Add, edit, and monitor upstream services.
+- **[Interactive Playground](docs/playground.md)**: Test tools with auto-generated forms supporting complex schemas.
+- **Observability**: Real-time metrics and logs.
+
 ## 📚 Learn More
 
 To learn more about Next.js, take a look at the following resources:
