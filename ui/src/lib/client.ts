@@ -72,9 +72,10 @@ export const apiClient = {
         // Fallback to REST for E2E reliability until gRPC-Web is stable
         const res = await fetchWithAuth('/api/v1/services');
         if (!res.ok) throw new Error('Failed to fetch services');
-        const services = await res.json();
+        const data = await res.json();
+        const list = Array.isArray(data) ? data : (data.services || []);
         // Map snake_case to camelCase for UI compatibility
-        return services.map((s: any) => ({
+        return list.map((s: any) => ({
             ...s,
             connectionPool: s.connection_pool,
             httpService: s.http_service,
