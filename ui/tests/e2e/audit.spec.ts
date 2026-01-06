@@ -36,7 +36,11 @@ test.describe('MCP Any Audit Screenshots', () => {
   test('Capture Services', async ({ page }) => {
     await page.goto('/services');
     await page.waitForSelector('text=Upstream Services');
-    await page.waitForSelector('text=Name'); // Wait for list headers
+    // Wait for either list headers (if services exist) or empty state message
+    await Promise.race([
+      page.waitForSelector('text=Name'),
+      page.waitForSelector('text=No services registered.')
+    ]);
     await page.screenshot({ path: path.join(auditDir, 'services.png'), fullPage: true });
   });
 
