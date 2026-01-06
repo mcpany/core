@@ -97,7 +97,7 @@ func TestHTTPCORSMiddleware(t *testing.T) {
 			expectHeaders: map[string]string{
 				"Access-Control-Allow-Origin":  "http://example.com",
 				"Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS, PATCH",
-				"Access-Control-Allow-Headers": "Content-Type, Authorization, X-API-Key, X-Requested-With",
+				"Access-Control-Allow-Headers": "Content-Type, Authorization, X-API-Key, X-Requested-With, x-grpc-web, grpc-timeout, x-user-agent",
 			},
 		},
 	}
