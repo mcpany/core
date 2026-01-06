@@ -16,7 +16,7 @@ import (
 func TestGeminiCLIE2E_Everything(t *testing.T) {
 	apiKey := os.Getenv("GEMINI_API_KEY")
 	if apiKey == "" {
-		t.Skip("GEMINI_API_KEY not set, skipping test")
+		t.Fatal("GEMINI_API_KEY not set, skipping test")
 	}
 
 	gemini := framework.NewGeminiCLI(t)

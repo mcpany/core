@@ -3,42 +3,45 @@
 
 package integration
 
-// import (
-// 	"context"
-// 	"sync"
-// 	"testing"
-// 	"time"
+import (
+	"context"
+	"sync"
+	"testing"
+	"time"
 
-// 	"github.com/mcpany/core/server/pkg/bus/redis"
-// 	busprotos "github.com/mcpany/core/proto/bus"
-// 	"github.com/stretchr/testify/require"
-// )
+	"github.com/mcpany/core/server/pkg/bus/redis"
+	goredis "github.com/redis/go-redis/v9"
+	"github.com/stretchr/testify/require"
+)
 
-// func TestRedisBus_ExternalServer(t *testing.T) {
-// 	if !IsDockerSocketAccessible() {
-// 		t.Skip("Docker is not available, skipping test")
-// 	}
-// 	redisAddr, redisCleanup := StartRedisContainer(t)
-// 	defer redisCleanup()
+func TestRedisBus_ExternalServer(t *testing.T) {
+	if !IsDockerSocketAccessible() {
+		t.Skip("Docker is not available, skipping test")
+	}
+	redisAddr, redisCleanup := StartRedisContainer(t)
+	defer redisCleanup()
 
-// 	redisBusConfig := &busprotos.RedisBus{Address: redisAddr}
-// 	bus := redis.New[string](redisBusConfig)
+	client := goredis.NewClient(&goredis.Options{
+		Addr: redisAddr,
+	})
 
-// 	var receivedMsg string
-// 	var mu sync.Mutex
-// 	unsubscribe := bus.Subscribe(context.Background(), "test-topic", func(msg string) {
-// 		mu.Lock()
-// 		defer mu.Unlock()
-// 		receivedMsg = msg
-// 	})
-// 	defer unsubscribe()
+	bus := redis.NewWithClient[string](client)
 
-// 	err := bus.Publish(context.Background(), "test-topic", "hello")
-// 	require.NoError(t, err)
+	var receivedMsg string
+	var mu sync.Mutex
+	unsubscribe := bus.Subscribe(context.Background(), "test-topic", func(msg string) {
+		mu.Lock()
+		defer mu.Unlock()
+		receivedMsg = msg
+	})
+	defer unsubscribe()
 
-// 	require.Eventually(t, func() bool {
-// 		mu.Lock()
-// 		defer mu.Unlock()
-// 		return receivedMsg == "hello"
-// 	}, 5*time.Second, 100*time.Millisecond, "did not receive message in time")
-// }
+	err := bus.Publish(context.Background(), "test-topic", "hello")
+	require.NoError(t, err)
+
+	require.Eventually(t, func() bool {
+		mu.Lock()
+		defer mu.Unlock()
+		return receivedMsg == "hello"
+	}, 5*time.Second, 100*time.Millisecond, "did not receive message in time")
+}

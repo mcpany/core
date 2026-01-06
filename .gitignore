@@ -5,6 +5,7 @@
 # **/*.pb.go
 coverage*.out
 coverage.html
+proto/**/*.ts
 
 # Build artifacts
 /build/

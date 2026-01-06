@@ -4,13 +4,8 @@ FROM golang:1.24-alpine AS builder
 
 WORKDIR /app
 
-# Copy root modules
-COPY go.mod go.sum ./
-
 # Copy server modules
 COPY server/go.mod server/go.sum ./server/
-
-# Download dependencies
 WORKDIR /app/server
 RUN go mod download
 
