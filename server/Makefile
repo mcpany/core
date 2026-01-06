@@ -583,7 +583,7 @@ ifdef HAS_DOCKER
 		fi; \
 	}
 	@echo "Server Docker image build complete."
-	@$(MAKE) clean-docker-context
+
 else
 	@echo "Docker not found. Cannot build server image."
 	@exit 1
@@ -594,7 +594,7 @@ build-http-echo-docker: docker/Dockerfile.http-echo-server prepare-docker-contex
 ifdef HAS_DOCKER
 	@echo "Building http-echo-server Docker image (mcpany/http-echo-server:latest)..."
 	@$(DOCKER_BUILD_CMD) -t mcpany/http-echo-server:latest -f docker/Dockerfile.http-echo-server .
-	@$(MAKE) clean-docker-context
+
 else
 	@echo "Docker not found. Cannot build http-echo-server image."
 	@exit 1
@@ -627,7 +627,7 @@ endif
 # Target to build all test images
 build-test-images:
 ifndef SKIP_DOCKER_REBUILD
-	@$(MAKE) -j build-docker build-http-echo-docker build-e2e-timeserver-docker build-cowsay-docker build-everything-docker
+	@$(MAKE) build-docker build-http-echo-docker build-e2e-timeserver-docker build-cowsay-docker build-everything-docker
 else
 	@echo "Skipping Docker image build (SKIP_DOCKER_REBUILD is set)"
 endif

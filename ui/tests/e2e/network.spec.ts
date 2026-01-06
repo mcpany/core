@@ -40,17 +40,17 @@ test.describe('Network Topology', () => {
     await page.goto('/network');
   });
 
-  test.skip('should display network topology nodes', async ({ page }) => {
+  test('should display network topology nodes', async ({ page }) => {
     // Locate the header specifically to avoid menu link ambiguity
     await expect(page.locator('.text-lg', { hasText: 'Network Graph' })).toBeVisible();
 
     // Check for nodes
-    await expect(page.getByText('MCP Any')).toBeVisible(); // Core
+    await expect(page.locator('.react-flow').getByText('MCP Any').first()).toBeVisible(); // Core
     // Wait for services to appear (polling might delay them)
-    await expect(page.getByText('Payment Gateway').or(page.getByText('User Service'))).toBeVisible();
+    await expect(page.locator('.react-flow').getByText('Payment Gateway').first().or(page.locator('.react-flow').getByText('User Service').first()).first()).toBeVisible();
 
     // Verify interaction
-    await page.getByText('MCP Any').click();
+    await page.locator('.react-flow').getByText('MCP Any').first().click();
     // Verify sheet opens with correct details
     await expect(page.getByText('Operational Status')).toBeVisible();
     await expect(page.getByText('CORE', { exact: true })).toBeVisible();
