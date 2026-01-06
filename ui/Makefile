@@ -32,8 +32,9 @@ test: build-test-docker build-server-docker
 	fi
 
 build-server-docker:
-	@echo "Building Server Docker image ($(SERVER_IMAGE))..."
-	docker build -t $(SERVER_IMAGE) -f ../server/docker/Dockerfile.server ../
+	@echo "Building Server Docker image ($(SERVER_IMAGE)) via server/Makefile..."
+	$(MAKE) -C ../server build-docker
+	docker tag mcpany/server:latest $(SERVER_IMAGE)
 
 # Run audit tests (generate screenshots)
 audit: build-test-docker

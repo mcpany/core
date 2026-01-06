@@ -8,6 +8,7 @@ ifdef INSIDE_DOCKER_CONTAINER
 GO_CMD := /usr/local/go/bin/go
 endif
 SERVER_IMAGE_TAGS ?= mcpany/server:latest
+EVERYTHING_IMAGE_TAG ?= mcpany/everything:latest
 VERSION := $(shell git describe --tags --always --dirty)
 LDFLAGS := -ldflags="-X main.Version=$(VERSION)"
 BUILD_DIR := $(abspath ../build)
@@ -107,7 +108,7 @@ endif
 RELEASE_DIR := $(BUILD_DIR)/release
 # PLATFORMS variable will be used to define the target platforms for the build.
 # Example: PLATFORMS := linux/amd64 linux/arm64
-PLATFORMS ?= linux/amd64 linux/arm64
+# PLATFORMS ?= linux/amd64 linux/arm64
 
 # Find all .proto files, excluding vendor/cache directories
 PROTO_FILES := $(shell find ../proto -path ./vendor -prune -o -name "*.proto" -print)
