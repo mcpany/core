@@ -6,7 +6,6 @@ package config
 import (
 	"context"
 	"fmt"
-	"strings"
 
 	"github.com/mcpany/core/server/pkg/logging"
 	configv1 "github.com/mcpany/core/proto/config/v1"
@@ -100,13 +99,31 @@ func LoadServices(ctx context.Context, store Store, binaryType string) (*configv
 		return nil, fmt.Errorf("unknown binary type: %s", binaryType)
 	}
 
-	if validationErrors := Validate(ctx, fileConfig, bt); len(validationErrors) > 0 {
-		var errorMessages []string
+	validationErrors := Validate(ctx, fileConfig, bt)
+	if len(validationErrors) > 0 {
+		// Filter out invalid services instead of failing completely
+		validServices := make([]*configv1.UpstreamServiceConfig, 0, len(fileConfig.GetUpstreamServices()))
+		invalidServiceNames := make(map[string]bool)
+
 		for _, e := range validationErrors {
-			log.Error("Config validation error", "service", e.ServiceName, "error", e.Err)
-			errorMessages = append(errorMessages, fmt.Sprintf("service '%s': %s", e.ServiceName, e.Err.Error()))
+			log.Error("Config validation error - skipping service", "service", e.ServiceName, "error", e.Err)
+			invalidServiceNames[e.ServiceName] = true
 		}
-		return nil, fmt.Errorf("config validation failed: %s", strings.Join(errorMessages, "; "))
+
+		for _, svc := range fileConfig.GetUpstreamServices() {
+			if !invalidServiceNames[svc.GetName()] {
+				validServices = append(validServices, svc)
+			}
+		}
+
+		// Also check global settings errors. If global settings are invalid, we might still have to fail?
+		// But Validate puts global errors with ServiceName="global_settings".
+		// If global settings are invalid, we probably should fail.
+		if invalidServiceNames["global_settings"] {
+			return nil, fmt.Errorf("global settings validation failed, check logs for details")
+		}
+
+		fileConfig.UpstreamServices = validServices
 	}
 
 	if len(fileConfig.GetUpstreamServices()) > 0 {
