@@ -889,8 +889,10 @@ func (a *Application) runServerMode(
 
 	var authMiddleware func(http.Handler) http.Handler
 	if authDisabled {
-		logging.GetLogger().Info("Auth middleware is disabled by config")
-		authMiddleware = func(next http.Handler) http.Handler { return next }
+		logging.GetLogger().Warn("Auth middleware is disabled by config! Enforcing private-IP-only access for safety.")
+		// Even if auth is disabled, we enforce private-IP-only access to prevent public exposure.
+		// Passing an empty string to createAuthMiddleware triggers the IsPrivateIP check.
+		authMiddleware = a.createAuthMiddleware("")
 	} else {
 		authMiddleware = a.createAuthMiddleware(apiKey)
 	}
