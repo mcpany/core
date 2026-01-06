@@ -68,14 +68,22 @@ func (t *WordTokenizer) CountTokens(text string) (int, error) {
 		c := text[i]
 		if c < utf8.RuneSelf {
 			// ASCII fast path
-			// unicode.IsSpace for ASCII includes '\t', '\n', '\v', '\f', '\r', ' '.
-			// Optimization: Check c <= ' ' first to eliminate most non-space chars with one comparison.
-			isSpace := c <= ' ' && (c == ' ' || (c >= '\t' && c <= '\r'))
-			if isSpace {
-				inWord = false
-			} else if !inWord {
-				inWord = true
-				wordCount++
+			// Optimization: Check c > ' ' (most common case) first to avoid complex boolean logic
+			if c > ' ' {
+				if !inWord {
+					inWord = true
+					wordCount++
+				}
+			} else {
+				// c <= ' '
+				// unicode.IsSpace for ASCII includes '\t', '\n', '\v', '\f', '\r', ' '.
+				if c == ' ' || (c >= '\t' && c <= '\r') {
+					inWord = false
+				} else if !inWord {
+					// Control characters that are not whitespace (e.g. \x00) start a word
+					inWord = true
+					wordCount++
+				}
 			}
 			i++
 		} else {
@@ -230,60 +238,6 @@ func simpleTokenizeInt(n int) int {
 		return 1
 	}
 	return count
-}
-
-func countTokensInValueWord(t *WordTokenizer, v interface{}) (int, error) {
-	// PERFORMANCE: This specialized fast path for WordTokenizer avoids expensive string formatting
-	// (fmt.Sprintf/strconv) for primitive types. Since numbers and booleans don't contain spaces,
-	// they count as a single word, so we can calculate token cost directly using the Factor.
-	// This reduces allocations and CPU usage significantly for numerical heavy payloads.
-
-	// For primitive types (numbers, bools, nil), they are always treated as a single "word"
-	// (no whitespace), so the token count depends only on the Factor.
-	// Factor * 1 word = Factor.
-	// We ensure at least 1 token if input is not empty (primitives are not empty string).
-	primitiveCount := int(t.Factor)
-	if primitiveCount < 1 {
-		primitiveCount = 1
-	}
-
-	switch val := v.(type) {
-	case string:
-		return t.CountTokens(val)
-	case int, int64, float64, bool, nil:
-		return primitiveCount, nil
-	case []interface{}:
-		count := 0
-		for _, item := range val {
-			c, err := countTokensInValueWord(t, item)
-			if err != nil {
-				return 0, err
-			}
-			count += c
-		}
-		return count, nil
-	case map[string]interface{}:
-		count := 0
-		for key, item := range val {
-			// Count the key
-			kc, err := t.CountTokens(key)
-			if err != nil {
-				return 0, err
-			}
-			count += kc
-
-			// Count the value
-			vc, err := countTokensInValueWord(t, item)
-			if err != nil {
-				return 0, err
-			}
-			count += vc
-		}
-		return count, nil
-	default:
-		// Convert to string representation for unknown types
-		return t.CountTokens(fmt.Sprintf("%v", val))
-	}
 }
 
 func simpleTokenizeInt64(n int64) int {

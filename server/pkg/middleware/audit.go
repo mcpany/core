@@ -8,15 +8,18 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"sync"
 	"time"
 
 	"github.com/mcpany/core/server/pkg/auth"
 	"github.com/mcpany/core/server/pkg/tool"
 	configv1 "github.com/mcpany/core/proto/config/v1"
+	"google.golang.org/protobuf/proto"
 )
 
 // AuditMiddleware provides audit logging for tool executions.
 type AuditMiddleware struct {
+	mu     sync.RWMutex
 	config *configv1.AuditConfig
 	store  AuditStore
 }
@@ -26,6 +29,13 @@ func NewAuditMiddleware(config *configv1.AuditConfig) (*AuditMiddleware, error) 
 	m := &AuditMiddleware{
 		config: config,
 	}
+	if err := m.initializeStore(config); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
+func (m *AuditMiddleware) initializeStore(config *configv1.AuditConfig) error {
 	if config != nil && config.GetEnabled() {
 		var store AuditStore
 		var err error
@@ -56,16 +66,60 @@ func NewAuditMiddleware(config *configv1.AuditConfig) (*AuditMiddleware, error) 
 		}
 
 		if err != nil {
-			return nil, fmt.Errorf("failed to initialize audit store: %w", err)
+			return fmt.Errorf("failed to initialize audit store: %w", err)
 		}
 		m.store = store
 	}
-	return m, nil
+	return nil
+}
+
+// UpdateConfig updates the audit configuration safely.
+func (m *AuditMiddleware) UpdateConfig(config *configv1.AuditConfig) error {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+
+	// If config is nil, disable audit
+	if config == nil {
+		if m.store != nil {
+			_ = m.store.Close()
+			m.store = nil
+		}
+		m.config = nil
+		return nil
+	}
+
+	// Check if storage config changed. If so, we need to re-initialize store.
+	// For simplicity, we always re-initialize if enabled, or if we are enabling it.
+	// Optimally, we check for diffs.
+	needsReinit := false
+	if m.config == nil {
+		needsReinit = true
+	} else if !proto.Equal(m.config, config) {
+		needsReinit = true
+	}
+
+	if needsReinit {
+		// Close old store
+		if m.store != nil {
+			_ = m.store.Close()
+			m.store = nil
+		}
+		if err := m.initializeStore(config); err != nil {
+			return err
+		}
+	}
+	m.config = config
+	return nil
 }
 
 // Execute intercepts tool execution to log audit events.
 func (m *AuditMiddleware) Execute(ctx context.Context, req *tool.ExecutionRequest, next tool.ExecutionFunc) (any, error) {
-	if m.config == nil || !m.config.GetEnabled() {
+	m.mu.RLock()
+	config := m.config
+	store := m.store
+	m.mu.RUnlock()
+
+	if config == nil || !config.GetEnabled() {
 		return next(ctx, req)
 	}
 
@@ -91,7 +145,7 @@ func (m *AuditMiddleware) Execute(ctx context.Context, req *tool.ExecutionReques
 		entry.ProfileID = profileID
 	}
 
-	if m.config.GetLogArguments() {
+	if config.GetLogArguments() {
 		// Try to marshal arguments to RawMessage to avoid double escaping if it's already structured
 		argsBytes, marshalErr := json.Marshal(req.ToolInputs)
 		if marshalErr == nil {
@@ -103,27 +157,29 @@ func (m *AuditMiddleware) Execute(ctx context.Context, req *tool.ExecutionReques
 		entry.Error = err.Error()
 	}
 
-	if m.config.GetLogResults() && err == nil {
+	if config.GetLogResults() && err == nil {
 		entry.Result = result
 	}
 
 	// Write log
-	m.writeLog(ctx, entry)
+	m.writeLog(ctx, store, entry)
 
 	return result, err
 }
 
-func (m *AuditMiddleware) writeLog(ctx context.Context, entry AuditEntry) {
-	if m.store == nil {
+func (m *AuditMiddleware) writeLog(ctx context.Context, store AuditStore, entry AuditEntry) {
+	if store == nil {
 		return
 	}
-	if err := m.store.Write(ctx, entry); err != nil {
+	if err := store.Write(ctx, entry); err != nil {
 		fmt.Fprintf(os.Stderr, "Failed to write audit log: %v\n", err)
 	}
 }
 
 // Close closes the underlying store.
 func (m *AuditMiddleware) Close() error {
+	m.mu.Lock()
+	defer m.mu.Unlock()
 	if m.store != nil {
 		return m.store.Close()
 	}
