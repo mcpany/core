@@ -1,4 +1,4 @@
-// Copyright 2026 Author(s) of MCP Any
+// Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
 package vector
@@ -12,95 +12,54 @@ import (
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
+	"google.golang.org/protobuf/proto"
 )
 
-func ptr(s string) *string {
-	return &s
-}
-
 func TestNewPineconeClient(t *testing.T) {
-	tests := []struct {
-		name      string
-		config    *configv1.PineconeVectorDB
-		expectErr bool
-		check     func(*testing.T, *PineconeClient)
-	}{
-		{
-			name: "valid config with host",
-			config: &configv1.PineconeVectorDB{
-				ApiKey: ptr("test-key"),
-				Host:   ptr("https://test-index.pinecone.io"),
-			},
-			expectErr: false,
-			check: func(t *testing.T, c *PineconeClient) {
-				assert.Equal(t, "https://test-index.pinecone.io", c.baseURL)
-			},
-		},
-		{
-			name: "valid config with components",
-			config: &configv1.PineconeVectorDB{
-				ApiKey:      ptr("test-key"),
-				IndexName:   ptr("my-index"),
-				ProjectId:   ptr("proj123"),
-				Environment: ptr("us-west1"),
-			},
-			expectErr: false,
-			check: func(t *testing.T, c *PineconeClient) {
-				assert.Equal(t, "https://my-index-proj123.svc.us-west1.pinecone.io", c.baseURL)
-			},
-		},
-		{
-			name:      "missing api key",
-			config:    &configv1.PineconeVectorDB{},
-			expectErr: true,
-		},
-		{
-			name: "missing host and components",
-			config: &configv1.PineconeVectorDB{
-				ApiKey: ptr("test-key"),
-			},
-			expectErr: true,
-		},
-	}
+	// Missing API Key
+	_, err := NewPineconeClient(&configv1.PineconeVectorDB{})
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), "api_key is required")
 
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			c, err := NewPineconeClient(tt.config)
-			if tt.expectErr {
-				assert.Error(t, err)
-			} else {
-				assert.NoError(t, err)
-				if tt.check != nil {
-					tt.check(t, c)
-				}
-			}
-		})
-	}
+	// Missing Host and Environment
+	_, err = NewPineconeClient(&configv1.PineconeVectorDB{
+		ApiKey: proto.String("key"),
+	})
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), "host OR (index_name, project_id, environment) must be provided")
+
+	// Success with Host
+	c, err := NewPineconeClient(&configv1.PineconeVectorDB{
+		ApiKey: proto.String("key"),
+		Host:   proto.String("https://custom-host"),
+	})
+	assert.NoError(t, err)
+	assert.Equal(t, "https://custom-host", c.baseURL)
+
+	// Success with components
+	c, err = NewPineconeClient(&configv1.PineconeVectorDB{
+		ApiKey:      proto.String("key"),
+		IndexName:   proto.String("idx"),
+		ProjectId:   proto.String("proj"),
+		Environment: proto.String("env"),
+	})
+	assert.NoError(t, err)
+	assert.Equal(t, "https://idx-proj.svc.env.pinecone.io", c.baseURL)
 }
 
 func TestPineconeClient_Operations(t *testing.T) {
-	// Setup mock server
-	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		// Verify Headers
-		assert.Equal(t, "test-key", r.Header.Get("Api-Key"))
+	// Mock Server
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		assert.Equal(t, "application/json", r.Header.Get("Content-Type"))
-
-		var reqBody map[string]interface{}
-		err := json.NewDecoder(r.Body).Decode(&reqBody)
-		if err != nil && err.Error() != "EOF" {
-			w.WriteHeader(http.StatusBadRequest)
-			return
-		}
-
-		w.Header().Set("Content-Type", "application/json")
+		assert.Equal(t, "key", r.Header.Get("Api-Key"))
 
 		switch r.URL.Path {
 		case "/query":
 			assert.Equal(t, "POST", r.Method)
-			// Check request body
-			assert.Contains(t, reqBody, "vector")
-			assert.Contains(t, reqBody, "topK")
+			var req map[string]interface{}
+			json.NewDecoder(r.Body).Decode(&req)
+			assert.NotNil(t, req["vector"])
+			assert.Equal(t, float64(5), req["topK"])
 
 			json.NewEncoder(w).Encode(map[string]interface{}{
 				"matches": []interface{}{
@@ -109,96 +68,99 @@ func TestPineconeClient_Operations(t *testing.T) {
 			})
 		case "/vectors/upsert":
 			assert.Equal(t, "POST", r.Method)
-			assert.Contains(t, reqBody, "vectors")
-			json.NewEncoder(w).Encode(map[string]interface{}{
-				"upsertedCount": 1,
-			})
+			var req map[string]interface{}
+			json.NewDecoder(r.Body).Decode(&req)
+			assert.NotNil(t, req["vectors"])
+			json.NewEncoder(w).Encode(map[string]interface{}{"upsertedCount": 1})
 		case "/vectors/delete":
 			assert.Equal(t, "POST", r.Method)
-			if _, ok := reqBody["deleteAll"]; ok {
-				json.NewEncoder(w).Encode(map[string]interface{}{})
+			var req map[string]interface{}
+			json.NewDecoder(r.Body).Decode(&req)
+			// Check logic for deleteAll vs ids
+			if _, ok := req["deleteAll"]; ok {
+				assert.Equal(t, true, req["deleteAll"])
 			} else {
-				assert.Contains(t, reqBody, "ids")
-				json.NewEncoder(w).Encode(map[string]interface{}{})
+				assert.NotNil(t, req["ids"])
 			}
+			json.NewEncoder(w).Encode(map[string]interface{}{"success": true})
 		case "/describe_index_stats":
 			assert.Equal(t, "POST", r.Method)
-			json.NewEncoder(w).Encode(map[string]interface{}{
-				"namespaces": map[string]interface{}{
-					"ns1": map[string]interface{}{"vectorCount": 10},
-				},
-			})
+			json.NewEncoder(w).Encode(map[string]interface{}{"totalVectorCount": 100})
 		default:
 			w.WriteHeader(http.StatusNotFound)
 		}
-	})
-
-	server := httptest.NewServer(handler)
+	}))
 	defer server.Close()
 
-	client, err := NewPineconeClient(&configv1.PineconeVectorDB{
-		ApiKey: ptr("test-key"),
-		Host:   ptr(server.URL),
+	c, err := NewPineconeClient(&configv1.PineconeVectorDB{
+		ApiKey: proto.String("key"),
+		Host:   proto.String(server.URL),
 	})
-	require.NoError(t, err)
+	assert.NoError(t, err)
+	// Override client to trust test server cert if needed, but httptest usually works with default client if using URL
+	// Actually default client might fail if server uses https without valid cert, but httptest.NewServer uses http by default unless NewTLSServer
+	// PineconeClient creates its own http.Client.
+	// Since httptest.NewServer returns http:// URL, standard client works.
 
 	ctx := context.Background()
 
 	// Test Query
-	t.Run("Query", func(t *testing.T) {
-		res, err := client.Query(ctx, []float32{0.1, 0.2}, 10, nil, "ns1")
-		assert.NoError(t, err)
-		assert.NotNil(t, res["matches"])
-	})
+	res, err := c.Query(ctx, []float32{0.1, 0.2}, 5, nil, "")
+	assert.NoError(t, err)
+	assert.NotNil(t, res["matches"])
 
 	// Test Upsert
-	t.Run("Upsert", func(t *testing.T) {
-		vectors := []map[string]interface{}{
-			{"id": "1", "values": []float32{0.1, 0.2}},
-		}
-		res, err := client.Upsert(ctx, vectors, "ns1")
-		assert.NoError(t, err)
-		assert.Equal(t, float64(1), res["upsertedCount"])
-	})
+	res, err = c.Upsert(ctx, []map[string]interface{}{{"id": "1", "values": []float32{0.1}}}, "")
+	assert.NoError(t, err)
+	assert.Equal(t, float64(1), res["upsertedCount"])
 
-	// Test Delete
-	t.Run("Delete", func(t *testing.T) {
-		res, err := client.Delete(ctx, []string{"1"}, "ns1", nil)
-		assert.NoError(t, err)
-		assert.NotNil(t, res)
-	})
+	// Test Delete IDs
+	res, err = c.Delete(ctx, []string{"1"}, "", nil)
+	assert.NoError(t, err)
 
 	// Test Delete All
-	t.Run("DeleteAll", func(t *testing.T) {
-		res, err := client.Delete(ctx, nil, "ns1", nil)
-		assert.NoError(t, err)
-		assert.NotNil(t, res)
-	})
+	res, err = c.Delete(ctx, nil, "", nil)
+	assert.NoError(t, err)
 
 	// Test DescribeIndexStats
-	t.Run("DescribeIndexStats", func(t *testing.T) {
-		res, err := client.DescribeIndexStats(ctx, nil)
-		assert.NoError(t, err)
-		assert.NotNil(t, res)
-	})
+	res, err = c.DescribeIndexStats(ctx, nil)
+	assert.NoError(t, err)
+	assert.Equal(t, float64(100), res["totalVectorCount"])
 }
 
 func TestPineconeClient_Errors(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte("internal error"))
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte(`{"error": "bad request"}`))
 	}))
 	defer server.Close()
 
-	client, err := NewPineconeClient(&configv1.PineconeVectorDB{
-		ApiKey: ptr("test-key"),
-		Host:   ptr(server.URL),
+	c, _ := NewPineconeClient(&configv1.PineconeVectorDB{
+		ApiKey: proto.String("key"),
+		Host:   proto.String(server.URL),
 	})
-	require.NoError(t, err)
 
-	ctx := context.Background()
-
-	_, err = client.Query(ctx, []float32{0.1}, 5, nil, "")
+	_, err := c.Query(context.Background(), []float32{0.1}, 1, nil, "")
 	assert.Error(t, err)
-	assert.Contains(t, err.Error(), "pinecone request failed")
+	assert.Contains(t, err.Error(), "pinecone request failed: status=400")
+
+	// Invalid URL
+	c.baseURL = "://invalid-url"
+	_, err = c.Query(context.Background(), []float32{0.1}, 1, nil, "")
+	assert.Error(t, err)
+
+	// Connection Error
+	c.baseURL = "http://localhost:12345" // Port likely closed
+	_, err = c.Query(context.Background(), []float32{0.1}, 1, nil, "")
+	assert.Error(t, err)
+
+	// Malformed JSON Response
+	badServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Write([]byte(`{invalid-json`))
+	}))
+	defer badServer.Close()
+	c.baseURL = badServer.URL
+	_, err = c.Query(context.Background(), []float32{0.1}, 1, nil, "")
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), "failed to unmarshal response")
 }

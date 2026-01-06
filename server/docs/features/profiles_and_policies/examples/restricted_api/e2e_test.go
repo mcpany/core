@@ -25,6 +25,10 @@ import (
 )
 
 func TestRestrictedApiE2E(t *testing.T) {
+	if os.Getenv("SKIP_EXTERNAL_TESTS") == "true" {
+		t.Skip("Skipping external tests")
+	}
+
 	// 1. Config Content
 	configContent := `
 upstream_services:
