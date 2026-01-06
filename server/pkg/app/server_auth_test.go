@@ -316,4 +316,19 @@ func TestAuthMiddleware_LocalhostSecurity(t *testing.T) {
 		handler.ServeHTTP(rec, req)
 		assert.Equal(t, http.StatusOK, rec.Code)
 	})
+
+	t.Run("With Key - External With Authorization Bearer Allowed", func(t *testing.T) {
+		middleware := app.createAuthMiddleware("secret")
+		handler := middleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.WriteHeader(http.StatusOK)
+		}))
+
+		req, _ := http.NewRequest("GET", "/", nil)
+		req.RemoteAddr = "192.168.1.5:12345"
+		req.Header.Set("Authorization", "Bearer secret")
+		rec := httptest.NewRecorder()
+
+		handler.ServeHTTP(rec, req)
+		assert.Equal(t, http.StatusOK, rec.Code)
+	})
 }

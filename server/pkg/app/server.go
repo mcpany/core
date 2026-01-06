@@ -1471,8 +1471,17 @@ func (a *Application) createAuthMiddleware(apiKey string) func(http.Handler) htt
 			r = r.WithContext(ctx)
 
 			if apiKey != "" {
-				logging.GetLogger().Info("DEBUG: Checking API Key", "configured", apiKey, "header", r.Header.Get("X-API-Key"), "remote_addr", r.RemoteAddr)
-				if subtle.ConstantTimeCompare([]byte(r.Header.Get("X-API-Key")), []byte(apiKey)) != 1 {
+				// Check X-API-Key or Authorization header
+				requestKey := r.Header.Get("X-API-Key")
+				if requestKey == "" {
+					authHeader := r.Header.Get("Authorization")
+					if strings.HasPrefix(authHeader, "Bearer ") {
+						requestKey = strings.TrimPrefix(authHeader, "Bearer ")
+					}
+				}
+
+				logging.GetLogger().Info("DEBUG: Checking API Key", "configured", "REDACTED", "header_len", len(requestKey), "remote_addr", r.RemoteAddr)
+				if subtle.ConstantTimeCompare([]byte(requestKey), []byte(apiKey)) != 1 {
 					http.Error(w, "Unauthorized", http.StatusUnauthorized)
 					return
 				}
