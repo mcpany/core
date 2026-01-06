@@ -43,6 +43,12 @@ func JSONRPCComplianceMiddleware(next http.Handler) http.Handler {
 			return
 		}
 
+		// Don't intercept gRPC requests
+		if strings.HasPrefix(r.Header.Get("Content-Type"), "application/grpc") {
+			next.ServeHTTP(w, r)
+			return
+		}
+
 		rw := &smartResponseWriter{
 			w:      w,
 			header: make(http.Header),
@@ -182,8 +188,6 @@ func (w *smartResponseWriter) rewriteError() {
 			Data:    bodyStr, // Include original message as data
 		},
 	}
-
-	logging.GetLogger().Info("Rewriting error response to JSON-RPC", "original_status", w.statusCode, "original_body", bodyStr, "new_code", code)
 
 	w.w.Header().Set("Content-Type", "application/json")
 	w.w.WriteHeader(w.statusCode) // Keep original status code (e.g. 400)

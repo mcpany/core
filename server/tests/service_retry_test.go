@@ -44,14 +44,17 @@ upstream_services:
 
 	a := app.NewApplication()
 	go func() {
-		err := a.Run(ctx, fs, false, ":8085", "", []string{"config.yaml"}, 1*time.Second)
+		err := a.Run(ctx, fs, false, ":8085", "", []string{"config.yaml"}, "", 1*time.Second)
         if err != nil && ctx.Err() == nil {
             t.Logf("Application run error: %v", err)
         }
 	}()
 
 	// Wait for app to start
-	time.Sleep(2 * time.Second)
+	err = a.WaitForStartup(ctx)
+	if err != nil {
+		t.Fatalf("Failed to wait for startup: %v", err)
+	}
 
 	// Verify service failed to register
     require.Eventually(t, func() bool {

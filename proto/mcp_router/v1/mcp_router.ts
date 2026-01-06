@@ -6,6 +6,8 @@
 
 /* eslint-disable */
 import { BinaryReader, BinaryWriter } from "@bufbuild/protobuf/wire";
+import { grpc } from "@improbable-eng/grpc-web";
+import { BrowserHeaders } from "browser-headers";
 import { Struct } from "github.com/mcpany/core/proto/third_party/google/protobuf/struct";
 import Long from "long";
 
@@ -2036,19 +2038,17 @@ export const ListResourcesResponse: MessageFns<ListResourcesResponse> = {
 };
 
 export interface McpRouter {
-  ListTools(request: ListToolsRequest): Promise<ListToolsResponse>;
-  CallTool(request: CallToolRequest): Promise<CallToolResponse>;
-  ListPrompts(request: ListPromptsRequest): Promise<ListPromptsResponse>;
-  GetPrompt(request: GetPromptRequest): Promise<GetPromptResponse>;
-  ListResources(request: ListResourcesRequest): Promise<ListResourcesResponse>;
+  ListTools(request: DeepPartial<ListToolsRequest>, metadata?: grpc.Metadata): Promise<ListToolsResponse>;
+  CallTool(request: DeepPartial<CallToolRequest>, metadata?: grpc.Metadata): Promise<CallToolResponse>;
+  ListPrompts(request: DeepPartial<ListPromptsRequest>, metadata?: grpc.Metadata): Promise<ListPromptsResponse>;
+  GetPrompt(request: DeepPartial<GetPromptRequest>, metadata?: grpc.Metadata): Promise<GetPromptResponse>;
+  ListResources(request: DeepPartial<ListResourcesRequest>, metadata?: grpc.Metadata): Promise<ListResourcesResponse>;
 }
 
-export const McpRouterServiceName = "mcpany.mcp_router.v1.McpRouter";
 export class McpRouterClientImpl implements McpRouter {
   private readonly rpc: Rpc;
-  private readonly service: string;
-  constructor(rpc: Rpc, opts?: { service?: string }) {
-    this.service = opts?.service || McpRouterServiceName;
+
+  constructor(rpc: Rpc) {
     this.rpc = rpc;
     this.ListTools = this.ListTools.bind(this);
     this.CallTool = this.CallTool.bind(this);
@@ -2056,39 +2056,211 @@ export class McpRouterClientImpl implements McpRouter {
     this.GetPrompt = this.GetPrompt.bind(this);
     this.ListResources = this.ListResources.bind(this);
   }
-  ListTools(request: ListToolsRequest): Promise<ListToolsResponse> {
-    const data = ListToolsRequest.encode(request).finish();
-    const promise = this.rpc.request(this.service, "ListTools", data);
-    return promise.then((data) => ListToolsResponse.decode(new BinaryReader(data)));
+
+  ListTools(request: DeepPartial<ListToolsRequest>, metadata?: grpc.Metadata): Promise<ListToolsResponse> {
+    return this.rpc.unary(McpRouterListToolsDesc, ListToolsRequest.fromPartial(request), metadata);
   }
 
-  CallTool(request: CallToolRequest): Promise<CallToolResponse> {
-    const data = CallToolRequest.encode(request).finish();
-    const promise = this.rpc.request(this.service, "CallTool", data);
-    return promise.then((data) => CallToolResponse.decode(new BinaryReader(data)));
+  CallTool(request: DeepPartial<CallToolRequest>, metadata?: grpc.Metadata): Promise<CallToolResponse> {
+    return this.rpc.unary(McpRouterCallToolDesc, CallToolRequest.fromPartial(request), metadata);
   }
 
-  ListPrompts(request: ListPromptsRequest): Promise<ListPromptsResponse> {
-    const data = ListPromptsRequest.encode(request).finish();
-    const promise = this.rpc.request(this.service, "ListPrompts", data);
-    return promise.then((data) => ListPromptsResponse.decode(new BinaryReader(data)));
+  ListPrompts(request: DeepPartial<ListPromptsRequest>, metadata?: grpc.Metadata): Promise<ListPromptsResponse> {
+    return this.rpc.unary(McpRouterListPromptsDesc, ListPromptsRequest.fromPartial(request), metadata);
   }
 
-  GetPrompt(request: GetPromptRequest): Promise<GetPromptResponse> {
-    const data = GetPromptRequest.encode(request).finish();
-    const promise = this.rpc.request(this.service, "GetPrompt", data);
-    return promise.then((data) => GetPromptResponse.decode(new BinaryReader(data)));
+  GetPrompt(request: DeepPartial<GetPromptRequest>, metadata?: grpc.Metadata): Promise<GetPromptResponse> {
+    return this.rpc.unary(McpRouterGetPromptDesc, GetPromptRequest.fromPartial(request), metadata);
   }
 
-  ListResources(request: ListResourcesRequest): Promise<ListResourcesResponse> {
-    const data = ListResourcesRequest.encode(request).finish();
-    const promise = this.rpc.request(this.service, "ListResources", data);
-    return promise.then((data) => ListResourcesResponse.decode(new BinaryReader(data)));
+  ListResources(request: DeepPartial<ListResourcesRequest>, metadata?: grpc.Metadata): Promise<ListResourcesResponse> {
+    return this.rpc.unary(McpRouterListResourcesDesc, ListResourcesRequest.fromPartial(request), metadata);
   }
 }
 
+export const McpRouterDesc = { serviceName: "mcpany.mcp_router.v1.McpRouter" };
+
+export const McpRouterListToolsDesc: UnaryMethodDefinitionish = {
+  methodName: "ListTools",
+  service: McpRouterDesc,
+  requestStream: false,
+  responseStream: false,
+  requestType: {
+    serializeBinary() {
+      return ListToolsRequest.encode(this).finish();
+    },
+  } as any,
+  responseType: {
+    deserializeBinary(data: Uint8Array) {
+      const value = ListToolsResponse.decode(data);
+      return {
+        ...value,
+        toObject() {
+          return value;
+        },
+      };
+    },
+  } as any,
+};
+
+export const McpRouterCallToolDesc: UnaryMethodDefinitionish = {
+  methodName: "CallTool",
+  service: McpRouterDesc,
+  requestStream: false,
+  responseStream: false,
+  requestType: {
+    serializeBinary() {
+      return CallToolRequest.encode(this).finish();
+    },
+  } as any,
+  responseType: {
+    deserializeBinary(data: Uint8Array) {
+      const value = CallToolResponse.decode(data);
+      return {
+        ...value,
+        toObject() {
+          return value;
+        },
+      };
+    },
+  } as any,
+};
+
+export const McpRouterListPromptsDesc: UnaryMethodDefinitionish = {
+  methodName: "ListPrompts",
+  service: McpRouterDesc,
+  requestStream: false,
+  responseStream: false,
+  requestType: {
+    serializeBinary() {
+      return ListPromptsRequest.encode(this).finish();
+    },
+  } as any,
+  responseType: {
+    deserializeBinary(data: Uint8Array) {
+      const value = ListPromptsResponse.decode(data);
+      return {
+        ...value,
+        toObject() {
+          return value;
+        },
+      };
+    },
+  } as any,
+};
+
+export const McpRouterGetPromptDesc: UnaryMethodDefinitionish = {
+  methodName: "GetPrompt",
+  service: McpRouterDesc,
+  requestStream: false,
+  responseStream: false,
+  requestType: {
+    serializeBinary() {
+      return GetPromptRequest.encode(this).finish();
+    },
+  } as any,
+  responseType: {
+    deserializeBinary(data: Uint8Array) {
+      const value = GetPromptResponse.decode(data);
+      return {
+        ...value,
+        toObject() {
+          return value;
+        },
+      };
+    },
+  } as any,
+};
+
+export const McpRouterListResourcesDesc: UnaryMethodDefinitionish = {
+  methodName: "ListResources",
+  service: McpRouterDesc,
+  requestStream: false,
+  responseStream: false,
+  requestType: {
+    serializeBinary() {
+      return ListResourcesRequest.encode(this).finish();
+    },
+  } as any,
+  responseType: {
+    deserializeBinary(data: Uint8Array) {
+      const value = ListResourcesResponse.decode(data);
+      return {
+        ...value,
+        toObject() {
+          return value;
+        },
+      };
+    },
+  } as any,
+};
+
+interface UnaryMethodDefinitionishR extends grpc.UnaryMethodDefinition<any, any> {
+  requestStream: any;
+  responseStream: any;
+}
+
+type UnaryMethodDefinitionish = UnaryMethodDefinitionishR;
+
 interface Rpc {
-  request(service: string, method: string, data: Uint8Array): Promise<Uint8Array>;
+  unary<T extends UnaryMethodDefinitionish>(
+    methodDesc: T,
+    request: any,
+    metadata: grpc.Metadata | undefined,
+  ): Promise<any>;
+}
+
+export class GrpcWebImpl {
+  private host: string;
+  private options: {
+    transport?: grpc.TransportFactory;
+
+    debug?: boolean;
+    metadata?: grpc.Metadata;
+    upStreamRetryCodes?: number[];
+  };
+
+  constructor(
+    host: string,
+    options: {
+      transport?: grpc.TransportFactory;
+
+      debug?: boolean;
+      metadata?: grpc.Metadata;
+      upStreamRetryCodes?: number[];
+    },
+  ) {
+    this.host = host;
+    this.options = options;
+  }
+
+  unary<T extends UnaryMethodDefinitionish>(
+    methodDesc: T,
+    _request: any,
+    metadata: grpc.Metadata | undefined,
+  ): Promise<any> {
+    const request = { ..._request, ...methodDesc.requestType };
+    const maybeCombinedMetadata = metadata && this.options.metadata
+      ? new BrowserHeaders({ ...this.options?.metadata.headersMap, ...metadata?.headersMap })
+      : metadata ?? this.options.metadata;
+    return new Promise((resolve, reject) => {
+      grpc.unary(methodDesc, {
+        request,
+        host: this.host,
+        metadata: maybeCombinedMetadata ?? {},
+        ...(this.options.transport !== undefined ? { transport: this.options.transport } : {}),
+        debug: this.options.debug ?? false,
+        onEnd: function (response) {
+          if (response.status === grpc.Code.OK) {
+            resolve(response.message!.toObject());
+          } else {
+            const err = new GrpcWebError(response.statusMessage, response.status, response.trailers);
+            reject(err);
+          }
+        },
+      });
+    });
+  }
 }
 
 function bytesFromBase64(b64: string): Uint8Array {
@@ -2134,6 +2306,12 @@ function isObject(value: any): boolean {
 
 function isSet(value: any): boolean {
   return value !== null && value !== undefined;
+}
+
+export class GrpcWebError extends globalThis.Error {
+  constructor(message: string, public code: grpc.Code, public metadata: grpc.Metadata) {
+    super(message);
+  }
 }
 
 export interface MessageFns<T> {

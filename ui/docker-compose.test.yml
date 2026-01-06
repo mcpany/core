@@ -14,6 +14,7 @@ services:
         "--config-path=config.minimal.yaml",
         "--mcp-listen-address=:50050",
       ]
+      # - MCPANY_API_KEY=test-token
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:50050/healthz"]
       interval: 5s
@@ -28,6 +29,7 @@ services:
       context: ../ui
       dockerfile: Dockerfile.e2e
     environment:
+      - MCPANY_LOG_LEVEL=info
       - BACKEND_URL=http://server:50050
       - BASE_URL=http://localhost:9002
       - NEXT_PUBLIC_API_URL=http://server:50050
@@ -49,7 +51,7 @@ services:
         condition: service_healthy
       http-echo-server:
         condition: service_healthy
-    command: ["npx", "playwright", "test"]
+    command: ["sh", "-c", "ls -la /work/ui/tests/e2e && cat /work/ui/tests/e2e/main.spec.ts && npx playwright test"]
 
   http-echo-server:
     build:

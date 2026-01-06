@@ -206,27 +206,27 @@ export function ServiceDetail({ serviceId }: { serviceId: string }) {
   }
 
   const serviceType =
-        service.grpc_service ? 'gRPC' :
-        service.http_service ? 'HTTP' :
-        service.command_line_service ? 'CLI' :
-        service.openapi_service ? 'OpenAPI' :
-        service.websocket_service ? 'WebSocket' :
-        service.webrtc_service ? 'WebRTC' :
-        service.graphql_service ? 'GraphQL' :
-        service.mcp_service ? 'MCP' :
+        service.grpcService ? 'gRPC' :
+        service.httpService ? 'HTTP' :
+        service.commandLineService ? 'CLI' :
+        service.openapiService ? 'OpenAPI' :
+        service.websocketService ? 'WebSocket' :
+        service.webrtcService ? 'WebRTC' :
+        service.graphqlService ? 'GraphQL' :
+        service.mcpService ? 'MCP' :
         'Unknown';
 
   const isEnabled = !service.disable;
 
   const serviceData =
-        service.grpc_service ||
-        service.http_service ||
-        service.command_line_service ||
-        service.openapi_service ||
-        service.websocket_service ||
-        service.webrtc_service ||
-        service.graphql_service ||
-        service.mcp_service;
+        service.grpcService ||
+        service.httpService ||
+        service.commandLineService ||
+        service.openapiService ||
+        service.websocketService ||
+        service.webrtcService ||
+        service.graphqlService ||
+        service.mcpService;
 
   // Type guard or loose access
   const tools = (serviceData as any)?.tools;
@@ -286,47 +286,47 @@ export function ServiceDetail({ serviceId }: { serviceId: string }) {
                 <DefinitionsTable title="Resources" data={resources} icon={<Database />} serviceId={serviceId} linkPath="resource" />
             </TabsContent>
             <TabsContent value="configuration" className="mt-4 grid gap-6">
-                 {service.grpc_service && (
+                 {service.grpcService && (
                     <ServicePropertyCard title="gRPC Config" data={{
-                        "Address": service.grpc_service.address,
-                        "Reflection Enabled": service.grpc_service.use_reflection ? "Yes" : "No",
+                        "Address": service.grpcService.address,
+                        "Reflection Enabled": service.grpcService.useReflection ? "Yes" : "No",
                     }} />
                 )}
-                 {service.http_service && (
+                 {service.httpService && (
                     <ServicePropertyCard title="HTTP Config" data={{
-                        "Address": service.http_service.address,
+                        "Address": service.httpService.address,
                     }} />
                 )}
-                 {service.command_line_service && (
+                 {service.commandLineService && (
                     <ServicePropertyCard title="CLI Config" data={{
-                        "Command": service.command_line_service.command,
+                        "Command": service.commandLineService.command,
                     }} />
                 )}
-                {service.openapi_service && (
+                {service.openapiService && (
                     <ServicePropertyCard title="OpenAPI Config" data={{
-                        "Address": service.openapi_service.address,
-                        "Spec URL": service.openapi_service.spec_url || "N/A",
+                        "Address": service.openapiService.address,
+                        "Spec URL": service.openapiService.specUrl || "N/A",
                     }} />
                 )}
-                {service.websocket_service && (
+                {service.websocketService && (
                     <ServicePropertyCard title="WebSocket Config" data={{
-                        "Address": service.websocket_service.address,
+                        "Address": service.websocketService.address,
                     }} />
                 )}
-                {service.webrtc_service && (
+                {service.webrtcService && (
                     <ServicePropertyCard title="WebRTC Config" data={{
-                        "Address": service.webrtc_service.address,
+                        "Address": service.webrtcService.address,
                     }} />
                 )}
-                {service.graphql_service && (
+                {service.graphqlService && (
                     <ServicePropertyCard title="GraphQL Config" data={{
-                        "Address": service.graphql_service.address,
+                        "Address": service.graphqlService.address,
                     }} />
                 )}
-                {service.mcp_service && (
+                {service.mcpService && (
                     <ServicePropertyCard title="MCP Upstream Config" data={{
-                        "Type": service.mcp_service.http_connection ? "HTTP" : service.mcp_service.stdio_connection ? "Stdio" : "Bundle",
-                        "Address/Command": service.mcp_service.http_connection?.http_address || service.mcp_service.stdio_connection?.command || service.mcp_service.bundle_connection?.bundle_path || "N/A",
+                        "Type": service.mcpService.httpConnection ? "HTTP" : service.mcpService.stdioConnection ? "Stdio" : "Bundle",
+                        "Address/Command": service.mcpService.httpConnection?.httpAddress || service.mcpService.stdioConnection?.command || service.mcpService.bundleConnection?.bundlePath || "N/A",
                     }} />
                 )}
 

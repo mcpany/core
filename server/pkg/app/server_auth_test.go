@@ -12,6 +12,7 @@ import (
 	"testing"
 	"time"
 
+	config_v1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/mcpany/core/server/pkg/auth"
 	"github.com/mcpany/core/server/pkg/bus"
 	"github.com/mcpany/core/server/pkg/config"
@@ -19,7 +20,6 @@ import (
 	"github.com/mcpany/core/server/pkg/pool"
 	"github.com/mcpany/core/server/pkg/serviceregistry"
 	"github.com/mcpany/core/server/pkg/upstream/factory"
-	config_v1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/proto"
@@ -106,7 +106,7 @@ func TestRunServerMode_Auth(t *testing.T) {
 
 	errChan := make(chan error, 1)
 	go func() {
-		errChan <- app.runServerMode(ctx, mcpSrv, busProvider, bindAddress, grpcPort, 5*time.Second, users, nil, nil, nil, nil, nil, serviceRegistry)
+		errChan <- app.runServerMode(ctx, mcpSrv, busProvider, bindAddress, grpcPort, 5*time.Second, globalKey, users, nil, nil, nil, nil, nil, serviceRegistry)
 	}()
 
 	// Wait for server to be ready

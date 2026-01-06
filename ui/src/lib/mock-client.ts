@@ -11,10 +11,10 @@ const mockServices: UpstreamServiceConfig[] = [
     name: "auth-service",
     version: "1.2.1",
     disable: false,
-    grpc_service: {
+    grpcService: {
       address: "auth.prod.mcpany.io:443",
-      use_reflection: true,
-      tls_config: { server_name: "auth.prod.mcpany.io", insecure_skip_verify: false },
+      useReflection: true,
+      tlsConfig: { serverName: "auth.prod.mcpany.io", insecureSkipVerify: false },
       tools: [
         { name: "Login", description: "Authenticate a user.", source: 'configured' },
         { name: "Logout", description: "Log out a user.", source: 'configured' },
@@ -31,9 +31,9 @@ const mockServices: UpstreamServiceConfig[] = [
     name: "payment-gateway",
     version: "2.0.0",
     disable: false,
-    http_service: {
+    httpService: {
       address: "https://payments.prod.mcpany.io",
-      tls_config: { server_name: "payments.prod.mcpany.io", insecure_skip_verify: false },
+      tlsConfig: { serverName: "payments.prod.mcpany.io", insecureSkipVerify: false },
       tools: [
         { name: "CreatePayment", description: "Create a new payment.", source: 'configured' },
         { name: "GetPaymentStatus", description: "Get the status of a payment.", source: 'configured' },
@@ -48,9 +48,9 @@ const mockServices: UpstreamServiceConfig[] = [
     name: "user-profiles",
     version: "0.5.0-beta",
     disable: true,
-    grpc_service: {
+    grpcService: {
       address: "users.staging.mcpany.io:8080",
-      use_reflection: false,
+      useReflection: false,
     }
   },
   {
@@ -58,7 +58,7 @@ const mockServices: UpstreamServiceConfig[] = [
     name: "inventory-service",
     version: "0.1.0-dev",
     disable: false,
-    command_line_service: {
+    commandLineService: {
       command: "go run ./cmd/inventory",
       tools: [
         { name: "CheckStock", description: "Check stock levels for an item.", source: 'configured' }

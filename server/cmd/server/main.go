@@ -120,7 +120,7 @@ func newRootCmd() *cobra.Command {
 				}()
 			}
 
-			if err := appRunner.Run(ctx, osFs, stdio, bindAddress, grpcPort, configPaths, shutdownTimeout); err != nil {
+			if err := appRunner.Run(ctx, osFs, stdio, bindAddress, grpcPort, configPaths, cfg.APIKey(), shutdownTimeout); err != nil {
 				log.Error("Application failed", "error", err)
 				return err
 			}
