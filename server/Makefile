@@ -538,7 +538,7 @@ endif
 # Set PLATFORMS to specify target platforms, e.g., linux/amd64,linux/arm64.
 # If PLATFORMS is not set, it defaults to the host architecture.
 # For single-platform local builds, --load is added automatically.
-build-docker: docker/Dockerfile.server
+build-docker: docker/Dockerfile.server prepare-docker-context
 ifdef HAS_DOCKER
 	@{ \
 		PLATFORMS="$(PLATFORMS)"; \
@@ -570,28 +570,30 @@ ifdef HAS_DOCKER
 				CMD_ARGS="--platform $${PLATFORMS} $${TAG_ARGS} -f docker/Dockerfile.server"; \
 				if echo "$${PLATFORMS}" | grep -q ','; then \
 					echo "Building multi-platform image locally (will not be loaded to docker images)..."; \
-					$(DOCKER_BUILDX_CMD) build $${CMD_ARGS} $${CACHE_ARGS} ..; \
+					$(DOCKER_BUILDX_CMD) build $${CMD_ARGS} $${CACHE_ARGS} .; \
 				else \
 					echo "Building single-platform image locally and loading to docker images..."; \
-					$(DOCKER_BUILD_CMD) $${CMD_ARGS} $${CACHE_ARGS} ..; \
+					$(DOCKER_BUILD_CMD) $${CMD_ARGS} $${CACHE_ARGS} .; \
 				fi; \
 			else \
 				echo "Building image using legacy docker build..."; \
-				$(DOCKER_BUILD_CMD) $${TAG_ARGS} -f docker/Dockerfile.server ..; \
+				$(DOCKER_BUILD_CMD) $${TAG_ARGS} -f docker/Dockerfile.server .; \
 			fi; \
 		fi; \
 	}
 	@echo "Server Docker image build complete."
+	@$(MAKE) clean-docker-context
 else
 	@echo "Docker not found. Cannot build server image."
 	@exit 1
 endif
 
 # Target to build http-echo-server Docker image
-build-http-echo-docker: docker/Dockerfile.http-echo-server
+build-http-echo-docker: docker/Dockerfile.http-echo-server prepare-docker-context
 ifdef HAS_DOCKER
 	@echo "Building http-echo-server Docker image (mcpany/http-echo-server:latest)..."
-	@$(DOCKER_BUILD_CMD) -t mcpany/http-echo-server:latest -f docker/Dockerfile.http-echo-server ..
+	@$(DOCKER_BUILD_CMD) -t mcpany/http-echo-server:latest -f docker/Dockerfile.http-echo-server .
+	@$(MAKE) clean-docker-context
 else
 	@echo "Docker not found. Cannot build http-echo-server image."
 	@exit 1
@@ -654,37 +656,16 @@ else
 	@exit 1
 endif
 
-EVERYTHING_IMAGE_TAG ?= mcpany/everything:latest
-build-everything-docker: docker/Dockerfile.everything
-ifdef HAS_DOCKER
-	@echo "Building everything server Docker image ($(EVERYTHING_IMAGE_TAG))..."
-	@$(DOCKER_BUILD_CMD) -t $(EVERYTHING_IMAGE_TAG) -f docker/Dockerfile.everything .
-	@echo "Everything server Docker image build complete."
-else
-	@echo "Docker not found. Cannot build everything server image."
-	@exit 1
-endif
 
-release: prepare
-	@echo "Building release binaries for platforms: $(PLATFORMS)..."
-	@mkdir -p $(RELEASE_DIR)
-	@for platform in $(PLATFORMS); do \
-		GOOS=$${platform%/*}; \
-		GOARCH=$${platform#*/}; \
-		EXT=""; \
-		if [ "$${GOOS}" = "windows" ]; then EXT=".exe"; fi; \
-		echo "Building for $${GOOS}/$${GOARCH}..."; \
-		CGO_ENABLED=0 GOOS=$${GOOS} GOARCH=$${GOARCH} $(GO_CMD) build $(LDFLAGS) -a -installsuffix cgo -buildvcs=false -o $(RELEASE_DIR)/server-$${GOOS}-$${GOARCH}$${EXT} ./cmd/server; \
-	done
-	@echo "Release binaries are in $(RELEASE_DIR)"
 
-# The release-docker target will build and push multi-architecture Docker images.
-# The GITHUB_TOKEN environment variable needs to be set for authentication.
-release-docker:
-	@echo "Building and pushing release images to registry..."
-	@if [ -z "$(GITHUB_TOKEN)" ]; then \
-		echo "Error: GITHUB_TOKEN is not set. Please set it to your GitHub personal access token."; \
-		exit 1; \
-	fi
-	@echo "$(GITHUB_TOKEN)" | docker login ghcr.io -u $(shell git config user.name) --password-stdin
-	@$(MAKE) build-docker PUSH=true PLATFORMS=linux/amd64,linux/arm64
+BUILD_CONTEXT_DIR := .build-context
+
+prepare-docker-context:
+	@echo "Preparing build context..."
+	@rm -rf $(BUILD_CONTEXT_DIR)
+	@mkdir -p $(BUILD_CONTEXT_DIR)/core
+	@cp ../go.mod ../go.sum $(BUILD_CONTEXT_DIR)/core/
+	@cp -r ../proto $(BUILD_CONTEXT_DIR)/core/
+
+clean-docker-context:
+	@rm -rf $(BUILD_CONTEXT_DIR)
