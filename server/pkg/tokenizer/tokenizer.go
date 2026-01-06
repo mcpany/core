@@ -265,6 +265,14 @@ func countTokensInValueWord(t *WordTokenizer, v interface{}) (int, error) {
 	switch val := v.(type) {
 	case string:
 		return t.CountTokens(val)
+	case int, int64, bool, nil:
+		// Optimization: Primitive types that don't contain spaces are always counted as 1 token
+		// by the WordTokenizer (which splits by whitespace).
+		// We avoid string allocation and scanning.
+		// int/int64: "123", "-456" -> 1 token
+		// bool: "true", "false" -> 1 token
+		// nil: "null" -> 1 token
+		return 1, nil
 	case []interface{}:
 		count := 0
 		for _, item := range val {
@@ -290,19 +298,8 @@ func countTokensInValueWord(t *WordTokenizer, v interface{}) (int, error) {
 			count += vc
 		}
 		return count, nil
-	case int:
-		return t.CountTokens(strconv.Itoa(val))
-	case int64:
-		return t.CountTokens(strconv.FormatInt(val, 10))
 	case float64:
 		return t.CountTokens(strconv.FormatFloat(val, 'g', -1, 64))
-	case bool:
-		if val {
-			return t.CountTokens("true")
-		}
-		return t.CountTokens("false")
-	case nil:
-		return t.CountTokens("null")
 	default:
 		return t.CountTokens(fmt.Sprintf("%v", val))
 	}
