@@ -38,7 +38,7 @@ test.describe('Global Search', () => {
      await expect(commandDialog).toBeVisible();
   });
 
-  test.skip('should open command palette via shortcut and search dynamic content', async ({ page }) => {
+  test('should open command palette via shortcut and search dynamic content', async ({ page }) => {
     // Determine modifier key
     const modifier = process.platform === 'darwin' ? 'Meta' : 'Control';
     await page.keyboard.press(`${modifier}+k`);

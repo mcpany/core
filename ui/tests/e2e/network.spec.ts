@@ -7,6 +7,7 @@ import { test, expect } from '@playwright/test';
 
 test.describe('Network Topology', () => {
   test.beforeEach(async ({ page, request }) => {
+    page.on('console', msg => console.log(`[BROWSER-NETWORK] ${msg.text()}`));
     // Seed data
      try {
         const r1 = await request.post('/api/v1/services', {
