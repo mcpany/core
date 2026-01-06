@@ -68,7 +68,11 @@ export function ServiceList({ services, isLoading, onToggle, onEdit, onDelete }:
   );
 }
 
-function ServiceRow({ service, onToggle, onEdit, onDelete }: {
+// ⚡ Bolt: Memoized to prevent unnecessary re-renders of the entire list when one item updates.
+// Reduces re-renders by O(n) when toggling service status.
+import { memo } from "react";
+
+const ServiceRow = memo(function ServiceRow({ service, onToggle, onEdit, onDelete }: {
     service: UpstreamServiceConfig,
     onToggle?: (name: string, enabled: boolean) => void,
     onEdit?: (service: UpstreamServiceConfig) => void,
@@ -138,4 +142,4 @@ function ServiceRow({ service, onToggle, onEdit, onDelete }: {
              </TableCell>
         </TableRow>
     );
-}
+});
