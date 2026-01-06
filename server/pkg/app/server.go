@@ -299,6 +299,8 @@ func (a *Application) Run(
 	poolManager := pool.NewManager()
 	upstreamFactory := factory.NewUpstreamServiceFactory(poolManager)
 	a.ToolManager = tool.NewManager(busProvider)
+	// Add Tracing Middleware (Outer-most)
+	a.ToolManager.AddMiddleware(middleware.NewTracingMiddleware())
 	// Add Tool Metrics Middleware
 	a.ToolManager.AddMiddleware(middleware.NewToolMetricsMiddleware())
 	// Add Resilience Middleware
