@@ -69,9 +69,9 @@ func TestDockerHelpers(t *testing.T) {
 	}
 
 	// Test StartDockerContainer
-	imageName := "mcpany-e2e-time-server"
+	imageName := "alpine:latest"
 	containerName := fmt.Sprintf("mcpany-test-container-%d", time.Now().UnixNano())
-	cleanup := StartDockerContainer(t, imageName, containerName, []string{"-d"})
+	cleanup := StartDockerContainer(t, imageName, containerName, []string{"-d"}, "sleep", "60")
 	defer cleanup()
 
 	// Verify the container is running
