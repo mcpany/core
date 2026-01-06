@@ -6,6 +6,8 @@ WORKDIR /app
 
 # Copy Go modules and download dependencies first to leverage Docker layer caching.
 COPY go.mod go.sum ./
+# Remove the replace directive from go.mod as it's only for local development.
+RUN sed -i '/replace github.com\/mcpany\/core => \.\//d' go.mod
 RUN go mod download
 
 # Copy the entire source code.

@@ -60,23 +60,23 @@ services:
     volumes:
       - ./server/docker/prometheus.yml:/etc/prometheus/prometheus.yml
     ports:
-      - "9099:9090"
+      - "0:9090"
     networks:
       - mcpany-net
 
-  # ui:
-  #   build:
-  #     context: ./ui
-  #     dockerfile: Dockerfile
-  #   ports:
-  #     - "3000:3000"
-  #   environment:
-  #     - NEXT_PUBLIC_API_URL=http://localhost:50055
-  #   depends_on:
-  #     mcpany-server:
-  #       condition: service_started
-  #   networks:
-  #     - mcpany-net
+  ui:
+    build:
+      context: ./ui
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_API_URL=http://localhost:50055
+    depends_on:
+      mcpany-server:
+        condition: service_started
+    networks:
+      - mcpany-net
 
 
 networks:

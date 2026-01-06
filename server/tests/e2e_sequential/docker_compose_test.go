@@ -23,11 +23,6 @@ import (
 )
 
 func TestDockerComposeE2E(t *testing.T) {
-	t.Skip("Skipping E2E test as requested by user to unblock merge")
-	if os.Getenv("E2E_DOCKER") != "true" {
-		t.Skip("Skipping E2E Docker test. Set E2E_DOCKER=true to run.")
-	}
-
 	rootDir, err := os.Getwd()
 	require.NoError(t, err)
 
@@ -59,18 +54,19 @@ func TestDockerComposeE2E(t *testing.T) {
 	// Cleanup function
 	cleanup := func() {
 		t.Log("Cleaning up...")
+		var cmd *exec.Cmd
 
 		// Dump logs from the active compose file if set
 		if currentComposeFile != "" {
 			t.Logf("Dumping logs from %s...", currentComposeFile)
-			cmd := exec.Command("docker", "compose", "-f", currentComposeFile, "logs")
+			cmd = exec.Command("docker", "compose", "-f", currentComposeFile, "logs")
 			cmd.Stdout = os.Stdout
 			cmd.Stderr = os.Stderr
 			_ = cmd.Run()
 		}
 
 		// Dump logs from manually run weather container
-		cmd := exec.Command("docker", "logs", "mcpany-weather-test") // Name without random suffix? No, we used random.
+		cmd = exec.Command("docker", "logs", "mcpany-weather-test") // Name without random suffix? No, we used random.
 		// We need to capture the weather container name too if we want to dump it.
 		// For now, let's skip dumping weather logs or try to capture it too.
 
@@ -144,13 +140,13 @@ func TestDockerComposeE2E(t *testing.T) {
 	// 5. Start Example Docker Compose
 	t.Log("Switching to example docker-compose...")
 
-	exampleDir := filepath.Join(rootDir, "examples/docker-compose-demo")
+	exampleDir := filepath.Join(rootDir, "server/examples/docker-compose-demo")
 	originalCompose := filepath.Join(exampleDir, "docker-compose.yml")
 	dynamicCompose := createDynamicCompose(t, originalCompose)
 	currentComposeFile = dynamicCompose
 	defer os.Remove(dynamicCompose)
 
-	runCommand(t, rootDir, "docker", "compose", "-f", dynamicCompose, "up", "-d", "--wait")
+	runCommand(t, exampleDir, "docker", "compose", "-f", dynamicCompose, "up", "-d", "--wait")
 
 	// 6. Verify Example Health
 	serverPort := getServicePort(dynamicCompose, "mcpany-server", "50050")
@@ -178,7 +174,7 @@ func TestDockerComposeE2E(t *testing.T) {
 func testFunctionalWeather(t *testing.T, rootDir string) {
 	// 1. Start mcpany-server with wttr.in config
 	// We run it on a dynamic port to avoid conflict with previous steps or other processes.
-	configPath := fmt.Sprintf("%s/examples/popular_services/wttr.in/config.yaml", rootDir)
+	configPath := filepath.Join(rootDir, "server", "examples", "popular_services", "wttr.in", "config.yaml")
 	t.Logf("rootDir: %s", rootDir)
 	t.Logf("configPath: %s", configPath)
 	if _, err := os.Stat(configPath); err != nil {

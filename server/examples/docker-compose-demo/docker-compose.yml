@@ -43,7 +43,7 @@ services:
   http-echo-server:
     build:
       context: ../../
-      dockerfile: docker/Dockerfile.http-echo-server
+      dockerfile: server/docker/Dockerfile.http-echo-server
     ports:
       - "8080:8080"
     healthcheck:
