@@ -15,8 +15,9 @@ RUN npm ci
 COPY . .
 
 # Grant permissions to specific directories needed for build/execution
-RUN mkdir -p .next node_modules/.cache test-results playwright-report && \
-    chmod -R 777 .next node_modules/.cache test-results playwright-report
+RUN touch next-env.d.ts && \
+    mkdir -p .next node_modules/.cache test-results playwright-report && \
+    chmod -R 777 .next node_modules/.cache test-results playwright-report next-env.d.ts
 
 # Default command (can be overridden)
 CMD ["npx", "playwright", "test"]
