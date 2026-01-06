@@ -276,7 +276,7 @@ func newRootCmd() *cobra.Command {
 				return fmt.Errorf("configuration validation failed: %w", err)
 			}
 			store := config.NewFileStore(osFs, cfg.ConfigPaths())
-			configs, err := config.LoadServices(context.Background(), store, "server")
+			configs, err := config.LoadResolvedConfig(context.Background(), store)
 			if err != nil {
 				return fmt.Errorf("failed to load configurations for validation: %w", err)
 			}
