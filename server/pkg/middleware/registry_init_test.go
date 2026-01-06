@@ -87,10 +87,12 @@ func TestInitStandardMiddlewares(t *testing.T) {
 	cachingMiddleware := &CachingMiddleware{}
 
 	// Call InitStandardMiddlewares
-	cleanup, err := InitStandardMiddlewares(authManager, mockToolManager, auditConfig, cachingMiddleware, nil)
+	standardMiddlewares, err := InitStandardMiddlewares(authManager, mockToolManager, auditConfig, cachingMiddleware, nil)
 	assert.NoError(t, err)
-	assert.NotNil(t, cleanup)
-	defer cleanup()
+	assert.NotNil(t, standardMiddlewares)
+	if standardMiddlewares.Cleanup != nil {
+		defer standardMiddlewares.Cleanup()
+	}
 
 	// Verify standard middlewares are registered in MCP registry
 	expectedMiddlewares := []string{"logging", "auth", "debug", "cors", "caching", "ratelimit", "call_policy", "audit", "global_ratelimit"}
@@ -161,7 +163,7 @@ func TestInitStandardMiddlewares_AuditError(t *testing.T) {
 	cachingMiddleware := &CachingMiddleware{}
 
 	// Call InitStandardMiddlewares
-	cleanup, err := InitStandardMiddlewares(authManager, mockToolManager, auditConfig, cachingMiddleware, nil)
+	standardMiddlewares, err := InitStandardMiddlewares(authManager, mockToolManager, auditConfig, cachingMiddleware, nil)
 	assert.Error(t, err)
-	assert.Nil(t, cleanup)
+	assert.Nil(t, standardMiddlewares)
 }

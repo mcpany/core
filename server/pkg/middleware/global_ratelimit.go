@@ -26,6 +26,7 @@ import (
 
 // GlobalRateLimitMiddleware provides rate limiting functionality for all MCP requests.
 type GlobalRateLimitMiddleware struct {
+	mu     sync.RWMutex
 	config *configv1.RateLimitConfig
 	// limiters caches active limiters. Key is "partitionKey".
 	limiters *cache.Cache
@@ -41,13 +42,27 @@ func NewGlobalRateLimitMiddleware(config *configv1.RateLimitConfig) *GlobalRateL
 	}
 }
 
+// UpdateConfig updates the rate limit configuration safely.
+func (m *GlobalRateLimitMiddleware) UpdateConfig(config *configv1.RateLimitConfig) {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+	m.config = config
+	// We might want to clear limiters cache if config changes drastically,
+	// but limiters update themselves on access if rps/burst changes.
+	// So we generally don't need to clear cache unless KeyBy changes.
+}
+
 // Execute executes the rate limiting middleware.
 func (m *GlobalRateLimitMiddleware) Execute(ctx context.Context, method string, req mcp.Request, next mcp.MethodHandler) (mcp.Result, error) {
-	if m.config == nil || !m.config.GetIsEnabled() {
+	m.mu.RLock()
+	config := m.config
+	m.mu.RUnlock()
+
+	if config == nil || !config.GetIsEnabled() {
 		return next(ctx, method, req)
 	}
 
-	limiter, err := m.getLimiter(ctx, m.config)
+	limiter, err := m.getLimiter(ctx, config)
 	if err == nil {
 		allowed, err := limiter.Allow(ctx)
 		if err != nil {
