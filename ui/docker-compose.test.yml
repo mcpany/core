@@ -12,7 +12,8 @@ services:
         "--config-path=config.minimal.yaml",
         "--mcp-listen-address=:50050",
       ]
-      # - MCPANY_API_KEY=test-token
+    environment:
+      - MCPANY_API_KEY=test-token
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:50050/healthz"]
       interval: 5s
@@ -32,6 +33,7 @@ services:
       - BACKEND_URL=http://server:50050
       - BASE_URL=http://localhost:9002
       - NEXT_PUBLIC_API_URL=http://server:50050
+      - NEXT_PUBLIC_MCPANY_API_KEY=test-token
       - CI=true
       - CAPTURE_SCREENSHOTS=${CAPTURE_SCREENSHOTS}
       - PLAYWRIGHT_ARGS=${PLAYWRIGHT_ARGS}
