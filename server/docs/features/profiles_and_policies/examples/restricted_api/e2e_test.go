@@ -28,12 +28,13 @@ import (
 )
 
 func TestRestrictedApiE2E(t *testing.T) {
-	// 1. Setup Mock Server
-	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	// 1. Setup Mock Upstream Service (Petstore)
+	mockServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// Serve openapi.yaml
 		if r.URL.Path == "/openapi.yaml" {
 			w.Header().Set("Content-Type", "application/yaml")
 			w.Write([]byte(`
-openapi: "3.0.0"
+openapi: 3.0.0
 info:
   version: 1.0.0
   title: Swagger Petstore
@@ -44,42 +45,63 @@ paths:
       parameters:
         - name: status
           in: query
+          required: true
           schema:
             type: array
             items:
               type: string
       responses:
-        "200":
+        '200':
           description: successful operation
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  type: object
+                  $ref: '#/components/schemas/Pet'
   /pet:
     post:
       operationId: addPet
       responses:
-        "200":
-          description: successful operation
+        '405':
+          description: Invalid input
+components:
+  schemas:
+    Pet:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+        photoUrls:
+          type: array
+          items:
+            type: string
+        status:
+          type: string
 `))
 			return
 		}
+
+		// Mock API endpoints
 		if r.URL.Path == "/pet/findByStatus" {
 			w.Header().Set("Content-Type", "application/json")
 			w.Write([]byte(`[{"id": 1, "name": "doggie", "status": "available"}]`))
 			return
 		}
-		if r.URL.Path == "/pet" {
+
+		if r.URL.Path == "/pet" && r.Method == "POST" {
 			w.WriteHeader(http.StatusOK)
 			return
 		}
-		http.NotFound(w, r)
-	}))
-	defer server.Close()
 
-	// 2. Config Content
+		w.WriteHeader(http.StatusNotFound)
+	}))
+	defer mockServer.Close()
+
+	// 2. Config Content using Mock Server
 	configContent := fmt.Sprintf(`
 upstream_services:
   - id: "petstore-service"
@@ -94,7 +116,7 @@ upstream_services:
             name_regex: "^petstore-service\\.findPetsByStatus$"
           - action: ALLOW
             name_regex: "^petstore-service\\.getPetById$"
-`, server.URL, server.URL)
+`, mockServer.URL, mockServer.URL)
 
 	tmpDir := t.TempDir()
 	configPath := filepath.Join(tmpDir, "config.yaml")
