@@ -24,8 +24,6 @@ func NewHTTPCORSMiddleware(allowedOrigins []string) *HTTPCORSMiddleware {
 // Handler wraps an http.Handler with CORS logic.
 func (m *HTTPCORSMiddleware) Handler(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-
-
 		origin := r.Header.Get("Origin")
 		if origin == "" {
 			// Not a CORS request

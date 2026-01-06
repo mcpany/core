@@ -2129,7 +2129,7 @@ func TestRun_APIKeyAuthentication(t *testing.T) {
 	assert.Equal(t, http.StatusUnauthorized, resp.StatusCode)
 
 	// Make a request with the correct API key
-	req, err = http.NewRequest("GET", "http://"+addr+"/healthz", nil)
+	req, err = http.NewRequest("GET", "http://"+addr+"/api/v1/topology", nil)
 	require.NoError(t, err)
 	req.Header.Set("X-API-Key", "test-api-key")
 	resp, err = http.DefaultClient.Do(req)
@@ -2138,7 +2138,7 @@ func TestRun_APIKeyAuthentication(t *testing.T) {
 	assert.Equal(t, http.StatusOK, resp.StatusCode)
 
 	// Make a request with an incorrect API key
-	req, err = http.NewRequest("GET", "http://"+addr+"/healthz", nil)
+	req, err = http.NewRequest("GET", "http://"+addr+"/api/v1/topology", nil)
 	require.NoError(t, err)
 	req.Header.Set("X-API-Key", "incorrect-api-key")
 	resp, err = http.DefaultClient.Do(req)
@@ -2207,7 +2207,7 @@ func TestRun_IPAllowlist(t *testing.T) {
 		addr := fmt.Sprintf("localhost:%d", port)
 
 		// Allow localhost (IPv4 and IPv6 just in case)
-		configContent := fmt.Sprintf(`
+		configContent := `
 global_settings:
   allowed_ips:
     - "127.0.0.1"
@@ -2216,7 +2216,7 @@ upstream_services:
  - name: "test-service"
    http_service:
      address: "http://localhost:8080"
-`)
+`
 		err = afero.WriteFile(fs, "/config.yaml", []byte(configContent), 0o644)
 		require.NoError(t, err)
 
@@ -2249,12 +2249,12 @@ upstream_services:
 		addr := fmt.Sprintf("localhost:%d", port)
 
 		// Only allow a different IP
-		configContent := fmt.Sprintf(`
+		configContent := `
 global_settings:
   allowed_ips:
     - "10.0.0.1"
 upstream_services: []
-`)
+`
 		err = afero.WriteFile(fs, "/config.yaml", []byte(configContent), 0o644)
 		require.NoError(t, err)
 

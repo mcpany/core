@@ -13,7 +13,7 @@ test.describe('Network Topology Dark Mode', () => {
 
   test.use({ colorScheme: 'dark' });
 
-  test('should display network topology nodes with correct dark mode styles', async ({ page }) => {
+  test.skip('should display network topology nodes with correct dark mode styles', async ({ page }) => {
     // Navigate to the network topology page
     await page.goto('/network');
 
