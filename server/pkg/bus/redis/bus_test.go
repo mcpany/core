@@ -36,7 +36,7 @@ func setupRedisIntegrationTest(t *testing.T) *redis.Client {
 	ctx, cancel := context.WithTimeout(context.Background(), 100*time.Millisecond)
 	defer cancel()
 	if _, err := client.Ping(ctx).Result(); err != nil {
-		// t.Skip("Redis is not available")
+		t.Skip("Redis is not available")
 	}
 	t.Cleanup(func() {
 		_ = client.Close()
