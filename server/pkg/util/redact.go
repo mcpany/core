@@ -268,10 +268,67 @@ var sensitiveKeys = []string{
 
 // IsSensitiveKey checks if a key name suggests it contains sensitive information.
 func IsSensitiveKey(key string) bool {
-	// Use the optimized byte-based scanner for keys as well.
-	// Avoid allocation using zero-copy conversion.
+	// Optimized implementation for short keys (typical key names).
+	// Avoids the overhead of calling scanForSensitiveKeys which is optimized for large blobs.
 	//nolint:gosec // Zero-copy conversion for optimization
-	return scanForSensitiveKeys(unsafe.Slice(unsafe.StringData(key), len(key)), false)
+	keyBytes := unsafe.Slice(unsafe.StringData(key), len(key))
+	n := len(key)
+
+	for i := 0; i < n; i++ {
+		c := keyBytes[i]
+		var lower byte
+		if c >= 'A' && c <= 'Z' {
+			lower = c + 32
+		} else {
+			lower = c
+		}
+
+		if len(sensitiveKeyGroups[lower]) == 0 {
+			continue
+		}
+
+		// Optimization: Check second character using mask if available
+		if i+1 < n {
+			nextChar := keyBytes[i+1] | 0x20
+			if nextChar >= 'a' && nextChar <= 'z' {
+				if (sensitiveNextCharMask[lower] & (1 << (nextChar - 'a'))) == 0 {
+					continue
+				}
+			}
+		}
+
+		for _, k := range sensitiveKeyGroups[lower] {
+			if matchFoldRest(keyBytes[i:], k) {
+				if isBoundary(keyBytes, i, len(k)) {
+					return true
+				}
+			}
+		}
+	}
+	return false
+}
+
+// isBoundary checks if the match is a valid word boundary.
+// It matches the heuristic used in scanForSensitiveKeys.
+func isBoundary(input []byte, start, length int) bool {
+	endIdx := start + length
+	if endIdx >= len(input) {
+		return true
+	}
+	next := input[endIdx]
+	// 1. If next char is lowercase letter, it's a continuation (e.g. "auth" in "author").
+	if next >= 'a' && next <= 'z' {
+		return false
+	}
+	// 2. CamelCase check.
+	if next >= 'A' && next <= 'Z' {
+		// Check if the matched key was uppercase.
+		first := input[start]
+		if first >= 'A' && first <= 'Z' {
+			return false // e.g. "Auth" in "AuthToken" or "AUTH" in "AUTHORITY"
+		}
+	}
+	return true
 }
 
 // scanForSensitiveKeys checks if input contains any sensitive key.
