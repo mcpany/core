@@ -44,7 +44,7 @@ func TestNewS3Provider_Config(t *testing.T) {
 		Bucket:          stringPtr("my-bucket"),
 		Region:          stringPtr("us-east-1"),
 		AccessKeyId:     stringPtr("AKIA..."),
-		SecretAccessKey: stringPtr("secret"),
+		SecretAccessKey: stringPtr("test-secret-key"),
 		SessionToken:    stringPtr("token"),
 		Endpoint:        stringPtr("http://localhost:9000"),
 	}
@@ -68,13 +68,13 @@ func TestNewSftpProvider_Error(t *testing.T) {
 	assert.Nil(t, p)
 	assert.Contains(t, err.Error(), "sftp config is nil")
 
-    // Invalid key path
-    cfg := &configv1.SftpFs{
-        KeyPath: stringPtr("/non/existent/key"),
-    }
-    p, err = NewSftpProvider(cfg)
-    assert.Error(t, err)
-    assert.Nil(t, p)
+	// Invalid key path
+	cfg := &configv1.SftpFs{
+		KeyPath: stringPtr("/non/existent/key"),
+	}
+	p, err = NewSftpProvider(cfg)
+	assert.Error(t, err)
+	assert.Nil(t, p)
 }
 
 func TestNewZipProvider_Error(t *testing.T) {
