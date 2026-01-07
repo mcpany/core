@@ -57,7 +57,6 @@ import (
 	"google.golang.org/grpc/peer"
 	"google.golang.org/grpc/reflection"
 	"google.golang.org/grpc/status"
-	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 )
 
@@ -487,6 +486,9 @@ func (a *Application) Run(
 
 	// Add Topology Middleware (Always Active)
 	mcpSrv.Server().AddReceivingMiddleware(a.TopologyManager.Middleware)
+
+	// Add Prometheus Metrics Middleware (Always Active)
+	mcpSrv.Server().AddReceivingMiddleware(middleware.PrometheusMetricsMiddleware())
 
 	if stdio {
 		err := a.runStdioModeFunc(ctx, mcpSrv)
@@ -923,24 +925,8 @@ func (a *Application) runServerMode(
 	apiHandler := http.StripPrefix("/api/v1", a.createAPIHandler(store))
 	mux.Handle("/api/v1/", authMiddleware(apiHandler))
 
-	// Topology API
-	mux.Handle("/api/v1/topology", authMiddleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Content-Type", "application/json")
-		graph := a.TopologyManager.GetGraph(r.Context())
+	// Topology API is now handled by apiHandler via api.go
 
-		// Use protojson for correct Enum serialization (strings instead of ints)
-		marshaler := protojson.MarshalOptions{
-			UseProtoNames:   true, // Use snake_case as per proto definition
-			EmitUnpopulated: false,
-		}
-		data, err := marshaler.Marshal(graph)
-		if err != nil {
-			logging.GetLogger().Error("Failed to marshal topology", "error", err)
-			http.Error(w, "Failed to encode topology", http.StatusInternalServerError)
-			return
-		}
-		_, _ = w.Write(data)
-	})))
 
 	logging.GetLogger().Info("DEBUG: Registering /mcp/u/ handler")
 	// Multi-user handler
@@ -1488,8 +1474,17 @@ func (a *Application) createAuthMiddleware(apiKey string) func(http.Handler) htt
 			r = r.WithContext(ctx)
 
 			if apiKey != "" {
-				// logging.GetLogger().Info("DEBUG: Checking API Key", "configured", apiKey, "header", r.Header.Get("X-API-Key"))
-				if subtle.ConstantTimeCompare([]byte(r.Header.Get("X-API-Key")), []byte(apiKey)) != 1 {
+				// Check X-API-Key or Authorization header
+				requestKey := r.Header.Get("X-API-Key")
+				if requestKey == "" {
+					authHeader := r.Header.Get("Authorization")
+					if strings.HasPrefix(authHeader, "Bearer ") {
+						requestKey = strings.TrimPrefix(authHeader, "Bearer ")
+					}
+				}
+
+				logging.GetLogger().Info("DEBUG: Checking API Key", "configured", "REDACTED", "header_len", len(requestKey), "remote_addr", r.RemoteAddr)
+				if subtle.ConstantTimeCompare([]byte(requestKey), []byte(apiKey)) != 1 {
 					http.Error(w, "Unauthorized", http.StatusUnauthorized)
 					return
 				}

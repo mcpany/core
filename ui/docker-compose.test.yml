@@ -12,7 +12,8 @@ services:
         "--config-path=config.minimal.yaml",
         "--mcp-listen-address=:50050",
       ]
-      # - MCPANY_API_KEY=test-token
+    environment:
+      - MCPANY_API_KEY=test-token
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:50050/healthz"]
       interval: 5s
@@ -27,16 +28,19 @@ services:
 
   ui-tests:
     image: mcpany-ui-e2e:latest
+    user: "${TEST_UID}:${TEST_GID}"
     environment:
       - MCPANY_LOG_LEVEL=info
       - BACKEND_URL=http://server:50050
       - BASE_URL=http://localhost:9002
       - NEXT_PUBLIC_API_URL=http://server:50050
+      - NEXT_PUBLIC_MCPANY_API_KEY=test-token
       - CI=true
       - CAPTURE_SCREENSHOTS=${CAPTURE_SCREENSHOTS}
+      - PLAYWRIGHT_ARGS=${PLAYWRIGHT_ARGS}
     volumes:
       - ../ui/test-results:/work/ui/test-results
-      - ../ui/playwright-report:/work/ui/playwright-report
+      - ../build/playwright-report:/work/ui/playwright-report
       - ../ui/.audit:/work/ui/.audit
       - ../ui/docs:/work/ui/docs
       - ../docs:/work/docs
@@ -50,7 +54,7 @@ services:
         condition: service_healthy
       http-echo-server:
         condition: service_healthy
-    command: ["sh", "-c", "ls -la /work/ui/tests/e2e && cat /work/ui/tests/e2e/main.spec.ts && npx playwright test"]
+    command: ["sh", "-c", "npx playwright test $PLAYWRIGHT_ARGS"]
 
   http-echo-server:
     image: mcpany/http-echo-server:latest

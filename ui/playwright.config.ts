@@ -13,13 +13,17 @@ export default defineConfig({
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
   workers: process.env.CI ? 1 : undefined,
-  reporter: [['line'], ['html']],
+  outputDir: 'test-results/artifacts',
+  reporter: [['line'], ['html', { outputFolder: 'playwright-report/html' }]],
   timeout: 60000,
   expect: {
     timeout: 15000,
   },
   use: {
     baseURL: process.env.PLAYWRIGHT_BASE_URL || 'http://localhost:9002',
+    extraHTTPHeaders: {
+      'X-API-Key': process.env.NEXT_PUBLIC_MCPANY_API_KEY || 'test-token',
+    },
     trace: 'on-first-retry',
     colorScheme: 'dark',
     actionTimeout: 15000,

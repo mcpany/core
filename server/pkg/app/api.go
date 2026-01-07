@@ -38,6 +38,7 @@ func (a *Application) createAPIHandler(store storage.Storage) http.Handler {
 	mux.HandleFunc("/resources", a.handleResources())
 	mux.HandleFunc("/secrets", a.handleSecrets(store))
 	mux.HandleFunc("/secrets/", a.handleSecretDetail(store))
+	mux.HandleFunc("/topology", a.handleTopology())
 
 	return mux
 }
@@ -119,10 +120,10 @@ func (a *Application) handleServices(store storage.Storage) http.HandlerFunc {
 				return
 			}
 
-			// 	// Trigger reload
-			// 	if err := a.ReloadConfig(a.fs, a.configPaths); err != nil {
-			// 		logging.GetLogger().Error("failed to reload config after save", "error", err)
-			// 	}
+			// Trigger reload
+			if err := a.ReloadConfig(a.fs, a.configPaths); err != nil {
+				logging.GetLogger().Error("failed to reload config after save", "error", err)
+			}
 
 			w.WriteHeader(http.StatusCreated)
 			_, _ = w.Write([]byte("{}"))
@@ -199,9 +200,9 @@ func (a *Application) handleServiceDetail(store storage.Storage) http.HandlerFun
 				http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 				return
 			}
-			// if err := a.ReloadConfig(a.fs, a.configPaths); err != nil {
-			// 	logging.GetLogger().Error("failed to reload config after update", "error", err)
-			// }
+			if err := a.ReloadConfig(a.fs, a.configPaths); err != nil {
+				logging.GetLogger().Error("failed to reload config after update", "error", err)
+			}
 			w.WriteHeader(http.StatusOK)
 			_, _ = w.Write([]byte("{}"))
 		case http.MethodDelete:
@@ -210,9 +211,9 @@ func (a *Application) handleServiceDetail(store storage.Storage) http.HandlerFun
 				http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 				return
 			}
-			// if err := a.ReloadConfig(a.fs, a.configPaths); err != nil {
-			// 	logging.GetLogger().Error("failed to reload config after delete", "error", err)
-			// }
+			if err := a.ReloadConfig(a.fs, a.configPaths); err != nil {
+				logging.GetLogger().Error("failed to reload config after delete", "error", err)
+			}
 			w.WriteHeader(http.StatusNoContent)
 		default:
 			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
@@ -293,9 +294,9 @@ func (a *Application) handleSettings(store storage.Storage) http.HandlerFunc {
 				return
 			}
 
-			// if err := a.ReloadConfig(a.fs, a.configPaths); err != nil {
-			// 	logging.GetLogger().Error("failed to reload config after settings save", "error", err)
-			// }
+			if err := a.ReloadConfig(a.fs, a.configPaths); err != nil {
+				logging.GetLogger().Error("failed to reload config after settings save", "error", err)
+			}
 
 			w.WriteHeader(http.StatusOK)
 			_, _ = w.Write([]byte("{}"))

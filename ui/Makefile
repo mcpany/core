@@ -22,14 +22,26 @@ TIMESTAMP := $(shell date +%s)
 SERVER_IMAGE_TAG := ui-test-$(TIMESTAMP)
 SERVER_IMAGE ?= mcpany/server:$(SERVER_IMAGE_TAG)
 
+TEST_UID := $(shell id -u)
+TEST_GID := $(shell id -g)
+export TEST_UID
+export TEST_GID
+
 # Default test target
 # Run the tests in a docker container
-test: build-test-docker build-server-docker
+test: clean-test-results build-test-docker build-server-docker
+	mkdir -p test-results .audit ../build/playwright-report
+	chmod -R 777 test-results .audit ../build/playwright-report || true
 	if [ -z '$(ARGS)' ]; then \
 		SERVER_IMAGE=$(SERVER_IMAGE) docker compose -f ./docker-compose.test.yml up --abort-on-container-exit --exit-code-from ui-tests; \
 	else \
 		SERVER_IMAGE=$(SERVER_IMAGE) docker compose -f ./docker-compose.test.yml run --rm --service-ports ui-tests npx playwright test $(ARGS); \
 	fi
+
+clean-test-results:
+	@echo "Cleaning test results..."
+	@docker run --rm -v $(PWD)/test-results:/work/ui/test-results alpine sh -c "rm -rf /work/ui/test-results/*" || true
+	@docker run --rm -v $(PWD)/.audit:/work/ui/.audit alpine sh -c "rm -rf /work/ui/.audit/*" || true
 
 build-server-docker:
 	@echo "Building Server Docker image ($(SERVER_IMAGE)) via server/Makefile..."
@@ -41,8 +53,9 @@ audit: build-test-docker
 	SERVER_IMAGE=$(SERVER_IMAGE) CAPTURE_SCREENSHOTS=true docker compose -f ./docker-compose.test.yml up --abort-on-container-exit --exit-code-from ui-tests
 	docker compose -f ./docker-compose.test.yml down -v
 
-test-ci:
-
+test-ci: clean-test-results
+	mkdir -p test-results .audit ../build/playwright-report
+	chmod -R 777 test-results .audit ../build/playwright-report || true
 	docker compose -f ./docker-compose.test.yml up --quiet-pull --abort-on-container-exit --exit-code-from ui-tests
 	docker compose -f ./docker-compose.test.yml down -v
 

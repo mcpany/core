@@ -6,6 +6,9 @@ package main
 import (
 	"context"
 	"encoding/json"
+	"fmt"
+	"net/http"
+	"net/http/httptest"
 	"os"
 	"path/filepath"
 	"testing"
@@ -30,13 +33,63 @@ func TestRestrictedApiE2E(t *testing.T) {
 	}
 
 	// 1. Config Content
-	configContent := `
+	// 1. Setup Mock Server
+	mockServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path == "/v2/pet/findByStatus" {
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(http.StatusOK)
+			_, _ = w.Write([]byte(`[{"id": 1, "name": "doggie", "status": "available"}]`))
+			return
+		}
+		http.Error(w, "Not Found", http.StatusNotFound)
+	}))
+	defer mockServer.Close()
+
+	// 2. Config Content
+	configContent := fmt.Sprintf(`
 upstream_services:
   - id: "petstore-service"
     name: "petstore-service"
     openapi_service:
-      address: "https://petstore.swagger.io/v2"
-      spec_url: "https://raw.githubusercontent.com/swagger-api/swagger-petstore/master/src/main/resources/openapi.yaml"
+      address: "%s/v2"
+      spec_content: |
+        openapi: "3.0.0"
+        info:
+          version: 1.0.0
+          title: Swagger Petstore
+        paths:
+          /pet/findByStatus:
+            get:
+              operationId: findPetsByStatus
+              parameters:
+                - name: status
+                  in: query
+                  schema:
+                    type: array
+                    items:
+                      type: string
+              responses:
+                '200':
+                  description: successful operation
+          /pet/{petId}:
+             get:
+              operationId: getPetById
+              parameters:
+                - name: petId
+                  in: path
+                  required: true
+                  schema:
+                    type: integer
+                    format: int64
+              responses:
+                '200':
+                  description: successful operation
+          /pet:
+            post:
+              operationId: addPet
+              responses:
+                '200':
+                   description: successful operation
     call_policies:
       - default_action: DENY
         rules:
@@ -44,7 +97,8 @@ upstream_services:
             name_regex: "^petstore-service\\.findPetsByStatus$"
           - action: ALLOW
             name_regex: "^petstore-service\\.getPetById$"
-`
+`, mockServer.URL)
+
 	tmpDir := t.TempDir()
 	configPath := filepath.Join(tmpDir, "config.yaml")
 	err := os.WriteFile(configPath, []byte(configContent), 0644)
