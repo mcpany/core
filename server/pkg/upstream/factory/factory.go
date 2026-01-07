@@ -12,6 +12,7 @@ import (
 	"github.com/mcpany/core/server/pkg/upstream/command"
 	"github.com/mcpany/core/server/pkg/upstream/graphql"
 	"github.com/mcpany/core/server/pkg/upstream/grpc"
+	"github.com/mcpany/core/server/pkg/upstream/browser"
 	"github.com/mcpany/core/server/pkg/upstream/http"
 	"github.com/mcpany/core/server/pkg/upstream/mcp"
 	"github.com/mcpany/core/server/pkg/upstream/filesystem"
@@ -88,6 +89,8 @@ func (f *UpstreamServiceFactory) NewUpstream(config *configv1.UpstreamServiceCon
 		return filesystem.NewUpstream(), nil
 	case configv1.UpstreamServiceConfig_VectorService_case:
 		return vector.NewUpstream(), nil
+	case configv1.UpstreamServiceConfig_BrowserService_case:
+		return browser.NewUpstream(), nil
 	default:
 		return nil, fmt.Errorf("unknown service config type: %T", config.WhichServiceConfig())
 	}

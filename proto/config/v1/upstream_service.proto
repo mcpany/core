@@ -71,6 +71,7 @@ message UpstreamServiceConfig {
     SqlUpstreamService sql_service = 31 [json_name = "sql_service"];
     FilesystemUpstreamService filesystem_service = 32 [json_name = "filesystem_service"];
     VectorUpstreamService vector_service = 34 [json_name = "vector_service"];
+    BrowserUpstreamService browser_service = 35 [json_name = "browser_service"];
   }
 
   // The version of the upstream service, if known (e.g., "v1.2.3").
@@ -342,6 +343,23 @@ message SqlUpstreamService {
   string dsn = 2;
   // A map of call definitions, keyed by their unique ID.
   map<string, SqlCallDefinition> calls = 3;
+}
+
+// BrowserUpstreamService defines an upstream service that provides browser automation.
+message BrowserUpstreamService {
+  // The WebSocket Debugger URL (e.g., "ws://localhost:9222/devtools/browser/...").
+  // If empty, a local headless browser will be launched using chromedp.
+  string endpoint = 1;
+  // If true, the browser will be headless. Default is true.
+  bool headless = 2;
+  // Viewport width. Default 1920.
+  int32 viewport_width = 3 [json_name = "viewport_width"];
+  // Viewport height. Default 1080.
+  int32 viewport_height = 4 [json_name = "viewport_height"];
+  // Timeout for browser actions.
+  google.protobuf.Duration timeout = 5;
+  // User agent string.
+  string user_agent = 6 [json_name = "user_agent"];
 }
 
 // FilesystemUpstreamService defines a service that exposes a local filesystem safely.
