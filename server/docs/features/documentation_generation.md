@@ -7,13 +7,13 @@ MCP Any includes a built-in tool to generate Markdown documentation for your con
 You can generate documentation using the `config doc` command:
 
 ```bash
-mcpany config doc --config-paths /path/to/your/config.yaml
+mcpany config doc --config-path /path/to/your/config.yaml
 ```
 
 This will print the generated Markdown to stdout. You can redirect it to a file:
 
 ```bash
-mcpany config doc --config-paths config.yaml > docs/api.md
+mcpany config doc --config-path config.yaml > docs/api.md
 ```
 
 ## What gets generated?
