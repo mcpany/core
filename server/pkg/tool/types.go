@@ -1998,9 +1998,25 @@ func isShellCommand(cmd string) bool {
 	// Shells and commands that invoke a shell or execute code remotely/locally via shell.
 	// We treat them as shells to enforce strict argument validation.
 	shells := []string{
+		// Shells
 		"sh", "bash", "zsh", "dash", "ash", "ksh", "csh", "tcsh", "fish",
 		"pwsh", "powershell", "powershell.exe", "pwsh.exe", "cmd", "cmd.exe",
+		// Remote execution/sudo
 		"ssh", "scp", "su", "sudo", "env",
+		// Common interpreters/runners that might be used for one-liners
+		"python", "python2", "python3", "python.exe",
+		"ruby", "ruby.exe",
+		"perl", "perl.exe",
+		"php", "php.exe",
+		"node", "nodejs", "node.exe",
+		"lua", "lua.exe",
+		"awk", "gawk", "nawk",
+		"sed",
+		"jq",
+		// SQL CLIs
+		"psql", "mysql", "sqlite3",
+		// Container runtimes
+		"docker", "podman",
 	}
 	base := filepath.Base(cmd)
 	for _, shell := range shells {

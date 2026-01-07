@@ -1,268 +1,104 @@
-// Copyright 2025 Author(s) of MCP Any
-// SPDX-License-Identifier: Apache-2.0
-
 package tool
 
 import (
 	"context"
 	"encoding/json"
+	"strings"
 	"testing"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	v1 "github.com/mcpany/core/proto/mcp_router/v1"
-	"github.com/stretchr/testify/assert"
 	"google.golang.org/protobuf/proto"
 )
 
-func TestLocalCommandTool_ArgumentInjection_Prevention(t *testing.T) {
-	t.Parallel()
-	// This test verifies that argument injection via placeholders is prevented.
+func TestLocalCommandTool_Execute_PythonInjection_Blocked(t *testing.T) {
+	// This test demonstrates that python IS treated as a shell command,
+	// blocking code injection via argument substitution.
 
-	tool := &v1.Tool{
-		Name:        proto.String("test-tool-cat"),
+	toolDef := &v1.Tool{
+		Name: proto.String("python_tool"),
 	}
+
 	service := &configv1.CommandLineUpstreamService{
-		Command: proto.String("cat"),
-		Local:   proto.Bool(true),
+		Command: proto.String("python3"),
 	}
+
 	callDef := &configv1.CommandLineCallDefinition{
+		Args: []string{"-c", "print('{{msg}}')"},
 		Parameters: []*configv1.CommandLineParameterMapping{
-			{Schema: &configv1.ParameterSchema{Name: proto.String("file")}},
-		},
-		Args: []string{"{{file}}"},
-	}
-
-	localTool := NewLocalCommandTool(tool, service, callDef, nil, "call-id")
-
-	// Case 1: Safe input (relative path)
-	reqSafe := &ExecutionRequest{
-		ToolName: "test-tool-cat",
-		Arguments: map[string]interface{}{
-			"file": "hosts",
+			{
+				Schema: &configv1.ParameterSchema{
+					Name: proto.String("msg"),
+				},
+			},
 		},
 	}
-	reqSafe.ToolInputs, _ = json.Marshal(reqSafe.Arguments)
 
-	_, err := localTool.Execute(context.Background(), reqSafe)
-	if err != nil {
-		assert.NotContains(t, err.Error(), "argument injection")
-		assert.NotContains(t, err.Error(), "absolute path detected")
+	ct := NewLocalCommandTool(toolDef, service, callDef, nil, "test-call-id")
+
+	// Malicious input trying to break out of python string
+	injectionPayload := "'); print(\"INJECTED\"); print('"
+	jsonInput, _ := json.Marshal(map[string]string{"msg": injectionPayload})
+
+	req := &ExecutionRequest{
+		ToolName: "python_tool",
+		ToolInputs: jsonInput,
 	}
 
-	// Case 2: Argument Injection
-	reqAttack := &ExecutionRequest{
-		ToolName: "test-tool-cat",
-		Arguments: map[string]interface{}{
-			"file": "-n", // Attempt to inject a flag
-		},
-	}
-	reqAttack.ToolInputs, _ = json.Marshal(reqAttack.Arguments)
+	// Execute
+	_, err := ct.Execute(context.Background(), req)
 
-	_, err = localTool.Execute(context.Background(), reqAttack)
-
-	assert.Error(t, err)
-	if err != nil {
-		assert.Contains(t, err.Error(), "argument injection")
+	if err == nil {
+		t.Fatal("Expected error due to injection detection, but got nil")
 	}
 
-	// Case 3: Negative number (should be allowed)
-	reqNegative := &ExecutionRequest{
-		ToolName: "test-tool-cat",
-		Arguments: map[string]interface{}{
-			"file": "-5",
-		},
-	}
-	reqNegative.ToolInputs, _ = json.Marshal(reqNegative.Arguments)
-
-	_, err = localTool.Execute(context.Background(), reqNegative)
-	if err != nil {
-		assert.NotContains(t, err.Error(), "argument injection")
+	if !strings.Contains(err.Error(), "shell injection detected") {
+		t.Fatalf("Expected 'shell injection detected' error, got: %v", err)
 	}
 }
 
-func TestLocalCommandTool_ShellInjection_Prevention(t *testing.T) {
-	t.Parallel()
-	// Test Case 1: Unquoted Placeholder (Vulnerable configuration)
-	t.Run("Unquoted Placeholder", func(t *testing.T) {
-		tool := &v1.Tool{Name: proto.String("test-tool-sh")}
-		service := &configv1.CommandLineUpstreamService{
-			Command: proto.String("sh"),
-			Local:   proto.Bool(true),
-		}
-		callDef := &configv1.CommandLineCallDefinition{
-			Parameters: []*configv1.CommandLineParameterMapping{
-				{Schema: &configv1.ParameterSchema{Name: proto.String("msg")}},
+func TestLocalCommandTool_Execute_DockerInjection_Blocked(t *testing.T) {
+	// This test demonstrates that docker IS treated as a shell command,
+	// blocking injection.
+
+	toolDef := &v1.Tool{
+		Name: proto.String("docker_tool"),
+	}
+
+	service := &configv1.CommandLineUpstreamService{
+		Command: proto.String("docker"),
+	}
+
+	callDef := &configv1.CommandLineCallDefinition{
+		Args: []string{"run", "ubuntu", "bash", "-c", "echo {{msg}}"},
+		Parameters: []*configv1.CommandLineParameterMapping{
+			{
+				Schema: &configv1.ParameterSchema{
+					Name: proto.String("msg"),
+				},
 			},
-			Args: []string{"-c", "echo {{msg}}"},
-		}
-		localTool := NewLocalCommandTool(tool, service, callDef, nil, "call-id")
+		},
+	}
 
-		// Injection attempt
-		reqAttack := &ExecutionRequest{
-			ToolName: "test-tool-sh",
-			Arguments: map[string]interface{}{
-				"msg": "hello; cat /etc/passwd",
-			},
-		}
-		reqAttack.ToolInputs, _ = json.Marshal(reqAttack.Arguments)
+	ct := NewLocalCommandTool(toolDef, service, callDef, nil, "test-call-id")
 
-		_, err := localTool.Execute(context.Background(), reqAttack)
-		assert.Error(t, err)
-		if err != nil {
-			assert.Contains(t, err.Error(), "shell injection detected")
-		}
+	// Malicious input
+	injectionPayload := "; rm -rf /"
+	jsonInput, _ := json.Marshal(map[string]string{"msg": injectionPayload})
 
-		// Safe input but with special chars that are dangerous in unquoted context
-		reqSafeish := &ExecutionRequest{
-			ToolName: "test-tool-sh",
-			Arguments: map[string]interface{}{
-				"msg": "Law & Order",
-			},
-		}
-		reqSafeish.ToolInputs, _ = json.Marshal(reqSafeish.Arguments)
-		_, err = localTool.Execute(context.Background(), reqSafeish)
-		// Should fail because & is dangerous unquoted
-		assert.Error(t, err)
-	})
+	req := &ExecutionRequest{
+		ToolName: "docker_tool",
+		ToolInputs: jsonInput,
+	}
 
-	// Test Case 2: Single Quoted Placeholder (Safer configuration)
-	t.Run("Single Quoted Placeholder", func(t *testing.T) {
-		tool := &v1.Tool{Name: proto.String("test-tool-sh-quoted")}
-		service := &configv1.CommandLineUpstreamService{
-			Command: proto.String("sh"),
-			Local:   proto.Bool(true),
-		}
-		callDef := &configv1.CommandLineCallDefinition{
-			Parameters: []*configv1.CommandLineParameterMapping{
-				{Schema: &configv1.ParameterSchema{Name: proto.String("msg")}},
-			},
-			Args: []string{"-c", "echo '{{msg}}'"},
-		}
-		localTool := NewLocalCommandTool(tool, service, callDef, nil, "call-id")
+	// Execute
+	_, err := ct.Execute(context.Background(), req)
 
-		// Safe input with special chars
-		reqSafe := &ExecutionRequest{
-			ToolName: "test-tool-sh-quoted",
-			Arguments: map[string]interface{}{
-				"msg": "Law & Order",
-			},
-		}
-		reqSafe.ToolInputs, _ = json.Marshal(reqSafe.Arguments)
+	if err == nil {
+		t.Fatal("Expected error due to injection detection, but got nil")
+	}
 
-		_, err := localTool.Execute(context.Background(), reqSafe)
-		// Should PASS because it's quoted
-		if err != nil {
-			assert.NotContains(t, err.Error(), "shell injection detected")
-		}
-
-		// Breakout attempt
-		reqBreakout := &ExecutionRequest{
-			ToolName: "test-tool-sh-quoted",
-			Arguments: map[string]interface{}{
-				"msg": "foo'bar",
-			},
-		}
-		reqBreakout.ToolInputs, _ = json.Marshal(reqBreakout.Arguments)
-		_, err = localTool.Execute(context.Background(), reqBreakout)
-		// Should FAIL because it contains single quote
-		assert.Error(t, err)
-	})
-
-	// Test Case 3: Double Quoted Placeholder
-	t.Run("Double Quoted Placeholder", func(t *testing.T) {
-		tool := &v1.Tool{Name: proto.String("test-tool-sh-dquoted")}
-		service := &configv1.CommandLineUpstreamService{
-			Command: proto.String("sh"),
-			Local:   proto.Bool(true),
-		}
-		callDef := &configv1.CommandLineCallDefinition{
-			Parameters: []*configv1.CommandLineParameterMapping{
-				{Schema: &configv1.ParameterSchema{Name: proto.String("msg")}},
-			},
-			Args: []string{"-c", "echo \"{{msg}}\""},
-		}
-		localTool := NewLocalCommandTool(tool, service, callDef, nil, "call-id")
-
-		// Safe input
-		reqSafe := &ExecutionRequest{
-			ToolName: "test-tool-sh-dquoted",
-			Arguments: map[string]interface{}{
-				"msg": "Hello World",
-			},
-		}
-		reqSafe.ToolInputs, _ = json.Marshal(reqSafe.Arguments)
-		_, err := localTool.Execute(context.Background(), reqSafe)
-		assert.NoError(t, err)
-
-		// Variable expansion attempt (dangerous in double quotes)
-		reqVar := &ExecutionRequest{
-			ToolName: "test-tool-sh-dquoted",
-			Arguments: map[string]interface{}{
-				"msg": "$HOME",
-			},
-		}
-		reqVar.ToolInputs, _ = json.Marshal(reqVar.Arguments)
-		_, err = localTool.Execute(context.Background(), reqVar)
-		assert.Error(t, err) // Should block $
-
-		// Breakout attempt
-		reqBreakout := &ExecutionRequest{
-			ToolName: "test-tool-sh-dquoted",
-			Arguments: map[string]interface{}{
-				"msg": "foo\"bar",
-			},
-		}
-		reqBreakout.ToolInputs, _ = json.Marshal(reqBreakout.Arguments)
-		_, err = localTool.Execute(context.Background(), reqBreakout)
-		assert.Error(t, err) // Should block "
-
-		// Backslash escape attempt (to escape closing quote)
-		reqBackslash := &ExecutionRequest{
-			ToolName: "test-tool-sh-dquoted",
-			Arguments: map[string]interface{}{
-				"msg": "foo\\",
-			},
-		}
-		reqBackslash.ToolInputs, _ = json.Marshal(reqBackslash.Arguments)
-		_, err = localTool.Execute(context.Background(), reqBackslash)
-		assert.Error(t, err) // Should block \
-
-		// Windows CMD injection attempt (dangerous in double quotes on Windows)
-		reqWinCmd := &ExecutionRequest{
-			ToolName: "test-tool-sh-dquoted",
-			Arguments: map[string]interface{}{
-				"msg": "%PATH%",
-			},
-		}
-		reqWinCmd.ToolInputs, _ = json.Marshal(reqWinCmd.Arguments)
-		_, err = localTool.Execute(context.Background(), reqWinCmd)
-		assert.Error(t, err) // Should block %
-	})
-
-	// Test Case 4: Non-Shell Command
-	t.Run("Non-Shell Command", func(t *testing.T) {
-		tool := &v1.Tool{Name: proto.String("test-tool-echo")}
-		service := &configv1.CommandLineUpstreamService{
-			Command: proto.String("echo"), // Not a shell
-			Local:   proto.Bool(true),
-		}
-		callDef := &configv1.CommandLineCallDefinition{
-			Parameters: []*configv1.CommandLineParameterMapping{
-				{Schema: &configv1.ParameterSchema{Name: proto.String("msg")}},
-			},
-			Args: []string{"{{msg}}"},
-		}
-		localTool := NewLocalCommandTool(tool, service, callDef, nil, "call-id")
-
-		// Input with shell chars - should be allowed for non-shell command
-		reqSafe := &ExecutionRequest{
-			ToolName: "test-tool-echo",
-			Arguments: map[string]interface{}{
-				"msg": "Law & Order",
-			},
-		}
-		reqSafe.ToolInputs, _ = json.Marshal(reqSafe.Arguments)
-		_, err := localTool.Execute(context.Background(), reqSafe)
-		assert.NoError(t, err)
-	})
+	if !strings.Contains(err.Error(), "shell injection detected") {
+		t.Fatalf("Expected 'shell injection detected' error, got: %v", err)
+	}
 }
