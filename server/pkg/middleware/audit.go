@@ -12,6 +12,7 @@ import (
 	"time"
 
 	"github.com/mcpany/core/server/pkg/auth"
+	"github.com/mcpany/core/server/pkg/config"
 	"github.com/mcpany/core/server/pkg/tool"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"google.golang.org/protobuf/proto"
@@ -19,19 +20,22 @@ import (
 
 // AuditMiddleware provides audit logging for tool executions.
 type AuditMiddleware struct {
-	mu     sync.RWMutex
-	config *configv1.AuditConfig
-	store  AuditStore
+	mu       sync.RWMutex
+	config   *configv1.AuditConfig
+	store    AuditStore
+	redactor *Redactor
 }
 
 // NewAuditMiddleware creates a new AuditMiddleware.
-func NewAuditMiddleware(config *configv1.AuditConfig) (*AuditMiddleware, error) {
+func NewAuditMiddleware(auditConfig *configv1.AuditConfig) (*AuditMiddleware, error) {
 	m := &AuditMiddleware{
-		config: config,
+		config: auditConfig,
 	}
-	if err := m.initializeStore(config); err != nil {
+	if err := m.initializeStore(auditConfig); err != nil {
 		return nil, err
 	}
+	// Initialize redactor with current global settings
+	m.redactor = NewRedactor(config.GlobalSettings().GetDlp(), nil)
 	return m, nil
 }
 
@@ -74,12 +78,16 @@ func (m *AuditMiddleware) initializeStore(config *configv1.AuditConfig) error {
 }
 
 // UpdateConfig updates the audit configuration safely.
-func (m *AuditMiddleware) UpdateConfig(config *configv1.AuditConfig) error {
+func (m *AuditMiddleware) UpdateConfig(auditConfig *configv1.AuditConfig) error {
 	m.mu.Lock()
 	defer m.mu.Unlock()
 
+	// Update redactor on config update (it uses global DLP config, which might also change,
+	// but UpdateConfig is usually called when config file changes, so good time to refresh)
+	m.redactor = NewRedactor(config.GlobalSettings().GetDlp(), nil)
+
 	// If config is nil, disable audit
-	if config == nil {
+	if auditConfig == nil {
 		if m.store != nil {
 			_ = m.store.Close()
 			m.store = nil
@@ -94,7 +102,7 @@ func (m *AuditMiddleware) UpdateConfig(config *configv1.AuditConfig) error {
 	needsReinit := false
 	if m.config == nil {
 		needsReinit = true
-	} else if !proto.Equal(m.config, config) {
+	} else if !proto.Equal(m.config, auditConfig) {
 		needsReinit = true
 	}
 
@@ -104,22 +112,23 @@ func (m *AuditMiddleware) UpdateConfig(config *configv1.AuditConfig) error {
 			_ = m.store.Close()
 			m.store = nil
 		}
-		if err := m.initializeStore(config); err != nil {
+		if err := m.initializeStore(auditConfig); err != nil {
 			return err
 		}
 	}
-	m.config = config
+	m.config = auditConfig
 	return nil
 }
 
 // Execute intercepts tool execution to log audit events.
 func (m *AuditMiddleware) Execute(ctx context.Context, req *tool.ExecutionRequest, next tool.ExecutionFunc) (any, error) {
 	m.mu.RLock()
-	config := m.config
+	auditConfig := m.config
 	store := m.store
+	redactor := m.redactor
 	m.mu.RUnlock()
 
-	if config == nil || !config.GetEnabled() {
+	if auditConfig == nil || !auditConfig.GetEnabled() {
 		return next(ctx, req)
 	}
 
@@ -145,10 +154,17 @@ func (m *AuditMiddleware) Execute(ctx context.Context, req *tool.ExecutionReques
 		entry.ProfileID = profileID
 	}
 
-	if config.GetLogArguments() {
+	if auditConfig.GetLogArguments() {
 		// Try to marshal arguments to RawMessage to avoid double escaping if it's already structured
 		argsBytes, marshalErr := json.Marshal(req.ToolInputs)
 		if marshalErr == nil {
+			// Use Redactor to ensure no secrets are logged
+			if redactor != nil {
+				redactedBytes, err := redactor.RedactJSON(argsBytes)
+				if err == nil {
+					argsBytes = redactedBytes
+				}
+			}
 			entry.Arguments = json.RawMessage(argsBytes)
 		}
 	}
@@ -157,8 +173,30 @@ func (m *AuditMiddleware) Execute(ctx context.Context, req *tool.ExecutionReques
 		entry.Error = err.Error()
 	}
 
-	if config.GetLogResults() && err == nil {
-		entry.Result = result
+	if auditConfig.GetLogResults() && err == nil {
+		// Use Redactor for result too to ensure structs are handled correctly
+		// and avoid side effects (modifying the result map if it's a map)
+		// We marshal to JSON, redact, and then unmarshal or store as RawMessage if entry.Result supports it?
+		// AuditEntry.Result is `any`. If we store redacted map, it's fine.
+		// If we use RedactJSON, we get []byte.
+
+		logResult := result
+		if redactor != nil {
+			// Best effort redaction
+			jsonBytes, err := json.Marshal(result)
+			if err == nil {
+				redactedBytes, err := redactor.RedactJSON(jsonBytes)
+				if err == nil {
+					// We can store it as RawMessage if we change AuditEntry, but AuditEntry.Result is `any`.
+					// Let's decode it back to generic interface to keep it compatible with whatever the store expects (usually JSON marshaling).
+					var redactedResult interface{}
+					if err := json.Unmarshal(redactedBytes, &redactedResult); err == nil {
+						logResult = redactedResult
+					}
+				}
+			}
+		}
+		entry.Result = logResult
 	}
 
 	// Write log
