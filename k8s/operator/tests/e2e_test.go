@@ -67,6 +67,9 @@ func TestOperatorE2E(t *testing.T) {
 	if err := runCommand(t, ctx, rootDir, "docker", "build", "-t", fmt.Sprintf("mcpany/operator:%s", tag), "-f", "k8s/operator/Dockerfile", "."); err != nil {
 		t.Fatalf("Failed to build operator image: %v", err)
 	}
+	if err := runCommand(t, ctx, rootDir, "docker", "build", "-t", fmt.Sprintf("mcpany/ui:%s", tag), "-f", "ui/Dockerfile", "."); err != nil {
+		t.Fatalf("Failed to build ui image: %v", err)
+	}
 
 	// 5. Load Images into Kind
 	t.Log("Loading images into Kind...")
@@ -75,6 +78,9 @@ func TestOperatorE2E(t *testing.T) {
 	}
 	if err := runCommand(t, ctx, rootDir, "kind", "load", "docker-image", fmt.Sprintf("mcpany/operator:%s", tag), "--name", clusterName); err != nil {
 		t.Fatalf("Failed to load operator image: %v", err)
+	}
+	if err := runCommand(t, ctx, rootDir, "kind", "load", "docker-image", fmt.Sprintf("mcpany/ui:%s", tag), "--name", clusterName); err != nil {
+		t.Fatalf("Failed to load ui image: %v", err)
 	}
 
 	// 6. Install Helm Chart
@@ -101,8 +107,10 @@ func TestOperatorE2E(t *testing.T) {
 		"--set", "operator.image.repository=mcpany/operator",
 		"--set", fmt.Sprintf("operator.image.tag=%s", tag),
 		"--set", "operator.image.pullPolicy=Never",
+		"--set", fmt.Sprintf("ui.image.tag=%s", tag),
+		"--set", "ui.image.pullPolicy=Never",
 		"--wait",
-		"--timeout", "3m",
+		"--timeout", "10m",
 	); err != nil {
 		t.Fatalf("Failed to install helm chart: %v", err)
 	}
