@@ -701,6 +701,8 @@ jobs:
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v5
+        with:
+          ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.ref || github.ref }}
 
       - name: Set up Go
         uses: actions/setup-go@v6
@@ -725,10 +727,14 @@ jobs:
           make gen
           # check for modified files
           if [[ -n $(git status --porcelain) ]]; then
-            echo "Error: Protobuf generation resulted in changes. Please run 'make gen' and commit the changes."
-            git status
-            git diff
-            exit 1
+            echo "Protobuf generation resulted in changes. Amending commit..."
+            git config --global user.name "github-actions[bot]"
+            git config --global user.email "github-actions[bot]@users.noreply.github.com"
+            git add .
+            git commit --amend --no-edit
+            git push --force-with-lease
+          else
+            echo "No changes in protobuf generation."
           fi
 
   ci-success:
