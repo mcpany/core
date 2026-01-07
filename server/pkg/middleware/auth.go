@@ -56,6 +56,11 @@ func AuthMiddleware(authManager *auth.Manager) mcp.Middleware {
 				return next(ctx, method, req)
 			}
 
+			// If no authenticator is registered for this service, let the request through.
+			if _, ok := authManager.GetAuthenticator(serviceID); !ok {
+				return next(ctx, method, req)
+			}
+
 			// Extract the http.Request from the context.
 			// The key "http.request" is not formally defined in the MCP spec, but it's a
 			// de-facto standard used by the reference implementation.

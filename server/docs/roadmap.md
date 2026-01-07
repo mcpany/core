@@ -4,46 +4,6 @@ This document outlines the current status and future plans for MCP Any.
 
 ## Status: Active Development
 
-## Strategic Context (Jan 2026)
-
-### Market Research & Alignment
-Based on a review of the MCP ecosystem (mcp.so, LobeHub, GitHub, Docker), we identified key opportunities:
-
-- **"Debugging is Hell"**: Developers need "Traffic Replay" and "Agent Debugger" (Solution: Observability++).
-- **Security & Trust**: Prompt Injection and Data Exfiltration risks (Solution: Guardrails & Granular Scopes).
-- **Tool Discovery & Config**: Manual config is error-prone (Solution: K8s Operator & Terraform Provider).
-
-### GitHub Issue Insights
-- **Context Bloat**: Token explosions in large repos (Action: Context Optimization).
-- **Installation Failures**: Environment mismatches (Action: Doctor API).
-- **Security**: Command injection fears (Action: WASM Sandboxing).
-
-## Feature Priorities (Jan 2026)
-
-### Top 10 Recommended Features
-
-| Rank | Feature Name | Why it matters | Difficulty |
-| :--- | :--- | :--- | :--- |
-| 1 | **Agent Debugger & Inspector** | **UX/Observability**: Visualizes tool usage, token consumption, and traffic replay. | Medium |
-| 2 | **Context Optimizer Middleware** | **Performance**: Automatically truncates/summarizes large outputs to prevent "Context Bloat". | Medium |
-| 3 | **Diagnostic "Doctor" API** | **UX/Ops**: Self-diagnosis endpoint to report env health and connectivity. | Low |
-| 4 | **Kubernetes Operator** | **Scalability/Ops**: Essential for enterprise adoption. | High |
-| 5 | **Browser Automation Provider** | **Feature**: High-demand capability (Playwright) for live web interaction. | High |
-| 6 | **SSO Integration (OIDC/SAML)** | **Security**: Enterprise requirement for Admin UI. | Medium |
-| 7 | **Prompt Injection Guardrails** | **Security**: Critical for Trust. Intercepts malicious prompts. | High |
-| 8 | **WASM Plugin System** | **Extensibility**: Safe sandboxing for transformation logic. | High |
-| 9 | **Universal Connector Runtime** | **Integration**: Standardized sidecar management. | High |
-| 10 | **Terraform Provider** | **Ops**: "Configuration as Code". | High |
-
-### Feature Gap & Technical Feasibility
-
-| Feature | Status | Feasibility / Strategy |
-| :--- | :--- | :--- |
-| **Context Optimizer** | In Progress | **Medium**: Reuse `server/pkg/tokenizer`. Implement `SummarizerMiddleware`. |
-| **Doctor API** | Missing | **Low**: `mcpctl doctor` command and `/v1/health/doctor` endpoint. |
-| **Agent Debugger** | Missing | **Medium**: Enhance `server/cmd/webhooks` (Sidecar) or build new UI. |
-| **WASM Sandbox** | Missing | **High**: Integrate `wazero` or similar. |
-
 ## Implemented Features
 
 ### Service Types
@@ -79,14 +39,12 @@ Based on a review of the MCP ecosystem (mcp.so, LobeHub, GitHub, Docker), we ide
 - [x] [Metrics](features/monitoring/README.md)
 - [x] [Structured Logging](features/monitoring/README.md)
 - [x] [Audit Logging](features/audit_logging.md)
-- [x] [Context Consumption Metrics](features/monitoring/README.md) (Token Counting)
 
 ### Security
 
 - [x] [Secrets Management](features/security.md)
 - [x] [IP Allowlisting](features/security.md)
-- [x] [Webhooks](features/webhooks/README.md) (Pre/Post-Call)
-- [x] [Webhooks Sidecar](features/webhooks/sidecar.md) (Context Optimization)
+- [x] [Webhooks](features/webhooks/README.md)
 - [x] [Data Loss Prevention (DLP)](features/security.md)
 
 ### Core
@@ -108,7 +66,17 @@ Based on a review of the MCP ecosystem (mcp.so, LobeHub, GitHub, Docker), we ide
 - [x] [Hot Reload](features/hot_reload.md)
 - [x] [Helm Chart Official Support](features/helm.md)
 
+## Upcoming Features (High Priority)
 
+### 1. WASM Plugins
+
+**Why:** Allow users to deploy safe, sandboxed custom logic for transformations or validations without recompiling the server.
+**Status:** Planned
+
+### 2. Kubernetes Operator
+
+**Why:** Simplify deployment and lifecycle management of MCP Any instances in Kubernetes environments, enabling GitOps workflows.
+**Status:** Recommended
 
 
 
@@ -178,20 +146,3 @@ Based on a review of the MCP ecosystem (mcp.so, LobeHub, GitHub, Docker), we ide
 48. **Binary Protocol Support**: Protobuf over WebSocket for high-performance low-bandwidth agents.
 49. **Edge Computing Support**: Optimized build for Cloudflare Workers / AWS Lambda.
 50. **Air-Gapped Mode**: Full offline operation with bundled dependencies and local docs.
-
-## Codebase Health Report
-
-### Critical Areas
-
-- **Rate Limiting Complexity**: `server/pkg/middleware/ratelimit.go` mixes local/Redis logic. Needs refactoring into strategies.
-- **Filesystem Provider Monolith**: `server/pkg/upstream/filesystem/upstream.go` handles too many types. Split into factory pattern.
-- **Documentation Scatter**: Needs unification (in progress).
-- **Test Coverage for Cloud Providers**: S3/GCS tests are missing/mocked. Need local emulation (MinIO).
-- **Webhooks "Test" Code**: `server/cmd/webhooks` needs formalization if intended for production (Sidecar pattern).
-
-### Recommendations
-
-1.  **Refactor Filesystem Upstream**: Split `upstream.go`.
-2.  **Consolidate SDKs**: Move `server/pkg/client` to separate repo.
-3.  **Formalize Webhook Server**: Polish `server/cmd/webhooks` as a Sidecar.
-4.  **Standardize Configuration**: Consistent config patterns.
