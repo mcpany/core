@@ -1,116 +1,130 @@
-/**
- * Copyright 2025 Author(s) of MCP Any
- * SPDX-License-Identifier: Apache-2.0
- */
 
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { apiClient, ToolDefinition } from "@/lib/client";
+import { GlassCard } from "@/components/layout/glass-card";
+import { CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Switch } from "@/components/ui/switch";
+import { StatusBadge } from "@/components/layout/status-badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Wrench, Play } from "lucide-react";
-import { ToolInspector } from "@/components/tools/tool-inspector";
+import { Play } from "lucide-react";
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogHeader,
+    DialogTitle,
+} from "@/components/ui/dialog"
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
 
 export default function ToolsPage() {
-  const [tools, setTools] = useState<ToolDefinition[]>([]);
-  const [selectedTool, setSelectedTool] = useState<ToolDefinition | null>(null);
-  const [inspectorOpen, setInspectorOpen] = useState(false);
+    const [tools, setTools] = useState<ToolDefinition[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [selectedTool, setSelectedTool] = useState<ToolDefinition | null>(null);
+    const [executionArgs, setExecutionArgs] = useState("{}");
+    const [executionResult, setExecutionResult] = useState<string>("");
 
-  useEffect(() => {
-    fetchTools();
-  }, []);
+    useEffect(() => {
+        apiClient.listTools().then(res => {
+            // Adjust based on actual API response structure (array vs object wrapper)
+            setTools(Array.isArray(res) ? res : (res.tools || []));
+            setLoading(false);
+        }).catch(err => {
+            console.error("Failed to load tools", err);
+            setLoading(false);
+        });
+    }, []);
 
-  const fetchTools = async () => {
-    try {
-      const res = await apiClient.listTools();
-      setTools(res.tools || []);
-    } catch (e) {
-      console.error("Failed to fetch tools", e);
-    }
-  };
+    const handleExecute = async () => {
+        if (!selectedTool) return;
+        try {
+            const args = JSON.parse(executionArgs);
+            const res = await apiClient.executeTool({
+                tool_name: selectedTool.name,
+                arguments: args
+            });
+            setExecutionResult(JSON.stringify(res, null, 2));
+        } catch (e: any) {
+            setExecutionResult(`Error: ${e.message}`);
+        }
+    };
 
-  const toggleTool = async (name: string, currentStatus: boolean) => {
-    // Optimistic update
-    setTools(tools.map(t => t.name === name ? { ...t, enabled: !currentStatus } : t));
+    return (
+        <div className="flex-1 space-y-4 p-8 pt-6">
+            <div className="flex items-center justify-between">
+                <h2 className="text-3xl font-bold tracking-tight">Tools</h2>
+            </div>
+            <GlassCard>
+                <CardHeader>
+                    <CardTitle>Available Tools</CardTitle>
+                    <CardDescription>Tools exposed by connected MCP servers.</CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <Table>
+                        <TableHeader>
+                            <TableRow>
+                                <TableHead>Name</TableHead>
+                                <TableHead>Description</TableHead>
+                                <TableHead>Actions</TableHead>
+                            </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                            {loading ? (
+                                <TableRow>
+                                    <TableCell colSpan={3} className="text-center">Loading...</TableCell>
+                                </TableRow>
+                            ) : tools.map((tool) => (
+                                <TableRow key={tool.name}>
+                                    <TableCell className="font-medium">{tool.name}</TableCell>
+                                    <TableCell className="max-w-md truncate" title={tool.description}>{tool.description}</TableCell>
+                                    <TableCell>
+                                        <Button size="sm" variant="outline" onClick={() => {
+                                            setSelectedTool(tool);
+                                            setExecutionArgs("{}"); // Reset args or try to generate schema template
+                                            setExecutionResult("");
+                                        }}>
+                                            <Play className="mr-2 h-3 w-3" /> Test
+                                        </Button>
+                                    </TableCell>
+                                </TableRow>
+                            ))}
+                        </TableBody>
+                    </Table>
+                </CardContent>
+            </GlassCard>
 
-    try {
-        await apiClient.setToolStatus(name, !currentStatus);
-    } catch (e) {
-        console.error("Failed to toggle tool", e);
-        fetchTools(); // Revert
-    }
-  };
-
-  const openInspector = (tool: ToolDefinition) => {
-      setSelectedTool(tool);
-      setInspectorOpen(true);
-  };
-
-  return (
-    <div className="flex-1 space-y-4 p-8 pt-6">
-      <div className="flex items-center justify-between">
-        <h2 className="text-3xl font-bold tracking-tight">Tools</h2>
-      </div>
-
-      <Card className="backdrop-blur-sm bg-background/50">
-        <CardHeader>
-          <CardTitle>Available Tools</CardTitle>
-          <CardDescription>Manage exposed tools from connected services.</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Name</TableHead>
-                <TableHead>Description</TableHead>
-                <TableHead>Service</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {tools.map((tool) => (
-                <TableRow key={tool.name} className="group">
-                  <TableCell className="font-medium flex items-center">
-                    <Wrench className="h-4 w-4 mr-2 text-muted-foreground" />
-                    {tool.name}
-                  </TableCell>
-                  <TableCell>{tool.description}</TableCell>
-                  <TableCell>
-                      <Badge variant="outline">{tool.serviceName}</Badge>
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex items-center space-x-2">
-                        <Switch
-                            checked={!!tool.enabled}
-                            onCheckedChange={() => toggleTool(tool.name, !!tool.enabled)}
-                        />
-                        <span className="text-sm text-muted-foreground w-16">
-                            {tool.enabled ? "Enabled" : "Disabled"}
-                        </span>
+            <Dialog open={!!selectedTool} onOpenChange={(open) => !open && setSelectedTool(null)}>
+                <DialogContent className="sm:max-w-[600px]">
+                    <DialogHeader>
+                        <DialogTitle>Execute Tool: {selectedTool?.name}</DialogTitle>
+                        <DialogDescription>
+                            {selectedTool?.description}
+                        </DialogDescription>
+                    </DialogHeader>
+                    <div className="grid gap-4 py-4">
+                        <div className="grid gap-2">
+                            <Label>Arguments (JSON)</Label>
+                            <Textarea
+                                value={executionArgs}
+                                onChange={(e) => setExecutionArgs(e.target.value)}
+                                className="font-mono"
+                                rows={5}
+                            />
+                        </div>
+                        <div className="grid gap-2">
+                            <Label>Result</Label>
+                            <div className="rounded-md bg-muted p-4 font-mono text-xs whitespace-pre-wrap h-[200px] overflow-auto">
+                                {executionResult || "Waiting for execution..."}
+                            </div>
+                        </div>
                     </div>
-                  </TableCell>
-                  <TableCell className="text-right">
-                      <Button variant="outline" size="sm" onClick={() => openInspector(tool)}>
-                          <Play className="h-3 w-3 mr-1" /> Inspect
-                      </Button>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
-
-      <ToolInspector
-        tool={selectedTool}
-        open={inspectorOpen}
-        onOpenChange={setInspectorOpen}
-      />
-    </div>
-  );
+                    <div className="flex justify-end">
+                        <Button onClick={handleExecute}>Execute</Button>
+                    </div>
+                </DialogContent>
+            </Dialog>
+        </div>
+    );
 }

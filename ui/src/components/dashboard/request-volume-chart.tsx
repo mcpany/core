@@ -1,83 +1,55 @@
-/**
- * Copyright 2025 Author(s) of MCP Any
- * SPDX-License-Identifier: Apache-2.0
- */
 
 "use client";
 
-import { useEffect, useState } from "react";
-import { Area, AreaChart, ResponsiveContainer, Tooltip, XAxis, YAxis, CartesianGrid } from "recharts";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis, Tooltip } from "recharts";
+import { GlassCard } from "@/components/layout/glass-card";
+import { CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 
-const generateData = () => {
-    const data = [];
-    for (let i = 0; i < 24; i++) {
-        data.push({
-            time: `${i.toString().padStart(2, '0')}:00`,
-            total: Math.floor(Math.random() * 500) + 100,
-        });
-    }
-    return data;
-};
+export interface RequestVolumeData {
+    name: string;
+    total: number;
+}
 
-const data = generateData();
-
-export function RequestVolumeChart() {
-    const [isMounted, setIsMounted] = useState(false);
-
-    useEffect(() => {
-        setIsMounted(true);
-    }, []);
-
-    if (!isMounted) return null;
-
+export function RequestVolumeChart({ data }: { data: RequestVolumeData[] }) {
   return (
-    <Card className="col-span-3 backdrop-blur-sm bg-background/50 h-full">
+    <GlassCard className="col-span-4">
       <CardHeader>
         <CardTitle>Request Volume</CardTitle>
-        <CardDescription>
-          Requests handled over the last 24 hours.
-        </CardDescription>
+        <CardDescription>Total requests processed over the last 24 hours.</CardDescription>
       </CardHeader>
       <CardContent className="pl-2">
-        <div className="h-[300px] w-full">
-            <ResponsiveContainer width="100%" height="100%">
-            <AreaChart data={data}>
-                <defs>
-                    <linearGradient id="colorTotal" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="#8884d8" stopOpacity={0.8}/>
-                        <stop offset="95%" stopColor="#8884d8" stopOpacity={0}/>
-                    </linearGradient>
-                </defs>
-                <XAxis
-                dataKey="time"
-                stroke="#888888"
-                fontSize={12}
-                tickLine={false}
-                axisLine={false}
-                />
-                <YAxis
-                stroke="#888888"
-                fontSize={12}
-                tickLine={false}
-                axisLine={false}
-                tickFormatter={(value) => `${value}`}
-                />
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--muted))" />
-                <Tooltip
-                    contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
-                />
-                <Area
-                    type="monotone"
-                    dataKey="total"
-                    stroke="#8884d8"
-                    fillOpacity={1}
-                    fill="url(#colorTotal)"
-                />
-            </AreaChart>
-            </ResponsiveContainer>
-        </div>
+        <ResponsiveContainer width="100%" height={350}>
+          <BarChart data={data}>
+            <XAxis
+              dataKey="name"
+              stroke="#888888"
+              fontSize={12}
+              tickLine={false}
+              axisLine={false}
+            />
+            <YAxis
+              stroke="#888888"
+              fontSize={12}
+              tickLine={false}
+              axisLine={false}
+              tickFormatter={(value) => `${value}`}
+            />
+            <Tooltip
+                contentStyle={{
+                    backgroundColor: "hsl(var(--card))",
+                    borderColor: "hsl(var(--border))",
+                    borderRadius: "var(--radius)",
+                }}
+                cursor={{ fill: "hsl(var(--muted))" }}
+            />
+            <Bar
+                dataKey="total"
+                fill="hsl(var(--primary))"
+                radius={[4, 4, 0, 0]}
+            />
+          </BarChart>
+        </ResponsiveContainer>
       </CardContent>
-    </Card>
+    </GlassCard>
   );
 }
