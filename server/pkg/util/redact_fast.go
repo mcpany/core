@@ -5,6 +5,7 @@ package util
 
 import (
 	"bytes"
+	"encoding/json"
 )
 
 // redactJSONFast is a zero-allocation (mostly) implementation of RedactJSON.
@@ -35,7 +36,7 @@ func redactJSONFast(input []byte) []byte {
 		// Parse string
 		// We need to find the matching closing quote
 		// Handle escapes: \\ and \"
-		endQuote := -1
+		var endQuote int
 		// Optimization: fast scan for closing quote
 		scanStart := i + 1
 		for {
@@ -88,9 +89,29 @@ func redactJSONFast(input []byte) []byte {
 			// Check if key is sensitive
 			keyContent := input[i+1 : endQuote]
 
-			// Use scanForSensitiveKeys to check if the key matches any sensitive pattern.
-			// scanForSensitiveKeys checks for substrings and handles case folding as implemented in its logic.
-			sensitive := scanForSensitiveKeys(keyContent, false)
+			// Check for escapes in the key
+			hasEscape := bytes.IndexByte(keyContent, '\\') != -1
+
+			var sensitive bool
+			if hasEscape {
+				// Unescape key to check sensitivity
+				// We need to include quotes for json.Unmarshal
+				var keyStr string
+				if err := json.Unmarshal(input[i:endQuote+1], &keyStr); err == nil {
+					// Check the unescaped key string
+					// We convert string to bytes to use existing helpers if needed, or pass string.
+					// scanForSensitiveKeys expects bytes.
+					sensitive = scanForSensitiveKeys([]byte(keyStr), false)
+				} else {
+					// Failed to unmarshal key, treat as not sensitive or fallback?
+					// If key is invalid JSON, we probably shouldn't be here or it's not a valid key.
+					sensitive = false
+				}
+			} else {
+				// Use scanForSensitiveKeys to check if the key matches any sensitive pattern.
+				// scanForSensitiveKeys checks for substrings and handles case folding as implemented in its logic.
+				sensitive = scanForSensitiveKeys(keyContent, false)
+			}
 
 			if sensitive {
 				// Write key and colon
@@ -117,7 +138,7 @@ func redactJSONFast(input []byte) []byte {
 				valEnd := skipJSONValue(input, valStart)
 
 				// Redact
-				out.Write(redactedValue) // redactedValue is "[REDACTED]" (json.RawMessage)
+				out.Write([]byte(redactedValue)) // redactedValue is "[REDACTED]" (json.RawMessage)
 
 				// Advance i to valEnd
 				i = valEnd
@@ -145,106 +166,111 @@ func skipJSONValue(input []byte, start int) int {
 	c := input[start]
 	switch c {
 	case '"':
-		// String
-		// Find closing quote
-		scanStart := start + 1
-		for {
-			q := bytes.IndexByte(input[scanStart:], '"')
-			if q == -1 {
-				return len(input)
-			}
-			absQ := scanStart + q
-			// Check escape
-			backslashes := 0
-			for j := absQ - 1; j >= scanStart; j-- {
-				if input[j] == '\\' {
-					backslashes++
-				} else {
-					break
-				}
-			}
-			if backslashes%2 == 0 {
-				return absQ + 1
-			}
-			scanStart = absQ + 1
-		}
+		return skipString(input, start)
 	case '{':
-		// Object
-		// Scan until matching }
-		depth := 1
-		i := start + 1
-		for i < len(input) {
-			switch input[i] {
-			case '{':
-				depth++
-			case '}':
-				depth--
-				if depth == 0 {
-					return i + 1
-				}
-			case '"':
-				// Skip string to avoid confusion with braces inside strings
-				i = skipJSONValue(input, i)
-				continue // skipJSONValue returns index after string, so continue loop
-			}
-			i++
-		}
-		return len(input)
+		return skipObject(input, start)
 	case '[':
-		// Array
-		// Scan until matching ]
-		depth := 1
-		i := start + 1
-		for i < len(input) {
-			switch input[i] {
-			case '[':
-				depth++
-			case ']':
-				depth--
-				if depth == 0 {
-					return i + 1
-				}
-			case '"':
-				i = skipJSONValue(input, i)
-				continue
-			}
-			i++
-		}
-		return len(input)
-	case 't', 'f':
-		// true, false
-		// Scan until non-alpha
-		i := start
-		for i < len(input) {
-			c := input[i]
-			if c < 'a' || c > 'z' {
-				return i
-			}
-			i++
-		}
-		return i
-	case 'n':
-		// null
-		i := start
-		for i < len(input) {
-			c := input[i]
-			if c < 'a' || c > 'z' {
-				return i
-			}
-			i++
-		}
-		return i
+		return skipArray(input, start)
+	case 't', 'f', 'n':
+		return skipLiteral(input, start)
 	default:
-		// Number
-		// Scan until delimiter: , } ] or whitespace
-		i := start
-		for i < len(input) {
-			c := input[i]
-			if c == ',' || c == '}' || c == ']' || c == ' ' || c == '\t' || c == '\n' || c == '\r' {
-				return i
-			}
-			i++
-		}
-		return i
+		return skipNumber(input, start)
 	}
+}
+
+func skipString(input []byte, start int) int {
+	// String starts at start, which is '"'
+	scanStart := start + 1
+	for {
+		q := bytes.IndexByte(input[scanStart:], '"')
+		if q == -1 {
+			return len(input)
+		}
+		absQ := scanStart + q
+		// Check escape
+		backslashes := 0
+		for j := absQ - 1; j >= scanStart; j-- {
+			if input[j] == '\\' {
+				backslashes++
+			} else {
+				break
+			}
+		}
+		if backslashes%2 == 0 {
+			return absQ + 1
+		}
+		scanStart = absQ + 1
+	}
+}
+
+func skipObject(input []byte, start int) int {
+	// Object starts at start, which is '{'
+	depth := 1
+	i := start + 1
+	for i < len(input) {
+		switch input[i] {
+		case '{':
+			depth++
+		case '}':
+			depth--
+			if depth == 0 {
+				return i + 1
+			}
+		case '"':
+			// Skip string to avoid confusion with braces inside strings
+			i = skipString(input, i)
+			continue // skipString returns index after string, so continue loop
+		}
+		i++
+	}
+	return len(input)
+}
+
+func skipArray(input []byte, start int) int {
+	// Array starts at start, which is '['
+	depth := 1
+	i := start + 1
+	for i < len(input) {
+		switch input[i] {
+		case '[':
+			depth++
+		case ']':
+			depth--
+			if depth == 0 {
+				return i + 1
+			}
+		case '"':
+			i = skipString(input, i)
+			continue
+		}
+		i++
+	}
+	return len(input)
+}
+
+func skipLiteral(input []byte, start int) int {
+	// true, false, null
+	i := start
+	for i < len(input) {
+		c := input[i]
+		if c < 'a' || c > 'z' {
+			return i
+		}
+		i++
+	}
+	return i
+}
+
+func skipNumber(input []byte, start int) int {
+	// Number
+	// Scan until delimiter: , } ] or whitespace
+	i := start
+	for i < len(input) {
+		c := input[i]
+		if c == ',' || c == '}' || c == ']' || c == ' ' || c == '\t' || c == '\n' || c == '\r' {
+			return i
+		}
+		i++
+	}
+	return i
 }
