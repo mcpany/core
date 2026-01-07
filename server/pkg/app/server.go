@@ -41,7 +41,6 @@ import (
 	"github.com/mcpany/core/server/pkg/storage/postgres"
 	"github.com/mcpany/core/server/pkg/storage/sqlite"
 	"github.com/mcpany/core/server/pkg/telemetry"
-	"github.com/mcpany/core/server/pkg/tokenizer"
 	"github.com/mcpany/core/server/pkg/tool"
 	"github.com/mcpany/core/server/pkg/upstream/factory"
 	"github.com/mcpany/core/server/pkg/util"
@@ -480,19 +479,6 @@ func (a *Application) Run(
 	// If we iterate:
 	// M1(M2(M3(...)))
 	// M1 is priority 0.
-	// If running in stdio mode, we must remove the auth middleware as it requires
-	// an HTTP request availability in the context, which is not present in stdio.
-	// Stdio mode implies local access (shell), so we trust the user.
-	if stdio {
-		var filtered []*config_v1.Middleware
-		for _, m := range middlewares {
-			if m.GetName() != "auth" {
-				filtered = append(filtered, m)
-			}
-		}
-		middlewares = filtered
-	}
-
 	chain := middleware.GetMCPMiddlewares(middlewares)
 	for _, m := range chain {
 		mcpSrv.Server().AddReceivingMiddleware(m)
@@ -502,8 +488,7 @@ func (a *Application) Run(
 	mcpSrv.Server().AddReceivingMiddleware(a.TopologyManager.Middleware)
 
 	// Add Prometheus Metrics Middleware (Always Active)
-	// We use SimpleTokenizer for low-overhead token counting
-	mcpSrv.Server().AddReceivingMiddleware(middleware.PrometheusMetricsMiddleware(tokenizer.NewSimpleTokenizer()))
+	mcpSrv.Server().AddReceivingMiddleware(middleware.PrometheusMetricsMiddleware())
 
 	if stdio {
 		err := a.runStdioModeFunc(ctx, mcpSrv)
@@ -889,14 +874,9 @@ func (a *Application) runServerMode(
 	errChan := make(chan error, 2)
 	var wg sync.WaitGroup
 
-	rawHTTPHandler := mcp.NewStreamableHTTPHandler(func(_ *http.Request) *mcp.Server {
+	httpHandler := mcp.NewStreamableHTTPHandler(func(_ *http.Request) *mcp.Server {
 		return mcpSrv.Server()
 	}, nil)
-
-	httpHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		ctx := context.WithValue(r.Context(), "http.request", r) //nolint:revive,staticcheck // matching legacy usage in auth.go
-		rawHTTPHandler.ServeHTTP(w, r.WithContext(ctx))
-	})
 
 	// Check if auth middleware is disabled in config
 	var authDisabled bool

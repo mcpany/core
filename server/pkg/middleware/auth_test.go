@@ -31,15 +31,7 @@ func TestAuthMiddleware(t *testing.T) {
 		}
 
 		handler := mw(nextHandler)
-
-		// Create an http.Request
-		httpReq, err := http.NewRequest("POST", "/", nil)
-		require.NoError(t, err)
-
-		// Add the http.Request to the context
-		ctx := context.WithValue(context.Background(), "http.request", httpReq)
-
-		_, err = handler(ctx, "test.method", nil)
+		_, err := handler(context.Background(), "test.method", nil)
 		require.NoError(t, err)
 		assert.True(t, nextCalled, "next handler should be called")
 	})
