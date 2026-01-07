@@ -87,54 +87,9 @@ func RedactJSON(input []byte) []byte {
 		return input
 	}
 
-	// Optimization: Determine if input is an object or array to avoid unnecessary Unmarshal calls.
-	// We only need to check the first non-whitespace character.
-	// bytes.TrimSpace scans the whole slice (left and right), which is O(N). We only need O(Whitespace).
-	var firstByte byte
-	for i := 0; i < len(input); i++ {
-		b := input[i]
-		if b != ' ' && b != '\t' && b != '\n' && b != '\r' {
-			firstByte = b
-			break
-		}
-	}
-
-	switch firstByte {
-	case '{':
-		var m map[string]json.RawMessage
-		if err := json.Unmarshal(input, &m); err == nil {
-			if redactMapRaw(m) {
-				b, _ := json.Marshal(m)
-				return b
-			}
-		}
-	case '[':
-		var s []json.RawMessage
-		if err := json.Unmarshal(input, &s); err == nil {
-			if redactSliceRaw(s) {
-				b, _ := json.Marshal(s)
-				return b
-			}
-		}
-	default:
-		// Try both if we can't determine (e.g. unknown format)
-		var m map[string]json.RawMessage
-		if err := json.Unmarshal(input, &m); err == nil {
-			if redactMapRaw(m) {
-				b, _ := json.Marshal(m)
-				return b
-			}
-		}
-		var s []json.RawMessage
-		if err := json.Unmarshal(input, &s); err == nil {
-			if redactSliceRaw(s) {
-				b, _ := json.Marshal(s)
-				return b
-			}
-		}
-	}
-
-	return input
+	// Use fast zero-allocation redaction path
+	// This avoids expensive json.Unmarshal/Marshal for large payloads
+	return redactJSONFast(input)
 }
 
 // RedactMap recursively redacts sensitive keys in a map.
@@ -171,101 +126,6 @@ func redactSlice(s []interface{}) []interface{} {
 	return newSlice
 }
 
-// redactMapRaw operates on map[string]json.RawMessage to avoid full decoding.
-// It returns true if any modification was made.
-func redactMapRaw(m map[string]json.RawMessage) bool {
-	changed := false
-	for k, v := range m {
-		if IsSensitiveKey(k) {
-			m[k] = redactedValue
-			changed = true
-		} else if len(v) > 0 {
-			// Check if we need to recurse
-			// Only recurse if the value looks like an object or array
-			// Optimization: json.RawMessage from Unmarshal already contains the value bytes without
-			// leading/trailing whitespace (unless the value itself is a string with spaces).
-			// We can check v[0] directly instead of scanning with bytes.TrimSpace(v) which is O(N).
-			switch v[0] {
-			case '{', '[':
-				if !shouldScanRaw(v) {
-					continue
-				}
-
-				if v[0] == '{' {
-					var nested map[string]json.RawMessage
-					if err := json.Unmarshal(v, &nested); err == nil {
-						if redactMapRaw(nested) {
-							if result, err := json.Marshal(nested); err == nil {
-								m[k] = result
-								changed = true
-							}
-						}
-					}
-				} else {
-					var nested []json.RawMessage
-					if err := json.Unmarshal(v, &nested); err == nil {
-						if redactSliceRaw(nested) {
-							if result, err := json.Marshal(nested); err == nil {
-								m[k] = result
-								changed = true
-							}
-						}
-					}
-				}
-			}
-		}
-	}
-	return changed
-}
-
-// redactSliceRaw operates on []json.RawMessage to avoid full decoding.
-// It returns true if any modification was made.
-func redactSliceRaw(s []json.RawMessage) bool {
-	changed := false
-	for i, v := range s {
-		if len(v) > 0 {
-			switch v[0] {
-			case '{', '[':
-				if !shouldScanRaw(v) {
-					continue
-				}
-
-				if v[0] == '{' {
-					var nested map[string]json.RawMessage
-					if err := json.Unmarshal(v, &nested); err == nil {
-						if redactMapRaw(nested) {
-							if result, err := json.Marshal(nested); err == nil {
-								s[i] = result
-								changed = true
-							}
-						}
-					}
-				} else {
-					var nested []json.RawMessage
-					if err := json.Unmarshal(v, &nested); err == nil {
-						if redactSliceRaw(nested) {
-							if result, err := json.Marshal(nested); err == nil {
-								s[i] = result
-								changed = true
-							}
-						}
-					}
-				}
-			}
-		}
-	}
-	return changed
-}
-
-// shouldScanRaw returns true if the raw JSON value might contain sensitive keys.
-// It is a heuristic to avoid expensive unmarshaling for clean values.
-func shouldScanRaw(v []byte) bool {
-	// Optimization: Check if any sensitive key is present in the value.
-	// If not, we can skip the expensive unmarshal/marshal process.
-	// Security Note: We also check for backslashes to ensure no escaped keys are present.
-	// If backslashes are present, we conservatively fallback to unmarshaling.
-	return scanForSensitiveKeys(v, true)
-}
 
 // bytesContainsFold2 is a proposed optimization that we might use in the future.
 // Ideally, we want a function that can search for multiple keys at once (Aho-Corasick),
