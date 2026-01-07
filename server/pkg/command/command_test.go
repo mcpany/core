@@ -611,10 +611,14 @@ func TestDockerExecutorWithStdIO(t *testing.T) {
 	})
 
 	t.Run("Execute_VolumeMounts", func(t *testing.T) {
+		cwd, err := os.Getwd()
+		require.NoError(t, err)
+		validPath := filepath.Join(cwd, "test-mount")
+
 		containerEnv := &configv1.ContainerEnvironment{}
 		containerEnv.SetImage("alpine:latest")
 		containerEnv.SetVolumes(map[string]string{
-			"/host/path": "/container/path",
+			validPath: "/container/path",
 		})
 		executor := newDockerExecutor(containerEnv).(*dockerExecutor)
 
@@ -629,13 +633,13 @@ func TestDockerExecutorWithStdIO(t *testing.T) {
 			return mockClient, nil
 		}
 
-		_, _, _, err := executor.Execute(context.Background(), "echo", nil, "", nil)
+		_, _, _, err = executor.Execute(context.Background(), "echo", nil, "", nil)
 		require.NoError(t, err)
 
 		require.NotNil(t, capturedHostConfig)
 		require.Len(t, capturedHostConfig.Mounts, 1)
 		// With the fix, Key is Source, Value is Target
-		assert.Equal(t, "/host/path", capturedHostConfig.Mounts[0].Source)
+		assert.Equal(t, validPath, capturedHostConfig.Mounts[0].Source)
 		assert.Equal(t, "/container/path", capturedHostConfig.Mounts[0].Target)
 	})
 }
@@ -792,10 +796,14 @@ func TestDockerExecutor_Mocked(t *testing.T) {
 	})
 
 	t.Run("Execute_VolumeMounts", func(t *testing.T) {
+		cwd, err := os.Getwd()
+		require.NoError(t, err)
+		validPath := filepath.Join(cwd, "test-mount")
+
 		containerEnv := &configv1.ContainerEnvironment{}
 		containerEnv.SetImage("alpine:latest")
 		containerEnv.SetVolumes(map[string]string{
-			"/host/path": "/container/path",
+			validPath: "/container/path",
 		})
 		executor := newDockerExecutor(containerEnv).(*dockerExecutor)
 
@@ -810,12 +818,12 @@ func TestDockerExecutor_Mocked(t *testing.T) {
 			return mockClient, nil
 		}
 
-		_, _, _, err := executor.Execute(context.Background(), "echo", nil, "", nil)
+		_, _, _, err = executor.Execute(context.Background(), "echo", nil, "", nil)
 		require.NoError(t, err)
 
 		require.NotNil(t, capturedHostConfig)
 		require.Len(t, capturedHostConfig.Mounts, 1)
-		assert.Equal(t, "/host/path", capturedHostConfig.Mounts[0].Source)
+		assert.Equal(t, validPath, capturedHostConfig.Mounts[0].Source)
 		assert.Equal(t, "/container/path", capturedHostConfig.Mounts[0].Target)
 	})
 }
