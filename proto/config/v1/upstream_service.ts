@@ -6,8 +6,8 @@
 
 /* eslint-disable */
 import { BinaryReader, BinaryWriter } from "@bufbuild/protobuf/wire";
-import { Duration } from "github.com/mcpany/core/proto/third_party/google/protobuf/duration";
 import Long from "long";
+import { Duration } from "../../google/protobuf/duration";
 import { RedisBus } from "../../bus/bus";
 import { AuthenticationConfig, SecretValue, UpstreamAuthentication } from "./auth";
 import {
@@ -656,9 +656,9 @@ export interface SftpFs {
 
 /** VectorUpstreamService defines a service that connects to a vector database. */
 export interface VectorUpstreamService {
-  /** Add other providers here (e.g., Milvus, Weaviate) */
-  pinecone?:
-    | PineconeVectorDB
+  pinecone?: PineconeVectorDB | undefined;
+  milvus?:
+    | MilvusVectorDB
     | undefined;
   /** Manually defined mappings (usually not needed as we auto-register Vector tools). */
   tools: ToolDefinition[];
@@ -677,6 +677,21 @@ export interface PineconeVectorDB {
   projectId: string;
   /** Optional: The full host URL (https://index-project.svc.pinecone.io) */
   host: string;
+}
+
+export interface MilvusVectorDB {
+  /** e.g., "localhost:19530" */
+  address: string;
+  /** Optional */
+  username: string;
+  /** Optional */
+  password: string;
+  collectionName: string;
+  /** Defaults to "default" */
+  databaseName: string;
+  useTls: boolean;
+  /** For Zilliz Cloud */
+  apiKey: string;
 }
 
 /** McpUpstreamService defines an upstream that is already an MCP-compliant service. */
@@ -5913,13 +5928,16 @@ export const SftpFs: MessageFns<SftpFs> = {
 };
 
 function createBaseVectorUpstreamService(): VectorUpstreamService {
-  return { pinecone: undefined, tools: [], resources: [], prompts: [] };
+  return { pinecone: undefined, milvus: undefined, tools: [], resources: [], prompts: [] };
 }
 
 export const VectorUpstreamService: MessageFns<VectorUpstreamService> = {
   encode(message: VectorUpstreamService, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
     if (message.pinecone !== undefined) {
       PineconeVectorDB.encode(message.pinecone, writer.uint32(10).fork()).join();
+    }
+    if (message.milvus !== undefined) {
+      MilvusVectorDB.encode(message.milvus, writer.uint32(42).fork()).join();
     }
     for (const v of message.tools) {
       ToolDefinition.encode(v!, writer.uint32(18).fork()).join();
@@ -5946,6 +5964,14 @@ export const VectorUpstreamService: MessageFns<VectorUpstreamService> = {
           }
 
           message.pinecone = PineconeVectorDB.decode(reader, reader.uint32());
+          continue;
+        }
+        case 5: {
+          if (tag !== 42) {
+            break;
+          }
+
+          message.milvus = MilvusVectorDB.decode(reader, reader.uint32());
           continue;
         }
         case 2: {
@@ -5984,6 +6010,7 @@ export const VectorUpstreamService: MessageFns<VectorUpstreamService> = {
   fromJSON(object: any): VectorUpstreamService {
     return {
       pinecone: isSet(object.pinecone) ? PineconeVectorDB.fromJSON(object.pinecone) : undefined,
+      milvus: isSet(object.milvus) ? MilvusVectorDB.fromJSON(object.milvus) : undefined,
       tools: globalThis.Array.isArray(object?.tools) ? object.tools.map((e: any) => ToolDefinition.fromJSON(e)) : [],
       resources: globalThis.Array.isArray(object?.resources)
         ? object.resources.map((e: any) => ResourceDefinition.fromJSON(e))
@@ -5998,6 +6025,9 @@ export const VectorUpstreamService: MessageFns<VectorUpstreamService> = {
     const obj: any = {};
     if (message.pinecone !== undefined) {
       obj.pinecone = PineconeVectorDB.toJSON(message.pinecone);
+    }
+    if (message.milvus !== undefined) {
+      obj.milvus = MilvusVectorDB.toJSON(message.milvus);
     }
     if (message.tools?.length) {
       obj.tools = message.tools.map((e) => ToolDefinition.toJSON(e));
@@ -6018,6 +6048,9 @@ export const VectorUpstreamService: MessageFns<VectorUpstreamService> = {
     const message = createBaseVectorUpstreamService();
     message.pinecone = (object.pinecone !== undefined && object.pinecone !== null)
       ? PineconeVectorDB.fromPartial(object.pinecone)
+      : undefined;
+    message.milvus = (object.milvus !== undefined && object.milvus !== null)
+      ? MilvusVectorDB.fromPartial(object.milvus)
       : undefined;
     message.tools = object.tools?.map((e) => ToolDefinition.fromPartial(e)) || [];
     message.resources = object.resources?.map((e) => ResourceDefinition.fromPartial(e)) || [];
@@ -6146,6 +6179,162 @@ export const PineconeVectorDB: MessageFns<PineconeVectorDB> = {
     message.indexName = object.indexName ?? "";
     message.projectId = object.projectId ?? "";
     message.host = object.host ?? "";
+    return message;
+  },
+};
+
+function createBaseMilvusVectorDB(): MilvusVectorDB {
+  return { address: "", username: "", password: "", collectionName: "", databaseName: "", useTls: false, apiKey: "" };
+}
+
+export const MilvusVectorDB: MessageFns<MilvusVectorDB> = {
+  encode(message: MilvusVectorDB, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.address !== "") {
+      writer.uint32(10).string(message.address);
+    }
+    if (message.username !== "") {
+      writer.uint32(18).string(message.username);
+    }
+    if (message.password !== "") {
+      writer.uint32(26).string(message.password);
+    }
+    if (message.collectionName !== "") {
+      writer.uint32(34).string(message.collectionName);
+    }
+    if (message.databaseName !== "") {
+      writer.uint32(42).string(message.databaseName);
+    }
+    if (message.useTls !== false) {
+      writer.uint32(48).bool(message.useTls);
+    }
+    if (message.apiKey !== "") {
+      writer.uint32(58).string(message.apiKey);
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): MilvusVectorDB {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseMilvusVectorDB();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.address = reader.string();
+          continue;
+        }
+        case 2: {
+          if (tag !== 18) {
+            break;
+          }
+
+          message.username = reader.string();
+          continue;
+        }
+        case 3: {
+          if (tag !== 26) {
+            break;
+          }
+
+          message.password = reader.string();
+          continue;
+        }
+        case 4: {
+          if (tag !== 34) {
+            break;
+          }
+
+          message.collectionName = reader.string();
+          continue;
+        }
+        case 5: {
+          if (tag !== 42) {
+            break;
+          }
+
+          message.databaseName = reader.string();
+          continue;
+        }
+        case 6: {
+          if (tag !== 48) {
+            break;
+          }
+
+          message.useTls = reader.bool();
+          continue;
+        }
+        case 7: {
+          if (tag !== 58) {
+            break;
+          }
+
+          message.apiKey = reader.string();
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): MilvusVectorDB {
+    return {
+      address: isSet(object.address) ? globalThis.String(object.address) : "",
+      username: isSet(object.username) ? globalThis.String(object.username) : "",
+      password: isSet(object.password) ? globalThis.String(object.password) : "",
+      collectionName: isSet(object.collection_name) ? globalThis.String(object.collection_name) : "",
+      databaseName: isSet(object.database_name) ? globalThis.String(object.database_name) : "",
+      useTls: isSet(object.use_tls) ? globalThis.Boolean(object.use_tls) : false,
+      apiKey: isSet(object.api_key) ? globalThis.String(object.api_key) : "",
+    };
+  },
+
+  toJSON(message: MilvusVectorDB): unknown {
+    const obj: any = {};
+    if (message.address !== "") {
+      obj.address = message.address;
+    }
+    if (message.username !== "") {
+      obj.username = message.username;
+    }
+    if (message.password !== "") {
+      obj.password = message.password;
+    }
+    if (message.collectionName !== "") {
+      obj.collection_name = message.collectionName;
+    }
+    if (message.databaseName !== "") {
+      obj.database_name = message.databaseName;
+    }
+    if (message.useTls !== false) {
+      obj.use_tls = message.useTls;
+    }
+    if (message.apiKey !== "") {
+      obj.api_key = message.apiKey;
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<MilvusVectorDB>, I>>(base?: I): MilvusVectorDB {
+    return MilvusVectorDB.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<MilvusVectorDB>, I>>(object: I): MilvusVectorDB {
+    const message = createBaseMilvusVectorDB();
+    message.address = object.address ?? "";
+    message.username = object.username ?? "";
+    message.password = object.password ?? "";
+    message.collectionName = object.collectionName ?? "";
+    message.databaseName = object.databaseName ?? "";
+    message.useTls = object.useTls ?? false;
+    message.apiKey = object.apiKey ?? "";
     return message;
   },
 };

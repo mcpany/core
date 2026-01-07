@@ -11,16 +11,17 @@
 // NOTE: Adjusted to point to local Next.js API routes for this UI overhaul task
 // In a real deployment, these might be /api/v1/... proxied to backend
 
-import { GrpcWebImpl, RegistrationServiceClientImpl } from '../proto/api/v1/registration';
-import { UpstreamServiceConfig } from '../proto/config/v1/upstream_service';
-import { ToolDefinition } from '../proto/config/v1/tool';
-import { ResourceDefinition } from '../proto/config/v1/resource';
-import { PromptDefinition } from '../proto/config/v1/prompt';
+import { GrpcWebImpl, RegistrationServiceClientImpl } from '@proto/api/v1/registration';
+import { UpstreamServiceConfig } from '@proto/config/v1/upstream_service';
+import { ToolDefinition } from '@proto/config/v1/tool';
+import { ResourceDefinition } from '@proto/config/v1/resource';
+import { PromptDefinition } from '@proto/config/v1/prompt';
 
 import { BrowserHeaders } from 'browser-headers';
 
 // Re-export generated types
 export type { UpstreamServiceConfig, ToolDefinition, ResourceDefinition, PromptDefinition };
+export type { ListServicesResponse, GetServiceResponse, GetServiceStatusResponse } from '@proto/api/v1/registration';
 
 // Initialize gRPC Web Client
 // Note: In development, we use localhost:8081 (envoy) or the Go server port if configured for gRPC-Web?
@@ -45,7 +46,27 @@ const registrationClient = new RegistrationServiceClientImpl(rpc);
 const fetchWithAuth = async (input: RequestInfo | URL, init?: RequestInit) => {
     const headers = new Headers(init?.headers);
     const key = process.env.NEXT_PUBLIC_MCPANY_API_KEY;
-    if (key) {
+
+    // Security: Only attach API Key to requests to the same origin or relative URLs
+    // to prevent leaking credentials to third parties (like Google Fonts, CDN, etc)
+    let isSameOrigin = false;
+    if (typeof input === 'string') {
+        if (input.startsWith('/') || input.startsWith('http://localhost') || (typeof window !== 'undefined' && input.startsWith(window.location.origin))) {
+            isSameOrigin = true;
+        }
+    } else if (input instanceof URL) {
+        if (input.origin === 'http://localhost' || (typeof window !== 'undefined' && input.origin === window.location.origin)) {
+            isSameOrigin = true;
+        }
+    } else {
+        // Request object
+        const url = new URL(input.url);
+        if (url.origin === 'http://localhost' || (typeof window !== 'undefined' && url.origin === window.location.origin)) {
+            isSameOrigin = true;
+        }
+    }
+
+    if (key && isSameOrigin) {
         headers.set('X-API-Key', key);
     }
     return fetch(input, { ...init, headers });
@@ -86,7 +107,7 @@ export const apiClient = {
     },
     getService: async (id: string) => {
          const response = await registrationClient.GetService({ serviceName: id }, getMetadata());
-         return response.service;
+         return response;
     },
     setServiceStatus: async (name: string, disable: boolean) => {
         const response = await fetchWithAuth(`/api/v1/services/${name}`, {
@@ -236,11 +257,10 @@ export const apiClient = {
             throw e;
         }
     },
-    setToolStatus: async (name: string, enabled: boolean) => {
+    setToolStatus: async (name: string, disabled: boolean) => {
         const res = await fetchWithAuth('/api/v1/tools', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ name, enabled })
+            method: 'PUT',
+            body: JSON.stringify({ name, disable: disabled })
         });
         return res.json();
     },
@@ -251,11 +271,10 @@ export const apiClient = {
         if (!res.ok) throw new Error('Failed to fetch resources');
         return res.json();
     },
-    setResourceStatus: async (uri: string, enabled: boolean) => {
-         const res = await fetchWithAuth('/api/v1/resources', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ uri, enabled })
+    setResourceStatus: async (uri: string, disabled: boolean) => {
+        const res = await fetchWithAuth('/api/v1/resources', {
+            method: 'PUT',
+            body: JSON.stringify({ uri, disable: disabled })
         });
         return res.json();
     },
@@ -311,43 +330,7 @@ export const apiClient = {
             }, 800);
         });
     },
-    executePrompt: async (name: string, args: Record<string, string>) => {
-        // Attempt to call backend
-        try {
-            const res = await fetch(`/api/v1/prompts/${name}/execute`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(args)
-            });
-            if (res.ok) return res.json();
-        } catch (e) {
-            console.warn("Backend execution failed, falling back to simulation for UI demo", e);
-        }
 
-        // Mock simulation if backend fails (for demo purposes)
-        return new Promise((resolve) => {
-            setTimeout(() => {
-                resolve({
-                    messages: [
-                        {
-                            role: "user",
-                            content: {
-                                type: "text",
-                                text: `Execute prompt '${name}' with args: ${JSON.stringify(args)}`
-                            }
-                        },
-                        {
-                            role: "assistant",
-                            content: {
-                                type: "text",
-                                text: `This is a simulated response for the prompt template '${name}'.\n\nArguments used:\n${Object.entries(args).map(([k, v]) => `- ${k}: ${v}`).join('\n')}\n\nThe backend endpoint /api/v1/prompts/${name}/execute is not yet implemented, so this mock response is provided for UI verification.`
-                            }
-                        }
-                    ]
-                });
-            }, 800);
-        });
-    },
 
     // Secrets
     listSecrets: async () => {

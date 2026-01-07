@@ -132,7 +132,7 @@ export function ServiceDetail({ serviceId }: { serviceId: string }) {
       setError(null);
       try {
         const response = await apiClient.getService(serviceId);
-        setService(response.service);
+        setService(response.service || null);
       } catch (e: any) {
         setError(e.message || "An unknown error occurred.");
         toast({

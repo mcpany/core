@@ -4,6 +4,7 @@
  */
 
 import type {NextConfig} from 'next';
+import path from 'path';
 
 const nextConfig: NextConfig = {
   output: 'standalone',
@@ -57,6 +58,18 @@ const nextConfig: NextConfig = {
         permanent: true,
       },
     ];
+  },
+  webpack: (config) => {
+    // Explicitly add alias for @proto to resolve external directory
+    // We use a symlink in Docker to make it appear inside the project
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      '@proto': path.resolve(__dirname, 'proto'),
+      '@google': path.resolve(__dirname, 'proto/google'),
+    };
+    // Important: Disable symlink resolution to prevent Webpack from resolving symlinks to their real path (which is outside the project)
+    config.resolve.symlinks = false;
+    return config;
   },
   async rewrites() {
     console.log("DEBUG: BACKEND_URL =", process.env.BACKEND_URL);

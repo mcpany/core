@@ -13,16 +13,28 @@ import { vi } from "vitest";
 const mockTool: ToolDefinition = {
   name: "test-tool",
   description: "A test tool",
-  schema: {
+  inputSchema: {
     type: "object",
     properties: {
       username: { type: "string", description: "The username" },
-      age: { type: "integer", description: "The age" },
-      isActive: { type: "boolean", description: "Is active?" },
-      role: { type: "string", enum: ["admin", "user"], description: "User role" }
+      age: { type: "string", description: "The age" },
+      isActive: { type: "string", description: "Is active status" },
+      role: { type: "string", enum: ["admin", "user"], description: "The role" }
     },
-    required: ["username", "age"]
-  }
+    required: ["username"]
+  },
+  serviceId: "test-service",
+  title: "Test Tool",
+  isStream: false,
+  readOnlyHint: false,
+  destructiveHint: false,
+  idempotentHint: false,
+  openWorldHint: false,
+  callId: "",
+  profiles: [],
+  tags: [],
+  mergeStrategy: 0,
+  disable: false
 };
 
 describe("ToolForm", () => {

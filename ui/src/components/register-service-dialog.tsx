@@ -87,17 +87,29 @@ export function RegisterServiceDialog({ onSuccess, trigger, serviceToEdit }: Reg
           // Construct config
           config = {
               name: values.name,
-              id: serviceToEdit?.id,
+              id: serviceToEdit?.id || "",
+              version: "1.0.0",
+              disable: false,
+              priority: 0,
+              loadBalancingStrategy: 0,
+              sanitizedName: "",
+              callPolicies: [],
+              preCallHooks: [],
+              postCallHooks: [],
+              profiles: [],
+              prompts: [],
+              profileLimits: {},
+              autoDiscoverTool: false,
           };
 
           if (values.type === 'grpc') {
-              config.grpcService = { address: values.address || "", useReflection: true, tools: [], resources: [], calls: [], prompts: [], protoCollection: [], protoDefinitions: [] };
+              config.grpcService = { address: values.address || "", useReflection: true, tools: [], resources: [], calls: {}, prompts: [], protoCollection: [], protoDefinitions: [] };
           } else if (values.type === 'http') {
-              config.httpService = { address: values.address || "", tools: [], calls: [], resources: [], prompts: [] };
+              config.httpService = { address: values.address || "", tools: [], calls: {}, resources: [], prompts: [] };
           } else if (values.type === 'command_line') {
               config.commandLineService = { command: values.command || "", workingDirectory: "", local: false, env: {}, tools: [], resources: [], prompts: [], communicationProtocol: 0, calls: {} };
           } else if (values.type === 'openapi') {
-               config.openapiService = { address: values.address || "", tools: [], calls: [], resources: [], prompts: [] };
+               config.openapiService = { address: values.address || "", tools: [], calls: {}, resources: [], prompts: [] };
           }
       }
 

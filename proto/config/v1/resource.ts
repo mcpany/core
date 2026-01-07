@@ -6,8 +6,8 @@
 
 /* eslint-disable */
 import { BinaryReader, BinaryWriter } from "@bufbuild/protobuf/wire";
-import { Timestamp } from "github.com/mcpany/core/proto/third_party/google/protobuf/timestamp";
 import Long from "long";
+import { Timestamp } from "../../google/protobuf/timestamp";
 import {
   CommandLineCallDefinition,
   GrpcCallDefinition,

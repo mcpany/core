@@ -75,11 +75,28 @@ func (t *WordTokenizer) CountTokens(text string) (int, error) {
 					inWord = true
 					wordCount++
 				}
+				// OPTIMIZATION: Skip subsequent non-whitespace ASCII characters
+				// This avoids checking inWord and c > ' ' repeatedly for each character in a word.
+				for i+1 < n {
+					c2 := text[i+1]
+					if c2 <= ' ' || c2 >= utf8.RuneSelf {
+						break
+					}
+					i++
+				}
 			} else {
 				// c <= ' '
 				// unicode.IsSpace for ASCII includes '\t', '\n', '\v', '\f', '\r', ' '.
 				if c == ' ' || (c >= '\t' && c <= '\r') {
 					inWord = false
+					// OPTIMIZATION: Skip subsequent whitespace
+					for i+1 < n {
+						c2 := text[i+1]
+						if c2 != ' ' && (c2 < '\t' || c2 > '\r') {
+							break
+						}
+						i++
+					}
 				} else if !inWord {
 					// Control characters that are not whitespace (e.g. \x00) start a word
 					inWord = true
