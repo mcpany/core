@@ -74,7 +74,6 @@ Most "popular" MCP servers today are bespoke binaries. If the upstream API chang
 - **Multi-User & Multi-Profile**: Securely support multiple users with distinct profiles, each with its own set of enabled services and granular authentication.
 - **Advanced Configuration**: Customize tool behavior with [Merge Strategies and Profile Filtering](server/docs/feature/merge_strategy.md).
 - **Extensible**: Designed to be easily extended with new service types and capabilities.
-- **OpenTelemetry Tracing**: Automatic distributed tracing of tool executions, providing visibility into latency and failures. Export traces to OTLP-compatible backends or stdout.
 
 ## ⚡ Quick Start (5 Minutes)
 
