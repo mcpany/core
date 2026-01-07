@@ -154,6 +154,18 @@ func TestRedactJSON(t *testing.T) {
 		output := RedactJSON([]byte(input))
 		assert.Contains(t, string(output), "[REDACTED]")
 	})
+
+	t.Run("key with escaped quotes", func(t *testing.T) {
+		input := `{"api_key \"foo\"": "secret"}`
+		output := RedactJSON([]byte(input))
+		var m map[string]interface{}
+		err := json.Unmarshal(output, &m)
+		assert.NoError(t, err)
+
+		val, ok := m["api_key \"foo\""]
+		assert.True(t, ok, "key should exist")
+		assert.Equal(t, "[REDACTED]", val)
+	})
 }
 
 func TestRedactJSON_FalsePositives(t *testing.T) {
