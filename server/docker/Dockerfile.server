@@ -49,9 +49,13 @@ WORKDIR /app
 RUN apt-get update && apt-get install -y ca-certificates curl && rm -rf /var/lib/apt/lists/*
 
 # Copy the binary from the builder stage
+# Copy the binary from the builder stage
 COPY --from=builder /server /app/server
 # Copy curl from the builder stage to be used in healthchecks
 # COPY --from=builder /usr/bin/curl /usr/bin/curl
+
+# Copy proto files for runtime usage
+COPY --from=builder /app/proto /app/proto
 
 # Expose the ports the server listens on
 EXPOSE 50050
