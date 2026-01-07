@@ -406,7 +406,7 @@ message VectorUpstreamService {
   // The specific configuration for the vector database type.
   oneof vector_db_type {
     PineconeVectorDB pinecone = 1;
-    // Add other providers here (e.g., Milvus, Weaviate)
+    MilvusVectorDB milvus = 5;
   }
 
   // Manually defined mappings (usually not needed as we auto-register Vector tools).
@@ -425,6 +425,16 @@ message PineconeVectorDB {
   string index_name = 3 [json_name = "index_name"];
   string project_id = 4 [json_name = "project_id"]; // Optional, might be needed for URL construction
   string host = 5; // Optional: The full host URL (https://index-project.svc.pinecone.io)
+}
+
+message MilvusVectorDB {
+  string address = 1; // e.g., "localhost:19530"
+  string username = 2; // Optional
+  string password = 3; // Optional
+  string collection_name = 4 [json_name = "collection_name"];
+  string database_name = 5 [json_name = "database_name"]; // Defaults to "default"
+  bool use_tls = 6 [json_name = "use_tls"];
+  string api_key = 7 [json_name = "api_key"]; // For Zilliz Cloud
 }
 
 // McpUpstreamService defines an upstream that is already an MCP-compliant service.
