@@ -83,17 +83,17 @@ paths:
 	configContent := fmt.Sprintf(`
 upstream_services:
   - id: "petstore-service"
-     name: "petstore-service"
-     openapi_service:
+    name: "petstore-service"
+    openapi_service:
       address: "%s"
       spec_url: "%s/openapi.yaml"
-     call_policies:
-       - default_action: DENY
-         rules:
-           - action: ALLOW
-             name_regex: "^petstore-service\\.findPetsByStatus$"
-           - action: ALLOW
-             name_regex: "^petstore-service\\.getPetById$"
+    call_policies:
+      - default_action: DENY
+        rules:
+          - action: ALLOW
+            name_regex: "^petstore-service\\.findPetsByStatus$"
+          - action: ALLOW
+            name_regex: "^petstore-service\\.getPetById$"
 `, server.URL, server.URL)
 
 	tmpDir := t.TempDir()
