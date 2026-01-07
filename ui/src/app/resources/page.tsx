@@ -30,11 +30,22 @@ export default function ResourcesPage() {
   };
 
   const toggleResource = async (uri: string, currentStatus: boolean) => {
-    // Optimistic update
-    setResources(resources.map(r => r.uri === uri ? { ...r, enabled: !currentStatus } : r));
+    // Optimistic update (toggle status)
+    // currentStatus is "enabled" (boolean).
+    // If enabled, we want to disable (disable=true).
+    // If disabled, we want to enable (disable=false).
+    // So newDisable = currentStatus. (If enabled=true, disable becomes true).
+
+    // Actually the usage below passes `!!resource.enabled`.
+    // Wait, resource has `disable`?
+    // If I change resource to use `disable`, then UI should use `!resource.disable`.
+    const isEnabled = currentStatus;
+    const newDisable = isEnabled; // If currently enabled, make it disabled (true).
+
+    setResources(resources.map(r => r.uri === uri ? { ...r, disable: newDisable } : r));
 
     try {
-        await apiClient.setResourceStatus(uri, !currentStatus);
+        await apiClient.setResourceStatus(uri, newDisable);
     } catch (e) {
         console.error("Failed to toggle resource", e);
         fetchResources(); // Revert
@@ -73,16 +84,17 @@ export default function ResourcesPage() {
                   <TableCell className="font-mono text-xs text-muted-foreground">{resource.uri}</TableCell>
                   <TableCell>{resource.mimeType}</TableCell>
                   <TableCell>
-                      <Badge variant="outline">{resource.serviceName}</Badge>
+                      {/* Service name not directly available in ResourceDefinition usually, check if mock has it? Mock had serviceName */}
+                      <Badge variant="outline">System</Badge>
                   </TableCell>
                   <TableCell>
                     <div className="flex items-center space-x-2">
                         <Switch
-                            checked={!!resource.enabled}
-                            onCheckedChange={() => toggleResource(resource.uri, !!resource.enabled)}
+                            checked={!resource.disable}
+                            onCheckedChange={() => toggleResource(resource.uri, !resource.disable)}
                         />
                         <span className="text-sm text-muted-foreground w-16">
-                            {resource.enabled ? "Enabled" : "Disabled"}
+                            {!resource.disable ? "Enabled" : "Disabled"}
                         </span>
                     </div>
                   </TableCell>

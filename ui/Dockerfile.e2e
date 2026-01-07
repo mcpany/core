@@ -6,13 +6,16 @@ FROM mcr.microsoft.com/playwright:v1.57.0-jammy
 WORKDIR /work/ui
 
 # Copy package files first for caching
-COPY package.json package-lock.json ./
+COPY ui/package.json ui/package-lock.json ./
 
 # Install dependencies
 RUN npm ci
 
 # Copy the rest of the UI code
-COPY . .
+COPY ui/ .
+COPY proto/ /work/proto/
+# Symlink node_modules so proto files can find dependencies
+RUN ln -s /work/ui/node_modules /work/proto/node_modules
 RUN find . -path ./node_modules -prune -o -exec chmod 777 {} +
 
 # Grant permissions to specific directories needed for build/execution

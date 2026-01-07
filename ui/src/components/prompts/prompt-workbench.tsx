@@ -72,9 +72,9 @@ export function PromptWorkbench({ initialPrompts = [] }: PromptWorkbenchProps) {
 
   const loadDemoData = () => {
       setPrompts([
-          { name: "summarize_notes", description: "Summarizes meeting notes into key action items", serviceName: "notes-service", arguments: [{name: "notes", description: "The raw notes text", required: true}, {name: "style", description: "bullet or paragraph", required: false}], enabled: true },
-          { name: "code_review", description: "Analyzes code for bugs and security issues", serviceName: "dev-service", arguments: [{name: "code", description: "Source code", required: true}, {name: "language", description: "Programming language", required: true}], enabled: true },
-          { name: "write_email", description: "Drafts a professional email", serviceName: "office-service", arguments: [{name: "recipient", description: "Name", required: true}, {name: "topic", description: "Main topic", required: true}], enabled: false },
+          { name: "summarize_notes", description: "Summarizes meeting notes into key action items", inputSchema: { type: "object", properties: { notes: { description: "The raw notes text", type: "string" }, style: { description: "bullet or paragraph", type: "string" } }, required: ["notes"] }, disable: false, profiles: [], title: "Summarize Notes", messages: [] },
+          { name: "code_review", description: "Analyzes code for bugs and security issues", inputSchema: { type: "object", properties: { code: { description: "Source code", type: "string" }, language: { description: "Programming language", type: "string" } }, required: ["code", "language"] }, disable: false, profiles: [], title: "Code Review", messages: [] },
+          { name: "write_email", description: "Drafts a professional email", inputSchema: { type: "object", properties: { recipient: { description: "Name", type: "string" }, topic: { description: "Main topic", type: "string" } }, required: ["recipient", "topic"] }, disable: true, profiles: [], title: "Write Email", messages: [] },
       ]);
   };
 
@@ -88,6 +88,18 @@ export function PromptWorkbench({ initialPrompts = [] }: PromptWorkbenchProps) {
     setSelectedPrompt(prompt);
     setArgumentValues({});
     setExecutionResult(null);
+  };
+
+  const getArguments = (prompt: PromptDefinition) => {
+      if (!prompt.inputSchema || !prompt.inputSchema.properties) return [];
+      const props = prompt.inputSchema.properties as Record<string, any>;
+      const required = (prompt.inputSchema.required as string[]) || [];
+      return Object.entries(props).map(([key, value]) => ({
+          name: key,
+          description: value.description,
+          required: required.includes(key),
+          type: value.type
+      }));
   };
 
   const handleExecute = async () => {
@@ -115,15 +127,18 @@ export function PromptWorkbench({ initialPrompts = [] }: PromptWorkbenchProps) {
   };
 
   const togglePromptStatus = async (prompt: PromptDefinition) => {
-      const newStatus = !prompt.enabled;
+      const newDisable = !prompt.disable;
+
       // Optimistic update
-      setPrompts(prompts.map(p => p.name === prompt.name ? {...p, enabled: newStatus} : p));
+      const updatedPrompts = prompts.map(p => p.name === prompt.name ? {...p, disable: newDisable} : p);
+      setPrompts(updatedPrompts);
+
       if (selectedPrompt?.name === prompt.name) {
-          setSelectedPrompt({...selectedPrompt, enabled: newStatus});
+          setSelectedPrompt({...selectedPrompt, disable: newDisable});
       }
 
       try {
-          await apiClient.setPromptStatus(prompt.name, newStatus);
+          await apiClient.setPromptStatus(prompt.name, newDisable);
       } catch (e) {
           console.error("Failed to toggle status", e);
           toast({
@@ -132,9 +147,9 @@ export function PromptWorkbench({ initialPrompts = [] }: PromptWorkbenchProps) {
               variant: "destructive"
           });
           // Revert
-           setPrompts(prompts.map(p => p.name === prompt.name ? {...p, enabled: !newStatus} : p));
+          setPrompts(prompts.map(p => p.name === prompt.name ? {...p, disable: prompt.disable} : p));
              if (selectedPrompt?.name === prompt.name) {
-                setSelectedPrompt({...selectedPrompt, enabled: !newStatus});
+                setSelectedPrompt({...selectedPrompt, disable: prompt.disable});
             }
       }
   };
@@ -200,12 +215,13 @@ export function PromptWorkbench({ initialPrompts = [] }: PromptWorkbenchProps) {
                             </p>
                         )}
                         <div className="flex items-center gap-2 mt-1">
+                             {/* serviceName is not available in PromptDefinition, showing system default or we need to fetch service info */}
                             <Badge variant="outline" className="text-[10px] px-1 py-0 h-4">
-                                {prompt.serviceName || "system"}
+                                System
                             </Badge>
-                             {(prompt.arguments?.length || 0) > 0 && (
+                             {(getArguments(prompt).length || 0) > 0 && (
                                 <span className="text-[10px] text-muted-foreground flex items-center gap-0.5">
-                                    <Terminal className="h-3 w-3" /> {prompt.arguments?.length} args
+                                    <Terminal className="h-3 w-3" /> {getArguments(prompt).length} args
                                 </span>
                              )}
                         </div>
@@ -214,7 +230,7 @@ export function PromptWorkbench({ initialPrompts = [] }: PromptWorkbenchProps) {
                 {filteredPrompts.length === 0 && (
                     <div className="p-8 text-center text-sm text-muted-foreground flex flex-col items-center gap-2">
                         <p>No prompts found.</p>
-                        <Button variant="outline" size="xs" onClick={loadDemoData} className="h-6 text-xs gap-1">
+                        <Button variant="outline" size="sm" onClick={loadDemoData} className="h-6 text-xs gap-1">
                             <Bug className="h-3 w-3" /> Load Demo Data
                         </Button>
                     </div>
@@ -237,11 +253,11 @@ export function PromptWorkbench({ initialPrompts = [] }: PromptWorkbenchProps) {
                         <div className="flex items-center gap-3">
                              <div className="flex items-center gap-2">
                                 <Switch
-                                    checked={!!selectedPrompt.enabled}
+                                    checked={!selectedPrompt.disable}
                                     onCheckedChange={() => togglePromptStatus(selectedPrompt)}
                                 />
                                 <Label className="text-xs text-muted-foreground">
-                                    {selectedPrompt.enabled ? "Enabled" : "Disabled"}
+                                    {!selectedPrompt.disable ? "Enabled" : "Disabled"}
                                 </Label>
                              </div>
                         </div>
@@ -259,8 +275,8 @@ export function PromptWorkbench({ initialPrompts = [] }: PromptWorkbenchProps) {
                                 </h3>
                                 <Card>
                                     <CardContent className="p-4 space-y-4">
-                                        {(selectedPrompt.arguments?.length || 0) > 0 ? (
-                                            selectedPrompt.arguments?.map((arg) => (
+                                        {getArguments(selectedPrompt).length > 0 ? (
+                                            getArguments(selectedPrompt).map((arg) => (
                                                 <div key={arg.name} className="space-y-1.5">
                                                     <Label htmlFor={arg.name} className="flex items-center gap-1 text-xs font-mono uppercase text-muted-foreground">
                                                         {arg.name}

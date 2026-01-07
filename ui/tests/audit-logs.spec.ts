@@ -6,6 +6,7 @@
 
 import { test } from '@playwright/test';
 import * as path from 'path';
+import * as fs from 'fs';
 
 test.describe('Feature Screenshot', () => {
     // Skip if CAPTURE_SCREENSHOTS is not set
@@ -15,7 +16,6 @@ test.describe('Feature Screenshot', () => {
     const auditDir = path.join(__dirname, '../.audit/ui', date);
 
     test.beforeAll(async () => {
-        const fs = require('fs');
         if (!fs.existsSync(auditDir)) {
             fs.mkdirSync(auditDir, { recursive: true });
         }

@@ -6,8 +6,8 @@
 
 /* eslint-disable */
 import { BinaryReader, BinaryWriter } from "@bufbuild/protobuf/wire";
-import { Duration } from "github.com/mcpany/core/proto/third_party/google/protobuf/duration";
 import Long from "long";
+import { Duration } from "../../google/protobuf/duration";
 import { RedisBus } from "../../bus/bus";
 import { AuthenticationConfig, SecretValue, UpstreamAuthentication } from "./auth";
 import {
