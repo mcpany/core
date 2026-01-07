@@ -14,7 +14,7 @@ test.describe('Playground Tool Configuration', () => {
           {
             name: 'weather_tool',
             description: 'Get weather info',
-            schema: {
+            inputSchema: {
               type: 'object',
               properties: {
                 city: { type: 'string', description: 'City name' },
