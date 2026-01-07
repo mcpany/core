@@ -56,7 +56,7 @@ async function restRequest<Req, Res>(
     const headers: HeadersInit = {
         'Content-Type': 'application/json',
     };
-    
+
     // Inject API Key if present
     const key = getApiKey();
     if (key) {
@@ -110,6 +110,9 @@ export const apiClient = {
             undefined,
             identity
         );
+        if (Array.isArray(response)) {
+            return response as UpstreamServiceConfig[];
+        }
         return (response as any).services as UpstreamServiceConfig[];
     },
     getService: async (id: string) => {
@@ -128,9 +131,9 @@ export const apiClient = {
          service.disable = disable;
 
          await restRequest(
-             '/api/v1/services/register',
-             'POST',
-             { config: service },
+             `/api/v1/services/${name}`,
+             'PUT',
+             service,
              identity
          );
          return service;
@@ -145,25 +148,25 @@ export const apiClient = {
     },
     registerService: async (config: UpstreamServiceConfig) => {
         return restRequest(
-            '/api/v1/services/register',
+            '/api/v1/services',
             'POST',
-            { config },
+            config,
             identity
         );
     },
     updateService: async (config: UpstreamServiceConfig) => {
         return restRequest(
-            '/api/v1/services/register',
-            'POST',
-            { config },
+            `/api/v1/services/${config.name}`,
+            'PUT',
+            config,
             identity
         );
     },
     unregisterService: async (id: string) => {
          await restRequest(
-             '/api/v1/services/unregister',
-             'POST',
-             { serviceName: id, namespace: '' },
+             `/api/v1/services/${id}`,
+             'DELETE',
+             undefined,
              identity
          );
          return {};
@@ -274,10 +277,10 @@ export const apiClient = {
         if (key) {
             (headers as any)['X-API-Key'] = key;
         }
-        const res = await fetch(url, { 
+        const res = await fetch(url, {
             method: 'POST',
-            headers, 
-            body: config 
+            headers,
+            body: config
         });
         if (!res.ok) throw new Error('Failed to save stack config');
         return res.json();

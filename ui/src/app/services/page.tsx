@@ -40,6 +40,10 @@ export default function ServicesPage() {
     setLoading(true);
     try {
       const res = await apiClient.listServices();
+      if (!res) {
+          setServices([]);
+          return;
+      }
       // Handle both array and object response formats for robustness
       if (Array.isArray(res)) {
           setServices(res);
