@@ -18,11 +18,11 @@ upstream_services:
     command_line_service:
       command: "echo"
       tools:
-        - name: "get_weather"
+        - name: "weather-service.get_weather"
           description: "Get current weather"
           call_id: "get_weather"
       calls:
-        get_weather:
+        weather-service.get_weather:
           args: ['{"weather": "sunny"}']
       resources:
         - uri: "system://logs"

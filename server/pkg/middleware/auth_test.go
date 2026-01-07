@@ -203,4 +203,44 @@ func TestAuthMiddleware(t *testing.T) {
 		assert.Contains(t, err.Error(), "unauthorized")
 		assert.False(t, nextCalled)
 	})
+
+	t.Run("should block non-namespaced tool calls", func(t *testing.T) {
+		authManager := auth.NewManager()
+		// Even if we have an authenticator for some service, non-namespaced tools should be blocked
+		// because we cannot attribute them to a service.
+		authenticator := &auth.APIKeyAuthenticator{
+			ParamName: "X-API-Key",
+			Value:     "secret",
+			In:        configv1.APIKeyAuth_HEADER,
+		}
+		_ = authManager.AddAuthenticator("some-service", authenticator)
+
+		mw := middleware.AuthMiddleware(authManager)
+
+		var nextCalled bool
+		nextHandler := func(_ context.Context, _ string, _ mcp.Request) (mcp.Result, error) {
+			nextCalled = true
+			return &mcp.CallToolResult{}, nil
+		}
+
+		handler := mw(nextHandler)
+
+		// Create a tool call with NO namespace (e.g. "mytool")
+		req := &mcp.CallToolRequest{
+			Params: &mcp.CallToolParamsRaw{
+				Name:      "mytool",
+				Arguments: json.RawMessage(`{}`),
+			},
+		}
+
+		httpReq, _ := http.NewRequest("POST", "/", nil)
+		ctx := context.WithValue(context.Background(), "http.request", httpReq)
+
+		_, err := handler(ctx, consts.MethodToolsCall, req)
+
+		// MUST be blocked now
+		require.Error(t, err)
+		assert.Contains(t, err.Error(), "unauthorized: tool name must be namespaced")
+		assert.False(t, nextCalled)
+	})
 }

@@ -50,6 +50,11 @@ func AuthMiddleware(authManager *auth.Manager) mcp.Middleware {
 			}
 
 			if serviceID == "" {
+				// Prevent authentication bypass for tool calls without a namespace
+				if method == consts.MethodToolsCall {
+					return nil, fmt.Errorf("unauthorized: tool name must be namespaced (service.tool)")
+				}
+
 				// If we couldn't determine a service ID, we assume it's a global method or
 				// a malformed request that doesn't map to a protected service.
 				// We let it pass, relying on downstream handlers to validate if necessary.
