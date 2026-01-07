@@ -55,6 +55,11 @@ func TestOperatorE2E(t *testing.T) {
 
 	// 4. Build Images (Locally)
 	t.Logf("Building Docker images with tag %s...", tag)
+	// Prepare docker context for server build
+	if err := runCommand(t, ctx, rootDir, "make", "-C", "server", "prepare-docker-context"); err != nil {
+		t.Fatalf("Failed to prepare docker context: %v", err)
+	}
+
 	// Build server with root context because Dockerfile expects it (COPY server/go.mod etc.)
 	if err := runCommand(t, ctx, rootDir, "make", "-C", "server", "build-docker", fmt.Sprintf("SERVER_IMAGE_TAGS=mcpany/server:%s", tag)); err != nil {
 		t.Fatalf("Failed to build server image: %v", err)
