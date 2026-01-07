@@ -14,11 +14,14 @@ import (
 
 	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/api/types/image"
+	"path/filepath"
+
 	"github.com/docker/docker/api/types/mount"
 	"github.com/docker/docker/client"
 	"github.com/docker/docker/pkg/stdcopy"
-	"github.com/mcpany/core/server/pkg/logging"
 	configv1 "github.com/mcpany/core/proto/config/v1"
+	"github.com/mcpany/core/server/pkg/logging"
+	"github.com/mcpany/core/server/pkg/validation"
 )
 
 // Executor is an interface for executing commands.
@@ -176,9 +179,22 @@ func (e *dockerExecutor) Execute(ctx context.Context, command string, args []str
 	hostConfig := &container.HostConfig{}
 	if e.containerEnv.GetVolumes() != nil {
 		for dest, src := range e.containerEnv.GetVolumes() {
+			// Validate host path (dest) to prevent mounting sensitive directories
+			if err := validation.IsRelativePath(dest); err != nil {
+				_ = cli.Close()
+				return nil, nil, nil, fmt.Errorf("invalid volume mount source %q: %w", dest, err)
+			}
+
+			// Docker requires absolute path for bind mounts
+			absDest, err := filepath.Abs(dest)
+			if err != nil {
+				_ = cli.Close()
+				return nil, nil, nil, fmt.Errorf("failed to resolve absolute path for %q: %w", dest, err)
+			}
+
 			hostConfig.Mounts = append(hostConfig.Mounts, mount.Mount{
 				Type:   mount.TypeBind,
-				Source: dest,
+				Source: absDest,
 				Target: src,
 			})
 		}
@@ -285,9 +301,22 @@ func (e *dockerExecutor) ExecuteWithStdIO(ctx context.Context, command string, a
 	hostConfig := &container.HostConfig{}
 	if e.containerEnv.GetVolumes() != nil {
 		for dest, src := range e.containerEnv.GetVolumes() {
+			// Validate host path (dest) to prevent mounting sensitive directories
+			if err := validation.IsRelativePath(dest); err != nil {
+				_ = cli.Close()
+				return nil, nil, nil, nil, fmt.Errorf("invalid volume mount source %q: %w", dest, err)
+			}
+
+			// Docker requires absolute path for bind mounts
+			absDest, err := filepath.Abs(dest)
+			if err != nil {
+				_ = cli.Close()
+				return nil, nil, nil, nil, fmt.Errorf("failed to resolve absolute path for %q: %w", dest, err)
+			}
+
 			hostConfig.Mounts = append(hostConfig.Mounts, mount.Mount{
 				Type:   mount.TypeBind,
-				Source: dest,
+				Source: absDest,
 				Target: src,
 			})
 		}
