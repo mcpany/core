@@ -20,14 +20,28 @@ import (
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
+// ClientFactory is a function that creates a VectorClient.
+type ClientFactory func(config *configv1.VectorUpstreamService) (Client, error)
+
 // Upstream implements the upstream.Upstream interface for vector database services.
 type Upstream struct {
-	// mu sync.Mutex
+	clientFactory ClientFactory
 }
 
 // NewUpstream creates a new instance of VectorUpstream.
 func NewUpstream() upstream.Upstream {
-	return &Upstream{}
+	return &Upstream{
+		clientFactory: defaultClientFactory,
+	}
+}
+
+func defaultClientFactory(config *configv1.VectorUpstreamService) (Client, error) {
+	switch t := config.VectorDbType.(type) {
+	case *configv1.VectorUpstreamService_Pinecone:
+		return NewPineconeClient(t.Pinecone)
+	default:
+		return nil, fmt.Errorf("unsupported vector database type")
+	}
 }
 
 // Shutdown implements the upstream.Upstream interface.
@@ -64,14 +78,7 @@ func (u *Upstream) Register(
 		return "", nil, nil, fmt.Errorf("vector service config is nil")
 	}
 
-	var client Client
-	switch t := vectorService.VectorDbType.(type) {
-	case *configv1.VectorUpstreamService_Pinecone:
-		client, err = NewPineconeClient(t.Pinecone)
-	default:
-		return "", nil, nil, fmt.Errorf("unsupported vector database type")
-	}
-
+	client, err := u.clientFactory(vectorService)
 	if err != nil {
 		return "", nil, nil, fmt.Errorf("failed to create vector client: %w", err)
 	}
@@ -239,7 +246,7 @@ func (u *Upstream) getTools(client Client) []vectorToolDef {
 							"values":   map[string]interface{}{"type": "array", "items": map[string]interface{}{"type": "number"}},
 							"metadata": map[string]interface{}{"type": "object"},
 						},
-						"required": []string{"id", "values"},
+						"required": []interface{}{"id", "values"},
 					},
 					"description": "List of vectors to upsert.",
 				},

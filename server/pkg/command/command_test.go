@@ -164,7 +164,7 @@ func TestLocalExecutor(t *testing.T) {
 
 func TestDockerExecutor(t *testing.T) {
 	if !canConnectToDocker(t) {
-		// t.Skip("Cannot connect to Docker daemon, skipping Docker tests")
+		t.Skip("Cannot connect to Docker daemon, skipping Docker tests")
 	}
 	t.Run("WithoutVolumeMount", func(t *testing.T) {
 		containerEnv := &configv1.ContainerEnvironment{}
@@ -309,7 +309,7 @@ func TestDockerExecutor(t *testing.T) {
 
 func TestCombinedOutput(t *testing.T) {
 	if !canConnectToDocker(t) {
-		// t.Skip("Cannot connect to Docker daemon, skipping Docker tests")
+		t.Skip("Cannot connect to Docker daemon, skipping Docker tests")
 	}
 	containerEnv := &configv1.ContainerEnvironment{}
 	containerEnv.SetImage("alpine:latest")
@@ -350,7 +350,7 @@ func TestCombinedOutput(t *testing.T) {
 
 func TestNewDockerExecutorSuccess(t *testing.T) {
 	if !canConnectToDocker(t) {
-		// t.Skip("Cannot connect to Docker daemon, skipping Docker tests")
+		t.Skip("Cannot connect to Docker daemon, skipping Docker tests")
 	}
 	containerEnv := &configv1.ContainerEnvironment{}
 	containerEnv.SetImage("alpine:latest")
@@ -566,7 +566,7 @@ func TestLocalExecutorWithStdIO(t *testing.T) {
 func TestDockerExecutorWithStdIO(t *testing.T) {
 	t.Skip("Skipping flaky test: TestDockerExecutorWithStdIO (hangs on stream read)")
 	if !canConnectToDocker(t) {
-		// t.Skip("Cannot connect to Docker daemon, skipping Docker tests")
+		t.Skip("Cannot connect to Docker daemon, skipping Docker tests")
 	}
 
 	t.Run("Success", func(t *testing.T) {
