@@ -346,7 +346,7 @@ func (x RateLimitConfig_CostMetric) Number() protoreflect.EnumNumber {
 type UpstreamServiceCollection struct {
 	state                     protoimpl.MessageState  `protogen:"opaque.v1"`
 	xxx_hidden_Name           *string                 `protobuf:"bytes,1,opt,name=name"`
-	xxx_hidden_HttpUrl        *string                 `protobuf:"bytes,2,opt,name=http_url"`
+	xxx_hidden_HttpUrl        *string                 `protobuf:"bytes,2,opt,name=http_url,json=httpUrl"`
 	xxx_hidden_Priority       int32                   `protobuf:"varint,3,opt,name=priority"`
 	xxx_hidden_Authentication *UpstreamAuthentication `protobuf:"bytes,4,opt,name=authentication"`
 	XXX_raceDetectHookData    protoimpl.RaceDetectHookData
@@ -520,28 +520,28 @@ type UpstreamServiceConfig struct {
 	state                             protoimpl.MessageState                `protogen:"opaque.v1"`
 	xxx_hidden_Id                     *string                               `protobuf:"bytes,1,opt,name=id"`
 	xxx_hidden_Name                   *string                               `protobuf:"bytes,2,opt,name=name"`
-	xxx_hidden_SanitizedName          *string                               `protobuf:"bytes,18,opt,name=sanitized_name"`
-	xxx_hidden_ConnectionPool         *ConnectionPoolConfig                 `protobuf:"bytes,3,opt,name=connection_pool"`
-	xxx_hidden_UpstreamAuthentication *UpstreamAuthentication               `protobuf:"bytes,4,opt,name=upstream_authentication"`
+	xxx_hidden_SanitizedName          *string                               `protobuf:"bytes,18,opt,name=sanitized_name,json=sanitizedName"`
+	xxx_hidden_ConnectionPool         *ConnectionPoolConfig                 `protobuf:"bytes,3,opt,name=connection_pool,json=connectionPool"`
+	xxx_hidden_UpstreamAuthentication *UpstreamAuthentication               `protobuf:"bytes,4,opt,name=upstream_authentication,json=upstreamAuthentication"`
 	xxx_hidden_Cache                  *CacheConfig                          `protobuf:"bytes,5,opt,name=cache"`
-	xxx_hidden_RateLimit              *RateLimitConfig                      `protobuf:"bytes,6,opt,name=rate_limit"`
-	xxx_hidden_LoadBalancingStrategy  LoadBalancingStrategy                 `protobuf:"varint,7,opt,name=load_balancing_strategy,enum=mcpany.config.v1.LoadBalancingStrategy"`
+	xxx_hidden_RateLimit              *RateLimitConfig                      `protobuf:"bytes,6,opt,name=rate_limit,json=rateLimit"`
+	xxx_hidden_LoadBalancingStrategy  LoadBalancingStrategy                 `protobuf:"varint,7,opt,name=load_balancing_strategy,json=loadBalancingStrategy,enum=mcpany.config.v1.LoadBalancingStrategy"`
 	xxx_hidden_Resilience             *ResilienceConfig                     `protobuf:"bytes,8,opt,name=resilience"`
 	xxx_hidden_ServiceConfig          isUpstreamServiceConfig_ServiceConfig `protobuf_oneof:"service_config"`
 	xxx_hidden_Version                *string                               `protobuf:"bytes,14,opt,name=version"`
 	xxx_hidden_Authentication         *AuthenticationConfig                 `protobuf:"bytes,15,opt,name=authentication"`
 	xxx_hidden_Disable                bool                                  `protobuf:"varint,19,opt,name=disable"`
 	xxx_hidden_Priority               int32                                 `protobuf:"varint,20,opt,name=priority"`
-	xxx_hidden_CallPolicies           *[]*CallPolicy                        `protobuf:"bytes,22,rep,name=call_policies"`
-	xxx_hidden_PreCallHooks           *[]*CallHook                          `protobuf:"bytes,23,rep,name=pre_call_hooks"`
-	xxx_hidden_PostCallHooks          *[]*CallHook                          `protobuf:"bytes,24,rep,name=post_call_hooks"`
+	xxx_hidden_CallPolicies           *[]*CallPolicy                        `protobuf:"bytes,22,rep,name=call_policies,json=callPolicies"`
+	xxx_hidden_PreCallHooks           *[]*CallHook                          `protobuf:"bytes,23,rep,name=pre_call_hooks,json=preCallHooks"`
+	xxx_hidden_PostCallHooks          *[]*CallHook                          `protobuf:"bytes,24,rep,name=post_call_hooks,json=postCallHooks"`
 	xxx_hidden_Profiles               *[]*Profile                           `protobuf:"bytes,25,rep,name=profiles"`
 	xxx_hidden_Prompts                *[]*PromptDefinition                  `protobuf:"bytes,26,rep,name=prompts"`
-	xxx_hidden_ToolExportPolicy       *ExportPolicy                         `protobuf:"bytes,27,opt,name=tool_export_policy"`
-	xxx_hidden_PromptExportPolicy     *ExportPolicy                         `protobuf:"bytes,28,opt,name=prompt_export_policy"`
-	xxx_hidden_ResourceExportPolicy   *ExportPolicy                         `protobuf:"bytes,29,opt,name=resource_export_policy"`
-	xxx_hidden_AutoDiscoverTool       bool                                  `protobuf:"varint,30,opt,name=auto_discover_tool"`
-	xxx_hidden_ProfileLimits          map[string]*RateLimitConfig           `protobuf:"bytes,33,rep,name=profile_limits" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	xxx_hidden_ToolExportPolicy       *ExportPolicy                         `protobuf:"bytes,27,opt,name=tool_export_policy,json=toolExportPolicy"`
+	xxx_hidden_PromptExportPolicy     *ExportPolicy                         `protobuf:"bytes,28,opt,name=prompt_export_policy,json=promptExportPolicy"`
+	xxx_hidden_ResourceExportPolicy   *ExportPolicy                         `protobuf:"bytes,29,opt,name=resource_export_policy,json=resourceExportPolicy"`
+	xxx_hidden_AutoDiscoverTool       bool                                  `protobuf:"varint,30,opt,name=auto_discover_tool,json=autoDiscoverTool"`
+	xxx_hidden_ProfileLimits          map[string]*RateLimitConfig           `protobuf:"bytes,33,rep,name=profile_limits,json=profileLimits" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
 	XXX_raceDetectHookData            protoimpl.RaceDetectHookData
 	XXX_presence                      [1]uint32
 	unknownFields                     protoimpl.UnknownFields
@@ -1622,47 +1622,47 @@ type isUpstreamServiceConfig_ServiceConfig interface {
 }
 
 type upstreamServiceConfig_McpService struct {
-	McpService *McpUpstreamService `protobuf:"bytes,9,opt,name=mcp_service,oneof"`
+	McpService *McpUpstreamService `protobuf:"bytes,9,opt,name=mcp_service,json=mcpService,oneof"`
 }
 
 type upstreamServiceConfig_HttpService struct {
-	HttpService *HttpUpstreamService `protobuf:"bytes,10,opt,name=http_service,oneof"`
+	HttpService *HttpUpstreamService `protobuf:"bytes,10,opt,name=http_service,json=httpService,oneof"`
 }
 
 type upstreamServiceConfig_GrpcService struct {
-	GrpcService *GrpcUpstreamService `protobuf:"bytes,11,opt,name=grpc_service,oneof"`
+	GrpcService *GrpcUpstreamService `protobuf:"bytes,11,opt,name=grpc_service,json=grpcService,oneof"`
 }
 
 type upstreamServiceConfig_OpenapiService struct {
-	OpenapiService *OpenapiUpstreamService `protobuf:"bytes,12,opt,name=openapi_service,oneof"`
+	OpenapiService *OpenapiUpstreamService `protobuf:"bytes,12,opt,name=openapi_service,json=openapiService,oneof"`
 }
 
 type upstreamServiceConfig_CommandLineService struct {
-	CommandLineService *CommandLineUpstreamService `protobuf:"bytes,13,opt,name=command_line_service,oneof"`
+	CommandLineService *CommandLineUpstreamService `protobuf:"bytes,13,opt,name=command_line_service,json=commandLineService,oneof"`
 }
 
 type upstreamServiceConfig_WebsocketService struct {
-	WebsocketService *WebsocketUpstreamService `protobuf:"bytes,16,opt,name=websocket_service,oneof"`
+	WebsocketService *WebsocketUpstreamService `protobuf:"bytes,16,opt,name=websocket_service,json=websocketService,oneof"`
 }
 
 type upstreamServiceConfig_WebrtcService struct {
-	WebrtcService *WebrtcUpstreamService `protobuf:"bytes,17,opt,name=webrtc_service,oneof"`
+	WebrtcService *WebrtcUpstreamService `protobuf:"bytes,17,opt,name=webrtc_service,json=webrtcService,oneof"`
 }
 
 type upstreamServiceConfig_GraphqlService struct {
-	GraphqlService *GraphQLUpstreamService `protobuf:"bytes,21,opt,name=graphql_service,oneof"`
+	GraphqlService *GraphQLUpstreamService `protobuf:"bytes,21,opt,name=graphql_service,json=graphqlService,oneof"`
 }
 
 type upstreamServiceConfig_SqlService struct {
-	SqlService *SqlUpstreamService `protobuf:"bytes,31,opt,name=sql_service,oneof"`
+	SqlService *SqlUpstreamService `protobuf:"bytes,31,opt,name=sql_service,json=sqlService,oneof"`
 }
 
 type upstreamServiceConfig_FilesystemService struct {
-	FilesystemService *FilesystemUpstreamService `protobuf:"bytes,32,opt,name=filesystem_service,oneof"`
+	FilesystemService *FilesystemUpstreamService `protobuf:"bytes,32,opt,name=filesystem_service,json=filesystemService,oneof"`
 }
 
 type upstreamServiceConfig_VectorService struct {
-	VectorService *VectorUpstreamService `protobuf:"bytes,34,opt,name=vector_service,oneof"`
+	VectorService *VectorUpstreamService `protobuf:"bytes,34,opt,name=vector_service,json=vectorService,oneof"`
 }
 
 func (*upstreamServiceConfig_McpService) isUpstreamServiceConfig_ServiceConfig() {}
@@ -1785,10 +1785,10 @@ func (b0 CallPolicy_builder) Build() *CallPolicy {
 type CallPolicyRule struct {
 	state                    protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_Action        CallPolicy_Action      `protobuf:"varint,1,opt,name=action,enum=mcpany.config.v1.CallPolicy_Action"`
-	xxx_hidden_NameRegex     *string                `protobuf:"bytes,2,opt,name=name_regex"`
+	xxx_hidden_NameRegex     *string                `protobuf:"bytes,2,opt,name=name_regex,json=nameRegex"`
 	xxx_hidden_ArgumentRegex *string                `protobuf:"bytes,3,opt,name=argument_regex,json=argumentRegex"`
-	xxx_hidden_UrlRegex      *string                `protobuf:"bytes,4,opt,name=url_regex"`
-	xxx_hidden_CallIdRegex   *string                `protobuf:"bytes,5,opt,name=call_id_regex"`
+	xxx_hidden_UrlRegex      *string                `protobuf:"bytes,4,opt,name=url_regex,json=urlRegex"`
+	xxx_hidden_CallIdRegex   *string                `protobuf:"bytes,5,opt,name=call_id_regex,json=callIdRegex"`
 	XXX_raceDetectHookData   protoimpl.RaceDetectHookData
 	XXX_presence             [1]uint32
 	unknownFields            protoimpl.UnknownFields
@@ -2091,7 +2091,7 @@ func (b0 ExportPolicy_builder) Build() *ExportPolicy {
 
 type ExportRule struct {
 	state                  protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_NameRegex   *string                `protobuf:"bytes,1,opt,name=name_regex"`
+	xxx_hidden_NameRegex   *string                `protobuf:"bytes,1,opt,name=name_regex,json=nameRegex"`
 	xxx_hidden_Action      ExportPolicy_Action    `protobuf:"varint,2,opt,name=action,enum=mcpany.config.v1.ExportPolicy_Action"`
 	XXX_raceDetectHookData protoimpl.RaceDetectHookData
 	XXX_presence           [1]uint32
@@ -2410,12 +2410,12 @@ func (*callHook_CallPolicy) isCallHook_HookConfig() {}
 type GrpcUpstreamService struct {
 	state                       protoimpl.MessageState         `protogen:"opaque.v1"`
 	xxx_hidden_Address          *string                        `protobuf:"bytes,1,opt,name=address"`
-	xxx_hidden_UseReflection    bool                           `protobuf:"varint,2,opt,name=use_reflection"`
-	xxx_hidden_TlsConfig        *TLSConfig                     `protobuf:"bytes,3,opt,name=tls_config"`
+	xxx_hidden_UseReflection    bool                           `protobuf:"varint,2,opt,name=use_reflection,json=useReflection"`
+	xxx_hidden_TlsConfig        *TLSConfig                     `protobuf:"bytes,3,opt,name=tls_config,json=tlsConfig"`
 	xxx_hidden_Tools            *[]*ToolDefinition             `protobuf:"bytes,4,rep,name=tools"`
-	xxx_hidden_HealthCheck      *GrpcHealthCheck               `protobuf:"bytes,5,opt,name=health_check"`
-	xxx_hidden_ProtoDefinitions *[]*ProtoDefinition            `protobuf:"bytes,6,rep,name=proto_definitions"`
-	xxx_hidden_ProtoCollection  *[]*ProtoCollection            `protobuf:"bytes,7,rep,name=proto_collection"`
+	xxx_hidden_HealthCheck      *GrpcHealthCheck               `protobuf:"bytes,5,opt,name=health_check,json=healthCheck"`
+	xxx_hidden_ProtoDefinitions *[]*ProtoDefinition            `protobuf:"bytes,6,rep,name=proto_definitions,json=protoDefinitions"`
+	xxx_hidden_ProtoCollection  *[]*ProtoCollection            `protobuf:"bytes,7,rep,name=proto_collection,json=protoCollection"`
 	xxx_hidden_Resources        *[]*ResourceDefinition         `protobuf:"bytes,8,rep,name=resources"`
 	xxx_hidden_Calls            map[string]*GrpcCallDefinition `protobuf:"bytes,9,rep,name=calls" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
 	xxx_hidden_Prompts          *[]*PromptDefinition           `protobuf:"bytes,19,rep,name=prompts"`
@@ -2829,11 +2829,11 @@ type isProtoDefinition_ProtoRef interface {
 }
 
 type protoDefinition_ProtoFile struct {
-	ProtoFile *ProtoFile `protobuf:"bytes,1,opt,name=proto_file,oneof"`
+	ProtoFile *ProtoFile `protobuf:"bytes,1,opt,name=proto_file,json=protoFile,oneof"`
 }
 
 type protoDefinition_ProtoDescriptor struct {
-	ProtoDescriptor *ProtoDescriptor `protobuf:"bytes,2,opt,name=proto_descriptor,oneof"`
+	ProtoDescriptor *ProtoDescriptor `protobuf:"bytes,2,opt,name=proto_descriptor,json=protoDescriptor,oneof"`
 }
 
 func (*protoDefinition_ProtoFile) isProtoDefinition_ProtoRef() {}
@@ -2842,7 +2842,7 @@ func (*protoDefinition_ProtoDescriptor) isProtoDefinition_ProtoRef() {}
 
 type ProtoFile struct {
 	state                  protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_FileName    *string                `protobuf:"bytes,1,opt,name=file_name"`
+	xxx_hidden_FileName    *string                `protobuf:"bytes,1,opt,name=file_name,json=fileName"`
 	xxx_hidden_FileRef     isProtoFile_FileRef    `protobuf_oneof:"file_ref"`
 	XXX_raceDetectHookData protoimpl.RaceDetectHookData
 	XXX_presence           [1]uint32
@@ -3027,11 +3027,11 @@ type isProtoFile_FileRef interface {
 }
 
 type protoFile_FileContent struct {
-	FileContent string `protobuf:"bytes,2,opt,name=file_content,oneof"`
+	FileContent string `protobuf:"bytes,2,opt,name=file_content,json=fileContent,oneof"`
 }
 
 type protoFile_FilePath struct {
-	FilePath string `protobuf:"bytes,3,opt,name=file_path,oneof"`
+	FilePath string `protobuf:"bytes,3,opt,name=file_path,json=filePath,oneof"`
 }
 
 func (*protoFile_FileContent) isProtoFile_FileRef() {}
@@ -3040,7 +3040,7 @@ func (*protoFile_FilePath) isProtoFile_FileRef() {}
 
 type ProtoDescriptor struct {
 	state                  protoimpl.MessageState    `protogen:"opaque.v1"`
-	xxx_hidden_FileName    *string                   `protobuf:"bytes,1,opt,name=file_name"`
+	xxx_hidden_FileName    *string                   `protobuf:"bytes,1,opt,name=file_name,json=fileName"`
 	xxx_hidden_FileRef     isProtoDescriptor_FileRef `protobuf_oneof:"file_ref"`
 	XXX_raceDetectHookData protoimpl.RaceDetectHookData
 	XXX_presence           [1]uint32
@@ -3191,16 +3191,16 @@ type isProtoDescriptor_FileRef interface {
 }
 
 type protoDescriptor_FilePath struct {
-	FilePath string `protobuf:"bytes,2,opt,name=file_path,oneof"`
+	FilePath string `protobuf:"bytes,2,opt,name=file_path,json=filePath,oneof"`
 }
 
 func (*protoDescriptor_FilePath) isProtoDescriptor_FileRef() {}
 
 type ProtoCollection struct {
 	state                     protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_RootPath       *string                `protobuf:"bytes,1,opt,name=root_path"`
-	xxx_hidden_PathMatchRegex *string                `protobuf:"bytes,2,opt,name=path_match_regex"`
-	xxx_hidden_IsRecursive    bool                   `protobuf:"varint,3,opt,name=is_recursive"`
+	xxx_hidden_RootPath       *string                `protobuf:"bytes,1,opt,name=root_path,json=rootPath"`
+	xxx_hidden_PathMatchRegex *string                `protobuf:"bytes,2,opt,name=path_match_regex,json=pathMatchRegex"`
+	xxx_hidden_IsRecursive    bool                   `protobuf:"varint,3,opt,name=is_recursive,json=isRecursive"`
 	XXX_raceDetectHookData    protoimpl.RaceDetectHookData
 	XXX_presence              [1]uint32
 	unknownFields             protoimpl.UnknownFields
@@ -3343,8 +3343,8 @@ type HttpUpstreamService struct {
 	xxx_hidden_Address     *string                        `protobuf:"bytes,1,opt,name=address"`
 	xxx_hidden_Tools       *[]*ToolDefinition             `protobuf:"bytes,2,rep,name=tools"`
 	xxx_hidden_Calls       map[string]*HttpCallDefinition `protobuf:"bytes,6,rep,name=calls" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
-	xxx_hidden_HealthCheck *HttpHealthCheck               `protobuf:"bytes,3,opt,name=health_check"`
-	xxx_hidden_TlsConfig   *TLSConfig                     `protobuf:"bytes,4,opt,name=tls_config"`
+	xxx_hidden_HealthCheck *HttpHealthCheck               `protobuf:"bytes,3,opt,name=health_check,json=healthCheck"`
+	xxx_hidden_TlsConfig   *TLSConfig                     `protobuf:"bytes,4,opt,name=tls_config,json=tlsConfig"`
 	xxx_hidden_Resources   *[]*ResourceDefinition         `protobuf:"bytes,5,rep,name=resources"`
 	xxx_hidden_Prompts     *[]*PromptDefinition           `protobuf:"bytes,7,rep,name=prompts"`
 	XXX_raceDetectHookData protoimpl.RaceDetectHookData
@@ -3540,11 +3540,11 @@ type WebsocketUpstreamService struct {
 	state                  protoimpl.MessageState              `protogen:"opaque.v1"`
 	xxx_hidden_Address     *string                             `protobuf:"bytes,1,opt,name=address"`
 	xxx_hidden_Tools       *[]*ToolDefinition                  `protobuf:"bytes,2,rep,name=tools"`
-	xxx_hidden_TlsConfig   *TLSConfig                          `protobuf:"bytes,3,opt,name=tls_config"`
+	xxx_hidden_TlsConfig   *TLSConfig                          `protobuf:"bytes,3,opt,name=tls_config,json=tlsConfig"`
 	xxx_hidden_Resources   *[]*ResourceDefinition              `protobuf:"bytes,4,rep,name=resources"`
 	xxx_hidden_Calls       map[string]*WebsocketCallDefinition `protobuf:"bytes,5,rep,name=calls" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
 	xxx_hidden_Prompts     *[]*PromptDefinition                `protobuf:"bytes,6,rep,name=prompts"`
-	xxx_hidden_HealthCheck *WebsocketHealthCheck               `protobuf:"bytes,7,opt,name=health_check"`
+	xxx_hidden_HealthCheck *WebsocketHealthCheck               `protobuf:"bytes,7,opt,name=health_check,json=healthCheck"`
 	XXX_raceDetectHookData protoimpl.RaceDetectHookData
 	XXX_presence           [1]uint32
 	unknownFields          protoimpl.UnknownFields
@@ -3738,11 +3738,11 @@ type WebrtcUpstreamService struct {
 	state                  protoimpl.MessageState           `protogen:"opaque.v1"`
 	xxx_hidden_Address     *string                          `protobuf:"bytes,1,opt,name=address"`
 	xxx_hidden_Tools       *[]*ToolDefinition               `protobuf:"bytes,2,rep,name=tools"`
-	xxx_hidden_TlsConfig   *TLSConfig                       `protobuf:"bytes,3,opt,name=tls_config"`
+	xxx_hidden_TlsConfig   *TLSConfig                       `protobuf:"bytes,3,opt,name=tls_config,json=tlsConfig"`
 	xxx_hidden_Resources   *[]*ResourceDefinition           `protobuf:"bytes,4,rep,name=resources"`
 	xxx_hidden_Calls       map[string]*WebrtcCallDefinition `protobuf:"bytes,5,rep,name=calls" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
 	xxx_hidden_Prompts     *[]*PromptDefinition             `protobuf:"bytes,6,rep,name=prompts"`
-	xxx_hidden_HealthCheck *WebRTCHealthCheck               `protobuf:"bytes,7,opt,name=health_check"`
+	xxx_hidden_HealthCheck *WebRTCHealthCheck               `protobuf:"bytes,7,opt,name=health_check,json=healthCheck"`
 	XXX_raceDetectHookData protoimpl.RaceDetectHookData
 	XXX_presence           [1]uint32
 	unknownFields          protoimpl.UnknownFields
@@ -3936,8 +3936,8 @@ type OpenapiUpstreamService struct {
 	state                  protoimpl.MessageState              `protogen:"opaque.v1"`
 	xxx_hidden_Address     *string                             `protobuf:"bytes,1,opt,name=address"`
 	xxx_hidden_SpecSource  isOpenapiUpstreamService_SpecSource `protobuf_oneof:"spec_source"`
-	xxx_hidden_HealthCheck *HttpHealthCheck                    `protobuf:"bytes,3,opt,name=health_check"`
-	xxx_hidden_TlsConfig   *TLSConfig                          `protobuf:"bytes,4,opt,name=tls_config"`
+	xxx_hidden_HealthCheck *HttpHealthCheck                    `protobuf:"bytes,3,opt,name=health_check,json=healthCheck"`
+	xxx_hidden_TlsConfig   *TLSConfig                          `protobuf:"bytes,4,opt,name=tls_config,json=tlsConfig"`
 	xxx_hidden_Tools       *[]*ToolDefinition                  `protobuf:"bytes,5,rep,name=tools"`
 	xxx_hidden_Resources   *[]*ResourceDefinition              `protobuf:"bytes,6,rep,name=resources"`
 	xxx_hidden_Calls       map[string]*OpenAPICallDefinition   `protobuf:"bytes,7,rep,name=calls" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
@@ -4241,12 +4241,12 @@ type isOpenapiUpstreamService_SpecSource interface {
 
 type openapiUpstreamService_SpecContent struct {
 	// The OpenAPI specification content (JSON or YAML).
-	SpecContent string `protobuf:"bytes,2,opt,name=spec_content,oneof"`
+	SpecContent string `protobuf:"bytes,2,opt,name=spec_content,json=specContent,oneof"`
 }
 
 type openapiUpstreamService_SpecUrl struct {
 	// The URL to fetch the OpenAPI specification from.
-	SpecUrl string `protobuf:"bytes,9,opt,name=spec_url,oneof"`
+	SpecUrl string `protobuf:"bytes,9,opt,name=spec_url,json=specUrl,oneof"`
 }
 
 func (*openapiUpstreamService_SpecContent) isOpenapiUpstreamService_SpecSource() {}
@@ -4257,16 +4257,16 @@ func (*openapiUpstreamService_SpecUrl) isOpenapiUpstreamService_SpecSource() {}
 type CommandLineUpstreamService struct {
 	state                            protoimpl.MessageState                           `protogen:"opaque.v1"`
 	xxx_hidden_Command               *string                                          `protobuf:"bytes,1,opt,name=command"`
-	xxx_hidden_WorkingDirectory      *string                                          `protobuf:"bytes,3,opt,name=working_directory"`
+	xxx_hidden_WorkingDirectory      *string                                          `protobuf:"bytes,3,opt,name=working_directory,json=workingDirectory"`
 	xxx_hidden_Tools                 *[]*ToolDefinition                               `protobuf:"bytes,4,rep,name=tools"`
-	xxx_hidden_HealthCheck           *CommandLineHealthCheck                          `protobuf:"bytes,5,opt,name=health_check"`
+	xxx_hidden_HealthCheck           *CommandLineHealthCheck                          `protobuf:"bytes,5,opt,name=health_check,json=healthCheck"`
 	xxx_hidden_Cache                 *CacheConfig                                     `protobuf:"bytes,6,opt,name=cache"`
-	xxx_hidden_ContainerEnvironment  *ContainerEnvironment                            `protobuf:"bytes,7,opt,name=container_environment"`
+	xxx_hidden_ContainerEnvironment  *ContainerEnvironment                            `protobuf:"bytes,7,opt,name=container_environment,json=containerEnvironment"`
 	xxx_hidden_Timeout               *durationpb.Duration                             `protobuf:"bytes,8,opt,name=timeout"`
 	xxx_hidden_Resources             *[]*ResourceDefinition                           `protobuf:"bytes,9,rep,name=resources"`
 	xxx_hidden_Calls                 map[string]*CommandLineCallDefinition            `protobuf:"bytes,10,rep,name=calls" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
 	xxx_hidden_Prompts               *[]*PromptDefinition                             `protobuf:"bytes,11,rep,name=prompts"`
-	xxx_hidden_CommunicationProtocol CommandLineUpstreamService_CommunicationProtocol `protobuf:"varint,12,opt,name=communication_protocol,enum=mcpany.config.v1.CommandLineUpstreamService_CommunicationProtocol"`
+	xxx_hidden_CommunicationProtocol CommandLineUpstreamService_CommunicationProtocol `protobuf:"varint,12,opt,name=communication_protocol,json=communicationProtocol,enum=mcpany.config.v1.CommandLineUpstreamService_CommunicationProtocol"`
 	xxx_hidden_Local                 bool                                             `protobuf:"varint,13,opt,name=local"`
 	xxx_hidden_Env                   map[string]*SecretValue                          `protobuf:"bytes,14,rep,name=env" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
 	XXX_raceDetectHookData           protoimpl.RaceDetectHookData
@@ -4842,8 +4842,8 @@ func (b0 SqlUpstreamService_builder) Build() *SqlUpstreamService {
 // FilesystemUpstreamService defines a service that exposes a local filesystem safely.
 type FilesystemUpstreamService struct {
 	state                     protoimpl.MessageState                     `protogen:"opaque.v1"`
-	xxx_hidden_RootPaths      map[string]string                          `protobuf:"bytes,1,rep,name=root_paths" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
-	xxx_hidden_ReadOnly       bool                                       `protobuf:"varint,2,opt,name=read_only"`
+	xxx_hidden_RootPaths      map[string]string                          `protobuf:"bytes,1,rep,name=root_paths,json=rootPaths" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	xxx_hidden_ReadOnly       bool                                       `protobuf:"varint,2,opt,name=read_only,json=readOnly"`
 	xxx_hidden_Tools          *[]*ToolDefinition                         `protobuf:"bytes,3,rep,name=tools"`
 	xxx_hidden_Resources      *[]*ResourceDefinition                     `protobuf:"bytes,4,rep,name=resources"`
 	xxx_hidden_Prompts        *[]*PromptDefinition                       `protobuf:"bytes,5,rep,name=prompts"`
@@ -6257,10 +6257,10 @@ func (*vectorUpstreamService_Pinecone) isVectorUpstreamService_VectorDbType() {}
 
 type PineconeVectorDB struct {
 	state                  protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_ApiKey      *string                `protobuf:"bytes,1,opt,name=api_key"`
+	xxx_hidden_ApiKey      *string                `protobuf:"bytes,1,opt,name=api_key,json=apiKey"`
 	xxx_hidden_Environment *string                `protobuf:"bytes,2,opt,name=environment"`
-	xxx_hidden_IndexName   *string                `protobuf:"bytes,3,opt,name=index_name"`
-	xxx_hidden_ProjectId   *string                `protobuf:"bytes,4,opt,name=project_id"`
+	xxx_hidden_IndexName   *string                `protobuf:"bytes,3,opt,name=index_name,json=indexName"`
+	xxx_hidden_ProjectId   *string                `protobuf:"bytes,4,opt,name=project_id,json=projectId"`
 	xxx_hidden_Host        *string                `protobuf:"bytes,5,opt,name=host"`
 	XXX_raceDetectHookData protoimpl.RaceDetectHookData
 	XXX_presence           [1]uint32
@@ -6469,7 +6469,7 @@ func (b0 PineconeVectorDB_builder) Build() *PineconeVectorDB {
 type McpUpstreamService struct {
 	state                        protoimpl.MessageState              `protogen:"opaque.v1"`
 	xxx_hidden_ConnectionType    isMcpUpstreamService_ConnectionType `protobuf_oneof:"connection_type"`
-	xxx_hidden_ToolAutoDiscovery bool                                `protobuf:"varint,3,opt,name=tool_auto_discovery"`
+	xxx_hidden_ToolAutoDiscovery bool                                `protobuf:"varint,3,opt,name=tool_auto_discovery,json=toolAutoDiscovery"`
 	xxx_hidden_Tools             *[]*ToolDefinition                  `protobuf:"bytes,6,rep,name=tools"`
 	xxx_hidden_Resources         *[]*ResourceDefinition              `protobuf:"bytes,7,rep,name=resources"`
 	xxx_hidden_Calls             map[string]*MCPCallDefinition       `protobuf:"bytes,8,rep,name=calls" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
@@ -6767,17 +6767,17 @@ type isMcpUpstreamService_ConnectionType interface {
 }
 
 type mcpUpstreamService_HttpConnection struct {
-	HttpConnection *McpStreamableHttpConnection `protobuf:"bytes,1,opt,name=http_connection,oneof"`
+	HttpConnection *McpStreamableHttpConnection `protobuf:"bytes,1,opt,name=http_connection,json=httpConnection,oneof"`
 }
 
 type mcpUpstreamService_StdioConnection struct {
 	// Connect via a stdio process.
-	StdioConnection *McpStdioConnection `protobuf:"bytes,2,opt,name=stdio_connection,oneof"`
+	StdioConnection *McpStdioConnection `protobuf:"bytes,2,opt,name=stdio_connection,json=stdioConnection,oneof"`
 }
 
 type mcpUpstreamService_BundleConnection struct {
 	// Connect via a bundle.
-	BundleConnection *McpBundleConnection `protobuf:"bytes,4,opt,name=bundle_connection,oneof"`
+	BundleConnection *McpBundleConnection `protobuf:"bytes,4,opt,name=bundle_connection,json=bundleConnection,oneof"`
 }
 
 func (*mcpUpstreamService_HttpConnection) isMcpUpstreamService_ConnectionType() {}
@@ -6791,9 +6791,9 @@ type McpStdioConnection struct {
 	state                       protoimpl.MessageState  `protogen:"opaque.v1"`
 	xxx_hidden_Command          *string                 `protobuf:"bytes,1,opt,name=command"`
 	xxx_hidden_Args             []string                `protobuf:"bytes,2,rep,name=args"`
-	xxx_hidden_WorkingDirectory *string                 `protobuf:"bytes,3,opt,name=working_directory"`
-	xxx_hidden_ContainerImage   *string                 `protobuf:"bytes,4,opt,name=container_image"`
-	xxx_hidden_SetupCommands    []string                `protobuf:"bytes,5,rep,name=setup_commands"`
+	xxx_hidden_WorkingDirectory *string                 `protobuf:"bytes,3,opt,name=working_directory,json=workingDirectory"`
+	xxx_hidden_ContainerImage   *string                 `protobuf:"bytes,4,opt,name=container_image,json=containerImage"`
+	xxx_hidden_SetupCommands    []string                `protobuf:"bytes,5,rep,name=setup_commands,json=setupCommands"`
 	xxx_hidden_Env              map[string]*SecretValue `protobuf:"bytes,7,rep,name=env" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
 	XXX_raceDetectHookData      protoimpl.RaceDetectHookData
 	XXX_presence                [1]uint32
@@ -6981,9 +6981,9 @@ func (b0 McpStdioConnection_builder) Build() *McpStdioConnection {
 
 type McpStreamableHttpConnection struct {
 	state                        protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_HttpAddress       *string                `protobuf:"bytes,1,opt,name=http_address"`
-	xxx_hidden_TlsConfig         *TLSConfig             `protobuf:"bytes,5,opt,name=tls_config"`
-	xxx_hidden_AllowHttpRedirect bool                   `protobuf:"varint,6,opt,name=allow_http_redirect"`
+	xxx_hidden_HttpAddress       *string                `protobuf:"bytes,1,opt,name=http_address,json=httpAddress"`
+	xxx_hidden_TlsConfig         *TLSConfig             `protobuf:"bytes,5,opt,name=tls_config,json=tlsConfig"`
+	xxx_hidden_AllowHttpRedirect bool                   `protobuf:"varint,6,opt,name=allow_http_redirect,json=allowHttpRedirect"`
 	XXX_raceDetectHookData       protoimpl.RaceDetectHookData
 	XXX_presence                 [1]uint32
 	unknownFields                protoimpl.UnknownFields
@@ -7118,8 +7118,8 @@ func (b0 McpStreamableHttpConnection_builder) Build() *McpStreamableHttpConnecti
 // McpBundleConnection defines the parameters for a bundle-based connection.
 type McpBundleConnection struct {
 	state                     protoimpl.MessageState  `protogen:"opaque.v1"`
-	xxx_hidden_BundlePath     *string                 `protobuf:"bytes,1,opt,name=bundle_path"`
-	xxx_hidden_ContainerImage *string                 `protobuf:"bytes,2,opt,name=container_image"`
+	xxx_hidden_BundlePath     *string                 `protobuf:"bytes,1,opt,name=bundle_path,json=bundlePath"`
+	xxx_hidden_ContainerImage *string                 `protobuf:"bytes,2,opt,name=container_image,json=containerImage"`
 	xxx_hidden_Env            map[string]*SecretValue `protobuf:"bytes,4,rep,name=env" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
 	XXX_raceDetectHookData    protoimpl.RaceDetectHookData
 	XXX_presence              [1]uint32
@@ -7247,9 +7247,9 @@ func (b0 McpBundleConnection_builder) Build() *McpBundleConnection {
 // ConnectionPoolConfig defines settings for managing a pool of connections to an upstream service.
 type ConnectionPoolConfig struct {
 	state                         protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_MaxConnections     int32                  `protobuf:"varint,1,opt,name=max_connections"`
-	xxx_hidden_MaxIdleConnections int32                  `protobuf:"varint,2,opt,name=max_idle_connections"`
-	xxx_hidden_IdleTimeout        *durationpb.Duration   `protobuf:"bytes,3,opt,name=idle_timeout"`
+	xxx_hidden_MaxConnections     int32                  `protobuf:"varint,1,opt,name=max_connections,json=maxConnections"`
+	xxx_hidden_MaxIdleConnections int32                  `protobuf:"varint,2,opt,name=max_idle_connections,json=maxIdleConnections"`
+	xxx_hidden_IdleTimeout        *durationpb.Duration   `protobuf:"bytes,3,opt,name=idle_timeout,json=idleTimeout"`
 	XXX_raceDetectHookData        protoimpl.RaceDetectHookData
 	XXX_presence                  [1]uint32
 	unknownFields                 protoimpl.UnknownFields
@@ -7525,14 +7525,14 @@ func (b0 ContainerEnvironment_builder) Build() *ContainerEnvironment {
 // Configuration for rate limiting requests to the upstream service.
 type RateLimitConfig struct {
 	state                        protoimpl.MessageState      `protogen:"opaque.v1"`
-	xxx_hidden_IsEnabled         bool                        `protobuf:"varint,1,opt,name=is_enabled"`
-	xxx_hidden_RequestsPerSecond float64                     `protobuf:"fixed64,2,opt,name=requests_per_second"`
+	xxx_hidden_IsEnabled         bool                        `protobuf:"varint,1,opt,name=is_enabled,json=isEnabled"`
+	xxx_hidden_RequestsPerSecond float64                     `protobuf:"fixed64,2,opt,name=requests_per_second,json=requestsPerSecond"`
 	xxx_hidden_Burst             int64                       `protobuf:"varint,3,opt,name=burst"`
 	xxx_hidden_Storage           RateLimitConfig_Storage     `protobuf:"varint,4,opt,name=storage,enum=mcpany.config.v1.RateLimitConfig_Storage"`
 	xxx_hidden_Redis             *bus.RedisBus               `protobuf:"bytes,5,opt,name=redis"`
-	xxx_hidden_KeyBy             RateLimitConfig_KeyBy       `protobuf:"varint,6,opt,name=key_by,enum=mcpany.config.v1.RateLimitConfig_KeyBy"`
-	xxx_hidden_CostMetric        RateLimitConfig_CostMetric  `protobuf:"varint,7,opt,name=cost_metric,enum=mcpany.config.v1.RateLimitConfig_CostMetric"`
-	xxx_hidden_ToolLimits        map[string]*RateLimitConfig `protobuf:"bytes,8,rep,name=tool_limits" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	xxx_hidden_KeyBy             RateLimitConfig_KeyBy       `protobuf:"varint,6,opt,name=key_by,json=keyBy,enum=mcpany.config.v1.RateLimitConfig_KeyBy"`
+	xxx_hidden_CostMetric        RateLimitConfig_CostMetric  `protobuf:"varint,7,opt,name=cost_metric,json=costMetric,enum=mcpany.config.v1.RateLimitConfig_CostMetric"`
+	xxx_hidden_ToolLimits        map[string]*RateLimitConfig `protobuf:"bytes,8,rep,name=tool_limits,json=toolLimits" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
 	XXX_raceDetectHookData       protoimpl.RaceDetectHookData
 	XXX_presence                 [1]uint32
 	unknownFields                protoimpl.UnknownFields
@@ -7801,8 +7801,8 @@ func (b0 RateLimitConfig_builder) Build() *RateLimitConfig {
 // Configuration for service resilience features like circuit breakers and retries.
 type ResilienceConfig struct {
 	state                     protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_CircuitBreaker *CircuitBreakerConfig  `protobuf:"bytes,1,opt,name=circuit_breaker"`
-	xxx_hidden_RetryPolicy    *RetryConfig           `protobuf:"bytes,2,opt,name=retry_policy"`
+	xxx_hidden_CircuitBreaker *CircuitBreakerConfig  `protobuf:"bytes,1,opt,name=circuit_breaker,json=circuitBreaker"`
+	xxx_hidden_RetryPolicy    *RetryConfig           `protobuf:"bytes,2,opt,name=retry_policy,json=retryPolicy"`
 	xxx_hidden_Timeout        *durationpb.Duration   `protobuf:"bytes,3,opt,name=timeout"`
 	unknownFields             protoimpl.UnknownFields
 	sizeCache                 protoimpl.SizeCache
@@ -7923,10 +7923,10 @@ func (b0 ResilienceConfig_builder) Build() *ResilienceConfig {
 // CircuitBreakerConfig defines the parameters for the circuit breaker pattern.
 type CircuitBreakerConfig struct {
 	state                           protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_FailureRateThreshold float64                `protobuf:"fixed64,1,opt,name=failure_rate_threshold"`
-	xxx_hidden_ConsecutiveFailures  int32                  `protobuf:"varint,2,opt,name=consecutive_failures"`
-	xxx_hidden_OpenDuration         *durationpb.Duration   `protobuf:"bytes,3,opt,name=open_duration"`
-	xxx_hidden_HalfOpenRequests     int32                  `protobuf:"varint,4,opt,name=half_open_requests"`
+	xxx_hidden_FailureRateThreshold float64                `protobuf:"fixed64,1,opt,name=failure_rate_threshold,json=failureRateThreshold"`
+	xxx_hidden_ConsecutiveFailures  int32                  `protobuf:"varint,2,opt,name=consecutive_failures,json=consecutiveFailures"`
+	xxx_hidden_OpenDuration         *durationpb.Duration   `protobuf:"bytes,3,opt,name=open_duration,json=openDuration"`
+	xxx_hidden_HalfOpenRequests     int32                  `protobuf:"varint,4,opt,name=half_open_requests,json=halfOpenRequests"`
 	XXX_raceDetectHookData          protoimpl.RaceDetectHookData
 	XXX_presence                    [1]uint32
 	unknownFields                   protoimpl.UnknownFields
@@ -8088,10 +8088,10 @@ func (b0 CircuitBreakerConfig_builder) Build() *CircuitBreakerConfig {
 // RetryConfig defines the parameters for retrying failed requests.
 type RetryConfig struct {
 	state                      protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_NumberOfRetries int32                  `protobuf:"varint,1,opt,name=number_of_retries"`
-	xxx_hidden_BaseBackoff     *durationpb.Duration   `protobuf:"bytes,2,opt,name=base_backoff"`
-	xxx_hidden_MaxBackoff      *durationpb.Duration   `protobuf:"bytes,3,opt,name=max_backoff"`
-	xxx_hidden_MaxElapsedTime  *durationpb.Duration   `protobuf:"bytes,4,opt,name=max_elapsed_time"`
+	xxx_hidden_NumberOfRetries int32                  `protobuf:"varint,1,opt,name=number_of_retries,json=numberOfRetries"`
+	xxx_hidden_BaseBackoff     *durationpb.Duration   `protobuf:"bytes,2,opt,name=base_backoff,json=baseBackoff"`
+	xxx_hidden_MaxBackoff      *durationpb.Duration   `protobuf:"bytes,3,opt,name=max_backoff,json=maxBackoff"`
+	xxx_hidden_MaxElapsedTime  *durationpb.Duration   `protobuf:"bytes,4,opt,name=max_elapsed_time,json=maxElapsedTime"`
 	XXX_raceDetectHookData     protoimpl.RaceDetectHookData
 	XXX_presence               [1]uint32
 	unknownFields              protoimpl.UnknownFields
@@ -8243,11 +8243,11 @@ func (b0 RetryConfig_builder) Build() *RetryConfig {
 // TLSConfig defines the TLS settings for connecting to an upstream service.
 type TLSConfig struct {
 	state                         protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_ServerName         *string                `protobuf:"bytes,1,opt,name=server_name"`
-	xxx_hidden_CaCertPath         *string                `protobuf:"bytes,2,opt,name=ca_cert_path"`
-	xxx_hidden_ClientCertPath     *string                `protobuf:"bytes,3,opt,name=client_cert_path"`
-	xxx_hidden_ClientKeyPath      *string                `protobuf:"bytes,4,opt,name=client_key_path"`
-	xxx_hidden_InsecureSkipVerify bool                   `protobuf:"varint,5,opt,name=insecure_skip_verify"`
+	xxx_hidden_ServerName         *string                `protobuf:"bytes,1,opt,name=server_name,json=serverName"`
+	xxx_hidden_CaCertPath         *string                `protobuf:"bytes,2,opt,name=ca_cert_path,json=caCertPath"`
+	xxx_hidden_ClientCertPath     *string                `protobuf:"bytes,3,opt,name=client_cert_path,json=clientCertPath"`
+	xxx_hidden_ClientKeyPath      *string                `protobuf:"bytes,4,opt,name=client_key_path,json=clientKeyPath"`
+	xxx_hidden_InsecureSkipVerify bool                   `protobuf:"varint,5,opt,name=insecure_skip_verify,json=insecureSkipVerify"`
 	XXX_raceDetectHookData        protoimpl.RaceDetectHookData
 	XXX_presence                  [1]uint32
 	unknownFields                 protoimpl.UnknownFields
@@ -8457,52 +8457,53 @@ var File_proto_config_v1_upstream_service_proto protoreflect.FileDescriptor
 
 const file_proto_config_v1_upstream_service_proto_rawDesc = "" +
 	"\n" +
-	"&proto/config/v1/upstream_service.proto\x12\x10mcpany.config.v1\x1a\x1egoogle/protobuf/duration.proto\x1a\x13proto/bus/bus.proto\x1a\x1aproto/config/v1/auth.proto\x1a\x1aproto/config/v1/call.proto\x1a\"proto/config/v1/health_check.proto\x1a\x1dproto/config/v1/profile.proto\x1a\x1cproto/config/v1/prompt.proto\x1a\x1eproto/config/v1/resource.proto\x1a\x1aproto/config/v1/tool.proto\x1a\x1dproto/config/v1/webhook.proto\"\xb9\x01\n" +
+	"&proto/config/v1/upstream_service.proto\x12\x10mcpany.config.v1\x1a\x1egoogle/protobuf/duration.proto\x1a\x13proto/bus/bus.proto\x1a\x1aproto/config/v1/auth.proto\x1a\x1aproto/config/v1/call.proto\x1a\"proto/config/v1/health_check.proto\x1a\x1dproto/config/v1/profile.proto\x1a\x1cproto/config/v1/prompt.proto\x1a\x1eproto/config/v1/resource.proto\x1a\x1aproto/config/v1/tool.proto\x1a\x1dproto/config/v1/webhook.proto\"\xb8\x01\n" +
 	"\x19UpstreamServiceCollection\x12\x12\n" +
-	"\x04name\x18\x01 \x01(\tR\x04name\x12\x1a\n" +
-	"\bhttp_url\x18\x02 \x01(\tR\bhttp_url\x12\x1a\n" +
+	"\x04name\x18\x01 \x01(\tR\x04name\x12\x19\n" +
+	"\bhttp_url\x18\x02 \x01(\tR\ahttpUrl\x12\x1a\n" +
 	"\bpriority\x18\x03 \x01(\x05R\bpriority\x12P\n" +
-	"\x0eauthentication\x18\x04 \x01(\v2(.mcpany.config.v1.UpstreamAuthenticationR\x0eauthentication\"\xc1\x13\n" +
+	"\x0eauthentication\x18\x04 \x01(\v2(.mcpany.config.v1.UpstreamAuthenticationR\x0eauthentication\"\xa1\x13\n" +
 	"\x15UpstreamServiceConfig\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x12\n" +
-	"\x04name\x18\x02 \x01(\tR\x04name\x12&\n" +
-	"\x0esanitized_name\x18\x12 \x01(\tR\x0esanitized_name\x12P\n" +
-	"\x0fconnection_pool\x18\x03 \x01(\v2&.mcpany.config.v1.ConnectionPoolConfigR\x0fconnection_pool\x12b\n" +
-	"\x17upstream_authentication\x18\x04 \x01(\v2(.mcpany.config.v1.UpstreamAuthenticationR\x17upstream_authentication\x123\n" +
-	"\x05cache\x18\x05 \x01(\v2\x1d.mcpany.config.v1.CacheConfigR\x05cache\x12A\n" +
+	"\x04name\x18\x02 \x01(\tR\x04name\x12%\n" +
+	"\x0esanitized_name\x18\x12 \x01(\tR\rsanitizedName\x12O\n" +
+	"\x0fconnection_pool\x18\x03 \x01(\v2&.mcpany.config.v1.ConnectionPoolConfigR\x0econnectionPool\x12a\n" +
+	"\x17upstream_authentication\x18\x04 \x01(\v2(.mcpany.config.v1.UpstreamAuthenticationR\x16upstreamAuthentication\x123\n" +
+	"\x05cache\x18\x05 \x01(\v2\x1d.mcpany.config.v1.CacheConfigR\x05cache\x12@\n" +
 	"\n" +
-	"rate_limit\x18\x06 \x01(\v2!.mcpany.config.v1.RateLimitConfigR\n" +
-	"rate_limit\x12a\n" +
-	"\x17load_balancing_strategy\x18\a \x01(\x0e2'.mcpany.config.v1.LoadBalancingStrategyR\x17load_balancing_strategy\x12B\n" +
+	"rate_limit\x18\x06 \x01(\v2!.mcpany.config.v1.RateLimitConfigR\trateLimit\x12_\n" +
+	"\x17load_balancing_strategy\x18\a \x01(\x0e2'.mcpany.config.v1.LoadBalancingStrategyR\x15loadBalancingStrategy\x12B\n" +
 	"\n" +
 	"resilience\x18\b \x01(\v2\".mcpany.config.v1.ResilienceConfigR\n" +
-	"resilience\x12H\n" +
-	"\vmcp_service\x18\t \x01(\v2$.mcpany.config.v1.McpUpstreamServiceH\x00R\vmcp_service\x12K\n" +
+	"resilience\x12G\n" +
+	"\vmcp_service\x18\t \x01(\v2$.mcpany.config.v1.McpUpstreamServiceH\x00R\n" +
+	"mcpService\x12J\n" +
 	"\fhttp_service\x18\n" +
-	" \x01(\v2%.mcpany.config.v1.HttpUpstreamServiceH\x00R\fhttp_service\x12K\n" +
-	"\fgrpc_service\x18\v \x01(\v2%.mcpany.config.v1.GrpcUpstreamServiceH\x00R\fgrpc_service\x12T\n" +
-	"\x0fopenapi_service\x18\f \x01(\v2(.mcpany.config.v1.OpenapiUpstreamServiceH\x00R\x0fopenapi_service\x12b\n" +
-	"\x14command_line_service\x18\r \x01(\v2,.mcpany.config.v1.CommandLineUpstreamServiceH\x00R\x14command_line_service\x12Z\n" +
-	"\x11websocket_service\x18\x10 \x01(\v2*.mcpany.config.v1.WebsocketUpstreamServiceH\x00R\x11websocket_service\x12Q\n" +
-	"\x0ewebrtc_service\x18\x11 \x01(\v2'.mcpany.config.v1.WebrtcUpstreamServiceH\x00R\x0ewebrtc_service\x12T\n" +
-	"\x0fgraphql_service\x18\x15 \x01(\v2(.mcpany.config.v1.GraphQLUpstreamServiceH\x00R\x0fgraphql_service\x12H\n" +
-	"\vsql_service\x18\x1f \x01(\v2$.mcpany.config.v1.SqlUpstreamServiceH\x00R\vsql_service\x12]\n" +
-	"\x12filesystem_service\x18  \x01(\v2+.mcpany.config.v1.FilesystemUpstreamServiceH\x00R\x12filesystem_service\x12Q\n" +
-	"\x0evector_service\x18\" \x01(\v2'.mcpany.config.v1.VectorUpstreamServiceH\x00R\x0evector_service\x12\x18\n" +
+	" \x01(\v2%.mcpany.config.v1.HttpUpstreamServiceH\x00R\vhttpService\x12J\n" +
+	"\fgrpc_service\x18\v \x01(\v2%.mcpany.config.v1.GrpcUpstreamServiceH\x00R\vgrpcService\x12S\n" +
+	"\x0fopenapi_service\x18\f \x01(\v2(.mcpany.config.v1.OpenapiUpstreamServiceH\x00R\x0eopenapiService\x12`\n" +
+	"\x14command_line_service\x18\r \x01(\v2,.mcpany.config.v1.CommandLineUpstreamServiceH\x00R\x12commandLineService\x12Y\n" +
+	"\x11websocket_service\x18\x10 \x01(\v2*.mcpany.config.v1.WebsocketUpstreamServiceH\x00R\x10websocketService\x12P\n" +
+	"\x0ewebrtc_service\x18\x11 \x01(\v2'.mcpany.config.v1.WebrtcUpstreamServiceH\x00R\rwebrtcService\x12S\n" +
+	"\x0fgraphql_service\x18\x15 \x01(\v2(.mcpany.config.v1.GraphQLUpstreamServiceH\x00R\x0egraphqlService\x12G\n" +
+	"\vsql_service\x18\x1f \x01(\v2$.mcpany.config.v1.SqlUpstreamServiceH\x00R\n" +
+	"sqlService\x12\\\n" +
+	"\x12filesystem_service\x18  \x01(\v2+.mcpany.config.v1.FilesystemUpstreamServiceH\x00R\x11filesystemService\x12P\n" +
+	"\x0evector_service\x18\" \x01(\v2'.mcpany.config.v1.VectorUpstreamServiceH\x00R\rvectorService\x12\x18\n" +
 	"\aversion\x18\x0e \x01(\tR\aversion\x12N\n" +
 	"\x0eauthentication\x18\x0f \x01(\v2&.mcpany.config.v1.AuthenticationConfigR\x0eauthentication\x12\x18\n" +
 	"\adisable\x18\x13 \x01(\bR\adisable\x12\x1a\n" +
-	"\bpriority\x18\x14 \x01(\x05R\bpriority\x12B\n" +
-	"\rcall_policies\x18\x16 \x03(\v2\x1c.mcpany.config.v1.CallPolicyR\rcall_policies\x12B\n" +
-	"\x0epre_call_hooks\x18\x17 \x03(\v2\x1a.mcpany.config.v1.CallHookR\x0epre_call_hooks\x12D\n" +
-	"\x0fpost_call_hooks\x18\x18 \x03(\v2\x1a.mcpany.config.v1.CallHookR\x0fpost_call_hooks\x125\n" +
+	"\bpriority\x18\x14 \x01(\x05R\bpriority\x12A\n" +
+	"\rcall_policies\x18\x16 \x03(\v2\x1c.mcpany.config.v1.CallPolicyR\fcallPolicies\x12@\n" +
+	"\x0epre_call_hooks\x18\x17 \x03(\v2\x1a.mcpany.config.v1.CallHookR\fpreCallHooks\x12B\n" +
+	"\x0fpost_call_hooks\x18\x18 \x03(\v2\x1a.mcpany.config.v1.CallHookR\rpostCallHooks\x125\n" +
 	"\bprofiles\x18\x19 \x03(\v2\x19.mcpany.config.v1.ProfileR\bprofiles\x12<\n" +
-	"\aprompts\x18\x1a \x03(\v2\".mcpany.config.v1.PromptDefinitionR\aprompts\x12N\n" +
-	"\x12tool_export_policy\x18\x1b \x01(\v2\x1e.mcpany.config.v1.ExportPolicyR\x12tool_export_policy\x12R\n" +
-	"\x14prompt_export_policy\x18\x1c \x01(\v2\x1e.mcpany.config.v1.ExportPolicyR\x14prompt_export_policy\x12V\n" +
-	"\x16resource_export_policy\x18\x1d \x01(\v2\x1e.mcpany.config.v1.ExportPolicyR\x16resource_export_policy\x12.\n" +
-	"\x12auto_discover_tool\x18\x1e \x01(\bR\x12auto_discover_tool\x12b\n" +
-	"\x0eprofile_limits\x18! \x03(\v2:.mcpany.config.v1.UpstreamServiceConfig.ProfileLimitsEntryR\x0eprofile_limits\x1ac\n" +
+	"\aprompts\x18\x1a \x03(\v2\".mcpany.config.v1.PromptDefinitionR\aprompts\x12L\n" +
+	"\x12tool_export_policy\x18\x1b \x01(\v2\x1e.mcpany.config.v1.ExportPolicyR\x10toolExportPolicy\x12P\n" +
+	"\x14prompt_export_policy\x18\x1c \x01(\v2\x1e.mcpany.config.v1.ExportPolicyR\x12promptExportPolicy\x12T\n" +
+	"\x16resource_export_policy\x18\x1d \x01(\v2\x1e.mcpany.config.v1.ExportPolicyR\x14resourceExportPolicy\x12,\n" +
+	"\x12auto_discover_tool\x18\x1e \x01(\bR\x10autoDiscoverTool\x12a\n" +
+	"\x0eprofile_limits\x18! \x03(\v2:.mcpany.config.v1.UpstreamServiceConfig.ProfileLimitsEntryR\rprofileLimits\x1ac\n" +
 	"\x12ProfileLimitsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x127\n" +
 	"\x05value\x18\x02 \x01(\v2!.mcpany.config.v1.RateLimitConfigR\x05value:\x028\x01B\x10\n" +
@@ -8516,15 +8517,14 @@ const file_proto_config_v1_upstream_service_proto_rawDesc = "" +
 	"\x04DENY\x10\x01\x12\x0e\n" +
 	"\n" +
 	"SAVE_CACHE\x10\x02\x12\x10\n" +
-	"\fDELETE_CACHE\x10\x03\"\xd8\x01\n" +
+	"\fDELETE_CACHE\x10\x03\"\xd4\x01\n" +
 	"\x0eCallPolicyRule\x12;\n" +
-	"\x06action\x18\x01 \x01(\x0e2#.mcpany.config.v1.CallPolicy.ActionR\x06action\x12\x1e\n" +
+	"\x06action\x18\x01 \x01(\x0e2#.mcpany.config.v1.CallPolicy.ActionR\x06action\x12\x1d\n" +
 	"\n" +
-	"name_regex\x18\x02 \x01(\tR\n" +
-	"name_regex\x12%\n" +
-	"\x0eargument_regex\x18\x03 \x01(\tR\rargumentRegex\x12\x1c\n" +
-	"\turl_regex\x18\x04 \x01(\tR\turl_regex\x12$\n" +
-	"\rcall_id_regex\x18\x05 \x01(\tR\rcall_id_regex\"\xd3\x01\n" +
+	"name_regex\x18\x02 \x01(\tR\tnameRegex\x12%\n" +
+	"\x0eargument_regex\x18\x03 \x01(\tR\rargumentRegex\x12\x1b\n" +
+	"\turl_regex\x18\x04 \x01(\tR\burlRegex\x12\"\n" +
+	"\rcall_id_regex\x18\x05 \x01(\tR\vcallIdRegex\"\xd3\x01\n" +
 	"\fExportPolicy\x12L\n" +
 	"\x0edefault_action\x18\x01 \x01(\x0e2%.mcpany.config.v1.ExportPolicy.ActionR\rdefaultAction\x122\n" +
 	"\x05rules\x18\x02 \x03(\v2\x1c.mcpany.config.v1.ExportRuleR\x05rules\"A\n" +
@@ -8532,107 +8532,100 @@ const file_proto_config_v1_upstream_service_proto_rawDesc = "" +
 	"\x19EXPORT_ACTION_UNSPECIFIED\x10\x00\x12\n" +
 	"\n" +
 	"\x06EXPORT\x10\x01\x12\f\n" +
-	"\bUNEXPORT\x10\x02\"k\n" +
+	"\bUNEXPORT\x10\x02\"j\n" +
 	"\n" +
-	"ExportRule\x12\x1e\n" +
+	"ExportRule\x12\x1d\n" +
 	"\n" +
-	"name_regex\x18\x01 \x01(\tR\n" +
-	"name_regex\x12=\n" +
+	"name_regex\x18\x01 \x01(\tR\tnameRegex\x12=\n" +
 	"\x06action\x18\x02 \x01(\x0e2%.mcpany.config.v1.ExportPolicy.ActionR\x06action\"\xab\x01\n" +
 	"\bCallHook\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12;\n" +
 	"\awebhook\x18\x02 \x01(\v2\x1f.mcpany.config.v1.WebhookConfigH\x00R\awebhook\x12?\n" +
 	"\vcall_policy\x18\x04 \x01(\v2\x1c.mcpany.config.v1.CallPolicyH\x00R\n" +
 	"callPolicyB\r\n" +
-	"\vhook_config\"\xdd\x05\n" +
+	"\vhook_config\"\xd8\x05\n" +
 	"\x13GrpcUpstreamService\x12\x18\n" +
-	"\aaddress\x18\x01 \x01(\tR\aaddress\x12&\n" +
-	"\x0euse_reflection\x18\x02 \x01(\bR\x0euse_reflection\x12;\n" +
+	"\aaddress\x18\x01 \x01(\tR\aaddress\x12%\n" +
+	"\x0euse_reflection\x18\x02 \x01(\bR\ruseReflection\x12:\n" +
 	"\n" +
-	"tls_config\x18\x03 \x01(\v2\x1b.mcpany.config.v1.TLSConfigR\n" +
-	"tls_config\x126\n" +
-	"\x05tools\x18\x04 \x03(\v2 .mcpany.config.v1.ToolDefinitionR\x05tools\x12E\n" +
-	"\fhealth_check\x18\x05 \x01(\v2!.mcpany.config.v1.GrpcHealthCheckR\fhealth_check\x12O\n" +
-	"\x11proto_definitions\x18\x06 \x03(\v2!.mcpany.config.v1.ProtoDefinitionR\x11proto_definitions\x12M\n" +
-	"\x10proto_collection\x18\a \x03(\v2!.mcpany.config.v1.ProtoCollectionR\x10proto_collection\x12B\n" +
+	"tls_config\x18\x03 \x01(\v2\x1b.mcpany.config.v1.TLSConfigR\ttlsConfig\x126\n" +
+	"\x05tools\x18\x04 \x03(\v2 .mcpany.config.v1.ToolDefinitionR\x05tools\x12D\n" +
+	"\fhealth_check\x18\x05 \x01(\v2!.mcpany.config.v1.GrpcHealthCheckR\vhealthCheck\x12N\n" +
+	"\x11proto_definitions\x18\x06 \x03(\v2!.mcpany.config.v1.ProtoDefinitionR\x10protoDefinitions\x12L\n" +
+	"\x10proto_collection\x18\a \x03(\v2!.mcpany.config.v1.ProtoCollectionR\x0fprotoCollection\x12B\n" +
 	"\tresources\x18\b \x03(\v2$.mcpany.config.v1.ResourceDefinitionR\tresources\x12F\n" +
 	"\x05calls\x18\t \x03(\v20.mcpany.config.v1.GrpcUpstreamService.CallsEntryR\x05calls\x12<\n" +
 	"\aprompts\x18\x13 \x03(\v2\".mcpany.config.v1.PromptDefinitionR\aprompts\x1a^\n" +
 	"\n" +
 	"CallsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12:\n" +
-	"\x05value\x18\x02 \x01(\v2$.mcpany.config.v1.GrpcCallDefinitionR\x05value:\x028\x01\"\xae\x01\n" +
-	"\x0fProtoDefinition\x12=\n" +
+	"\x05value\x18\x02 \x01(\v2$.mcpany.config.v1.GrpcCallDefinitionR\x05value:\x028\x01\"\xac\x01\n" +
+	"\x0fProtoDefinition\x12<\n" +
 	"\n" +
-	"proto_file\x18\x01 \x01(\v2\x1b.mcpany.config.v1.ProtoFileH\x00R\n" +
-	"proto_file\x12O\n" +
-	"\x10proto_descriptor\x18\x02 \x01(\v2!.mcpany.config.v1.ProtoDescriptorH\x00R\x10proto_descriptorB\v\n" +
-	"\tproto_ref\"{\n" +
-	"\tProtoFile\x12\x1c\n" +
-	"\tfile_name\x18\x01 \x01(\tR\tfile_name\x12$\n" +
-	"\ffile_content\x18\x02 \x01(\tH\x00R\ffile_content\x12\x1e\n" +
-	"\tfile_path\x18\x03 \x01(\tH\x00R\tfile_pathB\n" +
+	"proto_file\x18\x01 \x01(\v2\x1b.mcpany.config.v1.ProtoFileH\x00R\tprotoFile\x12N\n" +
+	"\x10proto_descriptor\x18\x02 \x01(\v2!.mcpany.config.v1.ProtoDescriptorH\x00R\x0fprotoDescriptorB\v\n" +
+	"\tproto_ref\"x\n" +
+	"\tProtoFile\x12\x1b\n" +
+	"\tfile_name\x18\x01 \x01(\tR\bfileName\x12#\n" +
+	"\ffile_content\x18\x02 \x01(\tH\x00R\vfileContent\x12\x1d\n" +
+	"\tfile_path\x18\x03 \x01(\tH\x00R\bfilePathB\n" +
 	"\n" +
-	"\bfile_ref\"[\n" +
-	"\x0fProtoDescriptor\x12\x1c\n" +
-	"\tfile_name\x18\x01 \x01(\tR\tfile_name\x12\x1e\n" +
-	"\tfile_path\x18\x02 \x01(\tH\x00R\tfile_pathB\n" +
+	"\bfile_ref\"Y\n" +
+	"\x0fProtoDescriptor\x12\x1b\n" +
+	"\tfile_name\x18\x01 \x01(\tR\bfileName\x12\x1d\n" +
+	"\tfile_path\x18\x02 \x01(\tH\x00R\bfilePathB\n" +
 	"\n" +
-	"\bfile_ref\"\x7f\n" +
-	"\x0fProtoCollection\x12\x1c\n" +
-	"\troot_path\x18\x01 \x01(\tR\troot_path\x12*\n" +
-	"\x10path_match_regex\x18\x02 \x01(\tR\x10path_match_regex\x12\"\n" +
-	"\fis_recursive\x18\x03 \x01(\bR\fis_recursive\"\x95\x04\n" +
+	"\bfile_ref\"{\n" +
+	"\x0fProtoCollection\x12\x1b\n" +
+	"\troot_path\x18\x01 \x01(\tR\brootPath\x12(\n" +
+	"\x10path_match_regex\x18\x02 \x01(\tR\x0epathMatchRegex\x12!\n" +
+	"\fis_recursive\x18\x03 \x01(\bR\visRecursive\"\x93\x04\n" +
 	"\x13HttpUpstreamService\x12\x18\n" +
 	"\aaddress\x18\x01 \x01(\tR\aaddress\x126\n" +
 	"\x05tools\x18\x02 \x03(\v2 .mcpany.config.v1.ToolDefinitionR\x05tools\x12F\n" +
-	"\x05calls\x18\x06 \x03(\v20.mcpany.config.v1.HttpUpstreamService.CallsEntryR\x05calls\x12E\n" +
-	"\fhealth_check\x18\x03 \x01(\v2!.mcpany.config.v1.HttpHealthCheckR\fhealth_check\x12;\n" +
+	"\x05calls\x18\x06 \x03(\v20.mcpany.config.v1.HttpUpstreamService.CallsEntryR\x05calls\x12D\n" +
+	"\fhealth_check\x18\x03 \x01(\v2!.mcpany.config.v1.HttpHealthCheckR\vhealthCheck\x12:\n" +
 	"\n" +
-	"tls_config\x18\x04 \x01(\v2\x1b.mcpany.config.v1.TLSConfigR\n" +
-	"tls_config\x12B\n" +
+	"tls_config\x18\x04 \x01(\v2\x1b.mcpany.config.v1.TLSConfigR\ttlsConfig\x12B\n" +
 	"\tresources\x18\x05 \x03(\v2$.mcpany.config.v1.ResourceDefinitionR\tresources\x12<\n" +
 	"\aprompts\x18\a \x03(\v2\".mcpany.config.v1.PromptDefinitionR\aprompts\x1a^\n" +
 	"\n" +
 	"CallsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12:\n" +
-	"\x05value\x18\x02 \x01(\v2$.mcpany.config.v1.HttpCallDefinitionR\x05value:\x028\x01\"\xa9\x04\n" +
+	"\x05value\x18\x02 \x01(\v2$.mcpany.config.v1.HttpCallDefinitionR\x05value:\x028\x01\"\xa7\x04\n" +
 	"\x18WebsocketUpstreamService\x12\x18\n" +
 	"\aaddress\x18\x01 \x01(\tR\aaddress\x126\n" +
-	"\x05tools\x18\x02 \x03(\v2 .mcpany.config.v1.ToolDefinitionR\x05tools\x12;\n" +
+	"\x05tools\x18\x02 \x03(\v2 .mcpany.config.v1.ToolDefinitionR\x05tools\x12:\n" +
 	"\n" +
-	"tls_config\x18\x03 \x01(\v2\x1b.mcpany.config.v1.TLSConfigR\n" +
-	"tls_config\x12B\n" +
+	"tls_config\x18\x03 \x01(\v2\x1b.mcpany.config.v1.TLSConfigR\ttlsConfig\x12B\n" +
 	"\tresources\x18\x04 \x03(\v2$.mcpany.config.v1.ResourceDefinitionR\tresources\x12K\n" +
 	"\x05calls\x18\x05 \x03(\v25.mcpany.config.v1.WebsocketUpstreamService.CallsEntryR\x05calls\x12<\n" +
-	"\aprompts\x18\x06 \x03(\v2\".mcpany.config.v1.PromptDefinitionR\aprompts\x12J\n" +
-	"\fhealth_check\x18\a \x01(\v2&.mcpany.config.v1.WebsocketHealthCheckR\fhealth_check\x1ac\n" +
+	"\aprompts\x18\x06 \x03(\v2\".mcpany.config.v1.PromptDefinitionR\aprompts\x12I\n" +
+	"\fhealth_check\x18\a \x01(\v2&.mcpany.config.v1.WebsocketHealthCheckR\vhealthCheck\x1ac\n" +
 	"\n" +
 	"CallsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12?\n" +
-	"\x05value\x18\x02 \x01(\v2).mcpany.config.v1.WebsocketCallDefinitionR\x05value:\x028\x01\"\x9d\x04\n" +
+	"\x05value\x18\x02 \x01(\v2).mcpany.config.v1.WebsocketCallDefinitionR\x05value:\x028\x01\"\x9b\x04\n" +
 	"\x15WebrtcUpstreamService\x12\x18\n" +
 	"\aaddress\x18\x01 \x01(\tR\aaddress\x126\n" +
-	"\x05tools\x18\x02 \x03(\v2 .mcpany.config.v1.ToolDefinitionR\x05tools\x12;\n" +
+	"\x05tools\x18\x02 \x03(\v2 .mcpany.config.v1.ToolDefinitionR\x05tools\x12:\n" +
 	"\n" +
-	"tls_config\x18\x03 \x01(\v2\x1b.mcpany.config.v1.TLSConfigR\n" +
-	"tls_config\x12B\n" +
+	"tls_config\x18\x03 \x01(\v2\x1b.mcpany.config.v1.TLSConfigR\ttlsConfig\x12B\n" +
 	"\tresources\x18\x04 \x03(\v2$.mcpany.config.v1.ResourceDefinitionR\tresources\x12H\n" +
 	"\x05calls\x18\x05 \x03(\v22.mcpany.config.v1.WebrtcUpstreamService.CallsEntryR\x05calls\x12<\n" +
-	"\aprompts\x18\x06 \x03(\v2\".mcpany.config.v1.PromptDefinitionR\aprompts\x12G\n" +
-	"\fhealth_check\x18\a \x01(\v2#.mcpany.config.v1.WebRTCHealthCheckR\fhealth_check\x1a`\n" +
+	"\aprompts\x18\x06 \x03(\v2\".mcpany.config.v1.PromptDefinitionR\aprompts\x12F\n" +
+	"\fhealth_check\x18\a \x01(\v2#.mcpany.config.v1.WebRTCHealthCheckR\vhealthCheck\x1a`\n" +
 	"\n" +
 	"CallsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12<\n" +
-	"\x05value\x18\x02 \x01(\v2&.mcpany.config.v1.WebrtcCallDefinitionR\x05value:\x028\x01\"\xf1\x04\n" +
+	"\x05value\x18\x02 \x01(\v2&.mcpany.config.v1.WebrtcCallDefinitionR\x05value:\x028\x01\"\xed\x04\n" +
 	"\x16OpenapiUpstreamService\x12\x18\n" +
-	"\aaddress\x18\x01 \x01(\tR\aaddress\x12$\n" +
-	"\fspec_content\x18\x02 \x01(\tH\x00R\fspec_content\x12\x1c\n" +
-	"\bspec_url\x18\t \x01(\tH\x00R\bspec_url\x12E\n" +
-	"\fhealth_check\x18\x03 \x01(\v2!.mcpany.config.v1.HttpHealthCheckR\fhealth_check\x12;\n" +
+	"\aaddress\x18\x01 \x01(\tR\aaddress\x12#\n" +
+	"\fspec_content\x18\x02 \x01(\tH\x00R\vspecContent\x12\x1b\n" +
+	"\bspec_url\x18\t \x01(\tH\x00R\aspecUrl\x12D\n" +
+	"\fhealth_check\x18\x03 \x01(\v2!.mcpany.config.v1.HttpHealthCheckR\vhealthCheck\x12:\n" +
 	"\n" +
-	"tls_config\x18\x04 \x01(\v2\x1b.mcpany.config.v1.TLSConfigR\n" +
-	"tls_config\x126\n" +
+	"tls_config\x18\x04 \x01(\v2\x1b.mcpany.config.v1.TLSConfigR\ttlsConfig\x126\n" +
 	"\x05tools\x18\x05 \x03(\v2 .mcpany.config.v1.ToolDefinitionR\x05tools\x12B\n" +
 	"\tresources\x18\x06 \x03(\v2$.mcpany.config.v1.ResourceDefinitionR\tresources\x12I\n" +
 	"\x05calls\x18\a \x03(\v23.mcpany.config.v1.OpenapiUpstreamService.CallsEntryR\x05calls\x12<\n" +
@@ -8641,20 +8634,20 @@ const file_proto_config_v1_upstream_service_proto_rawDesc = "" +
 	"CallsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12=\n" +
 	"\x05value\x18\x02 \x01(\v2'.mcpany.config.v1.OpenAPICallDefinitionR\x05value:\x028\x01B\r\n" +
-	"\vspec_source\"\xfe\b\n" +
+	"\vspec_source\"\xfa\b\n" +
 	"\x1aCommandLineUpstreamService\x12\x18\n" +
-	"\acommand\x18\x01 \x01(\tR\acommand\x12,\n" +
-	"\x11working_directory\x18\x03 \x01(\tR\x11working_directory\x126\n" +
-	"\x05tools\x18\x04 \x03(\v2 .mcpany.config.v1.ToolDefinitionR\x05tools\x12L\n" +
-	"\fhealth_check\x18\x05 \x01(\v2(.mcpany.config.v1.CommandLineHealthCheckR\fhealth_check\x123\n" +
-	"\x05cache\x18\x06 \x01(\v2\x1d.mcpany.config.v1.CacheConfigR\x05cache\x12\\\n" +
-	"\x15container_environment\x18\a \x01(\v2&.mcpany.config.v1.ContainerEnvironmentR\x15container_environment\x123\n" +
+	"\acommand\x18\x01 \x01(\tR\acommand\x12+\n" +
+	"\x11working_directory\x18\x03 \x01(\tR\x10workingDirectory\x126\n" +
+	"\x05tools\x18\x04 \x03(\v2 .mcpany.config.v1.ToolDefinitionR\x05tools\x12K\n" +
+	"\fhealth_check\x18\x05 \x01(\v2(.mcpany.config.v1.CommandLineHealthCheckR\vhealthCheck\x123\n" +
+	"\x05cache\x18\x06 \x01(\v2\x1d.mcpany.config.v1.CacheConfigR\x05cache\x12[\n" +
+	"\x15container_environment\x18\a \x01(\v2&.mcpany.config.v1.ContainerEnvironmentR\x14containerEnvironment\x123\n" +
 	"\atimeout\x18\b \x01(\v2\x19.google.protobuf.DurationR\atimeout\x12B\n" +
 	"\tresources\x18\t \x03(\v2$.mcpany.config.v1.ResourceDefinitionR\tresources\x12M\n" +
 	"\x05calls\x18\n" +
 	" \x03(\v27.mcpany.config.v1.CommandLineUpstreamService.CallsEntryR\x05calls\x12<\n" +
-	"\aprompts\x18\v \x03(\v2\".mcpany.config.v1.PromptDefinitionR\aprompts\x12z\n" +
-	"\x16communication_protocol\x18\f \x01(\x0e2B.mcpany.config.v1.CommandLineUpstreamService.CommunicationProtocolR\x16communication_protocol\x12\x14\n" +
+	"\aprompts\x18\v \x03(\v2\".mcpany.config.v1.PromptDefinitionR\aprompts\x12y\n" +
+	"\x16communication_protocol\x18\f \x01(\x0e2B.mcpany.config.v1.CommandLineUpstreamService.CommunicationProtocolR\x15communicationProtocol\x12\x14\n" +
 	"\x05local\x18\r \x01(\bR\x05local\x12G\n" +
 	"\x03env\x18\x0e \x03(\v25.mcpany.config.v1.CommandLineUpstreamService.EnvEntryR\x03env\x1ae\n" +
 	"\n" +
@@ -8681,12 +8674,11 @@ const file_proto_config_v1_upstream_service_proto_rawDesc = "" +
 	"\n" +
 	"CallsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x129\n" +
-	"\x05value\x18\x02 \x01(\v2#.mcpany.config.v1.SqlCallDefinitionR\x05value:\x028\x01\"\xe2\x05\n" +
-	"\x19FilesystemUpstreamService\x12Z\n" +
+	"\x05value\x18\x02 \x01(\v2#.mcpany.config.v1.SqlCallDefinitionR\x05value:\x028\x01\"\xe0\x05\n" +
+	"\x19FilesystemUpstreamService\x12Y\n" +
 	"\n" +
-	"root_paths\x18\x01 \x03(\v2:.mcpany.config.v1.FilesystemUpstreamService.RootPathsEntryR\n" +
-	"root_paths\x12\x1c\n" +
-	"\tread_only\x18\x02 \x01(\bR\tread_only\x126\n" +
+	"root_paths\x18\x01 \x03(\v2:.mcpany.config.v1.FilesystemUpstreamService.RootPathsEntryR\trootPaths\x12\x1b\n" +
+	"\tread_only\x18\x02 \x01(\bR\breadOnly\x126\n" +
 	"\x05tools\x18\x03 \x03(\v2 .mcpany.config.v1.ToolDefinitionR\x05tools\x12B\n" +
 	"\tresources\x18\x04 \x03(\v2$.mcpany.config.v1.ResourceDefinitionR\tresources\x12<\n" +
 	"\aprompts\x18\x05 \x03(\v2\".mcpany.config.v1.PromptDefinitionR\aprompts\x12(\n" +
@@ -8728,22 +8720,20 @@ const file_proto_config_v1_upstream_service_proto_rawDesc = "" +
 	"\x05tools\x18\x02 \x03(\v2 .mcpany.config.v1.ToolDefinitionR\x05tools\x12B\n" +
 	"\tresources\x18\x03 \x03(\v2$.mcpany.config.v1.ResourceDefinitionR\tresources\x12<\n" +
 	"\aprompts\x18\x04 \x03(\v2\".mcpany.config.v1.PromptDefinitionR\apromptsB\x10\n" +
-	"\x0evector_db_type\"\xa2\x01\n" +
-	"\x10PineconeVectorDB\x12\x18\n" +
-	"\aapi_key\x18\x01 \x01(\tR\aapi_key\x12 \n" +
-	"\venvironment\x18\x02 \x01(\tR\venvironment\x12\x1e\n" +
+	"\x0evector_db_type\"\x9f\x01\n" +
+	"\x10PineconeVectorDB\x12\x17\n" +
+	"\aapi_key\x18\x01 \x01(\tR\x06apiKey\x12 \n" +
+	"\venvironment\x18\x02 \x01(\tR\venvironment\x12\x1d\n" +
 	"\n" +
-	"index_name\x18\x03 \x01(\tR\n" +
-	"index_name\x12\x1e\n" +
+	"index_name\x18\x03 \x01(\tR\tindexName\x12\x1d\n" +
 	"\n" +
-	"project_id\x18\x04 \x01(\tR\n" +
-	"project_id\x12\x12\n" +
-	"\x04host\x18\x05 \x01(\tR\x04host\"\xbf\x05\n" +
-	"\x12McpUpstreamService\x12Y\n" +
-	"\x0fhttp_connection\x18\x01 \x01(\v2-.mcpany.config.v1.McpStreamableHttpConnectionH\x00R\x0fhttp_connection\x12R\n" +
-	"\x10stdio_connection\x18\x02 \x01(\v2$.mcpany.config.v1.McpStdioConnectionH\x00R\x10stdio_connection\x12U\n" +
-	"\x11bundle_connection\x18\x04 \x01(\v2%.mcpany.config.v1.McpBundleConnectionH\x00R\x11bundle_connection\x120\n" +
-	"\x13tool_auto_discovery\x18\x03 \x01(\bR\x13tool_auto_discovery\x126\n" +
+	"project_id\x18\x04 \x01(\tR\tprojectId\x12\x12\n" +
+	"\x04host\x18\x05 \x01(\tR\x04host\"\xba\x05\n" +
+	"\x12McpUpstreamService\x12X\n" +
+	"\x0fhttp_connection\x18\x01 \x01(\v2-.mcpany.config.v1.McpStreamableHttpConnectionH\x00R\x0ehttpConnection\x12Q\n" +
+	"\x10stdio_connection\x18\x02 \x01(\v2$.mcpany.config.v1.McpStdioConnectionH\x00R\x0fstdioConnection\x12T\n" +
+	"\x11bundle_connection\x18\x04 \x01(\v2%.mcpany.config.v1.McpBundleConnectionH\x00R\x10bundleConnection\x12.\n" +
+	"\x13tool_auto_discovery\x18\x03 \x01(\bR\x11toolAutoDiscovery\x126\n" +
 	"\x05tools\x18\x06 \x03(\v2 .mcpany.config.v1.ToolDefinitionR\x05tools\x12B\n" +
 	"\tresources\x18\a \x03(\v2$.mcpany.config.v1.ResourceDefinitionR\tresources\x12E\n" +
 	"\x05calls\x18\b \x03(\v2/.mcpany.config.v1.McpUpstreamService.CallsEntryR\x05calls\x12<\n" +
@@ -8752,34 +8742,34 @@ const file_proto_config_v1_upstream_service_proto_rawDesc = "" +
 	"CallsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x129\n" +
 	"\x05value\x18\x02 \x01(\v2#.mcpany.config.v1.MCPCallDefinitionR\x05value:\x028\x01B\x11\n" +
-	"\x0fconnection_type\"\xe0\x02\n" +
+	"\x0fconnection_type\"\xdd\x02\n" +
 	"\x12McpStdioConnection\x12\x18\n" +
 	"\acommand\x18\x01 \x01(\tR\acommand\x12\x12\n" +
-	"\x04args\x18\x02 \x03(\tR\x04args\x12,\n" +
-	"\x11working_directory\x18\x03 \x01(\tR\x11working_directory\x12(\n" +
-	"\x0fcontainer_image\x18\x04 \x01(\tR\x0fcontainer_image\x12&\n" +
-	"\x0esetup_commands\x18\x05 \x03(\tR\x0esetup_commands\x12?\n" +
+	"\x04args\x18\x02 \x03(\tR\x04args\x12+\n" +
+	"\x11working_directory\x18\x03 \x01(\tR\x10workingDirectory\x12'\n" +
+	"\x0fcontainer_image\x18\x04 \x01(\tR\x0econtainerImage\x12%\n" +
+	"\x0esetup_commands\x18\x05 \x03(\tR\rsetupCommands\x12?\n" +
 	"\x03env\x18\a \x03(\v2-.mcpany.config.v1.McpStdioConnection.EnvEntryR\x03env\x1aU\n" +
 	"\bEnvEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x123\n" +
-	"\x05value\x18\x02 \x01(\v2\x1d.mcpany.config.v1.SecretValueR\x05value:\x028\x01J\x04\b\x06\x10\a\"\xb0\x01\n" +
-	"\x1bMcpStreamableHttpConnection\x12\"\n" +
-	"\fhttp_address\x18\x01 \x01(\tR\fhttp_address\x12;\n" +
+	"\x05value\x18\x02 \x01(\v2\x1d.mcpany.config.v1.SecretValueR\x05value:\x028\x01J\x04\b\x06\x10\a\"\xac\x01\n" +
+	"\x1bMcpStreamableHttpConnection\x12!\n" +
+	"\fhttp_address\x18\x01 \x01(\tR\vhttpAddress\x12:\n" +
 	"\n" +
-	"tls_config\x18\x05 \x01(\v2\x1b.mcpany.config.v1.TLSConfigR\n" +
-	"tls_config\x120\n" +
-	"\x13allow_http_redirect\x18\x06 \x01(\bR\x13allow_http_redirect\"\x80\x02\n" +
-	"\x13McpBundleConnection\x12 \n" +
-	"\vbundle_path\x18\x01 \x01(\tR\vbundle_path\x12(\n" +
-	"\x0fcontainer_image\x18\x02 \x01(\tR\x0fcontainer_image\x12@\n" +
+	"tls_config\x18\x05 \x01(\v2\x1b.mcpany.config.v1.TLSConfigR\ttlsConfig\x12.\n" +
+	"\x13allow_http_redirect\x18\x06 \x01(\bR\x11allowHttpRedirect\"\xfe\x01\n" +
+	"\x13McpBundleConnection\x12\x1f\n" +
+	"\vbundle_path\x18\x01 \x01(\tR\n" +
+	"bundlePath\x12'\n" +
+	"\x0fcontainer_image\x18\x02 \x01(\tR\x0econtainerImage\x12@\n" +
 	"\x03env\x18\x04 \x03(\v2..mcpany.config.v1.McpBundleConnection.EnvEntryR\x03env\x1aU\n" +
 	"\bEnvEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x123\n" +
-	"\x05value\x18\x02 \x01(\v2\x1d.mcpany.config.v1.SecretValueR\x05value:\x028\x01J\x04\b\x03\x10\x04\"\xb3\x01\n" +
-	"\x14ConnectionPoolConfig\x12(\n" +
-	"\x0fmax_connections\x18\x01 \x01(\x05R\x0fmax_connections\x122\n" +
-	"\x14max_idle_connections\x18\x02 \x01(\x05R\x14max_idle_connections\x12=\n" +
-	"\fidle_timeout\x18\x03 \x01(\v2\x19.google.protobuf.DurationR\fidle_timeout\"\xe5\x02\n" +
+	"\x05value\x18\x02 \x01(\v2\x1d.mcpany.config.v1.SecretValueR\x05value:\x028\x01J\x04\b\x03\x10\x04\"\xaf\x01\n" +
+	"\x14ConnectionPoolConfig\x12'\n" +
+	"\x0fmax_connections\x18\x01 \x01(\x05R\x0emaxConnections\x120\n" +
+	"\x14max_idle_connections\x18\x02 \x01(\x05R\x12maxIdleConnections\x12<\n" +
+	"\fidle_timeout\x18\x03 \x01(\v2\x19.google.protobuf.DurationR\vidleTimeout\"\xe5\x02\n" +
 	"\x14ContainerEnvironment\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12\x14\n" +
 	"\x05image\x18\x02 \x01(\tR\x05image\x12M\n" +
@@ -8790,18 +8780,19 @@ const file_proto_config_v1_upstream_service_proto_rawDesc = "" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\x1aU\n" +
 	"\bEnvEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x123\n" +
-	"\x05value\x18\x02 \x01(\v2\x1d.mcpany.config.v1.SecretValueR\x05value:\x028\x01\"\xa1\x06\n" +
-	"\x0fRateLimitConfig\x12\x1e\n" +
+	"\x05value\x18\x02 \x01(\v2\x1d.mcpany.config.v1.SecretValueR\x05value:\x028\x01\"\x9b\x06\n" +
+	"\x0fRateLimitConfig\x12\x1d\n" +
 	"\n" +
-	"is_enabled\x18\x01 \x01(\bR\n" +
-	"is_enabled\x120\n" +
-	"\x13requests_per_second\x18\x02 \x01(\x01R\x13requests_per_second\x12\x14\n" +
+	"is_enabled\x18\x01 \x01(\bR\tisEnabled\x12.\n" +
+	"\x13requests_per_second\x18\x02 \x01(\x01R\x11requestsPerSecond\x12\x14\n" +
 	"\x05burst\x18\x03 \x01(\x03R\x05burst\x12C\n" +
 	"\astorage\x18\x04 \x01(\x0e2).mcpany.config.v1.RateLimitConfig.StorageR\astorage\x12#\n" +
-	"\x05redis\x18\x05 \x01(\v2\r.bus.RedisBusR\x05redis\x12?\n" +
-	"\x06key_by\x18\x06 \x01(\x0e2'.mcpany.config.v1.RateLimitConfig.KeyByR\x06key_by\x12N\n" +
-	"\vcost_metric\x18\a \x01(\x0e2,.mcpany.config.v1.RateLimitConfig.CostMetricR\vcost_metric\x12S\n" +
-	"\vtool_limits\x18\b \x03(\v21.mcpany.config.v1.RateLimitConfig.ToolLimitsEntryR\vtool_limits\x1a`\n" +
+	"\x05redis\x18\x05 \x01(\v2\r.bus.RedisBusR\x05redis\x12>\n" +
+	"\x06key_by\x18\x06 \x01(\x0e2'.mcpany.config.v1.RateLimitConfig.KeyByR\x05keyBy\x12M\n" +
+	"\vcost_metric\x18\a \x01(\x0e2,.mcpany.config.v1.RateLimitConfig.CostMetricR\n" +
+	"costMetric\x12R\n" +
+	"\vtool_limits\x18\b \x03(\v21.mcpany.config.v1.RateLimitConfig.ToolLimitsEntryR\n" +
+	"toolLimits\x1a`\n" +
 	"\x0fToolLimitsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x127\n" +
 	"\x05value\x18\x02 \x01(\v2!.mcpany.config.v1.RateLimitConfigR\x05value:\x028\x01\"I\n" +
@@ -8818,27 +8809,30 @@ const file_proto_config_v1_upstream_service_proto_rawDesc = "" +
 	"\n" +
 	"CostMetric\x12\x18\n" +
 	"\x14COST_METRIC_REQUESTS\x10\x00\x12\x16\n" +
-	"\x12COST_METRIC_TOKENS\x10\x01\"\xdc\x01\n" +
-	"\x10ResilienceConfig\x12P\n" +
-	"\x0fcircuit_breaker\x18\x01 \x01(\v2&.mcpany.config.v1.CircuitBreakerConfigR\x0fcircuit_breaker\x12A\n" +
-	"\fretry_policy\x18\x02 \x01(\v2\x1d.mcpany.config.v1.RetryConfigR\fretry_policy\x123\n" +
-	"\atimeout\x18\x03 \x01(\v2\x19.google.protobuf.DurationR\atimeout\"\xf3\x01\n" +
-	"\x14CircuitBreakerConfig\x126\n" +
-	"\x16failure_rate_threshold\x18\x01 \x01(\x01R\x16failure_rate_threshold\x122\n" +
-	"\x14consecutive_failures\x18\x02 \x01(\x05R\x14consecutive_failures\x12?\n" +
-	"\ropen_duration\x18\x03 \x01(\v2\x19.google.protobuf.DurationR\ropen_duration\x12.\n" +
-	"\x12half_open_requests\x18\x04 \x01(\x05R\x12half_open_requests\"\xfe\x01\n" +
-	"\vRetryConfig\x12,\n" +
-	"\x11number_of_retries\x18\x01 \x01(\x05R\x11number_of_retries\x12=\n" +
-	"\fbase_backoff\x18\x02 \x01(\v2\x19.google.protobuf.DurationR\fbase_backoff\x12;\n" +
-	"\vmax_backoff\x18\x03 \x01(\v2\x19.google.protobuf.DurationR\vmax_backoff\x12E\n" +
-	"\x10max_elapsed_time\x18\x04 \x01(\v2\x19.google.protobuf.DurationR\x10max_elapsed_time\"\xdb\x01\n" +
-	"\tTLSConfig\x12 \n" +
-	"\vserver_name\x18\x01 \x01(\tR\vserver_name\x12\"\n" +
-	"\fca_cert_path\x18\x02 \x01(\tR\fca_cert_path\x12*\n" +
-	"\x10client_cert_path\x18\x03 \x01(\tR\x10client_cert_path\x12(\n" +
-	"\x0fclient_key_path\x18\x04 \x01(\tR\x0fclient_key_path\x122\n" +
-	"\x14insecure_skip_verify\x18\x05 \x01(\bR\x14insecure_skip_verify*K\n" +
+	"\x12COST_METRIC_TOKENS\x10\x01\"\xda\x01\n" +
+	"\x10ResilienceConfig\x12O\n" +
+	"\x0fcircuit_breaker\x18\x01 \x01(\v2&.mcpany.config.v1.CircuitBreakerConfigR\x0ecircuitBreaker\x12@\n" +
+	"\fretry_policy\x18\x02 \x01(\v2\x1d.mcpany.config.v1.RetryConfigR\vretryPolicy\x123\n" +
+	"\atimeout\x18\x03 \x01(\v2\x19.google.protobuf.DurationR\atimeout\"\xed\x01\n" +
+	"\x14CircuitBreakerConfig\x124\n" +
+	"\x16failure_rate_threshold\x18\x01 \x01(\x01R\x14failureRateThreshold\x121\n" +
+	"\x14consecutive_failures\x18\x02 \x01(\x05R\x13consecutiveFailures\x12>\n" +
+	"\ropen_duration\x18\x03 \x01(\v2\x19.google.protobuf.DurationR\fopenDuration\x12,\n" +
+	"\x12half_open_requests\x18\x04 \x01(\x05R\x10halfOpenRequests\"\xf8\x01\n" +
+	"\vRetryConfig\x12*\n" +
+	"\x11number_of_retries\x18\x01 \x01(\x05R\x0fnumberOfRetries\x12<\n" +
+	"\fbase_backoff\x18\x02 \x01(\v2\x19.google.protobuf.DurationR\vbaseBackoff\x12:\n" +
+	"\vmax_backoff\x18\x03 \x01(\v2\x19.google.protobuf.DurationR\n" +
+	"maxBackoff\x12C\n" +
+	"\x10max_elapsed_time\x18\x04 \x01(\v2\x19.google.protobuf.DurationR\x0emaxElapsedTime\"\xd2\x01\n" +
+	"\tTLSConfig\x12\x1f\n" +
+	"\vserver_name\x18\x01 \x01(\tR\n" +
+	"serverName\x12 \n" +
+	"\fca_cert_path\x18\x02 \x01(\tR\n" +
+	"caCertPath\x12(\n" +
+	"\x10client_cert_path\x18\x03 \x01(\tR\x0eclientCertPath\x12&\n" +
+	"\x0fclient_key_path\x18\x04 \x01(\tR\rclientKeyPath\x120\n" +
+	"\x14insecure_skip_verify\x18\x05 \x01(\bR\x12insecureSkipVerify*K\n" +
 	"\x15LoadBalancingStrategy\x12\x0f\n" +
 	"\vROUND_ROBIN\x10\x00\x12\x15\n" +
 	"\x11LEAST_CONNECTIONS\x10\x01\x12\n" +

@@ -30,7 +30,8 @@ services:
     image: mcpany-ui-e2e:latest
     user: "${TEST_UID}:${TEST_GID}"
     environment:
-      - MCPANY_LOG_LEVEL=info
+      - MCPANY_LOG_LEVEL=debug
+      - MCPANY_ALLOW_ALL_ORIGINS=true
       - BACKEND_URL=http://server:50050
       - BASE_URL=http://localhost:9002
       - NEXT_PUBLIC_API_URL=http://server:50050
@@ -45,6 +46,11 @@ services:
       - ../ui/docs:/work/ui/docs
       - ../docs:/work/docs
       - ../ui/playwright.config.ts:/work/ui/playwright.config.ts
+      - ../ui/next.config.ts:/work/ui/next.config.ts
+      - ../ui/playwright.screenshots.config.ts:/work/ui/playwright.screenshots.config.ts
+      - ../ui/tests:/work/ui/tests
+      - ../ui/src:/work/ui/src
+    ipc: host
     depends_on:
       server:
         condition: service_healthy

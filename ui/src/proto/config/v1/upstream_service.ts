@@ -1065,7 +1065,7 @@ export const UpstreamServiceCollection: MessageFns<UpstreamServiceCollection> = 
   fromJSON(object: any): UpstreamServiceCollection {
     return {
       name: isSet(object.name) ? globalThis.String(object.name) : "",
-      httpUrl: isSet(object.http_url) ? globalThis.String(object.http_url) : "",
+      httpUrl: isSet(object.httpUrl) ? globalThis.String(object.httpUrl) : "",
       priority: isSet(object.priority) ? globalThis.Number(object.priority) : 0,
       authentication: isSet(object.authentication) ? UpstreamAuthentication.fromJSON(object.authentication) : undefined,
     };
@@ -1077,7 +1077,7 @@ export const UpstreamServiceCollection: MessageFns<UpstreamServiceCollection> = 
       obj.name = message.name;
     }
     if (message.httpUrl !== "") {
-      obj.http_url = message.httpUrl;
+      obj.httpUrl = message.httpUrl;
     }
     if (message.priority !== 0) {
       obj.priority = Math.round(message.priority);
@@ -1544,65 +1544,63 @@ export const UpstreamServiceConfig: MessageFns<UpstreamServiceConfig> = {
     return {
       id: isSet(object.id) ? globalThis.String(object.id) : "",
       name: isSet(object.name) ? globalThis.String(object.name) : "",
-      sanitizedName: isSet(object.sanitized_name) ? globalThis.String(object.sanitized_name) : "",
-      connectionPool: isSet(object.connection_pool) ? ConnectionPoolConfig.fromJSON(object.connection_pool) : undefined,
-      upstreamAuthentication: isSet(object.upstream_authentication)
-        ? UpstreamAuthentication.fromJSON(object.upstream_authentication)
+      sanitizedName: isSet(object.sanitizedName) ? globalThis.String(object.sanitizedName) : "",
+      connectionPool: isSet(object.connectionPool) ? ConnectionPoolConfig.fromJSON(object.connectionPool) : undefined,
+      upstreamAuthentication: isSet(object.upstreamAuthentication)
+        ? UpstreamAuthentication.fromJSON(object.upstreamAuthentication)
         : undefined,
       cache: isSet(object.cache) ? CacheConfig.fromJSON(object.cache) : undefined,
-      rateLimit: isSet(object.rate_limit) ? RateLimitConfig.fromJSON(object.rate_limit) : undefined,
-      loadBalancingStrategy: isSet(object.load_balancing_strategy)
-        ? loadBalancingStrategyFromJSON(object.load_balancing_strategy)
+      rateLimit: isSet(object.rateLimit) ? RateLimitConfig.fromJSON(object.rateLimit) : undefined,
+      loadBalancingStrategy: isSet(object.loadBalancingStrategy)
+        ? loadBalancingStrategyFromJSON(object.loadBalancingStrategy)
         : 0,
       resilience: isSet(object.resilience) ? ResilienceConfig.fromJSON(object.resilience) : undefined,
-      mcpService: isSet(object.mcp_service) ? McpUpstreamService.fromJSON(object.mcp_service) : undefined,
-      httpService: isSet(object.http_service) ? HttpUpstreamService.fromJSON(object.http_service) : undefined,
-      grpcService: isSet(object.grpc_service) ? GrpcUpstreamService.fromJSON(object.grpc_service) : undefined,
-      openapiService: isSet(object.openapi_service)
-        ? OpenapiUpstreamService.fromJSON(object.openapi_service)
+      mcpService: isSet(object.mcpService) ? McpUpstreamService.fromJSON(object.mcpService) : undefined,
+      httpService: isSet(object.httpService) ? HttpUpstreamService.fromJSON(object.httpService) : undefined,
+      grpcService: isSet(object.grpcService) ? GrpcUpstreamService.fromJSON(object.grpcService) : undefined,
+      openapiService: isSet(object.openapiService) ? OpenapiUpstreamService.fromJSON(object.openapiService) : undefined,
+      commandLineService: isSet(object.commandLineService)
+        ? CommandLineUpstreamService.fromJSON(object.commandLineService)
         : undefined,
-      commandLineService: isSet(object.command_line_service)
-        ? CommandLineUpstreamService.fromJSON(object.command_line_service)
+      websocketService: isSet(object.websocketService)
+        ? WebsocketUpstreamService.fromJSON(object.websocketService)
         : undefined,
-      websocketService: isSet(object.websocket_service)
-        ? WebsocketUpstreamService.fromJSON(object.websocket_service)
+      webrtcService: isSet(object.webrtcService) ? WebrtcUpstreamService.fromJSON(object.webrtcService) : undefined,
+      graphqlService: isSet(object.graphqlService) ? GraphQLUpstreamService.fromJSON(object.graphqlService) : undefined,
+      sqlService: isSet(object.sqlService) ? SqlUpstreamService.fromJSON(object.sqlService) : undefined,
+      filesystemService: isSet(object.filesystemService)
+        ? FilesystemUpstreamService.fromJSON(object.filesystemService)
         : undefined,
-      webrtcService: isSet(object.webrtc_service) ? WebrtcUpstreamService.fromJSON(object.webrtc_service) : undefined,
-      graphqlService: isSet(object.graphql_service)
-        ? GraphQLUpstreamService.fromJSON(object.graphql_service)
-        : undefined,
-      sqlService: isSet(object.sql_service) ? SqlUpstreamService.fromJSON(object.sql_service) : undefined,
-      filesystemService: isSet(object.filesystem_service)
-        ? FilesystemUpstreamService.fromJSON(object.filesystem_service)
-        : undefined,
-      vectorService: isSet(object.vector_service) ? VectorUpstreamService.fromJSON(object.vector_service) : undefined,
+      vectorService: isSet(object.vectorService) ? VectorUpstreamService.fromJSON(object.vectorService) : undefined,
       version: isSet(object.version) ? globalThis.String(object.version) : "",
       authentication: isSet(object.authentication) ? AuthenticationConfig.fromJSON(object.authentication) : undefined,
       disable: isSet(object.disable) ? globalThis.Boolean(object.disable) : false,
       priority: isSet(object.priority) ? globalThis.Number(object.priority) : 0,
-      callPolicies: globalThis.Array.isArray(object?.call_policies)
-        ? object.call_policies.map((e: any) => CallPolicy.fromJSON(e))
+      callPolicies: globalThis.Array.isArray(object?.callPolicies)
+        ? object.callPolicies.map((e: any) => CallPolicy.fromJSON(e))
         : [],
-      preCallHooks: globalThis.Array.isArray(object?.pre_call_hooks)
-        ? object.pre_call_hooks.map((e: any) => CallHook.fromJSON(e))
+      preCallHooks: globalThis.Array.isArray(object?.preCallHooks)
+        ? object.preCallHooks.map((e: any) => CallHook.fromJSON(e))
         : [],
-      postCallHooks: globalThis.Array.isArray(object?.post_call_hooks)
-        ? object.post_call_hooks.map((e: any) => CallHook.fromJSON(e))
+      postCallHooks: globalThis.Array.isArray(object?.postCallHooks)
+        ? object.postCallHooks.map((e: any) => CallHook.fromJSON(e))
         : [],
-      profiles: globalThis.Array.isArray(object?.profiles) ? object.profiles.map((e: any) => Profile.fromJSON(e)) : [],
+      profiles: globalThis.Array.isArray(object?.profiles)
+        ? object.profiles.map((e: any) => Profile.fromJSON(e))
+        : [],
       prompts: globalThis.Array.isArray(object?.prompts)
         ? object.prompts.map((e: any) => PromptDefinition.fromJSON(e))
         : [],
-      toolExportPolicy: isSet(object.tool_export_policy) ? ExportPolicy.fromJSON(object.tool_export_policy) : undefined,
-      promptExportPolicy: isSet(object.prompt_export_policy)
-        ? ExportPolicy.fromJSON(object.prompt_export_policy)
+      toolExportPolicy: isSet(object.toolExportPolicy) ? ExportPolicy.fromJSON(object.toolExportPolicy) : undefined,
+      promptExportPolicy: isSet(object.promptExportPolicy)
+        ? ExportPolicy.fromJSON(object.promptExportPolicy)
         : undefined,
-      resourceExportPolicy: isSet(object.resource_export_policy)
-        ? ExportPolicy.fromJSON(object.resource_export_policy)
+      resourceExportPolicy: isSet(object.resourceExportPolicy)
+        ? ExportPolicy.fromJSON(object.resourceExportPolicy)
         : undefined,
-      autoDiscoverTool: isSet(object.auto_discover_tool) ? globalThis.Boolean(object.auto_discover_tool) : false,
-      profileLimits: isObject(object.profile_limits)
-        ? (globalThis.Object.entries(object.profile_limits) as [string, any][]).reduce(
+      autoDiscoverTool: isSet(object.autoDiscoverTool) ? globalThis.Boolean(object.autoDiscoverTool) : false,
+      profileLimits: isObject(object.profileLimits)
+        ? (globalThis.Object.entries(object.profileLimits) as [string, any][]).reduce(
           (acc: { [key: string]: RateLimitConfig }, [key, value]: [string, any]) => {
             acc[key] = RateLimitConfig.fromJSON(value);
             return acc;
@@ -1622,58 +1620,58 @@ export const UpstreamServiceConfig: MessageFns<UpstreamServiceConfig> = {
       obj.name = message.name;
     }
     if (message.sanitizedName !== "") {
-      obj.sanitized_name = message.sanitizedName;
+      obj.sanitizedName = message.sanitizedName;
     }
     if (message.connectionPool !== undefined) {
-      obj.connection_pool = ConnectionPoolConfig.toJSON(message.connectionPool);
+      obj.connectionPool = ConnectionPoolConfig.toJSON(message.connectionPool);
     }
     if (message.upstreamAuthentication !== undefined) {
-      obj.upstream_authentication = UpstreamAuthentication.toJSON(message.upstreamAuthentication);
+      obj.upstreamAuthentication = UpstreamAuthentication.toJSON(message.upstreamAuthentication);
     }
     if (message.cache !== undefined) {
       obj.cache = CacheConfig.toJSON(message.cache);
     }
     if (message.rateLimit !== undefined) {
-      obj.rate_limit = RateLimitConfig.toJSON(message.rateLimit);
+      obj.rateLimit = RateLimitConfig.toJSON(message.rateLimit);
     }
     if (message.loadBalancingStrategy !== 0) {
-      obj.load_balancing_strategy = loadBalancingStrategyToJSON(message.loadBalancingStrategy);
+      obj.loadBalancingStrategy = loadBalancingStrategyToJSON(message.loadBalancingStrategy);
     }
     if (message.resilience !== undefined) {
       obj.resilience = ResilienceConfig.toJSON(message.resilience);
     }
     if (message.mcpService !== undefined) {
-      obj.mcp_service = McpUpstreamService.toJSON(message.mcpService);
+      obj.mcpService = McpUpstreamService.toJSON(message.mcpService);
     }
     if (message.httpService !== undefined) {
-      obj.http_service = HttpUpstreamService.toJSON(message.httpService);
+      obj.httpService = HttpUpstreamService.toJSON(message.httpService);
     }
     if (message.grpcService !== undefined) {
-      obj.grpc_service = GrpcUpstreamService.toJSON(message.grpcService);
+      obj.grpcService = GrpcUpstreamService.toJSON(message.grpcService);
     }
     if (message.openapiService !== undefined) {
-      obj.openapi_service = OpenapiUpstreamService.toJSON(message.openapiService);
+      obj.openapiService = OpenapiUpstreamService.toJSON(message.openapiService);
     }
     if (message.commandLineService !== undefined) {
-      obj.command_line_service = CommandLineUpstreamService.toJSON(message.commandLineService);
+      obj.commandLineService = CommandLineUpstreamService.toJSON(message.commandLineService);
     }
     if (message.websocketService !== undefined) {
-      obj.websocket_service = WebsocketUpstreamService.toJSON(message.websocketService);
+      obj.websocketService = WebsocketUpstreamService.toJSON(message.websocketService);
     }
     if (message.webrtcService !== undefined) {
-      obj.webrtc_service = WebrtcUpstreamService.toJSON(message.webrtcService);
+      obj.webrtcService = WebrtcUpstreamService.toJSON(message.webrtcService);
     }
     if (message.graphqlService !== undefined) {
-      obj.graphql_service = GraphQLUpstreamService.toJSON(message.graphqlService);
+      obj.graphqlService = GraphQLUpstreamService.toJSON(message.graphqlService);
     }
     if (message.sqlService !== undefined) {
-      obj.sql_service = SqlUpstreamService.toJSON(message.sqlService);
+      obj.sqlService = SqlUpstreamService.toJSON(message.sqlService);
     }
     if (message.filesystemService !== undefined) {
-      obj.filesystem_service = FilesystemUpstreamService.toJSON(message.filesystemService);
+      obj.filesystemService = FilesystemUpstreamService.toJSON(message.filesystemService);
     }
     if (message.vectorService !== undefined) {
-      obj.vector_service = VectorUpstreamService.toJSON(message.vectorService);
+      obj.vectorService = VectorUpstreamService.toJSON(message.vectorService);
     }
     if (message.version !== "") {
       obj.version = message.version;
@@ -1688,13 +1686,13 @@ export const UpstreamServiceConfig: MessageFns<UpstreamServiceConfig> = {
       obj.priority = Math.round(message.priority);
     }
     if (message.callPolicies?.length) {
-      obj.call_policies = message.callPolicies.map((e) => CallPolicy.toJSON(e));
+      obj.callPolicies = message.callPolicies.map((e) => CallPolicy.toJSON(e));
     }
     if (message.preCallHooks?.length) {
-      obj.pre_call_hooks = message.preCallHooks.map((e) => CallHook.toJSON(e));
+      obj.preCallHooks = message.preCallHooks.map((e) => CallHook.toJSON(e));
     }
     if (message.postCallHooks?.length) {
-      obj.post_call_hooks = message.postCallHooks.map((e) => CallHook.toJSON(e));
+      obj.postCallHooks = message.postCallHooks.map((e) => CallHook.toJSON(e));
     }
     if (message.profiles?.length) {
       obj.profiles = message.profiles.map((e) => Profile.toJSON(e));
@@ -1703,23 +1701,23 @@ export const UpstreamServiceConfig: MessageFns<UpstreamServiceConfig> = {
       obj.prompts = message.prompts.map((e) => PromptDefinition.toJSON(e));
     }
     if (message.toolExportPolicy !== undefined) {
-      obj.tool_export_policy = ExportPolicy.toJSON(message.toolExportPolicy);
+      obj.toolExportPolicy = ExportPolicy.toJSON(message.toolExportPolicy);
     }
     if (message.promptExportPolicy !== undefined) {
-      obj.prompt_export_policy = ExportPolicy.toJSON(message.promptExportPolicy);
+      obj.promptExportPolicy = ExportPolicy.toJSON(message.promptExportPolicy);
     }
     if (message.resourceExportPolicy !== undefined) {
-      obj.resource_export_policy = ExportPolicy.toJSON(message.resourceExportPolicy);
+      obj.resourceExportPolicy = ExportPolicy.toJSON(message.resourceExportPolicy);
     }
     if (message.autoDiscoverTool !== false) {
-      obj.auto_discover_tool = message.autoDiscoverTool;
+      obj.autoDiscoverTool = message.autoDiscoverTool;
     }
     if (message.profileLimits) {
       const entries = globalThis.Object.entries(message.profileLimits) as [string, RateLimitConfig][];
       if (entries.length > 0) {
-        obj.profile_limits = {};
+        obj.profileLimits = {};
         entries.forEach(([k, v]) => {
-          obj.profile_limits[k] = RateLimitConfig.toJSON(v);
+          obj.profileLimits[k] = RateLimitConfig.toJSON(v);
         });
       }
     }
@@ -2057,10 +2055,10 @@ export const CallPolicyRule: MessageFns<CallPolicyRule> = {
   fromJSON(object: any): CallPolicyRule {
     return {
       action: isSet(object.action) ? callPolicy_ActionFromJSON(object.action) : 0,
-      nameRegex: isSet(object.name_regex) ? globalThis.String(object.name_regex) : "",
+      nameRegex: isSet(object.nameRegex) ? globalThis.String(object.nameRegex) : "",
       argumentRegex: isSet(object.argumentRegex) ? globalThis.String(object.argumentRegex) : "",
-      urlRegex: isSet(object.url_regex) ? globalThis.String(object.url_regex) : "",
-      callIdRegex: isSet(object.call_id_regex) ? globalThis.String(object.call_id_regex) : "",
+      urlRegex: isSet(object.urlRegex) ? globalThis.String(object.urlRegex) : "",
+      callIdRegex: isSet(object.callIdRegex) ? globalThis.String(object.callIdRegex) : "",
     };
   },
 
@@ -2070,16 +2068,16 @@ export const CallPolicyRule: MessageFns<CallPolicyRule> = {
       obj.action = callPolicy_ActionToJSON(message.action);
     }
     if (message.nameRegex !== "") {
-      obj.name_regex = message.nameRegex;
+      obj.nameRegex = message.nameRegex;
     }
     if (message.argumentRegex !== "") {
       obj.argumentRegex = message.argumentRegex;
     }
     if (message.urlRegex !== "") {
-      obj.url_regex = message.urlRegex;
+      obj.urlRegex = message.urlRegex;
     }
     if (message.callIdRegex !== "") {
-      obj.call_id_regex = message.callIdRegex;
+      obj.callIdRegex = message.callIdRegex;
     }
     return obj;
   },
@@ -2223,7 +2221,7 @@ export const ExportRule: MessageFns<ExportRule> = {
 
   fromJSON(object: any): ExportRule {
     return {
-      nameRegex: isSet(object.name_regex) ? globalThis.String(object.name_regex) : "",
+      nameRegex: isSet(object.nameRegex) ? globalThis.String(object.nameRegex) : "",
       action: isSet(object.action) ? exportPolicy_ActionFromJSON(object.action) : 0,
     };
   },
@@ -2231,7 +2229,7 @@ export const ExportRule: MessageFns<ExportRule> = {
   toJSON(message: ExportRule): unknown {
     const obj: any = {};
     if (message.nameRegex !== "") {
-      obj.name_regex = message.nameRegex;
+      obj.nameRegex = message.nameRegex;
     }
     if (message.action !== 0) {
       obj.action = exportPolicy_ActionToJSON(message.action);
@@ -2498,15 +2496,15 @@ export const GrpcUpstreamService: MessageFns<GrpcUpstreamService> = {
   fromJSON(object: any): GrpcUpstreamService {
     return {
       address: isSet(object.address) ? globalThis.String(object.address) : "",
-      useReflection: isSet(object.use_reflection) ? globalThis.Boolean(object.use_reflection) : false,
-      tlsConfig: isSet(object.tls_config) ? TLSConfig.fromJSON(object.tls_config) : undefined,
+      useReflection: isSet(object.useReflection) ? globalThis.Boolean(object.useReflection) : false,
+      tlsConfig: isSet(object.tlsConfig) ? TLSConfig.fromJSON(object.tlsConfig) : undefined,
       tools: globalThis.Array.isArray(object?.tools) ? object.tools.map((e: any) => ToolDefinition.fromJSON(e)) : [],
-      healthCheck: isSet(object.health_check) ? GrpcHealthCheck.fromJSON(object.health_check) : undefined,
-      protoDefinitions: globalThis.Array.isArray(object?.proto_definitions)
-        ? object.proto_definitions.map((e: any) => ProtoDefinition.fromJSON(e))
+      healthCheck: isSet(object.healthCheck) ? GrpcHealthCheck.fromJSON(object.healthCheck) : undefined,
+      protoDefinitions: globalThis.Array.isArray(object?.protoDefinitions)
+        ? object.protoDefinitions.map((e: any) => ProtoDefinition.fromJSON(e))
         : [],
-      protoCollection: globalThis.Array.isArray(object?.proto_collection)
-        ? object.proto_collection.map((e: any) => ProtoCollection.fromJSON(e))
+      protoCollection: globalThis.Array.isArray(object?.protoCollection)
+        ? object.protoCollection.map((e: any) => ProtoCollection.fromJSON(e))
         : [],
       resources: globalThis.Array.isArray(object?.resources)
         ? object.resources.map((e: any) => ResourceDefinition.fromJSON(e))
@@ -2532,22 +2530,22 @@ export const GrpcUpstreamService: MessageFns<GrpcUpstreamService> = {
       obj.address = message.address;
     }
     if (message.useReflection !== false) {
-      obj.use_reflection = message.useReflection;
+      obj.useReflection = message.useReflection;
     }
     if (message.tlsConfig !== undefined) {
-      obj.tls_config = TLSConfig.toJSON(message.tlsConfig);
+      obj.tlsConfig = TLSConfig.toJSON(message.tlsConfig);
     }
     if (message.tools?.length) {
       obj.tools = message.tools.map((e) => ToolDefinition.toJSON(e));
     }
     if (message.healthCheck !== undefined) {
-      obj.health_check = GrpcHealthCheck.toJSON(message.healthCheck);
+      obj.healthCheck = GrpcHealthCheck.toJSON(message.healthCheck);
     }
     if (message.protoDefinitions?.length) {
-      obj.proto_definitions = message.protoDefinitions.map((e) => ProtoDefinition.toJSON(e));
+      obj.protoDefinitions = message.protoDefinitions.map((e) => ProtoDefinition.toJSON(e));
     }
     if (message.protoCollection?.length) {
-      obj.proto_collection = message.protoCollection.map((e) => ProtoCollection.toJSON(e));
+      obj.protoCollection = message.protoCollection.map((e) => ProtoCollection.toJSON(e));
     }
     if (message.resources?.length) {
       obj.resources = message.resources.map((e) => ResourceDefinition.toJSON(e));
@@ -2727,18 +2725,18 @@ export const ProtoDefinition: MessageFns<ProtoDefinition> = {
 
   fromJSON(object: any): ProtoDefinition {
     return {
-      protoFile: isSet(object.proto_file) ? ProtoFile.fromJSON(object.proto_file) : undefined,
-      protoDescriptor: isSet(object.proto_descriptor) ? ProtoDescriptor.fromJSON(object.proto_descriptor) : undefined,
+      protoFile: isSet(object.protoFile) ? ProtoFile.fromJSON(object.protoFile) : undefined,
+      protoDescriptor: isSet(object.protoDescriptor) ? ProtoDescriptor.fromJSON(object.protoDescriptor) : undefined,
     };
   },
 
   toJSON(message: ProtoDefinition): unknown {
     const obj: any = {};
     if (message.protoFile !== undefined) {
-      obj.proto_file = ProtoFile.toJSON(message.protoFile);
+      obj.protoFile = ProtoFile.toJSON(message.protoFile);
     }
     if (message.protoDescriptor !== undefined) {
-      obj.proto_descriptor = ProtoDescriptor.toJSON(message.protoDescriptor);
+      obj.protoDescriptor = ProtoDescriptor.toJSON(message.protoDescriptor);
     }
     return obj;
   },
@@ -2818,22 +2816,22 @@ export const ProtoFile: MessageFns<ProtoFile> = {
 
   fromJSON(object: any): ProtoFile {
     return {
-      fileName: isSet(object.file_name) ? globalThis.String(object.file_name) : "",
-      fileContent: isSet(object.file_content) ? globalThis.String(object.file_content) : undefined,
-      filePath: isSet(object.file_path) ? globalThis.String(object.file_path) : undefined,
+      fileName: isSet(object.fileName) ? globalThis.String(object.fileName) : "",
+      fileContent: isSet(object.fileContent) ? globalThis.String(object.fileContent) : undefined,
+      filePath: isSet(object.filePath) ? globalThis.String(object.filePath) : undefined,
     };
   },
 
   toJSON(message: ProtoFile): unknown {
     const obj: any = {};
     if (message.fileName !== "") {
-      obj.file_name = message.fileName;
+      obj.fileName = message.fileName;
     }
     if (message.fileContent !== undefined) {
-      obj.file_content = message.fileContent;
+      obj.fileContent = message.fileContent;
     }
     if (message.filePath !== undefined) {
-      obj.file_path = message.filePath;
+      obj.filePath = message.filePath;
     }
     return obj;
   },
@@ -2899,18 +2897,18 @@ export const ProtoDescriptor: MessageFns<ProtoDescriptor> = {
 
   fromJSON(object: any): ProtoDescriptor {
     return {
-      fileName: isSet(object.file_name) ? globalThis.String(object.file_name) : "",
-      filePath: isSet(object.file_path) ? globalThis.String(object.file_path) : undefined,
+      fileName: isSet(object.fileName) ? globalThis.String(object.fileName) : "",
+      filePath: isSet(object.filePath) ? globalThis.String(object.filePath) : undefined,
     };
   },
 
   toJSON(message: ProtoDescriptor): unknown {
     const obj: any = {};
     if (message.fileName !== "") {
-      obj.file_name = message.fileName;
+      obj.fileName = message.fileName;
     }
     if (message.filePath !== undefined) {
-      obj.file_path = message.filePath;
+      obj.filePath = message.filePath;
     }
     return obj;
   },
@@ -2986,22 +2984,22 @@ export const ProtoCollection: MessageFns<ProtoCollection> = {
 
   fromJSON(object: any): ProtoCollection {
     return {
-      rootPath: isSet(object.root_path) ? globalThis.String(object.root_path) : "",
-      pathMatchRegex: isSet(object.path_match_regex) ? globalThis.String(object.path_match_regex) : "",
-      isRecursive: isSet(object.is_recursive) ? globalThis.Boolean(object.is_recursive) : false,
+      rootPath: isSet(object.rootPath) ? globalThis.String(object.rootPath) : "",
+      pathMatchRegex: isSet(object.pathMatchRegex) ? globalThis.String(object.pathMatchRegex) : "",
+      isRecursive: isSet(object.isRecursive) ? globalThis.Boolean(object.isRecursive) : false,
     };
   },
 
   toJSON(message: ProtoCollection): unknown {
     const obj: any = {};
     if (message.rootPath !== "") {
-      obj.root_path = message.rootPath;
+      obj.rootPath = message.rootPath;
     }
     if (message.pathMatchRegex !== "") {
-      obj.path_match_regex = message.pathMatchRegex;
+      obj.pathMatchRegex = message.pathMatchRegex;
     }
     if (message.isRecursive !== false) {
-      obj.is_recursive = message.isRecursive;
+      obj.isRecursive = message.isRecursive;
     }
     return obj;
   },
@@ -3144,8 +3142,8 @@ export const HttpUpstreamService: MessageFns<HttpUpstreamService> = {
           {},
         )
         : {},
-      healthCheck: isSet(object.health_check) ? HttpHealthCheck.fromJSON(object.health_check) : undefined,
-      tlsConfig: isSet(object.tls_config) ? TLSConfig.fromJSON(object.tls_config) : undefined,
+      healthCheck: isSet(object.healthCheck) ? HttpHealthCheck.fromJSON(object.healthCheck) : undefined,
+      tlsConfig: isSet(object.tlsConfig) ? TLSConfig.fromJSON(object.tlsConfig) : undefined,
       resources: globalThis.Array.isArray(object?.resources)
         ? object.resources.map((e: any) => ResourceDefinition.fromJSON(e))
         : [],
@@ -3173,10 +3171,10 @@ export const HttpUpstreamService: MessageFns<HttpUpstreamService> = {
       }
     }
     if (message.healthCheck !== undefined) {
-      obj.health_check = HttpHealthCheck.toJSON(message.healthCheck);
+      obj.healthCheck = HttpHealthCheck.toJSON(message.healthCheck);
     }
     if (message.tlsConfig !== undefined) {
-      obj.tls_config = TLSConfig.toJSON(message.tlsConfig);
+      obj.tlsConfig = TLSConfig.toJSON(message.tlsConfig);
     }
     if (message.resources?.length) {
       obj.resources = message.resources.map((e) => ResourceDefinition.toJSON(e));
@@ -3412,7 +3410,7 @@ export const WebsocketUpstreamService: MessageFns<WebsocketUpstreamService> = {
     return {
       address: isSet(object.address) ? globalThis.String(object.address) : "",
       tools: globalThis.Array.isArray(object?.tools) ? object.tools.map((e: any) => ToolDefinition.fromJSON(e)) : [],
-      tlsConfig: isSet(object.tls_config) ? TLSConfig.fromJSON(object.tls_config) : undefined,
+      tlsConfig: isSet(object.tlsConfig) ? TLSConfig.fromJSON(object.tlsConfig) : undefined,
       resources: globalThis.Array.isArray(object?.resources)
         ? object.resources.map((e: any) => ResourceDefinition.fromJSON(e))
         : [],
@@ -3428,7 +3426,7 @@ export const WebsocketUpstreamService: MessageFns<WebsocketUpstreamService> = {
       prompts: globalThis.Array.isArray(object?.prompts)
         ? object.prompts.map((e: any) => PromptDefinition.fromJSON(e))
         : [],
-      healthCheck: isSet(object.health_check) ? WebsocketHealthCheck.fromJSON(object.health_check) : undefined,
+      healthCheck: isSet(object.healthCheck) ? WebsocketHealthCheck.fromJSON(object.healthCheck) : undefined,
     };
   },
 
@@ -3441,7 +3439,7 @@ export const WebsocketUpstreamService: MessageFns<WebsocketUpstreamService> = {
       obj.tools = message.tools.map((e) => ToolDefinition.toJSON(e));
     }
     if (message.tlsConfig !== undefined) {
-      obj.tls_config = TLSConfig.toJSON(message.tlsConfig);
+      obj.tlsConfig = TLSConfig.toJSON(message.tlsConfig);
     }
     if (message.resources?.length) {
       obj.resources = message.resources.map((e) => ResourceDefinition.toJSON(e));
@@ -3459,7 +3457,7 @@ export const WebsocketUpstreamService: MessageFns<WebsocketUpstreamService> = {
       obj.prompts = message.prompts.map((e) => PromptDefinition.toJSON(e));
     }
     if (message.healthCheck !== undefined) {
-      obj.health_check = WebsocketHealthCheck.toJSON(message.healthCheck);
+      obj.healthCheck = WebsocketHealthCheck.toJSON(message.healthCheck);
     }
     return obj;
   },
@@ -3691,7 +3689,7 @@ export const WebrtcUpstreamService: MessageFns<WebrtcUpstreamService> = {
     return {
       address: isSet(object.address) ? globalThis.String(object.address) : "",
       tools: globalThis.Array.isArray(object?.tools) ? object.tools.map((e: any) => ToolDefinition.fromJSON(e)) : [],
-      tlsConfig: isSet(object.tls_config) ? TLSConfig.fromJSON(object.tls_config) : undefined,
+      tlsConfig: isSet(object.tlsConfig) ? TLSConfig.fromJSON(object.tlsConfig) : undefined,
       resources: globalThis.Array.isArray(object?.resources)
         ? object.resources.map((e: any) => ResourceDefinition.fromJSON(e))
         : [],
@@ -3707,7 +3705,7 @@ export const WebrtcUpstreamService: MessageFns<WebrtcUpstreamService> = {
       prompts: globalThis.Array.isArray(object?.prompts)
         ? object.prompts.map((e: any) => PromptDefinition.fromJSON(e))
         : [],
-      healthCheck: isSet(object.health_check) ? WebRTCHealthCheck.fromJSON(object.health_check) : undefined,
+      healthCheck: isSet(object.healthCheck) ? WebRTCHealthCheck.fromJSON(object.healthCheck) : undefined,
     };
   },
 
@@ -3720,7 +3718,7 @@ export const WebrtcUpstreamService: MessageFns<WebrtcUpstreamService> = {
       obj.tools = message.tools.map((e) => ToolDefinition.toJSON(e));
     }
     if (message.tlsConfig !== undefined) {
-      obj.tls_config = TLSConfig.toJSON(message.tlsConfig);
+      obj.tlsConfig = TLSConfig.toJSON(message.tlsConfig);
     }
     if (message.resources?.length) {
       obj.resources = message.resources.map((e) => ResourceDefinition.toJSON(e));
@@ -3738,7 +3736,7 @@ export const WebrtcUpstreamService: MessageFns<WebrtcUpstreamService> = {
       obj.prompts = message.prompts.map((e) => PromptDefinition.toJSON(e));
     }
     if (message.healthCheck !== undefined) {
-      obj.health_check = WebRTCHealthCheck.toJSON(message.healthCheck);
+      obj.healthCheck = WebRTCHealthCheck.toJSON(message.healthCheck);
     }
     return obj;
   },
@@ -3993,10 +3991,10 @@ export const OpenapiUpstreamService: MessageFns<OpenapiUpstreamService> = {
   fromJSON(object: any): OpenapiUpstreamService {
     return {
       address: isSet(object.address) ? globalThis.String(object.address) : "",
-      specContent: isSet(object.spec_content) ? globalThis.String(object.spec_content) : undefined,
-      specUrl: isSet(object.spec_url) ? globalThis.String(object.spec_url) : undefined,
-      healthCheck: isSet(object.health_check) ? HttpHealthCheck.fromJSON(object.health_check) : undefined,
-      tlsConfig: isSet(object.tls_config) ? TLSConfig.fromJSON(object.tls_config) : undefined,
+      specContent: isSet(object.specContent) ? globalThis.String(object.specContent) : undefined,
+      specUrl: isSet(object.specUrl) ? globalThis.String(object.specUrl) : undefined,
+      healthCheck: isSet(object.healthCheck) ? HttpHealthCheck.fromJSON(object.healthCheck) : undefined,
+      tlsConfig: isSet(object.tlsConfig) ? TLSConfig.fromJSON(object.tlsConfig) : undefined,
       tools: globalThis.Array.isArray(object?.tools) ? object.tools.map((e: any) => ToolDefinition.fromJSON(e)) : [],
       resources: globalThis.Array.isArray(object?.resources)
         ? object.resources.map((e: any) => ResourceDefinition.fromJSON(e))
@@ -4022,16 +4020,16 @@ export const OpenapiUpstreamService: MessageFns<OpenapiUpstreamService> = {
       obj.address = message.address;
     }
     if (message.specContent !== undefined) {
-      obj.spec_content = message.specContent;
+      obj.specContent = message.specContent;
     }
     if (message.specUrl !== undefined) {
-      obj.spec_url = message.specUrl;
+      obj.specUrl = message.specUrl;
     }
     if (message.healthCheck !== undefined) {
-      obj.health_check = HttpHealthCheck.toJSON(message.healthCheck);
+      obj.healthCheck = HttpHealthCheck.toJSON(message.healthCheck);
     }
     if (message.tlsConfig !== undefined) {
-      obj.tls_config = TLSConfig.toJSON(message.tlsConfig);
+      obj.tlsConfig = TLSConfig.toJSON(message.tlsConfig);
     }
     if (message.tools?.length) {
       obj.tools = message.tools.map((e) => ToolDefinition.toJSON(e));
@@ -4357,12 +4355,12 @@ export const CommandLineUpstreamService: MessageFns<CommandLineUpstreamService> 
   fromJSON(object: any): CommandLineUpstreamService {
     return {
       command: isSet(object.command) ? globalThis.String(object.command) : "",
-      workingDirectory: isSet(object.working_directory) ? globalThis.String(object.working_directory) : "",
+      workingDirectory: isSet(object.workingDirectory) ? globalThis.String(object.workingDirectory) : "",
       tools: globalThis.Array.isArray(object?.tools) ? object.tools.map((e: any) => ToolDefinition.fromJSON(e)) : [],
-      healthCheck: isSet(object.health_check) ? CommandLineHealthCheck.fromJSON(object.health_check) : undefined,
+      healthCheck: isSet(object.healthCheck) ? CommandLineHealthCheck.fromJSON(object.healthCheck) : undefined,
       cache: isSet(object.cache) ? CacheConfig.fromJSON(object.cache) : undefined,
-      containerEnvironment: isSet(object.container_environment)
-        ? ContainerEnvironment.fromJSON(object.container_environment)
+      containerEnvironment: isSet(object.containerEnvironment)
+        ? ContainerEnvironment.fromJSON(object.containerEnvironment)
         : undefined,
       timeout: isSet(object.timeout) ? Duration.fromJSON(object.timeout) : undefined,
       resources: globalThis.Array.isArray(object?.resources)
@@ -4380,8 +4378,8 @@ export const CommandLineUpstreamService: MessageFns<CommandLineUpstreamService> 
       prompts: globalThis.Array.isArray(object?.prompts)
         ? object.prompts.map((e: any) => PromptDefinition.fromJSON(e))
         : [],
-      communicationProtocol: isSet(object.communication_protocol)
-        ? commandLineUpstreamService_CommunicationProtocolFromJSON(object.communication_protocol)
+      communicationProtocol: isSet(object.communicationProtocol)
+        ? commandLineUpstreamService_CommunicationProtocolFromJSON(object.communicationProtocol)
         : 0,
       local: isSet(object.local) ? globalThis.Boolean(object.local) : false,
       env: isObject(object.env)
@@ -4402,19 +4400,19 @@ export const CommandLineUpstreamService: MessageFns<CommandLineUpstreamService> 
       obj.command = message.command;
     }
     if (message.workingDirectory !== "") {
-      obj.working_directory = message.workingDirectory;
+      obj.workingDirectory = message.workingDirectory;
     }
     if (message.tools?.length) {
       obj.tools = message.tools.map((e) => ToolDefinition.toJSON(e));
     }
     if (message.healthCheck !== undefined) {
-      obj.health_check = CommandLineHealthCheck.toJSON(message.healthCheck);
+      obj.healthCheck = CommandLineHealthCheck.toJSON(message.healthCheck);
     }
     if (message.cache !== undefined) {
       obj.cache = CacheConfig.toJSON(message.cache);
     }
     if (message.containerEnvironment !== undefined) {
-      obj.container_environment = ContainerEnvironment.toJSON(message.containerEnvironment);
+      obj.containerEnvironment = ContainerEnvironment.toJSON(message.containerEnvironment);
     }
     if (message.timeout !== undefined) {
       obj.timeout = Duration.toJSON(message.timeout);
@@ -4435,9 +4433,7 @@ export const CommandLineUpstreamService: MessageFns<CommandLineUpstreamService> 
       obj.prompts = message.prompts.map((e) => PromptDefinition.toJSON(e));
     }
     if (message.communicationProtocol !== 0) {
-      obj.communication_protocol = commandLineUpstreamService_CommunicationProtocolToJSON(
-        message.communicationProtocol,
-      );
+      obj.communicationProtocol = commandLineUpstreamService_CommunicationProtocolToJSON(message.communicationProtocol);
     }
     if (message.local !== false) {
       obj.local = message.local;
@@ -5219,8 +5215,8 @@ export const FilesystemUpstreamService: MessageFns<FilesystemUpstreamService> = 
 
   fromJSON(object: any): FilesystemUpstreamService {
     return {
-      rootPaths: isObject(object.root_paths)
-        ? (globalThis.Object.entries(object.root_paths) as [string, any][]).reduce(
+      rootPaths: isObject(object.rootPaths)
+        ? (globalThis.Object.entries(object.rootPaths) as [string, any][]).reduce(
           (acc: { [key: string]: string }, [key, value]: [string, any]) => {
             acc[key] = globalThis.String(value);
             return acc;
@@ -5228,7 +5224,7 @@ export const FilesystemUpstreamService: MessageFns<FilesystemUpstreamService> = 
           {},
         )
         : {},
-      readOnly: isSet(object.read_only) ? globalThis.Boolean(object.read_only) : false,
+      readOnly: isSet(object.readOnly) ? globalThis.Boolean(object.readOnly) : false,
       tools: globalThis.Array.isArray(object?.tools) ? object.tools.map((e: any) => ToolDefinition.fromJSON(e)) : [],
       resources: globalThis.Array.isArray(object?.resources)
         ? object.resources.map((e: any) => ResourceDefinition.fromJSON(e))
@@ -5251,14 +5247,14 @@ export const FilesystemUpstreamService: MessageFns<FilesystemUpstreamService> = 
     if (message.rootPaths) {
       const entries = globalThis.Object.entries(message.rootPaths) as [string, string][];
       if (entries.length > 0) {
-        obj.root_paths = {};
+        obj.rootPaths = {};
         entries.forEach(([k, v]) => {
-          obj.root_paths[k] = v;
+          obj.rootPaths[k] = v;
         });
       }
     }
     if (message.readOnly !== false) {
-      obj.read_only = message.readOnly;
+      obj.readOnly = message.readOnly;
     }
     if (message.tools?.length) {
       obj.tools = message.tools.map((e) => ToolDefinition.toJSON(e));
@@ -6108,10 +6104,10 @@ export const PineconeVectorDB: MessageFns<PineconeVectorDB> = {
 
   fromJSON(object: any): PineconeVectorDB {
     return {
-      apiKey: isSet(object.api_key) ? globalThis.String(object.api_key) : "",
+      apiKey: isSet(object.apiKey) ? globalThis.String(object.apiKey) : "",
       environment: isSet(object.environment) ? globalThis.String(object.environment) : "",
-      indexName: isSet(object.index_name) ? globalThis.String(object.index_name) : "",
-      projectId: isSet(object.project_id) ? globalThis.String(object.project_id) : "",
+      indexName: isSet(object.indexName) ? globalThis.String(object.indexName) : "",
+      projectId: isSet(object.projectId) ? globalThis.String(object.projectId) : "",
       host: isSet(object.host) ? globalThis.String(object.host) : "",
     };
   },
@@ -6119,16 +6115,16 @@ export const PineconeVectorDB: MessageFns<PineconeVectorDB> = {
   toJSON(message: PineconeVectorDB): unknown {
     const obj: any = {};
     if (message.apiKey !== "") {
-      obj.api_key = message.apiKey;
+      obj.apiKey = message.apiKey;
     }
     if (message.environment !== "") {
       obj.environment = message.environment;
     }
     if (message.indexName !== "") {
-      obj.index_name = message.indexName;
+      obj.indexName = message.indexName;
     }
     if (message.projectId !== "") {
-      obj.project_id = message.projectId;
+      obj.projectId = message.projectId;
     }
     if (message.host !== "") {
       obj.host = message.host;
@@ -6277,16 +6273,14 @@ export const McpUpstreamService: MessageFns<McpUpstreamService> = {
 
   fromJSON(object: any): McpUpstreamService {
     return {
-      httpConnection: isSet(object.http_connection)
-        ? McpStreamableHttpConnection.fromJSON(object.http_connection)
+      httpConnection: isSet(object.httpConnection)
+        ? McpStreamableHttpConnection.fromJSON(object.httpConnection)
         : undefined,
-      stdioConnection: isSet(object.stdio_connection)
-        ? McpStdioConnection.fromJSON(object.stdio_connection)
+      stdioConnection: isSet(object.stdioConnection) ? McpStdioConnection.fromJSON(object.stdioConnection) : undefined,
+      bundleConnection: isSet(object.bundleConnection)
+        ? McpBundleConnection.fromJSON(object.bundleConnection)
         : undefined,
-      bundleConnection: isSet(object.bundle_connection)
-        ? McpBundleConnection.fromJSON(object.bundle_connection)
-        : undefined,
-      toolAutoDiscovery: isSet(object.tool_auto_discovery) ? globalThis.Boolean(object.tool_auto_discovery) : false,
+      toolAutoDiscovery: isSet(object.toolAutoDiscovery) ? globalThis.Boolean(object.toolAutoDiscovery) : false,
       tools: globalThis.Array.isArray(object?.tools) ? object.tools.map((e: any) => ToolDefinition.fromJSON(e)) : [],
       resources: globalThis.Array.isArray(object?.resources)
         ? object.resources.map((e: any) => ResourceDefinition.fromJSON(e))
@@ -6309,16 +6303,16 @@ export const McpUpstreamService: MessageFns<McpUpstreamService> = {
   toJSON(message: McpUpstreamService): unknown {
     const obj: any = {};
     if (message.httpConnection !== undefined) {
-      obj.http_connection = McpStreamableHttpConnection.toJSON(message.httpConnection);
+      obj.httpConnection = McpStreamableHttpConnection.toJSON(message.httpConnection);
     }
     if (message.stdioConnection !== undefined) {
-      obj.stdio_connection = McpStdioConnection.toJSON(message.stdioConnection);
+      obj.stdioConnection = McpStdioConnection.toJSON(message.stdioConnection);
     }
     if (message.bundleConnection !== undefined) {
-      obj.bundle_connection = McpBundleConnection.toJSON(message.bundleConnection);
+      obj.bundleConnection = McpBundleConnection.toJSON(message.bundleConnection);
     }
     if (message.toolAutoDiscovery !== false) {
-      obj.tool_auto_discovery = message.toolAutoDiscovery;
+      obj.toolAutoDiscovery = message.toolAutoDiscovery;
     }
     if (message.tools?.length) {
       obj.tools = message.tools.map((e) => ToolDefinition.toJSON(e));
@@ -6550,10 +6544,10 @@ export const McpStdioConnection: MessageFns<McpStdioConnection> = {
     return {
       command: isSet(object.command) ? globalThis.String(object.command) : "",
       args: globalThis.Array.isArray(object?.args) ? object.args.map((e: any) => globalThis.String(e)) : [],
-      workingDirectory: isSet(object.working_directory) ? globalThis.String(object.working_directory) : "",
-      containerImage: isSet(object.container_image) ? globalThis.String(object.container_image) : "",
-      setupCommands: globalThis.Array.isArray(object?.setup_commands)
-        ? object.setup_commands.map((e: any) => globalThis.String(e))
+      workingDirectory: isSet(object.workingDirectory) ? globalThis.String(object.workingDirectory) : "",
+      containerImage: isSet(object.containerImage) ? globalThis.String(object.containerImage) : "",
+      setupCommands: globalThis.Array.isArray(object?.setupCommands)
+        ? object.setupCommands.map((e: any) => globalThis.String(e))
         : [],
       env: isObject(object.env)
         ? (globalThis.Object.entries(object.env) as [string, any][]).reduce(
@@ -6576,13 +6570,13 @@ export const McpStdioConnection: MessageFns<McpStdioConnection> = {
       obj.args = message.args;
     }
     if (message.workingDirectory !== "") {
-      obj.working_directory = message.workingDirectory;
+      obj.workingDirectory = message.workingDirectory;
     }
     if (message.containerImage !== "") {
-      obj.container_image = message.containerImage;
+      obj.containerImage = message.containerImage;
     }
     if (message.setupCommands?.length) {
-      obj.setup_commands = message.setupCommands;
+      obj.setupCommands = message.setupCommands;
     }
     if (message.env) {
       const entries = globalThis.Object.entries(message.env) as [string, SecretValue][];
@@ -6757,22 +6751,22 @@ export const McpStreamableHttpConnection: MessageFns<McpStreamableHttpConnection
 
   fromJSON(object: any): McpStreamableHttpConnection {
     return {
-      httpAddress: isSet(object.http_address) ? globalThis.String(object.http_address) : "",
-      tlsConfig: isSet(object.tls_config) ? TLSConfig.fromJSON(object.tls_config) : undefined,
-      allowHttpRedirect: isSet(object.allow_http_redirect) ? globalThis.Boolean(object.allow_http_redirect) : false,
+      httpAddress: isSet(object.httpAddress) ? globalThis.String(object.httpAddress) : "",
+      tlsConfig: isSet(object.tlsConfig) ? TLSConfig.fromJSON(object.tlsConfig) : undefined,
+      allowHttpRedirect: isSet(object.allowHttpRedirect) ? globalThis.Boolean(object.allowHttpRedirect) : false,
     };
   },
 
   toJSON(message: McpStreamableHttpConnection): unknown {
     const obj: any = {};
     if (message.httpAddress !== "") {
-      obj.http_address = message.httpAddress;
+      obj.httpAddress = message.httpAddress;
     }
     if (message.tlsConfig !== undefined) {
-      obj.tls_config = TLSConfig.toJSON(message.tlsConfig);
+      obj.tlsConfig = TLSConfig.toJSON(message.tlsConfig);
     }
     if (message.allowHttpRedirect !== false) {
-      obj.allow_http_redirect = message.allowHttpRedirect;
+      obj.allowHttpRedirect = message.allowHttpRedirect;
     }
     return obj;
   },
@@ -6854,8 +6848,8 @@ export const McpBundleConnection: MessageFns<McpBundleConnection> = {
 
   fromJSON(object: any): McpBundleConnection {
     return {
-      bundlePath: isSet(object.bundle_path) ? globalThis.String(object.bundle_path) : "",
-      containerImage: isSet(object.container_image) ? globalThis.String(object.container_image) : "",
+      bundlePath: isSet(object.bundlePath) ? globalThis.String(object.bundlePath) : "",
+      containerImage: isSet(object.containerImage) ? globalThis.String(object.containerImage) : "",
       env: isObject(object.env)
         ? (globalThis.Object.entries(object.env) as [string, any][]).reduce(
           (acc: { [key: string]: SecretValue }, [key, value]: [string, any]) => {
@@ -6871,10 +6865,10 @@ export const McpBundleConnection: MessageFns<McpBundleConnection> = {
   toJSON(message: McpBundleConnection): unknown {
     const obj: any = {};
     if (message.bundlePath !== "") {
-      obj.bundle_path = message.bundlePath;
+      obj.bundlePath = message.bundlePath;
     }
     if (message.containerImage !== "") {
-      obj.container_image = message.containerImage;
+      obj.containerImage = message.containerImage;
     }
     if (message.env) {
       const entries = globalThis.Object.entries(message.env) as [string, SecretValue][];
@@ -7046,22 +7040,22 @@ export const ConnectionPoolConfig: MessageFns<ConnectionPoolConfig> = {
 
   fromJSON(object: any): ConnectionPoolConfig {
     return {
-      maxConnections: isSet(object.max_connections) ? globalThis.Number(object.max_connections) : 0,
-      maxIdleConnections: isSet(object.max_idle_connections) ? globalThis.Number(object.max_idle_connections) : 0,
-      idleTimeout: isSet(object.idle_timeout) ? Duration.fromJSON(object.idle_timeout) : undefined,
+      maxConnections: isSet(object.maxConnections) ? globalThis.Number(object.maxConnections) : 0,
+      maxIdleConnections: isSet(object.maxIdleConnections) ? globalThis.Number(object.maxIdleConnections) : 0,
+      idleTimeout: isSet(object.idleTimeout) ? Duration.fromJSON(object.idleTimeout) : undefined,
     };
   },
 
   toJSON(message: ConnectionPoolConfig): unknown {
     const obj: any = {};
     if (message.maxConnections !== 0) {
-      obj.max_connections = Math.round(message.maxConnections);
+      obj.maxConnections = Math.round(message.maxConnections);
     }
     if (message.maxIdleConnections !== 0) {
-      obj.max_idle_connections = Math.round(message.maxIdleConnections);
+      obj.maxIdleConnections = Math.round(message.maxIdleConnections);
     }
     if (message.idleTimeout !== undefined) {
-      obj.idle_timeout = Duration.toJSON(message.idleTimeout);
+      obj.idleTimeout = Duration.toJSON(message.idleTimeout);
     }
     return obj;
   },
@@ -7525,15 +7519,15 @@ export const RateLimitConfig: MessageFns<RateLimitConfig> = {
 
   fromJSON(object: any): RateLimitConfig {
     return {
-      isEnabled: isSet(object.is_enabled) ? globalThis.Boolean(object.is_enabled) : false,
-      requestsPerSecond: isSet(object.requests_per_second) ? globalThis.Number(object.requests_per_second) : 0,
+      isEnabled: isSet(object.isEnabled) ? globalThis.Boolean(object.isEnabled) : false,
+      requestsPerSecond: isSet(object.requestsPerSecond) ? globalThis.Number(object.requestsPerSecond) : 0,
       burst: isSet(object.burst) ? Long.fromValue(object.burst) : Long.ZERO,
       storage: isSet(object.storage) ? rateLimitConfig_StorageFromJSON(object.storage) : 0,
       redis: isSet(object.redis) ? RedisBus.fromJSON(object.redis) : undefined,
-      keyBy: isSet(object.key_by) ? rateLimitConfig_KeyByFromJSON(object.key_by) : 0,
-      costMetric: isSet(object.cost_metric) ? rateLimitConfig_CostMetricFromJSON(object.cost_metric) : 0,
-      toolLimits: isObject(object.tool_limits)
-        ? (globalThis.Object.entries(object.tool_limits) as [string, any][]).reduce(
+      keyBy: isSet(object.keyBy) ? rateLimitConfig_KeyByFromJSON(object.keyBy) : 0,
+      costMetric: isSet(object.costMetric) ? rateLimitConfig_CostMetricFromJSON(object.costMetric) : 0,
+      toolLimits: isObject(object.toolLimits)
+        ? (globalThis.Object.entries(object.toolLimits) as [string, any][]).reduce(
           (acc: { [key: string]: RateLimitConfig }, [key, value]: [string, any]) => {
             acc[key] = RateLimitConfig.fromJSON(value);
             return acc;
@@ -7547,10 +7541,10 @@ export const RateLimitConfig: MessageFns<RateLimitConfig> = {
   toJSON(message: RateLimitConfig): unknown {
     const obj: any = {};
     if (message.isEnabled !== false) {
-      obj.is_enabled = message.isEnabled;
+      obj.isEnabled = message.isEnabled;
     }
     if (message.requestsPerSecond !== 0) {
-      obj.requests_per_second = message.requestsPerSecond;
+      obj.requestsPerSecond = message.requestsPerSecond;
     }
     if (!message.burst.equals(Long.ZERO)) {
       obj.burst = (message.burst || Long.ZERO).toString();
@@ -7562,17 +7556,17 @@ export const RateLimitConfig: MessageFns<RateLimitConfig> = {
       obj.redis = RedisBus.toJSON(message.redis);
     }
     if (message.keyBy !== 0) {
-      obj.key_by = rateLimitConfig_KeyByToJSON(message.keyBy);
+      obj.keyBy = rateLimitConfig_KeyByToJSON(message.keyBy);
     }
     if (message.costMetric !== 0) {
-      obj.cost_metric = rateLimitConfig_CostMetricToJSON(message.costMetric);
+      obj.costMetric = rateLimitConfig_CostMetricToJSON(message.costMetric);
     }
     if (message.toolLimits) {
       const entries = globalThis.Object.entries(message.toolLimits) as [string, RateLimitConfig][];
       if (entries.length > 0) {
-        obj.tool_limits = {};
+        obj.toolLimits = {};
         entries.forEach(([k, v]) => {
-          obj.tool_limits[k] = RateLimitConfig.toJSON(v);
+          obj.toolLimits[k] = RateLimitConfig.toJSON(v);
         });
       }
     }
@@ -7746,8 +7740,8 @@ export const ResilienceConfig: MessageFns<ResilienceConfig> = {
 
   fromJSON(object: any): ResilienceConfig {
     return {
-      circuitBreaker: isSet(object.circuit_breaker) ? CircuitBreakerConfig.fromJSON(object.circuit_breaker) : undefined,
-      retryPolicy: isSet(object.retry_policy) ? RetryConfig.fromJSON(object.retry_policy) : undefined,
+      circuitBreaker: isSet(object.circuitBreaker) ? CircuitBreakerConfig.fromJSON(object.circuitBreaker) : undefined,
+      retryPolicy: isSet(object.retryPolicy) ? RetryConfig.fromJSON(object.retryPolicy) : undefined,
       timeout: isSet(object.timeout) ? Duration.fromJSON(object.timeout) : undefined,
     };
   },
@@ -7755,10 +7749,10 @@ export const ResilienceConfig: MessageFns<ResilienceConfig> = {
   toJSON(message: ResilienceConfig): unknown {
     const obj: any = {};
     if (message.circuitBreaker !== undefined) {
-      obj.circuit_breaker = CircuitBreakerConfig.toJSON(message.circuitBreaker);
+      obj.circuitBreaker = CircuitBreakerConfig.toJSON(message.circuitBreaker);
     }
     if (message.retryPolicy !== undefined) {
-      obj.retry_policy = RetryConfig.toJSON(message.retryPolicy);
+      obj.retryPolicy = RetryConfig.toJSON(message.retryPolicy);
     }
     if (message.timeout !== undefined) {
       obj.timeout = Duration.toJSON(message.timeout);
@@ -7855,26 +7849,26 @@ export const CircuitBreakerConfig: MessageFns<CircuitBreakerConfig> = {
 
   fromJSON(object: any): CircuitBreakerConfig {
     return {
-      failureRateThreshold: isSet(object.failure_rate_threshold) ? globalThis.Number(object.failure_rate_threshold) : 0,
-      consecutiveFailures: isSet(object.consecutive_failures) ? globalThis.Number(object.consecutive_failures) : 0,
-      openDuration: isSet(object.open_duration) ? Duration.fromJSON(object.open_duration) : undefined,
-      halfOpenRequests: isSet(object.half_open_requests) ? globalThis.Number(object.half_open_requests) : 0,
+      failureRateThreshold: isSet(object.failureRateThreshold) ? globalThis.Number(object.failureRateThreshold) : 0,
+      consecutiveFailures: isSet(object.consecutiveFailures) ? globalThis.Number(object.consecutiveFailures) : 0,
+      openDuration: isSet(object.openDuration) ? Duration.fromJSON(object.openDuration) : undefined,
+      halfOpenRequests: isSet(object.halfOpenRequests) ? globalThis.Number(object.halfOpenRequests) : 0,
     };
   },
 
   toJSON(message: CircuitBreakerConfig): unknown {
     const obj: any = {};
     if (message.failureRateThreshold !== 0) {
-      obj.failure_rate_threshold = message.failureRateThreshold;
+      obj.failureRateThreshold = message.failureRateThreshold;
     }
     if (message.consecutiveFailures !== 0) {
-      obj.consecutive_failures = Math.round(message.consecutiveFailures);
+      obj.consecutiveFailures = Math.round(message.consecutiveFailures);
     }
     if (message.openDuration !== undefined) {
-      obj.open_duration = Duration.toJSON(message.openDuration);
+      obj.openDuration = Duration.toJSON(message.openDuration);
     }
     if (message.halfOpenRequests !== 0) {
-      obj.half_open_requests = Math.round(message.halfOpenRequests);
+      obj.halfOpenRequests = Math.round(message.halfOpenRequests);
     }
     return obj;
   },
@@ -7965,26 +7959,26 @@ export const RetryConfig: MessageFns<RetryConfig> = {
 
   fromJSON(object: any): RetryConfig {
     return {
-      numberOfRetries: isSet(object.number_of_retries) ? globalThis.Number(object.number_of_retries) : 0,
-      baseBackoff: isSet(object.base_backoff) ? Duration.fromJSON(object.base_backoff) : undefined,
-      maxBackoff: isSet(object.max_backoff) ? Duration.fromJSON(object.max_backoff) : undefined,
-      maxElapsedTime: isSet(object.max_elapsed_time) ? Duration.fromJSON(object.max_elapsed_time) : undefined,
+      numberOfRetries: isSet(object.numberOfRetries) ? globalThis.Number(object.numberOfRetries) : 0,
+      baseBackoff: isSet(object.baseBackoff) ? Duration.fromJSON(object.baseBackoff) : undefined,
+      maxBackoff: isSet(object.maxBackoff) ? Duration.fromJSON(object.maxBackoff) : undefined,
+      maxElapsedTime: isSet(object.maxElapsedTime) ? Duration.fromJSON(object.maxElapsedTime) : undefined,
     };
   },
 
   toJSON(message: RetryConfig): unknown {
     const obj: any = {};
     if (message.numberOfRetries !== 0) {
-      obj.number_of_retries = Math.round(message.numberOfRetries);
+      obj.numberOfRetries = Math.round(message.numberOfRetries);
     }
     if (message.baseBackoff !== undefined) {
-      obj.base_backoff = Duration.toJSON(message.baseBackoff);
+      obj.baseBackoff = Duration.toJSON(message.baseBackoff);
     }
     if (message.maxBackoff !== undefined) {
-      obj.max_backoff = Duration.toJSON(message.maxBackoff);
+      obj.maxBackoff = Duration.toJSON(message.maxBackoff);
     }
     if (message.maxElapsedTime !== undefined) {
-      obj.max_elapsed_time = Duration.toJSON(message.maxElapsedTime);
+      obj.maxElapsedTime = Duration.toJSON(message.maxElapsedTime);
     }
     return obj;
   },
@@ -8090,30 +8084,30 @@ export const TLSConfig: MessageFns<TLSConfig> = {
 
   fromJSON(object: any): TLSConfig {
     return {
-      serverName: isSet(object.server_name) ? globalThis.String(object.server_name) : "",
-      caCertPath: isSet(object.ca_cert_path) ? globalThis.String(object.ca_cert_path) : "",
-      clientCertPath: isSet(object.client_cert_path) ? globalThis.String(object.client_cert_path) : "",
-      clientKeyPath: isSet(object.client_key_path) ? globalThis.String(object.client_key_path) : "",
-      insecureSkipVerify: isSet(object.insecure_skip_verify) ? globalThis.Boolean(object.insecure_skip_verify) : false,
+      serverName: isSet(object.serverName) ? globalThis.String(object.serverName) : "",
+      caCertPath: isSet(object.caCertPath) ? globalThis.String(object.caCertPath) : "",
+      clientCertPath: isSet(object.clientCertPath) ? globalThis.String(object.clientCertPath) : "",
+      clientKeyPath: isSet(object.clientKeyPath) ? globalThis.String(object.clientKeyPath) : "",
+      insecureSkipVerify: isSet(object.insecureSkipVerify) ? globalThis.Boolean(object.insecureSkipVerify) : false,
     };
   },
 
   toJSON(message: TLSConfig): unknown {
     const obj: any = {};
     if (message.serverName !== "") {
-      obj.server_name = message.serverName;
+      obj.serverName = message.serverName;
     }
     if (message.caCertPath !== "") {
-      obj.ca_cert_path = message.caCertPath;
+      obj.caCertPath = message.caCertPath;
     }
     if (message.clientCertPath !== "") {
-      obj.client_cert_path = message.clientCertPath;
+      obj.clientCertPath = message.clientCertPath;
     }
     if (message.clientKeyPath !== "") {
-      obj.client_key_path = message.clientKeyPath;
+      obj.clientKeyPath = message.clientKeyPath;
     }
     if (message.insecureSkipVerify !== false) {
-      obj.insecure_skip_verify = message.insecureSkipVerify;
+      obj.insecureSkipVerify = message.insecureSkipVerify;
     }
     return obj;
   },

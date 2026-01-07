@@ -100,7 +100,16 @@ func (g *schemaGenerator) protoMessageToSchema(
 			fieldName = string(field.Name())
 		}
 
-		properties[fieldName] = g.protoFieldToSchema(field)
+		schema := g.protoFieldToSchema(field)
+		properties[fieldName] = schema
+
+		// Also add the original proto name (snake_case) if it differs
+		// This supports config files using snake_case (legacy/yaml default)
+		// while allow client using camelCase (json default)
+		protoName := string(field.Name())
+		if protoName != fieldName {
+			properties[protoName] = schema
+		}
 	}
 
 	return map[string]interface{}{
