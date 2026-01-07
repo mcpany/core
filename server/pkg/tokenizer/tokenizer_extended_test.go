@@ -36,6 +36,11 @@ func TestCountTokensInValue_GenericFallback(t *testing.T) {
 		{"slice", []interface{}{"a", "bb"}, 1 + 2},
 		{"map", map[string]interface{}{"a": "b"}, 1 + 1},
 		{"struct", struct{ A int }{1}, 1}, // "1" (values only, consistent with map content)
+		{"ptr_struct", &struct{ A int }{1}, 1},
+		{"ptr_int", func() *int { i := 123; return &i }(), 3}, // "123" -> 3
+		{"ptr_nil", (*int)(nil), 4},                           // "null"
+		{"nested_ptr", func() **int { i := 123; p := &i; return &p }(), 3},
+		{"struct_unexported", struct{ a int }{1}, 0},
 	}
 
 	for _, tt := range tests {

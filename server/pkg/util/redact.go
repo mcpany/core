@@ -83,7 +83,7 @@ func init() {
 func RedactJSON(input []byte) []byte {
 	// Optimization: Check if any sensitive key is present in the input.
 	// If not, we can skip the expensive unmarshal/marshal process.
-	if !scanForSensitiveKeys(input, false) {
+	if !scanForSensitiveKeys(input) {
 		return input
 	}
 
@@ -144,20 +144,13 @@ func IsSensitiveKey(key string) bool {
 	// Use the optimized byte-based scanner for keys as well.
 	// Avoid allocation using zero-copy conversion.
 	//nolint:gosec // Zero-copy conversion for optimization
-	return scanForSensitiveKeys(unsafe.Slice(unsafe.StringData(key), len(key)), false)
+	return scanForSensitiveKeys(unsafe.Slice(unsafe.StringData(key), len(key)))
 }
 
 // scanForSensitiveKeys checks if input contains any sensitive key.
-// If checkEscape is true, it also returns true if a backslash is found.
 // This function replaces the old linear scan (O(N*M)) with a more optimized scan
 // that uses SIMD-accelerated IndexByte for grouped start characters.
-func scanForSensitiveKeys(input []byte, checkEscape bool) bool {
-	if checkEscape {
-		if bytes.IndexByte(input, '\\') != -1 {
-			return true
-		}
-	}
-
+func scanForSensitiveKeys(input []byte) bool {
 	// Optimization: For short strings, IndexAny is faster (one pass).
 	// For long strings, multiple IndexByte calls are faster (SIMD).
 	// The crossover is around 128 bytes.

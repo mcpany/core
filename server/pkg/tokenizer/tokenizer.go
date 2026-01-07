@@ -273,7 +273,7 @@ func countTokensReflect(t Tokenizer, v interface{}) (int, error) {
 
 	val := reflect.ValueOf(v)
 	switch val.Kind() {
-	case reflect.Ptr, reflect.Interface:
+	case reflect.Ptr:
 		if val.IsNil() {
 			return t.CountTokens("null")
 		}
