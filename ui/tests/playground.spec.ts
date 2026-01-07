@@ -14,7 +14,7 @@ test.describe('Playground Tool Configuration', () => {
           {
             name: 'weather_tool',
             description: 'Get weather info',
-            schema: {
+            inputSchema: {
               type: 'object',
               properties: {
                 city: { type: 'string', description: 'City name' },
@@ -60,7 +60,7 @@ test.describe('Playground Tool Configuration', () => {
     await expect(page.getByText('Configure weather_tool')).toBeVisible();
 
     // Fill form
-    await page.getByLabel('city').fill('San Francisco');
+    await page.getByLabel('city', { exact: false }).fill('San Francisco');
     await page.getByLabel('days').fill('5');
 
     // Run Tool

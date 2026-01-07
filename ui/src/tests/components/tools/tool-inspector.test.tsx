@@ -32,9 +32,19 @@ describe('ToolInspector', () => {
   const mockTool: ToolDefinition = {
     name: 'test_tool',
     description: 'A test tool',
-    serviceName: 'test_service',
-    enabled: true,
-    schema: {
+    title: 'Test Tool',
+    isStream: false,
+    readOnlyHint: false,
+    destructiveHint: false,
+    idempotentHint: false,
+    openWorldHint: false,
+    callId: '',
+    profiles: [],
+    tags: [],
+    mergeStrategy: 0,
+    serviceId: 'test_service',
+    disable: false,
+    inputSchema: {
         type: 'object',
         properties: {
             arg1: { type: 'string', description: 'Argument 1' }

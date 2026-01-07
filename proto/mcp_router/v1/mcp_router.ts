@@ -8,8 +8,8 @@
 import { BinaryReader, BinaryWriter } from "@bufbuild/protobuf/wire";
 import { grpc } from "@improbable-eng/grpc-web";
 import { BrowserHeaders } from "browser-headers";
-import { Struct } from "github.com/mcpany/core/proto/third_party/google/protobuf/struct";
 import Long from "long";
+import { Struct } from "../../google/protobuf/struct";
 
 export const protobufPackage = "mcpany.mcp_router.v1";
 

@@ -6,9 +6,9 @@
 
 /* eslint-disable */
 import { BinaryReader, BinaryWriter } from "@bufbuild/protobuf/wire";
-import { Duration } from "github.com/mcpany/core/proto/third_party/google/protobuf/duration";
-import { Struct, Value } from "github.com/mcpany/core/proto/third_party/google/protobuf/struct";
 import Long from "long";
+import { Duration } from "../../google/protobuf/duration";
+import { Struct, Value } from "../../google/protobuf/struct";
 import { SecretValue } from "./auth";
 import { WebhookConfig } from "./webhook";
 
