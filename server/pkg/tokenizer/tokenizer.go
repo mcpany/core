@@ -86,6 +86,24 @@ func (t *WordTokenizer) CountTokens(text string) (int, error) {
 				}
 			}
 			i++
+			// Continue fast path loop for sequential ASCII characters
+			for i < n && text[i] < utf8.RuneSelf {
+				c = text[i]
+				if c > ' ' {
+					if !inWord {
+						inWord = true
+						wordCount++
+					}
+				} else {
+					if c == ' ' || (c >= '\t' && c <= '\r') {
+						inWord = false
+					} else if !inWord {
+						inWord = true
+						wordCount++
+					}
+				}
+				i++
+			}
 		} else {
 			// Multibyte character, decode rune
 			r, w := utf8.DecodeRuneInString(text[i:])
