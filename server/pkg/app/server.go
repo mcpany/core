@@ -41,6 +41,7 @@ import (
 	"github.com/mcpany/core/server/pkg/storage/postgres"
 	"github.com/mcpany/core/server/pkg/storage/sqlite"
 	"github.com/mcpany/core/server/pkg/telemetry"
+	"github.com/mcpany/core/server/pkg/tokenizer"
 	"github.com/mcpany/core/server/pkg/tool"
 	"github.com/mcpany/core/server/pkg/upstream/factory"
 	"github.com/mcpany/core/server/pkg/util"
@@ -501,7 +502,8 @@ func (a *Application) Run(
 	mcpSrv.Server().AddReceivingMiddleware(a.TopologyManager.Middleware)
 
 	// Add Prometheus Metrics Middleware (Always Active)
-	mcpSrv.Server().AddReceivingMiddleware(middleware.PrometheusMetricsMiddleware())
+	// We use SimpleTokenizer for low-overhead token counting
+	mcpSrv.Server().AddReceivingMiddleware(middleware.PrometheusMetricsMiddleware(tokenizer.NewSimpleTokenizer()))
 
 	if stdio {
 		err := a.runStdioModeFunc(ctx, mcpSrv)
