@@ -11,7 +11,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/mcpany/core/server/pkg/tokenizer"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/prometheus/client_golang/prometheus"
 )
@@ -31,7 +30,7 @@ func TestPrometheusMetricsMiddleware(t *testing.T) {
 	// Since we use MustRegister which panics on dupes, we should ensure our middleware handles existing registration.
 	// Our implementation uses sync.Once, so it's safe to call multiple times in tests.
 
-	middleware := PrometheusMetricsMiddleware(tokenizer.NewSimpleTokenizer())
+	middleware := PrometheusMetricsMiddleware()
 
 	t.Run("SuccessCase", func(t *testing.T) {
 		handler := middleware(MockMethodHandler(&mcp.CallToolResult{
