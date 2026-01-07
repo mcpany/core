@@ -151,7 +151,7 @@ func IsSensitiveKey(key string) bool {
 // If checkEscape is true, it also returns true if a backslash is found.
 // This function replaces the old linear scan (O(N*M)) with a more optimized scan
 // that uses SIMD-accelerated IndexByte for grouped start characters.
-func scanForSensitiveKeys(input []byte, checkEscape bool) bool {
+func scanForSensitiveKeys(input []byte, checkEscape bool) bool { //nolint:unparam
 	if checkEscape {
 		if bytes.IndexByte(input, '\\') != -1 {
 			return true
