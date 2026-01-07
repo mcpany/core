@@ -1,0 +1,14 @@
+*
+!ui/
+!proto/
+!ui/Dockerfile.e2e
+!.dockerignore
+
+ui/node_modules
+ui/.next
+ui/test-results
+ui/playwright-report
+ui/coverage
+ui/*.log
+
+proto/node_modules
