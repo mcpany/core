@@ -24,6 +24,10 @@ var (
 	// ErrPoolFull is returned when the pool has reached its maximum capacity and
 	// cannot create new clients.
 	ErrPoolFull = fmt.Errorf("pool is full")
+
+	// retryBackoff is the duration to wait before retrying to create a new client
+	// when the upstream is unhealthy.
+	retryBackoff = 100 * time.Millisecond
 )
 
 // ClosableClient defines the interface for clients that can be managed by the
@@ -254,7 +258,22 @@ func (p *poolImpl[T]) Get(ctx context.Context) (T, error) {
 					return zero, ErrPoolClosed
 				}
 
-				return client, nil
+				if p.disableHealthCheck || client.IsHealthy(ctx) {
+					return client, nil
+				}
+				_ = lo.Try(func() error {
+					return client.Close()
+				})
+				p.sem.Release(1)
+
+				// Backoff before retrying to avoid busy loop when upstream is down
+				select {
+				case <-ctx.Done():
+					return zero, ctx.Err()
+				case <-time.After(retryBackoff):
+				}
+
+				continue // Retry.
 			}
 		}
 
