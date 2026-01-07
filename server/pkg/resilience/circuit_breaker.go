@@ -7,13 +7,14 @@ import (
 	"context"
 	"errors"
 	"sync"
+	"sync/atomic"
 	"time"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
 )
 
 // State represents the current state of the circuit breaker.
-type State int
+type State int32
 
 const (
 	// StateClosed represents the state where the circuit breaker allows requests to pass through.
@@ -29,7 +30,7 @@ const (
 type CircuitBreaker struct {
 	mutex sync.Mutex
 
-	state        State
+	state        State // Accessed using atomics for read optimization
 	failures     int
 	openTime     time.Time
 	halfOpenHits int
@@ -49,27 +50,37 @@ func NewCircuitBreaker(config *configv1.CircuitBreakerConfig) *CircuitBreaker {
 // returns a CircuitBreakerOpenError immediately. If the work function fails,
 // it tracks the failure and may trip the breaker.
 func (cb *CircuitBreaker) Execute(ctx context.Context, work func(context.Context) error) error {
-	cb.mutex.Lock()
+	// Optimization: Optimistically check if Closed without lock.
+	// This covers the "Happy Path" (most common case).
+	if cb.getState() == StateClosed {
+		// Proceed without lock
+	} else {
+		// Slow path: acquire lock to check Open/HalfOpen state
+		cb.mutex.Lock()
 
-	if cb.state == StateOpen {
-		if time.Since(cb.openTime) > cb.config.GetOpenDuration().AsDuration() {
-			cb.state = StateHalfOpen
-			cb.halfOpenHits = 0
-		} else {
-			cb.mutex.Unlock()
-			return &CircuitBreakerOpenError{}
+		// Re-check state under lock
+		currentState := cb.getState()
+
+		if currentState == StateOpen {
+			if time.Since(cb.openTime) > cb.config.GetOpenDuration().AsDuration() {
+				cb.setState(StateHalfOpen)
+				cb.halfOpenHits = 0
+			} else {
+				cb.mutex.Unlock()
+				return &CircuitBreakerOpenError{}
+			}
 		}
-	}
 
-	if cb.state == StateHalfOpen {
-		if cb.halfOpenHits >= int(cb.config.GetHalfOpenRequests()) {
-			cb.mutex.Unlock()
-			return &CircuitBreakerOpenError{}
+		if currentState == StateHalfOpen {
+			if cb.halfOpenHits >= int(cb.config.GetHalfOpenRequests()) {
+				cb.mutex.Unlock()
+				return &CircuitBreakerOpenError{}
+			}
+			cb.halfOpenHits++
 		}
-		cb.halfOpenHits++
-	}
 
-	cb.mutex.Unlock()
+		cb.mutex.Unlock()
+	}
 
 	err := work(ctx)
 	if err != nil {
@@ -90,28 +101,39 @@ func (cb *CircuitBreaker) Execute(ctx context.Context, work func(context.Context
 	return nil
 }
 
+// getState reads the state atomically.
+func (cb *CircuitBreaker) getState() State {
+	return State(atomic.LoadInt32((*int32)(&cb.state)))
+}
+
+// setState updates the state atomically. Caller must hold the mutex.
+func (cb *CircuitBreaker) setState(newState State) {
+	atomic.StoreInt32((*int32)(&cb.state), int32(newState))
+}
+
 func (cb *CircuitBreaker) onSuccess() {
-	if cb.state == StateHalfOpen {
-		cb.state = StateClosed
+	if cb.getState() == StateHalfOpen {
+		cb.setState(StateClosed)
 		cb.halfOpenHits = 0
 	}
 	cb.failures = 0
 }
 
 func (cb *CircuitBreaker) onFailure() {
-	if cb.state == StateOpen {
+	currentState := cb.getState()
+	if currentState == StateOpen {
 		return
 	}
 
-	if cb.state == StateHalfOpen {
-		cb.state = StateOpen
+	if currentState == StateHalfOpen {
+		cb.setState(StateOpen)
 		cb.openTime = time.Now()
 		return
 	}
 
 	cb.failures++
 	if cb.failures >= int(cb.config.GetConsecutiveFailures()) {
-		cb.state = StateOpen
+		cb.setState(StateOpen)
 		cb.openTime = time.Now()
 	}
 }
