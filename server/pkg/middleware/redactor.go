@@ -41,10 +41,8 @@ func NewRedactor(config *configv1.DLPConfig, log *slog.Logger) *Redactor {
 	for _, p := range config.CustomPatterns {
 		if r, err := regexp.Compile(p); err == nil {
 			patterns = append(patterns, r)
-		} else {
-			if log != nil {
-				log.Warn("Invalid custom DLP pattern, ignoring", "pattern", p, "error", err)
-			}
+		} else if log != nil {
+			log.Warn("Invalid custom DLP pattern, ignoring", "pattern", p, "error", err)
 		}
 	}
 
