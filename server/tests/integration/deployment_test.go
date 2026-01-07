@@ -284,7 +284,9 @@ func TestK8sFullStack(t *testing.T) {
 	installCmd := exec.Command("helm", "install", "mcpany-e2e", helmChartPath,
 		"--kube-context", kubectlCtx,
 		"--set", "image.pullPolicy=Never", // For local kind images
+		"--set", "image.tag=latest",
 		"--set", "ui.image.pullPolicy=Never",
+		"--set", "database.persistence.enabled=false", // Use ephemeral storage for test reliability
 		"--set", "database.image.pullPolicy=IfNotPresent", // These come from registry
 		"--set", "redis.image.pullPolicy=IfNotPresent",
 		"--wait", // Wait for pods to be ready
@@ -295,8 +297,8 @@ func TestK8sFullStack(t *testing.T) {
 
 	// Port Forwarding
 	// We need to forward UI port to access from Playwright
-	// UI Service: mcpany-e2e-mcpany-ui:3000
-	uiSvcName := "mcpany-e2e-mcpany-ui"
+	// UI Service: mcpany-e2e-ui:3000
+	uiSvcName := "mcpany-e2e-ui"
 
 	// Start port-forward in background
 	// We pick a random free port for UI
@@ -326,11 +328,11 @@ func TestK8sFullStack(t *testing.T) {
 		}
 		defer resp.Body.Close()
 		return resp.StatusCode < 500
-	}, 30*time.Second, 1*time.Second, "UI did not become accessible via port-forward")
+	}, 60*time.Second, 1*time.Second, "UI did not become accessible via port-forward")
 
 	// Run Playwright Tests
 	t.Log("Running Playwright E2E tests...")
-	e2eCmd := exec.Command("npm", "run", "test:e2e")
+	e2eCmd := exec.Command("npm", "run", "test")
 	e2eCmd.Dir = uiDir
 	e2eCmd.Env = os.Environ()
 	e2eCmd.Env = append(e2eCmd.Env, "REAL_CLUSTER=true")

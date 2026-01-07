@@ -1,3 +1,6 @@
+# Copyright 2026 Author(s) of MCP Any
+# SPDX-License-Identifier: Apache-2.0
+
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -21,10 +24,31 @@ spec:
         - name: worker
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
-          command: ["/app/server"] # Assuming same binary, different mode? Or distinct binary.
-          args: ["worker"] # Assuming worker mode is triggered via args
+          command:
+            - "/app/server"
+            - "run"
+            - "--config-path"
+            - "/etc/mcpany/config.yaml"
+          ports:
+            - containerPort: 50050
+              name: http
           env:
             - name: POSTGRES_URL
               value: "postgres://{{ .Values.database.postgresUser }}:{{ .Values.database.postgresPassword }}@{{ include "mcpany.fullname" . }}-database:5432/{{ .Values.database.postgresDb }}?sslmode=disable"
             - name: REDIS_URL
               value: "redis://{{ include "mcpany.fullname" . }}-redis:6379"
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: http
+          volumeMounts:
+            - name: config
+              mountPath: /etc/mcpany
+      volumes:
+        - name: config
+          configMap:
+            name: {{ include "mcpany.fullname" . }}-config

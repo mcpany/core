@@ -107,6 +107,7 @@ database:
     tag: "15"
     pullPolicy: IfNotPresent
   persistence:
+    enabled: true
     size: 1Gi
   postgresDb: mcpany
   postgresUser: mcpany

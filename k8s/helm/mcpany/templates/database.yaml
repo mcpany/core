@@ -1,3 +1,6 @@
+# Copyright 2026 Author(s) of MCP Any
+# SPDX-License-Identifier: Apache-2.0
+
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
@@ -36,6 +39,11 @@ spec:
             - name: data
               mountPath: /var/lib/postgresql/data
       volumes:
+  {{- if not .Values.database.persistence.enabled }}
+        - name: data
+          emptyDir: {}
+  {{- end }}
+  {{- if .Values.database.persistence.enabled }}
   volumeClaimTemplates:
     - metadata:
         name: data
@@ -44,6 +52,7 @@ spec:
         resources:
           requests:
             storage: {{ .Values.database.persistence.size }}
+  {{- end }}
 ---
 apiVersion: v1
 kind: Service
