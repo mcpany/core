@@ -74,54 +74,9 @@ func RedactJSON(input []byte) []byte {
 		return input
 	}
 
-	// Optimization: Determine if input is an object or array to avoid unnecessary Unmarshal calls.
-	// We only need to check the first non-whitespace character.
-	// bytes.TrimSpace scans the whole slice (left and right), which is O(N). We only need O(Whitespace).
-	var firstByte byte
-	for i := 0; i < len(input); i++ {
-		b := input[i]
-		if b != ' ' && b != '\t' && b != '\n' && b != '\r' {
-			firstByte = b
-			break
-		}
-	}
-
-	switch firstByte {
-	case '{':
-		var m map[string]json.RawMessage
-		if err := json.Unmarshal(input, &m); err == nil {
-			if redactMapRaw(m) {
-				b, _ := json.Marshal(m)
-				return b
-			}
-		}
-	case '[':
-		var s []json.RawMessage
-		if err := json.Unmarshal(input, &s); err == nil {
-			if redactSliceRaw(s) {
-				b, _ := json.Marshal(s)
-				return b
-			}
-		}
-	default:
-		// Try both if we can't determine (e.g. unknown format)
-		var m map[string]json.RawMessage
-		if err := json.Unmarshal(input, &m); err == nil {
-			if redactMapRaw(m) {
-				b, _ := json.Marshal(m)
-				return b
-			}
-		}
-		var s []json.RawMessage
-		if err := json.Unmarshal(input, &s); err == nil {
-			if redactSliceRaw(s) {
-				b, _ := json.Marshal(s)
-				return b
-			}
-		}
-	}
-
-	return input
+	// Use fast zero-allocation redaction path
+	// This avoids expensive json.Unmarshal/Marshal for large payloads
+	return redactJSONFast(input)
 }
 
 // RedactMap recursively redacts sensitive keys in a map.
