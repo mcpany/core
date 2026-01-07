@@ -49,3 +49,4 @@ lint_report.*
 ui/secrets-master.key
 ui/secrets-store.json
 .build-context/
+proto/node_modules/
