@@ -47,11 +47,11 @@ func NewMilvusClient(config *configv1.MilvusVectorDB) (*MilvusClient, error) {
 	// Check if collection exists
 	exists, err := c.HasCollection(ctx, config.GetCollectionName())
 	if err != nil {
-		c.Close()
+		_ = c.Close()
 		return nil, fmt.Errorf("failed to check collection existence: %w", err)
 	}
 	if !exists {
-		c.Close()
+		_ = c.Close()
 		return nil, fmt.Errorf("collection %s does not exist", config.GetCollectionName())
 	}
 
@@ -206,14 +206,26 @@ func (c *MilvusClient) Upsert(ctx context.Context, vectors []map[string]interfac
 }
 
 // convertVectorsToColumns converts a list of row-based vectors to Milvus column-based format.
-// This function is exported for testing purposes (via internal_test.go usually, but here just kept private or public as needed).
-// We'll keep it package-private but testable in same package.
+// This function is exported for testing purposes.
 func convertVectorsToColumns(vectors []map[string]interface{}, schema *entity.Schema) ([]entity.Column, error) {
-	// We need to pivot row-based input to column-based input for Milvus SDK
-	columns := make(map[string]entity.Column)
+	columns, err := initializeColumns(schema, len(vectors))
+	if err != nil {
+		return nil, err
+	}
 
-	// Initialize columns based on schema
-	rowCount := len(vectors)
+	for i, v := range vectors {
+		fillColumnData(columns, i, v, schema)
+	}
+
+	columnList := make([]entity.Column, 0, len(columns))
+	for _, col := range columns {
+		columnList = append(columnList, col)
+	}
+	return columnList, nil
+}
+
+func initializeColumns(schema *entity.Schema, rowCount int) (map[string]entity.Column, error) {
+	columns := make(map[string]entity.Column)
 	for _, field := range schema.Fields {
 		switch field.DataType {
 		case entity.FieldTypeInt64:
@@ -223,9 +235,11 @@ func convertVectorsToColumns(vectors []map[string]interface{}, schema *entity.Sc
 			data := make([]string, rowCount)
 			columns[field.Name] = entity.NewColumnVarChar(field.Name, data)
 		case entity.FieldTypeFloatVector:
-			dimStr, _ := field.TypeParams["dim"]
+			dimStr := field.TypeParams["dim"]
 			var dim int
-			fmt.Sscanf(dimStr, "%d", &dim)
+			if _, err := fmt.Sscanf(dimStr, "%d", &dim); err != nil {
+				return nil, fmt.Errorf("failed to parse dimension from field %s: %w", field.Name, err)
+			}
 			data := make([][]float32, rowCount)
 			for i := range data {
 				data[i] = make([]float32, dim)
@@ -244,129 +258,131 @@ func convertVectorsToColumns(vectors []map[string]interface{}, schema *entity.Sc
 			// log warning?
 		}
 	}
+	return columns, nil
+}
 
-	// Fill data
-	for i, v := range vectors {
-		// ID
-		if id, ok := v["id"]; ok {
-			// Try to find PK field
-			pkField := ""
-			for _, f := range schema.Fields {
-				if f.PrimaryKey {
-					pkField = f.Name
-					break
-				}
-			}
-			if pkField != "" {
-				if col, ok := columns[pkField]; ok {
-					// Assuming String PK for now, or Int64
-					if col.Type() == entity.FieldTypeVarChar {
-						col.(*entity.ColumnVarChar).Data()[i] = fmt.Sprint(id)
-					} else if col.Type() == entity.FieldTypeInt64 {
-						var val int64
-						switch v := id.(type) {
-						case float64:
-							val = int64(v)
-						case int:
-							val = int64(v)
-						case int64:
-							val = v
-						case string:
-							// Try to parse string
-							fmt.Sscanf(v, "%d", &val)
-						}
-						col.(*entity.ColumnInt64).Data()[i] = val
-					}
-				}
+func fillColumnData(columns map[string]entity.Column, i int, v map[string]interface{}, schema *entity.Schema) {
+	// ID
+	if id, ok := v["id"]; ok {
+		// Try to find PK field
+		pkField := ""
+		for _, f := range schema.Fields {
+			if f.PrimaryKey {
+				pkField = f.Name
+				break
 			}
 		}
-
-		// Values (Vector)
-		if values, ok := v["values"].([]interface{}); ok {
-			// Find vector field
-			vecField := ""
-			for _, f := range schema.Fields {
-				if f.DataType == entity.FieldTypeFloatVector {
-					vecField = f.Name
-					break
-				}
-			}
-			if vecField != "" {
-				if col, ok := columns[vecField]; ok {
-					vecData := col.(*entity.ColumnFloatVector).Data()
-					for j, val := range values {
-						if f, ok := val.(float64); ok {
-							vecData[i][j] = float32(f)
-						}
-					}
-				}
+		if pkField != "" {
+			if col, ok := columns[pkField]; ok {
+				fillIDColumn(col, i, id)
 			}
 		}
+	}
 
-		// Metadata
-		if metadata, ok := v["metadata"].(map[string]interface{}); ok {
-			for key, val := range metadata {
-				if col, ok := columns[key]; ok {
-					// Assign value
-					// This is tedious in Go without generics reflection helpers
-					switch col.Type() {
-					case entity.FieldTypeVarChar:
-						col.(*entity.ColumnVarChar).Data()[i] = fmt.Sprint(val)
-					case entity.FieldTypeInt64:
-						var v int64
-						switch t := val.(type) {
-						case float64:
-							v = int64(t)
-						case int:
-							v = int64(t)
-						case int64:
-							v = t
-						case string:
-							fmt.Sscanf(t, "%d", &v)
-						}
-						col.(*entity.ColumnInt64).Data()[i] = v
-					case entity.FieldTypeFloat:
-						var v float32
-						switch t := val.(type) {
-						case float64:
-							v = float32(t)
-						case float32:
-							v = t
-						}
-						col.(*entity.ColumnFloat).Data()[i] = v
-					case entity.FieldTypeDouble:
-						var v float64
-						switch t := val.(type) {
-						case float64:
-							v = t
-						case float32:
-							v = float64(t)
-						}
-						col.(*entity.ColumnDouble).Data()[i] = v
-					case entity.FieldTypeBool:
-						var v bool
-						if b, ok := val.(bool); ok {
-							v = b
-						}
-						col.(*entity.ColumnBool).Data()[i] = v
+	// Values (Vector)
+	if values, ok := v["values"].([]interface{}); ok {
+		// Find vector field
+		vecField := ""
+		for _, f := range schema.Fields {
+			if f.DataType == entity.FieldTypeFloatVector {
+				vecField = f.Name
+				break
+			}
+		}
+		if vecField != "" {
+			if col, ok := columns[vecField]; ok {
+				vecData := col.(*entity.ColumnFloatVector).Data()
+				for j, val := range values {
+					if f, ok := val.(float64); ok {
+						vecData[i][j] = float32(f)
 					}
 				}
 			}
 		}
 	}
 
-	columnList := make([]entity.Column, 0, len(columns))
-	for _, col := range columns {
-		columnList = append(columnList, col)
+	// Metadata
+	if metadata, ok := v["metadata"].(map[string]interface{}); ok {
+		for key, val := range metadata {
+			if col, ok := columns[key]; ok {
+				fillMetadataColumn(col, i, val)
+			}
+		}
 	}
-	return columnList, nil
+}
+
+func fillIDColumn(col entity.Column, i int, id interface{}) {
+	if col.Type() == entity.FieldTypeVarChar {
+		col.(*entity.ColumnVarChar).Data()[i] = fmt.Sprint(id)
+	} else if col.Type() == entity.FieldTypeInt64 {
+		var val int64
+		switch v := id.(type) {
+		case float64:
+			val = int64(v)
+		case int:
+			val = int64(v)
+		case int64:
+			val = v
+		case string:
+			// Try to parse string
+			_, _ = fmt.Sscanf(v, "%d", &val)
+		}
+		col.(*entity.ColumnInt64).Data()[i] = val
+	}
+}
+
+func fillMetadataColumn(col entity.Column, i int, val interface{}) {
+	// Assign value
+	// This is tedious in Go without generics reflection helpers
+	switch col.Type() {
+	case entity.FieldTypeVarChar:
+		col.(*entity.ColumnVarChar).Data()[i] = fmt.Sprint(val)
+	case entity.FieldTypeInt64:
+		var v int64
+		switch t := val.(type) {
+		case float64:
+			v = int64(t)
+		case int:
+			v = int64(t)
+		case int64:
+			v = t
+		case string:
+			_, _ = fmt.Sscanf(t, "%d", &v)
+		}
+		col.(*entity.ColumnInt64).Data()[i] = v
+	case entity.FieldTypeFloat:
+		var v float32
+		switch t := val.(type) {
+		case float64:
+			v = float32(t)
+		case float32:
+			v = t
+		}
+		col.(*entity.ColumnFloat).Data()[i] = v
+	case entity.FieldTypeDouble:
+		var v float64
+		switch t := val.(type) {
+		case float64:
+			v = t
+		case float32:
+			v = float64(t)
+		}
+		col.(*entity.ColumnDouble).Data()[i] = v
+	case entity.FieldTypeBool:
+		var v bool
+		if b, ok := val.(bool); ok {
+			v = b
+		}
+		col.(*entity.ColumnBool).Data()[i] = v
+	}
 }
 
 // Delete removes vectors.
 func (c *MilvusClient) Delete(ctx context.Context, ids []string, namespace string, filter map[string]interface{}) (map[string]interface{}, error) {
 	// Construct expression
-	expr := ""
-	if len(ids) > 0 {
+	var expr string
+	switch {
+	case len(ids) > 0:
 		// id in ["1", "2"] or id in [1, 2]
 		// Assuming PK is named "id" or "pk"? We need to know PK name.
 		coll, err := c.client.DescribeCollection(ctx, c.config.GetCollectionName())
@@ -391,7 +407,7 @@ func (c *MilvusClient) Delete(ctx context.Context, ids []string, namespace strin
 		} else {
 			expr = fmt.Sprintf("%s in [\"%s\"]", pkField, strings.Join(ids, "\", \""))
 		}
-	} else if filter != nil {
+	case filter != nil:
 		var parts []string
 		for k, v := range filter {
 			if s, ok := v.(string); ok {
@@ -401,7 +417,7 @@ func (c *MilvusClient) Delete(ctx context.Context, ids []string, namespace strin
 			}
 		}
 		expr = strings.Join(parts, " && ")
-	} else {
+	default:
 		return nil, fmt.Errorf("must provide ids or filter")
 	}
 
@@ -421,7 +437,7 @@ func (c *MilvusClient) Delete(ctx context.Context, ids []string, namespace strin
 }
 
 // DescribeIndexStats returns statistics about the index.
-func (c *MilvusClient) DescribeIndexStats(ctx context.Context, filter map[string]interface{}) (map[string]interface{}, error) {
+func (c *MilvusClient) DescribeIndexStats(ctx context.Context, _ map[string]interface{}) (map[string]interface{}, error) {
 	coll, err := c.client.DescribeCollection(ctx, c.config.GetCollectionName())
 	if err != nil {
 		return nil, err
@@ -433,7 +449,7 @@ func (c *MilvusClient) DescribeIndexStats(ctx context.Context, filter map[string
 	}
 
 	return map[string]interface{}{
-		"name": coll.Name,
+		"name":  coll.Name,
 		"stats": stats,
 	}, nil
 }
