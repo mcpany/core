@@ -3,6 +3,12 @@
 !proto/
 !ui/Dockerfile.e2e
 !.dockerignore
+!server/
+!k8s/
+!go.mod
+!go.sum
+!go.work
+!go.work.sum
 
 ui/node_modules
 ui/.next
