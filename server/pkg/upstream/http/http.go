@@ -310,44 +310,106 @@ func (u *Upstream) createAndRegisterHTTPTools(ctx context.Context, serviceID, ad
 		// BUT ONLY IF we are actually appending a path segment.
 		baseForJoin := *baseURL
 
-		// Make endpoint path relative
-		relPath := strings.TrimPrefix(endpointURL.Path, "/")
+		// Make endpoint path relative.
+		// We only strip the leading slash if the user actually provided one.
+		// If the path starts with %2F (encoded slash), url.Parse decodes it to /,
+		// so Path starts with /. But we should NOT strip it in that case, because
+		// it represents a path segment that starts with a slash, not a separator.
+		// However, standard url.ResolveReference logic treats any path starting with /
+		// as absolute, so we cannot use ResolveReference if we have a relative path
+		// segment that starts with an encoded slash.
 
-		// If the endpoint path has segments (not empty and not just /), force slash on base.
-		// If endpoint path is empty, we DON'T want to force a slash on base, because
-		// we want http://host/api + "" -> http://host/api
-		// But ResolveReference behavior is:
-		// Base: http://host/api, Rel: foo -> http://host/foo (Replaces last segment!)
-		// Base: http://host/api/, Rel: foo -> http://host/api/foo
-		// So if we have a relPath, we MUST ensure base has slash.
-		//
-		// Special case: If endpointURL.Path is exactly "/", we want to treat it as a slash
-		// relative to the base, effectively forcing a trailing slash on the base.
-		// But TrimPrefix(..., "/") makes it empty string.
-		// So we check if relPath is NOT empty OR if endpointURL.Path ended with a slash.
-		// We also check rawEndpointPath because if we trimmed slashes from //, endpointURL.Path
-		// might be empty, but we want to preserve the trailing slash implied by the original input.
-		if relPath != "" || strings.HasSuffix(endpointURL.Path, "/") || strings.HasSuffix(rawEndpointPath, "/") {
-			if !strings.HasSuffix(baseForJoin.Path, "/") {
-				baseForJoin.Path += "/"
-				if baseForJoin.RawPath != "" {
-					baseForJoin.RawPath += "/"
+		// Determine if we should treat this as a manual append or use ResolveReference.
+		// If rawEndpointPath starts with an encoded slash, we must manually append.
+		// Checking if rawEndpointPath DOES NOT start with "/" is a good heuristic,
+		// because if it started with "/", we would want to trim it (as handled by existing logic).
+		// If it doesn't start with "/" but endpointURL.Path DOES start with "/",
+		// it means we have an encoded slash at the start.
+
+		var resolvedURL *url.URL
+		if !strings.HasPrefix(rawEndpointPath, "/") && strings.HasPrefix(endpointURL.Path, "/") {
+			// Manual append logic for cases like %2F123
+			// We copy baseForJoin to ensure we preserve Scheme, Host, User, etc.
+			// baseForJoin is already a value copy of *baseURL, so we can take its address safely.
+			// However, we need a new pointer to avoid modifying baseForJoin if we were in a loop (though here it's per call).
+			// But baseForJoin IS modified below (appending slash), so we should use a copy.
+			urlCopy := baseForJoin
+			resolvedURL = &urlCopy
+
+			// Ensure trailing slash on base
+			if !strings.HasSuffix(resolvedURL.Path, "/") {
+				resolvedURL.Path += "/"
+				if resolvedURL.RawPath != "" {
+					resolvedURL.RawPath += "/"
+				} else {
+					resolvedURL.RawPath = resolvedURL.Path // If RawPath was empty, it syncs with Path (which now has /)
+				}
+			} else {
+				// Base has slash. Ensure RawPath is synced if it was empty?
+				// If RawPath is empty, url.String() uses Path.
+				// But we are about to append to RawPath. So we MUST ensure RawPath is populated if we want to use it.
+				if resolvedURL.RawPath == "" {
+					resolvedURL.RawPath = resolvedURL.Path
 				}
 			}
-		}
-		relRawPath := ""
-		if endpointURL.RawPath != "" {
-			relRawPath = strings.TrimPrefix(endpointURL.RawPath, "/")
-		}
 
-		// Construct a relative URL using RawPath to preserve encoding
-		relURL := &url.URL{
-			Path:     relPath,
-			RawPath:  relRawPath,
-			Fragment: endpointURL.Fragment,
-		}
+			// Append the endpoint path directly
+			resolvedURL.Path += endpointURL.Path
+			if endpointURL.RawPath != "" {
+				resolvedURL.RawPath += endpointURL.RawPath
+			} else {
+				resolvedURL.RawPath += endpointURL.Path // Fallback if no RawPath but we are in this block?
+				// If Path starts with / and raw doesn't start with /, raw must be encoded.
+				// So endpointURL.RawPath should be set. If not, it's strange but safe to append Path.
+			}
 
-		resolvedURL := baseForJoin.ResolveReference(relURL)
+			// Handle fragment
+			if endpointURL.Fragment != "" {
+				resolvedURL.Fragment = endpointURL.Fragment
+			} else {
+				resolvedURL.Fragment = baseForJoin.Fragment
+			}
+		} else {
+			// Standard logic using ResolveReference
+
+			relPath := strings.TrimPrefix(endpointURL.Path, "/")
+
+			// If the endpoint path has segments (not empty and not just /), force slash on base.
+			// If endpoint path is empty, we DON'T want to force a slash on base, because
+			// we want http://host/api + "" -> http://host/api
+			// But ResolveReference behavior is:
+			// Base: http://host/api, Rel: foo -> http://host/foo (Replaces last segment!)
+			// Base: http://host/api, Rel: foo -> http://host/api/foo
+			// So if we have a relPath, we MUST ensure base has slash.
+			//
+			// Special case: If endpointURL.Path is exactly "/", we want to treat it as a slash
+			// relative to the base, effectively forcing a trailing slash on the base.
+			// But TrimPrefix(..., "/") makes it empty string.
+			// So we check if relPath is NOT empty OR if endpointURL.Path ended with a slash.
+			// We also check rawEndpointPath because if we trimmed slashes from //, endpointURL.Path
+			// might be empty, but we want to preserve the trailing slash implied by the original input.
+			if relPath != "" || strings.HasSuffix(endpointURL.Path, "/") || strings.HasSuffix(rawEndpointPath, "/") {
+				if !strings.HasSuffix(baseForJoin.Path, "/") {
+					baseForJoin.Path += "/"
+					if baseForJoin.RawPath != "" {
+						baseForJoin.RawPath += "/"
+					}
+				}
+			}
+			relRawPath := ""
+			if endpointURL.RawPath != "" {
+				relRawPath = strings.TrimPrefix(endpointURL.RawPath, "/")
+			}
+
+			// Construct a relative URL using RawPath to preserve encoding
+			relURL := &url.URL{
+				Path:     relPath,
+				RawPath:  relRawPath,
+				Fragment: endpointURL.Fragment,
+			}
+
+			resolvedURL = baseForJoin.ResolveReference(relURL)
+		}
 		// ResolveReference discards the base query, so we restore it
 		resolvedURL.RawQuery = baseURL.RawQuery
 		// ResolveReference also discards the base fragment if the reference has none (empty string).
