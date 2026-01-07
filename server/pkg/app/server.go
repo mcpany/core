@@ -299,8 +299,6 @@ func (a *Application) Run(
 	poolManager := pool.NewManager()
 	upstreamFactory := factory.NewUpstreamServiceFactory(poolManager)
 	a.ToolManager = tool.NewManager(busProvider)
-	// Add Tracing Middleware (Outer-most)
-	a.ToolManager.AddMiddleware(middleware.NewTracingMiddleware())
 	// Add Tool Metrics Middleware
 	a.ToolManager.AddMiddleware(middleware.NewToolMetricsMiddleware())
 	// Add Resilience Middleware
@@ -512,9 +510,9 @@ func (a *Application) Run(
 
 	// Determine allowed origins for CORS
 	// Default to empty (Strict) to prevent insecure defaults.
-	// If LogLevel is DEBUG or MCPANY_ALLOW_ALL_ORIGINS is set, we allow "*" to facilitate local development.
+	// If LogLevel is DEBUG, we allow "*" to facilitate local development.
 	var allowedOrigins []string
-	if cfg.GetGlobalSettings().GetLogLevel() == config_v1.GlobalSettings_LOG_LEVEL_DEBUG || os.Getenv("MCPANY_ALLOW_ALL_ORIGINS") == "true" {
+	if cfg.GetGlobalSettings().GetLogLevel() == config_v1.GlobalSettings_LOG_LEVEL_DEBUG {
 		allowedOrigins = []string{"*"}
 	}
 
