@@ -141,12 +141,12 @@ func estimateRequestTokens(t tokenizer.Tokenizer, req mcp.Request) int {
 	// Type switch to access Params
 	switch r := req.(type) {
 	case *mcp.CallToolRequest:
-		if r.Params != nil && r.Params.Arguments != nil {
+		if r.Params.Arguments != nil {
 			c, _ := tokenizer.CountTokensInValue(t, r.Params.Arguments)
 			return c
 		}
 	case *mcp.GetPromptRequest:
-		if r.Params != nil && r.Params.Arguments != nil {
+		if r.Params.Arguments != nil {
 			c, _ := tokenizer.CountTokensInValue(t, r.Params.Arguments)
 			return c
 		}
