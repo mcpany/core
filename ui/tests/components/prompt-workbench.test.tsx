@@ -6,7 +6,7 @@
 
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { PromptWorkbench } from '../../src/components/prompts/prompt-workbench';
-import { apiClient } from '../../src/lib/client';
+import { apiClient, PromptDefinition } from '../../src/lib/client';
 import { vi } from 'vitest';
 
 // Mock apiClient
@@ -25,17 +25,23 @@ vi.mock('next/navigation', () => ({
 }));
 
 describe('PromptWorkbench', () => {
-  const mockPrompts = [
-    {
-      name: 'test-prompt',
-      description: 'A test prompt',
-      arguments: [
-        { name: 'arg1', description: 'Argument 1', required: true },
-      ],
-      enabled: true,
-      serviceName: 'test-service',
+  const mockPrompts: PromptDefinition[] = [
+  {
+    name: 'test-prompt',
+    title: 'Test Prompt',
+    description: 'A test prompt',
+    inputSchema: {
+      fields: {
+         arg1: { kind: { case: 'stringValue', value: 'Argument 1' } }
+      }
     },
-  ];
+    messages: [
+        { role: 0, text: { text: "Hello", annotations: undefined } }
+    ],
+    disable: false,
+    profiles: []
+  },
+];
 
   beforeEach(() => {
     vi.clearAllMocks();

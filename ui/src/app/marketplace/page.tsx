@@ -77,10 +77,31 @@ export default function MarketplacePage() {
       // Construct UpstreamServiceConfig
       await apiClient.registerService({
         name: selectedItem.id, // Using ID as name
-        command_line_service: {
-          command: selectedItem.config.command,
-          args: finalArgs,
-          env: finalEnv,
+        id: selectedItem.id,
+        version: "1.0.0",
+        disable: false,
+        priority: 0,
+        loadBalancingStrategy: 0,
+        sanitizedName: "",
+        callPolicies: [],
+        preCallHooks: [],
+        postCallHooks: [],
+        profiles: [],
+        prompts: [],
+        profileLimits: {},
+        autoDiscoverTool: false,
+        commandLineService: {
+          command: [selectedItem.config.command, ...(finalArgs || [])].join(" "),
+          env: Object.fromEntries(
+            Object.entries(finalEnv).map(([k, v]) => [k, { plainText: v }])
+          ),
+          workingDirectory: "",
+          tools: [],
+          resources: [],
+          prompts: [],
+          calls: {},
+          communicationProtocol: 0,
+          local: false,
         },
       });
 

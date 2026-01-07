@@ -6,13 +6,15 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { apiClient, ToolDefinition } from "@/lib/client";
+import { apiClient } from "@/lib/client";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Switch } from "@/components/ui/switch";
+import { UpstreamServiceConfig } from "@proto/config/v1/upstream_service";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Wrench, Play } from "lucide-react";
+import { ToolDefinition } from "@proto/config/v1/tool";
 import { ToolInspector } from "@/components/tools/tool-inspector";
 
 export default function ToolsPage() {
@@ -35,7 +37,7 @@ export default function ToolsPage() {
 
   const toggleTool = async (name: string, currentStatus: boolean) => {
     // Optimistic update
-    setTools(tools.map(t => t.name === name ? { ...t, enabled: !currentStatus } : t));
+    setTools(tools.map(t => t.name === name ? { ...t, disable: currentStatus } : t));
 
     try {
         await apiClient.setToolStatus(name, !currentStatus);
@@ -81,16 +83,16 @@ export default function ToolsPage() {
                   </TableCell>
                   <TableCell>{tool.description}</TableCell>
                   <TableCell>
-                      <Badge variant="outline">{tool.serviceName}</Badge>
+                      <Badge variant="outline">{tool.serviceId}</Badge>
                   </TableCell>
                   <TableCell>
                     <div className="flex items-center space-x-2">
                         <Switch
-                            checked={!!tool.enabled}
-                            onCheckedChange={() => toggleTool(tool.name, !!tool.enabled)}
+                            checked={!tool.disable}
+                            onCheckedChange={() => toggleTool(tool.name, !tool.disable)}
                         />
                         <span className="text-sm text-muted-foreground w-16">
-                            {tool.enabled ? "Enabled" : "Disabled"}
+                            {!tool.disable ? "Enabled" : "Disabled"}
                         </span>
                     </div>
                   </TableCell>

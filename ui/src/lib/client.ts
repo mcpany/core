@@ -11,16 +11,17 @@
 // NOTE: Adjusted to point to local Next.js API routes for this UI overhaul task
 // In a real deployment, these might be /api/v1/... proxied to backend
 
-import { GrpcWebImpl, RegistrationServiceClientImpl } from '../proto/api/v1/registration';
-import { UpstreamServiceConfig } from '../proto/config/v1/upstream_service';
-import { ToolDefinition } from '../proto/config/v1/tool';
-import { ResourceDefinition } from '../proto/config/v1/resource';
-import { PromptDefinition } from '../proto/config/v1/prompt';
+import { GrpcWebImpl, RegistrationServiceClientImpl } from '@proto/api/v1/registration';
+import { UpstreamServiceConfig } from '@proto/config/v1/upstream_service';
+import { ToolDefinition } from '@proto/config/v1/tool';
+import { ResourceDefinition } from '@proto/config/v1/resource';
+import { PromptDefinition } from '@proto/config/v1/prompt';
 
 import { BrowserHeaders } from 'browser-headers';
 
 // Re-export generated types
 export type { UpstreamServiceConfig, ToolDefinition, ResourceDefinition, PromptDefinition };
+export type { ListServicesResponse, GetServiceResponse, GetServiceStatusResponse } from '@proto/api/v1/registration';
 
 // Initialize gRPC Web Client
 // Note: In development, we use localhost:8081 (envoy) or the Go server port if configured for gRPC-Web?
@@ -86,7 +87,7 @@ export const apiClient = {
     },
     getService: async (id: string) => {
          const response = await registrationClient.GetService({ serviceName: id }, getMetadata());
-         return response.service;
+         return response;
     },
     setServiceStatus: async (name: string, disable: boolean) => {
         const response = await fetchWithAuth(`/api/v1/services/${name}`, {
@@ -236,11 +237,10 @@ export const apiClient = {
             throw e;
         }
     },
-    setToolStatus: async (name: string, enabled: boolean) => {
+    setToolStatus: async (name: string, disabled: boolean) => {
         const res = await fetchWithAuth('/api/v1/tools', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ name, enabled })
+            method: 'PUT',
+            body: JSON.stringify({ name, disable: disabled })
         });
         return res.json();
     },
@@ -251,11 +251,10 @@ export const apiClient = {
         if (!res.ok) throw new Error('Failed to fetch resources');
         return res.json();
     },
-    setResourceStatus: async (uri: string, enabled: boolean) => {
-         const res = await fetchWithAuth('/api/v1/resources', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ uri, enabled })
+    setResourceStatus: async (uri: string, disabled: boolean) => {
+        const res = await fetchWithAuth('/api/v1/resources', {
+            method: 'PUT',
+            body: JSON.stringify({ uri, disable: disabled })
         });
         return res.json();
     },
