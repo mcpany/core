@@ -68,7 +68,7 @@ test.describe('Playground Complex Schema Support', () => {
 
     // Verify form structure
     // Note: The UI might append type info like "user (object)", so we disable exact match
-    await expect(page.getByText('user', { exact: false })).toBeVisible();
+    await expect(page.getByText('user', { exact: true })).toBeVisible();
 
     // Try to submit empty form (should fail validation because user.name is required)
     await page.getByRole('button', { name: 'Run Tool' }).click();
