@@ -123,7 +123,6 @@ global_settings:
 ```yaml
 global_settings:
   mcp_listen_address: "0.0.0.0:8080"
-  mcp_basepath: "/mcp/v1"
   log_level: "DEBUG"
 ```
 

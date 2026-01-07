@@ -31,6 +31,7 @@ import (
 	"github.com/mcpany/core/server/pkg/gc"
 	"github.com/mcpany/core/server/pkg/logging"
 	"github.com/mcpany/core/server/pkg/mcpserver"
+	"github.com/mcpany/core/server/pkg/api/doctor"
 	"github.com/mcpany/core/server/pkg/metrics"
 	"github.com/mcpany/core/server/pkg/middleware"
 	"github.com/mcpany/core/server/pkg/pool"
@@ -1228,6 +1229,7 @@ func (a *Application) runServerMode(
 		w.WriteHeader(http.StatusOK)
 		_, _ = fmt.Fprintln(w, "OK")
 	}))
+	mux.Handle("/api/v1/health/doctor", authMiddleware(http.HandlerFunc(doctor.Handler)))
 	mux.Handle("/metrics", authMiddleware(metrics.Handler()))
 	mux.Handle("/upload", authMiddleware(http.HandlerFunc(a.uploadFile)))
 
