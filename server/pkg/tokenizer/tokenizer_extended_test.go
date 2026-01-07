@@ -36,6 +36,9 @@ func TestCountTokensInValue_GenericFallback(t *testing.T) {
 		{"slice", []interface{}{"a", "bb"}, 1 + 2},
 		{"map", map[string]interface{}{"a": "b"}, 1 + 1},
 		{"struct", struct{ A int }{1}, 1}, // "{1}" -> "1" (reflection counts value only)
+		{"slice_string", []string{"a", "bb"}, 1 + 2},
+		{"array_string", [2]string{"a", "bb"}, 1 + 2},
+		{"map_int_string", map[int]string{1: "a"}, 1 + 1},
 	}
 
 	for _, tt := range tests {
