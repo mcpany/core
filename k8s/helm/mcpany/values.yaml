@@ -100,3 +100,36 @@ nodeSelector: {}
 tolerations: []
 
 affinity: {}
+
+database:
+  image:
+    repository: postgres
+    tag: "15"
+    pullPolicy: IfNotPresent
+  persistence:
+    size: 1Gi
+  postgresDb: mcpany
+  postgresUser: mcpany
+  postgresPassword: "changeit"
+
+redis:
+  image:
+    repository: redis
+    tag: "7"
+    pullPolicy: IfNotPresent
+
+ui:
+  replicaCount: 1
+  image:
+    repository: mcpany/ui
+    tag: "latest"
+    pullPolicy: IfNotPresent
+  service:
+    type: ClusterIP
+    port: 3000
+
+worker:
+  replicaCount: 1
+
+webhook:
+  replicaCount: 1

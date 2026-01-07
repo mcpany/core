@@ -13,6 +13,12 @@ const AUDIT_DIR = path.join(__dirname, `../../.audit/ui/${DATE}`);
 test.describe('MCP Any UI E2E Tests', () => {
 
   test.beforeEach(async ({ page }) => {
+    // If running against a real cluster, skip mocks and let it hit the real backend
+    if (process.env.REAL_CLUSTER === 'true') {
+      console.log('Running against real cluster, skipping mocks...');
+      return;
+    }
+
     // Mock services
     await page.route('**/api/v1/services', async (route) => {
       await route.fulfill({
@@ -120,6 +126,10 @@ test.describe('MCP Any UI E2E Tests', () => {
   test('Network page visualizes topology', async ({ page }) => {
     // Mock Topology API
     await page.route('**/api/v1/topology', async (route) => {
+        if (process.env.REAL_CLUSTER === 'true') {
+            await route.continue();
+            return;
+        }
         await route.fulfill({
             json: {
                 clients: [

@@ -1,6 +1,10 @@
 *
 !ui/
 !proto/
+!server/
+!go.mod
+!go.sum
+!Makefile
 !ui/Dockerfile.e2e
 !.dockerignore
 !server/

@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "mcpany.fullname" . }}-worker
+  labels:
+    {{- include "mcpany.labels" . | nindent 4 }}
+    app.kubernetes.io/component: worker
+spec:
+  replicas: {{ .Values.worker.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "mcpany.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: worker
+  template:
+    metadata:
+      labels:
+        {{- include "mcpany.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: worker
+    spec:
+      containers:
+        - name: worker
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command: ["/app/server"] # Assuming same binary, different mode? Or distinct binary.
+          args: ["worker"] # Assuming worker mode is triggered via args
+          env:
+            - name: POSTGRES_URL
+              value: "postgres://{{ .Values.database.postgresUser }}:{{ .Values.database.postgresPassword }}@{{ include "mcpany.fullname" . }}-database:5432/{{ .Values.database.postgresDb }}?sslmode=disable"
+            - name: REDIS_URL
+              value: "redis://{{ include "mcpany.fullname" . }}-redis:6379"

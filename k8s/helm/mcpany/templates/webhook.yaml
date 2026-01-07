@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "mcpany.fullname" . }}-webhook
+  labels:
+    {{- include "mcpany.labels" . | nindent 4 }}
+    app.kubernetes.io/component: webhook
+spec:
+  replicas: {{ .Values.webhook.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "mcpany.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: webhook
+  template:
+    metadata:
+      labels:
+        {{- include "mcpany.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: webhook
+    spec:
+      containers:
+        - name: webhook
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command: ["/app/server"]
+          args: ["webhook"] # Assuming webhook mode
+          ports:
+            - containerPort: 8080
+              name: http
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "mcpany.fullname" . }}-webhook
+  labels:
+    {{- include "mcpany.labels" . | nindent 4 }}
+    app.kubernetes.io/component: webhook
+spec:
+  type: ClusterIP
+  ports:
+    - port: 80
+      targetPort: http
+      name: http
+  selector:
+    {{- include "mcpany.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/component: webhook
