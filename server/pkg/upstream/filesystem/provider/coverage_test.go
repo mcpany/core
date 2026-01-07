@@ -72,36 +72,33 @@ func TestLocalProvider_ResolvePath_EdgeCases(t *testing.T) {
 	assert.Error(t, err)
 	assert.Contains(t, err.Error(), "access denied: path traversal detected")
 
-    // Check p is not unused
-    require.NotNil(t, p)
+	// Check p is not unused
+	require.NotNil(t, p)
 }
 
 func TestLocalProvider_ResolvePath_PermissionError(t *testing.T) {
-    if os.Getuid() == 0 {
-        t.Skip("Skipping permission denied test as root")
-    }
+	if os.Getuid() == 0 {
+		t.Skip("Skipping permission denied test as root")
+	}
 
-    tmpDir := t.TempDir()
-    // Create a directory with no permissions
-    noPermDir := filepath.Join(tmpDir, "noperm")
-    err := os.Mkdir(noPermDir, 0000)
-    require.NoError(t, err)
-    // Make sure we can remove it later
-    defer os.Chmod(noPermDir, 0755)
+	tmpDir := t.TempDir()
+	// Create a directory with no permissions
+	noPermDir := filepath.Join(tmpDir, "noperm")
+	err := os.Mkdir(noPermDir, 0000)
+	require.NoError(t, err)
+	// Make sure we can remove it later
+	defer os.Chmod(noPermDir, 0755)
 
-    // Test EvalSymlinks failure on target path
-    p := NewLocalProvider(nil, map[string]string{"/": tmpDir})
-    _, err = p.ResolvePath(filepath.Join("noperm", "file.txt"))
-    // Depending on OS, this might fail with "permission denied" or work if parent has permissions.
-    // Actually, accessing "noperm/file.txt" where noperm is 0000 should fail stat.
-    // If it fails with something other than NotExist, we hit line 142.
-    // However, filepath.EvalSymlinks calls lstat, which requires exec permission on parent.
-    // If parent has no exec, lstat fails with permission denied.
+	// Test EvalSymlinks failure on target path
+	p := NewLocalProvider(nil, map[string]string{"/": tmpDir})
+	_, err = p.ResolvePath(filepath.Join("noperm", "file.txt"))
+	// Depending on OS, this might fail with "permission denied" or work if parent has permissions.
+	// Actually, accessing "noperm/file.txt" where noperm is 0000 should fail stat.
+	// If it fails with something other than NotExist, we hit line 142.
+	// However, filepath.EvalSymlinks calls lstat, which requires exec permission on parent.
+	// If parent has no exec, lstat fails with permission denied.
 
-    if err != nil {
-        // We expect error, hopefully not path traversal but resolution error
-         t.Logf("Got expected error: %v", err)
-    }
+	assert.Error(t, err, "Expected permission denied or similar error")
 }
 
 func TestZipProvider_ManualClose(t *testing.T) {
