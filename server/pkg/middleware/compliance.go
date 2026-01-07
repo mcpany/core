@@ -168,7 +168,7 @@ func (w *smartResponseWriter) rewriteError() {
 	case strings.Contains(messageLower, "parse error") || strings.Contains(messageLower, "malformed") || strings.Contains(messageLower, "invalid character"):
 		code = -32700
 		message = "Parse error"
-	case strings.Contains(messageLower, "invalid request") || message == "Bad Request":
+	case strings.Contains(messageLower, "invalid request") || message == "Bad Request" || strings.Contains(messageLower, "accept must contain"):
 		code = -32600
 		message = "Invalid Request"
 	case strings.Contains(messageLower, "method not found") || strings.Contains(messageLower, "not handled") || strings.Contains(messageLower, "unsupported"):
