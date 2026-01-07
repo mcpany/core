@@ -20,7 +20,7 @@ export default defineConfig({
     timeout: 15000,
   },
   use: {
-    baseURL: process.env.PLAYWRIGHT_BASE_URL || 'http://127.0.0.1:9002',
+    baseURL: process.env.PLAYWRIGHT_BASE_URL || 'http://localhost:9002',
     extraHTTPHeaders: {
       'X-API-Key': process.env.NEXT_PUBLIC_MCPANY_API_KEY || 'test-token',
     },
@@ -41,7 +41,7 @@ export default defineConfig({
   ],
   webServer: {
     command: 'npm run dev',
-    url: 'http://127.0.0.1:9002',
+    url: 'http://localhost:9002',
     reuseExistingServer: true,
     env: {
       BACKEND_URL: process.env.BACKEND_URL || 'http://localhost:50050',

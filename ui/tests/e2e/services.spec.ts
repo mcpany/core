@@ -8,8 +8,6 @@ import { test, expect } from '@playwright/test';
 test.describe('Services Feature', () => {
   test.beforeEach(async ({ page, request }) => {
     // Seed data
-    page.on('console', msg => console.log(`BROWSER LOG: ${msg.text()}`));
-    page.on('requestfailed', request => console.log(`BROWSER REQ FAILED: ${request.url()} ${request.failure()?.errorText}`));
     try {
         const r1 = await request.post('/api/v1/services', {
             data: {
@@ -21,8 +19,8 @@ test.describe('Services Feature', () => {
                 http_service: { address: "https://stripe.com", tools: [], resources: [] }
             }
         });
-        if (!r1.ok() && r1.status() !== 409) console.error("Failed to seed Payment Gateway:", r1.status(), await r1.text());
-        // expect(r1.ok()).toBeTruthy(); // Don't fail if 409
+        if (!r1.ok()) console.error("Failed to seed Payment Gateway:", r1.status(), await r1.text());
+        expect(r1.ok()).toBeTruthy();
 
         const r2 = await request.post('/api/v1/services', {
             data: {
@@ -30,15 +28,15 @@ test.describe('Services Feature', () => {
                name: "User Service",
                disable: false,
                version: "v1.0",
-               http_service: { address: "http://http-echo-server:8080", tools: [], resources: [] }
+               grpc_service: { address: "localhost:50051", tools: [], resources: [] }
             }
         });
-        if (!r2.ok() && r2.status() !== 409) console.error("Failed to seed User Service:", r2.status(), await r2.text());
-        // expect(r2.ok()).toBeTruthy();
+        if (!r2.ok()) console.error("Failed to seed User Service:", r2.status(), await r2.text());
+        expect(r2.ok()).toBeTruthy();
     } catch (e) {
         console.log("Seeding failed or services already exist", e);
-        // Ignore failure if it's just "already works" (we rely on list check)
-        // ideally we check if it exists, but ignoring 409/failure for now is robust for retries
+        // Fail test if seeding throws
+        throw e;
     }
 
     await page.goto('/services');

@@ -59,13 +59,11 @@ const nextConfig: NextConfig = {
     ];
   },
   async rewrites() {
-    console.error("DEBUG: BACKEND_URL =", process.env.BACKEND_URL);
-    // Default to server:50050 in CI (Docker), localhost:50050 otherwise
-    const defaultBackend = process.env.CI ? 'http://server:50050' : 'http://localhost:50050';
+    console.log("DEBUG: BACKEND_URL =", process.env.BACKEND_URL);
     return [
       {
         source: '/api/v1/:path*',
-        destination: `${process.env.BACKEND_URL || defaultBackend}/api/v1/:path*`,
+        destination: `${process.env.BACKEND_URL || 'http://localhost:8080'}/api/v1/:path*`,
       },
       {
         source: '/mcpany.api.v1.RegistrationService/:path*',
