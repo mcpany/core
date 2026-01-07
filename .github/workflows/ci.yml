@@ -587,7 +587,7 @@ jobs:
       - name: Build UI Test Image
         uses: docker/build-push-action@v5
         with:
-          context: ui
+          context: .
           file: ui/Dockerfile.e2e
           push: false
           load: true

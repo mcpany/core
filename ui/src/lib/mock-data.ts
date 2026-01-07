@@ -5,7 +5,7 @@
 
 
 
-import { UpstreamServiceConfig } from "@/proto/config/v1/upstream_service";
+import { UpstreamServiceConfig } from "@proto/config/v1/upstream_service";
 
 // Mock data generator
 export const mockServices: UpstreamServiceConfig[] = [

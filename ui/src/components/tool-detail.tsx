@@ -29,17 +29,14 @@ export function ToolDetail({ serviceId, toolName }: { serviceId: string, toolNam
       setError(null);
       try {
         const { service: serviceDetails } = await apiClient.getService(serviceId);
-        setService(serviceDetails);
+        setService(serviceDetails || null);
 
-        const serviceData =
-            serviceDetails.grpcService ||
-            serviceDetails.httpService ||
-            serviceDetails.commandLineService ||
-            serviceDetails.openapiService ||
-            serviceDetails.websocketService ||
-            serviceDetails.webrtcService ||
-            serviceDetails.graphqlService ||
-            serviceDetails.mcpService;
+        if (!serviceDetails) {
+            setError("Service not found");
+            setIsLoading(false);
+            return;
+        }
+        const serviceData = serviceDetails.grpcService || serviceDetails.httpService || serviceDetails.commandLineService || serviceDetails.openapiService || serviceDetails.websocketService || serviceDetails.webrtcService || serviceDetails.graphqlService || serviceDetails.mcpService;
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const foundTool = (serviceData as any)?.tools?.find((t: any) => t.name === toolName);
@@ -115,7 +112,7 @@ export function ToolDetail({ serviceId, toolName }: { serviceId: string, toolNam
         <ServicePropertyCard title="Tool Definition" data={{
             "Name": tool.name,
             "Description": tool.description || "N/A",
-            "Source": tool.source || "N/A"
+            //"Source": tool.source || "N/A"
         }} />
         <Card>
             <CardHeader>

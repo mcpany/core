@@ -16,8 +16,8 @@ test('Tools page loads and inspector opens', async ({ page }) => {
             name: 'get_weather',
             description: 'Get weather for a location',
             source: 'configured',
-            serviceName: 'weather-service',
-            schema: {
+            serviceId: 'weather-service',
+            inputSchema: {
                type: "object",
                properties: {
                  location: { type: "string" }
@@ -44,9 +44,9 @@ test('Tools page loads and inspector opens', async ({ page }) => {
   await expect(page.getByText('Schema')).toBeVisible();
 
   // The schema content from mock: { type: "object", properties: { location: { type: "string" } } }
-  // We can check if "location" is visible in the pre block
-  await expect(page.getByText('"location"')).toBeVisible();
-  await expect(page.getByText('"type": "object"')).toBeVisible();
+  // We check for "location" property in the JSON view
+  await expect(page.locator('pre').filter({ hasText: /"location"/ })).toBeVisible();
+  await expect(page.locator('pre').filter({ hasText: /"type": "object"/ })).toBeVisible();
 
   // Verify service name is shown in details (Scoped to the sheet)
   await expect(page.locator('div[role="dialog"]').getByText('weather-service')).toBeVisible();

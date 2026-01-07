@@ -6,9 +6,9 @@
 import { NextResponse } from 'next/server';
 
 let prompts = [
-    { name: "summarize_text", description: "Summarize a given text", enabled: true, serviceName: "ai-helper", arguments: [{ name: "text", required: true }] },
-    { name: "code_review", description: "Review code snippet", enabled: true, serviceName: "dev-assistant", arguments: [{ name: "code", required: true }] },
-    { name: "generate_sql", description: "Convert natural language to SQL", enabled: false, serviceName: "db-assistant", arguments: [{ name: "query", required: true }] },
+    { name: "summarize_text", description: "Summarize a given text", disable: false, serviceId: "ai-helper", inputSchema: { type: "object", properties: { text: { type: "string" } }, required: ["text"] }, title: "Summarize Text", messages: [] },
+    { name: "code_review", description: "Review code snippet", disable: false, serviceId: "dev-assistant", inputSchema: { type: "object", properties: { code: { type: "string" } }, required: ["code"] }, title: "Code Review", messages: [] },
+    { name: "generate_sql", description: "Convert natural language to SQL", disable: true, serviceId: "db-assistant", inputSchema: { type: "object", properties: { query: { type: "string" } }, required: ["query"] }, title: "Generate SQL", messages: [] },
 ];
 
 export async function GET() {
@@ -18,7 +18,7 @@ export async function GET() {
 export async function POST(request: Request) {
     const body = await request.json();
     if (body.name) {
-        prompts = prompts.map(p => p.name === body.name ? { ...p, enabled: body.enabled } : p);
+        prompts = prompts.map(p => p.name === body.name ? { ...p, disable: body.disable } : p);
         return NextResponse.json({ message: "Updated" });
     }
     return NextResponse.json({ error: "Invalid request" }, { status: 400 });

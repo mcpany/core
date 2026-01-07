@@ -123,8 +123,8 @@ prepare-proto:
 
 clean-protos:
 	@echo "Cleaning generated protobuf files..."
-	@-find ui/src/proto -name "*.ts" -delete
-	@-rm -rf ui/src/google
+	@-find proto -name "*.ts" -delete
+	@-rm -rf proto/google
 	@-find proto server/pkg server/cmd -name "*.pb.go" -delete
 	@-find proto -name "*.pb.gw.go" -delete
 
@@ -156,9 +156,12 @@ gen: clean-protos prepare-proto
 			--proto_path=$(BUILD_DIR)/grpc-gateway \
 			--proto_path=$(GOOGLEAPIS_DIR) \
 			--plugin=protoc-gen-ts_proto=./ui/node_modules/.bin/protoc-gen-ts_proto \
-			--ts_proto_out=ui/src \
+			--ts_proto_out=. \
 			--ts_proto_opt=esModuleInterop=true,forceLong=long,useOptionals=messages,outputClientImpl=grpc-web \
 			{} +; \
+		if [ -d "google" ]; then mv google proto/; fi; \
+		if [ -f "proto/google/protobuf/struct.ts" ]; then sed -i 's/map((e) => e)/map((e: any) => e)/g' proto/google/protobuf/struct.ts; fi; \
+		find proto -name "*.ts" -exec sed -i 's|\.\./\.\./\.\./google|\.\./\.\./google|g' {} +; \
 		echo "Local TypeScript Protobuf generation complete."; \
 		echo "Generating standard protobuf files (TypeScript)..."; \
 		STANDARD_PROTOS=$$(find $(PROTOC_INCLUDE_DIR)/google/protobuf $(GOOGLEAPIS_DIR)/google/api -name "*.proto" 2>/dev/null); \
@@ -167,7 +170,7 @@ gen: clean-protos prepare-proto
 				--proto_path=$(PROTOC_INCLUDE_DIR) \
 				--proto_path=$(GOOGLEAPIS_DIR) \
 				--plugin=protoc-gen-ts_proto=./ui/node_modules/.bin/protoc-gen-ts_proto \
-				--ts_proto_out=ui/src \
+				--ts_proto_out=proto \
 				--ts_proto_opt=esModuleInterop=true,forceLong=long,useOptionals=messages,outputClientImpl=grpc-web \
 				$$STANDARD_PROTOS; \
 		fi; \
