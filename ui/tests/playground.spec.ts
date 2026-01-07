@@ -60,7 +60,7 @@ test.describe('Playground Tool Configuration', () => {
     await expect(page.getByText('Configure weather_tool')).toBeVisible();
 
     // Fill form
-    await page.getByLabel('city').fill('San Francisco');
+    await page.getByLabel('city', { exact: false }).fill('San Francisco');
     await page.getByLabel('days').fill('5');
 
     // Run Tool
