@@ -19,6 +19,10 @@ var (
 	// Used for optimized scanning.
 	sensitiveStartChars []byte
 
+	// sensitiveStartCharsAny contains all sensitive start characters (lowercase and uppercase)
+	// for use with bytes.IndexAny.
+	sensitiveStartCharsAny string
+
 	// sensitiveKeyGroups maps a starting character (lowercase) to the list of sensitive keys starting with it.
 	// Optimization: Use array instead of map for faster lookup.
 	sensitiveKeyGroups [256][][]byte
@@ -42,6 +46,15 @@ func init() {
 			sensitiveKeyGroups[first] = append(sensitiveKeyGroups[first], kb)
 		}
 	}
+
+	// Build sensitiveStartCharsAny
+	anyBytes := make([]byte, 0, len(sensitiveStartChars)*2)
+	for _, c := range sensitiveStartChars {
+		anyBytes = append(anyBytes, c)
+		// Add uppercase variant
+		anyBytes = append(anyBytes, c-32)
+	}
+	sensitiveStartCharsAny = string(anyBytes)
 
 	// Build next char masks
 	for start, keys := range sensitiveKeyGroups {
@@ -285,8 +298,29 @@ func scanForSensitiveKeys(input []byte, checkEscape bool) bool {
 		}
 	}
 
+	// Optimization: For short strings, IndexAny is faster (one pass).
+	// For long strings, multiple IndexByte calls are faster (SIMD).
+	// The crossover is around 128 bytes.
+	if len(input) < 128 {
+		offset := 0
+		for offset < len(input) {
+			slice := input[offset:]
+			idx := bytes.IndexAny(slice, sensitiveStartCharsAny)
+			if idx == -1 {
+				break
+			}
+			matchStart := offset + idx
+			startChar := input[matchStart] | 0x20 // Normalize to lowercase
+
+			if checkPotentialMatch(input, matchStart, startChar) {
+				return true
+			}
+			offset = matchStart + 1
+		}
+		return false
+	}
+
 	for _, startChar := range sensitiveStartChars {
-		keys := sensitiveKeyGroups[startChar]
 		// startChar is lowercase. We need to check for uppercase too.
 		// Optimized loop: skip directly to the next occurrence of startChar or startChar-32
 		upperChar := startChar - 32
@@ -319,58 +353,70 @@ func scanForSensitiveKeys(input []byte, checkEscape bool) bool {
 			// Found candidate start at offset + idx
 			matchStart := offset + idx
 
-			// Optimization: Check second character
-			if matchStart+1 < len(input) {
-				second := input[matchStart+1] | 0x20
-				if second >= 'a' && second <= 'z' {
-					mask := sensitiveNextCharMask[startChar]
-					if (mask & (1 << (second - 'a'))) == 0 {
-						// Second character doesn't match any key in this group
-						offset = matchStart + 1
-						continue
-					}
-				}
-			} else {
-				// Not enough bytes for any key
-				break
-			}
-
-			// Check all keys in this group against input starting at matchStart
-			for _, key := range keys {
-				if matchFoldRest(input[matchStart:], key) {
-					endIdx := matchStart + len(key)
-					// Check boundary: if the next character is a lowercase letter,
-					// it's likely a continuation of a word (e.g. "auth" in "author"), so we skip it.
-					// We allow uppercase letters (CamelCase) and other characters (snake_case, end of string).
-					if endIdx < len(input) {
-						next := input[endIdx]
-						if next >= 'a' && next <= 'z' {
-							continue
-						}
-						// Special handling for uppercase keys (e.g. "AUTH" in "AUTHORITY")
-						// If the matched key was uppercase, and the next char is uppercase, it's a continuation.
-						// However, if the matched key was lowercase (e.g. "auth" in "authToken"), it's CamelCase (boundary).
-						if next >= 'A' && next <= 'Z' {
-							// Check if the matched key was uppercase.
-							// We know input[matchStart] matched the key start.
-							// If input[matchStart] is uppercase, assume the whole key match was uppercase (or case-insensitive matching logic holds).
-							firstChar := input[matchStart]
-							if firstChar >= 'A' && firstChar <= 'Z' {
-								continue
-							}
-						}
-					}
-
-					// Optimization: check if it looks like a key (followed by quote and colon)
-					// This reduces false positives when sensitive words appear in values.
-					if isKey(input, endIdx) {
-						return true
-					}
-				}
+			// In this loop, we know the candidate char matches startChar (modulo case).
+			// We can reuse the common validation logic.
+			if checkPotentialMatch(input, matchStart, startChar) {
+				return true
 			}
 
 			// Move past this match
 			offset = matchStart + 1
+		}
+	}
+	return false
+}
+
+// checkPotentialMatch checks if a sensitive key starts at matchStart.
+// startChar must be the lowercase version of input[matchStart].
+func checkPotentialMatch(input []byte, matchStart int, startChar byte) bool {
+	// Optimization: Check second character
+	if matchStart+1 < len(input) {
+		second := input[matchStart+1] | 0x20
+		if second >= 'a' && second <= 'z' {
+			mask := sensitiveNextCharMask[startChar]
+			if (mask & (1 << (second - 'a'))) == 0 {
+				// Second character doesn't match any key in this group
+				return false
+			}
+		}
+	} else {
+		// Not enough bytes for any key
+		return false
+	}
+
+	keys := sensitiveKeyGroups[startChar]
+
+	// Check all keys in this group against input starting at matchStart
+	for _, key := range keys {
+		if matchFoldRest(input[matchStart:], key) {
+			endIdx := matchStart + len(key)
+			// Check boundary: if the next character is a lowercase letter,
+			// it's likely a continuation of a word (e.g. "auth" in "author"), so we skip it.
+			// We allow uppercase letters (CamelCase) and other characters (snake_case, end of string).
+			if endIdx < len(input) {
+				next := input[endIdx]
+				if next >= 'a' && next <= 'z' {
+					continue
+				}
+				// Special handling for uppercase keys (e.g. "AUTH" in "AUTHORITY")
+				// If the matched key was uppercase, and the next char is uppercase, it's a continuation.
+				// However, if the matched key was lowercase (e.g. "auth" in "authToken"), it's CamelCase (boundary).
+				if next >= 'A' && next <= 'Z' {
+					// Check if the matched key was uppercase.
+					// We know input[matchStart] matched the key start.
+					// If input[matchStart] is uppercase, assume the whole key match was uppercase (or case-insensitive matching logic holds).
+					firstChar := input[matchStart]
+					if firstChar >= 'A' && firstChar <= 'Z' {
+						continue
+					}
+				}
+			}
+
+			// Optimization: check if it looks like a key (followed by quote and colon)
+			// This reduces false positives when sensitive words appear in values.
+			if isKey(input, endIdx) {
+				return true
+			}
 		}
 	}
 	return false
