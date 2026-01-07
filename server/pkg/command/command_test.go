@@ -611,10 +611,20 @@ func TestDockerExecutorWithStdIO(t *testing.T) {
 	})
 
 	t.Run("Execute_VolumeMounts", func(t *testing.T) {
+		// Ensure we have a valid directory for the volume mount test.
+		// In CWD, "testdata" usually exists.
+		if _, err := os.Stat("testdata"); os.IsNotExist(err) {
+			_ = os.Mkdir("testdata", 0755)
+			defer os.Remove("testdata")
+		}
+
 		containerEnv := &configv1.ContainerEnvironment{}
 		containerEnv.SetImage("alpine:latest")
+		// Use a relative path that IsRelativePath will accept (assuming it doesn't contain ..)
+		// and verify that it is passed to Docker.
+		// Note: IsRelativePath checks relative to CWD. We use "testdata" as a safe relative path.
 		containerEnv.SetVolumes(map[string]string{
-			"/host/path": "/container/path",
+			"testdata": "/container/path",
 		})
 		executor := newDockerExecutor(containerEnv).(*dockerExecutor)
 
@@ -623,6 +633,25 @@ func TestDockerExecutorWithStdIO(t *testing.T) {
 		mockClient.ContainerCreateFunc = func(ctx context.Context, config *container.Config, hostConfig *container.HostConfig, networkingConfig *network.NetworkingConfig, platform *v1.Platform, containerName string) (container.CreateResponse, error) {
 			capturedHostConfig = hostConfig
 			return container.CreateResponse{ID: "test-id"}, nil
+		}
+		// Mock ImagePull to avoid nil pointer dereference or real network call
+		mockClient.ImagePullFunc = func(ctx context.Context, ref string, options image.PullOptions) (io.ReadCloser, error) {
+			return io.NopCloser(strings.NewReader("")), nil
+		}
+		// Mock ContainerStart/Logs/Wait/Remove to complete execution flow
+		mockClient.ContainerStartFunc = func(ctx context.Context, containerID string, options container.StartOptions) error {
+			return nil
+		}
+		mockClient.ContainerLogsFunc = func(ctx context.Context, container string, options container.LogsOptions) (io.ReadCloser, error) {
+			return io.NopCloser(strings.NewReader("")), nil
+		}
+		mockClient.ContainerWaitFunc = func(ctx context.Context, containerID string, condition container.WaitCondition) (<-chan container.WaitResponse, <-chan error) {
+			statusCh := make(chan container.WaitResponse, 1)
+			statusCh <- container.WaitResponse{StatusCode: 0}
+			return statusCh, nil
+		}
+		mockClient.ContainerRemoveFunc = func(ctx context.Context, containerID string, options container.RemoveOptions) error {
+			return nil
 		}
 
 		executor.clientFactory = func() (DockerClient, error) {
@@ -792,10 +821,20 @@ func TestDockerExecutor_Mocked(t *testing.T) {
 	})
 
 	t.Run("Execute_VolumeMounts", func(t *testing.T) {
+		// Ensure we have a valid directory for the volume mount test.
+		// In CWD, "testdata" usually exists.
+		if _, err := os.Stat("testdata"); os.IsNotExist(err) {
+			_ = os.Mkdir("testdata", 0755)
+			defer os.Remove("testdata")
+		}
+
 		containerEnv := &configv1.ContainerEnvironment{}
 		containerEnv.SetImage("alpine:latest")
+		// Use a relative path that IsRelativePath will accept (assuming it doesn't contain ..)
+		// and verify that it is passed to Docker.
+		// Note: IsRelativePath checks relative to CWD. We use "testdata" as a safe relative path.
 		containerEnv.SetVolumes(map[string]string{
-			"/host/path": "/container/path",
+			"testdata": "/container/path",
 		})
 		executor := newDockerExecutor(containerEnv).(*dockerExecutor)
 
@@ -815,7 +854,9 @@ func TestDockerExecutor_Mocked(t *testing.T) {
 
 		require.NotNil(t, capturedHostConfig)
 		require.Len(t, capturedHostConfig.Mounts, 1)
-		assert.Equal(t, "/host/path", capturedHostConfig.Mounts[0].Source)
+		// We expect the resolved absolute path
+		absTestdata, _ := filepath.Abs("testdata")
+		assert.Equal(t, absTestdata, capturedHostConfig.Mounts[0].Source)
 		assert.Equal(t, "/container/path", capturedHostConfig.Mounts[0].Target)
 	})
 }
