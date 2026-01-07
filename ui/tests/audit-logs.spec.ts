@@ -9,7 +9,7 @@ import * as path from 'path';
 
 test.describe('Feature Screenshot', () => {
   const date = new Date().toISOString().split('T')[0];
-  const auditDir = path.join(__dirname, '../../.audit/ui', date);
+  const auditDir = path.join(__dirname, '../.audit/ui', date);
 
   test('Capture Logs', async ({ page }) => {
     await page.goto('/logs');

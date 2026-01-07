@@ -33,7 +33,7 @@ test('verify stats page', async ({ page }) => {
   // .audit is in the repo root.
   // The test file is in ui/tests/stats_analytics.spec.ts
   // So repo root is ../../
-  const screenshotDir = path.resolve(__dirname, '../../.audit/ui/2025-12-30');
+  const screenshotDir = path.resolve(__dirname, '../.audit/ui/2025-12-30');
   if (!fs.existsSync(screenshotDir)) {
       fs.mkdirSync(screenshotDir, { recursive: true });
   }

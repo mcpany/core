@@ -9,7 +9,7 @@ import path from 'path';
 
 test('capture screenshots', async ({ page }) => {
   const date = new Date().toISOString().split('T')[0];
-  const auditDir = path.join(__dirname, `../.audits/ui/${date}`);
+  const auditDir = path.join(__dirname, `../.audit/ui/${date}`);
 
   await page.goto('/');
   await page.waitForTimeout(1000); // Wait for animations
