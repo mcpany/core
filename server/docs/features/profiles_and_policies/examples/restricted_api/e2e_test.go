@@ -28,22 +28,56 @@ import (
 )
 
 func TestRestrictedApiE2E(t *testing.T) {
-	if os.Getenv("SKIP_EXTERNAL_TESTS") == "true" {
-		t.Skip("Skipping external tests")
-	}
-
-	// 1. Config Content
 	// 1. Setup Mock Server
-	mockServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if r.URL.Path == "/v2/pet/findByStatus" {
-			w.Header().Set("Content-Type", "application/json")
-			w.WriteHeader(http.StatusOK)
-			_, _ = w.Write([]byte(`[{"id": 1, "name": "doggie", "status": "available"}]`))
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path == "/openapi.yaml" {
+			w.Header().Set("Content-Type", "application/yaml")
+			w.Write([]byte(`
+openapi: "3.0.0"
+info:
+  version: 1.0.0
+  title: Swagger Petstore
+paths:
+  /pet/findByStatus:
+    get:
+      operationId: findPetsByStatus
+      parameters:
+        - name: status
+          in: query
+          schema:
+            type: array
+            items:
+              type: string
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+  /pet:
+    post:
+      operationId: addPet
+      responses:
+        "200":
+          description: successful operation
+`))
 			return
 		}
-		http.Error(w, "Not Found", http.StatusNotFound)
+		if r.URL.Path == "/pet/findByStatus" {
+			w.Header().Set("Content-Type", "application/json")
+			w.Write([]byte(`[{"id": 1, "name": "doggie", "status": "available"}]`))
+			return
+		}
+		if r.URL.Path == "/pet" {
+			w.WriteHeader(http.StatusOK)
+			return
+		}
+		http.NotFound(w, r)
 	}))
-	defer mockServer.Close()
+	defer server.Close()
 
 	// 2. Config Content
 	configContent := fmt.Sprintf(`
@@ -51,45 +85,8 @@ upstream_services:
   - id: "petstore-service"
     name: "petstore-service"
     openapi_service:
-      address: "%s/v2"
-      spec_content: |
-        openapi: "3.0.0"
-        info:
-          version: 1.0.0
-          title: Swagger Petstore
-        paths:
-          /pet/findByStatus:
-            get:
-              operationId: findPetsByStatus
-              parameters:
-                - name: status
-                  in: query
-                  schema:
-                    type: array
-                    items:
-                      type: string
-              responses:
-                '200':
-                  description: successful operation
-          /pet/{petId}:
-             get:
-              operationId: getPetById
-              parameters:
-                - name: petId
-                  in: path
-                  required: true
-                  schema:
-                    type: integer
-                    format: int64
-              responses:
-                '200':
-                  description: successful operation
-          /pet:
-            post:
-              operationId: addPet
-              responses:
-                '200':
-                   description: successful operation
+      address: "%s"
+      spec_url: "%s/openapi.yaml"
     call_policies:
       - default_action: DENY
         rules:
@@ -97,14 +94,14 @@ upstream_services:
             name_regex: "^petstore-service\\.findPetsByStatus$"
           - action: ALLOW
             name_regex: "^petstore-service\\.getPetById$"
-`, mockServer.URL)
+`, server.URL, server.URL)
 
 	tmpDir := t.TempDir()
 	configPath := filepath.Join(tmpDir, "config.yaml")
 	err := os.WriteFile(configPath, []byte(configContent), 0644)
 	require.NoError(t, err)
 
-	// 2. Setup Server components
+	// 3. Setup Server components
 	ctx := context.Background()
 	fs := afero.NewOsFs()
 	store := config.NewFileStore(fs, []string{configPath})
@@ -125,7 +122,7 @@ upstream_services:
 	_, err = mcpserver.NewServer(ctx, toolManager, promptManager, resourceManager, authManager, serviceRegistry, busProvider, true)
 	require.NoError(t, err)
 
-	// 3. Register Services
+	// 4. Register Services
 	for _, serviceConfig := range cfg.GetUpstreamServices() {
 		upstream, err := upstreamFactory.NewUpstream(serviceConfig)
 		require.NoError(t, err)
@@ -133,7 +130,7 @@ upstream_services:
 		require.NoError(t, err)
 	}
 
-	// 4. Test logic
+	// 5. Test logic
 	tests := []struct {
 		name          string
 		toolName      string

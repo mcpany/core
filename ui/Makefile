@@ -30,12 +30,12 @@ export TEST_GID
 # Default test target
 # Run the tests in a docker container
 test: clean-test-results build-test-docker build-server-docker
-	mkdir -p test-results .audit ../build/playwright-report
+	mkdir -p test-results .audit ../build/playwright-report docs playwright-report
 	chmod -R 777 test-results .audit ../build/playwright-report || true
 	if [ -z '$(ARGS)' ]; then \
-		SERVER_IMAGE=$(SERVER_IMAGE) docker compose -f ./docker-compose.test.yml up --abort-on-container-exit --exit-code-from ui-tests; \
+		HOST_UID=$(shell id -u) HOST_GID=$(shell id -g) SERVER_IMAGE=$(SERVER_IMAGE) docker compose -f ./docker-compose.test.yml up --abort-on-container-exit --exit-code-from ui-tests; \
 	else \
-		SERVER_IMAGE=$(SERVER_IMAGE) docker compose -f ./docker-compose.test.yml run --rm --service-ports ui-tests npx playwright test $(ARGS); \
+		HOST_UID=$(shell id -u) HOST_GID=$(shell id -g) SERVER_IMAGE=$(SERVER_IMAGE) docker compose -f ./docker-compose.test.yml run --rm --service-ports ui-tests npx playwright test $(ARGS); \
 	fi
 
 clean-test-results:
@@ -49,8 +49,10 @@ build-server-docker:
 	docker tag mcpany/server:latest $(SERVER_IMAGE)
 
 # Run audit tests (generate screenshots)
+# Run audit tests (generate screenshots)
 audit: build-test-docker
-	SERVER_IMAGE=$(SERVER_IMAGE) CAPTURE_SCREENSHOTS=true docker compose -f ./docker-compose.test.yml up --abort-on-container-exit --exit-code-from ui-tests
+	@mkdir -p test-results playwright-report .audit docs
+	HOST_UID=$(shell id -u) HOST_GID=$(shell id -g) SERVER_IMAGE=$(SERVER_IMAGE) CAPTURE_SCREENSHOTS=true docker compose -f ./docker-compose.test.yml up --abort-on-container-exit --exit-code-from ui-tests
 	docker compose -f ./docker-compose.test.yml down -v
 
 test-ci: clean-test-results
