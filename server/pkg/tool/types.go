@@ -2001,6 +2001,14 @@ func isShellCommand(cmd string) bool {
 		"sh", "bash", "zsh", "dash", "ash", "ksh", "csh", "tcsh", "fish",
 		"pwsh", "powershell", "powershell.exe", "pwsh.exe", "cmd", "cmd.exe",
 		"ssh", "scp", "su", "sudo", "env",
+		// Common interpreters and runners that can execute code
+		"python", "python2", "python3",
+		"ruby", "perl", "php",
+		"node", "nodejs", "bun", "deno",
+		"lua", "awk", "gawk", "nawk", "sed",
+		"jq",
+		"psql", "mysql", "sqlite3",
+		"docker",
 	}
 	base := filepath.Base(cmd)
 	for _, shell := range shells {
