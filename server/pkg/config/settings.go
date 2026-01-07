@@ -255,6 +255,11 @@ func (s *Settings) GetDlp() *configv1.DLPConfig {
 	return s.proto.GetDlp()
 }
 
+// SetDlp sets the DLP configuration.
+func (s *Settings) SetDlp(dlp *configv1.DLPConfig) {
+	s.proto.SetDlp(dlp)
+}
+
 // GetOidc returns the OIDC configuration.
 func (s *Settings) GetOidc() *configv1.OIDCConfig {
 	return s.proto.GetOidc()
