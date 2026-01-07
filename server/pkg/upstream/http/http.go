@@ -344,11 +344,13 @@ func (u *Upstream) createAndRegisterHTTPTools(ctx context.Context, serviceID, ad
 				} else {
 					resolvedURL.RawPath = resolvedURL.Path // If RawPath was empty, it syncs with Path (which now has /)
 				}
-			} else if resolvedURL.RawPath == "" {
+			} else {
 				// Base has slash. Ensure RawPath is synced if it was empty?
 				// If RawPath is empty, url.String() uses Path.
 				// But we are about to append to RawPath. So we MUST ensure RawPath is populated if we want to use it.
-				resolvedURL.RawPath = resolvedURL.Path
+				if resolvedURL.RawPath == "" {
+					resolvedURL.RawPath = resolvedURL.Path
+				}
 			}
 
 			// Append the endpoint path directly

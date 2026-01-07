@@ -9,13 +9,13 @@ import (
 	"encoding/hex"
 	"fmt"
 
+	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/mcpany/core/server/pkg/logging"
 	"github.com/mcpany/core/server/pkg/prompt"
 	"github.com/mcpany/core/server/pkg/resource"
 	"github.com/mcpany/core/server/pkg/tool"
 	"github.com/mcpany/core/server/pkg/upstream"
 	"github.com/mcpany/core/server/pkg/util"
-	configv1 "github.com/mcpany/core/proto/config/v1"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/structpb"
 )
@@ -39,6 +39,8 @@ func defaultClientFactory(config *configv1.VectorUpstreamService) (Client, error
 	switch t := config.VectorDbType.(type) {
 	case *configv1.VectorUpstreamService_Pinecone:
 		return NewPineconeClient(t.Pinecone)
+	case *configv1.VectorUpstreamService_Milvus:
+		return NewMilvusClient(t.Milvus)
 	default:
 		return nil, fmt.Errorf("unsupported vector database type")
 	}
