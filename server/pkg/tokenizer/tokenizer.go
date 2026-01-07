@@ -6,6 +6,7 @@ package tokenizer
 
 import (
 	"fmt"
+	"reflect"
 	"strconv"
 	"unicode"
 	"unicode/utf8"
@@ -177,8 +178,7 @@ func CountTokensInValue(t Tokenizer, v interface{}) (int, error) {
 	case nil:
 		return t.CountTokens("null")
 	default:
-		// Convert to string representation
-		return t.CountTokens(fmt.Sprintf("%v", val))
+		return countTokensReflect(t, v)
 	}
 }
 
@@ -225,8 +225,7 @@ func countTokensInValueSimple(t *SimpleTokenizer, v interface{}) (int, error) {
 	case float64:
 		return t.CountTokens(strconv.FormatFloat(val, 'g', -1, 64))
 	default:
-		// Convert to string representation
-		return t.CountTokens(fmt.Sprintf("%v", val))
+		return countTokensReflect(t, v)
 	}
 }
 
@@ -276,9 +275,65 @@ func countTokensInValueWord(t *WordTokenizer, v interface{}) (int, error) {
 		}
 		return count, nil
 	default:
-		// Convert to string representation
-		return t.CountTokens(fmt.Sprintf("%v", val))
+		return countTokensReflect(t, v)
 	}
+}
+
+// countTokensReflect uses reflection to count tokens in arbitrary structures.
+// This is a performance optimization to avoid the overhead of fmt.Sprintf("%v", v),
+// which allocates a large string and fails to correctly traverse pointers in structs.
+func countTokensReflect(t Tokenizer, v interface{}) (int, error) {
+	val := reflect.ValueOf(v)
+	switch val.Kind() {
+	case reflect.Ptr, reflect.Interface:
+		if val.IsNil() {
+			return t.CountTokens("null")
+		}
+		return CountTokensInValue(t, val.Elem().Interface())
+	case reflect.Struct:
+		count := 0
+		for i := 0; i < val.NumField(); i++ {
+			if val.Type().Field(i).IsExported() {
+				c, err := CountTokensInValue(t, val.Field(i).Interface())
+				if err != nil {
+					return 0, err
+				}
+				count += c
+			}
+		}
+		return count, nil
+	case reflect.Slice, reflect.Array:
+		count := 0
+		for i := 0; i < val.Len(); i++ {
+			c, err := CountTokensInValue(t, val.Index(i).Interface())
+			if err != nil {
+				return 0, err
+			}
+			count += c
+		}
+		return count, nil
+	case reflect.Map:
+		count := 0
+		iter := val.MapRange()
+		for iter.Next() {
+			// Count key
+			kc, err := t.CountTokens(fmt.Sprintf("%v", iter.Key().Interface())) // Keys usually string/int
+			if err != nil {
+				return 0, err
+			}
+			count += kc
+			// Count value
+			vc, err := CountTokensInValue(t, iter.Value().Interface())
+			if err != nil {
+				return 0, err
+			}
+			count += vc
+		}
+		return count, nil
+	}
+
+	// Final fallback
+	return t.CountTokens(fmt.Sprintf("%v", v))
 }
 
 func simpleTokenizeInt(n int) int {
