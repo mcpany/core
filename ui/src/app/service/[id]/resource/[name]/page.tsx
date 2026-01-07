@@ -16,7 +16,7 @@ export default function ResourceDetailPage({ params: paramsPromise }: { params: 
     const [service, setService] = useState<UpstreamServiceConfig | null>(null);
 
     useEffect(() => {
-        apiClient.getService(params.id).then(res => setService(res.service));
+        apiClient.getService(params.id).then(res => setService(res.service || null));
     }, [params.id]);
 
     const breadcrumbItems: BreadcrumbItem[] = service ? [

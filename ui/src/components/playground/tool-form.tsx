@@ -65,7 +65,7 @@ export function ToolForm({ tool, onSubmit, onCancel }: ToolFormProps) {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const validationErrors = validate(tool.schema, formData);
+    const validationErrors = validate(tool.inputSchema, formData);
 
     if (Object.keys(validationErrors).length > 0) {
         setErrors(validationErrors);
@@ -79,13 +79,13 @@ export function ToolForm({ tool, onSubmit, onCancel }: ToolFormProps) {
   return (
     <form onSubmit={handleSubmit} className="space-y-4 py-2 flex flex-col h-[60vh]">
       <div className="flex-1 overflow-y-auto pr-2">
-         {(!tool.schema || !tool.schema.properties || Object.keys(tool.schema.properties).length === 0) ? (
+         {(!tool.inputSchema || !tool.inputSchema.properties || Object.keys(tool.inputSchema.properties).length === 0) ? (
              <div className="text-sm text-muted-foreground italic">
                  This tool takes no arguments.
              </div>
          ) : (
              <SchemaForm
-                schema={tool.schema}
+                schema={tool.inputSchema}
                 value={formData}
                 onChange={(val) => {
                     setFormData(val);

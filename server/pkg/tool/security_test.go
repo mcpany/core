@@ -105,3 +105,51 @@ func TestLocalCommandTool_Execute_DockerInjection_Blocked(t *testing.T) {
 		t.Fatalf("Expected 'shell injection detected' error, got: %v", err)
 	}
 }
+
+func TestLocalCommandTool_Execute_PythonInjection(t *testing.T) {
+	// This test demonstrates that python is not currently treated as a shell command,
+	// allowing code injection via argument substitution.
+
+	toolDef := &v1.Tool{
+		Name: proto.String("python_tool"),
+	}
+
+	service := &configv1.CommandLineUpstreamService{
+		Command: proto.String("python3"),
+	}
+
+	callDef := &configv1.CommandLineCallDefinition{
+		Args: []string{"-c", "print('{{msg}}')"},
+		Parameters: []*configv1.CommandLineParameterMapping{
+			{
+				Schema: &configv1.ParameterSchema{
+					Name: proto.String("msg"),
+				},
+			},
+		},
+	}
+
+	ct := NewLocalCommandTool(toolDef, service, callDef, nil, "test-call-id")
+
+	// Malicious input trying to break out of python string
+	// msg = '); print("INJECTED"); print('
+	// Resulting code: print(''); print("INJECTED"); print('')
+	// Note: We need to escape quotes for JSON
+
+	injectionPayload := "'); print(\"INJECTED\"); print('"
+	jsonInput, _ := json.Marshal(map[string]string{"msg": injectionPayload})
+
+	req := &ExecutionRequest{
+		ToolName: "python_tool",
+		ToolInputs: jsonInput,
+	}
+
+	// Execute
+	_, err := ct.Execute(context.Background(), req)
+
+	// Expect strict shell injection prevention to kick in for Python
+	assert.Error(t, err)
+	if err != nil {
+		assert.Contains(t, err.Error(), "shell injection detected")
+	}
+}

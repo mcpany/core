@@ -194,10 +194,10 @@ export default function ServicesPage() {
                                     delete newService.mcpService;
 
 
-                                    if (val === 'http') newService.httpService = { address: "" };
-                                    if (val === 'grpc') newService.grpcService = { address: "" };
-                                    if (val === 'cmd') newService.commandLineService = { command: "", workingDirectory: "", local: false, env: {}, tools: [], resources: [], prompts: [], communicationProtocol: 0, calls: {} }; // Initialize required fields? Proto TS Might require more
-                                    if (val === 'mcp') newService.mcpService = { toolAutoDiscovery: true, tools: [], resources: [], calls: [], prompts: [] };
+                                    if (val === 'http') newService.httpService = { address: "", tools: [], calls: {}, resources: [], prompts: [] };
+                                    if (val === 'grpc') newService.grpcService = { address: "", useReflection: false, tools: [], resources: [], calls: {}, prompts: [], protoDefinitions: [], protoCollection: [] };
+                                    if (val === 'cmd') newService.commandLineService = { command: "", workingDirectory: "", local: false, env: {}, tools: [], resources: [], prompts: [], communicationProtocol: 0, calls: {} };
+                                    if (val === 'mcp') newService.mcpService = { toolAutoDiscovery: true, tools: [], resources: [], calls: {}, prompts: [] };
 
                                     setSelectedService(newService);
                                 }}

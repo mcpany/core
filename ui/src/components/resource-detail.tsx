@@ -29,12 +29,14 @@ export function ResourceDetail({ serviceId, resourceName }: { serviceId: string,
       setError(null);
       try {
         const { service: serviceDetails } = await apiClient.getService(serviceId);
-        setService(serviceDetails);
+        setService(serviceDetails || null);
 
-        const serviceData =
-            serviceDetails.grpcService ||
-            serviceDetails.httpService ||
-            serviceDetails.commandLineService ||
+        if (!serviceDetails) {
+            setError("Service not found");
+            setIsLoading(false);
+            return;
+        }
+        const serviceData = serviceDetails.grpcService || serviceDetails.httpService || serviceDetails.commandLineService ||
             serviceDetails.openapiService ||
             serviceDetails.websocketService ||
             serviceDetails.webrtcService ||
@@ -114,7 +116,7 @@ export function ResourceDetail({ serviceId, resourceName }: { serviceId: string,
       <CardContent className="grid gap-6">
         <ServicePropertyCard title="Resource Definition" data={{
             "Name": resource.name,
-            "Type": resource.type || "N/A",
+            "Mime Type": resource.mimeType || "N/A",
         }} />
         <Card>
             <CardHeader>

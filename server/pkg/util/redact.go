@@ -126,7 +126,6 @@ func redactSlice(s []interface{}) []interface{} {
 	return newSlice
 }
 
-
 // bytesContainsFold2 is a proposed optimization that we might use in the future.
 // Ideally, we want a function that can search for multiple keys at once (Aho-Corasick),
 // but for now we stick to optimizing the single key search or the calling pattern.
