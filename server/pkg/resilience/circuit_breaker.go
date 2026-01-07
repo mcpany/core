@@ -52,9 +52,7 @@ func NewCircuitBreaker(config *configv1.CircuitBreakerConfig) *CircuitBreaker {
 func (cb *CircuitBreaker) Execute(ctx context.Context, work func(context.Context) error) error {
 	// Optimization: Optimistically check if Closed without lock.
 	// This covers the "Happy Path" (most common case).
-	if cb.getState() == StateClosed {
-		// Proceed without lock
-	} else {
+	if cb.getState() != StateClosed {
 		// Slow path: acquire lock to check Open/HalfOpen state
 		cb.mutex.Lock()
 
