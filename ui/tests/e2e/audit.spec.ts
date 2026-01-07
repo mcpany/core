@@ -49,7 +49,7 @@ test.describe('MCP Any Audit Screenshots', () => {
     await page.goto('/services');
     await page.waitForSelector('text=Upstream Services');
     // Wait for either list headers (if services exist) or empty state message
-    await page.waitForTimeout(1000); 
+    await page.waitForTimeout(1000);
     await page.screenshot({ path: path.join(auditDir, 'services.png'), fullPage: true });
   });
 
