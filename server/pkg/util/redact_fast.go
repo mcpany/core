@@ -101,7 +101,7 @@ func redactJSONFast(input []byte) []byte {
 					// Check the unescaped key string
 					// We convert string to bytes to use existing helpers if needed, or pass string.
 					// scanForSensitiveKeys expects bytes.
-					sensitive = scanForSensitiveKeys([]byte(keyStr), false)
+					sensitive = scanForSensitiveKeys([]byte(keyStr), false, false)
 				} else {
 					// Failed to unmarshal key, treat as not sensitive or fallback?
 					// If key is invalid JSON, we probably shouldn't be here or it's not a valid key.
@@ -110,7 +110,7 @@ func redactJSONFast(input []byte) []byte {
 			} else {
 				// Use scanForSensitiveKeys to check if the key matches any sensitive pattern.
 				// scanForSensitiveKeys checks for substrings and handles case folding as implemented in its logic.
-				sensitive = scanForSensitiveKeys(keyContent, false)
+				sensitive = scanForSensitiveKeys(keyContent, false, false)
 			}
 
 			if sensitive {

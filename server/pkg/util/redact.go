@@ -83,7 +83,8 @@ func init() {
 func RedactJSON(input []byte) []byte {
 	// Optimization: Check if any sensitive key is present in the input.
 	// If not, we can skip the expensive unmarshal/marshal process.
-	if !scanForSensitiveKeys(input, false) {
+	// We pass performIsKeyCheck=true because we are scanning raw JSON and want to avoid false positives in values.
+	if !scanForSensitiveKeys(input, false, true) {
 		return input
 	}
 
@@ -144,14 +145,16 @@ func IsSensitiveKey(key string) bool {
 	// Use the optimized byte-based scanner for keys as well.
 	// Avoid allocation using zero-copy conversion.
 	//nolint:gosec // Zero-copy conversion for optimization
-	return scanForSensitiveKeys(unsafe.Slice(unsafe.StringData(key), len(key)), false)
+	// We pass performIsKeyCheck=false because we are scanning the key itself, not the raw JSON.
+	return scanForSensitiveKeys(unsafe.Slice(unsafe.StringData(key), len(key)), false, false)
 }
 
 // scanForSensitiveKeys checks if input contains any sensitive key.
 // If checkEscape is true, it also returns true if a backslash is found.
+// If performIsKeyCheck is true, it verifies that the match is followed by a quote and a colon (heuristic for JSON keys).
 // This function replaces the old linear scan (O(N*M)) with a more optimized scan
 // that uses SIMD-accelerated IndexByte for grouped start characters.
-func scanForSensitiveKeys(input []byte, checkEscape bool) bool {
+func scanForSensitiveKeys(input []byte, checkEscape bool, performIsKeyCheck bool) bool {
 	if checkEscape {
 		if bytes.IndexByte(input, '\\') != -1 {
 			return true
@@ -172,7 +175,7 @@ func scanForSensitiveKeys(input []byte, checkEscape bool) bool {
 			matchStart := offset + idx
 			startChar := input[matchStart] | 0x20 // Normalize to lowercase
 
-			if checkPotentialMatch(input, matchStart, startChar) {
+			if checkPotentialMatch(input, matchStart, startChar, performIsKeyCheck) {
 				return true
 			}
 			offset = matchStart + 1
@@ -215,7 +218,7 @@ func scanForSensitiveKeys(input []byte, checkEscape bool) bool {
 
 			// In this loop, we know the candidate char matches startChar (modulo case).
 			// We can reuse the common validation logic.
-			if checkPotentialMatch(input, matchStart, startChar) {
+			if checkPotentialMatch(input, matchStart, startChar, performIsKeyCheck) {
 				return true
 			}
 
@@ -228,7 +231,7 @@ func scanForSensitiveKeys(input []byte, checkEscape bool) bool {
 
 // checkPotentialMatch checks if a sensitive key starts at matchStart.
 // startChar must be the lowercase version of input[matchStart].
-func checkPotentialMatch(input []byte, matchStart int, startChar byte) bool {
+func checkPotentialMatch(input []byte, matchStart int, startChar byte, performIsKeyCheck bool) bool {
 	// Optimization: Check second character
 	if matchStart+1 < len(input) {
 		second := input[matchStart+1] | 0x20
@@ -274,7 +277,11 @@ func checkPotentialMatch(input []byte, matchStart int, startChar byte) bool {
 
 			// Optimization: check if it looks like a key (followed by quote and colon)
 			// This reduces false positives when sensitive words appear in values.
-			if isKey(input, endIdx) {
+			if performIsKeyCheck {
+				if isKey(input, endIdx) {
+					return true
+				}
+			} else {
 				return true
 			}
 		}
