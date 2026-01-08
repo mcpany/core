@@ -24,25 +24,24 @@ Based on a review of the MCP ecosystem (mcp.so, LobeHub, GitHub, Docker), we ide
 
 | Rank | Feature Name | Why it matters | Difficulty |
 | :--- | :--- | :--- | :--- |
-| 1 | **Agent Debugger & Inspector** | **UX/Observability**: Visualizes tool usage, token consumption, and traffic replay. | Medium |
-| 2 | **Context Optimizer Middleware** | **Performance**: Automatically truncates/summarizes large outputs to prevent "Context Bloat". | Medium |
-| 3 | **Diagnostic "Doctor" API** | **UX/Ops**: Self-diagnosis endpoint to report env health and connectivity. | Low |
-| 4 | **Kubernetes Operator** | **Scalability/Ops**: Essential for enterprise adoption. | High |
-| 5 | **Browser Automation Provider** | **Feature**: High-demand capability (Playwright) for live web interaction. | High |
-| 6 | **SSO Integration (OIDC/SAML)** | **Security**: Enterprise requirement for Admin UI. | Medium |
-| 7 | **Prompt Injection Guardrails** | **Security**: Critical for Trust. Intercepts malicious prompts. | High |
-| 8 | **WASM Plugin System** | **Extensibility**: Safe sandboxing for transformation logic. | High |
-| 9 | **Universal Connector Runtime** | **Integration**: Standardized sidecar management. | High |
-| 10 | **Terraform Provider** | **Ops**: "Configuration as Code". | High |
+| 1 | **Kubernetes Operator V2** | **Scalability/Ops**: Robust automation for enterprise deployment. | High |
+| 2 | **Browser Automation Provider** | **Feature**: High-demand capability (Playwright) for live web interaction. | High |
+| 3 | **Multi-Region Federation** | **Scalability**: Link instances for low latency. | High |
+| 4 | **Active-Active High Availability** | **Reliability**: Zero-downtime upgrades and failure tolerance. | High |
+| 5 | **Disaster Recovery Playbook** | **Ops**: Automated backup/restore. | Medium |
+| 6 | **Dynamic Secret Rotation** | **Security**: Integration with Vault/AWS Secrets Manager. | High |
+| 7 | **Downstream mTLS** | **Security**: Zero Trust for agents. | Medium |
+| 8 | **Just-In-Time (JIT) Access** | **Security**: Temporary privilege elevation. | High |
+| 9 | **Audit Log Export** | **Compliance**: Real-time push to Splunk/Datadog. | Medium |
+| 10 | **Cost Attribution** | **Observability**: Track token usage/cost per user. | Medium |
+
 
 ### Feature Gap & Technical Feasibility
 
 | Feature | Status | Feasibility / Strategy |
 | :--- | :--- | :--- |
-| **Context Optimizer** | In Progress | **Medium**: Reuse `server/pkg/tokenizer`. Implement `SummarizerMiddleware`. |
-| **Doctor API** | Missing | **Low**: `mcpctl doctor` command and `/v1/health/doctor` endpoint. |
-| **Agent Debugger** | Missing | **Medium**: Enhance `server/cmd/webhooks` (Sidecar) or build new UI. |
-| **WASM Sandbox** | Missing | **High**: Integrate `wazero` or similar. |
+| **Browser Automation** | Missing | **High**: Implement `server/pkg/upstream/browser` using Playwright-go. |
+| **K8s Operator V2** | In Progress | **High**: Enhance `k8s/operator` with CRDs and controller logic. |
 
 ## Implemented Features
 
@@ -66,12 +65,14 @@ Based on a review of the MCP ecosystem (mcp.so, LobeHub, GitHub, Docker), we ide
 - [x] [OAuth 2.0](features/authentication/README.md)
 - [x] [Role-Based Access Control (RBAC)](features/rbac.md)
 - [x] [Upstream mTLS](features/security.md) (Client Certificate Authentication)
+- [x] [SSO Integration (OIDC/SAML)](features/sso.md)
 
 ### Policies
 
 - [x] [Caching](features/caching/README.md)
 - [x] [Rate Limiting](features/rate-limiting/README.md) (Memory & Redis)
 - [x] [Resilience](features/resilience/README.md) (Circuit Breakers & Retries)
+- [x] [Prompt Injection Guardrails](features/guardrails.md)
 
 ### Observability
 
@@ -80,6 +81,8 @@ Based on a review of the MCP ecosystem (mcp.so, LobeHub, GitHub, Docker), we ide
 - [x] [Structured Logging](features/monitoring/README.md)
 - [x] [Audit Logging](features/audit_logging.md)
 - [x] [Context Consumption Metrics](features/monitoring/README.md) (Token Counting)
+- [x] [Agent Debugger & Inspector](features/debugger.md)
+- [x] [Context Optimizer Middleware](features/context_optimizer.md)
 
 ### Security
 
@@ -100,84 +103,64 @@ Based on a review of the MCP ecosystem (mcp.so, LobeHub, GitHub, Docker), we ide
 - [x] [Schema Validation](features/schema-validation.md)
 - [x] [Service Profiles](features/profiles_and_policies/README.md)
 - [x] [Semantic Caching](features/caching/README.md) (SQLite/Memory with Vector Embeddings)
+- [x] [WASM Plugin System](features/wasm.md)
+- [x] [Universal Connector Runtime](features/connector_runtime.md)
+- [x] [Terraform Provider](features/terraform.md)
 
 ## Developer Experience & Tooling
 
-- [x] [CI/CD Config Validator CLI](features/mcpctl.md)
+- [x] [CI/CD Config Validator CLI](features/mcpctl.md) (includes Doctor API)
 - [x] [Doc Generator](features/doc_generator.md)
 - [x] [Hot Reload](features/hot_reload.md)
 - [x] [Helm Chart Official Support](features/helm.md)
-
-
-
-
 
 ## Critical User Journeys (Upcoming)
 
 ### Enterprise & Operations
 
-1.  **Kubernetes Operator**: Automate deployment, scaling, and lifecycle management of MCP Any instances in K8s.
-2.  **Terraform Provider**: Manage MCP resources (Sources, Tools, Policies) via "Configuration as Code".
-3.  **[x] Helm Chart Official Support**: Provide a production-ready Helm chart with auto-scaling and monitoring presets.
-4.  **Multi-Region Federation**: Link multiple MCP Any instances across regions for low-latency tool access.
-5.  **Active-Active High Availability**: Support leaderless clustering for zero-downtime upgrades and failure tolerance.
-6.  **Disaster Recovery Playbook**: Automated backup/restore of state and configuration to S3/GCS.
-7.  **Dynamic Secret Rotation**: Integration with HashiCorp Vault / AWS Secrets Manager for zero-touch secret handling.
-8.  **[x] CI/CD Config Validator CLI**: A standalone binary to validate `config.yaml` in pipelines before deployment.
-9.  **Automated Dependency Updates**: "Dependabot" for MCP Tools - auto-update tool definitions when upstreams change.
-10. **Service Mesh Sidecar Mode**: Run MCP Any as a lightweight sidecar for application pods.
+1.  **Kubernetes Operator**: Automate deployment, scaling, and lifecycle management of MCP Any instances in K8s. (Partially implemented in `k8s/operator`)
+2.  **Multi-Region Federation**: Link multiple MCP Any instances across regions for low-latency tool access.
+3.  **Active-Active High Availability**: Support leaderless clustering for zero-downtime upgrades and failure tolerance.
+4.  **Disaster Recovery Playbook**: Automated backup/restore of state and configuration to S3/GCS.
+5.  **Dynamic Secret Rotation**: Integration with HashiCorp Vault / AWS Secrets Manager for zero-touch secret handling.
+6.  **Automated Dependency Updates**: "Dependabot" for MCP Tools - auto-update tool definitions when upstreams change.
+7.  **Service Mesh Sidecar Mode**: Run MCP Any as a lightweight sidecar for application pods.
 
 ### Security & Compliance
 
-11. **[x] Data Loss Prevention (DLP)**: Middleware to redact PII (emails, SSNs) from logs and tool inputs/outputs.
-12. **Downstream mTLS**: Enforce mutual TLS for agents collecting to MCP Any (Zero Trust).
-13. **SSO with SAML/OIDC**: Enterprise identity integration for the Admin UI and RBAC.
-14. **Just-In-Time (JIT) Access**: Temporary elevation of privileges for specific tools (e.g., "Grant Write access for 1 hour").
-15. **Audit Log Export**: Push audit logs to Splunk, Datadog to Cloud Logging in real-time.
-16. **Fine-Grained ABAC**: Attribute-Based Access Control (e.g. "Only allow production tools during business hours").
-17. **Tool Signature Verification**: Enforce that loaded WASM/Binary tools are signed by a trusted key.
-18. **Vulnerability Scanning Integration**: Auto-scan registered tool container images for CVEs.
-19. **Policy dry-run mode**: Test new security policies on traffic without blocking (shadow mode).
-20. **Compliance Reports**: Generate PDF reports of user activity for SOC2/ISO audits.
+8.  **Downstream mTLS**: Enforce mutual TLS for agents collecting to MCP Any (Zero Trust).
+9.  **Just-In-Time (JIT) Access**: Temporary elevation of privileges for specific tools (e.g., "Grant Write access for 1 hour").
+10. **Audit Log Export**: Push audit logs to Splunk, Datadog to Cloud Logging in real-time.
+11. **Fine-Grained ABAC**: Attribute-Based Access Control (e.g. "Only allow production tools during business hours").
+12. **Tool Signature Verification**: Enforce that loaded WASM/Binary tools are signed by a trusted key.
+13. **Vulnerability Scanning Integration**: Auto-scan registered tool container images for CVEs.
+14. **Policy dry-run mode**: Test new security policies on traffic without blocking (shadow mode).
+15. **Compliance Reports**: Generate PDF reports of user activity for SOC2/ISO audits.
 
 ### Observability & Insights
 
-21. **Custom Dashboards**: Drag-and-drop UI to create dashboards from MCP metrics.
-22. **Cost Attribution**: Track token usage and "cost" per user/team/project.
-23. **Alerting Rules Integration**: Built-in Prometheus alerting rules for high error rates or latency.
-24. **Request/Response Replay**: "TiVo" for tool interactions - replay past requests for debugging.
-25. **Distributed Tracing Sampling Control**: Dynamic sampling rates based on tenant or error-rate.
-26. **SLO Management**: Define and track Service Level Objectives (availability, latency) within the UI.
-27. **Semantic Search over Logs**: Use embeddings to search audit logs (e.g., "Show me all database drops").
-28. **Tool Usage Analytics**: Heatmaps of most used tools and arguments.
-29. **Anomaly Detection**: ML-based detection of unusual tool usage patterns.
-30. **Webhook Notifications**: Slack/PagerDuty alerts for critical system events.
-
-### Developer Experience & Core
-
-31. **WASM Plugin System**: Safe, sandboxed custom transformers and checkers.
-32. **[x] Cloud Storage Provider (S3/GCS)**: Treat buckets as filesystems for agents.
-33. **Interactive Playground 2.0**: Enhanced UI to test tools with auto-generated forms and mock data.
-
-35. **Local Emulator**: CLI command to run a lightweight in-memory MCP server for dev.
-36. **Language Server Protocol (LSP)**: IDE support for `config.yaml` editing (auto-complete tools).
-37. **[x] Hot Reload**: Reload configuration without restarting the server process.
-38. **Type-Safe Tool Chaining**: Define "Workflows" where output of Tool A feeds Tool B (Server-side).
-39. **Mock Provider**: A built-in provider that returns static responses for testing agents.
-40. **[x] Doc Generator**: Generate static HTML documentation site from registered tools.
+16. **Custom Dashboards**: Drag-and-drop UI to create dashboards from MCP metrics.
+17. **Cost Attribution**: Track token usage and "cost" per user/team/project.
+18. **Alerting Rules Integration**: Built-in Prometheus alerting rules for high error rates or latency.
+19. **Request/Response Replay**: "TiVo" for tool interactions - replay past requests for debugging.
+20. **Distributed Tracing Sampling Control**: Dynamic sampling rates based on tenant or error-rate.
+21. **SLO Management**: Define and track Service Level Objectives (availability, latency) within the UI.
+22. **Semantic Search over Logs**: Use embeddings to search audit logs (e.g., "Show me all database drops").
+23. **Tool Usage Analytics**: Heatmaps of most used tools and arguments.
+24. **Anomaly Detection**: ML-based detection of unusual tool usage patterns.
+25. **Webhook Notifications**: Slack/PagerDuty alerts for critical system events.
 
 ### Connectivity & Integration
 
-41. **[x] Database Connectors (SQL)**: Native support for PostgreSQL/MySQL as "Sources" (RAG included).
-42. **Salesforce Integration**: Official connector for CRM data.
-43. **Jira/Confluence Connector**: Read/Write tickets and docs.
-44. **Slack/Discord Bot Gateway**: Expose tools directly as chat commands.
-45. **Email Server Gateway**: Trigger tools via inbound email (SMTP/IMAP).
-46. **Browser Automation Provider**: Headless browser tool for "Read Webpage" capabilities.
-47. **GraphQL Subscriptions**: Support real-time data push from GraphQL upstreams.
-48. **Binary Protocol Support**: Protobuf over WebSocket for high-performance low-bandwidth agents.
-49. **Edge Computing Support**: Optimized build for Cloudflare Workers / AWS Lambda.
-50. **Air-Gapped Mode**: Full offline operation with bundled dependencies and local docs.
+26. **Salesforce Integration**: Official connector for CRM data.
+27. **Jira/Confluence Connector**: Read/Write tickets and docs.
+28. **Slack/Discord Bot Gateway**: Expose tools directly as chat commands.
+29. **Email Server Gateway**: Trigger tools via inbound email (SMTP/IMAP).
+30. **Browser Automation Provider**: Headless browser tool for "Read Webpage" capabilities.
+31. **GraphQL Subscriptions**: Support real-time data push from GraphQL upstreams.
+32. **Binary Protocol Support**: Protobuf over WebSocket for high-performance low-bandwidth agents.
+33. **Edge Computing Support**: Optimized build for Cloudflare Workers / AWS Lambda.
+34. **Air-Gapped Mode**: Full offline operation with bundled dependencies and local docs.
 
 ## Codebase Health Report
 
@@ -185,7 +168,7 @@ Based on a review of the MCP ecosystem (mcp.so, LobeHub, GitHub, Docker), we ide
 
 - **Rate Limiting Complexity**: `server/pkg/middleware/ratelimit.go` mixes local/Redis logic. Needs refactoring into strategies.
 - **Filesystem Provider Monolith**: `server/pkg/upstream/filesystem/upstream.go` handles too many types. Split into factory pattern.
-- **Documentation Scatter**: Needs unification (in progress).
+- **Documentation Scatter**: Needs unification.
 - **Test Coverage for Cloud Providers**: S3/GCS tests are missing/mocked. Need local emulation (MinIO).
 - **Webhooks "Test" Code**: `server/cmd/webhooks` needs formalization if intended for production (Sidecar pattern).
 
