@@ -8,8 +8,8 @@
 import { BinaryReader, BinaryWriter } from "@bufbuild/protobuf/wire";
 import Long from "long";
 import { MessageBus } from "../../bus/bus";
-import { AuthenticationConfig } from "./auth";
 import { RateLimitConfig, UpstreamServiceCollection, UpstreamServiceConfig } from "./upstream_service";
+import { User } from "./user";
 
 export const protobufPackage = "mcpany.config.v1";
 
@@ -25,19 +25,6 @@ export interface McpAnyServerConfig {
   upstreamServiceCollections: UpstreamServiceCollection[];
   /** A list of users authorized to access the server. */
   users: User[];
-}
-
-export interface User {
-  /** The unique ID of the user (UUID or Username). */
-  id: string;
-  /** The authentication configuration for the user. */
-  authentication?:
-    | AuthenticationConfig
-    | undefined;
-  /** The list of profile IDs this user has access to. */
-  profileIds: string[];
-  /** The list of roles assigned to the user. */
-  roles: string[];
 }
 
 /** Secret defines a secret value. */
@@ -484,118 +471,6 @@ export const McpAnyServerConfig: MessageFns<McpAnyServerConfig> = {
     message.upstreamServiceCollections =
       object.upstreamServiceCollections?.map((e) => UpstreamServiceCollection.fromPartial(e)) || [];
     message.users = object.users?.map((e) => User.fromPartial(e)) || [];
-    return message;
-  },
-};
-
-function createBaseUser(): User {
-  return { id: "", authentication: undefined, profileIds: [], roles: [] };
-}
-
-export const User: MessageFns<User> = {
-  encode(message: User, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.id !== "") {
-      writer.uint32(10).string(message.id);
-    }
-    if (message.authentication !== undefined) {
-      AuthenticationConfig.encode(message.authentication, writer.uint32(18).fork()).join();
-    }
-    for (const v of message.profileIds) {
-      writer.uint32(26).string(v!);
-    }
-    for (const v of message.roles) {
-      writer.uint32(34).string(v!);
-    }
-    return writer;
-  },
-
-  decode(input: BinaryReader | Uint8Array, length?: number): User {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
-    const end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseUser();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1: {
-          if (tag !== 10) {
-            break;
-          }
-
-          message.id = reader.string();
-          continue;
-        }
-        case 2: {
-          if (tag !== 18) {
-            break;
-          }
-
-          message.authentication = AuthenticationConfig.decode(reader, reader.uint32());
-          continue;
-        }
-        case 3: {
-          if (tag !== 26) {
-            break;
-          }
-
-          message.profileIds.push(reader.string());
-          continue;
-        }
-        case 4: {
-          if (tag !== 34) {
-            break;
-          }
-
-          message.roles.push(reader.string());
-          continue;
-        }
-      }
-      if ((tag & 7) === 4 || tag === 0) {
-        break;
-      }
-      reader.skip(tag & 7);
-    }
-    return message;
-  },
-
-  fromJSON(object: any): User {
-    return {
-      id: isSet(object.id) ? globalThis.String(object.id) : "",
-      authentication: isSet(object.authentication) ? AuthenticationConfig.fromJSON(object.authentication) : undefined,
-      profileIds: globalThis.Array.isArray(object?.profile_ids)
-        ? object.profile_ids.map((e: any) => globalThis.String(e))
-        : [],
-      roles: globalThis.Array.isArray(object?.roles) ? object.roles.map((e: any) => globalThis.String(e)) : [],
-    };
-  },
-
-  toJSON(message: User): unknown {
-    const obj: any = {};
-    if (message.id !== "") {
-      obj.id = message.id;
-    }
-    if (message.authentication !== undefined) {
-      obj.authentication = AuthenticationConfig.toJSON(message.authentication);
-    }
-    if (message.profileIds?.length) {
-      obj.profile_ids = message.profileIds;
-    }
-    if (message.roles?.length) {
-      obj.roles = message.roles;
-    }
-    return obj;
-  },
-
-  create<I extends Exact<DeepPartial<User>, I>>(base?: I): User {
-    return User.fromPartial(base ?? ({} as any));
-  },
-  fromPartial<I extends Exact<DeepPartial<User>, I>>(object: I): User {
-    const message = createBaseUser();
-    message.id = object.id ?? "";
-    message.authentication = (object.authentication !== undefined && object.authentication !== null)
-      ? AuthenticationConfig.fromPartial(object.authentication)
-      : undefined;
-    message.profileIds = object.profileIds?.map((e) => e) || [];
-    message.roles = object.roles?.map((e) => e) || [];
     return message;
   },
 };

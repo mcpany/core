@@ -1353,7 +1353,7 @@ func (a *Application) runServerMode(
 	}
 	v1.RegisterRegistrationServiceServer(grpcServer, registrationServer)
 
-	adminServer := admin.NewServer(cachingMiddleware, a.ToolManager)
+	adminServer := admin.NewServer(cachingMiddleware, a.ToolManager, store)
 	pb_admin.RegisterAdminServiceServer(grpcServer, adminServer)
 
 	// Initialize gRPC-Web wrapper even if gRPC port is not exposed
