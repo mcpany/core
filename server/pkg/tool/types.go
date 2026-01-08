@@ -675,12 +675,6 @@ func (t *HTTPTool) prepareInputsAndURL(ctx context.Context, req *ExecutionReques
 	}
 	urlString := buf.String()
 
-	parsedURL, err := url.Parse(urlString)
-	if err != nil {
-		return nil, "", fmt.Errorf("failed to parse URL: %w", err)
-	}
-	urlString = parsedURL.String()
-
 	return inputs, urlString, nil
 }
 
