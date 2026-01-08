@@ -57,6 +57,14 @@ func (t *DockerTransport) Connect(ctx context.Context) (mcp.Connection, error) {
 		return nil, fmt.Errorf("failed to create docker client: %w", err)
 	}
 
+	// Ensure the client is closed if connection setup fails
+	success := false
+	defer func() {
+		if !success {
+			_ = cli.Close()
+		}
+	}()
+
 	img := t.StdioConfig.GetContainerImage()
 	if img == "" {
 		return nil, fmt.Errorf("container_image must be specified for docker transport")
@@ -149,6 +157,7 @@ func (t *DockerTransport) Connect(ctx context.Context) (mcp.Connection, error) {
 		containerID: resp.ID,
 		cli:         cli,
 	}
+	success = true
 	return &dockerConn{
 		rwc:     rwc,
 		decoder: json.NewDecoder(rwc),
