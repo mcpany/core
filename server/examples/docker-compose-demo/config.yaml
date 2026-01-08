@@ -16,7 +16,7 @@ upstream_services:
           description: "Echoes back the request body."
           call_id: "echo"
           input_schema: {}
-      # health_check:
-      #   url: "http://http-echo-server:8080/health"
-      #   interval: "10s"
-      #   timeout: "2s"
+      health_check:
+        url: "http://http-echo-server:8080/health"
+        interval: "10s"
+        timeout: "2s"

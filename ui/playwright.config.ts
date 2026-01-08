@@ -40,7 +40,7 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: `BACKEND_URL=${process.env.BACKEND_URL || 'http://localhost:50050'} npm run dev`,
+    command: 'npm run dev',
     url: 'http://localhost:9002',
     reuseExistingServer: true,
     env: {

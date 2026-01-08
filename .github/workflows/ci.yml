@@ -349,9 +349,6 @@ jobs:
           - target: build-everything-docker
             image: mcpany/everything:latest
             filename: everything.tar
-          - target: docker-build-ui
-            image: mcpany/ui:latest
-            filename: ui.tar
     steps:
       - uses: actions/checkout@v5
       - name: Set up QEMU

@@ -75,5 +75,4 @@ test.describe('Playground Tool Configuration', () => {
     // "Mock execution result"
     await expect(page.getByText('Mock execution result')).toBeVisible();
   });
-
 });
