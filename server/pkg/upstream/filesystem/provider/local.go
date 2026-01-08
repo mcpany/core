@@ -56,9 +56,18 @@ func (p *LocalProvider) ResolvePath(virtualPath string) (string, error) {
 		}
 
 		if strings.HasPrefix(checkPath, cleanVRoot) {
-			if len(cleanVRoot) > len(bestMatchVirtual) {
-				bestMatchVirtual = cleanVRoot
-				bestMatchReal = rRoot
+			// Ensure it matches as a directory component
+			// cleanVRoot is "/data", checkPath is "/database" -> startsWith is true, but not a child.
+			// Matches if checkPath == cleanVRoot OR checkPath starts with cleanVRoot + "/"
+			validMatch := checkPath == cleanVRoot ||
+				strings.HasPrefix(checkPath, cleanVRoot+"/") ||
+				cleanVRoot == "/"
+
+			if validMatch {
+				if len(cleanVRoot) > len(bestMatchVirtual) {
+					bestMatchVirtual = cleanVRoot
+					bestMatchReal = rRoot
+				}
 			}
 		}
 	}
