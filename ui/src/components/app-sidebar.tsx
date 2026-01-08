@@ -67,6 +67,11 @@ const platformItems = [
     icon: Terminal,
   },
   {
+    title: "Traces",
+    url: "/traces",
+    icon: Activity,
+  },
+  {
     title: "Stacks",
     url: "/stacks",
     icon: Layers,
