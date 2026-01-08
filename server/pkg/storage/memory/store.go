@@ -6,6 +6,7 @@ package memory
 
 import (
 	"context"
+	"fmt"
 	"sync"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
@@ -17,6 +18,7 @@ type Store struct {
 	mu             sync.RWMutex
 	services       map[string]*configv1.UpstreamServiceConfig
 	secrets        map[string]*configv1.Secret
+	users          map[string]*configv1.User
 	globalSettings *configv1.GlobalSettings
 }
 
@@ -25,6 +27,7 @@ func NewStore() *Store {
 	return &Store{
 		services: make(map[string]*configv1.UpstreamServiceConfig),
 		secrets:  make(map[string]*configv1.Secret),
+		users:    make(map[string]*configv1.User),
 	}
 }
 
@@ -143,5 +146,59 @@ func (s *Store) DeleteSecret(id string) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	delete(s.secrets, id)
+	return nil
+}
+
+// CreateUser creates a new user.
+func (s *Store) CreateUser(_ context.Context, user *configv1.User) error {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	if user.GetId() == "" {
+		return fmt.Errorf("user ID is required")
+	}
+	if _, ok := s.users[user.GetId()]; ok {
+		return fmt.Errorf("user already exists")
+	}
+	s.users[user.GetId()] = proto.Clone(user).(*configv1.User)
+	return nil
+}
+
+// GetUser retrieves a user by ID.
+func (s *Store) GetUser(_ context.Context, id string) (*configv1.User, error) {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+	if user, ok := s.users[id]; ok {
+		return proto.Clone(user).(*configv1.User), nil
+	}
+	return nil, nil
+}
+
+// ListUsers retrieves all users.
+func (s *Store) ListUsers(_ context.Context) ([]*configv1.User, error) {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+	list := make([]*configv1.User, 0, len(s.users))
+	for _, user := range s.users {
+		list = append(list, proto.Clone(user).(*configv1.User))
+	}
+	return list, nil
+}
+
+// UpdateUser updates an existing user.
+func (s *Store) UpdateUser(_ context.Context, user *configv1.User) error {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	if _, ok := s.users[user.GetId()]; !ok {
+		return fmt.Errorf("user not found")
+	}
+	s.users[user.GetId()] = proto.Clone(user).(*configv1.User)
+	return nil
+}
+
+// DeleteUser deletes a user by ID.
+func (s *Store) DeleteUser(_ context.Context, id string) error {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	delete(s.users, id)
 	return nil
 }

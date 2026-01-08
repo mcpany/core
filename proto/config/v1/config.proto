@@ -7,7 +7,6 @@ package mcpany.config.v1;
 
 import "proto/bus/bus.proto";
 import "proto/config/v1/upstream_service.proto";
-import "proto/config/v1/auth.proto";
 
 option go_package = "github.com/mcpany/core/proto/config/v1";
 option java_outer_classname = "ConfigProto";
@@ -15,6 +14,8 @@ option java_outer_classname = "ConfigProto";
 // ===================================================================
 // Root Server Configuration
 // ===================================================================
+
+import "proto/config/v1/user.proto";
 
 // McpAnyServerConfig is the root configuration for the entire MCPANY server.
 message McpAnyServerConfig {
@@ -26,17 +27,6 @@ message McpAnyServerConfig {
   repeated UpstreamServiceCollection upstream_service_collections = 3 [json_name = "upstream_service_collections"];
   // A list of users authorized to access the server.
   repeated User users = 4 [json_name = "users"];
-}
-
-message User {
-  // The unique ID of the user (UUID or Username).
-  string id = 1 [json_name = "id"];
-  // The authentication configuration for the user.
-  AuthenticationConfig authentication = 2 [json_name = "authentication"];
-  // The list of profile IDs this user has access to.
-  repeated string profile_ids = 3 [json_name = "profile_ids"];
-  // The list of roles assigned to the user.
-  repeated string roles = 4 [json_name = "roles"];
 }
 
 // Secret defines a secret value.

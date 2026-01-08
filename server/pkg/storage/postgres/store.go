@@ -128,3 +128,115 @@ func (s *Store) DeleteService(ctx context.Context, name string) error {
 	}
 	return nil
 }
+
+// CreateUser creates a new user.
+func (s *Store) CreateUser(ctx context.Context, user *configv1.User) error {
+	if user.GetId() == "" {
+		return fmt.Errorf("user ID is required")
+	}
+
+	opts := protojson.MarshalOptions{UseProtoNames: true}
+	configJSON, err := opts.Marshal(user)
+	if err != nil {
+		return fmt.Errorf("failed to marshal user config: %w", err)
+	}
+
+	query := `
+	INSERT INTO users (id, config_json, updated_at)
+	VALUES ($1, $2, CURRENT_TIMESTAMP)
+	`
+	_, err = s.db.ExecContext(ctx, query, user.GetId(), string(configJSON))
+	if err != nil {
+		return fmt.Errorf("failed to create user: %w", err)
+	}
+	return nil
+}
+
+// GetUser retrieves a user by ID.
+func (s *Store) GetUser(ctx context.Context, id string) (*configv1.User, error) {
+	query := "SELECT config_json FROM users WHERE id = $1"
+	row := s.db.QueryRowContext(ctx, query, id)
+
+	var configJSON string
+	if err := row.Scan(&configJSON); err != nil {
+		if err == sql.ErrNoRows {
+			return nil, nil // Not found
+		}
+		return nil, fmt.Errorf("failed to scan user config: %w", err)
+	}
+
+	var user configv1.User
+	if err := protojson.Unmarshal([]byte(configJSON), &user); err != nil {
+		return nil, fmt.Errorf("failed to unmarshal user config: %w", err)
+	}
+	return &user, nil
+}
+
+// ListUsers retrieves all users.
+func (s *Store) ListUsers(ctx context.Context) ([]*configv1.User, error) {
+	rows, err := s.db.QueryContext(ctx, "SELECT config_json FROM users")
+	if err != nil {
+		return nil, fmt.Errorf("failed to query users: %w", err)
+	}
+	defer func() { _ = rows.Close() }()
+
+	var users []*configv1.User
+	for rows.Next() {
+		var configJSON string
+		if err := rows.Scan(&configJSON); err != nil {
+			return nil, fmt.Errorf("failed to scan user config: %w", err)
+		}
+
+		var user configv1.User
+		if err := protojson.Unmarshal([]byte(configJSON), &user); err != nil {
+			return nil, fmt.Errorf("failed to unmarshal user config: %w", err)
+		}
+		users = append(users, &user)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, fmt.Errorf("error iterating rows: %w", err)
+	}
+
+	return users, nil
+}
+
+// UpdateUser updates an existing user.
+func (s *Store) UpdateUser(ctx context.Context, user *configv1.User) error {
+	if user.GetId() == "" {
+		return fmt.Errorf("user ID is required")
+	}
+
+	opts := protojson.MarshalOptions{UseProtoNames: true}
+	configJSON, err := opts.Marshal(user)
+	if err != nil {
+		return fmt.Errorf("failed to marshal user config: %w", err)
+	}
+
+	query := `
+	UPDATE users
+	SET config_json = $2, updated_at = CURRENT_TIMESTAMP
+	WHERE id = $1
+	`
+	res, err := s.db.ExecContext(ctx, query, user.GetId(), string(configJSON))
+	if err != nil {
+		return fmt.Errorf("failed to update user: %w", err)
+	}
+	rowsAffected, err := res.RowsAffected()
+	if err != nil {
+		return fmt.Errorf("failed to get rows affected: %w", err)
+	}
+	if rowsAffected == 0 {
+		return fmt.Errorf("user not found")
+	}
+	return nil
+}
+
+// DeleteUser deletes a user by ID.
+func (s *Store) DeleteUser(ctx context.Context, id string) error {
+	_, err := s.db.ExecContext(ctx, "DELETE FROM users WHERE id = $1", id)
+	if err != nil {
+		return fmt.Errorf("failed to delete user: %w", err)
+	}
+	return nil
+}
