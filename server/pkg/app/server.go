@@ -606,6 +606,28 @@ func (a *Application) ReloadConfig(fs afero.Fs, configPaths []string) error {
 
 	log.Info("Reloading configuration...")
 	metrics.IncrCounter([]string{"config", "reload", "total"}, 1)
+
+	cfg, err := a.loadConfig(fs, configPaths)
+	if err != nil {
+		metrics.IncrCounter([]string{"config", "reload", "errors"}, 1)
+		return fmt.Errorf("failed to load services from config: %w", err)
+	}
+
+	// Update global settings
+	a.updateGlobalSettings(cfg)
+
+	// Update profiles on reload
+	a.ToolManager.SetProfiles(
+		cfg.GetGlobalSettings().GetProfiles(),
+		cfg.GetGlobalSettings().GetProfileDefinitions(),
+	)
+
+	// Reconcile services (add/remove/update)
+	a.reconcileServices(cfg)
+	return nil
+}
+
+func (a *Application) loadConfig(fs afero.Fs, configPaths []string) (*config_v1.McpAnyServerConfig, error) {
 	var stores []config.Store
 	if len(configPaths) > 0 {
 		stores = append(stores, config.NewFileStore(fs, configPaths))
@@ -615,20 +637,20 @@ func (a *Application) ReloadConfig(fs afero.Fs, configPaths []string) error {
 	}
 
 	store := config.NewMultiStore(stores...)
-	cfg, err := config.LoadServices(context.Background(), store, "server")
-	if err != nil {
-		metrics.IncrCounter([]string{"config", "reload", "errors"}, 1)
-		return fmt.Errorf("failed to load services from config: %w", err)
-	}
+	return config.LoadServices(context.Background(), store, "server")
+}
 
-	// Update global settings
+func (a *Application) updateGlobalSettings(cfg *config_v1.McpAnyServerConfig) {
+	log := logging.GetLogger()
 	if a.SettingsManager != nil {
 		a.SettingsManager.Update(cfg.GetGlobalSettings(), a.explicitAPIKey)
 	}
 
 	// Update dynamic middlewares
 	if a.ipMiddleware != nil {
-		a.ipMiddleware.Update(a.SettingsManager.GetAllowedIPs())
+		if err := a.ipMiddleware.Update(a.SettingsManager.GetAllowedIPs()); err != nil {
+			log.Error("Failed to update IP allowlist", "error", err)
+		}
 	}
 	if a.corsMiddleware != nil {
 		a.corsMiddleware.Update(a.SettingsManager.GetAllowedOrigins())
@@ -644,13 +666,11 @@ func (a *Application) ReloadConfig(fs afero.Fs, configPaths []string) error {
 			a.standardMiddlewares.GlobalRateLimit.UpdateConfig(cfg.GetGlobalSettings().GetRateLimit())
 		}
 	}
+}
 
-	// Update profiles on reload
-	a.ToolManager.SetProfiles(
-		cfg.GetGlobalSettings().GetProfiles(),
-		cfg.GetGlobalSettings().GetProfileDefinitions(),
-	)
-
+// reconcileServices reconciles the service registry with the new configuration.
+func (a *Application) reconcileServices(cfg *config_v1.McpAnyServerConfig) {
+	log := logging.GetLogger()
 	// Get current active services
 	currentServicesMap := make(map[string]*config_v1.UpstreamServiceConfig)
 	if a.ServiceRegistry != nil {
@@ -694,8 +714,6 @@ func (a *Application) ReloadConfig(fs afero.Fs, configPaths []string) error {
 			needsUpdate = true
 		} else {
 			// Compare configs
-			// We need to handle fields that are populated during registration (ID, SanitizedName).
-			// We create a clone of the old config and strip these fields to compare with the new fresh config.
 			newSvcCopy := proto.Clone(newSvc).(*config_v1.UpstreamServiceConfig)
 			if newSvcCopy.GetId() == "" {
 				newSvcCopy.Id = oldConfig.Id
@@ -707,18 +725,15 @@ func (a *Application) ReloadConfig(fs afero.Fs, configPaths []string) error {
 			if !proto.Equal(oldConfig, newSvcCopy) {
 				log.Info("Updating service", "service", name)
 				needsUpdate = true
-				// Unregister old service first
 				if a.ServiceRegistry != nil {
 					if err := a.ServiceRegistry.UnregisterService(context.Background(), name); err != nil {
 						log.Error("Failed to unregister service for update", "service", name, "error", err)
-						// Proceeding anyway as we want to try to register the new one
 					}
 				}
 			}
 		}
 
 		if needsUpdate {
-			// Register new service
 			if a.ServiceRegistry != nil {
 				_, _, _, err := a.ServiceRegistry.RegisterService(context.Background(), newSvc)
 				if err != nil {
@@ -734,7 +749,6 @@ func (a *Application) ReloadConfig(fs afero.Fs, configPaths []string) error {
 	}
 
 	log.Info("Reload complete", "tools_count", len(a.ToolManager.ListTools()))
-	return nil
 }
 
 // WaitForStartup waits for the application to be fully initialized.
