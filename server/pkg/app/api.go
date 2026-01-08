@@ -13,6 +13,7 @@ import (
 	"github.com/google/uuid"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/mcpany/core/server/pkg/config"
+	"github.com/mcpany/core/server/pkg/health"
 	"github.com/mcpany/core/server/pkg/logging"
 	"github.com/mcpany/core/server/pkg/storage"
 	"github.com/mcpany/core/server/pkg/tool"
@@ -31,6 +32,10 @@ func (a *Application) createAPIHandler(store storage.Storage) http.Handler {
 		w.WriteHeader(http.StatusOK)
 		_, _ = w.Write([]byte("OK"))
 	})
+	// Doctor API
+	doctor := health.NewDoctor()
+	mux.Handle("/doctor", doctor.Handler())
+
 	mux.HandleFunc("/settings", a.handleSettings(store))
 	mux.HandleFunc("/tools", a.handleTools())
 	mux.HandleFunc("/execute", a.handleExecute())
