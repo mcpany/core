@@ -5,10 +5,13 @@ package middleware
 
 import (
 	"net/http"
+	"sync"
 )
 
 // HTTPCORSMiddleware handles CORS for HTTP endpoints.
+// It is thread-safe and supports dynamic updates.
 type HTTPCORSMiddleware struct {
+	mu             sync.RWMutex
 	allowedOrigins []string
 }
 
@@ -21,9 +24,20 @@ func NewHTTPCORSMiddleware(allowedOrigins []string) *HTTPCORSMiddleware {
 	}
 }
 
+// Update updates the allowed origins.
+func (m *HTTPCORSMiddleware) Update(allowedOrigins []string) {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+	m.allowedOrigins = allowedOrigins
+}
+
 // Handler wraps an http.Handler with CORS logic.
 func (m *HTTPCORSMiddleware) Handler(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		m.mu.RLock()
+		origins := m.allowedOrigins
+		m.mu.RUnlock()
+
 		origin := r.Header.Get("Origin")
 		if origin == "" {
 			// Not a CORS request
@@ -34,7 +48,7 @@ func (m *HTTPCORSMiddleware) Handler(next http.Handler) http.Handler {
 		allowed := false
 		wildcardAllowed := false
 
-		for _, o := range m.allowedOrigins {
+		for _, o := range origins {
 			if o == origin {
 				allowed = true
 				break
