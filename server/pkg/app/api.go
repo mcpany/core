@@ -456,9 +456,14 @@ func (a *Application) handleSecretDetail(store storage.Storage) http.HandlerFunc
 				http.NotFound(w, r)
 				return
 			}
+			// Sentinel Security: Redact the secret value before returning
+			// We clone the secret to avoid modifying the cached object (if any)
+			safeSecret := proto.Clone(secret).(*configv1.Secret)
+			safeSecret.Value = proto.String("[REDACTED]")
+
 			w.Header().Set("Content-Type", "application/json")
 			opts := protojson.MarshalOptions{UseProtoNames: true}
-			b, _ := opts.Marshal(secret)
+			b, _ := opts.Marshal(safeSecret)
 			_, _ = w.Write(b)
 
 		case http.MethodDelete:
