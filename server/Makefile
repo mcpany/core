@@ -645,6 +645,10 @@ else
 endif
 
 # Target to run the UI Docker smoke test
+# Target to build UI Docker image (wrapper for CI)
+docker-build-ui:
+	$(MAKE) -C ../ui docker-build-ui
+
 docker-smoke-test-ui:
 ifdef HAS_DOCKER
 	@echo "Building UI Docker image..."

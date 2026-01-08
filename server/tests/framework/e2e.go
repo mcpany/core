@@ -224,7 +224,7 @@ func BuildWebsocketWeatherServer(t *testing.T) *integration.ManagedProcess {
 	if _, err := os.Stat(binaryPath); os.IsNotExist(err) {
 		t.Logf("Binary not found at %s, attempting to build...", binaryPath)
 		sourcePath := filepath.Join(root, "examples/upstream_service_demo/http/server/weather_server/weather_server.go")
-		cmd := exec.CommandContext(context.Background(), "go", "build", "-o", binaryPath, sourcePath) // #nosec G204
+		cmd := exec.CommandContext(context.Background(), "go", "build", "-o", binaryPath, sourcePath) //nolint:gosec // Testing code
 		cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stderr
 		err := cmd.Run()
