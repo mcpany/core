@@ -44,6 +44,30 @@ func TestPostgresStore(t *testing.T) {
 		}
 	})
 
+	t.Run("ListUsers", func(t *testing.T) {
+		rows := sqlmock.NewRows([]string{"config_json"}).
+			AddRow(`{"id":"user-1","roles":["admin"]}`).
+			AddRow(`{"id":"user-2","roles":["viewer"]}`)
+
+		mock.ExpectQuery("SELECT config_json FROM users").
+			WillReturnRows(rows)
+
+		got, err := store.ListUsers(context.Background())
+		if err != nil {
+			t.Errorf("error was not expected while listing users: %s", err)
+		}
+		if len(got) != 2 {
+			t.Errorf("expected 2 users, got %d", len(got))
+		}
+		if got[0].GetId() != "user-1" {
+			t.Errorf("expected user-1, got %s", got[0].GetId())
+		}
+
+		if err := mock.ExpectationsWereMet(); err != nil {
+			t.Errorf("there were unmet expectations: %s", err)
+		}
+	})
+
 	t.Run("GetService", func(t *testing.T) {
 		svc := &configv1.UpstreamServiceConfig{
 			Name: proto.String("test-service"),
