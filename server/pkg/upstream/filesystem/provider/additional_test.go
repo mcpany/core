@@ -5,100 +5,131 @@ package provider
 
 import (
 	"os"
+	"path/filepath"
 	"testing"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"google.golang.org/protobuf/proto"
 )
 
-func stringPtr(s string) *string {
-	return &s
+// Test S3 Provider Factory
+func TestNewS3Provider(t *testing.T) {
+	t.Run("Valid Config", func(t *testing.T) {
+		cfg := &configv1.S3Fs{
+			Bucket:          proto.String("my-bucket"),
+			Region:          proto.String("us-west-2"),
+			AccessKeyId:     proto.String("key"),
+			SecretAccessKey: proto.String("secret"),
+			Endpoint:        proto.String("http://localhost:9000"),
+		}
+		p, err := NewS3Provider(cfg)
+		require.NoError(t, err)
+		require.NotNil(t, p)
+		assert.NotNil(t, p.GetFs())
+	})
+
+	t.Run("Missing Bucket", func(t *testing.T) {
+		cfg := &configv1.S3Fs{
+			Region: proto.String("us-east-1"),
+		}
+		p, err := NewS3Provider(cfg)
+		require.NoError(t, err)
+		assert.NotNil(t, p)
+	})
+
+	t.Run("Region Only", func(t *testing.T) {
+		cfg := &configv1.S3Fs{
+			Bucket: proto.String("bkt"),
+			Region: proto.String("us-east-1"),
+		}
+		p, err := NewS3Provider(cfg)
+		require.NoError(t, err)
+		assert.NotNil(t, p)
+	})
 }
 
-func TestLocalProvider_Methods(t *testing.T) {
-	tmpDir := t.TempDir()
-	p := NewLocalProvider(nil, map[string]string{"/": tmpDir})
+// Test SFTP Provider Factory
+func TestNewSftpProvider(t *testing.T) {
+	t.Run("Nil Config", func(t *testing.T) {
+		p, err := NewSftpProvider(nil)
+		assert.Error(t, err)
+		assert.Nil(t, p)
+		assert.Equal(t, "sftp config is nil", err.Error())
+	})
 
-	// Test GetFs
-	assert.NotNil(t, p.GetFs())
+	t.Run("Key Path Read Error", func(t *testing.T) {
+		cfg := &configv1.SftpFs{
+			Address: proto.String("localhost:22"),
+			KeyPath: proto.String("/non/existent/key"),
+		}
+		p, err := NewSftpProvider(cfg)
+		assert.Error(t, err)
+		assert.Nil(t, p)
+		assert.Contains(t, err.Error(), "failed to read private key")
+	})
 
-	// Test Close
-	assert.NoError(t, p.Close())
+	t.Run("Invalid Private Key", func(t *testing.T) {
+		// Create a dummy invalid key file
+		tmpFile := filepath.Join(t.TempDir(), "invalid_key")
+		err := os.WriteFile(tmpFile, []byte("not a key"), 0600)
+		require.NoError(t, err)
+
+		cfg := &configv1.SftpFs{
+			Address: proto.String("localhost:22"),
+			KeyPath: proto.String(tmpFile),
+		}
+		p, err := NewSftpProvider(cfg)
+		assert.Error(t, err)
+		assert.Nil(t, p)
+		assert.Contains(t, err.Error(), "failed to parse private key")
+	})
+
+	t.Run("Connection Error", func(t *testing.T) {
+		// Try to connect to a closed port
+		cfg := &configv1.SftpFs{
+			Address:  proto.String("localhost:54321"), // Random port likely closed
+			Username: proto.String("user"),
+			Password: proto.String("pass"),
+		}
+		p, err := NewSftpProvider(cfg)
+		assert.Error(t, err)
+		assert.Nil(t, p)
+		assert.Contains(t, err.Error(), "failed to dial ssh")
+	})
 }
 
-func TestNewS3Provider_Config(t *testing.T) {
-	// Minimal valid config
-	cfg := &configv1.S3Fs{
-		Bucket: stringPtr("my-bucket"),
-		Region: stringPtr("us-east-1"),
-	}
-	p, err := NewS3Provider(cfg)
-	require.NoError(t, err)
-	require.NotNil(t, p)
-	assert.NotNil(t, p.GetFs())
-	assert.NoError(t, p.Close())
-
-	// Config with credentials
-	cfgWithCreds := &configv1.S3Fs{
-		Bucket:          stringPtr("my-bucket"),
-		Region:          stringPtr("us-east-1"),
-		AccessKeyId:     stringPtr("AKIA..."),
-		SecretAccessKey: stringPtr("test-secret-key"),
-		SessionToken:    stringPtr("token"),
-		Endpoint:        stringPtr("http://localhost:9000"),
-	}
-	p2, err := NewS3Provider(cfgWithCreds)
-	require.NoError(t, err)
-	require.NotNil(t, p2)
-}
-
-func TestNewGcsProvider_Error(t *testing.T) {
-	// Nil config
-	p, err := NewGcsProvider(nil, nil)
-	assert.Error(t, err)
-	assert.Nil(t, p)
-	assert.Contains(t, err.Error(), "gcs config is nil")
-}
-
-func TestNewSftpProvider_Error(t *testing.T) {
-	// Nil config
-	p, err := NewSftpProvider(nil)
-	assert.Error(t, err)
-	assert.Nil(t, p)
-	assert.Contains(t, err.Error(), "sftp config is nil")
-
-	// Invalid key path
-	cfg := &configv1.SftpFs{
-		KeyPath: stringPtr("/non/existent/key"),
-	}
-	p, err = NewSftpProvider(cfg)
-	assert.Error(t, err)
-	assert.Nil(t, p)
-}
-
+// Test Zip Provider Factory
 func TestNewZipProvider_Error(t *testing.T) {
-	// Non-existent file
-	path := "/non/existent/file.zip"
-	cfg := &configv1.ZipFs{
-		FilePath: &path,
-	}
-	p, err := NewZipProvider(cfg)
-	assert.Error(t, err)
-	assert.Nil(t, p)
+	t.Run("File Not Found", func(t *testing.T) {
+		cfg := &configv1.ZipFs{
+			FilePath: proto.String("/non/existent/file.zip"),
+		}
+		p, err := NewZipProvider(cfg)
+		assert.Error(t, err)
+		assert.Nil(t, p)
+		assert.Contains(t, err.Error(), "failed to open zip file")
+	})
 
-	// Create a non-zip file
-	tmpFile, err := os.CreateTemp("", "not-a-zip")
-	require.NoError(t, err)
-	defer os.Remove(tmpFile.Name())
-	tmpFile.Write([]byte("not a zip"))
-	tmpFile.Close()
+	t.Run("Not A Zip File", func(t *testing.T) {
+		tmpFile := filepath.Join(t.TempDir(), "not_zip.txt")
+		err := os.WriteFile(tmpFile, []byte("plain text"), 0600)
+		require.NoError(t, err)
 
-	path2 := tmpFile.Name()
-	cfg2 := &configv1.ZipFs{
-		FilePath: &path2,
-	}
-	p2, err := NewZipProvider(cfg2)
+		cfg := &configv1.ZipFs{
+			FilePath: proto.String(tmpFile),
+		}
+		p, err := NewZipProvider(cfg)
+		assert.Error(t, err)
+		assert.Nil(t, p)
+		assert.Contains(t, err.Error(), "failed to create zip reader")
+	})
+}
+
+func TestLocalProvider_NoRoots(t *testing.T) {
+	p := NewLocalProvider(nil, nil)
+	_, err := p.ResolvePath("/test")
 	assert.Error(t, err)
-	assert.Nil(t, p2)
+	assert.Equal(t, "no root paths defined", err.Error())
 }
