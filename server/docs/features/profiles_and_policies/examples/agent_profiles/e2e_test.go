@@ -225,7 +225,7 @@ upstream_services:
 
 	t.Run("Planning_Profile", func(t *testing.T) {
 		checkVisibility(t, "planning",
-			[]string{"planning-tools.search_web", "shared-tools.ping", "builtin.mcp:list_roots"},
+			[]string{"planning-tools.search_web", "shared-tools.ping"},
 			[]string{"planning-guidelines"},
 			[]string{},
 		)
@@ -233,7 +233,7 @@ upstream_services:
 
 	t.Run("Executor_Profile", func(t *testing.T) {
 		checkVisibility(t, "executor",
-			[]string{"executor-tools.run_code", "shared-tools.ping", "builtin.mcp:list_roots"},
+			[]string{"executor-tools.run_code", "shared-tools.ping"},
 			[]string{},
 			[]string{"executor-tools.fix_bug"},
 		)
