@@ -209,3 +209,140 @@ func TestHelmChart(t *testing.T) {
 	require.Contains(t, outputStr, "kind: Deployment", "Rendered template should contain a Deployment")
 	require.Contains(t, outputStr, "app.kubernetes.io/name: mcpany", "Rendered template should contain the app name label")
 }
+
+func TestK8sFullStack(t *testing.T) {
+	if os.Getenv("E2E") != "true" {
+		t.Skip("Skipping K8s E2E test (E2E=true not set)")
+	}
+
+	// Dependencies check
+	requiredCmds := []string{"kind", "helm", "kubectl", "docker", "npm"}
+	for _, cmd := range requiredCmds {
+		if !commandExists(cmd) {
+			t.Fatalf("%s command not found", cmd)
+		}
+	}
+
+	rootDir := integration.ProjectRoot(t)
+	helmChartPath := filepath.Join(rootDir, "../k8s", "helm", "mcpany")
+	uiDir := filepath.Join(rootDir, "../ui")
+
+	// Cluster Config
+	clusterName := "mcpany-e2e-" + time.Now().Format("20060102-150405")
+	t.Logf("Creating Kind cluster: %s", clusterName)
+
+	// Create Cluster
+	createClusterCmd := exec.Command("kind", "create", "cluster", "--name", clusterName)
+	if out, err := createClusterCmd.CombinedOutput(); err != nil {
+		t.Fatalf("Failed to create kind cluster: %v\nOutput: %s", err, string(out))
+	}
+
+	// Cleanup
+	t.Cleanup(func() {
+		if t.Failed() {
+			// Dump logs
+			t.Log("Test failed, dumping cluster logs...")
+			exec.Command("kubectl", "--context", "kind-"+clusterName, "get", "pods", "-o", "wide").Run()
+			exec.Command("kubectl", "--context", "kind-"+clusterName, "describe", "pods").Run()
+			exec.Command("kubectl", "--context", "kind-"+clusterName, "logs", "-l", "app.kubernetes.io/name=mcpany", "--tail=100").Run()
+		}
+		t.Logf("Deleting Kind cluster: %s", clusterName)
+		exec.Command("kind", "delete", "cluster", "--name", clusterName).Run()
+	})
+
+	// Use the cluster context
+	kubectlCtx := "kind-" + clusterName
+
+	// Build Images
+	t.Log("Building Docker images...")
+	// Assuming make is available and works from root
+	// We might need to run specific make targets or direct docker build commands
+	// For simplicity calling 'make docker-build-all' from root might be heavy/slow
+	// Let's build server and ui specifically or assume they are pre-built?
+	// Better to build them here to ensure latest code is tested
+	buildCmd := exec.Command("make", "-C", filepath.Join(rootDir, ".."), "docker-build-all")
+	if out, err := buildCmd.CombinedOutput(); err != nil {
+		t.Fatalf("Failed to build images: %v\nOutput: %s", err, string(out))
+	}
+
+	// Load Images into Kind
+	// images := []string{"mcpany/server:latest", "mcpany/ui:latest", "redis:7", "postgres:15"}
+	// We need to pull postgres/redis if not present locally, 'kind load' needs them locally
+	// Or we just load mcpany images and let kind pull others?
+	// Kind can pull public images. We only need to load local ones.
+	localImages := []string{"mcpany/server:latest", "mcpany/ui:latest"}
+	for _, img := range localImages {
+		t.Logf("Loading image into Kind: %s", img)
+		loadCmd := exec.Command("kind", "load", "docker-image", img, "--name", clusterName)
+		if out, err := loadCmd.CombinedOutput(); err != nil {
+			t.Fatalf("Failed to load image %s: %v\nOutput: %s", img, err, string(out))
+		}
+	}
+
+	// Install Helm Chart
+	t.Log("Installing Helm chart...")
+	installCmd := exec.Command("helm", "install", "mcpany-e2e", helmChartPath,
+		"--kube-context", kubectlCtx,
+		"--set", "image.pullPolicy=Never", // For local kind images
+		"--set", "image.tag=latest",
+		"--set", "ui.image.pullPolicy=Never",
+		"--set", "database.persistence.enabled=false", // Use ephemeral storage for test reliability
+		"--set", "database.image.pullPolicy=IfNotPresent", // These come from registry
+		"--set", "redis.image.pullPolicy=IfNotPresent",
+		"--wait", // Wait for pods to be ready
+		"--timeout", "5m")
+	if out, err := installCmd.CombinedOutput(); err != nil {
+		t.Fatalf("Failed to install helm chart: %v\nOutput: %s", err, string(out))
+	}
+
+	// Port Forwarding
+	// We need to forward UI port to access from Playwright
+	// UI Service: mcpany-e2e-ui:3000
+	uiSvcName := "mcpany-e2e-ui"
+
+	// Start port-forward in background
+	// We pick a random free port for UI
+	// Doing simple port forward here
+	// ctx, cancel := context.WithCancel(context.Background())
+	// defer cancel()
+
+	// uiPort := "3000" // Local port matches container port for simplicity, or find free one
+	// TODO: Find free port logic if needed, but 3000 might be busy.
+	// Let's try 30080
+	localUIPort := "30080"
+
+	pfCmd := exec.Command("kubectl", "--context", kubectlCtx, "port-forward", "svc/"+uiSvcName, localUIPort+":3000")
+	if err := pfCmd.Start(); err != nil {
+		t.Fatalf("Failed to start port-forward: %v", err)
+	}
+	defer func() {
+		_ = pfCmd.Process.Kill()
+	}()
+
+	// Wait for port-forward compatibility
+	t.Log("Waiting for port-forward to be ready...")
+	require.Eventually(t, func() bool {
+		resp, err := http.Get("http://localhost:" + localUIPort)
+		if err != nil {
+			return false
+		}
+		defer resp.Body.Close()
+		return resp.StatusCode < 500
+	}, 60*time.Second, 1*time.Second, "UI did not become accessible via port-forward")
+
+	// Run Playwright Tests
+	t.Log("Running Playwright E2E tests...")
+	e2eCmd := exec.Command("npm", "run", "test")
+	e2eCmd.Dir = uiDir
+	e2eCmd.Env = os.Environ()
+	e2eCmd.Env = append(e2eCmd.Env, "REAL_CLUSTER=true")
+	e2eCmd.Env = append(e2eCmd.Env, "PLAYWRIGHT_BASE_URL=http://localhost:"+localUIPort)
+	// We might need to skip some tests specifically?
+	// The current suite runs all tests in e2e.spec.ts.
+
+	if out, err := e2eCmd.CombinedOutput(); err != nil {
+		t.Fatalf("Playwright tests failed: %v\nOutput: %s", err, string(out))
+	}
+
+	t.Log("K8s Full Stack Test passed!")
+}

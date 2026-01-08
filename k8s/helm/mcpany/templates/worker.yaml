@@ -1,37 +1,27 @@
-# Copyright 2025 Author(s) of MCP Any
+# Copyright 2026 Author(s) of MCP Any
 # SPDX-License-Identifier: Apache-2.0
 
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "mcpany.fullname" . }}
+  name: {{ include "mcpany.fullname" . }}-worker
   labels:
     {{- include "mcpany.labels" . | nindent 4 }}
+    app.kubernetes.io/component: worker
 spec:
-  replicas: {{ .Values.replicaCount }}
+  replicas: {{ .Values.worker.replicaCount }}
   selector:
     matchLabels:
       {{- include "mcpany.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: worker
   template:
     metadata:
-      {{- with .Values.podAnnotations }}
-      annotations:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
       labels:
         {{- include "mcpany.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: worker
     spec:
-      {{- with .Values.imagePullSecrets }}
-      imagePullSecrets:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
-      serviceAccountName: {{ include "mcpany.serviceAccountName" . }}
-      securityContext:
-        {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
-        - name: {{ .Chart.Name }}
-          securityContext:
-            {{- toYaml .Values.securityContext | nindent 12 }}
+        - name: worker
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           command:
@@ -39,44 +29,26 @@ spec:
             - "run"
             - "--config-path"
             - "/etc/mcpany/config.yaml"
+          ports:
+            - containerPort: 50050
+              name: http
           env:
             - name: POSTGRES_URL
               value: "postgres://{{ .Values.database.postgresUser }}:{{ .Values.database.postgresPassword }}@{{ include "mcpany.fullname" . }}-database:5432/{{ .Values.database.postgresDb }}?sslmode=disable"
             - name: REDIS_URL
               value: "redis://{{ include "mcpany.fullname" . }}-redis:6379"
-          ports:
-            - name: jsonrpc
-              containerPort: {{ .Values.service.jsonrpcPort }}
-              protocol: TCP
-            - name: grpc
-              containerPort: {{ .Values.service.grpcPort }}
-              protocol: TCP
           livenessProbe:
             httpGet:
               path: /healthz
-              port: jsonrpc
+              port: http
           readinessProbe:
             httpGet:
               path: /healthz
-              port: jsonrpc
+              port: http
           volumeMounts:
             - name: config
               mountPath: /etc/mcpany
-          resources:
-            {{- toYaml .Values.resources | nindent 12 }}
       volumes:
         - name: config
           configMap:
             name: {{ include "mcpany.fullname" . }}-config
-      {{- with .Values.nodeSelector }}
-      nodeSelector:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
-      {{- with .Values.affinity }}
-      affinity:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
-      {{- with .Values.tolerations }}
-      tolerations:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
