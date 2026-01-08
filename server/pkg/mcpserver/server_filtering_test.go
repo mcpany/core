@@ -144,6 +144,7 @@ func (m *serviceInfoProviderToolManager) SetMCPServer(_ tool.MCPServerProvider) 
 func (m *serviceInfoProviderToolManager) AddTool(_ tool.Tool) error                { return nil }
 func (m *serviceInfoProviderToolManager) ClearToolsForService(_ string)            {}
 func (m *serviceInfoProviderToolManager) SetProfiles(_ []string, _ []*configv1.ProfileDefinition) {}
+func (m *serviceInfoProviderToolManager) IsServiceAllowed(_, _ string) bool                       { return true }
 
 
 func TestResourceListFilteringMiddleware(t *testing.T) {

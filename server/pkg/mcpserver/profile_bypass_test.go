@@ -95,6 +95,15 @@ func TestServer_CallTool_ProfileBypass_Repro(t *testing.T) {
 	}
 	_ = tm.AddTool(restrictedTool)
 
+	// Configure profiles to allow access
+	profileDef := &configv1.ProfileDefinition{
+		Name: proto.String(restrictedProfileID),
+		ServiceConfig: map[string]*configv1.ProfileServiceConfig{
+			restrictedServiceID: {Enabled: proto.Bool(true)},
+		},
+	}
+	tm.SetProfiles([]string{restrictedProfileID}, []*configv1.ProfileDefinition{profileDef})
+
 	// Create client-server connection
 	client := mcp.NewClient(&mcp.Implementation{Name: "test-client"}, nil)
 	clientTransport, serverTransport := mcp.NewInMemoryTransports()

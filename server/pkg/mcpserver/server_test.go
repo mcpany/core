@@ -585,6 +585,8 @@ func (m *mockToolManager) ClearToolsForService(_ string) {
 
 func (m *mockToolManager) SetProfiles(_ []string, _ []*configv1.ProfileDefinition) {}
 
+func (m *mockToolManager) IsServiceAllowed(_, _ string) bool { return true }
+
 func TestServer_ToolManagerDelegation(t *testing.T) {
 	poolManager := pool.NewManager()
 	factory := factory.NewUpstreamServiceFactory(poolManager)
@@ -993,6 +995,8 @@ func (m *smartToolManager) AddMiddleware(_ tool.ExecutionMiddleware) {}
 func (m *smartToolManager) SetMCPServer(_ tool.MCPServerProvider)    {}
 func (m *smartToolManager) AddTool(_ tool.Tool) error                { return nil }
 func (m *smartToolManager) ClearToolsForService(_ string)            {}
+func (m *smartToolManager) SetProfiles(_ []string, _ []*configv1.ProfileDefinition) {}
+func (m *smartToolManager) IsServiceAllowed(_, _ string) bool                       { return true }
 
 
 func TestServer_MiddlewareChain(t *testing.T) {
