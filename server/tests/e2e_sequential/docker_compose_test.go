@@ -197,7 +197,7 @@ func testFunctionalWeather(t *testing.T, rootDir string) {
 	cmd := exec.Command("docker", "run", "-d", "--name", containerName,
 		"-p", "0:50050", // Dynamic port
 		"-v", fmt.Sprintf("%s:/config.yaml", configPath),
-		"ghcr.io/mcpany/server:latest",
+		"mcpany/server:latest",
 		"run", "--config-path", "/config.yaml", "--mcp-listen-address", ":50050",
 	)
 	t.Logf("Running command: %s", cmd.String())
