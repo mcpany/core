@@ -49,7 +49,6 @@ func NewDB(path string) (*DB, error) {
 		return nil, fmt.Errorf("failed to set busy_timeout: %w", err)
 	}
 
-
 	return &DB{db}, nil
 }
 
@@ -80,6 +79,22 @@ func initSchema(db *sql.DB) error {
 
 	CREATE TABLE IF NOT EXISTS users (
 		id TEXT PRIMARY KEY,
+		config_json TEXT NOT NULL,
+		created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+		updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+	);
+
+	CREATE TABLE IF NOT EXISTS profile_definitions (
+		id TEXT PRIMARY KEY,
+		name TEXT UNIQUE NOT NULL,
+		config_json TEXT NOT NULL,
+		created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+		updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+	);
+
+	CREATE TABLE IF NOT EXISTS service_collections (
+		id TEXT PRIMARY KEY,
+		name TEXT UNIQUE NOT NULL,
 		config_json TEXT NOT NULL,
 		created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
 		updated_at DATETIME DEFAULT CURRENT_TIMESTAMP

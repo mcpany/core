@@ -8,6 +8,8 @@ import (
 	"encoding/json"
 	"testing"
 
+	bus_pb "github.com/mcpany/core/proto/bus"
+	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/mcpany/core/server/pkg/auth"
 	"github.com/mcpany/core/server/pkg/bus"
 	"github.com/mcpany/core/server/pkg/consts"
@@ -18,8 +20,6 @@ import (
 	"github.com/mcpany/core/server/pkg/serviceregistry"
 	"github.com/mcpany/core/server/pkg/tool"
 	"github.com/mcpany/core/server/pkg/upstream/factory"
-	bus_pb "github.com/mcpany/core/proto/bus"
-	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -158,10 +158,8 @@ func TestResourceListFilteringMiddleware(t *testing.T) {
 	// Services config
 	srvGlobal := &tool.ServiceInfo{Config: &configv1.UpstreamServiceConfig{}}
 	srvProfile := &tool.ServiceInfo{Config: &configv1.UpstreamServiceConfig{
-		Profiles: []*configv1.Profile{{Id: "p1"}},
 	}}
 	srvOther := &tool.ServiceInfo{Config: &configv1.UpstreamServiceConfig{
-		Profiles: []*configv1.Profile{{Id: "p2"}},
 	}}
 
 	tm := &serviceInfoProviderToolManager{
@@ -198,7 +196,7 @@ func TestResourceListFilteringMiddleware(t *testing.T) {
 	require.True(t, ok)
 	assert.Len(t, lRes.Resources, 3)
 
-	// 2. Profile "p1" -> Should see global + profile, NOT other
+	// 2. Profile "p1" -> Should see ALL resources
 	ctxP1 := auth.ContextWithProfileID(ctx, "p1")
 	res, err = server.ResourceListFilteringMiddleware(next)(ctxP1, consts.MethodResourcesList, &mcp.ListResourcesRequest{})
 	require.NoError(t, err)
@@ -211,16 +209,16 @@ func TestResourceListFilteringMiddleware(t *testing.T) {
 	}
 	assert.Contains(t, foundURIs, "global://res")
 	assert.Contains(t, foundURIs, "profile://res")
-	assert.NotContains(t, foundURIs, "other://res")
-	assert.Len(t, lRes.Resources, 2)
+	assert.Contains(t, foundURIs, "other://res")
+	assert.Len(t, lRes.Resources, 3)
 
-	// 3. Profile "p2" -> Should see global + other
+	// 3. Profile "p2" -> Should see ALL resources
 	ctxP2 := auth.ContextWithProfileID(ctx, "p2")
 	res, err = server.ResourceListFilteringMiddleware(next)(ctxP2, consts.MethodResourcesList, &mcp.ListResourcesRequest{})
 	require.NoError(t, err)
 	lRes, ok = res.(*mcp.ListResourcesResult)
 	require.True(t, ok)
-	assert.Len(t, lRes.Resources, 2)
+	assert.Len(t, lRes.Resources, 3)
 
 	// 4. Other method -> should call next
 	res, err = server.ResourceListFilteringMiddleware(next)(ctx, "other/method", nil)
@@ -242,10 +240,8 @@ func TestPromptListFilteringMiddleware(t *testing.T) {
 	// Services config
 	srvGlobal := &tool.ServiceInfo{Config: &configv1.UpstreamServiceConfig{}}
 	srvProfile := &tool.ServiceInfo{Config: &configv1.UpstreamServiceConfig{
-		Profiles: []*configv1.Profile{{Id: "p1"}},
 	}}
 	srvOther := &tool.ServiceInfo{Config: &configv1.UpstreamServiceConfig{
-		Profiles: []*configv1.Profile{{Id: "p2"}},
 	}}
 
 	tm := &serviceInfoProviderToolManager{
@@ -282,7 +278,7 @@ func TestPromptListFilteringMiddleware(t *testing.T) {
 	require.True(t, ok)
 	assert.Len(t, lRes.Prompts, 3)
 
-	// 2. Profile "p1" -> Should see global + profile, NOT other
+	// 2. Profile "p1" -> Should see ALL prompts
 	ctxP1 := auth.ContextWithProfileID(ctx, "p1")
 	res, err = server.PromptListFilteringMiddleware(next)(ctxP1, consts.MethodPromptsList, &mcp.ListPromptsRequest{})
 	require.NoError(t, err)
@@ -295,16 +291,16 @@ func TestPromptListFilteringMiddleware(t *testing.T) {
 	}
 	assert.Contains(t, foundNames, "global-prompt")
 	assert.Contains(t, foundNames, "profile-prompt")
-	assert.NotContains(t, foundNames, "other-prompt")
-	assert.Len(t, lRes.Prompts, 2)
+	assert.Contains(t, foundNames, "other-prompt")
+	assert.Len(t, lRes.Prompts, 3)
 
-	// 3. Profile "p2" -> Should see global + other
+	// 3. Profile "p2" -> Should see ALL prompts
 	ctxP2 := auth.ContextWithProfileID(ctx, "p2")
 	res, err = server.PromptListFilteringMiddleware(next)(ctxP2, consts.MethodPromptsList, &mcp.ListPromptsRequest{})
 	require.NoError(t, err)
 	lRes, ok = res.(*mcp.ListPromptsResult)
 	require.True(t, ok)
-	assert.Len(t, lRes.Prompts, 2)
+	assert.Len(t, lRes.Prompts, 3)
 
 	// 4. Other method -> should call next
 	res, err = server.PromptListFilteringMiddleware(next)(ctx, "other/method", nil)

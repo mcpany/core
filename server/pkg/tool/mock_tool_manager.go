@@ -144,6 +144,20 @@ func (m *MockManagerInterface) ListServices() []*ServiceInfo {
 	return ret0
 }
 
+// IsServiceAllowed mocks base method.
+func (m *MockManagerInterface) IsServiceAllowed(serviceID, profileID string) bool {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "IsServiceAllowed", serviceID, profileID)
+	ret0, _ := ret[0].(bool)
+	return ret0
+}
+
+// IsServiceAllowed indicates an expected call of IsServiceAllowed.
+func (mr *MockManagerInterfaceMockRecorder) IsServiceAllowed(serviceID, profileID any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "IsServiceAllowed", reflect.TypeOf((*MockManagerInterface)(nil).IsServiceAllowed), serviceID, profileID)
+}
+
 // ListServices indicates an expected call of ListServices.
 func (mr *MockManagerInterfaceMockRecorder) ListServices() *gomock.Call {
 	mr.mock.ctrl.T.Helper()

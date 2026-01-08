@@ -11,10 +11,10 @@ import (
 	"testing"
 
 	"github.com/getkin/kin-openapi/openapi3"
-	"github.com/mcpany/core/server/pkg/tool"
-	"github.com/mcpany/core/server/pkg/util"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	v1 "github.com/mcpany/core/proto/mcp_router/v1"
+	"github.com/mcpany/core/server/pkg/tool"
+	"github.com/mcpany/core/server/pkg/util"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
@@ -81,6 +81,10 @@ func (m *MockToolManager) AddMiddleware(_ tool.ExecutionMiddleware) {
 
 func (m *MockToolManager) SetProfiles(enabled []string, defs []*configv1.ProfileDefinition) {
 	m.Called(enabled, defs)
+}
+
+func (m *MockToolManager) IsServiceAllowed(serviceID, profileID string) bool {
+	return true
 }
 
 func TestNewOpenAPIUpstream(t *testing.T) {

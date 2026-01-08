@@ -47,6 +47,19 @@ global_settings:
   profiles:
     - "planning"
     - "executor"
+  profile_definitions:
+    - name: "planning"
+      service_config:
+        "planning-tools":
+          enabled: true
+        "shared-tools":
+          enabled: true
+    - name: "executor"
+      service_config:
+        "executor-tools":
+          enabled: true
+        "shared-tools":
+          enabled: true
 
 upstream_services:
   - id: "planning-tools"
@@ -67,9 +80,6 @@ upstream_services:
           name: "planning-guidelines"
           static:
             text_content: "Always plan before acting."
-    profiles:
-      - id: "planning"
-        name: "planning"
 
   - id: "executor-tools"
     name: "executor-tools"
@@ -78,7 +88,7 @@ upstream_services:
       local: true
       calls:
         "default":
-             args: ["{{args}}"]
+          args: ["{{args}}"]
       tools:
         - name: "run_code"
           description: "Run code"
@@ -87,9 +97,6 @@ upstream_services:
       prompts:
         - name: "fix_bug"
           description: "Fix a bug"
-    profiles:
-      - id: "executor"
-        name: "executor"
 
   - id: "shared-tools"
     name: "shared-tools"
@@ -98,17 +105,12 @@ upstream_services:
       local: true
       calls:
         "default":
-             args: ["{{args}}"]
+          args: ["{{args}}"]
       tools:
         - name: "ping"
           description: "Ping service"
           call_id: "default"
           input_schema: { type: object }
-    profiles:
-      - id: "planning"
-        name: "planning"
-      - id: "executor"
-        name: "executor"
 `
 	tmpDir := t.TempDir()
 	configPath := filepath.Join(tmpDir, "config.yaml")
@@ -138,6 +140,11 @@ upstream_services:
 
 	mcpServer, err := mcpserver.NewServer(ctx, toolManager, promptManager, resourceManager, authManager, serviceRegistry, busProvider, true)
 	require.NoError(t, err)
+
+	// Set Profiles
+	if cfg.GetGlobalSettings() != nil {
+		toolManager.SetProfiles(cfg.GetGlobalSettings().GetProfiles(), cfg.GetGlobalSettings().GetProfileDefinitions())
+	}
 
 	// Register Services
 	for _, serviceConfig := range cfg.GetUpstreamServices() {

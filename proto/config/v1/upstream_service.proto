@@ -90,8 +90,7 @@ message UpstreamServiceConfig {
   repeated CallHook pre_call_hooks = 23 [json_name = "pre_call_hooks"];
   // List of hooks to execute after the call.
   repeated CallHook post_call_hooks = 24 [json_name = "post_call_hooks"];
-  // A list of profiles this service belongs to.
-  repeated Profile profiles = 25;
+  reserved 25; // profiles
   // The prompts provided by this upstream service.
   repeated PromptDefinition prompts = 26;
 
@@ -103,9 +102,7 @@ message UpstreamServiceConfig {
   // If true, automatically convert all API calls to tools.
   bool auto_discover_tool = 30 [json_name = "auto_discover_tool"];
 
-  // Rate limits per profile. Key is the profile ID.
-  // These limits override the service-level rate_limit if the user belongs to the profile.
-  map<string, RateLimitConfig> profile_limits = 33 [json_name = "profile_limits"];
+  reserved 33; // profile_limits
 }
 
 message CallPolicy {
@@ -525,44 +522,6 @@ enum LoadBalancingStrategy {
   LEAST_CONNECTIONS = 1;
   // Selects a server at random.
   RANDOM = 2;
-}
-
-// Configuration for rate limiting requests to the upstream service.
-message RateLimitConfig {
-  // Whether rate limiting is enabled.
-  bool is_enabled = 1 [json_name = "is_enabled"];
-  // The maximum number of requests allowed per second.
-  double requests_per_second = 2 [json_name = "requests_per_second"];
-  // The number of requests that can be allowed in a short burst.
-  int64 burst = 3;
-
-  enum Storage {
-    STORAGE_UNSPECIFIED = 0;
-    STORAGE_MEMORY = 1;
-    STORAGE_REDIS = 2;
-  }
-  Storage storage = 4;
-
-  // Redis configuration if storage is set to STORAGE_REDIS.
-  bus.RedisBus redis = 5;
-
-  enum KeyBy {
-    KEY_BY_UNSPECIFIED = 0;
-    KEY_BY_GLOBAL = 1;
-    KEY_BY_IP = 2;
-    KEY_BY_USER_ID = 3;
-    KEY_BY_API_KEY = 4;
-  }
-  KeyBy key_by = 6 [json_name = "key_by"];
-
-  enum CostMetric {
-    COST_METRIC_REQUESTS = 0;
-    COST_METRIC_TOKENS = 1;
-  }
-  CostMetric cost_metric = 7 [json_name = "cost_metric"];
-
-  // Tool-specific rate limits. Key is the tool name.
-  map<string, RateLimitConfig> tool_limits = 8 [json_name = "tool_limits"];
 }
 
 

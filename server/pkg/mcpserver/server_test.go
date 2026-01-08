@@ -11,6 +11,9 @@ import (
 	"testing"
 	"time"
 
+	bus_pb "github.com/mcpany/core/proto/bus"
+	configv1 "github.com/mcpany/core/proto/config/v1"
+	v1 "github.com/mcpany/core/proto/mcp_router/v1"
 	"github.com/mcpany/core/server/pkg/auth"
 	"github.com/mcpany/core/server/pkg/bus"
 	"github.com/mcpany/core/server/pkg/consts"
@@ -23,9 +26,6 @@ import (
 	"github.com/mcpany/core/server/pkg/upstream/factory"
 	"github.com/mcpany/core/server/pkg/util"
 	"github.com/mcpany/core/server/pkg/worker"
-	bus_pb "github.com/mcpany/core/proto/bus"
-	configv1 "github.com/mcpany/core/proto/config/v1"
-	v1 "github.com/mcpany/core/proto/mcp_router/v1"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -1017,12 +1017,8 @@ func TestServer_MiddlewareChain(t *testing.T) {
     // "other-service": { Profiles: [ {Id: "p2"} ] }
 
     srvGlobal := &tool.ServiceInfo{Config: &configv1.UpstreamServiceConfig{}}
-    srvProfile := &tool.ServiceInfo{Config: &configv1.UpstreamServiceConfig{
-        Profiles: []*configv1.Profile{{Id: "p1"}},
-    }}
-    srvOther := &tool.ServiceInfo{Config: &configv1.UpstreamServiceConfig{
-        Profiles: []*configv1.Profile{{Id: "p2"}},
-    }}
+    srvProfile := &tool.ServiceInfo{Config: &configv1.UpstreamServiceConfig{}}
+    srvOther := &tool.ServiceInfo{Config: &configv1.UpstreamServiceConfig{}}
 
     toolGlobal := &mockTool{tool: &v1.Tool{Name: proto.String("global.tool"), ServiceId: proto.String("global-service")}}
     toolProfile := &mockTool{tool: &v1.Tool{Name: proto.String("profile.tool"), ServiceId: proto.String("profile-service")}}
@@ -1085,24 +1081,24 @@ func TestServer_MiddlewareChain(t *testing.T) {
 	lRes, ok = res.(*mcp.ListToolsResult)
 	require.True(t, ok)
 
-	// Verify contents
+	// Verify contents - Expect ALL 3 tools now
 	foundNames := make(map[string]bool)
 	for _, t := range lRes.Tools {
 	    foundNames[t.Name] = true
 	}
 	assert.Contains(t, foundNames, "global-service.global.tool")
 	assert.Contains(t, foundNames, "profile-service.profile.tool")
-	assert.NotContains(t, foundNames, "other-service.other.tool")
-	assert.Len(t, lRes.Tools, 2)
+	assert.Contains(t, foundNames, "other-service.other.tool")
+	assert.Len(t, lRes.Tools, 3)
 
     // Case C: Profile "p2"
-    // Should see global + other
+    // Should see ALL 3 tools now
     ctxP2 := auth.ContextWithProfileID(ctx, "p2")
     res, err = server.ToolListFilteringMiddleware(next)(ctxP2, consts.MethodToolsList, &mcp.ListToolsRequest{})
     require.NoError(t, err)
     lRes, ok = res.(*mcp.ListToolsResult)
     require.True(t, ok)
-    assert.Len(t, lRes.Tools, 2)
+    assert.Len(t, lRes.Tools, 3)
 
 	// Case D: other method -> should call next
 	res, err = server.ToolListFilteringMiddleware(next)(ctx, "other/method", nil)

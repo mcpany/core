@@ -8,12 +8,12 @@ import (
 	"testing"
 	"time"
 
-	"github.com/mcpany/core/server/pkg/auth"
-	"github.com/mcpany/core/server/pkg/consts"
-	"github.com/mcpany/core/server/pkg/tool"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	mcp_router_v1 "github.com/mcpany/core/proto/mcp_router/v1"
 	topologyv1 "github.com/mcpany/core/proto/topology/v1"
+	"github.com/mcpany/core/server/pkg/auth"
+	"github.com/mcpany/core/server/pkg/consts"
+	"github.com/mcpany/core/server/pkg/tool"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
@@ -80,6 +80,10 @@ func (m *MockToolManager) ListServices() []*tool.ServiceInfo {
 
 func (m *MockToolManager) SetProfiles(enabled []string, defs []*configv1.ProfileDefinition) {
 	m.Called(enabled, defs)
+}
+
+func (m *MockToolManager) IsServiceAllowed(serviceID, profileID string) bool {
+	return true
 }
 
 // MockTool is a mock implementation of tool.Tool

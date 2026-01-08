@@ -10,9 +10,9 @@ import (
 	"time"
 
 	"github.com/go-redis/redismock/v9"
-	"github.com/mcpany/core/server/pkg/middleware"
 	busproto "github.com/mcpany/core/proto/bus"
 	configv1 "github.com/mcpany/core/proto/config/v1"
+	"github.com/mcpany/core/server/pkg/middleware"
 	"github.com/redis/go-redis/v9"
 	"github.com/stretchr/testify/assert"
 	"google.golang.org/protobuf/proto"
@@ -43,8 +43,8 @@ func TestRedisLimiter(t *testing.T) {
 	t.Run("Update", func(t *testing.T) {
 		config := configv1.RateLimitConfig_builder{
 			Redis:             busproto.RedisBus_builder{Address: proto.String("addr")}.Build(),
-			RequestsPerSecond: proto.Float64(10),
-			Burst:             proto.Int64(10),
+			RequestsPerSecond: 10,
+			Burst:             10,
 		}.Build()
 		l, err := middleware.NewRedisLimiter("service", config)
 		assert.NoError(t, err)
@@ -62,8 +62,8 @@ func TestRedisLimiter(t *testing.T) {
 	t.Run("Allow error", func(t *testing.T) {
 		config := configv1.RateLimitConfig_builder{
 			Redis:             busproto.RedisBus_builder{Address: proto.String("addr")}.Build(),
-			RequestsPerSecond: proto.Float64(10),
-			Burst:             proto.Int64(10),
+			RequestsPerSecond: 10,
+			Burst:             10,
 		}.Build()
 		l, _ := middleware.NewRedisLimiter("service", config)
 
@@ -84,8 +84,8 @@ func TestRedisLimiter(t *testing.T) {
 	t.Run("Allow unexpected type", func(t *testing.T) {
 		config := configv1.RateLimitConfig_builder{
 			Redis:             busproto.RedisBus_builder{Address: proto.String("addr")}.Build(),
-			RequestsPerSecond: proto.Float64(10),
-			Burst:             proto.Int64(10),
+			RequestsPerSecond: 10,
+			Burst:             10,
 		}.Build()
 		l, _ := middleware.NewRedisLimiter("service", config)
 

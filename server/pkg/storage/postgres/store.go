@@ -129,6 +129,50 @@ func (s *Store) DeleteService(ctx context.Context, name string) error {
 	return nil
 }
 
+// GetGlobalSettings retrieves the global configuration.
+func (s *Store) GetGlobalSettings() (*configv1.GlobalSettings, error) {
+	query := "SELECT config_json FROM global_settings WHERE id = 1"
+	row := s.db.QueryRowContext(context.TODO(), query)
+
+	var configJSON string
+	if err := row.Scan(&configJSON); err != nil {
+		if err == sql.ErrNoRows {
+			return nil, nil // Not found
+		}
+		return nil, fmt.Errorf("failed to scan global settings: %w", err)
+	}
+
+	var settings configv1.GlobalSettings
+	if err := protojson.Unmarshal([]byte(configJSON), &settings); err != nil {
+		return nil, fmt.Errorf("failed to unmarshal global settings: %w", err)
+	}
+	return &settings, nil
+}
+
+// SaveGlobalSettings saves the global configuration.
+func (s *Store) SaveGlobalSettings(settings *configv1.GlobalSettings) error {
+	opts := protojson.MarshalOptions{UseProtoNames: true}
+	configJSON, err := opts.Marshal(settings)
+	if err != nil {
+		return fmt.Errorf("failed to marshal global settings: %w", err)
+	}
+
+	query := `
+	INSERT INTO global_settings (id, config_json, updated_at)
+	VALUES (1, $1, CURRENT_TIMESTAMP)
+	ON CONFLICT(id) DO UPDATE SET
+		config_json = excluded.config_json,
+		updated_at = excluded.updated_at;
+	`
+	_, err = s.db.ExecContext(context.TODO(), query, string(configJSON))
+	if err != nil {
+		return fmt.Errorf("failed to save global settings: %w", err)
+	}
+	return nil
+}
+
+// Users
+
 // CreateUser creates a new user.
 func (s *Store) CreateUser(ctx context.Context, user *configv1.User) error {
 	if user.GetId() == "" {
@@ -237,6 +281,264 @@ func (s *Store) DeleteUser(ctx context.Context, id string) error {
 	_, err := s.db.ExecContext(ctx, "DELETE FROM users WHERE id = $1", id)
 	if err != nil {
 		return fmt.Errorf("failed to delete user: %w", err)
+	}
+	return nil
+}
+
+// Secrets
+
+// ListSecrets retrieves all secrets.
+func (s *Store) ListSecrets() ([]*configv1.Secret, error) {
+	rows, err := s.db.QueryContext(context.TODO(), "SELECT config_json FROM secrets")
+	if err != nil {
+		return nil, fmt.Errorf("failed to query secrets: %w", err)
+	}
+	defer func() { _ = rows.Close() }()
+
+	var secrets []*configv1.Secret
+	for rows.Next() {
+		var configJSON string
+		if err := rows.Scan(&configJSON); err != nil {
+			return nil, fmt.Errorf("failed to scan config_json: %w", err)
+		}
+
+		var secret configv1.Secret
+		if err := protojson.Unmarshal([]byte(configJSON), &secret); err != nil {
+			return nil, fmt.Errorf("failed to unmarshal secret: %w", err)
+		}
+		secrets = append(secrets, &secret)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, fmt.Errorf("error iterating rows: %w", err)
+	}
+	return secrets, nil
+}
+
+// GetSecret retrieves a secret by ID.
+func (s *Store) GetSecret(id string) (*configv1.Secret, error) {
+	query := "SELECT config_json FROM secrets WHERE id = $1"
+	row := s.db.QueryRowContext(context.TODO(), query, id)
+
+	var configJSON string
+	if err := row.Scan(&configJSON); err != nil {
+		if err == sql.ErrNoRows {
+			return nil, nil // Not found
+		}
+		return nil, fmt.Errorf("failed to scan secret: %w", err)
+	}
+
+	var secret configv1.Secret
+	if err := protojson.Unmarshal([]byte(configJSON), &secret); err != nil {
+		return nil, fmt.Errorf("failed to unmarshal secret: %w", err)
+	}
+	return &secret, nil
+}
+
+// SaveSecret saves a secret.
+func (s *Store) SaveSecret(secret *configv1.Secret) error {
+	if secret.GetId() == "" {
+		return fmt.Errorf("secret id is required")
+	}
+
+	opts := protojson.MarshalOptions{UseProtoNames: true}
+	configJSON, err := opts.Marshal(secret)
+	if err != nil {
+		return fmt.Errorf("failed to marshal secret: %w", err)
+	}
+
+	query := `
+	INSERT INTO secrets (id, name, key, config_json, updated_at)
+	VALUES ($1, $2, $3, $4, CURRENT_TIMESTAMP)
+	ON CONFLICT(id) DO UPDATE SET
+		name = excluded.name,
+		key = excluded.key,
+		config_json = excluded.config_json,
+		updated_at = excluded.updated_at;
+	`
+	_, err = s.db.ExecContext(context.TODO(), query, secret.GetId(), secret.GetName(), secret.GetKey(), string(configJSON))
+	if err != nil {
+		return fmt.Errorf("failed to save secret: %w", err)
+	}
+	return nil
+}
+
+// DeleteSecret deletes a secret by ID.
+func (s *Store) DeleteSecret(id string) error {
+	_, err := s.db.ExecContext(context.TODO(), "DELETE FROM secrets WHERE id = $1", id)
+	if err != nil {
+		return fmt.Errorf("failed to delete secret: %w", err)
+	}
+	return nil
+}
+
+// Profiles
+
+// ListProfiles retrieves all profile definitions.
+func (s *Store) ListProfiles(ctx context.Context) ([]*configv1.ProfileDefinition, error) {
+	rows, err := s.db.QueryContext(ctx, "SELECT config_json FROM profile_definitions")
+	if err != nil {
+		return nil, fmt.Errorf("failed to query profile_definitions: %w", err)
+	}
+	defer func() { _ = rows.Close() }()
+
+	var profiles []*configv1.ProfileDefinition
+	for rows.Next() {
+		var configJSON string
+		if err := rows.Scan(&configJSON); err != nil {
+			return nil, fmt.Errorf("failed to scan config_json: %w", err)
+		}
+
+		var profile configv1.ProfileDefinition
+		if err := protojson.Unmarshal([]byte(configJSON), &profile); err != nil {
+			return nil, fmt.Errorf("failed to unmarshal profile config: %w", err)
+		}
+		profiles = append(profiles, &profile)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, fmt.Errorf("error iterating rows: %w", err)
+	}
+	return profiles, nil
+}
+
+// GetProfile retrieves a profile definition by name.
+func (s *Store) GetProfile(ctx context.Context, name string) (*configv1.ProfileDefinition, error) {
+	query := "SELECT config_json FROM profile_definitions WHERE name = $1"
+	row := s.db.QueryRowContext(ctx, query, name)
+
+	var configJSON string
+	if err := row.Scan(&configJSON); err != nil {
+		if err == sql.ErrNoRows {
+			return nil, nil // Not found
+		}
+		return nil, fmt.Errorf("failed to scan config_json: %w", err)
+	}
+
+	var profile configv1.ProfileDefinition
+	if err := protojson.Unmarshal([]byte(configJSON), &profile); err != nil {
+		return nil, fmt.Errorf("failed to unmarshal profile config: %w", err)
+	}
+	return &profile, nil
+}
+
+// SaveProfile saves a profile definition.
+func (s *Store) SaveProfile(ctx context.Context, profile *configv1.ProfileDefinition) error {
+	if profile.GetName() == "" {
+		return fmt.Errorf("profile name is required")
+	}
+
+	opts := protojson.MarshalOptions{UseProtoNames: true}
+	configJSON, err := opts.Marshal(profile)
+	if err != nil {
+		return fmt.Errorf("failed to marshal profile config: %w", err)
+	}
+
+	query := `
+	INSERT INTO profile_definitions (id, name, config_json, updated_at)
+	VALUES ($1, $2, $3, CURRENT_TIMESTAMP)
+	ON CONFLICT(name) DO UPDATE SET
+		config_json = excluded.config_json,
+		updated_at = excluded.updated_at;
+	`
+	id := profile.GetName()
+
+	_, err = s.db.ExecContext(ctx, query, id, profile.GetName(), string(configJSON))
+	if err != nil {
+		return fmt.Errorf("failed to save profile: %w", err)
+	}
+	return nil
+}
+
+// DeleteProfile deletes a profile definition by name.
+func (s *Store) DeleteProfile(ctx context.Context, name string) error {
+	_, err := s.db.ExecContext(ctx, "DELETE FROM profile_definitions WHERE name = $1", name)
+	if err != nil {
+		return fmt.Errorf("failed to delete profile: %w", err)
+	}
+	return nil
+}
+
+// Service Collections
+
+// ListServiceCollections retrieves all service collections.
+func (s *Store) ListServiceCollections(ctx context.Context) ([]*configv1.UpstreamServiceCollectionShare, error) {
+	rows, err := s.db.QueryContext(ctx, "SELECT config_json FROM service_collections")
+	if err != nil {
+		return nil, fmt.Errorf("failed to query service_collections: %w", err)
+	}
+	defer func() { _ = rows.Close() }()
+
+	var collections []*configv1.UpstreamServiceCollectionShare
+	for rows.Next() {
+		var configJSON string
+		if err := rows.Scan(&configJSON); err != nil {
+			return nil, fmt.Errorf("failed to scan config_json: %w", err)
+		}
+
+		var collection configv1.UpstreamServiceCollectionShare
+		if err := protojson.Unmarshal([]byte(configJSON), &collection); err != nil {
+			return nil, fmt.Errorf("failed to unmarshal collection config: %w", err)
+		}
+		collections = append(collections, &collection)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, fmt.Errorf("error iterating rows: %w", err)
+	}
+	return collections, nil
+}
+
+// GetServiceCollection retrieves a service collection by name.
+func (s *Store) GetServiceCollection(ctx context.Context, name string) (*configv1.UpstreamServiceCollectionShare, error) {
+	query := "SELECT config_json FROM service_collections WHERE name = $1"
+	row := s.db.QueryRowContext(ctx, query, name)
+
+	var configJSON string
+	if err := row.Scan(&configJSON); err != nil {
+		if err == sql.ErrNoRows {
+			return nil, nil // Not found
+		}
+		return nil, fmt.Errorf("failed to scan config_json: %w", err)
+	}
+
+	var collection configv1.UpstreamServiceCollectionShare
+	if err := protojson.Unmarshal([]byte(configJSON), &collection); err != nil {
+		return nil, fmt.Errorf("failed to unmarshal collection config: %w", err)
+	}
+	return &collection, nil
+}
+
+// SaveServiceCollection saves a service collection.
+func (s *Store) SaveServiceCollection(ctx context.Context, collection *configv1.UpstreamServiceCollectionShare) error {
+	if collection.GetName() == "" {
+		return fmt.Errorf("collection name is required")
+	}
+
+	opts := protojson.MarshalOptions{UseProtoNames: true}
+	configJSON, err := opts.Marshal(collection)
+	if err != nil {
+		return fmt.Errorf("failed to marshal collection config: %w", err)
+	}
+
+	query := `
+	INSERT INTO service_collections (id, name, config_json, updated_at)
+	VALUES ($1, $2, $3, CURRENT_TIMESTAMP)
+	ON CONFLICT(name) DO UPDATE SET
+		config_json = excluded.config_json,
+		updated_at = excluded.updated_at;
+	`
+	id := collection.GetName()
+
+	_, err = s.db.ExecContext(ctx, query, id, collection.GetName(), string(configJSON))
+	if err != nil {
+		return fmt.Errorf("failed to save collection: %w", err)
+	}
+	return nil
+}
+
+// DeleteServiceCollection deletes a service collection by name.
+func (s *Store) DeleteServiceCollection(ctx context.Context, name string) error {
+	_, err := s.db.ExecContext(ctx, "DELETE FROM service_collections WHERE name = $1", name)
+	if err != nil {
+		return fmt.Errorf("failed to delete collection: %w", err)
 	}
 	return nil
 }

@@ -8,10 +8,10 @@ import (
 	"encoding/json"
 	"testing"
 
-	"github.com/mcpany/core/server/pkg/middleware"
-	"github.com/mcpany/core/server/pkg/tool"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	v1 "github.com/mcpany/core/proto/mcp_router/v1"
+	"github.com/mcpany/core/server/pkg/middleware"
+	"github.com/mcpany/core/server/pkg/tool"
 	"github.com/stretchr/testify/assert"
 	"google.golang.org/protobuf/proto"
 )
@@ -26,10 +26,10 @@ func TestRateLimitMiddleware_ArgumentsPopulated(t *testing.T) {
 	mockTool := &rateLimitMockTool{toolProto: toolProto}
 
 	rlConfig := configv1.RateLimitConfig_builder{
-		IsEnabled:         proto.Bool(true),
-		RequestsPerSecond: proto.Float64(10),
-		Burst:             proto.Int64(10),
-		CostMetric:        configv1.RateLimitConfig_COST_METRIC_TOKENS.Enum(), // Force parsing
+		IsEnabled:         true,
+		RequestsPerSecond: 10,
+		Burst:             10,
+		CostMetric:        configv1.RateLimitConfig_COST_METRIC_TOKENS, // Force parsing
 	}.Build()
 
 	serviceInfo := &tool.ServiceInfo{

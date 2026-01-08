@@ -8,10 +8,10 @@ import (
 	"testing"
 	"time"
 
+	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/mcpany/core/server/pkg/bus"
 	"github.com/mcpany/core/server/pkg/tool"
 	"github.com/mcpany/core/server/pkg/worker"
-	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -32,6 +32,7 @@ func (m *MockToolManager) AddServiceInfo(_ string, _ *tool.ServiceInfo) {}
 func (m *MockToolManager) GetServiceInfo(_ string) (*tool.ServiceInfo, bool) { return nil, false }
 func (m *MockToolManager) ListServices() []*tool.ServiceInfo { return nil }
 func (m *MockToolManager) SetProfiles(_ []string, _ []*configv1.ProfileDefinition) {}
+func (m *MockToolManager) IsServiceAllowed(serviceID, profileID string) bool { return true }
 
 func TestUpstreamWorker_Stop(t *testing.T) {
 	// Setup bus

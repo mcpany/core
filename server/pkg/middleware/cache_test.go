@@ -8,10 +8,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/mcpany/core/server/pkg/middleware"
-	"github.com/mcpany/core/server/pkg/tool"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	v1 "github.com/mcpany/core/proto/mcp_router/v1"
+	"github.com/mcpany/core/server/pkg/middleware"
+	"github.com/mcpany/core/server/pkg/tool"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -70,6 +70,7 @@ func (m *mockToolManager) ExecuteTool(_ context.Context, _ *tool.ExecutionReques
 func (m *mockToolManager) SetMCPServer(_ tool.MCPServerProvider)                   {}
 func (m *mockToolManager) AddServiceInfo(_ string, _ *tool.ServiceInfo)            {}
 func (m *mockToolManager) SetProfiles(_ []string, _ []*configv1.ProfileDefinition) {}
+func (m *mockToolManager) IsServiceAllowed(serviceID, profileID string) bool      { return true }
 func (m *mockToolManager) ClearToolsForService(_ string)                           {}
 
 func TestCachingMiddleware_ExecutionAndCacheHit(t *testing.T) {

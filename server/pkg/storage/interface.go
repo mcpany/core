@@ -58,6 +58,25 @@ type Storage interface {
 	// DeleteUser deletes a user by ID.
 	DeleteUser(ctx context.Context, id string) error
 
+	// Profiles
+	// ListProfiles retrieves all profile definitions.
+	ListProfiles(ctx context.Context) ([]*configv1.ProfileDefinition, error)
+	// GetProfile retrieves a profile definition by name.
+	GetProfile(ctx context.Context, name string) (*configv1.ProfileDefinition, error)
+	// SaveProfile saves a profile definition.
+	SaveProfile(ctx context.Context, profile *configv1.ProfileDefinition) error
+	// DeleteProfile deletes a profile definition by name.
+	DeleteProfile(ctx context.Context, name string) error
+
+	// Service Collections
+	// ListServiceCollections retrieves all service collections.
+	ListServiceCollections(ctx context.Context) ([]*configv1.UpstreamServiceCollectionShare, error)
+	// GetServiceCollection retrieves a service collection by name.
+	GetServiceCollection(ctx context.Context, name string) (*configv1.UpstreamServiceCollectionShare, error)
+	// SaveServiceCollection saves a service collection.
+	SaveServiceCollection(ctx context.Context, collection *configv1.UpstreamServiceCollectionShare) error
+	// DeleteServiceCollection deletes a service collection by name.
+	DeleteServiceCollection(ctx context.Context, name string) error
 
 	// Close closes the underlying storage connection.
 	Close() error
