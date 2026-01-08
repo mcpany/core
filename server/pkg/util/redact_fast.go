@@ -12,9 +12,12 @@ import (
 // It scans the input byte slice and constructs a new slice with redacted values.
 // It avoids full JSON parsing.
 func redactJSONFast(input []byte) []byte {
-	// Pre-allocate result buffer. Usually it will be same size or slightly smaller/larger.
-	// 1.1x input size is a safe bet to avoid reallocations if we replace short values with long placeholders.
-	out := make([]byte, 0, len(input)+len(input)/10)
+	// Pre-allocate result buffer.
+	// We use len(input) as a safe estimate.
+	// Redaction usually shrinks the output (replacing long values with [REDACTED]),
+	// but can expand it if replacing short values (like "") with [REDACTED].
+	// append will handle growth if needed.
+	out := make([]byte, 0, len(input))
 
 	i := 0
 	n := len(input)
