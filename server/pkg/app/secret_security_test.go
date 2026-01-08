@@ -63,16 +63,8 @@ func TestSecretLeak(t *testing.T) {
 		err = json.NewDecoder(resp.Body).Decode(&result)
 		require.NoError(t, err)
 
-		// 3. Check if the value is exposed
-		// If vulnerability exists, this assertion will FAIL (we expect it to be redacted, but it is not)
-		// Since I want to PROVE the vulnerability, I will assert it EQUALS the secret value for now.
-		// Then I will fix it and change assertion to expect redaction.
-
-		// Wait, if I want to "fail" securely in the test suite (if this was a real repo), I shouldn't assert "success" of a vuln.
-		// But for the purpose of this exercise, I need to demonstrate the vuln exists.
-
-		// If I assert Equal(t, secretValue, result["value"]), the test passes if vuln exists.
-		assert.Equal(t, "[REDACTED]", result["value"], "Secret value should be redacted!")
+		// 3. Check if the value is redacted
+		assert.Equal(t, "[REDACTED]", result["value"], "Secret value should be redacted in detail view")
 	})
 
 	t.Run("ListSecrets_Redaction_Check", func(t *testing.T) {
