@@ -5,7 +5,7 @@ package util
 
 import (
 	"bytes"
-	"encoding/json"
+	"unicode/utf8"
 )
 
 // redactJSONFast is a zero-allocation (mostly) implementation of RedactJSON.
@@ -14,7 +14,7 @@ import (
 func redactJSONFast(input []byte) []byte {
 	// Pre-allocate result buffer. Usually it will be same size or slightly smaller/larger.
 	// 1.1x input size is a safe bet to avoid reallocations if we replace short values with long placeholders.
-	out := bytes.NewBuffer(make([]byte, 0, len(input)))
+	out := make([]byte, 0, len(input)+len(input)/10)
 
 	i := 0
 	n := len(input)
@@ -24,13 +24,13 @@ func redactJSONFast(input []byte) []byte {
 		nextQuote := bytes.IndexByte(input[i:], '"')
 		if nextQuote == -1 {
 			// No more strings, just copy the rest
-			out.Write(input[i:])
+			out = append(out, input[i:]...)
 			break
 		}
 		quotePos := i + nextQuote
 
 		// Copy everything up to the quote
-		out.Write(input[i:quotePos])
+		out = append(out, input[i:quotePos]...)
 		i = quotePos
 
 		// Parse string
@@ -43,8 +43,8 @@ func redactJSONFast(input []byte) []byte {
 			q := bytes.IndexByte(input[scanStart:], '"')
 			if q == -1 {
 				// Malformed JSON (unclosed string), just copy the rest
-				out.Write(input[i:])
-				return out.Bytes()
+				out = append(out, input[i:]...)
+				return out
 			}
 			absQ := scanStart + q
 			// Check for escape
@@ -95,19 +95,9 @@ func redactJSONFast(input []byte) []byte {
 			var sensitive bool
 			if hasEscape {
 				// Unescape key to check sensitivity
-				// We need to include quotes for json.Unmarshal
-				var keyStr string
-				if err := json.Unmarshal(input[i:endQuote+1], &keyStr); err == nil {
-					// Check the unescaped key string
-					// We convert string to bytes to use existing helpers if needed, or pass string.
-					// scanForSensitiveKeys expects bytes.
-					// We don't need to validate key context here because we know we are inside a key.
-					sensitive = scanForSensitiveKeys([]byte(keyStr), false)
-				} else {
-					// Failed to unmarshal key, treat as not sensitive or fallback?
-					// If key is invalid JSON, we probably shouldn't be here or it's not a valid key.
-					sensitive = false
-				}
+				// Avoid json.Unmarshal for performance
+				unquoted := unquoteBytes(input[i : endQuote+1])
+				sensitive = scanForSensitiveKeys(unquoted, false)
 			} else {
 				// Use scanForSensitiveKeys to check if the key matches any sensitive pattern.
 				// scanForSensitiveKeys checks for substrings and handles case folding as implemented in its logic.
@@ -117,7 +107,7 @@ func redactJSONFast(input []byte) []byte {
 
 			if sensitive {
 				// Write key and colon
-				out.Write(input[i : colonPos+1])
+				out = append(out, input[i:colonPos+1]...)
 
 				// Identify value
 				valStart := colonPos + 1
@@ -125,7 +115,7 @@ func redactJSONFast(input []byte) []byte {
 				for valStart < n {
 					c := input[valStart]
 					if c == ' ' || c == '\t' || c == '\n' || c == '\r' {
-						out.WriteByte(c) // Preserve whitespace
+						out = append(out, c) // Preserve whitespace
 						valStart++
 						continue
 					}
@@ -140,23 +130,108 @@ func redactJSONFast(input []byte) []byte {
 				valEnd := skipJSONValue(input, valStart)
 
 				// Redact
-				out.Write([]byte(redactedValue)) // redactedValue is "[REDACTED]" (json.RawMessage)
+				out = append(out, redactedValue...)
 
 				// Advance i to valEnd
 				i = valEnd
 			} else {
 				// Not sensitive, copy key and let loop continue
-				out.Write(input[i : endQuote+1])
+				out = append(out, input[i:endQuote+1]...)
 				i = endQuote + 1
 			}
 		} else {
 			// Not a key (just a string value), copy it
-			out.Write(input[i : endQuote+1])
+			out = append(out, input[i:endQuote+1]...)
 			i = endQuote + 1
 		}
 	}
 
-	return out.Bytes()
+	return out
+}
+
+// unquoteBytes unquotes a JSON string (with quotes) into a byte slice.
+// It handles basic escapes and unicode sequences.
+func unquoteBytes(input []byte) []byte {
+	// input includes quotes, e.g. "key"
+	n := len(input)
+	if n < 2 {
+		return input // Should not happen for valid quoted string
+	}
+	// content is input[1 : n-1]
+	// Conservative estimate for capacity: len(input)-2
+	out := make([]byte, 0, n-2)
+
+	// We iterate manually
+	for i := 1; i < n-1; i++ {
+		c := input[i]
+		if c == '\\' {
+			i++
+			if i >= n-1 {
+				// Trailing backslash?
+				out = append(out, '\\')
+				break
+			}
+			switch input[i] {
+			case '"', '\\', '/', '\'':
+				out = append(out, input[i])
+			case 'b':
+				out = append(out, '\b')
+			case 'f':
+				out = append(out, '\f')
+			case 'n':
+				out = append(out, '\n')
+			case 'r':
+				out = append(out, '\r')
+			case 't':
+				out = append(out, '\t')
+			case 'u':
+				// Parse hex
+				if i+4 < n-1 {
+					r, ok := decodeUnicode(input[i+1 : i+5])
+					if ok {
+						out = utf8.AppendRune(out, r)
+						i += 4
+					} else {
+						// Invalid unicode escape, keep literal
+						out = append(out, '\\', 'u')
+					}
+				} else {
+					out = append(out, '\\', 'u')
+				}
+			default:
+				// Unknown escape, keep literal
+				out = append(out, '\\', input[i])
+			}
+		} else {
+			out = append(out, c)
+		}
+	}
+	return out
+}
+
+func decodeUnicode(src []byte) (rune, bool) {
+	var r rune
+	for i := 0; i < 4; i++ {
+		b, ok := hexToByte(src[i])
+		if !ok {
+			return 0, false
+		}
+		r = r<<4 | rune(b)
+	}
+	return r, true
+}
+
+func hexToByte(c byte) (byte, bool) {
+	if c >= '0' && c <= '9' {
+		return c - '0', true
+	}
+	if c >= 'a' && c <= 'f' {
+		return c - 'a' + 10, true
+	}
+	if c >= 'A' && c <= 'F' {
+		return c - 'A' + 10, true
+	}
+	return 0, false
 }
 
 // skipJSONValue returns the index after the JSON value starting at start.
