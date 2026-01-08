@@ -878,7 +878,7 @@ func TestRunServerMode_GracefulShutdownOnContextCancel(t *testing.T) {
 	errChan := make(chan error, 1)
 	go func() {
 		// Use ephemeral ports to avoid conflicts.
-		errChan <- app.runServerMode(ctx, mcpSrv, busProvider, "localhost:0", "localhost:0", 1*time.Second, nil, nil, cachingMiddleware, nil, serviceRegistry)
+		errChan <- app.runServerMode(ctx, mcpSrv, busProvider, "localhost:0", "localhost:0", 1*time.Second, nil, nil, cachingMiddleware, nil, serviceRegistry, nil)
 	}()
 
 	// Give the servers a moment to start up.
@@ -917,7 +917,7 @@ func TestGRPCServer_PortReleasedAfterShutdown(t *testing.T) {
 	lis, err = net.Listen("tcp", fmt.Sprintf("localhost:%d", port))
 	require.NoError(t, err)
 	srv := gogrpc.NewServer()
-	startGrpcServer(ctx, &wg, errChan, "TestGRPC", lis, 5*time.Second, srv)
+	startGrpcServer(ctx, &wg, errChan, nil, "TestGRPC", lis, 5*time.Second, srv)
 
 	// Allow some time for the server to start up.
 	time.Sleep(100 * time.Millisecond)
@@ -987,7 +987,7 @@ func TestGRPCServer_FastShutdownRace(t *testing.T) {
 			raceLis, err := net.Listen("tcp", fmt.Sprintf("localhost:%d", port))
 			require.NoError(t, err)
 			srv := gogrpc.NewServer()
-			startGrpcServer(ctx, &wg, errChan, "TestGRPC_Race", raceLis, 5*time.Second, srv)
+			startGrpcServer(ctx, &wg, errChan, nil, "TestGRPC_Race", raceLis, 5*time.Second, srv)
 
 			// Immediately cancel the context. This creates a race between
 			// the server starting up and shutting down.
@@ -1016,7 +1016,7 @@ func TestHTTPServer_GoroutineTerminatesOnError(t *testing.T) {
 	errChan := make(chan error, 1)
 	var wg sync.WaitGroup
 
-	startHTTPServer(ctx, &wg, errChan, "TestHTTP_Error", fmt.Sprintf("localhost:%d", port), nil, 5*time.Second)
+	startHTTPServer(ctx, &wg, errChan, nil, "TestHTTP_Error", fmt.Sprintf("localhost:%d", port), nil, 5*time.Second)
 
 	// Wait for the startup error.
 	select {
@@ -1050,7 +1050,7 @@ func TestHTTPServer_ShutdownTimesOut(t *testing.T) {
 	shutdownTimeout := 100 * time.Millisecond
 	handlerSleep := 5 * time.Second
 
-	startHTTPServer(ctx, &wg, errChan, "TestHTTP_Hang", fmt.Sprintf(":%d", port), http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+	startHTTPServer(ctx, &wg, errChan, nil, "TestHTTP_Hang", fmt.Sprintf(":%d", port), http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		close(handlerStarted)
 		time.Sleep(handlerSleep)
 		w.WriteHeader(http.StatusOK)
@@ -1129,7 +1129,7 @@ func TestGRPCServer_GracefulShutdownHangs(t *testing.T) {
 		Metadata: "testhang.proto",
 	}
 	srv.RegisterService(desc, hangService)
-	startGrpcServer(ctx, &wg, errChan, "TestGRPC_Hang", lis, 1*time.Second, srv)
+	startGrpcServer(ctx, &wg, errChan, nil, "TestGRPC_Hang", lis, 1*time.Second, srv)
 
 	// Give the server time to start.
 	time.Sleep(100 * time.Millisecond)
@@ -1208,7 +1208,7 @@ func TestGRPCServer_GracefulShutdownWithTimeout(t *testing.T) {
 		Metadata: "testhang.proto",
 	}
 	srv.RegisterService(desc, hangService)
-	startGrpcServer(ctx, &wg, errChan, "TestGRPC_Hang", lis, 50*time.Millisecond, srv)
+	startGrpcServer(ctx, &wg, errChan, nil, "TestGRPC_Hang", lis, 50*time.Millisecond, srv)
 
 	// Give the server a moment to start up.
 	time.Sleep(100 * time.Millisecond)
@@ -1278,7 +1278,7 @@ func TestGRPCServer_NoDoubleClickOnForceShutdown(t *testing.T) {
 		Metadata: "testhang.proto",
 	}
 	srv.RegisterService(desc, hangservice)
-	startGrpcServer(ctx, &wg, errchan, "TestGRPC_NoDoubleClick", countinglis, 50*time.Millisecond, srv)
+	startGrpcServer(ctx, &wg, errchan, nil, "TestGRPC_NoDoubleClick", countinglis, 50*time.Millisecond, srv)
 
 	// Give the server a moment to start up.
 	time.Sleep(100 * time.Millisecond)
@@ -1316,7 +1316,7 @@ func TestHTTPServer_HangOnListenError(t *testing.T) {
 	errChan := make(chan error, 1)
 	var wg sync.WaitGroup
 
-	startHTTPServer(ctx, &wg, errChan, "TestHTTP_Hang", fmt.Sprintf("localhost:%d", port), nil, 5*time.Second)
+	startHTTPServer(ctx, &wg, errChan, nil, "TestHTTP_Hang", fmt.Sprintf("localhost:%d", port), nil, 5*time.Second)
 
 	// Wait for the startup error.
 	select {
@@ -1361,7 +1361,7 @@ func TestRunServerMode_ContextCancellation(t *testing.T) {
 	cachingMiddleware := middleware.NewCachingMiddleware(app.ToolManager)
 
 	go func() {
-		errChan <- app.runServerMode(ctx, mcpSrv, busProvider, "localhost:0", "localhost:0", 5*time.Second, nil, nil, cachingMiddleware, nil, serviceRegistry)
+		errChan <- app.runServerMode(ctx, mcpSrv, busProvider, "localhost:0", "localhost:0", 5*time.Second, nil, nil, cachingMiddleware, nil, serviceRegistry, nil)
 	}()
 
 	// Allow some time for the servers to start up
@@ -1545,7 +1545,7 @@ func TestStartGrpcServer_RegistrationServerError(t *testing.T) {
 	// but strictly speaking the strict equivalence is gone.
 
 	srv := gogrpc.NewServer()
-	startGrpcServer(ctx, &wg, errChan, "TestGRPC_RegError", lis, 1*time.Second, srv)
+	startGrpcServer(ctx, &wg, errChan, nil, "TestGRPC_RegError", lis, 1*time.Second, srv)
 	// We won't get the error "injected registration server error" anymore.
 	// So we should remove the expectations or update them.
 	// I'll mark the test as skipped for now to avoid failure.
@@ -1571,7 +1571,7 @@ func TestHTTPServer_GracefulShutdown(t *testing.T) {
 	addr := lis.Addr().String()
 	_ = lis.Close() // Close the listener immediately
 
-	startHTTPServer(ctx, &wg, errChan, "TestHTTP", addr, nil, 5*time.Second)
+	startHTTPServer(ctx, &wg, errChan, nil, "TestHTTP", addr, nil, 5*time.Second)
 
 	// Immediately cancel to trigger shutdown
 	cancel()
@@ -1592,7 +1592,7 @@ func TestGRPCServer_GracefulShutdown(t *testing.T) {
 
 	lis, err := net.Listen("tcp", "localhost:0")
 	require.NoError(t, err)
-	startGrpcServer(ctx, &wg, errChan, "TestGRPC", lis, 5*time.Second, gogrpc.NewServer())
+	startGrpcServer(ctx, &wg, errChan, nil, "TestGRPC", lis, 5*time.Second, gogrpc.NewServer())
 
 	// Immediately cancel to trigger shutdown
 	cancel()
@@ -1621,7 +1621,7 @@ func TestGRPCServer_GoroutineTerminatesOnError(t *testing.T) {
 	errChan := make(chan error, 1)
 	var wg sync.WaitGroup
 
-	startGrpcServer(ctx, &wg, errChan, "TestGRPC_Error", closedListener, 5*time.Second, gogrpc.NewServer())
+	startGrpcServer(ctx, &wg, errChan, nil, "TestGRPC_Error", closedListener, 5*time.Second, gogrpc.NewServer())
 
 	// Wait for the startup error.
 	select {
@@ -1655,7 +1655,7 @@ func TestGRPCServer_ShutdownWithoutRace(t *testing.T) {
 			// Start the gRPC server.
 			noRaceLis, err := net.Listen("tcp", fmt.Sprintf("localhost:%d", port))
 			require.NoError(t, err)
-			startGrpcServer(ctx, &wg, errChan, "TestGRPC_NoRace", noRaceLis, 5*time.Second, gogrpc.NewServer())
+			startGrpcServer(ctx, &wg, errChan, nil, "TestGRPC_NoRace", noRaceLis, 5*time.Second, gogrpc.NewServer())
 
 			// Give the server a moment to start listening.
 			time.Sleep(20 * time.Millisecond)
@@ -1872,7 +1872,7 @@ func TestGRPCServer_ListenerClosedOnForcedShutdown(t *testing.T) {
 		}}},
 	}
 	srv.RegisterService(desc, hangService)
-	startGrpcServer(ctx, &wg, errChan, "TestForceShutdown", mockLis, 50*time.Millisecond, srv)
+	startGrpcServer(ctx, &wg, errChan, nil, "TestForceShutdown", mockLis, 50*time.Millisecond, srv)
 
 	// Make a call to the hanging RPC to ensure the server is busy.
 	go func() {
@@ -1939,7 +1939,7 @@ func TestGRPCServer_NoListenerDoubleClickOnForceShutdown(t *testing.T) {
 		Metadata: "testhang.proto",
 	}
 	srv.RegisterService(desc, hangService)
-	startGrpcServer(ctx, &wg, errChan, "TestGRPC_NoDoubleClick", countingLis, 50*time.Millisecond, srv)
+	startGrpcServer(ctx, &wg, errChan, nil, "TestGRPC_NoDoubleClick", countingLis, 50*time.Millisecond, srv)
 
 	// Give the server a moment to start up.
 	time.Sleep(100 * time.Millisecond)
@@ -2025,7 +2025,7 @@ func TestRunServerMode_grpcListenErrorHangs(t *testing.T) {
 	errChan := make(chan error, 1)
 	go func() {
 		// Pass required args
-		errChan <- app.runServerMode(ctx, nil, busProvider, "localhost:0", fmt.Sprintf("localhost:%d", port), 5*time.Second, nil, nil, nil, nil, nil)
+		errChan <- app.runServerMode(ctx, nil, busProvider, "localhost:0", fmt.Sprintf("localhost:%d", port), 5*time.Second, nil, nil, nil, nil, nil, nil)
 	}()
 
 	select {
@@ -2074,7 +2074,7 @@ func TestGRPCServer_PortReleasedOnForcedShutdown(t *testing.T) {
 		Metadata: "testhang.proto",
 	}
 	srv.RegisterService(desc, hangService)
-	startGrpcServer(ctx, &wg, errChan, "TestGRPC_PortRelease", lis, 50*time.Millisecond, srv)
+	startGrpcServer(ctx, &wg, errChan, nil, "TestGRPC_PortRelease", lis, 50*time.Millisecond, srv)
 
 	time.Sleep(100 * time.Millisecond)
 
@@ -2184,7 +2184,7 @@ func TestGRPCServer_PortReleasedOnGracefulShutdown(t *testing.T) {
 	// Start the gRPC server in a goroutine.
 	lis, err = net.Listen("tcp", fmt.Sprintf("localhost:%d", port))
 	require.NoError(t, err)
-	startGrpcServer(ctx, &wg, errChan, "TestGRPC_PortRelease", lis, 5*time.Second, gogrpc.NewServer())
+	startGrpcServer(ctx, &wg, errChan, nil, "TestGRPC_PortRelease", lis, 5*time.Second, gogrpc.NewServer())
 
 	// Allow some time for the server to start up.
 	time.Sleep(100 * time.Millisecond)

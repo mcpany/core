@@ -112,7 +112,7 @@ func TestRunServerMode_Auth(t *testing.T) {
 	errChan := make(chan error, 1)
 	go func() {
 		// Pass nil for storage, it should be fine if not used by these handlers
-		errChan <- app.runServerMode(ctx, mcpSrv, busProvider, bindAddress, grpcPort, 5*time.Second, users, nil, cachingMiddleware, app.Storage, serviceRegistry)
+		errChan <- app.runServerMode(ctx, mcpSrv, busProvider, bindAddress, grpcPort, 5*time.Second, users, nil, cachingMiddleware, app.Storage, serviceRegistry, nil)
 	}()
 
 	// Wait for server to be ready
@@ -397,7 +397,7 @@ func TestAuthMiddleware_AuthDisabled(t *testing.T) {
 
 	errChan := make(chan error, 1)
 	go func() {
-		errChan <- app.runServerMode(ctx, mcpSrv, busProvider, bindAddress, "", 5*time.Second, nil, nil, cachingMiddleware, nil, serviceRegistry)
+		errChan <- app.runServerMode(ctx, mcpSrv, busProvider, bindAddress, "", 5*time.Second, nil, nil, cachingMiddleware, nil, serviceRegistry, nil)
 	}()
 
 	// Wait for server to be ready
