@@ -103,6 +103,10 @@ func (m *MockToolManager) ExecuteTool(_ context.Context, _ *tool.ExecutionReques
 func (m *MockToolManager) AddMiddleware(_ tool.ExecutionMiddleware) {
 }
 
+func (m *MockToolManager) ToolMatchesProfile(tool tool.Tool, profileID string) bool {
+	return true
+}
+
 func TestUpstream_Register_DisabledTool(t *testing.T) {
 	toolManager := NewMockToolManager(nil)
 	poolManager := pool.NewManager()

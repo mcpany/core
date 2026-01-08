@@ -8,8 +8,8 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/mcpany/core/server/pkg/tool"
 	configv1 "github.com/mcpany/core/proto/config/v1"
+	"github.com/mcpany/core/server/pkg/tool"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"google.golang.org/protobuf/proto"
@@ -206,6 +206,10 @@ func (m *MockToolManager) AddServiceInfo(serviceID string, info *tool.ServiceInf
 func (m *MockToolManager) AddTool(t tool.Tool) error {
 	args := m.Called(t)
 	return args.Error(0)
+}
+
+func (m *MockToolManager) ToolMatchesProfile(tool tool.Tool, profileID string) bool {
+	return true
 }
 
 func TestRegister(t *testing.T) {

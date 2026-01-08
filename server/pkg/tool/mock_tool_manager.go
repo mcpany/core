@@ -201,3 +201,17 @@ func (mr *MockManagerInterfaceMockRecorder) SetProfiles(enabled, defs any) *gomo
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SetProfiles", reflect.TypeOf((*MockManagerInterface)(nil).SetProfiles), enabled, defs)
 }
+
+// ToolMatchesProfile mocks base method.
+func (m *MockManagerInterface) ToolMatchesProfile(tool Tool, profileID string) bool {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ToolMatchesProfile", tool, profileID)
+	ret0, _ := ret[0].(bool)
+	return ret0
+}
+
+// ToolMatchesProfile indicates an expected call of ToolMatchesProfile.
+func (mr *MockManagerInterfaceMockRecorder) ToolMatchesProfile(tool, profileID any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ToolMatchesProfile", reflect.TypeOf((*MockManagerInterface)(nil).ToolMatchesProfile), tool, profileID)
+}

@@ -131,6 +131,10 @@ func (m *MockToolManager) SetError(err error) {
 func (m *MockToolManager) AddMiddleware(_ tool.ExecutionMiddleware) {
 }
 
+func (m *MockToolManager) ToolMatchesProfile(tool tool.Tool, profileID string) bool {
+	return true
+}
+
 func TestNewGRPCUpstream(t *testing.T) {
 	poolManager := pool.NewManager()
 	upstream := NewUpstream(poolManager)

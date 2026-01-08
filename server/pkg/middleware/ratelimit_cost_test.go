@@ -54,6 +54,9 @@ func (m *MockToolManagerForCost) SetProfiles(_ []string, _ []*configv1.ProfileDe
 func (m *MockToolManagerForCost) IsServiceAllowed(serviceID, profileID string) bool { return true }
 func (m *MockToolManagerForCost) AddMiddleware(_ tool.ExecutionMiddleware)          {}
 func (m *MockToolManagerForCost) ListServices() []*tool.ServiceInfo                 { return nil }
+func (m *MockToolManagerForCost) ToolMatchesProfile(tool tool.Tool, profileID string) bool {
+	return true
+}
 
 // MockToolForCost is a mock for tool.Tool
 type MockToolForCost struct {

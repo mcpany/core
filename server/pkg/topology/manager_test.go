@@ -86,6 +86,10 @@ func (m *MockToolManager) IsServiceAllowed(serviceID, profileID string) bool {
 	return true
 }
 
+func (m *MockToolManager) ToolMatchesProfile(tool tool.Tool, profileID string) bool {
+	return true
+}
+
 // MockTool is a mock implementation of tool.Tool
 type MockTool struct {
 	mock.Mock
