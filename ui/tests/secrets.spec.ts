@@ -7,7 +7,7 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('Secrets Manager', () => {
-  test.skip('should allow adding and deleting secrets', async ({ page }) => {
+  test('should allow adding and deleting secrets', async ({ page }) => {
     const timestamp = Date.now();
     const secretName = `E2E Test Secret ${timestamp}`;
     const secretKey = `E2E_TEST_KEY_${timestamp}`;

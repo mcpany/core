@@ -15,7 +15,7 @@ test.describe('E2E Full Coverage', () => {
     page.on('console', msg => console.log(`[BROWSER] ${msg.text()}`));
   });
 
-  test.skip('should navigate to all pages and verify content', async ({ page }) => {
+  test('should navigate to all pages and verify content', async ({ page }) => {
     // Mock API calls to prevent flakiness due to backend connection issues
     await page.route('/api/v1/**', async route => {
       // Return empty list/object for lists
