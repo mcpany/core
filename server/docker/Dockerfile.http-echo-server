@@ -4,9 +4,9 @@ FROM golang:1.24-alpine AS builder
 WORKDIR /app
 
 # Copy injected root dependencies
-COPY .build-context/core/go.mod .build-context/core/go.sum ./
+COPY build-context/core/go.mod build-context/core/go.sum ./
 # http-echo-server might not strictly need proto, but good for consistency if deps change
-COPY .build-context/core/proto ./proto/
+COPY build-context/core/proto ./proto/
 
 WORKDIR /app/server
 

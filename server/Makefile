@@ -670,7 +670,7 @@ else
 	@exit 1
 endif
 
-BUILD_CONTEXT_DIR := .build-context
+BUILD_CONTEXT_DIR := build-context
 
 prepare-docker-context:
 	@echo "Preparing build context..."
