@@ -7,18 +7,18 @@ import { test, expect } from '@playwright/test';
 
 test.describe('Navigation Coverage', () => {
   const routes = [
-    { path: '/', title: 'Topology|System' },
-    { path: '/logs', title: 'Logs' },
+    { path: '/', title: 'Dashboard' },
+    { path: '/logs', title: 'Live Logs' },
     { path: '/marketplace', title: 'Marketplace' },
-    { path: '/playground', title: 'Playground|Chat' },
+    { path: '/playground', title: 'Playground' },
     { path: '/profiles', title: 'Profiles' },
-    { path: '/prompts', title: 'Prompts' },
+    { path: '/prompts', title: 'Prompt Library' },
     { path: '/resources', title: 'Resources' },
     { path: '/secrets', title: 'API Keys & Secrets' },
     { path: '/services', title: 'Services' },
     { path: '/settings', title: 'Settings' },
     { path: '/stacks', title: 'Stacks' },
-    { path: '/stats', title: 'Stats|Analytics' },
+    { path: '/stats', title: 'Analytics & Stats' },
     { path: '/tools', title: 'Tools' },
     { path: '/webhooks', title: 'Webhooks' },
   ];
