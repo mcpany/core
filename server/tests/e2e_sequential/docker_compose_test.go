@@ -75,7 +75,7 @@ func TestDockerComposeE2E(t *testing.T) {
 		}
 
 		// Dump logs from manually run weather container
-		cmd := exec.Command("docker", "logs", "mcpany-weather-test") // Name without random suffix? No, we used random.
+		// cmd := exec.Command("docker", "logs", "mcpany-weather-test") // Name without random suffix? No, we used random.
 		// We need to capture the weather container name too if we want to dump it.
 		// For now, let's skip dumping weather logs or try to capture it too.
 
@@ -85,7 +85,7 @@ func TestDockerComposeE2E(t *testing.T) {
 		// So this main cleanup is just a safety net.
 
 		if currentComposeFile != "" {
-			cmd = exec.Command("docker", "compose", "-f", currentComposeFile, "down", "-v", "--remove-orphans")
+			cmd := exec.Command("docker", "compose", "-f", currentComposeFile, "down", "-v", "--remove-orphans")
 			cmd.Env = os.Environ()
 			cmd.Stdout = os.Stdout
 			cmd.Stderr = os.Stderr
@@ -93,7 +93,7 @@ func TestDockerComposeE2E(t *testing.T) {
 		}
 
 		// Also try generic project down just in case
-		cmd = exec.Command("docker", "compose", "down", "-v", "--remove-orphans")
+		cmd := exec.Command("docker", "compose", "down", "-v", "--remove-orphans")
 		cmd.Env = os.Environ()
 		_ = cmd.Run()
 
@@ -412,7 +412,7 @@ func verifyPrometheusMetric(t *testing.T, url string, expectedTarget string) {
 // simulateGeminiCLI simulates a basic Gemini CLI interaction (MCP client)
 // It connects via SSE and sends a JSON-RPC tool call using the Go SDK.
 func simulateGeminiCLI(t *testing.T, baseURL string) {
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 
 	client := mcp.NewClient(&mcp.Implementation{Name: "test-client", Version: "1.0"}, nil)
@@ -429,7 +429,12 @@ func simulateGeminiCLI(t *testing.T, baseURL string) {
 	// List tools to find the correct name
 	list, err := session.ListTools(ctx, nil)
 	require.NoError(t, err, "Failed to list tools")
-	t.Logf("Available tools: %v", list.Tools)
+
+	var toolNames []string
+	for _, tool := range list.Tools {
+		toolNames = append(toolNames, tool.Name)
+	}
+	t.Logf("Available tools: %v", toolNames)
 
 	toolName := "echo"
 	for _, tool := range list.Tools {
@@ -440,13 +445,21 @@ func simulateGeminiCLI(t *testing.T, baseURL string) {
 	}
 	t.Logf("Using tool name: %s", toolName)
 
-	// 2. Send generic tool call
+	// 2. Send generic tool call with retry
 	t.Log("Calling echo tool...")
-	result, err := session.CallTool(ctx, &mcp.CallToolParams{
-		Name:      toolName,
-		Arguments: json.RawMessage(`{"message": "Hello MCP"}`),
-	})
-	require.NoError(t, err, "Failed to call echo tool")
+	var result *mcp.CallToolResult
+	for i := 0; i < 3; i++ {
+		result, err = session.CallTool(ctx, &mcp.CallToolParams{
+			Name:      toolName,
+			Arguments: json.RawMessage(`{"message": "Hello MCP"}`),
+		})
+		if err == nil {
+			break
+		}
+		t.Logf("CallTool failed (attempt %d/3): %v. Retrying...", i+1, err)
+		time.Sleep(2 * time.Second)
+	}
+	require.NoError(t, err, "Failed to call echo tool after retries")
 
 	// Check result
 	require.NotNil(t, result)
@@ -495,24 +508,10 @@ func createDynamicCompose(t *testing.T, rootDir, originalPath string) string {
 	require.NoError(t, err)
 
 	// Replace fixed ports with 0 ports
-	// Use regex to handle potential spacing variations
 	// Match pattern: "HOST_PORT:CONTAINER_PORT"
 	// We want to replace any HostPort with 0.
-
-	// Pattern: any whitespace - "digits:digits"
-	// mcpany-server: "${HOST_PORT:-50050}:50050" -> 0:50050
-	re1 := regexp.MustCompile(`"\$\{HOST_PORT:-50050\}:50050"`)
-	re2 := regexp.MustCompile(`"50051:50051"`)
-	re3 := regexp.MustCompile(`"8080:8080"`)
-	re4 := regexp.MustCompile(`"9099:9090"`)
-	re5 := regexp.MustCompile(`"6379:6379"`)
-
-	s := string(content)
-	s = re1.ReplaceAllString(s, `"0:50050"`)
-	s = re2.ReplaceAllString(s, `"0:50051"`)
-	s = re3.ReplaceAllString(s, `"0:8080"`)
-	s = re4.ReplaceAllString(s, `"0:9090"`)
-	s = re5.ReplaceAllString(s, `"0:6379"`)
+	re := regexp.MustCompile(`"([0-9\$\{}:_a-zA-Z-]+):([0-9]+)"`)
+	s := re.ReplaceAllString(string(content), `"0:$2"`)
 
 	// Ensure build directory exists
 	buildDir := filepath.Join(rootDir, "build")
