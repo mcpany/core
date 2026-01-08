@@ -38,6 +38,8 @@ export interface LogEntry {
   level: LogLevel
   message: string
   source?: string
+  // Optimization: Pre-computed lowercase string for search performance
+  searchStr?: string
 }
 
 const SAMPLE_MESSAGES = {
@@ -135,18 +137,25 @@ export function LogStream() {
       const message = messages[Math.floor(Math.random() * messages.length)]
       const source = SOURCES[Math.floor(Math.random() * SOURCES.length)]
 
+      // Optimization: Pre-compute search string to avoid repetitive toLowerCase() during filtering
+      const searchStr = (message + " " + (source || "")).toLowerCase()
+
       const newLog: LogEntry = {
         id: Math.random().toString(36).substring(7),
         timestamp: new Date().toISOString(),
         level,
         message,
-        source
+        source,
+        searchStr
       }
 
       setLogs((prev) => {
-        const newLogs = [...prev, newLog]
-        if (newLogs.length > 1000) return newLogs.slice(newLogs.length - 1000)
-        return newLogs
+        // Optimization: Avoid creating an intermediate array (double copy) when limit is reached.
+        // If we are at limit, slice the old array (copy N-1 items) and append the new one.
+        if (prev.length >= 1000) {
+          return [...prev.slice(1), newLog]
+        }
+        return [...prev, newLog]
       })
     }, 800)
 
@@ -169,9 +178,17 @@ export function LogStream() {
     const lowerSearchQuery = searchQuery.toLowerCase()
     return logs.filter((log) => {
       const matchesLevel = filterLevel === "ALL" || log.level === filterLevel
-      const matchesSearch =
-        log.message.toLowerCase().includes(lowerSearchQuery) ||
-        log.source?.toLowerCase().includes(lowerSearchQuery)
+
+      // Optimization: Use pre-computed search string if available to skip repeated toLowerCase() calls
+      let matchesSearch: boolean | undefined
+      if (log.searchStr) {
+        matchesSearch = log.searchStr.includes(lowerSearchQuery)
+      } else {
+        matchesSearch =
+          log.message.toLowerCase().includes(lowerSearchQuery) ||
+          log.source?.toLowerCase().includes(lowerSearchQuery)
+      }
+
       return matchesLevel && matchesSearch
     })
   }, [logs, filterLevel, searchQuery])
