@@ -181,7 +181,6 @@ func (s *Store) DeleteSecret(id string) error {
 	return nil
 }
 
-<<<<<<< HEAD
 // CreateUser creates a new user.
 func (s *Store) CreateUser(_ context.Context, user *configv1.User) error {
 	s.mu.Lock()
@@ -213,11 +212,6 @@ func (s *Store) ListUsers(_ context.Context) ([]*configv1.User, error) {
 	list := make([]*configv1.User, 0, len(s.users))
 	for _, user := range s.users {
 		list = append(list, proto.Clone(user).(*configv1.User))
-=======
-// Profiles
-
-// ListProfiles retrieves all profile definitions.
-func (s *Store) ListProfiles(_ context.Context) ([]*configv1.ProfileDefinition, error) {
 	}
 	return list, nil
 }
