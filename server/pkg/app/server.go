@@ -61,6 +61,8 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
+const authMiddlewareName = "auth"
+
 var healthCheckClient = &http.Client{
 	CheckRedirect: func(_ *http.Request, _ []*http.Request) error {
 		return http.ErrUseLastResponse
@@ -471,7 +473,7 @@ func (a *Application) Run(
 		// Default chain if none configured
 		middlewares = []*config_v1.Middleware{
 			{Name: proto.String("debug"), Priority: proto.Int32(10)},
-			{Name: proto.String("auth"), Priority: proto.Int32(20)},
+			{Name: proto.String(authMiddlewareName), Priority: proto.Int32(20)},
 			{Name: proto.String("logging"), Priority: proto.Int32(30)},
 			{Name: proto.String("audit"), Priority: proto.Int32(40)},
 			{Name: proto.String("global_ratelimit"), Priority: proto.Int32(45)},
@@ -504,7 +506,7 @@ func (a *Application) Run(
 	if stdio {
 		var filtered []*config_v1.Middleware
 		for _, m := range middlewares {
-			if m.GetName() != "auth" {
+			if m.GetName() != authMiddlewareName {
 				filtered = append(filtered, m)
 			}
 		}
@@ -570,7 +572,7 @@ func (a *Application) Run(
 		grpcPort,
 		shutdownTimeout,
 		cfg.GetUsers(),
-		cfg.GetGlobalSettings().GetProfileDefinitions(),
+		cfg.GetGlobalSettings(),
 		cachingMiddleware,
 		s,
 		serviceRegistry,
@@ -886,7 +888,7 @@ func (a *Application) runServerMode(
 	bindAddress, grpcPort string,
 	shutdownTimeout time.Duration,
 	users []*config_v1.User,
-	profileDefinitions []*config_v1.ProfileDefinition,
+	globalSettings *config_v1.GlobalSettings,
 	cachingMiddleware *middleware.CachingMiddleware,
 	store storage.Storage,
 	serviceRegistry *serviceregistry.ServiceRegistry,
@@ -916,10 +918,22 @@ func (a *Application) runServerMode(
 
 	// Check if auth middleware is disabled in config
 	var authDisabled bool
-	for _, m := range config.GlobalSettings().Middlewares() {
-		if m.GetName() == "auth" && m.GetDisabled() {
-			authDisabled = true
-			break
+
+	// Use passed globalSettings for middleware config check
+	if globalSettings != nil {
+		for _, m := range globalSettings.GetMiddlewares() {
+			if m.GetName() == authMiddlewareName && m.GetDisabled() {
+				authDisabled = true
+				break
+			}
+		}
+	} else {
+		// Fallback to singleton if nil (should not happen in normal Run)
+		for _, m := range config.GlobalSettings().Middlewares() {
+			if m.GetName() == authMiddlewareName && m.GetDisabled() {
+				authDisabled = true
+				break
+			}
 		}
 	}
 
@@ -941,6 +955,13 @@ func (a *Application) runServerMode(
 
 	// Build Profile Definition Map for RBAC
 	profileDefMap := make(map[string]*config_v1.ProfileDefinition)
+	var profileDefinitions []*config_v1.ProfileDefinition
+	if globalSettings != nil {
+		profileDefinitions = globalSettings.GetProfileDefinitions()
+	} else {
+		profileDefinitions = config.GlobalSettings().GetProfileDefinitions()
+	}
+
 	for _, def := range profileDefinitions {
 		profileDefMap[def.GetName()] = def
 	}
@@ -1197,7 +1218,13 @@ func (a *Application) runServerMode(
 	mux.Handle("/upload", authMiddleware(http.HandlerFunc(a.uploadFile)))
 
 	// OIDC Routes
-	oidcConfig := config.GlobalSettings().GetOidc()
+	var oidcConfig *config_v1.OIDCConfig
+	if globalSettings != nil {
+		oidcConfig = globalSettings.GetOidc()
+	} else {
+		oidcConfig = config.GlobalSettings().GetOidc()
+	}
+
 	if oidcConfig != nil {
 		provider, err := auth.NewOIDCProvider(localCtx, auth.OIDCConfig{
 			Issuer:       oidcConfig.GetIssuer(),

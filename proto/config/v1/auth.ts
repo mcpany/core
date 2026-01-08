@@ -120,11 +120,33 @@ export interface UpstreamMTLSAuth {
 
 /** AuthenticationConfig specifies the authentication method to use. */
 export interface AuthenticationConfig {
-  apiKey?:
-    | APIKeyAuth
-    | undefined;
-  /** Can be extended with other auth types like JWT, mTLS etc. */
+  apiKey?: APIKeyAuth | undefined;
   oauth2?: OAuth2Auth | undefined;
+  basicAuth?: BasicAuth | undefined;
+  oidc?: OIDCAuth | undefined;
+  trustedHeader?: TrustedHeaderAuth | undefined;
+}
+
+/**
+ * BasicAuth defines authentication using a username and password.
+ * The password should be stored as a bcrypt hash.
+ */
+export interface BasicAuth {
+  passwordHash: string;
+}
+
+/** OIDCAuth defines authentication using OpenID Connect. */
+export interface OIDCAuth {
+  issuer: string;
+  subject: string;
+  email: string;
+  audience: string[];
+}
+
+/** TrustedHeaderAuth defines authentication using a trusted header (e.g. from an auth proxy). */
+export interface TrustedHeaderAuth {
+  headerName: string;
+  headerValue: string;
 }
 
 /** APIKeyAuth defines authentication using an API key. */
@@ -1361,7 +1383,7 @@ export const UpstreamMTLSAuth: MessageFns<UpstreamMTLSAuth> = {
 };
 
 function createBaseAuthenticationConfig(): AuthenticationConfig {
-  return { apiKey: undefined, oauth2: undefined };
+  return { apiKey: undefined, oauth2: undefined, basicAuth: undefined, oidc: undefined, trustedHeader: undefined };
 }
 
 export const AuthenticationConfig: MessageFns<AuthenticationConfig> = {
@@ -1371,6 +1393,15 @@ export const AuthenticationConfig: MessageFns<AuthenticationConfig> = {
     }
     if (message.oauth2 !== undefined) {
       OAuth2Auth.encode(message.oauth2, writer.uint32(18).fork()).join();
+    }
+    if (message.basicAuth !== undefined) {
+      BasicAuth.encode(message.basicAuth, writer.uint32(26).fork()).join();
+    }
+    if (message.oidc !== undefined) {
+      OIDCAuth.encode(message.oidc, writer.uint32(34).fork()).join();
+    }
+    if (message.trustedHeader !== undefined) {
+      TrustedHeaderAuth.encode(message.trustedHeader, writer.uint32(42).fork()).join();
     }
     return writer;
   },
@@ -1398,6 +1429,30 @@ export const AuthenticationConfig: MessageFns<AuthenticationConfig> = {
           message.oauth2 = OAuth2Auth.decode(reader, reader.uint32());
           continue;
         }
+        case 3: {
+          if (tag !== 26) {
+            break;
+          }
+
+          message.basicAuth = BasicAuth.decode(reader, reader.uint32());
+          continue;
+        }
+        case 4: {
+          if (tag !== 34) {
+            break;
+          }
+
+          message.oidc = OIDCAuth.decode(reader, reader.uint32());
+          continue;
+        }
+        case 5: {
+          if (tag !== 42) {
+            break;
+          }
+
+          message.trustedHeader = TrustedHeaderAuth.decode(reader, reader.uint32());
+          continue;
+        }
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -1411,6 +1466,9 @@ export const AuthenticationConfig: MessageFns<AuthenticationConfig> = {
     return {
       apiKey: isSet(object.api_key) ? APIKeyAuth.fromJSON(object.api_key) : undefined,
       oauth2: isSet(object.oauth2) ? OAuth2Auth.fromJSON(object.oauth2) : undefined,
+      basicAuth: isSet(object.basic_auth) ? BasicAuth.fromJSON(object.basic_auth) : undefined,
+      oidc: isSet(object.oidc) ? OIDCAuth.fromJSON(object.oidc) : undefined,
+      trustedHeader: isSet(object.trusted_header) ? TrustedHeaderAuth.fromJSON(object.trusted_header) : undefined,
     };
   },
 
@@ -1421,6 +1479,15 @@ export const AuthenticationConfig: MessageFns<AuthenticationConfig> = {
     }
     if (message.oauth2 !== undefined) {
       obj.oauth2 = OAuth2Auth.toJSON(message.oauth2);
+    }
+    if (message.basicAuth !== undefined) {
+      obj.basic_auth = BasicAuth.toJSON(message.basicAuth);
+    }
+    if (message.oidc !== undefined) {
+      obj.oidc = OIDCAuth.toJSON(message.oidc);
+    }
+    if (message.trustedHeader !== undefined) {
+      obj.trusted_header = TrustedHeaderAuth.toJSON(message.trustedHeader);
     }
     return obj;
   },
@@ -1436,6 +1503,255 @@ export const AuthenticationConfig: MessageFns<AuthenticationConfig> = {
     message.oauth2 = (object.oauth2 !== undefined && object.oauth2 !== null)
       ? OAuth2Auth.fromPartial(object.oauth2)
       : undefined;
+    message.basicAuth = (object.basicAuth !== undefined && object.basicAuth !== null)
+      ? BasicAuth.fromPartial(object.basicAuth)
+      : undefined;
+    message.oidc = (object.oidc !== undefined && object.oidc !== null) ? OIDCAuth.fromPartial(object.oidc) : undefined;
+    message.trustedHeader = (object.trustedHeader !== undefined && object.trustedHeader !== null)
+      ? TrustedHeaderAuth.fromPartial(object.trustedHeader)
+      : undefined;
+    return message;
+  },
+};
+
+function createBaseBasicAuth(): BasicAuth {
+  return { passwordHash: "" };
+}
+
+export const BasicAuth: MessageFns<BasicAuth> = {
+  encode(message: BasicAuth, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.passwordHash !== "") {
+      writer.uint32(10).string(message.passwordHash);
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): BasicAuth {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseBasicAuth();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.passwordHash = reader.string();
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): BasicAuth {
+    return { passwordHash: isSet(object.password_hash) ? globalThis.String(object.password_hash) : "" };
+  },
+
+  toJSON(message: BasicAuth): unknown {
+    const obj: any = {};
+    if (message.passwordHash !== "") {
+      obj.password_hash = message.passwordHash;
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<BasicAuth>, I>>(base?: I): BasicAuth {
+    return BasicAuth.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<BasicAuth>, I>>(object: I): BasicAuth {
+    const message = createBaseBasicAuth();
+    message.passwordHash = object.passwordHash ?? "";
+    return message;
+  },
+};
+
+function createBaseOIDCAuth(): OIDCAuth {
+  return { issuer: "", subject: "", email: "", audience: [] };
+}
+
+export const OIDCAuth: MessageFns<OIDCAuth> = {
+  encode(message: OIDCAuth, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.issuer !== "") {
+      writer.uint32(10).string(message.issuer);
+    }
+    if (message.subject !== "") {
+      writer.uint32(18).string(message.subject);
+    }
+    if (message.email !== "") {
+      writer.uint32(26).string(message.email);
+    }
+    for (const v of message.audience) {
+      writer.uint32(34).string(v!);
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): OIDCAuth {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseOIDCAuth();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.issuer = reader.string();
+          continue;
+        }
+        case 2: {
+          if (tag !== 18) {
+            break;
+          }
+
+          message.subject = reader.string();
+          continue;
+        }
+        case 3: {
+          if (tag !== 26) {
+            break;
+          }
+
+          message.email = reader.string();
+          continue;
+        }
+        case 4: {
+          if (tag !== 34) {
+            break;
+          }
+
+          message.audience.push(reader.string());
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): OIDCAuth {
+    return {
+      issuer: isSet(object.issuer) ? globalThis.String(object.issuer) : "",
+      subject: isSet(object.subject) ? globalThis.String(object.subject) : "",
+      email: isSet(object.email) ? globalThis.String(object.email) : "",
+      audience: globalThis.Array.isArray(object?.audience) ? object.audience.map((e: any) => globalThis.String(e)) : [],
+    };
+  },
+
+  toJSON(message: OIDCAuth): unknown {
+    const obj: any = {};
+    if (message.issuer !== "") {
+      obj.issuer = message.issuer;
+    }
+    if (message.subject !== "") {
+      obj.subject = message.subject;
+    }
+    if (message.email !== "") {
+      obj.email = message.email;
+    }
+    if (message.audience?.length) {
+      obj.audience = message.audience;
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<OIDCAuth>, I>>(base?: I): OIDCAuth {
+    return OIDCAuth.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<OIDCAuth>, I>>(object: I): OIDCAuth {
+    const message = createBaseOIDCAuth();
+    message.issuer = object.issuer ?? "";
+    message.subject = object.subject ?? "";
+    message.email = object.email ?? "";
+    message.audience = object.audience?.map((e) => e) || [];
+    return message;
+  },
+};
+
+function createBaseTrustedHeaderAuth(): TrustedHeaderAuth {
+  return { headerName: "", headerValue: "" };
+}
+
+export const TrustedHeaderAuth: MessageFns<TrustedHeaderAuth> = {
+  encode(message: TrustedHeaderAuth, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.headerName !== "") {
+      writer.uint32(10).string(message.headerName);
+    }
+    if (message.headerValue !== "") {
+      writer.uint32(18).string(message.headerValue);
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): TrustedHeaderAuth {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseTrustedHeaderAuth();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.headerName = reader.string();
+          continue;
+        }
+        case 2: {
+          if (tag !== 18) {
+            break;
+          }
+
+          message.headerValue = reader.string();
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): TrustedHeaderAuth {
+    return {
+      headerName: isSet(object.header_name) ? globalThis.String(object.header_name) : "",
+      headerValue: isSet(object.header_value) ? globalThis.String(object.header_value) : "",
+    };
+  },
+
+  toJSON(message: TrustedHeaderAuth): unknown {
+    const obj: any = {};
+    if (message.headerName !== "") {
+      obj.header_name = message.headerName;
+    }
+    if (message.headerValue !== "") {
+      obj.header_value = message.headerValue;
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<TrustedHeaderAuth>, I>>(base?: I): TrustedHeaderAuth {
+    return TrustedHeaderAuth.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<TrustedHeaderAuth>, I>>(object: I): TrustedHeaderAuth {
+    const message = createBaseTrustedHeaderAuth();
+    message.headerName = object.headerName ?? "";
+    message.headerValue = object.headerValue ?? "";
     return message;
   },
 };
