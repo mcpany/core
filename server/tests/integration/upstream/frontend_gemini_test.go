@@ -24,7 +24,7 @@ func TestGeminiCLIE2E_FrontendReact(t *testing.T) {
 	gemini := framework.NewGeminiCLI(t)
 	gemini.Install()
 
-	configPath := "/usr/local/google/home/kxw/core/marketplace/upstream_service_collection/frontend_react.yaml"
+	configPath := "../../../../marketplace/upstream_service_collection/frontend_react.yaml"
 	configContent, err := os.ReadFile(configPath)
 	require.NoError(t, err)
 
