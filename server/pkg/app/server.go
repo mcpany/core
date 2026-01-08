@@ -555,11 +555,11 @@ func (a *Application) Run(
 	a.Storage = s
 
 	// Signal startup complete
-	a.startupOnce.Do(func() {
-		close(a.startupCh)
-	})
-
-	// Start gRPC server
+	startupCallback := func() {
+		a.startupOnce.Do(func() {
+			close(a.startupCh)
+		})
+	}
 
 	// Start servers
 	if err := a.runServerMode(
@@ -574,6 +574,7 @@ func (a *Application) Run(
 		cachingMiddleware,
 		s,
 		serviceRegistry,
+		startupCallback,
 	); err != nil {
 		workerCancel()
 		upstreamWorker.Stop()
@@ -890,6 +891,7 @@ func (a *Application) runServerMode(
 	cachingMiddleware *middleware.CachingMiddleware,
 	store storage.Storage,
 	serviceRegistry *serviceregistry.ServiceRegistry,
+	startupCallback func(),
 ) error {
 	ipMiddleware, err := middleware.NewIPAllowlistMiddleware(a.SettingsManager.GetAllowedIPs())
 	if err != nil {
@@ -902,7 +904,11 @@ func (a *Application) runServerMode(
 	localCtx, cancel := context.WithCancel(ctx)
 	defer cancel()
 
+	defer cancel()
+
 	errChan := make(chan error, 2)
+	readyChan := make(chan struct{}, 2)
+	expectedReady := 0
 	var wg sync.WaitGroup
 
 	rawHTTPHandler := mcp.NewStreamableHTTPHandler(func(_ *http.Request) *mcp.Server {
@@ -1319,10 +1325,12 @@ func (a *Application) runServerMode(
 		if err != nil {
 			errChan <- fmt.Errorf("gRPC server failed to listen: %w", err)
 		} else {
+			expectedReady++
 			startGrpcServer(
 				localCtx,
 				&wg,
 				errChan,
+				readyChan,
 				"Registration",
 				lis,
 				shutdownTimeout,
@@ -1332,6 +1340,7 @@ func (a *Application) runServerMode(
 	}
 
 	// Register Root Handler with gRPC-Web support
+	// Register Root Handler with gRPC-Web support
 	mux.Handle("/", authMiddleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if wrappedGrpc != nil && wrappedGrpc.IsGrpcWebRequest(r) {
 			wrappedGrpc.ServeHTTP(w, r)
@@ -1340,7 +1349,29 @@ func (a *Application) runServerMode(
 		httpHandler.ServeHTTP(w, r)
 	})))
 
-	startHTTPServer(localCtx, &wg, errChan, "MCP Any HTTP", httpBindAddress, handler, shutdownTimeout)
+	expectedReady++
+	startHTTPServer(localCtx, &wg, errChan, readyChan, "MCP Any HTTP", httpBindAddress, handler, shutdownTimeout)
+
+	// Wait for servers to be ready
+	timeout := time.NewTimer(10 * time.Second) // Reasonable timeout for binding ports
+	defer timeout.Stop()
+
+	for i := 0; i < expectedReady; i++ {
+		select {
+		case <-readyChan:
+			// One server is ready
+		case err := <-errChan:
+			return fmt.Errorf("failed to start a server: %w", err)
+		case <-ctx.Done():
+			return ctx.Err()
+		case <-timeout.C:
+			return fmt.Errorf("timed out waiting for servers to be ready")
+		}
+	}
+
+	if startupCallback != nil {
+		startupCallback()
+	}
 
 	var startupErr error
 	select {
@@ -1385,6 +1416,7 @@ func startHTTPServer(
 	ctx context.Context,
 	wg *sync.WaitGroup,
 	errChan chan<- error,
+	readyChan chan<- struct{},
 	name, addr string,
 	handler http.Handler,
 	shutdownTimeout time.Duration,
@@ -1397,6 +1429,9 @@ func startHTTPServer(
 		if err != nil {
 			errChan <- fmt.Errorf("[%s] server failed to listen: %w", name, err)
 			return
+		}
+		if readyChan != nil {
+			readyChan <- struct{}{}
 		}
 		defer func() { _ = lis.Close() }()
 
@@ -1512,6 +1547,7 @@ func startGrpcServer(
 	ctx context.Context,
 	wg *sync.WaitGroup,
 	errChan chan<- error,
+	readyChan chan<- struct{},
 	name string,
 	lis net.Listener,
 	shutdownTimeout time.Duration,
@@ -1559,7 +1595,12 @@ func startGrpcServer(
 			}
 		}()
 
+
+
 		serverLog.Info("gRPC server listening", "port", lis.Addr().String())
+		if readyChan != nil {
+			readyChan <- struct{}{}
+		}
 		if err := server.Serve(lis); err != nil && err != gogrpc.ErrServerStopped {
 			errChan <- fmt.Errorf("[%s] server failed to serve: %w", name, err)
 			cancel() // Signal shutdown goroutine to exit
