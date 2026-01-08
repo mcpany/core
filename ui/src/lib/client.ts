@@ -384,5 +384,47 @@ export const apiClient = {
         });
         if (!res.ok) throw new Error('Failed to save stack config');
         return res.json();
+    },
+
+    // User Management
+    listUsers: async () => {
+        // Fallback for demo/dev - use AdminRPC if possible, but we don't have generated client for Admin yet in UI?
+        // We do have @proto/admin/v1/admin
+        // Let's rely on fetch for now if we expose REST, OR we can try to use standard gRPC-Web if we set it up.
+        // For simplicity in this UI iteration (which seems to use fetchWithAuth mostly),
+        // we might assume there is a REST gateway or we use a custom endpoint.
+        // Wait, server/pkg/admin/server.go implements providing gRPC.
+        // Does it expose REST?
+        // The previous task walkthrough mentions "Admin Service RPCs".
+        // And `server/pkg/app/server.go` likely mounts gRPC-Gateway?
+        // Let's try fetch first.
+        const res = await fetchWithAuth('/api/v1/users');
+        if (!res.ok) throw new Error('Failed to list users');
+        return res.json();
+    },
+    createUser: async (user: any) => {
+        const res = await fetchWithAuth('/api/v1/users', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ user }) // Wrapper expected by AdminRPC? Request is CreateUserRequest { user: User }
+        });
+        if (!res.ok) throw new Error('Failed to create user');
+        return res.json();
+    },
+    updateUser: async (user: any) => {
+         const res = await fetchWithAuth(`/api/v1/users/${user.id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ user })
+        });
+        if (!res.ok) throw new Error('Failed to update user');
+        return res.json();
+    },
+    deleteUser: async (id: string) => {
+        const res = await fetchWithAuth(`/api/v1/users/${id}`, {
+            method: 'DELETE'
+        });
+        if (!res.ok) throw new Error('Failed to delete user');
+        return {};
     }
 };

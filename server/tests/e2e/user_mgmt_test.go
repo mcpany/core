@@ -1,18 +1,20 @@
-// Copyright 2025 Author(s) of MCP Any
+// Copyright 2026 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
-
-//go:build e2e
 
 package e2e
 
 import (
 	"context"
 	"fmt"
+	"io"
+	"net/http"
+	"net/http/httptest"
 	"os"
 	"strings"
 	"testing"
 	"time"
 
+	"github.com/coreos/go-oidc/v3/oidc"
 	"github.com/gogo/protobuf/proto"
 	pb_admin "github.com/mcpany/core/proto/admin/v1"
 	configv1 "github.com/mcpany/core/proto/config/v1"
@@ -25,6 +27,32 @@ import (
 )
 
 func TestUserManagement(t *testing.T) {
+	// Mock OIDC Server (Start FIRST so we can use URL in config)
+	mockOIDCMux := http.NewServeMux()
+	// Use TLS to satisfy OIDC requirements (or we'd need to assume insecure which is harder to inject globally without flag)
+	// We will inject the trusted client via context.
+	mockOIDC := httptest.NewTLSServer(mockOIDCMux)
+	defer mockOIDC.Close()
+
+	mockOIDCMux.HandleFunc("/.well-known/openid-configuration", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		io.WriteString(w, fmt.Sprintf(`{
+			"issuer": "%s",
+			"authorization_endpoint": "%s/authorize",
+			"token_endpoint": "%s/token",
+			"jwks_uri": "%s/keys",
+			"response_types_supported": ["code"],
+			"subject_types_supported": ["public"],
+			"id_token_signing_alg_values_supported": ["RS256"]
+		}`, mockOIDC.URL, mockOIDC.URL, mockOIDC.URL, mockOIDC.URL))
+	})
+
+	// Just return 200 for keys to satisfy startup check if it fetches them
+	mockOIDCMux.HandleFunc("/keys", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		io.WriteString(w, `{"keys": []}`)
+	})
+
 	// Setup temporary DB path
 	dbPath := t.TempDir() + "/mcpany_test.db"
 
@@ -33,7 +61,12 @@ global_settings:
     db_driver: "sqlite"
     db_path: "%s"
     api_key: "test-api-key"
-`, dbPath)
+    oidc:
+        issuer: "%s"
+        client_id: "test-client"
+        client_secret: "test-secret"
+        redirect_url: "http://localhost:8080/callback"
+`, dbPath, mockOIDC.URL)
 
 	tmpFile, err := os.CreateTemp(t.TempDir(), "mcpany-config-*.yaml")
 	require.NoError(t, err)
@@ -48,6 +81,11 @@ global_settings:
 	var cancel context.CancelFunc
 	var appRunner *app.Application
 
+	// Prepare Context with Trusted OIDC Client
+	baseCtx := context.Background()
+	oidcClient := mockOIDC.Client()
+	baseCtx = oidc.ClientContext(baseCtx, oidcClient)
+
 	// Retry loop for ports
 	for attempt := 0; attempt < 3; attempt++ {
 		jsonrpcPort = integration.FindFreePort(t)
@@ -56,7 +94,7 @@ global_settings:
 			grpcRegPort = integration.FindFreePort(t)
 		}
 
-		ctx, cancel = context.WithCancel(context.Background())
+		ctx, cancel = context.WithCancel(baseCtx)
 		appRunner = app.NewApplication()
 
 		errChan := make(chan error, 1)
@@ -142,4 +180,31 @@ ServerStarted:
 	// Verify deletion
 	_, err = adminClient.GetUser(ctx, &pb_admin.GetUserRequest{UserId: proto.String("user-1")})
 	require.Error(t, err)
+
+	// Test OIDC Configuration (External Authenticator Hook)
+	t.Log("Testing OIDC Login Endpoint...")
+
+	// Verify Auth Login endpoint is active (should redirect to our mock)
+	// We use the same client that trusts the mock (oidcClient) but we need to disable redirect following manually if needed.
+	// Actually oidcClient follows redirects by default.
+	// We want to check the redirect location.
+	// So we need a client that does NOT follow redirects but TRUSTS the certs.
+	// mockOIDC.Client() returns a client with Transport configured.
+
+	// Clone client config
+	checkRedirectClient := *oidcClient
+	checkRedirectClient.CheckRedirect = func(req *http.Request, via []*http.Request) error {
+		return http.ErrUseLastResponse
+	}
+
+	loginUrl := fmt.Sprintf("http://127.0.0.1:%d/auth/login", jsonrpcPort)
+	loginResp, err := checkRedirectClient.Get(loginUrl)
+	require.NoError(t, err)
+	defer loginResp.Body.Close()
+
+	require.Equal(t, http.StatusFound, loginResp.StatusCode)
+	loc, err := loginResp.Location()
+	require.NoError(t, err)
+	// Check that we redirect to the mock OIDC authorization endpoint
+	require.Contains(t, loc.String(), mockOIDC.URL+"/authorize")
 }

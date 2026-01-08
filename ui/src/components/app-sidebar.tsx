@@ -118,6 +118,11 @@ const configItems = [
     icon: Server,
   },
   {
+    title: "Users",
+    url: "/users",
+    icon: User,
+  },
+  {
     title: "Secrets Vault",
     url: "/secrets",
     icon: Key,

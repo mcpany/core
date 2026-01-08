@@ -265,6 +265,11 @@ func (s *Settings) GetOidc() *configv1.OIDCConfig {
 	return s.proto.GetOidc()
 }
 
+// GetProfileDefinitions returns the profile definitions.
+func (s *Settings) GetProfileDefinitions() []*configv1.ProfileDefinition {
+	return s.proto.GetProfileDefinitions()
+}
+
 // getStringSlice is a helper function to get a string slice from viper.
 // It handles the case where viper returns a slice with a single element
 // containing comma-separated values (which happens with environment variables).
