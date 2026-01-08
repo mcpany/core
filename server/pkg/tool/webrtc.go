@@ -37,9 +37,16 @@ func (w *peerConnectionWrapper) Close() error {
 	return w.PeerConnection.Close()
 }
 
-// IsHealthy checks if the peer connection is in a connected state.
+// IsHealthy checks if the peer connection is in a usable state.
 func (w *peerConnectionWrapper) IsHealthy(_ context.Context) bool {
-	return w.PeerConnection != nil && w.ICEConnectionState() == webrtc.ICEConnectionStateConnected
+	if w.PeerConnection == nil {
+		return false
+	}
+	state := w.ICEConnectionState()
+	return state == webrtc.ICEConnectionStateNew ||
+		state == webrtc.ICEConnectionStateChecking ||
+		state == webrtc.ICEConnectionStateConnected ||
+		state == webrtc.ICEConnectionStateCompleted
 }
 
 // WebrtcTool implements the Tool interface for a tool that is exposed via a
