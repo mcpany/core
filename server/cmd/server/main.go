@@ -19,6 +19,7 @@ import (
 	"github.com/mcpany/core/server/pkg/appconsts"
 	"github.com/mcpany/core/server/pkg/config"
 	"github.com/mcpany/core/server/pkg/logging"
+	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/mcpany/core/server/pkg/metrics"
 	"github.com/mcpany/core/server/pkg/update"
 	"github.com/spf13/afero"
@@ -109,6 +110,20 @@ func newRootCmd() *cobra.Command {
 				}()
 			}
 
+			// Start Stdin watcher if flag is present
+			watchStdin, _ := cmd.Flags().GetBool("watch-stdin")
+			if watchStdin {
+				go func() {
+					log.Info("Starting Stdin config watcher")
+					stdinWatcher := config.NewStdinWatcher(os.Stdin)
+					stdinWatcher.Watch(func(cfg *configv1.McpAnyServerConfig) {
+						if err := appRunner.UpdateDynamicConfig(cfg); err != nil {
+							log.Error("Failed to update dynamic config", "error", err)
+						}
+					})
+				}()
+			}
+
 			shutdownTimeout := cfg.ShutdownTimeout()
 
 			if metricsListenAddress := cfg.MetricsListenAddress(); metricsListenAddress != "" {
@@ -129,6 +144,7 @@ func newRootCmd() *cobra.Command {
 		},
 	}
 	config.BindServerFlags(runCmd)
+	runCmd.Flags().Bool("watch-stdin", false, "Watch standard input for configuration updates (JSON stream)")
 	rootCmd.AddCommand(runCmd)
 
 	versionCmd := &cobra.Command{

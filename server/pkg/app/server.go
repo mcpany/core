@@ -140,6 +140,9 @@ type Runner interface {
 	// Returns:
 	//   - An error if the configuration reload fails.
 	ReloadConfig(fs afero.Fs, configPaths []string) error
+
+	// UpdateDynamicConfig updates the in-memory configuration store and triggers a reload.
+	UpdateDynamicConfig(cfg *config_v1.McpAnyServerConfig) error
 }
 
 // Application is the main application struct, holding the dependencies and
@@ -158,6 +161,7 @@ type Application struct {
 	fs               afero.Fs
 	configPaths      []string
 	Storage          storage.Storage
+	dynamicStore     *config.MemoryStore
 
 	// Middleware handles for dynamic updates
 	standardMiddlewares *middleware.StandardMiddlewares
@@ -186,10 +190,11 @@ func NewApplication() *Application {
 		PromptManager:    prompt.NewManager(),
 		ToolManager:      tool.NewManager(busProvider),
 
-		ResourceManager: resource.NewManager(),
-		UpstreamFactory: factory.NewUpstreamServiceFactory(pool.NewManager()),
-		configFiles:     make(map[string]string),
-		startupCh:       make(chan struct{}),
+		ResourceManager:    resource.NewManager(),
+		UpstreamFactory:    factory.NewUpstreamServiceFactory(pool.NewManager()),
+		configFiles:        make(map[string]string),
+		startupCh:          make(chan struct{}),
+		dynamicStore:       config.NewMemoryStore(),
 	}
 }
 
@@ -635,9 +640,26 @@ func (a *Application) loadConfig(fs afero.Fs, configPaths []string) (*config_v1.
 	if a.Storage != nil {
 		stores = append(stores, a.Storage)
 	}
+	if a.dynamicStore != nil {
+		stores = append(stores, a.dynamicStore)
+	}
 
 	store := config.NewMultiStore(stores...)
 	return config.LoadServices(context.Background(), store, "server")
+}
+
+// UpdateDynamicConfig updates the in-memory configuration store and triggers a reload.
+func (a *Application) UpdateDynamicConfig(cfg *config_v1.McpAnyServerConfig) error {
+	if a.dynamicStore != nil {
+		a.dynamicStore.Update(cfg)
+		// We trigger a reload using the last known filesystem and paths
+		// If fs or configPaths are not set, it might just rely on dynamic store
+		if a.fs == nil {
+			return fmt.Errorf("filesystem not initialized")
+		}
+		return a.ReloadConfig(a.fs, a.configPaths)
+	}
+	return nil
 }
 
 func (a *Application) updateGlobalSettings(cfg *config_v1.McpAnyServerConfig) {
