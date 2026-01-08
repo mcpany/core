@@ -9,6 +9,7 @@ import (
 	"io"
 	"net/http"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"testing"
 	"time"
@@ -219,7 +220,17 @@ func BuildWebsocketWeatherServer(t *testing.T) *integration.ManagedProcess {
 	port := integration.FindFreePort(t)
 	root, err := integration.GetProjectRoot()
 	require.NoError(t, err)
-	proc := integration.NewManagedProcess(t, "websocket_weather_server", filepath.Join(root, "../build/examples/bin/weather-server"), []string{fmt.Sprintf("--addr=localhost:%d", port)}, []string{fmt.Sprintf("HTTP_PORT=%d", port)})
+	binaryPath := filepath.Join(root, "../build/examples/bin/weather-server")
+	if _, err := os.Stat(binaryPath); os.IsNotExist(err) {
+		t.Logf("Binary not found at %s, attempting to build...", binaryPath)
+		sourcePath := filepath.Join(root, "examples/upstream_service_demo/http/server/weather_server/weather_server.go")
+		cmd := exec.Command("go", "build", "-o", binaryPath, sourcePath)
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
+		err := cmd.Run()
+		require.NoError(t, err, "Failed to build weather-server")
+	}
+	proc := integration.NewManagedProcess(t, "websocket_weather_server", binaryPath, []string{fmt.Sprintf("--addr=localhost:%d", port)}, []string{fmt.Sprintf("HTTP_PORT=%d", port)})
 	proc.Port = port
 	return proc
 }
