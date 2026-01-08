@@ -10,6 +10,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/mcpany/core/server/pkg/tokenizer"
 	"github.com/mcpany/core/server/pkg/tool"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/prometheus/client_golang/prometheus"
@@ -55,35 +56,76 @@ var (
 		},
 		[]string{"tool", "service_id"},
 	)
+
+	toolExecutionTokensTotal = prometheus.NewCounterVec(
+		prometheus.CounterOpts{
+			Name: "tool_execution_tokens_total",
+			Help: "Total number of tokens in tool executions.",
+		},
+		[]string{"tool", "service_id", "direction"}, // direction: input, output
+	)
+
+	toolExecutionsInFlight = prometheus.NewGaugeVec(
+		prometheus.GaugeOpts{
+			Name: "tool_executions_in_flight",
+			Help: "Current number of tool executions in flight.",
+		},
+		[]string{"tool", "service_id"},
+	)
 )
 
 // ToolMetricsMiddleware provides detailed metrics for tool executions.
-type ToolMetricsMiddleware struct{}
+type ToolMetricsMiddleware struct {
+	tokenizer tokenizer.Tokenizer
+}
 
 // NewToolMetricsMiddleware creates a new ToolMetricsMiddleware.
-func NewToolMetricsMiddleware() *ToolMetricsMiddleware {
+func NewToolMetricsMiddleware(t tokenizer.Tokenizer) *ToolMetricsMiddleware {
 	registerMetricsOnce.Do(func() {
 		// Register metrics with the default registry (which server/pkg/metrics also uses/exposes)
 		prometheus.MustRegister(toolExecutionDuration)
 		prometheus.MustRegister(toolExecutionTotal)
 		prometheus.MustRegister(toolExecutionInputBytes)
 		prometheus.MustRegister(toolExecutionOutputBytes)
+		prometheus.MustRegister(toolExecutionTokensTotal)
+		prometheus.MustRegister(toolExecutionsInFlight)
 	})
-	return &ToolMetricsMiddleware{}
+	if t == nil {
+		t = tokenizer.NewSimpleTokenizer()
+	}
+	return &ToolMetricsMiddleware{
+		tokenizer: t,
+	}
 }
 
 // Execute executes the tool metrics middleware.
 func (m *ToolMetricsMiddleware) Execute(ctx context.Context, req *tool.ExecutionRequest, next tool.ExecutionFunc) (any, error) {
-	start := time.Now()
-
-	// Record input size
-	inputSize := len(req.ToolInputs)
-
 	// Get Service ID if possible (from context or tool)
 	var serviceID string
 	if t, ok := tool.GetFromContext(ctx); ok && t.Tool() != nil {
 		serviceID = t.Tool().GetServiceId()
 	}
+
+	labels := prometheus.Labels{
+		"tool":       req.ToolName,
+		"service_id": serviceID,
+	}
+
+	toolExecutionsInFlight.With(labels).Inc()
+	defer toolExecutionsInFlight.With(labels).Dec()
+
+	start := time.Now()
+
+	// Record input size and tokens
+	inputSize := len(req.ToolInputs)
+	inputTokens := m.countInputTokens(req)
+
+	toolExecutionInputBytes.With(labels).Observe(float64(inputSize))
+	toolExecutionTokensTotal.With(prometheus.Labels{
+		"tool":       req.ToolName,
+		"service_id": serviceID,
+		"direction":  "input",
+	}).Add(float64(inputTokens))
 
 	result, err := next(ctx, req)
 
@@ -103,28 +145,53 @@ func (m *ToolMetricsMiddleware) Execute(ctx context.Context, req *tool.Execution
 		}
 	}
 
-	labels := prometheus.Labels{
+	resultLabels := prometheus.Labels{
 		"tool":       req.ToolName,
 		"service_id": serviceID,
 		"status":     status,
 		"error_type": errorType,
 	}
 
-	toolExecutionTotal.With(labels).Inc()
-	toolExecutionDuration.With(labels).Observe(duration)
+	toolExecutionTotal.With(resultLabels).Inc()
+	toolExecutionDuration.With(resultLabels).Observe(duration)
 
-	// Byte metrics usually don't need status/error_type, just tool/service
-	byteLabels := prometheus.Labels{
+	// Calculate output size and tokens
+	outputSize := calculateOutputSize(result)
+	outputTokens := m.countOutputTokens(result)
+
+	toolExecutionOutputBytes.With(labels).Observe(float64(outputSize))
+	toolExecutionTokensTotal.With(prometheus.Labels{
 		"tool":       req.ToolName,
 		"service_id": serviceID,
-	}
-	toolExecutionInputBytes.With(byteLabels).Observe(float64(inputSize))
-
-	// Calculate output size
-	outputSize := calculateOutputSize(result)
-	toolExecutionOutputBytes.With(byteLabels).Observe(float64(outputSize))
+		"direction":  "output",
+	}).Add(float64(outputTokens))
 
 	return result, err
+}
+
+func (m *ToolMetricsMiddleware) countInputTokens(req *tool.ExecutionRequest) int {
+	// Try to use Arguments map first as it's already parsed
+	if req.Arguments != nil {
+		tokens, _ := tokenizer.CountTokensInValue(m.tokenizer, req.Arguments)
+		return tokens
+	}
+	// Fallback to ToolInputs byte slice (less accurate if it's JSON, but simple tokenizer might handle strings)
+	// Or unmarshal first? The RateLimit middleware logic does this too.
+	// For metrics, we can try to unmarshal if not present, but better to avoid double unmarshal if possible.
+	// Tool request usually populates Arguments.
+	// If ToolInputs is present, we can treat it as string.
+	if len(req.ToolInputs) > 0 {
+		tokens, _ := m.tokenizer.CountTokens(string(req.ToolInputs))
+		return tokens
+	}
+	return 0
+}
+
+func (m *ToolMetricsMiddleware) countOutputTokens(result any) int {
+	if result == nil {
+		return 0
+	}
+	return calculateToolResultTokens(m.tokenizer, result)
 }
 
 func calculateOutputSize(result any) int {

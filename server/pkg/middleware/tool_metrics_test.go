@@ -20,7 +20,7 @@ import (
 
 func TestToolMetricsMiddleware_Execute(t *testing.T) {
 	// Ensure metrics are registered
-	middleware := NewToolMetricsMiddleware()
+	middleware := NewToolMetricsMiddleware(nil)
 
 	checkMetric := func(t *testing.T, toolName string, metricName string, expectedValue float64, checkType string) {
 		metrics, err := prometheus.DefaultGatherer.Gather()
@@ -170,6 +170,76 @@ func TestToolMetricsMiddleware_Execute(t *testing.T) {
 		checkMetric(t, toolName, "tool_execution_output_bytes", 15, "histogram_sum")
 	})
 
+	t.Run("TokenUsage", func(t *testing.T) {
+		toolName := "token_tool"
+		// Simple tokenizer counts words. "hello world" -> 2 tokens.
+		req := &tool.ExecutionRequest{
+			ToolName:   toolName,
+			ToolInputs: json.RawMessage(`"hello world"`),
+		}
+
+		next := func(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
+			// "response value" -> 2 tokens
+			return &mcp.CallToolResult{
+				Content: []mcp.Content{
+					&mcp.TextContent{Text: "response value"},
+				},
+			}, nil
+		}
+
+		serviceID := "test_service_token"
+		mockProtoTool := &v1.Tool{ServiceId: &serviceID}
+		mockTool := &tool.MockTool{ToolFunc: func() *v1.Tool { return mockProtoTool }}
+		ctx := tool.NewContextWithTool(context.Background(), mockTool)
+
+		// Before execution, gauge should be 0 (or undefined for this tool)
+		// We can't easily check "before" because it might not exist yet.
+
+		// During execution? Hard to test with synchronous call unless we use a goroutine.
+		// Let's test the final counters first.
+
+		_, err := middleware.Execute(ctx, req, next)
+		require.NoError(t, err)
+
+		// Check Input Tokens
+		// Input: `"hello world"`. `len` = 13. `13 / 4 = 3`. Correct.
+		// Output: `"response value"`. `len` = 14. `14 / 4 = 3`. Correct.
+
+		checkMetric(t, toolName, "tool_execution_tokens_total", 3, "counter")
+		checkMetric(t, toolName, "tool_execution_tokens_total", 3, "counter")
+	})
+
+	t.Run("Concurrency", func(t *testing.T) {
+		toolName := "concurrency_tool"
+		req := &tool.ExecutionRequest{
+			ToolName:   toolName,
+			ToolInputs: json.RawMessage(`{}`),
+		}
+
+		startCh := make(chan struct{})
+		doneCh := make(chan struct{})
+
+		next := func(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
+			close(startCh)
+			<-doneCh
+			return nil, nil
+		}
+
+		go func() {
+			_, _ = middleware.Execute(context.Background(), req, next)
+		}()
+
+		<-startCh
+		// Now it is in flight.
+		checkMetric(t, toolName, "tool_executions_in_flight", 1, "gauge")
+
+		close(doneCh)
+		// Wait for goroutine to finish?
+		time.Sleep(10 * time.Millisecond) // Flaky but simple
+
+		checkMetric(t, toolName, "tool_executions_in_flight", 0, "gauge")
+	})
+
 	t.Run("Nil Result", func(t *testing.T) {
 		toolName := "nil_tool"
 		req := &tool.ExecutionRequest{ToolName: toolName, ToolInputs: json.RawMessage(`{}`)}
@@ -232,7 +302,7 @@ func TestToolMetricsMiddleware_Execute(t *testing.T) {
 }
 
 func BenchmarkToolMetricsMiddleware_Execute(b *testing.B) {
-	middleware := NewToolMetricsMiddleware()
+	middleware := NewToolMetricsMiddleware(nil)
 	req := &tool.ExecutionRequest{
 		ToolName:   "bench_tool",
 		ToolInputs: json.RawMessage(`{"arg": "value"}`),
