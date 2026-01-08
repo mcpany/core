@@ -180,31 +180,6 @@ func skipJSONValue(input []byte, start int) int {
 	}
 }
 
-func skipString(input []byte, start int) int {
-	// String starts at start, which is '"'
-	scanStart := start + 1
-	for {
-		q := bytes.IndexByte(input[scanStart:], '"')
-		if q == -1 {
-			return len(input)
-		}
-		absQ := scanStart + q
-		// Check escape
-		backslashes := 0
-		for j := absQ - 1; j >= scanStart; j-- {
-			if input[j] == '\\' {
-				backslashes++
-			} else {
-				break
-			}
-		}
-		if backslashes%2 == 0 {
-			return absQ + 1
-		}
-		scanStart = absQ + 1
-	}
-}
-
 func skipObject(input []byte, start int) int {
 	// Object starts at start, which is '{'
 	depth := 1

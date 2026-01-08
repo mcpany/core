@@ -152,6 +152,12 @@ func IsSensitiveKey(key string) bool {
 // This function replaces the old linear scan (O(N*M)) with a more optimized scan
 // that uses SIMD-accelerated IndexByte for grouped start characters.
 func scanForSensitiveKeys(input []byte, validateKeyContext bool) bool {
+	// Optimization: If we are validating key context (JSON input), we can scan by quotes.
+	// This allows us to skip scanning string values entirely, which is a huge win for large payloads.
+	if validateKeyContext {
+		return scanJSONForSensitiveKeys(input)
+	}
+
 	// Optimization: For short strings, IndexAny is faster (one pass).
 	// For long strings, multiple IndexByte calls are faster (SIMD).
 	// The crossover is around 128 bytes.
@@ -334,4 +340,78 @@ func isKey(input []byte, startOffset int) bool {
 	// Limit reached or EOF without finding quote.
 	// Conservative: assume it might be a key.
 	return true
+}
+
+// scanJSONForSensitiveKeys scans a JSON input for sensitive keys by navigating quotes.
+// It assumes keys are enclosed in quotes.
+func scanJSONForSensitiveKeys(input []byte) bool {
+	i := 0
+	for i < len(input) {
+		idx := bytes.IndexByte(input[i:], '"')
+		if idx == -1 {
+			return false
+		}
+		start := i + idx
+
+		// We found a string starting at start.
+		// Get the end of the string.
+		end := skipString(input, start) // returns index after closing quote
+
+		// Check if it is a key (followed by colon)
+		if isKeyColon(input, end) {
+			// It is a key. Check content.
+			// Content is input[start+1 : end-1]
+			if start+1 < end-1 {
+				keyContent := input[start+1 : end-1]
+				// Check if keyContent is sensitive.
+				// We use scanForSensitiveKeys with validateKeyContext=false to check the text.
+				if scanForSensitiveKeys(keyContent, false) {
+					return true
+				}
+			}
+		}
+
+		// Move past this string
+		i = end
+	}
+	return false
+}
+
+// isKeyColon checks if the JSON element ending at endOffset is followed by a colon.
+func isKeyColon(input []byte, endOffset int) bool {
+	for j := endOffset; j < len(input); j++ {
+		c := input[j]
+		if c == ' ' || c == '\t' || c == '\n' || c == '\r' {
+			continue
+		}
+		return c == ':'
+	}
+	return false
+}
+
+// skipString returns the index after the JSON string starting at start.
+// start must point to the opening quote.
+func skipString(input []byte, start int) int {
+	// String starts at start, which is '"'
+	scanStart := start + 1
+	for {
+		q := bytes.IndexByte(input[scanStart:], '"')
+		if q == -1 {
+			return len(input)
+		}
+		absQ := scanStart + q
+		// Check escape
+		backslashes := 0
+		for j := absQ - 1; j >= scanStart; j-- {
+			if input[j] == '\\' {
+				backslashes++
+			} else {
+				break
+			}
+		}
+		if backslashes%2 == 0 {
+			return absQ + 1
+		}
+		scanStart = absQ + 1
+	}
 }
