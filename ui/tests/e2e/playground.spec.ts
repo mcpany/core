@@ -17,7 +17,7 @@ test.describe('Playground Complex Schema Support', () => {
             {
               name: 'complex_tool',
               description: 'A tool with complex schema',
-              serviceId: 'test',
+              serviceName: 'test',
               inputSchema: {
                 type: 'object',
                 properties: {

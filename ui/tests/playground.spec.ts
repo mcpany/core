@@ -6,7 +6,7 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('Playground Tool Configuration', () => {
-  test.skip('should allow configuring and running a tool via form', async ({ page }) => {
+  test('should allow configuring and running a tool via form', async ({ page }) => {
     // Mock the tools API response
     await page.route('/api/v1/tools', async route => {
       const json = {
@@ -60,9 +60,8 @@ test.describe('Playground Tool Configuration', () => {
     await expect(page.getByText('Configure weather_tool')).toBeVisible();
 
     // Fill form
-    await expect(page.getByLabel(/city/i)).toBeVisible();
-    await page.getByLabel(/city/i).fill('San Francisco');
-    await page.getByLabel(/days/i).fill('5');
+    await page.getByLabel('city', { exact: false }).fill('San Francisco');
+    await page.getByLabel('days').fill('5');
 
     // Run Tool
     await page.getByRole('button', { name: /run tool/i }).click();

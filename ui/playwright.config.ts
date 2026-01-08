@@ -39,7 +39,7 @@ export default defineConfig({
       },
     },
   ],
-  webServer: process.env.REAL_CLUSTER ? undefined : {
+  webServer: {
     command: 'npm run dev',
     url: 'http://localhost:9002',
     reuseExistingServer: true,

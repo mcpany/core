@@ -7,14 +7,9 @@
 import { test } from '@playwright/test';
 import path from 'path';
 
-import fs from 'fs';
-
 test('capture screenshots', async ({ page }) => {
   const date = new Date().toISOString().split('T')[0];
-  const auditDir = path.join(__dirname, `../test-results/audit/ui/${date}`);
-  if (!fs.existsSync(auditDir)) {
-    fs.mkdirSync(auditDir, { recursive: true });
-  }
+  const auditDir = path.join(__dirname, `../.audit/ui/${date}`);
 
   await page.goto('/');
   await page.waitForTimeout(1000); // Wait for animations
