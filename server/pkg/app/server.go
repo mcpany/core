@@ -161,9 +161,17 @@ type Application struct {
 
 	// Middleware handles for dynamic updates
 	standardMiddlewares *middleware.StandardMiddlewares
+	// Settings Manager for global settings (dynamic updates)
+	SettingsManager     *GlobalSettingsManager
+	// Middlewares that need manual updates
+	ipMiddleware       *middleware.IPAllowlistMiddleware
+	corsMiddleware     *middleware.HTTPCORSMiddleware
+
 	startupCh           chan struct{}
 	startupOnce         sync.Once
 	configMu            sync.Mutex
+	// Store explicit API Key passed via CLI args
+	explicitAPIKey      string
 }
 
 // NewApplication creates a new Application with default dependencies.
@@ -223,6 +231,7 @@ func (a *Application) Run(
 	}
 	a.fs = fs
 	a.configPaths = configPaths
+	a.explicitAPIKey = apiKey
 
 	shutdownTracer, err := telemetry.InitTracer(ctx, appconsts.Name, appconsts.Version, os.Stderr)
 	if err != nil {
@@ -292,6 +301,15 @@ func (a *Application) Run(
 		cfg = &config_v1.McpAnyServerConfig{}
 	}
 
+	// Initialize Settings Manager
+	a.SettingsManager = NewGlobalSettingsManager(
+		apiKey,
+		cfg.GetGlobalSettings().GetAllowedIps(),
+		// Logic for origins default moved to inside NewGlobalSettingsManager or updated here
+		nil,
+	)
+	a.SettingsManager.Update(cfg.GetGlobalSettings(), apiKey)
+
 	busConfig := cfg.GetGlobalSettings().GetMessageBus()
 	busProvider, err := bus.NewProvider(busConfig)
 	if err != nil {
@@ -308,8 +326,8 @@ func (a *Application) Run(
 	a.PromptManager = prompt.NewManager()
 	a.ResourceManager = resource.NewManager()
 	authManager := auth.NewManager()
-	if cfg.GetGlobalSettings().GetApiKey() != "" {
-		authManager.SetAPIKey(cfg.GetGlobalSettings().GetApiKey())
+	if a.SettingsManager.GetAPIKey() != "" {
+		authManager.SetAPIKey(a.SettingsManager.GetAPIKey())
 	}
 
 	// Set profiles for tool filtering
@@ -518,19 +536,6 @@ func (a *Application) Run(
 		bindAddress = cfg.GetGlobalSettings().GetMcpListenAddress()
 	}
 
-	var allowedIPs []string
-	if cfg.GetGlobalSettings() != nil {
-		allowedIPs = cfg.GetGlobalSettings().GetAllowedIps()
-	}
-
-	// Determine allowed origins for CORS
-	// Default to empty (Strict) to prevent insecure defaults.
-	// If LogLevel is DEBUG, we allow "*" to facilitate local development.
-	var allowedOrigins []string
-	if cfg.GetGlobalSettings().GetLogLevel() == config_v1.GlobalSettings_LOG_LEVEL_DEBUG {
-		allowedOrigins = []string{"*"}
-	}
-
 	// Use storageStore which is initialized as either sqlite or postgres
 	// We need to assert it to storage.Storage. Both implement it.
 	// But stores[...] is config.Store. storageStore is config.Store.
@@ -556,29 +561,16 @@ func (a *Application) Run(
 
 	// Start gRPC server
 
-
-	if apiKey == "" {
-		apiKey = cfg.GetGlobalSettings().GetApiKey()
-	}
-
 	// Start servers
 	if err := a.runServerMode(
 		ctx,
 		mcpSrv,
 		busProvider,
-		// We use cfg values or defaults?
-		// cfg has McpListenAddress?
-		// Run function has bindAddress argument?
-		// Run signature: (ctx, fs, stdio, jsonrpcPort, grpcPort, configPaths, shutdownTimeout)
-		// We have jsonrpcPort from Run args.
 		bindAddress,
 		grpcPort,
 		shutdownTimeout,
-		apiKey,
 		cfg.GetUsers(),
 		cfg.GetGlobalSettings().GetProfileDefinitions(),
-		allowedIPs,
-		allowedOrigins,
 		cachingMiddleware,
 		s,
 		serviceRegistry,
@@ -630,6 +622,18 @@ func (a *Application) ReloadConfig(fs afero.Fs, configPaths []string) error {
 	}
 
 	// Update global settings
+	if a.SettingsManager != nil {
+		a.SettingsManager.Update(cfg.GetGlobalSettings(), a.explicitAPIKey)
+	}
+
+	// Update dynamic middlewares
+	if a.ipMiddleware != nil {
+		a.ipMiddleware.Update(a.SettingsManager.GetAllowedIPs())
+	}
+	if a.corsMiddleware != nil {
+		a.corsMiddleware.Update(a.SettingsManager.GetAllowedOrigins())
+	}
+
 	if a.standardMiddlewares != nil {
 		if a.standardMiddlewares.Audit != nil {
 			if err := a.standardMiddlewares.Audit.UpdateConfig(cfg.GetGlobalSettings().GetAudit()); err != nil {
@@ -867,19 +871,17 @@ func (a *Application) runServerMode(
 	bus *bus.Provider,
 	bindAddress, grpcPort string,
 	shutdownTimeout time.Duration,
-	apiKey string,
 	users []*config_v1.User,
 	profileDefinitions []*config_v1.ProfileDefinition,
-	allowedIPs []string,
-	allowedOrigins []string,
 	cachingMiddleware *middleware.CachingMiddleware,
 	store storage.Storage,
 	serviceRegistry *serviceregistry.ServiceRegistry,
 ) error {
-	ipMiddleware, err := middleware.NewIPAllowlistMiddleware(allowedIPs)
+	ipMiddleware, err := middleware.NewIPAllowlistMiddleware(a.SettingsManager.GetAllowedIPs())
 	if err != nil {
 		return fmt.Errorf("failed to create IP allowlist middleware: %w", err)
 	}
+	a.ipMiddleware = ipMiddleware
 
 	// localCtx is used to manage the lifecycle of the servers started in this function.
 	// It's canceled when this function returns, ensuring that all servers are shut down.
@@ -912,9 +914,10 @@ func (a *Application) runServerMode(
 		logging.GetLogger().Warn("Auth middleware is disabled by config! Enforcing private-IP-only access for safety.")
 		// Even if auth is disabled, we enforce private-IP-only access to prevent public exposure.
 		// Passing an empty string to createAuthMiddleware triggers the IsPrivateIP check.
-		authMiddleware = a.createAuthMiddleware("")
+		authMiddleware = a.createAuthMiddleware() // empty apiKey implied if we change signature?
+		// Wait, createAuthMiddleware needs to use SettingsManager now.
 	} else {
-		authMiddleware = a.createAuthMiddleware(apiKey)
+		authMiddleware = a.createAuthMiddleware()
 	}
 
 	userMap := make(map[string]*config_v1.User)
@@ -1052,8 +1055,7 @@ func (a *Application) runServerMode(
 				}
 			} else {
 				// 3. Global Auth
-				// Global Auth is still a simple API Key string in GlobalSettings for now (based on current code).
-				// We can continue to use it as is.
+				apiKey := a.SettingsManager.GetAPIKey()
 				if apiKey != "" {
 					// Manual check for global key since it's a string, or wrap it.
 					// We'll just do manual check to match existing behavior logic.
@@ -1273,7 +1275,8 @@ func (a *Application) runServerMode(
 	rateLimiter := middleware.NewHTTPRateLimitMiddleware(20, 50)
 
 	// Apply CORS Middleware
-	corsMiddleware := middleware.NewHTTPCORSMiddleware(allowedOrigins)
+	corsMiddleware := middleware.NewHTTPCORSMiddleware(a.SettingsManager.GetAllowedOrigins())
+	a.corsMiddleware = corsMiddleware
 
 	// Middleware order: SecurityHeaders -> CORS -> JSONRPCCompliance -> IPAllowList -> RateLimit -> Mux
 	// We wrap everything with a debug logger to see what's coming in
@@ -1488,12 +1491,14 @@ func startHTTPServer(
 }
 
 // createAuthMiddleware creates the authentication middleware.
-func (a *Application) createAuthMiddleware(apiKey string) func(http.Handler) http.Handler {
+func (a *Application) createAuthMiddleware() func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			ip := util.ExtractIP(r.RemoteAddr)
 			ctx := util.ContextWithRemoteIP(r.Context(), ip)
 			r = r.WithContext(ctx)
+
+			apiKey := a.SettingsManager.GetAPIKey()
 
 			if apiKey != "" {
 				// Check X-API-Key or Authorization header
@@ -1505,7 +1510,6 @@ func (a *Application) createAuthMiddleware(apiKey string) func(http.Handler) htt
 					}
 				}
 
-				logging.GetLogger().Info("DEBUG: Checking API Key", "configured", "REDACTED", "header_len", len(requestKey), "remote_addr", r.RemoteAddr)
 				if subtle.ConstantTimeCompare([]byte(requestKey), []byte(apiKey)) != 1 {
 					http.Error(w, "Unauthorized", http.StatusUnauthorized)
 					return

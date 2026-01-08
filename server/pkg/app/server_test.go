@@ -25,6 +25,7 @@ import (
 	"github.com/mcpany/core/server/pkg/bus"
 	"github.com/mcpany/core/server/pkg/logging"
 	"github.com/mcpany/core/server/pkg/mcpserver"
+	"github.com/mcpany/core/server/pkg/middleware"
 	"github.com/mcpany/core/server/pkg/pool"
 	"github.com/mcpany/core/server/pkg/prompt"
 	"github.com/mcpany/core/server/pkg/resource"
@@ -871,10 +872,13 @@ func TestRunServerMode_GracefulShutdownOnContextCancel(t *testing.T) {
 	)
 	require.NoError(t, err)
 
+	app.SettingsManager = NewGlobalSettingsManager("", nil, nil)
+	cachingMiddleware := middleware.NewCachingMiddleware(app.ToolManager)
+
 	errChan := make(chan error, 1)
 	go func() {
 		// Use ephemeral ports to avoid conflicts.
-		errChan <- app.runServerMode(ctx, mcpSrv, busProvider, "localhost:0", "localhost:0", 1*time.Second, "", nil, nil, nil, nil, nil, nil, serviceRegistry)
+		errChan <- app.runServerMode(ctx, mcpSrv, busProvider, "localhost:0", "localhost:0", 1*time.Second, nil, nil, cachingMiddleware, nil, serviceRegistry)
 	}()
 
 	// Give the servers a moment to start up.
@@ -1353,8 +1357,11 @@ func TestRunServerMode_ContextCancellation(t *testing.T) {
 	)
 	require.NoError(t, err)
 
+	app.SettingsManager = NewGlobalSettingsManager("", nil, nil)
+	cachingMiddleware := middleware.NewCachingMiddleware(app.ToolManager)
+
 	go func() {
-		errChan <- app.runServerMode(ctx, mcpSrv, busProvider, "localhost:0", "localhost:0", 5*time.Second, "", nil, nil, nil, nil, nil, nil, serviceRegistry)
+		errChan <- app.runServerMode(ctx, mcpSrv, busProvider, "localhost:0", "localhost:0", 5*time.Second, nil, nil, cachingMiddleware, nil, serviceRegistry)
 	}()
 
 	// Allow some time for the servers to start up
@@ -2012,9 +2019,13 @@ func TestRunServerMode_grpcListenErrorHangs(t *testing.T) {
 	busProvider, err := bus.NewProvider(nil)
 	require.NoError(t, err)
 
+	// Need SettingsManager for runServerMode
+	app.SettingsManager = NewGlobalSettingsManager("", nil, nil)
+
 	errChan := make(chan error, 1)
 	go func() {
-		errChan <- app.runServerMode(ctx, nil, busProvider, "localhost:0", fmt.Sprintf("localhost:%d", port), 5*time.Second, "", nil, nil, nil, nil, nil, nil, nil)
+		// Pass required args
+		errChan <- app.runServerMode(ctx, nil, busProvider, "localhost:0", fmt.Sprintf("localhost:%d", port), 5*time.Second, nil, nil, nil, nil, nil)
 	}()
 
 	select {
