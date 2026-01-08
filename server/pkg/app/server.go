@@ -1148,7 +1148,12 @@ func (a *Application) runServerMode(
 							continue
 						}
 
-						// Check profiles - REMOVED
+						// Check profiles
+						if profileID != "" {
+							if !mcpSrv.ToolManager().IsServiceAllowed(serviceID, profileID) {
+								continue
+							}
+						}
 
 						responseTools = append(responseTools, map[string]any{
 							"name":        v1Tool.GetName(),
