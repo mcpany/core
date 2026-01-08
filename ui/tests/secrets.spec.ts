@@ -48,7 +48,7 @@ test.describe('Secrets Manager', () => {
 
     // Find the span containing the value and check text
     // The value might take a moment to be revealed/hydrated
-    await expect(secretRow.getByText('[REDACTED]')).toBeVisible({ timeout: 5000 });
+    await expect(secretRow.getByText(secretValue)).toBeVisible({ timeout: 5000 });
 
     // Delete the secret
     await secretRow.locator('button[aria-label="Delete secret"]').click();

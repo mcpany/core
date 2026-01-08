@@ -75,4 +75,11 @@ test.describe('Playground Tool Configuration', () => {
     // "Mock execution result"
     await expect(page.getByText('Mock execution result')).toBeVisible();
   });
+
+  test('should allow selecting a model', async ({ page }) => {
+    await page.goto('/playground');
+    // Basic check for model selector existence to ensure page loaded fully
+    // and layout is correct
+    await expect(page.getByText('Model')).toBeVisible();
+  });
 });

@@ -5,7 +5,7 @@
 
 import { test, expect } from '@playwright/test';
 
-test.describe('Full Coverage E2E Navigation', () => {
+test.describe('Navigation Coverage', () => {
   const routes = [
     { path: '/', title: 'Topology|System' },
     { path: '/logs', title: 'Logs' },
