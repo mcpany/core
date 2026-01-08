@@ -12,9 +12,10 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/mcpany/core/server/pkg/logging"
-	"github.com/mcpany/core/server/pkg/util"
 	configv1 "github.com/mcpany/core/proto/config/v1"
+	"github.com/mcpany/core/server/pkg/logging"
+	"github.com/mcpany/core/server/pkg/profile"
+	"github.com/mcpany/core/server/pkg/util"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/encoding/prototext"
 	"google.golang.org/protobuf/proto"
@@ -28,11 +29,14 @@ import (
 // including local files and remote URLs (e.g., GitHub).
 type UpstreamServiceManager struct {
 	log               *slog.Logger
-	services          map[string]*configv1.UpstreamServiceConfig
+	services          map[string]*configv1.UpstreamServiceConfig // Stores the final, merged UpstreamServiceConfig objects
 	servicePriorities map[string]int32
 	httpClient        *http.Client
 	newGitHub         func(ctx context.Context, rawURL string) (*GitHub, error)
 	enabledProfiles   []string
+	// New fields for profile management
+	profileServiceOverrides map[string]*configv1.ProfileServiceConfig // Stores overrides from profiles
+	profileSecrets          map[string]*configv1.SecretValue          // Stores secrets resolved from profiles
 }
 
 // NewUpstreamServiceManager creates a new instance of UpstreamServiceManager.
@@ -48,9 +52,11 @@ func NewUpstreamServiceManager(enabledProfiles []string) *UpstreamServiceManager
 		enabledProfiles = []string{"default"}
 	}
 	return &UpstreamServiceManager{
-		log:               logging.GetLogger().With("component", "UpstreamServiceManager"),
-		services:          make(map[string]*configv1.UpstreamServiceConfig),
-		servicePriorities: make(map[string]int32),
+		log:                     logging.GetLogger().With("component", "UpstreamServiceManager"),
+		services:                make(map[string]*configv1.UpstreamServiceConfig),
+		servicePriorities:       make(map[string]int32),
+		profileServiceOverrides: make(map[string]*configv1.ProfileServiceConfig),
+		profileSecrets:          make(map[string]*configv1.SecretValue),
 		httpClient: &http.Client{
 			Transport: &http.Transport{
 				DialContext: util.SafeDialContext,
@@ -73,6 +79,28 @@ func NewUpstreamServiceManager(enabledProfiles []string) *UpstreamServiceManager
 //   A slice of pointers to UpstreamServiceConfig objects that represent the final set of loaded services.
 //   An error if any critical failure occurs during loading or merging.
 func (m *UpstreamServiceManager) LoadAndMergeServices(ctx context.Context, config *configv1.McpAnyServerConfig) ([]*configv1.UpstreamServiceConfig, error) {
+	// Initialize Profile Manager and resolve overrides
+	pm := profile.NewManager(config.GetGlobalSettings().GetProfileDefinitions())
+	for _, profileName := range m.enabledProfiles {
+		configs, secrets, err := pm.ResolveProfile(profileName)
+		if err != nil {
+			m.log.Warn("Failed to resolve profile", "profile", profileName, "error", err)
+			continue
+		}
+		// Merge resolved configs
+		for serviceID, cfg := range configs {
+			if existing, exists := m.profileServiceOverrides[serviceID]; exists {
+				proto.Merge(existing, cfg)
+			} else {
+				m.profileServiceOverrides[serviceID] = proto.Clone(cfg).(*configv1.ProfileServiceConfig)
+			}
+		}
+		// Merge resolved secrets
+		for key, secret := range secrets {
+			m.profileSecrets[key] = proto.Clone(secret).(*configv1.SecretValue)
+		}
+	}
+
 	// Load local services with default priority 0
 	for _, service := range config.GetUpstreamServices() {
 		if err := m.addService(service, 0); err != nil {
@@ -285,35 +313,39 @@ func (m *UpstreamServiceManager) addService(service *configv1.UpstreamServiceCon
 		return nil
 	}
 
-	// Filter by profile
-	serviceProfiles := service.GetProfiles()
-	if len(serviceProfiles) == 0 {
-		// Default to "default" profile if none specified
-		serviceProfiles = []*configv1.Profile{{Name: "default"}}
-		service.Profiles = serviceProfiles
+	// Profile filtering is now implicitly done by "enabled state".
+	// By default, if a service is not mentioned in any profile config, is it enabled?
+	// Or disabled?
+	// If we want "centralized management", maybe default is disabled unless enabled in profile?
+	// Check overrides first
+	isOverrideDisabled := false
+	var activeConfig *configv1.ProfileServiceConfig
+
+	// We can match by Name or ID. Ideally ID.
+	if cfg, ok := m.profileServiceOverrides[service.GetId()]; ok {
+		activeConfig = cfg
+	} else if cfg, ok := m.profileServiceOverrides[service.GetName()]; ok {
+		activeConfig = cfg
 	}
 
-	allowed := false
-	for _, sp := range serviceProfiles {
-		// Normalize profile: default ID to Name if missing
-		if sp.GetId() == "" && sp.GetName() != "" {
-			sp.Id = sp.GetName()
-		}
-		for _, ep := range m.enabledProfiles {
-			if sp.GetName() == ep || sp.GetId() == ep {
-				allowed = true
-				break
+	if activeConfig != nil {
+		if activeConfig.Enabled != nil {
+			if !*activeConfig.Enabled {
+				isOverrideDisabled = true
 			}
 		}
-		if allowed {
-			break
-		}
 	}
 
-	if !allowed {
-		m.log.Debug("Skipping service due to profile mismatch", "service_name", service.GetName(), "service_profiles", serviceProfiles, "enabled_profiles", m.enabledProfiles)
+	// Hydrate secrets (using profile resolved secrets)
+	HydrateSecretsInService(service, m.profileSecrets)
+
+	// Apply enabled/disabled override
+	if isOverrideDisabled {
+		m.log.Info("Service disabled by profile override, skipping", "service_name", service.GetName())
 		return nil
 	}
+	// If explicitly enabled by profile, ensure it's added regardless of other conditions (e.g., if it was implicitly disabled by another profile rule, though current logic doesn't have that)
+	// For now, if it's explicitly enabled, it just means it passes this check.
 
 	serviceName := service.GetName()
 	if existingPriority, exists := m.servicePriorities[serviceName]; exists {

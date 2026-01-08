@@ -7,6 +7,7 @@
 /* eslint-disable */
 import { BinaryReader, BinaryWriter } from "@bufbuild/protobuf/wire";
 import Long from "long";
+import { RedisBus } from "../../bus/bus";
 import { AuthenticationConfig } from "./auth";
 
 export const protobufPackage = "mcpany.config.v1";
@@ -18,6 +19,155 @@ export interface Profile {
   id: string;
   /** The authentication configuration for the profile. */
   authentication?: AuthenticationConfig | undefined;
+}
+
+export interface ProfileServiceConfig {
+  /** Whether the service is enabled in this profile. */
+  enabled?: boolean | undefined;
+}
+
+export interface RateLimitConfig {
+  /** Whether rate limiting is enabled. */
+  isEnabled: boolean;
+  /** The maximum number of requests allowed per second. */
+  requestsPerSecond: number;
+  /** The number of requests that can be allowed in a short burst. */
+  burst: Long;
+  storage: RateLimitConfig_Storage;
+  /** Redis configuration if storage is set to STORAGE_REDIS. */
+  redis?: RedisBus | undefined;
+  keyBy: RateLimitConfig_KeyBy;
+  costMetric: RateLimitConfig_CostMetric;
+  /** Tool-specific rate limits. Key is the tool name. */
+  toolLimits: { [key: string]: RateLimitConfig };
+}
+
+export enum RateLimitConfig_Storage {
+  STORAGE_UNSPECIFIED = 0,
+  STORAGE_MEMORY = 1,
+  STORAGE_REDIS = 2,
+  UNRECOGNIZED = -1,
+}
+
+export function rateLimitConfig_StorageFromJSON(object: any): RateLimitConfig_Storage {
+  switch (object) {
+    case 0:
+    case "STORAGE_UNSPECIFIED":
+      return RateLimitConfig_Storage.STORAGE_UNSPECIFIED;
+    case 1:
+    case "STORAGE_MEMORY":
+      return RateLimitConfig_Storage.STORAGE_MEMORY;
+    case 2:
+    case "STORAGE_REDIS":
+      return RateLimitConfig_Storage.STORAGE_REDIS;
+    case -1:
+    case "UNRECOGNIZED":
+    default:
+      return RateLimitConfig_Storage.UNRECOGNIZED;
+  }
+}
+
+export function rateLimitConfig_StorageToJSON(object: RateLimitConfig_Storage): string {
+  switch (object) {
+    case RateLimitConfig_Storage.STORAGE_UNSPECIFIED:
+      return "STORAGE_UNSPECIFIED";
+    case RateLimitConfig_Storage.STORAGE_MEMORY:
+      return "STORAGE_MEMORY";
+    case RateLimitConfig_Storage.STORAGE_REDIS:
+      return "STORAGE_REDIS";
+    case RateLimitConfig_Storage.UNRECOGNIZED:
+    default:
+      return "UNRECOGNIZED";
+  }
+}
+
+export enum RateLimitConfig_KeyBy {
+  KEY_BY_UNSPECIFIED = 0,
+  KEY_BY_GLOBAL = 1,
+  KEY_BY_IP = 2,
+  KEY_BY_USER_ID = 3,
+  KEY_BY_API_KEY = 4,
+  UNRECOGNIZED = -1,
+}
+
+export function rateLimitConfig_KeyByFromJSON(object: any): RateLimitConfig_KeyBy {
+  switch (object) {
+    case 0:
+    case "KEY_BY_UNSPECIFIED":
+      return RateLimitConfig_KeyBy.KEY_BY_UNSPECIFIED;
+    case 1:
+    case "KEY_BY_GLOBAL":
+      return RateLimitConfig_KeyBy.KEY_BY_GLOBAL;
+    case 2:
+    case "KEY_BY_IP":
+      return RateLimitConfig_KeyBy.KEY_BY_IP;
+    case 3:
+    case "KEY_BY_USER_ID":
+      return RateLimitConfig_KeyBy.KEY_BY_USER_ID;
+    case 4:
+    case "KEY_BY_API_KEY":
+      return RateLimitConfig_KeyBy.KEY_BY_API_KEY;
+    case -1:
+    case "UNRECOGNIZED":
+    default:
+      return RateLimitConfig_KeyBy.UNRECOGNIZED;
+  }
+}
+
+export function rateLimitConfig_KeyByToJSON(object: RateLimitConfig_KeyBy): string {
+  switch (object) {
+    case RateLimitConfig_KeyBy.KEY_BY_UNSPECIFIED:
+      return "KEY_BY_UNSPECIFIED";
+    case RateLimitConfig_KeyBy.KEY_BY_GLOBAL:
+      return "KEY_BY_GLOBAL";
+    case RateLimitConfig_KeyBy.KEY_BY_IP:
+      return "KEY_BY_IP";
+    case RateLimitConfig_KeyBy.KEY_BY_USER_ID:
+      return "KEY_BY_USER_ID";
+    case RateLimitConfig_KeyBy.KEY_BY_API_KEY:
+      return "KEY_BY_API_KEY";
+    case RateLimitConfig_KeyBy.UNRECOGNIZED:
+    default:
+      return "UNRECOGNIZED";
+  }
+}
+
+export enum RateLimitConfig_CostMetric {
+  COST_METRIC_REQUESTS = 0,
+  COST_METRIC_TOKENS = 1,
+  UNRECOGNIZED = -1,
+}
+
+export function rateLimitConfig_CostMetricFromJSON(object: any): RateLimitConfig_CostMetric {
+  switch (object) {
+    case 0:
+    case "COST_METRIC_REQUESTS":
+      return RateLimitConfig_CostMetric.COST_METRIC_REQUESTS;
+    case 1:
+    case "COST_METRIC_TOKENS":
+      return RateLimitConfig_CostMetric.COST_METRIC_TOKENS;
+    case -1:
+    case "UNRECOGNIZED":
+    default:
+      return RateLimitConfig_CostMetric.UNRECOGNIZED;
+  }
+}
+
+export function rateLimitConfig_CostMetricToJSON(object: RateLimitConfig_CostMetric): string {
+  switch (object) {
+    case RateLimitConfig_CostMetric.COST_METRIC_REQUESTS:
+      return "COST_METRIC_REQUESTS";
+    case RateLimitConfig_CostMetric.COST_METRIC_TOKENS:
+      return "COST_METRIC_TOKENS";
+    case RateLimitConfig_CostMetric.UNRECOGNIZED:
+    default:
+      return "UNRECOGNIZED";
+  }
+}
+
+export interface RateLimitConfig_ToolLimitsEntry {
+  key: string;
+  value?: RateLimitConfig | undefined;
 }
 
 function createBaseProfile(): Profile {
@@ -114,6 +264,352 @@ export const Profile: MessageFns<Profile> = {
   },
 };
 
+function createBaseProfileServiceConfig(): ProfileServiceConfig {
+  return { enabled: undefined };
+}
+
+export const ProfileServiceConfig: MessageFns<ProfileServiceConfig> = {
+  encode(message: ProfileServiceConfig, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.enabled !== undefined) {
+      writer.uint32(8).bool(message.enabled);
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): ProfileServiceConfig {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseProfileServiceConfig();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 8) {
+            break;
+          }
+
+          message.enabled = reader.bool();
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): ProfileServiceConfig {
+    return { enabled: isSet(object.enabled) ? globalThis.Boolean(object.enabled) : undefined };
+  },
+
+  toJSON(message: ProfileServiceConfig): unknown {
+    const obj: any = {};
+    if (message.enabled !== undefined) {
+      obj.enabled = message.enabled;
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<ProfileServiceConfig>, I>>(base?: I): ProfileServiceConfig {
+    return ProfileServiceConfig.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<ProfileServiceConfig>, I>>(object: I): ProfileServiceConfig {
+    const message = createBaseProfileServiceConfig();
+    message.enabled = object.enabled ?? undefined;
+    return message;
+  },
+};
+
+function createBaseRateLimitConfig(): RateLimitConfig {
+  return {
+    isEnabled: false,
+    requestsPerSecond: 0,
+    burst: Long.ZERO,
+    storage: 0,
+    redis: undefined,
+    keyBy: 0,
+    costMetric: 0,
+    toolLimits: {},
+  };
+}
+
+export const RateLimitConfig: MessageFns<RateLimitConfig> = {
+  encode(message: RateLimitConfig, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.isEnabled !== false) {
+      writer.uint32(8).bool(message.isEnabled);
+    }
+    if (message.requestsPerSecond !== 0) {
+      writer.uint32(17).double(message.requestsPerSecond);
+    }
+    if (!message.burst.equals(Long.ZERO)) {
+      writer.uint32(24).int64(message.burst.toString());
+    }
+    if (message.storage !== 0) {
+      writer.uint32(32).int32(message.storage);
+    }
+    if (message.redis !== undefined) {
+      RedisBus.encode(message.redis, writer.uint32(42).fork()).join();
+    }
+    if (message.keyBy !== 0) {
+      writer.uint32(48).int32(message.keyBy);
+    }
+    if (message.costMetric !== 0) {
+      writer.uint32(56).int32(message.costMetric);
+    }
+    globalThis.Object.entries(message.toolLimits).forEach(([key, value]: [string, RateLimitConfig]) => {
+      RateLimitConfig_ToolLimitsEntry.encode({ key: key as any, value }, writer.uint32(66).fork()).join();
+    });
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): RateLimitConfig {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseRateLimitConfig();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 8) {
+            break;
+          }
+
+          message.isEnabled = reader.bool();
+          continue;
+        }
+        case 2: {
+          if (tag !== 17) {
+            break;
+          }
+
+          message.requestsPerSecond = reader.double();
+          continue;
+        }
+        case 3: {
+          if (tag !== 24) {
+            break;
+          }
+
+          message.burst = Long.fromString(reader.int64().toString());
+          continue;
+        }
+        case 4: {
+          if (tag !== 32) {
+            break;
+          }
+
+          message.storage = reader.int32() as any;
+          continue;
+        }
+        case 5: {
+          if (tag !== 42) {
+            break;
+          }
+
+          message.redis = RedisBus.decode(reader, reader.uint32());
+          continue;
+        }
+        case 6: {
+          if (tag !== 48) {
+            break;
+          }
+
+          message.keyBy = reader.int32() as any;
+          continue;
+        }
+        case 7: {
+          if (tag !== 56) {
+            break;
+          }
+
+          message.costMetric = reader.int32() as any;
+          continue;
+        }
+        case 8: {
+          if (tag !== 66) {
+            break;
+          }
+
+          const entry8 = RateLimitConfig_ToolLimitsEntry.decode(reader, reader.uint32());
+          if (entry8.value !== undefined) {
+            message.toolLimits[entry8.key] = entry8.value;
+          }
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): RateLimitConfig {
+    return {
+      isEnabled: isSet(object.is_enabled) ? globalThis.Boolean(object.is_enabled) : false,
+      requestsPerSecond: isSet(object.requests_per_second) ? globalThis.Number(object.requests_per_second) : 0,
+      burst: isSet(object.burst) ? Long.fromValue(object.burst) : Long.ZERO,
+      storage: isSet(object.storage) ? rateLimitConfig_StorageFromJSON(object.storage) : 0,
+      redis: isSet(object.redis) ? RedisBus.fromJSON(object.redis) : undefined,
+      keyBy: isSet(object.key_by) ? rateLimitConfig_KeyByFromJSON(object.key_by) : 0,
+      costMetric: isSet(object.cost_metric) ? rateLimitConfig_CostMetricFromJSON(object.cost_metric) : 0,
+      toolLimits: isObject(object.tool_limits)
+        ? (globalThis.Object.entries(object.tool_limits) as [string, any][]).reduce(
+          (acc: { [key: string]: RateLimitConfig }, [key, value]: [string, any]) => {
+            acc[key] = RateLimitConfig.fromJSON(value);
+            return acc;
+          },
+          {},
+        )
+        : {},
+    };
+  },
+
+  toJSON(message: RateLimitConfig): unknown {
+    const obj: any = {};
+    if (message.isEnabled !== false) {
+      obj.is_enabled = message.isEnabled;
+    }
+    if (message.requestsPerSecond !== 0) {
+      obj.requests_per_second = message.requestsPerSecond;
+    }
+    if (!message.burst.equals(Long.ZERO)) {
+      obj.burst = (message.burst || Long.ZERO).toString();
+    }
+    if (message.storage !== 0) {
+      obj.storage = rateLimitConfig_StorageToJSON(message.storage);
+    }
+    if (message.redis !== undefined) {
+      obj.redis = RedisBus.toJSON(message.redis);
+    }
+    if (message.keyBy !== 0) {
+      obj.key_by = rateLimitConfig_KeyByToJSON(message.keyBy);
+    }
+    if (message.costMetric !== 0) {
+      obj.cost_metric = rateLimitConfig_CostMetricToJSON(message.costMetric);
+    }
+    if (message.toolLimits) {
+      const entries = globalThis.Object.entries(message.toolLimits) as [string, RateLimitConfig][];
+      if (entries.length > 0) {
+        obj.tool_limits = {};
+        entries.forEach(([k, v]) => {
+          obj.tool_limits[k] = RateLimitConfig.toJSON(v);
+        });
+      }
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<RateLimitConfig>, I>>(base?: I): RateLimitConfig {
+    return RateLimitConfig.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<RateLimitConfig>, I>>(object: I): RateLimitConfig {
+    const message = createBaseRateLimitConfig();
+    message.isEnabled = object.isEnabled ?? false;
+    message.requestsPerSecond = object.requestsPerSecond ?? 0;
+    message.burst = (object.burst !== undefined && object.burst !== null) ? Long.fromValue(object.burst) : Long.ZERO;
+    message.storage = object.storage ?? 0;
+    message.redis = (object.redis !== undefined && object.redis !== null)
+      ? RedisBus.fromPartial(object.redis)
+      : undefined;
+    message.keyBy = object.keyBy ?? 0;
+    message.costMetric = object.costMetric ?? 0;
+    message.toolLimits = (globalThis.Object.entries(object.toolLimits ?? {}) as [string, RateLimitConfig][]).reduce(
+      (acc: { [key: string]: RateLimitConfig }, [key, value]: [string, RateLimitConfig]) => {
+        if (value !== undefined) {
+          acc[key] = RateLimitConfig.fromPartial(value);
+        }
+        return acc;
+      },
+      {},
+    );
+    return message;
+  },
+};
+
+function createBaseRateLimitConfig_ToolLimitsEntry(): RateLimitConfig_ToolLimitsEntry {
+  return { key: "", value: undefined };
+}
+
+export const RateLimitConfig_ToolLimitsEntry: MessageFns<RateLimitConfig_ToolLimitsEntry> = {
+  encode(message: RateLimitConfig_ToolLimitsEntry, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.key !== "") {
+      writer.uint32(10).string(message.key);
+    }
+    if (message.value !== undefined) {
+      RateLimitConfig.encode(message.value, writer.uint32(18).fork()).join();
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): RateLimitConfig_ToolLimitsEntry {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseRateLimitConfig_ToolLimitsEntry();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.key = reader.string();
+          continue;
+        }
+        case 2: {
+          if (tag !== 18) {
+            break;
+          }
+
+          message.value = RateLimitConfig.decode(reader, reader.uint32());
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): RateLimitConfig_ToolLimitsEntry {
+    return {
+      key: isSet(object.key) ? globalThis.String(object.key) : "",
+      value: isSet(object.value) ? RateLimitConfig.fromJSON(object.value) : undefined,
+    };
+  },
+
+  toJSON(message: RateLimitConfig_ToolLimitsEntry): unknown {
+    const obj: any = {};
+    if (message.key !== "") {
+      obj.key = message.key;
+    }
+    if (message.value !== undefined) {
+      obj.value = RateLimitConfig.toJSON(message.value);
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<RateLimitConfig_ToolLimitsEntry>, I>>(base?: I): RateLimitConfig_ToolLimitsEntry {
+    return RateLimitConfig_ToolLimitsEntry.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<RateLimitConfig_ToolLimitsEntry>, I>>(
+    object: I,
+  ): RateLimitConfig_ToolLimitsEntry {
+    const message = createBaseRateLimitConfig_ToolLimitsEntry();
+    message.key = object.key ?? "";
+    message.value = (object.value !== undefined && object.value !== null)
+      ? RateLimitConfig.fromPartial(object.value)
+      : undefined;
+    return message;
+  },
+};
+
 type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;
 
 export type DeepPartial<T> = T extends Builtin ? T
@@ -125,6 +621,10 @@ export type DeepPartial<T> = T extends Builtin ? T
 type KeysOfUnion<T> = T extends T ? keyof T : never;
 export type Exact<P, I extends P> = P extends Builtin ? P
   : P & { [K in keyof P]: Exact<P[K], I[K]> } & { [K in Exclude<keyof I, KeysOfUnion<P>>]: never };
+
+function isObject(value: any): boolean {
+  return typeof value === "object" && value !== null;
+}
 
 function isSet(value: any): boolean {
   return value !== null && value !== undefined;

@@ -6,9 +6,9 @@ package middleware
 import (
 	"testing"
 
-	configv1 "github.com/mcpany/core/proto/config/v1"
-	bus "github.com/mcpany/core/proto/bus"
 	"github.com/go-redis/redismock/v9"
+	bus "github.com/mcpany/core/proto/bus"
+	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -29,8 +29,8 @@ func TestRedisLimiter_GetConfigHash(t *testing.T) {
 	redisBus.SetDb(dbIdx)
 
 	config := &configv1.RateLimitConfig{
-		RequestsPerSecond: &rps,
-		Burst:             &burst,
+		RequestsPerSecond: rps,
+		Burst:             burst,
 		Redis:             redisBus,
 	}
 

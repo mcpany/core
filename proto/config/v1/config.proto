@@ -7,6 +7,8 @@ package mcpany.config.v1;
 
 import "proto/bus/bus.proto";
 import "proto/config/v1/upstream_service.proto";
+import "proto/config/v1/auth.proto";
+import "proto/config/v1/profile.proto";
 
 option go_package = "github.com/mcpany/core/proto/config/v1";
 option java_outer_classname = "ConfigProto";
@@ -181,9 +183,13 @@ message ProfileDefinition {
   string name = 1;
   ProfileSelector selector = 2;
   // List of roles required to access this profile.
-  // If empty, no specific role is required (but user must still have the profile_id explicitly assigned if strict mode).
-  // Alternatively, if user has one of these roles, they get access.
   repeated string required_roles = 3 [json_name = "required_roles"];
+  // Parent profile IDs for inheritance.
+  repeated string parent_profile_ids = 4 [json_name = "parent_profile_ids"];
+  // Service-specific configurations for this profile.
+  map<string, ProfileServiceConfig> service_config = 5 [json_name = "service_config"];
+  // Secrets available to services in this profile.
+  map<string, SecretValue> secrets = 6 [json_name = "secrets"];
 }
 
 message ProfileSelector {

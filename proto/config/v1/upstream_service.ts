@@ -8,7 +8,6 @@
 import { BinaryReader, BinaryWriter } from "@bufbuild/protobuf/wire";
 import Long from "long";
 import { Duration } from "../../google/protobuf/duration";
-import { RedisBus } from "../../bus/bus";
 import { AuthenticationConfig, SecretValue, UpstreamAuthentication } from "./auth";
 import {
   CacheConfig,
@@ -29,7 +28,7 @@ import {
   WebRTCHealthCheck,
   WebsocketHealthCheck,
 } from "./health_check";
-import { Profile } from "./profile";
+import { RateLimitConfig } from "./profile";
 import { PromptDefinition } from "./prompt";
 import { ResourceDefinition } from "./resource";
 import { ToolDefinition } from "./tool";
@@ -164,8 +163,6 @@ export interface UpstreamServiceConfig {
   preCallHooks: CallHook[];
   /** List of hooks to execute after the call. */
   postCallHooks: CallHook[];
-  /** A list of profiles this service belongs to. */
-  profiles: Profile[];
   /** The prompts provided by this upstream service. */
   prompts: PromptDefinition[];
   /** Policies to control what is exported to the client. */
@@ -176,16 +173,6 @@ export interface UpstreamServiceConfig {
     | undefined;
   /** If true, automatically convert all API calls to tools. */
   autoDiscoverTool: boolean;
-  /**
-   * Rate limits per profile. Key is the profile ID.
-   * These limits override the service-level rate_limit if the user belongs to the profile.
-   */
-  profileLimits: { [key: string]: RateLimitConfig };
-}
-
-export interface UpstreamServiceConfig_ProfileLimitsEntry {
-  key: string;
-  value?: RateLimitConfig | undefined;
 }
 
 export interface CallPolicy {
@@ -805,151 +792,6 @@ export interface ContainerEnvironment_EnvEntry {
   value?: SecretValue | undefined;
 }
 
-/** Configuration for rate limiting requests to the upstream service. */
-export interface RateLimitConfig {
-  /** Whether rate limiting is enabled. */
-  isEnabled: boolean;
-  /** The maximum number of requests allowed per second. */
-  requestsPerSecond: number;
-  /** The number of requests that can be allowed in a short burst. */
-  burst: Long;
-  storage: RateLimitConfig_Storage;
-  /** Redis configuration if storage is set to STORAGE_REDIS. */
-  redis?: RedisBus | undefined;
-  keyBy: RateLimitConfig_KeyBy;
-  costMetric: RateLimitConfig_CostMetric;
-  /** Tool-specific rate limits. Key is the tool name. */
-  toolLimits: { [key: string]: RateLimitConfig };
-}
-
-export enum RateLimitConfig_Storage {
-  STORAGE_UNSPECIFIED = 0,
-  STORAGE_MEMORY = 1,
-  STORAGE_REDIS = 2,
-  UNRECOGNIZED = -1,
-}
-
-export function rateLimitConfig_StorageFromJSON(object: any): RateLimitConfig_Storage {
-  switch (object) {
-    case 0:
-    case "STORAGE_UNSPECIFIED":
-      return RateLimitConfig_Storage.STORAGE_UNSPECIFIED;
-    case 1:
-    case "STORAGE_MEMORY":
-      return RateLimitConfig_Storage.STORAGE_MEMORY;
-    case 2:
-    case "STORAGE_REDIS":
-      return RateLimitConfig_Storage.STORAGE_REDIS;
-    case -1:
-    case "UNRECOGNIZED":
-    default:
-      return RateLimitConfig_Storage.UNRECOGNIZED;
-  }
-}
-
-export function rateLimitConfig_StorageToJSON(object: RateLimitConfig_Storage): string {
-  switch (object) {
-    case RateLimitConfig_Storage.STORAGE_UNSPECIFIED:
-      return "STORAGE_UNSPECIFIED";
-    case RateLimitConfig_Storage.STORAGE_MEMORY:
-      return "STORAGE_MEMORY";
-    case RateLimitConfig_Storage.STORAGE_REDIS:
-      return "STORAGE_REDIS";
-    case RateLimitConfig_Storage.UNRECOGNIZED:
-    default:
-      return "UNRECOGNIZED";
-  }
-}
-
-export enum RateLimitConfig_KeyBy {
-  KEY_BY_UNSPECIFIED = 0,
-  KEY_BY_GLOBAL = 1,
-  KEY_BY_IP = 2,
-  KEY_BY_USER_ID = 3,
-  KEY_BY_API_KEY = 4,
-  UNRECOGNIZED = -1,
-}
-
-export function rateLimitConfig_KeyByFromJSON(object: any): RateLimitConfig_KeyBy {
-  switch (object) {
-    case 0:
-    case "KEY_BY_UNSPECIFIED":
-      return RateLimitConfig_KeyBy.KEY_BY_UNSPECIFIED;
-    case 1:
-    case "KEY_BY_GLOBAL":
-      return RateLimitConfig_KeyBy.KEY_BY_GLOBAL;
-    case 2:
-    case "KEY_BY_IP":
-      return RateLimitConfig_KeyBy.KEY_BY_IP;
-    case 3:
-    case "KEY_BY_USER_ID":
-      return RateLimitConfig_KeyBy.KEY_BY_USER_ID;
-    case 4:
-    case "KEY_BY_API_KEY":
-      return RateLimitConfig_KeyBy.KEY_BY_API_KEY;
-    case -1:
-    case "UNRECOGNIZED":
-    default:
-      return RateLimitConfig_KeyBy.UNRECOGNIZED;
-  }
-}
-
-export function rateLimitConfig_KeyByToJSON(object: RateLimitConfig_KeyBy): string {
-  switch (object) {
-    case RateLimitConfig_KeyBy.KEY_BY_UNSPECIFIED:
-      return "KEY_BY_UNSPECIFIED";
-    case RateLimitConfig_KeyBy.KEY_BY_GLOBAL:
-      return "KEY_BY_GLOBAL";
-    case RateLimitConfig_KeyBy.KEY_BY_IP:
-      return "KEY_BY_IP";
-    case RateLimitConfig_KeyBy.KEY_BY_USER_ID:
-      return "KEY_BY_USER_ID";
-    case RateLimitConfig_KeyBy.KEY_BY_API_KEY:
-      return "KEY_BY_API_KEY";
-    case RateLimitConfig_KeyBy.UNRECOGNIZED:
-    default:
-      return "UNRECOGNIZED";
-  }
-}
-
-export enum RateLimitConfig_CostMetric {
-  COST_METRIC_REQUESTS = 0,
-  COST_METRIC_TOKENS = 1,
-  UNRECOGNIZED = -1,
-}
-
-export function rateLimitConfig_CostMetricFromJSON(object: any): RateLimitConfig_CostMetric {
-  switch (object) {
-    case 0:
-    case "COST_METRIC_REQUESTS":
-      return RateLimitConfig_CostMetric.COST_METRIC_REQUESTS;
-    case 1:
-    case "COST_METRIC_TOKENS":
-      return RateLimitConfig_CostMetric.COST_METRIC_TOKENS;
-    case -1:
-    case "UNRECOGNIZED":
-    default:
-      return RateLimitConfig_CostMetric.UNRECOGNIZED;
-  }
-}
-
-export function rateLimitConfig_CostMetricToJSON(object: RateLimitConfig_CostMetric): string {
-  switch (object) {
-    case RateLimitConfig_CostMetric.COST_METRIC_REQUESTS:
-      return "COST_METRIC_REQUESTS";
-    case RateLimitConfig_CostMetric.COST_METRIC_TOKENS:
-      return "COST_METRIC_TOKENS";
-    case RateLimitConfig_CostMetric.UNRECOGNIZED:
-    default:
-      return "UNRECOGNIZED";
-  }
-}
-
-export interface RateLimitConfig_ToolLimitsEntry {
-  key: string;
-  value?: RateLimitConfig | undefined;
-}
-
 /** Configuration for service resilience features like circuit breakers and retries. */
 export interface ResilienceConfig {
   /** Circuit breaker configuration to prevent repeated calls to a failing service. */
@@ -1147,13 +989,11 @@ function createBaseUpstreamServiceConfig(): UpstreamServiceConfig {
     callPolicies: [],
     preCallHooks: [],
     postCallHooks: [],
-    profiles: [],
     prompts: [],
     toolExportPolicy: undefined,
     promptExportPolicy: undefined,
     resourceExportPolicy: undefined,
     autoDiscoverTool: false,
-    profileLimits: {},
   };
 }
 
@@ -1240,9 +1080,6 @@ export const UpstreamServiceConfig: MessageFns<UpstreamServiceConfig> = {
     for (const v of message.postCallHooks) {
       CallHook.encode(v!, writer.uint32(194).fork()).join();
     }
-    for (const v of message.profiles) {
-      Profile.encode(v!, writer.uint32(202).fork()).join();
-    }
     for (const v of message.prompts) {
       PromptDefinition.encode(v!, writer.uint32(210).fork()).join();
     }
@@ -1258,9 +1095,6 @@ export const UpstreamServiceConfig: MessageFns<UpstreamServiceConfig> = {
     if (message.autoDiscoverTool !== false) {
       writer.uint32(240).bool(message.autoDiscoverTool);
     }
-    globalThis.Object.entries(message.profileLimits).forEach(([key, value]: [string, RateLimitConfig]) => {
-      UpstreamServiceConfig_ProfileLimitsEntry.encode({ key: key as any, value }, writer.uint32(266).fork()).join();
-    });
     return writer;
   },
 
@@ -1487,14 +1321,6 @@ export const UpstreamServiceConfig: MessageFns<UpstreamServiceConfig> = {
           message.postCallHooks.push(CallHook.decode(reader, reader.uint32()));
           continue;
         }
-        case 25: {
-          if (tag !== 202) {
-            break;
-          }
-
-          message.profiles.push(Profile.decode(reader, reader.uint32()));
-          continue;
-        }
         case 26: {
           if (tag !== 210) {
             break;
@@ -1533,17 +1359,6 @@ export const UpstreamServiceConfig: MessageFns<UpstreamServiceConfig> = {
           }
 
           message.autoDiscoverTool = reader.bool();
-          continue;
-        }
-        case 33: {
-          if (tag !== 266) {
-            break;
-          }
-
-          const entry33 = UpstreamServiceConfig_ProfileLimitsEntry.decode(reader, reader.uint32());
-          if (entry33.value !== undefined) {
-            message.profileLimits[entry33.key] = entry33.value;
-          }
           continue;
         }
       }
@@ -1604,7 +1419,6 @@ export const UpstreamServiceConfig: MessageFns<UpstreamServiceConfig> = {
       postCallHooks: globalThis.Array.isArray(object?.post_call_hooks)
         ? object.post_call_hooks.map((e: any) => CallHook.fromJSON(e))
         : [],
-      profiles: globalThis.Array.isArray(object?.profiles) ? object.profiles.map((e: any) => Profile.fromJSON(e)) : [],
       prompts: globalThis.Array.isArray(object?.prompts)
         ? object.prompts.map((e: any) => PromptDefinition.fromJSON(e))
         : [],
@@ -1616,15 +1430,6 @@ export const UpstreamServiceConfig: MessageFns<UpstreamServiceConfig> = {
         ? ExportPolicy.fromJSON(object.resource_export_policy)
         : undefined,
       autoDiscoverTool: isSet(object.auto_discover_tool) ? globalThis.Boolean(object.auto_discover_tool) : false,
-      profileLimits: isObject(object.profile_limits)
-        ? (globalThis.Object.entries(object.profile_limits) as [string, any][]).reduce(
-          (acc: { [key: string]: RateLimitConfig }, [key, value]: [string, any]) => {
-            acc[key] = RateLimitConfig.fromJSON(value);
-            return acc;
-          },
-          {},
-        )
-        : {},
     };
   },
 
@@ -1711,9 +1516,6 @@ export const UpstreamServiceConfig: MessageFns<UpstreamServiceConfig> = {
     if (message.postCallHooks?.length) {
       obj.post_call_hooks = message.postCallHooks.map((e) => CallHook.toJSON(e));
     }
-    if (message.profiles?.length) {
-      obj.profiles = message.profiles.map((e) => Profile.toJSON(e));
-    }
     if (message.prompts?.length) {
       obj.prompts = message.prompts.map((e) => PromptDefinition.toJSON(e));
     }
@@ -1728,15 +1530,6 @@ export const UpstreamServiceConfig: MessageFns<UpstreamServiceConfig> = {
     }
     if (message.autoDiscoverTool !== false) {
       obj.auto_discover_tool = message.autoDiscoverTool;
-    }
-    if (message.profileLimits) {
-      const entries = globalThis.Object.entries(message.profileLimits) as [string, RateLimitConfig][];
-      if (entries.length > 0) {
-        obj.profile_limits = {};
-        entries.forEach(([k, v]) => {
-          obj.profile_limits[k] = RateLimitConfig.toJSON(v);
-        });
-      }
     }
     return obj;
   },
@@ -1808,7 +1601,6 @@ export const UpstreamServiceConfig: MessageFns<UpstreamServiceConfig> = {
     message.callPolicies = object.callPolicies?.map((e) => CallPolicy.fromPartial(e)) || [];
     message.preCallHooks = object.preCallHooks?.map((e) => CallHook.fromPartial(e)) || [];
     message.postCallHooks = object.postCallHooks?.map((e) => CallHook.fromPartial(e)) || [];
-    message.profiles = object.profiles?.map((e) => Profile.fromPartial(e)) || [];
     message.prompts = object.prompts?.map((e) => PromptDefinition.fromPartial(e)) || [];
     message.toolExportPolicy = (object.toolExportPolicy !== undefined && object.toolExportPolicy !== null)
       ? ExportPolicy.fromPartial(object.toolExportPolicy)
@@ -1820,95 +1612,6 @@ export const UpstreamServiceConfig: MessageFns<UpstreamServiceConfig> = {
       ? ExportPolicy.fromPartial(object.resourceExportPolicy)
       : undefined;
     message.autoDiscoverTool = object.autoDiscoverTool ?? false;
-    message.profileLimits = (globalThis.Object.entries(object.profileLimits ?? {}) as [string, RateLimitConfig][])
-      .reduce((acc: { [key: string]: RateLimitConfig }, [key, value]: [string, RateLimitConfig]) => {
-        if (value !== undefined) {
-          acc[key] = RateLimitConfig.fromPartial(value);
-        }
-        return acc;
-      }, {});
-    return message;
-  },
-};
-
-function createBaseUpstreamServiceConfig_ProfileLimitsEntry(): UpstreamServiceConfig_ProfileLimitsEntry {
-  return { key: "", value: undefined };
-}
-
-export const UpstreamServiceConfig_ProfileLimitsEntry: MessageFns<UpstreamServiceConfig_ProfileLimitsEntry> = {
-  encode(message: UpstreamServiceConfig_ProfileLimitsEntry, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.key !== "") {
-      writer.uint32(10).string(message.key);
-    }
-    if (message.value !== undefined) {
-      RateLimitConfig.encode(message.value, writer.uint32(18).fork()).join();
-    }
-    return writer;
-  },
-
-  decode(input: BinaryReader | Uint8Array, length?: number): UpstreamServiceConfig_ProfileLimitsEntry {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
-    const end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseUpstreamServiceConfig_ProfileLimitsEntry();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1: {
-          if (tag !== 10) {
-            break;
-          }
-
-          message.key = reader.string();
-          continue;
-        }
-        case 2: {
-          if (tag !== 18) {
-            break;
-          }
-
-          message.value = RateLimitConfig.decode(reader, reader.uint32());
-          continue;
-        }
-      }
-      if ((tag & 7) === 4 || tag === 0) {
-        break;
-      }
-      reader.skip(tag & 7);
-    }
-    return message;
-  },
-
-  fromJSON(object: any): UpstreamServiceConfig_ProfileLimitsEntry {
-    return {
-      key: isSet(object.key) ? globalThis.String(object.key) : "",
-      value: isSet(object.value) ? RateLimitConfig.fromJSON(object.value) : undefined,
-    };
-  },
-
-  toJSON(message: UpstreamServiceConfig_ProfileLimitsEntry): unknown {
-    const obj: any = {};
-    if (message.key !== "") {
-      obj.key = message.key;
-    }
-    if (message.value !== undefined) {
-      obj.value = RateLimitConfig.toJSON(message.value);
-    }
-    return obj;
-  },
-
-  create<I extends Exact<DeepPartial<UpstreamServiceConfig_ProfileLimitsEntry>, I>>(
-    base?: I,
-  ): UpstreamServiceConfig_ProfileLimitsEntry {
-    return UpstreamServiceConfig_ProfileLimitsEntry.fromPartial(base ?? ({} as any));
-  },
-  fromPartial<I extends Exact<DeepPartial<UpstreamServiceConfig_ProfileLimitsEntry>, I>>(
-    object: I,
-  ): UpstreamServiceConfig_ProfileLimitsEntry {
-    const message = createBaseUpstreamServiceConfig_ProfileLimitsEntry();
-    message.key = object.key ?? "";
-    message.value = (object.value !== undefined && object.value !== null)
-      ? RateLimitConfig.fromPartial(object.value)
-      : undefined;
     return message;
   },
 };
@@ -7582,294 +7285,6 @@ export const ContainerEnvironment_EnvEntry: MessageFns<ContainerEnvironment_EnvE
     message.key = object.key ?? "";
     message.value = (object.value !== undefined && object.value !== null)
       ? SecretValue.fromPartial(object.value)
-      : undefined;
-    return message;
-  },
-};
-
-function createBaseRateLimitConfig(): RateLimitConfig {
-  return {
-    isEnabled: false,
-    requestsPerSecond: 0,
-    burst: Long.ZERO,
-    storage: 0,
-    redis: undefined,
-    keyBy: 0,
-    costMetric: 0,
-    toolLimits: {},
-  };
-}
-
-export const RateLimitConfig: MessageFns<RateLimitConfig> = {
-  encode(message: RateLimitConfig, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.isEnabled !== false) {
-      writer.uint32(8).bool(message.isEnabled);
-    }
-    if (message.requestsPerSecond !== 0) {
-      writer.uint32(17).double(message.requestsPerSecond);
-    }
-    if (!message.burst.equals(Long.ZERO)) {
-      writer.uint32(24).int64(message.burst.toString());
-    }
-    if (message.storage !== 0) {
-      writer.uint32(32).int32(message.storage);
-    }
-    if (message.redis !== undefined) {
-      RedisBus.encode(message.redis, writer.uint32(42).fork()).join();
-    }
-    if (message.keyBy !== 0) {
-      writer.uint32(48).int32(message.keyBy);
-    }
-    if (message.costMetric !== 0) {
-      writer.uint32(56).int32(message.costMetric);
-    }
-    globalThis.Object.entries(message.toolLimits).forEach(([key, value]: [string, RateLimitConfig]) => {
-      RateLimitConfig_ToolLimitsEntry.encode({ key: key as any, value }, writer.uint32(66).fork()).join();
-    });
-    return writer;
-  },
-
-  decode(input: BinaryReader | Uint8Array, length?: number): RateLimitConfig {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
-    const end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseRateLimitConfig();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1: {
-          if (tag !== 8) {
-            break;
-          }
-
-          message.isEnabled = reader.bool();
-          continue;
-        }
-        case 2: {
-          if (tag !== 17) {
-            break;
-          }
-
-          message.requestsPerSecond = reader.double();
-          continue;
-        }
-        case 3: {
-          if (tag !== 24) {
-            break;
-          }
-
-          message.burst = Long.fromString(reader.int64().toString());
-          continue;
-        }
-        case 4: {
-          if (tag !== 32) {
-            break;
-          }
-
-          message.storage = reader.int32() as any;
-          continue;
-        }
-        case 5: {
-          if (tag !== 42) {
-            break;
-          }
-
-          message.redis = RedisBus.decode(reader, reader.uint32());
-          continue;
-        }
-        case 6: {
-          if (tag !== 48) {
-            break;
-          }
-
-          message.keyBy = reader.int32() as any;
-          continue;
-        }
-        case 7: {
-          if (tag !== 56) {
-            break;
-          }
-
-          message.costMetric = reader.int32() as any;
-          continue;
-        }
-        case 8: {
-          if (tag !== 66) {
-            break;
-          }
-
-          const entry8 = RateLimitConfig_ToolLimitsEntry.decode(reader, reader.uint32());
-          if (entry8.value !== undefined) {
-            message.toolLimits[entry8.key] = entry8.value;
-          }
-          continue;
-        }
-      }
-      if ((tag & 7) === 4 || tag === 0) {
-        break;
-      }
-      reader.skip(tag & 7);
-    }
-    return message;
-  },
-
-  fromJSON(object: any): RateLimitConfig {
-    return {
-      isEnabled: isSet(object.is_enabled) ? globalThis.Boolean(object.is_enabled) : false,
-      requestsPerSecond: isSet(object.requests_per_second) ? globalThis.Number(object.requests_per_second) : 0,
-      burst: isSet(object.burst) ? Long.fromValue(object.burst) : Long.ZERO,
-      storage: isSet(object.storage) ? rateLimitConfig_StorageFromJSON(object.storage) : 0,
-      redis: isSet(object.redis) ? RedisBus.fromJSON(object.redis) : undefined,
-      keyBy: isSet(object.key_by) ? rateLimitConfig_KeyByFromJSON(object.key_by) : 0,
-      costMetric: isSet(object.cost_metric) ? rateLimitConfig_CostMetricFromJSON(object.cost_metric) : 0,
-      toolLimits: isObject(object.tool_limits)
-        ? (globalThis.Object.entries(object.tool_limits) as [string, any][]).reduce(
-          (acc: { [key: string]: RateLimitConfig }, [key, value]: [string, any]) => {
-            acc[key] = RateLimitConfig.fromJSON(value);
-            return acc;
-          },
-          {},
-        )
-        : {},
-    };
-  },
-
-  toJSON(message: RateLimitConfig): unknown {
-    const obj: any = {};
-    if (message.isEnabled !== false) {
-      obj.is_enabled = message.isEnabled;
-    }
-    if (message.requestsPerSecond !== 0) {
-      obj.requests_per_second = message.requestsPerSecond;
-    }
-    if (!message.burst.equals(Long.ZERO)) {
-      obj.burst = (message.burst || Long.ZERO).toString();
-    }
-    if (message.storage !== 0) {
-      obj.storage = rateLimitConfig_StorageToJSON(message.storage);
-    }
-    if (message.redis !== undefined) {
-      obj.redis = RedisBus.toJSON(message.redis);
-    }
-    if (message.keyBy !== 0) {
-      obj.key_by = rateLimitConfig_KeyByToJSON(message.keyBy);
-    }
-    if (message.costMetric !== 0) {
-      obj.cost_metric = rateLimitConfig_CostMetricToJSON(message.costMetric);
-    }
-    if (message.toolLimits) {
-      const entries = globalThis.Object.entries(message.toolLimits) as [string, RateLimitConfig][];
-      if (entries.length > 0) {
-        obj.tool_limits = {};
-        entries.forEach(([k, v]) => {
-          obj.tool_limits[k] = RateLimitConfig.toJSON(v);
-        });
-      }
-    }
-    return obj;
-  },
-
-  create<I extends Exact<DeepPartial<RateLimitConfig>, I>>(base?: I): RateLimitConfig {
-    return RateLimitConfig.fromPartial(base ?? ({} as any));
-  },
-  fromPartial<I extends Exact<DeepPartial<RateLimitConfig>, I>>(object: I): RateLimitConfig {
-    const message = createBaseRateLimitConfig();
-    message.isEnabled = object.isEnabled ?? false;
-    message.requestsPerSecond = object.requestsPerSecond ?? 0;
-    message.burst = (object.burst !== undefined && object.burst !== null) ? Long.fromValue(object.burst) : Long.ZERO;
-    message.storage = object.storage ?? 0;
-    message.redis = (object.redis !== undefined && object.redis !== null)
-      ? RedisBus.fromPartial(object.redis)
-      : undefined;
-    message.keyBy = object.keyBy ?? 0;
-    message.costMetric = object.costMetric ?? 0;
-    message.toolLimits = (globalThis.Object.entries(object.toolLimits ?? {}) as [string, RateLimitConfig][]).reduce(
-      (acc: { [key: string]: RateLimitConfig }, [key, value]: [string, RateLimitConfig]) => {
-        if (value !== undefined) {
-          acc[key] = RateLimitConfig.fromPartial(value);
-        }
-        return acc;
-      },
-      {},
-    );
-    return message;
-  },
-};
-
-function createBaseRateLimitConfig_ToolLimitsEntry(): RateLimitConfig_ToolLimitsEntry {
-  return { key: "", value: undefined };
-}
-
-export const RateLimitConfig_ToolLimitsEntry: MessageFns<RateLimitConfig_ToolLimitsEntry> = {
-  encode(message: RateLimitConfig_ToolLimitsEntry, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.key !== "") {
-      writer.uint32(10).string(message.key);
-    }
-    if (message.value !== undefined) {
-      RateLimitConfig.encode(message.value, writer.uint32(18).fork()).join();
-    }
-    return writer;
-  },
-
-  decode(input: BinaryReader | Uint8Array, length?: number): RateLimitConfig_ToolLimitsEntry {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
-    const end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseRateLimitConfig_ToolLimitsEntry();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1: {
-          if (tag !== 10) {
-            break;
-          }
-
-          message.key = reader.string();
-          continue;
-        }
-        case 2: {
-          if (tag !== 18) {
-            break;
-          }
-
-          message.value = RateLimitConfig.decode(reader, reader.uint32());
-          continue;
-        }
-      }
-      if ((tag & 7) === 4 || tag === 0) {
-        break;
-      }
-      reader.skip(tag & 7);
-    }
-    return message;
-  },
-
-  fromJSON(object: any): RateLimitConfig_ToolLimitsEntry {
-    return {
-      key: isSet(object.key) ? globalThis.String(object.key) : "",
-      value: isSet(object.value) ? RateLimitConfig.fromJSON(object.value) : undefined,
-    };
-  },
-
-  toJSON(message: RateLimitConfig_ToolLimitsEntry): unknown {
-    const obj: any = {};
-    if (message.key !== "") {
-      obj.key = message.key;
-    }
-    if (message.value !== undefined) {
-      obj.value = RateLimitConfig.toJSON(message.value);
-    }
-    return obj;
-  },
-
-  create<I extends Exact<DeepPartial<RateLimitConfig_ToolLimitsEntry>, I>>(base?: I): RateLimitConfig_ToolLimitsEntry {
-    return RateLimitConfig_ToolLimitsEntry.fromPartial(base ?? ({} as any));
-  },
-  fromPartial<I extends Exact<DeepPartial<RateLimitConfig_ToolLimitsEntry>, I>>(
-    object: I,
-  ): RateLimitConfig_ToolLimitsEntry {
-    const message = createBaseRateLimitConfig_ToolLimitsEntry();
-    message.key = object.key ?? "";
-    message.value = (object.value !== undefined && object.value !== null)
-      ? RateLimitConfig.fromPartial(object.value)
       : undefined;
     return message;
   },

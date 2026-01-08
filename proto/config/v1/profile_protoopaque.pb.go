@@ -12,6 +12,7 @@
 package v1
 
 import (
+	bus "github.com/mcpany/core/proto/bus"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	reflect "reflect"
@@ -24,6 +25,141 @@ const (
 	// Verify that runtime/protoimpl is sufficiently up-to-date.
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
+
+type RateLimitConfig_Storage int32
+
+const (
+	RateLimitConfig_STORAGE_UNSPECIFIED RateLimitConfig_Storage = 0
+	RateLimitConfig_STORAGE_MEMORY      RateLimitConfig_Storage = 1
+	RateLimitConfig_STORAGE_REDIS       RateLimitConfig_Storage = 2
+)
+
+// Enum value maps for RateLimitConfig_Storage.
+var (
+	RateLimitConfig_Storage_name = map[int32]string{
+		0: "STORAGE_UNSPECIFIED",
+		1: "STORAGE_MEMORY",
+		2: "STORAGE_REDIS",
+	}
+	RateLimitConfig_Storage_value = map[string]int32{
+		"STORAGE_UNSPECIFIED": 0,
+		"STORAGE_MEMORY":      1,
+		"STORAGE_REDIS":       2,
+	}
+)
+
+func (x RateLimitConfig_Storage) Enum() *RateLimitConfig_Storage {
+	p := new(RateLimitConfig_Storage)
+	*p = x
+	return p
+}
+
+func (x RateLimitConfig_Storage) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (RateLimitConfig_Storage) Descriptor() protoreflect.EnumDescriptor {
+	return file_proto_config_v1_profile_proto_enumTypes[0].Descriptor()
+}
+
+func (RateLimitConfig_Storage) Type() protoreflect.EnumType {
+	return &file_proto_config_v1_profile_proto_enumTypes[0]
+}
+
+func (x RateLimitConfig_Storage) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+type RateLimitConfig_KeyBy int32
+
+const (
+	RateLimitConfig_KEY_BY_UNSPECIFIED RateLimitConfig_KeyBy = 0
+	RateLimitConfig_KEY_BY_GLOBAL      RateLimitConfig_KeyBy = 1
+	RateLimitConfig_KEY_BY_IP          RateLimitConfig_KeyBy = 2
+	RateLimitConfig_KEY_BY_USER_ID     RateLimitConfig_KeyBy = 3
+	RateLimitConfig_KEY_BY_API_KEY     RateLimitConfig_KeyBy = 4
+)
+
+// Enum value maps for RateLimitConfig_KeyBy.
+var (
+	RateLimitConfig_KeyBy_name = map[int32]string{
+		0: "KEY_BY_UNSPECIFIED",
+		1: "KEY_BY_GLOBAL",
+		2: "KEY_BY_IP",
+		3: "KEY_BY_USER_ID",
+		4: "KEY_BY_API_KEY",
+	}
+	RateLimitConfig_KeyBy_value = map[string]int32{
+		"KEY_BY_UNSPECIFIED": 0,
+		"KEY_BY_GLOBAL":      1,
+		"KEY_BY_IP":          2,
+		"KEY_BY_USER_ID":     3,
+		"KEY_BY_API_KEY":     4,
+	}
+)
+
+func (x RateLimitConfig_KeyBy) Enum() *RateLimitConfig_KeyBy {
+	p := new(RateLimitConfig_KeyBy)
+	*p = x
+	return p
+}
+
+func (x RateLimitConfig_KeyBy) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (RateLimitConfig_KeyBy) Descriptor() protoreflect.EnumDescriptor {
+	return file_proto_config_v1_profile_proto_enumTypes[1].Descriptor()
+}
+
+func (RateLimitConfig_KeyBy) Type() protoreflect.EnumType {
+	return &file_proto_config_v1_profile_proto_enumTypes[1]
+}
+
+func (x RateLimitConfig_KeyBy) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+type RateLimitConfig_CostMetric int32
+
+const (
+	RateLimitConfig_COST_METRIC_REQUESTS RateLimitConfig_CostMetric = 0
+	RateLimitConfig_COST_METRIC_TOKENS   RateLimitConfig_CostMetric = 1
+)
+
+// Enum value maps for RateLimitConfig_CostMetric.
+var (
+	RateLimitConfig_CostMetric_name = map[int32]string{
+		0: "COST_METRIC_REQUESTS",
+		1: "COST_METRIC_TOKENS",
+	}
+	RateLimitConfig_CostMetric_value = map[string]int32{
+		"COST_METRIC_REQUESTS": 0,
+		"COST_METRIC_TOKENS":   1,
+	}
+)
+
+func (x RateLimitConfig_CostMetric) Enum() *RateLimitConfig_CostMetric {
+	p := new(RateLimitConfig_CostMetric)
+	*p = x
+	return p
+}
+
+func (x RateLimitConfig_CostMetric) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (RateLimitConfig_CostMetric) Descriptor() protoreflect.EnumDescriptor {
+	return file_proto_config_v1_profile_proto_enumTypes[2].Descriptor()
+}
+
+func (RateLimitConfig_CostMetric) Type() protoreflect.EnumType {
+	return &file_proto_config_v1_profile_proto_enumTypes[2]
+}
+
+func (x RateLimitConfig_CostMetric) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
 
 type Profile struct {
 	state                     protoimpl.MessageState `protogen:"opaque.v1"`
@@ -124,28 +260,321 @@ func (b0 Profile_builder) Build() *Profile {
 	return m0
 }
 
+type ProfileServiceConfig struct {
+	state                  protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Enabled     bool                   `protobuf:"varint,1,opt,name=enabled,proto3,oneof"`
+	XXX_raceDetectHookData protoimpl.RaceDetectHookData
+	XXX_presence           [1]uint32
+	unknownFields          protoimpl.UnknownFields
+	sizeCache              protoimpl.SizeCache
+}
+
+func (x *ProfileServiceConfig) Reset() {
+	*x = ProfileServiceConfig{}
+	mi := &file_proto_config_v1_profile_proto_msgTypes[1]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ProfileServiceConfig) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ProfileServiceConfig) ProtoMessage() {}
+
+func (x *ProfileServiceConfig) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_config_v1_profile_proto_msgTypes[1]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+func (x *ProfileServiceConfig) GetEnabled() bool {
+	if x != nil {
+		return x.xxx_hidden_Enabled
+	}
+	return false
+}
+
+func (x *ProfileServiceConfig) SetEnabled(v bool) {
+	x.xxx_hidden_Enabled = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 1)
+}
+
+func (x *ProfileServiceConfig) HasEnabled() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
+}
+
+func (x *ProfileServiceConfig) ClearEnabled() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
+	x.xxx_hidden_Enabled = false
+}
+
+type ProfileServiceConfig_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// Whether the service is enabled in this profile.
+	Enabled *bool
+}
+
+func (b0 ProfileServiceConfig_builder) Build() *ProfileServiceConfig {
+	m0 := &ProfileServiceConfig{}
+	b, x := &b0, m0
+	_, _ = b, x
+	if b.Enabled != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 1)
+		x.xxx_hidden_Enabled = *b.Enabled
+	}
+	return m0
+}
+
+type RateLimitConfig struct {
+	state                        protoimpl.MessageState      `protogen:"opaque.v1"`
+	xxx_hidden_IsEnabled         bool                        `protobuf:"varint,1,opt,name=is_enabled,proto3"`
+	xxx_hidden_RequestsPerSecond float64                     `protobuf:"fixed64,2,opt,name=requests_per_second,proto3"`
+	xxx_hidden_Burst             int64                       `protobuf:"varint,3,opt,name=burst,proto3"`
+	xxx_hidden_Storage           RateLimitConfig_Storage     `protobuf:"varint,4,opt,name=storage,proto3,enum=mcpany.config.v1.RateLimitConfig_Storage"`
+	xxx_hidden_Redis             *bus.RedisBus               `protobuf:"bytes,5,opt,name=redis,proto3"`
+	xxx_hidden_KeyBy             RateLimitConfig_KeyBy       `protobuf:"varint,6,opt,name=key_by,proto3,enum=mcpany.config.v1.RateLimitConfig_KeyBy"`
+	xxx_hidden_CostMetric        RateLimitConfig_CostMetric  `protobuf:"varint,7,opt,name=cost_metric,proto3,enum=mcpany.config.v1.RateLimitConfig_CostMetric"`
+	xxx_hidden_ToolLimits        map[string]*RateLimitConfig `protobuf:"bytes,8,rep,name=tool_limits,proto3" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	unknownFields                protoimpl.UnknownFields
+	sizeCache                    protoimpl.SizeCache
+}
+
+func (x *RateLimitConfig) Reset() {
+	*x = RateLimitConfig{}
+	mi := &file_proto_config_v1_profile_proto_msgTypes[2]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *RateLimitConfig) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RateLimitConfig) ProtoMessage() {}
+
+func (x *RateLimitConfig) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_config_v1_profile_proto_msgTypes[2]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+func (x *RateLimitConfig) GetIsEnabled() bool {
+	if x != nil {
+		return x.xxx_hidden_IsEnabled
+	}
+	return false
+}
+
+func (x *RateLimitConfig) GetRequestsPerSecond() float64 {
+	if x != nil {
+		return x.xxx_hidden_RequestsPerSecond
+	}
+	return 0
+}
+
+func (x *RateLimitConfig) GetBurst() int64 {
+	if x != nil {
+		return x.xxx_hidden_Burst
+	}
+	return 0
+}
+
+func (x *RateLimitConfig) GetStorage() RateLimitConfig_Storage {
+	if x != nil {
+		return x.xxx_hidden_Storage
+	}
+	return RateLimitConfig_STORAGE_UNSPECIFIED
+}
+
+func (x *RateLimitConfig) GetRedis() *bus.RedisBus {
+	if x != nil {
+		return x.xxx_hidden_Redis
+	}
+	return nil
+}
+
+func (x *RateLimitConfig) GetKeyBy() RateLimitConfig_KeyBy {
+	if x != nil {
+		return x.xxx_hidden_KeyBy
+	}
+	return RateLimitConfig_KEY_BY_UNSPECIFIED
+}
+
+func (x *RateLimitConfig) GetCostMetric() RateLimitConfig_CostMetric {
+	if x != nil {
+		return x.xxx_hidden_CostMetric
+	}
+	return RateLimitConfig_COST_METRIC_REQUESTS
+}
+
+func (x *RateLimitConfig) GetToolLimits() map[string]*RateLimitConfig {
+	if x != nil {
+		return x.xxx_hidden_ToolLimits
+	}
+	return nil
+}
+
+func (x *RateLimitConfig) SetIsEnabled(v bool) {
+	x.xxx_hidden_IsEnabled = v
+}
+
+func (x *RateLimitConfig) SetRequestsPerSecond(v float64) {
+	x.xxx_hidden_RequestsPerSecond = v
+}
+
+func (x *RateLimitConfig) SetBurst(v int64) {
+	x.xxx_hidden_Burst = v
+}
+
+func (x *RateLimitConfig) SetStorage(v RateLimitConfig_Storage) {
+	x.xxx_hidden_Storage = v
+}
+
+func (x *RateLimitConfig) SetRedis(v *bus.RedisBus) {
+	x.xxx_hidden_Redis = v
+}
+
+func (x *RateLimitConfig) SetKeyBy(v RateLimitConfig_KeyBy) {
+	x.xxx_hidden_KeyBy = v
+}
+
+func (x *RateLimitConfig) SetCostMetric(v RateLimitConfig_CostMetric) {
+	x.xxx_hidden_CostMetric = v
+}
+
+func (x *RateLimitConfig) SetToolLimits(v map[string]*RateLimitConfig) {
+	x.xxx_hidden_ToolLimits = v
+}
+
+func (x *RateLimitConfig) HasRedis() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_Redis != nil
+}
+
+func (x *RateLimitConfig) ClearRedis() {
+	x.xxx_hidden_Redis = nil
+}
+
+type RateLimitConfig_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// Whether rate limiting is enabled.
+	IsEnabled bool
+	// The maximum number of requests allowed per second.
+	RequestsPerSecond float64
+	// The number of requests that can be allowed in a short burst.
+	Burst   int64
+	Storage RateLimitConfig_Storage
+	// Redis configuration if storage is set to STORAGE_REDIS.
+	Redis      *bus.RedisBus
+	KeyBy      RateLimitConfig_KeyBy
+	CostMetric RateLimitConfig_CostMetric
+	// Tool-specific rate limits. Key is the tool name.
+	ToolLimits map[string]*RateLimitConfig
+}
+
+func (b0 RateLimitConfig_builder) Build() *RateLimitConfig {
+	m0 := &RateLimitConfig{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_IsEnabled = b.IsEnabled
+	x.xxx_hidden_RequestsPerSecond = b.RequestsPerSecond
+	x.xxx_hidden_Burst = b.Burst
+	x.xxx_hidden_Storage = b.Storage
+	x.xxx_hidden_Redis = b.Redis
+	x.xxx_hidden_KeyBy = b.KeyBy
+	x.xxx_hidden_CostMetric = b.CostMetric
+	x.xxx_hidden_ToolLimits = b.ToolLimits
+	return m0
+}
+
 var File_proto_config_v1_profile_proto protoreflect.FileDescriptor
 
 const file_proto_config_v1_profile_proto_rawDesc = "" +
 	"\n" +
-	"\x1dproto/config/v1/profile.proto\x12\x10mcpany.config.v1\x1a\x1aproto/config/v1/auth.proto\"}\n" +
+	"\x1dproto/config/v1/profile.proto\x12\x10mcpany.config.v1\x1a\x1aproto/config/v1/auth.proto\x1a\x13proto/bus/bus.proto\"}\n" +
 	"\aProfile\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12\x0e\n" +
 	"\x02id\x18\x02 \x01(\tR\x02id\x12N\n" +
-	"\x0eauthentication\x18\x03 \x01(\v2&.mcpany.config.v1.AuthenticationConfigR\x0eauthenticationB(Z&github.com/mcpany/core/proto/config/v1b\x06proto3"
+	"\x0eauthentication\x18\x03 \x01(\v2&.mcpany.config.v1.AuthenticationConfigR\x0eauthentication\"A\n" +
+	"\x14ProfileServiceConfig\x12\x1d\n" +
+	"\aenabled\x18\x01 \x01(\bH\x00R\aenabled\x88\x01\x01B\n" +
+	"\n" +
+	"\b_enabled\"\xa1\x06\n" +
+	"\x0fRateLimitConfig\x12\x1e\n" +
+	"\n" +
+	"is_enabled\x18\x01 \x01(\bR\n" +
+	"is_enabled\x120\n" +
+	"\x13requests_per_second\x18\x02 \x01(\x01R\x13requests_per_second\x12\x14\n" +
+	"\x05burst\x18\x03 \x01(\x03R\x05burst\x12C\n" +
+	"\astorage\x18\x04 \x01(\x0e2).mcpany.config.v1.RateLimitConfig.StorageR\astorage\x12#\n" +
+	"\x05redis\x18\x05 \x01(\v2\r.bus.RedisBusR\x05redis\x12?\n" +
+	"\x06key_by\x18\x06 \x01(\x0e2'.mcpany.config.v1.RateLimitConfig.KeyByR\x06key_by\x12N\n" +
+	"\vcost_metric\x18\a \x01(\x0e2,.mcpany.config.v1.RateLimitConfig.CostMetricR\vcost_metric\x12S\n" +
+	"\vtool_limits\x18\b \x03(\v21.mcpany.config.v1.RateLimitConfig.ToolLimitsEntryR\vtool_limits\x1a`\n" +
+	"\x0fToolLimitsEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\tR\x03key\x127\n" +
+	"\x05value\x18\x02 \x01(\v2!.mcpany.config.v1.RateLimitConfigR\x05value:\x028\x01\"I\n" +
+	"\aStorage\x12\x17\n" +
+	"\x13STORAGE_UNSPECIFIED\x10\x00\x12\x12\n" +
+	"\x0eSTORAGE_MEMORY\x10\x01\x12\x11\n" +
+	"\rSTORAGE_REDIS\x10\x02\"i\n" +
+	"\x05KeyBy\x12\x16\n" +
+	"\x12KEY_BY_UNSPECIFIED\x10\x00\x12\x11\n" +
+	"\rKEY_BY_GLOBAL\x10\x01\x12\r\n" +
+	"\tKEY_BY_IP\x10\x02\x12\x12\n" +
+	"\x0eKEY_BY_USER_ID\x10\x03\x12\x12\n" +
+	"\x0eKEY_BY_API_KEY\x10\x04\">\n" +
+	"\n" +
+	"CostMetric\x12\x18\n" +
+	"\x14COST_METRIC_REQUESTS\x10\x00\x12\x16\n" +
+	"\x12COST_METRIC_TOKENS\x10\x01B(Z&github.com/mcpany/core/proto/config/v1b\x06proto3"
 
-var file_proto_config_v1_profile_proto_msgTypes = make([]protoimpl.MessageInfo, 1)
+var file_proto_config_v1_profile_proto_enumTypes = make([]protoimpl.EnumInfo, 3)
+var file_proto_config_v1_profile_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
 var file_proto_config_v1_profile_proto_goTypes = []any{
-	(*Profile)(nil),              // 0: mcpany.config.v1.Profile
-	(*AuthenticationConfig)(nil), // 1: mcpany.config.v1.AuthenticationConfig
+	(RateLimitConfig_Storage)(0),    // 0: mcpany.config.v1.RateLimitConfig.Storage
+	(RateLimitConfig_KeyBy)(0),      // 1: mcpany.config.v1.RateLimitConfig.KeyBy
+	(RateLimitConfig_CostMetric)(0), // 2: mcpany.config.v1.RateLimitConfig.CostMetric
+	(*Profile)(nil),                 // 3: mcpany.config.v1.Profile
+	(*ProfileServiceConfig)(nil),    // 4: mcpany.config.v1.ProfileServiceConfig
+	(*RateLimitConfig)(nil),         // 5: mcpany.config.v1.RateLimitConfig
+	nil,                             // 6: mcpany.config.v1.RateLimitConfig.ToolLimitsEntry
+	(*AuthenticationConfig)(nil),    // 7: mcpany.config.v1.AuthenticationConfig
+	(*bus.RedisBus)(nil),            // 8: bus.RedisBus
 }
 var file_proto_config_v1_profile_proto_depIdxs = []int32{
-	1, // 0: mcpany.config.v1.Profile.authentication:type_name -> mcpany.config.v1.AuthenticationConfig
-	1, // [1:1] is the sub-list for method output_type
-	1, // [1:1] is the sub-list for method input_type
-	1, // [1:1] is the sub-list for extension type_name
-	1, // [1:1] is the sub-list for extension extendee
-	0, // [0:1] is the sub-list for field type_name
+	7, // 0: mcpany.config.v1.Profile.authentication:type_name -> mcpany.config.v1.AuthenticationConfig
+	0, // 1: mcpany.config.v1.RateLimitConfig.storage:type_name -> mcpany.config.v1.RateLimitConfig.Storage
+	8, // 2: mcpany.config.v1.RateLimitConfig.redis:type_name -> bus.RedisBus
+	1, // 3: mcpany.config.v1.RateLimitConfig.key_by:type_name -> mcpany.config.v1.RateLimitConfig.KeyBy
+	2, // 4: mcpany.config.v1.RateLimitConfig.cost_metric:type_name -> mcpany.config.v1.RateLimitConfig.CostMetric
+	6, // 5: mcpany.config.v1.RateLimitConfig.tool_limits:type_name -> mcpany.config.v1.RateLimitConfig.ToolLimitsEntry
+	5, // 6: mcpany.config.v1.RateLimitConfig.ToolLimitsEntry.value:type_name -> mcpany.config.v1.RateLimitConfig
+	7, // [7:7] is the sub-list for method output_type
+	7, // [7:7] is the sub-list for method input_type
+	7, // [7:7] is the sub-list for extension type_name
+	7, // [7:7] is the sub-list for extension extendee
+	0, // [0:7] is the sub-list for field type_name
 }
 
 func init() { file_proto_config_v1_profile_proto_init() }
@@ -154,18 +583,20 @@ func file_proto_config_v1_profile_proto_init() {
 		return
 	}
 	file_proto_config_v1_auth_proto_init()
+	file_proto_config_v1_profile_proto_msgTypes[1].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_proto_config_v1_profile_proto_rawDesc), len(file_proto_config_v1_profile_proto_rawDesc)),
-			NumEnums:      0,
-			NumMessages:   1,
+			NumEnums:      3,
+			NumMessages:   4,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
 		GoTypes:           file_proto_config_v1_profile_proto_goTypes,
 		DependencyIndexes: file_proto_config_v1_profile_proto_depIdxs,
+		EnumInfos:         file_proto_config_v1_profile_proto_enumTypes,
 		MessageInfos:      file_proto_config_v1_profile_proto_msgTypes,
 	}.Build()
 	File_proto_config_v1_profile_proto = out.File

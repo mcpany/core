@@ -16,18 +16,22 @@ import (
 // Store implements storage.Storage in memory.
 type Store struct {
 	mu             sync.RWMutex
-	services       map[string]*configv1.UpstreamServiceConfig
-	secrets        map[string]*configv1.Secret
-	users          map[string]*configv1.User
-	globalSettings *configv1.GlobalSettings
+	services           map[string]*configv1.UpstreamServiceConfig
+	secrets            map[string]*configv1.Secret
+	users              map[string]*configv1.User
+	profileDefinitions map[string]*configv1.ProfileDefinition
+	serviceCollections map[string]*configv1.UpstreamServiceCollectionShare
+	globalSettings     *configv1.GlobalSettings
 }
 
 // NewStore creates a new memory store.
 func NewStore() *Store {
 	return &Store{
-		services: make(map[string]*configv1.UpstreamServiceConfig),
-		secrets:  make(map[string]*configv1.Secret),
-		users:    make(map[string]*configv1.User),
+		services:           make(map[string]*configv1.UpstreamServiceConfig),
+		secrets:            make(map[string]*configv1.Secret),
+		users:              make(map[string]*configv1.User),
+		profileDefinitions: make(map[string]*configv1.ProfileDefinition),
+		serviceCollections: make(map[string]*configv1.UpstreamServiceCollectionShare),
 	}
 }
 
@@ -45,8 +49,36 @@ func (s *Store) Load(_ context.Context) (*configv1.McpAnyServerConfig, error) {
 		cfg.UpstreamServices = append(cfg.UpstreamServices, proto.Clone(svc).(*configv1.UpstreamServiceConfig))
 	}
 
+	if len(s.profileDefinitions) > 0 {
+		cfg.GlobalSettings = &configv1.GlobalSettings{} // Ensure GlobalSettings structure exists if we have profiles?
+		// But s.globalSettings might override it.
+		// Wait, profiles are inside GlobalSettings.
+		// So if s.globalSettings is nil, we should create it if we have profiles?
+		// Or just assume s.globalSettings tracks everything?
+		// In memory store, we separated `profileDefinitions` map.
+		// So we should merge them into `cfg`.
+	}
+
 	if s.globalSettings != nil {
 		cfg.GlobalSettings = proto.Clone(s.globalSettings).(*configv1.GlobalSettings)
+	} else if len(s.profileDefinitions) > 0 {
+		cfg.GlobalSettings = &configv1.GlobalSettings{}
+	}
+
+	if cfg.GlobalSettings != nil {
+		// Populate profiles from separate map if not already in GlobalSettings?
+		// Memory store usually keeps source of truth in maps.
+		// But SaveGlobalSettings saves the whole blob.
+		// If we use separate map for profiles, we should inject them.
+		// But SaveGlobalSettings might overwrite profiles if it contains them?
+		// The design of MemoryStore:
+		// Logic: `SaveProfile` updates `profileDefinitions`. `SaveGlobalSettings` updates `globalSettings`.
+		// If `GlobalSettings` contains `ProfileDefinitions`, they are duplicated?
+		// Ideally `Load` should combine them.
+		// Let's append `profileDefinitions` map to `cfg.GlobalSettings.ProfileDefinitions`.
+		for _, p := range s.profileDefinitions {
+			cfg.GlobalSettings.ProfileDefinitions = append(cfg.GlobalSettings.ProfileDefinitions, proto.Clone(p).(*configv1.ProfileDefinition))
+		}
 	}
 
 	return cfg, nil
@@ -149,6 +181,7 @@ func (s *Store) DeleteSecret(id string) error {
 	return nil
 }
 
+<<<<<<< HEAD
 // CreateUser creates a new user.
 func (s *Store) CreateUser(_ context.Context, user *configv1.User) error {
 	s.mu.Lock()
@@ -180,6 +213,11 @@ func (s *Store) ListUsers(_ context.Context) ([]*configv1.User, error) {
 	list := make([]*configv1.User, 0, len(s.users))
 	for _, user := range s.users {
 		list = append(list, proto.Clone(user).(*configv1.User))
+=======
+// Profiles
+
+// ListProfiles retrieves all profile definitions.
+func (s *Store) ListProfiles(_ context.Context) ([]*configv1.ProfileDefinition, error) {
 	}
 	return list, nil
 }
@@ -200,5 +238,83 @@ func (s *Store) DeleteUser(_ context.Context, id string) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	delete(s.users, id)
+	return nil
+}
+
+// Profiles
+
+// ListProfiles retrieves all profile definitions.
+func (s *Store) ListProfiles(_ context.Context) ([]*configv1.ProfileDefinition, error) {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+	list := make([]*configv1.ProfileDefinition, 0, len(s.profileDefinitions))
+	for _, p := range s.profileDefinitions {
+		list = append(list, proto.Clone(p).(*configv1.ProfileDefinition))
+	}
+	return list, nil
+}
+
+// GetProfile retrieves a profile definition by name.
+func (s *Store) GetProfile(_ context.Context, name string) (*configv1.ProfileDefinition, error) {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+	if p, ok := s.profileDefinitions[name]; ok {
+		return proto.Clone(p).(*configv1.ProfileDefinition), nil
+	}
+	return nil, nil
+}
+
+// SaveProfile saves a profile definition.
+func (s *Store) SaveProfile(_ context.Context, profile *configv1.ProfileDefinition) error {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	s.profileDefinitions[profile.GetName()] = proto.Clone(profile).(*configv1.ProfileDefinition)
+	return nil
+}
+
+// DeleteProfile deletes a profile definition by name.
+func (s *Store) DeleteProfile(_ context.Context, name string) error {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	delete(s.profileDefinitions, name)
+	return nil
+}
+
+// Service Collections
+
+// ListServiceCollections retrieves all service collections.
+func (s *Store) ListServiceCollections(_ context.Context) ([]*configv1.UpstreamServiceCollectionShare, error) {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+	list := make([]*configv1.UpstreamServiceCollectionShare, 0, len(s.serviceCollections))
+	for _, c := range s.serviceCollections {
+		list = append(list, proto.Clone(c).(*configv1.UpstreamServiceCollectionShare))
+	}
+	return list, nil
+}
+
+// GetServiceCollection retrieves a service collection by name.
+func (s *Store) GetServiceCollection(_ context.Context, name string) (*configv1.UpstreamServiceCollectionShare, error) {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+	if c, ok := s.serviceCollections[name]; ok {
+		return proto.Clone(c).(*configv1.UpstreamServiceCollectionShare), nil
+	}
+	return nil, nil
+}
+
+// SaveServiceCollection saves a service collection.
+func (s *Store) SaveServiceCollection(_ context.Context, collection *configv1.UpstreamServiceCollectionShare) error {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	s.serviceCollections[collection.GetName()] = proto.Clone(collection).(*configv1.UpstreamServiceCollectionShare)
+	return nil
+}
+
+// DeleteServiceCollection deletes a service collection by name.
+func (s *Store) DeleteServiceCollection(_ context.Context, name string) error {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	delete(s.serviceCollections, name)
 	return nil
 }

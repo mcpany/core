@@ -8,10 +8,10 @@ import (
 	"encoding/json"
 	"testing"
 
-	"github.com/mcpany/core/server/pkg/tokenizer"
-	"github.com/mcpany/core/server/pkg/tool"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	v1 "github.com/mcpany/core/proto/mcp_router/v1"
+	"github.com/mcpany/core/server/pkg/tokenizer"
+	"github.com/mcpany/core/server/pkg/tool"
 	github_com_modelcontextprotocol_go_sdk_mcp "github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
@@ -51,7 +51,8 @@ func (m *MockToolManagerForCost) SetMCPServer(_ tool.MCPServerProvider)  {}
 func (m *MockToolManagerForCost) ClearToolsForService(_ string) {}
 func (m *MockToolManagerForCost) SetProfiles(_ []string, _ []*configv1.ProfileDefinition) {
 }
-func (m *MockToolManagerForCost) AddMiddleware(_ tool.ExecutionMiddleware) {}
+func (m *MockToolManagerForCost) IsServiceAllowed(serviceID, profileID string) bool { return true }
+func (m *MockToolManagerForCost) AddMiddleware(_ tool.ExecutionMiddleware)          {}
 func (m *MockToolManagerForCost) ListServices() []*tool.ServiceInfo                 { return nil }
 
 // MockToolForCost is a mock for tool.Tool
@@ -196,11 +197,11 @@ func TestRateLimitMiddleware_AllowN(t *testing.T) {
 
 	// Config with Token Cost Metric
 	config := &configv1.RateLimitConfig{}
-	config.IsEnabled = proto.Bool(true)
-	config.RequestsPerSecond = proto.Float64(10)
-	config.Burst = proto.Int64(20)
-	config.CostMetric = configv1.RateLimitConfig_COST_METRIC_TOKENS.Enum()
-	config.Storage = configv1.RateLimitConfig_STORAGE_MEMORY.Enum()
+	config.IsEnabled = true
+	config.RequestsPerSecond = 10
+	config.Burst = 20
+	config.CostMetric = configv1.RateLimitConfig_COST_METRIC_TOKENS
+	config.Storage = configv1.RateLimitConfig_STORAGE_MEMORY
 
 	mockManager.On("GetServiceInfo", serviceID).Return(&tool.ServiceInfo{
 		Name: "Test Service",

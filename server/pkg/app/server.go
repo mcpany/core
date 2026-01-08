@@ -1017,47 +1017,8 @@ func (a *Application) runServerMode(
 		// Assumption: If "prod" is defined in multiple places, they should logically share the key or we pick one.
 		// Better approach: We iterate over all services to find the profile definition.
 
-		var profileAuthConfig *config_v1.AuthenticationConfig
-		// We need access to the full config or tool manager to look up profiles.
-		// mcpSrv.ServiceRegistry() gives us registered services.
-
-		services, err := mcpSrv.ServiceRegistry().GetAllServices()
-		if err != nil {
-			logging.GetLogger().Error("Failed to list services for profile auth check", "error", err)
-		} else {
-			for _, svc := range services {
-				// svc is *config.UpstreamServiceConfig
-				for _, p := range svc.GetProfiles() {
-					if p.GetId() == profileID {
-						profileAuthConfig = p.GetAuthentication()
-						// We found the profile, break inner loop.
-						// Should we break outer loop? Yes, assuming profile IDs are unique or we take first match.
-						break
-					}
-				}
-				if profileAuthConfig != nil {
-					break
-				}
-			}
-		}
-
-		// Authentication Logic with Priority:
-		// 1. Profile Authentication
-		// 2. User Authentication
-		// 3. Global Authentication
-
+		// 1. Profile Auth - REMOVED (Per-profile ingress auth is no longer supported in this refactor)
 		var isAuthenticated bool
-
-		// 1. Profile Auth
-		if profileAuthConfig != nil {
-			if err := auth.ValidateAuthentication(r.Context(), profileAuthConfig, r); err == nil {
-				isAuthenticated = true
-			} else {
-				// Profile auth configured but failed
-				http.Error(w, "Unauthorized (Profile)", http.StatusUnauthorized)
-				return
-			}
-		} else {
 			// 2. User Auth
 			if user.GetAuthentication() != nil {
 				if err := auth.ValidateAuthentication(r.Context(), user.GetAuthentication(), r); err == nil {
@@ -1093,7 +1054,6 @@ func (a *Application) runServerMode(
 					isAuthenticated = true
 				}
 			}
-		}
 
 		if !isAuthenticated {
 			// Should be unreachable if logic covers all cases, but safety net
@@ -1183,28 +1143,12 @@ func (a *Application) runServerMode(
 					for _, t := range tools {
 						v1Tool := t.Tool()
 						serviceID := v1Tool.GetServiceId()
-						info, ok := mcpSrv.GetServiceInfo(serviceID)
+						_, ok := mcpSrv.GetServiceInfo(serviceID)
 						if !ok {
 							continue
 						}
 
-						// Check profiles
-						allowed := false
-						if len(info.Config.GetProfiles()) == 0 {
-							allowed = true
-						} else {
-							// Check if current profileID matches any allowed profile
-							for _, p := range info.Config.GetProfiles() {
-								if p.GetId() == profileID {
-									allowed = true
-									break
-								}
-							}
-						}
-
-						if !allowed {
-							continue
-						}
+						// Check profiles - REMOVED
 
 						responseTools = append(responseTools, map[string]any{
 							"name":        v1Tool.GetName(),

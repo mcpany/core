@@ -11,8 +11,8 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/mcpany/core/server/pkg/util"
 	configv1 "github.com/mcpany/core/proto/config/v1"
+	"github.com/mcpany/core/server/pkg/util"
 	"github.com/spf13/afero"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -386,10 +386,6 @@ upstream_services: {
 	name: "service-with-named-profile"
 	http_service: {
 		address: "http://api.example.com"
-	}
-	profiles: {
-		name: "dev"
-		# id is missing
 	}
 }
 `

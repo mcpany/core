@@ -7,10 +7,10 @@ import (
 	"context"
 	"testing"
 
-	"github.com/mcpany/core/server/pkg/middleware"
-	"github.com/mcpany/core/server/pkg/tool"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	v1 "github.com/mcpany/core/proto/mcp_router/v1"
+	"github.com/mcpany/core/server/pkg/middleware"
+	"github.com/mcpany/core/server/pkg/tool"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
@@ -48,8 +48,9 @@ func (m *MockToolManager) ExecuteTool(_ context.Context, _ *tool.ExecutionReques
 }
 func (m *MockToolManager) SetMCPServer(_ tool.MCPServerProvider)                                   {}
 func (m *MockToolManager) SetProfiles(_ []string, _ []*configv1.ProfileDefinition) {}
-func (m *MockToolManager) AddMiddleware(_ tool.ExecutionMiddleware)                               {}
-func (m *MockToolManager) ListServices() []*tool.ServiceInfo                                       { return nil }
+func (m *MockToolManager) IsServiceAllowed(serviceID, profileID string) bool      { return true }
+func (m *MockToolManager) AddMiddleware(_ tool.ExecutionMiddleware)               {}
+func (m *MockToolManager) ListServices() []*tool.ServiceInfo                      { return nil }
 
 type MockTool struct {
 	name      string
@@ -79,14 +80,14 @@ func TestRateLimitMiddleware_Granular(t *testing.T) {
 	config := &configv1.UpstreamServiceConfig{
 		Name: proto.String(serviceID),
 		RateLimit: &configv1.RateLimitConfig{
-			IsEnabled:         proto.Bool(true),
-			RequestsPerSecond: proto.Float64(100),
-			Burst:             proto.Int64(100),
+			IsEnabled:         true,
+			RequestsPerSecond: 100,
+			Burst:             100,
 			ToolLimits: map[string]*configv1.RateLimitConfig{
 				toolName: {
-					IsEnabled:         proto.Bool(true),
-					RequestsPerSecond: proto.Float64(1),
-					Burst:             proto.Int64(1),
+					IsEnabled:         true,
+					RequestsPerSecond: 1,
+					Burst:             1,
 				},
 			},
 		},
@@ -132,9 +133,9 @@ func TestRateLimitMiddleware_ServiceLimitFallback(t *testing.T) {
 	config := &configv1.UpstreamServiceConfig{
 		Name: proto.String(serviceID),
 		RateLimit: &configv1.RateLimitConfig{
-			IsEnabled:         proto.Bool(true),
-			RequestsPerSecond: proto.Float64(1),
-			Burst:             proto.Int64(1),
+			IsEnabled:         true,
+			RequestsPerSecond: 1,
+			Burst:             1,
 		},
 	}
 

@@ -14,11 +14,11 @@ import (
 	json "github.com/json-iterator/go"
 
 	"github.com/google/uuid"
+	configv1 "github.com/mcpany/core/proto/config/v1"
+	v1 "github.com/mcpany/core/proto/mcp_router/v1"
 	"github.com/mcpany/core/server/pkg/bus"
 	"github.com/mcpany/core/server/pkg/logging"
 	"github.com/mcpany/core/server/pkg/util"
-	configv1 "github.com/mcpany/core/proto/config/v1"
-	v1 "github.com/mcpany/core/proto/mcp_router/v1"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	xsync "github.com/puzpuzpuz/xsync/v4"
 )
@@ -55,6 +55,8 @@ type ManagerInterface interface {
 	ListServices() []*ServiceInfo
 	// SetProfiles sets the enabled profiles and their definitions.
 	SetProfiles(enabled []string, defs []*configv1.ProfileDefinition)
+	// IsServiceAllowed checks if a service is allowed for a given profile.
+	IsServiceAllowed(serviceID, profileID string) bool
 }
 
 // ExecutionMiddleware defines the interface for tool execution middleware.
@@ -131,7 +133,36 @@ func (tm *Manager) toolMatchesProfile(t *v1.Tool, profileName string) bool {
 	if !ok {
 		return false
 	}
+
+	// 3. Check Service Config
+	if sc, ok := def.GetServiceConfig()[t.GetServiceId()]; ok {
+		if sc.GetEnabled() {
+			return true
+		}
+	}
+
 	return tm.matchesSelector(t, def.GetSelector())
+}
+
+// IsServiceAllowed checks if a service is allowed for a given profile.
+func (tm *Manager) IsServiceAllowed(serviceID, profileID string) bool {
+	tm.mu.RLock()
+	defer tm.mu.RUnlock()
+
+	def, ok := tm.profileDefs[profileID]
+	if !ok {
+		return false
+	}
+
+	if sc, ok := def.GetServiceConfig()[serviceID]; ok {
+		return sc.GetEnabled()
+	}
+
+	// Default to false if not explicitly enabled in service_config?
+	// Or check selector? Selectors are for tools, not services?
+	// But if a profile selects tools via tags, the service is implicitly allowed?
+	// Ideally, service should be explicitly enabled.
+	return false
 }
 
 func (tm *Manager) matchesSelector(t *v1.Tool, selector *configv1.ProfileSelector) bool {

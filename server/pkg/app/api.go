@@ -6,6 +6,7 @@ package app
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io"
 	"net/http"
 	"strings"
@@ -44,6 +45,10 @@ func (a *Application) createAPIHandler(store storage.Storage) http.Handler {
 	mux.HandleFunc("/secrets", a.handleSecrets(store))
 	mux.HandleFunc("/secrets/", a.handleSecretDetail(store))
 	mux.HandleFunc("/topology", a.handleTopology())
+	mux.HandleFunc("/profiles", a.handleProfiles(store))
+	mux.HandleFunc("/profiles/", a.handleProfileDetail(store))
+	mux.HandleFunc("/collections", a.handleCollections(store))
+	mux.HandleFunc("/collections/", a.handleCollectionDetail(store))
 
 	return mux
 }
@@ -474,4 +479,324 @@ func (a *Application) handleSecretDetail(store storage.Storage) http.HandlerFunc
 			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
 		}
 	}
+}
+
+func (a *Application) handleProfiles(store storage.Storage) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		switch r.Method {
+		case http.MethodGet:
+			profiles, err := store.ListProfiles(r.Context())
+			if err != nil {
+				logging.GetLogger().Error("failed to list profiles", "error", err)
+				http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+				return
+			}
+			w.Header().Set("Content-Type", "application/json")
+			opts := protojson.MarshalOptions{UseProtoNames: true}
+			var buf []byte
+			buf = append(buf, '[')
+			for i, p := range profiles {
+				if i > 0 {
+					buf = append(buf, ',')
+				}
+				b, _ := opts.Marshal(p)
+				buf = append(buf, b...)
+			}
+			buf = append(buf, ']')
+			_, _ = w.Write(buf)
+
+		case http.MethodPost:
+			var profile configv1.ProfileDefinition
+			body, _ := io.ReadAll(r.Body)
+			if err := protojson.Unmarshal(body, &profile); err != nil {
+				http.Error(w, err.Error(), http.StatusBadRequest)
+				return
+			}
+			if profile.GetName() == "" {
+				http.Error(w, "name is required", http.StatusBadRequest)
+				return
+			}
+			if err := store.SaveProfile(r.Context(), &profile); err != nil {
+				logging.GetLogger().Error("failed to save profile", "error", err)
+				http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+				return
+			}
+			// Trigger reload
+			if err := a.ReloadConfig(a.fs, a.configPaths); err != nil {
+				logging.GetLogger().Error("failed to reload config after profile save", "error", err)
+			}
+			w.WriteHeader(http.StatusCreated)
+			_, _ = w.Write([]byte("{}"))
+		default:
+			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+		}
+	}
+}
+
+func (a *Application) handleProfileDetail(store storage.Storage) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		name := strings.TrimPrefix(r.URL.Path, "/profiles/")
+		if name == "" {
+			http.Error(w, "name required", http.StatusBadRequest)
+			return
+		}
+
+		if strings.HasSuffix(name, "/export") {
+			name = strings.TrimSuffix(name, "/export")
+			if r.Method != http.MethodGet {
+				http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+				return
+			}
+			profile, err := store.GetProfile(r.Context(), name)
+			if err != nil {
+				logging.GetLogger().Error("failed to get profile for export", "name", name, "error", err)
+				http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+				return
+			}
+			if profile == nil {
+				http.NotFound(w, r)
+				return
+			}
+			exportProfile := proto.Clone(profile).(*configv1.ProfileDefinition)
+			config.StripSecretsFromProfile(exportProfile)
+			w.Header().Set("Content-Type", "application/json")
+			// Force download? Maybe 'Content-Disposition: attachment; filename="profile.json"'
+			w.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=\"%s.json\"", name))
+			opts := protojson.MarshalOptions{UseProtoNames: true, Multiline: true, Indent: "  "}
+			b, _ := opts.Marshal(exportProfile)
+			_, _ = w.Write(b)
+			return
+		}
+
+		switch r.Method {
+		case http.MethodGet:
+			profile, err := store.GetProfile(r.Context(), name)
+			if err != nil {
+				logging.GetLogger().Error("failed to get profile", "name", name, "error", err)
+				http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+				return
+			}
+			if profile == nil {
+				http.NotFound(w, r)
+				return
+			}
+			w.Header().Set("Content-Type", "application/json")
+			opts := protojson.MarshalOptions{UseProtoNames: true}
+			b, _ := opts.Marshal(profile)
+			_, _ = w.Write(b)
+
+		case http.MethodPut:
+			var profile configv1.ProfileDefinition
+			body, _ := io.ReadAll(r.Body)
+			if err := protojson.Unmarshal(body, &profile); err != nil {
+				http.Error(w, err.Error(), http.StatusBadRequest)
+				return
+			}
+			profile.Name = proto.String(name) // Force name match
+
+			if err := store.SaveProfile(r.Context(), &profile); err != nil {
+				logging.GetLogger().Error("failed to save profile", "name", name, "error", err)
+				http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+				return
+			}
+			if err := a.ReloadConfig(a.fs, a.configPaths); err != nil {
+				logging.GetLogger().Error("failed to reload config after profile update", "error", err)
+			}
+			w.WriteHeader(http.StatusOK)
+			_, _ = w.Write([]byte("{}"))
+
+		case http.MethodDelete:
+			if err := store.DeleteProfile(r.Context(), name); err != nil {
+				logging.GetLogger().Error("failed to delete profile", "name", name, "error", err)
+				http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+				return
+			}
+			if err := a.ReloadConfig(a.fs, a.configPaths); err != nil {
+				logging.GetLogger().Error("failed to reload config after profile delete", "error", err)
+			}
+			w.WriteHeader(http.StatusNoContent)
+
+		default:
+			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+		}
+	}
+}
+
+func (a *Application) handleCollections(store storage.Storage) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		switch r.Method {
+		case http.MethodGet:
+			collections, err := store.ListServiceCollections(r.Context())
+			if err != nil {
+				logging.GetLogger().Error("failed to list collections", "error", err)
+				http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+				return
+			}
+			w.Header().Set("Content-Type", "application/json")
+			opts := protojson.MarshalOptions{UseProtoNames: true}
+			var buf []byte
+			buf = append(buf, '[')
+			for i, c := range collections {
+				if i > 0 {
+					buf = append(buf, ',')
+				}
+				b, _ := opts.Marshal(c)
+				buf = append(buf, b...)
+			}
+			buf = append(buf, ']')
+			_, _ = w.Write(buf)
+
+		case http.MethodPost:
+			var collection configv1.UpstreamServiceCollectionShare
+			body, _ := io.ReadAll(r.Body)
+			if err := protojson.Unmarshal(body, &collection); err != nil {
+				http.Error(w, err.Error(), http.StatusBadRequest)
+				return
+			}
+			if collection.GetName() == "" {
+				http.Error(w, "name is required", http.StatusBadRequest)
+				return
+			}
+			if err := store.SaveServiceCollection(r.Context(), &collection); err != nil {
+				logging.GetLogger().Error("failed to save collection", "error", err)
+				http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+				return
+			}
+			w.WriteHeader(http.StatusCreated)
+			_, _ = w.Write([]byte("{}"))
+		default:
+			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+		}
+	}
+}
+
+func (a *Application) handleCollectionDetail(store storage.Storage) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		name := strings.TrimPrefix(r.URL.Path, "/collections/")
+		if name == "" {
+			http.Error(w, "name required", http.StatusBadRequest)
+			return
+		}
+
+		if strings.HasSuffix(name, "/export") {
+			name = strings.TrimSuffix(name, "/export")
+			if r.Method != http.MethodGet {
+				http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+				return
+			}
+			collection, err := store.GetServiceCollection(r.Context(), name)
+			if err != nil {
+				logging.GetLogger().Error("failed to get collection for export", "name", name, "error", err)
+				http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+				return
+			}
+			if collection == nil {
+				http.NotFound(w, r)
+				return
+			}
+			exportCollection := proto.Clone(collection).(*configv1.UpstreamServiceCollectionShare)
+			config.StripSecretsFromCollection(exportCollection)
+			w.Header().Set("Content-Type", "application/json")
+			w.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=\"%s.json\"", name))
+			opts := protojson.MarshalOptions{UseProtoNames: true, Multiline: true, Indent: "  "}
+			b, _ := opts.Marshal(exportCollection)
+			_, _ = w.Write(b)
+			return
+		}
+
+		if strings.HasSuffix(name, "/apply") {
+			name = strings.TrimSuffix(name, "/apply")
+			a.handleCollectionApply(w, r, name, store)
+			return
+		}
+
+		switch r.Method {
+		case http.MethodGet:
+			collection, err := store.GetServiceCollection(r.Context(), name)
+			if err != nil {
+				logging.GetLogger().Error("failed to get collection", "name", name, "error", err)
+				http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+				return
+			}
+			if collection == nil {
+				http.NotFound(w, r)
+				return
+			}
+			w.Header().Set("Content-Type", "application/json")
+			opts := protojson.MarshalOptions{UseProtoNames: true}
+			b, _ := opts.Marshal(collection)
+			_, _ = w.Write(b)
+
+		case http.MethodPut:
+			var collection configv1.UpstreamServiceCollectionShare
+			body, _ := io.ReadAll(r.Body)
+			if err := protojson.Unmarshal(body, &collection); err != nil {
+				http.Error(w, err.Error(), http.StatusBadRequest)
+				return
+			}
+			collection.Name = proto.String(name) // Force name match
+
+			if err := store.SaveServiceCollection(r.Context(), &collection); err != nil {
+				logging.GetLogger().Error("failed to save collection", "name", name, "error", err)
+				http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+				return
+			}
+			w.WriteHeader(http.StatusOK)
+			_, _ = w.Write([]byte("{}"))
+
+		case http.MethodDelete:
+			if err := store.DeleteServiceCollection(r.Context(), name); err != nil {
+				logging.GetLogger().Error("failed to delete collection", "name", name, "error", err)
+				http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+				return
+			}
+			w.WriteHeader(http.StatusNoContent)
+
+		default:
+			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+		}
+	}
+}
+
+func (a *Application) handleCollectionApply(w http.ResponseWriter, r *http.Request, name string, store storage.Storage) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	collection, err := store.GetServiceCollection(r.Context(), name)
+	if err != nil {
+		logging.GetLogger().Error("failed to get collection for apply", "name", name, "error", err)
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		return
+	}
+	if collection == nil {
+		http.NotFound(w, r)
+		return
+	}
+
+	// Apply services
+	for _, rawSvc := range collection.Services {
+		svc := proto.Clone(rawSvc).(*configv1.UpstreamServiceConfig)
+		// We should probably check if service already exists?
+		// "Upsert" logic ideally.
+		// And we need to validate it.
+		if err := config.ValidateOrError(r.Context(), svc); err != nil {
+			logging.GetLogger().Error("invalid service in collection", "service", svc.GetName(), "error", err)
+			continue // Skip invalid? Or error out?
+		}
+		if err := store.SaveService(r.Context(), svc); err != nil {
+			logging.GetLogger().Error("failed to save service from collection", "service", svc.GetName(), "error", err)
+			// Continue or abort?
+			// Maybe best effort?
+		}
+	}
+
+	// Trigger reload
+	if err := a.ReloadConfig(a.fs, a.configPaths); err != nil {
+		logging.GetLogger().Error("failed to reload config after collection apply", "error", err)
+	}
+
+	w.WriteHeader(http.StatusOK)
+	_, _ = w.Write([]byte("{}"))
 }
