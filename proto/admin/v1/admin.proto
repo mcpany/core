@@ -6,6 +6,7 @@ edition = "2023";
 package mcpany.admin.v1;
 
 import "proto/config/v1/upstream_service.proto";
+import "proto/config/v1/user.proto";
 import "proto/mcp_router/v1/mcp_router.proto";
 
 option go_package = "github.com/mcpany/core/proto/admin/v1";
@@ -27,6 +28,25 @@ service AdminService {
 
   // GetTool returns a specific tool by name.
   rpc GetTool(GetToolRequest) returns (GetToolResponse);
+
+  // ===================================================================
+  // User Management
+  // ===================================================================
+
+  // CreateUser creates a new user.
+  rpc CreateUser(CreateUserRequest) returns (CreateUserResponse);
+
+  // GetUser returns a specific user by ID.
+  rpc GetUser(GetUserRequest) returns (GetUserResponse);
+
+  // ListUsers returns all registered users.
+  rpc ListUsers(ListUsersRequest) returns (ListUsersResponse);
+
+  // UpdateUser updates an existing user.
+  rpc UpdateUser(UpdateUserRequest) returns (UpdateUserResponse);
+
+  // DeleteUser deletes a user by ID.
+  rpc DeleteUser(DeleteUserRequest) returns (DeleteUserResponse);
 }
 
 message ClearCacheRequest {}
@@ -60,3 +80,42 @@ message GetToolRequest {
 message GetToolResponse {
   mcpany.mcp_router.v1.Tool tool = 1;
 }
+
+// User Management Messages
+
+message CreateUserRequest {
+  mcpany.config.v1.User user = 1;
+}
+
+message CreateUserResponse {
+  mcpany.config.v1.User user = 1;
+}
+
+message GetUserRequest {
+  string user_id = 1;
+}
+
+message GetUserResponse {
+  mcpany.config.v1.User user = 1;
+}
+
+message ListUsersRequest {}
+
+message ListUsersResponse {
+  repeated mcpany.config.v1.User users = 1;
+}
+
+message UpdateUserRequest {
+  mcpany.config.v1.User user = 1;
+  // Field mask to specify which fields to update (optional for now, full replace).
+}
+
+message UpdateUserResponse {
+  mcpany.config.v1.User user = 1;
+}
+
+message DeleteUserRequest {
+  string user_id = 1;
+}
+
+message DeleteUserResponse {}

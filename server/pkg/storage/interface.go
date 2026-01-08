@@ -46,6 +46,19 @@ type Storage interface {
 	// DeleteSecret deletes a secret by ID.
 	DeleteSecret(id string) error
 
+	// Users
+	// CreateUser creates a new user.
+	CreateUser(ctx context.Context, user *configv1.User) error
+	// GetUser retrieves a user by ID.
+	GetUser(ctx context.Context, id string) (*configv1.User, error)
+	// ListUsers retrieves all users.
+	ListUsers(ctx context.Context) ([]*configv1.User, error)
+	// UpdateUser updates an existing user.
+	UpdateUser(ctx context.Context, user *configv1.User) error
+	// DeleteUser deletes a user by ID.
+	DeleteUser(ctx context.Context, id string) error
+
+
 	// Close closes the underlying storage connection.
 	Close() error
 }
