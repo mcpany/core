@@ -11,6 +11,7 @@ import (
 	"testing"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
+	"github.com/mcpany/core/server/pkg/util/passhash"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/proto"
@@ -343,5 +344,65 @@ func TestValidateAuthentication(t *testing.T) {
 		config := &configv1.AuthenticationConfig{}
 		err := ValidateAuthentication(context.Background(), config, nil)
 		assert.NoError(t, err)
+	})
+}
+
+func TestBasicAuthenticator(t *testing.T) {
+	password := "secret123"
+	hashed, _ := passhash.Password(password)
+	config := &configv1.BasicAuth{
+		PasswordHash: proto.String(hashed),
+	}
+
+	authenticator := NewBasicAuthenticator(config)
+	require.NotNil(t, authenticator)
+
+	t.Run("successful_authentication", func(t *testing.T) {
+		req := httptest.NewRequest("GET", "/", nil)
+		req.SetBasicAuth("user", password)
+		_, err := authenticator.Authenticate(context.Background(), req)
+		assert.NoError(t, err)
+	})
+
+	t.Run("failed_authentication_wrong_password", func(t *testing.T) {
+		req := httptest.NewRequest("GET", "/", nil)
+		req.SetBasicAuth("user", "wrong")
+		_, err := authenticator.Authenticate(context.Background(), req)
+		assert.Error(t, err)
+	})
+
+	t.Run("failed_authentication_missing_header", func(t *testing.T) {
+		req := httptest.NewRequest("GET", "/", nil)
+		_, err := authenticator.Authenticate(context.Background(), req)
+		assert.Error(t, err)
+	})
+}
+
+func TestTrustedHeaderAuthenticator(t *testing.T) {
+	config := &configv1.TrustedHeaderAuth{
+		HeaderName:  proto.String("X-Trusted-User"),
+		HeaderValue: proto.String("verified"),
+	}
+	authenticator := NewTrustedHeaderAuthenticator(config)
+	require.NotNil(t, authenticator)
+
+	t.Run("successful_authentication", func(t *testing.T) {
+		req := httptest.NewRequest("GET", "/", nil)
+		req.Header.Set("X-Trusted-User", "verified")
+		_, err := authenticator.Authenticate(context.Background(), req)
+		assert.NoError(t, err)
+	})
+
+	t.Run("failed_authentication_wrong_value", func(t *testing.T) {
+		req := httptest.NewRequest("GET", "/", nil)
+		req.Header.Set("X-Trusted-User", "unverified")
+		_, err := authenticator.Authenticate(context.Background(), req)
+		assert.Error(t, err)
+	})
+
+	t.Run("failed_authentication_missing_header", func(t *testing.T) {
+		req := httptest.NewRequest("GET", "/", nil)
+		_, err := authenticator.Authenticate(context.Background(), req)
+		assert.Error(t, err)
 	})
 }

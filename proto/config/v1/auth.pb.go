@@ -2027,6 +2027,9 @@ type AuthenticationConfig struct {
 	//
 	//	*AuthenticationConfig_ApiKey
 	//	*AuthenticationConfig_Oauth2
+	//	*AuthenticationConfig_BasicAuth
+	//	*AuthenticationConfig_Oidc
+	//	*AuthenticationConfig_TrustedHeader
 	AuthMethod    isAuthenticationConfig_AuthMethod `protobuf_oneof:"auth_method"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -2082,6 +2085,33 @@ func (x *AuthenticationConfig) GetOauth2() *OAuth2Auth {
 	return nil
 }
 
+func (x *AuthenticationConfig) GetBasicAuth() *BasicAuth {
+	if x != nil {
+		if x, ok := x.AuthMethod.(*AuthenticationConfig_BasicAuth); ok {
+			return x.BasicAuth
+		}
+	}
+	return nil
+}
+
+func (x *AuthenticationConfig) GetOidc() *OIDCAuth {
+	if x != nil {
+		if x, ok := x.AuthMethod.(*AuthenticationConfig_Oidc); ok {
+			return x.Oidc
+		}
+	}
+	return nil
+}
+
+func (x *AuthenticationConfig) GetTrustedHeader() *TrustedHeaderAuth {
+	if x != nil {
+		if x, ok := x.AuthMethod.(*AuthenticationConfig_TrustedHeader); ok {
+			return x.TrustedHeader
+		}
+	}
+	return nil
+}
+
 func (x *AuthenticationConfig) SetApiKey(v *APIKeyAuth) {
 	if v == nil {
 		x.AuthMethod = nil
@@ -2096,6 +2126,30 @@ func (x *AuthenticationConfig) SetOauth2(v *OAuth2Auth) {
 		return
 	}
 	x.AuthMethod = &AuthenticationConfig_Oauth2{v}
+}
+
+func (x *AuthenticationConfig) SetBasicAuth(v *BasicAuth) {
+	if v == nil {
+		x.AuthMethod = nil
+		return
+	}
+	x.AuthMethod = &AuthenticationConfig_BasicAuth{v}
+}
+
+func (x *AuthenticationConfig) SetOidc(v *OIDCAuth) {
+	if v == nil {
+		x.AuthMethod = nil
+		return
+	}
+	x.AuthMethod = &AuthenticationConfig_Oidc{v}
+}
+
+func (x *AuthenticationConfig) SetTrustedHeader(v *TrustedHeaderAuth) {
+	if v == nil {
+		x.AuthMethod = nil
+		return
+	}
+	x.AuthMethod = &AuthenticationConfig_TrustedHeader{v}
 }
 
 func (x *AuthenticationConfig) HasAuthMethod() bool {
@@ -2121,6 +2175,30 @@ func (x *AuthenticationConfig) HasOauth2() bool {
 	return ok
 }
 
+func (x *AuthenticationConfig) HasBasicAuth() bool {
+	if x == nil {
+		return false
+	}
+	_, ok := x.AuthMethod.(*AuthenticationConfig_BasicAuth)
+	return ok
+}
+
+func (x *AuthenticationConfig) HasOidc() bool {
+	if x == nil {
+		return false
+	}
+	_, ok := x.AuthMethod.(*AuthenticationConfig_Oidc)
+	return ok
+}
+
+func (x *AuthenticationConfig) HasTrustedHeader() bool {
+	if x == nil {
+		return false
+	}
+	_, ok := x.AuthMethod.(*AuthenticationConfig_TrustedHeader)
+	return ok
+}
+
 func (x *AuthenticationConfig) ClearAuthMethod() {
 	x.AuthMethod = nil
 }
@@ -2137,9 +2215,30 @@ func (x *AuthenticationConfig) ClearOauth2() {
 	}
 }
 
+func (x *AuthenticationConfig) ClearBasicAuth() {
+	if _, ok := x.AuthMethod.(*AuthenticationConfig_BasicAuth); ok {
+		x.AuthMethod = nil
+	}
+}
+
+func (x *AuthenticationConfig) ClearOidc() {
+	if _, ok := x.AuthMethod.(*AuthenticationConfig_Oidc); ok {
+		x.AuthMethod = nil
+	}
+}
+
+func (x *AuthenticationConfig) ClearTrustedHeader() {
+	if _, ok := x.AuthMethod.(*AuthenticationConfig_TrustedHeader); ok {
+		x.AuthMethod = nil
+	}
+}
+
 const AuthenticationConfig_AuthMethod_not_set_case case_AuthenticationConfig_AuthMethod = 0
 const AuthenticationConfig_ApiKey_case case_AuthenticationConfig_AuthMethod = 1
 const AuthenticationConfig_Oauth2_case case_AuthenticationConfig_AuthMethod = 2
+const AuthenticationConfig_BasicAuth_case case_AuthenticationConfig_AuthMethod = 3
+const AuthenticationConfig_Oidc_case case_AuthenticationConfig_AuthMethod = 4
+const AuthenticationConfig_TrustedHeader_case case_AuthenticationConfig_AuthMethod = 5
 
 func (x *AuthenticationConfig) WhichAuthMethod() case_AuthenticationConfig_AuthMethod {
 	if x == nil {
@@ -2150,6 +2249,12 @@ func (x *AuthenticationConfig) WhichAuthMethod() case_AuthenticationConfig_AuthM
 		return AuthenticationConfig_ApiKey_case
 	case *AuthenticationConfig_Oauth2:
 		return AuthenticationConfig_Oauth2_case
+	case *AuthenticationConfig_BasicAuth:
+		return AuthenticationConfig_BasicAuth_case
+	case *AuthenticationConfig_Oidc:
+		return AuthenticationConfig_Oidc_case
+	case *AuthenticationConfig_TrustedHeader:
+		return AuthenticationConfig_TrustedHeader_case
 	default:
 		return AuthenticationConfig_AuthMethod_not_set_case
 	}
@@ -2159,8 +2264,11 @@ type AuthenticationConfig_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
 	// Fields of oneof AuthMethod:
-	ApiKey *APIKeyAuth
-	Oauth2 *OAuth2Auth
+	ApiKey        *APIKeyAuth
+	Oauth2        *OAuth2Auth
+	BasicAuth     *BasicAuth
+	Oidc          *OIDCAuth
+	TrustedHeader *TrustedHeaderAuth
 	// -- end of AuthMethod
 }
 
@@ -2173,6 +2281,15 @@ func (b0 AuthenticationConfig_builder) Build() *AuthenticationConfig {
 	}
 	if b.Oauth2 != nil {
 		x.AuthMethod = &AuthenticationConfig_Oauth2{b.Oauth2}
+	}
+	if b.BasicAuth != nil {
+		x.AuthMethod = &AuthenticationConfig_BasicAuth{b.BasicAuth}
+	}
+	if b.Oidc != nil {
+		x.AuthMethod = &AuthenticationConfig_Oidc{b.Oidc}
+	}
+	if b.TrustedHeader != nil {
+		x.AuthMethod = &AuthenticationConfig_TrustedHeader{b.TrustedHeader}
 	}
 	return m0
 }
@@ -2196,12 +2313,327 @@ type AuthenticationConfig_ApiKey struct {
 }
 
 type AuthenticationConfig_Oauth2 struct {
-	Oauth2 *OAuth2Auth `protobuf:"bytes,2,opt,name=oauth2,oneof"` // Can be extended with other auth types like JWT, mTLS etc.
+	Oauth2 *OAuth2Auth `protobuf:"bytes,2,opt,name=oauth2,oneof"`
+}
+
+type AuthenticationConfig_BasicAuth struct {
+	BasicAuth *BasicAuth `protobuf:"bytes,3,opt,name=basic_auth,oneof"`
+}
+
+type AuthenticationConfig_Oidc struct {
+	Oidc *OIDCAuth `protobuf:"bytes,4,opt,name=oidc,oneof"`
+}
+
+type AuthenticationConfig_TrustedHeader struct {
+	TrustedHeader *TrustedHeaderAuth `protobuf:"bytes,5,opt,name=trusted_header,oneof"`
 }
 
 func (*AuthenticationConfig_ApiKey) isAuthenticationConfig_AuthMethod() {}
 
 func (*AuthenticationConfig_Oauth2) isAuthenticationConfig_AuthMethod() {}
+
+func (*AuthenticationConfig_BasicAuth) isAuthenticationConfig_AuthMethod() {}
+
+func (*AuthenticationConfig_Oidc) isAuthenticationConfig_AuthMethod() {}
+
+func (*AuthenticationConfig_TrustedHeader) isAuthenticationConfig_AuthMethod() {}
+
+// BasicAuth defines authentication using a username and password.
+// The password should be stored as a bcrypt hash.
+type BasicAuth struct {
+	state         protoimpl.MessageState `protogen:"hybrid.v1"`
+	PasswordHash  *string                `protobuf:"bytes,1,opt,name=password_hash" json:"password_hash,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *BasicAuth) Reset() {
+	*x = BasicAuth{}
+	mi := &file_proto_config_v1_auth_proto_msgTypes[12]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *BasicAuth) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*BasicAuth) ProtoMessage() {}
+
+func (x *BasicAuth) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_config_v1_auth_proto_msgTypes[12]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+func (x *BasicAuth) GetPasswordHash() string {
+	if x != nil && x.PasswordHash != nil {
+		return *x.PasswordHash
+	}
+	return ""
+}
+
+func (x *BasicAuth) SetPasswordHash(v string) {
+	x.PasswordHash = &v
+}
+
+func (x *BasicAuth) HasPasswordHash() bool {
+	if x == nil {
+		return false
+	}
+	return x.PasswordHash != nil
+}
+
+func (x *BasicAuth) ClearPasswordHash() {
+	x.PasswordHash = nil
+}
+
+type BasicAuth_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	PasswordHash *string
+}
+
+func (b0 BasicAuth_builder) Build() *BasicAuth {
+	m0 := &BasicAuth{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.PasswordHash = b.PasswordHash
+	return m0
+}
+
+// OIDCAuth defines authentication using OpenID Connect.
+type OIDCAuth struct {
+	state         protoimpl.MessageState `protogen:"hybrid.v1"`
+	Issuer        *string                `protobuf:"bytes,1,opt,name=issuer" json:"issuer,omitempty"`
+	Subject       *string                `protobuf:"bytes,2,opt,name=subject" json:"subject,omitempty"`
+	Email         *string                `protobuf:"bytes,3,opt,name=email" json:"email,omitempty"`
+	Audience      []string               `protobuf:"bytes,4,rep,name=audience" json:"audience,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *OIDCAuth) Reset() {
+	*x = OIDCAuth{}
+	mi := &file_proto_config_v1_auth_proto_msgTypes[13]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *OIDCAuth) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*OIDCAuth) ProtoMessage() {}
+
+func (x *OIDCAuth) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_config_v1_auth_proto_msgTypes[13]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+func (x *OIDCAuth) GetIssuer() string {
+	if x != nil && x.Issuer != nil {
+		return *x.Issuer
+	}
+	return ""
+}
+
+func (x *OIDCAuth) GetSubject() string {
+	if x != nil && x.Subject != nil {
+		return *x.Subject
+	}
+	return ""
+}
+
+func (x *OIDCAuth) GetEmail() string {
+	if x != nil && x.Email != nil {
+		return *x.Email
+	}
+	return ""
+}
+
+func (x *OIDCAuth) GetAudience() []string {
+	if x != nil {
+		return x.Audience
+	}
+	return nil
+}
+
+func (x *OIDCAuth) SetIssuer(v string) {
+	x.Issuer = &v
+}
+
+func (x *OIDCAuth) SetSubject(v string) {
+	x.Subject = &v
+}
+
+func (x *OIDCAuth) SetEmail(v string) {
+	x.Email = &v
+}
+
+func (x *OIDCAuth) SetAudience(v []string) {
+	x.Audience = v
+}
+
+func (x *OIDCAuth) HasIssuer() bool {
+	if x == nil {
+		return false
+	}
+	return x.Issuer != nil
+}
+
+func (x *OIDCAuth) HasSubject() bool {
+	if x == nil {
+		return false
+	}
+	return x.Subject != nil
+}
+
+func (x *OIDCAuth) HasEmail() bool {
+	if x == nil {
+		return false
+	}
+	return x.Email != nil
+}
+
+func (x *OIDCAuth) ClearIssuer() {
+	x.Issuer = nil
+}
+
+func (x *OIDCAuth) ClearSubject() {
+	x.Subject = nil
+}
+
+func (x *OIDCAuth) ClearEmail() {
+	x.Email = nil
+}
+
+type OIDCAuth_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	Issuer   *string
+	Subject  *string
+	Email    *string
+	Audience []string
+}
+
+func (b0 OIDCAuth_builder) Build() *OIDCAuth {
+	m0 := &OIDCAuth{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.Issuer = b.Issuer
+	x.Subject = b.Subject
+	x.Email = b.Email
+	x.Audience = b.Audience
+	return m0
+}
+
+// TrustedHeaderAuth defines authentication using a trusted header (e.g. from an auth proxy).
+type TrustedHeaderAuth struct {
+	state         protoimpl.MessageState `protogen:"hybrid.v1"`
+	HeaderName    *string                `protobuf:"bytes,1,opt,name=header_name" json:"header_name,omitempty"`
+	HeaderValue   *string                `protobuf:"bytes,2,opt,name=header_value" json:"header_value,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *TrustedHeaderAuth) Reset() {
+	*x = TrustedHeaderAuth{}
+	mi := &file_proto_config_v1_auth_proto_msgTypes[14]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *TrustedHeaderAuth) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*TrustedHeaderAuth) ProtoMessage() {}
+
+func (x *TrustedHeaderAuth) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_config_v1_auth_proto_msgTypes[14]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+func (x *TrustedHeaderAuth) GetHeaderName() string {
+	if x != nil && x.HeaderName != nil {
+		return *x.HeaderName
+	}
+	return ""
+}
+
+func (x *TrustedHeaderAuth) GetHeaderValue() string {
+	if x != nil && x.HeaderValue != nil {
+		return *x.HeaderValue
+	}
+	return ""
+}
+
+func (x *TrustedHeaderAuth) SetHeaderName(v string) {
+	x.HeaderName = &v
+}
+
+func (x *TrustedHeaderAuth) SetHeaderValue(v string) {
+	x.HeaderValue = &v
+}
+
+func (x *TrustedHeaderAuth) HasHeaderName() bool {
+	if x == nil {
+		return false
+	}
+	return x.HeaderName != nil
+}
+
+func (x *TrustedHeaderAuth) HasHeaderValue() bool {
+	if x == nil {
+		return false
+	}
+	return x.HeaderValue != nil
+}
+
+func (x *TrustedHeaderAuth) ClearHeaderName() {
+	x.HeaderName = nil
+}
+
+func (x *TrustedHeaderAuth) ClearHeaderValue() {
+	x.HeaderValue = nil
+}
+
+type TrustedHeaderAuth_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	HeaderName  *string
+	HeaderValue *string
+}
+
+func (b0 TrustedHeaderAuth_builder) Build() *TrustedHeaderAuth {
+	m0 := &TrustedHeaderAuth{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.HeaderName = b.HeaderName
+	x.HeaderValue = b.HeaderValue
+	return m0
+}
 
 // APIKeyAuth defines authentication using an API key.
 type APIKeyAuth struct {
@@ -2217,7 +2649,7 @@ type APIKeyAuth struct {
 
 func (x *APIKeyAuth) Reset() {
 	*x = APIKeyAuth{}
-	mi := &file_proto_config_v1_auth_proto_msgTypes[12]
+	mi := &file_proto_config_v1_auth_proto_msgTypes[15]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2229,7 +2661,7 @@ func (x *APIKeyAuth) String() string {
 func (*APIKeyAuth) ProtoMessage() {}
 
 func (x *APIKeyAuth) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_auth_proto_msgTypes[12]
+	mi := &file_proto_config_v1_auth_proto_msgTypes[15]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2341,7 +2773,7 @@ type OAuth2Auth struct {
 
 func (x *OAuth2Auth) Reset() {
 	*x = OAuth2Auth{}
-	mi := &file_proto_config_v1_auth_proto_msgTypes[13]
+	mi := &file_proto_config_v1_auth_proto_msgTypes[16]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2353,7 +2785,7 @@ func (x *OAuth2Auth) String() string {
 func (*OAuth2Auth) ProtoMessage() {}
 
 func (x *OAuth2Auth) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_auth_proto_msgTypes[13]
+	mi := &file_proto_config_v1_auth_proto_msgTypes[16]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2562,11 +2994,26 @@ const file_proto_config_v1_auth_proto_rawDesc = "" +
 	"\x10client_cert_path\x18\x01 \x01(\tR\x0eclientCertPath\x12&\n" +
 	"\x0fclient_key_path\x18\x02 \x01(\tR\rclientKeyPath\x12 \n" +
 	"\fca_cert_path\x18\x03 \x01(\tR\n" +
-	"caCertPath\"\x97\x01\n" +
+	"caCertPath\"\xd7\x02\n" +
 	"\x14AuthenticationConfig\x128\n" +
 	"\aapi_key\x18\x01 \x01(\v2\x1c.mcpany.config.v1.APIKeyAuthH\x00R\aapi_key\x126\n" +
-	"\x06oauth2\x18\x02 \x01(\v2\x1c.mcpany.config.v1.OAuth2AuthH\x00R\x06oauth2B\r\n" +
-	"\vauth_method\"\xa4\x01\n" +
+	"\x06oauth2\x18\x02 \x01(\v2\x1c.mcpany.config.v1.OAuth2AuthH\x00R\x06oauth2\x12=\n" +
+	"\n" +
+	"basic_auth\x18\x03 \x01(\v2\x1b.mcpany.config.v1.BasicAuthH\x00R\n" +
+	"basic_auth\x120\n" +
+	"\x04oidc\x18\x04 \x01(\v2\x1a.mcpany.config.v1.OIDCAuthH\x00R\x04oidc\x12M\n" +
+	"\x0etrusted_header\x18\x05 \x01(\v2#.mcpany.config.v1.TrustedHeaderAuthH\x00R\x0etrusted_headerB\r\n" +
+	"\vauth_method\"1\n" +
+	"\tBasicAuth\x12$\n" +
+	"\rpassword_hash\x18\x01 \x01(\tR\rpassword_hash\"n\n" +
+	"\bOIDCAuth\x12\x16\n" +
+	"\x06issuer\x18\x01 \x01(\tR\x06issuer\x12\x18\n" +
+	"\asubject\x18\x02 \x01(\tR\asubject\x12\x14\n" +
+	"\x05email\x18\x03 \x01(\tR\x05email\x12\x1a\n" +
+	"\baudience\x18\x04 \x03(\tR\baudience\"Y\n" +
+	"\x11TrustedHeaderAuth\x12 \n" +
+	"\vheader_name\x18\x01 \x01(\tR\vheader_name\x12\"\n" +
+	"\fheader_value\x18\x02 \x01(\tR\fheader_value\"\xa4\x01\n" +
 	"\n" +
 	"APIKeyAuth\x12\x1e\n" +
 	"\n" +
@@ -2588,7 +3035,7 @@ const file_proto_config_v1_auth_proto_rawDesc = "" +
 	"\baudience\x18\a \x01(\tR\baudienceB3B\tAuthProtoZ&github.com/mcpany/core/proto/config/v1b\beditionsp\xe8\a"
 
 var file_proto_config_v1_auth_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_proto_config_v1_auth_proto_msgTypes = make([]protoimpl.MessageInfo, 14)
+var file_proto_config_v1_auth_proto_msgTypes = make([]protoimpl.MessageInfo, 17)
 var file_proto_config_v1_auth_proto_goTypes = []any{
 	(APIKeyAuth_Location)(0),        // 0: mcpany.config.v1.APIKeyAuth.Location
 	(*SecretValue)(nil),             // 1: mcpany.config.v1.SecretValue
@@ -2603,8 +3050,11 @@ var file_proto_config_v1_auth_proto_goTypes = []any{
 	(*UpstreamOAuth2Auth)(nil),      // 10: mcpany.config.v1.UpstreamOAuth2Auth
 	(*UpstreamMTLSAuth)(nil),        // 11: mcpany.config.v1.UpstreamMTLSAuth
 	(*AuthenticationConfig)(nil),    // 12: mcpany.config.v1.AuthenticationConfig
-	(*APIKeyAuth)(nil),              // 13: mcpany.config.v1.APIKeyAuth
-	(*OAuth2Auth)(nil),              // 14: mcpany.config.v1.OAuth2Auth
+	(*BasicAuth)(nil),               // 13: mcpany.config.v1.BasicAuth
+	(*OIDCAuth)(nil),                // 14: mcpany.config.v1.OIDCAuth
+	(*TrustedHeaderAuth)(nil),       // 15: mcpany.config.v1.TrustedHeaderAuth
+	(*APIKeyAuth)(nil),              // 16: mcpany.config.v1.APIKeyAuth
+	(*OAuth2Auth)(nil),              // 17: mcpany.config.v1.OAuth2Auth
 }
 var file_proto_config_v1_auth_proto_depIdxs = []int32{
 	4,  // 0: mcpany.config.v1.SecretValue.remote_content:type_name -> mcpany.config.v1.RemoteContent
@@ -2626,14 +3076,17 @@ var file_proto_config_v1_auth_proto_depIdxs = []int32{
 	1,  // 16: mcpany.config.v1.UpstreamBasicAuth.password:type_name -> mcpany.config.v1.SecretValue
 	1,  // 17: mcpany.config.v1.UpstreamOAuth2Auth.client_id:type_name -> mcpany.config.v1.SecretValue
 	1,  // 18: mcpany.config.v1.UpstreamOAuth2Auth.client_secret:type_name -> mcpany.config.v1.SecretValue
-	13, // 19: mcpany.config.v1.AuthenticationConfig.api_key:type_name -> mcpany.config.v1.APIKeyAuth
-	14, // 20: mcpany.config.v1.AuthenticationConfig.oauth2:type_name -> mcpany.config.v1.OAuth2Auth
-	0,  // 21: mcpany.config.v1.APIKeyAuth.in:type_name -> mcpany.config.v1.APIKeyAuth.Location
-	22, // [22:22] is the sub-list for method output_type
-	22, // [22:22] is the sub-list for method input_type
-	22, // [22:22] is the sub-list for extension type_name
-	22, // [22:22] is the sub-list for extension extendee
-	0,  // [0:22] is the sub-list for field type_name
+	16, // 19: mcpany.config.v1.AuthenticationConfig.api_key:type_name -> mcpany.config.v1.APIKeyAuth
+	17, // 20: mcpany.config.v1.AuthenticationConfig.oauth2:type_name -> mcpany.config.v1.OAuth2Auth
+	13, // 21: mcpany.config.v1.AuthenticationConfig.basic_auth:type_name -> mcpany.config.v1.BasicAuth
+	14, // 22: mcpany.config.v1.AuthenticationConfig.oidc:type_name -> mcpany.config.v1.OIDCAuth
+	15, // 23: mcpany.config.v1.AuthenticationConfig.trusted_header:type_name -> mcpany.config.v1.TrustedHeaderAuth
+	0,  // 24: mcpany.config.v1.APIKeyAuth.in:type_name -> mcpany.config.v1.APIKeyAuth.Location
+	25, // [25:25] is the sub-list for method output_type
+	25, // [25:25] is the sub-list for method input_type
+	25, // [25:25] is the sub-list for extension type_name
+	25, // [25:25] is the sub-list for extension extendee
+	0,  // [0:25] is the sub-list for field type_name
 }
 
 func init() { file_proto_config_v1_auth_proto_init() }
@@ -2665,6 +3118,9 @@ func file_proto_config_v1_auth_proto_init() {
 	file_proto_config_v1_auth_proto_msgTypes[11].OneofWrappers = []any{
 		(*AuthenticationConfig_ApiKey)(nil),
 		(*AuthenticationConfig_Oauth2)(nil),
+		(*AuthenticationConfig_BasicAuth)(nil),
+		(*AuthenticationConfig_Oidc)(nil),
+		(*AuthenticationConfig_TrustedHeader)(nil),
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
@@ -2672,7 +3128,7 @@ func file_proto_config_v1_auth_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_proto_config_v1_auth_proto_rawDesc), len(file_proto_config_v1_auth_proto_rawDesc)),
 			NumEnums:      1,
-			NumMessages:   14,
+			NumMessages:   17,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

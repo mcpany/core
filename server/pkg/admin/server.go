@@ -6,6 +6,7 @@ package admin
 
 import (
 	"context"
+	"strings"
 
 	pb "github.com/mcpany/core/proto/admin/v1"
 	configv1 "github.com/mcpany/core/proto/config/v1"
@@ -13,8 +14,10 @@ import (
 	"github.com/mcpany/core/server/pkg/middleware"
 	"github.com/mcpany/core/server/pkg/storage"
 	"github.com/mcpany/core/server/pkg/tool"
+	"github.com/mcpany/core/server/pkg/util/passhash"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/proto"
 )
 
 // Server implements the AdminServiceServer interface.
@@ -97,6 +100,18 @@ func (s *Server) CreateUser(ctx context.Context, req *pb.CreateUserRequest) (*pb
 	if req.User == nil {
 		return nil, status.Error(codes.InvalidArgument, "user is required")
 	}
+	// Hash password if needed
+	if req.User.Authentication != nil {
+		if basic := req.User.Authentication.GetBasicAuth(); basic != nil {
+			if basic.GetPasswordHash() != "" && !strings.HasPrefix(basic.GetPasswordHash(), "$2") {
+				hashed, err := passhash.Password(basic.GetPasswordHash())
+				if err != nil {
+					return nil, status.Errorf(codes.Internal, "failed to hash password: %v", err)
+				}
+				basic.PasswordHash = proto.String(hashed)
+			}
+		}
+	}
 	if err := s.storage.CreateUser(ctx, req.User); err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to create user: %v", err)
 	}
@@ -128,6 +143,18 @@ func (s *Server) ListUsers(ctx context.Context, _ *pb.ListUsersRequest) (*pb.Lis
 func (s *Server) UpdateUser(ctx context.Context, req *pb.UpdateUserRequest) (*pb.UpdateUserResponse, error) {
 	if req.User == nil {
 		return nil, status.Error(codes.InvalidArgument, "user is required")
+	}
+	// Hash password if needed
+	if req.User.Authentication != nil {
+		if basic := req.User.Authentication.GetBasicAuth(); basic != nil {
+			if basic.GetPasswordHash() != "" && !strings.HasPrefix(basic.GetPasswordHash(), "$2") {
+				hashed, err := passhash.Password(basic.GetPasswordHash())
+				if err != nil {
+					return nil, status.Errorf(codes.Internal, "failed to hash password: %v", err)
+				}
+				basic.PasswordHash = proto.String(hashed)
+			}
+		}
 	}
 	if err := s.storage.UpdateUser(ctx, req.User); err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to update user: %v", err)

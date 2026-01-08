@@ -14,6 +14,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { GlobalSettingsForm } from "@/components/settings/global-settings-form";
 import { SecretsManager } from "@/components/settings/secrets-manager";
+import { AuthSettingsForm } from "@/components/settings/auth-settings";
 
 import Link from "next/link";
 
@@ -33,6 +34,7 @@ export default function SettingsPage() {
             <Link href="/settings/webhooks">Webhooks</Link>
           </TabsTrigger>
           <TabsTrigger value="secrets">Secrets & Keys</TabsTrigger>
+          <TabsTrigger value="auth">Authentication</TabsTrigger>
           <TabsTrigger value="general">General</TabsTrigger>
         </TabsList>
         <TabsContent value="profiles" className="space-y-4">
@@ -81,6 +83,9 @@ ALLOWED_HOSTS=*`} />
         </TabsContent>
         <TabsContent value="secrets" className="flex-1 h-full">
             <SecretsManager />
+        </TabsContent>
+        <TabsContent value="auth">
+            <AuthSettingsForm />
         </TabsContent>
         <TabsContent value="general">
              <GlobalSettingsForm />
