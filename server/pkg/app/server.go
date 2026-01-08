@@ -319,7 +319,7 @@ func (a *Application) Run(
 	upstreamFactory := factory.NewUpstreamServiceFactory(poolManager)
 	a.ToolManager = tool.NewManager(busProvider)
 	// Add Tool Metrics Middleware
-	a.ToolManager.AddMiddleware(middleware.NewToolMetricsMiddleware())
+	a.ToolManager.AddMiddleware(middleware.NewToolMetricsMiddleware(tokenizer.NewSimpleTokenizer()))
 	// Add Resilience Middleware
 	a.ToolManager.AddMiddleware(middleware.NewResilienceMiddleware(a.ToolManager))
 
