@@ -129,11 +129,14 @@ global_settings:
     - name: "custom_profile"
       selector:
         tags: ["visible"]
+      service_config:
+        "mock-service":
+          enabled: true
 
 upstream_services:
   - name: "mock-service"
-    profiles:
-      - name: "custom_profile"
+    id: "mock-service"
+
     mcp_service:
       tool_auto_discovery: true
       stdio_connection:

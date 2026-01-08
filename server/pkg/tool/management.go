@@ -57,6 +57,8 @@ type ManagerInterface interface {
 	SetProfiles(enabled []string, defs []*configv1.ProfileDefinition)
 	// IsServiceAllowed checks if a service is allowed for a given profile.
 	IsServiceAllowed(serviceID, profileID string) bool
+	// ToolMatchesProfile checks if a tool matches a given profile.
+	ToolMatchesProfile(tool Tool, profileID string) bool
 }
 
 // ExecutionMiddleware defines the interface for tool execution middleware.
@@ -137,6 +139,14 @@ func (tm *Manager) toolMatchesProfile(t *v1.Tool, profileName string) bool {
 	// 3. Check Service Config
 	if sc, ok := def.GetServiceConfig()[t.GetServiceId()]; ok {
 		if sc.GetEnabled() {
+			// If selector has criteria, apply them.
+			if def.GetSelector() != nil {
+				hasCriteria := len(def.GetSelector().GetTags()) > 0 || len(def.GetSelector().GetToolProperties()) > 0
+				if hasCriteria {
+					return tm.matchesSelector(t, def.GetSelector())
+				}
+			}
+			// If no criteria, enabled service implies all tools allowed.
 			return true
 		}
 	}
@@ -163,6 +173,13 @@ func (tm *Manager) IsServiceAllowed(serviceID, profileID string) bool {
 	// But if a profile selects tools via tags, the service is implicitly allowed?
 	// Ideally, service should be explicitly enabled.
 	return false
+}
+
+// ToolMatchesProfile checks if a tool matches a given profile.
+func (tm *Manager) ToolMatchesProfile(tool Tool, profileID string) bool {
+	tm.mu.RLock()
+	defer tm.mu.RUnlock()
+	return tm.toolMatchesProfile(tool.Tool(), profileID)
 }
 
 func (tm *Manager) matchesSelector(t *v1.Tool, selector *configv1.ProfileSelector) bool {
@@ -419,7 +436,6 @@ func (tm *Manager) AddTool(tool Tool) error {
 
 	// Filter tool based on profiles
 	if !tm.isToolAllowed(tool.Tool()) {
-		logging.GetLogger().Debug("Tool skipped by profile filter", "toolName", tool.Tool().GetName(), "serviceID", tool.Tool().GetServiceId())
 		return nil
 	}
 

@@ -81,6 +81,10 @@ func (m *MockToolManagerForRegistry) IsServiceAllowed(serviceID, profileID strin
 	return true
 }
 
+func (m *MockToolManagerForRegistry) ToolMatchesProfile(tool tool.Tool, profileID string) bool {
+	return true
+}
+
 func TestInitStandardMiddlewares(t *testing.T) {
 	// Setup dependencies
 	authManager := auth.NewManager()
