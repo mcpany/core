@@ -14,7 +14,7 @@ import (
 func redactJSONFast(input []byte) []byte {
 	// Pre-allocate result buffer. Usually it will be same size or slightly smaller/larger.
 	// 1.1x input size is a safe bet to avoid reallocations if we replace short values with long placeholders.
-	out := bytes.NewBuffer(make([]byte, 0, len(input)))
+	out := bytes.NewBuffer(make([]byte, 0, len(input)+len(input)/10))
 
 	i := 0
 	n := len(input)
