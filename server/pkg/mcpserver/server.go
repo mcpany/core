@@ -496,9 +496,13 @@ func (s *Server) CallTool(ctx context.Context, req *tool.ExecutionRequest) (any,
 		}
 	}
 
-	// Previously checked isServiceAllowed here.
-	// Now we assume if the tool exists and is loaded, it is allowed.
-	// We might add RBAC later.
+	profileID, _ := auth.ProfileIDFromContext(ctx)
+	if profileID != "" && serviceID != "" {
+		if !s.toolManager.IsServiceAllowed(serviceID, profileID) {
+			logging.GetLogger().Warn("Access denied to tool by profile", "toolName", req.ToolName, "profileID", profileID)
+			return nil, fmt.Errorf("access denied to tool %q", req.ToolName)
+		}
+	}
 
 	metrics.IncrCounterWithLabels([]string{"tools", "call", "total"}, 1, []metrics.Label{
 		{Name: "tool", Value: req.ToolName},

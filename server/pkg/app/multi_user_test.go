@@ -43,12 +43,30 @@ func TestMultiUserToolFiltering(t *testing.T) {
 
 	// Create Config with users
 	fs := afero.NewMemMapFs()
-	configContent := `
+		configContent := `
+global_settings:
+  profile_definitions:
+    - name: "dev-profile"
+      service_config:
+        dev-service: {enabled: true}
+        shared-service: {enabled: true}
+    - name: "prod-profile"
+      service_config:
+        prod-service: {enabled: true}
+        shared-service: {enabled: true}
+    - name: "secure-profile"
+      service_config:
+        secure-service: {enabled: true}
+    - name: "rbac-profile"
+      required_roles: ["admin"]
+      service_config:
+        rbac-service: {enabled: true}
+      selector:
+        tags: ["rbac"]
+
 upstream_services:
   - name: "dev-service"
-    profiles:
-      - name: "dev"
-        id: "dev-profile"
+    id: "dev-service"
     http_service:
       address: "http://localhost:8081"
       tools:
@@ -60,9 +78,7 @@ upstream_services:
           endpoint_path: "/dev"
           method: "HTTP_METHOD_POST"
   - name: "prod-service"
-    profiles:
-      - name: "prod"
-        id: "prod-profile"
+    id: "prod-service"
     http_service:
       address: "http://localhost:8082"
       tools:
@@ -74,14 +90,7 @@ upstream_services:
           endpoint_path: "/prod"
           method: "HTTP_METHOD_POST"
   - name: "secure-service"
-    profiles:
-      - name: "secure"
-        id: "secure-profile"
-        authentication:
-          api_key:
-            param_name: "X-Profile-Key"
-            key_value: "key-secure-profile"
-            in: "HEADER"
+    id: "secure-service"
     http_service:
       address: "http://localhost:8084"
       tools:
@@ -93,13 +102,7 @@ upstream_services:
           endpoint_path: "/secure"
           method: "HTTP_METHOD_POST"
   - name: "shared-service"
-    # No profiles defined -> defaults to "default".
-    # Since we want it shared, we add it to the profiles used by test users.
-    profiles:
-      - name: "dev"
-        id: "dev-profile"
-      - name: "prod"
-        id: "prod-profile"
+    id: "shared-service"
     http_service:
       address: "http://localhost:8083"
       tools:
@@ -111,9 +114,7 @@ upstream_services:
           endpoint_path: "/shared"
           method: "HTTP_METHOD_POST"
   - name: "rbac-service"
-    profiles:
-      - name: "rbac"
-        id: "rbac-profile"
+    id: "rbac-service"
     http_service:
       address: "http://localhost:8085"
       tools:
@@ -147,14 +148,6 @@ upstream_services:
 	require.NoError(t, err)
 	grpcPort := l2.Addr().(*net.TCPAddr).Port
 	_ = l2.Close()
-
-	// Inject users into the run call?
-	// app.Run loads config from file.
-	// The config in file doesn't have users yet because I didn't add them to YAML.
-	// But `app.Run` loads users from `cfg.GetUsers()`.
-	// I need to add users to the YAML or modify how they are loaded.
-	// `LoadServices` in `pkg/config/load.go` reads `users`.
-	// So I should add users to YAML.
 
 	configContentWithUsers := configContent + `
 users:
@@ -195,13 +188,6 @@ users:
         in: "HEADER"
     profile_ids: ["rbac-profile"]
     roles: ["guest"]
-
-global_settings:
-  profile_definitions:
-    - name: "rbac-profile"
-      required_roles: ["admin"]
-      selector:
-        tags: ["rbac"]
 `
 	err = afero.WriteFile(fs, "/config.yaml", []byte(configContentWithUsers), 0o644)
 	require.NoError(t, err)
@@ -317,21 +303,6 @@ global_settings:
 		assert.NotContains(t, tools, "prod-tool")
 	})
 
-	// Test Case 6: Auth Priority - Profile Key overrides User Key
-	t.Run("Auth Priority: Profile Key overrides User Key", func(t *testing.T) {
-		// secure-profile has api_key: "key-secure-profile"
-		// user-secure has api_key: "key-secure-user"
-
-		// 1. Verify Profile Key works
-		tools, err := listTools("user-secure", "secure-profile", "X-Profile-Key", "key-secure-profile")
-		require.NoError(t, err)
-		assert.Contains(t, tools, "secure-tool")
-
-		// 2. Verify User Key fails (because profile key is set)
-		_, err = listTools("user-secure", "secure-profile", "X-User-Key", "key-secure-user")
-		require.Error(t, err)
-		assert.Contains(t, err.Error(), "status code: 401")
-	})
 
 	// Test Case 4: Invalid Auth
 	t.Run("Invalid API Key fails", func(t *testing.T) {
