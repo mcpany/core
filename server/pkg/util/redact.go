@@ -261,7 +261,19 @@ func checkPotentialMatch(input []byte, matchStart int, startChar byte, validateK
 					// If input[matchStart] is uppercase, assume the whole key match was uppercase (or case-insensitive matching logic holds).
 					firstChar := input[matchStart]
 					if firstChar >= 'A' && firstChar <= 'Z' {
-						continue
+						// Only treat as continuation if the ENTIRE matched part is uppercase.
+						// This allows PascalCase (e.g. "AuthInfo") to match "auth", while "AUTHORITY" does not.
+						isAllUpper := true
+						for i := 1; i < len(key); i++ {
+							c := input[matchStart+i]
+							if c >= 'a' && c <= 'z' {
+								isAllUpper = false
+								break
+							}
+						}
+						if isAllUpper {
+							continue
+						}
 					}
 				}
 			}

@@ -192,6 +192,7 @@ func TestRedactJSON_FalsePositives(t *testing.T) {
 		{"end of string", `{"user_auth": "123"}`, true},    // "auth" at end
 		{"API_KEY", `{"API_KEY": "123"}`, true},            // exact upper
 		{"api_key_val", `{"api_key_val": "123"}`, true},    // "api_key" + "_"
+		{"AuthInfo", `{"AuthInfo": "secret"}`, true},       // "Auth" + "Info" (PascalCase, was failing before)
 	}
 
 	for _, tt := range tests {
