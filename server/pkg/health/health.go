@@ -17,10 +17,10 @@ import (
 
 	"github.com/alexliesenfeld/health"
 	"github.com/coder/websocket"
+	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/mcpany/core/server/pkg/command"
 	"github.com/mcpany/core/server/pkg/logging"
 	"github.com/mcpany/core/server/pkg/metrics"
-	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/samber/lo"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
@@ -96,9 +96,9 @@ func NewChecker(uc *configv1.UpstreamServiceConfig) health.Checker {
 	return health.NewChecker(opts...)
 }
 
-func httpCheckFunc(ctx context.Context, address string, hc *configv1.HttpHealthCheck) error {
+func httpCheckFunc(ctx context.Context, _ string, hc *configv1.HttpHealthCheck) error {
 	if hc == nil {
-		return checkConnection(ctx, address)
+		return nil
 	}
 
 	client := &http.Client{

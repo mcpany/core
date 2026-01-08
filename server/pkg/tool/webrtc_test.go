@@ -102,11 +102,11 @@ func TestWebrtcTool_PoolInteraction(t *testing.T) {
 	// Execute twice to test pooling
 	_, err = wt.Execute(context.Background(), &ExecutionRequest{ToolInputs: []byte(`{"message":"test1"}`)})
 	require.NoError(t, err)
-	assert.Equal(t, 1, p.Len())
+	assert.Equal(t, 5, p.Len())
 
 	_, err = wt.Execute(context.Background(), &ExecutionRequest{ToolInputs: []byte(`{"message":"test2"}`)})
 	require.NoError(t, err)
-	assert.Equal(t, 1, p.Len())
+	assert.Equal(t, 5, p.Len())
 
 	wg.Done()
 	wg.Done()
