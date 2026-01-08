@@ -36,6 +36,9 @@ func (s *Store) Load(ctx context.Context) (*configv1.McpAnyServerConfig, error) 
 	defer func() { _ = rows.Close() }()
 
 	var services []*configv1.UpstreamServiceConfig
+	// Allow unknown fields to be safe against schema evolution
+	opts := protojson.UnmarshalOptions{DiscardUnknown: true}
+
 	for rows.Next() {
 		var configJSON string
 		if err := rows.Scan(&configJSON); err != nil {
@@ -43,8 +46,6 @@ func (s *Store) Load(ctx context.Context) (*configv1.McpAnyServerConfig, error) 
 		}
 
 		var service configv1.UpstreamServiceConfig
-		// Allow unknown fields to be safe against schema evolution
-		opts := protojson.UnmarshalOptions{DiscardUnknown: true}
 		if err := opts.Unmarshal([]byte(configJSON), &service); err != nil {
 			return nil, fmt.Errorf("failed to unmarshal service config: %w", err)
 		}
@@ -225,6 +226,9 @@ func (s *Store) ListUsers(ctx context.Context) ([]*configv1.User, error) {
 	defer func() { _ = rows.Close() }()
 
 	var users []*configv1.User
+	// Allow unknown fields to be safe against schema evolution
+	opts := protojson.UnmarshalOptions{DiscardUnknown: true}
+
 	for rows.Next() {
 		var configJSON string
 		if err := rows.Scan(&configJSON); err != nil {
@@ -232,7 +236,7 @@ func (s *Store) ListUsers(ctx context.Context) ([]*configv1.User, error) {
 		}
 
 		var user configv1.User
-		if err := protojson.Unmarshal([]byte(configJSON), &user); err != nil {
+		if err := opts.Unmarshal([]byte(configJSON), &user); err != nil {
 			return nil, fmt.Errorf("failed to unmarshal user config: %w", err)
 		}
 		users = append(users, &user)
