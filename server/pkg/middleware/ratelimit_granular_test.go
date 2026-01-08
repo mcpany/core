@@ -50,6 +50,7 @@ func (m *MockToolManager) SetMCPServer(_ tool.MCPServerProvider)                
 func (m *MockToolManager) SetProfiles(_ []string, _ []*configv1.ProfileDefinition) {}
 func (m *MockToolManager) IsServiceAllowed(serviceID, profileID string) bool      { return true }
 func (m *MockToolManager) AddMiddleware(_ tool.ExecutionMiddleware)               {}
+func (m *MockToolManager) ToolMatchesProfile(tool tool.Tool, profileID string) bool      { return true }
 func (m *MockToolManager) ListServices() []*tool.ServiceInfo                      { return nil }
 
 type MockTool struct {
