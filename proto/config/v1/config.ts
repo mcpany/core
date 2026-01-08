@@ -8,7 +8,9 @@
 import { BinaryReader, BinaryWriter } from "@bufbuild/protobuf/wire";
 import Long from "long";
 import { MessageBus } from "../../bus/bus";
-import { RateLimitConfig, UpstreamServiceCollection, UpstreamServiceConfig } from "./upstream_service";
+import { SecretValue } from "./auth";
+import { ProfileServiceConfig, RateLimitConfig } from "./profile";
+import { UpstreamServiceCollection, UpstreamServiceConfig } from "./upstream_service";
 import { User } from "./user";
 
 export const protobufPackage = "mcpany.config.v1";
@@ -331,12 +333,24 @@ export interface ProfileDefinition {
   selector?:
     | ProfileSelector
     | undefined;
-  /**
-   * List of roles required to access this profile.
-   * If empty, no specific role is required (but user must still have the profile_id explicitly assigned if strict mode).
-   * Alternatively, if user has one of these roles, they get access.
-   */
+  /** List of roles required to access this profile. */
   requiredRoles: string[];
+  /** Parent profile IDs for inheritance. */
+  parentProfileIds: string[];
+  /** Service-specific configurations for this profile. */
+  serviceConfig: { [key: string]: ProfileServiceConfig };
+  /** Secrets available to services in this profile. */
+  secrets: { [key: string]: SecretValue };
+}
+
+export interface ProfileDefinition_ServiceConfigEntry {
+  key: string;
+  value?: ProfileServiceConfig | undefined;
+}
+
+export interface ProfileDefinition_SecretsEntry {
+  key: string;
+  value?: SecretValue | undefined;
 }
 
 export interface ProfileSelector {
@@ -1873,7 +1887,7 @@ export const DatadogConfig: MessageFns<DatadogConfig> = {
 };
 
 function createBaseProfileDefinition(): ProfileDefinition {
-  return { name: "", selector: undefined, requiredRoles: [] };
+  return { name: "", selector: undefined, requiredRoles: [], parentProfileIds: [], serviceConfig: {}, secrets: {} };
 }
 
 export const ProfileDefinition: MessageFns<ProfileDefinition> = {
@@ -1887,6 +1901,15 @@ export const ProfileDefinition: MessageFns<ProfileDefinition> = {
     for (const v of message.requiredRoles) {
       writer.uint32(26).string(v!);
     }
+    for (const v of message.parentProfileIds) {
+      writer.uint32(34).string(v!);
+    }
+    globalThis.Object.entries(message.serviceConfig).forEach(([key, value]: [string, ProfileServiceConfig]) => {
+      ProfileDefinition_ServiceConfigEntry.encode({ key: key as any, value }, writer.uint32(42).fork()).join();
+    });
+    globalThis.Object.entries(message.secrets).forEach(([key, value]: [string, SecretValue]) => {
+      ProfileDefinition_SecretsEntry.encode({ key: key as any, value }, writer.uint32(50).fork()).join();
+    });
     return writer;
   },
 
@@ -1921,6 +1944,36 @@ export const ProfileDefinition: MessageFns<ProfileDefinition> = {
           message.requiredRoles.push(reader.string());
           continue;
         }
+        case 4: {
+          if (tag !== 34) {
+            break;
+          }
+
+          message.parentProfileIds.push(reader.string());
+          continue;
+        }
+        case 5: {
+          if (tag !== 42) {
+            break;
+          }
+
+          const entry5 = ProfileDefinition_ServiceConfigEntry.decode(reader, reader.uint32());
+          if (entry5.value !== undefined) {
+            message.serviceConfig[entry5.key] = entry5.value;
+          }
+          continue;
+        }
+        case 6: {
+          if (tag !== 50) {
+            break;
+          }
+
+          const entry6 = ProfileDefinition_SecretsEntry.decode(reader, reader.uint32());
+          if (entry6.value !== undefined) {
+            message.secrets[entry6.key] = entry6.value;
+          }
+          continue;
+        }
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -1937,6 +1990,27 @@ export const ProfileDefinition: MessageFns<ProfileDefinition> = {
       requiredRoles: globalThis.Array.isArray(object?.required_roles)
         ? object.required_roles.map((e: any) => globalThis.String(e))
         : [],
+      parentProfileIds: globalThis.Array.isArray(object?.parent_profile_ids)
+        ? object.parent_profile_ids.map((e: any) => globalThis.String(e))
+        : [],
+      serviceConfig: isObject(object.service_config)
+        ? (globalThis.Object.entries(object.service_config) as [string, any][]).reduce(
+          (acc: { [key: string]: ProfileServiceConfig }, [key, value]: [string, any]) => {
+            acc[key] = ProfileServiceConfig.fromJSON(value);
+            return acc;
+          },
+          {},
+        )
+        : {},
+      secrets: isObject(object.secrets)
+        ? (globalThis.Object.entries(object.secrets) as [string, any][]).reduce(
+          (acc: { [key: string]: SecretValue }, [key, value]: [string, any]) => {
+            acc[key] = SecretValue.fromJSON(value);
+            return acc;
+          },
+          {},
+        )
+        : {},
     };
   },
 
@@ -1951,6 +2025,27 @@ export const ProfileDefinition: MessageFns<ProfileDefinition> = {
     if (message.requiredRoles?.length) {
       obj.required_roles = message.requiredRoles;
     }
+    if (message.parentProfileIds?.length) {
+      obj.parent_profile_ids = message.parentProfileIds;
+    }
+    if (message.serviceConfig) {
+      const entries = globalThis.Object.entries(message.serviceConfig) as [string, ProfileServiceConfig][];
+      if (entries.length > 0) {
+        obj.service_config = {};
+        entries.forEach(([k, v]) => {
+          obj.service_config[k] = ProfileServiceConfig.toJSON(v);
+        });
+      }
+    }
+    if (message.secrets) {
+      const entries = globalThis.Object.entries(message.secrets) as [string, SecretValue][];
+      if (entries.length > 0) {
+        obj.secrets = {};
+        entries.forEach(([k, v]) => {
+          obj.secrets[k] = SecretValue.toJSON(v);
+        });
+      }
+    }
     return obj;
   },
 
@@ -1964,6 +2059,185 @@ export const ProfileDefinition: MessageFns<ProfileDefinition> = {
       ? ProfileSelector.fromPartial(object.selector)
       : undefined;
     message.requiredRoles = object.requiredRoles?.map((e) => e) || [];
+    message.parentProfileIds = object.parentProfileIds?.map((e) => e) || [];
+    message.serviceConfig = (globalThis.Object.entries(object.serviceConfig ?? {}) as [string, ProfileServiceConfig][])
+      .reduce((acc: { [key: string]: ProfileServiceConfig }, [key, value]: [string, ProfileServiceConfig]) => {
+        if (value !== undefined) {
+          acc[key] = ProfileServiceConfig.fromPartial(value);
+        }
+        return acc;
+      }, {});
+    message.secrets = (globalThis.Object.entries(object.secrets ?? {}) as [string, SecretValue][]).reduce(
+      (acc: { [key: string]: SecretValue }, [key, value]: [string, SecretValue]) => {
+        if (value !== undefined) {
+          acc[key] = SecretValue.fromPartial(value);
+        }
+        return acc;
+      },
+      {},
+    );
+    return message;
+  },
+};
+
+function createBaseProfileDefinition_ServiceConfigEntry(): ProfileDefinition_ServiceConfigEntry {
+  return { key: "", value: undefined };
+}
+
+export const ProfileDefinition_ServiceConfigEntry: MessageFns<ProfileDefinition_ServiceConfigEntry> = {
+  encode(message: ProfileDefinition_ServiceConfigEntry, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.key !== "") {
+      writer.uint32(10).string(message.key);
+    }
+    if (message.value !== undefined) {
+      ProfileServiceConfig.encode(message.value, writer.uint32(18).fork()).join();
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): ProfileDefinition_ServiceConfigEntry {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseProfileDefinition_ServiceConfigEntry();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.key = reader.string();
+          continue;
+        }
+        case 2: {
+          if (tag !== 18) {
+            break;
+          }
+
+          message.value = ProfileServiceConfig.decode(reader, reader.uint32());
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): ProfileDefinition_ServiceConfigEntry {
+    return {
+      key: isSet(object.key) ? globalThis.String(object.key) : "",
+      value: isSet(object.value) ? ProfileServiceConfig.fromJSON(object.value) : undefined,
+    };
+  },
+
+  toJSON(message: ProfileDefinition_ServiceConfigEntry): unknown {
+    const obj: any = {};
+    if (message.key !== "") {
+      obj.key = message.key;
+    }
+    if (message.value !== undefined) {
+      obj.value = ProfileServiceConfig.toJSON(message.value);
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<ProfileDefinition_ServiceConfigEntry>, I>>(
+    base?: I,
+  ): ProfileDefinition_ServiceConfigEntry {
+    return ProfileDefinition_ServiceConfigEntry.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<ProfileDefinition_ServiceConfigEntry>, I>>(
+    object: I,
+  ): ProfileDefinition_ServiceConfigEntry {
+    const message = createBaseProfileDefinition_ServiceConfigEntry();
+    message.key = object.key ?? "";
+    message.value = (object.value !== undefined && object.value !== null)
+      ? ProfileServiceConfig.fromPartial(object.value)
+      : undefined;
+    return message;
+  },
+};
+
+function createBaseProfileDefinition_SecretsEntry(): ProfileDefinition_SecretsEntry {
+  return { key: "", value: undefined };
+}
+
+export const ProfileDefinition_SecretsEntry: MessageFns<ProfileDefinition_SecretsEntry> = {
+  encode(message: ProfileDefinition_SecretsEntry, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.key !== "") {
+      writer.uint32(10).string(message.key);
+    }
+    if (message.value !== undefined) {
+      SecretValue.encode(message.value, writer.uint32(18).fork()).join();
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): ProfileDefinition_SecretsEntry {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseProfileDefinition_SecretsEntry();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.key = reader.string();
+          continue;
+        }
+        case 2: {
+          if (tag !== 18) {
+            break;
+          }
+
+          message.value = SecretValue.decode(reader, reader.uint32());
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): ProfileDefinition_SecretsEntry {
+    return {
+      key: isSet(object.key) ? globalThis.String(object.key) : "",
+      value: isSet(object.value) ? SecretValue.fromJSON(object.value) : undefined,
+    };
+  },
+
+  toJSON(message: ProfileDefinition_SecretsEntry): unknown {
+    const obj: any = {};
+    if (message.key !== "") {
+      obj.key = message.key;
+    }
+    if (message.value !== undefined) {
+      obj.value = SecretValue.toJSON(message.value);
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<ProfileDefinition_SecretsEntry>, I>>(base?: I): ProfileDefinition_SecretsEntry {
+    return ProfileDefinition_SecretsEntry.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<ProfileDefinition_SecretsEntry>, I>>(
+    object: I,
+  ): ProfileDefinition_SecretsEntry {
+    const message = createBaseProfileDefinition_SecretsEntry();
+    message.key = object.key ?? "";
+    message.value = (object.value !== undefined && object.value !== null)
+      ? SecretValue.fromPartial(object.value)
+      : undefined;
     return message;
   },
 };

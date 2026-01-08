@@ -2009,9 +2009,13 @@ type ProfileDefinition struct {
 	Name     *string                `protobuf:"bytes,1,opt,name=name" json:"name,omitempty"`
 	Selector *ProfileSelector       `protobuf:"bytes,2,opt,name=selector" json:"selector,omitempty"`
 	// List of roles required to access this profile.
-	// If empty, no specific role is required (but user must still have the profile_id explicitly assigned if strict mode).
-	// Alternatively, if user has one of these roles, they get access.
 	RequiredRoles []string `protobuf:"bytes,3,rep,name=required_roles" json:"required_roles,omitempty"`
+	// Parent profile IDs for inheritance.
+	ParentProfileIds []string `protobuf:"bytes,4,rep,name=parent_profile_ids" json:"parent_profile_ids,omitempty"`
+	// Service-specific configurations for this profile.
+	ServiceConfig map[string]*ProfileServiceConfig `protobuf:"bytes,5,rep,name=service_config" json:"service_config,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	// Secrets available to services in this profile.
+	Secrets       map[string]*SecretValue `protobuf:"bytes,6,rep,name=secrets" json:"secrets,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -2062,6 +2066,27 @@ func (x *ProfileDefinition) GetRequiredRoles() []string {
 	return nil
 }
 
+func (x *ProfileDefinition) GetParentProfileIds() []string {
+	if x != nil {
+		return x.ParentProfileIds
+	}
+	return nil
+}
+
+func (x *ProfileDefinition) GetServiceConfig() map[string]*ProfileServiceConfig {
+	if x != nil {
+		return x.ServiceConfig
+	}
+	return nil
+}
+
+func (x *ProfileDefinition) GetSecrets() map[string]*SecretValue {
+	if x != nil {
+		return x.Secrets
+	}
+	return nil
+}
+
 func (x *ProfileDefinition) SetName(v string) {
 	x.Name = &v
 }
@@ -2072,6 +2097,18 @@ func (x *ProfileDefinition) SetSelector(v *ProfileSelector) {
 
 func (x *ProfileDefinition) SetRequiredRoles(v []string) {
 	x.RequiredRoles = v
+}
+
+func (x *ProfileDefinition) SetParentProfileIds(v []string) {
+	x.ParentProfileIds = v
+}
+
+func (x *ProfileDefinition) SetServiceConfig(v map[string]*ProfileServiceConfig) {
+	x.ServiceConfig = v
+}
+
+func (x *ProfileDefinition) SetSecrets(v map[string]*SecretValue) {
+	x.Secrets = v
 }
 
 func (x *ProfileDefinition) HasName() bool {
@@ -2102,9 +2139,13 @@ type ProfileDefinition_builder struct {
 	Name     *string
 	Selector *ProfileSelector
 	// List of roles required to access this profile.
-	// If empty, no specific role is required (but user must still have the profile_id explicitly assigned if strict mode).
-	// Alternatively, if user has one of these roles, they get access.
 	RequiredRoles []string
+	// Parent profile IDs for inheritance.
+	ParentProfileIds []string
+	// Service-specific configurations for this profile.
+	ServiceConfig map[string]*ProfileServiceConfig
+	// Secrets available to services in this profile.
+	Secrets map[string]*SecretValue
 }
 
 func (b0 ProfileDefinition_builder) Build() *ProfileDefinition {
@@ -2114,6 +2155,9 @@ func (b0 ProfileDefinition_builder) Build() *ProfileDefinition {
 	x.Name = b.Name
 	x.Selector = b.Selector
 	x.RequiredRoles = b.RequiredRoles
+	x.ParentProfileIds = b.ParentProfileIds
+	x.ServiceConfig = b.ServiceConfig
+	x.Secrets = b.Secrets
 	return m0
 }
 
@@ -2316,7 +2360,7 @@ var File_proto_config_v1_config_proto protoreflect.FileDescriptor
 
 const file_proto_config_v1_config_proto_rawDesc = "" +
 	"\n" +
-	"\x1cproto/config/v1/config.proto\x12\x10mcpany.config.v1\x1a\x13proto/bus/bus.proto\x1a&proto/config/v1/upstream_service.proto\x1a\x1aproto/config/v1/user.proto\"\xd6\x02\n" +
+	"\x1cproto/config/v1/config.proto\x12\x10mcpany.config.v1\x1a\x13proto/bus/bus.proto\x1a&proto/config/v1/upstream_service.proto\x1a\x1aproto/config/v1/auth.proto\x1a\x1dproto/config/v1/profile.proto\x1a\x1aproto/config/v1/user.proto\"\xd6\x02\n" +
 	"\x12McpAnyServerConfig\x12J\n" +
 	"\x0fglobal_settings\x18\x01 \x01(\v2 .mcpany.config.v1.GlobalSettingsR\x0fglobal_settings\x12U\n" +
 	"\x11upstream_services\x18\x02 \x03(\v2'.mcpany.config.v1.UpstreamServiceConfigR\x11upstream_services\x12o\n" +
@@ -2415,11 +2459,20 @@ const file_proto_config_v1_config_proto_rawDesc = "" +
 	"\aapi_key\x18\x01 \x01(\tR\aapi_key\x12\x12\n" +
 	"\x04site\x18\x02 \x01(\tR\x04site\x12\x18\n" +
 	"\aservice\x18\x03 \x01(\tR\aservice\x12\x12\n" +
-	"\x04tags\x18\x04 \x01(\tR\x04tags\"\x8e\x01\n" +
+	"\x04tags\x18\x04 \x01(\tR\x04tags\"\xaf\x04\n" +
 	"\x11ProfileDefinition\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12=\n" +
 	"\bselector\x18\x02 \x01(\v2!.mcpany.config.v1.ProfileSelectorR\bselector\x12&\n" +
-	"\x0erequired_roles\x18\x03 \x03(\tR\x0erequired_roles\"\xc9\x01\n" +
+	"\x0erequired_roles\x18\x03 \x03(\tR\x0erequired_roles\x12.\n" +
+	"\x12parent_profile_ids\x18\x04 \x03(\tR\x12parent_profile_ids\x12^\n" +
+	"\x0eservice_config\x18\x05 \x03(\v26.mcpany.config.v1.ProfileDefinition.ServiceConfigEntryR\x0eservice_config\x12J\n" +
+	"\asecrets\x18\x06 \x03(\v20.mcpany.config.v1.ProfileDefinition.SecretsEntryR\asecrets\x1ah\n" +
+	"\x12ServiceConfigEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\tR\x03key\x12<\n" +
+	"\x05value\x18\x02 \x01(\v2&.mcpany.config.v1.ProfileServiceConfigR\x05value:\x028\x01\x1aY\n" +
+	"\fSecretsEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\tR\x03key\x123\n" +
+	"\x05value\x18\x02 \x01(\v2\x1d.mcpany.config.v1.SecretValueR\x05value:\x028\x01\"\xc9\x01\n" +
 	"\x0fProfileSelector\x12\x12\n" +
 	"\x04tags\x18\x01 \x03(\tR\x04tags\x12_\n" +
 	"\x0ftool_properties\x18\x02 \x03(\v25.mcpany.config.v1.ProfileSelector.ToolPropertiesEntryR\x0ftool_properties\x1aA\n" +
@@ -2433,7 +2486,7 @@ const file_proto_config_v1_config_proto_rawDesc = "" +
 	"\bdisabled\x18\x03 \x01(\bR\bdisabledB5B\vConfigProtoZ&github.com/mcpany/core/proto/config/v1b\beditionsp\xe8\a"
 
 var file_proto_config_v1_config_proto_enumTypes = make([]protoimpl.EnumInfo, 3)
-var file_proto_config_v1_config_proto_msgTypes = make([]protoimpl.MessageInfo, 15)
+var file_proto_config_v1_config_proto_msgTypes = make([]protoimpl.MessageInfo, 17)
 var file_proto_config_v1_config_proto_goTypes = []any{
 	(GlobalSettings_LogLevel)(0),      // 0: mcpany.config.v1.GlobalSettings.LogLevel
 	(GlobalSettings_LogFormat)(0),     // 1: mcpany.config.v1.GlobalSettings.LogFormat
@@ -2452,21 +2505,25 @@ var file_proto_config_v1_config_proto_goTypes = []any{
 	(*ProfileSelector)(nil),           // 14: mcpany.config.v1.ProfileSelector
 	(*Middleware)(nil),                // 15: mcpany.config.v1.Middleware
 	nil,                               // 16: mcpany.config.v1.AuditConfig.WebhookHeadersEntry
-	nil,                               // 17: mcpany.config.v1.ProfileSelector.ToolPropertiesEntry
-	(*UpstreamServiceConfig)(nil),     // 18: mcpany.config.v1.UpstreamServiceConfig
-	(*UpstreamServiceCollection)(nil), // 19: mcpany.config.v1.UpstreamServiceCollection
-	(*User)(nil),                      // 20: mcpany.config.v1.User
-	(*bus.MessageBus)(nil),            // 21: bus.MessageBus
-	(*RateLimitConfig)(nil),           // 22: mcpany.config.v1.RateLimitConfig
+	nil,                               // 17: mcpany.config.v1.ProfileDefinition.ServiceConfigEntry
+	nil,                               // 18: mcpany.config.v1.ProfileDefinition.SecretsEntry
+	nil,                               // 19: mcpany.config.v1.ProfileSelector.ToolPropertiesEntry
+	(*UpstreamServiceConfig)(nil),     // 20: mcpany.config.v1.UpstreamServiceConfig
+	(*UpstreamServiceCollection)(nil), // 21: mcpany.config.v1.UpstreamServiceCollection
+	(*User)(nil),                      // 22: mcpany.config.v1.User
+	(*bus.MessageBus)(nil),            // 23: bus.MessageBus
+	(*RateLimitConfig)(nil),           // 24: mcpany.config.v1.RateLimitConfig
+	(*ProfileServiceConfig)(nil),      // 25: mcpany.config.v1.ProfileServiceConfig
+	(*SecretValue)(nil),               // 26: mcpany.config.v1.SecretValue
 }
 var file_proto_config_v1_config_proto_depIdxs = []int32{
 	6,  // 0: mcpany.config.v1.McpAnyServerConfig.global_settings:type_name -> mcpany.config.v1.GlobalSettings
-	18, // 1: mcpany.config.v1.McpAnyServerConfig.upstream_services:type_name -> mcpany.config.v1.UpstreamServiceConfig
-	19, // 2: mcpany.config.v1.McpAnyServerConfig.upstream_service_collections:type_name -> mcpany.config.v1.UpstreamServiceCollection
-	20, // 3: mcpany.config.v1.McpAnyServerConfig.users:type_name -> mcpany.config.v1.User
+	20, // 1: mcpany.config.v1.McpAnyServerConfig.upstream_services:type_name -> mcpany.config.v1.UpstreamServiceConfig
+	21, // 2: mcpany.config.v1.McpAnyServerConfig.upstream_service_collections:type_name -> mcpany.config.v1.UpstreamServiceCollection
+	22, // 3: mcpany.config.v1.McpAnyServerConfig.users:type_name -> mcpany.config.v1.User
 	4,  // 4: mcpany.config.v1.SecretList.secrets:type_name -> mcpany.config.v1.Secret
 	0,  // 5: mcpany.config.v1.GlobalSettings.log_level:type_name -> mcpany.config.v1.GlobalSettings.LogLevel
-	21, // 6: mcpany.config.v1.GlobalSettings.message_bus:type_name -> bus.MessageBus
+	23, // 6: mcpany.config.v1.GlobalSettings.message_bus:type_name -> bus.MessageBus
 	10, // 7: mcpany.config.v1.GlobalSettings.audit:type_name -> mcpany.config.v1.AuditConfig
 	13, // 8: mcpany.config.v1.GlobalSettings.profile_definitions:type_name -> mcpany.config.v1.ProfileDefinition
 	1,  // 9: mcpany.config.v1.GlobalSettings.log_format:type_name -> mcpany.config.v1.GlobalSettings.LogFormat
@@ -2474,18 +2531,22 @@ var file_proto_config_v1_config_proto_depIdxs = []int32{
 	9,  // 11: mcpany.config.v1.GlobalSettings.dlp:type_name -> mcpany.config.v1.DLPConfig
 	8,  // 12: mcpany.config.v1.GlobalSettings.gc_settings:type_name -> mcpany.config.v1.GCSettings
 	7,  // 13: mcpany.config.v1.GlobalSettings.oidc:type_name -> mcpany.config.v1.OIDCConfig
-	22, // 14: mcpany.config.v1.GlobalSettings.rate_limit:type_name -> mcpany.config.v1.RateLimitConfig
+	24, // 14: mcpany.config.v1.GlobalSettings.rate_limit:type_name -> mcpany.config.v1.RateLimitConfig
 	2,  // 15: mcpany.config.v1.AuditConfig.storage_type:type_name -> mcpany.config.v1.AuditConfig.StorageType
 	16, // 16: mcpany.config.v1.AuditConfig.webhook_headers:type_name -> mcpany.config.v1.AuditConfig.WebhookHeadersEntry
 	11, // 17: mcpany.config.v1.AuditConfig.splunk:type_name -> mcpany.config.v1.SplunkConfig
 	12, // 18: mcpany.config.v1.AuditConfig.datadog:type_name -> mcpany.config.v1.DatadogConfig
 	14, // 19: mcpany.config.v1.ProfileDefinition.selector:type_name -> mcpany.config.v1.ProfileSelector
-	17, // 20: mcpany.config.v1.ProfileSelector.tool_properties:type_name -> mcpany.config.v1.ProfileSelector.ToolPropertiesEntry
-	21, // [21:21] is the sub-list for method output_type
-	21, // [21:21] is the sub-list for method input_type
-	21, // [21:21] is the sub-list for extension type_name
-	21, // [21:21] is the sub-list for extension extendee
-	0,  // [0:21] is the sub-list for field type_name
+	17, // 20: mcpany.config.v1.ProfileDefinition.service_config:type_name -> mcpany.config.v1.ProfileDefinition.ServiceConfigEntry
+	18, // 21: mcpany.config.v1.ProfileDefinition.secrets:type_name -> mcpany.config.v1.ProfileDefinition.SecretsEntry
+	19, // 22: mcpany.config.v1.ProfileSelector.tool_properties:type_name -> mcpany.config.v1.ProfileSelector.ToolPropertiesEntry
+	25, // 23: mcpany.config.v1.ProfileDefinition.ServiceConfigEntry.value:type_name -> mcpany.config.v1.ProfileServiceConfig
+	26, // 24: mcpany.config.v1.ProfileDefinition.SecretsEntry.value:type_name -> mcpany.config.v1.SecretValue
+	25, // [25:25] is the sub-list for method output_type
+	25, // [25:25] is the sub-list for method input_type
+	25, // [25:25] is the sub-list for extension type_name
+	25, // [25:25] is the sub-list for extension extendee
+	0,  // [0:25] is the sub-list for field type_name
 }
 
 func init() { file_proto_config_v1_config_proto_init() }
@@ -2494,6 +2555,8 @@ func file_proto_config_v1_config_proto_init() {
 		return
 	}
 	file_proto_config_v1_upstream_service_proto_init()
+	file_proto_config_v1_auth_proto_init()
+	file_proto_config_v1_profile_proto_init()
 	file_proto_config_v1_user_proto_init()
 	type x struct{}
 	out := protoimpl.TypeBuilder{
@@ -2501,7 +2564,7 @@ func file_proto_config_v1_config_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_proto_config_v1_config_proto_rawDesc), len(file_proto_config_v1_config_proto_rawDesc)),
 			NumEnums:      3,
-			NumMessages:   15,
+			NumMessages:   17,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

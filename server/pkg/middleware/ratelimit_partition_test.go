@@ -9,12 +9,12 @@ import (
 	"net/http"
 	"testing"
 
+	configv1 "github.com/mcpany/core/proto/config/v1"
+	v1 "github.com/mcpany/core/proto/mcp_router/v1"
 	"github.com/mcpany/core/server/pkg/auth"
 	"github.com/mcpany/core/server/pkg/middleware"
 	"github.com/mcpany/core/server/pkg/tool"
 	"github.com/mcpany/core/server/pkg/util"
-	configv1 "github.com/mcpany/core/proto/config/v1"
-	v1 "github.com/mcpany/core/proto/mcp_router/v1"
 	"github.com/stretchr/testify/assert"
 	"google.golang.org/protobuf/proto"
 )
@@ -32,10 +32,10 @@ func TestRateLimitPartitioning(t *testing.T) {
 		mockTool := &rateLimitMockTool{toolProto: toolProto}
 
 		rlConfig := configv1.RateLimitConfig_builder{
-			IsEnabled:         proto.Bool(true),
-			RequestsPerSecond: proto.Float64(1),
-			Burst:             proto.Int64(1),
-			KeyBy:             keyBy.Enum(),
+			IsEnabled:         true,
+			RequestsPerSecond: 1,
+			Burst:             1,
+			KeyBy:             keyBy,
 		}.Build()
 
 		serviceInfo := &tool.ServiceInfo{

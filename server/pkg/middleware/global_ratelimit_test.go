@@ -7,22 +7,21 @@ import (
 	"context"
 	"testing"
 
+	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/mcpany/core/server/pkg/auth"
 	"github.com/mcpany/core/server/pkg/util"
-	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/assert"
-	"google.golang.org/protobuf/proto"
 )
 
 func TestGlobalRateLimitMiddleware_Allow(t *testing.T) {
 	// Setup config: 10 RPS, Burst 10
 	cfg := &configv1.RateLimitConfig{
-		IsEnabled:         proto.Bool(true),
-		RequestsPerSecond: proto.Float64(10),
-		Burst:             proto.Int64(10),
-		Storage:           configv1.RateLimitConfig_STORAGE_MEMORY.Enum(),
-		KeyBy:             configv1.RateLimitConfig_KEY_BY_IP.Enum(),
+		IsEnabled:         true,
+		RequestsPerSecond: 10,
+		Burst:             10,
+		Storage:           configv1.RateLimitConfig_STORAGE_MEMORY,
+		KeyBy:             configv1.RateLimitConfig_KEY_BY_IP,
 	}
 
 	mw := NewGlobalRateLimitMiddleware(cfg)
@@ -46,11 +45,11 @@ func TestGlobalRateLimitMiddleware_Allow(t *testing.T) {
 func TestGlobalRateLimitMiddleware_Block(t *testing.T) {
 	// Setup config: 1 RPS, Burst 1
 	cfg := &configv1.RateLimitConfig{
-		IsEnabled:         proto.Bool(true),
-		RequestsPerSecond: proto.Float64(1),
-		Burst:             proto.Int64(1),
-		Storage:           configv1.RateLimitConfig_STORAGE_MEMORY.Enum(),
-		KeyBy:             configv1.RateLimitConfig_KEY_BY_IP.Enum(),
+		IsEnabled:         true,
+		RequestsPerSecond: 1,
+		Burst:             1,
+		Storage:           configv1.RateLimitConfig_STORAGE_MEMORY,
+		KeyBy:             configv1.RateLimitConfig_KEY_BY_IP,
 	}
 
 	mw := NewGlobalRateLimitMiddleware(cfg)
@@ -75,9 +74,9 @@ func TestGlobalRateLimitMiddleware_Block(t *testing.T) {
 
 func TestGlobalRateLimitMiddleware_Disabled(t *testing.T) {
 	cfg := &configv1.RateLimitConfig{
-		IsEnabled:         proto.Bool(false),
-		RequestsPerSecond: proto.Float64(1),
-		Burst:             proto.Int64(1),
+		IsEnabled:         false,
+		RequestsPerSecond: 1,
+		Burst:             1,
 	}
 
 	mw := NewGlobalRateLimitMiddleware(cfg)
@@ -98,10 +97,10 @@ func TestGlobalRateLimitMiddleware_Disabled(t *testing.T) {
 
 func TestGlobalRateLimitMiddleware_KeyByUserID(t *testing.T) {
 	cfg := &configv1.RateLimitConfig{
-		IsEnabled:         proto.Bool(true),
-		RequestsPerSecond: proto.Float64(1),
-		Burst:             proto.Int64(1),
-		KeyBy:             configv1.RateLimitConfig_KEY_BY_USER_ID.Enum(),
+		IsEnabled:         true,
+		RequestsPerSecond: 1,
+		Burst:             1,
+		KeyBy:             configv1.RateLimitConfig_KEY_BY_USER_ID,
 	}
 
 	mw := NewGlobalRateLimitMiddleware(cfg)
@@ -129,10 +128,10 @@ func TestGlobalRateLimitMiddleware_KeyByUserID(t *testing.T) {
 
 func TestGlobalRateLimitMiddleware_KeyByGlobal(t *testing.T) {
 	cfg := &configv1.RateLimitConfig{
-		IsEnabled:         proto.Bool(true),
-		RequestsPerSecond: proto.Float64(1),
-		Burst:             proto.Int64(1),
-		KeyBy:             configv1.RateLimitConfig_KEY_BY_GLOBAL.Enum(),
+		IsEnabled:         true,
+		RequestsPerSecond: 1,
+		Burst:             1,
+		KeyBy:             configv1.RateLimitConfig_KEY_BY_GLOBAL,
 	}
 
 	mw := NewGlobalRateLimitMiddleware(cfg)

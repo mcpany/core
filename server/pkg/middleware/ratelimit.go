@@ -15,13 +15,13 @@ import (
 	"time"
 
 	armonmetrics "github.com/armon/go-metrics"
+	"github.com/mcpany/core/proto/bus"
+	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/mcpany/core/server/pkg/auth"
 	"github.com/mcpany/core/server/pkg/metrics"
 	"github.com/mcpany/core/server/pkg/tokenizer"
 	"github.com/mcpany/core/server/pkg/tool"
 	"github.com/mcpany/core/server/pkg/util"
-	"github.com/mcpany/core/proto/bus"
-	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/patrickmn/go-cache"
 	"github.com/redis/go-redis/v9"
 	"golang.org/x/time/rate"
@@ -121,18 +121,6 @@ func (m *RateLimitMiddleware) Execute(ctx context.Context, req *tool.ExecutionRe
 
 	serviceRateLimitConfig := serviceInfo.Config.GetRateLimit()
 
-	// Determine if there is a profile-specific rate limit override
-	// Check auth context for profile ID
-	if profileID, ok := auth.ProfileIDFromContext(ctx); ok && profileID != "" {
-		if profileLimits := serviceInfo.Config.GetProfileLimits(); profileLimits != nil {
-			if profileConfig, ok := profileLimits[profileID]; ok {
-				// We have a profile override. Use this config instead of the default service config.
-				// NOTE: We do NOT merge configs. If a profile limit is set, it completely replaces the service default.
-				// This includes tool limits within the profile config.
-				serviceRateLimitConfig = profileConfig
-			}
-		}
-	}
 
 	// Check for tool-specific limit first
 	var toolLimiter Limiter

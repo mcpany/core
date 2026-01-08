@@ -13,6 +13,7 @@ import (
 	"testing"
 
 	"github.com/gorilla/websocket"
+	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/mcpany/core/server/pkg/bus"
 	"github.com/mcpany/core/server/pkg/client"
 	"github.com/mcpany/core/server/pkg/pool"
@@ -20,7 +21,6 @@ import (
 	"github.com/mcpany/core/server/pkg/resource"
 	"github.com/mcpany/core/server/pkg/tool"
 	"github.com/mcpany/core/server/pkg/util"
-	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/proto"
@@ -56,6 +56,10 @@ func (m *MockToolManager) GetTool(name string) (tool.Tool, bool) {
 	defer m.mu.Unlock()
 	t, ok := m.tools[name]
 	return t, ok
+}
+
+func (m *MockToolManager) IsServiceAllowed(serviceID, profileID string) bool {
+	return true
 }
 
 func (m *MockToolManager) ListTools() []tool.Tool {

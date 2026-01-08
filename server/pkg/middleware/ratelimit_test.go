@@ -11,13 +11,13 @@ import (
 	"time"
 
 	"github.com/go-redis/redismock/v9"
+	busproto "github.com/mcpany/core/proto/bus"
+	configv1 "github.com/mcpany/core/proto/config/v1"
+	v1 "github.com/mcpany/core/proto/mcp_router/v1"
 	"github.com/mcpany/core/server/pkg/auth"
 	"github.com/mcpany/core/server/pkg/middleware"
 	"github.com/mcpany/core/server/pkg/tool"
 	"github.com/mcpany/core/server/pkg/util"
-	busproto "github.com/mcpany/core/proto/bus"
-	configv1 "github.com/mcpany/core/proto/config/v1"
-	v1 "github.com/mcpany/core/proto/mcp_router/v1"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/redis/go-redis/v9"
 	"github.com/stretchr/testify/assert"
@@ -73,6 +73,10 @@ func (m *rateLimitMockToolManager) ListServices() []*tool.ServiceInfo {
 	return nil
 }
 
+func (m *rateLimitMockToolManager) IsServiceAllowed(serviceID, profileID string) bool {
+	return true
+}
+
 func TestRateLimitMiddleware(t *testing.T) {
 	const successResult = "success"
 	t.Run("rate limit allowed", func(t *testing.T) {
@@ -85,9 +89,9 @@ func TestRateLimitMiddleware(t *testing.T) {
 		mockTool := &rateLimitMockTool{toolProto: toolProto}
 
 		rlConfig := configv1.RateLimitConfig_builder{
-			IsEnabled:         proto.Bool(true),
-			RequestsPerSecond: proto.Float64(10),
-			Burst:             proto.Int64(1),
+			IsEnabled:         true,
+			RequestsPerSecond: 10,
+			Burst:             1,
 		}.Build()
 
 		serviceInfo := &tool.ServiceInfo{
@@ -127,9 +131,9 @@ func TestRateLimitMiddleware(t *testing.T) {
 		mockTool := &rateLimitMockTool{toolProto: toolProto}
 
 		rlConfig := configv1.RateLimitConfig_builder{
-			IsEnabled:         proto.Bool(true),
-			RequestsPerSecond: proto.Float64(1),
-			Burst:             proto.Int64(1),
+			IsEnabled:         true,
+			RequestsPerSecond: 1,
+			Burst:             1,
 		}.Build()
 
 		serviceInfo := &tool.ServiceInfo{
@@ -173,9 +177,9 @@ func TestRateLimitMiddleware(t *testing.T) {
 
 		// Initial Config: 10 RPS, Burst 10
 		rlConfig1 := configv1.RateLimitConfig_builder{
-			IsEnabled:         proto.Bool(true),
-			RequestsPerSecond: proto.Float64(10),
-			Burst:             proto.Int64(10),
+			IsEnabled:         true,
+			RequestsPerSecond: 10,
+			Burst:             10,
 		}.Build()
 
 		serviceInfo1 := &tool.ServiceInfo{
@@ -187,9 +191,9 @@ func TestRateLimitMiddleware(t *testing.T) {
 
 		// Updated Config: 1 RPS, Burst 1
 		rlConfig2 := configv1.RateLimitConfig_builder{
-			IsEnabled:         proto.Bool(true),
-			RequestsPerSecond: proto.Float64(1),
-			Burst:             proto.Int64(1),
+			IsEnabled:         true,
+			RequestsPerSecond: 1,
+			Burst:             1,
 		}.Build()
 
 		serviceInfo2 := &tool.ServiceInfo{
@@ -243,7 +247,7 @@ func TestRateLimitMiddleware(t *testing.T) {
 		mockTool := &rateLimitMockTool{toolProto: toolProto}
 
 		rlConfig := configv1.RateLimitConfig_builder{
-			IsEnabled: proto.Bool(false),
+			IsEnabled: false,
 		}.Build()
 
 		serviceInfo := &tool.ServiceInfo{
@@ -328,10 +332,10 @@ func TestRateLimitMiddleware(t *testing.T) {
 
 		storageRedis := configv1.RateLimitConfig_STORAGE_REDIS
 		rlConfig := configv1.RateLimitConfig_builder{
-			IsEnabled:         proto.Bool(true),
-			RequestsPerSecond: proto.Float64(10),
-			Burst:             proto.Int64(10),
-			Storage:           &storageRedis,
+			IsEnabled:         true,
+			RequestsPerSecond: 10,
+			Burst:             10,
+			Storage:           storageRedis,
 			Redis: busproto.RedisBus_builder{
 				Address: proto.String("localhost:6379"),
 			}.Build(),
@@ -395,10 +399,10 @@ func TestRateLimitMiddleware_Partitioning(t *testing.T) {
 		mockTool := &rateLimitMockTool{toolProto: toolProto}
 
 		rlConfig := configv1.RateLimitConfig_builder{
-			IsEnabled:         proto.Bool(true),
-			RequestsPerSecond: proto.Float64(1),
-			Burst:             proto.Int64(1),
-			KeyBy:             &keyBy,
+			IsEnabled:         true,
+			RequestsPerSecond: 1,
+			Burst:             1,
+			KeyBy:             keyBy,
 		}.Build()
 
 		serviceInfo := &tool.ServiceInfo{

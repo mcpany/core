@@ -7,9 +7,9 @@ import (
 	"context"
 	"testing"
 
+	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/mcpany/core/server/pkg/auth"
 	"github.com/mcpany/core/server/pkg/tool"
-	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
@@ -75,6 +75,10 @@ func (m *MockToolManagerForRegistry) ListServices() []*tool.ServiceInfo {
 
 func (m *MockToolManagerForRegistry) SetProfiles(enabled []string, defs []*configv1.ProfileDefinition) {
 	m.Called(enabled, defs)
+}
+
+func (m *MockToolManagerForRegistry) IsServiceAllowed(serviceID, profileID string) bool {
+	return true
 }
 
 func TestInitStandardMiddlewares(t *testing.T) {

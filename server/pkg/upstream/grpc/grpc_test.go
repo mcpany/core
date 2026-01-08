@@ -14,15 +14,15 @@ import (
 	"sync"
 	"testing"
 
+	configv1 "github.com/mcpany/core/proto/config/v1"
+	pb "github.com/mcpany/core/proto/examples/weather/v1"
+	routerv1 "github.com/mcpany/core/proto/mcp_router/v1"
 	"github.com/mcpany/core/server/pkg/pool"
 	"github.com/mcpany/core/server/pkg/prompt"
 	"github.com/mcpany/core/server/pkg/resource"
 	"github.com/mcpany/core/server/pkg/tool"
 	"github.com/mcpany/core/server/pkg/upstream/grpc/protobufparser"
 	"github.com/mcpany/core/server/pkg/util"
-	configv1 "github.com/mcpany/core/proto/config/v1"
-	pb "github.com/mcpany/core/proto/examples/weather/v1"
-	routerv1 "github.com/mcpany/core/proto/mcp_router/v1"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -58,6 +58,10 @@ func (m *MockToolManager) AddTool(t tool.Tool) error {
 	toolID := t.Tool().GetServiceId() + "." + sanitizedToolName
 	m.tools[toolID] = t
 	return nil
+}
+
+func (m *MockToolManager) IsServiceAllowed(serviceID, profileID string) bool {
+	return true
 }
 
 func (m *MockToolManager) GetTool(name string) (tool.Tool, bool) {
