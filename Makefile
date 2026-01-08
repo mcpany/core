@@ -37,11 +37,11 @@ all: gen
 	$(MAKE) -C ui build
 
 test: gen
+	$(MAKE) test-proto
 	$(MAKE) -C server test
 	$(MAKE) -C ui test
-	$(MAKE) test-proto
 	$(MAKE) -C k8s test
-	$(MAKE) -C k8s test
+
 
 docker-build-all:
 	$(MAKE) -C server docker-build-server docker-build-dev docker-build-http-echo
