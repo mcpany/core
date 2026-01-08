@@ -10,13 +10,13 @@ The **Request Tracer** is a new observability feature that allows users to visua
 
 ## Screenshot
 
-![Trace View](.audit/ui/2025-05-23/trace_view.png)
+![Trace View](images/trace_view.png)
 
 ## Implementation Details
 
 - **Frontend**: Built with Next.js, using `ResizablePanel` for a flexible split-pane layout.
 - **Visualization**: Custom CSS-based timeline visualization for performance and simplicity.
-- **Mock API**: Currently backed by a mock API (`/api/traces`) for demonstration purposes, ready to be connected to a real backend tracing system (e.g., OpenTelemetry).
+- **Mock API**: Currently backed by a mock API (`/api/traces`) for demonstration purposes, ready to be connected to a real backend tracing system (e.g., OpenTelemetry). The backend already supports OpenTelemetry tracing, but the frontend currently uses the mock API for visualization.
 
 ## Usage
 
