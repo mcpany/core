@@ -17,6 +17,7 @@ import (
 	"github.com/mcpany/core/server/pkg/bus"
 	"github.com/mcpany/core/server/pkg/config"
 	"github.com/mcpany/core/server/pkg/mcpserver"
+	"github.com/mcpany/core/server/pkg/middleware"
 	"github.com/mcpany/core/server/pkg/pool"
 	"github.com/mcpany/core/server/pkg/serviceregistry"
 	"github.com/mcpany/core/server/pkg/upstream/factory"
@@ -50,13 +51,15 @@ func TestRunServerMode_Auth(t *testing.T) {
 	// Create app
 	app := NewApplication()
 
-	// Global Key
-	globalKey := "global-secret"
-	config.GlobalSettings().SetAPIKey(globalKey)
+	// Initialize SettingsManager
+	app.SettingsManager = NewGlobalSettingsManager("global-secret", nil, nil)
+
+	// Global Key - config.GlobalSettings is used by some components, ensure sync
+	config.GlobalSettings().SetAPIKey("global-secret")
 	defer config.GlobalSettings().SetAPIKey("")
 
 	authManager := auth.NewManager()
-	authManager.SetAPIKey(globalKey)
+	authManager.SetAPIKey("global-secret")
 
 	serviceRegistry := serviceregistry.New(
 		upstreamFactory,
@@ -104,9 +107,12 @@ func TestRunServerMode_Auth(t *testing.T) {
 		},
 	}
 
+	cachingMiddleware := middleware.NewCachingMiddleware(app.ToolManager)
+
 	errChan := make(chan error, 1)
 	go func() {
-		errChan <- app.runServerMode(ctx, mcpSrv, busProvider, bindAddress, grpcPort, 5*time.Second, globalKey, users, nil, nil, nil, nil, nil, serviceRegistry)
+		// Pass nil for storage, it should be fine if not used by these handlers
+		errChan <- app.runServerMode(ctx, mcpSrv, busProvider, bindAddress, grpcPort, 5*time.Second, users, nil, cachingMiddleware, app.Storage, serviceRegistry)
 	}()
 
 	// Wait for server to be ready
@@ -181,7 +187,7 @@ func TestRunServerMode_Auth(t *testing.T) {
 	// Case 7: User No Auth - Fallback to Global - Correct Key
 	t.Run("User No Auth - Global Correct", func(t *testing.T) {
 		req, _ := http.NewRequest("POST", baseURL+"/mcp/u/user_no_auth/profile/profileB", nil)
-		req.Header.Set("X-API-Key", globalKey)
+		req.Header.Set("X-API-Key", "global-secret")
 		resp, err := http.DefaultClient.Do(req)
 		require.NoError(t, err)
 		defer func() { _ = resp.Body.Close() }()
@@ -201,7 +207,7 @@ func TestRunServerMode_Auth(t *testing.T) {
 	// Case 9: Global Auth via Bearer Token
 	t.Run("Global Auth Bearer", func(t *testing.T) {
 		req, _ := http.NewRequest("POST", baseURL+"/mcp/u/user_no_auth/profile/profileB", nil)
-		req.Header.Set("Authorization", "Bearer "+globalKey)
+		req.Header.Set("Authorization", "Bearer global-secret")
 		resp, err := http.DefaultClient.Do(req)
 		require.NoError(t, err)
 		defer func() { _ = resp.Body.Close() }()
@@ -215,10 +221,11 @@ func TestRunServerMode_Auth(t *testing.T) {
 
 func TestAuthMiddleware_LocalhostSecurity(t *testing.T) {
 	app := NewApplication()
+	app.SettingsManager = NewGlobalSettingsManager("", nil, nil) // Empty key
 
 	// Case 1: No API Key Configured
 	t.Run("No Key - Localhost Allowed", func(t *testing.T) {
-		middleware := app.createAuthMiddleware("") // No key
+		middleware := app.createAuthMiddleware() // No key
 		handler := middleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusOK)
 		}))
@@ -232,7 +239,7 @@ func TestAuthMiddleware_LocalhostSecurity(t *testing.T) {
 	})
 
 	t.Run("No Key - IPv6 Localhost Allowed", func(t *testing.T) {
-		middleware := app.createAuthMiddleware("") // No key
+		middleware := app.createAuthMiddleware() // No key
 		handler := middleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusOK)
 		}))
@@ -246,7 +253,7 @@ func TestAuthMiddleware_LocalhostSecurity(t *testing.T) {
 	})
 
 	t.Run("No Key - Private IP Allowed", func(t *testing.T) {
-		middleware := app.createAuthMiddleware("") // No key
+		middleware := app.createAuthMiddleware() // No key
 		handler := middleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusOK)
 		}))
@@ -260,7 +267,7 @@ func TestAuthMiddleware_LocalhostSecurity(t *testing.T) {
 	})
 
 	t.Run("No Key - Public IP Denied", func(t *testing.T) {
-		middleware := app.createAuthMiddleware("") // No key
+		middleware := app.createAuthMiddleware() // No key
 		handler := middleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusOK)
 		}))
@@ -274,8 +281,10 @@ func TestAuthMiddleware_LocalhostSecurity(t *testing.T) {
 	})
 
 	// Case 2: API Key Configured
+	app.SettingsManager.Update(nil, "secret") // Set key
+
 	t.Run("With Key - Localhost Needs Key", func(t *testing.T) {
-		middleware := app.createAuthMiddleware("secret")
+		middleware := app.createAuthMiddleware()
 		handler := middleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusOK)
 		}))
@@ -289,7 +298,7 @@ func TestAuthMiddleware_LocalhostSecurity(t *testing.T) {
 	})
 
 	t.Run("With Key - External Needs Key", func(t *testing.T) {
-		middleware := app.createAuthMiddleware("secret")
+		middleware := app.createAuthMiddleware()
 		handler := middleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusOK)
 		}))
@@ -303,7 +312,7 @@ func TestAuthMiddleware_LocalhostSecurity(t *testing.T) {
 	})
 
 	t.Run("With Key - External With Correct Key Allowed", func(t *testing.T) {
-		middleware := app.createAuthMiddleware("secret")
+		middleware := app.createAuthMiddleware()
 		handler := middleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusOK)
 		}))
@@ -318,7 +327,7 @@ func TestAuthMiddleware_LocalhostSecurity(t *testing.T) {
 	})
 
 	t.Run("With Key - External With Authorization Bearer Allowed", func(t *testing.T) {
-		middleware := app.createAuthMiddleware("secret")
+		middleware := app.createAuthMiddleware()
 		handler := middleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusOK)
 		}))
@@ -346,6 +355,8 @@ func TestAuthMiddleware_AuthDisabled(t *testing.T) {
 	bindAddress := fmt.Sprintf("localhost:%d", port)
 
 	app := NewApplication()
+	app.SettingsManager = NewGlobalSettingsManager("", nil, nil)
+
 	busProvider, _ := bus.NewProvider(nil)
 	poolManager := pool.NewManager()
 	upstreamFactory := factory.NewUpstreamServiceFactory(poolManager)
@@ -369,6 +380,8 @@ func TestAuthMiddleware_AuthDisabled(t *testing.T) {
 	)
 	require.NoError(t, err)
 
+	cachingMiddleware := middleware.NewCachingMiddleware(app.ToolManager)
+
 	// Configure settings to Disable Auth
 	origMiddlewares := config.GlobalSettings().Middlewares()
 	defer config.GlobalSettings().SetMiddlewares(origMiddlewares)
@@ -384,7 +397,7 @@ func TestAuthMiddleware_AuthDisabled(t *testing.T) {
 
 	errChan := make(chan error, 1)
 	go func() {
-		errChan <- app.runServerMode(ctx, mcpSrv, busProvider, bindAddress, "", 5*time.Second, "", nil, nil, nil, nil, nil, nil, serviceRegistry)
+		errChan <- app.runServerMode(ctx, mcpSrv, busProvider, bindAddress, "", 5*time.Second, nil, nil, cachingMiddleware, nil, serviceRegistry)
 	}()
 
 	// Wait for server to be ready
