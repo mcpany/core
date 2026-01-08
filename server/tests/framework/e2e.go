@@ -28,27 +28,27 @@ type RegistrationMethod string
 
 const (
 	// FileRegistration uses a configuration file for registration.
-	FileRegistration    RegistrationMethod = "file"
+	FileRegistration RegistrationMethod = "file"
 	// GRPCRegistration uses the RegistrationService via gRPC.
-	GRPCRegistration    RegistrationMethod = "grpc"
+	GRPCRegistration RegistrationMethod = "grpc"
 	// JSONRPCRegistration uses the RegistrationService via JSON-RPC.
 	JSONRPCRegistration RegistrationMethod = "jsonrpc"
 )
 
 // E2ETestCase defines the structure for an end-to-end test case.
 type E2ETestCase struct {
-	Name                        string
-	UpstreamServiceType         string
-	BuildUpstream               func(t *testing.T) *integration.ManagedProcess
-	RegisterUpstream            func(t *testing.T, registrationClient apiv1.RegistrationServiceClient, upstreamEndpoint string)
-	ValidateTool                func(t *testing.T, mcpanyEndpoint string)
-	ValidateMiddlewares         func(t *testing.T, mcpanyEndpoint string, upstreamEndpoint string)
-	InvokeAIClient              func(t *testing.T, mcpanyEndpoint string)
+	Name                         string
+	UpstreamServiceType          string
+	BuildUpstream                func(t *testing.T) *integration.ManagedProcess
+	RegisterUpstream             func(t *testing.T, registrationClient apiv1.RegistrationServiceClient, upstreamEndpoint string)
+	ValidateTool                 func(t *testing.T, mcpanyEndpoint string)
+	ValidateMiddlewares          func(t *testing.T, mcpanyEndpoint string, upstreamEndpoint string)
+	InvokeAIClient               func(t *testing.T, mcpanyEndpoint string)
 	InvokeAIClientWithServerInfo func(t *testing.T, serverInfo *integration.MCPANYTestServerInfo)
-	RegistrationMethods         []RegistrationMethod
-	GenerateUpstreamConfig      func(_ string) string
-	StartMCPANYServer           func(t *testing.T, testName string, extraArgs ...string) *integration.MCPANYTestServerInfo
-	RegisterUpstreamWithJSONRPC func(t *testing.T, mcpanyEndpoint, upstreamEndpoint string)
+	RegistrationMethods          []RegistrationMethod
+	GenerateUpstreamConfig       func(_ string) string
+	StartMCPANYServer            func(t *testing.T, testName string, extraArgs ...string) *integration.MCPANYTestServerInfo
+	RegisterUpstreamWithJSONRPC  func(t *testing.T, mcpanyEndpoint, upstreamEndpoint string)
 }
 
 // ValidateRegisteredTool validates that the expected tool is registered.
@@ -224,7 +224,9 @@ func BuildWebsocketWeatherServer(t *testing.T) *integration.ManagedProcess {
 	if _, err := os.Stat(binaryPath); os.IsNotExist(err) {
 		t.Logf("Binary not found at %s, attempting to build...", binaryPath)
 		sourcePath := filepath.Join(root, "examples/upstream_service_demo/http/server/weather_server/weather_server.go")
-		cmd := exec.CommandContext(context.Background(), "go", "build", "-o", binaryPath, sourcePath) //nolint:gosec // Testing code
+		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
+		defer cancel()
+		cmd := exec.CommandContext(ctx, "go", "build", "-o", binaryPath, sourcePath) //nolint:gosec
 		cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stderr
 		err := cmd.Run()
