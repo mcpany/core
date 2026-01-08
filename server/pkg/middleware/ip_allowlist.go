@@ -7,17 +7,29 @@ import (
 	"fmt"
 	"net"
 	"net/http"
+	"sync"
 
 	"github.com/mcpany/core/server/pkg/logging"
 )
 
 // IPAllowlistMiddleware restricts access to allowed IP addresses.
+// It is thread-safe and supports dynamic updates.
 type IPAllowlistMiddleware struct {
+	mu            sync.RWMutex
 	allowedIPNets []*net.IPNet
 }
 
 // NewIPAllowlistMiddleware creates a new IPAllowlistMiddleware.
 func NewIPAllowlistMiddleware(allowedCIDRs []string) (*IPAllowlistMiddleware, error) {
+	m := &IPAllowlistMiddleware{}
+	if err := m.Update(allowedCIDRs); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
+// Update updates the allowlist with new CIDRs/IPs.
+func (m *IPAllowlistMiddleware) Update(allowedCIDRs []string) error {
 	nets := make([]*net.IPNet, 0, len(allowedCIDRs))
 	for _, cidr := range allowedCIDRs {
 		// Try parsing as CIDR first
@@ -30,7 +42,7 @@ func NewIPAllowlistMiddleware(allowedCIDRs []string) (*IPAllowlistMiddleware, er
 		// If not CIDR, try as single IP
 		ip := net.ParseIP(cidr)
 		if ip == nil {
-			return nil, fmt.Errorf("invalid IP or CIDR: %s", cidr)
+			return fmt.Errorf("invalid IP or CIDR: %s", cidr)
 		}
 
 		// Convert single IP to /32 or /128
@@ -41,15 +53,20 @@ func NewIPAllowlistMiddleware(allowedCIDRs []string) (*IPAllowlistMiddleware, er
 		nets = append(nets, &net.IPNet{IP: ip, Mask: mask})
 	}
 
-	return &IPAllowlistMiddleware{
-		allowedIPNets: nets,
-	}, nil
+	m.mu.Lock()
+	m.allowedIPNets = nets
+	m.mu.Unlock()
+	return nil
 }
 
 // Allow checks if the given remote address is allowed.
 // remoteAddr should be in the form "IP" or "IP:Port".
 func (m *IPAllowlistMiddleware) Allow(remoteAddr string) bool {
-	if len(m.allowedIPNets) == 0 {
+	m.mu.RLock()
+	nets := m.allowedIPNets
+	m.mu.RUnlock()
+
+	if len(nets) == 0 {
 		return true
 	}
 
@@ -69,7 +86,7 @@ func (m *IPAllowlistMiddleware) Allow(remoteAddr string) bool {
 		return false
 	}
 
-	for _, ipNet := range m.allowedIPNets {
+	for _, ipNet := range nets {
 		if ipNet.Contains(ip) {
 			return true
 		}
