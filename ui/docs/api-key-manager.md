@@ -4,7 +4,7 @@ The API Key Manager is a secure vault for managing credentials used by upstream 
 
 ## Features
 
-- **Secure Storage**: Secrets are stored securely (simulated in this version via local storage, to be replaced by backend vault).
+- **Secure Storage**: Secrets are stored securely (simulated in this version via in-memory mock storage on the server, to be replaced by backend vault).
 - **Visibility Control**: Secrets are masked by default. Toggle visibility to view or copy.
 - **Provider Metadata**: Tag secrets with their provider (OpenAI, AWS, etc.) for better organization.
 - **Clipboard Integration**: One-click copy functionality.
