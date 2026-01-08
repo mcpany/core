@@ -161,9 +161,17 @@ type Application struct {
 
 	// Middleware handles for dynamic updates
 	standardMiddlewares *middleware.StandardMiddlewares
+	// Settings Manager for global settings (dynamic updates)
+	SettingsManager     *GlobalSettingsManager
+	// Middlewares that need manual updates
+	ipMiddleware       *middleware.IPAllowlistMiddleware
+	corsMiddleware     *middleware.HTTPCORSMiddleware
+
 	startupCh           chan struct{}
 	startupOnce         sync.Once
 	configMu            sync.Mutex
+	// Store explicit API Key passed via CLI args
+	explicitAPIKey      string
 }
 
 // NewApplication creates a new Application with default dependencies.
@@ -223,6 +231,7 @@ func (a *Application) Run(
 	}
 	a.fs = fs
 	a.configPaths = configPaths
+	a.explicitAPIKey = apiKey
 
 	shutdownTracer, err := telemetry.InitTracer(ctx, appconsts.Name, appconsts.Version, os.Stderr)
 	if err != nil {
@@ -292,6 +301,15 @@ func (a *Application) Run(
 		cfg = &config_v1.McpAnyServerConfig{}
 	}
 
+	// Initialize Settings Manager
+	a.SettingsManager = NewGlobalSettingsManager(
+		apiKey,
+		cfg.GetGlobalSettings().GetAllowedIps(),
+		// Logic for origins default moved to inside NewGlobalSettingsManager or updated here
+		nil,
+	)
+	a.SettingsManager.Update(cfg.GetGlobalSettings(), apiKey)
+
 	busConfig := cfg.GetGlobalSettings().GetMessageBus()
 	busProvider, err := bus.NewProvider(busConfig)
 	if err != nil {
@@ -308,8 +326,8 @@ func (a *Application) Run(
 	a.PromptManager = prompt.NewManager()
 	a.ResourceManager = resource.NewManager()
 	authManager := auth.NewManager()
-	if cfg.GetGlobalSettings().GetApiKey() != "" {
-		authManager.SetAPIKey(cfg.GetGlobalSettings().GetApiKey())
+	if a.SettingsManager.GetAPIKey() != "" {
+		authManager.SetAPIKey(a.SettingsManager.GetAPIKey())
 	}
 
 	// Set profiles for tool filtering
@@ -518,19 +536,6 @@ func (a *Application) Run(
 		bindAddress = cfg.GetGlobalSettings().GetMcpListenAddress()
 	}
 
-	var allowedIPs []string
-	if cfg.GetGlobalSettings() != nil {
-		allowedIPs = cfg.GetGlobalSettings().GetAllowedIps()
-	}
-
-	// Determine allowed origins for CORS
-	// Default to empty (Strict) to prevent insecure defaults.
-	// If LogLevel is DEBUG, we allow "*" to facilitate local development.
-	var allowedOrigins []string
-	if cfg.GetGlobalSettings().GetLogLevel() == config_v1.GlobalSettings_LOG_LEVEL_DEBUG {
-		allowedOrigins = []string{"*"}
-	}
-
 	// Use storageStore which is initialized as either sqlite or postgres
 	// We need to assert it to storage.Storage. Both implement it.
 	// But stores[...] is config.Store. storageStore is config.Store.
@@ -556,29 +561,16 @@ func (a *Application) Run(
 
 	// Start gRPC server
 
-
-	if apiKey == "" {
-		apiKey = cfg.GetGlobalSettings().GetApiKey()
-	}
-
 	// Start servers
 	if err := a.runServerMode(
 		ctx,
 		mcpSrv,
 		busProvider,
-		// We use cfg values or defaults?
-		// cfg has McpListenAddress?
-		// Run function has bindAddress argument?
-		// Run signature: (ctx, fs, stdio, jsonrpcPort, grpcPort, configPaths, shutdownTimeout)
-		// We have jsonrpcPort from Run args.
 		bindAddress,
 		grpcPort,
 		shutdownTimeout,
-		apiKey,
 		cfg.GetUsers(),
 		cfg.GetGlobalSettings().GetProfileDefinitions(),
-		allowedIPs,
-		allowedOrigins,
 		cachingMiddleware,
 		s,
 		serviceRegistry,
@@ -614,6 +606,28 @@ func (a *Application) ReloadConfig(fs afero.Fs, configPaths []string) error {
 
 	log.Info("Reloading configuration...")
 	metrics.IncrCounter([]string{"config", "reload", "total"}, 1)
+
+	cfg, err := a.loadConfig(fs, configPaths)
+	if err != nil {
+		metrics.IncrCounter([]string{"config", "reload", "errors"}, 1)
+		return fmt.Errorf("failed to load services from config: %w", err)
+	}
+
+	// Update global settings
+	a.updateGlobalSettings(cfg)
+
+	// Update profiles on reload
+	a.ToolManager.SetProfiles(
+		cfg.GetGlobalSettings().GetProfiles(),
+		cfg.GetGlobalSettings().GetProfileDefinitions(),
+	)
+
+	// Reconcile services (add/remove/update)
+	a.reconcileServices(cfg)
+	return nil
+}
+
+func (a *Application) loadConfig(fs afero.Fs, configPaths []string) (*config_v1.McpAnyServerConfig, error) {
 	var stores []config.Store
 	if len(configPaths) > 0 {
 		stores = append(stores, config.NewFileStore(fs, configPaths))
@@ -623,13 +637,25 @@ func (a *Application) ReloadConfig(fs afero.Fs, configPaths []string) error {
 	}
 
 	store := config.NewMultiStore(stores...)
-	cfg, err := config.LoadServices(context.Background(), store, "server")
-	if err != nil {
-		metrics.IncrCounter([]string{"config", "reload", "errors"}, 1)
-		return fmt.Errorf("failed to load services from config: %w", err)
+	return config.LoadServices(context.Background(), store, "server")
+}
+
+func (a *Application) updateGlobalSettings(cfg *config_v1.McpAnyServerConfig) {
+	log := logging.GetLogger()
+	if a.SettingsManager != nil {
+		a.SettingsManager.Update(cfg.GetGlobalSettings(), a.explicitAPIKey)
 	}
 
-	// Update global settings
+	// Update dynamic middlewares
+	if a.ipMiddleware != nil {
+		if err := a.ipMiddleware.Update(a.SettingsManager.GetAllowedIPs()); err != nil {
+			log.Error("Failed to update IP allowlist", "error", err)
+		}
+	}
+	if a.corsMiddleware != nil {
+		a.corsMiddleware.Update(a.SettingsManager.GetAllowedOrigins())
+	}
+
 	if a.standardMiddlewares != nil {
 		if a.standardMiddlewares.Audit != nil {
 			if err := a.standardMiddlewares.Audit.UpdateConfig(cfg.GetGlobalSettings().GetAudit()); err != nil {
@@ -640,13 +666,11 @@ func (a *Application) ReloadConfig(fs afero.Fs, configPaths []string) error {
 			a.standardMiddlewares.GlobalRateLimit.UpdateConfig(cfg.GetGlobalSettings().GetRateLimit())
 		}
 	}
+}
 
-	// Update profiles on reload
-	a.ToolManager.SetProfiles(
-		cfg.GetGlobalSettings().GetProfiles(),
-		cfg.GetGlobalSettings().GetProfileDefinitions(),
-	)
-
+// reconcileServices reconciles the service registry with the new configuration.
+func (a *Application) reconcileServices(cfg *config_v1.McpAnyServerConfig) {
+	log := logging.GetLogger()
 	// Get current active services
 	currentServicesMap := make(map[string]*config_v1.UpstreamServiceConfig)
 	if a.ServiceRegistry != nil {
@@ -690,8 +714,6 @@ func (a *Application) ReloadConfig(fs afero.Fs, configPaths []string) error {
 			needsUpdate = true
 		} else {
 			// Compare configs
-			// We need to handle fields that are populated during registration (ID, SanitizedName).
-			// We create a clone of the old config and strip these fields to compare with the new fresh config.
 			newSvcCopy := proto.Clone(newSvc).(*config_v1.UpstreamServiceConfig)
 			if newSvcCopy.GetId() == "" {
 				newSvcCopy.Id = oldConfig.Id
@@ -703,18 +725,15 @@ func (a *Application) ReloadConfig(fs afero.Fs, configPaths []string) error {
 			if !proto.Equal(oldConfig, newSvcCopy) {
 				log.Info("Updating service", "service", name)
 				needsUpdate = true
-				// Unregister old service first
 				if a.ServiceRegistry != nil {
 					if err := a.ServiceRegistry.UnregisterService(context.Background(), name); err != nil {
 						log.Error("Failed to unregister service for update", "service", name, "error", err)
-						// Proceeding anyway as we want to try to register the new one
 					}
 				}
 			}
 		}
 
 		if needsUpdate {
-			// Register new service
 			if a.ServiceRegistry != nil {
 				_, _, _, err := a.ServiceRegistry.RegisterService(context.Background(), newSvc)
 				if err != nil {
@@ -730,7 +749,6 @@ func (a *Application) ReloadConfig(fs afero.Fs, configPaths []string) error {
 	}
 
 	log.Info("Reload complete", "tools_count", len(a.ToolManager.ListTools()))
-	return nil
 }
 
 // WaitForStartup waits for the application to be fully initialized.
@@ -867,19 +885,17 @@ func (a *Application) runServerMode(
 	bus *bus.Provider,
 	bindAddress, grpcPort string,
 	shutdownTimeout time.Duration,
-	apiKey string,
 	users []*config_v1.User,
 	profileDefinitions []*config_v1.ProfileDefinition,
-	allowedIPs []string,
-	allowedOrigins []string,
 	cachingMiddleware *middleware.CachingMiddleware,
 	store storage.Storage,
 	serviceRegistry *serviceregistry.ServiceRegistry,
 ) error {
-	ipMiddleware, err := middleware.NewIPAllowlistMiddleware(allowedIPs)
+	ipMiddleware, err := middleware.NewIPAllowlistMiddleware(a.SettingsManager.GetAllowedIPs())
 	if err != nil {
 		return fmt.Errorf("failed to create IP allowlist middleware: %w", err)
 	}
+	a.ipMiddleware = ipMiddleware
 
 	// localCtx is used to manage the lifecycle of the servers started in this function.
 	// It's canceled when this function returns, ensuring that all servers are shut down.
@@ -912,9 +928,10 @@ func (a *Application) runServerMode(
 		logging.GetLogger().Warn("Auth middleware is disabled by config! Enforcing private-IP-only access for safety.")
 		// Even if auth is disabled, we enforce private-IP-only access to prevent public exposure.
 		// Passing an empty string to createAuthMiddleware triggers the IsPrivateIP check.
-		authMiddleware = a.createAuthMiddleware("")
+		authMiddleware = a.createAuthMiddleware() // empty apiKey implied if we change signature?
+		// Wait, createAuthMiddleware needs to use SettingsManager now.
 	} else {
-		authMiddleware = a.createAuthMiddleware(apiKey)
+		authMiddleware = a.createAuthMiddleware()
 	}
 
 	userMap := make(map[string]*config_v1.User)
@@ -1052,8 +1069,7 @@ func (a *Application) runServerMode(
 				}
 			} else {
 				// 3. Global Auth
-				// Global Auth is still a simple API Key string in GlobalSettings for now (based on current code).
-				// We can continue to use it as is.
+				apiKey := a.SettingsManager.GetAPIKey()
 				if apiKey != "" {
 					// Manual check for global key since it's a string, or wrap it.
 					// We'll just do manual check to match existing behavior logic.
@@ -1273,7 +1289,8 @@ func (a *Application) runServerMode(
 	rateLimiter := middleware.NewHTTPRateLimitMiddleware(20, 50)
 
 	// Apply CORS Middleware
-	corsMiddleware := middleware.NewHTTPCORSMiddleware(allowedOrigins)
+	corsMiddleware := middleware.NewHTTPCORSMiddleware(a.SettingsManager.GetAllowedOrigins())
+	a.corsMiddleware = corsMiddleware
 
 	// Middleware order: SecurityHeaders -> CORS -> JSONRPCCompliance -> IPAllowList -> RateLimit -> Mux
 	// We wrap everything with a debug logger to see what's coming in
@@ -1488,12 +1505,14 @@ func startHTTPServer(
 }
 
 // createAuthMiddleware creates the authentication middleware.
-func (a *Application) createAuthMiddleware(apiKey string) func(http.Handler) http.Handler {
+func (a *Application) createAuthMiddleware() func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			ip := util.ExtractIP(r.RemoteAddr)
 			ctx := util.ContextWithRemoteIP(r.Context(), ip)
 			r = r.WithContext(ctx)
+
+			apiKey := a.SettingsManager.GetAPIKey()
 
 			if apiKey != "" {
 				// Check X-API-Key or Authorization header
@@ -1505,7 +1524,6 @@ func (a *Application) createAuthMiddleware(apiKey string) func(http.Handler) htt
 					}
 				}
 
-				logging.GetLogger().Info("DEBUG: Checking API Key", "configured", "REDACTED", "header_len", len(requestKey), "remote_addr", r.RemoteAddr)
 				if subtle.ConstantTimeCompare([]byte(requestKey), []byte(apiKey)) != 1 {
 					http.Error(w, "Unauthorized", http.StatusUnauthorized)
 					return

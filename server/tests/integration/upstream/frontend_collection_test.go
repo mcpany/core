@@ -22,7 +22,7 @@ import (
 func TestFrontendReactCollection(t *testing.T) {
 	// 1. Load config
 	fs := afero.NewOsFs()
-	configPath := "/usr/local/google/home/kxw/core/marketplace/upstream_service_collection/frontend_react.yaml"
+	configPath := "../../../../marketplace/upstream_service_collection/frontend_react.yaml"
 
 	// Verify file exists
 	_, err := fs.Stat(configPath)
