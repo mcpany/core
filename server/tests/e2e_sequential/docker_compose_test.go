@@ -129,24 +129,19 @@ func TestDockerComposeE2E(t *testing.T) {
 		defer os.Remove(dynamicCompose)
 
 		// We must pass --project-directory because the dynamic file is in build/
-		runCommand(t, rootDir, "docker", "compose", "-f", dynamicCompose, "--project-directory", rootDir, "up", "-d", "--wait")
+		// We explicitly start only mcpany-server (and dependencies) and prometheus to avoid requiring the UI image
+		runCommand(t, rootDir, "docker", "compose", "-f", dynamicCompose, "--project-directory", rootDir, "up", "-d", "--wait", "mcpany-server", "prometheus")
 
 		// Discover ports
 		serverPort := getServicePort(dynamicCompose, rootDir, "mcpany-server", "50050")
-		// prometheusPort := getServicePort(dynamicCompose, rootDir, "prometheus", "9090")
-		// We might fallback or skip prometheus if not present.
 
 		t.Logf("Root mcpany-server running on port %s", serverPort)
 		verifyEndpoint(t, fmt.Sprintf("http://localhost:%s/healthz", serverPort), 200, 30*time.Second)
 
-		// We only verify prometheus if we can find the port.
-		// For now, let's assume we focused on example-compose as the main test.
-		// If root compose is present, we shut it down.
 		runCommand(t, rootDir, "docker", "compose", "-f", dynamicCompose, "--project-directory", rootDir, "down")
 	} else {
 		t.Log("Skipping root docker-compose test (docker-compose.yml not found)")
 	}
-
 	// 5. Start Example Docker Compose
 	t.Log("Switching to example docker-compose...")
 
