@@ -40,7 +40,7 @@ Based on a review of the MCP ecosystem (mcp.so, LobeHub, GitHub, Docker), we ide
 | Feature | Status | Feasibility / Strategy |
 | :--- | :--- | :--- |
 | **Context Optimizer** | In Progress | **Medium**: Reuse `server/pkg/tokenizer`. Implement `SummarizerMiddleware`. |
-| **Doctor API** | Missing | **Low**: `mcpctl doctor` command and `/v1/health/doctor` endpoint. |
+| **Doctor API** | Implemented | **Low**: `mcpctl doctor` command and `/v1/health/doctor` endpoint. |
 | **Agent Debugger** | Missing | **Medium**: Enhance `server/cmd/webhooks` (Sidecar) or build new UI. |
 | **WASM Sandbox** | Missing | **High**: Integrate `wazero` or similar. |
 

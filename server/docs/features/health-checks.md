@@ -1,8 +1,20 @@
 # Health Checks
 
-MCP Any provides a robust mechanism to monitor the health of your upstream services. By configuring health checks, you ensure that traffic is only routed to healthy service instances, improving the overall reliability of your system.
+MCP Any provides a robust mechanism to monitor the health of your upstream services and the MCP Any server itself.
 
-## Supported Protocols
+## Server Health Endpoints
+
+MCP Any exposes the following endpoints for monitoring the server's own health:
+
+-   `/healthz`: Liveness probe. Returns 200 OK if the server is running.
+-   `/readyz`: Readiness probe. Returns 200 OK if the server is ready to accept traffic (e.g. connected to database, message bus).
+-   `/v1/health/doctor`: **Doctor API**. Runs a suite of diagnostic checks (internet connectivity, dependencies) and returns a detailed JSON report.
+
+## Upstream Health Checks
+
+By configuring health checks for upstream services, you ensure that traffic is only routed to healthy service instances, improving the overall reliability of your system.
+
+### Supported Protocols
 
 Health checks can be configured for the following upstream service types:
 

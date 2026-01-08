@@ -29,6 +29,7 @@ import (
 	"github.com/mcpany/core/server/pkg/bus"
 	"github.com/mcpany/core/server/pkg/config"
 	"github.com/mcpany/core/server/pkg/gc"
+	"github.com/mcpany/core/server/pkg/health"
 	"github.com/mcpany/core/server/pkg/logging"
 	"github.com/mcpany/core/server/pkg/mcpserver"
 	"github.com/mcpany/core/server/pkg/metrics"
@@ -1228,6 +1229,17 @@ func (a *Application) runServerMode(
 		w.WriteHeader(http.StatusOK)
 		_, _ = fmt.Fprintln(w, "OK")
 	}))
+	mux.Handle("/readyz", http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+		// TODO: Add actual readiness checks (e.g. DB connection, Bus connection)
+		w.WriteHeader(http.StatusOK)
+		_, _ = fmt.Fprintln(w, "OK")
+	}))
+
+	// Doctor API
+	doctor := health.NewDoctor()
+	// We might want to inject dependencies into Doctor here if needed
+	mux.Handle("/v1/health/doctor", authMiddleware(doctor.Handler()))
+
 	mux.Handle("/metrics", authMiddleware(metrics.Handler()))
 	mux.Handle("/upload", authMiddleware(http.HandlerFunc(a.uploadFile)))
 
