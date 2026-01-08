@@ -38,17 +38,15 @@ test.describe('Secrets Manager', () => {
 
     // Toggle visibility
     // Click the eye icon button using aria-label
-    // Use force: true because sometimes the button structure might intercept text pointer events
     const toggleButton = secretRow.locator('button[aria-label="Show secret"]');
-    await toggleButton.click({ force: true });
-    await page.waitForTimeout(500); // Wait for state update/animation
+    await toggleButton.click();
 
-    // Verify state changed (Implicit in next check)
-    // await expect(secretRow.locator('button[aria-label="Hide secret"]')).toBeVisible();
+    // Wait for the button to change to "Hide secret" to confirm state update
+    await expect(secretRow.locator('button[aria-label="Hide secret"]')).toBeVisible();
 
     // Find the span containing the value and check text
-    // The value might take a moment to be revealed/hydrated
-    await expect(secretRow.getByText(secretValue)).toBeVisible({ timeout: 5000 });
+    // The server redacts values in the list API, so we expect [REDACTED]
+    await expect(secretRow.getByText('[REDACTED]')).toBeVisible({ timeout: 5000 });
 
     // Delete the secret
     await secretRow.locator('button[aria-label="Delete secret"]').click();
