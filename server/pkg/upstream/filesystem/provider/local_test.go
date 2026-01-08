@@ -106,6 +106,12 @@ func TestValidateLocalPath(t *testing.T) {
 			rootPaths:   map[string]string{"/": dataDir},
 			wantErr:     false,
 		},
+		{
+			name:        "Invalid prefix match",
+			virtualPath: "/database/file.txt",
+			rootPaths:   map[string]string{"/data": dataDir},
+			wantErr:     true,
+		},
 	}
 
 	for _, tt := range tests {
