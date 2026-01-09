@@ -139,6 +139,7 @@ func (a *APIKeyAuthenticator) Authenticate(ctx context.Context, r *http.Request)
 // BasicAuthenticator authenticates using HTTP Basic Auth and bcrypt password hashing.
 type BasicAuthenticator struct {
 	PasswordHash string
+	Username     string
 }
 
 // NewBasicAuthenticator creates a new BasicAuthenticator.
@@ -148,13 +149,18 @@ func NewBasicAuthenticator(config *configv1.BasicAuth) *BasicAuthenticator {
 	}
 	return &BasicAuthenticator{
 		PasswordHash: config.GetPasswordHash(),
+		Username:     config.GetUsername(),
 	}
 }
 
 // Authenticate validates the basic auth credentials.
 func (a *BasicAuthenticator) Authenticate(ctx context.Context, r *http.Request) (context.Context, error) {
-	_, password, ok := r.BasicAuth()
+	user, password, ok := r.BasicAuth()
 	if !ok {
+		return ctx, fmt.Errorf("unauthorized")
+	}
+
+	if a.Username != "" && user != a.Username {
 		return ctx, fmt.Errorf("unauthorized")
 	}
 
