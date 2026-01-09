@@ -43,10 +43,12 @@ type UpstreamServiceManager struct {
 // It initializes the manager with the specified enabled profiles and default settings.
 //
 // Parameters:
-//   enabledProfiles: A list of profile names that are active. Services must match one of these profiles to be loaded.
+//
+//	enabledProfiles: A list of profile names that are active. Services must match one of these profiles to be loaded.
 //
 // Returns:
-//   A pointer to a fully initialized UpstreamServiceManager.
+//
+//	A pointer to a fully initialized UpstreamServiceManager.
 func NewUpstreamServiceManager(enabledProfiles []string) *UpstreamServiceManager {
 	if len(enabledProfiles) == 0 {
 		enabledProfiles = []string{"default"}
@@ -72,12 +74,14 @@ func NewUpstreamServiceManager(enabledProfiles []string) *UpstreamServiceManager
 // based on their priority and name.
 //
 // Parameters:
-//   ctx: The context for the operation.
-//   config: The main server configuration containing service definitions and collection references.
+//
+//	ctx: The context for the operation.
+//	config: The main server configuration containing service definitions and collection references.
 //
 // Returns:
-//   A slice of pointers to UpstreamServiceConfig objects that represent the final set of loaded services.
-//   An error if any critical failure occurs during loading or merging.
+//
+//	A slice of pointers to UpstreamServiceConfig objects that represent the final set of loaded services.
+//	An error if any critical failure occurs during loading or merging.
 func (m *UpstreamServiceManager) LoadAndMergeServices(ctx context.Context, config *configv1.McpAnyServerConfig) ([]*configv1.UpstreamServiceConfig, error) {
 	// Initialize Profile Manager and resolve overrides
 	pm := profile.NewManager(config.GetGlobalSettings().GetProfileDefinitions())
@@ -241,6 +245,7 @@ func (m *UpstreamServiceManager) unmarshalServices(data []byte, services *[]*con
 		if err != nil {
 			return fmt.Errorf("failed to convert yaml to json: %w", err)
 		}
+		m.log.Info("Unmarshalled YAML to JSON", "json", string(jsonData))
 	}
 
 	return m.unmarshalProtoJSON(jsonData, services)
@@ -318,7 +323,8 @@ func (m *UpstreamServiceManager) addService(service *configv1.UpstreamServiceCon
 	// Or disabled?
 	// If we want "centralized management", maybe default is disabled unless enabled in profile?
 	// Check overrides first
-	isOverrideDisabled := false
+	m.log.Info("Checking service disabled status", "service", service.GetName(), "disabled_field", service.GetDisable())
+	isOverrideDisabled := service.GetDisable()
 	var activeConfig *configv1.ProfileServiceConfig
 
 	// We can match by Name or ID. Ideally ID.
@@ -330,9 +336,7 @@ func (m *UpstreamServiceManager) addService(service *configv1.UpstreamServiceCon
 
 	if activeConfig != nil {
 		if activeConfig.Enabled != nil {
-			if !*activeConfig.Enabled {
-				isOverrideDisabled = true
-			}
+			isOverrideDisabled = !*activeConfig.Enabled
 		}
 	}
 

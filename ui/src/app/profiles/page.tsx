@@ -10,6 +10,9 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { User, Plus, Trash, Edit } from "lucide-react";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 interface Profile {
     id: string;
@@ -27,14 +30,54 @@ const mockProfiles: Profile[] = [
 
 export default function ProfilesPage() {
   const [profiles, setProfiles] = useState<Profile[]>(mockProfiles);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [newProfileName, setNewProfileName] = useState("");
+  const [newProfileDesc, setNewProfileDesc] = useState("");
+
+  const handleCreate = () => {
+      const newProfile: Profile = {
+          id: `p${profiles.length + 1}`,
+          name: newProfileName,
+          description: newProfileDesc,
+          services: [],
+          type: "dev"
+      };
+      setProfiles([...profiles, newProfile]);
+      setIsDialogOpen(false);
+      setNewProfileName("");
+      setNewProfileDesc("");
+  };
 
   return (
     <div className="flex-1 space-y-4 p-8 pt-6">
       <div className="flex items-center justify-between">
         <h2 className="text-3xl font-bold tracking-tight">Profiles</h2>
-        <Button>
-            <Plus className="mr-2 h-4 w-4" /> Create Profile
-        </Button>
+        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+            <DialogTrigger asChild>
+                <Button>
+                    <Plus className="mr-2 h-4 w-4" /> Create Profile
+                </Button>
+            </DialogTrigger>
+            <DialogContent>
+                <DialogHeader>
+                    <DialogTitle>Create Profile</DialogTitle>
+                    <DialogDescription>Add a new profile to manage service access.</DialogDescription>
+                </DialogHeader>
+                <div className="grid gap-4 py-4">
+                    <div className="grid grid-cols-4 items-center gap-4">
+                        <Label htmlFor="name" className="text-right">Name</Label>
+                        <Input id="name" value={newProfileName} onChange={(e) => setNewProfileName(e.target.value)} className="col-span-3" />
+                    </div>
+                    <div className="grid grid-cols-4 items-center gap-4">
+                        <Label htmlFor="description" className="text-right">Description</Label>
+                        <Input id="description" value={newProfileDesc} onChange={(e) => setNewProfileDesc(e.target.value)} className="col-span-3" />
+                    </div>
+                </div>
+                <DialogFooter>
+                    <Button onClick={handleCreate}>Save</Button>
+                </DialogFooter>
+            </DialogContent>
+        </Dialog>
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">

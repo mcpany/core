@@ -459,6 +459,11 @@ func (tm *Manager) AddTool(tool Tool) error {
 	// If the name is scoped (e.g. "service.tool"), this works.
 	// If there are collisions, last one wins.
 	tm.nameMap.Store(tool.Tool().GetName(), toolID)
+	// Also map the fully qualified name that the MCP server exposes to clients
+	if tool.Tool().GetServiceId() != "" {
+		fullExposedName := tool.Tool().GetServiceId() + "." + tool.Tool().GetName()
+		tm.nameMap.Store(fullExposedName, toolID)
+	}
 
 	tm.toolsMutex.Lock()
 	tm.cachedTools = nil

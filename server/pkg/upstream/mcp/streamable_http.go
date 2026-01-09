@@ -560,7 +560,7 @@ func (u *Upstream) registerTools(
 		}
 
 		// Check auto-discovery
-		if !hasConfig && !serviceConfig.GetAutoDiscoverTool() {
+		if !hasConfig && !serviceConfig.GetAutoDiscoverTool() && !mcpService.GetToolAutoDiscovery() {
 			// Skip tool if not explicitly configured and auto-discovery is disabled
 			continue
 		}
