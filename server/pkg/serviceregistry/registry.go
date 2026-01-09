@@ -9,14 +9,15 @@ import (
 	"fmt"
 	"sync"
 
+	config "github.com/mcpany/core/proto/config/v1"
 	"github.com/mcpany/core/server/pkg/auth"
+	"github.com/mcpany/core/server/pkg/logging"
 	"github.com/mcpany/core/server/pkg/prompt"
 	"github.com/mcpany/core/server/pkg/resource"
 	"github.com/mcpany/core/server/pkg/tool"
 	"github.com/mcpany/core/server/pkg/upstream"
 	"github.com/mcpany/core/server/pkg/upstream/factory"
 	"github.com/mcpany/core/server/pkg/util"
-	config "github.com/mcpany/core/proto/config/v1"
 )
 
 // ServiceRegistryInterface defines the interface for a service registry.
@@ -226,25 +227,32 @@ func (r *ServiceRegistry) UnregisterService(ctx context.Context, serviceName str
 	r.mu.Lock()
 	defer r.mu.Unlock()
 
-	if _, ok := r.serviceConfigs[serviceName]; !ok {
-		return fmt.Errorf("service %q not found", serviceName)
+	serviceID, err := util.SanitizeServiceName(serviceName)
+	if err != nil {
+		return fmt.Errorf("failed to sanitize service name %q: %w", serviceName, err)
+	}
+
+	if _, ok := r.serviceConfigs[serviceID]; !ok {
+		return fmt.Errorf("service %q (id: %s) not found", serviceName, serviceID)
 	}
 
 	var shutdownErr error
-	if u, ok := r.upstreams[serviceName]; ok {
+	if u, ok := r.upstreams[serviceID]; ok {
+		logging.GetLogger().Info("Shutting down upstream", "service", serviceName)
 		if err := u.Shutdown(ctx); err != nil {
 			shutdownErr = fmt.Errorf("failed to shutdown upstream for service %s: %w", serviceName, err)
 		}
-		delete(r.upstreams, serviceName)
+		logging.GetLogger().Info("Upstream shutdown complete", "service", serviceName)
+		delete(r.upstreams, serviceID)
 	}
 
-	delete(r.serviceConfigs, serviceName)
-	delete(r.serviceInfo, serviceName)
-	delete(r.serviceErrors, serviceName)
-	r.toolManager.ClearToolsForService(serviceName)
-	r.promptManager.ClearPromptsForService(serviceName)
-	r.resourceManager.ClearResourcesForService(serviceName)
-	r.authManager.RemoveAuthenticator(serviceName)
+	delete(r.serviceConfigs, serviceID)
+	delete(r.serviceInfo, serviceID)
+	delete(r.serviceErrors, serviceID)
+	r.toolManager.ClearToolsForService(serviceID)
+	r.promptManager.ClearPromptsForService(serviceID)
+	r.resourceManager.ClearResourcesForService(serviceID)
+	r.authManager.RemoveAuthenticator(serviceID)
 	return shutdownErr
 }
 

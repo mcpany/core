@@ -8,6 +8,7 @@ import (
 	"context"
 	"crypto/sha256"
 	"encoding/hex"
+	"encoding/json"
 	"fmt"
 	"io"
 	"sync"
@@ -158,7 +159,13 @@ type fsCallable struct {
 // Call executes the filesystem tool with the provided request arguments.
 // It returns the result of the tool execution or an error.
 func (c *fsCallable) Call(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
-	return c.handler(ctx, req.Arguments)
+	args := req.Arguments
+	if args == nil && len(req.ToolInputs) > 0 {
+		if err := json.Unmarshal(req.ToolInputs, &args); err != nil {
+			return nil, fmt.Errorf("failed to unmarshal arguments: %w", err)
+		}
+	}
+	return c.handler(ctx, args)
 }
 
 func (u *Upstream) createProvider(ctx context.Context, config *configv1.FilesystemUpstreamService) (provider.Provider, error) {

@@ -282,7 +282,7 @@ func TestServiceRegistry_UnregisterService(t *testing.T) {
 	// Try to unregister a non-existent service
 	err = registry.UnregisterService(context.Background(), "non-existent-service")
 	require.Error(t, err)
-	assert.Contains(t, err.Error(), `service "non-existent-service" not found`)
+	assert.Contains(t, err.Error(), `service "non-existent-service" (id: non-existent-service) not found`)
 }
 
 func TestServiceRegistry_Close(t *testing.T) {
