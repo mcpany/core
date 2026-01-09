@@ -192,6 +192,26 @@ export interface TrustedHeaderAuth {
   headerValue: string;
 }
 
+/** UserToken represents an OAuth2 token stored for a user. */
+export interface UserToken {
+  /** The ID of the user who owns this token. */
+  userId: string;
+  /** The ID of the service this token is for. */
+  serviceId: string;
+  /** The access token. */
+  accessToken: string;
+  /** The refresh token. */
+  refreshToken: string;
+  /** The token type (e.g. "Bearer"). */
+  tokenType: string;
+  /** The expiry time of the token (RFC3339). */
+  expiry: string;
+  /** The scopes associated with the token. */
+  scope: string;
+  /** The timestamp when the token was created/updated (RFC3339). */
+  updatedAt: string;
+}
+
 function createBaseSecretValue(): SecretValue {
   return {
     plainText: undefined,
@@ -1555,6 +1575,187 @@ export const TrustedHeaderAuth: MessageFns<TrustedHeaderAuth> = {
     const message = createBaseTrustedHeaderAuth();
     message.headerName = object.headerName ?? "";
     message.headerValue = object.headerValue ?? "";
+    return message;
+  },
+};
+
+function createBaseUserToken(): UserToken {
+  return {
+    userId: "",
+    serviceId: "",
+    accessToken: "",
+    refreshToken: "",
+    tokenType: "",
+    expiry: "",
+    scope: "",
+    updatedAt: "",
+  };
+}
+
+export const UserToken: MessageFns<UserToken> = {
+  encode(message: UserToken, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.userId !== "") {
+      writer.uint32(10).string(message.userId);
+    }
+    if (message.serviceId !== "") {
+      writer.uint32(18).string(message.serviceId);
+    }
+    if (message.accessToken !== "") {
+      writer.uint32(26).string(message.accessToken);
+    }
+    if (message.refreshToken !== "") {
+      writer.uint32(34).string(message.refreshToken);
+    }
+    if (message.tokenType !== "") {
+      writer.uint32(42).string(message.tokenType);
+    }
+    if (message.expiry !== "") {
+      writer.uint32(50).string(message.expiry);
+    }
+    if (message.scope !== "") {
+      writer.uint32(58).string(message.scope);
+    }
+    if (message.updatedAt !== "") {
+      writer.uint32(66).string(message.updatedAt);
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): UserToken {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseUserToken();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.userId = reader.string();
+          continue;
+        }
+        case 2: {
+          if (tag !== 18) {
+            break;
+          }
+
+          message.serviceId = reader.string();
+          continue;
+        }
+        case 3: {
+          if (tag !== 26) {
+            break;
+          }
+
+          message.accessToken = reader.string();
+          continue;
+        }
+        case 4: {
+          if (tag !== 34) {
+            break;
+          }
+
+          message.refreshToken = reader.string();
+          continue;
+        }
+        case 5: {
+          if (tag !== 42) {
+            break;
+          }
+
+          message.tokenType = reader.string();
+          continue;
+        }
+        case 6: {
+          if (tag !== 50) {
+            break;
+          }
+
+          message.expiry = reader.string();
+          continue;
+        }
+        case 7: {
+          if (tag !== 58) {
+            break;
+          }
+
+          message.scope = reader.string();
+          continue;
+        }
+        case 8: {
+          if (tag !== 66) {
+            break;
+          }
+
+          message.updatedAt = reader.string();
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): UserToken {
+    return {
+      userId: isSet(object.user_id) ? globalThis.String(object.user_id) : "",
+      serviceId: isSet(object.service_id) ? globalThis.String(object.service_id) : "",
+      accessToken: isSet(object.access_token) ? globalThis.String(object.access_token) : "",
+      refreshToken: isSet(object.refresh_token) ? globalThis.String(object.refresh_token) : "",
+      tokenType: isSet(object.token_type) ? globalThis.String(object.token_type) : "",
+      expiry: isSet(object.expiry) ? globalThis.String(object.expiry) : "",
+      scope: isSet(object.scope) ? globalThis.String(object.scope) : "",
+      updatedAt: isSet(object.updated_at) ? globalThis.String(object.updated_at) : "",
+    };
+  },
+
+  toJSON(message: UserToken): unknown {
+    const obj: any = {};
+    if (message.userId !== "") {
+      obj.user_id = message.userId;
+    }
+    if (message.serviceId !== "") {
+      obj.service_id = message.serviceId;
+    }
+    if (message.accessToken !== "") {
+      obj.access_token = message.accessToken;
+    }
+    if (message.refreshToken !== "") {
+      obj.refresh_token = message.refreshToken;
+    }
+    if (message.tokenType !== "") {
+      obj.token_type = message.tokenType;
+    }
+    if (message.expiry !== "") {
+      obj.expiry = message.expiry;
+    }
+    if (message.scope !== "") {
+      obj.scope = message.scope;
+    }
+    if (message.updatedAt !== "") {
+      obj.updated_at = message.updatedAt;
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<UserToken>, I>>(base?: I): UserToken {
+    return UserToken.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<UserToken>, I>>(object: I): UserToken {
+    const message = createBaseUserToken();
+    message.userId = object.userId ?? "";
+    message.serviceId = object.serviceId ?? "";
+    message.accessToken = object.accessToken ?? "";
+    message.refreshToken = object.refreshToken ?? "";
+    message.tokenType = object.tokenType ?? "";
+    message.expiry = object.expiry ?? "";
+    message.scope = object.scope ?? "";
+    message.updatedAt = object.updatedAt ?? "";
     return message;
   },
 };

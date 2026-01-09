@@ -2216,6 +2216,266 @@ func (b0 TrustedHeaderAuth_builder) Build() *TrustedHeaderAuth {
 	return m0
 }
 
+// UserToken represents an OAuth2 token stored for a user.
+type UserToken struct {
+	state protoimpl.MessageState `protogen:"hybrid.v1"`
+	// The ID of the user who owns this token.
+	UserId *string `protobuf:"bytes,1,opt,name=user_id" json:"user_id,omitempty"`
+	// The ID of the service this token is for.
+	ServiceId *string `protobuf:"bytes,2,opt,name=service_id" json:"service_id,omitempty"`
+	// The access token.
+	AccessToken *string `protobuf:"bytes,3,opt,name=access_token" json:"access_token,omitempty"`
+	// The refresh token.
+	RefreshToken *string `protobuf:"bytes,4,opt,name=refresh_token" json:"refresh_token,omitempty"`
+	// The token type (e.g. "Bearer").
+	TokenType *string `protobuf:"bytes,5,opt,name=token_type" json:"token_type,omitempty"`
+	// The expiry time of the token (RFC3339).
+	Expiry *string `protobuf:"bytes,6,opt,name=expiry" json:"expiry,omitempty"`
+	// The scopes associated with the token.
+	Scope *string `protobuf:"bytes,7,opt,name=scope" json:"scope,omitempty"`
+	// The timestamp when the token was created/updated (RFC3339).
+	UpdatedAt     *string `protobuf:"bytes,8,opt,name=updated_at" json:"updated_at,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *UserToken) Reset() {
+	*x = UserToken{}
+	mi := &file_proto_config_v1_auth_proto_msgTypes[12]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *UserToken) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UserToken) ProtoMessage() {}
+
+func (x *UserToken) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_config_v1_auth_proto_msgTypes[12]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+func (x *UserToken) GetUserId() string {
+	if x != nil && x.UserId != nil {
+		return *x.UserId
+	}
+	return ""
+}
+
+func (x *UserToken) GetServiceId() string {
+	if x != nil && x.ServiceId != nil {
+		return *x.ServiceId
+	}
+	return ""
+}
+
+func (x *UserToken) GetAccessToken() string {
+	if x != nil && x.AccessToken != nil {
+		return *x.AccessToken
+	}
+	return ""
+}
+
+func (x *UserToken) GetRefreshToken() string {
+	if x != nil && x.RefreshToken != nil {
+		return *x.RefreshToken
+	}
+	return ""
+}
+
+func (x *UserToken) GetTokenType() string {
+	if x != nil && x.TokenType != nil {
+		return *x.TokenType
+	}
+	return ""
+}
+
+func (x *UserToken) GetExpiry() string {
+	if x != nil && x.Expiry != nil {
+		return *x.Expiry
+	}
+	return ""
+}
+
+func (x *UserToken) GetScope() string {
+	if x != nil && x.Scope != nil {
+		return *x.Scope
+	}
+	return ""
+}
+
+func (x *UserToken) GetUpdatedAt() string {
+	if x != nil && x.UpdatedAt != nil {
+		return *x.UpdatedAt
+	}
+	return ""
+}
+
+func (x *UserToken) SetUserId(v string) {
+	x.UserId = &v
+}
+
+func (x *UserToken) SetServiceId(v string) {
+	x.ServiceId = &v
+}
+
+func (x *UserToken) SetAccessToken(v string) {
+	x.AccessToken = &v
+}
+
+func (x *UserToken) SetRefreshToken(v string) {
+	x.RefreshToken = &v
+}
+
+func (x *UserToken) SetTokenType(v string) {
+	x.TokenType = &v
+}
+
+func (x *UserToken) SetExpiry(v string) {
+	x.Expiry = &v
+}
+
+func (x *UserToken) SetScope(v string) {
+	x.Scope = &v
+}
+
+func (x *UserToken) SetUpdatedAt(v string) {
+	x.UpdatedAt = &v
+}
+
+func (x *UserToken) HasUserId() bool {
+	if x == nil {
+		return false
+	}
+	return x.UserId != nil
+}
+
+func (x *UserToken) HasServiceId() bool {
+	if x == nil {
+		return false
+	}
+	return x.ServiceId != nil
+}
+
+func (x *UserToken) HasAccessToken() bool {
+	if x == nil {
+		return false
+	}
+	return x.AccessToken != nil
+}
+
+func (x *UserToken) HasRefreshToken() bool {
+	if x == nil {
+		return false
+	}
+	return x.RefreshToken != nil
+}
+
+func (x *UserToken) HasTokenType() bool {
+	if x == nil {
+		return false
+	}
+	return x.TokenType != nil
+}
+
+func (x *UserToken) HasExpiry() bool {
+	if x == nil {
+		return false
+	}
+	return x.Expiry != nil
+}
+
+func (x *UserToken) HasScope() bool {
+	if x == nil {
+		return false
+	}
+	return x.Scope != nil
+}
+
+func (x *UserToken) HasUpdatedAt() bool {
+	if x == nil {
+		return false
+	}
+	return x.UpdatedAt != nil
+}
+
+func (x *UserToken) ClearUserId() {
+	x.UserId = nil
+}
+
+func (x *UserToken) ClearServiceId() {
+	x.ServiceId = nil
+}
+
+func (x *UserToken) ClearAccessToken() {
+	x.AccessToken = nil
+}
+
+func (x *UserToken) ClearRefreshToken() {
+	x.RefreshToken = nil
+}
+
+func (x *UserToken) ClearTokenType() {
+	x.TokenType = nil
+}
+
+func (x *UserToken) ClearExpiry() {
+	x.Expiry = nil
+}
+
+func (x *UserToken) ClearScope() {
+	x.Scope = nil
+}
+
+func (x *UserToken) ClearUpdatedAt() {
+	x.UpdatedAt = nil
+}
+
+type UserToken_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// The ID of the user who owns this token.
+	UserId *string
+	// The ID of the service this token is for.
+	ServiceId *string
+	// The access token.
+	AccessToken *string
+	// The refresh token.
+	RefreshToken *string
+	// The token type (e.g. "Bearer").
+	TokenType *string
+	// The expiry time of the token (RFC3339).
+	Expiry *string
+	// The scopes associated with the token.
+	Scope *string
+	// The timestamp when the token was created/updated (RFC3339).
+	UpdatedAt *string
+}
+
+func (b0 UserToken_builder) Build() *UserToken {
+	m0 := &UserToken{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.UserId = b.UserId
+	x.ServiceId = b.ServiceId
+	x.AccessToken = b.AccessToken
+	x.RefreshToken = b.RefreshToken
+	x.TokenType = b.TokenType
+	x.Expiry = b.Expiry
+	x.Scope = b.Scope
+	x.UpdatedAt = b.UpdatedAt
+	return m0
+}
+
 var File_proto_config_v1_auth_proto protoreflect.FileDescriptor
 
 const file_proto_config_v1_auth_proto_rawDesc = "" +
@@ -2300,10 +2560,25 @@ const file_proto_config_v1_auth_proto_rawDesc = "" +
 	"\fca_cert_path\x18\x03 \x01(\tR\fca_cert_path\"Y\n" +
 	"\x11TrustedHeaderAuth\x12 \n" +
 	"\vheader_name\x18\x01 \x01(\tR\vheader_name\x12\"\n" +
-	"\fheader_value\x18\x02 \x01(\tR\fheader_valueB3B\tAuthProtoZ&github.com/mcpany/core/proto/config/v1b\beditionsp\xe8\a"
+	"\fheader_value\x18\x02 \x01(\tR\fheader_value\"\xfd\x01\n" +
+	"\tUserToken\x12\x18\n" +
+	"\auser_id\x18\x01 \x01(\tR\auser_id\x12\x1e\n" +
+	"\n" +
+	"service_id\x18\x02 \x01(\tR\n" +
+	"service_id\x12\"\n" +
+	"\faccess_token\x18\x03 \x01(\tR\faccess_token\x12$\n" +
+	"\rrefresh_token\x18\x04 \x01(\tR\rrefresh_token\x12\x1e\n" +
+	"\n" +
+	"token_type\x18\x05 \x01(\tR\n" +
+	"token_type\x12\x16\n" +
+	"\x06expiry\x18\x06 \x01(\tR\x06expiry\x12\x14\n" +
+	"\x05scope\x18\a \x01(\tR\x05scope\x12\x1e\n" +
+	"\n" +
+	"updated_at\x18\b \x01(\tR\n" +
+	"updated_atB3B\tAuthProtoZ&github.com/mcpany/core/proto/config/v1b\beditionsp\xe8\a"
 
 var file_proto_config_v1_auth_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_proto_config_v1_auth_proto_msgTypes = make([]protoimpl.MessageInfo, 12)
+var file_proto_config_v1_auth_proto_msgTypes = make([]protoimpl.MessageInfo, 13)
 var file_proto_config_v1_auth_proto_goTypes = []any{
 	(APIKeyAuth_Location)(0),       // 0: mcpany.config.v1.APIKeyAuth.Location
 	(*SecretValue)(nil),            // 1: mcpany.config.v1.SecretValue
@@ -2318,6 +2593,7 @@ var file_proto_config_v1_auth_proto_goTypes = []any{
 	(*OIDCAuth)(nil),               // 10: mcpany.config.v1.OIDCAuth
 	(*MTLSAuth)(nil),               // 11: mcpany.config.v1.MTLSAuth
 	(*TrustedHeaderAuth)(nil),      // 12: mcpany.config.v1.TrustedHeaderAuth
+	(*UserToken)(nil),              // 13: mcpany.config.v1.UserToken
 }
 var file_proto_config_v1_auth_proto_depIdxs = []int32{
 	4,  // 0: mcpany.config.v1.SecretValue.remote_content:type_name -> mcpany.config.v1.RemoteContent
@@ -2373,7 +2649,7 @@ func file_proto_config_v1_auth_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_proto_config_v1_auth_proto_rawDesc), len(file_proto_config_v1_auth_proto_rawDesc)),
 			NumEnums:      1,
-			NumMessages:   12,
+			NumMessages:   13,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
