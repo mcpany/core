@@ -152,3 +152,23 @@ message TrustedHeaderAuth {
   string header_name = 1 [json_name = "header_name"];
   string header_value = 2 [json_name = "header_value"];
 }
+
+// UserToken represents an OAuth2 token stored for a user.
+message UserToken {
+  // The ID of the user who owns this token.
+  string user_id = 1 [json_name = "user_id"];
+  // The ID of the service this token is for.
+  string service_id = 2 [json_name = "service_id"];
+  // The access token.
+  string access_token = 3 [json_name = "access_token"];
+  // The refresh token.
+  string refresh_token = 4 [json_name = "refresh_token"];
+  // The token type (e.g. "Bearer").
+  string token_type = 5 [json_name = "token_type"];
+  // The expiry time of the token (RFC3339).
+  string expiry = 6 [json_name = "expiry"];
+  // The scopes associated with the token.
+  string scope = 7 [json_name = "scope"];
+  // The timestamp when the token was created/updated (RFC3339).
+  string updated_at = 8 [json_name = "updated_at"];
+}

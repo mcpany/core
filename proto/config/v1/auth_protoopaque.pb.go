@@ -2398,6 +2398,324 @@ func (b0 TrustedHeaderAuth_builder) Build() *TrustedHeaderAuth {
 	return m0
 }
 
+// UserToken represents an OAuth2 token stored for a user.
+type UserToken struct {
+	state                   protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_UserId       *string                `protobuf:"bytes,1,opt,name=user_id"`
+	xxx_hidden_ServiceId    *string                `protobuf:"bytes,2,opt,name=service_id"`
+	xxx_hidden_AccessToken  *string                `protobuf:"bytes,3,opt,name=access_token"`
+	xxx_hidden_RefreshToken *string                `protobuf:"bytes,4,opt,name=refresh_token"`
+	xxx_hidden_TokenType    *string                `protobuf:"bytes,5,opt,name=token_type"`
+	xxx_hidden_Expiry       *string                `protobuf:"bytes,6,opt,name=expiry"`
+	xxx_hidden_Scope        *string                `protobuf:"bytes,7,opt,name=scope"`
+	xxx_hidden_UpdatedAt    *string                `protobuf:"bytes,8,opt,name=updated_at"`
+	XXX_raceDetectHookData  protoimpl.RaceDetectHookData
+	XXX_presence            [1]uint32
+	unknownFields           protoimpl.UnknownFields
+	sizeCache               protoimpl.SizeCache
+}
+
+func (x *UserToken) Reset() {
+	*x = UserToken{}
+	mi := &file_proto_config_v1_auth_proto_msgTypes[12]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *UserToken) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UserToken) ProtoMessage() {}
+
+func (x *UserToken) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_config_v1_auth_proto_msgTypes[12]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+func (x *UserToken) GetUserId() string {
+	if x != nil {
+		if x.xxx_hidden_UserId != nil {
+			return *x.xxx_hidden_UserId
+		}
+		return ""
+	}
+	return ""
+}
+
+func (x *UserToken) GetServiceId() string {
+	if x != nil {
+		if x.xxx_hidden_ServiceId != nil {
+			return *x.xxx_hidden_ServiceId
+		}
+		return ""
+	}
+	return ""
+}
+
+func (x *UserToken) GetAccessToken() string {
+	if x != nil {
+		if x.xxx_hidden_AccessToken != nil {
+			return *x.xxx_hidden_AccessToken
+		}
+		return ""
+	}
+	return ""
+}
+
+func (x *UserToken) GetRefreshToken() string {
+	if x != nil {
+		if x.xxx_hidden_RefreshToken != nil {
+			return *x.xxx_hidden_RefreshToken
+		}
+		return ""
+	}
+	return ""
+}
+
+func (x *UserToken) GetTokenType() string {
+	if x != nil {
+		if x.xxx_hidden_TokenType != nil {
+			return *x.xxx_hidden_TokenType
+		}
+		return ""
+	}
+	return ""
+}
+
+func (x *UserToken) GetExpiry() string {
+	if x != nil {
+		if x.xxx_hidden_Expiry != nil {
+			return *x.xxx_hidden_Expiry
+		}
+		return ""
+	}
+	return ""
+}
+
+func (x *UserToken) GetScope() string {
+	if x != nil {
+		if x.xxx_hidden_Scope != nil {
+			return *x.xxx_hidden_Scope
+		}
+		return ""
+	}
+	return ""
+}
+
+func (x *UserToken) GetUpdatedAt() string {
+	if x != nil {
+		if x.xxx_hidden_UpdatedAt != nil {
+			return *x.xxx_hidden_UpdatedAt
+		}
+		return ""
+	}
+	return ""
+}
+
+func (x *UserToken) SetUserId(v string) {
+	x.xxx_hidden_UserId = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 8)
+}
+
+func (x *UserToken) SetServiceId(v string) {
+	x.xxx_hidden_ServiceId = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 8)
+}
+
+func (x *UserToken) SetAccessToken(v string) {
+	x.xxx_hidden_AccessToken = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 8)
+}
+
+func (x *UserToken) SetRefreshToken(v string) {
+	x.xxx_hidden_RefreshToken = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 3, 8)
+}
+
+func (x *UserToken) SetTokenType(v string) {
+	x.xxx_hidden_TokenType = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 4, 8)
+}
+
+func (x *UserToken) SetExpiry(v string) {
+	x.xxx_hidden_Expiry = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 5, 8)
+}
+
+func (x *UserToken) SetScope(v string) {
+	x.xxx_hidden_Scope = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 6, 8)
+}
+
+func (x *UserToken) SetUpdatedAt(v string) {
+	x.xxx_hidden_UpdatedAt = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 7, 8)
+}
+
+func (x *UserToken) HasUserId() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
+}
+
+func (x *UserToken) HasServiceId() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 1)
+}
+
+func (x *UserToken) HasAccessToken() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 2)
+}
+
+func (x *UserToken) HasRefreshToken() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 3)
+}
+
+func (x *UserToken) HasTokenType() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 4)
+}
+
+func (x *UserToken) HasExpiry() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 5)
+}
+
+func (x *UserToken) HasScope() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 6)
+}
+
+func (x *UserToken) HasUpdatedAt() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 7)
+}
+
+func (x *UserToken) ClearUserId() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
+	x.xxx_hidden_UserId = nil
+}
+
+func (x *UserToken) ClearServiceId() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 1)
+	x.xxx_hidden_ServiceId = nil
+}
+
+func (x *UserToken) ClearAccessToken() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 2)
+	x.xxx_hidden_AccessToken = nil
+}
+
+func (x *UserToken) ClearRefreshToken() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 3)
+	x.xxx_hidden_RefreshToken = nil
+}
+
+func (x *UserToken) ClearTokenType() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 4)
+	x.xxx_hidden_TokenType = nil
+}
+
+func (x *UserToken) ClearExpiry() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 5)
+	x.xxx_hidden_Expiry = nil
+}
+
+func (x *UserToken) ClearScope() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 6)
+	x.xxx_hidden_Scope = nil
+}
+
+func (x *UserToken) ClearUpdatedAt() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 7)
+	x.xxx_hidden_UpdatedAt = nil
+}
+
+type UserToken_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// The ID of the user who owns this token.
+	UserId *string
+	// The ID of the service this token is for.
+	ServiceId *string
+	// The access token.
+	AccessToken *string
+	// The refresh token.
+	RefreshToken *string
+	// The token type (e.g. "Bearer").
+	TokenType *string
+	// The expiry time of the token (RFC3339).
+	Expiry *string
+	// The scopes associated with the token.
+	Scope *string
+	// The timestamp when the token was created/updated (RFC3339).
+	UpdatedAt *string
+}
+
+func (b0 UserToken_builder) Build() *UserToken {
+	m0 := &UserToken{}
+	b, x := &b0, m0
+	_, _ = b, x
+	if b.UserId != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 8)
+		x.xxx_hidden_UserId = b.UserId
+	}
+	if b.ServiceId != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 8)
+		x.xxx_hidden_ServiceId = b.ServiceId
+	}
+	if b.AccessToken != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 8)
+		x.xxx_hidden_AccessToken = b.AccessToken
+	}
+	if b.RefreshToken != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 3, 8)
+		x.xxx_hidden_RefreshToken = b.RefreshToken
+	}
+	if b.TokenType != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 4, 8)
+		x.xxx_hidden_TokenType = b.TokenType
+	}
+	if b.Expiry != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 5, 8)
+		x.xxx_hidden_Expiry = b.Expiry
+	}
+	if b.Scope != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 6, 8)
+		x.xxx_hidden_Scope = b.Scope
+	}
+	if b.UpdatedAt != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 7, 8)
+		x.xxx_hidden_UpdatedAt = b.UpdatedAt
+	}
+	return m0
+}
+
 var File_proto_config_v1_auth_proto protoreflect.FileDescriptor
 
 const file_proto_config_v1_auth_proto_rawDesc = "" +
@@ -2482,10 +2800,25 @@ const file_proto_config_v1_auth_proto_rawDesc = "" +
 	"\fca_cert_path\x18\x03 \x01(\tR\fca_cert_path\"Y\n" +
 	"\x11TrustedHeaderAuth\x12 \n" +
 	"\vheader_name\x18\x01 \x01(\tR\vheader_name\x12\"\n" +
-	"\fheader_value\x18\x02 \x01(\tR\fheader_valueB3B\tAuthProtoZ&github.com/mcpany/core/proto/config/v1b\beditionsp\xe8\a"
+	"\fheader_value\x18\x02 \x01(\tR\fheader_value\"\xfd\x01\n" +
+	"\tUserToken\x12\x18\n" +
+	"\auser_id\x18\x01 \x01(\tR\auser_id\x12\x1e\n" +
+	"\n" +
+	"service_id\x18\x02 \x01(\tR\n" +
+	"service_id\x12\"\n" +
+	"\faccess_token\x18\x03 \x01(\tR\faccess_token\x12$\n" +
+	"\rrefresh_token\x18\x04 \x01(\tR\rrefresh_token\x12\x1e\n" +
+	"\n" +
+	"token_type\x18\x05 \x01(\tR\n" +
+	"token_type\x12\x16\n" +
+	"\x06expiry\x18\x06 \x01(\tR\x06expiry\x12\x14\n" +
+	"\x05scope\x18\a \x01(\tR\x05scope\x12\x1e\n" +
+	"\n" +
+	"updated_at\x18\b \x01(\tR\n" +
+	"updated_atB3B\tAuthProtoZ&github.com/mcpany/core/proto/config/v1b\beditionsp\xe8\a"
 
 var file_proto_config_v1_auth_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_proto_config_v1_auth_proto_msgTypes = make([]protoimpl.MessageInfo, 12)
+var file_proto_config_v1_auth_proto_msgTypes = make([]protoimpl.MessageInfo, 13)
 var file_proto_config_v1_auth_proto_goTypes = []any{
 	(APIKeyAuth_Location)(0),       // 0: mcpany.config.v1.APIKeyAuth.Location
 	(*SecretValue)(nil),            // 1: mcpany.config.v1.SecretValue
@@ -2500,6 +2833,7 @@ var file_proto_config_v1_auth_proto_goTypes = []any{
 	(*OIDCAuth)(nil),               // 10: mcpany.config.v1.OIDCAuth
 	(*MTLSAuth)(nil),               // 11: mcpany.config.v1.MTLSAuth
 	(*TrustedHeaderAuth)(nil),      // 12: mcpany.config.v1.TrustedHeaderAuth
+	(*UserToken)(nil),              // 13: mcpany.config.v1.UserToken
 }
 var file_proto_config_v1_auth_proto_depIdxs = []int32{
 	4,  // 0: mcpany.config.v1.SecretValue.remote_content:type_name -> mcpany.config.v1.RemoteContent
@@ -2555,7 +2889,7 @@ func file_proto_config_v1_auth_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_proto_config_v1_auth_proto_rawDesc), len(file_proto_config_v1_auth_proto_rawDesc)),
 			NumEnums:      1,
-			NumMessages:   12,
+			NumMessages:   13,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

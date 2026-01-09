@@ -13,6 +13,7 @@ import (
 	"time"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
+	"github.com/mcpany/core/server/pkg/storage"
 	"github.com/mcpany/core/server/pkg/util/passhash"
 	xsync "github.com/puzpuzpuz/xsync/v4"
 )
@@ -61,14 +62,9 @@ func ProfileIDFromContext(ctx context.Context) (string, bool) {
 	return val, ok
 }
 
-// Authenticator defines the interface for authentication strategies. Each
-// implementation is responsible for authenticating an incoming request and
-// returning a context, which may be modified to include authentication-related
-// information.
+// Authenticator checks if a request is authenticated.
 type Authenticator interface {
-	// Authenticate validates the credentials in an HTTP request. It returns a
-	// context, which may be enriched with authentication details, and an error if
-	// the authentication fails.
+	// Authenticate returns the authenticated user's context or an error.
 	Authenticate(ctx context.Context, r *http.Request) (context.Context, error)
 }
 
@@ -214,6 +210,11 @@ type Manager struct {
 	// usersMu protects users map to allow atomic updates (hot-swap).
 	usersMu sync.RWMutex
 	users   map[string]*configv1.User
+
+	// mu protects storage
+	// mu protects storage
+	mu      sync.RWMutex
+	storage storage.Storage
 }
 
 // NewManager creates and initializes a new Manager with an empty
@@ -226,16 +227,20 @@ func NewManager() *Manager {
 	}
 }
 
-// SetUsers updates the user list atomically.
+// SetUsers sets the users.
 func (am *Manager) SetUsers(users []*configv1.User) {
-	newUsers := make(map[string]*configv1.User, len(users))
-	for _, u := range users {
-		newUsers[u.GetId()] = u
-	}
-
 	am.usersMu.Lock()
 	defer am.usersMu.Unlock()
-	am.users = newUsers
+	for _, u := range users {
+		am.users[u.GetId()] = u
+	}
+}
+
+// SetStorage sets the storage.
+func (am *Manager) SetStorage(s storage.Storage) {
+	am.mu.Lock()
+	defer am.mu.Unlock()
+	am.storage = s
 }
 
 // GetUser retrieves a user by ID.

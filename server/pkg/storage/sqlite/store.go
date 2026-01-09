@@ -542,3 +542,60 @@ func (s *Store) DeleteServiceCollection(ctx context.Context, name string) error 
 	}
 	return nil
 }
+
+// Tokens
+
+// SaveToken saves a user token.
+func (s *Store) SaveToken(ctx context.Context, token *configv1.UserToken) error {
+	if token.GetUserId() == "" || token.GetServiceId() == "" {
+		return fmt.Errorf("user ID and service ID are required")
+	}
+
+	opts := protojson.MarshalOptions{UseProtoNames: true}
+	configJSON, err := opts.Marshal(token)
+	if err != nil {
+		return fmt.Errorf("failed to marshal token: %w", err)
+	}
+
+	query := `
+	INSERT INTO user_tokens (user_id, service_id, config_json, updated_at)
+	VALUES (?, ?, ?, CURRENT_TIMESTAMP)
+	ON CONFLICT(user_id, service_id) DO UPDATE SET
+		config_json = excluded.config_json,
+		updated_at = excluded.updated_at;
+	`
+	_, err = s.db.ExecContext(ctx, query, token.GetUserId(), token.GetServiceId(), string(configJSON))
+	if err != nil {
+		return fmt.Errorf("failed to save token: %w", err)
+	}
+	return nil
+}
+
+// GetToken retrieves a user token by user ID and service ID.
+func (s *Store) GetToken(ctx context.Context, userID, serviceID string) (*configv1.UserToken, error) {
+	query := "SELECT config_json FROM user_tokens WHERE user_id = ? AND service_id = ?"
+	row := s.db.QueryRowContext(ctx, query, userID, serviceID)
+
+	var configJSON string
+	if err := row.Scan(&configJSON); err != nil {
+		if err == sql.ErrNoRows {
+			return nil, nil // Not found
+		}
+		return nil, fmt.Errorf("failed to scan token config: %w", err)
+	}
+
+	var token configv1.UserToken
+	if err := protojson.Unmarshal([]byte(configJSON), &token); err != nil {
+		return nil, fmt.Errorf("failed to unmarshal token: %w", err)
+	}
+	return &token, nil
+}
+
+// DeleteToken deletes a user token.
+func (s *Store) DeleteToken(ctx context.Context, userID, serviceID string) error {
+	_, err := s.db.ExecContext(ctx, "DELETE FROM user_tokens WHERE user_id = ? AND service_id = ?", userID, serviceID)
+	if err != nil {
+		return fmt.Errorf("failed to delete token: %w", err)
+	}
+	return nil
+}

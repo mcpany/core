@@ -22,6 +22,7 @@ type Store struct {
 	profileDefinitions map[string]*configv1.ProfileDefinition
 	serviceCollections map[string]*configv1.UpstreamServiceCollectionShare
 	globalSettings     *configv1.GlobalSettings
+	tokens             map[string]*configv1.UserToken
 }
 
 // NewStore creates a new memory store.
@@ -32,7 +33,42 @@ func NewStore() *Store {
 		users:              make(map[string]*configv1.User),
 		profileDefinitions: make(map[string]*configv1.ProfileDefinition),
 		serviceCollections: make(map[string]*configv1.UpstreamServiceCollectionShare),
+		tokens:             make(map[string]*configv1.UserToken),
 	}
+}
+
+// Helper to generate token key
+func tokenKey(userID, serviceID string) string {
+	return userID + "|" + serviceID
+}
+
+// SaveToken saves a user token.
+func (s *Store) SaveToken(_ context.Context, token *configv1.UserToken) error {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	key := tokenKey(token.GetUserId(), token.GetServiceId())
+	s.tokens[key] = proto.Clone(token).(*configv1.UserToken)
+	return nil
+}
+
+// GetToken retrieves a user token by user ID and service ID.
+func (s *Store) GetToken(_ context.Context, userID, serviceID string) (*configv1.UserToken, error) {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+	key := tokenKey(userID, serviceID)
+	if token, ok := s.tokens[key]; ok {
+		return proto.Clone(token).(*configv1.UserToken), nil
+	}
+	return nil, nil
+}
+
+// DeleteToken deletes a user token.
+func (s *Store) DeleteToken(_ context.Context, userID, serviceID string) error {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	key := tokenKey(userID, serviceID)
+	delete(s.tokens, key)
+	return nil
 }
 
 // Load retrieves the full server configuration.

@@ -102,12 +102,39 @@ export const apiClient = {
             httpService: s.http_service,
             grpcService: s.grpc_service,
             commandLineService: s.command_line_service,
-            mcpService: s.mcp_service
+            mcpService: s.mcp_service,
+            upstreamAuth: s.upstream_auth
         }));
     },
     getService: async (id: string) => {
-         const response = await registrationClient.GetService({ serviceName: id }, getMetadata());
-         return response;
+         try {
+             // Try gRPC-Web first
+             const response = await registrationClient.GetService({ serviceName: id }, getMetadata());
+             return response;
+         } catch (e) {
+             // Fallback to REST if gRPC fails (e.g. in E2E tests passing through Next.js proxy or mock)
+             // Check if we are in a test env or just try fetch
+             const res = await fetchWithAuth(`/api/v1/services/${id}`);
+             if (res.ok) {
+                 const data = await res.json();
+                 // REST returns { service: ... }, gRPC returns { service: ... }
+                 // Map snake_case to camelCase for ServiceDetail
+                 if (data.service) {
+                     const s = data.service;
+                     data.service = {
+                         ...s,
+                         connectionPool: s.connection_pool,
+                         httpService: s.http_service,
+                         grpcService: s.grpc_service,
+                         commandLineService: s.command_line_service,
+                         mcpService: s.mcp_service,
+                         upstreamAuth: s.upstream_auth
+                     };
+                 }
+                 return data;
+             }
+             throw e;
+         }
     },
     setServiceStatus: async (name: string, disable: boolean) => {
         const response = await fetchWithAuth(`/api/v1/services/${name}`, {
@@ -426,5 +453,31 @@ export const apiClient = {
         });
         if (!res.ok) throw new Error('Failed to delete user');
         return {};
+    },
+
+    // OAuth
+    initiateOAuth: async (serviceID: string, redirectURL: string) => {
+        const res = await fetchWithAuth('/auth/oauth/initiate', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ service_id: serviceID, redirect_url: redirectURL })
+        });
+        if (!res.ok) {
+            const txt = await res.text();
+            throw new Error(`Failed to initiate OAuth: ${res.status} ${txt}`);
+        }
+        return res.json();
+    },
+    handleOAuthCallback: async (serviceID: string, code: string, redirectURL: string) => {
+        const res = await fetchWithAuth('/auth/oauth/callback', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ service_id: serviceID, code, redirect_url: redirectURL })
+        });
+        if (!res.ok) {
+            const txt = await res.text();
+            throw new Error(`Failed to handle callback: ${res.status} ${txt}`);
+        }
+        return res.json();
     }
 };

@@ -173,6 +173,50 @@ export function ServiceDetail({ serviceId }: { serviceId: string }) {
     }
   }
 
+  const handleConnect = async () => {
+    if (!service) return;
+    try {
+        // Use current window location as redirect URL basis, but append /auth/callback or similar if UI handles it?
+        // Actually the backend expects a redirect URL that *it* will redirect the user to after upstream auth.
+        // If we want the user to come back to the UI, we should pass a UI URL.
+        // But the backend `handleOAuthCallback` *also* takes a `redirectURL` (to verify against what was sent mostly or to redirect?).
+        // Wait, standard OAuth:
+        // 1. Client (us) sends `redirect_uri` to Provider (via Backend).
+        // 2. Provider redirects to `redirect_uri` with code.
+        // 3. Backend exchanges code.
+        // If `redirect_uri` points to the BACKEND directly (`/auth/oauth/callback`), the backend gets the code immediately.
+        // But then the backend needs to know where to redirect the user *after* saving the token.
+        // My implementation in `interactive.go`:
+        // `InitiateOAuth` takes `redirectURL`. This is passed to `conf.AuthCodeURL`.
+        // So this MUST be where the Provider redirects the browser.
+        // If we want the Backend to handle it, `redirectURL` should be `https://backend/auth/oauth/callback`.
+        // But `interactive.go` logic seems to imply the *caller* decides.
+        // If we pass `window.location.origin + '/oauth/callback'`, the UI must have a route for this.
+        // Let's assume we want the UI to handle the callback code and pass it to backend?
+        // My backend API `handleOAuthCallback` takes `code` in the body.
+        // This confirms the UI receives the code and posts it to backend.
+        // So `redirectURL` should be a page in the UI. e.g. `/services/{id}/callback` or global `/oauth/callback`.
+        // Let's use `/auth/callback` in UI.
+
+        const redirectUrl = `${window.location.origin}/auth/callback`;
+        const { authorization_url, state } = await apiClient.initiateOAuth(serviceId, redirectUrl);
+
+        // Store state/serviceId in local storage to verify/resume?
+        sessionStorage.setItem('oauth_state', state);
+        sessionStorage.setItem('oauth_service_id', serviceId);
+        sessionStorage.setItem('oauth_redirect_url', redirectUrl);
+
+        // Redirect user
+        window.location.href = authorization_url;
+    } catch (e: any) {
+         toast({
+            variant: "destructive",
+            title: "OAuth Initiation Failed",
+            description: e.message,
+        });
+    }
+  };
+
   if (isLoading) {
     return (
       <Card className="w-full max-w-6xl">
@@ -256,6 +300,17 @@ export function ServiceDetail({ serviceId }: { serviceId: string }) {
                 trigger={<Button variant="outline" size="sm"><Wrench className="mr-2 h-4 w-4"/> Edit Config</Button>}
              />
             <div className="flex items-center space-x-2">
+                {/* Check if service has OAuth configured. We need to check upstreamAuth?.oauth2.
+                    Since UpstreamServiceConfig type might not have it strictly typed in frontend depending on generation,
+                    we use loose access or verify type.
+                    Assuming 'upstreamAuth' field exists.
+                 */}
+                 { (service as any).upstreamAuth?.oauth2 && (
+                     <Button variant="default" size="sm" onClick={handleConnect}>
+                         Connect Account
+                     </Button>
+                 )}
+
                 <Switch
                 id="service-status"
                 checked={isEnabled}
