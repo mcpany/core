@@ -153,7 +153,11 @@ export function LogStream() {
         // Optimization: Avoid creating an intermediate array (double copy) when limit is reached.
         // If we are at limit, slice the old array (copy N-1 items) and append the new one.
         if (prev.length >= 1000) {
-          return [...prev.slice(1), newLog]
+          // Optimization: slice(1) returns a shallow copy. push mutates it.
+          // This avoids the double allocation of [...prev.slice(1), newLog].
+          const next = prev.slice(1)
+          next.push(newLog)
+          return next
         }
         return [...prev, newLog]
       })
