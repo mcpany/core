@@ -18,6 +18,12 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
+      '@proto/api/v1/registration': path.resolve(__dirname, './src/mocks/proto/mock-proto.ts'),
+      '@proto/config/v1/upstream_service': path.resolve(__dirname, './src/mocks/proto/mock-proto.ts'),
+      '@proto/config/v1/tool': path.resolve(__dirname, './src/mocks/proto/mock-proto.ts'),
+      '@proto/config/v1/resource': path.resolve(__dirname, './src/mocks/proto/mock-proto.ts'),
+      '@proto/config/v1/prompt': path.resolve(__dirname, './src/mocks/proto/mock-proto.ts'),
+      '@proto/admin/v1/admin': path.resolve(__dirname, './src/mocks/proto/mock-proto.ts'),
     },
   },
 })
