@@ -29,7 +29,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Alert, Severity, AlertStatus } from "./types";
-import { cn } from "@/lib/utils";
 import { formatDistanceToNow } from "date-fns";
 
 const MOCK_ALERTS: Alert[] = [
