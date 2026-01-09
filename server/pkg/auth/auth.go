@@ -9,6 +9,7 @@ import (
 	"crypto/subtle"
 	"fmt"
 	"net/http"
+	"sync"
 	"time"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
@@ -112,8 +113,6 @@ func NewAPIKeyAuthenticator(config *configv1.APIKeyAuth) *APIKeyAuthenticator {
 //   - r: The HTTP request to authenticate.
 //
 // Returns the original context and `nil` on success, or an error on failure.
-// Authenticate verifies the API key in the request.
-// ... (existing comments).
 func (a *APIKeyAuthenticator) Authenticate(ctx context.Context, r *http.Request) (context.Context, error) {
 	var receivedKey string
 	switch a.In {
@@ -162,9 +161,7 @@ func (a *BasicAuthenticator) Authenticate(ctx context.Context, r *http.Request) 
 // TrustedHeaderAuthenticator authenticates using a trusted header (e.g., from an auth proxy).
 type TrustedHeaderAuthenticator struct {
 	HeaderName  string
-	HeaderValue string // Optional: if empty, just checks presence? No, prototype had value.
-	// If we want to identify user by header, we might need a different logic.
-	// But for "User" config having `TrustedHeaderAuth`, it usually implies "This user matches if header X has value Y".
+	HeaderValue string // Optional: if empty, just checks presence
 }
 
 // NewTrustedHeaderAuthenticator creates a new TrustedHeaderAuthenticator.
@@ -190,9 +187,6 @@ func (a *TrustedHeaderAuthenticator) Authenticate(ctx context.Context, r *http.R
 			return ctx, fmt.Errorf("unauthorized")
 		}
 	}
-	// If HeaderValue is empty, does it mean any value is allowed?
-	// The current proto definition has `header_value` as a match criteria for a specific user.
-	// So usually it should be set.
 	return ctx, nil
 }
 
@@ -204,6 +198,10 @@ func (a *TrustedHeaderAuthenticator) Authenticate(ctx context.Context, r *http.R
 type Manager struct {
 	authenticators *xsync.Map[string, Authenticator]
 	apiKey         string
+
+	// usersMu protects users map to allow atomic updates (hot-swap).
+	usersMu sync.RWMutex
+	users   map[string]*configv1.User
 }
 
 // NewManager creates and initializes a new Manager with an empty
@@ -212,7 +210,28 @@ type Manager struct {
 func NewManager() *Manager {
 	return &Manager{
 		authenticators: xsync.NewMap[string, Authenticator](),
+		users:          make(map[string]*configv1.User),
 	}
+}
+
+// SetUsers updates the user list atomically.
+func (am *Manager) SetUsers(users []*configv1.User) {
+	newUsers := make(map[string]*configv1.User, len(users))
+	for _, u := range users {
+		newUsers[u.GetId()] = u
+	}
+
+	am.usersMu.Lock()
+	defer am.usersMu.Unlock()
+	am.users = newUsers
+}
+
+// GetUser retrieves a user by ID.
+func (am *Manager) GetUser(id string) (*configv1.User, bool) {
+	am.usersMu.RLock()
+	defer am.usersMu.RUnlock()
+	u, ok := am.users[id]
+	return u, ok
 }
 
 // SetAPIKey sets the global API key for the server.
