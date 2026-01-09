@@ -37,9 +37,7 @@ test.describe('Generate Docs Screenshots and Verify UI', () => {
     { name: 'traces', path: '/traces' },
     { name: 'secrets', path: '/secrets' },
     { name: 'settings', path: '/settings' },
-    // Marketplace is already in the list at index 14, but let's ensure we visit it explicitly if needed
-    // or just rely on the loop. The loop handles 'marketplace'.
-    // We want to add external marketplace specifically
+    { name: 'credentials', path: '/credentials' }, // Added credentials page
   ];
 
   /*
@@ -178,6 +176,78 @@ test.describe('Generate Docs Screenshots and Verify UI', () => {
       console.log('Saved screenshot to marketplace_external_detailed.png');
   });
 
+  test('Verify and Screenshot Credentials Flow', async ({ page }) => {
+      // Mock credentials list
+      await page.route('**/api/v1/credentials', async route => {
+          if (route.request().method() === 'GET') {
+              await route.fulfill({
+                  json: [
+                      { id: '1', name: 'OpenAI API Key', authentication: { apiKey: { paramName: 'Authorization', in: 0, value: { plainText: 'sk-...' } } } },
+                      { id: '2', name: 'Github Token', authentication: { bearerToken: { token: { plainText: 'ghp_...' } } } }
+                  ]
+              });
+          } else {
+              await route.continue();
+          }
+      });
+
+      console.log('Navigating to /credentials...');
+      await page.goto('/credentials');
+      await page.waitForTimeout(1000);
+      await expect(page.getByText('OpenAI API Key')).toBeVisible();
+
+      // Screenshot List
+      await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'credentials_list.png'), fullPage: true });
+
+      // Open "New Credential" dialog
+      await page.getByRole('button', { name: 'New Credential' }).click();
+      await page.waitForTimeout(500);
+      await expect(page.getByText('Create Credential')).toBeVisible();
+
+      // Fill form partially for screenshot
+      await page.getByLabel('Name').fill('My New Credential');
+      // Takes screenshot of form
+      await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'credential_form.png'), fullPage: true });
+
+      // Close dialog
+      await page.getByRole('button', { name: 'Close' }).click().catch(() => page.keyboard.press('Escape'));
+  });
+
+  test('Verify and Screenshot Service Auth Tab', async ({ page }) => {
+        // Mock Credentials
+        await page.route('**/api/v1/credentials', async route => {
+             await route.fulfill({
+                  json: [
+                      { id: '1', name: 'OpenAI API Key', authentication: { apiKey: { paramName: 'Authorization', in: 0, value: { plainText: 'sk-...' } } } }
+                  ]
+              });
+        });
+
+        // Mock Services List (empty ok, just need it to load page)
+        await page.route('**/api/v1/services', async route => {
+             if (route.request().method() === 'GET') {
+                await route.fulfill({ json: { services: [] } });
+             } else {
+                await route.continue(); // allow POST if needed, but we don't need real post
+             }
+        });
+
+        console.log('Navigating to /services...');
+        await page.goto('/services');
+
+        // Open Register Service Dialog
+        await page.getByRole('button', { name: 'Register Service' }).click();
+        await page.waitForTimeout(500);
+        await expect(page.getByText('Register New Service')).toBeVisible();
+
+        // Switch to Authentication Tab
+        await page.getByRole('tab', { name: 'Authentication' }).click();
+        await page.waitForTimeout(500);
+        await expect(page.getByText('Load from Credential')).toBeVisible();
+
+        // Screenshot Auth Tab
+        await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'service_auth_tab.png'), fullPage: true });
+  });
   test('Verify and Screenshot OAuth Connect Button', async ({ page }) => {
         const serviceID = 'oauth-demo-service';
         // Mock the service response to include OAuth
@@ -187,46 +257,15 @@ test.describe('Generate Docs Screenshots and Verify UI', () => {
                     service: {
                         id: serviceID,
                         name: serviceID,
-                        upstream_auth: { /* snake_case from backend usually, but client maps? No, client maps response. */
-                             /* wrapper `ServiceDetail` uses `service` state.
-                                `apiClient.getService` uses `registrationClient.GetService` (gRPC).
-                                IF we want to mock this in `generate_docs_screenshots` which might use real backend or not?
-                                `webServer` in `playwright.screenshots.config.ts` starts the app.
-                                The app tries to talk to backend.
-                                We can INTERCEPT it.
-                              */
+                        upstream_auth: {
                             oauth2: { provider: 'github' }
                         },
-                        // We also need other fields to not crash
                         http_service: { address: 'http://localhost:8080' }
                     }
                 }
             });
         });
 
-        // We also need to mock `getService` if it uses gRPC-Web (POST to /mcpany...GetService).
-        // Since `client.ts` Implementation of `getService` calls `registrationClient`.
-        // We probably need to route the gRPC call OR fallback to REST if I changed it?
-        // Wait, I did NOT change `getService` in `client.ts` to fallback to REST.
-        // I should probably do that to make testing easier, or mock the gRPC endpoint.
-        // Mocking gRPC endpoint:
-        // Pattern: /mcpany.config.v1.registration.RegistrationService/GetService
-        // But let's check `client.ts` again. I only added OAuth methods.
-        // I did NOT force `getService` to REST.
-        // So `ServiceDetail` will make a gRPC-Web call.
-        // I should probably switch `getService` to REST in `client.ts` for consistency/ease of testing if the verification allows?
-        // Or I can add the mock for the gRPC path.
-        // The gRPC path is likely: `htt://localhost:9002/mcpany.config.v1.registration.RegistrationService/GetService`
-        // Content-Type: application/grpc-web...
-
-        // Easier fix: Update `client.ts` to use REST for `getService` too, since `listServices` uses REST.
-        // Backend `api_registration.go` (or similar) likely has REST handlers for GetService if using gRPC-Gateway?
-        // `server.go` registers `v1.RegisterRegistrationServiceHandlerFromEndpoint`.
-        // This enables REST /v1/services/{service_name} usually?
-        // Let's check `upstream_service.proto` or `registration.proto` annotations.
-        // I can't check them easily right now without reading.
-        // But `apiClient.listServices` calls `/api/v1/services`.
-        // It's highly likely `/api/v1/services/{name}` exists.
-        // So I will modify `client.ts` to use REST for `getService` to simplify testing.
+        // Add mock for REST list services as well since we might navigate
   });
 });

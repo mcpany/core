@@ -3,20 +3,16 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { defineConfig, devices } from '@playwright/test';
-import baseConfig from './playwright.config';
+import config from './playwright.config';
+import { defineConfig } from '@playwright/test';
 
 export default defineConfig({
-  ...baseConfig,
-  testMatch: ['**/generate_docs_screenshots.spec.ts'],
-  testIgnore: [], // Explicitly un-ignore for this specific config
+  ...config,
+  testIgnore: undefined, // Override ignore
+  testMatch: '**/generate_docs_screenshots.spec.ts',
   webServer: {
-    command: `npm run build && npm run start -- -p 9002`,
-    url: 'http://localhost:9002',
-    reuseExistingServer: false, // Ensure we build fresh for screenshots
-    timeout: 120000, // Build might take time
-    env: {
-      BACKEND_URL: process.env.BACKEND_URL || 'http://localhost:50050',
-    },
+    ...config.webServer,
+    command: `PORT=9002 BACKEND_URL=${process.env.BACKEND_URL || 'http://localhost:50050'} node core/ui/server.js`,
+    cwd: '.next/standalone',
   },
 });
