@@ -771,7 +771,8 @@ func (a *Application) reconcileServices(cfg *config_v1.McpAnyServerConfig) {
 		}
 
 		if needsUpdate {
-			if a.busProvider != nil {
+			switch {
+			case a.busProvider != nil:
 				// Async registration via bus to support retries
 				registrationBus, err := bus.GetBus[*bus.ServiceRegistrationRequest](
 					a.busProvider,
@@ -787,14 +788,14 @@ func (a *Application) reconcileServices(cfg *config_v1.McpAnyServerConfig) {
 				} else {
 					log.Info("Queued service for registration update", "service", name)
 				}
-			} else if a.ServiceRegistry != nil {
+			case a.ServiceRegistry != nil:
 				// Fallback to sync registration if bus is not available (e.g. tests without full init)
 				_, _, _, err := a.ServiceRegistry.RegisterService(context.Background(), newSvc)
 				if err != nil {
 					log.Error("Failed to register upstream service", "service", name, "error", err)
 					continue
 				}
-			} else {
+			default:
 				log.Warn("ServiceRegistry is nil, cannot register service", "service", name)
 			}
 		} else {
