@@ -3,7 +3,7 @@
 
 upstream_services:
   - name: airtable
-    upstream_authentication:
+    upstream_auth:
       bearer_token:
         token:
           plain_text: "${AIRTABLE_API_TOKEN}" # Removed manual 'Bearer ' prefix as bearer_token type should handle it

@@ -7,12 +7,12 @@ upstream_services:
       api_key:
         param_name: "X-Auth"
         in: "HEADER"
-        key_value: "s3cret"
+        verification_value: "s3cret"
     http_service:
       address: "https://example.com"
 
   - name: "outgoing-auth-service"
-    upstream_authentication:
+    upstream_auth:
       basic_auth:
         username: "admin"
         password:

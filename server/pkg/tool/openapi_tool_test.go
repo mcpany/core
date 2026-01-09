@@ -12,11 +12,11 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	configv1 "github.com/mcpany/core/proto/config/v1"
+	v1 "github.com/mcpany/core/proto/mcp_router/v1"
 	"github.com/mcpany/core/server/pkg/auth"
 	"github.com/mcpany/core/server/pkg/client"
 	"github.com/mcpany/core/server/pkg/tool"
-	configv1 "github.com/mcpany/core/proto/config/v1"
-	v1 "github.com/mcpany/core/proto/mcp_router/v1"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/proto"
@@ -98,13 +98,18 @@ func TestOpenAPITool_Execute(t *testing.T) {
 		}
 
 		toolProto := &v1.Tool{}
-		apiKeyAuth := &configv1.UpstreamAPIKeyAuth{}
-		apiKeyAuth.SetHeaderName("X-API-Key")
-		secret := &configv1.SecretValue{}
-		secret.SetPlainText("my-secret-key")
-		apiKeyAuth.SetApiKey(secret)
-		authn := &configv1.UpstreamAuthentication{}
-		authn.SetApiKey(apiKeyAuth)
+		apiKeyAuth := &configv1.APIKeyAuth{
+			ParamName: proto.String("X-API-Key"),
+			Value: &configv1.SecretValue{
+				Value: &configv1.SecretValue_PlainText{PlainText: "my-secret-key"},
+			},
+		}
+
+		authn := &configv1.Authentication{
+			AuthMethod: &configv1.Authentication_ApiKey{
+				ApiKey: apiKeyAuth,
+			},
+		}
 		authenticator, err := auth.NewUpstreamAuthenticator(authn)
 		require.NoError(t, err)
 

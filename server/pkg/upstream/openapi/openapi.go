@@ -17,6 +17,8 @@ import (
 
 	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/jellydator/ttlcache/v3"
+	configv1 "github.com/mcpany/core/proto/config/v1"
+	pb "github.com/mcpany/core/proto/mcp_router/v1"
 	"github.com/mcpany/core/server/pkg/auth"
 	"github.com/mcpany/core/server/pkg/logging"
 	"github.com/mcpany/core/server/pkg/prompt"
@@ -24,8 +26,6 @@ import (
 	"github.com/mcpany/core/server/pkg/tool"
 	"github.com/mcpany/core/server/pkg/upstream"
 	"github.com/mcpany/core/server/pkg/util"
-	configv1 "github.com/mcpany/core/proto/config/v1"
-	pb "github.com/mcpany/core/proto/mcp_router/v1"
 	"google.golang.org/protobuf/proto"
 )
 
@@ -230,7 +230,7 @@ func (u *OpenAPIUpstream) addOpenAPIToolsToIndex(_ context.Context, pbTools []*p
 	httpClient := u.getHTTPClient(serviceID)
 	httpC := &httpClientImpl{client: httpClient}
 
-	authenticator, err := auth.NewUpstreamAuthenticator(serviceConfig.GetUpstreamAuthentication())
+	authenticator, err := auth.NewUpstreamAuthenticator(serviceConfig.GetUpstreamAuth())
 	if err != nil {
 		log.Error("Failed to create authenticator for OpenAPI upstream", "serviceID", serviceID, "error", err)
 	}

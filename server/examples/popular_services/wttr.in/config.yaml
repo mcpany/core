@@ -6,10 +6,10 @@ global_settings:
   log_level: "INFO"
 upstream_services:
   - name: "wttr.in"
-    upstream_authentication:
+    upstream_auth:
       api_key:
-        header_name: "User-Agent"
-        api_key:
+        param_name: "User-Agent"
+        value:
           plain_text: "curl/8.5.0"
     http_service:
       address: "https://wttr.in"

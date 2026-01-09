@@ -15,6 +15,8 @@ import (
 	"strings"
 
 	"al.essio.dev/pkg/shellescape"
+	configv1 "github.com/mcpany/core/proto/config/v1"
+	v1 "github.com/mcpany/core/proto/mcp_router/v1"
 	"github.com/mcpany/core/server/pkg/auth"
 	"github.com/mcpany/core/server/pkg/client"
 	"github.com/mcpany/core/server/pkg/logging"
@@ -23,8 +25,6 @@ import (
 	"github.com/mcpany/core/server/pkg/tool"
 	"github.com/mcpany/core/server/pkg/upstream"
 	"github.com/mcpany/core/server/pkg/util"
-	configv1 "github.com/mcpany/core/proto/config/v1"
-	v1 "github.com/mcpany/core/proto/mcp_router/v1"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/structpb"
@@ -810,7 +810,7 @@ func (u *Upstream) createAndRegisterMCPItemsFromStreamableHTTP(
 	_ bool,
 	serviceConfig *configv1.UpstreamServiceConfig,
 ) ([]*configv1.ToolDefinition, []*configv1.ResourceDefinition, error) {
-	authenticator, err := auth.NewUpstreamAuthenticator(serviceConfig.GetUpstreamAuthentication())
+	authenticator, err := auth.NewUpstreamAuthenticator(serviceConfig.GetUpstreamAuth())
 	if err != nil {
 		return nil, nil, fmt.Errorf("failed to create authenticator for MCP upstream: %w", err)
 	}

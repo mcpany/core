@@ -11,8 +11,8 @@ import (
 	"os"
 	"testing"
 
-	"github.com/mcpany/core/server/pkg/util"
 	configv1 "github.com/mcpany/core/proto/config/v1"
+	"github.com/mcpany/core/server/pkg/util"
 	"github.com/stretchr/testify/assert"
 	"google.golang.org/protobuf/proto"
 )
@@ -108,9 +108,9 @@ func TestResolveSecret(t *testing.T) {
 		apiKeySecret := &configv1.SecretValue{}
 		apiKeySecret.SetPlainText("my-api-key")
 
-		apiKeyAuth := &configv1.UpstreamAPIKeyAuth{}
-		apiKeyAuth.SetHeaderName("X-API-Key")
-		apiKeyAuth.SetApiKey(apiKeySecret)
+		apiKeyAuth := &configv1.APIKeyAuth{}
+		apiKeyAuth.SetParamName("X-API-Key")
+		apiKeyAuth.SetValue(apiKeySecret)
 
 		auth := &configv1.Authentication{}
 		auth.SetApiKey(apiKeyAuth)
@@ -137,7 +137,7 @@ func TestResolveSecret(t *testing.T) {
 		tokenSecret := &configv1.SecretValue{}
 		tokenSecret.SetPlainText("my-bearer-token")
 
-		bearerTokenAuth := &configv1.UpstreamBearerTokenAuth{}
+		bearerTokenAuth := &configv1.BearerTokenAuth{}
 		bearerTokenAuth.SetToken(tokenSecret)
 
 		auth := &configv1.Authentication{}
@@ -168,7 +168,7 @@ func TestResolveSecret(t *testing.T) {
 		passwordSecret := &configv1.SecretValue{}
 		passwordSecret.SetPlainText("my-password")
 
-		basicAuth := &configv1.UpstreamBasicAuth{}
+		basicAuth := &configv1.BasicAuth{}
 		basicAuth.SetUsername("my-user")
 		basicAuth.SetPassword(passwordSecret)
 

@@ -48,10 +48,10 @@ func RegisterHTTPAuthedEchoService(t *testing.T, registrationClient apiv1.Regist
 	secret := configv1.SecretValue_builder{
 		PlainText: proto.String("test-api-key"),
 	}.Build()
-	authConfig := configv1.UpstreamAuthentication_builder{
-		ApiKey: configv1.UpstreamAPIKeyAuth_builder{
-			HeaderName: proto.String("X-Api-Key"),
-			ApiKey:     secret,
+	authConfig := configv1.Authentication_builder{
+		ApiKey: configv1.APIKeyAuth_builder{
+			ParamName: proto.String("X-Api-Key"),
+			Value:     secret,
 		}.Build(),
 	}.Build()
 	integration.RegisterHTTPService(t, registrationClient, serviceID, upstreamEndpoint, "echo", "/echo", http.MethodPost, authConfig)

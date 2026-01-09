@@ -12,12 +12,12 @@ import (
 	"strings"
 
 	"github.com/machinebox/graphql"
+	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/mcpany/core/server/pkg/auth"
 	"github.com/mcpany/core/server/pkg/prompt"
 	"github.com/mcpany/core/server/pkg/resource"
 	"github.com/mcpany/core/server/pkg/tool"
 	"github.com/mcpany/core/server/pkg/upstream"
-	configv1 "github.com/mcpany/core/proto/config/v1"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/structpb"
 )
@@ -157,7 +157,7 @@ func (g *graphqlUpstream) Register(
 		return "", nil, nil, fmt.Errorf("missing graphql service config")
 	}
 
-	authenticator, err := auth.NewUpstreamAuthenticator(serviceConfig.GetUpstreamAuthentication())
+	authenticator, err := auth.NewUpstreamAuthenticator(serviceConfig.GetUpstreamAuth())
 	if err != nil {
 		return "", nil, nil, fmt.Errorf("failed to create upstream authenticator: %w", err)
 	}

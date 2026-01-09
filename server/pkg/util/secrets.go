@@ -18,8 +18,8 @@ import (
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/secretsmanager"
 	"github.com/hashicorp/vault/api"
-	"github.com/mcpany/core/server/pkg/validation"
 	configv1 "github.com/mcpany/core/proto/config/v1"
+	"github.com/mcpany/core/server/pkg/validation"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/clientcredentials"
 )
@@ -82,11 +82,11 @@ func resolveSecretRecursive(ctx context.Context, secret *configv1.SecretValue, d
 
 		if auth := remote.GetAuth(); auth != nil {
 			if apiKey := auth.GetApiKey(); apiKey != nil {
-				apiKeyValue, err := resolveSecretRecursive(ctx, apiKey.GetApiKey(), depth+1)
+				apiKeyValue, err := resolveSecretRecursive(ctx, apiKey.GetValue(), depth+1)
 				if err != nil {
 					return "", fmt.Errorf("failed to resolve api key for remote secret: %w", err)
 				}
-				req.Header.Set(apiKey.GetHeaderName(), apiKeyValue)
+				req.Header.Set(apiKey.GetParamName(), apiKeyValue)
 			} else if bearer := auth.GetBearerToken(); bearer != nil {
 				token, err := resolveSecretRecursive(ctx, bearer.GetToken(), depth+1)
 				if err != nil {

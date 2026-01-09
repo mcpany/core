@@ -280,17 +280,17 @@ func (m *UpstreamServiceManager) unmarshalProtoJSON(data []byte, services *[]*co
 	return nil
 }
 
-func (m *UpstreamServiceManager) applyAuthentication(req *http.Request, auth *configv1.UpstreamAuthentication) error {
+func (m *UpstreamServiceManager) applyAuthentication(req *http.Request, auth *configv1.Authentication) error {
 	if auth == nil {
 		return nil
 	}
 
 	if apiKey := auth.GetApiKey(); apiKey != nil {
-		apiKeyValue, err := util.ResolveSecret(req.Context(), apiKey.GetApiKey())
+		apiKeyValue, err := util.ResolveSecret(req.Context(), apiKey.GetValue())
 		if err != nil {
 			return err
 		}
-		req.Header.Set(apiKey.GetHeaderName(), apiKeyValue)
+		req.Header.Set(apiKey.GetParamName(), apiKeyValue)
 	} else if bearerToken := auth.GetBearerToken(); bearerToken != nil {
 		tokenValue, err := util.ResolveSecret(req.Context(), bearerToken.GetToken())
 		if err != nil {

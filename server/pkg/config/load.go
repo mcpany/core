@@ -139,12 +139,12 @@ func LoadResolvedConfig(ctx context.Context, store Store) (*configv1.McpAnyServe
 		}
 		if apiKey != "" {
 			headerLoc := configv1.APIKeyAuth_HEADER
-			defaultUser.Authentication = &configv1.AuthenticationConfig{
-				AuthMethod: &configv1.AuthenticationConfig_ApiKey{
+			defaultUser.Authentication = &configv1.Authentication{
+				AuthMethod: &configv1.Authentication_ApiKey{
 					ApiKey: &configv1.APIKeyAuth{
-						ParamName: proto.String("X-API-Key"),
-						KeyValue:  proto.String(apiKey),
-						In:        &headerLoc,
+						ParamName:         proto.String("X-API-Key"),
+						VerificationValue: proto.String(apiKey),
+						In:                &headerLoc,
 					},
 				},
 			}

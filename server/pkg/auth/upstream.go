@@ -40,21 +40,37 @@ type UpstreamAuthenticator interface {
 // Returns:
 //   - An `UpstreamAuthenticator` implementation, or nil if no auth is configured.
 //   - An error if the configuration is invalid.
-func NewUpstreamAuthenticator(authConfig *configv1.UpstreamAuthentication) (UpstreamAuthenticator, error) {
+// NewUpstreamAuthenticator creates an `UpstreamAuthenticator` based on the
+// provided authentication configuration. It supports API key, bearer token, and
+// basic authentication, as well as substitution of environment variables in the
+// authentication parameters.
+//
+// If the `authConfig` is `nil`, no authenticator is created, and the function
+// returns `nil, nil`. If the configuration is invalid (e.g., missing required
+// fields), an error is returned.
+//
+// Parameters:
+//   - authConfig: The configuration that specifies the authentication method
+//     and its parameters.
+//
+// Returns:
+//   - An `UpstreamAuthenticator` implementation, or nil if no auth is configured.
+//   - An error if the configuration is invalid.
+func NewUpstreamAuthenticator(authConfig *configv1.Authentication) (UpstreamAuthenticator, error) {
 	if authConfig == nil {
 		return nil, nil
 	}
 
 	if apiKey := authConfig.GetApiKey(); apiKey != nil {
-		if apiKey.GetHeaderName() == "" {
-			return nil, errors.New("API key authentication requires a header name")
+		if apiKey.GetParamName() == "" {
+			return nil, errors.New("API key authentication requires a parameter name")
 		}
-		if apiKey.GetApiKey() == nil {
-			return nil, errors.New("API key authentication requires an API key")
+		if apiKey.GetValue() == nil {
+			return nil, errors.New("API key authentication requires an API key value")
 		}
 		return &APIKeyAuth{
-			HeaderName:  apiKey.GetHeaderName(),
-			HeaderValue: apiKey.GetApiKey(),
+			ParamName: apiKey.GetParamName(),
+			Value:     apiKey.GetValue(),
 		}, nil
 	}
 
@@ -103,9 +119,10 @@ func NewUpstreamAuthenticator(authConfig *configv1.UpstreamAuthentication) (Upst
 
 // APIKeyAuth implements UpstreamAuthenticator for API key-based authentication.
 // It adds a specified header with a static API key value to the request.
+// Note: Currently primarily supports Header based auth for upstream.
 type APIKeyAuth struct {
-	HeaderName  string
-	HeaderValue *configv1.SecretValue
+	ParamName string
+	Value     *configv1.SecretValue
 }
 
 // Authenticate adds the configured API key to the request's header.
@@ -116,14 +133,16 @@ type APIKeyAuth struct {
 // Returns:
 //   - nil on success, or an error if the secret cannot be resolved.
 func (a *APIKeyAuth) Authenticate(req *http.Request) error {
-	if a.HeaderValue == nil {
+	if a.Value == nil {
 		return errors.New("api key secret is not configured")
 	}
-	value, err := util.ResolveSecret(req.Context(), a.HeaderValue)
+	value, err := util.ResolveSecret(req.Context(), a.Value)
 	if err != nil {
 		return err
 	}
-	req.Header.Set(a.HeaderName, value)
+	// TODO: Support other locations (Query, Cookie) if needed for upstream.
+	// For now defaulting to Header as per previous behavior, reusing ParamName as HeaderName.
+	req.Header.Set(a.ParamName, value)
 	return nil
 }
 

@@ -3,10 +3,10 @@
 
 upstream_services:
   - name: google_calendar
-    upstream_authentication:
+    upstream_auth:
       api_key:
-        header_name: "x-goog-api-key"
-        api_key:
+        param_name: "x-goog-api-key"
+        value:
           plain_text: "${GOOGLE_API_KEY}"
     http_service:
       address: "https://www.googleapis.com"

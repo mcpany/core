@@ -180,15 +180,21 @@ func TestGRPCUpstream_Register(t *testing.T) {
 	t.Run("authenticator creation fails", func(t *testing.T) {
 		poolManager := pool.NewManager()
 		upstream := NewUpstream(poolManager)
-		serviceConfig := (&configv1.UpstreamServiceConfig_builder{
+		serviceConfig := &configv1.UpstreamServiceConfig{
 			Name: proto.String("test"),
-			GrpcService: (&configv1.GrpcUpstreamService_builder{
-				Address: proto.String("localhost:50051"),
-			}).Build(),
-			UpstreamAuthentication: (&configv1.UpstreamAuthentication_builder{
-				BearerToken: (&configv1.UpstreamBearerTokenAuth_builder{}).Build(),
-			}).Build(),
-		}).Build()
+			ServiceConfig: &configv1.UpstreamServiceConfig_GrpcService{
+				GrpcService: &configv1.GrpcUpstreamService{
+					Address: proto.String("localhost:50051"),
+				},
+			},
+			UpstreamAuth: &configv1.Authentication{
+				AuthMethod: &configv1.Authentication_BearerToken{
+					BearerToken: &configv1.BearerTokenAuth{
+						// Token missing
+					},
+				},
+			},
+		}
 
 		_, _, _, err := upstream.Register(context.Background(), serviceConfig, NewMockToolManager(), promptManager, resourceManager, false)
 		require.Error(t, err)

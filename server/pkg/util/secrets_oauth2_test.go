@@ -10,8 +10,8 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/mcpany/core/server/pkg/util"
 	configv1 "github.com/mcpany/core/proto/config/v1"
+	"github.com/mcpany/core/server/pkg/util"
 	"github.com/stretchr/testify/assert"
 	"google.golang.org/protobuf/proto"
 )
@@ -73,7 +73,7 @@ func TestResolveSecret_RemoteContent_OAuth2(t *testing.T) {
 				HttpUrl: proto.String(secretServer.URL),
 				Auth: &configv1.Authentication{
 					AuthMethod: &configv1.Authentication_Oauth2{
-						Oauth2: &configv1.UpstreamOAuth2Auth{
+						Oauth2: &configv1.OAuth2Auth{
 							TokenUrl: proto.String(tokenServer.URL),
 							ClientId: &configv1.SecretValue{
 								Value: &configv1.SecretValue_PlainText{PlainText: "test-client-id"},

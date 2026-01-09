@@ -30,7 +30,7 @@ func TestNewAPIKeyAuthenticator(t *testing.T) {
 
 	t.Run("empty_param_name", func(t *testing.T) {
 		config := configv1.APIKeyAuth_builder{
-			KeyValue: proto.String("some-key"),
+			VerificationValue: proto.String("some-key"),
 		}.Build()
 		authenticator := NewAPIKeyAuthenticator(config)
 		assert.Nil(t, authenticator)
@@ -48,7 +48,7 @@ func TestNewAPIKeyAuthenticator(t *testing.T) {
 func TestAPIKeyAuthenticator(t *testing.T) {
 	config := configv1.APIKeyAuth_builder{
 		ParamName: proto.String("X-API-Key"),
-		KeyValue:  proto.String("secret-key"),
+		VerificationValue:  proto.String("secret-key"),
 	}.Build()
 
 	authenticator := NewAPIKeyAuthenticator(config)
@@ -83,7 +83,7 @@ func TestAuthManager(t *testing.T) {
 
 	config := configv1.APIKeyAuth_builder{
 		ParamName: proto.String("X-API-Key"),
-		KeyValue:  proto.String("secret-key"),
+		VerificationValue:  proto.String("secret-key"),
 	}.Build()
 	apiKeyAuth := NewAPIKeyAuthenticator(config)
 
@@ -239,7 +239,7 @@ func TestAddOAuth2Authenticator(t *testing.T) {
 func TestAPIKeyAuthenticator_Query(t *testing.T) {
 	config := configv1.APIKeyAuth_builder{
 		ParamName: proto.String("api_key"),
-		KeyValue:  proto.String("secret"),
+		VerificationValue:  proto.String("secret"),
 		In:        configv1.APIKeyAuth_QUERY.Enum(),
 	}.Build()
 
@@ -266,12 +266,12 @@ func TestValidateAuthentication(t *testing.T) {
 	})
 
 	t.Run("api_key_valid", func(t *testing.T) {
-		config := &configv1.AuthenticationConfig{
-			AuthMethod: &configv1.AuthenticationConfig_ApiKey{
+		config := &configv1.Authentication{
+			AuthMethod: &configv1.Authentication_ApiKey{
 				ApiKey: &configv1.APIKeyAuth{
-					ParamName: proto.String("X-API-Key"),
-					KeyValue:  proto.String("secret"),
-					In:        configv1.APIKeyAuth_HEADER.Enum(),
+					ParamName:         proto.String("X-API-Key"),
+					VerificationValue: proto.String("secret"),
+					In:                configv1.APIKeyAuth_HEADER.Enum(),
 				},
 			},
 		}
@@ -282,12 +282,12 @@ func TestValidateAuthentication(t *testing.T) {
 	})
 
 	t.Run("api_key_invalid", func(t *testing.T) {
-		config := &configv1.AuthenticationConfig{
-			AuthMethod: &configv1.AuthenticationConfig_ApiKey{
+		config := &configv1.Authentication{
+			AuthMethod: &configv1.Authentication_ApiKey{
 				ApiKey: &configv1.APIKeyAuth{
-					ParamName: proto.String("X-API-Key"),
-					KeyValue:  proto.String("secret"),
-					In:        configv1.APIKeyAuth_HEADER.Enum(),
+					ParamName:         proto.String("X-API-Key"),
+					VerificationValue: proto.String("secret"),
+					In:                configv1.APIKeyAuth_HEADER.Enum(),
 				},
 			},
 		}
@@ -298,8 +298,8 @@ func TestValidateAuthentication(t *testing.T) {
 	})
 
 	t.Run("api_key_bad_config", func(t *testing.T) {
-		config := &configv1.AuthenticationConfig{
-			AuthMethod: &configv1.AuthenticationConfig_ApiKey{
+		config := &configv1.Authentication{
+			AuthMethod: &configv1.Authentication_ApiKey{
 				ApiKey: &configv1.APIKeyAuth{
 					// Missing params
 				},
@@ -326,8 +326,8 @@ func TestValidateAuthentication(t *testing.T) {
 		}))
 		defer server.Close()
 
-		config := &configv1.AuthenticationConfig{
-			AuthMethod: &configv1.AuthenticationConfig_Oauth2{
+		config := &configv1.Authentication{
+			AuthMethod: &configv1.Authentication_Oauth2{
 				Oauth2: &configv1.OAuth2Auth{
 					IssuerUrl: proto.String(server.URL),
 					Audience:  proto.String("test-audience"),
@@ -341,7 +341,7 @@ func TestValidateAuthentication(t *testing.T) {
 	})
 
 	t.Run("no_method", func(t *testing.T) {
-		config := &configv1.AuthenticationConfig{}
+		config := &configv1.Authentication{}
 		err := ValidateAuthentication(context.Background(), config, nil)
 		assert.NoError(t, err)
 	})

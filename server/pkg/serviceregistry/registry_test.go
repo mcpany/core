@@ -10,6 +10,8 @@ import (
 	"sync"
 	"testing"
 
+	configv1 "github.com/mcpany/core/proto/config/v1"
+	mcp_routerv1 "github.com/mcpany/core/proto/mcp_router/v1"
 	"github.com/mcpany/core/server/pkg/auth"
 	"github.com/mcpany/core/server/pkg/pool"
 	"github.com/mcpany/core/server/pkg/prompt"
@@ -18,8 +20,6 @@ import (
 	"github.com/mcpany/core/server/pkg/upstream"
 	"github.com/mcpany/core/server/pkg/upstream/factory"
 	"github.com/mcpany/core/server/pkg/util"
-	configv1 "github.com/mcpany/core/proto/config/v1"
-	mcp_routerv1 "github.com/mcpany/core/proto/mcp_router/v1"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -117,10 +117,14 @@ func TestServiceRegistry_RegisterAndGetService(t *testing.T) {
 	httpService.SetAddress("http://localhost")
 	serviceConfig.SetHttpService(httpService)
 
-	authConfig := &configv1.AuthenticationConfig{}
-	apiKeyAuth := &configv1.APIKeyAuth{}
-	apiKeyAuth.SetKeyValue("test-key")
-	authConfig.SetApiKey(apiKeyAuth)
+	apiKeyAuth := &configv1.APIKeyAuth{
+		VerificationValue: proto.String("test-key"),
+	}
+	authConfig := &configv1.Authentication{
+		AuthMethod: &configv1.Authentication_ApiKey{
+			ApiKey: apiKeyAuth,
+		},
+	}
 	serviceConfig.SetAuthentication(authConfig)
 
 	// Successful registration
@@ -151,11 +155,15 @@ func TestServiceRegistry_RegisterAndGetService(t *testing.T) {
 		httpService := &configv1.HttpUpstreamService{}
 		httpService.SetAddress("http://localhost")
 		serviceConfig.SetHttpService(httpService)
-		authConfig := &configv1.AuthenticationConfig{}
-		oauth2Config := &configv1.OAuth2Auth{}
-		oauth2Config.SetIssuerUrl("https://accounts.google.com")
-		oauth2Config.SetAudience("test-audience")
-		authConfig.SetOauth2(oauth2Config)
+		oauth2Config := &configv1.OAuth2Auth{
+			IssuerUrl: proto.String("https://accounts.google.com"),
+			Audience:  proto.String("test-audience"),
+		}
+		authConfig := &configv1.Authentication{
+			AuthMethod: &configv1.Authentication_Oauth2{
+				Oauth2: oauth2Config,
+			},
+		}
 		serviceConfig.SetAuthentication(authConfig)
 		serviceID, _, _, err := registry.RegisterService(context.Background(), serviceConfig)
 		require.NoError(t, err)

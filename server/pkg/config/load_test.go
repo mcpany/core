@@ -174,10 +174,10 @@ upstream_services: {
 			textprotoContent: `
 upstream_services: {
 	name: "http-svc-1"
-	upstream_authentication: {
+	upstream_auth: {
 		api_key: {
-			header_name: "X-Token"
-			api_key: { plain_text: "secretapikey" }
+			param_name: "X-Token"
+			value: { plain_text: "secretapikey" }
 		}
 	}
 	http_service: {
@@ -209,12 +209,12 @@ upstream_services: {
 				httpService := s.GetHttpService()
 				require.NotNil(t, httpService)
 				assert.Equal(t, "http://api.example.com/v1", httpService.GetAddress())
-				auth := s.GetUpstreamAuthentication()
+				auth := s.GetUpstreamAuth()
 				require.NotNil(t, auth)
 				apiKey := auth.GetApiKey()
 				require.NotNil(t, apiKey)
-				assert.Equal(t, "X-Token", apiKey.GetHeaderName())
-				apiKeyValue, err := util.ResolveSecret(context.Background(), apiKey.GetApiKey())
+				assert.Equal(t, "X-Token", apiKey.GetParamName())
+				apiKeyValue, err := util.ResolveSecret(context.Background(), apiKey.GetValue())
 				require.NoError(t, err)
 				assert.Equal(t, "secretapikey", apiKeyValue, "API key should be plaintext")
 				assert.Len(t, httpService.GetTools(), 1)
@@ -231,7 +231,7 @@ upstream_services: {
 			textprotoContent: `
 upstream_services: {
 	name: "http-svc-bearer"
-	upstream_authentication: {
+	upstream_auth: {
 		bearer_token: {
 			token: { plain_text: "secretbearertoken" }
 		}
@@ -244,7 +244,7 @@ upstream_services: {
 			expectedCount: 1,
 			checkServices: func(t *testing.T, services []*configv1.UpstreamServiceConfig) {
 				s := services[0]
-				auth := s.GetUpstreamAuthentication()
+				auth := s.GetUpstreamAuth()
 				require.NotNil(t, auth)
 				bearerToken := auth.GetBearerToken()
 				require.NotNil(t, bearerToken)
@@ -258,7 +258,7 @@ upstream_services: {
 			textprotoContent: `
 upstream_services: {
 	name: "http-svc-basic"
-	upstream_authentication: {
+	upstream_auth: {
 		basic_auth: {
 			username: "testuser"
 			password: { plain_text: "secretpassword" }
@@ -272,7 +272,7 @@ upstream_services: {
 			expectedCount: 1,
 			checkServices: func(t *testing.T, services []*configv1.UpstreamServiceConfig) {
 				s := services[0]
-				auth := s.GetUpstreamAuthentication()
+				auth := s.GetUpstreamAuth()
 				require.NotNil(t, auth)
 				basicAuth := auth.GetBasicAuth()
 				require.NotNil(t, basicAuth)

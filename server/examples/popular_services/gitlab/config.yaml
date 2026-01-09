@@ -6,10 +6,10 @@ upstream_services:
     name: "GitLab"
     openapi_service:
       spec_url: "https://gitlab.com/gitlab-org/gitlab/-/raw/master/doc/api/openapi/openapi.yaml"
-    upstream_authentication:
+    upstream_auth:
       api_key:
-        header_name: "PRIVATE-TOKEN"
-        api_key:
+        param_name: "PRIVATE-TOKEN"
+        value:
           plain_text: "{{GITLAB_TOKEN}}"
     call_policies:
       - default_action: ALLOW

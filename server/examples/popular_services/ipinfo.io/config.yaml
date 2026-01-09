@@ -3,7 +3,7 @@
 
 upstream_services:
   - name: ipinfo.io
-    upstream_authentication:
+    upstream_auth:
       bearer_token:
         token:
           plain_text: "${IPINFO_API_TOKEN}"
