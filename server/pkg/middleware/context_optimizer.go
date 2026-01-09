@@ -49,7 +49,7 @@ func (co *ContextOptimizer) Middleware() gin.HandlerFunc {
 			// Check if result.content exists and is an array
 			resultContent := gjson.GetBytes(bodyBytes, "result.content")
 			if resultContent.IsArray() {
-				resultContent.ForEach(func(key, value gjson.Result) bool {
+				resultContent.ForEach(func(_, value gjson.Result) bool {
 					text := value.Get("text")
 					// Use len(text.String()) to check length.
 					// Note: gjson text.String() handles escape characters correctly for length check
