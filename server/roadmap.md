@@ -24,18 +24,33 @@
 
 ## 2. Top 10 Recommended Features
 
-| Rank | Feature Name                        | Why it matters                                                                                                                                                                                            | Difficulty |
-| :--- | :---------------------------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :--------- |
-| 1    | **Kubernetes Operator V2**          | **Scalability/Ops**: The current `k8s/operator` is skeletal. To support enterprise scale, we need a robust operator with CRDs for defining MCP Servers, handling automated updates, and managing secrets. | High       |
-| 2    | **Browser Automation Provider**     | **Feature**: A "Read Webpage" capability is essential for modern agents. Integrating Playwright as an upstream provider will allow safe, headless interaction with dynamic web content.                   | High       |
-| 3    | **Multi-Region Federation**         | **Scalability**: For global deployments, linking multiple MCP Any instances (Core-to-Core) reduces latency by routing tool calls to the nearest available provider.                                       | High       |
-| 4    | **Active-Active High Availability** | **Reliability**: Production environments demand zero downtime. Implementing a leaderless clustering model ensures the system survives node failures and supports rolling upgrades.                        | High       |
-| 5    | **Disaster Recovery Playbook**      | **Ops**: We need automated tooling to snapshot the server state and configuration to cloud storage (S3/GCS) to meet enterprise SLA requirements for recovery time.                                        | Medium     |
-| 6    | **Dynamic Secret Rotation**         | **Security**: Hardcoded secrets are a risk. Integrating with HashiCorp Vault or AWS Secrets Manager will allow credentials to rotate automatically without server restarts.                               | High       |
-| 7    | **Downstream mTLS**                 | **Security**: To achieve a Zero Trust architecture, we must enforce mutual TLS authentication for all agents connecting to the MCP Any server.                                                            | Medium     |
-| 8    | **Just-In-Time (JIT) Access**       | **Security**: Implement temporary privilege elevation (e.g., "Grant Write access for 1 hour") to enforce the principle of least privilege for sensitive tools.                                            | High       |
-| 9    | **Persistent Vector Store**         | **Core**: While SQLite vector search is good for testing, production use requires connectors for dedicated vector databases like Milvus, Pinecone, or pgvector.                                           | Medium     |
-| 10   | **SDK Consolidation**               | **DevX**: The `server/pkg/client` package is coupled to the server. Extracting it into a standalone Go SDK repository will simplify integration for third-party developers.                               | Medium     |
+| Rank | Feature Name | Why it matters | Difficulty |
+| :--- | :--- | :--- | :--- |
+| 1 | **Traffic Inspector & Replay** | **Debugging**: The "Network Tab" for AI. View raw JSON-RPC messages, latency, and errors. "Replay" a tool call with modified parameters to pinpoint why a tool failed or why the agent hallucinated arguments. | Medium |
+| 2 | **Context Lens & Optimizer** | **Optimization**: Solve "Context Limit Exceeded". Visual breakdown of token usage (System Prompt vs Tool Definitions vs Conversation). Strategies to auto-summarize or "forget" older turns to keep agents running. | High |
+| 3 | **Prompt Studio & Evals** | **Stability**: When "tool invocation is unexpected", it's often the tool description. Edit descriptions in UI and run "Evals" (regression tests) to verify the model picks the right tool for a given query. | High |
+| 4 | **Mocking & Fixtures** | **Testing**: Define static responses for tools ("Happy Path", "Error 500"). Test how your agent handles edge cases without hitting real production APIs. | Medium |
+| 5 | **Session Recorder** | **Forensics**: Record full agent-server interaction sessions. Share a link to a "Broken Session" with a teammate so they can replay it and analyze the exact state that caused a failure. | Medium |
+| 6 | **Unified Marketplace & Installer** | **Discovery**: "npm install" for MCP servers. Rapidly bootstrap a dev environment with standard tools (Postgres, GitHub, Slack) to test agent capabilities. | Medium |
+| 7 | **Universal Client Export** | **Usability**: One-click generation of configuration files/links for Claude Desktop, Cursor, and VS Code. Removes the friction of "how do I get this URL into my editor?". | Low |
+| 8 | **Interactive OAuth Handler** | **Auth**: Solves the pain of manual token management. Click "Login" in the UI to authenticate tools like GitHub/Google, handling refresh tokens automatically. | High |
+| 9 | **Sandboxed Runtime (Docker/WASM)** | **Safety**: Run untrusted community tools safely. Essential for developers testing out new MCP servers from the marketplace without risking their local machine. | High |
+| 10 | **Team Configuration Sync** | **Collaboration**: Share common dev tools and secrets (encrypted) with your team. Ensure everyone is testing against the same version of the backend services. | Medium |
+| 11 | **Human-in-the-Loop Approval UI** | **Safety**: Intercept dangerous tool calls (e.g. `delete_db`) and require manual clicking "Approve" in the UI before execution proceeds. Essential for dev/prod safety. | Low |
+| 12 | **Local LLM "One-Click" Connect** | **Connectivity**: First-class support for Ollama, LM Studio, and LocalAI. Auto-detect running local models and expose them as standardized agents/clients. | Low |
+| 13 | **Tool "Dry Run" Mode** | **Debugging**: Execute tool logic in a safe mode (if supported) or validate input types without performing side effects. Great for testing complex tool arguments. | Medium |
+| 14 | **Cost & Latency Budgeting** | **Ops**: Set alerts for session costs ("Warn if > $0.50") or tool latency ("Warn if > 2s"). Helps developers optimize their agent's performance and burn rate. | Medium |
+| 15 | **Smart Error Recovery** | **Resilience**: Auto-suggest fixes for common JSON-RPC errors or API failures. If a tool fails with "Rate Limit", auto-retry with exponential backoff transparently. | High |
+| 16 | **Documentation Generator** | **Documentation**: Auto-generate beautiful Markdown/HTML documentation for all registered tools, arguments, and return types. Keep your agent system docs always up-to-date. | Low |
+| 17 | **API Key Vault** | **Security**: Secure local storage for all upstream keys, decoupled from config files. Prevents accidental git commits of secrets. | Medium |
+| 18 | **Server Plugin System** | **Extensibility**: Allow developers to write middleware/plugins for MCP Any itself (e.g. "Log to Datadog", "Custom Auth") using a simple WASM or Go plugin API. | High |
+| 19 | **Global "Tool Search"** | **Usability**: Cmd+K palette to search across all available tools, docs, and resources. Quickly find "Which tool allows me to search Jira?". | Low |
+| 20 | **Conversation Branching** | **Testing**: In the Playground/Recorder, fork a conversation at any point to test alternate prompts or tool outputs ("What if the tool returned X instead of Y?"). | High |
+| 21 | **Schema Validation Labs** | **Development**: A sandbox to test JSON Schemas against sample inputs. Verify that your robust tool definitions actually match the expected payloads. | Low |
+| 22 | **Vector DB Inspector** | **Observability**: If using Compass/Semantic Caching, visualize the vector store contents. See which queries are "close" to each other in embedding space. | High |
+| 23 | **Rate Limit Dashboard** | **Observability**: Visualize token buckets and quota usage for all connected services. Understand why your agent is getting throttled. | Low |
+| 24 | **Multi-Tenant Profile Simulator** | **IAM**: "View As" User X. Debug permission issues by simulating how the server behaves for a specific user profile or role. | Medium |
+| 25 | **No-Code Tool Builder** | **Creators**: Create simple tools (Shell command -> Tool, HTTP Request -> Tool) via a UI wizard without writing a single line of Go/Python code. | Medium |
 
 ## 3. Codebase Health
 
