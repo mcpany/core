@@ -27,7 +27,7 @@ message UpstreamServiceCollection {
   // The priority of the collection. Lower numbers have higher priority.
   int32 priority = 3;
   // The authentication to use when fetching the collection.
-  UpstreamAuthentication authentication = 4;
+  Authentication authentication = 4;
 }
 
 // UpstreamServiceConfig is the top-level configuration for a single upstream service
@@ -47,8 +47,10 @@ message UpstreamServiceConfig {
   string sanitized_name = 18 [json_name = "sanitized_name"];
   // Configuration for the pool of connections to the upstream service.
   ConnectionPoolConfig connection_pool = 3 [json_name = "connection_pool"];
-  // Authentication configuration for mcpany to use when connecting to the upstream service.
-  UpstreamAuthentication upstream_authentication = 4 [json_name = "upstream_authentication"];
+  // Authentication configuration for mcpany to use when connecting to the upstream service (outgoing).
+  Authentication upstream_auth = 4 [json_name = "upstream_auth"];
+  reserved upstream_authentication; // Was UpstreamAuthentication
+
   // Caching configuration to improve performance and reduce load on the upstream.
   CacheConfig cache = 5;
   // Rate limiting to protect the upstream service from being overwhelmed.
@@ -76,8 +78,8 @@ message UpstreamServiceConfig {
   // The version of the upstream service, if known (e.g., "v1.2.3").
   string version = 14;
 
-  // Authentication configuration for securing access to the MCP Any service (incoming requests).
-  AuthenticationConfig authentication = 15;
+  // Authentication configuration for securing access to this service (incoming).
+  Authentication authentication = 15;
 
   // If true, this upstream service is disabled.
   bool disable = 19;

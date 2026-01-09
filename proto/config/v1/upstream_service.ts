@@ -8,7 +8,7 @@
 import { BinaryReader, BinaryWriter } from "@bufbuild/protobuf/wire";
 import Long from "long";
 import { Duration } from "../../google/protobuf/duration";
-import { AuthenticationConfig, SecretValue, UpstreamAuthentication } from "./auth";
+import { Authentication, SecretValue } from "./auth";
 import {
   CacheConfig,
   CommandLineCallDefinition,
@@ -88,7 +88,7 @@ export interface UpstreamServiceCollection {
   /** The priority of the collection. Lower numbers have higher priority. */
   priority: number;
   /** The authentication to use when fetching the collection. */
-  authentication?: UpstreamAuthentication | undefined;
+  authentication?: Authentication | undefined;
 }
 
 /**
@@ -118,9 +118,9 @@ export interface UpstreamServiceConfig {
   connectionPool?:
     | ConnectionPoolConfig
     | undefined;
-  /** Authentication configuration for mcpany to use when connecting to the upstream service. */
-  upstreamAuthentication?:
-    | UpstreamAuthentication
+  /** Authentication configuration for mcpany to use when connecting to the upstream service (outgoing). */
+  upstreamAuth?:
+    | Authentication
     | undefined;
   /** Caching configuration to improve performance and reduce load on the upstream. */
   cache?:
@@ -149,9 +149,9 @@ export interface UpstreamServiceConfig {
     | undefined;
   /** The version of the upstream service, if known (e.g., "v1.2.3"). */
   version: string;
-  /** Authentication configuration for securing access to the MCP Any service (incoming requests). */
+  /** Authentication configuration for securing access to this service (incoming). */
   authentication?:
-    | AuthenticationConfig
+    | Authentication
     | undefined;
   /** If true, this upstream service is disabled. */
   disable: boolean;
@@ -866,7 +866,7 @@ export const UpstreamServiceCollection: MessageFns<UpstreamServiceCollection> = 
       writer.uint32(24).int32(message.priority);
     }
     if (message.authentication !== undefined) {
-      UpstreamAuthentication.encode(message.authentication, writer.uint32(34).fork()).join();
+      Authentication.encode(message.authentication, writer.uint32(34).fork()).join();
     }
     return writer;
   },
@@ -907,7 +907,7 @@ export const UpstreamServiceCollection: MessageFns<UpstreamServiceCollection> = 
             break;
           }
 
-          message.authentication = UpstreamAuthentication.decode(reader, reader.uint32());
+          message.authentication = Authentication.decode(reader, reader.uint32());
           continue;
         }
       }
@@ -924,7 +924,7 @@ export const UpstreamServiceCollection: MessageFns<UpstreamServiceCollection> = 
       name: isSet(object.name) ? globalThis.String(object.name) : "",
       httpUrl: isSet(object.http_url) ? globalThis.String(object.http_url) : "",
       priority: isSet(object.priority) ? globalThis.Number(object.priority) : 0,
-      authentication: isSet(object.authentication) ? UpstreamAuthentication.fromJSON(object.authentication) : undefined,
+      authentication: isSet(object.authentication) ? Authentication.fromJSON(object.authentication) : undefined,
     };
   },
 
@@ -940,7 +940,7 @@ export const UpstreamServiceCollection: MessageFns<UpstreamServiceCollection> = 
       obj.priority = Math.round(message.priority);
     }
     if (message.authentication !== undefined) {
-      obj.authentication = UpstreamAuthentication.toJSON(message.authentication);
+      obj.authentication = Authentication.toJSON(message.authentication);
     }
     return obj;
   },
@@ -954,7 +954,7 @@ export const UpstreamServiceCollection: MessageFns<UpstreamServiceCollection> = 
     message.httpUrl = object.httpUrl ?? "";
     message.priority = object.priority ?? 0;
     message.authentication = (object.authentication !== undefined && object.authentication !== null)
-      ? UpstreamAuthentication.fromPartial(object.authentication)
+      ? Authentication.fromPartial(object.authentication)
       : undefined;
     return message;
   },
@@ -966,7 +966,7 @@ function createBaseUpstreamServiceConfig(): UpstreamServiceConfig {
     name: "",
     sanitizedName: "",
     connectionPool: undefined,
-    upstreamAuthentication: undefined,
+    upstreamAuth: undefined,
     cache: undefined,
     rateLimit: undefined,
     loadBalancingStrategy: 0,
@@ -1011,8 +1011,8 @@ export const UpstreamServiceConfig: MessageFns<UpstreamServiceConfig> = {
     if (message.connectionPool !== undefined) {
       ConnectionPoolConfig.encode(message.connectionPool, writer.uint32(26).fork()).join();
     }
-    if (message.upstreamAuthentication !== undefined) {
-      UpstreamAuthentication.encode(message.upstreamAuthentication, writer.uint32(34).fork()).join();
+    if (message.upstreamAuth !== undefined) {
+      Authentication.encode(message.upstreamAuth, writer.uint32(34).fork()).join();
     }
     if (message.cache !== undefined) {
       CacheConfig.encode(message.cache, writer.uint32(42).fork()).join();
@@ -1063,7 +1063,7 @@ export const UpstreamServiceConfig: MessageFns<UpstreamServiceConfig> = {
       writer.uint32(114).string(message.version);
     }
     if (message.authentication !== undefined) {
-      AuthenticationConfig.encode(message.authentication, writer.uint32(122).fork()).join();
+      Authentication.encode(message.authentication, writer.uint32(122).fork()).join();
     }
     if (message.disable !== false) {
       writer.uint32(152).bool(message.disable);
@@ -1142,7 +1142,7 @@ export const UpstreamServiceConfig: MessageFns<UpstreamServiceConfig> = {
             break;
           }
 
-          message.upstreamAuthentication = UpstreamAuthentication.decode(reader, reader.uint32());
+          message.upstreamAuth = Authentication.decode(reader, reader.uint32());
           continue;
         }
         case 5: {
@@ -1278,7 +1278,7 @@ export const UpstreamServiceConfig: MessageFns<UpstreamServiceConfig> = {
             break;
           }
 
-          message.authentication = AuthenticationConfig.decode(reader, reader.uint32());
+          message.authentication = Authentication.decode(reader, reader.uint32());
           continue;
         }
         case 19: {
@@ -1376,9 +1376,7 @@ export const UpstreamServiceConfig: MessageFns<UpstreamServiceConfig> = {
       name: isSet(object.name) ? globalThis.String(object.name) : "",
       sanitizedName: isSet(object.sanitized_name) ? globalThis.String(object.sanitized_name) : "",
       connectionPool: isSet(object.connection_pool) ? ConnectionPoolConfig.fromJSON(object.connection_pool) : undefined,
-      upstreamAuthentication: isSet(object.upstream_authentication)
-        ? UpstreamAuthentication.fromJSON(object.upstream_authentication)
-        : undefined,
+      upstreamAuth: isSet(object.upstream_auth) ? Authentication.fromJSON(object.upstream_auth) : undefined,
       cache: isSet(object.cache) ? CacheConfig.fromJSON(object.cache) : undefined,
       rateLimit: isSet(object.rate_limit) ? RateLimitConfig.fromJSON(object.rate_limit) : undefined,
       loadBalancingStrategy: isSet(object.load_balancing_strategy)
@@ -1407,7 +1405,7 @@ export const UpstreamServiceConfig: MessageFns<UpstreamServiceConfig> = {
         : undefined,
       vectorService: isSet(object.vector_service) ? VectorUpstreamService.fromJSON(object.vector_service) : undefined,
       version: isSet(object.version) ? globalThis.String(object.version) : "",
-      authentication: isSet(object.authentication) ? AuthenticationConfig.fromJSON(object.authentication) : undefined,
+      authentication: isSet(object.authentication) ? Authentication.fromJSON(object.authentication) : undefined,
       disable: isSet(object.disable) ? globalThis.Boolean(object.disable) : false,
       priority: isSet(object.priority) ? globalThis.Number(object.priority) : 0,
       callPolicies: globalThis.Array.isArray(object?.call_policies)
@@ -1447,8 +1445,8 @@ export const UpstreamServiceConfig: MessageFns<UpstreamServiceConfig> = {
     if (message.connectionPool !== undefined) {
       obj.connection_pool = ConnectionPoolConfig.toJSON(message.connectionPool);
     }
-    if (message.upstreamAuthentication !== undefined) {
-      obj.upstream_authentication = UpstreamAuthentication.toJSON(message.upstreamAuthentication);
+    if (message.upstreamAuth !== undefined) {
+      obj.upstream_auth = Authentication.toJSON(message.upstreamAuth);
     }
     if (message.cache !== undefined) {
       obj.cache = CacheConfig.toJSON(message.cache);
@@ -1499,7 +1497,7 @@ export const UpstreamServiceConfig: MessageFns<UpstreamServiceConfig> = {
       obj.version = message.version;
     }
     if (message.authentication !== undefined) {
-      obj.authentication = AuthenticationConfig.toJSON(message.authentication);
+      obj.authentication = Authentication.toJSON(message.authentication);
     }
     if (message.disable !== false) {
       obj.disable = message.disable;
@@ -1545,10 +1543,9 @@ export const UpstreamServiceConfig: MessageFns<UpstreamServiceConfig> = {
     message.connectionPool = (object.connectionPool !== undefined && object.connectionPool !== null)
       ? ConnectionPoolConfig.fromPartial(object.connectionPool)
       : undefined;
-    message.upstreamAuthentication =
-      (object.upstreamAuthentication !== undefined && object.upstreamAuthentication !== null)
-        ? UpstreamAuthentication.fromPartial(object.upstreamAuthentication)
-        : undefined;
+    message.upstreamAuth = (object.upstreamAuth !== undefined && object.upstreamAuth !== null)
+      ? Authentication.fromPartial(object.upstreamAuth)
+      : undefined;
     message.cache = (object.cache !== undefined && object.cache !== null)
       ? CacheConfig.fromPartial(object.cache)
       : undefined;
@@ -1594,7 +1591,7 @@ export const UpstreamServiceConfig: MessageFns<UpstreamServiceConfig> = {
       : undefined;
     message.version = object.version ?? "";
     message.authentication = (object.authentication !== undefined && object.authentication !== null)
-      ? AuthenticationConfig.fromPartial(object.authentication)
+      ? Authentication.fromPartial(object.authentication)
       : undefined;
     message.disable = object.disable ?? false;
     message.priority = object.priority ?? 0;

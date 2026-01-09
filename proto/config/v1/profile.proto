@@ -16,7 +16,7 @@ message Profile {
   // The unique ID of the profile (UUID).
   string id = 2;
   // The authentication configuration for the profile.
-  AuthenticationConfig authentication = 3 [json_name = "authentication"];
+  Authentication authentication = 3 [json_name = "authentication"];
 }
 
 message ProfileServiceConfig {
