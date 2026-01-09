@@ -5,6 +5,7 @@ package middleware
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"strings"
@@ -130,6 +131,241 @@ func TestPrometheusMetricsMiddleware(t *testing.T) {
 			t.Errorf("Payload metric not found in output: %s", output)
 		}
 	})
+}
+
+func TestEstimateRequestTokens(t *testing.T) {
+	tok := tokenizer.NewSimpleTokenizer()
+
+	tests := []struct {
+		name     string
+		req      mcp.Request
+		minCount int
+	}{
+		{
+			name: "CallToolRequest",
+			req: &mcp.CallToolRequest{
+				Params: &mcp.CallToolParamsRaw{
+					Name:      "test-tool",
+					Arguments: json.RawMessage(`{"arg1": "some long text value"}`),
+				},
+			},
+			minCount: 1,
+		},
+		{
+			name: "GetPromptRequest",
+			req: &mcp.GetPromptRequest{
+				Params: &mcp.GetPromptParams{
+					Name:      "test-prompt",
+					Arguments: map[string]string{"arg1": "some long text value"},
+				},
+			},
+			minCount: 1,
+		},
+		{
+			name:     "NilRequest",
+			req:      nil,
+			minCount: 0,
+		},
+		{
+			name:     "OtherRequest",
+			req:      &mcp.ListToolsRequest{},
+			minCount: 0,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			count := estimateRequestTokens(tok, tt.req)
+			if count < tt.minCount {
+				t.Errorf("Expected tokens >= %d, got %d", tt.minCount, count)
+			}
+		})
+	}
+}
+
+func TestEstimateResultTokens(t *testing.T) {
+	tok := tokenizer.NewSimpleTokenizer()
+
+	tests := []struct {
+		name     string
+		res      mcp.Result
+		minCount int
+	}{
+		{
+			name: "ReadResourceResult",
+			res: &mcp.ReadResourceResult{
+				Contents: []*mcp.ResourceContents{
+					{Text: "some content"},
+					{Text: "more content"},
+					nil, // Edge case
+				},
+			},
+			minCount: 2,
+		},
+		{
+			name: "CallToolResult_Text",
+			res: &mcp.CallToolResult{
+				Content: []mcp.Content{
+					&mcp.TextContent{Text: "tool output"},
+				},
+			},
+			minCount: 1,
+		},
+		{
+			name: "GetPromptResult_Text",
+			res: &mcp.GetPromptResult{
+				Messages: []*mcp.PromptMessage{
+					{Role: "user", Content: &mcp.TextContent{Text: "prompt content"}},
+				},
+			},
+			minCount: 1,
+		},
+		{
+			name: "GetPromptResult_Image",
+			res: &mcp.GetPromptResult{
+				Messages: []*mcp.PromptMessage{
+					{Role: "user", Content: &mcp.ImageContent{Data: []byte("fake_image_data"), MIMEType: "image/png"}},
+				},
+			},
+			minCount: 0, // Currently 0 for images
+		},
+		{
+			name:     "NilResult",
+			res:      nil,
+			minCount: 0,
+		},
+		{
+			name:     "FallbackJSON",
+			res:      &mcp.ListToolsResult{Tools: []*mcp.Tool{{Name: "tool1"}}},
+			minCount: 1, // Fallback marshals to JSON
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			count := estimateResultTokens(tok, tt.res)
+			if count < tt.minCount {
+				t.Errorf("Expected tokens >= %d, got %d", tt.minCount, count)
+			}
+		})
+	}
+}
+
+func TestCalculateToolResultSize(t *testing.T) {
+	_ = tokenizer.NewSimpleTokenizer()
+
+	tests := []struct {
+		name    string
+		result  any
+		minSize int
+	}{
+		{
+			name: "CallToolResult_Text",
+			result: &mcp.CallToolResult{
+				Content: []mcp.Content{
+					&mcp.TextContent{Text: "12345"}, // 5 bytes
+				},
+			},
+			minSize: 5,
+		},
+		{
+			name: "CallToolResult_Image",
+			result: &mcp.CallToolResult{
+				Content: []mcp.Content{
+					&mcp.ImageContent{Data: []byte("12345"), MIMEType: "image/png"},
+				},
+			},
+			minSize: 5,
+		},
+		{
+			name: "CallToolResult_Resource",
+			result: &mcp.CallToolResult{
+				Content: []mcp.Content{
+					&mcp.EmbeddedResource{Resource: &mcp.ResourceContents{Blob: []byte("12345")}},
+				},
+			},
+			minSize: 5,
+		},
+		{
+			name:    "String",
+			result:  "12345",
+			minSize: 5,
+		},
+		{
+			name:    "Bytes",
+			result:  []byte("12345"),
+			minSize: 5,
+		},
+		{
+			name:    "StructFallback",
+			result:  map[string]string{"key": "val"},
+			minSize: 10, // {"key":"val"} approx
+		},
+		{
+			name:    "Nil",
+			result:  nil,
+			minSize: 0,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			size := calculateToolResultSize(tt.result)
+			if size < tt.minSize {
+				t.Errorf("Expected size >= %d, got %d", tt.minSize, size)
+			}
+		})
+	}
+}
+
+func TestEstimateResultSize(t *testing.T) {
+	tests := []struct {
+		name    string
+		res     mcp.Result
+		minSize int
+	}{
+		{
+			name: "ReadResourceResult",
+			res: &mcp.ReadResourceResult{
+				Contents: []*mcp.ResourceContents{
+					{Text: "12345"},
+					{Blob: []byte("12345")},
+					nil,
+				},
+			},
+			minSize: 10,
+		},
+		{
+			name: "GetPromptResult",
+			res: &mcp.GetPromptResult{
+				Messages: []*mcp.PromptMessage{
+					{Role: "user", Content: &mcp.TextContent{Text: "12345"}},
+					{Role: "user", Content: &mcp.ImageContent{Data: []byte("12345"), MIMEType: "image/png"}},
+					{Role: "user", Content: &mcp.EmbeddedResource{Resource: &mcp.ResourceContents{Blob: []byte("12345")}}},
+				},
+			},
+			minSize: 15,
+		},
+		{
+			name:    "Nil",
+			res:     nil,
+			minSize: 0,
+		},
+		{
+			name:    "Fallback",
+			res:     &mcp.ListToolsResult{},
+			minSize: 0,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			size := estimateResultSize(tt.res)
+			if size < tt.minSize {
+				t.Errorf("Expected size >= %d, got %d", tt.minSize, size)
+			}
+		})
+	}
 }
 
 func getMetricsOutput(t *testing.T) string {
