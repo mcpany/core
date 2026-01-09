@@ -16,6 +16,7 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { Download, Package, Globe, ExternalLink } from "lucide-react";
 import Link from "next/link";
+import { ShareCollectionDialog } from "@/components/share-collection-dialog";
 
 export default function MarketplacePage() {
   const { toast } = useToast();
@@ -66,10 +67,13 @@ export default function MarketplacePage() {
             Import Service Collections or browse Public Marketplaces.
           </p>
         </div>
-        <Button onClick={() => setIsImportDialogOpen(true)}>
-            <Download className="mr-2 h-4 w-4" />
-            Import from URL
-        </Button>
+        <div className="flex gap-2">
+            <ShareCollectionDialog />
+            <Button onClick={() => setIsImportDialogOpen(true)}>
+                <Download className="mr-2 h-4 w-4" />
+                Import from URL
+            </Button>
+        </div>
       </div>
 
       {/* Official Collections */}

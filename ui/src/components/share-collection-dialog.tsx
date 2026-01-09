@@ -7,7 +7,7 @@
 
 import * as React from "react"
 import { Check, Copy, ExternalLink, Share2 } from "lucide-react"
-import jsyaml from "js-yaml"
+import * as jsyaml from "js-yaml"
 
 import { Button } from "@/components/ui/button"
 import {
