@@ -82,10 +82,12 @@ type smartResponseWriter struct {
 	passThrough bool
 }
 
+// Header returns the header map that will be sent by WriteHeader.
 func (w *smartResponseWriter) Header() http.Header {
 	return w.header
 }
 
+// WriteHeader sends an HTTP response header with the provided status code.
 func (w *smartResponseWriter) WriteHeader(code int) {
 	if w.committed {
 		return
@@ -108,6 +110,7 @@ func (w *smartResponseWriter) WriteHeader(code int) {
 	}
 }
 
+// Write writes the data to the connection as part of an HTTP reply.
 func (w *smartResponseWriter) Write(b []byte) (int, error) {
 	if !w.committed {
 		w.WriteHeader(http.StatusOK)

@@ -140,6 +140,7 @@ func (w *responseBuffer) checkBuffer() {
 	}
 }
 
+// Write writes the data to the buffer or the underlying ResponseWriter.
 func (w *responseBuffer) Write(b []byte) (int, error) {
 	w.checkBuffer()
 
@@ -149,6 +150,7 @@ func (w *responseBuffer) Write(b []byte) (int, error) {
 	return w.ResponseWriter.Write(b)
 }
 
+// WriteString writes the string data to the buffer or the underlying ResponseWriter.
 func (w *responseBuffer) WriteString(s string) (int, error) {
 	w.checkBuffer()
 
