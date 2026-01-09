@@ -15,7 +15,7 @@ import (
 
 // Store implements storage.Storage in memory.
 type Store struct {
-	mu             sync.RWMutex
+	mu                 sync.RWMutex
 	services           map[string]*configv1.UpstreamServiceConfig
 	secrets            map[string]*configv1.Secret
 	users              map[string]*configv1.User
@@ -37,7 +37,7 @@ func NewStore() *Store {
 	}
 }
 
-// Helper to generate token key
+// Helper to generate token key.
 func tokenKey(userID, serviceID string) string {
 	return userID + "|" + serviceID
 }

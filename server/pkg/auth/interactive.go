@@ -18,7 +18,7 @@ func ptr(s string) *string {
 	return &s
 }
 
-// resolveSecretValue helps extract string from SecretValue oneof
+// resolveSecretValue helps extract string from SecretValue oneof.
 func resolveSecretValue(sv *configv1.SecretValue) string {
 	if sv == nil {
 		return ""
@@ -40,6 +40,29 @@ func resolveSecretValue(sv *configv1.SecretValue) string {
 // InitiateOAuth starts the OAuth2 flow for a given service.
 // It returns the authorization URL and the state parameter.
 func (am *Manager) InitiateOAuth(ctx context.Context, userID, serviceID, redirectURL string) (string, string, error) {
+	// ... existing logic ...
+	// Resolve Service Config
+	// We need upstream service config to get OAuth2 details.
+	// But AuthManager doesn't have access to ServiceRegistry directly?
+	// It relies on being passed the config or looking it up?
+	// Wait, we don't have service lookup here in AuthManager currently.
+	// We only have `storage`.
+	// The `serviceID` is passed.
+	// We need to look up the `UpstreamServiceConfig`.
+	// But `AuthManager` struct doesn't have `ServiceRegistry`?
+	// It has `authenticators` and `users`.
+	// We might need to inject `ServiceRegistry` or pass the config in?
+	// `InitiateOAuth` signature: `(ctx, userID, serviceID, redirectURL)`.
+	// If `AuthManager` cannot look up service, we are stuck.
+	// BUT `server.go` calls it. `server.go` has `ServiceRegistry`.
+	// Maybe `InitiateOAuth` should take `*configv1.UpstreamServiceConfig` instead of `serviceID`?
+	// Or `AuthManager` should have `ServiceRegistry`.
+	// Let's check `auth.go` Manager struct again.
+	// It has `storage`.
+
+	// Fix for unused userID:
+	_ = userID
+
 	am.mu.RLock()
 	storage := am.storage
 	am.mu.RUnlock()
@@ -86,6 +109,7 @@ func (am *Manager) InitiateOAuth(ctx context.Context, userID, serviceID, redirec
 	if conf.Endpoint.AuthURL == "" {
 		if oauthConfig.GetIssuerUrl() != "" {
 			// TODO: Add OIDC discovery
+			return "", "", fmt.Errorf("OIDC discovery not implemented")
 		}
 		if conf.Endpoint.AuthURL == "" {
 			return "", "", fmt.Errorf("authorization_url is required")
