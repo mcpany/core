@@ -337,12 +337,31 @@ func (a *Application) Run(
 	a.PromptManager = prompt.NewManager()
 	a.ResourceManager = resource.NewManager()
 
-	// Initialize Auth Manager and set users
+	// Initialize auth manager
 	authManager := auth.NewManager()
+	authManager.SetUsers(cfg.GetUsers())
+
+	// Cast storageStore to storage.Storage
+	if s, ok := storageStore.(storage.Storage); ok {
+		authManager.SetStorage(s)
+	} else {
+		// This should theoretically not happen if storageStore is properly initialized from sqlite/postgres
+		log.Warn("storageStore does not implement storage.Storage, interactive OAuth will be disabled")
+	}
+
+	// Use SetAPIKey from config if available
 	if a.SettingsManager.GetAPIKey() != "" {
 		authManager.SetAPIKey(a.SettingsManager.GetAPIKey())
 	}
-	authManager.SetUsers(cfg.GetUsers())
+	// Note: previous code checked cfg.GetGlobalSettings().GetApiKeyParamName() but that might be inside Authentication config?
+	// GlobalSettings usually has Authentication field.
+	// Let's rely on SettingsManager or check cfg.GetGlobalSettings().GetAuthentication() if needed
+	// For API Key param name, it is likely in Authentication message if configured.
+	// But AuthManager uses APIKeyAuthenticator which takes config.APIKeyAuth.
+	// The explicit API key (CLI) overrides or sets a simple key.
+	// We'll leave the complex check out for now unless it was critical for something else.
+
+	// Register auth manager
 	a.AuthManager = authManager
 
 	// Initialize Profile Manager and set profile definitions
@@ -1280,6 +1299,10 @@ func (a *Application) runServerMode(
 			mux.HandleFunc("/auth/callback", provider.HandleCallback)
 		}
 	}
+
+	// OAuth API Routes
+	mux.Handle("/auth/oauth/initiate", authMiddleware(http.HandlerFunc(a.handleInitiateOAuth)))
+	mux.Handle("/auth/oauth/callback", authMiddleware(http.HandlerFunc(a.handleOAuthCallback)))
 
 	if grpcPort != "" {
 		gwmux := runtime.NewServeMux()

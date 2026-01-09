@@ -78,6 +78,14 @@ type Storage interface {
 	// DeleteServiceCollection deletes a service collection by name.
 	DeleteServiceCollection(ctx context.Context, name string) error
 
+	// Tokens
+	// SaveToken saves a user token.
+	SaveToken(ctx context.Context, token *configv1.UserToken) error
+	// GetToken retrieves a user token by user ID and service ID.
+	GetToken(ctx context.Context, userID, serviceID string) (*configv1.UserToken, error)
+	// DeleteToken deletes a user token.
+	DeleteToken(ctx context.Context, userID, serviceID string) error
+
 	// Close closes the underlying storage connection.
 	Close() error
 }
