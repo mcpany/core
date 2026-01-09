@@ -62,7 +62,7 @@ Most "popular" MCP servers today are bespoke binaries. If the upstream API chang
   - **Semantic Caching**: Intelligent caching using vector embeddings to serve similar requests from cache. Now supports **SQLite persistence** to survive restarts.
   - **Audit Logging**: Keep a tamper-evident record of all tool executions in a JSON file or **SQLite database** (using SHA-256 hash chaining) for compliance and security auditing.
 - **Network Topology Visualization**: Visualizes your entire MCP ecosystem (Clients, Core, Services, Tools, API Calls) in a 5-level hierarchical interactive graph with real-time QPS and Latency metrics.
-  ![Network Topology](server/docs/images/network_topology.png)
+  ![Network Topology](ui/docs/screenshots/network.png)
 - **MCP Any Proxy**: Proxy and re-expose tools from another MCP Any instance.
 - **MCP Sampling Support**: Enables upstream tools to request sampling (LLM generation) from the connected client, fully supported via `mcp.Client` options.
 - **Upstream Authentication**: Securely connect to your backend services using:
@@ -74,6 +74,29 @@ Most "popular" MCP servers today are bespoke binaries. If the upstream API chang
 - **Multi-User & Multi-Profile**: Securely support multiple users with distinct profiles, each with its own set of enabled services and granular authentication.
 - **Advanced Configuration**: Customize tool behavior with [Merge Strategies and Profile Filtering](server/docs/feature/merge_strategy.md).
 - **Extensible**: Designed to be easily extended with new service types and capabilities.
+
+## 🖥️ Management Dashboard
+
+The **MCP Any UI** provides a powerful interface for managing your server, services, and configuration.
+
+### Dashboard
+Real-time metrics and system health at a glance.
+![Dashboard](ui/docs/screenshots/dashboard.png)
+
+### Services Management
+Manage upstream services (HTTP, gRPC, MCP, CMD), toggle them on/off, and configure their settings.
+![Services](ui/docs/screenshots/services.png)
+
+### Interactive Playground
+Test your registered tools directly from the browser with auto-generated forms.
+![Playground](ui/docs/screenshots/playground.png)
+
+### Configuration via UI
+You can manage core configuration directly from the UI without editing YAML files:
+- **General**: Configure server settings.
+- **Auth**: Manage users and authentication profiles.
+- **Secrets**: Securely manage API keys and credentials for upstream services.
+![Settings](ui/docs/screenshots/settings.png)
 
 ## ⚡ Quick Start (5 Minutes)
 
@@ -250,7 +273,9 @@ Contributions are welcome! Please feel free to open an issue or submit a pull re
 
 ## 🗺️ Roadmap
 
-Check out our [Roadmap](product-evolution-plan.md) to see what we're working on and what's coming next.
+Check out our Roadmap to see what we're working on and what's coming next:
+- [Server Roadmap](server/roadmap.md)
+- [UI Roadmap](ui/roadmap.md)
 
 ## 📄 License
 
