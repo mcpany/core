@@ -88,26 +88,33 @@ test.describe('Generate Docs Screenshots and Verify UI', () => {
       await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'settings_profiles.png'), fullPage: true });
       console.log('Saved settings.png and settings_profiles.png');
 
-      // Click Webhooks
-      await page.click('button[value="webhooks"]');
+      // Click Secrets (Tab)
+      await page.getByRole('tab', { name: 'Secrets' }).click();
       await page.waitForTimeout(500);
-      await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'settings_webhooks.png'), fullPage: true });
-
-      // Click Secrets
-      await page.click('button[value="secrets"]');
-      await page.waitForTimeout(500);
+      await expect(page.getByText('Secrets Manager')).toBeVisible({ timeout: 5000 }).catch(() => {});
       await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'settings_secrets.png'), fullPage: true });
 
-      // Click Auth
-      await page.click('button[value="auth"]');
+      // Click Auth (Tab)
+      await page.getByRole('tab', { name: 'Authentication' }).click();
       await page.waitForTimeout(500);
+      await expect(page.getByText('Authentication Settings')).toBeVisible({ timeout: 5000 }).catch(() => {});
       await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'settings_auth.png'), fullPage: true });
 
-      // Click General
-      await page.click('button[value="general"]');
+      // Click General (Tab)
+      await page.getByRole('tab', { name: 'General' }).click();
       await page.waitForTimeout(500);
+      await expect(page.getByText('Global Settings')).toBeVisible({ timeout: 5000 }).catch(() => {});
       await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'settings_general.png'), fullPage: true });
-      console.log('Saved screenshot to settings_general.png');
+
+      // Webhooks is a Link to /settings/webhooks, so we screenshot it there or verify it separately
+      // The user wants settings_webhooks.png to show the tab header.
+      // If we go to /settings/webhooks, does it show the tabs?
+      // We should check /settings/webhooks
+      await page.getByRole('tab', { name: 'Webhooks' }).click();
+      await page.waitForURL('**/settings/webhooks');
+      await page.waitForTimeout(1000);
+      await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'settings_webhooks.png'), fullPage: true });
+      console.log('Saved all settings tab screenshots');
   });
 
   test('Verify and Screenshot Global Search', async ({ page }) => {
