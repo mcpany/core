@@ -6,197 +6,159 @@
 
 "use client";
 
-import { useState } from "react";
-import { MARKETPLACE_ITEMS, MarketplaceItem } from "@/lib/marketplace-data";
-import { apiClient } from "@/lib/client";
+import { useEffect, useState } from "react";
+import { marketplaceService, ServiceCollection, ExternalMarketplace } from "@/lib/marketplace-service";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { HardDrive, Github, Database, Terminal, Download } from "lucide-react";
-
-// Icon mapping
-const ICON_MAP: Record<string, React.ComponentType<any>> = {
-  HardDrive,
-  Github,
-  Database,
-  Terminal,
-};
+import { Download, Package, Globe, ExternalLink } from "lucide-react";
+import Link from "next/link";
 
 export default function MarketplacePage() {
   const { toast } = useToast();
-  const [selectedItem, setSelectedItem] = useState<MarketplaceItem | null>(null);
-  const [envValues, setEnvValues] = useState<Record<string, string>>({});
-  const [isInstalling, setIsInstalling] = useState(false);
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [collections, setCollections] = useState<ServiceCollection[]>([]);
+  const [publicMarkets, setPublicMarkets] = useState<ExternalMarketplace[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [importUrl, setImportUrl] = useState("");
+  const [isImportDialogOpen, setIsImportDialogOpen] = useState(false);
 
-  const handleInstallClick = (item: MarketplaceItem) => {
-    setSelectedItem(item);
-    setEnvValues({});
-    setIsDialogOpen(true);
-  };
-
-  const handleInputChange = (key: string, value: string) => {
-    setEnvValues((prev) => ({ ...prev, [key]: value }));
-  };
-
-  const handleConfirmInstall = async () => {
-    if (!selectedItem) return;
-
-    // Validate required fields
-    const missing = selectedItem.config.envVars
-      .filter((v) => v.required && !envValues[v.name])
-      .map((v) => v.name);
-
-    if (missing.length > 0) {
-      toast({
-        title: "Missing Required Fields",
-        description: `Please fill in: ${missing.join(", ")}`,
-        variant: "destructive",
-      });
-      return;
-    }
-
-    setIsInstalling(true);
-
-    try {
-      // Build payload
-      const finalArgs = [...selectedItem.config.args];
-      const finalEnv: Record<string, string> = { ...envValues }; // Start with just the values
-
-      // Process defined envVars to see if they should be appended to args
-      selectedItem.config.envVars.forEach((ev) => {
-        const val = envValues[ev.name];
-        if (val && ev.addToArgs) {
-          finalArgs.push(val);
+  useEffect(() => {
+    async function loadData() {
+        try {
+            const [cols, markets] = await Promise.all([
+                marketplaceService.fetchOfficialCollections(),
+                marketplaceService.fetchPublicMarketplaces()
+            ]);
+            setCollections(cols);
+            setPublicMarkets(markets);
+        } catch (e) {
+            console.error(e);
+            toast({ title: "Failed to load marketplace data", variant: "destructive" });
+        } finally {
+            setLoading(false);
         }
-      });
+    }
+    loadData();
+  }, [toast]);
 
-      // Construct UpstreamServiceConfig
-      await apiClient.registerService({
-        name: selectedItem.id, // Using ID as name
-        id: selectedItem.id,
-        version: "1.0.0",
-        disable: false,
-        priority: 0,
-        loadBalancingStrategy: 0,
-        sanitizedName: "",
-        callPolicies: [],
-        preCallHooks: [],
-        postCallHooks: [],
-        profiles: [],
-        prompts: [],
-        profileLimits: {},
-        autoDiscoverTool: false,
-        commandLineService: {
-          command: [selectedItem.config.command, ...(finalArgs || [])].join(" "),
-          env: Object.fromEntries(
-            Object.entries(finalEnv).map(([k, v]) => [k, { plainText: v }])
-          ),
-          workingDirectory: "",
-          tools: [],
-          resources: [],
-          prompts: [],
-          calls: {},
-          communicationProtocol: 0,
-          local: false,
-        },
-      });
-
-      toast({
-        title: "Installation Started",
-        description: `Service ${selectedItem.name} is being installed.`,
-      });
-      setIsDialogOpen(false);
-    } catch (error) {
-        console.error("Install failed", error);
-        toast({
-            title: "Installation Failed",
-            description: String(error),
-            variant: "destructive",
-        });
-    } finally {
-      setIsInstalling(false);
+  const handleImportCollection = async () => {
+    if (!importUrl) return;
+    try {
+        const col = await marketplaceService.importCollection(importUrl);
+        // In real app, we would install it here or show a confirmation dialog with contents
+        toast({ title: "Collection Imported", description: `Would install: ${col.name} (${col.services.length} services)` });
+        setIsImportDialogOpen(false);
+        setImportUrl("");
+    } catch (e) {
+        toast({ title: "Import Failed", variant: "destructive", description: String(e) });
     }
   };
 
   return (
-    <div className="flex flex-col gap-6 p-8 h-[calc(100vh-4rem)]">
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight">Marketplace</h1>
-        <p className="text-muted-foreground mt-2">
-          Discover and install standard MCP servers to extend your capabilities.
-        </p>
+    <div className="flex flex-col gap-8 p-8 h-[calc(100vh-4rem)] overflow-y-auto">
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">Marketplace</h1>
+          <p className="text-muted-foreground mt-2">
+            Import Service Collections or browse Public Marketplaces.
+          </p>
+        </div>
+        <Button onClick={() => setIsImportDialogOpen(true)}>
+            <Download className="mr-2 h-4 w-4" />
+            Import from URL
+        </Button>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {MARKETPLACE_ITEMS.map((item) => {
-          const Icon = ICON_MAP[item.icon] || Terminal;
-          return (
-            <Card key={item.id} className="flex flex-col">
-              <CardHeader>
-                <div className="flex items-center gap-2 mb-2">
-                  <div className="p-2 rounded-md bg-muted text-muted-foreground">
-                    <Icon className="h-6 w-6" />
-                  </div>
-                </div>
-                <CardTitle>{item.name}</CardTitle>
-                <CardDescription>{item.description}</CardDescription>
-              </CardHeader>
-              <CardContent className="flex-1">
-                {/* Placeholder for tags or more info */}
-              </CardContent>
-              <CardFooter>
-                <Button className="w-full" onClick={() => handleInstallClick(item)}>
-                  <Download className="mr-2 h-4 w-4" /> Install
-                </Button>
-              </CardFooter>
-            </Card>
-          );
-        })}
-      </div>
-
-      {/* Install Dialog */}
-      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="sm:max-w-[500px]">
-          <DialogHeader>
-            <DialogTitle>Install {selectedItem?.name}</DialogTitle>
-            <DialogDescription>
-              Configure the service before installation.
-            </DialogDescription>
-          </DialogHeader>
-
-          {selectedItem && (
-            <div className="grid gap-4 py-4">
-              {selectedItem.config.envVars.map((ev) => (
-                <div key={ev.name} className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor={ev.name} className="text-right">
-                    {ev.name}
-                  </Label>
-                  <Input
-                    id={ev.name}
-                    type={ev.type === "password" ? "password" : "text"}
-                    placeholder={ev.description}
-                    className="col-span-3"
-                    value={envValues[ev.name] || ""}
-                    onChange={(e) => handleInputChange(ev.name, e.target.value)}
-                  />
-                </div>
+      {/* Official Collections */}
+      <section>
+          <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
+              <Package className="h-5 w-5" />
+              Official Service Collections
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {collections.map((col, idx) => (
+                  <Card key={idx} className="flex flex-col">
+                      <CardHeader>
+                          <CardTitle>{col.name}</CardTitle>
+                          <CardDescription>{col.description}</CardDescription>
+                      </CardHeader>
+                      <CardContent className="flex-1">
+                          <div className="text-sm text-muted-foreground">
+                              {col.services.length} Services • by {col.author}
+                          </div>
+                      </CardContent>
+                      <CardFooter>
+                          <Button className="w-full" variant="outline">
+                              View Details
+                          </Button>
+                      </CardFooter>
+                  </Card>
               ))}
-            </div>
-          )}
+              {collections.length === 0 && !loading && (
+                  <div className="col-span-full text-center p-8 text-muted-foreground border rounded-lg border-dashed">
+                      No official collections found.
+                  </div>
+              )}
+          </div>
+      </section>
 
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
-              Cancel
-            </Button>
-            <Button onClick={handleConfirmInstall} disabled={isInstalling}>
-              {isInstalling ? "Installing..." : "Confirm Installation"}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
+      {/* Public Marketplaces */}
+      <section>
+          <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
+              <Globe className="h-5 w-5" />
+              Public MCP Server Marketplaces
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {publicMarkets.map((market) => (
+                  <Card key={market.id} className="cursor-pointer hover:border-primary transition-colors">
+                      <Link href={`/marketplace/external/${market.id}`}>
+                        <CardHeader>
+                            <CardTitle className="flex items-center gap-2">
+                                {market.name}
+                                <ExternalLink className="h-4 w-4 opacity-50" />
+                            </CardTitle>
+                            <CardDescription>{market.description}</CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                             <div className="text-sm text-muted-foreground truncate">
+                                 {market.url}
+                             </div>
+                        </CardContent>
+                      </Link>
+                  </Card>
+              ))}
+          </div>
+      </section>
+
+      <Dialog open={isImportDialogOpen} onOpenChange={setIsImportDialogOpen}>
+          <DialogContent>
+              <DialogHeader>
+                  <DialogTitle>Import Service Collection</DialogTitle>
+                  <DialogDescription>
+                      Enter the URL of a Service Collection (JSON) to import.
+                  </DialogDescription>
+              </DialogHeader>
+              <div className="grid gap-4 py-4">
+                  <div className="grid grid-cols-4 items-center gap-4">
+                      <Label htmlFor="url" className="text-right">
+                          URL
+                      </Label>
+                      <Input
+                          id="url"
+                          value={importUrl}
+                          onChange={(e) => setImportUrl(e.target.value)}
+                          className="col-span-3"
+                          placeholder="https://..."
+                      />
+                  </div>
+              </div>
+              <DialogFooter>
+                  <Button onClick={handleImportCollection}>Import</Button>
+              </DialogFooter>
+          </DialogContent>
       </Dialog>
     </div>
   );

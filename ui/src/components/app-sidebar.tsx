@@ -48,6 +48,7 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { useUser } from "@/components/user-context"
 
 
 const platformItems = [
@@ -136,6 +137,31 @@ const configItems = [
 
 export function AppSidebar() {
   const pathname = usePathname()
+  const { user, login } = useUser()
+
+  const isAdmin = user?.role === 'admin';
+
+  // Filter items based on role
+  // Regular users see Dashboard, Network Graph, Analytics, Marketplace for Platform?
+  // User said: "Regular user, probably will not see... Live Logs/Traces"
+  const filteredPlatformItems = platformItems.filter(item => {
+    if (!isAdmin) {
+        return !['Live Logs', 'Traces'].includes(item.title);
+    }
+    return true;
+  });
+
+  // User said: "probably will not see 'Configuration' section"
+  // So we hide the whole config group if not admin?
+  // "Regular user can only see and manage settings belong to their own copy of profile"
+  // Maybe we keep Settings but hide Services, Users, Secrets?
+  const filteredConfigItems = configItems.filter(item => {
+      if (!isAdmin) {
+          // Keep Settings, hide others?
+          return item.title === 'Settings';
+      }
+      return true;
+  });
 
   return (
     <Sidebar collapsible="icon">
@@ -155,7 +181,7 @@ export function AppSidebar() {
           <SidebarGroupLabel>Platform</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {platformItems.map((item) => (
+              {filteredPlatformItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild isActive={pathname === item.url} tooltip={item.title}>
                     <Link href={item.url}>
@@ -187,41 +213,44 @@ export function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
 
-        <SidebarGroup>
-          <SidebarGroupLabel>Configuration</SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {configItems.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild isActive={pathname === item.url} tooltip={item.title}>
-                    <Link href={item.url}>
-                      <item.icon />
-                      <span>{item.title}</span>
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
+        {/* Only show Configuration group if there are items to show */}
+        {filteredConfigItems.length > 0 && (
+            <SidebarGroup>
+            <SidebarGroupLabel>Configuration</SidebarGroupLabel>
+            <SidebarGroupContent>
+                <SidebarMenu>
+                {filteredConfigItems.map((item) => (
+                    <SidebarMenuItem key={item.title}>
+                    <SidebarMenuButton asChild isActive={pathname === item.url} tooltip={item.title}>
+                        <Link href={item.url}>
+                        <item.icon />
+                        <span>{item.title}</span>
+                        </Link>
+                    </SidebarMenuButton>
+                    </SidebarMenuItem>
+                ))}
+                </SidebarMenu>
+            </SidebarGroupContent>
+            </SidebarGroup>
+        )}
       </SidebarContent>
 
-      <SidebarFooter>
-        <SidebarMenu>
+      <SidebarFooter className="mt-auto p-0 border-t">
+        <SidebarMenu className="gap-0">
           <SidebarMenuItem>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <SidebarMenuButton
                   size="lg"
-                  className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+                  className="rounded-none h-14 data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
                 >
                   <Avatar className="h-8 w-8 rounded-lg">
-                    <AvatarImage src="/avatars/admin.png" alt="Admin" />
+                    <AvatarImage src={user?.avatar} alt={user?.name} />
                     <AvatarFallback className="rounded-lg">AD</AvatarFallback>
                   </Avatar>
                   <div className="grid flex-1 text-left text-sm leading-tight group-data-[collapsible=icon]:hidden">
-                    <span className="truncate font-semibold">Admin User</span>
-                    <span className="truncate text-xs">admin@mcp-any.io</span>
+                    <span className="truncate font-semibold">{user?.name}</span>
+                    <span className="truncate text-xs">{user?.email}</span>
                   </div>
                   <ChevronsUpDown className="ml-auto size-4 group-data-[collapsible=icon]:hidden" />
                 </SidebarMenuButton>
@@ -235,18 +264,19 @@ export function AppSidebar() {
                 <DropdownMenuLabel className="p-0 font-normal">
                   <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                     <Avatar className="h-8 w-8 rounded-lg">
+                      <AvatarImage src={user?.avatar} alt={user?.name} />
                       <AvatarFallback className="rounded-lg">AD</AvatarFallback>
                     </Avatar>
                     <div className="grid flex-1 text-left text-sm leading-tight">
-                      <span className="truncate font-semibold">Admin User</span>
-                      <span className="truncate text-xs">admin@mcp-any.io</span>
+                      <span className="truncate font-semibold">{user?.name}</span>
+                      <span className="truncate text-xs">{user?.email}</span>
                     </div>
                   </div>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem>
-                  <User className="mr-2 h-4 w-4" />
-                  Account
+                <DropdownMenuItem onClick={() => login(user?.role === 'admin' ? 'viewer' : 'admin')}>
+                   <User className="mr-2 h-4 w-4" />
+                   Switch Role (Demo)
                 </DropdownMenuItem>
                 <DropdownMenuItem>
                    <Settings className="mr-2 h-4 w-4" />

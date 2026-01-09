@@ -32,7 +32,19 @@ test.describe('Generate Docs Screenshots and Verify UI', () => {
     { name: 'playground', path: '/playground' },
     { name: 'stats', path: '/stats' },
     { name: 'stacks', path: '/stacks' },
+    { name: 'marketplace', path: '/marketplace' },
+    { name: 'users', path: '/users' },
+    { name: 'traces', path: '/traces' },
+    { name: 'secrets', path: '/secrets' },
+    { name: 'settings', path: '/settings' },
+    // Marketplace is already in the list at index 14, but let's ensure we visit it explicitly if needed
+    // or just rely on the loop. The loop handles 'marketplace'.
+    // We want to add external marketplace specifically
   ];
+
+  /*
+   * Existing loop covers marketplace/page.tsx
+   */
 
   for (const pageInfo of pages) {
     test(`Verify and Screenshot ${pageInfo.name}`, async ({ page }) => {
@@ -44,6 +56,10 @@ test.describe('Generate Docs Screenshots and Verify UI', () => {
 
       // Wait for content - giving a bit more time for data fetching
       await page.waitForTimeout(3000);
+
+      if (pageInfo.name === 'marketplace') {
+          await expect(page.getByText('Share Your Config')).toBeVisible();
+      }
 
       // simple visual check
       await expect(page.locator('body')).toBeVisible();
@@ -64,18 +80,94 @@ test.describe('Generate Docs Screenshots and Verify UI', () => {
   test('Verify and Screenshot Settings Tabs', async ({ page }) => {
       console.log('Navigating to /settings...');
       await page.goto('/settings');
-      await expect(page.locator('body')).toBeVisible();
       await page.waitForTimeout(1000);
 
       // Default is Profiles
+      // Save as settings.png (per user request) AND settings_profiles.png
+      await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'settings.png'), fullPage: true });
       await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'settings_profiles.png'), fullPage: true });
-      console.log('Saved screenshot to settings_profiles.png');
+      console.log('Saved settings.png and settings_profiles.png');
+
+      // Click Webhooks
+      await page.click('button[value="webhooks"]');
+      await page.waitForTimeout(500);
+      await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'settings_webhooks.png'), fullPage: true });
+
+      // Click Secrets
+      await page.click('button[value="secrets"]');
+      await page.waitForTimeout(500);
+      await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'settings_secrets.png'), fullPage: true });
+
+      // Click Auth
+      await page.click('button[value="auth"]');
+      await page.waitForTimeout(500);
+      await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'settings_auth.png'), fullPage: true });
 
       // Click General
-      console.log('Clicking General tab...');
-      await page.getByRole('tab', { name: 'General' }).click();
-      await page.waitForTimeout(1000);
+      await page.click('button[value="general"]');
+      await page.waitForTimeout(500);
       await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'settings_general.png'), fullPage: true });
       console.log('Saved screenshot to settings_general.png');
+  });
+
+  test('Verify and Screenshot Global Search', async ({ page }) => {
+      console.log('Navigating to /...');
+      await page.goto('/');
+      await expect(page.locator('body')).toBeVisible();
+      await page.waitForTimeout(1000);
+
+      // Open Global Search with keyboard shortcut
+      console.log('Opening Global Search...');
+      await page.keyboard.press('Control+k');
+      await page.waitForTimeout(1000);
+
+      // Wait for dialog
+      await expect(page.locator('[cmdk-root]')).toBeVisible();
+
+      // Take screenshot of the dialog
+      // specific selector or just page? page might be better to show context
+      await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'global_search.png'), fullPage: true });
+      console.log('Saved screenshot to global_search.png');
+  });
+
+  test('Verify Sidebar RBAC for Regular User', async ({ page }) => {
+      console.log('Navigating to / as regular user...');
+      await page.goto('/');
+      await page.waitForTimeout(1000);
+
+      // By default we are Admin. Switch to Regular User
+      console.log('Switching to Regular User...');
+      await page.locator('button[data-sidebar="menu-button"]').last().click(); // Open User Menu
+      await page.getByText('Switch Role').click();
+      await page.waitForTimeout(1000);
+
+      // Verify "Users" and "Secrets" are hidden in Configuration
+      // "services", "users", "secrets" should NOT be visible. "settings" SHOULD be visible.
+      const sidebarText = await page.locator('[data-sidebar="sidebar"]').innerText();
+      expect(sidebarText).not.toContain('Users');
+      expect(sidebarText).not.toContain('Secrets Vault');
+      expect(sidebarText).not.toContain('Services');
+      expect(sidebarText).toContain('Settings');
+
+      // Verify "Live Logs" and "Traces" hidden in Platform
+      expect(sidebarText).not.toContain('Live Logs');
+      expect(sidebarText).not.toContain('Traces');
+
+      // Switch back to Admin for cleanup/subsequent tests if any
+      // await page.locator('button[data-sidebar="menu-button"]').last().click();
+      // await page.getByText('Switch Role').click();
+  });
+
+  test('Verify and Screenshot External Marketplace', async ({ page }) => {
+      console.log('Navigating to /marketplace/external/mcpmarket...');
+      await page.goto('/marketplace/external/mcpmarket');
+      await page.waitForTimeout(3000); // Wait for mock fetch
+
+      // Verify content
+      await expect(page.locator('body')).toContainText('MCP Market');
+      await expect(page.locator('body')).toContainText('Linear');
+
+      await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'marketplace_external_detailed.png'), fullPage: true });
+      console.log('Saved screenshot to marketplace_external_detailed.png');
   });
 });
