@@ -21,6 +21,7 @@
 - [x] **Helm Chart Official Support**: K8s deployment charts. [Docs](server/docs/features/helm.md)
 - [x] **Message Bus**: NATS/Kafka integration for events. [Docs](server/docs/features/message_bus.md)
 - [x] **Structured Output Transformation**: JQ/JSONPath response shaping. [Docs](server/docs/features/transformation.md)
+- [x] **Documentation Generator**: Auto-generate beautiful Markdown/HTML documentation. [Docs](server/docs/features/documentation_generation.md)
 
 ## 2. Top 10 Recommended Features
 
@@ -41,7 +42,6 @@
 | 13 | **Tool "Dry Run" Mode** | **Debugging**: Execute tool logic in a safe mode (if supported) or validate input types without performing side effects. Great for testing complex tool arguments. | Medium |
 | 14 | **Cost & Latency Budgeting** | **Ops**: Set alerts for session costs ("Warn if > $0.50") or tool latency ("Warn if > 2s"). Helps developers optimize their agent's performance and burn rate. | Medium |
 | 15 | **Smart Error Recovery** | **Resilience**: Auto-suggest fixes for common JSON-RPC errors or API failures. If a tool fails with "Rate Limit", auto-retry with exponential backoff transparently. | High |
-| 16 | **Documentation Generator** | **Documentation**: Auto-generate beautiful Markdown/HTML documentation for all registered tools, arguments, and return types. Keep your agent system docs always up-to-date. | Low |
 | 17 | **API Key Vault** | **Security**: Secure local storage for all upstream keys, decoupled from config files. Prevents accidental git commits of secrets. | Medium |
 | 18 | **Server Plugin System** | **Extensibility**: Allow developers to write middleware/plugins for MCP Any itself (e.g. "Log to Datadog", "Custom Auth") using a simple WASM or Go plugin API. | High |
 | 19 | **Global "Tool Search"** | **Usability**: Cmd+K palette to search across all available tools, docs, and resources. Quickly find "Which tool allows me to search Jira?". | Low |
