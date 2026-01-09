@@ -484,34 +484,16 @@ export const apiClient = {
 
     // Credentials
     listCredentials: async () => {
-        const res = await fetchWithAuth('/credentials');
+        const res = await fetchWithAuth('/api/v1/credentials');
         if (!res.ok) throw new Error('Failed to list credentials');
         return res.json();
     },
     saveCredential: async (credential: Credential) => {
-        // If ID exists, update, else create.
-        // Our backend API: POST /credentials (create), PUT /credentials/:id (update)
-        // Adjust logic based on presence of ID and desired behavior.
-        // Usually UI flow will know if it's new or edit.
-        // Assuming if (credential.id && credential.id !== "") => update
-        // But backend create also accepts ID?
-        // Let's assume we use create for new and update for existing.
-        // Actually, we should check if we are in "edit" mode.
-        // For now, I'll add createCredential and updateCredential separately, or a smart save.
-
-        if (credential.id) {
-             // Check if it exists? Or just PUT?
-             // Since ID is user-defined or slugified, maybe we always PUT if we know it exists.
-             // But for new credentials, ID might be empty.
-             const isNew = false; // We don't know easily without checking.
-             // Let's rely on caller to pick create vs update, or try update and fallback?
-             // Safer to simple expose create/update.
-        }
-        // Let's expose both.
+        // ... (logic omitted for brevity, keeping same) ...
         return apiClient.createCredential(credential);
     },
     createCredential: async (credential: Credential) => {
-        const res = await fetchWithAuth('/credentials', {
+        const res = await fetchWithAuth('/api/v1/credentials', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(credential)
@@ -520,7 +502,7 @@ export const apiClient = {
         return res.json();
     },
     updateCredential: async (credential: Credential) => {
-        const res = await fetchWithAuth(`/credentials/${credential.id}`, {
+        const res = await fetchWithAuth(`/api/v1/credentials/${credential.id}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(credential)
@@ -529,16 +511,16 @@ export const apiClient = {
         return res.json();
     },
     deleteCredential: async (id: string) => {
-        const res = await fetchWithAuth(`/credentials/${id}`, {
+        const res = await fetchWithAuth(`/api/v1/credentials/${id}`, {
             method: 'DELETE'
         });
         if (!res.ok) throw new Error('Failed to delete credential');
         return {};
     },
     testAuth: async (req: any) => {
-        const res = await fetchWithAuth('/debug/auth-test', {
+        const res = await fetchWithAuth('/api/v1/debug/auth-test', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(req)
         });
         // We always return JSON even on error
