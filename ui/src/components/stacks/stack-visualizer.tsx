@@ -89,7 +89,7 @@ export function StackVisualizer({ yamlContent }: StackVisualizerProps) {
     }
 
     return (
-        <div className="flex flex-col h-full bg-muted/5 w-[280px] border-l">
+        <div className="flex flex-col h-full bg-muted/5 w-[280px] border-l stack-visualizer-container">
             <div className="p-4 border-b flex items-center justify-between">
                 <div className="flex items-center gap-2 font-semibold">
                     <Layers className="h-5 w-5 text-primary" />
@@ -100,7 +100,7 @@ export function StackVisualizer({ yamlContent }: StackVisualizerProps) {
             <ScrollArea className="flex-1 p-4">
                 <div className="space-y-3">
                     {services.map(svc => (
-                        <Card key={svc.name} className="overflow-hidden border-l-4 border-l-primary/50 shadow-sm">
+                        <Card key={svc.name} className="overflow-hidden border-l-4 border-l-primary/50 shadow-sm" role="article" aria-label={`Service: ${svc.name}`}>
                             <CardHeader className="p-3 pb-2 bg-muted/20">
                                 <CardTitle className="text-sm font-medium flex items-center gap-2">
                                     <ServiceIcon type={svc.type} />
