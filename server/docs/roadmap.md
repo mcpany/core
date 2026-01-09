@@ -79,8 +79,9 @@ Based on a review of the MCP ecosystem (mcp.so, LobeHub, GitHub, Docker), we ide
 - [x] [Distributed Tracing](features/tracing/README.md) (OpenTelemetry)
 - [x] [Metrics](features/monitoring/README.md)
 - [x] [Structured Logging](features/monitoring/README.md)
-- [x] [Audit Logging](features/audit_logging.md)
+- [x] [Audit Logging](features/audit_logging.md) (File, SQL, Splunk, Datadog)
 - [x] [Context Consumption Metrics](features/monitoring/README.md) (Token Counting)
+- [x] [Cost Attribution](features/rate-limiting/README.md) (Token Estimation)
 - [x] [Agent Debugger & Inspector](features/debugger.md)
 - [x] [Context Optimizer Middleware](features/context_optimizer.md)
 
@@ -130,8 +131,7 @@ Based on a review of the MCP ecosystem (mcp.so, LobeHub, GitHub, Docker), we ide
 
 8.  **Downstream mTLS**: Enforce mutual TLS for agents collecting to MCP Any (Zero Trust).
 9.  **Just-In-Time (JIT) Access**: Temporary elevation of privileges for specific tools (e.g., "Grant Write access for 1 hour").
-10. **Audit Log Export**: Push audit logs to Splunk, Datadog to Cloud Logging in real-time.
-11. **Fine-Grained ABAC**: Attribute-Based Access Control (e.g. "Only allow production tools during business hours").
+10. **Fine-Grained ABAC**: Attribute-Based Access Control (e.g. "Only allow production tools during business hours").
 12. **Tool Signature Verification**: Enforce that loaded WASM/Binary tools are signed by a trusted key.
 13. **Vulnerability Scanning Integration**: Auto-scan registered tool container images for CVEs.
 14. **Policy dry-run mode**: Test new security policies on traffic without blocking (shadow mode).
@@ -140,8 +140,7 @@ Based on a review of the MCP ecosystem (mcp.so, LobeHub, GitHub, Docker), we ide
 ### Observability & Insights
 
 16. **Custom Dashboards**: Drag-and-drop UI to create dashboards from MCP metrics.
-17. **Cost Attribution**: Track token usage and "cost" per user/team/project.
-18. **Alerting Rules Integration**: Built-in Prometheus alerting rules for high error rates or latency.
+17. **Alerting Rules Integration**: Built-in Prometheus alerting rules for high error rates or latency.
 19. **Request/Response Replay**: "TiVo" for tool interactions - replay past requests for debugging.
 20. **Distributed Tracing Sampling Control**: Dynamic sampling rates based on tenant or error-rate.
 21. **SLO Management**: Define and track Service Level Objectives (availability, latency) within the UI.
