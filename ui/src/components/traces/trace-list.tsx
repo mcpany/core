@@ -13,6 +13,7 @@ import { cn } from "@/lib/utils";
 import { Search, AlertCircle, CheckCircle2, Clock, Terminal, Globe, Database, User, Webhook as WebhookIcon } from "lucide-react";
 import { Trace, SpanStatus } from "@/app/api/traces/route"; // Import type from route (or move types to shared)
 import { formatDistanceToNow } from "date-fns";
+import React, { memo, useMemo } from "react";
 
 interface TraceListProps {
   traces: Trace[];
@@ -22,12 +23,54 @@ interface TraceListProps {
   onSearchChange: (query: string) => void;
 }
 
+// Optimization: Memoize TraceListItem to prevent re-renders of all items when one is selected.
+// Only the selected and previously selected items will re-render.
+const TraceListItem = memo(({ trace, isSelected, onSelect }: { trace: Trace, isSelected: boolean, onSelect: (id: string) => void }) => {
+  return (
+    <button
+      onClick={() => onSelect(trace.id)}
+      className={cn(
+        "flex flex-col items-start gap-2 p-4 text-left text-sm transition-all hover:bg-accent/50 border-b last:border-0",
+        isSelected && "bg-accent border-l-2 border-l-primary"
+      )}
+    >
+      <div className="flex w-full flex-col gap-1">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <StatusIcon status={trace.status} className="h-4 w-4" />
+            <span className="font-semibold">{trace.rootSpan.name}</span>
+          </div>
+          <span className="text-xs text-muted-foreground font-mono">
+            {formatDuration(trace.totalDuration)}
+          </span>
+        </div>
+
+        <div className="flex items-center justify-between w-full mt-1">
+           <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                <TriggerIcon trigger={trace.trigger} className="h-3 w-3" />
+                <span>{trace.id}</span>
+           </div>
+           <span className="text-xs text-muted-foreground">
+             {formatDistanceToNow(new Date(trace.timestamp), { addSuffix: true })}
+           </span>
+        </div>
+      </div>
+    </button>
+  );
+});
+TraceListItem.displayName = "TraceListItem";
+
 export function TraceList({ traces, selectedId, onSelect, searchQuery, onSearchChange }: TraceListProps) {
 
-  const filteredTraces = traces.filter(t =>
-    t.rootSpan.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    t.id.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  // Optimization: Memoize filtered traces to avoid re-calculating on every render,
+  // especially when only selectedId changes.
+  const filteredTraces = useMemo(() => {
+    const lowerQuery = searchQuery.toLowerCase();
+    return traces.filter(t =>
+      t.rootSpan.name.toLowerCase().includes(lowerQuery) ||
+      t.id.toLowerCase().includes(lowerQuery)
+    );
+  }, [traces, searchQuery]);
 
   return (
     <div className="flex flex-col h-full border-r bg-background/50 backdrop-blur-sm">
@@ -50,36 +93,12 @@ export function TraceList({ traces, selectedId, onSelect, searchQuery, onSearchC
              </div>
           )}
           {filteredTraces.map((trace) => (
-            <button
+            <TraceListItem
               key={trace.id}
-              onClick={() => onSelect(trace.id)}
-              className={cn(
-                "flex flex-col items-start gap-2 p-4 text-left text-sm transition-all hover:bg-accent/50 border-b last:border-0",
-                selectedId === trace.id && "bg-accent border-l-2 border-l-primary"
-              )}
-            >
-              <div className="flex w-full flex-col gap-1">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <StatusIcon status={trace.status} className="h-4 w-4" />
-                    <span className="font-semibold">{trace.rootSpan.name}</span>
-                  </div>
-                  <span className="text-xs text-muted-foreground font-mono">
-                    {formatDuration(trace.totalDuration)}
-                  </span>
-                </div>
-
-                <div className="flex items-center justify-between w-full mt-1">
-                   <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                        <TriggerIcon trigger={trace.trigger} className="h-3 w-3" />
-                        <span>{trace.id}</span>
-                   </div>
-                   <span className="text-xs text-muted-foreground">
-                     {formatDistanceToNow(new Date(trace.timestamp), { addSuffix: true })}
-                   </span>
-                </div>
-              </div>
-            </button>
+              trace={trace}
+              isSelected={selectedId === trace.id}
+              onSelect={onSelect}
+            />
           ))}
         </div>
       </ScrollArea>
