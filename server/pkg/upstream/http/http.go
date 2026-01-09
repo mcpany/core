@@ -372,6 +372,17 @@ func (u *Upstream) createAndRegisterHTTPTools(ctx context.Context, serviceID, ad
 					}
 				}
 			}
+			// Also capture flags from the endpoint URL
+			if endpointURL.RawQuery != "" {
+				for _, param := range strings.Split(endpointURL.RawQuery, "&") {
+					if !strings.Contains(param, "=") && len(param) > 0 {
+						// Decode the key to store it canonically.
+						if decodedKey, err := url.QueryUnescape(param); err == nil {
+							originalFlags[decodedKey] = true
+						}
+					}
+				}
+			}
 
 			query := resolvedURL.Query()
 			for k, v := range endpointQuery {
