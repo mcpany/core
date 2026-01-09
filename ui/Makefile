@@ -83,4 +83,4 @@ build:
 
 update-screenshots:
 	@echo "Updating screenshots..."
-	docker compose -f ./docker-compose.test.yml run --rm ui-tests npx playwright test --config playwright.screenshots.config.ts
+	HOST_UID=$(shell id -u) HOST_GID=$(shell id -g) SERVER_IMAGE=mcpany/server:latest docker compose -f ./docker-compose.test.yml run --rm ui-tests npx playwright test --config playwright.screenshots.config.ts

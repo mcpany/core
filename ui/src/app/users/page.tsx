@@ -43,9 +43,14 @@ export default function UsersPage() {
   async function loadUsers() {
     try {
       const resp = await apiClient.listUsers();
-      setUsers(resp.users || []);
+      if (resp && Array.isArray(resp.users)) {
+        setUsers(resp.users);
+      } else {
+        setUsers([]);
+      }
     } catch (e) {
       console.error("Failed to list users", e);
+      setUsers([]);
     } finally {
       setLoading(false);
     }
