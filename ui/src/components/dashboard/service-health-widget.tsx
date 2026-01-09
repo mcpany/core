@@ -38,8 +38,25 @@ export function ServiceHealthWidget() {
       }
     }
     fetchHealth();
-    const interval = setInterval(fetchHealth, 10000); // Poll every 10s
-    return () => clearInterval(interval);
+    const interval = setInterval(() => {
+      // ⚡ Bolt Optimization: Pause polling when tab is not visible
+      if (!document.hidden) {
+        fetchHealth();
+      }
+    }, 10000); // Poll every 10s
+
+    // ⚡ Bolt Optimization: Refresh immediately when tab becomes visible
+    const onVisibilityChange = () => {
+      if (!document.hidden) {
+        fetchHealth();
+      }
+    };
+    document.addEventListener("visibilitychange", onVisibilityChange);
+
+    return () => {
+      clearInterval(interval);
+      document.removeEventListener("visibilitychange", onVisibilityChange);
+    };
   }, []);
 
   const getStatusIcon = (status: string) => {
