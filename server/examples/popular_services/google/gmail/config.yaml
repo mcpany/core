@@ -6,7 +6,7 @@ upstream_services:
     openapi_service:
       # Use spec_source oneof: spec_url
       spec_url: "https://www.googleapis.com/discovery/v1/apis/gmail/v1/rest"
-    upstream_authentication:
+    upstream_auth:
       oauth2:
         token_url: "https://oauth2.googleapis.com/token"
         client_id:

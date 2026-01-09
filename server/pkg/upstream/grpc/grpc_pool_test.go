@@ -61,7 +61,7 @@ func TestGrpcPool_New_MtlsFailure(t *testing.T) {
 	// mTLS with missing files
 	configJSON := `{
 		"grpc_service": {"address": "localhost:50051"},
-		"upstream_authentication": {
+		"upstream_auth": {
 			"mtls": {
 				"client_cert_path": "/non/existent/cert",
 				"client_key_path": "/non/existent/key",

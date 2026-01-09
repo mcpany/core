@@ -6,10 +6,10 @@ upstream_services:
     name: "Spotify"
     openapi_service:
       spec_url: "https://raw.githubusercontent.com/sonallux/spotify-web-api-openapi/master/openapi.yml"
-    upstream_authentication:
+    upstream_auth:
       api_key:
-        header_name: "Authorization"
-        api_key:
+        param_name: "Authorization"
+        value:
           plain_text: "Bearer {{SPOTIFY_TOKEN}}"
     call_policies:
       - default_action: ALLOW

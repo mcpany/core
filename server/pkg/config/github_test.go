@@ -10,8 +10,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/mcpany/core/server/pkg/util"
 	configv1 "github.com/mcpany/core/proto/config/v1"
+	"github.com/mcpany/core/server/pkg/util"
 )
 
 func TestIsGitHubURL(t *testing.T) {
@@ -146,10 +146,10 @@ func TestGitHub_List(t *testing.T) {
 		httpClient: &http.Client{},
 	}
 
-	auth := &configv1.UpstreamAuthentication{}
+	auth := &configv1.Authentication{}
 	secret := &configv1.SecretValue{}
 	secret.SetPlainText("my-secret-token")
-	bearer := &configv1.UpstreamBearerTokenAuth{}
+	bearer := &configv1.BearerTokenAuth{}
 	bearer.SetToken(secret)
 	auth.SetBearerToken(bearer)
 
@@ -275,10 +275,10 @@ func TestGitHub_List_Auth_Variants(t *testing.T) {
 	ctx := context.Background()
 
 	t.Run("APIKey", func(t *testing.T) {
-		auth := &configv1.UpstreamAuthentication{}
-		apiKey := &configv1.UpstreamAPIKeyAuth{}
-		apiKey.SetApiKey(&configv1.SecretValue{Value: &configv1.SecretValue_PlainText{PlainText: "my-api-key"}})
-		apiKey.SetHeaderName("X-API-Key")
+		auth := &configv1.Authentication{}
+		apiKey := &configv1.APIKeyAuth{}
+		apiKey.SetValue(&configv1.SecretValue{Value: &configv1.SecretValue_PlainText{PlainText: "my-api-key"}})
+		apiKey.SetParamName("X-API-Key")
 		auth.SetApiKey(apiKey)
 
 		_, err := g.List(ctx, auth)
@@ -288,8 +288,8 @@ func TestGitHub_List_Auth_Variants(t *testing.T) {
 	})
 
 	t.Run("BasicAuth", func(t *testing.T) {
-		auth := &configv1.UpstreamAuthentication{}
-		basic := &configv1.UpstreamBasicAuth{}
+		auth := &configv1.Authentication{}
+		basic := &configv1.BasicAuth{}
 		basic.SetUsername("user")
 		basic.SetPassword(&configv1.SecretValue{Value: &configv1.SecretValue_PlainText{PlainText: "pass"}})
 		auth.SetBasicAuth(basic)

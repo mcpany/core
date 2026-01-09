@@ -63,12 +63,14 @@ func TestUpstreamServiceManager_LoadAndMergeServices_GitHub(t *testing.T) {
 	collection := &configv1.UpstreamServiceCollection{}
 	collection.SetName("github-dir")
 	collection.SetHttpUrl("https://github.com/mcpany/core/tree/main/examples")
-	auth := &configv1.UpstreamAuthentication{}
+	auth := &configv1.Authentication{}
 	secret := &configv1.SecretValue{}
 	secret.SetPlainText("my-secret-token")
-	bearer := &configv1.UpstreamBearerTokenAuth{}
+	bearer := &configv1.BearerTokenAuth{}
 	bearer.SetToken(secret)
-	auth.SetBearerToken(bearer)
+	auth.AuthMethod = &configv1.Authentication_BearerToken{
+		BearerToken: bearer,
+	}
 	collection.SetAuthentication(auth)
 	config := &configv1.McpAnyServerConfig{}
 	config.SetUpstreamServiceCollections([]*configv1.UpstreamServiceCollection{collection})

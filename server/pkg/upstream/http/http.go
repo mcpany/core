@@ -14,6 +14,8 @@ import (
 	"strings"
 	"time"
 
+	configv1 "github.com/mcpany/core/proto/config/v1"
+	pb "github.com/mcpany/core/proto/mcp_router/v1"
 	"github.com/mcpany/core/server/pkg/auth"
 	"github.com/mcpany/core/server/pkg/logging"
 	"github.com/mcpany/core/server/pkg/pool"
@@ -23,8 +25,6 @@ import (
 	"github.com/mcpany/core/server/pkg/upstream"
 	"github.com/mcpany/core/server/pkg/util"
 	"github.com/mcpany/core/server/pkg/util/schemaconv"
-	configv1 "github.com/mcpany/core/proto/config/v1"
-	pb "github.com/mcpany/core/proto/mcp_router/v1"
 
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/structpb"
@@ -198,7 +198,7 @@ func (u *Upstream) createAndRegisterHTTPTools(ctx context.Context, serviceID, ad
 		callIDToDefinition[d.GetCallId()] = d
 	}
 
-	authenticator, err := auth.NewUpstreamAuthenticator(serviceConfig.GetUpstreamAuthentication())
+	authenticator, err := auth.NewUpstreamAuthenticator(serviceConfig.GetUpstreamAuth())
 	if err != nil {
 		log.Error("Failed to create authenticator, proceeding without authentication", "serviceID", serviceID, "error", err)
 		authenticator = nil

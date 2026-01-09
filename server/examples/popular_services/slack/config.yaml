@@ -3,7 +3,7 @@
 
 upstream_services:
 - name: slack
-  upstream_authentication:
+  upstream_auth:
     bearer_token:
       token:
 

@@ -89,12 +89,12 @@ func TestRunServerMode_Auth(t *testing.T) {
 	users := []*config_v1.User{
 		{
 			Id: proto.String("user_with_auth"),
-			Authentication: &config_v1.AuthenticationConfig{
-				AuthMethod: &config_v1.AuthenticationConfig_ApiKey{
+			Authentication: &config_v1.Authentication{
+				AuthMethod: &config_v1.Authentication_ApiKey{
 					ApiKey: &config_v1.APIKeyAuth{
-						KeyValue:  ptr("user-secret"),
-						In:        ptr(config_v1.APIKeyAuth_HEADER),
-						ParamName: ptr("X-API-Key"),
+						VerificationValue: ptr("user-secret"),
+						In:                ptr(config_v1.APIKeyAuth_HEADER),
+						ParamName:         ptr("X-API-Key"),
 					},
 				},
 			},

@@ -333,11 +333,14 @@ func TestUpstream_Register(t *testing.T) {
 
 		serviceConfig := &configv1.UpstreamServiceConfig{}
 		serviceConfig.SetName("test-webrtc-service")
-		authConfig := &configv1.UpstreamAuthentication{}
-		apiKeyAuth := &configv1.UpstreamAPIKeyAuth{}
-		apiKeyAuth.SetHeaderName("") // Invalid header name
-		authConfig.SetApiKey(apiKeyAuth)
-		serviceConfig.SetUpstreamAuthentication(authConfig)
+		authConfig := &configv1.Authentication{
+			AuthMethod: &configv1.Authentication_ApiKey{
+				ApiKey: &configv1.APIKeyAuth{
+					ParamName: proto.String(""), // Invalid header name
+				},
+			},
+		}
+		serviceConfig.SetUpstreamAuth(authConfig)
 
 		webrtcService := &configv1.WebrtcUpstreamService{}
 		webrtcService.SetAddress("http://localhost:8080/signal")

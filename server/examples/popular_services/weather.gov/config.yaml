@@ -3,10 +3,10 @@
 
 upstream_services:
   - name: weather.gov
-    upstream_authentication:
+    upstream_auth:
       api_key:
-        header_name: "User-Agent"
-        api_key:
+        param_name: "User-Agent"
+        value:
           plain_text: "mcpany-example/1.0"
     http_service:
       address: "https://api.weather.gov"
@@ -35,10 +35,10 @@ upstream_services:
                   forecast:
                     type: "string"
   - name: weather.gov-forecast
-    upstream_authentication:
+    upstream_auth:
       api_key:
-        header_name: "User-Agent"
-        api_key:
+        param_name: "User-Agent"
+        value:
           plain_text: "mcpany-example/1.0"
     http_service:
       address: "https://api.weather.gov"

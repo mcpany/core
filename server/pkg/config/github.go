@@ -14,9 +14,9 @@ import (
 	"regexp"
 	"strings"
 
+	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/mcpany/core/server/pkg/logging"
 	"github.com/mcpany/core/server/pkg/util"
-	configv1 "github.com/mcpany/core/proto/config/v1"
 )
 
 var (
@@ -129,7 +129,17 @@ type Content struct {
 // Returns:
 //   - A slice of Content objects.
 //   - An error if the fetch fails.
-func (g *GitHub) List(ctx context.Context, auth *configv1.UpstreamAuthentication) ([]Content, error) {
+// List fetches the contents of the configured GitHub path. It handles authentication
+// if provided and returns a list of Content objects.
+//
+// Parameters:
+//   - ctx: The context for the request.
+//   - auth: Optional authentication configuration for accessing private repos.
+//
+// Returns:
+//   - A slice of Content objects.
+//   - An error if the fetch fails.
+func (g *GitHub) List(ctx context.Context, auth *configv1.Authentication) ([]Content, error) {
 	apiURL := fmt.Sprintf("%s/repos/%s/%s/contents/%s", g.apiURL, g.Owner, g.Repo, g.Path)
 	if g.Ref != "" {
 		apiURL = fmt.Sprintf("%s?ref=%s", apiURL, g.Ref)
@@ -171,17 +181,17 @@ func (g *GitHub) List(ctx context.Context, auth *configv1.UpstreamAuthentication
 	return contents, nil
 }
 
-func (g *GitHub) applyAuthentication(req *http.Request, auth *configv1.UpstreamAuthentication) error {
+func (g *GitHub) applyAuthentication(req *http.Request, auth *configv1.Authentication) error {
 	if auth == nil {
 		return nil
 	}
 
 	if apiKey := auth.GetApiKey(); apiKey != nil {
-		apiKeyValue, err := util.ResolveSecret(req.Context(), apiKey.GetApiKey())
+		apiKeyValue, err := util.ResolveSecret(req.Context(), apiKey.GetValue())
 		if err != nil {
 			return err
 		}
-		req.Header.Set(apiKey.GetHeaderName(), apiKeyValue)
+		req.Header.Set(apiKey.GetParamName(), apiKeyValue)
 	} else if bearerToken := auth.GetBearerToken(); bearerToken != nil {
 		tokenValue, err := util.ResolveSecret(req.Context(), bearerToken.GetToken())
 		if err != nil {

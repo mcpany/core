@@ -10,13 +10,13 @@ import (
 	"testing"
 	"time"
 
+	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/mcpany/core/server/pkg/client"
 	"github.com/mcpany/core/server/pkg/pool"
 	"github.com/mcpany/core/server/pkg/prompt"
 	"github.com/mcpany/core/server/pkg/resource"
 	"github.com/mcpany/core/server/pkg/tool"
 	"github.com/mcpany/core/server/pkg/util"
-	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/encoding/protojson"
@@ -422,9 +422,9 @@ func TestHTTPUpstream_Register(t *testing.T) {
 					}
 				}
 			},
-			"upstream_authentication": {
+			"upstream_auth": {
 				"api_key": {
-					"api_key": {"plain_text": ""}
+					"value": {"plain_text": ""}
 				}
 			}
 		}`

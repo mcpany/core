@@ -3,7 +3,7 @@
 
 upstream_services:
 - name: jira
-  upstream_authentication:
+  upstream_auth:
     basic_auth:
       username: "${JIRA_USERNAME:user@example.com}"
       password:

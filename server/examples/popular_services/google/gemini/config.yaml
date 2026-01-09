@@ -3,10 +3,10 @@
 
 upstream_services:
   - name: "gemini"
-    upstream_authentication:
+    upstream_auth:
       api_key:
-        header_name: "x-goog-api-key"
-        api_key:
+        param_name: "x-goog-api-key"
+        value:
           plain_text: "${GEMINI_API_KEY}"
     http_service:
       address: "https://generativelanguage.googleapis.com"

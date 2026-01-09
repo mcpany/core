@@ -14,11 +14,11 @@ import (
 func TestStripSecretsFromService(t *testing.T) {
 	svc := &configv1.UpstreamServiceConfig{
 		Name: proto.String("test-service"),
-		UpstreamAuthentication: &configv1.UpstreamAuthentication{
-			AuthMethod: &configv1.UpstreamAuthentication_ApiKey{
-				ApiKey: &configv1.UpstreamAPIKeyAuth{
-					HeaderName: proto.String("X-API-Key"),
-					ApiKey: &configv1.SecretValue{
+		UpstreamAuth: &configv1.Authentication{
+			AuthMethod: &configv1.Authentication_ApiKey{
+				ApiKey: &configv1.APIKeyAuth{
+					ParamName: proto.String("X-API-Key"),
+					Value: &configv1.SecretValue{
 						Value: &configv1.SecretValue_PlainText{PlainText: "secret-key"},
 					},
 				},
@@ -28,10 +28,10 @@ func TestStripSecretsFromService(t *testing.T) {
 
 	StripSecretsFromService(svc)
 
-	assert.NotNil(t, svc.UpstreamAuthentication)
-	assert.NotNil(t, svc.UpstreamAuthentication.GetApiKey())
-	assert.NotNil(t, svc.UpstreamAuthentication.GetApiKey().ApiKey)
-	assert.Nil(t, svc.UpstreamAuthentication.GetApiKey().ApiKey.Value, "Plain text secret should be cleared")
+	assert.NotNil(t, svc.UpstreamAuth)
+	assert.NotNil(t, svc.UpstreamAuth.GetApiKey())
+	assert.NotNil(t, svc.UpstreamAuth.GetApiKey().Value)
+	assert.Nil(t, svc.UpstreamAuth.GetApiKey().Value.Value, "Plain text secret should be cleared")
 }
 
 func TestStripSecretsFromProfile(t *testing.T) {
@@ -55,9 +55,9 @@ func TestStripSecretsFromCollection(t *testing.T) {
 		Services: []*configv1.UpstreamServiceConfig{
 			{
 				Name: proto.String("svc1"),
-				UpstreamAuthentication: &configv1.UpstreamAuthentication{
-					AuthMethod: &configv1.UpstreamAuthentication_BasicAuth{
-						BasicAuth: &configv1.UpstreamBasicAuth{
+				UpstreamAuth: &configv1.Authentication{
+					AuthMethod: &configv1.Authentication_BasicAuth{
+						BasicAuth: &configv1.BasicAuth{
 							Username: proto.String("user"),
 							Password: &configv1.SecretValue{
 								Value: &configv1.SecretValue_PlainText{PlainText: "secret-password"},
@@ -72,18 +72,18 @@ func TestStripSecretsFromCollection(t *testing.T) {
 	StripSecretsFromCollection(collection)
 
 	svc := collection.Services[0]
-	assert.NotNil(t, svc.UpstreamAuthentication)
-	assert.Nil(t, svc.UpstreamAuthentication.GetBasicAuth().Password.Value, "Plain text secret should be cleared")
+	assert.NotNil(t, svc.UpstreamAuth)
+	assert.Nil(t, svc.UpstreamAuth.GetBasicAuth().Password.Value, "Plain text secret should be cleared")
 }
 
 func TestHydrateSecretsInService(t *testing.T) {
 	svc := &configv1.UpstreamServiceConfig{
 		Name: proto.String("test-service"),
-		UpstreamAuthentication: &configv1.UpstreamAuthentication{
-			AuthMethod: &configv1.UpstreamAuthentication_ApiKey{
-				ApiKey: &configv1.UpstreamAPIKeyAuth{
-					HeaderName: proto.String("X-API-Key"),
-					ApiKey: &configv1.SecretValue{
+		UpstreamAuth: &configv1.Authentication{
+			AuthMethod: &configv1.Authentication_ApiKey{
+				ApiKey: &configv1.APIKeyAuth{
+					ParamName: proto.String("X-API-Key"),
+					Value: &configv1.SecretValue{
 						Value: &configv1.SecretValue_EnvironmentVariable{EnvironmentVariable: "API_KEY_VAR"},
 					},
 				},
@@ -97,6 +97,6 @@ func TestHydrateSecretsInService(t *testing.T) {
 
 	HydrateSecretsInService(svc, secrets)
 
-	val := svc.UpstreamAuthentication.GetApiKey().ApiKey.Value.(*configv1.SecretValue_PlainText)
+	val := svc.UpstreamAuth.GetApiKey().Value.Value.(*configv1.SecretValue_PlainText)
 	assert.Equal(t, "resolved-secret", val.PlainText)
 }

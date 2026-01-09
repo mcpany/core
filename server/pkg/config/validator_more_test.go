@@ -9,9 +9,9 @@ import (
 	"os"
 	"testing"
 
-	"github.com/mcpany/core/server/pkg/validation"
 	"github.com/mcpany/core/proto/bus"
 	configv1 "github.com/mcpany/core/proto/config/v1"
+	"github.com/mcpany/core/server/pkg/validation"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/proto"
@@ -47,9 +47,9 @@ func TestValidate_MoreServices(t *testing.T) {
 								Address: proto.String("http://example.com"),
 							},
 						},
-						UpstreamAuthentication: &configv1.UpstreamAuthentication{
-							AuthMethod: &configv1.UpstreamAuthentication_Mtls{
-								Mtls: &configv1.UpstreamMTLSAuth{
+						UpstreamAuth: &configv1.Authentication{
+							AuthMethod: &configv1.Authentication_Mtls{
+								Mtls: &configv1.MTLSAuth{
 									ClientCertPath: proto.String(insecurePath),
 									ClientKeyPath:  proto.String(insecurePath), // Insecure path
 								},
@@ -72,9 +72,9 @@ func TestValidate_MoreServices(t *testing.T) {
 								Address: proto.String("http://example.com"),
 							},
 						},
-						UpstreamAuthentication: &configv1.UpstreamAuthentication{
-							AuthMethod: &configv1.UpstreamAuthentication_Mtls{
-								Mtls: &configv1.UpstreamMTLSAuth{
+						UpstreamAuth: &configv1.Authentication{
+							AuthMethod: &configv1.Authentication_Mtls{
+								Mtls: &configv1.MTLSAuth{
 									ClientCertPath: proto.String("/non/existent/cert.pem"),
 									ClientKeyPath:  proto.String("/non/existent/key.pem"),
 								},
@@ -97,9 +97,9 @@ func TestValidate_MoreServices(t *testing.T) {
 								Address: proto.String("http://example.com"),
 							},
 						},
-						UpstreamAuthentication: &configv1.UpstreamAuthentication{
-							AuthMethod: &configv1.UpstreamAuthentication_BasicAuth{
-								BasicAuth: &configv1.UpstreamBasicAuth{
+						UpstreamAuth: &configv1.Authentication{
+							AuthMethod: &configv1.Authentication_BasicAuth{
+								BasicAuth: &configv1.BasicAuth{
 									Username: proto.String("user"),
 									Password: &configv1.SecretValue{
 										Value: &configv1.SecretValue_EnvironmentVariable{
@@ -126,9 +126,9 @@ func TestValidate_MoreServices(t *testing.T) {
 								Address: proto.String("http://example.com"),
 							},
 						},
-						UpstreamAuthentication: &configv1.UpstreamAuthentication{
-							AuthMethod: &configv1.UpstreamAuthentication_BearerToken{
-								BearerToken: &configv1.UpstreamBearerTokenAuth{
+						UpstreamAuth: &configv1.Authentication{
+							AuthMethod: &configv1.Authentication_BearerToken{
+								BearerToken: &configv1.BearerTokenAuth{
 									Token: &configv1.SecretValue{
 										Value: &configv1.SecretValue_EnvironmentVariable{
 											EnvironmentVariable: "UNSET_ENV_VAR_FOR_TEST",
@@ -401,11 +401,11 @@ func TestValidate_MoreServices(t *testing.T) {
 								Address: proto.String("http://example.com"),
 							},
 						},
-						UpstreamAuthentication: &configv1.UpstreamAuthentication{
-							AuthMethod: &configv1.UpstreamAuthentication_ApiKey{
-								ApiKey: &configv1.UpstreamAPIKeyAuth{
-									HeaderName: proto.String("X-API-Key"),
-									ApiKey: &configv1.SecretValue{
+						UpstreamAuth: &configv1.Authentication{
+							AuthMethod: &configv1.Authentication_ApiKey{
+								ApiKey: &configv1.APIKeyAuth{
+									ParamName: proto.String("X-API-Key"),
+									Value: &configv1.SecretValue{
 										Value: &configv1.SecretValue_PlainText{PlainText: ""},
 									},
 								},
@@ -415,7 +415,7 @@ func TestValidate_MoreServices(t *testing.T) {
 				},
 			},
 			expectedErrorCount:  1,
-			expectedErrorString: "api key 'api_key' is empty",
+			expectedErrorString: "resolved api key value is empty",
 		},
 		{
 			name: "invalid basic auth - empty password",
@@ -428,9 +428,9 @@ func TestValidate_MoreServices(t *testing.T) {
 								Address: proto.String("http://example.com"),
 							},
 						},
-						UpstreamAuthentication: &configv1.UpstreamAuthentication{
-							AuthMethod: &configv1.UpstreamAuthentication_BasicAuth{
-								BasicAuth: &configv1.UpstreamBasicAuth{
+						UpstreamAuth: &configv1.Authentication{
+							AuthMethod: &configv1.Authentication_BasicAuth{
+								BasicAuth: &configv1.BasicAuth{
 									Username: proto.String("user"),
 									Password: &configv1.SecretValue{
 										Value: &configv1.SecretValue_PlainText{PlainText: ""},
@@ -455,9 +455,9 @@ func TestValidate_MoreServices(t *testing.T) {
 								Address: proto.String("https://example.com"),
 							},
 						},
-						UpstreamAuthentication: &configv1.UpstreamAuthentication{
-							AuthMethod: &configv1.UpstreamAuthentication_Mtls{
-								Mtls: &configv1.UpstreamMTLSAuth{
+						UpstreamAuth: &configv1.Authentication{
+							AuthMethod: &configv1.Authentication_Mtls{
+								Mtls: &configv1.MTLSAuth{
 									ClientCertPath: proto.String(insecurePath),
 									ClientKeyPath:  proto.String(insecurePath),
 									// CA Cert Path unset
@@ -480,7 +480,7 @@ func TestValidate_MoreServices(t *testing.T) {
 								Address: proto.String("https://example.com"),
 							},
 						},
-						UpstreamAuthentication: &configv1.UpstreamAuthentication{
+						UpstreamAuth: &configv1.Authentication{
 							// Empty auth config (no method set)
 						},
 					},
@@ -529,9 +529,9 @@ func TestValidate_MoreServices(t *testing.T) {
 								Address: proto.String("https://example.com"),
 							},
 						},
-						UpstreamAuthentication: &configv1.UpstreamAuthentication{
-							AuthMethod: &configv1.UpstreamAuthentication_Mtls{
-								Mtls: &configv1.UpstreamMTLSAuth{
+						UpstreamAuth: &configv1.Authentication{
+							AuthMethod: &configv1.Authentication_Mtls{
+								Mtls: &configv1.MTLSAuth{
 									ClientCertPath: proto.String(insecurePath),
 									ClientKeyPath:  proto.String(insecurePath),
 									CaCertPath:     proto.String(insecurePath),
@@ -563,9 +563,9 @@ func TestValidate_MoreServices(t *testing.T) {
 								Address: proto.String("https://example.com"),
 							},
 						},
-						UpstreamAuthentication: &configv1.UpstreamAuthentication{
-							AuthMethod: &configv1.UpstreamAuthentication_Mtls{
-								Mtls: &configv1.UpstreamMTLSAuth{
+						UpstreamAuth: &configv1.Authentication{
+							AuthMethod: &configv1.Authentication_Mtls{
+								Mtls: &configv1.MTLSAuth{
 									// Use insecurePath (exists) for client cert/key to pass check
 									ClientCertPath: proto.String(insecurePath),
 									ClientKeyPath:  proto.String(insecurePath),
@@ -809,9 +809,9 @@ func TestValidate_MtlsInsecure(t *testing.T) {
 								Address: proto.String("https://example.com"),
 							},
 						},
-						UpstreamAuthentication: &configv1.UpstreamAuthentication{
-							AuthMethod: &configv1.UpstreamAuthentication_Mtls{
-								Mtls: &configv1.UpstreamMTLSAuth{
+						UpstreamAuth: &configv1.Authentication{
+							AuthMethod: &configv1.Authentication_Mtls{
+								Mtls: &configv1.MTLSAuth{
 									ClientCertPath: proto.String(securePath),
 									ClientKeyPath:  proto.String(securePath),
 									CaCertPath:     proto.String("insecure.pem"),
@@ -835,9 +835,9 @@ func TestValidate_MtlsInsecure(t *testing.T) {
 								Address: proto.String("https://example.com"),
 							},
 						},
-						UpstreamAuthentication: &configv1.UpstreamAuthentication{
-							AuthMethod: &configv1.UpstreamAuthentication_Mtls{
-								Mtls: &configv1.UpstreamMTLSAuth{
+						UpstreamAuth: &configv1.Authentication{
+							AuthMethod: &configv1.Authentication_Mtls{
+								Mtls: &configv1.MTLSAuth{
 									ClientCertPath: proto.String("insecure.pem"),
 									ClientKeyPath:  proto.String(securePath),
 								},
@@ -860,9 +860,9 @@ func TestValidate_MtlsInsecure(t *testing.T) {
 								Address: proto.String("https://example.com"),
 							},
 						},
-						UpstreamAuthentication: &configv1.UpstreamAuthentication{
-							AuthMethod: &configv1.UpstreamAuthentication_Mtls{
-								Mtls: &configv1.UpstreamMTLSAuth{
+						UpstreamAuth: &configv1.Authentication{
+							AuthMethod: &configv1.Authentication_Mtls{
+								Mtls: &configv1.MTLSAuth{
 									ClientCertPath: proto.String(securePath),
 									ClientKeyPath:  proto.String("insecure.pem"),
 								},
@@ -885,9 +885,9 @@ func TestValidate_MtlsInsecure(t *testing.T) {
 								Address: proto.String("https://example.com"),
 							},
 						},
-						UpstreamAuthentication: &configv1.UpstreamAuthentication{
-							AuthMethod: &configv1.UpstreamAuthentication_Mtls{
-								Mtls: &configv1.UpstreamMTLSAuth{
+						UpstreamAuth: &configv1.Authentication{
+							AuthMethod: &configv1.Authentication_Mtls{
+								Mtls: &configv1.MTLSAuth{
 									ClientCertPath: proto.String(securePath),              // Valid secure path
 									ClientKeyPath:  proto.String(securePath + ".missing"), // Secure path BUT missing
 								},
@@ -910,9 +910,9 @@ func TestValidate_MtlsInsecure(t *testing.T) {
 								Address: proto.String("https://example.com"),
 							},
 						},
-						UpstreamAuthentication: &configv1.UpstreamAuthentication{
-							AuthMethod: &configv1.UpstreamAuthentication_Mtls{
-								Mtls: &configv1.UpstreamMTLSAuth{
+						UpstreamAuth: &configv1.Authentication{
+							AuthMethod: &configv1.Authentication_Mtls{
+								Mtls: &configv1.MTLSAuth{
 									ClientCertPath: proto.String(securePath),
 									// Use mock path that triggers generic error in mocked osStat
 									ClientKeyPath: proto.String("mock-error-path"),

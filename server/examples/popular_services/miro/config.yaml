@@ -3,7 +3,7 @@
 
 upstream_services:
   - name: miro
-    upstream_authentication:
+    upstream_auth:
       bearer_token:
         token:
           plain_text: "${MIRO_API_TOKEN}"

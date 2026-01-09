@@ -47,7 +47,7 @@ func TestMTLSAuthentication(t *testing.T) {
 	config := `
 upstream_services:
   - name: my-upstream
-    upstream_authentication:
+    upstream_auth:
       mtls:
         client_cert_path: "tests/tls/client.crt"
         client_key_path: "tests/tls/client.key"

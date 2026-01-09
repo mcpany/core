@@ -13,10 +13,11 @@ import (
 	"testing"
 
 	"github.com/machinebox/graphql"
-	"github.com/mcpany/core/server/pkg/tool"
 	configv1 "github.com/mcpany/core/proto/config/v1"
+	"github.com/mcpany/core/server/pkg/tool"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"google.golang.org/protobuf/proto"
 )
 
 func TestGraphQLUpstream_Register(t *testing.T) {
@@ -268,14 +269,18 @@ func TestGraphQLUpstream_RegisterWithAPIKeyAuth(t *testing.T) {
 	serviceConfig.SetName("test-service")
 	serviceConfig.SetGraphqlService(&configv1.GraphQLUpstreamService{})
 	serviceConfig.GetGraphqlService().SetAddress(server.URL)
-	authConfig := &configv1.UpstreamAuthentication{}
-	apiKeyAuth := &configv1.UpstreamAPIKeyAuth{}
-	apiKeyAuth.SetHeaderName("X-API-Key")
-	secretValue := &configv1.SecretValue{}
-	secretValue.SetPlainText("test-api-key")
-	apiKeyAuth.SetApiKey(secretValue)
-	authConfig.SetApiKey(apiKeyAuth)
-	serviceConfig.SetUpstreamAuthentication(authConfig)
+	apiKeyAuth := &configv1.APIKeyAuth{
+		ParamName: proto.String("X-API-Key"),
+		Value: &configv1.SecretValue{
+			Value: &configv1.SecretValue_PlainText{PlainText: "test-api-key"},
+		},
+	}
+	authConfig := &configv1.Authentication{
+		AuthMethod: &configv1.Authentication_ApiKey{
+			ApiKey: apiKeyAuth,
+		},
+	}
+	serviceConfig.SetUpstreamAuth(authConfig)
 
 	_, _, _, err := upstream.Register(context.Background(), serviceConfig, toolManager, nil, nil, false)
 	require.NoError(t, err)
@@ -309,14 +314,18 @@ func TestGraphQLUpstream_RegisterWithAPIKeyAuth_IntrospectionFails(t *testing.T)
 	serviceConfig.SetName("test-service")
 	serviceConfig.SetGraphqlService(&configv1.GraphQLUpstreamService{})
 	serviceConfig.GetGraphqlService().SetAddress(server.URL)
-	authConfig := &configv1.UpstreamAuthentication{}
-	apiKeyAuth := &configv1.UpstreamAPIKeyAuth{}
-	apiKeyAuth.SetHeaderName("X-API-Key")
-	secretValue := &configv1.SecretValue{}
-	secretValue.SetPlainText("test-api-key")
-	apiKeyAuth.SetApiKey(secretValue)
-	authConfig.SetApiKey(apiKeyAuth)
-	serviceConfig.SetUpstreamAuthentication(authConfig)
+	apiKeyAuth := &configv1.APIKeyAuth{
+		ParamName: proto.String("X-API-Key"),
+		Value: &configv1.SecretValue{
+			Value: &configv1.SecretValue_PlainText{PlainText: "test-api-key"},
+		},
+	}
+	authConfig := &configv1.Authentication{
+		AuthMethod: &configv1.Authentication_ApiKey{
+			ApiKey: apiKeyAuth,
+		},
+	}
+	serviceConfig.SetUpstreamAuth(authConfig)
 
 	_, _, _, err := upstream.Register(context.Background(), serviceConfig, toolManager, nil, nil, false)
 	require.Error(t, err)
@@ -373,14 +382,18 @@ func TestGraphQLUpstream_RegisterWithAPIKeyAuth_ToolCallFails(t *testing.T) {
 	serviceConfig.SetName("test-service")
 	serviceConfig.SetGraphqlService(&configv1.GraphQLUpstreamService{})
 	serviceConfig.GetGraphqlService().SetAddress(server.URL)
-	authConfig := &configv1.UpstreamAuthentication{}
-	apiKeyAuth := &configv1.UpstreamAPIKeyAuth{}
-	apiKeyAuth.SetHeaderName("X-API-Key")
-	secretValue := &configv1.SecretValue{}
-	secretValue.SetPlainText("test-api-key")
-	apiKeyAuth.SetApiKey(secretValue)
-	authConfig.SetApiKey(apiKeyAuth)
-	serviceConfig.SetUpstreamAuthentication(authConfig)
+	apiKeyAuth := &configv1.APIKeyAuth{
+		ParamName: proto.String("X-API-Key"),
+		Value: &configv1.SecretValue{
+			Value: &configv1.SecretValue_PlainText{PlainText: "test-api-key"},
+		},
+	}
+	authConfig := &configv1.Authentication{
+		AuthMethod: &configv1.Authentication_ApiKey{
+			ApiKey: apiKeyAuth,
+		},
+	}
+	serviceConfig.SetUpstreamAuth(authConfig)
 
 	_, _, _, err := upstream.Register(context.Background(), serviceConfig, toolManager, nil, nil, false)
 	require.NoError(t, err)

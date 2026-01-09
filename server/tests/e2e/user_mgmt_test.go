@@ -140,10 +140,10 @@ ServerStarted:
 	// Create initial user
 	user1 := &configv1.User{
 		Id: proto.String("user-1"),
-		Authentication: &configv1.AuthenticationConfig{
-			AuthMethod: &configv1.AuthenticationConfig_ApiKey{
+		Authentication: &configv1.Authentication{
+			AuthMethod: &configv1.Authentication_ApiKey{
 				ApiKey: &configv1.APIKeyAuth{
-					KeyValue: proto.String("secret-key"),
+					VerificationValue: proto.String("secret-key"),
 				},
 			},
 		},
@@ -154,7 +154,7 @@ ServerStarted:
 	createResp, err := adminClient.CreateUser(ctx, &pb_admin.CreateUserRequest{User: user1})
 	require.NoError(t, err)
 	require.Equal(t, "user-1", createResp.User.GetId())
-	require.Equal(t, "secret-key", createResp.User.GetAuthentication().GetApiKey().GetKeyValue())
+	require.Equal(t, "secret-key", createResp.User.GetAuthentication().GetApiKey().GetVerificationValue())
 
 	// Get user
 	getResp, err := adminClient.GetUser(ctx, &pb_admin.GetUserRequest{UserId: proto.String("user-1")})
