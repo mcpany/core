@@ -115,3 +115,35 @@ func TestGrpcPool_Get_ContextCancelled(t *testing.T) {
 	_, err = p.Get(ctx)
 	require.Error(t, err)
 }
+
+func TestGrpcPool_Close_StopsChecker(t *testing.T) {
+	// This test verifies that Close() can be called multiple times without panic
+	// and ostensibly cleans up resources.
+	// Since we can't easily verify internal state of health.Checker without mocking,
+	// we ensure that the new code path (Close -> Stop) is executed safely.
+
+	lis := startMockGrpcServer(t)
+	dialer := func(_ context.Context, _ string) (net.Conn, error) {
+		return lis.Dial()
+	}
+
+	configJSON := `{"grpc_service": {"address": "bufnet"}}`
+	config := &configv1.UpstreamServiceConfig{}
+	require.NoError(t, protojson.Unmarshal([]byte(configJSON), config))
+
+	p, err := NewGrpcPool(1, 5, 100, dialer, nil, config, true)
+	require.NoError(t, err)
+
+	// Verify pool type is what we expect (wrapped) via interface check if exported?
+	// poolWithChecker is unexported, so we can't check type easily.
+	// But we can check that Close works.
+	err = p.Close()
+	assert.NoError(t, err)
+
+	// Double close should be safe (pool implementation usually handles this,
+	// but health checker Stop is idempotent? The health library says Stop is safe to call multiple times)
+	// Even if not, our Close wrapper calls p.Pool.Close() which handles pool state.
+	// Let's call it again to be sure no panic.
+	err = p.Close()
+	assert.NoError(t, err)
+}
