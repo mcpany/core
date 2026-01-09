@@ -27,9 +27,11 @@ test('layout smoke test', async ({ page }) => {
 
   // Navigate to Stack Detail
   await page.click('text=mcpany-system');
-  await expect(page.locator('h1')).toContainText('Stack: system');
+  await expect(page).toHaveURL(/\/stacks\/system/);
+  await expect(page.locator('h2')).toContainText('system');
+  await expect(page.locator('h2')).toContainText('Stack');
 
   // Check Tabs
-  await expect(page.locator('button[role="tab"]', { hasText: 'Services' })).toBeVisible();
+  await expect(page.locator('button[role="tab"]', { hasText: 'Overview & Status' })).toBeVisible();
   await expect(page.locator('button[role="tab"]', { hasText: 'Editor' })).toBeVisible();
 });
