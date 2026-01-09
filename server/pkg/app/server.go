@@ -161,6 +161,7 @@ type Application struct {
 	fs               afero.Fs
 	configPaths      []string
 	Storage          storage.Storage
+	busProvider      *bus.Provider
 
 	// Middleware handles for dynamic updates
 	standardMiddlewares *middleware.StandardMiddlewares
@@ -323,6 +324,8 @@ func (a *Application) Run(
 	if err != nil {
 		return fmt.Errorf("failed to create bus provider: %w", err)
 	}
+	a.busProvider = busProvider
+
 	poolManager := pool.NewManager()
 	upstreamFactory := factory.NewUpstreamServiceFactory(poolManager)
 	a.ToolManager = tool.NewManager(busProvider)
@@ -768,7 +771,24 @@ func (a *Application) reconcileServices(cfg *config_v1.McpAnyServerConfig) {
 		}
 
 		if needsUpdate {
-			if a.ServiceRegistry != nil {
+			if a.busProvider != nil {
+				// Async registration via bus to support retries
+				registrationBus, err := bus.GetBus[*bus.ServiceRegistrationRequest](
+					a.busProvider,
+					bus.ServiceRegistrationRequestTopic,
+				)
+				if err != nil {
+					log.Error("Failed to get registration bus during reload", "error", err)
+					continue
+				}
+				regReq := &bus.ServiceRegistrationRequest{Config: newSvc}
+				if err := registrationBus.Publish(context.Background(), "request", regReq); err != nil {
+					log.Error("Failed to publish registration request during reload", "error", err)
+				} else {
+					log.Info("Queued service for registration update", "service", name)
+				}
+			} else if a.ServiceRegistry != nil {
+				// Fallback to sync registration if bus is not available (e.g. tests without full init)
 				_, _, _, err := a.ServiceRegistry.RegisterService(context.Background(), newSvc)
 				if err != nil {
 					log.Error("Failed to register upstream service", "service", name, "error", err)
