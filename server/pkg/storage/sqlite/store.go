@@ -599,3 +599,88 @@ func (s *Store) DeleteToken(ctx context.Context, userID, serviceID string) error
 	}
 	return nil
 }
+
+// Credentials
+
+// ListCredentials retrieves all credentials.
+func (s *Store) ListCredentials(ctx context.Context) ([]*configv1.Credential, error) {
+	rows, err := s.db.QueryContext(ctx, "SELECT config_json FROM credentials")
+	if err != nil {
+		return nil, fmt.Errorf("failed to query credentials: %w", err)
+	}
+	defer func() { _ = rows.Close() }()
+
+	var credentials []*configv1.Credential
+	for rows.Next() {
+		var configJSON string
+		if err := rows.Scan(&configJSON); err != nil {
+			return nil, fmt.Errorf("failed to scan credential config: %w", err)
+		}
+
+		var cred configv1.Credential
+		if err := protojson.Unmarshal([]byte(configJSON), &cred); err != nil {
+			return nil, fmt.Errorf("failed to unmarshal credential: %w", err)
+		}
+		credentials = append(credentials, &cred)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, fmt.Errorf("error iterating rows: %w", err)
+	}
+	return credentials, nil
+}
+
+// GetCredential retrieves a credential by ID.
+func (s *Store) GetCredential(ctx context.Context, id string) (*configv1.Credential, error) {
+	query := "SELECT config_json FROM credentials WHERE id = ?"
+	row := s.db.QueryRowContext(ctx, query, id)
+
+	var configJSON string
+	if err := row.Scan(&configJSON); err != nil {
+		if err == sql.ErrNoRows {
+			return nil, nil // Not found
+		}
+		return nil, fmt.Errorf("failed to scan credential: %w", err)
+	}
+
+	var cred configv1.Credential
+	if err := protojson.Unmarshal([]byte(configJSON), &cred); err != nil {
+		return nil, fmt.Errorf("failed to unmarshal credential: %w", err)
+	}
+	return &cred, nil
+}
+
+// SaveCredential saves a credential.
+func (s *Store) SaveCredential(ctx context.Context, cred *configv1.Credential) error {
+	if cred.GetId() == "" {
+		return fmt.Errorf("credential ID is required")
+	}
+
+	opts := protojson.MarshalOptions{UseProtoNames: true}
+	configJSON, err := opts.Marshal(cred)
+	if err != nil {
+		return fmt.Errorf("failed to marshal credential: %w", err)
+	}
+
+	query := `
+	INSERT INTO credentials (id, name, config_json, updated_at)
+	VALUES (?, ?, ?, CURRENT_TIMESTAMP)
+	ON CONFLICT(id) DO UPDATE SET
+		name = excluded.name,
+		config_json = excluded.config_json,
+		updated_at = excluded.updated_at;
+	`
+	_, err = s.db.ExecContext(ctx, query, cred.GetId(), cred.GetName(), string(configJSON))
+	if err != nil {
+		return fmt.Errorf("failed to save credential: %w", err)
+	}
+	return nil
+}
+
+// DeleteCredential deletes a credential by ID.
+func (s *Store) DeleteCredential(ctx context.Context, id string) error {
+	_, err := s.db.ExecContext(ctx, "DELETE FROM credentials WHERE id = ?", id)
+	if err != nil {
+		return fmt.Errorf("failed to delete credential: %w", err)
+	}
+	return nil
+}
