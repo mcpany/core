@@ -150,13 +150,13 @@ func NewBasicAuthenticator(config *configv1.BasicAuth) *BasicAuthenticator {
 func (a *BasicAuthenticator) Authenticate(ctx context.Context, r *http.Request) (context.Context, error) {
 	_, password, ok := r.BasicAuth()
 	if !ok {
-		return ctx, fmt.Errorf("unauthorized: missing basic auth")
+		return ctx, fmt.Errorf("unauthorized")
 	}
 
 	if passhash.CheckPassword(password, a.PasswordHash) {
 		return ctx, nil
 	}
-	return ctx, fmt.Errorf("unauthorized: invalid password")
+	return ctx, fmt.Errorf("unauthorized")
 }
 
 // TrustedHeaderAuthenticator authenticates using a trusted header (e.g., from an auth proxy).
@@ -182,12 +182,12 @@ func NewTrustedHeaderAuthenticator(config *configv1.TrustedHeaderAuth) *TrustedH
 func (a *TrustedHeaderAuthenticator) Authenticate(ctx context.Context, r *http.Request) (context.Context, error) {
 	val := r.Header.Get(a.HeaderName)
 	if val == "" {
-		return ctx, fmt.Errorf("unauthorized: missing trusted header")
+		return ctx, fmt.Errorf("unauthorized")
 	}
 	// If HeaderValue is set, it must match.
 	if a.HeaderValue != "" {
 		if val != a.HeaderValue {
-			return ctx, fmt.Errorf("unauthorized: invalid trusted header value")
+			return ctx, fmt.Errorf("unauthorized")
 		}
 	}
 	// If HeaderValue is empty, does it mean any value is allowed?
@@ -254,10 +254,10 @@ func (am *Manager) AddAuthenticator(serviceID string, authenticator Authenticato
 func (am *Manager) Authenticate(ctx context.Context, serviceID string, r *http.Request) (context.Context, error) {
 	if am.apiKey != "" {
 		if r.Header.Get("X-API-Key") == "" {
-			return ctx, fmt.Errorf("unauthorized: missing API key")
+			return ctx, fmt.Errorf("unauthorized")
 		}
 		if subtle.ConstantTimeCompare([]byte(r.Header.Get("X-API-Key")), []byte(am.apiKey)) != 1 {
-			return ctx, fmt.Errorf("unauthorized: invalid API key")
+			return ctx, fmt.Errorf("unauthorized")
 		}
 		ctx = ContextWithAPIKey(ctx, r.Header.Get("X-API-Key"))
 	}

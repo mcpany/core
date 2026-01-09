@@ -337,7 +337,7 @@ func TestValidateAuthentication(t *testing.T) {
 		req := httptest.NewRequest("GET", "/", nil)
 		err := ValidateAuthentication(context.Background(), config, req)
 		assert.Error(t, err)
-		assert.Contains(t, err.Error(), "missing Authorization header")
+		assert.Equal(t, "unauthorized", err.Error())
 	})
 
 	t.Run("no_method", func(t *testing.T) {

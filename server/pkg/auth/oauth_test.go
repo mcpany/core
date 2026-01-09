@@ -133,7 +133,7 @@ func TestOAuth2Authenticator_Authenticate(t *testing.T) {
 		req := httptest.NewRequest("GET", "/", nil)
 		_, err := authenticator.Authenticate(context.Background(), req)
 		assert.Error(t, err)
-		assert.Equal(t, "missing Authorization header", err.Error())
+		assert.Equal(t, "unauthorized", err.Error())
 	})
 
 	t.Run("invalid_authorization_header_format", func(t *testing.T) {
@@ -141,7 +141,7 @@ func TestOAuth2Authenticator_Authenticate(t *testing.T) {
 		req.Header.Set(authHeader, "invalid-token")
 		_, err := authenticator.Authenticate(context.Background(), req)
 		assert.Error(t, err)
-		assert.Equal(t, "invalid Authorization header format", err.Error())
+		assert.Equal(t, "unauthorized", err.Error())
 	})
 
 	t.Run("token_verification_failed", func(t *testing.T) {
@@ -160,7 +160,7 @@ func TestOAuth2Authenticator_Authenticate(t *testing.T) {
 
 		_, err := authenticator.Authenticate(context.Background(), req)
 		assert.Error(t, err)
-		assert.Contains(t, err.Error(), "failed to verify token")
+		assert.Equal(t, "unauthorized", err.Error())
 	})
 
 	t.Run("expired_token", func(t *testing.T) {
@@ -177,7 +177,7 @@ func TestOAuth2Authenticator_Authenticate(t *testing.T) {
 
 		_, err := authenticator.Authenticate(context.Background(), req)
 		assert.Error(t, err)
-		assert.Contains(t, err.Error(), "failed to verify token")
+		assert.Equal(t, "unauthorized", err.Error())
 	})
 }
 
@@ -237,5 +237,5 @@ func TestOAuth2Authenticator_Authenticate_ClaimError(t *testing.T) {
 
 	_, err = authenticator.Authenticate(context.Background(), req)
 	assert.Error(t, err)
-	assert.Contains(t, err.Error(), "failed to extract claims")
+	assert.Equal(t, "unauthorized", err.Error())
 }
