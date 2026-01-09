@@ -9,9 +9,9 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/mcpany/core/server/pkg/util"
 	apiv1 "github.com/mcpany/core/proto/api/v1"
 	configv1 "github.com/mcpany/core/proto/config/v1"
+	"github.com/mcpany/core/server/pkg/util"
 	"github.com/mcpany/core/server/tests/framework"
 	"github.com/mcpany/core/server/tests/integration"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
@@ -64,12 +64,14 @@ func TestUpstreamService_HTTP_WithIncorrectAPIKeyAuth(t *testing.T) {
 			secret := configv1.SecretValue_builder{
 				PlainText: proto.String("wrong-key"),
 			}.Build()
-			wrongAuthConfig := configv1.UpstreamAuthentication_builder{
-				ApiKey: configv1.UpstreamAPIKeyAuth_builder{
-					HeaderName: proto.String("X-Api-Key"),
-					ApiKey:     secret,
-				}.Build(),
-			}.Build()
+			wrongAuthConfig := &configv1.Authentication{
+				AuthMethod: &configv1.Authentication_ApiKey{
+					ApiKey: &configv1.APIKeyAuth{
+						ParamName: proto.String("X-Api-Key"),
+						Value:     secret,
+					},
+				},
+			}
 			integration.RegisterHTTPService(t, registrationClient, wrongAuthServiceID, upstreamEndpoint, "echo", "/echo", http.MethodPost, wrongAuthConfig)
 		},
 		InvokeAIClient: func(t *testing.T, mcpanyEndpoint string) {

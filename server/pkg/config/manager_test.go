@@ -206,8 +206,8 @@ services:
 					(configv1.UpstreamServiceCollection_builder{
 						Name:    proto.String("collection-authed"),
 						HttpUrl: proto.String(server.URL + "/collection-authed"),
-						Authentication: (&configv1.UpstreamAuthentication_builder{
-							BearerToken: (&configv1.UpstreamBearerTokenAuth_builder{
+						Authentication: (&configv1.Authentication_builder{
+							BearerToken: (&configv1.BearerTokenAuth_builder{
 								Token: (&configv1.SecretValue_builder{PlainText: proto.String("my-secret-token")}).Build(),
 							}).Build(),
 						}).Build(),
@@ -225,10 +225,10 @@ services:
 					(configv1.UpstreamServiceCollection_builder{
 						Name:    proto.String("collection-apikey"),
 						HttpUrl: proto.String(server.URL + "/collection-apikey"),
-						Authentication: (&configv1.UpstreamAuthentication_builder{
-							ApiKey: (&configv1.UpstreamAPIKeyAuth_builder{
-								HeaderName: proto.String("X-API-Key"),
-								ApiKey:     (&configv1.SecretValue_builder{PlainText: proto.String("my-api-key")}).Build(),
+						Authentication: (&configv1.Authentication_builder{
+							ApiKey: (&configv1.APIKeyAuth_builder{
+								ParamName: proto.String("X-API-Key"),
+								Value:     (&configv1.SecretValue_builder{PlainText: proto.String("my-api-key")}).Build(),
 							}).Build(),
 						}).Build(),
 					}).Build(),
@@ -245,8 +245,8 @@ services:
 					(configv1.UpstreamServiceCollection_builder{
 						Name:    proto.String("collection-basicauth"),
 						HttpUrl: proto.String(server.URL + "/collection-basicauth"),
-						Authentication: (&configv1.UpstreamAuthentication_builder{
-							BasicAuth: (&configv1.UpstreamBasicAuth_builder{
+						Authentication: (&configv1.Authentication_builder{
+							BasicAuth: (&configv1.BasicAuth_builder{
 								Username: proto.String("testuser"),
 								Password: (&configv1.SecretValue_builder{PlainText: proto.String("testpass")}).Build(),
 							}).Build(),

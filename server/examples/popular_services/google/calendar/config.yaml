@@ -3,11 +3,11 @@
 
 upstream_services:
 - name: google_calendar
-  upstream_authentication:
+  upstream_auth:
     # api_key:
     #   # query_parameter_name is seemingly not supported by UpstreamAPIKeyAuth in auth.proto (only header_name).
     #   # But leaving it as is in case custom logic or older version supports it roughly.
-    #   # Ideally this should be header_name: "X-Goog-Api-Key" or similar, but Google supports query param 'key'.
+    #   # Ideally this should be param_name: "X-Goog-Api-Key" or similar, but Google supports query param 'key'.
     #   # If UpstreamAPIKeyAuth enforces header, this might fail to auth, but registration might succeed.
     #   # The main issue was recursive replacement.
     #   # Fixed structure below:

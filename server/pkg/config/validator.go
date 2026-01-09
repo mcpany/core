@@ -12,9 +12,9 @@ import (
 	"regexp"
 	"time"
 
+	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/mcpany/core/server/pkg/util"
 	"github.com/mcpany/core/server/pkg/validation"
-	configv1 "github.com/mcpany/core/proto/config/v1"
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
@@ -93,7 +93,7 @@ func Validate(ctx context.Context, config *configv1.McpAnyServerConfig, binaryTy
 		}
 		userIDs[user.GetId()] = true
 
-		if err := validateUser(user); err != nil {
+		if err := validateUser(ctx, user); err != nil {
 			validationErrors = append(validationErrors, ValidationError{
 				ServiceName: fmt.Sprintf("user:%s", user.GetId()),
 				Err:         err,
@@ -265,10 +265,28 @@ func validateUpstreamService(ctx context.Context, service *configv1.UpstreamServ
 		}
 	}
 
-	if authConfig := service.GetUpstreamAuthentication(); authConfig != nil {
-		if err := validateUpstreamAuthentication(ctx, authConfig); err != nil {
+	if authConfig := service.GetUpstreamAuth(); authConfig != nil {
+		if err := validateAuthentication(ctx, authConfig); err != nil {
 			return err
 		}
+	}
+	return nil
+}
+
+// ... (other functions)
+
+func validateAuthentication(ctx context.Context, authConfig *configv1.Authentication) error {
+	switch authConfig.WhichAuthMethod() {
+	case configv1.Authentication_ApiKey_case:
+		return validateAPIKeyAuth(ctx, authConfig.GetApiKey())
+	case configv1.Authentication_BearerToken_case:
+		return validateBearerTokenAuth(ctx, authConfig.GetBearerToken())
+	case configv1.Authentication_BasicAuth_case:
+		return validateBasicAuth(ctx, authConfig.GetBasicAuth())
+	case configv1.Authentication_Mtls_case:
+		return validateMtlsAuth(authConfig.GetMtls())
+	case configv1.Authentication_Oauth2_case:
+		return validateOAuth2Auth(ctx, authConfig.GetOauth2())
 	}
 	return nil
 }
@@ -508,35 +526,48 @@ func validateWebrtcService(webrtcService *configv1.WebrtcUpstreamService) error 
 	return nil
 }
 
-func validateUpstreamAuthentication(ctx context.Context, authConfig *configv1.UpstreamAuthentication) error {
+func validateUpstreamAuthentication(ctx context.Context, authConfig *configv1.Authentication) error {
 	switch authConfig.WhichAuthMethod() {
-	case configv1.UpstreamAuthentication_ApiKey_case:
+	case configv1.Authentication_ApiKey_case:
 		return validateAPIKeyAuth(ctx, authConfig.GetApiKey())
-	case configv1.UpstreamAuthentication_BearerToken_case:
+	case configv1.Authentication_BearerToken_case:
 		return validateBearerTokenAuth(ctx, authConfig.GetBearerToken())
-	case configv1.UpstreamAuthentication_BasicAuth_case:
+	case configv1.Authentication_BasicAuth_case:
 		return validateBasicAuth(ctx, authConfig.GetBasicAuth())
-	case configv1.UpstreamAuthentication_Mtls_case:
+	case configv1.Authentication_Mtls_case:
 		return validateMtlsAuth(authConfig.GetMtls())
+	case configv1.Authentication_Oauth2_case:
+		return validateOAuth2Auth(ctx, authConfig.GetOauth2())
 	}
 	return nil
 }
 
-func validateAPIKeyAuth(ctx context.Context, apiKey *configv1.UpstreamAPIKeyAuth) error {
-	if apiKey.GetHeaderName() == "" {
-		return fmt.Errorf("api key 'header_name' is empty")
+func validateAPIKeyAuth(ctx context.Context, apiKey *configv1.APIKeyAuth) error {
+	if apiKey.GetParamName() == "" {
+		return fmt.Errorf("api key 'param_name' is empty")
 	}
-	apiKeyValue, err := util.ResolveSecret(ctx, apiKey.GetApiKey())
-	if err != nil {
-		return fmt.Errorf("failed to resolve api key secret: %w", err)
+	// Value might be nil but usually we want to validate it resolves if present,
+	// or ensure it IS present if required. For upstream, it's usually required.
+	if apiKey.GetValue() == nil && apiKey.GetVerificationValue() == "" {
+		// If both are missing, it's invalid?
+		// VerificationValue is for incoming, Value (SecretValue) is for outgoing.
+		// Detailed validation might depend on context (incoming vs outgoing),
+		// but here we are validating "UpstreamServiceConfig" which implies outgoing.
+		return fmt.Errorf("api key 'value' is missing (required for outgoing auth)")
 	}
-	if apiKeyValue == "" {
-		return fmt.Errorf("api key 'api_key' is empty")
+	if apiKey.GetValue() != nil {
+		apiKeyValue, err := util.ResolveSecret(ctx, apiKey.GetValue())
+		if err != nil {
+			return fmt.Errorf("failed to resolve api key secret: %w", err)
+		}
+		if apiKeyValue == "" {
+			return fmt.Errorf("resolved api key value is empty")
+		}
 	}
 	return nil
 }
 
-func validateBearerTokenAuth(ctx context.Context, bearerToken *configv1.UpstreamBearerTokenAuth) error {
+func validateBearerTokenAuth(ctx context.Context, bearerToken *configv1.BearerTokenAuth) error {
 	tokenValue, err := util.ResolveSecret(ctx, bearerToken.GetToken())
 	if err != nil {
 		return fmt.Errorf("failed to resolve bearer token secret: %w", err)
@@ -547,7 +578,7 @@ func validateBearerTokenAuth(ctx context.Context, bearerToken *configv1.Upstream
 	return nil
 }
 
-func validateBasicAuth(ctx context.Context, basicAuth *configv1.UpstreamBasicAuth) error {
+func validateBasicAuth(ctx context.Context, basicAuth *configv1.BasicAuth) error {
 	if basicAuth.GetUsername() == "" {
 		return fmt.Errorf("basic auth 'username' is empty")
 	}
@@ -561,7 +592,17 @@ func validateBasicAuth(ctx context.Context, basicAuth *configv1.UpstreamBasicAut
 	return nil
 }
 
-func validateMtlsAuth(mtls *configv1.UpstreamMTLSAuth) error {
+func validateOAuth2Auth(_ context.Context, oauth *configv1.OAuth2Auth) error {
+	if oauth.GetTokenUrl() == "" {
+		return fmt.Errorf("oauth2 token_url is empty")
+	}
+	if !validation.IsValidURL(oauth.GetTokenUrl()) {
+		return fmt.Errorf("invalid oauth2 token_url: %s", oauth.GetTokenUrl())
+	}
+	return nil
+}
+
+func validateMtlsAuth(mtls *configv1.MTLSAuth) error {
 	if mtls.GetClientCertPath() == "" {
 		return fmt.Errorf("mtls 'client_cert_path' is empty")
 	}
@@ -617,39 +658,17 @@ func validateSchema(s *structpb.Struct) error {
 	return nil
 }
 
-func validateUser(user *configv1.User) error {
+func validateUser(ctx context.Context, user *configv1.User) error {
 	if user.GetAuthentication() == nil {
 		return nil // No auth config means no authentication required (Open Access)
 	}
-	if err := validateAuthenticationConfig(user.GetAuthentication()); err != nil {
+	if err := validateAuthentication(ctx, user.GetAuthentication()); err != nil {
 		return err
 	}
 	return nil
 }
 
-func validateAuthenticationConfig(auth *configv1.AuthenticationConfig) error {
-	switch auth.WhichAuthMethod() {
-	case configv1.AuthenticationConfig_ApiKey_case:
-		apiKey := auth.GetApiKey()
-		if apiKey.GetParamName() == "" {
-			return fmt.Errorf("api_key param_name is empty")
-		}
-		if apiKey.GetKeyValue() == "" {
-			return fmt.Errorf("api_key key_value is empty")
-		}
-	case configv1.AuthenticationConfig_Oauth2_case:
-		oauth2 := auth.GetOauth2()
-		if oauth2.GetTokenUrl() == "" {
-			return fmt.Errorf("oauth2 token_url is empty")
-		}
-		if !validation.IsValidURL(oauth2.GetTokenUrl()) {
-			return fmt.Errorf("invalid oauth2 token_url: %s", oauth2.GetTokenUrl())
-		}
-	case configv1.AuthenticationConfig_AuthMethod_not_set_case:
-		return nil // No auth method set means no authentication required
-	}
-	return nil
-}
+
 
 func validateAuditConfig(audit *configv1.AuditConfig) error {
 	if audit == nil {

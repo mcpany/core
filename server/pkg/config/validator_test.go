@@ -8,8 +8,8 @@ import (
 	"os"
 	"testing"
 
-	"github.com/mcpany/core/server/pkg/validation"
 	configv1 "github.com/mcpany/core/proto/config/v1"
+	"github.com/mcpany/core/server/pkg/validation"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/encoding/protojson"
@@ -402,20 +402,20 @@ func TestValidateUpstreamAuthentication(t *testing.T) {
 			return nil
 		}
 
-		mtls := &configv1.UpstreamAuthentication{
-			AuthMethod: &configv1.UpstreamAuthentication_Mtls{
-				Mtls: &configv1.UpstreamMTLSAuth{
+		mtls := &configv1.Authentication{
+			AuthMethod: &configv1.Authentication_Mtls{
+				Mtls: &configv1.MTLSAuth{
 					ClientCertPath: strPtr("cert.pem"),
 					ClientKeyPath:  strPtr("key.pem"),
 				},
 			},
 		}
-		err := validateUpstreamAuthentication(ctx, mtls)
+		err := validateAuthentication(ctx, mtls)
 		require.NoError(t, err)
 
 		// Test insecure path
 		mtls.GetMtls().ClientCertPath = strPtr("/etc/cert.pem")
-		err = validateUpstreamAuthentication(ctx, mtls)
+		err = validateAuthentication(ctx, mtls)
 		require.Error(t, err)
 		assert.Contains(t, err.Error(), "not a secure path")
 	})
@@ -661,11 +661,11 @@ func TestValidateUsers(t *testing.T) {
 			users: []*configv1.User{
 				{
 					Id: strPtr("user1"),
-					Authentication: &configv1.AuthenticationConfig{
-						AuthMethod: &configv1.AuthenticationConfig_ApiKey{
+					Authentication: &configv1.Authentication{
+						AuthMethod: &configv1.Authentication_ApiKey{
 							ApiKey: &configv1.APIKeyAuth{
-								ParamName: strPtr("key"),
-								KeyValue:  strPtr("secret"),
+								ParamName:         strPtr("key"),
+								VerificationValue: strPtr("secret"),
 							},
 						},
 					},
@@ -688,17 +688,17 @@ func TestValidateUsers(t *testing.T) {
 			users: []*configv1.User{
 				{
 					Id: strPtr("user1"),
-					Authentication: &configv1.AuthenticationConfig{
-						AuthMethod: &configv1.AuthenticationConfig_ApiKey{
-							ApiKey: &configv1.APIKeyAuth{ParamName: strPtr("k"), KeyValue: strPtr("v")},
+					Authentication: &configv1.Authentication{
+						AuthMethod: &configv1.Authentication_ApiKey{
+							ApiKey: &configv1.APIKeyAuth{ParamName: strPtr("k"), VerificationValue: strPtr("v")},
 						},
 					},
 				},
 				{
 					Id: strPtr("user1"), // Duplicate
-					Authentication: &configv1.AuthenticationConfig{
-						AuthMethod: &configv1.AuthenticationConfig_ApiKey{
-							ApiKey: &configv1.APIKeyAuth{ParamName: strPtr("k"), KeyValue: strPtr("v")},
+					Authentication: &configv1.Authentication{
+						AuthMethod: &configv1.Authentication_ApiKey{
+							ApiKey: &configv1.APIKeyAuth{ParamName: strPtr("k"), VerificationValue: strPtr("v")},
 						},
 					},
 				},
@@ -720,8 +720,8 @@ func TestValidateUsers(t *testing.T) {
 			users: []*configv1.User{
 				{
 					Id: strPtr("user1"),
-					Authentication: &configv1.AuthenticationConfig{
-						AuthMethod: &configv1.AuthenticationConfig_Oauth2{
+					Authentication: &configv1.Authentication{
+						AuthMethod: &configv1.Authentication_Oauth2{
 							Oauth2: &configv1.OAuth2Auth{
 								TokenUrl: strPtr("invalid-url"),
 							},

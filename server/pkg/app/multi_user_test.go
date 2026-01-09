@@ -155,28 +155,28 @@ users:
     authentication:
       api_key:
         param_name: "X-User-Key"
-        key_value: "key-dev"
+        verification_value: "key-dev"
         in: "HEADER"
     profile_ids: ["dev-profile"]
   - id: "user-prod"
     authentication:
       api_key:
         param_name: "X-User-Key"
-        key_value: "key-prod"
+        verification_value: "key-prod"
         in: "HEADER"
     profile_ids: ["prod-profile", "dev-profile"]
   - id: "user-secure"
     authentication:
       api_key:
         param_name: "X-User-Key"
-        key_value: "key-secure-user"
+        verification_value: "key-secure-user"
         in: "HEADER"
     profile_ids: ["secure-profile"]
   - id: "user-admin"
     authentication:
       api_key:
         param_name: "X-User-Key"
-        key_value: "key-admin"
+        verification_value: "key-admin"
         in: "HEADER"
     profile_ids: ["rbac-profile"]
     roles: ["admin"]
@@ -184,7 +184,7 @@ users:
     authentication:
       api_key:
         param_name: "X-User-Key"
-        key_value: "key-guest"
+        verification_value: "key-guest"
         in: "HEADER"
     profile_ids: ["rbac-profile"]
     roles: ["guest"]

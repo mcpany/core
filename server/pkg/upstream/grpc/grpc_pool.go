@@ -13,10 +13,10 @@ import (
 	"strings"
 	"time"
 
+	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/mcpany/core/server/pkg/client"
 	healthChecker "github.com/mcpany/core/server/pkg/health"
 	"github.com/mcpany/core/server/pkg/pool"
-	configv1 "github.com/mcpany/core/proto/config/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 	"google.golang.org/grpc/credentials/insecure"
@@ -56,7 +56,7 @@ func NewGrpcPool(
 
 	factory := func(_ context.Context) (*client.GrpcClientWrapper, error) {
 		var transportCreds credentials.TransportCredentials
-		if mtlsConfig := config.GetUpstreamAuthentication().GetMtls(); mtlsConfig != nil {
+		if mtlsConfig := config.GetUpstreamAuth().GetMtls(); mtlsConfig != nil {
 			certificate, err := tls.LoadX509KeyPair(mtlsConfig.GetClientCertPath(), mtlsConfig.GetClientKeyPath())
 			if err != nil {
 				return nil, err

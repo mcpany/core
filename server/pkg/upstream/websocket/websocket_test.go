@@ -268,14 +268,16 @@ func TestUpstream_Register_Mocked(t *testing.T) {
 		}.Build()
 		websocketService.SetCalls(calls)
 
-		authConfig := (&configv1.UpstreamAuthentication_builder{
-			ApiKey: &configv1.UpstreamAPIKeyAuth{},
-		}).Build()
+		authConfig := &configv1.Authentication{
+			AuthMethod: &configv1.Authentication_ApiKey{
+				ApiKey: &configv1.APIKeyAuth{},
+			},
+		}
 
 		serviceConfig := &configv1.UpstreamServiceConfig{}
 		serviceConfig.SetName("auth-fail-service")
 		serviceConfig.SetWebsocketService(websocketService)
-		serviceConfig.SetUpstreamAuthentication(authConfig)
+		serviceConfig.SetUpstreamAuth(authConfig)
 
 		_, discoveredTools, _, err := upstream.Register(context.Background(), serviceConfig, toolManager, promptManager, resourceManager, false)
 		require.NoError(t, err)
@@ -409,14 +411,18 @@ func TestUpstream_Register_Integration(t *testing.T) {
 	t.Run("successful registration", func(t *testing.T) {
 		upstream := NewUpstream(poolManager)
 
-		apiKeyAuth := &configv1.UpstreamAPIKeyAuth{}
-		apiKeyAuth.SetHeaderName("X-API-Key")
-		secret := &configv1.SecretValue{}
-		secret.SetPlainText("test-key")
-		apiKeyAuth.SetApiKey(secret)
+		apiKeyAuth := &configv1.APIKeyAuth{
+			ParamName: proto.String("X-API-Key"),
+			Value: &configv1.SecretValue{
+				Value: &configv1.SecretValue_PlainText{PlainText: "test-key"},
+			},
+		}
 
-		authConfig := &configv1.UpstreamAuthentication{}
-		authConfig.SetApiKey(apiKeyAuth)
+		authConfig := &configv1.Authentication{
+			AuthMethod: &configv1.Authentication_ApiKey{
+				ApiKey: apiKeyAuth,
+			},
+		}
 
 		tool1 := configv1.ToolDefinition_builder{
 			Name:        proto.String("test-op"),
@@ -443,7 +449,7 @@ func TestUpstream_Register_Integration(t *testing.T) {
 
 		serviceConfig := &configv1.UpstreamServiceConfig{}
 		serviceConfig.SetName("test-service")
-		serviceConfig.SetUpstreamAuthentication(authConfig)
+		serviceConfig.SetUpstreamAuth(authConfig)
 		serviceConfig.SetWebsocketService(wsService)
 
 		serviceID, discoveredTools, _, err := upstream.Register(context.Background(), serviceConfig, tm, nil, nil, false)
@@ -495,8 +501,8 @@ func TestUpstream_Register_Integration(t *testing.T) {
 
 		serviceConfig := &configv1.UpstreamServiceConfig{}
 		serviceConfig.SetName("auth-fail-service")
-		// Intentionally not setting auth method on UpstreamAuthentication, which is a valid scenario (no auth).
-		serviceConfig.SetUpstreamAuthentication(&configv1.UpstreamAuthentication{})
+		// Intentionally not setting auth method on Authentication, which is a valid scenario (no auth).
+		serviceConfig.SetUpstreamAuth(&configv1.Authentication{})
 		serviceConfig.SetWebsocketService(wsService)
 
 		serviceID, tools, _, err := upstream.Register(context.Background(), serviceConfig, tm, nil, nil, false)

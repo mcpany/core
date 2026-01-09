@@ -9,13 +9,13 @@ import (
 )
 
 // StripSecretsFromService removes sensitive information from the service configuration.
-// It specifically targets plain text secrets in UpstreamAuthentication.
+// It specifically targets plain text secrets in UpstreamAuth.
 func StripSecretsFromService(svc *configv1.UpstreamServiceConfig) {
 	if svc == nil {
 		return
 	}
-	if svc.UpstreamAuthentication != nil {
-		StripSecretsFromAuth(svc.UpstreamAuthentication)
+	if svc.UpstreamAuth != nil {
+		StripSecretsFromAuth(svc.UpstreamAuth)
 	}
 	// TODO: Check for other places where secrets might be embedded (e.g. headers in tool definitions?)
 }
@@ -41,13 +41,13 @@ func StripSecretsFromCollection(collection *configv1.UpstreamServiceCollectionSh
 }
 
 // StripSecretsFromAuth removes sensitive values from the authentication config.
-func StripSecretsFromAuth(auth *configv1.UpstreamAuthentication) {
+func StripSecretsFromAuth(auth *configv1.Authentication) {
 	if auth == nil {
 		return
 	}
 
 	if apiKey := auth.GetApiKey(); apiKey != nil {
-		scrubSecretValue(apiKey.ApiKey)
+		scrubSecretValue(apiKey.Value)
 	}
 	if bearer := auth.GetBearerToken(); bearer != nil {
 		scrubSecretValue(bearer.Token)
@@ -69,7 +69,6 @@ func scrubSecretValue(sv *configv1.SecretValue) {
 		return
 	}
 	// If it is a PLAIN value, we must remove it.
-	// If it is a PLAIN value, we must remove it.
 	if _, ok := sv.Value.(*configv1.SecretValue_PlainText); ok {
 		sv.Value = nil
 	}
@@ -81,7 +80,7 @@ func HydrateSecretsInService(svc *configv1.UpstreamServiceConfig, secrets map[st
 		return
 	}
 
-	if auth := svc.UpstreamAuthentication; auth != nil {
+	if auth := svc.UpstreamAuth; auth != nil {
 		hydrateSecretsInAuth(auth, secrets)
 	}
 
@@ -89,9 +88,9 @@ func HydrateSecretsInService(svc *configv1.UpstreamServiceConfig, secrets map[st
 	// TODO: Add hydration for container environments and other fields.
 }
 
-func hydrateSecretsInAuth(auth *configv1.UpstreamAuthentication, secrets map[string]*configv1.SecretValue) {
+func hydrateSecretsInAuth(auth *configv1.Authentication, secrets map[string]*configv1.SecretValue) {
 	if apiKey := auth.GetApiKey(); apiKey != nil {
-		hydrateSecretValue(apiKey.ApiKey, secrets)
+		hydrateSecretValue(apiKey.Value, secrets)
 	}
 	if bearer := auth.GetBearerToken(); bearer != nil {
 		hydrateSecretValue(bearer.Token, secrets)

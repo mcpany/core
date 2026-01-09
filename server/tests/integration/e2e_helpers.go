@@ -1241,7 +1241,7 @@ func RegisterServiceViaAPI(t *testing.T, regClient apiv1.RegistrationServiceClie
 }
 
 // RegisterHTTPService registers a simple HTTP service.
-func RegisterHTTPService(t *testing.T, regClient apiv1.RegistrationServiceClient, serviceID, baseURL, operationID, endpointPath, httpMethod string, authConfig *configv1.UpstreamAuthentication) {
+func RegisterHTTPService(t *testing.T, regClient apiv1.RegistrationServiceClient, serviceID, baseURL, operationID, endpointPath, httpMethod string, authConfig *configv1.Authentication) {
 	t.Helper()
 	toolDef := configv1.ToolDefinition_builder{
 		Name: &operationID,
@@ -1250,7 +1250,7 @@ func RegisterHTTPService(t *testing.T, regClient apiv1.RegistrationServiceClient
 }
 
 // RegisterHTTPServiceWithParams registers an HTTP service with parameters.
-func RegisterHTTPServiceWithParams(t *testing.T, regClient apiv1.RegistrationServiceClient, serviceID, baseURL string, toolDef *configv1.ToolDefinition, endpointPath, httpMethod string, params []*configv1.HttpParameterMapping, authConfig *configv1.UpstreamAuthentication) {
+func RegisterHTTPServiceWithParams(t *testing.T, regClient apiv1.RegistrationServiceClient, serviceID, baseURL string, toolDef *configv1.ToolDefinition, endpointPath, httpMethod string, params []*configv1.HttpParameterMapping, authConfig *configv1.Authentication) {
 	t.Helper()
 	t.Logf("Registering HTTP service '%s' with endpoint path: %s", serviceID, endpointPath)
 
@@ -1278,7 +1278,7 @@ func RegisterHTTPServiceWithParams(t *testing.T, regClient apiv1.RegistrationSer
 		}.Build(),
 	}
 	if authConfig != nil {
-		upstreamServiceConfigBuilder.UpstreamAuthentication = authConfig
+		upstreamServiceConfigBuilder.UpstreamAuth = authConfig
 	}
 	config := upstreamServiceConfigBuilder.Build()
 
@@ -1291,7 +1291,7 @@ func RegisterHTTPServiceWithParams(t *testing.T, regClient apiv1.RegistrationSer
 }
 
 // RegisterWebsocketService registers a WebSocket service.
-func RegisterWebsocketService(t *testing.T, regClient apiv1.RegistrationServiceClient, serviceID, baseURL, operationID string, authConfig *configv1.UpstreamAuthentication) {
+func RegisterWebsocketService(t *testing.T, regClient apiv1.RegistrationServiceClient, serviceID, baseURL, operationID string, authConfig *configv1.Authentication) {
 	t.Helper()
 	t.Logf("Registering Websocket service '%s' with endpoint: %s", serviceID, baseURL)
 
@@ -1314,7 +1314,7 @@ func RegisterWebsocketService(t *testing.T, regClient apiv1.RegistrationServiceC
 		}.Build(),
 	}
 	if authConfig != nil {
-		upstreamServiceConfigBuilder.UpstreamAuthentication = authConfig
+		upstreamServiceConfigBuilder.UpstreamAuth = authConfig
 	}
 	config := upstreamServiceConfigBuilder.Build()
 
@@ -1327,7 +1327,7 @@ func RegisterWebsocketService(t *testing.T, regClient apiv1.RegistrationServiceC
 }
 
 // RegisterWebrtcService registers a WebRTC service.
-func RegisterWebrtcService(t *testing.T, regClient apiv1.RegistrationServiceClient, serviceID, baseURL, operationID string, authConfig *configv1.UpstreamAuthentication) {
+func RegisterWebrtcService(t *testing.T, regClient apiv1.RegistrationServiceClient, serviceID, baseURL, operationID string, authConfig *configv1.Authentication) {
 	t.Helper()
 	t.Logf("Registering Webrtc service '%s' with endpoint: %s", serviceID, baseURL)
 
@@ -1350,7 +1350,7 @@ func RegisterWebrtcService(t *testing.T, regClient apiv1.RegistrationServiceClie
 		}.Build(),
 	}
 	if authConfig != nil {
-		upstreamServiceConfigBuilder.UpstreamAuthentication = authConfig
+		upstreamServiceConfigBuilder.UpstreamAuth = authConfig
 	}
 	config := upstreamServiceConfigBuilder.Build()
 
@@ -1363,7 +1363,7 @@ func RegisterWebrtcService(t *testing.T, regClient apiv1.RegistrationServiceClie
 }
 
 // RegisterStreamableMCPService registers a streamable MCP service (SSE).
-func RegisterStreamableMCPService(t *testing.T, regClient apiv1.RegistrationServiceClient, serviceID, targetURL string, toolAutoDiscovery bool, authConfig *configv1.UpstreamAuthentication) {
+func RegisterStreamableMCPService(t *testing.T, regClient apiv1.RegistrationServiceClient, serviceID, targetURL string, toolAutoDiscovery bool, authConfig *configv1.Authentication) {
 	t.Helper()
 
 	mcpStreamableHTTPConnection := configv1.McpStreamableHttpConnection_builder{
@@ -1390,7 +1390,7 @@ func RegisterStreamableMCPService(t *testing.T, regClient apiv1.RegistrationServ
 		}.Build(),
 	}
 	if authConfig != nil {
-		upstreamServiceConfigBuilder.UpstreamAuthentication = authConfig
+		upstreamServiceConfigBuilder.UpstreamAuth = authConfig
 	}
 	config := upstreamServiceConfigBuilder.Build()
 
@@ -1413,7 +1413,7 @@ func RegisterStdioMCPService(t *testing.T, regClient apiv1.RegistrationServiceCl
 }
 
 // RegisterGRPCService registers a gRPC service.
-func RegisterGRPCService(t *testing.T, regClient apiv1.RegistrationServiceClient, serviceID, grpcTargetAddress string, authConfig *configv1.UpstreamAuthentication) {
+func RegisterGRPCService(t *testing.T, regClient apiv1.RegistrationServiceClient, serviceID, grpcTargetAddress string, authConfig *configv1.Authentication) {
 	t.Helper()
 
 	upstreamServiceConfigBuilder := configv1.UpstreamServiceConfig_builder{
@@ -1424,7 +1424,7 @@ func RegisterGRPCService(t *testing.T, regClient apiv1.RegistrationServiceClient
 		}.Build(),
 	}
 	if authConfig != nil {
-		upstreamServiceConfigBuilder.UpstreamAuthentication = authConfig
+		upstreamServiceConfigBuilder.UpstreamAuth = authConfig
 	}
 	config := upstreamServiceConfigBuilder.Build()
 
@@ -1487,7 +1487,7 @@ func RegisterStdioServiceWithSetup(t *testing.T, regClient apiv1.RegistrationSer
 }
 
 // RegisterOpenAPIService registers an OpenAPI service.
-func RegisterOpenAPIService(t *testing.T, regClient apiv1.RegistrationServiceClient, serviceID, openAPISpecPath, serverURLOverride string, authConfig *configv1.UpstreamAuthentication) {
+func RegisterOpenAPIService(t *testing.T, regClient apiv1.RegistrationServiceClient, serviceID, openAPISpecPath, serverURLOverride string, authConfig *configv1.Authentication) {
 	t.Helper()
 	absSpecPath, err := filepath.Abs(openAPISpecPath)
 	require.NoError(t, err)
@@ -1507,7 +1507,7 @@ func RegisterOpenAPIService(t *testing.T, regClient apiv1.RegistrationServiceCli
 		OpenapiService: openapiServiceDef,
 	}
 	if authConfig != nil {
-		upstreamServiceConfigBuilder.UpstreamAuthentication = authConfig
+		upstreamServiceConfigBuilder.UpstreamAuth = authConfig
 	}
 	config := upstreamServiceConfigBuilder.Build()
 
@@ -1520,7 +1520,7 @@ func RegisterOpenAPIService(t *testing.T, regClient apiv1.RegistrationServiceCli
 }
 
 // RegisterHTTPServiceWithJSONRPC registers an HTTP service using the JSON-RPC endpoint.
-func RegisterHTTPServiceWithJSONRPC(t *testing.T, mcpanyEndpoint, serviceID, baseURL, operationID, endpointPath, httpMethod string, authConfig *configv1.UpstreamAuthentication) {
+func RegisterHTTPServiceWithJSONRPC(t *testing.T, mcpanyEndpoint, serviceID, baseURL, operationID, endpointPath, httpMethod string, authConfig *configv1.Authentication) {
 	t.Helper()
 	t.Logf("Registering HTTP service '%s' via JSON-RPC with endpoint path: %s", serviceID, endpointPath)
 
@@ -1548,7 +1548,7 @@ func RegisterHTTPServiceWithJSONRPC(t *testing.T, mcpanyEndpoint, serviceID, bas
 		}.Build(),
 	}
 	if authConfig != nil {
-		upstreamServiceConfigBuilder.UpstreamAuthentication = authConfig
+		upstreamServiceConfigBuilder.UpstreamAuth = authConfig
 	}
 	config := upstreamServiceConfigBuilder.Build()
 

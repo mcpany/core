@@ -92,13 +92,13 @@ type APIKeyAuthenticator struct {
 // Returns a new instance of APIKeyAuthenticator or `nil` if the configuration
 // is invalid.
 func NewAPIKeyAuthenticator(config *configv1.APIKeyAuth) *APIKeyAuthenticator {
-	if config == nil || config.GetParamName() == "" || config.GetKeyValue() == "" {
+	if config == nil || config.GetParamName() == "" || config.GetVerificationValue() == "" {
 		return nil
 	}
 	return &APIKeyAuthenticator{
 		ParamName: config.GetParamName(),
 		In:        config.GetIn(),
-		Value:     config.GetKeyValue(),
+		Value:     config.GetVerificationValue(),
 	}
 }
 
@@ -113,6 +113,7 @@ func NewAPIKeyAuthenticator(config *configv1.APIKeyAuth) *APIKeyAuthenticator {
 //   - r: The HTTP request to authenticate.
 //
 // Returns the original context and `nil` on success, or an error on failure.
+// Authenticate verifies the API key in the request.
 func (a *APIKeyAuthenticator) Authenticate(ctx context.Context, r *http.Request) (context.Context, error) {
 	var receivedKey string
 	switch a.In {
@@ -120,6 +121,11 @@ func (a *APIKeyAuthenticator) Authenticate(ctx context.Context, r *http.Request)
 		receivedKey = r.Header.Get(a.ParamName)
 	case configv1.APIKeyAuth_QUERY:
 		receivedKey = r.URL.Query().Get(a.ParamName)
+	case configv1.APIKeyAuth_COOKIE:
+		cookie, err := r.Cookie(a.ParamName)
+		if err == nil {
+			receivedKey = cookie.Value
+		}
 	default:
 		receivedKey = r.Header.Get(a.ParamName)
 	}
@@ -343,20 +349,20 @@ var (
 //   - r: The HTTP request to validate.
 //
 // Returns an error if validation fails or the method is unsupported.
-func ValidateAuthentication(ctx context.Context, config *configv1.AuthenticationConfig, r *http.Request) error {
+func ValidateAuthentication(ctx context.Context, config *configv1.Authentication, r *http.Request) error {
 	if config == nil {
 		return nil // No auth configured implies allowed
 	}
 
 	switch method := config.AuthMethod.(type) {
-	case *configv1.AuthenticationConfig_ApiKey:
+	case *configv1.Authentication_ApiKey:
 		authenticator := NewAPIKeyAuthenticator(method.ApiKey)
 		if authenticator == nil {
 			return fmt.Errorf("invalid API key configuration")
 		}
 		_, err := authenticator.Authenticate(ctx, r)
 		return err
-	case *configv1.AuthenticationConfig_Oauth2:
+	case *configv1.Authentication_Oauth2:
 		cfg := method.Oauth2
 		if cfg.GetIssuerUrl() == "" {
 			return fmt.Errorf("invalid OAuth2 configuration: missing issuer_url")
@@ -388,21 +394,21 @@ func ValidateAuthentication(ctx context.Context, config *configv1.Authentication
 
 		_, err := authenticator.Authenticate(ctx, r)
 		return err
-	case *configv1.AuthenticationConfig_BasicAuth:
+	case *configv1.Authentication_BasicAuth:
 		authenticator := NewBasicAuthenticator(method.BasicAuth)
 		if authenticator == nil {
 			return fmt.Errorf("invalid Basic Auth configuration")
 		}
 		_, err := authenticator.Authenticate(ctx, r)
 		return err
-	case *configv1.AuthenticationConfig_TrustedHeader:
+	case *configv1.Authentication_TrustedHeader:
 		authenticator := NewTrustedHeaderAuthenticator(method.TrustedHeader)
 		if authenticator == nil {
 			return fmt.Errorf("invalid Trusted Header configuration")
 		}
 		_, err := authenticator.Authenticate(ctx, r)
 		return err
-	case *configv1.AuthenticationConfig_Oidc:
+	case *configv1.Authentication_Oidc:
 		// Reuse OAuth2 logic for OIDC for now, or adapt if needed
 		// For OIDCAuth, we might need to verify issuer/audience but we don't have a "Provider" created yet for this specific config (?)
 		// Or we create a new OAuth2Authenticator with issuer/aud from config.

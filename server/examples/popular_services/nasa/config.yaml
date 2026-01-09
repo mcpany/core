@@ -3,10 +3,10 @@
 
 upstream_services:
   - name: nasa-gibs
-    upstream_authentication:
+    upstream_auth:
       api_key:
-        header_name: "Authorization" # Assuming API Key usage for NASA if needed, otherwise this block might be removable but let's keep it structurally correct
-        api_key:
+        param_name: "Authorization" # Assuming API Key usage for NASA if needed, otherwise this block might be removable but let's keep it structurally correct
+        value:
           plain_text: "${NASA_OPEN_API_KEY}"
     http_service:
       address: "https://gibs.earthdata.nasa.gov"

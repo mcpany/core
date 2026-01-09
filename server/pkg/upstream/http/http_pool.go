@@ -12,10 +12,10 @@ import (
 	"os"
 	"time"
 
+	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/mcpany/core/server/pkg/client"
 	healthChecker "github.com/mcpany/core/server/pkg/health"
 	"github.com/mcpany/core/server/pkg/pool"
-	configv1 "github.com/mcpany/core/proto/config/v1"
 	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 )
 
@@ -53,7 +53,7 @@ var NewHTTPPool = func(
 		InsecureSkipVerify: config.GetHttpService().GetTlsConfig().GetInsecureSkipVerify(), //nolint:gosec
 	}
 
-	if mtlsConfig := config.GetUpstreamAuthentication().GetMtls(); mtlsConfig != nil {
+	if mtlsConfig := config.GetUpstreamAuth().GetMtls(); mtlsConfig != nil {
 		cert, err := tls.LoadX509KeyPair(mtlsConfig.GetClientCertPath(), mtlsConfig.GetClientKeyPath())
 		if err != nil {
 			return nil, err

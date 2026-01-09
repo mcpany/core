@@ -207,8 +207,8 @@ func RegisterGRPCAuthedWeatherService(t *testing.T, registrationClient apiv1.Reg
 	secret := configv1.SecretValue_builder{
 		PlainText: proto.String("test-bearer-token"),
 	}.Build()
-	authConfig := configv1.UpstreamAuthentication_builder{
-		BearerToken: configv1.UpstreamBearerTokenAuth_builder{
+	authConfig := configv1.Authentication_builder{
+		BearerToken: configv1.BearerTokenAuth_builder{
 			Token: secret,
 		}.Build(),
 	}.Build()
@@ -373,10 +373,10 @@ paths:
 	secret := configv1.SecretValue_builder{
 		PlainText: proto.String("test-api-key"),
 	}.Build()
-	authConfig := configv1.UpstreamAuthentication_builder{
-		ApiKey: configv1.UpstreamAPIKeyAuth_builder{
-			HeaderName: proto.String("X-Api-Key"),
-			ApiKey:     secret,
+	authConfig := configv1.Authentication_builder{
+		ApiKey: configv1.APIKeyAuth_builder{
+			ParamName: proto.String("X-Api-Key"),
+			Value:     secret,
 		}.Build(),
 	}.Build()
 	integration.RegisterOpenAPIService(t, registrationClient, serviceID, tmpfile.Name(), upstreamEndpoint, authConfig)
