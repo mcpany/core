@@ -37,7 +37,15 @@ func (co *ContextOptimizer) Middleware() gin.HandlerFunc {
 
 		c.Next()
 
+		// If we didn't buffer, it means we passed through the original writer (streaming).
+		// In that case, we don't need to do anything here.
+		if !w.isBuffering() {
+			return
+		}
+
 		// Only check successful JSON responses
+		// Note: w.shouldBuffer should already cover the content-type check, but we double check for safety
+		// and also check status code which might not have been available at first write (though it should be).
 		contentType := w.Header().Get("Content-Type")
 		if w.Status() == http.StatusOK && (contentType == "application/json" || strings.HasPrefix(contentType, "application/json;")) {
 			bodyBytes := w.body.Bytes()
@@ -107,13 +115,45 @@ func (co *ContextOptimizer) Middleware() gin.HandlerFunc {
 
 type responseBuffer struct {
 	gin.ResponseWriter
-	body *bytes.Buffer
+	body         *bytes.Buffer
+	shouldBuffer *bool
+}
+
+func (w *responseBuffer) isBuffering() bool {
+	// If explicitly set to false, then false.
+	if w.shouldBuffer != nil && !*w.shouldBuffer {
+		return false
+	}
+	// If true or nil (default), we assume buffering for now, OR we haven't written yet.
+	// But if we haven't written yet, body is empty, so Middleware will write empty body which is fine.
+	// However, if we return true here, Middleware will try to write w.body.Bytes().
+	// If we haven't written anything, w.body is empty.
+	return true
+}
+
+func (w *responseBuffer) checkBuffer() {
+	if w.shouldBuffer == nil {
+		ct := w.Header().Get("Content-Type")
+		// We only buffer application/json.
+		should := ct == "application/json" || strings.HasPrefix(ct, "application/json;")
+		w.shouldBuffer = &should
+	}
 }
 
 func (w *responseBuffer) Write(b []byte) (int, error) {
-	return w.body.Write(b)
+	w.checkBuffer()
+
+	if *w.shouldBuffer {
+		return w.body.Write(b)
+	}
+	return w.ResponseWriter.Write(b)
 }
 
 func (w *responseBuffer) WriteString(s string) (int, error) {
-	return w.body.WriteString(s)
+	w.checkBuffer()
+
+	if *w.shouldBuffer {
+		return w.body.WriteString(s)
+	}
+	return w.ResponseWriter.WriteString(s)
 }
