@@ -59,18 +59,18 @@ func NewOAuth2Authenticator(ctx context.Context, config *OAuth2Config) (*OAuth2A
 func (a *OAuth2Authenticator) Authenticate(ctx context.Context, r *http.Request) (context.Context, error) {
 	authHeader := r.Header.Get("Authorization")
 	if authHeader == "" {
-		return ctx, fmt.Errorf("missing Authorization header")
+		return ctx, fmt.Errorf("unauthorized")
 	}
 
 	parts := strings.Split(authHeader, " ")
 	if len(parts) != 2 || strings.ToLower(parts[0]) != "bearer" {
-		return ctx, fmt.Errorf("invalid Authorization header format")
+		return ctx, fmt.Errorf("unauthorized")
 	}
 	token := parts[1]
 
 	idToken, err := a.verifier.Verify(ctx, token)
 	if err != nil {
-		return ctx, fmt.Errorf("failed to verify token: %w", err)
+		return ctx, fmt.Errorf("unauthorized")
 	}
 
 	var claims struct {
@@ -79,11 +79,11 @@ func (a *OAuth2Authenticator) Authenticate(ctx context.Context, r *http.Request)
 		// Add other claims as needed
 	}
 	if err := idToken.Claims(&claims); err != nil {
-		return ctx, fmt.Errorf("failed to extract claims: %w", err)
+		return ctx, fmt.Errorf("unauthorized")
 	}
 
 	if !claims.EmailVerified {
-		return ctx, fmt.Errorf("email not verified")
+		return ctx, fmt.Errorf("unauthorized")
 	}
 
 	return context.WithValue(ctx, UserContextKey, claims.Email), nil
