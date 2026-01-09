@@ -163,9 +163,17 @@ export function LogStream() {
   }, [isPaused])
 
   // Auto-scroll
+  // Optimization: Cache the viewport element to avoid frequent DOM queries (querySelector).
+  const viewportRef = React.useRef<HTMLElement | null>(null)
+
   React.useEffect(() => {
     if (!isPaused && scrollRef.current) {
-      const scrollContainer = scrollRef.current.querySelector('[data-radix-scroll-area-viewport]')
+      // Lazy init or validate viewport ref
+      if (!viewportRef.current || !viewportRef.current.isConnected) {
+        viewportRef.current = scrollRef.current.querySelector('[data-radix-scroll-area-viewport]') as HTMLElement
+      }
+
+      const scrollContainer = viewportRef.current
       if (scrollContainer) {
         scrollContainer.scrollTop = scrollContainer.scrollHeight
       }
