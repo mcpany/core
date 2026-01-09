@@ -19,6 +19,7 @@ import (
 	"github.com/mcpany/core/server/pkg/mcpserver"
 	"github.com/mcpany/core/server/pkg/middleware"
 	"github.com/mcpany/core/server/pkg/pool"
+	"github.com/mcpany/core/server/pkg/profile"
 	"github.com/mcpany/core/server/pkg/serviceregistry"
 	"github.com/mcpany/core/server/pkg/upstream/factory"
 	"github.com/stretchr/testify/assert"
@@ -60,6 +61,9 @@ func TestRunServerMode_Auth(t *testing.T) {
 
 	authManager := auth.NewManager()
 	authManager.SetAPIKey("global-secret")
+
+	app.AuthManager = authManager
+	app.ProfileManager = profile.NewManager(nil) // Empty profiles
 
 	serviceRegistry := serviceregistry.New(
 		upstreamFactory,
@@ -107,12 +111,15 @@ func TestRunServerMode_Auth(t *testing.T) {
 		},
 	}
 
+	// Pre-populate users in AuthManager
+	authManager.SetUsers(users)
+
 	cachingMiddleware := middleware.NewCachingMiddleware(app.ToolManager)
 
 	errChan := make(chan error, 1)
 	go func() {
 		// Pass nil for storage, it should be fine if not used by these handlers
-		errChan <- app.runServerMode(ctx, mcpSrv, busProvider, bindAddress, grpcPort, 5*time.Second, users, nil, cachingMiddleware, app.Storage, serviceRegistry, nil)
+		errChan <- app.runServerMode(ctx, mcpSrv, busProvider, bindAddress, grpcPort, 5*time.Second, nil, cachingMiddleware, app.Storage, serviceRegistry, nil)
 	}()
 
 	// Wait for server to be ready
@@ -361,6 +368,9 @@ func TestAuthMiddleware_AuthDisabled(t *testing.T) {
 	poolManager := pool.NewManager()
 	upstreamFactory := factory.NewUpstreamServiceFactory(poolManager)
 	authManager := auth.NewManager()
+
+	app.AuthManager = authManager
+
 	serviceRegistry := serviceregistry.New(
 		upstreamFactory,
 		app.ToolManager,
@@ -397,7 +407,7 @@ func TestAuthMiddleware_AuthDisabled(t *testing.T) {
 
 	errChan := make(chan error, 1)
 	go func() {
-		errChan <- app.runServerMode(ctx, mcpSrv, busProvider, bindAddress, "", 5*time.Second, nil, nil, cachingMiddleware, nil, serviceRegistry, nil)
+		errChan <- app.runServerMode(ctx, mcpSrv, busProvider, bindAddress, "", 5*time.Second, nil, cachingMiddleware, nil, serviceRegistry, nil)
 	}()
 
 	// Wait for server to be ready
