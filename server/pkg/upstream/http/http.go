@@ -358,11 +358,52 @@ func (u *Upstream) createAndRegisterHTTPTools(ctx context.Context, serviceID, ad
 		// Merge query parameters, allowing endpoint parameters to override base parameters
 		endpointQuery := endpointURL.Query()
 		if len(endpointQuery) > 0 {
+			// Capture which keys are "flags" (no equals sign) in the base URL
+			// by manually inspecting RawQuery, because url.Values does not distinguish.
+			originalFlags := make(map[string]bool)
+			if baseURL.RawQuery != "" {
+				for _, param := range strings.Split(baseURL.RawQuery, "&") {
+					if !strings.Contains(param, "=") && len(param) > 0 {
+						// Decode the key to store it canonically.
+						// We must handle cases where RawQuery uses %20 but Encode uses +.
+						if decodedKey, err := url.QueryUnescape(param); err == nil {
+							originalFlags[decodedKey] = true
+						}
+					}
+				}
+			}
+
 			query := resolvedURL.Query()
 			for k, v := range endpointQuery {
 				query[k] = v
 			}
-			resolvedURL.RawQuery = query.Encode()
+			encoded := query.Encode()
+
+			// Post-process to restore flag style for keys that were originally flags
+			// and still have empty values (not overridden by a non-empty value).
+			// Encode() sorts keys, so we can split by "&" and process each part.
+			if len(originalFlags) > 0 {
+				parts := strings.Split(encoded, "&")
+				for i, part := range parts {
+					// Check if this part ends with "=" (meaning empty value)
+					if strings.HasSuffix(part, "=") {
+						encodedKey := strings.TrimSuffix(part, "=")
+						decodedKey, err := url.QueryUnescape(encodedKey)
+						if err == nil {
+							// Check if this key was originally a flag
+							if originalFlags[decodedKey] {
+								// Check if the current value in query map is actually empty.
+								vals := query[decodedKey]
+								if len(vals) == 0 || (len(vals) == 1 && vals[0] == "") {
+									parts[i] = encodedKey
+								}
+							}
+						}
+					}
+				}
+				encoded = strings.Join(parts, "&")
+			}
+			resolvedURL.RawQuery = encoded
 		}
 		fullURL := resolvedURL.String()
 
