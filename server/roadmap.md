@@ -1,4 +1,4 @@
-# Product Evolution Plan
+# Server Roadmap
 
 ## 1. Updated Roadmap
 
@@ -24,18 +24,18 @@
 
 ## 2. Top 10 Recommended Features
 
-| Rank | Feature Name | Why it matters | Difficulty |
-| :--- | :--- | :--- | :--- |
-| 1 | **Kubernetes Operator V2** | **Scalability/Ops**: The current `k8s/operator` is skeletal. To support enterprise scale, we need a robust operator with CRDs for defining MCP Servers, handling automated updates, and managing secrets. | High |
-| 2 | **Browser Automation Provider** | **Feature**: A "Read Webpage" capability is essential for modern agents. Integrating Playwright as an upstream provider will allow safe, headless interaction with dynamic web content. | High |
-| 3 | **Multi-Region Federation** | **Scalability**: For global deployments, linking multiple MCP Any instances (Core-to-Core) reduces latency by routing tool calls to the nearest available provider. | High |
-| 4 | **Active-Active High Availability** | **Reliability**: Production environments demand zero downtime. Implementing a leaderless clustering model ensures the system survives node failures and supports rolling upgrades. | High |
-| 5 | **Disaster Recovery Playbook** | **Ops**: We need automated tooling to snapshot the server state and configuration to cloud storage (S3/GCS) to meet enterprise SLA requirements for recovery time. | Medium |
-| 6 | **Dynamic Secret Rotation** | **Security**: Hardcoded secrets are a risk. Integrating with HashiCorp Vault or AWS Secrets Manager will allow credentials to rotate automatically without server restarts. | High |
-| 7 | **Downstream mTLS** | **Security**: To achieve a Zero Trust architecture, we must enforce mutual TLS authentication for all agents connecting to the MCP Any server. | Medium |
-| 8 | **Just-In-Time (JIT) Access** | **Security**: Implement temporary privilege elevation (e.g., "Grant Write access for 1 hour") to enforce the principle of least privilege for sensitive tools. | High |
-| 9 | **Persistent Vector Store** | **Core**: While SQLite vector search is good for testing, production use requires connectors for dedicated vector databases like Milvus, Pinecone, or pgvector. | Medium |
-| 10 | **SDK Consolidation** | **DevX**: The `server/pkg/client` package is coupled to the server. Extracting it into a standalone Go SDK repository will simplify integration for third-party developers. | Medium |
+| Rank | Feature Name                        | Why it matters                                                                                                                                                                                            | Difficulty |
+| :--- | :---------------------------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :--------- |
+| 1    | **Kubernetes Operator V2**          | **Scalability/Ops**: The current `k8s/operator` is skeletal. To support enterprise scale, we need a robust operator with CRDs for defining MCP Servers, handling automated updates, and managing secrets. | High       |
+| 2    | **Browser Automation Provider**     | **Feature**: A "Read Webpage" capability is essential for modern agents. Integrating Playwright as an upstream provider will allow safe, headless interaction with dynamic web content.                   | High       |
+| 3    | **Multi-Region Federation**         | **Scalability**: For global deployments, linking multiple MCP Any instances (Core-to-Core) reduces latency by routing tool calls to the nearest available provider.                                       | High       |
+| 4    | **Active-Active High Availability** | **Reliability**: Production environments demand zero downtime. Implementing a leaderless clustering model ensures the system survives node failures and supports rolling upgrades.                        | High       |
+| 5    | **Disaster Recovery Playbook**      | **Ops**: We need automated tooling to snapshot the server state and configuration to cloud storage (S3/GCS) to meet enterprise SLA requirements for recovery time.                                        | Medium     |
+| 6    | **Dynamic Secret Rotation**         | **Security**: Hardcoded secrets are a risk. Integrating with HashiCorp Vault or AWS Secrets Manager will allow credentials to rotate automatically without server restarts.                               | High       |
+| 7    | **Downstream mTLS**                 | **Security**: To achieve a Zero Trust architecture, we must enforce mutual TLS authentication for all agents connecting to the MCP Any server.                                                            | Medium     |
+| 8    | **Just-In-Time (JIT) Access**       | **Security**: Implement temporary privilege elevation (e.g., "Grant Write access for 1 hour") to enforce the principle of least privilege for sensitive tools.                                            | High       |
+| 9    | **Persistent Vector Store**         | **Core**: While SQLite vector search is good for testing, production use requires connectors for dedicated vector databases like Milvus, Pinecone, or pgvector.                                           | Medium     |
+| 10   | **SDK Consolidation**               | **DevX**: The `server/pkg/client` package is coupled to the server. Extracting it into a standalone Go SDK repository will simplify integration for third-party developers.                               | Medium     |
 
 ## 3. Codebase Health
 
