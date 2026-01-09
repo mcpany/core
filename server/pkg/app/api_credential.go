@@ -15,6 +15,7 @@ import (
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/mcpany/core/server/pkg/auth"
 	"github.com/mcpany/core/server/pkg/util"
+	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 )
 
@@ -22,6 +23,25 @@ import (
 func writeJSON(w http.ResponseWriter, status int, data any) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(status)
+
+	if pm, ok := data.(proto.Message); ok {
+		// Use protojson for proto messages to ensure correct field mapping
+		marshaler := protojson.MarshalOptions{
+			UseProtoNames: true, // Respect snake_case vs camelCase if needed, but standard is UseProtoNames=false -> camelCase
+			// If we want to match how standard JSON encoding would have behaved (roughly), we should check.
+			// However, our UI likely expects camelCase.
+			// protojson defaults to camelCase.
+			EmitUnpopulated: false,
+		}
+		b, err := marshaler.Marshal(pm)
+		if err != nil {
+			fmt.Printf("Failed to encode proto response: %v\n", err)
+			return
+		}
+		w.Write(b)
+		return
+	}
+
 	if err := json.NewEncoder(w).Encode(data); err != nil {
 		fmt.Printf("Failed to encode response: %v\n", err)
 	}
@@ -95,7 +115,15 @@ func (a *Application) createCredentialHandler(w http.ResponseWriter, r *http.Req
 	}
 	ctx := r.Context()
 	var cred configv1.Credential
-	if err := json.NewDecoder(r.Body).Decode(&cred); err != nil {
+
+	body, err := io.ReadAll(r.Body)
+	if err != nil {
+		writeError(w, fmt.Errorf("failed to read body: %w", err))
+		return
+	}
+	defer r.Body.Close()
+
+	if err := protojson.Unmarshal(body, &cred); err != nil {
 		writeError(w, fmt.Errorf("invalid request body: %w", err))
 		return
 	}

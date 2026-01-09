@@ -137,7 +137,7 @@ export function CredentialList() {
                         </TableCell>
                         <TableCell className="text-right">
                              <Button variant="ghost" size="sm" onClick={() => handleEdit(cred)}>Edit</Button>
-                             <Button variant="ghost" size="sm" className="text-destructive hover:text-destructive" onClick={() => handleDelete(cred.id)}><Trash className="h-4 w-4" /></Button>
+                             <Button variant="ghost" size="sm" className="text-destructive hover:text-destructive" onClick={() => handleDelete(cred.id)} aria-label="Delete"><Trash className="h-4 w-4" /></Button>
                         </TableCell>
                     </TableRow>
                 ))
