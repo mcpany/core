@@ -2716,6 +2716,173 @@ func (b0 UserToken_builder) Build() *UserToken {
 	return m0
 }
 
+// Credential represents a reusable authentication configuration.
+type Credential struct {
+	state                     protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Id             *string                `protobuf:"bytes,1,opt,name=id"`
+	xxx_hidden_Name           *string                `protobuf:"bytes,2,opt,name=name"`
+	xxx_hidden_Authentication *Authentication        `protobuf:"bytes,3,opt,name=authentication"`
+	xxx_hidden_Token          *UserToken             `protobuf:"bytes,4,opt,name=token"`
+	XXX_raceDetectHookData    protoimpl.RaceDetectHookData
+	XXX_presence              [1]uint32
+	unknownFields             protoimpl.UnknownFields
+	sizeCache                 protoimpl.SizeCache
+}
+
+func (x *Credential) Reset() {
+	*x = Credential{}
+	mi := &file_proto_config_v1_auth_proto_msgTypes[13]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Credential) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Credential) ProtoMessage() {}
+
+func (x *Credential) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_config_v1_auth_proto_msgTypes[13]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+func (x *Credential) GetId() string {
+	if x != nil {
+		if x.xxx_hidden_Id != nil {
+			return *x.xxx_hidden_Id
+		}
+		return ""
+	}
+	return ""
+}
+
+func (x *Credential) GetName() string {
+	if x != nil {
+		if x.xxx_hidden_Name != nil {
+			return *x.xxx_hidden_Name
+		}
+		return ""
+	}
+	return ""
+}
+
+func (x *Credential) GetAuthentication() *Authentication {
+	if x != nil {
+		return x.xxx_hidden_Authentication
+	}
+	return nil
+}
+
+func (x *Credential) GetToken() *UserToken {
+	if x != nil {
+		return x.xxx_hidden_Token
+	}
+	return nil
+}
+
+func (x *Credential) SetId(v string) {
+	x.xxx_hidden_Id = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 4)
+}
+
+func (x *Credential) SetName(v string) {
+	x.xxx_hidden_Name = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 4)
+}
+
+func (x *Credential) SetAuthentication(v *Authentication) {
+	x.xxx_hidden_Authentication = v
+}
+
+func (x *Credential) SetToken(v *UserToken) {
+	x.xxx_hidden_Token = v
+}
+
+func (x *Credential) HasId() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
+}
+
+func (x *Credential) HasName() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 1)
+}
+
+func (x *Credential) HasAuthentication() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_Authentication != nil
+}
+
+func (x *Credential) HasToken() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_Token != nil
+}
+
+func (x *Credential) ClearId() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
+	x.xxx_hidden_Id = nil
+}
+
+func (x *Credential) ClearName() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 1)
+	x.xxx_hidden_Name = nil
+}
+
+func (x *Credential) ClearAuthentication() {
+	x.xxx_hidden_Authentication = nil
+}
+
+func (x *Credential) ClearToken() {
+	x.xxx_hidden_Token = nil
+}
+
+type Credential_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// Unique identifier for the credential.
+	Id *string
+	// Human-readable name (e.g. "My GitHub Personal").
+	Name *string
+	// The authentication configuration.
+	Authentication *Authentication
+	// Optional: For interactive OAuth, the persisted session/tokens.
+	// This allows the proxy to use this credential by refreshing the token.
+	Token *UserToken
+}
+
+func (b0 Credential_builder) Build() *Credential {
+	m0 := &Credential{}
+	b, x := &b0, m0
+	_, _ = b, x
+	if b.Id != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 4)
+		x.xxx_hidden_Id = b.Id
+	}
+	if b.Name != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 4)
+		x.xxx_hidden_Name = b.Name
+	}
+	x.xxx_hidden_Authentication = b.Authentication
+	x.xxx_hidden_Token = b.Token
+	return m0
+}
+
 var File_proto_config_v1_auth_proto protoreflect.FileDescriptor
 
 const file_proto_config_v1_auth_proto_rawDesc = "" +
@@ -2815,10 +2982,16 @@ const file_proto_config_v1_auth_proto_rawDesc = "" +
 	"\x05scope\x18\a \x01(\tR\x05scope\x12\x1e\n" +
 	"\n" +
 	"updated_at\x18\b \x01(\tR\n" +
-	"updated_atB3B\tAuthProtoZ&github.com/mcpany/core/proto/config/v1b\beditionsp\xe8\a"
+	"updated_at\"\xad\x01\n" +
+	"\n" +
+	"Credential\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\x12\x12\n" +
+	"\x04name\x18\x02 \x01(\tR\x04name\x12H\n" +
+	"\x0eauthentication\x18\x03 \x01(\v2 .mcpany.config.v1.AuthenticationR\x0eauthentication\x121\n" +
+	"\x05token\x18\x04 \x01(\v2\x1b.mcpany.config.v1.UserTokenR\x05tokenB3B\tAuthProtoZ&github.com/mcpany/core/proto/config/v1b\beditionsp\xe8\a"
 
 var file_proto_config_v1_auth_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_proto_config_v1_auth_proto_msgTypes = make([]protoimpl.MessageInfo, 13)
+var file_proto_config_v1_auth_proto_msgTypes = make([]protoimpl.MessageInfo, 14)
 var file_proto_config_v1_auth_proto_goTypes = []any{
 	(APIKeyAuth_Location)(0),       // 0: mcpany.config.v1.APIKeyAuth.Location
 	(*SecretValue)(nil),            // 1: mcpany.config.v1.SecretValue
@@ -2834,6 +3007,7 @@ var file_proto_config_v1_auth_proto_goTypes = []any{
 	(*MTLSAuth)(nil),               // 11: mcpany.config.v1.MTLSAuth
 	(*TrustedHeaderAuth)(nil),      // 12: mcpany.config.v1.TrustedHeaderAuth
 	(*UserToken)(nil),              // 13: mcpany.config.v1.UserToken
+	(*Credential)(nil),             // 14: mcpany.config.v1.Credential
 }
 var file_proto_config_v1_auth_proto_depIdxs = []int32{
 	4,  // 0: mcpany.config.v1.SecretValue.remote_content:type_name -> mcpany.config.v1.RemoteContent
@@ -2854,11 +3028,13 @@ var file_proto_config_v1_auth_proto_depIdxs = []int32{
 	1,  // 15: mcpany.config.v1.BasicAuth.password:type_name -> mcpany.config.v1.SecretValue
 	1,  // 16: mcpany.config.v1.OAuth2Auth.client_id:type_name -> mcpany.config.v1.SecretValue
 	1,  // 17: mcpany.config.v1.OAuth2Auth.client_secret:type_name -> mcpany.config.v1.SecretValue
-	18, // [18:18] is the sub-list for method output_type
-	18, // [18:18] is the sub-list for method input_type
-	18, // [18:18] is the sub-list for extension type_name
-	18, // [18:18] is the sub-list for extension extendee
-	0,  // [0:18] is the sub-list for field type_name
+	5,  // 18: mcpany.config.v1.Credential.authentication:type_name -> mcpany.config.v1.Authentication
+	13, // 19: mcpany.config.v1.Credential.token:type_name -> mcpany.config.v1.UserToken
+	20, // [20:20] is the sub-list for method output_type
+	20, // [20:20] is the sub-list for method input_type
+	20, // [20:20] is the sub-list for extension type_name
+	20, // [20:20] is the sub-list for extension extendee
+	0,  // [0:20] is the sub-list for field type_name
 }
 
 func init() { file_proto_config_v1_auth_proto_init() }
@@ -2889,7 +3065,7 @@ func file_proto_config_v1_auth_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_proto_config_v1_auth_proto_rawDesc), len(file_proto_config_v1_auth_proto_rawDesc)),
 			NumEnums:      1,
-			NumMessages:   13,
+			NumMessages:   14,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

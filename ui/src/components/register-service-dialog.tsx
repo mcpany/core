@@ -19,7 +19,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import { apiClient } from "@/lib/client";
 import { UpstreamServiceConfig } from "@/lib/types";
-import { Plus } from "lucide-react";
+import { Credential } from "@proto/config/v1/auth";
+import { Plus, RotateCw } from "lucide-react";
 
 const formSchema = z.object({
   name: z.string().min(1, "Name is required"),
@@ -27,6 +28,7 @@ const formSchema = z.object({
   address: z.string().optional(),
   command: z.string().optional(),
   configJson: z.string().optional(), // For advanced mode
+  upstreamAuth: z.any().optional(), // Store auth config object
 });
 
 interface RegisterServiceDialogProps {
@@ -37,6 +39,7 @@ interface RegisterServiceDialogProps {
 
 export function RegisterServiceDialog({ onSuccess, trigger, serviceToEdit }: RegisterServiceDialogProps) {
   const [open, setOpen] = useState(false);
+  const [credentials, setCredentials] = useState<Credential[]>([]);
   const { toast } = useToast();
   const isEditing = !!serviceToEdit;
 
@@ -49,18 +52,43 @@ export function RegisterServiceDialog({ onSuccess, trigger, serviceToEdit }: Reg
       address: serviceToEdit.grpcService?.address || serviceToEdit.httpService?.address || serviceToEdit.openapiService?.address || "",
       command: serviceToEdit.commandLineService?.command || "",
       configJson: JSON.stringify(serviceToEdit, null, 2),
+      upstreamAuth: serviceToEdit.upstreamAuth,
   } : {
       name: "",
       type: "http" as const,
       address: "",
       command: "",
       configJson: "{\n  \"name\": \"my-service\",\n  \"httpService\": {\n    \"address\": \"https://api.example.com\"\n  }\n}",
+      upstreamAuth: undefined,
   };
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues,
   });
+
+  const loadCredentials = async () => {
+      try {
+          const data = await apiClient.listCredentials();
+          setCredentials(data);
+      } catch (e) {
+          console.error("Failed to load credentials", e);
+      }
+  };
+
+  const handleCredentialSelect = (credId: string) => {
+      const cred = credentials.find(c => c.id === credId);
+      if (cred && cred.authentication) {
+          form.setValue("upstreamAuth", cred.authentication, { shouldDirty: true });
+          toast({ title: "Authentication Applied", description: `Applied auth from '${cred.name}'` });
+      }
+  };
+
+  // Load credentials when dialog opens or tab changes to auth
+  // Simple check: load once
+  if (open && credentials.length === 0) {
+      loadCredentials();
+  }
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
@@ -96,9 +124,7 @@ export function RegisterServiceDialog({ onSuccess, trigger, serviceToEdit }: Reg
               callPolicies: [],
               preCallHooks: [],
               postCallHooks: [],
-              profiles: [],
               prompts: [],
-              profileLimits: {},
               autoDiscoverTool: false,
           };
 
@@ -110,6 +136,10 @@ export function RegisterServiceDialog({ onSuccess, trigger, serviceToEdit }: Reg
               config.commandLineService = { command: values.command || "", workingDirectory: "", local: false, env: {}, tools: [], resources: [], prompts: [], communicationProtocol: 0, calls: {} };
           } else if (values.type === 'openapi') {
                config.openapiService = { address: values.address || "", tools: [], calls: {}, resources: [], prompts: [] };
+          }
+
+          if (values.upstreamAuth) {
+              config.upstreamAuth = values.upstreamAuth;
           }
       }
 
@@ -148,8 +178,9 @@ export function RegisterServiceDialog({ onSuccess, trigger, serviceToEdit }: Reg
           </DialogDescription>
         </DialogHeader>
         <Tabs defaultValue="basic" className="w-full">
-            <TabsList className="grid w-full grid-cols-2">
+            <TabsList className="grid w-full grid-cols-3">
                 <TabsTrigger value="basic">Basic Configuration</TabsTrigger>
+                <TabsTrigger value="auth">Authentication</TabsTrigger>
                 <TabsTrigger value="advanced">Advanced (JSON)</TabsTrigger>
             </TabsList>
 
@@ -231,6 +262,42 @@ export function RegisterServiceDialog({ onSuccess, trigger, serviceToEdit }: Reg
                         Please switch to the Advanced tab to configure other service types using JSON.
                     </div>
                 )}
+            </TabsContent>
+
+            <TabsContent value="auth" className="space-y-4">
+                 <div className="space-y-4 border p-4 rounded-md bg-muted/50">
+                    <h3 className="text-sm font-medium">Load from Credential</h3>
+                    <p className="text-sm text-muted-foreground">Select a saved credential to apply its authentication configuration to this service.</p>
+                    <div className="flex gap-2 items-center">
+                        <Select onValueChange={handleCredentialSelect}>
+                            <SelectTrigger className="w-[300px]">
+                                <SelectValue placeholder="Select credential..." />
+                            </SelectTrigger>
+                            <SelectContent>
+                                {credentials.map((cred) => (
+                                    <SelectItem key={cred.id} value={cred.id}>{cred.name}</SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                        <Button type="button" variant="ghost" size="icon" onClick={loadCredentials} title="Refresh Credentials">
+                            <RotateCw className="h-4 w-4" />
+                        </Button>
+                    </div>
+                </div>
+
+                <div className="space-y-2">
+                    <h3 className="text-sm font-medium">Current Configuration</h3>
+                     {form.watch("upstreamAuth") ? (
+                        <div className="text-sm border p-2 rounded">
+                            <pre className="whitespace-pre-wrap break-all">
+                                {JSON.stringify(form.watch("upstreamAuth"), null, 2)}
+                            </pre>
+                            <Button type="button" variant="outline" size="sm" className="mt-2" onClick={() => form.setValue("upstreamAuth", undefined)}>Clear Authentication</Button>
+                        </div>
+                    ) : (
+                        <div className="text-sm text-muted-foreground italic">No authentication configured.</div>
+                    )}
+                </div>
             </TabsContent>
 
             <TabsContent value="advanced">

@@ -212,6 +212,23 @@ export interface UserToken {
   updatedAt: string;
 }
 
+/** Credential represents a reusable authentication configuration. */
+export interface Credential {
+  /** Unique identifier for the credential. */
+  id: string;
+  /** Human-readable name (e.g. "My GitHub Personal"). */
+  name: string;
+  /** The authentication configuration. */
+  authentication?:
+    | Authentication
+    | undefined;
+  /**
+   * Optional: For interactive OAuth, the persisted session/tokens.
+   * This allows the proxy to use this credential by refreshing the token.
+   */
+  token?: UserToken | undefined;
+}
+
 function createBaseSecretValue(): SecretValue {
   return {
     plainText: undefined,
@@ -1756,6 +1773,118 @@ export const UserToken: MessageFns<UserToken> = {
     message.expiry = object.expiry ?? "";
     message.scope = object.scope ?? "";
     message.updatedAt = object.updatedAt ?? "";
+    return message;
+  },
+};
+
+function createBaseCredential(): Credential {
+  return { id: "", name: "", authentication: undefined, token: undefined };
+}
+
+export const Credential: MessageFns<Credential> = {
+  encode(message: Credential, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.id !== "") {
+      writer.uint32(10).string(message.id);
+    }
+    if (message.name !== "") {
+      writer.uint32(18).string(message.name);
+    }
+    if (message.authentication !== undefined) {
+      Authentication.encode(message.authentication, writer.uint32(26).fork()).join();
+    }
+    if (message.token !== undefined) {
+      UserToken.encode(message.token, writer.uint32(34).fork()).join();
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): Credential {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseCredential();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.id = reader.string();
+          continue;
+        }
+        case 2: {
+          if (tag !== 18) {
+            break;
+          }
+
+          message.name = reader.string();
+          continue;
+        }
+        case 3: {
+          if (tag !== 26) {
+            break;
+          }
+
+          message.authentication = Authentication.decode(reader, reader.uint32());
+          continue;
+        }
+        case 4: {
+          if (tag !== 34) {
+            break;
+          }
+
+          message.token = UserToken.decode(reader, reader.uint32());
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): Credential {
+    return {
+      id: isSet(object.id) ? globalThis.String(object.id) : "",
+      name: isSet(object.name) ? globalThis.String(object.name) : "",
+      authentication: isSet(object.authentication) ? Authentication.fromJSON(object.authentication) : undefined,
+      token: isSet(object.token) ? UserToken.fromJSON(object.token) : undefined,
+    };
+  },
+
+  toJSON(message: Credential): unknown {
+    const obj: any = {};
+    if (message.id !== "") {
+      obj.id = message.id;
+    }
+    if (message.name !== "") {
+      obj.name = message.name;
+    }
+    if (message.authentication !== undefined) {
+      obj.authentication = Authentication.toJSON(message.authentication);
+    }
+    if (message.token !== undefined) {
+      obj.token = UserToken.toJSON(message.token);
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<Credential>, I>>(base?: I): Credential {
+    return Credential.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<Credential>, I>>(object: I): Credential {
+    const message = createBaseCredential();
+    message.id = object.id ?? "";
+    message.name = object.name ?? "";
+    message.authentication = (object.authentication !== undefined && object.authentication !== null)
+      ? Authentication.fromPartial(object.authentication)
+      : undefined;
+    message.token = (object.token !== undefined && object.token !== null)
+      ? UserToken.fromPartial(object.token)
+      : undefined;
     return message;
   },
 };

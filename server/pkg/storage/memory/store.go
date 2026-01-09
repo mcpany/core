@@ -23,6 +23,7 @@ type Store struct {
 	serviceCollections map[string]*configv1.UpstreamServiceCollectionShare
 	globalSettings     *configv1.GlobalSettings
 	tokens             map[string]*configv1.UserToken
+	credentials        map[string]*configv1.Credential
 }
 
 // NewStore creates a new memory store.
@@ -34,6 +35,7 @@ func NewStore() *Store {
 		profileDefinitions: make(map[string]*configv1.ProfileDefinition),
 		serviceCollections: make(map[string]*configv1.UpstreamServiceCollectionShare),
 		tokens:             make(map[string]*configv1.UserToken),
+		credentials:        make(map[string]*configv1.Credential),
 	}
 }
 
@@ -346,5 +348,44 @@ func (s *Store) DeleteServiceCollection(_ context.Context, name string) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	delete(s.serviceCollections, name)
+	return nil
+}
+
+// Credentials
+
+// ListCredentials retrieves all credentials.
+func (s *Store) ListCredentials(_ context.Context) ([]*configv1.Credential, error) {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+	list := make([]*configv1.Credential, 0, len(s.credentials))
+	for _, c := range s.credentials {
+		list = append(list, proto.Clone(c).(*configv1.Credential))
+	}
+	return list, nil
+}
+
+// GetCredential retrieves a credential by ID.
+func (s *Store) GetCredential(_ context.Context, id string) (*configv1.Credential, error) {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+	if c, ok := s.credentials[id]; ok {
+		return proto.Clone(c).(*configv1.Credential), nil
+	}
+	return nil, nil
+}
+
+// SaveCredential saves a credential.
+func (s *Store) SaveCredential(_ context.Context, cred *configv1.Credential) error {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	s.credentials[cred.GetId()] = proto.Clone(cred).(*configv1.Credential)
+	return nil
+}
+
+// DeleteCredential deletes a credential by ID.
+func (s *Store) DeleteCredential(_ context.Context, id string) error {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	delete(s.credentials, id)
 	return nil
 }
