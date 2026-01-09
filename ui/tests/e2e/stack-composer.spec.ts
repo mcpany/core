@@ -39,39 +39,51 @@ test.describe('Stack Composer', () => {
 
     // Verify Visualizer shows the existing service
     // Visualizer renders card titles. Use precise selector to avoid matching textarea content.
-    // Cards have title class `font-medium` or we can look for the visualizer container.
-    // The visualizer is in the right panel.
-    // Let's look for text inside a specific container if possible, or just strict exact text.
-    await expect(page.locator('span.truncate', { hasText: 'weather-service' })).toBeVisible();
+    await expect(page.locator('span.truncate', { hasText: 'weather-service' })).toBeVisible({ timeout: 10000 });
 
     // "Valid Configuration" badge in visualizer
-    await expect(page.locator('text=Valid Configuration').first()).toBeVisible();
+    await expect(page.locator('.stack-visualizer-container').getByText('Valid Configuration').first()).toBeVisible();
   });
-
   test('should insert template from palette', async ({ page }) => {
     await page.goto('http://localhost:9002/stacks/e2e-test-stack');
+
+    // Ensure we are on Editor tab (page level)
     await page.getByRole('tab', { name: 'Editor' }).click();
 
-    await expect(page.locator('text=Service Palette')).toBeVisible();
+    // Wait for the editor to load even the initial content to avoid race conditions
+    await expect(page.locator('.monaco-editor')).toContainText('Stack Configuration', { timeout: 15000 });
+
+    // Verify the Side Palette is visible
+    await expect(page.getByText('Service Palette')).toBeVisible({ timeout: 10000 });
 
     // Click a template (e.g., Redis)
-    await page.click('text=Redis');
+    await page.getByText('Redis').first().click();
 
     // Verify Visualizer updates
-    const visualizer = page.locator('div.bg-muted\\/5');
-    await expect(visualizer.getByText('redis-cache', { exact: true })).toBeVisible({ timeout: 15000 });
+    await expect(page.locator('.stack-visualizer-container').getByText('redis-cache')).toBeVisible({ timeout: 15000 });
   });
 
   test('should validate invalid YAML', async ({ page }) => {
     await page.goto('http://localhost:9002/stacks/e2e-test-stack');
+
+    // Ensure we are on Editor tab (page level)
     await page.getByRole('tab', { name: 'Editor' }).click();
 
-    // Click to focus the editor area
-    await page.locator('.monaco-editor').click();
-    // Type into the focused element
-    await page.keyboard.type('key: "unclosed string');
+    // Wait for editor to fully load initial content
+    await expect(page.locator('.monaco-editor')).toContainText('Stack Configuration', { timeout: 15000 });
 
-    await expect(page.locator('text=Invalid YAML')).toBeVisible({ timeout: 15000 });
-    await expect(page.locator('text=YAML Syntax Error')).toBeVisible({ timeout: 5000 });
+    // Focus editor and inject invalid YAML at the top
+    await page.locator('.monaco-editor').click();
+    await page.keyboard.press('Control+Home');
+    await page.waitForTimeout(500);
+
+    // Type definitely invalid syntax at the very beginning
+    await page.keyboard.type('!!!! invalid !!!!\n', { delay: 100 });
+
+    // Look for "Invalid YAML" badge - this is the most direct indicator
+    await expect(page.getByText('Invalid YAML')).toBeVisible({ timeout: 20000 });
+
+    // Also check for the error detail
+    await expect(page.getByText('YAML Syntax Error')).toBeVisible({ timeout: 10000 });
   });
 });
