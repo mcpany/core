@@ -257,6 +257,31 @@ func TestAPIKeyAuthenticator_Query(t *testing.T) {
 		_, err := authenticator.Authenticate(context.Background(), req)
 		assert.Error(t, err)
 	})
+
+	t.Run("authentication_with_configured_username", func(t *testing.T) {
+		password := "secret123"
+		hashed, _ := passhash.Password(password)
+		configWithUser := &configv1.BasicAuth{
+			Username:     proto.String("admin"),
+			PasswordHash: proto.String(hashed),
+		}
+		authWithUser := NewBasicAuthenticator(configWithUser)
+		require.NotNil(t, authWithUser)
+
+		t.Run("correct_username", func(t *testing.T) {
+			req := httptest.NewRequest("GET", "/", nil)
+			req.SetBasicAuth("admin", password)
+			_, err := authWithUser.Authenticate(context.Background(), req)
+			assert.NoError(t, err)
+		})
+
+		t.Run("wrong_username", func(t *testing.T) {
+			req := httptest.NewRequest("GET", "/", nil)
+			req.SetBasicAuth("guest", password)
+			_, err := authWithUser.Authenticate(context.Background(), req)
+			assert.Error(t, err)
+		})
+	})
 }
 
 func TestValidateAuthentication(t *testing.T) {
