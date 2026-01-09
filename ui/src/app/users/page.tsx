@@ -20,9 +20,7 @@ interface User {
   id: string;
   roles: string[];
   authentication?: {
-    basic_auth?: {
-      // password_hash is not returned or needed here usually
-    };
+    basic_auth?: Record<string, never>;
     api_key?: {
         key_value: string;
     };
