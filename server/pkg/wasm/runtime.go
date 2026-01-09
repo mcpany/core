@@ -11,7 +11,9 @@ import (
 
 // Runtime defines the interface for a WASM plugin runtime.
 type Runtime interface {
+	// LoadPlugin loads a WASM plugin from bytecode.
 	LoadPlugin(ctx context.Context, bytecode []byte) (Plugin, error)
+	// Close closes the runtime and releases resources.
 	Close() error
 }
 
@@ -19,6 +21,7 @@ type Runtime interface {
 type Plugin interface {
 	// Execute runs a function exported by the WASM module
 	Execute(ctx context.Context, function string, args ...[]byte) ([]byte, error)
+	// Close closes the plugin instance.
 	Close() error
 }
 
