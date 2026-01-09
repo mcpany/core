@@ -13,7 +13,7 @@ import (
 
 // handleInitiateOAuth handles the request to initiate an OAuth2 flow.
 // POST /auth/oauth/initiate
-// Body: {"service_id": "github", "redirect_url": "..."}
+// Body: {"service_id": "github", "redirect_url": "..."}.
 func (a *Application) handleInitiateOAuth(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
