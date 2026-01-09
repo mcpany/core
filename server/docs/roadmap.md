@@ -167,13 +167,14 @@ Based on a review of the MCP ecosystem (mcp.so, LobeHub, GitHub, Docker), we ide
 
 - **Rate Limiting Complexity**: `server/pkg/middleware/ratelimit.go` mixes local/Redis logic. Needs refactoring into strategies.
 - **Filesystem Provider Monolith**: `server/pkg/upstream/filesystem/upstream.go` handles too many types. Split into factory pattern.
-- **Documentation Scatter**: Needs unification.
 - **Test Coverage for Cloud Providers**: S3/GCS tests are missing/mocked. Need local emulation (MinIO).
 - **Webhooks "Test" Code**: `server/cmd/webhooks` needs formalization if intended for production (Sidecar pattern).
+- **SDK Consolidation**: `server/pkg/client` should ideally be in a separate repository to be used by other Go clients without pulling in the whole server.
 
 ### Recommendations
 
 1.  **Refactor Filesystem Upstream**: Split `upstream.go`.
-2.  **Consolidate SDKs**: Move `server/pkg/client` to separate repo.
+2.  **Refactor Rate Limiting**: Split into `RateLimiterStrategy` interface.
 3.  **Formalize Webhook Server**: Polish `server/cmd/webhooks` as a Sidecar.
 4.  **Standardize Configuration**: Consistent config patterns.
+5.  **Consolidate SDKs**: Move `server/pkg/client` to separate repo.
