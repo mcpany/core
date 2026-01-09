@@ -73,6 +73,11 @@ const platformItems = [
     icon: Activity,
   },
   {
+    title: "Alerts",
+    url: "/alerts",
+    icon: Activity,
+  },
+  {
     title: "Stacks",
     url: "/stacks",
     icon: Layers,
