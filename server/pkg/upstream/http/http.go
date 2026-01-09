@@ -361,17 +361,23 @@ func (u *Upstream) createAndRegisterHTTPTools(ctx context.Context, serviceID, ad
 			// Capture which keys are "flags" (no equals sign) in the base URL
 			// by manually inspecting RawQuery, because url.Values does not distinguish.
 			originalFlags := make(map[string]bool)
-			if baseURL.RawQuery != "" {
-				for _, param := range strings.Split(baseURL.RawQuery, "&") {
-					if !strings.Contains(param, "=") && len(param) > 0 {
-						// Decode the key to store it canonically.
-						// We must handle cases where RawQuery uses %20 but Encode uses +.
-						if decodedKey, err := url.QueryUnescape(param); err == nil {
-							originalFlags[decodedKey] = true
+			// Helper to extract flags from a raw query string
+			extractFlags := func(rawQuery string) {
+				if rawQuery != "" {
+					for _, param := range strings.Split(rawQuery, "&") {
+						if !strings.Contains(param, "=") && len(param) > 0 {
+							// Decode the key to store it canonically.
+							// We must handle cases where RawQuery uses %20 but Encode uses +.
+							if decodedKey, err := url.QueryUnescape(param); err == nil {
+								originalFlags[decodedKey] = true
+							}
 						}
 					}
 				}
 			}
+
+			extractFlags(baseURL.RawQuery)
+			extractFlags(endpointURL.RawQuery)
 
 			query := resolvedURL.Query()
 			for k, v := range endpointQuery {
