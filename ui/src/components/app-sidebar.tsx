@@ -21,7 +21,8 @@ import {
   ChevronsUpDown,
   LogOut,
   Layers,
-  ShoppingBag
+  ShoppingBag,
+  ShieldCheck
 } from "lucide-react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
@@ -122,6 +123,11 @@ const configItems = [
     title: "Users",
     url: "/users",
     icon: User,
+  },
+  {
+    title: "Credentials",
+    url: "/credentials",
+    icon: ShieldCheck,
   },
   {
     title: "Secrets Vault",

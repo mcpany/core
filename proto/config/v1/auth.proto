@@ -172,3 +172,18 @@ message UserToken {
   // The timestamp when the token was created/updated (RFC3339).
   string updated_at = 8 [json_name = "updated_at"];
 }
+
+// Credential represents a reusable authentication configuration.
+message Credential {
+  // Unique identifier for the credential.
+  string id = 1;
+  // Human-readable name (e.g. "My GitHub Personal").
+  string name = 2;
+
+  // The authentication configuration.
+  Authentication authentication = 3;
+
+  // Optional: For interactive OAuth, the persisted session/tokens.
+  // This allows the proxy to use this credential by refreshing the token.
+  UserToken token = 4;
+}

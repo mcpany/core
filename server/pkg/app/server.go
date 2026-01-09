@@ -166,21 +166,21 @@ type Application struct {
 	// Middleware handles for dynamic updates
 	standardMiddlewares *middleware.StandardMiddlewares
 	// Settings Manager for global settings (dynamic updates)
-	SettingsManager     *GlobalSettingsManager
+	SettingsManager *GlobalSettingsManager
 	// Profile Manager for dynamic profile updates
-	ProfileManager      *profile.Manager
+	ProfileManager *profile.Manager
 	// Auth Manager (stored here for access in runServerMode, though it is also passed to serviceregistry)
 	// We need to keep a reference to update it on reload.
-	AuthManager         *auth.Manager
+	AuthManager *auth.Manager
 	// Middlewares that need manual updates
-	ipMiddleware       *middleware.IPAllowlistMiddleware
-	corsMiddleware     *middleware.HTTPCORSMiddleware
+	ipMiddleware   *middleware.IPAllowlistMiddleware
+	corsMiddleware *middleware.HTTPCORSMiddleware
 
-	startupCh           chan struct{}
-	startupOnce         sync.Once
-	configMu            sync.Mutex
+	startupCh   chan struct{}
+	startupOnce sync.Once
+	configMu    sync.Mutex
 	// Store explicit API Key passed via CLI args
-	explicitAPIKey      string
+	explicitAPIKey string
 }
 
 // NewApplication creates a new Application with default dependencies.
@@ -1045,7 +1045,6 @@ func (a *Application) runServerMode(
 
 	// Topology API is now handled by apiHandler via api.go
 
-
 	logging.GetLogger().Info("DEBUG: Registering /mcp/u/ handler")
 	// Multi-user handler
 	// pattern: /mcp/u/{uid}/profile/{profile_id}
@@ -1099,41 +1098,41 @@ func (a *Application) runServerMode(
 
 		// 1. Profile Auth - REMOVED (Per-profile ingress auth is no longer supported in this refactor)
 		var isAuthenticated bool
-			// 2. User Auth
-			if user.GetAuthentication() != nil {
-				if err := auth.ValidateAuthentication(r.Context(), user.GetAuthentication(), r); err == nil {
+		// 2. User Auth
+		if user.GetAuthentication() != nil {
+			if err := auth.ValidateAuthentication(r.Context(), user.GetAuthentication(), r); err == nil {
+				isAuthenticated = true
+			} else {
+				// User auth configured but failed
+				http.Error(w, "Unauthorized (User)", http.StatusUnauthorized)
+				return
+			}
+		} else {
+			// 3. Global Auth
+			apiKey := a.SettingsManager.GetAPIKey()
+			if apiKey != "" {
+				// Manual check for global key since it's a string, or wrap it.
+				// We'll just do manual check to match existing behavior logic.
+				requestKey := r.Header.Get("X-API-Key")
+				if requestKey == "" {
+					authHeader := r.Header.Get("Authorization")
+					if strings.HasPrefix(authHeader, "Bearer ") {
+						requestKey = strings.TrimPrefix(authHeader, "Bearer ")
+					}
+				}
+
+				if subtle.ConstantTimeCompare([]byte(requestKey), []byte(apiKey)) == 1 {
 					isAuthenticated = true
 				} else {
-					// User auth configured but failed
-					http.Error(w, "Unauthorized (User)", http.StatusUnauthorized)
+					// Global auth configured but failed
+					http.Error(w, "Unauthorized (Global)", http.StatusUnauthorized)
 					return
 				}
 			} else {
-				// 3. Global Auth
-				apiKey := a.SettingsManager.GetAPIKey()
-				if apiKey != "" {
-					// Manual check for global key since it's a string, or wrap it.
-					// We'll just do manual check to match existing behavior logic.
-					requestKey := r.Header.Get("X-API-Key")
-					if requestKey == "" {
-						authHeader := r.Header.Get("Authorization")
-						if strings.HasPrefix(authHeader, "Bearer ") {
-							requestKey = strings.TrimPrefix(authHeader, "Bearer ")
-						}
-					}
-
-					if subtle.ConstantTimeCompare([]byte(requestKey), []byte(apiKey)) == 1 {
-						isAuthenticated = true
-					} else {
-						// Global auth configured but failed
-						http.Error(w, "Unauthorized (Global)", http.StatusUnauthorized)
-						return
-					}
-				} else {
-					// No auth configured at any level
-					isAuthenticated = true
-				}
+				// No auth configured at any level
+				isAuthenticated = true
 			}
+		}
 
 		if !isAuthenticated {
 			// Should be unreachable if logic covers all cases, but safety net
@@ -1303,6 +1302,35 @@ func (a *Application) runServerMode(
 	// OAuth API Routes
 	mux.Handle("/auth/oauth/initiate", authMiddleware(http.HandlerFunc(a.handleInitiateOAuth)))
 	mux.Handle("/auth/oauth/callback", authMiddleware(http.HandlerFunc(a.handleOAuthCallback)))
+
+	// Credentials API
+	// Note: Standard mux doesn't handle methods nicely, so we route by path and check method in handler.
+	// We route /credentials to list (GET) and create (POST)
+	// We route /credentials/ to get/update/delete (with ID)
+	mux.Handle("/credentials", authMiddleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		switch r.Method {
+		case http.MethodGet:
+			a.listCredentialsHandler(w, r)
+		case http.MethodPost:
+			a.createCredentialHandler(w, r)
+		default:
+			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		}
+	})))
+	mux.Handle("/credentials/", authMiddleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// This handles /credentials/:id
+		switch r.Method {
+		case http.MethodGet:
+			a.getCredentialHandler(w, r)
+		case http.MethodPut:
+			a.updateCredentialHandler(w, r)
+		case http.MethodDelete:
+			a.deleteCredentialHandler(w, r)
+		default:
+			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		}
+	})))
+	mux.Handle("/debug/auth-test", authMiddleware(http.HandlerFunc(a.testAuthHandler)))
 
 	if grpcPort != "" {
 		gwmux := runtime.NewServeMux()
@@ -1594,8 +1622,6 @@ func startGrpcServer(
 				server.Stop()
 			}
 		}()
-
-
 
 		serverLog.Info("gRPC server listening", "port", lis.Addr().String())
 		if readyChan != nil {

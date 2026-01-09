@@ -86,6 +86,16 @@ type Storage interface {
 	// DeleteToken deletes a user token.
 	DeleteToken(ctx context.Context, userID, serviceID string) error
 
+	// Credentials
+	// ListCredentials retrieves all credentials.
+	ListCredentials(ctx context.Context) ([]*configv1.Credential, error)
+	// GetCredential retrieves a credential by ID.
+	GetCredential(ctx context.Context, id string) (*configv1.Credential, error)
+	// SaveCredential saves a credential.
+	SaveCredential(ctx context.Context, cred *configv1.Credential) error
+	// DeleteCredential deletes a credential by ID.
+	DeleteCredential(ctx context.Context, id string) error
+
 	// Close closes the underlying storage connection.
 	Close() error
 }
