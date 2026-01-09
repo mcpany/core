@@ -16,6 +16,7 @@ import (
 	"github.com/mcpany/core/server/pkg/logging"
 	"github.com/mcpany/core/server/pkg/metrics"
 	"github.com/mcpany/core/server/pkg/tool"
+	"github.com/mcpany/core/server/pkg/util"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	v1 "github.com/mcpany/core/proto/mcp_router/v1"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
@@ -67,7 +68,9 @@ func (t *Tool) GetCacheConfig() *configv1.CacheConfig {
 // Execute runs the SQL query with the provided inputs.
 func (t *Tool) Execute(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
 	if logging.GetLogger().Enabled(ctx, slog.LevelDebug) {
-		logging.GetLogger().Debug("executing tool", "tool", req.ToolName, "inputs", string(req.ToolInputs))
+		// Use util.RedactJSON directly as prettyPrint is not available in this package
+		// and we know it is JSON.
+		logging.GetLogger().Debug("executing tool", "tool", req.ToolName, "inputs", string(util.RedactJSON(req.ToolInputs)))
 	}
 	defer metrics.MeasureSince([]string{"sql", "request", "latency"}, time.Now())
 
