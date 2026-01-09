@@ -38,6 +38,12 @@ services:
       - CI=true
       - CAPTURE_SCREENSHOTS=${CAPTURE_SCREENSHOTS}
       - PLAYWRIGHT_ARGS=${PLAYWRIGHT_ARGS}
+    command: >
+      sh -c "
+        mkdir -p test-results .audit playwright-report docs &&
+        chmod -R 777 test-results .audit playwright-report docs &&
+        npx playwright test $${PLAYWRIGHT_ARGS}
+      "
     volumes:
       - ../ui/test-results:/work/ui/test-results
       - ../build/playwright-report:/work/ui/playwright-report
