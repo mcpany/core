@@ -140,7 +140,7 @@ func TestDisabledHierarchyConfig(t *testing.T) {
 		logs := mcpAny.Process.StdoutString()
 
 		// 1. Service Disabled
-		if !strings.Contains(logs, `Skipping disabled service" service=disabled-service`) {
+		if !strings.Contains(logs, `Service disabled by profile override, skipping`) || !strings.Contains(logs, `service_name=disabled-service`) {
 			return false
 		}
 
