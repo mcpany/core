@@ -250,7 +250,7 @@ Contributions are welcome! Please feel free to open an issue or submit a pull re
 
 ## 🗺️ Roadmap
 
-Check out our [Roadmap](server/docs/roadmap.md) to see what we're working on and what's coming next.
+Check out our [Roadmap](product-evolution-plan.md) to see what we're working on and what's coming next.
 
 ## 📄 License
 
