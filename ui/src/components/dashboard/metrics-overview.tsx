@@ -60,8 +60,25 @@ export const MetricsOverview = memo(function MetricsOverview() {
     }
     fetchMetrics();
     // Poll every 5 seconds for real-time updates
-    const interval = setInterval(fetchMetrics, 5000);
-    return () => clearInterval(interval);
+    const interval = setInterval(() => {
+      // ⚡ Bolt Optimization: Pause polling when tab is not visible to save bandwidth
+      if (!document.hidden) {
+        fetchMetrics();
+      }
+    }, 5000);
+
+    // ⚡ Bolt Optimization: Refresh immediately when tab becomes visible
+    const onVisibilityChange = () => {
+      if (!document.hidden) {
+        fetchMetrics();
+      }
+    };
+    document.addEventListener("visibilitychange", onVisibilityChange);
+
+    return () => {
+      clearInterval(interval);
+      document.removeEventListener("visibilitychange", onVisibilityChange);
+    };
   }, []);
 
   if (metrics.length === 0) {
