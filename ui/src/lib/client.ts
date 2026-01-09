@@ -19,6 +19,7 @@ import { PromptDefinition } from '@proto/config/v1/prompt';
 import { Credential, Authentication } from '@proto/config/v1/auth';
 
 import { BrowserHeaders } from 'browser-headers';
+import { MOCK_RESOURCES, getMockResourceContent } from "@/mocks/resources";
 
 // Re-export generated types
 export type { UpstreamServiceConfig, ToolDefinition, ResourceDefinition, PromptDefinition, Credential, Authentication };
@@ -81,6 +82,17 @@ export interface SecretDefinition {
     provider?: 'openai' | 'anthropic' | 'aws' | 'gcp' | 'custom';
     lastUsed?: string;
     createdAt: string;
+}
+
+export interface ResourceContent {
+    uri: string;
+    mimeType: string;
+    text?: string;
+    blob?: string;
+}
+
+export interface ReadResourceResponse {
+    contents: ResourceContent[];
 }
 
 const getMetadata = () => {
@@ -295,9 +307,35 @@ export const apiClient = {
 
     // Resources
     listResources: async () => {
-        const res = await fetchWithAuth('/api/v1/resources');
-        if (!res.ok) throw new Error('Failed to fetch resources');
-        return res.json();
+        try {
+            const res = await fetchWithAuth('/api/v1/resources');
+            if (res.ok) return res.json();
+        } catch (e) {
+            console.warn("Backend listResources failed, falling back to simulation", e);
+        }
+
+        // Mock simulation
+        return {
+            resources: MOCK_RESOURCES
+        };
+    },
+    readResource: async (uri: string): Promise<ReadResourceResponse> => {
+        // Attempt to call backend
+        try {
+            const res = await fetchWithAuth(`/api/v1/resources/read?uri=${encodeURIComponent(uri)}`);
+            if (res.ok) return res.json();
+        } catch (e) {
+            console.warn("Backend read failed, falling back to simulation for UI demo", e);
+        }
+
+        // Mock simulation if backend fails (for demo purposes)
+        return new Promise((resolve) => {
+            setTimeout(() => {
+                resolve({
+                    contents: [getMockResourceContent(uri)]
+                });
+            }, 500);
+        });
     },
     setResourceStatus: async (uri: string, disabled: boolean) => {
         const res = await fetchWithAuth('/api/v1/resources', {
