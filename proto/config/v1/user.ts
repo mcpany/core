@@ -7,7 +7,7 @@
 /* eslint-disable */
 import { BinaryReader, BinaryWriter } from "@bufbuild/protobuf/wire";
 import Long from "long";
-import { AuthenticationConfig } from "./auth";
+import { Authentication } from "./auth";
 
 export const protobufPackage = "mcpany.config.v1";
 
@@ -16,7 +16,7 @@ export interface User {
   id: string;
   /** The authentication configuration for the user. */
   authentication?:
-    | AuthenticationConfig
+    | Authentication
     | undefined;
   /** The list of profile IDs this user has access to. */
   profileIds: string[];
@@ -34,7 +34,7 @@ export const User: MessageFns<User> = {
       writer.uint32(10).string(message.id);
     }
     if (message.authentication !== undefined) {
-      AuthenticationConfig.encode(message.authentication, writer.uint32(18).fork()).join();
+      Authentication.encode(message.authentication, writer.uint32(18).fork()).join();
     }
     for (const v of message.profileIds) {
       writer.uint32(26).string(v!);
@@ -65,7 +65,7 @@ export const User: MessageFns<User> = {
             break;
           }
 
-          message.authentication = AuthenticationConfig.decode(reader, reader.uint32());
+          message.authentication = Authentication.decode(reader, reader.uint32());
           continue;
         }
         case 3: {
@@ -96,7 +96,7 @@ export const User: MessageFns<User> = {
   fromJSON(object: any): User {
     return {
       id: isSet(object.id) ? globalThis.String(object.id) : "",
-      authentication: isSet(object.authentication) ? AuthenticationConfig.fromJSON(object.authentication) : undefined,
+      authentication: isSet(object.authentication) ? Authentication.fromJSON(object.authentication) : undefined,
       profileIds: globalThis.Array.isArray(object?.profile_ids)
         ? object.profile_ids.map((e: any) => globalThis.String(e))
         : [],
@@ -110,7 +110,7 @@ export const User: MessageFns<User> = {
       obj.id = message.id;
     }
     if (message.authentication !== undefined) {
-      obj.authentication = AuthenticationConfig.toJSON(message.authentication);
+      obj.authentication = Authentication.toJSON(message.authentication);
     }
     if (message.profileIds?.length) {
       obj.profile_ids = message.profileIds;
@@ -128,7 +128,7 @@ export const User: MessageFns<User> = {
     const message = createBaseUser();
     message.id = object.id ?? "";
     message.authentication = (object.authentication !== undefined && object.authentication !== null)
-      ? AuthenticationConfig.fromPartial(object.authentication)
+      ? Authentication.fromPartial(object.authentication)
       : undefined;
     message.profileIds = object.profileIds?.map((e) => e) || [];
     message.roles = object.roles?.map((e) => e) || [];

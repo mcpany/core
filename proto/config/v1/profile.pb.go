@@ -168,7 +168,7 @@ type Profile struct {
 	// The unique ID of the profile (UUID).
 	Id string `protobuf:"bytes,2,opt,name=id,proto3" json:"id,omitempty"`
 	// The authentication configuration for the profile.
-	Authentication *AuthenticationConfig `protobuf:"bytes,3,opt,name=authentication,proto3" json:"authentication,omitempty"`
+	Authentication *Authentication `protobuf:"bytes,3,opt,name=authentication,proto3" json:"authentication,omitempty"`
 	unknownFields  protoimpl.UnknownFields
 	sizeCache      protoimpl.SizeCache
 }
@@ -212,7 +212,7 @@ func (x *Profile) GetId() string {
 	return ""
 }
 
-func (x *Profile) GetAuthentication() *AuthenticationConfig {
+func (x *Profile) GetAuthentication() *Authentication {
 	if x != nil {
 		return x.Authentication
 	}
@@ -227,7 +227,7 @@ func (x *Profile) SetId(v string) {
 	x.Id = v
 }
 
-func (x *Profile) SetAuthentication(v *AuthenticationConfig) {
+func (x *Profile) SetAuthentication(v *Authentication) {
 	x.Authentication = v
 }
 
@@ -250,7 +250,7 @@ type Profile_builder struct {
 	// The unique ID of the profile (UUID).
 	Id string
 	// The authentication configuration for the profile.
-	Authentication *AuthenticationConfig
+	Authentication *Authentication
 }
 
 func (b0 Profile_builder) Build() *Profile {
@@ -513,11 +513,11 @@ var File_proto_config_v1_profile_proto protoreflect.FileDescriptor
 
 const file_proto_config_v1_profile_proto_rawDesc = "" +
 	"\n" +
-	"\x1dproto/config/v1/profile.proto\x12\x10mcpany.config.v1\x1a\x1aproto/config/v1/auth.proto\x1a\x13proto/bus/bus.proto\"}\n" +
+	"\x1dproto/config/v1/profile.proto\x12\x10mcpany.config.v1\x1a\x1aproto/config/v1/auth.proto\x1a\x13proto/bus/bus.proto\"w\n" +
 	"\aProfile\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12\x0e\n" +
-	"\x02id\x18\x02 \x01(\tR\x02id\x12N\n" +
-	"\x0eauthentication\x18\x03 \x01(\v2&.mcpany.config.v1.AuthenticationConfigR\x0eauthentication\"A\n" +
+	"\x02id\x18\x02 \x01(\tR\x02id\x12H\n" +
+	"\x0eauthentication\x18\x03 \x01(\v2 .mcpany.config.v1.AuthenticationR\x0eauthentication\"A\n" +
 	"\x14ProfileServiceConfig\x12\x1d\n" +
 	"\aenabled\x18\x01 \x01(\bH\x00R\aenabled\x88\x01\x01B\n" +
 	"\n" +
@@ -561,11 +561,11 @@ var file_proto_config_v1_profile_proto_goTypes = []any{
 	(*ProfileServiceConfig)(nil),    // 4: mcpany.config.v1.ProfileServiceConfig
 	(*RateLimitConfig)(nil),         // 5: mcpany.config.v1.RateLimitConfig
 	nil,                             // 6: mcpany.config.v1.RateLimitConfig.ToolLimitsEntry
-	(*AuthenticationConfig)(nil),    // 7: mcpany.config.v1.AuthenticationConfig
+	(*Authentication)(nil),          // 7: mcpany.config.v1.Authentication
 	(*bus.RedisBus)(nil),            // 8: bus.RedisBus
 }
 var file_proto_config_v1_profile_proto_depIdxs = []int32{
-	7, // 0: mcpany.config.v1.Profile.authentication:type_name -> mcpany.config.v1.AuthenticationConfig
+	7, // 0: mcpany.config.v1.Profile.authentication:type_name -> mcpany.config.v1.Authentication
 	0, // 1: mcpany.config.v1.RateLimitConfig.storage:type_name -> mcpany.config.v1.RateLimitConfig.Storage
 	8, // 2: mcpany.config.v1.RateLimitConfig.redis:type_name -> bus.RedisBus
 	1, // 3: mcpany.config.v1.RateLimitConfig.key_by:type_name -> mcpany.config.v1.RateLimitConfig.KeyBy

@@ -8,7 +8,7 @@
 import { BinaryReader, BinaryWriter } from "@bufbuild/protobuf/wire";
 import Long from "long";
 import { RedisBus } from "../../bus/bus";
-import { AuthenticationConfig } from "./auth";
+import { Authentication } from "./auth";
 
 export const protobufPackage = "mcpany.config.v1";
 
@@ -18,7 +18,7 @@ export interface Profile {
   /** The unique ID of the profile (UUID). */
   id: string;
   /** The authentication configuration for the profile. */
-  authentication?: AuthenticationConfig | undefined;
+  authentication?: Authentication | undefined;
 }
 
 export interface ProfileServiceConfig {
@@ -183,7 +183,7 @@ export const Profile: MessageFns<Profile> = {
       writer.uint32(18).string(message.id);
     }
     if (message.authentication !== undefined) {
-      AuthenticationConfig.encode(message.authentication, writer.uint32(26).fork()).join();
+      Authentication.encode(message.authentication, writer.uint32(26).fork()).join();
     }
     return writer;
   },
@@ -216,7 +216,7 @@ export const Profile: MessageFns<Profile> = {
             break;
           }
 
-          message.authentication = AuthenticationConfig.decode(reader, reader.uint32());
+          message.authentication = Authentication.decode(reader, reader.uint32());
           continue;
         }
       }
@@ -232,7 +232,7 @@ export const Profile: MessageFns<Profile> = {
     return {
       name: isSet(object.name) ? globalThis.String(object.name) : "",
       id: isSet(object.id) ? globalThis.String(object.id) : "",
-      authentication: isSet(object.authentication) ? AuthenticationConfig.fromJSON(object.authentication) : undefined,
+      authentication: isSet(object.authentication) ? Authentication.fromJSON(object.authentication) : undefined,
     };
   },
 
@@ -245,7 +245,7 @@ export const Profile: MessageFns<Profile> = {
       obj.id = message.id;
     }
     if (message.authentication !== undefined) {
-      obj.authentication = AuthenticationConfig.toJSON(message.authentication);
+      obj.authentication = Authentication.toJSON(message.authentication);
     }
     return obj;
   },
@@ -258,7 +258,7 @@ export const Profile: MessageFns<Profile> = {
     message.name = object.name ?? "";
     message.id = object.id ?? "";
     message.authentication = (object.authentication !== undefined && object.authentication !== null)
-      ? AuthenticationConfig.fromPartial(object.authentication)
+      ? Authentication.fromPartial(object.authentication)
       : undefined;
     return message;
   },
