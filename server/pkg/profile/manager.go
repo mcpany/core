@@ -6,6 +6,7 @@ package profile
 
 import (
 	"fmt"
+	"sync"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"google.golang.org/protobuf/proto"
@@ -13,6 +14,7 @@ import (
 
 // Manager handles the lifecycle and resolution of profiles.
 type Manager struct {
+	mu       sync.RWMutex
 	profiles map[string]*configv1.ProfileDefinition
 }
 
@@ -21,19 +23,36 @@ func NewManager(profiles []*configv1.ProfileDefinition) *Manager {
 	m := &Manager{
 		profiles: make(map[string]*configv1.ProfileDefinition),
 	}
-	for _, p := range profiles {
-		m.profiles[p.GetName()] = p
-		// We could also index by ID if we had one in ProfileDefinition,
-		// currently it relies on Name or implicit ID.
-		// Proto definition has `name` (field 1).
-	}
+	m.Update(profiles)
 	return m
+}
+
+// Update updates the profile definitions managed by the manager.
+func (m *Manager) Update(profiles []*configv1.ProfileDefinition) {
+	newProfiles := make(map[string]*configv1.ProfileDefinition)
+	for _, p := range profiles {
+		newProfiles[p.GetName()] = p
+	}
+	m.mu.Lock()
+	defer m.mu.Unlock()
+	m.profiles = newProfiles
+}
+
+// GetProfileDefinition returns the profile definition by name.
+func (m *Manager) GetProfileDefinition(name string) (*configv1.ProfileDefinition, bool) {
+	m.mu.RLock()
+	defer m.mu.RUnlock()
+	p, ok := m.profiles[name]
+	return p, ok
 }
 
 // ResolveProfile computes the final effective configuration for a given profile,
 // applying inheritance and overrides.
 // It returns a map of ProfileServiceConfigs and a map of resolved Secrets.
 func (m *Manager) ResolveProfile(profileName string) (map[string]*configv1.ProfileServiceConfig, map[string]*configv1.SecretValue, error) {
+	m.mu.RLock()
+	defer m.mu.RUnlock()
+
 	// 1. Find the profile
 	_, ok := m.profiles[profileName]
 	if !ok {

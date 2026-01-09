@@ -34,6 +34,7 @@ import (
 	"github.com/mcpany/core/server/pkg/metrics"
 	"github.com/mcpany/core/server/pkg/middleware"
 	"github.com/mcpany/core/server/pkg/pool"
+	"github.com/mcpany/core/server/pkg/profile"
 	"github.com/mcpany/core/server/pkg/prompt"
 	"github.com/mcpany/core/server/pkg/resource"
 	"github.com/mcpany/core/server/pkg/serviceregistry"
@@ -165,6 +166,11 @@ type Application struct {
 	standardMiddlewares *middleware.StandardMiddlewares
 	// Settings Manager for global settings (dynamic updates)
 	SettingsManager     *GlobalSettingsManager
+	// Profile Manager for dynamic profile updates
+	ProfileManager      *profile.Manager
+	// Auth Manager (stored here for access in runServerMode, though it is also passed to serviceregistry)
+	// We need to keep a reference to update it on reload.
+	AuthManager         *auth.Manager
 	// Middlewares that need manual updates
 	ipMiddleware       *middleware.IPAllowlistMiddleware
 	corsMiddleware     *middleware.HTTPCORSMiddleware
@@ -327,10 +333,24 @@ func (a *Application) Run(
 
 	a.PromptManager = prompt.NewManager()
 	a.ResourceManager = resource.NewManager()
+
+	// Initialize Auth Manager and set users
 	authManager := auth.NewManager()
 	if a.SettingsManager.GetAPIKey() != "" {
 		authManager.SetAPIKey(a.SettingsManager.GetAPIKey())
 	}
+	authManager.SetUsers(cfg.GetUsers())
+	a.AuthManager = authManager
+
+	// Initialize Profile Manager and set profile definitions
+	// GetProfileDefinitions returns nil if not set, handled by Update
+	var profileDefinitions []*config_v1.ProfileDefinition
+	if cfg.GetGlobalSettings() != nil {
+		profileDefinitions = cfg.GetGlobalSettings().GetProfileDefinitions()
+	} else {
+		profileDefinitions = config.GlobalSettings().GetProfileDefinitions()
+	}
+	a.ProfileManager = profile.NewManager(profileDefinitions)
 
 	// Set profiles for tool filtering
 	a.ToolManager.SetProfiles(
@@ -571,7 +591,6 @@ func (a *Application) Run(
 		bindAddress,
 		grpcPort,
 		shutdownTimeout,
-		cfg.GetUsers(),
 		cfg.GetGlobalSettings(),
 		cachingMiddleware,
 		s,
@@ -619,11 +638,23 @@ func (a *Application) ReloadConfig(fs afero.Fs, configPaths []string) error {
 	// Update global settings
 	a.updateGlobalSettings(cfg)
 
+	// Update Users (Dynamic!)
+	if a.AuthManager != nil {
+		a.AuthManager.SetUsers(cfg.GetUsers())
+		log.Info("Updated users configuration")
+	}
+
 	// Update profiles on reload
 	a.ToolManager.SetProfiles(
 		cfg.GetGlobalSettings().GetProfiles(),
 		cfg.GetGlobalSettings().GetProfileDefinitions(),
 	)
+
+	// Update Profile Manager (Dynamic!)
+	if a.ProfileManager != nil {
+		a.ProfileManager.Update(cfg.GetGlobalSettings().GetProfileDefinitions())
+		log.Info("Updated profile definitions configuration")
+	}
 
 	// Reconcile services (add/remove/update)
 	a.reconcileServices(cfg)
@@ -888,7 +919,6 @@ func (a *Application) runServerMode(
 	bus *bus.Provider,
 	bindAddress, grpcPort string,
 	shutdownTimeout time.Duration,
-	users []*config_v1.User,
 	globalSettings *config_v1.GlobalSettings,
 	cachingMiddleware *middleware.CachingMiddleware,
 	store storage.Storage,
@@ -954,24 +984,6 @@ func (a *Application) runServerMode(
 		authMiddleware = a.createAuthMiddleware()
 	}
 
-	userMap := make(map[string]*config_v1.User)
-	for _, u := range users {
-		userMap[u.GetId()] = u
-	}
-
-	// Build Profile Definition Map for RBAC
-	profileDefMap := make(map[string]*config_v1.ProfileDefinition)
-	var profileDefinitions []*config_v1.ProfileDefinition
-	if globalSettings != nil {
-		profileDefinitions = globalSettings.GetProfileDefinitions()
-	} else {
-		profileDefinitions = config.GlobalSettings().GetProfileDefinitions()
-	}
-
-	for _, def := range profileDefinitions {
-		profileDefMap[def.GetName()] = def
-	}
-
 	mux := http.NewServeMux()
 
 	// UI Handler
@@ -1015,7 +1027,8 @@ func (a *Application) runServerMode(
 		uid := parts[3]
 		profileID := parts[5]
 
-		user, ok := userMap[uid]
+		// Dynamic User Lookup
+		user, ok := a.AuthManager.GetUser(uid)
 		if !ok {
 			http.Error(w, "User not found", http.StatusNotFound)
 			return
@@ -1102,7 +1115,8 @@ func (a *Application) runServerMode(
 		}
 
 		// RBAC Check: Check if profile requires specific roles
-		if def, ok := profileDefMap[profileID]; ok && len(def.RequiredRoles) > 0 {
+		// Dynamic Profile Lookup
+		if def, ok := a.ProfileManager.GetProfileDefinition(profileID); ok && len(def.RequiredRoles) > 0 {
 			hasRole := false
 			// Check if user has any of the required roles
 			for _, requiredRole := range def.RequiredRoles {
@@ -1430,91 +1444,6 @@ func (a *Application) runServerMode(
 	return startupErr
 }
 
-// startHTTPServer starts an HTTP server in a new goroutine. It handles graceful
-// shutdown when the context is canceled.
-//
-// ctx is the context for managing the server's lifecycle.
-// wg is a WaitGroup to signal when the server has shut down.
-// errChan is a channel for reporting errors during startup.
-// name is a descriptive name for the server, used in logging.
-// addr is the address and port on which the server will listen.
-// handler is the HTTP handler for processing requests.
-func startHTTPServer(
-	ctx context.Context,
-	wg *sync.WaitGroup,
-	errChan chan<- error,
-	readyChan chan<- struct{},
-	name, addr string,
-	handler http.Handler,
-	shutdownTimeout time.Duration,
-) {
-	wg.Add(1)
-	go func() {
-		defer wg.Done()
-		serverLog := logging.GetLogger().With("server", name)
-		lis, err := (&net.ListenConfig{}).Listen(context.Background(), "tcp", addr)
-		if err != nil {
-			errChan <- fmt.Errorf("[%s] server failed to listen: %w", name, err)
-			return
-		}
-		if readyChan != nil {
-			readyChan <- struct{}{}
-		}
-		defer func() { _ = lis.Close() }()
-
-		serverLog = serverLog.With("port", lis.Addr().String())
-
-		server := &http.Server{
-			Handler: handler,
-			BaseContext: func(_ net.Listener) context.Context {
-				return ctx
-			},
-			ConnState: func(_ net.Conn, state http.ConnState) {
-				switch state {
-				case http.StateNew:
-					metrics.IncrCounter([]string{"http", "connections", "opened", "total"}, 1)
-				case http.StateClosed:
-					metrics.IncrCounter([]string{"http", "connections", "closed", "total"}, 1)
-				}
-			},
-			ReadHeaderTimeout: 10 * time.Second,
-			ReadTimeout:       30 * time.Second,
-			WriteTimeout:      60 * time.Second,
-			IdleTimeout:       120 * time.Second,
-		}
-
-		// localCtx is used to signal the shutdown goroutine to exit.
-		localCtx, cancel := context.WithCancel(context.Background())
-		defer cancel()
-
-		shutdownComplete := make(chan struct{})
-		go func() {
-			defer close(shutdownComplete)
-			select {
-			case <-ctx.Done():
-				// This is the normal shutdown path.
-			case <-localCtx.Done():
-				// This is the shutdown path for when the server fails to start.
-			}
-			shutdownCtx, cancelTimeout := context.WithTimeout(context.Background(), shutdownTimeout)
-			defer cancelTimeout()
-			serverLog.Info("Attempting to gracefully shut down server...")
-			if err := server.Shutdown(shutdownCtx); err != nil {
-				serverLog.Error("Shutdown error", "error", err)
-			}
-		}()
-
-		serverLog.Info("HTTP server listening")
-		if err := server.Serve(lis); err != nil && err != http.ErrServerClosed {
-			errChan <- fmt.Errorf("[%s] server failed: %w", name, err)
-			cancel() // Signal shutdown goroutine to exit
-		}
-
-		<-shutdownComplete
-		serverLog.Info("Server shut down.")
-	}()
-}
-
 // createAuthMiddleware creates the authentication middleware.
 func (a *Application) createAuthMiddleware() func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
@@ -1632,6 +1561,91 @@ func startGrpcServer(
 			errChan <- fmt.Errorf("[%s] server failed to serve: %w", name, err)
 			cancel() // Signal shutdown goroutine to exit
 		}
+		<-shutdownComplete
+		serverLog.Info("Server shut down.")
+	}()
+}
+
+// startHTTPServer starts an HTTP server in a new goroutine. It handles graceful
+// shutdown when the context is canceled.
+//
+// ctx is the context for managing the server's lifecycle.
+// wg is a WaitGroup to signal when the server has shut down.
+// errChan is a channel for reporting errors during startup.
+// name is a descriptive name for the server, used in logging.
+// addr is the address and port on which the server will listen.
+// handler is the HTTP handler for processing requests.
+func startHTTPServer(
+	ctx context.Context,
+	wg *sync.WaitGroup,
+	errChan chan<- error,
+	readyChan chan<- struct{},
+	name, addr string,
+	handler http.Handler,
+	shutdownTimeout time.Duration,
+) {
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		serverLog := logging.GetLogger().With("server", name)
+		lis, err := (&net.ListenConfig{}).Listen(context.Background(), "tcp", addr)
+		if err != nil {
+			errChan <- fmt.Errorf("[%s] server failed to listen: %w", name, err)
+			return
+		}
+		if readyChan != nil {
+			readyChan <- struct{}{}
+		}
+		defer func() { _ = lis.Close() }()
+
+		serverLog = serverLog.With("port", lis.Addr().String())
+
+		server := &http.Server{
+			Handler: handler,
+			BaseContext: func(_ net.Listener) context.Context {
+				return ctx
+			},
+			ConnState: func(_ net.Conn, state http.ConnState) {
+				switch state {
+				case http.StateNew:
+					metrics.IncrCounter([]string{"http", "connections", "opened", "total"}, 1)
+				case http.StateClosed:
+					metrics.IncrCounter([]string{"http", "connections", "closed", "total"}, 1)
+				}
+			},
+			ReadHeaderTimeout: 10 * time.Second,
+			ReadTimeout:       30 * time.Second,
+			WriteTimeout:      60 * time.Second,
+			IdleTimeout:       120 * time.Second,
+		}
+
+		// localCtx is used to signal the shutdown goroutine to exit.
+		localCtx, cancel := context.WithCancel(context.Background())
+		defer cancel()
+
+		shutdownComplete := make(chan struct{})
+		go func() {
+			defer close(shutdownComplete)
+			select {
+			case <-ctx.Done():
+				// This is the normal shutdown path.
+			case <-localCtx.Done():
+				// This is the shutdown path for when the server fails to start.
+			}
+			shutdownCtx, cancelTimeout := context.WithTimeout(context.Background(), shutdownTimeout)
+			defer cancelTimeout()
+			serverLog.Info("Attempting to gracefully shut down server...")
+			if err := server.Shutdown(shutdownCtx); err != nil {
+				serverLog.Error("Shutdown error", "error", err)
+			}
+		}()
+
+		serverLog.Info("HTTP server listening")
+		if err := server.Serve(lis); err != nil && err != http.ErrServerClosed {
+			errChan <- fmt.Errorf("[%s] server failed: %w", name, err)
+			cancel() // Signal shutdown goroutine to exit
+		}
+
 		<-shutdownComplete
 		serverLog.Info("Server shut down.")
 	}()
