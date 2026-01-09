@@ -9,11 +9,11 @@
 - [x] **Agent Debugger & Inspector**: Middleware for traffic replay and inspection.
 - [x] **Context Optimizer**: Middleware to prevent context bloat.
 - [x] **Diagnostic "Doctor" API**: `mcpctl` validation and health checks.
-- [x] **SSO Integration**: OIDC/SAML support via `server/pkg/middleware/sso.go`.
-- [x] **Prompt Injection Guardrails**: Security middleware.
-- [x] **WASM Plugin System**: Runtime for sandboxed plugins.
+- [x] **SSO Integration**: OIDC/SAML support.
+- [x] **Audit Log Export**: Native Splunk and Datadog integration.
+- [x] **Cost Attribution**: Token-based cost estimation and metrics.
 - [x] **Universal Connector Runtime**: Sidecar for stdio tools.
-- [x] **Terraform Provider**: Initial provider implementation.
+- [x] **WASM Plugin System**: Runtime for sandboxed plugins.
 
 ## 2. Top 10 Recommended Features
 
@@ -27,8 +27,8 @@
 | 6 | **Dynamic Secret Rotation** | **Security**: Integration with Vault or AWS Secrets Manager to automatically rotate credentials without restarting servers reduces attack surface. | High |
 | 7 | **Downstream mTLS** | **Security**: Enforcing mutual TLS for agents connecting to MCP Any ensures a Zero Trust architecture. | Medium |
 | 8 | **Just-In-Time (JIT) Access** | **Security**: Allows temporary privilege elevation for specific tools (e.g., "Grant Write access for 1 hour"), enforcing least privilege. | High |
-| 9 | **Audit Log Export** | **Compliance**: Real-time pushing of audit logs to SIEMs (Splunk, Datadog) is required for security auditing in large orgs. | Medium |
-| 10 | **Cost Attribution** | **Observability**: Tracking token usage and "cost" per user/team allows for chargeback models and resource optimization. | Medium |
+| 9 | **Persistent Vector Store** | **Core**: Official support for pgvector/Pinecone/Milvus for semantic caching persistence beyond SQLite. | Medium |
+| 10 | **SDK Consolidation** | **DevX**: Decouple `server/pkg/client` into a standalone Go SDK repository to improve developer experience for client integration. | Medium |
 
 ## 3. Codebase Health
 
