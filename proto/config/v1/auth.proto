@@ -59,100 +59,22 @@ message RemoteContent {
   Authentication auth = 2;
 }
 
-// Authentication defines the authentication method to use when fetching remote content.
+// ===================================================================
+// Authentication
+// ===================================================================
+
+// Authentication defines an authentication method that can be used for both
+// incoming requests (validation) and outgoing requests (client).
 message Authentication {
   oneof auth_method {
-    UpstreamAPIKeyAuth api_key = 1;
-    UpstreamBearerTokenAuth bearer_token = 2;
-    UpstreamBasicAuth basic_auth = 3;
-    UpstreamOAuth2Auth oauth2 = 5;
-  }
-}
-
-// ===================================================================
-// Upstream Authentication Definitions
-// ===================================================================
-
-// UpstreamAuthentication defines the authentication method to use when mcpany communicates
-// with an upstream service.
-message UpstreamAuthentication {
-  oneof auth_method {
-    UpstreamAPIKeyAuth api_key = 1;
-    UpstreamBearerTokenAuth bearer_token = 2;
-    UpstreamBasicAuth basic_auth = 3;
-    UpstreamOAuth2Auth oauth2 = 5;
-    UpstreamMTLSAuth mtls = 6;
-  }
-  bool use_environment_variable = 4;
-}
-
-// UpstreamAPIKeyAuth defines authentication using an API key sent to an upstream.
-message UpstreamAPIKeyAuth {
-  // The name of the header to carry the API key (e.g., "X-API-Key").
-  string header_name = 1;
-  // The API key value.
-  SecretValue api_key = 2;
-}
-
-// UpstreamBearerTokenAuth defines authentication using a bearer token.
-message UpstreamBearerTokenAuth {
-  // The bearer token.
-  SecretValue token = 1;
-}
-
-// UpstreamBasicAuth defines authentication using a username and password.
-message UpstreamBasicAuth {
-  string username = 1;
-  SecretValue password = 2;
-}
-
-// UpstreamOAuth2Auth defines authentication using the OAuth 2.0 client credentials flow.
-message UpstreamOAuth2Auth {
-  string token_url = 1;
-  SecretValue client_id = 2;
-  SecretValue client_secret = 3;
-  string scopes = 4;
-}
-
-// UpstreamMTLSAuth defines authentication using mutual TLS.
-message UpstreamMTLSAuth {
-  // Path to the client certificate file.
-  string client_cert_path = 1;
-  // Path to the client private key file.
-  string client_key_path = 2;
-  // Path to the CA certificate file for verifying the server's certificate.
-  string ca_cert_path = 3;
-}
-
-// AuthenticationConfig specifies the authentication method to use.
-message AuthenticationConfig {
-  oneof auth_method {
     APIKeyAuth api_key = 1 [json_name = "api_key"];
-    OAuth2Auth oauth2 = 2 [json_name = "oauth2"];
+    BearerTokenAuth bearer_token = 2 [json_name = "bearer_token"];
     BasicAuth basic_auth = 3 [json_name = "basic_auth"];
-    OIDCAuth oidc = 4 [json_name = "oidc"];
-    TrustedHeaderAuth trusted_header = 5 [json_name = "trusted_header"];
+    OAuth2Auth oauth2 = 4 [json_name = "oauth2"];
+    OIDCAuth oidc = 5 [json_name = "oidc"];
+    MTLSAuth mtls = 6 [json_name = "mtls"];
+    TrustedHeaderAuth trusted_header = 7 [json_name = "trusted_header"];
   }
-}
-
-// BasicAuth defines authentication using a username and password.
-// The password should be stored as a bcrypt hash.
-message BasicAuth {
-  string password_hash = 1 [json_name = "password_hash"];
-}
-
-// OIDCAuth defines authentication using OpenID Connect.
-message OIDCAuth {
-  string issuer = 1 [json_name = "issuer"];
-  string subject = 2 [json_name = "subject"];
-  string email = 3 [json_name = "email"];
-  repeated string audience = 4 [json_name = "audience"];
-}
-
-// TrustedHeaderAuth defines authentication using a trusted header (e.g. from an auth proxy).
-message TrustedHeaderAuth {
-  string header_name = 1 [json_name = "header_name"];
-  string header_value = 2 [json_name = "header_value"];
 }
 
 // APIKeyAuth defines authentication using an API key.
@@ -163,18 +85,70 @@ message APIKeyAuth {
   enum Location {
     HEADER = 0;
     QUERY = 1;
+    COOKIE = 2; // Added COOKIE for completeness
   }
   Location in = 2 [json_name = "in"];
-  // The actual API key value. It's recommended to use a secret management system.
-  string key_value = 3 [json_name = "key_value"];
+  // The API key value. Used for client authentication (outgoing).
+  SecretValue value = 3 [json_name = "value"];
+  // The expected API key value. Used for server validation (incoming).
+  // This is a plain string because we compare against it.
+  string verification_value = 4 [json_name = "verification_value"];
+}
+
+// BearerTokenAuth defines authentication using a bearer token.
+message BearerTokenAuth {
+  // The bearer token.
+  SecretValue token = 1 [json_name = "token"];
+}
+
+// BasicAuth defines authentication using a username and password.
+message BasicAuth {
+  string username = 1 [json_name = "username"];
+  // The password. Used for client authentication (outgoing).
+  SecretValue password = 2 [json_name = "password"];
+  // The bcrypt hash of the password. Used for server validation (incoming).
+  string password_hash = 3 [json_name = "password_hash"];
 }
 
 // OAuth2Auth defines authentication using the OAuth 2.0 client credentials flow.
 message OAuth2Auth {
-  string token_url = 3;
-  string authorization_url = 4;
+  string token_url = 1 [json_name = "token_url"];
+  SecretValue client_id = 2 [json_name = "client_id"];
+  SecretValue client_secret = 3 [json_name = "client_secret"];
   // Space-delimited list of scopes.
-  string scopes = 5;
-  string issuer_url = 6;
-  string audience = 7;
+  string scopes = 4 [json_name = "scopes"];
+  // Issuer URL for validation/discovery.
+  string issuer_url = 5 [json_name = "issuer_url"];
+  // Audience for validation.
+  string audience = 6 [json_name = "audience"];
+  // Authorization URL (optional, mainly for 3-legged flows if we ever support them).
+  string authorization_url = 7 [json_name = "authorization_url"];
+}
+
+// OIDCAuth defines authentication using OpenID Connect.
+message OIDCAuth {
+  // The issuer URL.
+  string issuer = 1 [json_name = "issuer"];
+  // The subject to validate (incoming).
+  string subject = 2 [json_name = "subject"];
+  // The email to validate (incoming).
+  string email = 3 [json_name = "email"];
+  // The audience(s) to validate (incoming).
+  repeated string audience = 4 [json_name = "audience"];
+}
+
+// MTLSAuth defines authentication using mutual TLS.
+message MTLSAuth {
+  // Path to the client certificate file.
+  string client_cert_path = 1 [json_name = "client_cert_path"];
+  // Path to the client private key file.
+  string client_key_path = 2 [json_name = "client_key_path"];
+  // Path to the CA certificate file for verifying the server's certificate.
+  string ca_cert_path = 3 [json_name = "ca_cert_path"];
+}
+
+// TrustedHeaderAuth defines authentication using a trusted header.
+message TrustedHeaderAuth {
+  string header_name = 1 [json_name = "header_name"];
+  string header_value = 2 [json_name = "header_value"];
 }

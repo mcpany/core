@@ -28,7 +28,7 @@ const (
 type User struct {
 	state                     protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_Id             *string                `protobuf:"bytes,1,opt,name=id"`
-	xxx_hidden_Authentication *AuthenticationConfig  `protobuf:"bytes,2,opt,name=authentication"`
+	xxx_hidden_Authentication *Authentication        `protobuf:"bytes,2,opt,name=authentication"`
 	xxx_hidden_ProfileIds     []string               `protobuf:"bytes,3,rep,name=profile_ids"`
 	xxx_hidden_Roles          []string               `protobuf:"bytes,4,rep,name=roles"`
 	XXX_raceDetectHookData    protoimpl.RaceDetectHookData
@@ -72,7 +72,7 @@ func (x *User) GetId() string {
 	return ""
 }
 
-func (x *User) GetAuthentication() *AuthenticationConfig {
+func (x *User) GetAuthentication() *Authentication {
 	if x != nil {
 		return x.xxx_hidden_Authentication
 	}
@@ -98,7 +98,7 @@ func (x *User) SetId(v string) {
 	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 4)
 }
 
-func (x *User) SetAuthentication(v *AuthenticationConfig) {
+func (x *User) SetAuthentication(v *Authentication) {
 	x.xxx_hidden_Authentication = v
 }
 
@@ -139,7 +139,7 @@ type User_builder struct {
 	// The unique ID of the user (UUID or Username).
 	Id *string
 	// The authentication configuration for the user.
-	Authentication *AuthenticationConfig
+	Authentication *Authentication
 	// The list of profile IDs this user has access to.
 	ProfileIds []string
 	// The list of roles assigned to the user.
@@ -164,20 +164,20 @@ var File_proto_config_v1_user_proto protoreflect.FileDescriptor
 
 const file_proto_config_v1_user_proto_rawDesc = "" +
 	"\n" +
-	"\x1aproto/config/v1/user.proto\x12\x10mcpany.config.v1\x1a\x1aproto/config/v1/auth.proto\"\x9e\x01\n" +
+	"\x1aproto/config/v1/user.proto\x12\x10mcpany.config.v1\x1a\x1aproto/config/v1/auth.proto\"\x98\x01\n" +
 	"\x04User\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\tR\x02id\x12N\n" +
-	"\x0eauthentication\x18\x02 \x01(\v2&.mcpany.config.v1.AuthenticationConfigR\x0eauthentication\x12 \n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\x12H\n" +
+	"\x0eauthentication\x18\x02 \x01(\v2 .mcpany.config.v1.AuthenticationR\x0eauthentication\x12 \n" +
 	"\vprofile_ids\x18\x03 \x03(\tR\vprofile_ids\x12\x14\n" +
 	"\x05roles\x18\x04 \x03(\tR\x05rolesB3B\tUserProtoZ&github.com/mcpany/core/proto/config/v1b\beditionsp\xe8\a"
 
 var file_proto_config_v1_user_proto_msgTypes = make([]protoimpl.MessageInfo, 1)
 var file_proto_config_v1_user_proto_goTypes = []any{
-	(*User)(nil),                 // 0: mcpany.config.v1.User
-	(*AuthenticationConfig)(nil), // 1: mcpany.config.v1.AuthenticationConfig
+	(*User)(nil),           // 0: mcpany.config.v1.User
+	(*Authentication)(nil), // 1: mcpany.config.v1.Authentication
 }
 var file_proto_config_v1_user_proto_depIdxs = []int32{
-	1, // 0: mcpany.config.v1.User.authentication:type_name -> mcpany.config.v1.AuthenticationConfig
+	1, // 0: mcpany.config.v1.User.authentication:type_name -> mcpany.config.v1.Authentication
 	1, // [1:1] is the sub-list for method output_type
 	1, // [1:1] is the sub-list for method input_type
 	1, // [1:1] is the sub-list for extension type_name

@@ -14,7 +14,7 @@ message User {
   // The unique ID of the user (UUID or Username).
   string id = 1 [json_name = "id"];
   // The authentication configuration for the user.
-  AuthenticationConfig authentication = 2 [json_name = "authentication"];
+  Authentication authentication = 2 [json_name = "authentication"];
   // The list of profile IDs this user has access to.
   repeated string profile_ids = 3 [json_name = "profile_ids"];
   // The list of roles assigned to the user.
