@@ -13,6 +13,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/alexliesenfeld/health"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/mcpany/core/server/pkg/client"
 	healthChecker "github.com/mcpany/core/server/pkg/health"
@@ -21,6 +22,18 @@ import (
 	"google.golang.org/grpc/credentials"
 	"google.golang.org/grpc/credentials/insecure"
 )
+
+// poolWithChecker wraps a pool.Pool and a health.Checker to ensure the checker
+// is stopped when the pool is closed.
+type poolWithChecker[T pool.ClosableClient] struct {
+	pool.Pool[T]
+	checker health.Checker
+}
+
+func (p *poolWithChecker[T]) Close() error {
+	p.checker.Stop()
+	return p.Pool.Close()
+}
 
 // NewGrpcPool creates a new connection pool for gRPC clients. It configures the
 // pool with a factory function that establishes new gRPC connections with the
@@ -94,5 +107,16 @@ func NewGrpcPool(
 		}
 		return client.NewGrpcClientWrapper(conn, config, checker), nil
 	}
-	return pool.New(factory, minSize, maxSize, idleTimeout, disableHealthCheck)
+
+	p, err := pool.New(factory, minSize, maxSize, idleTimeout, disableHealthCheck)
+	if err != nil {
+		// Ensure checker is stopped if pool creation fails
+		checker.Stop()
+		return nil, err
+	}
+
+	return &poolWithChecker[*client.GrpcClientWrapper]{
+		Pool:    p,
+		checker: checker,
+	}, nil
 }
