@@ -47,6 +47,7 @@ These features represent the next logical steps for the product, focusing on Ent
 ### Critical Areas (Refactoring Needed)
 
 1.  **Rate Limiting Complexity (`server/pkg/middleware/ratelimit.go`)**
+    *   **Status**: ✅ Refactored (Strategy Pattern Implemented).
     *   **Issue**: The current implementation tightly couples business logic with Redis/Memory backend logic.
     *   **Risk**: High cognitive load, difficult to test, hard to add new backends (e.g., Postgres).
     *   **Recommendation**: Extract a `RateLimitStrategy` interface.
