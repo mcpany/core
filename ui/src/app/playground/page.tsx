@@ -3,13 +3,12 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-
-import { PlaygroundClient } from "@/components/playground/playground-client";
+import { PlaygroundClientPro } from "@/components/playground/pro/playground-client-pro";
 
 export default function PlaygroundPage() {
   return (
     <div className="flex flex-col h-[calc(100vh-5rem)]">
-      <PlaygroundClient />
+      <PlaygroundClientPro />
     </div>
   );
 }

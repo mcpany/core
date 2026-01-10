@@ -1,0 +1,300 @@
+/**
+ * Copyright 2025 Author(s) of MCP Any
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+"use client";
+
+import { apiClient, ToolDefinition } from "@/lib/client";
+
+import { useState, useRef, useEffect } from "react";
+import { Send, Loader2, Sparkles, Terminal, PanelLeftClose, PanelLeftOpen, Zap } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+    DialogDescription
+} from "@/components/ui/dialog";
+import {
+  ResizableHandle,
+  ResizablePanel,
+  ResizablePanelGroup,
+} from "@/components/ui/resizable"
+
+import { ToolForm } from "@/components/playground/tool-form";
+import { ToolSidebar } from "./tool-sidebar";
+import { ChatMessage, Message } from "./chat-message";
+import { useIsMobile } from "@/hooks/use-mobile";
+
+export function PlaygroundClientPro() {
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [input, setInput] = useState("");
+
+  useEffect(() => {
+      setMessages([
+          {
+              id: "1",
+              type: "assistant",
+              content: "Hello! I am your MCP Assistant. Select a tool from the sidebar to configure and execute it, or type a command directly.",
+              timestamp: new Date(),
+          }
+      ]);
+  }, []);
+  const [isLoading, setIsLoading] = useState(false);
+  const [availableTools, setAvailableTools] = useState<ToolDefinition[]>([]);
+  const [toolToConfigure, setToolToConfigure] = useState<ToolDefinition | null>(null);
+  const scrollAreaRef = useRef<HTMLDivElement>(null);
+  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const isMobile = useIsMobile();
+
+  useEffect(() => {
+    apiClient.listTools()
+        .then(data => setAvailableTools(data.tools || []))
+        .catch(err => console.error("Failed to load tools:", err));
+  }, []);
+
+  useEffect(() => {
+      if (isMobile) setSidebarOpen(false);
+  }, [isMobile]);
+
+  // Auto-scroll to bottom
+  useEffect(() => {
+    if (scrollAreaRef.current) {
+        const scrollContainer = scrollAreaRef.current.querySelector('[data-radix-scroll-area-viewport]');
+        if (scrollContainer) {
+            scrollContainer.scrollTop = scrollContainer.scrollHeight;
+        }
+    }
+  }, [messages]);
+
+  const handleSend = async () => {
+    if (!input.trim()) return;
+
+    const userMsg: Message = {
+      id: Date.now().toString(),
+      type: "user",
+      content: input,
+      timestamp: new Date(),
+    };
+
+    setMessages((prev) => [...prev, userMsg]);
+    setInput("");
+    setIsLoading(true);
+
+    processResponse(input);
+  };
+
+  const handleToolFormSubmit = (data: Record<string, unknown>) => {
+    if (!toolToConfigure) return;
+    const command = `${toolToConfigure.name} ${JSON.stringify(data)}`;
+    setToolToConfigure(null);
+    setInput(command);
+
+    const userMsg: Message = {
+      id: Date.now().toString(),
+      type: "user",
+      content: command,
+      timestamp: new Date(),
+    };
+
+    setMessages((prev) => [...prev, userMsg]);
+    setIsLoading(true);
+    processResponse(command);
+  };
+
+  const processResponse = async (userInput: string) => {
+      const firstSpaceIndex = userInput.indexOf(' ');
+      let toolName = userInput;
+      let toolArgs = {};
+
+      if (firstSpaceIndex > 0) {
+          toolName = userInput.substring(0, firstSpaceIndex).trim();
+          const argsStr = userInput.substring(firstSpaceIndex + 1).trim();
+          if (argsStr) {
+             try {
+                toolArgs = JSON.parse(argsStr);
+            } catch {
+                 setMessages(prev => [...prev, {
+                    id: Date.now().toString(),
+                    type: "error",
+                    content: "Invalid JSON arguments. Use format: tool_name {\"key\": \"value\"}",
+                    timestamp: new Date(),
+                }]);
+                setIsLoading(false);
+                return;
+            }
+          }
+      }
+
+      setMessages(prev => [...prev, {
+          id: Date.now().toString() + "-tool",
+          type: "tool-call",
+          toolName: toolName,
+          toolArgs: toolArgs,
+          timestamp: new Date(),
+      }]);
+
+      try {
+          const result = await apiClient.executeTool({
+              name: toolName,
+              arguments: toolArgs
+          });
+
+          setMessages(prev => [...prev, {
+              id: Date.now().toString() + "-result",
+              type: "tool-result",
+              toolName: toolName,
+              toolResult: result,
+              timestamp: new Date(),
+          }]);
+
+      } catch (err: unknown) {
+          setMessages(prev => [...prev, {
+              id: Date.now().toString(),
+              type: "error",
+              content: (err instanceof Error ? err.message : String(err)) || "Tool execution failed",
+              timestamp: new Date(),
+          }]);
+      } finally {
+          setIsLoading(false);
+      }
+  };
+
+  return (
+    <div className="flex flex-col h-full bg-background">
+      <ResizablePanelGroup direction="horizontal" className="h-full items-stretch">
+         <ResizablePanel
+            defaultSize={25}
+            minSize={20}
+            maxSize={40}
+            collapsible={true}
+            collapsedSize={0}
+            className={!sidebarOpen ? "hidden" : ""}
+            onCollapse={() => setSidebarOpen(false)}
+            onExpand={() => setSidebarOpen(true)}
+         >
+             <ToolSidebar
+                tools={availableTools}
+                onSelectTool={setToolToConfigure}
+             />
+         </ResizablePanel>
+
+         <ResizableHandle withHandle={!isMobile} className={!sidebarOpen ? "hidden" : ""} />
+
+         <ResizablePanel defaultSize={75}>
+            <div className="flex flex-col h-full relative bg-muted/5">
+                {/* Header */}
+                <div className="h-14 border-b flex items-center justify-between px-4 bg-background/80 backdrop-blur-sm sticky top-0 z-10">
+                     <div className="flex items-center gap-2">
+                        {!sidebarOpen && (
+                             <Button variant="ghost" size="icon" onClick={() => setSidebarOpen(true)} className="h-8 w-8">
+                                 <PanelLeftOpen className="h-4 w-4" />
+                             </Button>
+                        )}
+                        {sidebarOpen && isMobile && (
+                            <Button variant="ghost" size="icon" onClick={() => setSidebarOpen(false)} className="h-8 w-8">
+                                <PanelLeftClose className="h-4 w-4" />
+                            </Button>
+                        )}
+                        <h2 className="font-semibold text-sm flex items-center gap-2">
+                            <Terminal className="h-4 w-4 text-primary" />
+                            Console
+                        </h2>
+                     </div>
+                     <div className="flex items-center gap-2">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="h-7 text-xs"
+                            onClick={() => setMessages([])}
+                            disabled={messages.length === 0}
+                          >
+                              Clear
+                          </Button>
+                     </div>
+                </div>
+
+                {/* Chat Area */}
+                <div className="flex-1 overflow-hidden relative">
+                    <ScrollArea className="h-full p-4" ref={scrollAreaRef}>
+                        <div className="max-w-4xl mx-auto pb-10 space-y-4">
+                            {messages.map((msg) => (
+                                <ChatMessage key={msg.id} message={msg} />
+                            ))}
+                            {isLoading && (
+                                <div className="flex items-center gap-2 text-muted-foreground text-xs animate-pulse pl-12">
+                                    <Sparkles className="size-3 text-primary" />
+                                    <span className="italic">Processing execution...</span>
+                                </div>
+                            )}
+                            <div className="h-4" /> {/* Spacer */}
+                        </div>
+                    </ScrollArea>
+                </div>
+
+                {/* Input Area */}
+                <div className="p-4 bg-background border-t">
+                    <div className="max-w-4xl mx-auto flex gap-3 relative">
+                         <div className="flex-1 relative">
+                            <Input
+                                placeholder="Enter command or select a tool..."
+                                value={input}
+                                onChange={(e) => setInput(e.target.value)}
+                                onKeyDown={(e) => e.key === "Enter" && handleSend()}
+                                disabled={isLoading}
+                                className="pr-12 font-mono text-sm bg-muted/20 focus-visible:bg-background transition-colors h-11"
+                                autoFocus
+                            />
+                             <div className="absolute right-1 top-1.5">
+                                <Button
+                                    size="sm"
+                                    className="h-8 w-8 p-0 rounded-md"
+                                    onClick={handleSend}
+                                    disabled={isLoading || !input.trim()}
+                                    aria-label="Send"
+                                >
+                                    {isLoading ? <Loader2 className="size-4 animate-spin" /> : <Send className="size-4" />}
+                                </Button>
+                            </div>
+                         </div>
+                    </div>
+                     <div className="max-w-4xl mx-auto mt-2 flex justify-between text-[10px] text-muted-foreground px-1">
+                        <span>Format: <code className="bg-muted px-1 rounded text-primary">tool_name {"{json_args}"}</code></span>
+                        <span className="hidden sm:inline">Press Enter to execute</span>
+                    </div>
+                </div>
+            </div>
+         </ResizablePanel>
+      </ResizablePanelGroup>
+
+      <Dialog open={!!toolToConfigure} onOpenChange={(open) => !open && setToolToConfigure(null)}>
+        <DialogContent className="sm:max-w-[600px] h-[80vh] flex flex-col p-0 gap-0 overflow-hidden">
+            <DialogHeader className="p-6 pb-2">
+                <DialogTitle className="flex items-center gap-2 text-xl">
+                    <div className="bg-primary/10 p-1.5 rounded-md">
+                        <Zap className="w-5 h-5 text-primary" />
+                    </div>
+                    {toolToConfigure?.name}
+                </DialogTitle>
+                <DialogDescription>
+                    Configure arguments for this tool execution.
+                </DialogDescription>
+            </DialogHeader>
+            <div className="flex-1 overflow-hidden p-6 pt-2">
+                {toolToConfigure && (
+                    <ToolForm
+                        tool={toolToConfigure}
+                        onSubmit={handleToolFormSubmit}
+                        onCancel={() => setToolToConfigure(null)}
+                    />
+                )}
+            </div>
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
+}
