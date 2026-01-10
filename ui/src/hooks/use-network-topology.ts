@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import { Node, Edge, useNodesState, useEdgesState, addEdge, Connection, MarkerType, Position } from '@xyflow/react';
 import dagre from 'dagre';
 import { Graph, Node as TopologyNode } from '../types/topology';
@@ -73,8 +73,9 @@ const getLayoutedElements = (nodes: Node[], edges: Edge[], direction = 'TB') => 
 export function useNetworkTopology() {
     const [nodes, setNodes, onNodesChange] = useNodesState<Node>([]);
     const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
+    const lastGraphJson = useRef<string>('');
 
-    const fetchData = useCallback(async () => {
+    const fetchData = useCallback(async (force = false) => {
         try {
             const res = await fetch('/api/v1/topology', {
                 headers: {
@@ -83,6 +84,15 @@ export function useNetworkTopology() {
             });
             if (!res.ok) throw new Error('Failed to fetch topology');
             const graph: Graph = await res.json();
+
+            // Optimization: Prevent redundant layout calculations and state updates
+            // if the topology data hasn't changed.
+            // This reduces React Flow re-renders and Dagre layout overhead (which is expensive).
+            const currentGraphJson = JSON.stringify(graph);
+            if (!force && currentGraphJson === lastGraphJson.current) {
+                return;
+            }
+            lastGraphJson.current = currentGraphJson;
 
             const newNodes: Node[] = [];
             const newEdges: Edge[] = [];
@@ -187,7 +197,7 @@ export function useNetworkTopology() {
     }, [fetchData]);
 
     const autoLayout = useCallback(() => {
-         fetchData();
+         fetchData(true);
     }, [fetchData]);
 
     return {
