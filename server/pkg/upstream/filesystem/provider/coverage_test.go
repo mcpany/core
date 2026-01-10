@@ -15,17 +15,19 @@ import (
 func TestLocalProvider_ResolvePath_EdgeCases(t *testing.T) {
 	// Setup: create a root dir
 	tmpDir := t.TempDir()
-	p := NewLocalProvider(nil, map[string]string{"/data": tmpDir})
+	p, err := NewLocalProvider(nil, map[string]string{"/data": tmpDir})
+	require.NoError(t, err)
 
 	// Case: no root paths defined
-	pEmpty := NewLocalProvider(nil, nil)
-	_, err := pEmpty.ResolvePath("/foo")
+	pEmpty, _ := NewLocalProvider(nil, nil)
+	_, err = pEmpty.ResolvePath("/foo")
 	assert.Error(t, err)
 	assert.Contains(t, err.Error(), "no root paths defined")
 
 	// Case: virtual path with no slash prefix
 	// The code handles this by adding /, but we should verifying it works
-	p2 := NewLocalProvider(nil, map[string]string{"data": tmpDir})
+	p2, err := NewLocalProvider(nil, map[string]string{"data": tmpDir})
+	require.NoError(t, err)
 	path, err := p2.ResolvePath("data/file.txt")
 	assert.NoError(t, err)
 	assert.Contains(t, path, tmpDir)
@@ -33,10 +35,11 @@ func TestLocalProvider_ResolvePath_EdgeCases(t *testing.T) {
 	// Case: root path does not exist
 	// filepath.Abs should succeed, but EvalSymlinks should fail
 	nonExistentRoot := filepath.Join(tmpDir, "does-not-exist")
-	p3 := NewLocalProvider(nil, map[string]string{"/": nonExistentRoot})
-	_, err = p3.ResolvePath("/file.txt")
+	p3, err := NewLocalProvider(nil, map[string]string{"/": nonExistentRoot})
+	// Now NewLocalProvider returns error for non-existent root
 	assert.Error(t, err)
-	assert.Contains(t, err.Error(), "failed to resolve root path symlinks")
+	assert.Nil(t, p3)
+	assert.Contains(t, err.Error(), "root path does not exist")
 
 	// Case: Non-existent file deep in path
 	// This exercises the "deepest existing ancestor" logic
@@ -44,7 +47,8 @@ func TestLocalProvider_ResolvePath_EdgeCases(t *testing.T) {
 	subDir := filepath.Join(tmpDir, "sub")
 	require.NoError(t, os.Mkdir(subDir, 0755))
 
-	p4 := NewLocalProvider(nil, map[string]string{"/": tmpDir})
+	p4, err := NewLocalProvider(nil, map[string]string{"/": tmpDir})
+	require.NoError(t, err)
 	resolved, err := p4.ResolvePath("/sub/non/existent/file.txt")
 	assert.NoError(t, err)
 	expected := filepath.Join(subDir, "non/existent/file.txt")
@@ -67,7 +71,8 @@ func TestLocalProvider_ResolvePath_EdgeCases(t *testing.T) {
 	symlink := filepath.Join(tmpDir, "badlink")
 	os.Symlink(outsideFile, symlink)
 
-	p5 := NewLocalProvider(nil, map[string]string{"/": tmpDir})
+	p5, err := NewLocalProvider(nil, map[string]string{"/": tmpDir})
+	require.NoError(t, err)
 	_, err = p5.ResolvePath("/badlink")
 	assert.Error(t, err)
 	assert.Contains(t, err.Error(), "access denied: path traversal detected")
@@ -90,7 +95,8 @@ func TestLocalProvider_ResolvePath_PermissionError(t *testing.T) {
 	defer os.Chmod(noPermDir, 0755)
 
 	// Test EvalSymlinks failure on target path
-	p := NewLocalProvider(nil, map[string]string{"/": tmpDir})
+	p, err := NewLocalProvider(nil, map[string]string{"/": tmpDir})
+	require.NoError(t, err)
 	_, err = p.ResolvePath(filepath.Join("noperm", "file.txt"))
 	// Depending on OS, this might fail with "permission denied" or work if parent has permissions.
 	// Actually, accessing "noperm/file.txt" where noperm is 0000 should fail stat.

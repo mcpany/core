@@ -30,6 +30,7 @@
 - [x] **Secrets Management Integration**: First-class integration with HashiCorp Vault or AWS Secrets Manager. [Docs](server/docs/reference/configuration.md#upstreamauthentication-outgoing)
 - [x] **Resilient Configuration Loading**: Better error reporting for invalid configs and keeping services in the list with error state.
 - [x] **Pre-flight Config Validation**: Added pre-flight checks for command existence and working directory validity to prevent "silent failures" at runtime.
+- [x] **Filesystem Root Path Validation**: Strict startup validation for filesystem adapter root paths to prevent "silent failures" and guide users on misconfiguration (e.g., Windows paths, non-existent dirs).
 
 ## 2. Top 10 Recommended Features
 
@@ -51,6 +52,8 @@ These features represent the next logical steps for the product, focusing on Ent
 | 11 | **Smart Retry Policies** | **Resilience**: Configurable exponential backoff and jitter for upstream connections to handle transient network failures gracefully. | Medium |
 | 12 | **Service Dependency Graph** | **Observability**: Visualize dependencies between services (e.g. Service A calls Tool B in Service C) to detect circular dependencies or bottlenecks. | High |
 | 11 | **Schema Validation Playground** | **DevX**: A dedicated UI in the dashboard to paste JSON/YAML and validate it against the server schema with real-time error highlighting. | Low |
+| 12 | **Advanced Windows Path Support** | **UX**: Dedicated support and validation for Windows-style paths (UNC, drive letters) in all adapters to reduce friction for Windows users (Source: GitHub #3174). | Medium |
+| 13 | **Memory Adapter Schema Validation** | **Robustness**: Enhanced validation for the Memory/Knowledge Graph adapter to gracefully handle or reject entities with unknown properties (Source: GitHub #3144). | Low |
 
 ## 3. Codebase Health
 
@@ -81,4 +84,4 @@ These features represent the next logical steps for the product, focusing on Ent
 
 *   **Core Middleware Pipeline**: The middleware architecture is robust and extensible.
 *   **Protocol Implementation**: `server/pkg/mcpserver` cleanly separates protocol details from business logic.
-*   **Documentation**: The project has excellent documentation coverage for most features.
+*   **Documentation**: The project has excellent documentation coverage for all public APIs.

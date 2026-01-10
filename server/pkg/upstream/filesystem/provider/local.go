@@ -20,11 +20,25 @@ type LocalProvider struct {
 }
 
 // NewLocalProvider creates a new LocalProvider from the given configuration.
-func NewLocalProvider(_ *configv1.OsFs, rootPaths map[string]string) *LocalProvider {
+func NewLocalProvider(_ *configv1.OsFs, rootPaths map[string]string) (*LocalProvider, error) {
+	// Validate root paths
+	for _, realPath := range rootPaths {
+		info, err := os.Stat(realPath)
+		if err != nil {
+			if os.IsNotExist(err) {
+				return nil, fmt.Errorf("root path does not exist: %s", realPath)
+			}
+			return nil, fmt.Errorf("failed to access root path %s: %w", realPath, err)
+		}
+		if !info.IsDir() {
+			return nil, fmt.Errorf("root path is not a directory: %s", realPath)
+		}
+	}
+
 	return &LocalProvider{
 		fs:        afero.NewOsFs(),
 		rootPaths: rootPaths,
-	}
+	}, nil
 }
 
 // GetFs returns the underlying filesystem.

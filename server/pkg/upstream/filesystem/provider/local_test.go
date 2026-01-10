@@ -116,7 +116,8 @@ func TestValidateLocalPath(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			p := NewLocalProvider(nil, tt.rootPaths)
+			p, err := NewLocalProvider(nil, tt.rootPaths)
+			require.NoError(t, err)
 			got, err := p.ResolvePath(tt.virtualPath)
 			if tt.wantErr {
 				assert.Error(t, err)
