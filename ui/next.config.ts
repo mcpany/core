@@ -88,6 +88,10 @@ const nextConfig: NextConfig = {
         source: '/mcpany.api.v1.RegistrationService/:path*',
         destination: `${process.env.BACKEND_URL || 'http://localhost:8080'}/mcpany.api.v1.RegistrationService/:path*`,
       },
+      {
+        source: '/auth/:path*',
+        destination: `${process.env.BACKEND_URL || 'http://localhost:8080'}/auth/:path*`,
+      },
     ];
   },
 };
