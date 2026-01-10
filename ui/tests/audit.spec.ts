@@ -6,13 +6,14 @@
 
 import { test } from '@playwright/test';
 import path from 'path';
+import fs from 'fs';
 
 test('capture screenshots', async ({ page }) => {
   const date = new Date().toISOString().split('T')[0];
   const auditDir = path.join(__dirname, `../.audit/ui/stack/${date}`);
 
-  if (!require('fs').existsSync(auditDir)) {
-    require('fs').mkdirSync(auditDir, { recursive: true });
+  if (!fs.existsSync(auditDir)) {
+    fs.mkdirSync(auditDir, { recursive: true });
   }
 
   await page.goto('/');
