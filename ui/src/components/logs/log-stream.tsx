@@ -131,6 +131,9 @@ export function LogStream() {
     if (isPaused) return
 
     const interval = setInterval(() => {
+      // Optimization: Stop generating logs when tab is hidden to save resources
+      if (document.hidden) return
+
       const levels: LogLevel[] = ["INFO", "INFO", "INFO", "WARN", "DEBUG", "ERROR"]
       const level = levels[Math.floor(Math.random() * levels.length)]
       const messages = SAMPLE_MESSAGES[level]
