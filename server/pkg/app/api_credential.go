@@ -211,26 +211,31 @@ func (a *Application) deleteCredentialHandler(w http.ResponseWriter, r *http.Req
 
 // TestAuthRequest defines the payload for testing authentication.
 type TestAuthRequest struct {
-	// The credential to use (can be a reference ID or inline Credential).
+	// CredentialID is the ID of the credential to use (optional).
 	CredentialID string `json:"credential_id"`
-	// OR inline authentication config
+	// Authentication is the inline authentication configuration (optional).
 	Authentication *configv1.Authentication `json:"authentication"`
-	// OR inline user token (for ad-hoc testing)
+	// UserToken is the inline user token for ad-hoc testing (optional).
 	UserToken *configv1.UserToken `json:"user_token"`
 
-	// The URL to test against.
+	// TargetURL is the URL to test against.
 	TargetURL string `json:"target_url"`
-	// HTTP Method (GET, POST, etc.)
+	// Method is the HTTP Method (GET, POST, etc.) to use.
 	Method string `json:"method"`
 }
 
 // TestAuthResponse defines the response for testing authentication.
 type TestAuthResponse struct {
-	Status     int               `json:"status"`
-	StatusText string            `json:"status_text"`
-	Headers    map[string]string `json:"headers"`
-	Body       string            `json:"body"`
-	Error      string            `json:"error,omitempty"`
+	// Status is the HTTP status code returned by the target URL.
+	Status int `json:"status"`
+	// StatusText is the HTTP status text.
+	StatusText string `json:"status_text"`
+	// Headers contains the response headers.
+	Headers map[string]string `json:"headers"`
+	// Body is the response body.
+	Body string `json:"body"`
+	// Error contains any error message if the request failed before receiving a response.
+	Error string `json:"error,omitempty"`
 }
 
 // testAuthHandler tests authentication against a target URL.

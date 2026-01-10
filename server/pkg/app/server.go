@@ -635,6 +635,13 @@ func (a *Application) Run(
 
 // ReloadConfig reloads the configuration from the given paths and updates the
 // services.
+//
+// Parameters:
+//   fs: The filesystem interface for reading configuration files.
+//   configPaths: A slice of paths to configuration files to reload.
+//
+// Returns:
+//   error: An error if the configuration reload fails.
 func (a *Application) ReloadConfig(fs afero.Fs, configPaths []string) error {
 	log := logging.GetLogger()
 	start := time.Now()
@@ -826,7 +833,12 @@ func (a *Application) reconcileServices(cfg *config_v1.McpAnyServerConfig) {
 }
 
 // WaitForStartup waits for the application to be fully initialized.
-// It returns nil if startup completes, or context error if context is canceled.
+//
+// Parameters:
+//   ctx: The context to wait on.
+//
+// Returns:
+//   error: nil if startup completes, or context error if context is canceled.
 func (a *Application) WaitForStartup(ctx context.Context) error {
 	select {
 	case <-a.startupCh:

@@ -42,10 +42,11 @@ type Engine interface {
 // `.yaml`, `.yml`, and `.textproto` file formats.
 //
 // Parameters:
-//   - path: The file path used to determine the configuration format.
+//   path: The file path used to determine the configuration format.
 //
-// Returns an `Engine` implementation for the corresponding file format, or an
-// error if the format is not supported.
+// Returns:
+//   Engine: An `Engine` implementation for the corresponding file format.
+//   error: An error if the format is not supported.
 func NewEngine(path string) (Engine, error) {
 	ext := strings.ToLower(filepath.Ext(path))
 	switch ext {
@@ -221,17 +222,24 @@ type FileStore struct {
 // paths to load configurations from.
 //
 // Parameters:
-//   - fs: The filesystem interface to use for file operations.
-//   - paths: A slice of file or directory paths to scan for configuration
-//     files.
+//   fs: The filesystem interface to use for file operations.
+//   paths: A slice of file or directory paths to scan for configuration files.
 //
-// Returns a new instance of `FileStore`.
+// Returns:
+//   *FileStore: A new instance of `FileStore`.
 func NewFileStore(fs afero.Fs, paths []string) *FileStore {
 	return &FileStore{fs: fs, paths: paths}
 }
 
 // NewFileStoreWithSkipErrors creates a new FileStore that skips malformed config files
 // instead of returning an error.
+//
+// Parameters:
+//   fs: The filesystem interface to use for file operations.
+//   paths: A slice of file or directory paths to scan for configuration files.
+//
+// Returns:
+//   *FileStore: A new instance of `FileStore`.
 func NewFileStoreWithSkipErrors(fs afero.Fs, paths []string) *FileStore {
 	return &FileStore{fs: fs, paths: paths, skipErrors: true}
 }
@@ -244,8 +252,12 @@ func NewFileStoreWithSkipErrors(fs afero.Fs, paths []string) *FileStore {
 // files are merged into earlier ones. This allows for a cascading configuration
 // setup where base configurations can be overridden by more specific ones.
 //
-// Returns the merged `McpAnyServerConfig` or an error if any part of the process
-// fails.
+// Parameters:
+//   ctx: The context for the operation.
+//
+// Returns:
+//   *configv1.McpAnyServerConfig: The merged `McpAnyServerConfig`.
+//   error: An error if any part of the process fails.
 func (s *FileStore) Load(ctx context.Context) (*configv1.McpAnyServerConfig, error) {
 	var mergedConfig *configv1.McpAnyServerConfig
 

@@ -106,7 +106,10 @@ const getMetadata = () => {
 };
 
 export const apiClient = {
-    // Services (Migrated to gRPC)
+    /**
+     * Lists all registered services.
+     * @returns A list of services with their current status and configuration.
+     */
     listServices: async () => {
         // Fallback to REST for E2E reliability until gRPC-Web is stable
         const res = await fetchWithAuth('/api/v1/services');
@@ -125,6 +128,11 @@ export const apiClient = {
             lastError: s.last_error,
         }));
     },
+    /**
+     * Retrieves a specific service by ID.
+     * @param id - The ID of the service to retrieve.
+     * @returns The service details.
+     */
     getService: async (id: string) => {
          try {
              // Try gRPC-Web first
@@ -155,6 +163,12 @@ export const apiClient = {
              throw e;
          }
     },
+    /**
+     * Enables or disables a service.
+     * @param name - The name of the service.
+     * @param disable - True to disable, false to enable.
+     * @returns The updated service status.
+     */
     setServiceStatus: async (name: string, disable: boolean) => {
         const response = await fetchWithAuth(`/api/v1/services/${name}`, {
             method: 'PUT',
@@ -169,6 +183,11 @@ export const apiClient = {
         // For E2E, we mainly check list. Let's assume list covers status.
         return {} as any;
     },
+    /**
+     * Registers a new upstream service.
+     * @param config - The configuration for the new service.
+     * @returns The registered service details.
+     */
     registerService: async (config: UpstreamServiceConfig) => {
         // Map camelCase (UI) to snake_case (Server REST)
         const payload: any = {
@@ -231,6 +250,11 @@ export const apiClient = {
         }
         return response.json();
     },
+    /**
+     * Updates an existing upstream service.
+     * @param config - The new configuration for the service.
+     * @returns The updated service details.
+     */
     updateService: async (config: UpstreamServiceConfig) => {
         // Same mapping as register
         const payload: any = {
@@ -273,6 +297,11 @@ export const apiClient = {
         }
         return response.json();
     },
+    /**
+     * Unregisters a service by ID.
+     * @param id - The ID of the service to unregister.
+     * @returns Empty object on success.
+     */
     unregisterService: async (id: string) => {
          const response = await fetchWithAuth(`/api/v1/services/${id}`, {
             method: 'DELETE'
@@ -284,11 +313,22 @@ export const apiClient = {
     // Tools (Legacy Fetch - Not yet migrated to Admin/Registration Service completely or keeping as is)
     // admin.proto has ListTools but we are focusing on RegistrationService first.
     // So keep using fetch for Tools/Secrets/etc for now.
+
+    /**
+     * Lists all available tools.
+     * @returns A list of tools.
+     */
     listTools: async () => {
         const res = await fetchWithAuth('/api/v1/tools');
         if (!res.ok) throw new Error('Failed to fetch tools');
         return res.json();
     },
+
+    /**
+     * Executes a tool.
+     * @param request - The execution request (tool name, arguments).
+     * @returns The result of the tool execution.
+     */
     executeTool: async (request: any) => {
         try {
             const res = await fetchWithAuth('/api/v1/execute', {
@@ -312,6 +352,11 @@ export const apiClient = {
     },
 
     // Resources
+
+    /**
+     * Lists all available resources.
+     * @returns A list of resources.
+     */
     listResources: async () => {
         try {
             const res = await fetchWithAuth('/api/v1/resources');
@@ -325,6 +370,11 @@ export const apiClient = {
             resources: MOCK_RESOURCES
         };
     },
+    /**
+     * Reads the content of a resource.
+     * @param uri - The URI of the resource to read.
+     * @returns The resource content.
+     */
     readResource: async (uri: string): Promise<ReadResourceResponse> => {
         // Attempt to call backend
         try {
@@ -352,6 +402,11 @@ export const apiClient = {
     },
 
     // Prompts
+
+    /**
+     * Lists all available prompts.
+     * @returns A list of prompts.
+     */
     listPrompts: async () => {
         const res = await fetchWithAuth('/api/v1/prompts');
         if (!res.ok) throw new Error('Failed to fetch prompts');
@@ -405,11 +460,22 @@ export const apiClient = {
 
 
     // Secrets
+
+    /**
+     * Lists all stored secrets.
+     * @returns A list of secrets (metadata only, values redacted).
+     */
     listSecrets: async () => {
         const res = await fetchWithAuth('/api/v1/secrets');
         if (!res.ok) throw new Error('Failed to fetch secrets');
         return res.json();
     },
+
+    /**
+     * Saves a new secret or updates an existing one.
+     * @param secret - The secret definition.
+     * @returns The saved secret metadata.
+     */
     saveSecret: async (secret: SecretDefinition) => {
         const res = await fetchWithAuth('/api/v1/secrets', {
             method: 'POST',
@@ -419,6 +485,12 @@ export const apiClient = {
         if (!res.ok) throw new Error('Failed to save secret');
         return res.json();
     },
+
+    /**
+     * Deletes a secret by ID.
+     * @param id - The ID of the secret to delete.
+     * @returns Empty object on success.
+     */
     deleteSecret: async (id: string) => {
         const res = await fetchWithAuth(`/api/v1/secrets/${id}`, {
             method: 'DELETE'

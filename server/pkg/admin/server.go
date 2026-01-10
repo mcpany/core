@@ -29,6 +29,14 @@ type Server struct {
 }
 
 // NewServer creates a new Admin Server.
+//
+// Parameters:
+//   cache: The caching middleware to use for clearing cache.
+//   toolManager: The tool manager to use for listing services and tools.
+//   storage: The storage backend to use for user management.
+//
+// Returns:
+//   *Server: A new instance of the Admin Server.
 func NewServer(
 	cache *middleware.CachingMiddleware,
 	toolManager tool.ManagerInterface,
@@ -42,6 +50,14 @@ func NewServer(
 }
 
 // ClearCache clears the cache.
+//
+// Parameters:
+//   ctx: The context for the request.
+//   _ : The request object (unused).
+//
+// Returns:
+//   *pb.ClearCacheResponse: Empty response on success.
+//   error: An error if the cache clearing failed or is not enabled.
 func (s *Server) ClearCache(ctx context.Context, _ *pb.ClearCacheRequest) (*pb.ClearCacheResponse, error) {
 	if s.cache == nil {
 		return nil, status.Error(codes.FailedPrecondition, "caching is not enabled")
@@ -53,6 +69,14 @@ func (s *Server) ClearCache(ctx context.Context, _ *pb.ClearCacheRequest) (*pb.C
 }
 
 // ListServices returns all registered services.
+//
+// Parameters:
+//   _ : The context for the request (unused).
+//   _ : The request object (unused).
+//
+// Returns:
+//   *pb.ListServicesResponse: The list of registered services.
+//   error: An error if the operation failed.
 func (s *Server) ListServices(_ context.Context, _ *pb.ListServicesRequest) (*pb.ListServicesResponse, error) {
 	serviceInfos := s.toolManager.ListServices()
 	var services []*configv1.UpstreamServiceConfig
@@ -65,6 +89,14 @@ func (s *Server) ListServices(_ context.Context, _ *pb.ListServicesRequest) (*pb
 }
 
 // GetService returns a specific service by ID.
+//
+// Parameters:
+//   _ : The context for the request (unused).
+//   req: The request object containing the service ID.
+//
+// Returns:
+//   *pb.GetServiceResponse: The requested service configuration.
+//   error: An error if the service was not found or has no config.
 func (s *Server) GetService(_ context.Context, req *pb.GetServiceRequest) (*pb.GetServiceResponse, error) {
 	info, ok := s.toolManager.GetServiceInfo(req.GetServiceId())
 	if !ok {
@@ -77,6 +109,14 @@ func (s *Server) GetService(_ context.Context, req *pb.GetServiceRequest) (*pb.G
 }
 
 // ListTools returns all registered tools.
+//
+// Parameters:
+//   _ : The context for the request (unused).
+//   _ : The request object (unused).
+//
+// Returns:
+//   *pb.ListToolsResponse: The list of all registered tools.
+//   error: An error if the operation failed.
 func (s *Server) ListTools(_ context.Context, _ *pb.ListToolsRequest) (*pb.ListToolsResponse, error) {
 	tools := s.toolManager.ListTools()
 	responseTools := make([]*mcprouterv1.Tool, 0, len(tools))
@@ -87,6 +127,14 @@ func (s *Server) ListTools(_ context.Context, _ *pb.ListToolsRequest) (*pb.ListT
 }
 
 // GetTool returns a specific tool by name.
+//
+// Parameters:
+//   _ : The context for the request (unused).
+//   req: The request object containing the tool name.
+//
+// Returns:
+//   *pb.GetToolResponse: The requested tool definition.
+//   error: An error if the tool was not found.
 func (s *Server) GetTool(_ context.Context, req *pb.GetToolRequest) (*pb.GetToolResponse, error) {
 	t, ok := s.toolManager.GetTool(req.GetToolName())
 	if !ok {
@@ -96,6 +144,14 @@ func (s *Server) GetTool(_ context.Context, req *pb.GetToolRequest) (*pb.GetTool
 }
 
 // CreateUser creates a new user.
+//
+// Parameters:
+//   ctx: The context for the request.
+//   req: The request object containing the user to create.
+//
+// Returns:
+//   *pb.CreateUserResponse: The created user.
+//   error: An error if the user creation failed.
 func (s *Server) CreateUser(ctx context.Context, req *pb.CreateUserRequest) (*pb.CreateUserResponse, error) {
 	if req.User == nil {
 		return nil, status.Error(codes.InvalidArgument, "user is required")
@@ -119,6 +175,14 @@ func (s *Server) CreateUser(ctx context.Context, req *pb.CreateUserRequest) (*pb
 }
 
 // GetUser retrieves a user by ID.
+//
+// Parameters:
+//   ctx: The context for the request.
+//   req: The request object containing the user ID.
+//
+// Returns:
+//   *pb.GetUserResponse: The requested user.
+//   error: An error if the user was not found.
 func (s *Server) GetUser(ctx context.Context, req *pb.GetUserRequest) (*pb.GetUserResponse, error) {
 	user, err := s.storage.GetUser(ctx, req.GetUserId())
 	if err != nil {
@@ -131,6 +195,14 @@ func (s *Server) GetUser(ctx context.Context, req *pb.GetUserRequest) (*pb.GetUs
 }
 
 // ListUsers lists all users.
+//
+// Parameters:
+//   ctx: The context for the request.
+//   _ : The request object (unused).
+//
+// Returns:
+//   *pb.ListUsersResponse: The list of all users.
+//   error: An error if the operation failed.
 func (s *Server) ListUsers(ctx context.Context, _ *pb.ListUsersRequest) (*pb.ListUsersResponse, error) {
 	users, err := s.storage.ListUsers(ctx)
 	if err != nil {
@@ -140,6 +212,14 @@ func (s *Server) ListUsers(ctx context.Context, _ *pb.ListUsersRequest) (*pb.Lis
 }
 
 // UpdateUser updates an existing user.
+//
+// Parameters:
+//   ctx: The context for the request.
+//   req: The request object containing the updated user information.
+//
+// Returns:
+//   *pb.UpdateUserResponse: The updated user.
+//   error: An error if the update failed.
 func (s *Server) UpdateUser(ctx context.Context, req *pb.UpdateUserRequest) (*pb.UpdateUserResponse, error) {
 	if req.User == nil {
 		return nil, status.Error(codes.InvalidArgument, "user is required")
@@ -163,6 +243,14 @@ func (s *Server) UpdateUser(ctx context.Context, req *pb.UpdateUserRequest) (*pb
 }
 
 // DeleteUser deletes a user by ID.
+//
+// Parameters:
+//   ctx: The context for the request.
+//   req: The request object containing the user ID to delete.
+//
+// Returns:
+//   *pb.DeleteUserResponse: Empty response on success.
+//   error: An error if the deletion failed.
 func (s *Server) DeleteUser(ctx context.Context, req *pb.DeleteUserRequest) (*pb.DeleteUserResponse, error) {
 	if err := s.storage.DeleteUser(ctx, req.GetUserId()); err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to delete user: %v", err)

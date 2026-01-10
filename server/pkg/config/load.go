@@ -21,15 +21,13 @@ import (
 // empty configuration is returned.
 //
 // Parameters:
-//   - store: The configuration store from which to load the configuration.
-//   - binaryType: The type of binary running the code (e.g., "server", "worker").
+//   ctx: The context for operation.
+//   store: The configuration store from which to load the configuration.
+//   binaryType: The type of binary running the code (e.g., "server", "worker").
 //
 // Returns:
-//   - A validated `McpAnyServerConfig` object.
-//   - An error if loading or validation fails.
-// LoadServices loads, validates, and processes the MCP Any server configuration.
-// It acts as a resilient loader that filters out invalid services to allow the server to start
-// even with partial configuration failures.
+//   *configv1.McpAnyServerConfig: A validated `McpAnyServerConfig` object.
+//   error: An error if loading or validation fails.
 func LoadServices(ctx context.Context, store Store, binaryType string) (*configv1.McpAnyServerConfig, error) {
 	log := logging.GetLogger().With("component", "configLoader")
 
@@ -82,6 +80,14 @@ func LoadServices(ctx context.Context, store Store, binaryType string) (*configv
 // LoadResolvedConfig loads key resolved configuration (merging services, setting defaults)
 // without performing strict validation or filtering. This is useful for tools that need
 // to inspect the configuration (like validate or doc) regardless of validity.
+//
+// Parameters:
+//   ctx: The context for operation.
+//   store: The configuration store.
+//
+// Returns:
+//   *configv1.McpAnyServerConfig: The resolved configuration.
+//   error: An error if loading fails.
 func LoadResolvedConfig(ctx context.Context, store Store) (*configv1.McpAnyServerConfig, error) {
 	log := logging.GetLogger().With("component", "configLoader")
 
