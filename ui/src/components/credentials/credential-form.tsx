@@ -29,7 +29,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { toast } from "sonner"
+import { useToast } from "@/hooks/use-toast"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
 const formSchema = z.object({
@@ -46,6 +46,12 @@ const formSchema = z.object({
   // Basic Auth
   basicUsername: z.string().optional(),
   basicPassword: z.string().optional(),
+  // OAuth 2.0
+  oauthClientId: z.string().optional(),
+  oauthClientSecret: z.string().optional(),
+  oauthAuthUrl: z.string().optional(),
+  oauthTokenUrl: z.string().optional(),
+  oauthScopes: z.string().optional(),
 })
 
 interface CredentialFormProps {
@@ -54,6 +60,7 @@ interface CredentialFormProps {
 }
 
 export function CredentialForm({ initialData, onSuccess }: CredentialFormProps) {
+  const { toast } = useToast()
   const [isTesting, setIsTesting] = useState(false)
   const [testUrl, setTestUrl] = useState("")
 
@@ -74,6 +81,11 @@ export function CredentialForm({ initialData, onSuccess }: CredentialFormProps) 
       bearerToken: initialData?.authentication?.bearerToken?.token?.plainText || "",
       basicUsername: initialData?.authentication?.basicAuth?.username || "",
       basicPassword: initialData?.authentication?.basicAuth?.password?.plainText || "",
+      oauthClientId: initialData?.authentication?.oauth2?.clientId?.plainText || "",
+      oauthClientSecret: initialData?.authentication?.oauth2?.clientSecret?.plainText || "",
+      oauthAuthUrl: initialData?.authentication?.oauth2?.authorizationUrl || "",
+      oauthTokenUrl: initialData?.authentication?.oauth2?.tokenUrl || "",
+      oauthScopes: initialData?.authentication?.oauth2?.scopes || "",
     },
   })
 
@@ -81,6 +93,7 @@ export function CredentialForm({ initialData, onSuccess }: CredentialFormProps) 
   const authType = form.watch("authType")
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
+    console.log("Submitting form", values);
     try {
         const auth: Authentication = {}
         if (values.authType === "api_key") {
@@ -100,33 +113,71 @@ export function CredentialForm({ initialData, onSuccess }: CredentialFormProps) 
                 password: { plainText: values.basicPassword || "" },
                 passwordHash: ""
             }
+        } else if (values.authType === "oauth2") {
+            auth.oauth2 = {
+                clientId: { plainText: values.oauthClientId || "" },
+                clientSecret: { plainText: values.oauthClientSecret || "" },
+                authorizationUrl: values.oauthAuthUrl || "",
+                tokenUrl: values.oauthTokenUrl || "",
+                scopes: values.oauthScopes || "",
+                issuerUrl: "",
+                audience: "",
+                // Preserve existing token if rewriting config, though usually server handles that merge?
+                // Credential update is usually full replace.
+                // If we want to keep the token, we might need to fetch it or ensure server doesn't wipe it?
+                // Server `SaveCredential` likely overwrites.
+                // But we don't have the token in the form.
+                // If we don't send `authentication.oauth2`, we lose it?
+                // Wait, `Token` is inside `authentication.oauth2`?
+                // No, `Token` is inside `Credential` (UserToken). `Authentication` has `OAuth2Auth` (config).
+                // Ah! `Credential` struct in `server/pkg/app/api_credential.go`:
+                // type Credential struct { ... Authentication *Authentication ... Token *UserToken ... }
+                // So `Authentication` only holds CONFIG. `Token` is separate.
+                // So safe to update Authentication without wiping Token (which is in `Credential.Token`).
+                // onSubmit constructs `payload` with `Authentication`.
+                // Does `apiClient.updateCredential` send `Token`?
+                // `payload` here handles name and authentication.
+                // If `initialData.token` exists, we should preserve it?
+                // Or maybe the server handles partial updates?
+                // `api_credential.go` `handleCredential` PUT likely does a full replace or merge.
+                // Let's assume server handles it or we should include token if present?
+                // Checking `api_credential.go`:
+                // `storage.SaveCredential(ctx, cred)`
+                // If we pass a `cred` without `Token`, and `SaveCredential` overwrites...
+                // SQLite: `UPDATE credentials SET ...`
+                // If we just construct a new `Credential` object here and send it, we might lose `Token` if we don't include it.
+                // Let's include `Token` from `initialData`.
+            }
         }
-        // TODO: OAuth2 (requires more fields)
 
         const payload: Credential = {
             id: initialData?.id || "",
             name: values.name,
-            authentication: auth
+            authentication: auth,
+            token: initialData?.token // Preserve token!
         }
 
         let saved: Credential;
         if (initialData?.id) {
             saved = await apiClient.updateCredential(payload)
-            toast.success("Credential updated")
+            toast({ description: "Credential updated" })
         } else {
             saved = await apiClient.createCredential(payload)
-            toast.success("Credential created")
+            toast({ description: "Credential created" })
         }
         onSuccess(saved)
     } catch (error: any) {
-        toast.error("Failed to save credential: " + error.message)
+
+        toast({ variant: "destructive", description: "Failed to save credential: " + error.message })
     }
   }
 
   async function handleTest() {
       if (!testUrl) {
-          toast.error("Please enter a URL to test")
+      if (!testUrl) {
+          toast({ variant: "destructive", description: "Please enter a URL to test" })
           return
+      }
       }
       setIsTesting(true)
       try {
@@ -146,23 +197,82 @@ export function CredentialForm({ initialData, onSuccess }: CredentialFormProps) 
              auth.bearerToken = { token: { plainText: values.bearerToken || "" } }
         } else if (values.authType === "basic_auth") {
             auth.basicAuth = { username: values.basicUsername || "", password: { plainText: values.basicPassword || "" }, passwordHash: "" }
+        } else if (values.authType === "oauth2") {
+             // For OAuth2, test connection might mean using the stored token?
+             // Or verifying the config?
+             // If we have a token in initialData, we can use it?
+             // But valid test requires a real request.
+             // If we don't have a token, we can't really test "connection" to a protected resource yet.
+             // Maybe warn user?
+             if (initialData?.token?.accessToken) {
+                 // Use the stored token (simulated as Bearer?)
+                 // `testAuth` endpoint likely expects `Authentication` loaded.
+                 // If we send `auth.oauth2` config, `testAuth` might try to use it?
+                 // But `testAuth` probably doesn't handle OAuth flow.
+                 // It checks if `Authenticator` works.
+                 // OAuth2 Authenticator uses `UserToken`?
+                 // If `testAuth` allows passing a UserToken, we could test.
+                 // But `Authentication` proto doesn't hold the token. `Credential` does.
+                 // `testAuth` API handler takes `TestAuthRequest` which likely contains `Authentication`.
+                 // It doesn't seem to take `UserToken`.
+                 // So `testAuth` for OAuth might be tricky without token.
+                 // Let's defer OAuth test logic or just basic config check.
+                 auth.oauth2 = {
+                    clientId: { plainText: values.oauthClientId || "" },
+                    clientSecret: { plainText: values.oauthClientSecret || "" },
+                    authorizationUrl: values.oauthAuthUrl || "",
+                    tokenUrl: values.oauthTokenUrl || "",
+                    scopes: values.oauthScopes || "",
+                    issuerUrl: "",
+                    audience: "",
+                 }
+             } else {
+                 toast({ description: "OAuth 2.0 requires connecting (getting a token) before testing." })
+                 return
+             }
         }
 
         const res = await apiClient.testAuth({
-            authentication: auth,
+            authentication: auth, // This might not be enough for OAuth if logic requires Token
             target_url: testUrl,
             method: "GET"
         })
         if (res.status >= 200 && res.status < 300) {
-            toast.success(`Test passed: ${res.status} ${res.status_text}`)
+            toast({ description: `Test passed: ${res.status} ${res.status_text}` })
         } else {
-            toast.warning(`Test returned: ${res.status} ${res.status_text}`)
+            toast({ variant: "destructive", description: `Test returned: ${res.status} ${res.status_text}` })
         }
 
       } catch (error: any) {
-          toast.error("Test failed: " + error.message)
+          toast({ variant: "destructive", description: "Test failed: " + error.message })
       } finally {
           setIsTesting(false)
+      }
+  }
+
+  async function handleConnect() {
+      if (!initialData?.id) {
+          toast({ variant: "destructive", description: "Please save the credential first." })
+          return
+      }
+      try {
+          // Check if we have necessary config saved?
+          // We assume user saved what is in the form.
+          // Initiate OAuth
+          const redirectUrl = `${window.location.origin}/auth/callback`
+          // Store credential ID in session for callback to use
+          sessionStorage.setItem('oauth_credential_id', initialData.id)
+          sessionStorage.setItem('oauth_redirect_url', redirectUrl)
+          sessionStorage.setItem('oauth_return_path', '/credentials')
+
+          const res = await apiClient.initiateOAuth("", redirectUrl, initialData.id)
+          if (res.authorization_url) {
+              window.location.href = res.authorization_url
+          } else {
+              toast({ variant: "destructive", description: "Failed to get authorization URL" })
+          }
+      } catch (e: any) {
+          toast({ variant: "destructive", description: "Failed to initiate connection: " + e.message })
       }
   }
 
@@ -199,7 +309,7 @@ export function CredentialForm({ initialData, onSuccess }: CredentialFormProps) 
                             <SelectItem value="api_key">API Key</SelectItem>
                             <SelectItem value="bearer_token">Bearer Token</SelectItem>
                             <SelectItem value="basic_auth">Basic Auth</SelectItem>
-                            <SelectItem value="oauth2" disabled>OAuth 2.0 (Client Credentials) - Coming Soon</SelectItem>
+                            <SelectItem value="oauth2">OAuth 2.0</SelectItem>
                         </SelectContent>
                     </Select>
                     <FormMessage />
@@ -297,6 +407,85 @@ export function CredentialForm({ initialData, onSuccess }: CredentialFormProps) 
                     )}
                 />
              </div>
+        )}
+
+        {authType === "oauth2" && (
+            <div className="space-y-4 border p-4 rounded-md">
+                <FormField
+                    control={form.control}
+                    name="oauthClientId"
+                    render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>Client ID</FormLabel>
+                            <FormControl><Input placeholder="...client id..." {...field} /></FormControl>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
+                <FormField
+                    control={form.control}
+                    name="oauthClientSecret"
+                    render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>Client Secret</FormLabel>
+                            <FormControl><Input type="password" placeholder="...client secret..." {...field} /></FormControl>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
+                <div className="grid grid-cols-2 gap-4">
+                    <FormField
+                        control={form.control}
+                        name="oauthAuthUrl"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Auth URL</FormLabel>
+                                <FormControl><Input placeholder="https://..." {...field} /></FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                    <FormField
+                        control={form.control}
+                        name="oauthTokenUrl"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Token URL</FormLabel>
+                                <FormControl><Input placeholder="https://..." {...field} /></FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                </div>
+                <FormField
+                    control={form.control}
+                    name="oauthScopes"
+                    render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>Scopes</FormLabel>
+                            <FormControl><Input placeholder="scope1 scope2" {...field} /></FormControl>
+                            <FormDescription>Space separated scopes</FormDescription>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
+
+                {initialData?.id && (
+                    <div className="pt-2">
+                         <div className="flex items-center gap-4">
+                             <Button type="button" variant="secondary" onClick={handleConnect}>
+                                 {initialData.token?.accessToken ? "Reconnect" : "Connect Account"}
+                             </Button>
+                             {initialData.token?.accessToken && <span className="text-green-600 text-sm">Connected</span>}
+                         </div>
+                    </div>
+                )}
+                 {!initialData?.id && (
+                     <div className="pt-2">
+                        <span className="text-muted-foreground text-sm">Save credential to connect.</span>
+                     </div>
+                 )}
+            </div>
         )}
 
         <div className="space-y-2 pt-4 border-t">

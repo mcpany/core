@@ -171,6 +171,8 @@ message UserToken {
   string scope = 7 [json_name = "scope"];
   // The timestamp when the token was created/updated (RFC3339).
   string updated_at = 8 [json_name = "updated_at"];
+  // The email associated with the token (if available).
+  string email = 9 [json_name = "email"];
 }
 
 // Credential represents a reusable authentication configuration.
