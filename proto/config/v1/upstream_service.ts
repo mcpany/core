@@ -598,6 +598,10 @@ export interface FilesystemUpstreamService {
   resources: ResourceDefinition[];
   /** Prompts that are exposed. */
   prompts: PromptDefinition[];
+  /** List of glob patterns for allowed paths. If empty, all paths under roots are allowed. */
+  allowedPaths: string[];
+  /** List of glob patterns for denied paths. Checked after allowed_paths. */
+  deniedPaths: string[];
   os?: OsFs | undefined;
   tmpfs?: MemMapFs | undefined;
   http?: HttpFs | undefined;
@@ -4788,6 +4792,8 @@ function createBaseFilesystemUpstreamService(): FilesystemUpstreamService {
     tools: [],
     resources: [],
     prompts: [],
+    allowedPaths: [],
+    deniedPaths: [],
     os: undefined,
     tmpfs: undefined,
     http: undefined,
@@ -4814,6 +4820,12 @@ export const FilesystemUpstreamService: MessageFns<FilesystemUpstreamService> = 
     }
     for (const v of message.prompts) {
       PromptDefinition.encode(v!, writer.uint32(42).fork()).join();
+    }
+    for (const v of message.allowedPaths) {
+      writer.uint32(50).string(v!);
+    }
+    for (const v of message.deniedPaths) {
+      writer.uint32(58).string(v!);
     }
     if (message.os !== undefined) {
       OsFs.encode(message.os, writer.uint32(82).fork()).join();
@@ -4887,6 +4899,22 @@ export const FilesystemUpstreamService: MessageFns<FilesystemUpstreamService> = 
           }
 
           message.prompts.push(PromptDefinition.decode(reader, reader.uint32()));
+          continue;
+        }
+        case 6: {
+          if (tag !== 50) {
+            break;
+          }
+
+          message.allowedPaths.push(reader.string());
+          continue;
+        }
+        case 7: {
+          if (tag !== 58) {
+            break;
+          }
+
+          message.deniedPaths.push(reader.string());
           continue;
         }
         case 10: {
@@ -4973,6 +5001,12 @@ export const FilesystemUpstreamService: MessageFns<FilesystemUpstreamService> = 
       prompts: globalThis.Array.isArray(object?.prompts)
         ? object.prompts.map((e: any) => PromptDefinition.fromJSON(e))
         : [],
+      allowedPaths: globalThis.Array.isArray(object?.allowed_paths)
+        ? object.allowed_paths.map((e: any) => globalThis.String(e))
+        : [],
+      deniedPaths: globalThis.Array.isArray(object?.denied_paths)
+        ? object.denied_paths.map((e: any) => globalThis.String(e))
+        : [],
       os: isSet(object.os) ? OsFs.fromJSON(object.os) : undefined,
       tmpfs: isSet(object.tmpfs) ? MemMapFs.fromJSON(object.tmpfs) : undefined,
       http: isSet(object.http) ? HttpFs.fromJSON(object.http) : undefined,
@@ -5005,6 +5039,12 @@ export const FilesystemUpstreamService: MessageFns<FilesystemUpstreamService> = 
     }
     if (message.prompts?.length) {
       obj.prompts = message.prompts.map((e) => PromptDefinition.toJSON(e));
+    }
+    if (message.allowedPaths?.length) {
+      obj.allowed_paths = message.allowedPaths;
+    }
+    if (message.deniedPaths?.length) {
+      obj.denied_paths = message.deniedPaths;
     }
     if (message.os !== undefined) {
       obj.os = OsFs.toJSON(message.os);
@@ -5048,6 +5088,8 @@ export const FilesystemUpstreamService: MessageFns<FilesystemUpstreamService> = 
     message.tools = object.tools?.map((e) => ToolDefinition.fromPartial(e)) || [];
     message.resources = object.resources?.map((e) => ResourceDefinition.fromPartial(e)) || [];
     message.prompts = object.prompts?.map((e) => PromptDefinition.fromPartial(e)) || [];
+    message.allowedPaths = object.allowedPaths?.map((e) => e) || [];
+    message.deniedPaths = object.deniedPaths?.map((e) => e) || [];
     message.os = (object.os !== undefined && object.os !== null) ? OsFs.fromPartial(object.os) : undefined;
     message.tmpfs = (object.tmpfs !== undefined && object.tmpfs !== null)
       ? MemMapFs.fromPartial(object.tmpfs)

@@ -128,7 +128,7 @@ func TestNewZipProvider_Error(t *testing.T) {
 }
 
 func TestLocalProvider_NoRoots(t *testing.T) {
-	p := NewLocalProvider(nil, nil)
+	p := NewLocalProvider(nil, nil, nil, nil)
 	_, err := p.ResolvePath("/test")
 	assert.Error(t, err)
 	assert.Equal(t, "no root paths defined", err.Error())

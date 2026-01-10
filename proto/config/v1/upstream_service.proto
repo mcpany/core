@@ -366,6 +366,12 @@ message FilesystemUpstreamService {
   // Prompts that are exposed.
   repeated PromptDefinition prompts = 5;
 
+  // List of glob patterns for allowed paths. If empty, all paths under roots are allowed.
+  repeated string allowed_paths = 6 [json_name = "allowed_paths"];
+
+  // List of glob patterns for denied paths. Checked after allowed_paths.
+  repeated string denied_paths = 7 [json_name = "denied_paths"];
+
   // The specific configuration for the filesystem type.
   oneof filesystem_type {
     OsFs os = 10;
