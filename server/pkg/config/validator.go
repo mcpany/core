@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"net/url"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"regexp"
 	"time"
@@ -35,7 +36,10 @@ const (
 	Client
 )
 
-var osStat = os.Stat
+var (
+	osStat       = os.Stat
+	execLookPath = exec.LookPath
+)
 
 // ValidationError encapsulates a validation error for a specific service.
 type ValidationError struct {
@@ -393,6 +397,14 @@ func validateCommandLineService(commandLineService *configv1.CommandLineUpstream
 	if commandLineService.GetCommand() == "" {
 		return fmt.Errorf("command_line_service has empty command")
 	}
+
+	// Only validate command existence if not running in a container
+	if commandLineService.GetContainerEnvironment().GetImage() == "" {
+		if err := validateCommandExists(commandLineService.GetCommand()); err != nil {
+			return fmt.Errorf("command_line_service command validation failed: %w", err)
+		}
+	}
+
 	if err := validateContainerEnvironment(commandLineService.GetContainerEnvironment()); err != nil {
 		return err
 	}
@@ -439,14 +451,23 @@ func validateMcpService(mcpService *configv1.McpUpstreamService) error {
 		if len(stdioConn.GetCommand()) == 0 {
 			return fmt.Errorf("mcp service with stdio_connection has empty command")
 		}
-		if stdioConn.GetWorkingDirectory() != "" {
-			// If running in Docker (container_image is set), we don't enforce host path restrictions
-			if stdioConn.GetContainerImage() == "" {
+
+		// If running in Docker (container_image is set), we don't enforce host path/command restrictions
+		if stdioConn.GetContainerImage() == "" {
+			if err := validateCommandExists(stdioConn.GetCommand()); err != nil {
+				return fmt.Errorf("mcp service with stdio_connection command validation failed: %w", err)
+			}
+
+			if stdioConn.GetWorkingDirectory() != "" {
 				if err := validation.IsRelativePath(stdioConn.GetWorkingDirectory()); err != nil {
 					return fmt.Errorf("mcp service with stdio_connection has insecure working_directory %q: %w", stdioConn.GetWorkingDirectory(), err)
 				}
+				if err := validateDirectoryExists(stdioConn.GetWorkingDirectory()); err != nil {
+					return fmt.Errorf("mcp service with stdio_connection working_directory validation failed: %w", err)
+				}
 			}
 		}
+
 		if err := validateSecretMap(stdioConn.GetEnv()); err != nil {
 			return fmt.Errorf("mcp service with stdio_connection has invalid secret environment variable: %w", err)
 		}
@@ -738,5 +759,47 @@ func validateGCSettings(gc *configv1.GCSettings) error {
 
 func validateProfileDefinition(_ *configv1.ProfileDefinition) error {
 	// Add specific profile validation if needed.
+	return nil
+}
+
+func validateCommandExists(command string) error {
+	// If the command is an absolute path, check if it exists and is executable
+	if filepath.IsAbs(command) {
+		info, err := osStat(command)
+		if err != nil {
+			if os.IsNotExist(err) {
+				return fmt.Errorf("executable not found at %q", command)
+			}
+			return fmt.Errorf("failed to check executable %q: %w", command, err)
+		}
+		if info.IsDir() {
+			return fmt.Errorf("%q is a directory, not an executable", command)
+		}
+		// Check for executable permission bit (simplified)
+		// Note: os.Access(path, unix.X_OK) is better but unix package adds dependency.
+		// For now os.Stat is good enough to check existence.
+		// exec.LookPath handles permission checks better.
+	}
+
+	// exec.LookPath searches for the executable in the directories named by the PATH environment variable.
+	// If the file contains a slash, it is tried directly and the PATH is not consulted.
+	_, err := execLookPath(command)
+	if err != nil {
+		return fmt.Errorf("command %q not found in PATH or is not executable: %w", command, err)
+	}
+	return nil
+}
+
+func validateDirectoryExists(path string) error {
+	info, err := osStat(path)
+	if err != nil {
+		if os.IsNotExist(err) {
+			return fmt.Errorf("directory %q does not exist", path)
+		}
+		return fmt.Errorf("failed to check directory %q: %w", path, err)
+	}
+	if !info.IsDir() {
+		return fmt.Errorf("%q is not a directory", path)
+	}
 	return nil
 }
