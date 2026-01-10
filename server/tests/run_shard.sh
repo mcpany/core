@@ -6,7 +6,6 @@ set -e
 
 # Usage: SHARD=1/4 ./run_shard.sh [additional go test args]
 
-# Default to running all if SHARD is not set
 if [ -z "$SHARD" ]; then
     echo "SHARD env var not set, running all tests..."
     SHARD_INDEX=1
