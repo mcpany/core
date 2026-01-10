@@ -51,3 +51,4 @@ ui/secrets-store.json
 .build-context/
 proto/node_modules/
 proto/node_modules
+server/pkg/tool/testdata/jsonecho/jsonecho
