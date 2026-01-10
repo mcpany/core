@@ -242,7 +242,7 @@ func TestValidateMcpService_StdioConnection(t *testing.T) {
 	oldLookPath := execLookPath
 	defer func() { execLookPath = oldLookPath }()
 	execLookPath = func(file string) (string, error) {
-		if file == "ls" {
+		if file == "ls" || file == "/bin/ls" {
 			return "/bin/ls", nil
 		}
 		return "", os.ErrNotExist
@@ -318,6 +318,131 @@ func TestValidateMcpService_StdioConnection(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			err := validateMcpService(tt.service)
+			if tt.expectErr {
+				require.Error(t, err)
+				assert.Contains(t, err.Error(), tt.errMsg)
+			} else {
+				require.NoError(t, err)
+			}
+		})
+	}
+}
+
+func TestValidateCommandExists(t *testing.T) {
+	// Mock execLookPath
+	oldLookPath := execLookPath
+	defer func() { execLookPath = oldLookPath }()
+	execLookPath = func(file string) (string, error) {
+		if file == "ls" || file == "/bin/ls" {
+			return "/bin/ls", nil
+		}
+		return "", os.ErrNotExist
+	}
+
+	// Mock osStat
+	oldOsStat := osStat
+	defer func() { osStat = oldOsStat }()
+	osStat = func(name string) (os.FileInfo, error) {
+		if name == "/bin/ls" {
+			return &mockFileInfo{isDir: false}, nil
+		}
+		if name == "/bin/dir" {
+			return &mockFileInfo{isDir: true}, nil
+		}
+		return nil, os.ErrNotExist
+	}
+
+	tests := []struct {
+		name      string
+		command   string
+		expectErr bool
+		errMsg    string
+	}{
+		{
+			name:      "Command in PATH",
+			command:   "ls",
+			expectErr: false,
+		},
+		{
+			name:      "Command not in PATH",
+			command:   "missing_cmd",
+			expectErr: true,
+			errMsg:    "not found in PATH",
+		},
+		{
+			name:      "Absolute path exists",
+			command:   "/bin/ls",
+			expectErr: false,
+		},
+		{
+			name:      "Absolute path missing",
+			command:   "/bin/missing",
+			expectErr: true,
+			errMsg:    "executable not found",
+		},
+		{
+			name:      "Absolute path is directory",
+			command:   "/bin/dir",
+			expectErr: true,
+			errMsg:    "is a directory",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			err := validateCommandExists(tt.command)
+			if tt.expectErr {
+				require.Error(t, err)
+				assert.Contains(t, err.Error(), tt.errMsg)
+			} else {
+				require.NoError(t, err)
+			}
+		})
+	}
+}
+
+func TestValidateDirectoryExists(t *testing.T) {
+	// Mock osStat
+	oldOsStat := osStat
+	defer func() { osStat = oldOsStat }()
+	osStat = func(name string) (os.FileInfo, error) {
+		if name == "/valid/dir" {
+			return &mockFileInfo{isDir: true}, nil
+		}
+		if name == "/valid/file" {
+			return &mockFileInfo{isDir: false}, nil
+		}
+		return nil, os.ErrNotExist
+	}
+
+	tests := []struct {
+		name      string
+		path      string
+		expectErr bool
+		errMsg    string
+	}{
+		{
+			name:      "Valid directory",
+			path:      "/valid/dir",
+			expectErr: false,
+		},
+		{
+			name:      "Missing directory",
+			path:      "/missing/dir",
+			expectErr: true,
+			errMsg:    "directory \"/missing/dir\" does not exist",
+		},
+		{
+			name:      "Path is a file",
+			path:      "/valid/file",
+			expectErr: true,
+			errMsg:    "is not a directory",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			err := validateDirectoryExists(tt.path)
 			if tt.expectErr {
 				require.Error(t, err)
 				assert.Contains(t, err.Error(), tt.errMsg)
