@@ -122,6 +122,35 @@ func TestOperatorE2E(t *testing.T) {
 	if err := runCommand(t, ctx, rootDir, "kubectl", "wait", "--for=condition=ready", "pod", "-l", "app.kubernetes.io/name=mcpany", "-n", namespace, "--timeout=60s"); err != nil {
 		t.Fatalf("Failed to wait for pods: %v", err)
 	}
+
+	// 8. Run UI Tests
+	t.Log("Running UI Tests...")
+	// Start port-forwarding for the UI service
+	// We need to run this in the background
+	uiPortForwardCmd := exec.CommandContext(ctx, "kubectl", "port-forward", "-n", namespace, "svc/mcpany-ui", "9002:80")
+	if err := uiPortForwardCmd.Start(); err != nil {
+		t.Fatalf("Failed to start UI port-forward: %v", err)
+	}
+	defer func() {
+		_ = uiPortForwardCmd.Process.Kill()
+	}()
+
+	// Wait a bit for port-forward to be ready
+	time.Sleep(5 * time.Second)
+
+	// Run Playwright tests
+	// We assume 'npx' is available and we are in the root or can find ui dir
+	uiDir := filepath.Join(rootDir, "ui")
+	playwrightCmd := exec.CommandContext(ctx, "npx", "playwright", "test")
+	playwrightCmd.Dir = uiDir
+	playwrightCmd.Env = append(os.Environ(), "PLAYWRIGHT_BASE_URL=http://localhost:9002")
+	playwrightCmd.Stdout = os.Stdout
+	playwrightCmd.Stderr = os.Stderr
+
+	t.Log("Executing npx playwright test in", uiDir)
+	if err := playwrightCmd.Run(); err != nil {
+		t.Fatalf("UI Tests failed: %v", err)
+	}
 }
 
 func checkPrerequisites(t *testing.T) {
