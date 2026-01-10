@@ -9,7 +9,7 @@ WORKDIR /work/ui
 COPY ui/package.json ui/package-lock.json ./
 
 # Install dependencies
-RUN npm ci
+RUN npm install
 
 # Copy the rest of the UI code
 COPY ui/ .
