@@ -28,4 +28,4 @@ The **Alerts & Incidents** feature provides a centralized console for monitoring
 
 The feature has been verified with E2E tests using Playwright.
 
-![Alerts Page Screenshot](.audit/ui/2026-01-09/alerts_feature.png)
+![Alerts Page Screenshot](images/alerts_feature.png)

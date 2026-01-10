@@ -11,7 +11,7 @@ The **Traffic Inspector & Replay** (formerly Request Tracer) is an advanced obse
 
 ## Screenshot
 
-![Trace View](images/trace_view.png)
+![Trace View](images/traces_feature.png)
 
 ## Implementation Details
 
