@@ -11,6 +11,10 @@ test('capture screenshots', async ({ page }) => {
   const date = new Date().toISOString().split('T')[0];
   const auditDir = path.join(__dirname, `../.audit/ui/stack/${date}`);
 
+  if (!require('fs').existsSync(auditDir)) {
+    require('fs').mkdirSync(auditDir, { recursive: true });
+  }
+
   await page.goto('/');
   await page.waitForTimeout(1000); // Wait for animations
   await page.screenshot({ path: `${auditDir}/dashboard.png`, fullPage: true });

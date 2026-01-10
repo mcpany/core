@@ -34,7 +34,8 @@ test.describe('Audit Smoke Tests', () => {
 
 test.describe('MCP Any Audit Screenshots', () => {
   // Skip these tests unless explicitly requested to avoid polluting git history
-  test.skip(process.env.CAPTURE_SCREENSHOTS !== 'true', 'Skipping audit screenshots');
+  // Enabled audit screenshots
+  // test.skip(process.env.CAPTURE_SCREENSHOTS !== 'true', 'Skipping audit screenshots');
 
   const date = new Date().toISOString().split('T')[0];
   const auditDir = path.join(__dirname, '../../.audit/ui', date);
@@ -55,14 +56,14 @@ test.describe('MCP Any Audit Screenshots', () => {
 
   test('Capture Tools', async ({ page }) => {
      await page.goto('/tools');
-     await page.waitForSelector('h1:has-text("Tools")');
+     await expect(page.getByRole('heading', { name: 'Tools' })).toBeVisible({ timeout: 15000 });
      await page.waitForTimeout(1000);
      await page.screenshot({ path: path.join(auditDir, 'tools.png'), fullPage: true });
   });
 
   test('Capture Resources', async ({ page }) => {
      await page.goto('/resources');
-     await page.waitForSelector('h1:has-text("Resources")');
+     await expect(page.getByRole('heading', { name: 'Resources' })).toBeVisible({ timeout: 15000 });
      await page.waitForTimeout(1000);
      await page.screenshot({ path: path.join(auditDir, 'resources.png'), fullPage: true });
   });
