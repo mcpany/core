@@ -5,6 +5,7 @@ package http
 
 import (
 	"context"
+	"net"
 	"testing"
 
 	"github.com/mcpany/core/server/pkg/pool"
@@ -21,6 +22,11 @@ func TestHTTPUpstream_InputSchema_BugRepro(t *testing.T) {
 	tm := tool.NewManager(nil)
 	upstream := NewUpstream(pm)
 
+	// Start dummy listener
+	l, _ := net.Listen("tcp", "localhost:0")
+	defer l.Close()
+	addr := l.Addr().String()
+
 	// Configuration with both InputSchema and Parameters.
 	// Parameters define a required path parameter.
 	// InputSchema defines a body parameter but omits the path parameter (or doesn't mark it required).
@@ -28,7 +34,7 @@ func TestHTTPUpstream_InputSchema_BugRepro(t *testing.T) {
 	configJSON := `{
 		"name": "schema-bug-service",
 		"http_service": {
-			"address": "http://localhost",
+			"address": "http://` + addr + `",
 			"tools": [{"name": "test-op", "call_id": "test-op-call"}],
 			"calls": {
 				"test-op-call": {

@@ -6,6 +6,7 @@ package http
 import (
 	"context"
 	"errors"
+	"net"
 	"testing"
 	"time"
 
@@ -26,10 +27,15 @@ func TestHTTPUpstream_Register_CallPolicy_Blocked(t *testing.T) {
 	tm := tool.NewManager(nil)
 	upstream := NewUpstream(pm)
 
+	// Start dummy listener
+	l, _ := net.Listen("tcp", "localhost:0")
+	defer l.Close()
+	addr := l.Addr().String()
+
 	configJSON := `{
 		"name": "blocked-service",
 		"http_service": {
-			"address": "http://localhost",
+			"address": "http://` + addr + `",
 			"tools": [
 				{"name": "allowed", "call_id": "call-allowed"},
 				{"name": "blocked", "call_id": "call-blocked"},
@@ -68,10 +74,15 @@ func TestHTTPUpstream_Register_MalformedURL(t *testing.T) {
 	tm := tool.NewManager(nil)
 	upstream := NewUpstream(pm)
 
+	// Start dummy listener
+	l, _ := net.Listen("tcp", "localhost:0")
+	defer l.Close()
+	addr := l.Addr().String()
+
 	configJSON := `{
 		"name": "bad-url-service",
 		"http_service": {
-			"address": "http://localhost",
+			"address": "http://` + addr + `",
 			"tools": [{"name": "bad-op", "call_id": "bad-op-call"}],
 			"calls": {
 				"bad-op-call": {
@@ -96,10 +107,15 @@ func TestHTTPUpstream_Register_ExportPolicy(t *testing.T) {
 	tm := tool.NewManager(nil)
 	upstream := NewUpstream(pm)
 
+	// Start dummy listener
+	l, _ := net.Listen("tcp", "localhost:0")
+	defer l.Close()
+	addr := l.Addr().String()
+
 	configJSON := `{
 		"name": "export-policy-test",
 		"http_service": {
-			"address": "http://localhost",
+			"address": "http://` + addr + `",
 			"tools": [
 				{"name": "private-tool", "call_id": "call1"},
 				{"name": "public-tool", "call_id": "call2"}
@@ -130,10 +146,15 @@ func TestHTTPUpstream_Register_AutoDiscover(t *testing.T) {
 	tm := tool.NewManager(nil)
 	upstream := NewUpstream(pm)
 
+	// Start dummy listener
+	l, _ := net.Listen("tcp", "localhost:0")
+	defer l.Close()
+	addr := l.Addr().String()
+
 	configJSON := `{
 		"name": "autodiscover-test",
 		"http_service": {
-			"address": "http://localhost",
+			"address": "http://` + addr + `",
 			"calls": {
 				"call1": {"id": "call1", "method": "HTTP_METHOD_GET"},
 				"call2": {"id": "call2", "method": "HTTP_METHOD_GET"}
@@ -157,10 +178,15 @@ func TestHTTPUpstream_Register_Comprehensive(t *testing.T) {
 	tm := tool.NewManager(nil)
 	upstream := NewUpstream(pm)
 
+	// Start dummy listener
+	l, _ := net.Listen("tcp", "localhost:0")
+	defer l.Close()
+	addr := l.Addr().String()
+
 	configJSON := `{
 		"name": "comprehensive-test",
 		"http_service": {
-			"address": "http://localhost",
+			"address": "http://` + addr + `",
 			"tools": [
 				{"name": "allowed-tool", "call_id": "call-allowed"},
 				{"name": "blocked-tool", "call_id": "call-blocked"}
@@ -205,14 +231,6 @@ func TestHTTPUpstream_Register_Comprehensive(t *testing.T) {
 	serviceConfig := &configv1.UpstreamServiceConfig{}
 	require.NoError(t, protojson.Unmarshal([]byte(configJSON), serviceConfig))
 
-	// We need to register tool for res-dynamic-no-tool to verify "Tool not found for dynamic resource" check?
-	// Actually "call-dynamic" exists but no tool uses it in "tools".
-	// So createAndRegisterHTTPTools will NOT create a tool for "call-dynamic" (unless autodiscover).
-	// So "tool, ok := callIDToName[call.GetId()]" might find "call-dynamic" -> logic?
-	// Wait, callIDToName maps call_id -> tool_name from definitions.
-	// "call-dynamic" is NOT in "tools". So it won't be in callIDToName.
-	// So "tool not found for dynamic resource" path (line 364) should be hit.
-
 	promptManager := prompt.NewManager()
 	resourceManager := resource.NewManager()
 
@@ -249,14 +267,15 @@ func TestHTTPUpstream_Register_InputSchemaGeneration(t *testing.T) {
 	tm := tool.NewManager(nil)
 	upstream := NewUpstream(pm)
 
-	// Create parameters manually to ensure they are valid for schemaconv
-	// We need configv1.Parameter which maps to jsonschema
-	// Actually schemaconv takes []*configv1.Parameter
+	// Start dummy listener
+	l, _ := net.Listen("tcp", "localhost:0")
+	defer l.Close()
+	addr := l.Addr().String()
 
 	configJSON := `{
 		"name": "schema-gen-test",
 		"http_service": {
-			"address": "http://localhost",
+			"address": "http://` + addr + `",
 			"tools": [
 				{"name": "schema-tool", "call_id": "call1"}
 			],
@@ -324,10 +343,15 @@ func TestHTTPUpstream_Register_PoolConfig(t *testing.T) {
 	tm := tool.NewManager(nil)
 	upstream := NewUpstream(pm)
 
+	// Start dummy listener
+	l, _ := net.Listen("tcp", "localhost:0")
+	defer l.Close()
+	addr := l.Addr().String()
+
 	configJSON := `{
 		"name": "pool-config-test",
 		"http_service": {
-			"address": "http://localhost"
+			"address": "http://` + addr + `"
 		},
 		"connection_pool": {
 			"max_connections": 5,
@@ -347,10 +371,15 @@ func TestHTTPUpstream_Register_PoolCreationFailure(t *testing.T) {
 	tm := tool.NewManager(nil)
 	upstream := NewUpstream(pm)
 
+	// Start dummy listener
+	l, _ := net.Listen("tcp", "localhost:0")
+	defer l.Close()
+	addr := l.Addr().String()
+
 	configJSON := `{
 		"name": "pool-fail-service",
 		"http_service": {
-			"address": "http://localhost"
+			"address": "http://` + addr + `"
 		}
 	}`
 	serviceConfig := &configv1.UpstreamServiceConfig{}
@@ -373,11 +402,16 @@ func TestHTTPUpstream_Register_ResourceErrors(t *testing.T) {
 	pm := pool.NewManager()
 	upstream := NewUpstream(pm)
 
+	// Start dummy listener
+	l, _ := net.Listen("tcp", "localhost:0")
+	defer l.Close()
+	addr := l.Addr().String()
+
 	// We need a service with tools to test linking
 	configJSON := `{
 		"name": "resource-error-service",
 		"http_service": {
-			"address": "http://localhost",
+			"address": "http://` + addr + `",
 			"tools": [
 				{"name": "tool1", "call_id": "call1"}
 			],
@@ -403,51 +437,11 @@ func TestHTTPUpstream_Register_ResourceErrors(t *testing.T) {
 			]
 		}
 	}`
-	// Note: for res-tool-not-found, we need "call1" to be in config, so it maps to "tool1",
-	// but we will trick the toolManager to NOT have "tool1" registered, or failing `GetTool`.
-	// Actually `Register` calls `createAndRegisterHTTPTools` first, which registers tools.
-	// So `tool1` WILL be registered.
-	// To trigger "Tool not found for dynamic resource", we might need to simulate `toolManager.GetTool` failure.
-	// Or we can use `call-dynamic` which doesn't have a tool definition but is in calls?
-	// If it's not in `tools` list, it won't be registered unless auto-discover is on.
-	// If it's not in `tools` list, `callIDToName` won't have it. -> "tool not found for dynamic resource" log and continue. (Line 364 in http.go)
 
 	serviceConfig := &configv1.UpstreamServiceConfig{}
 	require.NoError(t, protojson.Unmarshal([]byte(configJSON), serviceConfig))
 
-	// Mock tool manager to control GetTool?
-	// The standard `tool.NewManager` works fine.
-	// For `res-tool-not-found`:
-	// If we provide a call that IS in `tools` (so callIDToName has it),
-	// but for some reason `toolManager.GetTool` returns false.
-	// `createAndRegisterHTTPTools` adds tools to manager.
-	// If we want it to fail look up, maybe we can delete it from manager concurrently? No, standard logic is synchronous.
-	// Actually, `callIDToName` is built from `httpService.GetTools()`.
-	// `discoveredTools` are added to `toolManager`.
-	// If we have a tool in `httpService.GetTools()` but `AddTool` fails?
-	// We can use a mock tool manager again if we want precise control.
-
-	// Let's use `NewMockToolManager` from `http_test.go` if we can import/access it?
-	// It's in `http_test.go`, same package, but not exported. `http_coverage_test.go` is same package `http`.
-	// So we can use `newMockToolManager`.
-
 	mockTm := newMockToolManager()
-
-	// For `res-missing-call`: dynamic with nil http_call. Handled?
-	// Proto `GetHttpCall()` returns nil if missing. Code: `if call == nil { continue }`
-
-	// For `res-unknown-call`: `unknown-call` not in `callIDToName`. -> "tool not found for dynamic resource" (id error).
-
-	// For `res-tool-not-found`:
-	// We want `call1` -> `tool1` in `callIDToName`.
-	// But `toolManager.GetTool(serviceID + ".tool1")` to return false.
-	// `createAndRegisterHTTPTools` adds it to `mockTm`.
-	// We can make `mockTm` fail `GetTool` for specific name?
-	// Or we can make `AddTool` fail so it never gets added?
-	// If `AddTool` fails, `discoveredTools` won't have it. `callIDToName` WILL have it (it comes from config).
-	// So `callIDToName["call1"]` = "tool1".
-	// `toolManager.GetTool` will fail.
-
 	mockTm.addError = errors.New("failed to add tool")
 	// This will cause all tools to fail addition.
 
@@ -470,10 +464,15 @@ func TestHTTPUpstream_Register_PromptExportPolicy(t *testing.T) {
 	upstream := NewUpstream(pm)
 	promptManager := prompt.NewManager()
 
+	// Start dummy listener
+	l, _ := net.Listen("tcp", "localhost:0")
+	defer l.Close()
+	addr := l.Addr().String()
+
 	configJSON := `{
 		"name": "prompt-export-test",
 		"http_service": {
-			"address": "http://localhost",
+			"address": "http://` + addr + `",
 			"prompts": [
 				{"name": "p-default-allow", "disable": false},
 				{"name": "p-default-deny", "disable": false},
@@ -489,13 +488,6 @@ func TestHTTPUpstream_Register_PromptExportPolicy(t *testing.T) {
 			"default_action": "UNEXPORT"
 		}
 	}`
-	// Wait, if default is UNEXPORT, p-default-allow (intended) will be unexported.
-	// My naming is confusing.
-
-	// Let's test standard case:
-	// - p-export: matches EXPORT rule
-	// - p-unexport: matches UNEXPORT rule
-	// - p-residue: falls invalid default (UNEXPORT)
 
 	serviceConfig := &configv1.UpstreamServiceConfig{}
 	require.NoError(t, protojson.Unmarshal([]byte(configJSON), serviceConfig))

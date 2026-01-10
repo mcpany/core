@@ -24,6 +24,7 @@
 - [x] **Message Bus**: NATS/Kafka integration for events. [Docs](server/docs/features/message_bus.md)
 - [x] **Structured Output Transformation**: JQ/JSONPath response shaping. [Docs](server/docs/features/transformation.md)
 - [x] **Documentation Generator**: Auto-generate beautiful Markdown/HTML documentation. [Docs](server/docs/features/documentation_generation.md)
+- [x] **Enhanced Connectivity Diagnostics**: Detailed error messages for connection failures (DNS, Refused, Auth). [PR #Link](https://github.com/mcpany/core/pull/xxx)
 
 ## 2. Top 10 Recommended Features
 
@@ -41,6 +42,8 @@ These features represent the next logical steps for the product, focusing on Ent
 | 8 | **Canary Tool Deployment** | **Ops**: gradually roll out new tool versions to a subset of users or sessions to catch regressions before they impact everyone. | High |
 | 9 | **Compliance Reporting** | **Enterprise**: Automated generation of PDF/CSV reports from Audit Logs for SOC2/GDPR compliance reviews. | Medium |
 | 10 | **Advanced Tiered Caching** | **Performance**: Implement a multi-layer cache (Memory -> Redis -> Disk) with configurable eviction policies to reduce upstream costs. | Medium |
+| 11 | **Smart Retry Policies** | **Resilience**: Configurable exponential backoff and jitter for transient connection failures detected by the new diagnostics system. | Medium |
+| 12 | **Pre-flight Connectivity Check UI** | **UX**: A "Test Connection" button in the Service Configuration UI that uses the `health.CheckConnection` logic before saving. | Low |
 
 ## 3. Codebase Health
 

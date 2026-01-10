@@ -5,6 +5,7 @@ package http
 
 import (
 	"context"
+	"net"
 	"testing"
 
 	"github.com/mcpany/core/server/pkg/pool"
@@ -20,10 +21,15 @@ func TestInputSchemaMutation(t *testing.T) {
 	tm := tool.NewManager(nil)
 	upstream := NewUpstream(pm)
 
+	// Start dummy listener
+	l, _ := net.Listen("tcp", "localhost:0")
+	defer l.Close()
+	addr := l.Addr().String()
+
 	configJSON := `{
 		"name": "mutation-test-service",
 		"http_service": {
-			"address": "http://localhost",
+			"address": "http://` + addr + `",
 			"tools": [{"name": "test-op", "call_id": "test-op-call"}],
 			"calls": {
 				"test-op-call": {

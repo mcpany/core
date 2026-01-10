@@ -5,6 +5,7 @@ package http
 
 import (
 	"context"
+	"net"
 	"testing"
 
 	"github.com/mcpany/core/server/pkg/pool"
@@ -17,6 +18,11 @@ import (
 )
 
 func TestHTTPUpstream_URLConstruction_BugRepro(t *testing.T) {
+	// Start dummy listener
+	l, _ := net.Listen("tcp", "localhost:0")
+	defer l.Close()
+	addr := l.Addr().String()
+
 	testCases := []struct {
 		name          string
 		address       string
@@ -25,18 +31,18 @@ func TestHTTPUpstream_URLConstruction_BugRepro(t *testing.T) {
 	}{
 		{
 			name:         "base url with query params should be preserved",
-			address:      "http://localhost:8080?apikey=123",
+			address:      "http://" + addr + "?apikey=123",
 			endpointPath: "/api/v1/test",
-			expectedFqn:  "GET http://localhost:8080/api/v1/test?apikey=123",
+			expectedFqn:  "GET http://" + addr + "/api/v1/test?apikey=123",
 		},
 		{
 			name:         "base url query and endpoint query should merge",
-			address:      "http://localhost:8080?apikey=123",
+			address:      "http://" + addr + "?apikey=123",
 			endpointPath: "/api/v1/test?limit=10",
 			// Note: order of query params is implementation specific, but typically sorted or preserved.
 			// However, in our fix we should ensure both are present.
 			// Let's assert that it contains both.
-			expectedFqn:  "GET http://localhost:8080/api/v1/test?apikey=123&limit=10",
+			expectedFqn:  "GET http://" + addr + "/api/v1/test?apikey=123&limit=10",
 		},
 	}
 

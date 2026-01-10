@@ -7,6 +7,7 @@ package health
 import (
 	"bytes"
 	"context"
+	"errors"
 	"fmt"
 	"io"
 	"net"
@@ -96,9 +97,9 @@ func NewChecker(uc *configv1.UpstreamServiceConfig) health.Checker {
 	return health.NewChecker(opts...)
 }
 
-func httpCheckFunc(ctx context.Context, _ string, hc *configv1.HttpHealthCheck) error {
+func httpCheckFunc(ctx context.Context, address string, hc *configv1.HttpHealthCheck) error {
 	if hc == nil {
-		return nil
+		return CheckConnection(ctx, address)
 	}
 
 	client := &http.Client{
@@ -113,14 +114,14 @@ func httpCheckFunc(ctx context.Context, _ string, hc *configv1.HttpHealthCheck) 
 
 	resp, err := client.Do(req)
 	if err != nil {
-		return fmt.Errorf("health check failed: %w", err)
+		return enhanceConnectionError(err, hc.GetUrl())
 	}
 	defer func() {
 		_ = resp.Body.Close()
 	}()
 
 	if resp.StatusCode != int(hc.GetExpectedCode()) {
-		return fmt.Errorf("health check failed with status code: %d", resp.StatusCode)
+		return enhanceHTTPError(resp)
 	}
 
 	if hc.GetExpectedResponseBodyContains() != "" {
@@ -160,7 +161,7 @@ func webrtcCheck(name string, c *configv1.WebrtcUpstreamService) health.Check {
 					return websocketCheckFunc(ctx, c.GetAddress(), wsCheck)
 				}
 			}
-			return checkConnection(ctx, c.GetAddress())
+			return CheckConnection(ctx, c.GetAddress())
 		},
 	}
 }
@@ -177,7 +178,7 @@ func websocketCheck(name string, c *configv1.WebsocketUpstreamService) health.Ch
 
 func websocketCheckFunc(ctx context.Context, address string, hc *configv1.WebsocketHealthCheck) error {
 	if hc == nil {
-		return checkConnection(ctx, address)
+		return CheckConnection(ctx, address)
 	}
 
 	healthCheckURL := hc.GetUrl()
@@ -242,7 +243,7 @@ func grpcCheck(name string, c *configv1.GrpcUpstreamService) health.Check {
 		Timeout: 5 * time.Second,
 		Check: func(ctx context.Context) error {
 			if c.GetHealthCheck() == nil {
-				return checkConnection(ctx, c.GetAddress())
+				return CheckConnection(ctx, c.GetAddress())
 			}
 
 			conn, err := grpc.NewClient(
@@ -328,7 +329,7 @@ func mcpCheck(name string, c *configv1.McpUpstreamService) health.Check {
 		Name: name,
 		Check: func(ctx context.Context) error {
 			if conn := c.GetHttpConnection(); conn != nil {
-				return checkConnection(ctx, conn.GetHttpAddress())
+				return CheckConnection(ctx, conn.GetHttpAddress())
 			}
 			if c.GetStdioConnection() != nil {
 				return nil // Assume healthy
@@ -338,7 +339,9 @@ func mcpCheck(name string, c *configv1.McpUpstreamService) health.Check {
 	}
 }
 
-func checkConnection(ctx context.Context, address string) error {
+// CheckConnection attempts to establish a TCP connection to the given address.
+// It is exported so it can be used for diagnostics in other packages.
+func CheckConnection(ctx context.Context, address string) error {
 	var target string
 	if strings.Contains(address, "://") {
 		u, err := url.Parse(address)
@@ -371,8 +374,66 @@ func checkConnection(ctx context.Context, address string) error {
 	conn, err := d.DialContext(ctx, "tcp", target)
 	if err != nil {
 		logging.GetLogger().Error("checkConnection failed", "address", target, "error", err)
-		return fmt.Errorf("failed to connect to address %s: %w", target, err)
+		return enhanceConnectionError(err, target)
 	}
 	defer func() { _ = conn.Close() }()
 	return nil
+}
+
+// enhanceConnectionError inspects network errors and returns more user-friendly messages.
+func enhanceConnectionError(err error, target string) error {
+	var netErr net.Error
+	if !errors.As(err, &netErr) {
+		return fmt.Errorf("failed to connect to %s: %w", target, err)
+	}
+
+	// Check for DNS errors
+	var dnsErr *net.DNSError
+	if errors.As(err, &dnsErr) {
+		return fmt.Errorf("DNS lookup failed for '%s'. Please check the hostname.", dnsErr.Name)
+	}
+
+	// Check for connection refused/timeout
+	if netErr.Timeout() {
+		return fmt.Errorf("connection timed out connecting to %s. Check network or firewall.", target)
+	}
+
+	// This is a bit heuristic, as Go's net package doesn't strictly type "Connection Refused" uniformly across OS
+	msg := err.Error()
+	if strings.Contains(msg, "connection refused") {
+		return fmt.Errorf("connection refused by %s. Is the service running and listening on this port?", target)
+	}
+	if strings.Contains(msg, "no such host") {
+		return fmt.Errorf("host not found: %s", target)
+	}
+
+	return fmt.Errorf("network error connecting to %s: %w", target, err)
+}
+
+// enhanceHTTPError returns a descriptive error for HTTP failures, including body snippet.
+func enhanceHTTPError(resp *http.Response) error {
+	// Read a small part of the body to give context
+	const maxBodySnippet = 200
+	bodyBytes, _ := io.ReadAll(io.LimitReader(resp.Body, maxBodySnippet))
+	bodySnippet := string(bodyBytes)
+	bodySnippet = strings.ReplaceAll(bodySnippet, "\n", " ") // Flatten
+
+	var hint string
+	switch resp.StatusCode {
+	case http.StatusUnauthorized:
+		hint = "Authentication failed. Check your API key or token."
+	case http.StatusForbidden:
+		hint = "Access denied. You may not have permission to access this resource."
+	case http.StatusNotFound:
+		hint = "Endpoint not found (404). Check the URL path."
+	case http.StatusInternalServerError, http.StatusBadGateway, http.StatusServiceUnavailable:
+		hint = "Upstream server error. The service might be down or misconfigured."
+	default:
+		hint = "Unexpected response from server."
+	}
+
+	if bodySnippet != "" {
+		return fmt.Errorf("%s (Status: %d). Server said: %s...", hint, resp.StatusCode, bodySnippet)
+	}
+	return fmt.Errorf("%s (Status: %d)", hint, resp.StatusCode)
 }

@@ -5,6 +5,7 @@ package http
 
 import (
 	"context"
+	"net"
 	"testing"
 
 	"github.com/mcpany/core/server/pkg/pool"
@@ -17,6 +18,11 @@ import (
 )
 
 func TestHTTPUpstream_URLConstruction_FragmentBug(t *testing.T) {
+	// Start dummy listener to allow registration
+	l, _ := net.Listen("tcp", "localhost:0")
+	defer l.Close()
+	addr := l.Addr().String()
+
 	testCases := []struct {
 		name          string
 		address       string
@@ -25,21 +31,21 @@ func TestHTTPUpstream_URLConstruction_FragmentBug(t *testing.T) {
 	}{
 		{
 			name:         "endpoint fragment should be preserved",
-			address:      "http://localhost:8080",
+			address:      "http://" + addr,
 			endpointPath: "/api/v1/test#frag",
-			expectedFqn:  "GET http://localhost:8080/api/v1/test#frag",
+			expectedFqn:  "GET http://" + addr + "/api/v1/test#frag",
 		},
 		{
 			name:         "base fragment should be preserved when endpoint has no fragment",
-			address:      "http://example.com/api#base",
+			address:      "http://" + addr + "/api#base",
 			endpointPath: "/foo",
-			expectedFqn:  "GET http://example.com/api/foo#base",
+			expectedFqn:  "GET http://" + addr + "/api/foo#base",
 		},
 		{
 			name:         "endpoint fragment should override base fragment",
-			address:      "http://example.com/api#base",
+			address:      "http://" + addr + "/api#base",
 			endpointPath: "/foo#endpoint",
-			expectedFqn:  "GET http://example.com/api/foo#endpoint",
+			expectedFqn:  "GET http://" + addr + "/api/foo#endpoint",
 		},
 	}
 

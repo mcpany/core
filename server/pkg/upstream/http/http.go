@@ -16,7 +16,9 @@ import (
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	pb "github.com/mcpany/core/proto/mcp_router/v1"
+	"github.com/alexliesenfeld/health"
 	"github.com/mcpany/core/server/pkg/auth"
+	healthChecker "github.com/mcpany/core/server/pkg/health"
 	"github.com/mcpany/core/server/pkg/logging"
 	"github.com/mcpany/core/server/pkg/pool"
 	"github.com/mcpany/core/server/pkg/prompt"
@@ -144,6 +146,27 @@ func (u *Upstream) Register(
 		return "", nil, nil, fmt.Errorf("failed to create HTTP pool for %s: %w", serviceID, err)
 	}
 	u.poolManager.Register(serviceID, httpPool)
+
+	// Perform an initial health check to ensure the service is reachable.
+	// This provides immediate feedback to the user if the configuration is incorrect
+	// or the service is down.
+	checker := healthChecker.NewChecker(serviceConfig)
+	if checker != nil {
+		result := checker.Check(ctx)
+		if result.Status != health.StatusUp {
+			log.Warn("Initial health check failed", "serviceID", serviceID, "status", result.Status, "error", result.Details)
+
+			// Attempt to get a more descriptive error message by running the connection check directly.
+			// This ensures the user gets immediate feedback about why the service is unreachable.
+			if err := healthChecker.CheckConnection(ctx, address); err != nil {
+				return "", nil, nil, fmt.Errorf("connectivity check failed: %w", err)
+			}
+
+			// If CheckConnection passed but the general health check failed (e.g., HTTP status code mismatch),
+			// we should also fail the registration to prevent silent failures.
+			return "", nil, nil, fmt.Errorf("health check failed (status: %s). Check logs for details.", result.Status)
+		}
+	}
 
 	info := &tool.ServiceInfo{
 		Name:   serviceConfig.GetName(),
