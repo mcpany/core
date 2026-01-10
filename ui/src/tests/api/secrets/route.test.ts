@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { GET, POST } from '@/app/api/secrets/route';
 import { DELETE } from '@/app/api/secrets/[id]/route';
 import { SecretsStore } from '@/lib/server/secrets-store';

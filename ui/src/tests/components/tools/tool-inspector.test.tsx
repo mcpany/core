@@ -4,7 +4,7 @@
  */
 
 
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
 import { ToolInspector } from '@/components/tools/tool-inspector';
 import { ToolDefinition } from '@/lib/client';
@@ -19,10 +19,10 @@ vi.mock('@/components/ui/sheet', () => ({
 }));
 
 vi.mock('@/components/ui/tabs', () => ({
-  Tabs: ({ children, defaultValue, onValueChange }: any) => <div>{children}</div>,
+  Tabs: ({ children }: any) => <div>{children}</div>,
   TabsList: ({ children }: any) => <div>{children}</div>,
-  TabsTrigger: ({ children, value }: any) => <button>{children}</button>,
-  TabsContent: ({ children, value }: any) => <div>{children}</div>,
+  TabsTrigger: ({ children }: any) => <button>{children}</button>,
+  TabsContent: ({ children }: any) => <div>{children}</div>,
 }));
 
 // Mock fetch
@@ -67,8 +67,8 @@ describe('ToolInspector', () => {
 
   it('renders input fields based on schema', () => {
     render(<ToolInspector tool={mockTool} open={true} onOpenChange={() => {}} />);
-    expect(screen.getByText('arg1')).toBeDefined();
-    expect(screen.getByText('(string)')).toBeDefined();
+    expect(screen.getByText(/arg1/)).toBeDefined();
+    expect(screen.getByText(/"string"/)).toBeDefined();
     // In a real DOM (not mocked Sheet), we would look for the input
   });
 });

@@ -44,7 +44,7 @@ vi.mock('@/lib/client', () => ({
 // Mock the Command components
 vi.mock('@/components/ui/command', () => {
   return {
-    CommandDialog: ({ children, open, onOpenChange }: any) => open ? <div data-testid="command-dialog">{children}</div> : null,
+    CommandDialog: ({ children, open }: any) => open ? <div data-testid="command-dialog">{children}</div> : null,
     CommandInput: ({ placeholder, value, onValueChange }: any) => (
       <input
         placeholder={placeholder}

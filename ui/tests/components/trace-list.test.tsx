@@ -4,7 +4,7 @@
  */
 
 import { expect, test } from 'vitest';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import { TraceList } from '@/components/traces/trace-list';
 import { Trace } from '@/app/api/traces/route';
 
@@ -36,6 +36,8 @@ test('TraceList renders traces', () => {
         onSelect={() => {}}
         searchQuery=""
         onSearchChange={() => {}}
+        isLive={false}
+        onToggleLive={() => {}}
     />
   );
 
@@ -44,15 +46,17 @@ test('TraceList renders traces', () => {
 });
 
 test('TraceList filters traces based on search query', () => {
-    const onSearchChange = (q: string) => {}; // Mock
+    const onSearchChange = () => {}; // Mock
 
-    const { rerender } = render(
+    render(
       <TraceList
           traces={MOCK_TRACES}
           selectedId={null}
           onSelect={() => {}}
           searchQuery="test_tool_1"
           onSearchChange={onSearchChange}
+          isLive={false}
+          onToggleLive={() => {}}
       />
     );
 

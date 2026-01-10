@@ -7,11 +7,7 @@ import { test, expect } from '@playwright/test';
 
 test.describe('Credentials Management', () => {
 
-  test.beforeEach(async ({ page }) => {
-    // Mock successful authentication check (if needed)
-    // For now we assume we are authenticated or validation is skipped in test env for UI components
-    // But usually we mock the /api/v1/credentials endpoint
-  });
+
 
   test('should list, create, update and delete credentials', async ({ page }) => {
     // 1. Initial List (Empty)
