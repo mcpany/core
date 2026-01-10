@@ -47,7 +47,6 @@ export function GlobalSearch() {
   const [resources, setResources] = React.useState<ResourceDefinition[]>([])
   const [prompts, setPrompts] = React.useState<PromptDefinition[]>([])
   const [loading, setLoading] = React.useState(false)
-  const lastFetched = React.useRef(0)
 
   React.useEffect(() => {
     const down = (e: KeyboardEvent) => {
@@ -63,13 +62,8 @@ export function GlobalSearch() {
 
   React.useEffect(() => {
     if (open) {
-      // ⚡ Bolt Optimization: Prevent redundant API calls if data was fetched recently (< 1 min)
-      // This reduces 4 concurrent requests every time the search dialog is opened.
-      const now = Date.now()
-      if (now - lastFetched.current < 60000 && lastFetched.current > 0) {
-        return
-      }
-
+      // ⚡ Bolt Optimization: Use apiClient's shared cache to prevent redundant requests.
+      // The apiClient handles deduplication and caching globally.
       setLoading(true)
       Promise.all([
         apiClient.listServices().catch(() => ({ services: [] })),
@@ -81,7 +75,6 @@ export function GlobalSearch() {
          setTools(toolsData.tools || [])
          setResources(resourcesData.resources || [])
          setPrompts(promptsData.prompts || [])
-         lastFetched.current = Date.now()
       }).finally(() => {
         setLoading(false)
       })

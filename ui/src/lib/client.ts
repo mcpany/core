@@ -31,13 +31,6 @@ export type { ToolDefinition, ResourceDefinition, PromptDefinition, Credential, 
 export type { ListServicesResponse, GetServiceResponse, GetServiceStatusResponse } from '@proto/api/v1/registration';
 
 // Initialize gRPC Web Client
-// Note: In development, we use localhost:8081 (envoy) or the Go server port if configured for gRPC-Web?
-// server.go wraps gRPC-Web on the SAME port as HTTP (8080 usually).
-// So we can point to window.location.origin or relative?
-// GrpcWebImpl needs a full URL host usually.
-// If running in browser, we can use empty string or relative?
-// GrpcWebImpl implementation uses `this.host`. If empty?
-// Let's assume we point to the current origin.
 const getBaseUrl = () => {
     if (typeof window !== 'undefined') {
         return window.location.origin;
@@ -55,7 +48,6 @@ const fetchWithAuth = async (input: RequestInfo | URL, init?: RequestInit) => {
     const key = process.env.NEXT_PUBLIC_MCPANY_API_KEY;
 
     // Security: Only attach API Key to requests to the same origin or relative URLs
-    // to prevent leaking credentials to third parties (like Google Fonts, CDN, etc)
     let isSameOrigin = false;
     if (typeof input === 'string') {
         if (input.startsWith('/') || input.startsWith('http://localhost') || (typeof window !== 'undefined' && input.startsWith(window.location.origin))) {
@@ -105,25 +97,81 @@ const getMetadata = () => {
     return key ? new BrowserHeaders({ 'X-API-Key': key }) : undefined;
 };
 
+// ⚡ Bolt Optimization: Client-side caching & deduplication
+// This prevents redundant API calls from multiple components (e.g. Sidebar + Dashboard + GlobalSearch)
+// and handles request coalescing (multiple components requesting same data simultaneously).
+
+interface CacheEntry<T> {
+  data: T;
+  timestamp: number;
+  promise?: Promise<T>;
+}
+
+const requestCache = new Map<string, CacheEntry<any>>();
+const DEFAULT_TTL = 30000; // 30 seconds
+
+async function withCache<T>(key: string, fetcher: () => Promise<T>, ttl: number = DEFAULT_TTL): Promise<T> {
+  const now = Date.now();
+  let entry = requestCache.get(key);
+
+  if (entry) {
+    // 1. In-flight request deduplication
+    if (entry.promise) {
+      return entry.promise;
+    }
+
+    // 2. Cache hit
+    if (now - entry.timestamp < ttl) {
+      return entry.data;
+    }
+  }
+
+  // 3. Cache miss or stale - fetch new
+  const promise = fetcher().then(data => {
+    requestCache.set(key, { data, timestamp: Date.now() });
+    return data;
+  }).catch(err => {
+    requestCache.delete(key);
+    throw err;
+  });
+
+  // Store promise for deduplication
+  // We keep the old data if it exists so we don't return undefined if someone peeks,
+  // but logically for withCache consumers we return the promise.
+  requestCache.set(key, { data: entry?.data as T, timestamp: entry?.timestamp || 0, promise });
+
+  return promise;
+}
+
+function invalidateCache(keyPrefix: string) {
+    for (const key of requestCache.keys()) {
+        if (key.startsWith(keyPrefix)) {
+            requestCache.delete(key);
+        }
+    }
+}
+
 export const apiClient = {
     // Services (Migrated to gRPC)
     listServices: async () => {
-        // Fallback to REST for E2E reliability until gRPC-Web is stable
-        const res = await fetchWithAuth('/api/v1/services');
-        if (!res.ok) throw new Error('Failed to fetch services');
-        const data = await res.json();
-        const list = Array.isArray(data) ? data : (data.services || []);
-        // Map snake_case to camelCase for UI compatibility
-        return list.map((s: any) => ({
-            ...s,
-            connectionPool: s.connection_pool,
-            httpService: s.http_service,
-            grpcService: s.grpc_service,
-            commandLineService: s.command_line_service,
-            mcpService: s.mcp_service,
-            upstreamAuth: s.upstream_auth,
-            lastError: s.last_error,
-        }));
+        return withCache('services', async () => {
+            // Fallback to REST for E2E reliability until gRPC-Web is stable
+            const res = await fetchWithAuth('/api/v1/services');
+            if (!res.ok) throw new Error('Failed to fetch services');
+            const data = await res.json();
+            const list = Array.isArray(data) ? data : (data.services || []);
+            // Map snake_case to camelCase for UI compatibility
+            return list.map((s: any) => ({
+                ...s,
+                connectionPool: s.connection_pool,
+                httpService: s.http_service,
+                grpcService: s.grpc_service,
+                commandLineService: s.command_line_service,
+                mcpService: s.mcp_service,
+                upstreamAuth: s.upstream_auth,
+                lastError: s.last_error,
+            }));
+        });
     },
     getService: async (id: string) => {
          try {
@@ -162,6 +210,7 @@ export const apiClient = {
             body: JSON.stringify({ disable })
         });
         if (!response.ok) throw new Error('Failed to update service status');
+        invalidateCache('services');
         return response.json();
     },
     getServiceStatus: async (name: string) => {
@@ -190,28 +239,6 @@ export const apiClient = {
             payload.command_line_service = {
                 command: config.commandLineService.command,
                 working_directory: config.commandLineService.workingDirectory,
-                environment: config.commandLineService.env, // Correct field name is 'env' not 'environment' or 'environment' not 'env'?
-                // Wait, generated code says:
-                // 4183:     env: {},
-                // But in fromJSON:
-                // 4387:       env: isObject(object.env)
-                // So property on object is 'env'.
-                // My payload mapping in client.ts used 'environment'.
-                // If I'm creating a simple object to send via REST, I should use snake_case for the properties IF the server expects snake_case.
-                // The server uses protojson.Unmarshal.
-                // protojson expects JSON names.
-                // In proto definition (upstream_service.proto):
-                // map<string, SecretValue> env = 14;
-                // so JSON name is "env".
-                // BUT my multi_replace used "environment".
-                // AND the lint error says `Property 'environment' does not exist on type 'CommandLineUpstreamService'`.
-                // This refers to `config.commandLineService.environment`.
-                // Checking `CommandLineUpstreamService` interface in the outline?
-                // Step 804 (lines 4170-4184) shows:
-                // 4183:     env: {},
-                // It does NOT have `environment`.
-                // So `config.commandLineService.env` is correct.
-                // And payload key should be `env` (for protojson).
                 env: config.commandLineService.env
             };
         }
@@ -229,6 +256,7 @@ export const apiClient = {
              const txt = await response.text();
              throw new Error(`Failed to register service: ${response.status} ${txt}`);
         }
+        invalidateCache('services');
         return response.json();
     },
     updateService: async (config: UpstreamServiceConfig) => {
@@ -258,11 +286,8 @@ export const apiClient = {
             payload.mcp_service = { ...config.mcpService };
         }
 
-        const response = await fetchWithAuth(`/api/v1/services/${config.name}`, { // REST assumes ID/Name in path? Or just POST?
-            method: 'PUT', // Or POST if RegisterService handles update? server.go endpoint /api/v1/services handles POST for add. /api/v1/services/{name} for update?
-            // api.go has: mux.Handle("/api/v1/", authMiddleware(apiHandler))
-            // createAPIHandler: r.HandleFunc("/services", a.handleServices).Methods("GET", "POST")
-            // r.HandleFunc("/services/{id}", a.handleServices).Methods("PUT", "DELETE")
+        const response = await fetchWithAuth(`/api/v1/services/${config.name}`, {
+            method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload)
         });
@@ -271,6 +296,7 @@ export const apiClient = {
              const txt = await response.text();
              throw new Error(`Failed to update service: ${response.status} ${txt}`);
         }
+        invalidateCache('services');
         return response.json();
     },
     unregisterService: async (id: string) => {
@@ -278,16 +304,17 @@ export const apiClient = {
             method: 'DELETE'
          });
          if (!response.ok) throw new Error('Failed to unregister service');
+         invalidateCache('services');
          return {};
     },
 
-    // Tools (Legacy Fetch - Not yet migrated to Admin/Registration Service completely or keeping as is)
-    // admin.proto has ListTools but we are focusing on RegistrationService first.
-    // So keep using fetch for Tools/Secrets/etc for now.
+    // Tools
     listTools: async () => {
-        const res = await fetchWithAuth('/api/v1/tools');
-        if (!res.ok) throw new Error('Failed to fetch tools');
-        return res.json();
+        return withCache('tools', async () => {
+            const res = await fetchWithAuth('/api/v1/tools');
+            if (!res.ok) throw new Error('Failed to fetch tools');
+            return res.json();
+        });
     },
     executeTool: async (request: any) => {
         try {
@@ -308,22 +335,25 @@ export const apiClient = {
             method: 'PUT',
             body: JSON.stringify({ name, disable: disabled })
         });
+        invalidateCache('tools');
         return res.json();
     },
 
     // Resources
     listResources: async () => {
-        try {
-            const res = await fetchWithAuth('/api/v1/resources');
-            if (res.ok) return res.json();
-        } catch (e) {
-            console.warn("Backend listResources failed, falling back to simulation", e);
-        }
+        return withCache('resources', async () => {
+            try {
+                const res = await fetchWithAuth('/api/v1/resources');
+                if (res.ok) return res.json();
+            } catch (e) {
+                console.warn("Backend listResources failed, falling back to simulation", e);
+            }
 
-        // Mock simulation
-        return {
-            resources: MOCK_RESOURCES
-        };
+            // Mock simulation
+            return {
+                resources: MOCK_RESOURCES
+            };
+        });
     },
     readResource: async (uri: string): Promise<ReadResourceResponse> => {
         // Attempt to call backend
@@ -348,14 +378,17 @@ export const apiClient = {
             method: 'PUT',
             body: JSON.stringify({ uri, disable: disabled })
         });
+        invalidateCache('resources');
         return res.json();
     },
 
     // Prompts
     listPrompts: async () => {
-        const res = await fetchWithAuth('/api/v1/prompts');
-        if (!res.ok) throw new Error('Failed to fetch prompts');
-        return res.json();
+        return withCache('prompts', async () => {
+            const res = await fetchWithAuth('/api/v1/prompts');
+            if (!res.ok) throw new Error('Failed to fetch prompts');
+            return res.json();
+        });
     },
     setPromptStatus: async (name: string, enabled: boolean) => {
         const res = await fetchWithAuth('/api/v1/prompts', {
@@ -363,6 +396,7 @@ export const apiClient = {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ name, enabled })
         });
+        invalidateCache('prompts');
         return res.json();
     },
     executePrompt: async (name: string, args: Record<string, string>) => {
@@ -460,16 +494,6 @@ export const apiClient = {
 
     // User Management
     listUsers: async () => {
-        // Fallback for demo/dev - use AdminRPC if possible, but we don't have generated client for Admin yet in UI?
-        // We do have @proto/admin/v1/admin
-        // Let's rely on fetch for now if we expose REST, OR we can try to use standard gRPC-Web if we set it up.
-        // For simplicity in this UI iteration (which seems to use fetchWithAuth mostly),
-        // we might assume there is a REST gateway or we use a custom endpoint.
-        // Wait, server/pkg/admin/server.go implements providing gRPC.
-        // Does it expose REST?
-        // The previous task walkthrough mentions "Admin Service RPCs".
-        // And `server/pkg/app/server.go` likely mounts gRPC-Gateway?
-        // Let's try fetch first.
         const res = await fetchWithAuth('/api/v1/users');
         if (!res.ok) throw new Error('Failed to list users');
         return res.json();
