@@ -111,7 +111,6 @@ func ensureColumn(db *sql.DB, colName string) error {
 	}
 	// Add column
 
-	//nolint:gosec // colName is validated above
 	query = fmt.Sprintf("ALTER TABLE audit_logs ADD COLUMN %s TEXT DEFAULT ''", colName)
 	ctxAlter, cancelAlter := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancelAlter()
