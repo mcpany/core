@@ -17,24 +17,42 @@ export default function TracesPage() {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
+  const [isLive, setIsLive] = useState(false);
 
-  useEffect(() => {
-    async function loadTraces() {
+  // Separate load function for reuse
+  const loadTraces = async (isFirstLoad = false) => {
       try {
         const res = await fetch('/api/traces');
         const data = await res.json();
+
+        // If live, prepend new traces or merge?
+        // For simplicity, we just replace since the API returns a fresh list.
+        // In a real app we might want to merge.
         setTraces(data);
-        if (data.length > 0 && !selectedId) {
+
+        if (isFirstLoad && data.length > 0 && !selectedId) {
             setSelectedId(data[0].id);
         }
       } catch (err) {
         console.error("Failed to load traces", err);
       } finally {
-        setLoading(false);
+        if (isFirstLoad) setLoading(false);
       }
-    }
-    loadTraces();
+  };
+
+  useEffect(() => {
+    loadTraces(true);
   }, []);
+
+  useEffect(() => {
+      let interval: NodeJS.Timeout;
+      if (isLive) {
+          interval = setInterval(() => {
+              loadTraces(false);
+          }, 3000);
+      }
+      return () => clearInterval(interval);
+  }, [isLive]);
 
   const selectedTrace = traces.find(t => t.id === selectedId) || null;
 
@@ -56,6 +74,8 @@ export default function TracesPage() {
                 onSelect={setSelectedId}
                 searchQuery={searchQuery}
                 onSearchChange={setSearchQuery}
+                isLive={isLive}
+                onToggleLive={setIsLive}
             />
         </ResizablePanel>
         <ResizableHandle />

@@ -6,11 +6,12 @@
 "use client";
 
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
-import { Search, AlertCircle, CheckCircle2, Clock, Terminal, Globe, Database, User, Webhook as WebhookIcon } from "lucide-react";
+import { Search, AlertCircle, CheckCircle2, Clock, Terminal, Globe, Database, User, Webhook as WebhookIcon, Play, Pause } from "lucide-react";
 import { Trace, SpanStatus } from "@/app/api/traces/route"; // Import type from route (or move types to shared)
 import { formatDistanceToNow } from "date-fns";
 import React, { memo, useMemo } from "react";
@@ -21,6 +22,8 @@ interface TraceListProps {
   onSelect: (id: string) => void;
   searchQuery: string;
   onSearchChange: (query: string) => void;
+  isLive: boolean;
+  onToggleLive: (live: boolean) => void;
 }
 
 // Optimization: Memoize TraceListItem to prevent re-renders of all items when one is selected.
@@ -60,7 +63,7 @@ const TraceListItem = memo(({ trace, isSelected, onSelect }: { trace: Trace, isS
 });
 TraceListItem.displayName = "TraceListItem";
 
-export function TraceList({ traces, selectedId, onSelect, searchQuery, onSearchChange }: TraceListProps) {
+export function TraceList({ traces, selectedId, onSelect, searchQuery, onSearchChange, isLive, onToggleLive }: TraceListProps) {
 
   // Optimization: Memoize filtered traces to avoid re-calculating on every render,
   // especially when only selectedId changes.
@@ -74,8 +77,8 @@ export function TraceList({ traces, selectedId, onSelect, searchQuery, onSearchC
 
   return (
     <div className="flex flex-col h-full border-r bg-background/50 backdrop-blur-sm">
-      <div className="p-4 border-b">
-        <div className="relative">
+      <div className="p-4 border-b flex items-center gap-2">
+        <div className="relative flex-1">
           <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
           <Input
             placeholder="Search traces..."
@@ -84,6 +87,15 @@ export function TraceList({ traces, selectedId, onSelect, searchQuery, onSearchC
             onChange={(e) => onSearchChange(e.target.value)}
           />
         </div>
+        <Button
+            variant={isLive ? "default" : "outline"}
+            size="icon"
+            onClick={() => onToggleLive(!isLive)}
+            title={isLive ? "Pause Live Updates" : "Start Live Updates"}
+            className={cn("shrink-0", isLive && "bg-green-600 hover:bg-green-700")}
+        >
+             {isLive ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
+        </Button>
       </div>
       <ScrollArea className="flex-1">
         <div className="flex flex-col">
