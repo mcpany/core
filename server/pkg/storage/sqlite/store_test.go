@@ -155,10 +155,217 @@ func TestStore(t *testing.T) {
 			t.Errorf("expected secret to be nil after delete, got %v", loaded)
 		}
 	})
-}
 
-// Copyright 2025 Author(s) of MCP Any
-// SPDX-License-Identifier: Apache-2.0
+	t.Run("Users", func(t *testing.T) {
+		user := &configv1.User{
+			Id:    proto.String("user-1"),
+			Roles: []string{"admin"},
+		}
+		// Create
+		err := store.CreateUser(context.Background(), user)
+		if err != nil {
+			t.Fatalf("failed to create user: %v", err)
+		}
+
+		// Get
+		got, err := store.GetUser(context.Background(), "user-1")
+		if err != nil {
+			t.Fatalf("failed to get user: %v", err)
+		}
+		if got.GetId() != "user-1" {
+			t.Errorf("expected id user-1, got %s", got.GetId())
+		}
+
+		// List
+		users, err := store.ListUsers(context.Background())
+		if err != nil {
+			t.Fatalf("failed to list users: %v", err)
+		}
+		if len(users) != 1 {
+			t.Errorf("expected 1 user, got %d", len(users))
+		}
+
+		// Update
+		user.Roles = []string{"admin", "editor"}
+		err = store.UpdateUser(context.Background(), user)
+		if err != nil {
+			t.Fatalf("failed to update user: %v", err)
+		}
+		got, _ = store.GetUser(context.Background(), "user-1")
+		if len(got.GetRoles()) != 2 {
+			t.Errorf("expected 2 roles, got %d", len(got.GetRoles()))
+		}
+
+		// Update Non-Existent
+		err = store.UpdateUser(context.Background(), &configv1.User{Id: proto.String("non-existent")})
+		if err == nil {
+			t.Error("expected error updating non-existent user, got nil")
+		}
+
+		// Delete
+		err = store.DeleteUser(context.Background(), "user-1")
+		if err != nil {
+			t.Fatalf("failed to delete user: %v", err)
+		}
+		got, err = store.GetUser(context.Background(), "user-1")
+		if err != nil {
+			t.Fatalf("failed to get user after delete: %v", err)
+		}
+		if got != nil {
+			t.Errorf("expected user to be nil, got %v", got)
+		}
+	})
+
+	t.Run("Profiles", func(t *testing.T) {
+		prof := &configv1.ProfileDefinition{
+			Name: proto.String("prof-1"),
+		}
+		// Save
+		err := store.SaveProfile(context.Background(), prof)
+		if err != nil {
+			t.Fatalf("failed to save profile: %v", err)
+		}
+
+		// Get
+		got, err := store.GetProfile(context.Background(), "prof-1")
+		if err != nil {
+			t.Fatalf("failed to get profile: %v", err)
+		}
+		if got.GetName() != "prof-1" {
+			t.Errorf("expected name prof-1, got %s", got.GetName())
+		}
+
+		// List
+		profs, err := store.ListProfiles(context.Background())
+		if err != nil {
+			t.Fatalf("failed to list profiles: %v", err)
+		}
+		if len(profs) != 1 {
+			t.Errorf("expected 1 profile, got %d", len(profs))
+		}
+
+		// Delete
+		err = store.DeleteProfile(context.Background(), "prof-1")
+		if err != nil {
+			t.Fatalf("failed to delete profile: %v", err)
+		}
+		got, _ = store.GetProfile(context.Background(), "prof-1")
+		if got != nil {
+			t.Errorf("expected profile to be nil, got %v", got)
+		}
+	})
+
+	t.Run("ServiceCollections", func(t *testing.T) {
+		col := &configv1.UpstreamServiceCollectionShare{
+			Name: proto.String("col-1"),
+		}
+		// Save
+		err := store.SaveServiceCollection(context.Background(), col)
+		if err != nil {
+			t.Fatalf("failed to save collection: %v", err)
+		}
+
+		// Get
+		got, err := store.GetServiceCollection(context.Background(), "col-1")
+		if err != nil {
+			t.Fatalf("failed to get collection: %v", err)
+		}
+		if got.GetName() != "col-1" {
+			t.Errorf("expected name col-1, got %s", got.GetName())
+		}
+
+		// List
+		cols, err := store.ListServiceCollections(context.Background())
+		if err != nil {
+			t.Fatalf("failed to list collections: %v", err)
+		}
+		if len(cols) != 1 {
+			t.Errorf("expected 1 collection, got %d", len(cols))
+		}
+
+		// Delete
+		err = store.DeleteServiceCollection(context.Background(), "col-1")
+		if err != nil {
+			t.Fatalf("failed to delete collection: %v", err)
+		}
+		got, _ = store.GetServiceCollection(context.Background(), "col-1")
+		if got != nil {
+			t.Errorf("expected collection to be nil, got %v", got)
+		}
+	})
+
+	t.Run("Credentials", func(t *testing.T) {
+		cred := &configv1.Credential{
+			Id:   proto.String("cred-1"),
+			Name: proto.String("my-cred"),
+		}
+		// Save
+		err := store.SaveCredential(context.Background(), cred)
+		if err != nil {
+			t.Fatalf("failed to save credential: %v", err)
+		}
+
+		// Get
+		got, err := store.GetCredential(context.Background(), "cred-1")
+		if err != nil {
+			t.Fatalf("failed to get credential: %v", err)
+		}
+		if got.GetName() != "my-cred" {
+			t.Errorf("expected name my-cred, got %s", got.GetName())
+		}
+
+		// List
+		creds, err := store.ListCredentials(context.Background())
+		if err != nil {
+			t.Fatalf("failed to list credentials: %v", err)
+		}
+		if len(creds) != 1 {
+			t.Errorf("expected 1 credential, got %d", len(creds))
+		}
+
+		// Delete
+		err = store.DeleteCredential(context.Background(), "cred-1")
+		if err != nil {
+			t.Fatalf("failed to delete credential: %v", err)
+		}
+		got, _ = store.GetCredential(context.Background(), "cred-1")
+		if got != nil {
+			t.Errorf("expected credential to be nil, got %v", got)
+		}
+	})
+
+	t.Run("Tokens", func(t *testing.T) {
+		token := &configv1.UserToken{
+			UserId:      proto.String("user-1"),
+			ServiceId:   proto.String("svc-1"),
+			AccessToken: proto.String("xyz"),
+		}
+		// Save
+		err := store.SaveToken(context.Background(), token)
+		if err != nil {
+			t.Fatalf("failed to save token: %v", err)
+		}
+
+		// Get
+		got, err := store.GetToken(context.Background(), "user-1", "svc-1")
+		if err != nil {
+			t.Fatalf("failed to get token: %v", err)
+		}
+		if got.GetAccessToken() != "xyz" {
+			t.Errorf("expected token xyz, got %s", got.GetAccessToken())
+		}
+
+		// Delete
+		err = store.DeleteToken(context.Background(), "user-1", "svc-1")
+		if err != nil {
+			t.Fatalf("failed to delete token: %v", err)
+		}
+		got, _ = store.GetToken(context.Background(), "user-1", "svc-1")
+		if got != nil {
+			t.Errorf("expected token to be nil, got %v", got)
+		}
+	})
+}
 
 func TestSaveServiceValidation(t *testing.T) {
 	tmpDir, err := os.MkdirTemp("", "mcpany-test-validation-*")
