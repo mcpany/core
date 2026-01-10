@@ -193,7 +193,7 @@ upstream_services:
     require.NoError(t, err)
 
     t.Log("Triggering config reload...")
-    err = appRunner.ReloadConfig(afero.NewOsFs(), []string{tmpFile.Name()})
+    err = appRunner.ReloadConfig(context.Background(), afero.NewOsFs(), []string{tmpFile.Name()})
     require.NoError(t, err)
 
     // Verify failing-service is now working
