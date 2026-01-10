@@ -5,6 +5,7 @@ package middleware
 
 import (
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/mcpany/core/server/pkg/util"
@@ -14,9 +15,21 @@ import (
 
 // HTTPRateLimitMiddleware provides global rate limiting for HTTP endpoints.
 type HTTPRateLimitMiddleware struct {
-	limiters *cache.Cache
-	rps      rate.Limit
-	burst    int
+	limiters   *cache.Cache
+	rps        rate.Limit
+	burst      int
+	trustProxy bool
+}
+
+// HTTPRateLimitOption defines a functional option for HTTPRateLimitMiddleware.
+type HTTPRateLimitOption func(*HTTPRateLimitMiddleware)
+
+// WithTrustProxy enables trusting the X-Forwarded-For header.
+// This should only be used when the server is behind a trusted reverse proxy.
+func WithTrustProxy(trust bool) HTTPRateLimitOption {
+	return func(m *HTTPRateLimitMiddleware) {
+		m.trustProxy = trust
+	}
 }
 
 // NewHTTPRateLimitMiddleware creates a new HTTPRateLimitMiddleware.
@@ -24,16 +37,21 @@ type HTTPRateLimitMiddleware struct {
 // Parameters:
 //   - rps: Requests per second allowed per IP.
 //   - burst: Maximum burst size allowed per IP.
+//   - opts: Optional configuration options.
 //
 // Returns:
 //   - *HTTPRateLimitMiddleware: A new instance of HTTPRateLimitMiddleware.
-func NewHTTPRateLimitMiddleware(rps float64, burst int) *HTTPRateLimitMiddleware {
+func NewHTTPRateLimitMiddleware(rps float64, burst int, opts ...HTTPRateLimitOption) *HTTPRateLimitMiddleware {
 	// Cleanup limiters every 10 minutes, expire after 5 minutes of inactivity
-	return &HTTPRateLimitMiddleware{
+	m := &HTTPRateLimitMiddleware{
 		limiters: cache.New(5*time.Minute, 10*time.Minute),
 		rps:      rate.Limit(rps),
 		burst:    burst,
 	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
 }
 
 // Handler wraps an http.Handler with rate limiting.
@@ -46,6 +64,17 @@ func NewHTTPRateLimitMiddleware(rps float64, burst int) *HTTPRateLimitMiddleware
 func (m *HTTPRateLimitMiddleware) Handler(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		ip := util.ExtractIP(r.RemoteAddr)
+
+		if m.trustProxy {
+			if xff := r.Header.Get("X-Forwarded-For"); xff != "" {
+				// Use the first IP in the list (client IP)
+				if parts := strings.Split(xff, ","); len(parts) > 0 {
+					if clientIP := strings.TrimSpace(parts[0]); clientIP != "" {
+						ip = clientIP
+					}
+				}
+			}
+		}
 
 		var limiter *rate.Limiter
 		if val, found := m.limiters.Get(ip); found {

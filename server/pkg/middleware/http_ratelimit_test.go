@@ -41,3 +41,78 @@ func TestHTTPRateLimitMiddleware(t *testing.T) {
 	handler.ServeHTTP(rec2, req2)
 	assert.Equal(t, http.StatusOK, rec2.Code, "Different IP should be allowed")
 }
+
+func TestHTTPRateLimitMiddleware_TrustProxy(t *testing.T) {
+	// 5 RPS, burst 5, Trust Proxy Enabled
+	limiter := NewHTTPRateLimitMiddleware(5, 5, WithTrustProxy(true))
+	handler := limiter.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+	}))
+
+	// Simulate requests from a load balancer (same RemoteAddr) but different X-Forwarded-For
+	remoteAddr := "10.0.0.1:1234" // Proxy IP
+
+	// User 1: 5 requests allowed
+	for i := 0; i < 5; i++ {
+		req := httptest.NewRequest("GET", "/", nil)
+		req.RemoteAddr = remoteAddr
+		req.Header.Set("X-Forwarded-For", "203.0.113.1")
+		rec := httptest.NewRecorder()
+		handler.ServeHTTP(rec, req)
+		assert.Equal(t, http.StatusOK, rec.Code, "User 1 Request %d should be allowed", i)
+	}
+
+	// User 1: 6th request blocked
+	req := httptest.NewRequest("GET", "/", nil)
+	req.RemoteAddr = remoteAddr
+	req.Header.Set("X-Forwarded-For", "203.0.113.1")
+	rec := httptest.NewRecorder()
+	handler.ServeHTTP(rec, req)
+	assert.Equal(t, http.StatusTooManyRequests, rec.Code, "User 1 Request 6 should be blocked")
+
+	// User 2: Should be allowed despite same RemoteAddr, because X-Forwarded-For is different
+	req2 := httptest.NewRequest("GET", "/", nil)
+	req2.RemoteAddr = remoteAddr
+	req2.Header.Set("X-Forwarded-For", "203.0.113.2")
+	rec2 := httptest.NewRecorder()
+	handler.ServeHTTP(rec2, req2)
+	assert.Equal(t, http.StatusOK, rec2.Code, "User 2 Request 1 should be allowed")
+}
+
+func TestHTTPRateLimitMiddleware_NoTrustProxy(t *testing.T) {
+	// 5 RPS, burst 5, Trust Proxy Disabled (Default)
+	limiter := NewHTTPRateLimitMiddleware(5, 5, WithTrustProxy(false))
+	handler := limiter.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+	}))
+
+	// Simulate requests from a load balancer (same RemoteAddr) but different X-Forwarded-For
+	remoteAddr := "10.0.0.1:1234" // Proxy IP
+
+	// User 1: 5 requests allowed
+	for i := 0; i < 5; i++ {
+		req := httptest.NewRequest("GET", "/", nil)
+		req.RemoteAddr = remoteAddr
+		req.Header.Set("X-Forwarded-For", "203.0.113.1")
+		rec := httptest.NewRecorder()
+		handler.ServeHTTP(rec, req)
+		assert.Equal(t, http.StatusOK, rec.Code, "User 1 Request %d should be allowed", i)
+	}
+
+	// User 1: 6th request blocked
+	req := httptest.NewRequest("GET", "/", nil)
+	req.RemoteAddr = remoteAddr
+	req.Header.Set("X-Forwarded-For", "203.0.113.1")
+	rec := httptest.NewRecorder()
+	handler.ServeHTTP(rec, req)
+	assert.Equal(t, http.StatusTooManyRequests, rec.Code, "User 1 Request 6 should be blocked")
+
+	// User 2: Should be BLOCKED because trustProxy is false, so it sees the same RemoteAddr
+	req2 := httptest.NewRequest("GET", "/", nil)
+	req2.RemoteAddr = remoteAddr
+	req2.Header.Set("X-Forwarded-For", "203.0.113.2")
+	rec2 := httptest.NewRecorder()
+	handler.ServeHTTP(rec2, req2)
+	// This confirms that without TrustProxy, rate limiting is shared (Vulnerable behavior if behind proxy)
+	assert.Equal(t, http.StatusTooManyRequests, rec2.Code, "User 2 Request 1 should be blocked due to shared IP")
+}
