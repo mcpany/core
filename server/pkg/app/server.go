@@ -1477,33 +1477,42 @@ func (a *Application) runServerMode(
 	timeout := time.NewTimer(10 * time.Second) // Reasonable timeout for binding ports
 	defer timeout.Stop()
 
+	var startupErr error
 	for i := 0; i < expectedReady; i++ {
 		select {
 		case <-readyChan:
 			// One server is ready
 		case err := <-errChan:
-			return fmt.Errorf("failed to start a server: %w", err)
+			startupErr = fmt.Errorf("failed to start a server: %w", err)
 		case <-ctx.Done():
-			return ctx.Err()
+			startupErr = ctx.Err()
 		case <-timeout.C:
-			return fmt.Errorf("timed out waiting for servers to be ready")
+			startupErr = fmt.Errorf("timed out waiting for servers to be ready")
+		}
+
+		if startupErr != nil {
+			break
 		}
 	}
 
-	if startupCallback != nil {
-		startupCallback()
+	if startupErr == nil {
+		if startupCallback != nil {
+			startupCallback()
+		}
+
+		select {
+		case err := <-errChan:
+			startupErr = fmt.Errorf("failed to start a server: %w", err)
+		case <-localCtx.Done():
+			logging.GetLogger().Info("Received shutdown signal, shutting down gracefully...")
+		}
 	}
 
-	var startupErr error
-	select {
-	case err := <-errChan:
-		startupErr = fmt.Errorf("failed to start a server: %w", err)
+	if startupErr != nil {
 		logging.GetLogger().Error("Server startup failed, initiating shutdown...", "error", startupErr)
 		// A server failed to start, so we need to trigger a shutdown of any other
 		// servers that may have started successfully.
 		cancel()
-	case <-localCtx.Done():
-		logging.GetLogger().Info("Received shutdown signal, shutting down gracefully...")
 	}
 
 	// N.B. We wait for the servers to shut down regardless of whether there was a

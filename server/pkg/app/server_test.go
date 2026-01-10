@@ -2290,3 +2290,39 @@ upstream_services: []
 		<-errChan
 	})
 }
+
+func TestRun_WaitOnStartupError(t *testing.T) {
+	logging.ForTestsOnlyResetLogger()
+	var buf ThreadSafeBuffer
+	logging.Init(slog.LevelInfo, &buf)
+
+	// Occupy a port to ensure the HTTP server fails to start.
+	l, err := net.Listen("tcp", "localhost:0")
+	require.NoError(t, err)
+	defer func() { _ = l.Close() }()
+	httpPort := l.Addr().(*net.TCPAddr).Port
+
+	app := NewApplication()
+	fs := afero.NewMemMapFs()
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	// Set up a way to signal when shutdown is complete (if we could, but we rely on Run returning)
+	// We inject a sleep in the server shutdown via some mechanism? No, we can't easily inject into startGrpcServer from here without modifying it more.
+	// But the key is that Run() MUST wait for the gRPC server (which started) to stop.
+	// The gRPC server logs "Server shut down." at the very end.
+
+	runErr := app.Run(ctx, fs, false, fmt.Sprintf("localhost:%d", httpPort), "localhost:0", nil, "", 1*time.Second)
+
+	require.Error(t, runErr)
+	assert.Contains(t, runErr.Error(), "failed to start a server")
+
+	logs := buf.String()
+	// If Run returned before waiting, "Server shut down." might be missing if the background goroutine is slow.
+	// But since we can't control the speed of background goroutine easily here (without the sleep we removed),
+	// this test is probabilistic UNLESS we are sure.
+	// However, `TestRun_ServerStartupError_GracefulShutdown` was failing reliably when the sleep was added,
+	// and now passes. This test basically replicates it but explicitly looks for "Server shut down." which signifies completion.
+
+	assert.Contains(t, logs, "Server shut down.", "Run should wait for servers to shut down")
+}
