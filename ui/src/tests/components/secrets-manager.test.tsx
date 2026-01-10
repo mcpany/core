@@ -34,7 +34,7 @@ describe('SecretsManager', () => {
     const mockSecrets = [
       { id: '1', name: 'Test Secret', key: 'TEST_KEY', value: 'secret-value', provider: 'custom', createdAt: '2023-01-01' },
     ];
-    (apiClient.listSecrets as any).mockResolvedValue(mockSecrets);
+    (apiClient.listSecrets as unknown as ReturnType<typeof vi.fn>).mockResolvedValue(mockSecrets);
 
     render(<SecretsManager />);
 
@@ -47,7 +47,7 @@ describe('SecretsManager', () => {
   });
 
   it('allows adding a new secret', async () => {
-    (apiClient.listSecrets as any).mockResolvedValue([]);
+    (apiClient.listSecrets as unknown as ReturnType<typeof vi.fn>).mockResolvedValue([]);
     render(<SecretsManager />);
 
     await waitFor(() => {
@@ -81,7 +81,7 @@ describe('SecretsManager', () => {
      const mockSecrets = [
       { id: '1', name: 'Delete Me', key: 'DELETE_KEY', value: 'secret-value', provider: 'custom', createdAt: '2023-01-01' },
     ];
-    (apiClient.listSecrets as any).mockResolvedValue(mockSecrets);
+    (apiClient.listSecrets as unknown as ReturnType<typeof vi.fn>).mockResolvedValue(mockSecrets);
 
     render(<SecretsManager />);
 
