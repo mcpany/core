@@ -12,6 +12,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { RefreshCcw, Activity, PlayCircle, StopCircle, Trash2, Box } from "lucide-react";
+import { use } from "react";
 
 // Placeholder for StackStatus if we want a separate component
 function StackStatus({ stackId }: { stackId: string }) {
@@ -102,7 +103,8 @@ function StackStatus({ stackId }: { stackId: string }) {
     );
 }
 
-export default function StackDetailPage({ params }: { params: { stackId: string } }) {
+export default function StackDetailPage({ params }: { params: Promise<{ stackId: string }> }) {
+    const resolvedParams = use(params);
     const [activeTab, setActiveTab] = useState("editor");
 
     return (
@@ -110,7 +112,7 @@ export default function StackDetailPage({ params }: { params: { stackId: string 
             <div className="flex items-center justify-between">
                 <div className="flex flex-col gap-1">
                      <h2 className="text-3xl font-bold tracking-tight flex items-center gap-2">
-                        {params.stackId}
+                        {resolvedParams.stackId}
                         <Badge variant="outline" className="text-xs font-normal">Stack</Badge>
                      </h2>
                 </div>
@@ -136,11 +138,11 @@ export default function StackDetailPage({ params }: { params: { stackId: string 
                 </TabsList>
 
                 <TabsContent value="status" className="flex-1">
-                     <StackStatus stackId={params.stackId} />
+                     <StackStatus stackId={resolvedParams.stackId} />
                 </TabsContent>
 
                 <TabsContent value="editor" className="flex-1 flex flex-col h-full min-h-0">
-                    <StackEditor stackId={params.stackId} />
+                    <StackEditor stackId={resolvedParams.stackId} />
                 </TabsContent>
             </Tabs>
         </div>

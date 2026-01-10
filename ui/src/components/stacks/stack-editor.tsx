@@ -10,7 +10,6 @@ import { Save, RefreshCw, FileText, AlertTriangle, Download, Columns, PanelLeftC
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import jsyaml from "js-yaml";
 import { apiClient } from "@/lib/client";
@@ -18,6 +17,7 @@ import { apiClient } from "@/lib/client";
 // New Components
 import { ServicePalette } from "@/components/stacks/service-palette";
 import { StackVisualizer } from "@/components/stacks/stack-visualizer";
+import { ConfigEditor } from "./config-editor";
 
 interface StackEditorProps {
     stackId: string;
@@ -32,19 +32,10 @@ export function StackEditor({ stackId }: StackEditorProps) {
     const [showPalette, setShowPalette] = useState(true);
     const [showVisualizer, setShowVisualizer] = useState(true);
 
-    const lineNumbersRef = React.useRef<HTMLDivElement>(null);
-    const textareaRef = React.useRef<HTMLTextAreaElement>(null);
-
     // Mock initial load
     useEffect(() => {
         loadConfig();
     }, [stackId]);
-
-    const handleScroll = (e: React.UIEvent<HTMLTextAreaElement>) => {
-        if (lineNumbersRef.current) {
-            lineNumbersRef.current.scrollTop = e.currentTarget.scrollTop;
-        }
-    };
 
     const loadConfig = async () => {
         setIsLoading(true);
@@ -74,10 +65,10 @@ services:
         }
     };
 
-    const handleContentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-        const newVal = e.target.value;
-        setContent(newVal);
-        validateYaml(newVal);
+    const handleContentChange = (newVal: string | undefined) => {
+        const value = newVal || "";
+        setContent(value);
+        validateYaml(value);
     };
 
     const validateYaml = (value: string) => {
@@ -201,27 +192,11 @@ services:
                 </div>
 
                 {/* Center Panel: Editor */}
-                <div className="flex-1 relative flex flex-col bg-[#1e1e1e] text-[#d4d4d4] font-mono text-sm overflow-hidden min-w-0">
-                    <div className="absolute inset-0 flex">
-                         {/* Line Numbers */}
-                        <div
-                            ref={lineNumbersRef}
-                            className="w-10 bg-[#1e1e1e] border-r border-[#333] text-right pr-2 pt-4 text-xs text-[#858585] select-none opacity-50 overflow-hidden shrink-0"
-                        >
-                            {content.split('\n').map((_, i) => (
-                                <div key={i} className="leading-6">{i + 1}</div>
-                            ))}
-                        </div>
-                        {/* Editor Textarea */}
-                        <Textarea
-                            ref={textareaRef}
-                            value={content}
-                            onChange={handleContentChange}
-                            onScroll={handleScroll}
-                            className="flex-1 h-full w-full resize-none border-0 rounded-none bg-transparent text-inherit p-4 leading-6 focus-visible:ring-0 focus-visible:ring-offset-0 font-mono shadow-none"
-                            spellCheck={false}
-                        />
-                    </div>
+                <div className="flex-1 relative flex flex-col bg-background overflow-hidden min-w-0">
+                     <ConfigEditor
+                        value={content}
+                        onChange={handleContentChange}
+                    />
                      {validationError && (
                         <div className="absolute bottom-0 left-0 right-0 py-2 px-4 bg-red-900/90 border-t border-red-500/50 text-red-200 text-xs font-mono z-10 flex items-center">
                             <AlertTriangle className="h-3 w-3 mr-2 text-red-400" />
