@@ -1,12 +1,13 @@
-# Feature: Request Tracer & Observability
+# Feature: Traffic Inspector & Replay
 
 ## Overview
 
-The **Request Tracer** is a new observability feature that allows users to visualize the execution path of complex MCP tool chains. It provides a structured "waterfall" view of request traces, including:
+The **Traffic Inspector & Replay** (formerly Request Tracer) is an advanced observability feature that allows users to visualize and interact with the execution path of complex MCP tool chains. It provides a structured "waterfall" view of request traces and enables debugging via replay.
 
 - **Trace List**: A searchable, filterable list of recent requests with status indicators and duration.
 - **Trace Details**: A detailed view of a specific trace, showing the hierarchy of spans (steps), latencies, and input/output payloads.
 - **Waterfall Visualization**: A graphical representation of the timeline of each step in the chain.
+- **Replay**: Ability to replay a specific trace to verify fixes or debug issues.
 
 ## Screenshot
 
@@ -23,3 +24,4 @@ The **Request Tracer** is a new observability feature that allows users to visua
 1.  Navigate to **Traces** in the sidebar.
 2.  Select a trace from the list on the left.
 3.  Inspect the execution waterfall and details on the right.
+4.  Click **Replay Trace** to re-execute the request (simulation in mock mode).
