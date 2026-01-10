@@ -5,11 +5,17 @@
 ### Planned Features
 
 - [ ] **Advanced Service Configuration & Sharing**:
-  - UI-based generation, editing, and management of upstream service configurations.
   - Import external services via gRPC auto-discovery or OpenAPI specs.
-  - Visual editor to enable/disable parts of the spec, modify defaults, add fields, and link secrets to local authentication variables.
+  - Visual editor to enable/disable parts of the spec, modify defaults, add fields.
   - Export and share service configurations.
 - [ ] **Plugin UI Extensions**: Allow server plugins to inject custom UI components.
+- [ ] **Service Templates Library**: A built-in library of common service configurations (Postgres, Redis, Slack) to quickly spin up services without manual config.
+- [ ] **Configuration Versioning & Rollback**: UI to view history of service configuration changes and rollback to previous versions.
+
+### Completed Features
+
+- [x] **Service Environment Variable Editor**: UI for managing environment variables and working directory for command-line services, with secret masking.
+- [x] **Network Topology Visualization**: Interactive graph of the MCP ecosystem. [Docs](server/docs/features/dynamic-ui.md)
 
 ### Completed Features
 
