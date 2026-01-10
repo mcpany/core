@@ -113,6 +113,7 @@ message CallPolicy {
     DENY = 1;
     SAVE_CACHE = 2;
     DELETE_CACHE = 3;
+    REQUIRE_APPROVAL = 4;
   }
   // Default action if no rules match.
   Action default_action = 1;

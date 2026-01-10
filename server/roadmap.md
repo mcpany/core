@@ -6,6 +6,7 @@
 
 ### Implemented Features (Recently Completed)
 
+- [x] **Human-in-the-Loop Policy Support**: Added backend support for `REQUIRE_APPROVAL` policy action. (UI implementation pending)
 - [x] **Agent Debugger & Inspector**: Middleware for traffic replay and inspection. [Docs](server/docs/features/debugger.md)
 - [x] **Context Optimizer**: Middleware to prevent context bloat. [Docs](server/docs/features/context_optimizer.md)
 - [x] **Data Loss Prevention (DLP)**: Redaction of PII in inputs/outputs. [Docs](server/docs/features/dlp.md)
@@ -41,6 +42,8 @@ These features represent the next logical steps for the product, focusing on Ent
 | 8 | **Canary Tool Deployment** | **Ops**: gradually roll out new tool versions to a subset of users or sessions to catch regressions before they impact everyone. | High |
 | 9 | **Compliance Reporting** | **Enterprise**: Automated generation of PDF/CSV reports from Audit Logs for SOC2/GDPR compliance reviews. | Medium |
 | 10 | **Advanced Tiered Caching** | **Performance**: Implement a multi-layer cache (Memory -> Redis -> Disk) with configurable eviction policies to reduce upstream costs. | Medium |
+| 11 | **Smart Config Defaults** | **UX**: Reduce configuration friction by providing smart defaults and validation suggestions for common services (Github, Postgres). | Low |
+| 12 | **Service Connection Health UI** | **Visibility**: Real-time visual indicators in the dashboard for the connection status of upstream services (Connected, Error, Latency). | Low |
 
 ## 3. Codebase Health
 

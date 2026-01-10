@@ -51,13 +51,24 @@ func (m *CallPolicyMiddleware) Execute(ctx context.Context, req *tool.ExecutionR
 	}
 
 	// For CompiledCallPolicy, we need arguments as []byte (req.ToolInputs is already json.RawMessage which is []byte)
-	allowed, err := tool.EvaluateCompiledCallPolicy(compiledPolicies, req.ToolName, "", req.ToolInputs)
+	result, err := tool.EvaluateCompiledCallPolicyWithResult(compiledPolicies, req.ToolName, "", req.ToolInputs)
 	if err != nil {
 		logging.GetLogger().Error("Failed to evaluate call policy", "error", err)
 		return nil, err
 	}
 
-	if !allowed {
+	if result.RequireApproval {
+		metrics.IncrCounterWithLabels([]string{"call_policy", "approval_required_total"}, 1, []metrics.Label{
+			{Name: "service_id", Value: serviceID},
+			{Name: "tool_name", Value: req.ToolName},
+		})
+		// In a real system, this would hang/block or return a "Pending" status.
+		// For now, we return a specific error that the UI can interpret.
+		// TODO: Implement the full approval flow (store request, notify UI, wait for signal).
+		return nil, fmt.Errorf("execution requires human approval for tool: %s", req.ToolName)
+	}
+
+	if !result.Allowed {
 		metrics.IncrCounterWithLabels([]string{"call_policy", "blocked_total"}, 1, []metrics.Label{
 			{Name: "service_id", Value: serviceID},
 			{Name: "tool_name", Value: req.ToolName},

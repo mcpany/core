@@ -43,17 +43,39 @@ func ShouldExport(name string, policy *configv1.ExportPolicy) bool {
 	return true
 }
 
+// PolicyResult represents the result of a policy evaluation.
+type PolicyResult struct {
+	Allowed         bool
+	RequireApproval bool
+}
+
 // EvaluateCallPolicy checks if a call should be allowed based on the policies.
 // If arguments is nil, it performs a static check (ignoring rules with argument_regex).
 // It returns true if the call is allowed, false otherwise.
 func EvaluateCallPolicy(policies []*configv1.CallPolicy, toolName, callID string, arguments []byte) (bool, error) {
+	result, err := EvaluateCallPolicyWithResult(policies, toolName, callID, arguments)
+	if err != nil {
+		return false, err
+	}
+	// For backward compatibility, REQUIRE_APPROVAL is treated as "not allowed" (blocked)
+	// by this function, but the caller should use EvaluateCallPolicyWithResult for more details.
+	// Actually, if it requires approval, it's not "Allowed" in the sense of "proceed immediately".
+	if result.RequireApproval {
+		return false, nil
+	}
+	return result.Allowed, nil
+}
+
+// EvaluateCallPolicyWithResult checks if a call should be allowed based on the policies.
+func EvaluateCallPolicyWithResult(policies []*configv1.CallPolicy, toolName, callID string, arguments []byte) (PolicyResult, error) {
 	// Fallback to slower implementation if not using compiled policies
 	for _, policy := range policies {
 		if policy == nil {
 			continue
 		}
-		policyBlocked := false
-		matchedRule := false
+
+		matchedAction := policy.GetDefaultAction()
+
 		for _, rule := range policy.GetRules() {
 			matched := true
 			if rule.GetNameRegex() != "" {
@@ -78,24 +100,19 @@ func EvaluateCallPolicy(policies []*configv1.CallPolicy, toolName, callID string
 			}
 
 			if matched {
-				matchedRule = true
-				if rule.GetAction() == configv1.CallPolicy_DENY {
-					policyBlocked = true
-				}
+				matchedAction = rule.GetAction()
 				break // First match wins
 			}
 		}
-		if !matchedRule {
-			if policy.GetDefaultAction() == configv1.CallPolicy_DENY {
-				policyBlocked = true
-			}
-		}
 
-		if policyBlocked {
-			return false, nil // Blocked
+		if matchedAction == configv1.CallPolicy_DENY {
+			return PolicyResult{Allowed: false}, nil
+		}
+		if matchedAction == configv1.CallPolicy_REQUIRE_APPROVAL {
+			return PolicyResult{Allowed: false, RequireApproval: true}, nil
 		}
 	}
-	return true, nil // Allowed
+	return PolicyResult{Allowed: true}, nil
 }
 
 // compiledCallPolicyRule holds the pre-compiled regexes for a policy rule.
@@ -171,9 +188,21 @@ func NewCompiledCallPolicy(policy *configv1.CallPolicy) (*CompiledCallPolicy, er
 
 // EvaluateCompiledCallPolicy checks if a call should be allowed based on the compiled policies.
 func EvaluateCompiledCallPolicy(policies []*CompiledCallPolicy, toolName, callID string, arguments []byte) (bool, error) {
+	result, err := EvaluateCompiledCallPolicyWithResult(policies, toolName, callID, arguments)
+	if err != nil {
+		return false, err
+	}
+	if result.RequireApproval {
+		return false, nil
+	}
+	return result.Allowed, nil
+}
+
+// EvaluateCompiledCallPolicyWithResult checks if a call should be allowed based on the compiled policies.
+func EvaluateCompiledCallPolicyWithResult(policies []*CompiledCallPolicy, toolName, callID string, arguments []byte) (PolicyResult, error) {
 	for _, policy := range policies {
-		policyBlocked := false
-		matchedRule := false
+		matchedAction := policy.policy.GetDefaultAction()
+
 		for _, cRule := range policy.compiledRules {
 			matched := true
 			rule := cRule.rule
@@ -197,22 +226,17 @@ func EvaluateCompiledCallPolicy(policies []*CompiledCallPolicy, toolName, callID
 			}
 
 			if matched {
-				matchedRule = true
-				if rule.GetAction() == configv1.CallPolicy_DENY {
-					policyBlocked = true
-				}
+				matchedAction = rule.GetAction()
 				break // First match wins
 			}
 		}
-		if !matchedRule {
-			if policy.policy.GetDefaultAction() == configv1.CallPolicy_DENY {
-				policyBlocked = true
-			}
-		}
 
-		if policyBlocked {
-			return false, nil
+		if matchedAction == configv1.CallPolicy_DENY {
+			return PolicyResult{Allowed: false}, nil
+		}
+		if matchedAction == configv1.CallPolicy_REQUIRE_APPROVAL {
+			return PolicyResult{Allowed: false, RequireApproval: true}, nil
 		}
 	}
-	return true, nil
+	return PolicyResult{Allowed: true}, nil
 }

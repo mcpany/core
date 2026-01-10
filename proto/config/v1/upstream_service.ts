@@ -187,6 +187,7 @@ export enum CallPolicy_Action {
   DENY = 1,
   SAVE_CACHE = 2,
   DELETE_CACHE = 3,
+  REQUIRE_APPROVAL = 4,
   UNRECOGNIZED = -1,
 }
 
@@ -204,6 +205,9 @@ export function callPolicy_ActionFromJSON(object: any): CallPolicy_Action {
     case 3:
     case "DELETE_CACHE":
       return CallPolicy_Action.DELETE_CACHE;
+    case 4:
+    case "REQUIRE_APPROVAL":
+      return CallPolicy_Action.REQUIRE_APPROVAL;
     case -1:
     case "UNRECOGNIZED":
     default:
@@ -221,6 +225,8 @@ export function callPolicy_ActionToJSON(object: CallPolicy_Action): string {
       return "SAVE_CACHE";
     case CallPolicy_Action.DELETE_CACHE:
       return "DELETE_CACHE";
+    case CallPolicy_Action.REQUIRE_APPROVAL:
+      return "REQUIRE_APPROVAL";
     case CallPolicy_Action.UNRECOGNIZED:
     default:
       return "UNRECOGNIZED";

@@ -78,10 +78,11 @@ func (x LoadBalancingStrategy) Number() protoreflect.EnumNumber {
 type CallPolicy_Action int32
 
 const (
-	CallPolicy_ALLOW        CallPolicy_Action = 0
-	CallPolicy_DENY         CallPolicy_Action = 1
-	CallPolicy_SAVE_CACHE   CallPolicy_Action = 2
-	CallPolicy_DELETE_CACHE CallPolicy_Action = 3
+	CallPolicy_ALLOW            CallPolicy_Action = 0
+	CallPolicy_DENY             CallPolicy_Action = 1
+	CallPolicy_SAVE_CACHE       CallPolicy_Action = 2
+	CallPolicy_DELETE_CACHE     CallPolicy_Action = 3
+	CallPolicy_REQUIRE_APPROVAL CallPolicy_Action = 4
 )
 
 // Enum value maps for CallPolicy_Action.
@@ -91,12 +92,14 @@ var (
 		1: "DENY",
 		2: "SAVE_CACHE",
 		3: "DELETE_CACHE",
+		4: "REQUIRE_APPROVAL",
 	}
 	CallPolicy_Action_value = map[string]int32{
-		"ALLOW":        0,
-		"DENY":         1,
-		"SAVE_CACHE":   2,
-		"DELETE_CACHE": 3,
+		"ALLOW":            0,
+		"DENY":             1,
+		"SAVE_CACHE":       2,
+		"DELETE_CACHE":     3,
+		"REQUIRE_APPROVAL": 4,
 	}
 )
 
@@ -8374,17 +8377,18 @@ const file_proto_config_v1_upstream_service_proto_rawDesc = "" +
 	"\x14prompt_export_policy\x18\x1c \x01(\v2\x1e.mcpany.config.v1.ExportPolicyR\x14prompt_export_policy\x12V\n" +
 	"\x16resource_export_policy\x18\x1d \x01(\v2\x1e.mcpany.config.v1.ExportPolicyR\x16resource_export_policy\x12.\n" +
 	"\x12auto_discover_tool\x18\x1e \x01(\bR\x12auto_discover_toolB\x10\n" +
-	"\x0eservice_configJ\x04\b\x19\x10\x1aJ\x04\b!\x10\"R\x17upstream_authentication\"\xd1\x01\n" +
+	"\x0eservice_configJ\x04\b\x19\x10\x1aJ\x04\b!\x10\"R\x17upstream_authentication\"\xe7\x01\n" +
 	"\n" +
 	"CallPolicy\x12J\n" +
 	"\x0edefault_action\x18\x01 \x01(\x0e2#.mcpany.config.v1.CallPolicy.ActionR\rdefaultAction\x126\n" +
-	"\x05rules\x18\x02 \x03(\v2 .mcpany.config.v1.CallPolicyRuleR\x05rules\"?\n" +
+	"\x05rules\x18\x02 \x03(\v2 .mcpany.config.v1.CallPolicyRuleR\x05rules\"U\n" +
 	"\x06Action\x12\t\n" +
 	"\x05ALLOW\x10\x00\x12\b\n" +
 	"\x04DENY\x10\x01\x12\x0e\n" +
 	"\n" +
 	"SAVE_CACHE\x10\x02\x12\x10\n" +
-	"\fDELETE_CACHE\x10\x03\"\xd8\x01\n" +
+	"\fDELETE_CACHE\x10\x03\x12\x14\n" +
+	"\x10REQUIRE_APPROVAL\x10\x04\"\xd8\x01\n" +
 	"\x0eCallPolicyRule\x12;\n" +
 	"\x06action\x18\x01 \x01(\x0e2#.mcpany.config.v1.CallPolicy.ActionR\x06action\x12\x1e\n" +
 	"\n" +

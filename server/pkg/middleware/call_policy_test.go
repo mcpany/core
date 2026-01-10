@@ -261,4 +261,32 @@ func TestCallPolicyMiddleware(t *testing.T) {
 		assert.Equal(t, successResult, result)
 		assert.True(t, nextCalled)
 	})
+
+	t.Run("require approval -> pending error", func(t *testing.T) {
+		policy := &configv1.CallPolicy{
+			DefaultAction: actionPtr(configv1.CallPolicy_ALLOW),
+			Rules: []*configv1.CallPolicyRule{
+				{
+					Action:        actionPtr(configv1.CallPolicy_REQUIRE_APPROVAL),
+					ArgumentRegex: proto.String(".*sensitive.*"),
+				},
+			},
+		}
+
+		cpMiddleware, _, mockTool := setup([]*configv1.CallPolicy{policy})
+
+		req := &tool.ExecutionRequest{
+			ToolName:   "service.test-tool",
+			ToolInputs: json.RawMessage(`{"cmd": "sensitive operation"}`),
+		}
+		ctx := tool.NewContextWithTool(context.Background(), mockTool)
+
+		next := func(_ context.Context, _ *tool.ExecutionRequest) (any, error) {
+			return successResult, nil
+		}
+
+		_, err := cpMiddleware.Execute(ctx, req, next)
+		assert.Error(t, err)
+		assert.Contains(t, err.Error(), "execution requires human approval")
+	})
 }
