@@ -38,7 +38,7 @@ func writeJSON(w http.ResponseWriter, status int, data any) {
 			fmt.Printf("Failed to encode proto response: %v\n", err)
 			return
 		}
-		w.Write(b)
+		_, _ = w.Write(b)
 		return
 	}
 
@@ -121,7 +121,7 @@ func (a *Application) createCredentialHandler(w http.ResponseWriter, r *http.Req
 		writeError(w, fmt.Errorf("failed to read body: %w", err))
 		return
 	}
-	defer r.Body.Close()
+	defer func() { _ = r.Body.Close() }()
 
 	if err := protojson.Unmarshal(body, &cred); err != nil {
 		writeError(w, fmt.Errorf("invalid request body: %w", err))
