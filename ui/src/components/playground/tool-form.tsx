@@ -12,14 +12,15 @@ import { SchemaForm } from "./schema-form";
 
 interface ToolFormProps {
   tool: ToolDefinition;
-  onSubmit: (data: any) => void;
+  onSubmit: (data: Record<string, unknown>) => void;
   onCancel: () => void;
 }
 
 export function ToolForm({ tool, onSubmit, onCancel }: ToolFormProps) {
-  const [formData, setFormData] = useState<any>({});
+  const [formData, setFormData] = useState<Record<string, unknown>>({});
   const [errors, setErrors] = useState<Record<string, string>>({});
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const validate = (schema: any, data: any, path: string = ""): Record<string, string> => {
     let newErrors: Record<string, string> = {};
 
@@ -53,7 +54,8 @@ export function ToolForm({ tool, onSubmit, onCancel }: ToolFormProps) {
 
     // Recurse into array items
     if (schema.type === "array" && schema.items && Array.isArray(data)) {
-        data.forEach((item, index) => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        data.forEach((item: any, index: number) => {
             const itemPath = `${path}[${index}]`;
             const itemErrors = validate(schema.items, item, itemPath);
             newErrors = { ...newErrors, ...itemErrors };
