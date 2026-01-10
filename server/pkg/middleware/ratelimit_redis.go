@@ -38,11 +38,11 @@ type RedisLimiter struct {
 
 // NewRedisLimiter creates a new RedisLimiter.
 func NewRedisLimiter(serviceID string, config *configv1.RateLimitConfig) (*RedisLimiter, error) {
-	return NewRedisLimiterWithPartition(serviceID, "", config)
+	return NewRedisLimiterWithPartition(serviceID, "", "", config)
 }
 
 // NewRedisLimiterWithPartition creates a new RedisLimiter with a partition key.
-func NewRedisLimiterWithPartition(serviceID, partitionKey string, config *configv1.RateLimitConfig) (*RedisLimiter, error) {
+func NewRedisLimiterWithPartition(serviceID, limitScopeKey, partitionKey string, config *configv1.RateLimitConfig) (*RedisLimiter, error) {
 	if config.GetRedis() == nil {
 		return nil, fmt.Errorf("redis config is missing")
 	}
@@ -56,6 +56,9 @@ func NewRedisLimiterWithPartition(serviceID, partitionKey string, config *config
 	client := redisClientCreator(opts)
 
 	key := "ratelimit:" + serviceID
+	if limitScopeKey != "" {
+		key = key + ":" + limitScopeKey
+	}
 	if partitionKey != "" {
 		key = key + ":" + partitionKey
 	}
@@ -69,8 +72,11 @@ func NewRedisLimiterWithPartition(serviceID, partitionKey string, config *config
 }
 
 // NewRedisLimiterWithClient creates a new RedisLimiter with an existing client.
-func NewRedisLimiterWithClient(client *redis.Client, serviceID, partitionKey string, config *configv1.RateLimitConfig) *RedisLimiter {
+func NewRedisLimiterWithClient(client *redis.Client, serviceID, limitScopeKey, partitionKey string, config *configv1.RateLimitConfig) *RedisLimiter {
 	key := "ratelimit:" + serviceID
+	if limitScopeKey != "" {
+		key = key + ":" + limitScopeKey
+	}
 	if partitionKey != "" {
 		key = key + ":" + partitionKey
 	}
