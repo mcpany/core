@@ -42,7 +42,7 @@ func (m *mockRunner) Run(_ context.Context, _ afero.Fs, stdio bool, mcpListenAdd
 	return nil
 }
 
-func (m *mockRunner) ReloadConfig(_ afero.Fs, _ []string) error {
+func (m *mockRunner) ReloadConfig(_ context.Context, _ afero.Fs, _ []string) error {
 	return nil
 }
 
@@ -136,7 +136,8 @@ func TestRootCmd(t *testing.T) {
 		"--config-path", fmt.Sprintf("%s,%s", tmpFilePath, tmpDir),
 		"--shutdown-timeout", "10s",
 	})
-	_ = rootCmd.Execute()
+	err = rootCmd.Execute()
+	assert.NoError(t, err)
 
 	assert.True(t, mock.called, "app.Run should have been called")
 	assert.True(t, mock.capturedStdio, "stdio flag should be true")
@@ -154,7 +155,8 @@ func TestVersionCmd(t *testing.T) {
 
 	rootCmd := newRootCmd()
 	rootCmd.SetArgs([]string{"version"})
-	_ = rootCmd.Execute()
+	err := rootCmd.Execute()
+	assert.NoError(t, err)
 
 	_ = w.Close()
 	out, _ := io.ReadAll(r)
