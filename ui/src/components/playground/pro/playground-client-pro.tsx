@@ -30,9 +30,12 @@ import { ToolSidebar } from "./tool-sidebar";
 import { ChatMessage, Message } from "./chat-message";
 import { useIsMobile } from "@/hooks/use-mobile";
 
+import { useSearchParams } from "next/navigation";
+
 export function PlaygroundClientPro() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
+  const searchParams = useSearchParams();
 
   useEffect(() => {
       setMessages([
@@ -44,6 +47,24 @@ export function PlaygroundClientPro() {
           }
       ]);
   }, []);
+
+  useEffect(() => {
+    const tool = searchParams.get('tool');
+    const args = searchParams.get('args');
+    if (tool) {
+        // Prevent overwriting if user already typed?
+        // But this runs on mount/searchParams change.
+        // If we want to support replay, we should set it.
+        // Only set if input is empty? Or always?
+        // Replay implies intent to overwrite.
+        // Assuming clean navigation.
+        let command = tool;
+        if (args) {
+             command += ` ${args}`;
+        }
+        setInput(command);
+    }
+  }, [searchParams]);
   const [isLoading, setIsLoading] = useState(false);
   const [availableTools, setAvailableTools] = useState<ToolDefinition[]>([]);
   const [toolToConfigure, setToolToConfigure] = useState<ToolDefinition | null>(null);
