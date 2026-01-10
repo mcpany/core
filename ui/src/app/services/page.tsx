@@ -24,6 +24,7 @@ import { useToast } from "@/hooks/use-toast";
 
 import { UpstreamServiceConfig } from "@/lib/client";
 import { ServiceList } from "@/components/services/service-list";
+import { EnvVarEditor } from "@/components/services/env-var-editor";
 
 export default function ServicesPage() {
   const [services, setServices] = useState<UpstreamServiceConfig[]>([]);
@@ -240,16 +241,34 @@ export default function ServicesPage() {
                         </div>
                     )}
                      {selectedService.commandLineService && (
-                         <div className="grid grid-cols-4 items-center gap-4">
-                             <Label htmlFor="command" className="text-right">Command</Label>
-                             <Input
-                                id="command"
-                                value={selectedService.commandLineService.command}
-                                onChange={(e) => setSelectedService({...selectedService, commandLineService: { ...selectedService.commandLineService, command: e.target.value } as any})}
-                                placeholder="docker run ..."
-                                className="col-span-3"
-                            />
-                        </div>
+                         <>
+                             <div className="grid grid-cols-4 items-center gap-4">
+                                 <Label htmlFor="command" className="text-right">Command</Label>
+                                 <Input
+                                    id="command"
+                                    value={selectedService.commandLineService.command}
+                                    onChange={(e) => setSelectedService({...selectedService, commandLineService: { ...selectedService.commandLineService, command: e.target.value } as any})}
+                                    placeholder="docker run ..."
+                                    className="col-span-3"
+                                />
+                            </div>
+                             <div className="grid grid-cols-4 items-center gap-4">
+                                 <Label htmlFor="workingDirectory" className="text-right">Working Dir</Label>
+                                 <Input
+                                    id="workingDirectory"
+                                    value={selectedService.commandLineService.workingDirectory || ""}
+                                    onChange={(e) => setSelectedService({...selectedService, commandLineService: { ...selectedService.commandLineService, workingDirectory: e.target.value } as any})}
+                                    placeholder="/app"
+                                    className="col-span-3"
+                                />
+                            </div>
+                            <div className="col-span-4 border-t pt-4 mt-4">
+                                <EnvVarEditor
+                                    initialEnv={selectedService.commandLineService.env as any}
+                                    onChange={(newEnv) => setSelectedService({...selectedService, commandLineService: { ...selectedService.commandLineService, env: newEnv } as any})}
+                                />
+                            </div>
+                        </>
                     )}
 
                     <div className="flex justify-end gap-2 pt-4">
