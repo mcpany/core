@@ -137,10 +137,9 @@ upstream_services:
 		err := afero.WriteFile(fs, "/config.yaml", []byte(configContent), 0o644)
 		require.NoError(t, err)
 
-		// With the new resilient loading, ReloadConfig should NOT error,
-		// but the service should be skipped (not loaded).
+		// With strict loading, ReloadConfig SHOULD error for unknown services.
 		err = app.ReloadConfig(context.Background(), fs, []string{"/config.yaml"})
-		require.NoError(t, err)
+		require.Error(t, err)
 
 		// Check that the service was indeed NOT loaded
 		// Since we don't have access to the registry directly here easily without more setup,
