@@ -18,13 +18,15 @@ test.describe('Stack Editor', () => {
     await expect(visualizer.getByText('weather-service', { exact: true })).toBeVisible();
   });
 
-  // Skipped flaky interaction test for CI stability - verified manually
-  // test('should update visualizer when template added', async ({ page }) => {
-  //   await page.goto('/stacks/default-stack');
-  //   await page.locator('.monaco-editor').waitFor({ state: 'visible' });
-  //   await page.getByText('Redis', { exact: true }).click({ force: true });
-  //   await page.waitForTimeout(2000);
-  //   const visualizer = page.locator('.stack-visualizer-container');
-  //   await expect(visualizer.getByText('redis-cache')).toBeVisible({ timeout: 10000 });
-  // });
+  // Enabled previously flaky interaction test
+  test('should update visualizer when template added', async ({ page }) => {
+    await page.goto('/stacks/default-stack');
+    await page.locator('.monaco-editor').waitFor({ state: 'visible' });
+    // Click a template in the sidebar
+    await page.getByText('Redis', { exact: true }).click({ force: true });
+    // Wait for updates
+    await page.waitForTimeout(2000);
+    const visualizer = page.locator('.stack-visualizer-container');
+    await expect(visualizer.getByText('redis-cache')).toBeVisible({ timeout: 10000 });
+  });
 });

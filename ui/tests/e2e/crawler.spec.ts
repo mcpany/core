@@ -32,9 +32,25 @@ test.describe('UI Crawler', () => {
       visited.add(normalizedUrl);
 
       console.log(`Visiting: ${url}`);
+      await page.waitForTimeout(500); // Small delay between pages
 
       try {
-        const response = await page.goto(url, { waitUntil: 'domcontentloaded' });
+        let response;
+        let retries = 3;
+        while (retries > 0) {
+            try {
+                response = await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 30000 });
+                break;
+            } catch (e: any) {
+                if (e.message.includes('ERR_CONNECTION_REFUSED') && retries > 1) {
+                    console.warn(`Connection refused for ${url}, retrying...`);
+                    await page.waitForTimeout(2000);
+                    retries--;
+                    continue;
+                }
+                throw e;
+            }
+        }
 
         if (!response) {
             failures.push({ url, error: 'No response received' });

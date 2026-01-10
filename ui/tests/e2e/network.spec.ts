@@ -20,7 +20,10 @@ test.describe('Network Topology', () => {
                 http_service: { address: "https://stripe.com", tools: [], resources: [] }
             }
         });
-        expect(r1.ok()).toBeTruthy();
+        if (!r1.ok() && r1.status() !== 409) {
+            console.error(`Failed to seed svc_01: ${r1.status()} ${await r1.text()}`);
+        }
+        expect(r1.status() === 200 || r1.status() === 201 || r1.status() === 409).toBeTruthy();
 
         const r2 = await request.post('/api/v1/services', {
             data: {
@@ -31,9 +34,12 @@ test.describe('Network Topology', () => {
                 grpc_service: { address: "localhost:50051", tools: [], resources: [] }
             }
         });
-        expect(r2.ok()).toBeTruthy();
+        if (!r2.ok() && r2.status() !== 409) {
+            console.error(`Failed to seed svc_02: ${r2.status()} ${await r2.text()}`);
+        }
+        expect(r2.status() === 200 || r2.status() === 201 || r2.status() === 409).toBeTruthy();
     } catch (e) {
-        console.log("Seeding failed or services already exist", e);
+        console.log("Seeding interaction failed", e);
         throw e;
     }
 

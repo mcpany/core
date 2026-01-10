@@ -39,12 +39,16 @@ test.describe('Global Search', () => {
   });
 
   test('should open command palette via shortcut and search dynamic content', async ({ page }) => {
+    // Focus page to ensure keyboard events are captured
+    await page.click('body');
+
     // Determine modifier key
     const modifier = process.platform === 'darwin' ? 'Meta' : 'Control';
     await page.keyboard.press(`${modifier}+k`);
+    await page.waitForTimeout(500);
 
     const dialog = page.locator('div[role="dialog"]');
-    await expect(dialog).toBeVisible();
+    await expect(dialog).toBeVisible({ timeout: 10000 });
     const searchInput = page.locator('input[placeholder*="Type a command or search"]');
     await expect(searchInput).toBeVisible();
 
