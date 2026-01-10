@@ -47,6 +47,32 @@ func TestExampleConfigs(t *testing.T) {
 func validateConfig(t *testing.T, configPath string) {
 	osFs := afero.NewOsFs()
 
+	// Set dummy values for all required environment variables found in failure logs
+	// This allows the strict config validation to pass during tests
+	requiredEnvVars := []string{
+		"AIRTABLE_API_TOKEN",
+		"FIGMA_API_TOKEN",
+		"GITHUB_TOKEN",
+		"GOOGLE_API_KEY",
+		"GOOGLE_OAUTH_CLIENT_ID",
+		"GOOGLE_OAUTH_CLIENT_SECRET",
+		"GOOGLE_OAUTH_REFRESH_TOKEN",
+		"IPINFO_API_TOKEN",
+		"MIRO_API_TOKEN",
+		"NASA_OPEN_API_KEY",
+		"SLACK_API_TOKEN",
+		"STRIPE_API_KEY",
+		"TRELLO_API_TOKEN",
+		"TRELLO_API_KEY",
+		"TWILIO_ACCOUNT_SID",
+		"TWILIO_API_KEY",
+		"TWILIO_API_SECRET",
+	}
+
+	for _, v := range requiredEnvVars {
+		t.Setenv(v, "dummy-val")
+	}
+
 	// Create a store that points to this config file
 	store := config.NewFileStore(osFs, []string{configPath})
 
