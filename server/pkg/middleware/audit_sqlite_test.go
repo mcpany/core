@@ -17,6 +17,38 @@ import (
 	_ "modernc.org/sqlite"
 )
 
+func TestEnsureColumn_Validation(t *testing.T) {
+	// Create a temporary database file
+	f, err := os.CreateTemp("", "audit_validation_*.db")
+	require.NoError(t, err)
+	dbPath := f.Name()
+	f.Close()
+	defer os.Remove(dbPath)
+
+	// Open DB
+	db, err := sql.Open("sqlite", dbPath)
+	require.NoError(t, err)
+	defer db.Close()
+
+	// Initialize table
+	_, err = db.Exec("CREATE TABLE audit_logs (id INTEGER PRIMARY KEY)")
+	require.NoError(t, err)
+
+	// Test valid column
+	err = ensureColumn(db, "hash")
+	assert.NoError(t, err)
+
+	// Test invalid column
+	err = ensureColumn(db, "invalid_col")
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), "invalid column name")
+
+	// Test injection attempt
+	err = ensureColumn(db, "hash; DROP TABLE audit_logs;")
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), "invalid column name")
+}
+
 func TestSQLiteAuditStore(t *testing.T) {
 	// Create a temporary database file
 	f, err := os.CreateTemp("", "audit_test_*.db")
