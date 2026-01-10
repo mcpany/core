@@ -131,9 +131,9 @@ func (s *Store) DeleteService(ctx context.Context, name string) error {
 }
 
 // GetGlobalSettings retrieves the global configuration.
-func (s *Store) GetGlobalSettings() (*configv1.GlobalSettings, error) {
+func (s *Store) GetGlobalSettings(ctx context.Context) (*configv1.GlobalSettings, error) {
 	query := "SELECT config_json FROM global_settings WHERE id = 1"
-	row := s.db.QueryRowContext(context.TODO(), query)
+	row := s.db.QueryRowContext(ctx, query)
 
 	var configJSON string
 	if err := row.Scan(&configJSON); err != nil {
@@ -151,7 +151,7 @@ func (s *Store) GetGlobalSettings() (*configv1.GlobalSettings, error) {
 }
 
 // SaveGlobalSettings saves the global configuration.
-func (s *Store) SaveGlobalSettings(settings *configv1.GlobalSettings) error {
+func (s *Store) SaveGlobalSettings(ctx context.Context, settings *configv1.GlobalSettings) error {
 	opts := protojson.MarshalOptions{UseProtoNames: true}
 	configJSON, err := opts.Marshal(settings)
 	if err != nil {
@@ -165,7 +165,7 @@ func (s *Store) SaveGlobalSettings(settings *configv1.GlobalSettings) error {
 		config_json = excluded.config_json,
 		updated_at = excluded.updated_at;
 	`
-	_, err = s.db.ExecContext(context.TODO(), query, string(configJSON))
+	_, err = s.db.ExecContext(ctx, query, string(configJSON))
 	if err != nil {
 		return fmt.Errorf("failed to save global settings: %w", err)
 	}
@@ -292,8 +292,8 @@ func (s *Store) DeleteUser(ctx context.Context, id string) error {
 // Secrets
 
 // ListSecrets retrieves all secrets.
-func (s *Store) ListSecrets() ([]*configv1.Secret, error) {
-	rows, err := s.db.QueryContext(context.TODO(), "SELECT config_json FROM secrets")
+func (s *Store) ListSecrets(ctx context.Context) ([]*configv1.Secret, error) {
+	rows, err := s.db.QueryContext(ctx, "SELECT config_json FROM secrets")
 	if err != nil {
 		return nil, fmt.Errorf("failed to query secrets: %w", err)
 	}
@@ -319,9 +319,9 @@ func (s *Store) ListSecrets() ([]*configv1.Secret, error) {
 }
 
 // GetSecret retrieves a secret by ID.
-func (s *Store) GetSecret(id string) (*configv1.Secret, error) {
+func (s *Store) GetSecret(ctx context.Context, id string) (*configv1.Secret, error) {
 	query := "SELECT config_json FROM secrets WHERE id = $1"
-	row := s.db.QueryRowContext(context.TODO(), query, id)
+	row := s.db.QueryRowContext(ctx, query, id)
 
 	var configJSON string
 	if err := row.Scan(&configJSON); err != nil {
@@ -339,7 +339,7 @@ func (s *Store) GetSecret(id string) (*configv1.Secret, error) {
 }
 
 // SaveSecret saves a secret.
-func (s *Store) SaveSecret(secret *configv1.Secret) error {
+func (s *Store) SaveSecret(ctx context.Context, secret *configv1.Secret) error {
 	if secret.GetId() == "" {
 		return fmt.Errorf("secret id is required")
 	}
@@ -359,7 +359,7 @@ func (s *Store) SaveSecret(secret *configv1.Secret) error {
 		config_json = excluded.config_json,
 		updated_at = excluded.updated_at;
 	`
-	_, err = s.db.ExecContext(context.TODO(), query, secret.GetId(), secret.GetName(), secret.GetKey(), string(configJSON))
+	_, err = s.db.ExecContext(ctx, query, secret.GetId(), secret.GetName(), secret.GetKey(), string(configJSON))
 	if err != nil {
 		return fmt.Errorf("failed to save secret: %w", err)
 	}
@@ -367,8 +367,8 @@ func (s *Store) SaveSecret(secret *configv1.Secret) error {
 }
 
 // DeleteSecret deletes a secret by ID.
-func (s *Store) DeleteSecret(id string) error {
-	_, err := s.db.ExecContext(context.TODO(), "DELETE FROM secrets WHERE id = $1", id)
+func (s *Store) DeleteSecret(ctx context.Context, id string) error {
+	_, err := s.db.ExecContext(ctx, "DELETE FROM secrets WHERE id = $1", id)
 	if err != nil {
 		return fmt.Errorf("failed to delete secret: %w", err)
 	}

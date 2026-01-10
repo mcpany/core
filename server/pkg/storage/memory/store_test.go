@@ -50,7 +50,7 @@ func TestMemoryStore(t *testing.T) {
 		globalSettings := &configv1.GlobalSettings{
 			LogLevel: &debugLevel,
 		}
-		err := s.SaveGlobalSettings(globalSettings)
+		err := s.SaveGlobalSettings(ctx, globalSettings)
 		assert.NoError(t, err)
 
 		cfg, err := s.Load(ctx)
@@ -79,7 +79,7 @@ func TestMemoryStore(t *testing.T) {
 		// Initial state (should be empty but not nil if we follow implementation,
 		// actually implementation returns empty struct if nil)
 		s2 := NewStore()
-		got, err := s2.GetGlobalSettings()
+		got, err := s2.GetGlobalSettings(ctx)
 		assert.NoError(t, err)
 		assert.NotNil(t, got)
 		// Default enum value is 0 (LOG_LEVEL_UNSPECIFIED)
@@ -89,10 +89,10 @@ func TestMemoryStore(t *testing.T) {
 		settings := &configv1.GlobalSettings{
 			LogLevel: &infoLevel,
 		}
-		err = s2.SaveGlobalSettings(settings)
+		err = s2.SaveGlobalSettings(ctx, settings)
 		assert.NoError(t, err)
 
-		got, err = s2.GetGlobalSettings()
+		got, err = s2.GetGlobalSettings(ctx)
 		assert.NoError(t, err)
 		assert.Equal(t, configv1.GlobalSettings_LOG_LEVEL_INFO, got.GetLogLevel())
 	})
@@ -105,35 +105,35 @@ func TestMemoryStore(t *testing.T) {
 		}
 
 		// Save
-		err := s3.SaveSecret(secret)
+		err := s3.SaveSecret(ctx, secret)
 		assert.NoError(t, err)
 
 		// Get
-		got, err := s3.GetSecret("sec-1")
+		got, err := s3.GetSecret(ctx, "sec-1")
 		assert.NoError(t, err)
 		assert.NotNil(t, got)
 		assert.Equal(t, "super-secret", got.GetValue())
 
 		// Get Non-Existent
-		got, err = s3.GetSecret("non-existent")
+		got, err = s3.GetSecret(ctx, "non-existent")
 		assert.NoError(t, err)
 		assert.Nil(t, got)
 
 		// List
-		list, err := s3.ListSecrets()
+		list, err := s3.ListSecrets(ctx)
 		assert.NoError(t, err)
 		assert.Len(t, list, 1)
 		assert.Equal(t, "sec-1", list[0].GetId())
 
 		// Delete
-		err = s3.DeleteSecret("sec-1")
+		err = s3.DeleteSecret(ctx, "sec-1")
 		assert.NoError(t, err)
 
-		got, err = s3.GetSecret("sec-1")
+		got, err = s3.GetSecret(ctx, "sec-1")
 		assert.NoError(t, err)
 		assert.Nil(t, got)
 
-		list, err = s3.ListSecrets()
+		list, err = s3.ListSecrets(ctx)
 		assert.NoError(t, err)
 		assert.Empty(t, list)
 	})

@@ -272,7 +272,7 @@ func (a *Application) handleSettings(store storage.Storage) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case http.MethodGet:
-			settings, err := store.GetGlobalSettings()
+			settings, err := store.GetGlobalSettings(r.Context())
 			if err != nil {
 				logging.GetLogger().Error("failed to get global settings", "error", err)
 				http.Error(w, "Internal Server Error", http.StatusInternalServerError)
@@ -298,7 +298,7 @@ func (a *Application) handleSettings(store storage.Storage) http.HandlerFunc {
 				http.Error(w, err.Error(), http.StatusBadRequest)
 				return
 			}
-			if err := store.SaveGlobalSettings(&settings); err != nil {
+			if err := store.SaveGlobalSettings(r.Context(), &settings); err != nil {
 				logging.GetLogger().Error("failed to save global settings", "error", err)
 				http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 				return
@@ -396,7 +396,7 @@ func (a *Application) handleSecrets(store storage.Storage) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case http.MethodGet:
-			secrets, err := store.ListSecrets()
+			secrets, err := store.ListSecrets(r.Context())
 			if err != nil {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 				return
@@ -429,7 +429,7 @@ func (a *Application) handleSecrets(store storage.Storage) http.HandlerFunc {
 			if secret.GetId() == "" {
 				secret.Id = proto.String(uuid.New().String())
 			}
-			if err := store.SaveSecret(&secret); err != nil {
+			if err := store.SaveSecret(r.Context(), &secret); err != nil {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 				return
 			}
@@ -451,7 +451,7 @@ func (a *Application) handleSecretDetail(store storage.Storage) http.HandlerFunc
 
 		switch r.Method {
 		case http.MethodGet:
-			secret, err := store.GetSecret(id)
+			secret, err := store.GetSecret(r.Context(), id)
 			if err != nil {
 				logging.GetLogger().Error("failed to get secret", "id", id, "error", err)
 				http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -470,7 +470,7 @@ func (a *Application) handleSecretDetail(store storage.Storage) http.HandlerFunc
 			_, _ = w.Write(b)
 
 		case http.MethodDelete:
-			if err := store.DeleteSecret(id); err != nil {
+			if err := store.DeleteSecret(r.Context(), id); err != nil {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 				return
 			}
