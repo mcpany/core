@@ -1,3 +1,8 @@
+/**
+ * Copyright 2026 Author(s) of MCP Any
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 export type Severity = "critical" | "warning" | "info";
 export type AlertStatus = "active" | "acknowledged" | "resolved";
 
