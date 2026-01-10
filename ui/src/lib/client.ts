@@ -501,11 +501,15 @@ export const apiClient = {
     },
 
     // OAuth
-    initiateOAuth: async (serviceID: string, redirectURL: string) => {
+    initiateOAuth: async (serviceID: string, redirectURL: string, credentialID?: string) => {
+        const payload: any = { redirect_url: redirectURL };
+        if (serviceID) payload.service_id = serviceID;
+        if (credentialID) payload.credential_id = credentialID;
+
         const res = await fetchWithAuth('/auth/oauth/initiate', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ service_id: serviceID, redirect_url: redirectURL })
+            body: JSON.stringify(payload)
         });
         if (!res.ok) {
             const txt = await res.text();
@@ -513,11 +517,15 @@ export const apiClient = {
         }
         return res.json();
     },
-    handleOAuthCallback: async (serviceID: string, code: string, redirectURL: string) => {
+    handleOAuthCallback: async (serviceID: string | null, code: string, redirectURL: string, credentialID?: string) => {
+        const payload: any = { code, redirect_url: redirectURL };
+        if (serviceID) payload.service_id = serviceID;
+        if (credentialID) payload.credential_id = credentialID;
+
         const res = await fetchWithAuth('/auth/oauth/callback', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ service_id: serviceID, code, redirect_url: redirectURL })
+            body: JSON.stringify(payload)
         });
         if (!res.ok) {
             const txt = await res.text();
@@ -530,7 +538,8 @@ export const apiClient = {
     listCredentials: async () => {
         const res = await fetchWithAuth('/api/v1/credentials');
         if (!res.ok) throw new Error('Failed to list credentials');
-        return res.json();
+        const data = await res.json();
+        return Array.isArray(data) ? data : (data.credentials || []);
     },
     saveCredential: async (credential: Credential) => {
         // ... (logic omitted for brevity, keeping same) ...

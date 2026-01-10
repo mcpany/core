@@ -21,16 +21,17 @@ func (a *Application) handleInitiateOAuth(w http.ResponseWriter, r *http.Request
 	}
 
 	var req struct {
-		ServiceID   string `json:"service_id"`
-		RedirectURL string `json:"redirect_url"`
+		ServiceID    string `json:"service_id"`
+		CredentialID string `json:"credential_id"`
+		RedirectURL  string `json:"redirect_url"`
 	}
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		http.Error(w, "invalid request body", http.StatusBadRequest)
 		return
 	}
 
-	if req.ServiceID == "" || req.RedirectURL == "" {
-		http.Error(w, "service_id and redirect_url are required", http.StatusBadRequest)
+	if (req.ServiceID == "" && req.CredentialID == "") || req.RedirectURL == "" {
+		http.Error(w, "service_id (or credential_id) and redirect_url are required", http.StatusBadRequest)
 		return
 	}
 
@@ -43,7 +44,7 @@ func (a *Application) handleInitiateOAuth(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	url, state, err := a.AuthManager.InitiateOAuth(r.Context(), userID, req.ServiceID, req.RedirectURL)
+	url, state, err := a.AuthManager.InitiateOAuth(r.Context(), userID, req.ServiceID, req.CredentialID, req.RedirectURL)
 	if err != nil {
 		http.Error(w, fmt.Sprintf("failed to initiate oauth: %v", err), http.StatusInternalServerError)
 		return
@@ -74,17 +75,18 @@ func (a *Application) handleOAuthCallback(w http.ResponseWriter, r *http.Request
 	}
 
 	var req struct {
-		ServiceID   string `json:"service_id"`
-		Code        string `json:"code"`
-		RedirectURL string `json:"redirect_url"`
+		ServiceID    string `json:"service_id"`
+		CredentialID string `json:"credential_id"`
+		Code         string `json:"code"`
+		RedirectURL  string `json:"redirect_url"`
 	}
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		http.Error(w, "invalid request body", http.StatusBadRequest)
 		return
 	}
 
-	if req.ServiceID == "" || req.Code == "" || req.RedirectURL == "" {
-		http.Error(w, "service_id, code, and redirect_url are required", http.StatusBadRequest)
+	if (req.ServiceID == "" && req.CredentialID == "") || req.Code == "" || req.RedirectURL == "" {
+		http.Error(w, "service_id (or credential_id), code, and redirect_url are required", http.StatusBadRequest)
 		return
 	}
 
@@ -94,7 +96,7 @@ func (a *Application) handleOAuthCallback(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	if err := a.AuthManager.HandleOAuthCallback(r.Context(), userID, req.ServiceID, req.Code, req.RedirectURL); err != nil {
+	if err := a.AuthManager.HandleOAuthCallback(r.Context(), userID, req.ServiceID, req.CredentialID, req.Code, req.RedirectURL); err != nil {
 		http.Error(w, fmt.Sprintf("failed to handle callback: %v", err), http.StatusInternalServerError)
 		return
 	}
