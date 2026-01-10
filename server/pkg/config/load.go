@@ -50,27 +50,24 @@ func LoadServices(ctx context.Context, store Store, binaryType string) (*configv
 
 	validationErrors := Validate(ctx, fileConfig, bt)
 	if len(validationErrors) > 0 {
-		// Filter out invalid services instead of failing completely
-		validServices := make([]*configv1.UpstreamServiceConfig, 0, len(fileConfig.GetUpstreamServices()))
-		invalidServiceNames := make(map[string]bool)
-
+		// Map errors to services
+		serviceErrors := make(map[string]string)
 		for _, e := range validationErrors {
-			log.Error("Config validation error - skipping service", "service", e.ServiceName, "error", e.Err)
-			invalidServiceNames[e.ServiceName] = true
-		}
-
-		for _, svc := range fileConfig.GetUpstreamServices() {
-			if !invalidServiceNames[svc.GetName()] {
-				validServices = append(validServices, svc)
-			}
+			log.Error("Config validation error", "service", e.ServiceName, "error", e.Err)
+			serviceErrors[e.ServiceName] = e.Err.Error()
 		}
 
 		// Check global settings errors.
-		if invalidServiceNames["global_settings"] {
+		if _, ok := serviceErrors["global_settings"]; ok {
 			return nil, fmt.Errorf("global settings validation failed, check logs for details")
 		}
 
-		fileConfig.UpstreamServices = validServices
+		// Instead of filtering out invalid services, we mark them with the error
+		for _, svc := range fileConfig.GetUpstreamServices() {
+			if errMsg, ok := serviceErrors[svc.GetName()]; ok {
+				svc.ConfigError = proto.String(errMsg)
+			}
+		}
 	}
 
 	if len(fileConfig.GetUpstreamServices()) > 0 {

@@ -17,34 +17,31 @@ func redactJSONFast(input []byte) []byte {
 	out := bytes.NewBuffer(make([]byte, 0, len(input)+len(input)/10))
 
 	i := 0
+	lastWrite := 0
 	n := len(input)
 
 	for i < n {
 		// Scan for the next quote which might start a key
 		nextQuote := bytes.IndexByte(input[i:], '"')
 		if nextQuote == -1 {
-			// No more strings, just copy the rest
-			out.Write(input[i:])
+			// No more strings, break to write rest
 			break
 		}
 		quotePos := i + nextQuote
-
-		// Copy everything up to the quote
-		out.Write(input[i:quotePos])
-		i = quotePos
 
 		// Parse string
 		// We need to find the matching closing quote
 		// Handle escapes: \\ and \"
 		var endQuote int
 		// Optimization: fast scan for closing quote
-		scanStart := i + 1
+		scanStart := quotePos + 1
+		malformed := false
 		for {
 			q := bytes.IndexByte(input[scanStart:], '"')
 			if q == -1 {
-				// Malformed JSON (unclosed string), just copy the rest
-				out.Write(input[i:])
-				return out.Bytes()
+				// Malformed JSON (unclosed string)
+				malformed = true
+				break
 			}
 			absQ := scanStart + q
 			// Check for escape
@@ -64,6 +61,13 @@ func redactJSONFast(input []byte) []byte {
 			}
 			// Odd number means it IS escaped, continue
 			scanStart = absQ + 1
+		}
+
+		if malformed {
+			// Stop processing and flush
+			// i points to where we started scanning for strings
+			// But we want to preserve input as is if malformed
+			break
 		}
 
 		// Check if this string is a key.
@@ -87,7 +91,7 @@ func redactJSONFast(input []byte) []byte {
 
 		if isKey {
 			// Check if key is sensitive
-			keyContent := input[i+1 : endQuote]
+			keyContent := input[quotePos+1 : endQuote]
 
 			// Check for escapes in the key
 			hasEscape := bytes.IndexByte(keyContent, '\\') != -1
@@ -97,65 +101,59 @@ func redactJSONFast(input []byte) []byte {
 				// Unescape key to check sensitivity
 				// We need to include quotes for json.Unmarshal
 				var keyStr string
-				if err := json.Unmarshal(input[i:endQuote+1], &keyStr); err == nil {
+				if err := json.Unmarshal(input[quotePos:endQuote+1], &keyStr); err == nil {
 					// Check the unescaped key string
 					// We convert string to bytes to use existing helpers if needed, or pass string.
 					// scanForSensitiveKeys expects bytes.
 					// We don't need to validate key context here because we know we are inside a key.
 					sensitive = scanForSensitiveKeys([]byte(keyStr), false)
 				} else {
-					// Failed to unmarshal key, treat as not sensitive or fallback?
-					// If key is invalid JSON, we probably shouldn't be here or it's not a valid key.
+					// Failed to unmarshal key, treat as not sensitive
 					sensitive = false
 				}
 			} else {
 				// Use scanForSensitiveKeys to check if the key matches any sensitive pattern.
-				// scanForSensitiveKeys checks for substrings and handles case folding as implemented in its logic.
-				// We don't need to validate key context here because we know we are inside a key.
 				sensitive = scanForSensitiveKeys(keyContent, false)
 			}
 
 			if sensitive {
-				// Write key and colon
-				out.Write(input[i : colonPos+1])
-
-				// Identify value
+				// Identify value start
 				valStart := colonPos + 1
-				// Skip whitespace and write it to output
+				// Skip whitespace
 				for valStart < n {
 					c := input[valStart]
 					if c == ' ' || c == '\t' || c == '\n' || c == '\r' {
-						out.WriteByte(c) // Preserve whitespace
 						valStart++
 						continue
 					}
 					break
 				}
 
-				if valStart >= n {
-					break
+				if valStart < n {
+					// Determine value end
+					valEnd := skipJSONValue(input, valStart)
+
+					// Write pending data up to value start
+					out.Write(input[lastWrite:valStart])
+
+					// Write replacement
+					out.Write([]byte(redactedValue))
+
+					// Advance pointers
+					i = valEnd
+					lastWrite = valEnd
+					continue
 				}
-
-				// Determine value end
-				valEnd := skipJSONValue(input, valStart)
-
-				// Redact
-				out.Write([]byte(redactedValue)) // redactedValue is "[REDACTED]" (json.RawMessage)
-
-				// Advance i to valEnd
-				i = valEnd
-			} else {
-				// Not sensitive, copy key and let loop continue
-				out.Write(input[i : endQuote+1])
-				i = endQuote + 1
 			}
-		} else {
-			// Not a key (just a string value), copy it
-			out.Write(input[i : endQuote+1])
-			i = endQuote + 1
 		}
+
+		// Not sensitive key, or just string value
+		// Advance past the string
+		i = endQuote + 1
 	}
 
+	// Write remaining
+	out.Write(input[lastWrite:])
 	return out.Bytes()
 }
 

@@ -613,21 +613,22 @@ func (t *HTTPTool) prepareInputsAndURL(ctx context.Context, req *ExecutionReques
 
 			valStr := util.ToString(val)
 
+			if t.paramInPath[i] {
+				// ALWAYS check for path traversal in path parameters, regardless of escaping settings.
+				// Even if escaped, some servers might decode and normalize the path, leading to traversal.
+				if err := checkForPathTraversal(valStr); err != nil {
+					return nil, "", fmt.Errorf("path traversal attempt detected in parameter %q: %w", schema.GetName(), err)
+				}
+				// Also check decoded value just in case the input was already encoded
+				if decodedVal, err := url.QueryUnescape(valStr); err == nil && decodedVal != valStr {
+					if err := checkForPathTraversal(decodedVal); err != nil {
+						return nil, "", fmt.Errorf("path traversal attempt detected in parameter %q (decoded): %w", schema.GetName(), err)
+					}
+				}
+			}
+
 			if param.GetDisableEscape() {
-				// Check for path traversal if in path
 				if t.paramInPath[i] {
-					// Check the raw value first
-					if err := checkForPathTraversal(valStr); err != nil {
-						return nil, "", fmt.Errorf("path traversal attempt detected in parameter %q: %w", schema.GetName(), err)
-					}
-
-					// Check the decoded value to prevent bypasses like %2e%2e
-					if decodedVal, err := url.QueryUnescape(valStr); err == nil {
-						if err := checkForPathTraversal(decodedVal); err != nil {
-							return nil, "", fmt.Errorf("path traversal attempt detected in parameter %q (decoded): %w", schema.GetName(), err)
-						}
-					}
-
 					pathStr = strings.ReplaceAll(pathStr, placeholder, valStr)
 				}
 				if t.paramInQuery[i] {
@@ -2008,6 +2009,7 @@ func isShellCommand(cmd string) bool {
 		"sh", "bash", "zsh", "dash", "ash", "ksh", "csh", "tcsh", "fish",
 		"pwsh", "powershell", "powershell.exe", "pwsh.exe", "cmd", "cmd.exe",
 		"ssh", "scp", "su", "sudo", "env",
+		"busybox", "expect",
 		// Common interpreters and runners that can execute code
 		"python", "python2", "python3",
 		"ruby", "perl", "php",

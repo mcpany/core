@@ -149,46 +149,53 @@ func TestFileStore_Load_Engines(t *testing.T) {
 
 func TestExpand(t *testing.T) {
 	tests := []struct {
-		name     string
-		input    string
-		env      map[string]string
-		expected string
+		name        string
+		input       string
+		env         map[string]string
+		expected    string
+		expectError bool
 	}{
 		{
-			name:     "Variable set",
-			input:    "Hello ${NAME}",
-			env:      map[string]string{"NAME": "World"},
-			expected: "Hello World",
+			name:        "Variable set",
+			input:       "Hello ${NAME}",
+			env:         map[string]string{"NAME": "World"},
+			expected:    "Hello World",
+			expectError: false,
 		},
 		{
-			name:     "Variable unset",
-			input:    "Hello ${NAME}",
-			env:      map[string]string{},
-			expected: "Hello ${NAME}",
+			name:        "Variable unset",
+			input:       "Hello ${NAME}",
+			env:         map[string]string{},
+			expected:    "",
+			expectError: true,
 		},
 		{
-			name:     "Variable set to empty",
-			input:    "Hello ${NAME}",
-			env:      map[string]string{"NAME": ""},
-			expected: "Hello ",
+			name:        "Variable set to empty",
+			input:       "Hello ${NAME}",
+			env:         map[string]string{"NAME": ""},
+			expected:    "Hello ",
+			expectError: false,
 		},
 		{
-			name:     "Variable with default, unset",
-			input:    "Hello ${NAME:World}",
-			env:      map[string]string{},
-			expected: "Hello World",
+			name:        "Variable with default, unset",
+			input:       "Hello ${NAME:World}",
+			env:         map[string]string{},
+			expected:    "Hello World",
+			expectError: false,
 		},
 		{
-			name:     "Variable with default, set",
-			input:    "Hello ${NAME:World}",
-			env:      map[string]string{"NAME": "Universe"},
-			expected: "Hello Universe",
+			name:        "Variable with default, set",
+			input:       "Hello ${NAME:World}",
+			env:         map[string]string{"NAME": "Universe"},
+			expected:    "Hello Universe",
+			expectError: false,
 		},
 		{
-			name:     "Variable with default, set to empty",
-			input:    "Hello ${NAME:World}",
-			env:      map[string]string{"NAME": ""},
-			expected: "Hello World",
+			name:        "Variable with default, set to empty",
+			input:       "Hello ${NAME:World}",
+			env:         map[string]string{"NAME": ""},
+			expected:    "Hello World",
+			expectError: false,
 		},
 	}
 
@@ -197,12 +204,18 @@ func TestExpand(t *testing.T) {
 			for k, v := range tt.env {
 				os.Setenv(k, v)
 			}
+			defer func() {
+				for k := range tt.env {
+					os.Unsetenv(k)
+				}
+			}()
 
-			got := string(expand([]byte(tt.input)))
-			assert.Equal(t, tt.expected, got)
-
-			for k := range tt.env {
-				os.Unsetenv(k)
+			got, err := expand([]byte(tt.input))
+			if tt.expectError {
+				assert.Error(t, err)
+			} else {
+				assert.NoError(t, err)
+				assert.Equal(t, tt.expected, string(got))
 			}
 		})
 	}
