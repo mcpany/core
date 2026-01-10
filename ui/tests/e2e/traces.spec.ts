@@ -20,7 +20,7 @@ test.describe('Trace Viewer', () => {
     await page.waitForSelector('text=Loading traces...', { state: 'detached' });
 
     // Check if list is populated (should have at least one trace from mock)
-    const traceItems = page.locator('button >> text=calculate_sum').first();
+    // Check if list is populated (should have at least one trace from mock)
     // Use try/catch or flexible selector since mock data is random
     // But our mock generator creates at least one calculate_sum
     // Actually, let's just check for any trace item
