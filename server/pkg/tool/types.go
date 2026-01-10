@@ -635,6 +635,11 @@ func (t *HTTPTool) prepareInputsAndURL(ctx context.Context, req *ExecutionReques
 				}
 			} else {
 				if t.paramInPath[i] {
+					// Always check for path traversal in path parameters, even if escaped.
+					// url.PathEscape does not escape ".." or ".", so we must validate to prevent traversal.
+					if err := checkForPathTraversal(valStr); err != nil {
+						return nil, "", fmt.Errorf("path traversal attempt detected in parameter %q: %w", schema.GetName(), err)
+					}
 					pathStr = strings.ReplaceAll(pathStr, placeholder, url.PathEscape(valStr))
 				}
 				if t.paramInQuery[i] {
@@ -2003,6 +2008,7 @@ func isShellCommand(cmd string) bool {
 		"jq",
 		"psql", "mysql", "sqlite3",
 		"docker",
+		"busybox",
 	}
 	base := filepath.Base(cmd)
 	for _, shell := range shells {
