@@ -115,7 +115,7 @@ func redactJSONFast(input []byte) []byte {
 					// Initialize buffer if needed
 					if out == nil {
 						// 1.1x input size is a safe bet to avoid reallocations
-						out = bytes.NewBuffer(make([]byte, 0, len(input)+len(input)/10))
+						out = bytes.NewBuffer(make([]byte, 0, len(input)))
 					}
 
 					// Determine value end
