@@ -27,7 +27,7 @@ describe('Secrets API', () => {
             const mockSecrets = [
                 { id: '1', name: 'Test', key: 'TEST_KEY', value: 'secret', provider: 'custom' }
             ];
-            vi.mocked(SecretsStore.getAllDecrypted).mockReturnValue(mockSecrets as any);
+            vi.mocked(SecretsStore.getAllDecrypted).mockReturnValue(mockSecrets);
 
             const response = await GET();
             const data = await response.json();
@@ -50,7 +50,7 @@ describe('Secrets API', () => {
     describe('POST /api/secrets', () => {
         it('should create a new secret', async () => {
             const newSecret = { name: 'New', key: 'NEW_KEY', value: 'value123', provider: 'custom' };
-            vi.mocked(SecretsStore.add).mockReturnValue({ ...newSecret, id: '123', createdAt: '', lastUsed: '', encryptedValue: 'enc' } as any);
+            vi.mocked(SecretsStore.add).mockReturnValue({ ...newSecret, id: '123', createdAt: '', lastUsed: '', encryptedValue: 'enc' });
 
             const req = new Request('http://localhost/api/secrets', {
                 method: 'POST',

@@ -11,18 +11,18 @@ import { ToolDefinition } from '@/lib/client';
 
 // Mock dependencies
 vi.mock('@/components/ui/sheet', () => ({
-  Sheet: ({ children, open }: any) => open ? <div>{children}</div> : null,
-  SheetContent: ({ children }: any) => <div>{children}</div>,
-  SheetHeader: ({ children }: any) => <div>{children}</div>,
-  SheetTitle: ({ children }: any) => <div>{children}</div>,
-  SheetDescription: ({ children }: any) => <div>{children}</div>,
+  Sheet: ({ children, open }: { children: React.ReactNode; open: boolean }) => open ? <div>{children}</div> : null,
+  SheetContent: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
+  SheetHeader: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
+  SheetTitle: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
+  SheetDescription: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
 }));
 
 vi.mock('@/components/ui/tabs', () => ({
-  Tabs: ({ children }: any) => <div>{children}</div>,
-  TabsList: ({ children }: any) => <div>{children}</div>,
-  TabsTrigger: ({ children }: any) => <button>{children}</button>,
-  TabsContent: ({ children }: any) => <div>{children}</div>,
+  Tabs: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
+  TabsList: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
+  TabsTrigger: ({ children }: { children: React.ReactNode }) => <button>{children}</button>,
+  TabsContent: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
 }));
 
 // Mock fetch

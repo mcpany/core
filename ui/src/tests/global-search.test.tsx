@@ -44,8 +44,8 @@ vi.mock('@/lib/client', () => ({
 // Mock the Command components
 vi.mock('@/components/ui/command', () => {
   return {
-    CommandDialog: ({ children, open }: any) => open ? <div data-testid="command-dialog">{children}</div> : null,
-    CommandInput: ({ placeholder, value, onValueChange }: any) => (
+    CommandDialog: ({ children, open }: { children: React.ReactNode; open: boolean }) => open ? <div data-testid="command-dialog">{children}</div> : null,
+    CommandInput: ({ placeholder, value, onValueChange }: { placeholder?: string; value?: string; onValueChange: (v: string) => void }) => (
       <input
         placeholder={placeholder}
         value={value}
@@ -53,15 +53,15 @@ vi.mock('@/components/ui/command', () => {
         data-testid="command-input"
       />
     ),
-    CommandList: ({ children }: any) => <div>{children}</div>,
-    CommandEmpty: ({ children }: any) => <div>{children}</div>,
-    CommandGroup: ({ children, heading }: any) => (
+    CommandList: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
+    CommandEmpty: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
+    CommandGroup: ({ children, heading }: { children: React.ReactNode; heading?: string }) => (
       <div>
         <h3>{heading}</h3>
         {children}
       </div>
     ),
-    CommandItem: ({ children, onSelect, value }: any) => (
+    CommandItem: ({ children, onSelect, value }: { children: React.ReactNode; onSelect?: () => void; value?: string }) => (
       <div onClick={onSelect} data-value={value} data-testid="command-item">
         {children}
       </div>
