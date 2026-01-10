@@ -29,9 +29,9 @@ describe('PlaygroundClient', () => {
   const originalLocation = window.location;
 
   beforeEach(() => {
-    // @ts-ignore
+    // @ts-expect-error Mocking window.location
     delete window.location;
-    // @ts-ignore
+    // @ts-expect-error Mocking window.location
     window.location = { ...originalLocation, search: '' };
   });
 

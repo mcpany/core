@@ -24,7 +24,7 @@ vi.mock('react-syntax-highlighter', () => ({
 
 describe('ResourceExplorer', () => {
   it('renders loading state initially', async () => {
-    // @ts-ignore
+    // @ts-expect-error Mocking partial implementation
     apiClient.listResources.mockResolvedValueOnce({ resources: [] });
 
     render(<ResourceExplorer />);
@@ -34,7 +34,7 @@ describe('ResourceExplorer', () => {
   });
 
   it('renders list of resources', async () => {
-    // @ts-ignore
+    // @ts-expect-error Mocking partial implementation
     apiClient.listResources.mockResolvedValueOnce({ resources: MOCK_RESOURCES });
 
     render(<ResourceExplorer />);
@@ -46,7 +46,7 @@ describe('ResourceExplorer', () => {
   });
 
   it('filters resources based on search query', async () => {
-    // @ts-ignore
+    // @ts-expect-error Mocking partial implementation
     apiClient.listResources.mockResolvedValueOnce({ resources: MOCK_RESOURCES });
 
     render(<ResourceExplorer />);
@@ -63,9 +63,9 @@ describe('ResourceExplorer', () => {
   });
 
   it('selects a resource and shows content', async () => {
-    // @ts-ignore
+    // @ts-expect-error Mocking partial implementation
     apiClient.listResources.mockResolvedValueOnce({ resources: MOCK_RESOURCES });
-    // @ts-ignore
+    // @ts-expect-error Mocking partial implementation
     apiClient.readResource.mockResolvedValueOnce({
         contents: [{ uri: 'file:///app/config.json', mimeType: 'application/json', text: '{"test": true}' }]
     });
