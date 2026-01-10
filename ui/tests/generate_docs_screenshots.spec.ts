@@ -40,6 +40,7 @@ test.describe('Generate Docs Screenshots and Verify UI', () => {
     // Marketplace is already in the list at index 14, but let's ensure we visit it explicitly if needed
     // or just rely on the loop. The loop handles 'marketplace'.
     // We want to add external marketplace specifically
+    { name: 'credentials', path: '/credentials' },
   ];
 
   /*
@@ -56,6 +57,28 @@ test.describe('Generate Docs Screenshots and Verify UI', () => {
           ]
         }
       });
+    });
+
+    // Mock Credentials
+    await page.route('**/api/v1/credentials', async route => {
+        if (route.request().method() === 'GET') {
+            await route.fulfill({
+                json: [
+                    { id: '1', name: 'OpenAI API Key', authentication: { apiKey: { paramName: 'Authorization', in: 0, value: { plainText: 'sk-...' } } } }
+                ]
+            });
+        } else {
+            await route.continue();
+        }
+    });
+
+    // Mock Services (Empty list default)
+    await page.route('**/api/v1/services', async route => {
+        if (route.request().method() === 'GET') {
+            await route.fulfill({ json: { services: [] } });
+        } else {
+            await route.continue();
+        }
     });
   });
 
@@ -192,19 +215,12 @@ test.describe('Generate Docs Screenshots and Verify UI', () => {
   });
 
   test('Verify and Screenshot Credentials Flow', async ({ page }) => {
-      // Mock credentials list
-      await page.route('**/api/v1/credentials', async route => {
-          if (route.request().method() === 'GET') {
-              await route.fulfill({
-                  json: [
-                      { id: '1', name: 'OpenAI API Key', authentication: { apiKey: { paramName: 'Authorization', in: 0, value: { plainText: 'sk-...' } } } },
-                      { id: '2', name: 'Github Token', authentication: { bearerToken: { token: { plainText: 'ghp_...' } } } }
-                  ]
-              });
-          } else {
-              await route.continue();
-          }
+      /*
+      // Mock credentials list - MOVED TO beforeEach
+      await page.route('** /api/v1/credentials', async route => {
+          ...
       });
+      */
 
       console.log('Navigating to /credentials...');
       await page.goto('/credentials');
