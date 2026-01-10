@@ -50,7 +50,7 @@ build-server-docker:
 
 # Run audit tests (generate screenshots)
 # Run audit tests (generate screenshots)
-audit: build-test-docker
+audit: build-test-docker build-server-docker
 	@mkdir -p test-results playwright-report .audit docs
 	HOST_UID=$(shell id -u) HOST_GID=$(shell id -g) SERVER_IMAGE=$(SERVER_IMAGE) CAPTURE_SCREENSHOTS=true docker compose -f ./docker-compose.test.yml up --abort-on-container-exit --exit-code-from ui-tests
 	docker compose -f ./docker-compose.test.yml down -v
