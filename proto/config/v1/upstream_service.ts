@@ -173,6 +173,11 @@ export interface UpstreamServiceConfig {
     | undefined;
   /** If true, automatically convert all API calls to tools. */
   autoDiscoverTool: boolean;
+  /**
+   * The configuration error if the service failed validation.
+   * @inject_tag: yaml:"-"
+   */
+  configError: string;
 }
 
 export interface CallPolicy {
@@ -994,6 +999,7 @@ function createBaseUpstreamServiceConfig(): UpstreamServiceConfig {
     promptExportPolicy: undefined,
     resourceExportPolicy: undefined,
     autoDiscoverTool: false,
+    configError: "",
   };
 }
 
@@ -1094,6 +1100,9 @@ export const UpstreamServiceConfig: MessageFns<UpstreamServiceConfig> = {
     }
     if (message.autoDiscoverTool !== false) {
       writer.uint32(240).bool(message.autoDiscoverTool);
+    }
+    if (message.configError !== "") {
+      writer.uint32(282).string(message.configError);
     }
     return writer;
   },
@@ -1361,6 +1370,14 @@ export const UpstreamServiceConfig: MessageFns<UpstreamServiceConfig> = {
           message.autoDiscoverTool = reader.bool();
           continue;
         }
+        case 35: {
+          if (tag !== 282) {
+            break;
+          }
+
+          message.configError = reader.string();
+          continue;
+        }
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -1428,6 +1445,7 @@ export const UpstreamServiceConfig: MessageFns<UpstreamServiceConfig> = {
         ? ExportPolicy.fromJSON(object.resource_export_policy)
         : undefined,
       autoDiscoverTool: isSet(object.auto_discover_tool) ? globalThis.Boolean(object.auto_discover_tool) : false,
+      configError: isSet(object.config_error) ? globalThis.String(object.config_error) : "",
     };
   },
 
@@ -1529,6 +1547,9 @@ export const UpstreamServiceConfig: MessageFns<UpstreamServiceConfig> = {
     if (message.autoDiscoverTool !== false) {
       obj.auto_discover_tool = message.autoDiscoverTool;
     }
+    if (message.configError !== "") {
+      obj.config_error = message.configError;
+    }
     return obj;
   },
 
@@ -1609,6 +1630,7 @@ export const UpstreamServiceConfig: MessageFns<UpstreamServiceConfig> = {
       ? ExportPolicy.fromPartial(object.resourceExportPolicy)
       : undefined;
     message.autoDiscoverTool = object.autoDiscoverTool ?? false;
+    message.configError = object.configError ?? "";
     return message;
   },
 };

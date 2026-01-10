@@ -296,8 +296,14 @@ upstream_services: {
     }
 }
 `,
-			expectLoadError: false, // Changed: now we skip invalid services instead of erroring
-			expectedCount:   0,     // The service should be skipped
+			expectLoadError: false, // Now we keep invalid services with error
+			expectedCount:   1,     // The service should present
+			checkServices: func(t *testing.T, services []*configv1.UpstreamServiceConfig) {
+				s := services[0]
+				assert.Equal(t, "service-with-invalid-cache", s.GetName())
+				assert.True(t, s.HasConfigError())
+				assert.Contains(t, s.GetConfigError(), "invalid cache timeout")
+			},
 		},
 		{
 			name: "mixed valid and invalid services",
@@ -314,10 +320,22 @@ upstream_services: {
 }
 `,
 			expectLoadError: false,
-			expectedCount:   1,
+			expectedCount:   2,
 			checkServices: func(t *testing.T, services []*configv1.UpstreamServiceConfig) {
-				s := services[0]
-				assert.Equal(t, "valid-service", s.GetName())
+				var valid, invalid *configv1.UpstreamServiceConfig
+				for _, s := range services {
+					if s.GetName() == "valid-service" {
+						valid = s
+					} else if s.GetName() == "invalid-service" {
+						invalid = s
+					}
+				}
+				require.NotNil(t, valid)
+				assert.False(t, valid.HasConfigError())
+
+				require.NotNil(t, invalid)
+				assert.True(t, invalid.HasConfigError())
+				assert.Contains(t, invalid.GetConfigError(), "service type not specified")
 			},
 		},
 		{
