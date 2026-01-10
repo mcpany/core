@@ -301,11 +301,13 @@ func (b0 ListServicesResponse_builder) Build() *ListServicesResponse {
 }
 
 type InitiateOAuth2FlowRequest struct {
-	state                protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_ServiceId string                 `protobuf:"bytes,1,opt,name=service_id,json=serviceId"`
-	xxx_hidden_Namespace string                 `protobuf:"bytes,2,opt,name=namespace"`
-	unknownFields        protoimpl.UnknownFields
-	sizeCache            protoimpl.SizeCache
+	state                   protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_ServiceId    string                 `protobuf:"bytes,1,opt,name=service_id,json=serviceId"`
+	xxx_hidden_Namespace    string                 `protobuf:"bytes,2,opt,name=namespace"`
+	xxx_hidden_CredentialId string                 `protobuf:"bytes,3,opt,name=credential_id,json=credentialId"`
+	xxx_hidden_RedirectUrl  string                 `protobuf:"bytes,4,opt,name=redirect_url,json=redirectUrl"`
+	unknownFields           protoimpl.UnknownFields
+	sizeCache               protoimpl.SizeCache
 }
 
 func (x *InitiateOAuth2FlowRequest) Reset() {
@@ -347,6 +349,20 @@ func (x *InitiateOAuth2FlowRequest) GetNamespace() string {
 	return ""
 }
 
+func (x *InitiateOAuth2FlowRequest) GetCredentialId() string {
+	if x != nil {
+		return x.xxx_hidden_CredentialId
+	}
+	return ""
+}
+
+func (x *InitiateOAuth2FlowRequest) GetRedirectUrl() string {
+	if x != nil {
+		return x.xxx_hidden_RedirectUrl
+	}
+	return ""
+}
+
 func (x *InitiateOAuth2FlowRequest) SetServiceId(v string) {
 	x.xxx_hidden_ServiceId = v
 }
@@ -355,11 +371,21 @@ func (x *InitiateOAuth2FlowRequest) SetNamespace(v string) {
 	x.xxx_hidden_Namespace = v
 }
 
+func (x *InitiateOAuth2FlowRequest) SetCredentialId(v string) {
+	x.xxx_hidden_CredentialId = v
+}
+
+func (x *InitiateOAuth2FlowRequest) SetRedirectUrl(v string) {
+	x.xxx_hidden_RedirectUrl = v
+}
+
 type InitiateOAuth2FlowRequest_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	ServiceId string
-	Namespace string
+	ServiceId    string
+	Namespace    string
+	CredentialId string
+	RedirectUrl  string
 }
 
 func (b0 InitiateOAuth2FlowRequest_builder) Build() *InitiateOAuth2FlowRequest {
@@ -368,6 +394,8 @@ func (b0 InitiateOAuth2FlowRequest_builder) Build() *InitiateOAuth2FlowRequest {
 	_, _ = b, x
 	x.xxx_hidden_ServiceId = b.ServiceId
 	x.xxx_hidden_Namespace = b.Namespace
+	x.xxx_hidden_CredentialId = b.CredentialId
+	x.xxx_hidden_RedirectUrl = b.RedirectUrl
 	return m0
 }
 
@@ -1012,11 +1040,13 @@ const file_proto_api_v1_registration_proto_rawDesc = "" +
 	"\x14discovered_resources\x18\x04 \x03(\v2$.mcpany.config.v1.ResourceDefinitionR\x13discoveredResources\"\x15\n" +
 	"\x13ListServicesRequest\"[\n" +
 	"\x14ListServicesResponse\x12C\n" +
-	"\bservices\x18\x01 \x03(\v2'.mcpany.config.v1.UpstreamServiceConfigR\bservices\"X\n" +
+	"\bservices\x18\x01 \x03(\v2'.mcpany.config.v1.UpstreamServiceConfigR\bservices\"\xa0\x01\n" +
 	"\x19InitiateOAuth2FlowRequest\x12\x1d\n" +
 	"\n" +
 	"service_id\x18\x01 \x01(\tR\tserviceId\x12\x1c\n" +
-	"\tnamespace\x18\x02 \x01(\tR\tnamespace\"_\n" +
+	"\tnamespace\x18\x02 \x01(\tR\tnamespace\x12#\n" +
+	"\rcredential_id\x18\x03 \x01(\tR\fcredentialId\x12!\n" +
+	"\fredirect_url\x18\x04 \x01(\tR\vredirectUrl\"_\n" +
 	"\x1aInitiateOAuth2FlowResponse\x12+\n" +
 	"\x11authorization_url\x18\x01 \x01(\tR\x10authorizationUrl\x12\x14\n" +
 	"\x05state\x18\x02 \x01(\tR\x05state\"[\n" +

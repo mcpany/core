@@ -2409,6 +2409,7 @@ type UserToken struct {
 	xxx_hidden_Expiry       *string                `protobuf:"bytes,6,opt,name=expiry"`
 	xxx_hidden_Scope        *string                `protobuf:"bytes,7,opt,name=scope"`
 	xxx_hidden_UpdatedAt    *string                `protobuf:"bytes,8,opt,name=updated_at"`
+	xxx_hidden_Email        *string                `protobuf:"bytes,9,opt,name=email"`
 	XXX_raceDetectHookData  protoimpl.RaceDetectHookData
 	XXX_presence            [1]uint32
 	unknownFields           protoimpl.UnknownFields
@@ -2520,44 +2521,59 @@ func (x *UserToken) GetUpdatedAt() string {
 	return ""
 }
 
+func (x *UserToken) GetEmail() string {
+	if x != nil {
+		if x.xxx_hidden_Email != nil {
+			return *x.xxx_hidden_Email
+		}
+		return ""
+	}
+	return ""
+}
+
 func (x *UserToken) SetUserId(v string) {
 	x.xxx_hidden_UserId = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 8)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 9)
 }
 
 func (x *UserToken) SetServiceId(v string) {
 	x.xxx_hidden_ServiceId = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 8)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 9)
 }
 
 func (x *UserToken) SetAccessToken(v string) {
 	x.xxx_hidden_AccessToken = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 8)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 9)
 }
 
 func (x *UserToken) SetRefreshToken(v string) {
 	x.xxx_hidden_RefreshToken = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 3, 8)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 3, 9)
 }
 
 func (x *UserToken) SetTokenType(v string) {
 	x.xxx_hidden_TokenType = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 4, 8)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 4, 9)
 }
 
 func (x *UserToken) SetExpiry(v string) {
 	x.xxx_hidden_Expiry = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 5, 8)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 5, 9)
 }
 
 func (x *UserToken) SetScope(v string) {
 	x.xxx_hidden_Scope = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 6, 8)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 6, 9)
 }
 
 func (x *UserToken) SetUpdatedAt(v string) {
 	x.xxx_hidden_UpdatedAt = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 7, 8)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 7, 9)
+}
+
+func (x *UserToken) SetEmail(v string) {
+	x.xxx_hidden_Email = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 8, 9)
 }
 
 func (x *UserToken) HasUserId() bool {
@@ -2616,6 +2632,13 @@ func (x *UserToken) HasUpdatedAt() bool {
 	return protoimpl.X.Present(&(x.XXX_presence[0]), 7)
 }
 
+func (x *UserToken) HasEmail() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 8)
+}
+
 func (x *UserToken) ClearUserId() {
 	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
 	x.xxx_hidden_UserId = nil
@@ -2656,6 +2679,11 @@ func (x *UserToken) ClearUpdatedAt() {
 	x.xxx_hidden_UpdatedAt = nil
 }
 
+func (x *UserToken) ClearEmail() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 8)
+	x.xxx_hidden_Email = nil
+}
+
 type UserToken_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
@@ -2675,6 +2703,8 @@ type UserToken_builder struct {
 	Scope *string
 	// The timestamp when the token was created/updated (RFC3339).
 	UpdatedAt *string
+	// The email associated with the token (if available).
+	Email *string
 }
 
 func (b0 UserToken_builder) Build() *UserToken {
@@ -2682,36 +2712,40 @@ func (b0 UserToken_builder) Build() *UserToken {
 	b, x := &b0, m0
 	_, _ = b, x
 	if b.UserId != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 8)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 9)
 		x.xxx_hidden_UserId = b.UserId
 	}
 	if b.ServiceId != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 8)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 9)
 		x.xxx_hidden_ServiceId = b.ServiceId
 	}
 	if b.AccessToken != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 8)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 9)
 		x.xxx_hidden_AccessToken = b.AccessToken
 	}
 	if b.RefreshToken != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 3, 8)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 3, 9)
 		x.xxx_hidden_RefreshToken = b.RefreshToken
 	}
 	if b.TokenType != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 4, 8)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 4, 9)
 		x.xxx_hidden_TokenType = b.TokenType
 	}
 	if b.Expiry != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 5, 8)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 5, 9)
 		x.xxx_hidden_Expiry = b.Expiry
 	}
 	if b.Scope != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 6, 8)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 6, 9)
 		x.xxx_hidden_Scope = b.Scope
 	}
 	if b.UpdatedAt != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 7, 8)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 7, 9)
 		x.xxx_hidden_UpdatedAt = b.UpdatedAt
+	}
+	if b.Email != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 8, 9)
+		x.xxx_hidden_Email = b.Email
 	}
 	return m0
 }
@@ -2967,7 +3001,7 @@ const file_proto_config_v1_auth_proto_rawDesc = "" +
 	"\fca_cert_path\x18\x03 \x01(\tR\fca_cert_path\"Y\n" +
 	"\x11TrustedHeaderAuth\x12 \n" +
 	"\vheader_name\x18\x01 \x01(\tR\vheader_name\x12\"\n" +
-	"\fheader_value\x18\x02 \x01(\tR\fheader_value\"\xfd\x01\n" +
+	"\fheader_value\x18\x02 \x01(\tR\fheader_value\"\x93\x02\n" +
 	"\tUserToken\x12\x18\n" +
 	"\auser_id\x18\x01 \x01(\tR\auser_id\x12\x1e\n" +
 	"\n" +
@@ -2982,7 +3016,8 @@ const file_proto_config_v1_auth_proto_rawDesc = "" +
 	"\x05scope\x18\a \x01(\tR\x05scope\x12\x1e\n" +
 	"\n" +
 	"updated_at\x18\b \x01(\tR\n" +
-	"updated_at\"\xad\x01\n" +
+	"updated_at\x12\x14\n" +
+	"\x05email\x18\t \x01(\tR\x05email\"\xad\x01\n" +
 	"\n" +
 	"Credential\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x12\n" +

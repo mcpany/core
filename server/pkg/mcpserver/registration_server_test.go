@@ -10,6 +10,10 @@ import (
 	"testing"
 	"time"
 
+	v1 "github.com/mcpany/core/proto/api/v1"
+	bus_pb "github.com/mcpany/core/proto/bus"
+	configv1 "github.com/mcpany/core/proto/config/v1"
+	pb "github.com/mcpany/core/proto/examples/weather/v1"
 	"github.com/mcpany/core/server/pkg/auth"
 	"github.com/mcpany/core/server/pkg/bus"
 	"github.com/mcpany/core/server/pkg/pool"
@@ -19,10 +23,6 @@ import (
 	"github.com/mcpany/core/server/pkg/tool"
 	"github.com/mcpany/core/server/pkg/upstream/factory"
 	"github.com/mcpany/core/server/pkg/worker"
-	v1 "github.com/mcpany/core/proto/api/v1"
-	bus_pb "github.com/mcpany/core/proto/bus"
-	configv1 "github.com/mcpany/core/proto/config/v1"
-	pb "github.com/mcpany/core/proto/examples/weather/v1"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/grpc"
@@ -79,7 +79,7 @@ func TestRegistrationServer_RegisterService(t *testing.T) {
 	registrationWorker.Start(ctx)
 
 	// Setup server
-	registrationServer, err := NewRegistrationServer(busProvider)
+	registrationServer, err := NewRegistrationServer(busProvider, authManager)
 	require.NoError(t, err)
 
 	t.Run("successful registration", func(t *testing.T) {
@@ -335,7 +335,7 @@ func TestListServices(t *testing.T) {
 	registrationWorker.Start(ctx)
 
 	// Setup server
-	registrationServer, err := NewRegistrationServer(busProvider)
+	registrationServer, err := NewRegistrationServer(busProvider, authManager)
 	require.NoError(t, err)
 
 	// Register a service to be listed
@@ -372,7 +372,7 @@ func TestListServices(t *testing.T) {
 		errorBusProvider, err := bus.NewProvider(bus_pb.MessageBus_builder{}.Build())
 		require.NoError(t, err)
 
-		errorRegistrationServer, err := NewRegistrationServer(errorBusProvider)
+		errorRegistrationServer, err := NewRegistrationServer(errorBusProvider, authManager)
 		require.NoError(t, err)
 
 		shortCtx, cancel := context.WithTimeout(ctx, 100*time.Millisecond)
@@ -392,7 +392,7 @@ func TestRegistrationServer_Unimplemented(t *testing.T) {
 	messageBus.SetInMemory(bus_pb.InMemoryBus_builder{}.Build())
 	busProvider, err := bus.NewProvider(messageBus)
 	require.NoError(t, err)
-	registrationServer, err := NewRegistrationServer(busProvider)
+	registrationServer, err := NewRegistrationServer(busProvider, nil)
 	require.NoError(t, err)
 
 	t.Run("UnregisterService", func(t *testing.T) {
@@ -403,13 +403,7 @@ func TestRegistrationServer_Unimplemented(t *testing.T) {
 		assert.Equal(t, codes.Unimplemented, st.Code())
 	})
 
-	t.Run("InitiateOAuth2Flow", func(t *testing.T) {
-		_, err := registrationServer.InitiateOAuth2Flow(ctx, &v1.InitiateOAuth2FlowRequest{})
-		require.Error(t, err)
-		st, ok := status.FromError(err)
-		require.True(t, ok)
-		assert.Equal(t, codes.Unimplemented, st.Code())
-	})
+
 
 	t.Run("RegisterTools", func(t *testing.T) {
 		_, err := registrationServer.RegisterTools(ctx, &v1.RegisterToolsRequest{})
@@ -434,7 +428,7 @@ func TestRegistrationServer_Unimplemented(t *testing.T) {
 }
 
 func TestNewRegistrationServer_NilBus(t *testing.T) {
-	_, err := NewRegistrationServer(nil)
+	_, err := NewRegistrationServer(nil, nil)
 	assert.Error(t, err)
 }
 
@@ -448,7 +442,7 @@ func TestRegistrationServer_Timeouts(t *testing.T) {
 	busProvider, err := bus.NewProvider(messageBus)
 	require.NoError(t, err)
 
-	registrationServer, err := NewRegistrationServer(busProvider)
+	registrationServer, err := NewRegistrationServer(busProvider, nil)
 	require.NoError(t, err)
 
 	t.Run("RegisterService timeout", func(t *testing.T) {
@@ -498,7 +492,7 @@ func TestGetService(t *testing.T) {
 	registrationWorker.Start(ctx)
 
 	// Setup server
-	registrationServer, err := NewRegistrationServer(busProvider)
+	registrationServer, err := NewRegistrationServer(busProvider, authManager)
 	require.NoError(t, err)
 
 	// Register a service to be retrieved
@@ -549,7 +543,7 @@ func TestGetService(t *testing.T) {
 		emptyBusProvider, err := bus.NewProvider(messageBus)
 		require.NoError(t, err)
 
-		timeoutServer, err := NewRegistrationServer(emptyBusProvider)
+		timeoutServer, err := NewRegistrationServer(emptyBusProvider, authManager)
 		require.NoError(t, err)
 
 		// Use a short context to simulate timeout

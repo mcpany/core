@@ -2234,7 +2234,9 @@ type UserToken struct {
 	// The scopes associated with the token.
 	Scope *string `protobuf:"bytes,7,opt,name=scope" json:"scope,omitempty"`
 	// The timestamp when the token was created/updated (RFC3339).
-	UpdatedAt     *string `protobuf:"bytes,8,opt,name=updated_at" json:"updated_at,omitempty"`
+	UpdatedAt *string `protobuf:"bytes,8,opt,name=updated_at" json:"updated_at,omitempty"`
+	// The email associated with the token (if available).
+	Email         *string `protobuf:"bytes,9,opt,name=email" json:"email,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -2320,6 +2322,13 @@ func (x *UserToken) GetUpdatedAt() string {
 	return ""
 }
 
+func (x *UserToken) GetEmail() string {
+	if x != nil && x.Email != nil {
+		return *x.Email
+	}
+	return ""
+}
+
 func (x *UserToken) SetUserId(v string) {
 	x.UserId = &v
 }
@@ -2350,6 +2359,10 @@ func (x *UserToken) SetScope(v string) {
 
 func (x *UserToken) SetUpdatedAt(v string) {
 	x.UpdatedAt = &v
+}
+
+func (x *UserToken) SetEmail(v string) {
+	x.Email = &v
 }
 
 func (x *UserToken) HasUserId() bool {
@@ -2408,6 +2421,13 @@ func (x *UserToken) HasUpdatedAt() bool {
 	return x.UpdatedAt != nil
 }
 
+func (x *UserToken) HasEmail() bool {
+	if x == nil {
+		return false
+	}
+	return x.Email != nil
+}
+
 func (x *UserToken) ClearUserId() {
 	x.UserId = nil
 }
@@ -2440,6 +2460,10 @@ func (x *UserToken) ClearUpdatedAt() {
 	x.UpdatedAt = nil
 }
 
+func (x *UserToken) ClearEmail() {
+	x.Email = nil
+}
+
 type UserToken_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
@@ -2459,6 +2483,8 @@ type UserToken_builder struct {
 	Scope *string
 	// The timestamp when the token was created/updated (RFC3339).
 	UpdatedAt *string
+	// The email associated with the token (if available).
+	Email *string
 }
 
 func (b0 UserToken_builder) Build() *UserToken {
@@ -2473,6 +2499,7 @@ func (b0 UserToken_builder) Build() *UserToken {
 	x.Expiry = b.Expiry
 	x.Scope = b.Scope
 	x.UpdatedAt = b.UpdatedAt
+	x.Email = b.Email
 	return m0
 }
 
@@ -2714,7 +2741,7 @@ const file_proto_config_v1_auth_proto_rawDesc = "" +
 	"\fca_cert_path\x18\x03 \x01(\tR\fca_cert_path\"Y\n" +
 	"\x11TrustedHeaderAuth\x12 \n" +
 	"\vheader_name\x18\x01 \x01(\tR\vheader_name\x12\"\n" +
-	"\fheader_value\x18\x02 \x01(\tR\fheader_value\"\xfd\x01\n" +
+	"\fheader_value\x18\x02 \x01(\tR\fheader_value\"\x93\x02\n" +
 	"\tUserToken\x12\x18\n" +
 	"\auser_id\x18\x01 \x01(\tR\auser_id\x12\x1e\n" +
 	"\n" +
@@ -2729,7 +2756,8 @@ const file_proto_config_v1_auth_proto_rawDesc = "" +
 	"\x05scope\x18\a \x01(\tR\x05scope\x12\x1e\n" +
 	"\n" +
 	"updated_at\x18\b \x01(\tR\n" +
-	"updated_at\"\xad\x01\n" +
+	"updated_at\x12\x14\n" +
+	"\x05email\x18\t \x01(\tR\x05email\"\xad\x01\n" +
 	"\n" +
 	"Credential\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x12\n" +

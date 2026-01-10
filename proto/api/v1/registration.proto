@@ -77,6 +77,8 @@ message ListServicesResponse {
 message InitiateOAuth2FlowRequest {
   string service_id = 1;
   string namespace = 2;
+  string credential_id = 3;
+  string redirect_url = 4;
 }
 
 message InitiateOAuth2FlowResponse {
