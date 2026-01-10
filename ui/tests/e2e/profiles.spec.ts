@@ -4,7 +4,6 @@
  */
 
 import { test, expect } from '@playwright/test';
-import path from 'path';
 
 // CUJ 18-19: Profile & Collection Management
 test.describe('MCP Any Profile & Collection Tests', () => {
