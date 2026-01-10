@@ -20,7 +20,6 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
-import { apiClient } from "@/lib/client";
 
 const loginSchema = z.object({
   username: z.string().min(1, "Username is required"),
