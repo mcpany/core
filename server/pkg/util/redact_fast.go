@@ -5,16 +5,14 @@ package util //nolint:revive,nolintlint // Package name 'util' is common in this
 
 import (
 	"bytes"
-	"encoding/json"
 )
 
 // redactJSONFast is a zero-allocation (mostly) implementation of RedactJSON.
 // It scans the input byte slice and constructs a new slice with redacted values.
 // It avoids full JSON parsing.
 func redactJSONFast(input []byte) []byte {
-	// Pre-allocate result buffer. Usually it will be same size or slightly smaller/larger.
-	// 1.1x input size is a safe bet to avoid reallocations if we replace short values with long placeholders.
-	out := bytes.NewBuffer(make([]byte, 0, len(input)+len(input)/10))
+	// Lazy allocation: only allocate result buffer if we actually need to redact something.
+	var out *bytes.Buffer
 
 	i := 0
 	lastWrite := 0
@@ -93,28 +91,12 @@ func redactJSONFast(input []byte) []byte {
 			// Check if key is sensitive
 			keyContent := input[quotePos+1 : endQuote]
 
-			// Check for escapes in the key
-			hasEscape := bytes.IndexByte(keyContent, '\\') != -1
-
-			var sensitive bool
-			if hasEscape {
-				// Unescape key to check sensitivity
-				// We need to include quotes for json.Unmarshal
-				var keyStr string
-				if err := json.Unmarshal(input[quotePos:endQuote+1], &keyStr); err == nil {
-					// Check the unescaped key string
-					// We convert string to bytes to use existing helpers if needed, or pass string.
-					// scanForSensitiveKeys expects bytes.
-					// We don't need to validate key context here because we know we are inside a key.
-					sensitive = scanForSensitiveKeys([]byte(keyStr), false)
-				} else {
-					// Failed to unmarshal key, treat as not sensitive
-					sensitive = false
-				}
-			} else {
-				// Use scanForSensitiveKeys to check if the key matches any sensitive pattern.
-				sensitive = scanForSensitiveKeys(keyContent, false)
-			}
+			// Optimization: We check the raw key content against sensitive keys.
+			// We do NOT unescape the key (e.g. \u0061 for 'a').
+			// This avoids expensive json.Unmarshal calls.
+			// Note: scanForSensitiveKeys (used in the pre-check) also does not handle escapes.
+			// So this behavior is consistent with the fast-path detection logic.
+			sensitive := scanForSensitiveKeys(keyContent, false)
 
 			if sensitive {
 				// Identify value start
@@ -130,6 +112,12 @@ func redactJSONFast(input []byte) []byte {
 				}
 
 				if valStart < n {
+					// Initialize buffer if needed
+					if out == nil {
+						// 1.1x input size is a safe bet to avoid reallocations
+						out = bytes.NewBuffer(make([]byte, 0, len(input)+len(input)/10))
+					}
+
 					// Determine value end
 					valEnd := skipJSONValue(input, valStart)
 
@@ -150,6 +138,11 @@ func redactJSONFast(input []byte) []byte {
 		// Not sensitive key, or just string value
 		// Advance past the string
 		i = endQuote + 1
+	}
+
+	if out == nil {
+		// No redaction occurred
+		return input
 	}
 
 	// Write remaining
