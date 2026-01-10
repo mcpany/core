@@ -12,7 +12,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/component
 import { Button } from "@/components/ui/button";
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export type MessageType = "user" | "assistant" | "tool-call" | "tool-result" | "error";
 
@@ -46,8 +46,8 @@ export function ChatMessage({ message }: ChatMessageProps) {
                      <div className="bg-primary text-primary-foreground rounded-2xl rounded-tr-sm px-4 py-2 shadow-sm max-w-full overflow-hidden">
                         <p className="whitespace-pre-wrap font-mono text-sm break-words">{message.content}</p>
                     </div>
-                     <span className="text-[10px] text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" suppressHydrationWarning>
-                        {message.timestamp.toLocaleTimeString()}
+                     <span className="text-[10px] text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity">
+                        <HydrationSafeTime date={message.timestamp} />
                     </span>
                 </div>
                  <Avatar className="size-8 mt-1 border shadow-sm shrink-0">
@@ -68,7 +68,7 @@ export function ChatMessage({ message }: ChatMessageProps) {
                          <p className="whitespace-pre-wrap text-sm">{message.content}</p>
                     </div>
                     <span className="text-[10px] text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity">
-                        {message.timestamp.toLocaleTimeString()}
+                         <HydrationSafeTime date={message.timestamp} />
                     </span>
                 </div>
             </div>
@@ -173,4 +173,11 @@ export function ChatMessage({ message }: ChatMessageProps) {
     }
 
     return null;
+}
+
+function HydrationSafeTime({ date }: { date: Date }) {
+    const [mounted, setMounted] = useState(false);
+    useEffect(() => setMounted(true), []);
+    if (!mounted) return null;
+    return <>{date.toLocaleTimeString()}</>;
 }
