@@ -36,6 +36,7 @@ build/
 data/
 mcpany.db
 
+.audits/
 .audit/
 *.txt
 
