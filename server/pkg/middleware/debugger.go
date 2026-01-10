@@ -4,16 +4,23 @@
 package middleware
 
 import (
+	"bytes"
 	"container/ring"
+	"io"
 	"net/http"
+	"strings"
 	"sync"
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 )
+
+const maxBodySize = 10 * 1024 // 10KB
 
 // DebugEntry represents a captured HTTP request/response.
 type DebugEntry struct {
+	ID              string        `json:"id"`
 	Timestamp       time.Time     `json:"timestamp"`
 	Method          string        `json:"method"`
 	Path            string        `json:"path"`
@@ -21,6 +28,24 @@ type DebugEntry struct {
 	Duration        time.Duration `json:"duration"`
 	RequestHeaders  http.Header   `json:"request_headers"`
 	ResponseHeaders http.Header   `json:"response_headers"`
+	RequestBody     string        `json:"request_body"`
+	ResponseBody    string        `json:"response_body"`
+}
+
+// ReplayRequest represents a request to replay a call.
+type ReplayRequest struct {
+	Method  string            `json:"method"`
+	URL     string            `json:"url"`
+	Headers map[string]string `json:"headers"`
+	Body    string            `json:"body"`
+}
+
+// ReplayResponse represents the result of a replay.
+type ReplayResponse struct {
+	Status     int               `json:"status"`
+	Headers    map[string]string `json:"headers"`
+	Body       string            `json:"body"`
+	DurationMs int64             `json:"duration_ms"`
 }
 
 // Debugger monitors and records traffic for inspection.
@@ -38,17 +63,94 @@ func NewDebugger(size int) *Debugger {
 	}
 }
 
+type bodyLogWriter struct {
+	gin.ResponseWriter
+	body *bytes.Buffer
+}
+
+func (w bodyLogWriter) Write(b []byte) (int, error) {
+	if w.body.Len() < maxBodySize {
+		w.body.Write(b)
+	}
+	return w.ResponseWriter.Write(b)
+}
+
+func (w bodyLogWriter) WriteString(s string) (int, error) {
+	if w.body.Len() < maxBodySize {
+		w.body.WriteString(s)
+	}
+	return w.ResponseWriter.WriteString(s)
+}
+
 // Middleware returns the gin handler.
 func (d *Debugger) Middleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		start := time.Now()
+		reqID := uuid.New().String()
+
+		// Capture Request Body safely
+		var reqBodyBytes []byte
+		if c.Request.Body != nil {
+			var bodyBytes []byte
+			var err error
+
+			// If ContentLength is huge, we skip reading to avoid OOM
+			if c.Request.ContentLength > 1024*1024 { // 1MB
+				reqBodyBytes = []byte("<<Request body too large to capture>>")
+				// We DO NOT consume the body here, so the handler can read it streamingly if it supports it.
+				// However, io.NopCloser(bytes.NewBuffer(...)) pattern implies we read it all.
+				// If we don't read it, we can't capture it.
+				// If we don't restore it, the handler sees what?
+				// The handler sees the original body because we didn't touch c.Request.Body
+			} else {
+				// We want to read all, but with a limit of 1MB to avoid "Death by Body".
+				// http.MaxBytesReader prevents reading more than limit.
+				bodyBytes, err = io.ReadAll(http.MaxBytesReader(c.Writer, c.Request.Body, 1024*1024))
+				if err != nil {
+					// We hit the limit or error.
+					// If we hit the limit, we have a partial body.
+					// We can capture the partial body.
+					// But we consumed the stream. We must restore what we have.
+					// If the handler needs more than 1MB, it will fail because we only have 1MB.
+					// This effectively limits the request size for debugged endpoints.
+					if len(bodyBytes) > 0 {
+						reqBodyBytes = bodyBytes
+						// Append error note?
+					} else {
+						reqBodyBytes = []byte("<<Error reading body>>")
+					}
+					// Restore partial body so handler sees something (and likely fails cleanly on JSON decode)
+					c.Request.Body = io.NopCloser(bytes.NewBuffer(bodyBytes))
+				} else {
+					// Success
+					reqBodyBytes = bodyBytes
+					c.Request.Body = io.NopCloser(bytes.NewBuffer(bodyBytes))
+				}
+			}
+		}
+
+		// Capture Response Body
+		blw := &bodyLogWriter{body: bytes.NewBufferString(""), ResponseWriter: c.Writer}
+		c.Writer = blw
 
 		// Process request
 		c.Next()
 
 		duration := time.Since(start)
 
+		// Prepare bodies for storage (truncated)
+		reqBodyStr := string(reqBodyBytes)
+		if len(reqBodyStr) > maxBodySize {
+			reqBodyStr = reqBodyStr[:maxBodySize] + "...(truncated)"
+		}
+
+		respBodyStr := blw.body.String()
+		if len(respBodyStr) > maxBodySize {
+			respBodyStr = respBodyStr[:maxBodySize] + "...(truncated)"
+		}
+
 		entry := DebugEntry{
+			ID:              reqID,
 			Timestamp:       start,
 			Method:          c.Request.Method,
 			Path:            c.Request.URL.Path,
@@ -56,6 +158,8 @@ func (d *Debugger) Middleware() gin.HandlerFunc {
 			Duration:        duration,
 			RequestHeaders:  c.Request.Header,
 			ResponseHeaders: c.Writer.Header(),
+			RequestBody:     reqBodyStr,
+			ResponseBody:    respBodyStr,
 		}
 
 		d.mu.Lock()
@@ -76,6 +180,12 @@ func (d *Debugger) Entries() []DebugEntry {
 			entries = append(entries, p.(DebugEntry))
 		}
 	})
+
+	// Sort by timestamp descending (newest first)
+	// Since ring buffer order depends on current pointer, we just return as is or sort.
+	// Typically ring buffer iterates from oldest to newest if we don't track head.
+	// But `Do` iterates starting from `ring.Next()`, so it might be ordered.
+	// Let's not complicate with sorting here unless needed.
 	return entries
 }
 
@@ -83,5 +193,74 @@ func (d *Debugger) Entries() []DebugEntry {
 func (d *Debugger) Handler() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		c.JSON(http.StatusOK, d.Entries())
+	}
+}
+
+// ReplayHandler returns a http.HandlerFunc to execute a replay request.
+func (d *Debugger) ReplayHandler() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		var req ReplayRequest
+		if err := c.ShouldBindJSON(&req); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+
+		if req.URL == "" {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "url is required"})
+			return
+		}
+
+		// Create Request
+		var bodyReader io.Reader
+		if req.Body != "" {
+			bodyReader = strings.NewReader(req.Body)
+		}
+
+		// Use NewRequestWithContext
+		httpReq, err := http.NewRequestWithContext(c.Request.Context(), req.Method, req.URL, bodyReader)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "failed to create request: " + err.Error()})
+			return
+		}
+
+		// Add Headers
+		for k, v := range req.Headers {
+			httpReq.Header.Set(k, v)
+		}
+
+		// Execute
+		client := &http.Client{
+			Timeout: 30 * time.Second,
+		}
+		start := time.Now()
+		resp, err := client.Do(httpReq)
+		if err != nil {
+			c.JSON(http.StatusBadGateway, gin.H{"error": "failed to execute request: " + err.Error()})
+			return
+		}
+
+		// Read Response
+		respBody, err := io.ReadAll(resp.Body)
+		// Close body immediately after reading
+		_ = resp.Body.Close()
+
+		if err != nil {
+			c.JSON(http.StatusBadGateway, gin.H{"error": "failed to read response: " + err.Error()})
+			return
+		}
+		duration := time.Since(start)
+
+		// Prepare Response Headers
+		respHeaders := make(map[string]string)
+		for k, v := range resp.Header {
+			respHeaders[k] = strings.Join(v, ", ")
+		}
+
+		c.JSON(http.StatusOK, ReplayResponse{
+			Status:     resp.StatusCode,
+			Headers:    respHeaders,
+			Body:       string(respBody),
+			DurationMs: duration.Milliseconds(),
+		})
 	}
 }
