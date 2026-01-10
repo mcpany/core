@@ -9,7 +9,7 @@ WORKDIR /app
 
 # Install dependencies based on the preferred package manager
 COPY ui/package.json ui/package-lock.json* ./
-RUN npm ci
+RUN npm install -g npm@latest && npm ci --no-audit
 
 # Rebuild the source code only when needed
 FROM base AS builder
@@ -62,8 +62,8 @@ USER nextjs
 
 EXPOSE 3000
 
-ENV PORT 3000
+ENV PORT=3000
 # set hostname to localhost
-ENV HOSTNAME "0.0.0.0"
+ENV HOSTNAME=0.0.0.0
 
 CMD ["node", "server.js"]
