@@ -37,7 +37,7 @@ func NewMockOAuth2Server(t *testing.T) *MockOAuth2Server {
 		PrivateKey: privateKey,
 	}
 
-	mux.HandleFunc("/.well-known/openid-configuration", func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc("/.well-known/openid-configuration", func(w http.ResponseWriter, _ *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		config := map[string]interface{}{
 			"issuer":                 server.URL,
@@ -48,7 +48,7 @@ func NewMockOAuth2Server(t *testing.T) *MockOAuth2Server {
 		_ = json.NewEncoder(w).Encode(config)
 	})
 
-	mux.HandleFunc("/jwks", func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc("/jwks", func(w http.ResponseWriter, _ *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		jwk := jose.JSONWebKey{Key: &privateKey.PublicKey, Algorithm: "RS256", Use: "sig"}
 		jwks := map[string]interface{}{
@@ -70,7 +70,7 @@ func NewMockOAuth2Server(t *testing.T) *MockOAuth2Server {
 		http.Redirect(w, r, redirectURI+"?code=mock_code&state="+state, http.StatusFound)
 	})
 
-	mux.HandleFunc("/token", func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc("/token", func(w http.ResponseWriter, _ *http.Request) {
 		// Mock Token Endpoint
 		w.Header().Set("Content-Type", "application/json")
 		token := mock.NewIDToken(t, jwt.MapClaims{
@@ -79,7 +79,7 @@ func NewMockOAuth2Server(t *testing.T) *MockOAuth2Server {
 			"aud": "mock_client",
 			"exp": time.Now().Add(time.Hour).Unix(),
 		})
-		json.NewEncoder(w).Encode(map[string]interface{}{
+		_ = json.NewEncoder(w).Encode(map[string]interface{}{
 			"access_token": token,
 			"id_token":     token,
 			"token_type":   "Bearer",
