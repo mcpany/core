@@ -136,7 +136,7 @@ func (m *GlobalRateLimitMiddleware) getLimiter(ctx context.Context, config *conf
 		}
 		client := m.getRedisClient(config.GetRedis())
 		// Pass global identifier
-		limiter = NewRedisLimiterWithClient(client, "global", partitionKey, config)
+		limiter = NewRedisLimiterWithClient(client, "global", "", partitionKey, config)
 	} else {
 		limiter = &LocalLimiter{
 			Limiter: rate.NewLimiter(rate.Limit(rps), burst),

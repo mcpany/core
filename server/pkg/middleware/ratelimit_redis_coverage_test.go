@@ -34,12 +34,12 @@ func TestRedisLimiter_GetConfigHash(t *testing.T) {
 		Redis:             redisBus,
 	}
 
-	limiter := NewRedisLimiterWithClient(db, "service", "partition", config)
+	limiter := NewRedisLimiterWithClient(db, "service", "", "partition", config)
 
 	expectedHash := "localhost:6379|pass|0"
 	assert.Equal(t, expectedHash, limiter.GetConfigHash())
 
 	// Test with no redis config
-	limiterNoRedis := NewRedisLimiterWithClient(db, "service", "partition", &configv1.RateLimitConfig{})
+	limiterNoRedis := NewRedisLimiterWithClient(db, "service", "", "partition", &configv1.RateLimitConfig{})
 	assert.Equal(t, "", limiterNoRedis.GetConfigHash())
 }
