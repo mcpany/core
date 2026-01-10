@@ -8,7 +8,9 @@ import (
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"strings"
+	"syscall"
 	"testing"
 	"time"
 
@@ -198,4 +200,43 @@ func TestWSHandler_InvalidJSON(t *testing.T) {
 
 	_, _, err = conn.ReadMessage()
 	require.Error(t, err)
+}
+
+func TestRun(t *testing.T) {
+	// Use port 0 to let OS pick a free port
+	args := []string{"weather-server", "-port", "0"}
+
+	stop := make(chan os.Signal, 1)
+	ready := make(chan string, 1)
+
+	// Start run in background
+	errChan := make(chan error, 1)
+	go func() {
+		errChan <- run(args, stop, ready)
+	}()
+
+	// Wait for server to start and get address
+	var addr string
+	select {
+	case addr = <-ready:
+	case <-time.After(5 * time.Second):
+		t.Fatal("Server failed to start in time")
+	}
+
+	// Verify health check
+	resp, err := http.Get("http://" + addr + "/health")
+	require.NoError(t, err)
+	defer resp.Body.Close()
+	assert.Equal(t, http.StatusOK, resp.StatusCode)
+
+	// Stop server
+	stop <- syscall.SIGTERM
+
+	// Wait for cleanup
+	select {
+	case err = <-errChan:
+		assert.NoError(t, err)
+	case <-time.After(2 * time.Second):
+		t.Fatal("Server failed to stop in time")
+	}
 }

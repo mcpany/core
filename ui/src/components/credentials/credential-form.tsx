@@ -158,7 +158,7 @@ export function CredentialForm({ initialData, onSuccess }: CredentialFormProps) 
         } else {
             toast.warning(`Test returned: ${res.status} ${res.status_text}`)
         }
-        console.log("Test Response:", res)
+
       } catch (error: any) {
           toast.error("Test failed: " + error.message)
       } finally {
