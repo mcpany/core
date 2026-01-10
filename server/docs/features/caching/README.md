@@ -12,6 +12,8 @@ Caching can be configured at the **service level** (applying to all tools in the
 | ------------ | -------- | -------------------------------------------------------------- |
 | `is_enabled` | `bool`   | Whether caching is enabled for this service.                   |
 | `ttl`        | `string` | The time-to-live for cached entries (e.g., "10s", "5m", "1h"). |
+| `strategy`   | `string` | The caching strategy to use (default: exact match).            |
+| `semantic_config` | `object` | Configuration for semantic caching (see below).               |
 
 ### Configuration Snippet
 

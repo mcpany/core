@@ -24,6 +24,7 @@
 - [x] **Message Bus**: NATS/Kafka integration for events. [Docs](server/docs/features/message_bus.md)
 - [x] **Structured Output Transformation**: JQ/JSONPath response shaping. [Docs](server/docs/features/transformation.md)
 - [x] **Documentation Generator**: Auto-generate beautiful Markdown/HTML documentation. [Docs](server/docs/features/documentation_generation.md)
+- [x] **Secrets Management Integration**: First-class integration with HashiCorp Vault or AWS Secrets Manager. [Docs](server/docs/reference/configuration.md#upstreamauthentication-outgoing)
 
 ## 2. Top 10 Recommended Features
 
@@ -32,7 +33,6 @@ These features represent the next logical steps for the product, focusing on Ent
 | Rank | Feature Name | Why it matters | Difficulty |
 | :--- | :--- | :--- | :--- |
 | 1 | **Human-in-the-Loop Approval UI** | **Safety**: Critical for preventing dangerous actions (e.g., `DROP TABLE`) by requiring manual admin approval via the UI before execution. | Low |
-| 2 | **Secrets Management Integration** | **Security**: First-class integration with HashiCorp Vault or AWS Secrets Manager to avoid storing API keys in plain text configs or env vars. | Medium |
 | 3 | **Interactive OAuth Handler** | **UX/Auth**: Solve the "copy-paste token" friction. Allow users to click "Login" in the UI to authenticate tools like GitHub/Google. | High |
 | 4 | **Local LLM "One-Click" Connect** | **Connectivity**: Auto-detect and connect to local inference servers (Ollama, LM Studio) to democratize AI access without cloud costs. | Low |
 | 5 | **Tool "Dry Run" Mode** | **DevX**: Allow tools to define a "dry run" logic to validate inputs and permissions without executing side effects. | Medium |
