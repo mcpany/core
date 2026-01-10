@@ -9,29 +9,21 @@ import (
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
-	"path/filepath"
 	"testing"
 
-	"github.com/mcpany/core/server/pkg/storage/sqlite"
+	configv1 "github.com/mcpany/core/proto/config/v1"
+	"github.com/mcpany/core/server/pkg/storage/memory"
 	"github.com/spf13/afero"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"google.golang.org/protobuf/proto"
 )
 
 func TestCreateAPIHandler(t *testing.T) {
-	// Setup SQLite DB
-	tempDir := t.TempDir()
-	dbPath := filepath.Join(tempDir, "test.db")
-	db, err := sqlite.NewDB(dbPath)
-	require.NoError(t, err)
-	defer db.Close()
-
-	store := sqlite.NewStore(db)
-
-	// Setup Application
+	// Setup
+	store := memory.NewStore()
 	app := NewApplication()
 	app.fs = afero.NewMemMapFs() // Use in-memory FS to avoid side effects in ReloadConfig
-
 	handler := app.createAPIHandler(store)
 	ts := httptest.NewServer(handler)
 	defer ts.Close()
@@ -189,15 +181,153 @@ func TestCreateAPIHandler(t *testing.T) {
 		resp.Body.Close()
 
 		// Try to create again with same name/id
-		// Store implementation might not fail on duplicate (it might overwrite or ignore), check sqlite store implementation.
-		// If sqlite store uses `INSERT OR REPLACE` or `ON CONFLICT`, it might succeed.
-		// But let's check behavior.
 		resp, err = http.Post(ts.URL+"/services", "application/json", bytes.NewReader(bodyBytes))
 		require.NoError(t, err)
 		defer resp.Body.Close()
-		// If it succeeds (overwrite), then we can't test failure here easily without modifying store.
-		// Let's assume it succeeds for now, and check if we can force failure.
-		// If we can't force failure, we can't test the error path in createAPIHandler.
+
+		// Memory store creates/overwrites, so it might return 201.
 		assert.Equal(t, http.StatusCreated, resp.StatusCode)
+	})
+}
+
+func TestHandleServiceStatus(t *testing.T) {
+	store := memory.NewStore()
+	app := NewApplication()
+
+	// Pre-populate store
+	svc := &configv1.UpstreamServiceConfig{
+		Name: proto.String("test-service"),
+	}
+	_ = store.SaveService(context.Background(), svc)
+
+	t.Run("get status active", func(t *testing.T) {
+		req := httptest.NewRequest(http.MethodGet, "/services/test-service/status", nil)
+		w := httptest.NewRecorder()
+
+		app.handleServiceStatus(w, req, "test-service", store)
+
+		assert.Equal(t, http.StatusOK, w.Code)
+		var resp map[string]interface{}
+		err := json.Unmarshal(w.Body.Bytes(), &resp)
+		require.NoError(t, err)
+		assert.Equal(t, "test-service", resp["name"])
+		assert.Equal(t, "Inactive", resp["status"])
+	})
+
+	t.Run("service not found", func(t *testing.T) {
+		req := httptest.NewRequest(http.MethodGet, "/services/unknown-service/status", nil)
+		w := httptest.NewRecorder()
+
+		app.handleServiceStatus(w, req, "unknown-service", store)
+
+		assert.Equal(t, http.StatusNotFound, w.Code)
+	})
+
+	t.Run("method not allowed", func(t *testing.T) {
+		req := httptest.NewRequest(http.MethodPost, "/services/test-service/status", nil)
+		w := httptest.NewRecorder()
+
+		app.handleServiceStatus(w, req, "test-service", store)
+
+		assert.Equal(t, http.StatusMethodNotAllowed, w.Code)
+	})
+}
+
+func TestHandleCollectionApply(t *testing.T) {
+	store := memory.NewStore()
+	app := NewApplication()
+	app.fs = afero.NewMemMapFs()
+	// No configPaths set to avoid reload failure logs cluttering, but ReloadConfig might fail regardless.
+	// We can ignore the reload error as we test the handler logic.
+
+	// Create a collection with one service
+	svc := &configv1.UpstreamServiceConfig{
+		Name: proto.String("collection-service"),
+		ServiceConfig: &configv1.UpstreamServiceConfig_HttpService{
+			HttpService: &configv1.HttpUpstreamService{
+				Address: proto.String("http://localhost:8080"),
+			},
+		},
+	}
+	collection := &configv1.UpstreamServiceCollectionShare{
+		Name: proto.String("test-collection"),
+		Services: []*configv1.UpstreamServiceConfig{svc},
+	}
+	_ = store.SaveServiceCollection(context.Background(), collection)
+
+	t.Run("apply collection success", func(t *testing.T) {
+		req := httptest.NewRequest(http.MethodPost, "/collections/test-collection/apply", nil)
+		w := httptest.NewRecorder()
+
+		app.handleCollectionApply(w, req, "test-collection", store)
+
+		assert.Equal(t, http.StatusOK, w.Code)
+
+		savedSvc, err := store.GetService(context.Background(), "collection-service")
+		require.NoError(t, err)
+		require.NotNil(t, savedSvc)
+		assert.Equal(t, "collection-service", savedSvc.GetName())
+	})
+
+	t.Run("apply collection not found", func(t *testing.T) {
+		req := httptest.NewRequest(http.MethodPost, "/collections/unknown-collection/apply", nil)
+		w := httptest.NewRecorder()
+
+		app.handleCollectionApply(w, req, "unknown-collection", store)
+
+		assert.Equal(t, http.StatusNotFound, w.Code)
+	})
+
+	t.Run("method not allowed", func(t *testing.T) {
+		req := httptest.NewRequest(http.MethodGet, "/collections/test-collection/apply", nil)
+		w := httptest.NewRecorder()
+
+		app.handleCollectionApply(w, req, "test-collection", store)
+
+		assert.Equal(t, http.StatusMethodNotAllowed, w.Code)
+	})
+}
+
+func TestHandleSettings(t *testing.T) {
+	store := memory.NewStore()
+	app := NewApplication()
+	app.fs = afero.NewMemMapFs()
+
+	t.Run("get settings default", func(t *testing.T) {
+		req := httptest.NewRequest(http.MethodGet, "/settings", nil)
+		w := httptest.NewRecorder()
+
+		handler := app.handleSettings(store)
+		handler(w, req)
+
+		assert.Equal(t, http.StatusOK, w.Code)
+		// It returns default values, not empty JSON.
+		assert.Contains(t, w.Body.String(), `"allowed_ips":[]`)
+	})
+
+	t.Run("save settings", func(t *testing.T) {
+		settingsJSON := `{"allowed_ips": ["127.0.0.1"]}`
+		req := httptest.NewRequest(http.MethodPost, "/settings", bytes.NewBufferString(settingsJSON))
+		w := httptest.NewRecorder()
+
+		handler := app.handleSettings(store)
+		handler(w, req)
+
+		assert.Equal(t, http.StatusOK, w.Code)
+
+		// Verify saved
+		settings, err := store.GetGlobalSettings()
+		require.NoError(t, err)
+		assert.Contains(t, settings.AllowedIps, "127.0.0.1")
+	})
+
+	t.Run("method not allowed", func(t *testing.T) {
+		req := httptest.NewRequest(http.MethodDelete, "/settings", nil)
+		w := httptest.NewRecorder()
+
+		handler := app.handleSettings(store)
+		handler(w, req)
+
+		assert.Equal(t, http.StatusMethodNotAllowed, w.Code)
 	})
 }
