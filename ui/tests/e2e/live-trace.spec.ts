@@ -7,7 +7,29 @@ import { test, expect } from '@playwright/test';
 
 test('Live Trace Inspector and Replay Flow', async ({ page }) => {
   // Navigate to traces page
-  await page.goto('http://localhost:9002/traces');
+  // Mock traces API
+  await page.route('/api/traces', async route => {
+    await route.fulfill({
+      json: [
+        {
+          id: 'trace-123',
+          timestamp: new Date().toISOString(),
+          status: 'success',
+          trigger: 'user',
+          totalDuration: 150,
+          rootSpan: {
+            name: 'calculate_sum',
+            type: 'tool',
+            startTime: Date.now(),
+            endTime: Date.now() + 150
+          }
+        }
+      ]
+    });
+  });
+
+  // Navigate to traces page
+  await page.goto('/traces');
 
   // Verify Live Toggle exists
   const liveToggle = page.locator('button[title="Start Live Updates"]');
@@ -30,6 +52,7 @@ test('Live Trace Inspector and Replay Flow', async ({ page }) => {
   await expect(page).toHaveURL(/\/playground\?tool=calculate_sum&args=/);
 
   // Verify Playground input
-  const input = page.locator('input[placeholder*="e.g. calculator"]');
+  // Verify Playground input
+  const input = page.getByPlaceholder('Enter command or select a tool...');
   await expect(input).toHaveValue(/calculate_sum/);
 });

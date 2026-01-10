@@ -47,13 +47,13 @@ test.describe('Playground Tool Configuration', () => {
 
     await page.goto('/playground');
 
-    // Open Available Tools
-    await page.getByRole('button', { name: /available tools/i }).click();
+    // Open Available Tools (Sidebar is open by default)
+    // await page.getByRole('button', { name: /available tools/i }).click();
 
     // Click "Use Tool" for weather_tool
     // The sheet might be animating, so wait a bit or just look for the text
     await expect(page.getByText('weather_tool')).toBeVisible();
-    await page.getByRole('button', { name: /use tool/i }).click();
+    await page.getByRole('button', { name: 'Use', exact: true }).click();
 
     // Dialog should open
     await expect(page.getByRole('dialog')).toBeVisible();
@@ -64,7 +64,7 @@ test.describe('Playground Tool Configuration', () => {
     await page.getByLabel('days').fill('5');
 
     // Run Tool
-    await page.getByRole('button', { name: /run tool/i }).click();
+    await page.getByRole('button', { name: /build command/i }).click();
 
     // Verify chat message
     // The message should appear in the chat.
