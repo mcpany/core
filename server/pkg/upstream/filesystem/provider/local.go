@@ -37,67 +37,40 @@ func (p *LocalProvider) GetFs() afero.Fs {
 }
 
 // ResolvePath resolves the virtual path to a real path in the local filesystem.
-// ResolvePath resolves the virtual path to a real path in the local filesystem.
 func (p *LocalProvider) ResolvePath(virtualPath string) (string, error) {
 	if len(p.rootPaths) == 0 {
 		return "", fmt.Errorf("no root paths defined")
 	}
 
-	bestMatchVirtual, bestMatchReal, err := p.findBestRoot(virtualPath)
+	bestMatchVirtual, bestMatchReal, err := p.findBestMatch(virtualPath)
 	if err != nil {
 		return "", err
 	}
 
-	// Resolve the path
-	relativePath := strings.TrimPrefix(virtualPath, bestMatchVirtual)
-	// handle case where virtualPath matched exactly or with trailing slash
-	relativePath = strings.TrimPrefix(relativePath, "/")
-
-	realRootAbs, err := filepath.Abs(bestMatchReal)
-	if err != nil {
-		return "", fmt.Errorf("failed to resolve root path: %w", err)
-	}
-
-	// Resolve symlinks in the root path to ensure we have the canonical path
-	realRootCanonical, err := filepath.EvalSymlinks(realRootAbs)
-	if err != nil {
-		return "", fmt.Errorf("failed to resolve root path symlinks: %w", err)
-	}
-
-	targetPath := filepath.Join(realRootCanonical, relativePath)
-	targetPathAbs, err := filepath.Abs(targetPath)
-	if err != nil {
-		return "", fmt.Errorf("failed to resolve target path: %w", err)
-	}
-
-	// Resolve symlinks for the target path too
-	targetPathCanonical, err := p.resolveSymlinks(targetPathAbs)
+	targetPathCanonical, realRootCanonical, err := p.resolveSymlinks(virtualPath, bestMatchVirtual, bestMatchReal)
 	if err != nil {
 		return "", err
 	}
 
-	// Security Check: Ensure targetPathCanonical starts with realRootCanonical
-	if !strings.HasPrefix(targetPathCanonical, realRootCanonical+string(os.PathSeparator)) && targetPathCanonical != realRootCanonical {
-		return "", fmt.Errorf("access denied: path traversal detected")
-	}
-
-	if err := p.checkPathAccess(targetPathCanonical); err != nil {
+	if err := p.checkPathSecurity(targetPathCanonical, realRootCanonical); err != nil {
 		return "", err
 	}
 
 	return targetPathCanonical, nil
 }
 
-func (p *LocalProvider) findBestRoot(virtualPath string) (string, string, error) {
+func (p *LocalProvider) findBestMatch(virtualPath string) (string, string, error) {
 	var bestMatchVirtual string
 	var bestMatchReal string
 
 	for vRoot, rRoot := range p.rootPaths {
+		// Ensure vRoot has a clean format
 		cleanVRoot := vRoot
 		if !strings.HasPrefix(cleanVRoot, "/") {
 			cleanVRoot = "/" + cleanVRoot
 		}
 
+		// Ensure virtualPath starts with /
 		checkPath := virtualPath
 		if !strings.HasPrefix(checkPath, "/") {
 			checkPath = "/" + checkPath
@@ -125,33 +98,59 @@ func (p *LocalProvider) findBestRoot(virtualPath string) (string, string, error)
 			return "", "", fmt.Errorf("path %s is not allowed (no matching root)", virtualPath)
 		}
 	}
+
 	return bestMatchVirtual, bestMatchReal, nil
 }
 
-func (p *LocalProvider) resolveSymlinks(path string) (string, error) {
-	targetPathCanonical, err := filepath.EvalSymlinks(path)
-	if err == nil {
-		return targetPathCanonical, nil
-	}
-	if !os.IsNotExist(err) {
-		return "", fmt.Errorf("failed to resolve target path symlinks: %w", err)
+func (p *LocalProvider) resolveSymlinks(virtualPath, bestMatchVirtual, bestMatchReal string) (string, string, error) {
+	relativePath := strings.TrimPrefix(virtualPath, bestMatchVirtual)
+	relativePath = strings.TrimPrefix(relativePath, "/")
+
+	realRootAbs, err := filepath.Abs(bestMatchReal)
+	if err != nil {
+		return "", "", fmt.Errorf("failed to resolve root path: %w", err)
 	}
 
-	// If file doesn't exist, we need to find the deepest existing ancestor
-	currentPath := path
+	realRootCanonical, err := filepath.EvalSymlinks(realRootAbs)
+	if err != nil {
+		return "", "", fmt.Errorf("failed to resolve root path symlinks: %w", err)
+	}
+
+	targetPath := filepath.Join(realRootCanonical, relativePath)
+	targetPathAbs, err := filepath.Abs(targetPath)
+	if err != nil {
+		return "", "", fmt.Errorf("failed to resolve target path: %w", err)
+	}
+
+	targetPathCanonical, err := filepath.EvalSymlinks(targetPathAbs)
+	if err != nil {
+		if os.IsNotExist(err) {
+			targetPathCanonical, err = p.resolveNonExistentPath(targetPathAbs)
+			if err != nil {
+				return "", "", err
+			}
+		} else {
+			return "", "", fmt.Errorf("failed to resolve target path symlinks: %w", err)
+		}
+	}
+	return targetPathCanonical, realRootCanonical, nil
+}
+
+func (p *LocalProvider) resolveNonExistentPath(targetPathAbs string) (string, error) {
+	currentPath := targetPathAbs
 	var existingPath string
 	var remainingPath string
 
 	for {
 		dir := filepath.Dir(currentPath)
 		if dir == currentPath {
-			return "", fmt.Errorf("failed to resolve path (root not found): %s", path)
+			return "", fmt.Errorf("failed to resolve path (root not found): %s", targetPathAbs)
 		}
 
 		if _, err := os.Stat(dir); err == nil {
 			existingPath = dir
 			var relErr error
-			remainingPath, relErr = filepath.Rel(existingPath, path)
+			remainingPath, relErr = filepath.Rel(existingPath, targetPathAbs)
 			if relErr != nil {
 				return "", fmt.Errorf("failed to calculate relative path: %w", relErr)
 			}
@@ -168,11 +167,15 @@ func (p *LocalProvider) resolveSymlinks(path string) (string, error) {
 	return filepath.Join(existingPathCanonical, remainingPath), nil
 }
 
-func (p *LocalProvider) checkPathAccess(path string) error {
+func (p *LocalProvider) checkPathSecurity(targetPathCanonical, realRootCanonical string) error {
+	if !strings.HasPrefix(targetPathCanonical, realRootCanonical+string(os.PathSeparator)) && targetPathCanonical != realRootCanonical {
+		return fmt.Errorf("access denied: path traversal detected")
+	}
+
 	if len(p.allowedPaths) > 0 {
 		allowed := false
 		for _, pattern := range p.allowedPaths {
-			if p.matchPattern(pattern, path) {
+			if p.matchPath(pattern, targetPathCanonical) {
 				allowed = true
 				break
 			}
@@ -184,23 +187,21 @@ func (p *LocalProvider) checkPathAccess(path string) error {
 
 	if len(p.deniedPaths) > 0 {
 		for _, pattern := range p.deniedPaths {
-			if p.matchPattern(pattern, path) {
+			if p.matchPath(pattern, targetPathCanonical) {
 				return fmt.Errorf("access denied: path is in denied list")
 			}
 		}
 	}
+
 	return nil
 }
 
-func (p *LocalProvider) matchPattern(pattern, path string) bool {
-	matched, err := filepath.Match(pattern, path)
-	if err != nil {
-		return strings.HasPrefix(path, pattern)
+func (p *LocalProvider) matchPath(pattern, targetPath string) bool {
+	matched, err := filepath.Match(pattern, targetPath)
+	if err == nil && matched {
+		return true
 	}
-	if !matched {
-		return strings.HasPrefix(path, pattern)
-	}
-	return true
+	return strings.HasPrefix(targetPath, pattern)
 }
 
 // Close closes the provider.

@@ -420,7 +420,7 @@ EXAMPLE_BIN_DIR := $(BUILD_DIR)/examples/bin
 
 # List of example binaries
 .PHONY: build-examples
-build-examples: build-weather-server
+build-examples: build-weather-server build-stdio-tool
 
 # Target to build the weather server example
 .PHONY: build-weather-server
@@ -428,6 +428,12 @@ build-weather-server:
 	@echo "Building weather server example..."
 	@mkdir -p $(EXAMPLE_BIN_DIR)
 	@$(GO_CMD) build -buildvcs=false -o $(EXAMPLE_BIN_DIR)/weather-server examples/upstream_service_demo/http/server/weather_server/weather_server.go
+
+# Target to build the stdio tool example
+.PHONY: build-stdio-tool
+build-stdio-tool:
+	@echo "Building stdio tool example..."
+	@$(GO_CMD) build -buildvcs=false -o examples/demo/stdio/my-tool-bin examples/demo/stdio/my-tool/main.go
 
 .PHONY: build-file-upload-server
 build-file-upload-server:
