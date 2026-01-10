@@ -5,18 +5,19 @@
 package passhash
 
 import (
-	"crypto/sha256"
+	"crypto/sha512"
 	"fmt"
 
 	"golang.org/x/crypto/bcrypt"
 )
 
 // Password hashes a password using bcrypt.
-// If the password is longer than 72 bytes (bcrypt limit), it is pre-hashed with SHA-256.
+// If the password is longer than 72 bytes (bcrypt limit), it is pre-hashed with SHA-512.
+// SHA-512 produces 64 bytes, which fits within the 72-byte limit of bcrypt.
 func Password(password string) (string, error) {
 	passBytes := []byte(password)
 	if len(passBytes) > 72 {
-		h := sha256.Sum256(passBytes)
+		h := sha512.Sum512(passBytes)
 		passBytes = h[:]
 	}
 
@@ -28,11 +29,11 @@ func Password(password string) (string, error) {
 }
 
 // CheckPassword checks if a password matches a hash.
-// It handles passwords longer than 72 bytes by pre-hashing with SHA-256 if needed.
+// It handles passwords longer than 72 bytes by pre-hashing with SHA-512 if needed.
 func CheckPassword(password, hash string) bool {
 	passBytes := []byte(password)
 	if len(passBytes) > 72 {
-		h := sha256.Sum256(passBytes)
+		h := sha512.Sum512(passBytes)
 		passBytes = h[:]
 	}
 
