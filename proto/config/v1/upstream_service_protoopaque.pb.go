@@ -405,6 +405,7 @@ type UpstreamServiceConfig struct {
 	xxx_hidden_PromptExportPolicy    *ExportPolicy                         `protobuf:"bytes,28,opt,name=prompt_export_policy"`
 	xxx_hidden_ResourceExportPolicy  *ExportPolicy                         `protobuf:"bytes,29,opt,name=resource_export_policy"`
 	xxx_hidden_AutoDiscoverTool      bool                                  `protobuf:"varint,30,opt,name=auto_discover_tool"`
+	xxx_hidden_ConfigError           *string                               `protobuf:"bytes,35,opt,name=config_error"`
 	XXX_raceDetectHookData           protoimpl.RaceDetectHookData
 	XXX_presence                     [1]uint32
 	unknownFields                    protoimpl.UnknownFields
@@ -704,19 +705,29 @@ func (x *UpstreamServiceConfig) GetAutoDiscoverTool() bool {
 	return false
 }
 
+func (x *UpstreamServiceConfig) GetConfigError() string {
+	if x != nil {
+		if x.xxx_hidden_ConfigError != nil {
+			return *x.xxx_hidden_ConfigError
+		}
+		return ""
+	}
+	return ""
+}
+
 func (x *UpstreamServiceConfig) SetId(v string) {
 	x.xxx_hidden_Id = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 22)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 23)
 }
 
 func (x *UpstreamServiceConfig) SetName(v string) {
 	x.xxx_hidden_Name = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 22)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 23)
 }
 
 func (x *UpstreamServiceConfig) SetSanitizedName(v string) {
 	x.xxx_hidden_SanitizedName = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 22)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 23)
 }
 
 func (x *UpstreamServiceConfig) SetConnectionPool(v *ConnectionPoolConfig) {
@@ -737,7 +748,7 @@ func (x *UpstreamServiceConfig) SetRateLimit(v *RateLimitConfig) {
 
 func (x *UpstreamServiceConfig) SetLoadBalancingStrategy(v LoadBalancingStrategy) {
 	x.xxx_hidden_LoadBalancingStrategy = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 7, 22)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 7, 23)
 }
 
 func (x *UpstreamServiceConfig) SetResilience(v *ResilienceConfig) {
@@ -834,7 +845,7 @@ func (x *UpstreamServiceConfig) SetVectorService(v *VectorUpstreamService) {
 
 func (x *UpstreamServiceConfig) SetVersion(v string) {
 	x.xxx_hidden_Version = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 10, 22)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 10, 23)
 }
 
 func (x *UpstreamServiceConfig) SetAuthentication(v *Authentication) {
@@ -843,12 +854,12 @@ func (x *UpstreamServiceConfig) SetAuthentication(v *Authentication) {
 
 func (x *UpstreamServiceConfig) SetDisable(v bool) {
 	x.xxx_hidden_Disable = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 12, 22)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 12, 23)
 }
 
 func (x *UpstreamServiceConfig) SetPriority(v int32) {
 	x.xxx_hidden_Priority = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 13, 22)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 13, 23)
 }
 
 func (x *UpstreamServiceConfig) SetCallPolicies(v []*CallPolicy) {
@@ -881,7 +892,12 @@ func (x *UpstreamServiceConfig) SetResourceExportPolicy(v *ExportPolicy) {
 
 func (x *UpstreamServiceConfig) SetAutoDiscoverTool(v bool) {
 	x.xxx_hidden_AutoDiscoverTool = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 21, 22)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 21, 23)
+}
+
+func (x *UpstreamServiceConfig) SetConfigError(v string) {
+	x.xxx_hidden_ConfigError = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 22, 23)
 }
 
 func (x *UpstreamServiceConfig) HasId() bool {
@@ -1098,6 +1114,13 @@ func (x *UpstreamServiceConfig) HasAutoDiscoverTool() bool {
 	return protoimpl.X.Present(&(x.XXX_presence[0]), 21)
 }
 
+func (x *UpstreamServiceConfig) HasConfigError() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 22)
+}
+
 func (x *UpstreamServiceConfig) ClearId() {
 	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
 	x.xxx_hidden_Id = nil
@@ -1244,6 +1267,11 @@ func (x *UpstreamServiceConfig) ClearAutoDiscoverTool() {
 	x.xxx_hidden_AutoDiscoverTool = false
 }
 
+func (x *UpstreamServiceConfig) ClearConfigError() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 22)
+	x.xxx_hidden_ConfigError = nil
+}
+
 const UpstreamServiceConfig_ServiceConfig_not_set_case case_UpstreamServiceConfig_ServiceConfig = 0
 const UpstreamServiceConfig_McpService_case case_UpstreamServiceConfig_ServiceConfig = 9
 const UpstreamServiceConfig_HttpService_case case_UpstreamServiceConfig_ServiceConfig = 10
@@ -1352,6 +1380,9 @@ type UpstreamServiceConfig_builder struct {
 	ResourceExportPolicy *ExportPolicy
 	// If true, automatically convert all API calls to tools.
 	AutoDiscoverTool *bool
+	// The configuration error if the service failed validation.
+	// @inject_tag: yaml:"-"
+	ConfigError *string
 }
 
 func (b0 UpstreamServiceConfig_builder) Build() *UpstreamServiceConfig {
@@ -1359,15 +1390,15 @@ func (b0 UpstreamServiceConfig_builder) Build() *UpstreamServiceConfig {
 	b, x := &b0, m0
 	_, _ = b, x
 	if b.Id != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 22)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 23)
 		x.xxx_hidden_Id = b.Id
 	}
 	if b.Name != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 22)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 23)
 		x.xxx_hidden_Name = b.Name
 	}
 	if b.SanitizedName != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 22)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 23)
 		x.xxx_hidden_SanitizedName = b.SanitizedName
 	}
 	x.xxx_hidden_ConnectionPool = b.ConnectionPool
@@ -1375,7 +1406,7 @@ func (b0 UpstreamServiceConfig_builder) Build() *UpstreamServiceConfig {
 	x.xxx_hidden_Cache = b.Cache
 	x.xxx_hidden_RateLimit = b.RateLimit
 	if b.LoadBalancingStrategy != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 7, 22)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 7, 23)
 		x.xxx_hidden_LoadBalancingStrategy = *b.LoadBalancingStrategy
 	}
 	x.xxx_hidden_Resilience = b.Resilience
@@ -1413,16 +1444,16 @@ func (b0 UpstreamServiceConfig_builder) Build() *UpstreamServiceConfig {
 		x.xxx_hidden_ServiceConfig = &upstreamServiceConfig_VectorService{b.VectorService}
 	}
 	if b.Version != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 10, 22)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 10, 23)
 		x.xxx_hidden_Version = b.Version
 	}
 	x.xxx_hidden_Authentication = b.Authentication
 	if b.Disable != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 12, 22)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 12, 23)
 		x.xxx_hidden_Disable = *b.Disable
 	}
 	if b.Priority != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 13, 22)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 13, 23)
 		x.xxx_hidden_Priority = *b.Priority
 	}
 	x.xxx_hidden_CallPolicies = &b.CallPolicies
@@ -1433,8 +1464,12 @@ func (b0 UpstreamServiceConfig_builder) Build() *UpstreamServiceConfig {
 	x.xxx_hidden_PromptExportPolicy = b.PromptExportPolicy
 	x.xxx_hidden_ResourceExportPolicy = b.ResourceExportPolicy
 	if b.AutoDiscoverTool != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 21, 22)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 21, 23)
 		x.xxx_hidden_AutoDiscoverTool = *b.AutoDiscoverTool
+	}
+	if b.ConfigError != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 22, 23)
+		x.xxx_hidden_ConfigError = b.ConfigError
 	}
 	return m0
 }
@@ -8335,7 +8370,7 @@ const file_proto_config_v1_upstream_service_proto_rawDesc = "" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12\x1a\n" +
 	"\bhttp_url\x18\x02 \x01(\tR\bhttp_url\x12\x1a\n" +
 	"\bpriority\x18\x03 \x01(\x05R\bpriority\x12H\n" +
-	"\x0eauthentication\x18\x04 \x01(\v2 .mcpany.config.v1.AuthenticationR\x0eauthentication\"\xc4\x11\n" +
+	"\x0eauthentication\x18\x04 \x01(\v2 .mcpany.config.v1.AuthenticationR\x0eauthentication\"\xe8\x11\n" +
 	"\x15UpstreamServiceConfig\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x12\n" +
 	"\x04name\x18\x02 \x01(\tR\x04name\x12&\n" +
@@ -8373,7 +8408,8 @@ const file_proto_config_v1_upstream_service_proto_rawDesc = "" +
 	"\x12tool_export_policy\x18\x1b \x01(\v2\x1e.mcpany.config.v1.ExportPolicyR\x12tool_export_policy\x12R\n" +
 	"\x14prompt_export_policy\x18\x1c \x01(\v2\x1e.mcpany.config.v1.ExportPolicyR\x14prompt_export_policy\x12V\n" +
 	"\x16resource_export_policy\x18\x1d \x01(\v2\x1e.mcpany.config.v1.ExportPolicyR\x16resource_export_policy\x12.\n" +
-	"\x12auto_discover_tool\x18\x1e \x01(\bR\x12auto_discover_toolB\x10\n" +
+	"\x12auto_discover_tool\x18\x1e \x01(\bR\x12auto_discover_tool\x12\"\n" +
+	"\fconfig_error\x18# \x01(\tR\fconfig_errorB\x10\n" +
 	"\x0eservice_configJ\x04\b\x19\x10\x1aJ\x04\b!\x10\"R\x17upstream_authentication\"\xd1\x01\n" +
 	"\n" +
 	"CallPolicy\x12J\n" +

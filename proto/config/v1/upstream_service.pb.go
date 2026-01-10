@@ -425,8 +425,11 @@ type UpstreamServiceConfig struct {
 	ResourceExportPolicy *ExportPolicy `protobuf:"bytes,29,opt,name=resource_export_policy" json:"resource_export_policy,omitempty"`
 	// If true, automatically convert all API calls to tools.
 	AutoDiscoverTool *bool `protobuf:"varint,30,opt,name=auto_discover_tool" json:"auto_discover_tool,omitempty"`
-	unknownFields    protoimpl.UnknownFields
-	sizeCache        protoimpl.SizeCache
+	// The configuration error if the service failed validation.
+	// @inject_tag: yaml:"-"
+	ConfigError   *string `protobuf:"bytes,35,opt,name=config_error" json:"config_error,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *UpstreamServiceConfig) Reset() {
@@ -707,6 +710,13 @@ func (x *UpstreamServiceConfig) GetAutoDiscoverTool() bool {
 	return false
 }
 
+func (x *UpstreamServiceConfig) GetConfigError() string {
+	if x != nil && x.ConfigError != nil {
+		return *x.ConfigError
+	}
+	return ""
+}
+
 func (x *UpstreamServiceConfig) SetId(v string) {
 	x.Id = &v
 }
@@ -877,6 +887,10 @@ func (x *UpstreamServiceConfig) SetResourceExportPolicy(v *ExportPolicy) {
 
 func (x *UpstreamServiceConfig) SetAutoDiscoverTool(v bool) {
 	x.AutoDiscoverTool = &v
+}
+
+func (x *UpstreamServiceConfig) SetConfigError(v string) {
+	x.ConfigError = &v
 }
 
 func (x *UpstreamServiceConfig) HasId() bool {
@@ -1093,6 +1107,13 @@ func (x *UpstreamServiceConfig) HasAutoDiscoverTool() bool {
 	return x.AutoDiscoverTool != nil
 }
 
+func (x *UpstreamServiceConfig) HasConfigError() bool {
+	if x == nil {
+		return false
+	}
+	return x.ConfigError != nil
+}
+
 func (x *UpstreamServiceConfig) ClearId() {
 	x.Id = nil
 }
@@ -1231,6 +1252,10 @@ func (x *UpstreamServiceConfig) ClearAutoDiscoverTool() {
 	x.AutoDiscoverTool = nil
 }
 
+func (x *UpstreamServiceConfig) ClearConfigError() {
+	x.ConfigError = nil
+}
+
 const UpstreamServiceConfig_ServiceConfig_not_set_case case_UpstreamServiceConfig_ServiceConfig = 0
 const UpstreamServiceConfig_McpService_case case_UpstreamServiceConfig_ServiceConfig = 9
 const UpstreamServiceConfig_HttpService_case case_UpstreamServiceConfig_ServiceConfig = 10
@@ -1339,6 +1364,9 @@ type UpstreamServiceConfig_builder struct {
 	ResourceExportPolicy *ExportPolicy
 	// If true, automatically convert all API calls to tools.
 	AutoDiscoverTool *bool
+	// The configuration error if the service failed validation.
+	// @inject_tag: yaml:"-"
+	ConfigError *string
 }
 
 func (b0 UpstreamServiceConfig_builder) Build() *UpstreamServiceConfig {
@@ -1399,6 +1427,7 @@ func (b0 UpstreamServiceConfig_builder) Build() *UpstreamServiceConfig {
 	x.PromptExportPolicy = b.PromptExportPolicy
 	x.ResourceExportPolicy = b.ResourceExportPolicy
 	x.AutoDiscoverTool = b.AutoDiscoverTool
+	x.ConfigError = b.ConfigError
 	return m0
 }
 
@@ -7829,7 +7858,7 @@ const file_proto_config_v1_upstream_service_proto_rawDesc = "" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12\x1a\n" +
 	"\bhttp_url\x18\x02 \x01(\tR\bhttp_url\x12\x1a\n" +
 	"\bpriority\x18\x03 \x01(\x05R\bpriority\x12H\n" +
-	"\x0eauthentication\x18\x04 \x01(\v2 .mcpany.config.v1.AuthenticationR\x0eauthentication\"\xc4\x11\n" +
+	"\x0eauthentication\x18\x04 \x01(\v2 .mcpany.config.v1.AuthenticationR\x0eauthentication\"\xe8\x11\n" +
 	"\x15UpstreamServiceConfig\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x12\n" +
 	"\x04name\x18\x02 \x01(\tR\x04name\x12&\n" +
@@ -7867,7 +7896,8 @@ const file_proto_config_v1_upstream_service_proto_rawDesc = "" +
 	"\x12tool_export_policy\x18\x1b \x01(\v2\x1e.mcpany.config.v1.ExportPolicyR\x12tool_export_policy\x12R\n" +
 	"\x14prompt_export_policy\x18\x1c \x01(\v2\x1e.mcpany.config.v1.ExportPolicyR\x14prompt_export_policy\x12V\n" +
 	"\x16resource_export_policy\x18\x1d \x01(\v2\x1e.mcpany.config.v1.ExportPolicyR\x16resource_export_policy\x12.\n" +
-	"\x12auto_discover_tool\x18\x1e \x01(\bR\x12auto_discover_toolB\x10\n" +
+	"\x12auto_discover_tool\x18\x1e \x01(\bR\x12auto_discover_tool\x12\"\n" +
+	"\fconfig_error\x18# \x01(\tR\fconfig_errorB\x10\n" +
 	"\x0eservice_configJ\x04\b\x19\x10\x1aJ\x04\b!\x10\"R\x17upstream_authentication\"\xd1\x01\n" +
 	"\n" +
 	"CallPolicy\x12J\n" +
