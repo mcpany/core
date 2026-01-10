@@ -51,6 +51,10 @@ export function PlaygroundClientPro() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const isMobile = useIsMobile();
 
+  // Autocomplete state
+  const [filteredSuggestions, setFilteredSuggestions] = useState<ToolDefinition[]>([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+
   useEffect(() => {
     apiClient.listTools()
         .then(data => setAvailableTools(data.tools || []))
@@ -84,6 +88,7 @@ export function PlaygroundClientPro() {
     setMessages((prev) => [...prev, userMsg]);
     setInput("");
     setIsLoading(true);
+    setShowSuggestions(false);
 
     processResponse(input);
   };
@@ -93,17 +98,25 @@ export function PlaygroundClientPro() {
     const command = `${toolToConfigure.name} ${JSON.stringify(data)}`;
     setToolToConfigure(null);
     setInput(command);
+    // Do not auto-send. Just populate input.
+    // However, if we want to "Build", maybe we should just populate.
+    // The request says: "generate the toolbox request in the input box (without sending it)"
+  };
 
-    const userMsg: Message = {
-      id: Date.now().toString(),
-      type: "user",
-      content: command,
-      timestamp: new Date(),
-    };
+  const handleInputChange = (value: string) => {
+      setInput(value);
+      if (value.trim()) {
+          const suggestions = availableTools.filter(t => t.name.toLowerCase().includes(value.toLowerCase()));
+          setFilteredSuggestions(suggestions);
+          setShowSuggestions(suggestions.length > 0);
+      } else {
+          setShowSuggestions(false);
+      }
+  };
 
-    setMessages((prev) => [...prev, userMsg]);
-    setIsLoading(true);
-    processResponse(command);
+  const selectSuggestion = (tool: ToolDefinition) => {
+      setToolToConfigure(tool);
+      setShowSuggestions(false);
   };
 
   const processResponse = async (userInput: string) => {
@@ -243,12 +256,28 @@ export function PlaygroundClientPro() {
                             <Input
                                 placeholder="Enter command or select a tool..."
                                 value={input}
-                                onChange={(e) => setInput(e.target.value)}
+                                onChange={(e) => handleInputChange(e.target.value)}
                                 onKeyDown={(e) => e.key === "Enter" && handleSend()}
                                 disabled={isLoading}
                                 className="pr-12 font-mono text-sm bg-muted/20 focus-visible:bg-background transition-colors h-11"
                                 autoFocus
                             />
+                            {showSuggestions && (
+                                <div className="absolute bottom-full left-0 w-full bg-popover border rounded-md shadow-md mb-2 overflow-hidden z-20">
+                                    <div className="p-1">
+                                        {filteredSuggestions.map(tool => (
+                                            <div
+                                                key={tool.name}
+                                                className="px-2 py-1.5 text-sm cursor-pointer hover:bg-accent hover:text-accent-foreground rounded-sm flex items-center justify-between"
+                                                onClick={() => selectSuggestion(tool)}
+                                            >
+                                                <span className="font-medium">{tool.name}</span>
+                                                <span className="text-xs text-muted-foreground">{tool.serviceId || 'core'}</span>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
                              <div className="absolute right-1 top-1.5">
                                 <Button
                                     size="sm"
