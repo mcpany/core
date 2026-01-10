@@ -81,12 +81,6 @@ func init() {
 // RedactJSON parses a JSON byte slice and redacts sensitive keys.
 // If the input is not valid JSON object or array, it returns the input as is.
 func RedactJSON(input []byte) []byte {
-	// Optimization: Check if any sensitive key is present in the input.
-	// If not, we can skip the expensive unmarshal/marshal process.
-	if !scanForSensitiveKeys(input, true) {
-		return input
-	}
-
 	// Use fast zero-allocation redaction path
 	// This avoids expensive json.Unmarshal/Marshal for large payloads
 	return redactJSONFast(input)
