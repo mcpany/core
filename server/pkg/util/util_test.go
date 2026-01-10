@@ -192,12 +192,7 @@ func TestToString(t *testing.T) {
 	if len(ToString(ptr)) == 0 {
 		t.Error("ToString(ptr) is empty")
 	}
-	// Ptr coverage
-	i := 123
-	ptr := &i
-	if len(ToString(ptr)) == 0 {
-		t.Error("ToString(ptr) is empty")
-	}
+
 }
 
 // TestIsNil removed to avoid duplication with isnil_test.go
