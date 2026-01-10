@@ -43,7 +43,8 @@ const TEMPLATES: ServiceTemplate[] = [
     image: postgres:15
     environment:
       POSTGRES_USER: user
-      POSTGRES_PASSWORD: password
+      # 🚨 SECURITY: Change this password immediately!
+      POSTGRES_PASSWORD: CHANGE_ME_SECURELY
       POSTGRES_DB: mydb
     ports:
       - "5432:5432"
