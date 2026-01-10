@@ -16,9 +16,10 @@ import { cn } from "@/lib/utils";
 
 interface SchemaFieldProps {
     path: string;
-    schema: any;
-    value: any;
-    onChange: (path: string, value: any) => void;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    schema: any; // Using any for schema as it can be recursive and variable
+    value: unknown;
+    onChange: (path: string, value: unknown) => void;
     errors?: Record<string, string>;
     required?: boolean;
     label?: string;
@@ -26,9 +27,10 @@ interface SchemaFieldProps {
 }
 
 export function SchemaForm({ schema, value, onChange, errors }: {
-    schema: any;
-    value: any;
-    onChange: (value: any) => void;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    schema: any; // Using any for schema as it can be recursive and variable
+    value: unknown;
+    onChange: (value: unknown) => void;
     errors?: Record<string, string>;
 }) {
     return (
@@ -54,7 +56,7 @@ function SchemaField({ path, schema, value, onChange, errors, required, label, l
     if (schema.enum) {
         return (
             <FieldWrapper label={label} description={description} required={isRequired} error={errors?.[path]} level={level} inputId={path}>
-                <Select value={value} onValueChange={(v) => onChange(path, v)}>
+                <Select value={value as string} onValueChange={(v) => onChange(path, v)}>
                     <SelectTrigger id={path} className={cn(errors?.[path] && "border-red-500")}>
                         <SelectValue placeholder="Select..." />
                     </SelectTrigger>
@@ -73,7 +75,7 @@ function SchemaField({ path, schema, value, onChange, errors, required, label, l
             <FieldWrapper label={label} description={description} required={isRequired} error={errors?.[path]} level={level} inputId={path}>
                 <Input
                     id={path}
-                    value={value || ""}
+                    value={(value as string) || ""}
                     onChange={(e) => onChange(path, e.target.value)}
                     placeholder={label || "Enter text"}
                     className={cn(errors?.[path] && "border-red-500")}
@@ -89,7 +91,7 @@ function SchemaField({ path, schema, value, onChange, errors, required, label, l
                     id={path}
                     type="number"
                     step={type === "integer" ? "1" : "any"}
-                    value={value || ""}
+                    value={(value as number) || ""}
                     onChange={(e) => onChange(path, e.target.value === "" ? undefined : Number(e.target.value))}
                     placeholder="0"
                     className={cn(errors?.[path] && "border-red-500")}
@@ -118,9 +120,9 @@ function SchemaField({ path, schema, value, onChange, errors, required, label, l
         const properties = schema.properties || {};
         const requiredFields = schema.required || [];
         // Ensure value is object
-        const objectValue = value || {};
+        const objectValue = (value as Record<string, unknown>) || {};
 
-        const handleChildChange = (key: string, childValue: any) => {
+        const handleChildChange = (key: string, childValue: unknown) => {
             const newValue = { ...objectValue, [key]: childValue };
             onChange(path, newValue);
         };
@@ -161,7 +163,7 @@ function SchemaField({ path, schema, value, onChange, errors, required, label, l
     // Complex Types: Array
     if (type === "array") {
         const itemsSchema = schema.items || {};
-        const arrayValue: any[] = Array.isArray(value) ? value : [];
+        const arrayValue: unknown[] = Array.isArray(value) ? value : [];
 
         const handleAdd = () => {
             onChange(path, [...arrayValue, undefined]);
@@ -173,7 +175,7 @@ function SchemaField({ path, schema, value, onChange, errors, required, label, l
             onChange(path, newArray);
         };
 
-        const handleItemChange = (index: number, val: any) => {
+        const handleItemChange = (index: number, val: unknown) => {
             const newArray = [...arrayValue];
             newArray[index] = val;
             onChange(path, newArray);
@@ -233,7 +235,7 @@ function SchemaField({ path, schema, value, onChange, errors, required, label, l
         <FieldWrapper label={label} description={description} required={isRequired} error={errors?.[path]} level={level} inputId={path}>
              <Input
                 id={path}
-                value={value || ""}
+                value={(value as string) || ""}
                 onChange={(e) => onChange(path, e.target.value)}
                 placeholder="Unknown Type"
                 className={cn(errors?.[path] && "border-red-500")}
