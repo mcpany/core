@@ -27,7 +27,7 @@ func StripSecretsFromService(svc *configv1.UpstreamServiceConfig) {
 	case *configv1.UpstreamServiceConfig_CommandLineService:
 		stripSecretsFromCommandLineService(s.CommandLineService)
 	case *configv1.UpstreamServiceConfig_HttpService:
-		stripSecretsFromHttpService(s.HttpService)
+		stripSecretsFromHTTPService(s.HttpService)
 	case *configv1.UpstreamServiceConfig_McpService:
 		stripSecretsFromMcpService(s.McpService)
 	case *configv1.UpstreamServiceConfig_FilesystemService:
@@ -116,12 +116,12 @@ func stripSecretsFromCommandLineService(s *configv1.CommandLineUpstreamService) 
 	}
 }
 
-func stripSecretsFromHttpService(s *configv1.HttpUpstreamService) {
+func stripSecretsFromHTTPService(s *configv1.HttpUpstreamService) {
 	if s == nil {
 		return
 	}
 	for _, call := range s.Calls {
-		stripSecretsFromHttpCall(call)
+		stripSecretsFromHTTPCall(call)
 	}
 }
 
@@ -196,12 +196,12 @@ func stripSecretsFromWebrtcService(s *configv1.WebrtcUpstreamService) {
 	}
 }
 
-func stripSecretsFromGrpcService(s *configv1.GrpcUpstreamService) {
+func stripSecretsFromGrpcService(_ *configv1.GrpcUpstreamService) {
 	// gRPC calls don't have explicit parameter mapping with secrets currently defined in proto.
 	// If they do, add logic here.
 }
 
-func stripSecretsFromOpenapiService(s *configv1.OpenapiUpstreamService) {
+func stripSecretsFromOpenapiService(_ *configv1.OpenapiUpstreamService) {
 	// OpenAPI calls use generic structures, check if they have secret mappings.
 	// Current definition OpenAPICallDefinition doesn't have parameter mappings like HTTP.
 }
@@ -239,7 +239,7 @@ func stripSecretsFromCommandLineCall(c *configv1.CommandLineCallDefinition) {
 	}
 }
 
-func stripSecretsFromHttpCall(c *configv1.HttpCallDefinition) {
+func stripSecretsFromHTTPCall(c *configv1.HttpCallDefinition) {
 	if c == nil {
 		return
 	}
@@ -266,7 +266,7 @@ func stripSecretsFromWebrtcCall(c *configv1.WebrtcCallDefinition) {
 	}
 }
 
-func stripSecretsFromMcpCall(c *configv1.MCPCallDefinition) {
+func stripSecretsFromMcpCall(_ *configv1.MCPCallDefinition) {
 	// MCPCallDefinition doesn't seem to have explicit parameter mappings with secrets in the proto definition I read.
 	// It uses input_schema and transformers.
 }
