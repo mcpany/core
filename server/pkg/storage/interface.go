@@ -31,20 +31,20 @@ type Storage interface {
 	DeleteService(ctx context.Context, name string) error
 
 	// GetGlobalSettings retrieves the global configuration.
-	GetGlobalSettings() (*configv1.GlobalSettings, error)
+	GetGlobalSettings(ctx context.Context) (*configv1.GlobalSettings, error)
 
 	// SaveGlobalSettings saves the global configuration.
-	SaveGlobalSettings(settings *configv1.GlobalSettings) error
+	SaveGlobalSettings(ctx context.Context, settings *configv1.GlobalSettings) error
 
 	// Secrets
 	// ListSecrets retrieves all secrets.
-	ListSecrets() ([]*configv1.Secret, error)
+	ListSecrets(ctx context.Context) ([]*configv1.Secret, error)
 	// GetSecret retrieves a secret by ID.
-	GetSecret(id string) (*configv1.Secret, error)
+	GetSecret(ctx context.Context, id string) (*configv1.Secret, error)
 	// SaveSecret saves a secret.
-	SaveSecret(secret *configv1.Secret) error
+	SaveSecret(ctx context.Context, secret *configv1.Secret) error
 	// DeleteSecret deletes a secret by ID.
-	DeleteSecret(id string) error
+	DeleteSecret(ctx context.Context, id string) error
 
 	// Users
 	// CreateUser creates a new user.
