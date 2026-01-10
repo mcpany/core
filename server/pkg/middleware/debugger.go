@@ -6,6 +6,7 @@ package middleware
 import (
 	"bytes"
 	"container/ring"
+	"fmt"
 	"io"
 	"net/http"
 	"strings"
@@ -17,6 +18,7 @@ import (
 )
 
 const maxBodySize = 10 * 1024 // 10KB
+const maxCaptureSize = 1024 * 1024 // 1MB Limit for capture attempts
 
 // DebugEntry represents a captured HTTP request/response.
 type DebugEntry struct {
@@ -91,35 +93,26 @@ func (d *Debugger) Middleware() gin.HandlerFunc {
 		// Capture Request Body safely
 		var reqBodyBytes []byte
 		if c.Request.Body != nil {
-			var bodyBytes []byte
-			var err error
-
-			// If ContentLength is huge, we skip reading to avoid OOM
-			if c.Request.ContentLength > 1024*1024 { // 1MB
-				reqBodyBytes = []byte("<<Request body too large to capture>>")
-				// We DO NOT consume the body here, so the handler can read it streamingly if it supports it.
-				// However, io.NopCloser(bytes.NewBuffer(...)) pattern implies we read it all.
-				// If we don't read it, we can't capture it.
-				// If we don't restore it, the handler sees what?
-				// The handler sees the original body because we didn't touch c.Request.Body
+			// Check Content-Length to avoid reading huge bodies
+			if c.Request.ContentLength > int64(maxCaptureSize) {
+				reqBodyBytes = []byte(fmt.Sprintf("<<Request body too large to capture (Content-Length: %d)>>", c.Request.ContentLength))
 			} else {
-				// We want to read all, but with a limit of 1MB to avoid "Death by Body".
-				// http.MaxBytesReader prevents reading more than limit.
-				bodyBytes, err = io.ReadAll(http.MaxBytesReader(c.Writer, c.Request.Body, 1024*1024))
+				// Use MaxBytesReader to enforce limit during read
+				// This protects against chunked encoding attacks or lies about Content-Length
+				maxReader := http.MaxBytesReader(c.Writer, c.Request.Body, int64(maxCaptureSize))
+				bodyBytes, err := io.ReadAll(maxReader)
+
 				if err != nil {
-					// We hit the limit or error.
-					// If we hit the limit, we have a partial body.
-					// We can capture the partial body.
-					// But we consumed the stream. We must restore what we have.
-					// If the handler needs more than 1MB, it will fail because we only have 1MB.
-					// This effectively limits the request size for debugged endpoints.
+					// If we hit the limit, MaxBytesReader returns an error.
+					// We capture what we got, but we likely broke the stream for the handler.
 					if len(bodyBytes) > 0 {
-						reqBodyBytes = bodyBytes
-						// Append error note?
+						// Fix gocritic appendAssign
+						reqBodyBytes = append(reqBodyBytes, bodyBytes...)
+						reqBodyBytes = append(reqBodyBytes, []byte("... <<Error/Truncated>>")...)
 					} else {
-						reqBodyBytes = []byte("<<Error reading body>>")
+						reqBodyBytes = []byte("<<Error reading body: " + err.Error() + ">>")
 					}
-					// Restore partial body so handler sees something (and likely fails cleanly on JSON decode)
+					// Restore partial body so handler sees something (likely causing a parsing error, which is correct behavior for a truncated request)
 					c.Request.Body = io.NopCloser(bytes.NewBuffer(bodyBytes))
 				} else {
 					// Success
@@ -138,7 +131,7 @@ func (d *Debugger) Middleware() gin.HandlerFunc {
 
 		duration := time.Since(start)
 
-		// Prepare bodies for storage (truncated)
+		// Prepare bodies for storage (truncated for display)
 		reqBodyStr := string(reqBodyBytes)
 		if len(reqBodyStr) > maxBodySize {
 			reqBodyStr = reqBodyStr[:maxBodySize] + "...(truncated)"
@@ -181,11 +174,6 @@ func (d *Debugger) Entries() []DebugEntry {
 		}
 	})
 
-	// Sort by timestamp descending (newest first)
-	// Since ring buffer order depends on current pointer, we just return as is or sort.
-	// Typically ring buffer iterates from oldest to newest if we don't track head.
-	// But `Do` iterates starting from `ring.Next()`, so it might be ordered.
-	// Let's not complicate with sorting here unless needed.
 	return entries
 }
 
@@ -240,9 +228,14 @@ func (d *Debugger) ReplayHandler() gin.HandlerFunc {
 		}
 
 		// Read Response
-		respBody, err := io.ReadAll(resp.Body)
-		// Close body immediately after reading
-		_ = resp.Body.Close()
+		// Use MaxBytesReader here too for safety?
+		// Replay responses could be large, but we only return JSON.
+		// Let's limit response read to prevent memory issues here too.
+		const maxReplayResponseSize = 1024 * 1024 // 1MB
+
+		respBody, err := io.ReadAll(io.LimitReader(resp.Body, int64(maxReplayResponseSize)))
+		// We ignore error from LimitReader (it just stops), but check ReadAll error
+		_ = resp.Body.Close() // Explicitly ignore error on Close as we're done
 
 		if err != nil {
 			c.JSON(http.StatusBadGateway, gin.H{"error": "failed to read response: " + err.Error()})
