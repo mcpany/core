@@ -29,20 +29,20 @@ You want to alert if the error rate of your "weather-service" exceeds 5% or if t
 
 ## Available Metrics
 
-- `mcpany_tools_call_total`: Total number of tool calls (global).
-- `mcpany_tool_<tool_name>_call_total`: Total number of tool calls for a specific tool.
-- `mcpany_tools_call_latency`: Latency of tool calls (global).
-- `mcpany_tool_<tool_name>_call_latency`: Latency of tool calls for a specific tool.
+- `mcpany_tools_call_total`: Total number of tool calls.
+  - Labels: `tool`, `service_id`
+- `mcpany_tools_call_errors`: Total number of tool call errors.
+  - Labels: `tool`, `service_id`
+- `mcpany_tools_call_latency`: Latency of tool calls.
+  - Labels: `tool`, `service_id`
 - `mcpany_tools_list_total`: Total number of tools/list requests.
 - `mcpany_config_reload_total`: Configuration reload events.
 - `mcpany_grpc_connections_opened_total`: Total number of opened gRPC connections.
 - `mcpany_grpc_connections_closed_total`: Total number of closed gRPC connections.
 - `mcpany_grpc_rpc_started_total`: Total number of started gRPC RPCs.
 - `mcpany_grpc_rpc_finished_total`: Total number of finished gRPC RPCs.
-- `mcpany_tool_execution_total`: Total number of tool executions (labels: tool, service_id, status, error_type).
-- `mcpany_tool_execution_duration`: Histogram of tool execution duration.
-- `mcpany_tool_execution_input_bytes`: Histogram of input payload sizes in bytes.
-- `mcpany_tool_execution_output_bytes`: Histogram of output payload sizes in bytes.
+
+*Note: Some metrics like `mcpany_tool_execution_total` mentioned in older documentation have been standardized to `mcpany_tools_call_total` with labels.*
 
 ## Public API Example
 
