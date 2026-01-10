@@ -264,14 +264,43 @@ func TestAPIKeyAuth_Authenticate(t *testing.T) {
 	secret := (&configv1.SecretValue_builder{
 		PlainText: proto.String("secret-key"),
 	}).Build()
-	auth := &APIKeyAuth{
-		ParamName: "X-Custom-Auth",
-		Value:     secret,
-	}
-	req, _ := http.NewRequest("GET", "/", nil)
-	err := auth.Authenticate(req)
-	assert.NoError(t, err)
-	assert.Equal(t, "secret-key", req.Header.Get("X-Custom-Auth"))
+
+	t.Run("Header (Default)", func(t *testing.T) {
+		auth := &APIKeyAuth{
+			ParamName: "X-Custom-Auth",
+			Value:     secret,
+		}
+		req, _ := http.NewRequest("GET", "/", nil)
+		err := auth.Authenticate(req)
+		assert.NoError(t, err)
+		assert.Equal(t, "secret-key", req.Header.Get("X-Custom-Auth"))
+	})
+
+	t.Run("Query", func(t *testing.T) {
+		auth := &APIKeyAuth{
+			ParamName: "api_key",
+			Value:     secret,
+			Location:  configv1.APIKeyAuth_QUERY,
+		}
+		req, _ := http.NewRequest("GET", "/", nil)
+		err := auth.Authenticate(req)
+		assert.NoError(t, err)
+		assert.Equal(t, "secret-key", req.URL.Query().Get("api_key"))
+	})
+
+	t.Run("Cookie", func(t *testing.T) {
+		auth := &APIKeyAuth{
+			ParamName: "auth_cookie",
+			Value:     secret,
+			Location:  configv1.APIKeyAuth_COOKIE,
+		}
+		req, _ := http.NewRequest("GET", "/", nil)
+		err := auth.Authenticate(req)
+		assert.NoError(t, err)
+		cookie, err := req.Cookie("auth_cookie")
+		assert.NoError(t, err)
+		assert.Equal(t, "secret-key", cookie.Value)
+	})
 }
 
 func TestBearerTokenAuth_Authenticate(t *testing.T) {
