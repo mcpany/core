@@ -81,6 +81,15 @@ func TestSanitizeID(t *testing.T) {
 			expected:                 "id_2ec847d8",
 			expectError:              false,
 		},
+		{
+			name:                     "max sanitized length zero",
+			ids:                      []string{"abc"},
+			alwaysAppendHash:         false,
+			maxSanitizedPrefixLength: 0,
+			hashLength:               8,
+			expected:                 "id_ba7816bf",
+			expectError:              false,
+		},
 	}
 
 	for _, tc := range testCases {
@@ -426,6 +435,12 @@ func TestReplaceURLPath(t *testing.T) {
 			urlPath:  "/users/{{userID}}",
 			params:   map[string]interface{}{"other": "value"},
 			expected: "/users/{{userID}}",
+		},
+		{
+			name:     "unclosed placeholder",
+			urlPath:  "/users/{{userID",
+			params:   map[string]interface{}{"userID": "123"},
+			expected: "/users/{{userID",
 		},
 	}
 

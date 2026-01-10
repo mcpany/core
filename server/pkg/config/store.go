@@ -178,8 +178,11 @@ type ServiceStore interface {
 
 var envVarRegex = regexp.MustCompile(`\${([^{}]+)}`)
 
-func expand(b []byte) []byte {
-	return envVarRegex.ReplaceAllFunc(b, func(match []byte) []byte {
+// expand replaces ${VAR} or ${VAR:default} with environment variables.
+// If a variable is missing and no default is provided, it returns an error.
+func expand(b []byte) ([]byte, error) {
+	var missingVars []string
+	expanded := envVarRegex.ReplaceAllFunc(b, func(match []byte) []byte {
 		s := string(match[2 : len(match)-1])
 		parts := strings.SplitN(s, ":", 2)
 		varName := parts[0]
@@ -193,8 +196,15 @@ func expand(b []byte) []byte {
 		if len(parts) > 1 {
 			return []byte(parts[1])
 		}
+		missingVars = append(missingVars, varName)
 		return match
 	})
+
+	if len(missingVars) > 0 {
+		return nil, fmt.Errorf("missing environment variables: %v", missingVars)
+	}
+
+	return expanded, nil
 }
 
 // FileStore implements the `Store` interface for loading configurations from one
@@ -263,7 +273,10 @@ func (s *FileStore) Load(ctx context.Context) (*configv1.McpAnyServerConfig, err
 			continue
 		}
 
-		b = expand(b)
+		b, err = expand(b)
+		if err != nil {
+			return nil, fmt.Errorf("failed to expand environment variables in %s: %w", path, err)
+		}
 
 		engine, err := NewEngine(path)
 		if err != nil {

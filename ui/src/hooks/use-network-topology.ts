@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import { Node, Edge, useNodesState, useEdgesState, addEdge, Connection, MarkerType, Position } from '@xyflow/react';
 import dagre from 'dagre';
 import { Graph, Node as TopologyNode } from '../types/topology';
@@ -73,6 +73,15 @@ const getLayoutedElements = (nodes: Node[], edges: Edge[], direction = 'TB') => 
 export function useNetworkTopology() {
     const [nodes, setNodes, onNodesChange] = useNodesState<Node>([]);
     const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
+
+    // ⚡ Bolt Optimization: Refs to track current state without adding dependencies to fetchData
+    const nodesRef = useRef(nodes);
+    const edgesRef = useRef(edges);
+    const lastStructureHash = useRef<string>('');
+
+    // Keep refs in sync with state
+    useEffect(() => { nodesRef.current = nodes; }, [nodes]);
+    useEffect(() => { edgesRef.current = edges; }, [edges]);
 
     const fetchData = useCallback(async () => {
         try {
@@ -161,9 +170,44 @@ export function useNetworkTopology() {
                 addNode(graph.core);
             }
 
-            const layouted = getLayoutedElements(newNodes, newEdges);
-            setNodes(layouted.nodes);
-            setEdges(layouted.edges);
+            // ⚡ Bolt Optimization: Skip expensive dagre layout if topology structure hasn't changed.
+            // We compute a simple hash of node IDs and edge IDs to detect structural changes.
+            // If structure is same, we reuse positions from previous state, preserving user drags/layout,
+            // and only update node data (metrics, status, etc).
+
+            const nodeIds = newNodes.map(n => n.id).sort().join(',');
+            const edgeIds = newEdges.map(e => e.id).sort().join(',');
+            const currentStructureHash = `${nodeIds}|${edgeIds}`;
+
+            if (currentStructureHash === lastStructureHash.current && nodesRef.current.length > 0) {
+                // Structure match! Reuse positions.
+                const currentNodesMap = new Map(nodesRef.current.map(n => [n.id, n]));
+
+                const nodesWithOldPositions = newNodes.map(node => {
+                    const oldNode = currentNodesMap.get(node.id);
+                    if (oldNode) {
+                        return {
+                            ...node,
+                            position: oldNode.position,
+                            targetPosition: oldNode.targetPosition,
+                            sourcePosition: oldNode.sourcePosition,
+                            // Preserve dimensions if they were set by dagre previously
+                            width: oldNode.width,
+                            height: oldNode.height
+                        };
+                    }
+                    return node;
+                });
+
+                setNodes(nodesWithOldPositions);
+                setEdges(newEdges);
+            } else {
+                // Structure changed (or first load), run layout
+                const layouted = getLayoutedElements(newNodes, newEdges);
+                setNodes(layouted.nodes);
+                setEdges(layouted.edges);
+                lastStructureHash.current = currentStructureHash;
+            }
 
         } catch (error) {
             console.error("Failed to fetch topology data:", error);
