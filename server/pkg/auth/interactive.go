@@ -54,7 +54,8 @@ func (am *Manager) InitiateOAuth(ctx context.Context, userID, serviceID, credent
 
 	var oauthConfig *configv1.OAuth2Auth
 
-	if credentialID != "" {
+	switch {
+	case credentialID != "":
 		cred, err := storage.GetCredential(ctx, credentialID)
 		if err != nil {
 			return "", "", fmt.Errorf("failed to get credential %s: %w", credentialID, err)
@@ -69,7 +70,7 @@ func (am *Manager) InitiateOAuth(ctx context.Context, userID, serviceID, credent
 		if oauthConfig == nil {
 			return "", "", fmt.Errorf("credential %s is not configured for OAuth2", credentialID)
 		}
-	} else if serviceID != "" {
+	case serviceID != "":
 		// Get service config to find OAuth settings
 		service, err := storage.GetService(ctx, serviceID)
 		if err != nil {
@@ -88,7 +89,7 @@ func (am *Manager) InitiateOAuth(ctx context.Context, userID, serviceID, credent
 		if oauthConfig == nil {
 			return "", "", fmt.Errorf("service %s is not configured for OAuth2", serviceID)
 		}
-	} else {
+	default:
 		return "", "", fmt.Errorf("either service_id or credential_id must be provided")
 	}
 
@@ -143,7 +144,8 @@ func (am *Manager) HandleOAuthCallback(ctx context.Context, userID, serviceID, c
 	var oauthConfig *configv1.OAuth2Auth
 	var cred *configv1.Credential
 
-	if credentialID != "" {
+	switch {
+	case credentialID != "":
 		var err error
 		cred, err = storage.GetCredential(ctx, credentialID)
 		if err != nil {
@@ -156,7 +158,7 @@ func (am *Manager) HandleOAuthCallback(ctx context.Context, userID, serviceID, c
 		if oauthConfig == nil {
 			return fmt.Errorf("credential %s is not configured for OAuth2", credentialID)
 		}
-	} else if serviceID != "" {
+	case serviceID != "":
 		service, err := storage.GetService(ctx, serviceID)
 		if err != nil {
 			return fmt.Errorf("failed to get service %s: %w", serviceID, err)
@@ -172,7 +174,7 @@ func (am *Manager) HandleOAuthCallback(ctx context.Context, userID, serviceID, c
 		if oauthConfig == nil {
 			return fmt.Errorf("service %s is not configured for OAuth2", serviceID)
 		}
-	} else {
+	default:
 		return fmt.Errorf("either service_id or credential_id must be provided")
 	}
 
