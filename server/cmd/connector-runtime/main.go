@@ -16,23 +16,13 @@ import (
 // This runtime is designed to host MCP connectors (stdin/stdout tools)
 // as a sidecar process, managing their lifecycle and configuration.
 func main() {
-	if err := run(os.Args, make(chan os.Signal, 1)); err != nil {
-		fmt.Fprintf(os.Stderr, "Error: %v\n", err)
-		os.Exit(1)
-	}
-}
-
-func run(args []string, stop chan os.Signal) error {
-	fs := flag.NewFlagSet(args[0], flag.ContinueOnError)
-	connectorName := fs.String("name", "", "Name of the connector to run")
-	sidecar := fs.Bool("sidecar", true, "Run in sidecar mode")
-
-	if err := fs.Parse(args[1:]); err != nil {
-		return err
-	}
+	connectorName := flag.String("name", "", "Name of the connector to run")
+	sidecar := flag.Bool("sidecar", true, "Run in sidecar mode")
+	flag.Parse()
 
 	if *connectorName == "" {
-		return fmt.Errorf("usage: connector-runtime -name <connector> [-sidecar]")
+		fmt.Println("Usage: connector-runtime -name <connector> [-sidecar]")
+		os.Exit(1)
 	}
 
 	log.Printf("Starting Connector Runtime for: %s", *connectorName)
@@ -40,11 +30,15 @@ func run(args []string, stop chan os.Signal) error {
 		log.Printf("Mode: Sidecar")
 	}
 
+	// Main loop representing the runtime lifecycle
+	// In reality, this would fork/exec the actual connector binary
+	// and proxy stdin/stdout/stderr, potentially adding middleware like DLP or Logging.
+
+	stop := make(chan os.Signal, 1)
 	signal.Notify(stop, syscall.SIGINT, syscall.SIGTERM)
 
 	log.Println("Runtime active. Waiting for signals...")
 
 	<-stop
 	log.Println("Shutting down connector runtime...")
-	return nil
 }

@@ -142,13 +142,7 @@ type Runner interface {
 	//
 	// Returns:
 	//   - An error if the configuration reload fails.
-	//   - ctx: The context for the reload operation.
-	//   - fs: The filesystem interface for reading configuration files.
-	//   - configPaths: A slice of paths to configuration files to reload.
-	//
-	// Returns:
-	//   - An error if the configuration reload fails.
-	ReloadConfig(ctx context.Context, fs afero.Fs, configPaths []string) error
+	ReloadConfig(fs afero.Fs, configPaths []string) error
 }
 
 // Application is the main application struct, holding the dependencies and
@@ -459,8 +453,8 @@ func (a *Application) Run(
 		return fmt.Errorf("failed to create mcp server: %w", err)
 	}
 
-	mcpSrv.SetReloadFunc(func(ctx context.Context) error {
-		return a.ReloadConfig(ctx, fs, configPaths)
+	mcpSrv.SetReloadFunc(func() error {
+		return a.ReloadConfig(fs, configPaths)
 	})
 
 	a.ToolManager.SetMCPServer(mcpSrv)
@@ -641,7 +635,7 @@ func (a *Application) Run(
 
 // ReloadConfig reloads the configuration from the given paths and updates the
 // services.
-func (a *Application) ReloadConfig(ctx context.Context, fs afero.Fs, configPaths []string) error {
+func (a *Application) ReloadConfig(fs afero.Fs, configPaths []string) error {
 	log := logging.GetLogger()
 	start := time.Now()
 	defer func() {
@@ -657,7 +651,7 @@ func (a *Application) ReloadConfig(ctx context.Context, fs afero.Fs, configPaths
 	log.Info("Reloading configuration...")
 	metrics.IncrCounter([]string{"config", "reload", "total"}, 1)
 
-	cfg, err := a.loadConfig(ctx, fs, configPaths)
+	cfg, err := a.loadConfig(fs, configPaths)
 	if err != nil {
 		metrics.IncrCounter([]string{"config", "reload", "errors"}, 1)
 		return fmt.Errorf("failed to load services from config: %w", err)
@@ -685,11 +679,11 @@ func (a *Application) ReloadConfig(ctx context.Context, fs afero.Fs, configPaths
 	}
 
 	// Reconcile services (add/remove/update)
-	a.reconcileServices(ctx, cfg)
+	a.reconcileServices(cfg)
 	return nil
 }
 
-func (a *Application) loadConfig(ctx context.Context, fs afero.Fs, configPaths []string) (*config_v1.McpAnyServerConfig, error) {
+func (a *Application) loadConfig(fs afero.Fs, configPaths []string) (*config_v1.McpAnyServerConfig, error) {
 	var stores []config.Store
 	if len(configPaths) > 0 {
 		stores = append(stores, config.NewFileStore(fs, configPaths))
@@ -699,7 +693,7 @@ func (a *Application) loadConfig(ctx context.Context, fs afero.Fs, configPaths [
 	}
 
 	store := config.NewMultiStore(stores...)
-	return config.LoadServices(ctx, store, "server")
+	return config.LoadServices(context.Background(), store, "server")
 }
 
 func (a *Application) updateGlobalSettings(cfg *config_v1.McpAnyServerConfig) {
@@ -731,7 +725,7 @@ func (a *Application) updateGlobalSettings(cfg *config_v1.McpAnyServerConfig) {
 }
 
 // reconcileServices reconciles the service registry with the new configuration.
-func (a *Application) reconcileServices(ctx context.Context, cfg *config_v1.McpAnyServerConfig) {
+func (a *Application) reconcileServices(cfg *config_v1.McpAnyServerConfig) {
 	log := logging.GetLogger()
 	// Get current active services
 	currentServicesMap := make(map[string]*config_v1.UpstreamServiceConfig)
@@ -759,7 +753,7 @@ func (a *Application) reconcileServices(ctx context.Context, cfg *config_v1.McpA
 		if _, exists := newServices[name]; !exists {
 			log.Info("Removing service", "service", name)
 			if a.ServiceRegistry != nil {
-				if err := a.ServiceRegistry.UnregisterService(ctx, name); err != nil {
+				if err := a.ServiceRegistry.UnregisterService(context.Background(), name); err != nil {
 					log.Error("Failed to unregister service", "service", name, "error", err)
 				}
 			}
@@ -788,7 +782,7 @@ func (a *Application) reconcileServices(ctx context.Context, cfg *config_v1.McpA
 				log.Info("Updating service", "service", name)
 				needsUpdate = true
 				if a.ServiceRegistry != nil {
-					if err := a.ServiceRegistry.UnregisterService(ctx, name); err != nil {
+					if err := a.ServiceRegistry.UnregisterService(context.Background(), name); err != nil {
 						log.Error("Failed to unregister service for update", "service", name, "error", err)
 					}
 				}

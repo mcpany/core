@@ -107,7 +107,7 @@ upstream_services:
 	writeConfig(1)
 
 	// Force reload manually
-	err = app.ReloadConfig(ctx, fs, []string{configPath})
+	err = app.ReloadConfig(fs, []string{configPath})
 	require.NoError(t, err)
 
 	// Verify tool is GONE (because unregister happened, register failed)

@@ -40,7 +40,7 @@ func (m *mockFailingRunner) RunHealthServer(_ string) error {
 	return nil
 }
 
-func (m *mockFailingRunner) ReloadConfig(_ context.Context, _ afero.Fs, _ []string) error {
+func (m *mockFailingRunner) ReloadConfig(_ afero.Fs, _ []string) error {
 	return nil
 }
 

@@ -42,7 +42,7 @@ type Server struct {
 	authManager     *auth.Manager
 	serviceRegistry *serviceregistry.ServiceRegistry
 	bus             *bus.Provider
-	reloadFunc      func(context.Context) error
+	reloadFunc      func() error
 	debug           bool
 }
 
@@ -645,20 +645,17 @@ func (s *Server) ClearToolsForService(serviceKey string) {
 //
 // Parameters:
 //   - f: The function to execute on reload.
-func (s *Server) SetReloadFunc(f func(context.Context) error) {
+func (s *Server) SetReloadFunc(f func() error) {
 	s.reloadFunc = f
 }
 
 // Reload reloads the server's configuration and updates its state.
 //
-// Parameters:
-//   - ctx: The context for the reload operation.
-//
 // Returns:
 //   - An error if the reload function fails.
-func (s *Server) Reload(ctx context.Context) error {
+func (s *Server) Reload() error {
 	if s.reloadFunc != nil {
-		return s.reloadFunc(ctx)
+		return s.reloadFunc()
 	}
 	return nil
 }

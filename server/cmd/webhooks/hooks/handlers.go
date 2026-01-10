@@ -7,7 +7,6 @@ package hooks
 import (
 	"encoding/json"
 	"fmt"
-	"log"
 	"net/http"
 	"strconv"
 	"time"
@@ -203,9 +202,7 @@ func (h *PaginateHandler) Handle(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "application/cloudevents+json")
-	if err := json.NewEncoder(w).Encode(respEvent); err != nil {
-		log.Printf("Failed to encode response: %v", err)
-	}
+	_ = json.NewEncoder(w).Encode(respEvent)
 }
 
 // Helpers

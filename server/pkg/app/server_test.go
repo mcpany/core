@@ -73,7 +73,7 @@ upstream_services:
 		err := afero.WriteFile(fs, "/config.yaml", []byte(configContent), 0o644)
 		require.NoError(t, err)
 
-		err = app.ReloadConfig(context.Background(), fs, []string{"/config.yaml"})
+		err = app.ReloadConfig(fs, []string{"/config.yaml"})
 		require.NoError(t, err)
 
 		// Verify that the tool was loaded
@@ -88,12 +88,7 @@ upstream_services:
 		err := afero.WriteFile(fs, "/config.yaml", []byte("malformed yaml:"), 0o644)
 		require.NoError(t, err)
 
-		err = app.ReloadConfig(context.Background(), fs, []string{"/config.yaml"})
-		// ReloadConfig now skips bad files instead of returning an error, to avoid wiping configuration?
-		// Wait, my change to `server.go` was:
-		// stores = append(stores, config.NewFileStoreWithSkipErrors(fs, configPaths)) in Run()
-		// But ReloadConfig calls config.NewFileStore(fs, configPaths) inside itself.
-		// Let's check ReloadConfig implementation in server.go
+		err = app.ReloadConfig(fs, []string{"/config.yaml"})
 		assert.Error(t, err)
 	})
 
@@ -119,8 +114,9 @@ upstream_services:
 		err := afero.WriteFile(fs, "/config.yaml", []byte(configContent), 0o644)
 		require.NoError(t, err)
 
-		err = app.ReloadConfig(context.Background(), fs, []string{"/config.yaml"})
+		err = app.ReloadConfig(fs, []string{"/config.yaml"})
 		require.NoError(t, err)
+
 
 		_, ok := app.ToolManager.GetTool("test-tool")
 		assert.False(t, ok, "tool from disabled service should not be loaded")
@@ -137,15 +133,10 @@ upstream_services:
 		err := afero.WriteFile(fs, "/config.yaml", []byte(configContent), 0o644)
 		require.NoError(t, err)
 
-		// With strict loading, ReloadConfig SHOULD error for unknown services.
-		err = app.ReloadConfig(context.Background(), fs, []string{"/config.yaml"})
+		// With strict validation, ReloadConfig should error on invalid service
+		err = app.ReloadConfig(fs, []string{"/config.yaml"})
 		require.Error(t, err)
-
-		// Check that the service was indeed NOT loaded
-		// Since we don't have access to the registry directly here easily without more setup,
-		// we can infer it or check logs. But in this unit test context,
-		// successful return without panic/error is the main check for "don't crash".
-		// We can also verify that no services are registered if we started with empty.
+		assert.Contains(t, err.Error(), "service type not specified")
 	})
 }
 

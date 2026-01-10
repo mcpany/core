@@ -41,6 +41,7 @@ services:
     command: >
       sh -c "
         mkdir -p test-results .audit playwright-report docs &&
+        chmod -R 777 test-results .audit playwright-report docs || true &&
         npx playwright test $${PLAYWRIGHT_ARGS}
       "
     volumes:
