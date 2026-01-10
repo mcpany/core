@@ -43,6 +43,8 @@ clean-test-results:
 	@docker run --rm -v $(PWD)/test-results:/work/ui/test-results alpine sh -c "rm -rf /work/ui/test-results/*" || true
 	@docker run --rm -v $(PWD)/.audit:/work/ui/.audit alpine sh -c "rm -rf /work/ui/.audit/*" || true
 	@docker run --rm -v $(PWD)/playwright-report:/work/ui/playwright-report alpine sh -c "rm -rf /work/ui/playwright-report/*" || true
+	@# Fix permissions for reports directory to ensure reporter can write
+	@docker run --rm -v $(PWD):/work/ui alpine chown -R $(TEST_UID):$(TEST_GID) /work/ui/playwright-report /work/ui/test-results || true
 
 
 build-server-docker:
