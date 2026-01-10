@@ -10,7 +10,7 @@ import (
 )
 
 // StripSecretsFromService removes sensitive information from the service configuration.
-// It specifically targets plain text secrets in UpstreamAuth.
+// It specifically targets plain text secrets in UpstreamAuth and other locations.
 func StripSecretsFromService(svc *configv1.UpstreamServiceConfig) {
 	if svc == nil {
 		return
@@ -18,7 +18,48 @@ func StripSecretsFromService(svc *configv1.UpstreamServiceConfig) {
 	if svc.UpstreamAuth != nil {
 		StripSecretsFromAuth(svc.UpstreamAuth)
 	}
-	// TODO: Check for other places where secrets might be embedded (e.g. headers in tool definitions?)
+	if svc.Authentication != nil {
+		StripSecretsFromAuth(svc.Authentication)
+	}
+
+	// Service specific config
+	switch s := svc.ServiceConfig.(type) {
+	case *configv1.UpstreamServiceConfig_CommandLineService:
+		stripSecretsFromCommandLineService(s.CommandLineService)
+	case *configv1.UpstreamServiceConfig_HttpService:
+		stripSecretsFromHttpService(s.HttpService)
+	case *configv1.UpstreamServiceConfig_McpService:
+		stripSecretsFromMcpService(s.McpService)
+	case *configv1.UpstreamServiceConfig_FilesystemService:
+		stripSecretsFromFilesystemService(s.FilesystemService)
+	case *configv1.UpstreamServiceConfig_VectorService:
+		stripSecretsFromVectorService(s.VectorService)
+	case *configv1.UpstreamServiceConfig_WebsocketService:
+		stripSecretsFromWebsocketService(s.WebsocketService)
+	case *configv1.UpstreamServiceConfig_WebrtcService:
+		stripSecretsFromWebrtcService(s.WebrtcService)
+	case *configv1.UpstreamServiceConfig_GrpcService:
+		stripSecretsFromGrpcService(s.GrpcService)
+	case *configv1.UpstreamServiceConfig_OpenapiService:
+		stripSecretsFromOpenapiService(s.OpenapiService)
+	case *configv1.UpstreamServiceConfig_GraphqlService:
+		// No explicit secrets in GraphQL service definition yet, but checking calls might be good if added later.
+	case *configv1.UpstreamServiceConfig_SqlService:
+		// No explicit secrets in SQL service definition yet.
+	}
+
+	// Hooks
+	for _, hook := range svc.PreCallHooks {
+		stripSecretsFromHook(hook)
+	}
+	for _, hook := range svc.PostCallHooks {
+		stripSecretsFromHook(hook)
+	}
+
+	// Cache
+	if svc.Cache != nil {
+		stripSecretsFromCacheConfig(svc.Cache)
+	}
 }
 
 // StripSecretsFromProfile removes sensitive information from the profile definition.
@@ -63,6 +104,177 @@ func StripSecretsFromAuth(auth *configv1.Authentication) {
 		// ClientSecret is definitely sensitive.
 	}
 	// Add other auth types as needed
+}
+
+func stripSecretsFromCommandLineService(s *configv1.CommandLineUpstreamService) {
+	if s == nil {
+		return
+	}
+	stripSecretsFromSecretMap(s.Env)
+	for _, call := range s.Calls {
+		stripSecretsFromCommandLineCall(call)
+	}
+}
+
+func stripSecretsFromHttpService(s *configv1.HttpUpstreamService) {
+	if s == nil {
+		return
+	}
+	for _, call := range s.Calls {
+		stripSecretsFromHttpCall(call)
+	}
+}
+
+func stripSecretsFromMcpService(s *configv1.McpUpstreamService) {
+	if s == nil {
+		return
+	}
+	switch conn := s.ConnectionType.(type) {
+	case *configv1.McpUpstreamService_StdioConnection:
+		stripSecretsFromSecretMap(conn.StdioConnection.Env)
+	case *configv1.McpUpstreamService_BundleConnection:
+		stripSecretsFromSecretMap(conn.BundleConnection.Env)
+	}
+	for _, call := range s.Calls {
+		stripSecretsFromMcpCall(call)
+	}
+}
+
+func stripSecretsFromFilesystemService(s *configv1.FilesystemUpstreamService) {
+	if s == nil {
+		return
+	}
+	switch fs := s.FilesystemType.(type) {
+	case *configv1.FilesystemUpstreamService_S3:
+		if fs.S3.SecretAccessKey != nil {
+			fs.S3.SecretAccessKey = proto.String("")
+		}
+		if fs.S3.SessionToken != nil {
+			fs.S3.SessionToken = proto.String("")
+		}
+	case *configv1.FilesystemUpstreamService_Sftp:
+		if fs.Sftp.Password != nil {
+			fs.Sftp.Password = proto.String("")
+		}
+	}
+}
+
+func stripSecretsFromVectorService(s *configv1.VectorUpstreamService) {
+	if s == nil {
+		return
+	}
+	switch db := s.VectorDbType.(type) {
+	case *configv1.VectorUpstreamService_Pinecone:
+		if db.Pinecone.ApiKey != nil {
+			db.Pinecone.ApiKey = proto.String("")
+		}
+	case *configv1.VectorUpstreamService_Milvus:
+		if db.Milvus.ApiKey != nil {
+			db.Milvus.ApiKey = proto.String("")
+		}
+		if db.Milvus.Password != nil {
+			db.Milvus.Password = proto.String("")
+		}
+	}
+}
+
+func stripSecretsFromWebsocketService(s *configv1.WebsocketUpstreamService) {
+	if s == nil {
+		return
+	}
+	for _, call := range s.Calls {
+		stripSecretsFromWebsocketCall(call)
+	}
+}
+
+func stripSecretsFromWebrtcService(s *configv1.WebrtcUpstreamService) {
+	if s == nil {
+		return
+	}
+	for _, call := range s.Calls {
+		stripSecretsFromWebrtcCall(call)
+	}
+}
+
+func stripSecretsFromGrpcService(s *configv1.GrpcUpstreamService) {
+	// gRPC calls don't have explicit parameter mapping with secrets currently defined in proto.
+	// If they do, add logic here.
+}
+
+func stripSecretsFromOpenapiService(s *configv1.OpenapiUpstreamService) {
+	// OpenAPI calls use generic structures, check if they have secret mappings.
+	// Current definition OpenAPICallDefinition doesn't have parameter mappings like HTTP.
+}
+
+func stripSecretsFromHook(h *configv1.CallHook) {
+	if h == nil {
+		return
+	}
+	if wh := h.GetWebhook(); wh != nil {
+		// WebhookSecret is a string, clear it.
+		wh.WebhookSecret = ""
+	}
+}
+
+func stripSecretsFromCacheConfig(c *configv1.CacheConfig) {
+	if c == nil || c.SemanticConfig == nil {
+		return
+	}
+	// Deprecated ApiKey
+	scrubSecretValue(c.SemanticConfig.ApiKey)
+
+	// Provider specific configs
+	if openai := c.SemanticConfig.GetOpenai(); openai != nil {
+		scrubSecretValue(openai.ApiKey)
+	}
+	// Add other providers if they have secrets
+}
+
+func stripSecretsFromCommandLineCall(c *configv1.CommandLineCallDefinition) {
+	if c == nil {
+		return
+	}
+	for _, param := range c.Parameters {
+		scrubSecretValue(param.Secret)
+	}
+}
+
+func stripSecretsFromHttpCall(c *configv1.HttpCallDefinition) {
+	if c == nil {
+		return
+	}
+	for _, param := range c.Parameters {
+		scrubSecretValue(param.Secret)
+	}
+}
+
+func stripSecretsFromWebsocketCall(c *configv1.WebsocketCallDefinition) {
+	if c == nil {
+		return
+	}
+	for _, param := range c.Parameters {
+		scrubSecretValue(param.Secret)
+	}
+}
+
+func stripSecretsFromWebrtcCall(c *configv1.WebrtcCallDefinition) {
+	if c == nil {
+		return
+	}
+	for _, param := range c.Parameters {
+		scrubSecretValue(param.Secret)
+	}
+}
+
+func stripSecretsFromMcpCall(c *configv1.MCPCallDefinition) {
+	// MCPCallDefinition doesn't seem to have explicit parameter mappings with secrets in the proto definition I read.
+	// It uses input_schema and transformers.
+}
+
+func stripSecretsFromSecretMap(m map[string]*configv1.SecretValue) {
+	for _, sv := range m {
+		scrubSecretValue(sv)
+	}
 }
 
 func scrubSecretValue(sv *configv1.SecretValue) {
