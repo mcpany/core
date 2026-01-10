@@ -21,4 +21,6 @@ Navigate to the **Middleware** section in the dashboard.
 
 ## Implementation
 
-The page is implemented in `ui/src/app/middleware/page.tsx`. It uses `@hello-pangea/dnd` for the drag-and-drop functionality and updates the server configuration dynamically.
+The page is implemented in `ui/src/app/middleware/page.tsx`. It uses `@hello-pangea/dnd` for the drag-and-drop functionality.
+
+**Note:** Currently, this feature is a client-side simulation. Changes made in the UI (reordering, toggling) update the local state for visualization purposes but do not yet persist to the server configuration.

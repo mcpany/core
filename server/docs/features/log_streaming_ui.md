@@ -9,7 +9,7 @@ This feature allows administrators to monitor the server's activity in real-time
 ## Features
 
 - **Live Feed**: Logs appear instantly as they occur.
-- **Filtering**: (Planned) Filter logs by severity, source, or keyword.
+- **Filtering**: Filter logs by severity, source, or keyword.
 - **Pause/Resume**: Pause the stream to inspect specific log entries.
 
 ## Usage
