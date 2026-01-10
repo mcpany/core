@@ -6,6 +6,7 @@ package config
 import (
 	"context"
 	"fmt"
+	"strings"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/mcpany/core/server/pkg/logging"
@@ -50,11 +51,13 @@ func LoadServices(ctx context.Context, store Store, binaryType string) (*configv
 
 	validationErrors := Validate(ctx, fileConfig, bt)
 	if len(validationErrors) > 0 {
+		var errorMsgs []string
 		// Map errors to services
 		serviceErrors := make(map[string]string)
 		for _, e := range validationErrors {
 			log.Error("Config validation error", "service", e.ServiceName, "error", e.Err)
 			serviceErrors[e.ServiceName] = e.Err.Error()
+			errorMsgs = append(errorMsgs, fmt.Sprintf("%s: %s", e.ServiceName, e.Err.Error()))
 		}
 
 		// Check global settings errors.
@@ -62,11 +65,11 @@ func LoadServices(ctx context.Context, store Store, binaryType string) (*configv
 			return nil, fmt.Errorf("global settings validation failed, check logs for details")
 		}
 
-		// Instead of filtering out invalid services, we mark them with the error
-		for _, svc := range fileConfig.GetUpstreamServices() {
-			if errMsg, ok := serviceErrors[svc.GetName()]; ok {
-				svc.ConfigError = proto.String(errMsg)
-			}
+		// Update: For "Friction Fighter" mission, we now fail strictly on startup if any service is invalid.
+		// This prevents "silent failures" where a service is ignored but the server starts.
+		// We can consider making this configurable later if "resilience" is needed for partial outages.
+		if len(errorMsgs) > 0 {
+			return nil, fmt.Errorf("configuration validation failed for the following services:\n\t- %s", strings.Join(errorMsgs, "\n\t- "))
 		}
 	}
 
