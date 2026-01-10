@@ -83,40 +83,40 @@ func NewSQLiteAuditStore(path string) (*SQLiteAuditStore, error) {
 }
 
 func ensureColumns(db *sql.DB) error {
-	// Helper to check and add column
-	addColumn := func(colName string) error {
-		// Whitelist valid column names to prevent SQL injection even from internal calls
-		switch colName {
-		case "prev_hash", "hash":
-			// Allowed
-		default:
-			return fmt.Errorf("invalid column name: %s", colName)
-		}
-
-		// Check if column exists
-		//nolint:gosec // colName is validated above
-		query := fmt.Sprintf("SELECT %s FROM audit_logs LIMIT 1", colName)
-		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-		defer cancel()
-		if _, err := db.ExecContext(ctx, query); err == nil {
-			return nil
-		}
-		// Add column
-
-		query = fmt.Sprintf("ALTER TABLE audit_logs ADD COLUMN %s TEXT DEFAULT ''", colName)
-		ctxAlter, cancelAlter := context.WithTimeout(context.Background(), 10*time.Second)
-		defer cancelAlter()
-		_, err := db.ExecContext(ctxAlter, query)
+	if err := ensureColumn(db, "prev_hash"); err != nil {
 		return err
 	}
-
-	if err := addColumn("prev_hash"); err != nil {
-		return err
-	}
-	if err := addColumn("hash"); err != nil {
+	if err := ensureColumn(db, "hash"); err != nil {
 		return err
 	}
 	return nil
+}
+
+func ensureColumn(db *sql.DB, colName string) error {
+	// Whitelist valid column names to prevent SQL injection even from internal calls
+	switch colName {
+	case "prev_hash", "hash":
+		// Allowed
+	default:
+		return fmt.Errorf("invalid column name: %s", colName)
+	}
+
+	// Check if column exists
+	//nolint:gosec // colName is validated above
+	query := fmt.Sprintf("SELECT %s FROM audit_logs LIMIT 1", colName)
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	if _, err := db.ExecContext(ctx, query); err == nil {
+		return nil
+	}
+	// Add column
+
+	//nolint:gosec // colName is validated above
+	query = fmt.Sprintf("ALTER TABLE audit_logs ADD COLUMN %s TEXT DEFAULT ''", colName)
+	ctxAlter, cancelAlter := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancelAlter()
+	_, err := db.ExecContext(ctxAlter, query)
+	return err
 }
 
 // Write writes an audit entry to the database.
