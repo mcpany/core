@@ -74,6 +74,11 @@ const platformItems = [
     icon: Activity,
   },
   {
+    title: "Inspector",
+    url: "/inspector",
+    icon: Wrench,
+  },
+  {
     title: "Alerts",
     url: "/alerts",
     icon: Activity,

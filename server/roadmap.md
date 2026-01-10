@@ -6,7 +6,7 @@
 
 ### Implemented Features (Recently Completed)
 
-- [x] **Agent Debugger & Inspector**: Middleware for traffic replay and inspection. [Docs](server/docs/features/debugger.md)
+- [x] **Agent Debugger & Inspector**: Full-stack traffic inspection with UI and Middleware for traffic replay. [Docs](server/docs/features/debugger.md)
 - [x] **Context Optimizer**: Middleware to prevent context bloat. [Docs](server/docs/features/context_optimizer.md)
 - [x] **Data Loss Prevention (DLP)**: Redaction of PII in inputs/outputs. [Docs](server/docs/features/dlp.md)
 - [x] **Diagnostic "Doctor" API**: `mcpctl` validation and health checks. [Docs](server/docs/features/mcpctl.md)

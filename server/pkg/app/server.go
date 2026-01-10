@@ -1362,13 +1362,19 @@ func (a *Application) runServerMode(
 	corsMiddleware := middleware.NewHTTPCORSMiddleware(a.SettingsManager.GetAllowedOrigins())
 	a.corsMiddleware = corsMiddleware
 
-	// Middleware order: SecurityHeaders -> CORS -> JSONRPCCompliance -> IPAllowList -> RateLimit -> Mux
+	// Initialize Debugger Middleware (100 entries history)
+	debugger := middleware.NewDebugger(100)
+	mux.Handle("/debug/entries", authMiddleware(debugger.Handler()))
+
+	// Middleware order: SecurityHeaders -> CORS -> JSONRPCCompliance -> IPAllowList -> RateLimit -> Debugger -> Mux
 	// We wrap everything with a debug logger to see what's coming in
 	handler := middleware.HTTPSecurityHeadersMiddleware(
 		corsMiddleware.Handler(
 			middleware.JSONRPCComplianceMiddleware(
 				ipMiddleware.Handler(
-					rateLimiter.Handler(mux),
+					rateLimiter.Handler(
+						debugger.Middleware(mux),
+					),
 				),
 			),
 		),

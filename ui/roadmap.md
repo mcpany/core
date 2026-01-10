@@ -23,3 +23,4 @@
 - [x] **Tool Playground**: Test tools with auto-generated forms.
 - [x] **Profile Management**: Create and switch between user profiles.
 - [x] **Observability Dashboard**: Real-time metrics and system health.
+- [x] **Traffic Inspector**: Live inspection of HTTP traffic with details view.
