@@ -6,12 +6,15 @@ package tool_test
 import (
 	"context"
 	"encoding/json"
+	"os"
+	"os/exec"
+	"path/filepath"
 	"testing"
 
-	"github.com/mcpany/core/server/pkg/consts"
-	"github.com/mcpany/core/server/pkg/tool"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	v1 "github.com/mcpany/core/proto/mcp_router/v1"
+	"github.com/mcpany/core/server/pkg/consts"
+	"github.com/mcpany/core/server/pkg/tool"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/proto"
@@ -189,7 +192,23 @@ func TestCommandTool_Execute(t *testing.T) {
 
 	t.Run("json communication protocol", func(t *testing.T) {
 		t.Parallel()
-		cmdTool := newJSONCommandTool("./testdata/jsonecho/jsonecho", nil)
+		// Build the jsonecho binary
+		wd, err := os.Getwd()
+		require.NoError(t, err)
+		jsonechoDir := filepath.Join(wd, "testdata", "jsonecho")
+		jsonechoBin := filepath.Join(jsonechoDir, "jsonecho")
+
+		// Ensure the directory exists
+		err = os.MkdirAll(jsonechoDir, 0755)
+		require.NoError(t, err)
+
+		// Build it
+		cmd := exec.Command("go", "build", "-o", jsonechoBin, "main.go")
+		cmd.Dir = jsonechoDir
+		out, err := cmd.CombinedOutput()
+		require.NoError(t, err, "Failed to build jsonecho: %s", string(out))
+
+		cmdTool := newJSONCommandTool(jsonechoBin, nil)
 		inputData := map[string]interface{}{"foo": "bar"}
 		inputs, err := json.Marshal(inputData)
 		require.NoError(t, err)

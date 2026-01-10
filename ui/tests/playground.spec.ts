@@ -57,7 +57,7 @@ test.describe('Playground Tool Configuration', () => {
 
     // Dialog should open
     await expect(page.getByRole('dialog')).toBeVisible();
-    await expect(page.getByText('Configure weather_tool')).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'weather_tool' })).toBeVisible();
 
     // Fill form
     await page.getByLabel('city', { exact: false }).fill('San Francisco');
@@ -65,6 +65,7 @@ test.describe('Playground Tool Configuration', () => {
 
     // Run Tool
     await page.getByRole('button', { name: /build command/i }).click();
+    await page.getByLabel('Send').click();
 
     // Verify chat message
     // The message should appear in the chat.
