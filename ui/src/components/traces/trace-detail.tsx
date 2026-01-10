@@ -11,9 +11,10 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { AlertCircle, CheckCircle2, Clock, ChevronDown, ChevronRight, Activity, Terminal, Code, Cpu, Database, Globe } from "lucide-react";
+import { AlertCircle, CheckCircle2, Clock, ChevronDown, ChevronRight, Activity, Terminal, Code, Cpu, Database, Globe, Play } from "lucide-react";
 import { Trace, Span, SpanStatus } from "@/app/api/traces/route";
 import { useState } from "react";
+import { useToast } from "@/hooks/use-toast";
 import React from "react";
 
 // For Syntax Highlighting (simple version)
@@ -129,6 +130,8 @@ function WaterfallItem({
 
 
 export function TraceDetail({ trace }: { trace: Trace | null }) {
+    const { toast } = useToast();
+
     if (!trace) {
         return (
             <div className="flex-1 flex items-center justify-center h-full text-muted-foreground flex-col gap-4">
@@ -137,6 +140,13 @@ export function TraceDetail({ trace }: { trace: Trace | null }) {
             </div>
         );
     }
+
+    const handleReplay = () => {
+        toast({
+            title: "Replay Started",
+            description: `Replaying trace ${trace.id}... (Mock)`,
+        });
+    };
 
     return (
         <div className="h-full flex flex-col bg-background">
@@ -155,6 +165,9 @@ export function TraceDetail({ trace }: { trace: Trace | null }) {
                     </div>
                 </div>
                 <div className="flex gap-2">
+                    <Button variant="outline" size="sm" onClick={handleReplay}>
+                        <Play className="mr-2 h-4 w-4" /> Replay Trace
+                    </Button>
                     <Button variant="outline" size="sm">Export JSON</Button>
                 </div>
             </div>
