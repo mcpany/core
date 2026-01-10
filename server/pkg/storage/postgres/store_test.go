@@ -129,7 +129,7 @@ func TestPostgresStore(t *testing.T) {
 		mock.ExpectQuery("SELECT config_json FROM global_settings").
 			WillReturnRows(rows)
 
-		got, err := store.GetGlobalSettings()
+		got, err := store.GetGlobalSettings(context.Background())
 		require.NoError(t, err)
 		assert.Equal(t, ":8080", got.GetMcpListenAddress())
 
@@ -140,7 +140,7 @@ func TestPostgresStore(t *testing.T) {
 		mock.ExpectQuery("SELECT config_json FROM global_settings").
 			WillReturnError(sql.ErrNoRows)
 
-		got, err := store.GetGlobalSettings()
+		got, err := store.GetGlobalSettings(context.Background())
 		require.NoError(t, err)
 		assert.Nil(t, got)
 
@@ -156,7 +156,7 @@ func TestPostgresStore(t *testing.T) {
 			WithArgs(sqlmock.AnyArg()).
 			WillReturnResult(sqlmock.NewResult(1, 1))
 
-		err := store.SaveGlobalSettings(settings)
+		err := store.SaveGlobalSettings(context.Background(), settings)
 		require.NoError(t, err)
 
 		require.NoError(t, mock.ExpectationsWereMet())
@@ -284,7 +284,7 @@ func TestPostgresStore(t *testing.T) {
 		mock.ExpectQuery("SELECT config_json FROM secrets").
 			WillReturnRows(rows)
 
-		got, err := store.ListSecrets()
+		got, err := store.ListSecrets(context.Background())
 		require.NoError(t, err)
 		assert.Len(t, got, 2)
 
@@ -299,7 +299,7 @@ func TestPostgresStore(t *testing.T) {
 			WithArgs("sec-1").
 			WillReturnRows(rows)
 
-		got, err := store.GetSecret("sec-1")
+		got, err := store.GetSecret(context.Background(), "sec-1")
 		require.NoError(t, err)
 		assert.Equal(t, "secret1", got.GetName())
 
@@ -317,7 +317,7 @@ func TestPostgresStore(t *testing.T) {
 			WithArgs("sec-1", "secret1", "key1", sqlmock.AnyArg()).
 			WillReturnResult(sqlmock.NewResult(1, 1))
 
-		err := store.SaveSecret(secret)
+		err := store.SaveSecret(context.Background(), secret)
 		require.NoError(t, err)
 
 		require.NoError(t, mock.ExpectationsWereMet())
@@ -327,7 +327,7 @@ func TestPostgresStore(t *testing.T) {
 		secret := &configv1.Secret{
 			Name: stringPtr("secret1"),
 		}
-		err := store.SaveSecret(secret)
+		err := store.SaveSecret(context.Background(), secret)
 		require.Error(t, err)
 		assert.Contains(t, err.Error(), "secret id is required")
 	})
@@ -337,7 +337,7 @@ func TestPostgresStore(t *testing.T) {
 			WithArgs("sec-1").
 			WillReturnResult(sqlmock.NewResult(1, 1))
 
-		err := store.DeleteSecret("sec-1")
+		err := store.DeleteSecret(context.Background(), "sec-1")
 		require.NoError(t, err)
 
 		require.NoError(t, mock.ExpectationsWereMet())

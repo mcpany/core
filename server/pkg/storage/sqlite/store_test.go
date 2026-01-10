@@ -91,12 +91,12 @@ func TestStore(t *testing.T) {
 		settings := &configv1.GlobalSettings{
 			LogLevel: &level,
 		}
-		err := store.SaveGlobalSettings(settings)
+		err := store.SaveGlobalSettings(context.Background(), settings)
 		if err != nil {
 			t.Fatalf("failed to save global settings: %v", err)
 		}
 
-		loaded, err := store.GetGlobalSettings()
+		loaded, err := store.GetGlobalSettings(context.Background())
 		if err != nil {
 			t.Fatalf("failed to get global settings: %v", err)
 		}
@@ -111,13 +111,13 @@ func TestStore(t *testing.T) {
 			Name: proto.String("my-secret"),
 			Key:  proto.String("api_key"),
 		}
-		err := store.SaveSecret(secret)
+		err := store.SaveSecret(context.Background(), secret)
 		if err != nil {
 			t.Fatalf("failed to save secret: %v", err)
 		}
 
 		// List
-		secrets, err := store.ListSecrets()
+		secrets, err := store.ListSecrets(context.Background())
 		if err != nil {
 			t.Fatalf("failed to list secrets: %v", err)
 		}
@@ -126,7 +126,7 @@ func TestStore(t *testing.T) {
 		}
 
 		// Get
-		loaded, err := store.GetSecret("sec-1")
+		loaded, err := store.GetSecret(context.Background(), "sec-1")
 		if err != nil {
 			t.Fatalf("failed to get secret: %v", err)
 		}
@@ -136,21 +136,21 @@ func TestStore(t *testing.T) {
 
 		// Update
 		secret.Name = proto.String("updated-secret")
-		err = store.SaveSecret(secret)
+		err = store.SaveSecret(context.Background(), secret)
 		if err != nil {
 			t.Fatalf("failed to update secret: %v", err)
 		}
-		loaded, _ = store.GetSecret("sec-1")
+		loaded, _ = store.GetSecret(context.Background(), "sec-1")
 		if loaded.GetName() != "updated-secret" {
 			t.Errorf("expected name updated-secret, got %s", loaded.GetName())
 		}
 
 		// Delete
-		err = store.DeleteSecret("sec-1")
+		err = store.DeleteSecret(context.Background(), "sec-1")
 		if err != nil {
 			t.Fatalf("failed to delete secret: %v", err)
 		}
-		loaded, _ = store.GetSecret("sec-1")
+		loaded, _ = store.GetSecret(context.Background(), "sec-1")
 		if loaded != nil {
 			t.Errorf("expected secret to be nil after delete, got %v", loaded)
 		}

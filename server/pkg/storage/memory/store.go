@@ -165,7 +165,7 @@ func (s *Store) Close() error {
 }
 
 // GetGlobalSettings retrieves the global configuration.
-func (s *Store) GetGlobalSettings() (*configv1.GlobalSettings, error) {
+func (s *Store) GetGlobalSettings(_ context.Context) (*configv1.GlobalSettings, error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
 	if s.globalSettings == nil {
@@ -175,7 +175,7 @@ func (s *Store) GetGlobalSettings() (*configv1.GlobalSettings, error) {
 }
 
 // SaveGlobalSettings saves the global configuration.
-func (s *Store) SaveGlobalSettings(settings *configv1.GlobalSettings) error {
+func (s *Store) SaveGlobalSettings(_ context.Context, settings *configv1.GlobalSettings) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	s.globalSettings = proto.Clone(settings).(*configv1.GlobalSettings)
@@ -183,7 +183,7 @@ func (s *Store) SaveGlobalSettings(settings *configv1.GlobalSettings) error {
 }
 
 // ListSecrets retrieves all secrets.
-func (s *Store) ListSecrets() ([]*configv1.Secret, error) {
+func (s *Store) ListSecrets(_ context.Context) ([]*configv1.Secret, error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
 	list := make([]*configv1.Secret, 0, len(s.secrets))
@@ -194,7 +194,7 @@ func (s *Store) ListSecrets() ([]*configv1.Secret, error) {
 }
 
 // GetSecret retrieves a secret by ID.
-func (s *Store) GetSecret(id string) (*configv1.Secret, error) {
+func (s *Store) GetSecret(_ context.Context, id string) (*configv1.Secret, error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
 	if secret, ok := s.secrets[id]; ok {
@@ -204,7 +204,7 @@ func (s *Store) GetSecret(id string) (*configv1.Secret, error) {
 }
 
 // SaveSecret saves a secret.
-func (s *Store) SaveSecret(secret *configv1.Secret) error {
+func (s *Store) SaveSecret(_ context.Context, secret *configv1.Secret) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	s.secrets[secret.GetId()] = proto.Clone(secret).(*configv1.Secret)
@@ -212,7 +212,7 @@ func (s *Store) SaveSecret(secret *configv1.Secret) error {
 }
 
 // DeleteSecret deletes a secret by ID.
-func (s *Store) DeleteSecret(id string) error {
+func (s *Store) DeleteSecret(_ context.Context, id string) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	delete(s.secrets, id)
