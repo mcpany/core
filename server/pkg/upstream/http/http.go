@@ -398,11 +398,10 @@ func (u *Upstream) createAndRegisterHTTPTools(ctx context.Context, serviceID, ad
 						if err == nil {
 							// Check if this key was originally a flag
 							if originalFlags[decodedKey] {
-								// Check if the current value in query map is actually empty.
-								vals := query[decodedKey]
-								if len(vals) == 0 || (len(vals) == 1 && vals[0] == "") {
-									parts[i] = encodedKey
-								}
+								// Since this part ends with "=", the value is empty.
+								// If the key was originally a flag, and we have an empty value here,
+								// we restore it to the flag style (no equals sign).
+								parts[i] = encodedKey
 							}
 						}
 					}

@@ -340,8 +340,19 @@ func (m *UpstreamServiceManager) addService(service *configv1.UpstreamServiceCon
 		}
 	}
 
-	// Hydrate secrets (using profile resolved secrets)
-	HydrateSecretsInService(service, m.profileSecrets)
+	// If the service has a config error, we skip hydration and adding it to active service lists if it's not safe.
+	// But we DO want it in the config list for the UI.
+	// The `m.services` map is used to build the final config list.
+	// We need to make sure we don't try to use this service for actual operations if it has errors.
+	// Since UpstreamServiceManager is responsible for loading config, but downstream components (like mcpany-server)
+	// iterate over this config to start services, we need to ensure downstream is safe OR we mark it disabled here.
+	if service.HasConfigError() {
+		m.log.Warn("Adding service with configuration error (marked disabled)", "service", service.GetName(), "error", service.GetConfigError())
+		service.SetDisable(true) // Force disable so it doesn't get started
+	} else {
+		// Only hydrate secrets if config is valid to avoid potential issues
+		HydrateSecretsInService(service, m.profileSecrets)
+	}
 
 	// Apply enabled/disabled override
 	if isOverrideDisabled {

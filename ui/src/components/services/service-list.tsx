@@ -10,7 +10,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Settings, Trash2, CheckCircle, XCircle } from "lucide-react";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { Settings, Trash2, CheckCircle, XCircle, AlertTriangle } from "lucide-react";
 import { UpstreamServiceConfig } from "@/lib/client";
 
 
@@ -112,7 +113,21 @@ const ServiceRow = memo(function ServiceRow({ service, onToggle, onEdit, onDelet
                  </div>
              </TableCell>
              <TableCell className="font-medium">
-                 {service.name}
+                 <div className="flex items-center gap-2">
+                     {service.name}
+                     {service.lastError && (
+                         <TooltipProvider>
+                             <Tooltip>
+                                 <TooltipTrigger>
+                                     <AlertTriangle className="h-4 w-4 text-destructive" />
+                                 </TooltipTrigger>
+                                 <TooltipContent>
+                                     <p className="max-w-xs break-words text-xs">{service.lastError}</p>
+                                 </TooltipContent>
+                             </Tooltip>
+                         </TooltipProvider>
+                     )}
+                 </div>
              </TableCell>
              <TableCell>
                  <Badge variant="outline">{type}</Badge>

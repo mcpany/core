@@ -19,6 +19,16 @@ import (
 )
 
 func TestValidate_MoreServices(t *testing.T) {
+	// Mock execLookPath
+	oldLookPath := execLookPath
+	defer func() { execLookPath = oldLookPath }()
+	execLookPath = func(file string) (string, error) {
+		if file == "ls" {
+			return "/bin/ls", nil
+		}
+		return "", os.ErrNotExist
+	}
+
 	// Create an insecure file (world writable)
 	insecureFile, err := os.CreateTemp("", "insecure_key")
 	if err != nil {

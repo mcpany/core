@@ -105,6 +105,10 @@ message UpstreamServiceConfig {
   bool auto_discover_tool = 30 [json_name = "auto_discover_tool"];
 
   reserved 33; // profile_limits
+
+  // The configuration error if the service failed validation.
+  // @inject_tag: yaml:"-"
+  string config_error = 35 [json_name = "config_error"];
 }
 
 message CallPolicy {

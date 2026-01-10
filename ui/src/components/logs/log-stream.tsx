@@ -124,6 +124,8 @@ export function LogStream() {
   const [isPaused, setIsPaused] = React.useState(false)
   const [filterLevel, setFilterLevel] = React.useState<string>("ALL")
   const [searchQuery, setSearchQuery] = React.useState("")
+  // Optimization: Defer the search query to keep the UI responsive while filtering large lists
+  const deferredSearchQuery = React.useDeferredValue(searchQuery)
   const scrollRef = React.useRef<HTMLDivElement>(null)
 
   // Mock log generation
@@ -190,7 +192,13 @@ export function LogStream() {
   // Optimization: Memoize filtered logs and pre-calculate lowercase search query
   // to avoid O(N) redundant string operations during filtering
   const filteredLogs = React.useMemo(() => {
-    const lowerSearchQuery = searchQuery.toLowerCase()
+    // Optimization: Fast path for when no filters are active.
+    // This avoids iterating over the entire array (up to 1000 items) every 800ms when showing all logs.
+    if (filterLevel === "ALL" && !deferredSearchQuery) {
+      return logs
+    }
+
+    const lowerSearchQuery = deferredSearchQuery.toLowerCase()
     return logs.filter((log) => {
       const matchesLevel = filterLevel === "ALL" || log.level === filterLevel
 
@@ -206,7 +214,7 @@ export function LogStream() {
 
       return matchesLevel && matchesSearch
     })
-  }, [logs, filterLevel, searchQuery])
+  }, [logs, filterLevel, deferredSearchQuery])
 
   const clearLogs = () => setLogs([])
 

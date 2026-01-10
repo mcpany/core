@@ -12,7 +12,7 @@
 // In a real deployment, these might be /api/v1/... proxied to backend
 
 import { GrpcWebImpl, RegistrationServiceClientImpl } from '@proto/api/v1/registration';
-import { UpstreamServiceConfig } from '@proto/config/v1/upstream_service';
+import { UpstreamServiceConfig as BaseUpstreamServiceConfig } from '@proto/config/v1/upstream_service';
 import { ToolDefinition } from '@proto/config/v1/tool';
 import { ResourceDefinition } from '@proto/config/v1/resource';
 import { PromptDefinition } from '@proto/config/v1/prompt';
@@ -21,8 +21,13 @@ import { Credential, Authentication } from '@proto/config/v1/auth';
 import { BrowserHeaders } from 'browser-headers';
 import { MOCK_RESOURCES, getMockResourceContent } from "@/mocks/resources";
 
+// Extend UpstreamServiceConfig to include runtime error information
+export interface UpstreamServiceConfig extends BaseUpstreamServiceConfig {
+    lastError?: string;
+}
+
 // Re-export generated types
-export type { UpstreamServiceConfig, ToolDefinition, ResourceDefinition, PromptDefinition, Credential, Authentication };
+export type { ToolDefinition, ResourceDefinition, PromptDefinition, Credential, Authentication };
 export type { ListServicesResponse, GetServiceResponse, GetServiceStatusResponse } from '@proto/api/v1/registration';
 
 // Initialize gRPC Web Client
@@ -116,7 +121,8 @@ export const apiClient = {
             grpcService: s.grpc_service,
             commandLineService: s.command_line_service,
             mcpService: s.mcp_service,
-            upstreamAuth: s.upstream_auth
+            upstreamAuth: s.upstream_auth,
+            lastError: s.last_error,
         }));
     },
     getService: async (id: string) => {

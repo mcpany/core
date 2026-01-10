@@ -91,6 +91,11 @@ func TestIsNil(t *testing.T) {
 			input:    func() interface{} { var i interface{}; return i }(),
 			expected: true,
 		},
+		{
+			name:     "array value (not nil)",
+			input:    [3]int{1, 2, 3},
+			expected: false,
+		},
 	}
 
 	for _, tt := range tests {
