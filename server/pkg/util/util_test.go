@@ -199,7 +199,6 @@ func TestToString(t *testing.T) {
 		t.Error("ToString(ptr) is empty")
 	}
 }
-}
 
 // TestIsNil removed to avoid duplication with isnil_test.go
 
