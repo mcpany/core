@@ -10,7 +10,7 @@ test.describe('Navigation Coverage', () => {
     { path: '/', title: 'Dashboard' },
     { path: '/logs', title: 'Live Logs' },
     { path: '/marketplace', title: 'Marketplace' },
-    { path: '/playground', title: 'Playground' },
+    { path: '/playground', title: 'Console' },
     { path: '/profiles', title: 'Profiles' },
     { path: '/prompts', title: 'Prompt Library' },
     { path: '/resources', title: 'Resources' },
