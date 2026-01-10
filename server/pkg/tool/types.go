@@ -635,6 +635,12 @@ func (t *HTTPTool) prepareInputsAndURL(ctx context.Context, req *ExecutionReques
 				}
 			} else {
 				if t.paramInPath[i] {
+					// Even if we escape, we should check for ".." in the input because
+					// url.PathEscape does NOT escape dots, so ".." remains ".."
+					// and path.Clean will resolve it, potentially allowing path traversal.
+					if err := checkForPathTraversal(valStr); err != nil {
+						return nil, "", fmt.Errorf("path traversal attempt detected in parameter %q: %w", schema.GetName(), err)
+					}
 					pathStr = strings.ReplaceAll(pathStr, placeholder, url.PathEscape(valStr))
 				}
 				if t.paramInQuery[i] {
@@ -1958,6 +1964,7 @@ func checkForPathTraversal(val string) error {
 	if val == ".." {
 		return fmt.Errorf("path traversal attempt detected")
 	}
+	// Check for standard traversal sequences
 	if strings.HasPrefix(val, "../") || strings.HasPrefix(val, "..\\") {
 		return fmt.Errorf("path traversal attempt detected")
 	}
@@ -1966,6 +1973,12 @@ func checkForPathTraversal(val string) error {
 	}
 	if strings.Contains(val, "/../") || strings.Contains(val, "\\..\\") || strings.Contains(val, "/..\\") || strings.Contains(val, "\\../") {
 		return fmt.Errorf("path traversal attempt detected")
+	}
+
+	// Also check for encoded traversal sequences often used to bypass filters
+	// %2e%2e is ..
+	if strings.Contains(strings.ToLower(val), "%2e%2e") {
+		return fmt.Errorf("path traversal attempt detected (encoded)")
 	}
 	return nil
 }
@@ -2003,6 +2016,12 @@ func isShellCommand(cmd string) bool {
 		"jq",
 		"psql", "mysql", "sqlite3",
 		"docker",
+		// Additional shells/runners found missing
+		"busybox", "expect", "tclsh", "wish",
+		"irb", "php-cgi", "perl5",
+		"openssl", "git", "hg", "svn",
+		"wget", "curl", "nc", "netcat", "ncat",
+		"socat", "telnet",
 	}
 	base := filepath.Base(cmd)
 	for _, shell := range shells {
