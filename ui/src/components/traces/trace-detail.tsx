@@ -16,6 +16,7 @@ import { Trace, Span, SpanStatus } from "@/app/api/traces/route";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import React from "react";
+import { useRouter } from "next/navigation";
 
 // For Syntax Highlighting (simple version)
 function JsonView({ data }: { data: any }) {
@@ -130,7 +131,7 @@ function WaterfallItem({
 
 
 export function TraceDetail({ trace }: { trace: Trace | null }) {
-    const { toast } = useToast();
+    const router = useRouter();
 
     if (!trace) {
         return (
@@ -141,11 +142,10 @@ export function TraceDetail({ trace }: { trace: Trace | null }) {
         );
     }
 
-    const handleReplay = () => {
-        toast({
-            title: "Replay Started",
-            description: `Replaying trace ${trace.id}... (Mock)`,
-        });
+    const handleReplay = (toolName: string, args: Record<string, unknown> | undefined) => {
+         const argsStr = JSON.stringify(args || {});
+         const encodedArgs = encodeURIComponent(argsStr);
+         router.push(`/playground?tool=${toolName}&args=${encodedArgs}`);
     };
 
     return (
@@ -165,9 +165,16 @@ export function TraceDetail({ trace }: { trace: Trace | null }) {
                     </div>
                 </div>
                 <div className="flex gap-2">
-                    <Button variant="outline" size="sm" onClick={handleReplay}>
-                        <Play className="mr-2 h-4 w-4" /> Replay Trace
-                    </Button>
+                    {trace.rootSpan.type === 'tool' && (
+                        <Button
+                            variant="default"
+                            size="sm"
+                            onClick={() => handleReplay(trace.rootSpan.name, trace.rootSpan.input)}
+                            className="gap-2"
+                        >
+                            <Play className="h-3 w-3" /> Replay in Playground
+                        </Button>
+                    )}
                     <Button variant="outline" size="sm">Export JSON</Button>
                 </div>
             </div>

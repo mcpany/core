@@ -74,8 +74,21 @@ export function PlaygroundClient() {
     if (typeof window !== "undefined") {
         const params = new URLSearchParams(window.location.search);
         const toolName = params.get("tool");
+        const argsParam = params.get("args");
+
         if (toolName) {
-            setInput(`${toolName} {}`);
+            let argsStr = "{}";
+            if (argsParam) {
+                try {
+                    // Try to format it nicely if it's valid JSON
+                    const parsed = JSON.parse(argsParam);
+                    argsStr = JSON.stringify(parsed, null, 2);
+                } catch {
+                    // If not valid JSON, use as is (might be partial or simple string)
+                    argsStr = argsParam;
+                }
+            }
+            setInput(`${toolName} ${argsStr}`);
         }
     }
   }, []);
