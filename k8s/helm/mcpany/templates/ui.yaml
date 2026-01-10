@@ -30,8 +30,13 @@ spec:
           env:
             - name: BACKEND_URL
               value: "http://{{ include "mcpany.fullname" . }}:{{ .Values.service.grpcPort }}" # Or jsonrpcPort depending on how UI connects
+            {{- if or .Values.ui.existingSecret .Values.ui.apiKey }}
             - name: NEXT_PUBLIC_MCPANY_API_KEY
-              value: "test-token" # TODO: Make configurable
+              valueFrom:
+                secretKeyRef:
+                  name: {{ if .Values.ui.existingSecret }}{{ .Values.ui.existingSecret }}{{ else }}{{ include "mcpany.fullname" . }}-ui-secret{{ end }}
+                  key: {{ .Values.ui.secretKey | default "api-key" }}
+            {{- end }}
             # Add other env vars as needed
 ---
 apiVersion: v1
