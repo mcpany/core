@@ -87,6 +87,30 @@ func (a *Application) handleServices(store storage.Storage) http.HandlerFunc {
 					logging.GetLogger().Error("failed to marshal service", "error", err)
 					continue
 				}
+
+				// Inject runtime error information if available
+				// We unmarshal the JSON bytes to a map, inject the error field, and marshal back.
+				// This is a trade-off for not modifying the proto definition for a transient status.
+				var jsonMap map[string]any
+				if err := json.Unmarshal(b, &jsonMap); err == nil && a.ServiceRegistry != nil {
+					if svcID := svc.GetId(); svcID != "" {
+						if errMsg, ok := a.ServiceRegistry.GetServiceError(svcID); ok {
+							jsonMap["last_error"] = errMsg
+						}
+					}
+					// Also check sanitize name if ID lookup fails (or both?)
+					if svc.GetId() == "" && svc.GetSanitizedName() != "" {
+						if errMsg, ok := a.ServiceRegistry.GetServiceError(svc.GetSanitizedName()); ok {
+							jsonMap["last_error"] = errMsg
+						}
+					}
+
+					// Marshal back to JSON
+					if enrichedBytes, err := json.Marshal(jsonMap); err == nil {
+						b = enrichedBytes
+					}
+				}
+
 				buf = append(buf, b...)
 			}
 			buf = append(buf, ']')
