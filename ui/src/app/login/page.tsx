@@ -55,7 +55,7 @@ export default function LoginPage() {
       // or just storing the credentials if successful.
 
       // TODO: Implement actual login verification with backend
-      // For now, we simulate a successful login since this is a demo environment or dev mode.
+      console.log("Login attempt", data);
 
       // Simulate success for now or implement actual check
       // await apiClient.login(data.username, data.password);

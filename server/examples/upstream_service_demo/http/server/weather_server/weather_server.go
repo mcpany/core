@@ -5,7 +5,6 @@
 package main
 
 import (
-	"context"
 	"encoding/json"
 	"flag"
 	"fmt"
@@ -13,8 +12,7 @@ import (
 	"net"
 	"net/http"
 	"os"
-	"os/signal"
-	"syscall"
+	"strings"
 	"time"
 
 	"github.com/gorilla/websocket"
@@ -44,12 +42,15 @@ func weatherHandler(w http.ResponseWriter, r *http.Request) {
 		location = r.URL.Query().Get("location")
 	case "POST":
 		var reqBody map[string]string
+		// log.Printf("DEBUG: Headers: %v", r.Header)
+		// ^ Add this if debugging headers
 		if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
 			log.Printf("DEBUG: JSON Decode error: %v", err)
 			http.Error(w, "Invalid request body", http.StatusBadRequest)
 			return
 		}
 		log.Printf("DEBUG: Decoded body: %v", reqBody)
+	// log.Printf("DEBUG: Decoded body: %v", reqBody) --> Moved to above
 		location = reqBody["location"]
 	default:
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
@@ -130,16 +131,23 @@ func main() {
 	flag := flag.NewFlagSet("weather-server", flag.ExitOnError)
 	flag.StringVar(&addr, "addr", "", "address to listen on")
 	_ = flag.Parse(os.Args[1:])
-	if err := run(os.Args, make(chan os.Signal, 1), nil); err != nil {
-		log.Fatalf("Error: %v", err)
-	}
-}
 
-func run(args []string, stop chan os.Signal, ready chan<- string) error {
-	fs := flag.NewFlagSet("weather-server", flag.ContinueOnError)
-	port := fs.String("port", "8080", "Port to listen on")
-	if err := fs.Parse(args[1:]); err != nil {
-		return err
+	if addr == "" {
+		port := os.Getenv("HTTP_PORT")
+		if port == "" {
+			port = "8091"
+		}
+		addr = ":" + port
+	}
+
+	// Handle "localhost:port" or ":port"
+	if host, port, err := net.SplitHostPort(addr); err == nil {
+		if host == "localhost" {
+			addr = "127.0.0.1:" + port
+		}
+	} else if len(addr) > 0 && addr[0] != ':' && !strings.Contains(addr, ":") {
+		// Assume it's just a port
+		addr = ":" + addr
 	}
 
 	mux := http.NewServeMux()
@@ -147,33 +155,13 @@ func run(args []string, stop chan os.Signal, ready chan<- string) error {
 	mux.HandleFunc("/weather", weatherHandler)
 	mux.HandleFunc("/ws", wsHandler)
 
-	lc := net.ListenConfig{}
-	ln, err := lc.Listen(context.Background(), "tcp", ":"+*port)
-	if err != nil {
-		return fmt.Errorf("failed to listen: %w", err)
-	}
-
-	if ready != nil {
-		ready <- ln.Addr().String()
-	}
-
-	srv := &http.Server{
+	log.Printf("Server starting on %s", addr)
+	server := &http.Server{
+		Addr:              addr,
 		Handler:           mux,
-		ReadHeaderTimeout: 5 * time.Second,
+		ReadHeaderTimeout: 3 * time.Second,
 	}
-
-	go func() {
-		log.Printf("Starting weather server on %s", ln.Addr())
-		if err := srv.Serve(ln); err != nil && err != http.ErrServerClosed {
-			log.Printf("Server error: %v", err)
-		}
-	}()
-
-	signal.Notify(stop, syscall.SIGINT, syscall.SIGTERM)
-	<-stop
-	log.Println("Shutting down weather server...")
-
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
-	return srv.Shutdown(ctx)
+	if err := server.ListenAndServe(); err != nil {
+		log.Fatalf("Server failed to start: %v", err)
+	}
 }

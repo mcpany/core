@@ -100,7 +100,7 @@ func newRootCmd() *cobra.Command {
 
 				go func() {
 					if err := watcher.Watch(configPaths, func() {
-						if err := appRunner.ReloadConfig(ctx, osFs, configPaths); err != nil {
+						if err := appRunner.ReloadConfig(osFs, configPaths); err != nil {
 							log.Error("Failed to reload config", "error", err)
 						}
 					}); err != nil {

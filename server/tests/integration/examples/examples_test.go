@@ -25,13 +25,6 @@ func TestExampleConfigs(t *testing.T) {
 	// Assuming we run this from anywhere in the repo, we need to find the root.
 	// Common pattern: look for go.mod
 	projectRoot := findProjectRoot(t, wd)
-	// Change to project root so that relative paths in configs (e.g. "./examples/...") resolve correctly
-	err = os.Chdir(projectRoot)
-	require.NoError(t, err)
-	// Ensure we restore CWD is automatically handled by test cleanup if we run subtests?
-	// actually t.Chdir is better if available (Go 1.14+).
-	t.Chdir(projectRoot)
-
 	examplesDir := filepath.Join(projectRoot, "examples")
 
 	// Walk through examples directory

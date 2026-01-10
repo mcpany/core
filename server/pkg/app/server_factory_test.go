@@ -4,12 +4,11 @@
 package app
 
 import (
-	"context"
 	"fmt"
 	"testing"
 
-	config_v1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/mcpany/core/server/pkg/upstream"
+	config_v1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/spf13/afero"
 	"github.com/stretchr/testify/require"
 )
@@ -44,6 +43,6 @@ upstream_services:
 	err := afero.WriteFile(fs, "/config.yaml", []byte(configContent), 0o644)
 	require.NoError(t, err)
 
-	err = app.ReloadConfig(context.Background(), fs, []string{"/config.yaml"})
+	err = app.ReloadConfig(fs, []string{"/config.yaml"})
 	require.NoError(t, err) // Logs error but returns nil
 }
