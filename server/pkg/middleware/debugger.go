@@ -182,7 +182,7 @@ func (d *Debugger) Entries() []DebugEntry {
 
 // Handler returns a http.HandlerFunc to view entries.
 func (d *Debugger) Handler() http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
+	return func(w http.ResponseWriter, _ *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		_ = json.NewEncoder(w).Encode(d.Entries())
 	}
