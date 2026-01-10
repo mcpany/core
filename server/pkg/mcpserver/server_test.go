@@ -825,26 +825,26 @@ func TestServer_Reload(t *testing.T) {
 	require.NoError(t, err)
 
 	reloaded := false
-	server.SetReloadFunc(func() error {
+	server.SetReloadFunc(func(_ context.Context) error {
 		reloaded = true
 		return nil
 	})
 
-	err = server.Reload()
+	err = server.Reload(ctx)
 	require.NoError(t, err)
 	assert.True(t, reloaded)
 
 	// Test error case
-	server.SetReloadFunc(func() error {
+	server.SetReloadFunc(func(_ context.Context) error {
 		return errors.New("reload failed")
 	})
-	err = server.Reload()
+	err = server.Reload(ctx)
 	require.Error(t, err)
 	assert.Equal(t, "reload failed", err.Error())
 
 	// Test nil reload func
 	server.SetReloadFunc(nil)
-	err = server.Reload()
+	err = server.Reload(ctx)
 	require.NoError(t, err)
 }
 

@@ -6,6 +6,8 @@ package integration_test
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
+	"net"
 	"net/http"
 	"os"
 	"os/exec"
@@ -307,9 +309,8 @@ func TestK8sFullStack(t *testing.T) {
 	// defer cancel()
 
 	// uiPort := "3000" // Local port matches container port for simplicity, or find free one
-	// TODO: Find free port logic if needed, but 3000 might be busy.
-	// Let's try 30080
-	localUIPort := "30080"
+	// uiPort := "3000" // Local port matches container port for simplicity, or find free one
+	localUIPort := fmt.Sprintf("%d", findFreePort(t))
 
 	pfCmd := exec.Command("kubectl", "--context", kubectlCtx, "port-forward", "svc/"+uiSvcName, localUIPort+":3000")
 	if err := pfCmd.Start(); err != nil {
@@ -345,4 +346,18 @@ func TestK8sFullStack(t *testing.T) {
 	}
 
 	t.Log("K8s Full Stack Test passed!")
+}
+
+func findFreePort(t *testing.T) int {
+	t.Helper()
+	addr, err := net.ResolveTCPAddr("tcp", "localhost:0")
+	if err != nil {
+		t.Fatalf("failed to resolve tcp addr: %v", err)
+	}
+	l, err := net.ListenTCP("tcp", addr)
+	if err != nil {
+		t.Fatalf("failed to listen on tcp addr: %v", err)
+	}
+	defer func() { _ = l.Close() }()
+	return l.Addr().(*net.TCPAddr).Port
 }

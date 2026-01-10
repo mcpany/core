@@ -155,7 +155,7 @@ func (a *Application) handleServices(store storage.Storage) http.HandlerFunc {
 			}
 
 			// Trigger reload
-			if err := a.ReloadConfig(a.fs, a.configPaths); err != nil {
+			if err := a.ReloadConfig(r.Context(), a.fs, a.configPaths); err != nil {
 				logging.GetLogger().Error("failed to reload config after save", "error", err)
 			}
 
@@ -234,7 +234,7 @@ func (a *Application) handleServiceDetail(store storage.Storage) http.HandlerFun
 				http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 				return
 			}
-			if err := a.ReloadConfig(a.fs, a.configPaths); err != nil {
+			if err := a.ReloadConfig(r.Context(), a.fs, a.configPaths); err != nil {
 				logging.GetLogger().Error("failed to reload config after update", "error", err)
 			}
 			w.WriteHeader(http.StatusOK)
@@ -245,7 +245,7 @@ func (a *Application) handleServiceDetail(store storage.Storage) http.HandlerFun
 				http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 				return
 			}
-			if err := a.ReloadConfig(a.fs, a.configPaths); err != nil {
+			if err := a.ReloadConfig(r.Context(), a.fs, a.configPaths); err != nil {
 				logging.GetLogger().Error("failed to reload config after delete", "error", err)
 			}
 			w.WriteHeader(http.StatusNoContent)
@@ -328,7 +328,7 @@ func (a *Application) handleSettings(store storage.Storage) http.HandlerFunc {
 				return
 			}
 
-			if err := a.ReloadConfig(a.fs, a.configPaths); err != nil {
+			if err := a.ReloadConfig(r.Context(), a.fs, a.configPaths); err != nil {
 				logging.GetLogger().Error("failed to reload config after settings save", "error", err)
 			}
 
@@ -546,7 +546,7 @@ func (a *Application) handleProfiles(store storage.Storage) http.HandlerFunc {
 				return
 			}
 			// Trigger reload
-			if err := a.ReloadConfig(a.fs, a.configPaths); err != nil {
+			if err := a.ReloadConfig(r.Context(), a.fs, a.configPaths); err != nil {
 				logging.GetLogger().Error("failed to reload config after profile save", "error", err)
 			}
 			w.WriteHeader(http.StatusCreated)
@@ -623,7 +623,7 @@ func (a *Application) handleProfileDetail(store storage.Storage) http.HandlerFun
 				http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 				return
 			}
-			if err := a.ReloadConfig(a.fs, a.configPaths); err != nil {
+			if err := a.ReloadConfig(r.Context(), a.fs, a.configPaths); err != nil {
 				logging.GetLogger().Error("failed to reload config after profile update", "error", err)
 			}
 			w.WriteHeader(http.StatusOK)
@@ -635,7 +635,7 @@ func (a *Application) handleProfileDetail(store storage.Storage) http.HandlerFun
 				http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 				return
 			}
-			if err := a.ReloadConfig(a.fs, a.configPaths); err != nil {
+			if err := a.ReloadConfig(r.Context(), a.fs, a.configPaths); err != nil {
 				logging.GetLogger().Error("failed to reload config after profile delete", "error", err)
 			}
 			w.WriteHeader(http.StatusNoContent)
@@ -817,7 +817,7 @@ func (a *Application) handleCollectionApply(w http.ResponseWriter, r *http.Reque
 	}
 
 	// Trigger reload
-	if err := a.ReloadConfig(a.fs, a.configPaths); err != nil {
+	if err := a.ReloadConfig(r.Context(), a.fs, a.configPaths); err != nil {
 		logging.GetLogger().Error("failed to reload config after collection apply", "error", err)
 	}
 

@@ -77,7 +77,9 @@ func (w *ServiceRegistrationWorker) Start(ctx context.Context) {
 						Error: fmt.Errorf("panic during registration: %v", r),
 					}
 					res.SetCorrelationID(req.CorrelationID())
-					_ = resultBus.Publish(ctx, req.CorrelationID(), res)
+					if err := resultBus.Publish(ctx, req.CorrelationID(), res); err != nil {
+						log.Error("Failed to publish panic result", "error", err)
+					}
 				}
 			}()
 
@@ -95,7 +97,9 @@ func (w *ServiceRegistrationWorker) Start(ctx context.Context) {
 					Error: err,
 				}
 				res.SetCorrelationID(req.CorrelationID())
-				_ = resultBus.Publish(ctx, req.CorrelationID(), res)
+				if err := resultBus.Publish(ctx, req.CorrelationID(), res); err != nil {
+					log.Error("Failed to publish unregister result", "error", err)
+				}
 				return
 			}
 
@@ -133,7 +137,9 @@ func (w *ServiceRegistrationWorker) Start(ctx context.Context) {
 				metrics.IncrCounter([]string{"worker", "registration", "request", "success"}, 1)
 			}
 			res.SetCorrelationID(req.CorrelationID())
-			_ = resultBus.Publish(ctx, req.CorrelationID(), res)
+			if err := resultBus.Publish(ctx, req.CorrelationID(), res); err != nil {
+				log.Error("Failed to publish registration result", "error", err)
+			}
 		}()
 	})
 
@@ -157,7 +163,9 @@ func (w *ServiceRegistrationWorker) Start(ctx context.Context) {
 					Error: fmt.Errorf("panic during service list: %v", r),
 				}
 				res.SetCorrelationID(req.CorrelationID())
-				_ = listResultBus.Publish(ctx, req.CorrelationID(), res)
+				if err := listResultBus.Publish(ctx, req.CorrelationID(), res); err != nil {
+					log.Error("Failed to publish list panic result", "error", err)
+				}
 			}
 		}()
 
@@ -168,7 +176,9 @@ func (w *ServiceRegistrationWorker) Start(ctx context.Context) {
 			Error:    err,
 		}
 		res.SetCorrelationID(req.CorrelationID())
-		_ = listResultBus.Publish(ctx, req.CorrelationID(), res)
+		if err := listResultBus.Publish(ctx, req.CorrelationID(), res); err != nil {
+			log.Error("Failed to publish list result", "error", err)
+		}
 	})
 
 	getRequestBus, err := bus.GetBus[*bus.ServiceGetRequest](w.bus, bus.ServiceGetRequestTopic)
@@ -191,7 +201,9 @@ func (w *ServiceRegistrationWorker) Start(ctx context.Context) {
 					Error: fmt.Errorf("panic during service get: %v", r),
 				}
 				res.SetCorrelationID(req.CorrelationID())
-				_ = getResultBus.Publish(ctx, req.CorrelationID(), res)
+				if err := getResultBus.Publish(ctx, req.CorrelationID(), res); err != nil {
+					log.Error("Failed to publish get panic result", "error", err)
+				}
 			}
 		}()
 
@@ -220,7 +232,9 @@ func (w *ServiceRegistrationWorker) Start(ctx context.Context) {
 		}
 
 		res.SetCorrelationID(req.CorrelationID())
-		_ = getResultBus.Publish(ctx, req.CorrelationID(), res)
+		if err := getResultBus.Publish(ctx, req.CorrelationID(), res); err != nil {
+			log.Error("Failed to publish get result", "error", err)
+		}
 	})
 
 	go func() {
