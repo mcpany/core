@@ -72,8 +72,8 @@ export default function LoginPage() {
   }
 
   const handleOIDCLogin = () => {
-     // TODO: Redirect to OIDC provider
-     console.log("Initiating OIDC login...");
+     // Redirect to OIDC provider via backend
+     window.location.href = "/auth/login";
   };
 
   return (
