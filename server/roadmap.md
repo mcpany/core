@@ -10,6 +10,7 @@
 - [x] **Context Optimizer**: Middleware to prevent context bloat. [Docs](server/docs/features/context_optimizer.md)
 - [x] **Data Loss Prevention (DLP)**: Redaction of PII in inputs/outputs. [Docs](server/docs/features/dlp.md)
 - [x] **Diagnostic "Doctor" API**: `mcpctl` validation and health checks. [Docs](server/docs/features/mcpctl.md)
+  - _Update_: CLI implementation completed. Now supports connection verification and detailed health reporting.
 - [x] **SSO Integration**: OIDC/SAML support. [Docs](server/docs/features/sso.md)
 - [x] **Audit Log Export**: Native Splunk and Datadog integration. [Docs](server/docs/features/audit_logging.md)
 - [x] **Cost Attribution**: Token-based cost estimation and metrics. [Docs](server/docs/features/rate-limiting/README.md)
@@ -32,7 +33,8 @@ These features represent the next logical steps for the product, focusing on Ent
 | Rank | Feature Name | Why it matters | Difficulty |
 | :--- | :--- | :--- | :--- |
 | 1 | **Human-in-the-Loop Approval UI** | **Safety**: Critical for preventing dangerous actions (e.g., `DROP TABLE`) by requiring manual admin approval via the UI before execution. | Low |
-| 2 | **Secrets Management Integration** | **Security**: First-class integration with HashiCorp Vault or AWS Secrets Manager to avoid storing API keys in plain text configs or env vars. | Medium |
+| 2 | **Tool Poisoning Mitigation** | **Security**: Implement integrity checks for tool definitions to prevent "Rug Pull" attacks where a tool definition changes maliciously after installation. | High |
+| 3 | **Secrets Management Integration** | **Security**: First-class integration with HashiCorp Vault or AWS Secrets Manager to avoid storing API keys in plain text configs or env vars. | Medium |
 | 3 | **Interactive OAuth Handler** | **UX/Auth**: Solve the "copy-paste token" friction. Allow users to click "Login" in the UI to authenticate tools like GitHub/Google. | High |
 | 4 | **Local LLM "One-Click" Connect** | **Connectivity**: Auto-detect and connect to local inference servers (Ollama, LM Studio) to democratize AI access without cloud costs. | Low |
 | 5 | **Tool "Dry Run" Mode** | **DevX**: Allow tools to define a "dry run" logic to validate inputs and permissions without executing side effects. | Medium |
