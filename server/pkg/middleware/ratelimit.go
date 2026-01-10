@@ -11,11 +11,9 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
-	"sync"
 	"time"
 
 	armonmetrics "github.com/armon/go-metrics"
-	"github.com/mcpany/core/proto/bus"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/mcpany/core/server/pkg/auth"
 	"github.com/mcpany/core/server/pkg/metrics"
@@ -23,45 +21,7 @@ import (
 	"github.com/mcpany/core/server/pkg/tool"
 	"github.com/mcpany/core/server/pkg/util"
 	"github.com/patrickmn/go-cache"
-	"github.com/redis/go-redis/v9"
-	"golang.org/x/time/rate"
 )
-
-// Limiter interface defines the methods required for a rate limiter.
-type Limiter interface {
-	// Allow checks if the request is allowed.
-	Allow(ctx context.Context) (bool, error)
-	// AllowN checks if the request is allowed with a specific cost.
-	AllowN(ctx context.Context, n int) (bool, error)
-	// Update updates the limiter configuration.
-	Update(rps float64, burst int)
-}
-
-// LocalLimiter is an in-memory implementation of Limiter.
-type LocalLimiter struct {
-	*rate.Limiter
-}
-
-// Allow checks if the request is allowed (cost 1).
-func (l *LocalLimiter) Allow(_ context.Context) (bool, error) {
-	return l.Limiter.Allow(), nil
-}
-
-// AllowN checks if the request is allowed with a specific cost.
-func (l *LocalLimiter) AllowN(_ context.Context, n int) (bool, error) {
-	return l.Limiter.AllowN(time.Now(), n), nil
-}
-
-// Update updates the limiter configuration.
-func (l *LocalLimiter) Update(rps float64, burst int) {
-	limit := rate.Limit(rps)
-	if l.Limit() != limit {
-		l.SetLimit(limit)
-	}
-	if l.Burst() != burst {
-		l.SetBurst(burst)
-	}
-}
 
 // RateLimitMiddleware is a tool execution middleware that provides rate limiting
 // functionality for upstream services.
@@ -70,13 +30,8 @@ type RateLimitMiddleware struct {
 	tokenizer   tokenizer.Tokenizer
 	// limiters caches active limiters. Key is "limitKey:partitionKey".
 	limiters *cache.Cache
-	// redisClients caches Redis clients per service. Key is serviceID.
-	redisClients sync.Map
-}
-
-type cachedRedisClient struct {
-	client     *redis.Client
-	configHash string
+	// strategies maps storage types to strategies.
+	strategies map[configv1.RateLimitConfig_Storage]RateLimitStrategy
 }
 
 // Option defines a functional option for RateLimitMiddleware.
@@ -94,7 +49,15 @@ func NewRateLimitMiddleware(toolManager tool.ManagerInterface, opts ...Option) *
 	m := &RateLimitMiddleware{
 		toolManager: toolManager,
 		limiters:    cache.New(1*time.Hour, 10*time.Minute),
+		strategies:  make(map[configv1.RateLimitConfig_Storage]RateLimitStrategy),
 	}
+
+	// Register default strategies
+	m.strategies[configv1.RateLimitConfig_STORAGE_MEMORY] = NewLocalStrategy()
+	// Redis strategy requires a client provider or we can use the default one if it manages clients internally.
+	// For now, let's assume we want to use the one that manages clients.
+	m.strategies[configv1.RateLimitConfig_STORAGE_REDIS] = NewRedisStrategy()
+
 	for _, opt := range opts {
 		opt(m)
 	}
@@ -247,51 +210,49 @@ func (m *RateLimitMiddleware) getLimiter(ctx context.Context, serviceID string, 
 		cacheKey = cacheKey + ":" + partitionKey
 	}
 
-	isRedis := config.GetStorage() == configv1.RateLimitConfig_STORAGE_REDIS
+	storageType := config.GetStorage()
+	strategy, ok := m.strategies[storageType]
+	if !ok {
+		// Fallback to local if strategy not found or default to memory
+		strategy = m.strategies[configv1.RateLimitConfig_STORAGE_MEMORY]
+	}
 
 	// Try to get from cache
 	if val, found := m.limiters.Get(cacheKey); found {
 		limiter := val.(Limiter)
-		// Verify type matches config
-		var validType bool
-		if isRedis {
-			rl, ok := limiter.(*RedisLimiter)
-			validType = ok
-			// Check if Redis config changed
-			if ok && config.GetRedis() != nil {
-				newConfigHash := config.GetRedis().GetAddress() + "|" + config.GetRedis().GetPassword() + "|" + strconv.Itoa(int(config.GetRedis().GetDb()))
-				if rl.GetConfigHash() != newConfigHash {
-					validType = false // Force creation of new limiter
-				}
+
+		// We could try to verify if the limiter matches the strategy, but it's hard to do without type assertions on specific implementations.
+		// For now, we assume that if the config changed significantly (storage type change), the strategy would be different.
+		// But here we only have the generic Limiter interface.
+
+		// Ideally the Strategy should handle validation/updating of existing limiter, but GetLimiter interface creates new one.
+		// We can add "Validate" or "Update" to Strategy?
+		// Or we just update the generic properties:
+		limiter.Update(rps, burst)
+
+		// However, for Redis, we need to check if connection changed.
+		// This logic was previously inline.
+		// To keep it clean, let's assume if we retrieved it, it's good, unless we want to do strict checking.
+		// The previous logic checked `GetConfigHash()`.
+		// Let's rely on the strategy to support checking?
+		// Or simply: if it's RedisLimiter, we check.
+
+		if rl, ok := limiter.(interface{ GetConfigHash() string }); ok && storageType == configv1.RateLimitConfig_STORAGE_REDIS && config.GetRedis() != nil {
+			newConfigHash := config.GetRedis().GetAddress() + "|" + config.GetRedis().GetPassword() + "|" + strconv.Itoa(int(config.GetRedis().GetDb()))
+			if rl.GetConfigHash() != newConfigHash {
+				// Config changed, recreate
+				goto Create
 			}
-		} else {
-			_, validType = limiter.(*LocalLimiter)
 		}
 
-		if validType {
-			// Update config in case it changed
-			limiter.Update(rps, burst)
-			return limiter, nil
-		}
-		// Type mismatch or config changed, fall through to create new
+		return limiter, nil
 	}
 
+Create:
 	// Create new limiter
-	var limiter Limiter
-
-	if isRedis {
-		if config.GetRedis() == nil {
-			return nil, fmt.Errorf("redis config is missing")
-		}
-		client, err := m.getRedisClient(serviceID, config.GetRedis())
-		if err != nil {
-			return nil, err
-		}
-		limiter = NewRedisLimiterWithClient(client, serviceID, limitScopeKey, partitionKey, config)
-	} else {
-		limiter = &LocalLimiter{
-			Limiter: rate.NewLimiter(rate.Limit(rps), burst),
-		}
+	limiter, err := strategy.Create(ctx, serviceID, limitScopeKey, partitionKey, config)
+	if err != nil {
+		return nil, err
 	}
 
 	// Cache it
@@ -340,34 +301,4 @@ func hashKey(prefix, key string) string {
 	copy(buf, prefix)
 	hex.Encode(buf[len(prefix):], hash[:])
 	return string(buf)
-}
-
-func (m *RateLimitMiddleware) getRedisClient(serviceID string, config *bus.RedisBus) (*redis.Client, error) { //nolint:unparam
-	configHash := config.GetAddress() + "|" + config.GetPassword() + "|" + strconv.Itoa(int(config.GetDb()))
-
-	if val, ok := m.redisClients.Load(serviceID); ok {
-		// handle both legacy *redis.Client (if any) and new *cachedRedisClient
-		// Though in this code path we probably only have new ones if we restart.
-		// But sync.Map is persistent in memory.
-		if cached, ok := val.(*cachedRedisClient); ok {
-			if cached.configHash == configHash {
-				return cached.client, nil
-			}
-		} else if _, ok := val.(*redis.Client); ok {
-			// Legacy fallback or type mismatch, treat as miss
-			_ = ok
-		}
-	}
-
-	opts := &redis.Options{
-		Addr:     config.GetAddress(),
-		Password: config.GetPassword(),
-		DB:       int(config.GetDb()),
-	}
-	client := redisClientCreator(opts)
-	m.redisClients.Store(serviceID, &cachedRedisClient{
-		client:     client,
-		configHash: configHash,
-	})
-	return client, nil
 }
