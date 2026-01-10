@@ -7,6 +7,7 @@ import (
 	"context"
 	"os"
 	"testing"
+	"time"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/mcpany/core/server/pkg/validation"
@@ -237,6 +238,23 @@ func TestValidateContainerEnvironment_Volumes(t *testing.T) {
 }
 
 func TestValidateMcpService_StdioConnection(t *testing.T) {
+	// Mock execLookPath
+	oldLookPath := execLookPath
+	defer func() { execLookPath = oldLookPath }()
+	execLookPath = func(file string) (string, error) {
+		if file == "ls" {
+			return "/bin/ls", nil
+		}
+		return "", os.ErrNotExist
+	}
+
+	// Mock osStat for working directory validation
+	oldOsStat := osStat
+	defer func() { osStat = oldOsStat }()
+	osStat = func(name string) (os.FileInfo, error) {
+		return &mockFileInfo{isDir: true}, nil // Assume exists and is directory
+	}
+
 	// Focusing on stdio validation
 	tests := []struct {
 		name      string
@@ -309,6 +327,17 @@ func TestValidateMcpService_StdioConnection(t *testing.T) {
 		})
 	}
 }
+
+type mockFileInfo struct {
+	isDir bool
+}
+
+func (m *mockFileInfo) Name() string       { return "mock" }
+func (m *mockFileInfo) Size() int64        { return 0 }
+func (m *mockFileInfo) Mode() os.FileMode  { return 0 }
+func (m *mockFileInfo) ModTime() time.Time { return time.Time{} }
+func (m *mockFileInfo) IsDir() bool        { return m.isDir }
+func (m *mockFileInfo) Sys() any           { return nil }
 
 func TestValidateMcpService_BundleConnection(t *testing.T) {
 	tests := []struct {
