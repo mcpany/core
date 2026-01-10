@@ -1,6 +1,7 @@
 // Copyright 2026 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
+// Package config provides configuration management for MCP Any.
 package config
 
 import (
@@ -85,7 +86,34 @@ func HydrateSecretsInService(svc *configv1.UpstreamServiceConfig, secrets map[st
 	}
 
 	// Hydrate other places if needed (e.g. Env vars in command line service)
-	// TODO: Add hydration for container environments and other fields.
+	switch s := svc.ServiceConfig.(type) {
+	case *configv1.UpstreamServiceConfig_CommandLineService:
+		if cmd := s.CommandLineService; cmd != nil {
+			hydrateSecretsInEnv(cmd.Env, secrets)
+			if ce := cmd.ContainerEnvironment; ce != nil {
+				hydrateSecretsInEnv(ce.Env, secrets)
+			}
+		}
+	case *configv1.UpstreamServiceConfig_McpService:
+		if mcp := s.McpService; mcp != nil {
+			switch conn := mcp.ConnectionType.(type) {
+			case *configv1.McpUpstreamService_StdioConnection:
+				if stdio := conn.StdioConnection; stdio != nil {
+					hydrateSecretsInEnv(stdio.Env, secrets)
+				}
+			case *configv1.McpUpstreamService_BundleConnection:
+				if bundle := conn.BundleConnection; bundle != nil {
+					hydrateSecretsInEnv(bundle.Env, secrets)
+				}
+			}
+		}
+	}
+}
+
+func hydrateSecretsInEnv(env map[string]*configv1.SecretValue, secrets map[string]*configv1.SecretValue) {
+	for _, val := range env {
+		hydrateSecretValue(val, secrets)
+	}
 }
 
 func hydrateSecretsInAuth(auth *configv1.Authentication, secrets map[string]*configv1.SecretValue) {

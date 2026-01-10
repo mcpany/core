@@ -287,20 +287,7 @@ func (m *RateLimitMiddleware) getLimiter(ctx context.Context, serviceID string, 
 		if err != nil {
 			return nil, err
 		}
-		// Pass limitScopeKey as part of key prefix to redis limiter if needed?
-		// RedisLimiter probably uses a key prefix.
-		// We should ensure Redis keys don't collide.
-		// The current RedisLimiter implementation (assumed) takes a key.
-		// We should pass the cacheKey or similar unique identifier.
-
-		// Wait, NewRedisLimiterWithClient signature in original code:
-		// NewRedisLimiterWithClient(client, serviceID, partitionKey, config)
-		// It likely uses serviceID + partitionKey for the key.
-		// We need to pass the scope into it.
-		// Since I can't easily change RedisLimiter signature without seeing it, let's assume I need to pass a "key prefix" as serviceID.
-		// Hack: pass "serviceID:limitScopeKey" as the serviceID argument to NewRedisLimiterWithClient.
-
-		limiter = NewRedisLimiterWithClient(client, serviceID+":"+limitScopeKey, partitionKey, config)
+		limiter = NewRedisLimiterWithClient(client, serviceID, limitScopeKey, partitionKey, config)
 	} else {
 		limiter = &LocalLimiter{
 			Limiter: rate.NewLimiter(rate.Limit(rps), burst),

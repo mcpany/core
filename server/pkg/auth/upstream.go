@@ -71,6 +71,7 @@ func NewUpstreamAuthenticator(authConfig *configv1.Authentication) (UpstreamAuth
 		return &APIKeyAuth{
 			ParamName: apiKey.GetParamName(),
 			Value:     apiKey.GetValue(),
+			Location:  apiKey.GetIn(),
 		}, nil
 	}
 
@@ -119,13 +120,13 @@ func NewUpstreamAuthenticator(authConfig *configv1.Authentication) (UpstreamAuth
 
 // APIKeyAuth implements UpstreamAuthenticator for API key-based authentication.
 // It adds a specified header with a static API key value to the request.
-// Note: Currently primarily supports Header based auth for upstream.
 type APIKeyAuth struct {
 	ParamName string
 	Value     *configv1.SecretValue
+	Location  configv1.APIKeyAuth_Location
 }
 
-// Authenticate adds the configured API key to the request's header.
+// Authenticate adds the configured API key to the request's header, query, or cookie.
 //
 // Parameters:
 //   - req: The HTTP request to be modified.
@@ -140,9 +141,22 @@ func (a *APIKeyAuth) Authenticate(req *http.Request) error {
 	if err != nil {
 		return err
 	}
-	// TODO: Support other locations (Query, Cookie) if needed for upstream.
-	// For now defaulting to Header as per previous behavior, reusing ParamName as HeaderName.
-	req.Header.Set(a.ParamName, value)
+
+	switch a.Location {
+	case configv1.APIKeyAuth_QUERY:
+		q := req.URL.Query()
+		q.Set(a.ParamName, value)
+		req.URL.RawQuery = q.Encode()
+	case configv1.APIKeyAuth_COOKIE:
+		req.AddCookie(&http.Cookie{
+			Name:  a.ParamName,
+			Value: value,
+		})
+	case configv1.APIKeyAuth_HEADER:
+		fallthrough
+	default:
+		req.Header.Set(a.ParamName, value)
+	}
 	return nil
 }
 
