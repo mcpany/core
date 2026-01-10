@@ -78,6 +78,12 @@ export const FileConfigCard = memo(function FileConfigCard({ service }: { servic
                 <CardTitle className="text-xl flex items-center gap-2"><File /> File Config</CardTitle>
             </CardHeader>
             <CardContent>
+                <div className="mb-4">
+                    <p className="text-sm text-muted-foreground">
+                        Filesystem services allow defining specific allowed and denied paths.
+                        You can edit these in the configuration JSON below.
+                    </p>
+                </div>
                 <Tabs defaultValue="yaml">
                     <TabsList>
                         <TabsTrigger value="yaml">YAML</TabsTrigger>

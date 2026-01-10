@@ -4509,6 +4509,10 @@ type FilesystemUpstreamService struct {
 	Resources []*ResourceDefinition `protobuf:"bytes,4,rep,name=resources" json:"resources,omitempty"`
 	// Prompts that are exposed.
 	Prompts []*PromptDefinition `protobuf:"bytes,5,rep,name=prompts" json:"prompts,omitempty"`
+	// List of glob patterns for allowed paths. If empty, all paths under roots are allowed.
+	AllowedPaths []string `protobuf:"bytes,6,rep,name=allowed_paths" json:"allowed_paths,omitempty"`
+	// List of glob patterns for denied paths. Checked after allowed_paths.
+	DeniedPaths []string `protobuf:"bytes,7,rep,name=denied_paths" json:"denied_paths,omitempty"`
 	// The specific configuration for the filesystem type.
 	//
 	// Types that are valid to be assigned to FilesystemType:
@@ -4581,6 +4585,20 @@ func (x *FilesystemUpstreamService) GetResources() []*ResourceDefinition {
 func (x *FilesystemUpstreamService) GetPrompts() []*PromptDefinition {
 	if x != nil {
 		return x.Prompts
+	}
+	return nil
+}
+
+func (x *FilesystemUpstreamService) GetAllowedPaths() []string {
+	if x != nil {
+		return x.AllowedPaths
+	}
+	return nil
+}
+
+func (x *FilesystemUpstreamService) GetDeniedPaths() []string {
+	if x != nil {
+		return x.DeniedPaths
 	}
 	return nil
 }
@@ -4673,6 +4691,14 @@ func (x *FilesystemUpstreamService) SetResources(v []*ResourceDefinition) {
 
 func (x *FilesystemUpstreamService) SetPrompts(v []*PromptDefinition) {
 	x.Prompts = v
+}
+
+func (x *FilesystemUpstreamService) SetAllowedPaths(v []string) {
+	x.AllowedPaths = v
+}
+
+func (x *FilesystemUpstreamService) SetDeniedPaths(v []string) {
+	x.DeniedPaths = v
 }
 
 func (x *FilesystemUpstreamService) SetOs(v *OsFs) {
@@ -4899,6 +4925,10 @@ type FilesystemUpstreamService_builder struct {
 	Resources []*ResourceDefinition
 	// Prompts that are exposed.
 	Prompts []*PromptDefinition
+	// List of glob patterns for allowed paths. If empty, all paths under roots are allowed.
+	AllowedPaths []string
+	// List of glob patterns for denied paths. Checked after allowed_paths.
+	DeniedPaths []string
 	// The specific configuration for the filesystem type.
 
 	// Fields of oneof FilesystemType:
@@ -4921,6 +4951,8 @@ func (b0 FilesystemUpstreamService_builder) Build() *FilesystemUpstreamService {
 	x.Tools = b.Tools
 	x.Resources = b.Resources
 	x.Prompts = b.Prompts
+	x.AllowedPaths = b.AllowedPaths
+	x.DeniedPaths = b.DeniedPaths
 	if b.Os != nil {
 		x.FilesystemType = &FilesystemUpstreamService_Os{b.Os}
 	}
@@ -8073,7 +8105,7 @@ const file_proto_config_v1_upstream_service_proto_rawDesc = "" +
 	"\n" +
 	"CallsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x129\n" +
-	"\x05value\x18\x02 \x01(\v2#.mcpany.config.v1.SqlCallDefinitionR\x05value:\x028\x01\"\xe2\x05\n" +
+	"\x05value\x18\x02 \x01(\v2#.mcpany.config.v1.SqlCallDefinitionR\x05value:\x028\x01\"\xac\x06\n" +
 	"\x19FilesystemUpstreamService\x12Z\n" +
 	"\n" +
 	"root_paths\x18\x01 \x03(\v2:.mcpany.config.v1.FilesystemUpstreamService.RootPathsEntryR\n" +
@@ -8081,7 +8113,9 @@ const file_proto_config_v1_upstream_service_proto_rawDesc = "" +
 	"\tread_only\x18\x02 \x01(\bR\tread_only\x126\n" +
 	"\x05tools\x18\x03 \x03(\v2 .mcpany.config.v1.ToolDefinitionR\x05tools\x12B\n" +
 	"\tresources\x18\x04 \x03(\v2$.mcpany.config.v1.ResourceDefinitionR\tresources\x12<\n" +
-	"\aprompts\x18\x05 \x03(\v2\".mcpany.config.v1.PromptDefinitionR\aprompts\x12(\n" +
+	"\aprompts\x18\x05 \x03(\v2\".mcpany.config.v1.PromptDefinitionR\aprompts\x12$\n" +
+	"\rallowed_paths\x18\x06 \x03(\tR\rallowed_paths\x12\"\n" +
+	"\fdenied_paths\x18\a \x03(\tR\fdenied_paths\x12(\n" +
 	"\x02os\x18\n" +
 	" \x01(\v2\x16.mcpany.config.v1.OsFsH\x00R\x02os\x122\n" +
 	"\x05tmpfs\x18\v \x01(\v2\x1a.mcpany.config.v1.MemMapFsH\x00R\x05tmpfs\x12.\n" +
