@@ -85,8 +85,16 @@ func NewSQLiteAuditStore(path string) (*SQLiteAuditStore, error) {
 func ensureColumns(db *sql.DB) error {
 	// Helper to check and add column
 	addColumn := func(colName string) error {
+		// Whitelist valid column names to prevent SQL injection even from internal calls
+		switch colName {
+		case "prev_hash", "hash":
+			// Allowed
+		default:
+			return fmt.Errorf("invalid column name: %s", colName)
+		}
+
 		// Check if column exists
-		//nolint:gosec // colName is trusted (internal constant)
+		//nolint:gosec // colName is validated above
 		query := fmt.Sprintf("SELECT %s FROM audit_logs LIMIT 1", colName)
 		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 		defer cancel()
