@@ -9,7 +9,7 @@ WORKDIR /app
 
 # Install dependencies based on the preferred package manager
 COPY ui/package.json ui/package-lock.json* ./
-RUN npm install -g npm@latest && npm ci --no-audit
+RUN npm install -g npm@latest && npm install --no-audit
 
 # Rebuild the source code only when needed
 FROM base AS builder
