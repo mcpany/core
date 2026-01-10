@@ -46,6 +46,19 @@ test.describe('Generate Docs Screenshots and Verify UI', () => {
    * Existing loop covers marketplace/page.tsx
    */
 
+  test.beforeEach(async ({ page }) => {
+    // Mock Secrets
+    await page.route('**/api/v1/secrets', async route => {
+      await route.fulfill({
+        json: {
+          secrets: [
+            { name: 'TEST_SECRET', value: '********' }
+          ]
+        }
+      });
+    });
+  });
+
   for (const pageInfo of pages) {
     test(`Verify and Screenshot ${pageInfo.name}`, async ({ page }) => {
       console.log(`Navigating to ${pageInfo.path}...`);
