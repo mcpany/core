@@ -24,6 +24,7 @@
 - [x] **Message Bus**: NATS/Kafka integration for events. [Docs](server/docs/features/message_bus.md)
 - [x] **Structured Output Transformation**: JQ/JSONPath response shaping. [Docs](server/docs/features/transformation.md)
 - [x] **Documentation Generator**: Auto-generate beautiful Markdown/HTML documentation. [Docs](server/docs/features/documentation_generation.md)
+- [x] **Pre-flight Config Validation**: Added pre-flight checks for command existence and working directory validity to prevent "silent failures" at runtime.
 
 ## 2. Top 10 Recommended Features
 
