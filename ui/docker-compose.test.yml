@@ -60,9 +60,8 @@ services:
       default:
 
   ui-http-echo-server:
-    image: hashicorp/http-echo
+    image: mcpany/http-echo-server:latest
     ports:
       - "5678:5678"
     command:
-      - "-text=hello world"
-      - "-listen=:5678"
+      - "--port=5678"

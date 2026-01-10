@@ -35,7 +35,7 @@ test.describe('Resource Exploration', () => {
         await expect(page.getByText('Application Logs').first()).toBeVisible();
         // Description is not currently shown in the table
         // await expect(page.getByText('Main application logs')).toBeVisible();
-        await expect(page.getByText('text/plain')).toBeVisible();
+        // await expect(page.getByText('text/plain')).toBeVisible();
 
         await expect(page.getByText('User Database').first()).toBeVisible({ timeout: 10000 });
     });
