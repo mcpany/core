@@ -128,6 +128,11 @@ ui:
   service:
     type: ClusterIP
     port: 3000
+  # Security configuration for the UI
+  apiKey: "test-token" # WARN: Default value for testing. Change this in production!
+  # To use an existing secret instead of creating one from apiKey:
+  # existingSecret: "my-existing-secret"
+  secretKey: "api-key"
 
 worker:
   replicaCount: 1
