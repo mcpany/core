@@ -15,17 +15,17 @@ import (
 func TestLocalProvider_ResolvePath_EdgeCases(t *testing.T) {
 	// Setup: create a root dir
 	tmpDir := t.TempDir()
-	p := NewLocalProvider(nil, map[string]string{"/data": tmpDir})
+	p := NewLocalProvider(nil, map[string]string{"/data": tmpDir}, nil, nil)
 
 	// Case: no root paths defined
-	pEmpty := NewLocalProvider(nil, nil)
+	pEmpty := NewLocalProvider(nil, nil, nil, nil)
 	_, err := pEmpty.ResolvePath("/foo")
 	assert.Error(t, err)
 	assert.Contains(t, err.Error(), "no root paths defined")
 
 	// Case: virtual path with no slash prefix
 	// The code handles this by adding /, but we should verifying it works
-	p2 := NewLocalProvider(nil, map[string]string{"data": tmpDir})
+	p2 := NewLocalProvider(nil, map[string]string{"data": tmpDir}, nil, nil)
 	path, err := p2.ResolvePath("data/file.txt")
 	assert.NoError(t, err)
 	assert.Contains(t, path, tmpDir)
@@ -33,7 +33,7 @@ func TestLocalProvider_ResolvePath_EdgeCases(t *testing.T) {
 	// Case: root path does not exist
 	// filepath.Abs should succeed, but EvalSymlinks should fail
 	nonExistentRoot := filepath.Join(tmpDir, "does-not-exist")
-	p3 := NewLocalProvider(nil, map[string]string{"/": nonExistentRoot})
+	p3 := NewLocalProvider(nil, map[string]string{"/": nonExistentRoot}, nil, nil)
 	_, err = p3.ResolvePath("/file.txt")
 	assert.Error(t, err)
 	assert.Contains(t, err.Error(), "failed to resolve root path symlinks")
@@ -44,7 +44,7 @@ func TestLocalProvider_ResolvePath_EdgeCases(t *testing.T) {
 	subDir := filepath.Join(tmpDir, "sub")
 	require.NoError(t, os.Mkdir(subDir, 0755))
 
-	p4 := NewLocalProvider(nil, map[string]string{"/": tmpDir})
+	p4 := NewLocalProvider(nil, map[string]string{"/": tmpDir}, nil, nil)
 	resolved, err := p4.ResolvePath("/sub/non/existent/file.txt")
 	assert.NoError(t, err)
 	expected := filepath.Join(subDir, "non/existent/file.txt")
@@ -67,7 +67,7 @@ func TestLocalProvider_ResolvePath_EdgeCases(t *testing.T) {
 	symlink := filepath.Join(tmpDir, "badlink")
 	os.Symlink(outsideFile, symlink)
 
-	p5 := NewLocalProvider(nil, map[string]string{"/": tmpDir})
+	p5 := NewLocalProvider(nil, map[string]string{"/": tmpDir}, nil, nil)
 	_, err = p5.ResolvePath("/badlink")
 	assert.Error(t, err)
 	assert.Contains(t, err.Error(), "access denied: path traversal detected")
@@ -90,7 +90,7 @@ func TestLocalProvider_ResolvePath_PermissionError(t *testing.T) {
 	defer os.Chmod(noPermDir, 0755)
 
 	// Test EvalSymlinks failure on target path
-	p := NewLocalProvider(nil, map[string]string{"/": tmpDir})
+	p := NewLocalProvider(nil, map[string]string{"/": tmpDir}, nil, nil)
 	_, err = p.ResolvePath(filepath.Join("noperm", "file.txt"))
 	// Depending on OS, this might fail with "permission denied" or work if parent has permissions.
 	// Actually, accessing "noperm/file.txt" where noperm is 0000 should fail stat.

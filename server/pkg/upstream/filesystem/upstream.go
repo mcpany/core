@@ -205,12 +205,12 @@ func (u *Upstream) createProvider(ctx context.Context, config *configv1.Filesyst
 		}
 
 	case *configv1.FilesystemUpstreamService_Os:
-		prov = provider.NewLocalProvider(config.GetOs(), config.RootPaths)
+		prov = provider.NewLocalProvider(config.GetOs(), config.RootPaths, config.AllowedPaths, config.DeniedPaths)
 
 	default:
 		// Fallback to OsFs for backward compatibility if root_paths is set?
 		// Or defaulting to OsFs.
-		prov = provider.NewLocalProvider(nil, config.RootPaths)
+		prov = provider.NewLocalProvider(nil, config.RootPaths, config.AllowedPaths, config.DeniedPaths)
 	}
 
 	// Wrap with ReadOnly if requested.
