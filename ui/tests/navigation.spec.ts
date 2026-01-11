@@ -15,7 +15,7 @@ test.describe('Navigation Coverage', () => {
     { path: '/prompts', title: 'Prompt Library' },
     { path: '/resources', title: 'Resources' },
     { path: '/secrets', title: 'API Keys & Secrets' },
-    { path: '/services', title: 'Services' },
+    { path: '/upstream-services', title: 'Upstream Services' },
     { path: '/settings', title: 'Settings' },
     { path: '/stacks', title: 'Stacks' },
     { path: '/stats', title: 'Analytics & Stats' },
