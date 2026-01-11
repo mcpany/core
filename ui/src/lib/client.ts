@@ -122,6 +122,8 @@ export const apiClient = {
             commandLineService: s.command_line_service,
             mcpService: s.mcp_service,
             upstreamAuth: s.upstream_auth,
+            preCallHooks: s.pre_call_hooks,
+            postCallHooks: s.post_call_hooks,
             lastError: s.last_error,
         }));
     },
@@ -147,7 +149,9 @@ export const apiClient = {
                          grpcService: s.grpc_service,
                          commandLineService: s.command_line_service,
                          mcpService: s.mcp_service,
-                         upstreamAuth: s.upstream_auth
+                         upstreamAuth: s.upstream_auth,
+                         preCallHooks: s.pre_call_hooks,
+                         postCallHooks: s.post_call_hooks,
                      };
                  }
                  return data;
@@ -218,6 +222,12 @@ export const apiClient = {
         if (config.mcpService) {
             payload.mcp_service = { ...config.mcpService };
         }
+        if (config.preCallHooks) {
+            payload.pre_call_hooks = config.preCallHooks;
+        }
+        if (config.postCallHooks) {
+            payload.post_call_hooks = config.postCallHooks;
+        }
 
         const response = await fetchWithAuth('/api/v1/services', {
             method: 'POST',
@@ -256,6 +266,12 @@ export const apiClient = {
         }
         if (config.mcpService) {
             payload.mcp_service = { ...config.mcpService };
+        }
+        if (config.preCallHooks) {
+            payload.pre_call_hooks = config.preCallHooks;
+        }
+        if (config.postCallHooks) {
+            payload.post_call_hooks = config.postCallHooks;
         }
 
         const response = await fetchWithAuth(`/api/v1/services/${config.name}`, { // REST assumes ID/Name in path? Or just POST?
@@ -578,5 +594,77 @@ export const apiClient = {
         });
         // We always return JSON even on error
         return res.json();
+    },
+
+    // Templates (Backend Persistence)
+    listTemplates: async () => {
+        const res = await fetchWithAuth('/api/v1/templates');
+        if (!res.ok) throw new Error('Failed to fetch templates');
+        const data = await res.json();
+        // Backend returns generic UpstreamServiceConfig list.
+        // Map snake_case to camelCase
+        const list = Array.isArray(data) ? data : [];
+        return list.map((s: any) => ({
+            ...s,
+            // Reuse logic? Or copy/paste mapping
+            connectionPool: s.connection_pool,
+            httpService: s.http_service,
+            grpcService: s.grpc_service,
+            commandLineService: s.command_line_service,
+            mcpService: s.mcp_service,
+            upstreamAuth: s.upstream_auth,
+            preCallHooks: s.pre_call_hooks,
+            postCallHooks: s.post_call_hooks,
+        }));
+    },
+    saveTemplate: async (template: UpstreamServiceConfig) => {
+        // Map back to snake_case for saving
+        // Reuse registerService mapping logic essentially but for template endpoint
+        const payload: any = {
+            id: template.id,
+            name: template.name,
+            version: template.version,
+            disable: template.disable,
+            priority: template.priority,
+            load_balancing_strategy: template.loadBalancingStrategy,
+        };
+
+        if (template.httpService) {
+            payload.http_service = { address: template.httpService.address };
+        }
+        if (template.grpcService) {
+            payload.grpc_service = { address: template.grpcService.address };
+        }
+        if (template.commandLineService) {
+            payload.command_line_service = {
+                command: template.commandLineService.command,
+                working_directory: template.commandLineService.workingDirectory,
+                env: template.commandLineService.env
+            };
+        }
+        if (template.mcpService) {
+            payload.mcp_service = { ...template.mcpService };
+        }
+        if (template.preCallHooks) {
+            payload.pre_call_hooks = template.preCallHooks;
+        }
+        if (template.postCallHooks) {
+            payload.post_call_hooks = template.postCallHooks;
+        }
+
+        const res = await fetchWithAuth('/api/v1/templates', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+        if (!res.ok) throw new Error('Failed to save template');
+        return res.json();
+    },
+    deleteTemplate: async (id: string) => {
+        const res = await fetchWithAuth(`/api/v1/templates/${id}`, {
+            method: 'DELETE'
+        });
+        if (!res.ok) throw new Error('Failed to delete template');
+        return {};
     }
 };

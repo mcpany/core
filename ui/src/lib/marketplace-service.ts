@@ -60,8 +60,11 @@ const MOCK_OFFICIAL_COLLECTIONS: ServiceCollection[] = [
             preCallHooks: [],
             postCallHooks: [],
             prompts: [],
-            autoDiscoverTool: false
+
+            autoDiscoverTool: false,
+            configError: ""
         }
+
     ]
   },
   {
@@ -133,13 +136,17 @@ export const marketplaceService = {
                     preCallHooks: [],
                     postCallHooks: [],
                     prompts: [],
-                    autoDiscoverTool: false
+
+                    autoDiscoverTool: false,
+                    configError: ""
                 }
+
             }
         ];
     }
     return [];
   },
+
 
   importCollection: async (url: string): Promise<ServiceCollection> => {
      // Fetch from URL, validate, return
@@ -151,5 +158,37 @@ export const marketplaceService = {
          version: "0.0.1",
          services: []
      };
+  },
+
+  // Local Storage Logic
+  fetchLocalCollections: (): ServiceCollection[] => {
+      if (typeof window === 'undefined') return [];
+      try {
+          const stored = localStorage.getItem('mcp_local_collections');
+          return stored ? JSON.parse(stored) : [];
+      } catch (e) {
+          console.error("Failed to parse local collections", e);
+          return [];
+      }
+  },
+
+  saveLocalCollection: (collection: ServiceCollection) => {
+      if (typeof window === 'undefined') return;
+      const current = marketplaceService.fetchLocalCollections();
+      // Update if exists or append
+      const idx = current.findIndex(c => c.name === collection.name); // Simple dedupe by name for now
+      if (idx >= 0) {
+          current[idx] = collection;
+      } else {
+          current.push(collection);
+      }
+      localStorage.setItem('mcp_local_collections', JSON.stringify(current));
+  },
+
+  deleteLocalCollection: (name: string) => {
+      if (typeof window === 'undefined') return;
+      const current = marketplaceService.fetchLocalCollections();
+      const newCols = current.filter(c => c.name !== name);
+      localStorage.setItem('mcp_local_collections', JSON.stringify(newCols));
   }
 };

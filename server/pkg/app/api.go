@@ -38,6 +38,7 @@ func (a *Application) createAPIHandler(store storage.Storage) http.Handler {
 	mux.Handle("/doctor", doctor.Handler())
 
 	mux.HandleFunc("/settings", a.handleSettings(store))
+	mux.HandleFunc("/debug/auth-test", a.handleAuthTest())
 	mux.HandleFunc("/tools", a.handleTools())
 	mux.HandleFunc("/execute", a.handleExecute())
 	mux.HandleFunc("/prompts", a.handlePrompts())
@@ -45,6 +46,8 @@ func (a *Application) createAPIHandler(store storage.Storage) http.Handler {
 	mux.HandleFunc("/secrets", a.handleSecrets(store))
 	mux.HandleFunc("/secrets/", a.handleSecretDetail(store))
 	mux.HandleFunc("/topology", a.handleTopology())
+	mux.HandleFunc("/templates", a.handleTemplates())
+	mux.HandleFunc("/templates/", a.handleTemplateDetail())
 	mux.HandleFunc("/profiles", a.handleProfiles(store))
 	mux.HandleFunc("/profiles/", a.handleProfileDetail(store))
 	mux.HandleFunc("/collections", a.handleCollections(store))

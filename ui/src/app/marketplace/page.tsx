@@ -16,32 +16,60 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { Download, Package, Globe, ExternalLink } from "lucide-react";
 import Link from "next/link";
+
 import { ShareCollectionDialog } from "@/components/share-collection-dialog";
+import { CreateConfigWizard } from "@/components/marketplace/wizard/create-config-wizard";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Plus, Trash2 } from "lucide-react";
+import { InstantiateDialog } from "@/components/marketplace/instantiate-dialog";
+import { apiClient, UpstreamServiceConfig } from "@/lib/client";
 
 export default function MarketplacePage() {
   const { toast } = useToast();
   const [collections, setCollections] = useState<ServiceCollection[]>([]);
+  const [backendTemplates, setBackendTemplates] = useState<ServiceCollection[]>([]);
   const [publicMarkets, setPublicMarkets] = useState<ExternalMarketplace[]>([]);
   const [loading, setLoading] = useState(true);
   const [importUrl, setImportUrl] = useState("");
   const [isImportDialogOpen, setIsImportDialogOpen] = useState(false);
+  const [isWizardOpen, setIsWizardOpen] = useState(false);
+
+  // Instantiate State
+  const [isInstantiateOpen, setIsInstantiateOpen] = useState(false);
+  const [selectedTemplate, setSelectedTemplate] = useState<UpstreamServiceConfig | undefined>(undefined);
+
+  // Load Data
+  const loadData = async () => {
+    try {
+        const [cols, markets, templates] = await Promise.all([
+            marketplaceService.fetchOfficialCollections(),
+            marketplaceService.fetchPublicMarketplaces(),
+            apiClient.listTemplates().catch(e => {
+                console.warn("Failed to list templates", e);
+                return [];
+            })
+        ]);
+        setCollections(cols);
+        setPublicMarkets(markets);
+
+        // Map backend templates to ServiceCollection format for consistent display
+        const mappedTemplates = templates.map((t: UpstreamServiceConfig) => ({
+            name: t.name,
+            description: "Backend Template",
+            author: "User",
+            version: t.version || "0.0.1",
+            services: [t]
+        }));
+        setBackendTemplates(mappedTemplates);
+    } catch (e) {
+        console.error(e);
+        toast({ title: "Failed to load marketplace data", variant: "destructive" });
+    } finally {
+        setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    async function loadData() {
-        try {
-            const [cols, markets] = await Promise.all([
-                marketplaceService.fetchOfficialCollections(),
-                marketplaceService.fetchPublicMarketplaces()
-            ]);
-            setCollections(cols);
-            setPublicMarkets(markets);
-        } catch (e) {
-            console.error(e);
-            toast({ title: "Failed to load marketplace data", variant: "destructive" });
-        } finally {
-            setLoading(false);
-        }
-    }
     loadData();
   }, [toast]);
 
@@ -49,13 +77,59 @@ export default function MarketplacePage() {
     if (!importUrl) return;
     try {
         const col = await marketplaceService.importCollection(importUrl);
-        // In real app, we would install it here or show a confirmation dialog with contents
-        toast({ title: "Collection Imported", description: `Would install: ${col.name} (${col.services.length} services)` });
+        // For import, maybe we should save each service as a template?
+        // Or keep local storage for imports?
+        // Let's keep local storage for Imports for now as they are "Collections"
+        // But the task said "Implement Template Persistence".
+        // Let's save imported services to backend templates?
+        // Iterating and saving might be slow.
+        // Let's stick to LocalStorage for "Imported" if they are collections.
+        // But "Wizard" created ones should be backend.
+        // Actually, let's just use backend for everything if possible.
+        // If Importer returns a collection, we can't easily save a collection object to backend unless we use the collection API.
+        // I have handleCollections in API!
+        // But I didn't add client methods for collections.
+        // Let's just save to Local for Import and Backend for Wizard for now to mix both?
+        // Or simpler: Wizard saves to Backend. Import saves to Backend (as individual templates).
+
+        // For now, let's just save Wizard output to Backend.
+        // Import implementation can remain as is (Local) or be upgraded.
+        marketplaceService.saveLocalCollection(col);
+        toast({ title: "Collection Imported", description: `Saved ${col.name} to Local Marketplace` });
         setIsImportDialogOpen(false);
         setImportUrl("");
+        loadData();
     } catch (e) {
         toast({ title: "Import Failed", variant: "destructive", description: String(e) });
     }
+  };
+
+  const handleWizardComplete = async (config: UpstreamServiceConfig) => {
+      try {
+          await apiClient.saveTemplate(config);
+          toast({ title: "Config Saved", description: `${config.name} saved to Backend Templates.` });
+          setIsWizardOpen(false);
+          loadData();
+      } catch (e) {
+          console.error(e);
+          toast({ title: "Failed to save template", variant: "destructive", description: String(e) });
+      }
+  };
+
+  const deleteTemplate = async (templateSvc: UpstreamServiceConfig) => {
+      if (!templateSvc.id && !templateSvc.name) return;
+      try {
+        await apiClient.deleteTemplate(templateSvc.id || templateSvc.name);
+        loadData();
+        toast({ title: "Deleted", description: "Backend template deleted." });
+      } catch (e) {
+          toast({ title: "Failed to delete", variant: "destructive", description: String(e) });
+      }
+  };
+
+  const openInstantiate = (service: UpstreamServiceConfig) => {
+      setSelectedTemplate(service);
+      setIsInstantiateOpen(true);
   };
 
   return (
@@ -69,73 +143,124 @@ export default function MarketplacePage() {
         </div>
         <div className="flex gap-2">
             <ShareCollectionDialog />
-            <Button onClick={() => setIsImportDialogOpen(true)}>
+            <Button onClick={() => setIsImportDialogOpen(true)} variant="outline">
                 <Download className="mr-2 h-4 w-4" />
                 Import from URL
+            </Button>
+            <Button onClick={() => setIsWizardOpen(true)}>
+                <Plus className="mr-2 h-4 w-4" />
+                Create Config
             </Button>
         </div>
       </div>
 
-      {/* Official Collections */}
-      <section>
-          <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
-              <Package className="h-5 w-5" />
-              Official Service Collections
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {collections.map((col, idx) => (
-                  <Card key={idx} className="flex flex-col">
-                      <CardHeader>
-                          <CardTitle>{col.name}</CardTitle>
-                          <CardDescription>{col.description}</CardDescription>
-                      </CardHeader>
-                      <CardContent className="flex-1">
-                          <div className="text-sm text-muted-foreground">
-                              {col.services.length} Services • by {col.author}
-                          </div>
-                      </CardContent>
-                      <CardFooter>
-                          <Button className="w-full" variant="outline">
-                              View Details
-                          </Button>
-                      </CardFooter>
-                  </Card>
-              ))}
-              {collections.length === 0 && !loading && (
-                  <div className="col-span-full text-center p-8 text-muted-foreground border rounded-lg border-dashed">
-                      No official collections found.
-                  </div>
-              )}
-          </div>
-      </section>
+      <Tabs defaultValue="official" className="w-full">
+          <TabsList>
+              <TabsTrigger value="official">Official</TabsTrigger>
+              <TabsTrigger value="public">Public</TabsTrigger>
+              <TabsTrigger value="local">Local</TabsTrigger>
+          </TabsList>
 
-      {/* Public Marketplaces */}
-      <section>
-          <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
-              <Globe className="h-5 w-5" />
-              Public MCP Server Marketplaces
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {publicMarkets.map((market) => (
-                  <Card key={market.id} className="cursor-pointer hover:border-primary transition-colors">
-                      <Link href={`/marketplace/external/${market.id}`}>
-                        <CardHeader>
-                            <CardTitle className="flex items-center gap-2">
-                                {market.name}
-                                <ExternalLink className="h-4 w-4 opacity-50" />
-                            </CardTitle>
-                            <CardDescription>{market.description}</CardDescription>
-                        </CardHeader>
-                        <CardContent>
-                             <div className="text-sm text-muted-foreground truncate">
-                                 {market.url}
-                             </div>
-                        </CardContent>
-                      </Link>
-                  </Card>
-              ))}
-          </div>
-      </section>
+          <TabsContent value="official" className="mt-6">
+              <section>
+                <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
+                    <Package className="h-5 w-5" />
+                    Official Service Collections
+                </h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {collections.map((col, idx) => (
+                        <Card key={idx} className="flex flex-col">
+                            <CardHeader>
+                                <CardTitle>{col.name}</CardTitle>
+                                <CardDescription>{col.description}</CardDescription>
+                            </CardHeader>
+                            <CardContent className="flex-1">
+                                <div className="text-sm text-muted-foreground">
+                                    {col.services.length} Services • by {col.author}
+                                </div>
+                            </CardContent>
+                            <CardFooter>
+                                <Button className="w-full" variant="outline">
+                                    View Details
+                                </Button>
+                            </CardFooter>
+                        </Card>
+                    ))}
+                    {collections.length === 0 && !loading && (
+                        <div className="col-span-full text-center p-8 text-muted-foreground border rounded-lg border-dashed">
+                            No official collections found.
+                        </div>
+                    )}
+                </div>
+            </section>
+          </TabsContent>
+
+          <TabsContent value="public" className="mt-6">
+               <section>
+                <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
+                    <Globe className="h-5 w-5" />
+                    Public MCP Server Marketplaces
+                </h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {publicMarkets.map((market) => (
+                        <Card key={market.id} className="cursor-pointer hover:border-primary transition-colors">
+                            <Link href={`/marketplace/external/${market.id}`}>
+                                <CardHeader>
+                                    <CardTitle className="flex items-center gap-2">
+                                        {market.name}
+                                        <ExternalLink className="h-4 w-4 opacity-50" />
+                                    </CardTitle>
+                                    <CardDescription>{market.description}</CardDescription>
+                                </CardHeader>
+                                <CardContent>
+                                    <div className="text-sm text-muted-foreground truncate">
+                                        {market.url}
+                                    </div>
+                                </CardContent>
+                            </Link>
+                        </Card>
+                    ))}
+                </div>
+            </section>
+          </TabsContent>
+
+          <TabsContent value="local" className="mt-6">
+            <section>
+                <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
+                    <Package className="h-5 w-5" />
+                    Local Templates
+                </h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                     {backendTemplates.map((col, idx) => (
+                        <Card key={idx} className="flex flex-col border-dashed">
+                            <CardHeader>
+                                <CardTitle>{col.name}</CardTitle>
+                                <CardDescription>{col.description}</CardDescription>
+                            </CardHeader>
+                            <CardContent className="flex-1">
+                                <div className="text-sm text-muted-foreground">
+                                    {col.services.length} Services • {col.version}
+                                </div>
+                            </CardContent>
+                            <CardFooter className="gap-2">
+                                <Button className="flex-1" onClick={() => col.services[0] && openInstantiate(col.services[0])}>
+                                    Instantiate
+                                </Button>
+                                <Button variant="destructive" size="icon" onClick={() => col.services[0] && deleteTemplate(col.services[0])}>
+                                    <Trash2 className="h-4 w-4" />
+                                </Button>
+                            </CardFooter>
+                        </Card>
+                    ))}
+                     {backendTemplates.length === 0 && (
+                        <div className="col-span-full text-center p-12 text-muted-foreground border rounded-lg border-dashed bg-muted/20">
+                            No local templates. Create one to get started.
+                        </div>
+                    )}
+                </div>
+            </section>
+          </TabsContent>
+      </Tabs>
 
       <Dialog open={isImportDialogOpen} onOpenChange={setIsImportDialogOpen}>
           <DialogContent>
@@ -164,6 +289,19 @@ export default function MarketplacePage() {
               </DialogFooter>
           </DialogContent>
       </Dialog>
+
+      <CreateConfigWizard
+        open={isWizardOpen}
+        onOpenChange={setIsWizardOpen}
+        onComplete={handleWizardComplete}
+      />
+
+      <InstantiateDialog
+        open={isInstantiateOpen}
+        onOpenChange={setIsInstantiateOpen}
+        templateConfig={selectedTemplate}
+        onComplete={() => {}}
+      />
     </div>
   );
 }

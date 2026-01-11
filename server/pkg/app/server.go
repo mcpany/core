@@ -170,6 +170,7 @@ type Application struct {
 	fs               afero.Fs
 	configPaths      []string
 	Storage          storage.Storage
+	TemplateManager  *TemplateManager
 	busProvider      *bus.Provider
 
 	// Middleware handles for dynamic updates
@@ -354,6 +355,7 @@ func (a *Application) Run(
 	a.ToolManager.AddMiddleware(middleware.NewResilienceMiddleware(a.ToolManager))
 
 	a.PromptManager = prompt.NewManager()
+	a.TemplateManager = NewTemplateManager("data") // Use "data" directory for now
 	a.ResourceManager = resource.NewManager()
 
 	// Initialize auth manager

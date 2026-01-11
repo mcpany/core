@@ -119,13 +119,15 @@ const devItems = [
 ]
 
 const configItems = [
+
   {
-    title: "Services",
-    url: "/services",
+    title: "Upstream Services",
+    url: "/upstream-services",
     icon: Server,
   },
   {
     title: "Users",
+
     url: "/users",
     icon: User,
   },
