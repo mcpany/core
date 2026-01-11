@@ -316,8 +316,19 @@ func (a *Application) handleSettings(store storage.Storage) http.HandlerFunc {
 			_, _ = w.Write(b)
 
 		case http.MethodPost:
+			// Limit request body to 1MB
+			r.Body = http.MaxBytesReader(w, r.Body, 1048576)
 			var settings configv1.GlobalSettings
-			body, _ := io.ReadAll(r.Body)
+			body, err := io.ReadAll(r.Body)
+			if err != nil {
+				var maxBytesErr *http.MaxBytesError
+				if errors.As(err, &maxBytesErr) {
+					http.Error(w, "request body too large", http.StatusRequestEntityTooLarge)
+					return
+				}
+				http.Error(w, "failed to read body", http.StatusBadRequest)
+				return
+			}
 			if err := protojson.Unmarshal(body, &settings); err != nil {
 				http.Error(w, err.Error(), http.StatusBadRequest)
 				return
@@ -444,8 +455,19 @@ func (a *Application) handleSecrets(store storage.Storage) http.HandlerFunc {
 			_, _ = w.Write(buf)
 
 		case http.MethodPost:
+			// Limit request body to 1MB
+			r.Body = http.MaxBytesReader(w, r.Body, 1048576)
 			var secret configv1.Secret
-			body, _ := io.ReadAll(r.Body)
+			body, err := io.ReadAll(r.Body)
+			if err != nil {
+				var maxBytesErr *http.MaxBytesError
+				if errors.As(err, &maxBytesErr) {
+					http.Error(w, "request body too large", http.StatusRequestEntityTooLarge)
+					return
+				}
+				http.Error(w, "failed to read body", http.StatusBadRequest)
+				return
+			}
 			if err := protojson.Unmarshal(body, &secret); err != nil {
 				http.Error(w, err.Error(), http.StatusBadRequest)
 				return
@@ -530,8 +552,19 @@ func (a *Application) handleProfiles(store storage.Storage) http.HandlerFunc {
 			_, _ = w.Write(buf)
 
 		case http.MethodPost:
+			// Limit request body to 1MB
+			r.Body = http.MaxBytesReader(w, r.Body, 1048576)
 			var profile configv1.ProfileDefinition
-			body, _ := io.ReadAll(r.Body)
+			body, err := io.ReadAll(r.Body)
+			if err != nil {
+				var maxBytesErr *http.MaxBytesError
+				if errors.As(err, &maxBytesErr) {
+					http.Error(w, "request body too large", http.StatusRequestEntityTooLarge)
+					return
+				}
+				http.Error(w, "failed to read body", http.StatusBadRequest)
+				return
+			}
 			if err := protojson.Unmarshal(body, &profile); err != nil {
 				http.Error(w, err.Error(), http.StatusBadRequest)
 				return
@@ -610,8 +643,19 @@ func (a *Application) handleProfileDetail(store storage.Storage) http.HandlerFun
 			_, _ = w.Write(b)
 
 		case http.MethodPut:
+			// Limit request body to 1MB
+			r.Body = http.MaxBytesReader(w, r.Body, 1048576)
 			var profile configv1.ProfileDefinition
-			body, _ := io.ReadAll(r.Body)
+			body, err := io.ReadAll(r.Body)
+			if err != nil {
+				var maxBytesErr *http.MaxBytesError
+				if errors.As(err, &maxBytesErr) {
+					http.Error(w, "request body too large", http.StatusRequestEntityTooLarge)
+					return
+				}
+				http.Error(w, "failed to read body", http.StatusBadRequest)
+				return
+			}
 			if err := protojson.Unmarshal(body, &profile); err != nil {
 				http.Error(w, err.Error(), http.StatusBadRequest)
 				return
@@ -671,8 +715,19 @@ func (a *Application) handleCollections(store storage.Storage) http.HandlerFunc 
 			_, _ = w.Write(buf)
 
 		case http.MethodPost:
+			// Limit request body to 1MB
+			r.Body = http.MaxBytesReader(w, r.Body, 1048576)
 			var collection configv1.UpstreamServiceCollectionShare
-			body, _ := io.ReadAll(r.Body)
+			body, err := io.ReadAll(r.Body)
+			if err != nil {
+				var maxBytesErr *http.MaxBytesError
+				if errors.As(err, &maxBytesErr) {
+					http.Error(w, "request body too large", http.StatusRequestEntityTooLarge)
+					return
+				}
+				http.Error(w, "failed to read body", http.StatusBadRequest)
+				return
+			}
 			if err := protojson.Unmarshal(body, &collection); err != nil {
 				http.Error(w, err.Error(), http.StatusBadRequest)
 				return
@@ -752,8 +807,19 @@ func (a *Application) handleCollectionDetail(store storage.Storage) http.Handler
 			_, _ = w.Write(b)
 
 		case http.MethodPut:
+			// Limit request body to 1MB
+			r.Body = http.MaxBytesReader(w, r.Body, 1048576)
 			var collection configv1.UpstreamServiceCollectionShare
-			body, _ := io.ReadAll(r.Body)
+			body, err := io.ReadAll(r.Body)
+			if err != nil {
+				var maxBytesErr *http.MaxBytesError
+				if errors.As(err, &maxBytesErr) {
+					http.Error(w, "request body too large", http.StatusRequestEntityTooLarge)
+					return
+				}
+				http.Error(w, "failed to read body", http.StatusBadRequest)
+				return
+			}
 			if err := protojson.Unmarshal(body, &collection); err != nil {
 				http.Error(w, err.Error(), http.StatusBadRequest)
 				return
