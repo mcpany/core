@@ -3,13 +3,13 @@
   "version": "1.0.0",
   "description": "Integration tests for mcp-any",
   "dependencies": {
-    "@google/gemini-cli": "^0.11.0",
-    "@modelcontextprotocol/server-everything": "2025.9.25",
+    "@google/gemini-cli": "^0.23.0",
+    "@modelcontextprotocol/server-everything": "^2025.12.18",
     "@modelcontextprotocol/server-filesystem": "^2025.12.18",
-    "@playwright/mcp": "^0.0.45",
-    "zod": "^3.25.76"
+    "@playwright/mcp": "^0.0.55",
+    "zod": "^4.3.5"
   },
   "devDependencies": {
-    "@playwright/test": "^1.56.1"
+    "@playwright/test": "^1.57.0"
   }
 }
