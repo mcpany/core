@@ -50,4 +50,36 @@ test.describe('Alerts Page', () => {
     await page.getByRole('button', { name: 'Cancel' }).click();
     await expect(page.getByRole('dialog')).toBeHidden();
   });
+  test('should acknowledge alert via dropdown', async ({ page }) => {
+    await page.goto('/alerts');
+
+    // Find an active alert row (mock data usually has some)
+    // We target the row with "High CPU Usage" which is active in mock
+    const row = page.getByRole('row').filter({ hasText: 'High CPU Usage' });
+
+    // Click the "More Actions" dropdown button in that row
+    await row.getByRole('button', { name: 'Open menu' }).click();
+
+    // Click "Acknowledge"
+    await page.getByRole('menuitem', { name: 'Acknowledge' }).click();
+
+    // Verify status changes to "acknowledged"
+    await expect(row.getByText('acknowledged')).toBeVisible();
+  });
+
+  test('should resolve alert via dropdown', async ({ page }) => {
+    await page.goto('/alerts');
+
+    // Find an acknowledged or active alert
+    const row = page.getByRole('row').filter({ hasText: 'Disk Space Low' });
+
+    // Click "More Actions"
+    await row.getByRole('button', { name: 'Open menu' }).click();
+
+    // Click "Resolve"
+    await page.getByRole('menuitem', { name: 'Resolve' }).click();
+
+    // Verify status changes to "resolved"
+    await expect(row.getByText('resolved')).toBeVisible();
+  });
 });

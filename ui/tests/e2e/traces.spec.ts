@@ -46,8 +46,37 @@ test.describe('Trace Viewer', () => {
     await page.fill('input[placeholder="Search traces..."]', 'calculate');
 
     // Expect only matching items
-    // Since we don't know exactly what mock data is generated, we just ensure the input works
     // and doesn't crash the page
     await expect(page.locator('input[placeholder="Search traces..."]')).toHaveValue('calculate');
+  });
+
+  test('should replay trace in playground', async ({ page }) => {
+    await page.goto('/traces');
+
+    // Ensure we have a trace to click
+    await page.waitForSelector('text=Loading traces...', { state: 'detached' });
+    const firstTrace = page.locator('button.flex.flex-col').first();
+    await expect(firstTrace).toBeVisible();
+    await firstTrace.click();
+
+    // Click "Replay in Playground"
+    // We look for the button with specific text
+    const replayBtn = page.getByRole('button', { name: 'Replay in Playground' });
+    await expect(replayBtn).toBeVisible();
+    await replayBtn.click();
+
+    // Verify redirection to playground
+    await expect(page).toHaveURL(/\/playground.*/);
+
+    // Verify query params are present (tool and args)
+    // We don't check exact values as they depend on the random mock trace
+    const url = page.url();
+    expect(url).toContain('tool=');
+    expect(url).toContain('args=');
+
+    // Verify Playground input is populated
+    // The input should contain the tool name or args
+    // We wait for the form or input to be visible first
+    await expect(page.getByPlaceholder('Enter command or select a tool...').or(page.locator('textarea'))).toBeVisible();
   });
 });
