@@ -77,21 +77,25 @@ nodes:
 	}
 
 	// 6. Build Images (Locally)
-	t.Logf("Building Docker images with tag %s...", tag)
-	// Prepare docker context for server build
-	if err := runCommand(t, ctx, rootDir, "make", "-C", "server", "prepare-docker-context"); err != nil {
-		t.Fatalf("Failed to prepare docker context: %v", err)
-	}
+	if os.Getenv("SKIP_IMAGE_BUILD") != "true" {
+		t.Logf("Building Docker images with tag %s...", tag)
+		// Prepare docker context for server build
+		if err := runCommand(t, ctx, rootDir, "make", "-C", "server", "prepare-docker-context"); err != nil {
+			t.Fatalf("Failed to prepare docker context: %v", err)
+		}
 
-	// Build server with root context because Dockerfile expects it (COPY server/go.mod etc.)
-	if err := runCommand(t, ctx, rootDir, "make", "-C", "server", "build-docker", fmt.Sprintf("SERVER_IMAGE_TAGS=mcpany/server:%s", tag)); err != nil {
-		t.Fatalf("Failed to build server image: %v", err)
-	}
-	if err := runCommand(t, ctx, rootDir, "docker", "build", "-t", fmt.Sprintf("mcpany/operator:%s", tag), "-f", "k8s/operator/Dockerfile", "."); err != nil {
-		t.Fatalf("Failed to build operator image: %v", err)
-	}
-	if err := runCommand(t, ctx, rootDir, "docker", "build", "-t", fmt.Sprintf("mcpany/ui:%s", tag), "-f", "ui/Dockerfile", "."); err != nil {
-		t.Fatalf("Failed to build ui image: %v", err)
+		// Build server with root context because Dockerfile expects it (COPY server/go.mod etc.)
+		if err := runCommand(t, ctx, rootDir, "make", "-C", "server", "build-docker", fmt.Sprintf("SERVER_IMAGE_TAGS=mcpany/server:%s", tag)); err != nil {
+			t.Fatalf("Failed to build server image: %v", err)
+		}
+		if err := runCommand(t, ctx, rootDir, "docker", "build", "-t", fmt.Sprintf("mcpany/operator:%s", tag), "-f", "k8s/operator/Dockerfile", "."); err != nil {
+			t.Fatalf("Failed to build operator image: %v", err)
+		}
+		if err := runCommand(t, ctx, rootDir, "docker", "build", "-t", fmt.Sprintf("mcpany/ui:%s", tag), "-f", "ui/Dockerfile", "."); err != nil {
+			t.Fatalf("Failed to build ui image: %v", err)
+		}
+	} else {
+		t.Log("Skipping image build (SKIP_IMAGE_BUILD=true). Assuming images exist.")
 	}
 
 	// 5. Load Images into Kind
