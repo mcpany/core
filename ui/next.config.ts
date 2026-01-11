@@ -111,11 +111,13 @@ const nextConfig: NextConfig = {
     return config;
   },
   async rewrites() {
-    console.log("DEBUG: BACKEND_URL =", process.env.BACKEND_URL);
+    const backendUrl = process.env.BACKEND_URL || 'http://mcpany:50050';
+    console.log("DEBUG: BACKEND_URL env:", process.env.BACKEND_URL);
+    console.log("DEBUG: Using backend URL:", backendUrl);
     return [
       {
         source: '/api/v1/:path*',
-        destination: `${process.env.BACKEND_URL || 'http://localhost:8080'}/api/v1/:path*`,
+        destination: `${backendUrl}/api/v1/:path*`,
       },
       {
         source: '/mcpany.api.v1.RegistrationService/:path*',
