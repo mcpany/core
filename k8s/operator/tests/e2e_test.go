@@ -19,8 +19,15 @@ const (
 	clusterName = "mcp-e2e"
 	kindImage   = "kindest/node:v1.29.2"
 	namespace   = "mcp-system"
-	tag         = "1.0.0"
 )
+
+var tag = "1.0.0"
+
+func init() {
+	if t := os.Getenv("IMAGE_TAG"); t != "" {
+		tag = t
+	}
+}
 
 func TestOperatorE2E(t *testing.T) {
 	if os.Getenv("E2E") != "true" {

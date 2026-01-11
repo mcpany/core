@@ -356,6 +356,9 @@ jobs:
           - target: docker-build-ui
             image: mcpany/ui:latest
             filename: ui.tar
+          - target: docker-build-operator
+            image: mcpany/operator:latest
+            filename: operator.tar
     steps:
       - uses: actions/checkout@v5
       - name: Set up QEMU
@@ -712,9 +715,21 @@ jobs:
           kind load docker-image mcpany/server:latest --name mcp-e2e
           # Add others if needed? k8s tests probably use server.
 
+      - name: Download Docker Images
+        uses: actions/download-artifact@v4
+        with:
+          pattern: image-*
+          merge-multiple: true
+
+      - name: Load Docker Images
+        run: |
+          for f in *.tar; do
+            docker load -i "$f"
+          done
+
       - name: Run K8s E2E Tests
         run: |
-          make k8s-e2e
+          make k8s-e2e SKIP_IMAGE_BUILD=true IMAGE_TAG=latest
 
   ci-success:
     runs-on: ubuntu-latest
