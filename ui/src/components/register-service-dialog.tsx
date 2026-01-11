@@ -20,7 +20,8 @@ import { useToast } from "@/hooks/use-toast";
 import { apiClient } from "@/lib/client";
 import { UpstreamServiceConfig } from "@/lib/types";
 import { Credential } from "@proto/config/v1/auth";
-import { Plus, RotateCw } from "lucide-react";
+import { Plus, RotateCw, ChevronLeft } from "lucide-react";
+import { SERVICE_TEMPLATES, ServiceTemplate } from "@/lib/templates";
 
 const formSchema = z.object({
   name: z.string().min(1, "Name is required"),
@@ -40,8 +41,23 @@ interface RegisterServiceDialogProps {
 export function RegisterServiceDialog({ onSuccess, trigger, serviceToEdit }: RegisterServiceDialogProps) {
   const [open, setOpen] = useState(false);
   const [credentials, setCredentials] = useState<Credential[]>([]);
+  const [view, setView] = useState<"templates" | "form">("templates");
+  const [selectedTemplate, setSelectedTemplate] = useState<ServiceTemplate | null>(null);
+
   const { toast } = useToast();
   const isEditing = !!serviceToEdit;
+
+  // Reset view when dialog opens/closes
+  const handleOpenChange = (newOpen: boolean) => {
+      setOpen(newOpen);
+      if (!newOpen) {
+          setView("templates");
+          setSelectedTemplate(null);
+          form.reset();
+      } else if (isEditing) {
+          setView("form");
+      }
+  };
 
   const defaultValues = serviceToEdit ? {
       name: serviceToEdit.name,
@@ -85,28 +101,37 @@ export function RegisterServiceDialog({ onSuccess, trigger, serviceToEdit }: Reg
   };
 
   // Load credentials when dialog opens or tab changes to auth
-  // Simple check: load once
   if (open && credentials.length === 0) {
       loadCredentials();
   }
 
+  const handleTemplateSelect = (template: ServiceTemplate) => {
+      setSelectedTemplate(template);
+
+      // Pre-fill form based on template config
+      const config = template.config;
+      const type = config.grpcService ? "grpc" :
+                   config.httpService ? "http" :
+                   config.commandLineService ? "command_line" :
+                   config.openapiService ? "openapi" : "other";
+
+      form.setValue("name", config.name || "");
+      form.setValue("type", type as any);
+
+      if (config.httpService?.address) form.setValue("address", config.httpService.address);
+      if (config.grpcService?.address) form.setValue("address", config.grpcService.address);
+      if (config.openapiService?.address) form.setValue("address", config.openapiService.address);
+      if (config.commandLineService?.command) form.setValue("command", config.commandLineService.command);
+
+      // Also set the JSON for advanced usage
+      form.setValue("configJson", JSON.stringify(config, null, 2));
+
+      setView("form");
+  };
+
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
       let config: UpstreamServiceConfig;
-
-      // Logic: If on Advanced tab (we can't easily tell), OR type is 'other', use JSON.
-      // But we can check if JSON field was modified significantly?
-      // Simpler: If configJson parses to valid object and has matching name, prefer it?
-      // Let's assume if type is 'other', use JSON.
-      // If type is standard, construct config.
-
-      // However, we want to allow users to use Basic tab for quick setup.
-      // Let's assume: If user provided JSON, they probably want to use it.
-      // But defaultValues has JSON.
-
-      // Improved logic:
-      // If values.type === 'other', strictly use JSON.
-      // Else, construct config from basic fields.
 
       if (values.type === 'other') {
           if (!values.configJson) throw new Error("Config JSON is required for 'Other' type");
@@ -126,16 +151,32 @@ export function RegisterServiceDialog({ onSuccess, trigger, serviceToEdit }: Reg
               postCallHooks: [],
               prompts: [],
               autoDiscoverTool: false,
+              configError: ""
           };
 
           if (values.type === 'grpc') {
-              config.grpcService = { address: values.address || "", useReflection: true, tools: [], resources: [], calls: {}, prompts: [], protoCollection: [], protoDefinitions: [] };
+              config.grpcService = { address: values.address || "", useReflection: true, tools: [], resources: [], calls: {}, prompts: [], protoCollection: [], protoDefinitions: [], tlsConfig: undefined, healthCheck: undefined };
           } else if (values.type === 'http') {
-              config.httpService = { address: values.address || "", tools: [], calls: {}, resources: [], prompts: [] };
+              config.httpService = { address: values.address || "", tools: [], calls: {}, resources: [], prompts: [], healthCheck: undefined, tlsConfig: undefined };
           } else if (values.type === 'command_line') {
-              config.commandLineService = { command: values.command || "", workingDirectory: "", local: false, env: {}, tools: [], resources: [], prompts: [], communicationProtocol: 0, calls: {} };
+              config.commandLineService = { command: values.command || "", workingDirectory: "", local: false, env: {}, tools: [], resources: [], prompts: [], communicationProtocol: 0, calls: {}, healthCheck: undefined, cache: undefined, containerEnvironment: undefined, timeout: undefined };
+
+              // Try to preserve environment variables from configJson if available.
+              // This allows users to use the "Advanced (JSON)" tab to set env vars (like keys)
+              // while still using the "Basic" tab for command editing.
+              if (values.configJson) {
+                  try {
+                      const jsonConfig = JSON.parse(values.configJson);
+                      if (jsonConfig.commandLineService?.env) {
+                          config.commandLineService.env = jsonConfig.commandLineService.env;
+                      }
+                  } catch (e) {
+                      // Ignore JSON parse errors here
+                  }
+              }
+
           } else if (values.type === 'openapi') {
-               config.openapiService = { address: values.address || "", tools: [], calls: {}, resources: [], prompts: [] };
+               config.openapiService = { address: values.address || "", tools: [], calls: {}, resources: [], prompts: [], specContent: undefined, specUrl: undefined, healthCheck: undefined, tlsConfig: undefined };
           }
 
           if (values.upstreamAuth) {
@@ -166,165 +207,207 @@ export function RegisterServiceDialog({ onSuccess, trigger, serviceToEdit }: Reg
   const selectedType = form.watch("type");
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
         {trigger || <Button><Plus className="mr-2 h-4 w-4" /> Register Service</Button>}
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[600px] max-h-[80vh] overflow-y-auto">
+      <DialogContent className="sm:max-w-[700px] max-h-[85vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>{isEditing ? "Edit Service" : "Register New Service"}</DialogTitle>
+          <DialogTitle>
+              {view === "form" && !isEditing && (
+                  <Button variant="ghost" size="icon" className="mr-2 -ml-2 h-6 w-6" onClick={() => setView("templates")} aria-label="Back to templates">
+                      <ChevronLeft className="h-4 w-4" />
+                  </Button>
+              )}
+              {isEditing ? "Edit Service" : view === "templates" ? "Select Service Template" : "Configure Service"}
+          </DialogTitle>
           <DialogDescription>
-            Configure an upstream service to be exposed by MCPAny.
+            {view === "templates" ? "Choose a template to quickly configure a popular service, or start from scratch." : "Configure the upstream service details."}
           </DialogDescription>
         </DialogHeader>
-        <Tabs defaultValue="basic" className="w-full">
-            <TabsList className="grid w-full grid-cols-3">
-                <TabsTrigger value="basic">Basic Configuration</TabsTrigger>
-                <TabsTrigger value="auth">Authentication</TabsTrigger>
-                <TabsTrigger value="advanced">Advanced (JSON)</TabsTrigger>
-            </TabsList>
 
-            <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 mt-4">
+        {view === "templates" ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                {SERVICE_TEMPLATES.map((template) => {
+                    const Icon = template.icon;
+                    return (
+                        <div
+                            key={template.id}
+                            className="flex flex-col items-start p-4 border rounded-lg hover:bg-muted/50 cursor-pointer transition-colors"
+                            onClick={() => handleTemplateSelect(template)}
+                        >
+                            <div className="flex items-center gap-3 mb-2">
+                                <div className="p-2 bg-primary/10 rounded-md text-primary">
+                                    <Icon className="h-5 w-5" />
+                                </div>
+                                <h3 className="font-semibold">{template.name}</h3>
+                            </div>
+                            <p className="text-sm text-muted-foreground">{template.description}</p>
+                        </div>
+                    );
+                })}
+            </div>
+        ) : (
+            <Tabs defaultValue="basic" className="w-full">
+                <TabsList className="grid w-full grid-cols-3">
+                    <TabsTrigger value="basic">Basic Configuration</TabsTrigger>
+                    <TabsTrigger value="auth">Authentication</TabsTrigger>
+                    <TabsTrigger value="advanced">Advanced (JSON)</TabsTrigger>
+                </TabsList>
 
-            <TabsContent value="basic" className="space-y-4">
-                <FormField
-                  control={form.control}
-                  name="name"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Service Name</FormLabel>
-                      <FormControl>
-                        <Input placeholder="my-service" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="type"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Service Type</FormLabel>
-                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <Form {...form}>
+                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 mt-4">
+
+                <TabsContent value="basic" className="space-y-4">
+                    <FormField
+                    control={form.control}
+                    name="name"
+                    render={({ field }) => (
+                        <FormItem>
+                        <FormLabel>Service Name</FormLabel>
                         <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select type" />
-                          </SelectTrigger>
+                            <Input placeholder="my-service" {...field} />
                         </FormControl>
-                        <SelectContent>
-                          <SelectItem value="http">HTTP</SelectItem>
-                          <SelectItem value="grpc">gRPC</SelectItem>
-                          <SelectItem value="command_line">Command Line</SelectItem>
-                          <SelectItem value="openapi">OpenAPI</SelectItem>
-                          <SelectItem value="other">Other / Advanced</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                {(selectedType === 'http' || selectedType === 'grpc' || selectedType === 'openapi') && (
-                     <FormField
-                      control={form.control}
-                      name="address"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Address / URL</FormLabel>
-                          <FormControl>
-                            <Input placeholder="https://api.example.com" {...field} />
-                          </FormControl>
-                          <FormMessage />
+                        <FormMessage />
                         </FormItem>
-                      )}
+                    )}
                     />
-                )}
-
-                {selectedType === 'command_line' && (
-                     <FormField
-                      control={form.control}
-                      name="command"
-                      render={({ field }) => (
+                    <FormField
+                    control={form.control}
+                    name="type"
+                    render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Command</FormLabel>
-                          <FormControl>
-                            <Input placeholder="python script.py" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                )}
-                 {selectedType === 'other' && (
-                    <div className="text-sm text-muted-foreground">
-                        Please switch to the Advanced tab to configure other service types using JSON.
-                    </div>
-                )}
-            </TabsContent>
-
-            <TabsContent value="auth" className="space-y-4">
-                 <div className="space-y-4 border p-4 rounded-md bg-muted/50">
-                    <h3 className="text-sm font-medium">Load from Credential</h3>
-                    <p className="text-sm text-muted-foreground">Select a saved credential to apply its authentication configuration to this service.</p>
-                    <div className="flex gap-2 items-center">
-                        <Select onValueChange={handleCredentialSelect}>
-                            <SelectTrigger className="w-[300px]">
-                                <SelectValue placeholder="Select credential..." />
+                        <FormLabel>Service Type</FormLabel>
+                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                            <FormControl>
+                            <SelectTrigger>
+                                <SelectValue placeholder="Select type" />
                             </SelectTrigger>
+                            </FormControl>
                             <SelectContent>
-                                {credentials.map((cred) => (
-                                    <SelectItem key={cred.id} value={cred.id}>{cred.name}</SelectItem>
-                                ))}
+                            <SelectItem value="http">HTTP</SelectItem>
+                            <SelectItem value="grpc">gRPC</SelectItem>
+                            <SelectItem value="command_line">Command Line</SelectItem>
+                            <SelectItem value="openapi">OpenAPI</SelectItem>
+                            <SelectItem value="other">Other / Advanced</SelectItem>
                             </SelectContent>
                         </Select>
-                        <Button type="button" variant="ghost" size="icon" onClick={loadCredentials} title="Refresh Credentials">
-                            <RotateCw className="h-4 w-4" />
-                        </Button>
-                    </div>
-                </div>
-
-                <div className="space-y-2">
-                    <h3 className="text-sm font-medium">Current Configuration</h3>
-                     {form.watch("upstreamAuth") ? (
-                        <div className="text-sm border p-2 rounded">
-                            <pre className="whitespace-pre-wrap break-all">
-                                {JSON.stringify(form.watch("upstreamAuth"), null, 2)}
-                            </pre>
-                            <Button type="button" variant="outline" size="sm" className="mt-2" onClick={() => form.setValue("upstreamAuth", undefined)}>Clear Authentication</Button>
-                        </div>
-                    ) : (
-                        <div className="text-sm text-muted-foreground italic">No authentication configured.</div>
+                        <FormMessage />
+                        </FormItem>
                     )}
-                </div>
-            </TabsContent>
+                    />
 
-            <TabsContent value="advanced">
-                 <FormField
-                  control={form.control}
-                  name="configJson"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Configuration JSON</FormLabel>
-                      <FormControl>
-                        <Textarea className="font-mono" rows={15} {...field} />
-                      </FormControl>
-                       <FormDescription>
-                        Full JSON configuration for the UpstreamServiceConfig.
-                      </FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-            </TabsContent>
+                    {(selectedType === 'http' || selectedType === 'grpc' || selectedType === 'openapi') && (
+                        <FormField
+                        control={form.control}
+                        name="address"
+                        render={({ field }) => (
+                            <FormItem>
+                            <FormLabel>Address / URL</FormLabel>
+                            <FormControl>
+                                <Input placeholder="https://api.example.com" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                            </FormItem>
+                        )}
+                        />
+                    )}
 
-            <DialogFooter>
-              <Button type="submit">{isEditing ? "Save Changes" : "Register Service"}</Button>
-            </DialogFooter>
-            </form>
-            </Form>
-        </Tabs>
+                    {selectedType === 'command_line' && (
+                        <FormField
+                        control={form.control}
+                        name="command"
+                        render={({ field }) => (
+                            <FormItem>
+                            <FormLabel>Command</FormLabel>
+                            <FormControl>
+                                <Input placeholder="python script.py" {...field} />
+                            </FormControl>
+                            <FormDescription>
+                                The command to run the MCP server. Ensure all dependencies are installed.
+                            </FormDescription>
+                            <FormMessage />
+                            </FormItem>
+                        )}
+                        />
+                    )}
+                    {selectedType === 'other' && (
+                        <div className="text-sm text-muted-foreground">
+                            Please switch to the Advanced tab to configure other service types using JSON.
+                        </div>
+                    )}
+
+                    {/* Hint for Env Vars if using a template that needs them */}
+                    {selectedTemplate && selectedTemplate.config.commandLineService?.env && Object.keys(selectedTemplate.config.commandLineService.env).length > 0 && (
+                         <div className="p-3 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-900 rounded-md text-sm text-yellow-800 dark:text-yellow-200">
+                            <strong>Note:</strong> This template uses environment variables (e.g., keys).
+                            You may need to configure them in the "Advanced (JSON)" tab or ensure they are set in the server environment.
+                        </div>
+                    )}
+                </TabsContent>
+
+                <TabsContent value="auth" className="space-y-4">
+                    <div className="space-y-4 border p-4 rounded-md bg-muted/50">
+                        <h3 className="text-sm font-medium">Load from Credential</h3>
+                        <p className="text-sm text-muted-foreground">Select a saved credential to apply its authentication configuration to this service.</p>
+                        <div className="flex gap-2 items-center">
+                            <Select onValueChange={handleCredentialSelect}>
+                                <SelectTrigger className="w-[300px]">
+                                    <SelectValue placeholder="Select credential..." />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    {credentials.map((cred) => (
+                                        <SelectItem key={cred.id} value={cred.id}>{cred.name}</SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                            <Button type="button" variant="ghost" size="icon" onClick={loadCredentials} title="Refresh Credentials">
+                                <RotateCw className="h-4 w-4" />
+                            </Button>
+                        </div>
+                    </div>
+
+                    <div className="space-y-2">
+                        <h3 className="text-sm font-medium">Current Configuration</h3>
+                        {form.watch("upstreamAuth") ? (
+                            <div className="text-sm border p-2 rounded">
+                                <pre className="whitespace-pre-wrap break-all">
+                                    {JSON.stringify(form.watch("upstreamAuth"), null, 2)}
+                                </pre>
+                                <Button type="button" variant="outline" size="sm" className="mt-2" onClick={() => form.setValue("upstreamAuth", undefined)}>Clear Authentication</Button>
+                            </div>
+                        ) : (
+                            <div className="text-sm text-muted-foreground italic">No authentication configured.</div>
+                        )}
+                    </div>
+                </TabsContent>
+
+                <TabsContent value="advanced">
+                    <FormField
+                    control={form.control}
+                    name="configJson"
+                    render={({ field }) => (
+                        <FormItem>
+                        <FormLabel>Configuration JSON</FormLabel>
+                        <FormControl>
+                            <Textarea className="font-mono" rows={15} {...field} />
+                        </FormControl>
+                        <FormDescription>
+                            Full JSON configuration for the UpstreamServiceConfig.
+                        </FormDescription>
+                        <FormMessage />
+                        </FormItem>
+                    )}
+                    />
+                </TabsContent>
+
+                <DialogFooter>
+                <Button type="submit">{isEditing ? "Save Changes" : "Register Service"}</Button>
+                </DialogFooter>
+                </form>
+                </Form>
+            </Tabs>
+        )}
       </DialogContent>
     </Dialog>
   );

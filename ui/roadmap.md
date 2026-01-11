@@ -9,7 +9,7 @@
   - Visual editor to enable/disable parts of the spec, modify defaults, add fields.
   - Export and share service configurations.
 - [ ] **Plugin UI Extensions**: Allow server plugins to inject custom UI components.
-- [ ] **Service Templates Library**: A built-in library of common service configurations (Postgres, Redis, Slack) to quickly spin up services without manual config.
+- [x] **Service Templates Library**: A built-in library of common service configurations (Postgres, Redis, Slack) to quickly spin up services without manual config.
 - [ ] **Configuration Versioning & Rollback**: UI to view history of service configuration changes and rollback to previous versions.
 
 ### Completed Features
