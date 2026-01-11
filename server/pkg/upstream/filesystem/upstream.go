@@ -11,6 +11,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"os"
 	"sync"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
@@ -205,11 +206,13 @@ func (u *Upstream) createProvider(ctx context.Context, config *configv1.Filesyst
 		}
 
 	case *configv1.FilesystemUpstreamService_Os:
+		u.validateLocalPaths(config.RootPaths)
 		prov = provider.NewLocalProvider(config.GetOs(), config.RootPaths, config.AllowedPaths, config.DeniedPaths)
 
 	default:
 		// Fallback to OsFs for backward compatibility if root_paths is set?
 		// Or defaulting to OsFs.
+		u.validateLocalPaths(config.RootPaths)
 		prov = provider.NewLocalProvider(nil, config.RootPaths, config.AllowedPaths, config.DeniedPaths)
 	}
 
@@ -237,4 +240,22 @@ func (u *Upstream) getSupportedTools(fsService *configv1.FilesystemUpstreamServi
 	}
 
 	return getTools(prov, fs, fsService.GetReadOnly(), fsService.RootPaths)
+}
+
+func (u *Upstream) validateLocalPaths(rootPaths map[string]string) {
+	log := logging.GetLogger()
+	for virtualPath, localPath := range rootPaths {
+		// Use os.Stat to check if the path exists
+		// We use os.Stat here effectively because we are validating for the "Local" provider
+		// which uses the underlying OS filesystem.
+		_, err := os.Stat(localPath)
+		if err != nil {
+			if os.IsNotExist(err) {
+				log.Warn("Filesystem upstream: configured root path does not exist, removing from configuration", "virtual_path", virtualPath, "local_path", localPath)
+			} else {
+				log.Warn("Filesystem upstream: error accessing configured root path, removing from configuration", "virtual_path", virtualPath, "local_path", localPath, "error", err)
+			}
+			delete(rootPaths, virtualPath)
+		}
+	}
 }

@@ -31,6 +31,7 @@
 - [x] **Resilient Configuration Loading**: Better error reporting for invalid configs and keeping services in the list with error state.
 - [x] **Pre-flight Config Validation**: Added pre-flight checks for command existence and working directory validity to prevent "silent failures" at runtime.
 - [x] **Strict Startup Validation**: Server now fails fast with descriptive errors if the initial configuration contains invalid services, preventing "zombie services" (Friction Fighter).
+- [x] **Filesystem Path Validation**: Proactive validation of configured `root_paths` for Filesystem services to warn about missing directories on startup.
 
 ## 2. Top 10 Recommended Features
 
@@ -53,6 +54,8 @@ These features represent the next logical steps for the product, focusing on Ent
 | 13 | **Schema Validation Playground** | **DevX**: A dedicated UI in the dashboard to paste JSON/YAML and validate it against the server schema with real-time error highlighting. | Low |
 | 14 | **Config Linting Tool** | **DevX**: A standalone CLI command (e.g., `mcpany lint config.yaml`) to validate configuration without starting the server, useful for CI/CD pipelines. | Low |
 | 15 | **Partial Reloads** | **Resilience**: When reloading config dynamically, if one service is invalid, keep the old version running instead of removing it or failing the whole reload (if possible). | High |
+| 16 | **Filesystem Health Check** | **Observability**: Add a health check probe for filesystem roots to report status to the UI, not just logs. | Low |
+| 17 | **Safe Symlink Traversal** | **Security**: Add configuration options to strictly control symlink traversal policies (allow/deny/internal-only). | Medium |
 
 ## 3. Codebase Health
 
