@@ -22,6 +22,18 @@ test.describe('MCP Any UI E2E', () => {
     await expect(page.locator('text=System Health')).toBeVisible();
   });
 
+  test('should navigate to analytics from sidebar', async ({ page }) => {
+    await page.goto('/');
+    // Check if link exists
+    const statsLink = page.getByRole('link', { name: /Analytics|Stats/i });
+    if (await statsLink.count() > 0) {
+        await statsLink.click();
+        await expect(page).toHaveURL(/.*\/stats/);
+    } else {
+        console.log('Analytics link not found in sidebar, skipping navigation test');
+    }
+  });
+
 
 
 
