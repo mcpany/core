@@ -16,7 +16,13 @@ ifeq ($(shell $(DOCKER_CMD) buildx version >/dev/null 2>&1 && echo 1 || echo 0),
 	DOCKER_BUILD_CMD := $(DOCKER_CMD) build
 endif
 
-.PHONY: test test-local build-test-docker audit
+
+.PHONY: test test-local build-test-docker audit lint
+
+# Run lint
+lint:
+	npm run lint
+
 
 TIMESTAMP := $(shell date +%s)
 SERVER_IMAGE_TAG := ui-test-$(TIMESTAMP)
