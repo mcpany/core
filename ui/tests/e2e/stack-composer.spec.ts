@@ -9,16 +9,25 @@ test.describe('Stack Composer', () => {
 
   // Mock the API response for getStackConfig
   test.beforeEach(async ({ page }) => {
-    await page.route('**/api/v1/stacks/*/config', async (route) => {
-      await route.fulfill({
-        status: 200,
-        contentType: 'text/plain',
-        body: `version: "1.0"
+    let stackConfig = `version: "1.0"
 services:
   weather-service:
     image: mcpany/weather-service:latest
-`
-      });
+`;
+    await page.route('**/api/v1/stacks/*/config', async (route) => {
+      if (route.request().method() === 'POST') {
+        const postData = route.request().postData();
+        if (postData) {
+          stackConfig = postData;
+        }
+        await route.fulfill({ status: 200, body: stackConfig });
+      } else {
+        await route.fulfill({
+          status: 200,
+          contentType: 'text/plain',
+          body: stackConfig
+        });
+      }
     });
   });
   test('should load the editor and visualize configuration', async ({ page }) => {

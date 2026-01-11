@@ -52,25 +52,15 @@ func (m *mockRunner) RunHealthServer(_ string) error {
 
 func TestHealthCmd(t *testing.T) {
 	viper.Reset()
-	// Start a mock HTTP server on a custom port
-	portVal := findFreePort(t)
-	port := fmt.Sprintf("%d", portVal)
-	server := &http.Server{
-		Addr:              ":" + port,
-		ReadHeaderTimeout: 5 * time.Second,
-		ReadTimeout:       5 * time.Second,
-		WriteTimeout:      10 * time.Second,
-		IdleTimeout:       120 * time.Second,
-		Handler: http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
-			w.WriteHeader(http.StatusOK)
-		}),
-	}
-	go func() {
-		_ = server.ListenAndServe()
-	}()
-	defer func() { _ = server.Shutdown(context.Background()) }()
+	// Start a mock HTTP server on a random port using httptest
+	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+		w.WriteHeader(http.StatusOK)
+	}))
+	defer ts.Close()
 
-	// Wait for the server to start
+	port := fmt.Sprintf("%d", ts.Listener.Addr().(*net.TCPAddr).Port)
+
+	// Wait for the server to start (httptest starts immediately, but sleep doesn't hurt)
 	time.Sleep(100 * time.Millisecond)
 
 	rootCmd := newRootCmd()
@@ -82,23 +72,13 @@ func TestHealthCmd(t *testing.T) {
 
 func TestHealthCmdWithCustomPort(t *testing.T) {
 	viper.Reset()
-	// Start a mock HTTP server on a custom port
-	portVal := findFreePort(t)
-	port := fmt.Sprintf("%d", portVal)
-	server := &http.Server{
-		Addr:              ":" + port,
-		ReadHeaderTimeout: 5 * time.Second,
-		ReadTimeout:       5 * time.Second,
-		WriteTimeout:      10 * time.Second,
-		IdleTimeout:       120 * time.Second,
-		Handler: http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
-			w.WriteHeader(http.StatusOK)
-		}),
-	}
-	go func() {
-		_ = server.ListenAndServe()
-	}()
-	defer func() { _ = server.Shutdown(context.Background()) }()
+	// Start a mock HTTP server on a random port using httptest
+	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+		w.WriteHeader(http.StatusOK)
+	}))
+	defer ts.Close()
+
+	port := fmt.Sprintf("%d", ts.Listener.Addr().(*net.TCPAddr).Port)
 
 	// Wait for the server to start
 	time.Sleep(100 * time.Millisecond)
@@ -189,23 +169,13 @@ func TestMainExecution(t *testing.T) {
 
 func TestHealthCmdFlagPrecedence(t *testing.T) {
 	viper.Reset()
-	// Start a mock HTTP server on a custom port
-	portVal := findFreePort(t)
-	port := fmt.Sprintf("%d", portVal)
-	server := &http.Server{
-		Addr:              ":" + port,
-		ReadHeaderTimeout: 5 * time.Second,
-		ReadTimeout:       5 * time.Second,
-		WriteTimeout:      10 * time.Second,
-		IdleTimeout:       120 * time.Second,
-		Handler: http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
-			w.WriteHeader(http.StatusOK)
-		}),
-	}
-	go func() {
-		_ = server.ListenAndServe()
-	}()
-	defer func() { _ = server.Shutdown(context.Background()) }()
+	// Start a mock HTTP server on a random port using httptest
+	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+		w.WriteHeader(http.StatusOK)
+	}))
+	defer ts.Close()
+
+	port := fmt.Sprintf("%d", ts.Listener.Addr().(*net.TCPAddr).Port)
 
 	// Wait for the server to start
 	time.Sleep(100 * time.Millisecond)
@@ -231,16 +201,9 @@ global_settings:
 
 func findFreePort(t *testing.T) int {
 	t.Helper()
-	addr, err := net.ResolveTCPAddr("tcp", "localhost:0")
-	if err != nil {
-		t.Fatalf("failed to resolve tcp addr: %v", err)
-	}
-	l, err := net.ListenTCP("tcp", addr)
-	if err != nil {
-		t.Fatalf("failed to listen on tcp addr: %v", err)
-	}
-	defer func() { _ = l.Close() }()
-	return l.Addr().(*net.TCPAddr).Port
+	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {}))
+	defer ts.Close()
+	return ts.Listener.Addr().(*net.TCPAddr).Port
 }
 
 func TestGracefulShutdown(t *testing.T) {
@@ -248,9 +211,11 @@ func TestGracefulShutdown(t *testing.T) {
 		port := findFreePort(t)
 		cmd := newRootCmd()
 		cmd.SetArgs([]string{"run", "--mcp-listen-address", fmt.Sprintf("localhost:%d", port), "--config-path", ""})
+		done := make(chan struct{})
 		go func() {
 			err := cmd.Execute()
 			assert.NoError(t, err)
+			close(done)
 		}()
 		// Wait for the server to start by polling the health check endpoint.
 		assert.Eventually(t, func() bool {
@@ -261,6 +226,9 @@ func TestGracefulShutdown(t *testing.T) {
 			defer func() { _ = resp.Body.Close() }()
 			return resp.StatusCode == http.StatusOK
 		}, 5*time.Second, 100*time.Millisecond)
+
+		// Wait for server to finish
+		<-done
 		return
 	}
 
