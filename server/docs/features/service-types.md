@@ -44,6 +44,44 @@ Connects to WebSocket servers.
 Connects to services via WebRTC data channels.
 -   **Features**: Low-latency peer-to-peer communication.
 
-## Configuration Reference
+## Usage Examples
 
-For detailed configuration options for each service type, please refer to the [Configuration Reference](../reference/configuration.md) (if available) or the `upstream_services` section of your `config.yaml`.
+### Pain Point: "I want to use a Python script as a tool"
+Use the **Command Line** (`command_line_service` or `stdio`).
+
+```yaml
+upstream_services:
+  - name: "data-analysis"
+    type: "stdio"
+    command: "python3"
+    args: ["/opt/scripts/analyze.py"]
+    # Dependencies: Ensure libraries are installed in the environment
+```
+
+### Pain Point: "I need to connect to stripe"
+Use **OpenAPI**.
+
+```yaml
+upstream_services:
+  - name: "stripe"
+    type: "openapi"
+    # Point to the official spec
+    spec_url: "https://raw.githubusercontent.com/stripe/openapi/master/openapi/spec3.json"
+    authentication:
+      api_key:
+        header_name: "Authorization"
+        value: "Bearer ${STRIPE_KEY}"
+```
+
+### Pain Point: "I want to aggregate other MCP servers"
+Use **MCP Proxy**.
+
+```yaml
+upstream_services:
+  - name: "filesystem-server"
+    type: "mcp"
+    mcp_transport:
+      type: "stdio"
+      command: "npx"
+      args: ["-y", "@modelcontextprotocol/server-filesystem", "/var/www"]
+```

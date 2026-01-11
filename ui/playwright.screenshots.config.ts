@@ -10,9 +10,6 @@ export default defineConfig({
   ...config,
   testIgnore: undefined, // Override ignore
   testMatch: '**/generate_docs_screenshots.spec.ts',
-  webServer: {
-    ...config.webServer,
-    command: `PORT=9002 BACKEND_URL=${process.env.BACKEND_URL || 'http://localhost:50050'} node core/ui/server.js`,
-    cwd: '.next/standalone',
-  },
+  // Use the webServer config from the base config (npm run dev)
+  webServer: config.webServer,
 });
