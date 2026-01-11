@@ -63,6 +63,29 @@ test.describe('MCP Any UI E2E Tests', () => {
             ]
         });
     });
+
+    // Mock dashboard health endpoint
+    await page.route('**/api/dashboard/health', async (route) => {
+      await route.fulfill({
+        json: [
+          {
+            id: "svc_01",
+            name: "Payment Gateway",
+            status: "healthy",
+            latency: "--",
+            uptime: "--"
+          },
+          {
+            id: "svc_02",
+            name: "User Service",
+            status: "unhealthy",
+            latency: "--",
+            uptime: "--",
+            message: "Connection refused"
+          }
+        ]
+      });
+    });
   });
 
   test('Dashboard loads correctly', async ({ page }) => {
