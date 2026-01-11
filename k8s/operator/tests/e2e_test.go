@@ -288,7 +288,7 @@ func waitForPort(t *testing.T, ctx context.Context, addr string, timeout time.Du
 }
 
 func getFreePort() (int, error) {
-	addr, err := net.ResolveTCPAddr("tcp", "localhost:0")
+	addr, err := net.ResolveTCPAddr("tcp", ":0")
 	if err != nil {
 		return 0, err
 	}
