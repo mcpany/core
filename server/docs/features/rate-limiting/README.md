@@ -86,7 +86,7 @@ The following metrics are exposed for rate limiting:
 
 | Metric Name | Type | Labels | Description |
 | :--- | :--- | :--- | :--- |
-| `rate_limit_requests_total` | Counter | `service_id`, `status` | Total number of requests processed by the rate limiter. `status` can be `allowed` or `blocked`. |
+| `rate_limit_requests_total` | Counter | `service_id`, `limit_type`, `status` | Total number of requests processed by the rate limiter. `status` can be `allowed` or `blocked`. `limit_type` indicates the scope (e.g., `service`, `tool`). |
 
 ## Public API Example
 
@@ -101,7 +101,7 @@ This tutorial guides you through setting up a rate-limited service and verifying
 - `gemini` CLI tool installed
 
 ### 1. Create a Configuration File
-Create a file named `tutorial_config.yaml` with the following content (or use the provided `docs/features/rate-limiting/tutorial_config.yaml`):
+Create a file named `tutorial_config.yaml` with the following content (or use the provided `server/docs/features/rate-limiting/tutorial_config.yaml`):
 
 ```yaml
 upstream_services:
@@ -127,7 +127,7 @@ Run the server with the configuration file:
 
 ```bash
 # Assuming you are in the root of the repo
-go run ./cmd/server run --config-path ./docs/features/rate-limiting/tutorial_config.yaml --mcp-listen-address :8080 --metrics-listen-address :8081
+go run ./cmd/server run --config-path ./server/docs/features/rate-limiting/tutorial_config.yaml --mcp-listen-address :8080 --metrics-listen-address :8081
 ```
 
 The server should start and listen on port `8080`.
