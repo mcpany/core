@@ -125,7 +125,13 @@ const RedisRateLimitScript = `
              ttl = math.ceil(burst / rate * 2)
         end
         if ttl < 1 then ttl = 1 end
-        redis.call("EXPIRE", key, ttl)
+
+        -- Optimization: Only write EXPIRE if necessary to reduce replication traffic.
+        -- TTL command returns -1 if no expiry, -2 if missing (should not happen here).
+        local current_ttl = redis.call("TTL", key)
+        if current_ttl < (ttl / 2) then
+             redis.call("EXPIRE", key, ttl)
+        end
         return 1
     end
 
