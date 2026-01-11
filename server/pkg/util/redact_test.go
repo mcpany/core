@@ -8,6 +8,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestIsSensitiveKey(t *testing.T) {
@@ -213,6 +214,80 @@ func TestRedactJSON_FalsePositives(t *testing.T) {
 			} else {
 				assert.NotEqual(t, "[REDACTED]", val, "Expected NO redaction for input: %s", tt.input)
 			}
+		})
+	}
+}
+
+func TestRedactJSON_Types(t *testing.T) {
+	t.Parallel()
+	t.Run("nested types", func(t *testing.T) {
+		input := `{"api_key": {"foo": "bar"}, "token": ["a", "b"], "secret": 123, "secret_confidential": true, "password_hidden": null}`
+		output := RedactJSON([]byte(input))
+
+		var m map[string]interface{}
+		err := json.Unmarshal(output, &m)
+		require.NoError(t, err)
+
+		assert.Equal(t, "[REDACTED]", m["api_key"])
+		assert.Equal(t, "[REDACTED]", m["token"])
+		assert.Equal(t, "[REDACTED]", m["secret"])
+		assert.Equal(t, "[REDACTED]", m["secret_confidential"])
+		assert.Equal(t, "[REDACTED]", m["password_hidden"])
+	})
+
+	t.Run("malformed json handled gracefully", func(t *testing.T) {
+		// Unclosed string
+		input := `{"api_key": "sec`
+		output := RedactJSON([]byte(input))
+		// Fail-safe behavior: redacts what it thinks is the value (until EOF) and appends placeholder
+		expected := `{"api_key": "[REDACTED]"`
+		assert.Equal(t, expected, string(output))
+	})
+
+	t.Run("escaped quotes in skipping", func(t *testing.T) {
+		// String with escaped quotes
+		input := `{"public": "some \"string\"", "api_key": "secret"}`
+		output := RedactJSON([]byte(input))
+		assert.Contains(t, string(output), `some \"string\"`)
+		assert.Contains(t, string(output), `[REDACTED]`)
+	})
+
+	t.Run("nested object skipping", func(t *testing.T) {
+		input := `{"public": {"nested": "value"}, "api_key": "secret"}`
+		output := RedactJSON([]byte(input))
+		assert.Contains(t, string(output), `{"nested": "value"}`)
+		assert.Contains(t, string(output), `[REDACTED]`)
+	})
+
+	t.Run("nested array skipping", func(t *testing.T) {
+		input := `{"public": ["a", "b"], "api_key": "secret"}`
+		output := RedactJSON([]byte(input))
+		assert.Contains(t, string(output), `["a", "b"]`)
+		assert.Contains(t, string(output), `[REDACTED]`)
+	})
+}
+
+func TestScanForSensitiveKeys_JSON(t *testing.T) {
+	t.Parallel()
+	// Test the scanJSONForSensitiveKeys path (validateKeyContext=true)
+
+	tests := []struct {
+		name     string
+		input    string
+		expected bool
+	}{
+		{"simple key", `{"api_key": "value"}`, true},
+		{"nested key", `{"nested": {"api_key": "value"}}`, true},
+		{"key in string value (should be ignored)", `{"public": "this contains api_key but is a value"}`, false},
+		{"escaped quote in string", `{"public": "some \" quote", "api_key": "secret"}`, true},
+		{"malformed json (ignored)", `not json`, false},
+		{"key without colon", `{"api_key"}`, false},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			result := scanForSensitiveKeys([]byte(tt.input), true)
+			assert.Equal(t, tt.expected, result)
 		})
 	}
 }
