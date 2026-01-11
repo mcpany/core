@@ -95,7 +95,19 @@ export interface GlobalSettings {
     | OIDCConfig
     | undefined;
   /** Rate limiting configuration for the server. */
-  rateLimit?: RateLimitConfig | undefined;
+  rateLimit?:
+    | RateLimitConfig
+    | undefined;
+  /** Telemetry configuration. */
+  telemetry?:
+    | TelemetryConfig
+    | undefined;
+  /** GitHub API URL for self-updates (optional). */
+  githubApiUrl: string;
+  /** Whether to use sudo for Docker commands. */
+  useSudoForDocker: boolean;
+  /** Allowed file paths for validation. */
+  allowedFilePaths: string[];
 }
 
 export enum GlobalSettings_LogLevel {
@@ -186,6 +198,17 @@ export function globalSettings_LogFormatToJSON(object: GlobalSettings_LogFormat)
     default:
       return "UNRECOGNIZED";
   }
+}
+
+export interface TelemetryConfig {
+  /** Tracing configuration */
+  tracesExporter: string;
+  /** Metrics configuration */
+  metricsExporter: string;
+  /** OTLP endpoint (shared for now, or can be split) */
+  otlpEndpoint: string;
+  /** Service name override (optional) */
+  serviceName: string;
 }
 
 export interface OIDCConfig {
@@ -724,6 +747,10 @@ function createBaseGlobalSettings(): GlobalSettings {
     gcSettings: undefined,
     oidc: undefined,
     rateLimit: undefined,
+    telemetry: undefined,
+    githubApiUrl: "",
+    useSudoForDocker: false,
+    allowedFilePaths: [],
   };
 }
 
@@ -779,6 +806,18 @@ export const GlobalSettings: MessageFns<GlobalSettings> = {
     }
     if (message.rateLimit !== undefined) {
       RateLimitConfig.encode(message.rateLimit, writer.uint32(146).fork()).join();
+    }
+    if (message.telemetry !== undefined) {
+      TelemetryConfig.encode(message.telemetry, writer.uint32(154).fork()).join();
+    }
+    if (message.githubApiUrl !== "") {
+      writer.uint32(162).string(message.githubApiUrl);
+    }
+    if (message.useSudoForDocker !== false) {
+      writer.uint32(168).bool(message.useSudoForDocker);
+    }
+    for (const v of message.allowedFilePaths) {
+      writer.uint32(178).string(v!);
     }
     return writer;
   },
@@ -926,6 +965,38 @@ export const GlobalSettings: MessageFns<GlobalSettings> = {
           message.rateLimit = RateLimitConfig.decode(reader, reader.uint32());
           continue;
         }
+        case 19: {
+          if (tag !== 154) {
+            break;
+          }
+
+          message.telemetry = TelemetryConfig.decode(reader, reader.uint32());
+          continue;
+        }
+        case 20: {
+          if (tag !== 162) {
+            break;
+          }
+
+          message.githubApiUrl = reader.string();
+          continue;
+        }
+        case 21: {
+          if (tag !== 168) {
+            break;
+          }
+
+          message.useSudoForDocker = reader.bool();
+          continue;
+        }
+        case 22: {
+          if (tag !== 178) {
+            break;
+          }
+
+          message.allowedFilePaths.push(reader.string());
+          continue;
+        }
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -960,6 +1031,12 @@ export const GlobalSettings: MessageFns<GlobalSettings> = {
       gcSettings: isSet(object.gc_settings) ? GCSettings.fromJSON(object.gc_settings) : undefined,
       oidc: isSet(object.oidc) ? OIDCConfig.fromJSON(object.oidc) : undefined,
       rateLimit: isSet(object.rate_limit) ? RateLimitConfig.fromJSON(object.rate_limit) : undefined,
+      telemetry: isSet(object.telemetry) ? TelemetryConfig.fromJSON(object.telemetry) : undefined,
+      githubApiUrl: isSet(object.github_api_url) ? globalThis.String(object.github_api_url) : "",
+      useSudoForDocker: isSet(object.use_sudo_for_docker) ? globalThis.Boolean(object.use_sudo_for_docker) : false,
+      allowedFilePaths: globalThis.Array.isArray(object?.allowed_file_paths)
+        ? object.allowed_file_paths.map((e: any) => globalThis.String(e))
+        : [],
     };
   },
 
@@ -1016,6 +1093,18 @@ export const GlobalSettings: MessageFns<GlobalSettings> = {
     if (message.rateLimit !== undefined) {
       obj.rate_limit = RateLimitConfig.toJSON(message.rateLimit);
     }
+    if (message.telemetry !== undefined) {
+      obj.telemetry = TelemetryConfig.toJSON(message.telemetry);
+    }
+    if (message.githubApiUrl !== "") {
+      obj.github_api_url = message.githubApiUrl;
+    }
+    if (message.useSudoForDocker !== false) {
+      obj.use_sudo_for_docker = message.useSudoForDocker;
+    }
+    if (message.allowedFilePaths?.length) {
+      obj.allowed_file_paths = message.allowedFilePaths;
+    }
     return obj;
   },
 
@@ -1051,6 +1140,120 @@ export const GlobalSettings: MessageFns<GlobalSettings> = {
     message.rateLimit = (object.rateLimit !== undefined && object.rateLimit !== null)
       ? RateLimitConfig.fromPartial(object.rateLimit)
       : undefined;
+    message.telemetry = (object.telemetry !== undefined && object.telemetry !== null)
+      ? TelemetryConfig.fromPartial(object.telemetry)
+      : undefined;
+    message.githubApiUrl = object.githubApiUrl ?? "";
+    message.useSudoForDocker = object.useSudoForDocker ?? false;
+    message.allowedFilePaths = object.allowedFilePaths?.map((e) => e) || [];
+    return message;
+  },
+};
+
+function createBaseTelemetryConfig(): TelemetryConfig {
+  return { tracesExporter: "", metricsExporter: "", otlpEndpoint: "", serviceName: "" };
+}
+
+export const TelemetryConfig: MessageFns<TelemetryConfig> = {
+  encode(message: TelemetryConfig, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.tracesExporter !== "") {
+      writer.uint32(10).string(message.tracesExporter);
+    }
+    if (message.metricsExporter !== "") {
+      writer.uint32(18).string(message.metricsExporter);
+    }
+    if (message.otlpEndpoint !== "") {
+      writer.uint32(26).string(message.otlpEndpoint);
+    }
+    if (message.serviceName !== "") {
+      writer.uint32(34).string(message.serviceName);
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): TelemetryConfig {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseTelemetryConfig();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.tracesExporter = reader.string();
+          continue;
+        }
+        case 2: {
+          if (tag !== 18) {
+            break;
+          }
+
+          message.metricsExporter = reader.string();
+          continue;
+        }
+        case 3: {
+          if (tag !== 26) {
+            break;
+          }
+
+          message.otlpEndpoint = reader.string();
+          continue;
+        }
+        case 4: {
+          if (tag !== 34) {
+            break;
+          }
+
+          message.serviceName = reader.string();
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): TelemetryConfig {
+    return {
+      tracesExporter: isSet(object.traces_exporter) ? globalThis.String(object.traces_exporter) : "",
+      metricsExporter: isSet(object.metrics_exporter) ? globalThis.String(object.metrics_exporter) : "",
+      otlpEndpoint: isSet(object.otlp_endpoint) ? globalThis.String(object.otlp_endpoint) : "",
+      serviceName: isSet(object.service_name) ? globalThis.String(object.service_name) : "",
+    };
+  },
+
+  toJSON(message: TelemetryConfig): unknown {
+    const obj: any = {};
+    if (message.tracesExporter !== "") {
+      obj.traces_exporter = message.tracesExporter;
+    }
+    if (message.metricsExporter !== "") {
+      obj.metrics_exporter = message.metricsExporter;
+    }
+    if (message.otlpEndpoint !== "") {
+      obj.otlp_endpoint = message.otlpEndpoint;
+    }
+    if (message.serviceName !== "") {
+      obj.service_name = message.serviceName;
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<TelemetryConfig>, I>>(base?: I): TelemetryConfig {
+    return TelemetryConfig.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<TelemetryConfig>, I>>(object: I): TelemetryConfig {
+    const message = createBaseTelemetryConfig();
+    message.tracesExporter = object.tracesExporter ?? "";
+    message.metricsExporter = object.metricsExporter ?? "";
+    message.otlpEndpoint = object.otlpEndpoint ?? "";
+    message.serviceName = object.serviceName ?? "";
     return message;
   },
 };

@@ -62,7 +62,7 @@ func (m *mockTool) MCPTool() *mcp.Tool {
 
 func TestToolListFiltering(t *testing.T) {
 	poolManager := pool.NewManager()
-	factory := factory.NewUpstreamServiceFactory(poolManager)
+	factory := factory.NewUpstreamServiceFactory(poolManager, nil)
 	messageBus := bus_pb.MessageBus_builder{}.Build()
 	messageBus.SetInMemory(bus_pb.InMemoryBus_builder{}.Build())
 	busProvider, err := bus.NewProvider(messageBus)
@@ -145,7 +145,7 @@ func TestToolListFiltering(t *testing.T) {
 
 func TestToolListFilteringServiceId(t *testing.T) {
 	poolManager := pool.NewManager()
-	factory := factory.NewUpstreamServiceFactory(poolManager)
+	factory := factory.NewUpstreamServiceFactory(poolManager, nil)
 	messageBus := bus_pb.MessageBus_builder{}.Build()
 	messageBus.SetInMemory(bus_pb.InMemoryBus_builder{}.Build())
 	busProvider, err := bus.NewProvider(messageBus)
@@ -240,7 +240,7 @@ func (m *mockErrorTool) MCPTool() *mcp.Tool {
 
 func TestServer_CallTool(t *testing.T) {
 	poolManager := pool.NewManager()
-	factory := factory.NewUpstreamServiceFactory(poolManager)
+	factory := factory.NewUpstreamServiceFactory(poolManager, nil)
 	messageBus := bus_pb.MessageBus_builder{}.Build()
 	messageBus.SetInMemory(bus_pb.InMemoryBus_builder{}.Build())
 	busProvider, err := bus.NewProvider(messageBus)
@@ -370,7 +370,7 @@ func (p *testPrompt) Get(_ context.Context, _ json.RawMessage) (*mcp.GetPromptRe
 
 func TestServer_Prompts(t *testing.T) {
 	poolManager := pool.NewManager()
-	factory := factory.NewUpstreamServiceFactory(poolManager)
+	factory := factory.NewUpstreamServiceFactory(poolManager, nil)
 	messageBus := bus_pb.MessageBus_builder{}.Build()
 	messageBus.SetInMemory(bus_pb.InMemoryBus_builder{}.Build())
 	busProvider, err := bus.NewProvider(messageBus)
@@ -448,7 +448,7 @@ func (r *testResource) Subscribe(_ context.Context) error {
 
 func TestServer_Resources(t *testing.T) {
 	poolManager := pool.NewManager()
-	factory := factory.NewUpstreamServiceFactory(poolManager)
+	factory := factory.NewUpstreamServiceFactory(poolManager, nil)
 	messageBus := bus_pb.MessageBus_builder{}.Build()
 	messageBus.SetInMemory(bus_pb.InMemoryBus_builder{}.Build())
 	busProvider, err := bus.NewProvider(messageBus)
@@ -505,7 +505,7 @@ func TestServer_Resources(t *testing.T) {
 
 func TestServer_Getters(t *testing.T) {
 	poolManager := pool.NewManager()
-	factory := factory.NewUpstreamServiceFactory(poolManager)
+	factory := factory.NewUpstreamServiceFactory(poolManager, nil)
 	messageBus := bus_pb.MessageBus_builder{}.Build()
 	messageBus.SetInMemory(bus_pb.InMemoryBus_builder{}.Build())
 	busProvider, err := bus.NewProvider(messageBus)
@@ -589,7 +589,7 @@ func (m *mockToolManager) IsServiceAllowed(_, _ string) bool { return true }
 
 func TestServer_ToolManagerDelegation(t *testing.T) {
 	poolManager := pool.NewManager()
-	factory := factory.NewUpstreamServiceFactory(poolManager)
+	factory := factory.NewUpstreamServiceFactory(poolManager, nil)
 	messageBus := bus_pb.MessageBus_builder{}.Build()
 	messageBus.SetInMemory(bus_pb.InMemoryBus_builder{}.Build())
 	busProvider, err := bus.NewProvider(messageBus)
@@ -631,7 +631,7 @@ func TestServer_ToolManagerDelegation(t *testing.T) {
 
 func TestToolListFilteringIsAuthoritative(t *testing.T) {
 	poolManager := pool.NewManager()
-	factory := factory.NewUpstreamServiceFactory(poolManager)
+	factory := factory.NewUpstreamServiceFactory(poolManager, nil)
 	messageBus := bus_pb.MessageBus_builder{}.Build()
 	messageBus.SetInMemory(bus_pb.InMemoryBus_builder{}.Build())
 	busProvider, err := bus.NewProvider(messageBus)
@@ -701,7 +701,7 @@ func TestToolListFilteringIsAuthoritative(t *testing.T) {
 
 func TestToolListFiltering_ErrorCase(t *testing.T) {
 	poolManager := pool.NewManager()
-	factory := factory.NewUpstreamServiceFactory(poolManager)
+	factory := factory.NewUpstreamServiceFactory(poolManager, nil)
 	messageBus := bus_pb.MessageBus_builder{}.Build()
 	messageBus.SetInMemory(bus_pb.InMemoryBus_builder{}.Build())
 	busProvider, err := bus.NewProvider(messageBus)
@@ -753,7 +753,7 @@ func TestToolListFiltering_ErrorCase(t *testing.T) {
 
 func TestToolListFilteringConversionError(t *testing.T) {
 	poolManager := pool.NewManager()
-	factory := factory.NewUpstreamServiceFactory(poolManager)
+	factory := factory.NewUpstreamServiceFactory(poolManager, nil)
 	messageBus := bus_pb.MessageBus_builder{}.Build()
 	messageBus.SetInMemory(bus_pb.InMemoryBus_builder{}.Build())
 	busProvider, err := bus.NewProvider(messageBus)
@@ -809,7 +809,7 @@ func TestToolListFilteringConversionError(t *testing.T) {
 
 func TestServer_Reload(t *testing.T) {
 	poolManager := pool.NewManager()
-	factory := factory.NewUpstreamServiceFactory(poolManager)
+	factory := factory.NewUpstreamServiceFactory(poolManager, nil)
 	messageBus := bus_pb.MessageBus_builder{}.Build()
 	messageBus.SetInMemory(bus_pb.InMemoryBus_builder{}.Build())
 	busProvider, err := bus.NewProvider(messageBus)
@@ -850,7 +850,7 @@ func TestServer_Reload(t *testing.T) {
 
 func TestServer_MiddlewareHook(t *testing.T) {
 	poolManager := pool.NewManager()
-	factory := factory.NewUpstreamServiceFactory(poolManager)
+	factory := factory.NewUpstreamServiceFactory(poolManager, nil)
 	messageBus := bus_pb.MessageBus_builder{}.Build()
 	messageBus.SetInMemory(bus_pb.InMemoryBus_builder{}.Build())
 	busProvider, err := bus.NewProvider(messageBus)
@@ -878,7 +878,7 @@ func TestServer_MiddlewareHook(t *testing.T) {
 
 func TestServer_HandlerErrors(t *testing.T) {
 	poolManager := pool.NewManager()
-	factory := factory.NewUpstreamServiceFactory(poolManager)
+	factory := factory.NewUpstreamServiceFactory(poolManager, nil)
 	messageBus := bus_pb.MessageBus_builder{}.Build()
 	messageBus.SetInMemory(bus_pb.InMemoryBus_builder{}.Build())
 	busProvider, err := bus.NewProvider(messageBus)
@@ -1001,7 +1001,7 @@ func (m *smartToolManager) IsServiceAllowed(_, _ string) bool                   
 
 func TestServer_MiddlewareChain(t *testing.T) {
 	poolManager := pool.NewManager()
-	factory := factory.NewUpstreamServiceFactory(poolManager)
+	factory := factory.NewUpstreamServiceFactory(poolManager, nil)
 	messageBus := bus_pb.MessageBus_builder{}.Build()
 	messageBus.SetInMemory(bus_pb.InMemoryBus_builder{}.Build())
 	busProvider, err := bus.NewProvider(messageBus)
@@ -1113,7 +1113,7 @@ func TestServer_MiddlewareChain(t *testing.T) {
 
 func TestServer_RouterDispatch(t *testing.T) {
 	poolManager := pool.NewManager()
-	factory := factory.NewUpstreamServiceFactory(poolManager)
+	factory := factory.NewUpstreamServiceFactory(poolManager, nil)
 	messageBus := bus_pb.MessageBus_builder{}.Build()
 	messageBus.SetInMemory(bus_pb.InMemoryBus_builder{}.Build())
 	busProvider, err := bus.NewProvider(messageBus)

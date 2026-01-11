@@ -69,7 +69,7 @@ func TestRegistrationServer_RegisterService(t *testing.T) {
 
 	// Setup components
 	poolManager := pool.NewManager()
-	upstreamFactory := factory.NewUpstreamServiceFactory(poolManager)
+	upstreamFactory := factory.NewUpstreamServiceFactory(poolManager, nil)
 	toolManager := tool.NewManager(busProvider)
 	promptManager := prompt.NewManager()
 	resourceManager := resource.NewManager()
@@ -325,7 +325,7 @@ func TestListServices(t *testing.T) {
 
 	// Setup components
 	poolManager := pool.NewManager()
-	upstreamFactory := factory.NewUpstreamServiceFactory(poolManager)
+	upstreamFactory := factory.NewUpstreamServiceFactory(poolManager, nil)
 	toolManager := tool.NewManager(busProvider)
 	promptManager := prompt.NewManager()
 	resourceManager := resource.NewManager()
@@ -482,7 +482,7 @@ func TestGetService(t *testing.T) {
 
 	// Setup components
 	poolManager := pool.NewManager()
-	upstreamFactory := factory.NewUpstreamServiceFactory(poolManager)
+	upstreamFactory := factory.NewUpstreamServiceFactory(poolManager, nil)
 	toolManager := tool.NewManager(busProvider)
 	promptManager := prompt.NewManager()
 	resourceManager := resource.NewManager()

@@ -69,7 +69,7 @@ func TestBundleCleanup(t *testing.T) {
 	bundlePath := filepath.Join(tmpBundleDir, "bundle.zip")
 	createMockBundle(t, bundlePath)
 
-	u := NewUpstream().(*Upstream)
+	u := NewUpstream(nil).(*Upstream)
 	ctx := context.Background()
 
 	busProvider, _ := bus.NewProvider(nil)

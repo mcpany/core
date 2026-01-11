@@ -22,7 +22,7 @@ import (
 func TestNewUpstreamServiceFactory(t *testing.T) {
 	t.Run("with a valid pool manager", func(t *testing.T) {
 		pm := pool.NewManager()
-		f := NewUpstreamServiceFactory(pm)
+		f := NewUpstreamServiceFactory(pm, nil)
 		assert.NotNil(t, f)
 		impl, ok := f.(*UpstreamServiceFactory)
 		assert.True(t, ok)
@@ -30,7 +30,7 @@ func TestNewUpstreamServiceFactory(t *testing.T) {
 	})
 
 	t.Run("with a nil pool manager", func(t *testing.T) {
-		f := NewUpstreamServiceFactory(nil)
+		f := NewUpstreamServiceFactory(nil, nil)
 		assert.NotNil(t, f)
 		impl, ok := f.(*UpstreamServiceFactory)
 		assert.True(t, ok)
@@ -40,7 +40,7 @@ func TestNewUpstreamServiceFactory(t *testing.T) {
 
 func TestUpstreamServiceFactory_NewUpstream(t *testing.T) {
 	pm := pool.NewManager()
-	f := NewUpstreamServiceFactory(pm)
+	f := NewUpstreamServiceFactory(pm, nil)
 
 	grpcConfig := &configv1.UpstreamServiceConfig{
 		ServiceConfig: &configv1.UpstreamServiceConfig_GrpcService{

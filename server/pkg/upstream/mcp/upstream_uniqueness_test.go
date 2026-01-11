@@ -10,8 +10,8 @@ import (
 )
 
 func TestNewUpstream_Uniqueness(t *testing.T) {
-	u1 := NewUpstream()
-	u2 := NewUpstream()
+	u1 := NewUpstream(nil)
+	u2 := NewUpstream(nil)
 
 	// Check if the upstream instances are distinct pointers
 	assert.NotSame(t, u1, u2, "NewUpstream should return distinct instances")

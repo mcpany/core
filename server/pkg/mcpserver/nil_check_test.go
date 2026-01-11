@@ -62,7 +62,7 @@ func TestListPrompts_NilCheck(t *testing.T) {
 	resourceManager := resource.NewManager()
 	authManager := auth.NewManager()
 	poolManager := pool.NewManager()
-	f := factory.NewUpstreamServiceFactory(poolManager)
+	f := factory.NewUpstreamServiceFactory(poolManager, nil)
 	serviceRegistry := serviceregistry.New(f, toolManager, promptManager, resourceManager, authManager)
 
 	// Initialize server
@@ -95,7 +95,7 @@ func TestListResources_NilCheck(t *testing.T) {
 	resourceManager := resource.NewManager()
 	authManager := auth.NewManager()
 	poolManager := pool.NewManager()
-	f := factory.NewUpstreamServiceFactory(poolManager)
+	f := factory.NewUpstreamServiceFactory(poolManager, nil)
 	serviceRegistry := serviceregistry.New(f, toolManager, promptManager, resourceManager, authManager)
 
 	// Initialize server

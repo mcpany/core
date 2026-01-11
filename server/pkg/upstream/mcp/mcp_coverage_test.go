@@ -36,7 +36,7 @@ import (
 )
 
 func TestUpstream_Shutdown(t *testing.T) {
-	u := NewUpstream()
+	u := NewUpstream(nil)
 	err := u.Shutdown(context.Background())
 	assert.NoError(t, err)
 }
@@ -238,7 +238,7 @@ func TestUnzipBundle_ZipSlip(t *testing.T) {
 }
 
 func TestUpstream_Register_Bundle_Error(t *testing.T) {
-	u := NewUpstream()
+	u := NewUpstream(nil)
 	ctx := context.Background()
 	tm := &mockToolManagerCoverage{}
 	pm := &mockPromptManagerCoverage{}
@@ -309,7 +309,7 @@ func TestUpstream_Register_Bundle_Error(t *testing.T) {
 }
 
 func TestUpstream_Register_Bundle_Success(t *testing.T) {
-	u := NewUpstream()
+	u := NewUpstream(nil)
 	ctx := context.Background()
 	tm := &mockToolManagerCoverage{}
 	pm := &mockPromptManagerCoverage{}
@@ -373,7 +373,7 @@ func TestUpstream_Register_Bundle_Success(t *testing.T) {
 }
 
 func TestUpstream_Register_Bundle_Variants(t *testing.T) {
-	u := NewUpstream()
+	u := NewUpstream(nil)
 	ctx := context.Background()
 
 	variants := []struct {
@@ -437,7 +437,7 @@ func TestUpstream_Register_Bundle_Variants(t *testing.T) {
 
 func TestUpstream_Register_Bundle_RealClient(t *testing.T) {
 	// Test the path where mcp.NewClient is called (not mocked)
-	u := NewUpstream()
+	u := NewUpstream(nil)
 	ctx := context.Background()
 
 	// Reset any global mocks if they leak (though they shouldn't if I use Set correctly)
@@ -483,7 +483,7 @@ func TestUpstream_Register_Bundle_RealClient(t *testing.T) {
 }
 
 func TestUpstream_Register_Bundle_UnknownType(t *testing.T) {
-	u := NewUpstream()
+	u := NewUpstream(nil)
 	ctx := context.Background()
 
 	tmpDir := t.TempDir()
@@ -602,7 +602,7 @@ func TestDockerTransport_Connect_Errors(t *testing.T) {
 }
 
 func TestRegister_DynamicResource_EdgeCases(t *testing.T) {
-	u := NewUpstream()
+	u := NewUpstream(nil)
 	ctx := context.Background()
 	tm := &mockToolManagerCoverage{}
 	pm := &mockPromptManagerCoverage{}
@@ -749,7 +749,7 @@ func TestUpstream_Register_Coverage(t *testing.T) {
 	pm := &mockPromptManagerCoverage{}
 	rm := &mockResourceManagerCoverage{}
 
-	u := NewUpstream()
+	u := NewUpstream(nil)
 	ctx := context.Background()
 
 	// Case 1: Nil McpService -> Error "mcp service config is nil"

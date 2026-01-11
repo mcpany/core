@@ -83,6 +83,7 @@ type Upstream struct {
 	serviceID       string
 	// BundleBaseDir is the directory where bundles are extracted.
 	BundleBaseDir string
+	globalSettings *configv1.GlobalSettings
 }
 
 // Shutdown cleans up any temporary resources associated with the upstream, such
@@ -102,10 +103,11 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 }
 
 // NewUpstream creates a new instance of Upstream.
-func NewUpstream() upstream.Upstream {
+func NewUpstream(globalSettings *configv1.GlobalSettings) upstream.Upstream {
 	return &Upstream{
 		sessionRegistry: NewSessionRegistry(),
 		BundleBaseDir:   bundleBaseDir,
+		globalSettings:  globalSettings,
 	}
 }
 
@@ -275,6 +277,7 @@ type mcpConnection struct {
 	httpAddress     string
 	httpClient      *http.Client
 	sessionRegistry *SessionRegistry
+	globalSettings  *configv1.GlobalSettings
 }
 
 // withMCPClientSession is a helper function that abstracts the process of
@@ -294,7 +297,13 @@ func (c *mcpConnection) withMCPClientSession(ctx context.Context, f func(cs Clie
 				return fmt.Errorf("docker socket not accessible, but container_image is specified")
 			}
 		} else {
-			cmd, err := buildCommandFromStdioConfig(ctx, c.stdioConfig)
+			// We need global settings here if we want to support sudo.
+			// However, mcpConnection doesn't have GlobalSettings stored?
+			useSudo := false
+			if c.globalSettings != nil {
+				useSudo = c.globalSettings.GetUseSudoForDocker()
+			}
+			cmd, err := buildCommandFromStdioConfig(ctx, c.stdioConfig, useSudo)
 			if err != nil {
 				return fmt.Errorf("failed to build command from stdio config: %w", err)
 			}
@@ -360,38 +369,29 @@ func (c *mcpConnection) CallTool(ctx context.Context, params *mcp.CallToolParams
 // buildCommandFromStdioConfig constructs an *exec.Cmd from an McpStdioConnection
 // configuration. It combines the setup commands and the main command into a
 // single shell script to be executed.
-func buildCommandFromStdioConfig(ctx context.Context, stdio *configv1.McpStdioConnection) (*exec.Cmd, error) {
+func buildCommandFromStdioConfig(ctx context.Context, stdio *configv1.McpStdioConnection, useSudo bool) (*exec.Cmd, error) {
 	command := stdio.GetCommand()
 	args := stdio.GetArgs()
-
 	resolvedEnv, err := util.ResolveSecretMap(ctx, stdio.GetEnv(), nil)
 	if err != nil {
 		return nil, err
 	}
 
-	// If the command is 'docker', handle it directly, including sudo if needed.
+	// If the command is docker, we might need to prepend sudo.
 	if command == "docker" {
-		useSudo := os.Getenv("USE_SUDO_FOR_DOCKER") == "1"
 		if useSudo {
-			fullArgs := append([]string{command}, args...)
-
-			cmd := exec.CommandContext(ctx, "sudo", fullArgs...) //nolint:gosec // Command construction is intended
-			cmd.Dir = stdio.GetWorkingDirectory()
-			currentEnv := os.Environ()
-			for k, v := range resolvedEnv {
-				currentEnv = append(currentEnv, fmt.Sprintf("%s=%s", k, v))
-			}
-			cmd.Env = currentEnv
-			return cmd, nil
+			// If we are using sudo, we need to prepend sudo to the command
+			// and keep the arguments as is.
+			newArgs := append([]string{command}, args...)
+			command = "sudo"
+			args = newArgs
 		}
-
-		cmd := exec.CommandContext(ctx, command, args...) //nolint:gosec // Command construction is intended
+		cmd := exec.CommandContext(ctx, command, args...)
 		cmd.Dir = stdio.GetWorkingDirectory()
 		currentEnv := os.Environ()
 		for k, v := range resolvedEnv {
-			currentEnv = append(currentEnv, fmt.Sprintf("%s=%s", k, v))
+			cmd.Env = append(currentEnv, fmt.Sprintf("%s=%s", k, v))
 		}
-		cmd.Env = currentEnv
 		return cmd, nil
 	}
 
@@ -408,15 +408,13 @@ func buildCommandFromStdioConfig(ctx context.Context, stdio *configv1.McpStdioCo
 
 	script := strings.Join(scriptCommands, " && ")
 
-	// run the script directly on the host.
-
-	cmd := exec.CommandContext(ctx, "/bin/sh", "-c", script) //nolint:gosec // Command construction is intended
+	cmd := exec.CommandContext(ctx, "/bin/sh", "-c", script)
 	cmd.Dir = stdio.GetWorkingDirectory()
 	currentEnv := os.Environ()
 	for k, v := range resolvedEnv {
-		currentEnv = append(currentEnv, fmt.Sprintf("%s=%s", k, v))
+		cmd.Env = append(currentEnv, fmt.Sprintf("%s=%s", k, v))
 	}
-	cmd.Env = currentEnv
+
 	return cmd, nil
 }
 
@@ -440,7 +438,12 @@ func (u *Upstream) createAndRegisterMCPItemsFromStdio(
 		return nil, nil, fmt.Errorf("stdio connection config is nil")
 	}
 
-	transport, err := createStdioTransport(ctx, stdio)
+	useSudo := false
+	if u.globalSettings != nil {
+		useSudo = u.globalSettings.GetUseSudoForDocker()
+	}
+
+	transport, err := createStdioTransport(ctx, stdio, useSudo)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -476,12 +479,14 @@ func (u *Upstream) createAndRegisterMCPItemsFromStdio(
 			client:          mcpSdkClient,
 			stdioConfig:     stdio,
 			sessionRegistry: u.sessionRegistry,
+			globalSettings:  u.globalSettings,
 		}
 	} else {
 		conn := &mcpConnection{
 			client:          mcpSdkClient,
 			stdioConfig:     stdio,
 			sessionRegistry: u.sessionRegistry,
+			globalSettings:  u.globalSettings,
 		}
 		toolClient = conn
 		promptConnection = conn
@@ -491,7 +496,7 @@ func (u *Upstream) createAndRegisterMCPItemsFromStdio(
 	return u.processMCPItems(ctx, serviceID, listToolsResult, toolClient, promptConnection, cs, toolManager, promptManager, resourceManager, serviceConfig)
 }
 
-func createStdioTransport(ctx context.Context, stdio *configv1.McpStdioConnection) (mcp.Transport, error) {
+func createStdioTransport(ctx context.Context, stdio *configv1.McpStdioConnection, useSudo bool) (mcp.Transport, error) {
 	image := stdio.GetContainerImage()
 	if image != "" {
 		if util.IsDockerSocketAccessible() {
@@ -501,7 +506,7 @@ func createStdioTransport(ctx context.Context, stdio *configv1.McpStdioConnectio
 		}
 		return nil, fmt.Errorf("docker socket not accessible, but container_image is specified")
 	}
-	cmd, err := buildCommandFromStdioConfig(ctx, stdio)
+	cmd, err := buildCommandFromStdioConfig(ctx, stdio, useSudo)
 	if err != nil {
 		return nil, fmt.Errorf("failed to build command: %w", err)
 	}

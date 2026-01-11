@@ -49,7 +49,7 @@ func (m *mockBypassTool) GetCacheConfig() *configv1.CacheConfig {
 
 func TestServer_CallTool_ProfileBypass_Repro(t *testing.T) {
 	poolManager := pool.NewManager()
-	factory := factory.NewUpstreamServiceFactory(poolManager)
+	factory := factory.NewUpstreamServiceFactory(poolManager, nil)
 	messageBus := bus_pb.MessageBus_builder{}.Build()
 	messageBus.SetInMemory(bus_pb.InMemoryBus_builder{}.Build())
 	busProvider, err := bus.NewProvider(messageBus)

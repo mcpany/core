@@ -26,7 +26,7 @@ func TestRegister_DynamicResource(t *testing.T) {
 	toolManager := tool.NewManager(nil)
 	promptManager := prompt.NewManager()
 	resourceManager := resource.NewManager()
-	upstream := NewUpstream()
+	upstream := NewUpstream(nil)
 	ctx := context.Background()
 
 	var wg sync.WaitGroup
@@ -102,7 +102,7 @@ func TestRegister_Http_DynamicResource(t *testing.T) {
 	toolManager := tool.NewManager(nil)
 	promptManager := prompt.NewManager()
 	resourceManager := resource.NewManager()
-	upstream := NewUpstream()
+	upstream := NewUpstream(nil)
 	ctx := context.Background()
 
 	var wg sync.WaitGroup
@@ -172,7 +172,7 @@ func TestRegister_DisabledItems(t *testing.T) {
 	toolManager := tool.NewManager(nil)
 	promptManager := prompt.NewManager()
 	resourceManager := resource.NewManager()
-	upstream := NewUpstream()
+	upstream := NewUpstream(nil)
 	ctx := context.Background()
 
 	var wg sync.WaitGroup
@@ -329,7 +329,7 @@ func TestRegister_CallDefinitionMatching(t *testing.T) {
 	toolManager := tool.NewManager(nil)
 	promptManager := prompt.NewManager()
 	resourceManager := resource.NewManager()
-	upstream := NewUpstream()
+	upstream := NewUpstream(nil)
 	ctx := context.Background()
 
 	var wg sync.WaitGroup

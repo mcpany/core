@@ -192,7 +192,7 @@ func TestFullSystemWebhooks(t *testing.T) {
 
 	toolManager := tool.NewManager(nil)
 	ctx := context.Background()
-	upstreamService := mcp.NewUpstream()
+	upstreamService := mcp.NewUpstream(nil)
 
 	// Register service
 	serviceID, _, _, err := upstreamService.Register(
