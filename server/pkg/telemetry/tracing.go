@@ -65,7 +65,7 @@ func InitTelemetry(ctx context.Context, serviceName string, version string, cfg 
 	// Initialize Meter
 	shutdownMeter, err := initMeter(ctx, res, cfg, writer)
 	if err != nil {
-		shutdownTracer(ctx) // Attempt to shutdown tracer on failure
+		_ = shutdownTracer(ctx) // Attempt to shutdown tracer on failure
 		return nil, fmt.Errorf("failed to init meter: %w", err)
 	}
 
@@ -124,7 +124,7 @@ func initTracer(ctx context.Context, res *resource.Resource, cfg *config_v1.Tele
 	return tp.Shutdown, nil
 }
 
-func initMeter(ctx context.Context, res *resource.Resource, cfg *config_v1.TelemetryConfig, writer io.Writer) (func(context.Context) error, error) {
+func initMeter(ctx context.Context, res *resource.Resource, cfg *config_v1.TelemetryConfig, _ io.Writer) (func(context.Context) error, error) {
 	exporterType := cfg.GetMetricsExporter()
 	// If OTLP endpoint is set, default to otlp if type not specified
 	if cfg.GetOtlpEndpoint() != "" && (exporterType == "" || exporterType == exporterOTLP) {

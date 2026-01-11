@@ -13,13 +13,16 @@ import (
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/mcpany/core/server/pkg/util"
+	"github.com/mcpany/core/server/pkg/validation"
 	"github.com/stretchr/testify/assert"
 	"google.golang.org/protobuf/proto"
 )
 
 func TestResolveSecret(t *testing.T) {
 	t.Setenv("MCPANY_ALLOW_LOOPBACK_SECRETS", "true")
-	t.Setenv("MCPANY_FILE_PATH_ALLOW_LIST", os.TempDir())
+	// t.Setenv("MCPANY_FILE_PATH_ALLOW_LIST", os.TempDir())
+	validation.SetAllowedPaths([]string{os.TempDir()})
+	t.Cleanup(func() { validation.SetAllowedPaths(nil) })
 
 	t.Run("nil secret", func(t *testing.T) {
 		resolved, err := util.ResolveSecret(context.Background(), nil)
