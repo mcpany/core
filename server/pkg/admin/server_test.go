@@ -5,6 +5,7 @@ package admin
 
 import (
 	"context"
+	"errors"
 	"testing"
 
 	pb "github.com/mcpany/core/proto/admin/v1"
@@ -13,6 +14,7 @@ import (
 	"github.com/mcpany/core/server/pkg/middleware"
 	"github.com/mcpany/core/server/pkg/storage/memory"
 	"github.com/mcpany/core/server/pkg/tool"
+	"github.com/mcpany/core/server/pkg/util/passhash"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/mock/gomock"
@@ -328,4 +330,284 @@ func TestServer_ServiceManagement_Errors(t *testing.T) {
 	_, err := s.GetService(ctx, &pb.GetServiceRequest{ServiceId: proto.String("svc_no_config")})
 	assert.Error(t, err)
 	assert.Equal(t, codes.Internal, status.Code(err))
+}
+
+func TestCreateUser(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	mockManager := tool.NewMockManagerInterface(ctrl)
+	store := memory.NewStore()
+	server := NewServer(nil, mockManager, store)
+
+	user := &configv1.User{
+		Id: proto.String("user1"),
+		Authentication: &configv1.Authentication{
+			AuthMethod: &configv1.Authentication_BasicAuth{
+				BasicAuth: &configv1.BasicAuth{
+					PasswordHash: proto.String("password"),
+				},
+			},
+		},
+	}
+
+	resp, err := server.CreateUser(context.Background(), &pb.CreateUserRequest{User: user})
+	assert.NoError(t, err)
+	assert.Equal(t, "user1", resp.User.GetId())
+	assert.True(t, matchHash("password", resp.User.Authentication.GetBasicAuth().GetPasswordHash()))
+
+	// Verify user is stored
+	storedUser, err := store.GetUser(context.Background(), "user1")
+	assert.NoError(t, err)
+	assert.NotNil(t, storedUser)
+	assert.True(t, matchHash("password", storedUser.Authentication.GetBasicAuth().GetPasswordHash()))
+}
+
+func TestCreateUser_AlreadyHashed(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	mockManager := tool.NewMockManagerInterface(ctrl)
+	store := memory.NewStore()
+	server := NewServer(nil, mockManager, store)
+
+	hashed, _ := passhash.Password("password")
+	user := &configv1.User{
+		Id: proto.String("user1"),
+		Authentication: &configv1.Authentication{
+			AuthMethod: &configv1.Authentication_BasicAuth{
+				BasicAuth: &configv1.BasicAuth{
+					PasswordHash: proto.String(hashed),
+				},
+			},
+		},
+	}
+
+	resp, err := server.CreateUser(context.Background(), &pb.CreateUserRequest{User: user})
+	assert.NoError(t, err)
+	assert.Equal(t, hashed, resp.User.Authentication.GetBasicAuth().GetPasswordHash())
+}
+
+func TestCreateUser_Error(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	mockManager := tool.NewMockManagerInterface(ctrl)
+	store := memory.NewStore()
+	server := NewServer(nil, mockManager, store)
+
+	_, err := server.CreateUser(context.Background(), &pb.CreateUserRequest{})
+	assert.Error(t, err)
+	assert.Equal(t, codes.InvalidArgument, status.Code(err))
+}
+
+func TestCreateUser_StorageError(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	mockManager := tool.NewMockManagerInterface(ctrl)
+	store := memory.NewStore()
+	server := NewServer(nil, mockManager, store)
+
+	user := &configv1.User{Id: proto.String("user1")}
+	_ = store.CreateUser(context.Background(), user)
+
+	// Try creating again to trigger duplicate error
+	_, err := server.CreateUser(context.Background(), &pb.CreateUserRequest{User: user})
+	assert.Error(t, err)
+	assert.Equal(t, codes.Internal, status.Code(err))
+}
+
+func TestUpdateUser(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	mockManager := tool.NewMockManagerInterface(ctrl)
+	store := memory.NewStore()
+	server := NewServer(nil, mockManager, store)
+
+	user := &configv1.User{Id: proto.String("user1")}
+	_ = store.CreateUser(context.Background(), user)
+
+	user.Authentication = &configv1.Authentication{
+		AuthMethod: &configv1.Authentication_BasicAuth{
+			BasicAuth: &configv1.BasicAuth{
+				PasswordHash: proto.String("newpass"),
+			},
+		},
+	}
+
+	resp, err := server.UpdateUser(context.Background(), &pb.UpdateUserRequest{User: user})
+	assert.NoError(t, err)
+	assert.True(t, matchHash("newpass", resp.User.Authentication.GetBasicAuth().GetPasswordHash()))
+}
+
+func TestUpdateUser_Error(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	mockManager := tool.NewMockManagerInterface(ctrl)
+	store := memory.NewStore()
+	server := NewServer(nil, mockManager, store)
+
+	_, err := server.UpdateUser(context.Background(), &pb.UpdateUserRequest{})
+	assert.Error(t, err)
+	assert.Equal(t, codes.InvalidArgument, status.Code(err))
+}
+
+func TestUpdateUser_NotFound(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	mockManager := tool.NewMockManagerInterface(ctrl)
+	store := memory.NewStore()
+	server := NewServer(nil, mockManager, store)
+
+	user := &configv1.User{Id: proto.String("unknown")}
+	_, err := server.UpdateUser(context.Background(), &pb.UpdateUserRequest{User: user})
+	assert.Error(t, err)
+	assert.Equal(t, codes.Internal, status.Code(err))
+}
+
+func TestDeleteUser(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	mockManager := tool.NewMockManagerInterface(ctrl)
+	store := memory.NewStore()
+	server := NewServer(nil, mockManager, store)
+
+	user := &configv1.User{Id: proto.String("user1")}
+	_ = store.CreateUser(context.Background(), user)
+
+	_, err := server.DeleteUser(context.Background(), &pb.DeleteUserRequest{UserId: proto.String("user1")})
+	assert.NoError(t, err)
+
+	_, err = store.GetUser(context.Background(), "user1")
+	assert.NoError(t, err) // Memory store returns nil, nil for not found
+}
+
+func TestGetUser(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	mockManager := tool.NewMockManagerInterface(ctrl)
+	store := memory.NewStore()
+	server := NewServer(nil, mockManager, store)
+
+	user := &configv1.User{Id: proto.String("user1")}
+	_ = store.CreateUser(context.Background(), user)
+
+	resp, err := server.GetUser(context.Background(), &pb.GetUserRequest{UserId: proto.String("user1")})
+	assert.NoError(t, err)
+	assert.Equal(t, "user1", resp.User.GetId())
+}
+
+func TestGetUser_NotFound(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	mockManager := tool.NewMockManagerInterface(ctrl)
+	store := memory.NewStore()
+	server := NewServer(nil, mockManager, store)
+
+	_, err := server.GetUser(context.Background(), &pb.GetUserRequest{UserId: proto.String("unknown")})
+	assert.Error(t, err)
+	assert.Equal(t, codes.NotFound, status.Code(err))
+}
+
+func TestListUsers(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	mockManager := tool.NewMockManagerInterface(ctrl)
+	store := memory.NewStore()
+	server := NewServer(nil, mockManager, store)
+
+	_ = store.CreateUser(context.Background(), &configv1.User{Id: proto.String("user1")})
+	_ = store.CreateUser(context.Background(), &configv1.User{Id: proto.String("user2")})
+
+	resp, err := server.ListUsers(context.Background(), &pb.ListUsersRequest{})
+	assert.NoError(t, err)
+	assert.Len(t, resp.Users, 2)
+}
+
+// Mock storage for error testing
+type mockStorage struct {
+	memory.Store
+	err error
+}
+
+func (m *mockStorage) ListUsers(ctx context.Context) ([]*configv1.User, error) {
+	if m.err != nil {
+		return nil, m.err
+	}
+	return m.Store.ListUsers(ctx)
+}
+
+func (m *mockStorage) GetUser(ctx context.Context, id string) (*configv1.User, error) {
+	if m.err != nil {
+		return nil, m.err
+	}
+	return m.Store.GetUser(ctx, id)
+}
+
+func (m *mockStorage) DeleteUser(ctx context.Context, id string) error {
+	if m.err != nil {
+		return m.err
+	}
+	return m.Store.DeleteUser(ctx, id)
+}
+
+func TestListUsers_Error(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	mockManager := tool.NewMockManagerInterface(ctrl)
+	// We need a mock store that returns errors.
+	// Since memory.Store doesn't return errors for list, we need to mock the interface or wrap it.
+	// Here we use gomock to mock the storage interface if it was available as a mock.
+	// But NewServer takes storage.Storage interface.
+	// So we can create a mock implementation of storage.Storage.
+
+	// Ideally we should use a generated mock for storage.Storage, but I don't see one generated in the package.
+	// I'll create a simple struct that implements storage.Storage and embeds memory.Store but overrides method to return error.
+
+	ms := &mockStorage{err: errors.New("db error")}
+	server := NewServer(nil, mockManager, ms)
+
+	_, err := server.ListUsers(context.Background(), &pb.ListUsersRequest{})
+	assert.Error(t, err)
+	assert.Equal(t, codes.Internal, status.Code(err))
+}
+
+func TestGetUser_Error(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	mockManager := tool.NewMockManagerInterface(ctrl)
+	ms := &mockStorage{err: errors.New("db error")}
+	server := NewServer(nil, mockManager, ms)
+
+	_, err := server.GetUser(context.Background(), &pb.GetUserRequest{UserId: proto.String("user1")})
+	assert.Error(t, err)
+	assert.Equal(t, codes.Internal, status.Code(err))
+}
+
+func TestDeleteUser_Error(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	mockManager := tool.NewMockManagerInterface(ctrl)
+	ms := &mockStorage{err: errors.New("db error")}
+	server := NewServer(nil, mockManager, ms)
+
+	_, err := server.DeleteUser(context.Background(), &pb.DeleteUserRequest{UserId: proto.String("user1")})
+	assert.Error(t, err)
+	assert.Equal(t, codes.Internal, status.Code(err))
+}
+
+func matchHash(password, hash string) bool {
+	// Simple check that it is a bcrypt hash
+	return len(hash) == 60 && hash[:4] == "$2a$"
 }
