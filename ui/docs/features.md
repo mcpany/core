@@ -1,51 +1,30 @@
-
 # MCP Any UI Features
 
-This document outlines the features implemented in the MCP Any UI Overhaul.
+Detailed documentation for the MCP Any user interface capabilities.
 
-## 1. Dashboard
-**Path:** `/`
+## Core Management
+- [Dashboard](features/dashboard.md) - System overview and health metrics.
+- [Services](features/services.md) - Manage upstream service connections.
+- [Playground](features/playground.md) - Interactive tool testing and debugging.
+- [Stack Composer](features/stack-composer.md) - Visual stack composition.
 
-The dashboard provides a high-level overview of the system's health and performance.
+## Observability
+- [Live Traces](features/traces.md) - Request lifecycle inspection.
+- [Logs](features/logs.md) - Centralized log streaming.
+- [Network Graph](features/network.md) - Topology visualization.
+- [Alerts](features/alerts.md) - System notifications.
 
-*   **Real-time Metrics:** Displays Total Requests, Active Services, Average Latency, and Active Users.
-*   **Service Health:** Lists connected upstream services with their status (Healthy, Degraded, Unhealthy), uptime, and version.
+## Configuration & Integration
+- [Middleware](features/middleware.md) - Pipeline configuration.
+- [Webhooks](features/webhooks.md) - External event notifications.
+- [Secrets](features/secrets.md) - Secure credential management.
+- [Authentication](features/auth.md) - User and access management.
 
-![Dashboard Audit](screenshots/dashboard.png)
+## Discovery
+- [Marketplace](features/marketplace.md) - Pre-configured service templates.
+- [Resources](features/resources.md) - Static asset explorer.
+- [Prompts](features/prompts.md) - Standardized prompt library.
+- [Global Search](features/search.md) - Quick navigation.
 
-## 2. Services Management
-**Path:** `/services`
-
-Manage upstream services connected to MCP Any.
-
-*   **List View:** detailed table of services including Type, Version, Status, and Priority.
-*   **Toggle:** Enable/Disable services directly from the list.
-*   **Actions:** Configure or Delete services via the dropdown menu.
-
-![Services Audit](screenshots/services.png)
-
-## 3. Tools, Resources, & Prompts
-**Paths:** `/tools`, `/resources`, `/prompts`
-
-Explore the capabilities exposed by the connected MCP servers.
-
-*   **Tools:** List of available tools (functions) with descriptions and types.
-*   **Resources:** List of static resources (files, blobs) available for access.
-*   **Prompts:** Pre-defined prompts and their arguments.
-
-![Tools Audit](screenshots/tools.png)
-
-## 4. Settings & Advanced Configuration
-**Path:** `/settings`
-
-Configure system-wide behaviors.
-
-*   **Profiles:** Manage execution environments (Development, Production).
-*   **Webhooks:** Configure event notifications.
-*   **Middleware:** Visualize the request processing pipeline.
-
-![Settings Audit](screenshots/settings.png)
-
-## Testing Strategy
-All features are verified using Playwright E2E tests.
-Run tests with: `cd ui && npx playwright test`
+## Mobile
+- [Mobile Support](features/mobile.md) - Responsive design details.
