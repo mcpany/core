@@ -8,6 +8,7 @@ import (
 	"crypto/rand"
 	"encoding/base64"
 	"fmt"
+	"os"
 	"strings"
 	"time"
 
@@ -28,11 +29,13 @@ func resolveSecretValue(sv *configv1.SecretValue) string {
 	case *configv1.SecretValue_PlainText:
 		return v.PlainText
 	case *configv1.SecretValue_EnvironmentVariable:
-		// TODO: Implement env var lookup
-		return ""
+		return os.Getenv(v.EnvironmentVariable)
 	case *configv1.SecretValue_FilePath:
-		// TODO: Implement file lookup
-		return ""
+		data, err := os.ReadFile(v.FilePath)
+		if err != nil {
+			return ""
+		}
+		return strings.TrimSpace(string(data))
 	default:
 		return ""
 	}

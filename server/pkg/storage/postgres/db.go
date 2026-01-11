@@ -8,6 +8,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"time"
 
 	_ "github.com/lib/pq" // Register postgres driver
 )
@@ -29,12 +30,15 @@ func NewDBWithDriver(driver, dsn string) (*DB, error) {
 		return nil, fmt.Errorf("failed to open postgres db: %w", err)
 	}
 
-	if err := db.PingContext(context.TODO()); err != nil {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	if err := db.PingContext(ctx); err != nil {
 		_ = db.Close()
 		return nil, fmt.Errorf("failed to ping postgres db: %w", err)
 	}
 
-	if err := initSchema(db); err != nil {
+	if err := initSchema(ctx, db); err != nil {
 		_ = db.Close()
 		return nil, fmt.Errorf("failed to init schema: %w", err)
 	}
@@ -44,18 +48,21 @@ func NewDBWithDriver(driver, dsn string) (*DB, error) {
 
 // NewDBFromSQLDB creates a new DB wrapper from an existing sql.DB connection.
 func NewDBFromSQLDB(db *sql.DB) (*DB, error) {
-	if err := db.PingContext(context.TODO()); err != nil {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	if err := db.PingContext(ctx); err != nil {
 		return nil, fmt.Errorf("failed to ping db: %w", err)
 	}
 
-	if err := initSchema(db); err != nil {
+	if err := initSchema(ctx, db); err != nil {
 		return nil, fmt.Errorf("failed to init schema: %w", err)
 	}
 
 	return &DB{db}, nil
 }
 
-func initSchema(db *sql.DB) error {
+func initSchema(ctx context.Context, db *sql.DB) error {
 	query := `
 	CREATE TABLE IF NOT EXISTS upstream_services (
 		id TEXT PRIMARY KEY,
@@ -111,7 +118,7 @@ func initSchema(db *sql.DB) error {
 		PRIMARY KEY (user_id, service_id)
 	);
 	`
-	_, err := db.ExecContext(context.TODO(), query)
+	_, err := db.ExecContext(ctx, query)
 	if err != nil {
 		return fmt.Errorf("failed to create tables: %w", err)
 	}

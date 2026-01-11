@@ -467,7 +467,7 @@ func TestInitSchema(t *testing.T) {
 	mock.ExpectExec("CREATE TABLE IF NOT EXISTS upstream_services").
 		WillReturnResult(sqlmock.NewResult(0, 0))
 
-	err = initSchema(db)
+	err = initSchema(context.Background(), db)
 	require.NoError(t, err)
 	require.NoError(t, mock.ExpectationsWereMet())
 }
