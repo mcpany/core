@@ -147,7 +147,7 @@ nodes:
 	if err := runCommand(t, ctx, rootDir, "helm", "upgrade", "--install", "mcpany", "k8s/helm/mcpany",
 		"--namespace", namespace,
 		"--create-namespace",
-		"--set", fmt.Sprintf("image.repository=mcpany/server"),
+		"--set", "image.repository=mcpany/server",
 		"--set", fmt.Sprintf("image.tag=%s", tag),
 		"--set", "image.pullPolicy=Never",
 		"--set", "operator.enabled=true",
