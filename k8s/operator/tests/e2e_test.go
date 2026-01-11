@@ -36,27 +36,26 @@ func TestOperatorE2E(t *testing.T) {
 	}
 	t.Logf("Project root detected: %s", rootDir)
 
-	// 1. Cleanup previous runs
-	t.Log("Cleaning up previous runs...")
-	runCommand(t, ctx, rootDir, "helm", "uninstall", "mcpany", "-n", namespace, "--wait")
-	runCommand(t, ctx, rootDir, "kubectl", "delete", "ns", namespace, "--wait")
-
 	// 2. Check prerequisites
 	checkPrerequisites(t)
 
-	// Get a free port for the host side of NodePort
-	// We do this BEFORE creating the cluster so we can configure extraPortMappings
+	// 3. Clean up existing cluster to ensure fresh state and free ports
+	if clusterExists(t, ctx, clusterName) {
+		t.Logf("Deleting existing cluster %s to ensure clean state...", clusterName)
+		runCommand(t, ctx, rootDir, "kind", "delete", "cluster", "--name", clusterName)
+	}
+
+	// 4. Get a free port for the host side of NodePort
 	hostPort, err := getFreePort()
 	if err != nil {
 		t.Fatalf("Failed to get free port: %v", err)
 	}
 	t.Logf("Using host port %d for UI access (mapped to NodePort 30000)", hostPort)
 
-	// 3. Create Kind Cluster
-	if !clusterExists(t, ctx, clusterName) {
-		t.Logf("Creating Kind cluster %s...", clusterName)
-		// Generate temporary kind config with port mapping
-		kindConfigContent := fmt.Sprintf(`kind: Cluster
+	// 5. Create Kind Cluster
+	t.Logf("Creating Kind cluster %s...", clusterName)
+	// Generate temporary kind config with port mapping
+	kindConfigContent := fmt.Sprintf(`kind: Cluster
 apiVersion: kind.x-k8s.io/v1alpha4
 networking:
   ipFamily: ipv4
@@ -68,50 +67,16 @@ nodes:
     listenAddress: "0.0.0.0"
     protocol: TCP
 `, hostPort)
-		tmpConfig := filepath.Join(t.TempDir(), "kind-config.yaml")
-		if err := os.WriteFile(tmpConfig, []byte(kindConfigContent), 0644); err != nil {
-			t.Fatalf("Failed to write temp kind config: %v", err)
-		}
-
-		if err := runCommand(t, ctx, rootDir, "kind", "create", "cluster", "--name", clusterName, "--image", kindImage, "--config", tmpConfig, "--wait", "2m"); err != nil {
-			t.Fatalf("Failed to create kind cluster: %v", err)
-		}
-	} else {
-		t.Logf("Cluster %s already exists. WARNING: Existing cluster might not have correct port mappings. Recreating is recommended for consistency.", clusterName)
-		// We can't easily verify if the existing cluster mapping matches our expectation for TestOperatorE2E.
-		// For robustness in local dev (where cluster might exist), we assume standard config or warn.
-		// In CI, it starts fresh usually.
-		// To be safe, if we can't ensure mapping, we might default to port-forward fallback?
-		// But let's enforce recreation if we want NodePort to work reliably or assume the user knows.
-		// BETTER: Just delete the cluster if it exists to ensure our mapping is applied.
-		t.Log("Deleting existing cluster to ensure correct port mappings...")
-		runCommand(t, ctx, rootDir, "kind", "delete", "cluster", "--name", clusterName)
-
-		// Recurse/Retry creation logic by just falling through (or we could structure this better)
-		// But simpler: just copy the creation block here or structure as:
-		t.Logf("Re-creating Kind cluster %s...", clusterName)
-		kindConfigContent := fmt.Sprintf(`kind: Cluster
-apiVersion: kind.x-k8s.io/v1alpha4
-networking:
-  ipFamily: ipv4
-nodes:
-- role: control-plane
-  extraPortMappings:
-  - containerPort: 30000
-    hostPort: %d
-    listenAddress: "0.0.0.0"
-    protocol: TCP
-`, hostPort)
-		tmpConfig := filepath.Join(t.TempDir(), "kind-config.yaml")
-		if err := os.WriteFile(tmpConfig, []byte(kindConfigContent), 0644); err != nil {
-			t.Fatalf("Failed to write temp kind config: %v", err)
-		}
-		if err := runCommand(t, ctx, rootDir, "kind", "create", "cluster", "--name", clusterName, "--image", kindImage, "--config", tmpConfig, "--wait", "2m"); err != nil {
-			t.Fatalf("Failed to create kind cluster: %v", err)
-		}
+	tmpConfig := filepath.Join(t.TempDir(), "kind-config.yaml")
+	if err := os.WriteFile(tmpConfig, []byte(kindConfigContent), 0644); err != nil {
+		t.Fatalf("Failed to write temp kind config: %v", err)
 	}
 
-	// 4. Build Images (Locally)
+	if err := runCommand(t, ctx, rootDir, "kind", "create", "cluster", "--name", clusterName, "--image", kindImage, "--config", tmpConfig, "--wait", "2m"); err != nil {
+		t.Fatalf("Failed to create kind cluster: %v", err)
+	}
+
+	// 6. Build Images (Locally)
 	t.Logf("Building Docker images with tag %s...", tag)
 	// Prepare docker context for server build
 	if err := runCommand(t, ctx, rootDir, "make", "-C", "server", "prepare-docker-context"); err != nil {
