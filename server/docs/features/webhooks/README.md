@@ -49,7 +49,7 @@ This example demonstrates a **Pre-Call Hook** that inspects arguments for a comm
 
 1.  Navigate to the example directory:
     ```bash
-    cd docs/features/webhooks/examples/block_rm
+    cd server/docs/features/webhooks/examples/block_rm
     ```
 2.  Start the Webhook Server:
 
@@ -63,7 +63,7 @@ This example demonstrates a **Pre-Call Hook** that inspects arguments for a comm
 3.  In a separate terminal, start MCP Any with the example config:
     ```bash
     # Assuming you are in the root of the repo
-    go run cmd/server/main.go run --config-path docs/features/webhooks/examples/block_rm/config.yaml
+    go run cmd/server/main.go run --config-path server/docs/features/webhooks/examples/block_rm/config.yaml
     ```
 4.  Test functionality using `gemini` CLI (or any MCP client):
 
@@ -96,7 +96,7 @@ This example demonstrates a **Post-Call Hook** that transforms the output of a t
 
 1.  Navigate to the example directory:
     ```bash
-    cd docs/features/webhooks/examples/html_to_md
+    cd server/docs/features/webhooks/examples/html_to_md
     ```
 2.  Start the Webhook Server:
 
@@ -109,7 +109,7 @@ This example demonstrates a **Post-Call Hook** that transforms the output of a t
 
 3.  Start MCP Any with the example config:
     ```bash
-    go run cmd/server/main.go run --config-path docs/features/webhooks/examples/html_to_md/config.yaml
+    go run cmd/server/main.go run --config-path server/docs/features/webhooks/examples/html_to_md/config.yaml
     ```
 
 #### Verification (E2E Test)
