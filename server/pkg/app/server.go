@@ -15,6 +15,7 @@ import (
 	"net"
 	"net/http"
 	"os"
+	"path/filepath"
 	"strings"
 	"sync"
 	"time"
@@ -85,6 +86,23 @@ func (a *Application) uploadFile(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	defer func() { _ = file.Close() }()
+
+	// Validate file extension
+	ext := strings.ToLower(filepath.Ext(header.Filename))
+	allowedExts := map[string]bool{
+		".txt":  true,
+		".json": true,
+		".yaml": true,
+		".yml":  true,
+		".md":   true,
+		".csv":  true,
+		".log":  true,
+		".pdf":  true,
+	}
+	if !allowedExts[ext] {
+		http.Error(w, "File type not allowed", http.StatusBadRequest)
+		return
+	}
 
 	// Create a temporary file to store the uploaded content
 	tmpfile, err := os.CreateTemp("", "upload-*.txt")
@@ -1559,8 +1577,8 @@ func (a *Application) createAuthMiddleware() func(http.Handler) http.Handler {
 
 				// Check if the request is from a loopback address
 				ip := net.ParseIP(host)
-				if !util.IsPrivateIP(ip) {
-					logging.GetLogger().Warn("Blocked public internet request because no API Key is configured", "remote_addr", r.RemoteAddr)
+				if !ip.IsLoopback() {
+					logging.GetLogger().Warn("Blocked non-loopback request because no API Key is configured", "remote_addr", r.RemoteAddr)
 					http.Error(w, "Forbidden: Public access requires an API Key to be configured", http.StatusForbidden)
 					return
 				}

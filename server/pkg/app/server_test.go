@@ -195,6 +195,29 @@ func TestUploadFile(t *testing.T) {
 		assert.Equal(t, http.StatusBadRequest, rr.Code)
 		assert.Equal(t, "failed to get file from form\n", rr.Body.String())
 	})
+
+	// Test case 4: Blocked file type
+	t.Run("blocked file type", func(t *testing.T) {
+		var buf bytes.Buffer
+		writer := multipart.NewWriter(&buf)
+		// .exe is not allowed
+		fileWriter, err := writer.CreateFormFile("file", "test.exe")
+		require.NoError(t, err)
+
+		fileContent := "this is a test file"
+		_, err = io.WriteString(fileWriter, fileContent)
+		require.NoError(t, err)
+		_ = writer.Close()
+
+		req := httptest.NewRequest(http.MethodPost, "/upload", &buf)
+		req.Header.Set("Content-Type", writer.FormDataContentType())
+		rr := httptest.NewRecorder()
+
+		app.uploadFile(rr, req)
+
+		assert.Equal(t, http.StatusBadRequest, rr.Code)
+		assert.Equal(t, "File type not allowed\n", rr.Body.String())
+	})
 }
 
 // connCountingListener is a net.Listener that wraps another net.Listener and
