@@ -79,7 +79,7 @@ func (m *featureSamplingTool) MCPTool() *mcp.Tool {
 func TestFeatureSamplingSupport(t *testing.T) {
 	// Setup Server Components
 	poolManager := pool.NewManager()
-	factory := factory.NewUpstreamServiceFactory(poolManager)
+	factory := factory.NewUpstreamServiceFactory(poolManager, nil)
 	messageBus := bus_pb.MessageBus_builder{}.Build()
 	messageBus.SetInMemory(bus_pb.InMemoryBus_builder{}.Build())
 	busProvider, err := bus.NewProvider(messageBus)

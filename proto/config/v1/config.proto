@@ -103,6 +103,25 @@ message GlobalSettings {
   OIDCConfig oidc = 17 [json_name = "oidc"];
   // Rate limiting configuration for the server.
   RateLimitConfig rate_limit = 18 [json_name = "rate_limit"];
+  // Telemetry configuration.
+  TelemetryConfig telemetry = 19 [json_name = "telemetry"];
+  // GitHub API URL for self-updates (optional).
+  string github_api_url = 20 [json_name = "github_api_url"];
+  // Whether to use sudo for Docker commands.
+  bool use_sudo_for_docker = 21 [json_name = "use_sudo_for_docker"];
+  // Allowed file paths for validation.
+  repeated string allowed_file_paths = 22 [json_name = "allowed_file_paths"];
+}
+
+message TelemetryConfig {
+  // Tracing configuration
+  string traces_exporter = 1 [json_name = "traces_exporter"]; // "otlp", "stdout", "none"
+  // Metrics configuration
+  string metrics_exporter = 2 [json_name = "metrics_exporter"]; // "otlp", "stdout", "none"
+  // OTLP endpoint (shared for now, or can be split)
+  string otlp_endpoint = 3 [json_name = "otlp_endpoint"];
+  // Service name override (optional)
+  string service_name = 4 [json_name = "service_name"];
 }
 
 message OIDCConfig {

@@ -38,7 +38,7 @@ func GenerateDocumentation(ctx context.Context, cfg *configv1.McpAnyServerConfig
 	promptManager := prompt.NewManager()
 	resourceManager := resource.NewManager()
 	poolManager := pool.NewManager()
-	upstreamFactory := factory.NewUpstreamServiceFactory(poolManager)
+	upstreamFactory := factory.NewUpstreamServiceFactory(poolManager, nil)
 
 	for _, serviceConfig := range cfg.GetUpstreamServices() {
 		if serviceConfig.GetDisable() {

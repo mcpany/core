@@ -30,7 +30,7 @@ func TestUpstream_Register_MergeStrategy(t *testing.T) {
 
 	t.Run("Override Strategy", func(t *testing.T) {
 		toolManager := tool.NewManager(nil)
-		upstream := NewUpstream()
+		upstream := NewUpstream(nil)
 
 		var wg sync.WaitGroup
 		wg.Add(1)
@@ -100,7 +100,7 @@ func TestUpstream_Register_MergeStrategy(t *testing.T) {
 
 	t.Run("Merge Strategy", func(t *testing.T) {
 		toolManager := tool.NewManager(nil)
-		upstream := NewUpstream()
+		upstream := NewUpstream(nil)
 
 		var wg sync.WaitGroup
 		wg.Add(1)

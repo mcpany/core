@@ -247,7 +247,7 @@ func TestE2E_Bundle_Filesystem(t *testing.T) {
 	toolManager := tool.NewManager(nil)
 	promptManager := prompt.NewManager()
 	resourceManager := resource.NewManager()
-	upstreamService := mcp.NewUpstream()
+	upstreamService := mcp.NewUpstream(nil)
 	if impl, ok := upstreamService.(*mcp.Upstream); ok {
 		// Use a test-specific temp directory for bundles to ensure isolation
 		// and avoid conflicts with global state or other tests.

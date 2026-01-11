@@ -68,7 +68,7 @@ func TestPromptIntegration(t *testing.T) {
 	resourceManager := resource.NewManager()
 	authManager := auth.NewManager()
 	serviceRegistry := serviceregistry.New(
-		factory.NewUpstreamServiceFactory(poolManager),
+		factory.NewUpstreamServiceFactory(poolManager, nil),
 		toolManager,
 		promptManager,
 		resourceManager,

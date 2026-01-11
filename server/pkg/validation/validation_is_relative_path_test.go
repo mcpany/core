@@ -5,6 +5,7 @@ package validation
 
 import (
 	"runtime"
+	"strings"
 	"testing"
 )
 
@@ -48,10 +49,14 @@ func TestIsRelativePath(t *testing.T) {
 			}
 
 			if tt.allowList != "" {
-				t.Setenv("MCPANY_FILE_PATH_ALLOW_LIST", tt.allowList)
+				// t.Setenv("MCPANY_FILE_PATH_ALLOW_LIST", tt.allowList)
+				parts := strings.Split(tt.allowList, ":")
+				SetAllowedPaths(parts)
 			} else {
-				t.Setenv("MCPANY_FILE_PATH_ALLOW_LIST", "")
+				// t.Setenv("MCPANY_FILE_PATH_ALLOW_LIST", "")
+				SetAllowedPaths(nil)
 			}
+			t.Cleanup(func() { SetAllowedPaths(nil) })
 
 			err := IsRelativePath(tt.path)
 			if (err != nil) != tt.wantErr {

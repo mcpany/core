@@ -11,17 +11,23 @@ import (
 )
 
 // GrpcStatsHandler is a gRPC stats handler that records metrics for RPCs and connections.
-type GrpcStatsHandler struct{}
+// It can optionally wrap another stats.Handler (e.g., OpenTelemetry).
+type GrpcStatsHandler struct {
+	Wrapped stats.Handler
+}
 
 // TagRPC can be used to tag RPCs with custom information.
 //
 // Parameters:
 //   - ctx: The context of the RPC.
-//   - _ : Information about the RPC tag (unused).
+//   - info: Information about the RPC tag.
 //
 // Returns:
 //   - The context, potentially modified with new tags.
-func (h *GrpcStatsHandler) TagRPC(ctx context.Context, _ *stats.RPCTagInfo) context.Context {
+func (h *GrpcStatsHandler) TagRPC(ctx context.Context, info *stats.RPCTagInfo) context.Context {
+	if h.Wrapped != nil {
+		ctx = h.Wrapped.TagRPC(ctx, info)
+	}
 	return ctx
 }
 
@@ -30,7 +36,10 @@ func (h *GrpcStatsHandler) TagRPC(ctx context.Context, _ *stats.RPCTagInfo) cont
 // Parameters:
 //   - ctx: The context of the RPC.
 //   - s: The RPC stats.
-func (h *GrpcStatsHandler) HandleRPC(_ context.Context, s stats.RPCStats) {
+func (h *GrpcStatsHandler) HandleRPC(ctx context.Context, s stats.RPCStats) {
+	if h.Wrapped != nil {
+		h.Wrapped.HandleRPC(ctx, s)
+	}
 	switch s.(type) {
 	case *stats.Begin:
 		IncrCounter([]string{"grpc", "rpc", "started", "total"}, 1)
@@ -43,11 +52,14 @@ func (h *GrpcStatsHandler) HandleRPC(_ context.Context, s stats.RPCStats) {
 //
 // Parameters:
 //   - ctx: The context of the connection.
-//   - _ : Information about the connection tag (unused).
+//   - info: Information about the connection tag.
 //
 // Returns:
 //   - The context, potentially modified with new tags.
-func (h *GrpcStatsHandler) TagConn(ctx context.Context, _ *stats.ConnTagInfo) context.Context {
+func (h *GrpcStatsHandler) TagConn(ctx context.Context, info *stats.ConnTagInfo) context.Context {
+	if h.Wrapped != nil {
+		ctx = h.Wrapped.TagConn(ctx, info)
+	}
 	return ctx
 }
 
@@ -56,7 +68,10 @@ func (h *GrpcStatsHandler) TagConn(ctx context.Context, _ *stats.ConnTagInfo) co
 // Parameters:
 //   - ctx: The context of the connection.
 //   - s: The connection stats.
-func (h *GrpcStatsHandler) HandleConn(_ context.Context, s stats.ConnStats) {
+func (h *GrpcStatsHandler) HandleConn(ctx context.Context, s stats.ConnStats) {
+	if h.Wrapped != nil {
+		h.Wrapped.HandleConn(ctx, s)
+	}
 	switch s.(type) {
 	case *stats.ConnBegin:
 		IncrCounter([]string{"grpc", "connections", "opened", "total"}, 1)

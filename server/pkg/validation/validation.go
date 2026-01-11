@@ -60,6 +60,16 @@ var IsSecurePath = func(path string) error {
 	return nil
 }
 
+var (
+	allowedPaths []string
+)
+
+// SetAllowedPaths checks if a given file path is relative and does not contain any
+// path traversal sequences ("../").
+func SetAllowedPaths(paths []string) {
+	allowedPaths = paths
+}
+
 // IsRelativePath checks if a given file path is relative and does not contain any
 // path traversal sequences ("../").
 // It is a variable to allow mocking in tests.
@@ -94,24 +104,21 @@ var IsRelativePath = func(path string) error {
 		return nil
 	}
 
-	// 4. Check Allow List
-	allowList := os.Getenv("MCPANY_FILE_PATH_ALLOW_LIST")
-	if allowList != "" {
-		for _, allowedDir := range strings.Split(allowList, ":") {
-			allowedDir = strings.TrimSpace(allowedDir)
-			if allowedDir == "" {
-				continue
-			}
+	// 4. Check Allowed Paths
+	for _, allowedDir := range allowedPaths {
+		allowedDir = strings.TrimSpace(allowedDir)
+		if allowedDir == "" {
+			continue
+		}
 
-			// Resolve allowedDir to absolute too
-			allowedAbs, err := filepath.Abs(allowedDir)
-			if err == nil && isInside(allowedAbs, absPath) {
-				return nil
-			}
+		// Resolve allowedDir to absolute too
+		allowedAbs, err := filepath.Abs(allowedDir)
+		if err == nil && isInside(allowedAbs, absPath) {
+			return nil
 		}
 	}
 
-	return fmt.Errorf("path %q is not allowed (must be in CWD or in MCPANY_FILE_PATH_ALLOW_LIST)", path)
+	return fmt.Errorf("path %q is not allowed (must be in CWD or in allowed paths)", path)
 }
 
 // allowedOpaqueSchemes are schemes that are allowed to not have a host component.
