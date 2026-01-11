@@ -6,6 +6,7 @@ package tests
 import (
 	"context"
 	"fmt"
+	"net"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -85,21 +86,10 @@ func TestOperatorE2E(t *testing.T) {
 
 	// 6. Install Helm Chart
 	t.Log("Installing Helm chart...")
-	// Create namespace
-	cmd := exec.CommandContext(ctx, "kubectl", "create", "namespace", namespace, "--dry-run=client", "-o", "yaml")
-	out, err := cmd.Output()
-	if err != nil {
-		t.Fatalf("Failed to create namespace yaml: %v", err)
-	}
-	applyCmd := exec.CommandContext(ctx, "kubectl", "apply", "-f", "-")
-	applyCmd.Stdin = strings.NewReader(string(out))
-	if out, err := applyCmd.CombinedOutput(); err != nil {
-		t.Fatalf("Failed to apply namespace: %v, output: %s", err, string(out))
-	}
-
 	// Helm upgrade --install
 	if err := runCommand(t, ctx, rootDir, "helm", "upgrade", "--install", "mcpany", "k8s/helm/mcpany",
 		"--namespace", namespace,
+		"--create-namespace",
 		"--set", fmt.Sprintf("image.repository=mcpany/server"),
 		"--set", fmt.Sprintf("image.tag=%s", tag),
 		"--set", "image.pullPolicy=Never",
@@ -124,10 +114,18 @@ func TestOperatorE2E(t *testing.T) {
 	}
 
 	// 8. Run UI Tests
-	t.Log("Running UI Tests...")
+	// Get a free port
+	port, err := getFreePort()
+	if err != nil {
+		t.Fatalf("Failed to get free port: %v", err)
+	}
+	t.Logf("Using port %d for UI tests", port)
+
 	// Start port-forwarding for the UI service
 	// We need to run this in the background
-	uiPortForwardCmd := exec.CommandContext(ctx, "kubectl", "port-forward", "-n", namespace, "svc/mcpany-ui", "9002:80")
+	uiPortForwardCmd := exec.CommandContext(ctx, "kubectl", "port-forward", "-n", namespace, "svc/mcpany-ui", fmt.Sprintf("%d:3000", port), "--address", "0.0.0.0")
+	uiPortForwardCmd.Stdout = os.Stdout
+	uiPortForwardCmd.Stderr = os.Stderr
 	if err := uiPortForwardCmd.Start(); err != nil {
 		t.Fatalf("Failed to start UI port-forward: %v", err)
 	}
@@ -136,14 +134,21 @@ func TestOperatorE2E(t *testing.T) {
 	}()
 
 	// Wait a bit for port-forward to be ready
-	time.Sleep(5 * time.Second)
+	if err := waitForPort(t, ctx, fmt.Sprintf("127.0.0.1:%d", port), 30*time.Second); err != nil {
+		t.Fatalf("Port-forward failed to become ready: %v", err)
+	}
 
 	// Run Playwright tests
 	// We assume 'npx' is available and we are in the root or can find ui dir
 	uiDir := filepath.Join(rootDir, "ui")
-	playwrightCmd := exec.CommandContext(ctx, "npx", "playwright", "test")
+	playwrightArgs := []string{"test", "--workers=1"}
+	if grep := os.Getenv("PLAYWRIGHT_GREP"); grep != "" {
+		playwrightArgs = append(playwrightArgs, "--grep", grep)
+	}
+	args := append([]string{"playwright"}, playwrightArgs...)
+	playwrightCmd := exec.CommandContext(ctx, "npx", args...)
 	playwrightCmd.Dir = uiDir
-	playwrightCmd.Env = append(os.Environ(), "PLAYWRIGHT_BASE_URL=http://localhost:9002")
+	playwrightCmd.Env = append(os.Environ(), fmt.Sprintf("PLAYWRIGHT_BASE_URL=http://127.0.0.1:%d", port), "SKIP_WEBSERVER=true")
 	playwrightCmd.Stdout = os.Stdout
 	playwrightCmd.Stderr = os.Stderr
 
@@ -213,4 +218,42 @@ func runCommand(t *testing.T, ctx context.Context, dir string, name string, args
 	cmd.Stderr = os.Stderr
 	t.Logf("Running: %s %v", name, args)
 	return cmd.Run()
+}
+
+func waitForPort(t *testing.T, ctx context.Context, addr string, timeout time.Duration) error {
+	ticker := time.NewTicker(1 * time.Second)
+	defer ticker.Stop()
+	timeoutTimer := time.NewTimer(timeout)
+	defer timeoutTimer.Stop()
+
+	t.Logf("Waiting for %s to become available...", addr)
+	for {
+		select {
+		case <-ctx.Done():
+			return ctx.Err()
+		case <-timeoutTimer.C:
+			return fmt.Errorf("timeout waiting for %s", addr)
+		case <-ticker.C:
+			conn, err := net.DialTimeout("tcp", addr, 500*time.Millisecond)
+			if err == nil {
+				conn.Close()
+				t.Logf("Successfully connected to %s", addr)
+				return nil
+			}
+		}
+	}
+}
+
+func getFreePort() (int, error) {
+	addr, err := net.ResolveTCPAddr("tcp", "localhost:0")
+	if err != nil {
+		return 0, err
+	}
+
+	l, err := net.ListenTCP("tcp", addr)
+	if err != nil {
+		return 0, err
+	}
+	defer l.Close()
+	return l.Addr().(*net.TCPAddr).Port, nil
 }
