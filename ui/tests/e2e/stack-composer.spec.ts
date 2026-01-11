@@ -11,7 +11,7 @@ test.describe('Stack Composer', () => {
 
   test('should load the editor and visualize configuration', async ({ page }) => {
     // Navigate to a stack detail page
-    await page.goto('http://localhost:9002/stacks/e2e-test-stack');
+    await page.goto('/stacks/e2e-test-stack');
     await page.getByRole('tab', { name: 'Editor' }).click();
 
     // Verify Editor is loaded
@@ -27,7 +27,7 @@ test.describe('Stack Composer', () => {
     await expect(page.locator('.stack-visualizer-container').getByText('Valid Configuration').first()).toBeVisible();
   });
   test('should insert template from palette', async ({ page }) => {
-    await page.goto('http://localhost:9002/stacks/e2e-test-stack');
+    await page.goto('/stacks/e2e-test-stack');
 
     // Ensure we are on Editor tab (page level)
     await page.getByRole('tab', { name: 'Editor' }).click();
@@ -46,7 +46,7 @@ test.describe('Stack Composer', () => {
   });
 
   test('should validate invalid YAML', async ({ page }) => {
-    await page.goto('http://localhost:9002/stacks/e2e-test-stack');
+    await page.goto('/stacks/e2e-test-stack');
 
     // Ensure we are on Editor tab (page level)
     await page.getByRole('tab', { name: 'Editor' }).click();
