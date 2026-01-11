@@ -90,6 +90,39 @@ func TestSanitizeID(t *testing.T) {
 			expected:                 "id_ba7816bf",
 			expectError:              false,
 		},
+		{
+			name:                     "hash length zero defaults to 8",
+			ids:                      []string{"abc"},
+			alwaysAppendHash:         true,
+			maxSanitizedPrefixLength: 10,
+			hashLength:               0,
+			expected:                 "abc_ba7816bf",
+			expectError:              false,
+		},
+		{
+			name:                     "hash length negative defaults to 8",
+			ids:                      []string{"abc"},
+			alwaysAppendHash:         true,
+			maxSanitizedPrefixLength: 10,
+			hashLength:               -1,
+			expected:                 "abc_ba7816bf",
+			expectError:              false,
+		},
+		{
+			name:                     "hash length too large caps at 64",
+			ids:                      []string{"abc"},
+			alwaysAppendHash:         true,
+			maxSanitizedPrefixLength: 10,
+			hashLength:               100,
+			expected:                 "abc_ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad",
+			expectError:              false,
+		},
+		{
+			name:        "empty ids list",
+			ids:         []string{},
+			expectError: false,
+			expected:    "",
+		},
 	}
 
 	for _, tc := range testCases {
@@ -152,6 +185,45 @@ func TestToString(t *testing.T) {
 			assert.Equal(t, tt.expected, ToString(tt.input))
 		})
 	}
+
+	// Ptr coverage
+	i := 123
+	ptr := &i
+	if len(ToString(ptr)) == 0 {
+		t.Error("ToString(ptr) is empty")
+	}
+}
+
+func TestIsNil(t *testing.T) {
+	// Cover IsNil additional types
+	var ptr *int
+	if !IsNil(ptr) {
+		t.Error("IsNil(nil ptr) should be true")
+	}
+
+	var m map[string]string
+	if !IsNil(m) {
+		t.Error("IsNil(nil map) should be true")
+	}
+
+	var c chan int
+	if !IsNil(c) {
+		t.Error("IsNil(nil chan) should be true")
+	}
+
+	var s []int
+	if !IsNil(s) {
+		t.Error("IsNil(nil slice) should be true")
+	}
+
+	var f func()
+	if !IsNil(f) {
+		t.Error("IsNil(nil func) should be true")
+	}
+
+	if IsNil(123) {
+		t.Error("IsNil(123) should be false")
+	}
 }
 
 func TestReplaceURLPath_Security(t *testing.T) {
@@ -178,6 +250,12 @@ func TestReplaceURLPath_Security(t *testing.T) {
 			urlPath:  "/files/{{name}}",
 			params:   map[string]interface{}{"name": "file?admin=true"},
 			expected: "/files/file%3Fadmin=true",
+		},
+		{
+			name:     "nil value",
+			urlPath:  "/{{key}}",
+			params:   map[string]interface{}{"key": nil},
+			expected: "/%3Cnil%3E",
 		},
 	}
 
