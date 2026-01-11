@@ -1577,10 +1577,14 @@ func (a *Application) createAuthMiddleware() func(http.Handler) http.Handler {
 
 				// Check if the request is from a loopback address
 				ip := net.ParseIP(host)
-				if !ip.IsLoopback() {
-					logging.GetLogger().Warn("Blocked non-loopback request because no API Key is configured", "remote_addr", r.RemoteAddr)
-					http.Error(w, "Forbidden: Public access requires an API Key to be configured", http.StatusForbidden)
-					return
+				// If explicit allowed IPs are configured, we trust IPAllowlistMiddleware to handle it.
+				// If NO explicit allowed IPs are configured, we enforce localhost-only for unauthenticated access.
+				if len(a.SettingsManager.GetAllowedIPs()) == 0 {
+					if !ip.IsLoopback() {
+						logging.GetLogger().Warn("Blocked non-loopback request because no API Key is configured", "remote_addr", r.RemoteAddr)
+						http.Error(w, "Forbidden: Public access requires an API Key to be configured", http.StatusForbidden)
+						return
+					}
 				}
 			}
 			next.ServeHTTP(w, r)

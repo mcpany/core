@@ -123,6 +123,11 @@ func TestDockerComposeE2E(t *testing.T) {
 	// The previous test code had: if _, err := os.Stat(fmt.Sprintf("%s/docker-compose.yml", rootDir)); err == nil { ... }
 	// Let's keep strict parity but make it dynamic.
 	rootCompose := filepath.Join(rootDir, "docker-compose.yml")
+
+	// Create override for environment variables
+	envOverride := createOverrideCompose(t, rootDir)
+	defer os.Remove(envOverride)
+
 	if _, err := os.Stat(rootCompose); err == nil {
 		t.Log("Starting root docker-compose with dynamic ports...")
 		// Create dynamic override
@@ -132,7 +137,7 @@ func TestDockerComposeE2E(t *testing.T) {
 
 		// We must pass --project-directory because the dynamic file is in build/
 		// We explicitly start only mcpany-server (and dependencies) and prometheus to avoid requiring the UI image
-		runCommand(t, rootDir, "docker", "compose", "-f", dynamicCompose, "--project-directory", rootDir, "up", "-d", "--wait", "mcpany-server", "prometheus")
+		runCommand(t, rootDir, "docker", "compose", "-f", dynamicCompose, "-f", envOverride, "--project-directory", rootDir, "up", "-d", "--wait", "mcpany-server", "prometheus")
 
 		// Discover ports
 		serverPort := getServicePort(dynamicCompose, rootDir, "mcpany-server", "50050")
@@ -140,7 +145,7 @@ func TestDockerComposeE2E(t *testing.T) {
 		t.Logf("Root mcpany-server running on port %s", serverPort)
 		verifyEndpoint(t, fmt.Sprintf("http://localhost:%s/healthz", serverPort), 200, 30*time.Second)
 
-		runCommand(t, rootDir, "docker", "compose", "-f", dynamicCompose, "--project-directory", rootDir, "down")
+		runCommand(t, rootDir, "docker", "compose", "-f", dynamicCompose, "-f", envOverride, "--project-directory", rootDir, "down")
 	} else {
 		t.Log("Skipping root docker-compose test (docker-compose.yml not found)")
 	}
@@ -153,7 +158,7 @@ func TestDockerComposeE2E(t *testing.T) {
 	currentComposeFile = dynamicCompose
 	defer os.Remove(dynamicCompose)
 
-	runCommand(t, rootDir, "docker", "compose", "-f", dynamicCompose, "--project-directory", exampleDir, "up", "-d", "--wait")
+	runCommand(t, rootDir, "docker", "compose", "-f", dynamicCompose, "-f", envOverride, "--project-directory", exampleDir, "up", "-d", "--wait")
 
 	// 6. Verify Example Health
 	serverPort := getServicePort(dynamicCompose, exampleDir, "mcpany-server", "50050")
@@ -194,6 +199,7 @@ func testFunctionalWeather(t *testing.T, rootDir string) {
 	cmd := exec.Command("docker", "run", "-d", "--name", containerName,
 		"-p", "0:50050", // Dynamic port
 		"-v", fmt.Sprintf("%s:/config.yaml", configPath),
+		"-e", "MCPANY__GLOBAL_SETTINGS__ALLOWED_IPS=0.0.0.0/0,::/0", // Allow all IPs since we are testing from outside container
 		"mcpany/server:latest",
 		"run", "--config-path", "/config.yaml", "--mcp-listen-address", ":50050",
 	)
@@ -520,6 +526,27 @@ func createDynamicCompose(t *testing.T, rootDir, originalPath string) string {
 	require.NoError(t, err)
 
 	_, err = tmpFile.WriteString(s)
+	require.NoError(t, err)
+	tmpFile.Close()
+
+	return tmpFile.Name()
+}
+
+// createOverrideCompose creates a temporary docker-compose override file to inject environment variables
+func createOverrideCompose(t *testing.T, rootDir string) string {
+	content := `
+services:
+  mcpany-server:
+    environment:
+      - MCPANY__GLOBAL_SETTINGS__ALLOWED_IPS=0.0.0.0/0,::/0
+`
+	// Ensure build directory exists
+	buildDir := filepath.Join(rootDir, "build")
+	_ = os.MkdirAll(buildDir, 0755)
+
+	tmpFile, err := os.CreateTemp(buildDir, "docker-compose-override-*.yml")
+	require.NoError(t, err)
+	_, err = tmpFile.WriteString(content)
 	require.NoError(t, err)
 	tmpFile.Close()
 
