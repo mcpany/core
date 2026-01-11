@@ -210,8 +210,6 @@ export interface UserToken {
   scope: string;
   /** The timestamp when the token was created/updated (RFC3339). */
   updatedAt: string;
-  /** The email associated with the token (if available). */
-  email: string;
 }
 
 /** Credential represents a reusable authentication configuration. */
@@ -1608,7 +1606,6 @@ function createBaseUserToken(): UserToken {
     expiry: "",
     scope: "",
     updatedAt: "",
-    email: "",
   };
 }
 
@@ -1637,9 +1634,6 @@ export const UserToken: MessageFns<UserToken> = {
     }
     if (message.updatedAt !== "") {
       writer.uint32(66).string(message.updatedAt);
-    }
-    if (message.email !== "") {
-      writer.uint32(74).string(message.email);
     }
     return writer;
   },
@@ -1715,14 +1709,6 @@ export const UserToken: MessageFns<UserToken> = {
           message.updatedAt = reader.string();
           continue;
         }
-        case 9: {
-          if (tag !== 74) {
-            break;
-          }
-
-          message.email = reader.string();
-          continue;
-        }
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -1742,7 +1728,6 @@ export const UserToken: MessageFns<UserToken> = {
       expiry: isSet(object.expiry) ? globalThis.String(object.expiry) : "",
       scope: isSet(object.scope) ? globalThis.String(object.scope) : "",
       updatedAt: isSet(object.updated_at) ? globalThis.String(object.updated_at) : "",
-      email: isSet(object.email) ? globalThis.String(object.email) : "",
     };
   },
 
@@ -1772,9 +1757,6 @@ export const UserToken: MessageFns<UserToken> = {
     if (message.updatedAt !== "") {
       obj.updated_at = message.updatedAt;
     }
-    if (message.email !== "") {
-      obj.email = message.email;
-    }
     return obj;
   },
 
@@ -1791,7 +1773,6 @@ export const UserToken: MessageFns<UserToken> = {
     message.expiry = object.expiry ?? "";
     message.scope = object.scope ?? "";
     message.updatedAt = object.updatedAt ?? "";
-    message.email = object.email ?? "";
     return message;
   },
 };

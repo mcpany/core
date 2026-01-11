@@ -9,7 +9,7 @@ WORKDIR /app
 
 # Install dependencies based on the preferred package manager
 COPY ui/package.json ui/package-lock.json* ./
-RUN npm install -g npm@latest && npm ci --no-audit
+RUN npm ci
 
 # Rebuild the source code only when needed
 FROM base AS builder
@@ -23,11 +23,7 @@ RUN ln -s /app/node_modules /proto/node_modules
 # Next.js collects completely anonymous telemetry data about general usage.
 # Learn more here: https://nextjs.org/telemetry
 # Uncomment the following line in case you want to disable telemetry during the build.
-ENV NEXT_TELEMETRY_DISABLED=1
-
-# Set default API URL for build time (prerendering) if not provided
-ARG NEXT_PUBLIC_API_URL
-ENV NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL:-http://localhost:50050}
+ENV NEXT_TELEMETRY_DISABLED 1
 
 RUN npm run build
 RUN mkdir -p public
@@ -36,8 +32,8 @@ RUN mkdir -p public
 FROM base AS runner
 WORKDIR /app
 
-ENV NODE_ENV=production
-ENV NEXT_TELEMETRY_DISABLED=1
+ENV NODE_ENV production
+ENV NEXT_TELEMETRY_DISABLED 1
 
 # User authentication service URL
 ENV NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL:-http://localhost:50050}
@@ -62,8 +58,8 @@ USER nextjs
 
 EXPOSE 3000
 
-ENV PORT=3000
+ENV PORT 3000
 # set hostname to localhost
-ENV HOSTNAME=0.0.0.0
+ENV HOSTNAME "0.0.0.0"
 
 CMD ["node", "server.js"]

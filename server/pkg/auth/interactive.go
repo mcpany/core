@@ -8,7 +8,6 @@ import (
 	"crypto/rand"
 	"encoding/base64"
 	"fmt"
-	"strings"
 	"time"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
@@ -38,9 +37,29 @@ func resolveSecretValue(sv *configv1.SecretValue) string {
 	}
 }
 
-// InitiateOAuth starts the OAuth2 flow for a given service or credential.
+// InitiateOAuth starts the OAuth2 flow for a given service.
 // It returns the authorization URL and the state parameter.
-func (am *Manager) InitiateOAuth(ctx context.Context, userID, serviceID, credentialID, redirectURL string) (string, string, error) {
+func (am *Manager) InitiateOAuth(ctx context.Context, userID, serviceID, redirectURL string) (string, string, error) {
+	// ... existing logic ...
+	// Resolve Service Config
+	// We need upstream service config to get OAuth2 details.
+	// But AuthManager doesn't have access to ServiceRegistry directly?
+	// It relies on being passed the config or looking it up?
+	// Wait, we don't have service lookup here in AuthManager currently.
+	// We only have `storage`.
+	// The `serviceID` is passed.
+	// We need to look up the `UpstreamServiceConfig`.
+	// But `AuthManager` struct doesn't have `ServiceRegistry`?
+	// It has `authenticators` and `users`.
+	// We might need to inject `ServiceRegistry` or pass the config in?
+	// `InitiateOAuth` signature: `(ctx, userID, serviceID, redirectURL)`.
+	// If `AuthManager` cannot look up service, we are stuck.
+	// BUT `server.go` calls it. `server.go` has `ServiceRegistry`.
+	// Maybe `InitiateOAuth` should take `*configv1.UpstreamServiceConfig` instead of `serviceID`?
+	// Or `AuthManager` should have `ServiceRegistry`.
+	// Let's check `auth.go` Manager struct again.
+	// It has `storage`.
+
 	// Fix for unused userID:
 	_ = userID
 
@@ -52,45 +71,25 @@ func (am *Manager) InitiateOAuth(ctx context.Context, userID, serviceID, credent
 		return "", "", fmt.Errorf("storage not initialized")
 	}
 
-	var oauthConfig *configv1.OAuth2Auth
+	// ... (rest of simple checks)
 
-	switch {
-	case credentialID != "":
-		cred, err := storage.GetCredential(ctx, credentialID)
-		if err != nil {
-			return "", "", fmt.Errorf("failed to get credential %s: %w", credentialID, err)
-		}
-		if cred == nil {
-			return "", "", fmt.Errorf("credential %s not found", credentialID)
-		}
-		if cred.GetAuthentication() == nil {
-			return "", "", fmt.Errorf("credential %s has no authentication config", credentialID)
-		}
-		oauthConfig = cred.GetAuthentication().GetOauth2()
-		if oauthConfig == nil {
-			return "", "", fmt.Errorf("credential %s is not configured for OAuth2", credentialID)
-		}
-	case serviceID != "":
-		// Get service config to find OAuth settings
-		service, err := storage.GetService(ctx, serviceID)
-		if err != nil {
-			return "", "", fmt.Errorf("failed to get service %s: %w", serviceID, err)
-		}
-		if service == nil {
-			return "", "", fmt.Errorf("service %s not found", serviceID)
-		}
+	// Get service config to find OAuth settings
+	service, err := storage.GetService(ctx, serviceID)
+	if err != nil {
+		return "", "", fmt.Errorf("failed to get service %s: %w", serviceID, err)
+	}
+	if service == nil {
+		return "", "", fmt.Errorf("service %s not found", serviceID)
+	}
 
-		upstreamAuth := service.GetUpstreamAuth()
-		if upstreamAuth == nil {
-			return "", "", fmt.Errorf("service %s has no upstream auth configuration", serviceID)
-		}
+	upstreamAuth := service.GetUpstreamAuth()
+	if upstreamAuth == nil {
+		return "", "", fmt.Errorf("service %s has no upstream auth configuration", serviceID)
+	}
 
-		oauthConfig = upstreamAuth.GetOauth2()
-		if oauthConfig == nil {
-			return "", "", fmt.Errorf("service %s is not configured for OAuth2", serviceID)
-		}
-	default:
-		return "", "", fmt.Errorf("either service_id or credential_id must be provided")
+	oauthConfig := upstreamAuth.GetOauth2()
+	if oauthConfig == nil {
+		return "", "", fmt.Errorf("service %s is not configured for OAuth2", serviceID)
 	}
 
 	clientID := resolveSecretValue(oauthConfig.GetClientId())
@@ -99,16 +98,13 @@ func (am *Manager) InitiateOAuth(ctx context.Context, userID, serviceID, credent
 	conf := &oauth2.Config{
 		ClientID:     clientID,
 		ClientSecret: clientSecret,
-		Scopes:       strings.Split(oauthConfig.GetScopes(), " "),
+		Scopes:       []string{oauthConfig.GetScopes()},
 		Endpoint: oauth2.Endpoint{
 			AuthURL:  oauthConfig.GetAuthorizationUrl(),
 			TokenURL: oauthConfig.GetTokenUrl(),
 		},
 		RedirectURL: redirectURL,
 	}
-	// Fallback to "scopes" field as space-delimited string if splitting fails or logic changes.
-	// Actually oauthConfig.GetScopes() is a string "space-delimited list of scopes".
-	// oauth2.Config.Scopes is []string. So Split is correct.
 
 	if conf.Endpoint.AuthURL == "" {
 		if oauthConfig.GetIssuerUrl() != "" {
@@ -132,7 +128,7 @@ func (am *Manager) InitiateOAuth(ctx context.Context, userID, serviceID, credent
 }
 
 // HandleOAuthCallback handles the OAuth2 callback code exchange.
-func (am *Manager) HandleOAuthCallback(ctx context.Context, userID, serviceID, credentialID, code, redirectURL string) error {
+func (am *Manager) HandleOAuthCallback(ctx context.Context, userID, serviceID, code, redirectURL string) error {
 	am.mu.RLock()
 	storage := am.storage
 	am.mu.RUnlock()
@@ -141,41 +137,21 @@ func (am *Manager) HandleOAuthCallback(ctx context.Context, userID, serviceID, c
 		return fmt.Errorf("storage not initialized")
 	}
 
-	var oauthConfig *configv1.OAuth2Auth
-	var cred *configv1.Credential
+	service, err := storage.GetService(ctx, serviceID)
+	if err != nil {
+		return fmt.Errorf("failed to get service %s: %w", serviceID, err)
+	}
+	if service == nil {
+		return fmt.Errorf("service %s not found", serviceID)
+	}
 
-	switch {
-	case credentialID != "":
-		var err error
-		cred, err = storage.GetCredential(ctx, credentialID)
-		if err != nil {
-			return fmt.Errorf("failed to get credential %s: %w", credentialID, err)
-		}
-		if cred == nil {
-			return fmt.Errorf("credential %s not found", credentialID)
-		}
-		oauthConfig = cred.GetAuthentication().GetOauth2()
-		if oauthConfig == nil {
-			return fmt.Errorf("credential %s is not configured for OAuth2", credentialID)
-		}
-	case serviceID != "":
-		service, err := storage.GetService(ctx, serviceID)
-		if err != nil {
-			return fmt.Errorf("failed to get service %s: %w", serviceID, err)
-		}
-		if service == nil {
-			return fmt.Errorf("service %s not found", serviceID)
-		}
-		upstreamAuth := service.GetUpstreamAuth()
-		if upstreamAuth == nil {
-			return fmt.Errorf("service %s has no upstream auth configuration", serviceID)
-		}
-		oauthConfig = upstreamAuth.GetOauth2()
-		if oauthConfig == nil {
-			return fmt.Errorf("service %s is not configured for OAuth2", serviceID)
-		}
-	default:
-		return fmt.Errorf("either service_id or credential_id must be provided")
+	upstreamAuth := service.GetUpstreamAuth()
+	if upstreamAuth == nil {
+		return fmt.Errorf("service %s has no upstream auth configuration", serviceID)
+	}
+	oauthConfig := upstreamAuth.GetOauth2()
+	if oauthConfig == nil {
+		return fmt.Errorf("service %s is not configured for OAuth2", serviceID)
 	}
 
 	clientID := resolveSecretValue(oauthConfig.GetClientId())
@@ -195,16 +171,7 @@ func (am *Manager) HandleOAuthCallback(ctx context.Context, userID, serviceID, c
 		return fmt.Errorf("failed to exchange code: %w", err)
 	}
 
-	// TODO: Fetch user info (email) if possible using token?
-	// For now we don't know the user info endpoint unless we infer it or add it to config.
-	// But the feature request says "remember details fetched from process like email/scope".
-	// Scope is in token. extra.
-	// Email usually requires a call to /userinfo or similar.
-	// If OIDC, it might be in ID Token.
-	// For generic OAuth2, we'd need a userinfo endpoint.
-	// I'll add "Email" to UserToken but I won't populate it yet unless I know how.
-	// Maybe I can try to extract email if it's an ID token.
-
+	// Save token
 	userToken := &configv1.UserToken{
 		UserId:       ptr(userID),
 		ServiceId:    ptr(serviceID),
@@ -212,26 +179,12 @@ func (am *Manager) HandleOAuthCallback(ctx context.Context, userID, serviceID, c
 		RefreshToken: ptr(token.RefreshToken),
 		TokenType:    ptr(token.TokenType),
 		Expiry:       ptr(token.Expiry.Format(time.RFC3339)),
-		Scope:        ptr(oauthConfig.GetScopes()), // This might need to be actual scopes granted?
+		Scope:        ptr(oauthConfig.GetScopes()),
 		UpdatedAt:    ptr(time.Now().Format(time.RFC3339)),
 	}
 
-	// If extra has "scope", use it
-	if sc, ok := token.Extra("scope").(string); ok && sc != "" {
-		userToken.Scope = ptr(sc)
-	}
-
-	if credentialID != "" {
-		// Update Credential
-		cred.Token = userToken
-		if err := storage.SaveCredential(ctx, cred); err != nil {
-			return fmt.Errorf("failed to save credential: %w", err)
-		}
-	} else {
-		// Save to UserTokens table
-		if err := storage.SaveToken(ctx, userToken); err != nil {
-			return fmt.Errorf("failed to save token: %w", err)
-		}
+	if err := storage.SaveToken(ctx, userToken); err != nil {
+		return fmt.Errorf("failed to save token: %w", err)
 	}
 
 	return nil

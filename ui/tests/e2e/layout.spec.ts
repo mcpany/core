@@ -41,7 +41,7 @@ test.describe('Layout Tests', () => {
      await page.goto('/');
      await page.keyboard.press('Control+k');
 
-     await page.keyboard.press('Control+k');
+     const overlay = page.locator('[data-state="open"] > [data-radix-collection-item]').first();
      // Radix dialog overlay is usually a sibling or parent.
      // In our code: DialogOverlay is fixed inset-0 z-50 ... w-screen h-screen
 

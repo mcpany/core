@@ -10,11 +10,10 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	v1 "github.com/mcpany/core/proto/api/v1"
-	"github.com/mcpany/core/server/pkg/auth"
 	"github.com/mcpany/core/server/pkg/bus"
 	"github.com/mcpany/core/server/pkg/config"
 	"github.com/mcpany/core/server/pkg/logging"
+	v1 "github.com/mcpany/core/proto/api/v1"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -26,36 +25,34 @@ import (
 // registration logic, allowing for a more modular and scalable architecture.
 type RegistrationServer struct {
 	v1.UnimplementedRegistrationServiceServer
-	bus         *bus.Provider
-	authManager *auth.Manager
+	bus *bus.Provider
 }
 
 // NewRegistrationServerHook is a test hook for overriding the creation of a
 // RegistrationServer.
-var NewRegistrationServerHook func(bus interface{}, authManager interface{}) (*RegistrationServer, error)
+var NewRegistrationServerHook func(bus interface{}) (*RegistrationServer, error)
 
 // NewRegistrationServer creates a new RegistrationServer initialized with the
-// event bus and auth manager.
+// event bus.
 //
 // The bus is used for communicating with the service registration workers,
 // allowing for an asynchronous, decoupled registration process.
 //
 // Parameters:
 //   - bus: The event bus used for communication.
-//   - authManager: Manager for handling authentication/OAuth flows.
 //
 // Returns:
 //   - A new instance of the RegistrationServer.
 //   - An error if the bus is nil.
-func NewRegistrationServer(bus *bus.Provider, authManager *auth.Manager) (*RegistrationServer, error) {
+func NewRegistrationServer(bus *bus.Provider) (*RegistrationServer, error) {
 	if NewRegistrationServerHook != nil {
 		// The type assertion is safe because this is a test-only hook.
-		return NewRegistrationServerHook(bus, authManager)
+		return NewRegistrationServerHook(bus)
 	}
 	if bus == nil {
 		return nil, fmt.Errorf("bus is nil")
 	}
-	return &RegistrationServer{bus: bus, authManager: authManager}, nil
+	return &RegistrationServer{bus: bus}, nil
 }
 
 // RegisterService handles a gRPC request to register a new upstream service.
@@ -156,7 +153,8 @@ func (s *RegistrationServer) UnregisterService(_ context.Context, _ *v1.Unregist
 	return nil, status.Errorf(codes.Unimplemented, "method UnregisterService not implemented")
 }
 
-// InitiateOAuth2Flow initiates an OAuth2 flow for a service or credential.
+// InitiateOAuth2Flow is not yet implemented. It is intended to handle the
+// initiation of an OAuth2 flow for a service.
 //
 // Parameters:
 //   - ctx: The context for the gRPC call.
@@ -164,34 +162,9 @@ func (s *RegistrationServer) UnregisterService(_ context.Context, _ *v1.Unregist
 //
 // Returns:
 //   - A response with the initiation result.
-//   - An error if validation fails or flow initiation errors.
-func (s *RegistrationServer) InitiateOAuth2Flow(ctx context.Context, req *v1.InitiateOAuth2FlowRequest) (*v1.InitiateOAuth2FlowResponse, error) {
-	if req.GetServiceId() == "" && req.GetCredentialId() == "" {
-		return nil, status.Error(codes.InvalidArgument, "either service_id or credential_id is required")
-	}
-	if req.GetRedirectUrl() == "" {
-		return nil, status.Error(codes.InvalidArgument, "redirect_url is required")
-	}
-
-	uid, ok := auth.UserFromContext(ctx)
-	if !ok {
-		// Ideally, we require authentication to initiate oauth.
-		// If the context doesn't have it (e.g. CLI without user context?), what do we do?
-		// We might default to a system or verify if the request is allowed.
-		// For now, assume context has it or fail?
-		// gRPC interceptors should populate it if auth is enabled.
-		return nil, status.Error(codes.Unauthenticated, "user not authenticated")
-	}
-
-	url, state, err := s.authManager.InitiateOAuth(ctx, uid, req.GetServiceId(), req.GetCredentialId(), req.GetRedirectUrl())
-	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to initiate oauth: %v", err)
-	}
-
-	return &v1.InitiateOAuth2FlowResponse{
-		AuthorizationUrl: url,
-		State:            state,
-	}, nil
+//   - An error (currently always Unimplemented).
+func (s *RegistrationServer) InitiateOAuth2Flow(_ context.Context, _ *v1.InitiateOAuth2FlowRequest) (*v1.InitiateOAuth2FlowResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method InitiateOAuth2Flow not implemented")
 }
 
 // RegisterTools is not yet implemented. It is intended to handle the

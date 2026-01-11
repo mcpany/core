@@ -126,20 +126,6 @@ func redactJSONFast(input []byte) []byte {
 					// Determine value end
 					valEnd := skipJSONValue(input, valStart)
 
-					// Check for unclosed string value
-					if input[valStart] == '"' {
-						// If the value is a string, it must end with a quote.
-						// skipString returns the index AFTER the closing quote.
-						// So input[valEnd-1] must be '"'.
-						// If valEnd == len(input), we need to verify the last char is a quote.
-						if valEnd == len(input) {
-							if valEnd <= valStart+1 || input[valEnd-1] != '"' {
-								// Malformed (unclosed string at EOF)
-								break
-							}
-						}
-					}
-
 					// Write pending data up to value start
 					out.Write(input[lastWrite:valStart])
 

@@ -18,8 +18,6 @@ function OAuthCallbackContent() {
     const router = useRouter();
     const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading');
     const [errorMessage, setErrorMessage] = useState('');
-    const [returnPath, setReturnPath] = useState('/services');
-    console.log("OAuthCallbackContent Mounted", searchParams?.toString());
 
     useEffect(() => {
         const code = searchParams.get('code');
@@ -42,33 +40,24 @@ function OAuthCallbackContent() {
             try {
                 // Retrieve stored context
                 const serviceID = sessionStorage.getItem('oauth_service_id');
-                const credentialID = sessionStorage.getItem('oauth_credential_id'); // New
                 const storedState = sessionStorage.getItem('oauth_state');
-
                 const redirectUrl = sessionStorage.getItem('oauth_redirect_url') || `${window.location.origin}/auth/callback`;
-                const storedReturnPath = sessionStorage.getItem('oauth_return_path');
-                if (storedReturnPath) {
-                    setReturnPath(storedReturnPath);
-                }
 
-                if (!serviceID && !credentialID) {
-                    throw new Error('No service ID or credential ID found in session. Please start the flow again.');
+                if (!serviceID) {
+                    throw new Error('No service ID found in session. Please start the flow again.');
                 }
 
                 // Verify state if stricter security needed (backend does check validation usually? implementation dependent)
                 // We should ideally check state matches storedState.
                 // But for now let's just use what's returned.
 
-                await apiClient.handleOAuthCallback(serviceID || null, code, redirectUrl, credentialID || undefined);
+                await apiClient.handleOAuthCallback(serviceID, code, redirectUrl);
                 setStatus('success');
 
                 // Cleanup
                 sessionStorage.removeItem('oauth_service_id');
-                sessionStorage.removeItem('oauth_credential_id');
                 sessionStorage.removeItem('oauth_state');
-
                 sessionStorage.removeItem('oauth_redirect_url');
-                sessionStorage.removeItem('oauth_return_path');
 
                 // Redirect after short delay?
                 // Or let user click.
@@ -82,7 +71,10 @@ function OAuthCallbackContent() {
     }, [searchParams]);
 
     const handleContinue = () => {
-        router.push(returnPath);
+         // Try to go back to service page
+        // We don't have service ID easily if we cleared session.
+        // But we can check history or just go services.
+        router.push('/services');
     };
 
     return (
@@ -103,10 +95,7 @@ function OAuthCallbackContent() {
                     {status === 'success' && (
                         <div className="space-y-4">
                             <p>You have successfully connected your account.</p>
-
-                            <Button onClick={handleContinue} className="w-full">
-                                {returnPath === '/credentials' ? 'Return to Credentials' : 'Return to Services'}
-                            </Button>
+                            <Button onClick={handleContinue} className="w-full">Return to Services</Button>
                         </div>
                     )}
                     {status === 'error' && (
@@ -115,9 +104,7 @@ function OAuthCallbackContent() {
                                 <AlertTitle>Error</AlertTitle>
                                 <AlertDescription>{errorMessage}</AlertDescription>
                             </Alert>
-                            <Button variant="outline" onClick={() => router.push(returnPath)} className="w-full">
-                                {returnPath === '/credentials' ? 'Back to Credentials' : 'Back to Services'}
-                            </Button>
+                            <Button variant="outline" onClick={() => router.push('/services')} className="w-full">Back to Services</Button>
                          </div>
                     )}
                 </CardContent>

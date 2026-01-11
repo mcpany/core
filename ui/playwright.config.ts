@@ -4,7 +4,6 @@
  */
 
 import { defineConfig, devices } from '@playwright/test';
-import os from 'os';
 
 export default defineConfig({
   testDir: './tests',
@@ -13,7 +12,7 @@ export default defineConfig({
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
-  workers: os.cpus().length,
+  workers: 1,
   outputDir: 'test-results/artifacts',
   reporter: [['line'], ['html', { outputFolder: 'playwright-report/html' }], ['json', { outputFile: 'test-results/test-results.json' }]],
   timeout: 60000,

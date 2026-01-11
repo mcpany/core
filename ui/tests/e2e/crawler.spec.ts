@@ -6,7 +6,6 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('UI Crawler', () => {
-  test.setTimeout(300000); // Increase timeout to 5 minutes for crawling
   test('should crawl and verify all internal links', async ({ page }) => {
     const visited = new Set<string>();
     const toVisit: string[] = ['/'];

@@ -11,8 +11,7 @@ import { describe, it, expect, vi } from 'vitest';
 
 // Mock RechartsResponsiveContainer to avoid issues with Recharts in JSDOM
 // We need to mock the module 'recharts'
-// We need to mock the module 'recharts'
-// import * as Recharts from 'recharts';
+import * as Recharts from 'recharts';
 
 // Mocking Recharts components
 vi.mock('recharts', async () => {

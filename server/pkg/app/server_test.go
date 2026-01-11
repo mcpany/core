@@ -1502,7 +1502,7 @@ func TestRun_CachingMiddleware(t *testing.T) {
 
 func TestStartGrpcServer_RegistrationServerError(t *testing.T) {
 	// Inject an error for mcpserver.NewRegistrationServer
-	mcpserver.NewRegistrationServerHook = func(_ interface{}, _ interface{}) (*mcpserver.RegistrationServer, error) {
+	mcpserver.NewRegistrationServerHook = func(_ interface{}) (*mcpserver.RegistrationServer, error) {
 		return nil, fmt.Errorf("injected registration server error")
 	}
 	defer func() { mcpserver.NewRegistrationServerHook = nil }()

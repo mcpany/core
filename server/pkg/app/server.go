@@ -1423,7 +1423,7 @@ func (a *Application) runServerMode(
 	reflection.Register(grpcServer)
 
 	// Register Services
-	registrationServer, err := mcpserver.NewRegistrationServer(bus, a.AuthManager)
+	registrationServer, err := mcpserver.NewRegistrationServer(bus)
 	if err != nil {
 		return fmt.Errorf("failed to create API server: %w", err)
 	}

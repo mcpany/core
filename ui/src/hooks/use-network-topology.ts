@@ -217,25 +217,8 @@ export function useNetworkTopology() {
     // Fetch on mount
     useEffect(() => {
         fetchData();
-        const interval = setInterval(() => {
-            // ⚡ Bolt Optimization: Stop polling when tab is hidden to save resources
-            if (!document.hidden) {
-                fetchData();
-            }
-        }, 5000);
-
-        // ⚡ Bolt Optimization: Refresh immediately when tab becomes visible
-        const onVisibilityChange = () => {
-            if (!document.hidden) {
-                fetchData();
-            }
-        };
-        document.addEventListener("visibilitychange", onVisibilityChange);
-
-        return () => {
-            clearInterval(interval);
-            document.removeEventListener("visibilitychange", onVisibilityChange);
-        };
+        const interval = setInterval(fetchData, 5000);
+        return () => clearInterval(interval);
     }, [fetchData]);
 
     const onConnect = useCallback(

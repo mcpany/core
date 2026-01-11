@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { GET, POST } from '@/app/api/secrets/route';
 import { DELETE } from '@/app/api/secrets/[id]/route';
 import { SecretsStore } from '@/lib/server/secrets-store';
@@ -27,7 +27,7 @@ describe('Secrets API', () => {
             const mockSecrets = [
                 { id: '1', name: 'Test', key: 'TEST_KEY', value: 'secret', provider: 'custom' }
             ];
-            vi.mocked(SecretsStore.getAllDecrypted).mockReturnValue(mockSecrets);
+            vi.mocked(SecretsStore.getAllDecrypted).mockReturnValue(mockSecrets as any);
 
             const response = await GET();
             const data = await response.json();
@@ -50,7 +50,7 @@ describe('Secrets API', () => {
     describe('POST /api/secrets', () => {
         it('should create a new secret', async () => {
             const newSecret = { name: 'New', key: 'NEW_KEY', value: 'value123', provider: 'custom' };
-            vi.mocked(SecretsStore.add).mockReturnValue({ ...newSecret, id: '123', createdAt: '', lastUsed: '', encryptedValue: 'enc' });
+            vi.mocked(SecretsStore.add).mockReturnValue({ ...newSecret, id: '123', createdAt: '', lastUsed: '', encryptedValue: 'enc' } as any);
 
             const req = new Request('http://localhost/api/secrets', {
                 method: 'POST',

@@ -27,10 +27,9 @@ import {
 } from "@/components/ui/dialog"
 import { CredentialForm } from "./credential-form"
 import { Plus, Trash, Key, Lock, Globe } from "lucide-react"
-import { useToast } from "@/hooks/use-toast"
+import { toast } from "sonner"
 
 export function CredentialList() {
-  const { toast } = useToast()
   const [credentials, setCredentials] = useState<Credential[]>([])
   const [loading, setLoading] = useState(true)
   const [isOpen, setIsOpen] = useState(false)
@@ -48,9 +47,8 @@ export function CredentialList() {
       data.sort((a: Credential, b: Credential) => a.name.localeCompare(b.name))
       setCredentials(data)
     } catch (error) {
-
       console.error(error)
-      toast({ variant: "destructive", description: "Failed to load credentials" })
+      toast.error("Failed to load credentials")
     } finally {
       setLoading(false)
     }
@@ -60,10 +58,10 @@ export function CredentialList() {
       if (!confirm("Are you sure you want to delete this credential?")) return;
       try {
           await apiClient.deleteCredential(id)
-          toast({ description: "Credential deleted" })
+          toast.success("Credential deleted")
           loadCredentials()
       } catch (error) {
-          toast({ variant: "destructive", description: "Failed to delete credential" })
+          toast.error("Failed to delete credential")
       }
   }
 

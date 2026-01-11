@@ -7,11 +7,11 @@ import { test, expect } from '@playwright/test';
 
 test.describe('OAuth Flow E2E', () => {
   const serviceID = 'github-test';
-
+  const redirectURL = 'http://localhost:9002/auth/callback'; // UI URL
 
   test('should initiate oauth and handle callback', async ({ page }) => {
     // 1. Mock Service Details to include OAuth config
-    await page.route(`**/api/v1/registration.RegistrationService/GetService`, async () => {
+    await page.route(`**/api/v1/registration.RegistrationService/GetService`, async route => {
          // gRPC-Web response or REST?
          // logic in client.ts uses `registrationClient.GetService` which is gRPC-Web.
          // Mocking gRPC-Web in Playwright can be tricky if using binary format.

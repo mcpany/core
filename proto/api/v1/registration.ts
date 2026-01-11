@@ -38,8 +38,6 @@ export interface ListServicesResponse {
 export interface InitiateOAuth2FlowRequest {
   serviceId: string;
   namespace: string;
-  credentialId: string;
-  redirectUrl: string;
 }
 
 export interface InitiateOAuth2FlowResponse {
@@ -371,7 +369,7 @@ export const ListServicesResponse: MessageFns<ListServicesResponse> = {
 };
 
 function createBaseInitiateOAuth2FlowRequest(): InitiateOAuth2FlowRequest {
-  return { serviceId: "", namespace: "", credentialId: "", redirectUrl: "" };
+  return { serviceId: "", namespace: "" };
 }
 
 export const InitiateOAuth2FlowRequest: MessageFns<InitiateOAuth2FlowRequest> = {
@@ -381,12 +379,6 @@ export const InitiateOAuth2FlowRequest: MessageFns<InitiateOAuth2FlowRequest> = 
     }
     if (message.namespace !== "") {
       writer.uint32(18).string(message.namespace);
-    }
-    if (message.credentialId !== "") {
-      writer.uint32(26).string(message.credentialId);
-    }
-    if (message.redirectUrl !== "") {
-      writer.uint32(34).string(message.redirectUrl);
     }
     return writer;
   },
@@ -414,22 +406,6 @@ export const InitiateOAuth2FlowRequest: MessageFns<InitiateOAuth2FlowRequest> = 
           message.namespace = reader.string();
           continue;
         }
-        case 3: {
-          if (tag !== 26) {
-            break;
-          }
-
-          message.credentialId = reader.string();
-          continue;
-        }
-        case 4: {
-          if (tag !== 34) {
-            break;
-          }
-
-          message.redirectUrl = reader.string();
-          continue;
-        }
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -443,8 +419,6 @@ export const InitiateOAuth2FlowRequest: MessageFns<InitiateOAuth2FlowRequest> = 
     return {
       serviceId: isSet(object.serviceId) ? globalThis.String(object.serviceId) : "",
       namespace: isSet(object.namespace) ? globalThis.String(object.namespace) : "",
-      credentialId: isSet(object.credentialId) ? globalThis.String(object.credentialId) : "",
-      redirectUrl: isSet(object.redirectUrl) ? globalThis.String(object.redirectUrl) : "",
     };
   },
 
@@ -456,12 +430,6 @@ export const InitiateOAuth2FlowRequest: MessageFns<InitiateOAuth2FlowRequest> = 
     if (message.namespace !== "") {
       obj.namespace = message.namespace;
     }
-    if (message.credentialId !== "") {
-      obj.credentialId = message.credentialId;
-    }
-    if (message.redirectUrl !== "") {
-      obj.redirectUrl = message.redirectUrl;
-    }
     return obj;
   },
 
@@ -472,8 +440,6 @@ export const InitiateOAuth2FlowRequest: MessageFns<InitiateOAuth2FlowRequest> = 
     const message = createBaseInitiateOAuth2FlowRequest();
     message.serviceId = object.serviceId ?? "";
     message.namespace = object.namespace ?? "";
-    message.credentialId = object.credentialId ?? "";
-    message.redirectUrl = object.redirectUrl ?? "";
     return message;
   },
 };
