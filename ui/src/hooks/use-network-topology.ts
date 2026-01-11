@@ -85,11 +85,7 @@ export function useNetworkTopology() {
 
     const fetchData = useCallback(async () => {
         try {
-            const res = await fetch('/api/v1/topology', {
-                headers: {
-                    'X-API-Key': process.env.NEXT_PUBLIC_MCPANY_API_KEY || '',
-                }
-            });
+            const res = await fetch('/api/v1/topology');
             if (!res.ok) throw new Error('Failed to fetch topology');
             const graph: Graph = await res.json();
 
