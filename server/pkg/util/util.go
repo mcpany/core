@@ -50,12 +50,12 @@ import (
 //	                  sanitized string, regardless of whether it was modified.
 //	maxSanitizedPrefixLength: The maximum allowed length for the sanitized prefix of each
 //	                          string before a hash is appended.
-//	hashLength: The desired length of the hexadecimal hash to be appended.
+//	reqHashLength: The desired length of the hexadecimal hash to be appended.
 //
 // Returns:
 //
 //	A single string representing the sanitized and joined identifier.
-func SanitizeID(ids []string, alwaysAppendHash bool, maxSanitizedPrefixLength, hashLength int) (string, error) {
+func SanitizeID(ids []string, alwaysAppendHash bool, maxSanitizedPrefixLength, reqHashLength int) (string, error) {
 	if len(ids) == 0 {
 		return "", nil
 	}
@@ -80,6 +80,14 @@ func SanitizeID(ids []string, alwaysAppendHash bool, maxSanitizedPrefixLength, h
 		}
 	}
 
+	// Determine effective hash length for total length calculation
+	effectiveHashLength := reqHashLength
+	if effectiveHashLength <= 0 {
+		effectiveHashLength = hashLength // Default from package constant (8)
+	} else if effectiveHashLength > 64 {
+		effectiveHashLength = 64 // Cap at SHA256 hex length
+	}
+
 	// Optimization: Pre-calculate total length to avoid multiple allocations
 	totalLen := 0
 	for i, id := range ids {
@@ -88,7 +96,7 @@ func SanitizeID(ids []string, alwaysAppendHash bool, maxSanitizedPrefixLength, h
 		}
 		totalLen += len(id)
 		if alwaysAppendHash {
-			totalLen += 1 + hashLength // _ + hash
+			totalLen += 1 + effectiveHashLength // _ + hash
 		}
 		if i > 0 {
 			totalLen++ // dot
@@ -103,7 +111,7 @@ func SanitizeID(ids []string, alwaysAppendHash bool, maxSanitizedPrefixLength, h
 			sb.WriteByte('.')
 		}
 
-		if err := sanitizePart(&sb, id, alwaysAppendHash, maxSanitizedPrefixLength, hashLength); err != nil {
+		if err := sanitizePart(&sb, id, alwaysAppendHash, maxSanitizedPrefixLength, reqHashLength); err != nil {
 			return "", err
 		}
 	}
@@ -111,7 +119,7 @@ func SanitizeID(ids []string, alwaysAppendHash bool, maxSanitizedPrefixLength, h
 	return sb.String(), nil
 }
 
-func sanitizePart(sb *strings.Builder, id string, alwaysAppendHash bool, maxSanitizedPrefixLength, hashLength int) error { //nolint:unparam
+func sanitizePart(sb *strings.Builder, id string, alwaysAppendHash bool, maxSanitizedPrefixLength, reqHashLength int) error { //nolint:unparam
 	// Pass 1: Scan for dirty chars and count clean length
 	dirtyCount := 0
 	for j := 0; j < len(id); j++ {
@@ -152,11 +160,17 @@ func sanitizePart(sb *strings.Builder, id string, alwaysAppendHash bool, maxSani
 		hex.Encode(hashBuf[:], sum[:])
 
 		sb.WriteByte('_')
-		if hashLength > 0 && hashLength < 64 {
-			sb.Write(hashBuf[:hashLength])
-		} else {
-			sb.Write(hashBuf[:])
+
+		// Determine effective hash length
+		effectiveLen := reqHashLength
+		if effectiveLen <= 0 {
+			effectiveLen = hashLength // Use package-level constant (8)
+		} else if effectiveLen > 64 {
+			effectiveLen = 64
 		}
+
+		sb.Write(hashBuf[:effectiveLen])
+
 	} else { // appendHash is false, so dirtyCount == 0 and len(id) <= maxSanitizedPrefixLength
 		// We can just write id
 		sb.WriteString(id)
