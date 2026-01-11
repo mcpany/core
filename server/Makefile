@@ -616,6 +616,16 @@ else
 	@exit 1
 endif
 
+# Target to build operator Docker image
+docker-build-operator: prepare-docker-context
+ifdef HAS_DOCKER
+	@echo "Building operator Docker image (mcpany/operator:latest)..."
+	@$(DOCKER_BUILD_CMD) -t mcpany/operator:latest -f ../k8s/operator/Dockerfile ..
+else
+	@echo "Docker not found. Cannot build operator image."
+	@exit 1
+endif
+
 # Aliases for consistent naming
 docker-build-server: build-docker
 docker-build-http-echo: build-http-echo-docker
