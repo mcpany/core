@@ -1,3 +1,7 @@
+// Copyright 2025 Author(s) of MCP Any
+// SPDX-License-Identifier: Apache-2.0
+
+// Package diagnostic provides tools for diagnosing server configuration and environment issues before startup.
 package diagnostic
 
 import (
@@ -11,13 +15,14 @@ import (
 )
 
 // CheckPortAvailability checks if the given address is available for listening.
-func CheckPortAvailability(address string) error {
+func CheckPortAvailability(ctx context.Context, address string) error {
 	// If address doesn't contain port, we can't really check, but assume it's formatted as host:port
 	if !strings.Contains(address, ":") {
 		return nil // Invalid format, let server handle it or default
 	}
 
-	l, err := net.Listen("tcp", address)
+	var lc net.ListenConfig
+	l, err := lc.Listen(ctx, "tcp", address)
 	if err != nil {
 		return fmt.Errorf("port binding check failed for %s: %w", address, err)
 	}
@@ -40,8 +45,8 @@ func EnhanceConfigError(err error) error {
 			field := strings.Trim(parts[1], " \"")
 			// The field name might have trailing characters like ")" or newline
 			field = strings.TrimRight(field, ") \n")
-            // Re-trim quotes if they were inside parens
-            field = strings.Trim(field, "\"")
+			// Re-trim quotes if they were inside parens
+			field = strings.Trim(field, "\"")
 			suggestion := suggestField(field)
 			return fmt.Errorf("configuration error: unknown field '%s'. %s", field, suggestion)
 		}
@@ -69,9 +74,9 @@ func EnhanceConfigError(err error) error {
 func suggestField(field string) string {
 	// Simple mapping for common mistakes
 	commonMistakes := map[string]string{
-		"services": "Did you mean 'upstream_services'?",
+		"services":         "Did you mean 'upstream_services'?",
 		"mcpListenAddress": "Did you mean 'global_settings.mcp_listen_address'?",
-		"port": "Did you mean 'global_settings.mcp_listen_address' or 'grpc_port'?",
+		"port":             "Did you mean 'global_settings.mcp_listen_address' or 'grpc_port'?",
 	}
 	if suggestion, ok := commonMistakes[field]; ok {
 		return suggestion
@@ -82,10 +87,6 @@ func suggestField(field string) string {
 // RunDiagnostics runs a suite of startup checks.
 func RunDiagnostics(ctx context.Context, fs afero.Fs, configPaths []string, bindAddress string) error {
 	// 1. Check Config Validity
-	// We use LoadServices which calls LoadResolvedConfig AND Validate
-	// But LoadServices might be too heavy if we just want to check syntax first.
-	// Actually, LoadServices is what main calls. We want to wrap that or call it here.
-
 	store := config.NewFileStore(fs, configPaths)
 	// We just want to check if it parses correctly.
 	_, err := config.LoadServices(ctx, store, "server")
@@ -94,7 +95,7 @@ func RunDiagnostics(ctx context.Context, fs afero.Fs, configPaths []string, bind
 	}
 
 	// 2. Check Port Availability
-	if err := CheckPortAvailability(bindAddress); err != nil {
+	if err := CheckPortAvailability(ctx, bindAddress); err != nil {
 		return fmt.Errorf("network check failed: %w\n\tIs another instance of MCP Any running?", err)
 	}
 

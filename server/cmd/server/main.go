@@ -81,7 +81,7 @@ func newRootCmd() *cobra.Command { //nolint:gocyclo // Main entry point, expecte
 			log.Info("Running startup checks...")
 			if err := diagnostic.RunDiagnostics(ctx, osFs, configPaths, bindAddress); err != nil {
 				// We want to print this to stdout so the user sees it immediately, not just in logs
-				fmt.Fprintf(cmd.OutOrStderr(), "\n❌ Startup Failed:\n%v\n\n", err)
+				_, _ = fmt.Fprintf(cmd.OutOrStderr(), "\n❌ Startup Failed:\n%v\n\n", err)
 				return err // Return error to exit with non-zero code
 			}
 			log.Info("Startup checks passed.")
