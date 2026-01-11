@@ -299,7 +299,18 @@ func countTokensReflect(t Tokenizer, v interface{}) (int, error) {
 		count := 0
 		for i := 0; i < val.NumField(); i++ {
 			if val.Type().Field(i).IsExported() {
-				c, err := CountTokensInValue(t, val.Field(i).Interface())
+				// Optimization: Handle common types without Interface() allocation
+				// This significantly reduces allocs/op for structs with many string fields.
+				f := val.Field(i)
+				var c int
+				var err error
+
+				if f.Kind() == reflect.String {
+					c, err = t.CountTokens(f.String())
+				} else {
+					c, err = CountTokensInValue(t, f.Interface())
+				}
+
 				if err != nil {
 					return 0, err
 				}
@@ -310,7 +321,17 @@ func countTokensReflect(t Tokenizer, v interface{}) (int, error) {
 	case reflect.Slice, reflect.Array:
 		count := 0
 		for i := 0; i < val.Len(); i++ {
-			c, err := CountTokensInValue(t, val.Index(i).Interface())
+			// Optimization: Handle common types without Interface() allocation
+			e := val.Index(i)
+			var c int
+			var err error
+
+			if e.Kind() == reflect.String {
+				c, err = t.CountTokens(e.String())
+			} else {
+				c, err = CountTokensInValue(t, e.Interface())
+			}
+
 			if err != nil {
 				return 0, err
 			}
@@ -322,13 +343,27 @@ func countTokensReflect(t Tokenizer, v interface{}) (int, error) {
 		iter := val.MapRange()
 		for iter.Next() {
 			// Key
-			kc, err := CountTokensInValue(t, iter.Key().Interface())
+			k := iter.Key()
+			var kc int
+			var err error
+			if k.Kind() == reflect.String {
+				kc, err = t.CountTokens(k.String())
+			} else {
+				kc, err = CountTokensInValue(t, k.Interface())
+			}
 			if err != nil {
 				return 0, err
 			}
 			count += kc
+
 			// Value
-			vc, err := CountTokensInValue(t, iter.Value().Interface())
+			v := iter.Value()
+			var vc int
+			if v.Kind() == reflect.String {
+				vc, err = t.CountTokens(v.String())
+			} else {
+				vc, err = CountTokensInValue(t, v.Interface())
+			}
 			if err != nil {
 				return 0, err
 			}
