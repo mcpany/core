@@ -9,8 +9,9 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/mcpany/core/server/pkg/util"
 	configv1 "github.com/mcpany/core/proto/config/v1"
+	"github.com/mcpany/core/server/pkg/util"
+	"github.com/mcpany/core/server/pkg/validation"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -39,8 +40,12 @@ func TestResolveSecret_ValidPathWithDoubleDotsInName(t *testing.T) {
 	// This test ensures we didn't break valid filenames like "my..secret.txt"
 	tempDir, err := os.MkdirTemp("", "mcpany-repro-valid")
 	require.NoError(t, err)
-	t.Setenv("MCPANY_FILE_PATH_ALLOW_LIST", tempDir)
-	defer func() { _ = os.RemoveAll(tempDir) }()
+	// t.Setenv("MCPANY_FILE_PATH_ALLOW_LIST", tempDir)
+	validation.SetAllowedPaths([]string{tempDir})
+	defer func() {
+		validation.SetAllowedPaths(nil)
+		_ = os.RemoveAll(tempDir)
+	}()
 
 	secretFile := filepath.Join(tempDir, "my..secret.txt")
 	err = os.WriteFile(secretFile, []byte("VALID_SECRET"), 0600)
@@ -116,7 +121,8 @@ func TestResolveSecret_SSRF_PrivateIP_Allowed(t *testing.T) {
 
 func TestResolveSecret_AbsolutePathsBlockedByDefault(t *testing.T) {
 	// Ensure env var is NOT set
-	os.Unsetenv("MCPANY_FILE_PATH_ALLOW_LIST")
+	// os.Unsetenv("MCPANY_FILE_PATH_ALLOW_LIST")
+	validation.SetAllowedPaths(nil)
 
 	// Create a temp file
 	// os.CreateTemp uses default temp dir, which is usually outside CWD.
@@ -150,7 +156,9 @@ func TestResolveSecret_AbsolutePathsAllowedWithList(t *testing.T) {
 	defer os.Remove(tmpFile.Name())
 
 	// Add the temp dir to the allow list
-	t.Setenv("MCPANY_FILE_PATH_ALLOW_LIST", filepath.Dir(tmpFile.Name()))
+	// t.Setenv("MCPANY_FILE_PATH_ALLOW_LIST", filepath.Dir(tmpFile.Name()))
+	validation.SetAllowedPaths([]string{filepath.Dir(tmpFile.Name())})
+	defer validation.SetAllowedPaths(nil)
 
 	_, err = tmpFile.WriteString("supersecret")
 	require.NoError(t, err)

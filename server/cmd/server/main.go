@@ -46,7 +46,7 @@ var (
 // version and `health` to perform a health check against a running server.
 //
 // Returns the configured root command, ready to be executed.
-func newRootCmd() *cobra.Command {
+func newRootCmd() *cobra.Command { //nolint:gocyclo // Main entry point, expected to be complex
 	rootCmd := &cobra.Command{
 		Use:   appconsts.Name,
 		Short: "MCP Any is a versatile proxy for backend services.",

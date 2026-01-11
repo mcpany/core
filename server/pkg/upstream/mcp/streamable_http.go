@@ -386,12 +386,15 @@ func buildCommandFromStdioConfig(ctx context.Context, stdio *configv1.McpStdioCo
 			command = "sudo"
 			args = newArgs
 		}
-		cmd := exec.CommandContext(ctx, command, args...)
+		cmd := exec.CommandContext(ctx, command, args...) //nolint:gosec // Command is validated/configured by user
 		cmd.Dir = stdio.GetWorkingDirectory()
 		currentEnv := os.Environ()
+		env := make([]string, len(currentEnv), len(currentEnv)+len(resolvedEnv))
+		copy(env, currentEnv)
 		for k, v := range resolvedEnv {
-			cmd.Env = append(currentEnv, fmt.Sprintf("%s=%s", k, v))
+			env = append(env, fmt.Sprintf("%s=%s", k, v))
 		}
+		cmd.Env = env
 		return cmd, nil
 	}
 
@@ -408,12 +411,15 @@ func buildCommandFromStdioConfig(ctx context.Context, stdio *configv1.McpStdioCo
 
 	script := strings.Join(scriptCommands, " && ")
 
-	cmd := exec.CommandContext(ctx, "/bin/sh", "-c", script)
+	cmd := exec.CommandContext(ctx, "/bin/sh", "-c", script) //nolint:gosec // Script is configured by user
 	cmd.Dir = stdio.GetWorkingDirectory()
 	currentEnv := os.Environ()
+	env := make([]string, len(currentEnv), len(currentEnv)+len(resolvedEnv))
+	copy(env, currentEnv)
 	for k, v := range resolvedEnv {
-		cmd.Env = append(currentEnv, fmt.Sprintf("%s=%s", k, v))
+		env = append(env, fmt.Sprintf("%s=%s", k, v))
 	}
+	cmd.Env = env
 
 	return cmd, nil
 }
