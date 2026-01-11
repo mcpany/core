@@ -42,7 +42,7 @@ const getBaseUrl = () => {
     if (typeof window !== 'undefined') {
         return window.location.origin;
     }
-    return 'http://localhost:8080'; // Default for SSR
+    return process.env.BACKEND_URL || 'http://mcpany:50050'; // Default for SSR in K8s
 };
 
 const rpc = new GrpcWebImpl(getBaseUrl(), {
