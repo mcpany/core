@@ -20,7 +20,7 @@ test('capture screenshots', async ({ page }) => {
   await page.waitForTimeout(1000); // Wait for animations
   await page.screenshot({ path: `${auditDir}/dashboard.png`, fullPage: true });
 
-  await page.goto('/services');
+  await page.goto('/upstream-services');
   await page.waitForTimeout(1000);
   await page.screenshot({ path: `${auditDir}/services.png`, fullPage: true });
 

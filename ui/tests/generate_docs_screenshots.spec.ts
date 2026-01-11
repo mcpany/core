@@ -93,7 +93,7 @@ test.describe('Generate Detailed Docs Screenshots', () => {
   });
 
   test('Services Screenshots', async ({ page }) => {
-    await page.goto('/services');
+    await page.goto('/upstream-services');
     await page.waitForTimeout(1000);
     await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'services_list.png'), fullPage: true });
 
@@ -108,7 +108,7 @@ test.describe('Generate Detailed Docs Screenshots', () => {
 
     // Configure Service
     // We navigate directly
-    await page.goto('/services/postgres-primary');
+    await page.goto('/upstream-services/postgres-primary');
     await page.waitForTimeout(1000);
     await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'service_config.png'), fullPage: true });
   });
