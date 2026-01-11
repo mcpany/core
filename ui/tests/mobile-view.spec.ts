@@ -7,6 +7,29 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('Mobile View Verification', () => {
+  test('should toggle sidebar', async ({ page }) => {
+    await page.goto('/');
+
+    // Verify Sidebar is hidden initially (outside viewport or explicitly hidden class)
+    // The sidebar usually has a specific nav role or class.
+    // In mobile, checking that the "Dashboard" *text* in the sidebar is not visible or obscured is a good proxy.
+    const sidebarLink = page.getByRole('link', { name: 'Marketplace' });
+    await expect(sidebarLink).toBeHidden();
+
+    // Click Hamburger Menu
+    // Usually top-left.
+    const menuBtn = page.getByRole('button').first(); // Often the first button in header
+    // Or better, look for a likely icon label if accessible, or class.
+    // Browser trace showed it was just a button in the header.
+    await menuBtn.click();
+
+    // Verify Sidebar is now visible
+    await expect(sidebarLink).toBeVisible();
+
+    // Click outside or close to dismiss (optional, but good practice)
+    // await page.locator('.fixed.inset-0').click(); // Overlay
+  });
+
   test.use({ viewport: { width: 375, height: 667 } }); // iPhone SE
 
   test('should render Network Graph controls in mobile mode', async ({ page }) => {
