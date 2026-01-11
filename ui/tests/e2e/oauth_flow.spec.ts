@@ -96,7 +96,7 @@ test.describe('OAuth Flow E2E', () => {
 
         await route.fulfill({
             json: {
-                authorization_url: 'http://localhost:9002/mock-provider-auth?state=xyz',
+                authorization_url: '/mock-provider-auth?state=xyz',
                 state: 'xyz'
             }
         });
@@ -135,7 +135,7 @@ test.describe('OAuth Flow E2E', () => {
          await route.fulfill({
              status: 302,
              headers: {
-                 'Location': `http://localhost:9002/auth/callback?code=mock-code&state=${state}`
+                 'Location': `/auth/callback?code=mock-code&state=${state}`
              }
          });
     });
