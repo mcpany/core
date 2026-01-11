@@ -52,30 +52,8 @@ const registrationClient = new RegistrationServiceClientImpl(rpc);
 
 const fetchWithAuth = async (input: RequestInfo | URL, init?: RequestInit) => {
     const headers = new Headers(init?.headers);
-    const key = process.env.NEXT_PUBLIC_MCPANY_API_KEY;
-
-    // Security: Only attach API Key to requests to the same origin or relative URLs
-    // to prevent leaking credentials to third parties (like Google Fonts, CDN, etc)
-    let isSameOrigin = false;
-    if (typeof input === 'string') {
-        if (input.startsWith('/') || input.startsWith('http://localhost') || (typeof window !== 'undefined' && input.startsWith(window.location.origin))) {
-            isSameOrigin = true;
-        }
-    } else if (input instanceof URL) {
-        if (input.origin === 'http://localhost' || (typeof window !== 'undefined' && input.origin === window.location.origin)) {
-            isSameOrigin = true;
-        }
-    } else {
-        // Request object
-        const url = new URL(input.url);
-        if (url.origin === 'http://localhost' || (typeof window !== 'undefined' && url.origin === window.location.origin)) {
-            isSameOrigin = true;
-        }
-    }
-
-    if (key && isSameOrigin) {
-        headers.set('X-API-Key', key);
-    }
+    // API Key injection is now handled by Next.js Middleware for local API routes.
+    // This prevents exposing the API key in the client-side bundle.
     return fetch(input, { ...init, headers });
 };
 
@@ -101,8 +79,19 @@ export interface ReadResourceResponse {
 }
 
 const getMetadata = () => {
-    const key = process.env.NEXT_PUBLIC_MCPANY_API_KEY;
-    return key ? new BrowserHeaders({ 'X-API-Key': key }) : undefined;
+    // Metadata for gRPC calls.
+    // Since gRPC-Web calls might bypass Next.js middleware if they go directly to Envoy/Backend,
+    // we need to be careful.
+    // However, if we proxy gRPC via Next.js (not yet fully standard for gRPC-Web), we could use middleware.
+    // For now, if we don't have the key in NEXT_PUBLIC, we can't send it from client.
+    // The gRPC calls should ideally be proxied or use a session token.
+    // Given the current refactor to remove NEXT_PUBLIC_ key, direct gRPC calls from client will fail auth
+    // if they require the static key.
+    // We should rely on the Next.js API routes (REST) which use middleware, OR assume the gRPC endpoint
+    // is also behind the Next.js proxy (rewrites).
+    // ui/next.config.ts has a rewrite for `/mcpany.api.v1.RegistrationService/:path*`.
+    // If we use that, the middleware WILL run and inject the header!
+    return undefined;
 };
 
 export const apiClient = {
