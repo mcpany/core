@@ -8,7 +8,7 @@ import { test, expect } from '@playwright/test';
 
 test('verify sidebar navigation', async ({ page }) => {
   // Go to homepage
-  await page.goto('http://localhost:9002/');
+  await page.goto('/');
 
   // Check if sidebar is visible
   await expect(page.locator('button[data-sidebar="trigger"]')).toBeVisible();
