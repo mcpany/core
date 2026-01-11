@@ -95,9 +95,9 @@ func SanitizeID(ids []string, alwaysAppendHash bool, maxSanitizedPrefixLength, r
 			return "", fmt.Errorf("id cannot be empty")
 		}
 		totalLen += len(id)
-		if alwaysAppendHash {
-			totalLen += 1 + effectiveHashLength // _ + hash
-		}
+		// Optimization: Always reserve space for the hash to avoid reallocation if the ID turns out to be dirty.
+		// Over-allocating by ~9 bytes per ID is better than re-allocating the entire buffer.
+		totalLen += 1 + effectiveHashLength // _ + hash
 		if i > 0 {
 			totalLen++ // dot
 		}
