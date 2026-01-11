@@ -71,7 +71,7 @@ test.describe('Credential OAuth Flow E2E', () => {
         expect(req.credential_id).toBe(credentialID);
         await route.fulfill({
             json: {
-                authorization_url: 'http://localhost:9002/mock-auth?state=xyz',
+                authorization_url: '/mock-auth?state=xyz',
                 state: 'xyz'
             }
         });
@@ -86,7 +86,7 @@ test.describe('Credential OAuth Flow E2E', () => {
          await route.fulfill({
              status: 302,
              headers: {
-                 'Location': `http://localhost:9002/auth/callback?code=mock-code&state=${state}`
+                 'Location': `/auth/callback?code=mock-code&state=${state}`
              }
          });
     });
@@ -118,8 +118,8 @@ test.describe('Credential OAuth Flow E2E', () => {
     await expect(page.getByLabel('Client ID')).toBeVisible();
     await page.getByLabel('Client ID').fill('client-id');
     await page.getByLabel('Client Secret').fill('client-secret');
-    await page.getByLabel('Auth URL').fill('http://localhost:9002/mock-auth');
-    await page.getByLabel('Token URL').fill('http://localhost:9002/mock-token');
+    await page.getByLabel('Auth URL').fill('/mock-auth');
+    await page.getByLabel('Token URL').fill('/mock-token');
     await page.getByLabel('Scopes').fill('read write');
 
     // Wait for request
