@@ -12,7 +12,6 @@ import (
 	"io"
 	"net/http"
 	"net/url"
-	"os"
 	"strings"
 
 	"github.com/google/go-github/v39/github"
@@ -26,13 +25,14 @@ type Updater struct {
 }
 
 // NewUpdater creates a new Updater.
-func NewUpdater(httpClient *http.Client) *Updater {
+// NewUpdater creates a new Updater.
+func NewUpdater(httpClient *http.Client, githubAPIURL string) *Updater {
 	if httpClient == nil {
 		httpClient = http.DefaultClient
 	}
 	client := github.NewClient(httpClient)
-	if os.Getenv("GITHUB_API_URL") != "" {
-		baseURL, err := url.Parse(os.Getenv("GITHUB_API_URL"))
+	if githubAPIURL != "" {
+		baseURL, err := url.Parse(githubAPIURL)
 		if err == nil {
 			if !strings.HasSuffix(baseURL.Path, "/") {
 				baseURL.Path += "/"

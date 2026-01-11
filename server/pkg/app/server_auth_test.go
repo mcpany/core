@@ -47,7 +47,7 @@ func TestRunServerMode_Auth(t *testing.T) {
 
 	busProvider, _ := bus.NewProvider(nil)
 	poolManager := pool.NewManager()
-	upstreamFactory := factory.NewUpstreamServiceFactory(poolManager)
+	upstreamFactory := factory.NewUpstreamServiceFactory(poolManager, nil)
 
 	// Create app
 	app := NewApplication()
@@ -366,7 +366,7 @@ func TestAuthMiddleware_AuthDisabled(t *testing.T) {
 
 	busProvider, _ := bus.NewProvider(nil)
 	poolManager := pool.NewManager()
-	upstreamFactory := factory.NewUpstreamServiceFactory(poolManager)
+	upstreamFactory := factory.NewUpstreamServiceFactory(poolManager, nil)
 	authManager := auth.NewManager()
 
 	app.AuthManager = authManager

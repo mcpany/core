@@ -77,7 +77,7 @@ func (m *mockToolManager) SetProfiles(_ []string, _ []*configv1.ProfileDefinitio
 
 func TestNew(t *testing.T) {
 	pm := pool.NewManager()
-	f := factory.NewUpstreamServiceFactory(pm)
+	f := factory.NewUpstreamServiceFactory(pm, nil)
 	tm := &mockToolManager{}
 	prm := prompt.NewManager()
 	rm := resource.NewManager()

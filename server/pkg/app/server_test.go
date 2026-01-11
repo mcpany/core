@@ -47,7 +47,7 @@ func TestReloadConfig(t *testing.T) {
 		// Mock ServiceRegistry because NewApplication doesn't initialize it (it happens in Run)
 		// We can use a real one for this test
 		poolManager := pool.NewManager()
-		upstreamFactory := factory.NewUpstreamServiceFactory(poolManager)
+		upstreamFactory := factory.NewUpstreamServiceFactory(poolManager, nil)
 		app.ServiceRegistry = serviceregistry.New(
 			upstreamFactory,
 			app.ToolManager,
@@ -846,7 +846,7 @@ func TestRunServerMode_GracefulShutdownOnContextCancel(t *testing.T) {
 	require.NoError(t, err)
 
 	poolManager := pool.NewManager()
-	upstreamFactory := factory.NewUpstreamServiceFactory(poolManager)
+	upstreamFactory := factory.NewUpstreamServiceFactory(poolManager, nil)
 	toolManager := tool.NewManager(busProvider)
 	promptManager := prompt.NewManager()
 	resourceManager := resource.NewManager()

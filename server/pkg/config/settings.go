@@ -270,6 +270,11 @@ func (s *Settings) GetProfileDefinitions() []*configv1.ProfileDefinition {
 	return s.proto.GetProfileDefinitions()
 }
 
+// GithubAPIURL returns the GitHub API URL.
+func (s *Settings) GithubAPIURL() string {
+	return s.proto.GetGithubApiUrl()
+}
+
 // getStringSlice is a helper function to get a string slice from viper.
 // It handles the case where viper returns a slice with a single element
 // containing comma-separated values (which happens with environment variables).

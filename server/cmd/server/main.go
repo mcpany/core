@@ -148,6 +148,13 @@ func newRootCmd() *cobra.Command {
 		Use:   "update",
 		Short: "Update the application to the latest version",
 		RunE: func(cmd *cobra.Command, _ []string) error {
+			osFs := afero.NewOsFs()
+			cfg := config.GlobalSettings()
+			// We ignoring error here because even if config loading fails (e.g. missing file),
+			// we might still want to proceed with defaults or env vars,
+			// primarily for the GITHUB_TOKEN/GITHUB_API_URL.
+			_ = cfg.Load(cmd, osFs)
+
 			token := os.Getenv("GITHUB_TOKEN")
 			var tc *http.Client
 			if token != "" {
@@ -156,7 +163,13 @@ func newRootCmd() *cobra.Command {
 				)
 				tc = oauth2.NewClient(context.Background(), ts)
 			}
-			updater := update.NewUpdater(tc)
+
+			githubURL := cfg.GithubAPIURL()
+			if githubURL == "" {
+				githubURL = os.Getenv("GITHUB_API_URL")
+			}
+
+			updater := update.NewUpdater(tc, githubURL)
 			release, available, err := updater.CheckForUpdate(context.Background(), "mcpany", "core", Version)
 			if err != nil {
 				return fmt.Errorf("failed to check for updates: %w", err)

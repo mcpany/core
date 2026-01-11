@@ -46,7 +46,10 @@ import (
 	"github.com/mcpany/core/server/pkg/tool"
 	"github.com/mcpany/core/server/pkg/upstream/factory"
 	"github.com/mcpany/core/server/pkg/util"
+	"github.com/mcpany/core/server/pkg/validation"
 	"github.com/mcpany/core/server/pkg/worker"
+	otelgrpc "go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc"
+	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 
 	// config_v1 "github.com/mcpany/core/proto/config/v1".
 	config_v1 "github.com/mcpany/core/proto/config/v1"
@@ -202,7 +205,7 @@ func NewApplication() *Application {
 		ToolManager:      tool.NewManager(busProvider),
 
 		ResourceManager: resource.NewManager(),
-		UpstreamFactory: factory.NewUpstreamServiceFactory(pool.NewManager()),
+		UpstreamFactory: factory.NewUpstreamServiceFactory(pool.NewManager(), nil),
 		configFiles:     make(map[string]string),
 		startupCh:       make(chan struct{}),
 	}
@@ -248,16 +251,8 @@ func (a *Application) Run(
 	a.configPaths = configPaths
 	a.explicitAPIKey = apiKey
 
-	shutdownTracer, err := telemetry.InitTracer(ctx, appconsts.Name, appconsts.Version, os.Stderr)
-	if err != nil {
-		log.Error("Failed to initialize tracer", "error", err)
-	} else {
-		defer func() {
-			if err := shutdownTracer(context.Background()); err != nil {
-				log.Error("Failed to shutdown tracer", "error", err)
-			}
-		}()
-	}
+	// Telemetry initialization moved after config loading
+
 
 	log.Info("Starting MCP Any Service...")
 
@@ -316,6 +311,21 @@ func (a *Application) Run(
 		cfg = &config_v1.McpAnyServerConfig{}
 	}
 
+
+	// Initialize Telemetry with loaded config
+	shutdownTelemetry, err := telemetry.InitTelemetry(ctx, appconsts.Name, appconsts.Version, cfg.GetGlobalSettings().GetTelemetry(), os.Stderr)
+	if err != nil {
+		// Log error but don't fail startup just for telemetry if we want resilience,
+		// but typically we might want to know.
+		log.Error("Failed to initialize telemetry", "error", err)
+	} else {
+		defer func() {
+			if err := shutdownTelemetry(context.Background()); err != nil {
+				log.Error("Failed to shutdown telemetry", "error", err)
+			}
+		}()
+	}
+
 	// Initialize Settings Manager
 	a.SettingsManager = NewGlobalSettingsManager(
 		apiKey,
@@ -333,7 +343,10 @@ func (a *Application) Run(
 	a.busProvider = busProvider
 
 	poolManager := pool.NewManager()
-	upstreamFactory := factory.NewUpstreamServiceFactory(poolManager)
+	if gs := cfg.GetGlobalSettings(); gs != nil {
+		validation.SetAllowedPaths(gs.GetAllowedFilePaths())
+	}
+	upstreamFactory := factory.NewUpstreamServiceFactory(poolManager, cfg.GetGlobalSettings())
 	a.ToolManager = tool.NewManager(busProvider)
 	// Add Tool Metrics Middleware
 	a.ToolManager.AddMiddleware(middleware.NewToolMetricsMiddleware(tokenizer.NewSimpleTokenizer()))
@@ -993,10 +1006,11 @@ func (a *Application) runServerMode(
 		return mcpSrv.Server()
 	}, nil)
 
-	httpHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	// Wrap the HTTP handler with OpenTelemetry instrumentation
+	httpHandler := otelhttp.NewHandler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		ctx := context.WithValue(r.Context(), "http.request", r) //nolint:revive,staticcheck // matching legacy usage in auth.go
 		rawHTTPHandler.ServeHTTP(w, r.WithContext(ctx))
-	})
+	}), "server-request")
 
 	// Check if auth middleware is disabled in config
 	var authDisabled bool
@@ -1416,7 +1430,7 @@ func (a *Application) runServerMode(
 	grpcOpts := []gogrpc.ServerOption{
 		gogrpc.UnaryInterceptor(grpcUnaryInterceptor),
 		gogrpc.StreamInterceptor(grpcStreamInterceptor),
-		gogrpc.StatsHandler(&metrics.GrpcStatsHandler{}),
+		gogrpc.StatsHandler(&metrics.GrpcStatsHandler{Wrapped: otelgrpc.NewServerHandler()}),
 	}
 
 	grpcServer = gogrpc.NewServer(grpcOpts...)

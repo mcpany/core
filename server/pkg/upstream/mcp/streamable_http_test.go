@@ -13,11 +13,11 @@ import (
 	"sync"
 	"testing"
 
+	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/mcpany/core/server/pkg/prompt"
 	"github.com/mcpany/core/server/pkg/resource"
 	"github.com/mcpany/core/server/pkg/tool"
 	"github.com/mcpany/core/server/pkg/util"
-	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/modelcontextprotocol/go-sdk/jsonrpc"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/assert"
@@ -191,7 +191,7 @@ func TestUpstream_Register(t *testing.T) {
 		toolManager := tool.NewManager(nil)
 		promptManager := prompt.NewManager()
 		resourceManager := resource.NewManager()
-		upstream := NewUpstream()
+		upstream := NewUpstream(nil)
 
 		var wg sync.WaitGroup
 		wg.Add(1)
@@ -250,7 +250,7 @@ func TestUpstream_Register(t *testing.T) {
 		toolManager := tool.NewManager(nil)
 		promptManager := prompt.NewManager()
 		resourceManager := resource.NewManager()
-		upstream := NewUpstream()
+		upstream := NewUpstream(nil)
 
 		var wg sync.WaitGroup
 		wg.Add(1)
@@ -304,7 +304,7 @@ func TestUpstream_Register(t *testing.T) {
 		toolManager := tool.NewManager(nil)
 		promptManager := prompt.NewManager()
 		resourceManager := resource.NewManager()
-		upstream := NewUpstream()
+		upstream := NewUpstream(nil)
 
 		var wg sync.WaitGroup
 		wg.Add(1)
@@ -358,7 +358,7 @@ func TestUpstream_Register(t *testing.T) {
 		toolManager := tool.NewManager(nil)
 		promptManager := prompt.NewManager()
 		resourceManager := resource.NewManager()
-		upstream := NewUpstream()
+		upstream := NewUpstream(nil)
 
 		var wg sync.WaitGroup
 		wg.Add(1)
@@ -415,7 +415,7 @@ func TestUpstream_Register(t *testing.T) {
 		toolManager := tool.NewManager(nil)
 		promptManager := prompt.NewManager()
 		resourceManager := resource.NewManager()
-		upstream := NewUpstream()
+		upstream := NewUpstream(nil)
 
 		var wg sync.WaitGroup
 		wg.Add(1)
@@ -461,7 +461,7 @@ func TestUpstream_Register(t *testing.T) {
 		toolManager := tool.NewManager(nil)
 		promptManager := prompt.NewManager()
 		resourceManager := resource.NewManager()
-		upstream := NewUpstream()
+		upstream := NewUpstream(nil)
 
 		var wg sync.WaitGroup
 		wg.Add(1)
@@ -491,7 +491,7 @@ func TestUpstream_Register(t *testing.T) {
 		toolManager := tool.NewManager(nil)
 		promptManager := prompt.NewManager()
 		resourceManager := resource.NewManager()
-		upstream := NewUpstream()
+		upstream := NewUpstream(nil)
 
 		var wg sync.WaitGroup
 		wg.Add(1)
@@ -527,7 +527,7 @@ func TestUpstream_Register(t *testing.T) {
 		toolManager := tool.NewManager(nil)
 		promptManager := prompt.NewManager()
 		resourceManager := resource.NewManager()
-		upstream := NewUpstream()
+		upstream := NewUpstream(nil)
 
 		config := &configv1.UpstreamServiceConfig{}
 		config.SetName("test-service-nil")
@@ -542,7 +542,7 @@ func TestUpstream_Register(t *testing.T) {
 		toolManager := tool.NewManager(nil)
 		promptManager := prompt.NewManager()
 		resourceManager := resource.NewManager()
-		upstream := NewUpstream()
+		upstream := NewUpstream(nil)
 
 		config := &configv1.UpstreamServiceConfig{}
 		config.SetName("") // empty name
@@ -578,7 +578,7 @@ func TestAuthenticatedRoundTripper(t *testing.T) {
 }
 
 func TestUpstream_Register_HttpConnectionError(t *testing.T) {
-	u := NewUpstream()
+	u := NewUpstream(nil)
 	ctx := context.Background()
 	serviceConfig := configv1.UpstreamServiceConfig_builder{
 		Name: proto.String("test-service-http-error"),
@@ -613,7 +613,7 @@ func TestBuildCommandFromStdioConfig(t *testing.T) {
 		stdio := &configv1.McpStdioConnection{}
 		stdio.SetCommand("ls")
 		stdio.SetArgs([]string{"-l", "-a"})
-		cmd, err := buildCommandFromStdioConfig(context.Background(), stdio)
+		cmd, err := buildCommandFromStdioConfig(context.Background(), stdio, false)
 		assert.NoError(t, err)
 		assert.Equal(t, "/bin/sh", cmd.Path)
 		assert.Equal(t, []string{"/bin/sh", "-c", "exec ls -l -a"}, cmd.Args)
@@ -624,18 +624,17 @@ func TestBuildCommandFromStdioConfig(t *testing.T) {
 		stdio.SetCommand("my-app")
 		stdio.SetArgs([]string{"--verbose"})
 		stdio.SetSetupCommands([]string{"cd /tmp", "export FOO=bar"})
-		cmd, err := buildCommandFromStdioConfig(context.Background(), stdio)
+		cmd, err := buildCommandFromStdioConfig(context.Background(), stdio, false)
 		assert.NoError(t, err)
 		assert.Equal(t, "/bin/sh", cmd.Path)
 		assert.Equal(t, []string{"/bin/sh", "-c", "cd /tmp && export FOO=bar && exec my-app --verbose"}, cmd.Args)
 	})
 
 	t.Run("docker command with sudo", func(t *testing.T) {
-		t.Setenv("USE_SUDO_FOR_DOCKER", "1")
 		stdio := &configv1.McpStdioConnection{}
 		stdio.SetCommand("docker")
 		stdio.SetArgs([]string{"run", "hello-world"})
-		cmd, err := buildCommandFromStdioConfig(context.Background(), stdio)
+		cmd, err := buildCommandFromStdioConfig(context.Background(), stdio, true)
 		assert.NoError(t, err)
 		assert.Contains(t, cmd.Path, "sudo")
 		assert.Equal(t, []string{"sudo", "docker", "run", "hello-world"}, cmd.Args)
@@ -645,7 +644,7 @@ func TestBuildCommandFromStdioConfig(t *testing.T) {
 		stdio := &configv1.McpStdioConnection{}
 		stdio.SetCommand("echo")
 		stdio.SetArgs([]string{"hello; date"})
-		cmd, err := buildCommandFromStdioConfig(context.Background(), stdio)
+		cmd, err := buildCommandFromStdioConfig(context.Background(), stdio, false)
 		assert.NoError(t, err)
 		assert.Equal(t, "/bin/sh", cmd.Path)
 		assert.Equal(t, []string{"/bin/sh", "-c", "exec echo 'hello; date'"}, cmd.Args)
@@ -656,7 +655,7 @@ func TestBuildCommandFromStdioConfig(t *testing.T) {
 		stdio.SetCommand("echo")
 		// Attempt to close quote, run command, open quote
 		stdio.SetArgs([]string{"foo'; date; echo 'bar"})
-	cmd, err := buildCommandFromStdioConfig(context.Background(), stdio)
+		cmd, err := buildCommandFromStdioConfig(context.Background(), stdio, false)
 		assert.NoError(t, err)
 		assert.Equal(t, "/bin/sh", cmd.Path)
 		// shellescape should escape the single quote
@@ -712,7 +711,7 @@ func TestUpstream_Register_HTTP_Integration(t *testing.T) {
 	toolManager := newMockToolManager()
 	promptManager := newMockPromptManager()
 	resourceManager := newMockResourceManager()
-	upstream := NewUpstream()
+	upstream := NewUpstream(nil)
 
 	originalConnect := connectForTesting
 	connectForTesting = func(_ *mcp.Client, _ context.Context, _ mcp.Transport, _ []mcp.Root) (ClientSession, error) {
@@ -761,7 +760,7 @@ func TestUpstream_Register_HTTP_Integration(t *testing.T) {
 }
 
 func TestUpstream_Register_StdioConnectionError(t *testing.T) {
-	u := NewUpstream()
+	u := NewUpstream(nil)
 	ctx := context.Background()
 	serviceConfig := configv1.UpstreamServiceConfig_builder{
 		Name: proto.String("test-service-stdio-error"),
@@ -781,7 +780,7 @@ func TestUpstream_Register_StdioConnectionError(t *testing.T) {
 }
 
 func TestUpstream_Register_ListToolsError(t *testing.T) {
-	u := NewUpstream()
+	u := NewUpstream(nil)
 	ctx := context.Background()
 	serviceConfig := configv1.UpstreamServiceConfig_builder{
 		Name: proto.String("test-service-list-tools-error"),
@@ -807,7 +806,7 @@ func TestUpstream_Register_ListToolsError(t *testing.T) {
 }
 
 func TestUpstream_Register_ListPromptsError(t *testing.T) {
-	u := NewUpstream()
+	u := NewUpstream(nil)
 	ctx := context.Background()
 	serviceConfig := configv1.UpstreamServiceConfig_builder{
 		Name: proto.String("test-service-list-prompts-error"),
@@ -836,7 +835,7 @@ func TestUpstream_Register_ListPromptsError(t *testing.T) {
 }
 
 func TestMCPUpstream_Register_ListResourcesError(t *testing.T) {
-	u := NewUpstream()
+	u := NewUpstream(nil)
 	ctx := context.Background()
 	serviceConfig := configv1.UpstreamServiceConfig_builder{
 		Name: proto.String("test-service-list-resources-error"),
@@ -868,7 +867,7 @@ func TestMCPUpstream_Register_ListResourcesError(t *testing.T) {
 }
 
 func TestMCPUpstream_Register_InvalidServiceConfig(t *testing.T) {
-	u := NewUpstream()
+	u := NewUpstream(nil)
 	ctx := context.Background()
 	serviceConfig := configv1.UpstreamServiceConfig_builder{
 		Name: proto.String("test-service-invalid-config"),

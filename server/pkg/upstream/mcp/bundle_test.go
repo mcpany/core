@@ -60,7 +60,7 @@ func TestUpstream_Register_Bundle(t *testing.T) {
 	toolManager := tool.NewManager(nil)
 	promptManager := prompt.NewManager()
 	resourceManager := resource.NewManager()
-	upstream := NewUpstream()
+	upstream := NewUpstream(nil)
 	ctx := context.Background()
 
 	mockCS := &mockClientSession{
@@ -109,7 +109,7 @@ func TestUpstream_Register_Bundle(t *testing.T) {
 }
 
 func TestUpstream_Register_Bundle_Failures(t *testing.T) {
-	upstream := NewUpstream()
+	upstream := NewUpstream(nil)
 	tm := tool.NewManager(nil)
 	pm := prompt.NewManager()
 	rm := resource.NewManager()
@@ -176,7 +176,7 @@ func TestUpstream_Register_Bundle_Python(t *testing.T) {
 	_ = w.Close()
 	_ = file.Close()
 
-	upstream := NewUpstream()
+	upstream := NewUpstream(nil)
 	// Mock Connect
 	originalConnect := connectForTesting
 	var capturedTransport mcp.Transport
