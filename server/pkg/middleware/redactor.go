@@ -58,7 +58,7 @@ func NewRedactor(config *configv1.DLPConfig, log *slog.Logger) *Redactor {
 	// Optimization: Combine all patterns into a single regex for better performance
 	// and reduced memory allocations, especially for non-matching strings (common case).
 	// We wrap each pattern in a non-capturing group (?:...) and join with |.
-	var validPatternStrings []string
+	validPatternStrings := make([]string, 0, len(patternStrings))
 	for _, p := range patternStrings {
 		// Ensure pattern is valid before combining (already checked above, but safe to double check implicitly)
 		validPatternStrings = append(validPatternStrings, "(?:"+p+")")
