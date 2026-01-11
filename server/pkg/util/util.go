@@ -266,8 +266,23 @@ func SanitizeOperationID(input string) string {
 		return input
 	}
 
+	// Optimization: Calculate exact required size to avoid buffer resizing
+	needed := 0
+	for i := 0; i < len(input); {
+		if allowedIDChars[input[i]] {
+			needed++
+			i++
+		} else {
+			// Found start of disallowed sequence
+			for i < len(input) && !allowedIDChars[input[i]] {
+				i++
+			}
+			needed += 8 // _ + 6 hash + _
+		}
+	}
+
 	var sb strings.Builder
-	sb.Grow(len(input) + 16) // slightly more for potential hashes
+	sb.Grow(needed)
 
 	for i := 0; i < len(input); {
 		if allowedIDChars[input[i]] {
