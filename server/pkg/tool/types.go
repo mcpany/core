@@ -1512,7 +1512,10 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 		var result map[string]interface{}
 		if err := json.NewDecoder(io.LimitReader(stdout, limit)).Decode(&result); err != nil {
 			<-stderrDone
-			return nil, fmt.Errorf("failed to execute JSON CLI command: %w. Stderr: %s", err, stderrBuf.String())
+			// Log the stderr securely instead of returning it in the error message
+			// to avoid leaking potential secrets.
+			logging.GetLogger().Error("Failed to execute JSON CLI command", "error", err, "stderr", stderrBuf.String())
+			return nil, fmt.Errorf("failed to execute JSON CLI command: %w. Check logs for details", err)
 		}
 		return result, nil
 	}
