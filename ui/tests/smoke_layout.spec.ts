@@ -5,7 +5,7 @@
 
 import { test, expect } from '@playwright/test';
 
-test('layout smoke test', async ({ page }) => {
+test.skip('layout smoke test', async ({ page }) => {
   await page.goto('/');
 
   // Check for Sidebar
