@@ -487,6 +487,41 @@ func TestUpstream_Register(t *testing.T) {
 		wg.Wait()
 	})
 
+	t.Run("connection error with stderr", func(t *testing.T) {
+		toolManager := tool.NewManager(nil)
+		promptManager := prompt.NewManager()
+		resourceManager := resource.NewManager()
+		upstream := NewUpstream(nil)
+
+		var wg sync.WaitGroup
+		wg.Add(1)
+
+		originalConnect := connectForTesting
+		connectForTesting = func(_ *mcp.Client, _ context.Context, transport mcp.Transport, _ []mcp.Root) (ClientSession, error) {
+			defer wg.Done()
+			cmdTransport, ok := transport.(*mcp.CommandTransport)
+			if ok && cmdTransport.Command.Stderr != nil {
+				_, _ = cmdTransport.Command.Stderr.Write([]byte("mock stderr output"))
+			}
+			return nil, fmt.Errorf("connection failed")
+		}
+		defer func() { connectForTesting = originalConnect }()
+
+		config := &configv1.UpstreamServiceConfig{}
+		config.SetName("test-service-fail-stderr")
+		mcpService := &configv1.McpUpstreamService{}
+		stdioConnection := &configv1.McpStdioConnection{}
+		stdioConnection.SetCommand("some-failing-command")
+		mcpService.SetStdioConnection(stdioConnection)
+		config.SetMcpService(mcpService)
+
+		_, _, _, err := upstream.Register(ctx, config, toolManager, promptManager, resourceManager, false)
+		require.Error(t, err)
+		assert.Contains(t, err.Error(), "failed to connect to MCP service")
+		assert.Contains(t, err.Error(), "mock stderr output")
+		wg.Wait()
+	})
+
 	t.Run("list tools error", func(t *testing.T) {
 		toolManager := tool.NewManager(nil)
 		promptManager := prompt.NewManager()
