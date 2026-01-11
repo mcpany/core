@@ -194,37 +194,7 @@ func TestToString(t *testing.T) {
 	}
 }
 
-func TestIsNil(t *testing.T) {
-	// Cover IsNil additional types
-	var ptr *int
-	if !IsNil(ptr) {
-		t.Error("IsNil(nil ptr) should be true")
-	}
-
-	var m map[string]string
-	if !IsNil(m) {
-		t.Error("IsNil(nil map) should be true")
-	}
-
-	var c chan int
-	if !IsNil(c) {
-		t.Error("IsNil(nil chan) should be true")
-	}
-
-	var s []int
-	if !IsNil(s) {
-		t.Error("IsNil(nil slice) should be true")
-	}
-
-	var f func()
-	if !IsNil(f) {
-		t.Error("IsNil(nil func) should be true")
-	}
-
-	if IsNil(123) {
-		t.Error("IsNil(123) should be false")
-	}
-}
+// TestIsNil removed to avoid duplication with isnil_test.go
 
 func TestReplaceURLPath_Security(t *testing.T) {
 	tests := []struct {
