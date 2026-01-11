@@ -15,7 +15,7 @@ export default defineConfig({
   retries: process.env.CI ? 2 : 0,
   workers: os.cpus().length,
   outputDir: 'test-results/artifacts',
-  reporter: [['line'], ['html', { outputFolder: 'playwright-report/html' }], ['json', { outputFile: 'test-results/test-results.json' }]],
+  reporter: [['line'], ['json', { outputFile: 'test-results/test-results.json' }]],
   timeout: 60000,
   expect: {
     timeout: 15000,
