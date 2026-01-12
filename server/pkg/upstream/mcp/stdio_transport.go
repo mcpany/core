@@ -24,7 +24,7 @@ type StdioTransport struct {
 }
 
 // Connect starts the command and returns a connection.
-func (t *StdioTransport) Connect(ctx context.Context) (mcp.Connection, error) {
+func (t *StdioTransport) Connect(_ context.Context) (mcp.Connection, error) {
 	log := logging.GetLogger()
 
 	stdin, err := t.Command.StdinPipe()
@@ -79,7 +79,7 @@ type stdioConn struct {
 	closed        bool
 }
 
-func (c *stdioConn) Read(ctx context.Context) (jsonrpc.Message, error) {
+func (c *stdioConn) Read(_ context.Context) (jsonrpc.Message, error) {
 	var raw json.RawMessage
 	if err := c.decoder.Decode(&raw); err != nil {
 		if err == io.EOF {
@@ -161,7 +161,7 @@ func (c *stdioConn) Read(ctx context.Context) (jsonrpc.Message, error) {
 	return msg, nil
 }
 
-func (c *stdioConn) Write(ctx context.Context, msg jsonrpc.Message) error {
+func (c *stdioConn) Write(_ context.Context, msg jsonrpc.Message) error {
 	var method string
 	var params any
 	var result any
