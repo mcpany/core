@@ -5,6 +5,7 @@ package util //nolint:revive
 
 import (
 	"encoding/json"
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -166,6 +167,20 @@ func TestRedactJSON(t *testing.T) {
 		val, ok := m["api_key \"foo\""]
 		assert.True(t, ok, "key should exist")
 		assert.Equal(t, "[REDACTED]", val)
+	})
+
+	t.Run("large allocation cap", func(t *testing.T) {
+		// Create a large JSON input > 164KB to trigger the allocation cap logic.
+		// 200KB string
+		largeValue := strings.Repeat("a", 200*1024)
+		// We need a sensitive key to trigger the allocation path
+		input := `{"data": "` + largeValue + `", "api_key": "secret"}`
+
+		output := RedactJSON([]byte(input))
+
+		// Just ensure it processed correctly
+		assert.Contains(t, string(output), `[REDACTED]`)
+		assert.True(t, len(output) > 200*1024)
 	})
 }
 
