@@ -341,6 +341,15 @@ func (s *Server) GetPrompt(
 		return nil, prompt.ErrPromptNotFound
 	}
 
+	profileID, _ := auth.ProfileIDFromContext(ctx)
+	if profileID != "" {
+		serviceID := p.Service()
+		if serviceID != "" && !s.toolManager.IsServiceAllowed(serviceID, profileID) {
+			logging.GetLogger().Warn("Access denied to prompt by profile", "promptName", req.Params.Name, "profileID", profileID)
+			return nil, fmt.Errorf("access denied to prompt %q", req.Params.Name)
+		}
+	}
+
 	// Use json-iterator for faster JSON marshaling
 	var json = jsoniter.ConfigCompatibleWithStandardLibrary
 	argsBytes, err := json.Marshal(req.Params.Arguments)
@@ -396,6 +405,16 @@ func (s *Server) ReadResource(
 	if !ok {
 		return nil, resource.ErrResourceNotFound
 	}
+
+	profileID, _ := auth.ProfileIDFromContext(ctx)
+	if profileID != "" {
+		serviceID := r.Service()
+		if serviceID != "" && !s.toolManager.IsServiceAllowed(serviceID, profileID) {
+			logging.GetLogger().Warn("Access denied to resource by profile", "resourceURI", req.Params.URI, "profileID", profileID)
+			return nil, fmt.Errorf("access denied to resource %q", req.Params.URI)
+		}
+	}
+
 	return r.Read(ctx)
 }
 
