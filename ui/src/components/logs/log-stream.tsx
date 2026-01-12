@@ -99,21 +99,31 @@ export function LogStream() {
   const deferredSearchQuery = React.useDeferredValue(searchQuery)
   const scrollRef = React.useRef<HTMLDivElement>(null)
   const wsRef = React.useRef<WebSocket | null>(null)
+  // Optimization: Buffer for incoming logs to support batch processing
+  const logBufferRef = React.useRef<LogEntry[]>([])
 
   React.useEffect(() => {
+    // Optimization: Flush buffer periodically to limit re-renders
+    const flushInterval = setInterval(() => {
+      if (logBufferRef.current.length > 0) {
+        setLogs((prev) => {
+          const buffer = logBufferRef.current
+          logBufferRef.current = [] // Clear buffer
+
+          let next = [...prev, ...buffer]
+          // Limit total logs to avoid memory issues
+          if (next.length > 1000) {
+            next = next.slice(next.length - 1000)
+          }
+          return next
+        })
+      }
+    }, 100) // Flush every 100ms
+
     const connect = () => {
       // Determine protocol (ws or wss)
       const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:'
       const host = window.location.host
-      // Use /api/ws/logs if routed via Next.js proxy, or directly /ws/logs if server is direct
-      // Assuming Next.js rewrites /api/* to backend.
-      // But based on handleLogsWS implementation in Go, it is at /ws/logs
-      // And looking at next.config.ts might clarify rewrites.
-      // For now let's assume /api/ws/logs -> backend/ws/logs or just backend/ws/logs.
-      // The Go server registers at /ws/logs.
-      // If we are in dev, we might need a proxy.
-      // Let's try /api/ws/logs assuming a rewrite rule exists or we add it.
-      // Wait, let's check next.config.ts
 
       const wsUrl = `${protocol}//${host}/api/ws/logs`
       const ws = new WebSocket(wsUrl)
@@ -132,14 +142,8 @@ export function LogStream() {
           // Pre-compute search string
           newLog.searchStr = (newLog.message + " " + (newLog.source || "")).toLowerCase()
 
-          setLogs((prev) => {
-            if (prev.length >= 1000) {
-              const next = prev.slice(1)
-              next.push(newLog)
-              return next
-            }
-            return [...prev, newLog]
-          })
+          // Optimization: Add to buffer instead of calling setLogs directly
+          logBufferRef.current.push(newLog)
         } catch (e) {
           console.error("Failed to parse log message", e)
         }
@@ -163,6 +167,7 @@ export function LogStream() {
 
     return () => {
       wsRef.current?.close()
+      clearInterval(flushInterval)
     }
   }, []) // Empty dependency array -> run once
 
