@@ -94,12 +94,37 @@ func RunE2ETest(t *testing.T, testCase *E2ETestCase) {
 			t.Parallel()
 
 			// --- 1. Start Upstream Service ---
+			// --- 1. Start Upstream Service ---
 			var upstreamServerProc *integration.ManagedProcess
 			if testCase.BuildUpstream != nil {
-				upstreamServerProc = testCase.BuildUpstream(t)
+				// Retry loop for starting upstream server to handle port contention
+				for attempt := 1; attempt <= 5; attempt++ {
+					upstreamServerProc = testCase.BuildUpstream(t)
+					if upstreamServerProc != nil {
+						err := upstreamServerProc.Start()
+						if err == nil {
+							// Verify it's actually running and listening
+							err = integration.WaitForTCPPortE(t, upstreamServerProc.Port, integration.ServiceStartupTimeout)
+							if err == nil {
+								break
+							}
+							// Stop the failed process before retrying
+							upstreamServerProc.Stop()
+							t.Logf("Server failed to listen (attempt %d/5): %v. Retrying...", attempt, err)
+							err = fmt.Errorf("failed to listen: %w", err) // for final error check
+						} else {
+							t.Logf("Failed to start upstream server (attempt %d/5): %v. Retrying...", attempt, err)
+						}
+
+						if attempt == 5 {
+							require.NoError(t, err, "Failed to start upstream server after 5 attempts")
+						}
+					} else {
+						break // Should not happen if BuildUpstream is set
+					}
+				}
+
 				if upstreamServerProc != nil {
-					err := upstreamServerProc.Start()
-					require.NoError(t, err, "Failed to start upstream server")
 					t.Cleanup(upstreamServerProc.Stop)
 					if upstreamServerProc.Port != 0 {
 						integration.WaitForTCPPort(t, upstreamServerProc.Port, integration.ServiceStartupTimeout)
