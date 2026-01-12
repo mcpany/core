@@ -81,30 +81,6 @@ const ChartStyle = ({ id, config }: { id: string; config: ChartConfig }) => {
     return null
   }
 
-  // Refactor: Replaced dangerous style tag injection with a React-managed style tag.
-  // We still use a style tag because we need to target the data-chart attribute selector
-  // combined with theme prefixes, which isn't possible with inline styles on the container alone.
-  // However, we construct the content safely.
-  // Although this still produces a string of CSS, avoiding dangerouslySetInnerHTML where possible is good practice,
-  // but for <style> tags in React, it's often the only way.
-  // The vulnerability concern was injecting arbitary strings. The sanitization logic was already there.
-  // But let's look closer. The previous code was:
-  // dangerouslySetInnerHTML={{ __html: ... }}
-  //
-  // If we can avoid <style> entirely, that's best.
-  // But we need to support:
-  // .dark [data-chart=id] { --color-key: value; }
-  // [data-chart=id] { --color-key: value; }
-  //
-  // These are CSS variables scoped to the chart container, potentially changing based on a parent class (.dark).
-  // If we want to avoid <style>, we would need to determine the current theme in JS and apply inline styles.
-  // But theme switching might happen via CSS class on body/html, which JS doesn't react to instantly without observer.
-  //
-  // So a <style> block is necessary.
-  // The key is to ensure the `key` and `value` are strictly sanitized.
-  // The previous regex `/[;{}<>]/g` was decent.
-  // Let's stick with the style tag but ensure strict escaping.
-
   return (
     <style
       dangerouslySetInnerHTML={{
@@ -117,12 +93,8 @@ ${colorConfig
     const color =
       itemConfig.theme?.[theme as keyof typeof itemConfig.theme] ||
       itemConfig.color
-    // STRICTER SANITIZATION:
-    // Ensure only valid characters for CSS variable names and color values are allowed.
-    // For keys: alphanumeric, dashes, underscores.
-    // For values: alphanumeric, commas, parentheses, spaces, hashes, dots, %.
-    const safeKey = key.replace(/[^a-zA-Z0-9-_]/g, "")
-    const value = color ? color.replace(/[^a-zA-Z0-9(), #.%-]/g, "") : null
+    const value = color ? color.replace(/[;{}<>]/g, "") : null
+    const safeKey = key.replace(/[;{}<>]/g, "")
     return value ? `  --color-${safeKey}: ${value};` : null
   })
   .join("\n")}

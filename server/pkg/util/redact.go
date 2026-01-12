@@ -129,7 +129,7 @@ func redactSlice(s []interface{}) []interface{} {
 // so we only include the shorter ones to optimize performance.
 var sensitiveKeys = []string{
 	"api_key", "apikey", "token", "secret", "password", "passwd", "credential", "auth", "private_key",
-	"authorization", "proxy-authorization", "cookie", "set-cookie", "x-api-key", "client_id",
+	"authorization", "proxy-authorization", "cookie", "set-cookie", "x-api-key",
 }
 
 // IsSensitiveKey checks if a key name suggests it contains sensitive information.
