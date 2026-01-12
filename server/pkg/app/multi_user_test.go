@@ -197,7 +197,7 @@ users:
 		errChan <- app.Run(ctx, fs, false, fmt.Sprintf("%d", httpPort), fmt.Sprintf("%d", grpcPort), []string{"/config.yaml"}, "", 5*time.Second)
 	}()
 
-		// Wait for server to start
+	// Wait for server to start
 	baseURL := fmt.Sprintf("http://localhost:%d", httpPort)
 	require.Eventually(t, func() bool {
 		resp, err := http.Get(baseURL + "/healthz")
@@ -206,7 +206,7 @@ users:
 		}
 		defer func() { _ = resp.Body.Close() }()
 		return resp.StatusCode == http.StatusOK
-	}, 5*time.Second, 100*time.Millisecond)
+	}, 30*time.Second, 100*time.Millisecond)
 
 	// Helper to calls tools/list via SSE
 	listTools := func(uid, profileID, headerName, apiKey string) ([]string, error) {

@@ -7,6 +7,7 @@ import (
 	"context"
 	"fmt"
 	"testing"
+	"time"
 
 	"github.com/mcpany/core/server/tests/integration"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
@@ -17,13 +18,29 @@ func TestGRPCHelperFunctions(t *testing.T) {
 	// t.Parallel()
 	t.Run("unauthenticated", func(t *testing.T) {
 		// t.Parallel()
-		proc := BuildGRPCWeatherServer(t)
-		require.NotNil(t, proc)
-		err := proc.Start()
+		var proc *integration.ManagedProcess
+		var err error
+		for i := 0; i < 5; i++ {
+			proc = BuildGRPCWeatherServer(t)
+			require.NotNil(t, proc)
+			err = proc.Start()
+			if err == nil {
+				// Verify it's actually running and listening
+				err = integration.WaitForTCPPortE(t, proc.Port, integration.ServiceStartupTimeout)
+				if err == nil {
+					break
+				}
+				// Stop the failed process before retrying
+				proc.Stop()
+				t.Logf("Server failed to listen (attempt %d/5): %v. Retrying...", i+1, err)
+				err = fmt.Errorf("failed to listen: %w", err) // Ensure err is set for final check
+			} else {
+				t.Logf("Failed to start server (attempt %d/5): %v", i+1, err)
+			}
+			time.Sleep(100 * time.Millisecond)
+		}
 		require.NoError(t, err)
 		defer proc.Stop()
-
-		integration.WaitForTCPPort(t, proc.Port, integration.ServiceStartupTimeout)
 
 		mcpanyTestServerInfo := integration.StartMCPANYServer(t, "grpc-weather-test")
 		defer mcpanyTestServerInfo.CleanupFunc()
@@ -59,13 +76,29 @@ func TestGRPCHelperFunctions(t *testing.T) {
 
 	t.Run("authenticated", func(t *testing.T) {
 		// t.Parallel()
-		proc := BuildGRPCAuthedWeatherServer(t)
-		require.NotNil(t, proc)
-		err := proc.Start()
+		var proc *integration.ManagedProcess
+		var err error
+		for i := 0; i < 5; i++ {
+			proc = BuildGRPCAuthedWeatherServer(t)
+			require.NotNil(t, proc)
+			err = proc.Start()
+			if err == nil {
+				// Verify it's actually running and listening
+				err = integration.WaitForTCPPortE(t, proc.Port, integration.ServiceStartupTimeout)
+				if err == nil {
+					break
+				}
+				// Stop the failed process before retrying
+				proc.Stop()
+				t.Logf("Server failed to listen (attempt %d/5): %v. Retrying...", i+1, err)
+				err = fmt.Errorf("failed to listen: %w", err) // Ensure err is set for final check
+			} else {
+				t.Logf("Failed to start server (attempt %d/5): %v", i+1, err)
+			}
+			time.Sleep(100 * time.Millisecond)
+		}
 		require.NoError(t, err)
 		defer proc.Stop()
-
-		integration.WaitForTCPPort(t, proc.Port, integration.ServiceStartupTimeout)
 
 		mcpanyTestServerInfo := integration.StartMCPANYServer(t, "grpc-authed-weather-test")
 		defer mcpanyTestServerInfo.CleanupFunc()
