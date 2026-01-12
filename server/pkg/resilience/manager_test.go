@@ -90,4 +90,47 @@ func TestManager(t *testing.T) {
 		err := manager.Execute(ctx, func(_ context.Context) error { return nil })
 		require.NoError(t, err)
 	})
+
+    t.Run("empty_config_returns_nil", func(t *testing.T) {
+		config := &configv1.ResilienceConfig{}
+		manager := NewManager(config)
+		require.Nil(t, manager)
+	})
+
+     t.Run("manager_nil_check", func(t *testing.T) {
+        var manager *Manager
+		err := manager.Execute(ctx, func(_ context.Context) error { return nil })
+		require.NoError(t, err)
+	})
+}
+
+func TestManager_Execute_WithTimeout(t *testing.T) {
+    ctx := context.Background()
+	t.Run("Timeout_triggers", func(t *testing.T) {
+		config := &configv1.ResilienceConfig{}
+		config.SetTimeout(durationpb.New(50 * time.Millisecond))
+		manager := NewManager(config)
+
+		err := manager.Execute(ctx, func(ctx context.Context) error {
+			select {
+			case <-ctx.Done():
+				return ctx.Err()
+			case <-time.After(100 * time.Millisecond):
+				return nil
+			}
+		})
+		require.Error(t, err)
+        require.Equal(t, context.DeadlineExceeded, err)
+	})
+
+	t.Run("Timeout_does_not_trigger", func(t *testing.T) {
+		config := &configv1.ResilienceConfig{}
+		config.SetTimeout(durationpb.New(100 * time.Millisecond))
+		manager := NewManager(config)
+
+		err := manager.Execute(ctx, func(ctx context.Context) error {
+			return nil
+		})
+		require.NoError(t, err)
+	})
 }
