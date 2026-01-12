@@ -171,7 +171,18 @@ func validateSecretValue(secret *configv1.SecretValue) error {
 		return nil
 	}
 	switch secret.WhichValue() {
+	case configv1.SecretValue_PlainText_case:
+		if secret.GetPlainText() == "" {
+			return fmt.Errorf("secret plain_text value is empty")
+		}
+	case configv1.SecretValue_EnvironmentVariable_case:
+		if secret.GetEnvironmentVariable() == "" {
+			return fmt.Errorf("secret environment_variable name is empty")
+		}
 	case configv1.SecretValue_FilePath_case:
+		if secret.GetFilePath() == "" {
+			return fmt.Errorf("secret file_path is empty")
+		}
 		if err := validation.IsRelativePath(secret.GetFilePath()); err != nil {
 			return fmt.Errorf("invalid secret file path %q: %w", secret.GetFilePath(), err)
 		}

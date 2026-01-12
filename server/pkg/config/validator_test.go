@@ -43,6 +43,16 @@ func TestValidateSecretValue(t *testing.T) {
 			expectErr: false,
 		},
 		{
+			name: "Empty file path",
+			secret: &configv1.SecretValue{
+				Value: &configv1.SecretValue_FilePath{
+					FilePath: "",
+				},
+			},
+			expectErr: true,
+			errMsg:    "secret file_path is empty",
+		},
+		{
 			name: "Invalid file path (absolute)",
 			secret: &configv1.SecretValue{
 				Value: &configv1.SecretValue_FilePath{
@@ -51,6 +61,26 @@ func TestValidateSecretValue(t *testing.T) {
 			},
 			expectErr: true,
 			errMsg:    "invalid secret file path",
+		},
+		{
+			name: "Empty plain text",
+			secret: &configv1.SecretValue{
+				Value: &configv1.SecretValue_PlainText{
+					PlainText: "",
+				},
+			},
+			expectErr: true,
+			errMsg:    "secret plain_text value is empty",
+		},
+		{
+			name: "Empty environment variable",
+			secret: &configv1.SecretValue{
+				Value: &configv1.SecretValue_EnvironmentVariable{
+					EnvironmentVariable: "",
+				},
+			},
+			expectErr: true,
+			errMsg:    "secret environment_variable name is empty",
 		},
 		{
 			name: "Valid remote content",

@@ -32,6 +32,7 @@
 - [x] **Pre-flight Config Validation**: Added pre-flight checks for command existence and working directory validity to prevent "silent failures" at runtime.
 - [x] **Strict Startup Validation**: Server now fails fast with descriptive errors if the initial configuration contains invalid services, preventing "zombie services" (Friction Fighter).
 - [x] **Filesystem Path Validation**: Proactive validation of configured `root_paths` for Filesystem services to warn about missing directories on startup.
+- [x] **Enhanced Configuration Validation**: Added strict validation for `SecretValue` fields (plain_text, env_var, file_path) to ensure they are not empty, preventing confusing runtime errors.
 
 ## 2. Top 10 Recommended Features
 
@@ -56,6 +57,8 @@ These features represent the next logical steps for the product, focusing on Ent
 | 15 | **Partial Reloads** | **Resilience**: When reloading config dynamically, if one service is invalid, keep the old version running instead of removing it or failing the whole reload (if possible). | High |
 | 16 | **Filesystem Health Check** | **Observability**: Add a health check probe for filesystem roots to report status to the UI, not just logs. | Low |
 | 17 | **Safe Symlink Traversal** | **Security**: Add configuration options to strictly control symlink traversal policies (allow/deny/internal-only). | Medium |
+| 18 | **CLI Config Lint** | **DevX**: A standalone command `mcpany lint` that validates configuration files against the schema and business rules without starting the server. Essential for CI pipelines. | Low |
+| 19 | **Environment Variable Diagnostics** | **Observability**: A startup check that prints a warning for any configured environment variables (in `env` blocks) that are missing or empty at runtime, to prevent "it works on my machine" issues. | Low |
 
 ## 3. Codebase Health
 
