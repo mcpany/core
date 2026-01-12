@@ -108,7 +108,7 @@ func (m *RateLimitMiddleware) Execute(ctx context.Context, req *tool.ExecutionRe
 			}
 			if err := m.checkLimit(ctx, toolLimiter, toolConfig, req); err != nil {
 				m.recordMetrics(serviceID, "tool", "blocked")
-				return nil, fmt.Errorf("rate limit exceeded for tool %s", req.ToolName)
+				return nil, fmt.Errorf("rate limit exceeded for tool %s: %w", req.ToolName, err)
 			}
 			m.recordMetrics(serviceID, "tool", "allowed")
 			// If we checked tool limit, we return early (override logic).
@@ -124,7 +124,7 @@ func (m *RateLimitMiddleware) Execute(ctx context.Context, req *tool.ExecutionRe
 		}
 		if err := m.checkLimit(ctx, serviceLimiter, serviceRateLimitConfig, req); err != nil {
 			m.recordMetrics(serviceID, "service", "blocked")
-			return nil, fmt.Errorf("rate limit exceeded for service %s", serviceInfo.Name)
+			return nil, fmt.Errorf("rate limit exceeded for service %s: %w", serviceInfo.Name, err)
 		}
 		m.recordMetrics(serviceID, "service", "allowed")
 	}
