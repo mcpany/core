@@ -33,6 +33,7 @@
 - [x] **Strict Startup Validation**: Server now fails fast with descriptive errors if the initial configuration contains invalid services, preventing "zombie services" (Friction Fighter).
 - [x] **Filesystem Path Validation**: Proactive validation of configured `root_paths` for Filesystem services to warn about missing directories on startup.
 - [x] **Enhanced Startup Diagnostics**: Implemented a "Startup Doctor" that checks port availability and provides human-readable configuration error suggestions before server initialization.
+- [x] **Detailed Subprocess Error Reporting**: Captured stderr from failed MCP subprocess launches to expose actionable errors (e.g., command not found) instead of generic connection failures. (Friction Fighter)
 
 ## 2. Top 10 Recommended Features
 
