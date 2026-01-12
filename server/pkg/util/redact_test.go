@@ -193,6 +193,7 @@ func TestRedactJSON_FalsePositives(t *testing.T) {
 		{"API_KEY", `{"API_KEY": "123"}`, true},            // exact upper
 		{"api_key_val", `{"api_key_val": "123"}`, true},    // "api_key" + "_"
 		{"plural_s", `{"tokens": "123"}`, true},            // "token" + "s" (plural exception)
+		{"plural_continue", `{"tokenss": "123"}`, false},  // "token" + "s" + "s" (continuation should not match)
 	}
 
 	for _, tt := range tests {
