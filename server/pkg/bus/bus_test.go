@@ -29,11 +29,14 @@ func TestBusProvider(t *testing.T) {
 		messageBus := bus.MessageBus_builder{}.Build()
 		messageBus.SetInMemory(bus.InMemoryBus_builder{}.Build())
 		provider, err := NewProvider(messageBus)
-		assert.NoError(t, err)
+		require.NoError(t, err)
 
-		bus1, _ := GetBus[string](provider, "strings")
-		bus2, _ := GetBus[int](provider, "ints")
-		bus3, _ := GetBus[string](provider, "strings")
+		bus1, err := GetBus[string](provider, "strings")
+		require.NoError(t, err)
+		bus2, err := GetBus[int](provider, "ints")
+		require.NoError(t, err)
+		bus3, err := GetBus[string](provider, "strings")
+		require.NoError(t, err)
 
 		assert.NotNil(t, bus1)
 		assert.NotNil(t, bus2)
@@ -49,10 +52,12 @@ func TestBusProvider(t *testing.T) {
 		messageBus.SetNats(natsBus)
 
 		provider, err := NewProvider(messageBus)
-		assert.NoError(t, err)
+		require.NoError(t, err)
 
-		bus1, _ := GetBus[string](provider, "strings")
-		bus2, _ := GetBus[int](provider, "ints")
+		bus1, err := GetBus[string](provider, "strings")
+		require.NoError(t, err)
+		bus2, err := GetBus[int](provider, "ints")
+		require.NoError(t, err)
 
 		assert.NotNil(t, bus1)
 		assert.NotNil(t, bus2)
@@ -85,9 +90,10 @@ func TestBusProvider(t *testing.T) {
 		messageBus.SetKafka(kafkaBus)
 
 		provider, err := NewProvider(messageBus)
-		assert.NoError(t, err)
+		require.NoError(t, err)
 
-		bus1, _ := GetBus[string](provider, "strings")
+		bus1, err := GetBus[string](provider, "strings")
+		require.NoError(t, err)
 		assert.NotNil(t, bus1)
 	})
 }

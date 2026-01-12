@@ -227,8 +227,19 @@ func FindFreePort(t *testing.T) int {
 	t.Helper()
 	addr, err := net.ResolveTCPAddr("tcp", "127.0.0.1:0")
 	require.NoError(t, err)
-	l, err := net.ListenTCP("tcp", addr)
-	require.NoError(t, err)
+
+	var l *net.TCPListener
+	// Retry loop for ListenTCP
+	for i := 0; i < 20; i++ {
+		l, err = net.ListenTCP("tcp", addr)
+		if err == nil {
+			break
+		}
+		t.Logf("FindFreePort: attempt %d failed: %v", i+1, err)
+		time.Sleep(100 * time.Millisecond)
+	}
+	require.NoError(t, err, "failed to find free port after retries")
+
 	defer func() {
 		err := l.Close()
 		if err != nil {
