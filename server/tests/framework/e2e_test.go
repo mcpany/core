@@ -14,9 +14,9 @@ import (
 )
 
 func TestGRPCHelperFunctions(t *testing.T) {
-	t.Parallel()
+	// t.Parallel()
 	t.Run("unauthenticated", func(t *testing.T) {
-		t.Parallel()
+		// t.Parallel()
 		proc := BuildGRPCWeatherServer(t)
 		require.NotNil(t, proc)
 		err := proc.Start()
@@ -58,7 +58,7 @@ func TestGRPCHelperFunctions(t *testing.T) {
 	})
 
 	t.Run("authenticated", func(t *testing.T) {
-		t.Parallel()
+		// t.Parallel()
 		proc := BuildGRPCAuthedWeatherServer(t)
 		require.NotNil(t, proc)
 		err := proc.Start()
