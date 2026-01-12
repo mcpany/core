@@ -32,56 +32,54 @@
 - [x] **Pre-flight Config Validation**: Added pre-flight checks for command existence and working directory validity to prevent "silent failures" at runtime.
 - [x] **Strict Startup Validation**: Server now fails fast with descriptive errors if the initial configuration contains invalid services, preventing "zombie services" (Friction Fighter).
 - [x] **Filesystem Path Validation**: Proactive validation of configured `root_paths` for Filesystem services to warn about missing directories on startup.
-- [x] **Enhanced Startup Diagnostics**: Implemented a "Startup Doctor" that checks port availability and provides human-readable configuration error suggestions before server initialization.
-- [x] **Detailed Subprocess Error Reporting**: Captured stderr from failed MCP subprocess launches to expose actionable errors (e.g., command not found) instead of generic connection failures. (Friction Fighter)
+- [x] **Enhanced Secret Validation**: Strict startup validation for referenced environment variables and secret files. Server will now fail fast if a configured secret (env var or file) does not exist.
+- [x] **Smart Config Error Messages**: Detect and guide users migrating from Claude Desktop configuration format (`mcpServers` vs `upstream_services`). (Friction Fighter)
 
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.
 
-| Rank | Feature Name                         | Why it matters                                                                                                                                                                         | Difficulty |
-| :--- | :----------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :--------- |
-| 1    | **Human-in-the-Loop Approval UI**    | **Safety**: Critical for preventing dangerous actions (e.g., `DROP TABLE`) by requiring manual admin approval via the UI before execution.                                             | Low        |
-| 2    | **Tool Poisoning Mitigation**        | **Security**: Implement integrity checks for tool definitions to prevent "Rug Pull" attacks where a tool definition changes maliciously after installation.                            | High       |
-| 3    | **Interactive OAuth Handler**        | **UX/Auth**: Solve the "copy-paste token" friction. Allow users to click "Login" in the UI to authenticate tools like GitHub/Google.                                                   | High       |
-| 4    | **Local LLM "One-Click" Connect**    | **Connectivity**: Auto-detect and connect to local inference servers (Ollama, LM Studio) to democratize AI access without cloud costs.                                                 | Low        |
-| 5    | **Tool "Dry Run" Mode**              | **DevX**: Allow tools to define a "dry run" logic to validate inputs and permissions without executing side effects.                                                                   | Medium     |
-| 6    | **Team Configuration Sync**          | **Collaboration**: Allow teams to synchronize `mcpany` configurations and secrets securely, ensuring consistent dev environments.                                                      | Medium     |
-| 7    | **Smart Error Recovery**             | **Resilience**: Use an internal LLM loop to analyze tool errors and automatically retry with corrected parameters (Self-Healing).                                                      | High       |
-| 8    | **Canary Tool Deployment**           | **Ops**: gradually roll out new tool versions to a subset of users or sessions to catch regressions before they impact everyone.                                                       | High       |
-| 9    | **Compliance Reporting**             | **Enterprise**: Automated generation of PDF/CSV reports from Audit Logs for SOC2/GDPR compliance reviews.                                                                              | Medium     |
-| 10   | **Advanced Tiered Caching**          | **Performance**: Implement a multi-layer cache (Memory -> Redis -> Disk) with configurable eviction policies to reduce upstream costs.                                                 | Medium     |
-| 11   | **Smart Retry Policies**             | **Resilience**: Configurable exponential backoff and jitter for upstream connections to handle transient network failures gracefully.                                                  | Medium     |
-| 12   | **Service Dependency Graph**         | **Observability**: Visualize dependencies between services (e.g. Service A calls Tool B in Service C) to detect circular dependencies or bottlenecks.                                  | High       |
-| 13   | **Schema Validation Playground**     | **DevX**: A dedicated UI in the dashboard to paste JSON/YAML and validate it against the server schema with real-time error highlighting.                                              | Low        |
-| 14   | **Config Linting Tool**              | **DevX**: A standalone CLI command (e.g., `mcpany lint config.yaml`) to validate configuration without starting the server, useful for CI/CD pipelines.                                | Low        |
-| 15   | **Partial Reloads**                  | **Resilience**: When reloading config dynamically, if one service is invalid, keep the old version running instead of removing it or failing the whole reload (if possible).           | High       |
-| 16   | **Filesystem Health Check**          | **Observability**: Add a health check probe for filesystem roots to report status to the UI, not just logs.                                                                            | Low        |
-| 17   | **Safe Symlink Traversal**           | **Security**: Add configuration options to strictly control symlink traversal policies (allow/deny/internal-only).                                                                     | Medium     |
-| 18   | **Environment Variable Diagnostics** | **UX**: When environment variables are missing (like `GITHUB_TOKEN`), provide a specific "How to fix" message, perhaps even detecting which variables are needed by the active config. | Low        |
-| 19   | **Interactive CLI Setup Wizard**     | **Onboarding**: A `mcpany init` command that walks the user through creating a basic configuration file interactively.                                                                 | Medium     |
+| Rank | Feature Name | Why it matters | Difficulty |
+| :--- | :--- | :--- | :--- |
+| 1 | **Human-in-the-Loop Approval UI** | **Safety**: Critical for preventing dangerous actions (e.g., `DROP TABLE`) by requiring manual admin approval via the UI before execution. | Low |
+| 2 | **Tool Poisoning Mitigation** | **Security**: Implement integrity checks for tool definitions to prevent "Rug Pull" attacks where a tool definition changes maliciously after installation. | High |
+| 3 | **Interactive OAuth Handler** | **UX/Auth**: Solve the "copy-paste token" friction. Allow users to click "Login" in the UI to authenticate tools like GitHub/Google. | High |
+| 4 | **Local LLM "One-Click" Connect** | **Connectivity**: Auto-detect and connect to local inference servers (Ollama, LM Studio) to democratize AI access without cloud costs. | Low |
+| 5 | **Tool "Dry Run" Mode** | **DevX**: Allow tools to define a "dry run" logic to validate inputs and permissions without executing side effects. | Medium |
+| 6 | **Team Configuration Sync** | **Collaboration**: Allow teams to synchronize `mcpany` configurations and secrets securely, ensuring consistent dev environments. | Medium |
+| 7 | **Smart Error Recovery** | **Resilience**: Use an internal LLM loop to analyze tool errors and automatically retry with corrected parameters (Self-Healing). | High |
+| 8 | **Canary Tool Deployment** | **Ops**: gradually roll out new tool versions to a subset of users or sessions to catch regressions before they impact everyone. | High |
+| 9 | **Compliance Reporting** | **Enterprise**: Automated generation of PDF/CSV reports from Audit Logs for SOC2/GDPR compliance reviews. | Medium |
+| 10 | **Advanced Tiered Caching** | **Performance**: Implement a multi-layer cache (Memory -> Redis -> Disk) with configurable eviction policies to reduce upstream costs. | Medium |
+| 11 | **Smart Retry Policies** | **Resilience**: Configurable exponential backoff and jitter for upstream connections to handle transient network failures gracefully. | Medium |
+| 12 | **Service Dependency Graph** | **Observability**: Visualize dependencies between services (e.g. Service A calls Tool B in Service C) to detect circular dependencies or bottlenecks. | High |
+| 13 | **Schema Validation Playground** | **DevX**: A dedicated UI in the dashboard to paste JSON/YAML and validate it against the server schema with real-time error highlighting. | Low |
+| 14 | **Config Linting Tool** | **DevX**: A standalone CLI command (e.g., `mcpany lint config.yaml`) to validate configuration without starting the server, useful for CI/CD pipelines. | Low |
+| 15 | **Partial Reloads** | **Resilience**: When reloading config dynamically, if one service is invalid, keep the old version running instead of removing it or failing the whole reload (if possible). | High |
+| 16 | **Filesystem Health Check** | **Observability**: Add a health check probe for filesystem roots to report status to the UI, not just logs. | Low |
+| 17 | **Safe Symlink Traversal** | **Security**: Add configuration options to strictly control symlink traversal policies (allow/deny/internal-only). | Medium |
+| 18 | **Preset Service Gallery** | **UX**: A curated list of popular services (like `wttr.in`, `sqlite`, etc.) that can be added via CLI or UI with one click/command. | Medium |
+| 19 | **Configuration Migration Tool** | **DevX**: A CLI command to convert `claude_desktop_config.json` to `mcpany` config format. | Low |
 
 ## 3. Codebase Health
 
 ### Critical Areas (Refactoring Needed)
 
 1.  **Rate Limiting Complexity (`server/pkg/middleware/ratelimit.go`)**
-
-    - **Status**: ✅ Refactored (Strategy Pattern Implemented).
-    - **Issue**: The current implementation tightly couples business logic with Redis/Memory backend logic.
-    - **Risk**: High cognitive load, difficult to test, hard to add new backends (e.g., Postgres).
-    - **Recommendation**: Extract a `RateLimitStrategy` interface.
+    *   **Status**: ✅ Refactored (Strategy Pattern Implemented).
+    *   **Issue**: The current implementation tightly couples business logic with Redis/Memory backend logic.
+    *   **Risk**: High cognitive load, difficult to test, hard to add new backends (e.g., Postgres).
+    *   **Recommendation**: Extract a `RateLimitStrategy` interface.
 
 2.  **Filesystem Upstream Monolith (`server/pkg/upstream/filesystem`)**
-
-    - **Issue**: The logic for Local, S3, and GCS providers is often intertwined or shares too much structural code in a way that violates SRP.
-    - **Risk**: Changes to S3 support might break Local file support.
-    - **Recommendation**: Strictly separate providers into distinct packages/structs implementing a common interface.
+    *   **Issue**: The logic for Local, S3, and GCS providers is often intertwined or shares too much structural code in a way that violates SRP.
+    *   **Risk**: Changes to S3 support might break Local file support.
+    *   **Recommendation**: Strictly separate providers into distinct packages/structs implementing a common interface.
 
 3.  **Webhook "Prototype" Status (`server/cmd/webhooks`)**
-    - **Issue**: The code appears experimental and lacks the robustness of the main server (error handling, config validation).
-    - **Risk**: If used in production, it could become a single point of failure.
-    - **Recommendation**: Graduate this to `server/pkg/sidecar/webhooks` with full test coverage.
+    *   **Issue**: The code appears experimental and lacks the robustness of the main server (error handling, config validation).
+    *   **Risk**: If used in production, it could become a single point of failure.
+    *   **Recommendation**: Graduate this to `server/pkg/sidecar/webhooks` with full test coverage.
 
 ### Warning Areas
 
@@ -90,6 +88,6 @@ These features represent the next logical steps for the product, focusing on Ent
 
 ### Healthy Areas
 
-- **Core Middleware Pipeline**: The middleware architecture is robust and extensible.
-- **Protocol Implementation**: `server/pkg/mcpserver` cleanly separates protocol details from business logic.
-- **Documentation**: The project has excellent documentation coverage for most features.
+*   **Core Middleware Pipeline**: The middleware architecture is robust and extensible.
+*   **Protocol Implementation**: `server/pkg/mcpserver` cleanly separates protocol details from business logic.
+*   **Documentation**: The project has excellent documentation coverage for most features.

@@ -7,7 +7,6 @@ import (
 	"encoding/json"
 	"log/slog"
 	"regexp"
-	"strings"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"google.golang.org/protobuf/types/known/structpb"
@@ -24,8 +23,7 @@ var (
 
 // Redactor handles redaction of sensitive data based on configuration.
 type Redactor struct {
-	patterns []*regexp.Regexp
-	combined *regexp.Regexp
+	customPatterns []*regexp.Regexp
 }
 
 // NewRedactor creates a new Redactor from the given DLP config.
@@ -34,51 +32,18 @@ func NewRedactor(config *configv1.DLPConfig, log *slog.Logger) *Redactor {
 		return nil
 	}
 
-	patterns := []*regexp.Regexp{
-		emailRegex,
-		creditCardRegex,
-		ssnRegex,
-	}
-
-	patternStrings := []string{
-		emailRegex.String(),
-		creditCardRegex.String(),
-		ssnRegex.String(),
-	}
-
+	// Separate custom patterns from default ones for optimized processing
+	var customPatterns []*regexp.Regexp
 	for _, p := range config.CustomPatterns {
 		if r, err := regexp.Compile(p); err == nil {
-			patterns = append(patterns, r)
-			patternStrings = append(patternStrings, p)
+			customPatterns = append(customPatterns, r)
 		} else if log != nil {
 			log.Warn("Invalid custom DLP pattern, ignoring", "pattern", p, "error", err)
 		}
 	}
 
-	// Optimization: Combine all patterns into a single regex for better performance
-	// and reduced memory allocations, especially for non-matching strings (common case).
-	// We wrap each pattern in a non-capturing group (?:...) and join with |.
-	validPatternStrings := make([]string, 0, len(patternStrings))
-	for _, p := range patternStrings {
-		// Ensure pattern is valid before combining (already checked above, but safe to double check implicitly)
-		validPatternStrings = append(validPatternStrings, "(?:"+p+")")
-	}
-
-	var combined *regexp.Regexp
-	if len(validPatternStrings) > 0 {
-		joined := strings.Join(validPatternStrings, "|")
-		c, err := regexp.Compile(joined)
-		if err == nil {
-			combined = c
-		} else if log != nil {
-			// This might happen if the combined regex is too large or complex
-			log.Warn("Failed to compile combined DLP regex, falling back to sequential patterns", "error", err)
-		}
-	}
-
 	return &Redactor{
-		patterns: patterns,
-		combined: combined,
+		customPatterns: customPatterns,
 	}
 }
 
@@ -111,20 +76,37 @@ func (r *Redactor) RedactString(s string) string {
 		return s
 	}
 
-	// Optimization: Use combined regex if available
-	if r.combined != nil {
-		// Optimization: Check for match first to avoid allocation in ReplaceAllString
-		// if there are no matches (which is the most common case).
-		// MatchString is boolean and allocation-free (mostly).
-		if !r.combined.MatchString(s) {
-			return s
+	// Optimization: Scan string once to check for characteristics of PII
+	// This avoids expensive regex calls for strings that are obviously safe
+	hasAt := false
+	hasDigit := false
+	for i := 0; i < len(s); i++ {
+		c := s[i]
+		if c == '@' {
+			hasAt = true
+		} else if c >= '0' && c <= '9' {
+			hasDigit = true
 		}
-		return r.combined.ReplaceAllString(s, redactedStr)
+		if hasAt && hasDigit {
+			break
+		}
 	}
 
-	// Fallback to sequential patterns
 	res := s
-	for _, p := range r.patterns {
+
+	// Only run email regex if '@' is present
+	if hasAt {
+		res = emailRegex.ReplaceAllString(res, redactedStr)
+	}
+
+	// Only run CC and SSN regexes if digits are present
+	if hasDigit {
+		res = creditCardRegex.ReplaceAllString(res, redactedStr)
+		res = ssnRegex.ReplaceAllString(res, redactedStr)
+	}
+
+	// Always run custom patterns as we don't know their characteristics
+	for _, p := range r.customPatterns {
 		res = p.ReplaceAllString(res, redactedStr)
 	}
 	return res

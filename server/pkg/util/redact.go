@@ -19,10 +19,6 @@ var (
 	// Used for optimized scanning.
 	sensitiveStartChars []byte
 
-	// sensitiveStartCharsAny contains all sensitive start characters (lowercase and uppercase)
-	// for use with bytes.IndexAny.
-	sensitiveStartCharsAny string
-
 	// sensitiveKeyGroups maps a starting character (lowercase) to the list of sensitive keys starting with it.
 	// Optimization: Use array instead of map for faster lookup.
 	sensitiveKeyGroups [256][][]byte
@@ -31,6 +27,10 @@ var (
 	// Bit 0 = 'a', Bit 1 = 'b', etc.
 	// Used to quickly filter out false positives based on the second character.
 	sensitiveNextCharMask [256]uint32
+
+	// sensitiveStartCharBitmap is a bitmap for fast checking if a character is a start char.
+	// It's faster than bytes.IndexAny for short strings because it avoids overhead.
+	sensitiveStartCharBitmap [256]bool
 )
 
 func init() {
@@ -47,14 +47,13 @@ func init() {
 		}
 	}
 
-	// Build sensitiveStartCharsAny
-	anyBytes := make([]byte, 0, len(sensitiveStartChars)*2)
+	// Build sensitiveStartCharsAny and bitmap
 	for _, c := range sensitiveStartChars {
-		anyBytes = append(anyBytes, c)
+		sensitiveStartCharBitmap[c] = true
 		// Add uppercase variant
-		anyBytes = append(anyBytes, c-32)
+		upper := c - 32
+		sensitiveStartCharBitmap[upper] = true
 	}
-	sensitiveStartCharsAny = string(anyBytes)
 
 	// Build next char masks
 	for start, keys := range sensitiveKeyGroups {
@@ -129,7 +128,7 @@ func redactSlice(s []interface{}) []interface{} {
 // so we only include the shorter ones to optimize performance.
 var sensitiveKeys = []string{
 	"api_key", "apikey", "token", "secret", "password", "passwd", "credential", "auth", "private_key",
-	"authorization", "proxy-authorization", "cookie", "set-cookie", "x-api-key", "client_id",
+	"authorization", "proxy-authorization", "cookie", "set-cookie", "x-api-key",
 }
 
 // IsSensitiveKey checks if a key name suggests it contains sensitive information.
@@ -156,20 +155,15 @@ func scanForSensitiveKeys(input []byte, validateKeyContext bool) bool {
 	// For long strings, multiple IndexByte calls are faster (SIMD).
 	// The crossover is around 128 bytes.
 	if len(input) < 128 {
-		offset := 0
-		for offset < len(input) {
-			slice := input[offset:]
-			idx := bytes.IndexAny(slice, sensitiveStartCharsAny)
-			if idx == -1 {
-				break
+		// Use bitmap for faster check than IndexAny on short strings
+		for i := 0; i < len(input); i++ {
+			c := input[i]
+			if sensitiveStartCharBitmap[c] {
+				startChar := c | 0x20 // Normalize to lowercase
+				if checkPotentialMatch(input, i, startChar, validateKeyContext) {
+					return true
+				}
 			}
-			matchStart := offset + idx
-			startChar := input[matchStart] | 0x20 // Normalize to lowercase
-
-			if checkPotentialMatch(input, matchStart, startChar, validateKeyContext) {
-				return true
-			}
-			offset = matchStart + 1
 		}
 		return false
 	}

@@ -341,6 +341,15 @@ func (s *Server) GetPrompt(
 		return nil, prompt.ErrPromptNotFound
 	}
 
+	profileID, _ := auth.ProfileIDFromContext(ctx)
+	if profileID != "" {
+		serviceID := p.Service()
+		if serviceID != "" && !s.toolManager.IsServiceAllowed(serviceID, profileID) {
+			logging.GetLogger().Warn("Access denied to prompt by profile", "promptName", req.Params.Name, "profileID", profileID)
+			return nil, fmt.Errorf("access denied to prompt %q", req.Params.Name)
+		}
+	}
+
 	// Use json-iterator for faster JSON marshaling
 	var json = jsoniter.ConfigCompatibleWithStandardLibrary
 	argsBytes, err := json.Marshal(req.Params.Arguments)
@@ -396,6 +405,16 @@ func (s *Server) ReadResource(
 	if !ok {
 		return nil, resource.ErrResourceNotFound
 	}
+
+	profileID, _ := auth.ProfileIDFromContext(ctx)
+	if profileID != "" {
+		serviceID := r.Service()
+		if serviceID != "" && !s.toolManager.IsServiceAllowed(serviceID, profileID) {
+			logging.GetLogger().Warn("Access denied to resource by profile", "resourceURI", req.Params.URI, "profileID", profileID)
+			return nil, fmt.Errorf("access denied to resource %q", req.Params.URI)
+		}
+	}
+
 	return r.Read(ctx)
 }
 
@@ -507,10 +526,15 @@ func (s *Server) CallTool(ctx context.Context, req *tool.ExecutionRequest) (any,
 		{Name: "service_id", Value: serviceID},
 	})
 	startTime := time.Now()
-	defer metrics.MeasureSinceWithLabels([]string{"tools", "call", "latency"}, startTime, []metrics.Label{
-		{Name: "tool", Value: req.ToolName},
-		{Name: "service_id", Value: serviceID},
-	})
+	defer func() {
+		// Use AddSampleWithLabels directly to avoid emitting an unlabelled metric (which MeasureSinceWithLabels does).
+		// MeasureSince emits in milliseconds.
+		duration := float32(time.Since(startTime).Seconds() * 1000)
+		metrics.AddSampleWithLabels([]string{"tools", "call", "latency"}, duration, []metrics.Label{
+			{Name: "tool", Value: req.ToolName},
+			{Name: "service_id", Value: serviceID},
+		})
+	}()
 
 	result, err := s.toolManager.ExecuteTool(ctx, req)
 	if err != nil {

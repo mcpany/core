@@ -171,9 +171,18 @@ func validateSecretValue(secret *configv1.SecretValue) error {
 		return nil
 	}
 	switch secret.WhichValue() {
+	case configv1.SecretValue_EnvironmentVariable_case:
+		envVar := secret.GetEnvironmentVariable()
+		if _, exists := os.LookupEnv(envVar); !exists {
+			return fmt.Errorf("environment variable %q is not set", envVar)
+		}
 	case configv1.SecretValue_FilePath_case:
 		if err := validation.IsRelativePath(secret.GetFilePath()); err != nil {
 			return fmt.Errorf("invalid secret file path %q: %w", secret.GetFilePath(), err)
+		}
+		// Validate that the file actually exists to fail fast
+		if err := validation.FileExists(secret.GetFilePath()); err != nil {
+			return fmt.Errorf("secret file %q does not exist: %w", secret.GetFilePath(), err)
 		}
 	case configv1.SecretValue_RemoteContent_case:
 		remote := secret.GetRemoteContent()
