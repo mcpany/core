@@ -33,6 +33,7 @@
 - [x] **Strict Startup Validation**: Server now fails fast with descriptive errors if the initial configuration contains invalid services, preventing "zombie services" (Friction Fighter).
 - [x] **Filesystem Path Validation**: Proactive validation of configured `root_paths` for Filesystem services to warn about missing directories on startup.
 - [x] **Enhanced Secret Validation**: Strict startup validation for referenced environment variables and secret files. Server will now fail fast if a configured secret (env var or file) does not exist.
+- [x] **Proactive Schema Sanitization**: Automatically fixes common schema issues (like missing `type: object`) in tool definitions to ensure compatibility with strict MCP clients (e.g. Claude Code).
 
 ## 2. Top 10 Recommended Features
 
@@ -57,6 +58,8 @@ These features represent the next logical steps for the product, focusing on Ent
 | 15 | **Partial Reloads** | **Resilience**: When reloading config dynamically, if one service is invalid, keep the old version running instead of removing it or failing the whole reload (if possible). | High |
 | 16 | **Filesystem Health Check** | **Observability**: Add a health check probe for filesystem roots to report status to the UI, not just logs. | Low |
 | 17 | **Safe Symlink Traversal** | **Security**: Add configuration options to strictly control symlink traversal policies (allow/deny/internal-only). | Medium |
+| 18 | **Multi-Model Advisor** | **Intelligence**: Orchestrate queries across multiple models (e.g. Ollama models) to synthesize insights. | High |
+| 19 | **MCP Server Aggregator/Proxy** | **Architecture**: A meta-server capability to discover, configure, and manage multiple downstream MCP servers dynamically. | High |
 
 ## 3. Codebase Health
 
