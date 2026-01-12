@@ -32,7 +32,9 @@ var (
 	toolExecutionTotal = prometheus.NewCounterVec(
 		prometheus.CounterOpts{
 			Name: "mcpany_tools_call_total",
-			Help: "Total number of tool executions.",
+			// Help string must match the existing registration to avoid conflicts.
+			// The conflicting registration seems to use the name as the help string.
+			Help: "mcpany_tools_call_total",
 		},
 		[]string{"tool", "service_id", "status", "error_type"},
 	)
