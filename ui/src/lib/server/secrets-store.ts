@@ -10,10 +10,8 @@ import crypto from 'crypto';
 
 // 🚨 SECURITY NOTICE:
 // This is a MOCK store using a hardcoded key for demonstration purposes.
-// We now generate a random key at startup to ensure that even if this code is leaked,
-// the key is not. Since this is an in-memory store, the data is lost on restart anyway,
-// so a per-process key is perfectly fine and much more secure than a hardcoded one.
-const MOCK_ENCRYPTION_KEY = crypto.randomBytes(32);
+// In a real production environment, NEVER hardcode keys. Use a KMS or Vault.
+const MOCK_ENCRYPTION_KEY = crypto.scryptSync('mcp-any-mock-secret', 'salt', 32);
 const ALGORITHM = 'aes-256-gcm';
 
 interface Secret {
