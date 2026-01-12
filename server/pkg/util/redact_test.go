@@ -39,6 +39,51 @@ func TestIsSensitiveKey(t *testing.T) {
 	}
 }
 
+func TestScanForSensitiveKeys_SIMD(t *testing.T) {
+	t.Parallel()
+	// Create a string longer than 128 bytes to trigger the SIMD path in scanForSensitiveKeys
+
+	// Case 1: Key at the end
+	prefix := "not_sensitive_"
+	for i := 0; i < 10; i++ {
+		prefix += "not_sensitive_"
+	}
+	input := prefix + "api_key"
+
+	if !IsSensitiveKey(input) {
+		t.Errorf("IsSensitiveKey failed for long string ending with api_key")
+	}
+
+	// Case 2: Key at the start (separated)
+	// We use a separator because IsSensitiveKey boundary check is strict (won't match "api_keynot...")
+	input2 := "api_key" + "_" + prefix
+	if !IsSensitiveKey(input2) {
+		t.Errorf("IsSensitiveKey failed for long string starting with api_key")
+	}
+
+	// Case 3: Key in the middle (separated)
+	input3 := prefix + "_" + "api_key" + "_" + prefix
+	if !IsSensitiveKey(input3) {
+		t.Errorf("IsSensitiveKey failed for long string containing api_key in middle")
+	}
+
+	// Case 4: No key, but lots of potential triggers
+	pattern := "apple_pie_sugar_spice_" // 'a', 'p', 's' are start chars
+	input4 := ""
+	for i := 0; i < 10; i++ {
+		input4 += pattern
+	}
+	if IsSensitiveKey(input4) {
+		t.Errorf("IsSensitiveKey false positive for long string")
+	}
+
+	// Case 5: Boundary checks for long string
+	input5 := prefix + "tokens"
+	if IsSensitiveKey(input5) {
+		t.Errorf("IsSensitiveKey false positive for long string ending in 'tokens'")
+	}
+}
+
 func TestRedactMap(t *testing.T) {
 	t.Parallel()
 	input := map[string]interface{}{
