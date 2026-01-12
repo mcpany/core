@@ -105,4 +105,43 @@ func TestRetry(t *testing.T) {
 		require.Equal(t, 4*time.Second, retry.backoff(1))
 		require.Equal(t, 5*time.Second, retry.backoff(2))
 	})
+
+    t.Run("no_wait_after_last_attempt", func(t *testing.T) {
+		var attempts int
+		work := func(_ context.Context) error {
+			attempts++
+			return errors.New("persistent error")
+		}
+
+		retries := int32(2)
+		config := &configv1.RetryConfig{}
+		config.SetNumberOfRetries(retries)
+		// Set a long backoff to make it obvious if we wait
+		config.SetBaseBackoff(durationpb.New(100 * time.Millisecond))
+		retry := NewRetry(config)
+
+		start := time.Now()
+		err := retry.Execute(ctx, work)
+		elapsed := time.Since(start)
+
+		require.Error(t, err)
+		require.Equal(t, 3, attempts)
+
+        // Attempt 0: fails, waits 100ms
+        // Attempt 1: fails, waits 200ms
+        // Attempt 2: fails, should NOT wait
+        // Total wait should be around 300ms. If it waits after last attempt (400ms), total would be > 700ms
+
+        // Let's refine the expectation.
+        // i=0: wait backoff(0) = 100ms
+        // i=1: wait backoff(1) = 200ms
+        // i=2: should return immediately.
+
+        // Expected duration approx 300ms.
+        // If bug exists:
+        // i=2: wait backoff(2) = 400ms.
+        // Total duration > 700ms.
+
+		require.Less(t, elapsed, 600*time.Millisecond, "should not wait after the last attempt")
+	})
 }
