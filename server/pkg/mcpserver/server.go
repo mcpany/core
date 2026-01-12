@@ -275,9 +275,7 @@ func (s *Server) toolListFilteringMiddleware(next mcp.MethodHandler) mcp.MethodH
 				} else {
 					logging.GetLogger().
 						Error("Failed to convert tool to MCP format", "toolName", toolInstance.Tool().GetName())
-					// We continue instead of failing the whole request, or we can fail.
-					// Previous behavior was to return error.
-					return nil, fmt.Errorf("failed to convert tool %q to MCP format", toolInstance.Tool().GetName())
+					// We continue instead of failing the whole request.
 				}
 			}
 			return &mcp.ListToolsResult{Tools: refreshedTools}, nil
