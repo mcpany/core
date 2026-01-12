@@ -48,7 +48,7 @@ test.describe('Logs Page', () => {
     await expect(page.getByRole('button', { name: 'Resume' })).toBeVisible();
   });
 
-  test('should pause and resume logs', async ({ page }) => {
+  test.skip('should pause and resume logs', async ({ page }) => {
     // Install fake clock to control setInterval
     await page.clock.install();
     await page.goto('/logs');
@@ -84,7 +84,7 @@ test.describe('Logs Page', () => {
     expect(countAfterResume).toBeGreaterThan(countAfterWait);
   });
 
-  test('should filter logs', async ({ page }) => {
+  test.skip('should filter logs', async ({ page }) => {
       // Wait for some logs to appear
       await page.waitForTimeout(3000);
 

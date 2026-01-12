@@ -25,7 +25,12 @@ test.describe('Concurrency & Race Conditions', () => {
     // Perform concurrent actions (e.g. navigation or simple interaction if available)
     // For now, we'll verify they can all reach the playground
     // Use a more specific locator if needed, but for now generic link is fine
-    await Promise.all(pages.map(page => page.getByRole('link', { name: 'Playground' }).first().click()));
+    await Promise.all(pages.map(async page => {
+        const link = page.getByRole('link', { name: 'Playground' }).first();
+        await expect(link).toHaveAttribute('href', '/playground');
+        await link.click();
+        await page.waitForURL(/.*playground/);
+    }));
 
     // Check that all pages are on the playground
     await Promise.all(pages.map(page => expect(page).toHaveURL(/.*playground/)));
