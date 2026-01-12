@@ -22,7 +22,7 @@
 
 - [x] **Network Topology Visualization**: Interactive graph of the MCP ecosystem. [Docs](server/docs/features/dynamic-ui.md)
 - [x] **Middleware Visualization**: Drag-and-drop pipeline management. [Docs](server/docs/features/middleware_visualization.md)
-- [x] **Real-time Log Streaming UI**: Live audit logs. [Docs](server/docs/features/log_streaming_ui.md)
+- [x] **Real-time Log Streaming**: Live audit logs with backend integration (WebSocket). [Docs](server/docs/features/log_streaming_ui.md)
 - [x] **Granular Real-time Metrics**: Display RPS for individual tools, upstream services, middleware, and webhooks in the dashboard. [Docs](server/docs/monitoring.md)
 - [x] **Theme Builder**: Dark/Light mode support. [Docs](server/docs/features/theme_builder.md)
 - [x] **Mobile Optimization**: Complete responsiveness for all management pages. [Docs](server/docs/mobile-view.md)
