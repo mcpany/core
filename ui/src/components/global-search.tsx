@@ -21,7 +21,10 @@ import {
   Database,
   Wrench,
   FileBox,
-  MessageSquare
+  MessageSquare,
+  RefreshCw,
+  Copy,
+  RotateCcw
 } from "lucide-react"
 
 import {
@@ -35,12 +38,14 @@ import {
 } from "@/components/ui/command"
 
 import { apiClient, ToolDefinition, ResourceDefinition, PromptDefinition, UpstreamServiceConfig } from "@/lib/client"
+import { useToast } from "@/hooks/use-toast"
 
 export function GlobalSearch() {
   const [open, setOpen] = React.useState(false)
   const [query, setQuery] = React.useState("")
   const router = useRouter()
   const { setTheme } = useTheme()
+  const { toast } = useToast()
 
   const [services, setServices] = React.useState<UpstreamServiceConfig[]>([])
   const [tools, setTools] = React.useState<ToolDefinition[]>([])
@@ -48,6 +53,25 @@ export function GlobalSearch() {
   const [prompts, setPrompts] = React.useState<PromptDefinition[]>([])
   const [loading, setLoading] = React.useState(false)
   const lastFetched = React.useRef(0)
+
+  const fetchData = React.useCallback(async () => {
+      setLoading(true)
+      try {
+        const [servicesData, toolsData, resourcesData, promptsData] = await Promise.all([
+            apiClient.listServices().catch(() => ({ services: [] })),
+            apiClient.listTools().catch(() => ({ tools: [] })),
+            apiClient.listResources().catch(() => ({ resources: [] })),
+            apiClient.listPrompts().catch(() => ({ prompts: [] }))
+        ])
+        setServices(Array.isArray(servicesData) ? servicesData : servicesData.services || [])
+        setTools(toolsData.tools || [])
+        setResources(resourcesData.resources || [])
+        setPrompts(promptsData.prompts || [])
+        lastFetched.current = Date.now()
+      } finally {
+        setLoading(false)
+      }
+  }, [])
 
   React.useEffect(() => {
     const down = (e: KeyboardEvent) => {
@@ -69,29 +93,56 @@ export function GlobalSearch() {
       if (now - lastFetched.current < 60000 && lastFetched.current > 0) {
         return
       }
-
-      setLoading(true)
-      Promise.all([
-        apiClient.listServices().catch(() => ({ services: [] })),
-        apiClient.listTools().catch(() => ({ tools: [] })),
-        apiClient.listResources().catch(() => ({ resources: [] })),
-        apiClient.listPrompts().catch(() => ({ prompts: [] }))
-      ]).then(([servicesData, toolsData, resourcesData, promptsData]) => {
-         setServices(Array.isArray(servicesData) ? servicesData : servicesData.services || [])
-         setTools(toolsData.tools || [])
-         setResources(resourcesData.resources || [])
-         setPrompts(promptsData.prompts || [])
-         lastFetched.current = Date.now()
-      }).finally(() => {
-        setLoading(false)
-      })
+      fetchData()
     }
-  }, [open])
+  }, [open, fetchData])
 
   const runCommand = React.useCallback((command: () => unknown) => {
     setOpen(false)
     command()
   }, [])
+
+  const copyToClipboard = React.useCallback((text: string, label: string) => {
+      runCommand(() => {
+          navigator.clipboard.writeText(text)
+          toast({
+              title: "Copied to clipboard",
+              description: `Copied ${label} to clipboard.`
+          })
+      })
+  }, [runCommand, toast])
+
+  const restartService = React.useCallback(async (serviceName: string) => {
+      runCommand(async () => {
+          toast({
+              title: "Restarting Service",
+              description: `Restarting ${serviceName}...`
+          })
+          try {
+              await apiClient.setServiceStatus(serviceName, true) // Disable
+              // Small delay to ensure it stops? Or just immediately enable
+              await new Promise(r => setTimeout(r, 1000))
+              await apiClient.setServiceStatus(serviceName, false) // Enable
+               toast({
+                  title: "Service Restarted",
+                  description: `${serviceName} has been restarted.`
+              })
+          } catch (e) {
+              toast({
+                  variant: "destructive",
+                  title: "Restart Failed",
+                  description: `Failed to restart ${serviceName}.`
+              })
+          }
+      })
+  }, [runCommand, toast])
+
+    const reloadWindow = React.useCallback(() => {
+        runCommand(() => {
+            window.location.reload()
+        })
+    }, [runCommand])
+
 
   return (
     <>
@@ -99,7 +150,7 @@ export function GlobalSearch() {
         onClick={() => setOpen(true)}
         className="inline-flex items-center gap-2 whitespace-nowrap transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 border border-input hover:bg-accent hover:text-accent-foreground px-4 py-2 relative h-8 w-full justify-start rounded-[0.5rem] bg-muted/50 text-sm font-normal text-muted-foreground shadow-none sm:pr-12 md:w-40 lg:w-64"
       >
-        <span className="hidden lg:inline-flex">Search feature...</span>
+        <span className="hidden lg:inline-flex">Search or type &gt; for actions...</span>
         <span className="inline-flex lg:hidden">Search...</span>
         <kbd className="pointer-events-none absolute right-[0.3rem] top-[0.3rem] hidden h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium opacity-100 sm:flex">
           <span className="text-xs">⌘</span>K
@@ -145,6 +196,26 @@ export function GlobalSearch() {
           </CommandGroup>
           <CommandSeparator />
 
+           <CommandGroup heading="System Actions">
+              <CommandItem value="reload window" onSelect={reloadWindow}>
+                  <RotateCcw className="mr-2 h-4 w-4" />
+                  <span>Reload Window</span>
+              </CommandItem>
+               <CommandItem value="refresh data" onSelect={() => {
+                   lastFetched.current = 0; // Force invalidate
+                   fetchData();
+                   toast({ title: "Refreshing Data..." });
+               }}>
+                  <RefreshCw className="mr-2 h-4 w-4" />
+                  <span>Refresh Data</span>
+              </CommandItem>
+              <CommandItem value="copy current url" onSelect={() => copyToClipboard(window.location.href, "Current URL")}>
+                  <Copy className="mr-2 h-4 w-4" />
+                  <span>Copy Current URL</span>
+              </CommandItem>
+           </CommandGroup>
+           <CommandSeparator />
+
           {services.length > 0 && (
              <CommandGroup heading="Services">
                {services.map((service) => (
@@ -153,6 +224,13 @@ export function GlobalSearch() {
                    <span>{service.name}</span>
                    {service.version && <span className="ml-2 text-xs text-muted-foreground">v{service.version}</span>}
                  </CommandItem>
+               ))}
+               {/* Actions for Services - only shown if searching for "restart" or service name */}
+               {services.map((service) => (
+                   <CommandItem key={`restart-${service.name}`} value={`restart service ${service.name}`} onSelect={() => restartService(service.name)}>
+                       <RefreshCw className="mr-2 h-4 w-4 text-orange-500" />
+                       <span>Restart {service.name}</span>
+                   </CommandItem>
                ))}
              </CommandGroup>
           )}
@@ -175,6 +253,12 @@ export function GlobalSearch() {
                  <CommandItem key={resource.uri} value={`resource ${resource.name}`} onSelect={() => runCommand(() => router.push(`/resources?uri=${encodeURIComponent(resource.uri)}`))}>
                    <FileBox className="mr-2 h-4 w-4" />
                    <span>{resource.name}</span>
+                 </CommandItem>
+               ))}
+                {resources.map((resource) => (
+                 <CommandItem key={`copy-${resource.uri}`} value={`copy uri ${resource.name}`} onSelect={() => copyToClipboard(resource.uri, "Resource URI")}>
+                   <Copy className="mr-2 h-4 w-4 text-blue-500" />
+                   <span>Copy URI: {resource.name}</span>
                  </CommandItem>
                ))}
              </CommandGroup>
