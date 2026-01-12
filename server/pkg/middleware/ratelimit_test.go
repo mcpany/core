@@ -6,6 +6,7 @@ package middleware_test
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"net/http"
 	"testing"
 	"time"
@@ -379,6 +380,80 @@ func TestRateLimitMiddleware(t *testing.T) {
 		assert.NoError(t, err)
 		assert.Equal(t, successResult, result)
 		assert.True(t, nextCalled)
+		assert.NoError(t, mockRedis.ExpectationsWereMet())
+	})
+
+	t.Run("redis rate limit error", func(t *testing.T) {
+		db, mockRedis := redismock.NewClientMock()
+		middleware.SetRedisClientCreatorForTests(func(_ *redis.Options) *redis.Client {
+			return db
+		})
+		defer middleware.SetRedisClientCreatorForTests(func(opts *redis.Options) *redis.Client {
+			return redis.NewClient(opts)
+		})
+
+		fixedTime := time.Date(2025, 1, 1, 0, 0, 0, 0, time.UTC)
+		middleware.SetTimeNowForTests(func() time.Time {
+			return fixedTime
+		})
+		defer middleware.SetTimeNowForTests(time.Now)
+
+		mockToolManager := &rateLimitMockToolManager{}
+		rlMiddleware := middleware.NewRateLimitMiddleware(mockToolManager)
+
+		toolProto := v1.Tool_builder{
+			ServiceId: proto.String("service"),
+		}.Build()
+		mockTool := &rateLimitMockTool{toolProto: toolProto}
+
+		storageRedis := configv1.RateLimitConfig_STORAGE_REDIS
+		rlConfig := configv1.RateLimitConfig_builder{
+			IsEnabled:         true,
+			RequestsPerSecond: 10,
+			Burst:             10,
+			Storage:           storageRedis,
+			Redis: busproto.RedisBus_builder{
+				Address: proto.String("localhost:6379"),
+			}.Build(),
+		}.Build()
+
+		serviceInfo := &tool.ServiceInfo{
+			Name: "test-service",
+			Config: configv1.UpstreamServiceConfig_builder{
+				RateLimit: rlConfig,
+			}.Build(),
+		}
+		mockToolManager.On("GetTool", "service.test-tool").Return(mockTool, true)
+		mockToolManager.On("GetServiceInfo", "service").Return(serviceInfo, true)
+
+		req := &tool.ExecutionRequest{
+			ToolName:   "service.test-tool",
+			ToolInputs: json.RawMessage(`{}`),
+		}
+		ctx := tool.NewContextWithTool(context.Background(), mockTool)
+
+		// Mock Redis calls
+		s := redis.NewScript(middleware.RedisRateLimitScript)
+		mockRedis.ExpectEvalSha(
+			s.Hash(),
+			[]string{"ratelimit:service:service"},
+			10.0,
+			10,
+			fixedTime.UnixMicro(),
+			1,
+		).SetErr(errors.New("redis connection failed"))
+
+		nextCalled := false
+		next := func(_ context.Context, _ *tool.ExecutionRequest) (any, error) {
+			nextCalled = true
+			return successResult, nil
+		}
+
+		result, err := rlMiddleware.Execute(ctx, req, next)
+		assert.Error(t, err)
+		assert.Contains(t, err.Error(), "rate limit check failed")
+		assert.Nil(t, result)
+		assert.False(t, nextCalled)
 		assert.NoError(t, mockRedis.ExpectationsWereMet())
 	})
 }
