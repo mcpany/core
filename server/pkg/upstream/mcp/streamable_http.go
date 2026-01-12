@@ -5,11 +5,9 @@
 package mcp
 
 import (
-	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
-	"io"
 	"net/http"
 	"os"
 	"os/exec"
@@ -332,7 +330,7 @@ func (c *mcpConnection) withMCPClientSession(ctx context.Context, f func(cs Clie
 		cs, err = c.client.Connect(ctx, transport, nil)
 	}
 	if err != nil {
-		return fmt.Errorf("failed to connect to MCP service: %w", err)
+		return fmt.Errorf("failed to connect to MCP server: %w", err)
 	}
 	defer func() {
 		// Unregister session if registry is present
@@ -451,9 +449,7 @@ func (u *Upstream) createAndRegisterMCPItemsFromStdio(
 		useSudo = u.globalSettings.GetUseSudoForDocker()
 	}
 
-	// Capture stderr to improve error reporting on connection failure
-	var stderr bytes.Buffer
-	transport, err := createStdioTransport(ctx, stdio, useSudo, &stderr)
+	transport, err := createStdioTransport(ctx, stdio, useSudo)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -470,17 +466,6 @@ func (u *Upstream) createAndRegisterMCPItemsFromStdio(
 		cs, err = mcpSdkClient.Connect(ctx, transport, nil)
 	}
 	if err != nil {
-		// Close the transport explicitly to ensure the process is terminated
-		// before we read from the stderr buffer. This avoids data races.
-		if closer, ok := transport.(io.Closer); ok {
-			_ = closer.Close()
-		}
-
-		// Enhance error with stderr output if available
-		stderrStr := stderr.String()
-		if stderrStr != "" {
-			return nil, nil, fmt.Errorf("failed to connect to MCP service: %w. Stderr: %s", err, stderrStr)
-		}
 		return nil, nil, fmt.Errorf("failed to connect to MCP service: %w", err)
 	}
 	defer func() { _ = cs.Close() }()
@@ -517,7 +502,7 @@ func (u *Upstream) createAndRegisterMCPItemsFromStdio(
 	return u.processMCPItems(ctx, serviceID, listToolsResult, toolClient, promptConnection, cs, toolManager, promptManager, resourceManager, serviceConfig)
 }
 
-func createStdioTransport(ctx context.Context, stdio *configv1.McpStdioConnection, useSudo bool, stderr io.Writer) (mcp.Transport, error) {
+func createStdioTransport(ctx context.Context, stdio *configv1.McpStdioConnection, useSudo bool) (mcp.Transport, error) {
 	image := stdio.GetContainerImage()
 	if image != "" {
 		if util.IsDockerSocketAccessible() {
@@ -530,9 +515,6 @@ func createStdioTransport(ctx context.Context, stdio *configv1.McpStdioConnectio
 	cmd, err := buildCommandFromStdioConfig(ctx, stdio, useSudo)
 	if err != nil {
 		return nil, fmt.Errorf("failed to build command: %w", err)
-	}
-	if stderr != nil {
-		cmd.Stderr = stderr
 	}
 	return &mcp.CommandTransport{
 		Command: cmd,

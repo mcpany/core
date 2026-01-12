@@ -227,19 +227,8 @@ func FindFreePort(t *testing.T) int {
 	t.Helper()
 	addr, err := net.ResolveTCPAddr("tcp", "127.0.0.1:0")
 	require.NoError(t, err)
-
-	var l *net.TCPListener
-	// Retry loop for ListenTCP
-	for i := 0; i < 20; i++ {
-		l, err = net.ListenTCP("tcp", addr)
-		if err == nil {
-			break
-		}
-		t.Logf("FindFreePort: attempt %d failed: %v", i+1, err)
-		time.Sleep(100 * time.Millisecond)
-	}
-	require.NoError(t, err, "failed to find free port after retries")
-
+	l, err := net.ListenTCP("tcp", addr)
+	require.NoError(t, err)
 	defer func() {
 		err := l.Close()
 		if err != nil {
@@ -422,27 +411,18 @@ func (mp *ManagedProcess) WaitForText(t *testing.T, text string, timeout time.Du
 	}, timeout, RetryInterval, "Text '%s' not found in stdout for process '%s' in time.\nStdout: %s\nStderr: %s", text, mp.label, mp.StdoutString(), mp.StderrString())
 }
 
-// WaitForTCPPortE waits for a TCP port to become open and accepting connections, returning an error on timeout.
-func WaitForTCPPortE(t *testing.T, port int, timeout time.Duration) error {
-	t.Helper()
-	deadline := time.Now().Add(timeout)
-	for time.Now().Before(deadline) {
-		d := net.Dialer{Timeout: 100 * time.Millisecond}
-		conn, err := d.DialContext(context.Background(), "tcp", fmt.Sprintf("127.0.0.1:%d", port))
-		if err == nil {
-			_ = conn.Close()
-			return nil
-		}
-		time.Sleep(250 * time.Millisecond)
-	}
-	return fmt.Errorf("timeout waiting for port %d", port)
-}
-
 // WaitForTCPPort waits for a TCP port to become open and accepting connections.
 func WaitForTCPPort(t *testing.T, port int, timeout time.Duration) {
 	t.Helper()
-	err := WaitForTCPPortE(t, port, timeout)
-	require.NoError(t, err, "Port %d did not become available in time", port)
+	require.Eventually(t, func() bool {
+		d := net.Dialer{Timeout: 100 * time.Millisecond}
+		conn, err := d.DialContext(context.Background(), "tcp", fmt.Sprintf("127.0.0.1:%d", port))
+		if err != nil {
+			return false // Port is not open yet
+		}
+		_ = conn.Close()
+		return true // Port is open
+	}, timeout, 250*time.Millisecond, "Port %d did not become available in time", port)
 }
 
 // WaitForGRPCReady waits for a gRPC server to become ready by attempting to connect.
