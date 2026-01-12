@@ -84,7 +84,7 @@ func TestToolMetricsMiddleware_Execute(t *testing.T) {
 		_, err := middleware.Execute(ctx, req, next)
 		require.NoError(t, err)
 
-		checkMetric(t, toolName, "tool_execution_output_bytes", 6, "histogram_sum")
+		checkMetric(t, toolName, "mcpany_tools_call_output_bytes", 6, "histogram_sum")
 	})
 
 	t.Run("ImageContent", func(t *testing.T) {
@@ -106,7 +106,7 @@ func TestToolMetricsMiddleware_Execute(t *testing.T) {
 		_, err := middleware.Execute(context.Background(), req, next)
 		require.NoError(t, err)
 
-		checkMetric(t, toolName, "tool_execution_output_bytes", 10, "histogram_sum")
+		checkMetric(t, toolName, "mcpany_tools_call_output_bytes", 10, "histogram_sum")
 	})
 
 	t.Run("EmbeddedResource", func(t *testing.T) {
@@ -130,7 +130,7 @@ func TestToolMetricsMiddleware_Execute(t *testing.T) {
 		_, err := middleware.Execute(context.Background(), req, next)
 		require.NoError(t, err)
 
-		checkMetric(t, toolName, "tool_execution_output_bytes", 13, "histogram_sum")
+		checkMetric(t, toolName, "mcpany_tools_call_output_bytes", 13, "histogram_sum")
 	})
 
 	t.Run("String Result", func(t *testing.T) {
@@ -142,7 +142,7 @@ func TestToolMetricsMiddleware_Execute(t *testing.T) {
 		_, err := middleware.Execute(context.Background(), req, next)
 		require.NoError(t, err)
 
-		checkMetric(t, toolName, "tool_execution_output_bytes", 11, "histogram_sum")
+		checkMetric(t, toolName, "mcpany_tools_call_output_bytes", 11, "histogram_sum")
 	})
 
 	t.Run("Byte Slice Result", func(t *testing.T) {
@@ -154,7 +154,7 @@ func TestToolMetricsMiddleware_Execute(t *testing.T) {
 		_, err := middleware.Execute(context.Background(), req, next)
 		require.NoError(t, err)
 
-		checkMetric(t, toolName, "tool_execution_output_bytes", 10, "histogram_sum")
+		checkMetric(t, toolName, "mcpany_tools_call_output_bytes", 10, "histogram_sum")
 	})
 
 	t.Run("JSON Fallback", func(t *testing.T) {
@@ -167,7 +167,7 @@ func TestToolMetricsMiddleware_Execute(t *testing.T) {
 		require.NoError(t, err)
 
 		// json: {"key":"value"} = 15 bytes
-		checkMetric(t, toolName, "tool_execution_output_bytes", 15, "histogram_sum")
+		checkMetric(t, toolName, "mcpany_tools_call_output_bytes", 15, "histogram_sum")
 	})
 
 	t.Run("TokenUsage", func(t *testing.T) {
@@ -205,8 +205,8 @@ func TestToolMetricsMiddleware_Execute(t *testing.T) {
 		// Input: `"hello world"`. `len` = 13. `13 / 4 = 3`. Correct.
 		// Output: `"response value"`. `len` = 14. `14 / 4 = 3`. Correct.
 
-		checkMetric(t, toolName, "tool_execution_tokens_total", 3, "counter")
-		checkMetric(t, toolName, "tool_execution_tokens_total", 3, "counter")
+		checkMetric(t, toolName, "mcpany_tools_call_tokens_total", 3, "counter")
+		checkMetric(t, toolName, "mcpany_tools_call_tokens_total", 3, "counter")
 	})
 
 	t.Run("Concurrency", func(t *testing.T) {
@@ -231,13 +231,13 @@ func TestToolMetricsMiddleware_Execute(t *testing.T) {
 
 		<-startCh
 		// Now it is in flight.
-		checkMetric(t, toolName, "tool_executions_in_flight", 1, "gauge")
+		checkMetric(t, toolName, "mcpany_tools_call_in_flight", 1, "gauge")
 
 		close(doneCh)
 		// Wait for goroutine to finish?
 		time.Sleep(10 * time.Millisecond) // Flaky but simple
 
-		checkMetric(t, toolName, "tool_executions_in_flight", 0, "gauge")
+		checkMetric(t, toolName, "mcpany_tools_call_in_flight", 0, "gauge")
 	})
 
 	t.Run("Nil Result", func(t *testing.T) {
@@ -249,7 +249,7 @@ func TestToolMetricsMiddleware_Execute(t *testing.T) {
 		_, err := middleware.Execute(context.Background(), req, next)
 		require.NoError(t, err)
 
-		checkMetric(t, toolName, "tool_execution_output_bytes", 0, "histogram_sum")
+		checkMetric(t, toolName, "mcpany_tools_call_output_bytes", 0, "histogram_sum")
 	})
 
 	t.Run("ContextCanceled Error", func(t *testing.T) {
@@ -278,7 +278,7 @@ func TestToolMetricsMiddleware_Execute(t *testing.T) {
 
 		foundError := false
 		for _, mf := range metrics {
-			if mf.GetName() == "tool_executions_total" {
+			if mf.GetName() == "mcpany_tools_call_total" {
 				for _, m := range mf.GetMetric() {
 					toolLabel := ""
 					errorTypeLabel := ""
@@ -297,7 +297,7 @@ func TestToolMetricsMiddleware_Execute(t *testing.T) {
 				}
 			}
 		}
-		assert.True(t, foundError, "tool_executions_total with error_type=context_canceled not found")
+		assert.True(t, foundError, "mcpany_tools_call_total with error_type=context_canceled not found")
 	})
 }
 
