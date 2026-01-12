@@ -183,7 +183,6 @@ func TestRedactJSON_FalsePositives(t *testing.T) {
 		{"author", `{"author": "John Doe"}`, false},        // "auth" + "or" (lowercase continuation)
 		{"authority", `{"authority": "admin"}`, false},     // "auth" + "ority"
 		{"authentic", `{"authentic": "true"}`, false},      // "auth" + "entic"
-		{"tokens", `{"tokens": ["abc"]}`, false},           // "token" + "s" (lowercase continuation)
         {"AUTHORITY", `{"AUTHORITY": "public_info"}`, false}, // "AUTH" + "ORITY" (uppercase continuation)
 
 		// True positives (Substring matching logic)
@@ -193,6 +192,7 @@ func TestRedactJSON_FalsePositives(t *testing.T) {
 		{"end of string", `{"user_auth": "123"}`, true},    // "auth" at end
 		{"API_KEY", `{"API_KEY": "123"}`, true},            // exact upper
 		{"api_key_val", `{"api_key_val": "123"}`, true},    // "api_key" + "_"
+		{"plural_s", `{"tokens": "123"}`, true},            // "token" + "s" (plural exception)
 	}
 
 	for _, tt := range tests {

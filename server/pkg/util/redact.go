@@ -250,7 +250,19 @@ func checkPotentialMatch(input []byte, matchStart int, startChar byte, validateK
 			if endIdx < len(input) {
 				next := input[endIdx]
 				if next >= 'a' && next <= 'z' {
-					continue
+					// Exception for plural 's'
+					if next == 's' {
+						// Check if the character AFTER 's' is a lowercase letter.
+						// If it is, then it's a longer word, so we skip it.
+						if endIdx+1 < len(input) {
+							nextNext := input[endIdx+1]
+							if nextNext >= 'a' && nextNext <= 'z' {
+								continue
+							}
+						}
+					} else {
+						continue
+					}
 				}
 				// Special handling for uppercase keys (e.g. "AUTH" in "AUTHORITY")
 				// If the matched key was uppercase, and the next char is uppercase, it's a continuation.
