@@ -5,6 +5,7 @@ package util
 
 import (
 	"testing"
+	"unsafe"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -95,6 +96,11 @@ func TestIsNil(t *testing.T) {
 			name:     "array value (not nil)",
 			input:    [3]int{1, 2, 3},
 			expected: false,
+		},
+		{
+			name:     "nil unsafe.Pointer",
+			input:    (unsafe.Pointer)(nil),
+			expected: true,
 		},
 	}
 
