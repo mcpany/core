@@ -1377,7 +1377,7 @@ func (a *Application) runServerMode(
 	// Apply Global Rate Limit: 20 RPS with a burst of 50.
 	// This helps prevent basic DoS attacks on all HTTP endpoints, including /upload.
 	// We enable trustProxy if MCPANY_TRUST_PROXY is set, to handle load balancers correctly.
-	trustProxy := os.Getenv("MCPANY_TRUST_PROXY") == "true"
+	trustProxy := os.Getenv("MCPANY_TRUST_PROXY") == util.TrueStr
 	rateLimiter := middleware.NewHTTPRateLimitMiddleware(20, 50, middleware.WithTrustProxy(trustProxy))
 
 	// Apply CORS Middleware
