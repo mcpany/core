@@ -58,8 +58,9 @@ type Pool[T ClosableClient] interface {
 }
 
 type poolItem[T any] struct {
-	client T
-	retry  bool
+	client  T
+	retry   bool
+	putTime time.Time
 }
 
 // poolImpl is the internal implementation of the Pool interface. It manages a
@@ -72,6 +73,7 @@ type poolImpl[T ClosableClient] struct {
 	mu                 sync.RWMutex
 	closed             atomic.Bool
 	disableHealthCheck bool
+	idleTimeout        time.Duration
 }
 
 // New creates a new connection pool with the specified factory and size
@@ -85,14 +87,14 @@ type poolImpl[T ClosableClient] struct {
 //   - factory: A function that creates new clients.
 //   - minSize: The initial number of clients to create.
 //   - maxSize: The maximum number of clients the pool can hold.
-//   - idleTimeout: (Not yet used) Intended for future implementation of idle
-//     connection handling.
+//   - idleTimeout: The duration after which an idle client is discarded.
+//     If 0, idle timeout is disabled.
 //
 // Returns a new `Pool` instance or an error if the configuration is invalid.
 func New[T ClosableClient](
 	factory func(context.Context) (T, error),
 	minSize, maxSize int,
-	_ time.Duration, // idleTimeout is not used yet
+	idleTimeout time.Duration,
 	disableHealthCheck bool,
 ) (Pool[T], error) {
 	if maxSize <= 0 {
@@ -107,6 +109,7 @@ func New[T ClosableClient](
 		factory:            factory,
 		sem:                semaphore.NewWeighted(int64(maxSize)),
 		disableHealthCheck: disableHealthCheck,
+		idleTimeout:        idleTimeout,
 	}
 
 	// If health checks are disabled, we can pre-fill the pool without checks.
@@ -124,7 +127,7 @@ func New[T ClosableClient](
 				_ = p.Close()
 				return nil, fmt.Errorf("factory returned nil client")
 			}
-			p.clients <- poolItem[T]{client: client}
+			p.clients <- poolItem[T]{client: client, putTime: time.Now()}
 		}
 		if !p.sem.TryAcquire(int64(minSize)) {
 			return nil, fmt.Errorf("failed to acquire permits for initial clients")
@@ -146,7 +149,7 @@ func New[T ClosableClient](
 			_ = p.Close()
 			return nil, fmt.Errorf("factory returned nil client")
 		}
-		p.clients <- poolItem[T]{client: client}
+		p.clients <- poolItem[T]{client: client, putTime: time.Now()}
 	}
 	// Take permits for the initial clients
 	if !p.sem.TryAcquire(int64(minSize)) {
@@ -187,6 +190,29 @@ func (p *poolImpl[T]) Get(ctx context.Context) (T, error) {
 		return zero, ErrPoolClosed
 	}
 
+	checkClient := func(item poolItem[T]) (T, bool) {
+		// Check idle timeout
+		if p.idleTimeout > 0 && time.Since(item.putTime) > p.idleTimeout {
+			// Client expired, close it and retry
+			_ = lo.Try(func() error {
+				return item.client.Close()
+			})
+			p.sem.Release(1)
+			return zero, false
+		}
+
+		client := item.client
+
+		if p.disableHealthCheck || client.IsHealthy(ctx) {
+			return client, true
+		}
+		_ = lo.Try(func() error {
+			return client.Close()
+		})
+		p.sem.Release(1)
+		return zero, false
+	}
+
 	// Loop to ensure we return a healthy client
 	for {
 		// First, try a non-blocking retrieval of an existing client.
@@ -198,15 +224,10 @@ func (p *poolImpl[T]) Get(ctx context.Context) (T, error) {
 			if item.retry {
 				continue
 			}
-			client := item.client
 
-			if p.disableHealthCheck || client.IsHealthy(ctx) {
+			if client, ok := checkClient(item); ok {
 				return client, nil
 			}
-			_ = lo.Try(func() error {
-				return client.Close()
-			})
-			p.sem.Release(1)
 			continue // Retry.
 		default:
 			// Channel is empty, proceed.
@@ -226,15 +247,10 @@ func (p *poolImpl[T]) Get(ctx context.Context) (T, error) {
 				if item.retry {
 					continue
 				}
-				client := item.client
 
-				if p.disableHealthCheck || client.IsHealthy(ctx) {
+				if client, ok := checkClient(item); ok {
 					return client, nil
 				}
-				_ = lo.Try(func() error {
-					return client.Close()
-				})
-				p.sem.Release(1)
 				continue // Retry.
 			default:
 				// No client, so create a new one.
@@ -286,15 +302,10 @@ func (p *poolImpl[T]) Get(ctx context.Context) (T, error) {
 			if item.retry {
 				continue
 			}
-			client := item.client
 
-			if p.disableHealthCheck || client.IsHealthy(ctx) {
+			if client, ok := checkClient(item); ok {
 				return client, nil
 			}
-			_ = lo.Try(func() error {
-				return client.Close()
-			})
-			p.sem.Release(1)
 			continue // Retry.
 		case <-ctx.Done():
 			return zero, ctx.Err()
@@ -341,7 +352,7 @@ func (p *poolImpl[T]) Put(client T) {
 	}
 
 	select {
-	case p.clients <- poolItem[T]{client: client}:
+	case p.clients <- poolItem[T]{client: client, putTime: time.Now()}:
 		p.mu.RUnlock()
 	default:
 		// Idle pool is full, discard client. The permit for this client is
