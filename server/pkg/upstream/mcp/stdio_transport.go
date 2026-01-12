@@ -1,0 +1,229 @@
+// Copyright 2025 Author(s) of MCP Any
+// SPDX-License-Identifier: Apache-2.0
+
+package mcp
+
+import (
+	"context"
+	"encoding/json"
+	"fmt"
+	"io"
+	"log/slog"
+	"os/exec"
+	"sync"
+
+	"github.com/mcpany/core/server/pkg/logging"
+	"github.com/modelcontextprotocol/go-sdk/jsonrpc"
+	"github.com/modelcontextprotocol/go-sdk/mcp"
+)
+
+// StdioTransport implements mcp.Transport for a local command,
+// capturing stderr to provide better error messages on failure.
+type StdioTransport struct {
+	Command *exec.Cmd
+}
+
+// Connect starts the command and returns a connection.
+func (t *StdioTransport) Connect(ctx context.Context) (mcp.Connection, error) {
+	log := logging.GetLogger()
+
+	stdin, err := t.Command.StdinPipe()
+	if err != nil {
+		return nil, fmt.Errorf("failed to get stdin pipe: %w", err)
+	}
+
+	stdout, err := t.Command.StdoutPipe()
+	if err != nil {
+		return nil, fmt.Errorf("failed to get stdout pipe: %w", err)
+	}
+
+	stderr, err := t.Command.StderrPipe()
+	if err != nil {
+		return nil, fmt.Errorf("failed to get stderr pipe: %w", err)
+	}
+
+	// Capture stderr
+	stderrCapture := &tailBuffer{limit: 4096}
+	// We also want to log stderr to the application logs
+	// Note: slog.LevelError is imported from "log/slog"
+	logWriter := &slogWriter{log: log, level: slog.LevelError}
+
+	multiStderr := io.MultiWriter(stderrCapture, logWriter)
+
+	go func() {
+		_, _ = io.Copy(multiStderr, stderr)
+	}()
+
+	if err := t.Command.Start(); err != nil {
+		return nil, fmt.Errorf("failed to start command: %w", err)
+	}
+
+	return &stdioConn{
+		stdin:         stdin,
+		stdout:        stdout,
+		cmd:           t.Command,
+		stderrCapture: stderrCapture,
+		decoder:       json.NewDecoder(stdout),
+		encoder:       json.NewEncoder(stdin),
+	}, nil
+}
+
+type stdioConn struct {
+	stdin         io.WriteCloser
+	stdout        io.ReadCloser
+	cmd           *exec.Cmd
+	stderrCapture *tailBuffer
+	decoder       *json.Decoder
+	encoder       *json.Encoder
+	mutex         sync.Mutex
+	closed        bool
+}
+
+func (c *stdioConn) Read(ctx context.Context) (jsonrpc.Message, error) {
+	var raw json.RawMessage
+	if err := c.decoder.Decode(&raw); err != nil {
+		if err == io.EOF {
+			// Check if process has exited
+			if exitErr := c.checkExit(); exitErr != nil {
+				// Process exited with error
+				stderr := c.stderrCapture.String()
+				if stderr != "" {
+					return nil, fmt.Errorf("process exited with error: %v. Stderr: %s", exitErr, stderr)
+				}
+				return nil, fmt.Errorf("process exited with error: %v", exitErr)
+			}
+			// Normal EOF?
+			stderr := c.stderrCapture.String()
+			if stderr != "" {
+				return nil, fmt.Errorf("connection closed. Stderr: %s", stderr)
+			}
+		}
+		return nil, err
+	}
+
+	var header struct {
+		Method string `json:"method"`
+	}
+	if err := json.Unmarshal(raw, &header); err != nil {
+		return nil, fmt.Errorf("failed to unmarshal message header: %w", err)
+	}
+
+	var msg jsonrpc.Message
+	isRequest := header.Method != ""
+
+	if isRequest {
+		req := &jsonrpc.Request{}
+		if err := json.Unmarshal(raw, req); err != nil {
+			// Handle ID unmarshal issue if necessary (copied from docker_transport)
+			type requestAnyID struct {
+				Method string          `json:"method"`
+				Params json.RawMessage `json:"params,omitempty"`
+				ID     any             `json:"id,omitempty"`
+			}
+			var rAny requestAnyID
+			if err2 := json.Unmarshal(raw, &rAny); err2 != nil {
+				return nil, fmt.Errorf("failed to unmarshal request: %w (and %v)", err2, err)
+			}
+			req = &jsonrpc.Request{
+				Method: rAny.Method,
+				Params: rAny.Params,
+			}
+			setUnexportedID(&req.ID, rAny.ID)
+			msg = req
+		} else {
+			msg = req
+		}
+	} else {
+		resp := &jsonrpc.Response{}
+		if err := json.Unmarshal(raw, resp); err != nil {
+			type responseAnyID struct {
+				Result json.RawMessage `json:"result,omitempty"`
+				Error  *transportError `json:"error,omitempty"`
+				ID     any             `json:"id,omitempty"`
+			}
+			var rAny responseAnyID
+			if err2 := json.Unmarshal(raw, &rAny); err2 != nil {
+				return nil, fmt.Errorf("failed to unmarshal response: %w (and %v)", err2, err)
+			}
+			resp = &jsonrpc.Response{
+				Result: rAny.Result,
+			}
+			if rAny.Error != nil {
+				resp.Error = rAny.Error
+			}
+			setUnexportedID(&resp.ID, rAny.ID)
+			msg = resp
+		} else {
+			msg = resp
+		}
+	}
+
+	return msg, nil
+}
+
+func (c *stdioConn) Write(ctx context.Context, msg jsonrpc.Message) error {
+	var method string
+	var params any
+	var result any
+	var errorObj any
+	var id any
+
+	if req, ok := msg.(*jsonrpc.Request); ok {
+		method = req.Method
+		params = req.Params
+		id = fixID(req.ID)
+	} else if resp, ok := msg.(*jsonrpc.Response); ok {
+		result = resp.Result
+		errorObj = resp.Error
+		id = fixID(resp.ID)
+	}
+
+	wire := map[string]any{
+		"jsonrpc": "2.0",
+	}
+	if method != "" {
+		wire["method"] = method
+	}
+	if params != nil {
+		wire["params"] = params
+	}
+	if id != nil {
+		wire["id"] = id
+	}
+	if result != nil {
+		wire["result"] = result
+	}
+	if errorObj != nil {
+		wire["error"] = errorObj
+	}
+
+	return c.encoder.Encode(wire)
+}
+
+func (c *stdioConn) Close() error {
+	c.mutex.Lock()
+	defer c.mutex.Unlock()
+	if c.closed {
+		return nil
+	}
+	c.closed = true
+	_ = c.stdin.Close()
+	_ = c.stdout.Close()
+	if c.cmd.Process != nil {
+		_ = c.cmd.Process.Kill()
+	}
+	return nil
+}
+
+func (c *stdioConn) SessionID() string {
+	return "stdio-session"
+}
+
+func (c *stdioConn) checkExit() error {
+	// Wait for the command to finish.
+	// If it's already finished, Wait will return the error.
+	// However, Wait can only be called once.
+	// Since we are in Read() loop, we might have multiple reads?
+	// But if we hit EOF, the stream is done, so calling Wait is appropriate.
+	return c.cmd.Wait()
+}
