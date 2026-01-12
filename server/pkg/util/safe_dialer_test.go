@@ -15,7 +15,7 @@ import (
 )
 
 func TestSafeDialer(t *testing.T) {
-	t.Parallel()
+	// t.Parallel()
 	t.Run("Default Strict", func(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 		defer cancel()
