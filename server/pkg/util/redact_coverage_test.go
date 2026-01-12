@@ -1,3 +1,6 @@
+// Copyright 2025 Author(s) of MCP Any
+// SPDX-License-Identifier: Apache-2.0
+
 package util
 
 import (
@@ -20,7 +23,9 @@ func TestScanForSensitiveKeys_LongInput(t *testing.T) {
 	assert.True(t, scanForSensitiveKeys([]byte(longSensitive), false))
 
 	// Case 3: Long input with sensitive key in the middle
-	longSensitiveMid := strings.Repeat("a", 100) + "password" + strings.Repeat("b", 100)
+    // Note: Use '.' as filler after password to ensure boundary check passes.
+    // If we use 'b', it looks like "passwordbbbb..." which is treated as a different word.
+	longSensitiveMid := strings.Repeat("a", 100) + "password" + strings.Repeat(".", 100)
 	assert.True(t, scanForSensitiveKeys([]byte(longSensitiveMid), false))
 
     // Case 4: Long input with sensitive key that requires case folding match
