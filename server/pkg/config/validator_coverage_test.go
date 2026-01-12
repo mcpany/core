@@ -4,13 +4,22 @@
 package config
 
 import (
+	"os"
 	"testing"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
+	"github.com/mcpany/core/server/pkg/validation"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestValidateSecretValue_Coverage(t *testing.T) {
+	// Mock FileExists to pass existing tests
+	oldFileExists := validation.FileExists
+	defer func() { validation.FileExists = oldFileExists }()
+	validation.FileExists = func(path string) error {
+		return nil
+	}
+
 	tests := []struct {
 		name    string
 		secret  *configv1.SecretValue
@@ -83,7 +92,28 @@ func TestValidateSecretValue_Coverage(t *testing.T) {
 			},
 			wantErr: true,
 		},
+		{
+			name: "valid environment variable",
+			secret: &configv1.SecretValue{
+				Value: &configv1.SecretValue_EnvironmentVariable{
+					EnvironmentVariable: "PATH",
+				},
+			},
+			wantErr: false,
+		},
+		{
+			name: "invalid environment variable",
+			secret: &configv1.SecretValue{
+				Value: &configv1.SecretValue_EnvironmentVariable{
+					EnvironmentVariable: "NON_EXISTENT_ENV_VAR_12345",
+				},
+			},
+			wantErr: true,
+		},
 	}
+
+	// Ensure PATH exists
+	os.Setenv("PATH", "/bin")
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -98,6 +128,13 @@ func TestValidateSecretValue_Coverage(t *testing.T) {
 }
 
 func TestValidateSecretMap_Coverage(t *testing.T) {
+	// Mock FileExists to pass existing tests
+	oldFileExists := validation.FileExists
+	defer func() { validation.FileExists = oldFileExists }()
+	validation.FileExists = func(path string) error {
+		return nil
+	}
+
 	tests := []struct {
 		name    string
 		secrets map[string]*configv1.SecretValue

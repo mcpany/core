@@ -22,6 +22,23 @@ func strPtr(s string) *string {
 }
 
 func TestValidateSecretValue(t *testing.T) {
+	// Mock FileExists for this test
+	oldFileExists := validation.FileExists
+	defer func() { validation.FileExists = oldFileExists }()
+	validation.FileExists = func(path string) error {
+		if path == "secrets.txt" {
+			return nil
+		}
+		if path == "/etc/passwd" {
+			return nil // Exists but invalid path logic will catch it first
+		}
+		return os.ErrNotExist
+	}
+
+	// Mock Env vars
+	os.Setenv("TEST_ENV_VAR", "exists")
+	defer os.Unsetenv("TEST_ENV_VAR")
+
 	tests := []struct {
 		name      string
 		secret    *configv1.SecretValue
@@ -51,6 +68,35 @@ func TestValidateSecretValue(t *testing.T) {
 			},
 			expectErr: true,
 			errMsg:    "invalid secret file path",
+		},
+		{
+			name: "Missing file path",
+			secret: &configv1.SecretValue{
+				Value: &configv1.SecretValue_FilePath{
+					FilePath: "missing.txt",
+				},
+			},
+			expectErr: true,
+			errMsg:    "secret file \"missing.txt\" does not exist",
+		},
+		{
+			name: "Valid env var",
+			secret: &configv1.SecretValue{
+				Value: &configv1.SecretValue_EnvironmentVariable{
+					EnvironmentVariable: "TEST_ENV_VAR",
+				},
+			},
+			expectErr: false,
+		},
+		{
+			name: "Missing env var",
+			secret: &configv1.SecretValue{
+				Value: &configv1.SecretValue_EnvironmentVariable{
+					EnvironmentVariable: "MISSING_ENV_VAR",
+				},
+			},
+			expectErr: true,
+			errMsg:    "environment variable \"MISSING_ENV_VAR\" is not set",
 		},
 		{
 			name: "Valid remote content",
@@ -115,6 +161,13 @@ func TestValidateSecretValue(t *testing.T) {
 }
 
 func TestValidateSecretMap(t *testing.T) {
+	// Mock FileExists
+	oldFileExists := validation.FileExists
+	defer func() { validation.FileExists = oldFileExists }()
+	validation.FileExists = func(path string) error {
+		return nil
+	}
+
 	tests := []struct {
 		name      string
 		secrets   map[string]*configv1.SecretValue
@@ -253,6 +306,13 @@ func TestValidateMcpService_StdioConnection(t *testing.T) {
 	defer func() { osStat = oldOsStat }()
 	osStat = func(name string) (os.FileInfo, error) {
 		return &mockFileInfo{isDir: true}, nil // Assume exists and is directory
+	}
+
+	// Mock FileExists for secret validation
+	oldFileExists := validation.FileExists
+	defer func() { validation.FileExists = oldFileExists }()
+	validation.FileExists = func(path string) error {
+		return nil
 	}
 
 	// Focusing on stdio validation
@@ -465,6 +525,13 @@ func (m *mockFileInfo) IsDir() bool        { return m.isDir }
 func (m *mockFileInfo) Sys() any           { return nil }
 
 func TestValidateMcpService_BundleConnection(t *testing.T) {
+	// Mock FileExists for secret validation
+	oldFileExists := validation.FileExists
+	defer func() { validation.FileExists = oldFileExists }()
+	validation.FileExists = func(path string) error {
+		return nil
+	}
+
 	tests := []struct {
 		name      string
 		service   *configv1.McpUpstreamService
@@ -523,16 +590,6 @@ func TestValidateMcpService_BundleConnection(t *testing.T) {
 
 func TestValidateUpstreamAuthentication(t *testing.T) {
 	ctx := context.Background()
-	// Mock util.ResolveSecret if needed, or rely on defaults that might fail if not careful.
-	// Since util.ResolveSecret is not mocked here and likely reads files or envs, we need to be careful.
-	// However, if we pass a plain string to some auth methods (like BearerToken with direct value if supported by proto? No, it uses SecretValue usually? No, the proto has UpstreamBearerTokenAuth with `token` as SecretValue?
-	// checking `validateBearerTokenAuth` -> `util.ResolveSecret`.
-	// We might need to mock ResolveSecret or set up the environment.
-	// Since we can't easily mock ResolveSecret (it's a function in another package), we can test the validation logic structure.
-
-	// But wait, `validateUpstreamAuthentication` calls `util.ResolveSecret`.
-	// Let's stick to testing what we can without complex mocking of other packages unless we use a mock framework or interface.
-	// Luckily, `validateMtlsAuth` does NOT use `ResolveSecret` for paths, it uses `validation.IsSecurePath`.
 
 	t.Run("MTLS", func(t *testing.T) {
 		// Mock osStat

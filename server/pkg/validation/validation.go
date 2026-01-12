@@ -197,7 +197,7 @@ func ValidateHTTPServiceDefinition(def *configv1.HttpCallDefinition) error {
 }
 
 // FileExists checks if a file exists at the given path.
-func FileExists(path string) error {
+var FileExists = func(path string) error {
 	if _, err := os.Stat(path); os.IsNotExist(err) {
 		return err
 	}
