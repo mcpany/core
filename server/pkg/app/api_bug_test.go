@@ -21,6 +21,7 @@ func TestHandleProfiles_LargeBody(t *testing.T) {
 	largeBody := make([]byte, 2*1024*1024) // 2MB
 
 	req := httptest.NewRequest(http.MethodPost, "/profiles", bytes.NewReader(largeBody))
+	req.Header.Set("Content-Type", "application/json")
 	w := httptest.NewRecorder()
 
 	handler := app.handleProfiles(store)
@@ -55,6 +56,7 @@ func TestHandleProfileDetail_LargeBody(t *testing.T) {
 
 	largeBody := make([]byte, 2*1024*1024) // 2MB
 	req := httptest.NewRequest(http.MethodPut, "/profiles/test", bytes.NewReader(largeBody))
+	req.Header.Set("Content-Type", "application/json")
 	w := httptest.NewRecorder()
 
 	handler := app.handleProfileDetail(store)
@@ -71,6 +73,7 @@ func TestHandleSettings_LargeBody(t *testing.T) {
 
 	largeBody := make([]byte, 2*1024*1024) // 2MB
 	req := httptest.NewRequest(http.MethodPost, "/settings", bytes.NewReader(largeBody))
+	req.Header.Set("Content-Type", "application/json")
 	w := httptest.NewRecorder()
 
 	handler := app.handleSettings(store)
@@ -87,6 +90,7 @@ func TestHandleCollections_LargeBody(t *testing.T) {
 
 	largeBody := make([]byte, 2*1024*1024) // 2MB
 	req := httptest.NewRequest(http.MethodPost, "/collections", bytes.NewReader(largeBody))
+	req.Header.Set("Content-Type", "application/json")
 	w := httptest.NewRecorder()
 
 	handler := app.handleCollections(store)
@@ -103,6 +107,7 @@ func TestHandleCollectionDetail_LargeBody(t *testing.T) {
 
 	largeBody := make([]byte, 2*1024*1024) // 2MB
 	req := httptest.NewRequest(http.MethodPut, "/collections/test", bytes.NewReader(largeBody))
+	req.Header.Set("Content-Type", "application/json")
 	w := httptest.NewRecorder()
 
 	handler := app.handleCollectionDetail(store)
@@ -119,6 +124,7 @@ func TestHandleSecrets_LargeBody(t *testing.T) {
 
 	largeBody := make([]byte, 2*1024*1024) // 2MB
 	req := httptest.NewRequest(http.MethodPost, "/secrets", bytes.NewReader(largeBody))
+	req.Header.Set("Content-Type", "application/json")
 	w := httptest.NewRecorder()
 
 	handler := app.handleSecrets(store)
@@ -144,6 +150,7 @@ func TestHandleProfiles_ReadError(t *testing.T) {
 	store := memory.NewStore()
 
 	req := httptest.NewRequest(http.MethodPost, "/profiles", &errorReader{})
+	req.Header.Set("Content-Type", "application/json")
 	w := httptest.NewRecorder()
 
 	handler := app.handleProfiles(store)

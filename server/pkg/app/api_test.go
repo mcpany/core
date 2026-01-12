@@ -103,6 +103,7 @@ func TestCreateAPIHandler(t *testing.T) {
 
 		req, err := http.NewRequest(http.MethodPut, ts.URL+"/services/test-service", bytes.NewReader(bodyBytes))
 		require.NoError(t, err)
+		req.Header.Set("Content-Type", "application/json")
 
 		resp, err := http.DefaultClient.Do(req)
 		require.NoError(t, err)
@@ -164,6 +165,7 @@ func TestCreateAPIHandler(t *testing.T) {
 	t.Run("UpdateService_InvalidJSON", func(t *testing.T) {
 		resp, err := http.NewRequest(http.MethodPut, ts.URL+"/services/test-service", bytes.NewReader([]byte("{invalid-json")))
 		require.NoError(t, err)
+		resp.Header.Set("Content-Type", "application/json")
 
 		w := httptest.NewRecorder()
 		handler.ServeHTTP(w, resp)
@@ -199,5 +201,20 @@ func TestCreateAPIHandler(t *testing.T) {
 		// Let's assume it succeeds for now, and check if we can force failure.
 		// If we can't force failure, we can't test the error path in createAPIHandler.
 		assert.Equal(t, http.StatusCreated, resp.StatusCode)
+	})
+
+	t.Run("CreateService_MissingContentType", func(t *testing.T) {
+		body := map[string]interface{}{
+			"name": "test-service-ct",
+			"id":   "test-id-ct",
+		}
+		bodyBytes, _ := json.Marshal(body)
+
+		// Send with text/plain (Simulating CSRF attempt)
+		resp, err := http.Post(ts.URL+"/services", "text/plain", bytes.NewReader(bodyBytes))
+		require.NoError(t, err)
+		defer resp.Body.Close()
+
+		assert.Equal(t, http.StatusUnsupportedMediaType, resp.StatusCode)
 	})
 }

@@ -26,6 +26,14 @@ import (
 // readBodyWithLimit reads the request body with a limit and returns the bytes.
 // If the body exceeds the limit, it writes an error response and returns nil, error.
 func readBodyWithLimit(w http.ResponseWriter, r *http.Request, limit int64) ([]byte, error) {
+	// Enforce Content-Type: application/json to prevent CSRF via simple requests (text/plain).
+	// This forces a CORS preflight for cross-origin requests.
+	ct := r.Header.Get("Content-Type")
+	if !strings.HasPrefix(ct, "application/json") {
+		http.Error(w, "Content-Type must be application/json", http.StatusUnsupportedMediaType)
+		return nil, fmt.Errorf("invalid content type: %s", ct)
+	}
+
 	r.Body = http.MaxBytesReader(w, r.Body, limit)
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
@@ -814,6 +822,13 @@ func (a *Application) handleCollectionDetail(store storage.Storage) http.Handler
 func (a *Application) handleCollectionApply(w http.ResponseWriter, r *http.Request, name string, store storage.Storage) {
 	if r.Method != http.MethodPost {
 		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	// Enforce Content-Type: application/json to prevent CSRF via simple requests.
+	ct := r.Header.Get("Content-Type")
+	if !strings.HasPrefix(ct, "application/json") {
+		http.Error(w, "Content-Type must be application/json", http.StatusUnsupportedMediaType)
 		return
 	}
 

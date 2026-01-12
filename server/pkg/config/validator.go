@@ -11,6 +11,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"regexp"
+	"strings"
 	"time"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
@@ -452,6 +453,10 @@ func validateMcpService(mcpService *configv1.McpUpstreamService) error {
 			return fmt.Errorf("mcp service with stdio_connection has empty command")
 		}
 
+		if err := validateSetupCommands(stdioConn.GetSetupCommands()); err != nil {
+			return fmt.Errorf("mcp service with stdio_connection has insecure setup_commands: %w", err)
+		}
+
 		// If running in Docker (container_image is set), we don't enforce host path/command restrictions
 		if stdioConn.GetContainerImage() == "" {
 			if err := validateCommandExists(stdioConn.GetCommand()); err != nil {
@@ -492,6 +497,32 @@ func validateMcpService(mcpService *configv1.McpUpstreamService) error {
 		}
 		if err := validateSchema(call.GetOutputSchema()); err != nil {
 			return fmt.Errorf("mcp call %q output_schema error: %w", name, err)
+		}
+	}
+	return nil
+}
+
+func validateSetupCommands(commands []string) error {
+	for _, cmd := range commands {
+		// Check for dangerous shell characters that allow chaining or subshells.
+		// We allow users to provide multiple commands in the list to achieve chaining (&&).
+		// We disallow:
+		// & : Background or Chaining (&&)
+		// ; : Chaining
+		// | : Piping
+		// ` : Command substitution
+		// $ : Variable expansion (potentially dangerous if unquoted, but also useful).
+		//     However, $( is definitely command substitution.
+		// > : Redirection
+		// < : Redirection
+
+		// We will use a stricter subset for now: & ; | `
+		if strings.ContainsAny(cmd, "&;|`") {
+			return fmt.Errorf("setup command %q contains restricted characters (& ; | `). Please use separate list items for chaining commands.", cmd)
+		}
+		// Check for $()
+		if strings.Contains(cmd, "$(") {
+			return fmt.Errorf("setup command %q contains restricted sequence $(). Command substitution is not allowed.", cmd)
 		}
 	}
 	return nil

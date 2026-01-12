@@ -39,6 +39,7 @@ func TestAPIHandler_SecurityValidation(t *testing.T) {
 		body, _ := protojson.Marshal(svc)
 
 		req := httptest.NewRequest("POST", "/services", bytes.NewReader(body))
+		req.Header.Set("Content-Type", "application/json")
 		w := httptest.NewRecorder()
 
 		handler.ServeHTTP(w, req)
@@ -65,6 +66,7 @@ func TestAPIHandler_SecurityValidation(t *testing.T) {
 		body, _ := protojson.Marshal(svc)
 
 		req := httptest.NewRequest("POST", "/services", bytes.NewReader(body))
+		req.Header.Set("Content-Type", "application/json")
 		w := httptest.NewRecorder()
 
 		handler.ServeHTTP(w, req)

@@ -52,6 +52,7 @@ func TestHandleServices(t *testing.T) {
 	opts := protojson.MarshalOptions{UseProtoNames: true}
 	body, _ := opts.Marshal(svc)
 	req := httptest.NewRequest(http.MethodPost, "/services", bytes.NewReader(body))
+	req.Header.Set("Content-Type", "application/json")
 	w := httptest.NewRecorder()
 	handler.ServeHTTP(w, req)
 
@@ -72,6 +73,7 @@ func TestHandleServices(t *testing.T) {
 	svc.Name = proto.String("")
 	body, _ = opts.Marshal(svc)
 	req = httptest.NewRequest(http.MethodPost, "/services", bytes.NewReader(body))
+	req.Header.Set("Content-Type", "application/json")
 	w = httptest.NewRecorder()
 	handler.ServeHTTP(w, req)
 	if w.Code != http.StatusBadRequest {
@@ -119,6 +121,7 @@ func TestHandleServiceDetail(t *testing.T) {
 	opts := protojson.MarshalOptions{UseProtoNames: true}
 	body, _ := opts.Marshal(svc)
 	req = httptest.NewRequest(http.MethodPut, "/services/test-service", bytes.NewReader(body))
+	req.Header.Set("Content-Type", "application/json")
 	w = httptest.NewRecorder()
 	handler.ServeHTTP(w, req)
 	if w.Code != http.StatusOK {
@@ -167,6 +170,7 @@ func TestHandleSettings(t *testing.T) {
 	opts := protojson.MarshalOptions{UseProtoNames: true}
 	body, _ := opts.Marshal(settings)
 	req := httptest.NewRequest(http.MethodPost, "/settings", bytes.NewReader(body))
+	req.Header.Set("Content-Type", "application/json")
 	w := httptest.NewRecorder()
 	handler.ServeHTTP(w, req)
 	if w.Code != http.StatusOK {
@@ -234,6 +238,7 @@ func TestHandleSecrets(t *testing.T) {
 	opts := protojson.MarshalOptions{UseProtoNames: true}
 	body, _ := opts.Marshal(secret)
 	req := httptest.NewRequest(http.MethodPost, "/secrets", bytes.NewReader(body))
+	req.Header.Set("Content-Type", "application/json")
 	w := httptest.NewRecorder()
 	handler.ServeHTTP(w, req)
 	if w.Code != http.StatusOK {
@@ -294,6 +299,7 @@ func TestHandleProfiles(t *testing.T) {
 	opts := protojson.MarshalOptions{UseProtoNames: true}
 	body, _ := opts.Marshal(profile)
 	req := httptest.NewRequest(http.MethodPost, "/profiles", bytes.NewReader(body))
+	req.Header.Set("Content-Type", "application/json")
 	w := httptest.NewRecorder()
 	handler.ServeHTTP(w, req)
 	if w.Code != http.StatusCreated {
@@ -335,6 +341,7 @@ func TestHandleProfileDetail(t *testing.T) {
 	opts := protojson.MarshalOptions{UseProtoNames: true}
 	body, _ := opts.Marshal(profile)
 	req = httptest.NewRequest(http.MethodPut, "/profiles/dev", bytes.NewReader(body))
+	req.Header.Set("Content-Type", "application/json")
 	w = httptest.NewRecorder()
 	handler.ServeHTTP(w, req)
 	if w.Code != http.StatusOK {
@@ -368,6 +375,7 @@ func TestHandleCollections(t *testing.T) {
 	opts := protojson.MarshalOptions{UseProtoNames: true}
 	body, _ := opts.Marshal(collection)
 	req := httptest.NewRequest(http.MethodPost, "/collections", bytes.NewReader(body))
+	req.Header.Set("Content-Type", "application/json")
 	w := httptest.NewRecorder()
 	handler.ServeHTTP(w, req)
 	if w.Code != http.StatusCreated {
@@ -413,6 +421,7 @@ func TestHandleCollectionDetail(t *testing.T) {
 	opts := protojson.MarshalOptions{UseProtoNames: true}
 	body, _ := opts.Marshal(collection)
 	req = httptest.NewRequest(http.MethodPut, "/collections/col1", bytes.NewReader(body))
+	req.Header.Set("Content-Type", "application/json")
 	w = httptest.NewRecorder()
 	handler.ServeHTTP(w, req)
 	if w.Code != http.StatusOK {
@@ -429,6 +438,7 @@ func TestHandleCollectionDetail(t *testing.T) {
 
 	// Test Apply
 	req = httptest.NewRequest(http.MethodPost, "/collections/col1/apply", nil)
+	req.Header.Set("Content-Type", "application/json")
 	w = httptest.NewRecorder()
 	handler.ServeHTTP(w, req)
 	if w.Code != http.StatusOK {
@@ -450,6 +460,7 @@ func TestHandleExecute(t *testing.T) {
 
 	// 1. Invalid JSON
 	req := httptest.NewRequest(http.MethodPost, "/execute", bytes.NewReader([]byte("invalid")))
+	req.Header.Set("Content-Type", "application/json")
 	w := httptest.NewRecorder()
 	handler.ServeHTTP(w, req)
 	if w.Code != http.StatusBadRequest {
@@ -462,6 +473,7 @@ func TestHandleExecute(t *testing.T) {
 	}
 	body, _ := json.Marshal(execReq)
 	req = httptest.NewRequest(http.MethodPost, "/execute", bytes.NewReader(body))
+	req.Header.Set("Content-Type", "application/json")
 	w = httptest.NewRecorder()
 	handler.ServeHTTP(w, req)
 	// ExecuteTool returns error for unknown tool, handler returns 500 or error message?
