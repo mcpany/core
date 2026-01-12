@@ -130,8 +130,13 @@ func TestAuthMiddleware(t *testing.T) {
 		}
 
 		handler := mw(nextHandler)
+
+		httpReq, err := http.NewRequest("POST", "/", nil)
+		require.NoError(t, err)
+		ctx := context.WithValue(context.Background(), "http.request", httpReq)
+
 		// Method without dot
-		_, err := handler(context.Background(), "invalid_method", nil)
+		_, err = handler(ctx, "invalid_method", nil)
 		require.NoError(t, err)
 		assert.True(t, nextCalled)
 	})
