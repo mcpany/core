@@ -115,7 +115,7 @@ const nextConfig: NextConfig = {
     return config;
   },
   async rewrites() {
-    const backendUrl = process.env.BACKEND_URL || 'http://mcpany:50050';
+    const backendUrl = process.env.BACKEND_URL || 'http://localhost:8080';
     console.log("DEBUG: BACKEND_URL env:", process.env.BACKEND_URL);
     console.log("DEBUG: Using backend URL:", backendUrl);
     return [

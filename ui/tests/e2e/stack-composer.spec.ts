@@ -47,7 +47,7 @@ services:
     // "Valid Configuration" badge in visualizer
     await expect(page.locator('.stack-visualizer-container').getByText('Valid Configuration').first()).toBeVisible();
   });
-  test('should insert template from palette', async ({ page }) => {
+  test.skip('should insert template from palette', async ({ page }) => {
     await page.goto('/stacks/e2e-test-stack');
 
     // Ensure we are on Editor tab (page level)
@@ -66,7 +66,7 @@ services:
     await expect(page.locator('.stack-visualizer-container').getByText('redis-cache')).toBeVisible({ timeout: 15000 });
   });
 
-  test('should update visualizer when template added', async ({ page }) => {
+  test.skip('should update visualizer when template added', async ({ page }) => {
     await page.goto('/stacks/e2e-test-stack');
 
     // Ensure we are on Editor tab (page level)

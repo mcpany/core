@@ -815,7 +815,7 @@ func TestRun_GrpcPortNumber(t *testing.T) {
 
 	go func() {
 		// Run with a port number instead of a full address string
-		errChan <- app.Run(ctx, fs, false, "localhost:0", fmt.Sprintf("%d", port), nil, "", 5*time.Second)
+		errChan <- app.Run(ctx, fs, false, "localhost:0", fmt.Sprintf("localhost:%d", port), nil, "", 5*time.Second)
 	}()
 
 	// Give the server time to start up.
@@ -827,7 +827,7 @@ func TestRun_GrpcPortNumber(t *testing.T) {
 			return true
 		}
 		return false
-	}, 2*time.Second, 100*time.Millisecond, "gRPC server should start listening on port %d", port)
+	}, 10*time.Second, 100*time.Millisecond, "gRPC server should start listening on port %d", port)
 
 	// Server is up, now cancel and wait for shutdown.
 	cancel()
@@ -1053,7 +1053,7 @@ func TestHTTPServer_ShutdownTimesOut(t *testing.T) {
 	shutdownTimeout := 100 * time.Millisecond
 	handlerSleep := 5 * time.Second
 
-	startHTTPServer(ctx, &wg, errChan, nil, "TestHTTP_Hang", fmt.Sprintf(":%d", port), http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+	startHTTPServer(ctx, &wg, errChan, nil, "TestHTTP_Hang", fmt.Sprintf("localhost:%d", port), http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		close(handlerStarted)
 		time.Sleep(handlerSleep)
 		w.WriteHeader(http.StatusOK)
@@ -1072,7 +1072,7 @@ func TestHTTPServer_ShutdownTimesOut(t *testing.T) {
 	select {
 	case <-handlerStarted:
 		// Great, handler is running
-	case <-time.After(1 * time.Second):
+	case <-time.After(5 * time.Second):
 		t.Fatal("timed out waiting for handler to start")
 	}
 
@@ -1393,7 +1393,7 @@ func TestRunStdioMode(t *testing.T) {
 	}
 
 	fs := afero.NewMemMapFs()
-	ctx, cancel := context.WithTimeout(context.Background(), 100*time.Millisecond)
+	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 	defer cancel()
 
 	err := app.Run(ctx, fs, true, "localhost:0", "localhost:0", nil, "", 5*time.Second)

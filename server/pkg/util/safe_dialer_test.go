@@ -50,7 +50,15 @@ func TestSafeDialer(t *testing.T) {
 		d.AllowLoopback = true
 		// 127.0.0.1 is loopback
 		// Start a listener to accept connection if we want success.
-		l, err := net.Listen("tcp", "127.0.0.1:0")
+		var l net.Listener
+		var err error
+		for i := 0; i < 5; i++ {
+			l, err = net.Listen("tcp", "127.0.0.1:0")
+			if err == nil {
+				break
+			}
+			time.Sleep(100 * time.Millisecond)
+		}
 		require.NoError(t, err)
 		defer l.Close()
 		addr := l.Addr().String()

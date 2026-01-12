@@ -22,7 +22,15 @@ func TestServiceRetry(t *testing.T) {
 	fs := afero.NewMemMapFs()
 
     // Get an ephemeral port by listening on port 0
-    l, err := net.Listen("tcp", "127.0.0.1:0")
+    var l net.Listener
+    var err error
+    for i := 0; i < 5; i++ {
+        l, err = net.Listen("tcp", "127.0.0.1:0")
+        if err == nil {
+            break
+        }
+        time.Sleep(100 * time.Millisecond)
+    }
     require.NoError(t, err)
     // The actual address is deferred to the httptest.Server
     targetURL := fmt.Sprintf("http://%s/mcp", l.Addr().String())

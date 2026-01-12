@@ -19,7 +19,7 @@ import { PromptDefinition } from '@proto/config/v1/prompt';
 import { Credential, Authentication } from '@proto/config/v1/auth';
 
 import { BrowserHeaders } from 'browser-headers';
-import { MOCK_RESOURCES, getMockResourceContent } from "@/mocks/resources";
+
 
 // Extend UpstreamServiceConfig to include runtime error information
 export interface UpstreamServiceConfig extends BaseUpstreamServiceConfig {
@@ -318,35 +318,14 @@ export const apiClient = {
 
     // Resources
     listResources: async () => {
-        try {
-            const res = await fetchWithAuth('/api/v1/resources');
-            if (res.ok) return res.json();
-        } catch (e) {
-            console.warn("Backend listResources failed, falling back to simulation", e);
-        }
-
-        // Mock simulation
-        return {
-            resources: MOCK_RESOURCES
-        };
+        const res = await fetchWithAuth('/api/v1/resources');
+        if (!res.ok) throw new Error('Failed to fetch resources');
+        return res.json();
     },
     readResource: async (uri: string): Promise<ReadResourceResponse> => {
-        // Attempt to call backend
-        try {
-            const res = await fetchWithAuth(`/api/v1/resources/read?uri=${encodeURIComponent(uri)}`);
-            if (res.ok) return res.json();
-        } catch (e) {
-            console.warn("Backend read failed, falling back to simulation for UI demo", e);
-        }
-
-        // Mock simulation if backend fails (for demo purposes)
-        return new Promise((resolve) => {
-            setTimeout(() => {
-                resolve({
-                    contents: [getMockResourceContent(uri)]
-                });
-            }, 500);
-        });
+        const res = await fetchWithAuth(`/api/v1/resources/read?uri=${encodeURIComponent(uri)}`);
+        if (!res.ok) throw new Error('Failed to read resource');
+        return res.json();
     },
     setResourceStatus: async (uri: string, disabled: boolean) => {
         const res = await fetchWithAuth('/api/v1/resources', {
@@ -371,41 +350,13 @@ export const apiClient = {
         return res.json();
     },
     executePrompt: async (name: string, args: Record<string, string>) => {
-        // Attempt to call backend
-        try {
-            const res = await fetch(`/api/v1/prompts/${name}/execute`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(args)
-            });
-            if (res.ok) return res.json();
-        } catch (e) {
-            console.warn("Backend execution failed, falling back to simulation for UI demo", e);
-        }
-
-        // Mock simulation if backend fails (for demo purposes)
-        return new Promise((resolve) => {
-            setTimeout(() => {
-                resolve({
-                    messages: [
-                        {
-                            role: "user",
-                            content: {
-                                type: "text",
-                                text: `Execute prompt '${name}' with args: ${JSON.stringify(args)}`
-                            }
-                        },
-                        {
-                            role: "assistant",
-                            content: {
-                                type: "text",
-                                text: `This is a simulated response for the prompt template '${name}'.\n\nArguments used:\n${Object.entries(args).map(([k, v]) => `- ${k}: ${v}`).join('\n')}\n\nThe backend endpoint /api/v1/prompts/${name}/execute is not yet implemented, so this mock response is provided for UI verification.`
-                            }
-                        }
-                    ]
-                });
-            }, 800);
+        const res = await fetchWithAuth(`/api/v1/prompts/${name}/execute`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(args)
         });
+        if (!res.ok) throw new Error('Failed to execute prompt');
+        return res.json();
     },
 
 

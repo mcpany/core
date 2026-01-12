@@ -158,7 +158,7 @@ test.describe('Credential OAuth Flow E2E', () => {
     await page.getByRole('button', { name: 'Connect Account' }).click();
 
     // 8. Verify Callback Page
-    await page.waitForURL('**/auth/callback*');
+    await page.waitForURL('**/auth/callback*', { waitUntil: 'domcontentloaded' });
     await expect(page.getByText('Authentication Successful')).toBeVisible();
 
     // 9. Return

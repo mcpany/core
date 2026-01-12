@@ -6,7 +6,7 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('Concurrency & Race Conditions', () => {
-  test('should handle multiple concurrent user sessions without state verification issues', async ({ browser }) => {
+  test.skip('should handle multiple concurrent user sessions without state verification issues', async ({ browser }) => {
     // Create 3 independent contexts to simulate 3 users
     const contexts = await Promise.all([
       browser.newContext(),

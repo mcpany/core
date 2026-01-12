@@ -22,7 +22,7 @@ test.describe('Resource Explorer', () => {
     });
 
     // Mock content endpoint
-    await page.route('**/api/v1/resources/read?uri=file:///app/config.json', async route => {
+    await page.route(url => url.href.includes('/read') && url.href.includes('config.json'), async route => {
         await route.fulfill({
             json: { contents: [{ mimeType: 'application/json', text: '{\n  "key": "value"\n}' }] }
         });
@@ -55,7 +55,12 @@ test.describe('Resource Explorer', () => {
 
     // Check if content area is visible (looking for syntax highlighter or code)
     // The mock returns JSON content
-    await expect(page.locator('.prose, pre, code').first()).toBeVisible();
+    // Check if content area is visible
+    // The mock returns JSON content
+    // Check if content area is visible
+    // The mock returns JSON content
+    // Check if content is visible in the body
+    await expect(page.locator('body')).toContainText('"key": "value"');
 
     // Verify toolbar buttons
     await expect(page.getByTitle('List View')).toBeVisible();

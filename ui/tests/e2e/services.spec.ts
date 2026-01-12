@@ -30,7 +30,7 @@ test.describe('Services Feature', () => {
                name: "User Service",
                disable: false,
                version: "v1.0",
-               grpc_service: { address: "localhost:50051", tools: [], resources: [] }
+                http_service: { address: "https://auth.company.com", tools: [], resources: [] }
             }
         });
         if (!r2.ok() && r2.status() !== 409) {

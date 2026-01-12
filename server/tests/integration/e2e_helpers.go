@@ -227,7 +227,14 @@ func FindFreePort(t *testing.T) int {
 	t.Helper()
 	addr, err := net.ResolveTCPAddr("tcp", "127.0.0.1:0")
 	require.NoError(t, err)
-	l, err := net.ListenTCP("tcp", addr)
+	var l *net.TCPListener
+	for i := 0; i < 10; i++ {
+		l, err = net.ListenTCP("tcp", addr)
+		if err == nil {
+			break
+		}
+		time.Sleep(100 * time.Millisecond)
+	}
 	require.NoError(t, err)
 	defer func() {
 		err := l.Close()
