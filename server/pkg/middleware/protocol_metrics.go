@@ -174,7 +174,7 @@ func estimateResultTokens(t tokenizer.Tokenizer, res mcp.Result) int {
 		}
 		return count
 	case *mcp.CallToolResult:
-		return calculateToolResultTokens(t, r)
+		return CalculateToolResultTokens(t, r)
 	case *mcp.GetPromptResult:
 		count := 0
 		for _, msg := range r.Messages {
@@ -205,7 +205,8 @@ func estimateResultTokens(t tokenizer.Tokenizer, res mcp.Result) int {
 	return 0
 }
 
-func calculateToolResultTokens(t tokenizer.Tokenizer, result any) int {
+// CalculateToolResultTokens calculates the number of tokens in a tool result.
+func CalculateToolResultTokens(t tokenizer.Tokenizer, result any) int {
 	if result == nil {
 		return 0
 	}
