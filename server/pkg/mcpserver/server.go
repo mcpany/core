@@ -507,10 +507,15 @@ func (s *Server) CallTool(ctx context.Context, req *tool.ExecutionRequest) (any,
 		{Name: "service_id", Value: serviceID},
 	})
 	startTime := time.Now()
-	defer metrics.MeasureSinceWithLabels([]string{"tools", "call", "latency"}, startTime, []metrics.Label{
-		{Name: "tool", Value: req.ToolName},
-		{Name: "service_id", Value: serviceID},
-	})
+	defer func() {
+		// Use AddSampleWithLabels directly to avoid emitting an unlabelled metric (which MeasureSinceWithLabels does).
+		// MeasureSince emits in milliseconds.
+		duration := float32(time.Since(startTime).Seconds() * 1000)
+		metrics.AddSampleWithLabels([]string{"tools", "call", "latency"}, duration, []metrics.Label{
+			{Name: "tool", Value: req.ToolName},
+			{Name: "service_id", Value: serviceID},
+		})
+	}()
 
 	result, err := s.toolManager.ExecuteTool(ctx, req)
 	if err != nil {
