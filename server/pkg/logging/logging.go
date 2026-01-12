@@ -53,14 +53,17 @@ func Init(level slog.Level, output io.Writer, format ...string) {
 			AddSource: true,
 		}
 
-		var handler slog.Handler
+		var mainHandler slog.Handler
 		if fmtStr == "json" {
-			handler = slog.NewJSONHandler(output, opts)
+			mainHandler = slog.NewJSONHandler(output, opts)
 		} else {
-			handler = slog.NewTextHandler(output, opts)
+			mainHandler = slog.NewTextHandler(output, opts)
 		}
 
-		defaultLogger = slog.New(handler)
+		broadcastHandler := NewBroadcastHandler(GlobalBroadcaster)
+		teeHandler := NewTeeHandler(mainHandler, broadcastHandler)
+
+		defaultLogger = slog.New(teeHandler)
 	})
 }
 
