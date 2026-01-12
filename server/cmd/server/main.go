@@ -18,6 +18,7 @@ import (
 	"github.com/mcpany/core/server/pkg/app"
 	"github.com/mcpany/core/server/pkg/appconsts"
 	"github.com/mcpany/core/server/pkg/config"
+	"github.com/mcpany/core/server/pkg/diagnostic"
 	"github.com/mcpany/core/server/pkg/logging"
 	"github.com/mcpany/core/server/pkg/metrics"
 	"github.com/mcpany/core/server/pkg/update"
@@ -73,13 +74,22 @@ func newRootCmd() *cobra.Command { //nolint:gocyclo // Main entry point, expecte
 			stdio := cfg.Stdio()
 			configPaths := cfg.ConfigPaths()
 
+			ctx, cancel := context.WithCancel(context.Background())
+			defer cancel()
+
+			// Run diagnostics before starting the server
+			log.Info("Running startup checks...")
+			if err := diagnostic.RunDiagnostics(ctx, osFs, configPaths, bindAddress); err != nil {
+				// We want to print this to stdout so the user sees it immediately, not just in logs
+				_, _ = fmt.Fprintf(cmd.OutOrStderr(), "\n❌ Startup Failed:\n%v\n\n", err)
+				return err // Return error to exit with non-zero code
+			}
+			log.Info("Startup checks passed.")
+
 			log.Info("Configuration", "mcp-listen-address", bindAddress, "registration-port", grpcPort, "stdio", stdio, "config-path", configPaths)
 			if len(configPaths) > 0 {
 				log.Info("Attempting to load services from config path", "paths", configPaths)
 			}
-
-			ctx, cancel := context.WithCancel(context.Background())
-			defer cancel()
 
 			go func() {
 				// Wait for an interrupt signal
