@@ -34,6 +34,7 @@
 - [x] **Filesystem Path Validation**: Proactive validation of configured `root_paths` for Filesystem services to warn about missing directories on startup.
 - [x] **Enhanced Secret Validation**: Strict startup validation for referenced environment variables and secret files. Server will now fail fast if a configured secret (env var or file) does not exist.
 - [x] **Robust Transport Error Reporting**: Improved error messages for command-based and Docker transports. Now captures and surfaces `stderr` when a process exits unexpectedly, aiding quick debugging of configuration or runtime errors.
+- [x] **Smart Config Error Messages**: Detect and guide users migrating from Claude Desktop configuration format (`mcpServers` vs `upstream_services`). (Friction Fighter)
 
 ## 2. Top 10 Recommended Features
 
@@ -58,6 +59,8 @@ These features represent the next logical steps for the product, focusing on Ent
 | 15 | **Partial Reloads** | **Resilience**: When reloading config dynamically, if one service is invalid, keep the old version running instead of removing it or failing the whole reload (if possible). | High |
 | 16 | **Filesystem Health Check** | **Observability**: Add a health check probe for filesystem roots to report status to the UI, not just logs. | Low |
 | 17 | **Safe Symlink Traversal** | **Security**: Add configuration options to strictly control symlink traversal policies (allow/deny/internal-only). | Medium |
+| 18 | **Preset Service Gallery** | **UX**: A curated list of popular services (like `wttr.in`, `sqlite`, etc.) that can be added via CLI or UI with one click/command. | Medium |
+| 19 | **Configuration Migration Tool** | **DevX**: A CLI command to convert `claude_desktop_config.json` to `mcpany` config format. | Low |
 
 ## 3. Codebase Health
 

@@ -100,8 +100,7 @@ func StripSecretsFromAuth(auth *configv1.Authentication) {
 	}
 	if oauth := auth.GetOauth2(); oauth != nil {
 		scrubSecretValue(oauth.ClientSecret)
-		// ClientID is usually safe-ish, but maybe scrub if paranoid?
-		// ClientSecret is definitely sensitive.
+		scrubSecretValue(oauth.ClientId)
 	}
 	// Add other auth types as needed
 }
