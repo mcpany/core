@@ -224,7 +224,15 @@ func (p *LocalProvider) matchPath(pattern, targetPath string) bool {
 	if err == nil && matched {
 		return true
 	}
-	return strings.HasPrefix(targetPath, pattern)
+	// If pattern ends with separator, it's safe to use HasPrefix
+	if strings.HasSuffix(pattern, string(os.PathSeparator)) {
+		return strings.HasPrefix(targetPath, pattern)
+	}
+	// Otherwise, ensure exact match or prefix with separator
+	if targetPath == pattern {
+		return true
+	}
+	return strings.HasPrefix(targetPath, pattern+string(os.PathSeparator))
 }
 
 // Close closes the provider.

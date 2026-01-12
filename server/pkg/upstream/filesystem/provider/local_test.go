@@ -217,11 +217,26 @@ func TestLocalProviderAccessControl(t *testing.T) {
 			deniedPaths:  []string{publicFile},
 			wantErr:      true,
 		},
+		{
+			name:         "Regression: partial match not allowed",
+			virtualPath:  "/public_fake/fake.txt",
+			allowedPaths: []string{publicDir}, // e.g., /tmp/.../public
+			deniedPaths:  nil,
+			wantErr:      true,
+		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			p := NewLocalProvider(nil, rootPaths, tt.allowedPaths, tt.deniedPaths)
+			// For regression test, ensure the directory exists so ResolvePath doesn't fail on "no matching root" before checking security
+			// But here we mapped / -> rootDir, so /public_fake/fake.txt resolves to rootDir/public_fake/fake.txt
+			// We need to create that dir if we want to reach checkPathSecurity, OR rely on resolveNonExistentPath.
+			// resolveNonExistentPath will resolve parent.
+			if tt.name == "Regression: partial match not allowed" {
+				// We don't need to create the file, just ensure it maps to a path that triggers the bug if it existed
+			}
+
 			_, err := p.ResolvePath(tt.virtualPath)
 			if tt.wantErr {
 				assert.Error(t, err)
@@ -230,4 +245,37 @@ func TestLocalProviderAccessControl(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestLocalProvider_Methods(t *testing.T) {
+	p := NewLocalProvider(nil, map[string]string{"/": "/tmp"}, nil, nil)
+	assert.NotNil(t, p.GetFs())
+	assert.NoError(t, p.Close())
+	_, err := p.ResolvePath("foo") // invalid virtual path (must start with /)
+	// ResolvePath adds "/" prefix if missing in findBestMatch?
+	// findBestMatch logic:
+	// checkPath := virtualPath
+	// if !strings.HasPrefix(checkPath, "/") { checkPath = "/" + checkPath }
+	// So "foo" becomes "/foo".
+	// Since root map is {"/": "/tmp"}, it should match "/".
+	// So "foo" resolves to "/tmp/foo".
+
+	// Wait, findBestMatch modifies checkPath but returns original virtualPath?
+	// No, it returns bestMatchVirtual and bestMatchReal.
+	// resolveSymlinks uses virtualPath.
+
+	// resolveSymlinks:
+	// relativePath := strings.TrimPrefix(virtualPath, bestMatchVirtual)
+	// If virtualPath="foo" and bestMatchVirtual="/", TrimPrefix doesn't work as expected if "foo" doesn't start with "/".
+	// But TrimPrefix("foo", "/") -> "foo".
+	// TrimPrefix(relativePath, "/") -> "foo".
+	// targetPath := Join("/tmp", "foo") -> "/tmp/foo".
+
+	// So ResolvePath("foo") should SUCCEED.
+	assert.NoError(t, err)
+
+	pEmpty := NewLocalProvider(nil, nil, nil, nil)
+	_, err = pEmpty.ResolvePath("/foo")
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), "no root paths defined")
 }

@@ -68,6 +68,26 @@ func TestZipProvider(t *testing.T) {
 
 	err = p.Close()
 	assert.NoError(t, err)
+
+	// Test nil config
+	_, err = NewZipProvider(nil)
+	assert.Error(t, err)
+
+	// Test invalid zip
+	badZip, err := os.CreateTemp("", "bad*.zip")
+	require.NoError(t, err)
+	badZip.WriteString("not a zip")
+	badZip.Close()
+	defer os.Remove(badZip.Name())
+
+	badPath := badZip.Name()
+	_, err = NewZipProvider(&configv1.ZipFs{FilePath: &badPath})
+	assert.Error(t, err)
+
+	// Test missing file
+	missingPath := "/missing/file.zip"
+	_, err = NewZipProvider(&configv1.ZipFs{FilePath: &missingPath})
+	assert.Error(t, err)
 }
 
 func TestS3Provider_ResolvePath(t *testing.T) {
