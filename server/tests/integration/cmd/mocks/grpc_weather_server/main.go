@@ -46,8 +46,8 @@ func main() {
 	port := flag.Int("port", 0, "Port to listen on. If 0, a random available port will be chosen and printed to stdout.")
 	flag.Parse()
 
-	address := fmt.Sprintf(":%d", *port)
-	lis, err := (&net.ListenConfig{}).Listen(context.Background(), "tcp", address)
+	address := fmt.Sprintf("localhost:%d", *port)
+	lis, err := getListenConfig().Listen(context.Background(), "tcp", address)
 	if err != nil {
 		slog.Error("grpc_weather_server: Failed to listen", "error", err)
 		os.Exit(1)
@@ -78,7 +78,15 @@ func main() {
 	signal.Notify(sigChan, syscall.SIGINT, syscall.SIGTERM)
 	<-sigChan
 
-	slog.Info("grpc_weather_server: Shutting down server...")
-	s.GracefulStop()
 	slog.Info("grpc_weather_server: Server shut down gracefully.")
+}
+
+func getListenConfig() *net.ListenConfig {
+	return &net.ListenConfig{
+		Control: func(_, _ string, c syscall.RawConn) error {
+			return c.Control(func(fd uintptr) {
+				_ = syscall.SetsockoptInt(int(fd), syscall.SOL_SOCKET, syscall.SO_REUSEADDR, 1)
+			})
+		},
+	}
 }

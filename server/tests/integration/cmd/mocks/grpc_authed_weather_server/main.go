@@ -11,6 +11,7 @@ import (
 	"log"
 	"net"
 	"strings"
+	"syscall"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -89,7 +90,7 @@ func main() {
 		log.Fatal("port is required")
 	}
 
-	lis, err := (&net.ListenConfig{}).Listen(context.Background(), "tcp", fmt.Sprintf(":%d", *port))
+	lis, err := getListenConfig().Listen(context.Background(), "tcp", fmt.Sprintf("localhost:%d", *port))
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}
@@ -105,5 +106,15 @@ func main() {
 	fmt.Println("GRPC_SERVER_READY") // Signal that the server is ready
 	if err := s.Serve(lis); err != nil {
 		log.Fatalf("failed to serve: %v", err)
+	}
+}
+
+func getListenConfig() *net.ListenConfig {
+	return &net.ListenConfig{
+		Control: func(_, _ string, c syscall.RawConn) error {
+			return c.Control(func(fd uintptr) {
+				_ = syscall.SetsockoptInt(int(fd), syscall.SOL_SOCKET, syscall.SO_REUSEADDR, 1)
+			})
+		},
 	}
 }

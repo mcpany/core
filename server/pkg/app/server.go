@@ -17,6 +17,7 @@ import (
 	"os"
 	"strings"
 	"sync"
+	"syscall"
 	"time"
 
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
@@ -1458,7 +1459,7 @@ func (a *Application) runServerMode(
 		if !strings.Contains(grpcBindAddress, ":") {
 			grpcBindAddress = ":" + grpcBindAddress
 		}
-		lis, err := (&net.ListenConfig{}).Listen(context.Background(), "tcp", grpcBindAddress)
+		lis, err := getListenConfig().Listen(context.Background(), "tcp", grpcBindAddress)
 		if err != nil {
 			errChan <- fmt.Errorf("gRPC server failed to listen: %w", err)
 		} else {
@@ -1682,7 +1683,7 @@ func startHTTPServer(
 	go func() {
 		defer wg.Done()
 		serverLog := logging.GetLogger().With("server", name)
-		lis, err := (&net.ListenConfig{}).Listen(context.Background(), "tcp", addr)
+		lis, err := getListenConfig().Listen(context.Background(), "tcp", addr)
 		if err != nil {
 			errChan <- fmt.Errorf("[%s] server failed to listen: %w", name, err)
 			return
@@ -1743,4 +1744,14 @@ func startHTTPServer(
 		<-shutdownComplete
 		serverLog.Info("Server shut down.")
 	}()
+}
+
+func getListenConfig() *net.ListenConfig {
+	return &net.ListenConfig{
+		Control: func(_, _ string, c syscall.RawConn) error {
+			return c.Control(func(fd uintptr) {
+				_ = syscall.SetsockoptInt(int(fd), syscall.SOL_SOCKET, syscall.SO_REUSEADDR, 1)
+			})
+		},
+	}
 }
