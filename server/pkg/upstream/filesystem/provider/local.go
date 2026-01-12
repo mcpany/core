@@ -164,6 +164,29 @@ func (p *LocalProvider) resolveNonExistentPath(targetPathAbs string) (string, er
 		return "", fmt.Errorf("failed to resolve ancestor path symlinks: %w", err)
 	}
 
+	// Safety check: ensure we are not traversing any broken symlinks in the remaining path.
+	// existingPath is the deepest ancestor that Stat() confirmed exists.
+	// Therefore, any existing component in remainingPath must be either:
+	// 1. A broken symlink (Stat failed, but Lstat might succeed)
+	// 2. A file/dir with permission denied (Stat failed)
+	// We want to block (1).
+	if remainingPath != "." && remainingPath != "" {
+		parts := strings.Split(remainingPath, string(os.PathSeparator))
+		if len(parts) > 0 {
+			nextComponent := parts[0]
+			checkPath := filepath.Join(existingPath, nextComponent)
+			info, err := os.Lstat(checkPath)
+			if err == nil {
+				// The component exists (at least to Lstat).
+				// Since Stat failed (or we wouldn't be in this part of the loop),
+				// checking if it is a symlink is sufficient to identify a broken symlink.
+				if info.Mode()&os.ModeSymlink != 0 {
+					return "", fmt.Errorf("access denied: component %s is a broken symlink", nextComponent)
+				}
+			}
+		}
+	}
+
 	return filepath.Join(existingPathCanonical, remainingPath), nil
 }
 
