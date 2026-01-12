@@ -1,22 +1,20 @@
-# Service Connection Diagnostic Tool
+# Service Status & Diagnostics
 
 ## Overview
 
-A new diagnostic tool has been added to the Service Details page. This tool helps users troubleshoot connection issues with their upstream MCP services by validating the configuration and reporting the current connection status from the backend.
+Monitor the health and connection status of your upstream services directly from the **Service Details** page.
 
 ## Key Features
 
--   **Client-Side Configuration Check**: Validates that the service URL or command is correctly formatted before attempting to connect.
--   **Backend Status Check**: Queries the MCP Any backend for the real-time health status of the service.
--   **Error Hints**: Provides actionable hints for common errors like connection refusal, timeouts, or handshake failures.
+-   **Status Indicator**: Real-time Badge (Active/Disabled) indicating if the service is enabled in the gateway.
+-   **Last Error Visibility**: If the service encounters connection errors (e.g., during registration or health checks), the error message is displayed on the service card.
+-   **Toggle Availability**: Quickly enable or disable a service to stop traffic routing without uninstalling it.
 
 ## Usage
 
-1.  Navigate to any **Service Detail** page.
-2.  Click the **"Troubleshoot"** button in the header.
-3.  In the dialog, click **"Start Diagnostics"**.
-4.  View the real-time logs and status of the checks.
+1.  Navigate to **Services** (`/upstream-services`).
+2.  Click on any service card to view its **Details**.
+3.  Observe the **Status Badge** next to the title.
+4.  Check for any **Error Alerts** in the overview section.
 
-## Screenshot
-
-(Screenshot placeholder - feature verified via tests)
+> **Note**: A dedicated "Troubleshoot" wizard for active connection probing is currently in development and will be available in future updates.
