@@ -145,7 +145,13 @@ func (m *serviceInfoProviderToolManager) AddTool(_ tool.Tool) error             
 func (m *serviceInfoProviderToolManager) ClearToolsForService(_ string)            {}
 func (m *serviceInfoProviderToolManager) SetProfiles(_ []string, _ []*configv1.ProfileDefinition) {}
 func (m *serviceInfoProviderToolManager) IsServiceAllowed(_, _ string) bool                       { return true }
-
+func (m *serviceInfoProviderToolManager) GetAllowedServiceIDs(_ string) map[string]bool {
+	return map[string]bool{
+		"global-service":  true,
+		"profile-service": true,
+		"other-service":   true,
+	}
+}
 
 func TestResourceListFilteringMiddleware(t *testing.T) {
 	// Setup dependencies

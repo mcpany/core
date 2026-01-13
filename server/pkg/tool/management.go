@@ -57,6 +57,8 @@ type ManagerInterface interface {
 	SetProfiles(enabled []string, defs []*configv1.ProfileDefinition)
 	// IsServiceAllowed checks if a service is allowed for a given profile.
 	IsServiceAllowed(serviceID, profileID string) bool
+	// GetAllowedServiceIDs returns a set of allowed service IDs for a given profile.
+	GetAllowedServiceIDs(profileID string) map[string]bool
 	// ToolMatchesProfile checks if a tool matches a given profile.
 	ToolMatchesProfile(tool Tool, profileID string) bool
 }
@@ -173,6 +175,25 @@ func (tm *Manager) IsServiceAllowed(serviceID, profileID string) bool {
 	// But if a profile selects tools via tags, the service is implicitly allowed?
 	// Ideally, service should be explicitly enabled.
 	return false
+}
+
+// GetAllowedServiceIDs returns a set of allowed service IDs for a given profile.
+func (tm *Manager) GetAllowedServiceIDs(profileID string) map[string]bool {
+	tm.mu.RLock()
+	defer tm.mu.RUnlock()
+
+	def, ok := tm.profileDefs[profileID]
+	if !ok {
+		return nil
+	}
+
+	allowed := make(map[string]bool)
+	for sID, sc := range def.GetServiceConfig() {
+		if sc.GetEnabled() {
+			allowed[sID] = true
+		}
+	}
+	return allowed
 }
 
 // ToolMatchesProfile checks if a tool matches a given profile.

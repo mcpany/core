@@ -259,12 +259,16 @@ func (s *Server) toolListFilteringMiddleware(next mcp.MethodHandler) mcp.MethodH
 
 
 			profileID, _ := auth.ProfileIDFromContext(ctx)
+			var allowedServices map[string]bool
+			if profileID != "" {
+				allowedServices = s.toolManager.GetAllowedServiceIDs(profileID)
+			}
 
 			for _, toolInstance := range managedTools {
 				// Profile-based filtering
 				if profileID != "" {
 					serviceID := toolInstance.Tool().GetServiceId()
-					if !s.toolManager.IsServiceAllowed(serviceID, profileID) {
+					if allowedServices == nil || !allowedServices[serviceID] {
 						continue
 					}
 				}
@@ -697,11 +701,15 @@ func (s *Server) resourceListFilteringMiddleware(next mcp.MethodHandler) mcp.Met
 
 
 			profileID, _ := auth.ProfileIDFromContext(ctx)
+			var allowedServices map[string]bool
+			if profileID != "" {
+				allowedServices = s.toolManager.GetAllowedServiceIDs(profileID)
+			}
 
 			for _, resourceInstance := range managedResources {
 				// Profile filtering
 				if profileID != "" {
-					if !s.toolManager.IsServiceAllowed(resourceInstance.Service(), profileID) {
+					if allowedServices == nil || !allowedServices[resourceInstance.Service()] {
 						continue
 					}
 				}
@@ -728,11 +736,15 @@ func (s *Server) promptListFilteringMiddleware(next mcp.MethodHandler) mcp.Metho
 
 
 			profileID, _ := auth.ProfileIDFromContext(ctx)
+			var allowedServices map[string]bool
+			if profileID != "" {
+				allowedServices = s.toolManager.GetAllowedServiceIDs(profileID)
+			}
 
 			for _, promptInstance := range managedPrompts {
 				// Profile filtering
 				if profileID != "" {
-					if !s.toolManager.IsServiceAllowed(promptInstance.Service(), profileID) {
+					if allowedServices == nil || !allowedServices[promptInstance.Service()] {
 						continue
 					}
 				}

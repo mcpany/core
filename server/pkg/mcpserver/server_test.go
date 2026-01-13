@@ -586,6 +586,7 @@ func (m *mockToolManager) ClearToolsForService(_ string) {
 func (m *mockToolManager) SetProfiles(_ []string, _ []*configv1.ProfileDefinition) {}
 
 func (m *mockToolManager) IsServiceAllowed(_, _ string) bool { return true }
+func (m *mockToolManager) GetAllowedServiceIDs(_ string) map[string]bool { return nil }
 
 func TestServer_ToolManagerDelegation(t *testing.T) {
 	poolManager := pool.NewManager()
@@ -1012,7 +1013,13 @@ func (m *smartToolManager) AddTool(_ tool.Tool) error                { return ni
 func (m *smartToolManager) ClearToolsForService(_ string)            {}
 func (m *smartToolManager) SetProfiles(_ []string, _ []*configv1.ProfileDefinition) {}
 func (m *smartToolManager) IsServiceAllowed(_, _ string) bool                       { return true }
-
+func (m *smartToolManager) GetAllowedServiceIDs(_ string) map[string]bool {
+	return map[string]bool{
+		"global-service":  true,
+		"profile-service": true,
+		"other-service":   true,
+	}
+}
 
 func TestServer_MiddlewareChain(t *testing.T) {
 	poolManager := pool.NewManager()

@@ -158,6 +158,20 @@ func (mr *MockManagerInterfaceMockRecorder) IsServiceAllowed(serviceID, profileI
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "IsServiceAllowed", reflect.TypeOf((*MockManagerInterface)(nil).IsServiceAllowed), serviceID, profileID)
 }
 
+// GetAllowedServiceIDs mocks base method.
+func (m *MockManagerInterface) GetAllowedServiceIDs(profileID string) map[string]bool {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetAllowedServiceIDs", profileID)
+	ret0, _ := ret[0].(map[string]bool)
+	return ret0
+}
+
+// GetAllowedServiceIDs indicates an expected call of GetAllowedServiceIDs.
+func (mr *MockManagerInterfaceMockRecorder) GetAllowedServiceIDs(profileID any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAllowedServiceIDs", reflect.TypeOf((*MockManagerInterface)(nil).GetAllowedServiceIDs), profileID)
+}
+
 // ListServices indicates an expected call of ListServices.
 func (mr *MockManagerInterfaceMockRecorder) ListServices() *gomock.Call {
 	mr.mock.ctrl.T.Helper()
