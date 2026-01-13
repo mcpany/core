@@ -1962,6 +1962,34 @@ func isSensitiveHeader(key string) bool {
 }
 
 func checkForPathTraversal(val string) error {
+	// 1. Basic check on raw value
+	if err := checkTraversalPattern(val); err != nil {
+		return err
+	}
+
+	// 2. Decode and check loop
+	decoded := val
+	for i := 0; i < 3; i++ { // Limit recursion to 3 to avoid infinite loops or DoS
+		prev := decoded
+		if d, err := url.QueryUnescape(prev); err == nil {
+			decoded = d
+		} else {
+			// If we can't decode, we stop decoding.
+			break
+		}
+
+		if decoded == prev {
+			break
+		}
+		if err := checkTraversalPattern(decoded); err != nil {
+			return fmt.Errorf("%w (decoded)", err)
+		}
+	}
+
+	return nil
+}
+
+func checkTraversalPattern(val string) error {
 	if val == ".." {
 		return fmt.Errorf("path traversal attempt detected")
 	}
