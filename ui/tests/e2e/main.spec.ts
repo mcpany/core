@@ -12,8 +12,8 @@ test.describe('MCP Any UI E2E', () => {
     console.log('DEBUG: RUNNING MODIFIED FILE');
   });
 
-  test('Dashboard loads and shows metrics', async ({ page }) => {
-    // Mock metrics API
+  test.beforeEach(async ({ page }) => {
+    // Mock metrics API to prevent backend connection errors during tests
     await page.route('**/api/dashboard/metrics*', async route => {
         await route.fulfill({
             json: [
@@ -23,6 +23,15 @@ test.describe('MCP Any UI E2E', () => {
         });
     });
 
+    // Mock health API
+    await page.route('**/api/dashboard/health*', async route => {
+        await route.fulfill({
+            json: []
+        });
+    });
+  });
+
+  test('Dashboard loads and shows metrics', async ({ page }) => {
     await page.goto('/');
     // Updated title expectation
     await expect(page).toHaveTitle(/MCPAny Manager/);
@@ -40,13 +49,19 @@ test.describe('MCP Any UI E2E', () => {
   });
 
   test('should navigate to analytics from sidebar', async ({ page }) => {
+    // Verify direct navigation first (and warm up the route)
+    await page.goto('/stats');
+    await expect(page.locator('h2')).toContainText('Analytics & Stats');
+
     await page.goto('/');
     // Check if link exists
     const statsLink = page.getByRole('link', { name: /Analytics|Stats/i });
     if (await statsLink.count() > 0) {
+        await expect(statsLink).toBeVisible();
         await expect(statsLink).toHaveAttribute('href', '/stats');
         await statsLink.click();
-        await page.waitForURL('**/stats');
+        // Use expect to wait for URL change instead of strict waitForURL 'load' event
+        // which can be flaky with client-side routing if network is idle
         await expect(page).toHaveURL(/.*\/stats/);
         // Verify page content
         await expect(page.locator('h2')).toContainText('Analytics & Stats');
