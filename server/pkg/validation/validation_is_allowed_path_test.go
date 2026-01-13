@@ -9,7 +9,7 @@ import (
 	"testing"
 )
 
-func TestIsRelativePath(t *testing.T) {
+func TestIsAllowedPath(t *testing.T) {
 	tests := []struct {
 		name      string
 		path      string
@@ -58,9 +58,9 @@ func TestIsRelativePath(t *testing.T) {
 			}
 			t.Cleanup(func() { SetAllowedPaths(nil) })
 
-			err := IsRelativePath(tt.path)
+			err := IsAllowedPath(tt.path)
 			if (err != nil) != tt.wantErr {
-				t.Errorf("IsRelativePath(%q) allowList=%q error = %v, wantErr %v", tt.path, tt.allowList, err, tt.wantErr)
+				t.Errorf("IsAllowedPath(%q) allowList=%q error = %v, wantErr %v", tt.path, tt.allowList, err, tt.wantErr)
 			}
 		})
 	}

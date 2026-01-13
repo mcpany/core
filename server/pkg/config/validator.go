@@ -177,7 +177,7 @@ func validateSecretValue(secret *configv1.SecretValue) error {
 			return fmt.Errorf("environment variable %q is not set", envVar)
 		}
 	case configv1.SecretValue_FilePath_case:
-		if err := validation.IsRelativePath(secret.GetFilePath()); err != nil {
+		if err := validation.IsAllowedPath(secret.GetFilePath()); err != nil {
 			return fmt.Errorf("invalid secret file path %q: %w", secret.GetFilePath(), err)
 		}
 		// Validate that the file actually exists to fail fast
@@ -436,7 +436,7 @@ func validateContainerEnvironment(env *configv1.ContainerEnvironment) error {
 			// dest is the key (Host Path), src is the value (Container Path).
 			// We must validate the Host Path (dest) to ensure it is secure.
 			// It must be either relative to the CWD or in the allowed list.
-			if err := validation.IsRelativePath(dest); err != nil {
+			if err := validation.IsAllowedPath(dest); err != nil {
 				return fmt.Errorf("container environment volume host path %q is not a secure path: %w", dest, err)
 			}
 		}
@@ -468,7 +468,7 @@ func validateMcpService(mcpService *configv1.McpUpstreamService) error {
 			}
 
 			if stdioConn.GetWorkingDirectory() != "" {
-				if err := validation.IsRelativePath(stdioConn.GetWorkingDirectory()); err != nil {
+				if err := validation.IsAllowedPath(stdioConn.GetWorkingDirectory()); err != nil {
 					return fmt.Errorf("mcp service with stdio_connection has insecure working_directory %q: %w", stdioConn.GetWorkingDirectory(), err)
 				}
 				if err := validateDirectoryExists(stdioConn.GetWorkingDirectory()); err != nil {
@@ -485,7 +485,7 @@ func validateMcpService(mcpService *configv1.McpUpstreamService) error {
 		if bundleConn.GetBundlePath() == "" {
 			return fmt.Errorf("mcp service with bundle_connection has empty bundle_path")
 		}
-		if err := validation.IsRelativePath(bundleConn.GetBundlePath()); err != nil {
+		if err := validation.IsAllowedPath(bundleConn.GetBundlePath()); err != nil {
 			return fmt.Errorf("mcp service with bundle_connection has insecure bundle_path %q: %w", bundleConn.GetBundlePath(), err)
 		}
 		if err := validateSecretMap(bundleConn.GetEnv()); err != nil {
@@ -639,14 +639,14 @@ func validateMtlsAuth(mtls *configv1.MTLSAuth) error {
 	if mtls.GetClientKeyPath() == "" {
 		return fmt.Errorf("mtls 'client_key_path' is empty")
 	}
-	if err := validation.IsSecurePath(mtls.GetClientCertPath()); err != nil {
+	if err := validation.IsAllowedPath(mtls.GetClientCertPath()); err != nil {
 		return fmt.Errorf("mtls 'client_cert_path' is not a secure path: %w", err)
 	}
-	if err := validation.IsSecurePath(mtls.GetClientKeyPath()); err != nil {
+	if err := validation.IsAllowedPath(mtls.GetClientKeyPath()); err != nil {
 		return fmt.Errorf("mtls 'client_key_path' is not a secure path: %w", err)
 	}
 	if mtls.GetCaCertPath() != "" {
-		if err := validation.IsSecurePath(mtls.GetCaCertPath()); err != nil {
+		if err := validation.IsAllowedPath(mtls.GetCaCertPath()); err != nil {
 			return fmt.Errorf("mtls 'ca_cert_path' is not a secure path: %w", err)
 		}
 	}
@@ -754,7 +754,7 @@ func validateGCSettings(gc *configv1.GCSettings) error {
 			if path == "" {
 				return fmt.Errorf("empty gc path")
 			}
-			if err := validation.IsSecurePath(path); err != nil {
+			if err := validation.IsAllowedPath(path); err != nil {
 				return fmt.Errorf("gc path %q is not secure: %w", path, err)
 			}
 			// We might also checking if it's absolute?
