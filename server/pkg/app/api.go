@@ -9,12 +9,14 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"os"
 	"strings"
 
 	"github.com/google/uuid"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/mcpany/core/server/pkg/config"
 	"github.com/mcpany/core/server/pkg/health"
+	"github.com/mcpany/core/server/pkg/util"
 	"github.com/mcpany/core/server/pkg/logging"
 	"github.com/mcpany/core/server/pkg/storage"
 	"github.com/mcpany/core/server/pkg/tool"
@@ -158,6 +160,12 @@ func (a *Application) handleServices(store storage.Storage) http.HandlerFunc {
 				return
 			}
 
+			if isUnsafeConfig(&svc) && os.Getenv("MCPANY_ALLOW_UNSAFE_CONFIG") != util.TrueStr {
+				logging.GetLogger().Warn("Blocked unsafe service creation via API", "service", svc.GetName())
+				http.Error(w, "Creation of local command execution services (stdio/command_line) is disabled for security reasons. Configure them via file instead.", http.StatusBadRequest)
+				return
+			}
+
 			// Auto-generate ID if missing? Store handles it if we pass empty ID (fallback to name).
 			// But creating UUID here might be better? For now name fallback is fine.
 
@@ -231,6 +239,12 @@ func (a *Application) handleServiceDetail(store storage.Storage) http.HandlerFun
 			// Validate service configuration before saving
 			if err := config.ValidateOrError(r.Context(), &svc); err != nil {
 				http.Error(w, "invalid service configuration: "+err.Error(), http.StatusBadRequest)
+				return
+			}
+
+			if isUnsafeConfig(&svc) && os.Getenv("MCPANY_ALLOW_UNSAFE_CONFIG") != util.TrueStr {
+				logging.GetLogger().Warn("Blocked unsafe service update via API", "service", name)
+				http.Error(w, "Configuration of local command execution services (stdio/command_line) is disabled for security reasons. Configure them via file instead.", http.StatusBadRequest)
 				return
 			}
 
@@ -838,6 +852,12 @@ func (a *Application) handleCollectionApply(w http.ResponseWriter, r *http.Reque
 			logging.GetLogger().Error("invalid service in collection", "service", svc.GetName(), "error", err)
 			continue // Skip invalid? Or error out?
 		}
+
+		if isUnsafeConfig(svc) && os.Getenv("MCPANY_ALLOW_UNSAFE_CONFIG") != util.TrueStr {
+			logging.GetLogger().Warn("Skipping unsafe service in collection apply", "service", svc.GetName())
+			continue
+		}
+
 		if err := store.SaveService(r.Context(), svc); err != nil {
 			logging.GetLogger().Error("failed to save service from collection", "service", svc.GetName(), "error", err)
 			// Continue or abort?
@@ -852,4 +872,16 @@ func (a *Application) handleCollectionApply(w http.ResponseWriter, r *http.Reque
 
 	w.WriteHeader(http.StatusOK)
 	_, _ = w.Write([]byte("{}"))
+}
+
+func isUnsafeConfig(service *configv1.UpstreamServiceConfig) bool {
+	if mcp := service.GetMcpService(); mcp != nil {
+		if mcp.WhichConnectionType() == configv1.McpUpstreamService_StdioConnection_case {
+			return true
+		}
+	}
+	if service.GetCommandLineService() != nil {
+		return true
+	}
+	return false
 }
