@@ -307,7 +307,7 @@ func (c *mcpConnection) withMCPClientSession(ctx context.Context, f func(cs Clie
 			if err != nil {
 				return fmt.Errorf("failed to build command from stdio config: %w", err)
 			}
-			transport = &mcp.CommandTransport{
+			transport = &StdioTransport{
 				Command: cmd,
 			}
 		}
@@ -516,7 +516,8 @@ func createStdioTransport(ctx context.Context, stdio *configv1.McpStdioConnectio
 	if err != nil {
 		return nil, fmt.Errorf("failed to build command: %w", err)
 	}
-	return &mcp.CommandTransport{
+	// Use our robust StdioTransport instead of mcp.CommandTransport
+	return &StdioTransport{
 		Command: cmd,
 	}, nil
 }

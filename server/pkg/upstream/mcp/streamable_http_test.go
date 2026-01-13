@@ -290,8 +290,8 @@ func TestUpstream_Register(t *testing.T) {
 
 		wg.Wait()
 
-		cmdTransport, ok := capturedTransport.(*mcp.CommandTransport)
-		require.True(t, ok, "transport should be CommandTransport")
+		cmdTransport, ok := capturedTransport.(*StdioTransport)
+		require.True(t, ok, "transport should be StdioTransport")
 		assert.Equal(t, "/bin/sh", cmdTransport.Command.Path)
 		assert.Equal(t, []string{"/bin/sh", "-c", "setup1 && setup2 && exec main_command"}, cmdTransport.Command.Args)
 	})
@@ -368,7 +368,7 @@ func TestUpstream_Register(t *testing.T) {
 		originalConnect := connectForTesting
 		connectForTesting = func(_ *mcp.Client, _ context.Context, transport mcp.Transport, _ []mcp.Root) (ClientSession, error) {
 			defer wg.Done()
-			cmdTransport, ok := transport.(*mcp.CommandTransport)
+			cmdTransport, ok := transport.(*StdioTransport)
 			require.True(t, ok)
 			capturedCmd = cmdTransport.Command.Path
 			capturedArgs = cmdTransport.Command.Args
