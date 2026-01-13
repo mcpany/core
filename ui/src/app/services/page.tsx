@@ -129,6 +129,7 @@ export default function ServicesPage() {
           loadBalancingStrategy: 0,
           ...template.config,
           // Generate a default name/ID if helpful? No, force user to name it.
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } as any;
 
       setSelectedService(newService);
@@ -141,10 +142,12 @@ export default function ServicesPage() {
       try {
           if (selectedService.id) {
                // Update
+               // eslint-disable-next-line @typescript-eslint/no-explicit-any
                await apiClient.updateService(selectedService as any);
                toast({ title: "Service Updated", description: "Service configuration saved." });
           } else {
               // Create
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
               await apiClient.registerService(selectedService as any);
               toast({ title: "Service Created", description: "New service registered successfully." });
           }
