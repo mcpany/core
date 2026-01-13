@@ -409,7 +409,7 @@ func validateCommandLineService(commandLineService *configv1.CommandLineUpstream
 
 	// Only validate command existence if not running in a container
 	if commandLineService.GetContainerEnvironment().GetImage() == "" {
-		if err := validateCommandExists(commandLineService.GetCommand()); err != nil {
+		if err := validateCommandExists(commandLineService.GetCommand(), commandLineService.GetWorkingDirectory()); err != nil {
 			return fmt.Errorf("command_line_service command validation failed: %w", err)
 		}
 	}
@@ -463,7 +463,7 @@ func validateMcpService(mcpService *configv1.McpUpstreamService) error {
 
 		// If running in Docker (container_image is set), we don't enforce host path/command restrictions
 		if stdioConn.GetContainerImage() == "" {
-			if err := validateCommandExists(stdioConn.GetCommand()); err != nil {
+			if err := validateCommandExists(stdioConn.GetCommand(), stdioConn.GetWorkingDirectory()); err != nil {
 				return fmt.Errorf("mcp service with stdio_connection command validation failed: %w", err)
 			}
 
@@ -771,7 +771,7 @@ func validateProfileDefinition(_ *configv1.ProfileDefinition) error {
 	return nil
 }
 
-func validateCommandExists(command string) error {
+func validateCommandExists(command string, workingDir string) error {
 	// If the command is an absolute path, check if it exists and is executable
 	if filepath.IsAbs(command) {
 		info, err := osStat(command)
@@ -788,6 +788,24 @@ func validateCommandExists(command string) error {
 		// Note: os.Access(path, unix.X_OK) is better but unix package adds dependency.
 		// For now os.Stat is good enough to check existence.
 		// exec.LookPath handles permission checks better.
+	}
+
+	// If workingDir is provided and the command contains path separators (relative path),
+	// check if it exists relative to workingDir.
+	if workingDir != "" && (filepath.Base(command) != command) {
+		fullPath := filepath.Join(workingDir, command)
+		info, err := osStat(fullPath)
+		if err == nil {
+			if info.IsDir() {
+				return fmt.Errorf("%q is a directory, not an executable (relative to %q)", command, workingDir)
+			}
+			// Command exists relative to working dir
+			return nil
+		}
+		if !os.IsNotExist(err) {
+			return fmt.Errorf("failed to check executable %q (relative to %q): %w", command, workingDir, err)
+		}
+		// If not found relative to workingDir, fall through to LookPath (which might find it in PATH or CWD)
 	}
 
 	// exec.LookPath searches for the executable in the directories named by the PATH environment variable.
