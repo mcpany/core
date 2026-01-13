@@ -13,6 +13,18 @@ import (
 	"time"
 )
 
+// IPResolver defines an interface for looking up IP addresses.
+// It matches net.Resolver.LookupIP signature.
+type IPResolver interface {
+	LookupIP(ctx context.Context, network, host string) ([]net.IP, error)
+}
+
+// NetDialer defines an interface for dialing network connections.
+// It matches net.Dialer.DialContext signature.
+type NetDialer interface {
+	DialContext(ctx context.Context, network, address string) (net.Conn, error)
+}
+
 // SafeDialer provides control over outbound connections to prevent SSRF.
 type SafeDialer struct {
 	// AllowLoopback allows connections to loopback addresses (127.0.0.1, ::1).
@@ -22,6 +34,11 @@ type SafeDialer struct {
 	// AllowLinkLocal allows connections to link-local addresses (169.254.x.x, fe80::/10).
 	// This includes cloud metadata services.
 	AllowLinkLocal bool
+
+	// Resolver is used for DNS lookups. If nil, net.DefaultResolver is used.
+	Resolver IPResolver
+	// Dialer is used for establishing connections. If nil, &net.Dialer{} is used.
+	Dialer NetDialer
 }
 
 // NewSafeDialer creates a new SafeDialer with strict defaults (blocking all non-public IPs).
@@ -40,7 +57,12 @@ func (d *SafeDialer) DialContext(ctx context.Context, network, addr string) (net
 		return nil, fmt.Errorf("failed to split host and port: %w", err)
 	}
 
-	ips, err := net.DefaultResolver.LookupIP(ctx, "ip", host)
+	resolver := d.Resolver
+	if resolver == nil {
+		resolver = net.DefaultResolver
+	}
+
+	ips, err := resolver.LookupIP(ctx, "ip", host)
 	if err != nil {
 		return nil, fmt.Errorf("dns lookup failed for host %s: %w", host, err)
 	}
@@ -65,9 +87,24 @@ func (d *SafeDialer) DialContext(ctx context.Context, network, addr string) (net
 		}
 	}
 
-	// All IPs are safe. Dial the first one.
-	dialAddr := net.JoinHostPort(ips[0].String(), port)
-	return (&net.Dialer{}).DialContext(ctx, network, dialAddr)
+	dialer := d.Dialer
+	if dialer == nil {
+		dialer = &net.Dialer{}
+	}
+
+	// All IPs are safe. Dial them in order until one succeeds.
+	var firstErr error
+	for _, ip := range ips {
+		dialAddr := net.JoinHostPort(ip.String(), port)
+		conn, err := dialer.DialContext(ctx, network, dialAddr)
+		if err == nil {
+			return conn, nil
+		}
+		if firstErr == nil {
+			firstErr = err
+		}
+	}
+	return nil, firstErr
 }
 
 // SafeDialContext creates a connection to the given address, but strictly prevents
