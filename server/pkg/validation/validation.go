@@ -1,7 +1,3 @@
-// Copyright 2025 Author(s) of MCP Any
-// SPDX-License-Identifier: Apache-2.0
-
-// Package validation provides validation utilities for config files and other inputs.
 package validation
 
 import (
@@ -12,6 +8,7 @@ import (
 	"path/filepath"
 	"strconv"
 	"strings"
+	"sync"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
 )
@@ -61,13 +58,35 @@ var IsSecurePath = func(path string) error {
 }
 
 var (
-	allowedPaths []string
+	allowedPaths    []string
+	allowedPathsAbs []string
+	allowedPathsMu  sync.RWMutex
 )
 
 // SetAllowedPaths checks if a given file path is relative and does not contain any
 // path traversal sequences ("../").
 func SetAllowedPaths(paths []string) {
+	allowedPathsMu.Lock()
+	defer allowedPathsMu.Unlock()
+
 	allowedPaths = paths
+	allowedPathsAbs = make([]string, 0, len(paths))
+	for _, p := range paths {
+		p = strings.TrimSpace(p)
+		if p == "" {
+			continue
+		}
+		abs, err := filepath.Abs(p)
+		if err == nil {
+			// Resolve symlinks for the allowed path itself too, to catch canonical path
+			if realAbs, err := filepath.EvalSymlinks(abs); err == nil {
+				allowedPathsAbs = append(allowedPathsAbs, realAbs)
+			} else {
+				// If we can't eval symlinks (maybe it doesn't exist yet?), stick with abs
+				allowedPathsAbs = append(allowedPathsAbs, abs)
+			}
+		}
+	}
 }
 
 // IsAllowedPath checks if a given file path is allowed (inside CWD or AllowedPaths)
@@ -126,11 +145,8 @@ var IsAllowedPath = func(path string) error {
 
 	// Helper to check if child is inside parent
 	isInside := func(parent, child string) bool {
-		// We use EvalSymlinks on parent too just in case CWD is symlinked
-		realParent, err := filepath.EvalSymlinks(parent)
-		if err == nil {
-			parent = realParent
-		}
+		// We expect parent to be already resolved/absolute if possible
+		// But in case of CWD we still need to make sure.
 
 		rel, err := filepath.Rel(parent, child)
 		if err != nil {
@@ -144,21 +160,21 @@ var IsAllowedPath = func(path string) error {
 	if err != nil {
 		return fmt.Errorf("failed to get current working directory: %w", err)
 	}
+	// Resolve CWD symlinks once
+	if realCwd, err := filepath.EvalSymlinks(cwd); err == nil {
+		cwd = realCwd
+	}
 
 	if isInside(cwd, realPath) {
 		return nil
 	}
 
 	// 4. Check Allowed Paths
-	for _, allowedDir := range allowedPaths {
-		allowedDir = strings.TrimSpace(allowedDir)
-		if allowedDir == "" {
-			continue
-		}
+	allowedPathsMu.RLock()
+	defer allowedPathsMu.RUnlock()
 
-		// Resolve allowedDir to absolute too
-		allowedAbs, err := filepath.Abs(allowedDir)
-		if err == nil && isInside(allowedAbs, realPath) {
+	for _, allowedAbs := range allowedPathsAbs {
+		if isInside(allowedAbs, realPath) {
 			return nil
 		}
 	}

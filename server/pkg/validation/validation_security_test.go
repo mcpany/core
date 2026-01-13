@@ -31,12 +31,12 @@ func TestIsRelativePath_SymlinkTraversal_Block(t *testing.T) {
 	require.NoError(t, err)
 
 	// Verify IsRelativePath blocks it
-	err = IsRelativePath(symlinkName)
+	err = IsAllowedPath(symlinkName)
 	assert.Error(t, err)
 	assert.Contains(t, err.Error(), "is not allowed")
 }
 
-func TestIsRelativePath_NonExistentFile_Safe(t *testing.T) {
+func TestIsAllowedPath_NonExistentFile_Safe(t *testing.T) {
 	// Setup
 	tempDir := t.TempDir()
 	cwd, _ := os.Getwd()
@@ -44,15 +44,15 @@ func TestIsRelativePath_NonExistentFile_Safe(t *testing.T) {
 	require.NoError(t, os.Chdir(tempDir))
 
 	// Test a non-existent file in CWD
-	err := IsRelativePath("non_existent.txt")
+	err := IsAllowedPath("non_existent.txt")
 	assert.NoError(t, err)
 
 	// Test a non-existent file in a non-existent subdir
-	err = IsRelativePath("subdir/non_existent.txt")
+	err = IsAllowedPath("subdir/non_existent.txt")
 	assert.NoError(t, err)
 }
 
-func TestIsRelativePath_NonExistentFile_UnsafeSymlinkParent(t *testing.T) {
+func TestIsAllowedPath_NonExistentFile_UnsafeSymlinkParent(t *testing.T) {
 	// Setup
 	tempDir := t.TempDir()
 	cwd, _ := os.Getwd()
@@ -68,18 +68,18 @@ func TestIsRelativePath_NonExistentFile_UnsafeSymlinkParent(t *testing.T) {
 	require.NoError(t, err)
 
 	// Try to access a non-existent file through the symlink
-	// IsRelativePath("link_to_outside/missing.txt")
+	// IsAllowedPath("link_to_outside/missing.txt")
 	// "link_to_outside" exists and is a symlink to outside.
 	// The logic should walk up, find "link_to_outside" exists, resolve it -> /tmp/outside
 	// Then append /missing.txt -> /tmp/outside/missing.txt
 	// This is outside CWD, so it should fail.
 
-	err = IsRelativePath("link_to_outside/missing.txt")
+	err = IsAllowedPath("link_to_outside/missing.txt")
 	assert.Error(t, err)
 	assert.Contains(t, err.Error(), "is not allowed")
 }
 
-func TestIsRelativePath_EvalSymlinksError_Permission(t *testing.T) {
+func TestIsAllowedPath_EvalSymlinksError_Permission(t *testing.T) {
 	// Setup
 	tempDir := t.TempDir()
 	cwd, _ := os.Getwd()
@@ -99,9 +99,9 @@ func TestIsRelativePath_EvalSymlinksError_Permission(t *testing.T) {
 	// If we are root, this test might not trigger the specific error branch we want,
 	// but it's worth a try for coverage.
 
-	err := IsRelativePath(filepath.Join(noPermDir, "file.txt"))
+	err := IsAllowedPath(filepath.Join(noPermDir, "file.txt"))
 
-	// If EvalSymlinks fails with permission, IsRelativePath should return an error wrapping it.
+	// If EvalSymlinks fails with permission, IsAllowedPath should return an error wrapping it.
 	// However, our code has `if os.IsNotExist(err)`. Permission error is NOT NotExist.
 	// So it should go to `else { return fmt.Errorf("failed to resolve symlinks ...") }`
 
@@ -115,7 +115,7 @@ func TestIsRelativePath_EvalSymlinksError_Permission(t *testing.T) {
 	loopLink := "loop"
 	require.NoError(t, os.Symlink(loopLink, loopLink))
 
-	err = IsRelativePath(loopLink)
+	err = IsAllowedPath(loopLink)
 	assert.Error(t, err)
 	assert.Contains(t, err.Error(), "failed to resolve symlinks")
 }
