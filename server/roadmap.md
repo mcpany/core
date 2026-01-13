@@ -36,6 +36,7 @@
 - [x] **Robust Transport Error Reporting**: Improved error messages for command-based and Docker transports. Now captures and surfaces `stderr` when a process exits unexpectedly, aiding quick debugging of configuration or runtime errors.
 - [x] **Proactive Schema Sanitization**: Automatically fixes common schema issues (like missing `type: object`) in tool definitions to ensure compatibility with strict MCP clients (e.g. Claude Code).
 - [x] **Smart Config Error Messages**: Detect and guide users migrating from Claude Desktop configuration format (`mcpServers` vs `upstream_services`). (Friction Fighter)
+- [x] **Configuration Migration Tool**: A CLI command (`mcpany config migrate`) to convert `claude_desktop_config.json` to `mcpany` config format. (Friction Fighter)
 
 ## 2. Top 10 Recommended Features
 
@@ -62,8 +63,9 @@ These features represent the next logical steps for the product, focusing on Ent
 | 17 | **Safe Symlink Traversal** | **Security**: Add configuration options to strictly control symlink traversal policies (allow/deny/internal-only). | Medium |
 | 18 | **Multi-Model Advisor** | **Intelligence**: Orchestrate queries across multiple models (e.g. Ollama models) to synthesize insights. | High |
 | 19 | **MCP Server Aggregator/Proxy** | **Architecture**: A meta-server capability to discover, configure, and manage multiple downstream MCP servers dynamically. | High |
-| 18 | **Preset Service Gallery** | **UX**: A curated list of popular services (like `wttr.in`, `sqlite`, etc.) that can be added via CLI or UI with one click/command. | Medium |
-| 19 | **Configuration Migration Tool** | **DevX**: A CLI command to convert `claude_desktop_config.json` to `mcpany` config format. | Low |
+| 20 | **Preset Service Gallery** | **UX**: A curated list of popular services (like `wttr.in`, `sqlite`, etc.) that can be added via CLI or UI with one click/command. | Medium |
+| 21 | **Configurable Log Format** | **Ops**: Allow users to configure log format (JSON/Text) per sink (file, stdout) via configuration file, not just global settings. | Low |
+| 22 | **Service Health Dashboard** | **Observability**: A UI widget that shows the real-time health status (up/down, latency) of all connected upstream services in a grid view. | Medium |
 
 ## 3. Codebase Health
 

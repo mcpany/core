@@ -317,6 +317,36 @@ func newRootCmd() *cobra.Command { //nolint:gocyclo // Main entry point, expecte
 		},
 	}
 	configCmd.AddCommand(validateCmd)
+
+	migrateCmd := &cobra.Command{
+		Use:   "migrate [path-to-claude-config]",
+		Short: "Migrate a Claude Desktop configuration to MCP Any configuration",
+		Long: `Reads a claude_desktop_config.json file and outputs an equivalent mcpany configuration in YAML format.
+Example:
+  mcpany config migrate ~/Library/Application\ Support/Claude/claude_desktop_config.json > config.yaml`,
+		Args: cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			osFs := afero.NewOsFs()
+			path := args[0]
+
+			content, err := afero.ReadFile(osFs, path)
+			if err != nil {
+				return fmt.Errorf("failed to read input file: %w", err)
+			}
+
+			yamlOutput, err := config.MigrateClaudeConfig(content)
+			if err != nil {
+				return fmt.Errorf("failed to migrate configuration: %w", err)
+			}
+
+			if _, err := fmt.Fprintln(cmd.OutOrStdout(), yamlOutput); err != nil {
+				return fmt.Errorf("failed to write output: %w", err)
+			}
+			return nil
+		},
+	}
+	configCmd.AddCommand(migrateCmd)
+
 	rootCmd.AddCommand(configCmd)
 
 	config.BindRootFlags(rootCmd)
