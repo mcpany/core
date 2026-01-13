@@ -243,3 +243,8 @@ func TestInitStandardMiddlewares_AuditError(t *testing.T) {
 	assert.Error(t, err)
 	assert.Nil(t, standardMiddlewares)
 }
+
+func (m *MockToolManagerForRegistry) GetAllowedServiceIDs(profileID string) (map[string]bool, bool) {
+	args := m.Called(profileID)
+	return args.Get(0).(map[string]bool), args.Bool(1)
+}
