@@ -54,14 +54,14 @@ func resolveSecretRecursive(ctx context.Context, secret *configv1.SecretValue, d
 
 	switch secret.WhichValue() {
 	case configv1.SecretValue_PlainText_case:
-		return secret.GetPlainText(), nil
+		return strings.TrimSpace(secret.GetPlainText()), nil
 	case configv1.SecretValue_EnvironmentVariable_case:
 		envVar := secret.GetEnvironmentVariable()
 		value := os.Getenv(envVar)
 		if value == "" {
 			return "", fmt.Errorf("environment variable %q is not set", envVar)
 		}
-		return value, nil
+		return strings.TrimSpace(value), nil
 	case configv1.SecretValue_FilePath_case:
 		if err := validation.IsAllowedPath(secret.GetFilePath()); err != nil {
 			return "", fmt.Errorf("invalid secret file path %q: %w", secret.GetFilePath(), err)
@@ -72,7 +72,7 @@ func resolveSecretRecursive(ctx context.Context, secret *configv1.SecretValue, d
 		if err != nil {
 			return "", fmt.Errorf("failed to read secret from file %q: %w", secret.GetFilePath(), err)
 		}
-		return string(content), nil
+		return strings.TrimSpace(string(content)), nil
 	case configv1.SecretValue_RemoteContent_case:
 		remote := secret.GetRemoteContent()
 		req, err := http.NewRequestWithContext(ctx, "GET", remote.GetHttpUrl(), nil)
@@ -141,7 +141,7 @@ func resolveSecretRecursive(ctx context.Context, secret *configv1.SecretValue, d
 		if err != nil {
 			return "", fmt.Errorf("failed to read remote secret body: %w", err)
 		}
-		return string(body), nil
+		return strings.TrimSpace(string(body)), nil
 	case configv1.SecretValue_Vault_case:
 		vaultSecret := secret.GetVault()
 		config := &api.Config{
@@ -190,7 +190,7 @@ func resolveSecretRecursive(ctx context.Context, secret *configv1.SecretValue, d
 		// Handle KV v2 secrets, where data is nested under a "data" key.
 		if secretData, ok := data.Data["data"].(map[string]interface{}); ok {
 			if value, ok := secretData[vaultSecret.GetKey()].(string); ok {
-				return value, nil
+				return strings.TrimSpace(value), nil
 			}
 		}
 
@@ -199,7 +199,7 @@ func resolveSecretRecursive(ctx context.Context, secret *configv1.SecretValue, d
 		if !ok {
 			return "", fmt.Errorf("key %q not found in secret data at path %s", vaultSecret.GetKey(), vaultSecret.GetPath())
 		}
-		return value, nil
+		return strings.TrimSpace(value), nil
 	case configv1.SecretValue_AwsSecretManager_case:
 		smSecret := secret.GetAwsSecretManager()
 
@@ -261,13 +261,13 @@ func resolveSecretRecursive(ctx context.Context, secret *configv1.SecretValue, d
 
 			// Convert val to string
 			if strVal, ok := val.(string); ok {
-				return strVal, nil
+				return strings.TrimSpace(strVal), nil
 			}
 			// Try to convert other types to string
-			return fmt.Sprintf("%v", val), nil
+			return strings.TrimSpace(fmt.Sprintf("%v", val)), nil
 		}
 
-		return secretVal, nil
+		return strings.TrimSpace(secretVal), nil
 	default:
 		return "", nil
 	}
