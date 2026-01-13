@@ -162,6 +162,14 @@ export const apiClient = {
         // For E2E, we mainly check list. Let's assume list covers status.
         return {} as any;
     },
+    getServiceHealthHistory: async (name: string) => {
+        const res = await fetchWithAuth(`/api/v1/services/health-history?service=${encodeURIComponent(name)}`);
+        if (!res.ok) {
+             // Return empty history on error to avoid breaking UI
+             return { history: [] };
+        }
+        return res.json();
+    },
     registerService: async (config: UpstreamServiceConfig) => {
         // Map camelCase (UI) to snake_case (Server REST)
         const payload: any = {

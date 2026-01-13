@@ -82,6 +82,7 @@ func NewChecker(uc *configv1.UpstreamServiceConfig) health.Checker {
 				status = 1.0
 			}
 			metrics.SetGauge(healthStatusGauge, status, serviceName)
+			GetHistoryManager().AddRecord(serviceName, state.Status == health.StatusUp)
 			logging.GetLogger().Info("health status changed", "service", serviceName, "status", state.Status)
 		}),
 		// Using synchronous checks for now to simplify the implementation and ensure

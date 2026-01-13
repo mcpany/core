@@ -52,6 +52,7 @@ func (a *Application) createAPIHandler(store storage.Storage) http.Handler {
 		w.WriteHeader(http.StatusOK)
 		_, _ = w.Write([]byte("OK"))
 	})
+	mux.HandleFunc("/services/health-history", a.handleServiceHealthHistory())
 	// Doctor API
 	doctor := health.NewDoctor()
 	mux.Handle("/doctor", doctor.Handler())
@@ -884,4 +885,20 @@ func isUnsafeConfig(service *configv1.UpstreamServiceConfig) bool {
 		return true
 	}
 	return false
+}
+
+func (a *Application) handleServiceHealthHistory() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		name := r.URL.Query().Get("service")
+		if name == "" {
+			http.Error(w, "service name required", http.StatusBadRequest)
+			return
+		}
+
+		history := health.GetHistoryManager().GetHistory(name)
+		w.Header().Set("Content-Type", "application/json")
+		_ = json.NewEncoder(w).Encode(map[string]any{
+			"history": history,
+		})
+	}
 }

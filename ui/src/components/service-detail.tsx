@@ -24,6 +24,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { RegisterServiceDialog } from "./register-service-dialog";
 import { ConnectionDiagnosticDialog } from "@/components/diagnostics/connection-diagnostic";
 import { Button } from "@/components/ui/button";
+import { HealthHistory } from "@/components/health-history";
 
 function DefinitionsTable<T extends { name: string; description?: string; type?: string; source?: string; }>({ title, data, icon, serviceId, linkPath }: { title: string; data?: T[], icon: React.ReactNode, serviceId: string, linkPath: string }) {
   if (!data || data.length === 0) {
@@ -293,6 +294,7 @@ export function ServiceDetail({ serviceId }: { serviceId: string }) {
              <Badge variant={isEnabled ? "default" : "secondary"} className="mt-2">
               {isEnabled ? "Enabled" : "Disabled"}
             </Badge>
+            <HealthHistory serviceName={service.name} />
           </div>
            <div className="flex items-center space-x-4">
              <ConnectionDiagnosticDialog service={service} />
