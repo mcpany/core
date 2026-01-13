@@ -12,11 +12,13 @@
 - [ ] **Plugin UI Extensions**: Allow server plugins to inject custom UI components.
 - [x] **Service Templates Library**: A built-in library of common service configurations (Postgres, Redis, Slack) to quickly spin up services without manual config.
 - [ ] **Configuration Versioning & Rollback**: UI to view history of service configuration changes and rollback to previous versions.
-- [ ] **Global Keyboard Shortcuts Manager**: A dedicated UI to view and customize keyboard shortcuts for power users.
 - [ ] **Server Health History**: Visual timeline of server up/down status over the last 24h.
+- [ ] **Context Menu for Resources**: Right-click interactions for resources (Copy URI, View Details) to improve usability.
+- [ ] **Breadcrumb Navigation Enhancements**: Improved breadcrumbs with dropdowns for sibling navigation.
 
 ### Completed Features
 
+- [x] **Global Keyboard Shortcuts Manager**: A dedicated UI to view and customize keyboard shortcuts for power users.
 - [x] **Global Search & Action Palette**: Enhanced Command Palette (Cmd+K) with navigation, system actions (Reload, Copy URL), and context-aware actions (Restart Service, Copy Resource URI).
 - [x] **Service Environment Variable Editor**: UI for managing environment variables and working directory for command-line services, with secret masking.
 - [x] **Network Topology Visualization**: Interactive graph of the MCP ecosystem. [Docs](server/docs/features/dynamic-ui.md)

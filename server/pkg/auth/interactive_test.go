@@ -58,6 +58,70 @@ func TestInitiateOAuth(t *testing.T) {
 	assert.Contains(t, err.Error(), "storage not initialized")
 }
 
+func TestInitiateOAuth_Credential(t *testing.T) {
+	store := memory.NewStore()
+	am := NewManager()
+	am.SetStorage(store)
+	ctx := context.Background()
+
+	// Seed Credential with OAuth
+	credID := "cred-1"
+	cred := &configv1.Credential{
+		Id: proto.String(credID),
+		Authentication: &configv1.Authentication{
+			AuthMethod: &configv1.Authentication_Oauth2{
+				Oauth2: &configv1.OAuth2Auth{
+					ClientId:         &configv1.SecretValue{Value: &configv1.SecretValue_PlainText{PlainText: "client-id"}},
+					ClientSecret:     &configv1.SecretValue{Value: &configv1.SecretValue_PlainText{PlainText: "client-secret"}},
+					AuthorizationUrl: proto.String("https://provider.com/auth"),
+					TokenUrl:         proto.String("https://provider.com/token"),
+					Scopes:           proto.String("scope1"),
+				},
+			},
+		},
+	}
+	err := store.SaveCredential(ctx, cred)
+	require.NoError(t, err)
+
+	url, state, err := am.InitiateOAuth(ctx, "user1", "", credID, "http://localhost/cb")
+	require.NoError(t, err)
+	assert.Contains(t, url, "https://provider.com/auth")
+	assert.Contains(t, url, "client_id=client-id")
+	assert.NotEmpty(t, state)
+
+	// Test invalid credential
+	_, _, err = am.InitiateOAuth(ctx, "user1", "", "invalid-cred", "http://localhost/cb")
+	assert.Error(t, err)
+
+	// Test credential without Auth config
+	credNoAuth := &configv1.Credential{Id: proto.String("no-auth")}
+	err = store.SaveCredential(ctx, credNoAuth)
+	require.NoError(t, err)
+	_, _, err = am.InitiateOAuth(ctx, "user1", "", "no-auth", "http://localhost/cb")
+	assert.Error(t, err)
+}
+
+func TestResolveSecretValue(t *testing.T) {
+	t.Run("PlainText", func(t *testing.T) {
+		sv := &configv1.SecretValue{
+			Value: &configv1.SecretValue_PlainText{PlainText: "secret"},
+		}
+		assert.Equal(t, "secret", resolveSecretValue(sv))
+	})
+
+	t.Run("EnvironmentVariable", func(t *testing.T) {
+		// Not implemented yet, should return empty
+		sv := &configv1.SecretValue{
+			Value: &configv1.SecretValue_EnvironmentVariable{EnvironmentVariable: "ENV_VAR"},
+		}
+		assert.Equal(t, "", resolveSecretValue(sv))
+	})
+
+	t.Run("Nil", func(t *testing.T) {
+		assert.Equal(t, "", resolveSecretValue(nil))
+	})
+}
+
 func TestHandleOAuthCallback_Validation(t *testing.T) {
 	store := memory.NewStore()
 	am := NewManager()

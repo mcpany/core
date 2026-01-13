@@ -11,7 +11,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestIsRelativePath_SymlinkTraversal_Block(t *testing.T) {
+func TestIsAllowedPath_SymlinkTraversal_Block(t *testing.T) {
 	// Setup: Create a temp directory for the test
 	tempDir := t.TempDir()
 	cwd, _ := os.Getwd()
@@ -39,7 +39,7 @@ func TestIsRelativePath_SymlinkTraversal_Block(t *testing.T) {
 	assert.Contains(t, err.Error(), "is not allowed")
 }
 
-func TestIsRelativePath_NonExistentFile_Safe(t *testing.T) {
+func TestIsAllowedPath_NonExistentFile_Safe(t *testing.T) {
 	// Setup
 	tempDir := t.TempDir()
 	cwd, _ := os.Getwd()
@@ -55,7 +55,7 @@ func TestIsRelativePath_NonExistentFile_Safe(t *testing.T) {
 	assert.NoError(t, err)
 }
 
-func TestIsRelativePath_NonExistentFile_UnsafeSymlinkParent(t *testing.T) {
+func TestIsAllowedPath_NonExistentFile_UnsafeSymlinkParent(t *testing.T) {
 	// Setup
 	tempDir := t.TempDir()
 	cwd, _ := os.Getwd()
@@ -82,7 +82,7 @@ func TestIsRelativePath_NonExistentFile_UnsafeSymlinkParent(t *testing.T) {
 	assert.Contains(t, err.Error(), "is not allowed")
 }
 
-func TestIsRelativePath_EvalSymlinksError_Permission(t *testing.T) {
+func TestIsAllowedPath_EvalSymlinksError_Permission(t *testing.T) {
 	// Setup
 	tempDir := t.TempDir()
 	cwd, _ := os.Getwd()

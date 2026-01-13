@@ -24,7 +24,8 @@ import {
   MessageSquare,
   RefreshCw,
   Copy,
-  RotateCcw
+  RotateCcw,
+  Keyboard
 } from "lucide-react"
 
 import {
@@ -39,13 +40,17 @@ import {
 
 import { apiClient, ToolDefinition, ResourceDefinition, PromptDefinition, UpstreamServiceConfig } from "@/lib/client"
 import { useToast } from "@/hooks/use-toast"
+import { useShortcut, useKeyboardShortcuts } from "@/contexts/keyboard-shortcuts-context"
+import { KeyboardShortcutsDialog } from "@/components/keyboard-shortcuts-dialog"
 
 export function GlobalSearch() {
   const [open, setOpen] = React.useState(false)
+  const [showShortcuts, setShowShortcuts] = React.useState(false)
   const [query, setQuery] = React.useState("")
   const router = useRouter()
   const { setTheme } = useTheme()
   const { toast } = useToast()
+  const { getKeys } = useKeyboardShortcuts()
 
   const [services, setServices] = React.useState<UpstreamServiceConfig[]>([])
   const [tools, setTools] = React.useState<ToolDefinition[]>([])
@@ -53,6 +58,11 @@ export function GlobalSearch() {
   const [prompts, setPrompts] = React.useState<PromptDefinition[]>([])
   const [loading, setLoading] = React.useState(false)
   const lastFetched = React.useRef(0)
+
+  useShortcut("search.toggle", ["meta+k", "ctrl+k"], () => setOpen((open) => !open), {
+    label: "Toggle Search",
+    category: "Navigation"
+  })
 
   const fetchData = React.useCallback(async () => {
       setLoading(true)
@@ -71,18 +81,6 @@ export function GlobalSearch() {
       } finally {
         setLoading(false)
       }
-  }, [])
-
-  React.useEffect(() => {
-    const down = (e: KeyboardEvent) => {
-      if ((e.key === "k" || e.key === "K") && (e.metaKey || e.ctrlKey)) {
-        e.preventDefault()
-        setOpen((open) => !open)
-      }
-    }
-
-    document.addEventListener("keydown", down)
-    return () => document.removeEventListener("keydown", down)
   }, [])
 
   React.useEffect(() => {
@@ -111,6 +109,19 @@ export function GlobalSearch() {
           })
       })
   }, [runCommand, toast])
+
+  const formatKey = (keys: string[]) => {
+      if (!keys || keys.length === 0) return ""
+      const key = keys[0] // Just show first one
+      const parts = key.toLowerCase().split("+")
+      return parts.map(p => {
+          if (p === "meta" || p === "cmd") return "⌘"
+          if (p === "ctrl") return "⌃"
+          if (p === "shift") return "⇧"
+          if (p === "alt") return "⌥"
+          return p.toUpperCase()
+      }).join("")
+  }
 
   const restartService = React.useCallback(async (serviceName: string) => {
       runCommand(async () => {
@@ -153,9 +164,10 @@ export function GlobalSearch() {
         <span className="hidden lg:inline-flex">Search or type &gt; for actions...</span>
         <span className="inline-flex lg:hidden">Search...</span>
         <kbd className="pointer-events-none absolute right-[0.3rem] top-[0.3rem] hidden h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium opacity-100 sm:flex">
-          <span className="text-xs">⌘</span>K
+          {formatKey(getKeys("search.toggle"))}
         </kbd>
       </button>
+      <KeyboardShortcutsDialog open={showShortcuts} onOpenChange={setShowShortcuts} />
       <CommandDialog open={open} onOpenChange={setOpen}>
         <CommandInput placeholder="Type a command or search..." value={query} onValueChange={setQuery} />
         <CommandList>
@@ -197,6 +209,10 @@ export function GlobalSearch() {
           <CommandSeparator />
 
            <CommandGroup heading="System Actions">
+              <CommandItem value="keyboard shortcuts" onSelect={() => runCommand(() => setShowShortcuts(true))}>
+                  <Keyboard className="mr-2 h-4 w-4" />
+                  <span>Keyboard Shortcuts</span>
+              </CommandItem>
               <CommandItem value="reload window" onSelect={reloadWindow}>
                   <RotateCcw className="mr-2 h-4 w-4" />
                   <span>Reload Window</span>
