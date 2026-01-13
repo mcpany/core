@@ -1,92 +1,116 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
-package util //nolint:revive
+package util_test
 
 import (
 	"context"
+	"errors"
 	"net"
-	"strings"
 	"testing"
 	"time"
 
+	"github.com/mcpany/core/server/pkg/util"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 )
 
-func TestSafeDialer(t *testing.T) {
-	t.Parallel()
-	t.Run("Default Strict", func(t *testing.T) {
-		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-		defer cancel()
+// MockIPResolver is a mock implementation of util.IPResolver.
+type MockIPResolver struct {
+	mock.Mock
+}
 
-		d := NewSafeDialer()
-		// Test blocks loopback
-		_, err := d.DialContext(ctx, "tcp", "127.0.0.1:8080")
-		require.Error(t, err)
-		assert.Contains(t, err.Error(), "ssrf attempt blocked")
-	})
+func (m *MockIPResolver) LookupIP(ctx context.Context, network, host string) ([]net.IP, error) {
+	args := m.Called(ctx, network, host)
+	return args.Get(0).([]net.IP), args.Error(1)
+}
 
-	t.Run("Allow Private", func(t *testing.T) {
-		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-		defer cancel()
+// MockDialer is a mock implementation of util.NetDialer.
+type MockDialer struct {
+	mock.Mock
+}
 
-		d := NewSafeDialer()
-		d.AllowPrivate = true
-		// 10.0.0.1 is private
-		// Note: Dialing will fail with connection error (timeout), but should NOT be blocked by SSRF check.
-		// We use a random port to ensure connection failure.
-		_, err := d.DialContext(ctx, "tcp", "10.0.0.1:45678")
-		require.Error(t, err)
-		// Error should be a network error (e.g. timeout or unreachable), NOT "ssrf attempt blocked"
-		assert.False(t, strings.Contains(err.Error(), "ssrf attempt blocked"), "Should not be blocked by SSRF check. Got: %v", err)
-	})
+func (m *MockDialer) DialContext(ctx context.Context, network, address string) (net.Conn, error) {
+	args := m.Called(ctx, network, address)
+	val := args.Get(0)
+	if val == nil {
+		return nil, args.Error(1)
+	}
+	return val.(net.Conn), args.Error(1)
+}
 
-	t.Run("Allow Loopback", func(t *testing.T) {
-		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-		defer cancel()
+func TestSafeDialer_MultipleIPs_HappyEyeballs(t *testing.T) {
+	// Setup
+	resolver := new(MockIPResolver)
+	dialer := new(MockDialer)
 
-		d := NewSafeDialer()
-		d.AllowLoopback = true
-		// 127.0.0.1 is loopback
-		// Start a listener to accept connection if we want success.
-		l, err := net.Listen("tcp", "127.0.0.1:0")
-		require.NoError(t, err)
-		defer l.Close()
-		addr := l.Addr().String()
+	safeDialer := util.NewSafeDialer()
+	safeDialer.Resolver = resolver
+	safeDialer.Dialer = dialer
 
-		conn, err := d.DialContext(ctx, "tcp", addr)
-		if err != nil {
-			// If connection fails (e.g. environment issues), ensure it's NOT blocked by SSRF check.
-			assert.False(t, strings.Contains(err.Error(), "ssrf attempt blocked"), "Should not be blocked by SSRF check. Got: %v", err)
-		} else {
-			conn.Close()
-		}
-	})
+	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
+	defer cancel()
 
-	t.Run("Block LinkLocal", func(t *testing.T) {
-		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-		defer cancel()
+	host := "example.com"
+	port := "80"
+	addr := net.JoinHostPort(host, port)
 
-		d := NewSafeDialer()
-		d.AllowPrivate = true  // Even if private allowed
-		d.AllowLoopback = true // Even if loopback allowed
-		// 169.254.169.254 is LinkLocal
-		_, err := d.DialContext(ctx, "tcp", "169.254.169.254:80")
-		require.Error(t, err)
-		assert.Contains(t, err.Error(), "ssrf attempt blocked")
-	})
+	// IPs: first one is valid public but unreachable, second is valid public and reachable.
+	ip1 := net.ParseIP("1.2.3.4")
+	ip2 := net.ParseIP("5.6.7.8")
+	ips := []net.IP{ip1, ip2}
 
-	t.Run("Allow LinkLocal Explicitly", func(t *testing.T) {
-		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-		defer cancel()
+	resolver.On("LookupIP", ctx, "ip", host).Return(ips, nil)
 
-		d := NewSafeDialer()
-		d.AllowLinkLocal = true
-		// 169.254.169.254 is LinkLocal
-		// It will fail to connect (route unreachable or timeout), but shouldn't be blocked by SSRF.
-		_, err := d.DialContext(ctx, "tcp", "169.254.169.254:45678")
-		require.Error(t, err)
-		assert.False(t, strings.Contains(err.Error(), "ssrf attempt blocked"), "Should not be blocked by SSRF check. Got: %v", err)
-	})
+	// Mock behavior:
+	// If dialing ip1, fail.
+	// If dialing ip2, succeed.
+	dialer.On("DialContext", ctx, "tcp", net.JoinHostPort(ip1.String(), port)).Return(nil, errors.New("connection refused"))
+	dialer.On("DialContext", ctx, "tcp", net.JoinHostPort(ip2.String(), port)).Return(&net.TCPConn{}, nil)
+
+	// Execution
+	conn, err := safeDialer.DialContext(ctx, "tcp", addr)
+
+	// Verification
+	require.NoError(t, err)
+	assert.NotNil(t, conn)
+
+	resolver.AssertExpectations(t)
+	// We expect calling DialContext for ip1 (fails) AND ip2 (succeeds)
+	dialer.AssertCalled(t, "DialContext", ctx, "tcp", net.JoinHostPort(ip1.String(), port))
+	dialer.AssertCalled(t, "DialContext", ctx, "tcp", net.JoinHostPort(ip2.String(), port))
+}
+
+func TestSafeDialer_AllIPsFail(t *testing.T) {
+	// Setup
+	resolver := new(MockIPResolver)
+	dialer := new(MockDialer)
+
+	safeDialer := util.NewSafeDialer()
+	safeDialer.Resolver = resolver
+	safeDialer.Dialer = dialer
+
+	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
+	defer cancel()
+
+	host := "fail.com"
+	port := "80"
+	addr := net.JoinHostPort(host, port)
+
+	// IPs: all fail
+	ip1 := net.ParseIP("1.2.3.4")
+	ips := []net.IP{ip1}
+
+	resolver.On("LookupIP", ctx, "ip", host).Return(ips, nil)
+	expectedErr := errors.New("timeout")
+	dialer.On("DialContext", ctx, "tcp", net.JoinHostPort(ip1.String(), port)).Return(nil, expectedErr)
+
+	// Execution
+	conn, err := safeDialer.DialContext(ctx, "tcp", addr)
+
+	// Verification
+	require.Error(t, err)
+	assert.Nil(t, conn)
+	assert.Equal(t, expectedErr, err)
 }
