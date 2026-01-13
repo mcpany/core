@@ -207,12 +207,18 @@ func (u *Upstream) createProvider(ctx context.Context, config *configv1.Filesyst
 
 	case *configv1.FilesystemUpstreamService_Os:
 		u.validateLocalPaths(config.RootPaths)
+		if len(config.RootPaths) == 0 {
+			return nil, fmt.Errorf("no valid root paths defined for filesystem service")
+		}
 		prov = provider.NewLocalProvider(config.GetOs(), config.RootPaths, config.AllowedPaths, config.DeniedPaths)
 
 	default:
 		// Fallback to OsFs for backward compatibility if root_paths is set?
 		// Or defaulting to OsFs.
 		u.validateLocalPaths(config.RootPaths)
+		if len(config.RootPaths) == 0 {
+			return nil, fmt.Errorf("no valid root paths defined for filesystem service")
+		}
 		prov = provider.NewLocalProvider(nil, config.RootPaths, config.AllowedPaths, config.DeniedPaths)
 	}
 

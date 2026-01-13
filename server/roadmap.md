@@ -32,6 +32,7 @@
 - [x] **Pre-flight Config Validation**: Added pre-flight checks for command existence and working directory validity to prevent "silent failures" at runtime.
 - [x] **Strict Startup Validation**: Server now fails fast with descriptive errors if the initial configuration contains invalid services, preventing "zombie services" (Friction Fighter).
 - [x] **Filesystem Path Validation**: Proactive validation of configured `root_paths` for Filesystem services to warn about missing directories on startup.
+- [x] **Strict Filesystem Roots Validation**: The filesystem upstream now fails to start if no valid `root_paths` are configured (preventing "zombie" services that fail at runtime). (Friction Fighter)
 - [x] **Enhanced Secret Validation**: Strict startup validation for referenced environment variables and secret files. Server will now fail fast if a configured secret (env var or file) does not exist.
 - [x] **Robust Transport Error Reporting**: Improved error messages for command-based and Docker transports. Now captures and surfaces `stderr` when a process exits unexpectedly, aiding quick debugging of configuration or runtime errors.
 - [x] **Proactive Schema Sanitization**: Automatically fixes common schema issues (like missing `type: object`) in tool definitions to ensure compatibility with strict MCP clients (e.g. Claude Code).
@@ -64,6 +65,8 @@ These features represent the next logical steps for the product, focusing on Ent
 | 19 | **MCP Server Aggregator/Proxy** | **Architecture**: A meta-server capability to discover, configure, and manage multiple downstream MCP servers dynamically. | High |
 | 18 | **Preset Service Gallery** | **UX**: A curated list of popular services (like `wttr.in`, `sqlite`, etc.) that can be added via CLI or UI with one click/command. | Medium |
 | 19 | **Configuration Migration Tool** | **DevX**: A CLI command to convert `claude_desktop_config.json` to `mcpany` config format. | Low |
+| 20 | **Dynamic Filesystem Roots** | **UX**: Support `roots/list_changed` notification from clients to dynamically update allowed filesystem paths (e.g. VS Code workspace folders). | High |
+| 21 | **Windows Path Handling Audit** | **Reliability**: Comprehensive audit and testing of filesystem paths on Windows to ensure consistent behavior with POSIX systems (addressing ecosystem pain points). | Medium |
 
 ## 3. Codebase Health
 

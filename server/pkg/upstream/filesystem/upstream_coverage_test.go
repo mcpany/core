@@ -153,31 +153,6 @@ func TestFilesystemUpstream_PathResolution(t *testing.T) {
 	require.NoError(t, err)
 	defer os.RemoveAll(tempDir)
 
-	// Case 1: No root paths
-	configNoRoot := &configv1.UpstreamServiceConfig{
-		Name: proto.String("test_no_root"),
-		ServiceConfig: &configv1.UpstreamServiceConfig_FilesystemService{
-			FilesystemService: &configv1.FilesystemUpstreamService{
-				RootPaths: map[string]string{},
-				FilesystemType: &configv1.FilesystemUpstreamService_Os{
-					Os: &configv1.OsFs{},
-				},
-			},
-		},
-	}
-	id, _, _, err := u.Register(context.Background(), configNoRoot, tm, nil, nil, false)
-	require.NoError(t, err)
-
-	readTool, ok := tm.GetTool(id + ".read_file")
-	require.True(t, ok)
-
-	_, err = readTool.Execute(context.Background(), &tool.ExecutionRequest{
-		ToolName:  "read_file",
-		Arguments: map[string]interface{}{"path": "/test"},
-	})
-	assert.Error(t, err)
-	assert.Contains(t, err.Error(), "no root paths defined")
-
 	// Case 2: No matching root
 	configMismatch := &configv1.UpstreamServiceConfig{
 		Name: proto.String("test_mismatch"),
