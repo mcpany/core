@@ -40,6 +40,10 @@ func TestValidate_MoreServices(t *testing.T) {
 	}
 	insecurePath := insecureFile.Name()
 
+	// Allow temp directory for tests
+	validation.SetAllowedPaths([]string{os.TempDir()})
+	defer validation.SetAllowedPaths(nil)
+
 	tests := []struct {
 		name                string
 		config              *configv1.McpAnyServerConfig
@@ -72,6 +76,31 @@ func TestValidate_MoreServices(t *testing.T) {
 			expectedErrorString: "",
 		},
 		{
+			name: "MTLS Auth Unauthorized Path",
+			config: &configv1.McpAnyServerConfig{
+				UpstreamServices: []*configv1.UpstreamServiceConfig{
+					{
+						Name: proto.String("mtls-unauthorized"),
+						ServiceConfig: &configv1.UpstreamServiceConfig_HttpService{
+							HttpService: &configv1.HttpUpstreamService{
+								Address: proto.String("http://example.com"),
+							},
+						},
+						UpstreamAuth: &configv1.Authentication{
+							AuthMethod: &configv1.Authentication_Mtls{
+								Mtls: &configv1.MTLSAuth{
+									ClientCertPath: proto.String("/etc/passwd"),
+									ClientKeyPath:  proto.String("/etc/passwd"),
+								},
+							},
+						},
+					},
+				},
+			},
+			expectedErrorCount:  1,
+			expectedErrorString: "mtls 'client_cert_path' is not a secure path",
+		},
+		{
 			name: "MTLS Auth File Not Found",
 			config: &configv1.McpAnyServerConfig{
 				UpstreamServices: []*configv1.UpstreamServiceConfig{
@@ -85,8 +114,8 @@ func TestValidate_MoreServices(t *testing.T) {
 						UpstreamAuth: &configv1.Authentication{
 							AuthMethod: &configv1.Authentication_Mtls{
 								Mtls: &configv1.MTLSAuth{
-									ClientCertPath: proto.String("/non/existent/cert.pem"),
-									ClientKeyPath:  proto.String("/non/existent/key.pem"),
+									ClientCertPath: proto.String("non-existent-cert.pem"),
+									ClientKeyPath:  proto.String("non-existent-key.pem"),
 								},
 							},
 						},
@@ -579,7 +608,7 @@ func TestValidate_MoreServices(t *testing.T) {
 									// Use insecurePath (exists) for client cert/key to pass check
 									ClientCertPath: proto.String(insecurePath),
 									ClientKeyPath:  proto.String(insecurePath),
-									CaCertPath:     proto.String("/non/existent/ca.pem"),
+									CaCertPath:     proto.String("non-existent-ca.pem"),
 								},
 							},
 						},
@@ -781,16 +810,16 @@ func TestValidate_MtlsInsecure(t *testing.T) {
 	_ = fSecure.Close()
 	securePath := fSecure.Name()
 
-	// Mock IsSecurePath
-	originalIsSecurePath := validation.IsSecurePath
-	validation.IsSecurePath = func(path string) error {
+	// Mock IsAllowedPath
+	originalIsAllowedPath := validation.IsAllowedPath
+	validation.IsAllowedPath = func(path string) error {
 		if path == "insecure.pem" || path == insecurePath {
 			return fmt.Errorf("mock insecure path")
 		}
 		// All other paths are secure
 		return nil
 	}
-	defer func() { validation.IsSecurePath = originalIsSecurePath }()
+	defer func() { validation.IsAllowedPath = originalIsAllowedPath }()
 
 	// Mock osStat
 	originalOsStat := osStat

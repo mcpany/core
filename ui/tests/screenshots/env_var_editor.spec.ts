@@ -15,6 +15,9 @@ test.describe('Service Configuration Editor', () => {
     await page.getByRole('button', { name: 'Add Service' }).click();
     await expect(page.getByText('New Service')).toBeVisible();
 
+    // Switch to Connection tab
+    await page.getByRole('tab', { name: 'Connection' }).click();
+
     // Select "Command Line" type
     // Depending on the implementation of Select in Shadcn UI, it might need specific steps.
     // The SelectTrigger has text "Select type" initially.
@@ -25,7 +28,10 @@ test.describe('Service Configuration Editor', () => {
     await page.getByLabel('Command').fill('echo hello');
 
     // EnvVarEditor should be visible now
-    await expect(page.locator('label', { hasText: 'Environment Variables' })).toBeVisible();
+    // ServiceEditor has a label "Environment Variables" wrapping EnvVarEditor
+    // And EnvVarEditor has its own label "Environment Variables"
+    // Use first() to just check visibility of the section
+    await expect(page.locator('label', { hasText: 'Environment Variables' }).first()).toBeVisible();
 
     // Add a variable
     await page.getByRole('button', { name: 'Add Variable' }).click();
