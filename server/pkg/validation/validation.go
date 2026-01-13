@@ -1,3 +1,7 @@
+// Copyright 2026 Author(s) of MCP Any
+// SPDX-License-Identifier: Apache-2.0
+
+// Package validation provides validation utilities for config files and other inputs.
 package validation
 
 import (
@@ -58,7 +62,6 @@ var IsSecurePath = func(path string) error {
 }
 
 var (
-	allowedPaths    []string
 	allowedPathsAbs []string
 	allowedPathsMu  sync.RWMutex
 )
@@ -69,7 +72,6 @@ func SetAllowedPaths(paths []string) {
 	allowedPathsMu.Lock()
 	defer allowedPathsMu.Unlock()
 
-	allowedPaths = paths
 	allowedPathsAbs = make([]string, 0, len(paths))
 	for _, p := range paths {
 		p = strings.TrimSpace(p)
