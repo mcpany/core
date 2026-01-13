@@ -200,4 +200,23 @@ func TestCreateAPIHandler(t *testing.T) {
 		// If we can't force failure, we can't test the error path in createAPIHandler.
 		assert.Equal(t, http.StatusCreated, resp.StatusCode)
 	})
+
+	t.Run("CreateService_Unsafe_Blocked", func(t *testing.T) {
+		body := map[string]interface{}{
+			"name": "unsafe-service",
+			"mcp_service": map[string]interface{}{
+				"stdio_connection": map[string]interface{}{
+					"command": "echo",
+					"args":    []string{"hello"},
+				},
+			},
+		}
+		bodyBytes, _ := json.Marshal(body)
+
+		resp, err := http.Post(ts.URL+"/services", "application/json", bytes.NewReader(bodyBytes))
+		require.NoError(t, err)
+		defer resp.Body.Close()
+
+		assert.Equal(t, http.StatusBadRequest, resp.StatusCode)
+	})
 }
