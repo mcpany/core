@@ -1565,19 +1565,20 @@ func (a *Application) createAuthMiddleware() func(http.Handler) http.Handler {
 					return
 				}
 			} else {
-				// Sentinel Security: If no API key is configured, enforce localhost-only access.
-				// This prevents accidental exposure of the server to the public internet (RCE risk).
+				// Sentinel Security: If no API key is configured, enforce strict localhost-only access.
+				// We do NOT trust PrivateIPs (RFC1918) here because they could be a reverse proxy forwarding public traffic.
+				// If users want to access the server from the LAN or via a Proxy, they MUST configure an API Key.
 				host, _, err := net.SplitHostPort(r.RemoteAddr)
 				if err != nil {
 					// Fallback if RemoteAddr is weird, assume host is the string itself
 					host = r.RemoteAddr
 				}
 
-				// Check if the request is from a loopback address
+				// Check if the request is from a loopback address (127.0.0.0/8 or ::1)
 				ip := net.ParseIP(host)
-				if !util.IsPrivateIP(ip) {
-					logging.GetLogger().Warn("Blocked public internet request because no API Key is configured", "remote_addr", r.RemoteAddr)
-					http.Error(w, "Forbidden: Public access requires an API Key to be configured", http.StatusForbidden)
+				if !ip.IsLoopback() {
+					logging.GetLogger().Warn("Blocked non-loopback request because no API Key is configured", "remote_addr", r.RemoteAddr)
+					http.Error(w, "Forbidden: Remote access requires an API Key to be configured", http.StatusForbidden)
 					return
 				}
 			}
