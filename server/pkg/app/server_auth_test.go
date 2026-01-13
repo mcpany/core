@@ -259,7 +259,7 @@ func TestAuthMiddleware_LocalhostSecurity(t *testing.T) {
 		assert.Equal(t, http.StatusOK, rec.Code)
 	})
 
-	t.Run("No Key - Private IP Allowed", func(t *testing.T) {
+	t.Run("No Key - Private IP Denied (Sentinel Update)", func(t *testing.T) {
 		middleware := app.createAuthMiddleware() // No key
 		handler := middleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusOK)
@@ -270,7 +270,7 @@ func TestAuthMiddleware_LocalhostSecurity(t *testing.T) {
 		rec := httptest.NewRecorder()
 
 		handler.ServeHTTP(rec, req)
-		assert.Equal(t, http.StatusOK, rec.Code)
+		assert.Equal(t, http.StatusForbidden, rec.Code)
 	})
 
 	t.Run("No Key - Public IP Denied", func(t *testing.T) {
