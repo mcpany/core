@@ -203,9 +203,10 @@ func (p *poolImpl[T]) Get(ctx context.Context) (T, error) {
 			if p.disableHealthCheck || client.IsHealthy(ctx) {
 				return client, nil
 			}
-			_ = lo.Try(func() error {
-				return client.Close()
-			})
+			// Client is unhealthy, so we discard it.
+			// We ignore the error from Close() as we are discarding the client anyway.
+			// We don't use lo.Try here to avoid overhead of defer/recover on this path.
+			_ = client.Close()
 			p.sem.Release(1)
 			continue // Retry.
 		default:
@@ -231,9 +232,10 @@ func (p *poolImpl[T]) Get(ctx context.Context) (T, error) {
 				if p.disableHealthCheck || client.IsHealthy(ctx) {
 					return client, nil
 				}
-				_ = lo.Try(func() error {
-					return client.Close()
-				})
+				// Client is unhealthy, so we discard it.
+				// We ignore the error from Close() as we are discarding the client anyway.
+				// We don't use lo.Try here to avoid overhead of defer/recover on this path.
+				_ = client.Close()
 				p.sem.Release(1)
 				continue // Retry.
 			default:
@@ -251,9 +253,7 @@ func (p *poolImpl[T]) Get(ctx context.Context) (T, error) {
 
 				// Check again if the pool was closed while we were creating a client.
 				if p.closed.Load() {
-					_ = lo.Try(func() error {
-						return client.Close()
-					})
+					_ = client.Close()
 					p.sem.Release(1)
 					return zero, ErrPoolClosed
 				}
@@ -261,9 +261,10 @@ func (p *poolImpl[T]) Get(ctx context.Context) (T, error) {
 				if p.disableHealthCheck || client.IsHealthy(ctx) {
 					return client, nil
 				}
-				_ = lo.Try(func() error {
-					return client.Close()
-				})
+				// Client is unhealthy, so we discard it.
+				// We ignore the error from Close() as we are discarding the client anyway.
+				// We don't use lo.Try here to avoid overhead of defer/recover on this path.
+				_ = client.Close()
 				p.sem.Release(1)
 
 				// Backoff before retrying to avoid busy loop when upstream is down
@@ -291,9 +292,10 @@ func (p *poolImpl[T]) Get(ctx context.Context) (T, error) {
 			if p.disableHealthCheck || client.IsHealthy(ctx) {
 				return client, nil
 			}
-			_ = lo.Try(func() error {
-				return client.Close()
-			})
+			// Client is unhealthy, so we discard it.
+			// We ignore the error from Close() as we are discarding the client anyway.
+			// We don't use lo.Try here to avoid overhead of defer/recover on this path.
+			_ = client.Close()
 			p.sem.Release(1)
 			continue // Retry.
 		case <-ctx.Done():
