@@ -144,27 +144,8 @@ func TestValidateAuthentication_Extended(t *testing.T) {
 	})
 }
 
-func TestContextHelpers(t *testing.T) {
-	ctx := context.Background()
-
-	// APIKey
-	ctx = ContextWithAPIKey(ctx, "key")
-	val, ok := APIKeyFromContext(ctx)
-	assert.True(t, ok)
-	assert.Equal(t, "key", val)
-
-	// User
-	ctx = ContextWithUser(ctx, "user")
-	val, ok = UserFromContext(ctx)
-	assert.True(t, ok)
-	assert.Equal(t, "user", val)
-
-	// ProfileID
-	ctx = ContextWithProfileID(ctx, "profile")
-	val, ok = ProfileIDFromContext(ctx)
-	assert.True(t, ok)
-	assert.Equal(t, "profile", val)
-}
+// TestContextHelpers is already in context_test.go, but we can add more specific cases or just skip it here.
+// I will remove it from here to avoid redeclaration.
 
 func TestNewManager_Accessors(t *testing.T) {
 	m := NewManager()
