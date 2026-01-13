@@ -45,7 +45,7 @@ func ConvertMCPToolToProto(tool *mcp.Tool) (*pb.Tool, error) {
 	}
 
 	if tool.InputSchema != nil {
-		inputSchema, err := convertJSONSchemaToStruct(tool.InputSchema)
+		inputSchema, err := SanitizeJSONSchema(tool.InputSchema)
 		if err != nil {
 			return nil, fmt.Errorf("failed to convert input schema: %w", err)
 		}
