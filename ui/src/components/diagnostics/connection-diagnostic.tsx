@@ -9,9 +9,10 @@ import { useState } from "react";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { CheckCircle2, XCircle, Loader2, Play, Activity, Terminal, AlertTriangle } from "lucide-react";
+import { CheckCircle2, XCircle, Loader2, Play, Activity, Terminal } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { UpstreamServiceConfig } from "@/lib/types";
+import { analyzeConnectionError } from "@/lib/diagnostics-utils";
 
 interface DiagnosticStep {
   id: string;
@@ -123,12 +124,10 @@ export function ConnectionDiagnosticDialog({ service, trigger }: ConnectionDiagn
                  // Unhealthy or Degraded
                  addLog("backend_health", `Error: ${serviceStatus.message || "Unknown error"}`);
 
-                 if (serviceStatus.message?.includes("connection refused")) {
-                     addLog("backend_health", "Hint: Check if the upstream service is running and accessible from the MCP Any server container.");
-                 } else if (serviceStatus.message?.includes("handshake")) {
-                     addLog("backend_health", "Hint: Protocol error. Ensure upstream is a valid MCP server.");
-                 } else if (serviceStatus.message?.includes("timeout")) {
-                     addLog("backend_health", "Hint: Connection timed out. Check firewall or network latency.");
+                 const diagnosis = analyzeConnectionError(serviceStatus.message || "");
+                 if (diagnosis.category !== 'unknown') {
+                     addLog("backend_health", `Analysis: ${diagnosis.title} - ${diagnosis.description}`);
+                     addLog("backend_health", `Suggestion: ${diagnosis.suggestion}`);
                  }
 
                  updateStep("backend_health", { status: "failure", detail: serviceStatus.status });
