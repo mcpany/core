@@ -91,7 +91,9 @@ func checkHTTPConnectivity(ctx context.Context, address string) error {
 	if err != nil {
 		return err
 	}
-	defer resp.Body.Close()
+	defer func() {
+		_ = resp.Body.Close()
+	}()
 
 	// 5xx errors indicate the service is reachable but failing.
 	// 404 indicates reachable but path wrong.
@@ -131,6 +133,6 @@ func checkTCPConnectivity(ctx context.Context, address string, scheme string) er
 	if err != nil {
 		return err
 	}
-	conn.Close()
+	_ = conn.Close()
 	return nil
 }

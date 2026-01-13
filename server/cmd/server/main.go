@@ -311,7 +311,7 @@ func newRootCmd() *cobra.Command { //nolint:gocyclo // Main entry point, expecte
 
 			checkConnectivity, _ := cmd.Flags().GetBool("connectivity")
 			if checkConnectivity {
-				fmt.Fprintln(cmd.OutOrStdout(), "Performing connectivity checks...")
+				_, _ = fmt.Fprintln(cmd.OutOrStdout(), "Performing connectivity checks...")
 				if connectivityErrors := config.CheckConnectivity(context.Background(), configs); len(connectivityErrors) > 0 {
 					var connErrorMsgs []string
 					for _, e := range connectivityErrors {
@@ -319,7 +319,7 @@ func newRootCmd() *cobra.Command { //nolint:gocyclo // Main entry point, expecte
 					}
 					return fmt.Errorf("connectivity check failed with errors: \n- %s", strings.Join(connErrorMsgs, "\n- "))
 				}
-				fmt.Fprintln(cmd.OutOrStdout(), "Connectivity check passed.")
+				_, _ = fmt.Fprintln(cmd.OutOrStdout(), "Connectivity check passed.")
 			}
 
 			_, err = fmt.Fprintln(cmd.OutOrStdout(), "Configuration is valid.")
