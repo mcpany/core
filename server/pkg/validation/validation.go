@@ -70,10 +70,10 @@ func SetAllowedPaths(paths []string) {
 	allowedPaths = paths
 }
 
-// IsRelativePath checks if a given file path is relative and does not contain any
-// path traversal sequences ("../").
+// IsAllowedPath checks if a given file path is allowed (inside CWD or AllowedPaths)
+// and does not contain any path traversal sequences ("../").
 // It is a variable to allow mocking in tests.
-var IsRelativePath = func(path string) error {
+var IsAllowedPath = func(path string) error {
 	// 1. Basic security check (no .. in the path string itself)
 	if err := IsSecurePath(path); err != nil {
 		return err
