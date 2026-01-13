@@ -11,6 +11,7 @@ import (
 	"io"
 	"log/slog"
 	"strings"
+	"sync"
 
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
@@ -142,10 +143,15 @@ func (t *DockerTransport) Connect(ctx context.Context) (mcp.Connection, error) {
 
 	stdoutReader, stdoutWriter := io.Pipe()
 
+	// Capture stderr for better error reporting on early failure
+	stderrCapture := &tailBuffer{limit: 4096}
+
 	go func() {
 		defer func() { _ = stdoutWriter.Close() }()
 		logWriter := &slogWriter{log: log, level: slog.LevelError}
-		_, err := stdcopy.StdCopy(stdoutWriter, logWriter, hijackedResp.Reader)
+		// Write stderr to both capture buffer and log
+		multiStderr := io.MultiWriter(logWriter, stderrCapture)
+		_, err := stdcopy.StdCopy(stdoutWriter, multiStderr, hijackedResp.Reader)
 		if err != nil && err != io.EOF {
 			log.Error("Error demultiplexing docker stream", "error", err)
 		}
@@ -159,24 +165,34 @@ func (t *DockerTransport) Connect(ctx context.Context) (mcp.Connection, error) {
 	}
 	success = true
 	return &dockerConn{
-		rwc:     rwc,
-		decoder: json.NewDecoder(rwc),
-		encoder: json.NewEncoder(rwc),
+		rwc:           rwc,
+		decoder:       json.NewDecoder(rwc),
+		encoder:       json.NewEncoder(rwc),
+		stderrCapture: stderrCapture,
 	}, nil
 }
 
 // dockerConn provides a concrete implementation of the mcp.Connection interface,
 // tailored for communication with a service running in a Docker container.
 type dockerConn struct {
-	rwc     io.ReadWriteCloser
-	decoder *json.Decoder
-	encoder *json.Encoder
+	rwc           io.ReadWriteCloser
+	decoder       *json.Decoder
+	encoder       *json.Encoder
+	stderrCapture *tailBuffer
 }
 
 // Read decodes a single JSON-RPC message from the container's output stream.
 func (c *dockerConn) Read(_ context.Context) (jsonrpc.Message, error) {
 	var raw json.RawMessage
 	if err := c.decoder.Decode(&raw); err != nil {
+		if err == io.EOF {
+			// If we hit EOF, check if there was any stderr output captured.
+			// This usually indicates the container exited early (e.g. wrong command or config).
+			stderr := c.stderrCapture.String()
+			if stderr != "" {
+				return nil, fmt.Errorf("connection closed. Stderr: %s", stderr)
+			}
+		}
 		return nil, err
 	}
 
@@ -336,4 +352,29 @@ func (s *slogWriter) Write(p []byte) (n int, err error) {
 		s.log.Log(context.Background(), s.level, scanner.Text())
 	}
 	return len(p), nil
+}
+
+// tailBuffer is a thread-safe buffer that keeps the last N bytes written to it.
+type tailBuffer struct {
+	buf   []byte
+	limit int
+	mu    sync.Mutex
+}
+
+func (b *tailBuffer) Write(p []byte) (n int, err error) {
+	b.mu.Lock()
+	defer b.mu.Unlock()
+
+	b.buf = append(b.buf, p...)
+	if len(b.buf) > b.limit {
+		// Keep the last 'limit' bytes
+		b.buf = b.buf[len(b.buf)-b.limit:]
+	}
+	return len(p), nil
+}
+
+func (b *tailBuffer) String() string {
+	b.mu.Lock()
+	defer b.mu.Unlock()
+	return string(b.buf)
 }
