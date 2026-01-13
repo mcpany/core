@@ -639,14 +639,14 @@ func validateMtlsAuth(mtls *configv1.MTLSAuth) error {
 	if mtls.GetClientKeyPath() == "" {
 		return fmt.Errorf("mtls 'client_key_path' is empty")
 	}
-	if err := validation.IsSecurePath(mtls.GetClientCertPath()); err != nil {
+	if err := validation.IsRelativePath(mtls.GetClientCertPath()); err != nil {
 		return fmt.Errorf("mtls 'client_cert_path' is not a secure path: %w", err)
 	}
-	if err := validation.IsSecurePath(mtls.GetClientKeyPath()); err != nil {
+	if err := validation.IsRelativePath(mtls.GetClientKeyPath()); err != nil {
 		return fmt.Errorf("mtls 'client_key_path' is not a secure path: %w", err)
 	}
 	if mtls.GetCaCertPath() != "" {
-		if err := validation.IsSecurePath(mtls.GetCaCertPath()); err != nil {
+		if err := validation.IsRelativePath(mtls.GetCaCertPath()); err != nil {
 			return fmt.Errorf("mtls 'ca_cert_path' is not a secure path: %w", err)
 		}
 	}
@@ -712,6 +712,9 @@ func validateAuditConfig(audit *configv1.AuditConfig) error {
 		if audit.GetOutputPath() == "" {
 			return fmt.Errorf("output_path is required for file storage")
 		}
+		if err := validation.IsRelativePath(audit.GetOutputPath()); err != nil {
+			return fmt.Errorf("audit output_path %q is not a secure path: %w", audit.GetOutputPath(), err)
+		}
 	case configv1.AuditConfig_STORAGE_TYPE_WEBHOOK:
 		if audit.GetWebhookUrl() == "" {
 			return fmt.Errorf("webhook_url is required for webhook storage")
@@ -754,7 +757,7 @@ func validateGCSettings(gc *configv1.GCSettings) error {
 			if path == "" {
 				return fmt.Errorf("empty gc path")
 			}
-			if err := validation.IsSecurePath(path); err != nil {
+			if err := validation.IsRelativePath(path); err != nil {
 				return fmt.Errorf("gc path %q is not secure: %w", path, err)
 			}
 			// We might also checking if it's absolute?

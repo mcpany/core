@@ -987,7 +987,7 @@ func TestValidateGlobalSettings_Extended(t *testing.T) {
 				Audit: &configv1.AuditConfig{
 					Enabled:     boolPtr(true),
 					StorageType: storageTypePtr(configv1.AuditConfig_STORAGE_TYPE_FILE),
-					OutputPath:  strPtr("/var/log/audit.log"),
+					OutputPath:  strPtr("audit.log"),
 				},
 			},
 			expectErr: false,

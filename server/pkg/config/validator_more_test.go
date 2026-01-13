@@ -19,6 +19,10 @@ import (
 )
 
 func TestValidate_MoreServices(t *testing.T) {
+	// Allow temp dir for tests using absolute paths
+	validation.SetAllowedPaths([]string{os.TempDir(), "/non/existent"}) // Add /non/existent to allow path check to pass so we hit existence check
+	defer validation.SetAllowedPaths(nil)
+
 	// Mock execLookPath
 	oldLookPath := execLookPath
 	defer func() { execLookPath = oldLookPath }()
@@ -781,16 +785,16 @@ func TestValidate_MtlsInsecure(t *testing.T) {
 	_ = fSecure.Close()
 	securePath := fSecure.Name()
 
-	// Mock IsSecurePath
-	originalIsSecurePath := validation.IsSecurePath
-	validation.IsSecurePath = func(path string) error {
+	// Mock IsRelativePath (which is what validator uses now)
+	originalIsRelativePath := validation.IsRelativePath
+	validation.IsRelativePath = func(path string) error {
 		if path == "insecure.pem" || path == insecurePath {
 			return fmt.Errorf("mock insecure path")
 		}
 		// All other paths are secure
 		return nil
 	}
-	defer func() { validation.IsSecurePath = originalIsSecurePath }()
+	defer func() { validation.IsRelativePath = originalIsRelativePath }()
 
 	// Mock osStat
 	originalOsStat := osStat
