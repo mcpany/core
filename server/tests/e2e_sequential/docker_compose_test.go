@@ -24,6 +24,19 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+type authTransport struct {
+	base   http.RoundTripper
+	apiKey string
+}
+
+func (t *authTransport) RoundTrip(req *http.Request) (*http.Response, error) {
+	req.Header.Set("X-API-Key", t.apiKey)
+	if t.base == nil {
+		return http.DefaultTransport.RoundTrip(req)
+	}
+	return t.base.RoundTrip(req)
+}
+
 func TestDockerComposeE2E(t *testing.T) {
 	// t.Skip("Skipping E2E test as requested by user to unblock merge")
 	if os.Getenv("E2E_DOCKER") != "true" {
@@ -253,6 +266,9 @@ func simulateGeminiCLIWeather(t *testing.T, baseURL string) string {
 	client := mcp.NewClient(&mcp.Implementation{Name: "test-weather-client", Version: "1.0"}, nil)
 	transport := &mcp.StreamableClientTransport{
 		Endpoint: baseURL,
+		HTTPClient: &http.Client{
+			Transport: &authTransport{base: http.DefaultTransport, apiKey: "test-token"},
+		},
 	}
 
 	session, err := client.Connect(ctx, transport, nil)
@@ -309,7 +325,9 @@ func verifyToolMetricWithService(t *testing.T, metricsURL, toolName, serviceID s
 
 	for time.Now().Before(deadline) {
 		//nolint:gosec // G107: Url is constructed internally in test
-		resp, err := http.Get(metricsURL)
+		req, _ := http.NewRequest("GET", metricsURL, nil)
+		req.Header.Set("X-API-Key", "test-token")
+		resp, err := http.DefaultClient.Do(req)
 		if err != nil {
 			time.Sleep(100 * time.Millisecond)
 			continue
@@ -415,6 +433,9 @@ func simulateGeminiCLI(t *testing.T, baseURL string) {
 	client := mcp.NewClient(&mcp.Implementation{Name: "test-client", Version: "1.0"}, nil)
 	transport := &mcp.StreamableClientTransport{
 		Endpoint: baseURL,
+		HTTPClient: &http.Client{
+			Transport: &authTransport{base: http.DefaultTransport, apiKey: "test-token"},
+		},
 	}
 
 	session, err := client.Connect(ctx, transport, nil)
@@ -476,7 +497,9 @@ func verifyToolMetricDirect(t *testing.T, metricsURL, toolName string) {
 
 	for time.Now().Before(deadline) {
 		//nolint:gosec // G107: Url is constructed internally in test
-		resp, err := http.Get(metricsURL)
+		req, _ := http.NewRequest("GET", metricsURL, nil)
+		req.Header.Set("X-API-Key", "test-token")
+		resp, err := http.DefaultClient.Do(req)
 		if err != nil {
 			time.Sleep(100 * time.Millisecond)
 			continue

@@ -5,6 +5,11 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
+# Global API Key for the server (and UI).
+# Sentinel Security: We default to a test token to prevent accidental exposure,
+# but you SHOULD change this in production!
+apiKey: "test-token"
+
 replicaCount: 1
 
 image:
