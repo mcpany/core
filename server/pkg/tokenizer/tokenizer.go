@@ -169,6 +169,34 @@ func countTokensInValueRecursive(t Tokenizer, v interface{}, visited map[uintptr
 			count += vc
 		}
 		return count, nil
+	case []string:
+		count := 0
+		for _, item := range val {
+			c, err := t.CountTokens(item)
+			if err != nil {
+				return 0, err
+			}
+			count += c
+		}
+		return count, nil
+	case map[string]string:
+		count := 0
+		for key, item := range val {
+			// Count the key
+			kc, err := t.CountTokens(key)
+			if err != nil {
+				return 0, err
+			}
+			count += kc
+
+			// Count the value
+			vc, err := t.CountTokens(item)
+			if err != nil {
+				return 0, err
+			}
+			count += vc
+		}
+		return count, nil
 	case int:
 		return t.CountTokens(strconv.Itoa(val))
 	case int64:
@@ -227,6 +255,34 @@ func countTokensInValueSimple(t *SimpleTokenizer, v interface{}, visited map[uin
 			count += vc
 		}
 		return count, nil
+	case []string:
+		count := 0
+		for _, item := range val {
+			c, err := t.CountTokens(item)
+			if err != nil {
+				return 0, err
+			}
+			count += c
+		}
+		return count, nil
+	case map[string]string:
+		count := 0
+		for key, item := range val {
+			// Count the key
+			kc, err := t.CountTokens(key)
+			if err != nil {
+				return 0, err
+			}
+			count += kc
+
+			// Count the value
+			vc, err := t.CountTokens(item)
+			if err != nil {
+				return 0, err
+			}
+			count += vc
+		}
+		return count, nil
 	case float64:
 		return t.CountTokens(strconv.FormatFloat(val, 'g', -1, 64))
 	default:
@@ -273,6 +329,34 @@ func countTokensInValueWord(t *WordTokenizer, v interface{}, visited map[uintptr
 
 			// Count the value
 			vc, err := countTokensInValueWord(t, item, visited)
+			if err != nil {
+				return 0, err
+			}
+			count += vc
+		}
+		return count, nil
+	case []string:
+		count := 0
+		for _, item := range val {
+			c, err := t.CountTokens(item)
+			if err != nil {
+				return 0, err
+			}
+			count += c
+		}
+		return count, nil
+	case map[string]string:
+		count := 0
+		for key, item := range val {
+			// Count the key
+			kc, err := t.CountTokens(key)
+			if err != nil {
+				return 0, err
+			}
+			count += kc
+
+			// Count the value
+			vc, err := t.CountTokens(item)
 			if err != nil {
 				return 0, err
 			}
