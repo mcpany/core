@@ -133,6 +133,13 @@ func searchFilesTool(prov provider.Provider, fs afero.Fs) filesystemToolDef {
 				}
 
 				scanner := bufio.NewScanner(f)
+				// Increase buffer size to handle long lines (e.g., minified files, logs)
+				// Default is 64KB, we increase max capacity to 1MB.
+				// We start with a small buffer and let it grow.
+				const maxCapacity = 1024 * 1024 // 1MB
+				buf := make([]byte, 4096)
+				scanner.Buffer(buf, maxCapacity)
+
 				lineNum := 0
 				for scanner.Scan() {
 					// Check context inside scanning loop for large files

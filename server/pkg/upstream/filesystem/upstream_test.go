@@ -494,6 +494,44 @@ func TestFilesystemUpstream_Register_And_Execute(t *testing.T) {
 		assert.Contains(t, err.Error(), "exceeds limit")
 	})
 
+	// Test search_files long line (bug fix verification)
+	t.Run("search_files_long_line", func(t *testing.T) {
+		config.GetFilesystemService().ReadOnly = proto.Bool(false)
+		tm.ClearToolsForService(id)
+		u.Register(context.Background(), config, tm, nil, nil, false)
+
+		searchTool := findTool("search_files")
+		require.NotNil(t, searchTool)
+
+		longLineDir := filepath.Join(tempDir, "longline")
+		require.NoError(t, os.Mkdir(longLineDir, 0755))
+
+		// Create a file with a very long line (100KB)
+		longLine := make([]byte, 100*1024)
+		for i := range longLine {
+			longLine[i] = 'a'
+		}
+		// Append pattern
+		longLine = append(longLine, []byte(" match me")...)
+
+		err = os.WriteFile(filepath.Join(longLineDir, "long.txt"), longLine, 0644)
+		require.NoError(t, err)
+
+		// Search
+		res, err := searchTool.Execute(context.Background(), &tool.ExecutionRequest{
+			ToolName: "search_files",
+			Arguments: map[string]interface{}{
+				"path":    "/data/longline",
+				"pattern": "match me",
+			},
+		})
+		require.NoError(t, err)
+		resMap := res.(map[string]interface{})
+		matches := resMap["matches"].([]map[string]interface{})
+
+		assert.NotEmpty(t, matches, "Should find match in long line")
+	})
+
 	// Test Shutdown
 	t.Run("Shutdown", func(t *testing.T) {
 		err := u.Shutdown(context.Background())
