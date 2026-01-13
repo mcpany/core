@@ -96,17 +96,22 @@ func redactJSONFast(input []byte) []byte {
 			if bytes.Contains(keyContent, []byte{'\\'}) {
 				// Key contains escape sequences, unescape it to check for sensitivity.
 				// This is slower but safer.
-				quoted := make([]byte, len(keyContent)+2)
-				quoted[0] = '"'
-				copy(quoted[1:], keyContent)
-				quoted[len(quoted)-1] = '"'
-
-				var unescaped string
-				if err := json.Unmarshal(quoted, &unescaped); err == nil {
-					keyToCheck = []byte(unescaped)
-				} else {
-					// Fallback to raw content if unmarshal fails
+				// Limit the key size to prevent excessive allocation on malicious input
+				if len(keyContent) > 1024 {
 					keyToCheck = keyContent
+				} else {
+					quoted := make([]byte, len(keyContent)+2)
+					quoted[0] = '"'
+					copy(quoted[1:], keyContent)
+					quoted[len(quoted)-1] = '"'
+
+					var unescaped string
+					if err := json.Unmarshal(quoted, &unescaped); err == nil {
+						keyToCheck = []byte(unescaped)
+					} else {
+						// Fallback to raw content if unmarshal fails
+						keyToCheck = keyContent
+					}
 				}
 			} else {
 				keyToCheck = keyContent
