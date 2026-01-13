@@ -126,11 +126,16 @@ func (t *WordTokenizer) CountTokens(text string) (int, error) {
 
 // CountTokensInValue recursively counts tokens in arbitrary structures.
 func CountTokensInValue(t Tokenizer, v interface{}) (int, error) {
+	visited := make(map[uintptr]bool)
+	return countTokensInValueRecursive(t, v, visited)
+}
+
+func countTokensInValueRecursive(t Tokenizer, v interface{}, visited map[uintptr]bool) (int, error) {
 	if st, ok := t.(*SimpleTokenizer); ok {
-		return countTokensInValueSimple(st, v)
+		return countTokensInValueSimple(st, v, visited)
 	}
 	if wt, ok := t.(*WordTokenizer); ok {
-		return countTokensInValueWord(wt, v)
+		return countTokensInValueWord(wt, v, visited)
 	}
 
 	switch val := v.(type) {
@@ -139,7 +144,7 @@ func CountTokensInValue(t Tokenizer, v interface{}) (int, error) {
 	case []interface{}:
 		count := 0
 		for _, item := range val {
-			c, err := CountTokensInValue(t, item)
+			c, err := countTokensInValueRecursive(t, item, visited)
 			if err != nil {
 				return 0, err
 			}
@@ -157,7 +162,35 @@ func CountTokensInValue(t Tokenizer, v interface{}) (int, error) {
 			count += kc
 
 			// Count the value
-			vc, err := CountTokensInValue(t, item)
+			vc, err := countTokensInValueRecursive(t, item, visited)
+			if err != nil {
+				return 0, err
+			}
+			count += vc
+		}
+		return count, nil
+	case []string:
+		count := 0
+		for _, item := range val {
+			c, err := t.CountTokens(item)
+			if err != nil {
+				return 0, err
+			}
+			count += c
+		}
+		return count, nil
+	case map[string]string:
+		count := 0
+		for key, item := range val {
+			// Count the key
+			kc, err := t.CountTokens(key)
+			if err != nil {
+				return 0, err
+			}
+			count += kc
+
+			// Count the value
+			vc, err := t.CountTokens(item)
 			if err != nil {
 				return 0, err
 			}
@@ -178,11 +211,11 @@ func CountTokensInValue(t Tokenizer, v interface{}) (int, error) {
 	case nil:
 		return t.CountTokens("null")
 	default:
-		return countTokensReflect(t, val)
+		return countTokensReflect(t, val, visited)
 	}
 }
 
-func countTokensInValueSimple(t *SimpleTokenizer, v interface{}) (int, error) {
+func countTokensInValueSimple(t *SimpleTokenizer, v interface{}, visited map[uintptr]bool) (int, error) {
 	switch val := v.(type) {
 	case string:
 		return t.CountTokens(val)
@@ -197,7 +230,7 @@ func countTokensInValueSimple(t *SimpleTokenizer, v interface{}) (int, error) {
 	case []interface{}:
 		count := 0
 		for _, item := range val {
-			c, err := countTokensInValueSimple(t, item)
+			c, err := countTokensInValueSimple(t, item, visited)
 			if err != nil {
 				return 0, err
 			}
@@ -215,7 +248,35 @@ func countTokensInValueSimple(t *SimpleTokenizer, v interface{}) (int, error) {
 			count += kc
 
 			// Count the value
-			vc, err := countTokensInValueSimple(t, item)
+			vc, err := countTokensInValueSimple(t, item, visited)
+			if err != nil {
+				return 0, err
+			}
+			count += vc
+		}
+		return count, nil
+	case []string:
+		count := 0
+		for _, item := range val {
+			c, err := t.CountTokens(item)
+			if err != nil {
+				return 0, err
+			}
+			count += c
+		}
+		return count, nil
+	case map[string]string:
+		count := 0
+		for key, item := range val {
+			// Count the key
+			kc, err := t.CountTokens(key)
+			if err != nil {
+				return 0, err
+			}
+			count += kc
+
+			// Count the value
+			vc, err := t.CountTokens(item)
 			if err != nil {
 				return 0, err
 			}
@@ -225,11 +286,11 @@ func countTokensInValueSimple(t *SimpleTokenizer, v interface{}) (int, error) {
 	case float64:
 		return t.CountTokens(strconv.FormatFloat(val, 'g', -1, 64))
 	default:
-		return countTokensReflect(t, val)
+		return countTokensReflect(t, val, visited)
 	}
 }
 
-func countTokensInValueWord(t *WordTokenizer, v interface{}) (int, error) {
+func countTokensInValueWord(t *WordTokenizer, v interface{}, visited map[uintptr]bool) (int, error) {
 	// Optimization: For primitive types, WordTokenizer effectively returns
 	// max(1, int(1.0 * t.Factor)) assuming standard string representation
 	// (no spaces).
@@ -249,7 +310,7 @@ func countTokensInValueWord(t *WordTokenizer, v interface{}) (int, error) {
 	case []interface{}:
 		count := 0
 		for _, item := range val {
-			c, err := countTokensInValueWord(t, item)
+			c, err := countTokensInValueWord(t, item, visited)
 			if err != nil {
 				return 0, err
 			}
@@ -267,7 +328,35 @@ func countTokensInValueWord(t *WordTokenizer, v interface{}) (int, error) {
 			count += kc
 
 			// Count the value
-			vc, err := countTokensInValueWord(t, item)
+			vc, err := countTokensInValueWord(t, item, visited)
+			if err != nil {
+				return 0, err
+			}
+			count += vc
+		}
+		return count, nil
+	case []string:
+		count := 0
+		for _, item := range val {
+			c, err := t.CountTokens(item)
+			if err != nil {
+				return 0, err
+			}
+			count += c
+		}
+		return count, nil
+	case map[string]string:
+		count := 0
+		for key, item := range val {
+			// Count the key
+			kc, err := t.CountTokens(key)
+			if err != nil {
+				return 0, err
+			}
+			count += kc
+
+			// Count the value
+			vc, err := t.CountTokens(item)
 			if err != nil {
 				return 0, err
 			}
@@ -275,11 +364,11 @@ func countTokensInValueWord(t *WordTokenizer, v interface{}) (int, error) {
 		}
 		return count, nil
 	default:
-		return countTokensReflect(t, val)
+		return countTokensReflect(t, val, visited)
 	}
 }
 
-func countTokensReflect(t Tokenizer, v interface{}) (int, error) {
+func countTokensReflect(t Tokenizer, v interface{}, visited map[uintptr]bool) (int, error) {
 	// Check for fmt.Stringer first to respect custom formatting
 	if s, ok := v.(fmt.Stringer); ok {
 		return t.CountTokens(s.String())
@@ -294,12 +383,28 @@ func countTokensReflect(t Tokenizer, v interface{}) (int, error) {
 		if val.IsNil() {
 			return t.CountTokens("null")
 		}
-		return CountTokensInValue(t, val.Elem().Interface())
+		ptr := val.Pointer()
+		if visited[ptr] {
+			return 0, fmt.Errorf("cycle detected in value")
+		}
+		visited[ptr] = true
+		// We shouldn't defer delete(visited, ptr) because we want to detect shared references in a DAG too?
+		// No, usually for token counting, we might count shared references multiple times if they appear multiple times.
+		// But cycles must be avoided.
+		// If we want to allow DAGs but prevent cycles, we should remove from visited after return.
+		// However, for strict cycle detection in serialization-like traversal, removing after return is correct.
+		// If we leave it, we treat it as "already counted" which deduplicates shared nodes.
+		// Deduplication might be desired or not.
+		// "CountTokensInValue" usually implies counting the full expanded structure.
+		// So we should unmark it when leaving the branch.
+		defer delete(visited, ptr)
+
+		return countTokensInValueRecursive(t, val.Elem().Interface(), visited)
 	case reflect.Struct:
 		count := 0
 		for i := 0; i < val.NumField(); i++ {
 			if val.Type().Field(i).IsExported() {
-				c, err := CountTokensInValue(t, val.Field(i).Interface())
+				c, err := countTokensInValueRecursive(t, val.Field(i).Interface(), visited)
 				if err != nil {
 					return 0, err
 				}
@@ -310,7 +415,7 @@ func countTokensReflect(t Tokenizer, v interface{}) (int, error) {
 	case reflect.Slice, reflect.Array:
 		count := 0
 		for i := 0; i < val.Len(); i++ {
-			c, err := CountTokensInValue(t, val.Index(i).Interface())
+			c, err := countTokensInValueRecursive(t, val.Index(i).Interface(), visited)
 			if err != nil {
 				return 0, err
 			}
@@ -322,13 +427,13 @@ func countTokensReflect(t Tokenizer, v interface{}) (int, error) {
 		iter := val.MapRange()
 		for iter.Next() {
 			// Key
-			kc, err := CountTokensInValue(t, iter.Key().Interface())
+			kc, err := countTokensInValueRecursive(t, iter.Key().Interface(), visited)
 			if err != nil {
 				return 0, err
 			}
 			count += kc
 			// Value
-			vc, err := CountTokensInValue(t, iter.Value().Interface())
+			vc, err := countTokensInValueRecursive(t, iter.Value().Interface(), visited)
 			if err != nil {
 				return 0, err
 			}

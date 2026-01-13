@@ -196,7 +196,7 @@ func TestValidateHTTPServiceDefinition(t *testing.T) {
 	}
 }
 
-func TestIsRelativePath_AllowedDotDotPrefix(t *testing.T) {
+func TestIsAllowedPath_AllowedDotDotPrefix(t *testing.T) {
 	// Create a temporary directory for our "CWD"
 	cwd, err := os.MkdirTemp("", "mcpany-cwd")
 	require.NoError(t, err)
@@ -216,6 +216,6 @@ func TestIsRelativePath_AllowedDotDotPrefix(t *testing.T) {
 	require.NoError(t, err)
 
 	// This should PASS, but due to bug it FAILS
-	err = IsRelativePath("..foo")
-	require.NoError(t, err, "IsRelativePath should allow filenames starting with '..'")
+	err = IsAllowedPath("..foo")
+	require.NoError(t, err, "IsAllowedPath should allow filenames starting with '..'")
 }

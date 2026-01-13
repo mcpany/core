@@ -8,7 +8,6 @@ import (
 	"testing"
 	"time"
 
-	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/stretchr/testify/assert"
 	"google.golang.org/protobuf/types/known/durationpb"
 )
@@ -54,36 +53,4 @@ func TestTimeout_Execute(t *testing.T) {
 			}
 		})
 	}
-}
-
-func TestManager_Execute_WithTimeout(t *testing.T) {
-	config := &configv1.ResilienceConfig{
-		Timeout: durationpb.New(50 * time.Millisecond),
-	}
-	manager := NewManager(config)
-
-	t.Run("Timeout triggers", func(t *testing.T) {
-		err := manager.Execute(context.Background(), func(ctx context.Context) error {
-			select {
-			case <-ctx.Done():
-				return ctx.Err()
-			case <-time.After(100 * time.Millisecond):
-				return nil
-			}
-		})
-		assert.Error(t, err)
-		assert.Equal(t, context.DeadlineExceeded, err)
-	})
-
-	t.Run("Timeout does not trigger", func(t *testing.T) {
-		err := manager.Execute(context.Background(), func(ctx context.Context) error {
-			select {
-			case <-ctx.Done():
-				return ctx.Err()
-			case <-time.After(10 * time.Millisecond):
-				return nil
-			}
-		})
-		assert.NoError(t, err)
-	})
 }

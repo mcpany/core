@@ -801,10 +801,25 @@ func TestToolListFilteringConversionError(t *testing.T) {
 	require.NoError(t, err)
 	defer func() { _ = clientSession.Close() }()
 
-	// Test tools/list and expect an error because the chameleonTool is now invalid.
-	_, err = clientSession.ListTools(ctx, &mcp.ListToolsParams{})
-	require.Error(t, err, "ListTools should fail when a tool is invalid")
-	assert.Contains(t, err.Error(), "failed to convert tool", "Error message should indicate a conversion failure")
+	// Test tools/list and expect success, but the invalid tool should be omitted.
+	listResult, err := clientSession.ListTools(ctx, &mcp.ListToolsParams{})
+	require.NoError(t, err, "ListTools should succeed even when a tool is invalid")
+
+	// We expect only the builtin roots tool.
+	// The invalid tool should be filtered out.
+	found := false
+	for _, tool := range listResult.Tools {
+		if tool.Name == "test-service.valid-name" {
+			found = true
+			break
+		}
+	}
+	assert.False(t, found, "Invalid tool should not be present in the list")
+
+	// Ensure at least one tool (roots) is present if applicable, or just verify no error.
+	// Since we added `chameleon` and it became invalid, and `NewServer` adds roots tool.
+	// We expect 1 tool (roots).
+	assert.Len(t, listResult.Tools, 1, "Only valid tools should be returned")
 }
 
 func TestServer_Reload(t *testing.T) {
@@ -998,6 +1013,14 @@ func (m *smartToolManager) ClearToolsForService(_ string)            {}
 func (m *smartToolManager) SetProfiles(_ []string, _ []*configv1.ProfileDefinition) {}
 func (m *smartToolManager) IsServiceAllowed(_, _ string) bool                       { return true }
 
+func (m *smartToolManager) GetAllowedServiceIDs(profileID string) (map[string]bool, bool) {
+	// Permissive for testing
+	return map[string]bool{
+		"global-service":  true,
+		"profile-service": true,
+		"other-service":   true,
+	}, true
+}
 
 func TestServer_MiddlewareChain(t *testing.T) {
 	poolManager := pool.NewManager()

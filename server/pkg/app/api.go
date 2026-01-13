@@ -69,6 +69,7 @@ func (a *Application) createAPIHandler(store storage.Storage) http.Handler {
 	mux.HandleFunc("/profiles/", a.handleProfileDetail(store))
 	mux.HandleFunc("/collections", a.handleCollections(store))
 	mux.HandleFunc("/collections/", a.handleCollectionDetail(store))
+	mux.HandleFunc("/ws/logs", a.handleLogsWS())
 
 	return mux
 }
