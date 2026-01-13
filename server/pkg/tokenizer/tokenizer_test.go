@@ -70,6 +70,19 @@ func TestCountTokensInValue(t *testing.T) {
 	if got != 6 {
 		t.Errorf("CountTokensInValue = %d, want 6", got)
 	}
+
+	// Test specific types for SimpleTokenizer (optimization paths)
+	stringSlice := []string{"abcd", "efgh"} // 1 + 1 = 2
+	gotSlice, _ := CountTokensInValue(tokenizer, stringSlice)
+	if gotSlice != 2 {
+		t.Errorf("CountTokensInValue([]string) = %d, want 2", gotSlice)
+	}
+
+	stringMap := map[string]string{"key": "val"} // "key"(1) + "val"(1) = 2
+	gotMap, _ := CountTokensInValue(tokenizer, stringMap)
+	if gotMap != 2 {
+		t.Errorf("CountTokensInValue(map[string]string) = %d, want 2", gotMap)
+	}
 }
 
 func TestCountTokensInValue_Word(t *testing.T) {
@@ -86,6 +99,8 @@ func TestCountTokensInValue_Word(t *testing.T) {
 		{"string", "hello world", 2}, // "hello world" -> 2 words * 1.3 -> 2
 		{"slice", []interface{}{1, "hello"}, 1 + 1}, // 1 (int) + 1 (hello)
 		{"map", map[string]interface{}{"a": 1}, 1 + 1}, // "a" (1) + 1 (int)
+		{"string_slice", []string{"hello", "world"}, 1 + 1}, // 1 + 1
+		{"string_map", map[string]string{"a": "b"}, 1 + 1}, // "a"(1) + "b"(1)
 	}
 
 	for _, tt := range tests {
