@@ -39,6 +39,7 @@ import {
 
 import { apiClient, ToolDefinition, ResourceDefinition, PromptDefinition, UpstreamServiceConfig } from "@/lib/client"
 import { useToast } from "@/hooks/use-toast"
+import { useShortcut } from "@/components/shortcuts/shortcuts-provider"
 
 export function GlobalSearch() {
   const [open, setOpen] = React.useState(false)
@@ -73,17 +74,7 @@ export function GlobalSearch() {
       }
   }, [])
 
-  React.useEffect(() => {
-    const down = (e: KeyboardEvent) => {
-      if ((e.key === "k" || e.key === "K") && (e.metaKey || e.ctrlKey)) {
-        e.preventDefault()
-        setOpen((open) => !open)
-      }
-    }
-
-    document.addEventListener("keydown", down)
-    return () => document.removeEventListener("keydown", down)
-  }, [])
+  useShortcut("Cmd+K", "Global Search", "Navigation", () => setOpen((open) => !open))
 
   React.useEffect(() => {
     if (open) {

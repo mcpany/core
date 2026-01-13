@@ -6,6 +6,7 @@
 import React from 'react';
 import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
 import { GlobalSearch } from './global-search';
+import { ShortcutsProvider } from '@/components/shortcuts/shortcuts-provider';
 import { vi } from 'vitest';
 import { apiClient } from '@/lib/client';
 
@@ -78,12 +79,20 @@ describe('GlobalSearch', () => {
     });
 
     it('renders the search button', () => {
-        render(<GlobalSearch />);
+        render(
+            <ShortcutsProvider>
+                <GlobalSearch />
+            </ShortcutsProvider>
+        );
         expect(screen.getByText(/Search or type >/i)).toBeInTheDocument();
     });
 
     it('opens dialog on click and lists items', async () => {
-        render(<GlobalSearch />);
+        render(
+            <ShortcutsProvider>
+                <GlobalSearch />
+            </ShortcutsProvider>
+        );
 
         await act(async () => {
             fireEvent.click(screen.getByText(/Search or type >/i));
@@ -98,7 +107,11 @@ describe('GlobalSearch', () => {
     });
 
     it('navigates when item is selected', async () => {
-        render(<GlobalSearch />);
+        render(
+            <ShortcutsProvider>
+                <GlobalSearch />
+            </ShortcutsProvider>
+        );
 
         await act(async () => {
             fireEvent.click(screen.getByText(/Search or type >/i));
@@ -120,7 +133,11 @@ describe('GlobalSearch', () => {
     });
 
     it('triggers restart action', async () => {
-         render(<GlobalSearch />);
+         render(
+            <ShortcutsProvider>
+                <GlobalSearch />
+            </ShortcutsProvider>
+         );
 
         await act(async () => {
             fireEvent.click(screen.getByText(/Search or type >/i));
@@ -145,7 +162,11 @@ describe('GlobalSearch', () => {
     });
 
     it('triggers copy URI action', async () => {
-         render(<GlobalSearch />);
+         render(
+            <ShortcutsProvider>
+                <GlobalSearch />
+            </ShortcutsProvider>
+         );
 
         await act(async () => {
             fireEvent.click(screen.getByText(/Search or type >/i));
@@ -164,7 +185,11 @@ describe('GlobalSearch', () => {
     });
 
     it('triggers reload window action', async () => {
-         render(<GlobalSearch />);
+         render(
+            <ShortcutsProvider>
+                <GlobalSearch />
+            </ShortcutsProvider>
+         );
 
         await act(async () => {
             fireEvent.click(screen.getByText(/Search or type >/i));

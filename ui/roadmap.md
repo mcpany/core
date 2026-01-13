@@ -12,7 +12,7 @@
 - [ ] **Plugin UI Extensions**: Allow server plugins to inject custom UI components.
 - [x] **Service Templates Library**: A built-in library of common service configurations (Postgres, Redis, Slack) to quickly spin up services without manual config.
 - [ ] **Configuration Versioning & Rollback**: UI to view history of service configuration changes and rollback to previous versions.
-- [ ] **Global Keyboard Shortcuts Manager**: A dedicated UI to view and customize keyboard shortcuts for power users.
+- [x] **Global Keyboard Shortcuts Viewer**: A dedicated UI to view keyboard shortcuts. (Customization planned for future release).
 - [ ] **Server Health History**: Visual timeline of server up/down status over the last 24h.
 
 ### Completed Features

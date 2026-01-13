@@ -14,6 +14,8 @@ import { ThemeToggle } from "@/components/theme-toggle"
 import { GlobalSearch } from "@/components/global-search"
 import { Separator } from "@/components/ui/separator"
 import { UserProvider } from "@/components/user-context"
+import { ShortcutsProvider } from "@/components/shortcuts/shortcuts-provider"
+import { ShortcutsModal } from "@/components/shortcuts/shortcuts-modal"
 
 export const metadata: Metadata = {
   title: 'MCPAny Manager',
@@ -42,29 +44,32 @@ export default function RootLayout({
             disableTransitionOnChange
           >
           <TooltipProvider>
-            <UserProvider>
-              <SidebarProvider>
-                <AppSidebar />
-                <SidebarInset>
-                  <header className="flex h-14 shrink-0 items-center gap-2 border-b bg-background/95 backdrop-blur px-4 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">
-                    <SidebarTrigger className="-ml-1" />
-                    <Separator orientation="vertical" className="mr-2 h-4" />
-                     <div className="flex-1 flex items-center justify-between">
-                         <div className="font-medium text-sm">
-                             MCP Any
-                         </div>
-                         <div className="flex items-center gap-2">
-                             <GlobalSearch />
-                             <ThemeToggle />
-                         </div>
-                     </div>
-                  </header>
-                  <main className="flex-1 overflow-auto p-4 md:p-6 lg:p-8">
-                    {children}
-                  </main>
-                </SidebarInset>
-              </SidebarProvider>
-            </UserProvider>
+            <ShortcutsProvider>
+              <UserProvider>
+                <SidebarProvider>
+                  <AppSidebar />
+                  <SidebarInset>
+                    <header className="flex h-14 shrink-0 items-center gap-2 border-b bg-background/95 backdrop-blur px-4 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">
+                      <SidebarTrigger className="-ml-1" />
+                      <Separator orientation="vertical" className="mr-2 h-4" />
+                      <div className="flex-1 flex items-center justify-between">
+                          <div className="font-medium text-sm">
+                              MCP Any
+                          </div>
+                          <div className="flex items-center gap-2">
+                              <GlobalSearch />
+                              <ThemeToggle />
+                          </div>
+                      </div>
+                    </header>
+                    <main className="flex-1 overflow-auto p-4 md:p-6 lg:p-8">
+                      {children}
+                    </main>
+                  </SidebarInset>
+                  <ShortcutsModal />
+                </SidebarProvider>
+              </UserProvider>
+            </ShortcutsProvider>
             <Toaster />
           </TooltipProvider>
         </ThemeProvider>

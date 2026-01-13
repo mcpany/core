@@ -5,6 +5,7 @@
 
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { GlobalSearch } from '@/components/global-search';
+import { ShortcutsProvider } from '@/components/shortcuts/shortcuts-provider';
 import { vi } from 'vitest';
 
 // Mock the useRouter hook
@@ -76,13 +77,21 @@ describe('GlobalSearch', () => {
   });
 
   it('renders the search button', () => {
-    render(<GlobalSearch />);
-    expect(screen.getByText(/Search feature.../i)).toBeInTheDocument();
+    render(
+      <ShortcutsProvider>
+        <GlobalSearch />
+      </ShortcutsProvider>
+    );
+    expect(screen.getByText(/Search or type >/i)).toBeInTheDocument();
   });
 
   it('opens the dialog when button is clicked', async () => {
-    render(<GlobalSearch />);
-    fireEvent.click(screen.getByText(/Search feature.../i));
+    render(
+      <ShortcutsProvider>
+        <GlobalSearch />
+      </ShortcutsProvider>
+    );
+    fireEvent.click(screen.getByText(/Search or type >/i));
 
     await waitFor(() => {
         expect(screen.getByTestId('command-dialog')).toBeInTheDocument();
@@ -90,8 +99,27 @@ describe('GlobalSearch', () => {
   });
 
   it('opens the dialog on Cmd+K', async () => {
-    render(<GlobalSearch />);
-    fireEvent.keyDown(document, { key: 'k', metaKey: true });
+    // Mock navigator.platform to be Mac so Cmd+K works as expected with metaKey
+    Object.defineProperty(navigator, 'platform', {
+        value: 'MacIntel',
+        configurable: true
+    });
+
+    render(
+      <ShortcutsProvider>
+        <GlobalSearch />
+      </ShortcutsProvider>
+    );
+    // Simulate keyboard event with Meta key (Command)
+    // The implementation checks for e.key and modifiers.
+    // Ensure window event listener is triggered.
+    const event = new KeyboardEvent('keydown', {
+        key: 'k',
+        metaKey: true,
+        bubbles: true,
+        cancelable: true
+    });
+    window.dispatchEvent(event);
 
     await waitFor(() => {
         expect(screen.getByTestId('command-dialog')).toBeInTheDocument();
@@ -99,8 +127,12 @@ describe('GlobalSearch', () => {
   });
 
   it('displays suggestions and items', async () => {
-    render(<GlobalSearch />);
-    fireEvent.click(screen.getByText(/Search feature.../i));
+    render(
+      <ShortcutsProvider>
+        <GlobalSearch />
+      </ShortcutsProvider>
+    );
+    fireEvent.click(screen.getByText(/Search or type >/i));
 
     await waitFor(() => {
        expect(screen.getAllByText('Dashboard')).toHaveLength(1);
@@ -112,8 +144,12 @@ describe('GlobalSearch', () => {
   });
 
   it('navigates when an item is selected', async () => {
-    render(<GlobalSearch />);
-    fireEvent.click(screen.getByText(/Search feature.../i));
+    render(
+      <ShortcutsProvider>
+        <GlobalSearch />
+      </ShortcutsProvider>
+    );
+    fireEvent.click(screen.getByText(/Search or type >/i));
 
     await waitFor(() => {
        expect(screen.getAllByText('Dashboard')).toHaveLength(1);
@@ -124,8 +160,12 @@ describe('GlobalSearch', () => {
   });
 
   it('navigates to service detail', async () => {
-    render(<GlobalSearch />);
-    fireEvent.click(screen.getByText(/Search feature.../i));
+    render(
+      <ShortcutsProvider>
+        <GlobalSearch />
+      </ShortcutsProvider>
+    );
+    fireEvent.click(screen.getByText(/Search or type >/i));
 
     await waitFor(() => {
         expect(screen.getByText('Service A')).toBeInTheDocument();
@@ -136,8 +176,12 @@ describe('GlobalSearch', () => {
   });
 
    it('changes theme', async () => {
-    render(<GlobalSearch />);
-    fireEvent.click(screen.getByText(/Search feature.../i));
+    render(
+      <ShortcutsProvider>
+        <GlobalSearch />
+      </ShortcutsProvider>
+    );
+    fireEvent.click(screen.getByText(/Search or type >/i));
 
     await waitFor(() => {
         expect(screen.getByText('Light')).toBeInTheDocument();
