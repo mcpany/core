@@ -6,7 +6,7 @@ package tool
 import (
 	"bytes"
 	"context"
-	"encoding/json"
+	stdjson "encoding/json" // Renamed to stdjson to avoid conflict
 	"encoding/xml"
 	"fmt"
 	"io"
@@ -33,6 +33,7 @@ import (
 	"github.com/mcpany/core/server/pkg/resilience"
 	"github.com/mcpany/core/server/pkg/transformer"
 	"github.com/mcpany/core/server/pkg/util"
+	jsoniter "github.com/json-iterator/go"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/reflect/protoreflect"
@@ -44,6 +45,8 @@ const (
 	contentTypeJSON     = "application/json"
 	redactedPlaceholder = "[REDACTED]"
 )
+
+var fastJson = jsoniter.ConfigCompatibleWithStandardLibrary
 
 // Tool is the fundamental interface for any executable tool in the system.
 // Each implementation represents a different type of underlying service
@@ -86,7 +89,7 @@ type ExecutionRequest struct {
 	ToolName string `json:"name"`
 	// ToolInputs is the raw JSON message of the tool inputs. It is used by
 	// tools that need to unmarshal the inputs into a specific struct.
-	ToolInputs json.RawMessage `json:"toolInputs"`
+	ToolInputs stdjson.RawMessage `json:"toolInputs"`
 	// Arguments is a map of the tool inputs. It is used by tools that need to
 	// access the inputs as a map.
 	Arguments map[string]interface{} `json:"arguments"`
@@ -276,8 +279,9 @@ func (t *GRPCTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 		return nil, fmt.Errorf("failed to marshal grpc response to json: %w", err)
 	}
 
+	// ⚡ Bolt: Use json-iterator
 	var result map[string]any
-	if err := json.Unmarshal(responseJSON, &result); err != nil {
+	if err := fastJson.Unmarshal(responseJSON, &result); err != nil {
 		return string(responseJSON), nil
 	}
 
@@ -576,8 +580,9 @@ func (t *HTTPTool) prepareInputsAndURL(ctx context.Context, req *ExecutionReques
 		req.ToolInputs = bytes.TrimSpace(req.ToolInputs)
 	}
 
+	// ⚡ Bolt: Use json-iterator
 	if len(req.ToolInputs) > 0 {
-		decoder := json.NewDecoder(bytes.NewReader(req.ToolInputs))
+		decoder := fastJson.NewDecoder(bytes.NewReader(req.ToolInputs))
 		decoder.UseNumber()
 		if err := decoder.Decode(&inputs); err != nil {
 			return nil, "", fmt.Errorf("failed to unmarshal tool inputs: %w (inputs: %q)", err, string(req.ToolInputs))
@@ -693,6 +698,7 @@ func (t *HTTPTool) prepareBody(ctx context.Context, inputs map[string]any, metho
 		return nil, "", nil
 	}
 
+	// ⚡ Bolt: Use json-iterator
 	var body io.Reader
 	var contentType string
 
@@ -713,7 +719,7 @@ func (t *HTTPTool) prepareBody(ctx context.Context, inputs map[string]any, metho
 		if len(respData) > 0 {
 			body = bytes.NewReader(respData)
 			// Verify if it looks like JSON?
-			if json.Valid(respData) {
+			if fastJson.Valid(respData) {
 				contentType = contentTypeJSON
 			}
 		}
@@ -728,7 +734,7 @@ func (t *HTTPTool) prepareBody(ctx context.Context, inputs map[string]any, metho
 		}
 		body = strings.NewReader(renderedBody)
 	default:
-		jsonBytes, err := json.Marshal(inputs)
+		jsonBytes, err := fastJson.Marshal(inputs)
 		if err != nil {
 			return nil, "", fmt.Errorf("failed to marshal tool inputs to json: %w", err)
 		}
@@ -793,8 +799,9 @@ func (t *HTTPTool) processResponse(ctx context.Context, resp *http.Response) (an
 		return parsedResult, nil
 	}
 
+	// ⚡ Bolt: Use json-iterator
 	var result any
-	if err := json.Unmarshal(respBody, &result); err != nil {
+	if err := fastJson.Unmarshal(respBody, &result); err != nil {
 		return string(respBody), nil //nolint:nilerr
 	}
 
@@ -878,13 +885,16 @@ func (t *MCPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, erro
 	if len(bytes.TrimSpace(req.ToolInputs)) == 0 {
 		req.ToolInputs = []byte("{}")
 	}
-	decoder := json.NewDecoder(bytes.NewReader(req.ToolInputs))
+
+	// ⚡ Bolt: Use json-iterator
+	decoder := fastJson.NewDecoder(bytes.NewReader(req.ToolInputs))
 	decoder.UseNumber()
 	if err := decoder.Decode(&inputs); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal tool inputs: %w", err)
 	}
 
-	var arguments json.RawMessage
+	var arguments stdjson.RawMessage // Use stdjson for compatibility with SDK or struct? mcp.CallToolParams expects json.RawMessage (from encoding/json)
+	// mcp.CallToolParams.Arguments is json.RawMessage (standard).
 	switch {
 	case t.webhookClient != nil:
 		data := map[string]any{
@@ -898,7 +908,7 @@ func (t *MCPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, erro
 		}
 		respData := respEvent.Data()
 		if len(respData) > 0 {
-			arguments = json.RawMessage(respData)
+			arguments = stdjson.RawMessage(respData)
 		}
 	case t.inputTransformer != nil && t.inputTransformer.GetTemplate() != "": //nolint:staticcheck
 		tpl, err := transformer.NewTemplate(t.inputTransformer.GetTemplate(), "{{", "}}") //nolint:staticcheck
@@ -933,7 +943,7 @@ func (t *MCPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, erro
 		responseBytes = []byte(textContent.Text)
 	} else {
 		// Fallback for other content types - marshal the whole content part
-		responseBytes, err = json.Marshal(result.Content)
+		responseBytes, err = fastJson.Marshal(result.Content)
 		if err != nil {
 			return nil, fmt.Errorf("failed to marshal tool output: %w", err)
 		}
@@ -969,7 +979,7 @@ func (t *MCPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, erro
 	}
 
 	var resultMap map[string]any
-	if err := json.Unmarshal(responseBytes, &resultMap); err != nil {
+	if err := fastJson.Unmarshal(responseBytes, &resultMap); err != nil {
 		// If unmarshalling to a map fails, return the raw string content
 		return string(responseBytes), nil //nolint:nilerr // intentional fallback for non-JSON responses
 	}
@@ -1063,7 +1073,7 @@ func (t *OpenAPITool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 	if len(bytes.TrimSpace(req.ToolInputs)) == 0 {
 		req.ToolInputs = []byte("{}")
 	}
-	decoder := json.NewDecoder(bytes.NewReader(req.ToolInputs))
+	decoder := fastJson.NewDecoder(bytes.NewReader(req.ToolInputs))
 	decoder.UseNumber()
 	if err := decoder.Decode(&inputs); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal tool inputs: %w", err)
@@ -1094,7 +1104,7 @@ func (t *OpenAPITool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 			respData := respEvent.Data()
 			if len(respData) > 0 {
 				body = bytes.NewReader(respData)
-				if json.Valid(respData) {
+				if fastJson.Valid(respData) {
 					contentType = contentTypeJSON
 				}
 			}
@@ -1109,7 +1119,7 @@ func (t *OpenAPITool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 			}
 			body = strings.NewReader(renderedBody)
 		default:
-			jsonBytes, err := json.Marshal(inputs)
+			jsonBytes, err := fastJson.Marshal(inputs)
 			if err != nil {
 				return "", fmt.Errorf("failed to marshal tool inputs to json: %w", err)
 			}
@@ -1194,7 +1204,7 @@ func (t *OpenAPITool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 	}
 
 	var result map[string]any
-	if err := json.Unmarshal(respBody, &result); err != nil {
+	if err := fastJson.Unmarshal(respBody, &result); err != nil {
 		return string(respBody), nil
 	}
 
@@ -1299,273 +1309,6 @@ func NewLocalCommandTool(
 }
 
 // Tool returns the protobuf definition of the command-line tool.
-func (t *LocalCommandTool) Tool() *v1.Tool {
-	return t.tool
-}
-
-// MCPTool returns the MCP tool definition.
-func (t *LocalCommandTool) MCPTool() *mcp.Tool {
-	t.mcpToolOnce.Do(func() {
-		var err error
-		t.mcpTool, err = ConvertProtoToMCPTool(t.tool)
-		if err != nil {
-			logging.GetLogger().Error("Failed to convert tool to MCP tool", "toolName", t.tool.GetName(), "error", err)
-		}
-	})
-	return t.mcpTool
-}
-
-// GetCacheConfig returns the cache configuration for the command-line tool.
-func (t *LocalCommandTool) GetCacheConfig() *configv1.CacheConfig {
-	if t.callDefinition == nil {
-		return nil
-	}
-	return t.callDefinition.GetCache()
-}
-
-// Execute handles the execution of the command-line tool. It constructs a command
-// with arguments and environment variables derived from the tool inputs, runs
-// the command, and returns its output.
-func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) { //nolint:gocyclo
-	if t.initError != nil {
-		return nil, t.initError
-	}
-	if logging.GetLogger().Enabled(ctx, slog.LevelDebug) {
-		logging.GetLogger().Debug("executing tool", "tool", req.ToolName, "inputs", prettyPrint(req.ToolInputs, contentTypeJSON))
-	}
-
-	if allowed, err := EvaluateCompiledCallPolicy(t.policies, t.tool.GetName(), t.callID, req.ToolInputs); err != nil {
-		return nil, fmt.Errorf("failed to evaluate call policy: %w", err)
-	} else if !allowed {
-		return nil, fmt.Errorf("tool execution blocked by policy")
-	}
-	var inputs map[string]any
-	if len(bytes.TrimSpace(req.ToolInputs)) == 0 {
-		req.ToolInputs = []byte("{}")
-	}
-	decoder := json.NewDecoder(bytes.NewReader(req.ToolInputs))
-	decoder.UseNumber()
-	if err := decoder.Decode(&inputs); err != nil {
-		return nil, fmt.Errorf("failed to unmarshal tool inputs: %w", err)
-	}
-
-	args := []string{}
-	if t.callDefinition.GetArgs() != nil {
-		args = append(args, t.callDefinition.GetArgs()...)
-	}
-
-	// Substitute placeholders in args with input values
-	if inputs != nil {
-		for i, arg := range args {
-			for k, v := range inputs {
-				placeholder := "{{" + k + "}}"
-				if strings.Contains(arg, placeholder) {
-					val := util.ToString(v)
-					if err := checkForPathTraversal(val); err != nil {
-						return nil, fmt.Errorf("parameter %q: %w", k, err)
-					}
-					if err := checkForAbsolutePath(val); err != nil {
-						return nil, fmt.Errorf("parameter %q: %w", k, err)
-					}
-					if err := checkForArgumentInjection(val); err != nil {
-						return nil, fmt.Errorf("parameter %q: %w", k, err)
-					}
-					// If running a shell, validate that inputs are safe for shell execution
-					if isShellCommand(t.service.GetCommand()) {
-						if err := checkForShellInjection(val, arg, placeholder); err != nil {
-							return nil, fmt.Errorf("parameter %q: %w", k, err)
-						}
-					}
-					args[i] = strings.ReplaceAll(arg, placeholder, val)
-				}
-			}
-		}
-	}
-	if inputs != nil {
-		if argsVal, ok := inputs["args"]; ok {
-			// Check if args is allowed in the schema
-			argsAllowed := false
-			if inputSchema := t.tool.GetInputSchema(); inputSchema != nil {
-				if props := inputSchema.Fields["properties"].GetStructValue(); props != nil {
-					if _, ok := props.Fields["args"]; ok {
-						argsAllowed = true
-					}
-				}
-			}
-
-			if !argsAllowed {
-				return nil, fmt.Errorf("'args' parameter is not allowed for this tool")
-			}
-
-			if argsList, ok := argsVal.([]any); ok {
-				for _, arg := range argsList {
-					if argStr, ok := arg.(string); ok {
-						if err := checkForPathTraversal(argStr); err != nil {
-							return nil, fmt.Errorf("args parameter: %w", err)
-						}
-						if err := checkForAbsolutePath(argStr); err != nil {
-							return nil, fmt.Errorf("args parameter: %w", err)
-						}
-						if err := checkForArgumentInjection(argStr); err != nil {
-							return nil, fmt.Errorf("args parameter: %w", err)
-						}
-						// If running a shell, args passed dynamically should also be checked
-						if isShellCommand(t.service.GetCommand()) {
-							if err := checkForShellInjection(argStr, "", ""); err != nil {
-								return nil, fmt.Errorf("args parameter: %w", err)
-							}
-						}
-						args = append(args, argStr)
-					} else {
-						return nil, fmt.Errorf("non-string value in 'args' array")
-					}
-				}
-			} else {
-				return nil, fmt.Errorf("'args' parameter must be an array of strings")
-			}
-			delete(inputs, "args")
-		}
-	}
-
-	timeout := t.service.GetTimeout()
-	if timeout != nil {
-		var cancel context.CancelFunc
-		ctx, cancel = context.WithTimeout(ctx, timeout.AsDuration())
-		defer cancel()
-	}
-
-	executor := command.NewLocalExecutor()
-
-	env := []string{}
-	// Inherit only safe environment variables from host
-	// We strictly only preserve PATH and system identifiers to avoid leaking secrets
-	allowedEnvVars := []string{"PATH", "HOME", "USER", "SHELL", "TMPDIR", "SYSTEMROOT", "WINDIR"}
-	for _, key := range allowedEnvVars {
-		if val, ok := os.LookupEnv(key); ok {
-			env = append(env, fmt.Sprintf("%s=%s", key, val))
-		}
-	}
-
-	resolvedServiceEnv, err := util.ResolveSecretMap(ctx, t.service.GetEnv(), nil)
-	if err != nil {
-		return nil, fmt.Errorf("failed to resolve service env: %w", err)
-	}
-	for k, v := range resolvedServiceEnv {
-		env = append(env, fmt.Sprintf("%s=%s", k, v))
-	}
-
-	for _, param := range t.callDefinition.GetParameters() {
-		name := param.GetSchema().GetName()
-		if secret := param.GetSecret(); secret != nil {
-			secretValue, err := util.ResolveSecret(ctx, secret)
-			if err != nil {
-				return nil, fmt.Errorf("failed to resolve secret for parameter %q: %w", name, err)
-			}
-			env = append(env, fmt.Sprintf("%s=%s", name, secretValue))
-		} else if val, ok := inputs[name]; ok {
-			valStr := util.ToString(val)
-			if err := checkForPathTraversal(valStr); err != nil {
-				return nil, fmt.Errorf("parameter %q: %w", name, err)
-			}
-			if err := checkForAbsolutePath(valStr); err != nil {
-				return nil, fmt.Errorf("parameter %q: %w", name, err)
-			}
-			env = append(env, fmt.Sprintf("%s=%s", name, valStr))
-		}
-	}
-
-	startTime := time.Now()
-	limit := getMaxCommandOutputSize()
-
-	// Differentiate between JSON and environment variable-based communication
-	if t.service.GetCommunicationProtocol() == configv1.CommandLineUpstreamService_COMMUNICATION_PROTOCOL_JSON {
-		stdin, stdout, stderr, _, err := executor.ExecuteWithStdIO(ctx, t.service.GetCommand(), args, t.service.GetWorkingDirectory(), env)
-		if err != nil {
-			return nil, fmt.Errorf("failed to execute command with stdio: %w", err)
-		}
-		// We don't defer stdin.Close() here because we close it in the writer goroutine
-
-		var stderrBuf bytes.Buffer
-		stderrDone := make(chan struct{})
-		go func() {
-			defer close(stderrDone)
-			defer func() { _ = stderr.Close() }()
-			_, _ = io.Copy(&stderrBuf, io.LimitReader(stderr, limit))
-		}()
-
-		var unmarshaledInputs map[string]interface{}
-		decoder := json.NewDecoder(bytes.NewReader(req.ToolInputs))
-		decoder.UseNumber()
-		if err := decoder.Decode(&unmarshaledInputs); err != nil {
-			_ = stdin.Close()
-			return nil, fmt.Errorf("failed to unmarshal tool inputs: %w", err)
-		}
-
-		// Write inputs to stdin in a separate goroutine to avoid deadlock if the command crashes
-		go func() {
-			defer func() { _ = stdin.Close() }()
-			if err := json.NewEncoder(stdin).Encode(unmarshaledInputs); err != nil {
-				logging.GetLogger().Warn("Failed to encode inputs to stdin", "error", err)
-			}
-		}()
-
-		var result map[string]interface{}
-		if err := json.NewDecoder(io.LimitReader(stdout, limit)).Decode(&result); err != nil {
-			<-stderrDone
-			return nil, fmt.Errorf("failed to execute JSON CLI command: %w. Stderr: %s", err, stderrBuf.String())
-		}
-		return result, nil
-	}
-
-	stdout, stderr, exitCodeChan, err := executor.Execute(ctx, t.service.GetCommand(), args, t.service.GetWorkingDirectory(), env)
-	if err != nil {
-		return nil, fmt.Errorf("failed to execute command: %w", err)
-	}
-
-	var stdoutBuf, stderrBuf bytes.Buffer
-	var combinedBuf threadSafeBuffer
-	var wg sync.WaitGroup
-	wg.Add(2)
-
-	go func() {
-		defer wg.Done()
-		defer func() { _ = stdout.Close() }()
-		_, _ = io.Copy(io.MultiWriter(&stdoutBuf, &combinedBuf), io.LimitReader(stdout, limit))
-	}()
-	go func() {
-		defer wg.Done()
-		defer func() { _ = stderr.Close() }()
-		_, _ = io.Copy(io.MultiWriter(&stderrBuf, &combinedBuf), io.LimitReader(stderr, limit))
-	}()
-
-	wg.Wait()
-	exitCode := <-exitCodeChan
-	endTime := time.Now()
-
-	status := consts.CommandStatusSuccess
-	if ctx.Err() == context.DeadlineExceeded {
-		status = consts.CommandStatusTimeout
-		exitCode = -1 // Override exit code on timeout
-	} else if exitCode != 0 {
-		status = consts.CommandStatusError
-	}
-
-	result := map[string]interface{}{
-		"command":         t.service.GetCommand(),
-		"args":            args,
-		"stdout":          stdoutBuf.String(),
-		"stderr":          stderrBuf.String(),
-		"combined_output": combinedBuf.String(),
-		"start_time":      startTime,
-		"end_time":        endTime,
-		"return_code":     exitCode,
-		"status":          status,
-	}
-
-	return result, nil
-}
-
-// Tool returns the protobuf definition of the command-line tool.
 func (t *CommandTool) Tool() *v1.Tool {
 	return t.tool
 }
@@ -1611,7 +1354,9 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 	if len(bytes.TrimSpace(req.ToolInputs)) == 0 {
 		req.ToolInputs = []byte("{}")
 	}
-	decoder := json.NewDecoder(bytes.NewReader(req.ToolInputs))
+
+	// ⚡ Bolt: Use json-iterator
+	decoder := fastJson.NewDecoder(bytes.NewReader(req.ToolInputs))
 	decoder.UseNumber()
 	if err := decoder.Decode(&inputs); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal tool inputs: %w", err)
@@ -1642,6 +1387,12 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 					}
 					if err := checkForArgumentInjection(val); err != nil {
 						return nil, fmt.Errorf("parameter %q: %w", k, err)
+					}
+					// If running a shell, validate that inputs are safe for shell execution
+					if isShellCommand(t.service.GetCommand()) {
+						if err := checkForShellInjection(val, arg, placeholder); err != nil {
+							return nil, fmt.Errorf("parameter %q: %w", k, err)
+						}
 					}
 					args[i] = strings.ReplaceAll(arg, placeholder, val)
 				}
@@ -1678,6 +1429,12 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 						}
 						if err := checkForArgumentInjection(argStr); err != nil {
 							return nil, fmt.Errorf("args parameter: %w", err)
+						}
+						// If running a shell, args passed dynamically should also be checked
+						if isShellCommand(t.service.GetCommand()) {
+							if err := checkForShellInjection(argStr, "", ""); err != nil {
+								return nil, fmt.Errorf("args parameter: %w", err)
+							}
 						}
 						args = append(args, argStr)
 					} else {
@@ -1773,10 +1530,7 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 		}()
 
 		var unmarshaledInputs map[string]interface{}
-		if len(req.ToolInputs) == 0 {
-			req.ToolInputs = []byte("{}")
-		}
-		decoder := json.NewDecoder(bytes.NewReader(req.ToolInputs))
+		decoder := jsoniter.NewDecoder(bytes.NewReader(req.ToolInputs))
 		decoder.UseNumber()
 		if err := decoder.Decode(&unmarshaledInputs); err != nil {
 			_ = stdin.Close()
@@ -1786,13 +1540,296 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 		// Write inputs to stdin in a separate goroutine to avoid deadlock if the command crashes
 		go func() {
 			defer func() { _ = stdin.Close() }()
-			if err := json.NewEncoder(stdin).Encode(unmarshaledInputs); err != nil {
+			if err := fastJson.NewEncoder(stdin).Encode(unmarshaledInputs); err != nil {
 				logging.GetLogger().Warn("Failed to encode inputs to stdin", "error", err)
 			}
 		}()
 
 		var result map[string]interface{}
-		if err := json.NewDecoder(io.LimitReader(stdout, limit)).Decode(&result); err != nil {
+		if err := fastJson.NewDecoder(io.LimitReader(stdout, limit)).Decode(&result); err != nil {
+			<-stderrDone
+			return nil, fmt.Errorf("failed to execute JSON CLI command: %w. Stderr: %s", err, stderrBuf.String())
+		}
+		return result, nil
+	}
+
+	stdout, stderr, exitCodeChan, err := executor.Execute(ctx, t.service.GetCommand(), args, t.service.GetWorkingDirectory(), env)
+	if err != nil {
+		return nil, fmt.Errorf("failed to execute command: %w", err)
+	}
+
+	var stdoutBuf, stderrBuf bytes.Buffer
+	var combinedBuf threadSafeBuffer
+	var wg sync.WaitGroup
+	wg.Add(2)
+
+	go func() {
+		defer wg.Done()
+		defer func() { _ = stdout.Close() }()
+		_, _ = io.Copy(io.MultiWriter(&stdoutBuf, &combinedBuf), io.LimitReader(stdout, limit))
+	}()
+	go func() {
+		defer wg.Done()
+		defer func() { _ = stderr.Close() }()
+		_, _ = io.Copy(io.MultiWriter(&stderrBuf, &combinedBuf), io.LimitReader(stderr, limit))
+	}()
+
+	wg.Wait()
+	exitCode := <-exitCodeChan
+	endTime := time.Now()
+
+	status := consts.CommandStatusSuccess
+	if ctx.Err() == context.DeadlineExceeded {
+		status = consts.CommandStatusTimeout
+		exitCode = -1 // Override exit code on timeout
+	} else if exitCode != 0 {
+		status = consts.CommandStatusError
+	}
+
+	result := map[string]interface{}{
+		"command":         t.service.GetCommand(),
+		"args":            args,
+		"stdout":          stdoutBuf.String(),
+		"stderr":          stderrBuf.String(),
+		"combined_output": combinedBuf.String(),
+		"start_time":      startTime,
+		"end_time":        endTime,
+		"return_code":     exitCode,
+		"status":          status,
+	}
+
+	return result, nil
+}
+
+// Tool returns the protobuf definition of the command-line tool.
+func (t *LocalCommandTool) Tool() *v1.Tool {
+	return t.tool
+}
+
+// MCPTool returns the MCP tool definition.
+func (t *LocalCommandTool) MCPTool() *mcp.Tool {
+	t.mcpToolOnce.Do(func() {
+		var err error
+		t.mcpTool, err = ConvertProtoToMCPTool(t.tool)
+		if err != nil {
+			logging.GetLogger().Error("Failed to convert tool to MCP tool", "toolName", t.tool.GetName(), "error", err)
+		}
+	})
+	return t.mcpTool
+}
+
+// GetCacheConfig returns the cache configuration for the command-line tool.
+func (t *LocalCommandTool) GetCacheConfig() *configv1.CacheConfig {
+	if t.callDefinition == nil {
+		return nil
+	}
+	return t.callDefinition.GetCache()
+}
+
+// Execute handles the execution of the command-line tool. It constructs a command
+// with arguments and environment variables derived from the tool inputs, runs
+// the command, and returns its output.
+func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) { //nolint:gocyclo
+	if t.initError != nil {
+		return nil, t.initError
+	}
+	if logging.GetLogger().Enabled(ctx, slog.LevelDebug) {
+		logging.GetLogger().Debug("executing tool", "tool", req.ToolName, "inputs", prettyPrint(req.ToolInputs, contentTypeJSON))
+	}
+
+	if allowed, err := EvaluateCompiledCallPolicy(t.policies, t.tool.GetName(), t.callID, req.ToolInputs); err != nil {
+		return nil, fmt.Errorf("failed to evaluate call policy: %w", err)
+	} else if !allowed {
+		return nil, fmt.Errorf("tool execution blocked by policy")
+	}
+	var inputs map[string]any
+	// Handle empty inputs by treating them as empty JSON object
+	if len(bytes.TrimSpace(req.ToolInputs)) == 0 {
+		req.ToolInputs = []byte("{}")
+	}
+
+	// ⚡ Bolt: Use json-iterator
+	decoder := fastJson.NewDecoder(bytes.NewReader(req.ToolInputs))
+	decoder.UseNumber()
+	if err := decoder.Decode(&inputs); err != nil {
+		return nil, fmt.Errorf("failed to unmarshal tool inputs: %w", err)
+	}
+
+	args := []string{}
+	if t.callDefinition.GetArgs() != nil {
+		args = append(args, t.callDefinition.GetArgs()...)
+	}
+
+	// Determine execution environment early for validation
+	isDocker := t.service.GetContainerEnvironment() != nil && t.service.GetContainerEnvironment().GetImage() != ""
+
+	// Substitute placeholders in args with input values
+	if inputs != nil {
+		for i, arg := range args {
+			for k, v := range inputs {
+				placeholder := "{{" + k + "}}"
+				if strings.Contains(arg, placeholder) {
+					val := util.ToString(v)
+					if err := checkForPathTraversal(val); err != nil {
+						return nil, fmt.Errorf("parameter %q: %w", k, err)
+					}
+					if !isDocker {
+						if err := checkForAbsolutePath(val); err != nil {
+							return nil, fmt.Errorf("parameter %q: %w", k, err)
+						}
+					}
+					if err := checkForArgumentInjection(val); err != nil {
+						return nil, fmt.Errorf("parameter %q: %w", k, err)
+					}
+					// If running a shell, validate that inputs are safe for shell execution
+					if isShellCommand(t.service.GetCommand()) {
+						if err := checkForShellInjection(val, arg, placeholder); err != nil {
+							return nil, fmt.Errorf("parameter %q: %w", k, err)
+						}
+					}
+					args[i] = strings.ReplaceAll(arg, placeholder, val)
+				}
+			}
+		}
+	}
+
+	if inputs != nil {
+		if argsVal, ok := inputs["args"]; ok {
+			// Check if args is allowed in the schema
+			argsAllowed := false
+			if inputSchema := t.tool.GetInputSchema(); inputSchema != nil {
+				if props := inputSchema.Fields["properties"].GetStructValue(); props != nil {
+					if _, ok := props.Fields["args"]; ok {
+						argsAllowed = true
+					}
+				}
+			}
+
+			if !argsAllowed {
+				return nil, fmt.Errorf("'args' parameter is not allowed for this tool")
+			}
+
+			if argsList, ok := argsVal.([]any); ok {
+				for _, arg := range argsList {
+					if argStr, ok := arg.(string); ok {
+						if err := checkForPathTraversal(argStr); err != nil {
+							return nil, fmt.Errorf("args parameter: %w", err)
+						}
+						if !isDocker {
+							if err := checkForAbsolutePath(argStr); err != nil {
+								return nil, fmt.Errorf("args parameter: %w", err)
+							}
+						}
+						if err := checkForArgumentInjection(argStr); err != nil {
+							return nil, fmt.Errorf("args parameter: %w", err)
+						}
+						// If running a shell, args passed dynamically should also be checked
+						if isShellCommand(t.service.GetCommand()) {
+							if err := checkForShellInjection(argStr, "", ""); err != nil {
+								return nil, fmt.Errorf("args parameter: %w", err)
+							}
+						}
+						args = append(args, argStr)
+					} else {
+						return nil, fmt.Errorf("non-string value in 'args' array")
+					}
+				}
+			} else {
+				return nil, fmt.Errorf("'args' parameter must be an array of strings")
+			}
+			delete(inputs, "args")
+		}
+	}
+
+	timeout := t.service.GetTimeout()
+	if timeout != nil {
+		var cancel context.CancelFunc
+		ctx, cancel = context.WithTimeout(ctx, timeout.AsDuration())
+		defer cancel()
+	}
+
+	executor := command.NewLocalExecutor()
+
+	env := []string{}
+	// Only inherit safe environment variables from host for local execution
+	// For Docker execution, we should not inherit host environment variables at all
+	if !isDocker {
+		// We strictly only preserve PATH and system identifiers to avoid leaking secrets
+		allowedEnvVars := []string{"PATH", "HOME", "USER", "SHELL", "TMPDIR", "SYSTEMROOT", "WINDIR"}
+		for _, key := range allowedEnvVars {
+			if val, ok := os.LookupEnv(key); ok {
+				env = append(env, fmt.Sprintf("%s=%s", key, val))
+			}
+		}
+	}
+
+	resolvedServiceEnv, err := util.ResolveSecretMap(ctx, t.service.GetEnv(), nil)
+	if err != nil {
+		return nil, fmt.Errorf("failed to resolve service env: %w", err)
+	}
+	for k, v := range resolvedServiceEnv {
+		env = append(env, fmt.Sprintf("%s=%s", k, v))
+	}
+
+	for _, param := range t.callDefinition.GetParameters() {
+		name := param.GetSchema().GetName()
+		if secret := param.GetSecret(); secret != nil {
+			secretValue, err := util.ResolveSecret(ctx, secret)
+			if err != nil {
+				return nil, fmt.Errorf("failed to resolve secret for parameter %q: %w", name, err)
+			}
+			env = append(env, fmt.Sprintf("%s=%s", name, secretValue))
+		} else if val, ok := inputs[name]; ok {
+			valStr := util.ToString(val)
+			if err := checkForPathTraversal(valStr); err != nil {
+				return nil, fmt.Errorf("parameter %q: %w", name, err)
+			}
+			if !isDocker {
+				if err := checkForAbsolutePath(valStr); err != nil {
+					return nil, fmt.Errorf("parameter %q: %w", name, err)
+				}
+			}
+			env = append(env, fmt.Sprintf("%s=%s", name, valStr))
+		}
+	}
+
+	startTime := time.Now()
+	limit := getMaxCommandOutputSize()
+
+	// Differentiate between JSON and environment variable-based communication
+	if t.service.GetCommunicationProtocol() == configv1.CommandLineUpstreamService_COMMUNICATION_PROTOCOL_JSON {
+		stdin, stdout, stderr, _, err := executor.ExecuteWithStdIO(ctx, t.service.GetCommand(), args, t.service.GetWorkingDirectory(), env)
+		if err != nil {
+			return nil, fmt.Errorf("failed to execute command with stdio: %w", err)
+		}
+		// We don't defer stdin.Close() here because we close it in the writer goroutine
+
+		var stderrBuf bytes.Buffer
+		stderrDone := make(chan struct{})
+		go func() {
+			defer close(stderrDone)
+			defer func() { _ = stderr.Close() }()
+			_, _ = io.Copy(&stderrBuf, io.LimitReader(stderr, limit))
+		}()
+
+		var unmarshaledInputs map[string]interface{}
+		decoder := jsoniter.NewDecoder(bytes.NewReader(req.ToolInputs))
+		decoder.UseNumber()
+		if err := decoder.Decode(&unmarshaledInputs); err != nil {
+			_ = stdin.Close()
+			return nil, fmt.Errorf("failed to unmarshal tool inputs: %w", err)
+		}
+
+		// Write inputs to stdin in a separate goroutine to avoid deadlock if the command crashes
+		go func() {
+			defer func() { _ = stdin.Close() }()
+			if err := fastJson.NewEncoder(stdin).Encode(unmarshaledInputs); err != nil {
+				logging.GetLogger().Warn("Failed to encode inputs to stdin", "error", err)
+			}
+		}()
+
+		var result map[string]interface{}
+		if err := fastJson.NewDecoder(io.LimitReader(stdout, limit)).Decode(&result); err != nil {
 			<-stderrDone
 			return nil, fmt.Errorf("failed to execute JSON CLI command: %w. Stderr: %s", err, stderrBuf.String())
 		}
@@ -1897,7 +1934,8 @@ func prettyPrint(input []byte, contentType string) string {
 		input = util.RedactJSON(input)
 
 		var prettyJSON bytes.Buffer
-		if err := json.Indent(&prettyJSON, input, "", "  "); err == nil {
+		// Use stdjson for Indent
+		if err := stdjson.Indent(&prettyJSON, input, "", "  "); err == nil {
 			return prettyJSON.String()
 		}
 		// If JSON parsing fails, fall through to return string(input)
