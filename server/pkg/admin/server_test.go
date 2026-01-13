@@ -11,6 +11,7 @@ import (
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	mcprouterv1 "github.com/mcpany/core/proto/mcp_router/v1"
 	"github.com/mcpany/core/server/pkg/middleware"
+	"github.com/mcpany/core/server/pkg/serviceregistry"
 	"github.com/mcpany/core/server/pkg/storage/memory"
 	"github.com/mcpany/core/server/pkg/tool"
 	"github.com/stretchr/testify/assert"
@@ -21,14 +22,38 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
+// MockServiceRegistry
+type MockServiceRegistry struct {
+	serviceregistry.ServiceRegistryInterface
+	services map[string]*configv1.UpstreamServiceConfig
+	err      error
+}
+
+func (m *MockServiceRegistry) GetAllServices() ([]*configv1.UpstreamServiceConfig, error) {
+	if m.err != nil {
+		return nil, m.err
+	}
+	var res []*configv1.UpstreamServiceConfig
+	for _, s := range m.services {
+		res = append(res, s)
+	}
+	return res, nil
+}
+
+func (m *MockServiceRegistry) GetServiceConfig(id string) (*configv1.UpstreamServiceConfig, bool) {
+	s, ok := m.services[id]
+	return s, ok
+}
+
 func TestNewServer(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
 	store := memory.NewStore()
 	tm := tool.NewMockManagerInterface(ctrl)
+	sr := &MockServiceRegistry{}
 
-	s := NewServer(nil, tm, store)
+	s := NewServer(nil, tm, sr, store)
 	assert.NotNil(t, s)
 }
 
@@ -38,7 +63,8 @@ func TestServer_UserManagement(t *testing.T) {
 
 	store := memory.NewStore()
 	tm := tool.NewMockManagerInterface(ctrl)
-	s := NewServer(nil, tm, store)
+	sr := &MockServiceRegistry{}
+	s := NewServer(nil, tm, sr, store)
 	ctx := context.Background()
 
 	// Test CreateUser
@@ -102,33 +128,29 @@ func TestServer_ServiceManagement(t *testing.T) {
 
 	store := memory.NewStore()
 	tm := tool.NewMockManagerInterface(ctrl)
-	s := NewServer(nil, tm, store)
+	sr := &MockServiceRegistry{
+		services: make(map[string]*configv1.UpstreamServiceConfig),
+	}
+	s := NewServer(nil, tm, sr, store)
 	ctx := context.Background()
 
-	// Test ListServices
-	expectedServices := []*tool.ServiceInfo{
-		{
-			Name: "svc1",
-			Config: &configv1.UpstreamServiceConfig{
-				Name: proto.String("svc1"),
-			},
-		},
+	// Setup mock data
+	sr.services["svc1"] = &configv1.UpstreamServiceConfig{
+		Name: proto.String("svc1"),
 	}
-	tm.EXPECT().ListServices().Return(expectedServices)
 
+	// Test ListServices
 	listResp, err := s.ListServices(ctx, &pb.ListServicesRequest{})
 	require.NoError(t, err)
 	assert.Len(t, listResp.Services, 1)
 	assert.Equal(t, "svc1", listResp.Services[0].GetName())
 
 	// Test GetService
-	tm.EXPECT().GetServiceInfo("svc1").Return(expectedServices[0], true)
 	getResp, err := s.GetService(ctx, &pb.GetServiceRequest{ServiceId: proto.String("svc1")})
 	require.NoError(t, err)
 	assert.Equal(t, "svc1", getResp.Service.GetName())
 
 	// Test GetService Not Found
-	tm.EXPECT().GetServiceInfo("unknown").Return(nil, false)
 	_, err = s.GetService(ctx, &pb.GetServiceRequest{ServiceId: proto.String("unknown")})
 	assert.Error(t, err)
 	assert.Equal(t, codes.NotFound, status.Code(err))
@@ -140,7 +162,8 @@ func TestServer_ToolManagement(t *testing.T) {
 
 	store := memory.NewStore()
 	tm := tool.NewMockManagerInterface(ctrl)
-	s := NewServer(nil, tm, store)
+	sr := &MockServiceRegistry{}
+	s := NewServer(nil, tm, sr, store)
 	ctx := context.Background()
 
 	// Mock Tool
@@ -175,14 +198,14 @@ func TestServer_ClearCache(t *testing.T) {
 	defer ctrl.Finish()
 
 	// Test with nil cache
-	s := NewServer(nil, nil, nil)
+	s := NewServer(nil, nil, nil, nil)
 	_, err := s.ClearCache(context.Background(), &pb.ClearCacheRequest{})
 	assert.Error(t, err)
 	assert.Equal(t, codes.FailedPrecondition, status.Code(err))
 
 	// Test ClearCache with valid cache
 	realMiddleware := middleware.NewCachingMiddleware(tool.NewMockManagerInterface(ctrl))
-	sValid := NewServer(realMiddleware, nil, nil)
+	sValid := NewServer(realMiddleware, nil, nil, nil)
 	resp, err := sValid.ClearCache(context.Background(), &pb.ClearCacheRequest{})
 	require.NoError(t, err)
 	assert.NotNil(t, resp)
@@ -238,8 +261,9 @@ func TestServer_UserManagement_Errors(t *testing.T) {
 	defer ctrl.Finish()
 
 	tm := tool.NewMockManagerInterface(ctrl)
+	sr := &MockServiceRegistry{}
 	ms := &mockStorage{Store: memory.NewStore()}
-	s := NewServer(nil, tm, ms)
+	s := NewServer(nil, tm, sr, ms)
 	ctx := context.Background()
 
 	errInternal := status.Error(codes.Internal, "storage error")
@@ -285,8 +309,9 @@ func TestServer_UserManagement_PasswordHashing(t *testing.T) {
 	defer ctrl.Finish()
 
 	tm := tool.NewMockManagerInterface(ctrl)
+	sr := &MockServiceRegistry{}
 	store := memory.NewStore()
-	s := NewServer(nil, tm, store)
+	s := NewServer(nil, tm, sr, store)
 	ctx := context.Background()
 
 	longPassword := string(make([]byte, 73)) // 73 bytes > 72 bytes limit for bcrypt
@@ -320,12 +345,13 @@ func TestServer_ServiceManagement_Errors(t *testing.T) {
 
 	store := memory.NewStore()
 	tm := tool.NewMockManagerInterface(ctrl)
-	s := NewServer(nil, tm, store)
+	sr := &MockServiceRegistry{}
+	s := NewServer(nil, tm, sr, store)
 	ctx := context.Background()
 
-	// GetService: Service found but config nil
-	tm.EXPECT().GetServiceInfo("svc_no_config").Return(&tool.ServiceInfo{Config: nil}, true)
-	_, err := s.GetService(ctx, &pb.GetServiceRequest{ServiceId: proto.String("svc_no_config")})
+	// ListServices Error
+	sr.err = status.Error(codes.Internal, "registry error")
+	_, err := s.ListServices(ctx, &pb.ListServicesRequest{})
 	assert.Error(t, err)
 	assert.Equal(t, codes.Internal, status.Code(err))
 }

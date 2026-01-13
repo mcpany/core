@@ -71,6 +71,12 @@ func (f *UpstreamServiceFactory) NewUpstream(config *configv1.UpstreamServiceCon
 	if config == nil {
 		return nil, fmt.Errorf("upstream service config cannot be nil")
 	}
+
+	// Check for pre-existing configuration errors (e.g. from verification)
+	if config.GetConfigError() != "" {
+		return nil, fmt.Errorf("service configuration error: %s", config.GetConfigError())
+	}
+
 	switch config.WhichServiceConfig() {
 	case configv1.UpstreamServiceConfig_GrpcService_case:
 		return grpc.NewUpstream(f.poolManager), nil

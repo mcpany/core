@@ -73,6 +73,16 @@ func LoadServices(ctx context.Context, store Store, binaryType string) (*configv
 		}
 	}
 
+	// Perform connectivity checks
+	VerifyServices(ctx, fileConfig)
+
+	// Check for connectivity failures and log them
+	for _, svc := range fileConfig.GetUpstreamServices() {
+		if svc.GetConfigError() != "" {
+			log.Warn("Service verification failed", "service", svc.GetName(), "error", svc.GetConfigError())
+		}
+	}
+
 	if len(fileConfig.GetUpstreamServices()) > 0 {
 		log.Info("Successfully processed config file", "services", len(fileConfig.GetUpstreamServices()))
 	}

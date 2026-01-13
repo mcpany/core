@@ -36,6 +36,7 @@
 - [x] **Robust Transport Error Reporting**: Improved error messages for command-based and Docker transports. Now captures and surfaces `stderr` when a process exits unexpectedly, aiding quick debugging of configuration or runtime errors.
 - [x] **Proactive Schema Sanitization**: Automatically fixes common schema issues (like missing `type: object`) in tool definitions to ensure compatibility with strict MCP clients (e.g. Claude Code).
 - [x] **Smart Config Error Messages**: Detect and guide users migrating from Claude Desktop configuration format (`mcpServers` vs `upstream_services`). (Friction Fighter)
+- [x] **Startup Connectivity Verification**: Proactive reachability checks for HTTP, gRPC, and WebSocket services during startup/reload. Unreachable services are reported with explicit errors in the Admin API/UI instead of failing silently or confusingly at runtime. (Friction Fighter)
 
 ## 2. Top 10 Recommended Features
 
@@ -58,6 +59,8 @@ These features represent the next logical steps for the product, focusing on Ent
 | 13 | **Schema Validation Playground** | **DevX**: A dedicated UI in the dashboard to paste JSON/YAML and validate it against the server schema with real-time error highlighting. | Low |
 | 14 | **Config Linting Tool** | **DevX**: A standalone CLI command (e.g., `mcpany lint config.yaml`) to validate configuration without starting the server, useful for CI/CD pipelines. | Low |
 | 15 | **Partial Reloads** | **Resilience**: When reloading config dynamically, if one service is invalid, keep the old version running instead of removing it or failing the whole reload (if possible). | High |
+| 20 | **Background Connectivity Probing** | **Resilience**: Periodically retry connections to unreachable services and automatically recover them when they come online, without requiring a config reload. | Medium |
+| 21 | **Admin UI Diagnostics Page** | **UX**: A dedicated page in the UI to view detailed diagnostic logs, connectivity check results, and resolution suggestions for "Broken" services. | Low |
 | 16 | **Filesystem Health Check** | **Observability**: Add a health check probe for filesystem roots to report status to the UI, not just logs. | Low |
 | 17 | **Safe Symlink Traversal** | **Security**: Add configuration options to strictly control symlink traversal policies (allow/deny/internal-only). | Medium |
 | 18 | **Multi-Model Advisor** | **Intelligence**: Orchestrate queries across multiple models (e.g. Ollama models) to synthesize insights. | High |
