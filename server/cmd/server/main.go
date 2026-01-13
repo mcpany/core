@@ -317,6 +317,36 @@ func newRootCmd() *cobra.Command { //nolint:gocyclo // Main entry point, expecte
 		},
 	}
 	configCmd.AddCommand(validateCmd)
+
+	migrateCmd := &cobra.Command{
+		Use:   "migrate [path to claude_desktop_config.json]",
+		Short: "Migrate Claude Desktop configuration to MCP Any configuration",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(_ *cobra.Command, args []string) error {
+			claudeConfigPath := args[0]
+			// clean path to prevent path traversal issues (though this is a CLI tool, good practice)
+			// But filepath.Clean doesn't prevent reading arbitrary files if the user provides an absolute path.
+			// Since this is a CLI tool where the user intends to read a file they specify, G304 is often a false positive for CLI args.
+			// We can try filepath.Clean.
+			// Actually, for G304, since this is a CLI intended to read a user-supplied file, we can suppress it or just live with it if it's blocking.
+			// Let's suppress it with a nolint comment if possible, but gosec might run outside of golangci-lint in the Makefile.
+			// Let's try to just clean it.
+			content, err := os.ReadFile(claudeConfigPath) //nolint:gosec // This is a CLI tool intended to read user-specified files.
+			if err != nil {
+				return fmt.Errorf("failed to read file %s: %w", claudeConfigPath, err)
+			}
+
+			yamlOutput, err := config.MigrateClaudeConfig(content)
+			if err != nil {
+				return err
+			}
+
+			fmt.Println(yamlOutput)
+			return nil
+		},
+	}
+	configCmd.AddCommand(migrateCmd)
+
 	rootCmd.AddCommand(configCmd)
 
 	config.BindRootFlags(rootCmd)
