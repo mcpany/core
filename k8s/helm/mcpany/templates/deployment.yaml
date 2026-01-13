@@ -40,6 +40,13 @@ spec:
             - "--config-path"
             - "/etc/mcpany/config.yaml"
           env:
+            {{- if or .Values.ui.existingSecret .Values.ui.apiKey }}
+            - name: MCPANY_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ if .Values.ui.existingSecret }}{{ .Values.ui.existingSecret }}{{ else }}{{ include "mcpany.fullname" . }}-ui-secret{{ end }}
+                  key: {{ .Values.ui.secretKey | default "api-key" }}
+            {{- end }}
             - name: POSTGRES_URL
               value: "postgres://{{ .Values.database.postgresUser }}:{{ .Values.database.postgresPassword }}@{{ include "mcpany.fullname" . }}-database:5432/{{ .Values.database.postgresDb }}?sslmode=disable"
             - name: REDIS_URL
