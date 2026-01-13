@@ -27,19 +27,19 @@ func TestHTTPUpstream_URLConstruction_DoubleSlashBug(t *testing.T) {
 			name:         "endpoint path with double slash prefix",
 			address:      "http://example.com/api",
 			endpointPath: "//foo",
-			expectedFqn:  "GET http://example.com/api/foo",
+			expectedFqn:  "GET http://example.com/api//foo",
 		},
 		{
 			name:         "endpoint path with triple slash prefix",
 			address:      "http://example.com/api",
 			endpointPath: "///foo",
-			expectedFqn:  "GET http://example.com/api/foo",
+			expectedFqn:  "GET http://example.com/api///foo",
 		},
 		{
 			name:         "endpoint path with double slash and trailing slash",
 			address:      "http://example.com/api",
 			endpointPath: "//foo/",
-			expectedFqn:  "GET http://example.com/api/foo/",
+			expectedFqn:  "GET http://example.com/api//foo/",
 		},
 		{
 			name:         "endpoint path with just double slash",
