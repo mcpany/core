@@ -5,8 +5,8 @@
 ### Planned Features
 
 - [ ] **Advanced Service Configuration & Sharing**:
+  - [x] Visual editor for detailed service configuration (Connection, Auth, Advanced).
   - Import external services via gRPC auto-discovery or OpenAPI specs.
-  - Visual editor to enable/disable parts of the spec, modify defaults, add fields.
   - Export and share service configurations.
 - [x] **Service Connection Diagnostic Tool**: Interactive tool to diagnose connection issues with upstream services (DNS, Handshake, Capabilities) - Added based on Ecosystem Audit.
 - [ ] **Plugin UI Extensions**: Allow server plugins to inject custom UI components.

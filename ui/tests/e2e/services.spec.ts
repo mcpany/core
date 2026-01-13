@@ -65,10 +65,14 @@ test.describe('Services Feature', () => {
     const serviceName = `new-service-${Date.now()}`;
     await page.fill('input[id="name"]', serviceName);
 
+    // Switch to Connection tab
+    await page.getByRole('tab', { name: 'Connection' }).click();
+
     await page.getByRole('combobox').click();
     await page.getByRole('option', { name: 'HTTP' }).click();
 
-    const addressInput = page.getByLabel('Endpoint');
+    // With new editor, label is "Base URL" for HTTP
+    const addressInput = page.getByPlaceholder('https://api.example.com');
     await expect(addressInput).toBeVisible();
     await addressInput.fill('http://localhost:8080');
 
@@ -77,6 +81,8 @@ test.describe('Services Feature', () => {
 
     const newServiceRow = page.locator('tr').filter({ hasText: serviceName });
     await newServiceRow.getByRole('button', { name: 'Edit' }).click();
+
+    // Check general tab which is default
     await expect(page.locator('input[id="name"]')).toHaveValue(serviceName);
     await page.getByRole('button', { name: 'Cancel' }).click();
   });
