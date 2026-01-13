@@ -1,6 +1,3 @@
-// Copyright 2025 Author(s) of MCP Any
-// SPDX-License-Identifier: Apache-2.0
-
 package http
 
 import (
@@ -16,7 +13,7 @@ import (
 	"google.golang.org/protobuf/encoding/protojson"
 )
 
-func TestHTTPUpstream_URLConstruction_BugFix(t *testing.T) {
+func TestHTTPUpstream_URLConstruction_EncodedSlashBug(t *testing.T) {
 	testCases := []struct {
 		name          string
 		address       string
@@ -24,16 +21,28 @@ func TestHTTPUpstream_URLConstruction_BugFix(t *testing.T) {
 		expectedFqn   string
 	}{
 		{
-			name:         "endpoint path is root slash",
-			address:      "http://example.com/api",
-			endpointPath: "/",
-			expectedFqn:  "GET http://example.com/api/",
+			name:         "endpoint starting with encoded slash",
+			address:      "http://localhost:8080/api",
+			endpointPath: "%2Ftest",
+			// We expect the encoded slash to be preserved as a path segment
+			// resulting in /api//test (where the second slash is the decoded %2F)
+			// OR /api/%2Ftest (if we want to preserve encoding).
+			// Usually, for an API that expects %2Ftest, it means a segment named "/test".
+			// If we append it to /api, it should be /api/%2Ftest.
+			expectedFqn:  "GET http://localhost:8080/api/%2Ftest",
 		},
 		{
-			name:         "endpoint path is empty",
-			address:      "http://example.com/api",
-			endpointPath: "",
-			expectedFqn:  "GET http://example.com/api",
+			name:         "endpoint starting with encoded slash and trailing slash",
+			address:      "http://localhost:8080/api",
+			endpointPath: "%2Ftest/",
+			expectedFqn:  "GET http://localhost:8080/api/%2Ftest/",
+		},
+		{
+			name:         "endpoint starting with double slash (regression check)",
+			address:      "http://localhost:8080/api",
+			endpointPath: "//test",
+			// Existing logic fixes // to /
+			expectedFqn:  "GET http://localhost:8080/api/test",
 		},
 	}
 
@@ -44,7 +53,7 @@ func TestHTTPUpstream_URLConstruction_BugFix(t *testing.T) {
 			upstream := NewUpstream(pm)
 
 			configJSON := `{
-				"name": "url-test-service",
+				"name": "encoded-slash-service",
 				"http_service": {
 					"address": "` + tc.address + `",
 					"tools": [{"name": "test-op", "call_id": "test-op-call"}],

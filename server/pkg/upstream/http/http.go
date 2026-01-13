@@ -304,6 +304,16 @@ func (u *Upstream) createAndRegisterHTTPTools(ctx context.Context, serviceID, ad
 				log.Error("Failed to parse corrected endpoint path", "path", trimmed, "error", err)
 				continue
 			}
+		} else if endpointURL.Scheme == "" && (strings.HasPrefix(strings.ToLower(rawEndpointPath), "%2f")) {
+			// Fix for encoded leading slash (e.g., %2Ffoo).
+			// url.Parse treats %2F at the beginning of the path as a leading slash (absolute path).
+			// We want to treat it as a relative path segment.
+			// Prepending "./" forces it to be relative, and ResolveReference handles the dot segment.
+			endpointURL, err = url.Parse("./" + rawEndpointPath)
+			if err != nil {
+				log.Error("Failed to parse corrected endpoint path (encoded slash)", "path", rawEndpointPath, "error", err)
+				continue
+			}
 		}
 
 		// Ensure baseURL has a trailing slash so ResolveReference appends to it,
