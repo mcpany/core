@@ -294,8 +294,3 @@ func TestVectorCallable(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, req.Arguments, res)
 }
-
-func (m *MockToolManager) GetAllowedServiceIDs(profileID string) (map[string]bool, bool) {
-	args := m.Called(profileID)
-	return args.Get(0).(map[string]bool), args.Bool(1)
-}

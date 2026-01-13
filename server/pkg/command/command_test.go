@@ -620,9 +620,9 @@ func TestDockerExecutorWithStdIO(t *testing.T) {
 
 		containerEnv := &configv1.ContainerEnvironment{}
 		containerEnv.SetImage("alpine:latest")
-		// Use a relative path that IsAllowedPath will accept (assuming it doesn't contain ..)
+		// Use a relative path that IsRelativePath will accept (assuming it doesn't contain ..)
 		// and verify that it is passed to Docker.
-		// Note: IsAllowedPath checks relative to CWD. We use "testdata" as a safe relative path.
+		// Note: IsRelativePath checks relative to CWD. We use "testdata" as a safe relative path.
 		containerEnv.SetVolumes(map[string]string{
 			"testdata": "/container/path",
 		})
@@ -830,9 +830,9 @@ func TestDockerExecutor_Mocked(t *testing.T) {
 
 		containerEnv := &configv1.ContainerEnvironment{}
 		containerEnv.SetImage("alpine:latest")
-		// Use a relative path that IsAllowedPath will accept (assuming it doesn't contain ..)
+		// Use a relative path that IsRelativePath will accept (assuming it doesn't contain ..)
 		// and verify that it is passed to Docker.
-		// Note: IsAllowedPath checks relative to CWD. We use "testdata" as a safe relative path.
+		// Note: IsRelativePath checks relative to CWD. We use "testdata" as a safe relative path.
 		containerEnv.SetVolumes(map[string]string{
 			"testdata": "/container/path",
 		})

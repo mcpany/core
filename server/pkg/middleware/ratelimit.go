@@ -103,30 +103,33 @@ func (m *RateLimitMiddleware) Execute(ctx context.Context, req *tool.ExecutionRe
 	if serviceRateLimitConfig != nil && serviceRateLimitConfig.GetToolLimits() != nil {
 		if toolConfig, ok := serviceRateLimitConfig.GetToolLimits()[req.ToolName]; ok && toolConfig.GetIsEnabled() {
 			toolLimiter, toolErr = m.getLimiter(ctx, serviceID, "tool:"+req.ToolName, toolConfig)
-			if toolErr != nil {
-				return nil, fmt.Errorf("failed to get rate limiter for tool %s: %w", req.ToolName, toolErr)
+			if toolErr == nil {
+				appliedLimit = true
+				_ = appliedLimit
+				if err := m.checkLimit(ctx, toolLimiter, toolConfig, req); err != nil {
+					m.recordMetrics(serviceID, "tool", "blocked")
+					return nil, fmt.Errorf("rate limit exceeded for tool %s", req.ToolName)
+				}
+				m.recordMetrics(serviceID, "tool", "allowed")
+				// If we checked tool limit, we return early (override logic).
+				return next(ctx, req)
 			}
-			if err := m.checkLimit(ctx, toolLimiter, toolConfig, req); err != nil {
-				m.recordMetrics(serviceID, "tool", "blocked")
-				return nil, fmt.Errorf("rate limit exceeded for tool %s: %w", req.ToolName, err)
-			}
-			m.recordMetrics(serviceID, "tool", "allowed")
-			// If we checked tool limit, we return early (override logic).
-			return next(ctx, req)
+			// If getLimiter failed, we log/ignore? For now fall through or fail open.
+			// Let's fail open on error, but if we found config and failed to get limiter, maybe we should fall back to service?
+			// Safety: fail open.
 		}
 	}
 
 	// If no tool limit applied, check service limit
 	if !appliedLimit && serviceRateLimitConfig != nil && serviceRateLimitConfig.GetIsEnabled() {
 		serviceLimiter, serviceErr := m.getLimiter(ctx, serviceID, "service", serviceRateLimitConfig)
-		if serviceErr != nil {
-			return nil, fmt.Errorf("failed to get rate limiter for service %s: %w", serviceInfo.Name, serviceErr)
+		if serviceErr == nil {
+			if err := m.checkLimit(ctx, serviceLimiter, serviceRateLimitConfig, req); err != nil {
+				m.recordMetrics(serviceID, "service", "blocked")
+				return nil, fmt.Errorf("rate limit exceeded for service %s", serviceInfo.Name)
+			}
+			m.recordMetrics(serviceID, "service", "allowed")
 		}
-		if err := m.checkLimit(ctx, serviceLimiter, serviceRateLimitConfig, req); err != nil {
-			m.recordMetrics(serviceID, "service", "blocked")
-			return nil, fmt.Errorf("rate limit exceeded for service %s: %w", serviceInfo.Name, err)
-		}
-		m.recordMetrics(serviceID, "service", "allowed")
 	}
 
 	return next(ctx, req)
@@ -141,8 +144,8 @@ func (m *RateLimitMiddleware) checkLimit(ctx context.Context, limiter Limiter, c
 
 	allowed, err := limiter.AllowN(ctx, cost)
 	if err != nil {
-		// Fail secure on error
-		return fmt.Errorf("rate limit check failed: %w", err)
+		// Fail open on error
+		return nil //nolint:nilerr
 	}
 	if !allowed {
 		return fmt.Errorf("limit exceeded")

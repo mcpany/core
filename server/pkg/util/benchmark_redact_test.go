@@ -116,18 +116,3 @@ func BenchmarkRedactJSON(b *testing.B) {
 		}
 	})
 }
-
-func BenchmarkIsSensitiveKey(b *testing.B) {
-	keys := []string{
-		"id", "name", "value", "description", // Common short keys
-		"created_at", "updated_at", "email", // Medium keys
-		"api_key", "token", "auth", // Sensitive keys
-		"not_sensitive_but_long_enough_to_be_interesting",
-	}
-	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
-		for _, k := range keys {
-			IsSensitiveKey(k)
-		}
-	}
-}

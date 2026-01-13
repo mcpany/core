@@ -159,8 +159,3 @@ func TestRateLimitMiddleware_ServiceLimitFallback(t *testing.T) {
 	assert.Error(t, err)
 	assert.Contains(t, err.Error(), "rate limit exceeded for service")
 }
-
-func (m *MockToolManager) GetAllowedServiceIDs(profileID string) (map[string]bool, bool) {
-	args := m.Called(profileID)
-	return args.Get(0).(map[string]bool), args.Bool(1)
-}

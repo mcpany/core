@@ -11,18 +11,10 @@ test.describe('Trace Viewer', () => {
     await page.goto('/');
 
     // Check if Traces link exists in sidebar and click it
-    const tracesLink = page.getByRole('link', { name: 'Traces' });
-    if (await tracesLink.count() > 0) {
-        await expect(tracesLink).toHaveAttribute('href', '/traces');
-        await tracesLink.click();
-        await page.waitForURL(/\/traces/);
-        await expect(page).toHaveURL(/\/traces/);
-    } else {
-        // Fallback for when link is hidden (e.g. non-admin)
-        console.log('Traces link not found (likely non-admin), trying direct navigation');
-        await page.goto('/traces');
-        await expect(page).toHaveURL(/\/traces/);
-    }
+    await page.click('a[href="/traces"]');
+
+    // Verify URL
+    await expect(page).toHaveURL(/\/traces/);
 
     // Wait for traces to load
     await page.waitForSelector('text=Loading traces...', { state: 'detached' });

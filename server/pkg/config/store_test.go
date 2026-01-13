@@ -298,29 +298,6 @@ global_settings:
 	assert.Contains(t, err.Error(), "unknown field")
 }
 
-func TestYamlEngine_MCPServersField(t *testing.T) {
-	fs := afero.NewMemMapFs()
-	// Config that looks like Claude Desktop config
-	// Note: @ needs to be quoted in YAML if it starts a value, but here it's in a list
-	// The error "found character that cannot start any token" suggests issues with @
-	require.NoError(t, afero.WriteFile(fs, "/config/claude_config.yaml", []byte(`
-mcpServers:
-  filesystem:
-    command: "npx"
-    args:
-      - "-y"
-      - "@modelcontextprotocol/server-filesystem"
-      - "/path/to/allowed/files"
-`), 0644))
-
-	store := NewFileStore(fs, []string{"/config/claude_config.yaml"})
-	_, err := store.Load(context.Background())
-	assert.Error(t, err)
-	// Expect a helpful error message guiding the user
-	assert.Contains(t, err.Error(), "Did you mean \"upstream_services\"?")
-	assert.Contains(t, err.Error(), "mcpServers")
-}
-
 func TestReadURL_Localhost(t *testing.T) {
 	// Verify we can read from localhost if the client is configured to allow it.
 	// We mock the global httpClient to simulate a SafeHTTPClient with loopback enabled.

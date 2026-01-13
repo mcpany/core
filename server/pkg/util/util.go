@@ -422,7 +422,7 @@ func IsNil(i any) bool {
 		return true
 	}
 	switch reflect.TypeOf(i).Kind() {
-	case reflect.Ptr, reflect.Map, reflect.Chan, reflect.Slice, reflect.Func, reflect.UnsafePointer:
+	case reflect.Ptr, reflect.Map, reflect.Chan, reflect.Slice, reflect.Func:
 		return reflect.ValueOf(i).IsNil()
 	}
 	return false

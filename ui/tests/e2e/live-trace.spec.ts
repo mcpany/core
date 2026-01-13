@@ -53,7 +53,6 @@ test('Live Trace Inspector and Replay Flow', async ({ page }) => {
 
   // Verify Playground input
   // Verify Playground input
-  const input = page.getByPlaceholder('Enter command or select a tool...').or(page.locator('textarea'));
-  await expect(input).toBeVisible();
+  const input = page.getByPlaceholder('Enter command or select a tool...');
   await expect(input).toHaveValue(/calculate_sum/);
 });

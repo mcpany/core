@@ -131,7 +131,7 @@ test.describe('Credential OAuth Flow E2E', () => {
 
     // Verify toast or success state
     try {
-        await expect(page.getByText('Credential created').first()).toBeVisible({ timeout: 5000 });
+        await expect(page.getByText('Credential created')).toBeVisible({ timeout: 5000 });
     } catch (e) {
         console.log("Toast missing. Content:");
         console.log(await page.content());

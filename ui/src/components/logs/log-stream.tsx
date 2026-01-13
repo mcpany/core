@@ -13,8 +13,7 @@ import {
   Search,
   Download,
   Filter,
-  Terminal,
-  Unplug
+  Terminal
 } from "lucide-react"
 
 import { cn } from "@/lib/utils"
@@ -42,6 +41,37 @@ export interface LogEntry {
   // Optimization: Pre-computed lowercase string for search performance
   searchStr?: string
 }
+
+const SAMPLE_MESSAGES = {
+  INFO: [
+    "Server started on port 8080",
+    "Request received: GET /api/v1/tools",
+    "Health check passed",
+    "Configuration reloaded",
+    "User authenticated successfully",
+    "Backup completed",
+  ],
+  WARN: [
+    "Response time > 500ms",
+    "Rate limit approaching for user",
+    "Deprecated API usage detected",
+    "Memory usage at 75%",
+  ],
+  ERROR: [
+    "Database connection timeout",
+    "Failed to parse JSON body",
+    "Upstream service unavailable",
+    "Permission denied: /etc/hosts",
+  ],
+  DEBUG: [
+    "Payload size: 1024 bytes",
+    "Executing query: SELECT * FROM users",
+    "Cache miss for key: user_123",
+    "Context switch",
+  ],
+}
+
+const SOURCES = ["gateway", "auth-service", "db-worker", "api-server", "scheduler"]
 
 const getLevelColor = (level: LogLevel) => {
   switch (level) {
@@ -94,82 +124,52 @@ export function LogStream() {
   const [isPaused, setIsPaused] = React.useState(false)
   const [filterLevel, setFilterLevel] = React.useState<string>("ALL")
   const [searchQuery, setSearchQuery] = React.useState("")
-  const [isConnected, setIsConnected] = React.useState(false)
   // Optimization: Defer the search query to keep the UI responsive while filtering large lists
   const deferredSearchQuery = React.useDeferredValue(searchQuery)
   const scrollRef = React.useRef<HTMLDivElement>(null)
-  const wsRef = React.useRef<WebSocket | null>(null)
-  // Optimization: Buffer for incoming logs to support batch processing
-  const logBufferRef = React.useRef<LogEntry[]>([])
 
+  // Mock log generation
   React.useEffect(() => {
-    // Optimization: Flush buffer periodically to limit re-renders
-    const flushInterval = setInterval(() => {
-      if (logBufferRef.current.length > 0) {
-        setLogs((prev) => {
-          const buffer = logBufferRef.current
-          logBufferRef.current = [] // Clear buffer
+    if (isPaused) return
 
-          let next = [...prev, ...buffer]
-          // Limit total logs to avoid memory issues
-          if (next.length > 1000) {
-            next = next.slice(next.length - 1000)
-          }
+    const interval = setInterval(() => {
+      // Optimization: Stop generating logs when tab is hidden to save resources
+      if (document.hidden) return
+
+      const levels: LogLevel[] = ["INFO", "INFO", "INFO", "WARN", "DEBUG", "ERROR"]
+      const level = levels[Math.floor(Math.random() * levels.length)]
+      const messages = SAMPLE_MESSAGES[level]
+      const message = messages[Math.floor(Math.random() * messages.length)]
+      const source = SOURCES[Math.floor(Math.random() * SOURCES.length)]
+
+      // Optimization: Pre-compute search string to avoid repetitive toLowerCase() during filtering
+      const searchStr = (message + " " + (source || "")).toLowerCase()
+
+      const newLog: LogEntry = {
+        id: Math.random().toString(36).substring(7),
+        timestamp: new Date().toISOString(),
+        level,
+        message,
+        source,
+        searchStr
+      }
+
+      setLogs((prev) => {
+        // Optimization: Avoid creating an intermediate array (double copy) when limit is reached.
+        // If we are at limit, slice the old array (copy N-1 items) and append the new one.
+        if (prev.length >= 1000) {
+          // Optimization: slice(1) returns a shallow copy. push mutates it.
+          // This avoids the double allocation of [...prev.slice(1), newLog].
+          const next = prev.slice(1)
+          next.push(newLog)
           return next
-        })
-      }
-    }, 100) // Flush every 100ms
-
-    const connect = () => {
-      // Determine protocol (ws or wss)
-      const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:'
-      const host = window.location.host
-
-      const wsUrl = `${protocol}//${host}/api/ws/logs`
-      const ws = new WebSocket(wsUrl)
-
-      ws.onopen = () => {
-        setIsConnected(true)
-        console.log("Connected to log stream")
-      }
-
-      ws.onmessage = (event) => {
-        if (isPaused) return
-        if (document.hidden) return
-
-        try {
-          const newLog: LogEntry = JSON.parse(event.data)
-          // Pre-compute search string
-          newLog.searchStr = (newLog.message + " " + (newLog.source || "")).toLowerCase()
-
-          // Optimization: Add to buffer instead of calling setLogs directly
-          logBufferRef.current.push(newLog)
-        } catch (e) {
-          console.error("Failed to parse log message", e)
         }
-      }
+        return [...prev, newLog]
+      })
+    }, 800)
 
-      ws.onclose = () => {
-        setIsConnected(false)
-        console.log("Disconnected from log stream, retrying...")
-        setTimeout(connect, 3000)
-      }
-
-      ws.onerror = (err) => {
-        console.error("WebSocket error", err)
-        ws.close()
-      }
-
-      wsRef.current = ws
-    }
-
-    connect()
-
-    return () => {
-      wsRef.current?.close()
-      clearInterval(flushInterval)
-    }
-  }, []) // Empty dependency array -> run once
+    return () => clearInterval(interval)
+  }, [isPaused])
 
   // Auto-scroll
   // Optimization: Cache the viewport element to avoid frequent DOM queries (querySelector).
@@ -193,6 +193,7 @@ export function LogStream() {
   // to avoid O(N) redundant string operations during filtering
   const filteredLogs = React.useMemo(() => {
     // Optimization: Fast path for when no filters are active.
+    // This avoids iterating over the entire array (up to 1000 items) every 800ms when showing all logs.
     if (filterLevel === "ALL" && !deferredSearchQuery) {
       return logs
     }
@@ -235,22 +236,7 @@ export function LogStream() {
                 <h1 className="text-2xl font-bold tracking-tight flex items-center gap-2">
                     <Terminal className="w-6 h-6" /> Live Logs
                 </h1>
-                <Badge variant={isConnected ? "outline" : "destructive"} className="font-mono text-xs gap-1">
-                    {isConnected ? (
-                      <>
-                        <span className="relative flex h-2 w-2">
-                          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-                          <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
-                        </span>
-                        Live
-                      </>
-                    ) : (
-                      <>
-                        <Unplug className="h-3 w-3" /> Disconnected
-                      </>
-                    )}
-                </Badge>
-                <Badge variant="secondary" className="font-mono text-xs">
+                <Badge variant="outline" className="font-mono text-xs">
                     {logs.length} events
                 </Badge>
             </div>
@@ -318,12 +304,13 @@ export function LogStream() {
                 <div className="space-y-1" data-testid="log-rows-container">
                     {filteredLogs.length === 0 && (
                         <div className="text-muted-foreground text-center py-10 italic">
-                            {isConnected ? "No logs found matching your criteria..." : "Waiting for connection..."}
+                            No logs found matching your criteria...
                         </div>
                     )}
                     {filteredLogs.map((log) => (
                       <LogRow key={log.id} log={log} />
                     ))}
+                    {/* Invisible element to help auto-scroll if needed, though scroll logic handles viewport */}
                 </div>
              </ScrollArea>
         </CardContent>

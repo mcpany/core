@@ -115,11 +115,8 @@ func redactJSONFast(input []byte) []byte {
 					// Initialize buffer if needed
 					if out == nil {
 						// Allocate slightly more than input size to avoid reallocations when replacement is longer than original
-						// 1.1x is a heuristic, but we cap it to avoid excessive memory usage for large inputs.
+						// 1.1x is a heuristic
 						extra := len(input) / 10
-						if extra > 16384 {
-							extra = 16384
-						}
 						if extra < 128 {
 							extra = 128
 						}

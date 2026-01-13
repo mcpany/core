@@ -932,7 +932,3 @@ func TestUpstream_createAndRegisterWebsocketTools_DynamicResource_NoCall(t *test
 
 	assert.Empty(t, resourceManager.ListResources())
 }
-
-func (m *MockToolManager) GetAllowedServiceIDs(_ string) (map[string]bool, bool) {
-	return nil, true
-}

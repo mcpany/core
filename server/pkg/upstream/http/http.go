@@ -296,17 +296,14 @@ func (u *Upstream) createAndRegisterHTTPTools(ctx context.Context, serviceID, ad
 		// If the endpoint path starts with double slashes but has no scheme (e.g., //foo),
 		// url.Parse treats it as a scheme-relative URL (host="foo", path="").
 		// We want to treat it as a path relative to the base URL.
-		// However, we must be careful not to corrupt paths that happen to start with // but are correctly parsed as paths (e.g. ///foo).
-		// url.Parse("//foo") -> Host="foo", Path=""
-		// url.Parse("///foo") -> Host="", Path="///foo"
-		if endpointURL.Scheme == "" && strings.HasPrefix(rawEndpointPath, "//") && endpointURL.Host != "" {
-			// It was treated as scheme-relative (//Host/Path).
-			// Restore it to be just Path by prepending "//" + Host.
-			endpointURL.Path = "//" + endpointURL.Host + endpointURL.Path
-			if endpointURL.RawPath != "" {
-				endpointURL.RawPath = "//" + endpointURL.Host + endpointURL.RawPath
+		if endpointURL.Scheme == "" && strings.HasPrefix(rawEndpointPath, "//") {
+			// Trim all leading slashes to ensure it's treated as a relative path
+			trimmed := strings.TrimLeft(rawEndpointPath, "/")
+			endpointURL, err = url.Parse(trimmed)
+			if err != nil {
+				log.Error("Failed to parse corrected endpoint path", "path", trimmed, "error", err)
+				continue
 			}
-			endpointURL.Host = ""
 		}
 
 		// Ensure baseURL has a trailing slash so ResolveReference appends to it,
@@ -314,17 +311,7 @@ func (u *Upstream) createAndRegisterHTTPTools(ctx context.Context, serviceID, ad
 		baseForJoin := *baseURL
 
 		// Make endpoint path relative
-		// If the path starts with "/", we prepend "." to force it to be treated as a relative path segment
-		// by ResolveReference, instead of an absolute path that replaces the base path.
-		relPath := endpointURL.Path
-		relRawPath := endpointURL.RawPath
-
-		if strings.HasPrefix(relPath, "/") {
-			relPath = "." + relPath
-			if relRawPath != "" {
-				relRawPath = "." + relRawPath
-			}
-		}
+		relPath := strings.TrimPrefix(endpointURL.Path, "/")
 
 		// If the endpoint path has segments (not empty and not just /), force slash on base.
 		// If endpoint path is empty, we DON'T want to force a slash on base, because
@@ -348,6 +335,11 @@ func (u *Upstream) createAndRegisterHTTPTools(ctx context.Context, serviceID, ad
 				}
 			}
 		}
+		relRawPath := ""
+		if endpointURL.RawPath != "" {
+			relRawPath = strings.TrimPrefix(endpointURL.RawPath, "/")
+		}
+
 		// Construct a relative URL using RawPath to preserve encoding
 		relURL := &url.URL{
 			Path:     relPath,

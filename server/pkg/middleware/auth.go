@@ -49,6 +49,13 @@ func AuthMiddleware(authManager *auth.Manager) mcp.Middleware {
 				}
 			}
 
+			if serviceID == "" {
+				// If we couldn't determine a service ID, we assume it's a global method or
+				// a malformed request that doesn't map to a protected service.
+				// We let it pass, relying on downstream handlers to validate if necessary.
+				return next(ctx, method, req)
+			}
+
 			// Extract the http.Request from the context.
 			// The key "http.request" is not formally defined in the MCP spec, but it's a
 			// de-facto standard used by the reference implementation.
@@ -57,23 +64,6 @@ func AuthMiddleware(authManager *auth.Manager) mcp.Middleware {
 				// If the http.Request is not in the context, we cannot perform authentication.
 				// This should ideally not happen in a server environment.
 				return nil, fmt.Errorf("unauthorized: http.Request not found in context")
-			}
-
-			if serviceID == "" {
-				// If we couldn't determine a service ID, check if it's a known public method.
-				if isPublicMethod(method) {
-					return next(ctx, method, req)
-				}
-
-				// If not public, we attempt authentication with an empty service ID.
-				// This ensures that the Global API Key (if configured) is enforced.
-				// For methods like "prompts/list" or "resources/list" which don't map to a specific service,
-				// they will be protected by the global key but otherwise allowed.
-				newCtx, err := authManager.Authenticate(ctx, "", httpReq)
-				if err != nil {
-					return nil, fmt.Errorf("unauthorized: %w", err)
-				}
-				return next(newCtx, method, req)
 			}
 
 			// Authenticate the request.
@@ -85,14 +75,5 @@ func AuthMiddleware(authManager *auth.Manager) mcp.Middleware {
 			// If authentication is successful, proceed to the next handler.
 			return next(newCtx, method, req)
 		}
-	}
-}
-
-func isPublicMethod(method string) bool {
-	switch method {
-	case "initialize", "notifications/initialized", "ping":
-		return true
-	default:
-		return false
 	}
 }

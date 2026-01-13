@@ -28,7 +28,7 @@ func TestHTTPPool_New(t *testing.T) {
 		config := &configv1.UpstreamServiceConfig{}
 		require.NoError(t, protojson.Unmarshal([]byte(configJSON), config))
 
-		p, err := NewHTTPPool(1, 5, 100, config)
+		p, err := NewHTTPPool(1, 5, 0, config)
 		require.NoError(t, err)
 		assert.NotNil(t, p)
 		defer func() { _ = p.Close() }()
@@ -60,7 +60,7 @@ func TestHTTPPool_GetPut(t *testing.T) {
 	config := &configv1.UpstreamServiceConfig{}
 	require.NoError(t, protojson.Unmarshal([]byte(configJSON), config))
 
-	p, err := NewHTTPPool(1, 1, 10, config)
+	p, err := NewHTTPPool(1, 1, 0, config)
 	require.NoError(t, err)
 	require.NotNil(t, p)
 
@@ -82,7 +82,7 @@ func TestHTTPPool_GetPut(t *testing.T) {
 }
 
 func TestHTTPPool_SharedClients(t *testing.T) {
-	p, err := NewHTTPPool(2, 2, 10, &configv1.UpstreamServiceConfig{})
+	p, err := NewHTTPPool(2, 2, 0, &configv1.UpstreamServiceConfig{})
 	require.NoError(t, err)
 	require.NotNil(t, p)
 	defer func() { _ = p.Close() }()
@@ -100,7 +100,7 @@ func TestHTTPPool_SharedClients(t *testing.T) {
 }
 
 func TestHTTPPool_Close(t *testing.T) {
-	p, err := NewHTTPPool(1, 1, 10, &configv1.UpstreamServiceConfig{})
+	p, err := NewHTTPPool(1, 1, 0, &configv1.UpstreamServiceConfig{})
 	require.NoError(t, err)
 	require.NotNil(t, p)
 
@@ -112,7 +112,7 @@ func TestHTTPPool_Close(t *testing.T) {
 }
 
 func TestHTTPPool_PoolFull(t *testing.T) {
-	p, err := NewHTTPPool(1, 1, 1, &configv1.UpstreamServiceConfig{})
+	p, err := NewHTTPPool(1, 1, 0, &configv1.UpstreamServiceConfig{})
 	require.NoError(t, err)
 	require.NotNil(t, p)
 
@@ -128,7 +128,7 @@ func TestHTTPPool_PoolFull(t *testing.T) {
 }
 
 func TestHTTPPool_KeepAliveEnabled(t *testing.T) {
-	p, err := NewHTTPPool(1, 1, 10, &configv1.UpstreamServiceConfig{})
+	p, err := NewHTTPPool(1, 1, 0, &configv1.UpstreamServiceConfig{})
 	require.NoError(t, err)
 	require.NotNil(t, p)
 	defer func() { _ = p.Close() }()

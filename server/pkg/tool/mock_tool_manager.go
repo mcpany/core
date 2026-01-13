@@ -215,18 +215,3 @@ func (mr *MockManagerInterfaceMockRecorder) ToolMatchesProfile(tool, profileID a
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ToolMatchesProfile", reflect.TypeOf((*MockManagerInterface)(nil).ToolMatchesProfile), tool, profileID)
 }
-
-// GetAllowedServiceIDs mocks base method.
-func (m *MockManagerInterface) GetAllowedServiceIDs(profileID string) (map[string]bool, bool) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetAllowedServiceIDs", profileID)
-	ret0, _ := ret[0].(map[string]bool)
-	ret1, _ := ret[1].(bool)
-	return ret0, ret1
-}
-
-// GetAllowedServiceIDs indicates an expected call of GetAllowedServiceIDs.
-func (mr *MockManagerInterfaceMockRecorder) GetAllowedServiceIDs(profileID any) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAllowedServiceIDs", reflect.TypeOf((*MockManagerInterface)(nil).GetAllowedServiceIDs), profileID)
-}
