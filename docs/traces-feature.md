@@ -24,4 +24,4 @@ The **Traffic Inspector & Replay** (formerly Request Tracer) is an advanced obse
 1.  Navigate to **Traces** in the sidebar.
 2.  Select a trace from the list on the left.
 3.  Inspect the execution waterfall and details on the right.
-4.  Click **Replay in Playground** to open the trace arguments in the Interactive Playground for re-execution.
+4.  Click **Replay Trace** to re-execute the request (simulation in mock mode).

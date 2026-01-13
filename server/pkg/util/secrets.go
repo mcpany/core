@@ -63,7 +63,7 @@ func resolveSecretRecursive(ctx context.Context, secret *configv1.SecretValue, d
 		}
 		return value, nil
 	case configv1.SecretValue_FilePath_case:
-		if err := validation.IsAllowedPath(secret.GetFilePath()); err != nil {
+		if err := validation.IsRelativePath(secret.GetFilePath()); err != nil {
 			return "", fmt.Errorf("invalid secret file path %q: %w", secret.GetFilePath(), err)
 		}
 		// File reading is blocking and generally fast, but technically could verify context.

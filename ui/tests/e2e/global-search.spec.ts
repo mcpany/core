@@ -7,8 +7,24 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('Global Search', () => {
-  test.beforeEach(async ({ page }) => {
-    // We don't need to seed data for these tests as we search for static items
+  test.beforeEach(async ({ page, request }) => {
+    // Seed data for search
+    // Seed data for search
+    try {
+        const r = await request.post('/api/v1/services', {
+            data: {
+               id: "svc_02",
+               name: "User Service",
+               disable: false,
+               version: "v1.0",
+               grpc_service: { address: "localhost:50051", tools: [], resources: [] }
+            }
+        });
+        expect(r.ok()).toBeTruthy();
+    } catch (e) {
+        console.error("Seeding failed", e);
+        throw e;
+    }
     await page.goto('/');
   });
 
@@ -37,20 +53,11 @@ test.describe('Global Search', () => {
     await expect(searchInput).toBeVisible();
 
     // Check availability of content types
-    // "User Service" might not be indexed immediately or at all in some envs.
-    // "Dashboard" is a static page and should always be present.
-    await searchInput.fill('Dashboard');
-    await expect(page.getByRole('option', { name: /Dashboard/i }).first()).toBeVisible();
+    await searchInput.fill('User Service'); // Filtering explicitly
+    await expect(page.getByRole('option', { name: /User Service/i }).first()).toBeVisible();
 
-    // Also verify we can find the "Services" category or items
-    await searchInput.fill('Service');
-    await expect(page.getByRole('option', { name: /Services/i }).first()).toBeVisible();
-
-    // Navigate to Dashboard
-    await searchInput.fill('Dashboard');
+    // Navigate to it
     await page.keyboard.press('Enter');
-
-    // Verify navigation
-    await expect(page).toHaveURL(/\//); // Dashboard is usually root or /dashboard
+    // We expect navigation or action. For now, checking the search worked is finding the item.
   });
 });

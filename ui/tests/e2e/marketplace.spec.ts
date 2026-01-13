@@ -53,42 +53,4 @@ test.describe('Marketplace Tests', () => {
         console.log('No services found to test sharing');
     }
   });
-
-  test.skip('should open install modal', async ({ page }) => {
-    // Mock the templates API to return a predefined list so we have a known state
-    await page.route('**/api/v1/templates', async route => {
-       await route.fulfill({
-           json: [
-               {
-                   id: 'postgres-14',
-                   name: 'PostgreSQL 14',
-                   description: 'Standard SQL Database',
-                   version: '14.2',
-                   category: 'Database'
-               }
-           ]
-       });
-    });
-
-    await page.goto('/marketplace');
-
-    // Switch to Local tab where templates are listed
-    await page.getByRole('tab', { name: "Local" }).click();
-
-    // Find the Postgres card
-    const card = page.locator('.rounded-xl').filter({ hasText: 'PostgreSQL 14' });
-
-    await expect(card).toBeVisible();
-
-    // Click "Instantiate"
-    // Adjust selector based on actual UI.
-    await card.getByRole('button', { name: 'Instantiate' }).click();
-
-    // Verify Modal
-    await expect(page.getByRole('dialog')).toBeVisible();
-    await expect(page.getByRole('heading', { name: 'Instantiate Service' })).toBeVisible();
-
-    // Verify Create Instance button exists
-    await expect(page.getByRole('button', { name: 'Create Instance' })).toBeVisible();
-  });
 });

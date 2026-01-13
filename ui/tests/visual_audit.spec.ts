@@ -11,7 +11,7 @@ test.describe('Visual Audit', () => {
     { name: 'dashboard', path: '/' },
     { name: 'stacks_list', path: '/stacks' },
     { name: 'stack_detail', path: '/stacks/system' }, // Dummy ID
-    { name: 'services_list', path: '/upstream-services' },
+    { name: 'services_list', path: '/services' },
     { name: 'settings', path: '/settings/general' },
   ];
 

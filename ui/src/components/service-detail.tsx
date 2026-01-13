@@ -22,7 +22,6 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from ".
 import { FileConfigCard } from "./file-config-card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { RegisterServiceDialog } from "./register-service-dialog";
-import { ConnectionDiagnosticDialog } from "@/components/diagnostics/connection-diagnostic";
 import { Button } from "@/components/ui/button";
 
 function DefinitionsTable<T extends { name: string; description?: string; type?: string; source?: string; }>({ title, data, icon, serviceId, linkPath }: { title: string; data?: T[], icon: React.ReactNode, serviceId: string, linkPath: string }) {
@@ -295,7 +294,6 @@ export function ServiceDetail({ serviceId }: { serviceId: string }) {
             </Badge>
           </div>
            <div className="flex items-center space-x-4">
-             <ConnectionDiagnosticDialog service={service} />
              <RegisterServiceDialog
                 serviceToEdit={service}
                 onSuccess={fetchService}

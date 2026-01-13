@@ -180,7 +180,7 @@ func (e *dockerExecutor) Execute(ctx context.Context, command string, args []str
 	if e.containerEnv.GetVolumes() != nil {
 		for dest, src := range e.containerEnv.GetVolumes() {
 			// Validate host path (dest) to prevent mounting sensitive directories
-			if err := validation.IsAllowedPath(dest); err != nil {
+			if err := validation.IsRelativePath(dest); err != nil {
 				_ = cli.Close()
 				return nil, nil, nil, fmt.Errorf("invalid volume mount source %q: %w", dest, err)
 			}
@@ -302,7 +302,7 @@ func (e *dockerExecutor) ExecuteWithStdIO(ctx context.Context, command string, a
 	if e.containerEnv.GetVolumes() != nil {
 		for dest, src := range e.containerEnv.GetVolumes() {
 			// Validate host path (dest) to prevent mounting sensitive directories
-			if err := validation.IsAllowedPath(dest); err != nil {
+			if err := validation.IsRelativePath(dest); err != nil {
 				_ = cli.Close()
 				return nil, nil, nil, nil, fmt.Errorf("invalid volume mount source %q: %w", dest, err)
 			}

@@ -100,7 +100,8 @@ func StripSecretsFromAuth(auth *configv1.Authentication) {
 	}
 	if oauth := auth.GetOauth2(); oauth != nil {
 		scrubSecretValue(oauth.ClientSecret)
-		scrubSecretValue(oauth.ClientId)
+		// ClientID is usually safe-ish, but maybe scrub if paranoid?
+		// ClientSecret is definitely sensitive.
 	}
 	// Add other auth types as needed
 }
@@ -317,54 +318,6 @@ func HydrateSecretsInService(svc *configv1.UpstreamServiceConfig, secrets map[st
 					hydrateSecretsInEnv(bundle.Env, secrets)
 				}
 			}
-		}
-	case *configv1.UpstreamServiceConfig_HttpService:
-		hydrateSecretsInHTTPService(s.HttpService, secrets)
-	case *configv1.UpstreamServiceConfig_WebsocketService:
-		hydrateSecretsInWebsocketService(s.WebsocketService, secrets)
-	case *configv1.UpstreamServiceConfig_WebrtcService:
-		hydrateSecretsInWebrtcService(s.WebrtcService, secrets)
-	}
-}
-
-func hydrateSecretsInHTTPService(s *configv1.HttpUpstreamService, secrets map[string]*configv1.SecretValue) {
-	if s == nil {
-		return
-	}
-	for _, call := range s.Calls {
-		if call == nil {
-			continue
-		}
-		for _, param := range call.Parameters {
-			hydrateSecretValue(param.Secret, secrets)
-		}
-	}
-}
-
-func hydrateSecretsInWebsocketService(s *configv1.WebsocketUpstreamService, secrets map[string]*configv1.SecretValue) {
-	if s == nil {
-		return
-	}
-	for _, call := range s.Calls {
-		if call == nil {
-			continue
-		}
-		for _, param := range call.Parameters {
-			hydrateSecretValue(param.Secret, secrets)
-		}
-	}
-}
-
-func hydrateSecretsInWebrtcService(s *configv1.WebrtcUpstreamService, secrets map[string]*configv1.SecretValue) {
-	if s == nil {
-		return
-	}
-	for _, call := range s.Calls {
-		if call == nil {
-			continue
-		}
-		for _, param := range call.Parameters {
-			hydrateSecretValue(param.Secret, secrets)
 		}
 	}
 }

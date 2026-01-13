@@ -148,8 +148,7 @@ func run(args []string, stop chan os.Signal, ready chan<- string) error {
 	mux.HandleFunc("/ws", wsHandler)
 
 	lc := net.ListenConfig{}
-	// Bind to 127.0.0.1 to avoid issues with IPv6 or firewall in some environments
-	ln, err := lc.Listen(context.Background(), "tcp", "127.0.0.1:"+*port)
+	ln, err := lc.Listen(context.Background(), "tcp", ":"+*port)
 	if err != nil {
 		return fmt.Errorf("failed to listen: %w", err)
 	}

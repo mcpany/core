@@ -12,7 +12,7 @@ import (
 // It avoids full JSON parsing.
 func redactJSONFast(input []byte) []byte {
 	// Lazy allocation: only allocate result buffer if we actually need to redact something.
-	var out []byte
+	var out *bytes.Buffer
 
 	i := 0
 	lastWrite := 0
@@ -115,25 +115,22 @@ func redactJSONFast(input []byte) []byte {
 					// Initialize buffer if needed
 					if out == nil {
 						// Allocate slightly more than input size to avoid reallocations when replacement is longer than original
-						// 1.1x is a heuristic, but we cap it to avoid excessive memory usage for large inputs.
+						// 1.1x is a heuristic
 						extra := len(input) / 10
-						if extra > 16384 {
-							extra = 16384
-						}
 						if extra < 128 {
 							extra = 128
 						}
-						out = make([]byte, 0, len(input)+extra)
+						out = bytes.NewBuffer(make([]byte, 0, len(input)+extra))
 					}
 
 					// Determine value end
 					valEnd := skipJSONValue(input, valStart)
 
 					// Write pending data up to value start
-					out = append(out, input[lastWrite:valStart]...)
+					out.Write(input[lastWrite:valStart])
 
 					// Write replacement
-					out = append(out, redactedValue...)
+					out.Write([]byte(redactedValue))
 
 					// Advance pointers
 					i = valEnd
@@ -154,8 +151,8 @@ func redactJSONFast(input []byte) []byte {
 	}
 
 	// Write remaining
-	out = append(out, input[lastWrite:]...)
-	return out
+	out.Write(input[lastWrite:])
+	return out.Bytes()
 }
 
 // skipJSONValue returns the index after the JSON value starting at start.

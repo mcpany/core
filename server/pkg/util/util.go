@@ -95,9 +95,9 @@ func SanitizeID(ids []string, alwaysAppendHash bool, maxSanitizedPrefixLength, r
 			return "", fmt.Errorf("id cannot be empty")
 		}
 		totalLen += len(id)
-		// Optimization: Always reserve space for the hash to avoid reallocation if the ID turns out to be dirty.
-		// Over-allocating by ~9 bytes per ID is better than re-allocating the entire buffer.
-		totalLen += 1 + effectiveHashLength // _ + hash
+		if alwaysAppendHash {
+			totalLen += 1 + effectiveHashLength // _ + hash
+		}
 		if i > 0 {
 			totalLen++ // dot
 		}
@@ -422,7 +422,7 @@ func IsNil(i any) bool {
 		return true
 	}
 	switch reflect.TypeOf(i).Kind() {
-	case reflect.Ptr, reflect.Map, reflect.Chan, reflect.Slice, reflect.Func, reflect.UnsafePointer:
+	case reflect.Ptr, reflect.Map, reflect.Chan, reflect.Slice, reflect.Func:
 		return reflect.ValueOf(i).IsNil()
 	}
 	return false

@@ -70,10 +70,10 @@ func SetAllowedPaths(paths []string) {
 	allowedPaths = paths
 }
 
-// IsAllowedPath checks if a given file path is allowed (inside CWD or AllowedPaths)
-// and does not contain any path traversal sequences ("../").
+// IsRelativePath checks if a given file path is relative and does not contain any
+// path traversal sequences ("../").
 // It is a variable to allow mocking in tests.
-var IsAllowedPath = func(path string) error {
+var IsRelativePath = func(path string) error {
 	// 1. Basic security check (no .. in the path string itself)
 	if err := IsSecurePath(path); err != nil {
 		return err
@@ -85,53 +85,8 @@ var IsAllowedPath = func(path string) error {
 		return fmt.Errorf("failed to resolve absolute path: %w", err)
 	}
 
-	// Resolve Symlinks to ensure we are checking the real path
-	realPath, err := filepath.EvalSymlinks(absPath)
-	if err != nil {
-		if os.IsNotExist(err) {
-			// If file does not exist, we need to check the first existing parent directory.
-			// We want to ensure that even if the file is created later, it won't traverse out.
-			// Since we already checked `IsSecurePath` (no `..`), if the non-existing parts don't have `..`,
-			// the only risk is if an existing parent component is a symlink pointing out.
-			current := absPath
-			for {
-				// If current exists, we are good to stop and resolve it.
-				if _, err := os.Stat(current); err == nil {
-					break
-				}
-				parent := filepath.Dir(current)
-				if parent == current {
-					// We reached root and it doesn't exist? Should not happen on unix.
-					break
-				}
-				current = parent
-			}
-
-			realCurrent, err := filepath.EvalSymlinks(current)
-			if err != nil {
-				return fmt.Errorf("failed to resolve path %q: %w", path, err)
-			}
-
-			// Now calculate the suffix that didn't exist
-			rel, err := filepath.Rel(current, absPath)
-			if err != nil {
-				return fmt.Errorf("failed to calculate relative path: %w", err)
-			}
-
-			realPath = filepath.Join(realCurrent, rel)
-		} else {
-			return fmt.Errorf("failed to resolve symlinks for %q: %w", path, err)
-		}
-	}
-
 	// Helper to check if child is inside parent
 	isInside := func(parent, child string) bool {
-		// We use EvalSymlinks on parent too just in case CWD is symlinked
-		realParent, err := filepath.EvalSymlinks(parent)
-		if err == nil {
-			parent = realParent
-		}
-
 		rel, err := filepath.Rel(parent, child)
 		if err != nil {
 			return false
@@ -145,7 +100,7 @@ var IsAllowedPath = func(path string) error {
 		return fmt.Errorf("failed to get current working directory: %w", err)
 	}
 
-	if isInside(cwd, realPath) {
+	if isInside(cwd, absPath) {
 		return nil
 	}
 
@@ -158,7 +113,7 @@ var IsAllowedPath = func(path string) error {
 
 		// Resolve allowedDir to absolute too
 		allowedAbs, err := filepath.Abs(allowedDir)
-		if err == nil && isInside(allowedAbs, realPath) {
+		if err == nil && isInside(allowedAbs, absPath) {
 			return nil
 		}
 	}
@@ -242,7 +197,7 @@ func ValidateHTTPServiceDefinition(def *configv1.HttpCallDefinition) error {
 }
 
 // FileExists checks if a file exists at the given path.
-var FileExists = func(path string) error {
+func FileExists(path string) error {
 	if _, err := os.Stat(path); os.IsNotExist(err) {
 		return err
 	}

@@ -182,7 +182,7 @@ func testHTTPConnection(ctx context.Context, cfg *configv1.UpstreamServiceConfig
 		}
 	}()
 
-	if resp.StatusCode >= 400 {
+	if resp.StatusCode >= 500 {
 		return fmt.Errorf("server returned error status: %d", resp.StatusCode)
 	}
 

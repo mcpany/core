@@ -706,7 +706,3 @@ func TestUpstream_Register_CornerCases(t *testing.T) {
 		assert.Empty(t, promptManager.ListPrompts())
 	})
 }
-
-func (m *MockToolManager) GetAllowedServiceIDs(_ string) (map[string]bool, bool) {
-	return nil, true
-}

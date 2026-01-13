@@ -578,7 +578,3 @@ func TestCachingMiddleware_ProviderFactory(t *testing.T) {
 	}.Build(), "unknown")
 	assert.NoError(t, err)
 }
-
-func (m *mockToolManager) GetAllowedServiceIDs(_ string) (map[string]bool, bool) {
-	return nil, true
-}

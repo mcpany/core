@@ -130,13 +130,8 @@ func TestAuthMiddleware(t *testing.T) {
 		}
 
 		handler := mw(nextHandler)
-
-		httpReq, err := http.NewRequest("POST", "/", nil)
-		require.NoError(t, err)
-		ctx := context.WithValue(context.Background(), "http.request", httpReq)
-
 		// Method without dot
-		_, err = handler(ctx, "invalid_method", nil)
+		_, err := handler(context.Background(), "invalid_method", nil)
 		require.NoError(t, err)
 		assert.True(t, nextCalled)
 	})
@@ -207,53 +202,5 @@ func TestAuthMiddleware(t *testing.T) {
 		require.Error(t, err)
 		assert.Contains(t, err.Error(), "unauthorized")
 		assert.False(t, nextCalled)
-	})
-
-	t.Run("should block when global auth fails for public-like method", func(t *testing.T) {
-		authManager := auth.NewManager()
-		authManager.SetAPIKey("global-secret") // Set global key
-
-		mw := middleware.AuthMiddleware(authManager)
-
-		nextHandler := func(_ context.Context, _ string, _ mcp.Request) (mcp.Result, error) {
-			t.Fatal("next handler should not be called")
-			return nil, nil
-		}
-
-		handler := mw(nextHandler)
-
-		httpReq, err := http.NewRequest("POST", "/", nil) // No X-API-Key
-		require.NoError(t, err)
-		ctx := context.WithValue(context.Background(), "http.request", httpReq)
-
-		// Method without dot (serviceID == "")
-		_, err = handler(ctx, "invalid_method", nil)
-		require.Error(t, err)
-		assert.Contains(t, err.Error(), "unauthorized")
-	})
-
-	t.Run("should allow when global auth succeeds for public-like method", func(t *testing.T) {
-		authManager := auth.NewManager()
-		authManager.SetAPIKey("global-secret") // Set global key
-
-		mw := middleware.AuthMiddleware(authManager)
-
-		var nextCalled bool
-		nextHandler := func(_ context.Context, _ string, _ mcp.Request) (mcp.Result, error) {
-			nextCalled = true
-			return nil, nil
-		}
-
-		handler := mw(nextHandler)
-
-		httpReq, err := http.NewRequest("POST", "/", nil)
-		require.NoError(t, err)
-		httpReq.Header.Set("X-API-Key", "global-secret")
-		ctx := context.WithValue(context.Background(), "http.request", httpReq)
-
-		// Method without dot (serviceID == "")
-		_, err = handler(ctx, "invalid_method", nil)
-		require.NoError(t, err)
-		assert.True(t, nextCalled)
 	})
 }

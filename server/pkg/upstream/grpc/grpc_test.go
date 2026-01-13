@@ -1093,7 +1093,3 @@ func (s *simpleMockTool) MCPTool() *mcp.Tool {
 	t, _ := tool.ConvertProtoToMCPTool(s.t)
 	return t
 }
-
-func (m *MockToolManager) GetAllowedServiceIDs(_ string) (map[string]bool, bool) {
-	return nil, true
-}

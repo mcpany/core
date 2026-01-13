@@ -23,7 +23,7 @@ var (
 
 // Redactor handles redaction of sensitive data based on configuration.
 type Redactor struct {
-	customPatterns []*regexp.Regexp
+	patterns []*regexp.Regexp
 }
 
 // NewRedactor creates a new Redactor from the given DLP config.
@@ -32,18 +32,22 @@ func NewRedactor(config *configv1.DLPConfig, log *slog.Logger) *Redactor {
 		return nil
 	}
 
-	// Separate custom patterns from default ones for optimized processing
-	var customPatterns []*regexp.Regexp
+	patterns := []*regexp.Regexp{
+		emailRegex,
+		creditCardRegex,
+		ssnRegex,
+	}
+
 	for _, p := range config.CustomPatterns {
 		if r, err := regexp.Compile(p); err == nil {
-			customPatterns = append(customPatterns, r)
+			patterns = append(patterns, r)
 		} else if log != nil {
 			log.Warn("Invalid custom DLP pattern, ignoring", "pattern", p, "error", err)
 		}
 	}
 
 	return &Redactor{
-		customPatterns: customPatterns,
+		patterns: patterns,
 	}
 }
 
@@ -75,38 +79,8 @@ func (r *Redactor) RedactString(s string) string {
 	if r == nil {
 		return s
 	}
-
-	// Optimization: Scan string once to check for characteristics of PII
-	// This avoids expensive regex calls for strings that are obviously safe
-	hasAt := false
-	hasDigit := false
-	for i := 0; i < len(s); i++ {
-		c := s[i]
-		if c == '@' {
-			hasAt = true
-		} else if c >= '0' && c <= '9' {
-			hasDigit = true
-		}
-		if hasAt && hasDigit {
-			break
-		}
-	}
-
 	res := s
-
-	// Only run email regex if '@' is present
-	if hasAt {
-		res = emailRegex.ReplaceAllString(res, redactedStr)
-	}
-
-	// Only run CC and SSN regexes if digits are present
-	if hasDigit {
-		res = creditCardRegex.ReplaceAllString(res, redactedStr)
-		res = ssnRegex.ReplaceAllString(res, redactedStr)
-	}
-
-	// Always run custom patterns as we don't know their characteristics
-	for _, p := range r.customPatterns {
+	for _, p := range r.patterns {
 		res = p.ReplaceAllString(res, redactedStr)
 	}
 	return res

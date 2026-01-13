@@ -738,15 +738,10 @@ func TestRun_ServerStartupError_GracefulShutdown(t *testing.T) {
 	require.Error(t, runErr, "app.Run should return an error")
 	assert.Contains(t, runErr.Error(), "failed to start a server", "The error should indicate a server startup failure.")
 
-	assert.Eventually(t, func() bool {
-		return strings.Contains(buf.String(), "gRPC server listening")
-	}, 2*time.Second, 10*time.Millisecond, "The gRPC server should have started.")
-
-	assert.Eventually(t, func() bool {
-		logs := buf.String()
-		return strings.Contains(logs, "Attempting to gracefully shut down server...") &&
-			strings.Contains(logs, "Server shut down.")
-	}, 2*time.Second, 10*time.Millisecond, "The gRPC server should have been shut down gracefully.")
+	logs := buf.String()
+	assert.Contains(t, logs, "gRPC server listening", "The gRPC server should have started.")
+	assert.Contains(t, logs, "Attempting to gracefully shut down server...", "A graceful shutdown should be attempted.")
+	assert.Contains(t, logs, "Server shut down.", "The gRPC server should have been shut down gracefully.")
 }
 
 func TestRun_DefaultBindAddress(t *testing.T) {

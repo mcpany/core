@@ -257,25 +257,14 @@ func (s *Server) toolListFilteringMiddleware(next mcp.MethodHandler) mcp.MethodH
 			managedTools := s.toolManager.ListTools()
 			refreshedTools := make([]*mcp.Tool, 0, len(managedTools))
 
+
 			profileID, _ := auth.ProfileIDFromContext(ctx)
-			// ⚡ Bolt Optimization: Fetch allowed services once to avoid N lock acquisitions
-			var allowedServices map[string]bool
-			if profileID != "" {
-				allowedServices, _ = s.toolManager.GetAllowedServiceIDs(profileID)
-			}
 
 			for _, toolInstance := range managedTools {
 				// Profile-based filtering
 				if profileID != "" {
 					serviceID := toolInstance.Tool().GetServiceId()
-					// Optimized O(1) map lookup
-					if allowedServices != nil {
-						if !allowedServices[serviceID] {
-							continue
-						}
-					} else {
-						// Profile not found or error, default to deny if profileID was present?
-						// Original IsServiceAllowed logic: if profile not found, return false.
+					if !s.toolManager.IsServiceAllowed(serviceID, profileID) {
 						continue
 					}
 				}
@@ -286,7 +275,9 @@ func (s *Server) toolListFilteringMiddleware(next mcp.MethodHandler) mcp.MethodH
 				} else {
 					logging.GetLogger().
 						Error("Failed to convert tool to MCP format", "toolName", toolInstance.Tool().GetName())
-					// We continue instead of failing the whole request.
+					// We continue instead of failing the whole request, or we can fail.
+					// Previous behavior was to return error.
+					return nil, fmt.Errorf("failed to convert tool %q to MCP format", toolInstance.Tool().GetName())
 				}
 			}
 			return &mcp.ListToolsResult{Tools: refreshedTools}, nil
@@ -352,15 +343,6 @@ func (s *Server) GetPrompt(
 		return nil, prompt.ErrPromptNotFound
 	}
 
-	profileID, _ := auth.ProfileIDFromContext(ctx)
-	if profileID != "" {
-		serviceID := p.Service()
-		if serviceID != "" && !s.toolManager.IsServiceAllowed(serviceID, profileID) {
-			logging.GetLogger().Warn("Access denied to prompt by profile", "promptName", req.Params.Name, "profileID", profileID)
-			return nil, fmt.Errorf("access denied to prompt %q", req.Params.Name)
-		}
-	}
-
 	// Use json-iterator for faster JSON marshaling
 	var json = jsoniter.ConfigCompatibleWithStandardLibrary
 	argsBytes, err := json.Marshal(req.Params.Arguments)
@@ -416,16 +398,6 @@ func (s *Server) ReadResource(
 	if !ok {
 		return nil, resource.ErrResourceNotFound
 	}
-
-	profileID, _ := auth.ProfileIDFromContext(ctx)
-	if profileID != "" {
-		serviceID := r.Service()
-		if serviceID != "" && !s.toolManager.IsServiceAllowed(serviceID, profileID) {
-			logging.GetLogger().Warn("Access denied to resource by profile", "resourceURI", req.Params.URI, "profileID", profileID)
-			return nil, fmt.Errorf("access denied to resource %q", req.Params.URI)
-		}
-	}
-
 	return r.Read(ctx)
 }
 
@@ -537,15 +509,10 @@ func (s *Server) CallTool(ctx context.Context, req *tool.ExecutionRequest) (any,
 		{Name: "service_id", Value: serviceID},
 	})
 	startTime := time.Now()
-	defer func() {
-		// Use AddSampleWithLabels directly to avoid emitting an unlabelled metric (which MeasureSinceWithLabels does).
-		// MeasureSince emits in milliseconds.
-		duration := float32(time.Since(startTime).Seconds() * 1000)
-		metrics.AddSampleWithLabels([]string{"tools", "call", "latency"}, duration, []metrics.Label{
-			{Name: "tool", Value: req.ToolName},
-			{Name: "service_id", Value: serviceID},
-		})
-	}()
+	defer metrics.MeasureSinceWithLabels([]string{"tools", "call", "latency"}, startTime, []metrics.Label{
+		{Name: "tool", Value: req.ToolName},
+		{Name: "service_id", Value: serviceID},
+	})
 
 	result, err := s.toolManager.ExecuteTool(ctx, req)
 	if err != nil {
@@ -706,23 +673,13 @@ func (s *Server) resourceListFilteringMiddleware(next mcp.MethodHandler) mcp.Met
 			managedResources := s.resourceManager.ListResources()
 			refreshedResources := make([]*mcp.Resource, 0, len(managedResources))
 
+
 			profileID, _ := auth.ProfileIDFromContext(ctx)
-			// ⚡ Bolt Optimization: Fetch allowed services once to avoid N lock acquisitions
-			var allowedServices map[string]bool
-			if profileID != "" {
-				allowedServices, _ = s.toolManager.GetAllowedServiceIDs(profileID)
-			}
 
 			for _, resourceInstance := range managedResources {
 				// Profile filtering
 				if profileID != "" {
-					serviceID := resourceInstance.Service()
-					// Optimized O(1) map lookup
-					if allowedServices != nil {
-						if !allowedServices[serviceID] {
-							continue
-						}
-					} else {
+					if !s.toolManager.IsServiceAllowed(resourceInstance.Service(), profileID) {
 						continue
 					}
 				}
@@ -747,23 +704,13 @@ func (s *Server) promptListFilteringMiddleware(next mcp.MethodHandler) mcp.Metho
 			managedPrompts := s.promptManager.ListPrompts()
 			refreshedPrompts := make([]*mcp.Prompt, 0, len(managedPrompts))
 
+
 			profileID, _ := auth.ProfileIDFromContext(ctx)
-			// ⚡ Bolt Optimization: Fetch allowed services once to avoid N lock acquisitions
-			var allowedServices map[string]bool
-			if profileID != "" {
-				allowedServices, _ = s.toolManager.GetAllowedServiceIDs(profileID)
-			}
 
 			for _, promptInstance := range managedPrompts {
 				// Profile filtering
 				if profileID != "" {
-					serviceID := promptInstance.Service()
-					// Optimized O(1) map lookup
-					if allowedServices != nil {
-						if !allowedServices[serviceID] {
-							continue
-						}
-					} else {
+					if !s.toolManager.IsServiceAllowed(promptInstance.Service(), profileID) {
 						continue
 					}
 				}

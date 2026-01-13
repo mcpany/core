@@ -83,52 +83,11 @@ func init() {
 // This includes RFC1918, RFC4193 (Unique Local), and RFC6598 (CGNAT).
 // It does NOT include loopback or link-local addresses.
 func IsPrivateNetworkIP(ip net.IP) bool {
-	if ip4 := ip.To4(); ip4 != nil {
-		// IPv4 fast path: check directly to avoid linear scan of net.IPNet slices
-		return isPrivateNetworkIPv4(ip4)
-	}
-
 	for _, block := range privateNetworkBlocks {
 		if block.Contains(ip) {
 			return true
 		}
 	}
-	return false
-}
-
-// isPrivateNetworkIPv4 checks if an IPv4 address is private.
-// ip must be a valid 4-byte IPv4 address slice.
-func isPrivateNetworkIPv4(ip net.IP) bool {
-	switch ip[0] {
-	case 0:
-		return true // 0.0.0.0/8
-	case 10:
-		return true // 10.0.0.0/8
-	case 100:
-		return ip[1] >= 64 && ip[1] <= 127 // 100.64.0.0/10
-	case 172:
-		return ip[1] >= 16 && ip[1] <= 31 // 172.16.0.0/12
-	case 192:
-		if ip[1] == 168 {
-			return true // 192.168.0.0/16
-		}
-		if ip[1] == 0 {
-			return ip[2] == 0 || ip[2] == 2 // 192.0.0.0/24 or 192.0.2.0/24
-		}
-	case 198:
-		if ip[1] == 18 || ip[1] == 19 {
-			return true // 198.18.0.0/15
-		}
-		return ip[1] == 51 && ip[2] == 100 // 198.51.100.0/24
-	case 203:
-		return ip[1] == 0 && ip[2] == 113 // 203.0.113.0/24
-	}
-
-	// Class E (240.0.0.0/4) and Broadcast (255.255.255.255)
-	if ip[0] >= 240 {
-		return true
-	}
-
 	return false
 }
 

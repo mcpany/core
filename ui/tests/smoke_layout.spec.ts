@@ -5,7 +5,7 @@
 
 import { test, expect } from '@playwright/test';
 
-test.skip('layout smoke test', async ({ page }) => {
+test('layout smoke test', async ({ page }) => {
   await page.goto('/');
 
   // Check for Sidebar
@@ -14,7 +14,7 @@ test.skip('layout smoke test', async ({ page }) => {
 
   // Check for Sidebar links
   await expect(page.locator('a[href="/stacks"]').first()).toBeVisible();
-  await expect(page.locator('a[href="/upstream-services"]').first()).toBeVisible();
+  await expect(page.locator('a[href="/services"]').first()).toBeVisible();
   await expect(page.locator('a[href="/settings"]').first()).toBeVisible();
 
   // Navigate to Stacks

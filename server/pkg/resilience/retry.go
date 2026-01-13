@@ -51,11 +51,6 @@ func (r *Retry) Execute(ctx context.Context, work func(context.Context) error) e
 			return err
 		}
 
-		// If this was the last attempt, return the error immediately
-		if i == int(r.config.GetNumberOfRetries()) {
-			return err
-		}
-
 		select {
 		case <-ctx.Done():
 			return ctx.Err()

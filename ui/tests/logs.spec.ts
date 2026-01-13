@@ -26,29 +26,7 @@ test.describe('Logs Page', () => {
     expect(count).toBeGreaterThan(0);
   });
 
-  test.skip('should pause on scroll up', async ({ page }) => {
-    await page.clock.install();
-    await page.goto('/logs');
-
-    // Generate some logs
-    await page.clock.runFor(10000);
-    const logContainer = page.getByTestId('log-rows-container');
-
-    // Simulate scroll up
-    // We need to ensure there is enough content to scroll.
-    // The mock generates plenty of logs.
-
-    // Hover over container to ensure focus (optional but good for stability)
-    await logContainer.hover();
-
-    // Scroll up wheel event
-    await logContainer.dispatchEvent('wheel', { deltaY: -500 });
-
-    // Verify "Resume" button appears which indicates pause state
-    await expect(page.getByRole('button', { name: 'Resume' })).toBeVisible();
-  });
-
-  test.skip('should pause and resume logs', async ({ page }) => {
+  test('should pause and resume logs', async ({ page }) => {
     // Install fake clock to control setInterval
     await page.clock.install();
     await page.goto('/logs');
@@ -84,7 +62,7 @@ test.describe('Logs Page', () => {
     expect(countAfterResume).toBeGreaterThan(countAfterWait);
   });
 
-  test.skip('should filter logs', async ({ page }) => {
+  test('should filter logs', async ({ page }) => {
       // Wait for some logs to appear
       await page.waitForTimeout(3000);
 
