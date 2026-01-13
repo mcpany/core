@@ -11,7 +11,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestIsRelativePath_SymlinkTraversal_Block(t *testing.T) {
+func TestIsAllowedPath_SymlinkTraversal_Block(t *testing.T) {
 	// Setup: Create a temp directory for the test
 	tempDir := t.TempDir()
 	cwd, _ := os.Getwd()
