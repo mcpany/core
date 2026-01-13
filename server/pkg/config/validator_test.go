@@ -6,6 +6,7 @@ package config
 import (
 	"context"
 	"os"
+	"path/filepath"
 	"testing"
 	"time"
 
@@ -158,6 +159,76 @@ func TestValidateSecretValue(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestValidateMcpStdioConnection_RelativeCommandWithWorkingDir(t *testing.T) {
+	// Create a temporary directory for the "working directory" in the current directory
+	// so that IsAllowedPath passes.
+	tempDir, err := os.MkdirTemp(".", "mcpany-test-wd")
+	require.NoError(t, err)
+	defer os.RemoveAll(tempDir)
+
+	// Create a script in that directory
+	scriptPath := filepath.Join(tempDir, "start.sh")
+	err = os.WriteFile(scriptPath, []byte("#!/bin/sh\necho hello"), 0755)
+	require.NoError(t, err)
+
+	// Config with relative command and working directory
+	config := &configv1.McpAnyServerConfig{
+		UpstreamServices: []*configv1.UpstreamServiceConfig{
+			{
+				Name: proto.String("test-service"),
+				ServiceConfig: &configv1.UpstreamServiceConfig_McpService{
+					McpService: &configv1.McpUpstreamService{
+						ConnectionType: &configv1.McpUpstreamService_StdioConnection{
+							StdioConnection: &configv1.McpStdioConnection{
+								Command:          proto.String("./start.sh"),
+								WorkingDirectory: proto.String(tempDir),
+							},
+						},
+					},
+				},
+			},
+		},
+	}
+
+	// Validate should PASS now because it checks inside WorkingDirectory
+	errors := Validate(context.Background(), config, Server)
+
+	assert.Empty(t, errors, "Expected no validation errors for relative command in working directory")
+}
+
+func TestValidateMcpStdioConnection_RelativeCommandMissing(t *testing.T) {
+	// Create a temporary directory for the "working directory" in the current directory
+	tempDir, err := os.MkdirTemp(".", "mcpany-test-wd")
+	require.NoError(t, err)
+	defer os.RemoveAll(tempDir)
+
+	// Config with relative command that DOES NOT exist
+	config := &configv1.McpAnyServerConfig{
+		UpstreamServices: []*configv1.UpstreamServiceConfig{
+			{
+				Name: proto.String("test-service-missing"),
+				ServiceConfig: &configv1.UpstreamServiceConfig_McpService{
+					McpService: &configv1.McpUpstreamService{
+						ConnectionType: &configv1.McpUpstreamService_StdioConnection{
+							StdioConnection: &configv1.McpStdioConnection{
+								Command:          proto.String("./missing_script.sh"),
+								WorkingDirectory: proto.String(tempDir),
+							},
+						},
+					},
+				},
+			},
+		},
+	}
+
+	// Validate should FAIL
+	errors := Validate(context.Background(), config, Server)
+
+	assert.NotEmpty(t, errors, "Expected validation errors for missing command")
+	// We just check that it failed. The error message depends on whether it fell through to LookPath.
+	// Since it's missing in WD, it falls through to LookPath, which fails finding it in PATH/CWD.
 }
 
 func TestValidateSecretMap(t *testing.T) {
@@ -450,7 +521,7 @@ func TestValidateCommandExists(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			err := validateCommandExists(tt.command)
+			err := validateCommandExists(tt.command, "")
 			if tt.expectErr {
 				require.Error(t, err)
 				assert.Contains(t, err.Error(), tt.errMsg)
