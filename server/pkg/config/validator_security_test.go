@@ -46,3 +46,87 @@ func TestValidate_Security_VolumeMounts(t *testing.T) {
 	assert.Contains(t, validationErrors[0].Error(), "is not a secure path")
 	assert.Contains(t, validationErrors[0].Error(), "container environment volume host path")
 }
+
+func TestValidate_Security_URLSchemes(t *testing.T) {
+	testCases := []struct {
+		name          string
+		configJSON    string
+		expectedError string
+	}{
+		{
+			name: "mcp_http_connection_ftp_scheme",
+			configJSON: `{
+				"upstream_services": [{
+					"name": "bad-mcp-http",
+					"mcp_service": {
+						"http_connection": {
+							"http_address": "ftp://example.com/file"
+						}
+					}
+				}]
+			}`,
+			expectedError: "mcp service with http_connection has invalid http_address scheme: ftp",
+		},
+		{
+			name: "openapi_spec_url_ftp_scheme",
+			configJSON: `{
+				"upstream_services": [{
+					"name": "bad-openapi",
+					"openapi_service": {
+						"spec_url": "ftp://example.com/spec"
+					}
+				}]
+			}`,
+			expectedError: "invalid openapi spec_url scheme: ftp",
+		},
+		{
+			name: "audit_webhook_url_ftp_scheme",
+			configJSON: `{
+				"global_settings": {
+					"audit": {
+						"enabled": true,
+						"storage_type": "STORAGE_TYPE_WEBHOOK",
+						"webhook_url": "ftp://example.com/webhook"
+					}
+				}
+			}`,
+			expectedError: "invalid webhook_url scheme: ftp",
+		},
+		{
+			name: "oauth2_token_url_ftp_scheme",
+			configJSON: `{
+				"upstream_services": [{
+					"name": "bad-oauth",
+					"http_service": {
+						"address": "http://example.com"
+					},
+					"upstream_auth": {
+						"oauth2": {
+							"token_url": "ftp://example.com/token"
+						}
+					}
+				}]
+			}`,
+			expectedError: "invalid oauth2 token_url scheme: ftp",
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			cfg := &configv1.McpAnyServerConfig{}
+			require.NoError(t, protojson.Unmarshal([]byte(tc.configJSON), cfg))
+
+			validationErrors := Validate(context.Background(), cfg, Server)
+			require.NotEmpty(t, validationErrors, "Expected validation errors")
+
+			found := false
+			for _, err := range validationErrors {
+				if err.Err != nil && assert.Contains(t, err.Err.Error(), tc.expectedError) {
+					found = true
+					break
+				}
+			}
+			assert.True(t, found, "Expected error %q not found in %v", tc.expectedError, validationErrors)
+		})
+	}
+}
