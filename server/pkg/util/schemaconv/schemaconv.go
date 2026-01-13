@@ -18,62 +18,36 @@ const (
 	TypeNumber  = "number"
 	TypeInteger = "integer"
 	TypeBoolean = "boolean"
+	TypeObject  = "object"
+	TypeArray   = "array"
 )
+
+// MaxRecursionDepth limits the depth of nested messages to prevent infinite recursion.
+const MaxRecursionDepth = 10
 
 // MethodDescriptorToProtoProperties converts the fields of a method's input
 // message into a `structpb.Struct` for use as the `properties` field in a tool
 // input schema.
 func MethodDescriptorToProtoProperties(methodDesc protoreflect.MethodDescriptor) (*structpb.Struct, error) {
-	properties := &structpb.Struct{Fields: make(map[string]*structpb.Value)}
-	inputFields := methodDesc.Input().Fields()
-
-	for i := 0; i < inputFields.Len(); i++ {
-		field := inputFields.Get(i)
-		schema := map[string]interface{}{
-			"type": "string", // Default
-		}
-
-		switch field.Kind() {
-		case protoreflect.DoubleKind, protoreflect.FloatKind:
-			schema["type"] = TypeNumber
-		case protoreflect.Int32Kind, protoreflect.Int64Kind, protoreflect.Sint32Kind, protoreflect.Sint64Kind,
-			protoreflect.Uint32Kind, protoreflect.Uint64Kind, protoreflect.Fixed32Kind, protoreflect.Fixed64Kind,
-			protoreflect.Sfixed32Kind, protoreflect.Sfixed64Kind:
-			schema["type"] = TypeInteger
-		case protoreflect.BoolKind:
-			schema["type"] = TypeBoolean
-		}
-
-		if field.IsList() {
-			itemSchema := make(map[string]interface{})
-			for k, v := range schema {
-				itemSchema[k] = v
-			}
-			schema = map[string]interface{}{
-				"type":  "array",
-				"items": itemSchema,
-			}
-		}
-
-		structValue, err := structpb.NewStruct(schema)
-		if err != nil {
-			return nil, fmt.Errorf("failed to create struct for field %s: %w", field.Name(), err)
-		}
-		properties.Fields[string(field.Name())] = structpb.NewStructValue(structValue)
-	}
-
-	return properties, nil
+	return fieldsToProperties(methodDesc.Input().Fields(), 0)
 }
 
 // MethodOutputDescriptorToProtoProperties converts the fields of a method's
 // output message into a `structpb.Struct` for use as the `properties` field in
 // a tool output schema.
 func MethodOutputDescriptorToProtoProperties(methodDesc protoreflect.MethodDescriptor) (*structpb.Struct, error) {
-	properties := &structpb.Struct{Fields: make(map[string]*structpb.Value)}
-	outputFields := methodDesc.Output().Fields()
+	return fieldsToProperties(methodDesc.Output().Fields(), 0)
+}
 
-	for i := 0; i < outputFields.Len(); i++ {
-		field := outputFields.Get(i)
+func fieldsToProperties(fields protoreflect.FieldDescriptors, depth int) (*structpb.Struct, error) {
+	if depth > MaxRecursionDepth {
+		return nil, fmt.Errorf("recursion depth limit reached (%d)", MaxRecursionDepth)
+	}
+
+	properties := &structpb.Struct{Fields: make(map[string]*structpb.Value)}
+
+	for i := 0; i < fields.Len(); i++ {
+		field := fields.Get(i)
 		schema := map[string]interface{}{
 			"type": "string", // Default
 		}
@@ -87,6 +61,13 @@ func MethodOutputDescriptorToProtoProperties(methodDesc protoreflect.MethodDescr
 			schema["type"] = TypeInteger
 		case protoreflect.BoolKind:
 			schema["type"] = TypeBoolean
+		case protoreflect.MessageKind:
+			schema["type"] = TypeObject
+			nestedProps, err := fieldsToProperties(field.Message().Fields(), depth+1)
+			if err != nil {
+				return nil, fmt.Errorf("failed to process nested message %s: %w", field.Name(), err)
+			}
+			schema["properties"] = nestedProps.AsMap()
 		}
 
 		if field.IsList() {
@@ -95,7 +76,7 @@ func MethodOutputDescriptorToProtoProperties(methodDesc protoreflect.MethodDescr
 				itemSchema[k] = v
 			}
 			schema = map[string]interface{}{
-				"type":  "array",
+				"type":  TypeArray,
 				"items": itemSchema,
 			}
 		}
@@ -130,10 +111,7 @@ type McpFieldParameter interface {
 // from a service configuration into a `structpb.Struct` that can be used as the
 // `properties` field in a protobuf-based tool input schema.
 func ConfigSchemaToProtoProperties[T ConfigParameter](params []T) (*structpb.Struct, error) {
-	properties, err := structpb.NewStruct(make(map[string]interface{}))
-	if err != nil {
-		return nil, fmt.Errorf("failed to create properties struct: %w", err)
-	}
+	properties := &structpb.Struct{Fields: make(map[string]*structpb.Value)}
 
 	for _, param := range params {
 		paramSchema := param.GetSchema()
@@ -157,30 +135,26 @@ func ConfigSchemaToProtoProperties[T ConfigParameter](params []T) (*structpb.Str
 // `structpb.Struct` that can be used as the `properties` field in a
 // protobuf-based tool input schema.
 func McpFieldsToProtoProperties[T McpFieldParameter](params []T) (*structpb.Struct, error) {
-	properties, err := structpb.NewStruct(make(map[string]interface{}))
-	if err != nil {
-		return nil, fmt.Errorf("failed to create properties struct: %w", err)
-	}
+	properties := &structpb.Struct{Fields: make(map[string]*structpb.Value)}
 
 	for _, param := range params {
-		schema := map[string]interface{}{
-			"type":        "string", // Default to string for simplicity
-			"description": param.GetDescription(),
-		}
-
 		scalarType := strings.ToLower(strings.TrimPrefix(param.GetType(), "TYPE_"))
+		typeVal := "string" // Default
+
 		switch scalarType {
 		case "double", "float":
-			schema["type"] = TypeNumber
+			typeVal = TypeNumber
 		case "int32", "int64", "sint32", "sint64", "uint32", "uint64", "fixed32", "fixed64", "sfixed32", "sfixed64":
-			schema["type"] = TypeInteger
+			typeVal = TypeInteger
 		case "bool":
-			schema["type"] = TypeBoolean
+			typeVal = TypeBoolean
 		}
 
-		structValue, err := structpb.NewStruct(schema)
-		if err != nil {
-			return nil, fmt.Errorf("failed to create struct from schema: %w", err)
+		structValue := &structpb.Struct{
+			Fields: map[string]*structpb.Value{
+				"type":        structpb.NewStringValue(typeVal),
+				"description": structpb.NewStringValue(param.GetDescription()),
+			},
 		}
 		properties.Fields[param.GetName()] = structpb.NewStructValue(structValue)
 	}

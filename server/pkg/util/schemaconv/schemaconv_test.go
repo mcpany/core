@@ -4,6 +4,7 @@
 package schemaconv
 
 import (
+	"strings"
 	"testing"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
@@ -116,10 +117,15 @@ type mockFieldDescriptor struct {
 	kind        protoreflect.Kind
 	name        string
 	cardinality protoreflect.Cardinality
+	message     protoreflect.MessageDescriptor
 }
 
 func (m *mockFieldDescriptor) Kind() protoreflect.Kind {
 	return m.kind
+}
+
+func (m *mockFieldDescriptor) Message() protoreflect.MessageDescriptor {
+	return m.message
 }
 
 func (m *mockFieldDescriptor) Name() protoreflect.Name {
@@ -324,4 +330,103 @@ func TestMethodOutputDescriptorToProtoProperties(t *testing.T) {
 			})
 		}
 	})
+}
+
+func TestMethodDescriptorToProtoProperties_MessageKind(t *testing.T) {
+	// Nested message descriptor
+	nestedMsg := &mockMessageDescriptor{
+		fields: &mockFieldDescriptors{
+			fields: []protoreflect.FieldDescriptor{
+				&mockFieldDescriptor{
+					name: "nested_field",
+					kind: protoreflect.StringKind,
+				},
+			},
+		},
+	}
+
+	// Input message descriptor containing a MessageKind field
+	mockMethod := &mockMethodDescriptor{
+		input: &mockMessageDescriptor{
+			fields: &mockFieldDescriptors{
+				fields: []protoreflect.FieldDescriptor{
+					&mockFieldDescriptor{
+						name:    "nested_msg",
+						kind:    protoreflect.MessageKind,
+						message: nestedMsg,
+					},
+				},
+			},
+		},
+	}
+
+	properties, err := MethodDescriptorToProtoProperties(mockMethod)
+	require.NoError(t, err)
+	field := properties.Fields["nested_msg"]
+	require.NotNil(t, field)
+	s := field.GetStructValue()
+
+	// Expect "object" type for MessageKind
+	assert.Equal(t, "object", s.Fields["type"].GetStringValue(), "Expected MessageKind to be converted to object")
+
+	// Expect nested properties
+	nestedProps := s.Fields["properties"].GetStructValue()
+	require.NotNil(t, nestedProps)
+	assert.Contains(t, nestedProps.Fields, "nested_field")
+}
+
+func TestMethodDescriptorToProtoProperties_Repeated(t *testing.T) {
+	// This test covers the missing test case due to copy-paste error in the original test file
+	mockMethod := &mockMethodDescriptor{
+		input: &mockMessageDescriptor{
+			fields: &mockFieldDescriptors{
+				fields: []protoreflect.FieldDescriptor{
+					&mockFieldDescriptor{
+						name:        "tags",
+						kind:        protoreflect.StringKind,
+						cardinality: protoreflect.Repeated,
+					},
+				},
+			},
+		},
+	}
+
+	properties, err := MethodDescriptorToProtoProperties(mockMethod)
+	require.NoError(t, err)
+	require.Len(t, properties.Fields, 1)
+
+	tagsField, ok := properties.Fields["tags"]
+	require.True(t, ok)
+	s := tagsField.GetStructValue()
+	require.NotNil(t, s)
+
+	assert.Equal(t, "array", s.Fields["type"].GetStringValue())
+	items := s.Fields["items"].GetStructValue()
+	require.NotNil(t, items)
+	assert.Equal(t, "string", items.Fields["type"].GetStringValue())
+}
+
+func TestFieldsToProperties_RecursionLimit(t *testing.T) {
+	// Create a recursive message structure
+	// recursiveMsg -> field "next" (MessageKind) -> recursiveMsg
+	recursiveMsg := &mockMessageDescriptor{}
+	fields := &mockFieldDescriptors{
+		fields: []protoreflect.FieldDescriptor{
+			&mockFieldDescriptor{
+				name:    "next",
+				kind:    protoreflect.MessageKind,
+				message: recursiveMsg,
+			},
+		},
+	}
+	recursiveMsg.fields = fields
+
+	mockMethod := &mockMethodDescriptor{
+		input: recursiveMsg,
+	}
+
+	// This should fail due to recursion limit
+	_, err := MethodDescriptorToProtoProperties(mockMethod)
+	require.Error(t, err)
+	assert.True(t, strings.Contains(err.Error(), "recursion depth limit reached"))
 }
