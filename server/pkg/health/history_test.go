@@ -13,7 +13,7 @@ import (
 func TestHistoryManager(t *testing.T) {
 	// Create a dedicated instance for testing to avoid singleton issues
 	hm := &HistoryManager{
-		history: make(map[string][]HealthRecord),
+		history: make(map[string][]Record),
 		maxSize: 10, // Small size for testing
 	}
 

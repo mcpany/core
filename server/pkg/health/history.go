@@ -8,8 +8,8 @@ import (
 	"time"
 )
 
-// HealthRecord represents a single health check result.
-type HealthRecord struct {
+// Record represents a single health check result.
+type Record struct {
 	Timestamp time.Time `json:"timestamp"`
 	Status    bool      `json:"status"` // true = up, false = down
 }
@@ -17,7 +17,7 @@ type HealthRecord struct {
 // HistoryManager manages the history of health checks for services.
 type HistoryManager struct {
 	mu      sync.RWMutex
-	history map[string][]HealthRecord
+	history map[string][]Record
 	maxSize int
 }
 
@@ -30,7 +30,7 @@ var (
 func GetHistoryManager() *HistoryManager {
 	historyOnce.Do(func() {
 		globalHistory = &HistoryManager{
-			history: make(map[string][]HealthRecord),
+			history: make(map[string][]Record),
 			maxSize: 1000, // Store last 1000 checks per service
 		}
 	})
@@ -42,7 +42,7 @@ func (hm *HistoryManager) AddRecord(service string, status bool) {
 	hm.mu.Lock()
 	defer hm.mu.Unlock()
 
-	record := HealthRecord{
+	record := Record{
 		Timestamp: time.Now(),
 		Status:    status,
 	}
@@ -57,15 +57,15 @@ func (hm *HistoryManager) AddRecord(service string, status bool) {
 }
 
 // GetHistory returns the health history for a service.
-func (hm *HistoryManager) GetHistory(service string) []HealthRecord {
+func (hm *HistoryManager) GetHistory(service string) []Record {
 	hm.mu.RLock()
 	defer hm.mu.RUnlock()
 
 	if records, ok := hm.history[service]; ok {
 		// Return a copy to avoid race conditions
-		dst := make([]HealthRecord, len(records))
+		dst := make([]Record, len(records))
 		copy(dst, records)
 		return dst
 	}
-	return []HealthRecord{}
+	return []Record{}
 }
