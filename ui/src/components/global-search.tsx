@@ -52,7 +52,7 @@ export function GlobalSearch() {
   const [tools, setTools] = React.useState<ToolDefinition[]>([])
   const [resources, setResources] = React.useState<ResourceDefinition[]>([])
   const [prompts, setPrompts] = React.useState<PromptDefinition[]>([])
-  const [loading, setLoading] = React.useState(false)
+  const [_loading, setLoading] = React.useState(false)
   const lastFetched = React.useRef(0)
 
   const fetchData = React.useCallback(async () => {
@@ -118,7 +118,7 @@ export function GlobalSearch() {
                   title: "Service Restarted",
                   description: `${serviceName} has been restarted.`
               })
-          } catch (e) {
+          } catch (_e) {
               toast({
                   variant: "destructive",
                   title: "Restart Failed",
