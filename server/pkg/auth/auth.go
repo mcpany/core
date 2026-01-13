@@ -156,7 +156,7 @@ func (a *BasicAuthenticator) Authenticate(ctx context.Context, r *http.Request) 
 		return ctx, fmt.Errorf("unauthorized")
 	}
 
-	if a.Username != "" && user != a.Username {
+	if a.Username != "" && subtle.ConstantTimeCompare([]byte(user), []byte(a.Username)) != 1 {
 		return ctx, fmt.Errorf("unauthorized")
 	}
 

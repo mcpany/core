@@ -455,6 +455,10 @@ func validateMcpService(mcpService *configv1.McpUpstreamService) error {
 		if !validation.IsValidURL(httpConn.GetHttpAddress()) {
 			return fmt.Errorf("mcp service with http_connection has invalid http_address: %s", httpConn.GetHttpAddress())
 		}
+		u, _ := url.Parse(httpConn.GetHttpAddress())
+		if u.Scheme != schemeHTTP && u.Scheme != schemeHTTPS {
+			return fmt.Errorf("mcp service with http_connection has invalid http_address scheme: %s", u.Scheme)
+		}
 	case configv1.McpUpstreamService_StdioConnection_case:
 		stdioConn := mcpService.GetStdioConnection()
 		if len(stdioConn.GetCommand()) == 0 {
@@ -629,6 +633,10 @@ func validateOAuth2Auth(_ context.Context, oauth *configv1.OAuth2Auth) error {
 	if !validation.IsValidURL(oauth.GetTokenUrl()) {
 		return fmt.Errorf("invalid oauth2 token_url: %s", oauth.GetTokenUrl())
 	}
+	u, _ := url.Parse(oauth.GetTokenUrl())
+	if u.Scheme != schemeHTTP && u.Scheme != schemeHTTPS {
+		return fmt.Errorf("invalid oauth2 token_url scheme: %s", u.Scheme)
+	}
 	return nil
 }
 
@@ -718,6 +726,10 @@ func validateAuditConfig(audit *configv1.AuditConfig) error {
 		}
 		if !validation.IsValidURL(audit.GetWebhookUrl()) {
 			return fmt.Errorf("invalid webhook_url: %s", audit.GetWebhookUrl())
+		}
+		u, _ := url.Parse(audit.GetWebhookUrl())
+		if u.Scheme != schemeHTTP && u.Scheme != schemeHTTPS {
+			return fmt.Errorf("invalid webhook_url scheme: %s", u.Scheme)
 		}
 	}
 	return nil

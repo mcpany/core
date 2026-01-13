@@ -173,7 +173,6 @@ var allowedOpaqueSchemes = map[string]bool{
 	"passthrough": true,
 	"mailto":      true,
 	"data":        true,
-	"file":        true,
 }
 
 // IsValidURL checks if a given string is a valid URL. This function performs

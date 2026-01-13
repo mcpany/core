@@ -35,6 +35,7 @@ func TestIsValidURL(t *testing.T) {
 		{"valid passthrough scheme opaque", "passthrough:service-name", true},        // No host, opaque is present
 		{"valid mailto", "mailto:user@example.com", true},
 		{"valid data url", "data:text/plain;base64,SGVsbG8sIFdvcmxkIQ==", true},
+		{"file scheme (disallowed)", "file:///etc/passwd", false},
 
 		// Invalid URLs
 		{"empty string", "", false},
