@@ -350,3 +350,22 @@ func TestReadURL_Localhost(t *testing.T) {
 	require.NotNil(t, cfg)
 	assert.Equal(t, configv1.GlobalSettings_LOG_LEVEL_INFO, cfg.GlobalSettings.GetLogLevel())
 }
+
+func TestYamlEngine_UnknownFieldHelper(t *testing.T) {
+	fs := afero.NewMemMapFs()
+	require.NoError(t, afero.WriteFile(fs, "/config/unknown_helper.yaml", []byte(`
+upstream_services:
+  - name: "broken-service"
+    http_service:
+      address: "http://non-existent-domain.internal"
+    env:
+      - "MISSING_VAR"
+`), 0644))
+
+	store := NewFileStore(fs, []string{"/config/unknown_helper.yaml"})
+	_, err := store.Load(context.Background())
+	assert.Error(t, err)
+	// We expect the custom helpful error message
+	assert.Contains(t, err.Error(), "configuration error: found unknown field \"env\"")
+	assert.Contains(t, err.Error(), "env' -> 'environment'")
+}

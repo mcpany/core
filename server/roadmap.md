@@ -1,8 +1,4 @@
-# Server Roadmap
-
-## 1. Updated Roadmap
-
-### Status: Active Development
+[Output truncated for brevity]
 
 ### Implemented Features (Recently Completed)
 
@@ -36,6 +32,7 @@
 - [x] **Robust Transport Error Reporting**: Improved error messages for command-based and Docker transports. Now captures and surfaces `stderr` when a process exits unexpectedly, aiding quick debugging of configuration or runtime errors.
 - [x] **Proactive Schema Sanitization**: Automatically fixes common schema issues (like missing `type: object`) in tool definitions to ensure compatibility with strict MCP clients (e.g. Claude Code).
 - [x] **Smart Config Error Messages**: Detect and guide users migrating from Claude Desktop configuration format (`mcpServers` vs `upstream_services`). (Friction Fighter)
+- [x] **Friendly Unknown Field Error**: Improved error messages for unknown fields in configuration files (e.g., `env` -> `environment`). (Friction Fighter)
 
 ## 2. Top 10 Recommended Features
 
@@ -64,6 +61,8 @@ These features represent the next logical steps for the product, focusing on Ent
 | 19 | **MCP Server Aggregator/Proxy** | **Architecture**: A meta-server capability to discover, configure, and manage multiple downstream MCP servers dynamically. | High |
 | 18 | **Preset Service Gallery** | **UX**: A curated list of popular services (like `wttr.in`, `sqlite`, etc.) that can be added via CLI or UI with one click/command. | Medium |
 | 19 | **Configuration Migration Tool** | **DevX**: A CLI command to convert `claude_desktop_config.json` to `mcpany` config format. | Low |
+| 20 | **Interactive Config Wizard** | **UX**: A CLI command `mcpany init` to guide users through creating a basic configuration file interactively. | Low |
+| 21 | **Config Schema Validation CLI** | **DevX**: Expose the schema validation logic as a standalone CLI command for CI usage. | Low |
 
 ## 3. Codebase Health
 

@@ -102,6 +102,20 @@ func (e *yamlEngine) Unmarshal(b []byte, v proto.Message) error {
 			//nolint:staticcheck // This error message is user facing and needs to be descriptive
 			return fmt.Errorf("%w\n\nDid you mean \"upstream_services\"? It looks like you might be using a Claude Desktop configuration format. MCP Any uses a different configuration structure. See documentation for details.", err)
 		}
+
+		// Improve error message for unknown fields
+		if strings.Contains(err.Error(), "unknown field") {
+			// Extract the field name
+			// Error format: proto: (line X:Y): unknown field "FIELD_NAME"
+			re := regexp.MustCompile(`unknown field "([^"]+)"`)
+			matches := re.FindStringSubmatch(err.Error())
+			if len(matches) > 1 {
+				fieldName := matches[1]
+				// revive:disable-next-line:error-strings // This error message is user facing and needs to be descriptive
+
+				return fmt.Errorf("configuration error: found unknown field %q.\nPlease check your indentation and spelling. If you are trying to configure a service, ensure you are using the correct field names (e.g. 'upstream_services', 'http_service', 'env' -> 'environment').\nOriginal error: %w", fieldName, err)
+			}
+		}
 		return err
 	}
 	// Debug logging to inspect unmarshaled user
