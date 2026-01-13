@@ -187,6 +187,71 @@ func TestAuthManager(t *testing.T) {
 
 		authManager.SetAPIKey("")
 	})
+
+	t.Run("set_and_get_users", func(t *testing.T) {
+		users := []*configv1.User{
+			{Id: proto.String("user1"), Roles: []string{"admin"}},
+			{Id: proto.String("user2"), Roles: []string{"user"}},
+		}
+		authManager.SetUsers(users)
+
+		u1, ok := authManager.GetUser("user1")
+		assert.True(t, ok)
+		assert.Equal(t, "user1", u1.GetId())
+		assert.Equal(t, []string{"admin"}, u1.Roles)
+
+		u2, ok := authManager.GetUser("user2")
+		assert.True(t, ok)
+		assert.Equal(t, "user2", u2.GetId())
+
+		_, ok = authManager.GetUser("non-existent")
+		assert.False(t, ok)
+	})
+
+	t.Run("set_storage", func(t *testing.T) {
+		// Just ensure it doesn't panic and sets the storage (internal field)
+		// Since we can't easily check private field, we trust the setter.
+		// Or we could mock storage and check if it's used in other methods like InitiateOAuth
+		// But those are tested in interactive_test.go
+		authManager.SetStorage(nil)
+	})
+}
+
+func TestContextHelpers(t *testing.T) {
+	ctx := context.Background()
+
+	t.Run("user_context", func(t *testing.T) {
+		userID := "user-123"
+		ctxWithUser := ContextWithUser(ctx, userID)
+		val, ok := UserFromContext(ctxWithUser)
+		assert.True(t, ok)
+		assert.Equal(t, userID, val)
+
+		_, ok = UserFromContext(ctx)
+		assert.False(t, ok)
+	})
+
+	t.Run("profile_id_context", func(t *testing.T) {
+		profileID := "profile-abc"
+		ctxWithProfile := ContextWithProfileID(ctx, profileID)
+		val, ok := ProfileIDFromContext(ctxWithProfile)
+		assert.True(t, ok)
+		assert.Equal(t, profileID, val)
+
+		_, ok = ProfileIDFromContext(ctx)
+		assert.False(t, ok)
+	})
+
+	t.Run("api_key_context", func(t *testing.T) {
+		apiKey := "key-xyz"
+		ctxWithKey := ContextWithAPIKey(ctx, apiKey)
+		val, ok := APIKeyFromContext(ctxWithKey)
+		assert.True(t, ok)
+		assert.Equal(t, apiKey, val)
+
+		_, ok = APIKeyFromContext(ctx)
+		assert.False(t, ok)
+	})
 }
 
 func TestAddOAuth2Authenticator(t *testing.T) {
@@ -363,6 +428,64 @@ func TestValidateAuthentication(t *testing.T) {
 		err := ValidateAuthentication(context.Background(), config, req)
 		assert.Error(t, err)
 		assert.Equal(t, "unauthorized", err.Error())
+	})
+
+	t.Run("oidc_method", func(t *testing.T) {
+		// Mock OIDC provider
+		var server *httptest.Server
+		const wellKnownPath = "/.well-known/openid-configuration"
+		server = httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			if r.URL.Path == wellKnownPath {
+				w.Header().Set("Content-Type", "application/json")
+				_, _ = fmt.Fprintln(w, `{"issuer": "`+server.URL+`", "jwks_uri": "`+server.URL+`/jwks"}`)
+			} else if r.URL.Path == "/jwks" {
+				w.Header().Set("Content-Type", "application/json")
+				_, _ = fmt.Fprintln(w, `{"keys": []}`)
+			}
+		}))
+		defer server.Close()
+
+		config := &configv1.Authentication{
+			AuthMethod: &configv1.Authentication_Oidc{
+				Oidc: &configv1.OIDCAuth{
+					Issuer:   proto.String(server.URL),
+					Audience: []string{"test-audience"},
+				},
+			},
+		}
+		req := httptest.NewRequest("GET", "/", nil)
+		// Should fail unauthorized because no token, but prove it tried to authenticate using OIDC config
+		err := ValidateAuthentication(context.Background(), config, req)
+		assert.Error(t, err)
+		assert.Equal(t, "unauthorized", err.Error())
+	})
+
+	t.Run("oidc_method_missing_issuer", func(t *testing.T) {
+		config := &configv1.Authentication{
+			AuthMethod: &configv1.Authentication_Oidc{
+				Oidc: &configv1.OIDCAuth{
+					// Missing issuer
+				},
+			},
+		}
+		req := httptest.NewRequest("GET", "/", nil)
+		err := ValidateAuthentication(context.Background(), config, req)
+		assert.Error(t, err)
+		assert.Contains(t, err.Error(), "invalid OIDC configuration")
+	})
+
+	t.Run("oauth2_method_missing_issuer", func(t *testing.T) {
+		config := &configv1.Authentication{
+			AuthMethod: &configv1.Authentication_Oauth2{
+				Oauth2: &configv1.OAuth2Auth{
+					// Missing issuer
+				},
+			},
+		}
+		req := httptest.NewRequest("GET", "/", nil)
+		err := ValidateAuthentication(context.Background(), config, req)
+		assert.Error(t, err)
+		assert.Contains(t, err.Error(), "invalid OAuth2 configuration")
 	})
 
 	t.Run("no_method", func(t *testing.T) {
