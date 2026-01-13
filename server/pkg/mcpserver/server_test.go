@@ -1013,6 +1013,14 @@ func (m *smartToolManager) ClearToolsForService(_ string)            {}
 func (m *smartToolManager) SetProfiles(_ []string, _ []*configv1.ProfileDefinition) {}
 func (m *smartToolManager) IsServiceAllowed(_, _ string) bool                       { return true }
 
+func (m *smartToolManager) GetAllowedServiceIDs(profileID string) (map[string]bool, bool) {
+	// Permissive for testing
+	return map[string]bool{
+		"global-service":  true,
+		"profile-service": true,
+		"other-service":   true,
+	}, true
+}
 
 func TestServer_MiddlewareChain(t *testing.T) {
 	poolManager := pool.NewManager()

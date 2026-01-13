@@ -57,3 +57,7 @@ func TestUpstreamWorker_Stop(t *testing.T) {
 	// If we reached here, it didn't deadlock
 	assert.True(t, true)
 }
+
+func (m *MockToolManager) GetAllowedServiceIDs(_ string) (map[string]bool, bool) {
+	return nil, true
+}

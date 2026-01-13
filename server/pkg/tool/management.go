@@ -59,6 +59,8 @@ type ManagerInterface interface {
 	IsServiceAllowed(serviceID, profileID string) bool
 	// ToolMatchesProfile checks if a tool matches a given profile.
 	ToolMatchesProfile(tool Tool, profileID string) bool
+	// GetAllowedServiceIDs returns a map of allowed service IDs for a given profile.
+	GetAllowedServiceIDs(profileID string) (map[string]bool, bool)
 }
 
 // ExecutionMiddleware defines the interface for tool execution middleware.
@@ -180,6 +182,25 @@ func (tm *Manager) ToolMatchesProfile(tool Tool, profileID string) bool {
 	tm.mu.RLock()
 	defer tm.mu.RUnlock()
 	return tm.toolMatchesProfile(tool.Tool(), profileID)
+}
+
+// GetAllowedServiceIDs returns a map of allowed service IDs for a given profile.
+func (tm *Manager) GetAllowedServiceIDs(profileID string) (map[string]bool, bool) {
+	tm.mu.RLock()
+	defer tm.mu.RUnlock()
+
+	def, ok := tm.profileDefs[profileID]
+	if !ok {
+		return nil, false
+	}
+
+	allowed := make(map[string]bool)
+	for serviceID, sc := range def.GetServiceConfig() {
+		if sc.GetEnabled() {
+			allowed[serviceID] = true
+		}
+	}
+	return allowed, true
 }
 
 func (tm *Manager) matchesSelector(t *v1.Tool, selector *configv1.ProfileSelector) bool {

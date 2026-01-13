@@ -662,3 +662,8 @@ func TestConvertSchemaToStructPB_WithEnumAndDefault(t *testing.T) {
 	assert.NotNil(t, fields["default"])
 	assert.Equal(t, "A", fields["default"].GetStringValue())
 }
+
+func (m *MockToolManager) GetAllowedServiceIDs(profileID string) (map[string]bool, bool) {
+	args := m.Called(profileID)
+	return args.Get(0).(map[string]bool), args.Bool(1)
+}
