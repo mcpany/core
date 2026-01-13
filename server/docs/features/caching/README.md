@@ -101,9 +101,9 @@ level=DEBUG msg="Cache hit" key=...
 
 ### Automated Verification
 
-Run the E2E verification test:
+Run the verification test:
 ```bash
-go test -v -count=1 -tags=e2e ./docs/features/caching
+go test -v -count=1 ./server/pkg/middleware -run TestCachingMiddleware
 ```
 
 ### Metrics
