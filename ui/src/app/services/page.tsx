@@ -17,16 +17,26 @@ import {
     SheetHeader,
     SheetTitle,
 } from "@/components/ui/sheet"
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogHeader,
+    DialogTitle,
+} from "@/components/ui/dialog"
 import { useToast } from "@/hooks/use-toast";
 
 import { UpstreamServiceConfig } from "@/lib/client";
 import { ServiceList } from "@/components/services/service-list";
 import { ServiceEditor } from "@/components/services/editor/service-editor";
+import { TemplateSelector } from "@/components/services/template-selector";
+import { ServiceTemplate } from "@/data/service-templates";
 
 export default function ServicesPage() {
   const [services, setServices] = useState<UpstreamServiceConfig[]>([]);
   const [selectedService, setSelectedService] = useState<UpstreamServiceConfig | null>(null);
   const [isSheetOpen, setIsSheetOpen] = useState(false);
+  const [isTemplateDialogOpen, setIsTemplateDialogOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
 
@@ -104,16 +114,24 @@ export default function ServicesPage() {
   }, []);
 
   const openNew = () => {
-      setSelectedService({
-          id: "",
-          name: "",
+      setIsTemplateDialogOpen(true);
+  };
+
+  const handleTemplateSelect = (template: ServiceTemplate) => {
+      setIsTemplateDialogOpen(false);
+
+      const newService = {
+          id: "", // User to fill
+          name: "", // User to fill
           version: "1.0.0",
           disable: false,
           priority: 0,
           loadBalancingStrategy: 0,
-          httpService: { address: "" }
-      } as any);
+          ...template.config,
+          // Generate a default name/ID if helpful? No, force user to name it.
+      } as any;
 
+      setSelectedService(newService);
       setIsSheetOpen(true);
   };
 
@@ -166,6 +184,22 @@ export default function ServicesPage() {
              />
         </CardContent>
       </Card>
+
+      {/* Template Selection Dialog */}
+      <Dialog open={isTemplateDialogOpen} onOpenChange={setIsTemplateDialogOpen}>
+        <DialogContent className="sm:max-w-3xl max-h-[80vh] overflow-y-auto">
+             <DialogHeader>
+                 <DialogTitle>Choose a Service Template</DialogTitle>
+                 <DialogDescription>
+                     Select a pre-configured template to get started quickly, or choose 'Custom' to start from scratch.
+                 </DialogDescription>
+             </DialogHeader>
+             <TemplateSelector
+                onSelect={handleTemplateSelect}
+                onCancel={() => setIsTemplateDialogOpen(false)}
+             />
+        </DialogContent>
+      </Dialog>
 
       <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
         <SheetContent className="sm:max-w-2xl w-full">
