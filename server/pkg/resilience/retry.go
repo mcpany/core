@@ -89,7 +89,7 @@ func (r *Retry) backoff(attempt int) time.Duration {
 	}
 
 	base := r.config.GetBaseBackoff().AsDuration()
-	max := r.config.GetMaxBackoff().AsDuration()
+	maxBackoff := r.config.GetMaxBackoff().AsDuration()
 
 	if base <= 0 {
 		return 0
@@ -98,10 +98,10 @@ func (r *Retry) backoff(attempt int) time.Duration {
 	// Calculate factor = 2^attempt
 	factor := int64(1) << attempt
 
-	// Check for overflow: base * factor > max
-	// factor > max / base
-	if factor > int64(max/base) {
-		return max
+	// Check for overflow: base * factor > maxBackoff
+	// factor > maxBackoff / base
+	if factor > int64(maxBackoff/base) {
+		return maxBackoff
 	}
 
 	backoff := base * time.Duration(factor)
