@@ -102,6 +102,8 @@ func TestIsAllowedPath_EvalSymlinksError_Permission(t *testing.T) {
 	// If we are root, this test might not trigger the specific error branch we want,
 	// but it's worth a try for coverage.
 
+	err := IsAllowedPath(filepath.Join(noPermDir, "file.txt"))
+
 	// If EvalSymlinks fails with permission, IsAllowedPath should return an error wrapping it.
 	// However, our code has `if os.IsNotExist(err)`. Permission error is NOT NotExist.
 	// So it should go to `else { return fmt.Errorf("failed to resolve symlinks ...") }`
@@ -116,7 +118,7 @@ func TestIsAllowedPath_EvalSymlinksError_Permission(t *testing.T) {
 	loopLink := "loop"
 	require.NoError(t, os.Symlink(loopLink, loopLink))
 
-	err := IsAllowedPath(loopLink)
+	err = IsAllowedPath(loopLink)
 	assert.Error(t, err)
 	assert.Contains(t, err.Error(), "failed to resolve symlinks")
 }
