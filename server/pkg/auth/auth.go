@@ -157,7 +157,7 @@ func (a *BasicAuthenticator) Authenticate(ctx context.Context, r *http.Request) 
 		return ctx, fmt.Errorf("unauthorized")
 	}
 
-	if a.Username != "" && user != a.Username {
+	if a.Username != "" && subtle.ConstantTimeCompare([]byte(user), []byte(a.Username)) != 1 {
 		return ctx, fmt.Errorf("unauthorized")
 	}
 
@@ -192,7 +192,7 @@ func (a *TrustedHeaderAuthenticator) Authenticate(ctx context.Context, r *http.R
 	}
 	// If HeaderValue is set, it must match.
 	if a.HeaderValue != "" {
-		if val != a.HeaderValue {
+		if subtle.ConstantTimeCompare([]byte(val), []byte(a.HeaderValue)) != 1 {
 			return ctx, fmt.Errorf("unauthorized")
 		}
 	}
