@@ -134,7 +134,7 @@ func isPrivateNetworkIPv4(ip net.IP) bool {
 
 // IsPrivateIP checks if the IP address is a private, link-local, or loopback address.
 func IsPrivateIP(ip net.IP) bool {
-	if ip.IsLoopback() {
+	if ip.IsLoopback() || ip.IsUnspecified() {
 		return true
 	}
 	if IsPrivateNetworkIP(ip) {
