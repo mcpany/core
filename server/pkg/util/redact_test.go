@@ -306,3 +306,14 @@ func TestScanForSensitiveKeys_JSON(t *testing.T) {
 		})
 	}
 }
+
+func TestBug_PascalCaseRedaction_AuthId(t *testing.T) {
+	t.Parallel()
+	// "AuthId" starts with "Auth" which matches key "auth".
+	// "Id" is not sensitive.
+	// Logic should catch "Auth" as sensitive prefix.
+	// But bug might skip it because of uppercase continuation logic intended for AUTHORITY.
+	input := `{"AuthId": "123"}`
+	output := RedactJSON([]byte(input))
+	assert.Contains(t, string(output), `[REDACTED]`, "AuthId should be redacted")
+}
