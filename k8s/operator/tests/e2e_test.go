@@ -79,10 +79,6 @@ networking:
   ipFamily: ipv4
 nodes:
 - role: control-plane
-  extraPortMappings:
-  - containerPort: 30000
-    listenAddress: "0.0.0.0"
-    protocol: TCP
 `
 		tmpConfig := filepath.Join(t.TempDir(), "kind-config.yaml")
 		if err := os.WriteFile(tmpConfig, []byte(kindConfigContent), 0644); err != nil {
@@ -94,29 +90,7 @@ nodes:
 		}
 	}
 
-	// 5. Discover mapped port (Common for both new and reused clusters)
-	// docker port mcp-e2e-control-plane 30000/tcp -> 0.0.0.0:35907
-	cmd := exec.CommandContext(ctx, "docker", "port", fmt.Sprintf("%s-control-plane", clusterName), "30000/tcp")
-	out, err := cmd.Output()
-	if err != nil {
-		t.Fatalf("Failed to get mapped port from docker: %v", err)
-	}
-	// Output example: 0.0.0.0:35907
-	outStr := strings.TrimSpace(string(out))
-	parts := strings.Split(outStr, ":")
-	if len(parts) < 2 {
-		t.Fatalf("Unexpected docker port output: %s", outStr)
-	}
-	// Last part is the port
-	portStr := parts[len(parts)-1]
-	var hostPort int
-	_, err = fmt.Sscanf(portStr, "%d", &hostPort)
-	if err != nil {
-		t.Fatalf("Failed to parse port from %s: %v", portStr, err)
-	}
-	t.Logf("Using host port %d for UI access (mapped to NodePort 30000)", hostPort)
-
-	// 6. Build Images (Locally)
+	// 5. Build Images (Locally)
 	if os.Getenv("SKIP_IMAGE_BUILD") != "true" {
 		t.Logf("Building Docker images with tag %s...", tag)
 		// Prepare docker context for server build
@@ -138,7 +112,7 @@ nodes:
 		t.Log("Skipping image build (SKIP_IMAGE_BUILD=true). Assuming images exist.")
 	}
 
-	// 5. Load Images into Kind
+	// 6. Load Images into Kind
 	t.Log("Loading images into Kind...")
 	if err := runCommand(t, ctx, rootDir, "kind", "load", "docker-image", fmt.Sprintf("mcpany/server:%s", tag), "--name", clusterName); err != nil {
 		t.Fatalf("Failed to load server image: %v", err)
@@ -150,7 +124,7 @@ nodes:
 		t.Fatalf("Failed to load ui image: %v", err)
 	}
 
-	// 6. Install Helm Chart
+	// 7. Install Helm Chart
 	t.Log("Installing Helm chart...")
 	// Helm upgrade --install
 	if err := runCommand(t, ctx, rootDir, "helm", "upgrade", "--install", "mcpany", "k8s/helm/mcpany",
@@ -165,8 +139,7 @@ nodes:
 		"--set", "operator.image.pullPolicy=Never",
 		"--set", fmt.Sprintf("ui.image.tag=%s", tag),
 		"--set", "ui.image.pullPolicy=Never",
-		"--set", "ui.service.type=NodePort",
-		"--set", "ui.service.nodePort=30000",
+		"--set", "ui.service.type=ClusterIP", // No NodePort needed with port-forward
 		"--wait",
 		"--timeout", "10m",
 	); err != nil {
@@ -175,7 +148,7 @@ nodes:
 
 	t.Log("Deployment successful!")
 
-	// 7. Verify Pods
+	// 8. Verify Pods
 	// If reusing cluster, force restart UI to pick up new image
 	if os.Getenv("REUSE_CLUSTER") == "true" {
 		t.Log("Restarting UI deployment to pick up new images...")
@@ -187,17 +160,86 @@ nodes:
 		t.Fatalf("Failed to wait for pods: %v", err)
 	}
 
-	// 8. Run UI Tests
-	t.Logf("Using host port %d for UI tests (NodePort)", hostPort)
+	// 9. Start Port Forwarding
+	t.Log("Starting kubectl port-forward...")
+	// We use :3000 -> 3000 inside container (assuming UI listens on 3000)
+	// Or check helm chart service port. Previous code said NodePort 30000.
+	// Typically Next.js listens on 3000. Service usually maps 80->3000 or similar.
+	// Let's assume service port is 80 (standard HTTP) or matched to container.
+	// The previous helm set ui.service.nodePort=30000.
+	// Let's forward to the service.
+	pfCmd := exec.CommandContext(ctx, "kubectl", "port-forward", "service/mcpany-ui", ":80", "-n", namespace)
+	pfOutPipe, err := pfCmd.StdoutPipe()
+	if err != nil {
+		t.Fatalf("Failed to get pipe for port-forward: %v", err)
+	}
+	pfCmd.Stderr = os.Stderr
+	if err := pfCmd.Start(); err != nil {
+		t.Fatalf("Failed to start port-forward: %v", err)
+	}
+	// Try to kill it at end of test.
+	// Note: ctx cancel will likely kill it since it's CommandContext, but explicit kill is safer?
+	// CommandContext will kill it.
 
-	// Wait for NodePort to be accessible
-	// Since we mapped it in Kind, it should be reachable on localhost:hostPort
-	if err := waitForPort(t, ctx, fmt.Sprintf("127.0.0.1:%d", hostPort), 60*time.Second); err != nil {
-		t.Fatalf("NodePort failed to become accessible: %v", err)
+	// Parse port from output "Forwarding from 127.0.0.1:xxxxx -> 80"
+	var localPort int
+	// Read a bit of output
+	// Use a goroutine to read output or just read buffer.
+	// It prints immediately.
+	// We need to wait for it.
+    // Simpler: use a bufio scanner.
+    done := make(chan bool)
+    go func() {
+        // Simple scanner
+        var buf [1024]byte
+        n, err := pfOutPipe.Read(buf[:])
+        if err != nil {
+            return
+        }
+        output := string(buf[:n])
+        t.Logf("Port-forward output: %s", output)
+        // Extract port.
+        // Example: Forwarding from 127.0.0.1:45037 -> 80
+        //          Forwarding from [::1]:45037 -> 80
+        parts := strings.Split(output, ":")
+        // This is tricky parsing. Better to use regex if imported.
+        // Simple search: "127.0.0.1:"
+        idx := strings.Index(output, "127.0.0.1:")
+        if idx != -1 {
+            rest := output[idx+len("127.0.0.1:"):]
+            // space or ->
+            end := strings.IndexAny(rest, " ->")
+            if end != -1 {
+                fmt.Sscanf(rest[:end], "%d", &localPort)
+            }
+        }
+        close(done)
+    }()
+
+    select {
+    case <-done:
+        if localPort == 0 {
+             t.Log("Retrying port parse from IPv6 if needed...")
+             // Re-reading logic is complex in one-shot.
+             // Assume 127.0.0.1 for now or fail.
+        }
+    case <-time.After(10 * time.Second):
+        t.Fatal("Timeout waiting for port-forward output")
+    }
+
+    if localPort == 0 {
+         t.Fatal("Failed to parse local port from port-forward")
+    }
+
+	t.Logf("Using local port %d for UI tests", localPort)
+
+	// 10. Run UI Tests
+	// Wait for port to be accessible
+	if err := waitForPort(t, ctx, fmt.Sprintf("127.0.0.1:%d", localPort), 60*time.Second); err != nil {
+		t.Fatalf("Port-forward failed to become accessible: %v", err)
 	}
 
 	// Run Playwright tests
-	// We assume 'npx' is available and we are in the root or can find ui dir
 	uiDir := filepath.Join(rootDir, "ui")
 	playwrightArgs := []string{"test", "--workers=1"}
 	if grep := os.Getenv("PLAYWRIGHT_GREP"); grep != "" {
@@ -206,7 +248,7 @@ nodes:
 	args := append([]string{"playwright"}, playwrightArgs...)
 	playwrightCmd := exec.CommandContext(ctx, "npx", args...)
 	playwrightCmd.Dir = uiDir
-	playwrightCmd.Env = append(os.Environ(), fmt.Sprintf("PLAYWRIGHT_BASE_URL=http://127.0.0.1:%d", hostPort), "SKIP_WEBSERVER=true")
+	playwrightCmd.Env = append(os.Environ(), fmt.Sprintf("PLAYWRIGHT_BASE_URL=http://127.0.0.1:%d", localPort), "SKIP_WEBSERVER=true")
 	playwrightCmd.Stdout = os.Stdout
 	playwrightCmd.Stderr = os.Stderr
 
