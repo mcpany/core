@@ -61,8 +61,8 @@ func LoadServices(ctx context.Context, store Store, binaryType string) (*configv
 		}
 
 		// Check global settings errors.
-		if _, ok := serviceErrors["global_settings"]; ok {
-			return nil, fmt.Errorf("global settings validation failed, check logs for details")
+		if errStr, ok := serviceErrors["global_settings"]; ok {
+			return nil, fmt.Errorf("global settings validation failed: %s", errStr)
 		}
 
 		// Update: For "Friction Fighter" mission, we now fail strictly on startup if any service is invalid.

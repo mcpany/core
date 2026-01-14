@@ -37,6 +37,8 @@
 - [x] **Proactive Schema Sanitization**: Automatically fixes common schema issues (like missing `type: object`) in tool definitions to ensure compatibility with strict MCP clients (e.g. Claude Code).
 - [x] **Smart Config Error Messages**: Detect and guide users migrating from Claude Desktop configuration format (`mcpServers` vs `upstream_services`). (Friction Fighter)
 - [x] **Relative Command Resolution**: Fixed an issue where relative commands in `stdio_connection` failed validation even if they existed in the specified `working_directory`. (Friction Fighter)
+- [x] **Strict Config Loading**: Enforced strict validation for initial configuration files to prevent "silent failures" when syntax errors occur. (Friction Fighter)
+- [x] **Enhanced Validation Messages**: Improved error messages for missing service types and connection details to be more actionable.
 
 ## 2. Top 10 Recommended Features
 
@@ -66,6 +68,8 @@ These features represent the next logical steps for the product, focusing on Ent
 | 21 | **Configuration Migration Tool** | **DevX**: A CLI command to convert `claude_desktop_config.json` to `mcpany` config format. | Low |
 | 22 | **Auth Doctor** | **UX**: Diagnostic tool to verify that configured authentication methods match upstream expectations (e.g., detecting if a Bearer token is used where Basic Auth is expected). | Medium |
 | 23 | **Dynamic Tool Pruning** | **Performance/Cost**: Feature to filter visible tools based on the current user's role or context to reduce LLM context window usage and costs. | High |
+| 24 | **Config Wizard** | **UX**: An interactive CLI (`mcpany init`) to guide users through creating their first configuration file. | Low |
+| 25 | **Service Health Dashboard** | **Visibility**: A dedicated dashboard page showing the health status and last error for each upstream service. | Medium |
 
 ## 3. Codebase Health
 

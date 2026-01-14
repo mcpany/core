@@ -265,7 +265,7 @@ func ValidateOrError(ctx context.Context, service *configv1.UpstreamServiceConfi
 
 func validateUpstreamService(ctx context.Context, service *configv1.UpstreamServiceConfig) error {
 	if service.WhichServiceConfig() == configv1.UpstreamServiceConfig_ServiceConfig_not_set_case {
-		return fmt.Errorf("service type not specified")
+		return fmt.Errorf("service type not specified; must be one of [http_service, grpc_service, mcp_service, command_line_service, openapi_service, websocket_service, webrtc_service, sql_service, graphql_service]")
 	}
 
 	if err := validateServiceConfig(service); err != nil {
@@ -329,7 +329,7 @@ func validateServiceConfig(service *configv1.UpstreamServiceConfig) error {
 
 func validateHTTPService(httpService *configv1.HttpUpstreamService) error {
 	if httpService.GetAddress() == "" {
-		return fmt.Errorf("http service has empty target_address")
+		return fmt.Errorf("http service has empty target_address; check your 'http_service.address' field")
 	}
 	if !validation.IsValidURL(httpService.GetAddress()) {
 		return fmt.Errorf("invalid http target_address: %s", httpService.GetAddress())
@@ -492,7 +492,7 @@ func validateMcpService(mcpService *configv1.McpUpstreamService) error {
 			return fmt.Errorf("mcp service with bundle_connection has invalid secret environment variable: %w", err)
 		}
 	default:
-		return fmt.Errorf("mcp service has no connection_type")
+		return fmt.Errorf("mcp service has no connection_type; must be one of [http_connection, stdio_connection, bundle_connection]")
 	}
 
 	for name, call := range mcpService.GetCalls() {

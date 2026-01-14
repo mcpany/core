@@ -299,8 +299,9 @@ func (a *Application) Run(
 
 	var stores []config.Store
 	if len(configPaths) > 0 {
-		// Use NewFileStoreWithSkipErrors to tolerate partial config failures during startup
-		stores = append(stores, config.NewFileStoreWithSkipErrors(fs, configPaths))
+		// Use NewFileStore to enforce strict config validation during startup.
+		// We want to fail fast if the user provides an invalid config file.
+		stores = append(stores, config.NewFileStore(fs, configPaths))
 	}
 	stores = append(stores, storageStore)
 	multiStore := config.NewMultiStore(stores...)
