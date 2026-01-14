@@ -198,10 +198,10 @@ func TestRedactJSON_FalsePositives(t *testing.T) {
 		{"author", `{"author": "John Doe"}`, false},        // "auth" + "or" (lowercase continuation)
 		{"authority", `{"authority": "admin"}`, false},     // "auth" + "ority"
 		{"authentic", `{"authentic": "true"}`, false},      // "auth" + "entic"
-		{"tokens", `{"tokens": ["abc"]}`, false},           // "token" + "s" (lowercase continuation)
         {"AUTHORITY", `{"AUTHORITY": "public_info"}`, false}, // "AUTH" + "ORITY" (uppercase continuation)
 
 		// True positives (Substring matching logic)
+		{"tokens", `{"tokens": ["abc"]}`, true},            // "token" + "s" - now explicitly added to sensitive keys
 		{"CamelCase", `{"authToken": "123"}`, true},        // "auth" + "Token" (Uppercase boundary)
 		{"PascalCase", `{"AuthToken": "123"}`, true},       // "Auth" + "Token"
 		{"snake_case", `{"auth_token": "123"}`, true},      // "auth" + "_" (non-letter boundary)
