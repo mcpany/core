@@ -345,6 +345,15 @@ upstream_services: {
 				assert.Equal(t, "http://api.example.com/v1", httpService.GetAddress())
 			},
 		},
+		{
+			name: "invalid global settings",
+			textprotoContent: `
+global_settings: {
+    mcp_listen_address: "invalid-address"
+}
+`,
+			expectLoadError: true,
+		},
 	}
 
 	for _, tt := range tests {
