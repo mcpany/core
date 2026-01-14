@@ -302,12 +302,12 @@ func (t *GRPCTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 	}
 
 	// ⚡ Bolt: Use json-iterator
-	var result map[string]any
-	if err := fastJSON.Unmarshal(responseJSON, &result); err != nil {
-		return string(responseJSON), nil
+	// Return raw bytes to avoid unnecessary Unmarshal/Marshal roundtrip
+	if fastJSON.Valid(responseJSON) {
+		return stdjson.RawMessage(responseJSON), nil
 	}
 
-	return result, nil
+	return string(responseJSON), nil
 }
 
 // HTTPTool implements the Tool interface for a tool exposed via an HTTP endpoint.
@@ -860,12 +860,12 @@ func (t *HTTPTool) processResponse(ctx context.Context, resp *http.Response) (an
 	}
 
 	// ⚡ Bolt: Use json-iterator
-	var result any
-	if err := fastJSON.Unmarshal(respBody, &result); err != nil {
-		return string(respBody), nil //nolint:nilerr
+	// Return raw bytes to avoid unnecessary Unmarshal/Marshal roundtrip
+	if fastJSON.Valid(respBody) {
+		return stdjson.RawMessage(respBody), nil
 	}
 
-	return result, nil
+	return string(respBody), nil //nolint:nilerr
 }
 
 // MCPTool implements the Tool interface for a tool that is exposed via another
@@ -1038,13 +1038,13 @@ func (t *MCPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, erro
 		return parsedResult, nil
 	}
 
-	var resultMap map[string]any
-	if err := fastJSON.Unmarshal(responseBytes, &resultMap); err != nil {
-		// If unmarshalling to a map fails, return the raw string content
-		return string(responseBytes), nil //nolint:nilerr // intentional fallback for non-JSON responses
+	// Return raw bytes to avoid unnecessary Unmarshal/Marshal roundtrip
+	if fastJSON.Valid(responseBytes) {
+		return stdjson.RawMessage(responseBytes), nil
 	}
 
-	return resultMap, nil
+	// If unmarshalling to a map fails, return the raw string content
+	return string(responseBytes), nil //nolint:nilerr // intentional fallback for non-JSON responses
 }
 
 // OpenAPITool implements the Tool interface for a tool defined in an OpenAPI
@@ -1265,12 +1265,12 @@ func (t *OpenAPITool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 		return parsedResult, nil
 	}
 
-	var result map[string]any
-	if err := fastJSON.Unmarshal(respBody, &result); err != nil {
-		return string(respBody), nil
+	// Return raw bytes to avoid unnecessary Unmarshal/Marshal roundtrip
+	if fastJSON.Valid(respBody) {
+		return stdjson.RawMessage(respBody), nil
 	}
 
-	return result, nil
+	return string(respBody), nil
 }
 
 // CommandTool implements the Tool interface for a tool that is executed as a

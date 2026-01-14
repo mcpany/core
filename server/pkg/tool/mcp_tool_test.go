@@ -61,7 +61,13 @@ func TestMCPTool_Execute(t *testing.T) {
 
 		result, err := mcpTool.Execute(context.Background(), req)
 		require.NoError(t, err)
-		assert.Equal(t, map[string]any{"output": "result"}, result)
+
+		raw, ok := result.(json.RawMessage)
+		require.True(t, ok)
+		var resMap map[string]any
+		err = json.Unmarshal(raw, &resMap)
+		require.NoError(t, err)
+		assert.Equal(t, map[string]any{"output": "result"}, resMap)
 	})
 
 	t.Run("execution error", func(t *testing.T) {

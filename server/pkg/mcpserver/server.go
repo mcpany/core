@@ -5,6 +5,7 @@ package mcpserver
 
 import (
 	"context"
+	stdjson "encoding/json"
 	"fmt"
 	"time"
 
@@ -564,12 +565,38 @@ func (s *Server) CallTool(ctx context.Context, req *tool.ExecutionRequest) (any,
 		return ctr, nil
 	}
 
+	// Use json-iterator for faster JSON operations
+	var json = jsoniter.ConfigCompatibleWithStandardLibrary
+
+	// ⚡ Bolt Optimization: Handle raw bytes directly to avoid Unmarshal/Marshal roundtrip
+	if raw, ok := result.(stdjson.RawMessage); ok {
+		// It is valid JSON. Check if it fits CallToolResult schema.
+		isLikelyMCP := false
+		// Use json-iterator's Get to check for keys without full parsing
+		if json.Get(raw, "content").ValueType() != jsoniter.InvalidValue {
+			isLikelyMCP = true
+		} else if json.Get(raw, "isError").ValueType() != jsoniter.InvalidValue {
+			isLikelyMCP = true
+		}
+
+		if isLikelyMCP {
+			var callToolRes mcp.CallToolResult
+			if err := json.Unmarshal(raw, &callToolRes); err == nil {
+				return &callToolRes, nil
+			}
+			logging.GetLogger().Warn("Failed to unmarshal potential CallToolResult bytes, treating as raw data", "toolName", req.ToolName)
+		}
+		// Fallback: Return as text content
+		return &mcp.CallToolResult{
+			Content: []mcp.Content{
+				&mcp.TextContent{Text: string(raw)},
+			},
+		}, nil
+	}
+
 	// Handle map[string]any result (e.g. from HTTP tools)
 	var jsonBytes []byte
 	var marshalErr error
-
-	// Use json-iterator for faster JSON operations
-	var json = jsoniter.ConfigCompatibleWithStandardLibrary
 
 	if resultMap, ok := result.(map[string]any); ok {
 		// Heuristic: If map looks like CallToolResult (has "content" or "isError"),

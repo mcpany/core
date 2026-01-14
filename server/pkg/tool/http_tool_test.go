@@ -180,8 +180,12 @@ func TestHTTPTool_Execute_NoTransformation(t *testing.T) {
 	result, err := httpTool.Execute(context.Background(), req)
 	require.NoError(t, err)
 
-	resultMap, ok := result.(map[string]any)
+	raw, ok := result.(json.RawMessage)
 	require.True(t, ok)
+
+	var resultMap map[string]any
+	err = json.Unmarshal(raw, &resultMap)
+	require.NoError(t, err)
 	assert.Equal(t, "ok", resultMap["status"])
 	assert.Equal(t, "test", resultMap["param"])
 }
@@ -801,8 +805,11 @@ func TestHTTPTool_Execute_ConsecutiveCalls(t *testing.T) {
 	req1 := &tool.ExecutionRequest{ToolInputs: inputs1}
 	result1, err := httpTool.Execute(context.Background(), req1)
 	require.NoError(t, err)
-	resultMap1, ok := result1.(map[string]any)
+	raw1, ok := result1.(json.RawMessage)
 	require.True(t, ok)
+	var resultMap1 map[string]any
+	err = json.Unmarshal(raw1, &resultMap1)
+	require.NoError(t, err)
 	assert.Equal(t, "1", resultMap1["id"])
 
 	// Call 2
@@ -810,7 +817,10 @@ func TestHTTPTool_Execute_ConsecutiveCalls(t *testing.T) {
 	req2 := &tool.ExecutionRequest{ToolInputs: inputs2}
 	result2, err := httpTool.Execute(context.Background(), req2)
 	require.NoError(t, err)
-	resultMap2, ok := result2.(map[string]any)
+	raw2, ok := result2.(json.RawMessage)
 	require.True(t, ok)
+	var resultMap2 map[string]any
+	err = json.Unmarshal(raw2, &resultMap2)
+	require.NoError(t, err)
 	assert.Equal(t, "2", resultMap2["id"])
 }

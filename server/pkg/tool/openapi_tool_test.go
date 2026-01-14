@@ -64,8 +64,14 @@ func TestOpenAPITool_Execute(t *testing.T) {
 		result, err := openAPITool.Execute(context.Background(), req)
 		require.NoError(t, err)
 
+		raw, ok := result.(json.RawMessage)
+		require.True(t, ok)
+		var resMap map[string]any
+		err = json.Unmarshal(raw, &resMap)
+		require.NoError(t, err)
+
 		expected := map[string]any{"id": "123", "name": "test"}
-		assert.Equal(t, expected, result)
+		assert.Equal(t, expected, resMap)
 	})
 
 	t.Run("server error", func(t *testing.T) {
