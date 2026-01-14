@@ -31,6 +31,7 @@
 - [x] **Resilient Configuration Loading**: Better error reporting for invalid configs and keeping services in the list with error state.
 - [x] **Pre-flight Config Validation**: Added pre-flight checks for command existence and working directory validity to prevent "silent failures" at runtime.
 - [x] **Strict Startup Validation**: Server now fails fast with descriptive errors if the initial configuration contains invalid services, preventing "zombie services" (Friction Fighter).
+- [x] **Startup Connectivity Check**: Server now waits for upstream services to confirm connectivity during startup and fails fast if they are unreachable (e.g. connection refused, invalid spec). (Friction Fighter)
 - [x] **Filesystem Path Validation**: Proactive validation of configured `root_paths` for Filesystem services to warn about missing directories on startup.
 - [x] **Enhanced Secret Validation**: Strict startup validation for referenced environment variables and secret files. Server will now fail fast if a configured secret (env var or file) does not exist.
 - [x] **Robust Transport Error Reporting**: Improved error messages for command-based and Docker transports. Now captures and surfaces `stderr` when a process exits unexpectedly, aiding quick debugging of configuration or runtime errors.

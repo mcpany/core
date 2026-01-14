@@ -494,21 +494,126 @@ func (a *Application) Run(
 			registrationWorker.Stop()
 			return fmt.Errorf("failed to get registration bus: %w", err)
 		}
-		for _, serviceConfig := range cfg.GetUpstreamServices() {
-			if serviceConfig.GetDisable() {
-				log.Info("Skipping disabled service", "service", serviceConfig.GetName())
-				continue
+
+		// Wait logic for initial registration
+		expectedServices := make(map[string]bool)
+		for _, s := range cfg.GetUpstreamServices() {
+			if !s.GetDisable() {
+				expectedServices[s.GetName()] = true
 			}
-			log.Info(
-				"Queueing service for registration from config",
-				"service",
-				serviceConfig.GetName(),
+		}
+
+		if len(expectedServices) > 0 {
+			resultBus, err := bus.GetBus[*bus.ServiceRegistrationResult](
+				busProvider,
+				bus.ServiceRegistrationResultTopic,
 			)
-			regReq := &bus.ServiceRegistrationRequest{Config: serviceConfig}
-			// We don't need a correlation ID since we are not waiting for a response here
-			if err := registrationBus.Publish(ctx, "request", regReq); err != nil {
-				log.Error("Failed to publish registration request", "error", err)
+			if err != nil {
+				workerCancel()
+				upstreamWorker.Stop()
+				registrationWorker.Stop()
+				return fmt.Errorf("failed to get result bus: %w", err)
 			}
+
+			// Channel to signal completion or error
+			resultsCh := make(chan *bus.ServiceRegistrationResult, len(expectedServices))
+
+			var subscriptionCleanups []func()
+			defer func() {
+				for _, cleanup := range subscriptionCleanups {
+					cleanup()
+				}
+			}()
+
+			for _, serviceConfig := range cfg.GetUpstreamServices() {
+				if serviceConfig.GetDisable() {
+					log.Info("Skipping disabled service", "service", serviceConfig.GetName())
+					continue
+				}
+				log.Info(
+					"Queueing service for registration from config",
+					"service",
+					serviceConfig.GetName(),
+				)
+				regReq := &bus.ServiceRegistrationRequest{Config: serviceConfig}
+				// Use service name as correlation ID to route the response back to us
+				correlationID := serviceConfig.GetName()
+				regReq.SetCorrelationID(correlationID)
+
+				// Subscribe to the specific topic for this service's result
+				unsubscribe := resultBus.Subscribe(ctx, correlationID, func(res *bus.ServiceRegistrationResult) {
+					// Non-blocking send
+					select {
+					case resultsCh <- res:
+					default:
+					}
+				})
+				subscriptionCleanups = append(subscriptionCleanups, unsubscribe)
+
+				if err := registrationBus.Publish(ctx, "request", regReq); err != nil {
+					log.Error("Failed to publish registration request", "error", err)
+					workerCancel()
+					upstreamWorker.Stop()
+					registrationWorker.Stop()
+					return fmt.Errorf("failed to publish registration request for %s: %w", serviceConfig.GetName(), err)
+				}
+			}
+
+			// Wait for results
+			timeout := time.After(30 * time.Second) // Startup timeout
+			receivedCount := 0
+			var failures []string
+
+			// We need to track which ones we've seen because retries might fire
+			seen := make(map[string]bool)
+
+		Loop:
+			for receivedCount < len(expectedServices) {
+				select {
+				case res := <-resultsCh:
+					name := res.CorrelationID()
+					// If correlation ID is empty (e.g. from old code or unexpected source), we can't track it easily.
+					// But we set it on request, so result should have it.
+					if name == "" {
+						continue
+					}
+					if expectedServices[name] && !seen[name] {
+						seen[name] = true
+						receivedCount++
+						if res.Error != nil {
+							failures = append(failures, fmt.Sprintf("%s: %v", name, res.Error))
+						}
+					}
+				case <-timeout:
+					break Loop
+				case <-ctx.Done():
+					break Loop
+				}
+			}
+
+			if len(failures) > 0 {
+				workerCancel()
+				upstreamWorker.Stop()
+				registrationWorker.Stop()
+				return fmt.Errorf("startup failed: the following services failed to register:\n\t- %s", strings.Join(failures, "\n\t- "))
+			}
+
+			if receivedCount < len(expectedServices) {
+				// Timeout occurred
+				var missing []string
+				for name := range expectedServices {
+					if !seen[name] {
+						missing = append(missing, name)
+					}
+				}
+				log.Warn("Startup timeout: some services did not report status in time", "missing", missing)
+				workerCancel()
+				upstreamWorker.Stop()
+				registrationWorker.Stop()
+				return fmt.Errorf("startup timed out waiting for services: %v", missing)
+			}
+		} else {
+			log.Info("No active services to register.")
 		}
 	} else {
 		log.Info("No services found in config, skipping service registration.")
