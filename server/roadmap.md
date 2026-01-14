@@ -37,6 +37,7 @@
 - [x] **Proactive Schema Sanitization**: Automatically fixes common schema issues (like missing `type: object`) in tool definitions to ensure compatibility with strict MCP clients (e.g. Claude Code).
 - [x] **Smart Config Error Messages**: Detect and guide users migrating from Claude Desktop configuration format (`mcpServers` vs `upstream_services`). (Friction Fighter)
 - [x] **Relative Command Resolution**: Fixed an issue where relative commands in `stdio_connection` failed validation even if they existed in the specified `working_directory`. (Friction Fighter)
+- [x] **Live Logs Stream**: Fixed the WebSocket connection for the live logs dashboard by correcting the frontend URL path. Users can now see real-time server logs in the UI. (Experience Crafter)
 
 ## 2. Top 10 Recommended Features
 
@@ -45,7 +46,9 @@ These features represent the next logical steps for the product, focusing on Ent
 | Rank | Feature Name | Why it matters | Difficulty |
 | :--- | :--- | :--- | :--- |
 | 1 | **Tool Poisoning Mitigation** | **Security**: Implement integrity checks for tool definitions to prevent "Rug Pull" attacks where a tool definition changes maliciously after installation. | High |
+| 2 | **WebSocket Diagnostic Probe** | **Observability**: A standalone diagnostic tool in the UI to test and debug WebSocket connections (metrics, logs) independently of the main dashboard widgets. | Low |
 | 3 | **Interactive OAuth Handler** | **UX/Auth**: Solve the "copy-paste token" friction. Allow users to click "Login" in the UI to authenticate tools like GitHub/Google. (Backend Implemented, UI Pending) | High |
+| 3.1 | **Log Retention Policy** | **Ops**: Configure log retention duration and size limits for in-memory and persistent logs to prevent memory leaks and disk exhaustion. | Medium |
 | 4 | **Local LLM "One-Click" Connect** | **Connectivity**: Auto-detect and connect to local inference servers (Ollama, LM Studio) to democratize AI access without cloud costs. | Low |
 | 5 | **Tool "Dry Run" Mode** | **DevX**: Allow tools to define a "dry run" logic to validate inputs and permissions without executing side effects. | Medium |
 | 6 | **Team Configuration Sync** | **Collaboration**: Allow teams to synchronize `mcpany` configurations and secrets securely, ensuring consistent dev environments. | Medium |
