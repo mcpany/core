@@ -77,6 +77,8 @@ func (e *yamlEngine) Unmarshal(b []byte, v proto.Message) error {
 		// Enhance error message for common YAML mistakes
 		if strings.Contains(err.Error(), "found character that cannot start any token") {
 			if bytes.Contains(b, []byte("\t")) {
+				// revive:disable-next-line:error-strings // This error message is user facing and needs to be descriptive
+				//nolint:staticcheck // This error message is user facing and needs to be descriptive
 				return fmt.Errorf("failed to unmarshal YAML: %w\n\nHint: YAML files cannot contain tabs. Please use spaces for indentation.", err)
 			}
 		}
@@ -754,14 +756,14 @@ func levenshtein(s, t string) int {
 			if s[i-1] == t[j-1] {
 				d[i][j] = d[i-1][j-1]
 			} else {
-				min := d[i-1][j]
-				if d[i][j-1] < min {
-					min = d[i][j-1]
+				minVal := d[i-1][j]
+				if d[i][j-1] < minVal {
+					minVal = d[i][j-1]
 				}
-				if d[i-1][j-1] < min {
-					min = d[i-1][j-1]
+				if d[i-1][j-1] < minVal {
+					minVal = d[i-1][j-1]
 				}
-				d[i][j] = min + 1
+				d[i][j] = minVal + 1
 			}
 		}
 	}
@@ -809,7 +811,7 @@ func collectFieldNames(md protoreflect.MessageDescriptor, candidates map[string]
 		candidates[fd.JSONName()] = struct{}{}
 
 		if fd.Kind() == protoreflect.MessageKind {
-			 collectFieldNames(fd.Message(), candidates, visited)
+			collectFieldNames(fd.Message(), candidates, visited)
 		}
 	}
 }
