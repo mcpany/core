@@ -7,8 +7,14 @@
 
 import Link from "next/link";
 import { Fragment } from "react";
-import { ChevronRight, Home } from "lucide-react";
+import { ChevronRight, ChevronDown, Home } from "lucide-react";
 import { cn } from "@/lib/utils";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 /**
  * Represents a single item in the breadcrumb navigation.
@@ -18,6 +24,8 @@ export interface BreadcrumbItem {
     label: string;
     /** The URL link for the breadcrumb. */
     href: string;
+    /** Optional list of sibling items for navigation. */
+    siblings?: { label: string; href: string }[];
 }
 
 /**
@@ -46,17 +54,38 @@ export function Breadcrumbs({ items, className }: BreadcrumbsProps) {
                 {items.map((item, index) => (
                     <Fragment key={item.href}>
                         <li className="flex items-center gap-1">
-                             <ChevronRight className="size-4" />
-                            <Link
-                                href={item.href}
-                                aria-current={index === items.length - 1 ? "page" : undefined}
-                                className={cn(
-                                    "font-medium transition-colors hover:text-foreground",
-                                    index === items.length - 1 ? "text-foreground" : "text-foreground/80"
+                             <ChevronRight className="size-4 text-muted-foreground/50" />
+                             <div className="flex items-center gap-0.5">
+                                <Link
+                                    href={item.href}
+                                    aria-current={index === items.length - 1 ? "page" : undefined}
+                                    className={cn(
+                                        "font-medium transition-colors hover:text-foreground",
+                                        index === items.length - 1 ? "text-foreground" : "text-foreground/80"
+                                    )}
+                                >
+                                    {item.label}
+                                </Link>
+                                {item.siblings && item.siblings.length > 0 && (
+                                    <DropdownMenu>
+                                        <DropdownMenuTrigger asChild>
+                                            <button className="p-0.5 rounded-sm hover:bg-muted focus:outline-none transition-colors">
+                                                <ChevronDown className="size-3 text-muted-foreground/70" />
+                                                <span className="sr-only">More options</span>
+                                            </button>
+                                        </DropdownMenuTrigger>
+                                        <DropdownMenuContent align="start" className="max-h-[300px] overflow-y-auto">
+                                            {item.siblings.map((sibling) => (
+                                                <DropdownMenuItem key={sibling.href} asChild>
+                                                    <Link href={sibling.href} className={cn("cursor-pointer", sibling.href === item.href && "font-semibold bg-accent")}>
+                                                        {sibling.label}
+                                                    </Link>
+                                                </DropdownMenuItem>
+                                            ))}
+                                        </DropdownMenuContent>
+                                    </DropdownMenu>
                                 )}
-                            >
-                                {item.label}
-                            </Link>
+                            </div>
                         </li>
                     </Fragment>
                 ))}
