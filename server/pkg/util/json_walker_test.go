@@ -1,0 +1,117 @@
+// Copyright 2025 Author(s) of MCP Any
+// SPDX-License-Identifier: Apache-2.0
+
+package util
+
+import (
+	"testing"
+)
+
+func TestWalkJSONStrings(t *testing.T) {
+	tests := []struct {
+		name     string
+		input    string
+		visitor  func(raw []byte) ([]byte, bool)
+		expected string
+	}{
+		{
+			name:  "no changes",
+			input: `{"key": "value"}`,
+			visitor: func(raw []byte) ([]byte, bool) {
+				return nil, false
+			},
+			expected: `{"key": "value"}`,
+		},
+		{
+			name:  "replace value",
+			input: `{"key": "value"}`,
+			visitor: func(raw []byte) ([]byte, bool) {
+				if string(raw) == `"value"` {
+					return []byte(`"REDACTED"`), true
+				}
+				return nil, false
+			},
+			expected: `{"key": "REDACTED"}`,
+		},
+		{
+			name:  "ignore keys",
+			input: `{"target": "value"}`,
+			visitor: func(raw []byte) ([]byte, bool) {
+				if string(raw) == `"target"` {
+					return []byte(`"FAIL"`), true
+				}
+				return nil, false
+			},
+			expected: `{"target": "value"}`,
+		},
+		{
+			name:  "nested object",
+			input: `{"a": {"b": "target"}}`,
+			visitor: func(raw []byte) ([]byte, bool) {
+				if string(raw) == `"target"` {
+					return []byte(`"HIT"`), true
+				}
+				return nil, false
+			},
+			expected: `{"a": {"b": "HIT"}}`,
+		},
+		{
+			name:  "array",
+			input: `["a", "b"]`,
+			visitor: func(raw []byte) ([]byte, bool) {
+				return []byte(`"X"`), true
+			},
+			expected: `["X", "X"]`,
+		},
+		{
+			name:  "mixed array",
+			input: `["a", {"k": "v"}, "b"]`,
+			visitor: func(raw []byte) ([]byte, bool) {
+				if string(raw) == `"v"` {
+					return []byte(`"V"`), true
+				}
+				return nil, false
+			},
+			expected: `["a", {"k": "V"}, "b"]`,
+		},
+		{
+			name:  "escaped quotes",
+			input: `{"key": "val\"ue"}`,
+			visitor: func(raw []byte) ([]byte, bool) {
+				if string(raw) == `"val\"ue"` {
+					return []byte(`"HIT"`), true
+				}
+				return nil, false
+			},
+			expected: `{"key": "HIT"}`,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			result := WalkJSONStrings([]byte(tt.input), tt.visitor)
+			if string(result) != tt.expected {
+				t.Errorf("expected %s, got %s", tt.expected, string(result))
+			}
+			// check zero allocation if no change
+			if tt.input == tt.expected {
+				if &result[0] != &([]byte(tt.input))[0] {
+					// This check is tricky because []byte(str) allocates.
+					// But we want to ensure WalkJSONStrings returns the input slice if no change.
+					// We can check equality of pointer if we pass a slice variable.
+				}
+			}
+		})
+	}
+}
+
+func TestWalkJSONStrings_ZeroAlloc(t *testing.T) {
+	input := []byte(`{"key": "value"}`)
+	visitor := func(raw []byte) ([]byte, bool) {
+		return nil, false
+	}
+	result := WalkJSONStrings(input, visitor)
+	if &input[0] != &result[0] {
+		t.Error("WalkJSONStrings allocated new buffer even when no changes were made")
+	}
+}
