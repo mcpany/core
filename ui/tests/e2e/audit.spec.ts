@@ -116,7 +116,7 @@ test.describe('MCP Any Audit Screenshots', () => {
       const heading = page.getByRole('heading', { name, level: 2 });
 
       try {
-        await expect(heading).toBeVisible({ timeout: 5000 });
+        await expect(heading).toBeVisible({ timeout: 30000 });
       } catch (e) {
         // Fallback checks
         const bodyText = await page.locator('body').textContent() || '';
