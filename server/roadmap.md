@@ -31,6 +31,7 @@
 - [x] **Resilient Configuration Loading**: Better error reporting for invalid configs and keeping services in the list with error state.
 - [x] **Pre-flight Config Validation**: Added pre-flight checks for command existence and working directory validity to prevent "silent failures" at runtime.
 - [x] **Strict Startup Validation**: Server now fails fast with descriptive errors if the initial configuration contains invalid services, preventing "zombie services" (Friction Fighter).
+- [x] **Strict Syntax Validation**: Server now fails fast if configuration files are malformed (YAML/JSON syntax errors), preventing silent startup failures where services would just be missing. (Friction Fighter)
 - [x] **Filesystem Path Validation**: Proactive validation of configured `root_paths` for Filesystem services to warn about missing directories on startup.
 - [x] **Enhanced Secret Validation**: Strict startup validation for referenced environment variables and secret files. Server will now fail fast if a configured secret (env var or file) does not exist.
 - [x] **Robust Transport Error Reporting**: Improved error messages for command-based and Docker transports. Now captures and surfaces `stderr` when a process exits unexpectedly, aiding quick debugging of configuration or runtime errors.
@@ -66,6 +67,8 @@ These features represent the next logical steps for the product, focusing on Ent
 | 21 | **Configuration Migration Tool** | **DevX**: A CLI command to convert `claude_desktop_config.json` to `mcpany` config format. | Low |
 | 22 | **Auth Doctor** | **UX**: Diagnostic tool to verify that configured authentication methods match upstream expectations (e.g., detecting if a Bearer token is used where Basic Auth is expected). | Medium |
 | 23 | **Dynamic Tool Pruning** | **Performance/Cost**: Feature to filter visible tools based on the current user's role or context to reduce LLM context window usage and costs. | High |
+| 24 | **Interactive Diagnostic Tool** | **Support**: A "Diagnose" button in the UI for failed tools that runs a battery of checks (connectivity, DNS, Auth) and suggests fixes in plain English. | Medium |
+| 25 | **Environment Variable Generator** | **DevX**: CLI command to scan configuration files and generate a `.env.example` template with all required variables and their default values/descriptions. | Low |
 
 ## 3. Codebase Health
 
