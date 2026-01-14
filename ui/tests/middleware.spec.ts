@@ -6,35 +6,25 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('Middleware Page', () => {
-  test.skip('should open configuration sheet', async ({ page }) => {
+  test('should open configuration sheet', async ({ page }) => {
     await page.goto('/middleware');
 
-    // Find the Rate Limiter block
-    // We target the block by text "Rate Limiter"
-    const rateLimiter = page.locator('div').filter({ hasText: /^Rate Limiter$/ }).first();
+    // Find the row containing "Rate Limiter" in the Active Pipeline list
+    // The row has class "flex items-center justify-between" and contains "Rate Limiter"
+    const row = page.locator('.flex.items-center.justify-between').filter({ hasText: 'Rate Limiter' }).first();
+    const settingsBtn = row.getByRole('button').last(); // Settings button is the last one
 
-    // We need to click the settings/gear icon inside it or the block itself if actionable.
-    // Based on browser investigation, clicking the button inside worked.
-    // Let's look for the button with the gear icon or just the last button in the block.
-    // A reliable way might be to find the block "Rate Limiter" and find the button within it.
-
-    // Fallback: Click the settings button specifically.
-    // We'll target the common "Settings" or "Configure" label if it exists, or use a more structural selector.
-    // In the browser trace, we found it by `document.querySelectorAll('button')[40]` which is brittle.
-    // Better: Find the card that contains "Rate Limiter" and click the button inside it.
-
-    const card = page.locator('.border').filter({ hasText: 'Rate Limiter' });
-    const settingsBtn = card.getByRole('button').last(); // Usually the icon button is last or prominent
-
-    // Ensure card is visible
-    await expect(card).toBeVisible();
+    // Ensure row is visible
+    await expect(row).toBeVisible();
 
     // Click settings
     await settingsBtn.click();
 
     // Check for Sheet Content
-    // "Configure Middleware" or the name of the middleware usually appears in the sheet title.
-    await expect(page.getByText('Configure Middleware', { exact: false })).toBeVisible();
-    await expect(page.getByText('Rate Limiter', { exact: false })).toBeVisible();
+    // "Configure Middleware" should be visible in the dialog
+    const sheet = page.getByRole('dialog');
+    await expect(sheet).toBeVisible();
+    await expect(sheet.getByText('Configure Middleware')).toBeVisible();
+    await expect(sheet.getByText('Rate Limiter', { exact: false })).toBeVisible();
   });
 });

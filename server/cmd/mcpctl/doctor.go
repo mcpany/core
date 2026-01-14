@@ -95,6 +95,9 @@ func newDoctorCmd() *cobra.Command {
 
 			client := &http.Client{
 				Timeout: 2 * time.Second,
+				Transport: &http.Transport{
+					ForceAttemptHTTP2: false,
+				},
 			}
 
 			// Check /health

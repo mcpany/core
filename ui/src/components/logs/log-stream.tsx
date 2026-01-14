@@ -102,6 +102,12 @@ export function LogStream() {
   // Optimization: Buffer for incoming logs to support batch processing
   const logBufferRef = React.useRef<LogEntry[]>([])
 
+  const isPausedRef = React.useRef(isPaused)
+
+  React.useEffect(() => {
+    isPausedRef.current = isPaused
+  }, [isPaused])
+
   React.useEffect(() => {
     // Optimization: Flush buffer periodically to limit re-renders
     const flushInterval = setInterval(() => {
@@ -134,7 +140,7 @@ export function LogStream() {
       }
 
       ws.onmessage = (event) => {
-        if (isPaused) return
+        if (isPausedRef.current) return
         if (document.hidden) return
 
         try {
@@ -188,6 +194,29 @@ export function LogStream() {
       }
     }
   }, [logs, isPaused])
+
+  // Pause on scroll implementation
+  React.useEffect(() => {
+    const scrollContainer = scrollRef.current?.querySelector('[data-radix-scroll-area-viewport]') as HTMLElement
+    if (!scrollContainer) return
+
+    const handleScroll = () => {
+      const { scrollTop, scrollHeight, clientHeight } = scrollContainer
+      // Allow slight threshold
+      const isAtBottom = Math.abs(scrollHeight - clientHeight - scrollTop) < 20
+
+      // If user scrolls up (not at bottom), pause.
+      // If user scrolls to bottom, resume (stick to bottom).
+      setIsPaused((prev) => {
+        if (!isAtBottom && !prev) return true
+        if (isAtBottom && prev) return false
+        return prev
+      })
+    }
+
+    scrollContainer.addEventListener('scroll', handleScroll)
+    return () => scrollContainer.removeEventListener('scroll', handleScroll)
+  }, []) // Empty deps: attach once (assuming scrollContainer ref is stable-ish/available)
 
   // Optimization: Memoize filtered logs and pre-calculate lowercase search query
   // to avoid O(N) redundant string operations during filtering

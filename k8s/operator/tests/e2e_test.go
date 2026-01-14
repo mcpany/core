@@ -47,22 +47,63 @@ func TestOperatorE2E(t *testing.T) {
 	checkPrerequisites(t)
 
 	// 3. Clean up existing cluster to ensure fresh state and free ports
-	if clusterExists(t, ctx, clusterName) {
-		t.Logf("Deleting existing cluster %s to ensure clean state...", clusterName)
-		runCommand(t, ctx, rootDir, "kind", "delete", "cluster", "--name", clusterName)
+	if os.Getenv("REUSE_CLUSTER") != "true" {
+		if clusterExists(t, ctx, clusterName) {
+			t.Logf("Deleting existing cluster %s to ensure clean state...", clusterName)
+			runCommand(t, ctx, rootDir, "kind", "delete", "cluster", "--name", clusterName)
+		}
+	} else {
+		t.Log("REUSE_CLUSTER=true: Skipping cluster deletion")
+
+		// CLEANUP: Ensure previous installation is removed
+		t.Log("Cleaning up previous Helm release and resources...")
+		// Ignore error because it might not exist
+		_ = runCommand(t, ctx, rootDir, "helm", "uninstall", "mcpany", "-n", namespace)
+
+		// Force delete any remaining pods to ensure clean state for containers
+		_ = runCommand(t, ctx, rootDir, "kubectl", "delete", "pods", "--all", "-n", namespace, "--force", "--grace-period=0")
+
+		// Wait a bit for cleanup (optional but helpful)
+		time.Sleep(5 * time.Second)
 	}
 
-	// 4. Get a free port for the host side of NodePort
-	hostPort, err := getFreePort()
-	if err != nil {
-		t.Fatalf("Failed to get free port: %v", err)
-	}
-	t.Logf("Using host port %d for UI access (mapped to NodePort 30000)", hostPort)
+	// 4. Get a free port or discover existing one
+	var hostPort int
 
-	// 5. Create Kind Cluster
-	t.Logf("Creating Kind cluster %s...", clusterName)
-	// Generate temporary kind config with port mapping
-	kindConfigContent := fmt.Sprintf(`kind: Cluster
+	if os.Getenv("REUSE_CLUSTER") == "true" && clusterExists(t, ctx, clusterName) {
+		t.Logf("Reusing existing Kind cluster %s...", clusterName)
+		// Find the mapped port
+		// docker port mcp-e2e-control-plane 30000/tcp -> 0.0.0.0:35907
+		cmd := exec.CommandContext(ctx, "docker", "port", fmt.Sprintf("%s-control-plane", clusterName), "30000/tcp")
+		out, err := cmd.Output()
+		if err != nil {
+			t.Fatalf("Failed to get mapped port from docker: %v", err)
+		}
+		// Output example: 0.0.0.0:35907
+		outStr := strings.TrimSpace(string(out))
+		parts := strings.Split(outStr, ":")
+		if len(parts) < 2 {
+			t.Fatalf("Unexpected docker port output: %s", outStr)
+		}
+		// Last part is the port
+		portStr := parts[len(parts)-1]
+		_, err = fmt.Sscanf(portStr, "%d", &hostPort)
+		if err != nil {
+			t.Fatalf("Failed to parse port from %s: %v", portStr, err)
+		}
+		t.Logf("Discovered existing host port: %d", hostPort)
+	} else {
+		port, err := getFreePort()
+		if err != nil {
+			t.Fatalf("Failed to get free port: %v", err)
+		}
+		hostPort = port
+		t.Logf("Using host port %d for UI access (mapped to NodePort 30000)", hostPort)
+
+		// 5. Create Kind Cluster
+		t.Logf("Creating Kind cluster %s...", clusterName)
+		// Generate temporary kind config with port mapping
+		kindConfigContent := fmt.Sprintf(`kind: Cluster
 apiVersion: kind.x-k8s.io/v1alpha4
 networking:
   ipFamily: ipv4
@@ -74,13 +115,14 @@ nodes:
     listenAddress: "0.0.0.0"
     protocol: TCP
 `, hostPort)
-	tmpConfig := filepath.Join(t.TempDir(), "kind-config.yaml")
-	if err := os.WriteFile(tmpConfig, []byte(kindConfigContent), 0644); err != nil {
-		t.Fatalf("Failed to write temp kind config: %v", err)
-	}
+		tmpConfig := filepath.Join(t.TempDir(), "kind-config.yaml")
+		if err := os.WriteFile(tmpConfig, []byte(kindConfigContent), 0644); err != nil {
+			t.Fatalf("Failed to write temp kind config: %v", err)
+		}
 
-	if err := runCommand(t, ctx, rootDir, "kind", "create", "cluster", "--name", clusterName, "--image", kindImage, "--config", tmpConfig, "--wait", "2m"); err != nil {
-		t.Fatalf("Failed to create kind cluster: %v", err)
+		if err := runCommand(t, ctx, rootDir, "kind", "create", "cluster", "--name", clusterName, "--image", kindImage, "--config", tmpConfig, "--wait", "2m"); err != nil {
+			t.Fatalf("Failed to create kind cluster: %v", err)
+		}
 	}
 
 	// 6. Build Images (Locally)
@@ -143,6 +185,12 @@ nodes:
 	t.Log("Deployment successful!")
 
 	// 7. Verify Pods
+	// If reusing cluster, force restart UI to pick up new image
+	if os.Getenv("REUSE_CLUSTER") == "true" {
+		t.Log("Restarting UI deployment to pick up new images...")
+		runCommand(t, ctx, rootDir, "kubectl", "rollout", "restart", "deployment/mcpany-ui", "-n", "mcp-system")
+	}
+
 	t.Log("Verifying pods...")
 	if err := runCommand(t, ctx, rootDir, "kubectl", "wait", "--for=condition=ready", "pod", "-l", "app.kubernetes.io/name=mcpany", "-n", namespace, "--timeout=60s"); err != nil {
 		t.Fatalf("Failed to wait for pods: %v", err)

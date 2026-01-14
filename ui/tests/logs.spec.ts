@@ -3,147 +3,174 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-
 import { test, expect } from '@playwright/test';
 
 test.describe('Logs Page', () => {
+
+  // Mock WebSocket for stable testing
   test.beforeEach(async ({ page }) => {
+    // Mock the WebSocket connection
+    await page.routeWebSocket(/\/api\/ws\/logs/, ws => {
+        // Simply accept the connection mock (no action needed, just don't connect to server)
+        // We can save it if needed, but per-test override is better
+    });
+
     await page.goto('/logs');
   });
 
   test('should display logs title', async ({ page }) => {
-    // Verify page loaded
     await expect(page).toHaveTitle(/MCPAny/);
-    // Use more specific selector with longer timeout
-    await expect(page.getByRole('heading', { name: 'Live Logs' })).toBeVisible({ timeout: 30000 });
+    await expect(page.getByRole('heading', { name: 'Live Logs' })).toBeVisible();
   });
 
   test('should display log entries', async ({ page }) => {
-    // Wait for at least one log entry to appear (logs are generated every 800ms)
-    await page.waitForTimeout(2000);
-    const logs = page.locator('.group');
-    const count = await logs.count();
-    expect(count).toBeGreaterThan(0);
+    // Send a mock log
+    await page.routeWebSocket(/\/api\/ws\/logs/, ws => {
+        ws.send(JSON.stringify({
+            id: '1',
+            timestamp: new Date().toISOString(),
+            level: 'INFO',
+            message: 'Test Log Entry',
+            source: 'test'
+        }));
+    });
+
+    await page.reload(); // Reload to trigger new connection with mock
+
+    const logs = page.getByTestId('log-rows-container').locator('.group');
+    await expect(logs).toHaveCount(1);
+    await expect(logs.first()).toContainText('Test Log Entry');
   });
 
   test.skip('should pause on scroll up', async ({ page }) => {
-    await page.clock.install();
-    await page.goto('/logs');
+    // Send enough logs to overflow
+    await page.routeWebSocket(/\/api\/ws\/logs/, ws => {
+        for (let i = 0; i < 50; i++) {
+            ws.send(JSON.stringify({
+                id: `${i}`,
+                timestamp: new Date().toISOString(),
+                level: 'INFO',
+                message: `Log Entry ${i} - filling space to enable scrolling`,
+                source: 'test'
+            }));
+        }
+    });
 
-    // Generate some logs
-    await page.clock.runFor(10000);
+    await page.reload();
+
     const logContainer = page.getByTestId('log-rows-container');
+    const logs = page.getByTestId('log-rows-container').locator('.group');
+    await expect(logs).toHaveCount(50);
 
-    // Simulate scroll up
-    // We need to ensure there is enough content to scroll.
-    // The mock generates plenty of logs.
-
-    // Hover over container to ensure focus (optional but good for stability)
+    // Hover over container to ensure focus
     await logContainer.hover();
 
-    // Scroll up wheel event
-    await logContainer.dispatchEvent('wheel', { deltaY: -500 });
+    // Scroll up manually via evaluate to ensure event fires
+    await page.evaluate(() => {
+        const viewport = document.querySelector('[data-radix-scroll-area-viewport]');
+        if (viewport) {
+            viewport.scrollTop = 0;
+            viewport.dispatchEvent(new Event('scroll'));
+        }
+    });
 
-    // Verify "Resume" button appears which indicates pause state
+    // Check for paused state (Resume button)
     await expect(page.getByRole('button', { name: 'Resume' })).toBeVisible();
   });
 
-  test.skip('should pause and resume logs', async ({ page }) => {
-    // Install fake clock to control setInterval
-    await page.clock.install();
-    await page.goto('/logs');
+  test('should pause and resume logs', async ({ page }) => {
+     let socketRoute: any;
 
-    // Initial accumulation - advance time to generate some logs
-    await page.clock.runFor(2000);
-    const logs = page.locator('.group');
-    const countInitial = await logs.count();
-    expect(countInitial).toBeGreaterThan(0);
+     await page.routeWebSocket(/\/api\/ws\/logs/, ws => {
+        socketRoute = ws;
+        // Initial log
+        ws.send(JSON.stringify({
+            id: 'init',
+            timestamp: new Date().toISOString(),
+            level: 'INFO',
+            message: 'Initial Log',
+            source: 'test'
+        }));
+    });
+
+    await page.reload();
+    const logs = page.getByTestId('log-rows-container').locator('.group');
+    await expect(logs).toHaveCount(1);
 
     // Click pause
     const pauseButton = page.getByRole('button', { name: 'Pause' });
     await pauseButton.click();
-
-    // Wait for state to update
     await expect(page.getByRole('button', { name: 'Resume' })).toBeVisible();
 
-    const countAfterPause = await logs.count();
+    // Send another log while paused
+    if (socketRoute) {
+        socketRoute.send(JSON.stringify({
+            id: 'paused',
+            timestamp: new Date().toISOString(),
+            level: 'INFO',
+            message: 'Igored Log',
+            source: 'test'
+        }));
+    }
 
-    // Advance time - NO new logs should be added
-    await page.clock.runFor(4000);
-    const countAfterWait = await logs.count();
-    expect(countAfterWait).toBe(countAfterPause);
+    // Wait short time to ensure UI process it (and ignores it)
+    await page.waitForTimeout(1000);
+    // Count should still be 1
+    await expect(logs).toHaveCount(1);
 
     // Resume
     const resumeButton = page.getByRole('button', { name: 'Resume' });
     await resumeButton.click();
     await expect(page.getByRole('button', { name: 'Pause' })).toBeVisible();
 
-    // Advance time - logs SHOULD be added
-    await page.clock.runFor(4000);
-    const countAfterResume = await logs.count();
-    expect(countAfterResume).toBeGreaterThan(countAfterWait);
+    // Send new log
+    if (socketRoute) {
+         socketRoute.send(JSON.stringify({
+            id: 'resumed',
+            timestamp: new Date().toISOString(),
+            level: 'INFO',
+            message: 'New Log',
+            source: 'test'
+        }));
+    }
+
+    await expect(logs).toHaveCount(2);
+    await expect(logs.nth(1)).toContainText('New Log');
   });
 
-  test.skip('should filter logs', async ({ page }) => {
-      // Wait for some logs to appear
-      await page.waitForTimeout(3000);
+  test('should filter logs', async ({ page }) => {
+    await page.routeWebSocket(/\/api\/ws\/logs/, ws => {
+        ws.send(JSON.stringify({ id: '1', timestamp: new Date().toISOString(), level: 'INFO', message: 'Info Log', source: 'test' }));
+        ws.send(JSON.stringify({ id: '2', timestamp: new Date().toISOString(), level: 'ERROR', message: 'Error Log', source: 'test' }));
+    });
 
-      // Find a log level that exists in the current list
-      const logRows = page.getByTestId('log-rows-container').locator('.group');
-      const count = await logRows.count();
-      expect(count).toBeGreaterThan(0);
+    await page.reload();
+    const logs = page.getByTestId('log-rows-container').locator('.group');
+    await expect(logs).toHaveCount(2);
 
-      // Get the level of the first log
-      const firstLogLevel = await logRows.first().locator('span').nth(1).innerText();
-      const targetLevel = firstLogLevel.trim();
+    // Filter by ERROR
+    const filterSelect = page.getByRole('combobox');
+    await filterSelect.click();
+    await page.getByRole('option', { name: 'Error' }).click();
 
-      // Set filter to the found level
-      // Map log level to title case for selection (INFO -> Info, ERROR -> Error)
-      const levelOptionMap: Record<string, string> = {
-          'INFO': 'Info',
-          'WARN': 'Warning',
-          'ERROR': 'Error',
-          'DEBUG': 'Debug'
-      };
-
-      const optionName = levelOptionMap[targetLevel];
-      if (!optionName) {
-           // Fallback if we catch a level we didn't map (or if text is empty)
-           console.log(`Unknown level: ${targetLevel}, skipping filter test`);
-           return;
-      }
-
-      const filterSelect = page.getByRole('combobox');
-      await filterSelect.click();
-      await page.getByRole('option', { name: optionName }).click();
-
-      await page.waitForTimeout(1000);
-
-      // Check if all visible logs match the target level
-      // We need to re-locate because DOM updates
-      const visibleLogs = page.getByTestId('log-rows-container').locator('.group');
-      const visibleCount = await visibleLogs.count();
-
-      for (let i = 0; i < visibleCount; i++) {
-          const logText = await visibleLogs.nth(i).innerText();
-          expect(logText).toContain(targetLevel);
-      }
+    await expect(logs).toHaveCount(1);
+    await expect(logs.first()).toContainText('Error Log');
+    await expect(logs.first()).not.toContainText('Info Log');
   });
 
   test('should clear logs', async ({ page }) => {
-      await page.waitForTimeout(4000);
-      const clearButton = page.getByRole('button', { name: 'Clear' });
-      await clearButton.click();
+    await page.routeWebSocket(/\/api\/ws\/logs/, ws => {
+        ws.send(JSON.stringify({ id: '1', timestamp: new Date().toISOString(), level: 'INFO', message: 'Log 1', source: 'test' }));
+        ws.send(JSON.stringify({ id: '2', timestamp: new Date().toISOString(), level: 'INFO', message: 'Log 2', source: 'test' }));
+    });
 
-      await clearButton.click();
+    await page.reload();
+    const logs = page.getByTestId('log-rows-container').locator('.group');
+    await expect(logs).toHaveCount(2);
 
-      const logArea = page.getByTestId('log-rows-container');
-      const logRows = logArea.locator('.group');
+    const clearButton = page.getByRole('button', { name: 'Clear' });
+    await clearButton.click();
 
-      // Wait for logs to be cleared (count should drop)
-      await expect(async () => {
-        const count = await logRows.count();
-        expect(count).toBeLessThan(3);
-      }).toPass({ timeout: 2000 });
+    await expect(logs).toHaveCount(0);
   });
 });
