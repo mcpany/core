@@ -264,6 +264,10 @@ func ValidateOrError(ctx context.Context, service *configv1.UpstreamServiceConfi
 }
 
 func validateUpstreamService(ctx context.Context, service *configv1.UpstreamServiceConfig) error {
+	if service.GetName() == "" {
+		return fmt.Errorf("service name is empty")
+	}
+
 	if service.WhichServiceConfig() == configv1.UpstreamServiceConfig_ServiceConfig_not_set_case {
 		return fmt.Errorf("service type not specified; must be one of [http_service, grpc_service, mcp_service, command_line_service, openapi_service, websocket_service, webrtc_service, sql_service, graphql_service]")
 	}

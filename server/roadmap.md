@@ -31,6 +31,7 @@
 - [x] **Resilient Configuration Loading**: Better error reporting for invalid configs and keeping services in the list with error state.
 - [x] **Pre-flight Config Validation**: Added pre-flight checks for command existence and working directory validity to prevent "silent failures" at runtime.
 - [x] **Strict Startup Validation**: Server now fails fast with descriptive errors if the initial configuration contains invalid services, preventing "zombie services" (Friction Fighter).
+- [x] **Service Name Validation**: Enforce non-empty service names in configuration to prevent silent failures. (Friction Fighter)
 - [x] **Filesystem Path Validation**: Proactive validation of configured `root_paths` for Filesystem services to warn about missing directories on startup.
 - [x] **Enhanced Secret Validation**: Strict startup validation for referenced environment variables and secret files. Server will now fail fast if a configured secret (env var or file) does not exist.
 - [x] **Robust Transport Error Reporting**: Improved error messages for command-based and Docker transports. Now captures and surfaces `stderr` when a process exits unexpectedly, aiding quick debugging of configuration or runtime errors.
@@ -39,6 +40,8 @@
 - [x] **Relative Command Resolution**: Fixed an issue where relative commands in `stdio_connection` failed validation even if they existed in the specified `working_directory`. (Friction Fighter)
 - [x] **Strict Config Loading**: Enforced strict validation for initial configuration files to prevent "silent failures" when syntax errors occur. (Friction Fighter)
 - [x] **Enhanced Validation Messages**: Improved error messages for missing service types and connection details to be more actionable.
+- [x] **JSON Config Helper**: Added helpful error messages for JSON configuration files when users mistakenly use Claude Desktop format (`mcpServers`). (Friction Fighter)
+- [x] **Live Logs Stream**: Fixed the WebSocket connection for the live logs dashboard by correcting the frontend URL path. Users can now see real-time server logs in the UI. (Experience Crafter)
 
 ## 2. Top 10 Recommended Features
 
@@ -47,7 +50,9 @@ These features represent the next logical steps for the product, focusing on Ent
 | Rank | Feature Name | Why it matters | Difficulty |
 | :--- | :--- | :--- | :--- |
 | 1 | **Tool Poisoning Mitigation** | **Security**: Implement integrity checks for tool definitions to prevent "Rug Pull" attacks where a tool definition changes maliciously after installation. | High |
+| 2 | **WebSocket Diagnostic Probe** | **Observability**: A standalone diagnostic tool in the UI to test and debug WebSocket connections (metrics, logs) independently of the main dashboard widgets. | Low |
 | 3 | **Interactive OAuth Handler** | **UX/Auth**: Solve the "copy-paste token" friction. Allow users to click "Login" in the UI to authenticate tools like GitHub/Google. (Backend Implemented, UI Pending) | High |
+| 3.1 | **Log Retention Policy** | **Ops**: Configure log retention duration and size limits for in-memory and persistent logs to prevent memory leaks and disk exhaustion. | Medium |
 | 4 | **Local LLM "One-Click" Connect** | **Connectivity**: Auto-detect and connect to local inference servers (Ollama, LM Studio) to democratize AI access without cloud costs. | Low |
 | 5 | **Tool "Dry Run" Mode** | **DevX**: Allow tools to define a "dry run" logic to validate inputs and permissions without executing side effects. | Medium |
 | 6 | **Team Configuration Sync** | **Collaboration**: Allow teams to synchronize `mcpany` configurations and secrets securely, ensuring consistent dev environments. | Medium |
@@ -70,6 +75,10 @@ These features represent the next logical steps for the product, focusing on Ent
 | 23 | **Dynamic Tool Pruning** | **Performance/Cost**: Feature to filter visible tools based on the current user's role or context to reduce LLM context window usage and costs. | High |
 | 24 | **Config Wizard** | **UX**: An interactive CLI (`mcpany init`) to guide users through creating their first configuration file. | Low |
 | 25 | **Service Health Dashboard** | **Visibility**: A dedicated dashboard page showing the health status and last error for each upstream service. | Medium |
+| 24 | **Structured Logging for Config Errors** | **DevX**: Output configuration errors in a structured JSON format to allow the UI or IDEs to pinpoint the exact location of the error. | Low |
+| 25 | **Automatic Config Fixer** | **DevX**: An interactive CLI tool that detects common configuration errors (like legacy formats) and offers to fix them automatically. | Medium |
+| 24 | **Windows Filesystem Locking Fix** | **Compatibility**: Handle EPERM errors gracefully on Windows when renaming files, ensuring cross-platform stability. | Medium |
+| 25 | **Async Tool Loading** | **Reliability**: Ensure server waits for initial roots/tools to be loaded before accepting requests to prevent race conditions on startup. | Medium |
 
 ## 3. Codebase Health
 

@@ -125,7 +125,7 @@ export function LogStream() {
       const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:'
       const host = window.location.host
 
-      const wsUrl = `${protocol}//${host}/api/ws/logs`
+      const wsUrl = `${protocol}//${host}/api/v1/ws/logs`
       const ws = new WebSocket(wsUrl)
 
       ws.onopen = () => {
