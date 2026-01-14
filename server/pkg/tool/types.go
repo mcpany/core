@@ -473,51 +473,9 @@ func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 
 	var resp *http.Response
 	work := func(ctx context.Context) error {
-		var bodyForAttempt io.Reader
-		if body != nil {
-			if seeker, ok := body.(io.Seeker); ok {
-				if _, err := seeker.Seek(0, io.SeekStart); err != nil {
-					return &resilience.PermanentError{Err: fmt.Errorf("failed to seek body: %w", err)}
-				}
-				bodyForAttempt = body
-			} else {
-				return &resilience.PermanentError{Err: fmt.Errorf("cannot retry request with non-seekable body")}
-			}
-		}
-
-		httpReq, err := http.NewRequestWithContext(ctx, t.cachedMethod, urlString, bodyForAttempt)
+		httpReq, err := t.createHTTPRequest(ctx, t.cachedMethod, urlString, body, contentType)
 		if err != nil {
-			return &resilience.PermanentError{Err: fmt.Errorf("failed to create http request: %w", err)}
-		}
-
-		// Sentinel Security: Block access to cloud metadata services
-		// We resolve the IP to prevent DNS rebinding or alternative formats
-		resolver := &net.Resolver{}
-		ips, err := resolver.LookupIP(ctx, "ip", httpReq.URL.Hostname())
-		if err == nil {
-			for _, ip := range ips {
-				if ip.String() == "169.254.169.254" || ip.String() == "fd00:ec2::254" {
-					return &resilience.PermanentError{Err: fmt.Errorf("access to cloud metadata service IP %q is blocked", ip)}
-				}
-			}
-		}
-		if hostname := httpReq.URL.Hostname(); hostname == "169.254.169.254" || hostname == "metadata.google.internal" || hostname == "[fd00:ec2::254]" {
-			return &resilience.PermanentError{Err: fmt.Errorf("access to cloud metadata service %q is blocked", hostname)}
-		}
-
-		if contentType != "" {
-			httpReq.Header.Set("Content-Type", contentType)
-		}
-		// httpReq.Header.Set("User-Agent", "mcpany-e2e-test")
-		httpReq.Header.Set("Accept", "*/*")
-
-		if t.authenticator != nil {
-			if err := t.authenticator.Authenticate(httpReq); err != nil {
-				return &resilience.PermanentError{Err: fmt.Errorf("failed to authenticate request: %w", err)}
-			}
-			logging.GetLogger().Debug("Applied authentication", "user_agent", httpReq.Header.Get("User-Agent"))
-		} else {
-			logging.GetLogger().Debug("No authenticator configured")
+			return err
 		}
 
 		if t.cachedMethod == http.MethodGet || t.cachedMethod == http.MethodDelete {
@@ -528,31 +486,8 @@ func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 			httpReq.URL.RawQuery = q.Encode()
 		}
 
-		if logging.GetLogger().Enabled(ctx, slog.LevelDebug) {
-			// Log headers
-			var headerBuf bytes.Buffer
-			headerBuf.WriteString(fmt.Sprintf("%s %s %s\n", httpReq.Method, httpReq.URL.Path, httpReq.Proto))
-			headerBuf.WriteString(fmt.Sprintf("Host: %s\n", httpReq.Host))
-			for k, v := range httpReq.Header {
-				val := strings.Join(v, ", ")
-				if isSensitiveHeader(k) {
-					val = redactedPlaceholder
-				}
-				headerBuf.WriteString(fmt.Sprintf("%s: %s\n", k, val))
-			}
-			logging.GetLogger().DebugContext(ctx, "sending http request headers", "headers", headerBuf.String())
-
-			// Log body
-			if bodyForAttempt != nil {
-				contentType := httpReq.Header.Get("Content-Type")
-				bodyBytes, _ := io.ReadAll(bodyForAttempt)
-				// Restore body
-				if seeker, ok := bodyForAttempt.(io.Seeker); ok {
-					_, _ = seeker.Seek(0, io.SeekStart)
-				}
-				logging.GetLogger().DebugContext(ctx, "sending http request body", "body", prettyPrint(bodyBytes, contentType))
-			}
-		}
+		// Log request details
+		t.logRequest(ctx, httpReq, body)
 
 		attemptResp, err := httpClient.Do(httpReq)
 		if err != nil {
@@ -584,6 +519,86 @@ func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 	metrics.IncrCounter([]string{"http", "request", "success"}, 1)
 
 	return t.processResponse(ctx, resp)
+}
+
+func (t *HTTPTool) createHTTPRequest(ctx context.Context, method, urlString string, body io.Reader, contentType string) (*http.Request, error) {
+	var bodyForAttempt io.Reader
+	if body != nil {
+		if seeker, ok := body.(io.Seeker); ok {
+			if _, err := seeker.Seek(0, io.SeekStart); err != nil {
+				return nil, &resilience.PermanentError{Err: fmt.Errorf("failed to seek body: %w", err)}
+			}
+			bodyForAttempt = body
+		} else {
+			return nil, &resilience.PermanentError{Err: fmt.Errorf("cannot retry request with non-seekable body")}
+		}
+	}
+
+	httpReq, err := http.NewRequestWithContext(ctx, method, urlString, bodyForAttempt)
+	if err != nil {
+		return nil, &resilience.PermanentError{Err: fmt.Errorf("failed to create http request: %w", err)}
+	}
+
+	// Sentinel Security: Block access to cloud metadata services
+	// We resolve the IP to prevent DNS rebinding or alternative formats
+	resolver := &net.Resolver{}
+	ips, err := resolver.LookupIP(ctx, "ip", httpReq.URL.Hostname())
+	if err == nil {
+		for _, ip := range ips {
+			if ip.String() == "169.254.169.254" || ip.String() == "fd00:ec2::254" {
+				return nil, &resilience.PermanentError{Err: fmt.Errorf("access to cloud metadata service IP %q is blocked", ip)}
+			}
+		}
+	}
+	if hostname := httpReq.URL.Hostname(); hostname == "169.254.169.254" || hostname == "metadata.google.internal" || hostname == "[fd00:ec2::254]" {
+		return nil, &resilience.PermanentError{Err: fmt.Errorf("access to cloud metadata service %q is blocked", hostname)}
+	}
+
+	if contentType != "" {
+		httpReq.Header.Set("Content-Type", contentType)
+	}
+	// httpReq.Header.Set("User-Agent", "mcpany-e2e-test")
+	httpReq.Header.Set("Accept", "*/*")
+
+	if t.authenticator != nil {
+		if err := t.authenticator.Authenticate(httpReq); err != nil {
+			return nil, &resilience.PermanentError{Err: fmt.Errorf("failed to authenticate request: %w", err)}
+		}
+		logging.GetLogger().Debug("Applied authentication", "user_agent", httpReq.Header.Get("User-Agent"))
+	} else {
+		logging.GetLogger().Debug("No authenticator configured")
+	}
+
+	return httpReq, nil
+}
+
+func (t *HTTPTool) logRequest(ctx context.Context, httpReq *http.Request, body io.Reader) {
+	if logging.GetLogger().Enabled(ctx, slog.LevelDebug) {
+		// Log headers
+		var headerBuf bytes.Buffer
+		headerBuf.WriteString(fmt.Sprintf("%s %s %s\n", httpReq.Method, httpReq.URL.Path, httpReq.Proto))
+		headerBuf.WriteString(fmt.Sprintf("Host: %s\n", httpReq.Host))
+		for k, v := range httpReq.Header {
+			val := strings.Join(v, ", ")
+			if isSensitiveHeader(k) {
+				val = redactedPlaceholder
+			}
+			headerBuf.WriteString(fmt.Sprintf("%s: %s\n", k, val))
+		}
+		logging.GetLogger().DebugContext(ctx, "sending http request headers", "headers", headerBuf.String())
+
+		// Log body
+		if body != nil {
+			contentType := httpReq.Header.Get("Content-Type")
+			if seeker, ok := body.(io.Seeker); ok {
+				_, _ = seeker.Seek(0, io.SeekStart)
+				bodyBytes, _ := io.ReadAll(body)
+				// Restore body
+				_, _ = seeker.Seek(0, io.SeekStart)
+				logging.GetLogger().DebugContext(ctx, "sending http request body", "body", prettyPrint(bodyBytes, contentType))
+			}
+		}
+	}
 }
 
 func (t *HTTPTool) prepareInputsAndURL(ctx context.Context, req *ExecutionRequest) (map[string]any, string, error) {
