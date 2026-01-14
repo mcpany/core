@@ -4,148 +4,206 @@
  */
 
 import { test, expect } from '@playwright/test';
+import http from 'http';
+import { AddressInfo } from 'net';
 
-test.describe('OAuth Flow E2E', () => {
-  const serviceID = 'github-test';
+test.describe('OAuth Flow Integration', () => {
+  let mockProviderFn: http.Server;
+  let mockProviderUrl: string;
 
-
-  test('should initiate oauth and handle callback', async ({ page }) => {
-    // 1. Mock Service Details to include OAuth config
-    await page.route(`**/api/v1/registration.RegistrationService/GetService`, async () => {
-         // gRPC-Web response or REST?
-         // logic in client.ts uses `registrationClient.GetService` which is gRPC-Web.
-         // Mocking gRPC-Web in Playwright can be tricky if using binary format.
-         // BUT `client.ts` uses `GrpcWebImpl` which usually POSTs to `/.../GetService`.
-         // If we use standard gRPC-Web text/proto, mocking might be hard.
-         // However, `apiClient.listServices` is implemented via REST `/api/v1/services`.
-         // `ServiceDetail` uses `getService` which uses `apiClient.getService`.
-         // `apiClient.getService` calls `registrationClient.GetService`.
-         // Can we fallback/force REST or just mock the network response if it was REST?
-         // The mock for `ServiceDetail` page might need careful handling.
-         // Let's assume for this test, we navigate to the service detail page.
-
-         // Wait, `ServiceDetail` component calls `apiClient.getService(serviceId)`.
-         // `client.ts` says: `const registrationClient = new RegistrationServiceClientImpl(rpc);`
-         // It sends a POST to `http://localhost:9002/mcpany.config.v1.registration.RegistrationService/GetService` (or similar).
-         // Protocol is gRPC-Web. Content-Type: application/grpc-web-text or application/grpc-web+proto.
-         // Mocking that is painful without helpers.
-
-         // ALTERNATIVE:
-         // Navigate to `/services` (List) which uses REST `/api/v1/services`.
-         // If we click a service there, does it go to Detail? Yes.
-         // Can we test "List" page showing "Connect" button?
-         // No, the button is in `ServiceDetail`.
-
-         // Maybe we can skip `ServiceDetail` component test if mocking gRPC is too hard,
-         // AND only test the `oauth/callback` page directly?
-         // The user wants "walk through the oauth process via UI".
-         // This implies clicking the button.
-
-         // If I look at `ui/src/lib/client.ts`, `getService` is gRPC.
-         // Is there any other way?
-         // Maybe I can patch `apiClient.getService` in the browser context?
-         // Playwright allows `page.addInitScript`.
-         // But `apiClient` is imported by the component.
-         // It's hard to mock imports.
-
-         // What if I blindly mock the POST request with a valid gRPC-Web response?
-         // It's base64 encoded protobuf.
-         // That's too fragile.
-
-         // Let's look at `auth.spec.ts` again. It mocks `api/v1/users`.
-         // `listServices` is REST.
-         // Maybe I can just use `listServices`?
-         // No, `ServiceDetail` specifically calls `getService`.
-
-         // WORKAROUND:
-         // I'll skip the Service Detail page for now if I can't mock it easily
-         // OR I update `client.ts` to fallback to REST for `getService` too?
-         // The comment in `client.ts` says: `// Services (Migrated to gRPC)`.
-         // But `listServices` has fallback.
-         // `getService` does NOT.
-         // I will ADD fallback to `getService` in `client.ts` to make it testable/robust.
-         // `api/v1/services/{name}` REST endpoint should exist if `listServices` uses REST.
-         // `server/pkg/api/api.go` usually registers them.
-
-         // Let's assume I added the fallback (I will do it next).
+  test.beforeAll(async () => {
+    // Start a simple HTTP server to act as OAuth Provider
+    mockProviderFn = http.createServer((req, res) => {
+      const url = new URL(req.url || '', `http://${req.headers.host}`);
+      if (url.pathname === '/auth') {
+        const redirectUri = url.searchParams.get('redirect_uri');
+        const state = url.searchParams.get('state');
+        if (redirectUri && state) {
+            // Simulate user approval by redirecting back immediately
+            res.writeHead(302, {
+                'Location': `${redirectUri}?code=mock_code&state=${state}`
+            });
+            res.end();
+            return;
+        }
+      }
+      res.writeHead(404);
+      res.end();
     });
 
-    // Mock REST GetService (assuming I added fallback)
-    await page.route(`**/api/v1/services/${serviceID}`, async route => {
-        await route.fulfill({
-            json: {
-                service: {
-                    id: serviceID,
-                    name: serviceID,
-                    upstream_auth: {
-                        oauth2: {
-                            provider: 'github'
-                        }
-                    }
-                }
+    await new Promise<void>((resolve) => {
+        mockProviderFn.listen(0, '127.0.0.1', () => resolve());
+    });
+    const addr = mockProviderFn.address() as AddressInfo;
+    mockProviderUrl = `http://127.0.0.1:${addr.port}`;
+    console.log(`Mock OAuth Provider running at ${mockProviderUrl}`);
+  });
+
+  test.afterAll(async () => {
+    mockProviderFn.close();
+  });
+
+  test('should complete the OAuth flow via Auth Wizard', async ({ page }) => {
+    // 1. Mock Credentials List to return an OAuth Credential
+    const oauthCred = {
+        id: 'cred-oauth-1',
+        name: 'GitHub OAuth',
+        authentication: {
+            oauth2: {
+                clientId: { value: { plainText: 'client-id' } },
+                authorizationUrl: `${mockProviderUrl}/auth`,
+                tokenUrl: `${mockProviderUrl}/token`,
+                scopes: 'read:user'
             }
-        });
+        }
+    };
+
+    await page.route('**/api/v1/credentials', async route => {
+        if (route.request().method() === 'GET') {
+            await route.fulfill({ json: [oauthCred] });
+        } else {
+            await route.continue();
+        }
     });
 
-    // Mock Initiate OAuth
+    // 2. Mock Initiate OAuth API
+    // The UI calls this to get the Authorization URL
     await page.route('**/auth/oauth/initiate', async route => {
-        // Expect POST
-        const req = route.request().postDataJSON();
-        expect(req.service_id).toBe(serviceID);
-        expect(req.redirect_url).toContain('/auth/callback');
-
-        await route.fulfill({
-            json: {
-                authorization_url: '/mock-provider-auth?state=xyz',
-                state: 'xyz'
-            }
-        });
+        const body = route.request().postDataJSON();
+        // Expect valid body
+        if (body.credential_id === 'cred-oauth-1' && body.redirect_url) {
+            await route.fulfill({
+                json: {
+                    authorization_url: `${mockProviderUrl}/auth?state=test_state_123&redirect_uri=${encodeURIComponent(body.redirect_url)}`,
+                    state: 'test_state_123'
+                }
+            });
+        } else {
+            await route.fulfill({ status: 400, body: 'Invalid request' });
+        }
     });
 
-    // Mock Callback Endpoint (Backend)
+    // 3. Mock Callback API
+    // The UI calls this after returning from provider
+    let callbackCalled = false;
     await page.route('**/auth/oauth/callback', async route => {
-        const req = route.request().postDataJSON();
-        expect(req.code).toBe('mock-code');
-        expect(req.service_id).toBe(serviceID);
-
-        await route.fulfill({ json: { status: 'success' } });
+        callbackCalled = true;
+        const body = route.request().postDataJSON();
+        // Expect code and state match
+        if (body.code === 'mock_code') {
+            await route.fulfill({ json: { status: 'success' } });
+        } else {
+            await route.fulfill({ status: 400, body: 'Invalid code' });
+        }
     });
 
+    // 4. Start Flow
+    // We navigate to wizard usually via New Service -> select Template or blank.
+    // For this test, we can try to test the Wizard components in isolation OR go through the flow.
+    // Let's assume we can go to /marketplace and click something, or direct to a wizard route if it exists.
+    // Currently wizard is a modal or a route?
+    // `app/marketplace/page.tsx` starts the wizard.
+    // Let's go to /marketplace.
 
-    // Start Test
-    // 1. Go to Service Detail
-    await page.goto(`/service/${serviceID}`);
-    // Wait for "Connect Account" button
-    await expect(page.getByRole('button', { name: 'Connect Account' })).toBeVisible();
+    // Pass empty services/templates list to avoid noise
+    await page.route('**/api/v1/services', async route => route.fulfill({ json: [] }));
+    await page.route('**/api/v1/templates', async route => route.fulfill({ json: [] }));
 
-    // 2. Click Connect
-    // This will redirect to authorization_url.
-    // We need to intercept the navigation or mock the provider page.
-    // The provider page is 'http://localhost:9002/mock-provider-auth?state=xyz'
-    // Let's route that location.
-    await page.route('**/mock-provider-auth*', async route => {
-         // Simulate user approving and redirecting back
-         const url = new URL(route.request().url());
-         const state = url.searchParams.get('state');
+    await page.goto('/marketplace');
 
-         // Redirect back to callback
-         // Playwright route.fulfill with status 302?
-         // Or just navigate manually?
-         // Browsers follow 302.
-         await route.fulfill({
-             status: 302,
-             headers: {
-                 'Location': `/auth/callback?code=mock-code&state=${state}`
-             }
-         });
-    });
+    // Click "Configure" on a "Blank Service" or similar if we can find one.
+    // Or simpler: The wizard seems to be triggered by "Add Service" or selecting a template.
+    // Let's look for a button to start wizard.
+    // Assuming "Create Service" or similar exists.
+    // If not, we might need to verify marketplace page content.
+    // Ignoring the exact entry point, let's assume we are IN the wizard.
+    // Can we shallow mount? No, E2E.
+    // Let's click "Create from Scratch" if available.
 
-    await page.getByRole('button', { name: 'Connect Account' }).click();
+    await expect(page.getByRole('button', { name: 'Create Config' })).toBeVisible();
+    await page.getByRole('button', { name: 'Create Config' }).click();
 
-    // 3. Should end up at /auth/callback
-    await page.waitForURL('**/auth/callback*');
+    // Now in Wizard.
+    // Step 1: Service Type
+    // Assuming Step 1 is "Parameters" or "Service Type".
+    // If it's Service Type (step-service-type.tsx), we might need to select something.
+    // But let's see if we can just navigate or if we are already at a step.
+    // `CreateConfigWizard` defaults to step 0.
+    // If step 0 is `StepServiceType`, we need to pick one?
+    // Let's assume we can click Next if default is selected?
+    // Or we might need to fill "Service Name" which is usually in parameters.
+    // Wait for Wizard Dialog
+    await expect(page.getByRole('dialog', { name: 'Create Upstream Service Config' })).toBeVisible();
 
-    // 4. Verification
-    await expect(page.getByText('Authentication Successful')).toBeVisible({ timeout: 10000 });
+    // Step 1: Service Type (if applicable) or Parameters.
+    // Let's assume we need to click Next until we hit Auth.
+    // Or check what step we are on.
+    // We can just try to click Next.
+
+    // If Step 1 is Service Type:
+    if (await page.getByText('1. Select Service Type').isVisible()) {
+        await page.getByLabel('Service Name').fill('My OAuth Service');
+
+        // Ensure we select a template to populate config (trigger change)
+        await page.getByLabel('Template').click();
+        await page.getByRole('option', { name: 'Filesystem' }).click();
+
+        // Wait for state update
+        await page.waitForTimeout(1000);
+
+        await page.getByRole('button', { name: 'Next', exact: true }).click();
+
+         // Check for validation error (robust)
+        if (await page.getByText('Validation Error').first().isVisible()) {
+            // ...
+        }
+    }
+
+    // Step 2: Configure Parameters
+    await expect(page.getByText('2. Configure Parameters')).toBeVisible();
+    await page.getByRole('button', { name: 'Next', exact: true }).click();
+
+    // Step 3: Webhooks
+    await expect(page.getByText('3. Webhooks & Transformers')).toBeVisible();
+    await page.getByRole('button', { name: 'Next', exact: true }).click();
+
+     // Step 4: Authentication
+    await expect(page.getByText('4. Authentication')).toBeVisible();
+
+     // Step 4: Authentication
+    await expect(page.getByText('4. Authentication')).toBeVisible();
+
+    // Step 2: Connection / Auth?
+    // If Auth is step 2.
+    // Wait for "Select Credential for Testing".
+    await expect(page.getByText('Select Credential for Testing')).toBeVisible();
+
+    // Select our credential
+    await page.getByRole('combobox').click();
+    await page.getByRole('option', { name: 'GitHub OAuth' }).click();
+
+    // Verify "Connect with OAuth" button appears
+    const connectBtn = page.getByRole('button', { name: 'Connect with OAuth' });
+    await expect(connectBtn).toBeVisible();
+
+    // Click it
+    await connectBtn.click();
+
+    // This should redirect to external mock provider, then back to /auth/callback
+    // We wait for the URL to change to /auth/callback
+    await page.waitForURL(/.*\/auth\/callback.*/);
+
+    // Verify Success UI
+    await expect(page.getByText('Authentication Successful')).toBeVisible();
+    await expect(page.getByText('You have successfully connected your account.')).toBeVisible();
+
+    // Verify API called
+    expect(callbackCalled).toBe(true);
+
+    // Click Continue
+    await page.getByRole('button', { name: 'Continue' }).click();
+
+    // Wizard state is lost on redirect, so we expect to be back at Marketplace page
+    await expect(page.getByRole('heading', { name: 'Marketplace' })).toBeVisible();
   });
 });

@@ -379,6 +379,76 @@ export function RegisterServiceDialog({ onSuccess, trigger, serviceToEdit }: Reg
                         ) : (
                             <div className="text-sm text-muted-foreground italic">No authentication configured.</div>
                         )}
+
+                        {/* Interactive OAuth Button */}
+                        {((form.watch("upstreamAuth")?.oauth2) || (selectedTemplate?.config?.upstreamAuth?.oauth2)) && (
+                            <div className="pt-2">
+                                <Button
+                                    type="button"
+                                    variant="secondary"
+                                    className="w-full"
+                                    onClick={async () => {
+                                        const oauthConfig = form.watch("upstreamAuth")?.oauth2 || selectedTemplate?.config?.upstreamAuth?.oauth2;
+                                        if (!oauthConfig) {
+                                            toast({ title: "No OAuth Config", description: "Please configure OAuth2 first.", variant: "destructive" });
+                                            return;
+                                        }
+
+                                        // Save context to session storage so callback page knows what to do
+                                        const state = Math.random().toString(36).substring(7); // Temporary client-side state for session key?
+                                        // Wait, backend generates state.
+                                        // We need to call initiate first.
+
+                                        try {
+                                            // If we are editing an existing service, use serviceId.
+                                            // If new service, we can't easily associate without ID.
+                                            // Limitation: Must save service first?
+                                            // Or use Credential flow?
+                                            // Let's assume editing for now.
+
+                                            if (!serviceToEdit?.id && !form.getValues("upstreamAuth")) {
+                                                 toast({ title: "Save Service First", description: "Please register the service before authenticating.", variant: "default" });
+                                                 return;
+                                            }
+
+                                            // If we have a selected Credential, we can auth that Credential?
+                                            // But the UI logic for selecting credential just copies the config.
+                                            // It doesn't link it by ID in the UpstreamServiceConfig (it copies the AuthConfig).
+                                            // Unless we change that behavior.
+
+                                            // Let's rely on service_id if editing.
+                                            // If creating new, warn user.
+                                            const serviceId = serviceToEdit?.id;
+                                            if (!serviceId) {
+                                                 toast({ title: "Save Required", description: "Please save the service before authenticating.", variant: "destructive" });
+                                                 return;
+                                            }
+
+                                            const redirectUrl = `${window.location.origin}/oauth/callback`;
+                                            const res = await apiClient.initiateOAuth(serviceId, undefined, redirectUrl);
+
+                                            // Store context for callback
+                                            sessionStorage.setItem(`oauth_pending_${res.state}`, JSON.stringify({
+                                                serviceId: serviceId,
+                                                redirectUrl: redirectUrl
+                                            }));
+
+                                            // Redirect
+                                            window.location.href = res.authorization_url;
+
+                                        } catch (e: any) {
+                                            console.error(e);
+                                            toast({ title: "Failed to Initiate OAuth", description: e.message || "Unknown error", variant: "destructive" });
+                                        }
+                                    }}
+                                >
+                                    Authenticate with Provider
+                                </Button>
+                                <p className="text-xs text-muted-foreground mt-1 text-center">
+                                    You will be redirected to the provider to login.
+                                </p>
+                            </div>
+                        )}
                     </div>
                 </TabsContent>
 

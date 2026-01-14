@@ -81,8 +81,9 @@ export function StepServiceType() {
     return (
         <div className="space-y-6">
             <div className="space-y-2">
-                <Label>Service Name</Label>
+                <Label htmlFor="service-name">Service Name</Label>
                 <Input
+                    id="service-name"
                     placeholder="e.g. My Postgres DB"
                     value={config.name || ''}
                     onChange={e => updateConfig({ name: e.target.value })}
@@ -91,9 +92,9 @@ export function StepServiceType() {
             </div>
 
             <div className="space-y-2">
-                <Label>Template</Label>
+                <Label htmlFor="service-template">Template</Label>
                 <Select value={selectedTemplateId || 'manual'} onValueChange={handleTemplateChange}>
-                    <SelectTrigger>
+                    <SelectTrigger id="service-template">
                         <SelectValue placeholder="Select a template" />
                     </SelectTrigger>
                     <SelectContent>

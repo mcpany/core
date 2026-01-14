@@ -292,12 +292,16 @@ export const apiClient = {
         if (!res.ok) throw new Error('Failed to fetch tools');
         return res.json();
     },
-    executeTool: async (request: any) => {
+    executeTool: async (request: any, dryRun?: boolean) => {
         try {
+            const payload = { ...request };
+            if (dryRun) {
+                payload.dryRun = true;
+            }
             const res = await fetchWithAuth('/api/v1/execute', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(request)
+                body: JSON.stringify(payload)
             });
             if (!res.ok) throw new Error('Failed to execute tool');
             return res.json();
@@ -453,6 +457,7 @@ export const apiClient = {
         if (!res.ok) throw new Error('Failed to delete user');
         return {};
     },
+
 
     // OAuth
     initiateOAuth: async (serviceID: string, redirectURL: string, credentialID?: string) => {
