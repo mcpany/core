@@ -136,7 +136,9 @@ func (c *stdioConn) Read(_ context.Context) (jsonrpc.Message, error) {
 				Method: rAny.Method,
 				Params: rAny.Params,
 			}
-			setUnexportedID(&req.ID, rAny.ID)
+			if err := setUnexportedID(&req.ID, rAny.ID); err != nil {
+				logging.GetLogger().Error("Failed to set unexported ID on request", "error", err)
+			}
 			msg = req
 		} else {
 			msg = req
@@ -159,7 +161,9 @@ func (c *stdioConn) Read(_ context.Context) (jsonrpc.Message, error) {
 			if rAny.Error != nil {
 				resp.Error = rAny.Error
 			}
-			setUnexportedID(&resp.ID, rAny.ID)
+			if err := setUnexportedID(&resp.ID, rAny.ID); err != nil {
+				logging.GetLogger().Error("Failed to set unexported ID on response", "error", err)
+			}
 			msg = resp
 		} else {
 			msg = resp
