@@ -578,6 +578,11 @@ func (s *Server) CallTool(ctx context.Context, req *tool.ExecutionRequest) (any,
 		_, hasIsError := resultMap["isError"]
 
 		if hasContent || hasIsError {
+			// ⚡ Bolt Optimization: Try fast path conversion first to avoid JSON roundtrip
+			if res, err := convertMapToCallToolResult(resultMap); err == nil {
+				return res, nil
+			}
+
 			// Convert map to CallToolResult via JSON
 			jsonBytes, marshalErr = json.Marshal(resultMap)
 			if marshalErr != nil {
@@ -694,6 +699,55 @@ func (s *Server) Reload(ctx context.Context) error {
 		return s.reloadFunc(ctx)
 	}
 	return nil
+}
+
+// convertMapToCallToolResult attempts to convert a map result to a CallToolResult
+// without JSON serialization overhead. It currently supports text content only.
+func convertMapToCallToolResult(m map[string]any) (*mcp.CallToolResult, error) {
+	// Fast path for simple text content
+	contentRaw, ok := m["content"]
+	if !ok {
+		// Maybe it's just error?
+		isError, _ := m["isError"].(bool)
+		return &mcp.CallToolResult{IsError: isError}, nil
+	}
+
+	contentList, ok := contentRaw.([]any)
+	if !ok {
+		return nil, fmt.Errorf("content is not a list")
+	}
+
+	var contents []mcp.Content
+	for _, c := range contentList {
+		cMap, ok := c.(map[string]any)
+		if !ok {
+			return nil, fmt.Errorf("content item is not a map")
+		}
+
+		typeStr, ok := cMap["type"].(string)
+		if !ok {
+			return nil, fmt.Errorf("content type is not a string")
+		}
+
+		if typeStr == "text" {
+			text, ok := cMap["text"].(string)
+			if !ok {
+				return nil, fmt.Errorf("text content text is not a string")
+			}
+			contents = append(contents, &mcp.TextContent{
+				Text: text,
+			})
+		} else {
+			// Fallback for non-text
+			return nil, fmt.Errorf("unsupported content type for fast path: %s", typeStr)
+		}
+	}
+
+	isError, _ := m["isError"].(bool)
+	return &mcp.CallToolResult{
+		Content: contents,
+		IsError: isError,
+	}, nil
 }
 
 func (s *Server) resourceListFilteringMiddleware(next mcp.MethodHandler) mcp.MethodHandler {
