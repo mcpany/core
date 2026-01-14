@@ -197,6 +197,9 @@ func (e *jsonEngine) Unmarshal(b []byte, v proto.Message) error {
 type Store interface {
 	// Load retrieves and returns the McpAnyServerConfig.
 	Load(ctx context.Context) (*configv1.McpAnyServerConfig, error)
+
+	// HasConfigSources returns true if the store has configuration sources (e.g., file paths) configured.
+	HasConfigSources() bool
 }
 
 // ServiceStore extends Store to provide CRUD operations for UpstreamServices.
@@ -291,6 +294,11 @@ func NewFileStore(fs afero.Fs, paths []string) *FileStore {
 // instead of returning an error.
 func NewFileStoreWithSkipErrors(fs afero.Fs, paths []string) *FileStore {
 	return &FileStore{fs: fs, paths: paths, skipErrors: true}
+}
+
+// HasConfigSources returns true if the store has configuration paths configured.
+func (s *FileStore) HasConfigSources() bool {
+	return len(s.paths) > 0
 }
 
 // Load scans the configured paths for supported configuration files (JSON,
@@ -814,4 +822,14 @@ func collectFieldNames(md protoreflect.MessageDescriptor, candidates map[string]
 			collectFieldNames(fd.Message(), candidates, visited)
 		}
 	}
+}
+
+// HasConfigSources returns true if any of the underlying stores have configuration sources.
+func (ms *MultiStore) HasConfigSources() bool {
+	for _, s := range ms.stores {
+		if s.HasConfigSources() {
+			return true
+		}
+	}
+	return false
 }

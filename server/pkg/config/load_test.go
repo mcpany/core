@@ -105,12 +105,11 @@ upstream_services: {
 		require.Error(t, err)
 		assert.Contains(t, err.Error(), "failed to unmarshal config")
 
-		// Test with NewFileStoreWithSkipErrors (should succeed with empty config)
+		// Test with NewFileStoreWithSkipErrors (should fail because empty config is now invalid if config sources are present)
 		resilientStore := NewFileStoreWithSkipErrors(fs, []string{server.URL + "/config.textproto"})
-		cfg, err := LoadServices(context.Background(), resilientStore, "server")
-		require.NoError(t, err)
-		require.NotNil(t, cfg)
-		assert.Empty(t, cfg.GetUpstreamServices())
+		_, err = LoadServices(context.Background(), resilientStore, "server")
+		require.Error(t, err)
+		assert.Contains(t, err.Error(), "configuration sources provided but loaded configuration is empty")
 	})
 
 	t.Run("Load from URL with response larger than 1MB", func(t *testing.T) {
@@ -134,7 +133,16 @@ upstream_services: {
 	})
 
 	t.Run("unknown binary type", func(t *testing.T) {
-		filePath := createTempConfigFile(t, "")
+		// We need a valid config to reach the binary type check
+		content := `
+upstream_services: {
+	name: "dummy-service"
+	http_service: {
+		address: "http://example.com"
+	}
+}
+`
+		filePath := createTempConfigFile(t, content)
 		fs := afero.NewOsFs()
 		fileStore := NewFileStore(fs, []string{filePath})
 		_, err := LoadServices(context.Background(), fileStore, "unknown")

@@ -50,6 +50,7 @@ require (
 	github.com/itchyny/gojq v0.12.18
 	github.com/jellydator/ttlcache/v3 v3.4.0
 	github.com/jhump/protoreflect v1.15.3
+	github.com/joho/godotenv v1.5.1
 	github.com/json-iterator/go v1.1.12
 	github.com/lib/pq v1.10.9
 	github.com/machinebox/graphql v0.2.2

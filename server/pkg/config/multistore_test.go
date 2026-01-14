@@ -45,6 +45,10 @@ func (m *MockStore) Close() error {
 	return nil
 }
 
+func (m *MockStore) HasConfigSources() bool {
+	return true
+}
+
 func TestMultiStore(t *testing.T) {
 	t.Run("MergeConfigs", func(t *testing.T) {
 		s1 := &MockStore{

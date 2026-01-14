@@ -400,7 +400,11 @@ func buildCommandFromStdioConfig(ctx context.Context, stdio *configv1.McpStdioCo
 
 	// Combine all commands into a single script.
 	var scriptCommands []string
-	scriptCommands = append(scriptCommands, stdio.GetSetupCommands()...)
+	setupCommands := stdio.GetSetupCommands()
+	if len(setupCommands) > 0 {
+		logging.GetLogger().Warn("Using setup_commands in StdioTransport is dangerous and allows Command Injection if config is untrusted.", "setup_commands", setupCommands)
+	}
+	scriptCommands = append(scriptCommands, setupCommands...)
 
 	// Add the main command. `exec` is used to replace the shell process with the main command.
 	mainCommandParts := []string{"exec", shellescape.Quote(command)}
