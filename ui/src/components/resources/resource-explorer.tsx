@@ -320,7 +320,7 @@ export function ResourceExplorer({ initialResources = [] }: ResourceExplorerProp
                                     const isSelected = selectedUri === res.uri;
                                     return (
                                         <ContextMenu key={res.uri}>
-                                            <ContextMenuTrigger>
+                                            <ContextMenuTrigger asChild>
                                                 <div
                                                     className={cn(
                                                         "flex items-center gap-3 p-3 px-4 cursor-pointer hover:bg-accent/50 transition-colors text-sm group",
@@ -363,7 +363,7 @@ export function ResourceExplorer({ initialResources = [] }: ResourceExplorerProp
                                     const isSelected = selectedUri === res.uri;
                                     return (
                                         <ContextMenu key={res.uri}>
-                                            <ContextMenuTrigger>
+                                            <ContextMenuTrigger asChild>
                                                 <Card
                                                     className={cn(
                                                         "cursor-pointer hover:border-primary/50 transition-all",
