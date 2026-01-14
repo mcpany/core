@@ -84,6 +84,7 @@ type stdioConn struct {
 	wg            sync.WaitGroup
 }
 
+// Read reads a JSON-RPC message from the standard output of the command.
 func (c *stdioConn) Read(_ context.Context) (jsonrpc.Message, error) {
 	var raw json.RawMessage
 	if err := c.decoder.Decode(&raw); err != nil {
@@ -166,6 +167,7 @@ func (c *stdioConn) Read(_ context.Context) (jsonrpc.Message, error) {
 	return msg, nil
 }
 
+// Write writes a JSON-RPC message to the standard input of the command.
 func (c *stdioConn) Write(_ context.Context, msg jsonrpc.Message) error {
 	var method string
 	var params any
@@ -205,6 +207,7 @@ func (c *stdioConn) Write(_ context.Context, msg jsonrpc.Message) error {
 	return c.encoder.Encode(wire)
 }
 
+// Close terminates the command and closes the streams.
 func (c *stdioConn) Close() error {
 	c.mutex.Lock()
 	defer c.mutex.Unlock()
@@ -220,6 +223,7 @@ func (c *stdioConn) Close() error {
 	return nil
 }
 
+// SessionID returns a static session ID for the stdio connection.
 func (c *stdioConn) SessionID() string {
 	return "stdio-session"
 }
@@ -230,5 +234,8 @@ func (c *stdioConn) checkExit() error {
 	// However, Wait can only be called once.
 	// Since we are in Read() loop, we might have multiple reads?
 	// But if we hit EOF, the stream is done, so calling Wait is appropriate.
-	return c.cmd.Wait()
+	err := c.cmd.Wait()
+	// Wait for the stderr copier goroutine to finish to ensure we captured all stderr
+	c.wg.Wait()
+	return err
 }

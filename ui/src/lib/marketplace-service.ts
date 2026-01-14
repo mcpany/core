@@ -5,27 +5,51 @@
 
 import { UpstreamServiceConfig } from "@/lib/client";
 
+/**
+ * A collection of services, typically organized by theme or use case.
+ */
 export interface ServiceCollection {
+  /** The name of the collection. */
   name: string;
+  /** A description of what the collection provides. */
   description: string;
+  /** The author or maintainer of the collection. */
   author: string;
+  /** The version of the collection. */
   version: string;
+  /** The list of service configurations included in the collection. */
   services: UpstreamServiceConfig[];
 }
 
+/**
+ * An external marketplace where MCP servers can be discovered.
+ */
 export interface ExternalMarketplace {
+  /** Unique identifier for the marketplace. */
   id: string;
+  /** Display name of the marketplace. */
   name: string;
+  /** URL of the marketplace website or API. */
   url: string;
+  /** Description of the marketplace. */
   description: string;
+  /** Icon name or URL for the marketplace. */
   icon?: string;
 }
 
+/**
+ * A server listed in an external marketplace.
+ */
 export interface ExternalServer {
+  /** Unique identifier for the server. */
   id: string;
+  /** Display name of the server. */
   name: string;
+  /** Description of the server. */
   description: string;
+  /** The author of the server. */
   author?: string;
+  /** The configuration to install this server. */
   config: UpstreamServiceConfig; // Mapped to our config format
 }
 
@@ -93,16 +117,32 @@ const PUBLIC_MARKETPLACES: ExternalMarketplace[] = [
   }
 ];
 
+/**
+ * Service for interacting with internal and external marketplaces.
+ */
 export const marketplaceService = {
+  /**
+   * Fetches the official collections provided by MCP Any.
+   * @returns A promise that resolves to a list of service collections.
+   */
   fetchOfficialCollections: async (): Promise<ServiceCollection[]> => {
     // In future: fetch('https://raw.githubusercontent.com/mcpany/marketplace/main/collections.json')
     return new Promise(resolve => setTimeout(() => resolve(MOCK_OFFICIAL_COLLECTIONS), 500));
   },
 
+  /**
+   * Fetches the list of known public marketplaces.
+   * @returns A promise that resolves to a list of external marketplaces.
+   */
   fetchPublicMarketplaces: async (): Promise<ExternalMarketplace[]> => {
     return PUBLIC_MARKETPLACES;
   },
 
+  /**
+   * Fetches available servers from a specific external marketplace.
+   * @param marketplaceId The ID of the marketplace to query.
+   * @returns A promise that resolves to a list of external servers.
+   */
   fetchExternalServers: async (marketplaceId: string): Promise<ExternalServer[]> => {
     // Mock fetching from external source
     // Real implementation would scrape or use API of the target marketplace
@@ -148,6 +188,11 @@ export const marketplaceService = {
   },
 
 
+  /**
+   * Imports a collection from a URL.
+   * @param url The URL of the collection to import.
+   * @returns A promise that resolves to the imported collection.
+   */
   importCollection: async (url: string): Promise<ServiceCollection> => {
      // Fetch from URL, validate, return
      // Mock for now
@@ -161,6 +206,11 @@ export const marketplaceService = {
   },
 
   // Local Storage Logic
+
+  /**
+   * Fetches collections stored locally in the browser.
+   * @returns A list of locally stored service collections.
+   */
   fetchLocalCollections: (): ServiceCollection[] => {
       if (typeof window === 'undefined') return [];
       try {
@@ -172,6 +222,10 @@ export const marketplaceService = {
       }
   },
 
+  /**
+   * Saves a collection to local storage.
+   * @param collection The collection to save.
+   */
   saveLocalCollection: (collection: ServiceCollection) => {
       if (typeof window === 'undefined') return;
       const current = marketplaceService.fetchLocalCollections();
@@ -185,6 +239,10 @@ export const marketplaceService = {
       localStorage.setItem('mcp_local_collections', JSON.stringify(current));
   },
 
+  /**
+   * Deletes a locally stored collection.
+   * @param name The name of the collection to delete.
+   */
   deleteLocalCollection: (name: string) => {
       if (typeof window === 'undefined') return;
       const current = marketplaceService.fetchLocalCollections();

@@ -7,7 +7,12 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
 import { ResourceExplorer } from './resource-explorer';
 import { apiClient } from '@/lib/client';
-import { MOCK_RESOURCES } from '@/mocks/resources';
+
+const MOCK_RESOURCES = [
+    { uri: 'file:///app/config.json', name: 'config.json', mimeType: 'application/json' },
+    { uri: 'file:///app/README.md', name: 'README.md', mimeType: 'text/markdown' },
+    { uri: 'postgres://db/users', name: 'users', mimeType: 'application/sql' }
+];
 
 // Mock dependencies
 vi.mock('@/lib/client', () => ({
