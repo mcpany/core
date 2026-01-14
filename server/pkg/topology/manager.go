@@ -18,7 +18,7 @@ import (
 type Manager struct {
 	mu              sync.RWMutex
 	sessions        map[string]*SessionStats
-	serviceRegistry serviceregistry.ServiceRegistryInterface
+	serviceRegistry serviceregistry.Interface
 	toolManager     tool.ManagerInterface
 }
 
@@ -31,7 +31,7 @@ type SessionStats struct {
 }
 
 // NewManager creates a new Topology Manager.
-func NewManager(registry serviceregistry.ServiceRegistryInterface, tm tool.ManagerInterface) *Manager {
+func NewManager(registry serviceregistry.Interface, tm tool.ManagerInterface) *Manager {
 	return &Manager{
 		sessions:        make(map[string]*SessionStats),
 		serviceRegistry: registry,

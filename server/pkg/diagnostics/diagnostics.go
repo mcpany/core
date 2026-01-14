@@ -1,6 +1,7 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
+// Package diagnostics provides functionality for gathering server diagnostics.
 package diagnostics
 
 import (
@@ -15,15 +16,15 @@ import (
 	"github.com/shirou/gopsutil/v3/mem"
 )
 
-// DiagnosticsService collects diagnostic information about the server.
-type DiagnosticsService struct {
+// Service collects diagnostic information about the server.
+type Service struct {
 	startTime       time.Time
-	serviceRegistry *serviceregistry.ServiceRegistry
+	serviceRegistry serviceregistry.Interface
 }
 
-// NewDiagnosticsService creates a new DiagnosticsService.
-func NewDiagnosticsService(serviceRegistry *serviceregistry.ServiceRegistry) *DiagnosticsService {
-	return &DiagnosticsService{
+// NewService creates a new DiagnosticsService.
+func NewService(serviceRegistry serviceregistry.Interface) *Service {
+	return &Service{
 		startTime:       time.Now(),
 		serviceRegistry: serviceRegistry,
 	}
@@ -64,7 +65,7 @@ type DiagnosticReport struct {
 }
 
 // GenerateReport generates a diagnostic report.
-func (s *DiagnosticsService) GenerateReport(ctx context.Context) (*DiagnosticReport, error) {
+func (s *Service) GenerateReport(_ context.Context) (*DiagnosticReport, error) {
 	report := &DiagnosticReport{
 		Timestamp: time.Now().Format(time.RFC3339),
 	}
@@ -110,12 +111,8 @@ func (s *DiagnosticsService) GenerateReport(ctx context.Context) (*DiagnosticRep
 			}
 
 			// Determine type
-			typeStr := "Unknown"
-			switch svc.WhichServiceConfig() {
-			case 1: typeStr = "HTTP" // Needs proper mapping
-			// Simplified:
-			default: typeStr = fmt.Sprintf("%T", svc.WhichServiceConfig())
-			}
+			// Simple mapping based on the enum or type
+			typeStr := fmt.Sprintf("%T", svc.WhichServiceConfig())
 
 			report.Services = append(report.Services, ServiceStatus{
 				ID:     id,

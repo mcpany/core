@@ -1,6 +1,7 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
+// Package diagnostics provides the HTTP handler for the diagnostics API.
 package diagnostics
 
 import (
@@ -13,11 +14,11 @@ import (
 
 // Handler handles diagnostics requests.
 type Handler struct {
-	diagnosticsService *pkg_diagnostics.DiagnosticsService
+	diagnosticsService *pkg_diagnostics.Service
 }
 
 // NewHandler creates a new diagnostics handler.
-func NewHandler(diagnosticsService *pkg_diagnostics.DiagnosticsService) *Handler {
+func NewHandler(diagnosticsService *pkg_diagnostics.Service) *Handler {
 	return &Handler{
 		diagnosticsService: diagnosticsService,
 	}

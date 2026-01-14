@@ -167,7 +167,7 @@ type Application struct {
 	PromptManager    prompt.ManagerInterface
 	ToolManager      tool.ManagerInterface
 	ResourceManager  resource.ManagerInterface
-	ServiceRegistry  serviceregistry.ServiceRegistryInterface
+	ServiceRegistry  serviceregistry.Interface
 	TopologyManager  *topology.Manager
 	UpstreamFactory  factory.Factory
 	configFiles      map[string]string
@@ -1384,7 +1384,7 @@ func (a *Application) runServerMode(
 	// Diagnostics reveals system info, so it SHOULD be protected if auth is enabled.
 	// However, if the user is debugging why auth fails... catch-22.
 	// Let's protect it with authMiddleware.
-	diagnosticsService := pkg_diagnostics.NewDiagnosticsService(a.ServiceRegistry.(*serviceregistry.ServiceRegistry))
+	diagnosticsService := pkg_diagnostics.NewService(a.ServiceRegistry)
 	diagnosticsHandler := diagnostics.NewHandler(diagnosticsService)
 	mux.Handle("/api/v1/diagnostics", authMiddleware(diagnosticsHandler))
 
