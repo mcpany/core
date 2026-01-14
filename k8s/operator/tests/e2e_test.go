@@ -201,8 +201,7 @@ nodes:
         // Extract port.
         // Example: Forwarding from 127.0.0.1:45037 -> 80
         //          Forwarding from [::1]:45037 -> 80
-        parts := strings.Split(output, ":")
-        // This is tricky parsing. Better to use regex if imported.
+
         // Simple search: "127.0.0.1:"
         idx := strings.Index(output, "127.0.0.1:")
         if idx != -1 {
