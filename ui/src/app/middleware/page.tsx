@@ -11,6 +11,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { GripVertical, Plus, Trash2, Settings } from "lucide-react";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
 
 interface Middleware {
     id: string;
@@ -28,6 +29,7 @@ const INITIAL_MIDDLEWARE: Middleware[] = [
 
 export default function MiddlewarePage() {
     const [middleware, setMiddleware] = useState<Middleware[]>(INITIAL_MIDDLEWARE);
+    const [selectedMiddleware, setSelectedMiddleware] = useState<Middleware | null>(null);
 
     const onDragEnd = (result: DropResult) => {
         if (!result.destination) {
@@ -96,7 +98,7 @@ export default function MiddlewarePage() {
                                                                 checked={item.enabled}
                                                                 onCheckedChange={() => toggleMiddleware(item.id)}
                                                             />
-                                                            <Button variant="ghost" size="icon">
+                                                            <Button variant="ghost" size="icon" onClick={() => setSelectedMiddleware(item)}>
                                                                 <Settings className="h-4 w-4" />
                                                             </Button>
                                                         </div>
@@ -115,7 +117,7 @@ export default function MiddlewarePage() {
                 <div className="space-y-6">
                     <Card>
                         <CardHeader>
-                             <CardTitle>Pipeline Visualization</CardTitle>
+                            <CardTitle>Pipeline Visualization</CardTitle>
                         </CardHeader>
                         <CardContent>
                             <div className="flex flex-col items-center space-y-2 py-4">
@@ -141,6 +143,22 @@ export default function MiddlewarePage() {
                     </Card>
                 </div>
             </div>
+
+            <Sheet open={!!selectedMiddleware} onOpenChange={(open) => !open && setSelectedMiddleware(null)}>
+                <SheetContent>
+                    <SheetHeader>
+                        <SheetTitle>Configure Middleware</SheetTitle>
+                        <SheetDescription>
+                            Configure settings for {selectedMiddleware?.name}
+                        </SheetDescription>
+                    </SheetHeader>
+                    <div className="grid gap-4 py-4">
+                        <div className="text-sm text-muted-foreground">
+                            Configuration options for {selectedMiddleware?.type} will appear here.
+                        </div>
+                    </div>
+                </SheetContent>
+            </Sheet>
         </div>
     );
 }

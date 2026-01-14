@@ -4,20 +4,22 @@
 package upstream_test
 
 import (
+	"bufio"
 	"context"
 	"encoding/json"
 	"fmt"
-	"net"
 	"net/http"
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strconv"
+	"strings"
 	"testing"
 	"time"
 
+	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/mcpany/core/server/pkg/tool"
 	"github.com/mcpany/core/server/pkg/upstream/mcp"
-	configv1 "github.com/mcpany/core/proto/config/v1"
 	mcpsdk "github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -35,16 +37,10 @@ func TestWebhooksE2E(t *testing.T) {
 
 	// Start webhook server
 	// Start webhook server
-	port := getFreePort(t)
-	portStr := fmt.Sprintf("%d", port)
-
 	const secret = "dGVzdC1zZWNyZXQtMTIz" //nolint:gosec // base64("test-secret-123")
 	secretPtr := secret                   // Create addressable variable
-	serverCmd := exec.Command(webhookBin) //nolint:gosec
-	serverCmd.Stdout = os.Stdout
-	serverCmd.Stderr = os.Stderr
-	serverCmd.Env = append(os.Environ(), "WEBHOOK_SECRET="+secret, "PORT="+portStr)
-	require.NoError(t, serverCmd.Start(), "Failed to start webhook server")
+
+	serverCmd, port := startWebhookServer(t, webhookBin, secret)
 	defer func() {
 		_ = serverCmd.Process.Kill()
 	}()
@@ -145,15 +141,8 @@ func TestFullSystemWebhooks(t *testing.T) {
 	require.NoError(t, cmd.Run(), "Failed to build mock MCP server")
 
 	// 3. Start Webhook Server
-	port := getFreePort(t)
-	portStr := fmt.Sprintf("%d", port)
-
 	const secret = "dGVzdC1zZWNyZXQtMTIz" //nolint:gosec
-	serverCmd := exec.Command(webhookBin) //nolint:gosec
-	serverCmd.Stdout = os.Stdout
-	serverCmd.Stderr = os.Stderr
-	serverCmd.Env = append(os.Environ(), "WEBHOOK_SECRET="+secret, "PORT="+portStr)
-	require.NoError(t, serverCmd.Start(), "Failed to start webhook server")
+	serverCmd, port := startWebhookServer(t, webhookBin, secret)
 	defer func() { _ = serverCmd.Process.Kill() }()
 
 	// Wait for webhook server
@@ -251,13 +240,47 @@ func TestFullSystemWebhooks(t *testing.T) {
 	assert.Contains(t, resultStr, "Mock content")
 }
 
-func getFreePort(t *testing.T) int {
-	addr, err := net.ResolveTCPAddr("tcp", "localhost:0")
+func startWebhookServer(t *testing.T, binPath, secret string) (*exec.Cmd, int) {
+	cmd := exec.Command(binPath)
+	cmd.Env = append(os.Environ(), "WEBHOOK_SECRET="+secret, "PORT=0")
+
+	// Create pipes
+	stdout, err := cmd.StdoutPipe()
 	require.NoError(t, err)
-	l, err := net.ListenTCP("tcp", addr)
-	require.NoError(t, err)
-	defer l.Close()
-	return l.Addr().(*net.TCPAddr).Port
+	cmd.Stderr = os.Stderr // Keep stderr for logs
+
+	require.NoError(t, cmd.Start())
+
+	// Read port
+	scanner := bufio.NewScanner(stdout)
+	var port int
+	for scanner.Scan() {
+		line := scanner.Text()
+		if strings.HasPrefix(line, "WEBHOOK_SERVER_PORT:") {
+			portStr := strings.TrimPrefix(line, "WEBHOOK_SERVER_PORT:")
+			p, err := strconv.Atoi(portStr)
+			require.NoError(t, err)
+			port = p
+			break
+		}
+		// Pass through other logs
+		fmt.Println(line)
+	}
+
+	if port == 0 {
+		// Try to read more lines or just fail?
+		// If scanner stopped, process probably exited
+		t.Fatal("Failed to get port from webhook server: process exited or no port printed")
+	}
+
+	// Start a goroutine to drain stdout so buffer doesn't fill
+	go func() {
+		for scanner.Scan() {
+			fmt.Println(scanner.Text())
+		}
+	}()
+
+	return cmd, port
 }
 
 func findRootDir(t *testing.T) string {

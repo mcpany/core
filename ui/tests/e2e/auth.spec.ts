@@ -34,14 +34,16 @@ test.describe('Authentication and User Management', () => {
     await page.goto('/');
   });
 
-  test.skip('should render login page components', async ({ page }) => {
+  test('should render login page components', async ({ page }) => {
     await page.goto('/login');
 
     // Check for essential elements mentioned in auth.md
-    await expect(page.getByRole('heading', { name: /Sign In|Login/i })).toBeVisible();
+    // Note: CardTitle renders as a div, not a heading tag, so getByRole('heading') fails.
+    // We search for the text "Login" in the card title class or just by text.
+    await expect(page.locator('.text-2xl', { hasText: 'Login' })).toBeVisible();
     await expect(page.getByLabel(/Email|Username/i)).toBeVisible();
     await expect(page.getByLabel(/Password/i)).toBeVisible();
-    await expect(page.getByRole('button', { name: /Sign In|Login/i })).toBeVisible();
+    await expect(page.getByRole('button', { name: /^Sign in$/i })).toBeVisible();
   });
 
   test('should navigate to user management', async ({ page }) => {

@@ -6,10 +6,13 @@ package main
 
 import (
 	"bytes"
+	"context"
 	"io"
 	"log"
+	"net"
 	"net/http"
 	"os"
+	"strconv"
 	"time"
 
 	"github.com/mcpany/core/server/cmd/webhooks/hooks"
@@ -84,13 +87,28 @@ func main() {
 
 	log.Printf("Starting Webhook Server on :%s", port)
 	server := &http.Server{
+		// Addr is ignored when using Serve(l) but we keep it for reference
 		Addr:              ":" + port,
 		ReadHeaderTimeout: 3 * time.Second,
 		ReadTimeout:       5 * time.Second,
 		WriteTimeout:      10 * time.Second,
 		IdleTimeout:       120 * time.Second,
 	}
-	if err := server.ListenAndServe(); err != nil {
+
+	var lc net.ListenConfig
+	ln, err := lc.Listen(context.Background(), "tcp", ":"+port)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// Print the actual port so tests can parse it
+	if tcpAddr, ok := ln.Addr().(*net.TCPAddr); ok {
+		// Use fmt to print to stdout for easy parsing, log goes to stderr
+		// We use a specific prefix "WEBHOOK_SERVER_PORT:"
+		_, _ = os.Stdout.WriteString("WEBHOOK_SERVER_PORT:" + strconv.Itoa(tcpAddr.Port) + "\n")
+	}
+
+	if err := server.Serve(ln); err != nil {
 		log.Fatal(err)
 	}
 }

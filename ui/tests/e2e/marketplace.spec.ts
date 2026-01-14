@@ -54,7 +54,7 @@ test.describe('Marketplace Tests', () => {
     }
   });
 
-  test.skip('should open install modal', async ({ page }) => {
+  test('should open install modal', async ({ page }) => {
     // Mock the templates API to return a predefined list so we have a known state
     await page.route('**/api/v1/templates', async route => {
        await route.fulfill({
@@ -75,9 +75,11 @@ test.describe('Marketplace Tests', () => {
     // Switch to Local tab where templates are listed
     await page.getByRole('tab', { name: "Local" }).click();
 
-    // Find the Postgres card
-    const card = page.locator('.rounded-xl').filter({ hasText: 'PostgreSQL 14' });
+    // Find the Postgres card using a more robust selector (Card title)
+    const card = page.locator('.border-dashed').filter({ hasText: 'PostgreSQL 14' });
 
+    // Alternative: page.getByRole('heading', { name: 'PostgreSQL 14' }).locator('xpath=../..')
+    // But filters are fine.
     await expect(card).toBeVisible();
 
     // Click "Instantiate"

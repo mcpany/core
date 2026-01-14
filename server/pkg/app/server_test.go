@@ -14,6 +14,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"os"
+	"regexp"
 	"strings"
 	"sync"
 	"sync/atomic"
@@ -2211,15 +2212,14 @@ func TestGRPCServer_PortReleasedOnGracefulShutdown(t *testing.T) {
 
 func TestRun_IPAllowlist(t *testing.T) {
 	t.Run("Allowed", func(t *testing.T) {
+		// Capture logs to find the dynamic port
+		logging.ForTestsOnlyResetLogger()
+		var buf ThreadSafeBuffer
+		logging.Init(slog.LevelInfo, &buf)
+
 		fs := afero.NewMemMapFs()
 		ctx, cancel := context.WithCancel(context.Background())
 		defer cancel()
-
-		l, err := net.Listen("tcp", "localhost:0")
-		require.NoError(t, err)
-		port := l.Addr().(*net.TCPAddr).Port
-		_ = l.Close()
-		addr := fmt.Sprintf("localhost:%d", port)
 
 		// Allow localhost (IPv4 and IPv6 just in case)
 		configContent := `
@@ -2232,16 +2232,34 @@ upstream_services:
    http_service:
      address: "http://localhost:8080"
 `
-		err = afero.WriteFile(fs, "/config.yaml", []byte(configContent), 0o644)
+		err := afero.WriteFile(fs, "/config.yaml", []byte(configContent), 0o644)
 		require.NoError(t, err)
 
 		app := NewApplication()
 		errChan := make(chan error, 1)
 		go func() {
-			errChan <- app.Run(ctx, fs, false, addr, "", []string{"/config.yaml"}, "", 5*time.Second)
+			errChan <- app.Run(ctx, fs, false, "localhost:0", "", []string{"/config.yaml"}, "", 5*time.Second)
 		}()
 
-		waitForServerReady(t, addr)
+		// Wait for server to start and retrieve port from logs
+		var addr string
+		require.Eventually(t, func() bool {
+			logs := buf.String()
+			if strings.Contains(logs, "HTTP server listening") {
+				re := regexp.MustCompile(`port=["']?([^"'\s]+)["']?`)
+				lines := strings.Split(logs, "\n")
+				for _, line := range lines {
+					if strings.Contains(line, "HTTP server listening") {
+						portMatch := re.FindStringSubmatch(line)
+						if len(portMatch) > 1 {
+							addr = portMatch[1]
+							return true
+						}
+					}
+				}
+			}
+			return false
+		}, 10*time.Second, 100*time.Millisecond, "Server fail to start or log port")
 
 		resp, err := http.Get("http://" + addr + "/healthz")
 		require.NoError(t, err)
@@ -2253,15 +2271,14 @@ upstream_services:
 	})
 
 	t.Run("Denied", func(t *testing.T) {
+		// Capture logs to find the dynamic port
+		logging.ForTestsOnlyResetLogger()
+		var buf ThreadSafeBuffer
+		logging.Init(slog.LevelInfo, &buf)
+
 		fs := afero.NewMemMapFs()
 		ctx, cancel := context.WithCancel(context.Background())
 		defer cancel()
-
-		l, err := net.Listen("tcp", "localhost:0")
-		require.NoError(t, err)
-		port := l.Addr().(*net.TCPAddr).Port
-		_ = l.Close()
-		addr := fmt.Sprintf("localhost:%d", port)
 
 		// Only allow a different IP
 		configContent := `
@@ -2270,16 +2287,34 @@ global_settings:
     - "10.0.0.1"
 upstream_services: []
 `
-		err = afero.WriteFile(fs, "/config.yaml", []byte(configContent), 0o644)
+		err := afero.WriteFile(fs, "/config.yaml", []byte(configContent), 0o644)
 		require.NoError(t, err)
 
 		app := NewApplication()
 		errChan := make(chan error, 1)
 		go func() {
-			errChan <- app.Run(ctx, fs, false, addr, "", []string{"/config.yaml"}, "", 5*time.Second)
+			errChan <- app.Run(ctx, fs, false, "localhost:0", "", []string{"/config.yaml"}, "", 5*time.Second)
 		}()
 
-		waitForServerReady(t, addr)
+		// Wait for server to start and retrieve port from logs
+		var addr string
+		require.Eventually(t, func() bool {
+			logs := buf.String()
+			if strings.Contains(logs, "HTTP server listening") {
+				re := regexp.MustCompile(`port=["']?([^"'\s]+)["']?`)
+				lines := strings.Split(logs, "\n")
+				for _, line := range lines {
+					if strings.Contains(line, "HTTP server listening") {
+						portMatch := re.FindStringSubmatch(line)
+						if len(portMatch) > 1 {
+							addr = portMatch[1]
+							return true
+						}
+					}
+				}
+			}
+			return false
+		}, 10*time.Second, 100*time.Millisecond, "Server fail to start or log port")
 
 		resp, err := http.Get("http://" + addr + "/healthz")
 		require.NoError(t, err)

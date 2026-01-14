@@ -85,9 +85,9 @@ func main() {
 	port := flag.Int("port", 0, "Port to listen on")
 	flag.Parse()
 
-	if *port == 0 {
-		log.Fatal("port is required")
-	}
+	// if *port == 0 {
+	// 	log.Fatal("port is required")
+	// }
 
 	lis, err := (&net.ListenConfig{}).Listen(context.Background(), "tcp", fmt.Sprintf(":%d", *port))
 	if err != nil {
@@ -101,7 +101,11 @@ func main() {
 	weatherV1.RegisterWeatherServiceServer(s, &server{})
 	reflection.Register(s)
 
-	log.Printf("INFO grpc_authed_weather_server: Listening on port port=%d", *port)
+	actualPort := lis.Addr().(*net.TCPAddr).Port
+	log.Printf("INFO grpc_authed_weather_server: Listening on port port=%d", actualPort)
+	if *port == 0 {
+		fmt.Printf("%d\n", actualPort)
+	}
 	fmt.Println("GRPC_SERVER_READY") // Signal that the server is ready
 	if err := s.Serve(lis); err != nil {
 		log.Fatalf("failed to serve: %v", err)

@@ -16,6 +16,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"regexp"
+	"strconv"
 	"strings"
 	"sync"
 	"syscall"
@@ -423,6 +424,31 @@ func WaitForTCPPort(t *testing.T, port int, timeout time.Duration) {
 		_ = conn.Close()
 		return true // Port is open
 	}, timeout, 250*time.Millisecond, "Port %d did not become available in time", port)
+}
+
+// WaitForDynamicPort waits for a port to be printed to stdout (unformatted integer on a line)
+// and updates mp.Port.
+func (mp *ManagedProcess) WaitForDynamicPort(t *testing.T, timeout time.Duration) int {
+	t.Helper()
+	var port int
+	require.Eventually(t, func() bool {
+		lines := strings.Split(mp.StdoutString(), "\n")
+		for _, line := range lines {
+			line = strings.TrimSpace(line)
+			if line == "" {
+				continue
+			}
+			// Try to parse as int
+			if p, err := strconv.Atoi(line); err == nil && p > 0 {
+				port = p
+				return true
+			}
+			// Also support "WEBHOOK_SERVER_PORT:12345" style if needed, but here we used plain int
+		}
+		return false
+	}, timeout, RetryInterval, "Process %s did not output a valid port number in time.\nStdout: %s", mp.label, mp.StdoutString())
+	mp.Port = port
+	return port
 }
 
 // WaitForGRPCReady waits for a gRPC server to become ready by attempting to connect.

@@ -23,6 +23,9 @@ func TestGRPCHelperFunctions(t *testing.T) {
 		require.NoError(t, err)
 		defer proc.Stop()
 
+		if proc.Port == 0 {
+			proc.Port = proc.WaitForDynamicPort(t, integration.ServiceStartupTimeout)
+		}
 		integration.WaitForTCPPort(t, proc.Port, integration.ServiceStartupTimeout)
 
 		mcpanyTestServerInfo := integration.StartMCPANYServer(t, "grpc-weather-test")
@@ -65,6 +68,9 @@ func TestGRPCHelperFunctions(t *testing.T) {
 		require.NoError(t, err)
 		defer proc.Stop()
 
+		if proc.Port == 0 {
+			proc.Port = proc.WaitForDynamicPort(t, integration.ServiceStartupTimeout)
+		}
 		integration.WaitForTCPPort(t, proc.Port, integration.ServiceStartupTimeout)
 
 		mcpanyTestServerInfo := integration.StartMCPANYServer(t, "grpc-authed-weather-test")

@@ -101,6 +101,9 @@ func RunE2ETest(t *testing.T, testCase *E2ETestCase) {
 					err := upstreamServerProc.Start()
 					require.NoError(t, err, "Failed to start upstream server")
 					t.Cleanup(upstreamServerProc.Stop)
+					if upstreamServerProc.Port == 0 {
+						upstreamServerProc.Port = upstreamServerProc.WaitForDynamicPort(t, integration.ServiceStartupTimeout)
+					}
 					if upstreamServerProc.Port != 0 {
 						integration.WaitForTCPPort(t, upstreamServerProc.Port, integration.ServiceStartupTimeout)
 					}
@@ -177,11 +180,9 @@ func RunE2ETest(t *testing.T, testCase *E2ETestCase) {
 
 // BuildGRPCWeatherServer builds the gRPC weather server.
 func BuildGRPCWeatherServer(t *testing.T) *integration.ManagedProcess {
-	port := integration.FindFreePort(t)
 	root, err := integration.GetProjectRoot()
 	require.NoError(t, err)
-	proc := integration.NewManagedProcess(t, "grpc_weather_server", filepath.Join(root, "../build/test/bin/grpc_weather_server"), []string{fmt.Sprintf("--port=%d", port)}, nil)
-	proc.Port = port
+	proc := integration.NewManagedProcess(t, "grpc_weather_server", filepath.Join(root, "../build/test/bin/grpc_weather_server"), []string{"--port=0"}, nil)
 	return proc
 }
 
@@ -193,11 +194,9 @@ func RegisterGRPCWeatherService(t *testing.T, registrationClient apiv1.Registrat
 
 // BuildGRPCAuthedWeatherServer builds the authenticated gRPC weather server.
 func BuildGRPCAuthedWeatherServer(t *testing.T) *integration.ManagedProcess {
-	port := integration.FindFreePort(t)
 	root, err := integration.GetProjectRoot()
 	require.NoError(t, err)
-	proc := integration.NewManagedProcess(t, "grpc_authed_weather_server", filepath.Join(root, "../build/test/bin/grpc_authed_weather_server"), []string{fmt.Sprintf("--port=%d", port)}, nil)
-	proc.Port = port
+	proc := integration.NewManagedProcess(t, "grpc_authed_weather_server", filepath.Join(root, "../build/test/bin/grpc_authed_weather_server"), []string{"--port=0"}, nil)
 	return proc
 }
 
@@ -245,11 +244,9 @@ func RegisterWebsocketWeatherService(t *testing.T, registrationClient apiv1.Regi
 
 // BuildWebrtcWeatherServer builds the webrtc weather server.
 func BuildWebrtcWeatherServer(t *testing.T) *integration.ManagedProcess {
-	port := integration.FindFreePort(t)
 	root, err := integration.GetProjectRoot()
 	require.NoError(t, err)
-	proc := integration.NewManagedProcess(t, "webrtc_weather_server", filepath.Join(root, "../build/test/bin/webrtc_weather_server"), []string{fmt.Sprintf("--port=%d", port)}, nil)
-	proc.Port = port
+	proc := integration.NewManagedProcess(t, "webrtc_weather_server", filepath.Join(root, "../build/test/bin/webrtc_weather_server"), []string{"--port=0"}, nil)
 	return proc
 }
 
@@ -298,11 +295,9 @@ func RegisterStdioDockerService(t *testing.T, registrationClient apiv1.Registrat
 
 // BuildOpenAPIWeatherServer builds the openapi weather server.
 func BuildOpenAPIWeatherServer(t *testing.T) *integration.ManagedProcess {
-	port := integration.FindFreePort(t)
 	root, err := integration.GetProjectRoot()
 	require.NoError(t, err)
-	proc := integration.NewManagedProcess(t, "openapi_weather_server", filepath.Join(root, "../build/test/bin/openapi_weather_server"), []string{fmt.Sprintf("--port=%d", port)}, nil)
-	proc.Port = port
+	proc := integration.NewManagedProcess(t, "openapi_weather_server", filepath.Join(root, "../build/test/bin/openapi_weather_server"), []string{"--port=0"}, nil)
 	return proc
 }
 
@@ -329,11 +324,9 @@ func RegisterOpenAPIWeatherService(t *testing.T, registrationClient apiv1.Regist
 
 // BuildOpenAPIAuthedServer builds the openapi authenticated server.
 func BuildOpenAPIAuthedServer(t *testing.T) *integration.ManagedProcess {
-	port := integration.FindFreePort(t)
 	root, err := integration.GetProjectRoot()
 	require.NoError(t, err)
-	proc := integration.NewManagedProcess(t, "http_authed_echo_server_openapi", filepath.Join(root, "../build/test/bin/http_authed_echo_server"), []string{fmt.Sprintf("--port=%d", port)}, nil)
-	proc.Port = port
+	proc := integration.NewManagedProcess(t, "http_authed_echo_server_openapi", filepath.Join(root, "../build/test/bin/http_authed_echo_server"), []string{"--port=0"}, nil)
 	return proc
 }
 

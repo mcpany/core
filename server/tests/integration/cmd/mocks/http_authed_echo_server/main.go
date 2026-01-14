@@ -5,8 +5,10 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"io"
+	"net"
 	"net/http"
 	"os"
 	"time"
@@ -42,12 +44,22 @@ func main() {
 	})
 
 	addr := fmt.Sprintf(":%d", *port)
-	fmt.Printf("Starting mock HTTP authed echo server on %s\n", addr)
+	listener, err := (&net.ListenConfig{}).Listen(context.Background(), "tcp", addr)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Failed to listen: %v\n", err)
+		os.Exit(1)
+	}
+
+	actualPort := listener.Addr().(*net.TCPAddr).Port
+	fmt.Printf("Starting mock HTTP authed echo server on :%d\n", actualPort)
+	if *port == 0 {
+		fmt.Printf("%d\n", actualPort)
+	}
+
 	server := &http.Server{
-		Addr:              addr,
 		ReadHeaderTimeout: 3 * time.Second,
 	}
-	if err := server.ListenAndServe(); err != nil {
+	if err := server.Serve(listener); err != nil {
 		fmt.Fprintf(os.Stderr, "Failed to start server: %v\n", err)
 		os.Exit(1)
 	}
