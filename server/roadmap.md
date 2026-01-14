@@ -87,6 +87,7 @@ These features represent the next logical steps for the product, focusing on Ent
     *   **Recommendation**: Extract a `RateLimitStrategy` interface.
 
 2.  **Filesystem Upstream Monolith (`server/pkg/upstream/filesystem`)**
+    *   **Status**: ✅ Refactored (Provider Pattern Implemented).
     *   **Issue**: The logic for Local, S3, and GCS providers is often intertwined or shares too much structural code in a way that violates SRP.
     *   **Risk**: Changes to S3 support might break Local file support.
     *   **Recommendation**: Strictly separate providers into distinct packages/structs implementing a common interface.
