@@ -10,11 +10,19 @@ import (
 
 // SanitizeJSONSchema attempts to fix common schema issues that cause strict MCP clients to fail.
 // It takes a raw map[string]interface{} (or compatible) and returns a *structpb.Struct.
+// This function does NOT modify the input schema.
 func SanitizeJSONSchema(schema any) (*structpb.Struct, error) {
 	if schema == nil {
 		return nil, nil
 	}
 
+	// Deep copy schema to avoid mutation of the input
+	schemaCopy := deepCopyJSON(schema)
+
+	return sanitizeJSONSchemaInPlace(schemaCopy)
+}
+
+func sanitizeJSONSchemaInPlace(schema any) (*structpb.Struct, error) {
 	schemaMap, ok := schema.(map[string]interface{})
 	if !ok {
 		// If it's not a map, we can't really sanitize it easily, but it might be valid if it's not an object type.
@@ -36,7 +44,7 @@ func SanitizeJSONSchema(schema any) (*structpb.Struct, error) {
 		for k, v := range props {
 			if vMap, ok := v.(map[string]interface{}); ok {
 				// Recursively sanitize
-				sanitizedV, err := SanitizeJSONSchema(vMap)
+				sanitizedV, err := sanitizeJSONSchemaInPlace(vMap)
 				if err == nil && sanitizedV != nil {
 					props[k] = sanitizedV.AsMap()
 				}
@@ -56,4 +64,23 @@ func SanitizeJSONSchema(schema any) (*structpb.Struct, error) {
 
 	// Let's convert back to structpb
 	return structpb.NewStruct(schemaMap)
+}
+
+func deepCopyJSON(src any) any {
+	switch v := src.(type) {
+	case map[string]interface{}:
+		dst := make(map[string]interface{}, len(v))
+		for k, val := range v {
+			dst[k] = deepCopyJSON(val)
+		}
+		return dst
+	case []interface{}:
+		dst := make([]interface{}, len(v))
+		for i, val := range v {
+			dst[i] = deepCopyJSON(val)
+		}
+		return dst
+	default:
+		return v
+	}
 }

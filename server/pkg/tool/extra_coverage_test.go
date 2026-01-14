@@ -75,7 +75,7 @@ func TestTool_MCPTool_Method(t *testing.T) {
 		}
 		mt := NewMCPTool(
 			toolDef,
-			&MockTypesMCPClient{},
+			&MockMCPClient{}, // Fixed typo
 			&configv1.MCPCallDefinition{},
 		)
 
@@ -144,6 +144,45 @@ func TestTool_MCPTool_Method(t *testing.T) {
 		assert.NotNil(t, mcpTool)
 		assert.Equal(t, "service.webrtc-tool", mcpTool.Name)
 	})
+
+    // Test CallableTool.MCPTool() (via BaseTool)
+	t.Run("CallableTool", func(t *testing.T) {
+        toolDef := &configv1.ToolDefinition{
+            Name: proto.String("callable-tool"),
+            ServiceId: proto.String("service"),
+        }
+        ct, err := NewCallableTool(
+            toolDef,
+            &configv1.UpstreamServiceConfig{},
+            nil, // Callable
+            nil,
+            nil,
+        )
+        assert.NoError(t, err)
+
+        mcpTool := ct.MCPTool()
+        assert.NotNil(t, mcpTool)
+        assert.Equal(t, "service.callable-tool", mcpTool.Name)
+    })
+
+    // Test WebsocketTool.MCPTool()
+    t.Run("WebsocketTool", func(t *testing.T) {
+        toolDef := &pb.Tool{
+            Name:      proto.String("websocket-tool"),
+            ServiceId: proto.String("service"),
+        }
+        wst := NewWebsocketTool(
+            toolDef,
+            nil,
+            "service-id",
+            nil,
+            &configv1.WebsocketCallDefinition{},
+        )
+
+        mcpTool := wst.MCPTool()
+        assert.NotNil(t, mcpTool)
+        assert.Equal(t, "service.websocket-tool", mcpTool.Name)
+    })
 }
 
 func TestTool_GetCacheConfig(t *testing.T) {
