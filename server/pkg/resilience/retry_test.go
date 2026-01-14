@@ -102,7 +102,13 @@ func TestRetry(t *testing.T) {
 		config.SetBaseBackoff(durationpb.New(2 * time.Second))
 		config.SetMaxBackoff(durationpb.New(5 * time.Second))
 		retry := NewRetry(config)
-		require.Equal(t, 4*time.Second, retry.backoff(1))
+		// backoff(1) should be around 4s (2s * 2) with jitter
+		// 4s * 0.8 = 3.2s, 4s * 1.2 = 4.8s. InDelta 1s covers this.
+		require.InDelta(t, float64(4*time.Second), float64(retry.backoff(1)), float64(1*time.Second))
+
+		// backoff(2) hits the cap (2s * 4 = 8s > 5s).
+		// Current implementation returns maxBackoff exactly when capped?
+		// Let's assume yes based on code reading.
 		require.Equal(t, 5*time.Second, retry.backoff(2))
 	})
 

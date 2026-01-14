@@ -25,6 +25,9 @@ import {
   ResizablePanelGroup,
 } from "@/components/ui/resizable"
 
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
+
 import { ToolForm } from "@/components/playground/tool-form";
 import { ToolSidebar } from "./tool-sidebar";
 import { ChatMessage, Message } from "./chat-message";
@@ -71,6 +74,7 @@ export function PlaygroundClientPro() {
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const isMobile = useIsMobile();
+  const [isDryRun, setIsDryRun] = useState(false);
 
   // Autocomplete state
   const [filteredSuggestions, setFilteredSuggestions] = useState<ToolDefinition[]>([]);
@@ -176,7 +180,7 @@ export function PlaygroundClientPro() {
           const result = await apiClient.executeTool({
               name: toolName,
               arguments: toolArgs
-          });
+          }, isDryRun);
 
           setMessages(prev => [...prev, {
               id: Date.now().toString() + "-result",
@@ -312,8 +316,14 @@ export function PlaygroundClientPro() {
                             </div>
                          </div>
                     </div>
-                     <div className="max-w-4xl mx-auto mt-2 flex justify-between text-[10px] text-muted-foreground px-1">
-                        <span>Format: <code className="bg-muted px-1 rounded text-primary">tool_name {"{json_args}"}</code></span>
+                     <div className="max-w-4xl mx-auto mt-2 flex justify-between items-center text-[10px] text-muted-foreground px-1">
+                        <div className="flex items-center gap-4">
+                            <span>Format: <code className="bg-muted px-1 rounded text-primary">tool_name {"{json_args}"}</code></span>
+                            <div className="flex items-center gap-1.5">
+                                <Switch id="console-dry-run" checked={isDryRun} onCheckedChange={setIsDryRun} className="scale-75 origin-left" />
+                                <Label htmlFor="console-dry-run" className="cursor-pointer">Dry Run</Label>
+                            </div>
+                        </div>
                         <span className="hidden sm:inline">Press Enter to execute</span>
                     </div>
                 </div>

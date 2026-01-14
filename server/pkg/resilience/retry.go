@@ -9,6 +9,7 @@ import (
 	"time"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
+	"github.com/mcpany/core/server/pkg/util"
 	"google.golang.org/protobuf/types/known/durationpb"
 )
 
@@ -105,5 +106,26 @@ func (r *Retry) backoff(attempt int) time.Duration {
 	}
 
 	backoff := base * time.Duration(factor)
-	return backoff
+
+	// Add jitter (±20%)
+	// Use float arithmetic for simplicity, or integer math to avoid issues.
+	// We'll use a simple approach: randomize between 0.8 * backoff and 1.2 * backoff.
+	// Or just "Full Jitter": random(0, backoff).
+	// But commonly we want to stay close to exponential.
+	// Let's do ±20% jitter.
+	// Note: rand.Float64() is global in math/rand for 1.20+ (seeded automatically in recent Go versions? No, need Seed).
+	// But math/rand/v2 is 1.22.
+	// We'll assume we can use math/rand with shared source or just time.
+	// better: backoff = backoff + random(0, backoff/2) to always increase?
+	// or just +/-.
+
+	// Implementation:
+	// We avoid global rand issues by using a local source or crypto/rand if needed, but for backoff math/rand is fine.
+	// However, we don't want to init rand source every time.
+	// We'll trust global rand is seeded or acceptable for jitter.
+	// Actually, relying on global rand without Seed might be deterministic.
+	// Go 1.20+ seeds global rand automatically.
+
+	jitter := time.Duration(float64(backoff) * (0.8 + 0.4*util.RandomFloat64()))
+	return jitter
 }

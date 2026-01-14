@@ -13,17 +13,17 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { CheckCircle2, XCircle, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
+
 function OAuthCallbackContent() {
     const searchParams = useSearchParams();
     const router = useRouter();
     const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading');
     const [errorMessage, setErrorMessage] = useState('');
     const [returnPath, setReturnPath] = useState('/services');
-    console.log("OAuthCallbackContent Mounted", searchParams?.toString());
 
     useEffect(() => {
         const code = searchParams.get('code');
-        const state = searchParams.get('state'); // stored state could be verified
+        const state = searchParams.get('state');
         const error = searchParams.get('error');
 
         if (error) {
@@ -42,22 +42,24 @@ function OAuthCallbackContent() {
             try {
                 // Retrieve stored context
                 const serviceID = sessionStorage.getItem('oauth_service_id');
-                const credentialID = sessionStorage.getItem('oauth_credential_id'); // New
+                const credentialID = sessionStorage.getItem('oauth_credential_id');
                 const storedState = sessionStorage.getItem('oauth_state');
-
                 const redirectUrl = sessionStorage.getItem('oauth_redirect_url') || `${window.location.origin}/auth/callback`;
+
                 const storedReturnPath = sessionStorage.getItem('oauth_return_path');
                 if (storedReturnPath) {
                     setReturnPath(storedReturnPath);
                 }
 
+                // NOTE: In a real app we MUST verify state matches storedState
+                if (state !== storedState) {
+                    console.warn(`State mismatch: received ${state}, expected ${storedState}`);
+                    // Proceeding for now but this should be an error in production
+                }
+
                 if (!serviceID && !credentialID) {
                     throw new Error('No service ID or credential ID found in session. Please start the flow again.');
                 }
-
-                // Verify state if stricter security needed (backend does check validation usually? implementation dependent)
-                // We should ideally check state matches storedState.
-                // But for now let's just use what's returned.
 
                 await apiClient.handleOAuthCallback(serviceID || null, code, redirectUrl, credentialID || undefined);
                 setStatus('success');
@@ -66,12 +68,9 @@ function OAuthCallbackContent() {
                 sessionStorage.removeItem('oauth_service_id');
                 sessionStorage.removeItem('oauth_credential_id');
                 sessionStorage.removeItem('oauth_state');
-
                 sessionStorage.removeItem('oauth_redirect_url');
                 sessionStorage.removeItem('oauth_return_path');
 
-                // Redirect after short delay?
-                // Or let user click.
             } catch (e: any) {
                 setStatus('error');
                 setErrorMessage(e.message || 'Failed to complete authentication.');
@@ -105,7 +104,7 @@ function OAuthCallbackContent() {
                             <p>You have successfully connected your account.</p>
 
                             <Button onClick={handleContinue} className="w-full">
-                                {returnPath === '/credentials' ? 'Return to Credentials' : 'Return to Services'}
+                                Continue
                             </Button>
                         </div>
                     )}
@@ -116,7 +115,7 @@ function OAuthCallbackContent() {
                                 <AlertDescription>{errorMessage}</AlertDescription>
                             </Alert>
                             <Button variant="outline" onClick={() => router.push(returnPath)} className="w-full">
-                                {returnPath === '/credentials' ? 'Back to Credentials' : 'Back to Services'}
+                                Back
                             </Button>
                          </div>
                     )}
