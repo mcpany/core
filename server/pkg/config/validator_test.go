@@ -899,6 +899,23 @@ func TestValidate_ExtraServices(t *testing.T) {
 			expectedErrorCount:  1,
 			expectedErrorString: `service "service-1": duplicate service name found`,
 		},
+		{
+			name: "invalid upstream service - empty name",
+			config: func() *configv1.McpAnyServerConfig {
+				cfg := &configv1.McpAnyServerConfig{}
+				require.NoError(t, protojson.Unmarshal([]byte(`{
+					"upstream_services": [
+						{
+							"name": "",
+							"http_service": { "address": "http://example.com/empty-name" }
+						}
+					]
+				}`), cfg))
+				return cfg
+			}(),
+			expectedErrorCount:  1,
+			expectedErrorString: `service "": service name is empty`,
+		},
 	}
 
 	for _, tt := range tests {
