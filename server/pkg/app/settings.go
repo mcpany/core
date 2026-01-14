@@ -54,7 +54,8 @@ func (m *GlobalSettingsManager) Update(settings *config_v1.GlobalSettings, expli
 	// Origins logic from server.go
 	var origins []string
 	if settings != nil {
-		if settings.GetLogLevel() == config_v1.GlobalSettings_LOG_LEVEL_DEBUG {
+		origins = settings.GetAllowedOrigins()
+		if len(origins) == 0 && settings.GetLogLevel() == config_v1.GlobalSettings_LOG_LEVEL_DEBUG {
 			origins = []string{"*"}
 		}
 	}
