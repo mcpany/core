@@ -62,7 +62,9 @@ func (t *StdioTransport) Connect(_ context.Context) (mcp.Connection, error) {
 
 	go func() {
 		defer conn.wg.Done()
-		_, _ = io.Copy(multiStderr, stderr)
+		if _, err := io.Copy(multiStderr, stderr); err != nil && err != io.EOF {
+			log.Error("Failed to copy stderr", "error", err)
+		}
 	}()
 
 	if err := t.Command.Start(); err != nil {
