@@ -5,6 +5,7 @@ package config
 
 import (
 	"context"
+	"encoding/csv"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -522,7 +523,13 @@ func resolveEnvValue(root proto.Message, path []string, value string) interface{
 
 			if fd.IsList() {
 				// Repeated field: split by comma
-				parts := strings.Split(value, ",")
+				r := csv.NewReader(strings.NewReader(value))
+				r.TrimLeadingSpace = true
+				parts, err := r.Read()
+				if err != nil {
+					// Fallback to simple split if CSV parsing fails
+					parts = strings.Split(value, ",")
+				}
 				var list []interface{}
 				for _, part := range parts {
 					part = strings.TrimSpace(part)
