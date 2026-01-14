@@ -15,6 +15,9 @@ test.describe('Service Configuration Editor', () => {
     await page.getByRole('button', { name: 'Add Service' }).click();
     await expect(page.getByText('New Service')).toBeVisible();
 
+    // Select Custom Service template
+    await page.getByText('Custom Service').click();
+
     // Switch to Connection tab
     await page.getByRole('tab', { name: 'Connection' }).click();
 
