@@ -160,7 +160,10 @@ test.describe('MCP Any Audit Screenshots', () => {
 
   test('Capture Prompts', async ({ page }) => {
      await page.goto('/prompts');
-     await verifyPageLoad(page, 'Prompts');
+     // Prompts page uses H3 for "Prompt Library" or H3 for "No Prompt Selected"
+     // verifyPageLoad hardcodes H2, so we check manually.
+     const heading = page.getByRole('heading', { name: 'Prompt Library', level: 3 });
+     await expect(heading).toBeVisible({ timeout: 30000 });
      await page.waitForTimeout(1000);
      await page.screenshot({ path: path.join(auditDir, 'prompts.png'), fullPage: true });
   });
