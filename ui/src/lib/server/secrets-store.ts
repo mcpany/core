@@ -9,9 +9,13 @@ import crypto from 'crypto';
 // In production this would interact with the backend service via gRPC or DB
 
 // 🚨 SECURITY NOTICE:
-// This is a MOCK store using a hardcoded key for demonstration purposes.
-// In a real production environment, NEVER hardcode keys. Use a KMS or Vault.
-const MOCK_ENCRYPTION_KEY = crypto.scryptSync('mcp-any-mock-secret', 'salt', 32);
+// This is a MOCK store. We use a random key for the session to ensure
+// secrets are encrypted in memory, but they are lost on restart.
+// In a real production environment, use a KMS or Vault.
+const MOCK_ENCRYPTION_KEY = process.env.MOCK_ENCRYPTION_KEY
+    ? crypto.scryptSync(process.env.MOCK_ENCRYPTION_KEY, 'salt', 32)
+    : crypto.randomBytes(32);
+
 const ALGORITHM = 'aes-256-gcm';
 
 interface Secret {
