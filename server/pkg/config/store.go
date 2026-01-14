@@ -103,6 +103,12 @@ func (e *yamlEngine) Unmarshal(b []byte, v proto.Message) error {
 			//nolint:staticcheck // This error message is user facing and needs to be descriptive
 			return fmt.Errorf("%w\n\nDid you mean \"upstream_services\"? It looks like you might be using a Claude Desktop configuration format. MCP Any uses a different configuration structure. See documentation for details.", err)
 		}
+
+		// Detect invalid use of service_config wrapper (common mistake due to old docs)
+		if strings.Contains(err.Error(), "unknown field \"service_config\"") {
+			// revive:disable-next-line:error-strings // This error message is user facing and needs to be descriptive
+			return fmt.Errorf("%w\n\nIt looks like you are using 'service_config' as a wrapper key. In MCP Any configuration, you should place the service type (e.g., 'http_service', 'grpc_service') directly under the service definition, without a 'service_config' wrapper.", err)
+		}
 		return err
 	}
 	// Debug logging to inspect unmarshaled user
