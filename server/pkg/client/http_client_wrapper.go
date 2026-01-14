@@ -45,12 +45,12 @@ func (w *HTTPClientWrapper) IsHealthy(ctx context.Context) bool {
 	return w.checker.Check(ctx).Status == health.StatusUp
 }
 
-// Close closes any idle connections associated with the client.
+// Close is a no-op for the wrapper as it does not own the http.Client.
+// The owner of the http.Client (e.g., the pool manager) is responsible for closing idle connections
+// on the shared Transport when the service is shut down.
+//
+// Previously, this called CloseIdleConnections on the shared transport, which would negatively
+// impact other concurrent requests sharing the same Transport.
 func (w *HTTPClientWrapper) Close() error {
-	if w.Client != nil {
-		if t, ok := w.Transport.(interface{ CloseIdleConnections() }); ok {
-			t.CloseIdleConnections()
-		}
-	}
 	return nil
 }
