@@ -57,8 +57,8 @@ func resolveSecretRecursive(ctx context.Context, secret *configv1.SecretValue, d
 		return strings.TrimSpace(secret.GetPlainText()), nil
 	case configv1.SecretValue_EnvironmentVariable_case:
 		envVar := secret.GetEnvironmentVariable()
-		value := os.Getenv(envVar)
-		if value == "" {
+		value, ok := os.LookupEnv(envVar)
+		if !ok {
 			return "", fmt.Errorf("environment variable %q is not set", envVar)
 		}
 		return strings.TrimSpace(value), nil

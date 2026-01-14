@@ -537,3 +537,10 @@ func TestReplaceURLQuery(t *testing.T) {
 		})
 	}
 }
+
+func TestRandomFloat64(t *testing.T) {
+	val := RandomFloat64()
+	if val < 0.0 || val >= 1.0 {
+		t.Errorf("RandomFloat64() = %v, want [0.0, 1.0)", val)
+	}
+}
