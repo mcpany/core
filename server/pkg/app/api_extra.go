@@ -33,7 +33,7 @@ func (a *Application) handleResourceRead() http.HandlerFunc {
 		result, err := res.Read(r.Context())
 		if err != nil {
 			logging.GetLogger().Error("failed to read resource", "uri", uri, "error", err)
-			http.Error(w, err.Error(), http.StatusInternalServerError)
+			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 			return
 		}
 
@@ -81,7 +81,7 @@ func (a *Application) handlePromptExecute() http.HandlerFunc {
 		result, err := prompt.Get(r.Context(), json.RawMessage(body))
 		if err != nil {
 			logging.GetLogger().Error("failed to execute prompt", "name", name, "error", err)
-			http.Error(w, err.Error(), http.StatusInternalServerError)
+			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 			return
 		}
 
