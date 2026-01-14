@@ -249,8 +249,8 @@ func checkPotentialMatch(input []byte, matchStart int, startChar byte, validateK
 				// Special handling for uppercase keys (e.g. "AUTH" in "AUTHORITY")
 				// If the matched key was uppercase, and the next char is uppercase, it's a continuation.
 			// However, if the matched key was lowercase (e.g. "auth" in "authToken") or mixed case (e.g. "Auth" in "AuthId"), it's CamelCase/PascalCase (boundary).
-				if next >= 'A' && next <= 'Z' {
-					// Check if the matched key was uppercase.
+			if next >= 'A' && next <= 'Z' {
+				// Check if the matched key was uppercase.
 				// We must check the WHOLE matched key.
 				isAllUpper := true
 				end := matchStart + len(key)
@@ -261,9 +261,9 @@ func checkPotentialMatch(input []byte, matchStart int, startChar byte, validateK
 					}
 				}
 				if isAllUpper {
-						continue
-					}
+					continue
 				}
+			}
 			}
 
 			if !validateKeyContext {
