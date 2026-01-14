@@ -6,20 +6,38 @@
 import { UpstreamServiceConfig } from "@/lib/types";
 import { Database, FileText, Github, Globe, Server, Terminal } from "lucide-react";
 
+/**
+ * A template for creating a new service configuration.
+ */
 export interface ServiceTemplate {
+  /** Unique identifier for the template. */
   id: string;
+  /** Display name of the template. */
   name: string;
+  /** Description of what the template provides. */
   description: string;
+  /** Icon component for the template. */
   icon: any; // Lucide icon component
+  /** Partial configuration provided by the template. */
   config: Partial<UpstreamServiceConfig>;
+  /**
+   * Optional list of fields that need to be filled in by the user.
+   */
   fields?: {
+    /** The name of the field. */
     name: string;
+    /** The label to display for the field. */
     label: string;
+    /** Placeholder text for the input. */
     placeholder: string;
-    key: string; // Key path in config object (e.g. "httpService.address")
+    /** Key path in the config object where the value should be set (e.g. "httpService.address"). */
+    key: string;
   }[];
 }
 
+/**
+ * A list of built-in service templates.
+ */
 export const SERVICE_TEMPLATES: ServiceTemplate[] = [
   {
     id: "empty",

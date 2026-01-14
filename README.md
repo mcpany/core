@@ -246,6 +246,27 @@ The project is organized as follows:
 - **`proto/`**: Protocol Buffer definitions for configuration and internal APIs.
 - **`server/examples/`**: Example configuration files and demo services.
 - **`server/docs/`**: Detailed documentation and guides.
+- **`ui/`**: The web-based management dashboard (Next.js/React).
+
+### UI Development
+
+To work on the frontend dashboard:
+
+1.  **Navigate to the UI directory:**
+    ```bash
+    cd ui
+    ```
+2.  **Install dependencies:**
+    ```bash
+    npm install
+    ```
+3.  **Run the development server:**
+    ```bash
+    npm run dev
+    ```
+    The UI will be available at http://localhost:9002.
+
+For more details, see the [UI README](ui/README.md).
 
 ### Code Standards
 
