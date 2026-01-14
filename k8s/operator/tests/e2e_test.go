@@ -312,15 +312,22 @@ func waitForPort(t *testing.T, ctx context.Context, addr string, timeout time.Du
 }
 
 func getFreePort() (int, error) {
-	addr, err := net.ResolveTCPAddr("tcp", ":0")
-	if err != nil {
-		return 0, err
-	}
+	var lastErr error
+	for i := 0; i < 5; i++ {
+		addr, err := net.ResolveTCPAddr("tcp", "localhost:0")
+		if err != nil {
+			lastErr = err
+			continue
+		}
 
-	l, err := net.ListenTCP("tcp", addr)
-	if err != nil {
-		return 0, err
+		l, err := net.ListenTCP("tcp", addr)
+		if err != nil {
+			lastErr = err
+			time.Sleep(100 * time.Millisecond)
+			continue
+		}
+		defer l.Close()
+		return l.Addr().(*net.TCPAddr).Port, nil
 	}
-	defer l.Close()
-	return l.Addr().(*net.TCPAddr).Port, nil
+	return 0, fmt.Errorf("failed to get free port after 5 retries: %v", lastErr)
 }
