@@ -164,6 +164,12 @@ func (s *Store) Close() error {
 	return nil
 }
 
+// HasConfigSources returns true if the store has configuration sources (e.g., file paths) configured.
+// Memory store always has data available.
+func (s *Store) HasConfigSources() bool {
+	return true
+}
+
 // GetGlobalSettings retrieves the global configuration.
 func (s *Store) GetGlobalSettings(_ context.Context) (*configv1.GlobalSettings, error) {
 	s.mu.RLock()
