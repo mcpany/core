@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"net/http"
 	"strings"
+	"sync"
 
 	"github.com/gin-gonic/gin"
 	jsoniter "github.com/json-iterator/go"
@@ -26,14 +27,35 @@ func NewContextOptimizer(maxChars int) *ContextOptimizer {
 	}
 }
 
+var bufferPool = sync.Pool{
+	New: func() any {
+		return &responseBuffer{
+			body: &bytes.Buffer{},
+		}
+	},
+}
+
 // Middleware returns the middleware handler.
 func (co *ContextOptimizer) Middleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		w := &responseBuffer{
-			ResponseWriter: c.Writer,
-			body:           &bytes.Buffer{},
-		}
+		w := bufferPool.Get().(*responseBuffer)
+		w.ResponseWriter = c.Writer
+		w.body.Reset()
+		w.checked = false
+		w.shouldBuffer = false
+
+		originalWriter := c.Writer
 		c.Writer = w
+
+		defer func() {
+			c.Writer = originalWriter
+			w.ResponseWriter = nil // Avoid holding reference
+			// If buffer is too large (>1MB), replace it with a new one to release memory
+			if w.body.Cap() > 1024*1024 {
+				w.body = &bytes.Buffer{}
+			}
+			bufferPool.Put(w)
+		}()
 
 		c.Next()
 
@@ -116,27 +138,25 @@ func (co *ContextOptimizer) Middleware() gin.HandlerFunc {
 type responseBuffer struct {
 	gin.ResponseWriter
 	body         *bytes.Buffer
-	shouldBuffer *bool
+	shouldBuffer bool
+	checked      bool
 }
 
 func (w *responseBuffer) isBuffering() bool {
 	// If explicitly set to false, then false.
-	if w.shouldBuffer != nil && !*w.shouldBuffer {
+	if w.checked && !w.shouldBuffer {
 		return false
 	}
 	// If true or nil (default), we assume buffering for now, OR we haven't written yet.
-	// But if we haven't written yet, body is empty, so Middleware will write empty body which is fine.
-	// However, if we return true here, Middleware will try to write w.body.Bytes().
-	// If we haven't written anything, w.body is empty.
 	return true
 }
 
 func (w *responseBuffer) checkBuffer() {
-	if w.shouldBuffer == nil {
+	if !w.checked {
 		ct := w.Header().Get("Content-Type")
 		// We only buffer application/json.
-		should := ct == "application/json" || strings.HasPrefix(ct, "application/json;")
-		w.shouldBuffer = &should
+		w.shouldBuffer = ct == "application/json" || strings.HasPrefix(ct, "application/json;")
+		w.checked = true
 	}
 }
 
@@ -144,7 +164,7 @@ func (w *responseBuffer) checkBuffer() {
 func (w *responseBuffer) Write(b []byte) (int, error) {
 	w.checkBuffer()
 
-	if *w.shouldBuffer {
+	if w.shouldBuffer {
 		return w.body.Write(b)
 	}
 	return w.ResponseWriter.Write(b)
@@ -154,7 +174,7 @@ func (w *responseBuffer) Write(b []byte) (int, error) {
 func (w *responseBuffer) WriteString(s string) (int, error) {
 	w.checkBuffer()
 
-	if *w.shouldBuffer {
+	if w.shouldBuffer {
 		return w.body.WriteString(s)
 	}
 	return w.ResponseWriter.WriteString(s)
