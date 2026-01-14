@@ -380,14 +380,19 @@ func (m *CachingMiddleware) getCacheKey(req *tool.ExecutionRequest) string {
 	var hashBuf [16]byte
 	hashBytes := h.Sum(hashBuf[:0])
 
-	// Pre-allocate buffer: len(toolName) + 1 (separator) + 32 (hex hash)
-	// This reduces allocations compared to fmt.Sprintf and hex.EncodeToString
-	buf := make([]byte, len(req.ToolName)+1+hex.EncodedLen(len(hashBytes)))
-	n := copy(buf, req.ToolName)
-	buf[n] = ':'
-	hex.Encode(buf[n+1:], hashBytes)
+	// Optimization: Use strings.Builder to build the key to avoid one allocation (string conversion)
+	// and use stack buffer for hex encoding.
+	var sb strings.Builder
+	// 32 is hex encoded length of 16 bytes
+	sb.Grow(len(req.ToolName) + 1 + 32)
+	sb.WriteString(req.ToolName)
+	sb.WriteByte(':')
 
-	return string(buf)
+	var hexBuf [32]byte
+	encodedLen := hex.Encode(hexBuf[:], hashBytes)
+	sb.Write(hexBuf[:encodedLen])
+
+	return sb.String()
 }
 
 // Clear clears the cache.
