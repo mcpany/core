@@ -338,7 +338,7 @@ func TestHTTPTool_Execute_Errors(t *testing.T) {
 		req := &tool.ExecutionRequest{}
 		_, err := httpTool.Execute(context.Background(), req)
 		require.Error(t, err)
-		assert.Contains(t, err.Error(), "failed to create output template")
+		assert.Contains(t, err.Error(), "failed to parse output template")
 	})
 
 	t.Run("input_transformation_render_error", func(t *testing.T) {
