@@ -231,6 +231,128 @@ func TestValidateMcpStdioConnection_RelativeCommandMissing(t *testing.T) {
 	// Since it's missing in WD, it falls through to LookPath, which fails finding it in PATH/CWD.
 }
 
+func TestValidateMcpStdioConnection_ArgsValidation(t *testing.T) {
+	// Create a temporary directory
+	tempDir, err := os.MkdirTemp(".", "mcpany-test-args")
+	require.NoError(t, err)
+	defer os.RemoveAll(tempDir)
+
+	// Create a valid script
+	scriptPath := filepath.Join(tempDir, "script.py")
+	err = os.WriteFile(scriptPath, []byte("print('hello')"), 0644)
+	require.NoError(t, err)
+
+	tests := []struct {
+		name        string
+		command     string
+		args        []string
+		workingDir  string
+		expectError bool
+	}{
+		{
+			name:        "Valid script arg (Python)",
+			command:     "python3",
+			args:        []string{scriptPath},
+			expectError: false,
+		},
+		{
+			name:        "Missing script arg (Python)",
+			command:     "python3",
+			args:        []string{filepath.Join(tempDir, "missing.py")},
+			expectError: true,
+		},
+		{
+			name:        "Valid script arg with flag (Python)",
+			command:     "python3",
+			args:        []string{"-u", scriptPath},
+			expectError: false,
+		},
+		{
+			name:        "Missing script arg with flag (Python)",
+			command:     "python3",
+			args:        []string{"-u", filepath.Join(tempDir, "missing.py")},
+			expectError: true,
+		},
+		{
+			name:        "Non-interpreter command (ignored)",
+			command:     "ls",
+			args:        []string{"non_existent_file.txt"}, // ls might complain at runtime, but validation ignores it
+			expectError: false,
+		},
+		{
+			name:        "Relative script in WorkingDir",
+			command:     "python3",
+			args:        []string{"script.py"},
+			workingDir:  tempDir,
+			expectError: false,
+		},
+		{
+			name:        "Relative missing script in WorkingDir",
+			command:     "python3",
+			args:        []string{"missing.py"},
+			workingDir:  tempDir,
+			expectError: true,
+		},
+		{
+			name:        "Python -m module execution",
+			command:     "python3",
+			args:        []string{"-m", "http.server"}, // http.server looks like a file but -m should skip validation
+			expectError: false,
+		},
+		{
+			name:        "Deno remote script",
+			command:     "deno",
+			args:        []string{"run", "https://deno.land/std/examples/chat/server.ts"},
+			expectError: false,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			config := &configv1.McpAnyServerConfig{
+				UpstreamServices: []*configv1.UpstreamServiceConfig{
+					{
+						Name: proto.String("test-service"),
+						ServiceConfig: &configv1.UpstreamServiceConfig_McpService{
+							McpService: &configv1.McpUpstreamService{
+								ConnectionType: &configv1.McpUpstreamService_StdioConnection{
+									StdioConnection: &configv1.McpStdioConnection{
+										Command:          proto.String(tt.command),
+										Args:             tt.args,
+										WorkingDirectory: proto.String(tt.workingDir),
+									},
+								},
+							},
+						},
+					},
+				},
+			}
+
+			// We need to mock execLookPath to allow "python3" to pass command validation
+			oldLookPath := execLookPath
+			defer func() { execLookPath = oldLookPath }()
+			execLookPath = func(file string) (string, error) {
+				return "/usr/bin/" + file, nil
+			}
+
+			// We need to mock osStat to call real os.Stat for the tempDir files
+			// But other tests mock it globally!
+			// We can restore it after this test block, or use a local override if the tested code uses the global variable.
+			// The tested code uses the global `osStat` variable.
+			oldOsStat := osStat
+			defer func() { osStat = oldOsStat }()
+			osStat = os.Stat
+
+			errors := Validate(context.Background(), config, Server)
+			if tt.expectError {
+				assert.NotEmpty(t, errors, "Expected validation error")
+			} else {
+				assert.Empty(t, errors, "Expected no validation error")
+			}
+		})
+	}
+}
+
 func TestValidateSecretMap(t *testing.T) {
 	// Mock FileExists
 	oldFileExists := validation.FileExists
@@ -749,7 +871,7 @@ func TestValidate_ExtraServices(t *testing.T) {
 				return cfg
 			}(),
 			expectedErrorCount:  1,
-			expectedErrorString: `service "graphql-bad-scheme": invalid graphql target_address scheme: ftp`,
+			expectedErrorString: `service "graphql-bad-scheme": invalid graphql address scheme: ftp`,
 		},
 		{
 			name: "valid webrtc service",
@@ -787,7 +909,7 @@ func TestValidate_ExtraServices(t *testing.T) {
 				return cfg
 			}(),
 			expectedErrorCount:  1,
-			expectedErrorString: `service "webrtc-bad-scheme": invalid webrtc target_address scheme: ftp`,
+			expectedErrorString: `service "webrtc-bad-scheme": invalid webrtc address scheme: ftp`,
 		},
 		{
 			name: "valid upstream service collection",

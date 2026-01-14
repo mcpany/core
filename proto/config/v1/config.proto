@@ -111,6 +111,8 @@ message GlobalSettings {
   bool use_sudo_for_docker = 21 [json_name = "use_sudo_for_docker"];
   // Allowed file paths for validation.
   repeated string allowed_file_paths = 22 [json_name = "allowed_file_paths"];
+  // Allowed origins for CORS.
+  repeated string allowed_origins = 23 [json_name = "allowed_origins"];
 }
 
 message TelemetryConfig {

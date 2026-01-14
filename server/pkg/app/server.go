@@ -301,7 +301,7 @@ func (a *Application) Run(
 
 	var stores []config.Store
 	if len(configPaths) > 0 {
-		// Strict validation: Use NewFileStore to fail fast on invalid config files
+		// Use strict FileStore to fail fast on configuration errors (Track 1: Friction Fighter)
 		stores = append(stores, config.NewFileStore(fs, configPaths))
 	}
 	stores = append(stores, storageStore)
@@ -518,7 +518,7 @@ func (a *Application) Run(
 
 	// Initialize standard middlewares in registry
 	cachingMiddleware := middleware.NewCachingMiddleware(a.ToolManager)
-	standardMiddlewares, err := middleware.InitStandardMiddlewares(mcpSrv.AuthManager(), a.ToolManager, cfg.GetGlobalSettings().GetAudit(), cachingMiddleware, cfg.GetGlobalSettings().GetRateLimit())
+	standardMiddlewares, err := middleware.InitStandardMiddlewares(mcpSrv.AuthManager(), a.ToolManager, cfg.GetGlobalSettings().GetAudit(), cachingMiddleware, cfg.GetGlobalSettings().GetRateLimit(), cfg.GetGlobalSettings().GetDlp())
 	if err != nil {
 		workerCancel()
 		upstreamWorker.Stop()
@@ -543,6 +543,7 @@ func (a *Application) Run(
 			{Name: proto.String(authMiddlewareName), Priority: proto.Int32(20)},
 			{Name: proto.String("logging"), Priority: proto.Int32(30)},
 			{Name: proto.String("audit"), Priority: proto.Int32(40)},
+			{Name: proto.String("dlp"), Priority: proto.Int32(42)},
 			{Name: proto.String("global_ratelimit"), Priority: proto.Int32(45)},
 			{Name: proto.String("call_policy"), Priority: proto.Int32(50)},
 			{Name: proto.String("caching"), Priority: proto.Int32(60)},
@@ -582,6 +583,7 @@ func (a *Application) Run(
 
 	chain := middleware.GetMCPMiddlewares(middlewares)
 	for _, m := range chain {
+		logging.GetLogger().Info("Adding middleware", "count", len(chain))
 		mcpSrv.Server().AddReceivingMiddleware(m)
 	}
 

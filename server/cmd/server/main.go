@@ -18,9 +18,11 @@ import (
 	"github.com/mcpany/core/server/pkg/app"
 	"github.com/mcpany/core/server/pkg/appconsts"
 	"github.com/mcpany/core/server/pkg/config"
+	"github.com/mcpany/core/server/pkg/lint"
 	"github.com/mcpany/core/server/pkg/logging"
 	"github.com/mcpany/core/server/pkg/metrics"
 	"github.com/mcpany/core/server/pkg/update"
+	"github.com/joho/godotenv"
 	"github.com/spf13/afero"
 	"github.com/spf13/cobra"
 	"golang.org/x/oauth2"
@@ -31,6 +33,33 @@ var (
 	Version              = "dev"
 	appRunner app.Runner = app.NewApplication()
 )
+
+// loadEnv loads environment variables from a .env file.
+// It checks for the --env-file flag and loads the specified file.
+// If no flag is provided, it attempts to load .env from the current directory.
+// If the default .env exists but fails to parse, an error is returned.
+func loadEnv(cmd *cobra.Command) error {
+	envFile, _ := cmd.Flags().GetString("env-file")
+	if envFile != "" {
+		if err := godotenv.Load(envFile); err != nil {
+			return fmt.Errorf("failed to load env file %q: %w", envFile, err)
+		}
+		return nil
+	}
+
+	// Try loading default .env
+	// We check for existence first to avoid silence on parse errors for an existing file
+	if _, err := os.Stat(".env"); err == nil {
+		if err := godotenv.Load(); err != nil {
+			return fmt.Errorf("failed to parse .env file: %w", err)
+		}
+	} else if !os.IsNotExist(err) {
+		// Return error if stat failed for reason other than not exist (e.g. permission)
+		return fmt.Errorf("failed to check for .env file: %w", err)
+	}
+
+	return nil
+}
 
 // newRootCmd creates and configures the main command for the application.
 // It sets up the command-line flags for configuring the server, such as ports,
@@ -50,7 +79,14 @@ func newRootCmd() *cobra.Command { //nolint:gocyclo // Main entry point, expecte
 	rootCmd := &cobra.Command{
 		Use:   appconsts.Name,
 		Short: "MCP Any is a versatile proxy for backend services.",
+		// We use PersistentPreRunE to load the .env file before any command runs.
+		// Note: Cobra's OnInitialize is not used here, so this is safe.
+		// If OnInitialize were used, we would need to ensure godotenv is loaded before Viper reads env vars.
+		PersistentPreRunE: func(cmd *cobra.Command, _ []string) error {
+			return loadEnv(cmd)
+		},
 	}
+	rootCmd.PersistentFlags().String("env-file", "", "Path to .env file to load environment variables from")
 
 	runCmd := &cobra.Command{
 		Use:   "run",
@@ -318,6 +354,48 @@ func newRootCmd() *cobra.Command { //nolint:gocyclo // Main entry point, expecte
 		},
 	}
 	configCmd.AddCommand(validateCmd)
+
+	lintCmd := &cobra.Command{
+		Use:   "lint",
+		Short: "Lint the configuration file for best practices and security issues",
+		RunE: func(cmd *cobra.Command, _ []string) error {
+			osFs := afero.NewOsFs()
+			cfg := config.GlobalSettings()
+			if err := cfg.Load(cmd, osFs); err != nil {
+				return fmt.Errorf("configuration load failed: %w", err)
+			}
+			store := config.NewFileStore(osFs, cfg.ConfigPaths())
+			configs, err := config.LoadResolvedConfig(context.Background(), store)
+			if err != nil {
+				return fmt.Errorf("failed to load configurations for linting: %w", err)
+			}
+
+			linter := lint.NewLinter(configs)
+			results, err := linter.Run(context.Background())
+			if err != nil {
+				return fmt.Errorf("linting failed: %w", err)
+			}
+
+			if len(results) == 0 {
+				_, _ = fmt.Fprintln(cmd.OutOrStdout(), "Lint passed! No issues found.")
+				return nil
+			}
+
+			hasErrors := false
+			for _, result := range results {
+				_, _ = fmt.Fprintln(cmd.OutOrStdout(), result.String())
+				if result.Severity == lint.Error {
+					hasErrors = true
+				}
+			}
+
+			if hasErrors {
+				return fmt.Errorf("linting failed with errors")
+			}
+			return nil
+		},
+	}
+	rootCmd.AddCommand(lintCmd)
 	rootCmd.AddCommand(configCmd)
 
 	config.BindRootFlags(rootCmd)

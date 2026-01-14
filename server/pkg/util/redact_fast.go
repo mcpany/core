@@ -97,7 +97,8 @@ func redactJSONFast(input []byte) []byte {
 				// Key contains escape sequences, unescape it to check for sensitivity.
 				// This is slower but safer.
 				// Limit the key size to prevent excessive allocation on malicious input
-				if len(keyContent) > 1024 {
+				// We increase this to 1MB to handle reasonably large keys while still preventing DoS.
+				if len(keyContent) > 1024*1024 {
 					keyToCheck = keyContent
 				} else {
 					quoted := make([]byte, len(keyContent)+2)

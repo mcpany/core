@@ -330,14 +330,16 @@ type HTTPTool struct {
 	callID            string
 
 	// Cached fields for performance
-	initError          error
-	cachedMethod       string
-	cachedURL          *url.URL
-	cachedPath         string // with %7B replaced
-	cachedQuery        string // with %7B replaced
-	cachedPlaceholders map[string]string
-	paramInPath        []bool
-	paramInQuery       []bool
+	initError            error
+	cachedMethod         string
+	cachedURL            *url.URL
+	cachedPath           string // with %7B replaced
+	cachedQuery          string // with %7B replaced
+	cachedPlaceholders   map[string]string
+	paramInPath          []bool
+	paramInQuery         []bool
+	cachedInputTemplate  *transformer.TextTemplate
+	cachedOutputTemplate *transformer.TextTemplate
 }
 
 // NewHTTPTool creates a new HTTPTool.
@@ -380,6 +382,24 @@ func NewHTTPTool(tool *v1.Tool, poolManager *pool.Manager, serviceID string, aut
 		t.initError = fmt.Errorf("failed to compile call policies: %w", err)
 	}
 	t.policies = compiled
+
+	// Cache templates
+	if it := t.inputTransformer; it != nil && it.GetTemplate() != "" { //nolint:staticcheck
+		tpl, err := transformer.NewTemplate(it.GetTemplate(), "{{", "}}") //nolint:staticcheck
+		if err != nil {
+			t.initError = fmt.Errorf("failed to parse input template: %w", err)
+		} else {
+			t.cachedInputTemplate = tpl
+		}
+	}
+	if ot := t.outputTransformer; ot != nil && ot.GetTemplate() != "" {
+		tpl, err := transformer.NewTemplate(ot.GetTemplate(), "{{", "}}")
+		if err != nil {
+			t.initError = fmt.Errorf("failed to parse output template: %w", err)
+		} else {
+			t.cachedOutputTemplate = tpl
+		}
+	}
 
 	// Pre-calculate URL components
 	methodAndURL := strings.Fields(tool.GetUnderlyingMethodFqn())
@@ -783,16 +803,15 @@ func (t *HTTPTool) prepareBody(ctx context.Context, inputs map[string]any, metho
 				contentType = contentTypeJSON
 			}
 		}
-	case t.inputTransformer != nil && t.inputTransformer.GetTemplate() != "": //nolint:staticcheck
-		tpl, err := transformer.NewTemplate(t.inputTransformer.GetTemplate(), "{{", "}}") //nolint:staticcheck
-		if err != nil {
-			return nil, "", fmt.Errorf("failed to create input template: %w", err)
-		}
-		renderedBody, err := tpl.Render(inputs)
+	case t.cachedInputTemplate != nil:
+		renderedBody, err := t.cachedInputTemplate.Render(inputs)
 		if err != nil {
 			return nil, "", fmt.Errorf("failed to render input template: %w", err)
 		}
 		body = strings.NewReader(renderedBody)
+	case t.inputTransformer != nil && t.inputTransformer.GetTemplate() != "": //nolint:staticcheck
+		// Fallback for unexpected case
+		return nil, "", fmt.Errorf("input template configured but not cached (initialization error?)")
 	default:
 		jsonBytes, err := fastJSON.Marshal(inputs)
 		if err != nil {
@@ -842,15 +861,14 @@ func (t *HTTPTool) processResponse(ctx context.Context, resp *http.Response) (an
 		}
 
 		if t.outputTransformer.GetTemplate() != "" {
-			tpl, err := transformer.NewTemplate(t.outputTransformer.GetTemplate(), "{{", "}}")
-			if err != nil {
-				return nil, fmt.Errorf("failed to create output template: %w", err)
+			if t.cachedOutputTemplate == nil {
+				return nil, fmt.Errorf("output template configured but not cached (initialization error?)")
 			}
 			resultMap, ok := parsedResult.(map[string]any)
 			if !ok {
 				return nil, fmt.Errorf("output must be a map to be used with a template, got %T", parsedResult)
 			}
-			renderedOutput, err := tpl.Render(resultMap)
+			renderedOutput, err := t.cachedOutputTemplate.Render(resultMap)
 			if err != nil {
 				return nil, fmt.Errorf("failed to render output template: %w", err)
 			}
@@ -872,14 +890,17 @@ func (t *HTTPTool) processResponse(ctx context.Context, resp *http.Response) (an
 // MCP-compliant service. It acts as a proxy, forwarding the tool call to the
 // downstream MCP service.
 type MCPTool struct {
-	tool              *v1.Tool
-	mcpTool           *mcp.Tool
-	mcpToolOnce       sync.Once
-	client            client.MCPClient
-	inputTransformer  *configv1.InputTransformer
-	outputTransformer *configv1.OutputTransformer
-	webhookClient     *WebhookClient
-	cache             *configv1.CacheConfig
+	tool                 *v1.Tool
+	mcpTool              *mcp.Tool
+	mcpToolOnce          sync.Once
+	client               client.MCPClient
+	inputTransformer     *configv1.InputTransformer
+	outputTransformer    *configv1.OutputTransformer
+	webhookClient        *WebhookClient
+	cache                *configv1.CacheConfig
+	cachedInputTemplate  *transformer.TextTemplate
+	cachedOutputTemplate *transformer.TextTemplate
+	initError            error
 }
 
 // NewMCPTool creates a new MCPTool.
@@ -898,7 +919,7 @@ func NewMCPTool(tool *v1.Tool, client client.MCPClient, callDefinition *configv1
 	if it := callDefinition.GetInputTransformer(); it != nil && it.GetWebhook() != nil {
 		webhookClient = NewWebhookClient(it.GetWebhook())
 	}
-	return &MCPTool{
+	t := &MCPTool{
 		tool:              tool,
 		client:            client,
 		inputTransformer:  callDefinition.GetInputTransformer(),
@@ -906,6 +927,25 @@ func NewMCPTool(tool *v1.Tool, client client.MCPClient, callDefinition *configv1
 		webhookClient:     webhookClient,
 		cache:             callDefinition.GetCache(),
 	}
+
+	// Cache templates
+	if it := t.inputTransformer; it != nil && it.GetTemplate() != "" { //nolint:staticcheck
+		tpl, err := transformer.NewTemplate(it.GetTemplate(), "{{", "}}") //nolint:staticcheck
+		if err != nil {
+			t.initError = fmt.Errorf("failed to parse input template: %w", err)
+		} else {
+			t.cachedInputTemplate = tpl
+		}
+	}
+	if ot := t.outputTransformer; ot != nil && ot.GetTemplate() != "" {
+		tpl, err := transformer.NewTemplate(ot.GetTemplate(), "{{", "}}")
+		if err != nil {
+			t.initError = fmt.Errorf("failed to parse output template: %w", err)
+		} else {
+			t.cachedOutputTemplate = tpl
+		}
+	}
+	return t
 }
 
 // Tool returns the protobuf definition of the MCP tool.
@@ -935,6 +975,9 @@ func (t *MCPTool) GetCacheConfig() *configv1.CacheConfig {
 // configured client and applies any necessary transformations to the request
 // and response.
 func (t *MCPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
+	if t.initError != nil {
+		return nil, t.initError
+	}
 	if logging.GetLogger().Enabled(ctx, slog.LevelDebug) {
 		logging.GetLogger().Debug("executing tool", "tool", req.ToolName, "inputs", prettyPrint(req.ToolInputs, contentTypeJSON))
 	}
@@ -970,16 +1013,15 @@ func (t *MCPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, erro
 		if len(respData) > 0 {
 			arguments = stdjson.RawMessage(respData)
 		}
-	case t.inputTransformer != nil && t.inputTransformer.GetTemplate() != "": //nolint:staticcheck
-		tpl, err := transformer.NewTemplate(t.inputTransformer.GetTemplate(), "{{", "}}") //nolint:staticcheck
-		if err != nil {
-			return nil, fmt.Errorf("failed to create input template: %w", err)
-		}
-		rendered, err := tpl.Render(inputs)
+	case t.cachedInputTemplate != nil:
+		rendered, err := t.cachedInputTemplate.Render(inputs)
 		if err != nil {
 			return nil, fmt.Errorf("failed to render input template: %w", err)
 		}
 		arguments = []byte(rendered)
+	case t.inputTransformer != nil && t.inputTransformer.GetTemplate() != "": //nolint:staticcheck
+		// Fallback for unexpected case
+		return nil, fmt.Errorf("input template configured but not cached (initialization error?)")
 	default:
 		arguments = req.ToolInputs
 	}
@@ -1021,15 +1063,14 @@ func (t *MCPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, erro
 		}
 
 		if t.outputTransformer.GetTemplate() != "" {
-			tpl, err := transformer.NewTemplate(t.outputTransformer.GetTemplate(), "{{", "}}")
-			if err != nil {
-				return nil, fmt.Errorf("failed to create output template: %w", err)
+			if t.cachedOutputTemplate == nil {
+				return nil, fmt.Errorf("output template configured but not cached (initialization error?)")
 			}
 			resultMap, ok := parsedResult.(map[string]any)
 			if !ok {
 				return nil, fmt.Errorf("output must be a map to be used with a template, got %T", parsedResult)
 			}
-			renderedOutput, err := tpl.Render(resultMap)
+			renderedOutput, err := t.cachedOutputTemplate.Render(resultMap)
 			if err != nil {
 				return nil, fmt.Errorf("failed to render output template: %w", err)
 			}
@@ -1051,18 +1092,21 @@ func (t *MCPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, erro
 // specification. It constructs and sends an HTTP request based on the OpenAPI
 // operation definition.
 type OpenAPITool struct {
-	tool              *v1.Tool
-	mcpTool           *mcp.Tool
-	mcpToolOnce       sync.Once
-	client            client.HTTPClient
-	parameterDefs     map[string]string
-	method            string
-	url               string
-	authenticator     auth.UpstreamAuthenticator
-	inputTransformer  *configv1.InputTransformer
-	outputTransformer *configv1.OutputTransformer
-	webhookClient     *WebhookClient
-	cache             *configv1.CacheConfig
+	tool                 *v1.Tool
+	mcpTool              *mcp.Tool
+	mcpToolOnce          sync.Once
+	client               client.HTTPClient
+	parameterDefs        map[string]string
+	method               string
+	url                  string
+	authenticator        auth.UpstreamAuthenticator
+	inputTransformer     *configv1.InputTransformer
+	outputTransformer    *configv1.OutputTransformer
+	webhookClient        *WebhookClient
+	cache                *configv1.CacheConfig
+	cachedInputTemplate  *transformer.TextTemplate
+	cachedOutputTemplate *transformer.TextTemplate
+	initError            error
 }
 
 // NewOpenAPITool creates a new OpenAPITool.
@@ -1085,7 +1129,7 @@ func NewOpenAPITool(tool *v1.Tool, client client.HTTPClient, parameterDefs map[s
 	if it := callDefinition.GetInputTransformer(); it != nil && it.GetWebhook() != nil {
 		webhookClient = NewWebhookClient(it.GetWebhook())
 	}
-	return &OpenAPITool{
+	t := &OpenAPITool{
 		tool:              tool,
 		client:            client,
 		parameterDefs:     parameterDefs,
@@ -1097,6 +1141,25 @@ func NewOpenAPITool(tool *v1.Tool, client client.HTTPClient, parameterDefs map[s
 		webhookClient:     webhookClient,
 		cache:             callDefinition.GetCache(),
 	}
+
+	// Cache templates
+	if it := t.inputTransformer; it != nil && it.GetTemplate() != "" { //nolint:staticcheck
+		tpl, err := transformer.NewTemplate(it.GetTemplate(), "{{", "}}") //nolint:staticcheck
+		if err != nil {
+			t.initError = fmt.Errorf("failed to parse input template: %w", err)
+		} else {
+			t.cachedInputTemplate = tpl
+		}
+	}
+	if ot := t.outputTransformer; ot != nil && ot.GetTemplate() != "" {
+		tpl, err := transformer.NewTemplate(ot.GetTemplate(), "{{", "}}")
+		if err != nil {
+			t.initError = fmt.Errorf("failed to parse output template: %w", err)
+		} else {
+			t.cachedOutputTemplate = tpl
+		}
+	}
+	return t
 }
 
 // Tool returns the protobuf definition of the OpenAPI tool.
@@ -1126,6 +1189,9 @@ func (t *OpenAPITool) GetCacheConfig() *configv1.CacheConfig {
 // sends the request, and processes the response, applying transformations as
 // needed.
 func (t *OpenAPITool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) { //nolint:gocyclo
+	if t.initError != nil {
+		return nil, t.initError
+	}
 	if logging.GetLogger().Enabled(ctx, slog.LevelDebug) {
 		logging.GetLogger().Debug("executing tool", "tool", req.ToolName, "inputs", prettyPrint(req.ToolInputs, contentTypeJSON))
 	}
@@ -1170,16 +1236,15 @@ func (t *OpenAPITool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 					contentType = contentTypeJSON
 				}
 			}
-		case t.inputTransformer != nil && t.inputTransformer.GetTemplate() != "": //nolint:staticcheck
-			tpl, err := transformer.NewTemplate(t.inputTransformer.GetTemplate(), "{{", "}}") //nolint:staticcheck
-			if err != nil {
-				return nil, fmt.Errorf("failed to create input template: %w", err)
-			}
-			renderedBody, err := tpl.Render(inputs)
+		case t.cachedInputTemplate != nil:
+			renderedBody, err := t.cachedInputTemplate.Render(inputs)
 			if err != nil {
 				return nil, fmt.Errorf("failed to render input template: %w", err)
 			}
 			body = strings.NewReader(renderedBody)
+		case t.inputTransformer != nil && t.inputTransformer.GetTemplate() != "": //nolint:staticcheck
+			// Fallback for unexpected case
+			return nil, fmt.Errorf("input template configured but not cached (initialization error?)")
 		default:
 			jsonBytes, err := fastJSON.Marshal(inputs)
 			if err != nil {
@@ -1248,15 +1313,14 @@ func (t *OpenAPITool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 		}
 
 		if t.outputTransformer.GetTemplate() != "" {
-			tpl, err := transformer.NewTemplate(t.outputTransformer.GetTemplate(), "{{", "}}")
-			if err != nil {
-				return nil, fmt.Errorf("failed to create output template: %w", err)
+			if t.cachedOutputTemplate == nil {
+				return nil, fmt.Errorf("output template configured but not cached (initialization error?)")
 			}
 			resultMap, ok := parsedResult.(map[string]any)
 			if !ok {
 				return nil, fmt.Errorf("output must be a map to be used with a template, got %T", parsedResult)
 			}
-			renderedOutput, err := tpl.Render(resultMap)
+			renderedOutput, err := t.cachedOutputTemplate.Render(resultMap)
 			if err != nil {
 				return nil, fmt.Errorf("failed to render output template: %w", err)
 			}

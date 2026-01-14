@@ -11,6 +11,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"regexp"
+	"strings"
 	"time"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
@@ -153,6 +154,85 @@ func validateUpstreamServiceCollection(ctx context.Context, collection *configv1
 		if err := validateUpstreamAuthentication(ctx, authConfig); err != nil {
 			return err
 		}
+	}
+	return nil
+}
+
+func validateStdioArgs(command string, args []string, workingDir string) error {
+	// Only check for common interpreters to avoid false positives on arbitrary flags
+	baseCmd := filepath.Base(command)
+	isInterpreter := false
+	// List of common interpreters that take a script file as an argument
+	interpreters := []string{"python", "python3", "node", "deno", "bun", "ruby", "perl", "bash", "sh", "zsh", "go"}
+	for _, i := range interpreters {
+		if baseCmd == i || strings.HasPrefix(baseCmd, i) { // e.g. python3.9
+			isInterpreter = true
+			break
+		}
+	}
+
+	if !isInterpreter {
+		return nil
+	}
+
+	isPython := strings.HasPrefix(baseCmd, "python")
+
+	// Find the first non-flag argument
+	for _, arg := range args {
+		// Skip flags (start with -)
+		if strings.HasPrefix(arg, "-") {
+			// Special case for Python -m (module execution)
+			// If we see -m, the next argument is a module name which might look like a file (e.g. http.server)
+			// but shouldn't be validated as a file on disk.
+			if isPython && arg == "-m" {
+				return nil
+			}
+			continue
+		}
+
+		// Check for URLs (Deno/Bun/remote scripts)
+		// These are valid arguments for some interpreters but not local files.
+		if strings.HasPrefix(arg, "http://") || strings.HasPrefix(arg, "https://") {
+			return nil
+		}
+
+		// This is likely the script file.
+		// We only validate it if it looks like a file (has an extension).
+		// This avoids validating things like "install" or module names.
+		ext := filepath.Ext(arg)
+		if ext == "" {
+			continue
+		}
+
+		// Check if file exists
+		if err := validateFileExists(arg, workingDir); err != nil {
+			return fmt.Errorf("argument %q looks like a script file but does not exist: %w", arg, err)
+		}
+
+		// We only check the FIRST script argument for interpreters.
+		// Subsequent args are likely arguments to the script itself.
+		return nil
+	}
+	return nil
+}
+
+func validateFileExists(path string, workingDir string) error {
+	targetPath := path
+	// If path is relative and workingDir is set, join them.
+	// Note: If workingDir is empty, we check relative to CWD (process root), which is standard behavior.
+	if !filepath.IsAbs(path) && workingDir != "" {
+		targetPath = filepath.Join(workingDir, path)
+	}
+
+	info, err := osStat(targetPath)
+	if err != nil {
+		if os.IsNotExist(err) {
+			return fmt.Errorf("file not found")
+		}
+		return err
+	}
+	if info.IsDir() {
+		return fmt.Errorf("is a directory, expected a file")
 	}
 	return nil
 }
@@ -333,14 +413,14 @@ func validateServiceConfig(service *configv1.UpstreamServiceConfig) error {
 
 func validateHTTPService(httpService *configv1.HttpUpstreamService) error {
 	if httpService.GetAddress() == "" {
-		return fmt.Errorf("http service has empty target_address")
+		return fmt.Errorf("http service has empty address")
 	}
 	if !validation.IsValidURL(httpService.GetAddress()) {
-		return fmt.Errorf("invalid http target_address: %s", httpService.GetAddress())
+		return fmt.Errorf("invalid http address: %s", httpService.GetAddress())
 	}
 	u, _ := url.Parse(httpService.GetAddress())
 	if u.Scheme != schemeHTTP && u.Scheme != schemeHTTPS {
-		return fmt.Errorf("invalid http target_address scheme: %s", u.Scheme)
+		return fmt.Errorf("invalid http address scheme: %s", u.Scheme)
 	}
 
 	for name, call := range httpService.GetCalls() {
@@ -356,14 +436,14 @@ func validateHTTPService(httpService *configv1.HttpUpstreamService) error {
 
 func validateWebSocketService(websocketService *configv1.WebsocketUpstreamService) error {
 	if websocketService.GetAddress() == "" {
-		return fmt.Errorf("websocket service has empty target_address")
+		return fmt.Errorf("websocket service has empty address")
 	}
 	if !validation.IsValidURL(websocketService.GetAddress()) {
-		return fmt.Errorf("invalid websocket target_address: %s", websocketService.GetAddress())
+		return fmt.Errorf("invalid websocket address: %s", websocketService.GetAddress())
 	}
 	u, _ := url.Parse(websocketService.GetAddress())
 	if u.Scheme != "ws" && u.Scheme != "wss" {
-		return fmt.Errorf("invalid websocket target_address scheme: %s", u.Scheme)
+		return fmt.Errorf("invalid websocket address scheme: %s", u.Scheme)
 	}
 
 	for name, call := range websocketService.GetCalls() {
@@ -379,7 +459,7 @@ func validateWebSocketService(websocketService *configv1.WebsocketUpstreamServic
 
 func validateGrpcService(grpcService *configv1.GrpcUpstreamService) error {
 	if grpcService.GetAddress() == "" {
-		return fmt.Errorf("gRPC service has empty target_address")
+		return fmt.Errorf("gRPC service has empty address")
 	}
 
 	for name, call := range grpcService.GetCalls() {
@@ -398,7 +478,7 @@ func validateOpenAPIService(openapiService *configv1.OpenapiUpstreamService) err
 		return fmt.Errorf("openapi service must have either an address, spec content or spec url")
 	}
 	if openapiService.GetAddress() != "" && !validation.IsValidURL(openapiService.GetAddress()) {
-		return fmt.Errorf("invalid openapi target_address: %s", openapiService.GetAddress())
+		return fmt.Errorf("invalid openapi address: %s", openapiService.GetAddress())
 	}
 	if openapiService.GetSpecUrl() != "" && !validation.IsValidURL(openapiService.GetSpecUrl()) {
 		return fmt.Errorf("invalid openapi spec_url: %s", openapiService.GetSpecUrl())
@@ -471,6 +551,10 @@ func validateMcpService(mcpService *configv1.McpUpstreamService) error {
 				return fmt.Errorf("mcp service with stdio_connection command validation failed: %w", err)
 			}
 
+			if err := validateStdioArgs(stdioConn.GetCommand(), stdioConn.GetArgs(), stdioConn.GetWorkingDirectory()); err != nil {
+				return fmt.Errorf("mcp service with stdio_connection argument validation failed: %w", err)
+			}
+
 			if stdioConn.GetWorkingDirectory() != "" {
 				if err := validation.IsAllowedPath(stdioConn.GetWorkingDirectory()); err != nil {
 					return fmt.Errorf("mcp service with stdio_connection has insecure working_directory %q: %w", stdioConn.GetWorkingDirectory(), err)
@@ -537,11 +621,11 @@ func validateGraphQLService(graphqlService *configv1.GraphQLUpstreamService) err
 		return fmt.Errorf("graphql service has empty address")
 	}
 	if !validation.IsValidURL(graphqlService.GetAddress()) {
-		return fmt.Errorf("invalid graphql target_address: %s", graphqlService.GetAddress())
+		return fmt.Errorf("invalid graphql address: %s", graphqlService.GetAddress())
 	}
 	u, _ := url.Parse(graphqlService.GetAddress())
 	if u.Scheme != schemeHTTP && u.Scheme != schemeHTTPS {
-		return fmt.Errorf("invalid graphql target_address scheme: %s", u.Scheme)
+		return fmt.Errorf("invalid graphql address scheme: %s", u.Scheme)
 	}
 	return nil
 }
@@ -551,11 +635,11 @@ func validateWebrtcService(webrtcService *configv1.WebrtcUpstreamService) error 
 		return fmt.Errorf("webrtc service has empty address")
 	}
 	if !validation.IsValidURL(webrtcService.GetAddress()) {
-		return fmt.Errorf("invalid webrtc target_address: %s", webrtcService.GetAddress())
+		return fmt.Errorf("invalid webrtc address: %s", webrtcService.GetAddress())
 	}
 	u, _ := url.Parse(webrtcService.GetAddress())
 	if u.Scheme != schemeHTTP && u.Scheme != schemeHTTPS {
-		return fmt.Errorf("invalid webrtc target_address scheme: %s", u.Scheme)
+		return fmt.Errorf("invalid webrtc address scheme: %s", u.Scheme)
 	}
 	return nil
 }

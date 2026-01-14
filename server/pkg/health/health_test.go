@@ -200,6 +200,64 @@ func TestNewChecker(t *testing.T) {
 	})
 }
 
+func TestFilesystemCheck(t *testing.T) {
+	ctx := context.Background()
+
+	t.Run("Success", func(t *testing.T) {
+		tmpDir := t.TempDir()
+		config := &configv1.UpstreamServiceConfig{
+			Name: lo.ToPtr("fs-service-healthy"),
+			ServiceConfig: &configv1.UpstreamServiceConfig_FilesystemService{
+				FilesystemService: &configv1.FilesystemUpstreamService{
+					FilesystemType: &configv1.FilesystemUpstreamService_Os{
+						Os: &configv1.OsFs{},
+					},
+					RootPaths: map[string]string{"/": tmpDir},
+				},
+			},
+		}
+
+		checker := NewChecker(config)
+		assert.NotNil(t, checker)
+		assert.Equal(t, health.StatusUp, checker.Check(ctx).Status)
+	})
+
+	t.Run("Failure_PathDoesNotExist", func(t *testing.T) {
+		config := &configv1.UpstreamServiceConfig{
+			Name: lo.ToPtr("fs-service-unhealthy"),
+			ServiceConfig: &configv1.UpstreamServiceConfig_FilesystemService{
+				FilesystemService: &configv1.FilesystemUpstreamService{
+					FilesystemType: &configv1.FilesystemUpstreamService_Os{
+						Os: &configv1.OsFs{},
+					},
+					RootPaths: map[string]string{"/": "/path/to/nowhere/must/not/exist"},
+				},
+			},
+		}
+
+		checker := NewChecker(config)
+		assert.NotNil(t, checker)
+		assert.Equal(t, health.StatusDown, checker.Check(ctx).Status)
+	})
+
+	t.Run("ImplicitLocal_Success", func(t *testing.T) {
+		tmpDir := t.TempDir()
+		// No FilesystemType specified, defaults to local
+		config := &configv1.UpstreamServiceConfig{
+			Name: lo.ToPtr("fs-service-implicit-healthy"),
+			ServiceConfig: &configv1.UpstreamServiceConfig_FilesystemService{
+				FilesystemService: &configv1.FilesystemUpstreamService{
+					RootPaths: map[string]string{"/": tmpDir},
+				},
+			},
+		}
+
+		checker := NewChecker(config)
+		assert.NotNil(t, checker)
+		assert.Equal(t, health.StatusUp, checker.Check(ctx).Status)
+	})
+}
+
 func TestCheckGRPCHealth(t *testing.T) {
 	ctx := context.Background()
 

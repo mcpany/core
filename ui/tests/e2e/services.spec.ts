@@ -62,6 +62,9 @@ test.describe('Services Feature', () => {
     await page.getByRole('button', { name: 'Add Service' }).click();
     await expect(page.getByRole('dialog')).toBeVisible();
 
+    // Select Custom Service template
+    await page.getByText('Custom Service').click();
+
     const serviceName = `new-service-${Date.now()}`;
     await page.fill('input[id="name"]', serviceName);
 
