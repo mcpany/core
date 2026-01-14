@@ -69,6 +69,7 @@ test.describe('MCP Any UI E2E', () => {
         // Use expect to wait for URL change instead of strict waitForURL 'load' event
         // which can be flaky with client-side routing if network is idle
         await expect(page).toHaveURL(/.*\/stats/);
+
         // Verify page content
         await expect(page.locator('h2')).toContainText('Analytics & Stats');
     } else {
