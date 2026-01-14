@@ -85,6 +85,22 @@ func TestResolveSecret(t *testing.T) {
 		assert.Error(t, err)
 	})
 
+	t.Run("FilePath with newline", func(t *testing.T) {
+		tmpfile, err := os.CreateTemp("", "secret_with_newline")
+		assert.NoError(t, err)
+		defer func() { _ = os.Remove(tmpfile.Name()) }()
+
+		_, err = tmpfile.WriteString("my-file-secret-newline\n")
+		assert.NoError(t, err)
+		_ = tmpfile.Close()
+
+		secret := &configv1.SecretValue{}
+		secret.SetFilePath(tmpfile.Name())
+		resolved, err := util.ResolveSecret(context.Background(), secret)
+		assert.NoError(t, err)
+		assert.Equal(t, "my-file-secret-newline", resolved)
+	})
+
 	t.Run("RemoteContent", func(t *testing.T) {
 		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 			_, _ = fmt.Fprint(w, "my-remote-secret")
