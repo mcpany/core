@@ -7,25 +7,46 @@
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
+/**
+ * Defines the role of a user in the system.
+ */
 export type UserRole = 'admin' | 'editor' | 'viewer';
 
+/**
+ * Represents a user of the application.
+ */
 export interface User {
+  /** Unique user ID. */
   id: string;
+  /** Display name. */
   name: string;
+  /** Email address. */
   email: string;
+  /** URL to avatar image. */
   avatar?: string;
+  /** The user's role. */
   role: UserRole;
 }
 
+/**
+ * Context interface for user management.
+ */
 interface UserContextType {
+  /** The current user, or null if not logged in. */
   user: User | null;
+  /** Whether authentication status is loading. */
   loading: boolean;
+  /** Logs in the user with the specified role (mock). */
   login: (role: UserRole) => void;
+  /** Logs out the current user. */
   logout: () => void;
 }
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
 
+/**
+ * Provider component for user authentication context.
+ */
 export function UserProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
@@ -68,6 +89,11 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
   );
 }
 
+/**
+ * Hook to access the user context.
+ * @returns The user context.
+ * @throws Error if used outside of a UserProvider.
+ */
 export function useUser() {
   const context = useContext(UserContext);
   if (context === undefined) {

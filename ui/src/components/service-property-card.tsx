@@ -8,11 +8,19 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "./ui/badge";
 
+/**
+ * Props for the ServicePropertyCard component.
+ */
 interface ServicePropertyCardProps {
+    /** The title of the card. */
     title: string;
+    /** The data to display as key-value pairs. */
     data: Record<string, string | number | boolean>;
 }
 
+/**
+ * A card component that displays a list of properties.
+ */
 export function ServicePropertyCard({ title, data }: ServicePropertyCardProps) {
     return (
         <Card>

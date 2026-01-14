@@ -54,6 +54,7 @@ type bodyLogWriter struct {
 	overflow    bool
 }
 
+// Write writes the data to the connection and captures it for the log.
 func (w *bodyLogWriter) Write(b []byte) (int, error) {
 	if !w.overflow {
 		if int64(w.body.Len()+len(b)) > w.maxBodySize {
@@ -71,6 +72,7 @@ func (w *bodyLogWriter) Write(b []byte) (int, error) {
 	return w.ResponseWriter.Write(b)
 }
 
+// WriteString writes the string to the connection and captures it for the log.
 func (w *bodyLogWriter) WriteString(s string) (int, error) {
 	if !w.overflow {
 		if int64(w.body.Len()+len(s)) > w.maxBodySize {
