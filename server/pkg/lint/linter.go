@@ -1,6 +1,8 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
+// Package lint provides functionality for analyzing configuration files
+// to detect potential security issues and best practice violations.
 package lint
 
 import (
@@ -70,7 +72,8 @@ func NewLinter(cfg *configv1.McpAnyServerConfig) *Linter {
 
 // Run executes all linting checks.
 func (l *Linter) Run(ctx context.Context) ([]Result, error) {
-	var results []Result
+	// Pre-allocate to avoid performance warnings, though initial size is a guess.
+	results := make([]Result, 0, 10)
 
 	// 1. Run standard validation first (Errors)
 	validationErrors := config.Validate(ctx, l.cfg, config.Server)
