@@ -46,7 +46,7 @@ export const SERVICE_TEMPLATES: ServiceTemplate[] = [
     icon: Server,
     config: {
       name: "",
-      type: "http" as any, // Default to http
+      httpService: { address: "" },
     },
   },
   {

@@ -314,3 +314,57 @@ func TestLocalCommandTool_Execute_PythonInjection(t *testing.T) {
 		assert.Contains(t, err.Error(), "shell injection detected")
 	}
 }
+
+func TestLocalCommandTool_ShellInjection_ControlChars(t *testing.T) {
+	t.Parallel()
+	tool := &v1.Tool{
+		Name: proto.String("test-tool-shell-control"),
+	}
+	service := &configv1.CommandLineUpstreamService{
+		Command: proto.String("sh"), // This triggers shell injection checks
+		Local:   proto.Bool(true),
+	}
+	callDef := &configv1.CommandLineCallDefinition{
+		Args: []string{"-c", "echo {{arg}}"},
+		Parameters: []*configv1.CommandLineParameterMapping{
+			{Schema: &configv1.ParameterSchema{Name: proto.String("arg")}},
+		},
+	}
+
+	localTool := NewLocalCommandTool(tool, service, callDef, nil, "call-id")
+
+	// Test cases for control characters
+	testCases := []struct {
+		name       string
+		input      string
+		shouldFail bool
+	}{
+		{"CarriageReturn", "hello\rworld", true},
+		{"Tab", "hello\tworld", true}, // We want to block this as it can split args in unquoted context
+		{"VerticalTab", "hello\vworld", true},
+		{"FormFeed", "hello\fworld", true},
+		{"Safe", "hello world", false}, // Space is currently allowed
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			req := &ExecutionRequest{
+				ToolName: "test-tool-shell-control",
+				Arguments: map[string]interface{}{
+					"arg": tc.input,
+				},
+			}
+			req.ToolInputs, _ = json.Marshal(req.Arguments)
+
+			_, err := localTool.Execute(context.Background(), req)
+			if tc.shouldFail {
+				if err == nil {
+					t.Fatalf("Expected error for input %q, but got nil", tc.input)
+				}
+				assert.Contains(t, err.Error(), "shell injection detected")
+			} else {
+				assert.NoError(t, err)
+			}
+		})
+	}
+}

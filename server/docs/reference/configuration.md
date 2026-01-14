@@ -44,14 +44,12 @@ global_settings:
   log_level: "LOG_LEVEL_INFO"
 upstream_services:
   - name: "user-service"
-    service_config:
-      grpc_service:
-        address: "localhost:50051"
-        use_reflection: true
+    grpc_service:
+      address: "localhost:50051"
+      use_reflection: true
   - name: "weather-api"
-    service_config:
-      http_service:
-        address: "https://api.weather.com"
+    http_service:
+      address: "https://api.weather.com"
 ```
 
 ### `UpstreamServiceCollection`
@@ -164,7 +162,8 @@ upstream_services:
   - name: "debug-service"
     profiles:
       - name: "dev"
-    service_config:
+    # Service specific configuration (e.g. http_service)
+    http_service:
       # ...
 ```
 
@@ -194,10 +193,9 @@ upstream_services:
         header_name: "X-API-Key"
         api_key:
           environment_variable: "PRODUCT_CATALOG_API_KEY"
-    service_config:
-      grpc_service:
-        address: "grpc.product-catalog.svc.cluster.local:50051"
-        use_reflection: true
+    grpc_service:
+      address: "grpc.product-catalog.svc.cluster.local:50051"
+      use_reflection: true
 ```
 
 ### Upstream Service Types
@@ -233,15 +231,14 @@ The `service_config` oneof field can contain one of the following service types:
 Expose a gRPC service that requires TLS and has its protobuf definitions stored locally.
 
 ```yaml
-service_config:
-  grpc_service:
-    address: "user-service.internal:50051"
-    tls_config:
-      ca_cert_path: "/certs/ca.pem"
-    proto_definitions:
-      - proto_file:
-          file_name: "user.proto"
-          file_path: "/proto/user.proto"
+grpc_service:
+  address: "user-service.internal:50051"
+  tls_config:
+    ca_cert_path: "/certs/ca.pem"
+  proto_definitions:
+    - proto_file:
+        file_name: "user.proto"
+        file_path: "/proto/user.proto"
 ```
 
 #### `HttpUpstreamService`
@@ -261,13 +258,12 @@ service_config:
 Proxy an external HTTP API and add a health check.
 
 ```yaml
-service_config:
-  http_service:
-    address: "https://api.example.com"
-    health_check:
-      url: "https://api.example.com/health"
-      expected_code: 200
-      interval: "10s"
+http_service:
+  address: "https://api.example.com"
+  health_check:
+    url: "https://api.example.com/health"
+    expected_code: 200
+    interval: "10s"
 ```
 
 ##### `HttpCallDefinition`
@@ -321,15 +317,14 @@ output_transformer:
 Automatically discover and expose an OpenAPI-defined service.
 
 ```yaml
-service_config:
-  openapi_service:
-    address: "https://petstore.swagger.io/v2"
-    openapi_spec: |
-      swagger: "2.0"
-      info:
-        version: "1.0.0"
-        title: "Swagger Petstore"
-      # ... rest of the spec
+openapi_service:
+  address: "https://petstore.swagger.io/v2"
+  openapi_spec: |
+    swagger: "2.0"
+    info:
+      version: "1.0.0"
+      title: "Swagger Petstore"
+    # ... rest of the spec
 ```
 
 #### `CommandLineUpstreamService`
@@ -354,17 +349,16 @@ service_config:
 Wrap a command-line tool, run it in a container, and cache the results.
 
 ```yaml
-service_config:
-  command_line_service:
-    command: "python /scripts/process.py"
-    working_directory: "/data"
-    container_environment:
-      image: "python:3.9-slim"
-      volumes:
-        "/local/data": "/data"
-    cache:
-      is_enabled: true
-      ttl: "1h"
+command_line_service:
+  command: "python /scripts/process.py"
+  working_directory: "/data"
+  container_environment:
+    image: "python:3.9-slim"
+    volumes:
+      "/local/data": "/data"
+  cache:
+    is_enabled: true
+    ttl: "1h"
 ```
 
 ##### `CommandLineCallDefinition`
@@ -393,11 +387,10 @@ Defines argument mapping for a command-line tool.
 Proxy another MCP Any instance and automatically discover its tools.
 
 ```yaml
-service_config:
-  mcp_service:
-    http_connection:
-      http_address: "mcp-internal.example.com:8080"
-    tool_auto_discovery: true
+mcp_service:
+  http_connection:
+    http_address: "mcp-internal.example.com:8080"
+  tool_auto_discovery: true
 ```
 
 #### Proxying CLI-based MCP Servers (Python/Node)
@@ -407,17 +400,16 @@ You can also proxy MCP servers that run as a local command (stdio) or in a conta
 ##### Example: Python MCP Server
 
 ```yaml
-service_config:
-  mcp_service:
-    stdio_connection:
-      command: "python"
-      args:
-        - "main.py"
-      working_directory: "/path/to/server"
-      env:
-        MY_ENV:
-          plain_text: "value"
-    tool_auto_discovery: true
+mcp_service:
+  stdio_connection:
+    command: "python"
+    args:
+      - "main.py"
+    working_directory: "/path/to/server"
+    env:
+      MY_ENV:
+        plain_text: "value"
+  tool_auto_discovery: true
 ```
 
 ##### Example: NPX MCP Server (Puppeteer)
@@ -425,14 +417,13 @@ service_config:
 This example runs the [`@modelcontextprotocol/server-puppeteer`](https://github.com/modelcontextprotocol/servers) using `npx`.
 
 ```yaml
-service_config:
-  mcp_service:
-    stdio_connection:
-      command: "npx"
-      args:
-        - "-y"
-        - "@modelcontextprotocol/server-puppeteer"
-    tool_auto_discovery: true
+mcp_service:
+  stdio_connection:
+    command: "npx"
+    args:
+      - "-y"
+      - "@modelcontextprotocol/server-puppeteer"
+  tool_auto_discovery: true
 ```
 
 ##### Verification with Gemini CLI
@@ -498,11 +489,10 @@ upstream_services:
 Connect to a real-time data streaming service over a secure Websocket.
 
 ```yaml
-service_config:
-  websocket_service:
-    address: "wss://streaming.example.com/data"
-    tls_config:
-      server_name: "streaming.example.com"
+websocket_service:
+  address: "wss://streaming.example.com/data"
+  tls_config:
+    server_name: "streaming.example.com"
 ```
 
 #### `WebrtcUpstreamService`
@@ -521,9 +511,8 @@ service_config:
 Expose a WebRTC service for real-time communication, connecting to its signaling server.
 
 ```yaml
-service_config:
-  webrtc_service:
-    address: "https://signaling.example.com"
+webrtc_service:
+  address: "https://signaling.example.com"
 ```
 
 ### Service Policies and Advanced Configuration
