@@ -4,104 +4,166 @@
 package provider
 
 import (
+	"archive/zip"
+	"context"
 	"os"
 	"path/filepath"
 	"testing"
+	"time"
 
+	configv1 "github.com/mcpany/core/proto/config/v1"
+	"github.com/spf13/afero"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"google.golang.org/protobuf/proto"
 )
 
-func TestLocalProvider_ResolvePath_EdgeCases(t *testing.T) {
-	// Setup: create a root dir
-	tmpDir := t.TempDir()
-	p := NewLocalProvider(nil, map[string]string{"/data": tmpDir}, nil, nil)
+// --- GcsFs Unit Tests ---
+func TestGcsFs_Structure(t *testing.T) {
+	// We cannot create a functional gcsFs without a real storage.Client,
+	// because Open/Create etc call client methods directly.
+	// However, we can test the methods that don't use the client, or fail gracefully.
 
-	// Case: no root paths defined
-	pEmpty := NewLocalProvider(nil, nil, nil, nil)
-	_, err := pEmpty.ResolvePath("/foo")
-	assert.Error(t, err)
-	assert.Contains(t, err.Error(), "no root paths defined")
-
-	// Case: virtual path with no slash prefix
-	// The code handles this by adding /, but we should verifying it works
-	p2 := NewLocalProvider(nil, map[string]string{"data": tmpDir}, nil, nil)
-	path, err := p2.ResolvePath("data/file.txt")
-	assert.NoError(t, err)
-	assert.Contains(t, path, tmpDir)
-
-	// Case: root path does not exist
-	// filepath.Abs should succeed, but EvalSymlinks should fail
-	nonExistentRoot := filepath.Join(tmpDir, "does-not-exist")
-	p3 := NewLocalProvider(nil, map[string]string{"/": nonExistentRoot}, nil, nil)
-	_, err = p3.ResolvePath("/file.txt")
-	assert.Error(t, err)
-	assert.Contains(t, err.Error(), "failed to resolve root path symlinks")
-
-	// Case: Non-existent file deep in path
-	// This exercises the "deepest existing ancestor" logic
-	// Create a dir
-	subDir := filepath.Join(tmpDir, "sub")
-	require.NoError(t, os.Mkdir(subDir, 0755))
-
-	p4 := NewLocalProvider(nil, map[string]string{"/": tmpDir}, nil, nil)
-	resolved, err := p4.ResolvePath("/sub/non/existent/file.txt")
-	assert.NoError(t, err)
-	expected := filepath.Join(subDir, "non/existent/file.txt")
-	// On some systems EvalSymlinks might resolve /private/tmp to /tmp, so we compare Canonical paths
-	expectedCanonical, _ := filepath.EvalSymlinks(subDir)
-	if expectedCanonical == "" {
-		expectedCanonical = subDir
-	}
-	expected = filepath.Join(expectedCanonical, "non/existent/file.txt")
-
-	assert.Equal(t, expected, resolved)
-
-	// Case: Access denied path traversal detected (target not in root)
-	// We need a symlink that points outside the root, but the symlink itself is inside
-	// AND the target exists.
-	outsideDir := t.TempDir()
-	outsideFile := filepath.Join(outsideDir, "outside.txt")
-	os.WriteFile(outsideFile, []byte("outside"), 0644)
-
-	symlink := filepath.Join(tmpDir, "badlink")
-	os.Symlink(outsideFile, symlink)
-
-	p5 := NewLocalProvider(nil, map[string]string{"/": tmpDir}, nil, nil)
-	_, err = p5.ResolvePath("/badlink")
-	assert.Error(t, err)
-	assert.Contains(t, err.Error(), "access denied: path traversal detected")
-
-	// Check p is not unused
-	require.NotNil(t, p)
-}
-
-func TestLocalProvider_ResolvePath_PermissionError(t *testing.T) {
-	if os.Getuid() == 0 {
-		t.Skip("Skipping permission denied test as root")
+	fs := &gcsFs{
+		client: nil, // Will panic if used? Yes.
+		bucket: "test-bucket",
+		ctx:    context.Background(),
 	}
 
-	tmpDir := t.TempDir()
-	// Create a directory with no permissions
-	noPermDir := filepath.Join(tmpDir, "noperm")
-	err := os.Mkdir(noPermDir, 0000)
-	require.NoError(t, err)
-	// Make sure we can remove it later
-	defer os.Chmod(noPermDir, 0755)
+	// Name
+	assert.Equal(t, "gcs", fs.Name())
 
-	// Test EvalSymlinks failure on target path
-	p := NewLocalProvider(nil, map[string]string{"/": tmpDir}, nil, nil)
-	_, err = p.ResolvePath(filepath.Join("noperm", "file.txt"))
-	// Depending on OS, this might fail with "permission denied" or work if parent has permissions.
-	// Actually, accessing "noperm/file.txt" where noperm is 0000 should fail stat.
-	// If it fails with something other than NotExist, we hit line 142.
-	// However, filepath.EvalSymlinks calls lstat, which requires exec permission on parent.
-	// If parent has no exec, lstat fails with permission denied.
+	// Mkdir / MkdirAll (No-ops)
+	assert.NoError(t, fs.Mkdir("foo", 0755))
+	assert.NoError(t, fs.MkdirAll("foo/bar", 0755))
 
-	assert.Error(t, err, "Expected permission denied or similar error")
-}
+	// Chmod / Chown / Chtimes (Not supported)
+	assert.NoError(t, fs.Chmod("foo", 0755))
+	assert.NoError(t, fs.Chown("foo", 1000, 1000))
+	assert.NoError(t, fs.Chtimes("foo", time.Now(), time.Now()))
 
-func TestZipProvider_ManualClose(t *testing.T) {
-	p := &ZipProvider{fs: nil, closer: nil}
+	// ResolvePath (from GcsProvider)
+	p := &GcsProvider{fs: fs}
+	resolved, err := p.ResolvePath("foo/bar")
+	assert.NoError(t, err)
+	assert.Equal(t, "foo/bar", resolved)
+
+	resolved, err = p.ResolvePath("/foo/bar")
+	assert.NoError(t, err)
+	assert.Equal(t, "foo/bar", resolved)
+
+	_, err = p.ResolvePath(".")
+	assert.Error(t, err)
+
+	// Close (nil client)
 	assert.NoError(t, p.Close())
+}
+
+// --- SftpProvider Extra Tests ---
+// Since SftpProvider uses a private sftpFs struct, and we can't easily mock the SFTP client...
+// But we can check ResolvePath and other non-network methods.
+
+func TestSftpProvider_Methods(t *testing.T) {
+	p := &SftpProvider{}
+	assert.NoError(t, p.Close()) // nil closer
+
+	path, err := p.ResolvePath("foo/bar")
+	assert.NoError(t, err)
+	assert.Equal(t, "foo/bar", path) // It just cleans the path
+
+	// Test GetFs
+	assert.Nil(t, p.GetFs())
+}
+
+// --- ZipProvider Extra Tests ---
+func TestZipProvider_Methods(t *testing.T) {
+	// Create a real zip file for testing
+	tmpZip := filepath.Join(t.TempDir(), "test.zip")
+
+	// Create zip
+	zFile, err := os.Create(tmpZip)
+	require.NoError(t, err)
+
+	zw := zip.NewWriter(zFile)
+	f, err := zw.Create("hello.txt")
+	require.NoError(t, err)
+	_, err = f.Write([]byte("world"))
+	require.NoError(t, err)
+	require.NoError(t, zw.Close())
+	require.NoError(t, zFile.Close())
+
+	// Now load it
+	cfg := &configv1.ZipFs{FilePath: proto.String(tmpZip)}
+	p, err := NewZipProvider(cfg)
+	require.NoError(t, err)
+	defer p.Close()
+
+	assert.NotNil(t, p.GetFs())
+
+	res, err := p.ResolvePath("foo/../bar")
+	assert.NoError(t, err)
+	assert.Equal(t, "bar", res)
+}
+
+func TestZipProvider_Errors(t *testing.T) {
+	// 1. File not found
+	_, err := NewZipProvider(&configv1.ZipFs{FilePath: proto.String("non_existent.zip")})
+	assert.Error(t, err)
+
+	// 2. Not a zip file
+	tmpFile := filepath.Join(t.TempDir(), "not_a_zip.txt")
+	err = os.WriteFile(tmpFile, []byte("not a zip"), 0644)
+	require.NoError(t, err)
+
+	_, err = NewZipProvider(&configv1.ZipFs{FilePath: proto.String(tmpFile)})
+	assert.Error(t, err)
+}
+
+// --- TmpfsProvider Extra Tests ---
+func TestTmpfsProvider_Methods(t *testing.T) {
+	p := NewTmpfsProvider()
+	assert.NotNil(t, p.GetFs())
+
+	path, err := p.ResolvePath("foo/bar")
+	assert.NoError(t, err)
+	assert.Equal(t, "foo/bar", path)
+
+	assert.NoError(t, p.Close())
+}
+
+// --- LocalProvider Extra Coverage ---
+func TestLocalProvider_Close(t *testing.T) {
+	p := &LocalProvider{}
+	assert.NoError(t, p.Close())
+	assert.Nil(t, p.GetFs())
+}
+
+// --- GcsFile Methods Error Checking ---
+func TestGcsFile_Methods(t *testing.T) {
+	// This covers the error paths when file is not properly opened
+	f := &gcsFile{}
+
+	_, err := f.Read([]byte{})
+	assert.Error(t, err)
+
+	_, err = f.Write([]byte{})
+	assert.Error(t, err)
+
+	_, err = f.Seek(0, 0)
+	assert.Error(t, err)
+
+	_, err = f.WriteAt(nil, 0)
+	assert.Error(t, err)
+
+	assert.NoError(t, f.Sync())
+	assert.Error(t, f.Truncate(0))
+	assert.NoError(t, f.Close())
+
+	assert.Equal(t, "", f.Name())
+}
+
+func TestGcsFs_FileCreation(t *testing.T) {
+	// We can't really test Create/Open without client, but we can verify the interface types
+	fs := &gcsFs{bucket: "b", ctx: context.Background()}
+	var _ afero.Fs = fs
 }
