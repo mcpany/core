@@ -24,16 +24,19 @@ describe('Secrets API', () => {
 
     describe('GET /api/secrets', () => {
         it('should return list of secrets', async () => {
-            const mockSecrets = [
-                { id: '1', name: 'Test', key: 'TEST_KEY', value: 'secret', provider: 'custom' }
+            const mockSecretsList = [
+                { id: '1', name: 'Test', key: 'TEST_KEY', value: 'secret', provider: 'custom', createdAt: '2024-01-01', lastUsed: 'never' }
             ];
-            vi.mocked(SecretsStore.getAllDecrypted).mockReturnValue(mockSecrets);
+            const mockResponse = { secrets: mockSecretsList };
+
+            // @ts-ignore - Mocking partial implementation
+            vi.mocked(SecretsStore.getAllDecrypted).mockReturnValue(mockResponse);
 
             const response = await GET();
             const data = await response.json();
 
             expect(response.status).toBe(200);
-            expect(data).toEqual(mockSecrets);
+            expect(data).toEqual(mockResponse);
             expect(SecretsStore.getAllDecrypted).toHaveBeenCalled();
         });
 
@@ -50,7 +53,18 @@ describe('Secrets API', () => {
     describe('POST /api/secrets', () => {
         it('should create a new secret', async () => {
             const newSecret = { name: 'New', key: 'NEW_KEY', value: 'value123', provider: 'custom' };
-            vi.mocked(SecretsStore.add).mockReturnValue({ ...newSecret, id: '123', createdAt: '', lastUsed: '', encryptedValue: 'enc' });
+            const mockAddedSecret = {
+                ...newSecret,
+                id: '123',
+                createdAt: '',
+                lastUsed: '',
+                encryptedValue: 'enc',
+                iv: 'iv',
+                authTag: 'tag'
+            };
+
+            // @ts-ignore - Mocking partial implementation
+            vi.mocked(SecretsStore.add).mockReturnValue(mockAddedSecret);
 
             const req = new Request('http://localhost/api/secrets', {
                 method: 'POST',

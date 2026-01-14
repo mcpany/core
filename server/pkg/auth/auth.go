@@ -9,6 +9,7 @@ import (
 	"crypto/subtle"
 	"fmt"
 	"net/http"
+	"strings"
 	"sync"
 	"time"
 
@@ -347,7 +348,7 @@ func (am *Manager) AddOAuth2Authenticator(ctx context.Context, serviceID string,
 }
 
 var (
-	// oauthAuthenticatorCache stores *OAuth2Authenticator keyed by IssuerURL + Audience.
+	// oauthAuthenticatorCache stores *OAuth2Authenticator keyed by IssuerURL + joined Audiences.
 	oauthAuthenticatorCache = xsync.NewMap[string, *OAuth2Authenticator]()
 )
 
@@ -420,30 +421,20 @@ func ValidateAuthentication(ctx context.Context, config *configv1.Authentication
 		_, err := authenticator.Authenticate(ctx, r)
 		return err
 	case *configv1.Authentication_Oidc:
-		// Reuse OAuth2 logic for OIDC for now, or adapt if needed
-		// For OIDCAuth, we might need to verify issuer/audience but we don't have a "Provider" created yet for this specific config (?)
-		// Or we create a new OAuth2Authenticator with issuer/aud from config.
 		cfg := method.Oidc
 		if cfg.GetIssuer() == "" {
 			return fmt.Errorf("invalid OIDC configuration: missing issuer")
 		}
-		// The proto has 'Audience' (repeated). OAuth2Authenticator uses single audience (optional check).
-		// We'll use the first audience for now or join them?
-		// OAuth2Authenticator expects config.Audience string.
-		// Go-OIDC verification can handle multiple audiences if we configure it.
-		// For now, let's use the first one if present.
-		aud := ""
-		if len(cfg.GetAudience()) > 0 {
-			aud = cfg.GetAudience()[0]
-		}
 
-		cacheKey := cfg.GetIssuer() + "|" + aud
+		audiences := cfg.GetAudience()
+		audStr := strings.Join(audiences, ",")
+		cacheKey := cfg.GetIssuer() + "|" + audStr
 
 		authenticator, ok := oauthAuthenticatorCache.Load(cacheKey)
 		if !ok {
 			oConfig := &OAuth2Config{
 				IssuerURL: cfg.GetIssuer(),
-				Audience:  aud,
+				Audiences: audiences,
 			}
 			initCtx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 			defer cancel()

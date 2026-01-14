@@ -16,7 +16,8 @@ import (
 // authentication using OpenID Connect (OIDC). It validates JWTs (JSON Web
 // Tokens) presented in the HTTP Authorization header.
 type OAuth2Authenticator struct {
-	verifier *oidc.IDTokenVerifier
+	verifier  *oidc.IDTokenVerifier
+	audiences []string
 }
 
 // NewOAuth2Authenticator creates a new OAuth2Authenticator with the provided
@@ -36,12 +37,25 @@ func NewOAuth2Authenticator(ctx context.Context, config *OAuth2Config) (*OAuth2A
 		return nil, fmt.Errorf("failed to create OIDC provider: %w", err)
 	}
 
-	oidcConfig := &oidc.Config{
-		ClientID: config.Audience,
+	oidcConfig := &oidc.Config{}
+	audiences := config.Audiences
+
+	// Backward compatibility
+	if len(audiences) == 0 && config.Audience != "" {
+		audiences = []string{config.Audience}
+	}
+
+	if len(audiences) == 1 {
+		oidcConfig.ClientID = audiences[0]
+	} else if len(audiences) > 1 {
+		// If multiple audiences are allowed, we skip the ClientID check in the verifier
+		// and perform it manually in Authenticate.
+		oidcConfig.SkipClientIDCheck = true
 	}
 
 	return &OAuth2Authenticator{
-		verifier: provider.Verifier(oidcConfig),
+		verifier:  provider.Verifier(oidcConfig),
+		audiences: audiences,
 	}, nil
 }
 
@@ -71,6 +85,25 @@ func (a *OAuth2Authenticator) Authenticate(ctx context.Context, r *http.Request)
 	idToken, err := a.verifier.Verify(ctx, token)
 	if err != nil {
 		return ctx, fmt.Errorf("unauthorized")
+	}
+
+	// Manual audience check if multiple audiences are configured
+	if len(a.audiences) > 1 {
+		matched := false
+		for _, aud := range idToken.Audience {
+			for _, allowedAud := range a.audiences {
+				if aud == allowedAud {
+					matched = true
+					break
+				}
+			}
+			if matched {
+				break
+			}
+		}
+		if !matched {
+			return ctx, fmt.Errorf("unauthorized: audience mismatch")
+		}
 	}
 
 	var claims struct {
