@@ -12,7 +12,7 @@ test.describe('Visual Audit', () => {
     { name: 'stacks_list', path: '/stacks' },
     { name: 'stack_detail', path: '/stacks/system' }, // Dummy ID
     { name: 'services_list', path: '/upstream-services' },
-    { name: 'settings', path: '/settings/general' },
+    { name: 'settings', path: '/settings' },
   ];
 
   for (const pageInfo of pages) {
