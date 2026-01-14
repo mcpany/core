@@ -350,3 +350,21 @@ func TestReadURL_Localhost(t *testing.T) {
 	require.NotNil(t, cfg)
 	assert.Equal(t, configv1.GlobalSettings_LOG_LEVEL_INFO, cfg.GlobalSettings.GetLogLevel())
 }
+
+func TestYamlEngine_ServiceConfigWrapper(t *testing.T) {
+	fs := afero.NewMemMapFs()
+	// Config that incorrectly uses service_config wrapper
+	require.NoError(t, afero.WriteFile(fs, "/config/service_config_wrapper.yaml", []byte(`
+upstream_services:
+  - name: "wrapper-test"
+    service_config:
+      http_service:
+        address: "https://example.com"
+`), 0644))
+
+	store := NewFileStore(fs, []string{"/config/service_config_wrapper.yaml"})
+	_, err := store.Load(context.Background())
+	assert.Error(t, err)
+	// Expect the new helpful error message
+	assert.Contains(t, err.Error(), "without a 'service_config' wrapper")
+}
