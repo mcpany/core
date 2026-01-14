@@ -41,6 +41,7 @@
 - [x] **Smart Stdio Argument Validation**: Detects and validates script files in `stdio_connection` arguments for common interpreters (Python, Node, etc.) while correctly handling remote URLs and module execution flags. (Friction Fighter)
 - [x] **JSON Config Helper**: Added helpful error messages for JSON configuration files when users mistakenly use Claude Desktop format (`mcpServers`). (Friction Fighter)
 - [x] **Live Logs Stream**: Fixed the WebSocket connection for the live logs dashboard by correcting the frontend URL path. Users can now see real-time server logs in the UI. (Experience Crafter)
+- [x] **Intelligent Config Diagnostics**: Added fuzzy matching suggestions for "unknown field" errors (e.g. "Did you mean 'address'?" for 'target_address') and helpful hints for YAML syntax errors (like tabs vs spaces). (Friction Fighter)
 
 ## 2. Top 10 Recommended Features
 
@@ -76,6 +77,8 @@ These features represent the next logical steps for the product, focusing on Ent
 | 25 | **Automatic Config Fixer** | **DevX**: An interactive CLI tool that detects common configuration errors (like legacy formats) and offers to fix them automatically. | Medium |
 | 24 | **Windows Filesystem Locking Fix** | **Compatibility**: Handle EPERM errors gracefully on Windows when renaming files, ensuring cross-platform stability. | Medium |
 | 25 | **Async Tool Loading** | **Reliability**: Ensure server waits for initial roots/tools to be loaded before accepting requests to prevent race conditions on startup. | Medium |
+| 26 | **Strict JSON Validation for Memory MCP** | **Friction Fighter**: Ensure nested JSON strings in configuration are properly escaped or parsed to prevent cryptic "Unexpected non-whitespace" errors. | Low |
+| 27 | **Config Schema Visualization** | **DevX**: Generate a visual representation of the expected configuration structure to help users understand nesting. | Low |
 
 ## 3. Codebase Health
 

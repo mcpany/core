@@ -4,6 +4,7 @@
 package config
 
 import (
+	"bytes"
 	"context"
 	"encoding/csv"
 	"encoding/json"
@@ -73,6 +74,12 @@ func (e *yamlEngine) Unmarshal(b []byte, v proto.Message) error {
 	// First, unmarshal YAML into a generic map.
 	var yamlMap map[string]interface{}
 	if err := yaml.Unmarshal(b, &yamlMap); err != nil {
+		// Enhance error message for common YAML mistakes
+		if strings.Contains(err.Error(), "found character that cannot start any token") {
+			if bytes.Contains(b, []byte("\t")) {
+				return fmt.Errorf("failed to unmarshal YAML: %w\n\nHint: YAML files cannot contain tabs. Please use spaces for indentation.", err)
+			}
+		}
 		return fmt.Errorf("failed to unmarshal YAML: %w", err)
 	}
 
@@ -109,6 +116,18 @@ func (e *yamlEngine) Unmarshal(b []byte, v proto.Message) error {
 			// revive:disable-next-line:error-strings // This error message is user facing and needs to be descriptive
 			//nolint:staticcheck // This error message is user facing and needs to be descriptive
 			return fmt.Errorf("%w\n\nIt looks like you are using 'service_config' as a wrapper key. In MCP Any configuration, you should place the service type (e.g., 'http_service', 'grpc_service') directly under the service definition, without a 'service_config' wrapper.", err)
+		}
+
+		// Check for unknown fields and suggest fuzzy matches
+		if strings.Contains(err.Error(), "unknown field") {
+			matches := unknownFieldRegex.FindStringSubmatch(err.Error())
+			if len(matches) > 1 {
+				unknownField := matches[1]
+				suggestion := suggestFix(unknownField, v)
+				if suggestion != "" {
+					return fmt.Errorf("%w\n\n%s", err, suggestion)
+				}
+			}
 		}
 		return err
 	}
@@ -152,6 +171,18 @@ func (e *jsonEngine) Unmarshal(b []byte, v proto.Message) error {
 			// revive:disable-next-line:error-strings // This error message is user facing and needs to be descriptive
 			//nolint:staticcheck // This error message is user facing and needs to be descriptive
 			return fmt.Errorf("%w\n\nDid you mean \"upstream_services\"? It looks like you might be using a Claude Desktop configuration format. MCP Any uses a different configuration structure. See documentation for details.", err)
+		}
+
+		// Check for unknown fields and suggest fuzzy matches
+		if strings.Contains(err.Error(), "unknown field") {
+			matches := unknownFieldRegex.FindStringSubmatch(err.Error())
+			if len(matches) > 1 {
+				unknownField := matches[1]
+				suggestion := suggestFix(unknownField, v)
+				if suggestion != "" {
+					return fmt.Errorf("%w\n\n%s", err, suggestion)
+				}
+			}
 		}
 		return err
 	}
@@ -200,6 +231,7 @@ type ServiceStore interface {
 }
 
 var envVarRegex = regexp.MustCompile(`\${([^{}]+)}`)
+var unknownFieldRegex = regexp.MustCompile(`unknown field "([^"]+)"`)
 
 // expand replaces ${VAR} or ${VAR:default} with environment variables.
 // If a variable is missing and no default is provided, it returns an error.
@@ -703,4 +735,81 @@ func (ms *MultiStore) Load(ctx context.Context) (*configv1.McpAnyServerConfig, e
 		}
 	}
 	return mergedConfig, nil
+}
+
+// levenshtein calculates the Levenshtein distance between two strings.
+func levenshtein(s, t string) int {
+	d := make([][]int, len(s)+1)
+	for i := range d {
+		d[i] = make([]int, len(t)+1)
+	}
+	for i := 0; i <= len(s); i++ {
+		d[i][0] = i
+	}
+	for j := 0; j <= len(t); j++ {
+		d[0][j] = j
+	}
+	for j := 1; j <= len(t); j++ {
+		for i := 1; i <= len(s); i++ {
+			if s[i-1] == t[j-1] {
+				d[i][j] = d[i-1][j-1]
+			} else {
+				min := d[i-1][j]
+				if d[i][j-1] < min {
+					min = d[i][j-1]
+				}
+				if d[i-1][j-1] < min {
+					min = d[i-1][j-1]
+				}
+				d[i][j] = min + 1
+			}
+		}
+	}
+	return d[len(s)][len(t)]
+}
+
+// suggestFix finds the closest matching field name in the proto message.
+func suggestFix(unknownField string, root proto.Message) string {
+	candidates := make(map[string]struct{})
+	collectFieldNames(root.ProtoReflect().Descriptor(), candidates, make(map[string]bool))
+
+	bestMatch := ""
+	minDist := 100
+
+	for name := range candidates {
+		dist := levenshtein(unknownField, name)
+		if dist < minDist {
+			minDist = dist
+			bestMatch = name
+		}
+	}
+
+	// Only suggest if it's reasonably close.
+	// We allow up to 3 edits for short strings, or more for longer strings (50% rule).
+	limit := len(unknownField) / 2
+	if limit < 3 {
+		limit = 3
+	}
+
+	if minDist <= limit {
+		return fmt.Sprintf("Did you mean %q?", bestMatch)
+	}
+	return ""
+}
+
+func collectFieldNames(md protoreflect.MessageDescriptor, candidates map[string]struct{}, visited map[string]bool) {
+	if visited[string(md.FullName())] {
+		return
+	}
+	visited[string(md.FullName())] = true
+
+	for i := 0; i < md.Fields().Len(); i++ {
+		fd := md.Fields().Get(i)
+		candidates[string(fd.Name())] = struct{}{}
+		candidates[fd.JSONName()] = struct{}{}
+
+		if fd.Kind() == protoreflect.MessageKind {
+			 collectFieldNames(fd.Message(), candidates, visited)
+		}
+	}
 }
