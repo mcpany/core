@@ -58,3 +58,45 @@ func TestReproduction_ClaudeConfig_HelpfulError(t *testing.T) {
 	// Verify the helpful message is present
 	assert.True(t, strings.Contains(errStrict.Error(), "Did you mean \"upstream_services\"?"), "Error message should contain helpful hint")
 }
+
+func TestReproduction_Typo_UnknownField_HelpfulError(t *testing.T) {
+	fs := afero.NewMemMapFs()
+	// Config with a typo: "target_address" instead of "address"
+	typoConfig := `
+upstream_services:
+  - name: "my-service"
+    http_service:
+      target_address: "http://localhost:8080"
+`
+	_ = afero.WriteFile(fs, "typo_config.yaml", []byte(typoConfig), 0644)
+
+	store := NewFileStore(fs, []string{"typo_config.yaml"})
+	_, err := store.Load(context.Background())
+
+	assert.Error(t, err)
+	// Now we expect a suggestion.
+	// It might suggest "address" or "http_address" depending on Levenshtein distance.
+	// Both are valid suggestions relative to "target_address".
+	hasSuggestion := strings.Contains(err.Error(), "Did you mean \"address\"?") || strings.Contains(err.Error(), "Did you mean \"http_address\"?")
+	assert.True(t, hasSuggestion, "Error message should contain a helpful suggestion")
+	t.Logf("Error: %v", err)
+}
+
+func TestReproduction_YamlSyntaxError_HelpfulMessage(t *testing.T) {
+	fs := afero.NewMemMapFs()
+	// Config with indentation error
+	// "calls" is indented too far, making it look like it's inside "address" value (which is impossible)
+	// or just invalid structure for list.
+	// Actually, let's use a TAB character which is forbidden in YAML.
+	badYaml := "upstream_services:\n\t- name: test"
+	_ = afero.WriteFile(fs, "tab_config.yaml", []byte(badYaml), 0644)
+
+	store := NewFileStore(fs, []string{"tab_config.yaml"})
+	_, err := store.Load(context.Background())
+
+	assert.Error(t, err)
+	t.Logf("Error: %v", err)
+	// Check if the error is reasonably descriptive
+	assert.True(t, strings.Contains(err.Error(), "found character that cannot start any token"), "Should mention tab error or token error")
+	assert.True(t, strings.Contains(err.Error(), "Hint: YAML files cannot contain tabs"), "Should provide hint about tabs")
+}
