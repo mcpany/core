@@ -22,9 +22,9 @@ func TestEvaluateCompiledCallPolicy_Coverage(t *testing.T) {
 			Rules: []*configv1.CallPolicyRule{
 				{
 					Action:        &allow,
-					NameRegex:     proto.String("match.*"),
-					CallIdRegex:   proto.String("id.*"),
-					ArgumentRegex: proto.String(".*secret.*"),
+					NameRegex:     proto.String("^match.*"),
+					CallIdRegex:   proto.String("^id.*"),
+					ArgumentRegex: proto.String("secret"),
 				},
 			},
 		},
@@ -39,11 +39,13 @@ func TestEvaluateCompiledCallPolicy_Coverage(t *testing.T) {
 	assert.False(t, allowed) // Default DENY
 
 	// Case 2: Call ID mismatch
+	// "noid" does not start with "id"
 	allowed, err = EvaluateCompiledCallPolicy(compiled, "match1", "noid", json.RawMessage(`{"a":"secret"}`))
 	assert.NoError(t, err)
 	assert.False(t, allowed)
 
 	// Case 3: Arg mismatch
+	// "public" does not contain "secret"
 	allowed, err = EvaluateCompiledCallPolicy(compiled, "match1", "id1", json.RawMessage(`{"a":"public"}`))
 	assert.NoError(t, err)
 	assert.False(t, allowed)
