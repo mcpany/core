@@ -299,7 +299,7 @@ func (a *Application) Run(
 
 	var stores []config.Store
 	if len(configPaths) > 0 {
-		// Strict validation: Use NewFileStore to fail fast on invalid config files
+		// Use strict FileStore to fail fast on configuration errors (Track 1: Friction Fighter)
 		stores = append(stores, config.NewFileStore(fs, configPaths))
 	}
 	stores = append(stores, storageStore)
