@@ -38,6 +38,7 @@
 - [x] **Proactive Schema Sanitization**: Automatically fixes common schema issues (like missing `type: object`) in tool definitions to ensure compatibility with strict MCP clients (e.g. Claude Code).
 - [x] **Smart Config Error Messages**: Detect and guide users migrating from Claude Desktop configuration format (`mcpServers` vs `upstream_services`). (Friction Fighter)
 - [x] **Relative Command Resolution**: Fixed an issue where relative commands in `stdio_connection` failed validation even if they existed in the specified `working_directory`. (Friction Fighter)
+- [x] **Smart Stdio Argument Validation**: Detects and validates script files in `stdio_connection` arguments for common interpreters (Python, Node, etc.) while correctly handling remote URLs and module execution flags. (Friction Fighter)
 - [x] **JSON Config Helper**: Added helpful error messages for JSON configuration files when users mistakenly use Claude Desktop format (`mcpServers`). (Friction Fighter)
 - [x] **Live Logs Stream**: Fixed the WebSocket connection for the live logs dashboard by correcting the frontend URL path. Users can now see real-time server logs in the UI. (Experience Crafter)
 
