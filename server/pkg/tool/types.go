@@ -2186,7 +2186,8 @@ func checkForShellInjection(val string, template string, placeholder string) err
 	// Block common shell metacharacters and globbing/expansion characters
 	// % and ^ are Windows CMD metacharacters
 	// We also block quotes and backslashes to prevent argument splitting and interpretation abuse
-	dangerousChars := []string{";", "|", "&", "$", "`", "(", ")", "{", "}", "<", ">", "!", "\n", "*", "?", "[", "]", "~", "#", "%", "^", "\"", "'", "\\"}
+	// We also block control characters that could act as separators or cause confusion (\r, \t, \v, \f)
+	dangerousChars := []string{";", "|", "&", "$", "`", "(", ")", "{", "}", "<", ">", "!", "\n", "\r", "\t", "\v", "\f", "*", "?", "[", "]", "~", "#", "%", "^", "\"", "'", "\\"}
 	for _, char := range dangerousChars {
 		if strings.Contains(val, char) {
 			return fmt.Errorf("shell injection detected: value contains dangerous character %q", char)

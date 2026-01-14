@@ -594,9 +594,10 @@ func TestRun_ConfigLoadError(t *testing.T) {
 	defer cancel()
 
 	app := NewApplication()
-	// Should NOT return error, as we are tolerant to config errors during startup
+	// Should return error, as we are now strict about config errors during startup
 	err = app.Run(ctx, fs, false, "localhost:0", "localhost:0", []string{"/config.yaml"}, "", 5*time.Second)
-	require.NoError(t, err)
+	require.Error(t, err)
+	assert.Contains(t, err.Error(), "malformed yaml")
 }
 
 func TestRun_BusProviderError(t *testing.T) {
