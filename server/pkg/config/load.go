@@ -113,15 +113,9 @@ func LoadResolvedConfig(ctx context.Context, store Store) (*configv1.McpAnyServe
 		log.Info("No users configured, creating default user")
 		allProfileIDs := make(map[string]bool)
 
-		// Collect from GlobalSettings.Profiles (enabled profiles)
-		for _, p := range fileConfig.GetGlobalSettings().GetProfiles() {
+		// Collect from resolved active profiles
+		for _, p := range profiles {
 			allProfileIDs[p] = true
-		}
-		// Collect from ProfileDefinitions
-		for _, pd := range fileConfig.GetGlobalSettings().GetProfileDefinitions() {
-			if pd.GetName() != "" {
-				allProfileIDs[pd.GetName()] = true
-			}
 		}
 
 		// Ensure at least "default"
