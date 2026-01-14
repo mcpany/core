@@ -108,6 +108,8 @@ export interface GlobalSettings {
   useSudoForDocker: boolean;
   /** Allowed file paths for validation. */
   allowedFilePaths: string[];
+  /** Context Optimizer configuration. */
+  contextOptimizer?: ContextOptimizerConfig | undefined;
 }
 
 export enum GlobalSettings_LogLevel {
@@ -198,6 +200,11 @@ export function globalSettings_LogFormatToJSON(object: GlobalSettings_LogFormat)
     default:
       return "UNRECOGNIZED";
   }
+}
+
+export interface ContextOptimizerConfig {
+  /** Maximum characters per text field in the result. */
+  maxChars: number;
 }
 
 export interface TelemetryConfig {
@@ -751,6 +758,7 @@ function createBaseGlobalSettings(): GlobalSettings {
     githubApiUrl: "",
     useSudoForDocker: false,
     allowedFilePaths: [],
+    contextOptimizer: undefined,
   };
 }
 
@@ -818,6 +826,9 @@ export const GlobalSettings: MessageFns<GlobalSettings> = {
     }
     for (const v of message.allowedFilePaths) {
       writer.uint32(178).string(v!);
+    }
+    if (message.contextOptimizer !== undefined) {
+      ContextOptimizerConfig.encode(message.contextOptimizer, writer.uint32(186).fork()).join();
     }
     return writer;
   },
@@ -997,6 +1008,14 @@ export const GlobalSettings: MessageFns<GlobalSettings> = {
           message.allowedFilePaths.push(reader.string());
           continue;
         }
+        case 23: {
+          if (tag !== 186) {
+            break;
+          }
+
+          message.contextOptimizer = ContextOptimizerConfig.decode(reader, reader.uint32());
+          continue;
+        }
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -1037,6 +1056,9 @@ export const GlobalSettings: MessageFns<GlobalSettings> = {
       allowedFilePaths: globalThis.Array.isArray(object?.allowed_file_paths)
         ? object.allowed_file_paths.map((e: any) => globalThis.String(e))
         : [],
+      contextOptimizer: isSet(object.context_optimizer)
+        ? ContextOptimizerConfig.fromJSON(object.context_optimizer)
+        : undefined,
     };
   },
 
@@ -1105,6 +1127,9 @@ export const GlobalSettings: MessageFns<GlobalSettings> = {
     if (message.allowedFilePaths?.length) {
       obj.allowed_file_paths = message.allowedFilePaths;
     }
+    if (message.contextOptimizer !== undefined) {
+      obj.context_optimizer = ContextOptimizerConfig.toJSON(message.contextOptimizer);
+    }
     return obj;
   },
 
@@ -1146,6 +1171,67 @@ export const GlobalSettings: MessageFns<GlobalSettings> = {
     message.githubApiUrl = object.githubApiUrl ?? "";
     message.useSudoForDocker = object.useSudoForDocker ?? false;
     message.allowedFilePaths = object.allowedFilePaths?.map((e) => e) || [];
+    message.contextOptimizer = (object.contextOptimizer !== undefined && object.contextOptimizer !== null)
+      ? ContextOptimizerConfig.fromPartial(object.contextOptimizer)
+      : undefined;
+    return message;
+  },
+};
+
+function createBaseContextOptimizerConfig(): ContextOptimizerConfig {
+  return { maxChars: 0 };
+}
+
+export const ContextOptimizerConfig: MessageFns<ContextOptimizerConfig> = {
+  encode(message: ContextOptimizerConfig, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.maxChars !== 0) {
+      writer.uint32(8).int32(message.maxChars);
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): ContextOptimizerConfig {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseContextOptimizerConfig();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 8) {
+            break;
+          }
+
+          message.maxChars = reader.int32();
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): ContextOptimizerConfig {
+    return { maxChars: isSet(object.max_chars) ? globalThis.Number(object.max_chars) : 0 };
+  },
+
+  toJSON(message: ContextOptimizerConfig): unknown {
+    const obj: any = {};
+    if (message.maxChars !== 0) {
+      obj.max_chars = Math.round(message.maxChars);
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<ContextOptimizerConfig>, I>>(base?: I): ContextOptimizerConfig {
+    return ContextOptimizerConfig.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<ContextOptimizerConfig>, I>>(object: I): ContextOptimizerConfig {
+    const message = createBaseContextOptimizerConfig();
+    message.maxChars = object.maxChars ?? 0;
     return message;
   },
 };

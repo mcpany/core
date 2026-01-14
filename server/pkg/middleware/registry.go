@@ -10,6 +10,7 @@ import (
 	"sync"
 
 	"github.com/mcpany/core/server/pkg/auth"
+	"github.com/mcpany/core/server/pkg/logging"
 	"github.com/mcpany/core/server/pkg/tool"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
@@ -108,9 +109,8 @@ type StandardMiddlewares struct {
 func InitStandardMiddlewares(
 	authManager *auth.Manager,
 	toolManager tool.ManagerInterface,
-	auditConfig *configv1.AuditConfig,
 	cachingMiddleware *CachingMiddleware,
-	globalRateLimitConfig *configv1.RateLimitConfig,
+	globalSettings *configv1.GlobalSettings,
 ) (*StandardMiddlewares, error) {
 	// 1. Logging
 	RegisterMCP("logging", func(_ *configv1.Middleware) func(mcp.MethodHandler) mcp.MethodHandler {
@@ -213,7 +213,7 @@ func InitStandardMiddlewares(
 
 	// Audit
 	// Audit middleware needs to be closed to ensure file handles are released.
-	audit, err := NewAuditMiddleware(auditConfig)
+	audit, err := NewAuditMiddleware(globalSettings.GetAudit())
 	if err != nil {
 		return nil, err
 	}
@@ -242,7 +242,7 @@ func InitStandardMiddlewares(
 	})
 
 	// Global Rate Limit
-	globalRateLimit := NewGlobalRateLimitMiddleware(globalRateLimitConfig)
+	globalRateLimit := NewGlobalRateLimitMiddleware(globalSettings.GetRateLimit())
 	RegisterMCP("global_ratelimit", func(_ *configv1.Middleware) func(mcp.MethodHandler) mcp.MethodHandler {
 		return func(next mcp.MethodHandler) mcp.MethodHandler {
 			return func(ctx context.Context, method string, req mcp.Request) (mcp.Result, error) {
@@ -250,6 +250,21 @@ func InitStandardMiddlewares(
 			}
 		}
 	})
+
+	// DLP
+	if globalSettings.GetDlp() != nil {
+		RegisterMCP("dlp", func(_ *configv1.Middleware) func(mcp.MethodHandler) mcp.MethodHandler {
+			return DLPMiddleware(globalSettings.GetDlp(), logging.GetLogger())
+		})
+	}
+
+	// Context Optimizer
+	if globalSettings.GetContextOptimizer() != nil {
+		ctxOptimizer := NewContextOptimizer(int(globalSettings.GetContextOptimizer().GetMaxChars()))
+		RegisterMCP("context_optimizer", func(_ *configv1.Middleware) func(mcp.MethodHandler) mcp.MethodHandler {
+			return ctxOptimizer.Execute
+		})
+	}
 
 	return &StandardMiddlewares{
 		Audit:           audit,

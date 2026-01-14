@@ -111,6 +111,13 @@ message GlobalSettings {
   bool use_sudo_for_docker = 21 [json_name = "use_sudo_for_docker"];
   // Allowed file paths for validation.
   repeated string allowed_file_paths = 22 [json_name = "allowed_file_paths"];
+  // Context Optimizer configuration.
+  ContextOptimizerConfig context_optimizer = 23 [json_name = "context_optimizer"];
+}
+
+message ContextOptimizerConfig {
+  // Maximum characters per text field in the result.
+  int32 max_chars = 1 [json_name = "max_chars"];
 }
 
 message TelemetryConfig {

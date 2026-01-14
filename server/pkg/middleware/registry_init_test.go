@@ -92,10 +92,15 @@ func TestInitStandardMiddlewares(t *testing.T) {
 	auditConfig := &configv1.AuditConfig{
 		Enabled: proto.Bool(false), // Disable to avoid file creation issues in test
 	}
+	globalSettings := &configv1.GlobalSettings{
+		Audit:            auditConfig,
+		Dlp:              &configv1.DLPConfig{Enabled: proto.Bool(true)},
+		ContextOptimizer: &configv1.ContextOptimizerConfig{MaxChars: proto.Int32(100)},
+	}
 	cachingMiddleware := &CachingMiddleware{}
 
 	// Call InitStandardMiddlewares
-	standardMiddlewares, err := InitStandardMiddlewares(authManager, mockToolManager, auditConfig, cachingMiddleware, nil)
+	standardMiddlewares, err := InitStandardMiddlewares(authManager, mockToolManager, cachingMiddleware, globalSettings)
 	assert.NoError(t, err)
 	assert.NotNil(t, standardMiddlewares)
 	if standardMiddlewares.Cleanup != nil {
@@ -103,7 +108,7 @@ func TestInitStandardMiddlewares(t *testing.T) {
 	}
 
 	// Verify standard middlewares are registered in MCP registry
-	expectedMiddlewares := []string{"logging", "auth", "debug", "cors", "caching", "ratelimit", "call_policy", "audit", "global_ratelimit"}
+	expectedMiddlewares := []string{"logging", "auth", "debug", "cors", "caching", "ratelimit", "call_policy", "audit", "global_ratelimit", "dlp", "context_optimizer"}
 
 	globalRegistry.mu.RLock()
 	for _, name := range expectedMiddlewares {
@@ -236,10 +241,13 @@ func TestInitStandardMiddlewares_AuditError(t *testing.T) {
 		StorageType: &st,
 		OutputPath:  proto.String("/invalid/path/that/does/not/exist/audit.db"),
 	}
+	globalSettings := &configv1.GlobalSettings{
+		Audit: auditConfig,
+	}
 	cachingMiddleware := &CachingMiddleware{}
 
 	// Call InitStandardMiddlewares
-	standardMiddlewares, err := InitStandardMiddlewares(authManager, mockToolManager, auditConfig, cachingMiddleware, nil)
+	standardMiddlewares, err := InitStandardMiddlewares(authManager, mockToolManager, cachingMiddleware, globalSettings)
 	assert.Error(t, err)
 	assert.Nil(t, standardMiddlewares)
 }

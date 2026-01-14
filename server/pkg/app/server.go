@@ -516,7 +516,7 @@ func (a *Application) Run(
 
 	// Initialize standard middlewares in registry
 	cachingMiddleware := middleware.NewCachingMiddleware(a.ToolManager)
-	standardMiddlewares, err := middleware.InitStandardMiddlewares(mcpSrv.AuthManager(), a.ToolManager, cfg.GetGlobalSettings().GetAudit(), cachingMiddleware, cfg.GetGlobalSettings().GetRateLimit())
+	standardMiddlewares, err := middleware.InitStandardMiddlewares(mcpSrv.AuthManager(), a.ToolManager, cachingMiddleware, cfg.GetGlobalSettings())
 	if err != nil {
 		workerCancel()
 		upstreamWorker.Stop()
