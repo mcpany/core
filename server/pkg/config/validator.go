@@ -413,14 +413,14 @@ func validateServiceConfig(service *configv1.UpstreamServiceConfig) error {
 
 func validateHTTPService(httpService *configv1.HttpUpstreamService) error {
 	if httpService.GetAddress() == "" {
-		return fmt.Errorf("http service has empty target_address")
+		return fmt.Errorf("http service has empty address")
 	}
 	if !validation.IsValidURL(httpService.GetAddress()) {
-		return fmt.Errorf("invalid http target_address: %s", httpService.GetAddress())
+		return fmt.Errorf("invalid http address: %s", httpService.GetAddress())
 	}
 	u, _ := url.Parse(httpService.GetAddress())
 	if u.Scheme != schemeHTTP && u.Scheme != schemeHTTPS {
-		return fmt.Errorf("invalid http target_address scheme: %s", u.Scheme)
+		return fmt.Errorf("invalid http address scheme: %s", u.Scheme)
 	}
 
 	for name, call := range httpService.GetCalls() {
@@ -436,14 +436,14 @@ func validateHTTPService(httpService *configv1.HttpUpstreamService) error {
 
 func validateWebSocketService(websocketService *configv1.WebsocketUpstreamService) error {
 	if websocketService.GetAddress() == "" {
-		return fmt.Errorf("websocket service has empty target_address")
+		return fmt.Errorf("websocket service has empty address")
 	}
 	if !validation.IsValidURL(websocketService.GetAddress()) {
-		return fmt.Errorf("invalid websocket target_address: %s", websocketService.GetAddress())
+		return fmt.Errorf("invalid websocket address: %s", websocketService.GetAddress())
 	}
 	u, _ := url.Parse(websocketService.GetAddress())
 	if u.Scheme != "ws" && u.Scheme != "wss" {
-		return fmt.Errorf("invalid websocket target_address scheme: %s", u.Scheme)
+		return fmt.Errorf("invalid websocket address scheme: %s", u.Scheme)
 	}
 
 	for name, call := range websocketService.GetCalls() {
@@ -459,7 +459,7 @@ func validateWebSocketService(websocketService *configv1.WebsocketUpstreamServic
 
 func validateGrpcService(grpcService *configv1.GrpcUpstreamService) error {
 	if grpcService.GetAddress() == "" {
-		return fmt.Errorf("gRPC service has empty target_address")
+		return fmt.Errorf("gRPC service has empty address")
 	}
 
 	for name, call := range grpcService.GetCalls() {
@@ -478,7 +478,7 @@ func validateOpenAPIService(openapiService *configv1.OpenapiUpstreamService) err
 		return fmt.Errorf("openapi service must have either an address, spec content or spec url")
 	}
 	if openapiService.GetAddress() != "" && !validation.IsValidURL(openapiService.GetAddress()) {
-		return fmt.Errorf("invalid openapi target_address: %s", openapiService.GetAddress())
+		return fmt.Errorf("invalid openapi address: %s", openapiService.GetAddress())
 	}
 	if openapiService.GetSpecUrl() != "" && !validation.IsValidURL(openapiService.GetSpecUrl()) {
 		return fmt.Errorf("invalid openapi spec_url: %s", openapiService.GetSpecUrl())
@@ -621,11 +621,11 @@ func validateGraphQLService(graphqlService *configv1.GraphQLUpstreamService) err
 		return fmt.Errorf("graphql service has empty address")
 	}
 	if !validation.IsValidURL(graphqlService.GetAddress()) {
-		return fmt.Errorf("invalid graphql target_address: %s", graphqlService.GetAddress())
+		return fmt.Errorf("invalid graphql address: %s", graphqlService.GetAddress())
 	}
 	u, _ := url.Parse(graphqlService.GetAddress())
 	if u.Scheme != schemeHTTP && u.Scheme != schemeHTTPS {
-		return fmt.Errorf("invalid graphql target_address scheme: %s", u.Scheme)
+		return fmt.Errorf("invalid graphql address scheme: %s", u.Scheme)
 	}
 	return nil
 }
@@ -635,11 +635,11 @@ func validateWebrtcService(webrtcService *configv1.WebrtcUpstreamService) error 
 		return fmt.Errorf("webrtc service has empty address")
 	}
 	if !validation.IsValidURL(webrtcService.GetAddress()) {
-		return fmt.Errorf("invalid webrtc target_address: %s", webrtcService.GetAddress())
+		return fmt.Errorf("invalid webrtc address: %s", webrtcService.GetAddress())
 	}
 	u, _ := url.Parse(webrtcService.GetAddress())
 	if u.Scheme != schemeHTTP && u.Scheme != schemeHTTPS {
-		return fmt.Errorf("invalid webrtc target_address scheme: %s", u.Scheme)
+		return fmt.Errorf("invalid webrtc address scheme: %s", u.Scheme)
 	}
 	return nil
 }
