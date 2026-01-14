@@ -361,6 +361,7 @@ type tailBuffer struct {
 	mu    sync.Mutex
 }
 
+// Write writes data to the buffer, maintaining the size limit.
 func (b *tailBuffer) Write(p []byte) (n int, err error) {
 	b.mu.Lock()
 	defer b.mu.Unlock()
@@ -373,6 +374,7 @@ func (b *tailBuffer) Write(p []byte) (n int, err error) {
 	return len(p), nil
 }
 
+// String returns the buffered data as a string.
 func (b *tailBuffer) String() string {
 	b.mu.Lock()
 	defer b.mu.Unlock()

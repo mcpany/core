@@ -1486,8 +1486,13 @@ func (a *Application) runServerMode(
 		httpHandler.ServeHTTP(w, r)
 	})))
 
-	expectedReady++
-	startHTTPServer(localCtx, &wg, errChan, readyChan, "MCP Any HTTP", httpBindAddress, handler, shutdownTimeout)
+	httpLis, err := (&net.ListenConfig{}).Listen(context.Background(), "tcp", httpBindAddress)
+	if err != nil {
+		errChan <- fmt.Errorf("HTTP server failed to listen: %w", err)
+	} else {
+		expectedReady++
+		startHTTPServer(localCtx, &wg, errChan, readyChan, "MCP Any HTTP", httpLis, handler, shutdownTimeout)
+	}
 
 	// Wait for servers to be ready
 	timeout := time.NewTimer(10 * time.Second) // Reasonable timeout for binding ports
@@ -1667,14 +1672,15 @@ func startGrpcServer(
 // wg is a WaitGroup to signal when the server has shut down.
 // errChan is a channel for reporting errors during startup.
 // name is a descriptive name for the server, used in logging.
-// addr is the address and port on which the server will listen.
+// lis is the net.Listener on which the server will listen.
 // handler is the HTTP handler for processing requests.
 func startHTTPServer(
 	ctx context.Context,
 	wg *sync.WaitGroup,
 	errChan chan<- error,
 	readyChan chan<- struct{},
-	name, addr string,
+	name string,
+	lis net.Listener,
 	handler http.Handler,
 	shutdownTimeout time.Duration,
 ) {
@@ -1682,14 +1688,25 @@ func startHTTPServer(
 	go func() {
 		defer wg.Done()
 		serverLog := logging.GetLogger().With("server", name)
-		lis, err := (&net.ListenConfig{}).Listen(context.Background(), "tcp", addr)
-		if err != nil {
-			errChan <- fmt.Errorf("[%s] server failed to listen: %w", name, err)
-			return
-		}
+		// Listener passed in is already listening
 		if readyChan != nil {
 			readyChan <- struct{}{}
 		}
+		// We don't close lis here because http.Server.Serve closes it,
+		// or we might want to close it on shutdown?
+		// http.Server.Serve docs: "Serve accepts incoming connections on the Listener l... always returns a non-nil error."
+		// It does NOT say it closes the listener.
+		// However, Shutdown() closes the listener?
+		// "Shutdown gracefully shuts down the server without interrupting any active connections... Shutdown works by first closing all open listeners..."
+		// So Server.Shutdown closes it.
+		// BUT if we error out before Shutdown, we should close it?
+		// Let's rely on Server.Serve or Shutdown closing it, or defer close if not?
+		// Ideally we defer close if Serve returns error other than ErrServerClosed.
+		// Use a flag to check if Shutdown was called?
+		// Or just defer Close() ignoring error? http.Server might close it too, double close is fine for net.Listener usually.
+		// But let's check stdlib behavior.
+		// Safe bet: defer lis.Close() at the top.
+		// If Shutdown is called, it closes it. Double close is harmless for TCP listeners.
 		defer func() { _ = lis.Close() }()
 
 		serverLog = serverLog.With("port", lis.Addr().String())

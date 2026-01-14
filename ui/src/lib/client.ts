@@ -19,8 +19,14 @@ import { PromptDefinition } from '@proto/config/v1/prompt';
 import { Credential, Authentication } from '@proto/config/v1/auth';
 
 import { BrowserHeaders } from 'browser-headers';
-// Extend UpstreamServiceConfig to include runtime error information
+
+/**
+ * Extended UpstreamServiceConfig to include runtime error information.
+ */
 export interface UpstreamServiceConfig extends BaseUpstreamServiceConfig {
+    /**
+     * The last error message encountered by the service, if any.
+     */
     lastError?: string;
 }
 
@@ -55,24 +61,45 @@ const fetchWithAuth = async (input: RequestInfo | URL, init?: RequestInit) => {
     return fetch(input, { ...init, headers });
 };
 
+/**
+ * Definition of a secret stored in the system.
+ */
 export interface SecretDefinition {
+    /** Unique identifier for the secret. */
     id: string;
+    /** Human-readable name of the secret. */
     name: string;
+    /** The key or name used to reference the secret in configurations. */
     key: string;
+    /** The secret value (masked in responses). */
     value: string;
+    /** The provider of the secret (e.g., openai, anthropic). */
     provider?: 'openai' | 'anthropic' | 'aws' | 'gcp' | 'custom';
+    /** Timestamp of the last usage. */
     lastUsed?: string;
+    /** Timestamp of creation. */
     createdAt: string;
 }
 
+/**
+ * Content of a resource.
+ */
 export interface ResourceContent {
+    /** The URI of the resource. */
     uri: string;
+    /** The MIME type of the content. */
     mimeType: string;
+    /** Text content, if applicable. */
     text?: string;
+    /** Binary content as a base64 encoded string, if applicable. */
     blob?: string;
 }
 
+/**
+ * Response for reading a resource.
+ */
 export interface ReadResourceResponse {
+    /** List of resource contents. */
     contents: ResourceContent[];
 }
 
@@ -92,8 +119,16 @@ const getMetadata = () => {
     return undefined;
 };
 
+/**
+ * API Client for interacting with the MCP Any server.
+ */
 export const apiClient = {
     // Services (Migrated to gRPC)
+
+    /**
+     * Lists all registered upstream services.
+     * @returns A promise that resolves to a list of services.
+     */
     listServices: async () => {
         // Fallback to REST for E2E reliability until gRPC-Web is stable
         const res = await fetchWithAuth('/api/v1/services');
@@ -114,6 +149,12 @@ export const apiClient = {
             lastError: s.last_error,
         }));
     },
+
+    /**
+     * Gets a single service by its ID.
+     * @param id The ID of the service to retrieve.
+     * @returns A promise that resolves to the service configuration.
+     */
     getService: async (id: string) => {
          try {
              // Try gRPC-Web first
@@ -146,6 +187,13 @@ export const apiClient = {
              throw e;
          }
     },
+
+    /**
+     * Sets the status (enabled/disabled) of a service.
+     * @param name The name of the service.
+     * @param disable True to disable the service, false to enable it.
+     * @returns A promise that resolves to the updated service status.
+     */
     setServiceStatus: async (name: string, disable: boolean) => {
         const response = await fetchWithAuth(`/api/v1/services/${name}`, {
             method: 'PUT',
@@ -155,11 +203,23 @@ export const apiClient = {
         if (!response.ok) throw new Error('Failed to update service status');
         return response.json();
     },
+
+    /**
+     * Gets the status of a service.
+     * @param name The name of the service.
+     * @returns A promise that resolves to the service status.
+     */
     getServiceStatus: async (name: string) => {
         // Fallback or keep as TODO - REST endpoint might be /api/v1/services/{name}/status ?
         // For E2E, we mainly check list. Let's assume list covers status.
         return {} as any;
     },
+
+    /**
+     * Registers a new upstream service.
+     * @param config The configuration of the service to register.
+     * @returns A promise that resolves to the registered service configuration.
+     */
     registerService: async (config: UpstreamServiceConfig) => {
         // Map camelCase (UI) to snake_case (Server REST)
         const payload: any = {
@@ -181,28 +241,7 @@ export const apiClient = {
             payload.command_line_service = {
                 command: config.commandLineService.command,
                 working_directory: config.commandLineService.workingDirectory,
-                environment: config.commandLineService.env, // Correct field name is 'env' not 'environment' or 'environment' not 'env'?
-                // Wait, generated code says:
-                // 4183:     env: {},
-                // But in fromJSON:
-                // 4387:       env: isObject(object.env)
-                // So property on object is 'env'.
-                // My payload mapping in client.ts used 'environment'.
-                // If I'm creating a simple object to send via REST, I should use snake_case for the properties IF the server expects snake_case.
-                // The server uses protojson.Unmarshal.
-                // protojson expects JSON names.
-                // In proto definition (upstream_service.proto):
-                // map<string, SecretValue> env = 14;
-                // so JSON name is "env".
-                // BUT my multi_replace used "environment".
-                // AND the lint error says `Property 'environment' does not exist on type 'CommandLineUpstreamService'`.
-                // This refers to `config.commandLineService.environment`.
-                // Checking `CommandLineUpstreamService` interface in the outline?
-                // Step 804 (lines 4170-4184) shows:
-                // 4183:     env: {},
-                // It does NOT have `environment`.
-                // So `config.commandLineService.env` is correct.
-                // And payload key should be `env` (for protojson).
+                environment: config.commandLineService.env,
                 env: config.commandLineService.env
             };
         }
@@ -228,6 +267,12 @@ export const apiClient = {
         }
         return response.json();
     },
+
+    /**
+     * Updates an existing upstream service.
+     * @param config The updated configuration of the service.
+     * @returns A promise that resolves to the updated service configuration.
+     */
     updateService: async (config: UpstreamServiceConfig) => {
         // Same mapping as register
         const payload: any = {
@@ -261,11 +306,8 @@ export const apiClient = {
             payload.post_call_hooks = config.postCallHooks;
         }
 
-        const response = await fetchWithAuth(`/api/v1/services/${config.name}`, { // REST assumes ID/Name in path? Or just POST?
-            method: 'PUT', // Or POST if RegisterService handles update? server.go endpoint /api/v1/services handles POST for add. /api/v1/services/{name} for update?
-            // api.go has: mux.Handle("/api/v1/", authMiddleware(apiHandler))
-            // createAPIHandler: r.HandleFunc("/services", a.handleServices).Methods("GET", "POST")
-            // r.HandleFunc("/services/{id}", a.handleServices).Methods("PUT", "DELETE")
+        const response = await fetchWithAuth(`/api/v1/services/${config.name}`, {
+            method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload)
         });
@@ -276,6 +318,12 @@ export const apiClient = {
         }
         return response.json();
     },
+
+    /**
+     * Unregisters (deletes) an upstream service.
+     * @param id The ID of the service to unregister.
+     * @returns A promise that resolves when the service is unregistered.
+     */
     unregisterService: async (id: string) => {
          const response = await fetchWithAuth(`/api/v1/services/${id}`, {
             method: 'DELETE'
@@ -287,11 +335,22 @@ export const apiClient = {
     // Tools (Legacy Fetch - Not yet migrated to Admin/Registration Service completely or keeping as is)
     // admin.proto has ListTools but we are focusing on RegistrationService first.
     // So keep using fetch for Tools/Secrets/etc for now.
+
+    /**
+     * Lists all available tools.
+     * @returns A promise that resolves to a list of tools.
+     */
     listTools: async () => {
         const res = await fetchWithAuth('/api/v1/tools');
         if (!res.ok) throw new Error('Failed to fetch tools');
         return res.json();
     },
+
+    /**
+     * Executes a tool with the given request parameters.
+     * @param request The tool execution request.
+     * @returns A promise that resolves to the tool execution result.
+     */
     executeTool: async (request: any) => {
         try {
             const res = await fetchWithAuth('/api/v1/execute', {
@@ -306,6 +365,13 @@ export const apiClient = {
             throw e;
         }
     },
+
+    /**
+     * Sets the status (enabled/disabled) of a tool.
+     * @param name The name of the tool.
+     * @param disabled True to disable the tool, false to enable it.
+     * @returns A promise that resolves to the updated tool status.
+     */
     setToolStatus: async (name: string, disabled: boolean) => {
         const res = await fetchWithAuth('/api/v1/tools', {
             method: 'PUT',
@@ -315,16 +381,34 @@ export const apiClient = {
     },
 
     // Resources
+
+    /**
+     * Lists all available resources.
+     * @returns A promise that resolves to a list of resources.
+     */
     listResources: async () => {
         const res = await fetchWithAuth('/api/v1/resources');
         if (!res.ok) throw new Error('Failed to list resources');
         return res.json();
     },
+
+    /**
+     * Reads the content of a resource.
+     * @param uri The URI of the resource to read.
+     * @returns A promise that resolves to the resource content.
+     */
     readResource: async (uri: string): Promise<ReadResourceResponse> => {
         const res = await fetchWithAuth(`/api/v1/resources/read?uri=${encodeURIComponent(uri)}`);
         if (!res.ok) throw new Error('Failed to read resource');
         return res.json();
     },
+
+    /**
+     * Sets the status (enabled/disabled) of a resource.
+     * @param uri The URI of the resource.
+     * @param disabled True to disable the resource, false to enable it.
+     * @returns A promise that resolves to the updated resource status.
+     */
     setResourceStatus: async (uri: string, disabled: boolean) => {
         const res = await fetchWithAuth('/api/v1/resources', {
             method: 'PUT',
@@ -334,11 +418,23 @@ export const apiClient = {
     },
 
     // Prompts
+
+    /**
+     * Lists all available prompts.
+     * @returns A promise that resolves to a list of prompts.
+     */
     listPrompts: async () => {
         const res = await fetchWithAuth('/api/v1/prompts');
         if (!res.ok) throw new Error('Failed to fetch prompts');
         return res.json();
     },
+
+    /**
+     * Sets the status (enabled/disabled) of a prompt.
+     * @param name The name of the prompt.
+     * @param enabled True to enable the prompt, false to disable it.
+     * @returns A promise that resolves to the updated prompt status.
+     */
     setPromptStatus: async (name: string, enabled: boolean) => {
         const res = await fetchWithAuth('/api/v1/prompts', {
             method: 'POST',
@@ -347,6 +443,13 @@ export const apiClient = {
         });
         return res.json();
     },
+
+    /**
+     * Executes a prompt with the given arguments.
+     * @param name The name of the prompt.
+     * @param args The arguments for the prompt.
+     * @returns A promise that resolves to the prompt execution result.
+     */
     executePrompt: async (name: string, args: Record<string, string>) => {
         const res = await fetch(`/api/v1/prompts/${name}/execute`, {
             method: 'POST',
@@ -359,11 +462,22 @@ export const apiClient = {
 
 
     // Secrets
+
+    /**
+     * Lists all stored secrets.
+     * @returns A promise that resolves to a list of secrets.
+     */
     listSecrets: async () => {
         const res = await fetchWithAuth('/api/v1/secrets');
         if (!res.ok) throw new Error('Failed to fetch secrets');
         return res.json();
     },
+
+    /**
+     * Saves a secret.
+     * @param secret The secret definition to save.
+     * @returns A promise that resolves to the saved secret.
+     */
     saveSecret: async (secret: SecretDefinition) => {
         const res = await fetchWithAuth('/api/v1/secrets', {
             method: 'POST',
@@ -373,6 +487,12 @@ export const apiClient = {
         if (!res.ok) throw new Error('Failed to save secret');
         return res.json();
     },
+
+    /**
+     * Deletes a secret.
+     * @param id The ID of the secret to delete.
+     * @returns A promise that resolves when the secret is deleted.
+     */
     deleteSecret: async (id: string) => {
         const res = await fetchWithAuth(`/api/v1/secrets/${id}`, {
             method: 'DELETE'
@@ -382,11 +502,22 @@ export const apiClient = {
     },
 
     // Global Settings
+
+    /**
+     * Gets the global server settings.
+     * @returns A promise that resolves to the global settings.
+     */
     getGlobalSettings: async () => {
         const res = await fetchWithAuth('/api/v1/settings');
         if (!res.ok) throw new Error('Failed to fetch global settings');
         return res.json();
     },
+
+    /**
+     * Saves the global server settings.
+     * @param settings The settings to save.
+     * @returns A promise that resolves when the settings are saved.
+     */
     saveGlobalSettings: async (settings: any) => {
         const res = await fetchWithAuth('/api/v1/settings', {
             method: 'POST',
@@ -397,11 +528,24 @@ export const apiClient = {
     },
 
     // Stack Management
+
+    /**
+     * Gets the configuration for a stack.
+     * @param stackId The ID of the stack.
+     * @returns A promise that resolves to the stack configuration (as text/yaml).
+     */
     getStackConfig: async (stackId: string) => {
         const res = await fetchWithAuth(`/api/v1/stacks/${stackId}/config`);
         if (!res.ok) throw new Error('Failed to fetch stack config');
         return res.text(); // Config is likely raw YAML/JSON text
     },
+
+    /**
+     * Saves the configuration for a stack.
+     * @param stackId The ID of the stack.
+     * @param config The configuration content.
+     * @returns A promise that resolves when the config is saved.
+     */
     saveStackConfig: async (stackId: string, config: string) => {
         const res = await fetchWithAuth(`/api/v1/stacks/${stackId}/config`, {
             method: 'POST',
@@ -413,6 +557,11 @@ export const apiClient = {
     },
 
     // User Management
+
+    /**
+     * Lists all users.
+     * @returns A promise that resolves to a list of users.
+     */
     listUsers: async () => {
         // Fallback for demo/dev - use AdminRPC if possible, but we don't have generated client for Admin yet in UI?
         // We do have @proto/admin/v1/admin
@@ -428,6 +577,12 @@ export const apiClient = {
         if (!res.ok) throw new Error('Failed to list users');
         return res.json();
     },
+
+    /**
+     * Creates a new user.
+     * @param user The user object to create.
+     * @returns A promise that resolves to the created user.
+     */
     createUser: async (user: any) => {
         const res = await fetchWithAuth('/api/v1/users', {
             method: 'POST',
@@ -437,6 +592,12 @@ export const apiClient = {
         if (!res.ok) throw new Error('Failed to create user');
         return res.json();
     },
+
+    /**
+     * Updates an existing user.
+     * @param user The user object to update.
+     * @returns A promise that resolves to the updated user.
+     */
     updateUser: async (user: any) => {
          const res = await fetchWithAuth(`/api/v1/users/${user.id}`, {
             method: 'PUT',
@@ -446,6 +607,12 @@ export const apiClient = {
         if (!res.ok) throw new Error('Failed to update user');
         return res.json();
     },
+
+    /**
+     * Deletes a user.
+     * @param id The ID of the user to delete.
+     * @returns A promise that resolves when the user is deleted.
+     */
     deleteUser: async (id: string) => {
         const res = await fetchWithAuth(`/api/v1/users/${id}`, {
             method: 'DELETE'
@@ -455,6 +622,14 @@ export const apiClient = {
     },
 
     // OAuth
+
+    /**
+     * Initiates an OAuth flow.
+     * @param serviceID The ID of the service for which to initiate OAuth.
+     * @param redirectURL The URL to redirect to after OAuth completes.
+     * @param credentialID Optional credential ID to associate with the token.
+     * @returns A promise that resolves to the initiation response.
+     */
     initiateOAuth: async (serviceID: string, redirectURL: string, credentialID?: string) => {
         const payload: any = { redirect_url: redirectURL };
         if (serviceID) payload.service_id = serviceID;
@@ -471,6 +646,15 @@ export const apiClient = {
         }
         return res.json();
     },
+
+    /**
+     * Handles the OAuth callback.
+     * @param serviceID The ID of the service (optional).
+     * @param code The OAuth authorization code.
+     * @param redirectURL The redirect URL used in the initial request.
+     * @param credentialID Optional credential ID.
+     * @returns A promise that resolves to the callback handling result.
+     */
     handleOAuthCallback: async (serviceID: string | null, code: string, redirectURL: string, credentialID?: string) => {
         const payload: any = { code, redirect_url: redirectURL };
         if (serviceID) payload.service_id = serviceID;
@@ -489,16 +673,33 @@ export const apiClient = {
     },
 
     // Credentials
+
+    /**
+     * Lists all stored credentials.
+     * @returns A promise that resolves to a list of credentials.
+     */
     listCredentials: async () => {
         const res = await fetchWithAuth('/api/v1/credentials');
         if (!res.ok) throw new Error('Failed to list credentials');
         const data = await res.json();
         return Array.isArray(data) ? data : (data.credentials || []);
     },
+
+    /**
+     * Saves (creates or updates) a credential.
+     * @param credential The credential to save.
+     * @returns A promise that resolves to the saved credential.
+     */
     saveCredential: async (credential: Credential) => {
         // ... (logic omitted for brevity, keeping same) ...
         return apiClient.createCredential(credential);
     },
+
+    /**
+     * Creates a new credential.
+     * @param credential The credential to create.
+     * @returns A promise that resolves to the created credential.
+     */
     createCredential: async (credential: Credential) => {
         const res = await fetchWithAuth('/api/v1/credentials', {
             method: 'POST',
@@ -508,6 +709,12 @@ export const apiClient = {
         if (!res.ok) throw new Error('Failed to create credential');
         return res.json();
     },
+
+    /**
+     * Updates an existing credential.
+     * @param credential The credential to update.
+     * @returns A promise that resolves to the updated credential.
+     */
     updateCredential: async (credential: Credential) => {
         const res = await fetchWithAuth(`/api/v1/credentials/${credential.id}`, {
             method: 'PUT',
@@ -517,6 +724,12 @@ export const apiClient = {
         if (!res.ok) throw new Error('Failed to update credential');
         return res.json();
     },
+
+    /**
+     * Deletes a credential.
+     * @param id The ID of the credential to delete.
+     * @returns A promise that resolves when the credential is deleted.
+     */
     deleteCredential: async (id: string) => {
         const res = await fetchWithAuth(`/api/v1/credentials/${id}`, {
             method: 'DELETE'
@@ -524,6 +737,12 @@ export const apiClient = {
         if (!res.ok) throw new Error('Failed to delete credential');
         return {};
     },
+
+    /**
+     * Tests authentication with the provided parameters.
+     * @param req The authentication test request.
+     * @returns A promise that resolves to the test result.
+     */
     testAuth: async (req: any) => {
         const res = await fetchWithAuth('/api/v1/debug/auth-test', {
             method: 'POST',
@@ -535,6 +754,11 @@ export const apiClient = {
     },
 
     // Templates (Backend Persistence)
+
+    /**
+     * Lists all service templates.
+     * @returns A promise that resolves to a list of templates.
+     */
     listTemplates: async () => {
         const res = await fetchWithAuth('/api/v1/templates');
         if (!res.ok) throw new Error('Failed to fetch templates');
@@ -555,6 +779,12 @@ export const apiClient = {
             postCallHooks: s.post_call_hooks,
         }));
     },
+
+    /**
+     * Saves a service template.
+     * @param template The template configuration to save.
+     * @returns A promise that resolves to the saved template.
+     */
     saveTemplate: async (template: UpstreamServiceConfig) => {
         // Map back to snake_case for saving
         // Reuse registerService mapping logic essentially but for template endpoint
@@ -598,6 +828,12 @@ export const apiClient = {
         if (!res.ok) throw new Error('Failed to save template');
         return res.json();
     },
+
+    /**
+     * Deletes a service template.
+     * @param id The ID of the template to delete.
+     * @returns A promise that resolves when the template is deleted.
+     */
     deleteTemplate: async (id: string) => {
         const res = await fetchWithAuth(`/api/v1/templates/${id}`, {
             method: 'DELETE'

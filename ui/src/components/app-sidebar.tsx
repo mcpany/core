@@ -148,6 +148,10 @@ const configItems = [
   },
 ]
 
+/**
+ * The main application sidebar.
+ * Displays navigation links and user profile menu.
+ */
 export function AppSidebar() {
   const pathname = usePathname()
   const { user, login } = useUser()
