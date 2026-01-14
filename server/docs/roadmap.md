@@ -161,6 +161,11 @@ Based on a review of the MCP ecosystem (mcp.so, LobeHub, GitHub, Docker), we ide
 33. **Edge Computing Support**: Optimized build for Cloudflare Workers / AWS Lambda.
 34. **Air-Gapped Mode**: Full offline operation with bundled dependencies and local docs.
 
+### Developer Experience
+
+35. **Enhanced Configuration Validation**: Implement strict schema validation (using JSON Schema) to catch structure errors like `service_config` wrapper usage at parsing time.
+36. **Interactive `mcp init` CLI**: A wizard to generate valid configuration files interactively, reducing copy-paste errors from docs.
+
 ## Codebase Health Report
 
 ### Critical Areas
@@ -176,5 +181,5 @@ Based on a review of the MCP ecosystem (mcp.so, LobeHub, GitHub, Docker), we ide
 1.  **Refactor Filesystem Upstream**: Split `upstream.go`.
 2.  **Refactor Rate Limiting**: Split into `RateLimiterStrategy` interface.
 3.  **Formalize Webhook Server**: Polish `server/cmd/webhooks` as a Sidecar.
-4.  **Standardize Configuration**: Consistent config patterns.
+4.  **Standardize Configuration**: Consistent config patterns (Done: fixed documentation/error handling for `service_config`).
 5.  **Consolidate SDKs**: Move `server/pkg/client` to separate repo.
