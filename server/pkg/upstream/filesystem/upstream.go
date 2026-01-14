@@ -14,7 +14,9 @@ import (
 	"os"
 	"sync"
 
+	"github.com/alexliesenfeld/health"
 	configv1 "github.com/mcpany/core/proto/config/v1"
+	mcphealth "github.com/mcpany/core/server/pkg/health"
 	"github.com/mcpany/core/server/pkg/logging"
 	"github.com/mcpany/core/server/pkg/prompt"
 	"github.com/mcpany/core/server/pkg/resource"
@@ -32,6 +34,7 @@ import (
 type Upstream struct {
 	mu      sync.Mutex
 	closers []io.Closer
+	checker health.Checker
 }
 
 // NewUpstream creates a new instance of FilesystemUpstream.
@@ -45,6 +48,9 @@ func NewUpstream() upstream.Upstream {
 func (u *Upstream) Shutdown(_ context.Context) error {
 	u.mu.Lock()
 	defer u.mu.Unlock()
+	if u.checker != nil {
+		u.checker.Stop()
+	}
 	for _, c := range u.closers {
 		_ = c.Close()
 	}
@@ -93,6 +99,15 @@ func (u *Upstream) Register(
 	u.mu.Unlock()
 
 	fs := prov.GetFs()
+
+	// Initialize and start health checker
+	if u.checker != nil {
+		u.checker.Stop()
+	}
+	u.checker = mcphealth.NewChecker(serviceConfig)
+	if u.checker != nil {
+		u.checker.Start()
+	}
 
 	info := &tool.ServiceInfo{
 		Name:   serviceConfig.GetName(),

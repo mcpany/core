@@ -11,6 +11,7 @@ Health checks can be configured for the following upstream service types:
 -   **WebSocket**: Sends a message and expects a specific response.
 -   **WebRTC**: Can perform HTTP or WebSocket checks over the WebRTC channel.
 -   **Command Line**: Executes a command and checks the output.
+-   **Filesystem**: Checks if configured root paths exist and are accessible (Automatic).
 
 ## Configuration
 
@@ -70,6 +71,19 @@ upstream_services:
         prompt: "print('alive')"
         expected_response_contains: "alive"
         interval: "60s"
+```
+
+### Filesystem Health Check
+
+Filesystem health checks are enabled automatically for local filesystem services. They verify that all configured `root_paths` exist and are accessible.
+
+```yaml
+upstream_services:
+  - name: "my-files"
+    filesystem_service:
+      root_paths:
+        "/data": "/var/lib/data"
+      # Health check is automatic
 ```
 
 ## Monitoring
