@@ -18,6 +18,7 @@ import (
 	"github.com/mcpany/core/server/pkg/app"
 	"github.com/mcpany/core/server/pkg/appconsts"
 	"github.com/mcpany/core/server/pkg/config"
+	"github.com/mcpany/core/server/pkg/lint"
 	"github.com/mcpany/core/server/pkg/logging"
 	"github.com/mcpany/core/server/pkg/metrics"
 	"github.com/mcpany/core/server/pkg/update"
@@ -352,6 +353,48 @@ func newRootCmd() *cobra.Command { //nolint:gocyclo // Main entry point, expecte
 		},
 	}
 	configCmd.AddCommand(validateCmd)
+
+	lintCmd := &cobra.Command{
+		Use:   "lint",
+		Short: "Lint the configuration file for best practices and security issues",
+		RunE: func(cmd *cobra.Command, _ []string) error {
+			osFs := afero.NewOsFs()
+			cfg := config.GlobalSettings()
+			if err := cfg.Load(cmd, osFs); err != nil {
+				return fmt.Errorf("configuration load failed: %w", err)
+			}
+			store := config.NewFileStore(osFs, cfg.ConfigPaths())
+			configs, err := config.LoadResolvedConfig(context.Background(), store)
+			if err != nil {
+				return fmt.Errorf("failed to load configurations for linting: %w", err)
+			}
+
+			linter := lint.NewLinter(configs)
+			results, err := linter.Run(context.Background())
+			if err != nil {
+				return fmt.Errorf("linting failed: %w", err)
+			}
+
+			if len(results) == 0 {
+				_, _ = fmt.Fprintln(cmd.OutOrStdout(), "Lint passed! No issues found.")
+				return nil
+			}
+
+			hasErrors := false
+			for _, result := range results {
+				_, _ = fmt.Fprintln(cmd.OutOrStdout(), result.String())
+				if result.Severity == lint.Error {
+					hasErrors = true
+				}
+			}
+
+			if hasErrors {
+				return fmt.Errorf("linting failed with errors")
+			}
+			return nil
+		},
+	}
+	rootCmd.AddCommand(lintCmd)
 	rootCmd.AddCommand(configCmd)
 
 	config.BindRootFlags(rootCmd)

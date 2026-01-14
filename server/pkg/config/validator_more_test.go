@@ -214,7 +214,7 @@ func TestValidate_MoreServices(t *testing.T) {
 				},
 			},
 			expectedErrorCount:  1,
-			expectedErrorString: `service "grpc-invalid": gRPC service has empty target_address`,
+			expectedErrorString: `service "grpc-invalid": gRPC service has empty address`,
 		},
 		{
 			name: "invalid mcp service - missing connection",
@@ -290,7 +290,7 @@ func TestValidate_MoreServices(t *testing.T) {
 				},
 			},
 			expectedErrorCount:  1,
-			expectedErrorString: "http service has empty target_address",
+			expectedErrorString: "http service has empty address",
 		},
 		{
 			name: "invalid http service - invalid url",
@@ -307,7 +307,7 @@ func TestValidate_MoreServices(t *testing.T) {
 				},
 			},
 			expectedErrorCount:  1,
-			expectedErrorString: "invalid http target_address",
+			expectedErrorString: "invalid http address",
 		},
 		{
 			name: "invalid http service - invalid scheme",
@@ -324,7 +324,7 @@ func TestValidate_MoreServices(t *testing.T) {
 				},
 			},
 			expectedErrorCount:  1,
-			expectedErrorString: "invalid http target_address scheme",
+			expectedErrorString: "invalid http address scheme",
 		},
 		{
 			name: "invalid websocket service - empty address",
@@ -341,7 +341,7 @@ func TestValidate_MoreServices(t *testing.T) {
 				},
 			},
 			expectedErrorCount:  1,
-			expectedErrorString: "websocket service has empty target_address",
+			expectedErrorString: "websocket service has empty address",
 		},
 		{
 			name: "invalid websocket service - invalid scheme",
@@ -358,7 +358,7 @@ func TestValidate_MoreServices(t *testing.T) {
 				},
 			},
 			expectedErrorCount:  1,
-			expectedErrorString: "invalid websocket target_address scheme",
+			expectedErrorString: "invalid websocket address scheme",
 		},
 		{
 			name: "invalid openapi service - all empty",
@@ -392,7 +392,7 @@ func TestValidate_MoreServices(t *testing.T) {
 				},
 			},
 			expectedErrorCount:  1,
-			expectedErrorString: "invalid openapi target_address",
+			expectedErrorString: "invalid openapi address",
 		},
 		{
 			name: "invalid openapi service - invalid spec url",
