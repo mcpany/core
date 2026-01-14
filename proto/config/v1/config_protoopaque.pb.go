@@ -663,6 +663,7 @@ type GlobalSettings struct {
 	xxx_hidden_GithubApiUrl       *string                  `protobuf:"bytes,20,opt,name=github_api_url"`
 	xxx_hidden_UseSudoForDocker   bool                     `protobuf:"varint,21,opt,name=use_sudo_for_docker"`
 	xxx_hidden_AllowedFilePaths   []string                 `protobuf:"bytes,22,rep,name=allowed_file_paths"`
+	xxx_hidden_AllowedOrigins     []string                 `protobuf:"bytes,23,rep,name=allowed_origins"`
 	XXX_raceDetectHookData        protoimpl.RaceDetectHookData
 	XXX_presence                  [1]uint32
 	unknownFields                 protoimpl.UnknownFields
@@ -867,14 +868,21 @@ func (x *GlobalSettings) GetAllowedFilePaths() []string {
 	return nil
 }
 
+func (x *GlobalSettings) GetAllowedOrigins() []string {
+	if x != nil {
+		return x.xxx_hidden_AllowedOrigins
+	}
+	return nil
+}
+
 func (x *GlobalSettings) SetMcpListenAddress(v string) {
 	x.xxx_hidden_McpListenAddress = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 21)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 22)
 }
 
 func (x *GlobalSettings) SetLogLevel(v GlobalSettings_LogLevel) {
 	x.xxx_hidden_LogLevel = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 21)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 22)
 }
 
 func (x *GlobalSettings) SetMessageBus(v *bus.MessageBus) {
@@ -883,7 +891,7 @@ func (x *GlobalSettings) SetMessageBus(v *bus.MessageBus) {
 
 func (x *GlobalSettings) SetApiKey(v string) {
 	x.xxx_hidden_ApiKey = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 3, 21)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 3, 22)
 }
 
 func (x *GlobalSettings) SetProfiles(v []string) {
@@ -904,22 +912,22 @@ func (x *GlobalSettings) SetProfileDefinitions(v []*ProfileDefinition) {
 
 func (x *GlobalSettings) SetLogFormat(v GlobalSettings_LogFormat) {
 	x.xxx_hidden_LogFormat = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 8, 21)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 8, 22)
 }
 
 func (x *GlobalSettings) SetDbPath(v string) {
 	x.xxx_hidden_DbPath = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 9, 21)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 9, 22)
 }
 
 func (x *GlobalSettings) SetDbDsn(v string) {
 	x.xxx_hidden_DbDsn = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 10, 21)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 10, 22)
 }
 
 func (x *GlobalSettings) SetDbDriver(v string) {
 	x.xxx_hidden_DbDriver = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 11, 21)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 11, 22)
 }
 
 func (x *GlobalSettings) SetMiddlewares(v []*Middleware) {
@@ -948,16 +956,20 @@ func (x *GlobalSettings) SetTelemetry(v *TelemetryConfig) {
 
 func (x *GlobalSettings) SetGithubApiUrl(v string) {
 	x.xxx_hidden_GithubApiUrl = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 18, 21)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 18, 22)
 }
 
 func (x *GlobalSettings) SetUseSudoForDocker(v bool) {
 	x.xxx_hidden_UseSudoForDocker = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 19, 21)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 19, 22)
 }
 
 func (x *GlobalSettings) SetAllowedFilePaths(v []string) {
 	x.xxx_hidden_AllowedFilePaths = v
+}
+
+func (x *GlobalSettings) SetAllowedOrigins(v []string) {
+	x.xxx_hidden_AllowedOrigins = v
 }
 
 func (x *GlobalSettings) HasMcpListenAddress() bool {
@@ -1190,6 +1202,8 @@ type GlobalSettings_builder struct {
 	UseSudoForDocker *bool
 	// Allowed file paths for validation.
 	AllowedFilePaths []string
+	// Allowed origins for CORS.
+	AllowedOrigins []string
 }
 
 func (b0 GlobalSettings_builder) Build() *GlobalSettings {
@@ -1197,16 +1211,16 @@ func (b0 GlobalSettings_builder) Build() *GlobalSettings {
 	b, x := &b0, m0
 	_, _ = b, x
 	if b.McpListenAddress != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 21)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 22)
 		x.xxx_hidden_McpListenAddress = b.McpListenAddress
 	}
 	if b.LogLevel != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 21)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 22)
 		x.xxx_hidden_LogLevel = *b.LogLevel
 	}
 	x.xxx_hidden_MessageBus = b.MessageBus
 	if b.ApiKey != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 3, 21)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 3, 22)
 		x.xxx_hidden_ApiKey = b.ApiKey
 	}
 	x.xxx_hidden_Profiles = b.Profiles
@@ -1214,19 +1228,19 @@ func (b0 GlobalSettings_builder) Build() *GlobalSettings {
 	x.xxx_hidden_Audit = b.Audit
 	x.xxx_hidden_ProfileDefinitions = &b.ProfileDefinitions
 	if b.LogFormat != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 8, 21)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 8, 22)
 		x.xxx_hidden_LogFormat = *b.LogFormat
 	}
 	if b.DbPath != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 9, 21)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 9, 22)
 		x.xxx_hidden_DbPath = b.DbPath
 	}
 	if b.DbDsn != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 10, 21)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 10, 22)
 		x.xxx_hidden_DbDsn = b.DbDsn
 	}
 	if b.DbDriver != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 11, 21)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 11, 22)
 		x.xxx_hidden_DbDriver = b.DbDriver
 	}
 	x.xxx_hidden_Middlewares = &b.Middlewares
@@ -1236,14 +1250,15 @@ func (b0 GlobalSettings_builder) Build() *GlobalSettings {
 	x.xxx_hidden_RateLimit = b.RateLimit
 	x.xxx_hidden_Telemetry = b.Telemetry
 	if b.GithubApiUrl != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 18, 21)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 18, 22)
 		x.xxx_hidden_GithubApiUrl = b.GithubApiUrl
 	}
 	if b.UseSudoForDocker != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 19, 21)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 19, 22)
 		x.xxx_hidden_UseSudoForDocker = *b.UseSudoForDocker
 	}
 	x.xxx_hidden_AllowedFilePaths = b.AllowedFilePaths
+	x.xxx_hidden_AllowedOrigins = b.AllowedOrigins
 	return m0
 }
 
@@ -2947,7 +2962,8 @@ const file_proto_config_v1_config_proto_rawDesc = "" +
 	"created_at\x18\a \x01(\tR\tcreatedAt\"@\n" +
 	"\n" +
 	"SecretList\x122\n" +
-	"\asecrets\x18\x01 \x03(\v2\x18.mcpany.config.v1.SecretR\asecrets\"\xfd\t\n" +
+	"\asecrets\x18\x01 \x03(\v2\x18.mcpany.config.v1.SecretR\asecrets\"\xa7\n" +
+	"\n" +
 	"\x0eGlobalSettings\x12.\n" +
 	"\x12mcp_listen_address\x18\x01 \x01(\tR\x12mcp_listen_address\x12G\n" +
 	"\tlog_level\x18\x03 \x01(\x0e2).mcpany.config.v1.GlobalSettings.LogLevelR\tlog_level\x121\n" +
@@ -2974,7 +2990,8 @@ const file_proto_config_v1_config_proto_rawDesc = "" +
 	"\ttelemetry\x18\x13 \x01(\v2!.mcpany.config.v1.TelemetryConfigR\ttelemetry\x12&\n" +
 	"\x0egithub_api_url\x18\x14 \x01(\tR\x0egithub_api_url\x120\n" +
 	"\x13use_sudo_for_docker\x18\x15 \x01(\bR\x13use_sudo_for_docker\x12.\n" +
-	"\x12allowed_file_paths\x18\x16 \x03(\tR\x12allowed_file_paths\"w\n" +
+	"\x12allowed_file_paths\x18\x16 \x03(\tR\x12allowed_file_paths\x12(\n" +
+	"\x0fallowed_origins\x18\x17 \x03(\tR\x0fallowed_origins\"w\n" +
 	"\bLogLevel\x12\x19\n" +
 	"\x15LOG_LEVEL_UNSPECIFIED\x10\x00\x12\x12\n" +
 	"\x0eLOG_LEVEL_INFO\x10\x01\x12\x12\n" +

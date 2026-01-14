@@ -629,8 +629,10 @@ type GlobalSettings struct {
 	UseSudoForDocker *bool `protobuf:"varint,21,opt,name=use_sudo_for_docker" json:"use_sudo_for_docker,omitempty"`
 	// Allowed file paths for validation.
 	AllowedFilePaths []string `protobuf:"bytes,22,rep,name=allowed_file_paths" json:"allowed_file_paths,omitempty"`
-	unknownFields    protoimpl.UnknownFields
-	sizeCache        protoimpl.SizeCache
+	// Allowed origins for CORS.
+	AllowedOrigins []string `protobuf:"bytes,23,rep,name=allowed_origins" json:"allowed_origins,omitempty"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
 }
 
 func (x *GlobalSettings) Reset() {
@@ -805,6 +807,13 @@ func (x *GlobalSettings) GetAllowedFilePaths() []string {
 	return nil
 }
 
+func (x *GlobalSettings) GetAllowedOrigins() []string {
+	if x != nil {
+		return x.AllowedOrigins
+	}
+	return nil
+}
+
 func (x *GlobalSettings) SetMcpListenAddress(v string) {
 	x.McpListenAddress = &v
 }
@@ -887,6 +896,10 @@ func (x *GlobalSettings) SetUseSudoForDocker(v bool) {
 
 func (x *GlobalSettings) SetAllowedFilePaths(v []string) {
 	x.AllowedFilePaths = v
+}
+
+func (x *GlobalSettings) SetAllowedOrigins(v []string) {
+	x.AllowedOrigins = v
 }
 
 func (x *GlobalSettings) HasMcpListenAddress() bool {
@@ -1110,6 +1123,8 @@ type GlobalSettings_builder struct {
 	UseSudoForDocker *bool
 	// Allowed file paths for validation.
 	AllowedFilePaths []string
+	// Allowed origins for CORS.
+	AllowedOrigins []string
 }
 
 func (b0 GlobalSettings_builder) Build() *GlobalSettings {
@@ -1137,6 +1152,7 @@ func (b0 GlobalSettings_builder) Build() *GlobalSettings {
 	x.GithubApiUrl = b.GithubApiUrl
 	x.UseSudoForDocker = b.UseSudoForDocker
 	x.AllowedFilePaths = b.AllowedFilePaths
+	x.AllowedOrigins = b.AllowedOrigins
 	return m0
 }
 
@@ -2625,7 +2641,8 @@ const file_proto_config_v1_config_proto_rawDesc = "" +
 	"created_at\x18\a \x01(\tR\tcreatedAt\"@\n" +
 	"\n" +
 	"SecretList\x122\n" +
-	"\asecrets\x18\x01 \x03(\v2\x18.mcpany.config.v1.SecretR\asecrets\"\xfd\t\n" +
+	"\asecrets\x18\x01 \x03(\v2\x18.mcpany.config.v1.SecretR\asecrets\"\xa7\n" +
+	"\n" +
 	"\x0eGlobalSettings\x12.\n" +
 	"\x12mcp_listen_address\x18\x01 \x01(\tR\x12mcp_listen_address\x12G\n" +
 	"\tlog_level\x18\x03 \x01(\x0e2).mcpany.config.v1.GlobalSettings.LogLevelR\tlog_level\x121\n" +
@@ -2652,7 +2669,8 @@ const file_proto_config_v1_config_proto_rawDesc = "" +
 	"\ttelemetry\x18\x13 \x01(\v2!.mcpany.config.v1.TelemetryConfigR\ttelemetry\x12&\n" +
 	"\x0egithub_api_url\x18\x14 \x01(\tR\x0egithub_api_url\x120\n" +
 	"\x13use_sudo_for_docker\x18\x15 \x01(\bR\x13use_sudo_for_docker\x12.\n" +
-	"\x12allowed_file_paths\x18\x16 \x03(\tR\x12allowed_file_paths\"w\n" +
+	"\x12allowed_file_paths\x18\x16 \x03(\tR\x12allowed_file_paths\x12(\n" +
+	"\x0fallowed_origins\x18\x17 \x03(\tR\x0fallowed_origins\"w\n" +
 	"\bLogLevel\x12\x19\n" +
 	"\x15LOG_LEVEL_UNSPECIFIED\x10\x00\x12\x12\n" +
 	"\x0eLOG_LEVEL_INFO\x10\x01\x12\x12\n" +
