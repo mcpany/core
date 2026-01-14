@@ -424,6 +424,9 @@ func validateHTTPService(httpService *configv1.HttpUpstreamService) error {
 	}
 
 	for name, call := range httpService.GetCalls() {
+		if err := validation.ValidateHTTPServiceDefinition(call); err != nil {
+			return fmt.Errorf("http call %q invalid: %w", name, err)
+		}
 		if err := validateSchema(call.GetInputSchema()); err != nil {
 			return fmt.Errorf("http call %q input_schema error: %w", name, err)
 		}

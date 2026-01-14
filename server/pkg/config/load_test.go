@@ -190,6 +190,8 @@ upstream_services: {
 			key: "get_user_call"
 			value: {
 				id: "get_user_call"
+				endpoint_path: "/users"
+				method: HTTP_METHOD_GET
 			}
 		}
 		resources: {
