@@ -1039,11 +1039,9 @@ func (a *Application) runServerMode(
 	if authDisabled {
 		logging.GetLogger().Warn("Auth middleware is disabled by config! Enforcing private-IP-only access for safety.")
 		// Even if auth is disabled, we enforce private-IP-only access to prevent public exposure.
-		// Passing an empty string to createAuthMiddleware triggers the IsPrivateIP check.
-		authMiddleware = a.createAuthMiddleware() // empty apiKey implied if we change signature?
-		// Wait, createAuthMiddleware needs to use SettingsManager now.
+		authMiddleware = a.createAuthMiddleware(true)
 	} else {
-		authMiddleware = a.createAuthMiddleware()
+		authMiddleware = a.createAuthMiddleware(false)
 	}
 
 	mux := http.NewServeMux()
@@ -1541,7 +1539,7 @@ func (a *Application) runServerMode(
 }
 
 // createAuthMiddleware creates the authentication middleware.
-func (a *Application) createAuthMiddleware() func(http.Handler) http.Handler {
+func (a *Application) createAuthMiddleware(forcePrivateIPOnly bool) func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			ip := util.ExtractIP(r.RemoteAddr)
@@ -1550,7 +1548,7 @@ func (a *Application) createAuthMiddleware() func(http.Handler) http.Handler {
 
 			apiKey := a.SettingsManager.GetAPIKey()
 
-			if apiKey != "" {
+			if !forcePrivateIPOnly && apiKey != "" {
 				// Check X-API-Key or Authorization header
 				requestKey := r.Header.Get("X-API-Key")
 				if requestKey == "" {

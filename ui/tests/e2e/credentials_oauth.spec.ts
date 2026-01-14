@@ -71,7 +71,7 @@ test.describe('Credential OAuth Flow E2E', () => {
         expect(req.credential_id).toBe(credentialID);
         await route.fulfill({
             json: {
-                authorization_url: '/mock-auth?state=xyz',
+                authorization_url: '/auth/callback?code=mock-code&state=xyz',
                 state: 'xyz'
             }
         });
@@ -158,7 +158,10 @@ test.describe('Credential OAuth Flow E2E', () => {
     await page.getByRole('button', { name: 'Connect Account' }).click();
 
     // 8. Verify Callback Page
-    await page.waitForURL('**/auth/callback*');
+    await expect(page).toHaveURL(/.*\/auth\/callback.*/).catch(async e => {
+        console.log("Current URL:", page.url());
+        throw e;
+    });
     await expect(page.getByText('Authentication Successful')).toBeVisible();
 
     // 9. Return

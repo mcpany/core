@@ -16,10 +16,10 @@ import (
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/mcpany/core/server/pkg/config"
 	"github.com/mcpany/core/server/pkg/health"
-	"github.com/mcpany/core/server/pkg/util"
 	"github.com/mcpany/core/server/pkg/logging"
 	"github.com/mcpany/core/server/pkg/storage"
 	"github.com/mcpany/core/server/pkg/tool"
+	"github.com/mcpany/core/server/pkg/util"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
@@ -58,19 +58,67 @@ func (a *Application) createAPIHandler(store storage.Storage) http.Handler {
 
 	mux.HandleFunc("/settings", a.handleSettings(store))
 	mux.HandleFunc("/debug/auth-test", a.handleAuthTest())
+
 	mux.HandleFunc("/tools", a.handleTools())
 	mux.HandleFunc("/execute", a.handleExecute())
+
 	mux.HandleFunc("/prompts", a.handlePrompts())
+	mux.HandleFunc("/prompts/", a.handlePromptExecute()) // Handles /prompts/{name}/execute
+
 	mux.HandleFunc("/resources", a.handleResources())
+	mux.HandleFunc("/resources/read", a.handleResourceRead())
+
 	mux.HandleFunc("/secrets", a.handleSecrets(store))
 	mux.HandleFunc("/secrets/", a.handleSecretDetail(store))
+
 	mux.HandleFunc("/topology", a.handleTopology())
+
 	mux.HandleFunc("/templates", a.handleTemplates())
 	mux.HandleFunc("/templates/", a.handleTemplateDetail())
+
 	mux.HandleFunc("/profiles", a.handleProfiles(store))
 	mux.HandleFunc("/profiles/", a.handleProfileDetail(store))
+
 	mux.HandleFunc("/collections", a.handleCollections(store))
 	mux.HandleFunc("/collections/", a.handleCollectionDetail(store))
+
+	// Users
+	mux.HandleFunc("/users", a.handleUsers(store))
+	mux.HandleFunc("/users/", a.handleUserDetail(store))
+
+	// Credentials
+	mux.HandleFunc("/credentials", a.listCredentialsHandler)
+	mux.HandleFunc("/credentials/", func(w http.ResponseWriter, r *http.Request) {
+		// Manual dispatch for detail vs specific
+		// listCredentialsHandler handles GET /credentials (handled above)
+		// create is POST /credentials (handled below)
+		// Detail methods use path suffix
+		if r.Method == http.MethodPost {
+			a.createCredentialHandler(w, r)
+			return
+		}
+		// Check if it's a detail request
+		path := strings.TrimPrefix(r.URL.Path, "/credentials/")
+		if path != "" {
+			switch r.Method {
+			case http.MethodGet:
+				a.getCredentialHandler(w, r)
+			case http.MethodPut:
+				a.updateCredentialHandler(w, r)
+			case http.MethodDelete:
+				a.deleteCredentialHandler(w, r)
+			default:
+				http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+			}
+			return
+		}
+		http.NotFound(w, r)
+	})
+
+	// Auth (OAuth)
+	mux.HandleFunc("/auth/oauth/initiate", a.handleInitiateOAuth)
+	mux.HandleFunc("/auth/oauth/callback", a.handleOAuthCallback)
+
 	mux.HandleFunc("/ws/logs", a.handleLogsWS())
 
 	return mux
