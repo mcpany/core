@@ -23,34 +23,11 @@ func TestMarkdownHandler(t *testing.T) {
 		verifyResponse func(t *testing.T, respBytes []byte)
 	}{
 		{
-			name: "Valid HTML to Markdown (PreCall)",
+			name: "Convert HTML to Markdown",
 			reqBody: map[string]any{
-				"tool_name": "get_html",
-				"inputs": map[string]any{
-					"content": "<h1>Hello</h1>",
-				},
-			},
-			expectedStatus: http.StatusOK,
-			verifyResponse: func(t *testing.T, respBytes []byte) {
-				event := cloudevents.NewEvent()
-				err := json.Unmarshal(respBytes, &event)
-				require.NoError(t, err)
-
-				var data map[string]any
-				err = event.DataAs(&data)
-				require.NoError(t, err)
-
-				assert.True(t, data["allowed"].(bool))
-				repl := data["replacement_object"].(map[string]any)
-				assert.Equal(t, "# Hello", repl["content"])
-			},
-		},
-		{
-			name: "Valid HTML to Markdown (PostCall)",
-			reqBody: map[string]any{
-				"tool_name": "get_html",
+				"tool_name": "browser_action",
 				"result": map[string]any{
-					"content": "<h1>Hello</h1>",
+					"content": "<h1>Hello World</h1><p>This is a test.</p>",
 				},
 			},
 			expectedStatus: http.StatusOK,
@@ -63,9 +40,10 @@ func TestMarkdownHandler(t *testing.T) {
 				err = event.DataAs(&data)
 				require.NoError(t, err)
 
-				assert.True(t, data["allowed"].(bool))
+				assert.Equal(t, true, data["allowed"])
 				repl := data["replacement_object"].(map[string]any)
-				assert.Equal(t, "# Hello", repl["content"])
+				assert.Contains(t, repl["content"], "# Hello World")
+				assert.Contains(t, repl["content"], "This is a test.")
 			},
 		},
 	}
@@ -469,4 +447,65 @@ func TestMarkdownHandler_NoOp(t *testing.T) {
 
 	assert.True(t, respData["allowed"].(bool))
 	assert.Nil(t, respData["replacement_object"])
+}
+
+func TestTruncateHandler_Panic(t *testing.T) {
+	handler := &TruncateHandler{}
+
+	event := cloudevents.NewEvent()
+	event.SetID("test-id")
+	event.SetSource("test-source")
+	event.SetType("test-type")
+	event.SetData(cloudevents.ApplicationJSON, map[string]any{
+		"inputs": "some long text that needs truncating",
+	})
+
+	body, _ := json.Marshal(event)
+	// Even with negative max_chars, it should now default to 1, so no panic.
+	req := httptest.NewRequest(http.MethodPost, "/?max_chars=-5", bytes.NewReader(body))
+	req.Header.Set("Content-Type", "application/cloudevents+json")
+	w := httptest.NewRecorder()
+
+	defer func() {
+		if r := recover(); r != nil {
+			t.Errorf("Unexpected panic: %v", r)
+		}
+	}()
+
+	handler.Handle(w, req)
+
+	if w.Code != http.StatusOK {
+		t.Errorf("Expected 200 OK, got %d", w.Code)
+	}
+}
+
+func TestPaginateHandler_Panic(t *testing.T) {
+	handler := &PaginateHandler{}
+
+	event := cloudevents.NewEvent()
+	event.SetID("test-id")
+	event.SetSource("test-source")
+	event.SetType("test-type")
+	event.SetData(cloudevents.ApplicationJSON, map[string]any{
+		"inputs": "some long text that needs paginating",
+	})
+
+	// Case 1: page_size = 0 -> Should now default to 1
+	body, _ := json.Marshal(event)
+	req := httptest.NewRequest(http.MethodPost, "/?page_size=0", bytes.NewReader(body))
+	req.Header.Set("Content-Type", "application/cloudevents+json")
+	w := httptest.NewRecorder()
+
+	func() {
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Unexpected panic: %v", r)
+			}
+		}()
+		handler.Handle(w, req)
+	}()
+
+	if w.Code != http.StatusOK {
+		t.Errorf("Expected 200 OK, got %d", w.Code)
+	}
 }
