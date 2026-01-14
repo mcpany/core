@@ -376,7 +376,7 @@ func countTokensInValueSimple(t *SimpleTokenizer, v interface{}, visited map[uin
 	case float64:
 		return t.CountTokens(strconv.FormatFloat(val, 'g', -1, 64))
 	default:
-		return countTokensReflect(t, val, visited)
+		return countTokensReflectSimple(t, val, visited)
 	}
 }
 
@@ -454,8 +454,150 @@ func countTokensInValueWord(t *WordTokenizer, v interface{}, visited map[uintptr
 		}
 		return count, nil
 	default:
-		return countTokensReflect(t, val, visited)
+		return countTokensReflectWord(t, val, visited)
 	}
+}
+
+func countTokensReflectSimple(t *SimpleTokenizer, v interface{}, visited map[uintptr]bool) (int, error) {
+	// Check for fmt.Stringer first to respect custom formatting
+	if s, ok := v.(fmt.Stringer); ok {
+		return t.CountTokens(s.String())
+	}
+	if e, ok := v.(error); ok {
+		return t.CountTokens(e.Error())
+	}
+
+	val := reflect.ValueOf(v)
+	switch val.Kind() {
+	case reflect.Ptr:
+		if val.IsNil() {
+			return 1, nil // "null" (4 chars) / 4 = 1
+		}
+		ptr := val.Pointer()
+		if visited[ptr] {
+			return 0, fmt.Errorf("cycle detected in value")
+		}
+		visited[ptr] = true
+		defer delete(visited, ptr)
+
+		return countTokensInValueSimple(t, val.Elem().Interface(), visited)
+	case reflect.Struct:
+		count := 0
+		for i := 0; i < val.NumField(); i++ {
+			if val.Type().Field(i).IsExported() {
+				c, err := countTokensInValueSimple(t, val.Field(i).Interface(), visited)
+				if err != nil {
+					return 0, err
+				}
+				count += c
+			}
+		}
+		return count, nil
+	case reflect.Slice, reflect.Array:
+		count := 0
+		for i := 0; i < val.Len(); i++ {
+			c, err := countTokensInValueSimple(t, val.Index(i).Interface(), visited)
+			if err != nil {
+				return 0, err
+			}
+			count += c
+		}
+		return count, nil
+	case reflect.Map:
+		count := 0
+		iter := val.MapRange()
+		for iter.Next() {
+			// Key
+			kc, err := countTokensInValueSimple(t, iter.Key().Interface(), visited)
+			if err != nil {
+				return 0, err
+			}
+			count += kc
+			// Value
+			vc, err := countTokensInValueSimple(t, iter.Value().Interface(), visited)
+			if err != nil {
+				return 0, err
+			}
+			count += vc
+		}
+		return count, nil
+	}
+
+	// Fallback for others (channels, funcs, unhandled types)
+	return t.CountTokens(fmt.Sprintf("%v", v))
+}
+
+func countTokensReflectWord(t *WordTokenizer, v interface{}, visited map[uintptr]bool) (int, error) {
+	// Check for fmt.Stringer first to respect custom formatting
+	if s, ok := v.(fmt.Stringer); ok {
+		return t.CountTokens(s.String())
+	}
+	if e, ok := v.(error); ok {
+		return t.CountTokens(e.Error())
+	}
+
+	val := reflect.ValueOf(v)
+	switch val.Kind() {
+	case reflect.Ptr:
+		if val.IsNil() {
+			primitiveCount := int(t.Factor)
+			if primitiveCount < 1 {
+				primitiveCount = 1
+			}
+			return primitiveCount, nil
+		}
+		ptr := val.Pointer()
+		if visited[ptr] {
+			return 0, fmt.Errorf("cycle detected in value")
+		}
+		visited[ptr] = true
+		defer delete(visited, ptr)
+
+		return countTokensInValueWord(t, val.Elem().Interface(), visited)
+	case reflect.Struct:
+		count := 0
+		for i := 0; i < val.NumField(); i++ {
+			if val.Type().Field(i).IsExported() {
+				c, err := countTokensInValueWord(t, val.Field(i).Interface(), visited)
+				if err != nil {
+					return 0, err
+				}
+				count += c
+			}
+		}
+		return count, nil
+	case reflect.Slice, reflect.Array:
+		count := 0
+		for i := 0; i < val.Len(); i++ {
+			c, err := countTokensInValueWord(t, val.Index(i).Interface(), visited)
+			if err != nil {
+				return 0, err
+			}
+			count += c
+		}
+		return count, nil
+	case reflect.Map:
+		count := 0
+		iter := val.MapRange()
+		for iter.Next() {
+			// Key
+			kc, err := countTokensInValueWord(t, iter.Key().Interface(), visited)
+			if err != nil {
+				return 0, err
+			}
+			count += kc
+			// Value
+			vc, err := countTokensInValueWord(t, iter.Value().Interface(), visited)
+			if err != nil {
+				return 0, err
+			}
+			count += vc
+		}
+		return count, nil
+	}
+
+	// Fallback for others (channels, funcs, unhandled types)
+	return t.CountTokens(fmt.Sprintf("%v", v))
 }
 
 func countTokensReflect(t Tokenizer, v interface{}, visited map[uintptr]bool) (int, error) {
