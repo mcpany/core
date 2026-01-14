@@ -16,16 +16,12 @@ import (
 // IPResolver defines an interface for looking up IP addresses.
 // It matches net.Resolver.LookupIP signature.
 type IPResolver interface {
-	// LookupIP looks up host using the local resolver.
-	// It returns a slice of that host's IPv4 and IPv6 addresses.
 	LookupIP(ctx context.Context, network, host string) ([]net.IP, error)
 }
 
 // NetDialer defines an interface for dialing network connections.
 // It matches net.Dialer.DialContext signature.
 type NetDialer interface {
-	// DialContext connects to the address on the named network using
-	// the provided context.
 	DialContext(ctx context.Context, network, address string) (net.Conn, error)
 }
 

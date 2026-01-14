@@ -1009,16 +1009,17 @@ func TestGRPCServer_FastShutdownRace(t *testing.T) {
 }
 
 func TestHTTPServer_GoroutineTerminatesOnError(t *testing.T) {
-	// Create a listener and close it immediately to force a Serve error
+	// Find a free port and occupy it
 	l, err := net.Listen("tcp", "localhost:0")
 	require.NoError(t, err)
-	_ = l.Close()
+	defer func() { _ = l.Close() }()
+	port := l.Addr().(*net.TCPAddr).Port
 
 	ctx, cancel := context.WithCancel(context.Background())
 	errChan := make(chan error, 1)
 	var wg sync.WaitGroup
 
-	startHTTPServer(ctx, &wg, errChan, nil, "TestHTTP_Error", l, nil, 5*time.Second)
+	startHTTPServer(ctx, &wg, errChan, nil, "TestHTTP_Error", fmt.Sprintf("localhost:%d", port), nil, 5*time.Second)
 
 	// Wait for the startup error.
 	select {
@@ -1042,6 +1043,7 @@ func TestHTTPServer_ShutdownTimesOut(t *testing.T) {
 	lis, err := net.Listen("tcp", "localhost:0")
 	require.NoError(t, err, "Failed to find a free port.")
 	port := lis.Addr().(*net.TCPAddr).Port
+	_ = lis.Close()
 
 	ctx, cancel := context.WithCancel(context.Background())
 	errChan := make(chan error, 1)
@@ -1051,7 +1053,7 @@ func TestHTTPServer_ShutdownTimesOut(t *testing.T) {
 	shutdownTimeout := 100 * time.Millisecond
 	handlerSleep := 5 * time.Second
 
-	startHTTPServer(ctx, &wg, errChan, nil, "TestHTTP_Hang", lis, http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+	startHTTPServer(ctx, &wg, errChan, nil, "TestHTTP_Hang", fmt.Sprintf(":%d", port), http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		close(handlerStarted)
 		time.Sleep(handlerSleep)
 		w.WriteHeader(http.StatusOK)
@@ -1307,16 +1309,17 @@ func TestGRPCServer_NoDoubleClickOnForceShutdown(t *testing.T) {
 }
 
 func TestHTTPServer_HangOnListenError(t *testing.T) {
-	// Create a listener and close it to simulate error during Serve (since we passed Listen phase)
+	// Find a free port and occupy it
 	l, err := net.Listen("tcp", "localhost:0")
 	require.NoError(t, err)
-	_ = l.Close()
+	defer func() { _ = l.Close() }()
+	port := l.Addr().(*net.TCPAddr).Port
 
 	ctx, cancel := context.WithCancel(context.Background())
 	errChan := make(chan error, 1)
 	var wg sync.WaitGroup
 
-	startHTTPServer(ctx, &wg, errChan, nil, "TestHTTP_Hang", l, nil, 5*time.Second)
+	startHTTPServer(ctx, &wg, errChan, nil, "TestHTTP_Hang", fmt.Sprintf("localhost:%d", port), nil, 5*time.Second)
 
 	// Wait for the startup error.
 	select {
@@ -1568,8 +1571,10 @@ func TestHTTPServer_GracefulShutdown(t *testing.T) {
 
 	lis, err := net.Listen("tcp", "localhost:0")
 	require.NoError(t, err)
+	addr := lis.Addr().String()
+	_ = lis.Close() // Close the listener immediately
 
-	startHTTPServer(ctx, &wg, errChan, nil, "TestHTTP", lis, nil, 5*time.Second)
+	startHTTPServer(ctx, &wg, errChan, nil, "TestHTTP", addr, nil, 5*time.Second)
 
 	// Immediately cancel to trigger shutdown
 	cancel()

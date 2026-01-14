@@ -15,9 +15,6 @@ import { Wrench, AlertTriangle, TrendingUp } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ServicePropertyCard } from "./service-property-card";
 
-/**
- * Displays details of a specific tool within a service.
- */
 export function ToolDetail({ serviceId, toolName }: { serviceId: string, toolName: string }) {
   const [tool, setTool] = useState<ToolDefinition | null>(null);
   const [service, setService] = useState<UpstreamServiceConfig | null>(null);

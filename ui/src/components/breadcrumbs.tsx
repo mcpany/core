@@ -10,29 +10,16 @@ import { Fragment } from "react";
 import { ChevronRight, Home } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-/**
- * Represents a single item in the breadcrumb navigation.
- */
 export interface BreadcrumbItem {
-    /** The label to display for the breadcrumb. */
     label: string;
-    /** The URL link for the breadcrumb. */
     href: string;
 }
 
-/**
- * Props for the Breadcrumbs component.
- */
 interface BreadcrumbsProps {
-    /** The list of breadcrumb items to display. */
     items: BreadcrumbItem[];
-    /** Optional CSS class names. */
     className?: string;
 }
 
-/**
- * Breadcrumbs navigation component.
- */
 export function Breadcrumbs({ items, className }: BreadcrumbsProps) {
     return (
         <nav aria-label="Breadcrumb" className={cn("w-full max-w-6xl mb-4", className)}>

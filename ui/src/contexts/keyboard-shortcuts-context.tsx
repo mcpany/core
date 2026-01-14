@@ -7,37 +7,20 @@
 
 import * as React from "react"
 
-/**
- * Defines a keyboard shortcut.
- */
 export type ShortcutDefinition = {
-  /** Unique identifier for the shortcut. */
   id: string
-  /** Human-readable label. */
   label: string
-  /** Category for grouping. */
   category?: string
-  /** Default key combinations (e.g., ["ctrl+s", "meta+s"]). */
   defaultKeys: string[]
 }
 
-/**
- * Context type for keyboard shortcuts.
- */
 type KeyboardShortcutsContextType = {
-  /** Map of registered shortcuts. */
   shortcuts: Record<string, ShortcutDefinition>
-  /** Map of user-overridden keys. */
   overrides: Record<string, string[]>
-  /** Registers a new shortcut. */
   register: (def: ShortcutDefinition) => void
-  /** Unregisters a shortcut. */
   unregister: (id: string) => void
-  /** Updates the override for a shortcut. */
   updateOverride: (id: string, keys: string[]) => void
-  /** Resets the override for a shortcut. */
   resetOverride: (id: string) => void
-  /** Gets the active keys for a shortcut (override or default). */
   getKeys: (id: string) => string[]
 }
 
@@ -45,9 +28,6 @@ const KeyboardShortcutsContext = React.createContext<KeyboardShortcutsContextTyp
 
 const STORAGE_KEY = "mcp_any_shortcut_overrides"
 
-/**
- * Provider component for keyboard shortcuts.
- */
 export function KeyboardShortcutsProvider({ children }: { children: React.ReactNode }) {
   const [shortcuts, setShortcuts] = React.useState<Record<string, ShortcutDefinition>>({})
   const [overrides, setOverrides] = React.useState<Record<string, string[]>>({})
@@ -126,10 +106,6 @@ export function KeyboardShortcutsProvider({ children }: { children: React.ReactN
   )
 }
 
-/**
- * Hook to access the keyboard shortcuts context.
- * @returns The context.
- */
 export function useKeyboardShortcuts() {
   const context = React.useContext(KeyboardShortcutsContext)
   if (!context) {
@@ -162,13 +138,6 @@ function matchesKey(event: KeyboardEvent, keyDef: string): boolean {
   return event.key.toLowerCase() === key
 }
 
-/**
- * Hook to register and listen for a keyboard shortcut.
- * @param id Unique identifier.
- * @param defaultKeys Default key combinations.
- * @param action Callback function when shortcut is triggered.
- * @param options Additional options (label, category, enabled).
- */
 export function useShortcut(
   id: string,
   defaultKeys: string[],

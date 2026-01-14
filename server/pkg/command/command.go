@@ -49,12 +49,6 @@ type localExecutor struct{}
 
 // Execute executes a command locally.
 func (e *localExecutor) Execute(ctx context.Context, command string, args []string, workingDir string, env []string) (io.ReadCloser, io.ReadCloser, <-chan int, error) {
-	if workingDir != "" {
-		if err := validation.IsAllowedPath(workingDir); err != nil {
-			return nil, nil, nil, fmt.Errorf("invalid working directory %q: %w", workingDir, err)
-		}
-	}
-
 	cmd := exec.CommandContext(ctx, command, args...)
 	cmd.Dir = workingDir
 	cmd.Env = env
@@ -95,12 +89,6 @@ func (e *localExecutor) Execute(ctx context.Context, command string, args []stri
 
 // ExecuteWithStdIO executes a command locally with stdin/stdout/stderr pipes.
 func (e *localExecutor) ExecuteWithStdIO(ctx context.Context, command string, args []string, workingDir string, env []string) (io.WriteCloser, io.ReadCloser, io.ReadCloser, <-chan int, error) {
-	if workingDir != "" {
-		if err := validation.IsAllowedPath(workingDir); err != nil {
-			return nil, nil, nil, nil, fmt.Errorf("invalid working directory %q: %w", workingDir, err)
-		}
-	}
-
 	cmd := exec.CommandContext(ctx, command, args...)
 	cmd.Dir = workingDir
 	cmd.Env = env

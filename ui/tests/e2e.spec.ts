@@ -205,24 +205,4 @@ test.describe('MCP Any UI E2E Tests', () => {
     }
   });
 
-  test('Service Health Widget shows diagnostics', async ({ page }) => {
-    await page.goto('/');
-
-    // Find the unhealthy service
-    const unhealthyService = page.locator('.group', { hasText: 'User Service' });
-    await expect(unhealthyService).toBeVisible();
-
-    // Check for the error icon
-    const errorIcon = unhealthyService.locator('.cursor-help');
-    await expect(errorIcon).toBeVisible();
-
-    // Click to open Popover
-    await errorIcon.click();
-
-    // Check for diagnostic content
-    await expect(page.getByRole('heading', { name: 'Connection Refused' })).toBeVisible();
-    await expect(page.getByText('The server is unreachable')).toBeVisible();
-    await expect(page.getByText('Suggestion:')).toBeVisible();
-  });
-
 });

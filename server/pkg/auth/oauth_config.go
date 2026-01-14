@@ -10,6 +10,7 @@ type OAuth2Config struct {
 	// IssuerURL is the URL of the OIDC provider's issuer. This is used to
 	// fetch the provider's public keys for token validation.
 	IssuerURL string
+	// Audience is the intended audience of the JWT. The authenticator will
 	// verify that the token's 'aud' claim matches this value.
 	//
 	// Deprecated: Use Audiences instead.

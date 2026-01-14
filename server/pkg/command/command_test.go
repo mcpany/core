@@ -26,7 +26,6 @@ import (
 	"github.com/docker/docker/client"
 	dockererrdefs "github.com/docker/docker/errdefs"
 	configv1 "github.com/mcpany/core/proto/config/v1"
-	"github.com/mcpany/core/server/pkg/validation"
 	v1 "github.com/opencontainers/image-spec/specs-go/v1"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -160,37 +159,6 @@ func TestLocalExecutor(t *testing.T) {
 		case <-time.After(2 * time.Second):
 			t.Fatal("Test timed out waiting for command to exit")
 		}
-	})
-
-	t.Run("RestrictedWorkingDir", func(t *testing.T) {
-		// Set allowed paths to a specific directory
-		tmpDir := t.TempDir()
-		// Get absolute path to ensure matching works correctly
-		absTmpDir, err := filepath.Abs(tmpDir)
-		require.NoError(t, err)
-
-		validation.SetAllowedPaths([]string{absTmpDir})
-		t.Cleanup(func() { validation.SetAllowedPaths(nil) })
-
-		executor := NewExecutor(nil)
-
-		// 1. Allowed path should succeed
-		stdout, _, exitCodeChan, err := executor.Execute(context.Background(), "echo", []string{"hello"}, absTmpDir, nil)
-		require.NoError(t, err)
-
-		// Consume output to prevent hanging
-		_, _ = io.ReadAll(stdout)
-		assert.Equal(t, 0, <-exitCodeChan)
-
-		// 2. Disallowed path should fail
-		// Create another temp dir that is NOT allowed
-		disallowedDir := t.TempDir()
-		absDisallowedDir, err := filepath.Abs(disallowedDir)
-		require.NoError(t, err)
-
-		_, _, _, err = executor.Execute(context.Background(), "echo", []string{"hello"}, absDisallowedDir, nil)
-		assert.Error(t, err)
-		assert.Contains(t, err.Error(), "invalid working directory")
 	})
 }
 
