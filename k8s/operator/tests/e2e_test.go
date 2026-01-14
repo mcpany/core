@@ -168,7 +168,7 @@ nodes:
 	// Let's assume service port is 80 (standard HTTP) or matched to container.
 	// The previous helm set ui.service.nodePort=30000.
 	// Let's forward to the service.
-	pfCmd := exec.CommandContext(ctx, "kubectl", "port-forward", "service/mcpany-ui", ":80", "-n", namespace)
+	pfCmd := exec.CommandContext(ctx, "kubectl", "port-forward", "service/mcpany-ui", ":3000", "-n", namespace)
 	pfOutPipe, err := pfCmd.StdoutPipe()
 	if err != nil {
 		t.Fatalf("Failed to get pipe for port-forward: %v", err)
