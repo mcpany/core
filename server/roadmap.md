@@ -6,6 +6,7 @@
 
 ### Implemented Features (Recently Completed)
 
+- [x] **Strict Config Parsing**: Startup now fails immediately on YAML/JSON syntax errors in configuration files (previously skipped silently).
 - [x] **Upstream Service Diagnostics**: Improved error reporting in the UI for failed upstream connections (e.g., connection refused, auth failure).
 - [x] **Config Environment Variable Validation**: Strict validation for missing environment variables in configuration files. [PR](#)
 - [x] **Agent Debugger & Inspector**: Middleware for traffic replay and inspection. [Docs](server/docs/features/debugger.md)
@@ -66,6 +67,8 @@ These features represent the next logical steps for the product, focusing on Ent
 | 21 | **Configuration Migration Tool** | **DevX**: A CLI command to convert `claude_desktop_config.json` to `mcpany` config format. | Low |
 | 22 | **Auth Doctor** | **UX**: Diagnostic tool to verify that configured authentication methods match upstream expectations (e.g., detecting if a Bearer token is used where Basic Auth is expected). | Medium |
 | 23 | **Dynamic Tool Pruning** | **Performance/Cost**: Feature to filter visible tools based on the current user's role or context to reduce LLM context window usage and costs. | High |
+| 24 | **Environment Variable Linter** | **DevX**: A tool/check to scan config files and verify that all referenced environment variables (e.g. `${API_KEY}`) are actually set in the current shell/env. | Low |
+| 25 | **JSON Schema for Config** | **DevX**: Auto-generate and publish a JSON Schema for the `config.yaml` to enable intellisense/validation in IDEs like VS Code. | Low |
 
 ## 3. Codebase Health
 
