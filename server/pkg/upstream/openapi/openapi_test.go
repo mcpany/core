@@ -171,6 +171,7 @@ func TestOpenAPIUpstream_Register_Errors(t *testing.T) {
 }
 
 func TestOpenAPIUpstream_Register_SpecUrl(t *testing.T) {
+	t.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "true")
 	ctx := context.Background()
 	mockToolManager := new(MockToolManager)
 	upstream := NewOpenAPIUpstream()

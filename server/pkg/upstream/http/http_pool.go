@@ -7,6 +7,7 @@ import (
 	"context"
 	"crypto/tls"
 	"crypto/x509"
+	"net"
 	"net/http"
 	"os"
 	"time"
@@ -70,6 +71,10 @@ var NewHTTPPool = func(
 	}
 
 	dialer := util.NewSafeDialer()
+	dialer.Dialer = &net.Dialer{
+		Timeout:   30 * time.Second,
+		KeepAlive: 30 * time.Second,
+	}
 	if os.Getenv("MCPANY_ALLOW_LOOPBACK_RESOURCES") == util.TrueStr {
 		dialer.AllowLoopback = true
 	}
