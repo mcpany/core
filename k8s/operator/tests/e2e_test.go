@@ -67,43 +67,13 @@ func TestOperatorE2E(t *testing.T) {
 		time.Sleep(5 * time.Second)
 	}
 
-	// 4. Get a free port or discover existing one
-	var hostPort int
-
+	// 4. Create Kind Cluster if needed
 	if os.Getenv("REUSE_CLUSTER") == "true" && clusterExists(t, ctx, clusterName) {
 		t.Logf("Reusing existing Kind cluster %s...", clusterName)
-		// Find the mapped port
-		// docker port mcp-e2e-control-plane 30000/tcp -> 0.0.0.0:35907
-		cmd := exec.CommandContext(ctx, "docker", "port", fmt.Sprintf("%s-control-plane", clusterName), "30000/tcp")
-		out, err := cmd.Output()
-		if err != nil {
-			t.Fatalf("Failed to get mapped port from docker: %v", err)
-		}
-		// Output example: 0.0.0.0:35907
-		outStr := strings.TrimSpace(string(out))
-		parts := strings.Split(outStr, ":")
-		if len(parts) < 2 {
-			t.Fatalf("Unexpected docker port output: %s", outStr)
-		}
-		// Last part is the port
-		portStr := parts[len(parts)-1]
-		_, err = fmt.Sscanf(portStr, "%d", &hostPort)
-		if err != nil {
-			t.Fatalf("Failed to parse port from %s: %v", portStr, err)
-		}
-		t.Logf("Discovered existing host port: %d", hostPort)
 	} else {
-		port, err := getFreePort()
-		if err != nil {
-			t.Fatalf("Failed to get free port: %v", err)
-		}
-		hostPort = port
-		t.Logf("Using host port %d for UI access (mapped to NodePort 30000)", hostPort)
-
-		// 5. Create Kind Cluster
 		t.Logf("Creating Kind cluster %s...", clusterName)
-		// Generate temporary kind config with port mapping
-		kindConfigContent := fmt.Sprintf(`kind: Cluster
+		// Generate temporary kind config with port mapping (letting Docker assign host port)
+		kindConfigContent := `kind: Cluster
 apiVersion: kind.x-k8s.io/v1alpha4
 networking:
   ipFamily: ipv4
@@ -111,10 +81,9 @@ nodes:
 - role: control-plane
   extraPortMappings:
   - containerPort: 30000
-    hostPort: %d
     listenAddress: "0.0.0.0"
     protocol: TCP
-`, hostPort)
+`
 		tmpConfig := filepath.Join(t.TempDir(), "kind-config.yaml")
 		if err := os.WriteFile(tmpConfig, []byte(kindConfigContent), 0644); err != nil {
 			t.Fatalf("Failed to write temp kind config: %v", err)
@@ -124,6 +93,28 @@ nodes:
 			t.Fatalf("Failed to create kind cluster: %v", err)
 		}
 	}
+
+	// 5. Discover mapped port (Common for both new and reused clusters)
+	// docker port mcp-e2e-control-plane 30000/tcp -> 0.0.0.0:35907
+	cmd := exec.CommandContext(ctx, "docker", "port", fmt.Sprintf("%s-control-plane", clusterName), "30000/tcp")
+	out, err := cmd.Output()
+	if err != nil {
+		t.Fatalf("Failed to get mapped port from docker: %v", err)
+	}
+	// Output example: 0.0.0.0:35907
+	outStr := strings.TrimSpace(string(out))
+	parts := strings.Split(outStr, ":")
+	if len(parts) < 2 {
+		t.Fatalf("Unexpected docker port output: %s", outStr)
+	}
+	// Last part is the port
+	portStr := parts[len(parts)-1]
+	var hostPort int
+	_, err = fmt.Sscanf(portStr, "%d", &hostPort)
+	if err != nil {
+		t.Fatalf("Failed to parse port from %s: %v", portStr, err)
+	}
+	t.Logf("Using host port %d for UI access (mapped to NodePort 30000)", hostPort)
 
 	// 6. Build Images (Locally)
 	if os.Getenv("SKIP_IMAGE_BUILD") != "true" {
@@ -309,25 +300,4 @@ func waitForPort(t *testing.T, ctx context.Context, addr string, timeout time.Du
 			}
 		}
 	}
-}
-
-func getFreePort() (int, error) {
-	var lastErr error
-	for i := 0; i < 5; i++ {
-		addr, err := net.ResolveTCPAddr("tcp", "localhost:0")
-		if err != nil {
-			lastErr = err
-			continue
-		}
-
-		l, err := net.ListenTCP("tcp", addr)
-		if err != nil {
-			lastErr = err
-			time.Sleep(100 * time.Millisecond)
-			continue
-		}
-		defer l.Close()
-		return l.Addr().(*net.TCPAddr).Port, nil
-	}
-	return 0, fmt.Errorf("failed to get free port after 5 retries: %v", lastErr)
 }
