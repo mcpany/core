@@ -94,7 +94,12 @@ ${colorConfig
       itemConfig.theme?.[theme as keyof typeof itemConfig.theme] ||
       itemConfig.color
     const value = color ? color.replace(/[;{}<>"\r\n]/g, "") : null
-    const safeKey = key.replace(/[;{}<>"\r\n]/g, "")
+    // Sentinel Security: Strictly allow only alphanumeric, dashes, and underscores for CSS variable names
+    const safeKey = key.replace(/[^a-zA-Z0-9\-_]/g, "")
+    // Sentinel Security: Prevent javascript: protocol injection (defense in depth)
+    if (value && /javascript:/i.test(value)) {
+      return null
+    }
     return value ? `  --color-${safeKey}: ${value};` : null
   })
   .join("\n")}

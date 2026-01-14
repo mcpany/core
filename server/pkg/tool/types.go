@@ -11,6 +11,7 @@ import (
 	"fmt"
 	"io"
 	"log/slog"
+	"net"
 	"net/http"
 	"net/url"
 	"os"
@@ -21,6 +22,7 @@ import (
 	"sync"
 	"time"
 
+	jsoniter "github.com/json-iterator/go"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	v1 "github.com/mcpany/core/proto/mcp_router/v1"
 	"github.com/mcpany/core/server/pkg/auth"
@@ -33,7 +35,6 @@ import (
 	"github.com/mcpany/core/server/pkg/resilience"
 	"github.com/mcpany/core/server/pkg/transformer"
 	"github.com/mcpany/core/server/pkg/util"
-	jsoniter "github.com/json-iterator/go"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/reflect/protoreflect"
@@ -487,6 +488,21 @@ func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 		httpReq, err := http.NewRequestWithContext(ctx, t.cachedMethod, urlString, bodyForAttempt)
 		if err != nil {
 			return &resilience.PermanentError{Err: fmt.Errorf("failed to create http request: %w", err)}
+		}
+
+		// Sentinel Security: Block access to cloud metadata services
+		// We resolve the IP to prevent DNS rebinding or alternative formats
+		resolver := &net.Resolver{}
+		ips, err := resolver.LookupIP(ctx, "ip", httpReq.URL.Hostname())
+		if err == nil {
+			for _, ip := range ips {
+				if ip.String() == "169.254.169.254" || ip.String() == "fd00:ec2::254" {
+					return &resilience.PermanentError{Err: fmt.Errorf("access to cloud metadata service IP %q is blocked", ip)}
+				}
+			}
+		}
+		if hostname := httpReq.URL.Hostname(); hostname == "169.254.169.254" || hostname == "metadata.google.internal" || hostname == "[fd00:ec2::254]" {
+			return &resilience.PermanentError{Err: fmt.Errorf("access to cloud metadata service %q is blocked", hostname)}
 		}
 
 		if contentType != "" {
@@ -2111,6 +2127,16 @@ func checkForShellInjection(val string, template string, placeholder string) err
 	}
 
 	// Unquoted (or unknown quoting): strict check
+	// Sentinel Security: Quote the value to prevent shell injection if not already done by the template.
+	// But since we are validating inputs here, we should just ensure no dangerous characters are present
+	// that would allow breaking out of the context IF it were quoted, OR strictly validating unquoted usage.
+	// However, since we don't control the template quoting here easily (we just replaced),
+	// the best defense for unquoted placeholders is to prevent shell metacharacters.
+	// We allow spaces now, but we must ensure they are treated as arguments, which is hard without quotes.
+	// If the user uses `echo {{input}}` and input is `hello world`, it becomes `echo hello world`.
+	// This is 2 arguments. This is usually fine but can be surprising.
+	// If input is `foo; rm -rf /`, we must block `;`.
+
 	// Block common shell metacharacters and globbing/expansion characters
 	// % and ^ are Windows CMD metacharacters
 	// We also block quotes and backslashes to prevent argument splitting and interpretation abuse
