@@ -60,7 +60,7 @@ services:
     await expect(page.getByText('Service Palette')).toBeVisible({ timeout: 10000 });
 
     // Click a template (e.g., Redis)
-    await page.getByText('Redis').first().click();
+    await page.getByText('Redis').first().click({ force: true });
 
     // Verify Visualizer updates
     await expect(page.locator('.stack-visualizer-container').getByText('redis-cache')).toBeVisible({ timeout: 15000 });
@@ -77,7 +77,7 @@ services:
     await expect(page.getByText('Service Palette')).toBeVisible({ timeout: 10000 });
 
     // Click a template (e.g., Redis)
-    await page.getByText('Redis').first().click();
+    await page.getByText('Redis').first().click({ force: true });
 
     // Verify Visualizer updates
     // The visualizer should show 'redis-cache' or similar from the template

@@ -29,7 +29,7 @@ test.describe('Concurrency & Race Conditions', () => {
         const link = page.getByRole('link', { name: 'Playground' }).first();
         await expect(link).toHaveAttribute('href', '/playground');
         await link.click();
-        await page.waitForURL(/.*playground/);
+        await expect(page).toHaveURL(/.*playground/);
     }));
 
     // Check that all pages are on the playground

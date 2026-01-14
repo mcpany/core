@@ -39,8 +39,8 @@ test.describe('MCP Any UI E2E', () => {
     if (await statsLink.count() > 0) {
         await expect(statsLink).toHaveAttribute('href', '/stats');
         await statsLink.click();
-        await page.waitForURL('**/stats');
         await expect(page).toHaveURL(/.*\/stats/);
+
         // Verify page content
         await expect(page.locator('h2')).toContainText('Analytics & Stats');
     } else {
