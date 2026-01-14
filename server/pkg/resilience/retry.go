@@ -20,6 +20,9 @@ type Retry struct {
 // NewRetry creates a new Retry instance with the given configuration.
 // It sets default values for base and max backoff if they are not provided.
 func NewRetry(config *configv1.RetryConfig) *Retry {
+	if config == nil {
+		config = &configv1.RetryConfig{}
+	}
 	if config.GetBaseBackoff() == nil {
 		config.SetBaseBackoff(durationpb.New(time.Second))
 	}
@@ -35,7 +38,14 @@ func NewRetry(config *configv1.RetryConfig) *Retry {
 // to the configured policy.
 func (r *Retry) Execute(ctx context.Context, work func(context.Context) error) error {
 	var err error
-	for i := 0; i < int(r.config.GetNumberOfRetries())+1; i++ {
+	// Use int64 for attempts to match usage, though retries count is usually small.
+	// Cast safely.
+	retries := int(r.config.GetNumberOfRetries())
+	if retries < 0 {
+		retries = 0
+	}
+
+	for i := 0; i < retries+1; i++ {
 		// Check context before each attempt
 		if ctx.Err() != nil {
 			return ctx.Err()
@@ -52,7 +62,7 @@ func (r *Retry) Execute(ctx context.Context, work func(context.Context) error) e
 		}
 
 		// If this was the last attempt, return the error immediately
-		if i == int(r.config.GetNumberOfRetries()) {
+		if i == retries {
 			return err
 		}
 
@@ -67,9 +77,33 @@ func (r *Retry) Execute(ctx context.Context, work func(context.Context) error) e
 }
 
 func (r *Retry) backoff(attempt int) time.Duration {
-	backoff := r.config.GetBaseBackoff().AsDuration() * time.Duration(1<<attempt)
-	if backoff > r.config.GetMaxBackoff().AsDuration() {
+	if attempt < 0 {
+		return r.config.GetBaseBackoff().AsDuration()
+	}
+
+	// Cap attempt to avoid potential overflow in 1<<attempt.
+	// 62 is chosen because 1<<62 fits in int64 (positive).
+	// With base=1ns, 1<<62 ns is > 100 years, far exceeding any reasonable MaxBackoff.
+	if attempt >= 62 {
 		return r.config.GetMaxBackoff().AsDuration()
 	}
+
+	base := r.config.GetBaseBackoff().AsDuration()
+	maxBackoff := r.config.GetMaxBackoff().AsDuration()
+
+	if base <= 0 {
+		return 0
+	}
+
+	// Calculate factor = 2^attempt
+	factor := int64(1) << attempt
+
+	// Check for overflow: base * factor > maxBackoff
+	// factor > maxBackoff / base
+	if factor > int64(maxBackoff/base) {
+		return maxBackoff
+	}
+
+	backoff := base * time.Duration(factor)
 	return backoff
 }

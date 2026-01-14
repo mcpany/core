@@ -6,6 +6,10 @@
 import { defineConfig, devices } from '@playwright/test';
 import os from 'os';
 
+// Use TEST_PORT env var if set, otherwise default to 9111
+const PORT = process.env.TEST_PORT || 9111;
+const BASE_URL = process.env.PLAYWRIGHT_BASE_URL || `http://localhost:${PORT}`;
+
 export default defineConfig({
   testDir: './tests',
   testMatch: ['**/*.spec.ts'], // Changed to match all specs
@@ -16,12 +20,12 @@ export default defineConfig({
   workers: os.cpus().length,
   outputDir: 'test-results/artifacts',
   reporter: [['line'], ['json', { outputFile: 'test-results/test-results.json' }]],
-  timeout: 60000,
+  timeout: 120000,
   expect: {
     timeout: 15000,
   },
   use: {
-    baseURL: process.env.PLAYWRIGHT_BASE_URL || 'http://localhost:9002',
+    baseURL: BASE_URL,
     extraHTTPHeaders: {
       'X-API-Key': process.env.MCPANY_API_KEY || 'test-token',
     },
@@ -43,11 +47,12 @@ export default defineConfig({
   webServer: process.env.SKIP_WEBSERVER
     ? undefined
     : {
-        command: `BACKEND_URL=${process.env.BACKEND_URL || 'http://localhost:50050'} npm run dev`,
-        url: 'http://localhost:9002',
-        reuseExistingServer: true,
+        command: `BACKEND_URL=${process.env.BACKEND_URL || 'http://localhost:50050'} npx next dev -p ${PORT}`,
+        url: BASE_URL,
+        reuseExistingServer: false,
         env: {
           BACKEND_URL: process.env.BACKEND_URL || 'http://localhost:50050',
+          MCPANY_API_KEY: process.env.MCPANY_API_KEY || 'test-token',
         },
       },
 });

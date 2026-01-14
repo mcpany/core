@@ -50,7 +50,18 @@ func (t *StdioTransport) Connect(_ context.Context) (mcp.Connection, error) {
 
 	multiStderr := io.MultiWriter(stderrCapture, logWriter)
 
+	conn := &stdioConn{
+		stdin:         stdin,
+		stdout:        stdout,
+		cmd:           t.Command,
+		stderrCapture: stderrCapture,
+		decoder:       json.NewDecoder(stdout),
+		encoder:       json.NewEncoder(stdin),
+	}
+	conn.wg.Add(1)
+
 	go func() {
+		defer conn.wg.Done()
 		_, _ = io.Copy(multiStderr, stderr)
 	}()
 
@@ -58,14 +69,7 @@ func (t *StdioTransport) Connect(_ context.Context) (mcp.Connection, error) {
 		return nil, fmt.Errorf("failed to start command: %w", err)
 	}
 
-	return &stdioConn{
-		stdin:         stdin,
-		stdout:        stdout,
-		cmd:           t.Command,
-		stderrCapture: stderrCapture,
-		decoder:       json.NewDecoder(stdout),
-		encoder:       json.NewEncoder(stdin),
-	}, nil
+	return conn, nil
 }
 
 type stdioConn struct {
@@ -77,6 +81,7 @@ type stdioConn struct {
 	encoder       *json.Encoder
 	mutex         sync.Mutex
 	closed        bool
+	wg            sync.WaitGroup
 }
 
 func (c *stdioConn) Read(_ context.Context) (jsonrpc.Message, error) {

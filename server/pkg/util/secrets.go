@@ -54,7 +54,7 @@ func resolveSecretRecursive(ctx context.Context, secret *configv1.SecretValue, d
 
 	switch secret.WhichValue() {
 	case configv1.SecretValue_PlainText_case:
-		return secret.GetPlainText(), nil
+		return strings.TrimSpace(secret.GetPlainText()), nil
 	case configv1.SecretValue_EnvironmentVariable_case:
 		envVar := secret.GetEnvironmentVariable()
 		value := os.Getenv(envVar)

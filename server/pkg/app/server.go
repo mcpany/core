@@ -89,25 +89,27 @@ func (a *Application) uploadFile(w http.ResponseWriter, r *http.Request) {
 	}
 	defer func() { _ = file.Close() }()
 
-	// Create a temporary file to store the uploaded content
-	tmpfile, err := os.CreateTemp("", "upload-*.txt")
-	if err != nil {
-		http.Error(w, "failed to create temporary file", http.StatusInternalServerError)
-		return
+	// Clean up any temporary files created by ParseMultipartForm
+	if r.MultipartForm != nil {
+		defer func() {
+			if err := r.MultipartForm.RemoveAll(); err != nil {
+				logging.GetLogger().Error("Failed to remove multipart form files", "error", err)
+			}
+		}()
 	}
-	defer func() { _ = tmpfile.Close() }()           // close the file handle
-	defer func() { _ = os.Remove(tmpfile.Name()) }() // clean up
 
-	// Copy the uploaded file to the temporary file
-	if _, err := io.Copy(tmpfile, file); err != nil {
-		http.Error(w, "failed to copy file", http.StatusInternalServerError)
+	// Consume the file content without writing to disk.
+	// We discard the content to avoid disk usage and potential residue.
+	written, err := io.Copy(io.Discard, file)
+	if err != nil {
+		http.Error(w, "failed to read file", http.StatusInternalServerError)
 		return
 	}
 
 	// Respond with the file name and size
 	// Sanitize the filename to prevent reflected XSS
 	w.Header().Set("Content-Type", "text/plain")
-	_, _ = fmt.Fprintf(w, "File '%s' uploaded successfully (size: %d bytes)", html.EscapeString(header.Filename), header.Size)
+	_, _ = fmt.Fprintf(w, "File '%s' uploaded successfully (size: %d bytes)", html.EscapeString(header.Filename), written)
 }
 
 // Runner defines the interface for running the MCP Any application. It abstracts
@@ -1039,11 +1041,9 @@ func (a *Application) runServerMode(
 	if authDisabled {
 		logging.GetLogger().Warn("Auth middleware is disabled by config! Enforcing private-IP-only access for safety.")
 		// Even if auth is disabled, we enforce private-IP-only access to prevent public exposure.
-		// Passing an empty string to createAuthMiddleware triggers the IsPrivateIP check.
-		authMiddleware = a.createAuthMiddleware() // empty apiKey implied if we change signature?
-		// Wait, createAuthMiddleware needs to use SettingsManager now.
+		authMiddleware = a.createAuthMiddleware(true)
 	} else {
-		authMiddleware = a.createAuthMiddleware()
+		authMiddleware = a.createAuthMiddleware(false)
 	}
 
 	mux := http.NewServeMux()
@@ -1541,7 +1541,7 @@ func (a *Application) runServerMode(
 }
 
 // createAuthMiddleware creates the authentication middleware.
-func (a *Application) createAuthMiddleware() func(http.Handler) http.Handler {
+func (a *Application) createAuthMiddleware(forcePrivateIPOnly bool) func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			ip := util.ExtractIP(r.RemoteAddr)
@@ -1550,7 +1550,7 @@ func (a *Application) createAuthMiddleware() func(http.Handler) http.Handler {
 
 			apiKey := a.SettingsManager.GetAPIKey()
 
-			if apiKey != "" {
+			if !forcePrivateIPOnly && apiKey != "" {
 				// Check X-API-Key or Authorization header
 				requestKey := r.Header.Get("X-API-Key")
 				if requestKey == "" {

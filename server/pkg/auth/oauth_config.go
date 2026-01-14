@@ -12,5 +12,9 @@ type OAuth2Config struct {
 	IssuerURL string
 	// Audience is the intended audience of the JWT. The authenticator will
 	// verify that the token's 'aud' claim matches this value.
+	// Deprecated: Use Audiences instead.
 	Audience string
+	// Audiences is the list of intended audiences of the JWT. The authenticator will
+	// verify that the token's 'aud' claim matches at least one of these values.
+	Audiences []string
 }

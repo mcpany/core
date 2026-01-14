@@ -9,7 +9,7 @@
     "build": "NODE_ENV=production next build",
     "start": "next start",
     "lint": "eslint .",
-    "test": "playwright test",
+    "test": "TEST_PORT=$(shuf -i 10000-20000 -n 1) playwright test",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {

@@ -40,6 +40,51 @@ const iconMap: Record<string, any> = {
   AlertCircle
 };
 
+// ⚡ Bolt Optimization: Extracted and memoized MetricItem to prevent unnecessary re-renders
+// when only some metrics change during polling.
+const MetricItem = memo(function MetricItem({ metric }: { metric: Metric }) {
+  const Icon = iconMap[metric.icon] || Activity;
+  const isPositiveTrend = metric.trend === "up";
+  // For latency and errors, down is usually good (green), up is bad (red)
+  const isReverseTrend = metric.label.includes("Latency") || metric.label.includes("Error");
+
+  let trendColor = isPositiveTrend ? "text-green-500" : "text-red-500";
+  if (isReverseTrend) {
+      trendColor = isPositiveTrend ? "text-red-500" : "text-green-500";
+  }
+
+  return (
+    <Card className="backdrop-blur-xl bg-background/60 border border-white/20 shadow-sm hover:shadow-lg transition-all duration-300">
+      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+        <CardTitle className="text-sm font-medium text-muted-foreground">
+          {metric.label}
+        </CardTitle>
+        <Icon className="h-4 w-4 text-muted-foreground opacity-70" />
+      </CardHeader>
+      <CardContent>
+        <div className="text-2xl font-bold tracking-tight">{metric.value}</div>
+        <div className="flex items-center justify-between mt-1">
+            {metric.change && (
+          <p className={`text-xs flex items-center ${trendColor}`}>
+            {metric.trend === "up" ? (
+              <ArrowUpRight className="h-3 w-3 mr-1" />
+            ) : (
+              <ArrowDownRight className="h-3 w-3 mr-1" />
+            )}
+            <span>
+              {metric.change}
+            </span>
+          </p>
+        )}
+          {metric.subLabel && (
+            <span className="text-xs text-muted-foreground opacity-80">{metric.subLabel}</span>
+          )}
+        </div>
+      </CardContent>
+    </Card>
+  );
+});
+
 // Memoized to prevent unnecessary re-renders when parent components update.
 // This component manages its own state and data fetching, so it only needs to re-render
 // when its own state changes, not when the parent re-renders.
@@ -87,48 +132,9 @@ export const MetricsOverview = memo(function MetricsOverview() {
 
   return (
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-      {metrics.map((metric) => {
-        const Icon = iconMap[metric.icon] || Activity;
-        const isPositiveTrend = metric.trend === "up";
-        // For latency and errors, down is usually good (green), up is bad (red)
-        const isReverseTrend = metric.label.includes("Latency") || metric.label.includes("Error");
-
-        let trendColor = isPositiveTrend ? "text-green-500" : "text-red-500";
-        if (isReverseTrend) {
-            trendColor = isPositiveTrend ? "text-red-500" : "text-green-500";
-        }
-
-        return (
-          <Card key={metric.label} className="backdrop-blur-xl bg-background/60 border border-white/20 shadow-sm hover:shadow-lg transition-all duration-300">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">
-                {metric.label}
-              </CardTitle>
-              <Icon className="h-4 w-4 text-muted-foreground opacity-70" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold tracking-tight">{metric.value}</div>
-              <div className="flex items-center justify-between mt-1">
-                 {metric.change && (
-                <p className={`text-xs flex items-center ${trendColor}`}>
-                  {metric.trend === "up" ? (
-                    <ArrowUpRight className="h-3 w-3 mr-1" />
-                  ) : (
-                    <ArrowDownRight className="h-3 w-3 mr-1" />
-                  )}
-                  <span>
-                    {metric.change}
-                  </span>
-                </p>
-              )}
-               {metric.subLabel && (
-                  <span className="text-xs text-muted-foreground opacity-80">{metric.subLabel}</span>
-               )}
-              </div>
-            </CardContent>
-          </Card>
-        );
-      })}
+      {metrics.map((metric) => (
+        <MetricItem key={metric.label} metric={metric} />
+      ))}
     </div>
   );
 });
