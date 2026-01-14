@@ -34,6 +34,14 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import {
+    ContextMenu,
+    ContextMenuContent,
+    ContextMenuItem,
+    ContextMenuSeparator,
+    ContextMenuShortcut,
+    ContextMenuTrigger,
+} from "@/components/ui/context-menu";
+import {
     Tabs,
     TabsContent,
     TabsList,
@@ -137,16 +145,39 @@ export function ResourceExplorer({ initialResources = [] }: ResourceExplorerProp
         }
     };
 
-    const handleDownload = () => {
-        if (!resourceContent) return;
-        const blob = new Blob([resourceContent.text || ""], { type: resourceContent.mimeType });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url;
-        // Try to extract filename from URI or Name
-        const selectedRes = resources.find(r => r.uri === selectedUri);
-        a.download = selectedRes?.name || "resource";
-        a.click();
+    const handleDownload = (uri?: string) => {
+        // If called from context menu with URI, we might not have content loaded yet.
+        // For this demo, we only support download if content is already loaded (selected)
+        // or we could fetch it. Ideally we should fetch.
+        // For now, let's fallback to current selection if match.
+
+        // If uri is provided and matches selectedUri, use resourceContent.
+        // Otherwise we can't easily download without fetching first.
+        const targetUri = uri || selectedUri;
+        if (!targetUri) return;
+
+        if (targetUri === selectedUri && resourceContent) {
+             const blob = new Blob([resourceContent.text || ""], { type: resourceContent.mimeType });
+             const url = URL.createObjectURL(blob);
+             const a = document.createElement("a");
+             a.href = url;
+             const selectedRes = resources.find(r => r.uri === targetUri);
+             a.download = selectedRes?.name || "resource";
+             a.click();
+        } else {
+             // TODO: Fetch and download
+             toast({ title: "Info", description: "Select the resource first to download." });
+        }
+    };
+
+    const handleCopyUri = (uri: string) => {
+        navigator.clipboard.writeText(uri);
+        toast({ title: "Copied", description: "Resource URI copied to clipboard." });
+    };
+
+    const handleCopyName = (name: string) => {
+        navigator.clipboard.writeText(name);
+        toast({ title: "Copied", description: "Resource name copied to clipboard." });
     };
 
     const renderPreview = () => {
@@ -288,21 +319,40 @@ export function ResourceExplorer({ initialResources = [] }: ResourceExplorerProp
                                     const Icon = getIcon(res.mimeType);
                                     const isSelected = selectedUri === res.uri;
                                     return (
-                                        <div
-                                            key={res.uri}
-                                            className={cn(
-                                                "flex items-center gap-3 p-3 px-4 cursor-pointer hover:bg-accent/50 transition-colors text-sm group",
-                                                isSelected ? "bg-accent text-accent-foreground border-l-4 border-l-primary pl-3" : "border-l-4 border-l-transparent"
-                                            )}
-                                            onClick={() => setSelectedUri(res.uri)}
-                                        >
-                                            <Icon className={cn("h-4 w-4 text-muted-foreground group-hover:text-primary", isSelected && "text-primary")} />
-                                            <div className="flex-1 min-w-0">
-                                                <div className="font-medium truncate">{res.name}</div>
-                                                <div className="text-[10px] text-muted-foreground truncate opacity-70" title={res.uri}>{res.uri}</div>
-                                            </div>
-                                            {isSelected && <ChevronRight className="h-3 w-3 text-muted-foreground" />}
-                                        </div>
+                                        <ContextMenu key={res.uri}>
+                                            <ContextMenuTrigger>
+                                                <div
+                                                    className={cn(
+                                                        "flex items-center gap-3 p-3 px-4 cursor-pointer hover:bg-accent/50 transition-colors text-sm group",
+                                                        isSelected ? "bg-accent text-accent-foreground border-l-4 border-l-primary pl-3" : "border-l-4 border-l-transparent"
+                                                    )}
+                                                    onClick={() => setSelectedUri(res.uri)}
+                                                >
+                                                    <Icon className={cn("h-4 w-4 text-muted-foreground group-hover:text-primary", isSelected && "text-primary")} />
+                                                    <div className="flex-1 min-w-0">
+                                                        <div className="font-medium truncate">{res.name}</div>
+                                                        <div className="text-[10px] text-muted-foreground truncate opacity-70" title={res.uri}>{res.uri}</div>
+                                                    </div>
+                                                    {isSelected && <ChevronRight className="h-3 w-3 text-muted-foreground" />}
+                                                </div>
+                                            </ContextMenuTrigger>
+                                            <ContextMenuContent>
+                                                <ContextMenuItem onClick={() => setSelectedUri(res.uri)}>
+                                                    <Eye className="mr-2 h-4 w-4" /> View Details
+                                                </ContextMenuItem>
+                                                <ContextMenuSeparator />
+                                                <ContextMenuItem onClick={() => handleCopyUri(res.uri)}>
+                                                    <Copy className="mr-2 h-4 w-4" /> Copy URI
+                                                </ContextMenuItem>
+                                                <ContextMenuItem onClick={() => handleCopyName(res.name)}>
+                                                    <FileText className="mr-2 h-4 w-4" /> Copy Name
+                                                </ContextMenuItem>
+                                                <ContextMenuSeparator />
+                                                <ContextMenuItem onClick={() => handleDownload(res.uri)} disabled={!isSelected}>
+                                                    <Download className="mr-2 h-4 w-4" /> Download
+                                                </ContextMenuItem>
+                                            </ContextMenuContent>
+                                        </ContextMenu>
                                     );
                                 })}
                             </div>
@@ -312,24 +362,43 @@ export function ResourceExplorer({ initialResources = [] }: ResourceExplorerProp
                                     const Icon = getIcon(res.mimeType);
                                     const isSelected = selectedUri === res.uri;
                                     return (
-                                        <Card
-                                            key={res.uri}
-                                            className={cn(
-                                                "cursor-pointer hover:border-primary/50 transition-all",
-                                                isSelected ? "border-primary ring-1 ring-primary" : ""
-                                            )}
-                                            onClick={() => setSelectedUri(res.uri)}
-                                        >
-                                            <CardContent className="p-3 flex flex-col items-center text-center gap-2">
-                                                <div className="p-2 bg-muted rounded-full">
-                                                    <Icon className="h-6 w-6 text-muted-foreground" />
-                                                </div>
-                                                <div className="w-full">
-                                                    <div className="font-medium text-xs truncate" title={res.name}>{res.name}</div>
-                                                    <div className="text-[10px] text-muted-foreground truncate mt-0.5">{res.mimeType || "unknown"}</div>
-                                                </div>
-                                            </CardContent>
-                                        </Card>
+                                        <ContextMenu key={res.uri}>
+                                            <ContextMenuTrigger>
+                                                <Card
+                                                    className={cn(
+                                                        "cursor-pointer hover:border-primary/50 transition-all",
+                                                        isSelected ? "border-primary ring-1 ring-primary" : ""
+                                                    )}
+                                                    onClick={() => setSelectedUri(res.uri)}
+                                                >
+                                                    <CardContent className="p-3 flex flex-col items-center text-center gap-2">
+                                                        <div className="p-2 bg-muted rounded-full">
+                                                            <Icon className="h-6 w-6 text-muted-foreground" />
+                                                        </div>
+                                                        <div className="w-full">
+                                                            <div className="font-medium text-xs truncate" title={res.name}>{res.name}</div>
+                                                            <div className="text-[10px] text-muted-foreground truncate mt-0.5">{res.mimeType || "unknown"}</div>
+                                                        </div>
+                                                    </CardContent>
+                                                </Card>
+                                            </ContextMenuTrigger>
+                                            <ContextMenuContent>
+                                                <ContextMenuItem onClick={() => setSelectedUri(res.uri)}>
+                                                    <Eye className="mr-2 h-4 w-4" /> View Details
+                                                </ContextMenuItem>
+                                                <ContextMenuSeparator />
+                                                <ContextMenuItem onClick={() => handleCopyUri(res.uri)}>
+                                                    <Copy className="mr-2 h-4 w-4" /> Copy URI
+                                                </ContextMenuItem>
+                                                <ContextMenuItem onClick={() => handleCopyName(res.name)}>
+                                                    <FileText className="mr-2 h-4 w-4" /> Copy Name
+                                                </ContextMenuItem>
+                                                <ContextMenuSeparator />
+                                                <ContextMenuItem onClick={() => handleDownload(res.uri)} disabled={!isSelected}>
+                                                    <Download className="mr-2 h-4 w-4" /> Download
+                                                </ContextMenuItem>
+                                            </ContextMenuContent>
+                                        </ContextMenu>
                                     );
                                 })}
                             </div>
@@ -356,7 +425,7 @@ export function ResourceExplorer({ initialResources = [] }: ResourceExplorerProp
                                     <Button variant="ghost" size="sm" className="h-7 text-xs" onClick={handleCopyContent} disabled={!resourceContent}>
                                         <Copy className="h-3 w-3 mr-1" /> Copy
                                     </Button>
-                                    <Button variant="ghost" size="sm" className="h-7 text-xs" onClick={handleDownload} disabled={!resourceContent}>
+                                    <Button variant="ghost" size="sm" className="h-7 text-xs" onClick={() => handleDownload()} disabled={!resourceContent}>
                                         <Download className="h-3 w-3 mr-1" /> Download
                                     </Button>
                                 </div>
