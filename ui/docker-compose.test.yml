@@ -10,6 +10,7 @@ services:
         "run",
         "--config-path=config.minimal.yaml",
         "--mcp-listen-address=:50050",
+        "--grpc-port=:50051"
       ]
     environment:
       - MCPANY_API_KEY=test-token

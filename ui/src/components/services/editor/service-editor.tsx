@@ -241,7 +241,7 @@ export function ServiceEditor({ service, onChange, onSave, onCancel }: ServiceEd
                                         <Label htmlFor="openapi-spec">Spec URL</Label>
                                          <Input
                                             id="openapi-spec"
-                                            // @ts-ignore - Proto oneof handling might be tricky in TS without proper generated types helper
+                                            // @ts-expect-error: Suppress type error if applicable - Proto oneof handling might be tricky in TS without proper generated types helper
                                             value={(service.openapiService as any).specUrl || ""}
                                             onChange={(e) => onChange({ ...service, openapiService: { ...service.openapiService!, specUrl: e.target.value } as any })}
                                             placeholder="https://api.example.com/openapi.json"
@@ -358,7 +358,7 @@ export function ServiceEditor({ service, onChange, onSave, onCancel }: ServiceEd
                                             <Input
                                                 id="timeout"
                                                 placeholder="30s"
-                                                // @ts-ignore - Assuming simplified input for now
+                                                // @ts-expect-error: Suppress type error if applicable - Assuming simplified input for now
                                                 defaultValue="30s"
                                             />
                                         </div>

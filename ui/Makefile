@@ -38,6 +38,7 @@ export TEST_GID
 test: clean-test-results build-test-docker build-server-docker
 	mkdir -p test-results .audit ../build/playwright-report docs playwright-report/html
 	chmod -R 777 test-results .audit ../build/playwright-report playwright-report || true
+	HOST_UID=$(shell id -u) HOST_GID=$(shell id -g) SERVER_IMAGE=$(SERVER_IMAGE) docker compose -f ./docker-compose.test.yml down --remove-orphans || true
 	if [ -z '$(ARGS)' ]; then \
 		HOST_UID=$(shell id -u) HOST_GID=$(shell id -g) SERVER_IMAGE=$(SERVER_IMAGE) docker compose -f ./docker-compose.test.yml up --abort-on-container-exit --exit-code-from ui-tests; \
 	else \

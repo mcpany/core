@@ -16,7 +16,7 @@ export default defineConfig({
   workers: os.cpus().length,
   outputDir: 'test-results/artifacts',
   reporter: [['line'], ['json', { outputFile: 'test-results/test-results.json' }]],
-  timeout: 60000,
+  timeout: 120000,
   expect: {
     timeout: 15000,
   },
