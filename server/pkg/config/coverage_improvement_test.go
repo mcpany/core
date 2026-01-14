@@ -137,7 +137,7 @@ func TestValidatorCoverageMore(t *testing.T) {
     }
     errs = config.Validate(ctx, cfgHttp, config.Server)
     assert.NotEmpty(t, errs)
-    assert.Contains(t, errs[0].Err.Error(), "invalid http target_address scheme")
+    assert.Contains(t, errs[0].Err.Error(), "invalid http address scheme")
 
     // 5. Websocket Service Invalid Scheme
     cfgWs := &configv1.McpAnyServerConfig{
@@ -154,7 +154,7 @@ func TestValidatorCoverageMore(t *testing.T) {
     }
     errs = config.Validate(ctx, cfgWs, config.Server)
     assert.NotEmpty(t, errs)
-    assert.Contains(t, errs[0].Err.Error(), "invalid websocket target_address scheme")
+    assert.Contains(t, errs[0].Err.Error(), "invalid websocket address scheme")
 
     // 6. GC Settings Invalid Duration
     cfgGC := &configv1.McpAnyServerConfig{
