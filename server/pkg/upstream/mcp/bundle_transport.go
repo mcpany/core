@@ -214,7 +214,10 @@ func (c *bundleDockerConn) Read(_ context.Context) (jsonrpc.Message, error) {
 				Method: rAny.Method,
 				Params: rAny.Params,
 			}
-			setUnexportedID(&req.ID, rAny.ID)
+			if err := setUnexportedID(&req.ID, rAny.ID); err != nil {
+				c.log.Error("Failed to set unexported ID on request", "error", err)
+				// Continue, as ID might be nil or we can proceed without it (though JSON-RPC requires it for requests)
+			}
 			msg = req
 		} else {
 			msg = req
@@ -238,7 +241,9 @@ func (c *bundleDockerConn) Read(_ context.Context) (jsonrpc.Message, error) {
 			if rAny.Error != nil {
 				resp.Error = rAny.Error
 			}
-			setUnexportedID(&resp.ID, rAny.ID)
+			if err := setUnexportedID(&resp.ID, rAny.ID); err != nil {
+				c.log.Error("Failed to set unexported ID on response", "error", err)
+			}
 			msg = resp
 		} else {
 			msg = resp
@@ -248,9 +253,9 @@ func (c *bundleDockerConn) Read(_ context.Context) (jsonrpc.Message, error) {
 	return msg, nil
 }
 
-func setUnexportedID(idPtr interface{}, val interface{}) {
+func setUnexportedID(idPtr interface{}, val interface{}) error {
 	if val == nil {
-		return // ID{value: nil} is default
+		return nil // ID{value: nil} is default
 	}
 	// jsonrpc2.ID struct has 'value' field.
 	// Check if val is number (float64 from json) -> convert to int if possible?
@@ -267,10 +272,12 @@ func setUnexportedID(idPtr interface{}, val interface{}) {
 	v := reflect.ValueOf(idPtr).Elem()
 	f := v.FieldByName("value")
 	if !f.IsValid() {
-		return // Should not happen if type is correct
+		// This suggests the SDK internal structure has changed.
+		return fmt.Errorf("field 'value' not found in jsonrpc.ID struct")
 	}
 	f = reflect.NewAt(f.Type(), unsafe.Pointer(f.UnsafeAddr())).Elem() //nolint:gosec // Need unsafe to access unexported field
 	f.Set(reflect.ValueOf(val))
+	return nil
 }
 
 // Write writes a JSON-RPC message to the connection.
@@ -332,6 +339,7 @@ func fixID(id interface{}) interface{} {
 	}
 
 	// If it's the broken struct, print it and parse
+	// This is fragile, but needed until SDK exports ID or provides a way to marshal it.
 	s := fmt.Sprintf("%+v", id)
 	// Expect {value:1}
 	matches := idValueIntRegex.FindStringSubmatch(s)
@@ -345,6 +353,7 @@ func fixID(id interface{}) interface{} {
 		return matchesStr[1]
 	}
 
+	// If parsing fails, return the ID as is and hope for the best (it might be marshaled as {})
 	return id
 }
 
