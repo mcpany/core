@@ -111,6 +111,7 @@ func InitStandardMiddlewares(
 	auditConfig *configv1.AuditConfig,
 	cachingMiddleware *CachingMiddleware,
 	globalRateLimitConfig *configv1.RateLimitConfig,
+	dlpConfig *configv1.DLPConfig,
 ) (*StandardMiddlewares, error) {
 	// 1. Logging
 	RegisterMCP("logging", func(_ *configv1.Middleware) func(mcp.MethodHandler) mcp.MethodHandler {
@@ -249,6 +250,15 @@ func InitStandardMiddlewares(
 				return globalRateLimit.Execute(ctx, method, req, next)
 			}
 		}
+	})
+
+	// DLP
+	RegisterMCP("dlp", func(_ *configv1.Middleware) func(mcp.MethodHandler) mcp.MethodHandler {
+		// Logger will be injected by DLPMiddleware constructor or we use default?
+		// DLPMiddleware takes (*configv1.DLPConfig, *slog.Logger)
+		// We use package level logger or similar.
+		// NOTE: DLPMiddleware signature is: func DLPMiddleware(config *configv1.DLPConfig, log *slog.Logger) mcp.Middleware
+		return DLPMiddleware(dlpConfig, nil)
 	})
 
 	return &StandardMiddlewares{
