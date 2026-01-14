@@ -10,6 +10,8 @@ import (
 	"encoding/hex"
 	"fmt"
 
+	"github.com/alexliesenfeld/health"
+	mcphealth "github.com/mcpany/core/server/pkg/health"
 	"github.com/mcpany/core/server/pkg/logging"
 	"github.com/mcpany/core/server/pkg/prompt"
 	"github.com/mcpany/core/server/pkg/resource"
@@ -26,11 +28,15 @@ import (
 // Upstream implements the upstream.Upstream interface for services that
 // are exposed as command-line tools. It discovers and registers tools based on
 // a list of commands defined in the service configuration.
-type Upstream struct{}
+type Upstream struct {
+	checker health.Checker
+}
 
 // Shutdown implements the upstream.Upstream interface.
 func (u *Upstream) Shutdown(_ context.Context) error {
-	// Noop for command upstream
+	if u.checker != nil {
+		u.checker.Stop()
+	}
 	return nil
 }
 
@@ -75,6 +81,15 @@ func (u *Upstream) Register(
 		Config: serviceConfig,
 	}
 	toolManager.AddServiceInfo(serviceID, info)
+
+	// Initialize and start health checker
+	if u.checker != nil {
+		u.checker.Stop()
+	}
+	u.checker = mcphealth.NewChecker(serviceConfig)
+	if u.checker != nil {
+		u.checker.Start()
+	}
 
 	discoveredTools, err := u.createAndRegisterCommandTools(
 		ctx,
