@@ -23,6 +23,9 @@ func SanitizeJSONSchema(schema any) (*structpb.Struct, error) {
 		return convertJSONSchemaToStruct(schema)
 	}
 
+	// Deep copy the map to prevent mutation of the input
+	schemaMap = deepCopyMap(schemaMap)
+
 	// 1. Fix missing "type": "object" if "properties" is present
 	if _, hasProperties := schemaMap["properties"]; hasProperties {
 		if _, hasType := schemaMap["type"]; !hasType {
@@ -56,4 +59,32 @@ func SanitizeJSONSchema(schema any) (*structpb.Struct, error) {
 
 	// Let's convert back to structpb
 	return structpb.NewStruct(schemaMap)
+}
+
+func deepCopyMap(m map[string]interface{}) map[string]interface{} {
+	cp := make(map[string]interface{}, len(m))
+	for k, v := range m {
+		if vm, ok := v.(map[string]interface{}); ok {
+			cp[k] = deepCopyMap(vm)
+		} else if vs, ok := v.([]interface{}); ok {
+			cp[k] = deepCopySlice(vs)
+		} else {
+			cp[k] = v
+		}
+	}
+	return cp
+}
+
+func deepCopySlice(s []interface{}) []interface{} {
+	cp := make([]interface{}, len(s))
+	for i, v := range s {
+		if vm, ok := v.(map[string]interface{}); ok {
+			cp[i] = deepCopyMap(vm)
+		} else if vs, ok := v.([]interface{}); ok {
+			cp[i] = deepCopySlice(vs)
+		} else {
+			cp[i] = v
+		}
+	}
+	return cp
 }
