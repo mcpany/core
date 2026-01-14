@@ -91,6 +91,9 @@ func LoadResolvedConfig(ctx context.Context, store Store) (*configv1.McpAnyServe
 	}
 
 	if fileConfig == nil {
+		if store.HasConfigSources() {
+			return nil, fmt.Errorf("configuration sources provided but loaded configuration is empty. Check if the sources are empty or invalid")
+		}
 		log.Info("No configuration files found or all were empty, using default configuration.")
 		fileConfig = &configv1.McpAnyServerConfig{}
 	}
