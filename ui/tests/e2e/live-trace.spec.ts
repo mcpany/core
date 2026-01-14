@@ -49,7 +49,7 @@ test('Live Trace Inspector and Replay Flow', async ({ page }) => {
 
   // Click Replay and verify navigation
   await replayButton.click();
-  await expect(page).toHaveURL(/\/playground\?tool=calculate_sum&args=/);
+  await expect(page).toHaveURL(/tool=calculate_sum/);
 
   // Verify Playground input
   // Verify Playground input

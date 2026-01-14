@@ -15,6 +15,8 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { PlayCircle, Loader2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
+import { Switch } from "@/components/ui/switch";
+
 interface ToolInspectorProps {
   tool: ToolDefinition | null;
   open: boolean;
@@ -25,6 +27,7 @@ export function ToolInspector({ tool, open, onOpenChange }: ToolInspectorProps) 
   const [input, setInput] = useState("{}");
   const [output, setOutput] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [isDryRun, setIsDryRun] = useState(false);
 
   if (!tool) return null;
 
@@ -36,7 +39,7 @@ export function ToolInspector({ tool, open, onOpenChange }: ToolInspectorProps) 
       const res = await apiClient.executeTool({
           toolName: tool.name,
           arguments: args
-      });
+      }, isDryRun);
       setOutput(JSON.stringify(res, null, 2));
     } catch (e: any) {
       setOutput(`Error: ${e.message}`);
@@ -87,12 +90,18 @@ export function ToolInspector({ tool, open, onOpenChange }: ToolInspectorProps) 
             )}
         </div>
 
-        <DialogFooter>
-          <Button variant="secondary" onClick={() => onOpenChange(false)}>Close</Button>
-          <Button onClick={handleExecute} disabled={loading}>
-            {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <PlayCircle className="mr-2 h-4 w-4" />}
-            Execute
-          </Button>
+        <DialogFooter className="flex justify-between items-center sm:justify-between">
+          <div className="flex items-center space-x-2">
+              <Switch id="dry-run" checked={isDryRun} onCheckedChange={setIsDryRun} />
+              <Label htmlFor="dry-run">Dry Run</Label>
+          </div>
+          <div className="flex gap-2">
+              <Button variant="secondary" onClick={() => onOpenChange(false)}>Close</Button>
+              <Button onClick={handleExecute} disabled={loading}>
+                {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <PlayCircle className="mr-2 h-4 w-4" />}
+                Execute
+              </Button>
+          </div>
         </DialogFooter>
       </DialogContent>
     </Dialog>

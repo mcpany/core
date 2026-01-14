@@ -68,6 +68,12 @@ func (d *Doctor) Handler() http.HandlerFunc {
 			}
 		}
 
+		// Auth Checks
+		authChecks := CheckAuth()
+		for k, v := range authChecks {
+			report.Checks[k] = v
+		}
+
 		// We could add Redis/DB checks here if we had the connections injected.
 		// For MVP, just internet connectivity is a good "Doctor" check for "Why can't I access my tools?"
 
