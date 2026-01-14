@@ -13,10 +13,10 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestDiagnosticsService_GenerateReport(t *testing.T) {
+func TestService_GenerateReport(t *testing.T) {
 	// Setup
 	registry := serviceregistry.New(nil, nil, nil, nil, nil)
-	svc := NewDiagnosticsService(registry)
+	svc := NewService(registry)
 	appconsts.Version = "v1.2.3" // Mock version
 
 	// Execute
