@@ -27,7 +27,9 @@ import (
 	"github.com/mcpany/core/server/pkg/appconsts"
 	"github.com/mcpany/core/server/pkg/auth"
 	"github.com/mcpany/core/server/pkg/bus"
+	"github.com/mcpany/core/server/pkg/api/v1/diagnostics"
 	"github.com/mcpany/core/server/pkg/config"
+	pkg_diagnostics "github.com/mcpany/core/server/pkg/diagnostics"
 	"github.com/mcpany/core/server/pkg/gc"
 	"github.com/mcpany/core/server/pkg/logging"
 	"github.com/mcpany/core/server/pkg/mcpserver"
@@ -962,6 +964,85 @@ func HealthCheckWithContext(
 	return nil
 }
 
+// HealthCheckWithDiagnostics performs a detailed health check and diagnostic report.
+func HealthCheckWithDiagnostics(
+	out io.Writer,
+	addr string,
+	apiKey string,
+	timeout time.Duration,
+) error {
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
+
+	// 1. Basic Health Check
+	if err := HealthCheckWithContext(ctx, out, addr); err != nil {
+		return err
+	}
+
+	// 2. Fetch Diagnostics
+	req, err := http.NewRequestWithContext(
+		ctx,
+		http.MethodGet,
+		fmt.Sprintf("http://%s/api/v1/diagnostics", addr),
+		nil,
+	)
+	if err != nil {
+		_, _ = fmt.Fprintf(out, "Failed to create diagnostics request: %v\n", err)
+		return nil // Not fatal
+	}
+
+	if apiKey != "" {
+		req.Header.Set("X-API-Key", apiKey)
+	}
+
+	resp, err := healthCheckClient.Do(req)
+	if err != nil {
+		_, _ = fmt.Fprintf(out, "Failed to fetch diagnostics: %v\n", err)
+		return nil
+	}
+	defer func() { _ = resp.Body.Close() }()
+
+	if resp.StatusCode != http.StatusOK {
+		_, _ = fmt.Fprintf(out, "Failed to fetch diagnostics (status %d). API Key might be required or incorrect.\n", resp.StatusCode)
+		return nil
+	}
+
+	var report pkg_diagnostics.DiagnosticReport
+	if err := json.NewDecoder(resp.Body).Decode(&report); err != nil {
+		_, _ = fmt.Fprintf(out, "Failed to decode diagnostics report: %v\n", err)
+		return nil
+	}
+
+	// 3. Print Report
+	_, _ = fmt.Fprintln(out, "\n--- System Diagnostics ---")
+	_, _ = fmt.Fprintf(out, "Version:      %s\n", report.System.Version)
+	_, _ = fmt.Fprintf(out, "Uptime:       %s\n", report.System.Uptime)
+	_, _ = fmt.Fprintf(out, "Memory Usage: %s\n", report.System.Memory)
+	_, _ = fmt.Fprintf(out, "Go Routines:  %d\n", report.System.NumGoroutine)
+
+	_, _ = fmt.Fprintln(out, "\n--- Loaded Configuration ---")
+	for _, p := range report.Config.ConfigPaths {
+		_, _ = fmt.Fprintf(out, "- %s\n", p)
+	}
+
+	_, _ = fmt.Fprintln(out, "\n--- Upstream Services ---")
+	if len(report.Services) == 0 {
+		_, _ = fmt.Fprintln(out, "No services registered.")
+	} else {
+		// Simple tabular format
+		_, _ = fmt.Fprintf(out, "%-20s %-10s %-10s\n", "NAME", "TYPE", "STATUS")
+		for _, s := range report.Services {
+			status := s.Status
+			if s.Error != "" {
+				status = fmt.Sprintf("Error: %s", s.Error)
+			}
+			_, _ = fmt.Fprintf(out, "%-20s %-10s %s\n", s.Name, s.Type, status)
+		}
+	}
+
+	return nil
+}
+
 // runServerMode runs the server in the standard HTTP and gRPC server mode. It
 // starts the HTTP server for JSON-RPC and the gRPC server for service
 // registration, and handles graceful shutdown.
@@ -1295,6 +1376,18 @@ func (a *Application) runServerMode(
 		w.WriteHeader(http.StatusOK)
 		_, _ = fmt.Fprintln(w, "OK")
 	}))
+
+	// Register Diagnostics Handler (no auth required for diagnostics by default, or maybe use auth?)
+	// For now, let's keep it under authMiddleware to be safe, or separate.
+	// Users complain about "Connection closed" so they might not have auth set up correctly?
+	// But /healthz is open.
+	// Diagnostics reveals system info, so it SHOULD be protected if auth is enabled.
+	// However, if the user is debugging why auth fails... catch-22.
+	// Let's protect it with authMiddleware.
+	diagnosticsService := pkg_diagnostics.NewDiagnosticsService(a.ServiceRegistry.(*serviceregistry.ServiceRegistry))
+	diagnosticsHandler := diagnostics.NewHandler(diagnosticsService)
+	mux.Handle("/api/v1/diagnostics", authMiddleware(diagnosticsHandler))
+
 	mux.Handle("/metrics", authMiddleware(metrics.Handler()))
 	mux.Handle("/upload", authMiddleware(http.HandlerFunc(a.uploadFile)))
 

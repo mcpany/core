@@ -1,7 +1,6 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
-// Package serviceregistry provides service registry functionality.
 package serviceregistry
 
 import (
@@ -20,23 +19,16 @@ import (
 	"github.com/mcpany/core/server/pkg/util"
 )
 
-// ServiceRegistryInterface defines the interface for a service registry.
-// It provides a method for registering new upstream services.
-type ServiceRegistryInterface interface { //nolint:revive
-	// RegisterService registers a new upstream service based on the provided
-	// configuration. It returns the generated service key, a list of any tools
-	// discovered during registration, and an error if the registration fails.
+// RegistryInterface defines the interface for the service registry.
+type RegistryInterface interface {
 	RegisterService(ctx context.Context, serviceConfig *config.UpstreamServiceConfig) (string, []*config.ToolDefinition, []*config.ResourceDefinition, error)
-	// UnregisterService removes a service from the registry.
 	UnregisterService(ctx context.Context, serviceName string) error
-	// GetAllServices returns a list of all registered services.
-	GetAllServices() ([]*config.UpstreamServiceConfig, error)
-	// GetServiceInfo retrieves the metadata for a service by its ID.
 	GetServiceInfo(serviceID string) (*tool.ServiceInfo, bool)
-	// GetServiceConfig returns the configuration for a given service key.
 	GetServiceConfig(serviceID string) (*config.UpstreamServiceConfig, bool)
-	// GetServiceError returns the registration error for a service, if any.
+	Close(ctx context.Context) error
+	AddServiceInfo(serviceID string, info *tool.ServiceInfo)
 	GetServiceError(serviceID string) (string, bool)
+	GetAllServices() ([]*config.UpstreamServiceConfig, error)
 }
 
 // ServiceRegistry is responsible for managing the lifecycle of upstream

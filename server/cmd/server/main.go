@@ -220,12 +220,13 @@ func newRootCmd() *cobra.Command { //nolint:gocyclo // Main entry point, expecte
 				return err
 			}
 			addr := cfg.MCPListenAddress()
+			apiKey := cfg.APIKey()
 
 			if !strings.Contains(addr, ":") {
 				addr = "localhost:" + addr
 			}
 			timeout, _ := cmd.Flags().GetDuration("timeout")
-			return app.HealthCheck(cmd.OutOrStdout(), addr, timeout)
+			return app.HealthCheckWithDiagnostics(cmd.OutOrStdout(), addr, apiKey, timeout)
 		},
 	}
 	healthCmd.Flags().Duration("timeout", 5*time.Second, "Timeout for the health check.")

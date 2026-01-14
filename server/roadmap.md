@@ -40,6 +40,7 @@
 - [x] **Relative Command Resolution**: Fixed an issue where relative commands in `stdio_connection` failed validation even if they existed in the specified `working_directory`. (Friction Fighter)
 - [x] **JSON Config Helper**: Added helpful error messages for JSON configuration files when users mistakenly use Claude Desktop format (`mcpServers`). (Friction Fighter)
 - [x] **Live Logs Stream**: Fixed the WebSocket connection for the live logs dashboard by correcting the frontend URL path. Users can now see real-time server logs in the UI. (Experience Crafter)
+- [x] **Enhanced Diagnostics**: Implemented `/api/v1/diagnostics` endpoint and updated `mcpany health` to provide detailed system status and service registration info. (Experience Crafter)
 
 ## 2. Top 10 Recommended Features
 
@@ -75,6 +76,8 @@ These features represent the next logical steps for the product, focusing on Ent
 | 25 | **Automatic Config Fixer** | **DevX**: An interactive CLI tool that detects common configuration errors (like legacy formats) and offers to fix them automatically. | Medium |
 | 24 | **Windows Filesystem Locking Fix** | **Compatibility**: Handle EPERM errors gracefully on Windows when renaming files, ensuring cross-platform stability. | Medium |
 | 25 | **Async Tool Loading** | **Reliability**: Ensure server waits for initial roots/tools to be loaded before accepting requests to prevent race conditions on startup. | Medium |
+| 26 | **Diagnostics UI Page** | **UX**: Add a dedicated page in the UI to visualize the output of the new Diagnostics API (Service Status, Config Paths, etc.). | Low |
+| 27 | **Real-time Latency Metrics** | **Observability**: Expose real-time per-service latency histograms in the Diagnostics API for detailed performance analysis. | Medium |
 
 ## 3. Codebase Health
 
