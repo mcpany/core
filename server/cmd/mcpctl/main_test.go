@@ -98,13 +98,13 @@ func TestDoctorCmd_AddressParsing(t *testing.T) {
 }
 
 func TestDoctorCmd_ServerErrors(t *testing.T) {
-	t.Skip("Skipping TestDoctorCmd_ServerErrors due to persistent 'malformed HTTP status code' protocol errors in test environment (H2/H1 mismatch)")
-	/*
 	// 1. Server returns 500 on health
 	t.Run("Health 500", func(t *testing.T) {
-		ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		ts := httptest.NewUnstartedServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusInternalServerError)
 		}))
+		ts.EnableHTTP2 = false
+		ts.Start()
 		defer ts.Close()
 		_, port, _ := net.SplitHostPort(strings.TrimPrefix(ts.URL, "http://"))
 
@@ -118,13 +118,15 @@ func TestDoctorCmd_ServerErrors(t *testing.T) {
 
 	// 2. Server returns 500 on doctor
 	t.Run("Doctor 500", func(t *testing.T) {
-		ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		ts := httptest.NewUnstartedServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			if r.URL.Path == "/health" {
 				w.WriteHeader(http.StatusOK)
 			} else {
 				w.WriteHeader(http.StatusInternalServerError)
 			}
 		}))
+		ts.EnableHTTP2 = false
+		ts.Start()
 		defer ts.Close()
 		_, port, _ := net.SplitHostPort(strings.TrimPrefix(ts.URL, "http://"))
 
@@ -138,7 +140,7 @@ func TestDoctorCmd_ServerErrors(t *testing.T) {
 
 	// 3. Doctor returns invalid JSON
 	t.Run("Doctor Invalid JSON", func(t *testing.T) {
-		ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		ts := httptest.NewUnstartedServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			if r.URL.Path == "/health" {
 				w.WriteHeader(http.StatusOK)
 			} else {
@@ -146,6 +148,8 @@ func TestDoctorCmd_ServerErrors(t *testing.T) {
 				w.Write([]byte("invalid json"))
 			}
 		}))
+		ts.EnableHTTP2 = false
+		ts.Start()
 		defer ts.Close()
 		_, port, _ := net.SplitHostPort(strings.TrimPrefix(ts.URL, "http://"))
 
@@ -159,7 +163,7 @@ func TestDoctorCmd_ServerErrors(t *testing.T) {
 
     // 4. Doctor returns degraded status
 	t.Run("Doctor Degraded", func(t *testing.T) {
-		ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		ts := httptest.NewUnstartedServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			if r.URL.Path == "/health" {
 				w.WriteHeader(http.StatusOK)
 			} else {
@@ -168,6 +172,8 @@ func TestDoctorCmd_ServerErrors(t *testing.T) {
                 w.Write([]byte(`{"status":"degraded","checks":{"db":{"status":"failed","message":"connection lost"}}}`))
 			}
 		}))
+		ts.EnableHTTP2 = false
+		ts.Start()
 		defer ts.Close()
 		_, port, _ := net.SplitHostPort(strings.TrimPrefix(ts.URL, "http://"))
 
@@ -180,5 +186,4 @@ func TestDoctorCmd_ServerErrors(t *testing.T) {
 		assert.Contains(t, b.String(), "db: FAIL")
         assert.Contains(t, b.String(), "connection lost")
 	})
-	*/
 }
