@@ -1,9 +1,11 @@
-// Copyright 2026 Author(s) of MCP Any
+// Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
 package util
 
 import (
+	"encoding/json"
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -27,4 +29,36 @@ func TestRedactJSON_EscapedKey_Complex(t *testing.T) {
 
 	result := RedactJSON(input)
 	assert.Equal(t, string(expected), string(result))
+}
+
+func TestRedactJSON_LargeKeyWithEscapes(t *testing.T) {
+	// Create a key larger than 1024 bytes
+	// "password" escaped as "p\u0061ssword"
+	padding := strings.Repeat("a", 1100)
+	escapedPassword := `p\u0061ssword`
+	key := padding + escapedPassword
+	input := []byte(`{"` + key + `": "secret_value"}`)
+
+	// Verify the key length is > 1024
+	if len(key) <= 1024 {
+		t.Fatalf("Key length %d is not > 1024", len(key))
+	}
+
+	output := RedactJSON(input)
+
+	// Parse output to check value
+	var m map[string]interface{}
+	// We need to unmarshal to see if value was redacted.
+	// Note: unmarshaling the key will decode \u0061 to a.
+	err := json.Unmarshal(output, &m)
+	assert.NoError(t, err)
+
+	// The key in the map will have 'a' instead of \u0061
+	expectedKey := padding + "password"
+	val, ok := m[expectedKey]
+	if !ok {
+		t.Fatalf("Key not found in output")
+	}
+
+	assert.Equal(t, "[REDACTED]", val, "Large key with escapes should be redacted")
 }
