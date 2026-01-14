@@ -2090,7 +2090,12 @@ func checkForPathTraversal(val string) error {
 
 	// Also check for encoded traversal sequences often used to bypass filters
 	// %2e%2e is ..
-	if strings.Contains(strings.ToLower(val), "%2e%2e") {
+	// %2e. is ..
+	// .%2e is ..
+	lowerVal := strings.ToLower(val)
+	if strings.Contains(lowerVal, "%2e%2e") ||
+		strings.Contains(lowerVal, "%2e.") ||
+		strings.Contains(lowerVal, ".%2e") {
 		return fmt.Errorf("path traversal attempt detected (encoded)")
 	}
 	return nil
