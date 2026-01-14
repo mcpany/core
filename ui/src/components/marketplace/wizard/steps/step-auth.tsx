@@ -73,33 +73,6 @@ export function StepAuth() {
       }
   };
 
-  const selectedCred = credentials.find(c => c.id === selectedCredId);
-  const isOAuthConfigured = selectedCred?.authentication?.oauth2;
-
-  const handleConnect = async () => {
-    if (!selectedCred || !selectedCredId) return;
-
-    try {
-        setLoading(true);
-        const redirectUrl = `${window.location.origin}/auth/callback`;
-        const res = await apiClient.initiateOAuth(getServiceType(config), redirectUrl, selectedCredId);
-
-        // Store context for callback
-        sessionStorage.setItem('oauth_service_id', getServiceType(config));
-        sessionStorage.setItem('oauth_credential_id', selectedCredId);
-        sessionStorage.setItem('oauth_state', res.state);
-        sessionStorage.setItem('oauth_redirect_url', redirectUrl);
-        sessionStorage.setItem('oauth_return_path', window.location.pathname + window.location.search); // Return here? Or just to wizard?
-
-        // Redirect
-        window.location.href = res.authorization_url;
-    } catch (e) {
-        console.error("OAuth init failed", e);
-        setTestResult({ success: false, message: "Failed to initiate OAuth flow" });
-        setLoading(false);
-    }
-  };
-
   if (loading) {
       return <div className="flex justify-center p-8"><Loader2 className="h-6 w-6 animate-spin" /></div>;
   }
@@ -117,7 +90,7 @@ export function StepAuth() {
 
       <div className="space-y-4">
           <Label>Select Credential for Testing</Label>
-          <Select onValueChange={(val) => { setSelectedCredId(val); handleAuthChange(val); }} value={selectedCredId}>
+          <Select onValueChange={(val) => { setSelectedCredId(val); handleAuthChange(val); }}>
               <SelectTrigger>
                   <SelectValue placeholder="Select a credential..." />
               </SelectTrigger>
@@ -131,7 +104,7 @@ export function StepAuth() {
               </SelectContent>
           </Select>
 
-          <div className="pt-4 flex gap-4">
+          <div className="pt-4">
               <Button
                 onClick={testConnection}
                 disabled={!selectedCredId || testing}
@@ -141,17 +114,6 @@ export function StepAuth() {
                   {testing ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <ShieldCheck className="mr-2 h-4 w-4" />}
                   Test Connection
               </Button>
-
-              {isOAuthConfigured && (
-                  <Button
-                    onClick={handleConnect}
-                    disabled={!selectedCredId}
-                    variant="default"
-                    className="w-full sm:w-auto"
-                  >
-                      Connect with OAuth
-                  </Button>
-              )}
           </div>
 
           {testResult && (

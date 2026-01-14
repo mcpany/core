@@ -309,10 +309,6 @@ func (tm *Manager) ExecuteTool(ctx context.Context, req *ExecutionRequest) (any,
 	var preHooks []PreCallHook
 	var postHooks []PostCallHook
 	if ok {
-		if serviceInfo.HealthStatus == "unhealthy" {
-			log.Warn("Service is unhealthy, denying execution", "serviceID", serviceID)
-			return nil, fmt.Errorf("service %s is currently unhealthy", serviceID)
-		}
 		preHooks = serviceInfo.PreHooks
 		postHooks = serviceInfo.PostHooks
 	}
@@ -639,13 +635,6 @@ func (tm *Manager) ListTools() []Tool {
 
 	var tools []Tool
 	tm.tools.Range(func(_ string, value Tool) bool {
-		// Check service health
-		serviceID := value.Tool().GetServiceId()
-		if info, ok := tm.GetServiceInfo(serviceID); ok {
-			if info.HealthStatus == "unhealthy" {
-				return true // Skip unhealthy tools
-			}
-		}
 		tools = append(tools, value)
 		return true
 	})

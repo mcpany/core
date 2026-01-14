@@ -19,7 +19,7 @@ func ContextWithRemoteIP(ctx context.Context, ip string) context.Context {
 }
 
 // ExtractIP extracts the IP address from a host:port string or just an IP string.
-// It also handles IPv6 brackets and strips IPv6 zone indices (e.g., %eth0).
+// It also handles IPv6 brackets.
 func ExtractIP(addr string) string {
 	ip, _, err := net.SplitHostPort(addr)
 	if err != nil {
@@ -27,12 +27,6 @@ func ExtractIP(addr string) string {
 	}
 	if len(ip) > 0 && ip[0] == '[' && ip[len(ip)-1] == ']' {
 		ip = ip[1 : len(ip)-1]
-	}
-	// Strip zone index if present (e.g. fe80::1%eth0 -> fe80::1)
-	for i := 0; i < len(ip); i++ {
-		if ip[i] == '%' {
-			return ip[:i]
-		}
 	}
 	return ip
 }
@@ -140,7 +134,7 @@ func isPrivateNetworkIPv4(ip net.IP) bool {
 
 // IsPrivateIP checks if the IP address is a private, link-local, or loopback address.
 func IsPrivateIP(ip net.IP) bool {
-	if ip.IsLoopback() || ip.IsUnspecified() {
+	if ip.IsLoopback() {
 		return true
 	}
 	if IsPrivateNetworkIP(ip) {

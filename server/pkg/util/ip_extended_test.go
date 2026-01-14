@@ -49,8 +49,6 @@ func TestIsPrivateIP_Extended(t *testing.T) {
 		{"fe80::1", true},    // Link-local IPv6 should be true
 		{"169.254.1.1", true},// Link-local IPv4
 		{"127.0.0.1", true},  // Loopback
-		{"::", true},         // Unspecified IPv6
-		{"0.0.0.0", true},    // Unspecified IPv4
 	}
 
 	for _, tt := range tests {

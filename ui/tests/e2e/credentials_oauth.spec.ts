@@ -165,8 +165,9 @@ test.describe('Credential OAuth Flow E2E', () => {
     await expect(page.getByText('Authentication Successful')).toBeVisible();
 
     // 9. Return
-    // The button on callback page is "Continue"
-    await page.getByRole('button', { name: 'Continue' }).click();
+    // "Return to Services" or "Return to Credentials"?
+    // The flow originates from credentials, so it should be "Return to Credentials"
+    await page.getByRole('button', { name: 'Return to Credentials' }).click();
 
     // It should go to credentials page
     await page.waitForURL('**/credentials');

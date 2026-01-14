@@ -8,13 +8,11 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
-	"math/rand"
 	"net/url"
 	"os"
 	"reflect"
 	"strconv"
 	"strings"
-	"time"
 	"unsafe"
 
 	"github.com/google/uuid"
@@ -475,15 +473,4 @@ func ToString(v any) string {
 	default:
 		return fmt.Sprintf("%v", v)
 	}
-}
-
-// RandomFloat64 returns a random float64 in [0.0, 1.0).
-// It uses the global math/rand source.
-func RandomFloat64() float64 {
-	return rand.Float64() //nolint:gosec // Weak random is sufficient for jitter
-}
-
-
-func init() {
-	rand.Seed(time.Now().UnixNano()) //nolint:staticcheck // Deprecated in Go 1.20 but needed for older or explicit seed
 }

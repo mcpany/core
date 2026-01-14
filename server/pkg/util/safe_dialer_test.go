@@ -114,35 +114,3 @@ func TestSafeDialer_AllIPsFail(t *testing.T) {
 	assert.Nil(t, conn)
 	assert.Equal(t, expectedErr, err)
 }
-
-func TestSafeDialer_BlocksUnspecified(t *testing.T) {
-	// Setup
-	resolver := new(MockIPResolver)
-	dialer := new(MockDialer)
-
-	safeDialer := util.NewSafeDialer()
-	safeDialer.Resolver = resolver
-	safeDialer.Dialer = dialer
-
-	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
-	defer cancel()
-
-	host := "unspecified"
-	port := "80"
-	addr := net.JoinHostPort(host, port)
-
-	// IPs: ::
-	ip := net.ParseIP("::")
-	ips := []net.IP{ip}
-
-	resolver.On("LookupIP", ctx, "ip", host).Return(ips, nil)
-
-	// Execution
-	conn, err := safeDialer.DialContext(ctx, "tcp", addr)
-
-	// Verification
-	require.Error(t, err)
-	assert.Nil(t, conn)
-	assert.Contains(t, err.Error(), "ssrf attempt blocked")
-	assert.Contains(t, err.Error(), "unspecified ip")
-}

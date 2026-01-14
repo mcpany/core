@@ -21,7 +21,6 @@ import (
 	"sync"
 	"time"
 
-	jsoniter "github.com/json-iterator/go"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	v1 "github.com/mcpany/core/proto/mcp_router/v1"
 	"github.com/mcpany/core/server/pkg/auth"
@@ -34,6 +33,7 @@ import (
 	"github.com/mcpany/core/server/pkg/resilience"
 	"github.com/mcpany/core/server/pkg/transformer"
 	"github.com/mcpany/core/server/pkg/util"
+	jsoniter "github.com/json-iterator/go"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/reflect/protoreflect"
@@ -80,9 +80,6 @@ type ServiceInfo struct {
 
 	// CompiledPolicies are the pre-compiled call policies for the service.
 	CompiledPolicies []*CompiledCallPolicy
-
-	// HealthStatus indicates the health of the service ("healthy", "unhealthy", "unknown").
-	HealthStatus string
 }
 
 // ExecutionRequest represents a request to execute a specific tool, including
@@ -96,10 +93,6 @@ type ExecutionRequest struct {
 	// Arguments is a map of the tool inputs. It is used by tools that need to
 	// access the inputs as a map.
 	Arguments map[string]interface{} `json:"arguments"`
-	// DryRun indicates whether the tool should be executed in dry-run mode.
-	// In dry-run mode, the tool should validate inputs and return a preview
-	// of the execution without performing any side effects.
-	DryRun bool `json:"dryRun"`
 }
 
 // ServiceRegistry defines an interface for a component that can look up tools
@@ -275,21 +268,6 @@ func (t *GRPCTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 	serviceName := fqn[:lastDot]
 	methodName := fqn[lastDot+1:]
 	grpcMethodName := fmt.Sprintf("/%s/%s", serviceName, methodName)
-
-	if req.DryRun {
-		logging.GetLogger().Info("Dry run execution", "tool", req.ToolName)
-		jsonBytes, _ := protojson.Marshal(t.requestMessage)
-		var payloadMap map[string]any
-		_ = fastJSON.Unmarshal(jsonBytes, &payloadMap)
-		return map[string]any{
-			"dry_run": true,
-			"request": map[string]any{
-				"method":  grpcMethodName,
-				"payload": payloadMap,
-			},
-		}, nil
-	}
-
 	if err := grpcClient.Invoke(ctx, grpcMethodName, t.requestMessage, responseMessage); err != nil {
 		metrics.IncrCounter([]string{"grpc", "request", "error"}, 1)
 		return nil, fmt.Errorf("failed to invoke grpc method: %w", err)
@@ -492,28 +470,6 @@ func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 		return nil, err
 	}
 
-	if req.DryRun {
-		logging.GetLogger().Info("Dry run execution", "tool", req.ToolName)
-		dryRunResult := map[string]any{
-			"dry_run": true,
-			"request": map[string]any{
-				"method": t.cachedMethod,
-				"url":    urlString,
-				"headers": map[string]string{
-					"Content-Type": contentType,
-				},
-			},
-		}
-		if body != nil {
-			if seeker, ok := body.(io.Seeker); ok {
-				_, _ = seeker.Seek(0, io.SeekStart)
-			}
-			bodyBytes, _ := io.ReadAll(body)
-			dryRunResult["request"].(map[string]any)["body"] = string(bodyBytes)
-		}
-		return dryRunResult, nil
-	}
-
 	var resp *http.Response
 	work := func(ctx context.Context) error {
 		var bodyForAttempt io.Reader
@@ -528,23 +484,63 @@ func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 			}
 		}
 
-		httpReq, err := t.createHTTPRequest(ctx, urlString, bodyForAttempt, contentType, inputs)
+		httpReq, err := http.NewRequestWithContext(ctx, t.cachedMethod, urlString, bodyForAttempt)
 		if err != nil {
-			return &resilience.PermanentError{Err: err}
+			return &resilience.PermanentError{Err: fmt.Errorf("failed to create http request: %w", err)}
+		}
+
+		if contentType != "" {
+			httpReq.Header.Set("Content-Type", contentType)
+		}
+		// httpReq.Header.Set("User-Agent", "mcpany-e2e-test")
+		httpReq.Header.Set("Accept", "*/*")
+
+		if t.authenticator != nil {
+			if err := t.authenticator.Authenticate(httpReq); err != nil {
+				return &resilience.PermanentError{Err: fmt.Errorf("failed to authenticate request: %w", err)}
+			}
+			logging.GetLogger().Debug("Applied authentication", "user_agent", httpReq.Header.Get("User-Agent"))
+		} else {
+			logging.GetLogger().Debug("No authenticator configured")
+		}
+
+		if t.cachedMethod == http.MethodGet || t.cachedMethod == http.MethodDelete {
+			q := httpReq.URL.Query()
+			for key, value := range inputs {
+				q.Add(key, util.ToString(value))
+			}
+			httpReq.URL.RawQuery = q.Encode()
 		}
 
 		if logging.GetLogger().Enabled(ctx, slog.LevelDebug) {
-			t.logRequest(ctx, httpReq, bodyForAttempt)
+			// Log headers
+			var headerBuf bytes.Buffer
+			headerBuf.WriteString(fmt.Sprintf("%s %s %s\n", httpReq.Method, httpReq.URL.Path, httpReq.Proto))
+			headerBuf.WriteString(fmt.Sprintf("Host: %s\n", httpReq.Host))
+			for k, v := range httpReq.Header {
+				val := strings.Join(v, ", ")
+				if isSensitiveHeader(k) {
+					val = redactedPlaceholder
+				}
+				headerBuf.WriteString(fmt.Sprintf("%s: %s\n", k, val))
+			}
+			logging.GetLogger().DebugContext(ctx, "sending http request headers", "headers", headerBuf.String())
+
+			// Log body
+			if bodyForAttempt != nil {
+				contentType := httpReq.Header.Get("Content-Type")
+				bodyBytes, _ := io.ReadAll(bodyForAttempt)
+				// Restore body
+				if seeker, ok := bodyForAttempt.(io.Seeker); ok {
+					_, _ = seeker.Seek(0, io.SeekStart)
+				}
+				logging.GetLogger().DebugContext(ctx, "sending http request body", "body", prettyPrint(bodyBytes, contentType))
+			}
 		}
 
 		attemptResp, err := httpClient.Do(httpReq)
 		if err != nil {
 			return fmt.Errorf("failed to execute http request: %w", err)
-		}
-
-		if attemptResp.StatusCode == http.StatusTooManyRequests {
-			_ = attemptResp.Body.Close()
-			return fmt.Errorf("upstream HTTP request failed with status %d (Too Many Requests)", attemptResp.StatusCode)
 		}
 
 		if attemptResp.StatusCode >= 400 && attemptResp.StatusCode < 500 {
@@ -572,62 +568,6 @@ func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 	metrics.IncrCounter([]string{"http", "request", "success"}, 1)
 
 	return t.processResponse(ctx, resp)
-}
-
-func (t *HTTPTool) createHTTPRequest(ctx context.Context, urlString string, body io.Reader, contentType string, inputs map[string]interface{}) (*http.Request, error) {
-	httpReq, err := http.NewRequestWithContext(ctx, t.cachedMethod, urlString, body)
-	if err != nil {
-		return nil, fmt.Errorf("failed to create http request: %w", err)
-	}
-
-	if contentType != "" {
-		httpReq.Header.Set("Content-Type", contentType)
-	}
-	httpReq.Header.Set("Accept", "*/*")
-
-	if t.authenticator != nil {
-		if err := t.authenticator.Authenticate(httpReq); err != nil {
-			return nil, fmt.Errorf("failed to authenticate request: %w", err)
-		}
-		logging.GetLogger().Debug("Applied authentication", "user_agent", httpReq.Header.Get("User-Agent"))
-	} else {
-		logging.GetLogger().Debug("No authenticator configured")
-	}
-
-	if t.cachedMethod == http.MethodGet || t.cachedMethod == http.MethodDelete {
-		q := httpReq.URL.Query()
-		for key, value := range inputs {
-			q.Add(key, util.ToString(value))
-		}
-		httpReq.URL.RawQuery = q.Encode()
-	}
-	return httpReq, nil
-}
-
-func (t *HTTPTool) logRequest(ctx context.Context, httpReq *http.Request, body io.Reader) {
-	// Log headers
-	var headerBuf bytes.Buffer
-	headerBuf.WriteString(fmt.Sprintf("%s %s %s\n", httpReq.Method, httpReq.URL.Path, httpReq.Proto))
-	headerBuf.WriteString(fmt.Sprintf("Host: %s\n", httpReq.Host))
-	for k, v := range httpReq.Header {
-		val := strings.Join(v, ", ")
-		if isSensitiveHeader(k) {
-			val = redactedPlaceholder
-		}
-		headerBuf.WriteString(fmt.Sprintf("%s: %s\n", k, val))
-	}
-	logging.GetLogger().DebugContext(ctx, "sending http request headers", "headers", headerBuf.String())
-
-	// Log body
-	if body != nil {
-		contentType := httpReq.Header.Get("Content-Type")
-		bodyBytes, _ := io.ReadAll(body)
-		// Restore body
-		if seeker, ok := body.(io.Seeker); ok {
-			_, _ = seeker.Seek(0, io.SeekStart)
-		}
-		logging.GetLogger().DebugContext(ctx, "sending http request body", "body", prettyPrint(bodyBytes, contentType))
-	}
 }
 
 func (t *HTTPTool) prepareInputsAndURL(ctx context.Context, req *ExecutionRequest) (map[string]any, string, error) {
@@ -1853,18 +1793,6 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 			}
 			env = append(env, fmt.Sprintf("%s=%s", name, valStr))
 		}
-	}
-
-	if req.DryRun {
-		logging.GetLogger().Info("Dry run execution", "tool", req.ToolName)
-		return map[string]any{
-			"dry_run": true,
-			"request": map[string]any{
-				"command": t.service.GetCommand(),
-				"args":    args,
-				"env":     env,
-			},
-		}, nil
 	}
 
 	startTime := time.Now()
