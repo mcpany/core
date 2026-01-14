@@ -211,7 +211,7 @@ func countTokensInValueRecursive(t Tokenizer, v interface{}, visited map[uintptr
 	case nil:
 		return t.CountTokens("null")
 	default:
-		return countTokensReflect(t, val, visited)
+		return countTokensReflect(t, val, visited, nil)
 	}
 }
 
@@ -286,8 +286,18 @@ func countTokensInValueSimple(t *SimpleTokenizer, v interface{}, visited map[uin
 	case float64:
 		return t.CountTokens(strconv.FormatFloat(val, 'g', -1, 64))
 	default:
-		return countTokensReflect(t, val, visited)
+		return countTokensReflectGeneric(t, val, visited)
 	}
+}
+
+// recursiveTokenizer is an interface for tokenizers that support efficient recursive traversal.
+type recursiveTokenizer interface {
+	Tokenizer
+	countRecursive(v interface{}, visited map[uintptr]bool) (int, error)
+}
+
+func (t *SimpleTokenizer) countRecursive(v interface{}, visited map[uintptr]bool) (int, error) {
+	return countTokensInValueSimple(t, v, visited)
 }
 
 func countTokensInValueWord(t *WordTokenizer, v interface{}, visited map[uintptr]bool) (int, error) {
@@ -364,11 +374,86 @@ func countTokensInValueWord(t *WordTokenizer, v interface{}, visited map[uintptr
 		}
 		return count, nil
 	default:
-		return countTokensReflect(t, val, visited)
+		return countTokensReflectGeneric(t, val, visited)
 	}
 }
 
-func countTokensReflect(t Tokenizer, v interface{}, visited map[uintptr]bool) (int, error) {
+func (t *WordTokenizer) countRecursive(v interface{}, visited map[uintptr]bool) (int, error) {
+	return countTokensInValueWord(t, v, visited)
+}
+
+func countTokensReflectGeneric[T recursiveTokenizer](t T, v interface{}, visited map[uintptr]bool) (int, error) {
+	// Check for fmt.Stringer first to respect custom formatting
+	if s, ok := v.(fmt.Stringer); ok {
+		return t.CountTokens(s.String())
+	}
+	if e, ok := v.(error); ok {
+		return t.CountTokens(e.Error())
+	}
+
+	val := reflect.ValueOf(v)
+	switch val.Kind() {
+	case reflect.Ptr:
+		if val.IsNil() {
+			// Consistent nil handling: defer to tokenizer's string logic for "null"
+			return t.CountTokens("null")
+		}
+		ptr := val.Pointer()
+		if visited[ptr] {
+			return 0, fmt.Errorf("cycle detected in value")
+		}
+		visited[ptr] = true
+		defer delete(visited, ptr)
+
+		return t.countRecursive(val.Elem().Interface(), visited)
+	case reflect.Struct:
+		count := 0
+		for i := 0; i < val.NumField(); i++ {
+			if val.Type().Field(i).IsExported() {
+				c, err := t.countRecursive(val.Field(i).Interface(), visited)
+				if err != nil {
+					return 0, err
+				}
+				count += c
+			}
+		}
+		return count, nil
+	case reflect.Slice, reflect.Array:
+		count := 0
+		for i := 0; i < val.Len(); i++ {
+			c, err := t.countRecursive(val.Index(i).Interface(), visited)
+			if err != nil {
+				return 0, err
+			}
+			count += c
+		}
+		return count, nil
+	case reflect.Map:
+		count := 0
+		iter := val.MapRange()
+		for iter.Next() {
+			// Key
+			kc, err := t.countRecursive(iter.Key().Interface(), visited)
+			if err != nil {
+				return 0, err
+			}
+			count += kc
+			// Value
+			vc, err := t.countRecursive(iter.Value().Interface(), visited)
+			if err != nil {
+				return 0, err
+			}
+			count += vc
+		}
+		return count, nil
+	}
+
+	// Fallback for others (channels, funcs, unhandled types)
+	return t.CountTokens(fmt.Sprintf("%v", v))
+}
+
+// countTokensReflect is the fallback for non-recursiveTokenizer implementations.
+func countTokensReflect(t Tokenizer, v interface{}, visited map[uintptr]bool, _ func(interface{}, map[uintptr]bool) (int, error)) (int, error) {
 	// Check for fmt.Stringer first to respect custom formatting
 	if s, ok := v.(fmt.Stringer); ok {
 		return t.CountTokens(s.String())
@@ -388,15 +473,6 @@ func countTokensReflect(t Tokenizer, v interface{}, visited map[uintptr]bool) (i
 			return 0, fmt.Errorf("cycle detected in value")
 		}
 		visited[ptr] = true
-		// We shouldn't defer delete(visited, ptr) because we want to detect shared references in a DAG too?
-		// No, usually for token counting, we might count shared references multiple times if they appear multiple times.
-		// But cycles must be avoided.
-		// If we want to allow DAGs but prevent cycles, we should remove from visited after return.
-		// However, for strict cycle detection in serialization-like traversal, removing after return is correct.
-		// If we leave it, we treat it as "already counted" which deduplicates shared nodes.
-		// Deduplication might be desired or not.
-		// "CountTokensInValue" usually implies counting the full expanded structure.
-		// So we should unmark it when leaving the branch.
 		defer delete(visited, ptr)
 
 		return countTokensInValueRecursive(t, val.Elem().Interface(), visited)

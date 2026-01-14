@@ -83,4 +83,24 @@ func TestResolveSecret_AwsSecretManager(t *testing.T) {
 		assert.NoError(t, err)
 		assert.Equal(t, "123", resolved)
 	})
+
+	t.Run("AwsSecretManager failure", func(t *testing.T) {
+		// Create a separate server for failure case to avoid messing up the shared one
+		failServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.WriteHeader(http.StatusInternalServerError)
+		}))
+		defer failServer.Close()
+
+		// Override endpoint for this test only
+		t.Setenv("AWS_ENDPOINT_URL", failServer.URL)
+
+		awsSecret := &configv1.AwsSecretManagerSecret{}
+		awsSecret.SetSecretId("my-secret")
+		secret := &configv1.SecretValue{}
+		secret.SetAwsSecretManager(awsSecret)
+
+		_, err := util.ResolveSecret(context.Background(), secret)
+		assert.Error(t, err)
+		assert.Contains(t, err.Error(), "failed to get secret value")
+	})
 }

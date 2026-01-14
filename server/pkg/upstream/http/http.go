@@ -288,8 +288,25 @@ func (u *Upstream) createAndRegisterHTTPTools(ctx context.Context, serviceID, ad
 		rawEndpointPath := httpDef.GetEndpointPath()
 		endpointURL, err := url.Parse(rawEndpointPath)
 		if err != nil {
-			log.Error("Failed to parse endpoint path", "path", rawEndpointPath, "error", err)
-			continue
+			// If parsing failed and the path starts with //, it might be because url.Parse
+			// treated it as a scheme-relative URL with an invalid host (e.g., //foo%2Fbar).
+			// Try parsing it as a path by prepending a slash.
+			if strings.HasPrefix(rawEndpointPath, "//") {
+				if parsedURL, err2 := url.Parse("/" + rawEndpointPath); err2 == nil {
+					// Remove the leading slash we added
+					parsedURL.Path = strings.TrimPrefix(parsedURL.Path, "/")
+					if parsedURL.RawPath != "" {
+						parsedURL.RawPath = strings.TrimPrefix(parsedURL.RawPath, "/")
+					}
+					endpointURL = parsedURL
+					err = nil
+				}
+			}
+
+			if err != nil {
+				log.Error("Failed to parse endpoint path", "path", rawEndpointPath, "error", err)
+				continue
+			}
 		}
 
 		// Fix for double slash bug (e.g., //foo).

@@ -385,6 +385,26 @@ func TestResolveSecret_Vault(t *testing.T) {
 		assert.Error(t, err)
 		assert.Contains(t, err.Error(), "secret resolution exceeded max recursion depth")
 	})
+
+	t.Run("Context Cancelled", func(t *testing.T) {
+		ctx, cancel := context.WithCancel(context.Background())
+		cancel() // Cancel immediately
+
+		secret := &configv1.SecretValue{}
+		// Use Vault type to trigger the context check
+		vaultSecret := &configv1.VaultSecret{}
+		vaultSecret.SetAddress("http://localhost:8200")
+		vaultSecret.SetToken(&configv1.SecretValue{
+			Value: &configv1.SecretValue_PlainText{PlainText: "token"},
+		})
+		vaultSecret.SetPath("secret/foo")
+		vaultSecret.SetKey("bar")
+		secret.SetVault(vaultSecret)
+
+		_, err := util.ResolveSecret(ctx, secret)
+		assert.Error(t, err)
+		assert.Equal(t, context.Canceled, err)
+	})
 }
 
 func TestResolveSecretMap(t *testing.T) {
