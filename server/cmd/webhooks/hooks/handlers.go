@@ -101,6 +101,12 @@ func (h *TruncateHandler) Handle(w http.ResponseWriter, r *http.Request) {
 	maxChars := 100
 	if m := r.URL.Query().Get("max_chars"); m != "" {
 		if val, err := strconv.Atoi(m); err == nil {
+			if val <= 0 {
+				val = 1
+			}
+			if val > 100000 {
+				val = 100000
+			}
 			maxChars = val
 		}
 	}
@@ -163,6 +169,12 @@ func (h *PaginateHandler) Handle(w http.ResponseWriter, r *http.Request) {
 	pageSize := 1000
 	if p := r.URL.Query().Get("page_size"); p != "" {
 		if val, err := strconv.Atoi(p); err == nil {
+			if val <= 0 {
+				val = 1
+			}
+			if val > 10000 {
+				val = 10000
+			}
 			pageSize = val
 		}
 	}

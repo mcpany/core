@@ -344,6 +344,10 @@ func ValidateOrError(ctx context.Context, service *configv1.UpstreamServiceConfi
 }
 
 func validateUpstreamService(ctx context.Context, service *configv1.UpstreamServiceConfig) error {
+	if service.GetName() == "" {
+		return fmt.Errorf("service name is empty")
+	}
+
 	if service.WhichServiceConfig() == configv1.UpstreamServiceConfig_ServiceConfig_not_set_case {
 		return fmt.Errorf("service type not specified")
 	}
