@@ -160,7 +160,9 @@ test.describe('MCP Any Audit Screenshots', () => {
 
   test('Capture Prompts', async ({ page }) => {
      await page.goto('/prompts');
-     await verifyPageLoad(page, 'Prompts');
+     await page.goto('/prompts');
+     // Prompts page uses an h3 for "Prompt Library" in the sidebar
+     await expect(page.getByRole('heading', { name: 'Prompt Library', level: 3 })).toBeVisible();
      await page.waitForTimeout(1000);
      await page.screenshot({ path: path.join(auditDir, 'prompts.png'), fullPage: true });
   });
