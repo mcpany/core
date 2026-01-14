@@ -121,13 +121,22 @@ func TestSettings_Load_StringSliceEnv(t *testing.T) {
 	cmd := &cobra.Command{}
 
 	// Simulate Env vars
-	viper.Set("config-path", "/path/1, /path/2")
+	viper.Set("config-path", "/path/1.textproto, /path/2.textproto")
 	viper.Set("profiles", "p1, p2")
 
 	// Create dummy config file to avoid Load error
-	err := afero.WriteFile(fs, "/path/1", []byte("upstream_services: []"), 0o644)
+	// We need to provide a service so that LoadServices doesn't fail with "empty config"
+	content := `
+upstream_services: {
+	name: "dummy-service"
+	http_service: {
+		address: "http://example.com"
+	}
+}
+`
+	err := afero.WriteFile(fs, "/path/1.textproto", []byte(content), 0o644)
 	require.NoError(t, err)
-	err = afero.WriteFile(fs, "/path/2", []byte("upstream_services: []"), 0o644)
+	err = afero.WriteFile(fs, "/path/2.textproto", []byte(content), 0o644)
 	require.NoError(t, err)
 
 	// Also we need to ensure logging doesn't panic or fail.
@@ -143,6 +152,6 @@ func TestSettings_Load_StringSliceEnv(t *testing.T) {
 	err = settings.Load(cmd, fs)
 	require.NoError(t, err)
 
-	assert.Equal(t, []string{"/path/1", "/path/2"}, settings.ConfigPaths())
+	assert.Equal(t, []string{"/path/1.textproto", "/path/2.textproto"}, settings.ConfigPaths())
 	assert.Equal(t, []string{"p1", "p2"}, settings.Profiles())
 }

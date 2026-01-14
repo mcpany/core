@@ -18,6 +18,9 @@ type Storage interface {
 	// Note: Currently it mostly returns UpstreamServices.
 	Load(ctx context.Context) (*configv1.McpAnyServerConfig, error)
 
+	// HasConfigSources returns true if the store has configuration sources (e.g., file paths) configured.
+	HasConfigSources() bool
+
 	// SaveService saves a single upstream service configuration.
 	SaveService(ctx context.Context, service *configv1.UpstreamServiceConfig) error
 
