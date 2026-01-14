@@ -18,9 +18,12 @@
 - [ ] **Drag-and-Drop Resource Export**: Ability to drag a resource from the list to the desktop or another app.
 - [ ] **Prompt/Resource Sibling Navigation**: Enable sibling navigation for Prompts and Resources (requires backend API update to include service_id).
 - [ ] **Breadcrumb History**: Show recently visited breadcrumbs in a dropdown or history menu.
+- [ ] **Bulk Service Import**: Allow importing multiple services from a single config file or URL.
+- [ ] **Service Configuration Validation**: Pre-save validation for service configs (e.g. check if URL is reachable).
 
 ### Completed Features
 
+- [x] **Service Template Integration**: Integrated Service Templates into the main "Add Service" flow for better discoverability.
 - [x] **Context Menu for Resources**: Right-click interactions for resources (Copy URI, View Details) to improve usability.
 - [x] **Global Keyboard Shortcuts Manager**: A dedicated UI to view and customize keyboard shortcuts for power users.
 - [x] **Global Search & Action Palette**: Enhanced Command Palette (Cmd+K) with navigation, system actions (Reload, Copy URL), and context-aware actions (Restart Service, Copy Resource URI).

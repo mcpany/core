@@ -165,11 +165,15 @@ func TestLocalCommandTool_Execute_Timeout(t *testing.T) {
 
 	req := &ExecutionRequest{ToolInputs: json.RawMessage(`{}`)}
 	res, err := tool.Execute(context.Background(), req)
-	assert.NoError(t, err)
 
-	resMap, ok := res.(map[string]interface{})
-	assert.True(t, ok)
-	assert.Equal(t, -1, resMap["return_code"])
+	if err != nil {
+		// Can happen if timeout occurs during command startup
+		assert.Contains(t, err.Error(), "context deadline exceeded")
+	} else {
+		resMap, ok := res.(map[string]interface{})
+		assert.True(t, ok)
+		assert.Equal(t, -1, resMap["return_code"])
+	}
 }
 
 func TestLocalCommandTool_Execute_InvalidArgs(t *testing.T) {
