@@ -21,6 +21,7 @@ import (
 )
 
 func TestHTTPPoolConnectionLeak(t *testing.T) {
+	t.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "true")
 	// Start a mock server that counts active connections
 	connectionCount := 0
 	server := httptest.NewUnstartedServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -70,8 +71,9 @@ func TestHTTPPoolConnectionLeak(t *testing.T) {
 		assert.NoError(t, err)
 
 		resp, err := client.Get(server.URL)
-		assert.NoError(t, err)
-		resp.Body.Close()
+		if assert.NoError(t, err) {
+			resp.Body.Close()
+		}
 
 		// Return client to pool
 		pool.Put(client)
