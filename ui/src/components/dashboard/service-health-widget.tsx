@@ -10,7 +10,8 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { CheckCircle2, AlertTriangle, XCircle, Activity, PauseCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { analyzeConnectionError } from "@/lib/diagnostics-utils";
 
 interface ServiceHealth {
   id: string;
@@ -147,16 +148,32 @@ export function ServiceHealthWidget() {
                   <div className="flex items-center gap-2">
                      <p className="text-sm font-medium leading-none mb-1">{service.name}</p>
                      {service.message && (
-                         <TooltipProvider>
-                             <Tooltip>
-                                 <TooltipTrigger>
-                                     <AlertTriangle className="h-3 w-3 text-red-500 cursor-help" />
-                                 </TooltipTrigger>
-                                 <TooltipContent>
-                                     <p className="max-w-xs">{service.message}</p>
-                                 </TooltipContent>
-                             </Tooltip>
-                         </TooltipProvider>
+                        <Popover>
+                          <PopoverTrigger>
+                             <AlertTriangle className="h-3 w-3 text-red-500 cursor-help hover:text-red-600 transition-colors" />
+                          </PopoverTrigger>
+                          <PopoverContent className="w-80">
+                            {(() => {
+                                const diagnosis = analyzeConnectionError(service.message!);
+                                return (
+                                    <div className="space-y-2">
+                                        <div className="flex items-center gap-2 border-b pb-2">
+                                            <AlertTriangle className="h-4 w-4 text-red-500" />
+                                            <h4 className="font-medium text-red-900 dark:text-red-200">{diagnosis.title}</h4>
+                                        </div>
+                                        <p className="text-sm text-muted-foreground">{diagnosis.description}</p>
+                                        <div className="bg-muted/50 p-2 rounded text-xs font-mono break-all max-h-24 overflow-y-auto">
+                                            {service.message}
+                                        </div>
+                                        <div className="pt-2">
+                                            <p className="text-xs font-medium mb-1">Suggestion:</p>
+                                            <p className="text-xs text-muted-foreground whitespace-pre-wrap">{diagnosis.suggestion}</p>
+                                        </div>
+                                    </div>
+                                )
+                            })()}
+                          </PopoverContent>
+                        </Popover>
                      )}
                   </div>
                   {service.status !== 'inactive' && service.latency !== '--' && (
