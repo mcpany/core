@@ -108,6 +108,8 @@ export interface GlobalSettings {
   useSudoForDocker: boolean;
   /** Allowed file paths for validation. */
   allowedFilePaths: string[];
+  /** Allowed origins for CORS. */
+  allowedOrigins: string[];
 }
 
 export enum GlobalSettings_LogLevel {
@@ -751,6 +753,7 @@ function createBaseGlobalSettings(): GlobalSettings {
     githubApiUrl: "",
     useSudoForDocker: false,
     allowedFilePaths: [],
+    allowedOrigins: [],
   };
 }
 
@@ -818,6 +821,9 @@ export const GlobalSettings: MessageFns<GlobalSettings> = {
     }
     for (const v of message.allowedFilePaths) {
       writer.uint32(178).string(v!);
+    }
+    for (const v of message.allowedOrigins) {
+      writer.uint32(186).string(v!);
     }
     return writer;
   },
@@ -997,6 +1003,14 @@ export const GlobalSettings: MessageFns<GlobalSettings> = {
           message.allowedFilePaths.push(reader.string());
           continue;
         }
+        case 23: {
+          if (tag !== 186) {
+            break;
+          }
+
+          message.allowedOrigins.push(reader.string());
+          continue;
+        }
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -1036,6 +1050,9 @@ export const GlobalSettings: MessageFns<GlobalSettings> = {
       useSudoForDocker: isSet(object.use_sudo_for_docker) ? globalThis.Boolean(object.use_sudo_for_docker) : false,
       allowedFilePaths: globalThis.Array.isArray(object?.allowed_file_paths)
         ? object.allowed_file_paths.map((e: any) => globalThis.String(e))
+        : [],
+      allowedOrigins: globalThis.Array.isArray(object?.allowed_origins)
+        ? object.allowed_origins.map((e: any) => globalThis.String(e))
         : [],
     };
   },
@@ -1105,6 +1122,9 @@ export const GlobalSettings: MessageFns<GlobalSettings> = {
     if (message.allowedFilePaths?.length) {
       obj.allowed_file_paths = message.allowedFilePaths;
     }
+    if (message.allowedOrigins?.length) {
+      obj.allowed_origins = message.allowedOrigins;
+    }
     return obj;
   },
 
@@ -1146,6 +1166,7 @@ export const GlobalSettings: MessageFns<GlobalSettings> = {
     message.githubApiUrl = object.githubApiUrl ?? "";
     message.useSudoForDocker = object.useSudoForDocker ?? false;
     message.allowedFilePaths = object.allowedFilePaths?.map((e) => e) || [];
+    message.allowedOrigins = object.allowedOrigins?.map((e) => e) || [];
     return message;
   },
 };
