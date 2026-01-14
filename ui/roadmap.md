@@ -16,9 +16,12 @@
 - [ ] **Breadcrumb Navigation Enhancements**: Improved breadcrumbs with dropdowns for sibling navigation.
 - [ ] **Resource Preview Modal**: A dedicated modal to preview resources instead of the split pane, for larger viewing area.
 - [ ] **Drag-and-Drop Resource Export**: Ability to drag a resource from the list to the desktop or another app.
+- [ ] **Bulk Service Import**: Allow importing multiple services from a single config file or URL.
+- [ ] **Service Configuration Validation**: Pre-save validation for service configs (e.g. check if URL is reachable).
 
 ### Completed Features
 
+- [x] **Service Template Integration**: Integrated Service Templates into the main "Add Service" flow for better discoverability.
 - [x] **Context Menu for Resources**: Right-click interactions for resources (Copy URI, View Details) to improve usability.
 - [x] **Global Keyboard Shortcuts Manager**: A dedicated UI to view and customize keyboard shortcuts for power users.
 - [x] **Global Search & Action Palette**: Enhanced Command Palette (Cmd+K) with navigation, system actions (Reload, Copy URL), and context-aware actions (Restart Service, Copy Resource URI).

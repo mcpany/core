@@ -9,7 +9,7 @@ import { useState, useEffect, useCallback } from "react";
 import { apiClient } from "@/lib/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Plus } from "lucide-react";
+import { Plus, ChevronLeft } from "lucide-react";
 import {
     Sheet,
     SheetContent,
@@ -22,6 +22,8 @@ import { useToast } from "@/hooks/use-toast";
 import { UpstreamServiceConfig } from "@/lib/client";
 import { ServiceList } from "@/components/services/service-list";
 import { ServiceEditor } from "@/components/services/editor/service-editor";
+import { ServiceTemplateSelector } from "@/components/services/service-template-selector";
+import { ServiceTemplate } from "@/lib/templates";
 
 export default function ServicesPage() {
   const [services, setServices] = useState<UpstreamServiceConfig[]>([]);
@@ -104,17 +106,21 @@ export default function ServicesPage() {
   }, []);
 
   const openNew = () => {
-      setSelectedService({
-          id: "",
-          name: "",
-          version: "1.0.0",
-          disable: false,
-          priority: 0,
-          loadBalancingStrategy: 0,
-          httpService: { address: "" }
-      } as any);
-
+      setSelectedService(null);
       setIsSheetOpen(true);
+  };
+
+  const handleTemplateSelect = (template: ServiceTemplate) => {
+      // Deep copy config to avoid mutating template
+      const newService = JSON.parse(JSON.stringify(template.config));
+      // Ensure defaults
+      newService.version = newService.version || "1.0.0";
+      newService.priority = newService.priority || 0;
+      newService.disable = false;
+      // Ensure ID is empty to mark as new
+      newService.id = "";
+
+      setSelectedService(newService);
   };
 
   const handleSave = async () => {
@@ -170,18 +176,35 @@ export default function ServicesPage() {
       <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
         <SheetContent className="sm:max-w-2xl w-full">
             <SheetHeader className="mb-4">
-                <SheetTitle>{selectedService?.id ? "Edit Service" : "New Service"}</SheetTitle>
+                <div className="flex items-center gap-2">
+                     {selectedService && !selectedService.id && (
+                         <Button variant="ghost" size="icon" className="-ml-2 h-8 w-8" onClick={() => setSelectedService(null)}>
+                             <ChevronLeft className="h-4 w-4" />
+                         </Button>
+                     )}
+                     <SheetTitle>{selectedService?.id ? "Edit Service" : "New Service"}</SheetTitle>
+                </div>
                 <SheetDescription>
-                    Configure your upstream service details.
+                    {selectedService ? "Configure your upstream service details." : "Choose a template to start quickly."}
                 </SheetDescription>
             </SheetHeader>
-            {selectedService && (
+            {!selectedService ? (
+                 <div className="h-[calc(100vh-140px)] overflow-y-auto">
+                    <ServiceTemplateSelector onSelect={handleTemplateSelect} />
+                 </div>
+            ) : (
                 <div className="h-[calc(100vh-140px)]">
                     <ServiceEditor
                         service={selectedService}
                         onChange={setSelectedService}
                         onSave={handleSave}
-                        onCancel={() => setIsSheetOpen(false)}
+                        onCancel={() => {
+                            if (!selectedService.id) {
+                                setSelectedService(null);
+                            } else {
+                                setIsSheetOpen(false);
+                            }
+                        }}
                     />
                 </div>
             )}
