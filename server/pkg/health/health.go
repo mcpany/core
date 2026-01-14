@@ -12,6 +12,7 @@ import (
 	"net"
 	"net/http"
 	"net/url"
+	"os"
 	"strings"
 	"time"
 
@@ -71,6 +72,8 @@ func NewChecker(uc *configv1.UpstreamServiceConfig) health.Checker {
 		check = webrtcCheck(serviceName, uc.GetWebrtcService())
 	case configv1.UpstreamServiceConfig_McpService_case:
 		check = mcpCheck(serviceName, uc.GetMcpService())
+	case configv1.UpstreamServiceConfig_FilesystemService_case:
+		check = filesystemCheck(serviceName, uc.GetFilesystemService())
 	default:
 		return nil
 	}
@@ -334,6 +337,37 @@ func mcpCheck(name string, c *configv1.McpUpstreamService) health.Check {
 				return nil // Assume healthy
 			}
 			return fmt.Errorf("no connection configured for MCP service")
+		},
+	}
+}
+
+func filesystemCheck(name string, c *configv1.FilesystemUpstreamService) health.Check {
+	return health.Check{
+		Name: name,
+		Check: func(_ context.Context) error {
+			// Basic check: Ensure root paths exist (for local OS FS)
+			// Only check local paths if it's explicitly OsFs or not specified (default)
+			// For remote filesystems (S3, GCS), we would need client-specific checks,
+			// which are harder to implement here without the provider instance.
+			// So we focus on Local FS for now which is the most common use case for "health" of FS.
+			isLocal := false
+			switch c.FilesystemType.(type) {
+			case *configv1.FilesystemUpstreamService_Os:
+				isLocal = true
+			case nil:
+				// Fallback behavior matches provider logic
+				isLocal = true
+			}
+
+			if isLocal {
+				for virtualPath, localPath := range c.GetRootPaths() {
+					if _, err := os.Stat(localPath); err != nil {
+						return fmt.Errorf("root path check failed for %s (%s): %w", virtualPath, localPath, err)
+					}
+				}
+			}
+			// For other types, assume healthy for now or add specific checks later.
+			return nil
 		},
 	}
 }
