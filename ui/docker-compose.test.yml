@@ -14,6 +14,7 @@ services:
       ]
     environment:
       - MCPANY_API_KEY=test-token
+      - MCPANY_INSECURE_ALLOW_PRIVATE_NETWORK_WITHOUT_AUTH=true
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:50050/healthz"]
       interval: 5s

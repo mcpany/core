@@ -1580,7 +1580,20 @@ func (a *Application) createAuthMiddleware(forcePrivateIPOnly bool) func(http.Ha
 
 				// Check if the request is from a loopback address
 				ip := net.ParseIP(host)
-				if !ip.IsLoopback() {
+				allowed := false
+				if os.Getenv("MCPANY_INSECURE_ALLOW_PRIVATE_NETWORK_WITHOUT_AUTH") == util.TrueStr {
+					// Insecure mode for testing/CI environments
+					if util.IsPrivateIP(ip) {
+						allowed = true
+					}
+				} else {
+					// Secure default: Only allow loopback
+					if ip.IsLoopback() {
+						allowed = true
+					}
+				}
+
+				if !allowed {
 					logging.GetLogger().Warn("Blocked non-localhost request because no API Key is configured", "remote_addr", r.RemoteAddr)
 					http.Error(w, "Forbidden: Non-localhost access requires an API Key to be configured", http.StatusForbidden)
 					return
