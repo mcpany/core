@@ -16,6 +16,12 @@ import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { ScrollArea } from "./ui/scroll-area";
 
+/**
+ * Converts an object to a TextProto formatted string.
+ * @param obj The object to convert.
+ * @param indent The current indentation level.
+ * @returns The TextProto string representation.
+ */
 function objectToTextProto(obj: any, indent = 0): string {
   const indentStr = '  '.repeat(indent);
   let protoStr = '';
@@ -50,6 +56,11 @@ function objectToTextProto(obj: any, indent = 0): string {
 }
 
 
+/**
+ * Displays a code block with syntax highlighting.
+ * @param props.language The language for syntax highlighting (e.g., 'json', 'yaml').
+ * @param props.code The code content to display.
+ */
 function CodeBlock({ language, code }: { language: string; code: string }) {
     return (
         <ScrollArea className="h-72 w-full rounded-md border bg-background/50">
@@ -60,6 +71,10 @@ function CodeBlock({ language, code }: { language: string; code: string }) {
     )
 }
 
+/**
+ * Displays the configuration of a service in multiple formats (YAML, JSON, TextProto).
+ * @param props.service The service configuration to display.
+ */
 export const FileConfigCard = memo(function FileConfigCard({ service }: { service: UpstreamServiceConfig }) {
     const { jsonConfig, yamlConfig, textProtoConfig } = useMemo(() => {
         const tempService = JSON.parse(JSON.stringify(service));

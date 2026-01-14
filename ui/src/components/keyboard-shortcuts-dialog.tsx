@@ -18,11 +18,19 @@ import { Keyboard, RotateCcw, X, Edit2 } from "lucide-react"
 import { useKeyboardShortcuts, ShortcutDefinition } from "@/contexts/keyboard-shortcuts-context"
 import { cn } from "@/lib/utils"
 
+/**
+ * Props for the KeyboardShortcutsDialog component.
+ */
 interface KeyboardShortcutsDialogProps {
+  /** Whether the dialog is open. */
   open: boolean
+  /** Callback to handle dialog open/close state changes. */
   onOpenChange: (open: boolean) => void
 }
 
+/**
+ * A dialog that displays and allows customization of keyboard shortcuts.
+ */
 export function KeyboardShortcutsDialog({ open, onOpenChange }: KeyboardShortcutsDialogProps) {
   const { shortcuts, overrides, updateOverride, resetOverride } = useKeyboardShortcuts()
   const [editingId, setEditingId] = React.useState<string | null>(null)

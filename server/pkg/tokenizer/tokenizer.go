@@ -126,6 +126,96 @@ func (t *WordTokenizer) CountTokens(text string) (int, error) {
 
 // CountTokensInValue recursively counts tokens in arbitrary structures.
 func CountTokensInValue(t Tokenizer, v interface{}) (int, error) {
+	// OPTIMIZATION: Handle common primitive types and simple collections
+	// without allocating the 'visited' map. This significantly improves performance
+	// for simple inputs (strings, ints, etc.) which are common in metrics and logging.
+
+	if st, ok := t.(*SimpleTokenizer); ok && st != nil {
+		switch val := v.(type) {
+		case string:
+			return st.CountTokens(val)
+		case int:
+			return simpleTokenizeInt(val), nil
+		case int64:
+			return simpleTokenizeInt64(val), nil
+		case bool:
+			return 1, nil
+		case nil:
+			return 1, nil
+		case float64:
+			return st.CountTokens(strconv.FormatFloat(val, 'g', -1, 64))
+		case []string:
+			count := 0
+			for _, item := range val {
+				c, err := st.CountTokens(item)
+				if err != nil {
+					return 0, err
+				}
+				count += c
+			}
+			return count, nil
+		case map[string]string:
+			count := 0
+			for key, item := range val {
+				kc, err := st.CountTokens(key)
+				if err != nil {
+					return 0, err
+				}
+				count += kc
+				vc, err := st.CountTokens(item)
+				if err != nil {
+					return 0, err
+				}
+				count += vc
+			}
+			return count, nil
+		}
+	} else if wt, ok := t.(*WordTokenizer); ok && wt != nil {
+		// Calculate primitive count for WordTokenizer
+		primitiveCount := int(wt.Factor)
+		if primitiveCount < 1 {
+			primitiveCount = 1
+		}
+
+		switch val := v.(type) {
+		case string:
+			return wt.CountTokens(val)
+		case int, int64, float64, bool, nil:
+			return primitiveCount, nil
+		case []string:
+			count := 0
+			for _, item := range val {
+				c, err := wt.CountTokens(item)
+				if err != nil {
+					return 0, err
+				}
+				count += c
+			}
+			return count, nil
+		case map[string]string:
+			count := 0
+			for key, item := range val {
+				kc, err := wt.CountTokens(key)
+				if err != nil {
+					return 0, err
+				}
+				count += kc
+				vc, err := wt.CountTokens(item)
+				if err != nil {
+					return 0, err
+				}
+				count += vc
+			}
+			return count, nil
+		}
+	} else {
+		// Generic fallback for other Tokenizer implementations
+		// We can still handle string safely
+		if str, ok := v.(string); ok {
+			return t.CountTokens(str)
+		}
+	}
+
 	visited := make(map[uintptr]bool)
 	return countTokensInValueRecursive(t, v, visited)
 }

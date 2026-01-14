@@ -4,6 +4,7 @@
 package main
 
 import (
+	"bufio"
 	"context"
 	"fmt"
 	"io"
@@ -12,6 +13,7 @@ import (
 	"net/http/httptest"
 	"os"
 	"os/exec"
+	"regexp"
 	"syscall"
 	"testing"
 	"time"
@@ -208,24 +210,61 @@ func findFreePort(t *testing.T) int {
 
 func TestGracefulShutdown(t *testing.T) {
 	if os.Getenv("GO_TEST_GRACEFUL_SHUTDOWN") == "1" {
-		port := findFreePort(t)
+		// Create a temporary log file to capture output and find the port
+		logFile, err := os.CreateTemp("", "mcpany-shutdown-test-*.log")
+		assert.NoError(t, err)
+		defer os.Remove(logFile.Name())
+		logFileName := logFile.Name()
+		_ = logFile.Close()
+
 		cmd := newRootCmd()
-		cmd.SetArgs([]string{"run", "--mcp-listen-address", fmt.Sprintf("localhost:%d", port), "--config-path", ""})
+		// Use port 0 to let the OS pick a free port
+		cmd.SetArgs([]string{
+			"run",
+			"--mcp-listen-address", "localhost:0",
+			"--config-path", "",
+			"--logfile", logFileName,
+		})
 		done := make(chan struct{})
 		go func() {
 			err := cmd.Execute()
 			assert.NoError(t, err)
 			close(done)
 		}()
-		// Wait for the server to start by polling the health check endpoint.
+
+		var realPort int
+		// Wait for the server to start by parsing the log file for the port
 		assert.Eventually(t, func() bool {
-			resp, err := http.Get(fmt.Sprintf("http://localhost:%d/healthz", port))
+			content, err := os.ReadFile(logFileName)
+			if err != nil {
+				return false
+			}
+			// Regex to match log: msg="HTTP server listening" ... port=...
+			re := regexp.MustCompile(`msg="HTTP server listening".*?port=[^:]+:(\d+)`)
+			matches := re.FindSubmatch(content)
+			if len(matches) > 1 {
+				fmt.Sscanf(string(matches[1]), "%d", &realPort)
+				return true
+			}
+			return false
+		}, 5*time.Second, 100*time.Millisecond, "Failed to find port in logs")
+
+		if realPort == 0 {
+			return
+		}
+
+		// Wait for the server to be healthy
+		assert.Eventually(t, func() bool {
+			resp, err := http.Get(fmt.Sprintf("http://localhost:%d/healthz", realPort))
 			if err != nil {
 				return false
 			}
 			defer func() { _ = resp.Body.Close() }()
 			return resp.StatusCode == http.StatusOK
 		}, 5*time.Second, 100*time.Millisecond)
+
+		// Signal parent that we are ready
+		fmt.Println("READY")
 
 		// Wait for server to finish
 		<-done
@@ -237,12 +276,40 @@ func TestGracefulShutdown(t *testing.T) {
 	cmd.SysProcAttr = &syscall.SysProcAttr{
 		Setpgid: true,
 	}
-	err := cmd.Start()
+
+	stdout, err := cmd.StdoutPipe()
 	assert.NoError(t, err)
 
-	// This is a bit of a hack, but we need to wait for the server to start
-	// before we can get its port.
-	time.Sleep(500 * time.Millisecond)
+	err = cmd.Start()
+	assert.NoError(t, err)
+
+	// Wait for "READY" signal from child
+	scanner := bufio.NewScanner(stdout)
+	ready := false
+	timer := time.NewTimer(10 * time.Second)
+	done := make(chan struct{})
+
+	go func() {
+		for scanner.Scan() {
+			if scanner.Text() == "READY" {
+				close(done)
+				return
+			}
+		}
+	}()
+
+	select {
+	case <-done:
+		ready = true
+	case <-timer.C:
+		t.Log("Timed out waiting for child process to be ready")
+	}
+	timer.Stop()
+
+	if !ready {
+		_ = syscall.Kill(-cmd.Process.Pid, syscall.SIGKILL)
+		t.Fatal("Child process did not become ready in time")
+	}
 
 	// Send the interrupt signal to the child process group.
 	err = syscall.Kill(-cmd.Process.Pid, syscall.SIGINT)
