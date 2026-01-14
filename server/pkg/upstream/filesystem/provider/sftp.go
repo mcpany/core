@@ -152,7 +152,8 @@ func (s *sftpFs) Remove(name string) error {
 
 // RemoveAll removes a directory path and any children it contains.
 func (s *sftpFs) RemoveAll(path string) error {
-	return s.client.Remove(path)
+	// sftp.Client.RemoveAll actually does recursive removal
+	return s.client.RemoveAll(path)
 }
 
 // Rename renames a file.

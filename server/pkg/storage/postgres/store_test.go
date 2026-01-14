@@ -63,6 +63,19 @@ func TestPostgresStore(t *testing.T) {
 		require.NoError(t, mock.ExpectationsWereMet())
 	})
 
+	t.Run("SaveService_MarshalError", func(t *testing.T) {
+		// Just pass something that might cause issues, although with protojson it's hard to trigger marshal error with valid struct.
+		// However, we can't easily inject marshal error here without mocking protojson.
+		// But we can test validations.
+		svc := &configv1.UpstreamServiceConfig{
+			// Missing Name
+			Id: stringPtr("test-id"),
+		}
+		err := store.SaveService(context.Background(), svc)
+		require.Error(t, err)
+		assert.Contains(t, err.Error(), "service name is required")
+	})
+
 	t.Run("GetService", func(t *testing.T) {
 		svc := &configv1.UpstreamServiceConfig{
 			Name: stringPtr("test-service"),
@@ -455,6 +468,78 @@ func TestPostgresStore(t *testing.T) {
 		require.NoError(t, err)
 
 		require.NoError(t, mock.ExpectationsWereMet())
+	})
+
+	// Token Tests
+	t.Run("SaveToken", func(t *testing.T) {
+		token := &configv1.UserToken{
+			UserId:    stringPtr("user1"),
+			ServiceId: stringPtr("svc1"),
+		}
+
+		mock.ExpectExec("INSERT INTO user_tokens").
+			WithArgs("user1", "svc1", sqlmock.AnyArg()).
+			WillReturnResult(sqlmock.NewResult(1, 1))
+
+		err := store.SaveToken(context.Background(), token)
+		require.NoError(t, err)
+
+		require.NoError(t, mock.ExpectationsWereMet())
+	})
+
+	t.Run("SaveToken_MissingID", func(t *testing.T) {
+		token := &configv1.UserToken{
+			UserId: stringPtr("user1"),
+			// ServiceId missing
+		}
+		err := store.SaveToken(context.Background(), token)
+		require.Error(t, err)
+		assert.Contains(t, err.Error(), "user ID and service ID are required")
+	})
+
+	t.Run("GetToken", func(t *testing.T) {
+		rows := sqlmock.NewRows([]string{"config_json"}).
+			AddRow(`{"user_id":"user1","service_id":"svc1"}`)
+
+		mock.ExpectQuery("SELECT config_json FROM user_tokens").
+			WithArgs("user1", "svc1").
+			WillReturnRows(rows)
+
+		got, err := store.GetToken(context.Background(), "user1", "svc1")
+		require.NoError(t, err)
+		assert.Equal(t, "user1", got.GetUserId())
+		assert.Equal(t, "svc1", got.GetServiceId())
+
+		require.NoError(t, mock.ExpectationsWereMet())
+	})
+
+	t.Run("GetToken_NotFound", func(t *testing.T) {
+		mock.ExpectQuery("SELECT config_json FROM user_tokens").
+			WithArgs("user1", "svc1").
+			WillReturnError(sql.ErrNoRows)
+
+		got, err := store.GetToken(context.Background(), "user1", "svc1")
+		require.NoError(t, err)
+		assert.Nil(t, got)
+
+		require.NoError(t, mock.ExpectationsWereMet())
+	})
+
+	t.Run("DeleteToken", func(t *testing.T) {
+		mock.ExpectExec("DELETE FROM user_tokens").
+			WithArgs("user1", "svc1").
+			WillReturnResult(sqlmock.NewResult(1, 1))
+
+		err := store.DeleteToken(context.Background(), "user1", "svc1")
+		require.NoError(t, err)
+
+		require.NoError(t, mock.ExpectationsWereMet())
+	})
+
+	t.Run("Close", func(t *testing.T) {
+		mock.ExpectClose()
+		err := store.Close()
+		require.NoError(t, err)
 	})
 }
 
