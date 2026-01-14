@@ -55,103 +55,7 @@ func (t *Transformer) Transform(templateStr string, data any) ([]byte, error) {
 				}
 				return string(b), nil
 			},
-			"join": func(sep string, a []any) string {
-				var sb strings.Builder
-				sepLen := len(sep)
-				var totalLen int
-
-				// First pass: try to calculate total length
-				// Optimized for strings, but handles common types
-				for i, v := range a {
-					if s, ok := v.(string); ok {
-						totalLen += len(s)
-						if i > 0 {
-							totalLen += sepLen
-						}
-					} else {
-						// Not a string, try to estimate length for other types
-						if i > 0 {
-							totalLen += sepLen
-						}
-
-						// Handle current item
-						l := estimateLen(v)
-						if l == -1 {
-							// fallback
-							totalLen += (len(a) - i) * 10
-							break
-						}
-						totalLen += l
-
-						// Continue loop for the rest
-						stop := false
-						for j := i + 1; j < len(a); j++ {
-							if j > 0 {
-								totalLen += sepLen
-							}
-							l := estimateLen(a[j])
-							if l == -1 {
-								totalLen += (len(a) - j) * 10
-								stop = true
-								break
-							}
-							totalLen += l
-						}
-						if stop {
-							break
-						}
-						// We processed all remaining items in the inner loop
-						break
-					}
-				}
-
-				sb.Grow(totalLen)
-
-				// Scratch buffer for number conversion to avoid allocations
-				var scratch [64]byte
-
-				for i, v := range a {
-					if i > 0 {
-						sb.WriteString(sep)
-					}
-					switch val := v.(type) {
-					case string:
-						sb.WriteString(val)
-					case fmt.Stringer:
-						sb.WriteString(val.String())
-					case int:
-						sb.Write(strconv.AppendInt(scratch[:0], int64(val), 10))
-					case int64:
-						sb.Write(strconv.AppendInt(scratch[:0], val, 10))
-					case int32:
-						sb.Write(strconv.AppendInt(scratch[:0], int64(val), 10))
-					case int16:
-						sb.Write(strconv.AppendInt(scratch[:0], int64(val), 10))
-					case int8:
-						sb.Write(strconv.AppendInt(scratch[:0], int64(val), 10))
-					case uint:
-						sb.Write(strconv.AppendUint(scratch[:0], uint64(val), 10))
-					case uint64:
-						sb.Write(strconv.AppendUint(scratch[:0], val, 10))
-					case uint32:
-						sb.Write(strconv.AppendUint(scratch[:0], uint64(val), 10))
-					case uint16:
-						sb.Write(strconv.AppendUint(scratch[:0], uint64(val), 10))
-					case uint8:
-						sb.Write(strconv.AppendUint(scratch[:0], uint64(val), 10))
-					case float64:
-						// Use -1 to behave like %v / %g
-						sb.Write(strconv.AppendFloat(scratch[:0], val, 'g', -1, 64))
-					case float32:
-						sb.Write(strconv.AppendFloat(scratch[:0], float64(val), 'g', -1, 32))
-					case bool:
-						sb.Write(strconv.AppendBool(scratch[:0], val))
-					default:
-						fmt.Fprint(&sb, v)
-					}
-				}
-				return sb.String()
-			},
+			"join": joinFunc,
 		}).Parse(templateStr)
 		if err != nil {
 			return nil, fmt.Errorf("failed to parse template: %w", err)
@@ -177,6 +81,104 @@ func (t *Transformer) Transform(templateStr string, data any) ([]byte, error) {
 	copy(out, buf.Bytes())
 
 	return out, nil
+}
+
+func joinFunc(sep string, a []any) string {
+	var sb strings.Builder
+	sepLen := len(sep)
+	var totalLen int
+
+	// First pass: try to calculate total length
+	// Optimized for strings, but handles common types
+	for i, v := range a {
+		if s, ok := v.(string); ok {
+			totalLen += len(s)
+			if i > 0 {
+				totalLen += sepLen
+			}
+		} else {
+			// Not a string, try to estimate length for other types
+			if i > 0 {
+				totalLen += sepLen
+			}
+
+			// Handle current item
+			l := estimateLen(v)
+			if l == -1 {
+				// fallback
+				totalLen += (len(a) - i) * 10
+				break
+			}
+			totalLen += l
+
+			// Continue loop for the rest
+			stop := false
+			for j := i + 1; j < len(a); j++ {
+				if j > 0 {
+					totalLen += sepLen
+				}
+				l := estimateLen(a[j])
+				if l == -1 {
+					totalLen += (len(a) - j) * 10
+					stop = true
+					break
+				}
+				totalLen += l
+			}
+			if stop {
+				break
+			}
+			// We processed all remaining items in the inner loop
+			break
+		}
+	}
+
+	sb.Grow(totalLen)
+
+	// Scratch buffer for number conversion to avoid allocations
+	var scratch [64]byte
+
+	for i, v := range a {
+		if i > 0 {
+			sb.WriteString(sep)
+		}
+		switch val := v.(type) {
+		case string:
+			sb.WriteString(val)
+		case fmt.Stringer:
+			sb.WriteString(val.String())
+		case int:
+			sb.Write(strconv.AppendInt(scratch[:0], int64(val), 10))
+		case int64:
+			sb.Write(strconv.AppendInt(scratch[:0], val, 10))
+		case int32:
+			sb.Write(strconv.AppendInt(scratch[:0], int64(val), 10))
+		case int16:
+			sb.Write(strconv.AppendInt(scratch[:0], int64(val), 10))
+		case int8:
+			sb.Write(strconv.AppendInt(scratch[:0], int64(val), 10))
+		case uint:
+			sb.Write(strconv.AppendUint(scratch[:0], uint64(val), 10))
+		case uint64:
+			sb.Write(strconv.AppendUint(scratch[:0], val, 10))
+		case uint32:
+			sb.Write(strconv.AppendUint(scratch[:0], uint64(val), 10))
+		case uint16:
+			sb.Write(strconv.AppendUint(scratch[:0], uint64(val), 10))
+		case uint8:
+			sb.Write(strconv.AppendUint(scratch[:0], uint64(val), 10))
+		case float64:
+			// Use -1 to behave like %v / %g
+			sb.Write(strconv.AppendFloat(scratch[:0], val, 'g', -1, 64))
+		case float32:
+			sb.Write(strconv.AppendFloat(scratch[:0], float64(val), 'g', -1, 32))
+		case bool:
+			sb.Write(strconv.AppendBool(scratch[:0], val))
+		default:
+			fmt.Fprint(&sb, v)
+		}
+	}
+	return sb.String()
 }
 
 func estimateLen(v any) int {
