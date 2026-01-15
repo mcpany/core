@@ -29,6 +29,7 @@ import (
 	"github.com/mcpany/core/server/pkg/bus"
 	"github.com/mcpany/core/server/pkg/config"
 	"github.com/mcpany/core/server/pkg/gc"
+	"github.com/mcpany/core/server/pkg/health"
 	"github.com/mcpany/core/server/pkg/logging"
 	"github.com/mcpany/core/server/pkg/mcpserver"
 	"github.com/mcpany/core/server/pkg/metrics"
@@ -193,6 +194,13 @@ type Application struct {
 	configMu    sync.Mutex
 	// Store explicit API Key passed via CLI args
 	explicitAPIKey string
+
+	// lastReloadErr stores the error from the last configuration reload.
+	// It is protected by configMu.
+	lastReloadErr error
+	// lastReloadTime stores the time of the last configuration reload attempt.
+	// It is protected by configMu.
+	lastReloadTime time.Time
 }
 
 // NewApplication creates a new Application with default dependencies.
@@ -677,6 +685,8 @@ func (a *Application) ReloadConfig(ctx context.Context, fs afero.Fs, configPaths
 	metrics.IncrCounter([]string{"config", "reload", "total"}, 1)
 
 	cfg, err := a.loadConfig(ctx, fs, configPaths)
+	a.lastReloadTime = time.Now()
+	a.lastReloadErr = err
 	if err != nil {
 		metrics.IncrCounter([]string{"config", "reload", "errors"}, 1)
 		return fmt.Errorf("failed to load services from config: %w", err)
@@ -890,6 +900,30 @@ func runStdioMode(ctx context.Context, mcpSrv *mcpserver.Server) error {
 	log := logging.GetLogger()
 	log.Info("Starting in stdio mode")
 	return mcpSrv.Server().Run(ctx, &mcp.StdioTransport{})
+}
+
+// configHealthCheck checks the status of the configuration.
+func (a *Application) configHealthCheck(_ context.Context) health.CheckResult {
+	a.configMu.Lock()
+	defer a.configMu.Unlock()
+
+	if a.lastReloadErr != nil {
+		return health.CheckResult{
+			Status:  "degraded",
+			Message: a.lastReloadErr.Error(),
+			Latency: time.Since(a.lastReloadTime).String(),
+		}
+	}
+
+	status := "ok"
+	if a.lastReloadTime.IsZero() {
+		status = "unknown"
+	}
+
+	return health.CheckResult{
+		Status:  status,
+		Latency: time.Since(a.lastReloadTime).String(),
+	}
 }
 
 // HealthCheck performs a health check against a running server by sending an

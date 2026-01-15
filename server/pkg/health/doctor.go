@@ -4,8 +4,10 @@
 package health
 
 import (
+	"context"
 	"encoding/json"
 	"net/http"
+	"sync"
 	"time"
 )
 
@@ -16,6 +18,9 @@ type CheckResult struct {
 	Latency string `json:"latency,omitempty"`
 }
 
+// CheckFunc is a function that performs a health check.
+type CheckFunc func(context.Context) CheckResult
+
 // DoctorReport represents the full doctor report.
 type DoctorReport struct {
 	Status    string                 `json:"status"`
@@ -25,12 +30,22 @@ type DoctorReport struct {
 
 // Doctor is the health check handler.
 type Doctor struct {
-	// Add dependencies here if needed, e.g. db connection
+	checks map[string]CheckFunc
+	mu     sync.RWMutex
 }
 
 // NewDoctor creates a new Doctor.
 func NewDoctor() *Doctor {
-	return &Doctor{}
+	return &Doctor{
+		checks: make(map[string]CheckFunc),
+	}
+}
+
+// AddCheck adds a named health check.
+func (d *Doctor) AddCheck(name string, check CheckFunc) {
+	d.mu.Lock()
+	defer d.mu.Unlock()
+	d.checks[name] = check
 }
 
 // Handler returns the http handler.
@@ -74,8 +89,16 @@ func (d *Doctor) Handler() http.HandlerFunc {
 			report.Checks[k] = v
 		}
 
-		// We could add Redis/DB checks here if we had the connections injected.
-		// For MVP, just internet connectivity is a good "Doctor" check for "Why can't I access my tools?"
+		// Execute dynamic checks
+		d.mu.RLock()
+		for name, check := range d.checks {
+			res := check(r.Context())
+			report.Checks[name] = res
+			if res.Status != "ok" {
+				report.Status = "degraded"
+			}
+		}
+		d.mu.RUnlock()
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)

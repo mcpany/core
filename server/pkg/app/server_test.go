@@ -2291,3 +2291,33 @@ upstream_services: []
 		<-errChan
 	})
 }
+
+func TestConfigHealthCheck(t *testing.T) {
+	fs := afero.NewMemMapFs()
+	app := NewApplication()
+
+	// 1. Initial State
+	check := app.configHealthCheck(context.Background())
+	assert.Equal(t, "unknown", check.Status)
+
+	// 2. Successful Reload
+	err := afero.WriteFile(fs, "/config.yaml", []byte("upstream_services: []"), 0o644)
+	require.NoError(t, err)
+	err = app.ReloadConfig(context.Background(), fs, []string{"/config.yaml"})
+	require.NoError(t, err)
+
+	check = app.configHealthCheck(context.Background())
+	assert.Equal(t, "ok", check.Status)
+	assert.NotEmpty(t, check.Latency)
+
+	// 3. Failed Reload
+	err = afero.WriteFile(fs, "/config.yaml", []byte("malformed: :"), 0o644)
+	require.NoError(t, err)
+	err = app.ReloadConfig(context.Background(), fs, []string{"/config.yaml"})
+	require.Error(t, err)
+
+	check = app.configHealthCheck(context.Background())
+	assert.Equal(t, "degraded", check.Status)
+	assert.NotEmpty(t, check.Message)
+	assert.Contains(t, check.Message, "yaml")
+}
