@@ -6,7 +6,6 @@
 
 - **Configuration Validation**: Check your config files for errors before deploying.
 - **Doctor**: Run a health check on your environment and server.
-- **Client**: Interact with the MCP server directly from the command line.
 
 ## Usage
 
