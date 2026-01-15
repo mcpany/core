@@ -532,3 +532,83 @@ func TestUpdateCmd(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Contains(t, string(out), "You are already running the latest version.")
 }
+
+func TestMigrateCmd(t *testing.T) {
+	viper.Reset()
+	// Create a temporary Claude config file
+	claudeConfigFile, err := os.CreateTemp("", "claude_config.json")
+	assert.NoError(t, err)
+	defer func() { _ = os.Remove(claudeConfigFile.Name()) }()
+	_, err = claudeConfigFile.WriteString(`{
+  "mcpServers": {
+    "test-server": {
+      "command": "test-command",
+      "args": ["arg1", "arg2"],
+      "env": {"KEY": "VALUE"}
+    }
+  }
+}`)
+	assert.NoError(t, err)
+	_ = claudeConfigFile.Close()
+
+	// Output file
+	outputFile := claudeConfigFile.Name() + ".yaml"
+	defer func() { _ = os.Remove(outputFile) }()
+
+	originalStdout := os.Stdout
+	r, w, _ := os.Pipe()
+	os.Stdout = w
+
+	rootCmd := newRootCmd()
+	rootCmd.SetArgs([]string{"config", "migrate", "--input", claudeConfigFile.Name(), "--output", outputFile})
+	err = rootCmd.Execute()
+	assert.NoError(t, err)
+
+	_ = w.Close()
+	out, _ := io.ReadAll(r)
+	os.Stdout = originalStdout
+
+	// Verify stdout message
+	assert.Contains(t, string(out), "Successfully migrated configuration to "+outputFile)
+
+	// Verify file content
+	content, err := os.ReadFile(outputFile)
+	assert.NoError(t, err)
+	assert.Contains(t, string(content), "name: test-server")
+	assert.Contains(t, string(content), "command: test-command")
+	assert.Contains(t, string(content), "KEY: VALUE")
+}
+
+func TestMigrateCmdStdout(t *testing.T) {
+	viper.Reset()
+	// Create a temporary Claude config file
+	claudeConfigFile, err := os.CreateTemp("", "claude_config.json")
+	assert.NoError(t, err)
+	defer func() { _ = os.Remove(claudeConfigFile.Name()) }()
+	_, err = claudeConfigFile.WriteString(`{
+  "mcpServers": {
+    "test-server": {
+      "command": "test-command"
+    }
+  }
+}`)
+	assert.NoError(t, err)
+	_ = claudeConfigFile.Close()
+
+	originalStdout := os.Stdout
+	r, w, _ := os.Pipe()
+	os.Stdout = w
+
+	rootCmd := newRootCmd()
+	rootCmd.SetArgs([]string{"config", "migrate", "--input", claudeConfigFile.Name(), "--output", "-"})
+	err = rootCmd.Execute()
+	assert.NoError(t, err)
+
+	_ = w.Close()
+	out, _ := io.ReadAll(r)
+	os.Stdout = originalStdout
+
+	// Verify stdout has YAML content
+	assert.Contains(t, string(out), "name: test-server")
+	assert.Contains(t, string(out), "command: test-command")
+}
