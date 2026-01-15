@@ -736,11 +736,18 @@ export interface McpStdioConnection {
   setupCommands: string[];
   /** Optional: Environment variables to set in the container. */
   env: { [key: string]: SecretValue };
+  /** Optional: Validation rules for the environment. */
+  validation?: EnvValidation | undefined;
 }
 
 export interface McpStdioConnection_EnvEntry {
   key: string;
   value?: SecretValue | undefined;
+}
+
+export interface EnvValidation {
+  /** A list of environment variables that MUST be set (either inherited or explicit). */
+  requiredEnv: string[];
 }
 
 export interface McpStreamableHttpConnection {
@@ -6406,7 +6413,15 @@ export const McpUpstreamService_CallsEntry: MessageFns<McpUpstreamService_CallsE
 };
 
 function createBaseMcpStdioConnection(): McpStdioConnection {
-  return { command: "", args: [], workingDirectory: "", containerImage: "", setupCommands: [], env: {} };
+  return {
+    command: "",
+    args: [],
+    workingDirectory: "",
+    containerImage: "",
+    setupCommands: [],
+    env: {},
+    validation: undefined,
+  };
 }
 
 export const McpStdioConnection: MessageFns<McpStdioConnection> = {
@@ -6429,6 +6444,9 @@ export const McpStdioConnection: MessageFns<McpStdioConnection> = {
     globalThis.Object.entries(message.env).forEach(([key, value]: [string, SecretValue]) => {
       McpStdioConnection_EnvEntry.encode({ key: key as any, value }, writer.uint32(58).fork()).join();
     });
+    if (message.validation !== undefined) {
+      EnvValidation.encode(message.validation, writer.uint32(66).fork()).join();
+    }
     return writer;
   },
 
@@ -6490,6 +6508,14 @@ export const McpStdioConnection: MessageFns<McpStdioConnection> = {
           }
           continue;
         }
+        case 8: {
+          if (tag !== 66) {
+            break;
+          }
+
+          message.validation = EnvValidation.decode(reader, reader.uint32());
+          continue;
+        }
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -6517,6 +6543,7 @@ export const McpStdioConnection: MessageFns<McpStdioConnection> = {
           {},
         )
         : {},
+      validation: isSet(object.validation) ? EnvValidation.fromJSON(object.validation) : undefined,
     };
   },
 
@@ -6546,6 +6573,9 @@ export const McpStdioConnection: MessageFns<McpStdioConnection> = {
         });
       }
     }
+    if (message.validation !== undefined) {
+      obj.validation = EnvValidation.toJSON(message.validation);
+    }
     return obj;
   },
 
@@ -6568,6 +6598,9 @@ export const McpStdioConnection: MessageFns<McpStdioConnection> = {
       },
       {},
     );
+    message.validation = (object.validation !== undefined && object.validation !== null)
+      ? EnvValidation.fromPartial(object.validation)
+      : undefined;
     return message;
   },
 };
@@ -6646,6 +6679,68 @@ export const McpStdioConnection_EnvEntry: MessageFns<McpStdioConnection_EnvEntry
     message.value = (object.value !== undefined && object.value !== null)
       ? SecretValue.fromPartial(object.value)
       : undefined;
+    return message;
+  },
+};
+
+function createBaseEnvValidation(): EnvValidation {
+  return { requiredEnv: [] };
+}
+
+export const EnvValidation: MessageFns<EnvValidation> = {
+  encode(message: EnvValidation, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    for (const v of message.requiredEnv) {
+      writer.uint32(10).string(v!);
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): EnvValidation {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseEnvValidation();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.requiredEnv.push(reader.string());
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): EnvValidation {
+    return {
+      requiredEnv: globalThis.Array.isArray(object?.required_env)
+        ? object.required_env.map((e: any) => globalThis.String(e))
+        : [],
+    };
+  },
+
+  toJSON(message: EnvValidation): unknown {
+    const obj: any = {};
+    if (message.requiredEnv?.length) {
+      obj.required_env = message.requiredEnv;
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<EnvValidation>, I>>(base?: I): EnvValidation {
+    return EnvValidation.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<EnvValidation>, I>>(object: I): EnvValidation {
+    const message = createBaseEnvValidation();
+    message.requiredEnv = object.requiredEnv?.map((e) => e) || [];
     return message;
   },
 };
