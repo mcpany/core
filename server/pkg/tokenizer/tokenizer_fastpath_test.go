@@ -4,13 +4,14 @@
 package tokenizer
 
 import (
-	"fmt"
 	"math"
+	"strconv"
 	"testing"
 )
 
 func TestCountTokensInValue_FastPathConsistency(t *testing.T) {
-	tok := NewSimpleTokenizer()
+	st := NewSimpleTokenizer()
+	wt := NewWordTokenizer()
 
 	tests := []struct {
 		name  string
@@ -26,38 +27,113 @@ func TestCountTokensInValue_FastPathConsistency(t *testing.T) {
 		{"Bool true", true},
 		{"Bool false", false},
 		{"Nil", nil},
-		{"Nested Map", map[string]interface{}{"a": 1, "b": true}},
-		{"Nested Slice", []interface{}{1, true, nil}},
+		{"Float64", 123.456},
+		{"Float64 Sci", 1.23e10},
+
+		// Slices
+		{"Slice Int", []int{1, 2, 3, 10000, -123}},
+		{"Slice Int64", []int64{1, 2, 3, 10000000000, -123}},
+		{"Slice Bool", []bool{true, false, true}},
+		{"Slice Float64", []float64{1.1, 2.2, 3.3, 1.23e5}},
+		{"Slice String", []string{"hello", "world", "fast", "path"}},
+
+		// Maps
+		{"Map String String", map[string]string{"key1": "val1", "key2": "val2"}},
 	}
 
 	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			// Fast path result
-			got, err := CountTokensInValue(tok, tt.input)
+		t.Run(tt.name+"/Simple", func(t *testing.T) {
+			got, err := CountTokensInValue(st, tt.input)
 			if err != nil {
 				t.Fatalf("CountTokensInValue failed: %v", err)
 			}
 
-			// Slow path equivalent (manually calculate using string conversion for primitives, or manual sum for complex)
-			// For complex types, we can't easily replicate "slow path" without bypassing the fast path in the code.
-			// But we can check primitives directly.
-			// For complex types, we can trust that if primitives are correct, the structural recursion is correct
-			// (as verified by existing TestCountTokensInValue).
+			// Validate correctness
+			// We can compare against manual calculation or reflect-based fallback (if we could force it)
+			// But since we can't easily force fallback, let's verify logic.
 
-			// Let's rely on string representation for primitives:
+			var want int
 			switch v := tt.input.(type) {
-			case int, int64, bool:
-				str := fmt.Sprintf("%v", v)
-				want, _ := tok.CountTokens(str)
-				if got != want {
-					t.Errorf("Mismatch for %v (str: %q): fast=%d, slow=%d", tt.input, str, got, want)
-				}
+			case int:
+				want = simpleTokenizeInt(v)
+			case int64:
+				want = simpleTokenizeInt64(v)
+			case bool:
+				want = 1
 			case nil:
-				// fmt.Sprintf("%v", nil) is "<nil>" (5 chars). 5/4 = 1.
-				// Fast path returns 1.
-				if got != 1 {
-					t.Errorf("Mismatch for nil: fast=%d, want 1", got)
+				want = 1
+			case float64:
+				c, _ := st.CountTokens(strconv.FormatFloat(v, 'g', -1, 64))
+				want = c
+			case []int:
+				for _, x := range v {
+					want += simpleTokenizeInt(x)
 				}
+			case []int64:
+				for _, x := range v {
+					want += simpleTokenizeInt64(x)
+				}
+			case []bool:
+				want = len(v)
+			case []float64:
+				for _, x := range v {
+					c, _ := st.CountTokens(strconv.FormatFloat(x, 'g', -1, 64))
+					want += c
+				}
+			case []string:
+				for _, x := range v {
+					c, _ := st.CountTokens(x)
+					want += c
+				}
+			case map[string]string:
+				for k, v := range v {
+					kc, _ := st.CountTokens(k)
+					vc, _ := st.CountTokens(v)
+					want += kc + vc
+				}
+			}
+
+			if got != want {
+				t.Errorf("Mismatch for %v: got %d, want %d", tt.input, got, want)
+			}
+		})
+
+		t.Run(tt.name+"/Word", func(t *testing.T) {
+			got, err := CountTokensInValue(wt, tt.input)
+			if err != nil {
+				t.Fatalf("CountTokensInValue failed: %v", err)
+			}
+
+			primCount := int(wt.Factor)
+			if primCount < 1 { primCount = 1 }
+
+			var want int
+			switch v := tt.input.(type) {
+			case int, int64, float64, bool, nil:
+				want = primCount
+			case []int:
+				want = len(v) * primCount
+			case []int64:
+				want = len(v) * primCount
+			case []float64:
+				want = len(v) * primCount
+			case []bool:
+				want = len(v) * primCount
+			case []string:
+				for _, x := range v {
+					c, _ := wt.CountTokens(x)
+					want += c
+				}
+			case map[string]string:
+				for k, v := range v {
+					kc, _ := wt.CountTokens(k)
+					vc, _ := wt.CountTokens(v)
+					want += kc + vc
+				}
+			}
+
+			if got != want {
+				t.Errorf("Mismatch for %v: got %d, want %d", tt.input, got, want)
 			}
 		})
 	}

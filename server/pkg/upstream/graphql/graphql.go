@@ -87,15 +87,16 @@ const introspectionQuery = `
   }
 `
 
-type graphqlUpstream struct{}
+// Upstream implements the upstream.Upstream interface for GraphQL services.
+type Upstream struct{}
 
 // NewGraphQLUpstream creates a new GraphQL upstream.
 func NewGraphQLUpstream() upstream.Upstream {
-	return &graphqlUpstream{}
+	return &Upstream{}
 }
 
 // Shutdown shuts down the upstream.
-func (g *graphqlUpstream) Shutdown(_ context.Context) error {
+func (g *Upstream) Shutdown(_ context.Context) error {
 	return nil
 }
 
@@ -144,7 +145,7 @@ func (c *Callable) Call(ctx context.Context, req *tool.ExecutionRequest) (any, e
 }
 
 // Register inspects the GraphQL upstream service and registers its capabilities.
-func (g *graphqlUpstream) Register(
+func (g *Upstream) Register(
 	ctx context.Context,
 	serviceConfig *configv1.UpstreamServiceConfig,
 	toolManager tool.ManagerInterface,
@@ -228,7 +229,7 @@ func (g *graphqlUpstream) Register(
 			for _, field := range t.Fields {
 				toolName := fmt.Sprintf("%s-%s", serviceConfig.GetName(), field.Name)
 				log.Printf("Creating tool: %s", toolName)
-				properties := &structpb.Struct{
+				inputSchema := &structpb.Struct{
 					Fields: make(map[string]*structpb.Value),
 				}
 				for _, arg := range field.Args {
@@ -236,7 +237,7 @@ func (g *graphqlUpstream) Register(
 					if arg.Type.Kind == "NON_NULL" {
 						typeName = arg.Type.OfType.Name
 					}
-					properties.Fields[arg.Name] = &structpb.Value{
+					inputSchema.Fields[arg.Name] = &structpb.Value{
 						Kind: &structpb.Value_StructValue{
 							StructValue: &structpb.Struct{
 								Fields: map[string]*structpb.Value{
@@ -249,20 +250,6 @@ func (g *graphqlUpstream) Register(
 							},
 						},
 					}
-				}
-				inputSchema := &structpb.Struct{
-					Fields: map[string]*structpb.Value{
-						"type": {
-							Kind: &structpb.Value_StringValue{
-								StringValue: "object",
-							},
-						},
-						"properties": {
-							Kind: &structpb.Value_StructValue{
-								StructValue: properties,
-							},
-						},
-					},
 				}
 
 				callID := "graphql"
