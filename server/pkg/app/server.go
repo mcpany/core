@@ -1085,8 +1085,28 @@ func (a *Application) runServerMode(
 	mux := http.NewServeMux()
 
 	// UI Handler
-	uiFS := http.FileServer(http.Dir("./ui"))
-	mux.Handle("/ui/", http.StripPrefix("/ui", uiFS))
+	// We prioritize serving from build directories (./ui/out, ./ui/dist).
+	// If only ./ui exists, we check if it contains source code (package.json) and block it if so.
+	var uiPath string
+	if _, err := os.Stat("./ui/out"); err == nil {
+		uiPath = "./ui/out"
+	} else if _, err := os.Stat("./ui/dist"); err == nil {
+		uiPath = "./ui/dist"
+	} else if _, err := os.Stat("./ui"); err == nil {
+		// Check for package.json to detect source code
+		if _, err := os.Stat("./ui/package.json"); err == nil {
+			logging.GetLogger().Warn("UI directory ./ui contains package.json. Refusing to serve source code for security.", "path", "./ui")
+		} else {
+			uiPath = "./ui"
+		}
+	} else {
+		logging.GetLogger().Info("No UI directory found (./ui/out, ./ui/dist, ./ui). UI will not be served.")
+	}
+
+	if uiPath != "" {
+		uiFS := http.FileServer(http.Dir(uiPath))
+		mux.Handle("/ui/", http.StripPrefix("/ui", uiFS))
+	}
 
 	// Handle root path with gRPC-Web support
 	// We defer the decision to the wrapper or the httpHandler
