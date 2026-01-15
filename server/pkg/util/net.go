@@ -86,9 +86,6 @@ func (d *SafeDialer) DialContext(ctx context.Context, network, addr string) (net
 		if !d.AllowPrivate && IsPrivateNetworkIP(ip) {
 			return nil, fmt.Errorf("ssrf attempt blocked: host %s resolved to private ip %s", host, ip)
 		}
-		if ip.IsUnspecified() {
-			return nil, fmt.Errorf("ssrf attempt blocked: host %s resolved to unspecified ip %s", host, ip)
-		}
 	}
 
 	dialer := d.Dialer
