@@ -116,8 +116,10 @@ type mockFieldDescriptor struct {
 	protoreflect.FieldDescriptor
 	kind        protoreflect.Kind
 	name        string
+	number      protoreflect.FieldNumber
 	cardinality protoreflect.Cardinality
 	message     protoreflect.MessageDescriptor
+	isMap       bool
 }
 
 func (m *mockFieldDescriptor) Kind() protoreflect.Kind {
@@ -132,12 +134,20 @@ func (m *mockFieldDescriptor) Name() protoreflect.Name {
 	return protoreflect.Name(m.name)
 }
 
+func (m *mockFieldDescriptor) Number() protoreflect.FieldNumber {
+	return m.number
+}
+
 func (m *mockFieldDescriptor) Cardinality() protoreflect.Cardinality {
 	return m.cardinality
 }
 
 func (m *mockFieldDescriptor) IsList() bool {
-	return m.cardinality == protoreflect.Repeated
+	return m.cardinality == protoreflect.Repeated && !m.isMap
+}
+
+func (m *mockFieldDescriptor) IsMap() bool {
+	return m.isMap
 }
 
 // mockFieldDescriptors is a mock implementation of protoreflect.FieldDescriptors for testing.
@@ -152,6 +162,15 @@ func (m *mockFieldDescriptors) Len() int {
 
 func (m *mockFieldDescriptors) Get(i int) protoreflect.FieldDescriptor {
 	return m.fields[i]
+}
+
+func (m *mockFieldDescriptors) ByNumber(n protoreflect.FieldNumber) protoreflect.FieldDescriptor {
+	for _, f := range m.fields {
+		if f.Number() == n {
+			return f
+		}
+	}
+	return nil
 }
 
 // mockMessageDescriptor is a mock implementation of protoreflect.MessageDescriptor for testing.

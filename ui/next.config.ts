@@ -120,6 +120,10 @@ const nextConfig: NextConfig = {
     console.log("DEBUG: Using backend URL:", backendUrl);
     return [
       {
+        source: '/doctor',
+        destination: `${backendUrl}/doctor`,
+      },
+      {
         source: '/api/v1/:path*',
         destination: `${backendUrl}/api/v1/:path*`,
       },

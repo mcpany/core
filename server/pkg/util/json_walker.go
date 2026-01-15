@@ -10,10 +10,13 @@ import (
 // WalkJSONStrings visits every string value in the JSON input.
 // visitor is called for every string value (not keys).
 // visitor receives:
-//   raw: the raw bytes of the string, including quotes.
+//
+//	raw: the raw bytes of the string, including quotes.
+//
 // visitor returns:
-//   replacement: the new bytes to replace 'raw' with, or nil to keep original.
-//   modified: true if replacement should be used.
+//
+//	replacement: the new bytes to replace 'raw' with, or nil to keep original.
+//	modified: true if replacement should be used.
 func WalkJSONStrings(input []byte, visitor func(raw []byte) ([]byte, bool)) []byte {
 	var out []byte
 	i := 0
