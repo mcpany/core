@@ -15,6 +15,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
 } from "@/components/ui/dialog";
 
 export function SystemHealthIndicator() {
@@ -64,6 +65,9 @@ export function SystemHealthIndicator() {
                     <Icon className={cn("h-5 w-5", error ? "text-red-500" : report?.status === 'healthy' ? "text-green-500" : "text-yellow-500")} />
                     System Status
                 </DialogTitle>
+                <DialogDescription>
+                    Real-time connectivity status of the MCP Any server.
+                </DialogDescription>
             </DialogHeader>
           <div className="space-y-4">
             <div className="flex items-center justify-between">
