@@ -54,6 +54,7 @@ func (a *Application) createAPIHandler(store storage.Storage) http.Handler {
 	})
 	// Doctor API
 	doctor := health.NewDoctor()
+	doctor.AddCheck("configuration", a.configHealthCheck)
 	mux.Handle("/doctor", doctor.Handler())
 
 	mux.HandleFunc("/settings", a.handleSettings(store))
