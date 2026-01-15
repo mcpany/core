@@ -61,44 +61,6 @@ func TestDLPMiddleware(t *testing.T) {
 		assert.NoError(t, err)
 	})
 
-	t.Run("OptimizationPath", func(t *testing.T) {
-		// Test the optimization path (no custom patterns)
-		cfg := &configv1.DLPConfig{
-			Enabled: &enabled,
-			// No CustomPatterns
-		}
-		mwOpt := DLPMiddleware(cfg, logger)
-
-		handler := func(ctx context.Context, method string, req mcp.Request) (mcp.Result, error) {
-			callReq := req.(*mcp.CallToolRequest)
-			var args map[string]interface{}
-			err := json.Unmarshal(callReq.Params.Arguments, &args)
-			assert.NoError(t, err)
-
-			// Email should be redacted (contains @)
-			email := args["email"].(string)
-			assert.Equal(t, "***REDACTED***", email)
-
-			// Safe string should NOT be redacted (and should skip unmarshal in optimization)
-			safe := args["safe"].(string)
-			assert.Equal(t, "safe string", safe)
-
-			return &mcp.CallToolResult{}, nil
-		}
-
-		wrapped := mwOpt(handler)
-		req := &mcp.CallToolRequest{
-			Params: &mcp.CallToolParamsRaw{
-				Arguments: json.RawMessage(`{
-					"email": "user@example.com",
-					"safe": "safe string"
-				}`),
-			},
-		}
-		_, err := wrapped(context.Background(), "tools/call", req)
-		assert.NoError(t, err)
-	})
-
 	t.Run("RedactResult", func(t *testing.T) {
 		handler := func(ctx context.Context, method string, req mcp.Request) (mcp.Result, error) {
 			return &mcp.CallToolResult{

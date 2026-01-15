@@ -146,7 +146,7 @@ func IsSensitiveKey(key string) bool {
 // If validateKeyContext is true, it checks if the match is followed by a closing quote and a colon.
 // This function replaces the old linear scan (O(N*M)) with a more optimized scan
 // that uses SIMD-accelerated IndexByte for grouped start characters.
-func scanForSensitiveKeys(input []byte, validateKeyContext bool) bool { //nolint:unparam
+func scanForSensitiveKeys(input []byte, validateKeyContext bool) bool {
 	// Optimization: If we are validating key context (JSON input), we can scan by quotes.
 	// This allows us to skip scanning string values entirely, which is a huge win for large payloads.
 	if validateKeyContext {

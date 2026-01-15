@@ -15,6 +15,7 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/joho/godotenv"
 	"github.com/mcpany/core/server/pkg/app"
 	"github.com/mcpany/core/server/pkg/appconsts"
 	"github.com/mcpany/core/server/pkg/config"
@@ -23,7 +24,6 @@ import (
 	"github.com/mcpany/core/server/pkg/logging"
 	"github.com/mcpany/core/server/pkg/metrics"
 	"github.com/mcpany/core/server/pkg/update"
-	"github.com/joho/godotenv"
 	"github.com/spf13/afero"
 	"github.com/spf13/cobra"
 	"golang.org/x/oauth2"
@@ -171,9 +171,10 @@ func newRootCmd() *cobra.Command { //nolint:gocyclo // Main entry point, expecte
 				fmt.Println("\n--- 🩺 Diagnostic Report ---")
 				for _, r := range results {
 					symbol := "✅"
-					if r.Severity == doctor.Warning {
+					switch r.Severity {
+					case doctor.Warning:
 						symbol = "⚠️ "
-					} else if r.Severity == doctor.Error {
+					case doctor.Error:
 						symbol = "❌"
 					}
 					fmt.Printf("%s %s: %s\n", symbol, r.Name, r.Message)
@@ -210,9 +211,10 @@ func newRootCmd() *cobra.Command { //nolint:gocyclo // Main entry point, expecte
 			for _, r := range results {
 				symbol := "✅"
 
-				if r.Severity == doctor.Warning {
+				switch r.Severity {
+				case doctor.Warning:
 					symbol = "⚠️ "
-				} else if r.Severity == doctor.Error {
+				case doctor.Error:
 					symbol = "❌"
 					hasErrors = true
 				}

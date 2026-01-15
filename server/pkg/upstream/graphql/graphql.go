@@ -87,16 +87,15 @@ const introspectionQuery = `
   }
 `
 
-// Upstream implements the upstream.Upstream interface for GraphQL services.
-type Upstream struct{}
+type graphqlUpstream struct{}
 
 // NewGraphQLUpstream creates a new GraphQL upstream.
 func NewGraphQLUpstream() upstream.Upstream {
-	return &Upstream{}
+	return &graphqlUpstream{}
 }
 
 // Shutdown shuts down the upstream.
-func (g *Upstream) Shutdown(_ context.Context) error {
+func (g *graphqlUpstream) Shutdown(_ context.Context) error {
 	return nil
 }
 
@@ -145,7 +144,7 @@ func (c *Callable) Call(ctx context.Context, req *tool.ExecutionRequest) (any, e
 }
 
 // Register inspects the GraphQL upstream service and registers its capabilities.
-func (g *Upstream) Register(
+func (g *graphqlUpstream) Register(
 	ctx context.Context,
 	serviceConfig *configv1.UpstreamServiceConfig,
 	toolManager tool.ManagerInterface,

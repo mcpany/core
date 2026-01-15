@@ -1,6 +1,7 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
+// Package doctor provides diagnostic checks for the server environment.
 package doctor
 
 import (
@@ -80,7 +81,7 @@ func NewDoctor(cfg *config.Settings, fs afero.Fs) *Doctor {
 
 // Diagnose runs all registered checks and returns the results.
 func (d *Doctor) Diagnose(ctx context.Context) []Result {
-	var results []Result
+	results := make([]Result, 0, len(d.checks))
 	for _, check := range d.checks {
 		results = append(results, check.Run(ctx))
 	}
@@ -95,14 +96,17 @@ type ConfigCheck struct {
 	paths []string
 }
 
+// NewConfigCheck creates a new ConfigCheck.
 func NewConfigCheck(fs afero.Fs, paths []string) *ConfigCheck {
 	return &ConfigCheck{fs: fs, paths: paths}
 }
 
+// Name returns the name of the check.
 func (c *ConfigCheck) Name() string {
 	return "Configuration Check"
 }
 
+// Run executes the configuration check.
 func (c *ConfigCheck) Run(ctx context.Context) Result {
 	if len(c.paths) == 0 {
 		return Result{
@@ -153,10 +157,12 @@ type PortCheck struct {
 	nameSuffix string
 }
 
+// NewPortCheck creates a new PortCheck.
 func NewPortCheck(host string) *PortCheck {
 	return &PortCheck{host: host}
 }
 
+// Name returns the name of the check.
 func (c *PortCheck) Name() string {
 	name := "Port Availability"
 	if c.nameSuffix != "" {
@@ -165,6 +171,7 @@ func (c *PortCheck) Name() string {
 	return name
 }
 
+// Run executes the port availability check.
 func (c *PortCheck) Run(ctx context.Context) Result {
 	host := c.host
 	if host == "" {
@@ -183,8 +190,9 @@ func (c *PortCheck) Run(ctx context.Context) Result {
 		host = ":" + host
 	}
 
-	// Try to bind to the port
-	ln, err := net.Listen("tcp", host)
+	// Try to bind to the port using ListenConfig to pass context (pacifying linter)
+	lc := net.ListenConfig{}
+	ln, err := lc.Listen(ctx, "tcp", host)
 	if err != nil {
 		msg := fmt.Sprintf("Port %s is not available: %v", host, err)
 		severity := Error

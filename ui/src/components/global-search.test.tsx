@@ -6,7 +6,6 @@
 import React from 'react';
 import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
 import { GlobalSearch } from './global-search';
-import { KeyboardShortcutsProvider } from '@/contexts/keyboard-shortcuts-context';
 import { vi } from 'vitest';
 import { apiClient } from '@/lib/client';
 
@@ -79,20 +78,12 @@ describe('GlobalSearch', () => {
     });
 
     it('renders the search button', () => {
-        render(
-            <KeyboardShortcutsProvider>
-                <GlobalSearch />
-            </KeyboardShortcutsProvider>
-        );
+        render(<GlobalSearch />);
         expect(screen.getByText(/Search or type >/i)).toBeInTheDocument();
     });
 
     it('opens dialog on click and lists items', async () => {
-        render(
-            <KeyboardShortcutsProvider>
-                <GlobalSearch />
-            </KeyboardShortcutsProvider>
-        );
+        render(<GlobalSearch />);
 
         await act(async () => {
             fireEvent.click(screen.getByText(/Search or type >/i));
@@ -107,11 +98,7 @@ describe('GlobalSearch', () => {
     });
 
     it('navigates when item is selected', async () => {
-        render(
-            <KeyboardShortcutsProvider>
-                <GlobalSearch />
-            </KeyboardShortcutsProvider>
-        );
+        render(<GlobalSearch />);
 
         await act(async () => {
             fireEvent.click(screen.getByText(/Search or type >/i));
@@ -133,19 +120,11 @@ describe('GlobalSearch', () => {
     });
 
     it('triggers restart action', async () => {
-         render(
-            <KeyboardShortcutsProvider>
-                <GlobalSearch />
-            </KeyboardShortcutsProvider>
-         );
+         render(<GlobalSearch />);
 
         await act(async () => {
             fireEvent.click(screen.getByText(/Search or type >/i));
         });
-
-        // Type to show restart actions
-        const input = screen.getByPlaceholderText(/Type a command or search.../i);
-        fireEvent.change(input, { target: { value: 'restart' } });
 
         await waitFor(() => {
             expect(screen.getByText('Restart service-1')).toBeInTheDocument();
@@ -166,19 +145,11 @@ describe('GlobalSearch', () => {
     });
 
     it('triggers copy URI action', async () => {
-         render(
-            <KeyboardShortcutsProvider>
-                <GlobalSearch />
-            </KeyboardShortcutsProvider>
-         );
+         render(<GlobalSearch />);
 
         await act(async () => {
             fireEvent.click(screen.getByText(/Search or type >/i));
         });
-
-        // Type to show copy actions
-        const input = screen.getByPlaceholderText(/Type a command or search.../i);
-        fireEvent.change(input, { target: { value: 'copy' } });
 
         await waitFor(() => {
             expect(screen.getByText('Copy URI: res-1')).toBeInTheDocument();
@@ -193,11 +164,7 @@ describe('GlobalSearch', () => {
     });
 
     it('triggers reload window action', async () => {
-         render(
-            <KeyboardShortcutsProvider>
-                <GlobalSearch />
-            </KeyboardShortcutsProvider>
-         );
+         render(<GlobalSearch />);
 
         await act(async () => {
             fireEvent.click(screen.getByText(/Search or type >/i));

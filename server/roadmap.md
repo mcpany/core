@@ -49,7 +49,6 @@
 - [x] **Smart Config Error Messages - Address**: Fixed an issue where the validator confusingly referred to 'target_address' instead of 'address', aligning error messages with the actual configuration schema. (Friction Fighter)
 - [x] **Configuration Health Check**: Added a Doctor check that tracks the status of dynamic configuration reloads (success/failure, timestamp) and exposes it via `/doctor` API to aid in debugging silent reload failures. (Experience Crafter)
 - [x] **Pre-flight Diagnostic "Doctor"**: Added `mcpany doctor` CLI command and automated startup diagnostics to detect and report configuration errors and port conflicts with actionable remediation steps. (Friction Fighter)
-- [x] **WebSocket Diagnostic Probe**: Implemented a diagnostic probe in the UI to validate WebSocket service configuration and test connectivity (including browser-side check). (Experience Crafter)
 
 ## 2. Top 10 Recommended Features
 
@@ -58,43 +57,44 @@ These features represent the next logical steps for the product, focusing on Ent
 | Rank | Feature Name | Why it matters | Difficulty |
 | :--- | :--- | :--- | :--- |
 | 1 | **Tool Poisoning Mitigation** | **Security**: Implement integrity checks for tool definitions to prevent "Rug Pull" attacks where a tool definition changes maliciously after installation. | High |
-| 2 | **Interactive OAuth Handler** | **UX/Auth**: Solve the "copy-paste token" friction. Allow users to click "Login" in the UI to authenticate tools like GitHub/Google. (Backend Implemented, UI Pending) | High |
-| 3 | **Interactive OAuth UI** | **UX**: Complete the UI implementation for the Interactive OAuth Handler to allow seamless user authentication flows. | Medium |
-| 4 | **Local LLM "One-Click" Connect** | **Connectivity**: Auto-detect and connect to local inference servers (Ollama, LM Studio) to democratize AI access without cloud costs. | Low |
-| 5 | **Tool "Dry Run" Mode** | **DevX**: Allow tools to define a "dry run" logic to validate inputs and permissions without executing side effects. | Medium |
-| 6 | **Team Configuration Sync** | **Collaboration**: Allow teams to synchronize `mcpany` configurations and secrets securely, ensuring consistent dev environments. | Medium |
-| 7 | **Smart Error Recovery** | **Resilience**: Use an internal LLM loop to analyze tool errors and automatically retry with corrected parameters (Self-Healing). | High |
-| 8 | **Canary Tool Deployment** | **Ops**: gradually roll out new tool versions to a subset of users or sessions to catch regressions before they impact everyone. | High |
-| 9 | **Compliance Reporting** | **Enterprise**: Automated generation of PDF/CSV reports from Audit Logs for SOC2/GDPR compliance reviews. | Medium |
-| 10 | **Advanced Tiered Caching** | **Performance**: Implement a multi-layer cache (Memory -> Redis -> Disk) with configurable eviction policies to reduce upstream costs. | Medium |
-| 11 | **Smart Retry Policies** | **Resilience**: Configurable exponential backoff and jitter for upstream connections to handle transient network failures gracefully. | Medium |
-| 12 | **Service Dependency Graph** | **Observability**: Visualize dependencies between services (e.g. Service A calls Tool B in Service C) to detect circular dependencies or bottlenecks. | High |
-| 13 | **Schema Validation Playground** | **DevX**: A dedicated UI in the dashboard to paste JSON/YAML and validate it against the server schema with real-time error highlighting. | Low |
-| 14 | **Partial Reloads** | **Resilience**: When reloading config dynamically, if one service is invalid, keep the old version running instead of removing it or failing the whole reload (if possible). | High |
-| 15 | **Filesystem Health Check** | **Observability**: Add a health check probe for filesystem roots to report status to the UI, not just logs. | Low |
-| 16 | **Safe Symlink Traversal** | **Security**: Add configuration options to strictly control symlink traversal policies (allow/deny/internal-only). | Medium |
-| 17 | **Multi-Model Advisor** | **Intelligence**: Orchestrate queries across multiple models (e.g. Ollama models) to synthesize insights. | High |
-| 18 | **MCP Server Aggregator/Proxy** | **Architecture**: A meta-server capability to discover, configure, and manage multiple downstream MCP servers dynamically. | High |
-| 19 | **Preset Service Gallery** | **UX**: A curated list of popular services (like `wttr.in`, `sqlite`, etc.) that can be added via CLI or UI with one click/command. | Medium |
-| 20 | **Configuration Migration Tool** | **DevX**: A CLI command to convert `claude_desktop_config.json` to `mcpany` config format. | Low |
-| 21 | **Auth Doctor** | **UX**: Diagnostic tool to verify that configured authentication methods match upstream expectations (e.g., detecting if a Bearer token is used where Basic Auth is expected). | Medium |
-| 22 | **Dynamic Tool Pruning** | **Performance/Cost**: Feature to filter visible tools based on the current user's role or context to reduce LLM context window usage and costs. | High |
-| 23 | **Validation CLI Command** | **DevX**: Enhance `mcpany config validate` to run deep checks, including connecting to upstream services (dry-run) to verify connectivity and auth. | Medium |
-| 24 | **Config Schema Migration** | **Maintenance**: Automated tool to upgrade configuration files when the schema evolves (e.g. `v1alpha` to `v1`). | Medium |
-| 25 | **Environment Variable Linter** | **DevX**: A tool/check to scan config files and verify that all referenced environment variables (e.g. `${API_KEY}`) are actually set in the current shell/env. | Low |
-| 26 | **JSON Schema for Config** | **DevX**: Auto-generate and publish a JSON Schema for the `config.yaml` to enable intellisense/validation in IDEs like VS Code. | Low |
-| 27 | **Linter Git Hook** | **DevX**: Provide a pre-commit hook script that automatically runs `mcpany lint` on staged configuration files to prevent committing insecure configs. | Low |
-| 28 | **Secret Rotation Helper** | **Ops**: A CLI tool to help rotate secrets by identifying which services are using a specific secret key/path and validating the new secret against the upstream. | Medium |
-| 29 | **Structured Logging for Config Errors** | **DevX**: Output configuration errors in a structured JSON format to allow the UI or IDEs to pinpoint the exact location of the error. | Low |
-| 30 | **Automatic Config Fixer** | **DevX**: An interactive CLI tool that detects common configuration errors (like legacy formats) and offers to fix them automatically. | Medium |
-| 31 | **Windows Filesystem Locking Fix** | **Compatibility**: Handle EPERM errors gracefully on Windows when renaming files, ensuring cross-platform stability. | Medium |
-| 32 | **Async Tool Loading** | **Reliability**: Ensure server waits for initial roots/tools to be loaded before accepting requests to prevent race conditions on startup. | Medium |
-| 33 | **Config Schema Validation via CLI** | **DevX**: `mcpany check config.yaml` that validates against the full JSON schema (including types and enums) using `jsonschema` library, providing line-number precise errors. | Low |
-| 34 | **Interactive Config Generator** | **DevX**: `mcpany init` wizard that asks questions and generates a valid `config.yaml` with best practices (secure defaults, comments). | Low |
-| 35 | **Frontend Config Status Banner** | **UX**: Add a visual indicator (banner/toast) in the UI Management Dashboard that queries the new `/doctor` configuration check and warns the user if the server is running with a stale or invalid configuration. | Medium |
-| 36 | **Configuration Diffing API** | **Observability**: An API endpoint to compare the currently active configuration with the previous version or the file on disk, helping users understand what changed during a reload. | Medium |
-| 37 | **Automatic WebSocket Reconnection Strategy** | **Resilience**: Allow users to configure retry backoff and max attempts for WS connections to handle transient network drops. | Medium |
-| 38 | **WebSocket Message Inspector** | **Debugging**: A UI tool to capture and view raw WS frames (text/binary) for debugging protocol issues. | Medium |
+| 2 | **WebSocket Diagnostic Probe** | **Observability**: A standalone diagnostic tool in the UI to test and debug WebSocket connections (metrics, logs) independently of the main dashboard widgets. | Low |
+| 3 | **Interactive OAuth Handler** | **UX/Auth**: Solve the "copy-paste token" friction. Allow users to click "Login" in the UI to authenticate tools like GitHub/Google. (Backend Implemented, UI Pending) | High |
+| 4 | **Interactive OAuth UI** | **UX**: Complete the UI implementation for the Interactive OAuth Handler to allow seamless user authentication flows. | Medium |
+| 5 | **Local LLM "One-Click" Connect** | **Connectivity**: Auto-detect and connect to local inference servers (Ollama, LM Studio) to democratize AI access without cloud costs. | Low |
+| 6 | **Tool "Dry Run" Mode** | **DevX**: Allow tools to define a "dry run" logic to validate inputs and permissions without executing side effects. | Medium |
+| 7 | **Team Configuration Sync** | **Collaboration**: Allow teams to synchronize `mcpany` configurations and secrets securely, ensuring consistent dev environments. | Medium |
+| 8 | **Smart Error Recovery** | **Resilience**: Use an internal LLM loop to analyze tool errors and automatically retry with corrected parameters (Self-Healing). | High |
+| 9 | **Canary Tool Deployment** | **Ops**: gradually roll out new tool versions to a subset of users or sessions to catch regressions before they impact everyone. | High |
+| 10 | **Compliance Reporting** | **Enterprise**: Automated generation of PDF/CSV reports from Audit Logs for SOC2/GDPR compliance reviews. | Medium |
+| 11 | **Advanced Tiered Caching** | **Performance**: Implement a multi-layer cache (Memory -> Redis -> Disk) with configurable eviction policies to reduce upstream costs. | Medium |
+| 12 | **Smart Retry Policies** | **Resilience**: Configurable exponential backoff and jitter for upstream connections to handle transient network failures gracefully. | Medium |
+| 13 | **Service Dependency Graph** | **Observability**: Visualize dependencies between services (e.g. Service A calls Tool B in Service C) to detect circular dependencies or bottlenecks. | High |
+| 14 | **Schema Validation Playground** | **DevX**: A dedicated UI in the dashboard to paste JSON/YAML and validate it against the server schema with real-time error highlighting. | Low |
+| 15 | **Partial Reloads** | **Resilience**: When reloading config dynamically, if one service is invalid, keep the old version running instead of removing it or failing the whole reload (if possible). | High |
+| 16 | **Filesystem Health Check** | **Observability**: Add a health check probe for filesystem roots to report status to the UI, not just logs. | Low |
+| 17 | **Safe Symlink Traversal** | **Security**: Add configuration options to strictly control symlink traversal policies (allow/deny/internal-only). | Medium |
+| 18 | **Multi-Model Advisor** | **Intelligence**: Orchestrate queries across multiple models (e.g. Ollama models) to synthesize insights. | High |
+| 19 | **MCP Server Aggregator/Proxy** | **Architecture**: A meta-server capability to discover, configure, and manage multiple downstream MCP servers dynamically. | High |
+| 20 | **Preset Service Gallery** | **UX**: A curated list of popular services (like `wttr.in`, `sqlite`, etc.) that can be added via CLI or UI with one click/command. | Medium |
+| 21 | **Configuration Migration Tool** | **DevX**: A CLI command to convert `claude_desktop_config.json` to `mcpany` config format. | Low |
+| 22 | **Auth Doctor** | **UX**: Diagnostic tool to verify that configured authentication methods match upstream expectations (e.g., detecting if a Bearer token is used where Basic Auth is expected). | Medium |
+| 23 | **Dynamic Tool Pruning** | **Performance/Cost**: Feature to filter visible tools based on the current user's role or context to reduce LLM context window usage and costs. | High |
+| 24 | **Validation CLI Command** | **DevX**: Enhance `mcpany config validate` to run deep checks, including connecting to upstream services (dry-run) to verify connectivity and auth. | Medium |
+| 25 | **Config Schema Migration** | **Maintenance**: Automated tool to upgrade configuration files when the schema evolves (e.g. `v1alpha` to `v1`). | Medium |
+| 24 | **Environment Variable Linter** | **DevX**: A tool/check to scan config files and verify that all referenced environment variables (e.g. `${API_KEY}`) are actually set in the current shell/env. | Low |
+| 25 | **JSON Schema for Config** | **DevX**: Auto-generate and publish a JSON Schema for the `config.yaml` to enable intellisense/validation in IDEs like VS Code. | Low |
+| 24 | **Linter Git Hook** | **DevX**: Provide a pre-commit hook script that automatically runs `mcpany lint` on staged configuration files to prevent committing insecure configs. | Low |
+| 25 | **Secret Rotation Helper** | **Ops**: A CLI tool to help rotate secrets by identifying which services are using a specific secret key/path and validating the new secret against the upstream. | Medium |
+| 26 | **Structured Logging for Config Errors** | **DevX**: Output configuration errors in a structured JSON format to allow the UI or IDEs to pinpoint the exact location of the error. | Low |
+| 27 | **Automatic Config Fixer** | **DevX**: An interactive CLI tool that detects common configuration errors (like legacy formats) and offers to fix them automatically. | Medium |
+| 28 | **Windows Filesystem Locking Fix** | **Compatibility**: Handle EPERM errors gracefully on Windows when renaming files, ensuring cross-platform stability. | Medium |
+| 29 | **Async Tool Loading** | **Reliability**: Ensure server waits for initial roots/tools to be loaded before accepting requests to prevent race conditions on startup. | Medium |
+| 30 | **Config Schema Validation via CLI** | **DevX**: `mcpany check config.yaml` that validates against the full JSON schema (including types and enums) using `jsonschema` library, providing line-number precise errors. | Low |
+| 31 | **Interactive Config Generator** | **DevX**: `mcpany init` wizard that asks questions and generates a valid `config.yaml` with best practices (secure defaults, comments). | Low |
+| 32 | **Frontend Config Status Banner** | **UX**: Add a visual indicator (banner/toast) in the UI Management Dashboard that queries the new `/doctor` configuration check and warns the user if the server is running with a stale or invalid configuration. | Medium |
+| 33 | **Configuration Diffing API** | **Observability**: An API endpoint to compare the currently active configuration with the previous version or the file on disk, helping users understand what changed during a reload. | Medium |
+| 34 | **Interactive Doctor UI** | **UX**: Expose the `doctor` checks via an API endpoint and visualize them in the UI Dashboard, allowing remote health assessment without CLI access. | Medium |
+| 35 | **Dependency Doctor Check** | **Friction Fighter**: Extend `doctor` to check for external tool dependencies (e.g., `docker`, `node`, `python` versions) required by configured services. | Medium |
 
 ## 3. Codebase Health
 

@@ -192,7 +192,7 @@ func (a *TrustedHeaderAuthenticator) Authenticate(ctx context.Context, r *http.R
 	}
 	// If HeaderValue is set, it must match.
 	if a.HeaderValue != "" {
-		if subtle.ConstantTimeCompare([]byte(val), []byte(a.HeaderValue)) != 1 {
+		if val != a.HeaderValue {
 			return ctx, fmt.Errorf("unauthorized")
 		}
 	}
