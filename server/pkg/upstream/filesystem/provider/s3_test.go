@@ -47,3 +47,74 @@ func TestNewS3Provider(t *testing.T) {
 		assert.NotNil(t, p)
 	})
 }
+
+func TestS3Provider_ResolvePath(t *testing.T) {
+	config := &configv1.S3Fs{
+		Bucket: proto.String("my-bucket"),
+		Region: proto.String("us-east-1"),
+	}
+	p, err := NewS3Provider(config)
+	require.NoError(t, err)
+	defer p.Close()
+
+	tests := []struct {
+		name        string
+		virtualPath string
+		want        string
+		wantErr     bool
+	}{
+		{
+			name:        "Root",
+			virtualPath: "/",
+			want:        "", // TrimPrefix removes leading slash, path.Clean("/") is "/"
+			// Wait, if cleanPath is "", it returns error "invalid path"
+			wantErr: true,
+		},
+		{
+			name:        "Empty",
+			virtualPath: "",
+			wantErr:     true,
+		},
+		{
+			name:        "Normal file",
+			virtualPath: "/path/to/file.txt",
+			want:        "path/to/file.txt",
+			wantErr:     false,
+		},
+		{
+			name:        "No leading slash",
+			virtualPath: "file.txt",
+			want:        "file.txt",
+			wantErr:     false,
+		},
+		{
+			name:        "Traversal",
+			virtualPath: "../file.txt",
+			want:        "file.txt", // Sandboxed to root
+			wantErr:     false,
+		},
+		{
+			name:        "Deep traversal",
+			virtualPath: "a/../../b",
+			want:        "b",
+			wantErr:     false,
+		},
+		{
+			name:        "Dot",
+			virtualPath: ".",
+			wantErr:     true,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := p.ResolvePath(tt.virtualPath)
+			if tt.wantErr {
+				assert.Error(t, err)
+			} else {
+				assert.NoError(t, err)
+				assert.Equal(t, tt.want, got)
+			}
+		})
+	}
+}
