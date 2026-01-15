@@ -12,30 +12,12 @@ import (
 	"time"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
+	"github.com/mcpany/core/server/pkg/util"
 	"golang.org/x/oauth2"
 )
 
 func ptr(s string) *string {
 	return &s
-}
-
-// resolveSecretValue helps extract string from SecretValue oneof.
-func resolveSecretValue(sv *configv1.SecretValue) string {
-	if sv == nil {
-		return ""
-	}
-	switch v := sv.Value.(type) {
-	case *configv1.SecretValue_PlainText:
-		return v.PlainText
-	case *configv1.SecretValue_EnvironmentVariable:
-		// TODO: Implement env var lookup
-		return ""
-	case *configv1.SecretValue_FilePath:
-		// TODO: Implement file lookup
-		return ""
-	default:
-		return ""
-	}
 }
 
 // InitiateOAuth starts the OAuth2 flow for a given service or credential.
@@ -93,8 +75,15 @@ func (am *Manager) InitiateOAuth(ctx context.Context, userID, serviceID, credent
 		return "", "", fmt.Errorf("either service_id or credential_id must be provided")
 	}
 
-	clientID := resolveSecretValue(oauthConfig.GetClientId())
-	clientSecret := resolveSecretValue(oauthConfig.GetClientSecret())
+	clientID, err := util.ResolveSecret(ctx, oauthConfig.GetClientId())
+	if err != nil {
+		return "", "", fmt.Errorf("failed to resolve client_id: %w", err)
+	}
+
+	clientSecret, err := util.ResolveSecret(ctx, oauthConfig.GetClientSecret())
+	if err != nil {
+		return "", "", fmt.Errorf("failed to resolve client_secret: %w", err)
+	}
 
 	conf := &oauth2.Config{
 		ClientID:     clientID,
@@ -178,8 +167,14 @@ func (am *Manager) HandleOAuthCallback(ctx context.Context, userID, serviceID, c
 		return fmt.Errorf("either service_id or credential_id must be provided")
 	}
 
-	clientID := resolveSecretValue(oauthConfig.GetClientId())
-	clientSecret := resolveSecretValue(oauthConfig.GetClientSecret())
+	clientID, err := util.ResolveSecret(ctx, oauthConfig.GetClientId())
+	if err != nil {
+		return fmt.Errorf("failed to resolve client_id: %w", err)
+	}
+	clientSecret, err := util.ResolveSecret(ctx, oauthConfig.GetClientSecret())
+	if err != nil {
+		return fmt.Errorf("failed to resolve client_secret: %w", err)
+	}
 
 	conf := &oauth2.Config{
 		ClientID:     clientID,
