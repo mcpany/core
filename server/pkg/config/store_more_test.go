@@ -42,3 +42,45 @@ func TestUnmarshal_NaN(t *testing.T) {
 	assert.Error(t, err)
 	assert.Contains(t, err.Error(), "failed to marshal map to JSON")
 }
+
+func TestMultiStore_HasConfigSources(t *testing.T) {
+	fs := afero.NewMemMapFs()
+	// Case 1: Empty MultiStore
+	ms := NewMultiStore()
+	assert.False(t, ms.HasConfigSources())
+
+	// Case 2: Store with sources
+	s1 := NewFileStore(fs, []string{"/config"})
+	ms = NewMultiStore(s1)
+	assert.True(t, ms.HasConfigSources())
+
+	// Case 3: Store without sources
+	s2 := NewFileStore(fs, []string{})
+	ms = NewMultiStore(s2)
+	assert.False(t, ms.HasConfigSources())
+
+	// Case 4: Mixed
+	ms = NewMultiStore(s2, s1)
+	assert.True(t, ms.HasConfigSources())
+}
+
+func TestMultiStore_Load(t *testing.T) {
+	fs := afero.NewMemMapFs()
+	require.NoError(t, afero.WriteFile(fs, "/config/1.yaml", []byte(`
+global_settings:
+  log_level: INFO
+`), 0644))
+	require.NoError(t, afero.WriteFile(fs, "/config/2.yaml", []byte(`
+global_settings:
+  api_key: "my-key"
+`), 0644))
+
+	s1 := NewFileStore(fs, []string{"/config/1.yaml"})
+	s2 := NewFileStore(fs, []string{"/config/2.yaml"})
+	ms := NewMultiStore(s1, s2)
+
+	cfg, err := ms.Load(context.Background())
+	require.NoError(t, err)
+	assert.Equal(t, configv1.GlobalSettings_LOG_LEVEL_INFO, cfg.GlobalSettings.GetLogLevel())
+	assert.Equal(t, "my-key", cfg.GlobalSettings.GetApiKey())
+}

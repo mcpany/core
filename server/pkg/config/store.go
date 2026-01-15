@@ -525,6 +525,14 @@ func applyEnvVarsFromSlice(m map[string]interface{}, environ []string, v proto.M
 				// We need to go deeper
 				if next, ok := current[section].(map[string]interface{}); ok {
 					current = next
+				} else if slice, ok := current[section].([]interface{}); ok {
+					// It is a slice, convert to map keyed by index to support merging
+					next := make(map[string]interface{})
+					for idx, val := range slice {
+						next[strconv.Itoa(idx)] = val
+					}
+					current[section] = next
+					current = next
 				} else {
 					// Create new map if it doesn't exist or isn't a map
 					next := make(map[string]interface{})
