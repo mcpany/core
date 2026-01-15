@@ -5,7 +5,6 @@ package util //nolint:revive
 
 import (
 	"context"
-	"net"
 	"testing"
 )
 
@@ -75,25 +74,6 @@ func TestExtractIP(t *testing.T) {
 			got := ExtractIP(tt.input)
 			if got != tt.expected {
 				t.Errorf("ExtractIP(%q) = %q, want %q", tt.input, got, tt.expected)
-			}
-		})
-	}
-}
-
-func TestIsPrivateNetworkIP_Unspecified(t *testing.T) {
-	tests := []struct {
-		ip       string
-		expected bool
-	}{
-		{"0.0.0.0", true},
-		{"::", true},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.ip, func(t *testing.T) {
-			ip := net.ParseIP(tt.ip)
-			if got := IsPrivateNetworkIP(ip); got != tt.expected {
-				t.Errorf("IsPrivateNetworkIP(%q) = %v, want %v", tt.ip, got, tt.expected)
 			}
 		})
 	}

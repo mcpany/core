@@ -246,9 +246,7 @@ export function GlobalSearch() {
                  </CommandItem>
                ))}
                {/* Actions for Services - only shown if searching for "restart" or service name */}
-               {/* ⚡ Bolt Optimization: Only render these heavy actions when the user has typed something.
-                   This significantly reduces the number of DOM nodes when the dialog is first opened. */}
-               {query.length > 0 && services.map((service) => (
+               {services.map((service) => (
                    <CommandItem key={`restart-${service.name}`} value={`restart service ${service.name}`} onSelect={() => restartService(service.name)}>
                        <RefreshCw className="mr-2 h-4 w-4 text-orange-500" />
                        <span>Restart {service.name}</span>
@@ -277,8 +275,7 @@ export function GlobalSearch() {
                    <span>{resource.name}</span>
                  </CommandItem>
                ))}
-                {/* ⚡ Bolt Optimization: Only render copy actions when searching to reduce DOM nodes */}
-                {query.length > 0 && resources.map((resource) => (
+                {resources.map((resource) => (
                  <CommandItem key={`copy-${resource.uri}`} value={`copy uri ${resource.name}`} onSelect={() => copyToClipboard(resource.uri, "Resource URI")}>
                    <Copy className="mr-2 h-4 w-4 text-blue-500" />
                    <span>Copy URI: {resource.name}</span>

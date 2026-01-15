@@ -40,16 +40,10 @@ export function ConnectionDiagnosticDialog({ service, trigger }: ConnectionDiagn
   const [steps, setSteps] = useState<DiagnosticStep[]>([]);
 
   const resetSteps = () => {
-    const initialSteps: DiagnosticStep[] = [
+    setSteps([
       { id: "config", name: "Client-Side Configuration Check", status: "pending", logs: [] },
       { id: "backend_health", name: "Backend Status Check", status: "pending", logs: [] },
-    ];
-
-    if (service.webSocketService) {
-        initialSteps.splice(1, 0, { id: "browser_connectivity", name: "Browser Connectivity Check", status: "pending", logs: [] });
-    }
-
-    setSteps(initialSteps);
+    ]);
   };
 
   const runDiagnostics = async () => {
@@ -89,13 +83,6 @@ export function ConnectionDiagnosticDialog({ service, trigger }: ConnectionDiagn
              addLog("config", "Error: Command is empty");
              isValid = false;
         }
-    } else if (service.webSocketService) {
-        url = service.webSocketService.address;
-        addLog("config", `Validating WebSocket address: ${url}`);
-        if (!url.startsWith("ws://") && !url.startsWith("wss://")) {
-            addLog("config", "Error: WebSocket address must start with ws:// or wss://");
-            isValid = false;
-        }
     }
 
     if (!isValid) {
@@ -104,41 +91,6 @@ export function ConnectionDiagnosticDialog({ service, trigger }: ConnectionDiagn
         return;
     }
     updateStep("config", { status: "success", detail: "Configuration valid" });
-
-    // --- Step 1.5: Browser Connectivity (WebSocket Only) ---
-    if (service.webSocketService) {
-        updateStep("browser_connectivity", { status: "running" });
-        addLog("browser_connectivity", `Attempting to connect to ${url} from browser...`);
-
-        try {
-            const result = await new Promise<string>((resolve, reject) => {
-                const ws = new WebSocket(url);
-                const timer = setTimeout(() => {
-                    ws.close();
-                    reject(new Error("Connection timed out (5s)"));
-                }, 5000);
-
-                ws.onopen = () => {
-                    clearTimeout(timer);
-                    ws.close();
-                    resolve("Success");
-                };
-
-                ws.onerror = (ev) => {
-                    clearTimeout(timer);
-                    reject(new Error("Connection failed (Network error or blocked)"));
-                };
-            });
-
-            addLog("browser_connectivity", "Successfully connected to WebSocket server from browser.");
-            updateStep("browser_connectivity", { status: "success", detail: "Accessible" });
-        } catch (error: any) {
-            addLog("browser_connectivity", `Failed to connect from browser: ${error.message}`);
-            addLog("browser_connectivity", "Note: This is expected if the server is internal or behind a firewall not accessible from your browser.");
-            updateStep("browser_connectivity", { status: "failure", detail: "Not Accessible" });
-            // Don't stop diagnostics, backend might still see it
-        }
-    }
 
 
     // --- Step 2: Backend Health Check ---

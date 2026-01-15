@@ -31,29 +31,6 @@ const mockService: UpstreamServiceConfig = {
   }
 };
 
-const mockWebSocketService: UpstreamServiceConfig = {
-    id: "ws-service",
-    name: "WebSocket Service",
-    version: "1.0.0",
-    disable: false,
-    priority: 0,
-    loadBalancingStrategy: 0,
-    sanitizedName: "ws-service",
-    callPolicies: [],
-    preCallHooks: [],
-    postCallHooks: [],
-    prompts: [],
-    autoDiscoverTool: false,
-    configError: "",
-    webSocketService: {
-      address: "ws://example.com",
-      tools: [],
-      resources: [],
-      prompts: [],
-      calls: {},
-    }
-  };
-
 describe("ConnectionDiagnosticDialog", () => {
   beforeEach(() => {
     // Mock global fetch
@@ -61,8 +38,7 @@ describe("ConnectionDiagnosticDialog", () => {
         Promise.resolve({
             ok: true,
             json: () => Promise.resolve([
-                { id: "test-service", name: "Test Service", status: "healthy", message: "" },
-                { id: "ws-service", name: "WebSocket Service", status: "healthy", message: "" }
+                { id: "test-service", name: "Test Service", status: "healthy", message: "" }
             ]),
         })
     ) as any;
@@ -105,46 +81,5 @@ describe("ConnectionDiagnosticDialog", () => {
     // Check if backend health check was successful
     expect(global.fetch).toHaveBeenCalledWith("/api/dashboard/health", expect.any(Object));
     expect(screen.getByText("Connected")).toBeInTheDocument();
-  });
-
-  it("detects WebSocket service and adds browser check step", async () => {
-    // We try to mock WebSocket just to prevent errors, but we won't assert on it heavily
-    // since JSDOM mocking is flaky.
-    const MockWebSocket = vi.fn().mockImplementation(() => {
-        return {
-            close: vi.fn(),
-            onopen: null,
-            onerror: null,
-        };
-    });
-    vi.stubGlobal('WebSocket', MockWebSocket);
-    if (typeof window !== 'undefined') {
-        try {
-            Object.defineProperty(window, 'WebSocket', {
-                value: MockWebSocket,
-                writable: true,
-            });
-        } catch (e) {
-            // Ignore if we can't redefine
-        }
-    }
-
-    render(<ConnectionDiagnosticDialog service={mockWebSocketService} />);
-
-    const trigger = screen.getByText("Troubleshoot");
-    fireEvent.click(trigger);
-
-    const startButton = screen.getByText("Start Diagnostics");
-    fireEvent.click(startButton);
-
-    // Wait for the simulated UI delay
-    await waitFor(() => {
-        expect(screen.getByText("Client-Side Configuration Check")).toBeInTheDocument();
-    });
-
-    // Verify that the Browser Connectivity Check step is present
-    await waitFor(() => {
-        expect(screen.getByText("Browser Connectivity Check")).toBeInTheDocument();
-    });
   });
 });
