@@ -88,6 +88,8 @@ func TestFixID(t *testing.T) {
 		{"struct_value_int", struct{ value int }{1}, 1},
 		{"struct_value_string_brace", struct{ value string }{"foo}bar"}, "foo}bar"},
 		{"struct_value_string_simple", struct{ value string }{"foo"}, "foo"},
+		{"struct_value_int_string", struct{ value string }{"123"}, 123},       // Should become int to avoid regression
+		{"struct_value_tricky", struct{ value string }{"123}foo"}, "123}foo"}, // Should NOT be 123
 	}
 
 	for _, tt := range tests {
