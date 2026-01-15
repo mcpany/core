@@ -191,7 +191,7 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
         with:
-          config-inline: |
+          buildkitd-config-inline: |
             [registry."docker.io"]
               mirrors = ["mirror.gcr.io"]
 
@@ -222,22 +222,23 @@ jobs:
           tags: |
             ${{ env.DOCKERHUB_IMAGE }}
             ${{ env.GHCR_IMAGE }}
-          outputs: type=image,push-by-digest=true,name-canonical=true,push=true
+          # Export as tarball for artifact upload
+          outputs: type=docker,dest=/tmp/server-image.tar
           cache-from: type=gha,scope=${{ matrix.platform }}
           # Optimized cache: use mode=max to cache layers
           cache-to: type=gha,mode=max,scope=${{ matrix.platform }}
 
-      - name: Export digest
+      - name: Rename artifact
         run: |
-          mkdir -p /tmp/digests
-          digest="${{ steps.build.outputs.digest }}"
-          touch "/tmp/digests/${digest#sha256:}"
+          # Sanitize platform name for artifact filename
+          PLATFORM_SLUG=$(echo "${{ matrix.platform }}" | tr '/' '-')
+          mv /tmp/server-image.tar /tmp/server-image-${PLATFORM_SLUG}.tar
 
-      - name: Upload digest
+      - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: digests-${{ strategy.job-index }}
-          path: /tmp/digests/*
+          name: server-image-${{ strategy.job-index }}
+          path: /tmp/server-image-*.tar
           if-no-files-found: error
           retention-days: 1
 
@@ -253,17 +254,24 @@ jobs:
       contents: read
       packages: write
     steps:
-      - name: Download digests
+      - name: Download artifacts
         uses: actions/download-artifact@v4
         with:
-          pattern: digests-*
+          pattern: server-image-*
           merge-multiple: true
-          path: /tmp/digests
+          path: /tmp/images
+
+      - name: Load images
+        run: |
+          for tarball in /tmp/images/*.tar; do
+            echo "Loading $tarball..."
+            docker load --input "$tarball"
+          done
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
         with:
-          config-inline: |
+          buildkitd-config-inline: |
             [registry."docker.io"]
               mirrors = ["mirror.gcr.io"]
 
@@ -280,34 +288,71 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Create manifest list and push
-        working-directory: /tmp/digests
+      - name: Push images and create manifest
         run: |
-          # Parse tags from setup output
-          # Docker Hub
+          DOCKERHUB_IMAGE="${{ env.DOCKERHUB_IMAGE }}"
+          GHCR_IMAGE="${{ env.GHCR_IMAGE }}"
+          VERSION="${{ needs.setup.outputs.version }}"
+          IS_RELEASE="${{ needs.setup.outputs.is_release }}"
+
+          # Parse tags we expect to be on the loaded images
           TAGS_DH="${{ needs.setup.outputs.tags_dockerhub }}"
-          CMD_DH="docker buildx imagetools create"
-          IFS=',' read -ra ADDR <<< "$TAGS_DH"
-          for i in "${ADDR[@]}"; do
-             CMD_DH="$CMD_DH -t $i"
-          done
-          # Add sources
-          CMD_DH="$CMD_DH $(printf '${{ env.DOCKERHUB_IMAGE }}@sha256:%s ' *)"
-
-          echo "Running: $CMD_DH"
-          eval "$CMD_DH"
-
-          # GHCR
           TAGS_GH="${{ needs.setup.outputs.tags_ghcr }}"
-          CMD_GH="docker buildx imagetools create"
-          IFS=',' read -ra ADDR <<< "$TAGS_GH"
-          for i in "${ADDR[@]}"; do
-             CMD_GH="$CMD_GH -t $i"
-          done
-          CMD_GH="$CMD_GH $(printf '${{ env.DOCKERHUB_IMAGE }}@sha256:%s ' *)"
 
-          echo "Running: $CMD_GH"
-          eval "$CMD_GH"
+          # Convert comma-separated tags to arrays
+          IFS=',' read -ra ADDR_DH <<< "$TAGS_DH"
+          IFS=',' read -ra ADDR_GH <<< "$TAGS_GH"
+
+          # Arrays to hold the platform-specific tags for manifest creation
+          declare -A MANIFEST_TAGS_DH
+          declare -A MANIFEST_TAGS_GH
+
+          for tarball in /tmp/images/*.tar; do
+            # Extract platform slug from filename (e.g., server-image-linux-amd64.tar -> linux-amd64)
+            BASENAME=$(basename "$tarball" .tar)
+            PLATFORM_SLUG=${BASENAME#server-image-}
+
+            echo "Processing $tarball (Platform: $PLATFORM_SLUG)..."
+
+            # Load the image
+            # This restores the tags (e.g. mcpany/server:latest) pointing to this architecture's image
+            docker load --input "$tarball"
+
+            # Retag and Push DockerHub tags
+            for tag in "${ADDR_DH[@]}"; do
+              # tag is like mcpany/server:v1.2.3
+              ARCH_TAG="${tag}-${PLATFORM_SLUG}"
+              docker tag "$tag" "$ARCH_TAG"
+              docker push "$ARCH_TAG"
+
+              # Record this arch tag for the manifest of the base tag
+              MANIFEST_TAGS_DH["$tag"]="${MANIFEST_TAGS_DH["$tag"]} $ARCH_TAG"
+            done
+
+            # Retag and Push GHCR tags
+            for tag in "${ADDR_GH[@]}"; do
+              ARCH_TAG="${tag}-${PLATFORM_SLUG}"
+              docker tag "$tag" "$ARCH_TAG"
+              docker push "$ARCH_TAG"
+              MANIFEST_TAGS_GH["$tag"]="${MANIFEST_TAGS_GH["$tag"]} $ARCH_TAG"
+            done
+          done
+
+          # Create and Push Manifests for Docker Hub
+          for tag in "${!MANIFEST_TAGS_DH[@]}"; do
+            ARCH_TAGS=${MANIFEST_TAGS_DH["$tag"]}
+            echo "Creating manifest for $tag with: $ARCH_TAGS"
+            docker manifest create "$tag" $ARCH_TAGS
+            docker manifest push "$tag"
+          done
+
+          # Create and Push Manifests for GHCR
+          for tag in "${!MANIFEST_TAGS_GH[@]}"; do
+            ARCH_TAGS=${MANIFEST_TAGS_GH["$tag"]}
+            echo "Creating manifest for $tag with: $ARCH_TAGS"
+            docker manifest create "$tag" $ARCH_TAGS
+            docker manifest push "$tag"
+          done
 
       - name: Inspect image
         run: |
@@ -355,7 +400,7 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
         with:
-          config-inline: |
+          buildkitd-config-inline: |
             [registry."docker.io"]
               mirrors = ["mirror.gcr.io"]
 
@@ -382,9 +427,24 @@ jobs:
           tags: |
             mcpany/ui
             ghcr.io/mcpany/ui
-          outputs: type=image,push-by-digest=true,name-canonical=true,push=true
+          # Export as tarball for artifact upload
+          outputs: type=docker,dest=/tmp/ui-image.tar
           cache-from: type=gha,scope=ui-${{ matrix.platform }}
           cache-to: type=gha,mode=max,scope=ui-${{ matrix.platform }}
+
+      - name: Rename artifact
+        run: |
+          # Sanitize platform name for artifact filename
+          PLATFORM_SLUG=$(echo "${{ matrix.platform }}" | tr '/' '-')
+          mv /tmp/ui-image.tar /tmp/ui-image-${PLATFORM_SLUG}.tar
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ui-image-${{ strategy.job-index }}
+          path: /tmp/ui-image-*.tar
+          if-no-files-found: error
+          retention-days: 1
 
       - name: Export digest
         run: |
@@ -411,17 +471,24 @@ jobs:
       contents: read
       packages: write
     steps:
-      - name: Download digests
+      - name: Download artifacts
         uses: actions/download-artifact@v4
         with:
-          pattern: digests-ui-*
+          pattern: ui-image-*
           merge-multiple: true
-          path: /tmp/digests-ui
+          path: /tmp/images-ui
+
+      - name: Load images
+        run: |
+          for tarball in /tmp/images-ui/*.tar; do
+            echo "Loading $tarball..."
+            docker load --input "$tarball"
+          done
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
         with:
-          config-inline: |
+          buildkitd-config-inline: |
             [registry."docker.io"]
               mirrors = ["mirror.gcr.io"]
 
@@ -438,7 +505,7 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Create manifest list and push
+      - name: Push images and create manifest
         working-directory: /tmp/digests-ui
         run: |
           VERSION="${{ needs.setup.outputs.version }}"
@@ -453,22 +520,63 @@ jobs:
           TAGS_GH=""
 
           if [ "$IS_RELEASE" = "true" ]; then
-             TAGS_DH="-t ${DOCKERHUB_IMAGE}:${VERSION} -t ${DOCKERHUB_IMAGE}:latest"
-             TAGS_GH="-t ${GHCR_IMAGE}:${VERSION} -t ${GHCR_IMAGE}:latest"
+             TAGS_DH="${DOCKERHUB_IMAGE}:${VERSION},${DOCKERHUB_IMAGE}:latest"
+             TAGS_GH="${GHCR_IMAGE}:${VERSION},${GHCR_IMAGE}:latest"
           else
-             TAGS_DH="-t ${DOCKERHUB_IMAGE}:${VERSION} -t ${DOCKERHUB_IMAGE}:dev-latest -t ${DOCKERHUB_IMAGE}:dev"
-             TAGS_GH="-t ${GHCR_IMAGE}:${VERSION} -t ${GHCR_IMAGE}:dev-latest -t ${GHCR_IMAGE}:dev"
+             TAGS_DH="${DOCKERHUB_IMAGE}:${VERSION},${DOCKERHUB_IMAGE}:dev-latest,${DOCKERHUB_IMAGE}:dev"
+             TAGS_GH="${GHCR_IMAGE}:${VERSION},${GHCR_IMAGE}:dev-latest,${GHCR_IMAGE}:dev"
           fi
 
-          # Create Docker Hub Manifest
-          CMD_DH="docker buildx imagetools create $TAGS_DH $(printf '${DOCKERHUB_IMAGE}@sha256:%s ' *)"
-          echo "Running: $CMD_DH"
-          eval "$CMD_DH"
+          # Convert comma-separated tags to arrays
+          IFS=',' read -ra ADDR_DH <<< "$TAGS_DH"
+          IFS=',' read -ra ADDR_GH <<< "$TAGS_GH"
 
-          # Create GHCR Manifest
-          CMD_GH="docker buildx imagetools create $TAGS_GH $(printf '${DOCKERHUB_IMAGE}@sha256:%s ' *)"
-          echo "Running: $CMD_GH"
-          eval "$CMD_GH"
+          # Arrays to hold the platform-specific tags for manifest creation
+          declare -A MANIFEST_TAGS_DH
+          declare -A MANIFEST_TAGS_GH
+
+          for tarball in /tmp/images-ui/*.tar; do
+            # Extract platform slug from filename (e.g., ui-image-linux-amd64.tar -> linux-amd64)
+            BASENAME=$(basename "$tarball" .tar)
+            PLATFORM_SLUG=${BASENAME#ui-image-}
+
+            echo "Processing $tarball (Platform: $PLATFORM_SLUG)..."
+
+            # Load the image
+            docker load --input "$tarball"
+
+            # Retag and Push DockerHub tags
+            for tag in "${ADDR_DH[@]}"; do
+              ARCH_TAG="${tag}-${PLATFORM_SLUG}"
+              docker tag "$tag" "$ARCH_TAG"
+              docker push "$ARCH_TAG"
+              MANIFEST_TAGS_DH["$tag"]="${MANIFEST_TAGS_DH["$tag"]} $ARCH_TAG"
+            done
+
+            # Retag and Push GHCR tags
+            for tag in "${ADDR_GH[@]}"; do
+              ARCH_TAG="${tag}-${PLATFORM_SLUG}"
+              docker tag "$tag" "$ARCH_TAG"
+              docker push "$ARCH_TAG"
+              MANIFEST_TAGS_GH["$tag"]="${MANIFEST_TAGS_GH["$tag"]} $ARCH_TAG"
+            done
+          done
+
+          # Create and Push Manifests for Docker Hub
+          for tag in "${!MANIFEST_TAGS_DH[@]}"; do
+            ARCH_TAGS=${MANIFEST_TAGS_DH["$tag"]}
+            echo "Creating manifest for $tag with: $ARCH_TAGS"
+            docker manifest create "$tag" $ARCH_TAGS
+            docker manifest push "$tag"
+          done
+
+          # Create and Push Manifests for GHCR
+          for tag in "${!MANIFEST_TAGS_GH[@]}"; do
+            ARCH_TAGS=${MANIFEST_TAGS_GH["$tag"]}
+            echo "Creating manifest for $tag with: $ARCH_TAGS"
+            docker manifest create "$tag" $ARCH_TAGS
+            docker manifest push "$tag"
+          done
 
       - name: Inspect image
         run: |
