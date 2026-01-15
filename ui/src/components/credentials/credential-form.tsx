@@ -93,7 +93,6 @@ export function CredentialForm({ initialData, onSuccess }: CredentialFormProps) 
   const authType = form.watch("authType")
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log("Submitting form", values);
     try {
         const auth: Authentication = {}
         if (values.authType === "api_key") {
