@@ -111,13 +111,25 @@ export function LogStream() {
         setLogs((prev) => {
           const buffer = logBufferRef.current
           logBufferRef.current = [] // Clear buffer
+          const MAX_LOGS = 1000
 
-          let next = [...prev, ...buffer]
-          // Limit total logs to avoid memory issues
-          if (next.length > 1000) {
-            next = next.slice(next.length - 1000)
+          // Optimization: Efficient array handling to minimize memory allocation and gc pressure.
+          // Avoiding large intermediate arrays reduces garbage collection overhead during rapid logging.
+
+          // Case 1: Total logs fit within limit - simple concat
+          if (prev.length + buffer.length <= MAX_LOGS) {
+            return [...prev, ...buffer]
           }
-          return next
+
+          // Case 2: Buffer itself exceeds limit (unlikely but possible) - take last MAX_LOGS
+          if (buffer.length >= MAX_LOGS) {
+            return buffer.slice(buffer.length - MAX_LOGS)
+          }
+
+          // Case 3: Need to trim from prev to make room for buffer
+          // We need (MAX_LOGS - buffer.length) from the end of prev
+          const keepCount = MAX_LOGS - buffer.length
+          return [...prev.slice(-keepCount), ...buffer]
         })
       }
     }, 100) // Flush every 100ms
