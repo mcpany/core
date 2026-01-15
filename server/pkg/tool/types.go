@@ -14,7 +14,6 @@ import (
 	"net/http"
 	"net/url"
 	"os"
-	"path"
 	"path/filepath"
 	"strconv"
 	"strings"
@@ -741,7 +740,7 @@ func (t *HTTPTool) prepareInputsAndURL(ctx context.Context, req *ExecutionReques
 	// This prevents path.Clean from treating encoded slashes as separators
 	// and messing up the re-encoding later (which would convert %2F to /).
 	hadTrailingSlash := strings.HasSuffix(pathStr, "/")
-	pathStr = path.Clean(pathStr)
+	pathStr = cleanPathPreserveDoubleSlash(pathStr)
 	if hadTrailingSlash && pathStr != "/" {
 		pathStr += "/"
 	}
@@ -2158,6 +2157,82 @@ func checkForPathTraversal(val string) error {
 		return fmt.Errorf("path traversal attempt detected (encoded)")
 	}
 	return nil
+}
+
+// cleanPathPreserveDoubleSlash cleans the path like path.Clean but preserves double slashes.
+// It resolves . and .. segments.
+// It also trims the trailing slash (by removing the final empty segment if present),
+// assuming the caller will handle restoring it if necessary.
+func cleanPathPreserveDoubleSlash(p string) string {
+	if p == "" {
+		return "."
+	}
+
+	rooted := strings.HasPrefix(p, "/")
+	parts := strings.Split(p, "/")
+
+	var out []string
+
+	for i, part := range parts {
+		// Preserve root empty part if rooted
+		if i == 0 && rooted {
+			out = append(out, part) // part is ""
+			continue
+		}
+
+		// Skip last empty part (trailing slash removal)
+		// We only skip it if it is strictly the last part and is empty.
+		if i == len(parts)-1 && part == "" {
+			continue
+		}
+
+		if part == "." {
+			continue
+		}
+		if part == ".." {
+			if len(out) > 0 {
+				last := out[len(out)-1]
+				if rooted {
+					// At root, ignore ..
+					// Root is [""] or ["", "", ...]
+					// If out is just [""], we are at /.
+					if len(out) == 1 && out[0] == "" {
+						continue
+					}
+					// If out ends in "", it might be //
+					// Pop it
+					out = out[:len(out)-1]
+				} else {
+					if last == ".." {
+						out = append(out, part)
+					} else {
+						// Pop previous segment
+						out = out[:len(out)-1]
+					}
+				}
+			} else if !rooted {
+				out = append(out, part)
+			}
+		} else {
+			out = append(out, part)
+		}
+	}
+
+	if len(out) == 0 {
+		return "."
+	}
+
+	res := strings.Join(out, "/")
+	// If rooted and result is empty string, return "/"
+	if rooted && res == "" {
+		return "/"
+	}
+	// If result is empty string but not rooted, return "."
+	if res == "" {
+		return "."
+	}
+
+	return res
 }
 
 func checkForAbsolutePath(val string) error {
