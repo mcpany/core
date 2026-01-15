@@ -143,6 +143,10 @@ func httpCheck(name string, c HTTPServiceWithHealthCheck) health.Check {
 		Name:    name,
 		Timeout: 5 * time.Second,
 		Check: func(ctx context.Context) error {
+			// Fallback to basic connection check if no health check is configured
+			if c.GetHealthCheck() == nil {
+				return checkConnection(ctx, c.GetAddress())
+			}
 			return httpCheckFunc(ctx, c.GetAddress(), c.GetHealthCheck())
 		},
 	}

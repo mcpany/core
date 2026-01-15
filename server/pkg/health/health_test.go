@@ -198,6 +198,23 @@ func TestNewChecker(t *testing.T) {
 		assert.NotNil(t, checker)
 		assert.Equal(t, health.StatusUp, checker.Check(ctx).Status)
 	})
+
+	t.Run("HTTP Fallback Failure", func(t *testing.T) {
+		// Test that HTTP service fails when unreachable and no explicit health check is set.
+		addr := "http://localhost:12345" // Unreachable
+		upstreamConfig := configv1.UpstreamServiceConfig_builder{
+			Name: lo.ToPtr("http-fallback-fail"),
+			HttpService: configv1.HttpUpstreamService_builder{
+				Address: &addr,
+				// No HealthCheck
+			}.Build(),
+		}.Build()
+
+		checker := NewChecker(upstreamConfig)
+		assert.NotNil(t, checker)
+		// Should be DOWN because TCP connection fails
+		assert.Equal(t, health.StatusDown, checker.Check(ctx).Status)
+	})
 }
 
 func TestFilesystemCheck(t *testing.T) {
