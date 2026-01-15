@@ -15,6 +15,7 @@ import (
 	v1 "github.com/mcpany/core/proto/mcp_router/v1"
 	"github.com/mcpany/core/server/pkg/tool"
 	"github.com/mcpany/core/server/pkg/util"
+	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
@@ -46,6 +47,10 @@ func (m *MockToolManager) ListServices() []*tool.ServiceInfo {
 func (m *MockToolManager) ListTools() []tool.Tool {
 	args := m.Called()
 	return args.Get(0).([]tool.Tool)
+}
+
+func (m *MockToolManager) ListMCPTools() []*mcp.Tool {
+	return nil
 }
 
 func (m *MockToolManager) ClearToolsForService(serviceID string) {

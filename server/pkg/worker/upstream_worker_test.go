@@ -12,6 +12,7 @@ import (
 	"github.com/mcpany/core/server/pkg/bus"
 	"github.com/mcpany/core/server/pkg/tool"
 	"github.com/mcpany/core/server/pkg/worker"
+	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -22,6 +23,7 @@ type MockToolManager struct{}
 func (m *MockToolManager) AddTool(_ tool.Tool) error { return nil }
 func (m *MockToolManager) GetTool(_ string) (tool.Tool, bool) { return nil, false }
 func (m *MockToolManager) ListTools() []tool.Tool { return nil }
+func (m *MockToolManager) ListMCPTools() []*mcp.Tool { return nil }
 func (m *MockToolManager) ClearToolsForService(_ string) {}
 func (m *MockToolManager) ExecuteTool(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
 	return nil, nil

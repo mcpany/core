@@ -34,6 +34,11 @@ func (m *MockToolManagerForRegistry) ListTools() []tool.Tool {
 	return args.Get(0).([]tool.Tool)
 }
 
+func (m *MockToolManagerForRegistry) ListMCPTools() []*mcp.Tool {
+	args := m.Called()
+	return args.Get(0).([]*mcp.Tool)
+}
+
 func (m *MockToolManagerForRegistry) AddTool(t tool.Tool) error {
 	args := m.Called(t)
 	return args.Error(0)
