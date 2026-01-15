@@ -9,6 +9,7 @@ import (
 	"regexp"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
+	"github.com/mcpany/core/server/pkg/util"
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
@@ -53,21 +54,31 @@ func (r *Redactor) RedactJSON(data []byte) ([]byte, error) {
 		return data, nil
 	}
 
-	var args map[string]interface{}
-	// Try unmarshaling as map
-	if err := json.Unmarshal(data, &args); err == nil {
-		r.RedactStruct(args)
-		return json.Marshal(args)
-	}
+	// Use streaming redaction to avoid full unmarshal/marshal cycle.
+	return util.WalkJSONStrings(data, func(raw []byte) ([]byte, bool) {
+		// Optimization: Check for obviously safe strings before unmarshaling.
+		// If the raw string (excluding quotes) doesn't contain '@' or digits,
+		// and doesn't contain escapes (which might hide them), it's likely safe.
+		// However, to be perfectly safe and simple, we unmarshal.
+		// Given that we are eliminating the overhead of map[string]interface{} and
+		// reflection for the entire structure, this is already a huge win.
 
-	// Fallback: try unmarshaling as generic interface
-	var genericArgs interface{}
-	if err := json.Unmarshal(data, &genericArgs); err == nil {
-		redacted := r.RedactValue(genericArgs)
-		return json.Marshal(redacted)
-	}
+		var s string
+		if err := json.Unmarshal(raw, &s); err != nil {
+			// Should not happen for valid JSON strings
+			return nil, false
+		}
 
-	return data, nil
+		redacted := r.RedactString(s)
+		if redacted != s {
+			b, err := json.Marshal(redacted)
+			if err != nil {
+				return nil, false
+			}
+			return b, true
+		}
+		return nil, false
+	}), nil
 }
 
 // RedactString redacts sensitive information from a string.

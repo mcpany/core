@@ -27,6 +27,12 @@ func (s *Store) Close() error {
 	return s.db.Close()
 }
 
+// HasConfigSources returns true if the store has configuration sources (e.g., file paths) configured.
+// For DB stores, we assume they always have a source (the DB itself).
+func (s *Store) HasConfigSources() bool {
+	return true
+}
+
 // Load implements config.Store interface.
 func (s *Store) Load(ctx context.Context) (*configv1.McpAnyServerConfig, error) {
 	rows, err := s.db.QueryContext(ctx, "SELECT config_json FROM upstream_services")
