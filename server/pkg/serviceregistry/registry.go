@@ -37,6 +37,8 @@ type ServiceRegistryInterface interface { //nolint:revive
 	GetServiceConfig(serviceID string) (*config.UpstreamServiceConfig, bool)
 	// GetServiceError returns the registration error for a service, if any.
 	GetServiceError(serviceID string) (string, bool)
+	// CheckServiceHealth checks the health of a registered service.
+	CheckServiceHealth(ctx context.Context, serviceName string) error
 }
 
 // ServiceRegistry is responsible for managing the lifecycle of upstream
@@ -292,4 +294,39 @@ func (r *ServiceRegistry) GetAllServices() ([]*config.UpstreamServiceConfig, err
 		services = append(services, service)
 	}
 	return services, nil
+}
+
+// CheckServiceHealth checks the health of a registered service.
+// It returns nil if healthy, or an error if unhealthy/unreachable.
+func (r *ServiceRegistry) CheckServiceHealth(ctx context.Context, serviceName string) error {
+	r.mu.RLock()
+	serviceID, err := util.SanitizeServiceName(serviceName)
+	if err != nil {
+		r.mu.RUnlock()
+		return fmt.Errorf("failed to sanitize service name %q: %w", serviceName, err)
+	}
+
+	u, ok := r.upstreams[serviceID]
+	config, configOk := r.serviceConfigs[serviceID]
+	r.mu.RUnlock()
+
+	if !ok {
+		// If config exists but upstream missing, it means registration failed previously.
+		if configOk {
+			// Return the last error if available
+			r.mu.RLock()
+			defer r.mu.RUnlock()
+			if lastErr, ok := r.serviceErrors[serviceID]; ok {
+				return fmt.Errorf("service not running (last error: %s)", lastErr)
+			}
+			return fmt.Errorf("service not running")
+		}
+		return fmt.Errorf("service %q not found", serviceName)
+	}
+
+	if hc, ok := u.(upstream.HealthChecker); ok {
+		return hc.CheckHealth(ctx, config)
+	}
+
+	return nil
 }

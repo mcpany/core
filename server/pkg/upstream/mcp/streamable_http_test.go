@@ -898,3 +898,104 @@ func TestStreamableHTTP_RoundTrip(t *testing.T) {
 
 	assert.Equal(t, http.StatusOK, resp.StatusCode)
 }
+
+func TestUpstream_CheckHealth(t *testing.T) {
+	ctx := context.Background()
+
+	t.Run("healthy stdio connection", func(t *testing.T) {
+		upstream := NewUpstream(nil)
+		var wg sync.WaitGroup
+		wg.Add(1)
+
+		mockCS := &mockClientSession{
+			listToolsFunc: func(_ context.Context, _ *mcp.ListToolsParams) (*mcp.ListToolsResult, error) {
+				return &mcp.ListToolsResult{}, nil
+			},
+			closeFunc: func() error {
+				wg.Done()
+				return nil
+			},
+		}
+
+		originalConnect := connectForTesting
+		connectForTesting = func(_ *mcp.Client, _ context.Context, _ mcp.Transport, _ []mcp.Root) (ClientSession, error) {
+			return mockCS, nil
+		}
+		defer func() { connectForTesting = originalConnect }()
+
+		config := configv1.UpstreamServiceConfig_builder{
+			McpService: configv1.McpUpstreamService_builder{
+				StdioConnection: configv1.McpStdioConnection_builder{
+					Command: proto.String("echo"),
+				}.Build(),
+			}.Build(),
+		}.Build()
+
+		err := upstream.(interface {
+			CheckHealth(context.Context, *configv1.UpstreamServiceConfig) error
+		}).CheckHealth(ctx, config)
+		assert.NoError(t, err)
+		wg.Wait()
+	})
+
+	t.Run("unhealthy connection", func(t *testing.T) {
+		upstream := NewUpstream(nil)
+
+		originalConnect := connectForTesting
+		connectForTesting = func(_ *mcp.Client, _ context.Context, _ mcp.Transport, _ []mcp.Root) (ClientSession, error) {
+			return nil, fmt.Errorf("connection failed")
+		}
+		defer func() { connectForTesting = originalConnect }()
+
+		config := configv1.UpstreamServiceConfig_builder{
+			McpService: configv1.McpUpstreamService_builder{
+				StdioConnection: configv1.McpStdioConnection_builder{
+					Command: proto.String("echo"),
+				}.Build(),
+			}.Build(),
+		}.Build()
+
+		err := upstream.(interface {
+			CheckHealth(context.Context, *configv1.UpstreamServiceConfig) error
+		}).CheckHealth(ctx, config)
+		assert.Error(t, err)
+		assert.Contains(t, err.Error(), "failed to connect")
+	})
+
+	t.Run("connected but list tools fails", func(t *testing.T) {
+		upstream := NewUpstream(nil)
+		var wg sync.WaitGroup
+		wg.Add(1)
+
+		mockCS := &mockClientSession{
+			listToolsFunc: func(_ context.Context, _ *mcp.ListToolsParams) (*mcp.ListToolsResult, error) {
+				return nil, fmt.Errorf("timeout")
+			},
+			closeFunc: func() error {
+				wg.Done()
+				return nil
+			},
+		}
+
+		originalConnect := connectForTesting
+		connectForTesting = func(_ *mcp.Client, _ context.Context, _ mcp.Transport, _ []mcp.Root) (ClientSession, error) {
+			return mockCS, nil
+		}
+		defer func() { connectForTesting = originalConnect }()
+
+		config := configv1.UpstreamServiceConfig_builder{
+			McpService: configv1.McpUpstreamService_builder{
+				StdioConnection: configv1.McpStdioConnection_builder{
+					Command: proto.String("echo"),
+				}.Build(),
+			}.Build(),
+		}.Build()
+
+		err := upstream.(interface {
+			CheckHealth(context.Context, *configv1.UpstreamServiceConfig) error
+		}).CheckHealth(ctx, config)
+		assert.Error(t, err)
+		assert.Contains(t, err.Error(), "failed to list tools")
+		wg.Wait()
+	})
+}

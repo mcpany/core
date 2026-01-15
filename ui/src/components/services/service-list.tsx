@@ -5,14 +5,15 @@
 
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { Settings, Trash2, CheckCircle, XCircle, AlertTriangle } from "lucide-react";
-import { UpstreamServiceConfig } from "@/lib/client";
+import { Settings, Trash2, CheckCircle, XCircle, AlertTriangle, Activity, Loader2 } from "lucide-react";
+import { UpstreamServiceConfig, apiClient } from "@/lib/client";
+import { useToast } from "@/hooks/use-toast";
 
 
 interface ServiceListProps {
@@ -79,6 +80,9 @@ const ServiceRow = memo(function ServiceRow({ service, onToggle, onEdit, onDelet
     onEdit?: (service: UpstreamServiceConfig) => void,
     onDelete?: (name: string) => void
 }) {
+    const [testing, setTesting] = useState(false);
+    const { toast } = useToast();
+
     const type = useMemo(() => {
         if (service.httpService) return "HTTP";
         if (service.grpcService) return "gRPC";
@@ -99,6 +103,33 @@ const ServiceRow = memo(function ServiceRow({ service, onToggle, onEdit, onDelet
     const secure = useMemo(() => {
         return !!(service.grpcService?.tlsConfig || service.httpService?.tlsConfig || service.mcpService?.httpConnection?.tlsConfig);
     }, [service]);
+
+    const handleTest = async () => {
+        setTesting(true);
+        try {
+            const res = await apiClient.getServiceStatus(service.name, true);
+            if (res.status === "Healthy" || res.status === "Active") {
+                toast({
+                    title: "Service Healthy",
+                    description: `Successfully connected to ${service.name}.`,
+                });
+            } else {
+                 toast({
+                    title: "Service Unhealthy",
+                    description: (res as any).error || "Failed to verify connection.",
+                    variant: "destructive",
+                });
+            }
+        } catch (e) {
+            toast({
+                title: "Connection Test Failed",
+                description: e instanceof Error ? e.message : "Unknown error",
+                variant: "destructive",
+            });
+        } finally {
+            setTesting(false);
+        }
+    };
 
     return (
         <TableRow className={service.disable ? "opacity-60 bg-muted/40" : ""}>
@@ -143,6 +174,18 @@ const ServiceRow = memo(function ServiceRow({ service, onToggle, onEdit, onDelet
              </TableCell>
              <TableCell className="text-right">
                  <div className="flex justify-end gap-2">
+                    <TooltipProvider>
+                        <Tooltip>
+                            <TooltipTrigger asChild>
+                                <Button variant="ghost" size="icon" onClick={handleTest} disabled={testing || service.disable} aria-label="Test Connection">
+                                    {testing ? <Loader2 className="h-4 w-4 animate-spin" /> : <Activity className="h-4 w-4" />}
+                                </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                                <p>Test Connection</p>
+                            </TooltipContent>
+                        </Tooltip>
+                    </TooltipProvider>
                     {onEdit && (
                         <Button variant="ghost" size="icon" onClick={() => onEdit(service)} aria-label="Edit">
                             <Settings className="h-4 w-4" />

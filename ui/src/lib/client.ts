@@ -207,12 +207,17 @@ export const apiClient = {
     /**
      * Gets the status of a service.
      * @param name The name of the service.
+     * @param check If true, performs a live health check.
      * @returns A promise that resolves to the service status.
      */
-    getServiceStatus: async (name: string) => {
-        // Fallback or keep as TODO - REST endpoint might be /api/v1/services/{name}/status ?
-        // For E2E, we mainly check list. Let's assume list covers status.
-        return {} as any;
+    getServiceStatus: async (name: string, check: boolean = false) => {
+        let url = `/api/v1/services/${name}/status`;
+        if (check) {
+            url += '?check=true';
+        }
+        const res = await fetchWithAuth(url);
+        if (!res.ok) throw new Error('Failed to fetch service status');
+        return res.json();
     },
 
     /**

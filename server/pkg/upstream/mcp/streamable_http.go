@@ -111,6 +111,104 @@ func NewUpstream(globalSettings *configv1.GlobalSettings) upstream.Upstream {
 	}
 }
 
+// CheckHealth performs a health check on the upstream service using the
+// provided configuration. It returns an error if the service is unhealthy
+// or unreachable.
+func (u *Upstream) CheckHealth(ctx context.Context, config *configv1.UpstreamServiceConfig) error {
+	mcpService := config.GetMcpService()
+	if mcpService == nil {
+		return fmt.Errorf("mcp service config is nil")
+	}
+
+	var transport mcp.Transport
+	var err error
+
+	switch mcpService.WhichConnectionType() {
+	case configv1.McpUpstreamService_StdioConnection_case:
+		stdio := mcpService.GetStdioConnection()
+		if stdio == nil {
+			return fmt.Errorf("stdio connection config is nil")
+		}
+		useSudo := false
+		if u.globalSettings != nil {
+			useSudo = u.globalSettings.GetUseSudoForDocker()
+		}
+		transport, err = createStdioTransport(ctx, stdio, useSudo)
+		if err != nil {
+			return err
+		}
+
+	case configv1.McpUpstreamService_HttpConnection_case:
+		httpConnection := mcpService.GetHttpConnection()
+		if httpConnection == nil {
+			return fmt.Errorf("http connection config is nil")
+		}
+
+		authenticator, err := auth.NewUpstreamAuthenticator(config.GetUpstreamAuth())
+		if err != nil {
+			return fmt.Errorf("failed to create authenticator: %w", err)
+		}
+
+		httpClient, err := util.NewHTTPClientWithTLS(httpConnection.GetTlsConfig())
+		if err != nil {
+			return fmt.Errorf("failed to create http client: %w", err)
+		}
+		if !httpConnection.GetAllowHttpRedirect() {
+			httpClient.CheckRedirect = func(_ *http.Request, _ []*http.Request) error {
+				return http.ErrUseLastResponse
+			}
+		}
+		httpClient.Transport = &authenticatedRoundTripper{
+			authenticator: authenticator,
+			base:          httpClient.Transport,
+		}
+
+		transport = &mcp.StreamableClientTransport{
+			Endpoint:   httpConnection.GetHttpAddress(),
+			HTTPClient: httpClient,
+		}
+
+	case configv1.McpUpstreamService_BundleConnection_case:
+		// Basic bundle check logic: Check if bundle directory exists if serviceID is set
+		if u.serviceID != "" {
+			tempDir := filepath.Join(u.BundleBaseDir, u.serviceID)
+			if _, err := os.Stat(tempDir); err != nil {
+				return fmt.Errorf("bundle directory not found (service might need re-registration): %w", err)
+			}
+		}
+		// We don't support full connectivity check for bundle yet as it involves complex setup
+		return fmt.Errorf("health check not fully implemented for bundle connection")
+
+	default:
+		return fmt.Errorf("unknown connection type")
+	}
+
+	mcpSdkClient, err := u.createMCPClient(ctx)
+	if err != nil {
+		return err
+	}
+
+	// Connect
+	var cs ClientSession
+	if connectForTesting != nil {
+		cs, err = connectForTesting(mcpSdkClient, ctx, transport, nil)
+	} else {
+		cs, err = mcpSdkClient.Connect(ctx, transport, nil)
+	}
+	if err != nil {
+		return fmt.Errorf("failed to connect: %w", err)
+	}
+	defer func() { _ = cs.Close() }()
+
+	// Ping using ListTools (lightweight check)
+	_, err = cs.ListTools(ctx, &mcp.ListToolsParams{})
+	if err != nil {
+		return fmt.Errorf("connection established but failed to list tools: %w", err)
+	}
+
+	return nil
+}
+
 // mcpPrompt is a wrapper around the standard mcp.Prompt that associates it with
 // a specific service and provides the necessary connection details for execution.
 type mcpPrompt struct {

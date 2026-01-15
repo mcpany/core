@@ -352,12 +352,30 @@ func (a *Application) handleServiceStatus(w http.ResponseWriter, r *http.Request
 		status = "Active"
 	}
 
+	var checkError string
+	if r.URL.Query().Get("check") == "true" {
+		if a.ServiceRegistry != nil {
+			if err := a.ServiceRegistry.CheckServiceHealth(r.Context(), name); err != nil {
+				status = "Unhealthy"
+				checkError = err.Error()
+			} else {
+				status = "Healthy"
+			}
+		} else {
+			checkError = "Service registry not initialized"
+		}
+	}
+
 	w.Header().Set("Content-Type", "application/json")
-	_ = json.NewEncoder(w).Encode(map[string]any{
+	resp := map[string]any{
 		"name":    name,
 		"status":  status,
 		"metrics": map[string]any{},
-	})
+	}
+	if checkError != "" {
+		resp["error"] = checkError
+	}
+	_ = json.NewEncoder(w).Encode(resp)
 }
 
 func (a *Application) handleSettings(store storage.Storage) http.HandlerFunc {
