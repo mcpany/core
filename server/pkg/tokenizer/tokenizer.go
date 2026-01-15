@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"reflect"
 	"strconv"
+	"sync"
 	"unicode"
 	"unicode/utf8"
 )
@@ -472,6 +473,32 @@ func (t *WordTokenizer) countRecursive(v interface{}, visited map[uintptr]bool) 
 	return countTokensInValueWord(t, v, visited)
 }
 
+// structFieldCache stores the indices of exported fields for a given struct type.
+// This avoids calling IsExported() repeatedly which involves reflection overhead.
+var structFieldCache sync.Map
+
+func getExportedFields(typ reflect.Type) []int {
+	if cached, ok := structFieldCache.Load(typ); ok {
+		return cached.([]int)
+	}
+
+	numFields := typ.NumField()
+	var fields []int
+	// Pre-allocate assuming most fields might be exported, but safe to grow.
+	// If the struct is large, this is beneficial.
+	fields = make([]int, 0, numFields)
+
+	for i := 0; i < numFields; i++ {
+		if typ.Field(i).IsExported() {
+			fields = append(fields, i)
+		}
+	}
+
+	// Store in cache
+	structFieldCache.Store(typ, fields)
+	return fields
+}
+
 func countTokensReflectGeneric[T recursiveTokenizer](t T, v interface{}, visited map[uintptr]bool) (int, error) {
 	// Check for fmt.Stringer first to respect custom formatting
 	if s, ok := v.(fmt.Stringer); ok {
@@ -498,14 +525,13 @@ func countTokensReflectGeneric[T recursiveTokenizer](t T, v interface{}, visited
 		return t.countRecursive(val.Elem().Interface(), visited)
 	case reflect.Struct:
 		count := 0
-		for i := 0; i < val.NumField(); i++ {
-			if val.Type().Field(i).IsExported() {
-				c, err := t.countRecursive(val.Field(i).Interface(), visited)
-				if err != nil {
-					return 0, err
-				}
-				count += c
+		fields := getExportedFields(val.Type())
+		for _, i := range fields {
+			c, err := t.countRecursive(val.Field(i).Interface(), visited)
+			if err != nil {
+				return 0, err
 			}
+			count += c
 		}
 		return count, nil
 	case reflect.Slice, reflect.Array:
@@ -568,14 +594,13 @@ func countTokensReflect(t Tokenizer, v interface{}, visited map[uintptr]bool, _ 
 		return countTokensInValueRecursive(t, val.Elem().Interface(), visited)
 	case reflect.Struct:
 		count := 0
-		for i := 0; i < val.NumField(); i++ {
-			if val.Type().Field(i).IsExported() {
-				c, err := countTokensInValueRecursive(t, val.Field(i).Interface(), visited)
-				if err != nil {
-					return 0, err
-				}
-				count += c
+		fields := getExportedFields(val.Type())
+		for _, i := range fields {
+			c, err := countTokensInValueRecursive(t, val.Field(i).Interface(), visited)
+			if err != nil {
+				return 0, err
 			}
+			count += c
 		}
 		return count, nil
 	case reflect.Slice, reflect.Array:
