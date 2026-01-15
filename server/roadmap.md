@@ -50,6 +50,7 @@
 - [x] **Configuration Health Check**: Added a Doctor check that tracks the status of dynamic configuration reloads (success/failure, timestamp) and exposes it via `/doctor` API to aid in debugging silent reload failures. (Experience Crafter)
 - [x] **Frontend Config Status Banner**: Add a visual indicator (banner/toast) in the UI Management Dashboard that queries the new `/doctor` configuration check and warns the user if the server is running with a stale or invalid configuration. (Experience Crafter)
 - [x] **WebSocket Diagnostic Probe**: Implemented a diagnostic probe in the UI to validate WebSocket service configuration and test connectivity (including browser-side check). (Experience Crafter)
+- [x] **Network Connectivity Validation**: Added dynamic validation during startup and configuration reload to verify TCP reachability of upstream services (HTTP, gRPC, etc.), preventing "silent failures" where a service is configured but unreachable. (Friction Fighter)
 
 ## 2. Top 10 Recommended Features
 
@@ -60,8 +61,8 @@ These features represent the next logical steps for the product, focusing on Ent
 | 1 | **Tool Poisoning Mitigation** | **Security**: Implement integrity checks for tool definitions to prevent "Rug Pull" attacks where a tool definition changes maliciously after installation. | High |
 | 2 | **Interactive OAuth Handler** | **UX/Auth**: Solve the "copy-paste token" friction. Allow users to click "Login" in the UI to authenticate tools like GitHub/Google. (Backend Implemented, UI Pending) | High |
 | 3 | **Interactive OAuth UI** | **UX**: Complete the UI implementation for the Interactive OAuth Handler to allow seamless user authentication flows. | Medium |
-| 4 | **Local LLM "One-Click" Connect** | **Connectivity**: Auto-detect and connect to local inference servers (Ollama, LM Studio) to democratize AI access without cloud costs. | Low |
-| 5 | **Tool "Dry Run" Mode** | **DevX**: Allow tools to define a "dry run" logic to validate inputs and permissions without executing side effects. | Medium |
+| 4 | **Diagnostic CLI Command** | **DevX**: Add `mcpany diagnose` which runs a comprehensive suite of checks including network connectivity, authentication verification (if possible), and environment health, outputting a detailed report. | Medium |
+| 5 | **Circuit Breaker Dashboard** | **Ops**: Visual interface for the existing circuit breaker middleware to see the state (Open/Closed/Half-Open) of each upstream service in real-time. | Low |
 | 6 | **Team Configuration Sync** | **Collaboration**: Allow teams to synchronize `mcpany` configurations and secrets securely, ensuring consistent dev environments. | Medium |
 | 7 | **Smart Error Recovery** | **Resilience**: Use an internal LLM loop to analyze tool errors and automatically retry with corrected parameters (Self-Healing). | High |
 | 8 | **Canary Tool Deployment** | **Ops**: gradually roll out new tool versions to a subset of users or sessions to catch regressions before they impact everyone. | High |

@@ -155,6 +155,13 @@ func validateUpstreamServiceCollection(ctx context.Context, collection *configv1
 			return err
 		}
 	}
+
+	// Dynamic Validation: Check connectivity
+	// We only do this if the static validation passed.
+	if err := checkAddressReachability(ctx, collection.GetHttpUrl()); err != nil {
+		return fmt.Errorf("collection url unreachable: %w", err)
+	}
+
 	return nil
 }
 
@@ -367,6 +374,12 @@ func validateUpstreamService(ctx context.Context, service *configv1.UpstreamServ
 			return err
 		}
 	}
+
+	// Dynamic Validation: Check connectivity
+	if err := validateServiceConnection(ctx, service); err != nil {
+		return err
+	}
+
 	return nil
 }
 
