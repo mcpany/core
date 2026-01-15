@@ -169,6 +169,24 @@ func TestDynamicResource_Read(t *testing.T) {
 		require.Error(t, err)
 		assert.Contains(t, err.Error(), "failed to marshal tool result to JSON")
 	})
+
+	t.Run("MIMEType preservation", func(t *testing.T) {
+		defWithMime := configv1.ResourceDefinition_builder{
+			Uri:      proto.String("test-uri-mime"),
+			MimeType: proto.String("application/json"),
+		}.Build()
+
+		mockTool := new(MockTool)
+		mockTool.On("Execute", mock.Anything, mock.Anything).Return("{}", nil)
+		mockTool.On("Tool").Return(v1.Tool_builder{ServiceId: proto.String("test-service")}.Build())
+		dr, _ := NewDynamicResource(defWithMime, mockTool)
+		result, err := dr.Read(context.Background())
+		require.NoError(t, err)
+		require.Len(t, result.Contents, 1)
+		assert.Equal(t, "test-uri-mime", result.Contents[0].URI)
+		assert.Equal(t, "{}", result.Contents[0].Text)
+		assert.Equal(t, "application/json", result.Contents[0].MIMEType)
+	})
 }
 
 func TestDynamicResource_Subscribe(t *testing.T) {

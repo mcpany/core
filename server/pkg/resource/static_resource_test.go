@@ -86,4 +86,28 @@ func TestStaticResource(t *testing.T) {
 		assert.Error(t, err)
 		assert.Contains(t, err.Error(), "not yet implemented")
 	})
+
+	t.Run("ReadSizeLimit", func(t *testing.T) {
+		// Server returns "hello world" (11 bytes).
+		// Set limit to 5.
+		limitDef := &configv1.ResourceDefinition{
+			Uri:  strPtr(server.URL + "/test.txt"),
+			Size: int64Ptr(5),
+		}
+		limitR := NewStaticResource(limitDef, serviceID)
+		_, err := limitR.Read(context.Background())
+		assert.Error(t, err)
+		assert.Contains(t, err.Error(), "exceeds limit")
+	})
+
+	t.Run("ReadNewRequestError", func(t *testing.T) {
+		// NewRequestWithContext fails on bad URI characters, e.g. control chars.
+		badDef := &configv1.ResourceDefinition{
+			Uri: strPtr("http://example.com/\x00"),
+		}
+		badR := NewStaticResource(badDef, serviceID)
+		_, err := badR.Read(context.Background())
+		assert.Error(t, err)
+		assert.Contains(t, err.Error(), "failed to create request")
+	})
 }
