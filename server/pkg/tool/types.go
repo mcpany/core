@@ -33,6 +33,7 @@ import (
 	"github.com/mcpany/core/server/pkg/resilience"
 	"github.com/mcpany/core/server/pkg/transformer"
 	"github.com/mcpany/core/server/pkg/util"
+	"github.com/mcpany/core/server/pkg/validation"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/reflect/protoreflect"
@@ -502,6 +503,10 @@ func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 	inputs, urlString, err := t.prepareInputsAndURL(ctx, req)
 	if err != nil {
 		return nil, err
+	}
+
+	if err := validation.IsSafeURL(urlString); err != nil {
+		return nil, fmt.Errorf("unsafe url: %w", err)
 	}
 
 	body, contentType, err := t.prepareBody(ctx, inputs, t.cachedMethod, req.ToolName)
@@ -1311,6 +1316,10 @@ func (t *OpenAPITool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 			body = bytes.NewReader(jsonBytes)
 			contentType = contentTypeJSON
 		}
+	}
+
+	if err := validation.IsSafeURL(url); err != nil {
+		return nil, fmt.Errorf("unsafe url: %w", err)
 	}
 
 	httpReq, err := http.NewRequestWithContext(ctx, t.method, url, body)
