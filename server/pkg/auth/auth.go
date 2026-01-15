@@ -162,7 +162,7 @@ func (a *BasicAuthenticator) Authenticate(ctx context.Context, r *http.Request) 
 	}
 
 	if passhash.CheckPassword(password, a.PasswordHash) {
-		return ctx, nil
+		return ContextWithUser(ctx, user), nil
 	}
 	return ctx, fmt.Errorf("unauthorized")
 }
@@ -300,7 +300,21 @@ func (am *Manager) Authenticate(ctx context.Context, serviceID string, r *http.R
 	}
 
 	if authenticator, ok := am.authenticators.Load(serviceID); ok {
-		return authenticator.Authenticate(ctx, r)
+		ctx, err := authenticator.Authenticate(ctx, r)
+		if err != nil {
+			return ctx, err
+		}
+
+		// Check if we have a user in the context and populate roles if so
+		if userID, ok := UserFromContext(ctx); ok {
+			if user, ok := am.GetUser(userID); ok {
+				if len(user.Roles) > 0 {
+					ctx = ContextWithRoles(ctx, user.Roles)
+				}
+			}
+		}
+
+		return ctx, nil
 	}
 	// If no authenticator is configured for the service, we'll allow the request to proceed.
 	return ctx, nil

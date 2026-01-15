@@ -82,6 +82,7 @@ func TestHttpMethodToString(t *testing.T) {
 }
 
 func TestHTTPUpstream_Register_InsecureSkipVerify(t *testing.T) {
+	t.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "true")
 	// Create a test HTTPS server with a self-signed certificate
 	server := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		_, _ = w.Write([]byte("OK")) // This implicitly sets status to 200 OK if not already set
@@ -126,6 +127,7 @@ func TestHTTPUpstream_Register_InsecureSkipVerify(t *testing.T) {
 }
 
 func TestHTTPUpstream_Register_Disabled(t *testing.T) {
+	t.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "true")
 	pm := pool.NewManager()
 	tm := tool.NewManager(nil)
 	upstream := NewUpstream(pm)
@@ -214,6 +216,7 @@ func TestHTTPUpstream_Register_Disabled(t *testing.T) {
 }
 
 func TestDeterminismInToolNaming(t *testing.T) {
+	t.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "true")
 	pm := pool.NewManager()
 	tm := tool.NewManager(nil)
 	upstream := NewUpstream(pm)
@@ -251,6 +254,7 @@ func TestDeterminismInToolNaming(t *testing.T) {
 }
 
 func TestHTTPUpstream_Register_MissingToolName(t *testing.T) {
+	t.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "true")
 	pm := pool.NewManager()
 	tm := tool.NewManager(nil)
 	upstream := NewUpstream(pm)
@@ -282,6 +286,7 @@ func TestHTTPUpstream_Register_MissingToolName(t *testing.T) {
 }
 
 func TestHTTPUpstream_Register(t *testing.T) {
+	t.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "true")
 	t.Run("successful registration", func(t *testing.T) {
 		pm := pool.NewManager()
 		tm := tool.NewManager(nil)
@@ -540,6 +545,7 @@ func newMockToolManager() *mockToolManager {
 }
 
 func TestCreateAndRegisterHTTPTools_AddToolError(t *testing.T) {
+	t.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "true")
 	pm := pool.NewManager()
 	mockTm := newMockToolManager()
 	mockTm.addError = errors.New("failed to add tool")
@@ -576,6 +582,7 @@ func TestCreateAndRegisterHTTPTools_AddToolError(t *testing.T) {
 }
 
 func TestHTTPUpstream_Register_WithReload(t *testing.T) {
+	t.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "true")
 	pm := pool.NewManager()
 	tm := tool.NewManager(nil)
 	upstream := NewUpstream(pm)
@@ -636,6 +643,7 @@ func TestHTTPUpstream_Register_WithReload(t *testing.T) {
 }
 
 func TestHTTPUpstream_Register_InvalidMethod(t *testing.T) {
+	t.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "true")
 	pm := pool.NewManager()
 	tm := tool.NewManager(nil)
 	upstream := NewUpstream(pm)
@@ -727,6 +735,7 @@ func (m *mockToolManager) CallTool(_ context.Context, _ *tool.ExecutionRequest) 
 func (m *mockToolManager) SetProfiles(_ []string, _ []*configv1.ProfileDefinition) {}
 
 func TestHTTPUpstream_URLConstruction(t *testing.T) {
+	t.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "true")
 	testCases := []struct {
 		name          string
 		address       string
@@ -827,6 +836,7 @@ func TestHTTPUpstream_URLConstruction(t *testing.T) {
 }
 
 func TestHTTPUpstream_Register_Blocked(t *testing.T) {
+	t.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "true")
 	pm := pool.NewManager()
 	tm := tool.NewManager(nil)
 	upstream := NewUpstream(pm)

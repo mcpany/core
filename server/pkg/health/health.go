@@ -22,6 +22,7 @@ import (
 	"github.com/mcpany/core/server/pkg/command"
 	"github.com/mcpany/core/server/pkg/logging"
 	"github.com/mcpany/core/server/pkg/metrics"
+	"github.com/mcpany/core/server/pkg/util"
 	"github.com/samber/lo"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
@@ -104,9 +105,8 @@ func httpCheckFunc(ctx context.Context, _ string, hc *configv1.HttpHealthCheck) 
 		return nil
 	}
 
-	client := &http.Client{
-		Timeout: lo.Ternary(hc.GetTimeout() != nil, hc.GetTimeout().AsDuration(), 5*time.Second),
-	}
+	client := util.NewSafeHTTPClient()
+	client.Timeout = lo.Ternary(hc.GetTimeout() != nil, hc.GetTimeout().AsDuration(), 5*time.Second)
 
 	method := lo.Ternary(hc.GetMethod() != "", hc.GetMethod(), http.MethodGet)
 	req, err := http.NewRequestWithContext(ctx, method, hc.GetUrl(), nil)
@@ -401,8 +401,19 @@ func checkConnection(ctx context.Context, address string) error {
 		target = net.JoinHostPort(host, port)
 	}
 
-	d := net.Dialer{Timeout: 5 * time.Second}
-	conn, err := d.DialContext(ctx, "tcp", target)
+	d := util.NewSafeDialer()
+	if os.Getenv("MCPANY_ALLOW_LOOPBACK_RESOURCES") == util.TrueStr {
+		d.AllowLoopback = true
+	}
+	if os.Getenv("MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES") == util.TrueStr {
+		d.AllowPrivate = true
+	}
+
+	// Manual timeout management since SafeDialer doesn't have Timeout field, relies on context
+	dialCtx, cancel := context.WithTimeout(ctx, 5*time.Second)
+	defer cancel()
+
+	conn, err := d.DialContext(dialCtx, "tcp", target)
 	if err != nil {
 		logging.GetLogger().Error("checkConnection failed", "address", target, "error", err)
 		return fmt.Errorf("failed to connect to address %s: %w", target, err)
