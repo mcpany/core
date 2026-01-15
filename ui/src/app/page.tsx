@@ -8,6 +8,11 @@ import { ServiceHealthWidget } from "@/components/dashboard/service-health-widge
 import { RequestVolumeChart } from "@/components/dashboard/request-volume-chart";
 import { Button } from "@/components/ui/button";
 
+/**
+ * The main dashboard page component.
+ * Displays an overview of metrics, service health, and request volume.
+ * @returns The dashboard page.
+ */
 export default function DashboardPage() {
   return (
     <div className="flex-1 space-y-4 p-8 pt-6">
