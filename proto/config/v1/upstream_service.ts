@@ -79,18 +79,6 @@ export function loadBalancingStrategyToJSON(object: LoadBalancingStrategy): stri
   }
 }
 
-/** UpstreamServiceCollection defines a collection of upstream services that can be loaded from a remote source. */
-export interface UpstreamServiceCollection {
-  /** The name of the collection. */
-  name: string;
-  /** The HTTP URL to load the collection from. */
-  httpUrl: string;
-  /** The priority of the collection. Lower numbers have higher priority. */
-  priority: number;
-  /** The authentication to use when fetching the collection. */
-  authentication?: Authentication | undefined;
-}
-
 /**
  * UpstreamServiceConfig is the top-level configuration for a single upstream service
  * that mcpany will proxy. It defines the service's identity, how to connect to it,
@@ -98,15 +86,15 @@ export interface UpstreamServiceCollection {
  */
 export interface UpstreamServiceConfig {
   /**
-   * The full SHA256 hash of the service name, used as a unique identifier.
-   * This ensures that for the same service name, the ID is always the same.
-   */
-  id: string;
-  /**
    * The original user-provided name for the upstream service.
    * This name is used for identification, logging, and metrics.
    */
   name: string;
+  /**
+   * The full SHA256 hash of the service name, used as a unique identifier.
+   * This ensures that for the same service name, the ID is always the same.
+   */
+  id: string;
   /**
    * A sanitized version of the service name, conforming to identifier rules.
    * @inject_tag: yaml:"-"
@@ -114,6 +102,19 @@ export interface UpstreamServiceConfig {
    * This field is managed internally and should not be set by the user.
    */
   sanitizedName: string;
+  /** The version of the upstream service, if known (e.g., "v1.2.3"). */
+  version: string;
+  /** The priority of the service. Lower numbers have higher priority. */
+  priority: number;
+  /** If true, this upstream service is disabled. */
+  disable: boolean;
+  /** If true, automatically convert all API calls to tools. */
+  autoDiscoverTool: boolean;
+  /**
+   * The configuration error if the service failed validation.
+   * @inject_tag: yaml:"-"
+   */
+  configError: string;
   /** Configuration for the pool of connections to the upstream service. */
   connectionPool?:
     | ConnectionPoolConfig
@@ -133,7 +134,17 @@ export interface UpstreamServiceConfig {
   /** Strategy for distributing requests among multiple instances of the service. */
   loadBalancingStrategy: LoadBalancingStrategy;
   /** Advanced resiliency features to handle failures gracefully. */
-  resilience?: ResilienceConfig | undefined;
+  resilience?:
+    | ResilienceConfig
+    | undefined;
+  /** Authentication configuration for securing access to this service (incoming). */
+  authentication?:
+    | Authentication
+    | undefined;
+  /** Policies to control what is exported to the client. */
+  toolExportPolicy?: ExportPolicy | undefined;
+  promptExportPolicy?: ExportPolicy | undefined;
+  resourceExportPolicy?: ExportPolicy | undefined;
   mcpService?: McpUpstreamService | undefined;
   httpService?: HttpUpstreamService | undefined;
   grpcService?: GrpcUpstreamService | undefined;
@@ -147,16 +158,6 @@ export interface UpstreamServiceConfig {
   vectorService?:
     | VectorUpstreamService
     | undefined;
-  /** The version of the upstream service, if known (e.g., "v1.2.3"). */
-  version: string;
-  /** Authentication configuration for securing access to this service (incoming). */
-  authentication?:
-    | Authentication
-    | undefined;
-  /** If true, this upstream service is disabled. */
-  disable: boolean;
-  /** The priority of the service. Lower numbers have higher priority. */
-  priority: number;
   /** Policy to control which calls can be made. */
   callPolicies: CallPolicy[];
   /** List of hooks to execute before the call. */
@@ -165,19 +166,6 @@ export interface UpstreamServiceConfig {
   postCallHooks: CallHook[];
   /** The prompts provided by this upstream service. */
   prompts: PromptDefinition[];
-  /** Policies to control what is exported to the client. */
-  toolExportPolicy?: ExportPolicy | undefined;
-  promptExportPolicy?: ExportPolicy | undefined;
-  resourceExportPolicy?:
-    | ExportPolicy
-    | undefined;
-  /** If true, automatically convert all API calls to tools. */
-  autoDiscoverTool: boolean;
-  /**
-   * The configuration error if the service failed validation.
-   * @inject_tag: yaml:"-"
-   */
-  configError: string;
 }
 
 export interface CallPolicy {
@@ -724,7 +712,6 @@ export interface McpUpstreamService_CallsEntry {
 export interface McpStdioConnection {
   /** The command and arguments to execute the service. */
   command: string;
-  args: string[];
   /** The working directory for the command. */
   workingDirectory: string;
   /**
@@ -732,6 +719,8 @@ export interface McpStdioConnection {
    * selected based on the command.
    */
   containerImage: string;
+  /** Arguments to the command. */
+  args: string[];
   /** Optional: A list of commands to run as setup before the main command. */
   setupCommands: string[];
   /** Optional: Environment variables to set in the container. */
@@ -866,127 +855,26 @@ export interface TLSConfig {
   insecureSkipVerify: boolean;
 }
 
-function createBaseUpstreamServiceCollection(): UpstreamServiceCollection {
-  return { name: "", httpUrl: "", priority: 0, authentication: undefined };
-}
-
-export const UpstreamServiceCollection: MessageFns<UpstreamServiceCollection> = {
-  encode(message: UpstreamServiceCollection, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.name !== "") {
-      writer.uint32(10).string(message.name);
-    }
-    if (message.httpUrl !== "") {
-      writer.uint32(18).string(message.httpUrl);
-    }
-    if (message.priority !== 0) {
-      writer.uint32(24).int32(message.priority);
-    }
-    if (message.authentication !== undefined) {
-      Authentication.encode(message.authentication, writer.uint32(34).fork()).join();
-    }
-    return writer;
-  },
-
-  decode(input: BinaryReader | Uint8Array, length?: number): UpstreamServiceCollection {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
-    const end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseUpstreamServiceCollection();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1: {
-          if (tag !== 10) {
-            break;
-          }
-
-          message.name = reader.string();
-          continue;
-        }
-        case 2: {
-          if (tag !== 18) {
-            break;
-          }
-
-          message.httpUrl = reader.string();
-          continue;
-        }
-        case 3: {
-          if (tag !== 24) {
-            break;
-          }
-
-          message.priority = reader.int32();
-          continue;
-        }
-        case 4: {
-          if (tag !== 34) {
-            break;
-          }
-
-          message.authentication = Authentication.decode(reader, reader.uint32());
-          continue;
-        }
-      }
-      if ((tag & 7) === 4 || tag === 0) {
-        break;
-      }
-      reader.skip(tag & 7);
-    }
-    return message;
-  },
-
-  fromJSON(object: any): UpstreamServiceCollection {
-    return {
-      name: isSet(object.name) ? globalThis.String(object.name) : "",
-      httpUrl: isSet(object.http_url) ? globalThis.String(object.http_url) : "",
-      priority: isSet(object.priority) ? globalThis.Number(object.priority) : 0,
-      authentication: isSet(object.authentication) ? Authentication.fromJSON(object.authentication) : undefined,
-    };
-  },
-
-  toJSON(message: UpstreamServiceCollection): unknown {
-    const obj: any = {};
-    if (message.name !== "") {
-      obj.name = message.name;
-    }
-    if (message.httpUrl !== "") {
-      obj.http_url = message.httpUrl;
-    }
-    if (message.priority !== 0) {
-      obj.priority = Math.round(message.priority);
-    }
-    if (message.authentication !== undefined) {
-      obj.authentication = Authentication.toJSON(message.authentication);
-    }
-    return obj;
-  },
-
-  create<I extends Exact<DeepPartial<UpstreamServiceCollection>, I>>(base?: I): UpstreamServiceCollection {
-    return UpstreamServiceCollection.fromPartial(base ?? ({} as any));
-  },
-  fromPartial<I extends Exact<DeepPartial<UpstreamServiceCollection>, I>>(object: I): UpstreamServiceCollection {
-    const message = createBaseUpstreamServiceCollection();
-    message.name = object.name ?? "";
-    message.httpUrl = object.httpUrl ?? "";
-    message.priority = object.priority ?? 0;
-    message.authentication = (object.authentication !== undefined && object.authentication !== null)
-      ? Authentication.fromPartial(object.authentication)
-      : undefined;
-    return message;
-  },
-};
-
 function createBaseUpstreamServiceConfig(): UpstreamServiceConfig {
   return {
-    id: "",
     name: "",
+    id: "",
     sanitizedName: "",
+    version: "",
+    priority: 0,
+    disable: false,
+    autoDiscoverTool: false,
+    configError: "",
     connectionPool: undefined,
     upstreamAuth: undefined,
     cache: undefined,
     rateLimit: undefined,
     loadBalancingStrategy: 0,
     resilience: undefined,
+    authentication: undefined,
+    toolExportPolicy: undefined,
+    promptExportPolicy: undefined,
+    resourceExportPolicy: undefined,
     mcpService: undefined,
     httpService: undefined,
     grpcService: undefined,
@@ -998,122 +886,113 @@ function createBaseUpstreamServiceConfig(): UpstreamServiceConfig {
     sqlService: undefined,
     filesystemService: undefined,
     vectorService: undefined,
-    version: "",
-    authentication: undefined,
-    disable: false,
-    priority: 0,
     callPolicies: [],
     preCallHooks: [],
     postCallHooks: [],
     prompts: [],
-    toolExportPolicy: undefined,
-    promptExportPolicy: undefined,
-    resourceExportPolicy: undefined,
-    autoDiscoverTool: false,
-    configError: "",
   };
 }
 
 export const UpstreamServiceConfig: MessageFns<UpstreamServiceConfig> = {
   encode(message: UpstreamServiceConfig, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.id !== "") {
-      writer.uint32(10).string(message.id);
-    }
     if (message.name !== "") {
-      writer.uint32(18).string(message.name);
+      writer.uint32(10).string(message.name);
+    }
+    if (message.id !== "") {
+      writer.uint32(18).string(message.id);
     }
     if (message.sanitizedName !== "") {
-      writer.uint32(146).string(message.sanitizedName);
-    }
-    if (message.connectionPool !== undefined) {
-      ConnectionPoolConfig.encode(message.connectionPool, writer.uint32(26).fork()).join();
-    }
-    if (message.upstreamAuth !== undefined) {
-      Authentication.encode(message.upstreamAuth, writer.uint32(34).fork()).join();
-    }
-    if (message.cache !== undefined) {
-      CacheConfig.encode(message.cache, writer.uint32(42).fork()).join();
-    }
-    if (message.rateLimit !== undefined) {
-      RateLimitConfig.encode(message.rateLimit, writer.uint32(50).fork()).join();
-    }
-    if (message.loadBalancingStrategy !== 0) {
-      writer.uint32(56).int32(message.loadBalancingStrategy);
-    }
-    if (message.resilience !== undefined) {
-      ResilienceConfig.encode(message.resilience, writer.uint32(66).fork()).join();
-    }
-    if (message.mcpService !== undefined) {
-      McpUpstreamService.encode(message.mcpService, writer.uint32(74).fork()).join();
-    }
-    if (message.httpService !== undefined) {
-      HttpUpstreamService.encode(message.httpService, writer.uint32(82).fork()).join();
-    }
-    if (message.grpcService !== undefined) {
-      GrpcUpstreamService.encode(message.grpcService, writer.uint32(90).fork()).join();
-    }
-    if (message.openapiService !== undefined) {
-      OpenapiUpstreamService.encode(message.openapiService, writer.uint32(98).fork()).join();
-    }
-    if (message.commandLineService !== undefined) {
-      CommandLineUpstreamService.encode(message.commandLineService, writer.uint32(106).fork()).join();
-    }
-    if (message.websocketService !== undefined) {
-      WebsocketUpstreamService.encode(message.websocketService, writer.uint32(130).fork()).join();
-    }
-    if (message.webrtcService !== undefined) {
-      WebrtcUpstreamService.encode(message.webrtcService, writer.uint32(138).fork()).join();
-    }
-    if (message.graphqlService !== undefined) {
-      GraphQLUpstreamService.encode(message.graphqlService, writer.uint32(170).fork()).join();
-    }
-    if (message.sqlService !== undefined) {
-      SqlUpstreamService.encode(message.sqlService, writer.uint32(250).fork()).join();
-    }
-    if (message.filesystemService !== undefined) {
-      FilesystemUpstreamService.encode(message.filesystemService, writer.uint32(258).fork()).join();
-    }
-    if (message.vectorService !== undefined) {
-      VectorUpstreamService.encode(message.vectorService, writer.uint32(274).fork()).join();
+      writer.uint32(26).string(message.sanitizedName);
     }
     if (message.version !== "") {
-      writer.uint32(114).string(message.version);
+      writer.uint32(34).string(message.version);
+    }
+    if (message.priority !== 0) {
+      writer.uint32(40).int32(message.priority);
+    }
+    if (message.disable !== false) {
+      writer.uint32(48).bool(message.disable);
+    }
+    if (message.autoDiscoverTool !== false) {
+      writer.uint32(56).bool(message.autoDiscoverTool);
+    }
+    if (message.configError !== "") {
+      writer.uint32(66).string(message.configError);
+    }
+    if (message.connectionPool !== undefined) {
+      ConnectionPoolConfig.encode(message.connectionPool, writer.uint32(74).fork()).join();
+    }
+    if (message.upstreamAuth !== undefined) {
+      Authentication.encode(message.upstreamAuth, writer.uint32(82).fork()).join();
+    }
+    if (message.cache !== undefined) {
+      CacheConfig.encode(message.cache, writer.uint32(90).fork()).join();
+    }
+    if (message.rateLimit !== undefined) {
+      RateLimitConfig.encode(message.rateLimit, writer.uint32(98).fork()).join();
+    }
+    if (message.loadBalancingStrategy !== 0) {
+      writer.uint32(104).int32(message.loadBalancingStrategy);
+    }
+    if (message.resilience !== undefined) {
+      ResilienceConfig.encode(message.resilience, writer.uint32(114).fork()).join();
     }
     if (message.authentication !== undefined) {
       Authentication.encode(message.authentication, writer.uint32(122).fork()).join();
     }
-    if (message.disable !== false) {
-      writer.uint32(152).bool(message.disable);
-    }
-    if (message.priority !== 0) {
-      writer.uint32(160).int32(message.priority);
-    }
-    for (const v of message.callPolicies) {
-      CallPolicy.encode(v!, writer.uint32(178).fork()).join();
-    }
-    for (const v of message.preCallHooks) {
-      CallHook.encode(v!, writer.uint32(186).fork()).join();
-    }
-    for (const v of message.postCallHooks) {
-      CallHook.encode(v!, writer.uint32(194).fork()).join();
-    }
-    for (const v of message.prompts) {
-      PromptDefinition.encode(v!, writer.uint32(210).fork()).join();
-    }
     if (message.toolExportPolicy !== undefined) {
-      ExportPolicy.encode(message.toolExportPolicy, writer.uint32(218).fork()).join();
+      ExportPolicy.encode(message.toolExportPolicy, writer.uint32(130).fork()).join();
     }
     if (message.promptExportPolicy !== undefined) {
-      ExportPolicy.encode(message.promptExportPolicy, writer.uint32(226).fork()).join();
+      ExportPolicy.encode(message.promptExportPolicy, writer.uint32(138).fork()).join();
     }
     if (message.resourceExportPolicy !== undefined) {
-      ExportPolicy.encode(message.resourceExportPolicy, writer.uint32(234).fork()).join();
+      ExportPolicy.encode(message.resourceExportPolicy, writer.uint32(146).fork()).join();
     }
-    if (message.autoDiscoverTool !== false) {
-      writer.uint32(240).bool(message.autoDiscoverTool);
+    if (message.mcpService !== undefined) {
+      McpUpstreamService.encode(message.mcpService, writer.uint32(154).fork()).join();
     }
-    if (message.configError !== "") {
-      writer.uint32(282).string(message.configError);
+    if (message.httpService !== undefined) {
+      HttpUpstreamService.encode(message.httpService, writer.uint32(162).fork()).join();
+    }
+    if (message.grpcService !== undefined) {
+      GrpcUpstreamService.encode(message.grpcService, writer.uint32(170).fork()).join();
+    }
+    if (message.openapiService !== undefined) {
+      OpenapiUpstreamService.encode(message.openapiService, writer.uint32(178).fork()).join();
+    }
+    if (message.commandLineService !== undefined) {
+      CommandLineUpstreamService.encode(message.commandLineService, writer.uint32(186).fork()).join();
+    }
+    if (message.websocketService !== undefined) {
+      WebsocketUpstreamService.encode(message.websocketService, writer.uint32(194).fork()).join();
+    }
+    if (message.webrtcService !== undefined) {
+      WebrtcUpstreamService.encode(message.webrtcService, writer.uint32(202).fork()).join();
+    }
+    if (message.graphqlService !== undefined) {
+      GraphQLUpstreamService.encode(message.graphqlService, writer.uint32(210).fork()).join();
+    }
+    if (message.sqlService !== undefined) {
+      SqlUpstreamService.encode(message.sqlService, writer.uint32(218).fork()).join();
+    }
+    if (message.filesystemService !== undefined) {
+      FilesystemUpstreamService.encode(message.filesystemService, writer.uint32(226).fork()).join();
+    }
+    if (message.vectorService !== undefined) {
+      VectorUpstreamService.encode(message.vectorService, writer.uint32(234).fork()).join();
+    }
+    for (const v of message.callPolicies) {
+      CallPolicy.encode(v!, writer.uint32(242).fork()).join();
+    }
+    for (const v of message.preCallHooks) {
+      CallHook.encode(v!, writer.uint32(250).fork()).join();
+    }
+    for (const v of message.postCallHooks) {
+      CallHook.encode(v!, writer.uint32(258).fork()).join();
+    }
+    for (const v of message.prompts) {
+      PromptDefinition.encode(v!, writer.uint32(266).fork()).join();
     }
     return writer;
   },
@@ -1130,7 +1009,7 @@ export const UpstreamServiceConfig: MessageFns<UpstreamServiceConfig> = {
             break;
           }
 
-          message.id = reader.string();
+          message.name = reader.string();
           continue;
         }
         case 2: {
@@ -1138,15 +1017,7 @@ export const UpstreamServiceConfig: MessageFns<UpstreamServiceConfig> = {
             break;
           }
 
-          message.name = reader.string();
-          continue;
-        }
-        case 18: {
-          if (tag !== 146) {
-            break;
-          }
-
-          message.sanitizedName = reader.string();
+          message.id = reader.string();
           continue;
         }
         case 3: {
@@ -1154,7 +1025,7 @@ export const UpstreamServiceConfig: MessageFns<UpstreamServiceConfig> = {
             break;
           }
 
-          message.connectionPool = ConnectionPoolConfig.decode(reader, reader.uint32());
+          message.sanitizedName = reader.string();
           continue;
         }
         case 4: {
@@ -1162,23 +1033,23 @@ export const UpstreamServiceConfig: MessageFns<UpstreamServiceConfig> = {
             break;
           }
 
-          message.upstreamAuth = Authentication.decode(reader, reader.uint32());
+          message.version = reader.string();
           continue;
         }
         case 5: {
-          if (tag !== 42) {
+          if (tag !== 40) {
             break;
           }
 
-          message.cache = CacheConfig.decode(reader, reader.uint32());
+          message.priority = reader.int32();
           continue;
         }
         case 6: {
-          if (tag !== 50) {
+          if (tag !== 48) {
             break;
           }
 
-          message.rateLimit = RateLimitConfig.decode(reader, reader.uint32());
+          message.disable = reader.bool();
           continue;
         }
         case 7: {
@@ -1186,7 +1057,7 @@ export const UpstreamServiceConfig: MessageFns<UpstreamServiceConfig> = {
             break;
           }
 
-          message.loadBalancingStrategy = reader.int32() as any;
+          message.autoDiscoverTool = reader.bool();
           continue;
         }
         case 8: {
@@ -1194,7 +1065,7 @@ export const UpstreamServiceConfig: MessageFns<UpstreamServiceConfig> = {
             break;
           }
 
-          message.resilience = ResilienceConfig.decode(reader, reader.uint32());
+          message.configError = reader.string();
           continue;
         }
         case 9: {
@@ -1202,7 +1073,7 @@ export const UpstreamServiceConfig: MessageFns<UpstreamServiceConfig> = {
             break;
           }
 
-          message.mcpService = McpUpstreamService.decode(reader, reader.uint32());
+          message.connectionPool = ConnectionPoolConfig.decode(reader, reader.uint32());
           continue;
         }
         case 10: {
@@ -1210,7 +1081,7 @@ export const UpstreamServiceConfig: MessageFns<UpstreamServiceConfig> = {
             break;
           }
 
-          message.httpService = HttpUpstreamService.decode(reader, reader.uint32());
+          message.upstreamAuth = Authentication.decode(reader, reader.uint32());
           continue;
         }
         case 11: {
@@ -1218,7 +1089,7 @@ export const UpstreamServiceConfig: MessageFns<UpstreamServiceConfig> = {
             break;
           }
 
-          message.grpcService = GrpcUpstreamService.decode(reader, reader.uint32());
+          message.cache = CacheConfig.decode(reader, reader.uint32());
           continue;
         }
         case 12: {
@@ -1226,63 +1097,15 @@ export const UpstreamServiceConfig: MessageFns<UpstreamServiceConfig> = {
             break;
           }
 
-          message.openapiService = OpenapiUpstreamService.decode(reader, reader.uint32());
+          message.rateLimit = RateLimitConfig.decode(reader, reader.uint32());
           continue;
         }
         case 13: {
-          if (tag !== 106) {
+          if (tag !== 104) {
             break;
           }
 
-          message.commandLineService = CommandLineUpstreamService.decode(reader, reader.uint32());
-          continue;
-        }
-        case 16: {
-          if (tag !== 130) {
-            break;
-          }
-
-          message.websocketService = WebsocketUpstreamService.decode(reader, reader.uint32());
-          continue;
-        }
-        case 17: {
-          if (tag !== 138) {
-            break;
-          }
-
-          message.webrtcService = WebrtcUpstreamService.decode(reader, reader.uint32());
-          continue;
-        }
-        case 21: {
-          if (tag !== 170) {
-            break;
-          }
-
-          message.graphqlService = GraphQLUpstreamService.decode(reader, reader.uint32());
-          continue;
-        }
-        case 31: {
-          if (tag !== 250) {
-            break;
-          }
-
-          message.sqlService = SqlUpstreamService.decode(reader, reader.uint32());
-          continue;
-        }
-        case 32: {
-          if (tag !== 258) {
-            break;
-          }
-
-          message.filesystemService = FilesystemUpstreamService.decode(reader, reader.uint32());
-          continue;
-        }
-        case 34: {
-          if (tag !== 274) {
-            break;
-          }
-
-          message.vectorService = VectorUpstreamService.decode(reader, reader.uint32());
+          message.loadBalancingStrategy = reader.int32() as any;
           continue;
         }
         case 14: {
@@ -1290,7 +1113,7 @@ export const UpstreamServiceConfig: MessageFns<UpstreamServiceConfig> = {
             break;
           }
 
-          message.version = reader.string();
+          message.resilience = ResilienceConfig.decode(reader, reader.uint32());
           continue;
         }
         case 15: {
@@ -1301,20 +1124,52 @@ export const UpstreamServiceConfig: MessageFns<UpstreamServiceConfig> = {
           message.authentication = Authentication.decode(reader, reader.uint32());
           continue;
         }
-        case 19: {
-          if (tag !== 152) {
+        case 16: {
+          if (tag !== 130) {
             break;
           }
 
-          message.disable = reader.bool();
+          message.toolExportPolicy = ExportPolicy.decode(reader, reader.uint32());
+          continue;
+        }
+        case 17: {
+          if (tag !== 138) {
+            break;
+          }
+
+          message.promptExportPolicy = ExportPolicy.decode(reader, reader.uint32());
+          continue;
+        }
+        case 18: {
+          if (tag !== 146) {
+            break;
+          }
+
+          message.resourceExportPolicy = ExportPolicy.decode(reader, reader.uint32());
+          continue;
+        }
+        case 19: {
+          if (tag !== 154) {
+            break;
+          }
+
+          message.mcpService = McpUpstreamService.decode(reader, reader.uint32());
           continue;
         }
         case 20: {
-          if (tag !== 160) {
+          if (tag !== 162) {
             break;
           }
 
-          message.priority = reader.int32();
+          message.httpService = HttpUpstreamService.decode(reader, reader.uint32());
+          continue;
+        }
+        case 21: {
+          if (tag !== 170) {
+            break;
+          }
+
+          message.grpcService = GrpcUpstreamService.decode(reader, reader.uint32());
           continue;
         }
         case 22: {
@@ -1322,7 +1177,7 @@ export const UpstreamServiceConfig: MessageFns<UpstreamServiceConfig> = {
             break;
           }
 
-          message.callPolicies.push(CallPolicy.decode(reader, reader.uint32()));
+          message.openapiService = OpenapiUpstreamService.decode(reader, reader.uint32());
           continue;
         }
         case 23: {
@@ -1330,7 +1185,7 @@ export const UpstreamServiceConfig: MessageFns<UpstreamServiceConfig> = {
             break;
           }
 
-          message.preCallHooks.push(CallHook.decode(reader, reader.uint32()));
+          message.commandLineService = CommandLineUpstreamService.decode(reader, reader.uint32());
           continue;
         }
         case 24: {
@@ -1338,7 +1193,15 @@ export const UpstreamServiceConfig: MessageFns<UpstreamServiceConfig> = {
             break;
           }
 
-          message.postCallHooks.push(CallHook.decode(reader, reader.uint32()));
+          message.websocketService = WebsocketUpstreamService.decode(reader, reader.uint32());
+          continue;
+        }
+        case 25: {
+          if (tag !== 202) {
+            break;
+          }
+
+          message.webrtcService = WebrtcUpstreamService.decode(reader, reader.uint32());
           continue;
         }
         case 26: {
@@ -1346,7 +1209,7 @@ export const UpstreamServiceConfig: MessageFns<UpstreamServiceConfig> = {
             break;
           }
 
-          message.prompts.push(PromptDefinition.decode(reader, reader.uint32()));
+          message.graphqlService = GraphQLUpstreamService.decode(reader, reader.uint32());
           continue;
         }
         case 27: {
@@ -1354,7 +1217,7 @@ export const UpstreamServiceConfig: MessageFns<UpstreamServiceConfig> = {
             break;
           }
 
-          message.toolExportPolicy = ExportPolicy.decode(reader, reader.uint32());
+          message.sqlService = SqlUpstreamService.decode(reader, reader.uint32());
           continue;
         }
         case 28: {
@@ -1362,7 +1225,7 @@ export const UpstreamServiceConfig: MessageFns<UpstreamServiceConfig> = {
             break;
           }
 
-          message.promptExportPolicy = ExportPolicy.decode(reader, reader.uint32());
+          message.filesystemService = FilesystemUpstreamService.decode(reader, reader.uint32());
           continue;
         }
         case 29: {
@@ -1370,23 +1233,39 @@ export const UpstreamServiceConfig: MessageFns<UpstreamServiceConfig> = {
             break;
           }
 
-          message.resourceExportPolicy = ExportPolicy.decode(reader, reader.uint32());
+          message.vectorService = VectorUpstreamService.decode(reader, reader.uint32());
           continue;
         }
         case 30: {
-          if (tag !== 240) {
+          if (tag !== 242) {
             break;
           }
 
-          message.autoDiscoverTool = reader.bool();
+          message.callPolicies.push(CallPolicy.decode(reader, reader.uint32()));
           continue;
         }
-        case 35: {
-          if (tag !== 282) {
+        case 31: {
+          if (tag !== 250) {
             break;
           }
 
-          message.configError = reader.string();
+          message.preCallHooks.push(CallHook.decode(reader, reader.uint32()));
+          continue;
+        }
+        case 32: {
+          if (tag !== 258) {
+            break;
+          }
+
+          message.postCallHooks.push(CallHook.decode(reader, reader.uint32()));
+          continue;
+        }
+        case 33: {
+          if (tag !== 266) {
+            break;
+          }
+
+          message.prompts.push(PromptDefinition.decode(reader, reader.uint32()));
           continue;
         }
       }
@@ -1400,9 +1279,14 @@ export const UpstreamServiceConfig: MessageFns<UpstreamServiceConfig> = {
 
   fromJSON(object: any): UpstreamServiceConfig {
     return {
-      id: isSet(object.id) ? globalThis.String(object.id) : "",
       name: isSet(object.name) ? globalThis.String(object.name) : "",
+      id: isSet(object.id) ? globalThis.String(object.id) : "",
       sanitizedName: isSet(object.sanitized_name) ? globalThis.String(object.sanitized_name) : "",
+      version: isSet(object.version) ? globalThis.String(object.version) : "",
+      priority: isSet(object.priority) ? globalThis.Number(object.priority) : 0,
+      disable: isSet(object.disable) ? globalThis.Boolean(object.disable) : false,
+      autoDiscoverTool: isSet(object.auto_discover_tool) ? globalThis.Boolean(object.auto_discover_tool) : false,
+      configError: isSet(object.config_error) ? globalThis.String(object.config_error) : "",
       connectionPool: isSet(object.connection_pool) ? ConnectionPoolConfig.fromJSON(object.connection_pool) : undefined,
       upstreamAuth: isSet(object.upstream_auth) ? Authentication.fromJSON(object.upstream_auth) : undefined,
       cache: isSet(object.cache) ? CacheConfig.fromJSON(object.cache) : undefined,
@@ -1411,6 +1295,14 @@ export const UpstreamServiceConfig: MessageFns<UpstreamServiceConfig> = {
         ? loadBalancingStrategyFromJSON(object.load_balancing_strategy)
         : 0,
       resilience: isSet(object.resilience) ? ResilienceConfig.fromJSON(object.resilience) : undefined,
+      authentication: isSet(object.authentication) ? Authentication.fromJSON(object.authentication) : undefined,
+      toolExportPolicy: isSet(object.tool_export_policy) ? ExportPolicy.fromJSON(object.tool_export_policy) : undefined,
+      promptExportPolicy: isSet(object.prompt_export_policy)
+        ? ExportPolicy.fromJSON(object.prompt_export_policy)
+        : undefined,
+      resourceExportPolicy: isSet(object.resource_export_policy)
+        ? ExportPolicy.fromJSON(object.resource_export_policy)
+        : undefined,
       mcpService: isSet(object.mcp_service) ? McpUpstreamService.fromJSON(object.mcp_service) : undefined,
       httpService: isSet(object.http_service) ? HttpUpstreamService.fromJSON(object.http_service) : undefined,
       grpcService: isSet(object.grpc_service) ? GrpcUpstreamService.fromJSON(object.grpc_service) : undefined,
@@ -1432,10 +1324,6 @@ export const UpstreamServiceConfig: MessageFns<UpstreamServiceConfig> = {
         ? FilesystemUpstreamService.fromJSON(object.filesystem_service)
         : undefined,
       vectorService: isSet(object.vector_service) ? VectorUpstreamService.fromJSON(object.vector_service) : undefined,
-      version: isSet(object.version) ? globalThis.String(object.version) : "",
-      authentication: isSet(object.authentication) ? Authentication.fromJSON(object.authentication) : undefined,
-      disable: isSet(object.disable) ? globalThis.Boolean(object.disable) : false,
-      priority: isSet(object.priority) ? globalThis.Number(object.priority) : 0,
       callPolicies: globalThis.Array.isArray(object?.call_policies)
         ? object.call_policies.map((e: any) => CallPolicy.fromJSON(e))
         : [],
@@ -1448,28 +1336,34 @@ export const UpstreamServiceConfig: MessageFns<UpstreamServiceConfig> = {
       prompts: globalThis.Array.isArray(object?.prompts)
         ? object.prompts.map((e: any) => PromptDefinition.fromJSON(e))
         : [],
-      toolExportPolicy: isSet(object.tool_export_policy) ? ExportPolicy.fromJSON(object.tool_export_policy) : undefined,
-      promptExportPolicy: isSet(object.prompt_export_policy)
-        ? ExportPolicy.fromJSON(object.prompt_export_policy)
-        : undefined,
-      resourceExportPolicy: isSet(object.resource_export_policy)
-        ? ExportPolicy.fromJSON(object.resource_export_policy)
-        : undefined,
-      autoDiscoverTool: isSet(object.auto_discover_tool) ? globalThis.Boolean(object.auto_discover_tool) : false,
-      configError: isSet(object.config_error) ? globalThis.String(object.config_error) : "",
     };
   },
 
   toJSON(message: UpstreamServiceConfig): unknown {
     const obj: any = {};
-    if (message.id !== "") {
-      obj.id = message.id;
-    }
     if (message.name !== "") {
       obj.name = message.name;
     }
+    if (message.id !== "") {
+      obj.id = message.id;
+    }
     if (message.sanitizedName !== "") {
       obj.sanitized_name = message.sanitizedName;
+    }
+    if (message.version !== "") {
+      obj.version = message.version;
+    }
+    if (message.priority !== 0) {
+      obj.priority = Math.round(message.priority);
+    }
+    if (message.disable !== false) {
+      obj.disable = message.disable;
+    }
+    if (message.autoDiscoverTool !== false) {
+      obj.auto_discover_tool = message.autoDiscoverTool;
+    }
+    if (message.configError !== "") {
+      obj.config_error = message.configError;
     }
     if (message.connectionPool !== undefined) {
       obj.connection_pool = ConnectionPoolConfig.toJSON(message.connectionPool);
@@ -1488,6 +1382,18 @@ export const UpstreamServiceConfig: MessageFns<UpstreamServiceConfig> = {
     }
     if (message.resilience !== undefined) {
       obj.resilience = ResilienceConfig.toJSON(message.resilience);
+    }
+    if (message.authentication !== undefined) {
+      obj.authentication = Authentication.toJSON(message.authentication);
+    }
+    if (message.toolExportPolicy !== undefined) {
+      obj.tool_export_policy = ExportPolicy.toJSON(message.toolExportPolicy);
+    }
+    if (message.promptExportPolicy !== undefined) {
+      obj.prompt_export_policy = ExportPolicy.toJSON(message.promptExportPolicy);
+    }
+    if (message.resourceExportPolicy !== undefined) {
+      obj.resource_export_policy = ExportPolicy.toJSON(message.resourceExportPolicy);
     }
     if (message.mcpService !== undefined) {
       obj.mcp_service = McpUpstreamService.toJSON(message.mcpService);
@@ -1522,18 +1428,6 @@ export const UpstreamServiceConfig: MessageFns<UpstreamServiceConfig> = {
     if (message.vectorService !== undefined) {
       obj.vector_service = VectorUpstreamService.toJSON(message.vectorService);
     }
-    if (message.version !== "") {
-      obj.version = message.version;
-    }
-    if (message.authentication !== undefined) {
-      obj.authentication = Authentication.toJSON(message.authentication);
-    }
-    if (message.disable !== false) {
-      obj.disable = message.disable;
-    }
-    if (message.priority !== 0) {
-      obj.priority = Math.round(message.priority);
-    }
     if (message.callPolicies?.length) {
       obj.call_policies = message.callPolicies.map((e) => CallPolicy.toJSON(e));
     }
@@ -1546,21 +1440,6 @@ export const UpstreamServiceConfig: MessageFns<UpstreamServiceConfig> = {
     if (message.prompts?.length) {
       obj.prompts = message.prompts.map((e) => PromptDefinition.toJSON(e));
     }
-    if (message.toolExportPolicy !== undefined) {
-      obj.tool_export_policy = ExportPolicy.toJSON(message.toolExportPolicy);
-    }
-    if (message.promptExportPolicy !== undefined) {
-      obj.prompt_export_policy = ExportPolicy.toJSON(message.promptExportPolicy);
-    }
-    if (message.resourceExportPolicy !== undefined) {
-      obj.resource_export_policy = ExportPolicy.toJSON(message.resourceExportPolicy);
-    }
-    if (message.autoDiscoverTool !== false) {
-      obj.auto_discover_tool = message.autoDiscoverTool;
-    }
-    if (message.configError !== "") {
-      obj.config_error = message.configError;
-    }
     return obj;
   },
 
@@ -1569,9 +1448,14 @@ export const UpstreamServiceConfig: MessageFns<UpstreamServiceConfig> = {
   },
   fromPartial<I extends Exact<DeepPartial<UpstreamServiceConfig>, I>>(object: I): UpstreamServiceConfig {
     const message = createBaseUpstreamServiceConfig();
-    message.id = object.id ?? "";
     message.name = object.name ?? "";
+    message.id = object.id ?? "";
     message.sanitizedName = object.sanitizedName ?? "";
+    message.version = object.version ?? "";
+    message.priority = object.priority ?? 0;
+    message.disable = object.disable ?? false;
+    message.autoDiscoverTool = object.autoDiscoverTool ?? false;
+    message.configError = object.configError ?? "";
     message.connectionPool = (object.connectionPool !== undefined && object.connectionPool !== null)
       ? ConnectionPoolConfig.fromPartial(object.connectionPool)
       : undefined;
@@ -1587,6 +1471,18 @@ export const UpstreamServiceConfig: MessageFns<UpstreamServiceConfig> = {
     message.loadBalancingStrategy = object.loadBalancingStrategy ?? 0;
     message.resilience = (object.resilience !== undefined && object.resilience !== null)
       ? ResilienceConfig.fromPartial(object.resilience)
+      : undefined;
+    message.authentication = (object.authentication !== undefined && object.authentication !== null)
+      ? Authentication.fromPartial(object.authentication)
+      : undefined;
+    message.toolExportPolicy = (object.toolExportPolicy !== undefined && object.toolExportPolicy !== null)
+      ? ExportPolicy.fromPartial(object.toolExportPolicy)
+      : undefined;
+    message.promptExportPolicy = (object.promptExportPolicy !== undefined && object.promptExportPolicy !== null)
+      ? ExportPolicy.fromPartial(object.promptExportPolicy)
+      : undefined;
+    message.resourceExportPolicy = (object.resourceExportPolicy !== undefined && object.resourceExportPolicy !== null)
+      ? ExportPolicy.fromPartial(object.resourceExportPolicy)
       : undefined;
     message.mcpService = (object.mcpService !== undefined && object.mcpService !== null)
       ? McpUpstreamService.fromPartial(object.mcpService)
@@ -1621,27 +1517,10 @@ export const UpstreamServiceConfig: MessageFns<UpstreamServiceConfig> = {
     message.vectorService = (object.vectorService !== undefined && object.vectorService !== null)
       ? VectorUpstreamService.fromPartial(object.vectorService)
       : undefined;
-    message.version = object.version ?? "";
-    message.authentication = (object.authentication !== undefined && object.authentication !== null)
-      ? Authentication.fromPartial(object.authentication)
-      : undefined;
-    message.disable = object.disable ?? false;
-    message.priority = object.priority ?? 0;
     message.callPolicies = object.callPolicies?.map((e) => CallPolicy.fromPartial(e)) || [];
     message.preCallHooks = object.preCallHooks?.map((e) => CallHook.fromPartial(e)) || [];
     message.postCallHooks = object.postCallHooks?.map((e) => CallHook.fromPartial(e)) || [];
     message.prompts = object.prompts?.map((e) => PromptDefinition.fromPartial(e)) || [];
-    message.toolExportPolicy = (object.toolExportPolicy !== undefined && object.toolExportPolicy !== null)
-      ? ExportPolicy.fromPartial(object.toolExportPolicy)
-      : undefined;
-    message.promptExportPolicy = (object.promptExportPolicy !== undefined && object.promptExportPolicy !== null)
-      ? ExportPolicy.fromPartial(object.promptExportPolicy)
-      : undefined;
-    message.resourceExportPolicy = (object.resourceExportPolicy !== undefined && object.resourceExportPolicy !== null)
-      ? ExportPolicy.fromPartial(object.resourceExportPolicy)
-      : undefined;
-    message.autoDiscoverTool = object.autoDiscoverTool ?? false;
-    message.configError = object.configError ?? "";
     return message;
   },
 };
@@ -6415,9 +6294,9 @@ export const McpUpstreamService_CallsEntry: MessageFns<McpUpstreamService_CallsE
 function createBaseMcpStdioConnection(): McpStdioConnection {
   return {
     command: "",
-    args: [],
     workingDirectory: "",
     containerImage: "",
+    args: [],
     setupCommands: [],
     env: {},
     validation: undefined,
@@ -6429,14 +6308,14 @@ export const McpStdioConnection: MessageFns<McpStdioConnection> = {
     if (message.command !== "") {
       writer.uint32(10).string(message.command);
     }
-    for (const v of message.args) {
-      writer.uint32(18).string(v!);
-    }
     if (message.workingDirectory !== "") {
-      writer.uint32(26).string(message.workingDirectory);
+      writer.uint32(18).string(message.workingDirectory);
     }
     if (message.containerImage !== "") {
-      writer.uint32(34).string(message.containerImage);
+      writer.uint32(26).string(message.containerImage);
+    }
+    for (const v of message.args) {
+      writer.uint32(34).string(v!);
     }
     for (const v of message.setupCommands) {
       writer.uint32(42).string(v!);
@@ -6470,7 +6349,7 @@ export const McpStdioConnection: MessageFns<McpStdioConnection> = {
             break;
           }
 
-          message.args.push(reader.string());
+          message.workingDirectory = reader.string();
           continue;
         }
         case 3: {
@@ -6478,7 +6357,7 @@ export const McpStdioConnection: MessageFns<McpStdioConnection> = {
             break;
           }
 
-          message.workingDirectory = reader.string();
+          message.containerImage = reader.string();
           continue;
         }
         case 4: {
@@ -6486,7 +6365,7 @@ export const McpStdioConnection: MessageFns<McpStdioConnection> = {
             break;
           }
 
-          message.containerImage = reader.string();
+          message.args.push(reader.string());
           continue;
         }
         case 5: {
@@ -6528,9 +6407,9 @@ export const McpStdioConnection: MessageFns<McpStdioConnection> = {
   fromJSON(object: any): McpStdioConnection {
     return {
       command: isSet(object.command) ? globalThis.String(object.command) : "",
-      args: globalThis.Array.isArray(object?.args) ? object.args.map((e: any) => globalThis.String(e)) : [],
       workingDirectory: isSet(object.working_directory) ? globalThis.String(object.working_directory) : "",
       containerImage: isSet(object.container_image) ? globalThis.String(object.container_image) : "",
+      args: globalThis.Array.isArray(object?.args) ? object.args.map((e: any) => globalThis.String(e)) : [],
       setupCommands: globalThis.Array.isArray(object?.setup_commands)
         ? object.setup_commands.map((e: any) => globalThis.String(e))
         : [],
@@ -6552,14 +6431,14 @@ export const McpStdioConnection: MessageFns<McpStdioConnection> = {
     if (message.command !== "") {
       obj.command = message.command;
     }
-    if (message.args?.length) {
-      obj.args = message.args;
-    }
     if (message.workingDirectory !== "") {
       obj.working_directory = message.workingDirectory;
     }
     if (message.containerImage !== "") {
       obj.container_image = message.containerImage;
+    }
+    if (message.args?.length) {
+      obj.args = message.args;
     }
     if (message.setupCommands?.length) {
       obj.setup_commands = message.setupCommands;
@@ -6585,9 +6464,9 @@ export const McpStdioConnection: MessageFns<McpStdioConnection> = {
   fromPartial<I extends Exact<DeepPartial<McpStdioConnection>, I>>(object: I): McpStdioConnection {
     const message = createBaseMcpStdioConnection();
     message.command = object.command ?? "";
-    message.args = object.args?.map((e) => e) || [];
     message.workingDirectory = object.workingDirectory ?? "";
     message.containerImage = object.containerImage ?? "";
+    message.args = object.args?.map((e) => e) || [];
     message.setupCommands = object.setupCommands?.map((e) => e) || [];
     message.env = (globalThis.Object.entries(object.env ?? {}) as [string, SecretValue][]).reduce(
       (acc: { [key: string]: SecretValue }, [key, value]: [string, SecretValue]) => {
@@ -6852,7 +6731,7 @@ export const McpBundleConnection: MessageFns<McpBundleConnection> = {
       writer.uint32(18).string(message.containerImage);
     }
     globalThis.Object.entries(message.env).forEach(([key, value]: [string, SecretValue]) => {
-      McpBundleConnection_EnvEntry.encode({ key: key as any, value }, writer.uint32(34).fork()).join();
+      McpBundleConnection_EnvEntry.encode({ key: key as any, value }, writer.uint32(26).fork()).join();
     });
     return writer;
   },
@@ -6880,14 +6759,14 @@ export const McpBundleConnection: MessageFns<McpBundleConnection> = {
           message.containerImage = reader.string();
           continue;
         }
-        case 4: {
-          if (tag !== 34) {
+        case 3: {
+          if (tag !== 26) {
             break;
           }
 
-          const entry4 = McpBundleConnection_EnvEntry.decode(reader, reader.uint32());
-          if (entry4.value !== undefined) {
-            message.env[entry4.key] = entry4.value;
+          const entry3 = McpBundleConnection_EnvEntry.decode(reader, reader.uint32());
+          if (entry3.value !== undefined) {
+            message.env[entry3.key] = entry3.value;
           }
           continue;
         }

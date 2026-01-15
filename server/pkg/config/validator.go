@@ -123,8 +123,8 @@ func Validate(ctx context.Context, config *configv1.McpAnyServerConfig, binaryTy
 		}
 	}
 
-	for _, collection := range config.GetUpstreamServiceCollections() {
-		if err := validateUpstreamServiceCollection(ctx, collection); err != nil {
+	for _, collection := range config.GetCollections() {
+		if err := validateCollection(ctx, collection); err != nil {
 			validationErrors = append(validationErrors, ValidationError{
 				ServiceName: collection.GetName(),
 				Err:         err,
@@ -135,19 +135,24 @@ func Validate(ctx context.Context, config *configv1.McpAnyServerConfig, binaryTy
 	return validationErrors
 }
 
-func validateUpstreamServiceCollection(ctx context.Context, collection *configv1.UpstreamServiceCollection) error {
+func validateCollection(ctx context.Context, collection *configv1.Collection) error {
 	if collection.GetName() == "" {
 		return fmt.Errorf("collection name is empty")
 	}
 	if collection.GetHttpUrl() == "" {
-		return fmt.Errorf("collection http_url is empty")
-	}
-	if !validation.IsValidURL(collection.GetHttpUrl()) {
-		return fmt.Errorf("invalid collection http_url: %s", collection.GetHttpUrl())
-	}
-	u, _ := url.Parse(collection.GetHttpUrl())
-	if u.Scheme != schemeHTTP && u.Scheme != schemeHTTPS {
-		return fmt.Errorf("invalid collection http_url scheme: %s", u.Scheme)
+		if len(collection.GetServices()) == 0 && len(collection.GetSkills()) == 0 {
+			return fmt.Errorf("collection must have either http_url or inline content (services/skills)")
+		}
+		// If content is present, HttpUrl is optional (inline collection)
+	} else {
+		// If HttpUrl is present, validate it
+		if !validation.IsValidURL(collection.GetHttpUrl()) {
+			return fmt.Errorf("invalid collection http_url: %s", collection.GetHttpUrl())
+		}
+		u, _ := url.Parse(collection.GetHttpUrl())
+		if u.Scheme != schemeHTTP && u.Scheme != schemeHTTPS {
+			return fmt.Errorf("invalid collection http_url scheme: %s", u.Scheme)
+		}
 	}
 
 	if authConfig := collection.GetAuthentication(); authConfig != nil {

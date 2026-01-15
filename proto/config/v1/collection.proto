@@ -6,12 +6,18 @@ edition = "2023";
 package mcpany.config.v1;
 
 import "proto/config/v1/upstream_service.proto";
+import "proto/config/v1/auth.proto";
 
 option go_package = "github.com/mcpany/core/proto/config/v1";
 
-message UpstreamServiceCollectionShare {
-  repeated UpstreamServiceConfig services = 1;
-  string version = 2;
-  string description = 3;
-  string name = 4;
+message Collection {
+  string name = 1;
+  string description = 2;
+  string version = 3;
+  int32 priority = 4;
+  string http_url = 5 [json_name = "http_url"];
+  Authentication authentication = 6;
+
+  repeated UpstreamServiceConfig services = 7;
+  repeated string skills = 8;
 }

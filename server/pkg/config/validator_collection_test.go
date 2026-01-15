@@ -12,9 +12,9 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestValidate_UpstreamServiceCollection_InvalidURL(t *testing.T) {
+func TestValidate_Collection_InvalidURL(t *testing.T) {
 	config := &configv1.McpAnyServerConfig{
-		UpstreamServiceCollections: []*configv1.UpstreamServiceCollection{
+		Collections: []*configv1.Collection{
 			{
 				Name:    proto.String("invalid-collection"),
 				HttpUrl: proto.String("not-a-url"),
@@ -28,9 +28,9 @@ func TestValidate_UpstreamServiceCollection_InvalidURL(t *testing.T) {
 	assert.NotEmpty(t, errs, "Expected validation error for invalid URL in collection")
 }
 
-func TestValidate_UpstreamServiceCollection_EmptyURL(t *testing.T) {
+func TestValidate_Collection_EmptyURL(t *testing.T) {
 	config := &configv1.McpAnyServerConfig{
-		UpstreamServiceCollections: []*configv1.UpstreamServiceCollection{
+		Collections: []*configv1.Collection{
 			{
 				Name:    proto.String("empty-url-collection"),
 				HttpUrl: proto.String(""),
@@ -42,4 +42,19 @@ func TestValidate_UpstreamServiceCollection_EmptyURL(t *testing.T) {
 
 	// This ensures that invalid collections are caught by Validate
 	assert.NotEmpty(t, errs, "Expected validation error for empty URL in collection")
+	// Verify exact error if possible or just existence
+}
+
+func TestValidate_Collection_InlineWithSkills(t *testing.T) {
+	config := &configv1.McpAnyServerConfig{
+		Collections: []*configv1.Collection{
+			{
+				Name:   proto.String("skills-collection"),
+				Skills: []string{"test-skill"},
+			},
+		},
+	}
+
+	errs := Validate(context.Background(), config, Server)
+	assert.Empty(t, errs, "Expected no validation error for inline collection with skills")
 }

@@ -916,7 +916,7 @@ func TestValidate_ExtraServices(t *testing.T) {
 			config: func() *configv1.McpAnyServerConfig {
 				cfg := &configv1.McpAnyServerConfig{}
 				require.NoError(t, protojson.Unmarshal([]byte(`{
-					"upstream_service_collections": [
+					"collections": [
 						{
 							"name": "collection-1",
 							"http_url": "http://example.com/collection"
@@ -932,7 +932,7 @@ func TestValidate_ExtraServices(t *testing.T) {
 			config: func() *configv1.McpAnyServerConfig {
 				cfg := &configv1.McpAnyServerConfig{}
 				require.NoError(t, protojson.Unmarshal([]byte(`{
-					"upstream_service_collections": [
+					"collections": [
 						{
 							"name": "",
 							"http_url": "http://example.com/collection"
@@ -949,7 +949,7 @@ func TestValidate_ExtraServices(t *testing.T) {
 			config: func() *configv1.McpAnyServerConfig {
 				cfg := &configv1.McpAnyServerConfig{}
 				require.NoError(t, protojson.Unmarshal([]byte(`{
-					"upstream_service_collections": [
+					"collections": [
 						{
 							"name": "collection-no-url",
 							"http_url": ""
@@ -959,14 +959,14 @@ func TestValidate_ExtraServices(t *testing.T) {
 				return cfg
 			}(),
 			expectedErrorCount:  1,
-			expectedErrorString: `service "collection-no-url": collection http_url is empty`,
+			expectedErrorString: `service "collection-no-url": collection must have either http_url or inline content (services/skills)`,
 		},
 		{
 			name: "invalid upstream service collection - bad url scheme",
 			config: func() *configv1.McpAnyServerConfig {
 				cfg := &configv1.McpAnyServerConfig{}
 				require.NoError(t, protojson.Unmarshal([]byte(`{
-					"upstream_service_collections": [
+					"collections": [
 						{
 							"name": "collection-bad-scheme",
 							"http_url": "ftp://example.com/collection"
@@ -983,7 +983,7 @@ func TestValidate_ExtraServices(t *testing.T) {
 			config: func() *configv1.McpAnyServerConfig {
 				cfg := &configv1.McpAnyServerConfig{}
 				require.NoError(t, protojson.Unmarshal([]byte(`{
-					"upstream_service_collections": [
+					"collections": [
 						{
 							"name": "collection-auth",
 							"http_url": "http://example.com/collection",

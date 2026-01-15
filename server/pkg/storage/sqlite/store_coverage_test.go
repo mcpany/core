@@ -84,7 +84,7 @@ func TestStore_Validations(t *testing.T) {
 	})
 
 	t.Run("SaveServiceCollection Missing Name", func(t *testing.T) {
-		err := store.SaveServiceCollection(ctx, &configv1.UpstreamServiceCollectionShare{})
+		err := store.SaveServiceCollection(ctx, &configv1.Collection{})
 		assert.ErrorContains(t, err, "collection name is required")
 	})
 

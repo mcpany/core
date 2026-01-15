@@ -65,7 +65,7 @@ services:
 		}, nil
 	}
 
-	collection := &configv1.UpstreamServiceCollection{
+	collection := &configv1.Collection{
 		Name:    proto.String("test-collection"),
 		HttpUrl: proto.String("https://github.com/owner/repo/tree/main/path"),
 	}

@@ -30,7 +30,7 @@ func TestUpstreamServiceManager_LoadAndMergeServices_Errors(t *testing.T) {
 
 	t.Run("HTTP Non-200 Error", func(t *testing.T) {
 		config := &configv1.McpAnyServerConfig{
-			UpstreamServiceCollections: []*configv1.UpstreamServiceCollection{
+			Collections: []*configv1.Collection{
 				{
 					Name:    proto.String("error-collection"),
 					HttpUrl: proto.String(server.URL + "/error"),

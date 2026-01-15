@@ -113,7 +113,7 @@ func (m *UpstreamServiceManager) LoadAndMergeServices(ctx context.Context, confi
 	}
 
 	// Load and merge remote service collections
-	for _, collection := range config.GetUpstreamServiceCollections() {
+	for _, collection := range config.GetCollections() {
 		if err := m.loadAndMergeCollection(ctx, collection); err != nil {
 			m.log.Warn("Failed to load upstream service collection", "name", collection.GetName(), "url", collection.GetHttpUrl(), "error", err)
 			// Continue loading other collections even if one fails
@@ -131,7 +131,7 @@ func (m *UpstreamServiceManager) LoadAndMergeServices(ctx context.Context, confi
 	return services, nil
 }
 
-func (m *UpstreamServiceManager) loadAndMergeCollection(ctx context.Context, collection *configv1.UpstreamServiceCollection) error {
+func (m *UpstreamServiceManager) loadAndMergeCollection(ctx context.Context, collection *configv1.Collection) error {
 	if isGitHubURL(collection.GetHttpUrl()) {
 		g, err := m.newGitHub(ctx, collection.GetHttpUrl())
 		if err != nil {
@@ -149,7 +149,7 @@ func (m *UpstreamServiceManager) loadAndMergeCollection(ctx context.Context, col
 
 		for _, content := range contents {
 			if content.Type == "dir" {
-				newCollection := configv1.UpstreamServiceCollection_builder{
+				newCollection := configv1.Collection_builder{
 					Name:           proto.String(collection.GetName()),
 					HttpUrl:        proto.String(content.HTMLURL),
 					Priority:       proto.Int32(collection.GetPriority()),
@@ -178,7 +178,7 @@ func (m *UpstreamServiceManager) loadAndMergeCollection(ctx context.Context, col
 	return m.loadFromURL(ctx, collection.GetHttpUrl(), collection)
 }
 
-func (m *UpstreamServiceManager) loadFromURL(ctx context.Context, url string, collection *configv1.UpstreamServiceCollection) error {
+func (m *UpstreamServiceManager) loadFromURL(ctx context.Context, url string, collection *configv1.Collection) error {
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
 	if err != nil {
 		return fmt.Errorf("failed to create http request: %w", err)
@@ -233,7 +233,7 @@ func (m *UpstreamServiceManager) unmarshalServices(data []byte, services *[]*con
 	case "application/json":
 		jsonData = data
 	case "application/protobuf", "text/plain":
-		var serviceList configv1.UpstreamServiceCollectionShare
+		var serviceList configv1.Collection
 		if err := prototext.Unmarshal(data, &serviceList); err != nil {
 			return fmt.Errorf("failed to unmarshal protobuf text: %w", err)
 		}
@@ -252,7 +252,7 @@ func (m *UpstreamServiceManager) unmarshalServices(data []byte, services *[]*con
 }
 
 func (m *UpstreamServiceManager) unmarshalProtoJSON(data []byte, services *[]*configv1.UpstreamServiceConfig) error {
-	var serviceList configv1.UpstreamServiceCollectionShare
+	var serviceList configv1.Collection
 	if err := protojson.Unmarshal(data, &serviceList); err != nil {
 		// If unmarshalling into a list fails, try unmarshalling as a single service
 		var singleService configv1.UpstreamServiceConfig

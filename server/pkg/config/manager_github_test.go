@@ -94,7 +94,7 @@ services:
 		}, nil
 	}
 
-	collection := &configv1.UpstreamServiceCollection{
+	collection := &configv1.Collection{
 		Name:    proto.String("test-collection"),
 		HttpUrl: proto.String("https://github.com/owner/repo/tree/main/path"),
 	}
@@ -113,7 +113,7 @@ func TestUpstreamServiceManager_LoadAndMergeCollection_GitHub_Error(t *testing.T
 		return nil, fmt.Errorf("mock setup error")
 	}
 
-	collection := &configv1.UpstreamServiceCollection{
+	collection := &configv1.Collection{
 		Name:    proto.String("test-collection"),
 		HttpUrl: proto.String("https://github.com/owner/repo/tree/main/path"),
 	}
@@ -141,7 +141,7 @@ func TestUpstreamServiceManager_LoadAndMergeCollection_GitHub_ListError(t *testi
 		}, nil
 	}
 
-	collection := &configv1.UpstreamServiceCollection{
+	collection := &configv1.Collection{
 		HttpUrl: proto.String("https://github.com/owner/repo/tree/main/path"),
 	}
 
