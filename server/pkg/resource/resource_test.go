@@ -71,6 +71,10 @@ func TestResourceManager_AddGetListRemoveResource(t *testing.T) {
 	assert.Contains(t, resources, resource1)
 	assert.Contains(t, resources, resource2)
 
+	// List again (cache hit)
+	resources = rm.ListResources()
+	assert.Len(t, resources, 2)
+
 	// Remove
 	rm.RemoveResource("resource://one")
 	_, ok = rm.GetResource("resource://one")
@@ -156,4 +160,8 @@ func TestResourceManager_ClearResourcesForService(t *testing.T) {
 
 	// Verify callback (called once for Clear)
 	assert.Equal(t, 4, changedCount)
+
+	// Clear a service that has no resources
+	rm.ClearResourcesForService("non-existent-service")
+	assert.Equal(t, 4, changedCount, "OnListChanged should not be called when no resources are cleared")
 }
