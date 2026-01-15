@@ -9,6 +9,7 @@
   - Import external services via gRPC auto-discovery or OpenAPI specs.
   - Export and share service configurations.
 - [x] **Service Connection Diagnostic Tool**: Interactive tool to diagnose connection issues with upstream services (DNS, Handshake, Capabilities) - Added based on Ecosystem Audit.
+  - _Update_: Enhanced with WebSocket support and browser-side connectivity probing.
 - [ ] **Plugin UI Extensions**: Allow server plugins to inject custom UI components.
 - [x] **Service Templates Library**: A built-in library of common service configurations (Postgres, Redis, Slack) to quickly spin up services without manual config.
 - [ ] **Configuration Versioning & Rollback**: UI to view history of service configuration changes and rollback to previous versions.
