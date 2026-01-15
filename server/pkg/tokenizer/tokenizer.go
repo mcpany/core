@@ -155,6 +155,31 @@ func CountTokensInValue(t Tokenizer, v interface{}) (int, error) {
 				count += c
 			}
 			return count, nil
+		case []int:
+			count := 0
+			for _, item := range val {
+				count += simpleTokenizeInt(item)
+			}
+			return count, nil
+		case []int64:
+			count := 0
+			for _, item := range val {
+				count += simpleTokenizeInt64(item)
+			}
+			return count, nil
+		case []bool:
+			// bool is always 1 token
+			return len(val), nil
+		case []float64:
+			count := 0
+			for _, item := range val {
+				c, err := st.CountTokens(strconv.FormatFloat(item, 'g', -1, 64))
+				if err != nil {
+					return 0, err
+				}
+				count += c
+			}
+			return count, nil
 		case map[string]string:
 			count := 0
 			for key, item := range val {
@@ -193,6 +218,14 @@ func CountTokensInValue(t Tokenizer, v interface{}) (int, error) {
 				count += c
 			}
 			return count, nil
+		case []int:
+			return len(val) * primitiveCount, nil
+		case []int64:
+			return len(val) * primitiveCount, nil
+		case []float64:
+			return len(val) * primitiveCount, nil
+		case []bool:
+			return len(val) * primitiveCount, nil
 		case map[string]string:
 			count := 0
 			for key, item := range val {
@@ -356,6 +389,30 @@ func countTokensInValueSimple(t *SimpleTokenizer, v interface{}, visited map[uin
 			count += c
 		}
 		return count, nil
+	case []int:
+		count := 0
+		for _, item := range val {
+			count += simpleTokenizeInt(item)
+		}
+		return count, nil
+	case []int64:
+		count := 0
+		for _, item := range val {
+			count += simpleTokenizeInt64(item)
+		}
+		return count, nil
+	case []bool:
+		return len(val), nil
+	case []float64:
+		count := 0
+		for _, item := range val {
+			c, err := t.CountTokens(strconv.FormatFloat(item, 'g', -1, 64))
+			if err != nil {
+				return 0, err
+			}
+			count += c
+		}
+		return count, nil
 	case map[string]string:
 		count := 0
 		for key, item := range val {
@@ -446,6 +503,14 @@ func countTokensInValueWord(t *WordTokenizer, v interface{}, visited map[uintptr
 			count += c
 		}
 		return count, nil
+	case []int:
+		return len(val) * primitiveCount, nil
+	case []int64:
+		return len(val) * primitiveCount, nil
+	case []float64:
+		return len(val) * primitiveCount, nil
+	case []bool:
+		return len(val) * primitiveCount, nil
 	case map[string]string:
 		count := 0
 		for key, item := range val {
