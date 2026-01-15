@@ -1,0 +1,8 @@
+# Copyright 2026 Author(s) of MCP Any
+# SPDX-License-Identifier: Apache-2.0
+
+upstream_services:
+  - name: weather
+    http_service:
+      address: https://wttr.in
+      port: "8080"

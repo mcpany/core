@@ -395,6 +395,7 @@ func newRootCmd() *cobra.Command { //nolint:gocyclo // Main entry point, expecte
 		},
 	}
 	rootCmd.AddCommand(lintCmd)
+	rootCmd.AddCommand(newCheckCmd())
 	rootCmd.AddCommand(configCmd)
 
 	config.BindRootFlags(rootCmd)

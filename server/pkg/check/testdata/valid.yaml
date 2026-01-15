@@ -1,0 +1,17 @@
+# Copyright 2026 Author(s) of MCP Any
+# SPDX-License-Identifier: Apache-2.0
+
+upstream_services:
+  - name: weather
+    http_service:
+      address: https://wttr.in
+      tools: []
+    upstream_auth:
+      api_key:
+        value:
+          plain_text: secret
+        in: HEADER
+        param_name: X-API-Key
+  - name: local
+    command_line_service:
+      command: ls -la

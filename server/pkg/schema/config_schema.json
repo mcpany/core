@@ -1,0 +1,228 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mcpany.com/schema/config.json",
+  "title": "McpAnyServerConfig",
+  "type": "object",
+  "properties": {
+    "global_settings": { "$ref": "#/$defs/GlobalSettings" },
+    "upstream_services": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/UpstreamServiceConfig" }
+    },
+    "upstream_service_collections": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/UpstreamServiceCollection" }
+    },
+    "users": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/User" }
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "GlobalSettings": {
+      "type": "object",
+      "properties": {
+        "mcp_listen_address": { "type": "string" },
+        "log_level": { "type": ["string", "integer"], "enum": ["LOG_LEVEL_UNSPECIFIED", "LOG_LEVEL_INFO", "LOG_LEVEL_WARN", "LOG_LEVEL_ERROR", "LOG_LEVEL_DEBUG", "INFO", "WARN", "ERROR", "DEBUG", 0, 1, 2, 3, 4] },
+        "message_bus": { "type": "object" },
+        "api_key": { "type": "string" },
+        "profiles": { "type": "array", "items": { "type": "string" } },
+        "allowed_ips": { "type": "array", "items": { "type": "string" } },
+        "audit": { "$ref": "#/$defs/AuditConfig" },
+        "profile_definitions": { "type": "array", "items": { "$ref": "#/$defs/ProfileDefinition" } },
+        "log_format": { "type": "string" },
+        "db_path": { "type": "string" },
+        "db_dsn": { "type": "string" },
+        "db_driver": { "type": "string" },
+        "middlewares": { "type": "array", "items": { "$ref": "#/$defs/Middleware" } },
+        "dlp": { "$ref": "#/$defs/DLPConfig" },
+        "gc_settings": { "$ref": "#/$defs/GCSettings" },
+        "oidc": { "$ref": "#/$defs/OIDCConfig" },
+        "rate_limit": { "$ref": "#/$defs/RateLimitConfig" },
+        "telemetry": { "$ref": "#/$defs/TelemetryConfig" },
+        "github_api_url": { "type": "string" },
+        "use_sudo_for_docker": { "type": "boolean" },
+        "allowed_file_paths": { "type": "array", "items": { "type": "string" } },
+        "allowed_origins": { "type": "array", "items": { "type": "string" } }
+      },
+      "additionalProperties": false
+    },
+    "UpstreamServiceConfig": {
+      "type": "object",
+      "required": ["name"],
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "sanitized_name": { "type": "string" },
+        "connection_pool": { "$ref": "#/$defs/ConnectionPoolConfig" },
+        "upstream_auth": { "$ref": "#/$defs/Authentication" },
+        "cache": { "$ref": "#/$defs/CacheConfig" },
+        "rate_limit": { "$ref": "#/$defs/RateLimitConfig" },
+        "load_balancing_strategy": { "type": "string" },
+        "resilience": { "$ref": "#/$defs/ResilienceConfig" },
+        "mcp_service": { "$ref": "#/$defs/McpUpstreamService" },
+        "http_service": { "$ref": "#/$defs/HttpUpstreamService" },
+        "grpc_service": { "$ref": "#/$defs/GrpcUpstreamService" },
+        "openapi_service": { "$ref": "#/$defs/OpenapiUpstreamService" },
+        "command_line_service": { "$ref": "#/$defs/CommandLineUpstreamService" },
+        "websocket_service": { "$ref": "#/$defs/WebsocketUpstreamService" },
+        "webrtc_service": { "$ref": "#/$defs/WebrtcUpstreamService" },
+        "graphql_service": { "$ref": "#/$defs/GraphQLUpstreamService" },
+        "sql_service": { "$ref": "#/$defs/SqlUpstreamService" },
+        "filesystem_service": { "$ref": "#/$defs/FilesystemUpstreamService" },
+        "vector_service": { "$ref": "#/$defs/VectorUpstreamService" },
+        "version": { "type": "string" },
+        "authentication": { "$ref": "#/$defs/Authentication" },
+        "disable": { "type": "boolean" },
+        "priority": { "type": "integer" },
+        "call_policies": { "type": "array", "items": { "$ref": "#/$defs/CallPolicy" } },
+        "pre_call_hooks": { "type": "array", "items": { "$ref": "#/$defs/CallHook" } },
+        "post_call_hooks": { "type": "array", "items": { "$ref": "#/$defs/CallHook" } },
+        "prompts": { "type": "array" },
+        "tool_export_policy": { "$ref": "#/$defs/ExportPolicy" },
+        "prompt_export_policy": { "$ref": "#/$defs/ExportPolicy" },
+        "resource_export_policy": { "$ref": "#/$defs/ExportPolicy" },
+        "auto_discover_tool": { "type": "boolean" },
+        "config_error": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "Authentication": {
+        "type": "object",
+        "properties": {
+            "api_key": { "$ref": "#/$defs/APIKeyAuth" },
+            "bearer_token": { "$ref": "#/$defs/BearerTokenAuth" },
+            "basic_auth": { "$ref": "#/$defs/BasicAuth" },
+            "oauth2": { "$ref": "#/$defs/OAuth2Auth" },
+            "oidc": { "$ref": "#/$defs/OIDCAuth" },
+            "mtls": { "$ref": "#/$defs/MTLSAuth" },
+            "trusted_header": { "$ref": "#/$defs/TrustedHeaderAuth" }
+        },
+        "additionalProperties": false
+    },
+    "APIKeyAuth": {
+        "type": "object",
+        "required": ["value"],
+        "properties": {
+            "param_name": { "type": "string" },
+            "in": { "type": "string", "enum": ["HEADER", "QUERY", "COOKIE"] },
+            "value": { "$ref": "#/$defs/SecretValue" },
+            "verification_value": { "type": "string" }
+        },
+        "additionalProperties": false
+    },
+    "BearerTokenAuth": {
+        "type": "object",
+        "required": ["token"],
+        "properties": {
+            "token": { "$ref": "#/$defs/SecretValue" }
+        },
+        "additionalProperties": false
+    },
+    "SecretValue": {
+        "type": "object",
+        "properties": {
+            "plain_text": { "type": "string" },
+            "environment_variable": { "type": "string" },
+            "file_path": { "type": "string" },
+            "value": { "type": "string" }
+        },
+        "additionalProperties": true
+    },
+    "HttpUpstreamService": {
+        "type": "object",
+        "required": ["address"],
+        "properties": {
+            "address": { "type": "string" },
+            "tools": { "type": "array" },
+            "calls": { "type": "object" },
+            "health_check": { "type": "object" },
+            "tls_config": { "$ref": "#/$defs/TLSConfig" },
+            "resources": { "type": "array" },
+            "prompts": { "type": "array" }
+        },
+        "additionalProperties": false
+    },
+    "CommandLineUpstreamService": {
+        "type": "object",
+        "required": ["command"],
+        "properties": {
+            "command": { "type": "string" },
+            "working_directory": { "type": "string" },
+            "tools": { "type": "array" },
+            "health_check": { "type": "object" },
+            "cache": { "$ref": "#/$defs/CacheConfig" },
+            "container_environment": { "$ref": "#/$defs/ContainerEnvironment" },
+            "timeout": { "type": "string" },
+            "resources": { "type": "array" },
+            "calls": { "type": "object" },
+            "prompts": { "type": "array" },
+            "communication_protocol": { "type": ["string", "integer"] },
+            "local": { "type": "boolean" },
+            "env": { "type": "object", "additionalProperties": { "$ref": "#/$defs/SecretValue" } }
+        },
+        "additionalProperties": false
+    },
+    "McpUpstreamService": {
+        "type": "object",
+        "properties": {
+            "http_connection": { "$ref": "#/$defs/McpStreamableHttpConnection" },
+            "stdio_connection": { "$ref": "#/$defs/McpStdioConnection" },
+            "bundle_connection": { "$ref": "#/$defs/McpBundleConnection" },
+            "tool_auto_discovery": { "type": "boolean" },
+            "tools": { "type": "array" },
+            "resources": { "type": "array" },
+            "calls": { "type": "object" },
+            "prompts": { "type": "array" }
+        },
+        "additionalProperties": false
+    },
+    "McpStdioConnection": {
+        "type": "object",
+        "required": ["command"],
+        "properties": {
+            "command": { "type": "string" },
+            "args": { "type": "array", "items": { "type": "string" } },
+            "working_directory": { "type": "string" },
+            "container_image": { "type": "string" },
+            "setup_commands": { "type": "array", "items": { "type": "string" } },
+            "env": { "type": "object", "additionalProperties": { "$ref": "#/$defs/SecretValue" } }
+        },
+        "additionalProperties": false
+    },
+    "CacheConfig": { "type": "object", "additionalProperties": true },
+    "RateLimitConfig": { "type": "object", "additionalProperties": true },
+    "ResilienceConfig": { "type": "object", "additionalProperties": true },
+    "ConnectionPoolConfig": { "type": "object", "additionalProperties": true },
+    "AuditConfig": { "type": "object", "additionalProperties": true },
+    "DLPConfig": { "type": "object", "additionalProperties": true },
+    "GCSettings": { "type": "object", "additionalProperties": true },
+    "OIDCConfig": { "type": "object", "additionalProperties": true },
+    "TelemetryConfig": { "type": "object", "additionalProperties": true },
+    "UpstreamServiceCollection": { "type": "object", "additionalProperties": true },
+    "User": { "type": "object", "additionalProperties": true },
+    "ProfileDefinition": { "type": "object", "additionalProperties": true },
+    "Middleware": { "type": "object", "additionalProperties": true },
+    "CallPolicy": { "type": "object", "additionalProperties": true },
+    "CallHook": { "type": "object", "additionalProperties": true },
+    "ExportPolicy": { "type": "object", "additionalProperties": true },
+    "TLSConfig": { "type": "object", "additionalProperties": true },
+    "McpStreamableHttpConnection": { "type": "object", "additionalProperties": true },
+    "McpBundleConnection": { "type": "object", "additionalProperties": true },
+    "ContainerEnvironment": { "type": "object", "additionalProperties": true },
+    "GrpcUpstreamService": { "type": "object", "additionalProperties": true },
+    "OpenapiUpstreamService": { "type": "object", "additionalProperties": true },
+    "WebsocketUpstreamService": { "type": "object", "additionalProperties": true },
+    "WebrtcUpstreamService": { "type": "object", "additionalProperties": true },
+    "GraphQLUpstreamService": { "type": "object", "additionalProperties": true },
+    "SqlUpstreamService": { "type": "object", "additionalProperties": true },
+    "FilesystemUpstreamService": { "type": "object", "additionalProperties": true },
+    "VectorUpstreamService": { "type": "object", "additionalProperties": true },
+    "BasicAuth": { "type": "object", "additionalProperties": true },
+    "OAuth2Auth": { "type": "object", "additionalProperties": true },
+    "OIDCAuth": { "type": "object", "additionalProperties": true },
+    "MTLSAuth": { "type": "object", "additionalProperties": true },
+    "TrustedHeaderAuth": { "type": "object", "additionalProperties": true }
+  }
+}
