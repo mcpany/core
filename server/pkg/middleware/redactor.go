@@ -57,11 +57,22 @@ func (r *Redactor) RedactJSON(data []byte) ([]byte, error) {
 	// Use streaming redaction to avoid full unmarshal/marshal cycle.
 	return util.WalkJSONStrings(data, func(raw []byte) ([]byte, bool) {
 		// Optimization: Check for obviously safe strings before unmarshaling.
-		// If the raw string (excluding quotes) doesn't contain '@' or digits,
-		// and doesn't contain escapes (which might hide them), it's likely safe.
-		// However, to be perfectly safe and simple, we unmarshal.
-		// Given that we are eliminating the overhead of map[string]interface{} and
-		// reflection for the entire structure, this is already a huge win.
+		// If we have no custom patterns, we can skip unmarshaling if the raw bytes
+		// (including quotes) don't contain indicators of PII: '@', digits, or escapes.
+		// This avoids expensive json.Unmarshal for the vast majority of safe strings.
+		if len(r.customPatterns) == 0 {
+			hasIndicator := false
+			for i := 0; i < len(raw); i++ {
+				c := raw[i]
+				if c == '@' || (c >= '0' && c <= '9') || c == '\\' {
+					hasIndicator = true
+					break
+				}
+			}
+			if !hasIndicator {
+				return nil, false
+			}
+		}
 
 		var s string
 		if err := json.Unmarshal(raw, &s); err != nil {
