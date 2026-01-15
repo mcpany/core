@@ -39,6 +39,8 @@ type ManagerInterface interface {
 	GetTool(toolName string) (Tool, bool)
 	// ListTools returns all registered tools.
 	ListTools() []Tool
+	// ListMCPTools returns all registered tools in MCP format.
+	ListMCPTools() []*mcp.Tool
 	// ClearToolsForService removes all tools for a given service.
 	ClearToolsForService(serviceID string)
 	// ExecuteTool executes a tool with the given request.
@@ -79,7 +81,10 @@ type Manager struct {
 	mu          sync.RWMutex
 	middlewares []ExecutionMiddleware
 	cachedTools []Tool
-	toolsMutex  sync.RWMutex
+	// cachedMCPTools caches the list of tools in MCP format to avoid
+	// re-allocating and re-converting them on every request.
+	cachedMCPTools []*mcp.Tool
+	toolsMutex     sync.RWMutex
 
 	enabledProfiles []string
 	profileDefs     map[string]*configv1.ProfileDefinition
@@ -492,6 +497,7 @@ func (tm *Manager) AddTool(tool Tool) error {
 
 	tm.toolsMutex.Lock()
 	tm.cachedTools = nil
+	tm.cachedMCPTools = nil
 	tm.toolsMutex.Unlock()
 
 	if tm.mcpServer != nil {
@@ -637,6 +643,11 @@ func (tm *Manager) ListTools() []Tool {
 		return tm.cachedTools
 	}
 
+	return tm.rebuildCachedTools()
+}
+
+// rebuildCachedTools rebuilds the tools cache. Caller MUST hold tm.toolsMutex.Lock().
+func (tm *Manager) rebuildCachedTools() []Tool {
 	var tools []Tool
 	tm.tools.Range(func(_ string, value Tool) bool {
 		// Check service health
@@ -650,7 +661,45 @@ func (tm *Manager) ListTools() []Tool {
 		return true
 	})
 	tm.cachedTools = tools
+	// When we rebuild the source of truth, the derived cache must be invalidated
+	// if it wasn't already.
+	tm.cachedMCPTools = nil
 	return tools
+}
+
+// ListMCPTools returns a slice containing all the tools currently registered with
+// the manager in MCP format.
+func (tm *Manager) ListMCPTools() []*mcp.Tool {
+	tm.toolsMutex.RLock()
+	if tm.cachedMCPTools != nil {
+		defer tm.toolsMutex.RUnlock()
+		return tm.cachedMCPTools
+	}
+	tm.toolsMutex.RUnlock()
+
+	tm.toolsMutex.Lock()
+	defer tm.toolsMutex.Unlock()
+	// Double check
+	if tm.cachedMCPTools != nil {
+		return tm.cachedMCPTools
+	}
+
+	tools := tm.cachedTools
+	if tools == nil {
+		tools = tm.rebuildCachedTools()
+	}
+
+	// Build MCPTools cache
+	// We perform this under the lock to ensure that the cachedMCPTools matches cachedTools.
+	mcpTools := make([]*mcp.Tool, 0, len(tools))
+	for _, t := range tools {
+		if mt := t.MCPTool(); mt != nil {
+			mcpTools = append(mcpTools, mt)
+		}
+	}
+
+	tm.cachedMCPTools = mcpTools
+	return mcpTools
 }
 
 // ClearToolsForService removes all tools associated with a given service key from
@@ -694,6 +743,7 @@ func (tm *Manager) ClearToolsForService(serviceID string) {
 	if deletedCount > 0 {
 		tm.toolsMutex.Lock()
 		tm.cachedTools = nil
+		tm.cachedMCPTools = nil
 		tm.toolsMutex.Unlock()
 	}
 	log.Debug("Cleared tools for serviceID", "count", deletedCount)
