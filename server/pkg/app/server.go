@@ -39,6 +39,7 @@ import (
 	"github.com/mcpany/core/server/pkg/prompt"
 	"github.com/mcpany/core/server/pkg/resource"
 	"github.com/mcpany/core/server/pkg/serviceregistry"
+	"github.com/mcpany/core/server/pkg/skill"
 	"github.com/mcpany/core/server/pkg/storage"
 	"github.com/mcpany/core/server/pkg/storage/postgres"
 	"github.com/mcpany/core/server/pkg/storage/sqlite"
@@ -174,9 +175,13 @@ type Application struct {
 	configPaths      []string
 	Storage          storage.Storage
 	TemplateManager  *TemplateManager
-	busProvider      *bus.Provider
+	// Store explicit API Key passed via CLI args
+	explicitAPIKey string
 
-	// Middleware handles for dynamic updates
+	// SkillManager manages agent skills
+	SkillManager *skill.Manager
+
+	// lastReloadErr stores the error from the last configuration reload.
 	standardMiddlewares *middleware.StandardMiddlewares
 	// Settings Manager for global settings (dynamic updates)
 	SettingsManager *GlobalSettingsManager
@@ -189,11 +194,13 @@ type Application struct {
 	ipMiddleware   *middleware.IPAllowlistMiddleware
 	corsMiddleware *middleware.HTTPCORSMiddleware
 
+	busProvider      *bus.Provider
+
 	startupCh   chan struct{}
 	startupOnce sync.Once
 	configMu    sync.Mutex
-	// Store explicit API Key passed via CLI args
-	explicitAPIKey string
+
+	// lastReloadErr stores the error from the last configuration reload.
 
 	// lastReloadErr stores the error from the last configuration reload.
 	// It is protected by configMu.
@@ -368,6 +375,13 @@ func (a *Application) Run(
 	a.TemplateManager = NewTemplateManager("data") // Use "data" directory for now
 	a.ResourceManager = resource.NewManager()
 
+	// Initialize Skill Manager
+	skillManager, err := skill.NewManager("skills") // Use "skills" directory in CWD for now
+	if err != nil {
+		return fmt.Errorf("failed to initialize skill manager: %w", err)
+	}
+	a.SkillManager = skillManager
+
 	// Initialize auth manager
 	authManager := auth.NewManager()
 	authManager.SetUsers(cfg.GetUsers())
@@ -488,6 +502,12 @@ func (a *Application) Run(
 		return a.ReloadConfig(ctx, fs, configPaths)
 	})
 
+	// Register Skill resources
+	if err := mcpserver.RegisterSkillResources(a.ResourceManager, a.SkillManager); err != nil {
+		log.Error("Failed to register skill resources", "error", err)
+		// Don't fail startup for this?
+	}
+
 	a.ToolManager.SetMCPServer(mcpSrv)
 
 	if cfg.GetUpstreamServices() != nil {
@@ -577,6 +597,7 @@ func (a *Application) Run(
 	// If running in stdio mode, we must remove the auth middleware as it requires
 	// an HTTP request availability in the context, which is not present in stdio.
 	// Stdio mode implies local access (shell), so we trust the user.
+	// Stdio mode implies local access (shell), so we trust the user.
 	if stdio {
 		var filtered []*config_v1.Middleware
 		for _, m := range middlewares {
@@ -585,6 +606,22 @@ func (a *Application) Run(
 			}
 		}
 		middlewares = filtered
+	} else {
+		// Enforce auth middleware presence in non-stdio modes
+		hasAuth := false
+		for _, m := range middlewares {
+			if m.GetName() == authMiddlewareName {
+				hasAuth = true
+				break
+			}
+		}
+		if !hasAuth {
+			logging.GetLogger().Warn("Auth middleware not found in config, injecting it")
+			middlewares = append(middlewares, &config_v1.Middleware{
+				Name:     proto.String(authMiddlewareName),
+				Priority: proto.Int32(20), // Default priority
+			})
+		}
 	}
 
 	chain := middleware.GetMCPMiddlewares(middlewares)
@@ -1401,6 +1438,27 @@ func (a *Application) runServerMode(
 			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		}
 	})))
+	// mux.Handle("/api/v1/skills", authMiddleware(a.handleListSkills())) // Replaced by gRPC Gateway
+	// mux.Handle("/api/v1/skills/create", authMiddleware(a.handleCreateSkill())) // Replaced by gRPC Gateway
+
+	// Asset upload is handled later in the gRPC gateway block to support fallback
+
+	// Wait, we need to handle assets specifically.
+	// Let's use a more specific path for assets if possible, or ensure we fallback to gwmux?
+	// Mux doesn't fallback easily.
+	// Better: Register /v1/skills/{name}/assets manual handler if possible?
+	// ServeMux doesn't support wildcards.
+	// So we must handle /v1/skills/ and forward non-asset requests?
+	// But `gwmux` is NOT a simple handler we can call easily from here without re-entering the stack.
+	// ACTUALLY: gwmux is served via `mux.Handle("/v1/", ...)`
+	// If I register `mux.Handle("/v1/skills/", ...)` it takes precedence.
+	// So I MUST handle standard skill requests here too if I do that.
+	// OR I can use a different prefix for assets? No, API spec.
+	// OR I pass standard requests to `gwmux`?
+	// `gwmux.ServeHTTP(w, r)`!
+	// Yes, I can use `gwmux` as fallback.
+
+
 	mux.Handle("/credentials/", authMiddleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// This handles /credentials/:id
 		switch r.Method {
@@ -1426,7 +1484,24 @@ func (a *Application) runServerMode(
 		if err := v1.RegisterRegistrationServiceHandlerFromEndpoint(ctx, gwmux, endpoint, opts); err != nil {
 			return fmt.Errorf("failed to register gateway: %w", err)
 		}
+		// Register Skill Service Gateway
+		if err := v1.RegisterSkillServiceHandlerFromEndpoint(ctx, gwmux, endpoint, opts); err != nil {
+			return fmt.Errorf("failed to register skill gateway: %w", err)
+		}
+
 		mux.Handle("/v1/", authMiddleware(gwmux))
+
+		// Asset Handler implementation that allows Gateway to handle other paths
+		// We mount it on /v1/skills/ to capture asset requests.
+		// NOTE: This assumes /v1/skills/ is the prefix.
+		mux.Handle("/v1/skills/", authMiddleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			if strings.HasSuffix(r.URL.Path, "/assets") {
+				a.handleUploadSkillAsset()(w, r)
+			} else {
+				// Fallback to gwmux for standard skill/ paths
+				gwmux.ServeHTTP(w, r)
+			}
+		})))
 	}
 
 	httpBindAddress := bindAddress
@@ -1509,6 +1584,9 @@ func (a *Application) runServerMode(
 
 	adminServer := admin.NewServer(cachingMiddleware, a.ToolManager, store)
 	pb_admin.RegisterAdminServiceServer(grpcServer, adminServer)
+
+	// Register Skill Service
+	v1.RegisterSkillServiceServer(grpcServer, NewSkillServiceServer(a.SkillManager))
 
 	// Initialize gRPC-Web wrapper even if gRPC port is not exposed
 	wrappedGrpc = grpcweb.WrapServer(grpcServer,
@@ -1620,6 +1698,9 @@ func (a *Application) createAuthMiddleware(forcePrivateIPOnly bool) func(http.Ha
 			if !forcePrivateIPOnly && apiKey != "" {
 				// Check X-API-Key or Authorization header
 				requestKey := r.Header.Get("X-API-Key")
+				if requestKey == "" {
+					requestKey = r.URL.Query().Get("api_key")
+				}
 				if requestKey == "" {
 					authHeader := r.Header.Get("Authorization")
 					if strings.HasPrefix(authHeader, "Bearer ") {
