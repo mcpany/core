@@ -19,6 +19,7 @@ import (
 	"github.com/mcpany/core/server/pkg/logging"
 	"github.com/mcpany/core/server/pkg/storage"
 	"github.com/mcpany/core/server/pkg/tool"
+	"github.com/mcpany/core/server/pkg/upstream/diagnostics"
 	"github.com/mcpany/core/server/pkg/util"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"google.golang.org/protobuf/encoding/protojson"
@@ -56,6 +57,9 @@ func (a *Application) createAPIHandler(store storage.Storage) http.Handler {
 	doctor := health.NewDoctor()
 	doctor.AddCheck("configuration", a.configHealthCheck)
 	mux.Handle("/doctor", doctor.Handler())
+
+	// Service Diagnostic API
+	mux.HandleFunc("/diagnose", a.handleDiagnose(store))
 
 	mux.HandleFunc("/settings", a.handleSettings(store))
 	mux.HandleFunc("/debug/auth-test", a.handleAuthTest())
@@ -123,6 +127,64 @@ func (a *Application) createAPIHandler(store storage.Storage) http.Handler {
 	mux.HandleFunc("/ws/logs", a.handleLogsWS())
 
 	return mux
+}
+
+// handleDiagnose handles the on-demand diagnostics for a service.
+func (a *Application) handleDiagnose(store storage.Storage) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodPost {
+			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+			return
+		}
+
+		var req struct {
+			ServiceName string `json:"service_name"`
+		}
+		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+			http.Error(w, "invalid request body", http.StatusBadRequest)
+			return
+		}
+
+		if req.ServiceName == "" {
+			http.Error(w, "service_name is required", http.StatusBadRequest)
+			return
+		}
+
+		// Try to find the service config
+		// First check in-memory registry if available (most up to date)
+		var config *configv1.UpstreamServiceConfig
+		if a.ServiceRegistry != nil {
+			// We iterate because we need the config object, and GetAllServices returns them
+			services, err := a.ServiceRegistry.GetAllServices()
+			if err == nil {
+				for _, s := range services {
+					if s.GetName() == req.ServiceName || s.GetId() == req.ServiceName {
+						config = s
+						break
+					}
+				}
+			}
+		}
+
+		// Fallback to store if not found in registry (e.g. disabled service)
+		if config == nil {
+			svc, err := store.GetService(r.Context(), req.ServiceName)
+			if err == nil && svc != nil {
+				config = svc
+			}
+		}
+
+		if config == nil {
+			http.Error(w, "service not found", http.StatusNotFound)
+			return
+		}
+
+		// Run diagnostics
+		report := diagnostics.DiagnoseService(r.Context(), config)
+
+		w.Header().Set("Content-Type", "application/json")
+		_ = json.NewEncoder(w).Encode(report)
+	}
 }
 
 func (a *Application) handleServices(store storage.Storage) http.HandlerFunc {

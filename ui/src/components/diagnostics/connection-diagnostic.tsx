@@ -93,49 +93,65 @@ export function ConnectionDiagnosticDialog({ service, trigger }: ConnectionDiagn
     updateStep("config", { status: "success", detail: "Configuration valid" });
 
 
-    // --- Step 2: Backend Health Check ---
+    // --- Step 2: Active Diagnostics ---
     updateStep("backend_health", { status: "running" });
-    addLog("backend_health", "Querying backend service status...");
+    addLog("backend_health", "Running active diagnostics...");
 
     try {
-        const res = await fetch("/api/dashboard/health", { cache: 'no-store' });
+        const res = await fetch("/api/v1/diagnose", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ service_name: service.name }),
+        });
+
         if (!res.ok) {
              throw new Error(`API Error: ${res.status} ${res.statusText}`);
         }
-        const data: ServiceHealth[] = await res.json();
 
-        // Find our service
-        const serviceStatus = data.find(s => s.id === service.id || s.name === service.name);
+        const report = await res.json();
 
-        if (!serviceStatus) {
-             addLog("backend_health", "Warning: Service not found in backend registry.");
-             addLog("backend_health", "This might happen if the service was just added or backend is restarting.");
-             updateStep("backend_health", { status: "failure", detail: "Service Not Found" });
+        // Add dynamic steps from backend report
+        const newSteps: DiagnosticStep[] = report.steps.map((s: any) => ({
+            id: s.name.toLowerCase().replace(/\s+/g, "_"),
+            name: s.name,
+            status: s.status,
+            logs: s.message ? [`${s.message} ${s.latency ? `(${s.latency})` : ''}`] : []
+        }));
+
+        setSteps(prev => {
+            // Keep config check, replace backend_health with new steps
+            const configStep = prev.find(s => s.id === "config");
+            return configStep ? [configStep, ...newSteps] : newSteps;
+        });
+
+        const allPassed = newSteps.every(s => s.status === 'success' || s.status === 'skipped');
+        if (allPassed) {
+             addLog("backend_health", "All active checks passed.");
         } else {
-             addLog("backend_health", `Backend reports status: ${serviceStatus.status.toUpperCase()}`);
-
-             if (serviceStatus.status === 'healthy') {
-                 addLog("backend_health", "Service is connected and responding.");
-                 updateStep("backend_health", { status: "success", detail: "Connected" });
-             } else if (serviceStatus.status === 'inactive') {
-                 addLog("backend_health", "Service is explicitly disabled.");
-                 updateStep("backend_health", { status: "skipped", detail: "Disabled" });
-             } else {
-                 // Unhealthy or Degraded
-                 addLog("backend_health", `Error: ${serviceStatus.message || "Unknown error"}`);
-
-                 const diagnosis = analyzeConnectionError(serviceStatus.message || "");
+             const failedStep = newSteps.find(s => s.status === 'failure');
+             if (failedStep) {
+                 const diagnosis = analyzeConnectionError(failedStep.logs.join("\n"));
                  if (diagnosis.category !== 'unknown') {
-                     addLog("backend_health", `Analysis: ${diagnosis.title} - ${diagnosis.description}`);
-                     addLog("backend_health", `Suggestion: ${diagnosis.suggestion}`);
+                     // Add a summary step
+                     const analysisStep: DiagnosticStep = {
+                         id: "analysis",
+                         name: "Failure Analysis",
+                         status: "failure",
+                         logs: [
+                             `Analysis: ${diagnosis.title}`,
+                             `Description: ${diagnosis.description}`,
+                             `Suggestion: ${diagnosis.suggestion}`
+                         ]
+                     };
+                     setSteps(prev => [...prev, analysisStep]);
                  }
-
-                 updateStep("backend_health", { status: "failure", detail: serviceStatus.status });
              }
         }
 
     } catch (error: any) {
-        addLog("backend_health", `Failed to contact backend API: ${error.message}`);
+        addLog("backend_health", `Failed to contact diagnostics API: ${error.message}`);
         updateStep("backend_health", { status: "failure", detail: "API Failure" });
     }
 
