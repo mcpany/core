@@ -55,14 +55,25 @@ func writeError(w http.ResponseWriter, err error) {
 	status := http.StatusInternalServerError
 	var msg string
 
+	errStr := err.Error()
+
 	// Simple error checking for now, assuming util has some error types or just generic
-	if strings.Contains(err.Error(), "not found") {
+	switch {
+	case strings.Contains(errStr, "not found"):
 		status = http.StatusNotFound
-	} else if strings.Contains(err.Error(), "required") || strings.Contains(err.Error(), "invalid") {
+		msg = errStr
+	case strings.Contains(errStr, "required") || strings.Contains(errStr, "invalid"):
 		status = http.StatusBadRequest
+		msg = errStr
+	default:
+		// For 500 errors, we don't leak details
+		// We should log it though (but we don't have logger here easily unless we pass it or use global)
+		// Assuming global logging
+		// logging.GetLogger().Error("API Error", "error", err) // Cannot import due to cycle if logging depends on app? No, logging is in pkg/logging
+		// But let's just sanitize.
+		msg = "Internal Server Error"
 	}
 
-	msg = err.Error()
 	writeJSON(w, status, map[string]string{"error": msg})
 }
 
