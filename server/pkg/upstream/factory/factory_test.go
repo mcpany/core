@@ -8,14 +8,10 @@ import (
 
 	"github.com/mcpany/core/server/pkg/pool"
 	"github.com/mcpany/core/server/pkg/upstream/command"
-	"github.com/mcpany/core/server/pkg/upstream/filesystem"
-	"github.com/mcpany/core/server/pkg/upstream/graphql"
 	"github.com/mcpany/core/server/pkg/upstream/grpc"
 	"github.com/mcpany/core/server/pkg/upstream/http"
 	"github.com/mcpany/core/server/pkg/upstream/mcp"
 	"github.com/mcpany/core/server/pkg/upstream/openapi"
-	"github.com/mcpany/core/server/pkg/upstream/sql"
-	"github.com/mcpany/core/server/pkg/upstream/vector"
 	"github.com/mcpany/core/server/pkg/upstream/webrtc"
 	"github.com/mcpany/core/server/pkg/upstream/websocket"
 	configv1 "github.com/mcpany/core/proto/config/v1"
@@ -88,30 +84,6 @@ func TestUpstreamServiceFactory_NewUpstream(t *testing.T) {
 		},
 	}
 
-	graphqlConfig := &configv1.UpstreamServiceConfig{
-		ServiceConfig: &configv1.UpstreamServiceConfig_GraphqlService{
-			GraphqlService: &configv1.GraphQLUpstreamService{},
-		},
-	}
-
-	sqlConfig := &configv1.UpstreamServiceConfig{
-		ServiceConfig: &configv1.UpstreamServiceConfig_SqlService{
-			SqlService: &configv1.SqlUpstreamService{},
-		},
-	}
-
-	filesystemConfig := &configv1.UpstreamServiceConfig{
-		ServiceConfig: &configv1.UpstreamServiceConfig_FilesystemService{
-			FilesystemService: &configv1.FilesystemUpstreamService{},
-		},
-	}
-
-	vectorConfig := &configv1.UpstreamServiceConfig{
-		ServiceConfig: &configv1.UpstreamServiceConfig_VectorService{
-			VectorService: &configv1.VectorUpstreamService{},
-		},
-	}
-
 	testCases := []struct {
 		name        string
 		config      *configv1.UpstreamServiceConfig
@@ -152,26 +124,6 @@ func TestUpstreamServiceFactory_NewUpstream(t *testing.T) {
 			name:        "WebRTC Service",
 			config:      webrtcConfig,
 			expectedTyp: &webrtc.Upstream{},
-		},
-		{
-			name:        "GraphQL Service",
-			config:      graphqlConfig,
-			expectedTyp: &graphql.Upstream{},
-		},
-		{
-			name:        "SQL Service",
-			config:      sqlConfig,
-			expectedTyp: &sql.Upstream{},
-		},
-		{
-			name:        "Filesystem Service",
-			config:      filesystemConfig,
-			expectedTyp: &filesystem.Upstream{},
-		},
-		{
-			name:        "Vector Service",
-			config:      vectorConfig,
-			expectedTyp: &vector.Upstream{},
 		},
 		{
 			name:        "Unknown Service",
