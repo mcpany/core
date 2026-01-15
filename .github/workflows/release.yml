@@ -208,11 +208,15 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Prepare build context
+        run: |
+          make -C server prepare-docker-context
+
       - name: Build and push by digest
         id: build
         uses: docker/build-push-action@v5
         with:
-          context: .
+          context: server
           file: server/docker/Dockerfile.server
           platforms: ${{ matrix.platform }}
           tags: |
