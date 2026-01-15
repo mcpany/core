@@ -22,7 +22,6 @@ import (
 	"github.com/mcpany/core/server/pkg/profile"
 	"github.com/mcpany/core/server/pkg/serviceregistry"
 	"github.com/mcpany/core/server/pkg/upstream/factory"
-	"github.com/spf13/afero"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/proto"
@@ -52,8 +51,6 @@ func TestRunServerMode_Auth(t *testing.T) {
 
 	// Create app
 	app := NewApplication()
-	// Initialize fs for UI handler checks
-	app.fs = afero.NewMemMapFs()
 
 	// Initialize SettingsManager
 	app.SettingsManager = NewGlobalSettingsManager("global-secret", nil, nil)
@@ -365,7 +362,6 @@ func TestAuthMiddleware_AuthDisabled(t *testing.T) {
 	bindAddress := fmt.Sprintf("localhost:%d", port)
 
 	app := NewApplication()
-	app.fs = afero.NewMemMapFs()
 	app.SettingsManager = NewGlobalSettingsManager("", nil, nil)
 
 	busProvider, _ := bus.NewProvider(nil)

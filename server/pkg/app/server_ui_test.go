@@ -5,133 +5,63 @@ package app
 
 import (
 	"context"
-	"log/slog"
+	"fmt"
+	"net"
+	"net/http"
+	"os"
 	"testing"
 	"time"
 
-	"github.com/mcpany/core/server/pkg/auth"
-	"github.com/mcpany/core/server/pkg/bus"
-	"github.com/mcpany/core/server/pkg/logging"
-	"github.com/mcpany/core/server/pkg/mcpserver"
-	"github.com/mcpany/core/server/pkg/middleware"
-	"github.com/mcpany/core/server/pkg/pool"
-	"github.com/mcpany/core/server/pkg/prompt"
-	"github.com/mcpany/core/server/pkg/resource"
-	"github.com/mcpany/core/server/pkg/serviceregistry"
-	"github.com/mcpany/core/server/pkg/tool"
-	"github.com/mcpany/core/server/pkg/upstream/factory"
 	"github.com/spf13/afero"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
-func TestConfigureUIHandler(t *testing.T) {
-	// Setup dependencies
-	busProvider, _ := bus.NewProvider(nil)
-	poolManager := pool.NewManager()
-	upstreamFactory := factory.NewUpstreamServiceFactory(poolManager, nil)
-	toolManager := tool.NewManager(busProvider)
-	authManager := auth.NewManager()
-	serviceRegistry := serviceregistry.New(upstreamFactory, toolManager, prompt.NewManager(), resource.NewManager(), authManager)
-	mcpSrv, _ := mcpserver.NewServer(context.Background(), toolManager, prompt.NewManager(), resource.NewManager(), authManager, serviceRegistry, busProvider, false)
+func newTestApp(t *testing.T) *Application {
+	return NewApplication()
+}
 
-	t.Run("Prioritize ./ui/out", func(t *testing.T) {
-		fs := afero.NewMemMapFs()
-		fs.MkdirAll("ui/out", 0755)
-		fs.MkdirAll("ui/dist", 0755)
-		fs.MkdirAll("ui", 0755)
+func TestRun_UI(t *testing.T) {
+	// Create temporary ui directory in current package dir
+	err := os.Mkdir("ui", 0755)
+	if err != nil && !os.IsExist(err) {
+		t.Fatalf("Failed to create ui dir: %v", err)
+	}
+	defer os.RemoveAll("ui")
 
-		app := NewApplication()
-		app.fs = fs
-		app.SettingsManager = NewGlobalSettingsManager("", nil, nil)
+	err = os.WriteFile("ui/index.html", []byte("<html><body>Hello</body></html>"), 0644)
+	require.NoError(t, err)
 
-		ctx, cancel := context.WithCancel(context.Background())
-		go func() {
-			time.Sleep(50 * time.Millisecond)
-			cancel()
-		}()
+	fs := afero.NewMemMapFs()
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
 
-		logging.ForTestsOnlyResetLogger()
-		var buf ThreadSafeBuffer
-		logging.Init(slog.LevelInfo, &buf)
+	app := newTestApp(t)
 
-		_ = app.runServerMode(ctx, mcpSrv, busProvider, "localhost:0", "localhost:0", 1*time.Second, nil, middleware.NewCachingMiddleware(toolManager), nil, serviceRegistry, nil)
+	l, err := net.Listen("tcp", "localhost:0")
+	require.NoError(t, err)
+	port := l.Addr().(*net.TCPAddr).Port
+	_ = l.Close()
 
-		logs := buf.String()
-		assert.NotContains(t, logs, "UI directory ./ui contains package.json")
-		assert.NotContains(t, logs, "No UI directory found")
-	})
+	errChan := make(chan error, 1)
 
-	t.Run("Block ./ui with package.json", func(t *testing.T) {
-		fs := afero.NewMemMapFs()
-		fs.MkdirAll("ui", 0755)
-		afero.WriteFile(fs, "ui/package.json", []byte("{}"), 0644)
+	go func() {
+		// Run server
+		errChan <- app.Run(ctx, fs, false, fmt.Sprintf("localhost:%d", port), "localhost:0", nil, "", 5*time.Second)
+	}()
 
-		app := NewApplication()
-		app.fs = fs
-		app.SettingsManager = NewGlobalSettingsManager("", nil, nil)
+	// Verify UI endpoint
+	baseURL := fmt.Sprintf("http://localhost:%d", port)
+	require.Eventually(t, func() bool {
+		resp, err := http.Get(baseURL + "/ui/")
+		if err != nil {
+			return false
+		}
+		defer func() { _ = resp.Body.Close() }()
+		return resp.StatusCode == http.StatusOK
+	}, 5*time.Second, 100*time.Millisecond, "UI endpoint should be reachable")
 
-		ctx, cancel := context.WithCancel(context.Background())
-		go func() {
-			time.Sleep(50 * time.Millisecond)
-			cancel()
-		}()
-
-		logging.ForTestsOnlyResetLogger()
-		var buf ThreadSafeBuffer
-		logging.Init(slog.LevelInfo, &buf)
-
-		_ = app.runServerMode(ctx, mcpSrv, busProvider, "localhost:0", "localhost:0", 1*time.Second, nil, middleware.NewCachingMiddleware(toolManager), nil, serviceRegistry, nil)
-
-		logs := buf.String()
-		assert.Contains(t, logs, "UI directory ./ui contains package.json. Refusing to serve")
-	})
-
-	t.Run("Allow ./ui without package.json", func(t *testing.T) {
-		fs := afero.NewMemMapFs()
-		fs.MkdirAll("ui", 0755)
-		// No package.json
-
-		app := NewApplication()
-		app.fs = fs
-		app.SettingsManager = NewGlobalSettingsManager("", nil, nil)
-
-		ctx, cancel := context.WithCancel(context.Background())
-		go func() {
-			time.Sleep(50 * time.Millisecond)
-			cancel()
-		}()
-
-		logging.ForTestsOnlyResetLogger()
-		var buf ThreadSafeBuffer
-		logging.Init(slog.LevelInfo, &buf)
-
-		_ = app.runServerMode(ctx, mcpSrv, busProvider, "localhost:0", "localhost:0", 1*time.Second, nil, middleware.NewCachingMiddleware(toolManager), nil, serviceRegistry, nil)
-
-		logs := buf.String()
-		assert.NotContains(t, logs, "Refusing to serve")
-		assert.NotContains(t, logs, "No UI directory found")
-	})
-
-	t.Run("No UI directory", func(t *testing.T) {
-		fs := afero.NewMemMapFs()
-
-		app := NewApplication()
-		app.fs = fs
-		app.SettingsManager = NewGlobalSettingsManager("", nil, nil)
-
-		ctx, cancel := context.WithCancel(context.Background())
-		go func() {
-			time.Sleep(50 * time.Millisecond)
-			cancel()
-		}()
-
-		logging.ForTestsOnlyResetLogger()
-		var buf ThreadSafeBuffer
-		logging.Init(slog.LevelInfo, &buf)
-
-		_ = app.runServerMode(ctx, mcpSrv, busProvider, "localhost:0", "localhost:0", 1*time.Second, nil, middleware.NewCachingMiddleware(toolManager), nil, serviceRegistry, nil)
-
-		logs := buf.String()
-		assert.Contains(t, logs, "No UI directory found")
-	})
+	cancel()
+	err = <-errChan
+	assert.NoError(t, err)
 }

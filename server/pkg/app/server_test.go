@@ -844,7 +844,6 @@ func TestRunServerMode_GracefulShutdownOnContextCancel(t *testing.T) {
 	logging.Init(slog.LevelInfo, &buf)
 
 	app := NewApplication()
-	app.fs = afero.NewMemMapFs()
 	// This context will be canceled to trigger the shutdown.
 	ctx, cancel := context.WithCancel(context.Background())
 
@@ -1337,7 +1336,6 @@ func TestHTTPServer_HangOnListenError(t *testing.T) {
 
 func TestRunServerMode_ContextCancellation(t *testing.T) {
 	app := NewApplication()
-	app.fs = afero.NewMemMapFs()
 	ctx, cancel := context.WithCancel(context.Background())
 	errChan := make(chan error, 1)
 
@@ -2013,7 +2011,6 @@ func TestRunServerMode_grpcListenErrorHangs(t *testing.T) {
 	port := l.Addr().(*net.TCPAddr).Port
 
 	app := NewApplication()
-	app.fs = afero.NewMemMapFs()
 	// Use a context that will never be canceled.
 	ctx := context.Background()
 
