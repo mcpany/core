@@ -272,6 +272,39 @@ func newRootCmd() *cobra.Command { //nolint:gocyclo // Main entry point, expecte
 		Short: "Manage configuration",
 	}
 
+	migrateCmd := &cobra.Command{
+		Use:   "migrate",
+		Short: "Migrate Claude Desktop configuration to MCP Any format",
+		RunE: func(cmd *cobra.Command, _ []string) error {
+			inputFile, _ := cmd.Flags().GetString("input")
+			outputFile, _ := cmd.Flags().GetString("output")
+
+			inputBytes, err := os.ReadFile(inputFile) //nolint:gosec // File inclusion is intended for CLI
+			if err != nil {
+				return fmt.Errorf("failed to read input file: %w", err)
+			}
+
+			outputBytes, err := config.MigrateClaudeConfig(inputBytes)
+			if err != nil {
+				return err
+			}
+
+			if outputFile == "-" {
+				fmt.Print(string(outputBytes))
+			} else {
+				if err := os.WriteFile(outputFile, outputBytes, 0o644); err != nil { //nolint:gosec // File permission is appropriate for config file
+					return fmt.Errorf("failed to write output file: %w", err)
+				}
+				fmt.Printf("Successfully migrated configuration to %s\n", outputFile)
+			}
+
+			return nil
+		},
+	}
+	migrateCmd.Flags().StringP("input", "i", "claude_desktop_config.json", "Path to the Claude Desktop configuration file")
+	migrateCmd.Flags().StringP("output", "o", "config.yaml", "Path to the output MCP Any configuration file (use '-' for stdout)")
+	configCmd.AddCommand(migrateCmd)
+
 	generateCmd := &cobra.Command{
 		Use:   "generate",
 		Short: "Generate configuration",

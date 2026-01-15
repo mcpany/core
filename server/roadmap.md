@@ -49,6 +49,7 @@
 - [x] **Smart Config Error Messages - Address**: Fixed an issue where the validator confusingly referred to 'target_address' instead of 'address', aligning error messages with the actual configuration schema. (Friction Fighter)
 - [x] **Configuration Health Check**: Added a Doctor check that tracks the status of dynamic configuration reloads (success/failure, timestamp) and exposes it via `/doctor` API to aid in debugging silent reload failures. (Experience Crafter)
 - [x] **WebSocket Diagnostic Probe**: Implemented a diagnostic probe in the UI to validate WebSocket service configuration and test connectivity (including browser-side check). (Experience Crafter)
+- [x] **Configuration Migration Tool**: Implemented `mcpany config migrate` to automatically convert `claude_desktop_config.json` to `mcpany` config format, reducing friction for users switching from Claude Desktop. (Friction Fighter)
 
 ## 2. Top 10 Recommended Features
 
@@ -75,8 +76,7 @@ These features represent the next logical steps for the product, focusing on Ent
 | 17 | **Multi-Model Advisor** | **Intelligence**: Orchestrate queries across multiple models (e.g. Ollama models) to synthesize insights. | High |
 | 18 | **MCP Server Aggregator/Proxy** | **Architecture**: A meta-server capability to discover, configure, and manage multiple downstream MCP servers dynamically. | High |
 | 19 | **Preset Service Gallery** | **UX**: A curated list of popular services (like `wttr.in`, `sqlite`, etc.) that can be added via CLI or UI with one click/command. | Medium |
-| 20 | **Configuration Migration Tool** | **DevX**: A CLI command to convert `claude_desktop_config.json` to `mcpany` config format. | Low |
-| 21 | **Auth Doctor** | **UX**: Diagnostic tool to verify that configured authentication methods match upstream expectations (e.g., detecting if a Bearer token is used where Basic Auth is expected). | Medium |
+| 20 | **Auth Doctor** | **UX**: Diagnostic tool to verify that configured authentication methods match upstream expectations (e.g., detecting if a Bearer token is used where Basic Auth is expected). | Medium |
 | 22 | **Dynamic Tool Pruning** | **Performance/Cost**: Feature to filter visible tools based on the current user's role or context to reduce LLM context window usage and costs. | High |
 | 23 | **Validation CLI Command** | **DevX**: Enhance `mcpany config validate` to run deep checks, including connecting to upstream services (dry-run) to verify connectivity and auth. | Medium |
 | 24 | **Config Schema Migration** | **Maintenance**: Automated tool to upgrade configuration files when the schema evolves (e.g. `v1alpha` to `v1`). | Medium |
@@ -94,6 +94,8 @@ These features represent the next logical steps for the product, focusing on Ent
 | 36 | **Configuration Diffing API** | **Observability**: An API endpoint to compare the currently active configuration with the previous version or the file on disk, helping users understand what changed during a reload. | Medium |
 | 37 | **Automatic WebSocket Reconnection Strategy** | **Resilience**: Allow users to configure retry backoff and max attempts for WS connections to handle transient network drops. | Medium |
 | 38 | **WebSocket Message Inspector** | **Debugging**: A UI tool to capture and view raw WS frames (text/binary) for debugging protocol issues. | Medium |
+| 39 | **Configurable Log Redaction** | **Security/Ops**: Allow defining custom regex rules to redact sensitive fields in request/response logs beyond standard PII. | Low |
+| 40 | **Upstream Service Templating** | **DevX**: Support defining "service templates" (e.g. for a database) and instantiating them multiple times with different parameters to reduce config duplication. | Medium |
 
 ## 3. Codebase Health
 
