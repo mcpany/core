@@ -61,25 +61,34 @@ func (m *Manager) ResolveProfile(profileName string) (map[string]*configv1.Profi
 
 	// 2. Collect hierarchy (DFS or simple list if we assume directed acyclic graph)
 	// We want to apply parents FIRST, then children.
-	// visited check to prevent cycles.
+	// We use two maps to track state:
+	// - processing: currently in the recursion stack (detects cycles)
+	// - visited: fully processed and added to chain (prevents duplicates)
+	processing := make(map[string]bool)
 	visited := make(map[string]bool)
 	chain := []*configv1.ProfileDefinition{}
 
 	var collect func(name string) error
 	collect = func(name string) error {
-		if visited[name] {
+		if processing[name] {
 			return fmt.Errorf("cycle detected in profile inheritance: %s", name)
 		}
-		visited[name] = true
+		if visited[name] {
+			return nil
+		}
+
+		processing[name] = true
+		defer func() {
+			delete(processing, name)
+			visited[name] = true
+		}()
+
 		p, exists := m.profiles[name]
 		if !exists {
 			return fmt.Errorf("parent profile not found: %s", name)
 		}
 
-		// Process parents first (so they are earlier in the chain, wait...)
-		// If we want Parent settings to be defaults, and Child to override,
-		// we should apply Parent *then* Child.
-		// So we recurse first, then append Self.
+		// Process parents first
 		for _, parentID := range p.GetParentProfileIds() {
 			if err := collect(parentID); err != nil {
 				return err
