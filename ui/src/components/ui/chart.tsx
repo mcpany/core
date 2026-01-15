@@ -95,8 +95,10 @@ ${colorConfig
     const color =
       itemConfig.theme?.[theme as keyof typeof itemConfig.theme] ||
       itemConfig.color
-    const value = color ? color.replace(/[;{}<>"\r\n]/g, "") : null
-    const safeKey = key.replace(/[;{}<>"\r\n]/g, "")
+    // Enhanced sanitization: strictly allow only characters safe for CSS variable values (alphanumeric, spaces, basic punctuation)
+    // This prevents any potential CSS injection or breakout beyond what the previous regex covered.
+    const value = color ? color.replace(/[^a-zA-Z0-9\s.,#%()\-]/g, "") : null
+    const safeKey = key.replace(/[^a-zA-Z0-9\-_]/g, "")
     return value ? `  --color-${safeKey}: ${value};` : null
   })
   .join("\n")}
