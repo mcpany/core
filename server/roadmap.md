@@ -48,6 +48,7 @@
 - [x] **Intelligent Config Diagnostics**: Added fuzzy matching suggestions for "unknown field" errors (e.g. "Did you mean 'address'?" for 'target_address') and helpful hints for YAML syntax errors (like tabs vs spaces). (Friction Fighter)
 - [x] **Smart Config Error Messages - Address**: Fixed an issue where the validator confusingly referred to 'target_address' instead of 'address', aligning error messages with the actual configuration schema. (Friction Fighter)
 - [x] **Configuration Health Check**: Added a Doctor check that tracks the status of dynamic configuration reloads (success/failure, timestamp) and exposes it via `/doctor` API to aid in debugging silent reload failures. (Experience Crafter)
+- [x] **Frontend Config Status Banner**: Added a visual indicator (banner) in the UI Management Dashboard that queries the `/doctor` configuration check and warns the user if the server is running with a stale or invalid configuration. (Experience Crafter)
 
 ## 2. Top 10 Recommended Features
 
@@ -90,8 +91,9 @@ These features represent the next logical steps for the product, focusing on Ent
 | 29 | **Async Tool Loading** | **Reliability**: Ensure server waits for initial roots/tools to be loaded before accepting requests to prevent race conditions on startup. | Medium |
 | 30 | **Config Schema Validation via CLI** | **DevX**: `mcpany check config.yaml` that validates against the full JSON schema (including types and enums) using `jsonschema` library, providing line-number precise errors. | Low |
 | 31 | **Interactive Config Generator** | **DevX**: `mcpany init` wizard that asks questions and generates a valid `config.yaml` with best practices (secure defaults, comments). | Low |
-| 32 | **Frontend Config Status Banner** | **UX**: Add a visual indicator (banner/toast) in the UI Management Dashboard that queries the new `/doctor` configuration check and warns the user if the server is running with a stale or invalid configuration. | Medium |
-| 33 | **Configuration Diffing API** | **Observability**: An API endpoint to compare the currently active configuration with the previous version or the file on disk, helping users understand what changed during a reload. | Medium |
+| 32 | **Configuration Diffing API** | **Observability**: An API endpoint to compare the currently active configuration with the previous version or the file on disk, helping users understand what changed during a reload. | Medium |
+| 33 | **Config Snapshot/Rollback** | **Resilience**: Automatically save a snapshot of the last known good configuration before a reload. If the reload fails, offer an option in the UI (or CLI) to rollback to the last good snapshot. | Medium |
+| 34 | **"Reload in Progress" Indicator** | **UX**: Add a visual spinner or toast in the UI while a configuration reload is processing, so the user knows the server is busy updating. | Low |
 
 ## 3. Codebase Health
 

@@ -15,6 +15,7 @@ import { GlobalSearch } from "@/components/global-search"
 import { Separator } from "@/components/ui/separator"
 import { UserProvider } from "@/components/user-context"
 import { KeyboardShortcutsProvider } from "@/contexts/keyboard-shortcuts-context"
+import { ConfigStatusBanner } from "@/components/config-status-banner"
 
 export const metadata: Metadata = {
   title: 'MCPAny Manager',
@@ -67,6 +68,7 @@ export default function RootLayout({
                          </div>
                      </div>
                   </header>
+                  <ConfigStatusBanner />
                   <main className="flex-1 overflow-auto p-4 md:p-6 lg:p-8">
                     {children}
                   </main>
