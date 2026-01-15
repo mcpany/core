@@ -93,13 +93,23 @@ func redactJSONFast(input []byte) []byte {
 			keyContent := input[quotePos+1 : endQuote]
 
 			var keyToCheck []byte
+			sensitive := false
+
 			if bytes.Contains(keyContent, []byte{'\\'}) {
 				// Key contains escape sequences, unescape it to check for sensitivity.
 				// This is slower but safer.
 				// Limit the key size to prevent excessive allocation on malicious input
-				// We increase this to 1MB to handle reasonably large keys while still preventing DoS.
-				if len(keyContent) > 1024*1024 {
-					keyToCheck = keyContent
+				// We increase this to 2MB to handle reasonably large keys while still preventing DoS.
+				if len(keyContent) > 2*1024*1024 {
+					// Key is too large to safely unescape.
+					// Check raw content first.
+					if scanForSensitiveKeys(keyContent, false) {
+						sensitive = true
+					} else {
+						// If not found in raw content, it might be hidden by escapes.
+						// To be safe/secure, we treat large escaped keys as sensitive.
+						sensitive = true
+					}
 				} else {
 					quoted := make([]byte, len(keyContent)+2)
 					quoted[0] = '"'
@@ -113,15 +123,12 @@ func redactJSONFast(input []byte) []byte {
 						// Fallback to raw content if unmarshal fails
 						keyToCheck = keyContent
 					}
+					sensitive = scanForSensitiveKeys(keyToCheck, false)
 				}
 			} else {
 				keyToCheck = keyContent
+				sensitive = scanForSensitiveKeys(keyToCheck, false)
 			}
-
-			// Optimization: We check the raw key content against sensitive keys.
-			// We only unescape if backslashes are detected, avoiding expensive json.Unmarshal calls for the common case.
-			// Note: scanForSensitiveKeys (used in the pre-check) also does not handle escapes.
-			sensitive := scanForSensitiveKeys(keyToCheck, false)
 
 			if sensitive {
 				// Identify value start
