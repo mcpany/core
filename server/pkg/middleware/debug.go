@@ -6,6 +6,7 @@ package middleware
 import (
 	"context"
 	"encoding/json"
+	"log/slog"
 
 	"github.com/mcpany/core/server/pkg/logging"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
@@ -18,12 +19,15 @@ func DebugMiddleware() mcp.Middleware {
 	return func(next mcp.MethodHandler) mcp.MethodHandler {
 		return func(ctx context.Context, method string, req mcp.Request) (mcp.Result, error) {
 			log := logging.GetLogger()
+			debugEnabled := log.Enabled(ctx, slog.LevelDebug)
 
-			reqBytes, err := json.Marshal(req)
-			if err != nil {
-				log.Error("Failed to marshal request for debugging", "error", err)
-			} else {
-				log.Debug("MCP Request", "method", method, "request", string(reqBytes))
+			if debugEnabled {
+				reqBytes, err := json.Marshal(req)
+				if err != nil {
+					log.Error("Failed to marshal request for debugging", "error", err)
+				} else {
+					log.Debug("MCP Request", "method", method, "request", string(reqBytes))
+				}
 			}
 
 			result, err := next(ctx, method, req)
@@ -32,11 +36,13 @@ func DebugMiddleware() mcp.Middleware {
 				return nil, err
 			}
 
-			resBytes, err := json.Marshal(result)
-			if err != nil {
-				log.Error("Failed to marshal response for debugging", "error", err)
-			} else {
-				log.Debug("MCP Response", "method", method, "response", string(resBytes))
+			if debugEnabled {
+				resBytes, err := json.Marshal(result)
+				if err != nil {
+					log.Error("Failed to marshal response for debugging", "error", err)
+				} else {
+					log.Debug("MCP Response", "method", method, "response", string(resBytes))
+				}
 			}
 
 			return result, nil
