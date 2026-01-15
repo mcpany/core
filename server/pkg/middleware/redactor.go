@@ -69,11 +69,12 @@ func (r *Redactor) RedactJSON(data []byte) ([]byte, error) {
 		// We can safely scan the whole slice.
 		for i := 0; i < len(raw); i++ {
 			c := raw[i]
-			if c == '@' {
+			switch {
+			case c == '@':
 				hasAt = true
-			} else if c >= '0' && c <= '9' {
+			case c >= '0' && c <= '9':
 				hasDigit = true
-			} else if c == '\\' {
+			case c == '\\':
 				hasEscape = true
 			}
 			// If we found everything, we can stop scanning
