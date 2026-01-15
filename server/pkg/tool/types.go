@@ -312,32 +312,6 @@ func (t *GRPCTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 // HTTPTool implements the Tool interface for a tool exposed via an HTTP endpoint.
 // It constructs and sends an HTTP request based on the tool definition and
 // input, handling parameter mapping, authentication, and transformations.
-type urlSegment struct {
-	isParam bool
-	value   string // Literal text or parameter name
-}
-
-func parseURLSegments(template string) []urlSegment {
-	var segments []urlSegment
-	parts := strings.Split(template, "{{")
-	for i, part := range parts {
-		if i == 0 {
-			if part != "" {
-				segments = append(segments, urlSegment{isParam: false, value: part})
-			}
-			continue
-		}
-		// part looks like "param}}suffix"
-		subparts := strings.SplitN(part, "}}", 2)
-		paramName := subparts[0]
-		segments = append(segments, urlSegment{isParam: true, value: paramName})
-		if len(subparts) > 1 && subparts[1] != "" {
-			segments = append(segments, urlSegment{isParam: false, value: subparts[1]})
-		}
-	}
-	return segments
-}
-
 type HTTPTool struct {
 	tool              *v1.Tool
 	mcpTool           *mcp.Tool
@@ -689,73 +663,9 @@ func (t *HTTPTool) prepareInputsAndURL(ctx context.Context, req *ExecutionReques
 		}
 	}
 
-	pathReplacements := make(map[string]string, len(t.parameters))
-	queryReplacements := make(map[string]string, len(t.parameters))
-
-	for i, param := range t.parameters {
-		name := param.GetSchema().GetName()
-		if secret := param.GetSecret(); secret != nil {
-			secretValue, err := util.ResolveSecret(ctx, secret)
-			if err != nil {
-				return nil, "", fmt.Errorf("failed to resolve secret for parameter %q: %w", name, err)
-			}
-			if t.paramInPath[i] {
-				pathReplacements[name] = secretValue
-			}
-			if t.paramInQuery[i] {
-				queryReplacements[name] = secretValue
-			}
-		} else if schema := param.GetSchema(); schema != nil {
-			val, ok := inputs[name]
-			if !ok {
-				if schema.GetIsRequired() {
-					return nil, "", fmt.Errorf("missing required parameter: %s", name)
-				}
-				// If optional and missing, treat as empty string
-				val = ""
-			} else {
-				// Only delete from inputs if it was present
-				delete(inputs, name)
-			}
-
-			valStr := util.ToString(val)
-
-			if t.paramInPath[i] {
-				// ALWAYS check for path traversal in path parameters, regardless of escaping settings.
-				// Even if escaped, some servers might decode and normalize the path, leading to traversal.
-				if err := checkForPathTraversal(valStr); err != nil {
-					return nil, "", fmt.Errorf("path traversal attempt detected in parameter %q: %w", name, err)
-				}
-				// Also check decoded value just in case the input was already encoded
-				if decodedVal, err := url.QueryUnescape(valStr); err == nil && decodedVal != valStr {
-					if err := checkForPathTraversal(decodedVal); err != nil {
-						return nil, "", fmt.Errorf("path traversal attempt detected in parameter %q (decoded): %w", name, err)
-					}
-				}
-			}
-
-			if param.GetDisableEscape() {
-				if t.paramInPath[i] {
-					pathReplacements[name] = valStr
-				}
-				if t.paramInQuery[i] {
-					queryReplacements[name] = valStr
-				}
-			} else {
-				if t.paramInPath[i] {
-					// Even if we escape, we should check for ".." in the input because
-					// url.PathEscape does NOT escape dots, so ".." remains ".."
-					// and path.Clean will resolve it, potentially allowing path traversal.
-					if err := checkForPathTraversal(valStr); err != nil {
-						return nil, "", fmt.Errorf("path traversal attempt detected in parameter %q: %w", name, err)
-					}
-					pathReplacements[name] = url.PathEscape(valStr)
-				}
-				if t.paramInQuery[i] {
-					queryReplacements[name] = url.QueryEscape(valStr)
-				}
-			}
-		}
+	pathReplacements, queryReplacements, err := t.processParameters(ctx, inputs)
+	if err != nil {
+		return nil, "", err
 	}
 
 	var pathBuf strings.Builder
@@ -818,6 +728,104 @@ func (t *HTTPTool) prepareInputsAndURL(ctx context.Context, req *ExecutionReques
 	urlString := buf.String()
 
 	return inputs, urlString, nil
+}
+
+func (t *HTTPTool) processParameters(ctx context.Context, inputs map[string]any) (map[string]string, map[string]string, error) {
+	pathReplacements := make(map[string]string, len(t.parameters))
+	queryReplacements := make(map[string]string, len(t.parameters))
+
+	for i, param := range t.parameters {
+		name := param.GetSchema().GetName()
+		if secret := param.GetSecret(); secret != nil {
+			secretValue, err := util.ResolveSecret(ctx, secret)
+			if err != nil {
+				return nil, nil, fmt.Errorf("failed to resolve secret for parameter %q: %w", name, err)
+			}
+			if t.paramInPath[i] {
+				pathReplacements[name] = secretValue
+			}
+			if t.paramInQuery[i] {
+				queryReplacements[name] = secretValue
+			}
+		} else if schema := param.GetSchema(); schema != nil {
+			val, ok := inputs[name]
+			if !ok {
+				if schema.GetIsRequired() {
+					return nil, nil, fmt.Errorf("missing required parameter: %s", name)
+				}
+				// If optional and missing, treat as empty string
+				val = ""
+			} else {
+				// Only delete from inputs if it was present
+				delete(inputs, name)
+			}
+
+			valStr := util.ToString(val)
+
+			if t.paramInPath[i] {
+				// ALWAYS check for path traversal in path parameters, regardless of escaping settings.
+				// Even if escaped, some servers might decode and normalize the path, leading to traversal.
+				if err := checkForPathTraversal(valStr); err != nil {
+					return nil, nil, fmt.Errorf("path traversal attempt detected in parameter %q: %w", name, err)
+				}
+				// Also check decoded value just in case the input was already encoded
+				if decodedVal, err := url.QueryUnescape(valStr); err == nil && decodedVal != valStr {
+					if err := checkForPathTraversal(decodedVal); err != nil {
+						return nil, nil, fmt.Errorf("path traversal attempt detected in parameter %q (decoded): %w", name, err)
+					}
+				}
+			}
+
+			if param.GetDisableEscape() {
+				if t.paramInPath[i] {
+					pathReplacements[name] = valStr
+				}
+				if t.paramInQuery[i] {
+					queryReplacements[name] = valStr
+				}
+			} else {
+				if t.paramInPath[i] {
+					// Even if we escape, we should check for ".." in the input because
+					// url.PathEscape does NOT escape dots, so ".." remains ".."
+					// and path.Clean will resolve it, potentially allowing path traversal.
+					if err := checkForPathTraversal(valStr); err != nil {
+						return nil, nil, fmt.Errorf("path traversal attempt detected in parameter %q: %w", name, err)
+					}
+					pathReplacements[name] = url.PathEscape(valStr)
+				}
+				if t.paramInQuery[i] {
+					queryReplacements[name] = url.QueryEscape(valStr)
+				}
+			}
+		}
+	}
+	return pathReplacements, queryReplacements, nil
+}
+
+type urlSegment struct {
+	isParam bool
+	value   string // Literal text or parameter name
+}
+
+func parseURLSegments(template string) []urlSegment {
+	parts := strings.Split(template, "{{")
+	segments := make([]urlSegment, 0, len(parts)*2)
+	for i, part := range parts {
+		if i == 0 {
+			if part != "" {
+				segments = append(segments, urlSegment{isParam: false, value: part})
+			}
+			continue
+		}
+		// part looks like "param}}suffix"
+		subparts := strings.SplitN(part, "}}", 2)
+		paramName := subparts[0]
+		segments = append(segments, urlSegment{isParam: true, value: paramName})
+		if len(subparts) > 1 && subparts[1] != "" {
+			segments = append(segments, urlSegment{isParam: false, value: subparts[1]})
+		}
+	}
+	return segments
 }
 
 func (t *HTTPTool) prepareBody(ctx context.Context, inputs map[string]any, method string, toolName string) (io.Reader, string, error) {
