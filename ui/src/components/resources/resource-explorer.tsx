@@ -19,7 +19,6 @@ import {
     ChevronRight,
     Folder,
     File,
-    Loader2,
     Maximize2,
     Minimize2,
     LayoutGrid,
@@ -38,31 +37,12 @@ import {
     ContextMenuContent,
     ContextMenuItem,
     ContextMenuSeparator,
-    ContextMenuShortcut,
     ContextMenuTrigger,
 } from "@/components/ui/context-menu";
-import {
-    Tabs,
-    TabsContent,
-    TabsList,
-    TabsTrigger,
-} from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
-import ReactSyntaxHighlighter from 'react-syntax-highlighter/dist/esm/light';
-import json from 'react-syntax-highlighter/dist/esm/languages/hljs/json';
-import yaml from 'react-syntax-highlighter/dist/esm/languages/hljs/yaml';
-import xml from 'react-syntax-highlighter/dist/esm/languages/hljs/xml';
-import markdown from 'react-syntax-highlighter/dist/esm/languages/hljs/markdown';
-import plaintext from 'react-syntax-highlighter/dist/esm/languages/hljs/plaintext';
-import { vs2015 } from 'react-syntax-highlighter/dist/esm/styles/hljs';
-
-ReactSyntaxHighlighter.registerLanguage('json', json);
-ReactSyntaxHighlighter.registerLanguage('yaml', yaml);
-ReactSyntaxHighlighter.registerLanguage('xml', xml);
-ReactSyntaxHighlighter.registerLanguage('markdown', markdown);
-ReactSyntaxHighlighter.registerLanguage('text', plaintext);
-
+import { ResourceViewer } from "./resource-viewer";
+import { ResourcePreviewModal } from "./resource-preview-modal";
 
 interface ResourceExplorerProps {
     initialResources?: ResourceDefinition[];
@@ -77,6 +57,7 @@ export function ResourceExplorer({ initialResources = [] }: ResourceExplorerProp
     const [resourceContent, setResourceContent] = useState<ResourceContent | null>(null);
     const [contentLoading, setContentLoading] = useState(false);
     const [isFullscreen, setIsFullscreen] = useState(false);
+    const [previewResource, setPreviewResource] = useState<ResourceDefinition | null>(null);
 
     const { toast } = useToast();
 
@@ -157,13 +138,6 @@ export function ResourceExplorer({ initialResources = [] }: ResourceExplorerProp
     };
 
     const handleDownload = (uri?: string) => {
-        // If called from context menu with URI, we might not have content loaded yet.
-        // For this demo, we only support download if content is already loaded (selected)
-        // or we could fetch it. Ideally we should fetch.
-        // For now, let's fallback to current selection if match.
-
-        // If uri is provided and matches selectedUri, use resourceContent.
-        // Otherwise we can't easily download without fetching first.
         const targetUri = uri || selectedUri;
         if (!targetUri) return;
 
@@ -175,8 +149,8 @@ export function ResourceExplorer({ initialResources = [] }: ResourceExplorerProp
              const selectedRes = resources.find(r => r.uri === targetUri);
              a.download = selectedRes?.name || "resource";
              a.click();
+             URL.revokeObjectURL(url);
         } else {
-             // TODO: Fetch and download
              toast({ title: "Info", description: "Select the resource first to download." });
         }
     };
@@ -189,85 +163,6 @@ export function ResourceExplorer({ initialResources = [] }: ResourceExplorerProp
     const handleCopyName = (name: string) => {
         navigator.clipboard.writeText(name);
         toast({ title: "Copied", description: "Resource name copied to clipboard." });
-    };
-
-    const renderPreview = () => {
-        if (contentLoading) {
-            return (
-                <div className="flex flex-col items-center justify-center h-full text-muted-foreground gap-2">
-                    <Loader2 className="h-8 w-8 animate-spin text-primary" />
-                    <p>Loading content...</p>
-                </div>
-            );
-        }
-
-        if (!resourceContent) {
-            return (
-                <div className="flex flex-col items-center justify-center h-full text-muted-foreground gap-2 p-8 text-center">
-                    <Eye className="h-12 w-12 opacity-20" />
-                    <p>Select a resource to view its content.</p>
-                </div>
-            );
-        }
-
-        const { mimeType, text } = resourceContent;
-
-        if (mimeType.startsWith("image/")) {
-            // Since we mocked text content, we can't really show an image unless it's a blob URL.
-            // But let's assume we might handle base64 in future.
-            return (
-                 <div className="flex items-center justify-center h-full bg-checkered p-4">
-                     <div className="text-muted-foreground italic">Image preview not supported in this demo.</div>
-                 </div>
-            );
-        }
-
-        if (mimeType.includes("json") || mimeType.includes("yaml") || mimeType.includes("xml")) {
-             return (
-                <ScrollArea className="h-full">
-                    <ReactSyntaxHighlighter
-                        language={mimeType.includes("json") ? "json" : "yaml"}
-                        style={vs2015}
-                        customStyle={{ margin: 0, borderRadius: 0, height: "100%", fontSize: '0.875rem' }}
-                        showLineNumbers={true}
-                    >
-                        {text || ""}
-                    </ReactSyntaxHighlighter>
-                </ScrollArea>
-            );
-        }
-
-        // Markdown
-         if (mimeType.includes("markdown") || selectedUri?.endsWith(".md")) {
-             return (
-                <ScrollArea className="h-full p-6">
-                    <div className="prose dark:prose-invert max-w-none">
-                         <ReactSyntaxHighlighter
-                            language="markdown"
-                            style={vs2015}
-                            customStyle={{ background: 'transparent', padding: 0 }}
-                            wrapLines={true}
-                        >
-                            {text || ""}
-                        </ReactSyntaxHighlighter>
-                    </div>
-                </ScrollArea>
-            );
-        }
-
-        // Code / Plain Text
-        return (
-             <ScrollArea className="h-full">
-                 <ReactSyntaxHighlighter
-                    language="text" // generic
-                    style={vs2015}
-                    customStyle={{ margin: 0, borderRadius: 0, height: "100%", fontSize: '0.875rem' }}
-                    showLineNumbers={true}
-                >
-                    {text || ""}
-                </ReactSyntaxHighlighter>
-            </ScrollArea>
-        );
     };
 
     return (
@@ -351,6 +246,9 @@ export function ResourceExplorer({ initialResources = [] }: ResourceExplorerProp
                                                 <ContextMenuItem onClick={() => setSelectedUri(res.uri)}>
                                                     <Eye className="mr-2 h-4 w-4" /> View Details
                                                 </ContextMenuItem>
+                                                <ContextMenuItem onClick={() => setPreviewResource(res)}>
+                                                    <Maximize2 className="mr-2 h-4 w-4" /> Preview in Modal
+                                                </ContextMenuItem>
                                                 <ContextMenuSeparator />
                                                 <ContextMenuItem onClick={() => handleCopyUri(res.uri)}>
                                                     <Copy className="mr-2 h-4 w-4" /> Copy URI
@@ -397,6 +295,9 @@ export function ResourceExplorer({ initialResources = [] }: ResourceExplorerProp
                                                 <ContextMenuItem onClick={() => setSelectedUri(res.uri)}>
                                                     <Eye className="mr-2 h-4 w-4" /> View Details
                                                 </ContextMenuItem>
+                                                <ContextMenuItem onClick={() => setPreviewResource(res)}>
+                                                    <Maximize2 className="mr-2 h-4 w-4" /> Preview in Modal
+                                                </ContextMenuItem>
                                                 <ContextMenuSeparator />
                                                 <ContextMenuItem onClick={() => handleCopyUri(res.uri)}>
                                                     <Copy className="mr-2 h-4 w-4" /> Copy URI
@@ -433,6 +334,12 @@ export function ResourceExplorer({ initialResources = [] }: ResourceExplorerProp
                                      <Badge variant="outline" className="text-[10px] font-normal h-5">{resourceContent?.mimeType || "loading..."}</Badge>
                                 </div>
                                 <div className="flex items-center gap-1">
+                                    <Button variant="ghost" size="sm" className="h-7 text-xs" onClick={() => {
+                                        const res = resources.find(r => r.uri === selectedUri);
+                                        if (res) setPreviewResource(res);
+                                    }} disabled={!selectedUri} title="Maximize Preview">
+                                         <Maximize2 className="h-3 w-3 mr-1" /> Expand
+                                    </Button>
                                     <Button variant="ghost" size="sm" className="h-7 text-xs" onClick={handleCopyContent} disabled={!resourceContent}>
                                         <Copy className="h-3 w-3 mr-1" /> Copy
                                     </Button>
@@ -442,7 +349,7 @@ export function ResourceExplorer({ initialResources = [] }: ResourceExplorerProp
                                 </div>
                             </div>
                             <div className="flex-1 overflow-hidden relative">
-                                {renderPreview()}
+                                <ResourceViewer content={resourceContent} loading={contentLoading} />
                             </div>
                         </>
                     ) : (
@@ -458,6 +365,13 @@ export function ResourceExplorer({ initialResources = [] }: ResourceExplorerProp
                     )}
                 </ResizablePanel>
             </ResizablePanelGroup>
+
+            <ResourcePreviewModal
+                isOpen={!!previewResource}
+                onOpenChange={(open) => !open && setPreviewResource(null)}
+                resource={previewResource}
+                initialContent={resourceContent?.uri === previewResource?.uri ? resourceContent : undefined}
+            />
         </div>
     );
 }

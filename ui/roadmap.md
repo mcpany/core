@@ -13,8 +13,10 @@
 - [x] **Service Templates Library**: A built-in library of common service configurations (Postgres, Redis, Slack) to quickly spin up services without manual config.
 - [ ] **Configuration Versioning & Rollback**: UI to view history of service configuration changes and rollback to previous versions.
 - [ ] **Server Health History**: Visual timeline of server up/down status over the last 24h.
+- [x] **Resource Preview Modal**: A dedicated modal to preview resources instead of the split pane, for larger viewing area.
+- [ ] **Markdown Rendering Improvements**: Support for Mermaid diagrams and other GFM extensions in the resource previewer.
+- [ ] **Syntax Highlighting Theme Selector**: Allow users to choose the syntax highlighting theme in the resource viewer (currently fixed to vs2015).
 - [x] **Breadcrumb Navigation Enhancements**: Improved breadcrumbs with dropdowns for sibling navigation.
-- [ ] **Resource Preview Modal**: A dedicated modal to preview resources instead of the split pane, for larger viewing area.
 - [ ] **Drag-and-Drop Resource Export**: Ability to drag a resource from the list to the desktop or another app.
 - [ ] **Prompt/Resource Sibling Navigation**: Enable sibling navigation for Prompts and Resources (requires backend API update to include service_id).
 - [ ] **Breadcrumb History**: Show recently visited breadcrumbs in a dropdown or history menu.

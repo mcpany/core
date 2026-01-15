@@ -93,4 +93,34 @@ describe('ResourceExplorer', () => {
         expect(screen.getByTestId('code-block')).toHaveTextContent('{"test": true}');
     });
   });
+
+  it('opens preview modal when expand button is clicked', async () => {
+    // @ts-expect-error Mocking partial implementation
+    apiClient.listResources.mockResolvedValueOnce({ resources: MOCK_RESOURCES });
+    // @ts-expect-error Mocking partial implementation
+    apiClient.readResource.mockResolvedValueOnce({
+        contents: [{ uri: 'file:///app/config.json', mimeType: 'application/json', text: '{"test": true}' }]
+    });
+
+    render(<ResourceExplorer />);
+
+    await waitFor(() => {
+        expect(screen.getByText('config.json')).toBeInTheDocument();
+    });
+
+    // Select resource
+    fireEvent.click(screen.getByText('config.json'));
+
+    await waitFor(() => {
+        expect(screen.getByTitle('Maximize Preview')).toBeEnabled();
+    });
+
+    // Click expand
+    fireEvent.click(screen.getByTitle('Maximize Preview'));
+
+    await waitFor(() => {
+        expect(screen.getByRole('dialog')).toBeInTheDocument();
+        expect(screen.getByRole('dialog')).toHaveTextContent('config.json');
+    });
+  });
 });
