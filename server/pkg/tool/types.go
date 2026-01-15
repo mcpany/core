@@ -312,6 +312,32 @@ func (t *GRPCTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 // HTTPTool implements the Tool interface for a tool exposed via an HTTP endpoint.
 // It constructs and sends an HTTP request based on the tool definition and
 // input, handling parameter mapping, authentication, and transformations.
+type urlSegment struct {
+	isParam bool
+	value   string // Literal text or parameter name
+}
+
+func parseURLSegments(template string) []urlSegment {
+	var segments []urlSegment
+	parts := strings.Split(template, "{{")
+	for i, part := range parts {
+		if i == 0 {
+			if part != "" {
+				segments = append(segments, urlSegment{isParam: false, value: part})
+			}
+			continue
+		}
+		// part looks like "param}}suffix"
+		subparts := strings.SplitN(part, "}}", 2)
+		paramName := subparts[0]
+		segments = append(segments, urlSegment{isParam: true, value: paramName})
+		if len(subparts) > 1 && subparts[1] != "" {
+			segments = append(segments, urlSegment{isParam: false, value: subparts[1]})
+		}
+	}
+	return segments
+}
+
 type HTTPTool struct {
 	tool              *v1.Tool
 	mcpTool           *mcp.Tool
@@ -332,9 +358,8 @@ type HTTPTool struct {
 	initError            error
 	cachedMethod         string
 	cachedURL            *url.URL
-	cachedPath           string // with %7B replaced
-	cachedQuery          string // with %7B replaced
-	cachedPlaceholders   map[string]string
+	pathSegments         []urlSegment
+	querySegments        []urlSegment
 	paramInPath          []bool
 	paramInQuery         []bool
 	cachedInputTemplate  *transformer.TextTemplate
@@ -419,14 +444,14 @@ func NewHTTPTool(tool *v1.Tool, poolManager *pool.Manager, serviceID string, aut
 	pathStr := u.EscapedPath()
 	pathStr = strings.ReplaceAll(pathStr, "%7B", "{")
 	pathStr = strings.ReplaceAll(pathStr, "%7D", "}")
-	t.cachedPath = pathStr
 
 	queryStr := u.RawQuery
 	queryStr = strings.ReplaceAll(queryStr, "%7B", "{")
 	queryStr = strings.ReplaceAll(queryStr, "%7D", "}")
-	t.cachedQuery = queryStr
 
-	t.cachedPlaceholders = make(map[string]string)
+	t.pathSegments = parseURLSegments(pathStr)
+	t.querySegments = parseURLSegments(queryStr)
+
 	t.paramInPath = make([]bool, len(callDefinition.GetParameters()))
 	t.paramInQuery = make([]bool, len(callDefinition.GetParameters()))
 
@@ -434,12 +459,11 @@ func NewHTTPTool(tool *v1.Tool, poolManager *pool.Manager, serviceID string, aut
 		if schema := param.GetSchema(); schema != nil {
 			name := schema.GetName()
 			placeholder := "{{" + name + "}}"
-			t.cachedPlaceholders[name] = placeholder
 
-			if strings.Contains(t.cachedPath, placeholder) {
+			if strings.Contains(pathStr, placeholder) {
 				t.paramInPath[i] = true
 			}
-			if strings.Contains(t.cachedQuery, placeholder) {
+			if strings.Contains(queryStr, placeholder) {
 				t.paramInQuery[i] = true
 			}
 		}
@@ -650,9 +674,6 @@ func (t *HTTPTool) logRequest(ctx context.Context, httpReq *http.Request, body i
 }
 
 func (t *HTTPTool) prepareInputsAndURL(ctx context.Context, req *ExecutionRequest) (map[string]any, string, error) {
-	pathStr := t.cachedPath
-	queryStr := t.cachedQuery
-
 	var inputs map[string]any
 	if len(req.ToolInputs) > 0 {
 		// Trim whitespace to avoid EOF errors on empty/whitespace-only inputs
@@ -668,31 +689,33 @@ func (t *HTTPTool) prepareInputsAndURL(ctx context.Context, req *ExecutionReques
 		}
 	}
 
+	pathReplacements := make(map[string]string, len(t.parameters))
+	queryReplacements := make(map[string]string, len(t.parameters))
+
 	for i, param := range t.parameters {
+		name := param.GetSchema().GetName()
 		if secret := param.GetSecret(); secret != nil {
 			secretValue, err := util.ResolveSecret(ctx, secret)
 			if err != nil {
-				return nil, "", fmt.Errorf("failed to resolve secret for parameter %q: %w", param.GetSchema().GetName(), err)
+				return nil, "", fmt.Errorf("failed to resolve secret for parameter %q: %w", name, err)
 			}
-			placeholder := t.cachedPlaceholders[param.GetSchema().GetName()]
 			if t.paramInPath[i] {
-				pathStr = strings.ReplaceAll(pathStr, placeholder, secretValue)
+				pathReplacements[name] = secretValue
 			}
 			if t.paramInQuery[i] {
-				queryStr = strings.ReplaceAll(queryStr, placeholder, secretValue)
+				queryReplacements[name] = secretValue
 			}
 		} else if schema := param.GetSchema(); schema != nil {
-			placeholder := t.cachedPlaceholders[schema.GetName()]
-			val, ok := inputs[schema.GetName()]
+			val, ok := inputs[name]
 			if !ok {
 				if schema.GetIsRequired() {
-					return nil, "", fmt.Errorf("missing required parameter: %s", schema.GetName())
+					return nil, "", fmt.Errorf("missing required parameter: %s", name)
 				}
 				// If optional and missing, treat as empty string
 				val = ""
 			} else {
 				// Only delete from inputs if it was present
-				delete(inputs, schema.GetName())
+				delete(inputs, name)
 			}
 
 			valStr := util.ToString(val)
@@ -701,22 +724,22 @@ func (t *HTTPTool) prepareInputsAndURL(ctx context.Context, req *ExecutionReques
 				// ALWAYS check for path traversal in path parameters, regardless of escaping settings.
 				// Even if escaped, some servers might decode and normalize the path, leading to traversal.
 				if err := checkForPathTraversal(valStr); err != nil {
-					return nil, "", fmt.Errorf("path traversal attempt detected in parameter %q: %w", schema.GetName(), err)
+					return nil, "", fmt.Errorf("path traversal attempt detected in parameter %q: %w", name, err)
 				}
 				// Also check decoded value just in case the input was already encoded
 				if decodedVal, err := url.QueryUnescape(valStr); err == nil && decodedVal != valStr {
 					if err := checkForPathTraversal(decodedVal); err != nil {
-						return nil, "", fmt.Errorf("path traversal attempt detected in parameter %q (decoded): %w", schema.GetName(), err)
+						return nil, "", fmt.Errorf("path traversal attempt detected in parameter %q (decoded): %w", name, err)
 					}
 				}
 			}
 
 			if param.GetDisableEscape() {
 				if t.paramInPath[i] {
-					pathStr = strings.ReplaceAll(pathStr, placeholder, valStr)
+					pathReplacements[name] = valStr
 				}
 				if t.paramInQuery[i] {
-					queryStr = strings.ReplaceAll(queryStr, placeholder, valStr)
+					queryReplacements[name] = valStr
 				}
 			} else {
 				if t.paramInPath[i] {
@@ -724,16 +747,44 @@ func (t *HTTPTool) prepareInputsAndURL(ctx context.Context, req *ExecutionReques
 					// url.PathEscape does NOT escape dots, so ".." remains ".."
 					// and path.Clean will resolve it, potentially allowing path traversal.
 					if err := checkForPathTraversal(valStr); err != nil {
-						return nil, "", fmt.Errorf("path traversal attempt detected in parameter %q: %w", schema.GetName(), err)
+						return nil, "", fmt.Errorf("path traversal attempt detected in parameter %q: %w", name, err)
 					}
-					pathStr = strings.ReplaceAll(pathStr, placeholder, url.PathEscape(valStr))
+					pathReplacements[name] = url.PathEscape(valStr)
 				}
 				if t.paramInQuery[i] {
-					queryStr = strings.ReplaceAll(queryStr, placeholder, url.QueryEscape(valStr))
+					queryReplacements[name] = url.QueryEscape(valStr)
 				}
 			}
 		}
 	}
+
+	var pathBuf strings.Builder
+	for _, seg := range t.pathSegments {
+		if seg.isParam {
+			if val, ok := pathReplacements[seg.value]; ok {
+				pathBuf.WriteString(val)
+			} else {
+				pathBuf.WriteString("{{" + seg.value + "}}")
+			}
+		} else {
+			pathBuf.WriteString(seg.value)
+		}
+	}
+	pathStr := pathBuf.String()
+
+	var queryBuf strings.Builder
+	for _, seg := range t.querySegments {
+		if seg.isParam {
+			if val, ok := queryReplacements[seg.value]; ok {
+				queryBuf.WriteString(val)
+			} else {
+				queryBuf.WriteString("{{" + seg.value + "}}")
+			}
+		} else {
+			queryBuf.WriteString(seg.value)
+		}
+	}
+	queryStr := queryBuf.String()
 
 	// Clean the path to resolve . and .. and //
 	// We do this on the encoded string to treat %2F as opaque characters
