@@ -47,6 +47,12 @@ func TestHTTPUpstream_URLConstruction_DoubleSlashBug(t *testing.T) {
 			endpointPath: "//",
 			expectedFqn:  "GET http://example.com/api//",
 		},
+		{
+			name:         "endpoint path with double slash and encoded slash",
+			address:      "http://example.com/api",
+			endpointPath: "//foo%2Fbar",
+			expectedFqn:  "GET http://example.com/api//foo%2Fbar",
+		},
 	}
 
 	for _, tc := range testCases {
