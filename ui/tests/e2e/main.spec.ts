@@ -29,6 +29,15 @@ test.describe('MCP Any UI E2E', () => {
             json: []
         });
     });
+
+    // Mock doctor API to prevent system status banner
+    await page.route('**/doctor', async route => {
+        await route.fulfill({
+            status: 200,
+            contentType: 'application/json',
+            body: JSON.stringify({ status: 'healthy', checks: {} })
+        });
+    });
   });
 
   test('Dashboard loads and shows metrics', async ({ page }) => {
