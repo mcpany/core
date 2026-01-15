@@ -48,6 +48,7 @@
 - [x] **Intelligent Config Diagnostics**: Added fuzzy matching suggestions for "unknown field" errors (e.g. "Did you mean 'address'?" for 'target_address') and helpful hints for YAML syntax errors (like tabs vs spaces). (Friction Fighter)
 - [x] **Smart Config Error Messages - Address**: Fixed an issue where the validator confusingly referred to 'target_address' instead of 'address', aligning error messages with the actual configuration schema. (Friction Fighter)
 - [x] **Configuration Health Check**: Added a Doctor check that tracks the status of dynamic configuration reloads (success/failure, timestamp) and exposes it via `/doctor` API to aid in debugging silent reload failures. (Experience Crafter)
+- [x] **Frontend Config Status Banner**: Add a visual indicator (banner/toast) in the UI Management Dashboard that queries the new `/doctor` configuration check and warns the user if the server is running with a stale or invalid configuration. (Experience Crafter)
 - [x] **WebSocket Diagnostic Probe**: Implemented a diagnostic probe in the UI to validate WebSocket service configuration and test connectivity (including browser-side check). (Experience Crafter)
 
 ## 2. Top 10 Recommended Features
