@@ -499,7 +499,8 @@ func (a *Application) handleSecrets(store storage.Storage) http.HandlerFunc {
 		case http.MethodGet:
 			secrets, err := store.ListSecrets(r.Context())
 			if err != nil {
-				http.Error(w, err.Error(), http.StatusInternalServerError)
+				logging.GetLogger().Error("failed to list secrets", "error", err)
+				http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 				return
 			}
 			// Redact sensitive values
@@ -534,7 +535,8 @@ func (a *Application) handleSecrets(store storage.Storage) http.HandlerFunc {
 				secret.Id = proto.String(uuid.New().String())
 			}
 			if err := store.SaveSecret(r.Context(), &secret); err != nil {
-				http.Error(w, err.Error(), http.StatusInternalServerError)
+				logging.GetLogger().Error("failed to save secret", "error", err)
+				http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 				return
 			}
 			w.WriteHeader(http.StatusOK)
@@ -558,7 +560,7 @@ func (a *Application) handleSecretDetail(store storage.Storage) http.HandlerFunc
 			secret, err := store.GetSecret(r.Context(), id)
 			if err != nil {
 				logging.GetLogger().Error("failed to get secret", "id", id, "error", err)
-				http.Error(w, err.Error(), http.StatusInternalServerError)
+				http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 				return
 			}
 			if secret == nil {
@@ -575,7 +577,8 @@ func (a *Application) handleSecretDetail(store storage.Storage) http.HandlerFunc
 
 		case http.MethodDelete:
 			if err := store.DeleteSecret(r.Context(), id); err != nil {
-				http.Error(w, err.Error(), http.StatusInternalServerError)
+				logging.GetLogger().Error("failed to delete secret", "id", id, "error", err)
+				http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 				return
 			}
 			w.WriteHeader(http.StatusNoContent)
@@ -925,7 +928,9 @@ func (a *Application) handleCollectionApply(w http.ResponseWriter, r *http.Reque
 
 func isUnsafeConfig(service *configv1.UpstreamServiceConfig) bool {
 	if mcp := service.GetMcpService(); mcp != nil {
-		if mcp.WhichConnectionType() == configv1.McpUpstreamService_StdioConnection_case {
+		connType := mcp.WhichConnectionType()
+		if connType == configv1.McpUpstreamService_StdioConnection_case ||
+			connType == configv1.McpUpstreamService_BundleConnection_case {
 			return true
 		}
 	}
