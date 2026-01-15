@@ -483,6 +483,13 @@ message McpStdioConnection {
   reserved 6;
   // Optional: Environment variables to set in the container.
   map<string, SecretValue> env = 7 [json_name = "env"];
+  // Optional: Validation rules for the environment.
+  EnvValidation validation = 8 [json_name = "validation"];
+}
+
+message EnvValidation {
+  // A list of environment variables that MUST be set (either inherited or explicit).
+  repeated string required_env = 1 [json_name = "required_env"];
 }
 
 message McpStreamableHttpConnection {
