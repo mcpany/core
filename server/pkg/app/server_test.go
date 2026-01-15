@@ -1679,11 +1679,17 @@ func TestRun_ServiceRegistrationPublication(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 	defer cancel()
 
-	configContent := `
+	// Start a dummy server to pass validation
+	dummyLis, err := net.Listen("tcp", "localhost:0")
+	require.NoError(t, err)
+	defer dummyLis.Close()
+	dummyAddr := "http://" + dummyLis.Addr().String()
+
+	configContent := fmt.Sprintf(`
 upstream_services:
  - name: "test-service"
    http_service:
-     address: "http://localhost:8080"
+     address: "%s"
      tools:
        - name: "test-call"
          call_id: "test-call"
@@ -1704,8 +1710,8 @@ upstream_services:
           id: "test-call"
           endpoint_path: "/test"
           method: "HTTP_METHOD_POST"
-`
-	err := afero.WriteFile(fs, "/config.yaml", []byte(configContent), 0o644)
+`, dummyAddr)
+	err = afero.WriteFile(fs, "/config.yaml", []byte(configContent), 0o644)
 	require.NoError(t, err)
 
 	// Create a mock bus and set the hook.
@@ -1746,12 +1752,18 @@ func TestRun_ServiceRegistrationSkipsDisabled(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 	defer cancel()
 
-	configContent := `
+	// Start a dummy server to pass validation
+	dummyLis, err := net.Listen("tcp", "localhost:0")
+	require.NoError(t, err)
+	defer dummyLis.Close()
+	dummyAddr := "http://" + dummyLis.Addr().String()
+
+	configContent := fmt.Sprintf(`
 upstream_services:
  - name: "enabled-service"
    disable: false
    http_service:
-     address: "http://localhost:8080"
+     address: "%s"
      tools:
        - name: "test-call"
          call_id: "test-call"
@@ -1762,8 +1774,8 @@ upstream_services:
      tools:
        - name: "test-call"
          call_id: "test-call"
-`
-	err := afero.WriteFile(fs, "/config.yaml", []byte(configContent), 0o644)
+`, dummyAddr)
+	err = afero.WriteFile(fs, "/config.yaml", []byte(configContent), 0o644)
 	require.NoError(t, err)
 
 	mockRegBus := newMockBus[*bus.ServiceRegistrationRequest]()
@@ -2222,8 +2234,14 @@ func TestRun_IPAllowlist(t *testing.T) {
 		_ = l.Close()
 		addr := fmt.Sprintf("localhost:%d", port)
 
+		// Start a dummy server to pass validation
+		dummyLis, err := net.Listen("tcp", "localhost:0")
+		require.NoError(t, err)
+		defer dummyLis.Close()
+		dummyAddr := "http://" + dummyLis.Addr().String()
+
 		// Allow localhost (IPv4 and IPv6 just in case)
-		configContent := `
+		configContent := fmt.Sprintf(`
 global_settings:
   allowed_ips:
     - "127.0.0.1"
@@ -2231,8 +2249,8 @@ global_settings:
 upstream_services:
  - name: "test-service"
    http_service:
-     address: "http://localhost:8080"
-`
+     address: "%s"
+`, dummyAddr)
 		err = afero.WriteFile(fs, "/config.yaml", []byte(configContent), 0o644)
 		require.NoError(t, err)
 
