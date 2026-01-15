@@ -95,8 +95,13 @@ ${colorConfig
     const color =
       itemConfig.theme?.[theme as keyof typeof itemConfig.theme] ||
       itemConfig.color
-    const value = color ? color.replace(/[;{}<>"\r\n]/g, "") : null
-    const safeKey = key.replace(/[;{}<>"\r\n]/g, "")
+    // Sentinel Security: Strengthen sanitization to prevent CSS injection.
+    const value = color ? color.replace(/[;{}<>'"\r\n\\]/g, "") : null
+    const safeKey = key.replace(/[;{}<>'"\r\n\\]/g, "")
+    // Block url() to prevent external requests or javascript:
+    if (value && /url\(/i.test(value)) {
+      return null
+    }
     return value ? `  --color-${safeKey}: ${value};` : null
   })
   .join("\n")}
