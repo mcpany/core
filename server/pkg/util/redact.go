@@ -130,6 +130,7 @@ var sensitiveKeys = []string{
 	"api_key", "apikey", "token", "secret", "password", "passwd", "credential", "auth", "private_key",
 	"authorization", "proxy-authorization", "cookie", "set-cookie", "x-api-key",
 	"passwords", "tokens", "api_keys", "apikeys",
+	"authentication", "authenticator",
 }
 
 // IsSensitiveKey checks if a key name suggests it contains sensitive information.

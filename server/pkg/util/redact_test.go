@@ -317,3 +317,42 @@ func TestBug_PascalCaseRedaction_AuthId(t *testing.T) {
 	output := RedactJSON([]byte(input))
 	assert.Contains(t, string(output), `[REDACTED]`, "AuthId should be redacted")
 }
+
+func TestRedact_Authentication(t *testing.T) {
+	t.Parallel()
+	// "authentication" and "authenticator" were previously missed because "auth" matching logic skipped them
+	// as they continue with lowercase letters. We explicitly added them to sensitive keys list.
+
+	tests := []struct {
+		input        string
+		shouldRedact bool
+	}{
+		{`{"authentication": "secret"}`, true},
+		{`{"Authentication": "secret"}`, true},
+		{`{"AUTHENTICATION": "secret"}`, true},
+		{`{"authenticator": "secret"}`, true},
+		{`{"Authenticator": "secret"}`, true},
+		{`{"authentications": "secret"}`, false}, // Not explicitly added, should be false unless "auth" matches (which it doesn't due to lowercase continuation)
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.input, func(t *testing.T) {
+			output := RedactJSON([]byte(tt.input))
+			var m map[string]interface{}
+			err := json.Unmarshal(output, &m)
+			assert.NoError(t, err)
+
+			// Get the value (assuming single key)
+			var val interface{}
+			for _, v := range m {
+				val = v
+			}
+
+			if tt.shouldRedact {
+				assert.Equal(t, "[REDACTED]", val, "Input %q should be redacted", tt.input)
+			} else {
+				assert.NotEqual(t, "[REDACTED]", val, "Input %q should NOT be redacted", tt.input)
+			}
+		})
+	}
+}
