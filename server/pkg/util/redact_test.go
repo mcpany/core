@@ -301,7 +301,7 @@ func TestScanForSensitiveKeys_JSON(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			result := scanForSensitiveKeys([]byte(tt.input), true, false)
+			result := scanForSensitiveKeys([]byte(tt.input), true)
 			assert.Equal(t, tt.expected, result)
 		})
 	}

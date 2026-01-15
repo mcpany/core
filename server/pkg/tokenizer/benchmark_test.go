@@ -49,3 +49,31 @@ func BenchmarkStructTokenization(b *testing.B) {
 		_, _ = CountTokensInValue(t, s)
 	}
 }
+
+func BenchmarkPrimitiveSliceTokenization(b *testing.B) {
+	t := NewSimpleTokenizer()
+
+	// Create a large slice of ints
+	ints := make([]int, 1000)
+	for i := 0; i < 1000; i++ {
+		ints[i] = i * 12345
+	}
+
+	// Create a large slice of floats
+	floats := make([]float64, 1000)
+	for i := 0; i < 1000; i++ {
+		floats[i] = float64(i) * 1.2345
+	}
+
+	b.Run("IntSlice", func(b *testing.B) {
+		for i := 0; i < b.N; i++ {
+			_, _ = CountTokensInValue(t, ints)
+		}
+	})
+
+	b.Run("FloatSlice", func(b *testing.B) {
+		for i := 0; i < b.N; i++ {
+			_, _ = CountTokensInValue(t, floats)
+		}
+	})
+}

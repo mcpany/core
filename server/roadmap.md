@@ -50,7 +50,7 @@
 - [x] **Configuration Health Check**: Added a Doctor check that tracks the status of dynamic configuration reloads (success/failure, timestamp) and exposes it via `/doctor` API to aid in debugging silent reload failures. (Experience Crafter)
 - [x] **Frontend Config Status Banner**: Add a visual indicator (banner/toast) in the UI Management Dashboard that queries the new `/doctor` configuration check and warns the user if the server is running with a stale or invalid configuration. (Experience Crafter)
 - [x] **WebSocket Diagnostic Probe**: Implemented a diagnostic probe in the UI to validate WebSocket service configuration and test connectivity (including browser-side check). (Experience Crafter)
-- [x] **Network Connectivity Validation**: Added dynamic validation during startup and configuration reload to verify TCP reachability of upstream services (HTTP, gRPC, etc.), preventing "silent failures" where a service is configured but unreachable. (Friction Fighter)
+- [x] **Required Environment Variable Validation**: Added explicit `validation.required_env` support for Stdio connections to fail fast with descriptive errors if required environment variables are missing. (Friction Fighter)
 
 ## 2. Top 10 Recommended Features
 
@@ -96,6 +96,8 @@ These features represent the next logical steps for the product, focusing on Ent
 | 36 | **Configuration Diffing API** | **Observability**: An API endpoint to compare the currently active configuration with the previous version or the file on disk, helping users understand what changed during a reload. | Medium |
 | 37 | **Automatic WebSocket Reconnection Strategy** | **Resilience**: Allow users to configure retry backoff and max attempts for WS connections to handle transient network drops. | Medium |
 | 38 | **WebSocket Message Inspector** | **Debugging**: A UI tool to capture and view raw WS frames (text/binary) for debugging protocol issues. | Medium |
+| 39 | **RegEx Environment Variable Validation** | **Security**: Allow validating the *format* of environment variables using regex (e.g., ensuring an API key matches a pattern) in addition to existence checks. | Low |
+| 40 | **HTTP Upstream Env Validation** | **Consistency**: Extend required environment variable validation to HTTP connections (e.g. for `http_address` or auth headers). | Low |
 
 ## 3. Codebase Health
 

@@ -395,6 +395,12 @@ func buildCommandFromStdioConfig(ctx context.Context, stdio *configv1.McpStdioCo
 			env = append(env, fmt.Sprintf("%s=%s", k, v))
 		}
 		cmd.Env = env
+
+		// Validate required environment variables
+		if err := validateRequiredEnv(env, stdio.GetValidation()); err != nil {
+			return nil, err
+		}
+
 		return cmd, nil
 	}
 
@@ -425,7 +431,42 @@ func buildCommandFromStdioConfig(ctx context.Context, stdio *configv1.McpStdioCo
 	}
 	cmd.Env = env
 
+	// Validate required environment variables
+	if err := validateRequiredEnv(env, stdio.GetValidation()); err != nil {
+		return nil, err
+	}
+
 	return cmd, nil
+}
+
+func validateRequiredEnv(env []string, validation *configv1.EnvValidation) error {
+	if validation == nil {
+		return nil
+	}
+	required := validation.GetRequiredEnv()
+	if len(required) == 0 {
+		return nil
+	}
+
+	envMap := make(map[string]struct{})
+	for _, e := range env {
+		parts := strings.SplitN(e, "=", 2)
+		if len(parts) > 0 {
+			envMap[parts[0]] = struct{}{}
+		}
+	}
+
+	var missing []string
+	for _, req := range required {
+		if _, ok := envMap[req]; !ok {
+			missing = append(missing, req)
+		}
+	}
+
+	if len(missing) > 0 {
+		return fmt.Errorf("missing required environment variables: %s", strings.Join(missing, ", "))
+	}
+	return nil
 }
 
 // createAndRegisterMCPItemsFromStdio handles the registration of an MCP service
