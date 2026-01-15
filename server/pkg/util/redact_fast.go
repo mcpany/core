@@ -8,6 +8,12 @@ import (
 	"encoding/json"
 )
 
+// maxUnescapeLimit is the maximum size of a key that we will attempt to unescape
+// using json.Unmarshal. Keys larger than this will use a streaming scanner
+// to avoid excessive allocation.
+// Variable for testing purposes.
+var maxUnescapeLimit = 1024 * 1024
+
 // redactJSONFast is a zero-allocation (mostly) implementation of RedactJSON.
 // It scans the input byte slice and constructs a new slice with redacted values.
 // It avoids full JSON parsing.
@@ -91,39 +97,7 @@ func redactJSONFast(input []byte) []byte {
 		if isKey {
 			// Check if key is sensitive
 			keyContent := input[quotePos+1 : endQuote]
-
-			var keyToCheck []byte
-			if bytes.Contains(keyContent, []byte{'\\'}) {
-				// Key contains escape sequences, unescape it to check for sensitivity.
-				// This is slower but safer.
-				// Limit the key size to prevent excessive allocation on malicious input
-				// We increase this to 1MB to handle reasonably large keys while still preventing DoS.
-				if len(keyContent) > 1024*1024 {
-					keyToCheck = keyContent
-				} else {
-					quoted := make([]byte, len(keyContent)+2)
-					quoted[0] = '"'
-					copy(quoted[1:], keyContent)
-					quoted[len(quoted)-1] = '"'
-
-					var unescaped string
-					if err := json.Unmarshal(quoted, &unescaped); err == nil {
-						keyToCheck = []byte(unescaped)
-					} else {
-						// Fallback to raw content if unmarshal fails
-						keyToCheck = keyContent
-					}
-				}
-			} else {
-				keyToCheck = keyContent
-			}
-
-			// Optimization: We check the raw key content against sensitive keys.
-			// We only unescape if backslashes are detected, avoiding expensive json.Unmarshal calls for the common case.
-			// Note: scanForSensitiveKeys (used in the pre-check) also does not handle escapes.
-			sensitive := scanForSensitiveKeys(keyToCheck, false)
-
-			if sensitive {
+			if isKeySensitive(keyContent) {
 				// Identify value start
 				valStart := colonPos + 1
 				// Skip whitespace
@@ -260,6 +234,167 @@ func skipLiteral(input []byte, start int) int {
 		i++
 	}
 	return i
+}
+
+func isKeySensitive(keyContent []byte) bool {
+	var keyToCheck []byte
+	var sensitive bool
+
+	if bytes.Contains(keyContent, []byte{'\\'}) {
+		// Key contains escape sequences, unescape it to check for sensitivity.
+		// This is slower but safer.
+		// Limit the key size to prevent excessive allocation on malicious input
+		// We increase this to 1MB to handle reasonably large keys while still preventing DoS.
+		if len(keyContent) > maxUnescapeLimit {
+			// Use streaming/chunked scan for huge keys to avoid allocation
+			if scanEscapedKeyForSensitive(keyContent) {
+				sensitive = true
+			} else {
+				keyToCheck = keyContent
+			}
+		} else {
+			quoted := make([]byte, len(keyContent)+2)
+			quoted[0] = '"'
+			copy(quoted[1:], keyContent)
+			quoted[len(quoted)-1] = '"'
+
+			var unescaped string
+			if err := json.Unmarshal(quoted, &unescaped); err == nil {
+				keyToCheck = []byte(unescaped)
+			} else {
+				// Fallback to raw content if unmarshal fails
+				keyToCheck = keyContent
+			}
+		}
+	} else {
+		keyToCheck = keyContent
+	}
+
+	// Optimization: We check the raw key content against sensitive keys.
+	// We only unescape if backslashes are detected, avoiding expensive json.Unmarshal calls for the common case.
+	// Note: scanForSensitiveKeys (used in the pre-check) also does not handle escapes.
+	if !sensitive {
+		sensitive = scanForSensitiveKeys(keyToCheck, false)
+	}
+	return sensitive
+}
+
+// scanEscapedKeyForSensitive scans a large escaped key for sensitive words using a fixed-size buffer.
+// It returns true if any sensitive word is found.
+func scanEscapedKeyForSensitive(keyContent []byte) bool {
+	// 4KB buffer
+	const bufSize = 4096
+	const overlap = 64
+	var buf [bufSize]byte
+	bufIdx := 0
+
+	i := 0
+	n := len(keyContent)
+
+	for i < n {
+		// Unescape one character
+		c := keyContent[i]
+		if c == '\\' {
+			i++
+			if i >= n {
+				break
+			}
+			switch keyContent[i] {
+			case '"', '\\', '/', '\'':
+				c = keyContent[i]
+				i++
+			case 'b':
+				c = '\b'
+				i++
+			case 'f':
+				c = '\f'
+				i++
+			case 'n':
+				c = '\n'
+				i++
+			case 'r':
+				c = '\r'
+				i++
+			case 't':
+				c = '\t'
+				i++
+			case 'u':
+				// \uXXXX
+				if i+4 < n {
+					// Parse 4 hex digits
+					val := 0
+					valid := true
+					for k := 0; k < 4; k++ {
+						h := keyContent[i+1+k]
+						var d int
+						switch {
+						case h >= '0' && h <= '9':
+							d = int(h - '0')
+						case h >= 'a' && h <= 'f':
+							d = int(h - 'a' + 10)
+						case h >= 'A' && h <= 'F':
+							d = int(h - 'A' + 10)
+						default:
+							valid = false
+						}
+						if !valid {
+							break
+						}
+						val = (val << 4) | d
+					}
+
+					if valid {
+						// We have a rune value.
+						// Sensitive keys are ASCII. If val > 127, it won't match.
+						// We can just append '?' or similar if non-ascii, OR handle it if we want full correctness.
+						// scanForSensitiveKeys works on bytes.
+						// If val <= 127, we append byte(val).
+						if val <= 127 {
+							c = byte(val)
+						} else {
+							// For non-ASCII, we can skip or use a placeholder.
+							// Assuming sensitive keys are ASCII only.
+							c = '?'
+						}
+						i += 5 // u + 4 digits
+					} else {
+						// Invalid hex, treat as 'u'
+						c = 'u'
+						i++
+					}
+				} else {
+					c = 'u'
+					i++
+				}
+			default:
+				// Unknown escape, just output the char
+				c = keyContent[i]
+				i++
+			}
+		} else {
+			i++
+		}
+
+		buf[bufIdx] = c
+		bufIdx++
+
+		if bufIdx == bufSize {
+			if scanForSensitiveKeys(buf[:], false) {
+				return true
+			}
+			// Shift overlap
+			copy(buf[0:], buf[bufSize-overlap:])
+			bufIdx = overlap
+		}
+	}
+
+	if bufIdx > 0 {
+		if scanForSensitiveKeys(buf[:bufIdx], false) {
+			return true
+		}
+	}
+
+	return false
 }
 
 func skipNumber(input []byte, start int) int {
