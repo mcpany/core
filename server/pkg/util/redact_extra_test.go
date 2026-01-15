@@ -60,10 +60,10 @@ func TestScanForSensitiveKeys_Extra(t *testing.T) {
     // Cover validateKeyContext = true
 
     input := []byte(`{"password": "123"}`)
-    assert.True(t, scanForSensitiveKeys(input, true))
+    assert.True(t, scanForSensitiveKeys(input, true, false))
 
     input2 := []byte(`{"user": "alice"}`)
-    assert.False(t, scanForSensitiveKeys(input2, true))
+    assert.False(t, scanForSensitiveKeys(input2, true, false))
 
     // Case where second char check fails
     // "pass" vs "paaa"
@@ -73,7 +73,7 @@ func TestScanForSensitiveKeys_Extra(t *testing.T) {
     // next chars: 'a', 'r'.
     // So 'b' is not allowed.
     input3 := []byte("pbssword")
-    assert.False(t, scanForSensitiveKeys(input3, false))
+    assert.False(t, scanForSensitiveKeys(input3, false, false))
 }
 
 func TestIsKeyColon(t *testing.T) {
