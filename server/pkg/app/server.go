@@ -1087,14 +1087,17 @@ func (a *Application) runServerMode(
 	// UI Handler
 	// We prioritize serving from build directories (./ui/out, ./ui/dist).
 	// If only ./ui exists, we check if it contains source code (package.json) and block it if so.
+	// We use a.fs (Afero) to allow testing/mocking.
 	var uiPath string
-	if _, err := os.Stat("./ui/out"); err == nil {
+	var uiFS http.FileSystem
+
+	if _, err := a.fs.Stat("./ui/out"); err == nil {
 		uiPath = "./ui/out"
-	} else if _, err := os.Stat("./ui/dist"); err == nil {
+	} else if _, err := a.fs.Stat("./ui/dist"); err == nil {
 		uiPath = "./ui/dist"
-	} else if _, err := os.Stat("./ui"); err == nil {
+	} else if _, err := a.fs.Stat("./ui"); err == nil {
 		// Check for package.json to detect source code
-		if _, err := os.Stat("./ui/package.json"); err == nil {
+		if _, err := a.fs.Stat("./ui/package.json"); err == nil {
 			logging.GetLogger().Warn("UI directory ./ui contains package.json. Refusing to serve source code for security.", "path", "./ui")
 		} else {
 			uiPath = "./ui"
@@ -1104,8 +1107,11 @@ func (a *Application) runServerMode(
 	}
 
 	if uiPath != "" {
-		uiFS := http.FileServer(http.Dir(uiPath))
-		mux.Handle("/ui/", http.StripPrefix("/ui", uiFS))
+		// Use Afero's httpFs adapter
+		// We create a BasePathFs to restrict access to the UI directory
+		baseFs := afero.NewBasePathFs(a.fs, uiPath)
+		uiFS = afero.NewHttpFs(baseFs)
+		mux.Handle("/ui/", http.StripPrefix("/ui", http.FileServer(uiFS)))
 	}
 
 	// Handle root path with gRPC-Web support
