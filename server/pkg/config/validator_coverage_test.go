@@ -408,7 +408,10 @@ func TestValidateCollection_Coverage(t *testing.T) {
 	coll.Authentication = &configv1.Authentication{
 		AuthMethod: &configv1.Authentication_ApiKey{
 			ApiKey: &configv1.APIKeyAuth{
-				ParamName: proto.String(""), // Error
+				ParamName: proto.String("x-api-key"),
+				Value: &configv1.SecretValue{
+					Value: &configv1.SecretValue_PlainText{PlainText: "secret"},
+				},
 			},
 		},
 	}
@@ -444,7 +447,9 @@ func TestValidateCollection_Coverage(t *testing.T) {
 	coll.Authentication = &configv1.Authentication{
 		AuthMethod: &configv1.Authentication_BearerToken{
 			BearerToken: &configv1.BearerTokenAuth{
-				Token: nil, // Error: token empty
+				Token: &configv1.SecretValue{
+					Value: &configv1.SecretValue_PlainText{PlainText: "token"},
+				},
 			},
 		},
 	}

@@ -57,6 +57,7 @@ global_settings:
 upstream_services:
   - id: "backend-fs"
     name: "Backend FS"
+    disable: false
     filesystem_service:
       root_paths:
         "/data": "/data"
@@ -73,7 +74,7 @@ upstream_services:
 		"-v", fmt.Sprintf("%s:/mcp_config", upstreamConfigDir),
 		"-v", fmt.Sprintf("%s:/data", upstreamConfigDir),
 		"mcpany/server:latest",
-		"run", "--config-path", "/mcp_config/config.yaml", "--mcp-listen-address", ":50050", "--debug",
+		"run", "--config-path", "/mcp_config/config.yaml", "--mcp-listen-address", ":50050", "--debug", "--api-key", "test-key",
 	)
 	out, err = upstreamCmd.CombinedOutput()
 	require.NoError(t, err, "Failed to start upstream: %s", string(out))
@@ -91,6 +92,13 @@ global_settings:
 upstream_services:
   - id: "proxy-service"
     name: "Proxy Service"
+    disable: false
+    upstream_auth:
+      api_key:
+        in: QUERY
+        param_name: "api_key"
+        value:
+          plain_text: "test-key"
     mcp_service:
       tool_auto_discovery: true
       http_connection:
@@ -104,7 +112,7 @@ upstream_services:
 		"-p", "0:50050",
 		"-v", fmt.Sprintf("%s:/mcp_config", gatewayConfigDir),
 		"mcpany/server:latest",
-		"run", "--config-path", "/mcp_config/config.yaml", "--mcp-listen-address", ":50050", "--debug",
+		"run", "--config-path", "/mcp_config/config.yaml", "--mcp-listen-address", ":50050", "--debug", "--api-key", "test-key",
 	)
 	out, err = gatewayCmd.CombinedOutput()
 	require.NoError(t, err, "Failed to start gateway: %s", string(out))
@@ -157,7 +165,7 @@ upstream_services:
 	defer cancel()
 
 	client := mcp.NewClient(&mcp.Implementation{Name: "cuj-client", Version: "1.0"}, nil)
-	transport := &mcp.StreamableClientTransport{Endpoint: baseURL}
+	transport := &mcp.StreamableClientTransport{Endpoint: baseURL + "/mcp?api_key=test-key"}
 	session, err := client.Connect(ctx, transport, nil)
 	require.NoError(t, err)
 	defer session.Close()
