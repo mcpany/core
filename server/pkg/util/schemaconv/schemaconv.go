@@ -48,37 +48,9 @@ func fieldsToProperties(fields protoreflect.FieldDescriptors, depth int) (*struc
 
 	for i := 0; i < fields.Len(); i++ {
 		field := fields.Get(i)
-		schema := map[string]interface{}{
-			"type": "string", // Default
-		}
-
-		switch field.Kind() {
-		case protoreflect.DoubleKind, protoreflect.FloatKind:
-			schema["type"] = TypeNumber
-		case protoreflect.Int32Kind, protoreflect.Int64Kind, protoreflect.Sint32Kind, protoreflect.Sint64Kind,
-			protoreflect.Uint32Kind, protoreflect.Uint64Kind, protoreflect.Fixed32Kind, protoreflect.Fixed64Kind,
-			protoreflect.Sfixed32Kind, protoreflect.Sfixed64Kind:
-			schema["type"] = TypeInteger
-		case protoreflect.BoolKind:
-			schema["type"] = TypeBoolean
-		case protoreflect.MessageKind:
-			schema["type"] = TypeObject
-			nestedProps, err := fieldsToProperties(field.Message().Fields(), depth+1)
-			if err != nil {
-				return nil, fmt.Errorf("failed to process nested message %s: %w", field.Name(), err)
-			}
-			schema["properties"] = nestedProps.AsMap()
-		}
-
-		if field.IsList() {
-			itemSchema := make(map[string]interface{})
-			for k, v := range schema {
-				itemSchema[k] = v
-			}
-			schema = map[string]interface{}{
-				"type":  TypeArray,
-				"items": itemSchema,
-			}
+		schema, err := fieldToSchema(field, depth)
+		if err != nil {
+			return nil, err
 		}
 
 		structValue, err := structpb.NewStruct(schema)
@@ -89,6 +61,63 @@ func fieldsToProperties(fields protoreflect.FieldDescriptors, depth int) (*struc
 	}
 
 	return properties, nil
+}
+
+func fieldToSchema(field protoreflect.FieldDescriptor, depth int) (map[string]interface{}, error) {
+	if depth > MaxRecursionDepth {
+		return nil, fmt.Errorf("recursion depth limit reached (%d)", MaxRecursionDepth)
+	}
+
+	schema := map[string]interface{}{
+		"type": "string", // Default
+	}
+
+	switch field.Kind() {
+	case protoreflect.DoubleKind, protoreflect.FloatKind:
+		schema["type"] = TypeNumber
+	case protoreflect.Int32Kind, protoreflect.Int64Kind, protoreflect.Sint32Kind, protoreflect.Sint64Kind,
+		protoreflect.Uint32Kind, protoreflect.Uint64Kind, protoreflect.Fixed32Kind, protoreflect.Fixed64Kind,
+		protoreflect.Sfixed32Kind, protoreflect.Sfixed64Kind:
+		schema["type"] = TypeInteger
+	case protoreflect.BoolKind:
+		schema["type"] = TypeBoolean
+	case protoreflect.MessageKind:
+		schema["type"] = TypeObject
+		if field.IsMap() {
+			// Handle Map
+			// Map entry message has field 1 (key) and 2 (value).
+			valField := field.Message().Fields().ByNumber(2)
+			if valField == nil {
+				// Should not happen for valid map entry
+				return nil, fmt.Errorf("map entry %s missing value field", field.Name())
+			}
+			valSchema, err := fieldToSchema(valField, depth+1)
+			if err != nil {
+				return nil, err
+			}
+			schema["additionalProperties"] = valSchema
+		} else {
+			nestedProps, err := fieldsToProperties(field.Message().Fields(), depth+1)
+			if err != nil {
+				return nil, fmt.Errorf("failed to process nested message %s: %w", field.Name(), err)
+			}
+			schema["properties"] = nestedProps.AsMap()
+		}
+	}
+
+	// Maps are technically Repeated, but we handled them as Object with additionalProperties.
+	// So only wrap in Array if it is List AND NOT Map.
+	if field.IsList() && !field.IsMap() {
+		itemSchema := make(map[string]interface{})
+		for k, v := range schema {
+			itemSchema[k] = v
+		}
+		schema = map[string]interface{}{
+			"type":  TypeArray,
+			"items": itemSchema,
+		}
+	}
+	return schema, nil
 }
 
 // ConfigParameter an interface for config parameter schemas.
