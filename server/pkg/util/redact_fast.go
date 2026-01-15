@@ -274,7 +274,7 @@ func isKeySensitive(keyContent []byte) bool {
 	// We only unescape if backslashes are detected, avoiding expensive json.Unmarshal calls for the common case.
 	// Note: scanForSensitiveKeys (used in the pre-check) also does not handle escapes.
 	if !sensitive {
-		sensitive = scanForSensitiveKeys(keyToCheck, false, false)
+		sensitive = scanForSensitiveKeys(keyToCheck, false)
 	}
 	return sensitive
 }
@@ -379,12 +379,7 @@ func scanEscapedKeyForSensitive(keyContent []byte) bool {
 		bufIdx++
 
 		if bufIdx == bufSize {
-			// Pass isPartial=true because we have more data (or at least the overlap suggests we are handling chunks)
-			// Actually, even if i >= n, we rely on bufIdx == bufSize to trigger this block.
-			// The only case where this is "full" is if the key size is exactly multiple of bufSize?
-			// But we shift overlap anyway.
-			// So yes, treat as partial.
-			if scanForSensitiveKeys(buf[:], false, true) {
+			if scanForSensitiveKeys(buf[:], false) {
 				return true
 			}
 			// Shift overlap
@@ -394,8 +389,7 @@ func scanEscapedKeyForSensitive(keyContent []byte) bool {
 	}
 
 	if bufIdx > 0 {
-		// Final chunk, isPartial=false
-		if scanForSensitiveKeys(buf[:bufIdx], false, false) {
+		if scanForSensitiveKeys(buf[:bufIdx], false) {
 			return true
 		}
 	}
