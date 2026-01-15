@@ -41,6 +41,8 @@ export interface LogEntry {
   source?: string
   // Optimization: Pre-computed lowercase string for search performance
   searchStr?: string
+  // Optimization: Pre-computed formatted time string to avoid repeated Date parsing
+  formattedTime?: string
 }
 
 const getLevelColor = (level: LogLevel) => {
@@ -64,7 +66,7 @@ const LogRow = React.memo(({ log }: { log: LogEntry }) => {
     >
       <div className="flex items-center gap-2 sm:contents">
           <span className="text-muted-foreground whitespace-nowrap opacity-50 text-[10px] sm:text-xs sm:mt-0.5">
-            {new Date(log.timestamp).toLocaleTimeString()}
+            {log.formattedTime || new Date(log.timestamp).toLocaleTimeString()}
           </span>
           <span className={cn("font-bold w-12 text-[10px] sm:text-xs sm:mt-0.5", getLevelColor(log.level))}>
             {log.level}
@@ -141,6 +143,8 @@ export function LogStream() {
           const newLog: LogEntry = JSON.parse(event.data)
           // Pre-compute search string
           newLog.searchStr = (newLog.message + " " + (newLog.source || "")).toLowerCase()
+          // Optimization: Pre-compute formatted time to avoid expensive Date parsing during render
+          newLog.formattedTime = new Date(newLog.timestamp).toLocaleTimeString()
 
           // Optimization: Add to buffer instead of calling setLogs directly
           logBufferRef.current.push(newLog)
