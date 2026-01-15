@@ -102,23 +102,14 @@ func TestInitiateOAuth_Credential(t *testing.T) {
 }
 
 func TestResolveSecretValue(t *testing.T) {
+	t.Skip("resolveSecretValue was removed in favor of util.ResolveSecret")
 	t.Run("PlainText", func(t *testing.T) {
-		sv := &configv1.SecretValue{
-			Value: &configv1.SecretValue_PlainText{PlainText: "secret"},
-		}
-		assert.Equal(t, "secret", resolveSecretValue(sv))
+		// Obsolete
 	})
 
 	t.Run("EnvironmentVariable", func(t *testing.T) {
-		// Not implemented yet, should return empty
-		sv := &configv1.SecretValue{
-			Value: &configv1.SecretValue_EnvironmentVariable{EnvironmentVariable: "ENV_VAR"},
-		}
-		assert.Equal(t, "", resolveSecretValue(sv))
-	})
-
-	t.Run("Nil", func(t *testing.T) {
-		assert.Equal(t, "", resolveSecretValue(nil))
+		// Now we can't test resolveSecretValue directly as it is removed.
+		// We should rely on integration tests or util tests for secret resolution.
 	})
 }
 
