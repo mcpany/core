@@ -4,10 +4,20 @@
 package validation
 
 import (
+	"os"
 	"testing"
 )
 
 func TestIsSafeURL(t *testing.T) {
+	// Ensure the bypass env var is not set for this test
+	originalEnv := os.Getenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS")
+	os.Unsetenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS")
+	defer func() {
+		if originalEnv != "" {
+			os.Setenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS", originalEnv)
+		}
+	}()
+
 	tests := []struct {
 		name    string
 		url     string
