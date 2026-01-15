@@ -195,7 +195,7 @@ func testFunctionalWeather(t *testing.T, rootDir string) {
 		"-p", "0:50050", // Dynamic port
 		"-v", fmt.Sprintf("%s:/config.yaml", configPath),
 		"mcpany/server:latest",
-		"run", "--config-path", "/config.yaml", "--mcp-listen-address", ":50050",
+		"run", "--config-path", "/config.yaml", "--mcp-listen-address", ":50050", "--api-key", "demo-key",
 	)
 	t.Logf("Running command: %s", cmd.String())
 
@@ -252,7 +252,7 @@ func simulateGeminiCLIWeather(t *testing.T, baseURL string) string {
 
 	client := mcp.NewClient(&mcp.Implementation{Name: "test-weather-client", Version: "1.0"}, nil)
 	transport := &mcp.StreamableClientTransport{
-		Endpoint: baseURL,
+		Endpoint: baseURL + "/mcp?api_key=demo-key",
 	}
 
 	session, err := client.Connect(ctx, transport, nil)
@@ -308,8 +308,13 @@ func verifyToolMetricWithService(t *testing.T, metricsURL, toolName, serviceID s
 	var body string
 
 	for time.Now().Before(deadline) {
-		//nolint:gosec // G107: Url is constructed internally in test
-		resp, err := http.Get(metricsURL)
+		req, err := http.NewRequest("GET", metricsURL, nil)
+		if err != nil {
+			t.Fatal(err)
+		}
+		req.Header.Set("X-API-Key", "demo-key")
+
+		resp, err := http.DefaultClient.Do(req)
 		if err != nil {
 			time.Sleep(100 * time.Millisecond)
 			continue
@@ -414,7 +419,7 @@ func simulateGeminiCLI(t *testing.T, baseURL string) {
 
 	client := mcp.NewClient(&mcp.Implementation{Name: "test-client", Version: "1.0"}, nil)
 	transport := &mcp.StreamableClientTransport{
-		Endpoint: baseURL,
+		Endpoint: baseURL + "/mcp?api_key=demo-key",
 	}
 
 	session, err := client.Connect(ctx, transport, nil)
@@ -475,8 +480,13 @@ func verifyToolMetricDirect(t *testing.T, metricsURL, toolName string) {
 	var body string
 
 	for time.Now().Before(deadline) {
-		//nolint:gosec // G107: Url is constructed internally in test
-		resp, err := http.Get(metricsURL)
+		req, err := http.NewRequest("GET", metricsURL, nil)
+		if err != nil {
+			t.Fatal(err)
+		}
+		req.Header.Set("X-API-Key", "demo-key")
+
+		resp, err := http.DefaultClient.Do(req)
 		if err != nil {
 			time.Sleep(100 * time.Millisecond)
 			continue

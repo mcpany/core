@@ -87,7 +87,8 @@ upstream_services:
 		go func() {
 			jsonrpcAddress := fmt.Sprintf(":%d", jsonrpcPort)
 			grpcRegAddress := fmt.Sprintf(":%d", grpcRegPort)
-			err := appRunner.Run(ctx, afero.NewOsFs(), false, jsonrpcAddress, grpcRegAddress, []string{tmpFile.Name()}, "", 5*time.Second)
+			// Pass a test API key
+			err := appRunner.Run(ctx, afero.NewOsFs(), false, jsonrpcAddress, grpcRegAddress, []string{tmpFile.Name()}, "test-api-key", 5*time.Second)
 			if err != nil && err != context.Canceled {
 				errChan <- err
 			}
@@ -115,7 +116,8 @@ ServerStarted:
     httpUrl := fmt.Sprintf("http://127.0.0.1:%d/healthz", jsonrpcPort)
     integration.WaitForHTTPHealth(t, httpUrl, 10*time.Second)
 
-    endpoint := fmt.Sprintf("http://127.0.0.1:%d", jsonrpcPort)
+    // Include /mcp and api_key in the endpoint
+    endpoint := fmt.Sprintf("http://127.0.0.1:%d/mcp?api_key=test-api-key", jsonrpcPort)
 
     client := mcp.NewClient(&mcp.Implementation{
         Name: "test-client",
