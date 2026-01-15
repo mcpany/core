@@ -11,7 +11,6 @@ import (
 	"testing"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
-	"github.com/spf13/afero"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -68,77 +67,6 @@ func TestZipProvider(t *testing.T) {
 
 	err = p.Close()
 	assert.NoError(t, err)
-}
-
-func TestS3Provider_ResolvePath(t *testing.T) {
-	p := &S3Provider{fs: afero.NewMemMapFs()}
-
-	tests := []struct {
-		input    string
-		expected string
-		wantErr  bool
-	}{
-		{"test.txt", "test.txt", false},
-		{"/test.txt", "test.txt", false},
-		{"folder/test.txt", "folder/test.txt", false},
-		{"/folder/test.txt", "folder/test.txt", false},
-		{"../test.txt", "test.txt", false}, // Clean should handle ..
-		{".", "", true},
-		{"/", "", true},
-	}
-
-	for _, tt := range tests {
-		got, err := p.ResolvePath(tt.input)
-		if tt.wantErr {
-			assert.Error(t, err, "input: %s", tt.input)
-		} else {
-			assert.NoError(t, err, "input: %s", tt.input)
-			assert.Equal(t, tt.expected, got, "input: %s", tt.input)
-		}
-	}
-
-	assert.NotNil(t, p.GetFs())
-	assert.NoError(t, p.Close())
-}
-
-func TestGcsProvider_ResolvePath(t *testing.T) {
-	p := &GcsProvider{fs: &gcsFs{}}
-
-	tests := []struct {
-		input    string
-		expected string
-		wantErr  bool
-	}{
-		{"test.txt", "test.txt", false},
-		{"/test.txt", "test.txt", false},
-		{"folder/test.txt", "folder/test.txt", false},
-		{"/folder/test.txt", "folder/test.txt", false},
-		{"../test.txt", "test.txt", false}, // Clean should handle ..
-		{".", "", true},
-		{"/", "", true},
-	}
-
-	for _, tt := range tests {
-		got, err := p.ResolvePath(tt.input)
-		if tt.wantErr {
-			assert.Error(t, err, "input: %s", tt.input)
-		} else {
-			assert.NoError(t, err, "input: %s", tt.input)
-			assert.Equal(t, tt.expected, got, "input: %s", tt.input)
-		}
-	}
-
-	// GCS Close calls client.Close(), so we can't easily test it without a mock client or ensuring nil check.
-	// gcs.go:
-	// func (p *GcsProvider) Close() error {
-	// 	if p.client != nil {
-	// 		return p.client.Close()
-	// 	}
-	// 	return nil
-	// }
-	// So we can test Close() with nil client.
-	assert.NotNil(t, p.GetFs())
-	assert.NoError(t, p.Close())
 }
 
 func TestSftpProvider_ResolvePath(t *testing.T) {

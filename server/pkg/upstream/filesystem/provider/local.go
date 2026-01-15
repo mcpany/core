@@ -65,7 +65,7 @@ func (p *LocalProvider) findBestMatch(virtualPath string) (string, string, error
 
 	for vRoot, rRoot := range p.rootPaths {
 		// Ensure vRoot has a clean format
-		cleanVRoot := vRoot
+		cleanVRoot := strings.TrimSuffix(vRoot, "/")
 		if !strings.HasPrefix(cleanVRoot, "/") {
 			cleanVRoot = "/" + cleanVRoot
 		}
