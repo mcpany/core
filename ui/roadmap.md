@@ -41,3 +41,4 @@
 - [x] **Tool Playground**: Test tools with auto-generated forms.
 - [x] **Profile Management**: Create and switch between user profiles.
 - [x] **Observability Dashboard**: Real-time metrics and system health.
+- [x] **System Status Banner**: A global banner that displays system health status and connectivity issues (polled from `/doctor`).
