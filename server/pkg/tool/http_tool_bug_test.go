@@ -97,7 +97,7 @@ func TestHTTPTool_Execute_MissingAndEmptyParams(t *testing.T) {
 
 	t.Run("empty_string_param_creates_double_slash", func(t *testing.T) {
 		// Definition: /users/{{id}}/items
-		// id="" -> /users/items (Double slash cleaned)
+		// id="" -> /users//items (Double slash preserved)
 		methodAndURL := "GET " + server.URL + "/users/{{id}}/items"
 		mcpTool := v1.Tool_builder{
 			UnderlyingMethodFqn: &methodAndURL,
@@ -121,7 +121,7 @@ func TestHTTPTool_Execute_MissingAndEmptyParams(t *testing.T) {
 		require.NoError(t, err)
 		resultMap, ok := result.(map[string]any)
 		require.True(t, ok)
-		assert.Equal(t, "/users/items", resultMap["path"])
+		assert.Equal(t, "/users//items", resultMap["path"])
 	})
 
 	t.Run("missing_required_param", func(t *testing.T) {

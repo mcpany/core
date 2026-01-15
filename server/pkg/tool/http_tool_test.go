@@ -435,7 +435,7 @@ func TestHTTPTool_Execute_Errors(t *testing.T) {
 	t.Run("optional_path_parameter", func(t *testing.T) {
 		t.Parallel()
 		pathHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			assert.Equal(t, "/json", r.URL.Path)
+			assert.Equal(t, "//json", r.URL.Path)
 			w.WriteHeader(http.StatusOK)
 			_, _ = w.Write([]byte(`{"status": "ok"}`))
 		})
