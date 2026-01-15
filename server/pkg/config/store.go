@@ -270,6 +270,8 @@ func expand(b []byte) ([]byte, error) {
 				list = append(list, v)
 			}
 		}
+		// revive:disable-next-line:error-strings // This error message is user facing and needs to be descriptive
+		//nolint:staticcheck // This error message is user facing and needs to be descriptive
 		return nil, fmt.Errorf("missing environment variables: %v. Please set them in your environment or provide a default value (e.g. ${VAR:default}).", list)
 	}
 
