@@ -1,3 +1,6 @@
+// Copyright 2026 Author(s) of MCP Any
+// SPDX-License-Identifier: Apache-2.0
+
 package tool_test
 
 import (
@@ -88,7 +91,7 @@ func TestOpenAPITool_ExtraCoverage(t *testing.T) {
 		assert.Equal(t, "Result: success", resMap["result"])
 	})
 
-    t.Run("Raw Bytes Output", func(t *testing.T) {
+	t.Run("Raw Bytes Output", func(t *testing.T) {
 		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 			w.WriteHeader(http.StatusOK)
 			w.Write([]byte{0x01, 0x02})
@@ -105,7 +108,7 @@ func TestOpenAPITool_ExtraCoverage(t *testing.T) {
 		format := configv1.OutputTransformer_RAW_BYTES
 		callDef := &configv1.OpenAPICallDefinition{
 			OutputTransformer: &configv1.OutputTransformer{
-				Format:   &format,
+				Format: &format,
 			},
 		}
 
@@ -115,8 +118,8 @@ func TestOpenAPITool_ExtraCoverage(t *testing.T) {
 		result, err := openAPITool.Execute(context.Background(), req)
 		require.NoError(t, err)
 
-        resMap, ok := result.(map[string]any)
-        require.True(t, ok)
-        assert.Equal(t, []byte{0x01, 0x02}, resMap["raw"])
-    })
+		resMap, ok := result.(map[string]any)
+		require.True(t, ok)
+		assert.Equal(t, []byte{0x01, 0x02}, resMap["raw"])
+	})
 }

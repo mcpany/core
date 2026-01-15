@@ -1,3 +1,6 @@
+// Copyright 2026 Author(s) of MCP Any
+// SPDX-License-Identifier: Apache-2.0
+
 package tool_test
 
 import (
@@ -100,8 +103,8 @@ func TestCommandTool_ExtraCoverage(t *testing.T) {
 		assert.Contains(t, err.Error(), "non-string value in 'args' array")
 	})
 
-    // 6. Path traversal in 'args'
-    t.Run("path traversal in args", func(t *testing.T) {
+	// 6. Path traversal in 'args'
+	t.Run("path traversal in args", func(t *testing.T) {
 		callDef := &configv1.CommandLineCallDefinition{
 			Parameters: []*configv1.CommandLineParameterMapping{
 				{Schema: &configv1.ParameterSchema{Name: proto.String("args")}},
@@ -115,5 +118,5 @@ func TestCommandTool_ExtraCoverage(t *testing.T) {
 		_, err := cmdTool.Execute(context.Background(), req)
 		require.Error(t, err)
 		assert.Contains(t, err.Error(), "path traversal attempt detected")
-    })
+	})
 }

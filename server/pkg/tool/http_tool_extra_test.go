@@ -1,3 +1,6 @@
+// Copyright 2026 Author(s) of MCP Any
+// SPDX-License-Identifier: Apache-2.0
+
 package tool_test
 
 import (
@@ -55,7 +58,7 @@ func TestHTTPTool_ExtraCoverage(t *testing.T) {
 		assert.Contains(t, err.Error(), "path traversal attempt detected")
 	})
 
-    t.Run("double encoded path traversal", func(t *testing.T) {
+	t.Run("double encoded path traversal", func(t *testing.T) {
 		handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {})
 		server := httptest.NewServer(handler)
 		defer server.Close()
@@ -82,7 +85,7 @@ func TestHTTPTool_ExtraCoverage(t *testing.T) {
 
 		httpTool := tool.NewHTTPTool(mcpTool, poolManager, "test-service", nil, callDef, nil, nil, "")
 
-        // %252e%252e is double encoded ..
+		// %252e%252e is double encoded ..
 		inputs := json.RawMessage(`{"path": "%252e%252e"}`)
 		req := &tool.ExecutionRequest{ToolInputs: inputs}
 

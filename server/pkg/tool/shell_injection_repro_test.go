@@ -1,3 +1,6 @@
+// Copyright 2026 Author(s) of MCP Any
+// SPDX-License-Identifier: Apache-2.0
+
 package tool
 
 import (
@@ -17,7 +20,7 @@ func TestShellInjection_Repro(t *testing.T) {
 		tool := createTestCommandTool(cmd)
 		req := &ExecutionRequest{
 			ToolName: "test",
-			ToolInputs: []byte(`{"input": "'; rm -rf /; '"}`),
+			ToolInputs: []byte(`{"input": "'; echo 'pwned'; '"}`),
 		}
 
 		_, err := tool.Execute(context.Background(), req)
@@ -32,7 +35,7 @@ func TestShellInjection_Repro(t *testing.T) {
 		tool := createTestCommandTool(cmd)
 		req := &ExecutionRequest{
 			ToolName: "test",
-			ToolInputs: []byte(`{"input": "'; rm -rf /; '"}`),
+			ToolInputs: []byte(`{"input": "'; echo 'pwned'; '"}`),
 		}
 
 		_, err := tool.Execute(context.Background(), req)
