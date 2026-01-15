@@ -17,6 +17,7 @@ import (
 	"github.com/mcpany/core/server/pkg/storage"
 	"github.com/mcpany/core/server/pkg/util/passhash"
 	xsync "github.com/puzpuzpuz/xsync/v4"
+	"golang.org/x/sync/singleflight"
 )
 
 type authContextKey string
@@ -350,6 +351,8 @@ func (am *Manager) AddOAuth2Authenticator(ctx context.Context, serviceID string,
 var (
 	// oauthAuthenticatorCache stores *OAuth2Authenticator keyed by IssuerURL + joined Audiences.
 	oauthAuthenticatorCache = xsync.NewMap[string, *OAuth2Authenticator]()
+	// requestGroup is used to suppress duplicate authenticator creation requests.
+	requestGroup singleflight.Group
 )
 
 // ValidateAuthentication validates the authentication request against the provided configuration.
@@ -383,25 +386,32 @@ func ValidateAuthentication(ctx context.Context, config *configv1.Authentication
 
 		authenticator, ok := oauthAuthenticatorCache.Load(cacheKey)
 		if !ok {
-			oConfig := &OAuth2Config{
-				IssuerURL: cfg.GetIssuerUrl(),
-				Audience:  cfg.GetAudience(),
-			}
-			// Use context.Background() with a timeout for authenticator initialization to avoid
-			// binding the OIDC provider to a short-lived request context and prevent hanging.
-			initCtx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-			defer cancel()
-			newAuth, err := NewOAuth2Authenticator(initCtx, oConfig)
+			// Use singleflight to prevent multiple concurrent creations
+			val, err, _ := requestGroup.Do(cacheKey, func() (interface{}, error) {
+				// Check again if it was loaded while we were waiting
+				if auth, ok := oauthAuthenticatorCache.Load(cacheKey); ok {
+					return auth, nil
+				}
+
+				oConfig := &OAuth2Config{
+					IssuerURL: cfg.GetIssuerUrl(),
+					Audience:  cfg.GetAudience(),
+				}
+				// Use context.Background() with a timeout for authenticator initialization to avoid
+				// binding the OIDC provider to a short-lived request context and prevent hanging.
+				initCtx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+				defer cancel()
+				newAuth, err := NewOAuth2Authenticator(initCtx, oConfig)
+				if err != nil {
+					return nil, fmt.Errorf("failed to create oauth2 authenticator: %w", err)
+				}
+				oauthAuthenticatorCache.Store(cacheKey, newAuth)
+				return newAuth, nil
+			})
 			if err != nil {
-				return fmt.Errorf("failed to create oauth2 authenticator: %w", err)
+				return err
 			}
-			// Race condition handling: check if someone else inserted it
-			actual, loaded := oauthAuthenticatorCache.LoadOrStore(cacheKey, newAuth)
-			if loaded {
-				authenticator = actual
-			} else {
-				authenticator = newAuth
-			}
+			authenticator = val.(*OAuth2Authenticator)
 		}
 
 		_, err := authenticator.Authenticate(ctx, r)
@@ -432,22 +442,30 @@ func ValidateAuthentication(ctx context.Context, config *configv1.Authentication
 
 		authenticator, ok := oauthAuthenticatorCache.Load(cacheKey)
 		if !ok {
-			oConfig := &OAuth2Config{
-				IssuerURL: cfg.GetIssuer(),
-				Audiences: audiences,
-			}
-			initCtx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-			defer cancel()
-			newAuth, err := NewOAuth2Authenticator(initCtx, oConfig)
+			// Use singleflight to prevent multiple concurrent creations
+			val, err, _ := requestGroup.Do(cacheKey, func() (interface{}, error) {
+				// Check again if it was loaded while we were waiting
+				if auth, ok := oauthAuthenticatorCache.Load(cacheKey); ok {
+					return auth, nil
+				}
+
+				oConfig := &OAuth2Config{
+					IssuerURL: cfg.GetIssuer(),
+					Audiences: audiences,
+				}
+				initCtx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+				defer cancel()
+				newAuth, err := NewOAuth2Authenticator(initCtx, oConfig)
+				if err != nil {
+					return nil, fmt.Errorf("failed to create oidc authenticator: %w", err)
+				}
+				oauthAuthenticatorCache.Store(cacheKey, newAuth)
+				return newAuth, nil
+			})
 			if err != nil {
-				return fmt.Errorf("failed to create oidc authenticator: %w", err)
+				return err
 			}
-			actual, loaded := oauthAuthenticatorCache.LoadOrStore(cacheKey, newAuth)
-			if loaded {
-				authenticator = actual
-			} else {
-				authenticator = newAuth
-			}
+			authenticator = val.(*OAuth2Authenticator)
 		}
 		_, err := authenticator.Authenticate(ctx, r)
 		return err
