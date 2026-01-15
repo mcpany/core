@@ -22,6 +22,8 @@
 - [ ] **Breadcrumb History**: Show recently visited breadcrumbs in a dropdown or history menu.
 - [ ] **Bulk Service Import**: Allow importing multiple services from a single config file or URL.
 - [ ] **Service Configuration Validation**: Pre-save validation for service configs (e.g. check if URL is reachable).
+- [ ] **Enhanced Command Palette Integration**: Further integration of search for dynamic content (services, tools, resources) directly within the command palette, building on the initial navigation implementation.
+- [ ] **System Notifications Center**: A centralized notification hub for system events, errors, and updates, accessible via the UI.
 
 ### Completed Features
 
@@ -30,6 +32,7 @@
 - [x] **Context Menu for Resources**: Right-click interactions for resources (Copy URI, View Details) to improve usability.
 - [x] **Global Keyboard Shortcuts Manager**: A dedicated UI to view and customize keyboard shortcuts for power users.
 - [x] **Global Search & Action Palette**: Enhanced Command Palette (Cmd+K) with navigation, system actions (Reload, Copy URL), and context-aware actions (Restart Service, Copy Resource URI).
+- [x] **Command Menu (Navigation)**: Implemented a global command palette (Cmd+K) for quick navigation between key pages (Dashboard, Services, Playground, Logs, Settings).
 - [x] **Service Environment Variable Editor**: UI for managing environment variables and working directory for command-line services, with secret masking.
 - [x] **Network Topology Visualization**: Interactive graph of the MCP ecosystem. [Docs](server/docs/features/dynamic-ui.md)
 - [x] **Middleware Visualization**: Drag-and-drop pipeline management. [Docs](server/docs/features/middleware_visualization.md)

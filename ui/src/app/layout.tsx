@@ -12,6 +12,7 @@ import { AppSidebar } from "@/components/app-sidebar";
 import { ThemeProvider } from "@/components/theme-provider"
 import { ThemeToggle } from "@/components/theme-toggle"
 import { GlobalSearch } from "@/components/global-search"
+import { CommandMenu } from "@/components/command-menu"
 import { Separator } from "@/components/ui/separator"
 import { UserProvider } from "@/components/user-context"
 import { KeyboardShortcutsProvider } from "@/contexts/keyboard-shortcuts-context"
@@ -63,7 +64,7 @@ export default function RootLayout({
                              MCP Any
                          </div>
                          <div className="flex items-center gap-2">
-                             <GlobalSearch />
+                             <CommandMenu />
                              <ThemeToggle />
                          </div>
                      </div>
