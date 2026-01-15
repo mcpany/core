@@ -20,9 +20,12 @@
 - [ ] **Breadcrumb History**: Show recently visited breadcrumbs in a dropdown or history menu.
 - [ ] **Bulk Service Import**: Allow importing multiple services from a single config file or URL.
 - [ ] **Service Configuration Validation**: Pre-save validation for service configs (e.g. check if URL is reachable).
+- [ ] **Config Versioning & Rollback UI**: Interface to view and restore previous configuration versions (Backend support pending).
+- [ ] **Advanced Service Configuration Editor**: Visual editor for complex service settings (auth, advanced options).
 
 ### Completed Features
 
+- [x] **Frontend Config Status Banner**: Added a persistent system health indicator in the header that reports real-time status from the backend `/doctor` API.
 - [x] **Service Template Integration**: Integrated Service Templates into the main "Add Service" flow for better discoverability.
 - [x] **Context Menu for Resources**: Right-click interactions for resources (Copy URI, View Details) to improve usability.
 - [x] **Global Keyboard Shortcuts Manager**: A dedicated UI to view and customize keyboard shortcuts for power users.

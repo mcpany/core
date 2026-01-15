@@ -103,6 +103,24 @@ export interface ReadResourceResponse {
     contents: ResourceContent[];
 }
 
+/**
+ * CheckResult represents a single check result from the doctor.
+ */
+export interface CheckResult {
+    status: string;
+    message?: string;
+    latency?: string;
+}
+
+/**
+ * DoctorReport represents the full doctor report.
+ */
+export interface DoctorReport {
+    status: string;
+    timestamp: string;
+    checks: Record<string, CheckResult>;
+}
+
 const getMetadata = () => {
     // Metadata for gRPC calls.
     // Since gRPC-Web calls might bypass Next.js middleware if they go directly to Envoy/Backend,
@@ -839,5 +857,15 @@ export const apiClient = {
         });
         if (!res.ok) throw new Error('Failed to delete template');
         return {};
+    },
+
+    /**
+     * Fetches the doctor report.
+     * @returns A promise that resolves to the doctor report.
+     */
+    getDoctorReport: async (): Promise<DoctorReport> => {
+        const res = await fetchWithAuth('/api/v1/doctor');
+        if (!res.ok) throw new Error('Failed to fetch doctor report');
+        return res.json();
     }
 };
