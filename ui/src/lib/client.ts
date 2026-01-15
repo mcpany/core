@@ -846,5 +846,17 @@ export const apiClient = {
         });
         if (!res.ok) throw new Error('Failed to delete template');
         return {};
+    },
+
+    // System Health
+
+    /**
+     * Gets the doctor status report.
+     * @returns A promise that resolves to the doctor report.
+     */
+    getDoctorStatus: async () => {
+        const res = await fetchWithAuth('/api/v1/doctor');
+        if (!res.ok) throw new Error('Failed to fetch doctor status');
+        return res.json();
     }
 };

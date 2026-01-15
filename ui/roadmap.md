@@ -38,3 +38,4 @@
 - [x] **Tool Playground**: Test tools with auto-generated forms.
 - [x] **Profile Management**: Create and switch between user profiles.
 - [x] **Observability Dashboard**: Real-time metrics and system health.
+- [x] **Frontend Config Status Banner**: A global alert banner that warns users if the backend server configuration reload failed, ensuring visibility of stale or broken states.
