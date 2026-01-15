@@ -44,6 +44,11 @@ func (m *MockToolManager) ListTools() []tool.Tool {
 	return args.Get(0).([]tool.Tool)
 }
 
+func (m *MockToolManager) ListMCPTools() []*mcp.Tool {
+	args := m.Called()
+	return args.Get(0).([]*mcp.Tool)
+}
+
 func (m *MockToolManager) AddServiceInfo(id string, info *tool.ServiceInfo) {
 	m.Called(id, info)
 }

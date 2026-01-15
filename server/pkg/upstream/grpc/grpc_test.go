@@ -81,6 +81,18 @@ func (m *MockToolManager) ListTools() []tool.Tool {
 	return tools
 }
 
+func (m *MockToolManager) ListMCPTools() []*mcp.Tool {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+	mcpTools := make([]*mcp.Tool, 0, len(m.tools))
+	for _, t := range m.tools {
+		if mt := t.MCPTool(); mt != nil {
+			mcpTools = append(mcpTools, mt)
+		}
+	}
+	return mcpTools
+}
+
 func (m *MockToolManager) ClearToolsForService(serviceID string) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
