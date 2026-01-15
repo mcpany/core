@@ -14,7 +14,6 @@ import (
 	"reflect"
 	"strconv"
 	"strings"
-	"time"
 	"unsafe"
 
 	"github.com/google/uuid"
@@ -481,9 +480,4 @@ func ToString(v any) string {
 // It uses the global math/rand source.
 func RandomFloat64() float64 {
 	return rand.Float64() //nolint:gosec // Weak random is sufficient for jitter
-}
-
-
-func init() {
-	rand.Seed(time.Now().UnixNano()) //nolint:staticcheck // Deprecated in Go 1.20 but needed for older or explicit seed
 }
