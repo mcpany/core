@@ -345,6 +345,13 @@ export const apiClient = {
         if (!res.ok) throw new Error('Failed to fetch tools');
         return res.json();
     },
+
+    /**
+     * Executes a tool with the provided arguments.
+     * @param request The execution request (tool name, arguments, etc.).
+     * @param dryRun If true, performs a dry run without side effects.
+     * @returns A promise that resolves to the execution result.
+     */
     executeTool: async (request: any, dryRun?: boolean) => {
         try {
             const payload = { ...request };

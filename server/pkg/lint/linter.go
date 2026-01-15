@@ -42,12 +42,17 @@ func (s Severity) String() string {
 
 // Result represents a single linting finding.
 type Result struct {
-	Severity    Severity
+	// Severity indicates how critical the finding is.
+	Severity Severity
+	// ServiceName is the name of the service associated with the finding, if any.
 	ServiceName string
-	Message     string
-	Path        string // Config path context (e.g., "upstream_services[0].auth")
+	// Message is the descriptive text of the finding.
+	Message string
+	// Path is the location in the configuration where the issue was found (e.g., "upstream_services[0].auth").
+	Path string
 }
 
+// String returns the string representation of the result.
 func (r Result) String() string {
 	pathStr := ""
 	if r.Path != "" {
