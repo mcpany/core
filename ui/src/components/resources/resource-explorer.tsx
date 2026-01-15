@@ -17,9 +17,7 @@ import {
     Copy,
     Eye,
     ChevronRight,
-    Folder,
     File,
-    Loader2,
     Maximize2,
     Minimize2,
     LayoutGrid,
@@ -39,15 +37,8 @@ import {
     ContextMenuContent,
     ContextMenuItem,
     ContextMenuSeparator,
-    ContextMenuShortcut,
     ContextMenuTrigger,
 } from "@/components/ui/context-menu";
-import {
-    Tabs,
-    TabsContent,
-    TabsList,
-    TabsTrigger,
-} from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import { ResourceViewer } from "./resource-viewer";
