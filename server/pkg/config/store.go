@@ -261,7 +261,16 @@ func expand(b []byte) ([]byte, error) {
 	})
 
 	if len(missingVars) > 0 {
-		return nil, fmt.Errorf("missing environment variables: %v", missingVars)
+		// Dedup missing vars
+		uniqueMissing := make(map[string]bool)
+		var list []string
+		for _, v := range missingVars {
+			if !uniqueMissing[v] {
+				uniqueMissing[v] = true
+				list = append(list, v)
+			}
+		}
+		return nil, fmt.Errorf("missing environment variables: %v. Please set them in your environment or provide a default value (e.g. ${VAR:default}).", list)
 	}
 
 	return expanded, nil
