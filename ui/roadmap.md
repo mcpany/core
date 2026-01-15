@@ -14,8 +14,9 @@
 - [ ] **Configuration Versioning & Rollback**: UI to view history of service configuration changes and rollback to previous versions.
 - [ ] **Server Health History**: Visual timeline of server up/down status over the last 24h.
 - [x] **Breadcrumb Navigation Enhancements**: Improved breadcrumbs with dropdowns for sibling navigation.
-- [ ] **Resource Preview Modal**: A dedicated modal to preview resources instead of the split pane, for larger viewing area.
 - [ ] **Drag-and-Drop Resource Export**: Ability to drag a resource from the list to the desktop or another app.
+- [ ] **Resource Content Search**: Ability to search within the text content of resources for keywords.
+- [ ] **Binary Resource Preview**: Support for previewing images, PDFs, and other binary formats in the resource viewer.
 - [ ] **Prompt/Resource Sibling Navigation**: Enable sibling navigation for Prompts and Resources (requires backend API update to include service_id).
 - [ ] **Breadcrumb History**: Show recently visited breadcrumbs in a dropdown or history menu.
 - [ ] **Bulk Service Import**: Allow importing multiple services from a single config file or URL.
@@ -23,6 +24,7 @@
 
 ### Completed Features
 
+- [x] **Resource Preview Modal**: A dedicated modal to preview resources for larger viewing area.
 - [x] **Service Template Integration**: Integrated Service Templates into the main "Add Service" flow for better discoverability.
 - [x] **Context Menu for Resources**: Right-click interactions for resources (Copy URI, View Details) to improve usability.
 - [x] **Global Keyboard Shortcuts Manager**: A dedicated UI to view and customize keyboard shortcuts for power users.
