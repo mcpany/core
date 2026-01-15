@@ -38,6 +38,53 @@ func TestNewGcsProvider(t *testing.T) {
 	})
 }
 
+func TestGcsProvider_ResolvePath(t *testing.T) {
+	// We can manually create a GcsProvider struct to test ResolvePath without needing valid creds
+	p := &GcsProvider{}
+
+	tests := []struct {
+		name        string
+		virtualPath string
+		want        string
+		wantErr     bool
+	}{
+		{
+			name:        "Root",
+			virtualPath: "/",
+			wantErr:     true,
+		},
+		{
+			name:        "Empty",
+			virtualPath: "",
+			wantErr:     true,
+		},
+		{
+			name:        "Normal file",
+			virtualPath: "/path/to/file.txt",
+			want:        "path/to/file.txt",
+			wantErr:     false,
+		},
+		{
+			name:        "Traversal",
+			virtualPath: "../file.txt",
+			want:        "file.txt",
+			wantErr:     false,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := p.ResolvePath(tt.virtualPath)
+			if tt.wantErr {
+				assert.Error(t, err)
+			} else {
+				assert.NoError(t, err)
+				assert.Equal(t, tt.want, got)
+			}
+		})
+	}
+}
+
 func TestGcsFileInfo(t *testing.T) {
 	fi := &gcsFileInfo{
 		name:    "test.txt",
