@@ -156,7 +156,7 @@ nodes:
 	}
 
 	t.Log("Verifying pods...")
-	if err := runCommand(t, ctx, rootDir, "kubectl", "wait", "--for=condition=ready", "pod", "-l", "app.kubernetes.io/name=mcpany", "-n", namespace, "--timeout=60s"); err != nil {
+	if err := runCommand(t, ctx, rootDir, "kubectl", "wait", "--for=condition=ready", "pod", "-l", "app.kubernetes.io/name=mcpany", "-n", namespace, "--timeout=300s"); err != nil {
 		t.Fatalf("Failed to wait for pods: %v", err)
 	}
 

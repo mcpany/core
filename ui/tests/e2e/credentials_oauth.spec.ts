@@ -67,8 +67,21 @@ test.describe('Credential OAuth Flow E2E', () => {
     // Mock Initiate OAuth
     await page.route('**/auth/oauth/initiate', async route => {
         const req = route.request().postDataJSON();
-        console.log("Initiate OAuth redirect_url:", req.redirect_url);
-        expect(req.credential_id).toBe(credentialID);
+        console.log("Initiate OAuth request payload:", JSON.stringify(req));
+
+        if (req.credential_id !== credentialID) {
+            console.error(`Mismatch credentialID in initiate: received '${req.credential_id}', expected '${credentialID}'`);
+            // Fail the request explicitly so UI handles error (or we see it)
+            // But strict expect() crashes the route handler which causes hang.
+            // Let's fulfill with error or just log and proceed for debugging?
+            // Fulfilling with 400 helps UI show error.
+             await route.fulfill({
+                 status: 400,
+                 json: { error: 'Credential ID mismatch' }
+             });
+             return;
+        }
+
         await route.fulfill({
             json: {
                 authorization_url: '/auth/callback?code=mock-code&state=xyz',
