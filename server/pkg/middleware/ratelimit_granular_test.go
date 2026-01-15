@@ -40,6 +40,7 @@ func (m *MockToolManager) GetServiceInfo(id string) (*tool.ServiceInfo, bool) {
 
 // Implement other interface methods as no-ops or panics if needed
 func (m *MockToolManager) ListTools() []tool.Tool                           { return nil }
+func (m *MockToolManager) ListMCPTools() []*mcp.Tool                        { return nil }
 func (m *MockToolManager) AddTool(t tool.Tool) error                        { return nil }
 func (m *MockToolManager) AddServiceInfo(_ string, _ *tool.ServiceInfo) {}
 func (m *MockToolManager) ClearToolsForService(_ string)                   {}

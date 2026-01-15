@@ -15,6 +15,7 @@ import (
 	"github.com/mcpany/core/server/pkg/resource"
 	"github.com/mcpany/core/server/pkg/tool"
 	"github.com/mcpany/core/server/pkg/util"
+	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/proto"
@@ -64,6 +65,10 @@ func (m *MockToolManager) ListTools() []tool.Tool {
 		tools = append(tools, t)
 	}
 	return tools
+}
+
+func (m *MockToolManager) ListMCPTools() []*mcp.Tool {
+	return nil
 }
 
 func (m *MockToolManager) ClearToolsForService(serviceID string) {

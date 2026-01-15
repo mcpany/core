@@ -14,6 +14,7 @@ import (
 	reflect "reflect"
 
 	v1 "github.com/mcpany/core/proto/config/v1"
+	mcp "github.com/modelcontextprotocol/go-sdk/mcp"
 	gomock "go.uber.org/mock/gomock"
 )
 
@@ -106,6 +107,21 @@ func (mr *MockManagerInterfaceMockRecorder) ExecuteTool(ctx, req any) *gomock.Ca
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ExecuteTool", reflect.TypeOf((*MockManagerInterface)(nil).ExecuteTool), ctx, req)
 }
 
+// GetAllowedServiceIDs mocks base method.
+func (m *MockManagerInterface) GetAllowedServiceIDs(profileID string) (map[string]bool, bool) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetAllowedServiceIDs", profileID)
+	ret0, _ := ret[0].(map[string]bool)
+	ret1, _ := ret[1].(bool)
+	return ret0, ret1
+}
+
+// GetAllowedServiceIDs indicates an expected call of GetAllowedServiceIDs.
+func (mr *MockManagerInterfaceMockRecorder) GetAllowedServiceIDs(profileID any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAllowedServiceIDs", reflect.TypeOf((*MockManagerInterface)(nil).GetAllowedServiceIDs), profileID)
+}
+
 // GetServiceInfo mocks base method.
 func (m *MockManagerInterface) GetServiceInfo(serviceID string) (*ServiceInfo, bool) {
 	m.ctrl.T.Helper()
@@ -136,14 +152,6 @@ func (mr *MockManagerInterfaceMockRecorder) GetTool(toolName any) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetTool", reflect.TypeOf((*MockManagerInterface)(nil).GetTool), toolName)
 }
 
-// ListServices mocks base method.
-func (m *MockManagerInterface) ListServices() []*ServiceInfo {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ListServices")
-	ret0, _ := ret[0].([]*ServiceInfo)
-	return ret0
-}
-
 // IsServiceAllowed mocks base method.
 func (m *MockManagerInterface) IsServiceAllowed(serviceID, profileID string) bool {
 	m.ctrl.T.Helper()
@@ -156,6 +164,28 @@ func (m *MockManagerInterface) IsServiceAllowed(serviceID, profileID string) boo
 func (mr *MockManagerInterfaceMockRecorder) IsServiceAllowed(serviceID, profileID any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "IsServiceAllowed", reflect.TypeOf((*MockManagerInterface)(nil).IsServiceAllowed), serviceID, profileID)
+}
+
+// ListMCPTools mocks base method.
+func (m *MockManagerInterface) ListMCPTools() []*mcp.Tool {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ListMCPTools")
+	ret0, _ := ret[0].([]*mcp.Tool)
+	return ret0
+}
+
+// ListMCPTools indicates an expected call of ListMCPTools.
+func (mr *MockManagerInterfaceMockRecorder) ListMCPTools() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListMCPTools", reflect.TypeOf((*MockManagerInterface)(nil).ListMCPTools))
+}
+
+// ListServices mocks base method.
+func (m *MockManagerInterface) ListServices() []*ServiceInfo {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ListServices")
+	ret0, _ := ret[0].([]*ServiceInfo)
+	return ret0
 }
 
 // ListServices indicates an expected call of ListServices.
@@ -214,19 +244,4 @@ func (m *MockManagerInterface) ToolMatchesProfile(tool Tool, profileID string) b
 func (mr *MockManagerInterfaceMockRecorder) ToolMatchesProfile(tool, profileID any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ToolMatchesProfile", reflect.TypeOf((*MockManagerInterface)(nil).ToolMatchesProfile), tool, profileID)
-}
-
-// GetAllowedServiceIDs mocks base method.
-func (m *MockManagerInterface) GetAllowedServiceIDs(profileID string) (map[string]bool, bool) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetAllowedServiceIDs", profileID)
-	ret0, _ := ret[0].(map[string]bool)
-	ret1, _ := ret[1].(bool)
-	return ret0, ret1
-}
-
-// GetAllowedServiceIDs indicates an expected call of GetAllowedServiceIDs.
-func (mr *MockManagerInterfaceMockRecorder) GetAllowedServiceIDs(profileID any) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAllowedServiceIDs", reflect.TypeOf((*MockManagerInterface)(nil).GetAllowedServiceIDs), profileID)
 }

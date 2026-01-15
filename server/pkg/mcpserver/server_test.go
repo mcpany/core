@@ -991,6 +991,16 @@ func (m *smartToolManager) ListTools() []tool.Tool {
 	return m.tools
 }
 
+func (m *smartToolManager) ListMCPTools() []*mcp.Tool {
+	mcpTools := make([]*mcp.Tool, 0, len(m.tools))
+	for _, t := range m.tools {
+		if mt := t.MCPTool(); mt != nil {
+			mcpTools = append(mcpTools, mt)
+		}
+	}
+	return mcpTools
+}
+
 func (m *smartToolManager) ListServices() []*tool.ServiceInfo {
 	return nil
 }
