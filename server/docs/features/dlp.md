@@ -10,7 +10,8 @@ DLP is critical for preventing sensitive data leaks when interacting with LLMs. 
 
 - **Input Redaction**: Scans arguments in `CallToolRequest` for PII.
 - **Output Redaction**: Scans text content in `CallToolResult` for PII.
-- **Configurable Rules**: Define what patterns to look for (e.g., Credit Card numbers, SSN, Email addresses).
+- **Configurable Rules**: Define custom regex patterns to look for.
+- **Default Protection**: Automatically attempts to detect and redact Email addresses, Credit Card numbers, and Social Security Numbers.
 
 ## Configuration
 
@@ -19,13 +20,11 @@ To enable DLP, add the `dlp` section to your configuration:
 ```yaml
 dlp:
   enabled: true
-  rules:
-    - name: "credit_card"
-      pattern: "\\d{4}-\\d{4}-\\d{4}-\\d{4}"
-      replacement: "[REDACTED_CC]"
-    - name: "email"
-      pattern: "[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}"
-      replacement: "[REDACTED_EMAIL]"
+  # List of additional regex patterns to redact.
+  # Matches will be replaced with "***REDACTED***".
+  custom_patterns:
+    - "SECRET-[A-Z0-9]+"
+    - "API_KEY_[a-zA-Z0-9]+"
 ```
 
 ## Implementation

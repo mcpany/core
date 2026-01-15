@@ -1410,6 +1410,10 @@ func (a *Application) runServerMode(
 		httpBindAddress = ":" + httpBindAddress
 	}
 
+	// Initialize Debugger
+	debugger := middleware.NewDebugger(100)
+	mux.Handle("/debug/entries", authMiddleware(debugger.Handler()))
+
 	// Apply Global Rate Limit: 20 RPS with a burst of 50.
 	// This helps prevent basic DoS attacks on all HTTP endpoints, including /upload.
 	// We enable trustProxy if MCPANY_TRUST_PROXY is set, to handle load balancers correctly.
@@ -1420,13 +1424,15 @@ func (a *Application) runServerMode(
 	corsMiddleware := middleware.NewHTTPCORSMiddleware(a.SettingsManager.GetAllowedOrigins())
 	a.corsMiddleware = corsMiddleware
 
-	// Middleware order: SecurityHeaders -> CORS -> JSONRPCCompliance -> IPAllowList -> RateLimit -> Mux
+	// Middleware order: SecurityHeaders -> Debugger -> CORS -> JSONRPCCompliance -> IPAllowList -> RateLimit -> Mux
 	// We wrap everything with a debug logger to see what's coming in
 	handler := middleware.HTTPSecurityHeadersMiddleware(
-		corsMiddleware.Handler(
-			middleware.JSONRPCComplianceMiddleware(
-				ipMiddleware.Handler(
-					rateLimiter.Handler(mux),
+		debugger.Middleware(
+			corsMiddleware.Handler(
+				middleware.JSONRPCComplianceMiddleware(
+					ipMiddleware.Handler(
+						rateLimiter.Handler(mux),
+					),
 				),
 			),
 		),

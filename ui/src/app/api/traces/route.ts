@@ -30,114 +30,102 @@ export interface Trace {
   trigger: 'user' | 'webhook' | 'scheduler' | 'system';
 }
 
-// Helper to generate mock spans
-function generateSpan(
-  id: string,
-  name: string,
-  type: Span['type'],
-  startOffset: number,
-  duration: number,
-  serviceName?: string
-): Span {
-  const now = Date.now();
-  // We'll base timestamps relative to a fixed start for consistency in the response,
-  // but "now" works for fresh data.
-  // Actually, let's just use offsets for the mock generator logic
-  return {
-    id,
-    name,
-    type,
-    startTime: startOffset,
-    endTime: startOffset + duration,
-    status: Math.random() > 0.9 ? 'error' : 'success', // 10% chance of error
-    serviceName,
-    input: { query: "example input", param: 123 },
-    output: { result: "example output", confidence: 0.99 },
-    children: []
-  };
-}
+const BACKEND_URL = process.env.BACKEND_URL || 'http://localhost:50050';
 
 export async function GET(request: Request) {
-  const { searchParams } = new URL(request.url);
-  // const limit = searchParams.get('limit');
-
-  const traces: Trace[] = [];
-  const now = Date.now();
-
-  // Generate 20 mock traces
-  for (let i = 0; i < 20; i++) {
-    const traceId = `tr_${Math.random().toString(36).substring(2, 9)}`;
-    const startTime = now - (i * 1000 * 60 * 5); // spaced out by 5 mins
-
-    // Scenario 1: Simple Calculator
-    if (i % 3 === 0) {
-      const root = generateSpan(`sp_${traceId}_1`, "calculate_sum", "tool", startTime, 150, "math-service");
-      root.status = 'success'; // force success for root
-      root.input = { a: 10, b: 20 };
-      root.output = { result: 30 };
-
-      traces.push({
-        id: traceId,
-        rootSpan: root,
-        timestamp: new Date(startTime).toISOString(),
-        totalDuration: 150,
-        status: 'success',
-        trigger: 'user'
-      });
+  try {
+    // Forward the API Key if present in the incoming request headers
+    const headers: Record<string, string> = {};
+    const apiKey = request.headers.get('x-api-key') || request.headers.get('authorization');
+    if (apiKey) {
+        headers['Authorization'] = apiKey;
     }
-    // Scenario 2: RAG Chain (Complex)
-    else if (i % 3 === 1) {
-      const totalDuration = 2500;
-      const root = generateSpan(`sp_${traceId}_1`, "research_topic", "core", startTime, totalDuration, "orchestrator");
 
-      // Step 1: Search
-      const searchSpan = generateSpan(`sp_${traceId}_2`, "google_search", "tool", startTime + 50, 800, "search-service");
-      searchSpan.input = { query: "MCP architecture patterns" };
-      searchSpan.output = { hits: 5, top_url: "..." };
-      root.children!.push(searchSpan);
+    const res = await fetch(`${BACKEND_URL}/debug/entries`, {
+       headers,
+       cache: 'no-store'
+    });
 
-      // Step 2: Scrape (parallel-ish)
-      const scrapeSpan = generateSpan(`sp_${traceId}_3`, "web_scraper", "tool", startTime + 900, 1200, "browser-service");
-      root.children!.push(scrapeSpan);
-
-      // Step 3: Summarize
-      const summarizeSpan = generateSpan(`sp_${traceId}_4`, "llm_summarize", "tool", startTime + 2150, 300, "llm-gateway");
-      root.children!.push(summarizeSpan);
-
-      const isError = Math.random() > 0.8;
-      if (isError) {
-        scrapeSpan.status = 'error';
-        scrapeSpan.errorMessage = "Timeout waiting for selector .content";
-        root.status = 'error';
-      } else {
-        root.status = 'success';
-      }
-
-      traces.push({
-        id: traceId,
-        rootSpan: root,
-        timestamp: new Date(startTime).toISOString(),
-        totalDuration,
-        status: root.status,
-        trigger: 'webhook'
-      });
+    if (!res.ok) {
+        console.warn(`Backend returned ${res.status} for traces`);
+        // If backend fails, fallback to empty list instead of crashing
+        return NextResponse.json([]);
     }
-    // Scenario 3: Database Query
-    else {
-      const duration = 45;
-      const root = generateSpan(`sp_${traceId}_1`, "get_user_profile", "resource", startTime, duration, "user-db");
-      root.status = 'success';
 
-      traces.push({
-        id: traceId,
-        rootSpan: root,
-        timestamp: new Date(startTime).toISOString(),
-        totalDuration: duration,
-        status: 'success',
-        trigger: 'system'
-      });
-    }
+    const entries = await res.json();
+    const traces = entries.map((entry: any) => mapDebugEntryToTrace(entry));
+
+    // Sort by timestamp descending
+    traces.sort((a: Trace, b: Trace) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+
+    return NextResponse.json(traces);
+  } catch (e) {
+    console.error("Failed to fetch traces from backend", e);
+    return NextResponse.json([]);
   }
+}
 
-  return NextResponse.json(traces);
+function mapDebugEntryToTrace(entry: any): Trace {
+    const startTime = new Date(entry.timestamp).getTime();
+    // Duration from Go is in nanoseconds (number)
+    const durationMs = entry.duration / 1e6;
+    const endTime = startTime + durationMs;
+
+    let status: SpanStatus = 'success';
+    let errorMessage: string | undefined;
+
+    if (entry.status >= 400) {
+        status = 'error';
+        errorMessage = `HTTP ${entry.status}`;
+    }
+
+    let input: any;
+    try {
+        input = entry.request_body ? JSON.parse(entry.request_body) : undefined;
+    } catch {
+        input = { raw: entry.request_body };
+    }
+
+    let output: any;
+    try {
+        output = entry.response_body ? JSON.parse(entry.response_body) : undefined;
+    } catch {
+        output = { raw: entry.response_body };
+    }
+
+    // Try to detect MCP method from input
+    let name = `${entry.method} ${entry.path}`;
+    let type: Span['type'] = 'core';
+    let serviceName = 'http-gateway';
+
+    if (input && input.method) {
+        name = input.method; // e.g. "tools/call"
+        if (input.params && input.params.name) {
+             name = `${input.method} (${input.params.name})`;
+             type = 'tool';
+        }
+    }
+
+    const rootSpan: Span = {
+        id: `sp_${entry.id}`,
+        name: name,
+        type: type,
+        startTime: startTime,
+        endTime: endTime,
+        status: status,
+        input: input,
+        output: output,
+        serviceName: serviceName,
+        errorMessage: errorMessage,
+        children: []
+    };
+
+    return {
+        id: entry.id,
+        rootSpan: rootSpan,
+        timestamp: entry.timestamp,
+        totalDuration: durationMs,
+        status: status,
+        trigger: 'user' // Default to user
+    };
 }
