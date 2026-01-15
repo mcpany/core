@@ -568,6 +568,30 @@ func (a *Application) Run(
 		}
 	}
 
+	// 🛡️ Sentinel Security Update: Enforce Auth Middleware for HTTP/Server Mode
+	// If NOT running in stdio mode (which implies server mode), ensure "auth" middleware is present
+	// unless explicitly disabled by user config.
+	// If the user provided a list of middlewares but forgot "auth", we inject it.
+	if !stdio {
+		authPresent := false
+		for _, m := range middlewares {
+			if m.GetName() == authMiddlewareName {
+				authPresent = true
+				break
+			}
+		}
+
+		if !authPresent {
+			logging.GetLogger().Warn("Auth middleware missing from configuration. Injecting it for security.")
+			// Add auth middleware with default priority 20
+			authMiddlewareConfig := &config_v1.Middleware{
+				Name:     proto.String(authMiddlewareName),
+				Priority: proto.Int32(20),
+			}
+			middlewares = append(middlewares, authMiddlewareConfig)
+		}
+	}
+
 	// Apply middlewares
 	// Registry returns sorted list based on priority (low to high).
 	// If priority 0 is first, it wraps the rest?
