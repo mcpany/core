@@ -21,6 +21,18 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+// headerTransport is a http.RoundTripper that adds an API key header.
+type headerTransport struct {
+	Transport http.RoundTripper
+	APIKey    string
+}
+
+// RoundTrip implements http.RoundTripper.
+func (t *headerTransport) RoundTrip(req *http.Request) (*http.Response, error) {
+	req.Header.Set("X-API-Key", t.APIKey)
+	return t.Transport.RoundTrip(req)
+}
+
 func TestStartupWithFailingUpstream(t *testing.T) {
 	t.Parallel()
 
@@ -87,7 +99,8 @@ upstream_services:
 		go func() {
 			jsonrpcAddress := fmt.Sprintf(":%d", jsonrpcPort)
 			grpcRegAddress := fmt.Sprintf(":%d", grpcRegPort)
-			err := appRunner.Run(ctx, afero.NewOsFs(), false, jsonrpcAddress, grpcRegAddress, []string{tmpFile.Name()}, "", 5*time.Second)
+			// Pass a default API key for testing
+			err := appRunner.Run(ctx, afero.NewOsFs(), false, jsonrpcAddress, grpcRegAddress, []string{tmpFile.Name()}, "test-e2e-key", 5*time.Second)
 			if err != nil && err != context.Canceled {
 				errChan <- err
 			}
@@ -122,8 +135,17 @@ ServerStarted:
         Version: "1.0.0",
     }, nil)
 
+    // Create authenticated HTTP client
+    httpClient := &http.Client{
+        Transport: &headerTransport{
+            Transport: http.DefaultTransport,
+            APIKey:    "test-e2e-key",
+        },
+    }
+
     transport := &mcp.StreamableClientTransport{
-        Endpoint: endpoint,
+        Endpoint:   endpoint,
+        HTTPClient: httpClient,
     }
 
     ctxCall, cancelCall := context.WithTimeout(context.Background(), 10*time.Second)

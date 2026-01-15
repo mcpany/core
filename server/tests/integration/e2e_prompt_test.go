@@ -6,6 +6,7 @@ package integration_test
 import (
 	"context"
 	"fmt"
+	"net/http"
 	"path/filepath"
 	"testing"
 	"time"
@@ -17,6 +18,18 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
+
+// headerTransport is a http.RoundTripper that adds an API key header.
+type headerTransport struct {
+	Transport http.RoundTripper
+	APIKey    string
+}
+
+// RoundTrip implements http.RoundTripper.
+func (t *headerTransport) RoundTrip(req *http.Request) (*http.Response, error) {
+	req.Header.Set("X-API-Key", t.APIKey)
+	return t.Transport.RoundTrip(req)
+}
 
 func TestE2EPrompt(t *testing.T) {
 	framework.RunE2ETest(t, &framework.E2ETestCase{
@@ -62,8 +75,16 @@ func InvokeAIWithPrompt(t *testing.T, mcpanyEndpoint string) {
 	// Create a new MCP client.
 	client := mcp.NewClient(&mcp.Implementation{Name: "test-client"}, nil)
 
+	// Create authenticated HTTP client
+	httpClient := &http.Client{
+		Transport: &headerTransport{
+			Transport: http.DefaultTransport,
+			APIKey:    "test-e2e-key", // Sentinel: Authenticate test requests
+		},
+	}
+
 	// Create a new streamable HTTP transport.
-	transport := &mcp.StreamableClientTransport{Endpoint: mcpanyEndpoint}
+	transport := &mcp.StreamableClientTransport{Endpoint: mcpanyEndpoint, HTTPClient: httpClient}
 
 	// Connect to the server.
 	session, err := client.Connect(context.Background(), transport, nil)

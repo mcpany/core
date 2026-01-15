@@ -51,6 +51,18 @@ type E2ETestCase struct {
 	RegisterUpstreamWithJSONRPC  func(t *testing.T, mcpanyEndpoint, upstreamEndpoint string)
 }
 
+// headerTransport is a http.RoundTripper that adds an API key header.
+type headerTransport struct {
+	Transport http.RoundTripper
+	APIKey    string
+}
+
+// RoundTrip implements http.RoundTripper.
+func (t *headerTransport) RoundTrip(req *http.Request) (*http.Response, error) {
+	req.Header.Set("X-API-Key", t.APIKey)
+	return t.Transport.RoundTrip(req)
+}
+
 // ValidateRegisteredTool validates that the expected tool is registered.
 func ValidateRegisteredTool(t *testing.T, mcpanyEndpoint string, expectedTool *mcp.Tool) {
 	ctx, cancel := context.WithTimeout(context.Background(), integration.TestWaitTimeShort)
@@ -58,8 +70,17 @@ func ValidateRegisteredTool(t *testing.T, mcpanyEndpoint string, expectedTool *m
 
 	client := mcp.NewClient(&mcp.Implementation{Name: "e2e-test-client"}, nil)
 
+	// Create authenticated HTTP client
+	httpClient := &http.Client{
+		Transport: &headerTransport{
+			Transport: http.DefaultTransport,
+			APIKey:    "test-e2e-key", // Sentinel: Authenticate test requests
+		},
+	}
+
 	transport := &mcp.StreamableClientTransport{
-		Endpoint: mcpanyEndpoint,
+		Endpoint:   mcpanyEndpoint,
+		HTTPClient: httpClient,
 	}
 
 	session, err := client.Connect(ctx, transport, nil)
@@ -405,7 +426,16 @@ func VerifyMCPClient(t *testing.T, mcpanyEndpoint string) {
 	defer cancel()
 
 	testMCPClient := mcp.NewClient(&mcp.Implementation{Name: "test-mcp-client", Version: "v1.0.0"}, nil)
-	cs, err := testMCPClient.Connect(ctx, &mcp.StreamableClientTransport{Endpoint: mcpanyEndpoint}, nil)
+
+	// Create authenticated HTTP client
+	httpClient := &http.Client{
+		Transport: &headerTransport{
+			Transport: http.DefaultTransport,
+			APIKey:    "test-e2e-key", // Sentinel: Authenticate test requests
+		},
+	}
+
+	cs, err := testMCPClient.Connect(ctx, &mcp.StreamableClientTransport{Endpoint: mcpanyEndpoint, HTTPClient: httpClient}, nil)
 	require.NoError(t, err)
 	defer func() { _ = cs.Close() }()
 

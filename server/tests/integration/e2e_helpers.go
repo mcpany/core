@@ -849,7 +849,8 @@ func StartMCPANYServerWithClock(t *testing.T, testName string, healthCheck bool,
 		"--db-path", dbPath,
 	}
 	args = append(args, extraArgs...)
-	env := []string{"MCPANY_LOG_LEVEL=debug", "NATS_URL=" + natsURL}
+	// 🛡️ Sentinel Security Update: Set a default API key for E2E tests to bypass the new "Fail Closed" security enforcement.
+	env := []string{"MCPANY_LOG_LEVEL=debug", "NATS_URL=" + natsURL, "MCPANY_API_KEY=test-e2e-key"}
 	if sudo, ok := os.LookupEnv("USE_SUDO_FOR_DOCKER"); ok {
 		env = append(env, "USE_SUDO_FOR_DOCKER="+sudo)
 	}
@@ -1046,6 +1047,7 @@ func (s *MCPANYTestServerInfo) Initialize(ctx context.Context) error {
 	}
 	httpReq.Header.Set("Content-Type", "application/json")
 	httpReq.Header.Set("Accept", "application/json, text/event-stream")
+	httpReq.Header.Set("X-API-Key", "test-e2e-key") // Sentinel: Authenticate test requests
 	// Do NOT set Mcp-Session-Id for initialize, let server generate it if needed.
 	// Or maybe we need to support both modes?
 	// If we send it, server says 404 session not found. So we shouldn't send it for new session?
@@ -1087,6 +1089,7 @@ func (s *MCPANYTestServerInfo) Initialize(ctx context.Context) error {
 	httpReq.Header.Set("Content-Type", "application/json")
 	httpReq.Header.Set("Accept", "application/json, text/event-stream")
 	httpReq.Header.Set("Mcp-Session-Id", s.SessionID)
+	httpReq.Header.Set("X-API-Key", "test-e2e-key") // Sentinel: Authenticate test requests
 
 	respNotify, err := s.HTTPClient.Do(httpReq)
 	if err != nil {
@@ -1141,6 +1144,7 @@ func (s *MCPANYTestServerInfo) ListTools(ctx context.Context) (*mcp.ListToolsRes
 	}
 	httpReq.Header.Set("Content-Type", "application/json")
 	httpReq.Header.Set("Accept", "application/json, text/event-stream")
+	httpReq.Header.Set("X-API-Key", "test-e2e-key") // Sentinel: Authenticate test requests
 	if s.SessionID != "" {
 		httpReq.Header.Set("Mcp-Session-Id", s.SessionID)
 	}
@@ -1194,6 +1198,7 @@ func (s *MCPANYTestServerInfo) CallTool(ctx context.Context, params *mcp.CallToo
 	}
 	httpReq.Header.Set("Content-Type", "application/json")
 	httpReq.Header.Set("Accept", "application/json, text/event-stream")
+	httpReq.Header.Set("X-API-Key", "test-e2e-key") // Sentinel: Authenticate test requests
 	if s.SessionID != "" {
 		httpReq.Header.Set("Mcp-Session-Id", s.SessionID)
 	}
@@ -1575,6 +1580,7 @@ func RegisterHTTPServiceWithJSONRPC(t *testing.T, mcpanyEndpoint, serviceID, bas
 	httpReq, err := http.NewRequestWithContext(context.Background(), "POST", mcpanyEndpoint, bytes.NewBuffer(reqBody))
 	require.NoError(t, err)
 	httpReq.Header.Set("Content-Type", "application/json")
+	httpReq.Header.Set("X-API-Key", "test-e2e-key") // Sentinel: Authenticate test requests
 	resp, err := http.DefaultClient.Do(httpReq)
 	require.NoError(t, err)
 	defer func() { _ = resp.Body.Close() }()

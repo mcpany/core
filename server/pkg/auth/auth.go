@@ -297,12 +297,6 @@ func (am *Manager) Authenticate(ctx context.Context, serviceID string, r *http.R
 			return ctx, fmt.Errorf("unauthorized")
 		}
 		ctx = ContextWithAPIKey(ctx, r.Header.Get("X-API-Key"))
-	} else {
-		// 🛡️ Sentinel Security Update: Fail Closed
-		// If no global API key is set, and we are not using a service-specific authenticator below,
-		// we must ensure we don't accidentally allow public access unless explicitly intended.
-		// However, legitimate "public" services might exist if they have a "PublicAuthenticator".
-		// But here we are handling the case where NO authenticator is found.
 	}
 
 	if authenticator, ok := am.authenticators.Load(serviceID); ok {

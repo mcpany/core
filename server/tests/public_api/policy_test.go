@@ -6,6 +6,7 @@ package public_api //nolint:revive
 import (
 	"context"
 	"fmt"
+	"net/http"
 	"path/filepath"
 	"testing"
 	"time"
@@ -15,6 +16,18 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
+
+// headerTransport is a http.RoundTripper that adds an API key header.
+type headerTransport struct {
+	Transport http.RoundTripper
+	APIKey    string
+}
+
+// RoundTrip implements http.RoundTripper.
+func (t *headerTransport) RoundTrip(req *http.Request) (*http.Response, error) {
+	req.Header.Set("X-API-Key", t.APIKey)
+	return t.Transport.RoundTrip(req)
+}
 
 func TestCallPolicy_Enforcement(t *testing.T) {
 	// We use the "chrome" config structure (command_line) but use @modelcontextprotocol/server-filesystem
@@ -48,7 +61,16 @@ upstream_services:
 		defer cancel()
 
 		client := mcp.NewClient(&mcp.Implementation{Name: "test-client", Version: "1.0"}, nil)
-		cs, err := client.Connect(ctx, &mcp.StreamableClientTransport{Endpoint: serverInfo.HTTPEndpoint}, nil)
+
+		// Create authenticated HTTP client
+		httpClient := &http.Client{
+			Transport: &headerTransport{
+				Transport: http.DefaultTransport,
+				APIKey:    "test-e2e-key", // Sentinel: Authenticate test requests
+			},
+		}
+
+		cs, err := client.Connect(ctx, &mcp.StreamableClientTransport{Endpoint: serverInfo.HTTPEndpoint, HTTPClient: httpClient}, nil)
 		require.NoError(t, err)
 		defer func() { _ = cs.Close() }()
 
@@ -105,7 +127,16 @@ upstream_services:
 		defer cancel()
 
 		client := mcp.NewClient(&mcp.Implementation{Name: "test-client", Version: "1.0"}, nil)
-		cs, err := client.Connect(ctx, &mcp.StreamableClientTransport{Endpoint: serverInfo.HTTPEndpoint}, nil)
+
+		// Create authenticated HTTP client
+		httpClient := &http.Client{
+			Transport: &headerTransport{
+				Transport: http.DefaultTransport,
+				APIKey:    "test-e2e-key", // Sentinel: Authenticate test requests
+			},
+		}
+
+		cs, err := client.Connect(ctx, &mcp.StreamableClientTransport{Endpoint: serverInfo.HTTPEndpoint, HTTPClient: httpClient}, nil)
 		require.NoError(t, err)
 		defer func() { _ = cs.Close() }()
 
