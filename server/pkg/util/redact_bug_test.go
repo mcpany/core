@@ -102,7 +102,8 @@ func TestRedactJSON_SuperHugeKeyWithEscapes(t *testing.T) {
 		t.Skip("Skipping super huge key test in short mode")
 	}
 	// Create a key larger than 2MB (limit)
-	// This tests the fail-safe logic for extremely large keys
+	// This tests the fail-safe logic for extremely large keys:
+	// "Key is too large to safely unescape." -> sensitive = true
 	targetLen := 2*1024*1024 + 100
 	escapedPassword := `p\u0061ssword`
 	paddingLen := targetLen - len(escapedPassword)
@@ -119,5 +120,31 @@ func TestRedactJSON_SuperHugeKeyWithEscapes(t *testing.T) {
 	}
 	if bytes.Contains(output, []byte(`"secret_value"`)) {
 		t.Errorf("Output contains secret value")
+	}
+}
+
+func TestRedactJSON_SuperHugeKey_SensitiveRaw(t *testing.T) {
+	if testing.Short() {
+		t.Skip("Skipping super huge key test in short mode")
+	}
+	// Cover the branch:
+	// if scanForSensitiveKeys(keyContent) { return true }
+	// Key > 2MB, contains escapes, AND contains sensitive keyword in RAW content.
+
+	targetLen := 2*1024*1024 + 100
+	// "password" is sensitive.
+	// We add an escape sequence elsewhere to trigger the escape path.
+	rawSensitive := "password"
+	escapeSeq := `\n`
+	paddingLen := targetLen - len(rawSensitive) - len(escapeSeq)
+	padding := strings.Repeat("a", paddingLen)
+
+	key := padding + rawSensitive + escapeSeq
+	input := []byte(`{"` + key + `": "secret_value"}`)
+
+	output := RedactJSON(input)
+
+	if !bytes.Contains(output, []byte(`"[REDACTED]"`)) {
+		t.Errorf("Output does not contain redacted placeholder")
 	}
 }

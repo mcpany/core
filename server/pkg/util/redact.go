@@ -139,20 +139,13 @@ func IsSensitiveKey(key string) bool {
 	// Avoid allocation using zero-copy conversion.
 	//nolint:gosec // Zero-copy conversion for optimization
 	// For IsSensitiveKey, we don't need to validate the key context (quotes and colon) because we are checking the key itself.
-	return scanForSensitiveKeys(unsafe.Slice(unsafe.StringData(key), len(key)), false)
+	return scanForSensitiveKeys(unsafe.Slice(unsafe.StringData(key), len(key)))
 }
 
 // scanForSensitiveKeys checks if input contains any sensitive key.
-// If validateKeyContext is true, it checks if the match is followed by a closing quote and a colon.
 // This function replaces the old linear scan (O(N*M)) with a more optimized scan
 // that uses SIMD-accelerated IndexByte for grouped start characters.
-func scanForSensitiveKeys(input []byte, validateKeyContext bool) bool {
-	// Optimization: If we are validating key context (JSON input), we can scan by quotes.
-	// This allows us to skip scanning string values entirely, which is a huge win for large payloads.
-	if validateKeyContext {
-		return scanJSONForSensitiveKeys(input)
-	}
-
+func scanForSensitiveKeys(input []byte) bool {
 	// Optimization: For short strings, IndexAny is faster (one pass).
 	// For long strings, multiple IndexByte calls are faster (SIMD).
 	// The crossover is around 128 bytes.
@@ -162,7 +155,7 @@ func scanForSensitiveKeys(input []byte, validateKeyContext bool) bool {
 			c := input[i]
 			if sensitiveStartCharBitmap[c] {
 				startChar := c | 0x20 // Normalize to lowercase
-				if checkPotentialMatch(input, i, startChar, validateKeyContext) {
+				if checkPotentialMatch(input, i, startChar) {
 					return true
 				}
 			}
@@ -205,7 +198,7 @@ func scanForSensitiveKeys(input []byte, validateKeyContext bool) bool {
 
 			// In this loop, we know the candidate char matches startChar (modulo case).
 			// We can reuse the common validation logic.
-			if checkPotentialMatch(input, matchStart, startChar, validateKeyContext) {
+			if checkPotentialMatch(input, matchStart, startChar) {
 				return true
 			}
 
@@ -218,7 +211,7 @@ func scanForSensitiveKeys(input []byte, validateKeyContext bool) bool {
 
 // checkPotentialMatch checks if a sensitive key starts at matchStart.
 // startChar must be the lowercase version of input[matchStart].
-func checkPotentialMatch(input []byte, matchStart int, startChar byte, validateKeyContext bool) bool {
+func checkPotentialMatch(input []byte, matchStart int, startChar byte) bool {
 	// Optimization: Check second character
 	if matchStart+1 < len(input) {
 		second := input[matchStart+1] | 0x20
@@ -274,15 +267,7 @@ func checkPotentialMatch(input []byte, matchStart int, startChar byte, validateK
 				}
 			}
 
-			if !validateKeyContext {
-				return true
-			}
-
-			// Optimization: check if it looks like a key (followed by quote and colon)
-			// This reduces false positives when sensitive words appear in values.
-			if isKey(input, endIdx) {
-				return true
-			}
+			return true
 		}
 	}
 	return false
@@ -308,88 +293,6 @@ func matchFoldRest(s, key []byte) bool {
 	return true
 }
 
-// isKey checks if the string segment starting at startOffset is followed by a closing quote and a colon,
-// indicating it is likely a JSON key.
-// It conservatively returns true if it hits the scan limit or encounters ambiguity (like escapes).
-func isKey(input []byte, startOffset int) bool {
-	// Optimization: limit the scan to avoid O(N^2) behavior in pathological cases.
-	const maxScan = 256
-	endLimit := startOffset + maxScan
-	if endLimit > len(input) {
-		endLimit = len(input)
-	}
-
-	for i := startOffset; i < endLimit; i++ {
-		b := input[i]
-		if b == '\\' {
-			// Found escape sequence. To be safe/conservative, assume it might be a key.
-			// properly handling escapes would require tracking state which is complex.
-			return true
-		}
-		if b == '"' {
-			// Found potential closing quote.
-			// Check if followed by colon (ignoring whitespace).
-			for j := i + 1; j < len(input); j++ {
-				c := input[j]
-				if c == ' ' || c == '\t' || c == '\n' || c == '\r' {
-					continue
-				}
-				return c == ':'
-			}
-			return false // EOF before finding colon
-		}
-	}
-	// Limit reached or EOF without finding quote.
-	// Conservative: assume it might be a key.
-	return true
-}
-
-// scanJSONForSensitiveKeys scans a JSON input for sensitive keys by navigating quotes.
-// It assumes keys are enclosed in quotes.
-func scanJSONForSensitiveKeys(input []byte) bool {
-	i := 0
-	for i < len(input) {
-		idx := bytes.IndexByte(input[i:], '"')
-		if idx == -1 {
-			return false
-		}
-		start := i + idx
-
-		// We found a string starting at start.
-		// Get the end of the string.
-		end := skipString(input, start) // returns index after closing quote
-
-		// Check if it is a key (followed by colon)
-		if isKeyColon(input, end) {
-			// It is a key. Check content.
-			// Content is input[start+1 : end-1]
-			if start+1 < end-1 {
-				keyContent := input[start+1 : end-1]
-				// Check if keyContent is sensitive.
-				// We use scanForSensitiveKeys with validateKeyContext=false to check the text.
-				if scanForSensitiveKeys(keyContent, false) {
-					return true
-				}
-			}
-		}
-
-		// Move past this string
-		i = end
-	}
-	return false
-}
-
-// isKeyColon checks if the JSON element ending at endOffset is followed by a colon.
-func isKeyColon(input []byte, endOffset int) bool {
-	for j := endOffset; j < len(input); j++ {
-		c := input[j]
-		if c == ' ' || c == '\t' || c == '\n' || c == '\r' {
-			continue
-		}
-		return c == ':'
-	}
-	return false
-}
 
 // skipString returns the index after the JSON string starting at start.
 // start must point to the opening quote.

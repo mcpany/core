@@ -91,44 +91,7 @@ func redactJSONFast(input []byte) []byte {
 		if isKey {
 			// Check if key is sensitive
 			keyContent := input[quotePos+1 : endQuote]
-
-			var keyToCheck []byte
-			sensitive := false
-
-			if bytes.Contains(keyContent, []byte{'\\'}) {
-				// Key contains escape sequences, unescape it to check for sensitivity.
-				// This is slower but safer.
-				// Limit the key size to prevent excessive allocation on malicious input
-				// We increase this to 2MB to handle reasonably large keys while still preventing DoS.
-				if len(keyContent) > 2*1024*1024 {
-					// Key is too large to safely unescape.
-					// Check raw content first.
-					if scanForSensitiveKeys(keyContent, false) {
-						sensitive = true
-					} else {
-						// If not found in raw content, it might be hidden by escapes.
-						// To be safe/secure, we treat large escaped keys as sensitive.
-						sensitive = true
-					}
-				} else {
-					quoted := make([]byte, len(keyContent)+2)
-					quoted[0] = '"'
-					copy(quoted[1:], keyContent)
-					quoted[len(quoted)-1] = '"'
-
-					var unescaped string
-					if err := json.Unmarshal(quoted, &unescaped); err == nil {
-						keyToCheck = []byte(unescaped)
-					} else {
-						// Fallback to raw content if unmarshal fails
-						keyToCheck = keyContent
-					}
-					sensitive = scanForSensitiveKeys(keyToCheck, false)
-				}
-			} else {
-				keyToCheck = keyContent
-				sensitive = scanForSensitiveKeys(keyToCheck, false)
-			}
+			sensitive := checkKeySensitivity(keyContent)
 
 			if sensitive {
 				// Identify value start
@@ -188,6 +151,41 @@ func redactJSONFast(input []byte) []byte {
 	// Write remaining
 	out = append(out, input[lastWrite:]...)
 	return out
+}
+
+// checkKeySensitivity determines if a JSON key is sensitive.
+// It handles escaping and checks against the list of sensitive keys.
+func checkKeySensitivity(keyContent []byte) bool {
+	// If key contains escapes, we need to be careful.
+	if bytes.Contains(keyContent, []byte{'\\'}) {
+		// Limit the key size to prevent excessive allocation on malicious input
+		// We increase this to 2MB to handle reasonably large keys while still preventing DoS.
+		if len(keyContent) > 2*1024*1024 {
+			// Key is too large to safely unescape.
+			// Check raw content first.
+			if scanForSensitiveKeys(keyContent) {
+				return true
+			}
+			// If not found in raw content, it might be hidden by escapes.
+			// To be safe/secure, we treat large escaped keys as sensitive.
+			return true
+		}
+
+		quoted := make([]byte, len(keyContent)+2)
+		quoted[0] = '"'
+		copy(quoted[1:], keyContent)
+		quoted[len(quoted)-1] = '"'
+
+		var unescaped string
+		if err := json.Unmarshal(quoted, &unescaped); err == nil {
+			return scanForSensitiveKeys([]byte(unescaped))
+		}
+		// Fallback to raw content if unmarshal fails
+		return scanForSensitiveKeys(keyContent)
+	}
+
+	// No escapes, check raw content directly
+	return scanForSensitiveKeys(keyContent)
 }
 
 // skipJSONValue returns the index after the JSON value starting at start.

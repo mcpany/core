@@ -52,31 +52,3 @@ func TestRedactJSON_LongKeyNotSensitive_SIMD(t *testing.T) {
 	assert.Contains(t, string(result), `"value"`)
 }
 
-func TestIsKey_Coverage(t *testing.T) {
-	// Directly test unexported isKey function to ensure full coverage
-
-	// Case 1: backslash
-	input := []byte(`\`)
-	// isKey scans. input[0] is backslash. Returns true.
-	assert.True(t, isKey(input, 0))
-
-	// Case 2: quote followed by colon
-	input = []byte(`":`)
-	assert.True(t, isKey(input, 0))
-
-	// Case 3: quote followed by space then colon
-	input = []byte(`" :`)
-	assert.True(t, isKey(input, 0))
-
-	// Case 4: quote not followed by colon
-	input = []byte(`"z`)
-	assert.False(t, isKey(input, 0))
-
-	// Case 5: max scan limit
-	// isKey loop has limit 256.
-	input = make([]byte, 300)
-	for i := range input { input[i] = 'a' }
-	// no quote, no backslash.
-	// Returns true (conservative).
-	assert.True(t, isKey(input, 0))
-}

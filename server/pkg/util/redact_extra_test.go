@@ -9,61 +9,14 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestIsKey(t *testing.T) {
-	tests := []struct {
-		name     string
-		input    string
-		offset   int
-		expected bool
-	}{
-		{
-			name:     "simple key",
-			input:    `"key": "value"`,
-			offset:   1, // Start inside the key
-			expected: true,
-		},
-		{
-			name:     "key with whitespace",
-			input:    `"key" : "value"`,
-			offset:   1,
-			expected: true,
-		},
-		{
-			name:     "not a key (no colon)",
-			input:    `"key" "value"`,
-			offset:   1,
-			expected: false,
-		},
-		{
-			name:     "not a key (end of input)",
-			input:    `"key"`,
-			offset:   1,
-			expected: false,
-		},
-		{
-			name:     "escape sequence conservative",
-			input:    `"key\"": "value"`,
-			offset:   1,
-			expected: true,
-		},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			assert.Equal(t, tt.expected, isKey([]byte(tt.input), tt.offset))
-		})
-	}
-}
-
 func TestScanForSensitiveKeys_Extra(t *testing.T) {
     // Cover the case where len(input) < 128
-    // Cover validateKeyContext = true
 
     input := []byte(`{"password": "123"}`)
-    assert.True(t, scanForSensitiveKeys(input, true))
+    assert.True(t, scanForSensitiveKeys(input))
 
     input2 := []byte(`{"user": "alice"}`)
-    assert.False(t, scanForSensitiveKeys(input2, true))
+    assert.False(t, scanForSensitiveKeys(input2))
 
     // Case where second char check fails
     // "pass" vs "paaa"
@@ -73,14 +26,7 @@ func TestScanForSensitiveKeys_Extra(t *testing.T) {
     // next chars: 'a', 'r'.
     // So 'b' is not allowed.
     input3 := []byte("pbssword")
-    assert.False(t, scanForSensitiveKeys(input3, false))
-}
-
-func TestIsKeyColon(t *testing.T) {
-    assert.True(t, isKeyColon([]byte(`: value`), 0))
-    assert.True(t, isKeyColon([]byte(`   : value`), 0))
-    assert.False(t, isKeyColon([]byte(` value`), 0))
-    assert.False(t, isKeyColon([]byte(``), 0))
+    assert.False(t, scanForSensitiveKeys(input3))
 }
 
 func TestSkipString(t *testing.T) {

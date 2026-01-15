@@ -282,30 +282,6 @@ func TestRedactJSON_Types(t *testing.T) {
 	})
 }
 
-func TestScanForSensitiveKeys_JSON(t *testing.T) {
-	t.Parallel()
-	// Test the scanJSONForSensitiveKeys path (validateKeyContext=true)
-
-	tests := []struct {
-		name     string
-		input    string
-		expected bool
-	}{
-		{"simple key", `{"api_key": "value"}`, true},
-		{"nested key", `{"nested": {"api_key": "value"}}`, true},
-		{"key in string value (should be ignored)", `{"public": "this contains api_key but is a value"}`, false},
-		{"escaped quote in string", `{"public": "some \" quote", "api_key": "secret"}`, true},
-		{"malformed json (ignored)", `not json`, false},
-		{"key without colon", `{"api_key"}`, false},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			result := scanForSensitiveKeys([]byte(tt.input), true)
-			assert.Equal(t, tt.expected, result)
-		})
-	}
-}
 
 func TestBug_PascalCaseRedaction_AuthId(t *testing.T) {
 	t.Parallel()
