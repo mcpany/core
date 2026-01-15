@@ -10,8 +10,9 @@ import (
 	"strings"
 	"sync"
 
+	"encoding/json"
+
 	"github.com/gin-gonic/gin"
-	jsoniter "github.com/json-iterator/go"
 	"github.com/tidwall/gjson"
 )
 
@@ -72,9 +73,12 @@ func (co *ContextOptimizer) Middleware() gin.HandlerFunc {
 		if w.Status() == http.StatusOK && (contentType == "application/json" || strings.HasPrefix(contentType, "application/json;")) {
 			bodyBytes := w.body.Bytes()
 
-			// Fast path: check if we need to modify anything using gjson
-			// This avoids expensive full unmarshaling if no truncation is needed
-			needsModification := false
+			type modification struct {
+				start       int
+				end         int
+				replacement []byte
+			}
+			var mods []modification
 
 			// Check if result.content exists and is an array
 			resultContent := gjson.GetBytes(bodyBytes, "result.content")
@@ -83,48 +87,47 @@ func (co *ContextOptimizer) Middleware() gin.HandlerFunc {
 					text := value.Get("text")
 					// Use len(text.String()) to check length.
 					// Note: gjson text.String() handles escape characters correctly for length check
-					if text.Exists() && len(text.String()) > co.MaxChars {
-						needsModification = true
-						return false // stop iteration
+					if text.Exists() {
+						str := text.String()
+						if len(str) > co.MaxChars {
+							// Found a text that needs truncation
+							truncated := str[:co.MaxChars] + fmt.Sprintf("...[TRUNCATED %d chars]", len(str)-co.MaxChars)
+							// Marshal the truncated string to get valid JSON string representation (with quotes and escapes)
+							replacement, _ := json.Marshal(truncated)
+							mods = append(mods, modification{
+								start:       text.Index,
+								end:         text.Index + len(text.Raw),
+								replacement: replacement,
+							})
+						}
 					}
 					return true // continue
 				})
 			}
 
-			if needsModification {
-				var resp map[string]interface{}
-				var json = jsoniter.ConfigCompatibleWithStandardLibrary
-				if err := json.Unmarshal(bodyBytes, &resp); err == nil {
-					// Look for content.text deep in the structure
-					// Support MCP "content" array in result
-					modified := false
-					if result, ok := resp["result"].(map[string]interface{}); ok {
-						if content, ok := result["content"].([]interface{}); ok {
-							for i, item := range content {
-								if itemMap, ok := item.(map[string]interface{}); ok {
-									if text, ok := itemMap["text"].(string); ok {
-										if len(text) > co.MaxChars {
-											itemMap["text"] = text[:co.MaxChars] + fmt.Sprintf("...[TRUNCATED %d chars]", len(text)-co.MaxChars)
-											content[i] = itemMap
-											modified = true
-										}
-									}
-								}
-							}
-							if modified {
-								result["content"] = content
-								resp["result"] = result
-								newBody, _ := json.Marshal(resp)
-								// Reset buffer and write new body
-								if _, err := w.ResponseWriter.Write(newBody); err != nil {
-									// Ignore error
-									_ = err
-								}
-								return
-							}
-						}
-					}
+			if len(mods) > 0 {
+				// Rebuild the body with modifications
+				var newBody bytes.Buffer
+				// Pre-allocate buffer with rough size estimate (original size should be enough since we are shortening)
+				newBody.Grow(len(bodyBytes))
+
+				lastPos := 0
+				for _, mod := range mods {
+					// Append data before the modification
+					newBody.Write(bodyBytes[lastPos:mod.start])
+					// Append the replacement
+					newBody.Write(mod.replacement)
+					// Advance position
+					lastPos = mod.end
 				}
+				// Append remaining data
+				newBody.Write(bodyBytes[lastPos:])
+
+				// Write new body
+				if _, err := w.ResponseWriter.Write(newBody.Bytes()); err != nil {
+					_ = err
+				}
+				return
 			}
 		}
 
