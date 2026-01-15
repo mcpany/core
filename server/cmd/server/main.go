@@ -51,6 +51,8 @@ func loadEnv(cmd *cobra.Command) error {
 	// We check for existence first to avoid silence on parse errors for an existing file
 	if _, err := os.Stat(".env"); err == nil {
 		if err := godotenv.Load(); err != nil {
+			// This was previously silent, now we log it as an error to help debugging
+			fmt.Printf("⚠️  Failed to parse .env file: %v\n", err)
 			return fmt.Errorf("failed to parse .env file: %w", err)
 		}
 	} else if !os.IsNotExist(err) {
