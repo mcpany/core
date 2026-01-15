@@ -1,8 +1,13 @@
+/**
+ * Copyright 2026 Author(s) of MCP Any
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 "use client";
 
 import React, { useState } from 'react';
 import { useSystemHealth } from '@/hooks/use-system-health';
-import { CheckCircle, AlertTriangle, XCircle, RefreshCw, X } from 'lucide-react';
+import { CheckCircle, AlertTriangle, XCircle, RefreshCw } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import {

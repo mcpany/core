@@ -1,4 +1,9 @@
-import { render, screen, waitFor, fireEvent } from '@testing-library/react';
+/**
+ * Copyright 2026 Author(s) of MCP Any
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+import { render, screen, fireEvent } from '@testing-library/react';
 import { SystemHealthIndicator } from './system-health-indicator';
 import { useSystemHealth } from '@/hooks/use-system-health';
 import { vi, Mock } from 'vitest';
