@@ -2281,8 +2281,27 @@ func isShellCommand(cmd string) bool {
 		if base == shell {
 			return true
 		}
+		// Check for versioned binaries (e.g. python3.10, ruby2.7)
+		if strings.HasPrefix(base, shell) {
+			suffix := base[len(shell):]
+			if isVersionSuffix(suffix) {
+				return true
+			}
+		}
 	}
 	return false
+}
+
+func isVersionSuffix(s string) bool {
+	if s == "" {
+		return false
+	}
+	for _, r := range s {
+		if (r < '0' || r > '9') && r != '.' {
+			return false
+		}
+	}
+	return true
 }
 
 func checkForShellInjection(val string, template string, placeholder string) error {
