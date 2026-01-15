@@ -557,6 +557,10 @@ func (m *mockToolManager) ListTools() []tool.Tool {
 	return []tool.Tool{}
 }
 
+func (m *mockToolManager) ListMCPTools() []*mcp.Tool {
+	return []*mcp.Tool{}
+}
+
 func (m *mockToolManager) ExecuteTool(_ context.Context, _ *tool.ExecutionRequest) (any, error) {
 	m.executeToolCalled = true
 	return nil, nil
@@ -993,6 +997,17 @@ func (m *smartToolManager) ListTools() []tool.Tool {
 
 func (m *smartToolManager) ListServices() []*tool.ServiceInfo {
 	return nil
+}
+
+func (m *smartToolManager) ListMCPTools() []*mcp.Tool {
+	tools := m.ListTools()
+	mcpTools := make([]*mcp.Tool, 0, len(tools))
+	for _, t := range tools {
+		if mt := t.MCPTool(); mt != nil {
+			mcpTools = append(mcpTools, mt)
+		}
+	}
+	return mcpTools
 }
 
 func (m *smartToolManager) GetServiceInfo(id string) (*tool.ServiceInfo, bool) {

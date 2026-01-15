@@ -55,6 +55,10 @@ func TestMockManagerInterface(t *testing.T) {
 	mock.EXPECT().ListTools().Return(nil).Times(1)
 	mock.ListTools()
 
+	// ListMCPTools
+	mock.EXPECT().ListMCPTools().Return(nil).Times(1)
+	mock.ListMCPTools()
+
 	// SetMCPServer
 	mock.EXPECT().SetMCPServer(nil).Times(1)
 	mock.SetMCPServer(nil)

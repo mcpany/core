@@ -251,13 +251,20 @@ func (s *Server) toolListFilteringMiddleware(next mcp.MethodHandler) mcp.MethodH
 		req mcp.Request,
 	) (mcp.Result, error) {
 		if method == consts.MethodToolsList {
+			profileID, _ := auth.ProfileIDFromContext(ctx)
+
+			// ⚡ Bolt Optimization: If no profile is active, return the cached MCP tools list directly.
+			// This avoids re-allocating the slice and re-fetching/converting tools.
+			if profileID == "" {
+				return &mcp.ListToolsResult{Tools: s.toolManager.ListMCPTools()}, nil
+			}
+
 			// The tool manager is the authoritative source of tools. We iterate over the
 			// tools in the manager to ensure that the list is always up-to-date and
 			// reflects the current state of the system.
 			managedTools := s.toolManager.ListTools()
 			refreshedTools := make([]*mcp.Tool, 0, len(managedTools))
 
-			profileID, _ := auth.ProfileIDFromContext(ctx)
 			// ⚡ Bolt Optimization: Fetch allowed services once to avoid N lock acquisitions
 			var allowedServices map[string]bool
 			if profileID != "" {
