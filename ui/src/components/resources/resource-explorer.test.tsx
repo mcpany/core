@@ -23,9 +23,14 @@ vi.mock('@/lib/client', () => ({
 }));
 
 // Mock syntax highlighter since it might cause issues in JSDOM
-vi.mock('react-syntax-highlighter', () => ({
-  default: ({ children }: { children: React.ReactNode }) => <pre data-testid="code-block">{children}</pre>,
-}));
+vi.mock('react-syntax-highlighter/dist/esm/light', () => {
+    const MockHighlighter = ({ children }: { children: React.ReactNode }) => <pre data-testid="code-block">{children}</pre>;
+    // Mock static methods like registerLanguage
+    MockHighlighter.registerLanguage = vi.fn();
+    return {
+        default: MockHighlighter
+    };
+});
 
 describe('ResourceExplorer', () => {
   it('renders loading state initially', async () => {
