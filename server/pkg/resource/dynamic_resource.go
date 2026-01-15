@@ -68,8 +68,9 @@ func (r *DynamicResource) Read(ctx context.Context) (*mcp.ReadResourceResult, er
 		return &mcp.ReadResourceResult{
 			Contents: []*mcp.ResourceContents{
 				{
-					URI:  r.resource.URI,
-					Text: content,
+					URI:      r.resource.URI,
+					Text:     content,
+					MIMEType: r.resource.MIMEType,
 				},
 			},
 		}, nil
@@ -77,8 +78,9 @@ func (r *DynamicResource) Read(ctx context.Context) (*mcp.ReadResourceResult, er
 		return &mcp.ReadResourceResult{
 			Contents: []*mcp.ResourceContents{
 				{
-					URI:  r.resource.URI,
-					Blob: content,
+					URI:      r.resource.URI,
+					Blob:     content,
+					MIMEType: r.resource.MIMEType,
 				},
 			},
 		}, nil
@@ -92,8 +94,9 @@ func (r *DynamicResource) Read(ctx context.Context) (*mcp.ReadResourceResult, er
 		return &mcp.ReadResourceResult{
 			Contents: []*mcp.ResourceContents{
 				{
-					URI:  r.resource.URI,
-					Text: string(data),
+					URI:      r.resource.URI,
+					Text:     string(data),
+					MIMEType: r.resource.MIMEType,
 				},
 			},
 		}, nil
