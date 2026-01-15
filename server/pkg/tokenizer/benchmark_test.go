@@ -49,3 +49,27 @@ func BenchmarkStructTokenization(b *testing.B) {
 		_, _ = CountTokensInValue(t, s)
 	}
 }
+
+type StructWithInt32 struct {
+	Val int32
+}
+
+func BenchmarkInt32Struct(b *testing.B) {
+	t := NewSimpleTokenizer()
+	s := StructWithInt32{Val: 12345}
+
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		_, _ = CountTokensInValue(t, s)
+	}
+}
+
+func BenchmarkIntStruct(b *testing.B) {
+	t := NewSimpleTokenizer()
+	s := struct{ Val int }{Val: 12345}
+
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		_, _ = CountTokensInValue(t, s)
+	}
+}

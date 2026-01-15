@@ -132,82 +132,12 @@ func CountTokensInValue(t Tokenizer, v interface{}) (int, error) {
 	// for simple inputs (strings, ints, etc.) which are common in metrics and logging.
 
 	if st, ok := t.(*SimpleTokenizer); ok && st != nil {
-		switch val := v.(type) {
-		case string:
-			return st.CountTokens(val)
-		case int:
-			return simpleTokenizeInt(val), nil
-		case int64:
-			return simpleTokenizeInt64(val), nil
-		case bool:
-			return 1, nil
-		case nil:
-			return 1, nil
-		case float64:
-			return st.CountTokens(strconv.FormatFloat(val, 'g', -1, 64))
-		case []string:
-			count := 0
-			for _, item := range val {
-				c, err := st.CountTokens(item)
-				if err != nil {
-					return 0, err
-				}
-				count += c
-			}
-			return count, nil
-		case map[string]string:
-			count := 0
-			for key, item := range val {
-				kc, err := st.CountTokens(key)
-				if err != nil {
-					return 0, err
-				}
-				count += kc
-				vc, err := st.CountTokens(item)
-				if err != nil {
-					return 0, err
-				}
-				count += vc
-			}
-			return count, nil
+		if c, handled, err := countTokensSimpleFast(st, v); handled {
+			return c, err
 		}
 	} else if wt, ok := t.(*WordTokenizer); ok && wt != nil {
-		// Calculate primitive count for WordTokenizer
-		primitiveCount := int(wt.Factor)
-		if primitiveCount < 1 {
-			primitiveCount = 1
-		}
-
-		switch val := v.(type) {
-		case string:
-			return wt.CountTokens(val)
-		case int, int64, float64, bool, nil:
-			return primitiveCount, nil
-		case []string:
-			count := 0
-			for _, item := range val {
-				c, err := wt.CountTokens(item)
-				if err != nil {
-					return 0, err
-				}
-				count += c
-			}
-			return count, nil
-		case map[string]string:
-			count := 0
-			for key, item := range val {
-				kc, err := wt.CountTokens(key)
-				if err != nil {
-					return 0, err
-				}
-				count += kc
-				vc, err := wt.CountTokens(item)
-				if err != nil {
-					return 0, err
-				}
-				count += vc
-			}
-			return count, nil
+		if c, handled, err := countTokensWordFast(wt, v); handled {
+			return c, err
 		}
 	} else {
 		// Generic fallback for other Tokenizer implementations
@@ -219,6 +149,112 @@ func CountTokensInValue(t Tokenizer, v interface{}) (int, error) {
 
 	visited := make(map[uintptr]bool)
 	return countTokensInValueRecursive(t, v, visited)
+}
+
+func countTokensSimpleFast(t *SimpleTokenizer, v interface{}) (int, bool, error) {
+	switch val := v.(type) {
+	case string:
+		c, err := t.CountTokens(val)
+		return c, true, err
+	case int:
+		return simpleTokenizeInt(val), true, nil
+	case int8:
+		return simpleTokenizeInt(int(val)), true, nil
+	case int16:
+		return simpleTokenizeInt(int(val)), true, nil
+	case int32:
+		return simpleTokenizeInt(int(val)), true, nil
+	case int64:
+		return simpleTokenizeInt64(val), true, nil
+	case uint:
+		return simpleTokenizeUint64(uint64(val)), true, nil
+	case uint8:
+		return simpleTokenizeUint64(uint64(val)), true, nil
+	case uint16:
+		return simpleTokenizeUint64(uint64(val)), true, nil
+	case uint32:
+		return simpleTokenizeUint64(uint64(val)), true, nil
+	case uint64:
+		return simpleTokenizeUint64(val), true, nil
+	case bool:
+		return 1, true, nil
+	case nil:
+		return 1, true, nil
+	case float32:
+		c, err := t.CountTokens(strconv.FormatFloat(float64(val), 'g', -1, 32))
+		return c, true, err
+	case float64:
+		c, err := t.CountTokens(strconv.FormatFloat(val, 'g', -1, 64))
+		return c, true, err
+	case []string:
+		count := 0
+		for _, item := range val {
+			c, err := t.CountTokens(item)
+			if err != nil {
+				return 0, true, err
+			}
+			count += c
+		}
+		return count, true, nil
+	case map[string]string:
+		count := 0
+		for key, item := range val {
+			kc, err := t.CountTokens(key)
+			if err != nil {
+				return 0, true, err
+			}
+			count += kc
+			vc, err := t.CountTokens(item)
+			if err != nil {
+				return 0, true, err
+			}
+			count += vc
+		}
+		return count, true, nil
+	}
+	return 0, false, nil
+}
+
+func countTokensWordFast(t *WordTokenizer, v interface{}) (int, bool, error) {
+	// Calculate primitive count for WordTokenizer
+	primitiveCount := int(t.Factor)
+	if primitiveCount < 1 {
+		primitiveCount = 1
+	}
+
+	switch val := v.(type) {
+	case string:
+		c, err := t.CountTokens(val)
+		return c, true, err
+	case int, int8, int16, int32, int64, uint, uint8, uint16, uint32, uint64, float32, float64, bool, nil:
+		return primitiveCount, true, nil
+	case []string:
+		count := 0
+		for _, item := range val {
+			c, err := t.CountTokens(item)
+			if err != nil {
+				return 0, true, err
+			}
+			count += c
+		}
+		return count, true, nil
+	case map[string]string:
+		count := 0
+		for key, item := range val {
+			kc, err := t.CountTokens(key)
+			if err != nil {
+				return 0, true, err
+			}
+			count += kc
+			vc, err := t.CountTokens(item)
+			if err != nil {
+				return 0, true, err
+			}
+			count += vc
+		}
+		return count, true, nil
+	}
+	return 0, false, nil
 }
 
 func countTokensInValueRecursive(t Tokenizer, v interface{}, visited map[uintptr]bool) (int, error) {
@@ -312,8 +348,24 @@ func countTokensInValueSimple(t *SimpleTokenizer, v interface{}, visited map[uin
 		return t.CountTokens(val)
 	case int:
 		return simpleTokenizeInt(val), nil
+	case int8:
+		return simpleTokenizeInt(int(val)), nil
+	case int16:
+		return simpleTokenizeInt(int(val)), nil
+	case int32:
+		return simpleTokenizeInt(int(val)), nil
 	case int64:
 		return simpleTokenizeInt64(val), nil
+	case uint:
+		return simpleTokenizeUint64(uint64(val)), nil
+	case uint8:
+		return simpleTokenizeUint64(uint64(val)), nil
+	case uint16:
+		return simpleTokenizeUint64(uint64(val)), nil
+	case uint32:
+		return simpleTokenizeUint64(uint64(val)), nil
+	case uint64:
+		return simpleTokenizeUint64(val), nil
 	case bool:
 		return 1, nil // "true" (4 chars) or "false" (5 chars) / 4 >= 1. Both result in 1 token.
 	case nil:
@@ -374,6 +426,8 @@ func countTokensInValueSimple(t *SimpleTokenizer, v interface{}, visited map[uin
 			count += vc
 		}
 		return count, nil
+	case float32:
+		return t.CountTokens(strconv.FormatFloat(float64(val), 'g', -1, 32))
 	case float64:
 		return t.CountTokens(strconv.FormatFloat(val, 'g', -1, 64))
 	default:
@@ -406,7 +460,7 @@ func countTokensInValueWord(t *WordTokenizer, v interface{}, visited map[uintptr
 	switch val := v.(type) {
 	case string:
 		return t.CountTokens(val)
-	case int, int64, float64, bool, nil:
+	case int, int8, int16, int32, int64, uint, uint8, uint16, uint32, uint64, float32, float64, bool, nil:
 		return primitiveCount, nil
 	case []interface{}:
 		count := 0
@@ -562,6 +616,21 @@ func countTokensReflectGeneric[T recursiveTokenizer](t T, v interface{}, visited
 			count += vc
 		}
 		return count, nil
+	case reflect.String:
+		return t.CountTokens(val.String())
+	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
+		return t.CountTokens(strconv.FormatInt(val.Int(), 10))
+	case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
+		return t.CountTokens(strconv.FormatUint(val.Uint(), 10))
+	case reflect.Bool:
+		if val.Bool() {
+			return t.CountTokens("true")
+		}
+		return t.CountTokens("false")
+	case reflect.Float32:
+		return t.CountTokens(strconv.FormatFloat(val.Float(), 'g', -1, 32))
+	case reflect.Float64:
+		return t.CountTokens(strconv.FormatFloat(val.Float(), 'g', -1, 64))
 	}
 
 	// Fallback for others (channels, funcs, unhandled types)
@@ -631,6 +700,21 @@ func countTokensReflect(t Tokenizer, v interface{}, visited map[uintptr]bool, _ 
 			count += vc
 		}
 		return count, nil
+	case reflect.String:
+		return t.CountTokens(val.String())
+	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
+		return t.CountTokens(strconv.FormatInt(val.Int(), 10))
+	case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
+		return t.CountTokens(strconv.FormatUint(val.Uint(), 10))
+	case reflect.Bool:
+		if val.Bool() {
+			return t.CountTokens("true")
+		}
+		return t.CountTokens("false")
+	case reflect.Float32:
+		return t.CountTokens(strconv.FormatFloat(val.Float(), 'g', -1, 32))
+	case reflect.Float64:
+		return t.CountTokens(strconv.FormatFloat(val.Float(), 'g', -1, 64))
 	}
 
 	// Fallback for others (channels, funcs, unhandled types)
@@ -673,6 +757,24 @@ func simpleTokenizeInt64(n int64) int {
 			l = 1 // count the sign
 		}
 
+		for n != 0 {
+			l++
+			n /= 10
+		}
+	}
+
+	count := l / 4
+	if count < 1 {
+		return 1
+	}
+	return count
+}
+
+func simpleTokenizeUint64(n uint64) int {
+	l := 0
+	if n == 0 {
+		l = 1
+	} else {
 		for n != 0 {
 			l++
 			n /= 10
