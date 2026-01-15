@@ -1,11 +1,13 @@
 # Alerts & Incidents Feature
 
 **Date:** 2026-01-09
-**Status:** Implemented
+**Status:** Prototype / Mock
 
 ## Overview
 
 The **Alerts & Incidents** feature provides a centralized console for monitoring system health, viewing active alerts, and managing incident response. It is designed to elevate the "Premium Enterprise" feel of the MCP Any platform.
+
+**Note:** This feature is currently in a **Prototype** state. The UI is fully functional but it operates on mock data and is not yet connected to a backend alerting system.
 
 ## Key Capabilities
 
@@ -22,8 +24,8 @@ The **Alerts & Incidents** feature provides a centralized console for monitoring
     -   `AlertList`: The data table component with filtering logic.
     -   `AlertStats`: Top-level metrics.
     -   `CreateRuleDialog`: Configuration form.
--   **Mock Data:** The current implementation uses static mock data for demonstration purposes, simulating a live backend connection.
+-   **Mock Data:** The current implementation uses static mock data for demonstration purposes.
 
 ## Verification
 
-The feature has been verified with E2E tests using Playwright.
+The feature has been verified with E2E tests using Playwright against the mock data.

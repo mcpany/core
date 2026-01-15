@@ -30,114 +30,105 @@ export interface Trace {
   trigger: 'user' | 'webhook' | 'scheduler' | 'system';
 }
 
-// Helper to generate mock spans
-function generateSpan(
-  id: string,
-  name: string,
-  type: Span['type'],
-  startOffset: number,
-  duration: number,
-  serviceName?: string
-): Span {
-  const now = Date.now();
-  // We'll base timestamps relative to a fixed start for consistency in the response,
-  // but "now" works for fresh data.
-  // Actually, let's just use offsets for the mock generator logic
-  return {
-    id,
-    name,
-    type,
-    startTime: startOffset,
-    endTime: startOffset + duration,
-    status: Math.random() > 0.9 ? 'error' : 'success', // 10% chance of error
-    serviceName,
-    input: { query: "example input", param: 123 },
-    output: { result: "example output", confidence: 0.99 },
-    children: []
-  };
+interface DebugEntry {
+  id: string;
+  timestamp: string;
+  method: string;
+  path: string;
+  status: number;
+  duration: number; // nanoseconds
+  request_headers: Record<string, string[]>;
+  response_headers: Record<string, string[]>;
+  request_body: string;
+  response_body: string;
+}
+
+function tryParseJson(str: string): any {
+  try {
+    return JSON.parse(str);
+  } catch {
+    return str;
+  }
 }
 
 export async function GET(request: Request) {
-  const { searchParams } = new URL(request.url);
-  // const limit = searchParams.get('limit');
+  const backendUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:50050';
+  const apiKey = process.env.MCPANY_API_KEY;
+  const headers: Record<string, string> = {
+    'Accept': 'application/json'
+  };
 
-  const traces: Trace[] = [];
-  const now = Date.now();
-
-  // Generate 20 mock traces
-  for (let i = 0; i < 20; i++) {
-    const traceId = `tr_${Math.random().toString(36).substring(2, 9)}`;
-    const startTime = now - (i * 1000 * 60 * 5); // spaced out by 5 mins
-
-    // Scenario 1: Simple Calculator
-    if (i % 3 === 0) {
-      const root = generateSpan(`sp_${traceId}_1`, "calculate_sum", "tool", startTime, 150, "math-service");
-      root.status = 'success'; // force success for root
-      root.input = { a: 10, b: 20 };
-      root.output = { result: 30 };
-
-      traces.push({
-        id: traceId,
-        rootSpan: root,
-        timestamp: new Date(startTime).toISOString(),
-        totalDuration: 150,
-        status: 'success',
-        trigger: 'user'
-      });
-    }
-    // Scenario 2: RAG Chain (Complex)
-    else if (i % 3 === 1) {
-      const totalDuration = 2500;
-      const root = generateSpan(`sp_${traceId}_1`, "research_topic", "core", startTime, totalDuration, "orchestrator");
-
-      // Step 1: Search
-      const searchSpan = generateSpan(`sp_${traceId}_2`, "google_search", "tool", startTime + 50, 800, "search-service");
-      searchSpan.input = { query: "MCP architecture patterns" };
-      searchSpan.output = { hits: 5, top_url: "..." };
-      root.children!.push(searchSpan);
-
-      // Step 2: Scrape (parallel-ish)
-      const scrapeSpan = generateSpan(`sp_${traceId}_3`, "web_scraper", "tool", startTime + 900, 1200, "browser-service");
-      root.children!.push(scrapeSpan);
-
-      // Step 3: Summarize
-      const summarizeSpan = generateSpan(`sp_${traceId}_4`, "llm_summarize", "tool", startTime + 2150, 300, "llm-gateway");
-      root.children!.push(summarizeSpan);
-
-      const isError = Math.random() > 0.8;
-      if (isError) {
-        scrapeSpan.status = 'error';
-        scrapeSpan.errorMessage = "Timeout waiting for selector .content";
-        root.status = 'error';
-      } else {
-        root.status = 'success';
-      }
-
-      traces.push({
-        id: traceId,
-        rootSpan: root,
-        timestamp: new Date(startTime).toISOString(),
-        totalDuration,
-        status: root.status,
-        trigger: 'webhook'
-      });
-    }
-    // Scenario 3: Database Query
-    else {
-      const duration = 45;
-      const root = generateSpan(`sp_${traceId}_1`, "get_user_profile", "resource", startTime, duration, "user-db");
-      root.status = 'success';
-
-      traces.push({
-        id: traceId,
-        rootSpan: root,
-        timestamp: new Date(startTime).toISOString(),
-        totalDuration: duration,
-        status: 'success',
-        trigger: 'system'
-      });
-    }
+  if (apiKey) {
+    headers['X-API-Key'] = apiKey;
   }
 
-  return NextResponse.json(traces);
+  // Forward existing auth headers if any
+  const reqHeaders = new Headers(request.headers);
+  const authHeader = reqHeaders.get('authorization');
+  if (authHeader) {
+    headers['Authorization'] = authHeader;
+  }
+  const cookieHeader = reqHeaders.get('cookie');
+  if (cookieHeader) {
+    headers['Cookie'] = cookieHeader;
+  }
+
+  try {
+    const res = await fetch(`${backendUrl}/debug/entries`, {
+        cache: 'no-store',
+        headers: headers
+    });
+
+    if (res.ok) {
+        const entries: DebugEntry[] = await res.json();
+
+        // Map DebugEntry to Trace
+        const traces: Trace[] = entries.map(entry => {
+            const durationMs = entry.duration / 1000000; // ns to ms
+            const startTime = new Date(entry.timestamp).getTime();
+
+            const rootSpan: Span = {
+                id: `sp_${entry.id}`,
+                name: `${entry.method} ${entry.path}`,
+                type: 'core',
+                startTime: startTime,
+                endTime: startTime + durationMs,
+                status: entry.status >= 400 ? 'error' : 'success',
+                input: tryParseJson(entry.request_body),
+                output: tryParseJson(entry.response_body),
+                serviceName: 'backend',
+                children: []
+            };
+
+            return {
+                id: entry.id,
+                rootSpan: rootSpan,
+                timestamp: entry.timestamp,
+                totalDuration: durationMs,
+                status: rootSpan.status,
+                trigger: 'user' // Default assumption
+            };
+        });
+
+        // If we have traces, return them.
+        // If not (e.g. backend empty), we might want to return empty list.
+        return NextResponse.json(traces);
+    }
+  } catch (error) {
+    console.error("Failed to fetch debug entries from backend:", error);
+    // Fallback to empty list or mock data?
+    // Given the task is to align with roadmap (REAL backend), returning empty list + error log is better than fake data
+    // confusing the user.
+    // However, for the purpose of the UI not crashing if backend is down during this specific test env:
+  }
+
+  // If backend is unreachable or returns error, we return empty list or fallback to mock?
+  // I will return empty list to signify "Real Data Connection Attempted but failed/empty"
+  // But wait, if I return empty, the UI shows "No traces".
+  // If I return Mock data, I can verify the UI still works.
+  // The roadmap goal is to use REAL data.
+  // So I will return empty array if fetch fails, but maybe with a special error trace?
+
+  // Let's stick to returning empty array to prove we switched to real backend.
+  return NextResponse.json([]);
 }

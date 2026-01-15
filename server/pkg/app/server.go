@@ -1420,13 +1420,20 @@ func (a *Application) runServerMode(
 	corsMiddleware := middleware.NewHTTPCORSMiddleware(a.SettingsManager.GetAllowedOrigins())
 	a.corsMiddleware = corsMiddleware
 
-	// Middleware order: SecurityHeaders -> CORS -> JSONRPCCompliance -> IPAllowList -> RateLimit -> Mux
+	// Apply Debugger Middleware
+	// We enable it by default with size 100, but it could be configurable.
+	debugger := middleware.NewDebugger(100)
+	mux.Handle("/debug/entries", authMiddleware(debugger.Handler()))
+
+	// Middleware order: SecurityHeaders -> CORS -> Debugger -> JSONRPCCompliance -> IPAllowList -> RateLimit -> Mux
 	// We wrap everything with a debug logger to see what's coming in
 	handler := middleware.HTTPSecurityHeadersMiddleware(
 		corsMiddleware.Handler(
-			middleware.JSONRPCComplianceMiddleware(
-				ipMiddleware.Handler(
-					rateLimiter.Handler(mux),
+			debugger.Middleware(
+				middleware.JSONRPCComplianceMiddleware(
+					ipMiddleware.Handler(
+						rateLimiter.Handler(mux),
+					),
 				),
 			),
 		),

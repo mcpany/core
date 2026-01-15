@@ -6,13 +6,13 @@ package middleware
 import (
 	"bytes"
 	"container/ring"
+	"encoding/json"
 	"io"
 	"net/http"
 	"strings"
 	"sync"
 	"time"
 
-	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 )
 
@@ -40,6 +40,9 @@ type Debugger struct {
 
 // NewDebugger creates a new Debugger middleware.
 func NewDebugger(size int) *Debugger {
+	if size <= 0 {
+		size = 100
+	}
 	return &Debugger{
 		ring:        ring.New(size),
 		limit:       size,
@@ -48,17 +51,21 @@ func NewDebugger(size int) *Debugger {
 }
 
 type bodyLogWriter struct {
-	gin.ResponseWriter
+	http.ResponseWriter
 	body        *bytes.Buffer
 	maxBodySize int64
 	overflow    bool
+	status      int
 }
 
-// Write writes the data to the connection and captures it for the log.
+func (w *bodyLogWriter) WriteHeader(statusCode int) {
+	w.status = statusCode
+	w.ResponseWriter.WriteHeader(statusCode)
+}
+
 func (w *bodyLogWriter) Write(b []byte) (int, error) {
 	if !w.overflow {
 		if int64(w.body.Len()+len(b)) > w.maxBodySize {
-			// Capture what fits, then mark overflow
 			remaining := w.maxBodySize - int64(w.body.Len())
 			if remaining > 0 {
 				w.body.Write(b[:remaining])
@@ -72,78 +79,51 @@ func (w *bodyLogWriter) Write(b []byte) (int, error) {
 	return w.ResponseWriter.Write(b)
 }
 
-// WriteString writes the string to the connection and captures it for the log.
-func (w *bodyLogWriter) WriteString(s string) (int, error) {
-	if !w.overflow {
-		if int64(w.body.Len()+len(s)) > w.maxBodySize {
-			remaining := w.maxBodySize - int64(w.body.Len())
-			if remaining > 0 {
-				w.body.WriteString(s[:remaining])
-			}
-			w.overflow = true
-			w.body.WriteString("... [truncated]")
-		} else {
-			w.body.WriteString(s)
-		}
+func (w *bodyLogWriter) Flush() {
+	if f, ok := w.ResponseWriter.(http.Flusher); ok {
+		f.Flush()
 	}
-	return w.ResponseWriter.WriteString(s)
 }
 
-// readCloserWrapper wraps a Reader and a Closer.
-type readCloserWrapper struct {
-	io.Reader
-	io.Closer
-}
-
-// Middleware returns the gin handler.
-func (d *Debugger) Middleware() gin.HandlerFunc {
-	return func(c *gin.Context) {
+// Middleware returns the http handler middleware.
+func (d *Debugger) Middleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		start := time.Now()
 		reqID := uuid.New().String()
 
 		// Capture Request Body
 		var reqBody string
-		if c.Request.Body != nil {
-			bodyBytes, err := io.ReadAll(io.LimitReader(c.Request.Body, d.maxBodySize))
+		if r.Body != nil {
+			bodyBytes, err := io.ReadAll(io.LimitReader(r.Body, d.maxBodySize))
 			if err == nil {
 				reqBody = string(bodyBytes)
 				if int64(len(bodyBytes)) == d.maxBodySize {
 					reqBody += "... [truncated]"
 				}
-
-				// Reset request body so downstream can read it all.
-				// We wrap the original closer to ensure it gets closed properly.
-				multiReader := io.MultiReader(bytes.NewReader(bodyBytes), c.Request.Body)
-				c.Request.Body = &readCloserWrapper{
-					Reader: multiReader,
-					Closer: c.Request.Body,
-				}
+				// Restore body
+				r.Body = io.NopCloser(io.MultiReader(bytes.NewReader(bodyBytes), r.Body))
 			}
 		}
 
-		// Prepare Response Body Capture
 		// Skip for WebSockets
-		if c.Request.Header.Get("Upgrade") == "websocket" {
-			c.Next()
+		if strings.EqualFold(r.Header.Get("Upgrade"), "websocket") {
+			next.ServeHTTP(w, r)
 			return
 		}
 
 		blw := &bodyLogWriter{
 			body:           bytes.NewBufferString(""),
-			ResponseWriter: c.Writer,
+			ResponseWriter: w,
 			maxBodySize:    d.maxBodySize,
+			status:         http.StatusOK, // Default to 200 if WriteHeader not called
 		}
-		c.Writer = blw
 
-		// Process request
-		c.Next()
+		next.ServeHTTP(blw, r)
 
 		duration := time.Since(start)
 
-		// Check content type to avoid storing binary data as string
-		respContentType := c.Writer.Header().Get("Content-Type")
 		var respBody string
-		if isTextContent(respContentType) {
+		if isTextContent(blw.Header().Get("Content-Type")) {
 			respBody = blw.body.String()
 		} else {
 			respBody = "[Binary or Non-Text Data]"
@@ -152,12 +132,12 @@ func (d *Debugger) Middleware() gin.HandlerFunc {
 		entry := DebugEntry{
 			ID:              reqID,
 			Timestamp:       start,
-			Method:          c.Request.Method,
-			Path:            c.Request.URL.Path,
-			Status:          c.Writer.Status(),
+			Method:          r.Method,
+			Path:            r.URL.Path,
+			Status:          blw.status,
 			Duration:        duration,
-			RequestHeaders:  c.Request.Header,
-			ResponseHeaders: c.Writer.Header(),
+			RequestHeaders:  r.Header,
+			ResponseHeaders: blw.Header(),
 			RequestBody:     reqBody,
 			ResponseBody:    respBody,
 		}
@@ -166,7 +146,7 @@ func (d *Debugger) Middleware() gin.HandlerFunc {
 		d.ring.Value = entry
 		d.ring = d.ring.Next()
 		d.mu.Unlock()
-	}
+	})
 }
 
 func isTextContent(contentType string) bool {
@@ -195,8 +175,9 @@ func (d *Debugger) Entries() []DebugEntry {
 }
 
 // Handler returns a http.HandlerFunc to view entries.
-func (d *Debugger) Handler() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		c.JSON(http.StatusOK, d.Entries())
+func (d *Debugger) Handler() http.HandlerFunc {
+	return func(w http.ResponseWriter, _ *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		_ = json.NewEncoder(w).Encode(d.Entries())
 	}
 }
