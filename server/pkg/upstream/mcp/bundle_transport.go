@@ -12,6 +12,7 @@ import (
 	"reflect"
 	"regexp"
 	"strconv"
+	"strings"
 	"unsafe"
 
 	"github.com/docker/docker/api/types/container"
@@ -348,6 +349,13 @@ func fixID(id interface{}) interface{} {
 			return i
 		}
 	}
+
+	// Parse string value, handling potential closing braces in the content
+	// Format is {value:<content>}
+	if strings.HasPrefix(s, "{value:") && strings.HasSuffix(s, "}") {
+		return s[7 : len(s)-1]
+	}
+
 	matchesStr := idValueStrRegex.FindStringSubmatch(s)
 	if len(matchesStr) > 1 {
 		return matchesStr[1]
