@@ -9,7 +9,9 @@ import (
 	"fmt"
 	"io"
 	"net"
+	"os"
 	"os/exec"
+	"strings"
 	"sync"
 
 	"github.com/docker/docker/api/types/container"
@@ -52,6 +54,12 @@ func (e *localExecutor) Execute(ctx context.Context, command string, args []stri
 	if workingDir != "" {
 		if err := validation.IsAllowedPath(workingDir); err != nil {
 			return nil, nil, nil, fmt.Errorf("invalid working directory %q: %w", workingDir, err)
+		}
+	}
+
+	if strings.Contains(command, string(os.PathSeparator)) {
+		if err := validation.IsAllowedPath(command); err != nil {
+			return nil, nil, nil, fmt.Errorf("command path not allowed: %w", err)
 		}
 	}
 
@@ -98,6 +106,12 @@ func (e *localExecutor) ExecuteWithStdIO(ctx context.Context, command string, ar
 	if workingDir != "" {
 		if err := validation.IsAllowedPath(workingDir); err != nil {
 			return nil, nil, nil, nil, fmt.Errorf("invalid working directory %q: %w", workingDir, err)
+		}
+	}
+
+	if strings.Contains(command, string(os.PathSeparator)) {
+		if err := validation.IsAllowedPath(command); err != nil {
+			return nil, nil, nil, nil, fmt.Errorf("command path not allowed: %w", err)
 		}
 	}
 

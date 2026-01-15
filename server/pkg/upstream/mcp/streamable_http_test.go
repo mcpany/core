@@ -662,6 +662,14 @@ func TestBuildCommandFromStdioConfig(t *testing.T) {
 		// Expected: exec echo 'foo'"'"'; date; echo '"'"'bar'
 		assert.Equal(t, []string{"/bin/sh", "-c", "exec echo 'foo'\"'\"'; date; echo '\"'\"'bar'"}, cmd.Args)
 	})
+
+	t.Run("absolute path not allowed", func(t *testing.T) {
+		stdio := &configv1.McpStdioConnection{}
+		stdio.SetCommand("/tmp/evil")
+		_, err := buildCommandFromStdioConfig(context.Background(), stdio, false)
+		assert.Error(t, err)
+		assert.Contains(t, err.Error(), "command path not allowed")
+	})
 }
 
 func TestWithMCPClientSession_NoTransport(t *testing.T) {

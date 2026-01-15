@@ -25,6 +25,7 @@ import (
 	"github.com/mcpany/core/server/pkg/tool"
 	"github.com/mcpany/core/server/pkg/upstream"
 	"github.com/mcpany/core/server/pkg/util"
+	"github.com/mcpany/core/server/pkg/validation"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/structpb"
@@ -371,6 +372,13 @@ func (c *mcpConnection) CallTool(ctx context.Context, params *mcp.CallToolParams
 // single shell script to be executed.
 func buildCommandFromStdioConfig(ctx context.Context, stdio *configv1.McpStdioConnection, useSudo bool) (*exec.Cmd, error) {
 	command := stdio.GetCommand()
+
+	if strings.Contains(command, string(os.PathSeparator)) {
+		if err := validation.IsAllowedPath(command); err != nil {
+			return nil, fmt.Errorf("command path not allowed: %w", err)
+		}
+	}
+
 	args := stdio.GetArgs()
 	resolvedEnv, err := util.ResolveSecretMap(ctx, stdio.GetEnv(), nil)
 	if err != nil {
