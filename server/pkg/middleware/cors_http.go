@@ -21,11 +21,6 @@ type HTTPCORSMiddleware struct {
 // If allowedOrigins is empty, it defaults to allowing nothing (or behaving like standard Same-Origin).
 // To allow all, pass []string{"*"}.
 func NewHTTPCORSMiddleware(allowedOrigins []string) *HTTPCORSMiddleware {
-	for _, o := range allowedOrigins {
-		if o == "*" {
-			logging.GetLogger().Warn("⚠️  CORS configured with wildcard origin '*'. This allows any website to access your API. Ensure this is intended.")
-		}
-	}
 	return &HTTPCORSMiddleware{
 		allowedOrigins: allowedOrigins,
 	}
@@ -35,11 +30,6 @@ func NewHTTPCORSMiddleware(allowedOrigins []string) *HTTPCORSMiddleware {
 func (m *HTTPCORSMiddleware) Update(allowedOrigins []string) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
-	for _, o := range allowedOrigins {
-		if o == "*" {
-			logging.GetLogger().Warn("⚠️  CORS updated with wildcard origin '*'. This allows any website to access your API.")
-		}
-	}
 	m.allowedOrigins = allowedOrigins
 }
 
@@ -85,7 +75,7 @@ func (m *HTTPCORSMiddleware) Handler(next http.Handler) http.Handler {
 			w.Header().Set("Vary", "Origin")
 		} else {
 			// Wildcard match: Return "*" and NO credentials
-			logging.GetLogger().Debug("CORS: Allowing wildcard origin", "origin", origin, "source", "HTTPCORSMiddleware")
+			logging.GetLogger().Warn("CORS: Allowing wildcard origin", "origin", origin, "source", "HTTPCORSMiddleware")
 			w.Header().Set("Access-Control-Allow-Origin", "*")
 			// No Access-Control-Allow-Credentials
 		}

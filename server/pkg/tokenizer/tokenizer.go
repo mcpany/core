@@ -132,115 +132,12 @@ func CountTokensInValue(t Tokenizer, v interface{}) (int, error) {
 	// for simple inputs (strings, ints, etc.) which are common in metrics and logging.
 
 	if st, ok := t.(*SimpleTokenizer); ok && st != nil {
-		switch val := v.(type) {
-		case string:
-			return st.CountTokens(val)
-		case int:
-			return simpleTokenizeInt(val), nil
-		case int64:
-			return simpleTokenizeInt64(val), nil
-		case bool:
-			return 1, nil
-		case nil:
-			return 1, nil
-		case float64:
-			return st.CountTokens(strconv.FormatFloat(val, 'g', -1, 64))
-		case []string:
-			count := 0
-			for _, item := range val {
-				c, err := st.CountTokens(item)
-				if err != nil {
-					return 0, err
-				}
-				count += c
-			}
-			return count, nil
-		case []int:
-			count := 0
-			for _, item := range val {
-				count += simpleTokenizeInt(item)
-			}
-			return count, nil
-		case []int64:
-			count := 0
-			for _, item := range val {
-				count += simpleTokenizeInt64(item)
-			}
-			return count, nil
-		case []bool:
-			// bool is always 1 token
-			return len(val), nil
-		case []float64:
-			count := 0
-			for _, item := range val {
-				c, err := st.CountTokens(strconv.FormatFloat(item, 'g', -1, 64))
-				if err != nil {
-					return 0, err
-				}
-				count += c
-			}
-			return count, nil
-		case map[string]string:
-			count := 0
-			for key, item := range val {
-				kc, err := st.CountTokens(key)
-				if err != nil {
-					return 0, err
-				}
-				count += kc
-				vc, err := st.CountTokens(item)
-				if err != nil {
-					return 0, err
-				}
-				count += vc
-			}
-			return count, nil
+		if c, handled, err := countTokensInValueSimpleFast(st, v); handled {
+			return c, err
 		}
 	} else if wt, ok := t.(*WordTokenizer); ok && wt != nil {
-		// Calculate primitive count for WordTokenizer
-		primitiveCount := int(wt.Factor)
-		if primitiveCount < 1 {
-			primitiveCount = 1
-		}
-
-		switch val := v.(type) {
-		case string:
-			return wt.CountTokens(val)
-		case int, int64, float64, bool, nil:
-			return primitiveCount, nil
-		case []string:
-			count := 0
-			for _, item := range val {
-				c, err := wt.CountTokens(item)
-				if err != nil {
-					return 0, err
-				}
-				count += c
-			}
-			return count, nil
-		case []int:
-			return len(val) * primitiveCount, nil
-		case []int64:
-			return len(val) * primitiveCount, nil
-		case []float64:
-			return len(val) * primitiveCount, nil
-		case []bool:
-			return len(val) * primitiveCount, nil
-		case map[string]string:
-			count := 0
-			for key, item := range val {
-				kc, err := wt.CountTokens(key)
-				if err != nil {
-					return 0, err
-				}
-				count += kc
-				vc, err := wt.CountTokens(item)
-				if err != nil {
-					return 0, err
-				}
-				count += vc
-			}
-			return count, nil
+		if c, handled, err := countTokensInValueWordFast(wt, v); handled {
+			return c, err
 		}
 	} else {
 		// Generic fallback for other Tokenizer implementations
@@ -252,6 +149,129 @@ func CountTokensInValue(t Tokenizer, v interface{}) (int, error) {
 
 	visited := make(map[uintptr]bool)
 	return countTokensInValueRecursive(t, v, visited)
+}
+
+// countTokensInValueSimpleFast handles fast-path tokenization for SimpleTokenizer.
+// It returns (count, handled, error). If handled is false, the caller should fallback.
+func countTokensInValueSimpleFast(st *SimpleTokenizer, v interface{}) (int, bool, error) {
+	switch val := v.(type) {
+	case string:
+		c, err := st.CountTokens(val)
+		return c, true, err
+	case int:
+		return simpleTokenizeInt(val), true, nil
+	case int64:
+		return simpleTokenizeInt64(val), true, nil
+	case bool:
+		return 1, true, nil
+	case nil:
+		return 1, true, nil
+	case float64:
+		c, err := st.CountTokens(strconv.FormatFloat(val, 'g', -1, 64))
+		return c, true, err
+	case []string:
+		count := 0
+		for _, item := range val {
+			c, err := st.CountTokens(item)
+			if err != nil {
+				return 0, true, err
+			}
+			count += c
+		}
+		return count, true, nil
+	case []int:
+		count := 0
+		for _, item := range val {
+			count += simpleTokenizeInt(item)
+		}
+		return count, true, nil
+	case []int64:
+		count := 0
+		for _, item := range val {
+			count += simpleTokenizeInt64(item)
+		}
+		return count, true, nil
+	case []bool:
+		return len(val), true, nil
+	case []float64:
+		count := 0
+		for _, item := range val {
+			c, err := st.CountTokens(strconv.FormatFloat(item, 'g', -1, 64))
+			if err != nil {
+				return 0, true, err
+			}
+			count += c
+		}
+		return count, true, nil
+	case map[string]string:
+		count := 0
+		for key, item := range val {
+			kc, err := st.CountTokens(key)
+			if err != nil {
+				return 0, true, err
+			}
+			count += kc
+			vc, err := st.CountTokens(item)
+			if err != nil {
+				return 0, true, err
+			}
+			count += vc
+		}
+		return count, true, nil
+	}
+	return 0, false, nil
+}
+
+// countTokensInValueWordFast handles fast-path tokenization for WordTokenizer.
+// It returns (count, handled, error). If handled is false, the caller should fallback.
+func countTokensInValueWordFast(wt *WordTokenizer, v interface{}) (int, bool, error) {
+	// Calculate primitive count for WordTokenizer
+	primitiveCount := int(wt.Factor)
+	if primitiveCount < 1 {
+		primitiveCount = 1
+	}
+
+	switch val := v.(type) {
+	case string:
+		c, err := wt.CountTokens(val)
+		return c, true, err
+	case int, int64, float64, bool, nil:
+		return primitiveCount, true, nil
+	case []string:
+		count := 0
+		for _, item := range val {
+			c, err := wt.CountTokens(item)
+			if err != nil {
+				return 0, true, err
+			}
+			count += c
+		}
+		return count, true, nil
+	case []int:
+		return len(val) * primitiveCount, true, nil
+	case []int64:
+		return len(val) * primitiveCount, true, nil
+	case []float64:
+		return len(val) * primitiveCount, true, nil
+	case []bool:
+		return len(val) * primitiveCount, true, nil
+	case map[string]string:
+		count := 0
+		for key, item := range val {
+			kc, err := wt.CountTokens(key)
+			if err != nil {
+				return 0, true, err
+			}
+			count += kc
+			vc, err := wt.CountTokens(item)
+			if err != nil {
+				return 0, true, err
+			}
+			count += vc
+		}
+		return count, true, nil
+	}
+	return 0, false, nil
 }
 
 func countTokensInValueRecursive(t Tokenizer, v interface{}, visited map[uintptr]bool) (int, error) {
@@ -340,17 +360,12 @@ func countTokensInValueRecursive(t Tokenizer, v interface{}, visited map[uintptr
 }
 
 func countTokensInValueSimple(t *SimpleTokenizer, v interface{}, visited map[uintptr]bool) (int, error) {
+	// Try the fast path first (it handles the same types)
+	if c, handled, err := countTokensInValueSimpleFast(t, v); handled {
+		return c, err
+	}
+
 	switch val := v.(type) {
-	case string:
-		return t.CountTokens(val)
-	case int:
-		return simpleTokenizeInt(val), nil
-	case int64:
-		return simpleTokenizeInt64(val), nil
-	case bool:
-		return 1, nil // "true" (4 chars) or "false" (5 chars) / 4 >= 1. Both result in 1 token.
-	case nil:
-		return 1, nil // "null" (4 chars) / 4 = 1
 	case []interface{}:
 		count := 0
 		for _, item := range val {
@@ -379,60 +394,6 @@ func countTokensInValueSimple(t *SimpleTokenizer, v interface{}, visited map[uin
 			count += vc
 		}
 		return count, nil
-	case []string:
-		count := 0
-		for _, item := range val {
-			c, err := t.CountTokens(item)
-			if err != nil {
-				return 0, err
-			}
-			count += c
-		}
-		return count, nil
-	case []int:
-		count := 0
-		for _, item := range val {
-			count += simpleTokenizeInt(item)
-		}
-		return count, nil
-	case []int64:
-		count := 0
-		for _, item := range val {
-			count += simpleTokenizeInt64(item)
-		}
-		return count, nil
-	case []bool:
-		return len(val), nil
-	case []float64:
-		count := 0
-		for _, item := range val {
-			c, err := t.CountTokens(strconv.FormatFloat(item, 'g', -1, 64))
-			if err != nil {
-				return 0, err
-			}
-			count += c
-		}
-		return count, nil
-	case map[string]string:
-		count := 0
-		for key, item := range val {
-			// Count the key
-			kc, err := t.CountTokens(key)
-			if err != nil {
-				return 0, err
-			}
-			count += kc
-
-			// Count the value
-			vc, err := t.CountTokens(item)
-			if err != nil {
-				return 0, err
-			}
-			count += vc
-		}
-		return count, nil
-	case float64:
-		return t.CountTokens(strconv.FormatFloat(val, 'g', -1, 64))
 	default:
 		return countTokensReflectGeneric(t, val, visited)
 	}
@@ -449,22 +410,12 @@ func (t *SimpleTokenizer) countRecursive(v interface{}, visited map[uintptr]bool
 }
 
 func countTokensInValueWord(t *WordTokenizer, v interface{}, visited map[uintptr]bool) (int, error) {
-	// Optimization: For primitive types, WordTokenizer effectively returns
-	// max(1, int(1.0 * t.Factor)) assuming standard string representation
-	// (no spaces).
-	// Note: t.Factor defaults to 1.3. int(1.3) = 1.
-	// If t.Factor is 2.0, int(2.0) = 2.
-	// We assume standard primitives don't have spaces.
-	primitiveCount := int(t.Factor)
-	if primitiveCount < 1 {
-		primitiveCount = 1
+	// Try the fast path first
+	if c, handled, err := countTokensInValueWordFast(t, v); handled {
+		return c, err
 	}
 
 	switch val := v.(type) {
-	case string:
-		return t.CountTokens(val)
-	case int, int64, float64, bool, nil:
-		return primitiveCount, nil
 	case []interface{}:
 		count := 0
 		for _, item := range val {
@@ -487,42 +438,6 @@ func countTokensInValueWord(t *WordTokenizer, v interface{}, visited map[uintptr
 
 			// Count the value
 			vc, err := countTokensInValueWord(t, item, visited)
-			if err != nil {
-				return 0, err
-			}
-			count += vc
-		}
-		return count, nil
-	case []string:
-		count := 0
-		for _, item := range val {
-			c, err := t.CountTokens(item)
-			if err != nil {
-				return 0, err
-			}
-			count += c
-		}
-		return count, nil
-	case []int:
-		return len(val) * primitiveCount, nil
-	case []int64:
-		return len(val) * primitiveCount, nil
-	case []float64:
-		return len(val) * primitiveCount, nil
-	case []bool:
-		return len(val) * primitiveCount, nil
-	case map[string]string:
-		count := 0
-		for key, item := range val {
-			// Count the key
-			kc, err := t.CountTokens(key)
-			if err != nil {
-				return 0, err
-			}
-			count += kc
-
-			// Count the value
-			vc, err := t.CountTokens(item)
 			if err != nil {
 				return 0, err
 			}

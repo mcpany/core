@@ -73,3 +73,61 @@ func TestGrpcStatsHandler(t *testing.T) {
 		t.Errorf("Expected metric mcpany_grpc_rpc_finished_total not found in response body")
 	}
 }
+
+type mockStatsHandler struct {
+	tagRPCCalled     bool
+	handleRPCCalled  bool
+	tagConnCalled    bool
+	handleConnCalled bool
+}
+
+func (m *mockStatsHandler) TagRPC(ctx context.Context, info *stats.RPCTagInfo) context.Context {
+	m.tagRPCCalled = true
+	return ctx
+}
+
+func (m *mockStatsHandler) HandleRPC(ctx context.Context, s stats.RPCStats) {
+	m.handleRPCCalled = true
+}
+
+func (m *mockStatsHandler) TagConn(ctx context.Context, info *stats.ConnTagInfo) context.Context {
+	m.tagConnCalled = true
+	return ctx
+}
+
+func (m *mockStatsHandler) HandleConn(ctx context.Context, s stats.ConnStats) {
+	m.handleConnCalled = true
+}
+
+func TestGrpcStatsHandler_Wrapped(t *testing.T) {
+	mock := &mockStatsHandler{}
+	h := &GrpcStatsHandler{Wrapped: mock}
+
+	// Test HandleConn
+	h.HandleConn(context.Background(), &stats.ConnBegin{})
+	if !mock.handleConnCalled {
+		t.Error("Expected Wrapped.HandleConn to be called")
+	}
+
+	// Test TagRPC
+	if ctx := h.TagRPC(context.Background(), &stats.RPCTagInfo{}); ctx == nil {
+		t.Error("TagRPC returned a nil context")
+	}
+	if !mock.tagRPCCalled {
+		t.Error("Expected Wrapped.TagRPC to be called")
+	}
+
+	// Test HandleRPC
+	h.HandleRPC(context.Background(), &stats.Begin{})
+	if !mock.handleRPCCalled {
+		t.Error("Expected Wrapped.HandleRPC to be called")
+	}
+
+	// Test TagConn
+	if ctx := h.TagConn(context.Background(), &stats.ConnTagInfo{}); ctx == nil {
+		t.Error("TagConn returned a nil context")
+	}
+	if !mock.tagConnCalled {
+		t.Error("Expected Wrapped.TagConn to be called")
+	}
+}
