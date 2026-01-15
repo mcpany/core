@@ -624,25 +624,9 @@ func (tm *Manager) GetTool(toolName string) (Tool, bool) {
 	return nil, false
 }
 
-// ListTools returns a slice containing all the tools currently registered with
-// the manager.
-func (tm *Manager) ListTools() []Tool {
-	tm.toolsMutex.RLock()
-	if tm.cachedTools != nil {
-		defer tm.toolsMutex.RUnlock()
-		return tm.cachedTools
-	}
-	tm.toolsMutex.RUnlock()
-
-	tm.toolsMutex.Lock()
-	defer tm.toolsMutex.Unlock()
-	// After acquiring the write lock, we need to check if the cache is still nil.
-	// This is because another goroutine might have populated it between the RUnlock
-	// and Lock calls.
-	if tm.cachedTools != nil {
-		return tm.cachedTools
-	}
-
+// scanTools iterates over all registered tools and returns a slice of healthy tools.
+// This function should be called with toolsMutex locked if updating cache.
+func (tm *Manager) scanTools() []Tool {
 	var tools []Tool
 	tm.tools.Range(func(_ string, value Tool) bool {
 		// Check service health
@@ -655,30 +639,42 @@ func (tm *Manager) ListTools() []Tool {
 		tools = append(tools, value)
 		return true
 	})
-	tm.cachedTools = tools
 	return tools
+}
+
+// ListTools returns a slice containing all the tools currently registered with
+// the manager.
+func (tm *Manager) ListTools() []Tool {
+	tm.toolsMutex.RLock()
+	cached := tm.cachedTools
+	tm.toolsMutex.RUnlock()
+
+	if cached != nil {
+		return cached
+	}
+
+	tm.toolsMutex.Lock()
+	defer tm.toolsMutex.Unlock()
+	// After acquiring the write lock, we need to check if the cache is still nil.
+	// This is because another goroutine might have populated it between the RUnlock
+	// and Lock calls.
+	if tm.cachedTools != nil {
+		return tm.cachedTools
+	}
+
+	tm.cachedTools = tm.scanTools()
+	return tm.cachedTools
 }
 
 // ListMCPTools returns a slice containing all the tools currently registered with
 // the manager in MCP format.
 func (tm *Manager) ListMCPTools() []*mcp.Tool {
 	tm.toolsMutex.RLock()
-	if tm.cachedMCPTools != nil {
-		defer tm.toolsMutex.RUnlock()
-		return tm.cachedMCPTools
-	}
+	cached := tm.cachedMCPTools
 	tm.toolsMutex.RUnlock()
 
-	// ⚡ Bolt Optimization: Reuse ListTools() to get the source of truth
-	// and populate cachedTools if needed.
-	tools := tm.ListTools()
-
-	// Build MCPTools cache
-	mcpTools := make([]*mcp.Tool, 0, len(tools))
-	for _, t := range tools {
-		if mt := t.MCPTool(); mt != nil {
-			mcpTools = append(mcpTools, mt)
-		}
+	if cached != nil {
+		return cached
 	}
 
 	tm.toolsMutex.Lock()
@@ -687,6 +683,21 @@ func (tm *Manager) ListMCPTools() []*mcp.Tool {
 	if tm.cachedMCPTools != nil {
 		return tm.cachedMCPTools
 	}
+
+	// ⚡ Bolt Optimization: Ensure cachedTools is populated under the same lock
+	// to avoid race conditions where AddTool clears cache between ListTools() and here.
+	if tm.cachedTools == nil {
+		tm.cachedTools = tm.scanTools()
+	}
+
+	// Build MCPTools cache from the consistent cachedTools
+	mcpTools := make([]*mcp.Tool, 0, len(tm.cachedTools))
+	for _, t := range tm.cachedTools {
+		if mt := t.MCPTool(); mt != nil {
+			mcpTools = append(mcpTools, mt)
+		}
+	}
+
 	tm.cachedMCPTools = mcpTools
 	return mcpTools
 }
