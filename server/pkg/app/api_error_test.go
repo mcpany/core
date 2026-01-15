@@ -60,6 +60,11 @@ func (m *MockServiceRegistry) GetServiceError(serviceID string) (string, bool) {
 	return args.String(0), args.Bool(1)
 }
 
+func (m *MockServiceRegistry) CheckServiceHealth(ctx context.Context, serviceName string) error {
+	args := m.Called(ctx, serviceName)
+	return args.Error(0)
+}
+
 func TestHandleServices_IncludesError(t *testing.T) {
 	// Setup DB
 	db, err := sqlite.NewDB(":memory:")
