@@ -18,6 +18,7 @@ import (
 	"github.com/mcpany/core/server/pkg/app"
 	"github.com/mcpany/core/server/pkg/appconsts"
 	"github.com/mcpany/core/server/pkg/config"
+	"github.com/mcpany/core/server/pkg/doctor"
 	"github.com/mcpany/core/server/pkg/lint"
 	"github.com/mcpany/core/server/pkg/logging"
 	"github.com/mcpany/core/server/pkg/metrics"
@@ -161,7 +162,27 @@ func newRootCmd() *cobra.Command { //nolint:gocyclo // Main entry point, expecte
 			}
 
 			if err := appRunner.Run(ctx, osFs, stdio, bindAddress, grpcPort, configPaths, cfg.APIKey(), shutdownTimeout); err != nil {
-				log.Error("Application failed", "error", err)
+				log.Error("Application failed. Running diagnostics...", "error", err)
+
+				// Automatically run doctor on failure
+				doc := doctor.NewDoctor(cfg, osFs)
+				results := doc.Diagnose(context.Background())
+
+				fmt.Println("\n--- 🩺 Diagnostic Report ---")
+				for _, r := range results {
+					symbol := "✅"
+					if r.Severity == doctor.Warning {
+						symbol = "⚠️ "
+					} else if r.Severity == doctor.Error {
+						symbol = "❌"
+					}
+					fmt.Printf("%s %s: %s\n", symbol, r.Name, r.Message)
+					if r.Remediation != "" {
+						fmt.Printf("   💡 Suggestion: %s\n", r.Remediation)
+					}
+				}
+				fmt.Println("---------------------------")
+
 				return err
 			}
 			log.Info("Shutdown complete.")
@@ -170,6 +191,54 @@ func newRootCmd() *cobra.Command { //nolint:gocyclo // Main entry point, expecte
 	}
 	config.BindServerFlags(runCmd)
 	rootCmd.AddCommand(runCmd)
+
+	doctorCmd := &cobra.Command{
+		Use:   "doctor",
+		Short: "Run diagnostics to identify common issues",
+		RunE: func(cmd *cobra.Command, _ []string) error {
+			osFs := afero.NewOsFs()
+			cfg := config.GlobalSettings()
+			if err := cfg.Load(cmd, osFs); err != nil {
+				return err
+			}
+
+			doc := doctor.NewDoctor(cfg, osFs)
+			results := doc.Diagnose(context.Background())
+
+			fmt.Println("\n--- 🩺 MCP Any Doctor ---")
+			hasErrors := false
+			for _, r := range results {
+				symbol := "✅"
+
+				if r.Severity == doctor.Warning {
+					symbol = "⚠️ "
+				} else if r.Severity == doctor.Error {
+					symbol = "❌"
+					hasErrors = true
+				}
+
+				fmt.Printf("%s %s\n", symbol, r.Name)
+				if r.Message != "" {
+					fmt.Printf("   %s\n", r.Message)
+				}
+				if r.Remediation != "" {
+					fmt.Printf("   💡 Suggestion: %s\n", r.Remediation)
+				}
+				if r.Error != nil {
+					fmt.Printf("   🐞 Error Details: %v\n", r.Error)
+				}
+				fmt.Println()
+			}
+
+			if hasErrors {
+				return fmt.Errorf("doctor found issues that need attention")
+			}
+			fmt.Println("✨ All checks passed! You are ready to fly.")
+			return nil
+		},
+	}
+	config.BindServerFlags(doctorCmd) // Bind flags so we can check specific configs/ports
+	rootCmd.AddCommand(doctorCmd)
 
 	versionCmd := &cobra.Command{
 		Use:   "version",

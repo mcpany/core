@@ -48,6 +48,7 @@
 - [x] **Intelligent Config Diagnostics**: Added fuzzy matching suggestions for "unknown field" errors (e.g. "Did you mean 'address'?" for 'target_address') and helpful hints for YAML syntax errors (like tabs vs spaces). (Friction Fighter)
 - [x] **Smart Config Error Messages - Address**: Fixed an issue where the validator confusingly referred to 'target_address' instead of 'address', aligning error messages with the actual configuration schema. (Friction Fighter)
 - [x] **Configuration Health Check**: Added a Doctor check that tracks the status of dynamic configuration reloads (success/failure, timestamp) and exposes it via `/doctor` API to aid in debugging silent reload failures. (Experience Crafter)
+- [x] **Pre-flight Diagnostic "Doctor"**: Added `mcpany doctor` CLI command and automated startup diagnostics to detect and report configuration errors and port conflicts with actionable remediation steps. (Friction Fighter)
 
 ## 2. Top 10 Recommended Features
 
@@ -92,6 +93,8 @@ These features represent the next logical steps for the product, focusing on Ent
 | 31 | **Interactive Config Generator** | **DevX**: `mcpany init` wizard that asks questions and generates a valid `config.yaml` with best practices (secure defaults, comments). | Low |
 | 32 | **Frontend Config Status Banner** | **UX**: Add a visual indicator (banner/toast) in the UI Management Dashboard that queries the new `/doctor` configuration check and warns the user if the server is running with a stale or invalid configuration. | Medium |
 | 33 | **Configuration Diffing API** | **Observability**: An API endpoint to compare the currently active configuration with the previous version or the file on disk, helping users understand what changed during a reload. | Medium |
+| 34 | **Interactive Doctor UI** | **UX**: Expose the `doctor` checks via an API endpoint and visualize them in the UI Dashboard, allowing remote health assessment without CLI access. | Medium |
+| 35 | **Dependency Doctor Check** | **Friction Fighter**: Extend `doctor` to check for external tool dependencies (e.g., `docker`, `node`, `python` versions) required by configured services. | Medium |
 
 ## 3. Codebase Health
 
