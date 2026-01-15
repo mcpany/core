@@ -958,3 +958,40 @@ func TestPool_Starvation(t *testing.T) {
 		t.Fatal("Starvation detected: Get() did not return")
 	}
 }
+
+func TestPool_New_DisableHealthCheck_FactoryError(t *testing.T) {
+	factory := func(_ context.Context) (*mockClient, error) {
+		return nil, fmt.Errorf("factory error")
+	}
+	_, err := New(factory, 1, 1, 0, true)
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), "factory failed to create initial client")
+}
+
+type errorCloser struct{}
+
+func (e *errorCloser) Close() error {
+	return fmt.Errorf("close error")
+}
+
+func TestManager_RegisterOverwrite_CloseError(t *testing.T) {
+	m := NewManager()
+	pool1 := &errorCloser{}
+	pool2 := &simpleMockPool{}
+	m.Register("test_pool", pool1)
+
+	// This should trigger the warning log, but not panic
+	m.Register("test_pool", pool2)
+
+	// Verify the new pool is registered
+	assert.Equal(t, pool2, m.pools["test_pool"])
+}
+
+func TestPool_New_DisableHealthCheck_NilClient(t *testing.T) {
+	factory := func(_ context.Context) (*mockClient, error) {
+		return nil, nil // Return nil client with no error
+	}
+	_, err := New(factory, 1, 1, 0, true)
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), "factory returned nil client")
+}
