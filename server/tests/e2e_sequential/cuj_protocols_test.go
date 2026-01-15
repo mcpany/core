@@ -23,9 +23,6 @@ import (
 
 // TestCUJ_Protocols covers CUJs 6-10: HTTP(SSE), External integrations, Errors, etc.
 func TestCUJ_Protocols(t *testing.T) {
-	if os.Getenv("E2E_DOCKER") != "true" {
-		t.Skip("Skipping E2E Docker test. Set E2E_DOCKER=true to run.")
-	}
 
 	rootDir, err := os.Getwd()
 	require.NoError(t, err)
