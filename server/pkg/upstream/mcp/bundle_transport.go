@@ -12,6 +12,7 @@ import (
 	"reflect"
 	"regexp"
 	"strconv"
+	"strings"
 	"unsafe"
 
 	"github.com/docker/docker/api/types/container"
@@ -341,6 +342,17 @@ func fixID(id interface{}) interface{} {
 	// If it's the broken struct, print it and parse
 	// This is fragile, but needed until SDK exports ID or provides a way to marshal it.
 	s := fmt.Sprintf("%+v", id)
+	// Parse string value, handling potential closing braces in the content
+	// Format is {value:<content>}
+	if strings.HasPrefix(s, "{value:") && strings.HasSuffix(s, "}") {
+		content := s[7 : len(s)-1]
+		// Try to maintain integer type if possible to avoid regressions
+		if i, err := strconv.Atoi(content); err == nil {
+			return i
+		}
+		return content
+	}
+
 	// Expect {value:1}
 	matches := idValueIntRegex.FindStringSubmatch(s)
 	if len(matches) > 1 {
@@ -348,6 +360,7 @@ func fixID(id interface{}) interface{} {
 			return i
 		}
 	}
+
 	matchesStr := idValueStrRegex.FindStringSubmatch(s)
 	if len(matchesStr) > 1 {
 		return matchesStr[1]
