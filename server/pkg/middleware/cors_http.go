@@ -6,6 +6,8 @@ package middleware
 import (
 	"net/http"
 	"sync"
+
+	"github.com/mcpany/core/server/pkg/logging"
 )
 
 // HTTPCORSMiddleware handles CORS for HTTP endpoints.
@@ -73,6 +75,7 @@ func (m *HTTPCORSMiddleware) Handler(next http.Handler) http.Handler {
 			w.Header().Set("Vary", "Origin")
 		} else {
 			// Wildcard match: Return "*" and NO credentials
+			logging.GetLogger().Warn("CORS: Allowing wildcard origin", "origin", origin, "source", "HTTPCORSMiddleware")
 			w.Header().Set("Access-Control-Allow-Origin", "*")
 			// No Access-Control-Allow-Credentials
 		}
