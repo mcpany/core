@@ -77,6 +77,13 @@ func (w *responseWrapper) Write(b []byte) (int, error) {
 	return w.ResponseWriter.Write(b)
 }
 
+// Flush implements http.Flusher to allow streaming responses.
+func (w *responseWrapper) Flush() {
+	if f, ok := w.ResponseWriter.(http.Flusher); ok {
+		f.Flush()
+	}
+}
+
 // readCloserWrapper wraps a Reader and a Closer.
 type readCloserWrapper struct {
 	io.Reader
