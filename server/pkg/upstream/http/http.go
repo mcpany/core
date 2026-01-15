@@ -316,14 +316,19 @@ func (u *Upstream) createAndRegisterHTTPTools(ctx context.Context, serviceID, ad
 		// However, we must be careful not to corrupt paths that happen to start with // but are correctly parsed as paths (e.g. ///foo).
 		// url.Parse("//foo") -> Host="foo", Path=""
 		// url.Parse("///foo") -> Host="", Path="///foo"
-		if endpointURL.Scheme == "" && strings.HasPrefix(rawEndpointPath, "//") && endpointURL.Host != "" {
-			// It was treated as scheme-relative (//Host/Path).
-			// Restore it to be just Path by prepending "//" + Host.
-			endpointURL.Path = "//" + endpointURL.Host + endpointURL.Path
-			if endpointURL.RawPath != "" {
-				endpointURL.RawPath = "//" + endpointURL.Host + endpointURL.RawPath
+		if endpointURL.Scheme == "" && strings.HasPrefix(rawEndpointPath, "//") {
+			if endpointURL.Host != "" {
+				// It was treated as scheme-relative (//Host/Path).
+				// Restore it to be just Path by prepending "//" + Host.
+				endpointURL.Path = "//" + endpointURL.Host + endpointURL.Path
+				if endpointURL.RawPath != "" {
+					endpointURL.RawPath = "//" + endpointURL.Host + endpointURL.RawPath
+				}
+				endpointURL.Host = ""
+			} else if endpointURL.Path == "" {
+				// It was treated as scheme-relative with empty host (e.g. "//") which results in empty path
+				endpointURL.Path = "//"
 			}
-			endpointURL.Host = ""
 		}
 
 		// Ensure baseURL has a trailing slash so ResolveReference appends to it,
