@@ -139,14 +139,16 @@ func IsSensitiveKey(key string) bool {
 	// Avoid allocation using zero-copy conversion.
 	//nolint:gosec // Zero-copy conversion for optimization
 	// For IsSensitiveKey, we don't need to validate the key context (quotes and colon) because we are checking the key itself.
-	return scanForSensitiveKeys(unsafe.Slice(unsafe.StringData(key), len(key)), false)
+	return scanForSensitiveKeys(unsafe.Slice(unsafe.StringData(key), len(key)), false, false)
 }
 
 // scanForSensitiveKeys checks if input contains any sensitive key.
 // If validateKeyContext is true, it checks if the match is followed by a closing quote and a colon.
+// If isPartial is true, it indicates the input is a partial chunk and a match at the end
+// should be ignored if it looks like it could continue (to avoid false positives on split words).
 // This function replaces the old linear scan (O(N*M)) with a more optimized scan
 // that uses SIMD-accelerated IndexByte for grouped start characters.
-func scanForSensitiveKeys(input []byte, validateKeyContext bool) bool { //nolint:unparam
+func scanForSensitiveKeys(input []byte, validateKeyContext bool, isPartial bool) bool { //nolint:unparam
 	// Optimization: If we are validating key context (JSON input), we can scan by quotes.
 	// This allows us to skip scanning string values entirely, which is a huge win for large payloads.
 	if validateKeyContext {
@@ -162,7 +164,7 @@ func scanForSensitiveKeys(input []byte, validateKeyContext bool) bool { //nolint
 			c := input[i]
 			if sensitiveStartCharBitmap[c] {
 				startChar := c | 0x20 // Normalize to lowercase
-				if checkPotentialMatch(input, i, startChar, validateKeyContext) {
+				if checkPotentialMatch(input, i, startChar, validateKeyContext, isPartial) {
 					return true
 				}
 			}
@@ -205,7 +207,7 @@ func scanForSensitiveKeys(input []byte, validateKeyContext bool) bool { //nolint
 
 			// In this loop, we know the candidate char matches startChar (modulo case).
 			// We can reuse the common validation logic.
-			if checkPotentialMatch(input, matchStart, startChar, validateKeyContext) {
+			if checkPotentialMatch(input, matchStart, startChar, validateKeyContext, isPartial) {
 				return true
 			}
 
@@ -218,7 +220,7 @@ func scanForSensitiveKeys(input []byte, validateKeyContext bool) bool { //nolint
 
 // checkPotentialMatch checks if a sensitive key starts at matchStart.
 // startChar must be the lowercase version of input[matchStart].
-func checkPotentialMatch(input []byte, matchStart int, startChar byte, validateKeyContext bool) bool {
+func checkPotentialMatch(input []byte, matchStart int, startChar byte, validateKeyContext bool, isPartial bool) bool {
 	// Optimization: Check second character
 	if matchStart+1 < len(input) {
 		second := input[matchStart+1] | 0x20
@@ -257,21 +259,26 @@ func checkPotentialMatch(input []byte, matchStart int, startChar byte, validateK
 					// If input[matchStart] is uppercase, assume the whole key match was uppercase (or case-insensitive matching logic holds).
 					firstChar := input[matchStart]
 					if firstChar >= 'A' && firstChar <= 'Z' {
-					// Verify if the REST of the key is also uppercase.
-					// If not (e.g. "Auth"), then it is PascalCase and SHOULD be redacted.
-					isAllUpper := true
-					for k := 1; k < len(key); k++ {
-						c := input[matchStart+k]
-						if c >= 'a' && c <= 'z' {
-							isAllUpper = false
-							break
+						// Verify if the REST of the key is also uppercase.
+						// If not (e.g. "Auth"), then it is PascalCase and SHOULD be redacted.
+						isAllUpper := true
+						for k := 1; k < len(key); k++ {
+							c := input[matchStart+k]
+							if c >= 'a' && c <= 'z' {
+								isAllUpper = false
+								break
+							}
+						}
+						if isAllUpper {
+							continue
 						}
 					}
-					if isAllUpper {
-						continue
-					}
-					}
 				}
+			} else if isPartial {
+				// If we are at the end of a partial chunk, we cannot determine if the word continues.
+				// We err on the side of caution (to avoid false positives) and assume it might continue.
+				// The overlapping chunk mechanism in the caller should handle the detection in the next chunk.
+				continue
 			}
 
 			if !validateKeyContext {
@@ -367,7 +374,8 @@ func scanJSONForSensitiveKeys(input []byte) bool {
 				keyContent := input[start+1 : end-1]
 				// Check if keyContent is sensitive.
 				// We use scanForSensitiveKeys with validateKeyContext=false to check the text.
-				if scanForSensitiveKeys(keyContent, false) {
+				// isPartial is false because keyContent is the full key.
+				if scanForSensitiveKeys(keyContent, false, false) {
 					return true
 				}
 			}
