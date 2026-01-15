@@ -59,9 +59,36 @@ func (r *Redactor) RedactJSON(data []byte) ([]byte, error) {
 		// Optimization: Check for obviously safe strings before unmarshaling.
 		// If the raw string (excluding quotes) doesn't contain '@' or digits,
 		// and doesn't contain escapes (which might hide them), it's likely safe.
-		// However, to be perfectly safe and simple, we unmarshal.
-		// Given that we are eliminating the overhead of map[string]interface{} and
-		// reflection for the entire structure, this is already a huge win.
+		// We can skip unmarshal for these cases if no custom patterns are defined.
+
+		hasAt := false
+		hasDigit := false
+		hasEscape := false
+
+		// Scan the raw bytes (which includes quotes, but they are not @, digit, or backslash)
+		// We can safely scan the whole slice.
+		for i := 0; i < len(raw); i++ {
+			c := raw[i]
+			if c == '@' {
+				hasAt = true
+			} else if c >= '0' && c <= '9' {
+				hasDigit = true
+			} else if c == '\\' {
+				hasEscape = true
+			}
+			// If we found everything, we can stop scanning
+			if hasAt && hasDigit && hasEscape {
+				break
+			}
+		}
+
+		// If no custom patterns and no PII indicators found in raw bytes, skip unmarshal.
+		// We must unmarshal if there are escapes because they might hide PII (e.g. \u0040).
+		if len(r.customPatterns) == 0 {
+			if !hasEscape && !hasAt && !hasDigit {
+				return nil, false
+			}
+		}
 
 		var s string
 		if err := json.Unmarshal(raw, &s); err != nil {
