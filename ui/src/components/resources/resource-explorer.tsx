@@ -49,8 +49,19 @@ import {
 } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
-import ReactSyntaxHighlighter from 'react-syntax-highlighter';
+import ReactSyntaxHighlighter from 'react-syntax-highlighter/dist/esm/light';
+import json from 'react-syntax-highlighter/dist/esm/languages/hljs/json';
+import yaml from 'react-syntax-highlighter/dist/esm/languages/hljs/yaml';
+import xml from 'react-syntax-highlighter/dist/esm/languages/hljs/xml';
+import markdown from 'react-syntax-highlighter/dist/esm/languages/hljs/markdown';
+import plaintext from 'react-syntax-highlighter/dist/esm/languages/hljs/plaintext';
 import { vs2015 } from 'react-syntax-highlighter/dist/esm/styles/hljs';
+
+ReactSyntaxHighlighter.registerLanguage('json', json);
+ReactSyntaxHighlighter.registerLanguage('yaml', yaml);
+ReactSyntaxHighlighter.registerLanguage('xml', xml);
+ReactSyntaxHighlighter.registerLanguage('markdown', markdown);
+ReactSyntaxHighlighter.registerLanguage('text', plaintext);
 
 
 interface ResourceExplorerProps {
