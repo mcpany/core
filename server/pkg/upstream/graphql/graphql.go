@@ -229,7 +229,7 @@ func (g *Upstream) Register(
 			for _, field := range t.Fields {
 				toolName := fmt.Sprintf("%s-%s", serviceConfig.GetName(), field.Name)
 				log.Printf("Creating tool: %s", toolName)
-				inputSchema := &structpb.Struct{
+				properties := &structpb.Struct{
 					Fields: make(map[string]*structpb.Value),
 				}
 				for _, arg := range field.Args {
@@ -237,7 +237,7 @@ func (g *Upstream) Register(
 					if arg.Type.Kind == "NON_NULL" {
 						typeName = arg.Type.OfType.Name
 					}
-					inputSchema.Fields[arg.Name] = &structpb.Value{
+					properties.Fields[arg.Name] = &structpb.Value{
 						Kind: &structpb.Value_StructValue{
 							StructValue: &structpb.Struct{
 								Fields: map[string]*structpb.Value{
@@ -250,6 +250,20 @@ func (g *Upstream) Register(
 							},
 						},
 					}
+				}
+				inputSchema := &structpb.Struct{
+					Fields: map[string]*structpb.Value{
+						"type": {
+							Kind: &structpb.Value_StringValue{
+								StringValue: "object",
+							},
+						},
+						"properties": {
+							Kind: &structpb.Value_StructValue{
+								StructValue: properties,
+							},
+						},
+					},
 				}
 
 				callID := "graphql"
