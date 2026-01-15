@@ -99,9 +99,9 @@ func NewChecker(uc *configv1.UpstreamServiceConfig) health.Checker {
 	return health.NewChecker(opts...)
 }
 
-func httpCheckFunc(ctx context.Context, _ string, hc *configv1.HttpHealthCheck) error {
+func httpCheckFunc(ctx context.Context, address string, hc *configv1.HttpHealthCheck) error {
 	if hc == nil {
-		return nil
+		return checkConnection(ctx, address)
 	}
 
 	client := &http.Client{

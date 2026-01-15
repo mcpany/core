@@ -49,6 +49,7 @@
 - [x] **Smart Config Error Messages - Address**: Fixed an issue where the validator confusingly referred to 'target_address' instead of 'address', aligning error messages with the actual configuration schema. (Friction Fighter)
 - [x] **Configuration Health Check**: Added a Doctor check that tracks the status of dynamic configuration reloads (success/failure, timestamp) and exposes it via `/doctor` API to aid in debugging silent reload failures. (Experience Crafter)
 - [x] **WebSocket Diagnostic Probe**: Implemented a diagnostic probe in the UI to validate WebSocket service configuration and test connectivity (including browser-side check). (Experience Crafter)
+- [x] **Startup Connectivity Validation**: Improved the default health check for HTTP services. If no specific health check is configured, the system now automatically validates connectivity to the configured address on startup, preventing silent failures for unreachable services. (Friction Fighter)
 
 ## 2. Top 10 Recommended Features
 
@@ -94,6 +95,8 @@ These features represent the next logical steps for the product, focusing on Ent
 | 36 | **Configuration Diffing API** | **Observability**: An API endpoint to compare the currently active configuration with the previous version or the file on disk, helping users understand what changed during a reload. | Medium |
 | 37 | **Automatic WebSocket Reconnection Strategy** | **Resilience**: Allow users to configure retry backoff and max attempts for WS connections to handle transient network drops. | Medium |
 | 38 | **WebSocket Message Inspector** | **Debugging**: A UI tool to capture and view raw WS frames (text/binary) for debugging protocol issues. | Medium |
+| 39 | **Detailed Health Check Diagnostics in UI** | **UX/Observability**: Expose the specific error message from the health check (e.g., "Connection refused", "Timeout", "404") in the Dashboard UI, not just the status, to help users troubleshoot failures faster. | Medium |
+| 40 | **Configurable Startup Timeout** | **Resilience**: Allow users to configure a global or per-service timeout for waiting for upstream services to become healthy during startup, preventing the server from hanging or starting with broken dependencies. | Low |
 
 ## 3. Codebase Health
 
