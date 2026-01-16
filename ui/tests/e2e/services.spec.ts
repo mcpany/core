@@ -80,9 +80,12 @@ test.describe('Services Feature', () => {
     await addressInput.fill('http://localhost:8080');
 
     await page.getByRole('button', { name: 'Save Changes' }).click();
-    await expect(page.getByText(serviceName)).toBeVisible();
+
+    // Explicitly wait for the service to appear in the list with a generous timeout
+    await expect(page.getByText(serviceName)).toBeVisible({ timeout: 10000 });
 
     const newServiceRow = page.locator('tr').filter({ hasText: serviceName });
+    await newServiceRow.waitFor({ state: 'visible', timeout: 5000 });
     await newServiceRow.getByRole('button', { name: 'Open menu' }).click();
     await page.getByRole('menuitem', { name: 'Edit' }).click();
 

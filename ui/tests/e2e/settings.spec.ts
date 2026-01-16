@@ -29,11 +29,15 @@ test.describe('Settings & Secrets', () => {
     await page.fill('input[id="value"]', 'TEST_VAL');
 
     await page.getByRole('button', { name: 'Save Secret' }).click();
+    await expect(page.getByRole('dialog')).not.toBeVisible();
 
     // Verify visibility with retry
     await expect(async () => {
-        await expect(page.getByText(secretName)).toBeVisible({ timeout: 2000 });
-    }).toPass({ timeout: 10000 });
+        await page.reload(); // Reload to ensure data persistence
+        // Must switch back to Secrets tab after reload
+        await page.getByRole('tab', { name: 'Secrets & Keys' }).click();
+        await expect(page.getByText(secretName)).toBeVisible({ timeout: 5000 });
+    }).toPass({ timeout: 20000 });
 
     // Verify deletion
     const secretRow = page.locator('.group').filter({ hasText: secretName });

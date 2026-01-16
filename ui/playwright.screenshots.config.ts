@@ -10,6 +10,7 @@ export default defineConfig({
   ...config,
   testIgnore: undefined, // Override ignore
   testMatch: '**/generate_docs_screenshots.spec.ts',
+  workers: 4,
   // Use the webServer config from the base config (npm run dev)
   webServer: config.webServer,
 });

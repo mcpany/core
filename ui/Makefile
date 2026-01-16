@@ -38,11 +38,11 @@ export TEST_GID
 test: clean-test-results build-test-docker build-server-docker
 	mkdir -p test-results .audit ../build/playwright-report docs playwright-report/html
 	chmod -R 777 test-results .audit ../build/playwright-report playwright-report || true
-	HOST_UID=$(shell id -u) HOST_GID=$(shell id -g) SERVER_IMAGE=$(SERVER_IMAGE) docker compose -f ./docker-compose.test.yml down --remove-orphans || true
+	TEST_UID=$(TEST_UID) TEST_GID=$(TEST_GID) SERVER_IMAGE=$(SERVER_IMAGE) docker compose -f ./docker-compose.test.yml down --remove-orphans || true
 	if [ -z '$(ARGS)' ]; then \
-		HOST_UID=$(shell id -u) HOST_GID=$(shell id -g) SERVER_IMAGE=$(SERVER_IMAGE) docker compose -f ./docker-compose.test.yml up --abort-on-container-exit --exit-code-from ui-tests; \
+		TEST_UID=$(TEST_UID) TEST_GID=$(TEST_GID) SERVER_IMAGE=$(SERVER_IMAGE) docker compose -f ./docker-compose.test.yml up --abort-on-container-exit --exit-code-from ui-tests; \
 	else \
-		HOST_UID=$(shell id -u) HOST_GID=$(shell id -g) SERVER_IMAGE=$(SERVER_IMAGE) docker compose -f ./docker-compose.test.yml run --rm --service-ports ui-tests npx playwright test $(ARGS); \
+		TEST_UID=$(TEST_UID) TEST_GID=$(TEST_GID) SERVER_IMAGE=$(SERVER_IMAGE) docker compose -f ./docker-compose.test.yml run --rm --service-ports ui-tests npx playwright test $(ARGS); \
 	fi
 
 clean-test-results:
@@ -63,7 +63,7 @@ build-server-docker:
 # Run audit tests (generate screenshots)
 audit: build-test-docker build-server-docker
 	@mkdir -p test-results playwright-report .audit docs
-	HOST_UID=$(shell id -u) HOST_GID=$(shell id -g) SERVER_IMAGE=$(SERVER_IMAGE) CAPTURE_SCREENSHOTS=true docker compose -f ./docker-compose.test.yml up --abort-on-container-exit --exit-code-from ui-tests
+	TEST_UID=$(TEST_UID) TEST_GID=$(TEST_GID) SERVER_IMAGE=$(SERVER_IMAGE) CAPTURE_SCREENSHOTS=true docker compose -f ./docker-compose.test.yml up --abort-on-container-exit --exit-code-from ui-tests
 	docker compose -f ./docker-compose.test.yml down -v
 
 test-ci: clean-test-results
@@ -94,4 +94,4 @@ build:
 
 update-screenshots:
 	@echo "Updating screenshots..."
-	HOST_UID=$(shell id -u) HOST_GID=$(shell id -g) SERVER_IMAGE=mcpany/server:latest docker compose -f ./docker-compose.test.yml run --rm ui-tests npx playwright test --config playwright.screenshots.config.ts
+	TEST_UID=$(TEST_UID) TEST_GID=$(TEST_GID) SERVER_IMAGE=mcpany/server:latest docker compose -f ./docker-compose.test.yml run --rm ui-tests npx playwright test --config playwright.screenshots.config.ts
