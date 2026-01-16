@@ -118,6 +118,9 @@ type mockFieldDescriptor struct {
 	name        string
 	cardinality protoreflect.Cardinality
 	message     protoreflect.MessageDescriptor
+	isMap       bool
+	mapKey      protoreflect.FieldDescriptor
+	mapValue    protoreflect.FieldDescriptor
 }
 
 func (m *mockFieldDescriptor) Kind() protoreflect.Kind {
@@ -137,7 +140,29 @@ func (m *mockFieldDescriptor) Cardinality() protoreflect.Cardinality {
 }
 
 func (m *mockFieldDescriptor) IsList() bool {
+	// Maps are repeated on wire but IsList() usually returns false for maps in higher level abstractions
+	// but protoreflect says IsList() returns true if Cardinality is Repeated.
+	// HOWEVER, for Map fields, IsMap() is true, and IsList() might be false depending on implementation?
+	// The protoreflect docs say:
+	// IsList reports whether this field is a list.
+	// If IsList is true, then Cardinality is Repeated.
+	// If IsMap is true, then IsList is false.
+	if m.isMap {
+		return false
+	}
 	return m.cardinality == protoreflect.Repeated
+}
+
+func (m *mockFieldDescriptor) IsMap() bool {
+	return m.isMap
+}
+
+func (m *mockFieldDescriptor) MapKey() protoreflect.FieldDescriptor {
+	return m.mapKey
+}
+
+func (m *mockFieldDescriptor) MapValue() protoreflect.FieldDescriptor {
+	return m.mapValue
 }
 
 // mockFieldDescriptors is a mock implementation of protoreflect.FieldDescriptors for testing.
@@ -429,4 +454,60 @@ func TestFieldsToProperties_RecursionLimit(t *testing.T) {
 	_, err := MethodDescriptorToProtoProperties(mockMethod)
 	require.Error(t, err)
 	assert.True(t, strings.Contains(err.Error(), "recursion depth limit reached"))
+}
+
+func TestFieldsToProperties_Map(t *testing.T) {
+	// Map field: map<string, int32> labels = 1;
+	// This should be converted to an object with additionalProperties of type integer
+
+	// MapEntry message (simulated)
+	mapEntryMsg := &mockMessageDescriptor{
+		fields: &mockFieldDescriptors{
+			fields: []protoreflect.FieldDescriptor{
+				&mockFieldDescriptor{
+					name: "key",
+					kind: protoreflect.StringKind,
+				},
+				&mockFieldDescriptor{
+					name: "value",
+					kind: protoreflect.Int32Kind,
+				},
+			},
+		},
+	}
+
+	mockMethod := &mockMethodDescriptor{
+		input: &mockMessageDescriptor{
+			fields: &mockFieldDescriptors{
+				fields: []protoreflect.FieldDescriptor{
+					&mockFieldDescriptor{
+						name:        "labels",
+						kind:        protoreflect.MessageKind,
+						cardinality: protoreflect.Repeated,
+						isMap:       true,
+						message:     mapEntryMsg,
+						mapValue:    &mockFieldDescriptor{kind: protoreflect.Int32Kind},
+					},
+				},
+			},
+		},
+	}
+
+	properties, err := MethodDescriptorToProtoProperties(mockMethod)
+	require.NoError(t, err)
+
+	labelsField, ok := properties.Fields["labels"]
+	require.True(t, ok)
+	s := labelsField.GetStructValue()
+	require.NotNil(t, s)
+
+	// Now we expect correct behavior
+	assert.Equal(t, "object", s.Fields["type"].GetStringValue())
+
+	additionalProperties := s.Fields["additionalProperties"].GetStructValue()
+	require.NotNil(t, additionalProperties)
+	assert.Equal(t, "integer", additionalProperties.Fields["type"].GetStringValue())
+
+	// Should NOT have properties "key" and "value"
+	assert.NotContains(t, s.Fields, "properties")
 }
