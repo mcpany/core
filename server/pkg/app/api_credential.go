@@ -14,6 +14,7 @@ import (
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/mcpany/core/server/pkg/auth"
+	"github.com/mcpany/core/server/pkg/logging"
 	"github.com/mcpany/core/server/pkg/util"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
@@ -35,17 +36,17 @@ func writeJSON(w http.ResponseWriter, status int, data any) {
 		}
 		b, err := marshaler.Marshal(pm)
 		if err != nil {
-			fmt.Printf("Failed to encode proto response: %v\n", err)
+			logging.GetLogger().Error("Failed to encode proto response", "error", err)
 			return
 		}
 		if _, err := w.Write(b); err != nil {
-			fmt.Printf("Failed to write response: %v\n", err)
+			logging.GetLogger().Error("Failed to write response", "error", err)
 		}
 		return
 	}
 
 	if err := json.NewEncoder(w).Encode(data); err != nil {
-		fmt.Printf("Failed to encode response: %v\n", err)
+		logging.GetLogger().Error("Failed to encode response", "error", err)
 	}
 }
 
@@ -136,7 +137,7 @@ func (a *Application) createCredentialHandler(w http.ResponseWriter, r *http.Req
 	}
 	defer func() {
 		if err := r.Body.Close(); err != nil {
-			fmt.Printf("Failed to close request body: %v\n", err)
+			logging.GetLogger().Error("Failed to close request body", "error", err)
 		}
 	}()
 
@@ -294,11 +295,9 @@ func prepareAndExecuteRequest(ctx context.Context, w http.ResponseWriter, req Te
 		method = "GET"
 	}
 
-	// Use a clean http client
-	client := &http.Client{
-		// Timeout: util.DefaultTimeout, // Commented out used as per lint error
-		Timeout: 30 * time.Second,
-	}
+	// Use a clean http client with SSRF protection
+	client := util.NewSafeHTTPClient()
+	client.Timeout = 30 * time.Second
 
 	// Create Request
 	httpReq, err := http.NewRequestWithContext(ctx, method, req.TargetURL, nil)

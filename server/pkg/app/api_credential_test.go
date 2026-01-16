@@ -216,4 +216,26 @@ func TestAuthTestEndpoint(t *testing.T) {
 		require.NoError(t, err)
 		assert.Equal(t, 401, resp.Status)
 	})
+
+	// 4. Test SSRF Protection (Blocked)
+	t.Run("test ssrf protection blocked", func(t *testing.T) {
+		// Attempt to access a private IP that should be blocked by NewSafeHTTPClient
+		// 169.254.169.254 (Metadata service) should be blocked by default.
+		reqData := TestAuthRequest{
+			TargetURL: "http://169.254.169.254/latest/meta-data/",
+		}
+		body, _ := json.Marshal(reqData)
+		req := httptest.NewRequest(http.MethodPost, "/api/v1/debug/auth-test", bytes.NewReader(body))
+		rr := httptest.NewRecorder()
+
+		app.testAuthHandler(rr, req)
+
+		assert.Equal(t, http.StatusOK, rr.Code)
+		var resp TestAuthResponse
+		err := json.Unmarshal(rr.Body.Bytes(), &resp)
+		require.NoError(t, err)
+
+		// Expect failure with specific message
+		assert.Contains(t, resp.Error, "ssrf attempt blocked")
+	})
 }
