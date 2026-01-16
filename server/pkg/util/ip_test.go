@@ -68,6 +68,21 @@ func TestExtractIP(t *testing.T) {
 			input:    "localhost:3000",
 			expected: "localhost",
 		},
+		{
+			name:     "IPv6 with zone outside brackets",
+			input:    "[::1]%eth0",
+			expected: "::1",
+		},
+		{
+			name:     "IPv6 with zone inside brackets",
+			input:    "[fe80::1%eth0]",
+			expected: "fe80::1",
+		},
+		{
+			name:     "IPv6 with zone no brackets",
+			input:    "fe80::1%eth0",
+			expected: "fe80::1",
+		},
 	}
 
 	for _, tt := range tests {

@@ -31,9 +31,16 @@ func ExtractIP(addr string) string {
 	// Strip zone index if present (e.g. fe80::1%eth0 -> fe80::1)
 	for i := 0; i < len(ip); i++ {
 		if ip[i] == '%' {
-			return ip[:i]
+			ip = ip[:i]
+			break
 		}
 	}
+
+	// Check for brackets again in case zone stripping left them (e.g. [::1]%eth0 -> [::1])
+	if len(ip) > 0 && ip[0] == '[' && ip[len(ip)-1] == ']' {
+		ip = ip[1 : len(ip)-1]
+	}
+
 	return ip
 }
 
