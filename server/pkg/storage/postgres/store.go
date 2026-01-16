@@ -46,7 +46,10 @@ func (s *Store) Load(ctx context.Context) (*configv1.McpAnyServerConfig, error) 
 	opts := protojson.UnmarshalOptions{DiscardUnknown: true}
 
 	for rows.Next() {
-		var configJSON []byte
+		// Use sql.RawBytes to avoid allocation during Scan.
+		// The memory is valid until the next call to Next().
+		// protojson.Unmarshal will parse it immediately, so this is safe.
+		var configJSON sql.RawBytes
 		if err := rows.Scan(&configJSON); err != nil {
 			return nil, fmt.Errorf("failed to scan config_json: %w", err)
 		}
@@ -236,7 +239,7 @@ func (s *Store) ListUsers(ctx context.Context) ([]*configv1.User, error) {
 	opts := protojson.UnmarshalOptions{DiscardUnknown: true}
 
 	for rows.Next() {
-		var configJSON []byte
+		var configJSON sql.RawBytes
 		if err := rows.Scan(&configJSON); err != nil {
 			return nil, fmt.Errorf("failed to scan user config: %w", err)
 		}
@@ -307,7 +310,7 @@ func (s *Store) ListSecrets(ctx context.Context) ([]*configv1.Secret, error) {
 
 	var secrets []*configv1.Secret
 	for rows.Next() {
-		var configJSON []byte
+		var configJSON sql.RawBytes
 		if err := rows.Scan(&configJSON); err != nil {
 			return nil, fmt.Errorf("failed to scan config_json: %w", err)
 		}
@@ -393,7 +396,7 @@ func (s *Store) ListProfiles(ctx context.Context) ([]*configv1.ProfileDefinition
 
 	var profiles []*configv1.ProfileDefinition
 	for rows.Next() {
-		var configJSON []byte
+		var configJSON sql.RawBytes
 		if err := rows.Scan(&configJSON); err != nil {
 			return nil, fmt.Errorf("failed to scan config_json: %w", err)
 		}
@@ -479,7 +482,7 @@ func (s *Store) ListServiceCollections(ctx context.Context) ([]*configv1.Collect
 
 	var collections []*configv1.Collection
 	for rows.Next() {
-		var configJSON []byte
+		var configJSON sql.RawBytes
 		if err := rows.Scan(&configJSON); err != nil {
 			return nil, fmt.Errorf("failed to scan config_json: %w", err)
 		}
