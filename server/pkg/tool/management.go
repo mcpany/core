@@ -505,11 +505,13 @@ func (tm *Manager) AddTool(tool Tool) error {
 
 	// Map client-facing name to internal ID
 	// Use tool.Tool().GetName() which is the raw name (e.g. "mcp:list_roots")
-	// If the name is scoped (e.g. "service.tool"), this works.
-	// If there are collisions, last one wins.
-	tm.nameMap.Store(tool.Tool().GetName(), toolID)
-	// Also map the fully qualified name that the MCP server exposes to clients
-	if tool.Tool().GetServiceId() != "" {
+	// If the tool has a Service ID, we ONLY expose the namespaced version "service.tool"
+	// to prevent auth bypasses and collisions.
+	// If it doesn't have a Service ID (e.g. internal tools), we expose the short name.
+	if tool.Tool().GetServiceId() == "" {
+		tm.nameMap.Store(tool.Tool().GetName(), toolID)
+	} else {
+		// Enforce namespacing for service tools
 		fullExposedName := tool.Tool().GetServiceId() + "." + tool.Tool().GetName()
 		tm.nameMap.Store(fullExposedName, toolID)
 	}
@@ -523,6 +525,11 @@ func (tm *Manager) AddTool(tool Tool) error {
 		mcpTool, err := ConvertProtoToMCPTool(tool.Tool())
 		if err != nil {
 			return fmt.Errorf("failed to convert proto tool to mcp tool: %w", err)
+		}
+
+		// Enforce namespacing for the MCP server registration as well
+		if tool.Tool().GetServiceId() != "" {
+			mcpTool.Name = tool.Tool().GetServiceId() + "." + tool.Tool().GetName()
 		}
 
 		if tool.Tool().GetInputSchema() != nil {
