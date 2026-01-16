@@ -4,6 +4,7 @@
 package middleware
 
 import (
+	"bytes"
 	"encoding/json"
 	"log/slog"
 	"regexp"
@@ -19,7 +20,8 @@ var (
 	creditCardRegex = regexp.MustCompile(`(?:\d{4}[-\s]?){3}\d{4}`)
 	ssnRegex        = regexp.MustCompile(`\d{3}-\d{2}-\d{4}`)
 
-	redactedStr = "***REDACTED***"
+	redactedStr   = "***REDACTED***"
+	redactedBytes = []byte(redactedStr)
 )
 
 // Redactor handles redaction of sensitive data based on configuration.
@@ -56,24 +58,69 @@ func (r *Redactor) RedactJSON(data []byte) ([]byte, error) {
 
 	// Use streaming redaction to avoid full unmarshal/marshal cycle.
 	return util.WalkJSONStrings(data, func(raw []byte) ([]byte, bool) {
-		// Optimization: Check for obviously safe strings before unmarshaling.
-		// If we have no custom patterns, we can skip unmarshaling if the raw bytes
-		// (including quotes) don't contain indicators of PII: '@', digits, or escapes.
-		// This avoids expensive json.Unmarshal for the vast majority of safe strings.
+		// Optimization: Check for obviously safe strings and decide if unmarshaling is needed.
+		hasEscape := false
+		hasAt := false
+		hasDigit := false
+		shouldProcess := true
+
 		if len(r.customPatterns) == 0 {
-			hasIndicator := false
+			shouldProcess = false
 			for i := 0; i < len(raw); i++ {
 				c := raw[i]
-				if c == '@' || (c >= '0' && c <= '9') || c == '\\' {
-					hasIndicator = true
-					break
+				if c == '\\' {
+					hasEscape = true
+					shouldProcess = true
+					break // Found escape, forced to slow path, effectively 'shouldProcess' is true
+				}
+				if c == '@' {
+					hasAt = true
+					shouldProcess = true
+				} else if c >= '0' && c <= '9' {
+					hasDigit = true
+					shouldProcess = true
 				}
 			}
-			if !hasIndicator {
-				return nil, false
+		} else {
+			// Custom patterns exist, so we must process.
+			// Check for escapes for optimization.
+			// Also collect hasAt/hasDigit for optimization in fast path.
+			for i := 0; i < len(raw); i++ {
+				c := raw[i]
+				if c == '\\' {
+					hasEscape = true
+					break
+				}
+				if c == '@' {
+					hasAt = true
+				} else if c >= '0' && c <= '9' {
+					hasDigit = true
+				}
 			}
 		}
 
+		if !shouldProcess {
+			return nil, false
+		}
+
+		if !hasEscape && len(raw) >= 2 {
+			// FAST PATH: No escapes, so we can work on bytes directly.
+			// raw[1 : len(raw)-1] strips the surrounding quotes.
+			content := raw[1 : len(raw)-1]
+			// We already scanned for indicators in raw (which includes quotes, but quotes are safe).
+			redacted := r.doRedactBytes(content, false, hasAt, hasDigit)
+			if !bytes.Equal(content, redacted) {
+				// Construct result: " + redacted + "
+				res := make([]byte, len(redacted)+2)
+				res[0] = '"'
+				copy(res[1:], redacted)
+				res[len(res)-1] = '"'
+				return res, true
+			}
+			return nil, false
+		}
+
+		// SLOW PATH: Contains escapes or other complexity, use full JSON unmarshal
 		var s string
 		if err := json.Unmarshal(raw, &s); err != nil {
 			// Should not happen for valid JSON strings
@@ -90,6 +137,49 @@ func (r *Redactor) RedactJSON(data []byte) ([]byte, error) {
 		}
 		return nil, false
 	}), nil
+}
+
+// redactBytes redacts sensitive information from a byte slice.
+func (r *Redactor) redactBytes(b []byte) []byte {
+	return r.doRedactBytes(b, true, false, false)
+}
+
+func (r *Redactor) doRedactBytes(b []byte, scan bool, hasAt, hasDigit bool) []byte {
+	if r == nil {
+		return b
+	}
+
+	if scan {
+		hasAt = false
+		hasDigit = false
+		for i := 0; i < len(b); i++ {
+			c := b[i]
+			if c == '@' {
+				hasAt = true
+			} else if c >= '0' && c <= '9' {
+				hasDigit = true
+			}
+			if hasAt && hasDigit {
+				break
+			}
+		}
+	}
+
+	res := b
+
+	if hasAt {
+		res = emailRegex.ReplaceAll(res, redactedBytes)
+	}
+
+	if hasDigit {
+		res = creditCardRegex.ReplaceAll(res, redactedBytes)
+		res = ssnRegex.ReplaceAll(res, redactedBytes)
+	}
+
+	for _, p := range r.customPatterns {
+		res = p.ReplaceAll(res, redactedBytes)
+	}
+	return res
 }
 
 // RedactString redacts sensitive information from a string.
