@@ -19,9 +19,11 @@
 - [x] **Breadcrumb Navigation Enhancements**: Improved breadcrumbs with dropdowns for sibling navigation.
 - [ ] **Drag-and-Drop Resource Export**: Ability to drag a resource from the list to the desktop or another app.
 - [ ] **Resource Content Search**: Ability to search within the text content of resources for keywords.
-- [ ] **Binary Resource Preview**: Support for previewing images, PDFs, and other binary formats in the resource viewer.
+- [x] **Binary Resource Preview**: Support for previewing images, PDFs, and other binary formats in the resource viewer.
 - [ ] **Prompt/Resource Sibling Navigation**: Enable sibling navigation for Prompts and Resources (requires backend API update to include service_id).
 - [ ] **Breadcrumb History**: Show recently visited breadcrumbs in a dropdown or history menu.
+- [ ] **JSON Schema Visualizer**: Display tool input schemas as interactive diagrams instead of raw JSON for better understanding of complex types.
+- [ ] **Interactive Tool Usage History**: A timeline of tool executions with ability to replay them directly from the UI.
 - [ ] **Bulk Service Import**: Allow importing multiple services from a single config file or URL.
 - [ ] **Service Configuration Validation**: Pre-save validation for service configs (e.g. check if URL is reachable).
 - [x] **Service Tagging & Grouping**: Organize services by tags (e.g., prod, staging, external) and filter the list.
