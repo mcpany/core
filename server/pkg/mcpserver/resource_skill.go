@@ -9,6 +9,7 @@ import (
 	"mime"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/mcpany/core/server/pkg/resource"
 	"github.com/mcpany/core/server/pkg/skill"
@@ -89,8 +90,19 @@ func (r *SkillResource) Read(_ context.Context) (*mcp.ReadResourceResult, error)
 		content, err = os.ReadFile(path) //nolint:gosec
 	} else {
 		// Read asset
-		path := filepath.Join(r.skill.Path, r.assetPath)
-		content, err = os.ReadFile(path) //nolint:gosec
+		// Sanitize and validate path to prevent traversal
+		cleanAssetPath := filepath.Clean(r.assetPath)
+		if strings.Contains(cleanAssetPath, "..") || strings.HasPrefix(cleanAssetPath, "/") || strings.HasPrefix(cleanAssetPath, "\\") {
+			return nil, fmt.Errorf("invalid asset path: %s", r.assetPath)
+		}
+
+		path := filepath.Join(r.skill.Path, cleanAssetPath)
+		// Double check resolved path
+		if !strings.HasPrefix(path, filepath.Clean(r.skill.Path)) {
+			return nil, fmt.Errorf("invalid path: points outside skill directory")
+		}
+
+		content, err = os.ReadFile(path) //nolint:gosec // Path is validated to be within skill directory
 	}
 
 	if err != nil {
