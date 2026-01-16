@@ -144,7 +144,7 @@ const nextConfig: NextConfig = {
       },
       {
         source: '/api/v1/:path*',
-        destination: `${backendUrl}/:path*`,
+        destination: `${backendUrl}/api/v1/:path*`,
       },
       {
         source: '/mcpany.api.v1.RegistrationService/:path*',
