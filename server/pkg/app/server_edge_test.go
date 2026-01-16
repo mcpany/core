@@ -264,10 +264,12 @@ global_settings:
 // But above integration test is better.
 
 func TestMultiUserHandler_RBAC_RoleMismatch(t *testing.T) {
-    // Tests that even if user has access to profile ID, if they lack required role, it fails.
-    fs := afero.NewMemMapFs()
-    configContent := `
+	// Tests that even if user has access to profile ID, if they lack required role, it fails.
+	fs := afero.NewMemMapFs()
+	configContent := `
 global_settings:
+  db_driver: "sqlite"
+  db_path: ":memory:"
   profile_definitions:
     - name: "admin_profile"
       required_roles: ["admin"]
@@ -277,34 +279,53 @@ users:
     profile_ids: ["admin_profile"]
     roles: ["user"]
 `
-    err := afero.WriteFile(fs, "/config.yaml", []byte(configContent), 0o644)
-    require.NoError(t, err)
+	err := afero.WriteFile(fs, "/config.yaml", []byte(configContent), 0o644)
+	require.NoError(t, err)
 
-    ctx, cancel := context.WithCancel(context.Background())
-    defer cancel()
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
 
-    app := NewApplication()
+	app := NewApplication()
 
-    l, err := net.Listen("tcp", "localhost:0")
-    require.NoError(t, err)
-    port := l.Addr().(*net.TCPAddr).Port
-    _ = l.Close()
+	l, err := net.Listen("tcp", "localhost:0")
+	require.NoError(t, err)
+	port := l.Addr().(*net.TCPAddr).Port
+	_ = l.Close()
 
-    go func() {
-        app.Run(ctx, fs, false, fmt.Sprintf("%d", port), "", []string{"/config.yaml"}, "", 5*time.Second)
-    }()
+	errChan := make(chan error, 1)
+	go func() {
+		errChan <- app.Run(ctx, fs, false, fmt.Sprintf("%d", port), "", []string{"/config.yaml"}, "", 5*time.Second)
+	}()
 
-    baseURL := fmt.Sprintf("http://localhost:%d", port)
-    require.Eventually(t, func() bool {
-		resp, err := http.Get(baseURL + "/healthz")
-		if err != nil { return false }
-		defer resp.Body.Close()
-		return resp.StatusCode == http.StatusOK
-	}, 5*time.Second, 100*time.Millisecond)
+	// Wait for server to start or error
+	baseURL := fmt.Sprintf("http://localhost:%d", port)
+	ticker := time.NewTicker(100 * time.Millisecond)
+	defer ticker.Stop()
+	timeout := time.NewTimer(5 * time.Second)
+	defer timeout.Stop()
 
-    resp, err := http.Get(fmt.Sprintf("http://localhost:%d/mcp/u/user_regular/profile/admin_profile", port))
-    require.NoError(t, err)
-    defer resp.Body.Close()
+	serverReady := false
+	for !serverReady {
+		select {
+		case err := <-errChan:
+			require.NoError(t, err, "app.Run failed")
+			return
+		case <-timeout.C:
+			t.Fatal("timed out waiting for server start")
+		case <-ticker.C:
+			resp, err := http.Get(baseURL + "/healthz")
+			if err == nil {
+				_ = resp.Body.Close()
+				if resp.StatusCode == http.StatusOK {
+					serverReady = true
+				}
+			}
+		}
+	}
 
-    assert.Equal(t, http.StatusForbidden, resp.StatusCode)
+	resp, err := http.Get(fmt.Sprintf("http://localhost:%d/mcp/u/user_regular/profile/admin_profile", port))
+	require.NoError(t, err)
+	defer resp.Body.Close()
+
+	assert.Equal(t, http.StatusForbidden, resp.StatusCode)
 }

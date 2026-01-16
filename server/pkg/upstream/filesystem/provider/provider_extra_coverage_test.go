@@ -4,12 +4,14 @@
 package provider
 
 import (
+	"archive/zip"
 	"context"
 	"os"
 	"path/filepath"
 	"testing"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
+	"github.com/mcpany/core/server/pkg/validation"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/proto"
@@ -127,4 +129,46 @@ func TestNewS3Provider_NilConfig(t *testing.T) {
 	_, err := NewS3Provider(nil)
 	assert.Error(t, err)
 	assert.Contains(t, err.Error(), "s3 config is nil")
+}
+
+func TestLocalProvider_FindBestMatch_NoMatch(t *testing.T) {
+	p := NewLocalProvider(nil, map[string]string{
+		"/app": "/tmp/app",
+	}, nil, nil)
+
+	_, err := p.ResolvePath("/other/file.txt")
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), "path /other/file.txt is not allowed (no matching root)")
+}
+
+func TestZipProvider_Close(t *testing.T) {
+	// Create a valid zip file
+	tmpFile, err := os.CreateTemp("", "test.zip")
+	require.NoError(t, err)
+	defer os.Remove(tmpFile.Name())
+
+	// Write empty zip structure
+	zw := zip.NewWriter(tmpFile)
+	err = zw.Close()
+	require.NoError(t, err)
+	tmpFile.Close()
+
+	// Allow the temp file path
+	validation.SetAllowedPaths([]string{filepath.Dir(tmpFile.Name())})
+	defer validation.SetAllowedPaths(nil)
+
+	// Create valid provider
+	config := &configv1.ZipFs{
+		FilePath: proto.String(tmpFile.Name()),
+	}
+	p, err := NewZipProvider(config)
+	require.NoError(t, err)
+
+	err = p.Close()
+	assert.NoError(t, err)
+}
+
+func TestZipProvider_Close_Nil(t *testing.T) {
+	p := &ZipProvider{}
+	assert.NoError(t, p.Close())
 }

@@ -10,6 +10,7 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"path/filepath"
 	"runtime"
 	"strings"
 	"syscall"
@@ -328,8 +329,8 @@ func newRootCmd() *cobra.Command { //nolint:gocyclo // Main entry point, expecte
 			if err != nil {
 				return fmt.Errorf("failed to generate schema: %w", err)
 			}
-			fmt.Println(string(schemaBytes))
-			return nil
+			_, err = fmt.Fprintln(cmd.OutOrStdout(), string(schemaBytes))
+			return err
 		},
 	}
 	configCmd.AddCommand(schemaCmd)
@@ -339,7 +340,7 @@ func newRootCmd() *cobra.Command { //nolint:gocyclo // Main entry point, expecte
 		Short: "Check a configuration file against the JSON Schema",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			filename := args[0]
+			filename := filepath.Clean(args[0])
 			data, err := os.ReadFile(filename)
 			if err != nil {
 				return fmt.Errorf("failed to read file %q: %w", filename, err)
@@ -355,8 +356,8 @@ func newRootCmd() *cobra.Command { //nolint:gocyclo // Main entry point, expecte
 				return fmt.Errorf("configuration schema validation failed: %w", err)
 			}
 
-			fmt.Println("Configuration schema is valid.")
-			return nil
+			_, err = fmt.Fprintln(cmd.OutOrStdout(), "Configuration schema is valid.")
+			return err
 		},
 	}
 	configCmd.AddCommand(checkCmd)

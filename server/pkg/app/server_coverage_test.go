@@ -88,3 +88,28 @@ func TestUploadFile_TempDirFail(t *testing.T) {
 		_ = rr // Use rr
 	}
 }
+
+func TestWaitForStartup_Cancel(t *testing.T) {
+	app := NewApplication()
+	ctx, cancel := context.WithCancel(context.Background())
+	cancel() // Cancel immediately
+
+	err := app.WaitForStartup(ctx)
+	assert.ErrorIs(t, err, context.Canceled)
+}
+
+func TestHandleTopology_MethodNotAllowed(t *testing.T) {
+	app := NewApplication()
+	// Mock TopologyManager? It's initialized in Run usually.
+	// We can manually init it if needed, but for MethodNotAllowed it shouldn't be accessed.
+	// Wait, handleTopology accesses a.TopologyManager.GetGraph only in GET case.
+	// So for POST it should just return 405.
+	handler := app.handleTopology()
+
+	req := httptest.NewRequest(http.MethodPost, "/api/v1/topology", nil)
+	rr := httptest.NewRecorder()
+
+	handler(rr, req)
+
+	assert.Equal(t, http.StatusMethodNotAllowed, rr.Code)
+}
