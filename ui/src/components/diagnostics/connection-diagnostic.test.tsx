@@ -22,6 +22,7 @@ const mockService: UpstreamServiceConfig = {
   prompts: [],
   autoDiscoverTool: false,
   configError: "",
+  tags: [],
   httpService: {
     address: "https://example.com",
     tools: [],
@@ -45,7 +46,8 @@ const mockWebSocketService: UpstreamServiceConfig = {
     prompts: [],
     autoDiscoverTool: false,
     configError: "",
-    webSocketService: {
+    tags: [],
+    websocketService: {
       address: "ws://example.com",
       tools: [],
       resources: [],

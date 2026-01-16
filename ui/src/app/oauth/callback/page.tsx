@@ -64,12 +64,12 @@ function OAuthCallbackContent() {
                 // Or call fetch directly.
                 // The API expects POST.
 
-                await apiClient.handleOAuthCallback({
-                    serviceId: context.serviceId,
-                    credentialId: context.credentialId,
-                    code: code,
-                    redirectUrl: window.location.origin + window.location.pathname, // Must match what we sent in initiate
-                });
+                await apiClient.handleOAuthCallback(
+                    context.serviceId,
+                    code,
+                    window.location.origin + window.location.pathname, // Must match what we sent in initiate
+                    context.credentialId
+                );
 
                 setStatus("success");
                 toast({ title: "Authentication Successful", description: "You can now close this window." });

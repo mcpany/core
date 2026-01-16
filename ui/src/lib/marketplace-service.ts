@@ -86,7 +86,8 @@ const MOCK_OFFICIAL_COLLECTIONS: ServiceCollection[] = [
             prompts: [],
 
             autoDiscoverTool: false,
-            configError: ""
+            configError: "",
+            tags: []
         }
 
     ]
@@ -178,7 +179,8 @@ export const marketplaceService = {
                     prompts: [],
 
                     autoDiscoverTool: false,
-                    configError: ""
+                    configError: "",
+                    tags: []
                 }
 
             }
