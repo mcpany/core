@@ -144,5 +144,5 @@ func TestSafeDialer_BlocksUnspecified(t *testing.T) {
 	require.Error(t, err)
 	assert.Nil(t, conn)
 	assert.Contains(t, err.Error(), "ssrf attempt blocked")
-	assert.Contains(t, err.Error(), "private ip")
+	assert.Contains(t, err.Error(), "loopback/unspecified ip")
 }
