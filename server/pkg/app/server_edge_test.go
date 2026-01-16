@@ -178,13 +178,13 @@ users:
 	})
 
 	t.Run("Correct Auth", func(t *testing.T) {
-		req, _ := http.NewRequest("POST", baseURL+"/mcp/u/user_auth/profile/p1", bytes.NewReader([]byte(`invalid-json`))) // Invalid JSON but passes auth check
+		req, _ := http.NewRequest("POST", baseURL+"/mcp/u/user_auth/profile/p1", bytes.NewReader([]byte(`{}`))) // Valid JSON but empty method
 		req.Header.Set("X-Key", "secret")
 		resp, err := client.Do(req)
 		require.NoError(t, err)
 		defer resp.Body.Close()
-		// Should get 400 Bad Request (Invalid JSON) instead of 401
-		assert.Equal(t, http.StatusBadRequest, resp.StatusCode)
+		// Should get 405 Method Not Allowed (reached handler) instead of 401
+		assert.Equal(t, http.StatusMethodNotAllowed, resp.StatusCode)
 	})
 }
 
