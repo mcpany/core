@@ -31,3 +31,24 @@ func TestMockWASMRuntime(t *testing.T) {
 	_, err = runtime.LoadPlugin(context.Background(), nil)
 	assert.Error(t, err)
 }
+
+func TestWazeroRuntime(t *testing.T) {
+	ctx := context.Background()
+	runtime, err := NewRuntime(ctx)
+	assert.NoError(t, err)
+	defer runtime.Close()
+
+	// Minimal valid WASM module header
+	minimalWasm := []byte{0x00, 0x61, 0x73, 0x6d, 0x01, 0x00, 0x00, 0x00}
+
+	// Test Load
+	plugin, err := runtime.LoadPlugin(ctx, minimalWasm)
+	assert.NoError(t, err)
+	assert.NotNil(t, plugin)
+	defer plugin.Close()
+
+	// Test Execute (non-existent function)
+	_, err = plugin.Execute(ctx, "non_existent")
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), "not exported")
+}

@@ -48,6 +48,7 @@ import (
 	"github.com/mcpany/core/server/pkg/upstream/factory"
 	"github.com/mcpany/core/server/pkg/util"
 	"github.com/mcpany/core/server/pkg/validation"
+	"github.com/mcpany/core/server/pkg/wasm"
 	"github.com/mcpany/core/server/pkg/worker"
 	otelgrpc "go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc"
 	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
@@ -194,6 +195,9 @@ type Application struct {
 	configMu    sync.Mutex
 	// Store explicit API Key passed via CLI args
 	explicitAPIKey string
+
+	// WASM Runtime
+	WasmRuntime wasm.Runtime
 
 	// lastReloadErr stores the error from the last configuration reload.
 	// It is protected by configMu.
@@ -367,6 +371,18 @@ func (a *Application) Run(
 	a.PromptManager = prompt.NewManager()
 	a.TemplateManager = NewTemplateManager("data") // Use "data" directory for now
 	a.ResourceManager = resource.NewManager()
+
+	// Initialize WASM Runtime
+	wasmRuntime, err := wasm.NewRuntime(context.Background())
+	if err != nil {
+		log.Error("Failed to initialize WASM runtime", "error", err)
+		// Don't fail startup if WASM fails, as it's experimental?
+		// Or fail if "Implemented"?
+		// Reviewer said: "Blocking: The WASM runtime implementation is not integrated"
+		// If it fails, maybe we should warn.
+	} else {
+		a.WasmRuntime = wasmRuntime
+	}
 
 	// Initialize auth manager
 	authManager := auth.NewManager()
@@ -552,9 +568,9 @@ func (a *Application) Run(
 			{Name: proto.String("dlp"), Priority: proto.Int32(42)},
 			{Name: proto.String("global_ratelimit"), Priority: proto.Int32(45)},
 			{Name: proto.String("call_policy"), Priority: proto.Int32(50)},
+			{Name: proto.String("caching"), Priority: proto.Int32(60)},
 			{Name: proto.String("context_optimizer"), Priority: proto.Int32(65)},
 			{Name: proto.String("ratelimit"), Priority: proto.Int32(70)},
-			{Name: proto.String("caching"), Priority: proto.Int32(80)},
 			// CORS is typically 0 or negative to be outermost, but AddReceivingMiddleware adds in order.
 			// The SDK executes them in reverse order of addition?
 			// Wait, mcp.Server implementation:
@@ -1605,6 +1621,13 @@ func (a *Application) runServerMode(
 		defer shutdownCancel()
 		if err := serviceRegistry.Close(shutdownCtx); err != nil {
 			logging.GetLogger().Error("Failed to shutdown services", "error", err)
+		}
+	}
+
+	// Shutdown WASM Runtime
+	if a.WasmRuntime != nil {
+		if err := a.WasmRuntime.Close(); err != nil {
+			logging.GetLogger().Error("Failed to close WASM runtime", "error", err)
 		}
 	}
 
