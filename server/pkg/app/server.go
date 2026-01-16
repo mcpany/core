@@ -1514,13 +1514,18 @@ func (a *Application) runServerMode(
 	corsMiddleware := middleware.NewHTTPCORSMiddleware(a.SettingsManager.GetAllowedOrigins())
 	a.corsMiddleware = corsMiddleware
 
-	// Middleware order: SecurityHeaders -> CORS -> JSONRPCCompliance -> IPAllowList -> RateLimit -> Mux
+	// Initialize Context Optimizer (max 1000 chars per text field)
+	contextOptimizer := middleware.NewContextOptimizer(1000)
+
+	// Middleware order: SecurityHeaders -> CORS -> ContextOptimizer -> JSONRPCCompliance -> IPAllowList -> RateLimit -> Mux
 	// We wrap everything with a debug logger to see what's coming in
 	handler := middleware.HTTPSecurityHeadersMiddleware(
 		corsMiddleware.Handler(
-			middleware.JSONRPCComplianceMiddleware(
-				ipMiddleware.Handler(
-					rateLimiter.Handler(mux),
+			contextOptimizer.Handler(
+				middleware.JSONRPCComplianceMiddleware(
+					ipMiddleware.Handler(
+						rateLimiter.Handler(mux),
+					),
 				),
 			),
 		),
