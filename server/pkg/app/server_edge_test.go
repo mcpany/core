@@ -239,9 +239,7 @@ global_settings:
         app.Run(ctx, fs, false, fmt.Sprintf("%d", port), "", []string{"/config.yaml"}, "", 5*time.Second)
     }()
 
-    require.Eventually(t, func() bool {
-        return app.ipMiddleware != nil
-    }, 5*time.Second, 100*time.Millisecond)
+    require.NoError(t, app.WaitForStartup(ctx))
 
     // Check allow list
     assert.True(t, app.ipMiddleware.Allow("127.0.0.1"))
