@@ -194,7 +194,7 @@ users:
 
 	errChan := make(chan error, 1)
 	go func() {
-		errChan <- app.Run(ctx, fs, false, fmt.Sprintf("%d", httpPort), fmt.Sprintf("%d", grpcPort), []string{"/config.yaml"}, "", 5*time.Second)
+		errChan <- app.Run(ctx, fs, false, fmt.Sprintf("%d", httpPort), fmt.Sprintf("%d", grpcPort), []string{"/config.yaml"}, "", 100*time.Millisecond, 5*time.Second)
 	}()
 
 		// Wait for server to start

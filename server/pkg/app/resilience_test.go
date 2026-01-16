@@ -57,7 +57,7 @@ upstream_services:
 
 	errChan := make(chan error, 1)
 	go func() {
-		errChan <- app.Run(ctx, fs, false, fmt.Sprintf("localhost:%d", httpPort), "localhost:0", []string{"/config.yaml"}, "", 5*time.Second)
+		errChan <- app.Run(ctx, fs, false, fmt.Sprintf("localhost:%d", httpPort), "localhost:0", []string{"/config.yaml"}, "", 100*time.Millisecond, 5*time.Second)
 	}()
 
 	// 2. Verify Startup

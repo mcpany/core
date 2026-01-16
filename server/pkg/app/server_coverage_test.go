@@ -43,7 +43,7 @@ upstream_services: []
 
 	go func() {
 		// Pass empty port strings so it relies on config
-		errChan <- app.Run(ctx, fs, false, "", "", []string{"/config.yaml"}, "", 5*time.Second)
+		errChan <- app.Run(ctx, fs, false, "", "", []string{"/config.yaml"}, "", 100*time.Millisecond, 5*time.Second)
 	}()
 
 	// Wait for start (approximated by sleep or checking errChan not closed immediately)

@@ -41,7 +41,7 @@ users:
 
 	errChan := make(chan error, 1)
 	go func() {
-		errChan <- app.Run(ctx, fs, false, fmt.Sprintf("%d", httpPort), "", []string{"/config.yaml"}, "", 5*time.Second)
+		errChan <- app.Run(ctx, fs, false, fmt.Sprintf("%d", httpPort), "", []string{"/config.yaml"}, "", 100*time.Millisecond, 5*time.Second)
 	}()
 
 	// Wait for server to start
@@ -156,7 +156,7 @@ users:
 	_ = l.Close()
 
 	go func() {
-		app.Run(ctx, fs, false, fmt.Sprintf("%d", httpPort), "", []string{"/config.yaml"}, "", 5*time.Second)
+		app.Run(ctx, fs, false, fmt.Sprintf("%d", httpPort), "", []string{"/config.yaml"}, "", 100*time.Millisecond, 5*time.Second)
 	}()
 
 	baseURL := fmt.Sprintf("http://localhost:%d", httpPort)
@@ -202,7 +202,7 @@ func TestRun_ConflictingPorts(t *testing.T) {
     ctx, cancel := context.WithTimeout(context.Background(), 100*time.Millisecond)
     defer cancel()
 
-    err = app.Run(ctx, fs, false, fmt.Sprintf("%d", port), "", nil, "", 5*time.Second)
+    err = app.Run(ctx, fs, false, fmt.Sprintf("%d", port), "", nil, "", 100*time.Millisecond, 5*time.Second)
     require.Error(t, err)
     assert.Contains(t, err.Error(), "failed to start a server")
 }
@@ -236,7 +236,7 @@ global_settings:
     _ = l.Close()
 
     go func() {
-        app.Run(ctx, fs, false, fmt.Sprintf("%d", port), "", []string{"/config.yaml"}, "", 5*time.Second)
+        app.Run(ctx, fs, false, fmt.Sprintf("%d", port), "", []string{"/config.yaml"}, "", 100*time.Millisecond, 5*time.Second)
     }()
 
     require.NoError(t, app.WaitForStartup(ctx))
@@ -291,7 +291,7 @@ users:
     _ = l.Close()
 
     go func() {
-        app.Run(ctx, fs, false, fmt.Sprintf("%d", port), "", []string{"/config.yaml"}, "", 5*time.Second)
+        app.Run(ctx, fs, false, fmt.Sprintf("%d", port), "", []string{"/config.yaml"}, "", 100*time.Millisecond, 5*time.Second)
     }()
 
     baseURL := fmt.Sprintf("http://localhost:%d", port)

@@ -88,7 +88,7 @@ upstream_services:
 
 	// Run in background
 	go func() {
-		_ = app.Run(ctx, fs, false, fmt.Sprintf("localhost:%d", httpPort), grpcPortStr, []string{configPath}, "", 5*time.Second)
+		_ = app.Run(ctx, fs, false, fmt.Sprintf("localhost:%d", httpPort), grpcPortStr, []string{configPath}, "", 100*time.Millisecond, 5*time.Second)
 	}()
 
 	require.NoError(t, app.WaitForStartup(ctx))

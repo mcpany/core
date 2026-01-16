@@ -161,7 +161,7 @@ func newRootCmd() *cobra.Command { //nolint:gocyclo // Main entry point, expecte
 				log.Warn("⚠️  Running without a global API key. This is NOT recommended for production deployment.")
 			}
 
-			if err := appRunner.Run(ctx, osFs, stdio, bindAddress, grpcPort, configPaths, cfg.APIKey(), shutdownTimeout); err != nil {
+			if err := appRunner.Run(ctx, osFs, stdio, bindAddress, grpcPort, configPaths, cfg.APIKey(), 5*time.Second, shutdownTimeout); err != nil {
 				log.Error("Application failed", "error", err)
 				return err
 			}

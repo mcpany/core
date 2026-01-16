@@ -136,6 +136,7 @@ type Runner interface {
 		jsonrpcPort, grpcPort string,
 		configPaths []string,
 		apiKey string,
+		startupTimeout time.Duration,
 		shutdownTimeout time.Duration,
 	) error
 
@@ -258,6 +259,7 @@ func (a *Application) Run(
 	jsonrpcPort, grpcPort string,
 	configPaths []string,
 	apiKey string,
+	startupTimeout time.Duration,
 	shutdownTimeout time.Duration,
 ) error {
 	log := logging.GetLogger()
@@ -520,21 +522,24 @@ func (a *Application) Run(
 			registrationWorker.Stop()
 			return fmt.Errorf("failed to get registration bus: %w", err)
 		}
+
+		expectedServices := make(map[string]string)
+		var requests []*bus.ServiceRegistrationRequest
+
 		for _, serviceConfig := range cfg.GetUpstreamServices() {
 			if serviceConfig.GetDisable() {
 				log.Info("Skipping disabled service", "service", serviceConfig.GetName())
 				continue
 			}
-			log.Info(
-				"Queueing service for registration from config",
-				"service",
-				serviceConfig.GetName(),
-			)
+			cid := util.GenerateUUID()
 			regReq := &bus.ServiceRegistrationRequest{Config: serviceConfig}
-			// We don't need a correlation ID since we are not waiting for a response here
-			if err := registrationBus.Publish(ctx, "request", regReq); err != nil {
-				log.Error("Failed to publish registration request", "error", err)
-			}
+			regReq.SetCorrelationID(cid)
+			expectedServices[cid] = serviceConfig.GetName()
+			requests = append(requests, regReq)
+		}
+
+		if len(expectedServices) > 0 {
+			waitForInitialRegistrations(ctx, expectedServices, busProvider, registrationBus, requests, startupTimeout)
 		}
 	} else {
 		log.Info("No services found in config, skipping service registration.")
@@ -699,6 +704,133 @@ func (a *Application) Run(
 	registrationWorker.Stop()
 
 	return nil
+}
+
+// waitForInitialRegistrations waits for the initial set of services to register
+// and prints a status report to stderr.
+func waitForInitialRegistrations(
+	ctx context.Context,
+	expectedServices map[string]string,
+	busProvider *bus.Provider,
+	registrationBus bus.Bus[*bus.ServiceRegistrationRequest],
+	requests []*bus.ServiceRegistrationRequest,
+	timeout time.Duration,
+) {
+	log := logging.GetLogger()
+	log.Info("Waiting for initial service registration...", "count", len(expectedServices))
+
+	resultBus, err := bus.GetBus[*bus.ServiceRegistrationResult](busProvider, bus.ServiceRegistrationResultTopic)
+	if err != nil {
+		log.Error("Failed to get registration result bus", "error", err)
+		// Fallback: publish anyway without waiting
+		for _, req := range requests {
+			if err := registrationBus.Publish(ctx, "request", req); err != nil {
+				log.Error("Failed to publish registration request", "error", err)
+			}
+		}
+		return
+	}
+
+	results := make(map[string]error) // ServiceName -> Error (nil if success)
+	var mu sync.Mutex
+	done := make(chan struct{}, 1)
+
+	// Subscribe to results BEFORE publishing
+	unsubscribe := resultBus.Subscribe(ctx, "startup_waiter", func(res *bus.ServiceRegistrationResult) {
+		mu.Lock()
+		defer mu.Unlock()
+		if name, ok := expectedServices[res.CorrelationID()]; ok {
+			results[name] = res.Error
+			delete(expectedServices, res.CorrelationID())
+			if len(expectedServices) == 0 {
+				select {
+				case done <- struct{}{}:
+				default:
+				}
+			}
+		}
+	})
+
+	// Publish requests
+	for _, req := range requests {
+		log.Info(
+			"Queueing service for registration from config",
+			"service",
+			req.Config.GetName(),
+		)
+		if err := registrationBus.Publish(ctx, "request", req); err != nil {
+			log.Error("Failed to publish registration request", "error", err)
+			mu.Lock()
+			// Mark as failed immediately
+			results[req.Config.GetName()] = fmt.Errorf("failed to publish request: %w", err)
+			delete(expectedServices, req.CorrelationID())
+			if len(expectedServices) == 0 {
+				select {
+				case done <- struct{}{}:
+				default:
+				}
+			}
+			mu.Unlock()
+		}
+	}
+
+	// Wait with timeout
+	// We use a relatively short timeout to avoid blocking startup too long if something is stuck.
+	// 5 seconds should be enough for local/remote services to at least ACK or fail fast.
+	// If it takes longer, we'll proceed and let them finish in background.
+	if timeout <= 0 {
+		timeout = 5 * time.Second
+	}
+	timer := time.NewTimer(timeout)
+	defer timer.Stop()
+
+	select {
+	case <-done:
+		log.Info("All initial services registered")
+	case <-timer.C:
+		log.Warn("Timeout waiting for initial service registration", "pending", len(expectedServices))
+		// Mark remaining as pending/timeout
+		mu.Lock()
+		for _, name := range expectedServices {
+			if _, ok := results[name]; !ok {
+				results[name] = fmt.Errorf("timeout waiting for registration")
+			}
+		}
+		mu.Unlock()
+	case <-ctx.Done():
+		unsubscribe()
+		return
+	}
+
+	unsubscribe()
+
+	// Print summary table to Stderr
+	// We use stderr so it doesn't interfere with stdout in stdio mode (although stdio mode handles this separately,
+	// startup logs usually go to stderr).
+	fmt.Fprintln(os.Stderr, "\nMCP Any Service Startup Summary")
+	fmt.Fprintln(os.Stderr, "==================================================")
+	fmt.Fprintln(os.Stderr, fmt.Sprintf("%-30s | %-15s", "Service Name", "Status"))
+	fmt.Fprintln(os.Stderr, "--------------------------------------------------")
+
+	hasErrors := false
+	for name, err := range results {
+		status := "✅ OK"
+		if err != nil {
+			status = "❌ FAILED"
+			hasErrors = true
+		}
+		fmt.Fprintf(os.Stderr, "%-30s | %s\n", name, status)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "   Error: %v\n", err)
+		}
+	}
+	fmt.Fprintln(os.Stderr, "==================================================")
+	if hasErrors {
+		fmt.Fprintln(os.Stderr, "⚠️  Some services failed to start. Check logs for details.")
+	} else {
+		fmt.Fprintln(os.Stderr, "✨ All services started successfully.")
+	}
+	fmt.Fprintln(os.Stderr, "")
 }
 
 // ReloadConfig reloads the configuration from the given paths and updates the
