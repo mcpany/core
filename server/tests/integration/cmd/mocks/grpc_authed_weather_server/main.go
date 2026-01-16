@@ -88,7 +88,7 @@ func main() {
 
 	var lis net.Listener
 	var err error
-	addr := fmt.Sprintf(":%d", *port)
+	addr := fmt.Sprintf("127.0.0.1:%d", *port)
 	for i := 0; i < 5; i++ {
 		var lc net.ListenConfig
 		lis, err = lc.Listen(context.Background(), "tcp", addr)

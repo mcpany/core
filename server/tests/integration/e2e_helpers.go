@@ -793,13 +793,50 @@ func StartNatsServer(t *testing.T) (string, func()) {
 		}
 	}
 
-	natsPort := FindFreePort(t)
-	natsURL := fmt.Sprintf("nats://127.0.0.1:%d", natsPort)
+	// Use -p -1 to let NATS pick a random free port
+	cmd := exec.CommandContext(context.Background(), natsServerBin, "-p", "-1", "-a", "127.0.0.1") //nolint:gosec // Test helper
 
-	cmd := exec.CommandContext(context.Background(), natsServerBin, "-p", fmt.Sprintf("%d", natsPort)) //nolint:gosec // Test helper
+	// Capture output to find the port
+	// We need a thread-safe buffer because we might read while it writes (though wait loop handles this?)
+	// Actually, we can just use a pipe reading approach or shared buffer
+	// Use threadSafeBuffer to avoid race conditions when reading logs while process writes
+	var stdout, stderr threadSafeBuffer
+	cmd.Stdout = &stdout
+	cmd.Stderr = &stderr
+
 	err = cmd.Start()
-	require.NoError(t, err)
-	WaitForTCPPort(t, natsPort, 10*time.Second) // Wait for NATS server to be ready
+	require.NoError(t, err, "Failed to start nats-server")
+
+	// Wait for port log
+	var natsPort int
+	// NATS logs: "Listening for client connections on 127.0.0.1:4222"
+	// Or sometimes on stderr depending on config/version? Usually stdout.
+	regexPort := regexp.MustCompile(`Listening for client connections on [^:]+:(\d+)`)
+
+	start := time.Now()
+	found := false
+	for time.Since(start) < 10*time.Second {
+		output := stdout.String() + stderr.String()
+		matches := regexPort.FindStringSubmatch(output)
+		if len(matches) >= 2 {
+			if _, err := fmt.Sscanf(matches[1], "%d", &natsPort); err != nil {
+				t.Logf("failed to parse nats port: %v", err)
+				continue
+			}
+			found = true
+			break
+		}
+		// Also check if process exited
+		if cmd.ProcessState != nil && cmd.ProcessState.Exited() {
+			require.Fail(t, "nats-server exited unexpectedly", "Output:\n%s", output)
+		}
+		time.Sleep(100 * time.Millisecond)
+	}
+	require.True(t, found, "Failed to find NATS port in logs within timeout. Output:\n%s\nStderr:\n%s", stdout.String(), stderr.String())
+
+	natsURL := fmt.Sprintf("nats://127.0.0.1:%d", natsPort)
+	WaitForTCPPort(t, natsPort, 5*time.Second) // Double check availability
+
 	cleanup := func() {
 		_ = cmd.Process.Kill()
 	}
