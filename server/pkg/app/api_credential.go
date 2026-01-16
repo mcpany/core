@@ -129,18 +129,13 @@ func (a *Application) createCredentialHandler(w http.ResponseWriter, r *http.Req
 	ctx := r.Context()
 	var cred configv1.Credential
 
-	body, err := io.ReadAll(r.Body)
+	body, err := readBodyWithLimit(w, r, 1048576)
 	if err != nil {
-		writeError(w, fmt.Errorf("failed to read body: %w", err))
 		return
 	}
-	defer func() {
-		if err := r.Body.Close(); err != nil {
-			fmt.Printf("Failed to close request body: %v\n", err)
-		}
-	}()
 
-	if err := protojson.Unmarshal(body, &cred); err != nil {
+	unmarshaler := protojson.UnmarshalOptions{DiscardUnknown: true}
+	if err := unmarshaler.Unmarshal(body, &cred); err != nil {
 		writeError(w, fmt.Errorf("invalid request body: %w", err))
 		return
 	}
@@ -178,7 +173,14 @@ func (a *Application) updateCredentialHandler(w http.ResponseWriter, r *http.Req
 
 	ctx := r.Context()
 	var cred configv1.Credential
-	if err := json.NewDecoder(r.Body).Decode(&cred); err != nil {
+
+	body, err := readBodyWithLimit(w, r, 1048576)
+	if err != nil {
+		return
+	}
+
+	unmarshaler := protojson.UnmarshalOptions{DiscardUnknown: true}
+	if err := unmarshaler.Unmarshal(body, &cred); err != nil {
 		writeError(w, fmt.Errorf("invalid request body: %w", err))
 		return
 	}
@@ -252,7 +254,13 @@ func (a *Application) testAuthHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	ctx := r.Context()
 	var req TestAuthRequest
-	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+
+	body, err := readBodyWithLimit(w, r, 1048576)
+	if err != nil {
+		return
+	}
+
+	if err := json.Unmarshal(body, &req); err != nil {
 		writeError(w, fmt.Errorf("invalid request body: %w", err))
 		return
 	}
