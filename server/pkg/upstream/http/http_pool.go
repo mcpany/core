@@ -7,7 +7,6 @@ import (
 	"context"
 	"crypto/tls"
 	"crypto/x509"
-	"net"
 	"net/http"
 	"os"
 	"time"
@@ -16,6 +15,7 @@ import (
 	"github.com/mcpany/core/server/pkg/client"
 	healthChecker "github.com/mcpany/core/server/pkg/health"
 	"github.com/mcpany/core/server/pkg/pool"
+	"github.com/mcpany/core/server/pkg/util"
 	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 )
 
@@ -69,11 +69,18 @@ var NewHTTPPool = func(
 		tlsConfig.RootCAs = caCertPool
 	}
 
+	dialer := util.NewSafeDialer()
+	// Allow overriding via environment variables (useful for testing or specific deployments)
+	if os.Getenv("MCPANY_ALLOW_LOOPBACK_RESOURCES") == util.TrueStr {
+		dialer.AllowLoopback = true
+	}
+	if os.Getenv("MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES") == util.TrueStr {
+		dialer.AllowPrivate = true
+	}
+
 	baseTransport := &http.Transport{
 		TLSClientConfig: tlsConfig,
-		DialContext: (&net.Dialer{
-			Timeout: 30 * time.Second,
-		}).DialContext,
+		DialContext:     dialer.DialContext,
 		MaxIdleConns:        maxSize,
 		MaxIdleConnsPerHost: maxSize,
 	}

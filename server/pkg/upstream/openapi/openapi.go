@@ -11,6 +11,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"os"
 	"strings"
 	"sync"
 	"time"
@@ -109,9 +110,9 @@ func (u *OpenAPIUpstream) Register(
 	if specContent == "" {
 		specURL := openapiService.GetSpecUrl()
 		if specURL != "" {
-			client := &http.Client{
-				Timeout: 30 * time.Second,
-			}
+			client := util.NewSafeHTTPClient()
+			client.Timeout = 30 * time.Second
+
 			req, err := http.NewRequestWithContext(ctx, "GET", specURL, nil)
 			if err != nil {
 				logging.GetLogger().Warn("Failed to create request for OpenAPI spec", "url", specURL, "error", err)
@@ -193,7 +194,16 @@ func (u *OpenAPIUpstream) getHTTPClient(serviceID string) *http.Client {
 		return client
 	}
 
+	dialer := util.NewSafeDialer()
+	if os.Getenv("MCPANY_ALLOW_LOOPBACK_RESOURCES") == util.TrueStr {
+		dialer.AllowLoopback = true
+	}
+	if os.Getenv("MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES") == util.TrueStr {
+		dialer.AllowPrivate = true
+	}
+
 	transport := &http.Transport{
+		DialContext:         dialer.DialContext,
 		MaxIdleConns:        100,
 		MaxIdleConnsPerHost: 10,
 		IdleConnTimeout:     90 * time.Second,
