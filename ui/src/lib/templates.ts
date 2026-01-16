@@ -46,7 +46,7 @@ export const SERVICE_TEMPLATES: ServiceTemplate[] = [
     icon: Server,
     config: {
       name: "",
-      httpService: { address: "" },
+      httpService: { address: "" } as any,
     },
   },
   {

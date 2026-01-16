@@ -229,6 +229,7 @@ export const apiClient = {
             disable: config.disable,
             priority: config.priority,
             load_balancing_strategy: config.loadBalancingStrategy,
+            tags: config.tags,
         };
 
         if (config.httpService) {
@@ -282,6 +283,7 @@ export const apiClient = {
             disable: config.disable,
             priority: config.priority,
             load_balancing_strategy: config.loadBalancingStrategy,
+            tags: config.tags,
         };
         // Reuse mapping logic or duplicate for now safely
          if (config.httpService) {
@@ -801,6 +803,7 @@ export const apiClient = {
             disable: template.disable,
             priority: template.priority,
             load_balancing_strategy: template.loadBalancingStrategy,
+            tags: template.tags,
         };
 
         if (template.httpService) {

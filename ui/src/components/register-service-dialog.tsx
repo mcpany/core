@@ -30,6 +30,7 @@ const formSchema = z.object({
   command: z.string().optional(),
   configJson: z.string().optional(), // For advanced mode
   upstreamAuth: z.any().optional(), // Store auth config object
+  tags: z.string().optional(),
 });
 
 interface RegisterServiceDialogProps {
@@ -69,6 +70,7 @@ export function RegisterServiceDialog({ onSuccess, trigger, serviceToEdit }: Reg
       command: serviceToEdit.commandLineService?.command || "",
       configJson: JSON.stringify(serviceToEdit, null, 2),
       upstreamAuth: serviceToEdit.upstreamAuth,
+      tags: serviceToEdit.tags?.join(", ") || "",
   } : {
       name: "",
       type: "http" as const,
@@ -76,6 +78,7 @@ export function RegisterServiceDialog({ onSuccess, trigger, serviceToEdit }: Reg
       command: "",
       configJson: "{\n  \"name\": \"my-service\",\n  \"httpService\": {\n    \"address\": \"https://api.example.com\"\n  }\n}",
       upstreamAuth: undefined,
+      tags: "",
   };
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -122,6 +125,7 @@ export function RegisterServiceDialog({ onSuccess, trigger, serviceToEdit }: Reg
       if (config.grpcService?.address) form.setValue("address", config.grpcService.address);
       if (config.openapiService?.address) form.setValue("address", config.openapiService.address);
       if (config.commandLineService?.command) form.setValue("command", config.commandLineService.command);
+      if (config.tags) form.setValue("tags", config.tags.join(", "));
 
       // Also set the JSON for advanced usage
       form.setValue("configJson", JSON.stringify(config, null, 2));
@@ -151,7 +155,8 @@ export function RegisterServiceDialog({ onSuccess, trigger, serviceToEdit }: Reg
               postCallHooks: [],
               prompts: [],
               autoDiscoverTool: false,
-              configError: ""
+              configError: "",
+              tags: values.tags ? values.tags.split(",").map(t => t.trim()).filter(t => t) : [],
           };
 
           if (values.type === 'grpc') {
@@ -313,6 +318,23 @@ export function RegisterServiceDialog({ onSuccess, trigger, serviceToEdit }: Reg
                         />
                     )}
 
+                    <FormField
+                    control={form.control}
+                    name="tags"
+                    render={({ field }) => (
+                        <FormItem>
+                        <FormLabel>Tags</FormLabel>
+                        <FormControl>
+                            <Input placeholder="prod, external, db (comma separated)" {...field} />
+                        </FormControl>
+                        <FormDescription>
+                            Tags to organize and filter services.
+                        </FormDescription>
+                        <FormMessage />
+                        </FormItem>
+                    )}
+                    />
+
                     {selectedType === 'command_line' && (
                         <FormField
                         control={form.control}
@@ -425,7 +447,7 @@ export function RegisterServiceDialog({ onSuccess, trigger, serviceToEdit }: Reg
                                             }
 
                                             const redirectUrl = `${window.location.origin}/oauth/callback`;
-                                            const res = await apiClient.initiateOAuth(serviceId, undefined, redirectUrl);
+                                            const res = await apiClient.initiateOAuth(serviceId, redirectUrl);
 
                                             // Store context for callback
                                             sessionStorage.setItem(`oauth_pending_${res.state}`, JSON.stringify({

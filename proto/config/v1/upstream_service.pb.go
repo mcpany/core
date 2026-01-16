@@ -275,7 +275,9 @@ type UpstreamServiceConfig struct {
 	// List of hooks to execute after the call.
 	PostCallHooks []*CallHook `protobuf:"bytes,32,rep,name=post_call_hooks" json:"post_call_hooks,omitempty"`
 	// The prompts provided by this upstream service.
-	Prompts       []*PromptDefinition `protobuf:"bytes,33,rep,name=prompts" json:"prompts,omitempty"`
+	Prompts []*PromptDefinition `protobuf:"bytes,33,rep,name=prompts" json:"prompts,omitempty"`
+	// Tags for organizing and filtering services.
+	Tags          []string `protobuf:"bytes,34,rep,name=tags" json:"tags,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -565,6 +567,13 @@ func (x *UpstreamServiceConfig) GetPrompts() []*PromptDefinition {
 	return nil
 }
 
+func (x *UpstreamServiceConfig) GetTags() []string {
+	if x != nil {
+		return x.Tags
+	}
+	return nil
+}
+
 func (x *UpstreamServiceConfig) SetName(v string) {
 	x.Name = &v
 }
@@ -739,6 +748,10 @@ func (x *UpstreamServiceConfig) SetPostCallHooks(v []*CallHook) {
 
 func (x *UpstreamServiceConfig) SetPrompts(v []*PromptDefinition) {
 	x.Prompts = v
+}
+
+func (x *UpstreamServiceConfig) SetTags(v []string) {
+	x.Tags = v
 }
 
 func (x *UpstreamServiceConfig) HasName() bool {
@@ -1215,6 +1228,8 @@ type UpstreamServiceConfig_builder struct {
 	PostCallHooks []*CallHook
 	// The prompts provided by this upstream service.
 	Prompts []*PromptDefinition
+	// Tags for organizing and filtering services.
+	Tags []string
 }
 
 func (b0 UpstreamServiceConfig_builder) Build() *UpstreamServiceConfig {
@@ -1276,6 +1291,7 @@ func (b0 UpstreamServiceConfig_builder) Build() *UpstreamServiceConfig {
 	x.PreCallHooks = b.PreCallHooks
 	x.PostCallHooks = b.PostCallHooks
 	x.Prompts = b.Prompts
+	x.Tags = b.Tags
 	return m0
 }
 
@@ -7821,7 +7837,7 @@ var File_proto_config_v1_upstream_service_proto protoreflect.FileDescriptor
 
 const file_proto_config_v1_upstream_service_proto_rawDesc = "" +
 	"\n" +
-	"&proto/config/v1/upstream_service.proto\x12\x10mcpany.config.v1\x1a\x1egoogle/protobuf/duration.proto\x1a\x13proto/bus/bus.proto\x1a\x1aproto/config/v1/auth.proto\x1a\x1aproto/config/v1/call.proto\x1a\"proto/config/v1/health_check.proto\x1a\x1dproto/config/v1/profile.proto\x1a\x1cproto/config/v1/prompt.proto\x1a\x1eproto/config/v1/resource.proto\x1a\x1aproto/config/v1/tool.proto\x1a\x1dproto/config/v1/webhook.proto\"\xc3\x11\n" +
+	"&proto/config/v1/upstream_service.proto\x12\x10mcpany.config.v1\x1a\x1egoogle/protobuf/duration.proto\x1a\x13proto/bus/bus.proto\x1a\x1aproto/config/v1/auth.proto\x1a\x1aproto/config/v1/call.proto\x1a\"proto/config/v1/health_check.proto\x1a\x1dproto/config/v1/profile.proto\x1a\x1cproto/config/v1/prompt.proto\x1a\x1eproto/config/v1/resource.proto\x1a\x1aproto/config/v1/tool.proto\x1a\x1dproto/config/v1/webhook.proto\"\xd7\x11\n" +
 	"\x15UpstreamServiceConfig\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12\x0e\n" +
 	"\x02id\x18\x02 \x01(\tR\x02id\x12&\n" +
@@ -7860,7 +7876,8 @@ const file_proto_config_v1_upstream_service_proto_rawDesc = "" +
 	"\rcall_policies\x18\x1e \x03(\v2\x1c.mcpany.config.v1.CallPolicyR\rcall_policies\x12B\n" +
 	"\x0epre_call_hooks\x18\x1f \x03(\v2\x1a.mcpany.config.v1.CallHookR\x0epre_call_hooks\x12D\n" +
 	"\x0fpost_call_hooks\x18  \x03(\v2\x1a.mcpany.config.v1.CallHookR\x0fpost_call_hooks\x12<\n" +
-	"\aprompts\x18! \x03(\v2\".mcpany.config.v1.PromptDefinitionR\apromptsB\x10\n" +
+	"\aprompts\x18! \x03(\v2\".mcpany.config.v1.PromptDefinitionR\aprompts\x12\x12\n" +
+	"\x04tags\x18\" \x03(\tR\x04tagsB\x10\n" +
 	"\x0eservice_config\"\xd1\x01\n" +
 	"\n" +
 	"CallPolicy\x12J\n" +

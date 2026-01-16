@@ -45,7 +45,7 @@ export function ConnectionDiagnosticDialog({ service, trigger }: ConnectionDiagn
       { id: "backend_health", name: "Backend Status Check", status: "pending", logs: [] },
     ];
 
-    if (service.webSocketService) {
+    if (service.websocketService) {
         initialSteps.splice(1, 0, { id: "browser_connectivity", name: "Browser Connectivity Check", status: "pending", logs: [] });
     }
 
@@ -89,8 +89,8 @@ export function ConnectionDiagnosticDialog({ service, trigger }: ConnectionDiagn
              addLog("config", "Error: Command is empty");
              isValid = false;
         }
-    } else if (service.webSocketService) {
-        url = service.webSocketService.address;
+    } else if (service.websocketService) {
+        url = service.websocketService.address;
         addLog("config", `Validating WebSocket address: ${url}`);
         if (!url.startsWith("ws://") && !url.startsWith("wss://")) {
             addLog("config", "Error: WebSocket address must start with ws:// or wss://");
@@ -106,7 +106,7 @@ export function ConnectionDiagnosticDialog({ service, trigger }: ConnectionDiagn
     updateStep("config", { status: "success", detail: "Configuration valid" });
 
     // --- Step 1.5: Browser Connectivity (WebSocket Only) ---
-    if (service.webSocketService) {
+    if (service.websocketService) {
         updateStep("browser_connectivity", { status: "running" });
         addLog("browser_connectivity", `Attempting to connect to ${url} from browser...`);
 

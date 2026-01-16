@@ -5,13 +5,14 @@
 
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useState, memo } from "react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { Settings, Trash2, CheckCircle, XCircle, AlertTriangle, MoreHorizontal, Copy, Download } from "lucide-react";
+import { Settings, Trash2, CheckCircle, XCircle, AlertTriangle, MoreHorizontal, Copy, Download, Filter } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -34,6 +35,12 @@ interface ServiceListProps {
 }
 
 export function ServiceList({ services, isLoading, onToggle, onEdit, onDelete, onDuplicate, onExport }: ServiceListProps) {
+  const [tagFilter, setTagFilter] = useState("");
+
+  const filteredServices = useMemo(() => {
+    if (!tagFilter) return services;
+    return services.filter(s => s.tags?.some(tag => tag.toLowerCase().includes(tagFilter.toLowerCase())));
+  }, [services, tagFilter]);
 
   if (isLoading) {
       return (
@@ -50,40 +57,55 @@ export function ServiceList({ services, isLoading, onToggle, onEdit, onDelete, o
   }
 
   return (
-    <div className="rounded-md border">
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Status</TableHead>
-            <TableHead>Name</TableHead>
-            <TableHead>Type</TableHead>
-            <TableHead>Address / Command</TableHead>
-            <TableHead>Version</TableHead>
-            <TableHead className="text-center">Secure</TableHead>
-            <TableHead className="text-right">Actions</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {services.map((service) => (
-             <ServiceRow
-                key={service.name}
-                service={service}
-                onToggle={onToggle}
-                onEdit={onEdit}
-                onDelete={onDelete}
-                onDuplicate={onDuplicate}
-                onExport={onExport}
-             />
-          ))}
-        </TableBody>
-      </Table>
+    <div className="space-y-4">
+      <div className="flex items-center space-x-2 w-full md:w-1/3">
+        <Filter className="h-4 w-4 text-muted-foreground" />
+        <Input
+          placeholder="Filter by tag..."
+          value={tagFilter}
+          onChange={(e) => setTagFilter(e.target.value)}
+          className="h-8"
+        />
+      </div>
+      <div className="rounded-md border">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Status</TableHead>
+              <TableHead>Name</TableHead>
+              <TableHead>Type</TableHead>
+              <TableHead>Tags</TableHead>
+              <TableHead>Address / Command</TableHead>
+              <TableHead>Version</TableHead>
+              <TableHead className="text-center">Secure</TableHead>
+              <TableHead className="text-right">Actions</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {filteredServices.map((service) => (
+               <ServiceRow
+                  key={service.name}
+                  service={service}
+                  onToggle={onToggle}
+                  onEdit={onEdit}
+                  onDelete={onDelete}
+                  onDuplicate={onDuplicate}
+                  onExport={onExport}
+               />
+            ))}
+            {filteredServices.length === 0 && (
+              <TableRow>
+                <TableCell colSpan={8} className="h-24 text-center">
+                  No services match the tag filter.
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </div>
     </div>
   );
 }
-
-// ⚡ Bolt: Memoized to prevent unnecessary re-renders of the entire list when one item updates.
-// Reduces re-renders by O(n) when toggling service status.
-import { memo } from "react";
 
 const ServiceRow = memo(function ServiceRow({ service, onToggle, onEdit, onDelete, onDuplicate, onExport }: {
     service: UpstreamServiceConfig,
@@ -145,6 +167,15 @@ const ServiceRow = memo(function ServiceRow({ service, onToggle, onEdit, onDelet
              </TableCell>
              <TableCell>
                  <Badge variant="outline">{type}</Badge>
+             </TableCell>
+             <TableCell>
+                 <div className="flex flex-wrap gap-1">
+                     {service.tags?.map((tag) => (
+                         <Badge key={tag} variant="secondary" className="text-xs px-1 py-0 h-5">
+                             {tag}
+                         </Badge>
+                     ))}
+                 </div>
              </TableCell>
              <TableCell className="font-mono text-xs max-w-[200px] truncate" title={address}>
                  {address}
