@@ -50,3 +50,10 @@ func TestValidateConfigAgainstSchema(t *testing.T) {
 	assert.Error(t, err)
 	assert.Contains(t, err.Error(), "additionalProperties")
 }
+
+func TestGenerateJSONSchemaBytes(t *testing.T) {
+	bytes, err := GenerateJSONSchemaBytes()
+	assert.NoError(t, err)
+	assert.NotNil(t, bytes)
+	assert.Contains(t, string(bytes), "$schema")
+}
