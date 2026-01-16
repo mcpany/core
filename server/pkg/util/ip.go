@@ -143,7 +143,7 @@ func isPrivateNetworkIPv4(ip net.IP) bool {
 
 // IsPrivateIP checks if the IP address is a private, link-local, or loopback address.
 func IsPrivateIP(ip net.IP) bool {
-	if ip.IsLoopback() || ip.IsUnspecified() {
+	if ip.IsLoopback() {
 		return true
 	}
 
@@ -152,18 +152,11 @@ func IsPrivateIP(ip net.IP) bool {
 		if ip4[0] == 169 && ip4[1] == 254 {
 			return true
 		}
-		return isPrivateNetworkIPv4(ip4)
-	}
-
-	// IPv6 Link-local (fe80::/10)
-	if len(ip) == net.IPv6len && ip[0] == 0xfe && ip[1]&0xc0 == 0x80 {
+	} else if len(ip) == net.IPv6len && ip[0] == 0xfe && ip[1]&0xc0 == 0x80 {
+		// IPv6 Link-local (fe80::/10)
 		return true
 	}
 
-	for _, block := range privateNetworkBlocks {
-		if block.Contains(ip) {
-			return true
-		}
-	}
-	return false
+	// Use IsPrivateNetworkIP to handle private networks, including NAT64 and unspecified addresses.
+	return IsPrivateNetworkIP(ip)
 }
