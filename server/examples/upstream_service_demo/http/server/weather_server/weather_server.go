@@ -142,7 +142,6 @@ func run(args []string, stop chan os.Signal, ready chan<- string) error {
 		return err
 	}
 
-
 	mux := http.NewServeMux()
 	mux.HandleFunc("/health", healthHandler)
 	mux.HandleFunc("/weather", weatherHandler)

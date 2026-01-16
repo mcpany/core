@@ -25,7 +25,7 @@ func TestServiceRetry(t *testing.T) {
     var l net.Listener
     var err error
     for i := 0; i < 10; i++ {
-        l, err = net.Listen("tcp", "127.0.0.1:0")
+        l, err = net.Listen("tcp", ":0")
         if err == nil {
             break
         }
@@ -108,7 +108,7 @@ upstream_services:
 	}))
 
     // Assign the listener with the dynamic port. We need to re-bind.
-    l2, err := net.Listen("tcp", fmt.Sprintf("127.0.0.1:%d", port))
+    l2, err := net.Listen("tcp", fmt.Sprintf(":%d", port))
     require.NoError(t, err, "Failed to re-bind to port %d", port)
     ts.Listener = l2
 	ts.Start()
