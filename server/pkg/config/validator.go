@@ -389,6 +389,10 @@ func validateAuthentication(ctx context.Context, authConfig *configv1.Authentica
 		return validateMtlsAuth(authConfig.GetMtls())
 	case configv1.Authentication_Oauth2_case:
 		return validateOAuth2Auth(ctx, authConfig.GetOauth2())
+	case configv1.Authentication_Oidc_case:
+		return validateOIDCAuth(ctx, authConfig.GetOidc())
+	case configv1.Authentication_TrustedHeader_case:
+		return validateTrustedHeaderAuth(authConfig.GetTrustedHeader())
 	}
 	return nil
 }
@@ -715,12 +719,49 @@ func validateBasicAuth(ctx context.Context, basicAuth *configv1.BasicAuth) error
 	return nil
 }
 
-func validateOAuth2Auth(_ context.Context, oauth *configv1.OAuth2Auth) error {
+func validateOAuth2Auth(ctx context.Context, oauth *configv1.OAuth2Auth) error {
 	if oauth.GetTokenUrl() == "" {
 		return fmt.Errorf("oauth2 token_url is empty")
 	}
 	if !validation.IsValidURL(oauth.GetTokenUrl()) {
 		return fmt.Errorf("invalid oauth2 token_url: %s", oauth.GetTokenUrl())
+	}
+
+	clientID, err := util.ResolveSecret(ctx, oauth.GetClientId())
+	if err != nil {
+		return fmt.Errorf("failed to resolve oauth2 client_id: %w", err)
+	}
+	if clientID == "" {
+		return fmt.Errorf("oauth2 client_id is missing or empty")
+	}
+
+	clientSecret, err := util.ResolveSecret(ctx, oauth.GetClientSecret())
+	if err != nil {
+		return fmt.Errorf("failed to resolve oauth2 client_secret: %w", err)
+	}
+	if clientSecret == "" {
+		return fmt.Errorf("oauth2 client_secret is missing or empty")
+	}
+
+	return nil
+}
+
+func validateOIDCAuth(_ context.Context, oidc *configv1.OIDCAuth) error {
+	if oidc.GetIssuer() == "" {
+		return fmt.Errorf("oidc issuer is empty")
+	}
+	if !validation.IsValidURL(oidc.GetIssuer()) {
+		return fmt.Errorf("invalid oidc issuer url: %s", oidc.GetIssuer())
+	}
+	return nil
+}
+
+func validateTrustedHeaderAuth(th *configv1.TrustedHeaderAuth) error {
+	if th.GetHeaderName() == "" {
+		return fmt.Errorf("trusted header name is empty")
+	}
+	if th.GetHeaderValue() == "" {
+		return fmt.Errorf("trusted header value is empty")
 	}
 	return nil
 }

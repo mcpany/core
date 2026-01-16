@@ -53,6 +53,7 @@
 - [x] **Required Environment Variable Validation**: Added explicit `validation.required_env` support for Stdio connections to fail fast with descriptive errors if required environment variables are missing. (Friction Fighter)
 - [x] **JSON Schema for Config**: Auto-generate and publish a JSON Schema for the `config.yaml` to enable intellisense/validation in IDEs like VS Code. (Friction Fighter)
 - [x] **Config Schema Validation via CLI**: `mcpany config check config.yaml` that validates against the full JSON schema (including types and enums) using `jsonschema` library, providing line-number precise errors. (Friction Fighter)
+- [x] **Strict Auth Config Validation**: Added startup validation for OAuth2, OIDC, and TrustedHeader configuration to ensure required fields (like `client_id`, `issuer`) are present. (Friction Fighter)
 
 ## 2. Top 10 Recommended Features
 
@@ -100,6 +101,8 @@ These features represent the next logical steps for the product, focusing on Ent
 | 38 | **HTTP Upstream Env Validation** | **Consistency**: Extend required environment variable validation to HTTP connections (e.g. for `http_address` or auth headers). | Low |
 | 39 | **Config Snapshot/Restore** | **Ops**: Ability to save current runtime configuration state to a file (snapshot) and restore it later, useful for backing up verified working configs. | Medium |
 | 40 | **Config Inheritance** | **DevX**: Allow `config.yaml` to extend/import other configuration files (e.g. `extends: base.yaml`) to reduce duplication across environments. | High |
+| 41 | **OAuth2 Token Reachability Check** | **Reliability**: During validation (or via `doctor` command), attempt to connect to the OAuth2 token URL to verify network connectivity, going beyond simple syntax checks. | Medium |
+| 42 | **OIDC Auto-Discovery** | **UX**: Automatically configure OIDC endpoints (auth URL, token URL, keys) by fetching the `/.well-known/openid-configuration` from the issuer URL, simplifying configuration. | Medium |
 
 ## 3. Codebase Health
 
