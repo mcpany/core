@@ -10,6 +10,7 @@ import (
 	"net"
 	"net/http"
 	"os"
+	"strconv"
 	"time"
 )
 
@@ -123,14 +124,14 @@ func SafeDialContext(ctx context.Context, network, addr string) (net.Conn, error
 }
 
 // NewSafeDialerFromEnv creates a new SafeDialer configured from environment variables.
-// - MCPANY_ALLOW_LOOPBACK_RESOURCES: Set to "true" to allow loopback addresses.
-// - MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES: Set to "true" to allow private network addresses.
+// - MCPANY_ALLOW_LOOPBACK_RESOURCES: Set to "true" (or other boolean values) to allow loopback addresses.
+// - MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES: Set to "true" (or other boolean values) to allow private network addresses.
 func NewSafeDialerFromEnv() *SafeDialer {
 	dialer := NewSafeDialer()
-	if os.Getenv("MCPANY_ALLOW_LOOPBACK_RESOURCES") == TrueStr {
+	if val, err := strconv.ParseBool(os.Getenv("MCPANY_ALLOW_LOOPBACK_RESOURCES")); err == nil && val {
 		dialer.AllowLoopback = true
 	}
-	if os.Getenv("MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES") == TrueStr {
+	if val, err := strconv.ParseBool(os.Getenv("MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES")); err == nil && val {
 		dialer.AllowPrivate = true
 	}
 	return dialer
