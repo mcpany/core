@@ -1249,6 +1249,18 @@ func (a *Application) runServerMode(
 				}
 			} else {
 				// No auth configured at any level
+				// Sentinel Security: If no global API key is set, and no user auth is configured,
+				// we must enforce private IP access to prevent accidental public exposure.
+				host, _, err := net.SplitHostPort(r.RemoteAddr)
+				if err != nil {
+					host = r.RemoteAddr
+				}
+				ip := net.ParseIP(host)
+				if !util.IsPrivateIP(ip) {
+					logging.GetLogger().Warn("Blocked public internet request to /mcp/u/ because no API Key is configured", "remote_addr", r.RemoteAddr)
+					http.Error(w, "Forbidden: Public access requires an API Key", http.StatusForbidden)
+					return
+				}
 				isAuthenticated = true
 			}
 		}
@@ -1691,9 +1703,6 @@ func (a *Application) createAuthMiddleware(forcePrivateIPOnly bool) func(http.Ha
 			if !forcePrivateIPOnly && apiKey != "" {
 				// Check X-API-Key or Authorization header
 				requestKey := r.Header.Get("X-API-Key")
-				if requestKey == "" {
-					requestKey = r.URL.Query().Get("api_key")
-				}
 				if requestKey == "" {
 					authHeader := r.Header.Get("Authorization")
 					if strings.HasPrefix(authHeader, "Bearer ") {

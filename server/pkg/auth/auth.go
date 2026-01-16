@@ -292,7 +292,10 @@ func (am *Manager) Authenticate(ctx context.Context, serviceID string, r *http.R
 	if am.apiKey != "" {
 		receivedKey := r.Header.Get("X-API-Key")
 		if receivedKey == "" {
-			receivedKey = r.URL.Query().Get("api_key")
+			authHeader := r.Header.Get("Authorization")
+			if strings.HasPrefix(authHeader, "Bearer ") {
+				receivedKey = strings.TrimPrefix(authHeader, "Bearer ")
+			}
 		}
 
 		if receivedKey == "" {
