@@ -283,7 +283,9 @@ func isKeySensitive(keyContent []byte) bool {
 // It returns true if any sensitive word is found.
 func scanEscapedKeyForSensitive(keyContent []byte) bool {
 	// 4KB buffer
-	const bufSize = 4096
+	// We use 4097 to allow appending a dummy character when the buffer is full but
+	// the stream continues, to avoid false positive matches at the boundary.
+	const bufSize = 4097
 	const overlap = 64
 	var buf [bufSize]byte
 	bufIdx := 0
@@ -378,12 +380,23 @@ func scanEscapedKeyForSensitive(keyContent []byte) bool {
 		buf[bufIdx] = c
 		bufIdx++
 
-		if bufIdx == bufSize {
-			if scanForSensitiveKeys(buf[:], false) {
+		// Check if we reached the processing limit (bufSize - 1)
+		// We leave 1 byte for the potential dummy character.
+		if bufIdx == bufSize-1 {
+			scanLen := bufIdx
+			// If we are not at the end of the stream, append a dummy character
+			// to avoid matching a word that is cut off by the buffer boundary.
+			if i < n {
+				buf[bufIdx] = 'z' // Append dummy lowercase letter
+				scanLen++
+			}
+
+			if scanForSensitiveKeys(buf[:scanLen], false) {
 				return true
 			}
 			// Shift overlap
-			copy(buf[0:], buf[bufSize-overlap:])
+			// We shift from the valid data, excluding the dummy char if added.
+			copy(buf[0:], buf[bufIdx-overlap:bufIdx])
 			bufIdx = overlap
 		}
 	}
