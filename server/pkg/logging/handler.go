@@ -22,6 +22,13 @@ type LogEntry struct {
 	Level     string `json:"level"`
 	Message   string `json:"message"`
 	Source    string `json:"source,omitempty"`
+	// Enhanced fields for Tool Executions
+	Type     string `json:"type,omitempty"` // "general" or "tool_execution"
+	ToolName string `json:"tool_name,omitempty"`
+	Input    string `json:"input,omitempty"`
+	Output   string `json:"output,omitempty"`
+	Duration string `json:"duration,omitempty"`
+	IsError  bool   `json:"is_error,omitempty"`
 }
 
 // BroadcastHandler implements slog.Handler and sends logs to the Broadcaster.
@@ -51,13 +58,26 @@ func (h *BroadcastHandler) Handle(_ context.Context, r slog.Record) error {
 		Timestamp: r.Time.Format(time.RFC3339),
 		Level:     r.Level.String(),
 		Message:   r.Message,
+		Type:      "general", // Default
 	}
 
 	// Try to find source in attributes or use default
 	r.Attrs(func(a slog.Attr) bool {
-		if a.Key == "source" || a.Key == "component" {
+		switch a.Key {
+		case "source", "component":
 			entry.Source = a.Value.String()
-			return false // Stop iteration
+		case "log_type":
+			entry.Type = a.Value.String()
+		case "tool_name":
+			entry.ToolName = a.Value.String()
+		case "input":
+			entry.Input = a.Value.String()
+		case "output":
+			entry.Output = a.Value.String()
+		case "duration":
+			entry.Duration = a.Value.String()
+		case "is_error":
+			entry.IsError = a.Value.Bool()
 		}
 		return true
 	})

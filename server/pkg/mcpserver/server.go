@@ -521,7 +521,8 @@ func (s *Server) ListTools() []tool.Tool {
 //   - The result of the tool execution.
 //   - An error if the tool execution fails or access is denied.
 func (s *Server) CallTool(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
-	logging.GetLogger().Info("Calling tool...", "toolName", req.ToolName, "arguments", string(util.RedactJSON(req.ToolInputs)))
+	inputJSON := string(util.RedactJSON(req.ToolInputs))
+	logging.GetLogger().Info("Calling tool...", "toolName", req.ToolName, "arguments", inputJSON)
 	// Try to get service ID from tool
 	var serviceID string
 	if t, ok := s.GetTool(req.ToolName); ok {
@@ -543,24 +544,41 @@ func (s *Server) CallTool(ctx context.Context, req *tool.ExecutionRequest) (any,
 		{Name: "service_id", Value: serviceID},
 	})
 	startTime := time.Now()
-	defer func() {
-		// Use AddSampleWithLabels directly to avoid emitting an unlabelled metric (which MeasureSinceWithLabels does).
-		// MeasureSince emits in milliseconds.
-		duration := float32(time.Since(startTime).Seconds() * 1000)
-		metrics.AddSampleWithLabels([]string{"tools", "call", "latency"}, duration, []metrics.Label{
-			{Name: "tool", Value: req.ToolName},
-			{Name: "service_id", Value: serviceID},
-		})
-	}()
 
 	result, err := s.toolManager.ExecuteTool(ctx, req)
-	if err != nil {
+
+	duration := time.Since(startTime)
+	durationMs := float32(duration.Seconds() * 1000)
+
+	// Metrics
+	metrics.AddSampleWithLabels([]string{"tools", "call", "latency"}, durationMs, []metrics.Label{
+		{Name: "tool", Value: req.ToolName},
+		{Name: "service_id", Value: serviceID},
+	})
+
+	isError := err != nil
+	if isError {
 		metrics.IncrCounterWithLabels([]string{"tools", "call", "errors"}, 1, []metrics.Label{
 			{Name: "tool", Value: req.ToolName},
 			{Name: "service_id", Value: serviceID},
 		})
 	}
-	logging.GetLogger().Info("Tool execution completed", "result_type", fmt.Sprintf("%T", result), "result_value", result)
+
+	// Logging: Prepare result string for logging (truncated)
+	resultStr := fmt.Sprintf("%v", result)
+	if len(resultStr) > 1000 {
+		resultStr = resultStr[:1000] + "...(truncated)"
+	}
+
+	logging.GetLogger().Info("Tool execution completed",
+		"log_type", "tool_execution",
+		"tool_name", req.ToolName,
+		"input", inputJSON,
+		"output", resultStr,
+		"duration", duration.String(),
+		"is_error", isError,
+		"service_id", serviceID,
+	)
 
 	if err != nil {
 		return nil, err

@@ -39,6 +39,13 @@ export interface LogEntry {
   level: LogLevel
   message: string
   source?: string
+  // Enhanced fields for Tool Executions
+  type?: string // "general" or "tool_execution"
+  tool_name?: string
+  input?: string
+  output?: string
+  duration?: string
+  is_error?: boolean
   // Optimization: Pre-computed lowercase string for search performance
   searchStr?: string
   // Optimization: Pre-computed formatted time string to avoid repeated Date parsing
@@ -57,6 +64,43 @@ const getLevelColor = (level: LogLevel) => {
 
 // Optimization: Memoize LogRow to prevent unnecessary re-renders when list updates
 const LogRow = React.memo(({ log }: { log: LogEntry }) => {
+  // Render specialized row for tool execution
+  if (log.type === "tool_execution") {
+    return (
+      <div
+        className="group flex flex-col gap-2 bg-white/5 hover:bg-white/10 p-3 rounded-md transition-colors border border-white/5 mb-2"
+        style={{ contentVisibility: 'auto', containIntrinsicSize: '0 100px' } as React.CSSProperties}
+      >
+        <div className="flex items-center gap-3">
+           <span className="text-muted-foreground whitespace-nowrap opacity-50 text-xs">
+            {log.formattedTime || new Date(log.timestamp).toLocaleTimeString()}
+          </span>
+           <span className={cn("font-bold text-xs px-2 py-0.5 rounded-full bg-opacity-20", log.is_error ? "bg-red-500 text-red-400" : "bg-green-500 text-green-400")}>
+            {log.is_error ? "ERROR" : "SUCCESS"}
+          </span>
+          <span className="font-semibold text-cyan-400 text-sm">
+            {log.tool_name}
+          </span>
+          <span className="text-muted-foreground text-xs ml-auto">
+            {log.duration}
+          </span>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs font-mono bg-black/50 p-2 rounded">
+          <div className="overflow-hidden">
+             <div className="text-muted-foreground mb-1 uppercase text-[10px] font-bold">Input</div>
+             <div className="truncate text-gray-400" title={log.input}>{log.input}</div>
+          </div>
+          <div className="overflow-hidden">
+             <div className="text-muted-foreground mb-1 uppercase text-[10px] font-bold">Output</div>
+             <div className="truncate text-gray-300" title={log.output}>{log.output}</div>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  // Standard log row
   return (
     <div
       className="group flex flex-col sm:flex-row sm:items-start gap-1 sm:gap-3 hover:bg-white/5 p-2 sm:p-1 rounded transition-colors break-words border-b border-white/5 sm:border-0"
@@ -154,7 +198,7 @@ export function LogStream() {
         try {
           const newLog: LogEntry = JSON.parse(event.data)
           // Pre-compute search string
-          newLog.searchStr = (newLog.message + " " + (newLog.source || "")).toLowerCase()
+          newLog.searchStr = (newLog.message + " " + (newLog.source || "") + " " + (newLog.tool_name || "")).toLowerCase()
           // Optimization: Pre-compute formatted time to avoid expensive Date parsing during render
           newLog.formattedTime = new Date(newLog.timestamp).toLocaleTimeString()
 
