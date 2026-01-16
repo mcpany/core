@@ -10,7 +10,8 @@ DLP is critical for preventing sensitive data leaks when interacting with LLMs. 
 
 - **Input Redaction**: Scans arguments in `CallToolRequest` for PII.
 - **Output Redaction**: Scans text content in `CallToolResult` for PII.
-- **Configurable Rules**: Define what patterns to look for (e.g., Credit Card numbers, SSN, Email addresses).
+- **Default Patterns**: Automatically redacts Email addresses, Credit Card numbers, and SSNs.
+- **Custom Patterns**: Support for adding custom regex patterns.
 
 ## Configuration
 
@@ -19,15 +20,12 @@ To enable DLP, add the `dlp` section to your configuration:
 ```yaml
 dlp:
   enabled: true
-  rules:
-    - name: "credit_card"
-      pattern: "\\d{4}-\\d{4}-\\d{4}-\\d{4}"
-      replacement: "[REDACTED_CC]"
-    - name: "email"
-      pattern: "[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}"
-      replacement: "[REDACTED_EMAIL]"
+  # Optional: Add custom regex patterns to redact
+  custom_patterns:
+    - "SECRET-[A-Z0-9]+"
+    - "API_KEY_[a-zA-Z0-9]+"
 ```
 
 ## Implementation
 
-The middleware is implemented in `server/pkg/middleware/dlp.go`. It uses regex-based replacement to sanitize data before it reaches the tool (for inputs) or before it returns to the client (for outputs).
+The middleware is implemented in `server/pkg/middleware/dlp.go`. It uses regex-based replacement to sanitize data before it reaches the tool (for inputs) or before it returns to the client (for outputs). All matched sensitive data is replaced with `***REDACTED***`.

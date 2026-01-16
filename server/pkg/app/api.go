@@ -52,6 +52,9 @@ func (a *Application) createAPIHandler(store storage.Storage) http.Handler {
 		w.WriteHeader(http.StatusOK)
 		_, _ = w.Write([]byte("OK"))
 	})
+	// Dashboard Health API
+	mux.HandleFunc("/dashboard/health", a.handleDashboardHealth(store))
+
 	// Doctor API
 	doctor := health.NewDoctor()
 	doctor.AddCheck("configuration", a.configHealthCheck)
@@ -938,4 +941,88 @@ func isUnsafeConfig(service *configv1.UpstreamServiceConfig) bool {
 		return true
 	}
 	return false
+}
+
+func (a *Application) handleDashboardHealth(store storage.Storage) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodGet {
+			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+			return
+		}
+
+		var services []*configv1.UpstreamServiceConfig
+		var err error
+		if a.ServiceRegistry != nil {
+			services, err = a.ServiceRegistry.GetAllServices()
+		} else {
+			services, err = store.ListServices(r.Context())
+		}
+		if err != nil {
+			logging.GetLogger().Error("failed to list services", "error", err)
+			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+			return
+		}
+
+		type ServiceHealth struct {
+			ID      string `json:"id"`
+			Name    string `json:"name"`
+			Status  string `json:"status"` // healthy, degraded, unhealthy, inactive
+			Message string `json:"message,omitempty"`
+		}
+
+		var healths []ServiceHealth
+
+		for _, svc := range services {
+			h := ServiceHealth{
+				ID:     svc.GetId(),
+				Name:   svc.GetName(),
+				Status: "healthy",
+			}
+
+			if svc.GetDisable() {
+				h.Status = "inactive"
+			} else {
+				// Check for errors in registry
+				// Note: ServiceRegistry stores errors by ID or Name
+				// We prefer ID
+				var errMsg string
+				var ok bool
+
+				if a.ServiceRegistry != nil {
+					if svc.GetId() != "" {
+						errMsg, ok = a.ServiceRegistry.GetServiceError(svc.GetId())
+					}
+					if !ok && svc.GetSanitizedName() != "" {
+						errMsg, ok = a.ServiceRegistry.GetServiceError(svc.GetSanitizedName())
+					}
+				}
+
+				if ok {
+					h.Status = "unhealthy"
+					h.Message = errMsg
+				} else {
+					// Check if tool manager has it?
+					// If it's enabled but not in tool manager, it might be initializing or failed silently?
+					// Actually, ServiceRegistry.GetAllServices returns config.
+					// We can check a.ToolManager.ListServices() to see if it's active.
+					active := false
+					for _, info := range a.ToolManager.ListServices() {
+						if info.Name == svc.GetName() {
+							active = true
+							break
+						}
+					}
+					if !active && !svc.GetDisable() {
+						// It should be active but isn't.
+						h.Status = "degraded"
+						h.Message = "Service enabled but not active (initializing?)"
+					}
+				}
+			}
+			healths = append(healths, h)
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		_ = json.NewEncoder(w).Encode(healths)
+	}
 }
