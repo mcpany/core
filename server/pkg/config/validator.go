@@ -412,6 +412,10 @@ func validateServiceConfig(service *configv1.UpstreamServiceConfig) error {
 		return validateGraphQLService(graphqlService)
 	} else if webrtcService := service.GetWebrtcService(); webrtcService != nil {
 		return validateWebrtcService(webrtcService)
+	} else if filesystemService := service.GetFilesystemService(); filesystemService != nil {
+		return validateFilesystemService(filesystemService)
+	} else if vectorService := service.GetVectorService(); vectorService != nil {
+		return validateVectorService(vectorService)
 	}
 	return nil
 }
@@ -494,6 +498,15 @@ func validateOpenAPIService(openapiService *configv1.OpenapiUpstreamService) err
 func validateCommandLineService(commandLineService *configv1.CommandLineUpstreamService) error {
 	if commandLineService.GetCommand() == "" {
 		return fmt.Errorf("command_line_service has empty command")
+	}
+
+	if commandLineService.GetWorkingDirectory() != "" {
+		if err := validation.IsAllowedPath(commandLineService.GetWorkingDirectory()); err != nil {
+			return fmt.Errorf("command_line_service has insecure working_directory %q: %w", commandLineService.GetWorkingDirectory(), err)
+		}
+		if err := validateDirectoryExists(commandLineService.GetWorkingDirectory()); err != nil {
+			return fmt.Errorf("command_line_service working_directory validation failed: %w", err)
+		}
 	}
 
 	// Only validate command existence if not running in a container
@@ -645,6 +658,84 @@ func validateWebrtcService(webrtcService *configv1.WebrtcUpstreamService) error 
 	u, _ := url.Parse(webrtcService.GetAddress())
 	if u.Scheme != schemeHTTP && u.Scheme != schemeHTTPS {
 		return fmt.Errorf("invalid webrtc address scheme: %s", u.Scheme)
+	}
+	return nil
+}
+
+func validateFilesystemService(fs *configv1.FilesystemUpstreamService) error {
+	if len(fs.GetRootPaths()) == 0 {
+		return fmt.Errorf("filesystem service has no root_paths")
+	}
+
+	for virtualPath, localPath := range fs.GetRootPaths() {
+		if virtualPath == "" {
+			return fmt.Errorf("filesystem service has empty virtual path")
+		}
+		if localPath == "" {
+			return fmt.Errorf("filesystem service has empty local path for %q", virtualPath)
+		}
+		if err := validation.IsAllowedPath(localPath); err != nil {
+			return fmt.Errorf("filesystem service root_path %q is not secure: %w", localPath, err)
+		}
+		if err := validateDirectoryExists(localPath); err != nil {
+			return fmt.Errorf("filesystem service root_path %q validation failed: %w", localPath, err)
+		}
+	}
+
+	// Validate specific filesystem types
+	switch fs.WhichFilesystemType() {
+	case configv1.FilesystemUpstreamService_Http_case:
+		if fs.GetHttp().GetEndpoint() == "" {
+			return fmt.Errorf("filesystem service http endpoint is empty")
+		}
+		if !validation.IsValidURL(fs.GetHttp().GetEndpoint()) {
+			return fmt.Errorf("filesystem service http endpoint is invalid")
+		}
+	case configv1.FilesystemUpstreamService_Zip_case:
+		if fs.GetZip().GetFilePath() == "" {
+			return fmt.Errorf("filesystem service zip file_path is empty")
+		}
+		if err := validation.IsAllowedPath(fs.GetZip().GetFilePath()); err != nil {
+			return fmt.Errorf("filesystem service zip file_path is insecure: %w", err)
+		}
+		if err := validateFileExists(fs.GetZip().GetFilePath(), ""); err != nil {
+			return fmt.Errorf("filesystem service zip file_path validation failed: %w", err)
+		}
+	case configv1.FilesystemUpstreamService_Sftp_case:
+		sftp := fs.GetSftp()
+		if sftp.GetAddress() == "" {
+			return fmt.Errorf("filesystem service sftp address is empty")
+		}
+		if sftp.GetKeyPath() != "" {
+			if err := validation.IsAllowedPath(sftp.GetKeyPath()); err != nil {
+				return fmt.Errorf("filesystem service sftp key_path is insecure: %w", err)
+			}
+			if err := validateFileExists(sftp.GetKeyPath(), ""); err != nil {
+				return fmt.Errorf("filesystem service sftp key_path validation failed: %w", err)
+			}
+		}
+	}
+
+	return nil
+}
+
+func validateVectorService(vector *configv1.VectorUpstreamService) error {
+	switch vector.WhichVectorDbType() {
+	case configv1.VectorUpstreamService_Pinecone_case:
+		pinecone := vector.GetPinecone()
+		if pinecone.GetApiKey() == "" {
+			return fmt.Errorf("pinecone api_key is empty")
+		}
+		if pinecone.GetIndexName() == "" {
+			return fmt.Errorf("pinecone index_name is empty")
+		}
+	case configv1.VectorUpstreamService_Milvus_case:
+		milvus := vector.GetMilvus()
+		if milvus.GetAddress() == "" {
+			return fmt.Errorf("milvus address is empty")
+		}
+	default:
+		return fmt.Errorf("vector service type not specified")
 	}
 	return nil
 }
