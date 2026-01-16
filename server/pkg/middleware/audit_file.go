@@ -9,6 +9,8 @@ import (
 	"fmt"
 	"os"
 	"sync"
+
+	"github.com/mcpany/core/server/pkg/validation"
 )
 
 // FileAuditStore writes audit logs to a file or stdout.
@@ -22,6 +24,9 @@ func NewFileAuditStore(path string) (*FileAuditStore, error) {
 	var f *os.File
 	var err error
 	if path != "" {
+		if err := validation.IsAllowedPath(path); err != nil {
+			return nil, fmt.Errorf("audit log file path not allowed: %w", err)
+		}
 		f, err = os.OpenFile(path, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644) //nolint:gosec
 		if err != nil {
 			return nil, fmt.Errorf("failed to open audit log file: %w", err)
