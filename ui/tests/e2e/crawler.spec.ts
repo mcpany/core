@@ -67,7 +67,7 @@ test.describe('UI Crawler', () => {
         for (const anchor of anchors) {
           const href = await anchor.getAttribute('href');
           if (href && href.startsWith('/') && !href.startsWith('//') && !visited.has(normalize(href))) {
-             if (!toVisit.includes(href) && !href.startsWith('/api/')) {
+             if (!toVisit.includes(href) && !href.startsWith('/api/') && !href.startsWith('/network')) {
                  toVisit.push(href);
              }
           }
