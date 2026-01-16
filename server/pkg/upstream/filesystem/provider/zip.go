@@ -10,6 +10,7 @@ import (
 	"path/filepath"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
+	"github.com/mcpany/core/server/pkg/validation"
 	"github.com/spf13/afero"
 	"github.com/spf13/afero/zipfs"
 )
@@ -22,6 +23,10 @@ type ZipProvider struct {
 
 // NewZipProvider creates a new ZipProvider from the given configuration.
 func NewZipProvider(config *configv1.ZipFs) (*ZipProvider, error) {
+	if err := validation.IsAllowedPath(config.GetFilePath()); err != nil {
+		return nil, fmt.Errorf("zip file path not allowed: %w", err)
+	}
+
 	f, err := os.Open(config.GetFilePath())
 	if err != nil {
 		return nil, fmt.Errorf("failed to open zip file: %w", err)

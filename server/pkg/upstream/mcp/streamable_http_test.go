@@ -401,9 +401,10 @@ func TestUpstream_Register(t *testing.T) {
 
 		wg.Wait()
 
-		assert.Equal(t, "/bin/sh", capturedCmd)
-		expectedArgs := []string{"/bin/sh", "-c", "exec node"}
-		assert.Equal(t, expectedArgs, capturedArgs)
+		// cmd.Path resolves to the absolute path of "node"
+		assert.Contains(t, capturedCmd, "node")
+		// Direct execution, so args are just ["node"] (or absolute path)
+		assert.Contains(t, capturedArgs[0], "node")
 	})
 
 	t.Run("successful registration with http", func(t *testing.T) {
@@ -615,8 +616,12 @@ func TestBuildCommandFromStdioConfig(t *testing.T) {
 		stdio.SetArgs([]string{"-l", "-a"})
 		cmd, err := buildCommandFromStdioConfig(context.Background(), stdio, false)
 		assert.NoError(t, err)
-		assert.Equal(t, "/bin/sh", cmd.Path)
-		assert.Equal(t, []string{"/bin/sh", "-c", "exec ls -l -a"}, cmd.Args)
+		assert.Contains(t, cmd.Path, "ls")
+		// The first arg in cmd.Args is usually the command name (or path)
+		assert.Equal(t, 3, len(cmd.Args))
+		assert.Contains(t, cmd.Args[0], "ls")
+		assert.Equal(t, "-l", cmd.Args[1])
+		assert.Equal(t, "-a", cmd.Args[2])
 	})
 
 	t.Run("with setup commands", func(t *testing.T) {
@@ -640,14 +645,15 @@ func TestBuildCommandFromStdioConfig(t *testing.T) {
 		assert.Equal(t, []string{"sudo", "docker", "run", "hello-world"}, cmd.Args)
 	})
 
-	t.Run("arguments with shell metacharacters should be quoted", func(t *testing.T) {
+	t.Run("arguments with shell metacharacters should be passed directly", func(t *testing.T) {
 		stdio := &configv1.McpStdioConnection{}
 		stdio.SetCommand("echo")
 		stdio.SetArgs([]string{"hello; date"})
 		cmd, err := buildCommandFromStdioConfig(context.Background(), stdio, false)
 		assert.NoError(t, err)
-		assert.Equal(t, "/bin/sh", cmd.Path)
-		assert.Equal(t, []string{"/bin/sh", "-c", "exec echo 'hello; date'"}, cmd.Args)
+		assert.Contains(t, cmd.Path, "echo")
+		assert.Equal(t, 2, len(cmd.Args))
+		assert.Equal(t, "hello; date", cmd.Args[1])
 	})
 
 	t.Run("attempt complex injection in args", func(t *testing.T) {
@@ -657,10 +663,11 @@ func TestBuildCommandFromStdioConfig(t *testing.T) {
 		stdio.SetArgs([]string{"foo'; date; echo 'bar"})
 		cmd, err := buildCommandFromStdioConfig(context.Background(), stdio, false)
 		assert.NoError(t, err)
-		assert.Equal(t, "/bin/sh", cmd.Path)
-		// shellescape should escape the single quote
-		// Expected: exec echo 'foo'"'"'; date; echo '"'"'bar'
-		assert.Equal(t, []string{"/bin/sh", "-c", "exec echo 'foo'\"'\"'; date; echo '\"'\"'bar'"}, cmd.Args)
+		// Now we use direct execution, so no shell wrapping
+		assert.Contains(t, cmd.Path, "echo")
+		// Args should be passed as is, exec will handle them safely
+		assert.Equal(t, 2, len(cmd.Args))
+		assert.Equal(t, "foo'; date; echo 'bar", cmd.Args[1])
 	})
 }
 
