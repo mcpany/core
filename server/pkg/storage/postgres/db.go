@@ -8,6 +8,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"time"
 
 	_ "github.com/lib/pq" // Register postgres driver
 )
@@ -28,6 +29,13 @@ func NewDBWithDriver(driver, dsn string) (*DB, error) {
 	if err != nil {
 		return nil, fmt.Errorf("failed to open postgres db: %w", err)
 	}
+
+	// ⚡ Bolt Optimization: Set sensible connection pool defaults.
+	// Default MaxOpenConns is 0 (unlimited), which can exhaust DB resources.
+	// Default MaxIdleConns is 2, which causes high connection churn.
+	db.SetMaxOpenConns(25)
+	db.SetMaxIdleConns(25)
+	db.SetConnMaxLifetime(5 * time.Minute)
 
 	if err := db.PingContext(context.Background()); err != nil {
 		_ = db.Close()
