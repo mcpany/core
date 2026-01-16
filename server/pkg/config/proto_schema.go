@@ -24,22 +24,34 @@ type schemaGenerator struct {
 //   *jsonschema.Schema: The generated JSON schema.
 //   error: An error if the schema generation fails.
 func GenerateSchemaFromProto(msg protoreflect.Message) (*jsonschema.Schema, error) {
+	schemaMap := GenerateSchemaMapFromProto(msg)
+	return CompileSchema(schemaMap)
+}
+
+// GenerateSchemaMapFromProto generates a raw JSON schema map from a protobuf message using reflection.
+// This is useful if you want to export the schema as JSON.
+//
+// Parameters:
+//   msg: The protobuf message to generate the schema from.
+//
+// Returns:
+//   map[string]interface{}: The generated JSON schema map.
+func GenerateSchemaMapFromProto(msg protoreflect.Message) map[string]interface{} {
 	gen := &schemaGenerator{
 		defs: make(map[string]interface{}),
 	}
 
 	rootRef := gen.getOrAddDefinition(msg.Descriptor())
 
-	schemaMap := map[string]interface{}{
+	return map[string]interface{}{
 		"$schema": "https://json-schema.org/draft/2020-12/schema",
 		"$defs":   gen.defs,
 		"$ref":    rootRef["$ref"],
 	}
-
-	return compileSchema(schemaMap)
 }
 
-func compileSchema(schemaMap map[string]interface{}) (*jsonschema.Schema, error) {
+// CompileSchema compiles a raw JSON schema map into a jsonschema.Schema object.
+func CompileSchema(schemaMap map[string]interface{}) (*jsonschema.Schema, error) {
 	compiler := jsonschema.NewCompiler()
 	url := "config.schema.json"
 
