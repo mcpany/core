@@ -48,26 +48,31 @@ func fieldsToProperties(fields protoreflect.FieldDescriptors, depth int) (*struc
 
 	for i := 0; i < fields.Len(); i++ {
 		field := fields.Get(i)
-		schema := map[string]interface{}{
-			"type": "string", // Default
+
+		if field.IsMap() {
+			// Handle map fields: convert to object with additionalProperties
+			mapValueField := field.MapValue()
+			valueSchema, err := fieldToSchema(mapValueField, depth)
+			if err != nil {
+				return nil, fmt.Errorf("failed to process map value for field %s: %w", field.Name(), err)
+			}
+
+			schema := map[string]interface{}{
+				"type":                 TypeObject,
+				"additionalProperties": valueSchema,
+			}
+
+			structValue, err := structpb.NewStruct(schema)
+			if err != nil {
+				return nil, fmt.Errorf("failed to create struct for field %s: %w", field.Name(), err)
+			}
+			properties.Fields[string(field.Name())] = structpb.NewStructValue(structValue)
+			continue
 		}
 
-		switch field.Kind() {
-		case protoreflect.DoubleKind, protoreflect.FloatKind:
-			schema["type"] = TypeNumber
-		case protoreflect.Int32Kind, protoreflect.Int64Kind, protoreflect.Sint32Kind, protoreflect.Sint64Kind,
-			protoreflect.Uint32Kind, protoreflect.Uint64Kind, protoreflect.Fixed32Kind, protoreflect.Fixed64Kind,
-			protoreflect.Sfixed32Kind, protoreflect.Sfixed64Kind:
-			schema["type"] = TypeInteger
-		case protoreflect.BoolKind:
-			schema["type"] = TypeBoolean
-		case protoreflect.MessageKind:
-			schema["type"] = TypeObject
-			nestedProps, err := fieldsToProperties(field.Message().Fields(), depth+1)
-			if err != nil {
-				return nil, fmt.Errorf("failed to process nested message %s: %w", field.Name(), err)
-			}
-			schema["properties"] = nestedProps.AsMap()
+		schema, err := fieldToSchema(field, depth)
+		if err != nil {
+			return nil, err
 		}
 
 		if field.IsList() {
@@ -89,6 +94,31 @@ func fieldsToProperties(fields protoreflect.FieldDescriptors, depth int) (*struc
 	}
 
 	return properties, nil
+}
+
+func fieldToSchema(field protoreflect.FieldDescriptor, depth int) (map[string]interface{}, error) {
+	schema := map[string]interface{}{
+		"type": "string", // Default
+	}
+
+	switch field.Kind() {
+	case protoreflect.DoubleKind, protoreflect.FloatKind:
+		schema["type"] = TypeNumber
+	case protoreflect.Int32Kind, protoreflect.Int64Kind, protoreflect.Sint32Kind, protoreflect.Sint64Kind,
+		protoreflect.Uint32Kind, protoreflect.Uint64Kind, protoreflect.Fixed32Kind, protoreflect.Fixed64Kind,
+		protoreflect.Sfixed32Kind, protoreflect.Sfixed64Kind:
+		schema["type"] = TypeInteger
+	case protoreflect.BoolKind:
+		schema["type"] = TypeBoolean
+	case protoreflect.MessageKind, protoreflect.GroupKind:
+		schema["type"] = TypeObject
+		nestedProps, err := fieldsToProperties(field.Message().Fields(), depth+1)
+		if err != nil {
+			return nil, fmt.Errorf("failed to process nested message %s: %w", field.Name(), err)
+		}
+		schema["properties"] = nestedProps.AsMap()
+	}
+	return schema, nil
 }
 
 // ConfigParameter an interface for config parameter schemas.
