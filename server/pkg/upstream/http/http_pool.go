@@ -72,10 +72,15 @@ var NewHTTPPool = func(
 	baseTransport := &http.Transport{
 		TLSClientConfig: tlsConfig,
 		DialContext: (&net.Dialer{
-			Timeout: 30 * time.Second,
+			Timeout:   30 * time.Second,
+			KeepAlive: 30 * time.Second,
 		}).DialContext,
-		MaxIdleConns:        maxSize,
-		MaxIdleConnsPerHost: maxSize,
+		ForceAttemptHTTP2:     true,
+		MaxIdleConns:          maxSize,
+		MaxIdleConnsPerHost:   maxSize,
+		IdleConnTimeout:       90 * time.Second,
+		TLSHandshakeTimeout:   10 * time.Second,
+		ExpectContinueTimeout: 1 * time.Second,
 	}
 
 	sharedClient := &http.Client{

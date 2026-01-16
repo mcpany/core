@@ -147,3 +147,30 @@ func TestHTTPPool_KeepAliveEnabled(t *testing.T) {
 		t.Log("Transport is wrapped (likely by otelhttp), skipping direct *http.Transport assertions")
 	}
 }
+
+func TestHTTPPool_TransportOptimizations(t *testing.T) {
+	config := &configv1.UpstreamServiceConfig{}
+
+	p, err := NewHTTPPool(1, 1, 10, config)
+	require.NoError(t, err)
+	require.NotNil(t, p)
+	defer func() { _ = p.Close() }()
+
+	// Type assert to the concrete type to access the transport field
+	// This works because we are in the same package
+	concretePool, ok := p.(*httpPool)
+	require.True(t, ok, "Pool should be of type *httpPool")
+
+	transport := concretePool.transport
+	require.NotNil(t, transport)
+
+	// Verify optimizations are applied
+
+	// ForceAttemptHTTP2 should be true to enable H2C support
+	assert.True(t, transport.ForceAttemptHTTP2, "ForceAttemptHTTP2 should be true")
+
+	// Timeouts should be set to robust defaults
+	assert.Equal(t, 90*time.Second, transport.IdleConnTimeout, "IdleConnTimeout should be 90s")
+	assert.Equal(t, 10*time.Second, transport.TLSHandshakeTimeout, "TLSHandshakeTimeout should be 10s")
+	assert.Equal(t, 1*time.Second, transport.ExpectContinueTimeout, "ExpectContinueTimeout should be 1s")
+}
