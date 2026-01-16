@@ -24,9 +24,8 @@ import (
 // TestCUJ_Lifecycle_And_Config tests lifecycle events and config changes.
 // Using Filesystem upstream to avoid dependency on external binaries or containers.
 func TestCUJ_Lifecycle_And_Config(t *testing.T) {
-	if os.Getenv("E2E_DOCKER") != "true" {
-		t.Skip("Skipping E2E Docker test. Set E2E_DOCKER=true to run.")
-	}
+	// Check for E2E_DOCKER is removed to unskip the test
+
 
 	rootDir, err := os.Getwd()
 	require.NoError(t, err)
