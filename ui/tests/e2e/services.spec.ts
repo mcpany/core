@@ -83,7 +83,8 @@ test.describe('Services Feature', () => {
     await expect(page.getByText(serviceName)).toBeVisible();
 
     const newServiceRow = page.locator('tr').filter({ hasText: serviceName });
-    await newServiceRow.getByRole('button', { name: 'Edit' }).click();
+    await newServiceRow.getByRole('button', { name: 'Open menu' }).click();
+    await page.getByRole('menuitem', { name: 'Edit' }).click();
 
     // Check general tab which is default
     await expect(page.locator('input[id="name"]')).toHaveValue(serviceName);
