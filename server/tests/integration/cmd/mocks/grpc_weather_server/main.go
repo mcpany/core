@@ -68,7 +68,7 @@ func main() {
 	slog.Info("grpc_weather_server: Listening on port", "port", actualPort)
 	if *port == 0 {
 		fmt.Printf("%d\n", actualPort) // Output port for test runner
-		os.Stdout.Sync()
+		_ = os.Stdout.Sync()
 	}
 
 	s := grpc.NewServer()
