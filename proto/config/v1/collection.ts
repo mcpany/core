@@ -7,42 +7,68 @@
 /* eslint-disable */
 import { BinaryReader, BinaryWriter } from "@bufbuild/protobuf/wire";
 import Long from "long";
+import { Authentication } from "./auth";
 import { UpstreamServiceConfig } from "./upstream_service";
 
 export const protobufPackage = "mcpany.config.v1";
 
-export interface UpstreamServiceCollectionShare {
-  services: UpstreamServiceConfig[];
-  version: string;
-  description: string;
+export interface Collection {
   name: string;
+  description: string;
+  version: string;
+  priority: number;
+  httpUrl: string;
+  authentication?: Authentication | undefined;
+  services: UpstreamServiceConfig[];
+  skills: string[];
 }
 
-function createBaseUpstreamServiceCollectionShare(): UpstreamServiceCollectionShare {
-  return { services: [], version: "", description: "", name: "" };
+function createBaseCollection(): Collection {
+  return {
+    name: "",
+    description: "",
+    version: "",
+    priority: 0,
+    httpUrl: "",
+    authentication: undefined,
+    services: [],
+    skills: [],
+  };
 }
 
-export const UpstreamServiceCollectionShare: MessageFns<UpstreamServiceCollectionShare> = {
-  encode(message: UpstreamServiceCollectionShare, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    for (const v of message.services) {
-      UpstreamServiceConfig.encode(v!, writer.uint32(10).fork()).join();
-    }
-    if (message.version !== "") {
-      writer.uint32(18).string(message.version);
+export const Collection: MessageFns<Collection> = {
+  encode(message: Collection, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.name !== "") {
+      writer.uint32(10).string(message.name);
     }
     if (message.description !== "") {
-      writer.uint32(26).string(message.description);
+      writer.uint32(18).string(message.description);
     }
-    if (message.name !== "") {
-      writer.uint32(34).string(message.name);
+    if (message.version !== "") {
+      writer.uint32(26).string(message.version);
+    }
+    if (message.priority !== 0) {
+      writer.uint32(32).int32(message.priority);
+    }
+    if (message.httpUrl !== "") {
+      writer.uint32(42).string(message.httpUrl);
+    }
+    if (message.authentication !== undefined) {
+      Authentication.encode(message.authentication, writer.uint32(50).fork()).join();
+    }
+    for (const v of message.services) {
+      UpstreamServiceConfig.encode(v!, writer.uint32(58).fork()).join();
+    }
+    for (const v of message.skills) {
+      writer.uint32(66).string(v!);
     }
     return writer;
   },
 
-  decode(input: BinaryReader | Uint8Array, length?: number): UpstreamServiceCollectionShare {
+  decode(input: BinaryReader | Uint8Array, length?: number): Collection {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseUpstreamServiceCollectionShare();
+    const message = createBaseCollection();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -51,7 +77,7 @@ export const UpstreamServiceCollectionShare: MessageFns<UpstreamServiceCollectio
             break;
           }
 
-          message.services.push(UpstreamServiceConfig.decode(reader, reader.uint32()));
+          message.name = reader.string();
           continue;
         }
         case 2: {
@@ -59,7 +85,7 @@ export const UpstreamServiceCollectionShare: MessageFns<UpstreamServiceCollectio
             break;
           }
 
-          message.version = reader.string();
+          message.description = reader.string();
           continue;
         }
         case 3: {
@@ -67,15 +93,47 @@ export const UpstreamServiceCollectionShare: MessageFns<UpstreamServiceCollectio
             break;
           }
 
-          message.description = reader.string();
+          message.version = reader.string();
           continue;
         }
         case 4: {
-          if (tag !== 34) {
+          if (tag !== 32) {
             break;
           }
 
-          message.name = reader.string();
+          message.priority = reader.int32();
+          continue;
+        }
+        case 5: {
+          if (tag !== 42) {
+            break;
+          }
+
+          message.httpUrl = reader.string();
+          continue;
+        }
+        case 6: {
+          if (tag !== 50) {
+            break;
+          }
+
+          message.authentication = Authentication.decode(reader, reader.uint32());
+          continue;
+        }
+        case 7: {
+          if (tag !== 58) {
+            break;
+          }
+
+          message.services.push(UpstreamServiceConfig.decode(reader, reader.uint32()));
+          continue;
+        }
+        case 8: {
+          if (tag !== 66) {
+            break;
+          }
+
+          message.skills.push(reader.string());
           continue;
         }
       }
@@ -87,45 +145,65 @@ export const UpstreamServiceCollectionShare: MessageFns<UpstreamServiceCollectio
     return message;
   },
 
-  fromJSON(object: any): UpstreamServiceCollectionShare {
+  fromJSON(object: any): Collection {
     return {
+      name: isSet(object.name) ? globalThis.String(object.name) : "",
+      description: isSet(object.description) ? globalThis.String(object.description) : "",
+      version: isSet(object.version) ? globalThis.String(object.version) : "",
+      priority: isSet(object.priority) ? globalThis.Number(object.priority) : 0,
+      httpUrl: isSet(object.http_url) ? globalThis.String(object.http_url) : "",
+      authentication: isSet(object.authentication) ? Authentication.fromJSON(object.authentication) : undefined,
       services: globalThis.Array.isArray(object?.services)
         ? object.services.map((e: any) => UpstreamServiceConfig.fromJSON(e))
         : [],
-      version: isSet(object.version) ? globalThis.String(object.version) : "",
-      description: isSet(object.description) ? globalThis.String(object.description) : "",
-      name: isSet(object.name) ? globalThis.String(object.name) : "",
+      skills: globalThis.Array.isArray(object?.skills) ? object.skills.map((e: any) => globalThis.String(e)) : [],
     };
   },
 
-  toJSON(message: UpstreamServiceCollectionShare): unknown {
+  toJSON(message: Collection): unknown {
     const obj: any = {};
-    if (message.services?.length) {
-      obj.services = message.services.map((e) => UpstreamServiceConfig.toJSON(e));
-    }
-    if (message.version !== "") {
-      obj.version = message.version;
+    if (message.name !== "") {
+      obj.name = message.name;
     }
     if (message.description !== "") {
       obj.description = message.description;
     }
-    if (message.name !== "") {
-      obj.name = message.name;
+    if (message.version !== "") {
+      obj.version = message.version;
+    }
+    if (message.priority !== 0) {
+      obj.priority = Math.round(message.priority);
+    }
+    if (message.httpUrl !== "") {
+      obj.http_url = message.httpUrl;
+    }
+    if (message.authentication !== undefined) {
+      obj.authentication = Authentication.toJSON(message.authentication);
+    }
+    if (message.services?.length) {
+      obj.services = message.services.map((e) => UpstreamServiceConfig.toJSON(e));
+    }
+    if (message.skills?.length) {
+      obj.skills = message.skills;
     }
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<UpstreamServiceCollectionShare>, I>>(base?: I): UpstreamServiceCollectionShare {
-    return UpstreamServiceCollectionShare.fromPartial(base ?? ({} as any));
+  create<I extends Exact<DeepPartial<Collection>, I>>(base?: I): Collection {
+    return Collection.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<UpstreamServiceCollectionShare>, I>>(
-    object: I,
-  ): UpstreamServiceCollectionShare {
-    const message = createBaseUpstreamServiceCollectionShare();
-    message.services = object.services?.map((e) => UpstreamServiceConfig.fromPartial(e)) || [];
-    message.version = object.version ?? "";
-    message.description = object.description ?? "";
+  fromPartial<I extends Exact<DeepPartial<Collection>, I>>(object: I): Collection {
+    const message = createBaseCollection();
     message.name = object.name ?? "";
+    message.description = object.description ?? "";
+    message.version = object.version ?? "";
+    message.priority = object.priority ?? 0;
+    message.httpUrl = object.httpUrl ?? "";
+    message.authentication = (object.authentication !== undefined && object.authentication !== null)
+      ? Authentication.fromPartial(object.authentication)
+      : undefined;
+    message.services = object.services?.map((e) => UpstreamServiceConfig.fromPartial(e)) || [];
+    message.skills = object.skills?.map((e) => e) || [];
     return message;
   },
 };

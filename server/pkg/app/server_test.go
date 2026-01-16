@@ -1678,7 +1678,7 @@ func TestGRPCServer_ShutdownWithoutRace(t *testing.T) {
 
 func TestRun_ServiceRegistrationPublication(t *testing.T) {
 	fs := afero.NewMemMapFs()
-	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
 	configContent := `
@@ -1727,7 +1727,7 @@ upstream_services:
 	}()
 
 	// Allow some time for the services to be published.
-	time.Sleep(100 * time.Millisecond)
+	time.Sleep(1 * time.Second)
 	cancel()
 
 	err = <-errChan

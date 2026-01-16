@@ -60,7 +60,7 @@ func TestUpstreamServiceManager_LoadAndMergeServices_GitHub(t *testing.T) {
 		g.httpClient = &http.Client{}
 		return g, nil
 	}
-	collection := &configv1.UpstreamServiceCollection{}
+	collection := &configv1.Collection{}
 	collection.SetName("github-dir")
 	collection.SetHttpUrl("https://github.com/mcpany/core/tree/main/examples")
 	auth := &configv1.Authentication{}
@@ -73,7 +73,7 @@ func TestUpstreamServiceManager_LoadAndMergeServices_GitHub(t *testing.T) {
 	}
 	collection.SetAuthentication(auth)
 	config := &configv1.McpAnyServerConfig{}
-	config.SetUpstreamServiceCollections([]*configv1.UpstreamServiceCollection{collection})
+	config.SetCollections([]*configv1.Collection{collection})
 
 	loadedServices, err := manager.LoadAndMergeServices(context.Background(), config)
 	require.NoError(t, err)

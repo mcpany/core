@@ -32,7 +32,7 @@ The `McpAnyServerConfig` is the top-level configuration object for the entire MC
 | ------------------------------ | ------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------ |
 | `global_settings`              | `GlobalSettings`                     | Defines server-wide operational parameters, such as the bind address and log level.                                                  |
 | `upstream_services`            | `repeated UpstreamServiceConfig`     | A list of all configured upstream services that MCP Any will proxy to. Each service has its own specific configuration and policies. |
-| `upstream_service_collections` | `repeated UpstreamServiceCollection` | A list of upstream service collections to load from remote sources.                                                                  |
+| `upstream_service_collections` | `repeated Collection` | A list of upstream service collections to load from remote sources.                                                                  |
 
 ### Use Case and Example
 
@@ -52,7 +52,7 @@ upstream_services:
       address: "https://api.weather.com"
 ```
 
-### `UpstreamServiceCollection`
+### `Collection`
 
 Defines a collection of upstream services that can be loaded from a remote source.
 

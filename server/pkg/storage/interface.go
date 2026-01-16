@@ -73,11 +73,11 @@ type Storage interface {
 
 	// Service Collections
 	// ListServiceCollections retrieves all service collections.
-	ListServiceCollections(ctx context.Context) ([]*configv1.UpstreamServiceCollectionShare, error)
+	ListServiceCollections(ctx context.Context) ([]*configv1.Collection, error)
 	// GetServiceCollection retrieves a service collection by name.
-	GetServiceCollection(ctx context.Context, name string) (*configv1.UpstreamServiceCollectionShare, error)
+	GetServiceCollection(ctx context.Context, name string) (*configv1.Collection, error)
 	// SaveServiceCollection saves a service collection.
-	SaveServiceCollection(ctx context.Context, collection *configv1.UpstreamServiceCollectionShare) error
+	SaveServiceCollection(ctx context.Context, collection *configv1.Collection) error
 	// DeleteServiceCollection deletes a service collection by name.
 	DeleteServiceCollection(ctx context.Context, name string) error
 

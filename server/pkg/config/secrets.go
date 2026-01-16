@@ -73,7 +73,7 @@ func StripSecretsFromProfile(profile *configv1.ProfileDefinition) {
 }
 
 // StripSecretsFromCollection removes sensitive information from the service collection.
-func StripSecretsFromCollection(collection *configv1.UpstreamServiceCollectionShare) {
+func StripSecretsFromCollection(collection *configv1.Collection) {
 	if collection == nil {
 		return
 	}

@@ -50,7 +50,7 @@ func TestStripSecretsFromProfile(t *testing.T) {
 }
 
 func TestStripSecretsFromCollection(t *testing.T) {
-	collection := &configv1.UpstreamServiceCollectionShare{
+	collection := &configv1.Collection{
 		Name: proto.String("test-collection"),
 		Services: []*configv1.UpstreamServiceConfig{
 			{

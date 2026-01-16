@@ -18,97 +18,78 @@ import "proto/config/v1/webhook.proto";
 
 option go_package = "github.com/mcpany/core/proto/config/v1";
 option java_outer_classname = "UpstreamServiceProto";
-// UpstreamServiceCollection defines a collection of upstream services that can be loaded from a remote source.
-message UpstreamServiceCollection {
-  // The name of the collection.
-  string name = 1;
-  // The HTTP URL to load the collection from.
-  string http_url = 2 [json_name = "http_url"];
-  // The priority of the collection. Lower numbers have higher priority.
-  int32 priority = 3;
-  // The authentication to use when fetching the collection.
-  Authentication authentication = 4;
-}
+
 
 // UpstreamServiceConfig is the top-level configuration for a single upstream service
 // that mcpany will proxy. It defines the service's identity, how to connect to it,
 // and policies like authentication, caching, rate limiting, and load balancing.
 message UpstreamServiceConfig {
-  // The full SHA256 hash of the service name, used as a unique identifier.
-  // This ensures that for the same service name, the ID is always the same.
-  string id = 1;
   // The original user-provided name for the upstream service.
   // This name is used for identification, logging, and metrics.
-  string name = 2;
+  string name = 1;
+  // The full SHA256 hash of the service name, used as a unique identifier.
+  // This ensures that for the same service name, the ID is always the same.
+  string id = 2;
   // A sanitized version of the service name, conforming to identifier rules.
   // @inject_tag: yaml:"-"
   //
   // This field is managed internally and should not be set by the user.
-  string sanitized_name = 18 [json_name = "sanitized_name"];
-  // Configuration for the pool of connections to the upstream service.
-  ConnectionPoolConfig connection_pool = 3 [json_name = "connection_pool"];
-  // Authentication configuration for mcpany to use when connecting to the upstream service (outgoing).
-  Authentication upstream_auth = 4 [json_name = "upstream_auth"];
-  reserved upstream_authentication; // Was UpstreamAuthentication
-
-  // Caching configuration to improve performance and reduce load on the upstream.
-  CacheConfig cache = 5;
-  // Rate limiting to protect the upstream service from being overwhelmed.
-  RateLimitConfig rate_limit = 6 [json_name = "rate_limit"];
-  // Strategy for distributing requests among multiple instances of the service.
-  LoadBalancingStrategy load_balancing_strategy = 7 [json_name = "load_balancing_strategy"];
-  // Advanced resiliency features to handle failures gracefully.
-  ResilienceConfig resilience = 8;
-
-  // The specific configuration for the type of upstream service.
-  oneof service_config {
-    McpUpstreamService mcp_service = 9 [json_name = "mcp_service"];
-    HttpUpstreamService http_service = 10 [json_name = "http_service"];
-    GrpcUpstreamService grpc_service = 11 [json_name = "grpc_service"];
-    OpenapiUpstreamService openapi_service = 12 [json_name = "openapi_service"];
-    CommandLineUpstreamService command_line_service = 13 [json_name = "command_line_service"];
-    WebsocketUpstreamService websocket_service = 16 [json_name = "websocket_service"];
-    WebrtcUpstreamService webrtc_service = 17 [json_name = "webrtc_service"];
-    GraphQLUpstreamService graphql_service = 21 [json_name = "graphql_service"];
-    SqlUpstreamService sql_service = 31 [json_name = "sql_service"];
-    FilesystemUpstreamService filesystem_service = 32 [json_name = "filesystem_service"];
-    VectorUpstreamService vector_service = 34 [json_name = "vector_service"];
-  }
-
+  string sanitized_name = 3 [json_name = "sanitized_name"];
   // The version of the upstream service, if known (e.g., "v1.2.3").
-  string version = 14;
+  string version = 4;
+  // The priority of the service. Lower numbers have higher priority.
+  int32 priority = 5;
+  // If true, this upstream service is disabled.
+  bool disable = 6;
+  // If true, automatically convert all API calls to tools.
+  bool auto_discover_tool = 7 [json_name = "auto_discover_tool"];
+  // The configuration error if the service failed validation.
+  // @inject_tag: yaml:"-"
+  string config_error = 8 [json_name = "config_error"];
 
+  // Configuration for the pool of connections to the upstream service.
+  ConnectionPoolConfig connection_pool = 9 [json_name = "connection_pool"];
+  // Authentication configuration for mcpany to use when connecting to the upstream service (outgoing).
+  Authentication upstream_auth = 10 [json_name = "upstream_auth"];
+  // Caching configuration to improve performance and reduce load on the upstream.
+  CacheConfig cache = 11;
+  // Rate limiting to protect the upstream service from being overwhelmed.
+  RateLimitConfig rate_limit = 12 [json_name = "rate_limit"];
+  // Strategy for distributing requests among multiple instances of the service.
+  LoadBalancingStrategy load_balancing_strategy = 13 [json_name = "load_balancing_strategy"];
+  // Advanced resiliency features to handle failures gracefully.
+  ResilienceConfig resilience = 14;
   // Authentication configuration for securing access to this service (incoming).
   Authentication authentication = 15;
 
-  // If true, this upstream service is disabled.
-  bool disable = 19;
-  // The priority of the service. Lower numbers have higher priority.
-  int32 priority = 20;
+  // Policies to control what is exported to the client.
+  ExportPolicy tool_export_policy = 16 [json_name = "tool_export_policy"];
+  ExportPolicy prompt_export_policy = 17 [json_name = "prompt_export_policy"];
+  ExportPolicy resource_export_policy = 18 [json_name = "resource_export_policy"];
+
+  // The specific configuration for the type of upstream service.
+  oneof service_config {
+    McpUpstreamService mcp_service = 19 [json_name = "mcp_service"];
+    HttpUpstreamService http_service = 20 [json_name = "http_service"];
+    GrpcUpstreamService grpc_service = 21 [json_name = "grpc_service"];
+    OpenapiUpstreamService openapi_service = 22 [json_name = "openapi_service"];
+    CommandLineUpstreamService command_line_service = 23 [json_name = "command_line_service"];
+    WebsocketUpstreamService websocket_service = 24 [json_name = "websocket_service"];
+    WebrtcUpstreamService webrtc_service = 25 [json_name = "webrtc_service"];
+    GraphQLUpstreamService graphql_service = 26 [json_name = "graphql_service"];
+    SqlUpstreamService sql_service = 27 [json_name = "sql_service"];
+    FilesystemUpstreamService filesystem_service = 28 [json_name = "filesystem_service"];
+    VectorUpstreamService vector_service = 29 [json_name = "vector_service"];
+  }
 
   // Policy to control which calls can be made.
-  repeated CallPolicy call_policies = 22 [json_name = "call_policies"];
+  repeated CallPolicy call_policies = 30 [json_name = "call_policies"];
   // List of hooks to execute before the call.
-  repeated CallHook pre_call_hooks = 23 [json_name = "pre_call_hooks"];
+  repeated CallHook pre_call_hooks = 31 [json_name = "pre_call_hooks"];
   // List of hooks to execute after the call.
-  repeated CallHook post_call_hooks = 24 [json_name = "post_call_hooks"];
-  reserved 25; // profiles
+  repeated CallHook post_call_hooks = 32 [json_name = "post_call_hooks"];
   // The prompts provided by this upstream service.
-  repeated PromptDefinition prompts = 26;
-
-  // Policies to control what is exported to the client.
-  ExportPolicy tool_export_policy = 27 [json_name = "tool_export_policy"];
-  ExportPolicy prompt_export_policy = 28 [json_name = "prompt_export_policy"];
-  ExportPolicy resource_export_policy = 29 [json_name = "resource_export_policy"];
-
-  // If true, automatically convert all API calls to tools.
-  bool auto_discover_tool = 30 [json_name = "auto_discover_tool"];
-
-  reserved 33; // profile_limits
-
-  // The configuration error if the service failed validation.
-  // @inject_tag: yaml:"-"
-  string config_error = 35 [json_name = "config_error"];
+  repeated PromptDefinition prompts = 33;
 }
 
 message CallPolicy {
@@ -472,15 +453,16 @@ message McpUpstreamService {
 message McpStdioConnection {
   // The command and arguments to execute the service.
   string command = 1;
-  repeated string args = 2;
   // The working directory for the command.
-  string working_directory = 3 [json_name = "working_directory"];
+  string working_directory = 2 [json_name = "working_directory"];
   // Optional: The container image to use. If not provided, an image will be
   // selected based on the command.
-  string container_image = 4 [json_name = "container_image"];
+  string container_image = 3 [json_name = "container_image"];
+
+  // Arguments to the command.
+  repeated string args = 4;
   // Optional: A list of commands to run as setup before the main command.
   repeated string setup_commands = 5 [json_name = "setup_commands"];
-  reserved 6;
   // Optional: Environment variables to set in the container.
   map<string, SecretValue> env = 7 [json_name = "env"];
   // Optional: Validation rules for the environment.
@@ -507,9 +489,8 @@ message McpBundleConnection {
   string bundle_path = 1 [json_name = "bundle_path"];
   // Optional: The container image to use. If not provided, a default image will be used.
   string container_image = 2 [json_name = "container_image"];
-  reserved 3;
   // Optional: Environment variables to pass to the container.
-  map<string, SecretValue> env = 4 [json_name = "env"];
+  map<string, SecretValue> env = 3 [json_name = "env"];
 }
 
 // ConnectionPoolConfig defines settings for managing a pool of connections to an upstream service.

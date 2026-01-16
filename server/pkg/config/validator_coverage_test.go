@@ -49,7 +49,7 @@ func TestValidateAuditConfig(t *testing.T) {
 	// Case 3: File storage without path
 	stFile := configv1.AuditConfig_STORAGE_TYPE_FILE
 	err := validateAuditConfig(&configv1.AuditConfig{
-		Enabled: proto.Bool(true),
+		Enabled:     proto.Bool(true),
 		StorageType: &stFile,
 	})
 	assert.Error(t, err)
@@ -58,7 +58,7 @@ func TestValidateAuditConfig(t *testing.T) {
 	// Case 4: Webhook storage without URL
 	stWebhook := configv1.AuditConfig_STORAGE_TYPE_WEBHOOK
 	err = validateAuditConfig(&configv1.AuditConfig{
-		Enabled: proto.Bool(true),
+		Enabled:     proto.Bool(true),
 		StorageType: &stWebhook,
 	})
 	assert.Error(t, err)
@@ -66,9 +66,9 @@ func TestValidateAuditConfig(t *testing.T) {
 
 	// Case 5: Invalid webhook URL
 	err = validateAuditConfig(&configv1.AuditConfig{
-		Enabled: proto.Bool(true),
+		Enabled:     proto.Bool(true),
 		StorageType: &stWebhook,
-		WebhookUrl: proto.String("not-a-url"),
+		WebhookUrl:  proto.String("not-a-url"),
 	})
 	assert.Error(t, err)
 }
@@ -189,7 +189,7 @@ func TestValidateSQLService_Errors(t *testing.T) {
 	// Call with empty query
 	s = &configv1.SqlUpstreamService{
 		Driver: proto.String("postgres"),
-		Dsn: proto.String("postgres://"),
+		Dsn:    proto.String("postgres://"),
 		Calls: map[string]*configv1.SqlCallDefinition{
 			"call1": {Query: proto.String("")},
 		},
@@ -271,7 +271,7 @@ func TestValidateGCSettings(t *testing.T) {
 	// Case 3: Empty path in Paths
 	gc = &configv1.GCSettings{
 		Enabled: proto.Bool(true),
-		Paths: []string{""},
+		Paths:   []string{""},
 	}
 	err = validateGCSettings(gc)
 	assert.Error(t, err)
@@ -279,7 +279,7 @@ func TestValidateGCSettings(t *testing.T) {
 	// Case 4: Relative path
 	gc = &configv1.GCSettings{
 		Enabled: proto.Bool(true),
-		Paths: []string{"relative/path"},
+		Paths:   []string{"relative/path"},
 	}
 	err = validateGCSettings(gc)
 	assert.Error(t, err)
@@ -350,7 +350,7 @@ func TestValidateSQLService_SchemaErrors(t *testing.T) {
 	// Invalid Input Schema
 	s := &configv1.SqlUpstreamService{
 		Driver: proto.String("postgres"),
-		Dsn: proto.String("postgres://"),
+		Dsn:    proto.String("postgres://"),
 		Calls: map[string]*configv1.SqlCallDefinition{
 			"call1": {
 				Query: proto.String("SELECT 1"),
@@ -368,12 +368,140 @@ func TestValidateSQLService_SchemaErrors(t *testing.T) {
 }
 
 func TestValidate_ClientErrors(t *testing.T) {
-    cfg := &configv1.McpAnyServerConfig{
-        GlobalSettings: &configv1.GlobalSettings{
-            ApiKey: proto.String("short"),
-        },
-    }
-    errs := Validate(context.Background(), cfg, Client)
-    assert.NotEmpty(t, errs)
-    assert.Contains(t, errs[0].Err.Error(), "at least 16 characters")
+	cfg := &configv1.McpAnyServerConfig{
+		GlobalSettings: &configv1.GlobalSettings{
+			ApiKey: proto.String("short"),
+		},
+	}
+	errs := Validate(context.Background(), cfg, Client)
+	assert.NotEmpty(t, errs)
+	assert.Contains(t, errs[0].Err.Error(), "at least 16 characters")
+}
+
+func TestValidateCollection_Coverage(t *testing.T) {
+	ctx := context.Background()
+
+	// 1. Invalid Name
+	coll := &configv1.Collection{
+		Name:    proto.String(""),
+		HttpUrl: proto.String("http://example.com/collection.json"),
+	}
+	if err := validateCollection(ctx, coll); err == nil {
+		t.Error("Expected error for empty name")
+	}
+
+	// 2. Invalid URL
+	coll.Name = proto.String("valid-name")
+	coll.HttpUrl = proto.String("not-a-url")
+	if err := validateCollection(ctx, coll); err == nil {
+		t.Error("Expected error for invalid URL")
+	}
+
+	// 3. Invalid Scheme
+	coll.HttpUrl = proto.String("ftp://example.com")
+	if err := validateCollection(ctx, coll); err == nil {
+		t.Error("Expected error for invalid scheme")
+	}
+
+	// 4. Valid with Auth (ApiKey)
+	coll.HttpUrl = proto.String("http://example.com/collection.json")
+	coll.Authentication = &configv1.Authentication{
+		AuthMethod: &configv1.Authentication_ApiKey{
+			ApiKey: &configv1.APIKeyAuth{
+				ParamName: proto.String("x-api-key"),
+				Value: &configv1.SecretValue{
+					Value: &configv1.SecretValue_PlainText{PlainText: "secret"},
+				},
+			},
+		},
+	}
+
+	if err := validateCollection(ctx, coll); err != nil {
+		t.Errorf("Unexpected error: %v", err)
+	}
+
+	// Invalid API Key
+	coll.Authentication = &configv1.Authentication{
+		AuthMethod: &configv1.Authentication_ApiKey{
+			ApiKey: &configv1.APIKeyAuth{
+				ParamName: proto.String(""), // Empty ParamName
+				Value: &configv1.SecretValue{
+					Value: &configv1.SecretValue_PlainText{PlainText: "secret"},
+				},
+			},
+		},
+	}
+	assert.Error(t, validateCollection(ctx, coll))
+
+	coll.Authentication = &configv1.Authentication{
+		AuthMethod: &configv1.Authentication_ApiKey{
+			ApiKey: &configv1.APIKeyAuth{
+				ParamName: proto.String("header"),
+				// Missing Value
+			},
+		},
+	}
+	assert.Error(t, validateCollection(ctx, coll))
+
+	// 5. Valid with Bearer
+	coll.Authentication = &configv1.Authentication{
+		AuthMethod: &configv1.Authentication_BearerToken{
+			BearerToken: &configv1.BearerTokenAuth{
+				Token: &configv1.SecretValue{
+					Value: &configv1.SecretValue_PlainText{PlainText: "token"},
+				},
+			},
+		},
+	}
+
+	if err := validateCollection(ctx, coll); err != nil {
+		t.Errorf("Unexpected error: %v", err)
+	}
+
+	// 7. Valid with mTLS (failing due to missing files, but covering code path)
+	coll.Authentication = &configv1.Authentication{
+		AuthMethod: &configv1.Authentication_Mtls{
+			Mtls: &configv1.MTLSAuth{
+				ClientCertPath: proto.String("/tmp/nonexistent_cert.pem"),
+				ClientKeyPath:  proto.String("/tmp/nonexistent_key.pem"),
+			},
+		},
+	}
+	// Should fail file check
+	if err := validateCollection(ctx, coll); err == nil {
+		t.Error("Expected error for missing mTLS files")
+	}
+
+	// 8. Valid with OAuth2
+	coll.Authentication = &configv1.Authentication{
+		AuthMethod: &configv1.Authentication_Oauth2{
+			Oauth2: &configv1.OAuth2Auth{
+				TokenUrl:     proto.String("https://example.com/token"),
+				ClientId:     &configv1.SecretValue{Value: &configv1.SecretValue_PlainText{PlainText: "id"}},
+				ClientSecret: &configv1.SecretValue{Value: &configv1.SecretValue_PlainText{PlainText: "secret"}},
+			},
+		},
+	}
+	if err := validateCollection(ctx, coll); err != nil {
+		t.Errorf("Unexpected error: %v", err)
+	}
+
+	// Invalid OAuth2
+	coll.Authentication = &configv1.Authentication{
+		AuthMethod: &configv1.Authentication_Oauth2{
+			Oauth2: &configv1.OAuth2Auth{
+				TokenUrl: proto.String(""), // Empty URL
+			},
+		},
+	}
+	assert.Error(t, validateCollection(ctx, coll))
+
+	coll.Authentication = &configv1.Authentication{
+		AuthMethod: &configv1.Authentication_Oauth2{
+			Oauth2: &configv1.OAuth2Auth{
+				TokenUrl: proto.String("not-url"), // Invalid URL
+			},
+		},
+	}
+	assert.Error(t, validateCollection(ctx, coll))
 }

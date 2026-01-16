@@ -873,6 +873,10 @@ func StartMCPANYServerWithClock(t *testing.T, testName string, healthCheck bool,
 	_, err = os.Stat(absMcpAnyBinaryPath)
 	require.NoError(t, err, "MCPANY binary not found at %s. Run 'make build'.", absMcpAnyBinaryPath)
 
+	// Generate a random API key for this test
+	apiKey := fmt.Sprintf("test-key-%d", time.Now().UnixNano())
+	args = append(args, "--api-key", apiKey)
+
 	mcpProcess := NewManagedProcess(t, "MCPANYServer-"+testName, absMcpAnyBinaryPath, args, env)
 	mcpProcess.cmd.Dir = root
 	err = mcpProcess.Start()
@@ -939,7 +943,8 @@ func StartMCPANYServerWithClock(t *testing.T, testName string, healthCheck bool,
 
 	if jsonrpcPort != 0 {
 		jsonrpcEndpoint = fmt.Sprintf("http://127.0.0.1:%d", jsonrpcPort)
-		mcpRequestURL = jsonrpcEndpoint + "/mcp"
+		// Include API Key in URL query param for easy auth
+		mcpRequestURL = fmt.Sprintf("%s/mcp?api_key=%s", jsonrpcEndpoint, apiKey)
 	}
 	if grpcRegPort != 0 {
 		grpcRegEndpoint = fmt.Sprintf("127.0.0.1:%d", grpcRegPort)
@@ -981,6 +986,9 @@ func StartMCPANYServerWithClock(t *testing.T, testName string, healthCheck bool,
 		require.Eventually(t, func() bool {
 			ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
 			defer cancel()
+			// Use the URL with API key for health check too?
+			// But health check usually hits healthz? NO, this checks mcpRequestURL (SSE/POST).
+			// mcpRequestURL now has ?api_key=...
 			req, err := http.NewRequestWithContext(ctx, "GET", mcpRequestURL, nil)
 			if err != nil {
 				return false
@@ -990,6 +998,9 @@ func StartMCPANYServerWithClock(t *testing.T, testName string, healthCheck bool,
 				return false
 			}
 			defer func() { _ = resp.Body.Close() }()
+			// GET /mcp might fail method not allowed if only POST is supported?
+			// But we just check if it's reachable.
+			// Actually, server/pkg/transport/http/sse.go supports GET for SSE.
 			return true
 		}, McpAnyServerStartupTimeout, RetryInterval, "MCPANY HTTP endpoint %s not healthy.", mcpRequestURL)
 	} else if healthCheck {
@@ -997,7 +1008,7 @@ func StartMCPANYServerWithClock(t *testing.T, testName string, healthCheck bool,
 		mcpProcess.WaitForText(t, "MCPANY server is ready", McpAnyServerStartupTimeout) // Assumption or skipped?
 	}
 
-	t.Logf("MCPANY Server process started. MCP Endpoint Base: %s, gRPC Reg: %s, SessionID: %s", jsonrpcEndpoint, grpcRegEndpoint, sessionID)
+	t.Logf("MCPANY Server process started. MCP Endpoint Base: %s, gRPC Reg: %s, SessionID: %s, APIKey: %s", jsonrpcEndpoint, grpcRegEndpoint, sessionID, apiKey)
 
 	return &MCPANYTestServerInfo{
 		Process:                  mcpProcess,

@@ -143,6 +143,7 @@ export function TraceDetail({ trace }: { trace: Trace | null }) {
     }
 
     const handleReplay = (toolName: string, args: Record<string, unknown> | undefined) => {
+         console.log(`DEBUG: handleReplay called with ${toolName}`);
          const argsStr = JSON.stringify(args || {});
          const encodedArgs = encodeURIComponent(argsStr);
          router.push(`/playground?tool=${toolName}&args=${encodedArgs}`);

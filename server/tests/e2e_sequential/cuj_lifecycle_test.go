@@ -56,16 +56,24 @@ func TestCUJ_Lifecycle_And_Config(t *testing.T) {
 	// Initial Config: Enable Filesystem Upstream
 	// We assume the container has access to /config_data via volume
 	config1 := `
+global_settings:
+  mcp_listen_address: ":50050"
+  profile_definitions:
+    - name: "default"
+      selector:
+        tags: ["default"]
+      service_config:
+        "fs-service":
+          enabled: true
 upstream_services:
   - id: "fs-service"
     name: "Filesystem Service"
+    disable: false
+    auto_discover_tool: true
     filesystem_service:
       root_paths:
         "/data": "/config_data"
       os: {}
-      tools:
-        - name: "list_files"
-          description: "List files"
 `
 	configPath := filepath.Join(configDir, "config.yaml")
 	err = os.WriteFile(configPath, []byte(config1), 0644)
@@ -78,7 +86,7 @@ upstream_services:
 		"-v", fmt.Sprintf("%s:/mcp_config", configDir),
 		"-v", fmt.Sprintf("%s:/config_data", configDir),
 		"mcpany/server:latest",
-		"run", "--config-path", "/mcp_config/config.yaml", "--mcp-listen-address", ":50050", "--debug",
+		"run", "--config-path", "/mcp_config/config.yaml", "--mcp-listen-address", ":50050", "--debug", "--api-key", "test-key",
 	)
 	cmd.Env = os.Environ()
 	out, err := cmd.CombinedOutput()
@@ -118,7 +126,7 @@ upstream_services:
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 	client := mcp.NewClient(&mcp.Implementation{Name: "cuj-client", Version: "1.0"}, nil)
-	transport := &mcp.StreamableClientTransport{Endpoint: baseURL}
+	transport := &mcp.StreamableClientTransport{Endpoint: baseURL + "/mcp?api_key=test-key"}
 	session, err := client.Connect(ctx, transport, nil)
 	require.NoError(t, err)
 	defer session.Close()
@@ -145,7 +153,7 @@ upstream_services:
 	}
 
 	// CUJ 2: Hot-Reload
-	config2 := config1 + `
+	config2 := strings.Replace(config1, "enabled: true", "enabled: true\n        \"second-service\":\n          enabled: true", 1) + `
   - id: "second-service"
     name: "Second Service"
     filesystem_service:
@@ -189,7 +197,7 @@ upstream_services:
 	verifyEndpoint(t, fmt.Sprintf("%s/healthz", baseURL), 200, 60*time.Second)
 
 	// Re-connect
-	transport = &mcp.StreamableClientTransport{Endpoint: baseURL}
+	transport = &mcp.StreamableClientTransport{Endpoint: baseURL + "/mcp?api_key=test-key"}
 	session, err = client.Connect(ctx, transport, nil)
 	require.NoError(t, err)
 	defer session.Close()
@@ -253,7 +261,7 @@ upstream_services:
 	verifyEndpoint(t, fmt.Sprintf("%s/healthz", baseURL), 200, 60*time.Second)
 
 	// Re-connect
-	transport = &mcp.StreamableClientTransport{Endpoint: baseURL}
+	transport = &mcp.StreamableClientTransport{Endpoint: baseURL + "/mcp?api_key=test-key"}
 	session, err = client.Connect(ctx, transport, nil)
 	require.NoError(t, err)
 	defer session.Close()
@@ -272,7 +280,7 @@ upstream_services:
 	}, 15*time.Second, 1*time.Second, "Tool 'list_directory' should disappear")
 
 	// CUJ 4: Validating Topology
-	topoResp, err := http.Get(fmt.Sprintf("%s/api/v1/topology", baseURL))
+	topoResp, err := http.Get(fmt.Sprintf("%s/api/v1/topology?api_key=test-key", baseURL))
 	require.NoError(t, err)
 	defer topoResp.Body.Close()
 	require.Equal(t, 200, topoResp.StatusCode)

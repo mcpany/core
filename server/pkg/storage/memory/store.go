@@ -20,7 +20,7 @@ type Store struct {
 	secrets            map[string]*configv1.Secret
 	users              map[string]*configv1.User
 	profileDefinitions map[string]*configv1.ProfileDefinition
-	serviceCollections map[string]*configv1.UpstreamServiceCollectionShare
+	serviceCollections map[string]*configv1.Collection
 	globalSettings     *configv1.GlobalSettings
 	tokens             map[string]*configv1.UserToken
 	credentials        map[string]*configv1.Credential
@@ -33,7 +33,7 @@ func NewStore() *Store {
 		secrets:            make(map[string]*configv1.Secret),
 		users:              make(map[string]*configv1.User),
 		profileDefinitions: make(map[string]*configv1.ProfileDefinition),
-		serviceCollections: make(map[string]*configv1.UpstreamServiceCollectionShare),
+		serviceCollections: make(map[string]*configv1.Collection),
 		tokens:             make(map[string]*configv1.UserToken),
 		credentials:        make(map[string]*configv1.Credential),
 	}
@@ -321,31 +321,31 @@ func (s *Store) DeleteProfile(_ context.Context, name string) error {
 // Service Collections
 
 // ListServiceCollections retrieves all service collections.
-func (s *Store) ListServiceCollections(_ context.Context) ([]*configv1.UpstreamServiceCollectionShare, error) {
+func (s *Store) ListServiceCollections(_ context.Context) ([]*configv1.Collection, error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
-	list := make([]*configv1.UpstreamServiceCollectionShare, 0, len(s.serviceCollections))
+	list := make([]*configv1.Collection, 0, len(s.serviceCollections))
 	for _, c := range s.serviceCollections {
-		list = append(list, proto.Clone(c).(*configv1.UpstreamServiceCollectionShare))
+		list = append(list, proto.Clone(c).(*configv1.Collection))
 	}
 	return list, nil
 }
 
 // GetServiceCollection retrieves a service collection by name.
-func (s *Store) GetServiceCollection(_ context.Context, name string) (*configv1.UpstreamServiceCollectionShare, error) {
+func (s *Store) GetServiceCollection(_ context.Context, name string) (*configv1.Collection, error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
 	if c, ok := s.serviceCollections[name]; ok {
-		return proto.Clone(c).(*configv1.UpstreamServiceCollectionShare), nil
+		return proto.Clone(c).(*configv1.Collection), nil
 	}
 	return nil, nil
 }
 
 // SaveServiceCollection saves a service collection.
-func (s *Store) SaveServiceCollection(_ context.Context, collection *configv1.UpstreamServiceCollectionShare) error {
+func (s *Store) SaveServiceCollection(_ context.Context, collection *configv1.Collection) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
-	s.serviceCollections[collection.GetName()] = proto.Clone(collection).(*configv1.UpstreamServiceCollectionShare)
+	s.serviceCollections[collection.GetName()] = proto.Clone(collection).(*configv1.Collection)
 	return nil
 }
 

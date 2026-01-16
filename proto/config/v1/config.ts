@@ -9,8 +9,9 @@ import { BinaryReader, BinaryWriter } from "@bufbuild/protobuf/wire";
 import Long from "long";
 import { MessageBus } from "../../bus/bus";
 import { SecretValue } from "./auth";
+import { Collection } from "./collection";
 import { ProfileServiceConfig, RateLimitConfig } from "./profile";
-import { UpstreamServiceCollection, UpstreamServiceConfig } from "./upstream_service";
+import { UpstreamServiceConfig } from "./upstream_service";
 import { User } from "./user";
 
 export const protobufPackage = "mcpany.config.v1";
@@ -24,17 +25,17 @@ export interface McpAnyServerConfig {
   /** A list of all configured upstream services that MCP Any can proxy to. */
   upstreamServices: UpstreamServiceConfig[];
   /** A list of upstream service collections to load from. */
-  upstreamServiceCollections: UpstreamServiceCollection[];
+  collections: Collection[];
   /** A list of users authorized to access the server. */
   users: User[];
 }
 
 /** Secret defines a secret value. */
 export interface Secret {
-  /** id is the unique identifier for the secret. */
-  id: string;
   /** name is the human-readable name of the secret. */
   name: string;
+  /** id is the unique identifier for the secret. */
+  id: string;
   /** key is the key used to reference the secret (e.g. env var name). */
   key: string;
   /** value is the secret value (encrypted or raw depending on context). */
@@ -56,22 +57,8 @@ export interface GlobalSettings {
   mcpListenAddress: string;
   /** The log level for the server. */
   logLevel: GlobalSettings_LogLevel;
-  /** The message bus configuration. */
-  messageBus?:
-    | MessageBus
-    | undefined;
   /** The API key used for authentication. */
   apiKey: string;
-  /** The profiles to enable. */
-  profiles: string[];
-  /** The allowed IPs to access the server. */
-  allowedIps: string[];
-  /** Audit logging configuration. */
-  audit?:
-    | AuditConfig
-    | undefined;
-  /** The definitions of profiles. */
-  profileDefinitions: ProfileDefinition[];
   /** The log format for the server. */
   logFormat: GlobalSettings_LogFormat;
   /** The path to the database file. */
@@ -80,8 +67,18 @@ export interface GlobalSettings {
   dbDsn: string;
   /** The database driver (sqlite, postgres). */
   dbDriver: string;
-  /** The list of middlewares to enable and their configuration. */
-  middlewares: Middleware[];
+  /** GitHub API URL for self-updates (optional). */
+  githubApiUrl: string;
+  /** Whether to use sudo for Docker commands. */
+  useSudoForDocker: boolean;
+  /** The message bus configuration. */
+  messageBus?:
+    | MessageBus
+    | undefined;
+  /** Audit logging configuration. */
+  audit?:
+    | AuditConfig
+    | undefined;
   /** DLP configuration. */
   dlp?:
     | DLPConfig
@@ -102,10 +99,14 @@ export interface GlobalSettings {
   telemetry?:
     | TelemetryConfig
     | undefined;
-  /** GitHub API URL for self-updates (optional). */
-  githubApiUrl: string;
-  /** Whether to use sudo for Docker commands. */
-  useSudoForDocker: boolean;
+  /** The profiles to enable. */
+  profiles: string[];
+  /** The allowed IPs to access the server. */
+  allowedIps: string[];
+  /** The definitions of profiles. */
+  profileDefinitions: ProfileDefinition[];
+  /** The list of middlewares to enable and their configuration. */
+  middlewares: Middleware[];
   /** Allowed file paths for validation. */
   allowedFilePaths: string[];
   /** Allowed origins for CORS. */
@@ -398,7 +399,7 @@ export interface Middleware {
 }
 
 function createBaseMcpAnyServerConfig(): McpAnyServerConfig {
-  return { globalSettings: undefined, upstreamServices: [], upstreamServiceCollections: [], users: [] };
+  return { globalSettings: undefined, upstreamServices: [], collections: [], users: [] };
 }
 
 export const McpAnyServerConfig: MessageFns<McpAnyServerConfig> = {
@@ -409,8 +410,8 @@ export const McpAnyServerConfig: MessageFns<McpAnyServerConfig> = {
     for (const v of message.upstreamServices) {
       UpstreamServiceConfig.encode(v!, writer.uint32(18).fork()).join();
     }
-    for (const v of message.upstreamServiceCollections) {
-      UpstreamServiceCollection.encode(v!, writer.uint32(26).fork()).join();
+    for (const v of message.collections) {
+      Collection.encode(v!, writer.uint32(26).fork()).join();
     }
     for (const v of message.users) {
       User.encode(v!, writer.uint32(34).fork()).join();
@@ -446,7 +447,7 @@ export const McpAnyServerConfig: MessageFns<McpAnyServerConfig> = {
             break;
           }
 
-          message.upstreamServiceCollections.push(UpstreamServiceCollection.decode(reader, reader.uint32()));
+          message.collections.push(Collection.decode(reader, reader.uint32()));
           continue;
         }
         case 4: {
@@ -472,8 +473,8 @@ export const McpAnyServerConfig: MessageFns<McpAnyServerConfig> = {
       upstreamServices: globalThis.Array.isArray(object?.upstream_services)
         ? object.upstream_services.map((e: any) => UpstreamServiceConfig.fromJSON(e))
         : [],
-      upstreamServiceCollections: globalThis.Array.isArray(object?.upstream_service_collections)
-        ? object.upstream_service_collections.map((e: any) => UpstreamServiceCollection.fromJSON(e))
+      collections: globalThis.Array.isArray(object?.collections)
+        ? object.collections.map((e: any) => Collection.fromJSON(e))
         : [],
       users: globalThis.Array.isArray(object?.users) ? object.users.map((e: any) => User.fromJSON(e)) : [],
     };
@@ -487,10 +488,8 @@ export const McpAnyServerConfig: MessageFns<McpAnyServerConfig> = {
     if (message.upstreamServices?.length) {
       obj.upstream_services = message.upstreamServices.map((e) => UpstreamServiceConfig.toJSON(e));
     }
-    if (message.upstreamServiceCollections?.length) {
-      obj.upstream_service_collections = message.upstreamServiceCollections.map((e) =>
-        UpstreamServiceCollection.toJSON(e)
-      );
+    if (message.collections?.length) {
+      obj.collections = message.collections.map((e) => Collection.toJSON(e));
     }
     if (message.users?.length) {
       obj.users = message.users.map((e) => User.toJSON(e));
@@ -507,24 +506,23 @@ export const McpAnyServerConfig: MessageFns<McpAnyServerConfig> = {
       ? GlobalSettings.fromPartial(object.globalSettings)
       : undefined;
     message.upstreamServices = object.upstreamServices?.map((e) => UpstreamServiceConfig.fromPartial(e)) || [];
-    message.upstreamServiceCollections =
-      object.upstreamServiceCollections?.map((e) => UpstreamServiceCollection.fromPartial(e)) || [];
+    message.collections = object.collections?.map((e) => Collection.fromPartial(e)) || [];
     message.users = object.users?.map((e) => User.fromPartial(e)) || [];
     return message;
   },
 };
 
 function createBaseSecret(): Secret {
-  return { id: "", name: "", key: "", value: "", provider: "", lastUsed: "", createdAt: "" };
+  return { name: "", id: "", key: "", value: "", provider: "", lastUsed: "", createdAt: "" };
 }
 
 export const Secret: MessageFns<Secret> = {
   encode(message: Secret, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.id !== "") {
-      writer.uint32(10).string(message.id);
-    }
     if (message.name !== "") {
-      writer.uint32(18).string(message.name);
+      writer.uint32(10).string(message.name);
+    }
+    if (message.id !== "") {
+      writer.uint32(18).string(message.id);
     }
     if (message.key !== "") {
       writer.uint32(26).string(message.key);
@@ -556,7 +554,7 @@ export const Secret: MessageFns<Secret> = {
             break;
           }
 
-          message.id = reader.string();
+          message.name = reader.string();
           continue;
         }
         case 2: {
@@ -564,7 +562,7 @@ export const Secret: MessageFns<Secret> = {
             break;
           }
 
-          message.name = reader.string();
+          message.id = reader.string();
           continue;
         }
         case 3: {
@@ -618,8 +616,8 @@ export const Secret: MessageFns<Secret> = {
 
   fromJSON(object: any): Secret {
     return {
-      id: isSet(object.id) ? globalThis.String(object.id) : "",
       name: isSet(object.name) ? globalThis.String(object.name) : "",
+      id: isSet(object.id) ? globalThis.String(object.id) : "",
       key: isSet(object.key) ? globalThis.String(object.key) : "",
       value: isSet(object.value) ? globalThis.String(object.value) : "",
       provider: isSet(object.provider) ? globalThis.String(object.provider) : "",
@@ -630,11 +628,11 @@ export const Secret: MessageFns<Secret> = {
 
   toJSON(message: Secret): unknown {
     const obj: any = {};
-    if (message.id !== "") {
-      obj.id = message.id;
-    }
     if (message.name !== "") {
       obj.name = message.name;
+    }
+    if (message.id !== "") {
+      obj.id = message.id;
     }
     if (message.key !== "") {
       obj.key = message.key;
@@ -659,8 +657,8 @@ export const Secret: MessageFns<Secret> = {
   },
   fromPartial<I extends Exact<DeepPartial<Secret>, I>>(object: I): Secret {
     const message = createBaseSecret();
-    message.id = object.id ?? "";
     message.name = object.name ?? "";
+    message.id = object.id ?? "";
     message.key = object.key ?? "";
     message.value = object.value ?? "";
     message.provider = object.provider ?? "";
@@ -734,24 +732,24 @@ function createBaseGlobalSettings(): GlobalSettings {
   return {
     mcpListenAddress: "",
     logLevel: 0,
-    messageBus: undefined,
     apiKey: "",
-    profiles: [],
-    allowedIps: [],
-    audit: undefined,
-    profileDefinitions: [],
     logFormat: 0,
     dbPath: "",
     dbDsn: "",
     dbDriver: "",
-    middlewares: [],
+    githubApiUrl: "",
+    useSudoForDocker: false,
+    messageBus: undefined,
+    audit: undefined,
     dlp: undefined,
     gcSettings: undefined,
     oidc: undefined,
     rateLimit: undefined,
     telemetry: undefined,
-    githubApiUrl: "",
-    useSudoForDocker: false,
+    profiles: [],
+    allowedIps: [],
+    profileDefinitions: [],
+    middlewares: [],
     allowedFilePaths: [],
     allowedOrigins: [],
   };
@@ -763,67 +761,67 @@ export const GlobalSettings: MessageFns<GlobalSettings> = {
       writer.uint32(10).string(message.mcpListenAddress);
     }
     if (message.logLevel !== 0) {
-      writer.uint32(24).int32(message.logLevel);
-    }
-    if (message.messageBus !== undefined) {
-      MessageBus.encode(message.messageBus, writer.uint32(34).fork()).join();
+      writer.uint32(16).int32(message.logLevel);
     }
     if (message.apiKey !== "") {
-      writer.uint32(42).string(message.apiKey);
-    }
-    for (const v of message.profiles) {
-      writer.uint32(50).string(v!);
-    }
-    for (const v of message.allowedIps) {
-      writer.uint32(58).string(v!);
-    }
-    if (message.audit !== undefined) {
-      AuditConfig.encode(message.audit, writer.uint32(66).fork()).join();
-    }
-    for (const v of message.profileDefinitions) {
-      ProfileDefinition.encode(v!, writer.uint32(74).fork()).join();
+      writer.uint32(26).string(message.apiKey);
     }
     if (message.logFormat !== 0) {
-      writer.uint32(80).int32(message.logFormat);
+      writer.uint32(32).int32(message.logFormat);
     }
     if (message.dbPath !== "") {
-      writer.uint32(90).string(message.dbPath);
+      writer.uint32(42).string(message.dbPath);
     }
     if (message.dbDsn !== "") {
-      writer.uint32(114).string(message.dbDsn);
+      writer.uint32(50).string(message.dbDsn);
     }
     if (message.dbDriver !== "") {
-      writer.uint32(122).string(message.dbDriver);
-    }
-    for (const v of message.middlewares) {
-      Middleware.encode(v!, writer.uint32(98).fork()).join();
-    }
-    if (message.dlp !== undefined) {
-      DLPConfig.encode(message.dlp, writer.uint32(106).fork()).join();
-    }
-    if (message.gcSettings !== undefined) {
-      GCSettings.encode(message.gcSettings, writer.uint32(130).fork()).join();
-    }
-    if (message.oidc !== undefined) {
-      OIDCConfig.encode(message.oidc, writer.uint32(138).fork()).join();
-    }
-    if (message.rateLimit !== undefined) {
-      RateLimitConfig.encode(message.rateLimit, writer.uint32(146).fork()).join();
-    }
-    if (message.telemetry !== undefined) {
-      TelemetryConfig.encode(message.telemetry, writer.uint32(154).fork()).join();
+      writer.uint32(58).string(message.dbDriver);
     }
     if (message.githubApiUrl !== "") {
-      writer.uint32(162).string(message.githubApiUrl);
+      writer.uint32(66).string(message.githubApiUrl);
     }
     if (message.useSudoForDocker !== false) {
-      writer.uint32(168).bool(message.useSudoForDocker);
+      writer.uint32(72).bool(message.useSudoForDocker);
+    }
+    if (message.messageBus !== undefined) {
+      MessageBus.encode(message.messageBus, writer.uint32(82).fork()).join();
+    }
+    if (message.audit !== undefined) {
+      AuditConfig.encode(message.audit, writer.uint32(90).fork()).join();
+    }
+    if (message.dlp !== undefined) {
+      DLPConfig.encode(message.dlp, writer.uint32(98).fork()).join();
+    }
+    if (message.gcSettings !== undefined) {
+      GCSettings.encode(message.gcSettings, writer.uint32(106).fork()).join();
+    }
+    if (message.oidc !== undefined) {
+      OIDCConfig.encode(message.oidc, writer.uint32(114).fork()).join();
+    }
+    if (message.rateLimit !== undefined) {
+      RateLimitConfig.encode(message.rateLimit, writer.uint32(122).fork()).join();
+    }
+    if (message.telemetry !== undefined) {
+      TelemetryConfig.encode(message.telemetry, writer.uint32(130).fork()).join();
+    }
+    for (const v of message.profiles) {
+      writer.uint32(138).string(v!);
+    }
+    for (const v of message.allowedIps) {
+      writer.uint32(146).string(v!);
+    }
+    for (const v of message.profileDefinitions) {
+      ProfileDefinition.encode(v!, writer.uint32(154).fork()).join();
+    }
+    for (const v of message.middlewares) {
+      Middleware.encode(v!, writer.uint32(162).fork()).join();
     }
     for (const v of message.allowedFilePaths) {
-      writer.uint32(178).string(v!);
+      writer.uint32(170).string(v!);
     }
     for (const v of message.allowedOrigins) {
-      writer.uint32(186).string(v!);
+      writer.uint32(178).string(v!);
     }
     return writer;
   },
@@ -843,20 +841,28 @@ export const GlobalSettings: MessageFns<GlobalSettings> = {
           message.mcpListenAddress = reader.string();
           continue;
         }
-        case 3: {
-          if (tag !== 24) {
+        case 2: {
+          if (tag !== 16) {
             break;
           }
 
           message.logLevel = reader.int32() as any;
           continue;
         }
-        case 4: {
-          if (tag !== 34) {
+        case 3: {
+          if (tag !== 26) {
             break;
           }
 
-          message.messageBus = MessageBus.decode(reader, reader.uint32());
+          message.apiKey = reader.string();
+          continue;
+        }
+        case 4: {
+          if (tag !== 32) {
+            break;
+          }
+
+          message.logFormat = reader.int32() as any;
           continue;
         }
         case 5: {
@@ -864,7 +870,7 @@ export const GlobalSettings: MessageFns<GlobalSettings> = {
             break;
           }
 
-          message.apiKey = reader.string();
+          message.dbPath = reader.string();
           continue;
         }
         case 6: {
@@ -872,7 +878,7 @@ export const GlobalSettings: MessageFns<GlobalSettings> = {
             break;
           }
 
-          message.profiles.push(reader.string());
+          message.dbDsn = reader.string();
           continue;
         }
         case 7: {
@@ -880,7 +886,7 @@ export const GlobalSettings: MessageFns<GlobalSettings> = {
             break;
           }
 
-          message.allowedIps.push(reader.string());
+          message.dbDriver = reader.string();
           continue;
         }
         case 8: {
@@ -888,23 +894,23 @@ export const GlobalSettings: MessageFns<GlobalSettings> = {
             break;
           }
 
-          message.audit = AuditConfig.decode(reader, reader.uint32());
+          message.githubApiUrl = reader.string();
           continue;
         }
         case 9: {
-          if (tag !== 74) {
+          if (tag !== 72) {
             break;
           }
 
-          message.profileDefinitions.push(ProfileDefinition.decode(reader, reader.uint32()));
+          message.useSudoForDocker = reader.bool();
           continue;
         }
         case 10: {
-          if (tag !== 80) {
+          if (tag !== 82) {
             break;
           }
 
-          message.logFormat = reader.int32() as any;
+          message.messageBus = MessageBus.decode(reader, reader.uint32());
           continue;
         }
         case 11: {
@@ -912,23 +918,7 @@ export const GlobalSettings: MessageFns<GlobalSettings> = {
             break;
           }
 
-          message.dbPath = reader.string();
-          continue;
-        }
-        case 14: {
-          if (tag !== 114) {
-            break;
-          }
-
-          message.dbDsn = reader.string();
-          continue;
-        }
-        case 15: {
-          if (tag !== 122) {
-            break;
-          }
-
-          message.dbDriver = reader.string();
+          message.audit = AuditConfig.decode(reader, reader.uint32());
           continue;
         }
         case 12: {
@@ -936,7 +926,7 @@ export const GlobalSettings: MessageFns<GlobalSettings> = {
             break;
           }
 
-          message.middlewares.push(Middleware.decode(reader, reader.uint32()));
+          message.dlp = DLPConfig.decode(reader, reader.uint32());
           continue;
         }
         case 13: {
@@ -944,7 +934,23 @@ export const GlobalSettings: MessageFns<GlobalSettings> = {
             break;
           }
 
-          message.dlp = DLPConfig.decode(reader, reader.uint32());
+          message.gcSettings = GCSettings.decode(reader, reader.uint32());
+          continue;
+        }
+        case 14: {
+          if (tag !== 114) {
+            break;
+          }
+
+          message.oidc = OIDCConfig.decode(reader, reader.uint32());
+          continue;
+        }
+        case 15: {
+          if (tag !== 122) {
+            break;
+          }
+
+          message.rateLimit = RateLimitConfig.decode(reader, reader.uint32());
           continue;
         }
         case 16: {
@@ -952,7 +958,7 @@ export const GlobalSettings: MessageFns<GlobalSettings> = {
             break;
           }
 
-          message.gcSettings = GCSettings.decode(reader, reader.uint32());
+          message.telemetry = TelemetryConfig.decode(reader, reader.uint32());
           continue;
         }
         case 17: {
@@ -960,7 +966,7 @@ export const GlobalSettings: MessageFns<GlobalSettings> = {
             break;
           }
 
-          message.oidc = OIDCConfig.decode(reader, reader.uint32());
+          message.profiles.push(reader.string());
           continue;
         }
         case 18: {
@@ -968,7 +974,7 @@ export const GlobalSettings: MessageFns<GlobalSettings> = {
             break;
           }
 
-          message.rateLimit = RateLimitConfig.decode(reader, reader.uint32());
+          message.allowedIps.push(reader.string());
           continue;
         }
         case 19: {
@@ -976,7 +982,7 @@ export const GlobalSettings: MessageFns<GlobalSettings> = {
             break;
           }
 
-          message.telemetry = TelemetryConfig.decode(reader, reader.uint32());
+          message.profileDefinitions.push(ProfileDefinition.decode(reader, reader.uint32()));
           continue;
         }
         case 20: {
@@ -984,27 +990,19 @@ export const GlobalSettings: MessageFns<GlobalSettings> = {
             break;
           }
 
-          message.githubApiUrl = reader.string();
+          message.middlewares.push(Middleware.decode(reader, reader.uint32()));
           continue;
         }
         case 21: {
-          if (tag !== 168) {
-            break;
-          }
-
-          message.useSudoForDocker = reader.bool();
-          continue;
-        }
-        case 22: {
-          if (tag !== 178) {
+          if (tag !== 170) {
             break;
           }
 
           message.allowedFilePaths.push(reader.string());
           continue;
         }
-        case 23: {
-          if (tag !== 186) {
+        case 22: {
+          if (tag !== 178) {
             break;
           }
 
@@ -1024,30 +1022,30 @@ export const GlobalSettings: MessageFns<GlobalSettings> = {
     return {
       mcpListenAddress: isSet(object.mcp_listen_address) ? globalThis.String(object.mcp_listen_address) : "",
       logLevel: isSet(object.log_level) ? globalSettings_LogLevelFromJSON(object.log_level) : 0,
-      messageBus: isSet(object.message_bus) ? MessageBus.fromJSON(object.message_bus) : undefined,
       apiKey: isSet(object.api_key) ? globalThis.String(object.api_key) : "",
-      profiles: globalThis.Array.isArray(object?.profiles) ? object.profiles.map((e: any) => globalThis.String(e)) : [],
-      allowedIps: globalThis.Array.isArray(object?.allowed_ips)
-        ? object.allowed_ips.map((e: any) => globalThis.String(e))
-        : [],
-      audit: isSet(object.audit) ? AuditConfig.fromJSON(object.audit) : undefined,
-      profileDefinitions: globalThis.Array.isArray(object?.profile_definitions)
-        ? object.profile_definitions.map((e: any) => ProfileDefinition.fromJSON(e))
-        : [],
       logFormat: isSet(object.log_format) ? globalSettings_LogFormatFromJSON(object.log_format) : 0,
       dbPath: isSet(object.db_path) ? globalThis.String(object.db_path) : "",
       dbDsn: isSet(object.db_dsn) ? globalThis.String(object.db_dsn) : "",
       dbDriver: isSet(object.db_driver) ? globalThis.String(object.db_driver) : "",
-      middlewares: globalThis.Array.isArray(object?.middlewares)
-        ? object.middlewares.map((e: any) => Middleware.fromJSON(e))
-        : [],
+      githubApiUrl: isSet(object.github_api_url) ? globalThis.String(object.github_api_url) : "",
+      useSudoForDocker: isSet(object.use_sudo_for_docker) ? globalThis.Boolean(object.use_sudo_for_docker) : false,
+      messageBus: isSet(object.message_bus) ? MessageBus.fromJSON(object.message_bus) : undefined,
+      audit: isSet(object.audit) ? AuditConfig.fromJSON(object.audit) : undefined,
       dlp: isSet(object.dlp) ? DLPConfig.fromJSON(object.dlp) : undefined,
       gcSettings: isSet(object.gc_settings) ? GCSettings.fromJSON(object.gc_settings) : undefined,
       oidc: isSet(object.oidc) ? OIDCConfig.fromJSON(object.oidc) : undefined,
       rateLimit: isSet(object.rate_limit) ? RateLimitConfig.fromJSON(object.rate_limit) : undefined,
       telemetry: isSet(object.telemetry) ? TelemetryConfig.fromJSON(object.telemetry) : undefined,
-      githubApiUrl: isSet(object.github_api_url) ? globalThis.String(object.github_api_url) : "",
-      useSudoForDocker: isSet(object.use_sudo_for_docker) ? globalThis.Boolean(object.use_sudo_for_docker) : false,
+      profiles: globalThis.Array.isArray(object?.profiles) ? object.profiles.map((e: any) => globalThis.String(e)) : [],
+      allowedIps: globalThis.Array.isArray(object?.allowed_ips)
+        ? object.allowed_ips.map((e: any) => globalThis.String(e))
+        : [],
+      profileDefinitions: globalThis.Array.isArray(object?.profile_definitions)
+        ? object.profile_definitions.map((e: any) => ProfileDefinition.fromJSON(e))
+        : [],
+      middlewares: globalThis.Array.isArray(object?.middlewares)
+        ? object.middlewares.map((e: any) => Middleware.fromJSON(e))
+        : [],
       allowedFilePaths: globalThis.Array.isArray(object?.allowed_file_paths)
         ? object.allowed_file_paths.map((e: any) => globalThis.String(e))
         : [],
@@ -1065,23 +1063,8 @@ export const GlobalSettings: MessageFns<GlobalSettings> = {
     if (message.logLevel !== 0) {
       obj.log_level = globalSettings_LogLevelToJSON(message.logLevel);
     }
-    if (message.messageBus !== undefined) {
-      obj.message_bus = MessageBus.toJSON(message.messageBus);
-    }
     if (message.apiKey !== "") {
       obj.api_key = message.apiKey;
-    }
-    if (message.profiles?.length) {
-      obj.profiles = message.profiles;
-    }
-    if (message.allowedIps?.length) {
-      obj.allowed_ips = message.allowedIps;
-    }
-    if (message.audit !== undefined) {
-      obj.audit = AuditConfig.toJSON(message.audit);
-    }
-    if (message.profileDefinitions?.length) {
-      obj.profile_definitions = message.profileDefinitions.map((e) => ProfileDefinition.toJSON(e));
     }
     if (message.logFormat !== 0) {
       obj.log_format = globalSettings_LogFormatToJSON(message.logFormat);
@@ -1095,8 +1078,17 @@ export const GlobalSettings: MessageFns<GlobalSettings> = {
     if (message.dbDriver !== "") {
       obj.db_driver = message.dbDriver;
     }
-    if (message.middlewares?.length) {
-      obj.middlewares = message.middlewares.map((e) => Middleware.toJSON(e));
+    if (message.githubApiUrl !== "") {
+      obj.github_api_url = message.githubApiUrl;
+    }
+    if (message.useSudoForDocker !== false) {
+      obj.use_sudo_for_docker = message.useSudoForDocker;
+    }
+    if (message.messageBus !== undefined) {
+      obj.message_bus = MessageBus.toJSON(message.messageBus);
+    }
+    if (message.audit !== undefined) {
+      obj.audit = AuditConfig.toJSON(message.audit);
     }
     if (message.dlp !== undefined) {
       obj.dlp = DLPConfig.toJSON(message.dlp);
@@ -1113,11 +1105,17 @@ export const GlobalSettings: MessageFns<GlobalSettings> = {
     if (message.telemetry !== undefined) {
       obj.telemetry = TelemetryConfig.toJSON(message.telemetry);
     }
-    if (message.githubApiUrl !== "") {
-      obj.github_api_url = message.githubApiUrl;
+    if (message.profiles?.length) {
+      obj.profiles = message.profiles;
     }
-    if (message.useSudoForDocker !== false) {
-      obj.use_sudo_for_docker = message.useSudoForDocker;
+    if (message.allowedIps?.length) {
+      obj.allowed_ips = message.allowedIps;
+    }
+    if (message.profileDefinitions?.length) {
+      obj.profile_definitions = message.profileDefinitions.map((e) => ProfileDefinition.toJSON(e));
+    }
+    if (message.middlewares?.length) {
+      obj.middlewares = message.middlewares.map((e) => Middleware.toJSON(e));
     }
     if (message.allowedFilePaths?.length) {
       obj.allowed_file_paths = message.allowedFilePaths;
@@ -1135,21 +1133,19 @@ export const GlobalSettings: MessageFns<GlobalSettings> = {
     const message = createBaseGlobalSettings();
     message.mcpListenAddress = object.mcpListenAddress ?? "";
     message.logLevel = object.logLevel ?? 0;
-    message.messageBus = (object.messageBus !== undefined && object.messageBus !== null)
-      ? MessageBus.fromPartial(object.messageBus)
-      : undefined;
     message.apiKey = object.apiKey ?? "";
-    message.profiles = object.profiles?.map((e) => e) || [];
-    message.allowedIps = object.allowedIps?.map((e) => e) || [];
-    message.audit = (object.audit !== undefined && object.audit !== null)
-      ? AuditConfig.fromPartial(object.audit)
-      : undefined;
-    message.profileDefinitions = object.profileDefinitions?.map((e) => ProfileDefinition.fromPartial(e)) || [];
     message.logFormat = object.logFormat ?? 0;
     message.dbPath = object.dbPath ?? "";
     message.dbDsn = object.dbDsn ?? "";
     message.dbDriver = object.dbDriver ?? "";
-    message.middlewares = object.middlewares?.map((e) => Middleware.fromPartial(e)) || [];
+    message.githubApiUrl = object.githubApiUrl ?? "";
+    message.useSudoForDocker = object.useSudoForDocker ?? false;
+    message.messageBus = (object.messageBus !== undefined && object.messageBus !== null)
+      ? MessageBus.fromPartial(object.messageBus)
+      : undefined;
+    message.audit = (object.audit !== undefined && object.audit !== null)
+      ? AuditConfig.fromPartial(object.audit)
+      : undefined;
     message.dlp = (object.dlp !== undefined && object.dlp !== null) ? DLPConfig.fromPartial(object.dlp) : undefined;
     message.gcSettings = (object.gcSettings !== undefined && object.gcSettings !== null)
       ? GCSettings.fromPartial(object.gcSettings)
@@ -1163,8 +1159,10 @@ export const GlobalSettings: MessageFns<GlobalSettings> = {
     message.telemetry = (object.telemetry !== undefined && object.telemetry !== null)
       ? TelemetryConfig.fromPartial(object.telemetry)
       : undefined;
-    message.githubApiUrl = object.githubApiUrl ?? "";
-    message.useSudoForDocker = object.useSudoForDocker ?? false;
+    message.profiles = object.profiles?.map((e) => e) || [];
+    message.allowedIps = object.allowedIps?.map((e) => e) || [];
+    message.profileDefinitions = object.profileDefinitions?.map((e) => ProfileDefinition.fromPartial(e)) || [];
+    message.middlewares = object.middlewares?.map((e) => Middleware.fromPartial(e)) || [];
     message.allowedFilePaths = object.allowedFilePaths?.map((e) => e) || [];
     message.allowedOrigins = object.allowedOrigins?.map((e) => e) || [];
     return message;

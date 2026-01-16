@@ -466,21 +466,21 @@ func (s *Store) DeleteProfile(ctx context.Context, name string) error {
 // Service Collections
 
 // ListServiceCollections retrieves all service collections.
-func (s *Store) ListServiceCollections(ctx context.Context) ([]*configv1.UpstreamServiceCollectionShare, error) {
+func (s *Store) ListServiceCollections(ctx context.Context) ([]*configv1.Collection, error) {
 	rows, err := s.db.QueryContext(ctx, "SELECT config_json FROM service_collections")
 	if err != nil {
 		return nil, fmt.Errorf("failed to query service_collections: %w", err)
 	}
 	defer func() { _ = rows.Close() }()
 
-	var collections []*configv1.UpstreamServiceCollectionShare
+	var collections []*configv1.Collection
 	for rows.Next() {
 		var configJSON string
 		if err := rows.Scan(&configJSON); err != nil {
 			return nil, fmt.Errorf("failed to scan config_json: %w", err)
 		}
 
-		var collection configv1.UpstreamServiceCollectionShare
+		var collection configv1.Collection
 		if err := protojson.Unmarshal([]byte(configJSON), &collection); err != nil {
 			return nil, fmt.Errorf("failed to unmarshal collection config: %w", err)
 		}
@@ -493,7 +493,7 @@ func (s *Store) ListServiceCollections(ctx context.Context) ([]*configv1.Upstrea
 }
 
 // GetServiceCollection retrieves a service collection by name.
-func (s *Store) GetServiceCollection(ctx context.Context, name string) (*configv1.UpstreamServiceCollectionShare, error) {
+func (s *Store) GetServiceCollection(ctx context.Context, name string) (*configv1.Collection, error) {
 	query := "SELECT config_json FROM service_collections WHERE name = ?"
 	row := s.db.QueryRowContext(ctx, query, name)
 
@@ -505,7 +505,7 @@ func (s *Store) GetServiceCollection(ctx context.Context, name string) (*configv
 		return nil, fmt.Errorf("failed to scan config_json: %w", err)
 	}
 
-	var collection configv1.UpstreamServiceCollectionShare
+	var collection configv1.Collection
 	if err := protojson.Unmarshal([]byte(configJSON), &collection); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal collection config: %w", err)
 	}
@@ -513,7 +513,7 @@ func (s *Store) GetServiceCollection(ctx context.Context, name string) (*configv
 }
 
 // SaveServiceCollection saves a service collection.
-func (s *Store) SaveServiceCollection(ctx context.Context, collection *configv1.UpstreamServiceCollectionShare) error {
+func (s *Store) SaveServiceCollection(ctx context.Context, collection *configv1.Collection) error {
 	if collection.GetName() == "" {
 		return fmt.Errorf("collection name is required")
 	}

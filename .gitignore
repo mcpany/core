@@ -53,3 +53,4 @@ proto/node_modules/
 proto/node_modules
 server/pkg/tool/testdata/jsonecho/jsonecho
 server/examples/demo/stdio/my-tool-bin
+/skills/

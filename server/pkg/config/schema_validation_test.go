@@ -24,7 +24,7 @@ func TestValidateConfigAgainstSchema(t *testing.T) {
 				},
 			},
 		},
-		"upstream_service_collections": []interface{}{},
+		"collections": []interface{}{},
 		"users":                        []interface{}{},
 	}
 

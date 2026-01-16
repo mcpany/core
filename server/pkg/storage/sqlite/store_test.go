@@ -256,7 +256,7 @@ func TestStore(t *testing.T) {
 	})
 
 	t.Run("ServiceCollections", func(t *testing.T) {
-		col := &configv1.UpstreamServiceCollectionShare{
+		col := &configv1.Collection{
 			Name: proto.String("col-1"),
 		}
 		// Save

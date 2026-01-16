@@ -132,6 +132,10 @@ const nextConfig: NextConfig = {
         destination: `${process.env.BACKEND_URL || 'http://localhost:8080'}/mcpany.api.v1.RegistrationService/:path*`,
       },
       {
+        source: '/v1/:path*',
+        destination: `${backendUrl}/v1/:path*`,
+      },
+      {
         source: '/auth/:path*',
         destination: `${process.env.BACKEND_URL || 'http://localhost:8080'}/auth/:path*`,
       },
