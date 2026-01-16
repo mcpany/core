@@ -29,7 +29,7 @@ func TestHTTPSecurityHeadersMiddleware(t *testing.T) {
 	assert.Equal(t, "SAMEORIGIN", resp.Header.Get("X-Frame-Options"))
 	assert.Equal(t, "", resp.Header.Get("X-XSS-Protection"))
 	assert.Equal(t, "strict-origin-when-cross-origin", resp.Header.Get("Referrer-Policy"))
-	assert.Equal(t, "default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; script-src 'self'; connect-src 'self'; img-src 'self' data: https:; object-src 'none'; base-uri 'self'; frame-ancestors 'self'", resp.Header.Get("Content-Security-Policy"))
+	assert.Equal(t, "default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; script-src 'self'; connect-src 'self'; img-src 'self' data: https:; object-src 'none'; base-uri 'self'; frame-ancestors 'self'; form-action 'self'; upgrade-insecure-requests", resp.Header.Get("Content-Security-Policy"))
 	assert.Equal(t, "max-age=63072000; includeSubDomains", resp.Header.Get("Strict-Transport-Security"))
 	assert.Equal(t, "geolocation=(), camera=(), microphone=(), payment=(), usb=(), vr=()", resp.Header.Get("Permissions-Policy"))
 	assert.Equal(t, "no-store, no-cache, must-revalidate, proxy-revalidate", resp.Header.Get("Cache-Control"))
