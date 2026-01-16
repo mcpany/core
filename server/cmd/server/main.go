@@ -18,6 +18,7 @@ import (
 	"github.com/mcpany/core/server/pkg/app"
 	"github.com/mcpany/core/server/pkg/appconsts"
 	"github.com/mcpany/core/server/pkg/config"
+	"github.com/mcpany/core/server/pkg/connectivity"
 	"github.com/mcpany/core/server/pkg/lint"
 	"github.com/mcpany/core/server/pkg/logging"
 	"github.com/mcpany/core/server/pkg/metrics"
@@ -323,7 +324,7 @@ func newRootCmd() *cobra.Command { //nolint:gocyclo // Main entry point, expecte
 	schemaCmd := &cobra.Command{
 		Use:   "schema",
 		Short: "Print the JSON Schema for configuration",
-		RunE: func(cmd *cobra.Command, _ []string) error {
+		RunE: func(_ *cobra.Command, _ []string) error {
 			schemaBytes, err := config.GenerateJSONSchemaBytes()
 			if err != nil {
 				return fmt.Errorf("failed to generate schema: %w", err)
@@ -340,7 +341,7 @@ func newRootCmd() *cobra.Command { //nolint:gocyclo // Main entry point, expecte
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			filename := args[0]
-			data, err := os.ReadFile(filename)
+			data, err := os.ReadFile(filename) //nolint:gosec // Intended behavior for CLI
 			if err != nil {
 				return fmt.Errorf("failed to read file %q: %w", filename, err)
 			}
@@ -355,7 +356,7 @@ func newRootCmd() *cobra.Command { //nolint:gocyclo // Main entry point, expecte
 				return fmt.Errorf("configuration schema validation failed: %w", err)
 			}
 
-			fmt.Println("Configuration schema is valid.")
+			_, _ = fmt.Fprintln(cmd.OutOrStdout(), "Configuration schema is valid.")
 			return nil
 		},
 	}
@@ -387,13 +388,36 @@ func newRootCmd() *cobra.Command { //nolint:gocyclo // Main entry point, expecte
 				return fmt.Errorf("configuration validation failed with errors: \n- %s", strings.Join(allErrors, "\n- "))
 			}
 
-			_, err = fmt.Fprintln(cmd.OutOrStdout(), "Configuration is valid.")
-			if err != nil {
-				return fmt.Errorf("failed to print validation success message: %w", err)
+			_, _ = fmt.Fprintln(cmd.OutOrStdout(), "Configuration syntax is valid.")
+
+			checkConnectivity, _ := cmd.Flags().GetBool("connectivity")
+			if checkConnectivity {
+				_, _ = fmt.Fprintln(cmd.OutOrStdout(), "\nChecking connectivity to upstream services...")
+				results := connectivity.Check(context.Background(), configs)
+
+				hasFailures := false
+				for _, res := range results {
+					status := "✅ OK"
+					if !res.Status {
+						status = "❌ FAIL"
+						hasFailures = true
+					}
+					_, _ = fmt.Fprintf(cmd.OutOrStdout(), "%s [%s] %s (%s) - %s\n", status, res.Type, res.ServiceName, res.Target, res.Latency)
+					if res.Error != nil {
+						_, _ = fmt.Fprintf(cmd.OutOrStdout(), "  Error: %v\n", res.Error)
+					}
+				}
+
+				if hasFailures {
+					return fmt.Errorf("connectivity check failed for one or more services")
+				}
+				_, _ = fmt.Fprintln(cmd.OutOrStdout(), "\nAll connectivity checks passed.")
 			}
+
 			return nil
 		},
 	}
+	validateCmd.Flags().Bool("connectivity", false, "Perform connectivity checks against upstream services")
 	configCmd.AddCommand(validateCmd)
 
 	lintCmd := &cobra.Command{

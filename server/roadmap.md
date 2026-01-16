@@ -53,6 +53,7 @@
 - [x] **Required Environment Variable Validation**: Added explicit `validation.required_env` support for Stdio connections to fail fast with descriptive errors if required environment variables are missing. (Friction Fighter)
 - [x] **JSON Schema for Config**: Auto-generate and publish a JSON Schema for the `config.yaml` to enable intellisense/validation in IDEs like VS Code. (Friction Fighter)
 - [x] **Config Schema Validation via CLI**: `mcpany config check config.yaml` that validates against the full JSON schema (including types and enums) using `jsonschema` library, providing line-number precise errors. (Friction Fighter)
+- [x] **Validation CLI Connectivity Check**: Enhanced `mcpany config validate` with `--connectivity` flag to run deep checks, connecting to upstream services (dry-run) to verify reachability. (Friction Fighter)
 
 ## 2. Top 10 Recommended Features
 
@@ -82,8 +83,7 @@ These features represent the next logical steps for the product, focusing on Ent
 | 20 | **Configuration Migration Tool** | **DevX**: A CLI command to convert `claude_desktop_config.json` to `mcpany` config format. | Low |
 | 21 | **Auth Doctor** | **UX**: Diagnostic tool to verify that configured authentication methods match upstream expectations (e.g., detecting if a Bearer token is used where Basic Auth is expected). | Medium |
 | 22 | **Dynamic Tool Pruning** | **Performance/Cost**: Feature to filter visible tools based on the current user's role or context to reduce LLM context window usage and costs. | High |
-| 23 | **Validation CLI Command** | **DevX**: Enhance `mcpany config validate` to run deep checks, including connecting to upstream services (dry-run) to verify connectivity and auth. | Medium |
-| 24 | **Config Schema Migration** | **Maintenance**: Automated tool to upgrade configuration files when the schema evolves (e.g. `v1alpha` to `v1`). | Medium |
+| 23 | **Config Schema Migration** | **Maintenance**: Automated tool to upgrade configuration files when the schema evolves (e.g. `v1alpha` to `v1`). | Medium |
 | 25 | **Environment Variable Linter** | **DevX**: A tool/check to scan config files and verify that all referenced environment variables (e.g. `${API_KEY}`) are actually set in the current shell/env. | Low |
 | 26 | **Linter Git Hook** | **DevX**: Provide a pre-commit hook script that automatically runs `mcpany lint` on staged configuration files to prevent committing insecure configs. | Low |
 | 27 | **Secret Rotation Helper** | **Ops**: A CLI tool to help rotate secrets by identifying which services are using a specific secret key/path and validating the new secret against the upstream. | Medium |
@@ -100,6 +100,8 @@ These features represent the next logical steps for the product, focusing on Ent
 | 38 | **HTTP Upstream Env Validation** | **Consistency**: Extend required environment variable validation to HTTP connections (e.g. for `http_address` or auth headers). | Low |
 | 39 | **Config Snapshot/Restore** | **Ops**: Ability to save current runtime configuration state to a file (snapshot) and restore it later, useful for backing up verified working configs. | Medium |
 | 40 | **Config Inheritance** | **DevX**: Allow `config.yaml` to extend/import other configuration files (e.g. `extends: base.yaml`) to reduce duplication across environments. | High |
+| 41 | **Parallel Connectivity Checks** | **Performance**: Optimize `mcpany config validate --connectivity` to run checks in parallel to speed up validation for large configurations. | Low |
+| 42 | **Deep Auth Validation** | **Security/DevX**: Extend connectivity checks to verify authentication credentials by performing a safe authenticated call (e.g. `/whoami` or similar). | High |
 
 ## 3. Codebase Health
 
