@@ -9,7 +9,6 @@ import (
 	"fmt"
 	"io"
 	"log/slog"
-	"mime/multipart"
 	"net"
 	"net/http"
 	"net/http/httptest"
@@ -149,53 +148,6 @@ upstream_services:
 	})
 }
 
-func TestUploadFile(t *testing.T) {
-	app := NewApplication()
-
-	// Test case 1: Successful file upload
-	t.Run("successful upload", func(t *testing.T) {
-		var buf bytes.Buffer
-		writer := multipart.NewWriter(&buf)
-		fileWriter, err := writer.CreateFormFile("file", "test.txt")
-		require.NoError(t, err)
-
-		fileContent := "this is a test file"
-		_, err = io.WriteString(fileWriter, fileContent)
-		require.NoError(t, err)
-		_ = writer.Close()
-
-		req := httptest.NewRequest(http.MethodPost, "/upload", &buf)
-		req.Header.Set("Content-Type", writer.FormDataContentType())
-		rr := httptest.NewRecorder()
-
-		app.uploadFile(rr, req)
-
-		assert.Equal(t, http.StatusOK, rr.Code)
-		assert.Contains(t, rr.Body.String(), "File 'test.txt' uploaded successfully")
-	})
-
-	// Test case 2: Incorrect HTTP method
-	t.Run("incorrect http method", func(t *testing.T) {
-		req := httptest.NewRequest(http.MethodGet, "/upload", nil)
-		rr := httptest.NewRecorder()
-
-		app.uploadFile(rr, req)
-
-		assert.Equal(t, http.StatusMethodNotAllowed, rr.Code)
-		assert.Equal(t, "method not allowed\n", rr.Body.String())
-	})
-
-	// Test case 3: No file provided
-	t.Run("no file provided", func(t *testing.T) {
-		req := httptest.NewRequest(http.MethodPost, "/upload", nil)
-		rr := httptest.NewRecorder()
-
-		app.uploadFile(rr, req)
-
-		assert.Equal(t, http.StatusBadRequest, rr.Code)
-		assert.Equal(t, "failed to get file from form\n", rr.Body.String())
-	})
-}
 
 // connCountingListener is a net.Listener that wraps another net.Listener and
 // counts the number of accepted connections.

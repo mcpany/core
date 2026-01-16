@@ -10,7 +10,6 @@ import (
 	"crypto/subtle"
 	"encoding/json"
 	"fmt"
-	"html"
 	"io"
 	"net"
 	"net/http"
@@ -75,44 +74,6 @@ var healthCheckClient = &http.Client{
 	},
 }
 
-func (a *Application) uploadFile(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
-		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
-		return
-	}
-
-	// Limit the request body size to 10MB to prevent DoS attacks
-	r.Body = http.MaxBytesReader(w, r.Body, 10<<20)
-
-	file, header, err := r.FormFile("file")
-	if err != nil {
-		http.Error(w, "failed to get file from form", http.StatusBadRequest)
-		return
-	}
-	defer func() { _ = file.Close() }()
-
-	// Clean up any temporary files created by ParseMultipartForm
-	if r.MultipartForm != nil {
-		defer func() {
-			if err := r.MultipartForm.RemoveAll(); err != nil {
-				logging.GetLogger().Error("Failed to remove multipart form files", "error", err)
-			}
-		}()
-	}
-
-	// Consume the file content without writing to disk.
-	// We discard the content to avoid disk usage and potential residue.
-	written, err := io.Copy(io.Discard, file)
-	if err != nil {
-		http.Error(w, "failed to read file", http.StatusInternalServerError)
-		return
-	}
-
-	// Respond with the file name and size
-	// Sanitize the filename to prevent reflected XSS
-	w.Header().Set("Content-Type", "text/plain")
-	_, _ = fmt.Fprintf(w, "File '%s' uploaded successfully (size: %d bytes)", html.EscapeString(header.Filename), written)
-}
 
 // Runner defines the interface for running the MCP Any application. It abstracts
 // the application's entry point, allowing for different implementations or mocks
@@ -1393,7 +1354,6 @@ func (a *Application) runServerMode(
 		_, _ = fmt.Fprintln(w, "OK")
 	}))
 	mux.Handle("/metrics", authMiddleware(metrics.Handler()))
-	mux.Handle("/upload", authMiddleware(http.HandlerFunc(a.uploadFile)))
 
 	// OIDC Routes
 	var oidcConfig *config_v1.OIDCConfig
@@ -1691,9 +1651,6 @@ func (a *Application) createAuthMiddleware(forcePrivateIPOnly bool) func(http.Ha
 			if !forcePrivateIPOnly && apiKey != "" {
 				// Check X-API-Key or Authorization header
 				requestKey := r.Header.Get("X-API-Key")
-				if requestKey == "" {
-					requestKey = r.URL.Query().Get("api_key")
-				}
 				if requestKey == "" {
 					authHeader := r.Header.Get("Authorization")
 					if strings.HasPrefix(authHeader, "Bearer ") {
