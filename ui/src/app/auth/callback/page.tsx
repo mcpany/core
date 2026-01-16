@@ -46,6 +46,8 @@ function OAuthCallbackContent() {
                 const storedState = sessionStorage.getItem('oauth_state');
                 const redirectUrl = sessionStorage.getItem('oauth_redirect_url') || `${window.location.origin}/auth/callback`;
 
+                console.log(`DEBUG: Callback state=${state}, storedState=${storedState}, serviceID=${serviceID}, credentialID=${credentialID}`);
+
                 const storedReturnPath = sessionStorage.getItem('oauth_return_path');
                 if (storedReturnPath) {
                     setReturnPath(storedReturnPath);
@@ -58,6 +60,7 @@ function OAuthCallbackContent() {
                 }
 
                 if (!serviceID && !credentialID) {
+                    console.error('Missing session data for oauth');
                     throw new Error('No service ID or credential ID found in session. Please start the flow again.');
                 }
 

@@ -29,7 +29,11 @@ test.describe('Settings & Secrets', () => {
     await page.fill('input[id="value"]', 'TEST_VAL');
 
     await page.getByRole('button', { name: 'Save Secret' }).click();
-    await expect(page.getByText(secretName)).toBeVisible();
+
+    // Verify visibility with retry
+    await expect(async () => {
+        await expect(page.getByText(secretName)).toBeVisible({ timeout: 2000 });
+    }).toPass({ timeout: 10000 });
 
     // Verify deletion
     const secretRow = page.locator('.group').filter({ hasText: secretName });

@@ -254,7 +254,7 @@ func TestMemoryStore(t *testing.T) {
 
 	t.Run("Service Collections", func(t *testing.T) {
 		s6 := NewStore()
-		collection := &configv1.UpstreamServiceCollectionShare{
+		collection := &configv1.Collection{
 			Name: proto.String("collection-1"),
 			Description: proto.String("Test Collection"),
 		}

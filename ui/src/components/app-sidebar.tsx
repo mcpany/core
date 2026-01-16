@@ -22,7 +22,8 @@ import {
   LogOut,
   Layers,
   ShoppingBag,
-  ShieldCheck
+  ShieldCheck,
+  Zap
 } from "lucide-react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
@@ -115,6 +116,11 @@ const devItems = [
     title: "Prompts",
     url: "/prompts",
     icon: FileText,
+  },
+  {
+    title: "Skills",
+    url: "/skills",
+    icon: Zap,
   },
 ]
 

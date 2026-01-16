@@ -10,24 +10,23 @@ import (
 	"encoding/json"
 	"net/http"
 
+	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/mcpany/core/server/pkg/auth"
 	"github.com/mcpany/core/server/pkg/consts"
 	"github.com/mcpany/core/server/pkg/middleware"
-	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
 func TestAuthMiddleware(t *testing.T) {
-	t.Run("should call next handler when no authenticator is configured", func(t *testing.T) {
+	t.Run("should return error when no authenticator is configured", func(t *testing.T) {
 		authManager := auth.NewManager()
 		mw := middleware.AuthMiddleware(authManager)
 
-		var nextCalled bool
 		nextHandler := func(_ context.Context, _ string, _ mcp.Request) (mcp.Result, error) {
-			nextCalled = true
-			return &mcp.CallToolResult{}, nil
+			t.Fatal("next handler should not be called")
+			return nil, nil
 		}
 
 		handler := mw(nextHandler)
@@ -40,8 +39,8 @@ func TestAuthMiddleware(t *testing.T) {
 		ctx := context.WithValue(context.Background(), "http.request", httpReq)
 
 		_, err = handler(ctx, "test.method", nil)
-		require.NoError(t, err)
-		assert.True(t, nextCalled, "next handler should be called")
+		require.Error(t, err)
+		assert.Contains(t, err.Error(), "unauthorized")
 	})
 
 	t.Run("should return error when authentication fails", func(t *testing.T) {
@@ -119,13 +118,12 @@ func TestAuthMiddleware(t *testing.T) {
 		assert.True(t, nextCalled, "next handler should have been called")
 	})
 
-	t.Run("should call next handler when method format is invalid", func(t *testing.T) {
+	t.Run("should return error when method format is invalid and no global auth", func(t *testing.T) {
 		authManager := auth.NewManager()
 		mw := middleware.AuthMiddleware(authManager)
 
-		var nextCalled bool
 		nextHandler := func(_ context.Context, _ string, _ mcp.Request) (mcp.Result, error) {
-			nextCalled = true
+			t.Fatal("next handler should not be called")
 			return nil, nil
 		}
 
@@ -137,8 +135,8 @@ func TestAuthMiddleware(t *testing.T) {
 
 		// Method without dot
 		_, err = handler(ctx, "invalid_method", nil)
-		require.NoError(t, err)
-		assert.True(t, nextCalled)
+		require.Error(t, err)
+		assert.Contains(t, err.Error(), "unauthorized")
 	})
 
 	t.Run("should return error when http request is missing from context", func(t *testing.T) {

@@ -25,30 +25,34 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-type UpstreamServiceCollectionShare struct {
-	state         protoimpl.MessageState   `protogen:"hybrid.v1"`
-	Services      []*UpstreamServiceConfig `protobuf:"bytes,1,rep,name=services" json:"services,omitempty"`
-	Version       *string                  `protobuf:"bytes,2,opt,name=version" json:"version,omitempty"`
-	Description   *string                  `protobuf:"bytes,3,opt,name=description" json:"description,omitempty"`
-	Name          *string                  `protobuf:"bytes,4,opt,name=name" json:"name,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+type Collection struct {
+	state          protoimpl.MessageState   `protogen:"hybrid.v1"`
+	Name           *string                  `protobuf:"bytes,1,opt,name=name" json:"name,omitempty"`
+	Description    *string                  `protobuf:"bytes,2,opt,name=description" json:"description,omitempty"`
+	Version        *string                  `protobuf:"bytes,3,opt,name=version" json:"version,omitempty"`
+	Priority       *int32                   `protobuf:"varint,4,opt,name=priority" json:"priority,omitempty"`
+	HttpUrl        *string                  `protobuf:"bytes,5,opt,name=http_url" json:"http_url,omitempty"`
+	Authentication *Authentication          `protobuf:"bytes,6,opt,name=authentication" json:"authentication,omitempty"`
+	Services       []*UpstreamServiceConfig `protobuf:"bytes,7,rep,name=services" json:"services,omitempty"`
+	Skills         []string                 `protobuf:"bytes,8,rep,name=skills" json:"skills,omitempty"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
 }
 
-func (x *UpstreamServiceCollectionShare) Reset() {
-	*x = UpstreamServiceCollectionShare{}
+func (x *Collection) Reset() {
+	*x = Collection{}
 	mi := &file_proto_config_v1_collection_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *UpstreamServiceCollectionShare) String() string {
+func (x *Collection) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*UpstreamServiceCollectionShare) ProtoMessage() {}
+func (*Collection) ProtoMessage() {}
 
-func (x *UpstreamServiceCollectionShare) ProtoReflect() protoreflect.Message {
+func (x *Collection) ProtoReflect() protoreflect.Message {
 	mi := &file_proto_config_v1_collection_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -60,100 +64,185 @@ func (x *UpstreamServiceCollectionShare) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-func (x *UpstreamServiceCollectionShare) GetServices() []*UpstreamServiceConfig {
-	if x != nil {
-		return x.Services
-	}
-	return nil
-}
-
-func (x *UpstreamServiceCollectionShare) GetVersion() string {
-	if x != nil && x.Version != nil {
-		return *x.Version
-	}
-	return ""
-}
-
-func (x *UpstreamServiceCollectionShare) GetDescription() string {
-	if x != nil && x.Description != nil {
-		return *x.Description
-	}
-	return ""
-}
-
-func (x *UpstreamServiceCollectionShare) GetName() string {
+func (x *Collection) GetName() string {
 	if x != nil && x.Name != nil {
 		return *x.Name
 	}
 	return ""
 }
 
-func (x *UpstreamServiceCollectionShare) SetServices(v []*UpstreamServiceConfig) {
-	x.Services = v
+func (x *Collection) GetDescription() string {
+	if x != nil && x.Description != nil {
+		return *x.Description
+	}
+	return ""
 }
 
-func (x *UpstreamServiceCollectionShare) SetVersion(v string) {
-	x.Version = &v
+func (x *Collection) GetVersion() string {
+	if x != nil && x.Version != nil {
+		return *x.Version
+	}
+	return ""
 }
 
-func (x *UpstreamServiceCollectionShare) SetDescription(v string) {
-	x.Description = &v
+func (x *Collection) GetPriority() int32 {
+	if x != nil && x.Priority != nil {
+		return *x.Priority
+	}
+	return 0
 }
 
-func (x *UpstreamServiceCollectionShare) SetName(v string) {
+func (x *Collection) GetHttpUrl() string {
+	if x != nil && x.HttpUrl != nil {
+		return *x.HttpUrl
+	}
+	return ""
+}
+
+func (x *Collection) GetAuthentication() *Authentication {
+	if x != nil {
+		return x.Authentication
+	}
+	return nil
+}
+
+func (x *Collection) GetServices() []*UpstreamServiceConfig {
+	if x != nil {
+		return x.Services
+	}
+	return nil
+}
+
+func (x *Collection) GetSkills() []string {
+	if x != nil {
+		return x.Skills
+	}
+	return nil
+}
+
+func (x *Collection) SetName(v string) {
 	x.Name = &v
 }
 
-func (x *UpstreamServiceCollectionShare) HasVersion() bool {
-	if x == nil {
-		return false
-	}
-	return x.Version != nil
+func (x *Collection) SetDescription(v string) {
+	x.Description = &v
 }
 
-func (x *UpstreamServiceCollectionShare) HasDescription() bool {
-	if x == nil {
-		return false
-	}
-	return x.Description != nil
+func (x *Collection) SetVersion(v string) {
+	x.Version = &v
 }
 
-func (x *UpstreamServiceCollectionShare) HasName() bool {
+func (x *Collection) SetPriority(v int32) {
+	x.Priority = &v
+}
+
+func (x *Collection) SetHttpUrl(v string) {
+	x.HttpUrl = &v
+}
+
+func (x *Collection) SetAuthentication(v *Authentication) {
+	x.Authentication = v
+}
+
+func (x *Collection) SetServices(v []*UpstreamServiceConfig) {
+	x.Services = v
+}
+
+func (x *Collection) SetSkills(v []string) {
+	x.Skills = v
+}
+
+func (x *Collection) HasName() bool {
 	if x == nil {
 		return false
 	}
 	return x.Name != nil
 }
 
-func (x *UpstreamServiceCollectionShare) ClearVersion() {
-	x.Version = nil
+func (x *Collection) HasDescription() bool {
+	if x == nil {
+		return false
+	}
+	return x.Description != nil
 }
 
-func (x *UpstreamServiceCollectionShare) ClearDescription() {
-	x.Description = nil
+func (x *Collection) HasVersion() bool {
+	if x == nil {
+		return false
+	}
+	return x.Version != nil
 }
 
-func (x *UpstreamServiceCollectionShare) ClearName() {
+func (x *Collection) HasPriority() bool {
+	if x == nil {
+		return false
+	}
+	return x.Priority != nil
+}
+
+func (x *Collection) HasHttpUrl() bool {
+	if x == nil {
+		return false
+	}
+	return x.HttpUrl != nil
+}
+
+func (x *Collection) HasAuthentication() bool {
+	if x == nil {
+		return false
+	}
+	return x.Authentication != nil
+}
+
+func (x *Collection) ClearName() {
 	x.Name = nil
 }
 
-type UpstreamServiceCollectionShare_builder struct {
-	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
-
-	Services    []*UpstreamServiceConfig
-	Version     *string
-	Description *string
-	Name        *string
+func (x *Collection) ClearDescription() {
+	x.Description = nil
 }
 
-func (b0 UpstreamServiceCollectionShare_builder) Build() *UpstreamServiceCollectionShare {
-	m0 := &UpstreamServiceCollectionShare{}
+func (x *Collection) ClearVersion() {
+	x.Version = nil
+}
+
+func (x *Collection) ClearPriority() {
+	x.Priority = nil
+}
+
+func (x *Collection) ClearHttpUrl() {
+	x.HttpUrl = nil
+}
+
+func (x *Collection) ClearAuthentication() {
+	x.Authentication = nil
+}
+
+type Collection_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	Name           *string
+	Description    *string
+	Version        *string
+	Priority       *int32
+	HttpUrl        *string
+	Authentication *Authentication
+	Services       []*UpstreamServiceConfig
+	Skills         []string
+}
+
+func (b0 Collection_builder) Build() *Collection {
+	m0 := &Collection{}
 	b, x := &b0, m0
 	_, _ = b, x
-	x.Services = b.Services
-	x.Version = b.Version
-	x.Description = b.Description
 	x.Name = b.Name
+	x.Description = b.Description
+	x.Version = b.Version
+	x.Priority = b.Priority
+	x.HttpUrl = b.HttpUrl
+	x.Authentication = b.Authentication
+	x.Services = b.Services
+	x.Skills = b.Skills
 	return m0
 }
 
@@ -161,25 +250,32 @@ var File_proto_config_v1_collection_proto protoreflect.FileDescriptor
 
 const file_proto_config_v1_collection_proto_rawDesc = "" +
 	"\n" +
-	" proto/config/v1/collection.proto\x12\x10mcpany.config.v1\x1a&proto/config/v1/upstream_service.proto\"\xb5\x01\n" +
-	"\x1eUpstreamServiceCollectionShare\x12C\n" +
-	"\bservices\x18\x01 \x03(\v2'.mcpany.config.v1.UpstreamServiceConfigR\bservices\x12\x18\n" +
-	"\aversion\x18\x02 \x01(\tR\aversion\x12 \n" +
-	"\vdescription\x18\x03 \x01(\tR\vdescription\x12\x12\n" +
-	"\x04name\x18\x04 \x01(\tR\x04nameB(Z&github.com/mcpany/core/proto/config/v1b\beditionsp\xe8\a"
+	" proto/config/v1/collection.proto\x12\x10mcpany.config.v1\x1a&proto/config/v1/upstream_service.proto\x1a\x1aproto/config/v1/auth.proto\"\xbb\x02\n" +
+	"\n" +
+	"Collection\x12\x12\n" +
+	"\x04name\x18\x01 \x01(\tR\x04name\x12 \n" +
+	"\vdescription\x18\x02 \x01(\tR\vdescription\x12\x18\n" +
+	"\aversion\x18\x03 \x01(\tR\aversion\x12\x1a\n" +
+	"\bpriority\x18\x04 \x01(\x05R\bpriority\x12\x1a\n" +
+	"\bhttp_url\x18\x05 \x01(\tR\bhttp_url\x12H\n" +
+	"\x0eauthentication\x18\x06 \x01(\v2 .mcpany.config.v1.AuthenticationR\x0eauthentication\x12C\n" +
+	"\bservices\x18\a \x03(\v2'.mcpany.config.v1.UpstreamServiceConfigR\bservices\x12\x16\n" +
+	"\x06skills\x18\b \x03(\tR\x06skillsB(Z&github.com/mcpany/core/proto/config/v1b\beditionsp\xe8\a"
 
 var file_proto_config_v1_collection_proto_msgTypes = make([]protoimpl.MessageInfo, 1)
 var file_proto_config_v1_collection_proto_goTypes = []any{
-	(*UpstreamServiceCollectionShare)(nil), // 0: mcpany.config.v1.UpstreamServiceCollectionShare
-	(*UpstreamServiceConfig)(nil),          // 1: mcpany.config.v1.UpstreamServiceConfig
+	(*Collection)(nil),            // 0: mcpany.config.v1.Collection
+	(*Authentication)(nil),        // 1: mcpany.config.v1.Authentication
+	(*UpstreamServiceConfig)(nil), // 2: mcpany.config.v1.UpstreamServiceConfig
 }
 var file_proto_config_v1_collection_proto_depIdxs = []int32{
-	1, // 0: mcpany.config.v1.UpstreamServiceCollectionShare.services:type_name -> mcpany.config.v1.UpstreamServiceConfig
-	1, // [1:1] is the sub-list for method output_type
-	1, // [1:1] is the sub-list for method input_type
-	1, // [1:1] is the sub-list for extension type_name
-	1, // [1:1] is the sub-list for extension extendee
-	0, // [0:1] is the sub-list for field type_name
+	1, // 0: mcpany.config.v1.Collection.authentication:type_name -> mcpany.config.v1.Authentication
+	2, // 1: mcpany.config.v1.Collection.services:type_name -> mcpany.config.v1.UpstreamServiceConfig
+	2, // [2:2] is the sub-list for method output_type
+	2, // [2:2] is the sub-list for method input_type
+	2, // [2:2] is the sub-list for extension type_name
+	2, // [2:2] is the sub-list for extension extendee
+	0, // [0:2] is the sub-list for field type_name
 }
 
 func init() { file_proto_config_v1_collection_proto_init() }
@@ -188,6 +284,7 @@ func file_proto_config_v1_collection_proto_init() {
 		return
 	}
 	file_proto_config_v1_upstream_service_proto_init()
+	file_proto_config_v1_auth_proto_init()
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{

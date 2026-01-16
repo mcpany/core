@@ -69,10 +69,12 @@ func (u *Upstream) Register(
 ) (string, []*configv1.ToolDefinition, []*configv1.ResourceDefinition, error) {
 	log := logging.GetLogger()
 
-	// Calculate SHA256 for the ID
-	h := sha256.New()
-	h.Write([]byte(serviceConfig.GetName()))
-	serviceConfig.SetId(hex.EncodeToString(h.Sum(nil)))
+	// Calculate SHA256 for the ID if not set
+	if serviceConfig.GetId() == "" {
+		h := sha256.New()
+		h.Write([]byte(serviceConfig.GetName()))
+		serviceConfig.SetId(hex.EncodeToString(h.Sum(nil)))
+	}
 
 	// Sanitize the service name
 	sanitizedName, err := util.SanitizeServiceName(serviceConfig.GetName())

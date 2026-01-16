@@ -178,13 +178,13 @@ func (x AuditConfig_StorageType) Number() protoreflect.EnumNumber {
 
 // McpAnyServerConfig is the root configuration for the entire MCPANY server.
 type McpAnyServerConfig struct {
-	state                                 protoimpl.MessageState        `protogen:"opaque.v1"`
-	xxx_hidden_GlobalSettings             *GlobalSettings               `protobuf:"bytes,1,opt,name=global_settings"`
-	xxx_hidden_UpstreamServices           *[]*UpstreamServiceConfig     `protobuf:"bytes,2,rep,name=upstream_services"`
-	xxx_hidden_UpstreamServiceCollections *[]*UpstreamServiceCollection `protobuf:"bytes,3,rep,name=upstream_service_collections"`
-	xxx_hidden_Users                      *[]*User                      `protobuf:"bytes,4,rep,name=users"`
-	unknownFields                         protoimpl.UnknownFields
-	sizeCache                             protoimpl.SizeCache
+	state                       protoimpl.MessageState    `protogen:"opaque.v1"`
+	xxx_hidden_GlobalSettings   *GlobalSettings           `protobuf:"bytes,1,opt,name=global_settings"`
+	xxx_hidden_UpstreamServices *[]*UpstreamServiceConfig `protobuf:"bytes,2,rep,name=upstream_services"`
+	xxx_hidden_Collections      *[]*Collection            `protobuf:"bytes,3,rep,name=collections"`
+	xxx_hidden_Users            *[]*User                  `protobuf:"bytes,4,rep,name=users"`
+	unknownFields               protoimpl.UnknownFields
+	sizeCache                   protoimpl.SizeCache
 }
 
 func (x *McpAnyServerConfig) Reset() {
@@ -228,10 +228,10 @@ func (x *McpAnyServerConfig) GetUpstreamServices() []*UpstreamServiceConfig {
 	return nil
 }
 
-func (x *McpAnyServerConfig) GetUpstreamServiceCollections() []*UpstreamServiceCollection {
+func (x *McpAnyServerConfig) GetCollections() []*Collection {
 	if x != nil {
-		if x.xxx_hidden_UpstreamServiceCollections != nil {
-			return *x.xxx_hidden_UpstreamServiceCollections
+		if x.xxx_hidden_Collections != nil {
+			return *x.xxx_hidden_Collections
 		}
 	}
 	return nil
@@ -254,8 +254,8 @@ func (x *McpAnyServerConfig) SetUpstreamServices(v []*UpstreamServiceConfig) {
 	x.xxx_hidden_UpstreamServices = &v
 }
 
-func (x *McpAnyServerConfig) SetUpstreamServiceCollections(v []*UpstreamServiceCollection) {
-	x.xxx_hidden_UpstreamServiceCollections = &v
+func (x *McpAnyServerConfig) SetCollections(v []*Collection) {
+	x.xxx_hidden_Collections = &v
 }
 
 func (x *McpAnyServerConfig) SetUsers(v []*User) {
@@ -281,7 +281,7 @@ type McpAnyServerConfig_builder struct {
 	// A list of all configured upstream services that MCP Any can proxy to.
 	UpstreamServices []*UpstreamServiceConfig
 	// A list of upstream service collections to load from.
-	UpstreamServiceCollections []*UpstreamServiceCollection
+	Collections []*Collection
 	// A list of users authorized to access the server.
 	Users []*User
 }
@@ -292,7 +292,7 @@ func (b0 McpAnyServerConfig_builder) Build() *McpAnyServerConfig {
 	_, _ = b, x
 	x.xxx_hidden_GlobalSettings = b.GlobalSettings
 	x.xxx_hidden_UpstreamServices = &b.UpstreamServices
-	x.xxx_hidden_UpstreamServiceCollections = &b.UpstreamServiceCollections
+	x.xxx_hidden_Collections = &b.Collections
 	x.xxx_hidden_Users = &b.Users
 	return m0
 }
@@ -300,8 +300,8 @@ func (b0 McpAnyServerConfig_builder) Build() *McpAnyServerConfig {
 // Secret defines a secret value.
 type Secret struct {
 	state                  protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_Id          *string                `protobuf:"bytes,1,opt,name=id"`
-	xxx_hidden_Name        *string                `protobuf:"bytes,2,opt,name=name"`
+	xxx_hidden_Name        *string                `protobuf:"bytes,1,opt,name=name"`
+	xxx_hidden_Id          *string                `protobuf:"bytes,2,opt,name=id"`
 	xxx_hidden_Key         *string                `protobuf:"bytes,3,opt,name=key"`
 	xxx_hidden_Value       *string                `protobuf:"bytes,4,opt,name=value"`
 	xxx_hidden_Provider    *string                `protobuf:"bytes,5,opt,name=provider"`
@@ -338,20 +338,20 @@ func (x *Secret) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-func (x *Secret) GetId() string {
+func (x *Secret) GetName() string {
 	if x != nil {
-		if x.xxx_hidden_Id != nil {
-			return *x.xxx_hidden_Id
+		if x.xxx_hidden_Name != nil {
+			return *x.xxx_hidden_Name
 		}
 		return ""
 	}
 	return ""
 }
 
-func (x *Secret) GetName() string {
+func (x *Secret) GetId() string {
 	if x != nil {
-		if x.xxx_hidden_Name != nil {
-			return *x.xxx_hidden_Name
+		if x.xxx_hidden_Id != nil {
+			return *x.xxx_hidden_Id
 		}
 		return ""
 	}
@@ -408,13 +408,13 @@ func (x *Secret) GetCreatedAt() string {
 	return ""
 }
 
-func (x *Secret) SetId(v string) {
-	x.xxx_hidden_Id = &v
+func (x *Secret) SetName(v string) {
+	x.xxx_hidden_Name = &v
 	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 7)
 }
 
-func (x *Secret) SetName(v string) {
-	x.xxx_hidden_Name = &v
+func (x *Secret) SetId(v string) {
+	x.xxx_hidden_Id = &v
 	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 7)
 }
 
@@ -443,14 +443,14 @@ func (x *Secret) SetCreatedAt(v string) {
 	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 6, 7)
 }
 
-func (x *Secret) HasId() bool {
+func (x *Secret) HasName() bool {
 	if x == nil {
 		return false
 	}
 	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
 }
 
-func (x *Secret) HasName() bool {
+func (x *Secret) HasId() bool {
 	if x == nil {
 		return false
 	}
@@ -492,14 +492,14 @@ func (x *Secret) HasCreatedAt() bool {
 	return protoimpl.X.Present(&(x.XXX_presence[0]), 6)
 }
 
-func (x *Secret) ClearId() {
+func (x *Secret) ClearName() {
 	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
-	x.xxx_hidden_Id = nil
+	x.xxx_hidden_Name = nil
 }
 
-func (x *Secret) ClearName() {
+func (x *Secret) ClearId() {
 	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 1)
-	x.xxx_hidden_Name = nil
+	x.xxx_hidden_Id = nil
 }
 
 func (x *Secret) ClearKey() {
@@ -530,10 +530,10 @@ func (x *Secret) ClearCreatedAt() {
 type Secret_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	// id is the unique identifier for the secret.
-	Id *string
 	// name is the human-readable name of the secret.
 	Name *string
+	// id is the unique identifier for the secret.
+	Id *string
 	// key is the key used to reference the secret (e.g. env var name).
 	Key *string
 	// value is the secret value (encrypted or raw depending on context).
@@ -550,13 +550,13 @@ func (b0 Secret_builder) Build() *Secret {
 	m0 := &Secret{}
 	b, x := &b0, m0
 	_, _ = b, x
-	if b.Id != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 7)
-		x.xxx_hidden_Id = b.Id
-	}
 	if b.Name != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 7)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 7)
 		x.xxx_hidden_Name = b.Name
+	}
+	if b.Id != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 7)
+		x.xxx_hidden_Id = b.Id
 	}
 	if b.Key != nil {
 		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 7)
@@ -643,27 +643,27 @@ func (b0 SecretList_builder) Build() *SecretList {
 type GlobalSettings struct {
 	state                         protoimpl.MessageState   `protogen:"opaque.v1"`
 	xxx_hidden_McpListenAddress   *string                  `protobuf:"bytes,1,opt,name=mcp_listen_address"`
-	xxx_hidden_LogLevel           GlobalSettings_LogLevel  `protobuf:"varint,3,opt,name=log_level,enum=mcpany.config.v1.GlobalSettings_LogLevel"`
-	xxx_hidden_MessageBus         *bus.MessageBus          `protobuf:"bytes,4,opt,name=message_bus"`
-	xxx_hidden_ApiKey             *string                  `protobuf:"bytes,5,opt,name=api_key"`
-	xxx_hidden_Profiles           []string                 `protobuf:"bytes,6,rep,name=profiles"`
-	xxx_hidden_AllowedIps         []string                 `protobuf:"bytes,7,rep,name=allowed_ips"`
-	xxx_hidden_Audit              *AuditConfig             `protobuf:"bytes,8,opt,name=audit"`
-	xxx_hidden_ProfileDefinitions *[]*ProfileDefinition    `protobuf:"bytes,9,rep,name=profile_definitions"`
-	xxx_hidden_LogFormat          GlobalSettings_LogFormat `protobuf:"varint,10,opt,name=log_format,enum=mcpany.config.v1.GlobalSettings_LogFormat"`
-	xxx_hidden_DbPath             *string                  `protobuf:"bytes,11,opt,name=db_path"`
-	xxx_hidden_DbDsn              *string                  `protobuf:"bytes,14,opt,name=db_dsn"`
-	xxx_hidden_DbDriver           *string                  `protobuf:"bytes,15,opt,name=db_driver"`
-	xxx_hidden_Middlewares        *[]*Middleware           `protobuf:"bytes,12,rep,name=middlewares"`
-	xxx_hidden_Dlp                *DLPConfig               `protobuf:"bytes,13,opt,name=dlp"`
-	xxx_hidden_GcSettings         *GCSettings              `protobuf:"bytes,16,opt,name=gc_settings"`
-	xxx_hidden_Oidc               *OIDCConfig              `protobuf:"bytes,17,opt,name=oidc"`
-	xxx_hidden_RateLimit          *RateLimitConfig         `protobuf:"bytes,18,opt,name=rate_limit"`
-	xxx_hidden_Telemetry          *TelemetryConfig         `protobuf:"bytes,19,opt,name=telemetry"`
-	xxx_hidden_GithubApiUrl       *string                  `protobuf:"bytes,20,opt,name=github_api_url"`
-	xxx_hidden_UseSudoForDocker   bool                     `protobuf:"varint,21,opt,name=use_sudo_for_docker"`
-	xxx_hidden_AllowedFilePaths   []string                 `protobuf:"bytes,22,rep,name=allowed_file_paths"`
-	xxx_hidden_AllowedOrigins     []string                 `protobuf:"bytes,23,rep,name=allowed_origins"`
+	xxx_hidden_LogLevel           GlobalSettings_LogLevel  `protobuf:"varint,2,opt,name=log_level,enum=mcpany.config.v1.GlobalSettings_LogLevel"`
+	xxx_hidden_ApiKey             *string                  `protobuf:"bytes,3,opt,name=api_key"`
+	xxx_hidden_LogFormat          GlobalSettings_LogFormat `protobuf:"varint,4,opt,name=log_format,enum=mcpany.config.v1.GlobalSettings_LogFormat"`
+	xxx_hidden_DbPath             *string                  `protobuf:"bytes,5,opt,name=db_path"`
+	xxx_hidden_DbDsn              *string                  `protobuf:"bytes,6,opt,name=db_dsn"`
+	xxx_hidden_DbDriver           *string                  `protobuf:"bytes,7,opt,name=db_driver"`
+	xxx_hidden_GithubApiUrl       *string                  `protobuf:"bytes,8,opt,name=github_api_url"`
+	xxx_hidden_UseSudoForDocker   bool                     `protobuf:"varint,9,opt,name=use_sudo_for_docker"`
+	xxx_hidden_MessageBus         *bus.MessageBus          `protobuf:"bytes,10,opt,name=message_bus"`
+	xxx_hidden_Audit              *AuditConfig             `protobuf:"bytes,11,opt,name=audit"`
+	xxx_hidden_Dlp                *DLPConfig               `protobuf:"bytes,12,opt,name=dlp"`
+	xxx_hidden_GcSettings         *GCSettings              `protobuf:"bytes,13,opt,name=gc_settings"`
+	xxx_hidden_Oidc               *OIDCConfig              `protobuf:"bytes,14,opt,name=oidc"`
+	xxx_hidden_RateLimit          *RateLimitConfig         `protobuf:"bytes,15,opt,name=rate_limit"`
+	xxx_hidden_Telemetry          *TelemetryConfig         `protobuf:"bytes,16,opt,name=telemetry"`
+	xxx_hidden_Profiles           []string                 `protobuf:"bytes,17,rep,name=profiles"`
+	xxx_hidden_AllowedIps         []string                 `protobuf:"bytes,18,rep,name=allowed_ips"`
+	xxx_hidden_ProfileDefinitions *[]*ProfileDefinition    `protobuf:"bytes,19,rep,name=profile_definitions"`
+	xxx_hidden_Middlewares        *[]*Middleware           `protobuf:"bytes,20,rep,name=middlewares"`
+	xxx_hidden_AllowedFilePaths   []string                 `protobuf:"bytes,21,rep,name=allowed_file_paths"`
+	xxx_hidden_AllowedOrigins     []string                 `protobuf:"bytes,22,rep,name=allowed_origins"`
 	XXX_raceDetectHookData        protoimpl.RaceDetectHookData
 	XXX_presence                  [1]uint32
 	unknownFields                 protoimpl.UnknownFields
@@ -714,13 +714,6 @@ func (x *GlobalSettings) GetLogLevel() GlobalSettings_LogLevel {
 	return GlobalSettings_LOG_LEVEL_UNSPECIFIED
 }
 
-func (x *GlobalSettings) GetMessageBus() *bus.MessageBus {
-	if x != nil {
-		return x.xxx_hidden_MessageBus
-	}
-	return nil
-}
-
 func (x *GlobalSettings) GetApiKey() string {
 	if x != nil {
 		if x.xxx_hidden_ApiKey != nil {
@@ -731,39 +724,9 @@ func (x *GlobalSettings) GetApiKey() string {
 	return ""
 }
 
-func (x *GlobalSettings) GetProfiles() []string {
-	if x != nil {
-		return x.xxx_hidden_Profiles
-	}
-	return nil
-}
-
-func (x *GlobalSettings) GetAllowedIps() []string {
-	if x != nil {
-		return x.xxx_hidden_AllowedIps
-	}
-	return nil
-}
-
-func (x *GlobalSettings) GetAudit() *AuditConfig {
-	if x != nil {
-		return x.xxx_hidden_Audit
-	}
-	return nil
-}
-
-func (x *GlobalSettings) GetProfileDefinitions() []*ProfileDefinition {
-	if x != nil {
-		if x.xxx_hidden_ProfileDefinitions != nil {
-			return *x.xxx_hidden_ProfileDefinitions
-		}
-	}
-	return nil
-}
-
 func (x *GlobalSettings) GetLogFormat() GlobalSettings_LogFormat {
 	if x != nil {
-		if protoimpl.X.Present(&(x.XXX_presence[0]), 8) {
+		if protoimpl.X.Present(&(x.XXX_presence[0]), 3) {
 			return x.xxx_hidden_LogFormat
 		}
 	}
@@ -800,11 +763,33 @@ func (x *GlobalSettings) GetDbDriver() string {
 	return ""
 }
 
-func (x *GlobalSettings) GetMiddlewares() []*Middleware {
+func (x *GlobalSettings) GetGithubApiUrl() string {
 	if x != nil {
-		if x.xxx_hidden_Middlewares != nil {
-			return *x.xxx_hidden_Middlewares
+		if x.xxx_hidden_GithubApiUrl != nil {
+			return *x.xxx_hidden_GithubApiUrl
 		}
+		return ""
+	}
+	return ""
+}
+
+func (x *GlobalSettings) GetUseSudoForDocker() bool {
+	if x != nil {
+		return x.xxx_hidden_UseSudoForDocker
+	}
+	return false
+}
+
+func (x *GlobalSettings) GetMessageBus() *bus.MessageBus {
+	if x != nil {
+		return x.xxx_hidden_MessageBus
+	}
+	return nil
+}
+
+func (x *GlobalSettings) GetAudit() *AuditConfig {
+	if x != nil {
+		return x.xxx_hidden_Audit
 	}
 	return nil
 }
@@ -844,21 +829,36 @@ func (x *GlobalSettings) GetTelemetry() *TelemetryConfig {
 	return nil
 }
 
-func (x *GlobalSettings) GetGithubApiUrl() string {
+func (x *GlobalSettings) GetProfiles() []string {
 	if x != nil {
-		if x.xxx_hidden_GithubApiUrl != nil {
-			return *x.xxx_hidden_GithubApiUrl
-		}
-		return ""
+		return x.xxx_hidden_Profiles
 	}
-	return ""
+	return nil
 }
 
-func (x *GlobalSettings) GetUseSudoForDocker() bool {
+func (x *GlobalSettings) GetAllowedIps() []string {
 	if x != nil {
-		return x.xxx_hidden_UseSudoForDocker
+		return x.xxx_hidden_AllowedIps
 	}
-	return false
+	return nil
+}
+
+func (x *GlobalSettings) GetProfileDefinitions() []*ProfileDefinition {
+	if x != nil {
+		if x.xxx_hidden_ProfileDefinitions != nil {
+			return *x.xxx_hidden_ProfileDefinitions
+		}
+	}
+	return nil
+}
+
+func (x *GlobalSettings) GetMiddlewares() []*Middleware {
+	if x != nil {
+		if x.xxx_hidden_Middlewares != nil {
+			return *x.xxx_hidden_Middlewares
+		}
+	}
+	return nil
 }
 
 func (x *GlobalSettings) GetAllowedFilePaths() []string {
@@ -885,53 +885,47 @@ func (x *GlobalSettings) SetLogLevel(v GlobalSettings_LogLevel) {
 	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 22)
 }
 
-func (x *GlobalSettings) SetMessageBus(v *bus.MessageBus) {
-	x.xxx_hidden_MessageBus = v
-}
-
 func (x *GlobalSettings) SetApiKey(v string) {
 	x.xxx_hidden_ApiKey = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 3, 22)
-}
-
-func (x *GlobalSettings) SetProfiles(v []string) {
-	x.xxx_hidden_Profiles = v
-}
-
-func (x *GlobalSettings) SetAllowedIps(v []string) {
-	x.xxx_hidden_AllowedIps = v
-}
-
-func (x *GlobalSettings) SetAudit(v *AuditConfig) {
-	x.xxx_hidden_Audit = v
-}
-
-func (x *GlobalSettings) SetProfileDefinitions(v []*ProfileDefinition) {
-	x.xxx_hidden_ProfileDefinitions = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 22)
 }
 
 func (x *GlobalSettings) SetLogFormat(v GlobalSettings_LogFormat) {
 	x.xxx_hidden_LogFormat = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 8, 22)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 3, 22)
 }
 
 func (x *GlobalSettings) SetDbPath(v string) {
 	x.xxx_hidden_DbPath = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 9, 22)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 4, 22)
 }
 
 func (x *GlobalSettings) SetDbDsn(v string) {
 	x.xxx_hidden_DbDsn = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 10, 22)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 5, 22)
 }
 
 func (x *GlobalSettings) SetDbDriver(v string) {
 	x.xxx_hidden_DbDriver = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 11, 22)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 6, 22)
 }
 
-func (x *GlobalSettings) SetMiddlewares(v []*Middleware) {
-	x.xxx_hidden_Middlewares = &v
+func (x *GlobalSettings) SetGithubApiUrl(v string) {
+	x.xxx_hidden_GithubApiUrl = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 7, 22)
+}
+
+func (x *GlobalSettings) SetUseSudoForDocker(v bool) {
+	x.xxx_hidden_UseSudoForDocker = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 8, 22)
+}
+
+func (x *GlobalSettings) SetMessageBus(v *bus.MessageBus) {
+	x.xxx_hidden_MessageBus = v
+}
+
+func (x *GlobalSettings) SetAudit(v *AuditConfig) {
+	x.xxx_hidden_Audit = v
 }
 
 func (x *GlobalSettings) SetDlp(v *DLPConfig) {
@@ -954,14 +948,20 @@ func (x *GlobalSettings) SetTelemetry(v *TelemetryConfig) {
 	x.xxx_hidden_Telemetry = v
 }
 
-func (x *GlobalSettings) SetGithubApiUrl(v string) {
-	x.xxx_hidden_GithubApiUrl = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 18, 22)
+func (x *GlobalSettings) SetProfiles(v []string) {
+	x.xxx_hidden_Profiles = v
 }
 
-func (x *GlobalSettings) SetUseSudoForDocker(v bool) {
-	x.xxx_hidden_UseSudoForDocker = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 19, 22)
+func (x *GlobalSettings) SetAllowedIps(v []string) {
+	x.xxx_hidden_AllowedIps = v
+}
+
+func (x *GlobalSettings) SetProfileDefinitions(v []*ProfileDefinition) {
+	x.xxx_hidden_ProfileDefinitions = &v
+}
+
+func (x *GlobalSettings) SetMiddlewares(v []*Middleware) {
+	x.xxx_hidden_Middlewares = &v
 }
 
 func (x *GlobalSettings) SetAllowedFilePaths(v []string) {
@@ -986,6 +986,55 @@ func (x *GlobalSettings) HasLogLevel() bool {
 	return protoimpl.X.Present(&(x.XXX_presence[0]), 1)
 }
 
+func (x *GlobalSettings) HasApiKey() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 2)
+}
+
+func (x *GlobalSettings) HasLogFormat() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 3)
+}
+
+func (x *GlobalSettings) HasDbPath() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 4)
+}
+
+func (x *GlobalSettings) HasDbDsn() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 5)
+}
+
+func (x *GlobalSettings) HasDbDriver() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 6)
+}
+
+func (x *GlobalSettings) HasGithubApiUrl() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 7)
+}
+
+func (x *GlobalSettings) HasUseSudoForDocker() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 8)
+}
+
 func (x *GlobalSettings) HasMessageBus() bool {
 	if x == nil {
 		return false
@@ -993,46 +1042,11 @@ func (x *GlobalSettings) HasMessageBus() bool {
 	return x.xxx_hidden_MessageBus != nil
 }
 
-func (x *GlobalSettings) HasApiKey() bool {
-	if x == nil {
-		return false
-	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 3)
-}
-
 func (x *GlobalSettings) HasAudit() bool {
 	if x == nil {
 		return false
 	}
 	return x.xxx_hidden_Audit != nil
-}
-
-func (x *GlobalSettings) HasLogFormat() bool {
-	if x == nil {
-		return false
-	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 8)
-}
-
-func (x *GlobalSettings) HasDbPath() bool {
-	if x == nil {
-		return false
-	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 9)
-}
-
-func (x *GlobalSettings) HasDbDsn() bool {
-	if x == nil {
-		return false
-	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 10)
-}
-
-func (x *GlobalSettings) HasDbDriver() bool {
-	if x == nil {
-		return false
-	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 11)
 }
 
 func (x *GlobalSettings) HasDlp() bool {
@@ -1070,20 +1084,6 @@ func (x *GlobalSettings) HasTelemetry() bool {
 	return x.xxx_hidden_Telemetry != nil
 }
 
-func (x *GlobalSettings) HasGithubApiUrl() bool {
-	if x == nil {
-		return false
-	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 18)
-}
-
-func (x *GlobalSettings) HasUseSudoForDocker() bool {
-	if x == nil {
-		return false
-	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 19)
-}
-
 func (x *GlobalSettings) ClearMcpListenAddress() {
 	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
 	x.xxx_hidden_McpListenAddress = nil
@@ -1094,37 +1094,47 @@ func (x *GlobalSettings) ClearLogLevel() {
 	x.xxx_hidden_LogLevel = GlobalSettings_LOG_LEVEL_UNSPECIFIED
 }
 
-func (x *GlobalSettings) ClearMessageBus() {
-	x.xxx_hidden_MessageBus = nil
-}
-
 func (x *GlobalSettings) ClearApiKey() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 3)
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 2)
 	x.xxx_hidden_ApiKey = nil
 }
 
-func (x *GlobalSettings) ClearAudit() {
-	x.xxx_hidden_Audit = nil
-}
-
 func (x *GlobalSettings) ClearLogFormat() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 8)
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 3)
 	x.xxx_hidden_LogFormat = GlobalSettings_LOG_FORMAT_UNSPECIFIED
 }
 
 func (x *GlobalSettings) ClearDbPath() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 9)
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 4)
 	x.xxx_hidden_DbPath = nil
 }
 
 func (x *GlobalSettings) ClearDbDsn() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 10)
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 5)
 	x.xxx_hidden_DbDsn = nil
 }
 
 func (x *GlobalSettings) ClearDbDriver() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 11)
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 6)
 	x.xxx_hidden_DbDriver = nil
+}
+
+func (x *GlobalSettings) ClearGithubApiUrl() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 7)
+	x.xxx_hidden_GithubApiUrl = nil
+}
+
+func (x *GlobalSettings) ClearUseSudoForDocker() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 8)
+	x.xxx_hidden_UseSudoForDocker = false
+}
+
+func (x *GlobalSettings) ClearMessageBus() {
+	x.xxx_hidden_MessageBus = nil
+}
+
+func (x *GlobalSettings) ClearAudit() {
+	x.xxx_hidden_Audit = nil
 }
 
 func (x *GlobalSettings) ClearDlp() {
@@ -1147,16 +1157,6 @@ func (x *GlobalSettings) ClearTelemetry() {
 	x.xxx_hidden_Telemetry = nil
 }
 
-func (x *GlobalSettings) ClearGithubApiUrl() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 18)
-	x.xxx_hidden_GithubApiUrl = nil
-}
-
-func (x *GlobalSettings) ClearUseSudoForDocker() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 19)
-	x.xxx_hidden_UseSudoForDocker = false
-}
-
 type GlobalSettings_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
@@ -1164,18 +1164,8 @@ type GlobalSettings_builder struct {
 	McpListenAddress *string
 	// The log level for the server.
 	LogLevel *GlobalSettings_LogLevel
-	// The message bus configuration.
-	MessageBus *bus.MessageBus
 	// The API key used for authentication.
 	ApiKey *string
-	// The profiles to enable.
-	Profiles []string
-	// The allowed IPs to access the server.
-	AllowedIps []string
-	// Audit logging configuration.
-	Audit *AuditConfig
-	// The definitions of profiles.
-	ProfileDefinitions []*ProfileDefinition
 	// The log format for the server.
 	LogFormat *GlobalSettings_LogFormat
 	// The path to the database file.
@@ -1184,8 +1174,14 @@ type GlobalSettings_builder struct {
 	DbDsn *string
 	// The database driver (sqlite, postgres).
 	DbDriver *string
-	// The list of middlewares to enable and their configuration.
-	Middlewares []*Middleware
+	// GitHub API URL for self-updates (optional).
+	GithubApiUrl *string
+	// Whether to use sudo for Docker commands.
+	UseSudoForDocker *bool
+	// The message bus configuration.
+	MessageBus *bus.MessageBus
+	// Audit logging configuration.
+	Audit *AuditConfig
 	// DLP configuration.
 	Dlp *DLPConfig
 	// Garbage Collection configuration.
@@ -1196,10 +1192,14 @@ type GlobalSettings_builder struct {
 	RateLimit *RateLimitConfig
 	// Telemetry configuration.
 	Telemetry *TelemetryConfig
-	// GitHub API URL for self-updates (optional).
-	GithubApiUrl *string
-	// Whether to use sudo for Docker commands.
-	UseSudoForDocker *bool
+	// The profiles to enable.
+	Profiles []string
+	// The allowed IPs to access the server.
+	AllowedIps []string
+	// The definitions of profiles.
+	ProfileDefinitions []*ProfileDefinition
+	// The list of middlewares to enable and their configuration.
+	Middlewares []*Middleware
 	// Allowed file paths for validation.
 	AllowedFilePaths []string
 	// Allowed origins for CORS.
@@ -1218,45 +1218,45 @@ func (b0 GlobalSettings_builder) Build() *GlobalSettings {
 		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 22)
 		x.xxx_hidden_LogLevel = *b.LogLevel
 	}
-	x.xxx_hidden_MessageBus = b.MessageBus
 	if b.ApiKey != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 3, 22)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 22)
 		x.xxx_hidden_ApiKey = b.ApiKey
 	}
-	x.xxx_hidden_Profiles = b.Profiles
-	x.xxx_hidden_AllowedIps = b.AllowedIps
-	x.xxx_hidden_Audit = b.Audit
-	x.xxx_hidden_ProfileDefinitions = &b.ProfileDefinitions
 	if b.LogFormat != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 8, 22)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 3, 22)
 		x.xxx_hidden_LogFormat = *b.LogFormat
 	}
 	if b.DbPath != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 9, 22)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 4, 22)
 		x.xxx_hidden_DbPath = b.DbPath
 	}
 	if b.DbDsn != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 10, 22)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 5, 22)
 		x.xxx_hidden_DbDsn = b.DbDsn
 	}
 	if b.DbDriver != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 11, 22)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 6, 22)
 		x.xxx_hidden_DbDriver = b.DbDriver
 	}
-	x.xxx_hidden_Middlewares = &b.Middlewares
+	if b.GithubApiUrl != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 7, 22)
+		x.xxx_hidden_GithubApiUrl = b.GithubApiUrl
+	}
+	if b.UseSudoForDocker != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 8, 22)
+		x.xxx_hidden_UseSudoForDocker = *b.UseSudoForDocker
+	}
+	x.xxx_hidden_MessageBus = b.MessageBus
+	x.xxx_hidden_Audit = b.Audit
 	x.xxx_hidden_Dlp = b.Dlp
 	x.xxx_hidden_GcSettings = b.GcSettings
 	x.xxx_hidden_Oidc = b.Oidc
 	x.xxx_hidden_RateLimit = b.RateLimit
 	x.xxx_hidden_Telemetry = b.Telemetry
-	if b.GithubApiUrl != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 18, 22)
-		x.xxx_hidden_GithubApiUrl = b.GithubApiUrl
-	}
-	if b.UseSudoForDocker != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 19, 22)
-		x.xxx_hidden_UseSudoForDocker = *b.UseSudoForDocker
-	}
+	x.xxx_hidden_Profiles = b.Profiles
+	x.xxx_hidden_AllowedIps = b.AllowedIps
+	x.xxx_hidden_ProfileDefinitions = &b.ProfileDefinitions
+	x.xxx_hidden_Middlewares = &b.Middlewares
 	x.xxx_hidden_AllowedFilePaths = b.AllowedFilePaths
 	x.xxx_hidden_AllowedOrigins = b.AllowedOrigins
 	return m0
@@ -2945,15 +2945,15 @@ var File_proto_config_v1_config_proto protoreflect.FileDescriptor
 
 const file_proto_config_v1_config_proto_rawDesc = "" +
 	"\n" +
-	"\x1cproto/config/v1/config.proto\x12\x10mcpany.config.v1\x1a\x13proto/bus/bus.proto\x1a&proto/config/v1/upstream_service.proto\x1a\x1aproto/config/v1/auth.proto\x1a\x1dproto/config/v1/profile.proto\x1a\x1aproto/config/v1/user.proto\"\xd6\x02\n" +
+	"\x1cproto/config/v1/config.proto\x12\x10mcpany.config.v1\x1a\x13proto/bus/bus.proto\x1a&proto/config/v1/upstream_service.proto\x1a\x1aproto/config/v1/auth.proto\x1a\x1dproto/config/v1/profile.proto\x1a proto/config/v1/collection.proto\x1a\x1aproto/config/v1/user.proto\"\xa5\x02\n" +
 	"\x12McpAnyServerConfig\x12J\n" +
 	"\x0fglobal_settings\x18\x01 \x01(\v2 .mcpany.config.v1.GlobalSettingsR\x0fglobal_settings\x12U\n" +
-	"\x11upstream_services\x18\x02 \x03(\v2'.mcpany.config.v1.UpstreamServiceConfigR\x11upstream_services\x12o\n" +
-	"\x1cupstream_service_collections\x18\x03 \x03(\v2+.mcpany.config.v1.UpstreamServiceCollectionR\x1cupstream_service_collections\x12,\n" +
+	"\x11upstream_services\x18\x02 \x03(\v2'.mcpany.config.v1.UpstreamServiceConfigR\x11upstream_services\x12>\n" +
+	"\vcollections\x18\x03 \x03(\v2\x1c.mcpany.config.v1.CollectionR\vcollections\x12,\n" +
 	"\x05users\x18\x04 \x03(\v2\x16.mcpany.config.v1.UserR\x05users\"\xac\x01\n" +
-	"\x06Secret\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\tR\x02id\x12\x12\n" +
-	"\x04name\x18\x02 \x01(\tR\x04name\x12\x10\n" +
+	"\x06Secret\x12\x12\n" +
+	"\x04name\x18\x01 \x01(\tR\x04name\x12\x0e\n" +
+	"\x02id\x18\x02 \x01(\tR\x02id\x12\x10\n" +
 	"\x03key\x18\x03 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x04 \x01(\tR\x05value\x12\x1a\n" +
 	"\bprovider\x18\x05 \x01(\tR\bprovider\x12\x1b\n" +
@@ -2962,36 +2962,36 @@ const file_proto_config_v1_config_proto_rawDesc = "" +
 	"created_at\x18\a \x01(\tR\tcreatedAt\"@\n" +
 	"\n" +
 	"SecretList\x122\n" +
-	"\asecrets\x18\x01 \x03(\v2\x18.mcpany.config.v1.SecretR\asecrets\"\xa7\n" +
+	"\asecrets\x18\x01 \x03(\v2\x18.mcpany.config.v1.SecretR\asecrets\"\xa1\n" +
 	"\n" +
 	"\x0eGlobalSettings\x12.\n" +
 	"\x12mcp_listen_address\x18\x01 \x01(\tR\x12mcp_listen_address\x12G\n" +
-	"\tlog_level\x18\x03 \x01(\x0e2).mcpany.config.v1.GlobalSettings.LogLevelR\tlog_level\x121\n" +
-	"\vmessage_bus\x18\x04 \x01(\v2\x0f.bus.MessageBusR\vmessage_bus\x12\x18\n" +
-	"\aapi_key\x18\x05 \x01(\tR\aapi_key\x12\x1a\n" +
-	"\bprofiles\x18\x06 \x03(\tR\bprofiles\x12 \n" +
-	"\vallowed_ips\x18\a \x03(\tR\vallowed_ips\x123\n" +
-	"\x05audit\x18\b \x01(\v2\x1d.mcpany.config.v1.AuditConfigR\x05audit\x12U\n" +
-	"\x13profile_definitions\x18\t \x03(\v2#.mcpany.config.v1.ProfileDefinitionR\x13profile_definitions\x12J\n" +
+	"\tlog_level\x18\x02 \x01(\x0e2).mcpany.config.v1.GlobalSettings.LogLevelR\tlog_level\x12\x18\n" +
+	"\aapi_key\x18\x03 \x01(\tR\aapi_key\x12J\n" +
 	"\n" +
-	"log_format\x18\n" +
-	" \x01(\x0e2*.mcpany.config.v1.GlobalSettings.LogFormatR\n" +
+	"log_format\x18\x04 \x01(\x0e2*.mcpany.config.v1.GlobalSettings.LogFormatR\n" +
 	"log_format\x12\x18\n" +
-	"\adb_path\x18\v \x01(\tR\adb_path\x12\x16\n" +
-	"\x06db_dsn\x18\x0e \x01(\tR\x06db_dsn\x12\x1c\n" +
-	"\tdb_driver\x18\x0f \x01(\tR\tdb_driver\x12>\n" +
-	"\vmiddlewares\x18\f \x03(\v2\x1c.mcpany.config.v1.MiddlewareR\vmiddlewares\x12-\n" +
-	"\x03dlp\x18\r \x01(\v2\x1b.mcpany.config.v1.DLPConfigR\x03dlp\x12>\n" +
-	"\vgc_settings\x18\x10 \x01(\v2\x1c.mcpany.config.v1.GCSettingsR\vgc_settings\x120\n" +
-	"\x04oidc\x18\x11 \x01(\v2\x1c.mcpany.config.v1.OIDCConfigR\x04oidc\x12A\n" +
+	"\adb_path\x18\x05 \x01(\tR\adb_path\x12\x16\n" +
+	"\x06db_dsn\x18\x06 \x01(\tR\x06db_dsn\x12\x1c\n" +
+	"\tdb_driver\x18\a \x01(\tR\tdb_driver\x12&\n" +
+	"\x0egithub_api_url\x18\b \x01(\tR\x0egithub_api_url\x120\n" +
+	"\x13use_sudo_for_docker\x18\t \x01(\bR\x13use_sudo_for_docker\x121\n" +
+	"\vmessage_bus\x18\n" +
+	" \x01(\v2\x0f.bus.MessageBusR\vmessage_bus\x123\n" +
+	"\x05audit\x18\v \x01(\v2\x1d.mcpany.config.v1.AuditConfigR\x05audit\x12-\n" +
+	"\x03dlp\x18\f \x01(\v2\x1b.mcpany.config.v1.DLPConfigR\x03dlp\x12>\n" +
+	"\vgc_settings\x18\r \x01(\v2\x1c.mcpany.config.v1.GCSettingsR\vgc_settings\x120\n" +
+	"\x04oidc\x18\x0e \x01(\v2\x1c.mcpany.config.v1.OIDCConfigR\x04oidc\x12A\n" +
 	"\n" +
-	"rate_limit\x18\x12 \x01(\v2!.mcpany.config.v1.RateLimitConfigR\n" +
+	"rate_limit\x18\x0f \x01(\v2!.mcpany.config.v1.RateLimitConfigR\n" +
 	"rate_limit\x12?\n" +
-	"\ttelemetry\x18\x13 \x01(\v2!.mcpany.config.v1.TelemetryConfigR\ttelemetry\x12&\n" +
-	"\x0egithub_api_url\x18\x14 \x01(\tR\x0egithub_api_url\x120\n" +
-	"\x13use_sudo_for_docker\x18\x15 \x01(\bR\x13use_sudo_for_docker\x12.\n" +
-	"\x12allowed_file_paths\x18\x16 \x03(\tR\x12allowed_file_paths\x12(\n" +
-	"\x0fallowed_origins\x18\x17 \x03(\tR\x0fallowed_origins\"w\n" +
+	"\ttelemetry\x18\x10 \x01(\v2!.mcpany.config.v1.TelemetryConfigR\ttelemetry\x12\x1a\n" +
+	"\bprofiles\x18\x11 \x03(\tR\bprofiles\x12 \n" +
+	"\vallowed_ips\x18\x12 \x03(\tR\vallowed_ips\x12U\n" +
+	"\x13profile_definitions\x18\x13 \x03(\v2#.mcpany.config.v1.ProfileDefinitionR\x13profile_definitions\x12>\n" +
+	"\vmiddlewares\x18\x14 \x03(\v2\x1c.mcpany.config.v1.MiddlewareR\vmiddlewares\x12.\n" +
+	"\x12allowed_file_paths\x18\x15 \x03(\tR\x12allowed_file_paths\x12(\n" +
+	"\x0fallowed_origins\x18\x16 \x03(\tR\x0fallowed_origins\"w\n" +
 	"\bLogLevel\x12\x19\n" +
 	"\x15LOG_LEVEL_UNSPECIFIED\x10\x00\x12\x12\n" +
 	"\x0eLOG_LEVEL_INFO\x10\x01\x12\x12\n" +
@@ -3001,7 +3001,7 @@ const file_proto_config_v1_config_proto_rawDesc = "" +
 	"\tLogFormat\x12\x1a\n" +
 	"\x16LOG_FORMAT_UNSPECIFIED\x10\x00\x12\x13\n" +
 	"\x0fLOG_FORMAT_TEXT\x10\x01\x12\x13\n" +
-	"\x0fLOG_FORMAT_JSON\x10\x02J\x04\b\x02\x10\x03\"\xb1\x01\n" +
+	"\x0fLOG_FORMAT_JSON\x10\x02\"\xb1\x01\n" +
 	"\x0fTelemetryConfig\x12(\n" +
 	"\x0ftraces_exporter\x18\x01 \x01(\tR\x0ftraces_exporter\x12*\n" +
 	"\x10metrics_exporter\x18\x02 \x01(\tR\x10metrics_exporter\x12$\n" +
@@ -3084,52 +3084,52 @@ const file_proto_config_v1_config_proto_rawDesc = "" +
 var file_proto_config_v1_config_proto_enumTypes = make([]protoimpl.EnumInfo, 3)
 var file_proto_config_v1_config_proto_msgTypes = make([]protoimpl.MessageInfo, 18)
 var file_proto_config_v1_config_proto_goTypes = []any{
-	(GlobalSettings_LogLevel)(0),      // 0: mcpany.config.v1.GlobalSettings.LogLevel
-	(GlobalSettings_LogFormat)(0),     // 1: mcpany.config.v1.GlobalSettings.LogFormat
-	(AuditConfig_StorageType)(0),      // 2: mcpany.config.v1.AuditConfig.StorageType
-	(*McpAnyServerConfig)(nil),        // 3: mcpany.config.v1.McpAnyServerConfig
-	(*Secret)(nil),                    // 4: mcpany.config.v1.Secret
-	(*SecretList)(nil),                // 5: mcpany.config.v1.SecretList
-	(*GlobalSettings)(nil),            // 6: mcpany.config.v1.GlobalSettings
-	(*TelemetryConfig)(nil),           // 7: mcpany.config.v1.TelemetryConfig
-	(*OIDCConfig)(nil),                // 8: mcpany.config.v1.OIDCConfig
-	(*GCSettings)(nil),                // 9: mcpany.config.v1.GCSettings
-	(*DLPConfig)(nil),                 // 10: mcpany.config.v1.DLPConfig
-	(*AuditConfig)(nil),               // 11: mcpany.config.v1.AuditConfig
-	(*SplunkConfig)(nil),              // 12: mcpany.config.v1.SplunkConfig
-	(*DatadogConfig)(nil),             // 13: mcpany.config.v1.DatadogConfig
-	(*ProfileDefinition)(nil),         // 14: mcpany.config.v1.ProfileDefinition
-	(*ProfileSelector)(nil),           // 15: mcpany.config.v1.ProfileSelector
-	(*Middleware)(nil),                // 16: mcpany.config.v1.Middleware
-	nil,                               // 17: mcpany.config.v1.AuditConfig.WebhookHeadersEntry
-	nil,                               // 18: mcpany.config.v1.ProfileDefinition.ServiceConfigEntry
-	nil,                               // 19: mcpany.config.v1.ProfileDefinition.SecretsEntry
-	nil,                               // 20: mcpany.config.v1.ProfileSelector.ToolPropertiesEntry
-	(*UpstreamServiceConfig)(nil),     // 21: mcpany.config.v1.UpstreamServiceConfig
-	(*UpstreamServiceCollection)(nil), // 22: mcpany.config.v1.UpstreamServiceCollection
-	(*User)(nil),                      // 23: mcpany.config.v1.User
-	(*bus.MessageBus)(nil),            // 24: bus.MessageBus
-	(*RateLimitConfig)(nil),           // 25: mcpany.config.v1.RateLimitConfig
-	(*ProfileServiceConfig)(nil),      // 26: mcpany.config.v1.ProfileServiceConfig
-	(*SecretValue)(nil),               // 27: mcpany.config.v1.SecretValue
+	(GlobalSettings_LogLevel)(0),  // 0: mcpany.config.v1.GlobalSettings.LogLevel
+	(GlobalSettings_LogFormat)(0), // 1: mcpany.config.v1.GlobalSettings.LogFormat
+	(AuditConfig_StorageType)(0),  // 2: mcpany.config.v1.AuditConfig.StorageType
+	(*McpAnyServerConfig)(nil),    // 3: mcpany.config.v1.McpAnyServerConfig
+	(*Secret)(nil),                // 4: mcpany.config.v1.Secret
+	(*SecretList)(nil),            // 5: mcpany.config.v1.SecretList
+	(*GlobalSettings)(nil),        // 6: mcpany.config.v1.GlobalSettings
+	(*TelemetryConfig)(nil),       // 7: mcpany.config.v1.TelemetryConfig
+	(*OIDCConfig)(nil),            // 8: mcpany.config.v1.OIDCConfig
+	(*GCSettings)(nil),            // 9: mcpany.config.v1.GCSettings
+	(*DLPConfig)(nil),             // 10: mcpany.config.v1.DLPConfig
+	(*AuditConfig)(nil),           // 11: mcpany.config.v1.AuditConfig
+	(*SplunkConfig)(nil),          // 12: mcpany.config.v1.SplunkConfig
+	(*DatadogConfig)(nil),         // 13: mcpany.config.v1.DatadogConfig
+	(*ProfileDefinition)(nil),     // 14: mcpany.config.v1.ProfileDefinition
+	(*ProfileSelector)(nil),       // 15: mcpany.config.v1.ProfileSelector
+	(*Middleware)(nil),            // 16: mcpany.config.v1.Middleware
+	nil,                           // 17: mcpany.config.v1.AuditConfig.WebhookHeadersEntry
+	nil,                           // 18: mcpany.config.v1.ProfileDefinition.ServiceConfigEntry
+	nil,                           // 19: mcpany.config.v1.ProfileDefinition.SecretsEntry
+	nil,                           // 20: mcpany.config.v1.ProfileSelector.ToolPropertiesEntry
+	(*UpstreamServiceConfig)(nil), // 21: mcpany.config.v1.UpstreamServiceConfig
+	(*Collection)(nil),            // 22: mcpany.config.v1.Collection
+	(*User)(nil),                  // 23: mcpany.config.v1.User
+	(*bus.MessageBus)(nil),        // 24: bus.MessageBus
+	(*RateLimitConfig)(nil),       // 25: mcpany.config.v1.RateLimitConfig
+	(*ProfileServiceConfig)(nil),  // 26: mcpany.config.v1.ProfileServiceConfig
+	(*SecretValue)(nil),           // 27: mcpany.config.v1.SecretValue
 }
 var file_proto_config_v1_config_proto_depIdxs = []int32{
 	6,  // 0: mcpany.config.v1.McpAnyServerConfig.global_settings:type_name -> mcpany.config.v1.GlobalSettings
 	21, // 1: mcpany.config.v1.McpAnyServerConfig.upstream_services:type_name -> mcpany.config.v1.UpstreamServiceConfig
-	22, // 2: mcpany.config.v1.McpAnyServerConfig.upstream_service_collections:type_name -> mcpany.config.v1.UpstreamServiceCollection
+	22, // 2: mcpany.config.v1.McpAnyServerConfig.collections:type_name -> mcpany.config.v1.Collection
 	23, // 3: mcpany.config.v1.McpAnyServerConfig.users:type_name -> mcpany.config.v1.User
 	4,  // 4: mcpany.config.v1.SecretList.secrets:type_name -> mcpany.config.v1.Secret
 	0,  // 5: mcpany.config.v1.GlobalSettings.log_level:type_name -> mcpany.config.v1.GlobalSettings.LogLevel
-	24, // 6: mcpany.config.v1.GlobalSettings.message_bus:type_name -> bus.MessageBus
-	11, // 7: mcpany.config.v1.GlobalSettings.audit:type_name -> mcpany.config.v1.AuditConfig
-	14, // 8: mcpany.config.v1.GlobalSettings.profile_definitions:type_name -> mcpany.config.v1.ProfileDefinition
-	1,  // 9: mcpany.config.v1.GlobalSettings.log_format:type_name -> mcpany.config.v1.GlobalSettings.LogFormat
-	16, // 10: mcpany.config.v1.GlobalSettings.middlewares:type_name -> mcpany.config.v1.Middleware
-	10, // 11: mcpany.config.v1.GlobalSettings.dlp:type_name -> mcpany.config.v1.DLPConfig
-	9,  // 12: mcpany.config.v1.GlobalSettings.gc_settings:type_name -> mcpany.config.v1.GCSettings
-	8,  // 13: mcpany.config.v1.GlobalSettings.oidc:type_name -> mcpany.config.v1.OIDCConfig
-	25, // 14: mcpany.config.v1.GlobalSettings.rate_limit:type_name -> mcpany.config.v1.RateLimitConfig
-	7,  // 15: mcpany.config.v1.GlobalSettings.telemetry:type_name -> mcpany.config.v1.TelemetryConfig
+	1,  // 6: mcpany.config.v1.GlobalSettings.log_format:type_name -> mcpany.config.v1.GlobalSettings.LogFormat
+	24, // 7: mcpany.config.v1.GlobalSettings.message_bus:type_name -> bus.MessageBus
+	11, // 8: mcpany.config.v1.GlobalSettings.audit:type_name -> mcpany.config.v1.AuditConfig
+	10, // 9: mcpany.config.v1.GlobalSettings.dlp:type_name -> mcpany.config.v1.DLPConfig
+	9,  // 10: mcpany.config.v1.GlobalSettings.gc_settings:type_name -> mcpany.config.v1.GCSettings
+	8,  // 11: mcpany.config.v1.GlobalSettings.oidc:type_name -> mcpany.config.v1.OIDCConfig
+	25, // 12: mcpany.config.v1.GlobalSettings.rate_limit:type_name -> mcpany.config.v1.RateLimitConfig
+	7,  // 13: mcpany.config.v1.GlobalSettings.telemetry:type_name -> mcpany.config.v1.TelemetryConfig
+	14, // 14: mcpany.config.v1.GlobalSettings.profile_definitions:type_name -> mcpany.config.v1.ProfileDefinition
+	16, // 15: mcpany.config.v1.GlobalSettings.middlewares:type_name -> mcpany.config.v1.Middleware
 	2,  // 16: mcpany.config.v1.AuditConfig.storage_type:type_name -> mcpany.config.v1.AuditConfig.StorageType
 	17, // 17: mcpany.config.v1.AuditConfig.webhook_headers:type_name -> mcpany.config.v1.AuditConfig.WebhookHeadersEntry
 	12, // 18: mcpany.config.v1.AuditConfig.splunk:type_name -> mcpany.config.v1.SplunkConfig
@@ -3155,6 +3155,7 @@ func file_proto_config_v1_config_proto_init() {
 	file_proto_config_v1_upstream_service_proto_init()
 	file_proto_config_v1_auth_proto_init()
 	file_proto_config_v1_profile_proto_init()
+	file_proto_config_v1_collection_proto_init()
 	file_proto_config_v1_user_proto_init()
 	type x struct{}
 	out := protoimpl.TypeBuilder{

@@ -445,7 +445,7 @@ func TestPostgresStore(t *testing.T) {
 	})
 
 	t.Run("SaveServiceCollection", func(t *testing.T) {
-		col := &configv1.UpstreamServiceCollectionShare{
+		col := &configv1.Collection{
 			Name: stringPtr("col1"),
 		}
 

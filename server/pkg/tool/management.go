@@ -156,6 +156,25 @@ func (tm *Manager) toolMatchesProfile(t *v1.Tool, profileName string) bool {
 			// If no criteria, enabled service implies all tools allowed.
 			return true
 		}
+	} else {
+		// Fallback: Check Service Config by Name (retrieved via ServiceInfo)
+		// This handles cases where the Service ID might have been hashed (e.g. if empty in config)
+		// but the profile uses the human-readable Service Name.
+		if info, found := tm.GetServiceInfo(t.GetServiceId()); found && info.Config != nil {
+			if sc, ok := def.GetServiceConfig()[info.Config.GetName()]; ok {
+				if sc.GetEnabled() {
+					// If selector has criteria, apply them.
+					if def.GetSelector() != nil {
+						hasCriteria := len(def.GetSelector().GetTags()) > 0 || len(def.GetSelector().GetToolProperties()) > 0
+						if hasCriteria {
+							return tm.matchesSelector(t, def.GetSelector())
+						}
+					}
+					// If no criteria, enabled service implies all tools allowed.
+					return true
+				}
+			}
+		}
 	}
 
 	return tm.matchesSelector(t, def.GetSelector())

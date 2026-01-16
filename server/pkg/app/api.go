@@ -760,7 +760,7 @@ func (a *Application) handleCollections(store storage.Storage) http.HandlerFunc 
 			_, _ = w.Write(buf)
 
 		case http.MethodPost:
-			var collection configv1.UpstreamServiceCollectionShare
+			var collection configv1.Collection
 			body, err := readBodyWithLimit(w, r, 1048576)
 			if err != nil {
 				return
@@ -810,7 +810,7 @@ func (a *Application) handleCollectionDetail(store storage.Storage) http.Handler
 				http.NotFound(w, r)
 				return
 			}
-			exportCollection := proto.Clone(collection).(*configv1.UpstreamServiceCollectionShare)
+			exportCollection := proto.Clone(collection).(*configv1.Collection)
 			config.StripSecretsFromCollection(exportCollection)
 			w.Header().Set("Content-Type", "application/json")
 			w.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=\"%s.json\"", name))
@@ -844,7 +844,7 @@ func (a *Application) handleCollectionDetail(store storage.Storage) http.Handler
 			_, _ = w.Write(b)
 
 		case http.MethodPut:
-			var collection configv1.UpstreamServiceCollectionShare
+			var collection configv1.Collection
 			body, err := readBodyWithLimit(w, r, 1048576)
 			if err != nil {
 				return

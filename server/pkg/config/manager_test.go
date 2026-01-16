@@ -96,8 +96,8 @@ services:
 			name: "local and remote services, remote has higher priority",
 			initialConfig: (configv1.McpAnyServerConfig_builder{
 				UpstreamServices: []*configv1.UpstreamServiceConfig{localService1, localService2},
-				UpstreamServiceCollections: []*configv1.UpstreamServiceCollection{
-					(configv1.UpstreamServiceCollection_builder{
+				Collections: []*configv1.Collection{
+					(configv1.Collection_builder{
 						Name:     proto.String("collection1"),
 						HttpUrl:  proto.String(server.URL + "/collection1"),
 						Priority: proto.Int32(-1),
@@ -113,8 +113,8 @@ services:
 			name: "local and remote services, local has higher priority",
 			initialConfig: (configv1.McpAnyServerConfig_builder{
 				UpstreamServices: []*configv1.UpstreamServiceConfig{localService1, localService2},
-				UpstreamServiceCollections: []*configv1.UpstreamServiceCollection{
-					(configv1.UpstreamServiceCollection_builder{
+				Collections: []*configv1.Collection{
+					(configv1.Collection_builder{
 						Name:     proto.String("collection1"),
 						HttpUrl:  proto.String(server.URL + "/collection1"),
 						Priority: proto.Int32(1),
@@ -130,18 +130,18 @@ services:
 			name: "multiple remote collections, mixed priorities",
 			initialConfig: (configv1.McpAnyServerConfig_builder{
 				UpstreamServices: []*configv1.UpstreamServiceConfig{localService1, localService2},
-				UpstreamServiceCollections: []*configv1.UpstreamServiceCollection{
-					(configv1.UpstreamServiceCollection_builder{
+				Collections: []*configv1.Collection{
+					(configv1.Collection_builder{
 						Name:     proto.String("collection1"),
 						HttpUrl:  proto.String(server.URL + "/collection1"),
 						Priority: proto.Int32(1),
 					}).Build(),
-					(configv1.UpstreamServiceCollection_builder{
+					(configv1.Collection_builder{
 						Name:     proto.String("collection2"),
 						HttpUrl:  proto.String(server.URL + "/collection2"),
 						Priority: proto.Int32(-1),
 					}).Build(),
-					(configv1.UpstreamServiceCollection_builder{
+					(configv1.Collection_builder{
 						Name:     proto.String("collection3"),
 						HttpUrl:  proto.String(server.URL + "/collection3"),
 						Priority: proto.Int32(-2),
@@ -158,8 +158,8 @@ services:
 			name: "same priority, first one wins",
 			initialConfig: (configv1.McpAnyServerConfig_builder{
 				UpstreamServices: []*configv1.UpstreamServiceConfig{localService1},
-				UpstreamServiceCollections: []*configv1.UpstreamServiceCollection{
-					(configv1.UpstreamServiceCollection_builder{
+				Collections: []*configv1.Collection{
+					(configv1.Collection_builder{
 						Name:     proto.String("collection1"),
 						HttpUrl:  proto.String(server.URL + "/collection1"),
 						Priority: proto.Int32(0),
@@ -173,8 +173,8 @@ services:
 		{
 			name: "invalid semver",
 			initialConfig: (configv1.McpAnyServerConfig_builder{
-				UpstreamServiceCollections: []*configv1.UpstreamServiceCollection{
-					(configv1.UpstreamServiceCollection_builder{
+				Collections: []*configv1.Collection{
+					(configv1.Collection_builder{
 						Name:     proto.String("collection-invalid-semver"),
 						HttpUrl:  proto.String(server.URL + "/collection-invalid-semver"),
 						Priority: proto.Int32(0),
@@ -187,8 +187,8 @@ services:
 		{
 			name: "yaml content type",
 			initialConfig: (configv1.McpAnyServerConfig_builder{
-				UpstreamServiceCollections: []*configv1.UpstreamServiceCollection{
-					(configv1.UpstreamServiceCollection_builder{
+				Collections: []*configv1.Collection{
+					(configv1.Collection_builder{
 						Name:     proto.String("collection-yaml"),
 						HttpUrl:  proto.String(server.URL + "/collection-yaml"),
 						Priority: proto.Int32(0),
@@ -202,8 +202,8 @@ services:
 		{
 			name: "authenticated collection",
 			initialConfig: (configv1.McpAnyServerConfig_builder{
-				UpstreamServiceCollections: []*configv1.UpstreamServiceCollection{
-					(configv1.UpstreamServiceCollection_builder{
+				Collections: []*configv1.Collection{
+					(configv1.Collection_builder{
 						Name:    proto.String("collection-authed"),
 						HttpUrl: proto.String(server.URL + "/collection-authed"),
 						Authentication: (&configv1.Authentication_builder{
@@ -221,8 +221,8 @@ services:
 		{
 			name: "api key authenticated collection",
 			initialConfig: (configv1.McpAnyServerConfig_builder{
-				UpstreamServiceCollections: []*configv1.UpstreamServiceCollection{
-					(configv1.UpstreamServiceCollection_builder{
+				Collections: []*configv1.Collection{
+					(configv1.Collection_builder{
 						Name:    proto.String("collection-apikey"),
 						HttpUrl: proto.String(server.URL + "/collection-apikey"),
 						Authentication: (&configv1.Authentication_builder{
@@ -241,8 +241,8 @@ services:
 		{
 			name: "basic auth authenticated collection",
 			initialConfig: (configv1.McpAnyServerConfig_builder{
-				UpstreamServiceCollections: []*configv1.UpstreamServiceCollection{
-					(configv1.UpstreamServiceCollection_builder{
+				Collections: []*configv1.Collection{
+					(configv1.Collection_builder{
 						Name:    proto.String("collection-basicauth"),
 						HttpUrl: proto.String(server.URL + "/collection-basicauth"),
 						Authentication: (&configv1.Authentication_builder{
@@ -261,8 +261,8 @@ services:
 		{
 			name: "no content type assumes yaml",
 			initialConfig: (configv1.McpAnyServerConfig_builder{
-				UpstreamServiceCollections: []*configv1.UpstreamServiceCollection{
-					(configv1.UpstreamServiceCollection_builder{
+				Collections: []*configv1.Collection{
+					(configv1.Collection_builder{
 						Name:    proto.String("collection-no-content-type"),
 						HttpUrl: proto.String(server.URL + "/collection-no-content-type"),
 					}).Build(),

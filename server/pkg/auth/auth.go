@@ -290,20 +290,30 @@ func (am *Manager) AddAuthenticator(serviceID string, authenticator Authenticato
 // authentication fails.
 func (am *Manager) Authenticate(ctx context.Context, serviceID string, r *http.Request) (context.Context, error) {
 	if am.apiKey != "" {
-		if r.Header.Get("X-API-Key") == "" {
+		receivedKey := r.Header.Get("X-API-Key")
+		if receivedKey == "" {
+			receivedKey = r.URL.Query().Get("api_key")
+		}
+
+		if receivedKey == "" {
 			return ctx, fmt.Errorf("unauthorized")
 		}
-		if subtle.ConstantTimeCompare([]byte(r.Header.Get("X-API-Key")), []byte(am.apiKey)) != 1 {
+		if subtle.ConstantTimeCompare([]byte(receivedKey), []byte(am.apiKey)) != 1 {
 			return ctx, fmt.Errorf("unauthorized")
 		}
-		ctx = ContextWithAPIKey(ctx, r.Header.Get("X-API-Key"))
+		ctx = ContextWithAPIKey(ctx, receivedKey)
 	}
 
 	if authenticator, ok := am.authenticators.Load(serviceID); ok {
 		return authenticator.Authenticate(ctx, r)
 	}
-	// If no authenticator is configured for the service, we'll allow the request to proceed.
-	return ctx, nil
+	// If no authenticator is configured for the service:
+	// If we authenticated via Global API Key, we allow it.
+	if am.apiKey != "" {
+		return ctx, nil
+	}
+	// Otherwise, Fail Closed.
+	return ctx, fmt.Errorf("unauthorized: no authentication configured")
 }
 
 // GetAuthenticator retrieves the authenticator registered for a specific

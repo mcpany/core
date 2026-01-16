@@ -362,7 +362,7 @@ func TestHandleCollections(t *testing.T) {
 	app, store := setupCoverageTestApp()
 	handler := app.handleCollections(store)
 
-	collection := &configv1.UpstreamServiceCollectionShare{
+	collection := &configv1.Collection{
 		Name: proto.String("col1"),
 	}
 	opts := protojson.MarshalOptions{UseProtoNames: true}
@@ -386,7 +386,7 @@ func TestHandleCollectionDetail(t *testing.T) {
 	app, store := setupCoverageTestApp()
 	handler := app.handleCollectionDetail(store)
 
-	collection := &configv1.UpstreamServiceCollectionShare{
+	collection := &configv1.Collection{
 		Name: proto.String("col1"),
 		Services: []*configv1.UpstreamServiceConfig{
 			{

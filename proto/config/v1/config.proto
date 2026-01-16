@@ -9,6 +9,7 @@ import "proto/bus/bus.proto";
 import "proto/config/v1/upstream_service.proto";
 import "proto/config/v1/auth.proto";
 import "proto/config/v1/profile.proto";
+import "proto/config/v1/collection.proto";
 
 option go_package = "github.com/mcpany/core/proto/config/v1";
 option java_outer_classname = "ConfigProto";
@@ -26,17 +27,17 @@ message McpAnyServerConfig {
   // A list of all configured upstream services that MCP Any can proxy to.
   repeated UpstreamServiceConfig upstream_services = 2 [json_name = "upstream_services"];
   // A list of upstream service collections to load from.
-  repeated UpstreamServiceCollection upstream_service_collections = 3 [json_name = "upstream_service_collections"];
+  repeated Collection collections = 3 [json_name = "collections"];
   // A list of users authorized to access the server.
   repeated User users = 4 [json_name = "users"];
 }
 
 // Secret defines a secret value.
 message Secret {
-  // id is the unique identifier for the secret.
-  string id = 1;
   // name is the human-readable name of the secret.
-  string name = 2;
+  string name = 1;
+  // id is the unique identifier for the secret.
+  string id = 2;
   // key is the key used to reference the secret (e.g. env var name).
   string key = 3;
   // value is the secret value (encrypted or raw depending on context).
@@ -70,49 +71,50 @@ message GlobalSettings {
 
   // The address the MCP server listens on.
   string mcp_listen_address = 1 [json_name = "mcp_listen_address"];
-  reserved 2; // mcp_basepath
   // The log level for the server.
-  LogLevel log_level = 3 [json_name = "log_level"];
-  // The message bus configuration.
-  bus.MessageBus message_bus = 4 [json_name = "message_bus"];
+  LogLevel log_level = 2 [json_name = "log_level"];
   // The API key used for authentication.
-  string api_key = 5 [json_name = "api_key"];
-  // The profiles to enable.
-  repeated string profiles = 6 [json_name = "profiles"];
-  // The allowed IPs to access the server.
-  repeated string allowed_ips = 7 [json_name = "allowed_ips"];
-  // Audit logging configuration.
-  AuditConfig audit = 8 [json_name = "audit"];
-  // The definitions of profiles.
-  repeated ProfileDefinition profile_definitions = 9 [json_name = "profile_definitions"];
+  string api_key = 3 [json_name = "api_key"];
   // The log format for the server.
-  LogFormat log_format = 10 [json_name = "log_format"];
+  LogFormat log_format = 4 [json_name = "log_format"];
   // The path to the database file.
-  string db_path = 11 [json_name = "db_path"];
+  string db_path = 5 [json_name = "db_path"];
   // The database connection string (DSN).
-  string db_dsn = 14 [json_name = "db_dsn"];
+  string db_dsn = 6 [json_name = "db_dsn"];
   // The database driver (sqlite, postgres).
-  string db_driver = 15 [json_name = "db_driver"];
-  // The list of middlewares to enable and their configuration.
-  repeated Middleware middlewares = 12 [json_name = "middlewares"];
-  // DLP configuration.
-  DLPConfig dlp = 13 [json_name = "dlp"];
-  // Garbage Collection configuration.
-  GCSettings gc_settings = 16 [json_name = "gc_settings"];
-  // OIDC Configuration.
-  OIDCConfig oidc = 17 [json_name = "oidc"];
-  // Rate limiting configuration for the server.
-  RateLimitConfig rate_limit = 18 [json_name = "rate_limit"];
-  // Telemetry configuration.
-  TelemetryConfig telemetry = 19 [json_name = "telemetry"];
+  string db_driver = 7 [json_name = "db_driver"];
   // GitHub API URL for self-updates (optional).
-  string github_api_url = 20 [json_name = "github_api_url"];
+  string github_api_url = 8 [json_name = "github_api_url"];
   // Whether to use sudo for Docker commands.
-  bool use_sudo_for_docker = 21 [json_name = "use_sudo_for_docker"];
+  bool use_sudo_for_docker = 9 [json_name = "use_sudo_for_docker"];
+
+  // The message bus configuration.
+  bus.MessageBus message_bus = 10 [json_name = "message_bus"];
+  // Audit logging configuration.
+  AuditConfig audit = 11 [json_name = "audit"];
+  // DLP configuration.
+  DLPConfig dlp = 12 [json_name = "dlp"];
+  // Garbage Collection configuration.
+  GCSettings gc_settings = 13 [json_name = "gc_settings"];
+  // OIDC Configuration.
+  OIDCConfig oidc = 14 [json_name = "oidc"];
+  // Rate limiting configuration for the server.
+  RateLimitConfig rate_limit = 15 [json_name = "rate_limit"];
+  // Telemetry configuration.
+  TelemetryConfig telemetry = 16 [json_name = "telemetry"];
+
+  // The profiles to enable.
+  repeated string profiles = 17 [json_name = "profiles"];
+  // The allowed IPs to access the server.
+  repeated string allowed_ips = 18 [json_name = "allowed_ips"];
+  // The definitions of profiles.
+  repeated ProfileDefinition profile_definitions = 19 [json_name = "profile_definitions"];
+  // The list of middlewares to enable and their configuration.
+  repeated Middleware middlewares = 20 [json_name = "middlewares"];
   // Allowed file paths for validation.
-  repeated string allowed_file_paths = 22 [json_name = "allowed_file_paths"];
+  repeated string allowed_file_paths = 21 [json_name = "allowed_file_paths"];
   // Allowed origins for CORS.
-  repeated string allowed_origins = 23 [json_name = "allowed_origins"];
+  repeated string allowed_origins = 22 [json_name = "allowed_origins"];
 }
 
 message TelemetryConfig {
