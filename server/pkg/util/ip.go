@@ -62,7 +62,6 @@ func init() {
 		"255.255.255.255/32", // Broadcast
 		"fc00::/7",           // RFC4193 unique local address
 		"2001:db8::/32",      // IPv6 documentation (RFC 3849)
-		"64:ff9b::/96",       // IPv4/IPv6 translation (RFC 6052)
 	} {
 		_, block, err := net.ParseCIDR(cidr)
 		if err == nil {
@@ -83,6 +82,18 @@ func IsPrivateNetworkIP(ip net.IP) bool {
 
 	if ip4 := ip.To4(); ip4 != nil {
 		// IPv4 fast path: check directly to avoid linear scan of net.IPNet slices
+		return isPrivateNetworkIPv4(ip4)
+	}
+
+	// Check for NAT64 (IPv4-embedded IPv6) - 64:ff9b::/96 (RFC 6052)
+	// If it matches, we extract the last 4 bytes and check if they are private.
+	// 64:ff9b:: expands to 0064:ff9b:0000:0000:0000:0000 (96 bits)
+	if len(ip) == net.IPv6len &&
+		ip[0] == 0x00 && ip[1] == 0x64 && ip[2] == 0xff && ip[3] == 0x9b &&
+		ip[4] == 0 && ip[5] == 0 && ip[6] == 0 && ip[7] == 0 &&
+		ip[8] == 0 && ip[9] == 0 && ip[10] == 0 && ip[11] == 0 {
+		// Last 4 bytes are the IPv4 address
+		ip4 := ip[12:16]
 		return isPrivateNetworkIPv4(ip4)
 	}
 
