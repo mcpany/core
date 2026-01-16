@@ -53,6 +53,7 @@
 - [x] **Required Environment Variable Validation**: Added explicit `validation.required_env` support for Stdio connections to fail fast with descriptive errors if required environment variables are missing. (Friction Fighter)
 - [x] **JSON Schema for Config**: Auto-generate and publish a JSON Schema for the `config.yaml` to enable intellisense/validation in IDEs like VS Code. (Friction Fighter)
 - [x] **Config Schema Validation via CLI**: `mcpany config check config.yaml` that validates against the full JSON schema (including types and enums) using `jsonschema` library, providing line-number precise errors. (Friction Fighter)
+- [x] **Deep Validation CLI**: Enhanced `mcpany config validate --deep` to run connectivity checks against upstream services (HTTP, gRPC, SQL) to verify they are reachable and responding. (Friction Fighter)
 
 ## 2. Top 10 Recommended Features
 
@@ -82,8 +83,9 @@ These features represent the next logical steps for the product, focusing on Ent
 | 20 | **Configuration Migration Tool** | **DevX**: A CLI command to convert `claude_desktop_config.json` to `mcpany` config format. | Low |
 | 21 | **Auth Doctor** | **UX**: Diagnostic tool to verify that configured authentication methods match upstream expectations (e.g., detecting if a Bearer token is used where Basic Auth is expected). | Medium |
 | 22 | **Dynamic Tool Pruning** | **Performance/Cost**: Feature to filter visible tools based on the current user's role or context to reduce LLM context window usage and costs. | High |
-| 23 | **Validation CLI Command** | **DevX**: Enhance `mcpany config validate` to run deep checks, including connecting to upstream services (dry-run) to verify connectivity and auth. | Medium |
-| 24 | **Config Schema Migration** | **Maintenance**: Automated tool to upgrade configuration files when the schema evolves (e.g. `v1alpha` to `v1`). | Medium |
+| 23 | **Config Schema Migration** | **Maintenance**: Automated tool to upgrade configuration files when the schema evolves (e.g. `v1alpha` to `v1`). | Medium |
+| 24 | **Config Diff Viewer** | **DevX**: CLI command to show diff between two config files or current config and a new one. | Low |
+| 25 | **Service Health Dashboard** | **Observability**: A UI view aggregating the health status of all upstream services including latency history. | Medium |
 | 25 | **Environment Variable Linter** | **DevX**: A tool/check to scan config files and verify that all referenced environment variables (e.g. `${API_KEY}`) are actually set in the current shell/env. | Low |
 | 26 | **Linter Git Hook** | **DevX**: Provide a pre-commit hook script that automatically runs `mcpany lint` on staged configuration files to prevent committing insecure configs. | Low |
 | 27 | **Secret Rotation Helper** | **Ops**: A CLI tool to help rotate secrets by identifying which services are using a specific secret key/path and validating the new secret against the upstream. | Medium |

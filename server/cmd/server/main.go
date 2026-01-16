@@ -323,7 +323,7 @@ func newRootCmd() *cobra.Command { //nolint:gocyclo // Main entry point, expecte
 	schemaCmd := &cobra.Command{
 		Use:   "schema",
 		Short: "Print the JSON Schema for configuration",
-		RunE: func(cmd *cobra.Command, _ []string) error {
+		RunE: func(_ *cobra.Command, _ []string) error {
 			schemaBytes, err := config.GenerateJSONSchemaBytes()
 			if err != nil {
 				return fmt.Errorf("failed to generate schema: %w", err)
@@ -338,9 +338,9 @@ func newRootCmd() *cobra.Command { //nolint:gocyclo // Main entry point, expecte
 		Use:   "check [file]",
 		Short: "Check a configuration file against the JSON Schema",
 		Args:  cobra.ExactArgs(1),
-		RunE: func(cmd *cobra.Command, args []string) error {
+		RunE: func(_ *cobra.Command, args []string) error {
 			filename := args[0]
-			data, err := os.ReadFile(filename)
+			data, err := os.ReadFile(filename) //nolint:gosec // Intentionally reading file specified by user
 			if err != nil {
 				return fmt.Errorf("failed to read file %q: %w", filename, err)
 			}
@@ -377,9 +377,23 @@ func newRootCmd() *cobra.Command { //nolint:gocyclo // Main entry point, expecte
 			}
 
 			var allErrors []string
+			// Basic Validation
 			if validationErrors := config.Validate(context.Background(), configs, config.Server); len(validationErrors) > 0 {
 				for _, e := range validationErrors {
 					allErrors = append(allErrors, e.Error())
+				}
+			}
+
+			// Deep Validation (Connectivity)
+			deep, _ := cmd.Flags().GetBool("deep")
+			if deep && len(allErrors) == 0 {
+				_, _ = fmt.Fprintln(cmd.OutOrStdout(), "Running deep validation (connectivity checks)...")
+				timeout, _ := cmd.Flags().GetDuration("timeout")
+				validator := config.NewDeepValidator(timeout)
+				if deepErrors := validator.Validate(context.Background(), configs); len(deepErrors) > 0 {
+					for _, e := range deepErrors {
+						allErrors = append(allErrors, fmt.Sprintf("[Deep Check] %s", e.Error()))
+					}
 				}
 			}
 
@@ -394,6 +408,8 @@ func newRootCmd() *cobra.Command { //nolint:gocyclo // Main entry point, expecte
 			return nil
 		},
 	}
+	validateCmd.Flags().Bool("deep", false, "Run deep validation checks (connect to upstream services)")
+	validateCmd.Flags().Duration("timeout", 5*time.Second, "Timeout for deep validation checks")
 	configCmd.AddCommand(validateCmd)
 
 	lintCmd := &cobra.Command{
