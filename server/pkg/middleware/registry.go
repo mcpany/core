@@ -99,9 +99,11 @@ func GetMCPMiddlewares(configs []*configv1.Middleware) []func(mcp.MethodHandler)
 
 // StandardMiddlewares holds the standard middlewares that might need to be updated.
 type StandardMiddlewares struct {
-	Audit           *AuditMiddleware
-	GlobalRateLimit *GlobalRateLimitMiddleware
-	Cleanup         func() error
+	Audit            *AuditMiddleware
+	GlobalRateLimit  *GlobalRateLimitMiddleware
+	ContextOptimizer *ContextOptimizer
+	Debugger         *Debugger
+	Cleanup          func() error
 }
 
 // InitStandardMiddlewares registers standard middlewares.
@@ -112,6 +114,8 @@ func InitStandardMiddlewares(
 	cachingMiddleware *CachingMiddleware,
 	globalRateLimitConfig *configv1.RateLimitConfig,
 	dlpConfig *configv1.DLPConfig,
+	contextOptimizerConfig *configv1.ContextOptimizerConfig,
+	debuggerConfig *configv1.DebuggerConfig,
 ) (*StandardMiddlewares, error) {
 	// 1. Logging
 	RegisterMCP("logging", func(_ *configv1.Middleware) func(mcp.MethodHandler) mcp.MethodHandler {
@@ -261,9 +265,33 @@ func InitStandardMiddlewares(
 		return DLPMiddleware(dlpConfig, nil)
 	})
 
+	// Context Optimizer
+	var contextOptimizer *ContextOptimizer
+	if contextOptimizerConfig != nil {
+		contextOptimizer = NewContextOptimizer(int(contextOptimizerConfig.GetMaxChars()))
+		Register("context_optimizer", func(_ *configv1.Middleware) func(http.Handler) http.Handler {
+			return contextOptimizer.Handler
+		})
+	}
+
+	// Debugger
+	var debugger *Debugger
+	if debuggerConfig != nil && debuggerConfig.GetEnabled() {
+		size := int(debuggerConfig.GetSize())
+		if size == 0 {
+			size = 100 // Default
+		}
+		debugger = NewDebugger(size)
+		Register("debugger", func(_ *configv1.Middleware) func(http.Handler) http.Handler {
+			return debugger.Handler
+		})
+	}
+
 	return &StandardMiddlewares{
-		Audit:           audit,
-		GlobalRateLimit: globalRateLimit,
-		Cleanup:         audit.Close,
+		Audit:            audit,
+		GlobalRateLimit:  globalRateLimit,
+		ContextOptimizer: contextOptimizer,
+		Debugger:         debugger,
+		Cleanup:          audit.Close,
 	}, nil
 }
