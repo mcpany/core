@@ -10,6 +10,7 @@ import (
 	"fmt"
 	"log"
 	"net"
+	"os"
 	"strings"
 
 	"google.golang.org/grpc"
@@ -85,13 +86,25 @@ func main() {
 	port := flag.Int("port", 0, "Port to listen on")
 	flag.Parse()
 
-	if *port == 0 {
-		log.Fatal("port is required")
+	var lis net.Listener
+	var err error
+	addr := fmt.Sprintf("127.0.0.1:%d", *port)
+	for i := 0; i < 5; i++ {
+		var lc net.ListenConfig
+		lis, err = lc.Listen(context.Background(), "tcp", addr)
+		if err == nil {
+			break
+		}
+		log.Printf("WARN grpc_authed_weather_server: Failed to listen, retrying... error=%v attempt=%d", err, i+1)
+	}
+	if err != nil {
+		log.Fatalf("failed to listen after retries: %v", err)
 	}
 
-	lis, err := (&net.ListenConfig{}).Listen(context.Background(), "tcp", fmt.Sprintf(":%d", *port))
-	if err != nil {
-		log.Fatalf("failed to listen: %v", err)
+	actualPort := lis.Addr().(*net.TCPAddr).Port
+	if *port == 0 {
+		fmt.Printf("%d\n", actualPort) // Output port for test runner
+		os.Stdout.Sync()
 	}
 
 	s := grpc.NewServer(
@@ -101,7 +114,7 @@ func main() {
 	weatherV1.RegisterWeatherServiceServer(s, &server{})
 	reflection.Register(s)
 
-	log.Printf("INFO grpc_authed_weather_server: Listening on port port=%d", *port)
+	log.Printf("INFO grpc_authed_weather_server: Listening on port port=%d", actualPort)
 	fmt.Println("GRPC_SERVER_READY") // Signal that the server is ready
 	if err := s.Serve(lis); err != nil {
 		log.Fatalf("failed to serve: %v", err)

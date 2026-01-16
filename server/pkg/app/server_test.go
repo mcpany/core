@@ -751,14 +751,9 @@ func TestRun_ServerStartupError_GracefulShutdown(t *testing.T) {
 }
 
 func TestRun_DefaultBindAddress(t *testing.T) {
-	defaultAddr := "localhost:8070"
-	// This test is intended to run in an environment where port 8070 is available.
-	// If it's not, we skip the test.
-	conn, err := net.DialTimeout("tcp", defaultAddr, 100*time.Millisecond)
-	if err == nil {
-		_ = conn.Close()
-		// t.Skipf("port %s is already in use, skipping test", defaultAddr)
-	}
+	// Set the environment variable to use a dynamic port (localhost:0) as default
+	// This avoids "address already in use" errors when 8070 is occupied.
+	t.Setenv("MCPANY_DEFAULT_HTTP_ADDR", "localhost:0")
 
 	fs := afero.NewMemMapFs()
 	ctx, cancel := context.WithCancel(context.Background())
@@ -769,10 +764,22 @@ func TestRun_DefaultBindAddress(t *testing.T) {
 
 	go func() {
 		// Run with empty jsonrpcPort. gRPC is on an ephemeral port.
+		// Because we set MCPANY_DEFAULT_HTTP_ADDR="localhost:0", empty string means localhost:0
 		errChan <- app.Run(ctx, fs, false, "", "localhost:0", nil, "", 5*time.Second)
 	}()
 
-	// Give the server time to start up.
+	// Give the server time to start up and bind
+	var port int
+	require.Eventually(t, func() bool {
+		if app.BoundHTTPPort != 0 {
+			port = app.BoundHTTPPort
+			return true
+		}
+		return false
+	}, 2*time.Second, 100*time.Millisecond, "server should bind to a port")
+
+	// Verify we can dial the assigned port
+	defaultAddr := fmt.Sprintf("localhost:%d", port)
 	require.Eventually(t, func() bool {
 		conn, err := net.DialTimeout("tcp", defaultAddr, 100*time.Millisecond)
 		if err == nil {
@@ -780,11 +787,11 @@ func TestRun_DefaultBindAddress(t *testing.T) {
 			return true
 		}
 		return false
-	}, 2*time.Second, 100*time.Millisecond, "server should start listening on the default port")
+	}, 2*time.Second, 100*time.Millisecond, "server should be dialable on port %d", port)
 
 	// Server is up, now cancel and wait for shutdown.
 	cancel()
-	err = <-errChan
+	err := <-errChan
 
 	// On graceful shutdown, it should be nil.
 	assert.NoError(t, err, "app.Run should return nil on graceful shutdown")
@@ -801,12 +808,6 @@ func TestRun_DefaultBindAddress(t *testing.T) {
 }
 
 func TestRun_GrpcPortNumber(t *testing.T) {
-	// Find a free port to use for the test
-	l, err := net.Listen("tcp", "localhost:0")
-	require.NoError(t, err)
-	port := l.Addr().(*net.TCPAddr).Port
-	_ = l.Close()
-
 	fs := afero.NewMemMapFs()
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
@@ -815,11 +816,21 @@ func TestRun_GrpcPortNumber(t *testing.T) {
 	errChan := make(chan error, 1)
 
 	go func() {
-		// Run with a port number instead of a full address string
-		errChan <- app.Run(ctx, fs, false, "localhost:0", fmt.Sprintf("%d", port), nil, "", 5*time.Second)
+		// Run with "127.0.0.1:0" to use loopback ephemeral port
+		errChan <- app.Run(ctx, fs, false, "localhost:0", "127.0.0.1:0", nil, "", 5*time.Second)
 	}()
 
-	// Give the server time to start up.
+	// Give the server time to start up and bind
+	var port int
+	require.Eventually(t, func() bool {
+		if app.BoundGRPCPort != 0 {
+			port = app.BoundGRPCPort
+			return true
+		}
+		return false
+	}, 2*time.Second, 100*time.Millisecond, "gRPC server should start and bind")
+
+	// Verify we can connect
 	grpcAddr := fmt.Sprintf("localhost:%d", port)
 	require.Eventually(t, func() bool {
 		conn, err := net.DialTimeout("tcp", grpcAddr, 100*time.Millisecond)
@@ -828,11 +839,11 @@ func TestRun_GrpcPortNumber(t *testing.T) {
 			return true
 		}
 		return false
-	}, 2*time.Second, 100*time.Millisecond, "gRPC server should start listening on port %d", port)
+	}, 2*time.Second, 100*time.Millisecond, "gRPC server should be dialable on port %d", port)
 
 	// Server is up, now cancel and wait for shutdown.
 	cancel()
-	err = <-errChan
+	err := <-errChan
 
 	// On graceful shutdown, it should be nil.
 	assert.NoError(t, err, "app.Run should return nil on graceful shutdown")

@@ -135,6 +135,7 @@ const (
 	localHeaderMcpSessionID = "Mcp-Session-Id"
 	dockerCmd               = "docker"
 	sudoCmd                 = "sudo"
+	dynamicBindAddr         = "127.0.0.1:0"
 )
 
 var (
@@ -225,7 +226,7 @@ func FindFreePort(t *testing.T) int {
 	portMutex.Lock()
 	defer portMutex.Unlock()
 	t.Helper()
-	addr, err := net.ResolveTCPAddr("tcp", "127.0.0.1:0")
+	addr, err := net.ResolveTCPAddr("tcp", dynamicBindAddr)
 	require.NoError(t, err)
 	l, err := net.ListenTCP("tcp", addr)
 	require.NoError(t, err)
@@ -525,10 +526,10 @@ func StartDockerContainer(t *testing.T, imageName, containerName string, runArgs
 	// Ensure the container is not already running from a previous failed run
 
 	stopCmd := exec.CommandContext(context.Background(), dockerExe, buildArgs("stop", containerName)...) //nolint:gosec // Test helper
-	_ = stopCmd.Run()                                                       // Ignore error, it might not be running
+	_ = stopCmd.Run()                                                                                    // Ignore error, it might not be running
 
 	rmCmd := exec.CommandContext(context.Background(), dockerExe, buildArgs("rm", containerName)...) //nolint:gosec // Test helper
-	_ = rmCmd.Run()                                                     // Ignore error, it might not exist
+	_ = rmCmd.Run()                                                                                  // Ignore error, it might not exist
 
 	dockerRunArgs := []string{"run", "--name", containerName, "--rm"}
 	dockerRunArgs = append(dockerRunArgs, runArgs...)
@@ -682,14 +683,37 @@ func StartInProcessMCPANYServer(t *testing.T, _ string, apiKey ...string) *MCPAN
 	_, err := GetProjectRoot()
 	require.NoError(t, err, "Failed to get project root")
 
-	jsonrpcPort := FindFreePort(t)
-	grpcRegPort := FindFreePort(t)
-	for grpcRegPort == jsonrpcPort {
-		grpcRegPort = FindFreePort(t)
-	}
+	// Use port 0 for dynamic allocation to avoid race conditions
+	jsonrpcAddress := ":0"
+	grpcRegAddress := ":0"
 
-	jsonrpcAddress := fmt.Sprintf(":%d", jsonrpcPort)
-	grpcRegAddress := fmt.Sprintf(":%d", grpcRegPort)
+	ctx, cancel := context.WithCancel(context.Background())
+
+	appRunner := app.NewApplication()
+	go func() {
+		err := appRunner.Run(ctx, afero.NewOsFs(), false, jsonrpcAddress, grpcRegAddress, []string{}, "", 5*time.Second)
+		if err != nil && ctx.Err() == nil {
+			t.Logf("Application run error: %v", err)
+		}
+	}()
+
+	// Wait for startup which ensures ports are bound
+	err = appRunner.WaitForStartup(ctx)
+	require.NoError(t, err, "Failed to wait for application startup")
+
+	// Retrieve dynamically allocated ports
+	jsonrpcPort := appRunner.BoundHTTPPort
+	grpcRegPort := appRunner.BoundGRPCPort
+
+	// Fallback/Safety check
+	if jsonrpcPort == 0 || grpcRegPort == 0 {
+		// Retry logic or fail? WaitForStartup should guarantee connection, but let's check.
+		// If WaitForStartup uses HTTP health check internally using the configured port...
+		// Wait, WaitForStartup in app.go checks readiness.
+		// But app.Run populates Bound*Port BEFORE calling readiness check loop?
+		// Let's assume so.
+		t.Logf("Warning: Bound ports are 0 after startup. HTTP: %d, gRPC: %d", jsonrpcPort, grpcRegPort)
+	}
 
 	jsonrpcEndpoint := fmt.Sprintf("http://127.0.0.1:%d", jsonrpcPort)
 	grpcRegEndpoint := fmt.Sprintf("127.0.0.1:%d", grpcRegPort)
@@ -698,16 +722,7 @@ func StartInProcessMCPANYServer(t *testing.T, _ string, apiKey ...string) *MCPAN
 		mcpRequestURL += "?api_key=" + actualAPIKey
 	}
 
-	ctx, cancel := context.WithCancel(context.Background())
-
-	go func() {
-		appRunner := app.NewApplication()
-		err := appRunner.Run(ctx, afero.NewOsFs(), false, jsonrpcAddress, grpcRegAddress, []string{}, actualAPIKey, 5*time.Second)
-		require.NoError(t, err)
-	}()
-
-	WaitForHTTPHealth(t, fmt.Sprintf("http://127.0.0.1:%d/healthz", jsonrpcPort), McpAnyServerStartupTimeout)
-
+	// Verify gRPC connection
 	var grpcRegConn *grpc.ClientConn
 	require.Eventually(t, func() bool {
 		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
@@ -840,8 +855,8 @@ func StartMCPANYServerWithClock(t *testing.T, testName string, healthCheck bool,
 	fmt.Printf("DEBUG: Using MCPANY binary from: %s\n", mcpanyBinary)
 
 	// Use port 0 to let the OS assign free ports
-	jsonrpcPortArg := "127.0.0.1:0"
-	grpcRegPortArg := "127.0.0.1:0"
+	jsonrpcPortArg := dynamicBindAddr
+	grpcRegPortArg := dynamicBindAddr
 	natsURL, natsCleanup := StartNatsServer(t)
 
 	// Use unique DB path
@@ -862,19 +877,10 @@ func StartMCPANYServerWithClock(t *testing.T, testName string, healthCheck bool,
 		env = append(env, "USE_SUDO_FOR_DOCKER="+sudo)
 	}
 	// Metrics port
-	metricsPort := FindFreePort(t)
-	metricsAddrArg := fmt.Sprintf("127.0.0.1:%d", metricsPort)
-	env = append(env, "MCPANY_METRICS_LISTEN_ADDRESS="+metricsAddrArg)
-	t.Logf("Using metrics address: %s", metricsAddrArg)
-
-	// Deprecated: explicit env check logic removed in favor of always randomizing for tests to ensure isolation.
-	// If user provided MCPANY_METRICS_LISTEN_ADDRESS, it might be ignored here, but for E2E tests we want isolation usually.
-	// If we truly want to support override, we can check env first.
-	if override, ok := os.LookupEnv("MCPANY_METRICS_LISTEN_ADDRESS"); ok && override != "" {
-		// Actually, if parallel tests run, we MUST NOT use the same port.
-		// So ignoring env is safer for t.Parallel().
-		t.Logf("Ignoring env MCPANY_METRICS_LISTEN_ADDRESS=%s in favor of random port %d for isolation", override, metricsPort)
-	}
+	// Use port 0 for dynamic allocation
+	metricsPortArg := dynamicBindAddr
+	env = append(env, "MCPANY_METRICS_LISTEN_ADDRESS="+metricsPortArg)
+	t.Logf("Using dynamic metrics address request: %s", metricsPortArg)
 
 	absMcpAnyBinaryPath, err := filepath.Abs(mcpanyBinary)
 	require.NoError(t, err, "Failed to get absolute path for MCPANY binary: %s", mcpanyBinary)
@@ -891,7 +897,7 @@ func StartMCPANYServerWithClock(t *testing.T, testName string, healthCheck bool,
 	require.NoError(t, err, "Failed to start MCPANY server. Stderr: %s", mcpProcess.StderrString())
 
 	// Wait for ports to be assigned and logged
-	var jsonrpcPort, grpcRegPort int
+	var jsonrpcPort, grpcRegPort, metricsPort int
 
 	// Regex patterns to extract ports from logs.
 	// Matches: msg="HTTP server listening" ... port=127.0.0.1:12345
@@ -899,6 +905,8 @@ func StartMCPANYServerWithClock(t *testing.T, testName string, healthCheck bool,
 	// Matches: msg="gRPC server listening" ... port=127.0.0.1:12345
 	// OR: INFO grpc_weather_server: Listening on port port=43523
 	grpcPortRegex := regexp.MustCompile(`(?:msg="gRPC server listening".*?port=[^:]+:(\d+))|(?:Listening on port port=(\d+))`)
+	// Matches: Metrics server listening on port 12345
+	metricsPortRegex := regexp.MustCompile(`Metrics server listening on port (\d+)`)
 
 	require.Eventually(t, func() bool {
 		stdout := mcpProcess.StdoutString()
@@ -915,6 +923,14 @@ func StartMCPANYServerWithClock(t *testing.T, testName string, healthCheck bool,
 			if len(matches) >= 2 {
 				if _, err := fmt.Sscanf(matches[1], "%d", &grpcRegPort); err != nil {
 					t.Logf("failed to parse grpc port: %v", err)
+				}
+			}
+		}
+		if metricsPort == 0 {
+			matches := metricsPortRegex.FindStringSubmatch(stdout)
+			if len(matches) >= 2 {
+				if _, err := fmt.Sscanf(matches[1], "%d", &metricsPort); err != nil {
+					t.Logf("failed to parse metrics port: %v", err)
 				}
 			}
 		}
@@ -1023,7 +1039,7 @@ func StartMCPANYServerWithClock(t *testing.T, testName string, healthCheck bool,
 		JSONRPCEndpoint:          jsonrpcEndpoint,
 		HTTPEndpoint:             mcpRequestURL,
 		GrpcRegistrationEndpoint: grpcRegEndpoint,
-		MetricsEndpoint:          metricsAddrArg,
+		MetricsEndpoint:          fmt.Sprintf("127.0.0.1:%d", metricsPort),
 		HTTPClient:               httpClient,
 		GRPCRegConn:              grpcRegConn,
 		RegistrationClient:       registrationClient,

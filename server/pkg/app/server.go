@@ -208,6 +208,11 @@ type Application struct {
 	// lastReloadTime stores the time of the last configuration reload attempt.
 	// It is protected by configMu.
 	lastReloadTime time.Time
+
+	// BoundHTTPPort stores the actual port the HTTP server is listening on.
+	BoundHTTPPort int
+	// BoundGRPCPort stores the actual port the gRPC server is listening on.
+	BoundGRPCPort int
 }
 
 // NewApplication creates a new Application with default dependencies.
@@ -1514,7 +1519,11 @@ func (a *Application) runServerMode(
 
 	httpBindAddress := bindAddress
 	if httpBindAddress == "" {
-		httpBindAddress = "localhost:8070"
+		if envAddr := os.Getenv("MCPANY_DEFAULT_HTTP_ADDR"); envAddr != "" {
+			httpBindAddress = envAddr
+		} else {
+			httpBindAddress = "localhost:8070"
+		}
 	} else if !strings.Contains(httpBindAddress, ":") {
 		httpBindAddress = ":" + httpBindAddress
 	}
@@ -1624,6 +1633,9 @@ func (a *Application) runServerMode(
 		if err != nil {
 			errChan <- fmt.Errorf("gRPC server failed to listen: %w", err)
 		} else {
+			if addr, ok := lis.Addr().(*net.TCPAddr); ok {
+				a.BoundGRPCPort = addr.Port
+			}
 			expectedReady++
 			startGrpcServer(
 				localCtx,
@@ -1652,6 +1664,9 @@ func (a *Application) runServerMode(
 	if err != nil {
 		errChan <- fmt.Errorf("HTTP server failed to listen: %w", err)
 	} else {
+		if addr, ok := httpLis.Addr().(*net.TCPAddr); ok {
+			a.BoundHTTPPort = addr.Port
+		}
 		expectedReady++
 		startHTTPServer(localCtx, &wg, errChan, readyChan, "MCP Any HTTP", httpLis, handler, shutdownTimeout)
 	}
