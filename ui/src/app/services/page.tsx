@@ -123,6 +123,51 @@ export default function ServicesPage() {
       setSelectedService(newService);
   };
 
+  const handleDuplicate = useCallback((service: UpstreamServiceConfig) => {
+      // Deep clone
+      const newService = JSON.parse(JSON.stringify(service));
+      // Reset ID to ensure it creates a new service
+      newService.id = "";
+      // Append copy to name to avoid collision
+      newService.name = `${newService.name}-copy`;
+      // Ensure clean state
+      delete newService.lastError;
+      delete newService.connectionPool; // Runtime status
+
+      setSelectedService(newService);
+      setIsSheetOpen(true);
+      toast({
+        title: "Service Duplicated",
+        description: "A copy of the service has been created. Please review and save.",
+      });
+  }, [toast]);
+
+  const handleExport = useCallback((service: UpstreamServiceConfig) => {
+      // Create a clean copy for export (remove runtime fields like lastError)
+      const exportData = JSON.parse(JSON.stringify(service));
+      delete exportData.lastError;
+      // Remove runtime status fields if any
+      delete exportData.connectionPool;
+      // Keep hooks as they are part of the configuration
+      // delete exportData.preCallHooks;
+      // delete exportData.postCallHooks;
+
+      const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `${service.name}-config.json`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+
+      toast({
+        title: "Service Exported",
+        description: `Configuration for ${service.name} has been downloaded.`,
+      });
+  }, [toast]);
+
   const handleSave = async () => {
       if (!selectedService) return;
 
@@ -169,6 +214,8 @@ export default function ServicesPage() {
                 onToggle={toggleService}
                 onEdit={openEdit}
                 onDelete={deleteService}
+                onDuplicate={handleDuplicate}
+                onExport={handleExport}
              />
         </CardContent>
       </Card>
