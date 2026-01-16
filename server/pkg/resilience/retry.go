@@ -82,50 +82,36 @@ func (r *Retry) backoff(attempt int) time.Duration {
 		return r.config.GetBaseBackoff().AsDuration()
 	}
 
-	// Cap attempt to avoid potential overflow in 1<<attempt.
-	// 62 is chosen because 1<<62 fits in int64 (positive).
-	// With base=1ns, 1<<62 ns is > 100 years, far exceeding any reasonable MaxBackoff.
-	if attempt >= 62 {
-		return r.config.GetMaxBackoff().AsDuration()
-	}
-
 	base := r.config.GetBaseBackoff().AsDuration()
-	maxBackoff := r.config.GetMaxBackoff().AsDuration()
-
 	if base <= 0 {
 		return 0
 	}
 
-	// Calculate factor = 2^attempt
-	factor := int64(1) << attempt
+	maxBackoff := r.config.GetMaxBackoff().AsDuration()
 
-	// Check for overflow: base * factor > maxBackoff
-	// factor > maxBackoff / base
-	if factor > int64(maxBackoff/base) {
-		return maxBackoff
+	var backoff time.Duration
+
+	// Cap attempt to avoid potential overflow in 1<<attempt.
+	// 62 is chosen because 1<<62 fits in int64 (positive).
+	if attempt >= 62 {
+		backoff = maxBackoff
+	} else {
+		// Calculate factor = 2^attempt
+		factor := int64(1) << attempt
+
+		// Check for overflow: base * factor > maxBackoff
+		// factor > maxBackoff / base
+		if factor > int64(maxBackoff/base) {
+			backoff = maxBackoff
+		} else {
+			backoff = base * time.Duration(factor)
+		}
 	}
 
-	backoff := base * time.Duration(factor)
-
 	// Add jitter (±20%)
-	// Use float arithmetic for simplicity, or integer math to avoid issues.
-	// We'll use a simple approach: randomize between 0.8 * backoff and 1.2 * backoff.
-	// Or just "Full Jitter": random(0, backoff).
-	// But commonly we want to stay close to exponential.
-	// Let's do ±20% jitter.
-	// Note: rand.Float64() is global in math/rand for 1.20+ (seeded automatically in recent Go versions? No, need Seed).
-	// But math/rand/v2 is 1.22.
-	// We'll assume we can use math/rand with shared source or just time.
-	// better: backoff = backoff + random(0, backoff/2) to always increase?
-	// or just +/-.
-
-	// Implementation:
-	// We avoid global rand issues by using a local source or crypto/rand if needed, but for backoff math/rand is fine.
-	// However, we don't want to init rand source every time.
-	// We'll trust global rand is seeded or acceptable for jitter.
-	// Actually, relying on global rand without Seed might be deterministic.
-	// Go 1.20+ seeds global rand automatically.
-
+	// Use float arithmetic for simplicity.
+	// We randomize between 0.8 * backoff and 1.2 * backoff.
+	// Note: rand.Float64() is global in math/rand for 1.20+ (seeded automatically in recent Go versions).
 	jitter := time.Duration(float64(backoff) * (0.8 + 0.4*util.RandomFloat64()))
 	return jitter
 }

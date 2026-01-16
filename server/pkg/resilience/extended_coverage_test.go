@@ -42,15 +42,16 @@ func TestRetry_Backoff_Overflow(t *testing.T) {
 
 	// Case 1: Attempt 30.
 	dur := retry.backoff(30)
-	require.Equal(t, 100*time.Second, dur, "Backoff(30) should be capped at MaxBackoff")
+	// Now capped with jitter. 80s - 120s.
+	require.InDelta(t, float64(100*time.Second), float64(dur), float64(25*time.Second), "Backoff(30) should be capped at MaxBackoff (with jitter)")
 
 	// Case 2: Attempt 63.
 	dur = retry.backoff(63)
-	require.Equal(t, 100*time.Second, dur, "Backoff(63) should be capped at MaxBackoff")
+	require.InDelta(t, float64(100*time.Second), float64(dur), float64(25*time.Second), "Backoff(63) should be capped at MaxBackoff (with jitter)")
 
 	// Case 3: Attempt 100 (way over 64)
 	dur = retry.backoff(100)
-	require.Equal(t, 100*time.Second, dur, "Backoff(100) should be capped at MaxBackoff")
+	require.InDelta(t, float64(100*time.Second), float64(dur), float64(25*time.Second), "Backoff(100) should be capped at MaxBackoff (with jitter)")
 
     // Case 4: Negative attempt
     dur = retry.backoff(-1)

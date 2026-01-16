@@ -107,9 +107,8 @@ func TestRetry(t *testing.T) {
 		require.InDelta(t, float64(4*time.Second), float64(retry.backoff(1)), float64(1*time.Second))
 
 		// backoff(2) hits the cap (2s * 4 = 8s > 5s).
-		// Current implementation returns maxBackoff exactly when capped?
-		// Let's assume yes based on code reading.
-		require.Equal(t, 5*time.Second, retry.backoff(2))
+		// Now it should be jittered around 5s. (4s..6s)
+		require.InDelta(t, float64(5*time.Second), float64(retry.backoff(2)), float64(1200*time.Millisecond))
 	})
 
     t.Run("no_wait_after_last_attempt", func(t *testing.T) {
