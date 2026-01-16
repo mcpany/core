@@ -197,6 +197,8 @@ func (u *Upstream) createAndRegisterMCPItemsFromBundle(
 		},
 	}
 
+	u.cachedBundleTransport = transport
+
 	// 5. Connect and Register
 	mcpSdkClient, err := u.createMCPClient(ctx)
 	if err != nil {

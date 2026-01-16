@@ -12,7 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { Settings, Trash2, CheckCircle, XCircle, AlertTriangle, MoreHorizontal, Copy, Download, Filter } from "lucide-react";
+import { Settings, Trash2, CheckCircle, XCircle, AlertTriangle, MoreHorizontal, Copy, Download, Filter, Activity } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -32,9 +32,10 @@ interface ServiceListProps {
   onDelete?: (name: string) => void;
   onDuplicate?: (service: UpstreamServiceConfig) => void;
   onExport?: (service: UpstreamServiceConfig) => void;
+  onCheckHealth?: (name: string) => void;
 }
 
-export function ServiceList({ services, isLoading, onToggle, onEdit, onDelete, onDuplicate, onExport }: ServiceListProps) {
+export function ServiceList({ services, isLoading, onToggle, onEdit, onDelete, onDuplicate, onExport, onCheckHealth }: ServiceListProps) {
   const [tagFilter, setTagFilter] = useState("");
 
   const filteredServices = useMemo(() => {
@@ -91,6 +92,7 @@ export function ServiceList({ services, isLoading, onToggle, onEdit, onDelete, o
                   onDelete={onDelete}
                   onDuplicate={onDuplicate}
                   onExport={onExport}
+                  onCheckHealth={onCheckHealth}
                />
             ))}
             {filteredServices.length === 0 && (
@@ -107,13 +109,14 @@ export function ServiceList({ services, isLoading, onToggle, onEdit, onDelete, o
   );
 }
 
-const ServiceRow = memo(function ServiceRow({ service, onToggle, onEdit, onDelete, onDuplicate, onExport }: {
+const ServiceRow = memo(function ServiceRow({ service, onToggle, onEdit, onDelete, onDuplicate, onExport, onCheckHealth }: {
     service: UpstreamServiceConfig,
     onToggle?: (name: string, enabled: boolean) => void,
     onEdit?: (service: UpstreamServiceConfig) => void,
     onDelete?: (name: string) => void,
     onDuplicate?: (service: UpstreamServiceConfig) => void,
-    onExport?: (service: UpstreamServiceConfig) => void
+    onExport?: (service: UpstreamServiceConfig) => void,
+    onCheckHealth?: (name: string) => void
 }) {
     const type = useMemo(() => {
         if (service.httpService) return "HTTP";
@@ -187,13 +190,19 @@ const ServiceRow = memo(function ServiceRow({ service, onToggle, onEdit, onDelet
                  {secure ? <CheckCircle className="h-4 w-4 text-green-500 mx-auto" /> : <XCircle className="h-4 w-4 text-muted-foreground mx-auto" />}
              </TableCell>
              <TableCell className="text-right">
-                 <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" className="h-8 w-8 p-0">
-                            <span className="sr-only">Open menu</span>
-                            <MoreHorizontal className="h-4 w-4" />
-                        </Button>
-                    </DropdownMenuTrigger>
+                 <div className="flex items-center justify-end gap-1">
+                     {onCheckHealth && (
+                         <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => onCheckHealth(service.name)} title="Check Connection">
+                             <Activity className="h-4 w-4" />
+                         </Button>
+                     )}
+                     <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" className="h-8 w-8 p-0">
+                                <span className="sr-only">Open menu</span>
+                                <MoreHorizontal className="h-4 w-4" />
+                            </Button>
+                        </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
                         <DropdownMenuLabel>Actions</DropdownMenuLabel>
                         {onEdit && (
@@ -221,8 +230,9 @@ const ServiceRow = memo(function ServiceRow({ service, onToggle, onEdit, onDelet
                                 Delete
                             </DropdownMenuItem>
                         )}
-                    </DropdownMenuContent>
-                 </DropdownMenu>
+                        </DropdownMenuContent>
+                     </DropdownMenu>
+                 </div>
              </TableCell>
         </TableRow>
     );

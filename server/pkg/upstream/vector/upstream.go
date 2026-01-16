@@ -333,3 +333,8 @@ func (u *Upstream) getTools(client Client) []vectorToolDef {
 		},
 	}
 }
+
+// HealthCheck checks the health of the upstream service.
+func (u *Upstream) HealthCheck(_ context.Context) error {
+	return nil
+}

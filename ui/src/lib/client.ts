@@ -216,6 +216,19 @@ export const apiClient = {
     },
 
     /**
+     * Checks the health of a service.
+     * @param name The name of the service.
+     * @returns A promise that resolves to the health check result.
+     */
+    checkServiceHealth: async (name: string) => {
+        const res = await fetchWithAuth(`/api/v1/services/${name}/check`, {
+            method: 'POST'
+        });
+        // We expect JSON response regardless of status (200 or 503)
+        return res.json();
+    },
+
+    /**
      * Registers a new upstream service.
      * @param config The configuration of the service to register.
      * @returns A promise that resolves to the registered service configuration.

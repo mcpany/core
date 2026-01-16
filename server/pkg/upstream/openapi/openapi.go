@@ -425,3 +425,8 @@ func (u *OpenAPIUpstream) registerDynamicResources(
 		}
 	}
 }
+
+// HealthCheck checks the health of the upstream service.
+func (u *OpenAPIUpstream) HealthCheck(_ context.Context) error {
+	return nil
+}

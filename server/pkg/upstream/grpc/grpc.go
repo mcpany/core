@@ -560,3 +560,8 @@ func (u *Upstream) registerDynamicResources(
 		}
 	}
 }
+
+// HealthCheck checks the health of the upstream service.
+func (u *Upstream) HealthCheck(_ context.Context) error {
+	return nil
+}

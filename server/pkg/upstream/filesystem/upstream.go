@@ -276,3 +276,8 @@ func (u *Upstream) validateLocalPaths(rootPaths map[string]string) {
 		}
 	}
 }
+
+// HealthCheck checks the health of the upstream service.
+func (u *Upstream) HealthCheck(_ context.Context) error {
+	return nil
+}

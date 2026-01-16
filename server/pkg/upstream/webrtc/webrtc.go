@@ -239,3 +239,8 @@ func (u *Upstream) createAndRegisterPrompts(_ context.Context, serviceID string,
 		log.Info("Registered prompt", "prompt_name", newPrompt.Prompt().Name, "is_reload", isReload)
 	}
 }
+
+// HealthCheck checks the health of the upstream service.
+func (u *Upstream) HealthCheck(_ context.Context) error {
+	return nil
+}

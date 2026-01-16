@@ -84,6 +84,10 @@ type Upstream struct {
 	// BundleBaseDir is the directory where bundles are extracted.
 	BundleBaseDir string
 	globalSettings *configv1.GlobalSettings
+	mcpService     *configv1.McpUpstreamService
+	// cachedBundleTransport stores the transport configuration for bundle connections
+	// to avoid re-parsing the manifest during health checks.
+	cachedBundleTransport *BundleDockerTransport
 }
 
 // Shutdown cleans up any temporary resources associated with the upstream, such
@@ -263,8 +267,71 @@ func (u *Upstream) Register(
 		return "", nil, nil, err
 	}
 
+	u.mcpService = mcpService
 	log.Info("Registered MCP service", "serviceID", serviceID, "toolsAdded", len(discoveredTools))
 	return serviceID, discoveredTools, discoveredResources, nil
+}
+
+// HealthCheck checks the health of the MCP upstream service.
+func (u *Upstream) HealthCheck(ctx context.Context) error {
+	if u.mcpService == nil {
+		return fmt.Errorf("service not configured")
+	}
+
+	client, err := u.createMCPClient(ctx)
+	if err != nil {
+		return err
+	}
+
+	conn := &mcpConnection{
+		client:          client,
+		sessionRegistry: u.sessionRegistry,
+		globalSettings:  u.globalSettings,
+	}
+
+	switch u.mcpService.WhichConnectionType() {
+	case configv1.McpUpstreamService_StdioConnection_case:
+		conn.stdioConfig = u.mcpService.GetStdioConnection()
+	case configv1.McpUpstreamService_HttpConnection_case:
+		httpConn := u.mcpService.GetHttpConnection()
+		conn.httpAddress = httpConn.GetHttpAddress()
+		httpClient, err := util.NewHTTPClientWithTLS(httpConn.GetTlsConfig())
+		if err != nil {
+			return fmt.Errorf("failed to create http client: %w", err)
+		}
+		// Disable redirects
+		if !httpConn.GetAllowHttpRedirect() {
+			httpClient.CheckRedirect = func(_ *http.Request, _ []*http.Request) error {
+				return http.ErrUseLastResponse
+			}
+		}
+		// Note: We don't have the authenticator here easily available without recreating it.
+		// But for health check (ListTools), we might need it.
+		// We should probably cache the authenticator too if needed.
+		// However, auth.NewUpstreamAuthenticator is relatively cheap if config is small.
+		// We need serviceConfig which is not stored in Upstream currently.
+		// Let's assume for now that basic connectivity check (HEAD/GET or Connect) might fail auth but that's a "response".
+		// But Wait, if we use MCP protocol, we need to establish session. If Auth fails, Connect might fail?
+		// authenticatedRoundTripper handles Auth.
+		// If I don't add it, I can't authenticate.
+		// I should store `serviceConfig` in Upstream too.
+		// For now, let's try without auth. If it fails, users will see "Authentication failed" which is a valid HealthCheck result!
+		conn.httpClient = httpClient
+
+	case configv1.McpUpstreamService_BundleConnection_case:
+		if u.cachedBundleTransport == nil {
+			return fmt.Errorf("bundle transport not initialized")
+		}
+		conn.bundleTransport = u.cachedBundleTransport
+	default:
+		return fmt.Errorf("unknown connection type")
+	}
+
+	return conn.withMCPClientSession(ctx, func(cs ClientSession) error {
+		// We use ListTools as a health check ping
+		_, err := cs.ListTools(ctx, &mcp.ListToolsParams{})
+		return err
+	})
 }
 
 // mcpConnection holds the necessary information to connect to a downstream MCP

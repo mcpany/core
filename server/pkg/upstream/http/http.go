@@ -17,6 +17,7 @@ import (
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	pb "github.com/mcpany/core/proto/mcp_router/v1"
 	"github.com/mcpany/core/server/pkg/auth"
+	"github.com/mcpany/core/server/pkg/client"
 	"github.com/mcpany/core/server/pkg/logging"
 	"github.com/mcpany/core/server/pkg/pool"
 	"github.com/mcpany/core/server/pkg/prompt"
@@ -55,6 +56,7 @@ func httpMethodToString(method configv1.HttpCallDefinition_HttpMethod) (string, 
 type Upstream struct {
 	poolManager *pool.Manager
 	serviceID   string
+	address     string
 }
 
 // Shutdown gracefully terminates the HTTP upstream service by shutting down the
@@ -114,6 +116,7 @@ func (u *Upstream) Register(
 		return "", nil, nil, fmt.Errorf("http service config is nil")
 	}
 
+	u.address = httpService.GetAddress()
 	address := httpService.GetAddress()
 	if address == "" {
 		return "", nil, nil, fmt.Errorf("http service address is required")
@@ -183,6 +186,37 @@ func (u *Upstream) Register(
 	log.Info("Registered HTTP service", "serviceID", serviceID, "toolsAdded", len(discoveredTools))
 
 	return serviceID, discoveredTools, nil, nil
+}
+
+// HealthCheck checks the health of the HTTP upstream service.
+func (u *Upstream) HealthCheck(ctx context.Context) error {
+	if u.serviceID == "" || u.address == "" {
+		return fmt.Errorf("service not initialized")
+	}
+
+	p, ok := pool.Get[*client.HTTPClientWrapper](u.poolManager, u.serviceID)
+	if !ok {
+		return fmt.Errorf("upstream service not active")
+	}
+
+	wrapper, err := p.Get(ctx)
+	if err != nil {
+		return fmt.Errorf("failed to get client from pool: %w", err)
+	}
+	defer p.Put(wrapper)
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodHead, u.address, nil)
+	if err != nil {
+		return fmt.Errorf("failed to create health check request: %w", err)
+	}
+
+	resp, err := wrapper.Do(req)
+	if err != nil {
+		return fmt.Errorf("health check request failed: %w", err)
+	}
+	defer func() { _ = resp.Body.Close() }()
+
+	return nil
 }
 
 // createAndRegisterHTTPTools iterates through the HTTP call definitions in the

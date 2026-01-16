@@ -168,6 +168,31 @@ export default function ServicesPage() {
       });
   }, [toast]);
 
+  const handleCheckHealth = useCallback(async (name: string) => {
+      try {
+          const res = await apiClient.checkServiceHealth(name);
+          if (res.status === "ok") {
+              toast({
+                  title: "Connection Successful",
+                  description: `Successfully connected to service ${name}.`,
+              });
+          } else {
+               toast({
+                  variant: "destructive",
+                  title: "Connection Failed",
+                  description: res.message || "Unknown error occurred.",
+              });
+          }
+      } catch (e) {
+          console.error("Failed to check service health", e);
+          toast({
+              variant: "destructive",
+              title: "Error",
+              description: "Failed to perform health check.",
+          });
+      }
+  }, [toast]);
+
   const handleSave = async () => {
       if (!selectedService) return;
 
@@ -216,6 +241,7 @@ export default function ServicesPage() {
                 onDelete={deleteService}
                 onDuplicate={handleDuplicate}
                 onExport={handleExport}
+                onCheckHealth={handleCheckHealth}
              />
         </CardContent>
       </Card>

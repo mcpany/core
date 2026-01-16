@@ -45,4 +45,8 @@ type Upstream interface {
 		resourceManager resource.ManagerInterface,
 		isReload bool,
 	) (string, []*configv1.ToolDefinition, []*configv1.ResourceDefinition, error)
+
+	// HealthCheck checks the health of the upstream service.
+	// It returns an error if the service is unhealthy.
+	HealthCheck(ctx context.Context) error
 }

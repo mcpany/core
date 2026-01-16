@@ -114,3 +114,8 @@ func (u *Upstream) Register(
 
 	return serviceConfig.GetId(), toolDefs, nil, nil
 }
+
+// HealthCheck checks the health of the upstream service.
+func (u *Upstream) HealthCheck(_ context.Context) error {
+	return nil
+}

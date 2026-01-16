@@ -252,6 +252,11 @@ func (a *Application) handleServiceDetail(store storage.Storage) http.HandlerFun
 			return
 		}
 
+		if len(parts) == 2 && parts[1] == "check" {
+			a.handleServiceCheck(w, r, name)
+			return
+		}
+
 		if len(parts) > 1 {
 			http.NotFound(w, r)
 			return
@@ -938,4 +943,32 @@ func isUnsafeConfig(service *configv1.UpstreamServiceConfig) bool {
 		return true
 	}
 	return false
+}
+
+func (a *Application) handleServiceCheck(w http.ResponseWriter, r *http.Request, name string) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	if a.ServiceRegistry == nil {
+		http.Error(w, "Service Registry not available", http.StatusInternalServerError)
+		return
+	}
+
+	err := a.ServiceRegistry.CheckServiceHealth(r.Context(), name)
+	w.Header().Set("Content-Type", "application/json")
+	if err != nil {
+		w.WriteHeader(http.StatusServiceUnavailable)
+		_ = json.NewEncoder(w).Encode(map[string]string{
+			"status":  "error",
+			"message": err.Error(),
+		})
+		return
+	}
+
+	_ = json.NewEncoder(w).Encode(map[string]string{
+		"status":  "ok",
+		"message": "Service is healthy",
+	})
 }

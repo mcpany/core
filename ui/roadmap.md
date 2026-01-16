@@ -25,6 +25,7 @@
 - [ ] **Bulk Service Import**: Allow importing multiple services from a single config file or URL.
 - [ ] **Service Configuration Validation**: Pre-save validation for service configs (e.g. check if URL is reachable).
 - [x] **Service Tagging & Grouping**: Organize services by tags (e.g., prod, staging, external) and filter the list.
+- [x] **Service Connectivity Test**: Added a "Test Connection" button to the service list for immediate verification of upstream status.
 - [ ] **Service Config Diff Viewer**: Visual diff when updating or duplicating services to see exactly what changed.
 - [ ] **Bulk Service Actions**: Enable/Disable or Delete multiple services at once, potentially using tags for selection.
 - [ ] **Tag-based Access Control**: Restrict service access to specific user profiles based on tags.

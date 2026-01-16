@@ -37,6 +37,8 @@ type ServiceRegistryInterface interface { //nolint:revive
 	GetServiceConfig(serviceID string) (*config.UpstreamServiceConfig, bool)
 	// GetServiceError returns the registration error for a service, if any.
 	GetServiceError(serviceID string) (string, bool)
+	// CheckServiceHealth checks the health of a registered service.
+	CheckServiceHealth(ctx context.Context, serviceName string) error
 }
 
 // ServiceRegistry is responsible for managing the lifecycle of upstream
@@ -262,6 +264,38 @@ func (r *ServiceRegistry) GetServiceError(serviceID string) (string, bool) {
 	defer r.mu.RUnlock()
 	err, ok := r.serviceErrors[serviceID]
 	return err, ok
+}
+
+// CheckServiceHealth checks the health of a registered service.
+func (r *ServiceRegistry) CheckServiceHealth(ctx context.Context, serviceName string) error {
+	r.mu.RLock()
+	serviceID, err := util.SanitizeServiceName(serviceName)
+	if err != nil {
+		r.mu.RUnlock()
+		return fmt.Errorf("invalid service name: %w", err)
+	}
+
+	// Check if it's in upstreams (active)
+	u, ok := r.upstreams[serviceID]
+	r.mu.RUnlock() // Unlock before calling health check to avoid holding lock
+
+	if !ok {
+		// Not active. Check if it's in config but failed to register.
+		r.mu.RLock()
+		_, hasConfig := r.serviceConfigs[serviceID]
+		errMsg, hasError := r.serviceErrors[serviceID]
+		r.mu.RUnlock()
+
+		if hasConfig {
+			if hasError {
+				return fmt.Errorf("service is not running. Last error: %s", errMsg)
+			}
+			return fmt.Errorf("service is configured but not running (unknown reason)")
+		}
+		return fmt.Errorf("service not found")
+	}
+
+	return u.HealthCheck(ctx)
 }
 
 // Close gracefully shuts down all registered services.
