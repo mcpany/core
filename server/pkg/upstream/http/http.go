@@ -154,6 +154,16 @@ func (u *Upstream) Register(
 
 	address = httpService.GetAddress()
 
+	// Verify that the upstream is reachable.
+	// This is a startup check to warn the user if the service configuration is incorrect or the service is down.
+	if err := util.CheckConnection(ctx, address); err != nil {
+		log.Warn("⚠️  Upstream service appears unreachable. Tools will be registered but may fail at runtime.",
+			"service", serviceConfig.GetName(),
+			"address", address,
+			"error", err,
+		)
+	}
+
 	// Auto-discovery of tools from calls
 	if serviceConfig.GetAutoDiscoverTool() {
 		for callID := range httpService.GetCalls() {

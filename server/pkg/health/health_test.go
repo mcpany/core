@@ -15,6 +15,7 @@ import (
 	"github.com/alexliesenfeld/health"
 	"github.com/coder/websocket"
 	configv1 "github.com/mcpany/core/proto/config/v1"
+	"github.com/mcpany/core/server/pkg/util"
 	"github.com/samber/lo"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -323,7 +324,7 @@ func TestCheckConnection(t *testing.T) {
 		defer func() { _ = lis.Close() }()
 		assert.NoError(
 			t,
-			checkConnection(context.Background(), lis.Addr().String()),
+			util.CheckConnection(context.Background(), lis.Addr().String()),
 			"checkConnection should succeed for a listening port",
 		)
 	})
@@ -331,7 +332,7 @@ func TestCheckConnection(t *testing.T) {
 	t.Run("ConnectionFailure", func(t *testing.T) {
 		assert.Error(
 			t,
-			checkConnection(context.Background(), "localhost:12345"),
+			util.CheckConnection(context.Background(), "localhost:12345"),
 			"checkConnection should fail for a non-listening port",
 		)
 	})
@@ -693,19 +694,19 @@ func TestCheckConnection_WithScheme(t *testing.T) {
 	defer func() { _ = lis.Close() }()
 
 	// Test with http:// scheme
-	err = checkConnection(context.Background(), "http://"+lis.Addr().String())
+	err = util.CheckConnection(context.Background(), "http://"+lis.Addr().String())
 	assert.NoError(t, err)
 
 	// Test with https:// scheme (just checks port parsing, not actual TLS handshake for TCP dial)
 	// We need a listener that matches the port extracted.
 	// But JoinHostPort will use the port from the URL if present.
 	// If URL has port, it uses it.
-	err = checkConnection(context.Background(), "https://"+lis.Addr().String())
+	err = util.CheckConnection(context.Background(), "https://"+lis.Addr().String())
 	assert.NoError(t, err)
 
 	// Test with https default port (use dummy host that we know wont connect or we test that it tries port 443)
 	// We verify that it returns an error (connection refused or timeout)
-	err = checkConnection(context.Background(), "http://localhost")
+	err = util.CheckConnection(context.Background(), "http://localhost")
 	assert.Error(t, err) // Should ensure it tries port 80
 }
 
