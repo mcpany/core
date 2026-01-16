@@ -24,8 +24,10 @@
 - [ ] **Breadcrumb History**: Show recently visited breadcrumbs in a dropdown or history menu.
 - [ ] **Bulk Service Import**: Allow importing multiple services from a single config file or URL.
 - [ ] **Service Configuration Validation**: Pre-save validation for service configs (e.g. check if URL is reachable).
-- [ ] **Service Tagging & Grouping**: Organize services by tags (e.g., prod, staging, external) and filter the list.
+- [x] **Service Tagging & Grouping**: Organize services by tags (e.g., prod, staging, external) and filter the list.
 - [ ] **Service Config Diff Viewer**: Visual diff when updating or duplicating services to see exactly what changed.
+- [ ] **Bulk Service Actions**: Enable/Disable or Delete multiple services at once, potentially using tags for selection.
+- [ ] **Tag-based Access Control**: Restrict service access to specific user profiles based on tags.
 
 ### Completed Features
 

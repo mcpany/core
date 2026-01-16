@@ -166,6 +166,8 @@ export interface UpstreamServiceConfig {
   postCallHooks: CallHook[];
   /** The prompts provided by this upstream service. */
   prompts: PromptDefinition[];
+  /** Tags for organizing and filtering services. */
+  tags: string[];
 }
 
 export interface CallPolicy {
@@ -890,6 +892,7 @@ function createBaseUpstreamServiceConfig(): UpstreamServiceConfig {
     preCallHooks: [],
     postCallHooks: [],
     prompts: [],
+    tags: [],
   };
 }
 
@@ -993,6 +996,9 @@ export const UpstreamServiceConfig: MessageFns<UpstreamServiceConfig> = {
     }
     for (const v of message.prompts) {
       PromptDefinition.encode(v!, writer.uint32(266).fork()).join();
+    }
+    for (const v of message.tags) {
+      writer.uint32(274).string(v!);
     }
     return writer;
   },
@@ -1268,6 +1274,14 @@ export const UpstreamServiceConfig: MessageFns<UpstreamServiceConfig> = {
           message.prompts.push(PromptDefinition.decode(reader, reader.uint32()));
           continue;
         }
+        case 34: {
+          if (tag !== 274) {
+            break;
+          }
+
+          message.tags.push(reader.string());
+          continue;
+        }
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -1335,6 +1349,9 @@ export const UpstreamServiceConfig: MessageFns<UpstreamServiceConfig> = {
         : [],
       prompts: globalThis.Array.isArray(object?.prompts)
         ? object.prompts.map((e: any) => PromptDefinition.fromJSON(e))
+        : [],
+      tags: globalThis.Array.isArray(object?.tags)
+        ? object.tags.map((e: any) => globalThis.String(e))
         : [],
     };
   },
@@ -1440,6 +1457,9 @@ export const UpstreamServiceConfig: MessageFns<UpstreamServiceConfig> = {
     if (message.prompts?.length) {
       obj.prompts = message.prompts.map((e) => PromptDefinition.toJSON(e));
     }
+    if (message.tags?.length) {
+      obj.tags = message.tags;
+    }
     return obj;
   },
 
@@ -1521,6 +1541,7 @@ export const UpstreamServiceConfig: MessageFns<UpstreamServiceConfig> = {
     message.preCallHooks = object.preCallHooks?.map((e) => CallHook.fromPartial(e)) || [];
     message.postCallHooks = object.postCallHooks?.map((e) => CallHook.fromPartial(e)) || [];
     message.prompts = object.prompts?.map((e) => PromptDefinition.fromPartial(e)) || [];
+    message.tags = object.tags?.map((e) => e) || [];
     return message;
   },
 };

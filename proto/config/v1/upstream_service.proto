@@ -90,6 +90,8 @@ message UpstreamServiceConfig {
   repeated CallHook post_call_hooks = 32 [json_name = "post_call_hooks"];
   // The prompts provided by this upstream service.
   repeated PromptDefinition prompts = 33;
+  // Tags for organizing and filtering services.
+  repeated string tags = 34 [json_name = "tags"];
 }
 
 message CallPolicy {
