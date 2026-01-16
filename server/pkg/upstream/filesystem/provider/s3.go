@@ -23,6 +23,10 @@ type S3Provider struct {
 
 // NewS3Provider creates a new S3Provider from the given configuration.
 func NewS3Provider(config *configv1.S3Fs) (*S3Provider, error) {
+	if config == nil {
+		return nil, fmt.Errorf("s3 config is nil")
+	}
+
 	awsConfig := aws.NewConfig()
 
 	if config.GetRegion() != "" {
