@@ -17,11 +17,13 @@ import (
 )
 
 // ContextOptimizer optimises the context size of responses.
+// It reduces token usage by truncating large text fields in the response body.
 type ContextOptimizer struct {
 	MaxChars int
 }
 
 // NewContextOptimizer creates a new ContextOptimizer.
+// maxChars specifies the maximum number of characters to keep in text fields.
 func NewContextOptimizer(maxChars int) *ContextOptimizer {
 	return &ContextOptimizer{
 		MaxChars: maxChars,
@@ -36,7 +38,8 @@ var bufferPool = sync.Pool{
 	},
 }
 
-// Middleware returns the middleware handler.
+// Middleware returns a Gin middleware handler that optimizes response context.
+// It intercepts JSON responses and truncates text fields that exceed the configured maximum length.
 func (co *ContextOptimizer) Middleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		w := bufferPool.Get().(*responseBuffer)

@@ -29,6 +29,7 @@ type JSONRPCResponse struct {
 // JSONRPCComplianceMiddleware ensures that errors are returned as valid JSON-RPC responses.
 // It intercepts non-JSON error responses (4xx, 5xx) and wraps them in a JSON-RPC error format.
 // Successful responses (2xx) and JSON error responses are streamed directly to avoid buffering.
+// This is critical for compatibility with strict JSON-RPC clients like Claude Desktop.
 func JSONRPCComplianceMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// Only intercept POST requests (likely JSON-RPC)
@@ -83,11 +84,14 @@ type smartResponseWriter struct {
 }
 
 // Header returns the header map that will be sent by WriteHeader.
+// It allows modifying the response headers before they are committed.
 func (w *smartResponseWriter) Header() http.Header {
 	return w.header
 }
 
 // WriteHeader sends an HTTP response header with the provided status code.
+// If the status code indicates an error (>= 400) and the response is not already JSON,
+// it switches to buffering mode to allow rewriting the error response.
 func (w *smartResponseWriter) WriteHeader(code int) {
 	if w.committed {
 		return

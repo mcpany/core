@@ -30,37 +30,88 @@ export interface Trace {
   trigger: 'user' | 'webhook' | 'scheduler' | 'system';
 }
 
-// Helper to generate mock spans
-function generateSpan(
-  id: string,
-  name: string,
-  type: Span['type'],
-  startOffset: number,
-  duration: number,
-  serviceName?: string
-): Span {
-  const now = Date.now();
-  // We'll base timestamps relative to a fixed start for consistency in the response,
-  // but "now" works for fresh data.
-  // Actually, let's just use offsets for the mock generator logic
-  return {
-    id,
-    name,
-    type,
-    startTime: startOffset,
-    endTime: startOffset + duration,
-    status: Math.random() > 0.9 ? 'error' : 'success', // 10% chance of error
-    serviceName,
-    input: { query: "example input", param: 123 },
-    output: { result: "example output", confidence: 0.99 },
-    children: []
-  };
+interface DebugEntry {
+  id: string;
+  timestamp: string;
+  method: string;
+  path: string;
+  status: number;
+  duration: number; // In nanoseconds
+  request_headers: Record<string, string[]>;
+  response_headers: Record<string, string[]>;
+  request_body?: string;
+  response_body?: string;
+}
+
+function parseBody(body: string | undefined): Record<string, any> | undefined {
+  if (!body) return undefined;
+  try {
+    return JSON.parse(body);
+  } catch {
+    return { raw: body };
+  }
 }
 
 export async function GET(request: Request) {
-  const { searchParams } = new URL(request.url);
-  // const limit = searchParams.get('limit');
+  // Try to fetch from real backend
+  try {
+    const backendUrl = process.env.MCP_SERVER_URL || 'http://localhost:8070';
+    const res = await fetch(`${backendUrl}/debug/entries`, { cache: 'no-store' });
 
+    if (res.ok) {
+      const entries: DebugEntry[] = await res.json();
+
+      const traces: Trace[] = entries.map(entry => {
+        const startTime = new Date(entry.timestamp).getTime();
+        const durationMs = entry.duration / 1000000; // ns to ms
+        const isError = entry.status >= 400;
+
+        const input = parseBody(entry.request_body);
+        const output = parseBody(entry.response_body);
+
+        // Try to determine a better name from input (e.g. tool name in JSON-RPC)
+        let name = `${entry.method} ${entry.path}`;
+        let type: Span['type'] = 'core';
+
+        if (input && input.jsonrpc && input.method) {
+           name = input.method;
+           type = 'tool';
+        }
+
+        const rootSpan: Span = {
+          id: `sp_${entry.id}`,
+          name: name,
+          type: type,
+          startTime: startTime,
+          endTime: startTime + durationMs,
+          status: isError ? 'error' : 'success',
+          input: input,
+          output: output,
+          serviceName: 'mcp-server', // Could be derived from path or headers
+          errorMessage: isError ? `HTTP ${entry.status}` : undefined,
+          children: []
+        };
+
+        return {
+          id: entry.id,
+          rootSpan: rootSpan,
+          timestamp: entry.timestamp,
+          totalDuration: durationMs,
+          status: isError ? 'error' : 'success',
+          trigger: 'user' // Defaulting to user
+        };
+      });
+
+      // If we have traces, return them. Otherwise fall back to mock data (handled below)
+      if (traces.length > 0) {
+        return NextResponse.json(traces);
+      }
+    }
+  } catch (error) {
+    console.warn("Failed to fetch debug entries from backend, falling back to mock data", error);
+  }
+
+  // Fallback to Mock Data
   const traces: Trace[] = [];
   const now = Date.now();
 
@@ -141,3 +192,29 @@ export async function GET(request: Request) {
 
   return NextResponse.json(traces);
 }
+
+// Helper to generate mock spans
+function generateSpan(
+    id: string,
+    name: string,
+    type: Span['type'],
+    startOffset: number,
+    duration: number,
+    serviceName?: string
+  ): Span {
+    // We'll base timestamps relative to a fixed start for consistency in the response,
+    // but "now" works for fresh data.
+    // Actually, let's just use offsets for the mock generator logic
+    return {
+      id,
+      name,
+      type,
+      startTime: startOffset,
+      endTime: startOffset + duration,
+      status: Math.random() > 0.9 ? 'error' : 'success', // 10% chance of error
+      serviceName,
+      input: { query: "example input", param: 123 },
+      output: { result: "example output", confidence: 0.99 },
+      children: []
+    };
+  }

@@ -33,7 +33,8 @@ func NewMockRuntime() *MockRuntime {
 	return &MockRuntime{}
 }
 
-// LoadPlugin loads a plugin.
+// LoadPlugin loads a WASM plugin from the provided bytecode.
+// It verifies the bytecode is not empty and returns a new Plugin instance.
 func (m *MockRuntime) LoadPlugin(_ context.Context, bytecode []byte) (Plugin, error) {
 	if len(bytecode) == 0 {
 		return nil, fmt.Errorf("btyecode cannot be empty")
@@ -49,7 +50,8 @@ func (m *MockRuntime) Close() error {
 // MockPlugin is a mock plugin.
 type MockPlugin struct{}
 
-// Execute executes a function.
+// Execute runs a specific function exported by the WASM module.
+// It accepts optional byte arguments and returns the result as bytes.
 func (p *MockPlugin) Execute(_ context.Context, function string, _ ...[]byte) ([]byte, error) {
 	if function == "error" {
 		return nil, fmt.Errorf("simulated error")

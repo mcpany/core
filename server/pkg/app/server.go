@@ -1395,6 +1395,12 @@ func (a *Application) runServerMode(
 	mux.Handle("/metrics", authMiddleware(metrics.Handler()))
 	mux.Handle("/upload", authMiddleware(http.HandlerFunc(a.uploadFile)))
 
+	// Initialize and Register Debugger
+	// TODO: Make size configurable via config.yaml
+	// We use a larger buffer (1024 entries) to ensure we can capture enough history for debugging sessions.
+	agentDebugger := middleware.NewDebugger(1024)
+	mux.Handle("/debug/entries", authMiddleware(agentDebugger.HTTPHandler()))
+
 	// OIDC Routes
 	var oidcConfig *config_v1.OIDCConfig
 	if globalSettings != nil {
@@ -1514,13 +1520,16 @@ func (a *Application) runServerMode(
 	corsMiddleware := middleware.NewHTTPCORSMiddleware(a.SettingsManager.GetAllowedOrigins())
 	a.corsMiddleware = corsMiddleware
 
-	// Middleware order: SecurityHeaders -> CORS -> JSONRPCCompliance -> IPAllowList -> RateLimit -> Mux
+	// Middleware order: Debugger -> SecurityHeaders -> CORS -> JSONRPCCompliance -> IPAllowList -> RateLimit -> Mux
 	// We wrap everything with a debug logger to see what's coming in
-	handler := middleware.HTTPSecurityHeadersMiddleware(
-		corsMiddleware.Handler(
-			middleware.JSONRPCComplianceMiddleware(
-				ipMiddleware.Handler(
-					rateLimiter.Handler(mux),
+	// Debugger is outermost to capture all requests
+	handler := agentDebugger.HTTPMiddleware(
+		middleware.HTTPSecurityHeadersMiddleware(
+			corsMiddleware.Handler(
+				middleware.JSONRPCComplianceMiddleware(
+					ipMiddleware.Handler(
+						rateLimiter.Handler(mux),
+					),
 				),
 			),
 		),
