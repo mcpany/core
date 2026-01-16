@@ -17,7 +17,7 @@ import (
 
 func TestSftpProvider_Extended(t *testing.T) {
 	// Create a temporary directory for the SFTP server to serve
-	addr, _, cleanup := startSFTPServer(t)
+	addr, _, cleanup := startSFTPServer(t, nil)
 	defer cleanup()
 
 	// Create temp dir for testing
