@@ -34,6 +34,7 @@ type Settings struct {
 	dbPath          string
 	fs              afero.Fs
 	cmd             *cobra.Command
+	loaded          bool
 }
 
 var (
@@ -125,6 +126,7 @@ func (s *Settings) Load(cmd *cobra.Command, fs afero.Fs) error {
 		s.proto.SetDbDriver(viper.GetString("db-driver"))
 	}
 
+	s.loaded = true
 	return nil
 }
 
@@ -201,7 +203,7 @@ func (s *Settings) Profiles() []string {
 	if viper.IsSet("profiles") {
 		return getStringSlice("profiles")
 	}
-	if len(s.profiles) == 0 {
+	if !s.loaded && len(s.profiles) == 0 {
 		return []string{"default"}
 	}
 	return s.profiles
@@ -284,6 +286,12 @@ func (s *Settings) GithubAPIURL() string {
 // It handles the case where viper returns a slice with a single element
 // containing comma-separated values (which happens with environment variables).
 func getStringSlice(key string) []string {
+	// Check for empty environment variable explicitly to support clearing lists (e.g. MCPANY_PROFILES="")
+	envKey := "MCPANY_" + strings.ToUpper(strings.ReplaceAll(key, "-", "_"))
+	if val, ok := os.LookupEnv(envKey); ok && val == "" {
+		return []string{}
+	}
+
 	// Check the raw value to distinguish between a string (Env var) and a slice (YAML/JSON).
 	raw := viper.Get(key)
 	if val, ok := raw.(string); ok && val != "" {

@@ -74,6 +74,7 @@ func TestSettings_Defaults(t *testing.T) {
 	viper.Reset()
 	fs := afero.NewMemMapFs()
 	cmd := &cobra.Command{}
+	BindFlags(cmd)
 
 	settings := &Settings{
 		proto: &configv1.GlobalSettings{},
