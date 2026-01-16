@@ -386,70 +386,105 @@ func (u *Upstream) createAndRegisterHTTPTools(ctx context.Context, serviceID, ad
 			resolvedURL.Fragment = baseURL.Fragment
 		}
 		// Merge query parameters, allowing endpoint parameters to override base parameters
-		endpointQuery := endpointURL.Query()
-		if len(endpointQuery) > 0 {
-			query := resolvedURL.Query()
+		// We use a manual parsing strategy to preserve invalid percent encodings.
+		parseQueryManual := func(rawQuery string) (url.Values, []string, map[string]bool) {
+			values := make(url.Values)
+			var invalidParts []string
+			flags := make(map[string]bool)
 
-			// Check if we lost the entire base query due to parsing issues (e.g. invalid percent encoding).
-			// If base query looks non-empty but parsed to empty, we fallback to string appending.
-			if len(query) == 0 && strings.Trim(resolvedURL.RawQuery, "&") != "" {
-				if resolvedURL.RawQuery != "" {
-					resolvedURL.RawQuery += "&" + endpointURL.RawQuery
-				} else {
-					resolvedURL.RawQuery = endpointURL.RawQuery
-				}
-			} else {
-				// Capture which keys are "flags" (no equals sign) in the base URL
-				// by manually inspecting RawQuery, because url.Values does not distinguish.
-				originalFlags := make(map[string]bool)
-				// Helper to extract flags from a raw query string
-				extractFlags := func(rawQuery string) {
-					if rawQuery != "" {
-						for _, param := range strings.Split(rawQuery, "&") {
-							if !strings.Contains(param, "=") && len(param) > 0 {
-								// Decode the key to store it canonically.
-								// We must handle cases where RawQuery uses %20 but Encode uses +.
-								if decodedKey, err := url.QueryUnescape(param); err == nil {
-									originalFlags[decodedKey] = true
-								}
-							}
-						}
-					}
-				}
-
-				extractFlags(baseURL.RawQuery)
-				extractFlags(endpointURL.RawQuery)
-
-				for k, v := range endpointQuery {
-					query[k] = v
-				}
-				encoded := query.Encode()
-
-				// Post-process to restore flag style for keys that were originally flags
-				// and still have empty values (not overridden by a non-empty value).
-				// Encode() sorts keys, so we can split by "&" and process each part.
-				if len(originalFlags) > 0 {
-					parts := strings.Split(encoded, "&")
-					for i, part := range parts {
-						// Check if this part ends with "=" (meaning empty value)
-						if strings.HasSuffix(part, "=") {
-							encodedKey := strings.TrimSuffix(part, "=")
-							decodedKey, err := url.QueryUnescape(encodedKey)
-							if err == nil {
-								// Check if this key was originally a flag
-								if originalFlags[decodedKey] {
-									// Since this part ends with "=", the value is empty.
-									// If the key was originally a flag, and we have an empty value here,
-									// we restore it to the flag style (no equals sign).
-									parts[i] = encodedKey
-								}
-							}
-						}
-					}
-					encoded = strings.Join(parts, "&")
-				}
-				resolvedURL.RawQuery = encoded
+			if rawQuery == "" {
+				return values, invalidParts, flags
 			}
+
+			parts := strings.Split(rawQuery, "&")
+			for _, part := range parts {
+				if part == "" {
+					continue
+				}
+
+				// Try to parse this single part
+				m, err := url.ParseQuery(part)
+				if err != nil {
+					invalidParts = append(invalidParts, part)
+					continue
+				}
+
+				// Check for flag (no equals sign in part)
+				if !strings.Contains(part, "=") {
+					// It's a flag. key is unescaped part.
+					// m should contain { key: [""] }
+					for k := range m {
+						flags[k] = true
+					}
+				}
+
+				for k, v := range m {
+					values[k] = append(values[k], v...)
+				}
+			}
+			return values, invalidParts, flags
+		}
+
+		// Only attempt merge if there is something to merge from endpoint
+		if strings.Trim(endpointURL.RawQuery, "&") != "" {
+			// Base URL query comes from resolvedURL.RawQuery (which was reset to baseURL.RawQuery)
+			baseVals, baseInvalid, baseFlags := parseQueryManual(resolvedURL.RawQuery)
+			endVals, endInvalid, endFlags := parseQueryManual(endpointURL.RawQuery)
+
+			// Merge valid values (Endpoint overrides Base)
+			for k, v := range endVals {
+				baseVals[k] = v
+			}
+
+			encoded := baseVals.Encode()
+
+			// Post-process to restore flag style
+			if len(baseFlags) > 0 || len(endFlags) > 0 {
+				parts := strings.Split(encoded, "&")
+				for i, part := range parts {
+					// Check if this part ends with "=" (meaning empty value)
+					if strings.HasSuffix(part, "=") {
+						encodedKey := strings.TrimSuffix(part, "=")
+						decodedKey, err := url.QueryUnescape(encodedKey)
+						if err == nil {
+							// Check if this key should be a flag.
+							// It is a flag if:
+							// 1. It is in endFlags (endpoint explicitly set it as flag)
+							// 2. OR It is in baseFlags AND NOT in endVals (base set it, and endpoint didn't override it with a non-flag value)
+							// But wait, if endVals has it, we used endVals value.
+							// If endVals has it and it was a flag, endVals[k] is [""].
+							// So checking endFlags[k] is sufficient if it came from endpoint.
+							// If it came from base (not in endVals), then baseFlags[k].
+
+							// Check if this key should be a flag.
+							// We restore the flag style if it was a flag in either Base or Endpoint.
+							// This preserves the behavior of unioning flags, and ensures that
+							// if a parameter was a flag in the base URL, it remains a flag
+							// even if the endpoint specifies it with an empty value (e.g. ?flag=).
+							if endFlags[decodedKey] || baseFlags[decodedKey] {
+								parts[i] = encodedKey
+							}
+						}
+					}
+				}
+				encoded = strings.Join(parts, "&")
+			}
+
+			// Reconstruct final query with invalid parts preserved.
+			// We place base invalid parts first to match historical behavior where
+			// base query parameters (even invalid ones) appear before endpoint parameters.
+			var finalParts []string
+			if len(baseInvalid) > 0 {
+				finalParts = append(finalParts, baseInvalid...)
+			}
+			if encoded != "" {
+				finalParts = append(finalParts, encoded)
+			}
+			if len(endInvalid) > 0 {
+				finalParts = append(finalParts, endInvalid...)
+			}
+
+			resolvedURL.RawQuery = strings.Join(finalParts, "&")
 		}
 		fullURL := resolvedURL.String()
 
