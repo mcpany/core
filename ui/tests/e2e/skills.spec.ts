@@ -5,7 +5,7 @@
 
 import { test, expect } from '@playwright/test';
 
-test.describe.skip('Agent Skills', () => {
+test.describe('Agent Skills', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/skills');
   });
@@ -64,15 +64,21 @@ test.describe.skip('Agent Skills', () => {
         await page.goto('/skills/create');
     }
     await page.fill('input#name', skillName);
+    await page.fill('textarea#description', 'Created by E2E test');
     await page.click('button:has-text("Next")');
+
+    await expect(page.locator('text=Step 2: Instructions')).toBeVisible();
+    await page.fill('textarea', '# E2E Instructions\n\nRun this.');
     await page.click('button:has-text("Next")');
-    await page.click('button:has-text("Next")');
+
 
     const createPromise = page.waitForResponse(response =>
         response.url().includes('/v1/skills') && response.status() === 200
     );
     await page.click('button:has-text("Create Skill")');
     await createPromise;
+
+    await expect(page).toHaveURL(/\/skills$/);
 
     // Wait for list with retry
     await expect(async () => {
@@ -83,8 +89,8 @@ test.describe.skip('Agent Skills', () => {
     // Click View - finding the specific card link
     // The card title usually contains the name, and there is a "View Details" link
     // We can target the "View Details" link inside the card that has the skill name
-    const card = page.locator('.card', { hasText: skillName });
-    await card.locator('text=View Details').click();
+    // Click View Details directly using href
+    await page.click(`a[href="/skills/${skillName}"]`);
 
     await expect(page).toHaveURL(new RegExp(`/skills/${skillName}`));
     await expect(page.locator('h1')).toContainText(skillName);
