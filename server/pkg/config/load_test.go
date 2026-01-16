@@ -36,6 +36,7 @@ func TestLoadServices_ValidConfigs(t *testing.T) {
 			_, _ = w.Write([]byte(`
 upstream_services: {
 	name: "http-svc-from-url"
+	auto_discover_tool: true
 	http_service: {
 		address: "http://api.example.com/from-url"
 	}
@@ -137,6 +138,7 @@ upstream_services: {
 		content := `
 upstream_services: {
 	name: "dummy-service"
+	auto_discover_tool: true
 	http_service: {
 		address: "http://example.com"
 	}
@@ -161,6 +163,7 @@ upstream_services: {
 			textprotoContent: `
 upstream_services: {
 	name: "grpc-svc-1"
+	auto_discover_tool: true
 	grpc_service: {
 		address: "grpc://localhost:50051"
 		use_reflection: true
@@ -239,6 +242,7 @@ upstream_services: {
 			textprotoContent: `
 upstream_services: {
 	name: "http-svc-bearer"
+	auto_discover_tool: true
 	upstream_auth: {
 		bearer_token: {
 			token: { plain_text: "secretbearertoken" }
@@ -266,6 +270,7 @@ upstream_services: {
 			textprotoContent: `
 upstream_services: {
 	name: "http-svc-basic"
+	auto_discover_tool: true
 	upstream_auth: {
 		basic_auth: {
 			username: "testuser"
@@ -295,6 +300,7 @@ upstream_services: {
 			textprotoContent: `
 upstream_services: {
     name: "service-with-invalid-cache"
+    auto_discover_tool: true
     http_service: {
         address: "http://api.example.com/v2"
     }
@@ -312,6 +318,7 @@ upstream_services: {
 			textprotoContent: `
 upstream_services: {
     name: "valid-service"
+    auto_discover_tool: true
     http_service: {
         address: "http://valid.example.com"
     }
@@ -329,12 +336,14 @@ upstream_services: {
 			textprotoContent: `
 upstream_services: {
 	name: "duplicate-name"
+	auto_discover_tool: true
 	http_service: {
 		address: "http://api.example.com/v1"
 	}
 }
 upstream_services: {
 	name: "duplicate-name"
+	auto_discover_tool: true
 	http_service: {
 		address: "http://api.example.com/v2"
 	}
@@ -388,6 +397,7 @@ global_settings: {
 }
 upstream_services: {
 	name: "service-with-named-profile"
+	auto_discover_tool: true
 	http_service: {
 		address: "http://api.example.com"
 	}
@@ -423,6 +433,7 @@ func TestLoadServices_DefaultUser_ImplicitProfile(t *testing.T) {
 	content := `
 upstream_services: {
 	name: "service-implicit-profile"
+	auto_discover_tool: true
 	http_service: {
 		address: "http://api.example.com"
 	}

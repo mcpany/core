@@ -20,6 +20,7 @@ func TestValidate_McpBundleConnection(t *testing.T) {
 					Name: proto.String("mcp-bundle-svc"),
 					ServiceConfig: &configv1.UpstreamServiceConfig_McpService{
 						McpService: &configv1.McpUpstreamService{
+							ToolAutoDiscovery: proto.Bool(true),
 							ConnectionType: &configv1.McpUpstreamService_BundleConnection{
 								BundleConnection: &configv1.McpBundleConnection{
 									BundlePath: proto.String("test.bundle"),

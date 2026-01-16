@@ -372,7 +372,86 @@ func validateUpstreamService(ctx context.Context, service *configv1.UpstreamServ
 			return err
 		}
 	}
+
+	// Validate that the service has at least one capability exposed (Tools, Resources, Prompts)
+	// or has auto-discovery enabled. This prevents "silent failures" where a service is defined
+	// but exposes nothing to the client.
+	if !hasExposedCapabilities(service) {
+		return fmt.Errorf("service %q has no exposed capabilities (tools, resources, or prompts) and auto-discovery is disabled. Please define at least one capability or enable auto-discovery", service.GetName())
+	}
+
 	return nil
+}
+
+func hasExposedCapabilities(service *configv1.UpstreamServiceConfig) bool {
+	// If auto_discover_tool is enabled, we assume capabilities will be found.
+	if service.GetAutoDiscoverTool() {
+		return true
+	}
+
+	// Check if any prompts are defined at the top level.
+	if len(service.GetPrompts()) > 0 {
+		return true
+	}
+
+	switch service.WhichServiceConfig() {
+	case configv1.UpstreamServiceConfig_HttpService_case:
+		s := service.GetHttpService()
+		return len(s.GetTools()) > 0 || len(s.GetResources()) > 0 || len(s.GetPrompts()) > 0
+
+	case configv1.UpstreamServiceConfig_GrpcService_case:
+		s := service.GetGrpcService()
+		// Grpc has tools, resources, prompts, proto_definitions, proto_collection
+		// If proto_definitions/collection are present, it implies potential discovery/usage.
+		return len(s.GetTools()) > 0 || len(s.GetResources()) > 0 || len(s.GetPrompts()) > 0 ||
+			len(s.GetProtoDefinitions()) > 0 || len(s.GetProtoCollection()) > 0
+
+	case configv1.UpstreamServiceConfig_OpenapiService_case:
+		// OpenAPI always attempts auto-discovery if tools are empty.
+		// And we already validate that SpecContent/SpecUrl is present.
+		return true
+
+	case configv1.UpstreamServiceConfig_CommandLineService_case:
+		s := service.GetCommandLineService()
+		return len(s.GetTools()) > 0 || len(s.GetResources()) > 0 || len(s.GetPrompts()) > 0
+
+	case configv1.UpstreamServiceConfig_McpService_case:
+		s := service.GetMcpService()
+		if s.GetToolAutoDiscovery() {
+			return true
+		}
+		return len(s.GetTools()) > 0 || len(s.GetResources()) > 0 || len(s.GetPrompts()) > 0
+
+	case configv1.UpstreamServiceConfig_SqlService_case:
+		s := service.GetSqlService()
+		// SQL service generates tools from calls
+		return len(s.GetCalls()) > 0
+
+	case configv1.UpstreamServiceConfig_GraphqlService_case:
+		s := service.GetGraphqlService()
+		// GraphQL needs calls
+		return len(s.GetCalls()) > 0
+
+	case configv1.UpstreamServiceConfig_WebsocketService_case:
+		s := service.GetWebsocketService()
+		return len(s.GetTools()) > 0 || len(s.GetResources()) > 0 || len(s.GetPrompts()) > 0
+
+	case configv1.UpstreamServiceConfig_WebrtcService_case:
+		s := service.GetWebrtcService()
+		return len(s.GetTools()) > 0 || len(s.GetResources()) > 0 || len(s.GetPrompts()) > 0
+
+	case configv1.UpstreamServiceConfig_FilesystemService_case:
+		// FS usually exposes resources automatically
+		return true
+
+	case configv1.UpstreamServiceConfig_VectorService_case:
+		// Vector service usually has built-in tools
+		return true
+
+	default:
+		// Default to true for unknown services to avoid breaking future extensions
+		return true
+	}
 }
 
 // ... (other functions)

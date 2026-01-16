@@ -56,6 +56,7 @@ func TestValidate_MoreServices(t *testing.T) {
 				UpstreamServices: []*configv1.UpstreamServiceConfig{
 					{
 						Name: proto.String("mtls-service-insecure-key"),
+						AutoDiscoverTool: proto.Bool(true),
 						ServiceConfig: &configv1.UpstreamServiceConfig_HttpService{
 							HttpService: &configv1.HttpUpstreamService{
 								Address: proto.String("http://example.com"),
@@ -419,6 +420,7 @@ func TestValidate_MoreServices(t *testing.T) {
 				UpstreamServices: []*configv1.UpstreamServiceConfig{
 					{
 						Name: proto.String("cmd-valid"),
+						AutoDiscoverTool: proto.Bool(true),
 						ServiceConfig: &configv1.UpstreamServiceConfig_CommandLineService{
 							CommandLineService: &configv1.CommandLineUpstreamService{
 								Command: proto.String("ls"),
@@ -489,6 +491,7 @@ func TestValidate_MoreServices(t *testing.T) {
 				UpstreamServices: []*configv1.UpstreamServiceConfig{
 					{
 						Name: proto.String("mtls-valid-no-ca"),
+						AutoDiscoverTool: proto.Bool(true),
 						ServiceConfig: &configv1.UpstreamServiceConfig_HttpService{
 							HttpService: &configv1.HttpUpstreamService{
 								Address: proto.String("https://example.com"),
@@ -514,6 +517,7 @@ func TestValidate_MoreServices(t *testing.T) {
 				UpstreamServices: []*configv1.UpstreamServiceConfig{
 					{
 						Name: proto.String("empty-auth"),
+						AutoDiscoverTool: proto.Bool(true),
 						ServiceConfig: &configv1.UpstreamServiceConfig_HttpService{
 							HttpService: &configv1.HttpUpstreamService{
 								Address: proto.String("https://example.com"),
@@ -563,6 +567,7 @@ func TestValidate_MoreServices(t *testing.T) {
 				UpstreamServices: []*configv1.UpstreamServiceConfig{
 					{
 						Name: proto.String("mtls-insecure-ca"),
+						AutoDiscoverTool: proto.Bool(true),
 						ServiceConfig: &configv1.UpstreamServiceConfig_HttpService{
 							HttpService: &configv1.HttpUpstreamService{
 								Address: proto.String("https://example.com"),

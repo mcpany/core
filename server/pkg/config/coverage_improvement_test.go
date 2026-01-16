@@ -89,6 +89,7 @@ func TestValidatorCoverage(t *testing.T) {
 	// ValidateOrError expects UpstreamServiceConfig
 	cfg := &configv1.UpstreamServiceConfig{
         Name: proto.String("valid-service"),
+        AutoDiscoverTool: proto.Bool(true),
         ServiceConfig: &configv1.UpstreamServiceConfig_HttpService{
             HttpService: &configv1.HttpUpstreamService{
                 Address: proto.String("http://example.com"),
@@ -171,8 +172,8 @@ func TestValidatorCoverageMore(t *testing.T) {
     // 7. Duplicate Service Name
     cfgDup := &configv1.McpAnyServerConfig{
         UpstreamServices: []*configv1.UpstreamServiceConfig{
-            {Name: proto.String("s1"), ServiceConfig: &configv1.UpstreamServiceConfig_HttpService{HttpService: &configv1.HttpUpstreamService{Address: proto.String("http://a.com")}}},
-            {Name: proto.String("s1"), ServiceConfig: &configv1.UpstreamServiceConfig_HttpService{HttpService: &configv1.HttpUpstreamService{Address: proto.String("http://b.com")}}},
+            {Name: proto.String("s1"), AutoDiscoverTool: proto.Bool(true), ServiceConfig: &configv1.UpstreamServiceConfig_HttpService{HttpService: &configv1.HttpUpstreamService{Address: proto.String("http://a.com")}}},
+            {Name: proto.String("s1"), AutoDiscoverTool: proto.Bool(true), ServiceConfig: &configv1.UpstreamServiceConfig_HttpService{HttpService: &configv1.HttpUpstreamService{Address: proto.String("http://b.com")}}},
         },
     }
     errs = config.Validate(ctx, cfgDup, config.Server)
@@ -346,6 +347,7 @@ func TestValidatorCommandExists(t *testing.T) {
     // Valid command absolute path
     cfg := &configv1.UpstreamServiceConfig{
         Name: proto.String("cmd-svc"),
+        AutoDiscoverTool: proto.Bool(true),
         ServiceConfig: &configv1.UpstreamServiceConfig_CommandLineService{
             CommandLineService: &configv1.CommandLineUpstreamService{
                 Command: proto.String(exePath),

@@ -129,6 +129,7 @@ func TestSettings_Load_StringSliceEnv(t *testing.T) {
 	content := `
 upstream_services: {
 	name: "dummy-service"
+	auto_discover_tool: true
 	http_service: {
 		address: "http://example.com"
 	}

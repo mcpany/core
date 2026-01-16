@@ -180,6 +180,7 @@ func TestValidateMcpStdioConnection_RelativeCommandWithWorkingDir(t *testing.T) 
 				Name: proto.String("test-service"),
 				ServiceConfig: &configv1.UpstreamServiceConfig_McpService{
 					McpService: &configv1.McpUpstreamService{
+						ToolAutoDiscovery: proto.Bool(true),
 						ConnectionType: &configv1.McpUpstreamService_StdioConnection{
 							StdioConnection: &configv1.McpStdioConnection{
 								Command:          proto.String("./start.sh"),
@@ -315,6 +316,7 @@ func TestValidateMcpStdioConnection_ArgsValidation(t *testing.T) {
 						Name: proto.String("test-service"),
 						ServiceConfig: &configv1.UpstreamServiceConfig_McpService{
 							McpService: &configv1.McpUpstreamService{
+						ToolAutoDiscovery: proto.Bool(true),
 								ConnectionType: &configv1.McpUpstreamService_StdioConnection{
 									StdioConnection: &configv1.McpStdioConnection{
 										Command:          proto.String(tt.command),
@@ -846,6 +848,9 @@ func TestValidate_ExtraServices(t *testing.T) {
 						ServiceConfig: &configv1.UpstreamServiceConfig_GraphqlService{
 							GraphqlService: &configv1.GraphQLUpstreamService{
 								Address: proto.String("http://example.com/graphql"),
+								Calls: map[string]*configv1.GraphQLCallDefinition{
+									"test-call": {Query: proto.String("query { test }")},
+								},
 							},
 						},
 					},
@@ -881,6 +886,7 @@ func TestValidate_ExtraServices(t *testing.T) {
 				cfg.UpstreamServices = []*configv1.UpstreamServiceConfig{
 					{
 						Name: proto.String("webrtc-valid"),
+						AutoDiscoverTool: proto.Bool(true),
 						ServiceConfig: &configv1.UpstreamServiceConfig_WebrtcService{
 							WebrtcService: &configv1.WebrtcUpstreamService{
 								Address: proto.String("http://example.com/webrtc"),
