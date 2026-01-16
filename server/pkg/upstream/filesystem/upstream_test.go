@@ -12,6 +12,7 @@ import (
 
 	"github.com/mcpany/core/server/pkg/bus"
 	"github.com/mcpany/core/server/pkg/tool"
+	"github.com/mcpany/core/server/pkg/validation"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -585,6 +586,10 @@ func TestFilesystemUpstream_ZipFs(t *testing.T) {
 	tempDir, err := os.MkdirTemp("", "zip_test")
 	require.NoError(t, err)
 	defer os.RemoveAll(tempDir)
+
+	// Allow tempDir for validation
+	validation.SetAllowedPaths([]string{tempDir})
+	defer validation.SetAllowedPaths(nil)
 
 	zipPath := filepath.Join(tempDir, "test.zip")
 	f, err := os.Create(zipPath)

@@ -12,12 +12,15 @@ import (
 	"path/filepath"
 	"testing"
 
+	"github.com/mcpany/core/server/pkg/validation"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
 func TestNewFileAuditStore_File(t *testing.T) {
 	tmpDir := t.TempDir()
+	validation.SetAllowedPaths([]string{tmpDir})
+	defer validation.SetAllowedPaths(nil)
 	logFile := filepath.Join(tmpDir, "audit.log")
 
 	store, err := NewFileAuditStore(logFile)
@@ -40,11 +43,17 @@ func TestNewFileAuditStore_Error(t *testing.T) {
 	// Try to open a file in a non-existent directory to trigger error
 	_, err := NewFileAuditStore("/non/existent/dir/audit.log")
 	require.Error(t, err)
-	assert.Contains(t, err.Error(), "failed to open audit log file")
+	// Can be either "failed to open" or "path not allowed" depending on validation
+	// Since /non/existent/dir is likely not allowed, it should fail validation first
+	// But let's check for Error generally, or update expectation
+	// Update: it will fail validation.IsAllowedPath first.
+	assert.Contains(t, err.Error(), "path not allowed")
 }
 
 func TestFileAuditStore_Write_File(t *testing.T) {
 	tmpDir := t.TempDir()
+	validation.SetAllowedPaths([]string{tmpDir})
+	defer validation.SetAllowedPaths(nil)
 	logFile := filepath.Join(tmpDir, "audit.log")
 
 	store, err := NewFileAuditStore(logFile)
@@ -106,6 +115,8 @@ func TestFileAuditStore_Write_Stdout(t *testing.T) {
 
 func TestFileAuditStore_Close(t *testing.T) {
 	tmpDir := t.TempDir()
+	validation.SetAllowedPaths([]string{tmpDir})
+	defer validation.SetAllowedPaths(nil)
 	logFile := filepath.Join(tmpDir, "audit.log")
 
 	store, err := NewFileAuditStore(logFile)

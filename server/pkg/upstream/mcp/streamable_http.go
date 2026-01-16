@@ -407,9 +407,29 @@ func buildCommandFromStdioConfig(ctx context.Context, stdio *configv1.McpStdioCo
 	// Combine all commands into a single script.
 	var scriptCommands []string
 	setupCommands := stdio.GetSetupCommands()
-	if len(setupCommands) > 0 {
-		logging.GetLogger().Warn("Using setup_commands in StdioTransport is dangerous and allows Command Injection if config is untrusted.", "setup_commands", setupCommands)
+
+	// If no setup commands are provided, execute the command directly.
+	// This avoids shell injection risks and is safer.
+	if len(setupCommands) == 0 {
+		cmd := exec.CommandContext(ctx, command, args...) //nolint:gosec // Command is configured by user
+		cmd.Dir = stdio.GetWorkingDirectory()
+		currentEnv := os.Environ()
+		env := make([]string, len(currentEnv), len(currentEnv)+len(resolvedEnv))
+		copy(env, currentEnv)
+		for k, v := range resolvedEnv {
+			env = append(env, fmt.Sprintf("%s=%s", k, v))
+		}
+		cmd.Env = env
+
+		// Validate required environment variables
+		if err := validateRequiredEnv(env, stdio.GetValidation()); err != nil {
+			return nil, err
+		}
+
+		return cmd, nil
 	}
+
+	logging.GetLogger().Warn("Using setup_commands in StdioTransport is dangerous and allows Command Injection if config is untrusted.", "setup_commands", setupCommands)
 	scriptCommands = append(scriptCommands, setupCommands...)
 
 	// Add the main command. `exec` is used to replace the shell process with the main command.

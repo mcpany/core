@@ -11,6 +11,7 @@ import (
 	"testing"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
+	"github.com/mcpany/core/server/pkg/validation"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -43,6 +44,10 @@ func TestZipProvider(t *testing.T) {
 	tmpZip, err := os.CreateTemp("", "test*.zip")
 	require.NoError(t, err)
 	defer os.Remove(tmpZip.Name())
+
+	// Allow temp dir for validation
+	validation.SetAllowedPaths([]string{filepath.Dir(tmpZip.Name())})
+	defer validation.SetAllowedPaths(nil)
 
 	_, err = tmpZip.Write(buf.Bytes())
 	require.NoError(t, err)

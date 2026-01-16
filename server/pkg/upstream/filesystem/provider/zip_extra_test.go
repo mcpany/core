@@ -11,6 +11,7 @@ import (
 	"testing"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
+	"github.com/mcpany/core/server/pkg/validation"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/proto"
@@ -19,6 +20,11 @@ import (
 func TestZipProvider_E2E(t *testing.T) {
 	// Create a temporary zip file
 	tmpDir := t.TempDir()
+
+	// Allow tempDir for validation
+	validation.SetAllowedPaths([]string{tmpDir})
+	defer validation.SetAllowedPaths(nil)
+
 	zipPath := filepath.Join(tmpDir, "test.zip")
 
 	zipFile, err := os.Create(zipPath)

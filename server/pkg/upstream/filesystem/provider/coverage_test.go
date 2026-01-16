@@ -12,6 +12,7 @@ import (
 	"time"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
+	"github.com/mcpany/core/server/pkg/validation"
 	"github.com/spf13/afero"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -78,7 +79,13 @@ func TestSftpProvider_Methods(t *testing.T) {
 // --- ZipProvider Extra Tests ---
 func TestZipProvider_Methods(t *testing.T) {
 	// Create a real zip file for testing
-	tmpZip := filepath.Join(t.TempDir(), "test.zip")
+	tempDir := t.TempDir()
+
+	// Allow tempDir for validation
+	validation.SetAllowedPaths([]string{tempDir})
+	defer validation.SetAllowedPaths(nil)
+
+	tmpZip := filepath.Join(tempDir, "test.zip")
 
 	// Create zip
 	zFile, err := os.Create(tmpZip)
