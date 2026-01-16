@@ -100,7 +100,7 @@ func TestInitStandardMiddlewares(t *testing.T) {
 	cachingMiddleware := &CachingMiddleware{}
 
 	// Call InitStandardMiddlewares
-	standardMiddlewares, err := InitStandardMiddlewares(authManager, mockToolManager, auditConfig, cachingMiddleware, nil, nil)
+	standardMiddlewares, err := InitStandardMiddlewares(authManager, mockToolManager, auditConfig, cachingMiddleware, nil, nil, nil)
 	assert.NoError(t, err)
 	assert.NotNil(t, standardMiddlewares)
 	if standardMiddlewares.Cleanup != nil {
@@ -244,7 +244,7 @@ func TestInitStandardMiddlewares_AuditError(t *testing.T) {
 	cachingMiddleware := &CachingMiddleware{}
 
 	// Call InitStandardMiddlewares
-	standardMiddlewares, err := InitStandardMiddlewares(authManager, mockToolManager, auditConfig, cachingMiddleware, nil, nil)
+	standardMiddlewares, err := InitStandardMiddlewares(authManager, mockToolManager, auditConfig, cachingMiddleware, nil, nil, nil)
 	assert.Error(t, err)
 	assert.Nil(t, standardMiddlewares)
 }

@@ -524,7 +524,7 @@ func (a *Application) Run(
 
 	// Initialize standard middlewares in registry
 	cachingMiddleware := middleware.NewCachingMiddleware(a.ToolManager)
-	standardMiddlewares, err := middleware.InitStandardMiddlewares(mcpSrv.AuthManager(), a.ToolManager, cfg.GetGlobalSettings().GetAudit(), cachingMiddleware, cfg.GetGlobalSettings().GetRateLimit(), cfg.GetGlobalSettings().GetDlp())
+	standardMiddlewares, err := middleware.InitStandardMiddlewares(mcpSrv.AuthManager(), a.ToolManager, cfg.GetGlobalSettings().GetAudit(), cachingMiddleware, cfg.GetGlobalSettings().GetRateLimit(), cfg.GetGlobalSettings().GetDlp(), cfg.GetGlobalSettings().GetContextOptimizer())
 	if err != nil {
 		workerCancel()
 		upstreamWorker.Stop()
@@ -552,8 +552,9 @@ func (a *Application) Run(
 			{Name: proto.String("dlp"), Priority: proto.Int32(42)},
 			{Name: proto.String("global_ratelimit"), Priority: proto.Int32(45)},
 			{Name: proto.String("call_policy"), Priority: proto.Int32(50)},
-			{Name: proto.String("caching"), Priority: proto.Int32(60)},
+			{Name: proto.String("context_optimizer"), Priority: proto.Int32(65)},
 			{Name: proto.String("ratelimit"), Priority: proto.Int32(70)},
+			{Name: proto.String("caching"), Priority: proto.Int32(80)},
 			// CORS is typically 0 or negative to be outermost, but AddReceivingMiddleware adds in order.
 			// The SDK executes them in reverse order of addition?
 			// Wait, mcp.Server implementation:
@@ -755,6 +756,9 @@ func (a *Application) updateGlobalSettings(cfg *config_v1.McpAnyServerConfig) {
 		}
 		if a.standardMiddlewares.GlobalRateLimit != nil {
 			a.standardMiddlewares.GlobalRateLimit.UpdateConfig(cfg.GetGlobalSettings().GetRateLimit())
+		}
+		if a.standardMiddlewares.ContextOptimizer != nil {
+			a.standardMiddlewares.ContextOptimizer.UpdateConfig(cfg.GetGlobalSettings().GetContextOptimizer())
 		}
 	}
 }

@@ -101,6 +101,7 @@ func GetMCPMiddlewares(configs []*configv1.Middleware) []func(mcp.MethodHandler)
 type StandardMiddlewares struct {
 	Audit           *AuditMiddleware
 	GlobalRateLimit *GlobalRateLimitMiddleware
+	ContextOptimizer *ContextOptimizer
 	Cleanup         func() error
 }
 
@@ -112,6 +113,7 @@ func InitStandardMiddlewares(
 	cachingMiddleware *CachingMiddleware,
 	globalRateLimitConfig *configv1.RateLimitConfig,
 	dlpConfig *configv1.DLPConfig,
+	contextOptimizerConfig *configv1.ContextOptimizerConfig,
 ) (*StandardMiddlewares, error) {
 	// 1. Logging
 	RegisterMCP("logging", func(_ *configv1.Middleware) func(mcp.MethodHandler) mcp.MethodHandler {
@@ -261,9 +263,16 @@ func InitStandardMiddlewares(
 		return DLPMiddleware(dlpConfig, nil)
 	})
 
+	// Context Optimizer
+	contextOptimizer := NewContextOptimizer(contextOptimizerConfig)
+	RegisterMCP("context_optimizer", func(_ *configv1.Middleware) func(mcp.MethodHandler) mcp.MethodHandler {
+		return contextOptimizer.Middleware
+	})
+
 	return &StandardMiddlewares{
-		Audit:           audit,
-		GlobalRateLimit: globalRateLimit,
-		Cleanup:         audit.Close,
+		Audit:            audit,
+		GlobalRateLimit:  globalRateLimit,
+		ContextOptimizer: contextOptimizer,
+		Cleanup:          audit.Close,
 	}, nil
 }
