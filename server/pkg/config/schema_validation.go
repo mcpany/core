@@ -4,6 +4,7 @@
 package config
 
 import (
+	"encoding/json"
 	"fmt"
 	"sync"
 
@@ -50,4 +51,11 @@ func ValidateConfigAgainstSchema(rawConfig map[string]interface{}) error {
 		return fmt.Errorf("schema validation failed: %w", err)
 	}
 	return nil
+}
+
+// GenerateJSONSchemaBytes returns the JSON schema for McpAnyServerConfig as a byte slice.
+func GenerateJSONSchemaBytes() ([]byte, error) {
+	cfg := &configv1.McpAnyServerConfig{}
+	schemaMap := GenerateSchemaMapFromProto(cfg.ProtoReflect())
+	return json.MarshalIndent(schemaMap, "", "  ")
 }

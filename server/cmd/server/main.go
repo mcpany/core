@@ -26,6 +26,7 @@ import (
 	"github.com/spf13/afero"
 	"github.com/spf13/cobra"
 	"golang.org/x/oauth2"
+	"gopkg.in/yaml.v3"
 )
 
 var (
@@ -318,6 +319,47 @@ func newRootCmd() *cobra.Command { //nolint:gocyclo // Main entry point, expecte
 		},
 	}
 	configCmd.AddCommand(docCmd)
+
+	schemaCmd := &cobra.Command{
+		Use:   "schema",
+		Short: "Print the JSON Schema for configuration",
+		RunE: func(cmd *cobra.Command, _ []string) error {
+			schemaBytes, err := config.GenerateJSONSchemaBytes()
+			if err != nil {
+				return fmt.Errorf("failed to generate schema: %w", err)
+			}
+			fmt.Println(string(schemaBytes))
+			return nil
+		},
+	}
+	configCmd.AddCommand(schemaCmd)
+
+	checkCmd := &cobra.Command{
+		Use:   "check [file]",
+		Short: "Check a configuration file against the JSON Schema",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			filename := args[0]
+			data, err := os.ReadFile(filename)
+			if err != nil {
+				return fmt.Errorf("failed to read file %q: %w", filename, err)
+			}
+
+			// Unmarshal as YAML (superset of JSON) into generic map
+			var rawConfig map[string]interface{}
+			if err := yaml.Unmarshal(data, &rawConfig); err != nil {
+				return fmt.Errorf("failed to parse config file: %w", err)
+			}
+
+			if err := config.ValidateConfigAgainstSchema(rawConfig); err != nil {
+				return fmt.Errorf("configuration schema validation failed: %w", err)
+			}
+
+			fmt.Println("Configuration schema is valid.")
+			return nil
+		},
+	}
+	configCmd.AddCommand(checkCmd)
 
 	validateCmd := &cobra.Command{
 		Use:   "validate",

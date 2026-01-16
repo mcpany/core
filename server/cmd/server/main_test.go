@@ -532,3 +532,96 @@ func TestUpdateCmd(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Contains(t, string(out), "You are already running the latest version.")
 }
+
+func TestConfigSchemaCmd(t *testing.T) {
+	viper.Reset()
+	originalStdout := os.Stdout
+	r, w, _ := os.Pipe()
+	os.Stdout = w
+
+	rootCmd := newRootCmd()
+	rootCmd.SetArgs([]string{"config", "schema"})
+	err := rootCmd.Execute()
+
+	_ = w.Close()
+	out, _ := io.ReadAll(r)
+	os.Stdout = originalStdout
+
+	assert.NoError(t, err)
+	output := string(out)
+	assert.Contains(t, output, "$schema")
+	assert.Contains(t, output, "mcpany.config.v1.McpAnyServerConfig")
+}
+
+func TestConfigCheckCmd(t *testing.T) {
+	viper.Reset()
+	// Create a temporary valid config file
+	validConfigFile, err := os.CreateTemp("", "valid-config-*.yaml")
+	assert.NoError(t, err)
+	defer func() { _ = os.Remove(validConfigFile.Name()) }()
+	_, err = validConfigFile.WriteString(`
+global_settings:
+  mcp_listen_address: "localhost:8080"
+`)
+	assert.NoError(t, err)
+	_ = validConfigFile.Close()
+
+	// Create a temporary invalid schema config file
+	invalidConfigFile, err := os.CreateTemp("", "invalid-schema-config-*.yaml")
+	assert.NoError(t, err)
+	defer func() { _ = os.Remove(invalidConfigFile.Name()) }()
+	_, err = invalidConfigFile.WriteString(`
+global_settings:
+  mcp_listen_address: 12345
+`)
+	assert.NoError(t, err)
+	_ = invalidConfigFile.Close()
+
+	tests := []struct {
+		name           string
+		args           []string
+		expectError    bool
+		expectedOutput string
+	}{
+		{
+			name:           "valid config",
+			args:           []string{"config", "check", validConfigFile.Name()},
+			expectError:    false,
+			expectedOutput: "Configuration schema is valid.",
+		},
+		{
+			name:        "invalid config",
+			args:        []string{"config", "check", invalidConfigFile.Name()},
+			expectError: true,
+		},
+		{
+			name:        "file not found",
+			args:        []string{"config", "check", "nonexistent.yaml"},
+			expectError: true,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			viper.Reset()
+			originalStdout := os.Stdout
+			r, w, _ := os.Pipe()
+			os.Stdout = w
+
+			rootCmd := newRootCmd()
+			rootCmd.SetArgs(tt.args)
+			err := rootCmd.Execute()
+
+			_ = w.Close()
+			out, _ := io.ReadAll(r)
+			os.Stdout = originalStdout
+
+			if tt.expectError {
+				assert.Error(t, err)
+			} else {
+				assert.NoError(t, err)
+				assert.Contains(t, string(out), tt.expectedOutput)
+			}
+		})
+	}
+}

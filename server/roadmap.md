@@ -51,6 +51,8 @@
 - [x] **Frontend Config Status Banner**: Add a visual indicator (banner/toast) in the UI Management Dashboard that queries the new `/doctor` configuration check and warns the user if the server is running with a stale or invalid configuration. (Experience Crafter)
 - [x] **WebSocket Diagnostic Probe**: Implemented a diagnostic probe in the UI to validate WebSocket service configuration and test connectivity (including browser-side check). (Experience Crafter)
 - [x] **Required Environment Variable Validation**: Added explicit `validation.required_env` support for Stdio connections to fail fast with descriptive errors if required environment variables are missing. (Friction Fighter)
+- [x] **JSON Schema for Config**: Auto-generate and publish a JSON Schema for the `config.yaml` to enable intellisense/validation in IDEs like VS Code. (Friction Fighter)
+- [x] **Config Schema Validation via CLI**: `mcpany config check config.yaml` that validates against the full JSON schema (including types and enums) using `jsonschema` library, providing line-number precise errors. (Friction Fighter)
 
 ## 2. Top 10 Recommended Features
 
@@ -83,21 +85,21 @@ These features represent the next logical steps for the product, focusing on Ent
 | 23 | **Validation CLI Command** | **DevX**: Enhance `mcpany config validate` to run deep checks, including connecting to upstream services (dry-run) to verify connectivity and auth. | Medium |
 | 24 | **Config Schema Migration** | **Maintenance**: Automated tool to upgrade configuration files when the schema evolves (e.g. `v1alpha` to `v1`). | Medium |
 | 25 | **Environment Variable Linter** | **DevX**: A tool/check to scan config files and verify that all referenced environment variables (e.g. `${API_KEY}`) are actually set in the current shell/env. | Low |
-| 26 | **JSON Schema for Config** | **DevX**: Auto-generate and publish a JSON Schema for the `config.yaml` to enable intellisense/validation in IDEs like VS Code. | Low |
-| 27 | **Linter Git Hook** | **DevX**: Provide a pre-commit hook script that automatically runs `mcpany lint` on staged configuration files to prevent committing insecure configs. | Low |
-| 28 | **Secret Rotation Helper** | **Ops**: A CLI tool to help rotate secrets by identifying which services are using a specific secret key/path and validating the new secret against the upstream. | Medium |
-| 29 | **Structured Logging for Config Errors** | **DevX**: Output configuration errors in a structured JSON format to allow the UI or IDEs to pinpoint the exact location of the error. | Low |
-| 30 | **Automatic Config Fixer** | **DevX**: An interactive CLI tool that detects common configuration errors (like legacy formats) and offers to fix them automatically. | Medium |
-| 31 | **Windows Filesystem Locking Fix** | **Compatibility**: Handle EPERM errors gracefully on Windows when renaming files, ensuring cross-platform stability. | Medium |
-| 32 | **Async Tool Loading** | **Reliability**: Ensure server waits for initial roots/tools to be loaded before accepting requests to prevent race conditions on startup. | Medium |
-| 33 | **Config Schema Validation via CLI** | **DevX**: `mcpany check config.yaml` that validates against the full JSON schema (including types and enums) using `jsonschema` library, providing line-number precise errors. | Low |
-| 34 | **Interactive Config Generator** | **DevX**: `mcpany init` wizard that asks questions and generates a valid `config.yaml` with best practices (secure defaults, comments). | Low |
-| 35 | **Frontend Config Status Banner** | **UX**: Add a visual indicator (banner/toast) in the UI Management Dashboard that queries the new `/doctor` configuration check and warns the user if the server is running with a stale or invalid configuration. | Medium |
-| 36 | **Configuration Diffing API** | **Observability**: An API endpoint to compare the currently active configuration with the previous version or the file on disk, helping users understand what changed during a reload. | Medium |
-| 37 | **Automatic WebSocket Reconnection Strategy** | **Resilience**: Allow users to configure retry backoff and max attempts for WS connections to handle transient network drops. | Medium |
-| 38 | **WebSocket Message Inspector** | **Debugging**: A UI tool to capture and view raw WS frames (text/binary) for debugging protocol issues. | Medium |
-| 39 | **RegEx Environment Variable Validation** | **Security**: Allow validating the *format* of environment variables using regex (e.g., ensuring an API key matches a pattern) in addition to existence checks. | Low |
-| 40 | **HTTP Upstream Env Validation** | **Consistency**: Extend required environment variable validation to HTTP connections (e.g. for `http_address` or auth headers). | Low |
+| 26 | **Linter Git Hook** | **DevX**: Provide a pre-commit hook script that automatically runs `mcpany lint` on staged configuration files to prevent committing insecure configs. | Low |
+| 27 | **Secret Rotation Helper** | **Ops**: A CLI tool to help rotate secrets by identifying which services are using a specific secret key/path and validating the new secret against the upstream. | Medium |
+| 28 | **Structured Logging for Config Errors** | **DevX**: Output configuration errors in a structured JSON format to allow the UI or IDEs to pinpoint the exact location of the error. | Low |
+| 29 | **Automatic Config Fixer** | **DevX**: An interactive CLI tool that detects common configuration errors (like legacy formats) and offers to fix them automatically. | Medium |
+| 30 | **Windows Filesystem Locking Fix** | **Compatibility**: Handle EPERM errors gracefully on Windows when renaming files, ensuring cross-platform stability. | Medium |
+| 31 | **Async Tool Loading** | **Reliability**: Ensure server waits for initial roots/tools to be loaded before accepting requests to prevent race conditions on startup. | Medium |
+| 32 | **Interactive Config Generator** | **DevX**: `mcpany init` wizard that asks questions and generates a valid `config.yaml` with best practices (secure defaults, comments). | Low |
+| 33 | **Frontend Config Status Banner** | **UX**: Add a visual indicator (banner/toast) in the UI Management Dashboard that queries the new `/doctor` configuration check and warns the user if the server is running with a stale or invalid configuration. | Medium |
+| 34 | **Configuration Diffing API** | **Observability**: An API endpoint to compare the currently active configuration with the previous version or the file on disk, helping users understand what changed during a reload. | Medium |
+| 35 | **Automatic WebSocket Reconnection Strategy** | **Resilience**: Allow users to configure retry backoff and max attempts for WS connections to handle transient network drops. | Medium |
+| 36 | **WebSocket Message Inspector** | **Debugging**: A UI tool to capture and view raw WS frames (text/binary) for debugging protocol issues. | Medium |
+| 37 | **RegEx Environment Variable Validation** | **Security**: Allow validating the *format* of environment variables using regex (e.g., ensuring an API key matches a pattern) in addition to existence checks. | Low |
+| 38 | **HTTP Upstream Env Validation** | **Consistency**: Extend required environment variable validation to HTTP connections (e.g. for `http_address` or auth headers). | Low |
+| 39 | **Config Snapshot/Restore** | **Ops**: Ability to save current runtime configuration state to a file (snapshot) and restore it later, useful for backing up verified working configs. | Medium |
+| 40 | **Config Inheritance** | **DevX**: Allow `config.yaml` to extend/import other configuration files (e.g. `extends: base.yaml`) to reduce duplication across environments. | High |
 
 ## 3. Codebase Health
 
