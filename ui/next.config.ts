@@ -52,6 +52,21 @@ const nextConfig: NextConfig = {
     // },
   },
   async headers() {
+    const isDev = process.env.NODE_ENV !== 'production';
+    const csp = [
+      "default-src 'self'",
+      `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ""}`,
+      "style-src 'self' 'unsafe-inline'",
+      "img-src 'self' data: https://placehold.co https://images.unsplash.com https://picsum.photos",
+      "font-src 'self' data:",
+      "connect-src 'self' http://localhost:8080",
+      "object-src 'none'",
+      "base-uri 'self'",
+      "form-action 'self'",
+      "frame-ancestors 'none'",
+      isDev ? "" : "upgrade-insecure-requests"
+    ].filter(Boolean).join("; ");
+
     return [
       {
         source: '/:path*',
@@ -81,8 +96,12 @@ const nextConfig: NextConfig = {
             value: 'origin-when-cross-origin'
           },
           {
+            key: 'Permissions-Policy',
+            value: 'geolocation=(), camera=(), microphone=(), payment=(), usb=(), vr=()'
+          },
+          {
             key: 'Content-Security-Policy',
-            value: "default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://placehold.co https://images.unsplash.com https://picsum.photos; font-src 'self' data:; connect-src 'self' http://localhost:8080; object-src 'none'; base-uri 'self';"
+            value: csp
           }
         ]
       }
