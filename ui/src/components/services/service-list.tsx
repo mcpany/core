@@ -11,7 +11,15 @@ import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { Settings, Trash2, CheckCircle, XCircle, AlertTriangle } from "lucide-react";
+import { Settings, Trash2, CheckCircle, XCircle, AlertTriangle, MoreHorizontal, Copy, Download } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 import { UpstreamServiceConfig } from "@/lib/client";
 
 
@@ -21,9 +29,11 @@ interface ServiceListProps {
   onToggle?: (name: string, enabled: boolean) => void;
   onEdit?: (service: UpstreamServiceConfig) => void;
   onDelete?: (name: string) => void;
+  onDuplicate?: (service: UpstreamServiceConfig) => void;
+  onExport?: (service: UpstreamServiceConfig) => void;
 }
 
-export function ServiceList({ services, isLoading, onToggle, onEdit, onDelete }: ServiceListProps) {
+export function ServiceList({ services, isLoading, onToggle, onEdit, onDelete, onDuplicate, onExport }: ServiceListProps) {
 
   if (isLoading) {
       return (
@@ -61,6 +71,8 @@ export function ServiceList({ services, isLoading, onToggle, onEdit, onDelete }:
                 onToggle={onToggle}
                 onEdit={onEdit}
                 onDelete={onDelete}
+                onDuplicate={onDuplicate}
+                onExport={onExport}
              />
           ))}
         </TableBody>
@@ -73,11 +85,13 @@ export function ServiceList({ services, isLoading, onToggle, onEdit, onDelete }:
 // Reduces re-renders by O(n) when toggling service status.
 import { memo } from "react";
 
-const ServiceRow = memo(function ServiceRow({ service, onToggle, onEdit, onDelete }: {
+const ServiceRow = memo(function ServiceRow({ service, onToggle, onEdit, onDelete, onDuplicate, onExport }: {
     service: UpstreamServiceConfig,
     onToggle?: (name: string, enabled: boolean) => void,
     onEdit?: (service: UpstreamServiceConfig) => void,
-    onDelete?: (name: string) => void
+    onDelete?: (name: string) => void,
+    onDuplicate?: (service: UpstreamServiceConfig) => void,
+    onExport?: (service: UpstreamServiceConfig) => void
 }) {
     const type = useMemo(() => {
         if (service.httpService) return "HTTP";
@@ -142,18 +156,42 @@ const ServiceRow = memo(function ServiceRow({ service, onToggle, onEdit, onDelet
                  {secure ? <CheckCircle className="h-4 w-4 text-green-500 mx-auto" /> : <XCircle className="h-4 w-4 text-muted-foreground mx-auto" />}
              </TableCell>
              <TableCell className="text-right">
-                 <div className="flex justify-end gap-2">
-                    {onEdit && (
-                        <Button variant="ghost" size="icon" onClick={() => onEdit(service)} aria-label="Edit">
-                            <Settings className="h-4 w-4" />
+                 <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" className="h-8 w-8 p-0">
+                            <span className="sr-only">Open menu</span>
+                            <MoreHorizontal className="h-4 w-4" />
                         </Button>
-                    )}
-                    {onDelete && (
-                        <Button variant="ghost" size="icon" onClick={() => onDelete(service.name)} className="text-destructive hover:text-destructive" aria-label="Delete">
-                             <Trash2 className="h-4 w-4" />
-                        </Button>
-                    )}
-                 </div>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                        <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                        {onEdit && (
+                            <DropdownMenuItem onClick={() => onEdit(service)}>
+                                <Settings className="mr-2 h-4 w-4" />
+                                Edit
+                            </DropdownMenuItem>
+                        )}
+                        {onDuplicate && (
+                             <DropdownMenuItem onClick={() => onDuplicate(service)}>
+                                <Copy className="mr-2 h-4 w-4" />
+                                Duplicate
+                            </DropdownMenuItem>
+                        )}
+                        {onExport && (
+                             <DropdownMenuItem onClick={() => onExport(service)}>
+                                <Download className="mr-2 h-4 w-4" />
+                                Export
+                            </DropdownMenuItem>
+                        )}
+                        <DropdownMenuSeparator />
+                        {onDelete && (
+                            <DropdownMenuItem onClick={() => onDelete(service.name)} className="text-destructive focus:text-destructive">
+                                <Trash2 className="mr-2 h-4 w-4" />
+                                Delete
+                            </DropdownMenuItem>
+                        )}
+                    </DropdownMenuContent>
+                 </DropdownMenu>
              </TableCell>
         </TableRow>
     );

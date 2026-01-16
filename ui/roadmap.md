@@ -6,6 +6,8 @@
 
 - [ ] **Advanced Service Configuration & Sharing**:
   - [x] Visual editor for detailed service configuration (Connection, Auth, Advanced).
+  - [x] Service Duplication: One-click cloning of existing services.
+  - [x] Service Export: Download service configuration as JSON.
   - Import external services via gRPC auto-discovery or OpenAPI specs.
   - Export and share service configurations.
 - [x] **Service Connection Diagnostic Tool**: Interactive tool to diagnose connection issues with upstream services (DNS, Handshake, Capabilities) - Added based on Ecosystem Audit.
@@ -22,8 +24,12 @@
 - [ ] **Breadcrumb History**: Show recently visited breadcrumbs in a dropdown or history menu.
 - [ ] **Bulk Service Import**: Allow importing multiple services from a single config file or URL.
 - [ ] **Service Configuration Validation**: Pre-save validation for service configs (e.g. check if URL is reachable).
+- [ ] **Service Tagging & Grouping**: Organize services by tags (e.g., prod, staging, external) and filter the list.
+- [ ] **Service Config Diff Viewer**: Visual diff when updating or duplicating services to see exactly what changed.
 
 ### Completed Features
+
+- [x] **Service Duplication & Export**: Added "Duplicate" and "Export" actions to the service list for easier management.
 
 - [x] **Resource Preview Modal**: A dedicated modal to preview resources for larger viewing area.
 - [x] **Service Template Integration**: Integrated Service Templates into the main "Add Service" flow for better discoverability.
