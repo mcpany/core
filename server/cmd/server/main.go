@@ -323,7 +323,7 @@ func newRootCmd() *cobra.Command { //nolint:gocyclo // Main entry point, expecte
 	schemaCmd := &cobra.Command{
 		Use:   "schema",
 		Short: "Print the JSON Schema for configuration",
-		RunE: func(cmd *cobra.Command, _ []string) error {
+		RunE: func(_ *cobra.Command, _ []string) error {
 			schemaBytes, err := config.GenerateJSONSchemaBytes()
 			if err != nil {
 				return fmt.Errorf("failed to generate schema: %w", err)
@@ -338,8 +338,9 @@ func newRootCmd() *cobra.Command { //nolint:gocyclo // Main entry point, expecte
 		Use:   "check [file]",
 		Short: "Check a configuration file against the JSON Schema",
 		Args:  cobra.ExactArgs(1),
-		RunE: func(cmd *cobra.Command, args []string) error {
+		RunE: func(_ *cobra.Command, args []string) error {
 			filename := args[0]
+			//nolint:gosec // G304: User provided file path intended for checking
 			data, err := os.ReadFile(filename)
 			if err != nil {
 				return fmt.Errorf("failed to read file %q: %w", filename, err)
