@@ -112,7 +112,7 @@ func TestUpstreamService_FunTranslations(t *testing.T) {
 			continue
 		}
 		if strings.Contains(err.Error(), "upstream HTTP request failed with status 429") {
-			t.Skipf("Skipping test due to rate limiting from api.funtranslations.com: %v", err)
+			// t.Skip("Skipping test due to flakiness") limiting from api.funtranslations.com: %v", err)
 		}
 
 		require.NoError(t, err, "unrecoverable error calling translateToYoda tool")

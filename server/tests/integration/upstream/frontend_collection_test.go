@@ -88,7 +88,7 @@ func TestFrontendReactCollection(t *testing.T) {
 				// Let's rely on iteration over tools in toolManager if needed, or guess ID.
 				// util.SanitizeServiceName("npm-service-wrapper") -> "npm_service_wrapper"
 
-				toolID := "npm_exec"
+				toolID := "npm-service-wrapper.npm_exec"
 				tTool, ok := toolManager.GetTool(toolID)
 				require.True(t, ok, "Tool %s should be in manager", toolID)
 
