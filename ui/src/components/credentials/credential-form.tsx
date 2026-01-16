@@ -266,6 +266,10 @@ export function CredentialForm({ initialData, onSuccess }: CredentialFormProps) 
 
           const res = await apiClient.initiateOAuth("", redirectUrl, initialData.id)
           if (res.authorization_url) {
+              // Store state if returned (it should be!)
+              if (res.state) {
+                  sessionStorage.setItem('oauth_state', res.state)
+              }
               window.location.href = res.authorization_url
           } else {
               toast({ variant: "destructive", description: "Failed to get authorization URL" })

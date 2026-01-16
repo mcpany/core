@@ -26,8 +26,10 @@ test('layout smoke test', async ({ page }) => {
   await expect(page.locator('text=mcpany-system')).toBeVisible();
 
   // Navigate to Stack Detail
-  await page.click('text=mcpany-system');
-  await expect(page).toHaveURL(/\/stacks\/system/);
+  await Promise.all([
+    page.waitForURL(/\/stacks\/system/),
+    page.click('text=mcpany-system'),
+  ]);
   await expect(page.locator('h2')).toContainText('system');
   await expect(page.locator('h2')).toContainText('Stack');
 

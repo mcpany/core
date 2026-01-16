@@ -194,7 +194,7 @@ type Application struct {
 	ipMiddleware   *middleware.IPAllowlistMiddleware
 	corsMiddleware *middleware.HTTPCORSMiddleware
 
-	busProvider      *bus.Provider
+	busProvider *bus.Provider
 
 	startupCh   chan struct{}
 	startupOnce sync.Once
@@ -271,7 +271,6 @@ func (a *Application) Run(
 
 	// Telemetry initialization moved after config loading
 
-
 	log.Info("Starting MCP Any Service...")
 
 	// Load initial services from config files and Storage
@@ -328,7 +327,6 @@ func (a *Application) Run(
 	if cfg == nil {
 		cfg = &config_v1.McpAnyServerConfig{}
 	}
-
 
 	// Initialize Telemetry with loaded config
 	shutdownTelemetry, err := telemetry.InitTelemetry(ctx, appconsts.Name, appconsts.Version, cfg.GetGlobalSettings().GetTelemetry(), os.Stderr)
@@ -1458,7 +1456,6 @@ func (a *Application) runServerMode(
 	// `gwmux.ServeHTTP(w, r)`!
 	// Yes, I can use `gwmux` as fallback.
 
-
 	mux.Handle("/credentials/", authMiddleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// This handles /credentials/:id
 		switch r.Method {
@@ -1489,16 +1486,12 @@ func (a *Application) runServerMode(
 			return fmt.Errorf("failed to register skill gateway: %w", err)
 		}
 
-		mux.Handle("/v1/", authMiddleware(gwmux))
-
-		// Asset Handler implementation that allows Gateway to handle other paths
-		// We mount it on /v1/skills/ to capture asset requests.
-		// NOTE: This assumes /v1/skills/ is the prefix.
-		mux.Handle("/v1/skills/", authMiddleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// Consolidated handler for /v1/ to support both gRPC Gateway and Asset Uploads
+		// This prevents ServeMux from forcing redirects on /v1/skills due to specific subtree matching.
+		mux.Handle("/v1/", authMiddleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			if strings.HasSuffix(r.URL.Path, "/assets") {
 				a.handleUploadSkillAsset()(w, r)
 			} else {
-				// Fallback to gwmux for standard skill/ paths
 				gwmux.ServeHTTP(w, r)
 			}
 		})))
