@@ -8,7 +8,7 @@ import { useWizard } from '../wizard-context';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { CheckCircle2 } from 'lucide-react';
-import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { SyntaxHighlighter } from '@/components/ui/optimized-syntax-highlighter';
 import { oneDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
 
 export function StepReview({ onComplete }: { onComplete: (config: any) => void }) {

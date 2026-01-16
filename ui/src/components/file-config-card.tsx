@@ -12,8 +12,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { UpstreamServiceConfig } from "@/lib/types";
 import { File } from "lucide-react";
 import yaml from 'js-yaml';
-import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
-import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
+import { SyntaxHighlighter, vscDarkPlus } from '@/components/ui/optimized-syntax-highlighter';
 import { ScrollArea } from "./ui/scroll-area";
 
 /**

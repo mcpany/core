@@ -10,8 +10,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Button } from "@/components/ui/button";
-import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
-import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
+import { SyntaxHighlighter, vscDarkPlus } from '@/components/ui/optimized-syntax-highlighter';
 import { useState, useEffect } from "react";
 
 export type MessageType = "user" | "assistant" | "tool-call" | "tool-result" | "error";
