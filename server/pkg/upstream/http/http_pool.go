@@ -16,6 +16,7 @@ import (
 	"github.com/mcpany/core/server/pkg/client"
 	healthChecker "github.com/mcpany/core/server/pkg/health"
 	"github.com/mcpany/core/server/pkg/pool"
+	"github.com/mcpany/core/server/pkg/util"
 	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 )
 
@@ -69,11 +70,14 @@ var NewHTTPPool = func(
 		tlsConfig.RootCAs = caCertPool
 	}
 
+	dialer := util.NewSafeDialerFromEnv()
+	dialer.Dialer = &net.Dialer{
+		Timeout: 30 * time.Second,
+	}
+
 	baseTransport := &http.Transport{
-		TLSClientConfig: tlsConfig,
-		DialContext: (&net.Dialer{
-			Timeout: 30 * time.Second,
-		}).DialContext,
+		TLSClientConfig:     tlsConfig,
+		DialContext:         dialer.DialContext,
 		MaxIdleConns:        maxSize,
 		MaxIdleConnsPerHost: maxSize,
 	}

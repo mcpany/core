@@ -21,6 +21,7 @@ import (
 )
 
 func TestGraphQLUpstream_Register(t *testing.T) {
+	t.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "true")
 	// Create a mock GraphQL server
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		response := map[string]interface{}{
@@ -142,6 +143,7 @@ func TestGraphQLUpstream_Register(t *testing.T) {
 }
 
 func TestGraphQLUpstream_RegisterWithSelectionSet(t *testing.T) {
+	t.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "true")
 	// Create a mock GraphQL server
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		response := map[string]interface{}{
@@ -215,6 +217,7 @@ func TestGraphQLUpstream_RegisterWithSelectionSet(t *testing.T) {
 }
 
 func TestGraphQLUpstream_RegisterWithAPIKeyAuth(t *testing.T) {
+	t.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "true")
 	// Create a mock GraphQL server
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		assert.Equal(t, "test-api-key", r.Header.Get("X-API-Key"))
@@ -301,6 +304,7 @@ func TestGraphQLUpstream_RegisterWithAPIKeyAuth(t *testing.T) {
 }
 
 func TestGraphQLUpstream_RegisterWithAPIKeyAuth_IntrospectionFails(t *testing.T) {
+	t.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "true")
 	// Create a mock GraphQL server
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		w.WriteHeader(http.StatusUnauthorized)
@@ -333,6 +337,7 @@ func TestGraphQLUpstream_RegisterWithAPIKeyAuth_IntrospectionFails(t *testing.T)
 }
 
 func TestGraphQLUpstream_RegisterWithAPIKeyAuth_ToolCallFails(t *testing.T) {
+	t.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "true")
 	// Create a mock GraphQL server
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		assert.Equal(t, "test-api-key", r.Header.Get("X-API-Key"))
