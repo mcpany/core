@@ -5,6 +5,7 @@ package config
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -30,6 +31,13 @@ func createTempConfigFile(t *testing.T, content string) string {
 
 // TestLoadServices_ValidConfigs tests loading of various valid service configurations.
 func TestLoadServices_ValidConfigs(t *testing.T) {
+	// Disable connectivity check for these tests as they use dummy URLs
+	originalCheck := checkConnectivity
+	checkConnectivity = func(_ context.Context, _ *configv1.McpAnyServerConfig) []ValidationError {
+		return nil
+	}
+	defer func() { checkConnectivity = originalCheck }()
+
 	t.Run("Load from URL", func(t *testing.T) {
 		// Create a mock HTTP server to serve the config file
 		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
@@ -382,6 +390,13 @@ upstream_services: {
 }
 
 func TestDefaultUserHasProfileAccessWhenIdIsMissing(t *testing.T) {
+	// Disable connectivity check
+	originalCheck := checkConnectivity
+	checkConnectivity = func(_ context.Context, _ *configv1.McpAnyServerConfig) []ValidationError {
+		return nil
+	}
+	defer func() { checkConnectivity = originalCheck }()
+
 	content := `
 global_settings: {
     profiles: "dev"
@@ -416,6 +431,13 @@ upstream_services: {
 }
 
 func TestLoadServices_DefaultUser_ImplicitProfile(t *testing.T) {
+	// Disable connectivity check
+	originalCheck := checkConnectivity
+	checkConnectivity = func(_ context.Context, _ *configv1.McpAnyServerConfig) []ValidationError {
+		return nil
+	}
+	defer func() { checkConnectivity = originalCheck }()
+
 	// Configuration with one service that has NO explicit profiles.
 	// It should default to "default" profile.
 	// No users defined, so a default user should be created.
@@ -450,6 +472,13 @@ upstream_services: {
 }
 
 func TestDefaultUser_ShouldNotAccessDisabledProfiles(t *testing.T) {
+	// Disable connectivity check
+	originalCheck := checkConnectivity
+	checkConnectivity = func(_ context.Context, _ *configv1.McpAnyServerConfig) []ValidationError {
+		return nil
+	}
+	defer func() { checkConnectivity = originalCheck }()
+
 	content := `
 global_settings: {
     profiles: ["enabled_profile"]
@@ -474,4 +503,32 @@ global_settings: {
 
 	// Verify the default user DOES NOT have the disabled profile
 	assert.NotContains(t, defaultUser.GetProfileIds(), "disabled_profile", "Default user should not have access to disabled profiles")
+}
+
+func TestLoadServices_ConnectivityCheckFailure(t *testing.T) {
+	// We want to ensure that LoadServices calls the connectivity check and fails if it returns errors.
+
+	// Mock checkConnectivity to return an error
+	originalCheck := checkConnectivity
+	checkConnectivity = func(_ context.Context, _ *configv1.McpAnyServerConfig) []ValidationError {
+		return []ValidationError{{ServiceName: "bad-service", Err: fmt.Errorf("connection refused")}}
+	}
+	defer func() { checkConnectivity = originalCheck }()
+
+	content := `
+upstream_services: {
+	name: "bad-service"
+	http_service: {
+		address: "http://example.com"
+	}
+}
+`
+	filePath := createTempConfigFile(t, content)
+	fs := afero.NewOsFs()
+	fileStore := NewFileStore(fs, []string{filePath})
+
+	_, err := LoadServices(context.Background(), fileStore, "server")
+	require.Error(t, err)
+	assert.Contains(t, err.Error(), "connectivity check failed")
+	assert.Contains(t, err.Error(), "connection refused")
 }

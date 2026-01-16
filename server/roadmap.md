@@ -53,6 +53,7 @@
 - [x] **Required Environment Variable Validation**: Added explicit `validation.required_env` support for Stdio connections to fail fast with descriptive errors if required environment variables are missing. (Friction Fighter)
 - [x] **JSON Schema for Config**: Auto-generate and publish a JSON Schema for the `config.yaml` to enable intellisense/validation in IDEs like VS Code. (Friction Fighter)
 - [x] **Config Schema Validation via CLI**: `mcpany config check config.yaml` that validates against the full JSON schema (including types and enums) using `jsonschema` library, providing line-number precise errors. (Friction Fighter)
+- [x] **Startup Connectivity Check**: Validate connectivity to upstream services (HTTP, gRPC, etc.) during server startup and configuration reload to prevent silent failures. (Friction Fighter)
 
 ## 2. Top 10 Recommended Features
 
@@ -100,6 +101,8 @@ These features represent the next logical steps for the product, focusing on Ent
 | 38 | **HTTP Upstream Env Validation** | **Consistency**: Extend required environment variable validation to HTTP connections (e.g. for `http_address` or auth headers). | Low |
 | 39 | **Config Snapshot/Restore** | **Ops**: Ability to save current runtime configuration state to a file (snapshot) and restore it later, useful for backing up verified working configs. | Medium |
 | 40 | **Config Inheritance** | **DevX**: Allow `config.yaml` to extend/import other configuration files (e.g. `extends: base.yaml`) to reduce duplication across environments. | High |
+| 41 | **Parallel Connectivity Checks** | **Performance**: Refactor the startup connectivity checks to run in parallel to reduce startup time when many services are configured. | Low |
+| 42 | **Detailed Diagnostic Report** | **Observability**: Generate a structured report (JSON/HTML) of connectivity status for all services, accessible via CLI or UI, instead of just logging errors. | Medium |
 
 ## 3. Codebase Health
 

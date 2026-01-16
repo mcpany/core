@@ -13,6 +13,9 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
+// checkConnectivity is a variable to allow mocking in tests.
+var checkConnectivity = CheckConnectivity
+
 // LoadServices loads, validates, and processes the MCP Any server configuration
 // from a given store. It orchestrates the reading of the configuration,
 // validates its contents, and returns a sanitized configuration object.
@@ -71,6 +74,19 @@ func LoadServices(ctx context.Context, store Store, binaryType string) (*configv
 		if len(errorMsgs) > 0 {
 			return nil, fmt.Errorf("configuration validation failed for the following services:\n\t- %s", strings.Join(errorMsgs, "\n\t- "))
 		}
+	}
+
+	// Static validation passed. Now check connectivity (Friction Fighter).
+	// This ensures we catch unreachable services before starting, preventing silent failures.
+	// We only do this if static validation passed to avoid noise.
+	connectivityErrors := checkConnectivity(ctx, fileConfig)
+	if len(connectivityErrors) > 0 {
+		var errorMsgs []string
+		for _, e := range connectivityErrors {
+			log.Error("Connectivity check failed", "service", e.ServiceName, "error", e.Err)
+			errorMsgs = append(errorMsgs, fmt.Sprintf("%s: %s", e.ServiceName, e.Err.Error()))
+		}
+		return nil, fmt.Errorf("connectivity check failed for the following services (please check URL and network):\n\t- %s", strings.Join(errorMsgs, "\n\t- "))
 	}
 
 	if len(fileConfig.GetUpstreamServices()) > 0 {
