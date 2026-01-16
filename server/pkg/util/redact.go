@@ -6,6 +6,7 @@ package util //nolint:revive,nolintlint // Package name 'util' is common in this
 import (
 	"bytes"
 	"encoding/json"
+	"log/slog"
 	"unsafe"
 )
 
@@ -83,6 +84,18 @@ func RedactJSON(input []byte) []byte {
 	// Use fast zero-allocation redaction path
 	// This avoids expensive json.Unmarshal/Marshal for large payloads
 	return redactJSONFast(input)
+}
+
+// RedactedJSONLogger is a wrapper around []byte that implements slog.LogValuer.
+// It performs redaction only when the log is actually emitted and avoids string allocation.
+type RedactedJSONLogger []byte
+
+func (r RedactedJSONLogger) LogValue() slog.Value {
+	redacted := RedactJSON(r)
+	// Use unsafe string conversion to avoid allocation.
+	// This is safe because RedactJSON returns either a new slice (safe)
+	// or the original slice. The original slice (tool inputs) is treated as read-only.
+	return slog.StringValue(unsafe.String(unsafe.SliceData(redacted), len(redacted)))
 }
 
 // RedactMap recursively redacts sensitive keys in a map.
