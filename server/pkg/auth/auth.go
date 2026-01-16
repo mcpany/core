@@ -292,10 +292,6 @@ func (am *Manager) Authenticate(ctx context.Context, serviceID string, r *http.R
 	if am.apiKey != "" {
 		receivedKey := r.Header.Get("X-API-Key")
 		if receivedKey == "" {
-			receivedKey = r.URL.Query().Get("api_key")
-		}
-
-		if receivedKey == "" {
 			return ctx, fmt.Errorf("unauthorized")
 		}
 		if subtle.ConstantTimeCompare([]byte(receivedKey), []byte(am.apiKey)) != 1 {
