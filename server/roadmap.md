@@ -33,7 +33,7 @@
 - [x] **Pre-flight Config Validation**: Added pre-flight checks for command existence and working directory validity to prevent "silent failures" at runtime.
 - [x] **Strict Startup Validation**: Server now fails fast with descriptive errors if the initial configuration contains invalid services, preventing "zombie services" (Friction Fighter).
 - [x] **Service Name Validation**: Enforce non-empty service names in configuration to prevent silent failures. (Friction Fighter)
-- [x] **Filesystem Path Validation**: Proactive validation of configured `root_paths` for Filesystem services to warn about missing directories on startup.
+- [x] **Strict Filesystem Path Validation**: Changed from warning to error. Server now fails startup if configured `root_paths` do not exist, preventing silent failures. (Friction Fighter)
 - [x] **Enhanced Secret Validation**: Strict startup validation for referenced environment variables and secret files. Server will now fail fast if a configured secret (env var or file) does not exist.
 - [x] **Robust Transport Error Reporting**: Improved error messages for command-based and Docker transports. Now captures and surfaces `stderr` when a process exits unexpectedly, aiding quick debugging of configuration or runtime errors.
 - [x] **Proactive Schema Sanitization**: Automatically fixes common schema issues (like missing `type: object`) in tool definitions to ensure compatibility with strict MCP clients (e.g. Claude Code).
@@ -100,6 +100,8 @@ These features represent the next logical steps for the product, focusing on Ent
 | 38 | **HTTP Upstream Env Validation** | **Consistency**: Extend required environment variable validation to HTTP connections (e.g. for `http_address` or auth headers). | Low |
 | 39 | **Config Snapshot/Restore** | **Ops**: Ability to save current runtime configuration state to a file (snapshot) and restore it later, useful for backing up verified working configs. | Medium |
 | 40 | **Config Inheritance** | **DevX**: Allow `config.yaml` to extend/import other configuration files (e.g. `extends: base.yaml`) to reduce duplication across environments. | High |
+| 41 | **Config Validation Aggregation** | **DevX**: Aggregate multiple configuration errors and report them all at once instead of failing on the first one. | Medium |
+| 42 | **Filesystem Permission Check** | **Security/Reliability**: Verify read/write permissions on `root_paths` at startup if the service is not read-only. | Low |
 
 ## 3. Codebase Health
 

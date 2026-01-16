@@ -223,13 +223,17 @@ func (u *Upstream) createProvider(ctx context.Context, config *configv1.Filesyst
 		}
 
 	case *configv1.FilesystemUpstreamService_Os:
-		u.validateLocalPaths(config.RootPaths)
+		if err := u.validateLocalPaths(config.RootPaths); err != nil {
+			return nil, err
+		}
 		prov = provider.NewLocalProvider(config.GetOs(), config.RootPaths, config.AllowedPaths, config.DeniedPaths)
 
 	default:
 		// Fallback to OsFs for backward compatibility if root_paths is set?
 		// Or defaulting to OsFs.
-		u.validateLocalPaths(config.RootPaths)
+		if err := u.validateLocalPaths(config.RootPaths); err != nil {
+			return nil, err
+		}
 		prov = provider.NewLocalProvider(nil, config.RootPaths, config.AllowedPaths, config.DeniedPaths)
 	}
 
@@ -259,8 +263,7 @@ func (u *Upstream) getSupportedTools(fsService *configv1.FilesystemUpstreamServi
 	return getTools(prov, fs, fsService.GetReadOnly(), fsService.RootPaths)
 }
 
-func (u *Upstream) validateLocalPaths(rootPaths map[string]string) {
-	log := logging.GetLogger()
+func (u *Upstream) validateLocalPaths(rootPaths map[string]string) error {
 	for virtualPath, localPath := range rootPaths {
 		// Use os.Stat to check if the path exists
 		// We use os.Stat here effectively because we are validating for the "Local" provider
@@ -268,11 +271,10 @@ func (u *Upstream) validateLocalPaths(rootPaths map[string]string) {
 		_, err := os.Stat(localPath)
 		if err != nil {
 			if os.IsNotExist(err) {
-				log.Warn("Filesystem upstream: configured root path does not exist, removing from configuration", "virtual_path", virtualPath, "local_path", localPath)
-			} else {
-				log.Warn("Filesystem upstream: error accessing configured root path, removing from configuration", "virtual_path", virtualPath, "local_path", localPath, "error", err)
+				return fmt.Errorf("configured root path does not exist: %s (virtual: %s)", localPath, virtualPath)
 			}
-			delete(rootPaths, virtualPath)
+			return fmt.Errorf("error accessing configured root path: %s (virtual: %s): %w", localPath, virtualPath, err)
 		}
 	}
+	return nil
 }

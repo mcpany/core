@@ -715,55 +715,9 @@ func TestFilesystemUpstream_UnavailablePath(t *testing.T) {
 	tm := tool.NewManager(b)
 
 	// Register the service
-	// We expect this NOT to fail, but now it should optionally warn (checked via logs if we hooked logger, but here ensuring no crash)
-	id, _, _, err := u.Register(context.Background(), config, tm, nil, nil, false)
+	// We expect this TO fail now
+	_, _, _, err = u.Register(context.Background(), config, tm, nil, nil, false)
 
-	require.NoError(t, err, "Registration should not fail even if one path is missing")
-	assert.NotEmpty(t, id)
-
-	findTool := func(name string) tool.Tool {
-		tool, ok := tm.GetTool(id + "." + name)
-		if ok {
-			return tool
-		}
-		return nil
-	}
-
-	// 1. Verify valid path works
-	writeTool := findTool("write_file")
-	require.NotNil(t, writeTool)
-
-	_, err = writeTool.Execute(context.Background(), &tool.ExecutionRequest{
-		ToolName: "write_file",
-		Arguments: map[string]interface{}{
-			"path":    "/valid/test.txt",
-			"content": "ok",
-		},
-	})
-	assert.NoError(t, err, "Writing to valid path should succeed")
-
-	// 2. Verify invalid path fails gracefully
-	_, err = writeTool.Execute(context.Background(), &tool.ExecutionRequest{
-		ToolName: "write_file",
-		Arguments: map[string]interface{}{
-			"path":    "/invalid/test.txt",
-			"content": "fail",
-		},
-	})
-	assert.Error(t, err, "Writing to invalid path should fail")
-
-	// 3. Verify list_allowed_directories does NOT show the invalid path
-	listRootsTool := findTool("list_allowed_directories")
-	require.NotNil(t, listRootsTool)
-
-	res, err := listRootsTool.Execute(context.Background(), &tool.ExecutionRequest{
-		ToolName: "list_allowed_directories",
-		Arguments: map[string]interface{}{},
-	})
-	require.NoError(t, err)
-	resMap := res.(map[string]interface{})
-	roots := resMap["roots"].([]string)
-
-	assert.Contains(t, roots, "/valid", "Valid path should be present")
-	assert.NotContains(t, roots, "/invalid", "Invalid path should be removed")
+	require.Error(t, err, "Registration should fail if one path is missing")
+	assert.Contains(t, err.Error(), "configured root path does not exist")
 }
