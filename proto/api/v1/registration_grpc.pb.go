@@ -23,6 +23,7 @@ const _ = grpc.SupportPackageIsVersion9
 
 const (
 	RegistrationService_RegisterService_FullMethodName    = "/mcpany.api.v1.RegistrationService/RegisterService"
+	RegistrationService_ValidateService_FullMethodName    = "/mcpany.api.v1.RegistrationService/ValidateService"
 	RegistrationService_UnregisterService_FullMethodName  = "/mcpany.api.v1.RegistrationService/UnregisterService"
 	RegistrationService_InitiateOAuth2Flow_FullMethodName = "/mcpany.api.v1.RegistrationService/InitiateOAuth2Flow"
 	RegistrationService_RegisterTools_FullMethodName      = "/mcpany.api.v1.RegistrationService/RegisterTools"
@@ -36,6 +37,7 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type RegistrationServiceClient interface {
 	RegisterService(ctx context.Context, in *RegisterServiceRequest, opts ...grpc.CallOption) (*RegisterServiceResponse, error)
+	ValidateService(ctx context.Context, in *ValidateServiceRequest, opts ...grpc.CallOption) (*ValidateServiceResponse, error)
 	UnregisterService(ctx context.Context, in *UnregisterServiceRequest, opts ...grpc.CallOption) (*UnregisterServiceResponse, error)
 	InitiateOAuth2Flow(ctx context.Context, in *InitiateOAuth2FlowRequest, opts ...grpc.CallOption) (*InitiateOAuth2FlowResponse, error)
 	RegisterTools(ctx context.Context, in *RegisterToolsRequest, opts ...grpc.CallOption) (*RegisterToolsResponse, error)
@@ -56,6 +58,16 @@ func (c *registrationServiceClient) RegisterService(ctx context.Context, in *Reg
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(RegisterServiceResponse)
 	err := c.cc.Invoke(ctx, RegistrationService_RegisterService_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *registrationServiceClient) ValidateService(ctx context.Context, in *ValidateServiceRequest, opts ...grpc.CallOption) (*ValidateServiceResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ValidateServiceResponse)
+	err := c.cc.Invoke(ctx, RegistrationService_ValidateService_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -127,6 +139,7 @@ func (c *registrationServiceClient) GetService(ctx context.Context, in *GetServi
 // for forward compatibility.
 type RegistrationServiceServer interface {
 	RegisterService(context.Context, *RegisterServiceRequest) (*RegisterServiceResponse, error)
+	ValidateService(context.Context, *ValidateServiceRequest) (*ValidateServiceResponse, error)
 	UnregisterService(context.Context, *UnregisterServiceRequest) (*UnregisterServiceResponse, error)
 	InitiateOAuth2Flow(context.Context, *InitiateOAuth2FlowRequest) (*InitiateOAuth2FlowResponse, error)
 	RegisterTools(context.Context, *RegisterToolsRequest) (*RegisterToolsResponse, error)
@@ -145,6 +158,9 @@ type UnimplementedRegistrationServiceServer struct{}
 
 func (UnimplementedRegistrationServiceServer) RegisterService(context.Context, *RegisterServiceRequest) (*RegisterServiceResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RegisterService not implemented")
+}
+func (UnimplementedRegistrationServiceServer) ValidateService(context.Context, *ValidateServiceRequest) (*ValidateServiceResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ValidateService not implemented")
 }
 func (UnimplementedRegistrationServiceServer) UnregisterService(context.Context, *UnregisterServiceRequest) (*UnregisterServiceResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UnregisterService not implemented")
@@ -199,6 +215,24 @@ func _RegistrationService_RegisterService_Handler(srv interface{}, ctx context.C
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(RegistrationServiceServer).RegisterService(ctx, req.(*RegisterServiceRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _RegistrationService_ValidateService_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ValidateServiceRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RegistrationServiceServer).ValidateService(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: RegistrationService_ValidateService_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RegistrationServiceServer).ValidateService(ctx, req.(*ValidateServiceRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -321,6 +355,10 @@ var RegistrationService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "RegisterService",
 			Handler:    _RegistrationService_RegisterService_Handler,
+		},
+		{
+			MethodName: "ValidateService",
+			Handler:    _RegistrationService_ValidateService_Handler,
 		},
 		{
 			MethodName: "UnregisterService",

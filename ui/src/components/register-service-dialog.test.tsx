@@ -15,6 +15,7 @@ vi.mock('@/lib/client', () => ({
     registerService: vi.fn(),
     updateService: vi.fn(),
     listCredentials: vi.fn().mockResolvedValue([]),
+    validateService: vi.fn().mockResolvedValue({ valid: true, message: "Valid" }),
   },
 }));
 
@@ -91,5 +92,25 @@ describe('RegisterServiceDialog', () => {
       fireEvent.click(screen.getByLabelText('Back to templates'));
 
       expect(screen.getByText('Select Service Template')).toBeInTheDocument();
+  });
+
+  it('calls validateService when Test Connection is clicked', async () => {
+    render(<RegisterServiceDialog />);
+    fireEvent.click(screen.getByText('Register Service'));
+
+    // Select a template (PostgreSQL)
+    const postgresTemplate = SERVICE_TEMPLATES.find(t => t.id === 'postgres');
+    expect(postgresTemplate).toBeDefined();
+    if (!postgresTemplate) return;
+    fireEvent.click(screen.getByText(postgresTemplate.name));
+
+    // Find and click Test Connection
+    const testBtn = screen.getByText('Test Connection');
+    fireEvent.click(testBtn);
+
+    // Wait for validation result
+    await waitFor(() => {
+        expect(screen.getByText('Valid Configuration')).toBeInTheDocument();
+    });
   });
 });

@@ -20,7 +20,7 @@ import { useToast } from "@/hooks/use-toast";
 import { apiClient } from "@/lib/client";
 import { UpstreamServiceConfig } from "@/lib/types";
 import { Credential } from "@proto/config/v1/auth";
-import { Plus, RotateCw, ChevronLeft } from "lucide-react";
+import { Plus, RotateCw, ChevronLeft, Loader2, Activity, CheckCircle2, XCircle } from "lucide-react";
 import { SERVICE_TEMPLATES, ServiceTemplate } from "@/lib/templates";
 
 const formSchema = z.object({
@@ -44,6 +44,8 @@ export function RegisterServiceDialog({ onSuccess, trigger, serviceToEdit }: Reg
   const [credentials, setCredentials] = useState<Credential[]>([]);
   const [view, setView] = useState<"templates" | "form">("templates");
   const [selectedTemplate, setSelectedTemplate] = useState<ServiceTemplate | null>(null);
+  const [isValidating, setIsValidating] = useState(false);
+  const [validationResult, setValidationResult] = useState<{valid: boolean, message: string} | null>(null);
 
   const { toast } = useToast();
   const isEditing = !!serviceToEdit;
@@ -54,6 +56,7 @@ export function RegisterServiceDialog({ onSuccess, trigger, serviceToEdit }: Reg
       if (!newOpen) {
           setView("templates");
           setSelectedTemplate(null);
+          setValidationResult(null);
           form.reset();
       } else if (isEditing) {
           setView("form");
@@ -133,61 +136,93 @@ export function RegisterServiceDialog({ onSuccess, trigger, serviceToEdit }: Reg
       setView("form");
   };
 
-  const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    try {
-      let config: UpstreamServiceConfig;
-
+  const constructConfig = (values: z.infer<typeof formSchema>): UpstreamServiceConfig => {
       if (values.type === 'other') {
           if (!values.configJson) throw new Error("Config JSON is required for 'Other' type");
-          config = JSON.parse(values.configJson);
-      } else {
-          // Construct config
-          config = {
-              name: values.name,
-              id: serviceToEdit?.id || "",
-              version: "1.0.0",
-              disable: false,
-              priority: 0,
-              loadBalancingStrategy: 0,
-              sanitizedName: "",
-              callPolicies: [],
-              preCallHooks: [],
-              postCallHooks: [],
-              prompts: [],
-              autoDiscoverTool: false,
-              configError: "",
-              tags: values.tags ? values.tags.split(",").map(t => t.trim()).filter(t => t) : [],
-          };
-
-          if (values.type === 'grpc') {
-              config.grpcService = { address: values.address || "", useReflection: true, tools: [], resources: [], calls: {}, prompts: [], protoCollection: [], protoDefinitions: [], tlsConfig: undefined, healthCheck: undefined };
-          } else if (values.type === 'http') {
-              config.httpService = { address: values.address || "", tools: [], calls: {}, resources: [], prompts: [], healthCheck: undefined, tlsConfig: undefined };
-          } else if (values.type === 'command_line') {
-              config.commandLineService = { command: values.command || "", workingDirectory: "", local: false, env: {}, tools: [], resources: [], prompts: [], communicationProtocol: 0, calls: {}, healthCheck: undefined, cache: undefined, containerEnvironment: undefined, timeout: undefined };
-
-              // Try to preserve environment variables from configJson if available.
-              // This allows users to use the "Advanced (JSON)" tab to set env vars (like keys)
-              // while still using the "Basic" tab for command editing.
-              if (values.configJson) {
-                  try {
-                      const jsonConfig = JSON.parse(values.configJson);
-                      if (jsonConfig.commandLineService?.env) {
-                          config.commandLineService.env = jsonConfig.commandLineService.env;
-                      }
-                  } catch (e) {
-                      // Ignore JSON parse errors here
-                  }
-              }
-
-          } else if (values.type === 'openapi') {
-               config.openapiService = { address: values.address || "", tools: [], calls: {}, resources: [], prompts: [], specContent: undefined, specUrl: undefined, healthCheck: undefined, tlsConfig: undefined };
-          }
-
-          if (values.upstreamAuth) {
-              config.upstreamAuth = values.upstreamAuth;
-          }
+          return JSON.parse(values.configJson);
       }
+
+      const config: UpstreamServiceConfig = {
+          name: values.name,
+          id: serviceToEdit?.id || "",
+          version: "1.0.0",
+          disable: false,
+          priority: 0,
+          loadBalancingStrategy: 0,
+          sanitizedName: "",
+          callPolicies: [],
+          preCallHooks: [],
+          postCallHooks: [],
+          prompts: [],
+          autoDiscoverTool: false,
+          configError: "",
+          tags: values.tags ? values.tags.split(",").map(t => t.trim()).filter(t => t) : [],
+      };
+
+      if (values.type === 'grpc') {
+          config.grpcService = { address: values.address || "", useReflection: true, tools: [], resources: [], calls: {}, prompts: [], protoCollection: [], protoDefinitions: [], tlsConfig: undefined, healthCheck: undefined };
+      } else if (values.type === 'http') {
+          config.httpService = { address: values.address || "", tools: [], calls: {}, resources: [], prompts: [], healthCheck: undefined, tlsConfig: undefined };
+      } else if (values.type === 'command_line') {
+          config.commandLineService = { command: values.command || "", workingDirectory: "", local: false, env: {}, tools: [], resources: [], prompts: [], communicationProtocol: 0, calls: {}, healthCheck: undefined, cache: undefined, containerEnvironment: undefined, timeout: undefined };
+
+          // Try to preserve environment variables from configJson if available.
+          // This allows users to use the "Advanced (JSON)" tab to set env vars (like keys)
+          // while still using the "Basic" tab for command editing.
+          if (values.configJson) {
+              try {
+                  const jsonConfig = JSON.parse(values.configJson);
+                  if (jsonConfig.commandLineService?.env) {
+                      config.commandLineService.env = jsonConfig.commandLineService.env;
+                  }
+              } catch (e) {
+                  // Ignore JSON parse errors here
+              }
+          }
+
+      } else if (values.type === 'openapi') {
+           config.openapiService = { address: values.address || "", tools: [], calls: {}, resources: [], prompts: [], specContent: undefined, specUrl: undefined, healthCheck: undefined, tlsConfig: undefined };
+      }
+
+      if (values.upstreamAuth) {
+          config.upstreamAuth = values.upstreamAuth;
+      }
+      return config;
+  };
+
+  const onValidate = async () => {
+      setIsValidating(true);
+      setValidationResult(null);
+      const values = form.getValues();
+
+      try {
+          // Manually trigger validation for required fields before testing connection
+          const valid = await form.trigger();
+          if (!valid) {
+              setIsValidating(false);
+              return;
+          }
+
+          const config = constructConfig(values);
+          const response = await apiClient.validateService(config);
+          setValidationResult({ valid: response.valid, message: response.message });
+
+          if (response.valid) {
+              toast({ title: "Validation Successful", description: response.message });
+          } else {
+              toast({ variant: "destructive", title: "Validation Failed", description: response.message });
+          }
+      } catch (error: any) {
+          toast({ variant: "destructive", title: "Validation Error", description: error.message });
+          setValidationResult({ valid: false, message: error.message });
+      } finally {
+          setIsValidating(false);
+      }
+  };
+
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    try {
+      const config = constructConfig(values);
 
       if (isEditing) {
           await apiClient.updateService(config);
@@ -493,8 +528,22 @@ export function RegisterServiceDialog({ onSuccess, trigger, serviceToEdit }: Reg
                     />
                 </TabsContent>
 
-                <DialogFooter>
-                <Button type="submit">{isEditing ? "Save Changes" : "Register Service"}</Button>
+                {validationResult && (
+                    <div className={`p-3 rounded-md text-sm mb-4 ${validationResult.valid ? "bg-green-50 text-green-700 dark:bg-green-900/20 dark:text-green-300" : "bg-red-50 text-red-700 dark:bg-red-900/20 dark:text-red-300"}`}>
+                        <div className="flex items-center gap-2">
+                            {validationResult.valid ? <CheckCircle2 className="h-4 w-4" /> : <XCircle className="h-4 w-4" />}
+                            <span className="font-semibold">{validationResult.valid ? "Valid Configuration" : "Validation Failed"}</span>
+                        </div>
+                        <p className="mt-1 ml-6">{validationResult.message}</p>
+                    </div>
+                )}
+
+                <DialogFooter className="flex justify-between sm:justify-between w-full">
+                    <Button type="button" variant="secondary" onClick={onValidate} disabled={isValidating}>
+                        {isValidating ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Activity className="mr-2 h-4 w-4" />}
+                        Test Connection
+                    </Button>
+                    <Button type="submit">{isEditing ? "Save Changes" : "Register Service"}</Button>
                 </DialogFooter>
                 </form>
                 </Form>
