@@ -387,13 +387,29 @@ func newRootCmd() *cobra.Command { //nolint:gocyclo // Main entry point, expecte
 				return fmt.Errorf("configuration validation failed with errors: \n- %s", strings.Join(allErrors, "\n- "))
 			}
 
-			_, err = fmt.Fprintln(cmd.OutOrStdout(), "Configuration is valid.")
+			_, err = fmt.Fprintln(cmd.OutOrStdout(), "Configuration syntax is valid.")
 			if err != nil {
 				return fmt.Errorf("failed to print validation success message: %w", err)
 			}
+
+			checkConnectivity, _ := cmd.Flags().GetBool("connectivity")
+			if checkConnectivity {
+				_, _ = fmt.Fprintln(cmd.OutOrStdout(), "Checking connectivity to upstream services...")
+				connErrors := config.CheckConnectivity(context.Background(), configs)
+				if len(connErrors) > 0 {
+					var connErrorMsgs []string
+					for _, e := range connErrors {
+						connErrorMsgs = append(connErrorMsgs, e.Error())
+					}
+					return fmt.Errorf("connectivity check failed:\n- %s", strings.Join(connErrorMsgs, "\n- "))
+				}
+				_, _ = fmt.Fprintln(cmd.OutOrStdout(), "Connectivity check passed.")
+			}
+
 			return nil
 		},
 	}
+	validateCmd.Flags().Bool("connectivity", false, "Perform active connectivity checks against upstream services")
 	configCmd.AddCommand(validateCmd)
 
 	lintCmd := &cobra.Command{
