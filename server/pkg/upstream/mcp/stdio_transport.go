@@ -240,8 +240,8 @@ func (c *stdioConn) checkExit() error {
 	// However, Wait can only be called once.
 	// Since we are in Read() loop, we might have multiple reads?
 	// But if we hit EOF, the stream is done, so calling Wait is appropriate.
-	err := c.cmd.Wait()
 	// Wait for the stderr copier goroutine to finish to ensure we captured all stderr
 	c.wg.Wait()
+	err := c.cmd.Wait()
 	return err
 }
