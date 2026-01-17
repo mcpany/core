@@ -43,7 +43,7 @@ upstream_services:
 
 	_, err := LoadServices(ctx, store, "server")
 	assert.Error(t, err)
-	assert.Contains(t, err.Error(), "configuration validation failed")
+	assert.Contains(t, err.Error(), "Configuration Validation Failed")
 }
 
 func TestFileStore_Load_Coverage(t *testing.T) {

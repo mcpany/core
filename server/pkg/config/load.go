@@ -51,13 +51,11 @@ func LoadServices(ctx context.Context, store Store, binaryType string) (*configv
 
 	validationErrors := Validate(ctx, fileConfig, bt)
 	if len(validationErrors) > 0 {
-		var errorMsgs []string
-		// Map errors to services
+		// Map errors to services for logging
 		serviceErrors := make(map[string]string)
 		for _, e := range validationErrors {
 			log.Error("Config validation error", "service", e.ServiceName, "error", e.Err)
 			serviceErrors[e.ServiceName] = e.Err.Error()
-			errorMsgs = append(errorMsgs, fmt.Sprintf("%s: %s", e.ServiceName, e.Err.Error()))
 		}
 
 		// Check global settings errors.
@@ -68,8 +66,21 @@ func LoadServices(ctx context.Context, store Store, binaryType string) (*configv
 		// Update: For "Friction Fighter" mission, we now fail strictly on startup if any service is invalid.
 		// This prevents "silent failures" where a service is ignored but the server starts.
 		// We can consider making this configurable later if "resilience" is needed for partial outages.
-		if len(errorMsgs) > 0 {
-			return nil, fmt.Errorf("configuration validation failed for the following services:\n\t- %s", strings.Join(errorMsgs, "\n\t- "))
+		if len(validationErrors) > 0 {
+			var sb strings.Builder
+			sb.WriteString("\n❌ Configuration Validation Failed:\n")
+
+			for _, e := range validationErrors {
+				sb.WriteString(fmt.Sprintf("\n  Service: %q\n", e.ServiceName))
+
+				if ae, ok := e.Err.(*ActionableError); ok {
+					sb.WriteString(fmt.Sprintf("    Error: %v\n", ae.Err))
+					sb.WriteString(fmt.Sprintf("    💡 Fix: %s\n", ae.Suggestion))
+				} else {
+					sb.WriteString(fmt.Sprintf("    Error: %v\n", e.Err))
+				}
+			}
+			return nil, fmt.Errorf("%s", sb.String())
 		}
 	}
 
