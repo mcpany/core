@@ -10,7 +10,6 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"os"
-	"strings"
 	"testing"
 	"time"
 
@@ -71,46 +70,45 @@ upstream_services:
 	var cancel context.CancelFunc
 	var appRunner *app.Application
 
-	// Retry loop to handle "address already in use" race conditions from FindFreePort
-	for attempt := 0; attempt < 3; attempt++ {
-		jsonrpcPort = integration.FindFreePort(t)
-		grpcRegPort := integration.FindFreePort(t)
-		for grpcRegPort == jsonrpcPort {
-			grpcRegPort = integration.FindFreePort(t)
+	// Use dynamic ports to avoid race conditions
+	ctx, cancel = context.WithTimeout(context.Background(), 15*time.Second)
+
+	appRunner = app.NewApplication()
+
+	errChan := make(chan error, 1)
+	go func() {
+		// Use 127.0.0.1:0 for dynamic port allocation to match e2e_helpers and avoid :0 issues
+		jsonrpcAddress := "127.0.0.1:0"
+		grpcRegAddress := "127.0.0.1:0"
+		// Pass a test API key
+		err := appRunner.Run(ctx, afero.NewOsFs(), false, jsonrpcAddress, grpcRegAddress, []string{tmpFile.Name()}, "test-api-key", 5*time.Second)
+		if err != nil && err != context.Canceled {
+			errChan <- err
 		}
+	}()
 
-		ctx, cancel = context.WithCancel(context.Background())
-
-		appRunner = app.NewApplication()
-
-		errChan := make(chan error, 1)
-		go func() {
-			jsonrpcAddress := fmt.Sprintf(":%d", jsonrpcPort)
-			grpcRegAddress := fmt.Sprintf(":%d", grpcRegPort)
-			// Pass a test API key
-			err := appRunner.Run(ctx, afero.NewOsFs(), false, jsonrpcAddress, grpcRegAddress, []string{tmpFile.Name()}, "test-api-key", 5*time.Second)
-			if err != nil && err != context.Canceled {
-				errChan <- err
-			}
-		}()
-
-		// Wait briefly to check for immediate startup errors (like port conflicts)
-		select {
-		case err := <-errChan:
-			cancel() // Clean up failed attempt
-			if err != nil && (strings.Contains(err.Error(), "address already in use") || strings.Contains(err.Error(), "bind")) {
-				t.Logf("Port conflict detected on attempt %d, retrying...", attempt+1)
-				continue
-			}
-			t.Fatalf("Server failed to start: %v", err)
-		case <-time.After(500 * time.Millisecond):
-			// Server started successfully (or didn't fail immediately)
-			goto ServerStarted
-		}
+	// Wait for startup to get the bound ports
+	select {
+	case err := <-errChan:
+		cancel()
+		t.Fatalf("Server failed to start: %v", err)
+	case <-time.After(500 * time.Millisecond):
+		// Give it a bit of time to initialize listeners if WaitForStartup isn't available
+		// But appRunner should have Bound ports populated once listeners are started.
+		// We can loop wait for them.
 	}
-	t.Fatal("Failed to find free ports after multiple attempts")
 
-ServerStarted:
+	// Wait for ports to be assigned
+	// Wait for startup to ensure ports are bound
+	err = appRunner.WaitForStartup(ctx)
+	require.NoError(t, err, "failed to wait for startup")
+
+	require.NotZero(t, appRunner.BoundHTTPPort, "BoundHTTPPort should be set")
+	// require.NotZero(t, appRunner.BoundGRPCPort, "BoundGRPCPort should be set") // Start with just HTTP if that's what we use
+
+	jsonrpcPort = appRunner.BoundHTTPPort
+	// grpcRegPort := appRunner.BoundGRPCPort
+
 	defer cancel()
 
     httpUrl := fmt.Sprintf("http://127.0.0.1:%d/healthz", jsonrpcPort)

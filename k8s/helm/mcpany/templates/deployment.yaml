@@ -39,6 +39,8 @@ spec:
             - "run"
             - "--config-path"
             - "/etc/mcpany/config.yaml"
+            - "--grpc-port={{ .Values.service.grpcPort }}"
+            - "--mcp-listen-address=:{{ .Values.service.jsonrpcPort }}"
           env:
             - name: POSTGRES_URL
               value: "postgres://{{ .Values.database.postgresUser }}:{{ .Values.database.postgresPassword }}@{{ include "mcpany.fullname" . }}-database:5432/{{ .Values.database.postgresDb }}?sslmode=disable"

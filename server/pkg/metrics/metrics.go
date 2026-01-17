@@ -5,6 +5,9 @@
 package metrics
 
 import (
+	"context"
+	"fmt"
+	"net"
 	"net/http"
 	"sync"
 	"time"
@@ -73,15 +76,26 @@ func Handler() http.Handler {
 func StartServer(addr string) error {
 	mux := http.NewServeMux()
 	mux.Handle("/metrics", Handler())
+
+	var lc net.ListenConfig
+	ln, err := lc.Listen(context.Background(), "tcp", addr)
+	if err != nil {
+		return err
+	}
+
+	if tcpAddr, ok := ln.Addr().(*net.TCPAddr); ok {
+		// Log to stdout so E2E tests can parse the dynamically assigned port
+		fmt.Printf("Metrics server listening on port %d\n", tcpAddr.Port)
+	}
+
 	server := &http.Server{
-		Addr:              addr,
 		Handler:           mux,
 		ReadHeaderTimeout: 3 * time.Second,
 		ReadTimeout:       5 * time.Second,
 		WriteTimeout:      10 * time.Second,
 		IdleTimeout:       15 * time.Second,
 	}
-	return server.ListenAndServe()
+	return server.Serve(ln)
 }
 
 // SetGauge sets the value of a gauge.

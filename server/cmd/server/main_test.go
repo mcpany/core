@@ -222,6 +222,7 @@ func TestGracefulShutdown(t *testing.T) {
 		cmd.SetArgs([]string{
 			"run",
 			"--mcp-listen-address", "localhost:0",
+			"--metrics-listen-address", "localhost:0",
 			"--config-path", "",
 			"--logfile", logFileName,
 		})
@@ -321,14 +322,15 @@ func TestGracefulShutdown(t *testing.T) {
 
 func TestConfigValidateCmd(t *testing.T) {
 	viper.Reset()
+	port := findFreePort(t)
 	// Create a temporary valid config file
 	validConfigFile, err := os.CreateTemp("", "valid-config-*.yaml")
 	assert.NoError(t, err)
 	defer func() { _ = os.Remove(validConfigFile.Name()) }()
-	_, err = validConfigFile.WriteString(`
+	_, err = validConfigFile.WriteString(fmt.Sprintf(`
 global_settings:
-  mcp_listen_address: "localhost:8080"
-`)
+  mcp_listen_address: "localhost:%d"
+`, port))
 	assert.NoError(t, err)
 	_ = validConfigFile.Close()
 
@@ -431,7 +433,8 @@ func TestConfigGenerateCmd(t *testing.T) {
 	inputs := []string{
 		"http",
 		"my-service",
-		"http://localhost:8080",
+		"http://localhost:8080", // Keep this one as it's just input data, not actual binding
+
 		"get-data",
 		"Get some data",
 		"HTTP_METHOD_GET",
@@ -463,14 +466,18 @@ func TestConfigGenerateCmd(t *testing.T) {
 func TestDocCmd(t *testing.T) {
 	viper.Reset()
 	// Create a temporary valid config file
+	// Create a temporary valid config file
 	configFile, err := os.CreateTemp("", "doc-config-*.yaml")
 	assert.NoError(t, err)
 	defer func() { _ = os.Remove(configFile.Name()) }()
-	_, err = configFile.WriteString(`
+
+	// Use a free port to avoid conflicts if health check is attempted
+	port := findFreePort(t)
+	_, err = configFile.WriteString(fmt.Sprintf(`
 upstream_services:
   - name: "my-service"
     http_service:
-      address: "http://localhost:8080"
+      address: "http://localhost:%d"
       tools:
         - name: "my-tool"
           call_id: "my-call"
@@ -479,7 +486,7 @@ upstream_services:
           id: "my-call"
           method: HTTP_METHOD_GET
           endpoint_path: "/test"
-`)
+`, port))
 	assert.NoError(t, err)
 	_ = configFile.Close()
 
