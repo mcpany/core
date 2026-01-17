@@ -472,6 +472,12 @@ func ToString(v any) string {
 		if val == float32(int32(val)) {
 			return strconv.FormatInt(int64(val), 10)
 		}
+		// Also check if it fits in int64 (for larger integers that are exact in float32)
+		if math.Trunc(float64(val)) == float64(val) {
+			if float64(val) >= float64(math.MinInt64) && float64(val) <= float64(math.MaxInt64) {
+				return strconv.FormatInt(int64(val), 10)
+			}
+		}
 		return strconv.FormatFloat(float64(val), 'g', -1, 32)
 	case float64:
 		// Check if it's an integer and within int64 range.
