@@ -22,7 +22,7 @@
 - [x] **Binary Resource Preview**: Support for previewing images, PDFs, and other binary formats in the resource viewer.
 - [ ] **Prompt/Resource Sibling Navigation**: Enable sibling navigation for Prompts and Resources (requires backend API update to include service_id).
 - [ ] **Breadcrumb History**: Show recently visited breadcrumbs in a dropdown or history menu.
-- [ ] **JSON Schema Visualizer**: Display tool input schemas as interactive diagrams instead of raw JSON for better understanding of complex types.
+- [x] **JSON Schema Visualizer**: Display tool input schemas as interactive diagrams instead of raw JSON for better understanding of complex types.
 - [ ] **Interactive Tool Usage History**: A timeline of tool executions with ability to replay them directly from the UI.
 - [ ] **Bulk Service Import**: Allow importing multiple services from a single config file or URL.
 - [x] **Service Configuration Validation**: Pre-save validation for service configs (e.g. check if URL is reachable).
@@ -30,9 +30,12 @@
 - [ ] **Service Config Diff Viewer**: Visual diff when updating or duplicating services to see exactly what changed.
 - [ ] **Bulk Service Actions**: Enable/Disable or Delete multiple services at once, potentially using tags for selection.
 - [ ] **Tag-based Access Control**: Restrict service access to specific user profiles based on tags.
+- [ ] **Schema-Driven Form Generation**: Auto-generate a form input for tool arguments based on the schema, replacing the raw JSON textarea.
+- [ ] **Copy Schema as Code**: Button to copy the JSON schema as a TypeScript interface or Go struct for developers.
 
 ### Completed Features
 
+- [x] **JSON Schema Visualizer**: Added an interactive tree view for tool input schemas in the Tool Inspector.
 - [x] **Service Duplication & Export**: Added "Duplicate" and "Export" actions to the service list for easier management.
 
 - [x] **Resource Preview Modal**: A dedicated modal to preview resources for larger viewing area.
