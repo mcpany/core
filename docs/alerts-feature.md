@@ -1,7 +1,7 @@
 # Alerts & Incidents Feature
 
 **Date:** 2026-01-09
-**Status:** Implemented
+**Status:** Pending Implementation
 
 ## Overview
 
@@ -26,4 +26,4 @@ The **Alerts & Incidents** feature provides a centralized console for monitoring
 
 ## Verification
 
-The feature has been verified with E2E tests using Playwright.
+This feature is currently in the design phase and pending implementation. Code has not yet been merged.

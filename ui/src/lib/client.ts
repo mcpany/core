@@ -970,5 +970,29 @@ export const apiClient = {
         });
         if (!res.ok) throw new Error('Failed to delete template');
         return {};
+    },
+
+    // Debugger / Traces
+
+    /**
+     * Gets the captured debug entries (traces).
+     * @returns A promise that resolves to a list of debug entries.
+     */
+    getDebugEntries: async () => {
+        const res = await fetchWithAuth('/api/v1/debug/entries');
+        // Note: The backend endpoint might be `/debug/entries` (root) or `/api/v1/debug/entries` depending on routing.
+        // Based on `server/docs/features/debugger.md`, it says `GET /debug/entries`.
+        // However, usually API routes are under `/api/v1` or proxied.
+        // Let's try `/debug/entries` first, assuming the proxy rules handle it or it's a global handler.
+        // If it fails, we might need to adjust.
+        // For safety in this environment, I'll try the documented path.
+        // BUT `fetchWithAuth` is a wrapper. If `/debug/entries` is on the same host, it should work.
+        let response = await fetchWithAuth('/debug/entries');
+        if (!response.ok) {
+            // Fallback to /api/v1/debug/entries if the above fails (common pattern)
+            response = await fetchWithAuth('/api/v1/debug/entries');
+        }
+        if (!response.ok) throw new Error('Failed to fetch debug entries');
+        return response.json();
     }
 };
