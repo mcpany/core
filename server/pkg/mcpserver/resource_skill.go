@@ -109,15 +109,43 @@ func (r *SkillResource) Read(_ context.Context) (*mcp.ReadResourceResult, error)
 		return nil, fmt.Errorf("failed to read skill file: %w", err)
 	}
 
+	mimeType := r.Resource().MIMEType
+	resourceContent := &mcp.ResourceContents{
+		URI:      r.URI(),
+		MIMEType: mimeType,
+	}
+
+	if isTextMime(mimeType) {
+		resourceContent.Text = string(content)
+	} else {
+		resourceContent.Blob = content
+	}
+
 	return &mcp.ReadResourceResult{
 		Contents: []*mcp.ResourceContents{
-			{
-				URI:      r.URI(),
-				MIMEType: r.Resource().MIMEType,
-				Text:     string(content), // TODO: Handle binary assets (Blob) if needed
-			},
+			resourceContent,
 		},
 	}, nil
+}
+
+func isTextMime(mimeType string) bool {
+	baseMime, _, _ := strings.Cut(mimeType, ";")
+	baseMime = strings.TrimSpace(baseMime)
+
+	if strings.HasPrefix(baseMime, "text/") {
+		return true
+	}
+	// Common text-based application types
+	switch baseMime {
+	case "application/json",
+		"application/xml",
+		"application/yaml",
+		"application/x-yaml",
+		"application/javascript",
+		"application/ecmascript":
+		return true
+	}
+	return false
 }
 
 // Subscribe subscribes to changes on the resource.
