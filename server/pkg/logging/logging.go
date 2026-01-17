@@ -9,6 +9,7 @@ import (
 	"log/slog"
 	"os"
 	"sync"
+	"sync/atomic"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
 )
@@ -16,7 +17,7 @@ import (
 var (
 	mu            sync.Mutex
 	once          sync.Once
-	defaultLogger *slog.Logger
+	defaultLogger atomic.Pointer[slog.Logger]
 )
 
 // ForTestsOnlyResetLogger is for use in tests to reset the `sync.Once`
@@ -26,7 +27,7 @@ func ForTestsOnlyResetLogger() {
 	mu.Lock()
 	defer mu.Unlock()
 	once = sync.Once{}
-	defaultLogger = nil
+	defaultLogger.Store(nil)
 }
 
 // Init initializes the application's global logger with a specific log level
@@ -63,7 +64,7 @@ func Init(level slog.Level, output io.Writer, format ...string) {
 		broadcastHandler := NewBroadcastHandler(GlobalBroadcaster)
 		teeHandler := NewTeeHandler(mainHandler, broadcastHandler)
 
-		defaultLogger = slog.New(teeHandler)
+		defaultLogger.Store(slog.New(teeHandler))
 	})
 }
 
@@ -74,15 +75,21 @@ func Init(level slog.Level, output io.Writer, format ...string) {
 // Returns:
 //   - The global `*slog.Logger` instance.
 func GetLogger() *slog.Logger {
+	// ⚡ Bolt Optimization: Fast path to avoid lock contention on every log call.
+	// Atomic load is much cheaper than mutex lock.
+	if l := defaultLogger.Load(); l != nil {
+		return l
+	}
+
 	mu.Lock()
 	defer mu.Unlock()
 	once.Do(func() {
-		defaultLogger = slog.New(slog.NewTextHandler(os.Stderr, &slog.HandlerOptions{
+		defaultLogger.Store(slog.New(slog.NewTextHandler(os.Stderr, &slog.HandlerOptions{
 			Level:     slog.LevelInfo,
 			AddSource: true,
-		}))
+		})))
 	})
-	return defaultLogger
+	return defaultLogger.Load()
 }
 
 // ToSlogLevel converts a string log level to a slog.Level.
