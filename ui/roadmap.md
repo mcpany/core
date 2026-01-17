@@ -32,9 +32,12 @@
 - [ ] **Tag-based Access Control**: Restrict service access to specific user profiles based on tags.
 - [ ] **Live Tool Usage Graph**: Visual graph of tool execution metrics over time (RPS, Latency) in Tool Detail view.
 - [ ] **Playground Schema Validation**: Enforce JSON schema validation in the Tool Playground before submission to prevent bad requests.
+- [ ] **Favorites/Pinned Tools**: Ability to pin frequently used tools to the top of the list for quick access.
+- [ ] **Schema Validation Playground**: Allow users to test JSON payloads against the schema directly in the inspector with validation feedback.
 
 ### Completed Features
 
+- [x] **JSON Schema Visualizer**: Implemented a recursive tree view for tool schemas, replacing raw JSON.
 - [x] **Service Duplication & Export**: Added "Duplicate" and "Export" actions to the service list for easier management.
 
 - [x] **Resource Preview Modal**: A dedicated modal to preview resources for larger viewing area.
