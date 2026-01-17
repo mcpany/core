@@ -97,7 +97,8 @@ func redactJSONFast(input []byte) []byte {
 		if isKey {
 			// Check if key is sensitive
 			keyContent := input[quotePos+1 : endQuote]
-			if isKeySensitive(keyContent) {
+			// ⚡ Bolt Optimization: Skip sensitive check for keys shorter than the shortest sensitive key ("auth" = 4 chars)
+			if len(keyContent) >= 4 && isKeySensitive(keyContent) {
 				// Identify value start
 				valStart := colonPos + 1
 				// Skip whitespace
