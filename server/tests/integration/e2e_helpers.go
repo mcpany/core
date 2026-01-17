@@ -948,7 +948,7 @@ func StartMCPANYServerWithClock(t *testing.T, testName string, healthCheck bool,
 		"--db-path", dbPath,
 	}
 	args = append(args, extraArgs...)
-	env := []string{"MCPANY_LOG_LEVEL=debug", "NATS_URL=" + natsURL}
+	env := []string{"MCPANY_LOG_LEVEL=debug", "NATS_URL=" + natsURL, "MCPANY_DANGEROUS_ALLOW_LOCAL_IPS=true"}
 	if sudo, ok := os.LookupEnv("USE_SUDO_FOR_DOCKER"); ok {
 		env = append(env, "USE_SUDO_FOR_DOCKER="+sudo)
 	}
