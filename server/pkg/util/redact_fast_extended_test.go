@@ -105,12 +105,13 @@ func TestRedactJSON_KeyCheck(t *testing.T) {
 		// Key larger than 1024 bytes
 		longKey := "pass" + "\\u0077" + "ord" + string(make([]byte, 2000))
 		input := `{"` + longKey + `": "val"}`
-		// It should NOT unmarshal, but use raw content.
-		// Raw content contains `\u0077` so it won't match "password" directly if logic falls back to raw.
-		// `scanForSensitiveKeys` handles `password` but doesn't handle escapes in raw mode.
-		// So it should NOT be redacted.
+		// It should NOT unmarshal (too large), but use scanEscapedKeyForSensitive.
+		// scanEscapedKeyForSensitive handles `\u0077` -> 'w'.
+		// So it matches "password".
+		// Previous behavior (bug): fell back to raw key which didn't match.
+		// Fixed behavior: matches and redacts.
 		output := RedactJSON([]byte(input))
-		assert.NotContains(t, string(output), "[REDACTED]")
+		assert.Contains(t, string(output), "[REDACTED]")
 	})
 
 	// Cover `skipJSONValue` with unknown char

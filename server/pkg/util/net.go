@@ -9,7 +9,9 @@ import (
 	"fmt"
 	"net"
 	"net/http"
+	"net/url"
 	"os"
+	"strings"
 	"time"
 )
 
@@ -143,4 +145,44 @@ func NewSafeHTTPClient() *http.Client {
 			DialContext: dialer.DialContext,
 		},
 	}
+}
+
+// CheckConnection attempts to establish a TCP connection to the given address.
+// This is useful for verifying if a service is reachable.
+func CheckConnection(ctx context.Context, address string) error {
+	var target string
+	if strings.Contains(address, "://") {
+		u, err := url.Parse(address)
+		if err != nil {
+			return fmt.Errorf("failed to parse address %s: %w", address, err)
+		}
+		host := u.Hostname()
+		port := u.Port()
+		if port == "" {
+			if u.Scheme == "https" {
+				port = "443"
+			} else {
+				port = "80"
+			}
+		}
+		target = net.JoinHostPort(host, port)
+	} else {
+		// If no scheme, try to parse as host:port. If no port, assume 80.
+		host, port, err := net.SplitHostPort(address)
+		if err != nil {
+			// If SplitHostPort fails, it means no port was specified.
+			// Assume it's just a hostname and default to port 80.
+			host = address
+			port = "80"
+		}
+		target = net.JoinHostPort(host, port)
+	}
+
+	d := net.Dialer{Timeout: 5 * time.Second}
+	conn, err := d.DialContext(ctx, "tcp", target)
+	if err != nil {
+		return fmt.Errorf("failed to connect to address %s: %w", target, err)
+	}
+	defer func() { _ = conn.Close() }()
+	return nil
 }

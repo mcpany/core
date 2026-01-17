@@ -542,7 +542,16 @@ func (a *Application) Run(
 
 	// Initialize standard middlewares in registry
 	cachingMiddleware := middleware.NewCachingMiddleware(a.ToolManager)
-	standardMiddlewares, err := middleware.InitStandardMiddlewares(mcpSrv.AuthManager(), a.ToolManager, cfg.GetGlobalSettings().GetAudit(), cachingMiddleware, cfg.GetGlobalSettings().GetRateLimit(), cfg.GetGlobalSettings().GetDlp())
+	standardMiddlewares, err := middleware.InitStandardMiddlewares(
+		mcpSrv.AuthManager(),
+		a.ToolManager,
+		cfg.GetGlobalSettings().GetAudit(),
+		cachingMiddleware,
+		cfg.GetGlobalSettings().GetRateLimit(),
+		cfg.GetGlobalSettings().GetDlp(),
+		cfg.GetGlobalSettings().GetContextOptimizer(),
+		cfg.GetGlobalSettings().GetDebugger(),
+	)
 	if err != nil {
 		workerCancel()
 		upstreamWorker.Stop()
@@ -683,6 +692,7 @@ func (a *Application) Run(
 		shutdownTimeout,
 		cfg.GetGlobalSettings(),
 		cachingMiddleware,
+		standardMiddlewares,
 		s,
 		serviceRegistry,
 		startupCallback,
@@ -1055,6 +1065,7 @@ func (a *Application) runServerMode(
 	shutdownTimeout time.Duration,
 	globalSettings *config_v1.GlobalSettings,
 	cachingMiddleware *middleware.CachingMiddleware,
+	standardMiddlewares *middleware.StandardMiddlewares,
 	store storage.Storage,
 	serviceRegistry *serviceregistry.ServiceRegistry,
 	startupCallback func(),
@@ -1471,6 +1482,10 @@ func (a *Application) runServerMode(
 	})))
 	mux.Handle("/debug/auth-test", authMiddleware(http.HandlerFunc(a.testAuthHandler)))
 
+	if standardMiddlewares != nil && standardMiddlewares.Debugger != nil {
+		mux.Handle("/debug/entries", authMiddleware(standardMiddlewares.Debugger.APIHandler()))
+	}
+
 	if grpcPort != "" {
 		gwmux := runtime.NewServeMux()
 		opts := []gogrpc.DialOption{gogrpc.WithTransportCredentials(insecure.NewCredentials())}
@@ -1514,13 +1529,27 @@ func (a *Application) runServerMode(
 	corsMiddleware := middleware.NewHTTPCORSMiddleware(a.SettingsManager.GetAllowedOrigins())
 	a.corsMiddleware = corsMiddleware
 
-	// Middleware order: SecurityHeaders -> CORS -> JSONRPCCompliance -> IPAllowList -> RateLimit -> Mux
+	// Prepare final handler (Mux wrapped with Content Optimizer and Debugger)
+	var finalHandler http.Handler = mux
+
+	if standardMiddlewares != nil {
+		// Context Optimizer (inner)
+		if standardMiddlewares.ContextOptimizer != nil {
+			finalHandler = standardMiddlewares.ContextOptimizer.Handler(finalHandler)
+		}
+		// Debugger (outer to capture optimized response)
+		if standardMiddlewares.Debugger != nil {
+			finalHandler = standardMiddlewares.Debugger.Handler(finalHandler)
+		}
+	}
+
+	// Middleware order: SecurityHeaders -> CORS -> JSONRPCCompliance -> IPAllowList -> RateLimit -> (Debugger -> Optimizer -> Mux)
 	// We wrap everything with a debug logger to see what's coming in
 	handler := middleware.HTTPSecurityHeadersMiddleware(
 		corsMiddleware.Handler(
 			middleware.JSONRPCComplianceMiddleware(
 				ipMiddleware.Handler(
-					rateLimiter.Handler(mux),
+					rateLimiter.Handler(finalHandler),
 				),
 			),
 		),
