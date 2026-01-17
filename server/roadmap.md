@@ -57,6 +57,7 @@
 - [x] **Validation CLI Command**: Enhanced `mcpany config validate` with `--check-connection` flag to run deep checks, including connecting to upstream services to verify connectivity. Also added `mcpany doctor` for comprehensive system health diagnosis. (Friction Fighter)
 - [x] **Upstream Connectivity Probe**: Implemented a startup connection check for HTTP upstream services. The server now logs a warning if the upstream service is unreachable during registration, preventing silent failures. (Friction Fighter)
 - [x] **Actionable Config Errors**: Enhanced configuration validator to provide specific, actionable "Fix" suggestions for common errors like missing environment variables, files, or invalid URL schemes. (Friction Fighter)
+- [x] **Startup Health Checks**: Implemented concurrent health checks for upstream services during server startup. Errors are now logged loudly to prevent silent failures. (Friction Fighter)
 
 ## 2. Top 10 Recommended Features
 
@@ -105,12 +106,14 @@ These features represent the next logical steps for the product, focusing on Ent
 | 40 | **Config Inheritance** | **DevX**: Allow `config.yaml` to extend/import other configuration files (e.g. `extends: base.yaml`) to reduce duplication across environments. | High |
 | 41 | **OAuth2 Token Reachability Check** | **Reliability**: During validation (or via `doctor` command), attempt to connect to the OAuth2 token URL to verify network connectivity, going beyond simple syntax checks. | Medium |
 | 42 | **OIDC Auto-Discovery** | **UX**: Automatically configure OIDC endpoints (auth URL, token URL, keys) by fetching the `/.well-known/openid-configuration` from the issuer URL, simplifying configuration. | Medium |
-| 41 | **Doctor Auto-Fix** | **DevX**: Allow `mcpany doctor --fix` to automatically correct simple configuration errors (like typos or missing fields with defaults). | High |
-| 42 | **Doctor Web Report** | **DevX**: Generate an HTML report from `mcpany doctor` for easier sharing and debugging. | Low |
-| 41 | **Hard Failure Mode** | **Resilience**: A configuration option to strictly fail server startup (exit 1) if any service fails its connectivity probe, ensuring "fail-safe" deployments. | Low |
-| 42 | **Upstream Latency Metrics** | **Observability**: Record the latency of the initial connectivity probe to help diagnose slow upstream services during startup. | Low |
-| 41 | **Tool Name Fuzzy Matching** | **UX**: Improve error messages for tool execution by suggesting similar tool names when a user makes a typo. | Low |
-| 42 | **Config Strict Mode** | **Ops**: Add a CLI flag to treat configuration warnings (e.g. deprecated fields) as errors to ensure clean configs. | Low |
+| 43 | **Doctor Auto-Fix** | **DevX**: Allow `mcpany doctor --fix` to automatically correct simple configuration errors (like typos or missing fields with defaults). | High |
+| 44 | **Doctor Web Report** | **DevX**: Generate an HTML report from `mcpany doctor` for easier sharing and debugging. | Low |
+| 45 | **Hard Failure Mode** | **Resilience**: A configuration option to strictly fail server startup (exit 1) if any service fails its connectivity probe, ensuring "fail-safe" deployments. | Low |
+| 46 | **Upstream Latency Metrics** | **Observability**: Record the latency of the initial connectivity probe to help diagnose slow upstream services during startup. | Low |
+| 47 | **Tool Name Fuzzy Matching** | **UX**: Improve error messages for tool execution by suggesting similar tool names when a user makes a typo. | Low |
+| 48 | **Config Strict Mode** | **Ops**: Add a CLI flag to treat configuration warnings (e.g. deprecated fields) as errors to ensure clean configs. | Low |
+| 49 | **Doctor JSON Output** | **DevX**: Allow `mcpany doctor` to output JSON for programmatic consumption (e.g. by CI/CD pipelines or UI). | Low |
+| 50 | **Config Validation Hook** | **Ops**: A pre-start hook script support to allow users to run custom validation logic before the server starts. | Medium |
 
 ## 3. Codebase Health
 
@@ -133,10 +136,16 @@ These features represent the next logical steps for the product, focusing on Ent
     *   **Risk**: If used in production, it could become a single point of failure.
     *   **Recommendation**: Graduate this to `server/pkg/sidecar/webhooks` with full test coverage.
 
+4.  **Refactor `doctor` Package**
+    *   **Issue**: The `doctor` package mixes static validation with runtime connectivity checks. As we add more checks, this will become harder to maintain.
+    *   **Risk**: Slow startup times or incorrect validation logic.
+    *   **Recommendation**: Separate checks into "Static" (config structure) and "Runtime" (network), and implement a pluggable check interface.
+
 ### Warning Areas
 
 1.  **UI Component Duplication**: Some UI components in `ui/src/components` seem to have overlapping responsibilities (e.g., multiple "detail" views). A UI component audit is recommended.
 2.  **Test Coverage gaps**: While core logic is tested, cloud providers (S3/GCS) and some new UI features lack comprehensive integration tests.
+3.  **Standardize Context Timeouts**: Timeouts are hardcoded in many places (e.g. 5s in doctor). We should move these to a central configuration or constant definition.
 
 ### Healthy Areas
 

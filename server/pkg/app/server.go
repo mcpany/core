@@ -28,6 +28,7 @@ import (
 	"github.com/mcpany/core/server/pkg/auth"
 	"github.com/mcpany/core/server/pkg/bus"
 	"github.com/mcpany/core/server/pkg/config"
+	"github.com/mcpany/core/server/pkg/doctor"
 	"github.com/mcpany/core/server/pkg/gc"
 	"github.com/mcpany/core/server/pkg/health"
 	"github.com/mcpany/core/server/pkg/logging"
@@ -331,6 +332,33 @@ func (a *Application) Run(
 	}
 	if cfg == nil {
 		cfg = &config_v1.McpAnyServerConfig{}
+	}
+
+	// Run startup health checks to detect configuration issues early (Track 1: Friction Fighter)
+	// We run this after loading config but before starting services to give immediate feedback.
+	log.Info("Running startup health checks...")
+	// Run checks with a timeout derived from context or fixed?
+	// RunChecks uses 5s timeout internally per service.
+	healthResults := doctor.RunChecks(ctx, cfg)
+	failedChecks := 0
+	for _, res := range healthResults {
+		switch res.Status {
+		case doctor.StatusError:
+			failedChecks++
+			// Log error with high visibility
+			log.Error("❌ Startup check failed", "service", res.ServiceName, "error", res.Message)
+			if res.Error != nil {
+				log.Debug("Detailed error", "service", res.ServiceName, "error", res.Error)
+			}
+		case doctor.StatusWarning:
+			log.Warn("⚠️  Startup check warning", "service", res.ServiceName, "message", res.Message)
+		}
+	}
+
+	if failedChecks > 0 {
+		log.Warn(fmt.Sprintf("⚠️  Server starting with %d failed health check(s). Some tools may not work.", failedChecks))
+	} else {
+		log.Info("✅ All startup checks passed.")
 	}
 
 	// Initialize Telemetry with loaded config

@@ -2329,3 +2329,48 @@ func TestConfigHealthCheck(t *testing.T) {
 	assert.NotEmpty(t, check.Message)
 	assert.Contains(t, check.Message, "yaml")
 }
+
+func TestRun_StartupHealthCheck_LogsErrors(t *testing.T) {
+	logging.ForTestsOnlyResetLogger()
+	var buf ThreadSafeBuffer
+	logging.Init(slog.LevelInfo, &buf)
+
+	fs := afero.NewMemMapFs()
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	// Config with an unreachable HTTP service
+	configContent := `
+upstream_services:
+  - name: "unreachable-http-service"
+    http_service:
+      address: "http://localhost:9999"
+`
+	err := afero.WriteFile(fs, "/config.yaml", []byte(configContent), 0o644)
+	require.NoError(t, err)
+
+	app := NewApplication()
+	errChan := make(chan error, 1)
+
+	go func() {
+		// Use ephemeral ports
+		errChan <- app.Run(ctx, fs, false, "localhost:0", "", []string{"/config.yaml"}, "", 5*time.Second)
+	}()
+
+	// Wait for startup to complete
+	err = app.WaitForStartup(ctx)
+	if err != nil {
+		t.Logf("Logs:\n%s", buf.String())
+	}
+	require.NoError(t, err)
+
+	// Check logs
+	logs := buf.String()
+	assert.Contains(t, logs, "Running startup health checks...")
+	assert.Contains(t, logs, "Startup check failed")
+	assert.Contains(t, logs, "Failed to connect")
+	assert.Contains(t, logs, "Server starting with 1 failed health check(s)")
+
+	cancel()
+	<-errChan
+}
