@@ -387,6 +387,11 @@ func (s *FileStore) Load(ctx context.Context) (*configv1.McpAnyServerConfig, err
 			return nil, logErr
 		}
 
+		// Resolve relative paths in the configuration based on the file location.
+		if !isURL(path) {
+			ResolveRelativePaths(cfg, filepath.Dir(path))
+		}
+
 		if mergedConfig == nil {
 			mergedConfig = cfg
 		} else {

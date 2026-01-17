@@ -57,6 +57,7 @@
 - [x] **Validation CLI Command**: Enhanced `mcpany config validate` with `--check-connection` flag to run deep checks, including connecting to upstream services to verify connectivity. Also added `mcpany doctor` for comprehensive system health diagnosis. (Friction Fighter)
 - [x] **Upstream Connectivity Probe**: Implemented a startup connection check for HTTP upstream services. The server now logs a warning if the upstream service is unreachable during registration, preventing silent failures. (Friction Fighter)
 - [x] **Actionable Config Errors**: Enhanced configuration validator to provide specific, actionable "Fix" suggestions for common errors like missing environment variables, files, or invalid URL schemes. (Friction Fighter)
+- [x] **Relative Path Resolution**: Automatically resolve relative file paths in configuration (commands, scripts, secrets) relative to the configuration file's location, preventing common startup errors. (Friction Fighter)
 
 ## 2. Top 10 Recommended Features
 
@@ -111,6 +112,8 @@ These features represent the next logical steps for the product, focusing on Ent
 | 42 | **Upstream Latency Metrics** | **Observability**: Record the latency of the initial connectivity probe to help diagnose slow upstream services during startup. | Low |
 | 41 | **Tool Name Fuzzy Matching** | **UX**: Improve error messages for tool execution by suggesting similar tool names when a user makes a typo. | Low |
 | 42 | **Config Strict Mode** | **Ops**: Add a CLI flag to treat configuration warnings (e.g. deprecated fields) as errors to ensure clean configs. | Low |
+| 43 | **Config Source Annotation** | **Observability**: Annotate loaded services with their source configuration file path in the UI/API, so users know exactly where each service was defined. | Low |
+| 44 | **Relative Path Warnings** | **DevX**: If a path cannot be resolved or is ambiguous (e.g. valid relative to CWD but not config), log a warning to guide the user. | Low |
 
 ## 3. Codebase Health
 
