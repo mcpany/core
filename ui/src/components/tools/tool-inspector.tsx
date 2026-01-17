@@ -14,6 +14,8 @@ import { ToolDefinition, apiClient } from "@/lib/client";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { PlayCircle, Loader2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { SchemaViewer } from "./schema-viewer";
 
 import { Switch } from "@/components/ui/switch";
 
@@ -69,9 +71,22 @@ export function ToolInspector({ tool, open, onOpenChange }: ToolInspectorProps) 
         <div className="grid gap-4 py-4">
             <div className="grid gap-2">
                 <Label>Schema</Label>
-                <ScrollArea className="h-[150px] w-full rounded-md border p-4 bg-muted/50">
-                    <pre className="text-xs">{JSON.stringify(tool.inputSchema, null, 2)}</pre>
-                </ScrollArea>
+                <Tabs defaultValue="visual" className="w-full">
+                  <TabsList className="grid w-[200px] grid-cols-2 h-8">
+                    <TabsTrigger value="visual" className="text-xs">Visual</TabsTrigger>
+                    <TabsTrigger value="json" className="text-xs">JSON</TabsTrigger>
+                  </TabsList>
+                  <TabsContent value="visual" className="mt-2">
+                     <ScrollArea className="h-[200px] w-full rounded-md border p-4 bg-muted/20">
+                        <SchemaViewer schema={tool.inputSchema as any} />
+                     </ScrollArea>
+                  </TabsContent>
+                  <TabsContent value="json" className="mt-2">
+                    <ScrollArea className="h-[200px] w-full rounded-md border p-4 bg-muted/50">
+                        <pre className="text-xs">{JSON.stringify(tool.inputSchema, null, 2)}</pre>
+                    </ScrollArea>
+                  </TabsContent>
+                </Tabs>
             </div>
 
             <div className="grid gap-2">
