@@ -140,7 +140,7 @@ func TestUpstreamService_Bored(t *testing.T) {
 	require.NotEmpty(t, boredResponse["key"], "The key should not be empty")
 	require.NotEmpty(t, boredResponse["accessibility"], "The accessibility should not be empty")
 	if err != nil {
-		// 	// t.Skip("Skipping test due to flakiness")ient error from boredapi.com: %v", err)
+		// t.Skipf("Skipping test due to transient error from boredapi.com: %v", err)
 	}
 	t.Logf("SUCCESS: Received an activity: %s", textContent.Text)
 

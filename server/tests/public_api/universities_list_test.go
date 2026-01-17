@@ -35,7 +35,7 @@ func TestUpstreamService_UniversitiesList(t *testing.T) {
 
 	// --- 2. Register Universities List Server with MCPANY ---
 	const universitiesListServiceID = "e2e_universitieslist"
-	universitiesListServiceEndpoint := "https://universities.hipolabs.com"
+	universitiesListServiceEndpoint := "http://universities.hipolabs.com"
 	t.Logf("INFO: Registering '%s' with MCPANY at endpoint %s...", universitiesListServiceID, universitiesListServiceEndpoint)
 	registrationGRPCClient := mcpAnyTestServerInfo.RegistrationClient
 
@@ -125,7 +125,7 @@ func TestUpstreamService_UniversitiesList(t *testing.T) {
 	}
 
 	if err != nil {
-		t.Skip("Skipping test due to flakiness: universities.hipolabs.com failed with transient errors")
+		t.Skipf("Skipping test: all %d retries to universities.hipolabs.com failed with transient errors. Last error: %v", maxRetries, err)
 	}
 
 	require.NoError(t, err, "Error calling getUniversities tool")
