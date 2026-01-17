@@ -180,6 +180,23 @@ func (a *Application) handleServices(store storage.Storage) http.HandlerFunc {
 						}
 					}
 
+					// Inject Tool Count
+					if a.ToolManager != nil {
+						tools := a.ToolManager.ListTools()
+						count := 0
+						svcID := svc.GetId()
+						// Fallback to name if ID is empty or not matching (though tools should use ID)
+						sanitizedName := svc.GetSanitizedName()
+
+						for _, t := range tools {
+							tSvcID := t.Tool().GetServiceId()
+							if tSvcID != "" && (tSvcID == svcID || tSvcID == sanitizedName) {
+								count++
+							}
+						}
+						jsonMap["tool_count"] = count
+					}
+
 					// Marshal back to JSON
 					if enrichedBytes, err := json.Marshal(jsonMap); err == nil {
 						b = enrichedBytes
