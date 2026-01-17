@@ -768,15 +768,12 @@ func TestRun_DefaultBindAddress(t *testing.T) {
 		errChan <- app.Run(ctx, fs, false, "", "localhost:0", nil, "", 5*time.Second)
 	}()
 
-	// Give the server time to start up and bind
-	var port int
-	require.Eventually(t, func() bool {
-		if app.BoundHTTPPort != 0 {
-			port = app.BoundHTTPPort
-			return true
-		}
-		return false
-	}, 2*time.Second, 100*time.Millisecond, "server should bind to a port")
+	// Wait for the server to start up and bind
+	err := app.WaitForStartup(ctx)
+	require.NoError(t, err, "failed to wait for startup")
+
+	port := app.BoundHTTPPort
+	require.NotZero(t, port, "BoundHTTPPort should be set after startup")
 
 	// Verify we can dial the assigned port
 	defaultAddr := fmt.Sprintf("localhost:%d", port)
@@ -791,7 +788,7 @@ func TestRun_DefaultBindAddress(t *testing.T) {
 
 	// Server is up, now cancel and wait for shutdown.
 	cancel()
-	err := <-errChan
+	err = <-errChan
 
 	// On graceful shutdown, it should be nil.
 	assert.NoError(t, err, "app.Run should return nil on graceful shutdown")
@@ -820,15 +817,12 @@ func TestRun_GrpcPortNumber(t *testing.T) {
 		errChan <- app.Run(ctx, fs, false, "localhost:0", "127.0.0.1:0", nil, "", 5*time.Second)
 	}()
 
-	// Give the server time to start up and bind
-	var port int
-	require.Eventually(t, func() bool {
-		if app.BoundGRPCPort != 0 {
-			port = app.BoundGRPCPort
-			return true
-		}
-		return false
-	}, 2*time.Second, 100*time.Millisecond, "gRPC server should start and bind")
+	// Wait for the server to start up and bind
+	err := app.WaitForStartup(ctx)
+	require.NoError(t, err, "failed to wait for startup")
+
+	port := app.BoundGRPCPort
+	require.NotZero(t, port, "BoundGRPCPort should be set after startup")
 
 	// Verify we can connect
 	grpcAddr := fmt.Sprintf("localhost:%d", port)
@@ -843,7 +837,7 @@ func TestRun_GrpcPortNumber(t *testing.T) {
 
 	// Server is up, now cancel and wait for shutdown.
 	cancel()
-	err := <-errChan
+	err = <-errChan
 
 	// On graceful shutdown, it should be nil.
 	assert.NoError(t, err, "app.Run should return nil on graceful shutdown")

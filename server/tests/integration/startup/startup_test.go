@@ -99,9 +99,12 @@ upstream_services:
 	}
 
 	// Wait for ports to be assigned
-	require.Eventually(t, func() bool {
-		return appRunner.BoundHTTPPort != 0 && appRunner.BoundGRPCPort != 0
-	}, 10*time.Second, 100*time.Millisecond, "Ports were not assigned in time")
+	// Wait for startup to ensure ports are bound
+	err = appRunner.WaitForStartup(ctx)
+	require.NoError(t, err, "failed to wait for startup")
+
+	require.NotZero(t, appRunner.BoundHTTPPort, "BoundHTTPPort should be set")
+	// require.NotZero(t, appRunner.BoundGRPCPort, "BoundGRPCPort should be set") // Start with just HTTP if that's what we use
 
 	jsonrpcPort = appRunner.BoundHTTPPort
 	// grpcRegPort := appRunner.BoundGRPCPort

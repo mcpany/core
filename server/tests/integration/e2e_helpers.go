@@ -16,6 +16,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"regexp"
+	"strconv"
 	"strings"
 	"sync"
 	"syscall"
@@ -844,17 +845,16 @@ func StartNatsServer(t *testing.T) (string, func()) {
 }
 
 // StartRedisContainer starts a Redis container for testing.
+// StartRedisContainer starts a Redis container for testing.
 func StartRedisContainer(t *testing.T) (redisAddr string, cleanupFunc func()) {
 	t.Helper()
 	require.True(t, IsDockerSocketAccessible(), "Docker is not running or accessible. Please start Docker to run this test.")
 
 	containerName := fmt.Sprintf("mcpany-redis-test-%d", time.Now().UnixNano())
-	redisPort := FindFreePort(t)
-	redisAddr = fmt.Sprintf("127.0.0.1:%d", redisPort)
-
+	// Use port 0 for dynamic host port allocation
 	runArgs := []string{
-		"-d", // detached mode
-		"-p", fmt.Sprintf("%d:6379", redisPort),
+		"-d",
+		"-p", "127.0.0.1:0:6379",
 	}
 
 	command := []string{
@@ -864,10 +864,49 @@ func StartRedisContainer(t *testing.T) (redisAddr string, cleanupFunc func()) {
 
 	cleanup := StartDockerContainer(t, "mirror.gcr.io/library/redis:latest", containerName, runArgs, command...)
 
+	// Inspect the container to get the assigned port
+	dockerExe, dockerBaseArgs := getDockerCommand()
+	var hostPort int
+
+	// Wait for port to be assigned (it happens immediately on start, but good to retry on inspect failure)
+	require.Eventually(t, func() bool {
+		// Safely append to a new slice to avoid modifying backing array of dockerBaseArgs if it has capacity
+		portArgs := make([]string, 0, len(dockerBaseArgs)+3)
+		portArgs = append(portArgs, dockerBaseArgs...)
+		portArgs = append(portArgs, "port", containerName, "6379/tcp")
+
+		cmd := exec.CommandContext(context.Background(), dockerExe, portArgs...) //nolint:gosec // Test helper
+		output, err := cmd.CombinedOutput()
+		if err != nil {
+			t.Logf("docker port failed: %v, output: %s", err, string(output))
+			return false
+		}
+		// Output format: 127.0.0.1:32768
+		outputStr := strings.TrimSpace(string(output))
+		// Handle potential multiple lines or mappings, just take the first one
+		lines := strings.Split(outputStr, "\n")
+		if len(lines) == 0 {
+			return false
+		}
+		parts := strings.Split(lines[0], ":")
+		if len(parts) < 2 {
+			return false
+		}
+		portStr := parts[len(parts)-1]
+		p, err := strconv.Atoi(portStr)
+		if err != nil {
+			return false
+		}
+		hostPort = p
+		return true
+	}, 10*time.Second, 500*time.Millisecond, "Failed to inspect container port")
+
+	redisAddr = fmt.Sprintf("127.0.0.1:%d", hostPort)
+	t.Logf("Redis started at %s", redisAddr)
+
 	// Wait for Redis to be ready
 	require.Eventually(t, func() bool {
 		// Use redis-cli to ping the server
-		dockerExe, dockerBaseArgs := getDockerCommand()
 		pingArgs := append(dockerBaseArgs, "exec", containerName, "redis-cli", "ping") //nolint:gocritic // Helper
 		cmd := exec.CommandContext(context.Background(), dockerExe, pingArgs...)       //nolint:gosec // Test helper
 		output, err := cmd.CombinedOutput()

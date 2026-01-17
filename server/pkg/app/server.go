@@ -1487,36 +1487,6 @@ func (a *Application) runServerMode(
 	})))
 	mux.Handle("/debug/auth-test", authMiddleware(http.HandlerFunc(a.testAuthHandler)))
 
-	if standardMiddlewares != nil && standardMiddlewares.Debugger != nil {
-		mux.Handle("/debug/entries", authMiddleware(standardMiddlewares.Debugger.APIHandler()))
-	}
-
-	if grpcPort != "" {
-		gwmux := runtime.NewServeMux()
-		opts := []gogrpc.DialOption{gogrpc.WithTransportCredentials(insecure.NewCredentials())}
-		endpoint := grpcPort
-		if strings.HasPrefix(endpoint, ":") {
-			endpoint = "localhost" + endpoint
-		}
-		if err := v1.RegisterRegistrationServiceHandlerFromEndpoint(ctx, gwmux, endpoint, opts); err != nil {
-			return fmt.Errorf("failed to register gateway: %w", err)
-		}
-		// Register Skill Service Gateway
-		if err := v1.RegisterSkillServiceHandlerFromEndpoint(ctx, gwmux, endpoint, opts); err != nil {
-			return fmt.Errorf("failed to register skill gateway: %w", err)
-		}
-
-		// Consolidated handler for /v1/ to support both gRPC Gateway and Asset Uploads
-		// This prevents ServeMux from forcing redirects on /v1/skills due to specific subtree matching.
-		mux.Handle("/v1/", authMiddleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			if strings.HasSuffix(r.URL.Path, "/assets") {
-				a.handleUploadSkillAsset()(w, r)
-			} else {
-				gwmux.ServeHTTP(w, r)
-			}
-		})))
-	}
-
 	httpBindAddress := bindAddress
 	if httpBindAddress == "" {
 		if envAddr := os.Getenv("MCPANY_DEFAULT_HTTP_ADDR"); envAddr != "" {
@@ -1635,6 +1605,26 @@ func (a *Application) runServerMode(
 		} else {
 			if addr, ok := lis.Addr().(*net.TCPAddr); ok {
 				a.BoundGRPCPort = addr.Port
+
+				// Register gRPC Gateway with the bound port
+				gwmux := runtime.NewServeMux()
+				opts := []gogrpc.DialOption{gogrpc.WithTransportCredentials(insecure.NewCredentials())}
+				endpoint := fmt.Sprintf("localhost:%d", a.BoundGRPCPort)
+
+				if err := v1.RegisterRegistrationServiceHandlerFromEndpoint(ctx, gwmux, endpoint, opts); err != nil {
+					errChan <- fmt.Errorf("failed to register gateway: %w", err)
+				} else if err := v1.RegisterSkillServiceHandlerFromEndpoint(ctx, gwmux, endpoint, opts); err != nil {
+					errChan <- fmt.Errorf("failed to register skill gateway: %w", err)
+				} else {
+					// Consolidated handler for /v1/ to support both gRPC Gateway and Asset Uploads
+					mux.Handle("/v1/", authMiddleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+						if strings.HasSuffix(r.URL.Path, "/assets") {
+							a.handleUploadSkillAsset()(w, r)
+						} else {
+							gwmux.ServeHTTP(w, r)
+						}
+					})))
+				}
 			}
 			expectedReady++
 			startGrpcServer(
