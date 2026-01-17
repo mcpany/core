@@ -13,33 +13,45 @@ import (
 // HTTPCORSMiddleware handles CORS for HTTP endpoints.
 // It is thread-safe and supports dynamic updates.
 type HTTPCORSMiddleware struct {
-	mu             sync.RWMutex
-	allowedOrigins []string
+	mu              sync.RWMutex
+	allowedOrigins  map[string]struct{}
+	wildcardAllowed bool
 }
 
 // NewHTTPCORSMiddleware creates a new HTTPCORSMiddleware.
 // If allowedOrigins is empty, it defaults to allowing nothing (or behaving like standard Same-Origin).
 // To allow all, pass []string{"*"}.
 func NewHTTPCORSMiddleware(allowedOrigins []string) *HTTPCORSMiddleware {
-	return &HTTPCORSMiddleware{
-		allowedOrigins: allowedOrigins,
-	}
+	m := &HTTPCORSMiddleware{}
+	m.updateInternal(allowedOrigins)
+	return m
 }
 
 // Update updates the allowed origins.
 func (m *HTTPCORSMiddleware) Update(allowedOrigins []string) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
-	m.allowedOrigins = allowedOrigins
+	m.updateInternal(allowedOrigins)
+}
+
+// updateInternal populates the internal map and flags.
+// It must be called with the lock held or during initialization.
+// ⚡ Bolt Optimization: Uses map for O(1) lookup instead of O(N) slice iteration.
+func (m *HTTPCORSMiddleware) updateInternal(origins []string) {
+	m.allowedOrigins = make(map[string]struct{}, len(origins))
+	m.wildcardAllowed = false
+	for _, o := range origins {
+		if o == "*" {
+			m.wildcardAllowed = true
+		} else {
+			m.allowedOrigins[o] = struct{}{}
+		}
+	}
 }
 
 // Handler wraps an http.Handler with CORS logic.
 func (m *HTTPCORSMiddleware) Handler(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		m.mu.RLock()
-		origins := m.allowedOrigins
-		m.mu.RUnlock()
-
 		origin := r.Header.Get("Origin")
 		if origin == "" {
 			// Not a CORS request
@@ -47,19 +59,11 @@ func (m *HTTPCORSMiddleware) Handler(next http.Handler) http.Handler {
 			return
 		}
 
-		allowed := false
-		wildcardAllowed := false
-
-		for _, o := range origins {
-			if o == origin {
-				allowed = true
-				break
-			}
-			if o == "*" {
-				wildcardAllowed = true
-				// Don't break, keep looking for exact match
-			}
-		}
+		m.mu.RLock()
+		// Check for exact match first
+		_, allowed := m.allowedOrigins[origin]
+		wildcardAllowed := m.wildcardAllowed
+		m.mu.RUnlock()
 
 		if !allowed && !wildcardAllowed {
 			// CORS check failed
