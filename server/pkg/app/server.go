@@ -109,9 +109,10 @@ func (a *Application) uploadFile(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Respond with the file name and size
-	// Sanitize the filename to prevent reflected XSS
+	// Sanitize the filename to prevent reflected XSS and ensure safe filesystem usage
+	safeFilename := util.SanitizeFilename(header.Filename)
 	w.Header().Set("Content-Type", "text/plain")
-	_, _ = fmt.Fprintf(w, "File '%s' uploaded successfully (size: %d bytes)", html.EscapeString(header.Filename), written)
+	_, _ = fmt.Fprintf(w, "File '%s' uploaded successfully (size: %d bytes)", html.EscapeString(safeFilename), written)
 }
 
 // Runner defines the interface for running the MCP Any application. It abstracts
