@@ -671,8 +671,13 @@ func StartMCPANYServerWithNoHealthCheck(t *testing.T, testName string, extraArgs
 }
 
 // StartInProcessMCPANYServer starts an in-process MCP Any server for testing.
-func StartInProcessMCPANYServer(t *testing.T, _ string) *MCPANYTestServerInfo {
+func StartInProcessMCPANYServer(t *testing.T, _ string, apiKey ...string) *MCPANYTestServerInfo {
 	t.Helper()
+
+	var actualAPIKey string
+	if len(apiKey) > 0 {
+		actualAPIKey = apiKey[0]
+	}
 
 	_, err := GetProjectRoot()
 	require.NoError(t, err, "Failed to get project root")
@@ -689,12 +694,15 @@ func StartInProcessMCPANYServer(t *testing.T, _ string) *MCPANYTestServerInfo {
 	jsonrpcEndpoint := fmt.Sprintf("http://127.0.0.1:%d", jsonrpcPort)
 	grpcRegEndpoint := fmt.Sprintf("127.0.0.1:%d", grpcRegPort)
 	mcpRequestURL := jsonrpcEndpoint + "/mcp"
+	if actualAPIKey != "" {
+		mcpRequestURL += "?api_key=" + actualAPIKey
+	}
 
 	ctx, cancel := context.WithCancel(context.Background())
 
 	go func() {
 		appRunner := app.NewApplication()
-		err := appRunner.Run(ctx, afero.NewOsFs(), false, jsonrpcAddress, grpcRegAddress, []string{}, "", 5*time.Second)
+		err := appRunner.Run(ctx, afero.NewOsFs(), false, jsonrpcAddress, grpcRegAddress, []string{}, actualAPIKey, 5*time.Second)
 		require.NoError(t, err)
 	}()
 
