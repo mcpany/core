@@ -12,6 +12,7 @@ import (
 	"net/http"
 	"os/exec"
 	"strings"
+	"sync"
 	"time"
 
 	_ "github.com/go-sql-driver/mysql" // Register MySQL driver
@@ -44,25 +45,34 @@ type CheckResult struct {
 }
 
 // RunChecks performs connectivity and health checks on the provided configuration.
+// It runs checks concurrently to minimize startup delay.
 func RunChecks(ctx context.Context, config *configv1.McpAnyServerConfig) []CheckResult {
-	results := make([]CheckResult, 0, len(config.GetUpstreamServices()))
+	services := config.GetUpstreamServices()
+	results := make([]CheckResult, len(services))
+	var wg sync.WaitGroup
 
-	// Check upstream services
-	for _, service := range config.GetUpstreamServices() {
-		if service.GetDisable() {
-			results = append(results, CheckResult{
-				ServiceName: service.GetName(),
-				Status:      StatusSkipped,
-				Message:     "Service is disabled",
-			})
-			continue
-		}
+	// Check upstream services concurrently
+	for i, service := range services {
+		wg.Add(1)
+		go func(idx int, svc *configv1.UpstreamServiceConfig) {
+			defer wg.Done()
+			var res CheckResult
 
-		res := checkService(ctx, service)
-		res.ServiceName = service.GetName()
-		results = append(results, res)
+			if svc.GetDisable() {
+				res = CheckResult{
+					ServiceName: svc.GetName(),
+					Status:      StatusSkipped,
+					Message:     "Service is disabled",
+				}
+			} else {
+				res = checkService(ctx, svc)
+				res.ServiceName = svc.GetName()
+			}
+			results[idx] = res
+		}(i, service)
 	}
 
+	wg.Wait()
 	return results
 }
 

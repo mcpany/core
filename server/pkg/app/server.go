@@ -28,6 +28,7 @@ import (
 	"github.com/mcpany/core/server/pkg/auth"
 	"github.com/mcpany/core/server/pkg/bus"
 	"github.com/mcpany/core/server/pkg/config"
+	"github.com/mcpany/core/server/pkg/doctor"
 	"github.com/mcpany/core/server/pkg/gc"
 	"github.com/mcpany/core/server/pkg/health"
 	"github.com/mcpany/core/server/pkg/logging"
@@ -331,6 +332,34 @@ func (a *Application) Run(
 	}
 	if cfg == nil {
 		cfg = &config_v1.McpAnyServerConfig{}
+	}
+
+	// STARTUP HEALTH CHECK (Friction Fighter)
+	// We run doctor checks to ensure the configuration points to valid resources.
+	// This helps users identify issues immediately (e.g. missing binaries).
+	log.Info("Running startup health checks...")
+	healthResults := doctor.RunChecks(ctx, cfg)
+	for _, res := range healthResults {
+		switch res.Status {
+		case doctor.StatusError:
+			// Check if this is a "command not found" error or file not found, which are critical config errors.
+			// Network errors might be transient, but local path errors are permanent until config fix.
+			isLocalError := strings.Contains(res.Message, "Command not found") || strings.Contains(res.Message, "not found or inaccessible")
+			if isLocalError {
+				log.Error("Startup Check Failed (CRITICAL)",
+					"service", res.ServiceName,
+					"status", res.Status,
+					"message", res.Message,
+					"action", "Please check your configuration.")
+			} else {
+				log.Error("Startup Check Failed",
+					"service", res.ServiceName,
+					"status", res.Status,
+					"message", res.Message)
+			}
+		case doctor.StatusWarning:
+			log.Warn("Startup Check Warning", "service", res.ServiceName, "message", res.Message)
+		}
 	}
 
 	// Initialize Telemetry with loaded config
