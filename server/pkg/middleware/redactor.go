@@ -4,6 +4,7 @@
 package middleware
 
 import (
+	"bytes"
 	"encoding/json"
 	"log/slog"
 	"regexp"
@@ -62,13 +63,22 @@ func (r *Redactor) RedactJSON(data []byte) ([]byte, error) {
 		// This avoids expensive json.Unmarshal for the vast majority of safe strings.
 		if len(r.customPatterns) == 0 {
 			hasIndicator := false
-			for i := 0; i < len(raw); i++ {
-				c := raw[i]
-				if c == '@' || (c >= '0' && c <= '9') || c == '\\' {
-					hasIndicator = true
-					break
+			// Check for '@' and '\' first using optimized SIMD scan
+			if bytes.IndexByte(raw, '@') != -1 || bytes.IndexByte(raw, '\\') != -1 {
+				hasIndicator = true
+			} else {
+				// Check for digits '0'-'9'
+				// Using bytes.IndexByte for each digit is faster than a linear scan in Go for longer strings (approx > 64 bytes)
+				// because it uses SIMD instructions. Since raw can be large, this is a significant win.
+				// For very short strings, the overhead is negligible.
+				for c := byte('0'); c <= '9'; c++ {
+					if bytes.IndexByte(raw, c) != -1 {
+						hasIndicator = true
+						break
+					}
 				}
 			}
+
 			if !hasIndicator {
 				return nil, false
 			}
