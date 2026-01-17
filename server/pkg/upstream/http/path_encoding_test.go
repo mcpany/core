@@ -20,6 +20,8 @@ import (
 )
 
 func TestPathEncodingBug(t *testing.T) {
+	t.Setenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS", "true")
+
 	// Create a test server that checks the RequestURI
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// We expect the path to be exactly "/users/user%2F1"
@@ -78,6 +80,8 @@ func TestPathEncodingBug(t *testing.T) {
 }
 
 func TestPathEncoding_SlashInParameter_WithTrailingSlash(t *testing.T) {
+	t.Setenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS", "true")
+
 	// Create a test server that checks the path
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// We expect the path to contain "foo%2Fbar" (encoded slash)
