@@ -9,9 +9,7 @@ import (
 	"context"
 	"fmt"
 	"io"
-	"net"
 	"net/http"
-	"net/url"
 	"os"
 	"strings"
 	"time"
@@ -22,6 +20,7 @@ import (
 	"github.com/mcpany/core/server/pkg/command"
 	"github.com/mcpany/core/server/pkg/logging"
 	"github.com/mcpany/core/server/pkg/metrics"
+	"github.com/mcpany/core/server/pkg/util"
 	"github.com/samber/lo"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
@@ -163,7 +162,7 @@ func webrtcCheck(name string, c *configv1.WebrtcUpstreamService) health.Check {
 					return websocketCheckFunc(ctx, c.GetAddress(), wsCheck)
 				}
 			}
-			return checkConnection(ctx, c.GetAddress())
+			return util.CheckConnection(ctx, c.GetAddress())
 		},
 	}
 }
@@ -180,7 +179,7 @@ func websocketCheck(name string, c *configv1.WebsocketUpstreamService) health.Ch
 
 func websocketCheckFunc(ctx context.Context, address string, hc *configv1.WebsocketHealthCheck) error {
 	if hc == nil {
-		return checkConnection(ctx, address)
+		return util.CheckConnection(ctx, address)
 	}
 
 	healthCheckURL := hc.GetUrl()
@@ -245,7 +244,7 @@ func grpcCheck(name string, c *configv1.GrpcUpstreamService) health.Check {
 		Timeout: 5 * time.Second,
 		Check: func(ctx context.Context) error {
 			if c.GetHealthCheck() == nil {
-				return checkConnection(ctx, c.GetAddress())
+				return util.CheckConnection(ctx, c.GetAddress())
 			}
 
 			conn, err := grpc.NewClient(
@@ -331,7 +330,7 @@ func mcpCheck(name string, c *configv1.McpUpstreamService) health.Check {
 		Name: name,
 		Check: func(ctx context.Context) error {
 			if conn := c.GetHttpConnection(); conn != nil {
-				return checkConnection(ctx, conn.GetHttpAddress())
+				return util.CheckConnection(ctx, conn.GetHttpAddress())
 			}
 			if c.GetStdioConnection() != nil {
 				return nil // Assume healthy
@@ -372,41 +371,3 @@ func filesystemCheck(name string, c *configv1.FilesystemUpstreamService) health.
 	}
 }
 
-func checkConnection(ctx context.Context, address string) error {
-	var target string
-	if strings.Contains(address, "://") {
-		u, err := url.Parse(address)
-		if err != nil {
-			return fmt.Errorf("failed to parse address %s: %w", address, err)
-		}
-		host := u.Hostname()
-		port := u.Port()
-		if port == "" {
-			if u.Scheme == "https" {
-				port = "443"
-			} else {
-				port = "80"
-			}
-		}
-		target = net.JoinHostPort(host, port)
-	} else {
-		// If no scheme, try to parse as host:port. If no port, assume 80.
-		host, port, err := net.SplitHostPort(address)
-		if err != nil {
-			// If SplitHostPort fails, it means no port was specified.
-			// Assume it's just a hostname and default to port 80.
-			host = address
-			port = "80"
-		}
-		target = net.JoinHostPort(host, port)
-	}
-
-	d := net.Dialer{Timeout: 5 * time.Second}
-	conn, err := d.DialContext(ctx, "tcp", target)
-	if err != nil {
-		logging.GetLogger().Error("checkConnection failed", "address", target, "error", err)
-		return fmt.Errorf("failed to connect to address %s: %w", target, err)
-	}
-	defer func() { _ = conn.Close() }()
-	return nil
-}

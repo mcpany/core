@@ -198,6 +198,177 @@ func (b0 RegisterServiceResponse_builder) Build() *RegisterServiceResponse {
 	return m0
 }
 
+type ValidateServiceRequest struct {
+	state             protoimpl.MessageState    `protogen:"opaque.v1"`
+	xxx_hidden_Config *v1.UpstreamServiceConfig `protobuf:"bytes,1,opt,name=config"`
+	unknownFields     protoimpl.UnknownFields
+	sizeCache         protoimpl.SizeCache
+}
+
+func (x *ValidateServiceRequest) Reset() {
+	*x = ValidateServiceRequest{}
+	mi := &file_proto_api_v1_registration_proto_msgTypes[2]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ValidateServiceRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ValidateServiceRequest) ProtoMessage() {}
+
+func (x *ValidateServiceRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_api_v1_registration_proto_msgTypes[2]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+func (x *ValidateServiceRequest) GetConfig() *v1.UpstreamServiceConfig {
+	if x != nil {
+		return x.xxx_hidden_Config
+	}
+	return nil
+}
+
+func (x *ValidateServiceRequest) SetConfig(v *v1.UpstreamServiceConfig) {
+	x.xxx_hidden_Config = v
+}
+
+func (x *ValidateServiceRequest) HasConfig() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_Config != nil
+}
+
+func (x *ValidateServiceRequest) ClearConfig() {
+	x.xxx_hidden_Config = nil
+}
+
+type ValidateServiceRequest_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	Config *v1.UpstreamServiceConfig
+}
+
+func (b0 ValidateServiceRequest_builder) Build() *ValidateServiceRequest {
+	m0 := &ValidateServiceRequest{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_Config = b.Config
+	return m0
+}
+
+type ValidateServiceResponse struct {
+	state                          protoimpl.MessageState    `protogen:"opaque.v1"`
+	xxx_hidden_Valid               bool                      `protobuf:"varint,1,opt,name=valid"`
+	xxx_hidden_Message             string                    `protobuf:"bytes,2,opt,name=message"`
+	xxx_hidden_DiscoveredTools     *[]*v1.ToolDefinition     `protobuf:"bytes,3,rep,name=discovered_tools,json=discoveredTools"`
+	xxx_hidden_DiscoveredResources *[]*v1.ResourceDefinition `protobuf:"bytes,4,rep,name=discovered_resources,json=discoveredResources"`
+	unknownFields                  protoimpl.UnknownFields
+	sizeCache                      protoimpl.SizeCache
+}
+
+func (x *ValidateServiceResponse) Reset() {
+	*x = ValidateServiceResponse{}
+	mi := &file_proto_api_v1_registration_proto_msgTypes[3]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ValidateServiceResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ValidateServiceResponse) ProtoMessage() {}
+
+func (x *ValidateServiceResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_api_v1_registration_proto_msgTypes[3]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+func (x *ValidateServiceResponse) GetValid() bool {
+	if x != nil {
+		return x.xxx_hidden_Valid
+	}
+	return false
+}
+
+func (x *ValidateServiceResponse) GetMessage() string {
+	if x != nil {
+		return x.xxx_hidden_Message
+	}
+	return ""
+}
+
+func (x *ValidateServiceResponse) GetDiscoveredTools() []*v1.ToolDefinition {
+	if x != nil {
+		if x.xxx_hidden_DiscoveredTools != nil {
+			return *x.xxx_hidden_DiscoveredTools
+		}
+	}
+	return nil
+}
+
+func (x *ValidateServiceResponse) GetDiscoveredResources() []*v1.ResourceDefinition {
+	if x != nil {
+		if x.xxx_hidden_DiscoveredResources != nil {
+			return *x.xxx_hidden_DiscoveredResources
+		}
+	}
+	return nil
+}
+
+func (x *ValidateServiceResponse) SetValid(v bool) {
+	x.xxx_hidden_Valid = v
+}
+
+func (x *ValidateServiceResponse) SetMessage(v string) {
+	x.xxx_hidden_Message = v
+}
+
+func (x *ValidateServiceResponse) SetDiscoveredTools(v []*v1.ToolDefinition) {
+	x.xxx_hidden_DiscoveredTools = &v
+}
+
+func (x *ValidateServiceResponse) SetDiscoveredResources(v []*v1.ResourceDefinition) {
+	x.xxx_hidden_DiscoveredResources = &v
+}
+
+type ValidateServiceResponse_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	Valid               bool
+	Message             string
+	DiscoveredTools     []*v1.ToolDefinition
+	DiscoveredResources []*v1.ResourceDefinition
+}
+
+func (b0 ValidateServiceResponse_builder) Build() *ValidateServiceResponse {
+	m0 := &ValidateServiceResponse{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_Valid = b.Valid
+	x.xxx_hidden_Message = b.Message
+	x.xxx_hidden_DiscoveredTools = &b.DiscoveredTools
+	x.xxx_hidden_DiscoveredResources = &b.DiscoveredResources
+	return m0
+}
+
 type ListServicesRequest struct {
 	state         protoimpl.MessageState `protogen:"opaque.v1"`
 	unknownFields protoimpl.UnknownFields
@@ -206,7 +377,7 @@ type ListServicesRequest struct {
 
 func (x *ListServicesRequest) Reset() {
 	*x = ListServicesRequest{}
-	mi := &file_proto_api_v1_registration_proto_msgTypes[2]
+	mi := &file_proto_api_v1_registration_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -218,7 +389,7 @@ func (x *ListServicesRequest) String() string {
 func (*ListServicesRequest) ProtoMessage() {}
 
 func (x *ListServicesRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_api_v1_registration_proto_msgTypes[2]
+	mi := &file_proto_api_v1_registration_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -250,7 +421,7 @@ type ListServicesResponse struct {
 
 func (x *ListServicesResponse) Reset() {
 	*x = ListServicesResponse{}
-	mi := &file_proto_api_v1_registration_proto_msgTypes[3]
+	mi := &file_proto_api_v1_registration_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -262,7 +433,7 @@ func (x *ListServicesResponse) String() string {
 func (*ListServicesResponse) ProtoMessage() {}
 
 func (x *ListServicesResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_api_v1_registration_proto_msgTypes[3]
+	mi := &file_proto_api_v1_registration_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -312,7 +483,7 @@ type InitiateOAuth2FlowRequest struct {
 
 func (x *InitiateOAuth2FlowRequest) Reset() {
 	*x = InitiateOAuth2FlowRequest{}
-	mi := &file_proto_api_v1_registration_proto_msgTypes[4]
+	mi := &file_proto_api_v1_registration_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -324,7 +495,7 @@ func (x *InitiateOAuth2FlowRequest) String() string {
 func (*InitiateOAuth2FlowRequest) ProtoMessage() {}
 
 func (x *InitiateOAuth2FlowRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_api_v1_registration_proto_msgTypes[4]
+	mi := &file_proto_api_v1_registration_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -409,7 +580,7 @@ type InitiateOAuth2FlowResponse struct {
 
 func (x *InitiateOAuth2FlowResponse) Reset() {
 	*x = InitiateOAuth2FlowResponse{}
-	mi := &file_proto_api_v1_registration_proto_msgTypes[5]
+	mi := &file_proto_api_v1_registration_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -421,7 +592,7 @@ func (x *InitiateOAuth2FlowResponse) String() string {
 func (*InitiateOAuth2FlowResponse) ProtoMessage() {}
 
 func (x *InitiateOAuth2FlowResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_api_v1_registration_proto_msgTypes[5]
+	mi := &file_proto_api_v1_registration_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -480,7 +651,7 @@ type UnregisterServiceRequest struct {
 
 func (x *UnregisterServiceRequest) Reset() {
 	*x = UnregisterServiceRequest{}
-	mi := &file_proto_api_v1_registration_proto_msgTypes[6]
+	mi := &file_proto_api_v1_registration_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -492,7 +663,7 @@ func (x *UnregisterServiceRequest) String() string {
 func (*UnregisterServiceRequest) ProtoMessage() {}
 
 func (x *UnregisterServiceRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_api_v1_registration_proto_msgTypes[6]
+	mi := &file_proto_api_v1_registration_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -550,7 +721,7 @@ type UnregisterServiceResponse struct {
 
 func (x *UnregisterServiceResponse) Reset() {
 	*x = UnregisterServiceResponse{}
-	mi := &file_proto_api_v1_registration_proto_msgTypes[7]
+	mi := &file_proto_api_v1_registration_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -562,7 +733,7 @@ func (x *UnregisterServiceResponse) String() string {
 func (*UnregisterServiceResponse) ProtoMessage() {}
 
 func (x *UnregisterServiceResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_api_v1_registration_proto_msgTypes[7]
+	mi := &file_proto_api_v1_registration_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -609,7 +780,7 @@ type RegisterToolsRequest struct {
 
 func (x *RegisterToolsRequest) Reset() {
 	*x = RegisterToolsRequest{}
-	mi := &file_proto_api_v1_registration_proto_msgTypes[8]
+	mi := &file_proto_api_v1_registration_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -621,7 +792,7 @@ func (x *RegisterToolsRequest) String() string {
 func (*RegisterToolsRequest) ProtoMessage() {}
 
 func (x *RegisterToolsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_api_v1_registration_proto_msgTypes[8]
+	mi := &file_proto_api_v1_registration_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -695,7 +866,7 @@ type RegisterToolsResponse struct {
 
 func (x *RegisterToolsResponse) Reset() {
 	*x = RegisterToolsResponse{}
-	mi := &file_proto_api_v1_registration_proto_msgTypes[9]
+	mi := &file_proto_api_v1_registration_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -707,7 +878,7 @@ func (x *RegisterToolsResponse) String() string {
 func (*RegisterToolsResponse) ProtoMessage() {}
 
 func (x *RegisterToolsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_api_v1_registration_proto_msgTypes[9]
+	mi := &file_proto_api_v1_registration_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -765,7 +936,7 @@ type GetServiceRequest struct {
 
 func (x *GetServiceRequest) Reset() {
 	*x = GetServiceRequest{}
-	mi := &file_proto_api_v1_registration_proto_msgTypes[10]
+	mi := &file_proto_api_v1_registration_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -777,7 +948,7 @@ func (x *GetServiceRequest) String() string {
 func (*GetServiceRequest) ProtoMessage() {}
 
 func (x *GetServiceRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_api_v1_registration_proto_msgTypes[10]
+	mi := &file_proto_api_v1_registration_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -822,7 +993,7 @@ type GetServiceResponse struct {
 
 func (x *GetServiceResponse) Reset() {
 	*x = GetServiceResponse{}
-	mi := &file_proto_api_v1_registration_proto_msgTypes[11]
+	mi := &file_proto_api_v1_registration_proto_msgTypes[13]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -834,7 +1005,7 @@ func (x *GetServiceResponse) String() string {
 func (*GetServiceResponse) ProtoMessage() {}
 
 func (x *GetServiceResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_api_v1_registration_proto_msgTypes[11]
+	mi := &file_proto_api_v1_registration_proto_msgTypes[13]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -891,7 +1062,7 @@ type GetServiceStatusRequest struct {
 
 func (x *GetServiceStatusRequest) Reset() {
 	*x = GetServiceStatusRequest{}
-	mi := &file_proto_api_v1_registration_proto_msgTypes[12]
+	mi := &file_proto_api_v1_registration_proto_msgTypes[14]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -903,7 +1074,7 @@ func (x *GetServiceStatusRequest) String() string {
 func (*GetServiceStatusRequest) ProtoMessage() {}
 
 func (x *GetServiceStatusRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_api_v1_registration_proto_msgTypes[12]
+	mi := &file_proto_api_v1_registration_proto_msgTypes[14]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -962,7 +1133,7 @@ type GetServiceStatusResponse struct {
 
 func (x *GetServiceStatusResponse) Reset() {
 	*x = GetServiceStatusResponse{}
-	mi := &file_proto_api_v1_registration_proto_msgTypes[13]
+	mi := &file_proto_api_v1_registration_proto_msgTypes[15]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -974,7 +1145,7 @@ func (x *GetServiceStatusResponse) String() string {
 func (*GetServiceStatusResponse) ProtoMessage() {}
 
 func (x *GetServiceStatusResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_api_v1_registration_proto_msgTypes[13]
+	mi := &file_proto_api_v1_registration_proto_msgTypes[15]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1037,6 +1208,13 @@ const file_proto_api_v1_registration_proto_rawDesc = "" +
 	"\x10discovered_tools\x18\x02 \x03(\v2 .mcpany.config.v1.ToolDefinitionR\x0fdiscoveredTools\x12\x1f\n" +
 	"\vservice_key\x18\x03 \x01(\tR\n" +
 	"serviceKey\x12W\n" +
+	"\x14discovered_resources\x18\x04 \x03(\v2$.mcpany.config.v1.ResourceDefinitionR\x13discoveredResources\"Y\n" +
+	"\x16ValidateServiceRequest\x12?\n" +
+	"\x06config\x18\x01 \x01(\v2'.mcpany.config.v1.UpstreamServiceConfigR\x06config\"\xef\x01\n" +
+	"\x17ValidateServiceResponse\x12\x14\n" +
+	"\x05valid\x18\x01 \x01(\bR\x05valid\x12\x18\n" +
+	"\amessage\x18\x02 \x01(\tR\amessage\x12K\n" +
+	"\x10discovered_tools\x18\x03 \x03(\v2 .mcpany.config.v1.ToolDefinitionR\x0fdiscoveredTools\x12W\n" +
 	"\x14discovered_resources\x18\x04 \x03(\v2$.mcpany.config.v1.ResourceDefinitionR\x13discoveredResources\"\x15\n" +
 	"\x13ListServicesRequest\"[\n" +
 	"\x14ListServicesResponse\x12C\n" +
@@ -1074,9 +1252,10 @@ const file_proto_api_v1_registration_proto_rawDesc = "" +
 	"\ametrics\x18\x02 \x03(\v24.mcpany.api.v1.GetServiceStatusResponse.MetricsEntryR\ametrics\x1a:\n" +
 	"\fMetricsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\x03R\x05value:\x028\x012\xba\a\n" +
+	"\x05value\x18\x02 \x01(\x03R\x05value:\x028\x012\xbf\b\n" +
 	"\x13RegistrationService\x12\x82\x01\n" +
-	"\x0fRegisterService\x12%.mcpany.api.v1.RegisterServiceRequest\x1a&.mcpany.api.v1.RegisterServiceResponse\" \x82\xd3\xe4\x93\x02\x1a:\x01*\"\x15/v1/services/register\x12\x8a\x01\n" +
+	"\x0fRegisterService\x12%.mcpany.api.v1.RegisterServiceRequest\x1a&.mcpany.api.v1.RegisterServiceResponse\" \x82\xd3\xe4\x93\x02\x1a:\x01*\"\x15/v1/services/register\x12\x82\x01\n" +
+	"\x0fValidateService\x12%.mcpany.api.v1.ValidateServiceRequest\x1a&.mcpany.api.v1.ValidateServiceResponse\" \x82\xd3\xe4\x93\x02\x1a:\x01*\"\x15/v1/services/validate\x12\x8a\x01\n" +
 	"\x11UnregisterService\x12'.mcpany.api.v1.UnregisterServiceRequest\x1a(.mcpany.api.v1.UnregisterServiceResponse\"\"\x82\xd3\xe4\x93\x02\x1c:\x01*\"\x17/v1/services/unregister\x12\x92\x01\n" +
 	"\x12InitiateOAuth2Flow\x12(.mcpany.api.v1.InitiateOAuth2FlowRequest\x1a).mcpany.api.v1.InitiateOAuth2FlowResponse\"'\x82\xd3\xe4\x93\x02!:\x01*\"\x1c/v1/services/oauth2/initiate\x12\x82\x01\n" +
 	"\rRegisterTools\x12#.mcpany.api.v1.RegisterToolsRequest\x1a$.mcpany.api.v1.RegisterToolsResponse\"&\x82\xd3\xe4\x93\x02 :\x01*\"\x1b/v1/services/tools/register\x12\x8f\x01\n" +
@@ -1085,55 +1264,62 @@ const file_proto_api_v1_registration_proto_rawDesc = "" +
 	"\n" +
 	"GetService\x12 .mcpany.api.v1.GetServiceRequest\x1a!.mcpany.api.v1.GetServiceResponse\"#\x82\xd3\xe4\x93\x02\x1d\x12\x1b/v1/services/{service_name}B=B\x11RegistrationProtoZ#github.com/mcpany/core/proto/api/v1\x92\x03\x02\b\x02b\beditionsp\xe8\a"
 
-var file_proto_api_v1_registration_proto_msgTypes = make([]protoimpl.MessageInfo, 15)
+var file_proto_api_v1_registration_proto_msgTypes = make([]protoimpl.MessageInfo, 17)
 var file_proto_api_v1_registration_proto_goTypes = []any{
 	(*RegisterServiceRequest)(nil),     // 0: mcpany.api.v1.RegisterServiceRequest
 	(*RegisterServiceResponse)(nil),    // 1: mcpany.api.v1.RegisterServiceResponse
-	(*ListServicesRequest)(nil),        // 2: mcpany.api.v1.ListServicesRequest
-	(*ListServicesResponse)(nil),       // 3: mcpany.api.v1.ListServicesResponse
-	(*InitiateOAuth2FlowRequest)(nil),  // 4: mcpany.api.v1.InitiateOAuth2FlowRequest
-	(*InitiateOAuth2FlowResponse)(nil), // 5: mcpany.api.v1.InitiateOAuth2FlowResponse
-	(*UnregisterServiceRequest)(nil),   // 6: mcpany.api.v1.UnregisterServiceRequest
-	(*UnregisterServiceResponse)(nil),  // 7: mcpany.api.v1.UnregisterServiceResponse
-	(*RegisterToolsRequest)(nil),       // 8: mcpany.api.v1.RegisterToolsRequest
-	(*RegisterToolsResponse)(nil),      // 9: mcpany.api.v1.RegisterToolsResponse
-	(*GetServiceRequest)(nil),          // 10: mcpany.api.v1.GetServiceRequest
-	(*GetServiceResponse)(nil),         // 11: mcpany.api.v1.GetServiceResponse
-	(*GetServiceStatusRequest)(nil),    // 12: mcpany.api.v1.GetServiceStatusRequest
-	(*GetServiceStatusResponse)(nil),   // 13: mcpany.api.v1.GetServiceStatusResponse
-	nil,                                // 14: mcpany.api.v1.GetServiceStatusResponse.MetricsEntry
-	(*v1.UpstreamServiceConfig)(nil),   // 15: mcpany.config.v1.UpstreamServiceConfig
-	(*v1.ToolDefinition)(nil),          // 16: mcpany.config.v1.ToolDefinition
-	(*v1.ResourceDefinition)(nil),      // 17: mcpany.config.v1.ResourceDefinition
+	(*ValidateServiceRequest)(nil),     // 2: mcpany.api.v1.ValidateServiceRequest
+	(*ValidateServiceResponse)(nil),    // 3: mcpany.api.v1.ValidateServiceResponse
+	(*ListServicesRequest)(nil),        // 4: mcpany.api.v1.ListServicesRequest
+	(*ListServicesResponse)(nil),       // 5: mcpany.api.v1.ListServicesResponse
+	(*InitiateOAuth2FlowRequest)(nil),  // 6: mcpany.api.v1.InitiateOAuth2FlowRequest
+	(*InitiateOAuth2FlowResponse)(nil), // 7: mcpany.api.v1.InitiateOAuth2FlowResponse
+	(*UnregisterServiceRequest)(nil),   // 8: mcpany.api.v1.UnregisterServiceRequest
+	(*UnregisterServiceResponse)(nil),  // 9: mcpany.api.v1.UnregisterServiceResponse
+	(*RegisterToolsRequest)(nil),       // 10: mcpany.api.v1.RegisterToolsRequest
+	(*RegisterToolsResponse)(nil),      // 11: mcpany.api.v1.RegisterToolsResponse
+	(*GetServiceRequest)(nil),          // 12: mcpany.api.v1.GetServiceRequest
+	(*GetServiceResponse)(nil),         // 13: mcpany.api.v1.GetServiceResponse
+	(*GetServiceStatusRequest)(nil),    // 14: mcpany.api.v1.GetServiceStatusRequest
+	(*GetServiceStatusResponse)(nil),   // 15: mcpany.api.v1.GetServiceStatusResponse
+	nil,                                // 16: mcpany.api.v1.GetServiceStatusResponse.MetricsEntry
+	(*v1.UpstreamServiceConfig)(nil),   // 17: mcpany.config.v1.UpstreamServiceConfig
+	(*v1.ToolDefinition)(nil),          // 18: mcpany.config.v1.ToolDefinition
+	(*v1.ResourceDefinition)(nil),      // 19: mcpany.config.v1.ResourceDefinition
 }
 var file_proto_api_v1_registration_proto_depIdxs = []int32{
-	15, // 0: mcpany.api.v1.RegisterServiceRequest.config:type_name -> mcpany.config.v1.UpstreamServiceConfig
-	16, // 1: mcpany.api.v1.RegisterServiceResponse.discovered_tools:type_name -> mcpany.config.v1.ToolDefinition
-	17, // 2: mcpany.api.v1.RegisterServiceResponse.discovered_resources:type_name -> mcpany.config.v1.ResourceDefinition
-	15, // 3: mcpany.api.v1.ListServicesResponse.services:type_name -> mcpany.config.v1.UpstreamServiceConfig
-	16, // 4: mcpany.api.v1.RegisterToolsRequest.tools:type_name -> mcpany.config.v1.ToolDefinition
-	15, // 5: mcpany.api.v1.GetServiceResponse.service:type_name -> mcpany.config.v1.UpstreamServiceConfig
-	16, // 6: mcpany.api.v1.GetServiceStatusResponse.tools:type_name -> mcpany.config.v1.ToolDefinition
-	14, // 7: mcpany.api.v1.GetServiceStatusResponse.metrics:type_name -> mcpany.api.v1.GetServiceStatusResponse.MetricsEntry
-	0,  // 8: mcpany.api.v1.RegistrationService.RegisterService:input_type -> mcpany.api.v1.RegisterServiceRequest
-	6,  // 9: mcpany.api.v1.RegistrationService.UnregisterService:input_type -> mcpany.api.v1.UnregisterServiceRequest
-	4,  // 10: mcpany.api.v1.RegistrationService.InitiateOAuth2Flow:input_type -> mcpany.api.v1.InitiateOAuth2FlowRequest
-	8,  // 11: mcpany.api.v1.RegistrationService.RegisterTools:input_type -> mcpany.api.v1.RegisterToolsRequest
-	12, // 12: mcpany.api.v1.RegistrationService.GetServiceStatus:input_type -> mcpany.api.v1.GetServiceStatusRequest
-	2,  // 13: mcpany.api.v1.RegistrationService.ListServices:input_type -> mcpany.api.v1.ListServicesRequest
-	10, // 14: mcpany.api.v1.RegistrationService.GetService:input_type -> mcpany.api.v1.GetServiceRequest
-	1,  // 15: mcpany.api.v1.RegistrationService.RegisterService:output_type -> mcpany.api.v1.RegisterServiceResponse
-	7,  // 16: mcpany.api.v1.RegistrationService.UnregisterService:output_type -> mcpany.api.v1.UnregisterServiceResponse
-	5,  // 17: mcpany.api.v1.RegistrationService.InitiateOAuth2Flow:output_type -> mcpany.api.v1.InitiateOAuth2FlowResponse
-	9,  // 18: mcpany.api.v1.RegistrationService.RegisterTools:output_type -> mcpany.api.v1.RegisterToolsResponse
-	13, // 19: mcpany.api.v1.RegistrationService.GetServiceStatus:output_type -> mcpany.api.v1.GetServiceStatusResponse
-	3,  // 20: mcpany.api.v1.RegistrationService.ListServices:output_type -> mcpany.api.v1.ListServicesResponse
-	11, // 21: mcpany.api.v1.RegistrationService.GetService:output_type -> mcpany.api.v1.GetServiceResponse
-	15, // [15:22] is the sub-list for method output_type
-	8,  // [8:15] is the sub-list for method input_type
-	8,  // [8:8] is the sub-list for extension type_name
-	8,  // [8:8] is the sub-list for extension extendee
-	0,  // [0:8] is the sub-list for field type_name
+	17, // 0: mcpany.api.v1.RegisterServiceRequest.config:type_name -> mcpany.config.v1.UpstreamServiceConfig
+	18, // 1: mcpany.api.v1.RegisterServiceResponse.discovered_tools:type_name -> mcpany.config.v1.ToolDefinition
+	19, // 2: mcpany.api.v1.RegisterServiceResponse.discovered_resources:type_name -> mcpany.config.v1.ResourceDefinition
+	17, // 3: mcpany.api.v1.ValidateServiceRequest.config:type_name -> mcpany.config.v1.UpstreamServiceConfig
+	18, // 4: mcpany.api.v1.ValidateServiceResponse.discovered_tools:type_name -> mcpany.config.v1.ToolDefinition
+	19, // 5: mcpany.api.v1.ValidateServiceResponse.discovered_resources:type_name -> mcpany.config.v1.ResourceDefinition
+	17, // 6: mcpany.api.v1.ListServicesResponse.services:type_name -> mcpany.config.v1.UpstreamServiceConfig
+	18, // 7: mcpany.api.v1.RegisterToolsRequest.tools:type_name -> mcpany.config.v1.ToolDefinition
+	17, // 8: mcpany.api.v1.GetServiceResponse.service:type_name -> mcpany.config.v1.UpstreamServiceConfig
+	18, // 9: mcpany.api.v1.GetServiceStatusResponse.tools:type_name -> mcpany.config.v1.ToolDefinition
+	16, // 10: mcpany.api.v1.GetServiceStatusResponse.metrics:type_name -> mcpany.api.v1.GetServiceStatusResponse.MetricsEntry
+	0,  // 11: mcpany.api.v1.RegistrationService.RegisterService:input_type -> mcpany.api.v1.RegisterServiceRequest
+	2,  // 12: mcpany.api.v1.RegistrationService.ValidateService:input_type -> mcpany.api.v1.ValidateServiceRequest
+	8,  // 13: mcpany.api.v1.RegistrationService.UnregisterService:input_type -> mcpany.api.v1.UnregisterServiceRequest
+	6,  // 14: mcpany.api.v1.RegistrationService.InitiateOAuth2Flow:input_type -> mcpany.api.v1.InitiateOAuth2FlowRequest
+	10, // 15: mcpany.api.v1.RegistrationService.RegisterTools:input_type -> mcpany.api.v1.RegisterToolsRequest
+	14, // 16: mcpany.api.v1.RegistrationService.GetServiceStatus:input_type -> mcpany.api.v1.GetServiceStatusRequest
+	4,  // 17: mcpany.api.v1.RegistrationService.ListServices:input_type -> mcpany.api.v1.ListServicesRequest
+	12, // 18: mcpany.api.v1.RegistrationService.GetService:input_type -> mcpany.api.v1.GetServiceRequest
+	1,  // 19: mcpany.api.v1.RegistrationService.RegisterService:output_type -> mcpany.api.v1.RegisterServiceResponse
+	3,  // 20: mcpany.api.v1.RegistrationService.ValidateService:output_type -> mcpany.api.v1.ValidateServiceResponse
+	9,  // 21: mcpany.api.v1.RegistrationService.UnregisterService:output_type -> mcpany.api.v1.UnregisterServiceResponse
+	7,  // 22: mcpany.api.v1.RegistrationService.InitiateOAuth2Flow:output_type -> mcpany.api.v1.InitiateOAuth2FlowResponse
+	11, // 23: mcpany.api.v1.RegistrationService.RegisterTools:output_type -> mcpany.api.v1.RegisterToolsResponse
+	15, // 24: mcpany.api.v1.RegistrationService.GetServiceStatus:output_type -> mcpany.api.v1.GetServiceStatusResponse
+	5,  // 25: mcpany.api.v1.RegistrationService.ListServices:output_type -> mcpany.api.v1.ListServicesResponse
+	13, // 26: mcpany.api.v1.RegistrationService.GetService:output_type -> mcpany.api.v1.GetServiceResponse
+	19, // [19:27] is the sub-list for method output_type
+	11, // [11:19] is the sub-list for method input_type
+	11, // [11:11] is the sub-list for extension type_name
+	11, // [11:11] is the sub-list for extension extendee
+	0,  // [0:11] is the sub-list for field type_name
 }
 
 func init() { file_proto_api_v1_registration_proto_init() }
@@ -1147,7 +1333,7 @@ func file_proto_api_v1_registration_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_proto_api_v1_registration_proto_rawDesc), len(file_proto_api_v1_registration_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   15,
+			NumMessages:   17,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

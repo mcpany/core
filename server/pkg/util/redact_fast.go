@@ -240,7 +240,7 @@ func isKeySensitive(keyContent []byte) bool {
 	var keyToCheck []byte
 	var sensitive bool
 
-	if bytes.Contains(keyContent, []byte{'\\'}) {
+	if bytes.IndexByte(keyContent, '\\') != -1 {
 		// Key contains escape sequences, unescape it to check for sensitivity.
 		// This is slower but safer.
 		// Limit the key size to prevent excessive allocation on malicious input
@@ -262,8 +262,16 @@ func isKeySensitive(keyContent []byte) bool {
 			if err := json.Unmarshal(quoted, &unescaped); err == nil {
 				keyToCheck = []byte(unescaped)
 			} else {
-				// Fallback to raw content if unmarshal fails
-				keyToCheck = keyContent
+				// Fallback to loose scanning if unmarshal fails (e.g. due to invalid escapes)
+				// We use scanEscapedKeyForSensitive which handles invalid escapes gracefully
+				// by treating them as literals, which is safer than raw content comparison
+				// because scanForSensitiveKeys does not handle escapes.
+				if scanEscapedKeyForSensitive(keyContent) {
+					sensitive = true
+				} else {
+					// Still set keyToCheck for the final raw scan, just in case
+					keyToCheck = keyContent
+				}
 			}
 		}
 	} else {

@@ -15,6 +15,8 @@ import (
 	"github.com/mcpany/core/server/pkg/bus"
 	"github.com/mcpany/core/server/pkg/config"
 	"github.com/mcpany/core/server/pkg/logging"
+	"github.com/mcpany/core/server/pkg/pool"
+	"github.com/mcpany/core/server/pkg/upstream/factory"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -56,6 +58,60 @@ func NewRegistrationServer(bus *bus.Provider, authManager *auth.Manager) (*Regis
 		return nil, fmt.Errorf("bus is nil")
 	}
 	return &RegistrationServer{bus: bus, authManager: authManager}, nil
+}
+
+// ValidateService validates a service configuration by attempting to connect and discover tools.
+func (s *RegistrationServer) ValidateService(ctx context.Context, req *v1.ValidateServiceRequest) (*v1.ValidateServiceResponse, error) {
+	if req.GetConfig() == nil {
+		return nil, status.Errorf(codes.InvalidArgument, "config is required")
+	}
+
+	// Validate config syntax
+	if err := config.ValidateOrError(ctx, req.GetConfig()); err != nil {
+		return &v1.ValidateServiceResponse{
+			Valid:   false,
+			Message: fmt.Sprintf("Invalid configuration: %v", err),
+		}, nil
+	}
+
+	// Create temporary factory
+	// We need a pool manager. Since we close the upstream immediately, a local pool manager is fine.
+	poolManager := pool.NewManager()
+	defer poolManager.CloseAll()
+
+	// Use global settings for factory
+	upstreamFactory := factory.NewUpstreamServiceFactory(poolManager, config.GlobalSettings().ToProto())
+
+	u, err := upstreamFactory.NewUpstream(req.GetConfig())
+	if err != nil {
+		return &v1.ValidateServiceResponse{
+			Valid:   false,
+			Message: fmt.Sprintf("Failed to create upstream: %v", err),
+		}, nil
+	}
+	defer func() {
+		_ = u.Shutdown(ctx)
+	}()
+
+	// Use NoOp managers
+	toolManager := &NoOpToolManager{}
+	promptManager := &NoOpPromptManager{}
+	resourceManager := &NoOpResourceManager{}
+
+	_, tools, resources, err := u.Register(ctx, req.GetConfig(), toolManager, promptManager, resourceManager, false)
+	if err != nil {
+		return &v1.ValidateServiceResponse{
+			Valid:   false,
+			Message: fmt.Sprintf("Validation failed: %v", err),
+		}, nil
+	}
+
+	return &v1.ValidateServiceResponse{
+		Valid:               true,
+		Message:             "Service configuration is valid and reachable.",
+		DiscoveredTools:     tools,
+		DiscoveredResources: resources,
+	}, nil
 }
 
 // RegisterService handles a gRPC request to register a new upstream service.

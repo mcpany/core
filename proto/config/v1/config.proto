@@ -115,6 +115,19 @@ message GlobalSettings {
   repeated string allowed_file_paths = 21 [json_name = "allowed_file_paths"];
   // Allowed origins for CORS.
   repeated string allowed_origins = 22 [json_name = "allowed_origins"];
+  // Context Optimizer configuration.
+  ContextOptimizerConfig context_optimizer = 23 [json_name = "context_optimizer"];
+  // Debugger configuration.
+  DebuggerConfig debugger = 24 [json_name = "debugger"];
+}
+
+message ContextOptimizerConfig {
+  int32 max_chars = 1 [json_name = "max_chars"];
+}
+
+message DebuggerConfig {
+  bool enabled = 1 [json_name = "enabled"];
+  int32 size = 2 [json_name = "size"];
 }
 
 message TelemetryConfig {

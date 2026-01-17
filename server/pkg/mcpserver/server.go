@@ -723,7 +723,7 @@ func convertMapToCallToolResult(m map[string]any) (*mcp.CallToolResult, error) {
 		return nil, fmt.Errorf("content is not a list")
 	}
 
-	var contents []mcp.Content
+	contents := make([]mcp.Content, 0, len(contentList))
 	for _, c := range contentList {
 		cMap, ok := c.(map[string]any)
 		if !ok {

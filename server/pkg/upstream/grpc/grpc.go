@@ -438,16 +438,34 @@ func (u *Upstream) createAndRegisterGRPCToolsFromConfig(
 			continue
 		}
 
-		inputSchema, err := schemaconv.MethodDescriptorToProtoProperties(methodDescriptor)
+		propertiesStruct, err := schemaconv.MethodDescriptorToProtoProperties(methodDescriptor)
 		if err != nil {
 			log.Error("Failed to convert MethodDescriptor to InputSchema, skipping.", "method", methodDescriptor.FullName(), "error", err)
 			continue
 		}
+		if propertiesStruct == nil {
+			propertiesStruct = &structpb.Struct{Fields: make(map[string]*structpb.Value)}
+		}
+		inputSchema := &structpb.Struct{
+			Fields: map[string]*structpb.Value{
+				"type":       structpb.NewStringValue("object"),
+				"properties": structpb.NewStructValue(propertiesStruct),
+			},
+		}
 
-		outputSchema, err := schemaconv.MethodOutputDescriptorToProtoProperties(methodDescriptor)
+		outputPropertiesStruct, err := schemaconv.MethodOutputDescriptorToProtoProperties(methodDescriptor)
 		if err != nil {
 			log.Error("Failed to convert MethodDescriptor to OutputSchema, skipping.", "method", methodDescriptor.FullName(), "error", err)
 			continue
+		}
+		if outputPropertiesStruct == nil {
+			outputPropertiesStruct = &structpb.Struct{Fields: make(map[string]*structpb.Value)}
+		}
+		outputSchema := &structpb.Struct{
+			Fields: map[string]*structpb.Value{
+				"type":       structpb.NewStringValue("object"),
+				"properties": structpb.NewStructValue(outputPropertiesStruct),
+			},
 		}
 
 		newToolProto := pb.Tool_builder{

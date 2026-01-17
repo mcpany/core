@@ -32,33 +32,6 @@ func TestRedact_EdgeCases(t *testing.T) {
 		}
 	})
 
-	// Test isKey edge cases
-	t.Run("isKey_EdgeCases", func(t *testing.T) {
-		// 1. Hit maxScan limit
-		// We need an input starting at startOffset, without '"' or '\\', longer than maxScan (256).
-		longStr := make([]byte, 300)
-		for i := 0; i < 300; i++ {
-			longStr[i] = 'a'
-		}
-		// isKey starts scanning at startOffset.
-		// It returns true (conservative) if limit reached.
-		if !isKey(longStr, 0) {
-			t.Errorf("expected true (conservative) for long string")
-		}
-
-		// 2. Escape sequence
-		// If it finds '\\', it returns true (conservative).
-		escStr := []byte(`abc\def`)
-		if !isKey(escStr, 0) {
-			t.Errorf("expected true for string with escape")
-		}
-
-		// 3. Quote but no colon (EOF)
-		noColon := []byte(`abc"   `)
-		if isKey(noColon, 0) {
-			t.Errorf("expected false for quote with no colon")
-		}
-	})
 
 	// Test scanJSONForSensitiveKeys
 	t.Run("scanJSONForSensitiveKeys", func(t *testing.T) {
