@@ -58,4 +58,17 @@ describe('ResourceViewer', () => {
     render(<ResourceViewer content={content} loading={false} />);
     expect(screen.getByTestId('code-block')).toHaveTextContent('Just some logs');
   });
+
+  it('renders image content', () => {
+    const content: ResourceContent = {
+        uri: 'file:///image.png',
+        mimeType: 'image/png',
+        blob: 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg=='
+    };
+    render(<ResourceViewer content={content} loading={false} />);
+    const img = screen.getByRole('img');
+    expect(img).toBeInTheDocument();
+    expect(img).toHaveAttribute('src', `data:image/png;base64,${content.blob}`);
+    expect(img).toHaveAttribute('alt', content.uri);
+  });
 });

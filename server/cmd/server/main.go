@@ -19,6 +19,7 @@ import (
 	"github.com/mcpany/core/server/pkg/app"
 	"github.com/mcpany/core/server/pkg/appconsts"
 	"github.com/mcpany/core/server/pkg/config"
+	"github.com/mcpany/core/server/pkg/doctor"
 	"github.com/mcpany/core/server/pkg/lint"
 	"github.com/mcpany/core/server/pkg/logging"
 	"github.com/mcpany/core/server/pkg/metrics"
@@ -268,6 +269,50 @@ func newRootCmd() *cobra.Command { //nolint:gocyclo // Main entry point, expecte
 	healthCmd.Flags().Duration("timeout", 5*time.Second, "Timeout for the health check.")
 	rootCmd.AddCommand(healthCmd)
 
+	doctorCmd := &cobra.Command{
+		Use:   "doctor",
+		Short: "Check the health and connectivity of upstream services",
+		RunE: func(cmd *cobra.Command, _ []string) error {
+			osFs := afero.NewOsFs()
+			cfg := config.GlobalSettings()
+			if err := cfg.Load(cmd, osFs); err != nil {
+				return fmt.Errorf("configuration load failed: %w", err)
+			}
+			store := config.NewFileStore(osFs, cfg.ConfigPaths())
+			configs, err := config.LoadResolvedConfig(context.Background(), store)
+			if err != nil {
+				return fmt.Errorf("failed to load configurations: %w", err)
+			}
+
+			fmt.Println("Running doctor checks...")
+			results := doctor.RunChecks(context.Background(), configs)
+
+			hasErrors := false
+			for _, res := range results {
+				var icon string
+				switch res.Status {
+				case doctor.StatusOk:
+					icon = "✅"
+				case doctor.StatusWarning:
+					icon = "⚠️ "
+				case doctor.StatusError:
+					icon = "❌"
+					hasErrors = true
+				case doctor.StatusSkipped:
+					icon = "⏭️ "
+				}
+				fmt.Printf("%s [%s] %s: %s\n", icon, res.Status, res.ServiceName, res.Message)
+			}
+
+			if hasErrors {
+				return fmt.Errorf("doctor checks failed with errors")
+			}
+			fmt.Println("All checks passed!")
+			return nil
+		},
+	}
+	rootCmd.AddCommand(doctorCmd)
+
 	configCmd := &cobra.Command{
 		Use:   "config",
 		Short: "Manage configuration",
@@ -387,6 +432,31 @@ func newRootCmd() *cobra.Command { //nolint:gocyclo // Main entry point, expecte
 				return fmt.Errorf("configuration validation failed with errors: \n- %s", strings.Join(allErrors, "\n- "))
 			}
 
+			checkConnection, _ := cmd.Flags().GetBool("check-connection")
+			if checkConnection {
+				fmt.Println("Running connection checks...")
+				results := doctor.RunChecks(context.Background(), configs)
+				hasDoctorErrors := false
+				for _, res := range results {
+					var icon string
+					switch res.Status {
+					case doctor.StatusOk:
+						icon = "✅"
+					case doctor.StatusWarning:
+						icon = "⚠️ "
+					case doctor.StatusError:
+						icon = "❌"
+						hasDoctorErrors = true
+					case doctor.StatusSkipped:
+						icon = "⏭️ "
+					}
+					fmt.Printf("%s [%s] %s: %s\n", icon, res.Status, res.ServiceName, res.Message)
+				}
+				if hasDoctorErrors {
+					return fmt.Errorf("connection checks failed")
+				}
+			}
+
 			_, err = fmt.Fprintln(cmd.OutOrStdout(), "Configuration is valid.")
 			if err != nil {
 				return fmt.Errorf("failed to print validation success message: %w", err)
@@ -394,6 +464,7 @@ func newRootCmd() *cobra.Command { //nolint:gocyclo // Main entry point, expecte
 			return nil
 		},
 	}
+	validateCmd.Flags().Bool("check-connection", false, "Run connectivity checks for upstream services")
 	configCmd.AddCommand(validateCmd)
 
 	lintCmd := &cobra.Command{

@@ -32,7 +32,7 @@ export interface UpstreamServiceConfig extends BaseUpstreamServiceConfig {
 
 // Re-export generated types
 export type { ToolDefinition, ResourceDefinition, PromptDefinition, Credential, Authentication };
-export type { ListServicesResponse, GetServiceResponse, GetServiceStatusResponse } from '@proto/api/v1/registration';
+export type { ListServicesResponse, GetServiceResponse, GetServiceStatusResponse, ValidateServiceResponse } from '@proto/api/v1/registration';
 
 // Initialize gRPC Web Client
 // Note: In development, we use localhost:8081 (envoy) or the Go server port if configured for gRPC-Web?
@@ -216,6 +216,62 @@ export const apiClient = {
     },
 
     /**
+     * Validates a service configuration.
+     * @param config The service configuration to validate.
+     * @returns A promise that resolves to the validation response.
+     */
+    validateService: async (config: UpstreamServiceConfig) => {
+        // Map camelCase (UI) to snake_case (Server REST)
+        // Reuse mapping logic from registerService but wrapped in 'config' object
+        const mappedConfig: any = {
+            id: config.id,
+            name: config.name,
+            version: config.version,
+            disable: config.disable,
+            priority: config.priority,
+            load_balancing_strategy: config.loadBalancingStrategy,
+            tags: config.tags,
+        };
+
+        if (config.httpService) {
+            mappedConfig.http_service = { address: config.httpService.address };
+        }
+        if (config.grpcService) {
+            mappedConfig.grpc_service = { address: config.grpcService.address };
+        }
+        if (config.commandLineService) {
+            mappedConfig.command_line_service = {
+                command: config.commandLineService.command,
+                working_directory: config.commandLineService.workingDirectory,
+                environment: config.commandLineService.env,
+                env: config.commandLineService.env
+            };
+        }
+        if (config.mcpService) {
+            mappedConfig.mcp_service = { ...config.mcpService };
+        }
+        if (config.openapiService) {
+            mappedConfig.openapi_service = { address: config.openapiService.address };
+        }
+        if (config.upstreamAuth) {
+            mappedConfig.upstream_auth = config.upstreamAuth;
+        }
+        // TODO: Map other services if needed
+
+        const response = await fetchWithAuth('/api/v1/services/validate', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ config: mappedConfig })
+        });
+
+        if (!response.ok) {
+             const txt = await response.text();
+             throw new Error(`Failed to validate service: ${response.status} ${txt}`);
+        }
+        return response.json();
+    },
+
+    /**
      * Registers a new upstream service.
      * @param config The configuration of the service to register.
      * @returns A promise that resolves to the registered service configuration.
@@ -332,6 +388,71 @@ export const apiClient = {
          });
          if (!response.ok) throw new Error('Failed to unregister service');
          return {};
+    },
+
+    /**
+     * Validates a service configuration.
+     * @param config The service configuration to validate.
+     * @returns A promise that resolves to the validation result.
+     */
+    validateService: async (config: UpstreamServiceConfig) => {
+        // Map camelCase (UI) to snake_case (Server REST)
+        const payload: any = {
+            id: config.id,
+            name: config.name,
+            version: config.version,
+            disable: config.disable,
+            priority: config.priority,
+            load_balancing_strategy: config.loadBalancingStrategy,
+            tags: config.tags,
+        };
+
+        if (config.httpService) {
+            payload.http_service = { address: config.httpService.address };
+        }
+        if (config.grpcService) {
+            payload.grpc_service = { address: config.grpcService.address };
+        }
+        if (config.commandLineService) {
+            payload.command_line_service = {
+                command: config.commandLineService.command,
+                working_directory: config.commandLineService.workingDirectory,
+                env: config.commandLineService.env,
+                container_environment: config.commandLineService.containerEnvironment, // Include this if needed
+            };
+        }
+        if (config.mcpService) {
+            payload.mcp_service = { ...config.mcpService };
+        }
+        if (config.preCallHooks) {
+            payload.pre_call_hooks = config.preCallHooks;
+        }
+        if (config.postCallHooks) {
+            payload.post_call_hooks = config.postCallHooks;
+        }
+
+        const response = await fetchWithAuth('/api/v1/services/validate', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+
+        const text = await response.text();
+        let data: any;
+        try {
+            data = JSON.parse(text);
+        } catch (e) {
+            // Not JSON
+        }
+
+        if (!response.ok) {
+            // Even if not ok (400), it might contain validation details in JSON
+            if (data && data.error) {
+                 return data; // Return the error object (valid: false, error: ...)
+            }
+            throw new Error(`Failed to validate service: ${response.status} ${text}`);
+        }
+        return data;
     },
 
     // Tools (Legacy Fetch - Not yet migrated to Admin/Registration Service completely or keeping as is)

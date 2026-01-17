@@ -232,7 +232,11 @@ func validateFileExists(path string, workingDir string) error {
 	info, err := osStat(targetPath)
 	if err != nil {
 		if os.IsNotExist(err) {
-			return fmt.Errorf("file not found")
+			absPath, _ := filepath.Abs(targetPath)
+			return &ActionableError{
+				Err:        fmt.Errorf("file not found: %s", targetPath),
+				Suggestion: fmt.Sprintf("Check if the file exists at %q (absolute: %q) and the server process has read permissions.", targetPath, absPath),
+			}
 		}
 		return err
 	}
@@ -259,7 +263,10 @@ func validateSecretValue(secret *configv1.SecretValue) error {
 	case configv1.SecretValue_EnvironmentVariable_case:
 		envVar := secret.GetEnvironmentVariable()
 		if _, exists := os.LookupEnv(envVar); !exists {
-			return fmt.Errorf("environment variable %q is not set", envVar)
+			return &ActionableError{
+				Err:        fmt.Errorf("environment variable %q is not set", envVar),
+				Suggestion: fmt.Sprintf("Set the environment variable %q in your shell or .env file before starting the server.", envVar),
+			}
 		}
 	case configv1.SecretValue_FilePath_case:
 		if err := validation.IsAllowedPath(secret.GetFilePath()); err != nil {
@@ -429,7 +436,10 @@ func validateHTTPService(httpService *configv1.HttpUpstreamService) error {
 	}
 	u, _ := url.Parse(httpService.GetAddress())
 	if u.Scheme != schemeHTTP && u.Scheme != schemeHTTPS {
-		return fmt.Errorf("invalid http address scheme: %s", u.Scheme)
+		return &ActionableError{
+			Err:        fmt.Errorf("invalid http address scheme: %s", u.Scheme),
+			Suggestion: "Use 'http' or 'https' as the scheme (e.g., http://example.com).",
+		}
 	}
 
 	for name, call := range httpService.GetCalls() {
@@ -946,7 +956,10 @@ func validateCommandExists(command string, workingDir string) error {
 	// If the file contains a slash, it is tried directly and the PATH is not consulted.
 	_, err := execLookPath(command)
 	if err != nil {
-		return fmt.Errorf("command %q not found in PATH or is not executable: %w", command, err)
+		return &ActionableError{
+			Err:        fmt.Errorf("command %q not found in PATH or is not executable: %w", command, err),
+			Suggestion: fmt.Sprintf("Ensure %q is installed and listed in your PATH environment variable.", command),
+		}
 	}
 	return nil
 }

@@ -93,7 +93,7 @@ func BenchmarkCallTool_MapResult(b *testing.B) {
 	_ = tm.AddTool(mapTool)
 
 	req := &tool.ExecutionRequest{
-		ToolName:   "map-tool",
+		ToolName:   "test-service.map-tool",
 		ToolInputs: []byte("{}"),
 	}
 

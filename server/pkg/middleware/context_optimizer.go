@@ -5,14 +5,12 @@ package middleware
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"strings"
 	"sync"
 
-	"encoding/json"
-
-	"github.com/gin-gonic/gin"
 	"github.com/tidwall/gjson"
 )
 
@@ -36,42 +34,39 @@ var bufferPool = sync.Pool{
 	},
 }
 
-// Middleware returns the middleware handler.
-func (co *ContextOptimizer) Middleware() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		w := bufferPool.Get().(*responseBuffer)
-		w.ResponseWriter = c.Writer
-		w.body.Reset()
-		w.checked = false
-		w.shouldBuffer = false
-
-		originalWriter := c.Writer
-		c.Writer = w
+// Handler returns the middleware handler.
+func (co *ContextOptimizer) Handler(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		wb := bufferPool.Get().(*responseBuffer)
+		wb.ResponseWriter = w
+		wb.body.Reset()
+		wb.checked = false
+		wb.shouldBuffer = false
+		wb.status = http.StatusOK // Default status
+		wb.wroteHeader = false
 
 		defer func() {
-			c.Writer = originalWriter
-			w.ResponseWriter = nil // Avoid holding reference
+			wb.ResponseWriter = nil // Avoid holding reference
 			// If buffer is too large (>1MB), replace it with a new one to release memory
-			if w.body.Cap() > 1024*1024 {
-				w.body = &bytes.Buffer{}
+			if wb.body.Cap() > 1024*1024 {
+				wb.body = &bytes.Buffer{}
 			}
-			bufferPool.Put(w)
+			bufferPool.Put(wb)
 		}()
 
-		c.Next()
+		next.ServeHTTP(wb, r)
 
 		// If we didn't buffer, it means we passed through the original writer (streaming).
 		// In that case, we don't need to do anything here.
-		if !w.isBuffering() {
+		if !wb.isBuffering() {
 			return
 		}
 
 		// Only check successful JSON responses
 		// Note: w.shouldBuffer should already cover the content-type check, but we double check for safety
-		// and also check status code which might not have been available at first write (though it should be).
-		contentType := w.Header().Get("Content-Type")
-		if w.Status() == http.StatusOK && (contentType == "application/json" || strings.HasPrefix(contentType, "application/json;")) {
-			bodyBytes := w.body.Bytes()
+		contentType := wb.Header().Get("Content-Type")
+		if wb.status == http.StatusOK && (contentType == "application/json" || strings.HasPrefix(contentType, "application/json;")) {
+			bodyBytes := wb.body.Bytes()
 
 			type modification struct {
 				start       int
@@ -124,7 +119,11 @@ func (co *ContextOptimizer) Middleware() gin.HandlerFunc {
 				newBody.Write(bodyBytes[lastPos:])
 
 				// Write new body
-				if _, err := w.ResponseWriter.Write(newBody.Bytes()); err != nil {
+				// Use original writer to write. We must write header first.
+				// Update Content-Length because body size changed
+				wb.Header().Set("Content-Length", fmt.Sprintf("%d", newBody.Len()))
+				wb.ResponseWriter.WriteHeader(wb.status)
+				if _, err := wb.ResponseWriter.Write(newBody.Bytes()); err != nil {
 					_ = err
 				}
 				return
@@ -132,17 +131,20 @@ func (co *ContextOptimizer) Middleware() gin.HandlerFunc {
 		}
 
 		// If not modified, write original body
-		if _, err := w.ResponseWriter.Write(w.body.Bytes()); err != nil {
+		wb.ResponseWriter.WriteHeader(wb.status)
+		if _, err := wb.ResponseWriter.Write(wb.body.Bytes()); err != nil {
 			_ = err
 		}
-	}
+	})
 }
 
 type responseBuffer struct {
-	gin.ResponseWriter
+	http.ResponseWriter
 	body         *bytes.Buffer
 	shouldBuffer bool
 	checked      bool
+	status       int
+	wroteHeader  bool
 }
 
 func (w *responseBuffer) isBuffering() bool {
@@ -167,18 +169,24 @@ func (w *responseBuffer) checkBuffer() {
 func (w *responseBuffer) Write(b []byte) (int, error) {
 	w.checkBuffer()
 
+	if !w.wroteHeader {
+		w.WriteHeader(http.StatusOK)
+	}
+
 	if w.shouldBuffer {
 		return w.body.Write(b)
 	}
 	return w.ResponseWriter.Write(b)
 }
 
-// WriteString writes the string data to the buffer or the underlying ResponseWriter.
-func (w *responseBuffer) WriteString(s string) (int, error) {
-	w.checkBuffer()
-
-	if w.shouldBuffer {
-		return w.body.WriteString(s)
+func (w *responseBuffer) WriteHeader(statusCode int) {
+	if w.wroteHeader {
+		return
 	}
-	return w.ResponseWriter.WriteString(s)
+	w.status = statusCode
+	w.wroteHeader = true
+	w.checkBuffer()
+	if !w.shouldBuffer {
+		w.ResponseWriter.WriteHeader(statusCode)
+	}
 }

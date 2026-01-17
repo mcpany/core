@@ -1,0 +1,84 @@
+// Copyright 2025 Author(s) of MCP Any
+// SPDX-License-Identifier: Apache-2.0
+
+package validation
+
+import (
+	"os"
+	"testing"
+)
+
+func TestIsSafeURL(t *testing.T) {
+	// Ensure the bypass env var is not set for this test
+	originalEnv := os.Getenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS")
+	os.Unsetenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS")
+	defer func() {
+		if originalEnv != "" {
+			os.Setenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS", originalEnv)
+		}
+	}()
+
+	tests := []struct {
+		name    string
+		url     string
+		wantErr bool
+	}{
+		{
+			name:    "Safe Public URL",
+			url:     "https://google.com",
+			wantErr: false,
+		},
+		{
+			name:    "Safe Public IP",
+			url:     "http://8.8.8.8",
+			wantErr: false,
+		},
+		{
+			name:    "Localhost IP",
+			url:     "http://127.0.0.1",
+			wantErr: true,
+		},
+		{
+			name:    "Localhost IPv6",
+			url:     "http://[::1]",
+			wantErr: true,
+		},
+		{
+			name:    "Link-Local (Metadata)",
+			url:     "http://169.254.169.254",
+			wantErr: true,
+		},
+		{
+			name:    "Unspecified",
+			url:     "http://0.0.0.0",
+			wantErr: true,
+		},
+		{
+			name:    "Invalid Scheme",
+			url:     "ftp://example.com",
+			wantErr: true,
+		},
+		{
+			name:    "Missing Host",
+			url:     "http:///foo",
+			wantErr: true,
+		},
+		// Note: We cannot easily test "localhost" domain resolution in a pure unit test
+		// without mocking the resolver or assuming /etc/hosts,
+		// but standard environment usually resolves localhost to 127.0.0.1.
+		{
+			name:    "Localhost Domain",
+			url:     "http://localhost",
+			wantErr: true,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			err := IsSafeURL(tt.url)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("IsSafeURL() error = %v, wantErr %v", err, tt.wantErr)
+			}
+		})
+	}
+}

@@ -28,6 +28,17 @@ export interface RegisterServiceResponse {
   discoveredResources: ResourceDefinition[];
 }
 
+export interface ValidateServiceRequest {
+  config?: UpstreamServiceConfig | undefined;
+}
+
+export interface ValidateServiceResponse {
+  valid: boolean;
+  message: string;
+  discoveredTools: ToolDefinition[];
+  discoveredResources: ResourceDefinition[];
+}
+
 export interface ListServicesRequest {
 }
 
@@ -260,6 +271,178 @@ export const RegisterServiceResponse: MessageFns<RegisterServiceResponse> = {
     message.message = object.message ?? "";
     message.discoveredTools = object.discoveredTools?.map((e) => ToolDefinition.fromPartial(e)) || [];
     message.serviceKey = object.serviceKey ?? "";
+    message.discoveredResources = object.discoveredResources?.map((e) => ResourceDefinition.fromPartial(e)) || [];
+    return message;
+  },
+};
+
+function createBaseValidateServiceRequest(): ValidateServiceRequest {
+  return { config: undefined };
+}
+
+export const ValidateServiceRequest: MessageFns<ValidateServiceRequest> = {
+  encode(message: ValidateServiceRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.config !== undefined) {
+      UpstreamServiceConfig.encode(message.config, writer.uint32(10).fork()).join();
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): ValidateServiceRequest {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseValidateServiceRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.config = UpstreamServiceConfig.decode(reader, reader.uint32());
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): ValidateServiceRequest {
+    return { config: isSet(object.config) ? UpstreamServiceConfig.fromJSON(object.config) : undefined };
+  },
+
+  toJSON(message: ValidateServiceRequest): unknown {
+    const obj: any = {};
+    if (message.config !== undefined) {
+      obj.config = UpstreamServiceConfig.toJSON(message.config);
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<ValidateServiceRequest>, I>>(base?: I): ValidateServiceRequest {
+    return ValidateServiceRequest.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<ValidateServiceRequest>, I>>(object: I): ValidateServiceRequest {
+    const message = createBaseValidateServiceRequest();
+    message.config = (object.config !== undefined && object.config !== null)
+      ? UpstreamServiceConfig.fromPartial(object.config)
+      : undefined;
+    return message;
+  },
+};
+
+function createBaseValidateServiceResponse(): ValidateServiceResponse {
+  return { valid: false, message: "", discoveredTools: [], discoveredResources: [] };
+}
+
+export const ValidateServiceResponse: MessageFns<ValidateServiceResponse> = {
+  encode(message: ValidateServiceResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.valid !== false) {
+      writer.uint32(8).bool(message.valid);
+    }
+    if (message.message !== "") {
+      writer.uint32(18).string(message.message);
+    }
+    for (const v of message.discoveredTools) {
+      ToolDefinition.encode(v!, writer.uint32(26).fork()).join();
+    }
+    for (const v of message.discoveredResources) {
+      ResourceDefinition.encode(v!, writer.uint32(34).fork()).join();
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): ValidateServiceResponse {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseValidateServiceResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 8) {
+            break;
+          }
+
+          message.valid = reader.bool();
+          continue;
+        }
+        case 2: {
+          if (tag !== 18) {
+            break;
+          }
+
+          message.message = reader.string();
+          continue;
+        }
+        case 3: {
+          if (tag !== 26) {
+            break;
+          }
+
+          message.discoveredTools.push(ToolDefinition.decode(reader, reader.uint32()));
+          continue;
+        }
+        case 4: {
+          if (tag !== 34) {
+            break;
+          }
+
+          message.discoveredResources.push(ResourceDefinition.decode(reader, reader.uint32()));
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): ValidateServiceResponse {
+    return {
+      valid: isSet(object.valid) ? globalThis.Boolean(object.valid) : false,
+      message: isSet(object.message) ? globalThis.String(object.message) : "",
+      discoveredTools: globalThis.Array.isArray(object?.discoveredTools)
+        ? object.discoveredTools.map((e: any) => ToolDefinition.fromJSON(e))
+        : [],
+      discoveredResources: globalThis.Array.isArray(object?.discoveredResources)
+        ? object.discoveredResources.map((e: any) => ResourceDefinition.fromJSON(e))
+        : [],
+    };
+  },
+
+  toJSON(message: ValidateServiceResponse): unknown {
+    const obj: any = {};
+    if (message.valid !== false) {
+      obj.valid = message.valid;
+    }
+    if (message.message !== "") {
+      obj.message = message.message;
+    }
+    if (message.discoveredTools?.length) {
+      obj.discoveredTools = message.discoveredTools.map((e) => ToolDefinition.toJSON(e));
+    }
+    if (message.discoveredResources?.length) {
+      obj.discoveredResources = message.discoveredResources.map((e) => ResourceDefinition.toJSON(e));
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<ValidateServiceResponse>, I>>(base?: I): ValidateServiceResponse {
+    return ValidateServiceResponse.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<ValidateServiceResponse>, I>>(object: I): ValidateServiceResponse {
+    const message = createBaseValidateServiceResponse();
+    message.valid = object.valid ?? false;
+    message.message = object.message ?? "";
+    message.discoveredTools = object.discoveredTools?.map((e) => ToolDefinition.fromPartial(e)) || [];
     message.discoveredResources = object.discoveredResources?.map((e) => ResourceDefinition.fromPartial(e)) || [];
     return message;
   },
@@ -1236,6 +1419,10 @@ export interface RegistrationService {
     request: DeepPartial<RegisterServiceRequest>,
     metadata?: grpc.Metadata,
   ): Promise<RegisterServiceResponse>;
+  ValidateService(
+    request: DeepPartial<ValidateServiceRequest>,
+    metadata?: grpc.Metadata,
+  ): Promise<ValidateServiceResponse>;
   UnregisterService(
     request: DeepPartial<UnregisterServiceRequest>,
     metadata?: grpc.Metadata,
@@ -1259,6 +1446,7 @@ export class RegistrationServiceClientImpl implements RegistrationService {
   constructor(rpc: Rpc) {
     this.rpc = rpc;
     this.RegisterService = this.RegisterService.bind(this);
+    this.ValidateService = this.ValidateService.bind(this);
     this.UnregisterService = this.UnregisterService.bind(this);
     this.InitiateOAuth2Flow = this.InitiateOAuth2Flow.bind(this);
     this.RegisterTools = this.RegisterTools.bind(this);
@@ -1274,6 +1462,17 @@ export class RegistrationServiceClientImpl implements RegistrationService {
     return this.rpc.unary(
       RegistrationServiceRegisterServiceDesc,
       RegisterServiceRequest.fromPartial(request),
+      metadata,
+    );
+  }
+
+  ValidateService(
+    request: DeepPartial<ValidateServiceRequest>,
+    metadata?: grpc.Metadata,
+  ): Promise<ValidateServiceResponse> {
+    return this.rpc.unary(
+      RegistrationServiceValidateServiceDesc,
+      ValidateServiceRequest.fromPartial(request),
       metadata,
     );
   }
@@ -1339,6 +1538,29 @@ export const RegistrationServiceRegisterServiceDesc: UnaryMethodDefinitionish = 
   responseType: {
     deserializeBinary(data: Uint8Array) {
       const value = RegisterServiceResponse.decode(data);
+      return {
+        ...value,
+        toObject() {
+          return value;
+        },
+      };
+    },
+  } as any,
+};
+
+export const RegistrationServiceValidateServiceDesc: UnaryMethodDefinitionish = {
+  methodName: "ValidateService",
+  service: RegistrationServiceDesc,
+  requestStream: false,
+  responseStream: false,
+  requestType: {
+    serializeBinary() {
+      return ValidateServiceRequest.encode(this).finish();
+    },
+  } as any,
+  responseType: {
+    deserializeBinary(data: Uint8Array) {
+      const value = ValidateServiceResponse.decode(data);
       return {
         ...value,
         toObject() {

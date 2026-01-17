@@ -167,8 +167,15 @@ func countTokensInValueSimpleFast(st *SimpleTokenizer, v interface{}) (int, bool
 	case nil:
 		return 1, true, nil
 	case float64:
-		c, err := st.CountTokens(strconv.FormatFloat(val, 'g', -1, 64))
-		return c, true, err
+		// OPTIMIZATION: Use stack buffer to avoid string allocation.
+		// Logic must match SimpleTokenizer.CountTokens: len(text) / 4.
+		var buf [64]byte
+		b := strconv.AppendFloat(buf[:0], val, 'g', -1, 64)
+		count := len(b) / 4
+		if count < 1 {
+			count = 1
+		}
+		return count, true, nil
 	case []string:
 		count := 0
 		for _, item := range val {
@@ -195,10 +202,14 @@ func countTokensInValueSimpleFast(st *SimpleTokenizer, v interface{}) (int, bool
 		return len(val), true, nil
 	case []float64:
 		count := 0
+		// OPTIMIZATION: Reuse stack buffer to avoid string allocation per item.
+		// Logic must match SimpleTokenizer.CountTokens: len(text) / 4.
+		var buf [64]byte
 		for _, item := range val {
-			c, err := st.CountTokens(strconv.FormatFloat(item, 'g', -1, 64))
-			if err != nil {
-				return 0, true, err
+			b := strconv.AppendFloat(buf[:0], item, 'g', -1, 64)
+			c := len(b) / 4
+			if c < 1 {
+				c = 1
 			}
 			count += c
 		}

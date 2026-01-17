@@ -6,7 +6,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { UpstreamServiceConfig } from "@/lib/client";
+import { UpstreamServiceConfig, apiClient } from "@/lib/client";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -17,8 +17,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Separator } from "@/components/ui/separator";
 import { EnvVarEditor } from "@/components/services/env-var-editor";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { AlertCircle, Plus, Trash2 } from "lucide-react";
+import { AlertCircle, Plus, Trash2, CheckCircle2, XCircle, Loader2 } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { useToast } from "@/hooks/use-toast";
 
 interface ServiceEditorProps {
     service: UpstreamServiceConfig;
@@ -29,9 +30,40 @@ interface ServiceEditorProps {
 
 export function ServiceEditor({ service, onChange, onSave, onCancel }: ServiceEditorProps) {
     const [activeTab, setActiveTab] = useState("general");
+    const [validating, setValidating] = useState(false);
+    const { toast } = useToast();
 
     const updateService = (updates: Partial<UpstreamServiceConfig>) => {
         onChange({ ...service, ...updates });
+    };
+
+    const handleValidate = async () => {
+        setValidating(true);
+        try {
+            const result = await apiClient.validateService(service);
+            if (result.valid) {
+                toast({
+                    title: "Configuration Valid",
+                    description: "The service configuration is valid and reachable.",
+                    action: <CheckCircle2 className="h-5 w-5 text-green-500" />
+                });
+            } else {
+                 toast({
+                    variant: "destructive",
+                    title: "Validation Failed",
+                    description: result.error || "Unknown validation error.",
+                    action: <XCircle className="h-5 w-5 text-destructive-foreground" />
+                });
+            }
+        } catch (e: any) {
+            toast({
+                variant: "destructive",
+                title: "Validation Error",
+                description: e.message || "Failed to validate service.",
+            });
+        } finally {
+            setValidating(false);
+        }
     };
 
     const handleTypeChange = (type: string) => {
@@ -386,6 +418,10 @@ export function ServiceEditor({ service, onChange, onSave, onCancel }: ServiceEd
             </div>
 
             <div className="border-t p-4 flex justify-end gap-2 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+                <Button variant="outline" onClick={handleValidate} disabled={validating}>
+                    {validating ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+                    Validate
+                </Button>
                 <Button variant="outline" onClick={onCancel}>Cancel</Button>
                 <Button onClick={onSave}>Save Changes</Button>
             </div>
