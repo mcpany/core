@@ -57,6 +57,7 @@
 - [x] **Validation CLI Command**: Enhanced `mcpany config validate` with `--check-connection` flag to run deep checks, including connecting to upstream services to verify connectivity. Also added `mcpany doctor` for comprehensive system health diagnosis. (Friction Fighter)
 - [x] **Upstream Connectivity Probe**: Implemented a startup connection check for HTTP upstream services. The server now logs a warning if the upstream service is unreachable during registration, preventing silent failures. (Friction Fighter)
 - [x] **Actionable Config Errors**: Enhanced configuration validator to provide specific, actionable "Fix" suggestions for common errors like missing environment variables, files, or invalid URL schemes. (Friction Fighter)
+- [x] **Stdio Logging Visibility**: Fixed an issue where logs were discarded in stdio mode (used by clients like Claude Desktop). Logs now correctly output to stderr, ensuring "silent failures" are visible and debuggable. (Friction Fighter)
 
 ## 2. Top 10 Recommended Features
 
@@ -111,6 +112,8 @@ These features represent the next logical steps for the product, focusing on Ent
 | 42 | **Upstream Latency Metrics** | **Observability**: Record the latency of the initial connectivity probe to help diagnose slow upstream services during startup. | Low |
 | 41 | **Tool Name Fuzzy Matching** | **UX**: Improve error messages for tool execution by suggesting similar tool names when a user makes a typo. | Low |
 | 42 | **Config Strict Mode** | **Ops**: Add a CLI flag to treat configuration warnings (e.g. deprecated fields) as errors to ensure clean configs. | Low |
+| 43 | **Stdio Error Channel** | **DevX**: A dedicated side-channel or structured error output for stdio mode to communicate server status without interfering with JSON-RPC or stderr logging. | Medium |
+| 44 | **Log Redaction Rules** | **Security**: Configurable regex-based redaction for logs to prevent accidental leakage of sensitive data (API keys, PII) in stderr/files. | Medium |
 
 ## 3. Codebase Health
 
