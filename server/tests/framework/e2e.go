@@ -11,6 +11,9 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"regexp"
+	"strconv"
+	"strings"
 	"testing"
 	"time"
 
@@ -34,6 +37,8 @@ const (
 	// JSONRPCRegistration uses the RegistrationService via JSON-RPC.
 	JSONRPCRegistration RegistrationMethod = "jsonrpc"
 )
+
+var portRegex = regexp.MustCompile(`(?:metricsPort=|Metrics server listening on port |Listening on port port=)(\d+)`)
 
 // E2ETestCase defines the structure for an end-to-end test case.
 type E2ETestCase struct {
@@ -177,7 +182,7 @@ func RunE2ETest(t *testing.T, testCase *E2ETestCase) {
 
 // BuildGRPCWeatherServer builds the gRPC weather server.
 func BuildGRPCWeatherServer(t *testing.T) *integration.ManagedProcess {
-	port := integration.FindFreePort(t)
+	port := 0
 	root, err := integration.GetProjectRoot()
 	require.NoError(t, err)
 	proc := integration.NewManagedProcess(t, "grpc_weather_server", filepath.Join(root, "../build/test/bin/grpc_weather_server"), []string{fmt.Sprintf("--port=%d", port)}, nil)
@@ -193,12 +198,67 @@ func RegisterGRPCWeatherService(t *testing.T, registrationClient apiv1.Registrat
 
 // BuildGRPCAuthedWeatherServer builds the authenticated gRPC weather server.
 func BuildGRPCAuthedWeatherServer(t *testing.T) *integration.ManagedProcess {
-	port := integration.FindFreePort(t)
+	port := 0
 	root, err := integration.GetProjectRoot()
 	require.NoError(t, err)
 	proc := integration.NewManagedProcess(t, "grpc_authed_weather_server", filepath.Join(root, "../build/test/bin/grpc_authed_weather_server"), []string{fmt.Sprintf("--port=%d", port)}, nil)
 	proc.Port = port
 	return proc
+}
+
+// WaitForPort waits for a process to output its assigned port.
+// WaitForPort waits for a process to output its assigned port.
+func WaitForPort(t *testing.T, proc *integration.ManagedProcess) int {
+	t.Helper()
+	var port int
+	timeout := 10 * time.Second
+	deadline := time.Now().Add(timeout)
+	ticker := time.NewTicker(100 * time.Millisecond)
+	defer ticker.Stop()
+
+	for time.Now().Before(deadline) {
+		// Try simple parsing
+		out := proc.StdoutString()
+		lines := strings.Split(out, "\n")
+		for _, line := range lines {
+			line = strings.TrimSpace(line)
+			if p, err := strconv.Atoi(line); err == nil && p > 0 {
+				port = p
+				t.Logf("WaitForPort: Found simplified port %d", port)
+				return port
+			}
+		}
+
+		// Try regex on Stdout
+		matches := portRegex.FindStringSubmatch(out)
+		if len(matches) >= 2 {
+			if p, err := strconv.Atoi(matches[1]); err == nil {
+				port = p
+				t.Logf("WaitForPort: Found regex port %d in Stdout", port)
+				return port
+			}
+		}
+
+		// Try regex on Stderr
+		outErr := proc.StderrString()
+		matchesErr := portRegex.FindStringSubmatch(outErr)
+		if len(matchesErr) >= 2 {
+			if p, err := strconv.Atoi(matchesErr[1]); err == nil {
+				port = p
+				t.Logf("WaitForPort: Found regex port %d in Stderr", port)
+				return port
+			}
+		}
+
+		select {
+		case <-ticker.C:
+			continue
+		default:
+		}
+	}
+
+	t.Fatalf("Process %s did not output a port within %v. Stdout: %q, Stderr: %q", proc.Cmd().Path, timeout, proc.StdoutString(), proc.StderrString())
+	return 0
 }
 
 // RegisterGRPCAuthedWeatherService registers the authenticated gRPC weather service.

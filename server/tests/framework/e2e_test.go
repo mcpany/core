@@ -9,6 +9,7 @@ import (
 	"testing"
 
 	"github.com/mcpany/core/server/tests/integration"
+
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/require"
 )
@@ -23,7 +24,9 @@ func TestGRPCHelperFunctions(t *testing.T) {
 		require.NoError(t, err)
 		defer proc.Stop()
 
+		proc.Port = WaitForPort(t, proc)
 		integration.WaitForTCPPort(t, proc.Port, integration.ServiceStartupTimeout)
+
 
 		mcpanyTestServerInfo := integration.StartMCPANYServer(t, "grpc-weather-test")
 		defer mcpanyTestServerInfo.CleanupFunc()
@@ -65,7 +68,9 @@ func TestGRPCHelperFunctions(t *testing.T) {
 		require.NoError(t, err)
 		defer proc.Stop()
 
+		proc.Port = WaitForPort(t, proc)
 		integration.WaitForTCPPort(t, proc.Port, integration.ServiceStartupTimeout)
+
 
 		mcpanyTestServerInfo := integration.StartMCPANYServer(t, "grpc-authed-weather-test")
 		defer mcpanyTestServerInfo.CleanupFunc()

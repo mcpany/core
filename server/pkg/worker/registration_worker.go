@@ -103,6 +103,18 @@ func (w *ServiceRegistrationWorker) Start(ctx context.Context) {
 				return
 			}
 
+			// Apply timeout from resilience config if present
+			if resilience := req.Config.GetResilience(); resilience != nil && resilience.GetTimeout() != nil {
+				var cancel context.CancelFunc
+				timeoutDuration := resilience.GetTimeout().AsDuration()
+				// If timeout is very small, we might want to enforce a minimum?
+				// For now, trust the config.
+				if timeoutDuration > 0 {
+					requestCtx, cancel = context.WithTimeout(requestCtx, timeoutDuration)
+					defer cancel()
+				}
+			}
+
 			serviceID, discoveredTools, discoveredResources, err := w.serviceRegistry.RegisterService(requestCtx, req.Config)
 
 			res := &bus.ServiceRegistrationResult{

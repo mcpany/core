@@ -242,14 +242,14 @@ func TestRun(t *testing.T) {
 			}
 			return // Success!
 
-		case err := <-errChan:
+		case runErr = <-errChan:
 			// Server failed to start
-			if strings.Contains(err.Error(), "address already in use") {
-				t.Logf("Attempt %d: address in use, retrying...", i+1)
+			if strings.Contains(runErr.Error(), "address already in use") {
+				t.Logf("Attempt %d: address in use, retrying... error=%v", i+1, runErr)
 				time.Sleep(100 * time.Millisecond)
 				continue
 			}
-			t.Fatalf("Server failed to start: %v", err)
+			t.Fatalf("Server failed to start: %v", runErr)
 
 		case <-time.After(5 * time.Second):
 			t.Logf("Attempt %d: timed out starting, retrying...", i+1)
