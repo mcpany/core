@@ -510,7 +510,7 @@ func ToString(v any) string {
 				return strconv.FormatInt(int64(val), 10)
 			}
 		}
-		return strconv.FormatFloat(val, 'g', -1, 64)
+		return strconv.FormatFloat(val, 'f', -1, 64)
 	case fmt.Stringer:
 		return val.String()
 	default:

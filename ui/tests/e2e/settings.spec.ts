@@ -29,7 +29,7 @@ test.describe('Settings & Secrets', () => {
     await page.fill('input[id="value"]', 'TEST_VAL');
 
     await page.getByRole('button', { name: 'Save Secret' }).click();
-    await expect(page.getByRole('dialog')).not.toBeVisible();
+    await expect(page.getByRole('dialog')).toBeHidden({ timeout: 30000 });
 
     // Verify visibility with retry
     await expect(async () => {

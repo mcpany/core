@@ -4,10 +4,34 @@
 package util
 
 import (
+	"math"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 )
+
+func TestToString_Float64_LargeAndNoScientific(t *testing.T) {
+	// A value larger than int64 (> 9.22e18)
+	// 1e20
+	var val float64 = 1e20
+
+	actual := ToString(val)
+	// User requirement: "we should not have scientific symbol"
+	assert.NotContains(t, actual, "e+", "Should not contain scientific notation")
+	assert.NotContains(t, actual, "E+", "Should not contain scientific notation")
+
+	val = 1e20
+	assert.Equal(t, "100000000000000000000", actual, "Should format 1e20 as full decimal string")
+}
+
+func TestToString_Float64_Boundary(t *testing.T) {
+    // MaxInt64 is 9223372036854775807
+    var val float64 = float64(math.MaxInt64)
+
+    // Check behavior near boundary
+    actual := ToString(val)
+    assert.NotContains(t, actual, "e+")
+}
 
 func TestToString_Float32_LargeInteger(t *testing.T) {
 	// 3 billion is larger than MaxInt32 (2.14 billion)

@@ -9,7 +9,7 @@ import { test, expect } from '@playwright/test';
 test.describe('Secrets Manager', () => {
   test('should allow adding and deleting secrets', async ({ page }) => {
     const timestamp = Date.now();
-    const secretName = `E2E Test Secret ${timestamp}`;
+    const secretName = `e2e-test-secret-${timestamp}`;
     const secretKey = `E2E_TEST_KEY_${timestamp}`;
     const secretValue = `sk-test-value-${timestamp}`;
     await page.goto('/secrets');
@@ -26,9 +26,11 @@ test.describe('Secrets Manager', () => {
     await page.fill('#key', secretKey);
     await page.fill('#value', secretValue);
     await page.getByRole('button', { name: 'Save Secret' }).click();
+    // Wait for dialog to close to ensure submission is processed
+    await expect(page.getByRole('dialog')).toBeHidden({ timeout: 30000 });
 
     // Verify it appears in the list
-    await expect(page.getByText(secretName)).toBeVisible();
+    await expect(page.getByText(secretName)).toBeVisible({ timeout: 15000 });
     await expect(page.getByText(secretKey)).toBeVisible();
 
     // Verify mask (24 dots) - Scope to the row

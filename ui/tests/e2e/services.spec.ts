@@ -80,6 +80,7 @@ test.describe('Services Feature', () => {
     await addressInput.fill('http://localhost:8080');
 
     await page.getByRole('button', { name: 'Save Changes' }).click();
+    await expect(page.getByRole('dialog')).toBeHidden({ timeout: 30000 });
 
     // Explicitly wait for the service to appear in the list with a generous timeout
     await expect(page.getByText(serviceName)).toBeVisible({ timeout: 10000 });
