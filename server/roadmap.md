@@ -111,6 +111,8 @@ These features represent the next logical steps for the product, focusing on Ent
 | 42 | **Upstream Latency Metrics** | **Observability**: Record the latency of the initial connectivity probe to help diagnose slow upstream services during startup. | Low |
 | 41 | **Tool Name Fuzzy Matching** | **UX**: Improve error messages for tool execution by suggesting similar tool names when a user makes a typo. | Low |
 | 42 | **Config Strict Mode** | **Ops**: Add a CLI flag to treat configuration warnings (e.g. deprecated fields) as errors to ensure clean configs. | Low |
+| 43 | **Config Schema Visualization** | **UX**: A UI view to visualize the structure of the loaded configuration, highlighting inheritance or overrides. | Low |
+| 44 | **Validator Plugin System** | **Extensibility**: Allow users to write custom validation rules (e.g. "service name must start with 'prod-'") using Rego or simple scripts. | High |
 
 ## 3. Codebase Health
 

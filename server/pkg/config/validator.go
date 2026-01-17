@@ -429,10 +429,16 @@ func validateServiceConfig(service *configv1.UpstreamServiceConfig) error {
 
 func validateHTTPService(httpService *configv1.HttpUpstreamService) error {
 	if httpService.GetAddress() == "" {
-		return fmt.Errorf("http service has empty address")
+		return &ActionableError{
+			Err:        fmt.Errorf("http service has empty address"),
+			Suggestion: "Set the 'address' field in the http_service configuration (e.g., 'http://localhost:8080').",
+		}
 	}
 	if !validation.IsValidURL(httpService.GetAddress()) {
-		return fmt.Errorf("invalid http address: %s", httpService.GetAddress())
+		return &ActionableError{
+			Err:        fmt.Errorf("invalid http address: %s", httpService.GetAddress()),
+			Suggestion: "Ensure the address is a valid URL (e.g., 'http://example.com').",
+		}
 	}
 	u, _ := url.Parse(httpService.GetAddress())
 	if u.Scheme != schemeHTTP && u.Scheme != schemeHTTPS {
@@ -455,14 +461,23 @@ func validateHTTPService(httpService *configv1.HttpUpstreamService) error {
 
 func validateWebSocketService(websocketService *configv1.WebsocketUpstreamService) error {
 	if websocketService.GetAddress() == "" {
-		return fmt.Errorf("websocket service has empty address")
+		return &ActionableError{
+			Err:        fmt.Errorf("websocket service has empty address"),
+			Suggestion: "Set the 'address' field in the websocket_service configuration (e.g., 'ws://localhost:8080').",
+		}
 	}
 	if !validation.IsValidURL(websocketService.GetAddress()) {
-		return fmt.Errorf("invalid websocket address: %s", websocketService.GetAddress())
+		return &ActionableError{
+			Err:        fmt.Errorf("invalid websocket address: %s", websocketService.GetAddress()),
+			Suggestion: "Ensure the address is a valid URL (e.g., 'ws://example.com').",
+		}
 	}
 	u, _ := url.Parse(websocketService.GetAddress())
 	if u.Scheme != "ws" && u.Scheme != "wss" {
-		return fmt.Errorf("invalid websocket address scheme: %s", u.Scheme)
+		return &ActionableError{
+			Err:        fmt.Errorf("invalid websocket address scheme: %s", u.Scheme),
+			Suggestion: "Use 'ws' or 'wss' as the scheme.",
+		}
 	}
 
 	for name, call := range websocketService.GetCalls() {
@@ -478,7 +493,10 @@ func validateWebSocketService(websocketService *configv1.WebsocketUpstreamServic
 
 func validateGrpcService(grpcService *configv1.GrpcUpstreamService) error {
 	if grpcService.GetAddress() == "" {
-		return fmt.Errorf("gRPC service has empty address")
+		return &ActionableError{
+			Err:        fmt.Errorf("gRPC service has empty address"),
+			Suggestion: "Set the 'address' field in the grpc_service configuration (e.g., 'localhost:50051').",
+		}
 	}
 
 	for name, call := range grpcService.GetCalls() {
@@ -494,20 +512,32 @@ func validateGrpcService(grpcService *configv1.GrpcUpstreamService) error {
 
 func validateOpenAPIService(openapiService *configv1.OpenapiUpstreamService) error {
 	if openapiService.GetAddress() == "" && openapiService.GetSpecContent() == "" && openapiService.GetSpecUrl() == "" {
-		return fmt.Errorf("openapi service must have either an address, spec content or spec url")
+		return &ActionableError{
+			Err:        fmt.Errorf("openapi service must have either an address, spec content or spec url"),
+			Suggestion: "Provide one of 'address', 'spec_content', or 'spec_url' in the openapi_service configuration.",
+		}
 	}
 	if openapiService.GetAddress() != "" && !validation.IsValidURL(openapiService.GetAddress()) {
-		return fmt.Errorf("invalid openapi address: %s", openapiService.GetAddress())
+		return &ActionableError{
+			Err:        fmt.Errorf("invalid openapi address: %s", openapiService.GetAddress()),
+			Suggestion: "Ensure the address is a valid URL.",
+		}
 	}
 	if openapiService.GetSpecUrl() != "" && !validation.IsValidURL(openapiService.GetSpecUrl()) {
-		return fmt.Errorf("invalid openapi spec_url: %s", openapiService.GetSpecUrl())
+		return &ActionableError{
+			Err:        fmt.Errorf("invalid openapi spec_url: %s", openapiService.GetSpecUrl()),
+			Suggestion: "Ensure the spec_url is a valid URL.",
+		}
 	}
 	return nil
 }
 
 func validateCommandLineService(commandLineService *configv1.CommandLineUpstreamService) error {
 	if commandLineService.GetCommand() == "" {
-		return fmt.Errorf("command_line_service has empty command")
+		return &ActionableError{
+			Err:        fmt.Errorf("command_line_service has empty command"),
+			Suggestion: "Set the 'command' field (e.g., './my-script.sh' or 'python my_script.py').",
+		}
 	}
 
 	// Only validate command existence if not running in a container
@@ -553,15 +583,24 @@ func validateMcpService(mcpService *configv1.McpUpstreamService) error {
 	case configv1.McpUpstreamService_HttpConnection_case:
 		httpConn := mcpService.GetHttpConnection()
 		if httpConn.GetHttpAddress() == "" {
-			return fmt.Errorf("mcp service with http_connection has empty http_address")
+			return &ActionableError{
+				Err:        fmt.Errorf("mcp service with http_connection has empty http_address"),
+				Suggestion: "Set the 'http_address' field (e.g., 'http://localhost:8080').",
+			}
 		}
 		if !validation.IsValidURL(httpConn.GetHttpAddress()) {
-			return fmt.Errorf("mcp service with http_connection has invalid http_address: %s", httpConn.GetHttpAddress())
+			return &ActionableError{
+				Err:        fmt.Errorf("mcp service with http_connection has invalid http_address: %s", httpConn.GetHttpAddress()),
+				Suggestion: "Ensure the http_address is a valid URL.",
+			}
 		}
 	case configv1.McpUpstreamService_StdioConnection_case:
 		stdioConn := mcpService.GetStdioConnection()
 		if len(stdioConn.GetCommand()) == 0 {
-			return fmt.Errorf("mcp service with stdio_connection has empty command")
+			return &ActionableError{
+				Err:        fmt.Errorf("mcp service with stdio_connection has empty command"),
+				Suggestion: "Set the 'command' field (e.g., 'npx', 'python', or path to executable).",
+			}
 		}
 
 		// If running in Docker (container_image is set), we don't enforce host path/command restrictions
@@ -615,10 +654,16 @@ func validateMcpService(mcpService *configv1.McpUpstreamService) error {
 
 func validateSQLService(sqlService *configv1.SqlUpstreamService) error {
 	if sqlService.GetDriver() == "" {
-		return fmt.Errorf("sql service has empty driver")
+		return &ActionableError{
+			Err:        fmt.Errorf("sql service has empty driver"),
+			Suggestion: "Set the 'driver' field (e.g., 'postgres', 'mysql', 'sqlite3').",
+		}
 	}
 	if sqlService.GetDsn() == "" {
-		return fmt.Errorf("sql service has empty dsn")
+		return &ActionableError{
+			Err:        fmt.Errorf("sql service has empty dsn"),
+			Suggestion: "Set the 'dsn' (Data Source Name) field with connection details.",
+		}
 	}
 
 	for name, call := range sqlService.GetCalls() {
@@ -637,28 +682,46 @@ func validateSQLService(sqlService *configv1.SqlUpstreamService) error {
 
 func validateGraphQLService(graphqlService *configv1.GraphQLUpstreamService) error {
 	if graphqlService.GetAddress() == "" {
-		return fmt.Errorf("graphql service has empty address")
+		return &ActionableError{
+			Err:        fmt.Errorf("graphql service has empty address"),
+			Suggestion: "Set the 'address' field in the graphql_service configuration.",
+		}
 	}
 	if !validation.IsValidURL(graphqlService.GetAddress()) {
-		return fmt.Errorf("invalid graphql address: %s", graphqlService.GetAddress())
+		return &ActionableError{
+			Err:        fmt.Errorf("invalid graphql address: %s", graphqlService.GetAddress()),
+			Suggestion: "Ensure the address is a valid URL.",
+		}
 	}
 	u, _ := url.Parse(graphqlService.GetAddress())
 	if u.Scheme != schemeHTTP && u.Scheme != schemeHTTPS {
-		return fmt.Errorf("invalid graphql address scheme: %s", u.Scheme)
+		return &ActionableError{
+			Err:        fmt.Errorf("invalid graphql address scheme: %s", u.Scheme),
+			Suggestion: "Use 'http' or 'https' as the scheme.",
+		}
 	}
 	return nil
 }
 
 func validateWebrtcService(webrtcService *configv1.WebrtcUpstreamService) error {
 	if webrtcService.GetAddress() == "" {
-		return fmt.Errorf("webrtc service has empty address")
+		return &ActionableError{
+			Err:        fmt.Errorf("webrtc service has empty address"),
+			Suggestion: "Set the 'address' field in the webrtc_service configuration.",
+		}
 	}
 	if !validation.IsValidURL(webrtcService.GetAddress()) {
-		return fmt.Errorf("invalid webrtc address: %s", webrtcService.GetAddress())
+		return &ActionableError{
+			Err:        fmt.Errorf("invalid webrtc address: %s", webrtcService.GetAddress()),
+			Suggestion: "Ensure the address is a valid URL.",
+		}
 	}
 	u, _ := url.Parse(webrtcService.GetAddress())
 	if u.Scheme != schemeHTTP && u.Scheme != schemeHTTPS {
-		return fmt.Errorf("invalid webrtc address scheme: %s", u.Scheme)
+		return &ActionableError{
+			Err:        fmt.Errorf("invalid webrtc address scheme: %s", u.Scheme),
+			Suggestion: "Use 'http' or 'https' as the scheme.",
+		}
 	}
 	return nil
 }
@@ -681,7 +744,10 @@ func validateUpstreamAuthentication(ctx context.Context, authConfig *configv1.Au
 
 func validateAPIKeyAuth(ctx context.Context, apiKey *configv1.APIKeyAuth) error {
 	if apiKey.GetParamName() == "" {
-		return fmt.Errorf("api key 'param_name' is empty")
+		return &ActionableError{
+			Err:        fmt.Errorf("api key 'param_name' is empty"),
+			Suggestion: "Set the 'param_name' (e.g., 'X-API-Key' or 'api_key').",
+		}
 	}
 	// Value might be nil but usually we want to validate it resolves if present,
 	// or ensure it IS present if required. For upstream, it's usually required.
@@ -690,7 +756,10 @@ func validateAPIKeyAuth(ctx context.Context, apiKey *configv1.APIKeyAuth) error 
 		// VerificationValue is for incoming, Value (SecretValue) is for outgoing.
 		// Detailed validation might depend on context (incoming vs outgoing),
 		// but here we are validating "UpstreamServiceConfig" which implies outgoing.
-		return fmt.Errorf("api key 'value' is missing (required for outgoing auth)")
+		return &ActionableError{
+			Err:        fmt.Errorf("api key 'value' is missing (required for outgoing auth)"),
+			Suggestion: "Set the 'value' field using a secret (environment variable or file) for the API key.",
+		}
 	}
 	if apiKey.GetValue() != nil {
 		apiKeyValue, err := util.ResolveSecret(ctx, apiKey.GetValue())
@@ -698,7 +767,10 @@ func validateAPIKeyAuth(ctx context.Context, apiKey *configv1.APIKeyAuth) error 
 			return fmt.Errorf("failed to resolve api key secret: %w", err)
 		}
 		if apiKeyValue == "" {
-			return fmt.Errorf("resolved api key value is empty")
+			return &ActionableError{
+				Err:        fmt.Errorf("resolved api key value is empty"),
+				Suggestion: "Check that the environment variable or file providing the API key is not empty.",
+			}
 		}
 	}
 	return nil
@@ -710,21 +782,30 @@ func validateBearerTokenAuth(ctx context.Context, bearerToken *configv1.BearerTo
 		return fmt.Errorf("failed to resolve bearer token secret: %w", err)
 	}
 	if tokenValue == "" {
-		return fmt.Errorf("bearer token 'token' is empty")
+		return &ActionableError{
+			Err:        fmt.Errorf("bearer token 'token' is empty"),
+			Suggestion: "Check that the environment variable or file providing the Bearer token is not empty.",
+		}
 	}
 	return nil
 }
 
 func validateBasicAuth(ctx context.Context, basicAuth *configv1.BasicAuth) error {
 	if basicAuth.GetUsername() == "" {
-		return fmt.Errorf("basic auth 'username' is empty")
+		return &ActionableError{
+			Err:        fmt.Errorf("basic auth 'username' is empty"),
+			Suggestion: "Set the 'username' field.",
+		}
 	}
 	passwordValue, err := util.ResolveSecret(ctx, basicAuth.GetPassword())
 	if err != nil {
 		return fmt.Errorf("failed to resolve basic auth password secret: %w", err)
 	}
 	if passwordValue == "" {
-		return fmt.Errorf("basic auth 'password' is empty")
+		return &ActionableError{
+			Err:        fmt.Errorf("basic auth 'password' is empty"),
+			Suggestion: "Check that the environment variable or file providing the password is not empty.",
+		}
 	}
 	return nil
 }
