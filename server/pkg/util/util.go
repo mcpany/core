@@ -484,7 +484,9 @@ func ToString(v any) string {
 		// We check if the float value is integral.
 		if math.Trunc(val) == val {
 			// Check bounds to avoid undefined behavior or overflow when casting
-			if val >= float64(math.MinInt64) && val <= float64(math.MaxInt64) {
+			// Note: float64(math.MaxInt64) is 2^63, which cannot be represented as int64 (max is 2^63-1).
+			// So we must use < instead of <= for the upper bound.
+			if val >= float64(math.MinInt64) && val < float64(math.MaxInt64) {
 				return strconv.FormatInt(int64(val), 10)
 			}
 		}
