@@ -5,7 +5,6 @@ package util //nolint:revive,nolintlint // Package name 'util' is common in this
 
 import (
 	"bytes"
-	"encoding/json"
 )
 
 // maxUnescapeLimit is the maximum size of a key that we will attempt to unescape
@@ -237,54 +236,17 @@ func skipLiteral(input []byte, start int) int {
 }
 
 func isKeySensitive(keyContent []byte) bool {
-	var keyToCheck []byte
-	var sensitive bool
-
+	// Optimization: check for backslash to decide if we need unescaping
 	if bytes.IndexByte(keyContent, '\\') != -1 {
-		// Key contains escape sequences, unescape it to check for sensitivity.
-		// This is slower but safer.
-		// Limit the key size to prevent excessive allocation on malicious input
-		// We increase this to 1MB to handle reasonably large keys while still preventing DoS.
-		if len(keyContent) > maxUnescapeLimit {
-			// Use streaming/chunked scan for huge keys to avoid allocation
-			if scanEscapedKeyForSensitive(keyContent) {
-				sensitive = true
-			} else {
-				keyToCheck = keyContent
-			}
-		} else {
-			quoted := make([]byte, len(keyContent)+2)
-			quoted[0] = '"'
-			copy(quoted[1:], keyContent)
-			quoted[len(quoted)-1] = '"'
-
-			var unescaped string
-			if err := json.Unmarshal(quoted, &unescaped); err == nil {
-				keyToCheck = []byte(unescaped)
-			} else {
-				// Fallback to loose scanning if unmarshal fails (e.g. due to invalid escapes)
-				// We use scanEscapedKeyForSensitive which handles invalid escapes gracefully
-				// by treating them as literals, which is safer than raw content comparison
-				// because scanForSensitiveKeys does not handle escapes.
-				if scanEscapedKeyForSensitive(keyContent) {
-					sensitive = true
-				} else {
-					// Still set keyToCheck for the final raw scan, just in case
-					keyToCheck = keyContent
-				}
-			}
-		}
-	} else {
-		keyToCheck = keyContent
+		// Key contains escape sequences.
+		// Use scanEscapedKeyForSensitive which handles unescaping on the fly
+		// without allocating intermediate strings or buffers (uses stack buffer).
+		// This avoids expensive json.Unmarshal calls.
+		return scanEscapedKeyForSensitive(keyContent)
 	}
 
-	// Optimization: We check the raw key content against sensitive keys.
-	// We only unescape if backslashes are detected, avoiding expensive json.Unmarshal calls for the common case.
-	// Note: scanForSensitiveKeys (used in the pre-check) also does not handle escapes.
-	if !sensitive {
-		sensitive = scanForSensitiveKeys(keyToCheck, false)
-	}
-	return sensitive
+	// No escapes, scan raw content
+	return scanForSensitiveKeys(keyContent, false)
 }
 
 // scanEscapedKeyForSensitive scans a large escaped key for sensitive words using a fixed-size buffer.
