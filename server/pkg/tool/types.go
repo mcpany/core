@@ -760,8 +760,11 @@ func (t *HTTPTool) prepareInputsAndURL(ctx context.Context, req *ExecutionReques
 	// This prevents path.Clean from treating encoded slashes as separators
 	// and messing up the re-encoding later (which would convert %2F to /).
 	hadTrailingSlash := strings.HasSuffix(pathStr, "/")
+	// Detect if it was specifically root double slash which cleans to / but should be restored to //
+	wasRootDoubleSlash := pathStr == "//"
+
 	pathStr = cleanPathPreserveDoubleSlash(pathStr)
-	if hadTrailingSlash && pathStr != "/" {
+	if hadTrailingSlash && (pathStr != "/" || wasRootDoubleSlash) {
 		pathStr += "/"
 	}
 
