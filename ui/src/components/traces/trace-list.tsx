@@ -63,6 +63,11 @@ const TraceListItem = memo(({ trace, isSelected, onSelect }: { trace: Trace, isS
 });
 TraceListItem.displayName = "TraceListItem";
 
+/**
+ * TraceList.
+ *
+ * @param onToggleLive - The onToggleLive.
+ */
 export function TraceList({ traces, selectedId, onSelect, searchQuery, onSearchChange, isLive, onToggleLive }: TraceListProps) {
 
   // Optimization: Memoize filtered traces to avoid re-calculating on every render,

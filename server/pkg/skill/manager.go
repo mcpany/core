@@ -70,6 +70,11 @@ func (m *Manager) ListSkills() ([]*Skill, error) {
 }
 
 // GetSkill retrieves a specific skill by name.
+//
+// name is the name of the resource.
+//
+// Returns the result.
+// Returns an error if the operation fails.
 func (m *Manager) GetSkill(name string) (*Skill, error) {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
@@ -134,6 +139,10 @@ func (m *Manager) UpdateSkill(originalName string, skill *Skill) error {
 }
 
 // DeleteSkill deletes a skill.
+//
+// name is the name of the resource.
+//
+// Returns an error if the operation fails.
 func (m *Manager) DeleteSkill(name string) error {
 	m.mu.Lock()
 	defer m.mu.Unlock()

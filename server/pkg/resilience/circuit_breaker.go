@@ -39,6 +39,10 @@ type CircuitBreaker struct {
 }
 
 // NewCircuitBreaker creates a new CircuitBreaker with the given configuration.
+//
+// config holds the configuration settings.
+//
+// Returns the result.
 func NewCircuitBreaker(config *configv1.CircuitBreakerConfig) *CircuitBreaker {
 	return &CircuitBreaker{
 		config: config,
@@ -63,6 +67,7 @@ func (cb *CircuitBreaker) Execute(ctx context.Context, work func(context.Context
 			if time.Since(cb.openTime) > cb.config.GetOpenDuration().AsDuration() {
 				cb.setState(StateHalfOpen)
 				cb.halfOpenHits = 0
+				currentState = StateHalfOpen
 			} else {
 				cb.mutex.Unlock()
 				return &CircuitBreakerOpenError{}
@@ -140,6 +145,8 @@ func (cb *CircuitBreaker) onFailure() {
 type CircuitBreakerOpenError struct{}
 
 // Error returns the error message for a CircuitBreakerOpenError.
+//
+// Returns the result.
 func (e *CircuitBreakerOpenError) Error() string {
 	return "circuit breaker is open"
 }

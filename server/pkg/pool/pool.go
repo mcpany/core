@@ -35,8 +35,14 @@ var (
 // connection and checking its health.
 type ClosableClient interface {
 	// Close terminates the client's connection.
+	//
+	// Returns an error if the operation fails.
 	Close() error
 	// IsHealthy returns true if the client's connection is active and usable.
+	//
+	// ctx is the context for the request.
+	//
+	// Returns true if successful.
 	IsHealthy(ctx context.Context) bool
 }
 
@@ -54,6 +60,8 @@ type Pool[T ClosableClient] interface {
 	// created.
 	Close() error
 	// Len returns the number of idle clients currently in the pool.
+	//
+	// Returns the result.
 	Len() int
 }
 
@@ -387,6 +395,8 @@ func (p *poolImpl[T]) Close() error {
 }
 
 // Len returns the current number of idle clients in the pool.
+//
+// Returns the result.
 func (p *poolImpl[T]) Len() int {
 	return len(p.clients)
 }
@@ -396,6 +406,8 @@ func (p *poolImpl[T]) Len() int {
 type UntypedPool interface {
 	io.Closer
 	// Len returns the number of idle clients currently in the pool.
+	//
+	// Returns the result.
 	Len() int
 }
 
@@ -440,6 +452,8 @@ func (m *Manager) Register(name string, pool any) {
 }
 
 // Deregister closes and removes a pool from the manager.
+//
+// name is the name of the resource.
 func (m *Manager) Deregister(name string) {
 	m.mu.Lock()
 	defer m.mu.Unlock()

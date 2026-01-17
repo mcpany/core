@@ -47,6 +47,8 @@ const STORAGE_KEY = "mcp_any_shortcut_overrides"
 
 /**
  * Provider component for keyboard shortcuts.
+ *
+ * @param { children - The { children.
  */
 export function KeyboardShortcutsProvider({ children }: { children: React.ReactNode }) {
   const [shortcuts, setShortcuts] = React.useState<Record<string, ShortcutDefinition>>({})

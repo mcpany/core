@@ -22,8 +22,15 @@ type Resource interface {
 	// metadata.
 	Resource() *mcp.Resource
 	// Service returns the ID of the service that provides this resource.
+	//
+	// Returns the result.
 	Service() string
 	// Read retrieves the content of the resource.
+	//
+	// ctx is the context for the request.
+	//
+	// Returns the result.
+	// Returns an error if the operation fails.
 	Read(ctx context.Context) (*mcp.ReadResourceResult, error)
 	// Subscribe establishes a subscription to the resource, allowing for
 	// receiving updates.
@@ -35,17 +42,30 @@ type Resource interface {
 // resources, as well as for subscribing to changes.
 type ManagerInterface interface {
 	// GetResource retrieves a resource by its URI.
+	//
+	// uri is the uri.
+	//
+	// Returns the result.
+	// Returns true if successful.
 	GetResource(uri string) (Resource, bool)
 	// AddResource adds a new resource to the manager.
+	//
+	// resource is the resource.
 	AddResource(resource Resource)
 	// RemoveResource removes a resource from the manager by its URI.
+	//
+	// uri is the uri.
 	RemoveResource(uri string)
 	// ListResources returns a slice of all resources currently in the manager.
+	//
+	// Returns the result.
 	ListResources() []Resource
 	// OnListChanged registers a callback function to be called when the list of
 	// resources changes.
 	OnListChanged(func())
 	// ClearResourcesForService removes all resources associated with a given service ID.
+	//
+	// serviceID is the serviceID.
 	ClearResourcesForService(serviceID string)
 }
 
@@ -60,6 +80,8 @@ type Manager struct {
 }
 
 // NewManager creates and returns a new, empty Manager.
+//
+// Returns the result.
 func NewManager() *Manager {
 	return &Manager{
 		resources: make(map[string]Resource),
@@ -179,6 +201,8 @@ func (rm *Manager) Subscribe(ctx context.Context, uri string) error {
 }
 
 // ClearResourcesForService removes all resources associated with a given service ID.
+//
+// serviceID is the serviceID.
 func (rm *Manager) ClearResourcesForService(serviceID string) {
 	var callback func()
 	rm.mu.Lock()

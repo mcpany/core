@@ -23,6 +23,11 @@ interface StackEditorProps {
     stackId: string;
 }
 
+/**
+ * StackEditor.
+ *
+ * @param { stackId - The { stackId.
+ */
 export function StackEditor({ stackId }: StackEditorProps) {
     const [content, setContent] = useState("");
     const [isLoading, setIsLoading] = useState(false);

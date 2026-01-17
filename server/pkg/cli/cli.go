@@ -20,6 +20,11 @@ type JSONExecutor struct {
 }
 
 // NewJSONExecutor creates a new JSONExecutor with the given writer and reader.
+//
+// in is the in.
+// out is the out.
+//
+// Returns the result.
 func NewJSONExecutor(in io.Writer, out io.Reader) *JSONExecutor {
 	return &JSONExecutor{
 		in:  in,

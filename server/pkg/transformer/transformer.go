@@ -22,6 +22,8 @@ type Transformer struct {
 }
 
 // NewTransformer creates and returns a new instance of Transformer.
+//
+// Returns the result.
 func NewTransformer() *Transformer {
 	return &Transformer{
 		pool: sync.Pool{

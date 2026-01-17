@@ -58,6 +58,7 @@
 - [x] **Upstream Connectivity Probe**: Implemented a startup connection check for HTTP upstream services. The server now logs a warning if the upstream service is unreachable during registration, preventing silent failures. (Friction Fighter)
 - [x] **Actionable Config Errors**: Enhanced configuration validator to provide specific, actionable "Fix" suggestions for common errors like missing environment variables, files, or invalid URL schemes. (Friction Fighter)
 - [x] **Strict Startup Mode**: Implemented `--strict` flag for the `run` command. When enabled, the server performs pre-flight connectivity checks ("doctor" checks) on all configured upstream services and fails to start if any are unreachable, preventing silent failures. (Friction Fighter)
+- [x] **Stdio Logging Visibility**: Fixed an issue where logs were discarded in stdio mode (used by clients like Claude Desktop). Logs now correctly output to stderr, ensuring "silent failures" are visible and debuggable. (Friction Fighter)
 
 ## 2. Top 10 Recommended Features
 
@@ -112,6 +113,16 @@ These features represent the next logical steps for the product, focusing on Ent
 | 46 | **Tool Name Fuzzy Matching** | **UX**: Improve error messages for tool execution by suggesting similar tool names when a user makes a typo. | Low |
 | 47 | **Interactive Doctor** | **UX**: A TUI (Text User Interface) for the doctor command that allows users to interactively retry failed checks or inspect details. | Medium |
 | 48 | **Doctor Integration with Telemetry** | **Observability**: Send doctor check results to telemetry (if enabled) to track fleet health during startup or health checks. | Low |
+| 41 | **Doctor Auto-Fix** | **DevX**: Allow `mcpany doctor --fix` to automatically correct simple configuration errors (like typos or missing fields with defaults). | High |
+| 42 | **Doctor Web Report** | **DevX**: Generate an HTML report from `mcpany doctor` for easier sharing and debugging. | Low |
+| 41 | **Hard Failure Mode** | **Resilience**: A configuration option to strictly fail server startup (exit 1) if any service fails its connectivity probe, ensuring "fail-safe" deployments. | Low |
+| 42 | **Upstream Latency Metrics** | **Observability**: Record the latency of the initial connectivity probe to help diagnose slow upstream services during startup. | Low |
+| 41 | **Tool Name Fuzzy Matching** | **UX**: Improve error messages for tool execution by suggesting similar tool names when a user makes a typo. | Low |
+| 42 | **Config Strict Mode** | **Ops**: Add a CLI flag to treat configuration warnings (e.g. deprecated fields) as errors to ensure clean configs. | Low |
+| 43 | **Stdio Error Channel** | **DevX**: A dedicated side-channel or structured error output for stdio mode to communicate server status without interfering with JSON-RPC or stderr logging. | Medium |
+| 44 | **Log Redaction Rules** | **Security**: Configurable regex-based redaction for logs to prevent accidental leakage of sensitive data (API keys, PII) in stderr/files. | Medium |
+| 45 | **Config Validation Diff** | **Experience**: When a configuration reload fails, display a diff highlighting the changes that caused the error compared to the last known good configuration. | High |
+| 46 | **Health Webhooks** | **Ops**: Configure webhooks (Slack, Discord, PagerDuty) to be triggered when the system health status changes (e.g., from Healthy to Degraded). | Medium |
 
 ## 3. Codebase Health
 

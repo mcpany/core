@@ -35,6 +35,11 @@ interface ParsedService {
     type: "image" | "command" | "unknown";
 }
 
+/**
+ * StackVisualizer.
+ *
+ * @param { yamlContent - The { yamlContent.
+ */
 export function StackVisualizer({ yamlContent }: StackVisualizerProps) {
     const { services, error } = useMemo(() => {
         try {

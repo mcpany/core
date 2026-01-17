@@ -44,6 +44,15 @@ func NewUpdater(httpClient *http.Client, githubAPIURL string) *Updater {
 }
 
 // CheckForUpdate checks for a new release on GitHub.
+//
+// ctx is the context for the request.
+// owner is the owner.
+// repo is the repo.
+// currentVersion is the currentVersion.
+//
+// Returns the result.
+// Returns true if successful.
+// Returns an error if the operation fails.
 func (u *Updater) CheckForUpdate(ctx context.Context, owner, repo, currentVersion string) (*github.RepositoryRelease, bool, error) {
 	release, _, err := u.client.Repositories.GetLatestRelease(ctx, owner, repo)
 	if err != nil {
@@ -58,6 +67,15 @@ func (u *Updater) CheckForUpdate(ctx context.Context, owner, repo, currentVersio
 }
 
 // UpdateTo downloads the new release, verifies its checksum, and replaces the current executable.
+//
+// ctx is the context for the request.
+// fs is the fs.
+// executablePath is the executablePath.
+// release is the release.
+// assetName is the assetName.
+// checksumsAssetName is the checksumsAssetName.
+//
+// Returns an error if the operation fails.
 func (u *Updater) UpdateTo(ctx context.Context, fs afero.Fs, executablePath string, release *github.RepositoryRelease, assetName, checksumsAssetName string) error {
 	var asset *github.ReleaseAsset
 	for _, a := range release.Assets {

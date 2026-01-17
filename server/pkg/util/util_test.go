@@ -544,3 +544,68 @@ func TestRandomFloat64(t *testing.T) {
 		t.Errorf("RandomFloat64() = %v, want [0.0, 1.0)", val)
 	}
 }
+
+func TestSanitizeFilename(t *testing.T) {
+	tests := []struct {
+		name     string
+		input    string
+		expected string
+	}{
+		{
+			name:     "valid filename",
+			input:    "safe_file.txt",
+			expected: "safe_file.txt",
+		},
+		{
+			name:     "traversal attempt",
+			input:    "../../etc/passwd",
+			expected: "passwd",
+		},
+		{
+			name:     "weird characters",
+			input:    "my$file!.txt",
+			expected: "my_file_.txt",
+		},
+		{
+			name:     "null bytes",
+			input:    "file\x00name.txt",
+			expected: "filename.txt",
+		},
+		{
+			name:     "dots and dashes",
+			input:    ".config-file.yaml",
+			expected: ".config-file.yaml",
+		},
+		{
+			name:     "empty result",
+			input:    "$$$",
+			expected: "___",
+		},
+		{
+			name:     "reserved names",
+			input:    ".",
+			expected: "unnamed_file",
+		},
+		{
+			name:     "reserved names 2",
+			input:    "..",
+			expected: "unnamed_file",
+		},
+		{
+			name:     "empty input",
+			input:    "",
+			expected: "unnamed_file",
+		},
+		{
+			name:     "long filename",
+			input:    strings.Repeat("a", 300),
+			expected: strings.Repeat("a", 255),
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			assert.Equal(t, tt.expected, SanitizeFilename(tt.input))
+		})
+	}
+}

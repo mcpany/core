@@ -18,16 +18,30 @@ type LocalLimiter struct {
 }
 
 // Allow checks if the request is allowed (cost 1).
+//
+// _ is an unused parameter.
+//
+// Returns true if successful.
+// Returns an error if the operation fails.
 func (l *LocalLimiter) Allow(_ context.Context) (bool, error) {
 	return l.Limiter.Allow(), nil
 }
 
 // AllowN checks if the request is allowed with a specific cost.
+//
+// _ is an unused parameter.
+// n is the n.
+//
+// Returns true if successful.
+// Returns an error if the operation fails.
 func (l *LocalLimiter) AllowN(_ context.Context, n int) (bool, error) {
 	return l.Limiter.AllowN(time.Now(), n), nil
 }
 
 // Update updates the limiter configuration.
+//
+// rps is the rps.
+// burst is the burst.
 func (l *LocalLimiter) Update(rps float64, burst int) {
 	limit := rate.Limit(rps)
 	if l.Limit() != limit {
@@ -42,11 +56,22 @@ func (l *LocalLimiter) Update(rps float64, burst int) {
 type LocalStrategy struct{}
 
 // NewLocalStrategy creates a new LocalStrategy.
+//
+// Returns the result.
 func NewLocalStrategy() *LocalStrategy {
 	return &LocalStrategy{}
 }
 
 // Create creates a new LocalLimiter.
+//
+// _ is an unused parameter.
+// _ is an unused parameter.
+// _ is an unused parameter.
+// _ is an unused parameter.
+// config holds the configuration settings.
+//
+// Returns the result.
+// Returns an error if the operation fails.
 func (s *LocalStrategy) Create(_ context.Context, _, _, _ string, config *configv1.RateLimitConfig) (Limiter, error) {
 	rps := config.GetRequestsPerSecond()
 	burst := int(config.GetBurst())
