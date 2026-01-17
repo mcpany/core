@@ -12,6 +12,7 @@ import (
 	"math/rand"
 	"net/url"
 	"os"
+	"path/filepath"
 	"reflect"
 	"strconv"
 	"strings"
@@ -506,4 +507,38 @@ func ToString(v any) string {
 // It uses the global math/rand source.
 func RandomFloat64() float64 {
 	return rand.Float64() //nolint:gosec // Weak random is sufficient for jitter
+}
+
+// SanitizeFilename cleans a filename to ensure it is safe to use.
+// It removes any directory components, null bytes, and restricts characters
+// to alphanumeric, dots, dashes, and underscores.
+func SanitizeFilename(filename string) string {
+	// 1. Base name only
+	filename = filepath.Base(filename)
+
+	// 2. Remove any null bytes
+	filename = strings.ReplaceAll(filename, "\x00", "")
+
+	// 3. Remove non-allowed characters
+	var sb strings.Builder
+	for _, c := range filename {
+		if (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9') || c == '.' || c == '-' || c == '_' {
+			sb.WriteRune(c)
+		} else {
+			sb.WriteRune('_')
+		}
+	}
+	result := sb.String()
+
+	// 4. Ensure not empty
+	if result == "" || result == "." || result == ".." {
+		return "unnamed_file"
+	}
+
+	// 5. Truncate
+	if len(result) > 255 {
+		result = result[:255]
+	}
+
+	return result
 }
