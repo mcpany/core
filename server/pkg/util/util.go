@@ -474,7 +474,7 @@ func ToString(v any) string {
 		}
 		// Also check if it fits in int64 (for larger integers that are exact in float32)
 		if math.Trunc(float64(val)) == float64(val) {
-			if float64(val) >= float64(math.MinInt64) && float64(val) <= float64(math.MaxInt64) {
+			if float64(val) >= float64(math.MinInt64) && float64(val) < float64(math.MaxInt64) {
 				return strconv.FormatInt(int64(val), 10)
 			}
 		}
