@@ -152,6 +152,129 @@ func TestRunChecks_OpenAPI(t *testing.T) {
 	assert.Equal(t, StatusError, results[1].Status)
 }
 
+func TestRunChecks_Authentication_OAuth2(t *testing.T) {
+	// Mock OAuth2 Token Endpoint
+	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != "POST" {
+			w.WriteHeader(http.StatusMethodNotAllowed)
+			return
+		}
+		// Simulate different behaviors based on path
+		switch r.URL.Path {
+		case "/token-ok":
+			w.WriteHeader(http.StatusOK)
+		case "/token-400":
+			w.WriteHeader(http.StatusBadRequest)
+		case "/token-401":
+			w.WriteHeader(http.StatusUnauthorized)
+		case "/token-404":
+			w.WriteHeader(http.StatusNotFound)
+		case "/token-500":
+			w.WriteHeader(http.StatusInternalServerError)
+		}
+	}))
+	defer ts.Close()
+
+	config := &configv1.McpAnyServerConfig{
+		UpstreamServices: []*configv1.UpstreamServiceConfig{
+			{
+				Name: strPtr("auth-ok"),
+				ServiceConfig: &configv1.UpstreamServiceConfig_HttpService{
+					HttpService: &configv1.HttpUpstreamService{Address: strPtr(ts.URL)}, // Dummy service URL
+				},
+				UpstreamAuth: &configv1.Authentication{
+					AuthMethod: &configv1.Authentication_Oauth2{
+						Oauth2: &configv1.OAuth2Auth{
+							TokenUrl: strPtr(ts.URL + "/token-ok"),
+						},
+					},
+				},
+			},
+			{
+				Name: strPtr("auth-400"),
+				ServiceConfig: &configv1.UpstreamServiceConfig_HttpService{
+					HttpService: &configv1.HttpUpstreamService{Address: strPtr(ts.URL)},
+				},
+				UpstreamAuth: &configv1.Authentication{
+					AuthMethod: &configv1.Authentication_Oauth2{
+						Oauth2: &configv1.OAuth2Auth{
+							TokenUrl: strPtr(ts.URL + "/token-400"),
+						},
+					},
+				},
+			},
+			{
+				Name: strPtr("auth-401"),
+				ServiceConfig: &configv1.UpstreamServiceConfig_HttpService{
+					HttpService: &configv1.HttpUpstreamService{Address: strPtr(ts.URL)},
+				},
+				UpstreamAuth: &configv1.Authentication{
+					AuthMethod: &configv1.Authentication_Oauth2{
+						Oauth2: &configv1.OAuth2Auth{
+							TokenUrl: strPtr(ts.URL + "/token-401"),
+						},
+					},
+				},
+			},
+			{
+				Name: strPtr("auth-404"),
+				ServiceConfig: &configv1.UpstreamServiceConfig_HttpService{
+					HttpService: &configv1.HttpUpstreamService{Address: strPtr(ts.URL)},
+				},
+				UpstreamAuth: &configv1.Authentication{
+					AuthMethod: &configv1.Authentication_Oauth2{
+						Oauth2: &configv1.OAuth2Auth{
+							TokenUrl: strPtr(ts.URL + "/token-404"),
+						},
+					},
+				},
+			},
+			{
+				Name: strPtr("auth-500"),
+				ServiceConfig: &configv1.UpstreamServiceConfig_HttpService{
+					HttpService: &configv1.HttpUpstreamService{Address: strPtr(ts.URL)},
+				},
+				UpstreamAuth: &configv1.Authentication{
+					AuthMethod: &configv1.Authentication_Oauth2{
+						Oauth2: &configv1.OAuth2Auth{
+							TokenUrl: strPtr(ts.URL + "/token-500"),
+						},
+					},
+				},
+			},
+		},
+	}
+
+	results := RunChecks(context.Background(), config)
+
+	assert.Len(t, results, 5)
+
+	// Auth OK -> OK
+	assert.Equal(t, "auth-ok", results[0].ServiceName)
+	assert.Equal(t, StatusOk, results[0].Status)
+	assert.Contains(t, results[0].Message, "OAuth2 Reachable (200)")
+
+	// Auth 400 -> OK (Expected for empty POST)
+	assert.Equal(t, "auth-400", results[1].ServiceName)
+	assert.Equal(t, StatusOk, results[1].Status)
+	assert.Contains(t, results[1].Message, "OAuth2 Reachable (400)")
+
+	// Auth 401 -> OK
+	assert.Equal(t, "auth-401", results[2].ServiceName)
+	assert.Equal(t, StatusOk, results[2].Status)
+	assert.Contains(t, results[2].Message, "OAuth2 Reachable (401)")
+
+	// Auth 404 -> Error
+	assert.Equal(t, "auth-404", results[3].ServiceName)
+	assert.Equal(t, StatusError, results[3].Status)
+	assert.Contains(t, results[3].Message, "not found (404)")
+
+	// Auth 500 -> Error
+	assert.Equal(t, "auth-500", results[4].ServiceName)
+	assert.Equal(t, StatusError, results[4].Status)
+	assert.Contains(t, results[4].Message, "server error")
+}
+
 func TestRunChecks_Filesystem(t *testing.T) {
 	tmpDir, err := os.MkdirTemp("", "doctor-fs")
 	require.NoError(t, err)
