@@ -500,7 +500,7 @@ func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 		return nil, t.initError
 	}
 
-	inputs, urlString, err := t.prepareInputsAndURL(ctx, req)
+	inputs, urlString, inputsModified, err := t.prepareInputsAndURL(ctx, req)
 	if err != nil {
 		return nil, err
 	}
@@ -509,7 +509,7 @@ func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 		return nil, fmt.Errorf("unsafe url: %w", err)
 	}
 
-	body, contentType, err := t.prepareBody(ctx, inputs, t.cachedMethod, req.ToolName)
+	body, contentType, err := t.prepareBody(ctx, inputs, t.cachedMethod, req.ToolName, req.ToolInputs, inputsModified)
 	if err != nil {
 		return nil, err
 	}
@@ -652,7 +652,7 @@ func (t *HTTPTool) logRequest(ctx context.Context, httpReq *http.Request, body i
 	}
 }
 
-func (t *HTTPTool) prepareInputsAndURL(ctx context.Context, req *ExecutionRequest) (map[string]any, string, error) {
+func (t *HTTPTool) prepareInputsAndURL(ctx context.Context, req *ExecutionRequest) (map[string]any, string, bool, error) {
 	var inputs map[string]any
 	if len(req.ToolInputs) > 0 {
 		// Trim whitespace to avoid EOF errors on empty/whitespace-only inputs
@@ -664,13 +664,13 @@ func (t *HTTPTool) prepareInputsAndURL(ctx context.Context, req *ExecutionReques
 		decoder := fastJSON.NewDecoder(bytes.NewReader(req.ToolInputs))
 		decoder.UseNumber()
 		if err := decoder.Decode(&inputs); err != nil {
-			return nil, "", fmt.Errorf("failed to unmarshal tool inputs: %w (inputs: %q)", err, string(req.ToolInputs))
+			return nil, "", false, fmt.Errorf("failed to unmarshal tool inputs: %w (inputs: %q)", err, string(req.ToolInputs))
 		}
 	}
 
-	pathReplacements, queryReplacements, err := t.processParameters(ctx, inputs)
+	pathReplacements, queryReplacements, inputsModified, err := t.processParameters(ctx, inputs)
 	if err != nil {
-		return nil, "", err
+		return nil, "", false, err
 	}
 
 	var pathBuf strings.Builder
@@ -732,19 +732,20 @@ func (t *HTTPTool) prepareInputsAndURL(ctx context.Context, req *ExecutionReques
 	}
 	urlString := buf.String()
 
-	return inputs, urlString, nil
+	return inputs, urlString, inputsModified, nil
 }
 
-func (t *HTTPTool) processParameters(ctx context.Context, inputs map[string]any) (map[string]string, map[string]string, error) {
+func (t *HTTPTool) processParameters(ctx context.Context, inputs map[string]any) (map[string]string, map[string]string, bool, error) {
 	pathReplacements := make(map[string]string, len(t.parameters))
 	queryReplacements := make(map[string]string, len(t.parameters))
+	inputsModified := false
 
 	for i, param := range t.parameters {
 		name := param.GetSchema().GetName()
 		if secret := param.GetSecret(); secret != nil {
 			secretValue, err := util.ResolveSecret(ctx, secret)
 			if err != nil {
-				return nil, nil, fmt.Errorf("failed to resolve secret for parameter %q: %w", name, err)
+				return nil, nil, false, fmt.Errorf("failed to resolve secret for parameter %q: %w", name, err)
 			}
 			if t.paramInPath[i] {
 				pathReplacements[name] = secretValue
@@ -756,13 +757,14 @@ func (t *HTTPTool) processParameters(ctx context.Context, inputs map[string]any)
 			val, ok := inputs[name]
 			if !ok {
 				if schema.GetIsRequired() {
-					return nil, nil, fmt.Errorf("missing required parameter: %s", name)
+					return nil, nil, false, fmt.Errorf("missing required parameter: %s", name)
 				}
 				// If optional and missing, treat as empty string
 				val = ""
 			} else if t.paramInPath[i] || t.paramInQuery[i] {
 				// Only delete from inputs if it was present AND used in path/query replacement
 				delete(inputs, name)
+				inputsModified = true
 			}
 
 			valStr := util.ToString(val)
@@ -771,12 +773,12 @@ func (t *HTTPTool) processParameters(ctx context.Context, inputs map[string]any)
 				// ALWAYS check for path traversal in path parameters, regardless of escaping settings.
 				// Even if escaped, some servers might decode and normalize the path, leading to traversal.
 				if err := checkForPathTraversal(valStr); err != nil {
-					return nil, nil, fmt.Errorf("path traversal attempt detected in parameter %q: %w", name, err)
+					return nil, nil, false, fmt.Errorf("path traversal attempt detected in parameter %q: %w", name, err)
 				}
 				// Also check decoded value just in case the input was already encoded
 				if decodedVal, err := url.QueryUnescape(valStr); err == nil && decodedVal != valStr {
 					if err := checkForPathTraversal(decodedVal); err != nil {
-						return nil, nil, fmt.Errorf("path traversal attempt detected in parameter %q (decoded): %w", name, err)
+						return nil, nil, false, fmt.Errorf("path traversal attempt detected in parameter %q (decoded): %w", name, err)
 					}
 				}
 			}
@@ -794,7 +796,7 @@ func (t *HTTPTool) processParameters(ctx context.Context, inputs map[string]any)
 					// url.PathEscape does NOT escape dots, so ".." remains ".."
 					// and path.Clean will resolve it, potentially allowing path traversal.
 					if err := checkForPathTraversal(valStr); err != nil {
-						return nil, nil, fmt.Errorf("path traversal attempt detected in parameter %q: %w", name, err)
+						return nil, nil, false, fmt.Errorf("path traversal attempt detected in parameter %q: %w", name, err)
 					}
 					pathReplacements[name] = url.PathEscape(valStr)
 				}
@@ -804,7 +806,7 @@ func (t *HTTPTool) processParameters(ctx context.Context, inputs map[string]any)
 			}
 		}
 	}
-	return pathReplacements, queryReplacements, nil
+	return pathReplacements, queryReplacements, inputsModified, nil
 }
 
 type urlSegment struct {
@@ -833,7 +835,7 @@ func parseURLSegments(template string) []urlSegment {
 	return segments
 }
 
-func (t *HTTPTool) prepareBody(ctx context.Context, inputs map[string]any, method string, toolName string) (io.Reader, string, error) {
+func (t *HTTPTool) prepareBody(ctx context.Context, inputs map[string]any, method string, toolName string, originalInputs []byte, inputsModified bool) (io.Reader, string, error) {
 	if inputs == nil {
 		return nil, "", nil
 	}
@@ -876,11 +878,16 @@ func (t *HTTPTool) prepareBody(ctx context.Context, inputs map[string]any, metho
 		// Fallback for unexpected case
 		return nil, "", fmt.Errorf("input template configured but not cached (initialization error?)")
 	default:
-		jsonBytes, err := fastJSON.Marshal(inputs)
-		if err != nil {
-			return nil, "", fmt.Errorf("failed to marshal tool inputs to json: %w", err)
+		// Optimization: if inputs were not modified, reuse the original bytes
+		if !inputsModified && len(originalInputs) > 0 {
+			body = bytes.NewReader(originalInputs)
+		} else {
+			jsonBytes, err := fastJSON.Marshal(inputs)
+			if err != nil {
+				return nil, "", fmt.Errorf("failed to marshal tool inputs to json: %w", err)
+			}
+			body = bytes.NewReader(jsonBytes)
 		}
-		body = bytes.NewReader(jsonBytes)
 		contentType = contentTypeJSON
 	}
 
