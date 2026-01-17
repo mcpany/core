@@ -521,7 +521,8 @@ func (s *Server) ListTools() []tool.Tool {
 //   - The result of the tool execution.
 //   - An error if the tool execution fails or access is denied.
 func (s *Server) CallTool(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
-	logging.GetLogger().Info("Calling tool...", "toolName", req.ToolName, "arguments", string(util.RedactJSON(req.ToolInputs)))
+	// ⚡ Bolt Optimization: Use BytesToString to avoid allocation when logging arguments.
+	logging.GetLogger().Info("Calling tool...", "toolName", req.ToolName, "arguments", util.BytesToString(util.RedactJSON(req.ToolInputs)))
 	// Try to get service ID from tool
 	var serviceID string
 	if t, ok := s.GetTool(req.ToolName); ok {
