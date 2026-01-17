@@ -313,7 +313,7 @@ func (d *Debugger) APIHandler() http.HandlerFunc {
 
 // HTTPHandler returns a standard http.HandlerFunc to view entries.
 func (d *Debugger) HTTPHandler() http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
+	return func(w http.ResponseWriter, _ *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		if err := json.NewEncoder(w).Encode(d.Entries()); err != nil {
 			http.Error(w, "Failed to encode entries", http.StatusInternalServerError)
