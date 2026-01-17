@@ -15,10 +15,6 @@ var (
 	sensitiveKeysBytes [][]byte
 	redactedValue      json.RawMessage
 
-	// sensitiveStartChars contains the lowercase starting characters of all sensitive keys.
-	// Used for optimized scanning.
-	sensitiveStartChars []byte
-
 	// sensitiveKeyGroups maps a starting character (lowercase) to the list of sensitive keys starting with it.
 	// Optimization: Use array instead of map for faster lookup.
 	sensitiveKeyGroups [256][][]byte
@@ -34,6 +30,10 @@ var (
 )
 
 func init() {
+	// sensitiveStartChars contains the lowercase starting characters of all sensitive keys.
+	// Used temporarily for building the bitmap.
+	var sensitiveStartChars []byte
+
 	for _, k := range sensitiveKeys {
 		kb := []byte(k)
 		sensitiveKeysBytes = append(sensitiveKeysBytes, kb)
@@ -145,7 +145,7 @@ func IsSensitiveKey(key string) bool {
 // scanForSensitiveKeys checks if input contains any sensitive key.
 // If validateKeyContext is true, it checks if the match is followed by a closing quote and a colon.
 // This function replaces the old linear scan (O(N*M)) with a more optimized scan
-// that uses SIMD-accelerated IndexByte for grouped start characters.
+// that uses a lookup bitmap for fast filtering.
 func scanForSensitiveKeys(input []byte, validateKeyContext bool) bool { //nolint:unparam
 	// Optimization: If we are validating key context (JSON input), we can scan by quotes.
 	// This allows us to skip scanning string values entirely, which is a huge win for large payloads.
@@ -153,64 +153,17 @@ func scanForSensitiveKeys(input []byte, validateKeyContext bool) bool { //nolint
 		return scanJSONForSensitiveKeys(input)
 	}
 
-	// Optimization: For short strings, IndexAny is faster (one pass).
-	// For long strings, multiple IndexByte calls are faster (SIMD).
-	// The crossover is around 128 bytes.
-	if len(input) < 128 {
-		// Use bitmap for faster check than IndexAny on short strings
-		for i := 0; i < len(input); i++ {
-			c := input[i]
-			if sensitiveStartCharBitmap[c] {
-				startChar := c | 0x20 // Normalize to lowercase
-				if checkPotentialMatch(input, i, startChar) {
-					return true
-				}
-			}
-		}
-		return false
-	}
-
-	for _, startChar := range sensitiveStartChars {
-		// startChar is lowercase. We need to check for uppercase too.
-		// Optimized loop: skip directly to the next occurrence of startChar or startChar-32
-		upperChar := startChar - 32
-
-		offset := 0
-		for offset < len(input) {
-			slice := input[offset:]
-
-			// Find first occurrence of startChar or upperChar
-			idxL := bytes.IndexByte(slice, startChar)
-			idxU := bytes.IndexByte(slice, upperChar)
-
-			var idx int
-			if idxL == -1 && idxU == -1 {
-				break // No more matches for this char
-			}
-
-			switch {
-			case idxL == -1:
-				idx = idxU
-			case idxU == -1:
-				idx = idxL
-			default:
-				if idxL < idxU {
-					idx = idxL
-				} else {
-					idx = idxU
-				}
-			}
-			// Found candidate start at offset + idx
-			matchStart := offset + idx
-
-			// In this loop, we know the candidate char matches startChar (modulo case).
-			// We can reuse the common validation logic.
-			if checkPotentialMatch(input, matchStart, startChar) {
+	// Use bitmap for fast check.
+	// We previously used IndexByte for longer strings, but benchmarks showed that
+	// the bitmap loop is faster even for longer strings because we have multiple
+	// start characters to check, which would require multiple passes with IndexByte.
+	for i := 0; i < len(input); i++ {
+		c := input[i]
+		if sensitiveStartCharBitmap[c] {
+			startChar := c | 0x20 // Normalize to lowercase
+			if checkPotentialMatch(input, i, startChar) {
 				return true
 			}
-
-			// Move past this match
-			offset = matchStart + 1
 		}
 	}
 	return false
