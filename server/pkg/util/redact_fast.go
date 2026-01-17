@@ -14,6 +14,9 @@ import (
 // Variable for testing purposes.
 var maxUnescapeLimit = 1024 * 1024
 
+// unescapeStackLimit is the size of the stack buffer for unescaping keys.
+const unescapeStackLimit = 256
+
 // redactJSONFast is a zero-allocation (mostly) implementation of RedactJSON.
 // It scans the input byte slice and constructs a new slice with redacted values.
 // It avoids full JSON parsing.
@@ -240,11 +243,13 @@ func isKeySensitive(keyContent []byte) bool {
 	var keyToCheck []byte
 	var sensitive bool
 
+	// Stack buffer for unescaping small keys
+	var stackBuf [unescapeStackLimit]byte
+
 	if bytes.Contains(keyContent, []byte{'\\'}) {
 		// Key contains escape sequences, unescape it to check for sensitivity.
 		// This is slower but safer.
-		// Limit the key size to prevent excessive allocation on malicious input
-		// We increase this to 1MB to handle reasonably large keys while still preventing DoS.
+
 		if len(keyContent) > maxUnescapeLimit {
 			// Use streaming/chunked scan for huge keys to avoid allocation
 			if scanEscapedKeyForSensitive(keyContent) {
@@ -252,7 +257,16 @@ func isKeySensitive(keyContent []byte) bool {
 			} else {
 				keyToCheck = keyContent
 			}
+		} else if len(keyContent) < unescapeStackLimit {
+			// Optimization: use stack buffer for small keys
+			if unescaped, ok := unescapeKeySmall(keyContent, stackBuf[:]); ok {
+				keyToCheck = unescaped
+			} else {
+				// Fallback if unescape failed (e.g. malformed or weird escape)
+				keyToCheck = keyContent
+			}
 		} else {
+			// Allocation path for medium keys
 			quoted := make([]byte, len(keyContent)+2)
 			quoted[0] = '"'
 			copy(quoted[1:], keyContent)
@@ -277,6 +291,100 @@ func isKeySensitive(keyContent []byte) bool {
 		sensitive = scanForSensitiveKeys(keyToCheck, false)
 	}
 	return sensitive
+}
+
+// unescapeKeySmall unescapes a JSON string into a provided buffer.
+// It returns the unescaped slice (backed by buf) and true on success.
+// If buf is too small or input is invalid, it returns false.
+func unescapeKeySmall(input []byte, buf []byte) ([]byte, bool) {
+	bufIdx := 0
+	i := 0
+	n := len(input)
+
+	for i < n {
+		if bufIdx >= len(buf) {
+			return nil, false
+		}
+
+		c := input[i]
+		if c == '\\' {
+			i++
+			if i >= n {
+				return nil, false
+			}
+			switch input[i] {
+			case '"', '\\', '/', '\'':
+				c = input[i]
+				i++
+			case 'b':
+				c = '\b'
+				i++
+			case 'f':
+				c = '\f'
+				i++
+			case 'n':
+				c = '\n'
+				i++
+			case 'r':
+				c = '\r'
+				i++
+			case 't':
+				c = '\t'
+				i++
+			case 'u':
+				// \uXXXX
+				if i+4 < n {
+					val := 0
+					valid := true
+					for k := 0; k < 4; k++ {
+						h := input[i+1+k]
+						var d int
+						switch {
+						case h >= '0' && h <= '9':
+							d = int(h - '0')
+						case h >= 'a' && h <= 'f':
+							d = int(h - 'a' + 10)
+						case h >= 'A' && h <= 'F':
+							d = int(h - 'A' + 10)
+						default:
+							valid = false
+						}
+						if !valid {
+							break
+						}
+						val = (val << 4) | d
+					}
+
+					if valid {
+						if val <= 127 {
+							c = byte(val)
+						} else {
+							// For non-ASCII, we replace with '?' as scanForSensitiveKeys handles bytes.
+							// Sensitive keys are assumed to be ASCII.
+							c = '?'
+						}
+						i += 5
+					} else {
+						c = 'u'
+						i++
+					}
+				} else {
+					c = 'u'
+					i++
+				}
+			default:
+				// Unknown escape
+				c = input[i]
+				i++
+			}
+		} else {
+			i++
+		}
+		buf[bufIdx] = c
+		bufIdx++
+	}
+
+	return buf[:bufIdx], true
 }
 
 // scanEscapedKeyForSensitive scans a large escaped key for sensitive words using a fixed-size buffer.
