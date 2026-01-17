@@ -36,6 +36,13 @@ var (
 	appRunner app.Runner = app.NewApplication()
 )
 
+const (
+	iconOk      = "✅"
+	iconWarning = "⚠️ "
+	iconError   = "❌"
+	iconSkipped = "⏭️ "
+)
+
 // loadEnv loads environment variables from a .env file.
 // It checks for the --env-file flag and loads the specified file.
 // If no flag is provided, it attempts to load .env from the current directory.
@@ -163,6 +170,43 @@ func newRootCmd() *cobra.Command { //nolint:gocyclo // Main entry point, expecte
 				log.Warn("⚠️  Running without a global API key. This is NOT recommended for production deployment.")
 			}
 
+			// Track 1: Friction Fighter - Strict Mode
+			strict, _ := cmd.Flags().GetBool("strict")
+			if strict {
+				log.Info("Running in strict mode: validating configuration and upstream connectivity...")
+				store := config.NewFileStore(osFs, configPaths)
+				configs, err := config.LoadResolvedConfig(ctx, store)
+				if err != nil {
+					return fmt.Errorf("failed to load configuration for strict validation: %w", err)
+				}
+
+				results := doctor.RunChecks(ctx, configs)
+				hasErrors := false
+				for _, res := range results {
+					var icon string
+					switch res.Status {
+					case doctor.StatusOk:
+						icon = iconOk
+						log.Info(fmt.Sprintf("%s [%s] %s: %s", icon, res.Status, res.ServiceName, res.Message))
+					case doctor.StatusWarning:
+						icon = iconWarning
+						log.Warn(fmt.Sprintf("%s [%s] %s: %s", icon, res.Status, res.ServiceName, res.Message))
+					case doctor.StatusError:
+						icon = iconError
+						log.Error(fmt.Sprintf("%s [%s] %s: %s", icon, res.Status, res.ServiceName, res.Message))
+						hasErrors = true
+					case doctor.StatusSkipped:
+						icon = iconSkipped
+						log.Info(fmt.Sprintf("%s [%s] %s: %s", icon, res.Status, res.ServiceName, res.Message))
+					}
+				}
+
+				if hasErrors {
+					return fmt.Errorf("strict mode validation failed: one or more upstream services are unreachable or misconfigured")
+				}
+				log.Info("Strict mode validation passed.")
+			}
+
 			if err := appRunner.Run(ctx, osFs, stdio, bindAddress, grpcPort, configPaths, cfg.APIKey(), shutdownTimeout); err != nil {
 				log.Error("Application failed", "error", err)
 				return err
@@ -171,6 +215,7 @@ func newRootCmd() *cobra.Command { //nolint:gocyclo // Main entry point, expecte
 			return nil
 		},
 	}
+	runCmd.Flags().Bool("strict", false, "Run in strict mode (validate upstream connectivity before starting)")
 	config.BindServerFlags(runCmd)
 	rootCmd.AddCommand(runCmd)
 
@@ -293,14 +338,14 @@ func newRootCmd() *cobra.Command { //nolint:gocyclo // Main entry point, expecte
 				var icon string
 				switch res.Status {
 				case doctor.StatusOk:
-					icon = "✅"
+					icon = iconOk
 				case doctor.StatusWarning:
-					icon = "⚠️ "
+					icon = iconWarning
 				case doctor.StatusError:
-					icon = "❌"
+					icon = iconError
 					hasErrors = true
 				case doctor.StatusSkipped:
-					icon = "⏭️ "
+					icon = iconSkipped
 				}
 				fmt.Printf("%s [%s] %s: %s\n", icon, res.Status, res.ServiceName, res.Message)
 			}
@@ -442,14 +487,14 @@ func newRootCmd() *cobra.Command { //nolint:gocyclo // Main entry point, expecte
 					var icon string
 					switch res.Status {
 					case doctor.StatusOk:
-						icon = "✅"
+						icon = iconOk
 					case doctor.StatusWarning:
-						icon = "⚠️ "
+						icon = iconWarning
 					case doctor.StatusError:
-						icon = "❌"
+						icon = iconError
 						hasDoctorErrors = true
 					case doctor.StatusSkipped:
-						icon = "⏭️ "
+						icon = iconSkipped
 					}
 					fmt.Printf("%s [%s] %s: %s\n", icon, res.Status, res.ServiceName, res.Message)
 				}

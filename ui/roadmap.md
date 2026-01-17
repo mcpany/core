@@ -28,12 +28,14 @@
 - [x] **Service Configuration Validation**: Pre-save validation for service configs (e.g. check if URL is reachable).
 - [x] **Service Tagging & Grouping**: Organize services by tags (e.g., prod, staging, external) and filter the list.
 - [ ] **Service Config Diff Viewer**: Visual diff when updating or duplicating services to see exactly what changed.
-- [ ] **Bulk Service Actions**: Enable/Disable or Delete multiple services at once, potentially using tags for selection.
+- [x] **Bulk Service Actions**: Enable/Disable or Delete multiple services at once, potentially using tags for selection.
 - [ ] **Tag-based Access Control**: Restrict service access to specific user profiles based on tags.
 - [ ] **Live Tool Usage Graph**: Visual graph of tool execution metrics over time (RPS, Latency) in Tool Detail view.
 - [ ] **Playground Schema Validation**: Enforce JSON schema validation in the Tool Playground before submission to prevent bad requests.
 - [ ] **Favorites/Pinned Tools**: Ability to pin frequently used tools to the top of the list for quick access.
 - [ ] **Schema Validation Playground**: Allow users to test JSON payloads against the schema directly in the inspector with validation feedback.
+- [ ] **Service Health History Visualization**: A sparkline or small graph in the service list row showing uptime/latency history (e.g. last 1h).
+- [ ] **Bulk Edit Configuration**: Ability to edit common properties (like tags, timeout, or environment variables) for multiple selected services.
 
 ### Completed Features
 
