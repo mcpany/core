@@ -178,8 +178,19 @@ func CheckConnection(ctx context.Context, address string) error {
 		target = net.JoinHostPort(host, port)
 	}
 
-	d := net.Dialer{Timeout: 5 * time.Second}
-	conn, err := d.DialContext(ctx, "tcp", target)
+	dialer := NewSafeDialer()
+	// Set timeout on the underlying dialer
+	dialer.Dialer = &net.Dialer{Timeout: 5 * time.Second}
+
+	// Respect environment variables for allowed ranges
+	if os.Getenv("MCPANY_ALLOW_LOOPBACK_RESOURCES") == TrueStr {
+		dialer.AllowLoopback = true
+	}
+	if os.Getenv("MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES") == TrueStr {
+		dialer.AllowPrivate = true
+	}
+
+	conn, err := dialer.DialContext(ctx, "tcp", target)
 	if err != nil {
 		return fmt.Errorf("failed to connect to address %s: %w", target, err)
 	}

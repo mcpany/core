@@ -1,6 +1,7 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
+// Package doctor provides diagnostic checks for the server configuration and upstream services.
 package doctor
 
 import (
@@ -44,10 +45,11 @@ type CheckResult struct {
 
 // RunChecks performs connectivity and health checks on the provided configuration.
 func RunChecks(ctx context.Context, config *configv1.McpAnyServerConfig) []CheckResult {
-	var results []CheckResult
+	services := config.GetUpstreamServices()
+	results := make([]CheckResult, 0, len(services))
 
 	// Check upstream services
-	for _, service := range config.GetUpstreamServices() {
+	for _, service := range services {
 		if service.GetDisable() {
 			results = append(results, CheckResult{
 				ServiceName: service.GetName(),
@@ -150,7 +152,7 @@ func checkURL(ctx context.Context, urlStr string) CheckResult {
 			Error:   err,
 		}
 	}
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 
 	if resp.StatusCode >= 400 && resp.StatusCode != 404 && resp.StatusCode != 405 && resp.StatusCode != 426 { // 426 Upgrade Required is fine for WS
 		// We consider 4xx a warning because the service is technically reachable, just maybe not at this path.
@@ -192,7 +194,8 @@ func checkGRPCService(ctx context.Context, s *configv1.GrpcUpstreamService) Chec
 		timeout = time.Until(deadline)
 	}
 
-	conn, err := net.DialTimeout("tcp", net.JoinHostPort(host, port), timeout)
+	dialer := &net.Dialer{Timeout: timeout}
+	conn, err := dialer.DialContext(ctx, "tcp", net.JoinHostPort(host, port))
 	if err != nil {
 		return CheckResult{
 			Status:  StatusError,
@@ -200,7 +203,7 @@ func checkGRPCService(ctx context.Context, s *configv1.GrpcUpstreamService) Chec
 			Error:   err,
 		}
 	}
-	defer conn.Close()
+	defer func() { _ = conn.Close() }()
 
 	return CheckResult{
 		Status:  StatusOk,
@@ -249,7 +252,7 @@ func checkSQLService(ctx context.Context, s *configv1.SqlUpstreamService) CheckR
 			Error:   err,
 		}
 	}
-	defer db.Close()
+	defer func() { _ = db.Close() }()
 
 	// Try to ping
 	err = db.PingContext(ctx)
@@ -295,7 +298,7 @@ func checkMCPService(ctx context.Context, s *configv1.McpUpstreamService) CheckR
 	}
 }
 
-func checkCommandLineService(ctx context.Context, s *configv1.CommandLineUpstreamService) CheckResult {
+func checkCommandLineService(_ context.Context, s *configv1.CommandLineUpstreamService) CheckResult {
 	if s.GetContainerEnvironment().GetImage() != "" {
 		return CheckResult{
 			Status:  StatusSkipped,

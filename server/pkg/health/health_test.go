@@ -8,6 +8,7 @@ import (
 	"net"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"strings"
 	"testing"
 	"time"
@@ -23,6 +24,13 @@ import (
 	"google.golang.org/grpc/health/grpc_health_v1"
 	"google.golang.org/protobuf/types/known/durationpb"
 )
+
+func TestMain(m *testing.M) {
+	// Enable loopback resources for tests as they use localhost servers
+	_ = os.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "true")
+	code := m.Run()
+	os.Exit(code)
+}
 
 // mockHealthServer is a mock implementation of the gRPC health check server.
 type mockHealthServer struct {

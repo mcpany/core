@@ -30,6 +30,14 @@ func TestSkillResource_PathTraversal(t *testing.T) {
 	err = os.WriteFile(secretFile, []byte("super secret"), 0644)
 	require.NoError(t, err)
 
+	// Create a sibling directory that shares prefix
+	siblingDir := filepath.Join(tmpDir, "myskill-sibling")
+	err = os.Mkdir(siblingDir, 0755)
+	require.NoError(t, err)
+	siblingFile := filepath.Join(siblingDir, "secret.txt")
+	err = os.WriteFile(siblingFile, []byte("sibling secret"), 0644)
+	require.NoError(t, err)
+
 	// Create a valid skill asset
 	assetFile := filepath.Join(skillDir, "asset.txt")
 	err = os.WriteFile(assetFile, []byte("public asset"), 0644)
@@ -48,23 +56,30 @@ func TestSkillResource_PathTraversal(t *testing.T) {
 	require.NoError(t, err)
 	assert.Equal(t, "public asset", result.Contents[0].Text)
 
-	// Test Case 2: Path Traversal Attack
+	// Test Case 2: Path Traversal Attack (Dot Dot)
 	// We try to access ../secret.txt
 	resource = mcpserver.NewSkillAssetResource(s, "../secret.txt")
 	result, err = resource.Read(context.Background())
 
-	// Expectation: Should fail (but currently succeeds due to vulnerability)
+	// Expectation: Should fail
 	if err == nil {
-		// If it succeeds, check if we read the secret
-		if result.Contents[0].Text == "super secret" {
-			t.Log("VULNERABILITY CONFIRMED: Path traversal allowed access to secret file")
-			// We assert fail here to confirm the test is working as a reproduction
-			assert.Fail(t, "Should prevent path traversal")
-		} else {
-			t.Logf("Read succeeded but content unexpected: %s", result.Contents[0].Text)
-		}
+		assert.Fail(t, "Should prevent path traversal with ..")
 	} else {
-		// Once fixed, it should error
+		assert.ErrorContains(t, err, "invalid asset path")
+	}
+
+	// Test Case 3: Sibling Directory Attack
+	// We try to access ../myskill-sibling/secret.txt
+	relPath, err := filepath.Rel(skillDir, siblingFile)
+	require.NoError(t, err)
+
+	resource = mcpserver.NewSkillAssetResource(s, relPath)
+	result, err = resource.Read(context.Background())
+
+	// Expectation: Should fail
+	if err == nil {
+		assert.Fail(t, "Should prevent access to sibling directory")
+	} else {
 		assert.ErrorContains(t, err, "invalid asset path")
 	}
 }
