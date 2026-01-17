@@ -15,7 +15,6 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/joho/godotenv"
 	"github.com/mcpany/core/server/pkg/app"
 	"github.com/mcpany/core/server/pkg/appconsts"
 	"github.com/mcpany/core/server/pkg/config"
@@ -23,6 +22,7 @@ import (
 	"github.com/mcpany/core/server/pkg/logging"
 	"github.com/mcpany/core/server/pkg/metrics"
 	"github.com/mcpany/core/server/pkg/update"
+	"github.com/joho/godotenv"
 	"github.com/spf13/afero"
 	"github.com/spf13/cobra"
 	"golang.org/x/oauth2"
@@ -323,7 +323,7 @@ func newRootCmd() *cobra.Command { //nolint:gocyclo // Main entry point, expecte
 	schemaCmd := &cobra.Command{
 		Use:   "schema",
 		Short: "Print the JSON Schema for configuration",
-		RunE: func(_ *cobra.Command, _ []string) error {
+		RunE: func(cmd *cobra.Command, _ []string) error {
 			schemaBytes, err := config.GenerateJSONSchemaBytes()
 			if err != nil {
 				return fmt.Errorf("failed to generate schema: %w", err)
@@ -338,9 +338,9 @@ func newRootCmd() *cobra.Command { //nolint:gocyclo // Main entry point, expecte
 		Use:   "check [file]",
 		Short: "Check a configuration file against the JSON Schema",
 		Args:  cobra.ExactArgs(1),
-		RunE: func(_ *cobra.Command, args []string) error {
+		RunE: func(cmd *cobra.Command, args []string) error {
 			filename := args[0]
-			data, err := os.ReadFile(filename) //nolint:gosec // Intentionally reading file from user input
+			data, err := os.ReadFile(filename)
 			if err != nil {
 				return fmt.Errorf("failed to read file %q: %w", filename, err)
 			}
