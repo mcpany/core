@@ -57,6 +57,7 @@
 - [x] **Validation CLI Command**: Enhanced `mcpany config validate` with `--check-connection` flag to run deep checks, including connecting to upstream services to verify connectivity. Also added `mcpany doctor` for comprehensive system health diagnosis. (Friction Fighter)
 - [x] **Upstream Connectivity Probe**: Implemented a startup connection check for HTTP upstream services. The server now logs a warning if the upstream service is unreachable during registration, preventing silent failures. (Friction Fighter)
 - [x] **Actionable Config Errors**: Enhanced configuration validator to provide specific, actionable "Fix" suggestions for common errors like missing environment variables, files, or invalid URL schemes. (Friction Fighter)
+- [x] **Service Health API**: Enhanced `GET /services` API to include active `tool_count` and runtime error details, enabling richer UI feedback. (Experience Crafter)
 
 ## 2. Top 10 Recommended Features
 
@@ -77,6 +78,8 @@ These features represent the next logical steps for the product, focusing on Ent
 | 11 | **Smart Retry Policies** | **Resilience**: Configurable exponential backoff and jitter for upstream connections to handle transient network failures gracefully. | Medium |
 | 12 | **Service Dependency Graph** | **Observability**: Visualize dependencies between services (e.g. Service A calls Tool B in Service C) to detect circular dependencies or bottlenecks. | High |
 | 13 | **Schema Validation Playground** | **DevX**: A dedicated UI in the dashboard to paste JSON/YAML and validate it against the server schema with real-time error highlighting. | Low |
+| 13a| **Tool Usage Analytics** | **Observability**: Visualize tool usage trends (frequency, latency, errors) in the Dashboard to help users identify popular or problematic tools. | Medium |
+| 13b| **Config Hot-Reload Notification** | **UX**: Push a toast notification to the UI when the configuration is reloaded on the server (via WebSocket), so users know their changes are live. | Low |
 | 14 | **Partial Reloads** | **Resilience**: When reloading config dynamically, if one service is invalid, keep the old version running instead of removing it or failing the whole reload (if possible). | High |
 | 15 | **Filesystem Health Check** | **Observability**: Add a health check probe for filesystem roots to report status to the UI, not just logs. | Low |
 | 16 | **Safe Symlink Traversal** | **Security**: Add configuration options to strictly control symlink traversal policies (allow/deny/internal-only). | Medium |

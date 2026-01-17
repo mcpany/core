@@ -33,6 +33,7 @@
 
 ### Completed Features
 
+- [x] **Service Health & Tool Count UI**: Display active tool count and enhanced health status (error tooltips) in the Service Management list for better visibility.
 - [x] **Service Duplication & Export**: Added "Duplicate" and "Export" actions to the service list for easier management.
 
 - [x] **Resource Preview Modal**: A dedicated modal to preview resources for larger viewing area.

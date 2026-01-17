@@ -16,7 +16,13 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
-import { MoreHorizontal, Settings, Trash, RefreshCw } from "lucide-react";
+import { MoreHorizontal, Settings, Trash, RefreshCw, AlertCircle, CheckCircle2 } from "lucide-react";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -48,7 +54,7 @@ export function ServicesTable({ services, loading, onToggle, onDelete }: Service
           <TableRow>
             <TableHead>Name</TableHead>
             <TableHead>Type</TableHead>
-            <TableHead>Version</TableHead>
+            <TableHead>Tools</TableHead>
             <TableHead>Status</TableHead>
             <TableHead>Priority</TableHead>
             <TableHead className="text-right">Actions</TableHead>
@@ -77,16 +83,43 @@ export function ServicesTable({ services, loading, onToggle, onDelete }: Service
                      service.openapiService ? "OpenAPI" : "Unknown"}
                 </Badge>
               </TableCell>
-              <TableCell>{service.version || '-'}</TableCell>
+              <TableCell>
+                  <div className="flex items-center gap-2">
+                      <span className="font-medium">{service.toolCount || 0}</span>
+                  </div>
+              </TableCell>
               <TableCell>
                 <div className="flex items-center space-x-2">
                     <Switch
                         checked={!service.disable}
                         onCheckedChange={() => onToggle(service)}
                     />
-                    <span className="text-sm text-muted-foreground">
-                        {!service.disable ? 'Enabled' : 'Disabled'}
-                    </span>
+                    <TooltipProvider>
+                        <Tooltip>
+                            <TooltipTrigger>
+                                {service.disable ? (
+                                    <Badge variant="secondary">Disabled</Badge>
+                                ) : service.lastError ? (
+                                    <Badge variant="destructive" className="gap-1">
+                                        <AlertCircle className="h-3 w-3" /> Error
+                                    </Badge>
+                                ) : (
+                                    <Badge variant="default" className="bg-green-600 hover:bg-green-700 gap-1">
+                                        <CheckCircle2 className="h-3 w-3" /> Healthy
+                                    </Badge>
+                                )}
+                            </TooltipTrigger>
+                            <TooltipContent>
+                                {service.disable ? (
+                                    <p>Service is disabled.</p>
+                                ) : service.lastError ? (
+                                    <p className="text-red-500 font-medium">Error: {service.lastError}</p>
+                                ) : (
+                                    <p>Service is active and healthy.</p>
+                                )}
+                            </TooltipContent>
+                        </Tooltip>
+                    </TooltipProvider>
                 </div>
               </TableCell>
               <TableCell>{service.priority || 0}</TableCell>

@@ -76,7 +76,7 @@ export function ServiceList({ services, isLoading, onToggle, onEdit, onDelete, o
               <TableHead>Type</TableHead>
               <TableHead>Tags</TableHead>
               <TableHead>Address / Command</TableHead>
-              <TableHead>Version</TableHead>
+              <TableHead>Tools</TableHead>
               <TableHead className="text-center">Secure</TableHead>
               <TableHead className="text-right">Actions</TableHead>
             </TableRow>
@@ -146,23 +146,37 @@ const ServiceRow = memo(function ServiceRow({ service, onToggle, onEdit, onDelet
                             onCheckedChange={(checked) => onToggle(service.name, checked)}
                         />
                     )}
+                    <TooltipProvider>
+                        <Tooltip>
+                            <TooltipTrigger>
+                                {service.disable ? (
+                                    <Badge variant="secondary">Disabled</Badge>
+                                ) : service.lastError ? (
+                                    <Badge variant="destructive" className="gap-1">
+                                        <AlertTriangle className="h-3 w-3" /> Error
+                                    </Badge>
+                                ) : (
+                                    <Badge variant="default" className="bg-green-600 hover:bg-green-700 gap-1">
+                                        <CheckCircle className="h-3 w-3" /> Healthy
+                                    </Badge>
+                                )}
+                            </TooltipTrigger>
+                            <TooltipContent>
+                                {service.disable ? (
+                                    <p>Service is disabled.</p>
+                                ) : service.lastError ? (
+                                    <p className="text-red-500 font-medium">Error: {service.lastError}</p>
+                                ) : (
+                                    <p>Service is active and healthy.</p>
+                                )}
+                            </TooltipContent>
+                        </Tooltip>
+                    </TooltipProvider>
                  </div>
              </TableCell>
              <TableCell className="font-medium">
                  <div className="flex items-center gap-2">
                      {service.name}
-                     {service.lastError && (
-                         <TooltipProvider>
-                             <Tooltip>
-                                 <TooltipTrigger>
-                                     <AlertTriangle className="h-4 w-4 text-destructive" />
-                                 </TooltipTrigger>
-                                 <TooltipContent>
-                                     <p className="max-w-xs break-words text-xs">{service.lastError}</p>
-                                 </TooltipContent>
-                             </Tooltip>
-                         </TooltipProvider>
-                     )}
                  </div>
              </TableCell>
              <TableCell>
@@ -181,7 +195,10 @@ const ServiceRow = memo(function ServiceRow({ service, onToggle, onEdit, onDelet
                  {address}
              </TableCell>
              <TableCell>
-                 {service.version}
+                 <div className="flex items-center gap-2">
+                     <span className="font-medium">{service.toolCount || 0}</span>
+                     <span className="text-xs text-muted-foreground">tools</span>
+                 </div>
              </TableCell>
              <TableCell className="text-center">
                  {secure ? <CheckCircle className="h-4 w-4 text-green-500 mx-auto" /> : <XCircle className="h-4 w-4 text-muted-foreground mx-auto" />}
