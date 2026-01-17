@@ -27,7 +27,7 @@ func ptr(s string) *string {
 }
 
 // Helper to start a local SFTP server
-func startSFTPServer(t *testing.T) (string, *ssh.ServerConfig, func()) {
+func startSFTPServer(t *testing.T, authorizedKey ssh.PublicKey) (string, *ssh.ServerConfig, func()) {
 	// 1. Generate Host Key
 	key, err := rsa.GenerateKey(rand.Reader, 2048)
 	require.NoError(t, err)
@@ -45,6 +45,15 @@ func startSFTPServer(t *testing.T) (string, *ssh.ServerConfig, func()) {
 				return nil, nil
 			}
 			return nil, fmt.Errorf("password rejected for %q", c.User())
+		},
+		PublicKeyCallback: func(c ssh.ConnMetadata, pubKey ssh.PublicKey) (*ssh.Permissions, error) {
+			if authorizedKey != nil {
+				// We need to compare marshaled bytes to be safe
+				if ssh.FingerprintSHA256(pubKey) == ssh.FingerprintSHA256(authorizedKey) {
+					return nil, nil
+				}
+			}
+			return nil, fmt.Errorf("unknown public key for %q", c.User())
 		},
 	}
 	config.AddHostKey(signer)
@@ -116,7 +125,7 @@ func TestSftpProvider(t *testing.T) {
 	// Note: pkg/sftp server serves the local filesystem of the process.
 	// So we should operate in a temp dir.
 
-	addr, _, cleanup := startSFTPServer(t)
+	addr, _, cleanup := startSFTPServer(t, nil)
 	defer cleanup()
 
 	// Create temp dir for testing
@@ -317,5 +326,100 @@ func TestSftpProvider(t *testing.T) {
 
 		// Just call it, expecting either nil or error, but covering the line.
 		_ = fs.Chown(path, 1000, 1000)
+	})
+}
+
+func TestNewSftpProvider_KeyAuth(t *testing.T) {
+	// Generate a key pair for the client
+	privateKey, err := rsa.GenerateKey(rand.Reader, 2048)
+	require.NoError(t, err)
+
+	// Get public key for server
+	publicKey, err := ssh.NewPublicKey(&privateKey.PublicKey)
+	require.NoError(t, err)
+
+	addr, _, cleanup := startSFTPServer(t, publicKey)
+	defer cleanup()
+
+	// Write private key to temp file
+	keyDir, err := os.MkdirTemp("", "keys")
+	require.NoError(t, err)
+	defer os.RemoveAll(keyDir)
+
+	keyFile := filepath.Join(keyDir, "id_rsa")
+	keyPEM := pem.EncodeToMemory(&pem.Block{
+		Type:  "RSA PRIVATE KEY",
+		Bytes: x509.MarshalPKCS1PrivateKey(privateKey),
+	})
+	err = os.WriteFile(keyFile, keyPEM, 0600)
+	require.NoError(t, err)
+
+	config := &configv1.SftpFs{
+		Address:  &addr,
+		Username: ptr("testuser"),
+		KeyPath:  ptr(keyFile),
+	}
+
+	provider, err := NewSftpProvider(config)
+	require.NoError(t, err)
+	defer provider.Close()
+
+	// Verify connection works
+	_, err = provider.GetFs().Stat(".")
+	require.NoError(t, err)
+}
+
+func TestNewSftpProvider_Errors(t *testing.T) {
+	t.Run("Nil Config", func(t *testing.T) {
+		_, err := NewSftpProvider(nil)
+		assert.Error(t, err)
+		assert.Contains(t, err.Error(), "sftp config is nil")
+	})
+
+	t.Run("Missing Key File", func(t *testing.T) {
+		config := &configv1.SftpFs{
+			Username: ptr("user"),
+			KeyPath:  ptr("/non/existent/key"),
+		}
+		_, err := NewSftpProvider(config)
+		assert.Error(t, err)
+		assert.Contains(t, err.Error(), "failed to read private key")
+	})
+
+	t.Run("Invalid Key File", func(t *testing.T) {
+		keyDir, err := os.MkdirTemp("", "badkeys")
+		require.NoError(t, err)
+		defer os.RemoveAll(keyDir)
+
+		keyFile := filepath.Join(keyDir, "bad_key")
+		err = os.WriteFile(keyFile, []byte("not a key"), 0600)
+		require.NoError(t, err)
+
+		config := &configv1.SftpFs{
+			Username: ptr("user"),
+			KeyPath:  ptr(keyFile),
+		}
+		_, err = NewSftpProvider(config)
+		assert.Error(t, err)
+		assert.Contains(t, err.Error(), "failed to parse private key")
+	})
+
+	t.Run("Dial Error", func(t *testing.T) {
+		config := &configv1.SftpFs{
+			Address:  ptr("127.0.0.1:0"), // Random free port, likely nothing listening or connection refused
+			Username: ptr("user"),
+			Password: ptr("pass"),
+		}
+		// Try to find a free port that is NOT listening
+		l, err := net.Listen("tcp", "127.0.0.1:0")
+		require.NoError(t, err)
+		freeAddr := l.Addr().String()
+		l.Close()
+
+		config.Address = ptr(freeAddr)
+
+		_, err = NewSftpProvider(config)
+		assert.Error(t, err)
+		// Error message depends on OS but usually contains "refused"
 	})
 }
