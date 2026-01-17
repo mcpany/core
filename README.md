@@ -211,18 +211,23 @@ We welcome contributions to MCP Any! This section provides a brief overview of h
     ```
 
 2.  **Install dependencies and tools:**
-    Run the following command to set up your environment (installs `protoc`, linters, etc.):
+    The project uses a `Makefile` to automate the installation of all necessary development tools, including `protoc`, Go protobuf plugins, linters, and pre-commit hooks.
     ```bash
     make prepare
     ```
 
 ### Common Commands
 
-- **Build**: `make build` (Binary will be at `build/bin/server`)
-- **Test**: `make test` (Runs unit, integration, and E2E tests)
-- **Lint**: `make lint` (Runs `golangci-lint` and other checks)
-- **Generate**: `make gen` (Regenerates code from Protocol Buffers)
-- **Clean**: `make clean` (Removes build artifacts)
+- **Build**: `make build`
+    - Compiles the server binary to `build/bin/server`.
+- **Test**: `make test`
+    - Runs all unit, integration, and E2E tests to ensure system stability.
+- **Lint**: `make lint`
+    - Runs `golangci-lint` and other static analysis tools to maintain code quality.
+- **Generate**: `make gen`
+    - Regenerates Go and TypeScript code from Protocol Buffers definitions.
+- **Clean**: `make clean`
+    - Removes build artifacts and generated files.
 
 ### Running Locally
 

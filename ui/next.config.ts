@@ -135,7 +135,7 @@ const nextConfig: NextConfig = {
     return config;
   },
   async rewrites() {
-    const backendUrl = process.env.BACKEND_URL || 'http://mcpany:50050';
+    const backendUrl = process.env.BACKEND_URL || 'http://localhost:50059';
     console.log("DEBUG: BACKEND_URL env:", process.env.BACKEND_URL);
     console.log("DEBUG: Using backend URL:", backendUrl);
     return [
@@ -149,7 +149,7 @@ const nextConfig: NextConfig = {
       },
       {
         source: '/mcpany.api.v1.RegistrationService/:path*',
-        destination: `${process.env.BACKEND_URL || 'http://localhost:8080'}/mcpany.api.v1.RegistrationService/:path*`,
+        destination: `${backendUrl}/mcpany.api.v1.RegistrationService/:path*`,
       },
       {
         source: '/v1/:path*',
@@ -157,7 +157,7 @@ const nextConfig: NextConfig = {
       },
       {
         source: '/auth/:path*',
-        destination: `${process.env.BACKEND_URL || 'http://localhost:8080'}/auth/:path*`,
+        destination: `${backendUrl}/auth/:path*`,
       },
     ];
   },

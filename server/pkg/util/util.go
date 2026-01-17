@@ -12,6 +12,7 @@ import (
 	"math/rand"
 	"net/url"
 	"os"
+	"path/filepath"
 	"reflect"
 	"strconv"
 	"strings"
@@ -332,6 +333,12 @@ func stringToBytes(s string) []byte {
 	return unsafe.Slice(unsafe.StringData(s), len(s)) //nolint:gosec // Standard zero-copy conversion
 }
 
+// BytesToString converts a byte slice to a string without allocation.
+// IMPORTANT: The byte slice must not be modified while the string is in use.
+func BytesToString(b []byte) string {
+	return unsafe.String(unsafe.SliceData(b), len(b)) //nolint:gosec // Standard zero-copy conversion
+}
+
 // GetDockerCommand returns the command and base arguments for running Docker.
 // It checks the USE_SUDO_FOR_DOCKER environment variable to determine if
 // "sudo" should be prepended to the command.
@@ -419,6 +426,10 @@ func replacePlaceholders(input string, params map[string]interface{}, noEscapePa
 }
 
 // IsNil checks if an interface value is nil or holds a nil pointer.
+//
+// i is the i.
+//
+// Returns true if successful.
 func IsNil(i any) bool {
 	if i == nil {
 		return true
@@ -472,6 +483,12 @@ func ToString(v any) string {
 		if val == float32(int32(val)) {
 			return strconv.FormatInt(int64(val), 10)
 		}
+		// Also check if it fits in int64 (for larger integers that are exact in float32)
+		if math.Trunc(float64(val)) == float64(val) {
+			if float64(val) >= float64(math.MinInt64) && float64(val) <= float64(math.MaxInt64) {
+				return strconv.FormatInt(int64(val), 10)
+			}
+		}
 		return strconv.FormatFloat(float64(val), 'g', -1, 32)
 	case float64:
 		// Check if it's an integer and within int64 range.
@@ -484,7 +501,7 @@ func ToString(v any) string {
 		// We check if the float value is integral.
 		if math.Trunc(val) == val {
 			// Check bounds to avoid undefined behavior or overflow when casting
-			if val >= float64(math.MinInt64) && val <= float64(math.MaxInt64) {
+			if val >= float64(math.MinInt64) && val < float64(math.MaxInt64) {
 				return strconv.FormatInt(int64(val), 10)
 			}
 		}
@@ -500,4 +517,38 @@ func ToString(v any) string {
 // It uses the global math/rand source.
 func RandomFloat64() float64 {
 	return rand.Float64() //nolint:gosec // Weak random is sufficient for jitter
+}
+
+// SanitizeFilename cleans a filename to ensure it is safe to use.
+// It removes any directory components, null bytes, and restricts characters
+// to alphanumeric, dots, dashes, and underscores.
+func SanitizeFilename(filename string) string {
+	// 1. Base name only
+	filename = filepath.Base(filename)
+
+	// 2. Remove any null bytes
+	filename = strings.ReplaceAll(filename, "\x00", "")
+
+	// 3. Remove non-allowed characters
+	var sb strings.Builder
+	for _, c := range filename {
+		if (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9') || c == '.' || c == '-' || c == '_' {
+			sb.WriteRune(c)
+		} else {
+			sb.WriteRune('_')
+		}
+	}
+	result := sb.String()
+
+	// 4. Ensure not empty
+	if result == "" || result == "." || result == ".." {
+		return "unnamed_file"
+	}
+
+	// 5. Truncate
+	if len(result) > 255 {
+		result = result[:255]
+	}
+
+	return result
 }

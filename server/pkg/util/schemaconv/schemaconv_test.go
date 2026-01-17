@@ -13,6 +13,7 @@ import (
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/reflect/protoreflect"
+	"google.golang.org/protobuf/types/known/structpb"
 )
 
 type mockConfigParameter struct {
@@ -510,4 +511,33 @@ func TestFieldsToProperties_Map(t *testing.T) {
 
 	// Should NOT have properties "key" and "value"
 	assert.NotContains(t, s.Fields, "properties")
+}
+
+func TestConfigSchemaToProtoProperties_DefaultValue(t *testing.T) {
+	stringType := configv1.ParameterType(configv1.ParameterType_value["STRING"])
+	defaultValue, err := structpb.NewValue("default-value")
+	require.NoError(t, err)
+
+	params := []*mockConfigParameter{
+		{
+			schema: configv1.ParameterSchema_builder{
+				Name:         proto.String("param_with_default"),
+				Description:  proto.String("param with default value"),
+				Type:         &stringType,
+				DefaultValue: defaultValue,
+			}.Build(),
+		},
+	}
+
+	properties, err := ConfigSchemaToProtoProperties(params)
+	require.NoError(t, err)
+
+	param, ok := properties.Fields["param_with_default"]
+	require.True(t, ok)
+	s := param.GetStructValue()
+	require.NotNil(t, s)
+
+	defVal, ok := s.Fields["default"]
+	require.True(t, ok, "default field missing from schema properties")
+	assert.Equal(t, "default-value", defVal.GetStringValue())
 }

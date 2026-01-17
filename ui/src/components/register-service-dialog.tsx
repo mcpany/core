@@ -41,6 +41,11 @@ interface RegisterServiceDialogProps {
   serviceToEdit?: UpstreamServiceConfig;
 }
 
+/**
+ * RegisterServiceDialog.
+ *
+ * @param serviceToEdit - The serviceToEdit.
+ */
 export function RegisterServiceDialog({ onSuccess, trigger, serviceToEdit }: RegisterServiceDialogProps) {
   const [open, setOpen] = useState(false);
   const [credentials, setCredentials] = useState<Credential[]>([]);

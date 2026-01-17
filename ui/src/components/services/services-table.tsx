@@ -16,7 +16,13 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
-import { MoreHorizontal, Settings, Trash, RefreshCw } from "lucide-react";
+import { MoreHorizontal, Settings, Trash, RefreshCw, AlertCircle, CheckCircle2, CircleOff } from "lucide-react";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -35,6 +41,11 @@ interface ServicesTableProps {
     onDelete: (service: UpstreamServiceConfig) => void;
 }
 
+/**
+ * ServicesTable.
+ *
+ * @param onDelete - The onDelete.
+ */
 export function ServicesTable({ services, loading, onToggle, onDelete }: ServicesTableProps) {
 
   if (loading) {
@@ -48,6 +59,7 @@ export function ServicesTable({ services, loading, onToggle, onDelete }: Service
           <TableRow>
             <TableHead>Name</TableHead>
             <TableHead>Type</TableHead>
+            <TableHead>Tools</TableHead>
             <TableHead>Version</TableHead>
             <TableHead>Status</TableHead>
             <TableHead>Priority</TableHead>
@@ -57,7 +69,7 @@ export function ServicesTable({ services, loading, onToggle, onDelete }: Service
         <TableBody>
           {services.length === 0 && (
               <TableRow>
-                  <TableCell colSpan={6} className="text-center h-24 text-muted-foreground">
+                  <TableCell colSpan={7} className="text-center h-24 text-muted-foreground">
                       No services registered.
                   </TableCell>
               </TableRow>
@@ -77,16 +89,56 @@ export function ServicesTable({ services, loading, onToggle, onDelete }: Service
                      service.openapiService ? "OpenAPI" : "Unknown"}
                 </Badge>
               </TableCell>
+              <TableCell>
+                  {service.toolCount !== undefined ? (
+                      <Badge variant="secondary">{service.toolCount}</Badge>
+                  ) : (
+                      <span className="text-muted-foreground">-</span>
+                  )}
+              </TableCell>
               <TableCell>{service.version || '-'}</TableCell>
               <TableCell>
-                <div className="flex items-center space-x-2">
+                <div className="flex items-center space-x-4">
                     <Switch
                         checked={!service.disable}
                         onCheckedChange={() => onToggle(service)}
                     />
-                    <span className="text-sm text-muted-foreground">
-                        {!service.disable ? 'Enabled' : 'Disabled'}
-                    </span>
+                    <TooltipProvider>
+                        <Tooltip>
+                            <TooltipTrigger asChild>
+                                <div className="flex items-center space-x-1 cursor-help">
+                                    {service.disable ? (
+                                        <>
+                                            <CircleOff className="h-4 w-4 text-muted-foreground" />
+                                            <span className="text-sm text-muted-foreground">Disabled</span>
+                                        </>
+                                    ) : service.lastError ? (
+                                        <>
+                                            <AlertCircle className="h-4 w-4 text-destructive" />
+                                            <span className="text-sm text-destructive font-medium">Error</span>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <CheckCircle2 className="h-4 w-4 text-green-600" />
+                                            <span className="text-sm text-green-600 font-medium">Active</span>
+                                        </>
+                                    )}
+                                </div>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                                {service.disable ? (
+                                    <p>Service is explicitly disabled.</p>
+                                ) : service.lastError ? (
+                                    <div className="max-w-xs">
+                                        <p className="font-semibold">Error:</p>
+                                        <p className="text-sm break-words">{service.lastError}</p>
+                                    </div>
+                                ) : (
+                                    <p>Service is active and healthy.</p>
+                                )}
+                            </TooltipContent>
+                        </Tooltip>
+                    </TooltipProvider>
                 </div>
               </TableCell>
               <TableCell>{service.priority || 0}</TableCell>

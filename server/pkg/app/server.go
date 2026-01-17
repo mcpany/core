@@ -109,9 +109,10 @@ func (a *Application) uploadFile(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Respond with the file name and size
-	// Sanitize the filename to prevent reflected XSS
+	// Sanitize the filename to prevent reflected XSS and ensure safe filesystem usage
+	safeFilename := util.SanitizeFilename(header.Filename)
 	w.Header().Set("Content-Type", "text/plain")
-	_, _ = fmt.Fprintf(w, "File '%s' uploaded successfully (size: %d bytes)", html.EscapeString(header.Filename), written)
+	_, _ = fmt.Fprintf(w, "File '%s' uploaded successfully (size: %d bytes)", html.EscapeString(safeFilename), written)
 }
 
 // Runner defines the interface for running the MCP Any application. It abstracts
@@ -208,6 +209,11 @@ type Application struct {
 	// lastReloadTime stores the time of the last configuration reload attempt.
 	// It is protected by configMu.
 	lastReloadTime time.Time
+
+	// BoundHTTPPort stores the actual port the HTTP server is listening on.
+	BoundHTTPPort int
+	// BoundGRPCPort stores the actual port the gRPC server is listening on.
+	BoundGRPCPort int
 }
 
 // NewApplication creates a new Application with default dependencies.
@@ -1482,39 +1488,13 @@ func (a *Application) runServerMode(
 	})))
 	mux.Handle("/debug/auth-test", authMiddleware(http.HandlerFunc(a.testAuthHandler)))
 
-	if standardMiddlewares != nil && standardMiddlewares.Debugger != nil {
-		mux.Handle("/debug/entries", authMiddleware(standardMiddlewares.Debugger.APIHandler()))
-	}
-
-	if grpcPort != "" {
-		gwmux := runtime.NewServeMux()
-		opts := []gogrpc.DialOption{gogrpc.WithTransportCredentials(insecure.NewCredentials())}
-		endpoint := grpcPort
-		if strings.HasPrefix(endpoint, ":") {
-			endpoint = "localhost" + endpoint
-		}
-		if err := v1.RegisterRegistrationServiceHandlerFromEndpoint(ctx, gwmux, endpoint, opts); err != nil {
-			return fmt.Errorf("failed to register gateway: %w", err)
-		}
-		// Register Skill Service Gateway
-		if err := v1.RegisterSkillServiceHandlerFromEndpoint(ctx, gwmux, endpoint, opts); err != nil {
-			return fmt.Errorf("failed to register skill gateway: %w", err)
-		}
-
-		// Consolidated handler for /v1/ to support both gRPC Gateway and Asset Uploads
-		// This prevents ServeMux from forcing redirects on /v1/skills due to specific subtree matching.
-		mux.Handle("/v1/", authMiddleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			if strings.HasSuffix(r.URL.Path, "/assets") {
-				a.handleUploadSkillAsset()(w, r)
-			} else {
-				gwmux.ServeHTTP(w, r)
-			}
-		})))
-	}
-
 	httpBindAddress := bindAddress
 	if httpBindAddress == "" {
-		httpBindAddress = "localhost:8070"
+		if envAddr := os.Getenv("MCPANY_DEFAULT_HTTP_ADDR"); envAddr != "" {
+			httpBindAddress = envAddr
+		} else {
+			httpBindAddress = "localhost:8070"
+		}
 	} else if !strings.Contains(httpBindAddress, ":") {
 		httpBindAddress = ":" + httpBindAddress
 	}
@@ -1624,6 +1604,29 @@ func (a *Application) runServerMode(
 		if err != nil {
 			errChan <- fmt.Errorf("gRPC server failed to listen: %w", err)
 		} else {
+			if addr, ok := lis.Addr().(*net.TCPAddr); ok {
+				a.BoundGRPCPort = addr.Port
+
+				// Register gRPC Gateway with the bound port
+				gwmux := runtime.NewServeMux()
+				opts := []gogrpc.DialOption{gogrpc.WithTransportCredentials(insecure.NewCredentials())}
+				endpoint := fmt.Sprintf("localhost:%d", a.BoundGRPCPort)
+
+				if err := v1.RegisterRegistrationServiceHandlerFromEndpoint(ctx, gwmux, endpoint, opts); err != nil {
+					errChan <- fmt.Errorf("failed to register gateway: %w", err)
+				} else if err := v1.RegisterSkillServiceHandlerFromEndpoint(ctx, gwmux, endpoint, opts); err != nil {
+					errChan <- fmt.Errorf("failed to register skill gateway: %w", err)
+				} else {
+					// Consolidated handler for /v1/ to support both gRPC Gateway and Asset Uploads
+					mux.Handle("/v1/", authMiddleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+						if strings.HasSuffix(r.URL.Path, "/assets") {
+							a.handleUploadSkillAsset()(w, r)
+						} else {
+							gwmux.ServeHTTP(w, r)
+						}
+					})))
+				}
+			}
 			expectedReady++
 			startGrpcServer(
 				localCtx,
@@ -1652,6 +1655,9 @@ func (a *Application) runServerMode(
 	if err != nil {
 		errChan <- fmt.Errorf("HTTP server failed to listen: %w", err)
 	} else {
+		if addr, ok := httpLis.Addr().(*net.TCPAddr); ok {
+			a.BoundHTTPPort = addr.Port
+		}
 		expectedReady++
 		startHTTPServer(localCtx, &wg, errChan, readyChan, "MCP Any HTTP", httpLis, handler, shutdownTimeout)
 	}

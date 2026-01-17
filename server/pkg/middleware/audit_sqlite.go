@@ -22,6 +22,11 @@ type SQLiteAuditStore struct {
 }
 
 // NewSQLiteAuditStore creates a new SQLiteAuditStore.
+//
+// path is the path.
+//
+// Returns the result.
+// Returns an error if the operation fails.
 func NewSQLiteAuditStore(path string) (*SQLiteAuditStore, error) {
 	if path == "" {
 		return nil, fmt.Errorf("sqlite path is required")
@@ -119,6 +124,11 @@ func ensureColumn(db *sql.DB, colName string) error {
 }
 
 // Write writes an audit entry to the database.
+//
+// ctx is the context for the request.
+// entry is the entry.
+//
+// Returns an error if the operation fails.
 func (s *SQLiteAuditStore) Write(ctx context.Context, entry AuditEntry) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -224,6 +234,8 @@ func (s *SQLiteAuditStore) Verify() (bool, error) {
 }
 
 // Close closes the database connection.
+//
+// Returns an error if the operation fails.
 func (s *SQLiteAuditStore) Close() error {
 	s.mu.Lock()
 	defer s.mu.Unlock()

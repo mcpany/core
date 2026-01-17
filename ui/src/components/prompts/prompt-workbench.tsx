@@ -38,6 +38,11 @@ interface PromptWorkbenchProps {
   initialPrompts?: PromptDefinition[];
 }
 
+/**
+ * PromptWorkbench.
+ *
+ * @param { initialPrompts = [] - The { initialPrompts = [].
+ */
 export function PromptWorkbench({ initialPrompts = [] }: PromptWorkbenchProps) {
   const [prompts, setPrompts] = useState<PromptDefinition[]>(initialPrompts);
   const [selectedPrompt, setSelectedPrompt] = useState<PromptDefinition | null>(null);

@@ -100,6 +100,48 @@ export default function ServicesPage() {
     }
   }, [fetchServices, toast]);
 
+  const bulkToggleService = useCallback(async (names: string[], enabled: boolean) => {
+    // Optimistic update
+    setServices(prev => prev.map(s => names.includes(s.name) ? { ...s, disable: !enabled } : s));
+
+    try {
+        await Promise.all(names.map(name => apiClient.setServiceStatus(name, !enabled)));
+        toast({
+            title: enabled ? "Services Enabled" : "Services Disabled",
+            description: `${names.length} services have been ${enabled ? "enabled" : "disabled"}.`
+        });
+    } catch (e) {
+        console.error("Failed to bulk toggle services", e);
+        fetchServices(); // Revert
+        toast({
+            variant: "destructive",
+            title: "Error",
+            description: "Failed to update some services."
+        });
+    }
+  }, [fetchServices, toast]);
+
+  const bulkDeleteService = useCallback(async (names: string[]) => {
+    if (!confirm(`Are you sure you want to delete ${names.length} services?`)) return;
+
+    try {
+        await Promise.all(names.map(name => apiClient.unregisterService(name)));
+        setServices(prev => prev.filter(s => !names.includes(s.name)));
+        toast({
+            title: "Services Deleted",
+            description: `${names.length} services have been removed.`
+        });
+    } catch (e) {
+         console.error("Failed to delete services", e);
+         fetchServices();
+         toast({
+            variant: "destructive",
+            title: "Error",
+            description: "Failed to delete some services."
+        });
+    }
+  }, [fetchServices, toast]);
+
   const openEdit = useCallback((service: UpstreamServiceConfig) => {
       setSelectedService(service);
       setIsSheetOpen(true);
@@ -216,6 +258,8 @@ export default function ServicesPage() {
                 onDelete={deleteService}
                 onDuplicate={handleDuplicate}
                 onExport={handleExport}
+                onBulkToggle={bulkToggleService}
+                onBulkDelete={bulkDeleteService}
              />
         </CardContent>
       </Card>

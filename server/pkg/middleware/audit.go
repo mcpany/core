@@ -27,6 +27,11 @@ type AuditMiddleware struct {
 }
 
 // NewAuditMiddleware creates a new AuditMiddleware.
+//
+// auditConfig is the auditConfig.
+//
+// Returns the result.
+// Returns an error if the operation fails.
 func NewAuditMiddleware(auditConfig *configv1.AuditConfig) (*AuditMiddleware, error) {
 	m := &AuditMiddleware{
 		config: auditConfig,
@@ -78,6 +83,10 @@ func (m *AuditMiddleware) initializeStore(config *configv1.AuditConfig) error {
 }
 
 // UpdateConfig updates the audit configuration safely.
+//
+// auditConfig is the auditConfig.
+//
+// Returns an error if the operation fails.
 func (m *AuditMiddleware) UpdateConfig(auditConfig *configv1.AuditConfig) error {
 	m.mu.Lock()
 	defer m.mu.Unlock()
@@ -121,6 +130,13 @@ func (m *AuditMiddleware) UpdateConfig(auditConfig *configv1.AuditConfig) error 
 }
 
 // Execute intercepts tool execution to log audit events.
+//
+// ctx is the context for the request.
+// req is the request object.
+// next is the next.
+//
+// Returns the result.
+// Returns an error if the operation fails.
 func (m *AuditMiddleware) Execute(ctx context.Context, req *tool.ExecutionRequest, next tool.ExecutionFunc) (any, error) {
 	m.mu.RLock()
 	auditConfig := m.config
@@ -215,6 +231,8 @@ func (m *AuditMiddleware) writeLog(ctx context.Context, store AuditStore, entry 
 }
 
 // Close closes the underlying store.
+//
+// Returns an error if the operation fails.
 func (m *AuditMiddleware) Close() error {
 	m.mu.Lock()
 	defer m.mu.Unlock()

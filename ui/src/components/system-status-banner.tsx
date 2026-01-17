@@ -1,5 +1,5 @@
 /**
- * Copyright 2025 Author(s) of MCP Any
+ * Copyright 2026 Author(s) of MCP Any
  * SPDX-License-Identifier: Apache-2.0
  */
 
@@ -7,19 +7,8 @@
 
 import { useEffect, useState } from "react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { AlertTriangle, WifiOff } from "lucide-react";
-
-interface CheckResult {
-  status: string;
-  message?: string;
-  latency?: string;
-}
-
-interface DoctorReport {
-  status: string;
-  timestamp: string;
-  checks: Record<string, CheckResult>;
-}
+import { AlertTriangle, WifiOff, AlertCircle } from "lucide-react";
+import { apiClient, DoctorReport } from "@/lib/client";
 
 export function SystemStatusBanner() {
   const [report, setReport] = useState<DoctorReport | null>(null);
@@ -28,21 +17,19 @@ export function SystemStatusBanner() {
   useEffect(() => {
     const fetchHealth = async () => {
       try {
-        const res = await fetch("/doctor");
-        if (!res.ok) {
-          throw new Error(`Failed to fetch health status: ${res.statusText}`);
-        }
-        const data = await res.json();
+        const data = await apiClient.getDoctorStatus();
         setReport(data);
         setError(null);
       } catch (err) {
+        // Fail silently for network errors to avoid spamming the user if the server is just restarting
+        // But if we want to show connection error like before:
         setError(err instanceof Error ? err.message : "Unknown error");
         setReport(null);
       }
     };
 
     fetchHealth();
-    const interval = setInterval(fetchHealth, 30000); // Poll every 30s
+    const interval = setInterval(fetchHealth, 5000); // 30s might be too slow for config updates, using 5s like ConfigBanner
     return () => clearInterval(interval);
   }, []);
 
@@ -61,20 +48,51 @@ export function SystemStatusBanner() {
   }
 
   if (!report || report.status === "healthy" || report.status === "ok") {
+    // Double check specific configuration status even if overall says ok (unlikely but safe)
+    // Actually if overall is ok, config must be ok.
     return null;
   }
 
-  // Degraded state
+  // Check for specific configuration error to give it special treatment
+  const configCheck = report.checks?.configuration;
+  if (configCheck && configCheck.status !== "ok") {
+      return (
+        <div className="p-4 pb-0">
+            <Alert variant="destructive">
+            <AlertCircle className="h-4 w-4" />
+            <AlertTitle>Configuration Error</AlertTitle>
+            <AlertDescription className="flex flex-col gap-2">
+                <p>
+                The server configuration failed to reload. The server is running with a stale configuration.
+                </p>
+                {configCheck.message && (
+                    <p className="font-mono text-xs bg-black/10 p-2 rounded whitespace-pre-wrap">
+                    {configCheck.message}
+                    </p>
+                )}
+            </AlertDescription>
+            </Alert>
+        </div>
+      );
+  }
+
+  // Fallback for other degraded states
   const issues: string[] = [];
   if (report.checks) {
       Object.entries(report.checks).forEach(([name, check]) => {
-          if (check.status !== "ok") {
+          // Explicit cast or ensure type is correct
+          // report.checks is Record<string, DoctorCheckResult> in client.ts
+          // But I imported DoctorReport from client.ts which uses DoctorCheckResult
+          const c = check as any; // Temporary fix or better type assertion
+          if (c.status !== "ok") {
             // Capitalize first letter of name
             const niceName = name.charAt(0).toUpperCase() + name.slice(1);
-            issues.push(`${niceName}: ${check.message || "Unknown issue"}`);
+            issues.push(`${niceName}: ${c.message || "Unknown issue"}`);
           }
       });
   }
+
+  if (issues.length === 0) return null;
 
   return (
     <div className="p-4 pb-0">

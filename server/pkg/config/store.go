@@ -113,6 +113,13 @@ func (e *yamlEngine) Unmarshal(b []byte, v proto.Message) error {
 			return fmt.Errorf("%w\n\nDid you mean \"upstream_services\"? It looks like you might be using a Claude Desktop configuration format. MCP Any uses a different configuration structure. See documentation for details.", err)
 		}
 
+		// Detect if the user is using "services" which is a common alias for "upstream_services"
+		if strings.Contains(err.Error(), "unknown field \"services\"") {
+			// revive:disable-next-line:error-strings // This error message is user facing and needs to be descriptive
+			//nolint:staticcheck // This error message is user facing and needs to be descriptive
+			return fmt.Errorf("%w\n\nDid you mean \"upstream_services\"? \"services\" is not a valid top-level key.", err)
+		}
+
 		// Detect invalid use of service_config wrapper (common mistake due to old docs)
 		if strings.Contains(err.Error(), "unknown field \"service_config\"") {
 			// revive:disable-next-line:error-strings // This error message is user facing and needs to be descriptive
@@ -158,6 +165,11 @@ func (e *yamlEngine) Unmarshal(b []byte, v proto.Message) error {
 type textprotoEngine struct{}
 
 // Unmarshal parses a textproto byte slice into a `proto.Message`.
+//
+// b is the b.
+// v is the v.
+//
+// Returns an error if the operation fails.
 func (e *textprotoEngine) Unmarshal(b []byte, v proto.Message) error {
 	return prototext.Unmarshal(b, v)
 }
@@ -166,6 +178,11 @@ func (e *textprotoEngine) Unmarshal(b []byte, v proto.Message) error {
 type jsonEngine struct{}
 
 // Unmarshal parses a JSON byte slice into a `proto.Message`.
+//
+// b is the b.
+// v is the v.
+//
+// Returns an error if the operation fails.
 func (e *jsonEngine) Unmarshal(b []byte, v proto.Message) error {
 	if err := protojson.Unmarshal(b, v); err != nil {
 		// Detect if the user is using Claude Desktop config format
@@ -173,6 +190,13 @@ func (e *jsonEngine) Unmarshal(b []byte, v proto.Message) error {
 			// revive:disable-next-line:error-strings // This error message is user facing and needs to be descriptive
 			//nolint:staticcheck // This error message is user facing and needs to be descriptive
 			return fmt.Errorf("%w\n\nDid you mean \"upstream_services\"? It looks like you might be using a Claude Desktop configuration format. MCP Any uses a different configuration structure. See documentation for details.", err)
+		}
+
+		// Detect if the user is using "services" which is a common alias for "upstream_services"
+		if strings.Contains(err.Error(), "unknown field \"services\"") {
+			// revive:disable-next-line:error-strings // This error message is user facing and needs to be descriptive
+			//nolint:staticcheck // This error message is user facing and needs to be descriptive
+			return fmt.Errorf("%w\n\nDid you mean \"upstream_services\"? \"services\" is not a valid top-level key.", err)
 		}
 
 		// Check for unknown fields and suggest fuzzy matches
@@ -196,9 +220,16 @@ func (e *jsonEngine) Unmarshal(b []byte, v proto.Message) error {
 // server configuration from a source, such as a file or a remote service.
 type Store interface {
 	// Load retrieves and returns the McpAnyServerConfig.
+	//
+	// ctx is the context for the request.
+	//
+	// Returns the result.
+	// Returns an error if the operation fails.
 	Load(ctx context.Context) (*configv1.McpAnyServerConfig, error)
 
 	// HasConfigSources returns true if the store has configuration sources (e.g., file paths) configured.
+	//
+	// Returns true if successful.
 	HasConfigSources() bool
 }
 
@@ -297,6 +328,8 @@ func NewFileStoreWithSkipErrors(fs afero.Fs, paths []string) *FileStore {
 }
 
 // HasConfigSources returns true if the store has configuration paths configured.
+//
+// Returns true if successful.
 func (s *FileStore) HasConfigSources() bool {
 	return len(s.paths) > 0
 }
@@ -736,11 +769,20 @@ type MultiStore struct {
 }
 
 // NewMultiStore creates a new MultiStore with the given stores.
+//
+// stores is the stores.
+//
+// Returns the result.
 func NewMultiStore(stores ...Store) *MultiStore {
 	return &MultiStore{stores: stores}
 }
 
 // Load loads configurations from all stores and merges them into a single config.
+//
+// ctx is the context for the request.
+//
+// Returns the result.
+// Returns an error if the operation fails.
 func (ms *MultiStore) Load(ctx context.Context) (*configv1.McpAnyServerConfig, error) {
 	mergedConfig := &configv1.McpAnyServerConfig{}
 	for _, s := range ms.stores {
@@ -789,7 +831,26 @@ func levenshtein(s, t string) int {
 // suggestFix finds the closest matching field name in the proto message.
 func suggestFix(unknownField string, root proto.Message) string {
 	candidates := make(map[string]struct{})
-	collectFieldNames(root.ProtoReflect().Descriptor(), candidates, make(map[string]bool))
+	collectFieldNames(root.ProtoReflect().Descriptor(), candidates)
+
+	// Explicitly add fields from common nested configuration objects to the candidates.
+	// We avoid full recursion to prevent suggesting fields from obscure/irrelevant parts of the schema
+	// (like "services" from Collection which confuses users when they mean "upstream_services").
+	commonMessages := []proto.Message{
+		&configv1.GlobalSettings{},
+		&configv1.UpstreamServiceConfig{},
+		&configv1.HttpUpstreamService{},
+		&configv1.GrpcUpstreamService{},
+		&configv1.McpUpstreamService{},
+		&configv1.OpenapiUpstreamService{},
+		&configv1.CommandLineUpstreamService{},
+		&configv1.SqlUpstreamService{},
+		&configv1.Authentication{},
+	}
+
+	for _, msg := range commonMessages {
+		collectFieldNames(msg.ProtoReflect().Descriptor(), candidates)
+	}
 
 	bestMatch := ""
 	minDist := 100
@@ -815,24 +876,17 @@ func suggestFix(unknownField string, root proto.Message) string {
 	return ""
 }
 
-func collectFieldNames(md protoreflect.MessageDescriptor, candidates map[string]struct{}, visited map[string]bool) {
-	if visited[string(md.FullName())] {
-		return
-	}
-	visited[string(md.FullName())] = true
-
+func collectFieldNames(md protoreflect.MessageDescriptor, candidates map[string]struct{}) {
 	for i := 0; i < md.Fields().Len(); i++ {
 		fd := md.Fields().Get(i)
 		candidates[string(fd.Name())] = struct{}{}
 		candidates[fd.JSONName()] = struct{}{}
-
-		if fd.Kind() == protoreflect.MessageKind {
-			collectFieldNames(fd.Message(), candidates, visited)
-		}
 	}
 }
 
 // HasConfigSources returns true if any of the underlying stores have configuration sources.
+//
+// Returns true if successful.
 func (ms *MultiStore) HasConfigSources() bool {
 	for _, s := range ms.stores {
 		if s.HasConfigSources() {

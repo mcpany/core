@@ -26,6 +26,10 @@ type SkillResource struct {
 var _ resource.Resource = &SkillResource{}
 
 // NewSkillResource creates a new resource for the main SKILL.md.
+//
+// s is the s.
+//
+// Returns the result.
 func NewSkillResource(s *skill.Skill) *SkillResource {
 	return &SkillResource{
 		skill: s,
@@ -33,6 +37,11 @@ func NewSkillResource(s *skill.Skill) *SkillResource {
 }
 
 // NewSkillAssetResource creates a new resource for a skill asset.
+//
+// s is the s.
+// assetPath is the assetPath.
+//
+// Returns the result.
 func NewSkillAssetResource(s *skill.Skill, assetPath string) *SkillResource {
 	return &SkillResource{
 		skill:     s,
@@ -41,6 +50,8 @@ func NewSkillAssetResource(s *skill.Skill, assetPath string) *SkillResource {
 }
 
 // URI returns the URI of the resource.
+//
+// Returns the result.
 func (r *SkillResource) URI() string {
 	if r.assetPath == "" {
 		return fmt.Sprintf("skills://%s/SKILL.md", r.skill.Name)
@@ -49,6 +60,8 @@ func (r *SkillResource) URI() string {
 }
 
 // Name returns the name of the resource.
+//
+// Returns the result.
 func (r *SkillResource) Name() string {
 	if r.assetPath == "" {
 		return fmt.Sprintf("Skill: %s", r.skill.Name)
@@ -57,11 +70,15 @@ func (r *SkillResource) Name() string {
 }
 
 // Service returns the service associated with the resource.
+//
+// Returns the result.
 func (r *SkillResource) Service() string {
 	return "skills"
 }
 
 // Resource returns the underlying MCP resource definition.
+//
+// Returns the result.
 func (r *SkillResource) Resource() *mcp.Resource {
 	mimeType := "text/markdown"
 	if r.assetPath != "" {
@@ -80,6 +97,11 @@ func (r *SkillResource) Resource() *mcp.Resource {
 }
 
 // Read returns the contents of the resource.
+//
+// _ is an unused parameter.
+//
+// Returns the result.
+// Returns an error if the operation fails.
 func (r *SkillResource) Read(_ context.Context) (*mcp.ReadResourceResult, error) {
 	var content []byte
 	var err error
@@ -149,12 +171,21 @@ func isTextMime(mimeType string) bool {
 }
 
 // Subscribe subscribes to changes on the resource.
+//
+// _ is an unused parameter.
+//
+// Returns an error if the operation fails.
 func (r *SkillResource) Subscribe(_ context.Context) error {
 	// No-op for now
 	return nil
 }
 
 // RegisterSkillResources registers all skills from the manager into the resource manager.
+//
+// rm is the rm.
+// sm is the sm.
+//
+// Returns an error if the operation fails.
 func RegisterSkillResources(rm resource.ManagerInterface, sm *skill.Manager) error {
 	skills, err := sm.ListSkills()
 	if err != nil {

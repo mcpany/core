@@ -30,6 +30,12 @@ var weatherData = map[string]string{
 }
 
 // GetWeather implements the GetWeather method of the WeatherService.
+//
+// _ is an unused parameter.
+// in is the request object.
+//
+// Returns the response.
+// Returns an error if the operation fails.
 func (s *weatherServer) GetWeather(_ context.Context, in *weatherPb.GetWeatherRequest) (*weatherPb.GetWeatherResponse, error) {
 	slog.Info("grpc_weather_server: GetWeather called", "location", in.GetLocation())
 	weather, ok := weatherData[in.GetLocation()]
@@ -46,10 +52,21 @@ func main() {
 	port := flag.Int("port", 0, "Port to listen on. If 0, a random available port will be chosen and printed to stdout.")
 	flag.Parse()
 
-	address := fmt.Sprintf(":%d", *port)
-	lis, err := (&net.ListenConfig{}).Listen(context.Background(), "tcp", address)
+	address := fmt.Sprintf("127.0.0.1:%d", *port)
+	var lis net.Listener
+	var err error
+	for i := 0; i < 5; i++ {
+		var lc net.ListenConfig
+	lis, err = lc.Listen(context.Background(), "tcp", address)
+		if err == nil {
+			break
+		}
+		slog.Warn("grpc_weather_server: Failed to listen, retrying...", "error", err, "attempt", i+1)
+		// Small backoff
+		// time.Sleep not essential for bind error if ephemeral, but good practice
+	}
 	if err != nil {
-		slog.Error("grpc_weather_server: Failed to listen", "error", err)
+		slog.Error("grpc_weather_server: Failed to listen after retries", "error", err)
 		os.Exit(1)
 	}
 
@@ -57,6 +74,7 @@ func main() {
 	slog.Info("grpc_weather_server: Listening on port", "port", actualPort)
 	if *port == 0 {
 		fmt.Printf("%d\n", actualPort) // Output port for test runner
+		_ = os.Stdout.Sync()
 	}
 
 	s := grpc.NewServer()

@@ -20,6 +20,11 @@ interface InstantiateDialogProps {
     onComplete: () => void;
 }
 
+/**
+ * InstantiateDialog.
+ *
+ * @param onComplete - The onComplete.
+ */
 export function InstantiateDialog({ open, onOpenChange, templateConfig, onComplete }: InstantiateDialogProps) {
     const { toast } = useToast();
     const router = useRouter();

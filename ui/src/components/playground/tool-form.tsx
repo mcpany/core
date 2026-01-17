@@ -18,6 +18,11 @@ interface ToolFormProps {
   onCancel: () => void;
 }
 
+/**
+ * ToolForm.
+ *
+ * @param onCancel - The onCancel.
+ */
 export function ToolForm({ tool, onSubmit, onCancel }: ToolFormProps) {
   const [formData, setFormData] = useState<Record<string, unknown>>({});
   const [jsonInput, setJsonInput] = useState<string>("{}");

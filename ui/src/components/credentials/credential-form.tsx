@@ -59,6 +59,11 @@ interface CredentialFormProps {
   onSuccess: (cred: Credential) => void
 }
 
+/**
+ * CredentialForm.
+ *
+ * @param onSuccess - The onSuccess.
+ */
 export function CredentialForm({ initialData, onSuccess }: CredentialFormProps) {
   const { toast } = useToast()
   const [isTesting, setIsTesting] = useState(false)
@@ -94,66 +99,41 @@ export function CredentialForm({ initialData, onSuccess }: CredentialFormProps) 
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
-        const auth: Authentication = {}
+        const auth: any = {}
         if (values.authType === "api_key") {
-            auth.apiKey = {
-                paramName: values.apiKeyParamName || "X-API-Key",
-                in: parseInt(values.apiKeyLocation || "0") as APIKeyAuth_Location,
-                value: { plainText: values.apiKeyValue || "" },
-                verificationValue: "" // Not used for client
+            auth.api_key = {
+                param_name: values.apiKeyParamName || "X-API-Key",
+                in: parseInt(values.apiKeyLocation || "0"),
+                value: { plain_text: values.apiKeyValue || "" },
+                verification_value: ""
             }
         } else if (values.authType === "bearer_token") {
-            auth.bearerToken = {
-                token: { plainText: values.bearerToken || "" }
+            auth.bearer_token = {
+                token: { plain_text: values.bearerToken || "" }
             }
         } else if (values.authType === "basic_auth") {
-            auth.basicAuth = {
+            auth.basic_auth = {
                 username: values.basicUsername || "",
-                password: { plainText: values.basicPassword || "" },
-                passwordHash: ""
+                password: { plain_text: values.basicPassword || "" },
+                password_hash: ""
             }
         } else if (values.authType === "oauth2") {
             auth.oauth2 = {
-                clientId: { plainText: values.oauthClientId || "" },
-                clientSecret: { plainText: values.oauthClientSecret || "" },
-                authorizationUrl: values.oauthAuthUrl || "",
-                tokenUrl: values.oauthTokenUrl || "",
+                client_id: { plain_text: values.oauthClientId || "" },
+                client_secret: { plain_text: values.oauthClientSecret || "" },
+                authorization_url: values.oauthAuthUrl || "",
+                token_url: values.oauthTokenUrl || "",
                 scopes: values.oauthScopes || "",
-                issuerUrl: "",
+                issuer_url: "",
                 audience: "",
-                // Preserve existing token if rewriting config, though usually server handles that merge?
-                // Credential update is usually full replace.
-                // If we want to keep the token, we might need to fetch it or ensure server doesn't wipe it?
-                // Server `SaveCredential` likely overwrites.
-                // But we don't have the token in the form.
-                // If we don't send `authentication.oauth2`, we lose it?
-                // Wait, `Token` is inside `authentication.oauth2`?
-                // No, `Token` is inside `Credential` (UserToken). `Authentication` has `OAuth2Auth` (config).
-                // Ah! `Credential` struct in `server/pkg/app/api_credential.go`:
-                // type Credential struct { ... Authentication *Authentication ... Token *UserToken ... }
-                // So `Authentication` only holds CONFIG. `Token` is separate.
-                // So safe to update Authentication without wiping Token (which is in `Credential.Token`).
-                // onSubmit constructs `payload` with `Authentication`.
-                // Does `apiClient.updateCredential` send `Token`?
-                // `payload` here handles name and authentication.
-                // If `initialData.token` exists, we should preserve it?
-                // Or maybe the server handles partial updates?
-                // `api_credential.go` `handleCredential` PUT likely does a full replace or merge.
-                // Let's assume server handles it or we should include token if present?
-                // Checking `api_credential.go`:
-                // `storage.SaveCredential(ctx, cred)`
-                // If we pass a `cred` without `Token`, and `SaveCredential` overwrites...
-                // SQLite: `UPDATE credentials SET ...`
-                // If we just construct a new `Credential` object here and send it, we might lose `Token` if we don't include it.
-                // Let's include `Token` from `initialData`.
             }
         }
 
-        const payload: Credential = {
+        const payload: any = {
             id: initialData?.id || "",
             name: values.name,
             authentication: auth,
-            token: initialData?.token // Preserve token!
+            token: initialData?.token
         }
 
         let saved: Credential;

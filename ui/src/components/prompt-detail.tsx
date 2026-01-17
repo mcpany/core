@@ -15,6 +15,12 @@ import { Book, AlertTriangle, TrendingUp } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ServicePropertyCard } from "./service-property-card";
 
+/**
+ * PromptDetail.
+ *
+ * @param promptName - The promptName.
+ * @param promptName - The promptName.
+ */
 export function PromptDetail({ serviceId, promptName }: { serviceId: string, promptName: string }) {
   const [prompt, setPrompt] = useState<PromptDefinition | null>(null);
   const [service, setService] = useState<UpstreamServiceConfig | null>(null);

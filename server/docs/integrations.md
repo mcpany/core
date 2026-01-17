@@ -160,9 +160,9 @@ For production or staging environments, you can deploy `mcpany` to a Kubernetes 
 
 ---
 
-## 4. Claude Desktop / Claude Code
+## 4. Claude Desktop
 
-To use `mcpany` with [Claude Desktop](https://modelcontextprotocol.io/quickstart/user) or Claude Code, configure it to run the `mcpany` Docker container.
+To use `mcpany` with [Claude Desktop](https://modelcontextprotocol.io/quickstart/user), configure it to run the `mcpany` Docker container.
 
 Add the following to your `claude_desktop_config.json`:
 
@@ -192,11 +192,45 @@ Add the following to your `claude_desktop_config.json`:
 
 This setup ensures Claude launches a fresh `mcpany` container whenever it needs to access your tools.
 
-By following these instructions, you can connect `mcpany` to your favorite AI coding assistant, regardless of how you choose to run it.
+---
+
+## 5. Claude Code CLI
+
+To integrate `mcpany` with the [Claude Code CLI](https://www.npmjs.com/package/@anthropic-ai/claude-code):
+
+```bash
+# Register mcpany
+claude mcp add mcpany --transport http http://localhost:50050
+```
 
 ---
 
-## 5. VS Code (GitHub Copilot)
+## 6. GitHub Copilot CLI
+
+The GitHub Copilot CLI does not currently support a non-interactive `mcp add` command for remote servers. Instead, you should configure it using an `mcp-config.json` file.
+
+1.  Create an `mcp-config.json` file in your `~/.copilot` directory (or a directory specified by `XDG_CONFIG_HOME`).
+
+```json
+{
+  "mcpServers": {
+    "mcpany": {
+      "url": "http://localhost:50050",
+      "type": "http"
+    }
+  }
+}
+```
+
+2.  Run the Copilot CLI as usual:
+
+```bash
+gh copilot explain "how does this code work?"
+```
+
+---
+
+## 7. VS Code (GitHub Copilot)
 
 You can add `mcpany` to GitHub Copilot in VS Code using the command line:
 
@@ -208,7 +242,7 @@ Alternatively, you can manually edit your VS Code `settings.json` or use the **"
 
 ---
 
-## 6. Cursor
+## 8. Cursor
 
 To integrate with [Cursor](https://cursor.sh/):
 
@@ -222,7 +256,7 @@ To integrate with [Cursor](https://cursor.sh/):
 
 ---
 
-## 7. JetBrains AI Assistant
+## 9. JetBrains AI Assistant
 
 To integrate with JetBrains IDEs (IntelliJ IDEA, PyCharm, GoLand, etc.):
 
@@ -237,7 +271,7 @@ To integrate with JetBrains IDEs (IntelliJ IDEA, PyCharm, GoLand, etc.):
 
 ---
 
-## 8. Cline
+## 10. Cline
 
 To use `mcpany` with [Cline](https://github.com/cline/cline):
 
