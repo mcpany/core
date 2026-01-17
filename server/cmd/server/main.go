@@ -5,6 +5,7 @@
 package main
 
 import (
+	"bufio"
 	"context"
 	"fmt"
 	"net/http"
@@ -248,6 +249,55 @@ func newRootCmd() *cobra.Command { //nolint:gocyclo // Main entry point, expecte
 	updateCmd.Flags().String("path", "", "Path to the binary to update. Defaults to the current executable.")
 	rootCmd.AddCommand(updateCmd)
 
+	initCmd := &cobra.Command{
+		Use:   "init",
+		Short: "Initialize a new configuration using an interactive wizard",
+		RunE: func(_ *cobra.Command, _ []string) error {
+			fmt.Println("MCP Any CLI: Configuration Generator")
+			reader := bufio.NewReader(os.Stdin)
+			generator := config.NewGenerator(reader)
+			configData, err := generator.Generate()
+			if err != nil {
+				return err
+			}
+
+			fmt.Println("\n--- Generated Configuration ---")
+			fmt.Println(string(configData))
+
+			// Simple prompt to save
+			fmt.Print("\n💾 Save to file? [y/N]: ")
+			response, _ := reader.ReadString('\n')
+			response = strings.TrimSpace(strings.ToLower(response))
+
+			if response == "y" || response == "yes" {
+				fmt.Print("📂 Enter filename [config.yaml]: ")
+				filename, _ := reader.ReadString('\n')
+				filename = strings.TrimSpace(filename)
+				if filename == "" {
+					filename = "config.yaml"
+				}
+
+				// Check if file exists
+				if _, err := os.Stat(filename); err == nil {
+					fmt.Printf("⚠️  File '%s' already exists. Overwrite? [y/N]: ", filename)
+					overwrite, _ := reader.ReadString('\n')
+					overwrite = strings.TrimSpace(strings.ToLower(overwrite))
+					if overwrite != "y" && overwrite != "yes" {
+						fmt.Println("❌ Aborted.")
+						return nil
+					}
+				}
+
+				if err := os.WriteFile(filename, configData, 0600); err != nil {
+					return fmt.Errorf("failed to write file: %w", err)
+				}
+				fmt.Printf("✅ Saved to %s\n", filename)
+			}
+			return nil
+		},
+	}
+	rootCmd.AddCommand(initCmd)
+
 	healthCmd := &cobra.Command{
 		Use:   "health",
 		Short: "Run a health check against a running server",
@@ -324,7 +374,7 @@ func newRootCmd() *cobra.Command { //nolint:gocyclo // Main entry point, expecte
 		RunE: func(_ *cobra.Command, _ []string) error {
 			fmt.Println("MCP Any CLI: Configuration Generator")
 
-			generator := config.NewGenerator()
+			generator := config.NewGenerator(nil)
 			configData, err := generator.Generate()
 			if err != nil {
 				return err

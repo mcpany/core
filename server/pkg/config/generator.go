@@ -14,52 +14,121 @@ import (
 
 // Generator handles the interactive generation of configuration files.
 // It prompts the user for input and uses templates to generate YAML configuration
-// for different types of services (HTTP, gRPC, OpenAPI, GraphQL).
+// for different types of services (HTTP, gRPC, OpenAPI, GraphQL, Command).
 type Generator struct {
 	Reader *bufio.Reader
 }
 
-// NewGenerator creates a new Generator instance that reads from standard input.
+// ConfigData holds the list of generated services to be rendered in the final config.
+type ConfigData struct {
+	UpstreamServices []string
+}
+
+// NewGenerator creates a new Generator instance.
+//
+// Parameters:
+//   - reader: A *bufio.Reader to read input from. If nil, defaults to os.Stdin.
 //
 // Returns:
-//   - A pointer to a new Generator initialized with os.Stdin.
-func NewGenerator() *Generator {
+//   - A pointer to a new Generator.
+func NewGenerator(reader *bufio.Reader) *Generator {
+	if reader == nil {
+		reader = bufio.NewReader(os.Stdin)
+	}
 	return &Generator{
-		Reader: bufio.NewReader(os.Stdin),
+		Reader: reader,
 	}
 }
 
 // Generate prompts the user for service details and returns the generated
 // configuration as a byte slice. It supports multiple service types including
-// HTTP, gRPC, OpenAPI, and GraphQL.
+// HTTP, gRPC, OpenAPI, GraphQL, and Command.
 //
 // Returns:
 //   - A byte slice containing the generated YAML configuration.
 //   - An error if the generation fails or the user provides invalid input.
 func (g *Generator) Generate() ([]byte, error) {
-	serviceType, err := g.prompt("🤖 Enter service type (http, grpc, openapi, graphql): ")
+	configData := ConfigData{
+		UpstreamServices: []string{},
+	}
+
+	fmt.Println("Welcome to the MCP Any Configuration Wizard! 🧙‍♂️")
+	fmt.Println("Let's set up your upstream services.")
+
+	for {
+		fmt.Println("\n--- New Service ---")
+		serviceType, err := g.prompt("🤖 Enter service type (http, grpc, openapi, graphql, command) [or 'done' to finish]: ")
+		if err != nil {
+			return nil, err
+		}
+
+		serviceType = strings.ToLower(serviceType)
+		if serviceType == "done" || serviceType == "" {
+			if len(configData.UpstreamServices) > 0 {
+				break
+			}
+			if serviceType == "done" {
+				break // Allow exiting with empty config if explicitly requested
+			}
+			// If empty input and no services, just continue (loop)
+			continue
+		}
+
+		var serviceConfig []byte
+		switch serviceType {
+		case "http":
+			serviceConfig, err = g.generateHTTPService()
+		case "grpc":
+			serviceConfig, err = g.generateGRPCService()
+		case "openapi":
+			serviceConfig, err = g.generateOpenAPIService()
+		case "graphql":
+			serviceConfig, err = g.generateGraphQLService()
+		case "command", "cmd", "stdio":
+			serviceConfig, err = g.generateCommandService()
+		default:
+			fmt.Printf("❌ Unsupported service type: %s\n", serviceType)
+			continue
+		}
+
+		if err != nil {
+			return nil, err
+		}
+
+		configData.UpstreamServices = append(configData.UpstreamServices, string(serviceConfig))
+		fmt.Println("✅ Service added!")
+
+		// Ask if they want to add another one
+		addMore, err := g.promptBool("➕ Add another service?", false)
+		if err != nil {
+			return nil, err
+		}
+		if !addMore {
+			break
+		}
+	}
+
+	tmpl, err := template.New("config").Parse(configTemplate)
 	if err != nil {
 		return nil, err
 	}
 
-	switch strings.ToLower(serviceType) {
-	case "http":
-		return g.generateHTTPService()
-	case "grpc":
-		return g.generateGRPCService()
-	case "openapi":
-		return g.generateOpenAPIService()
-	case "graphql":
-		return g.generateGraphQLService()
-	default:
-		return nil, fmt.Errorf("unsupported service type: %s", serviceType)
+	var buf bytes.Buffer
+	if err := tmpl.Execute(&buf, configData); err != nil {
+		return nil, err
 	}
+
+	return buf.Bytes(), nil
 }
 
 func (g *Generator) prompt(prompt string) (string, error) {
 	fmt.Print(prompt)
 	input, err := g.Reader.ReadString('\n')
-	if err != nil && len(input) == 0 {
+	if err != nil {
+		if len(input) > 0 {
+			// If we got some input but then error (e.g. EOF without newline), return the input
+			return strings.TrimSpace(input), nil
+		}
 		return "", err
 	}
 	return strings.TrimSpace(input), nil
@@ -98,31 +167,29 @@ func (g *Generator) promptBool(prompt string, defaultValue bool) (bool, error) {
 	}
 }
 
-const httpServiceTemplate = `upstreamServices:
-  - name: "{{ .Name }}"
+const configTemplate = `upstreamServices:
+{{- range .UpstreamServices }}
+{{ . }}
+{{- end }}
+`
+
+const httpServiceTemplate = `  - name: "{{ .Name }}"
     httpService:
       address: "{{ .Address }}"
       calls:
         - operationId: "{{ .OperationID }}"
           description: "{{ .Description }}"
           method: "{{ .Method }}"
-          endpointPath: "{{ .EndpointPath }}"
-`
+          endpointPath: "{{ .EndpointPath }}"`
 
 // HTTPServiceData holds the data required to generate an HTTP service configuration.
 // It is used as the data context for the httpServiceTemplate.
 type HTTPServiceData struct {
-	// Name is the name of the service.
-	Name string
-	// Address is the base URL/address of the service.
-	Address string
-	// OperationID is the unique identifier for the operation.
-	OperationID string
-	// Description is a human-readable description of the service operation.
-	Description string
-	// Method is the HTTP method to use (e.g., "GET", "POST").
-	Method string
-	// EndpointPath is the path of the endpoint (e.g., "/api/v1/users").
+	Name         string
+	Address      string
+	OperationID  string
+	Description  string
+	Method       string
 	EndpointPath string
 }
 
@@ -174,22 +241,17 @@ func (g *Generator) generateHTTPService() ([]byte, error) {
 	return buf.Bytes(), nil
 }
 
-const grpcServiceTemplate = `upstreamServices:
-  - name: "{{ .Name }}"
+const grpcServiceTemplate = `  - name: "{{ .Name }}"
     grpcService:
       address: "{{ .Address }}"
       reflection:
-        enabled: {{ .ReflectionEnabled }}
-`
+        enabled: {{ .ReflectionEnabled }}`
 
 // GRPCServiceData holds the data required to generate a gRPC service configuration.
 // It is used as the data context for the grpcServiceTemplate.
 type GRPCServiceData struct {
-	// Name is the name of the service.
-	Name string
-	// Address is the address of the gRPC service (host:port).
-	Address string
-	// ReflectionEnabled indicates whether gRPC reflection should be enabled.
+	Name              string
+	Address           string
 	ReflectionEnabled bool
 }
 
@@ -225,19 +287,15 @@ func (g *Generator) generateGRPCService() ([]byte, error) {
 	return buf.Bytes(), nil
 }
 
-const openapiServiceTemplate = `upstreamServices:
-  - name: "{{ .Name }}"
+const openapiServiceTemplate = `  - name: "{{ .Name }}"
     openapiService:
       spec:
-        path: "{{ .SpecPath }}"
-`
+        path: "{{ .SpecPath }}"`
 
 // OpenAPIServiceData holds the data required to generate an OpenAPI service configuration.
 // It is used as the data context for the openapiServiceTemplate.
 type OpenAPIServiceData struct {
-	// Name is the name of the service.
-	Name string
-	// SpecPath is the path or URL to the OpenAPI specification file.
+	Name     string
 	SpecPath string
 }
 
@@ -268,25 +326,19 @@ func (g *Generator) generateOpenAPIService() ([]byte, error) {
 	return buf.Bytes(), nil
 }
 
-const graphqlServiceTemplate = `upstreamServices:
-  - name: "{{ .Name }}"
+const graphqlServiceTemplate = `  - name: "{{ .Name }}"
     graphqlService:
       address: "{{ .Address }}"
       calls:
         - name: "{{ .CallName }}"
-          selectionSet: "{{ .SelectionSet }}"
-`
+          selectionSet: "{{ .SelectionSet }}"`
 
 // GraphQLServiceData holds the data required to generate a GraphQL service configuration.
 // It is used as the data context for the graphqlServiceTemplate.
 type GraphQLServiceData struct {
-	// Name is the name of the service.
-	Name string
-	// Address is the URL of the GraphQL endpoint.
-	Address string
-	// CallName is the name of the GraphQL query or mutation to expose.
-	CallName string
-	// SelectionSet is the GraphQL selection set for the operation.
+	Name         string
+	Address      string
+	CallName     string
 	SelectionSet string
 }
 
@@ -315,6 +367,87 @@ func (g *Generator) generateGraphQLService() ([]byte, error) {
 	}
 
 	tmpl, err := template.New("graphqlService").Parse(graphqlServiceTemplate)
+	if err != nil {
+		return nil, err
+	}
+
+	var buf bytes.Buffer
+	if err := tmpl.Execute(&buf, data); err != nil {
+		return nil, err
+	}
+
+	return buf.Bytes(), nil
+}
+
+const commandServiceTemplate = `  - name: "{{ .Name }}"
+    command:
+      command: "{{ .Command }}"
+      args:
+{{- range .Args }}
+        - "{{ . }}"
+{{- end }}
+      env:
+{{- range $key, $value := .Env }}
+        {{ $key }}: "{{ $value }}"
+{{- end }}`
+
+// CommandServiceData holds the data required to generate a Command (stdio) service configuration.
+type CommandServiceData struct {
+	Name    string
+	Command string
+	Args    []string
+	Env     map[string]string
+}
+
+func (g *Generator) generateCommandService() ([]byte, error) {
+	data := CommandServiceData{
+		Env: make(map[string]string),
+	}
+	var err error
+
+	data.Name, err = g.prompt("🏷️  Enter service name: ")
+	if err != nil {
+		return nil, err
+	}
+
+	data.Command, err = g.prompt("💻 Enter command (e.g. npx, python, /path/to/binary): ")
+	if err != nil {
+		return nil, err
+	}
+
+	argsInput, err := g.prompt("📥 Enter arguments (space separated, or leave empty): ")
+	if err != nil {
+		return nil, err
+	}
+	if argsInput != "" {
+		// Simple space splitting, handling quotes would be better but this is a simple wizard
+		// For now let's just split by space
+		data.Args = strings.Fields(argsInput)
+	}
+
+	// Env vars loop
+	for {
+		addEnv, err := g.promptBool("🌱 Add environment variable?", false)
+		if err != nil {
+			return nil, err
+		}
+		if !addEnv {
+			break
+		}
+		key, err := g.prompt("  Key: ")
+		if err != nil {
+			return nil, err
+		}
+		val, err := g.prompt("  Value: ")
+		if err != nil {
+			return nil, err
+		}
+		if key != "" {
+			data.Env[key] = val
+		}
+	}
+
+	tmpl, err := template.New("commandService").Parse(commandServiceTemplate)
 	if err != nil {
 		return nil, err
 	}

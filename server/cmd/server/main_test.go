@@ -439,6 +439,7 @@ func TestConfigGenerateCmd(t *testing.T) {
 		"Get some data",
 		"HTTP_METHOD_GET",
 		"/data",
+		"n", // Add another service? No
 	}
 
 	go func() {
@@ -461,6 +462,60 @@ func TestConfigGenerateCmd(t *testing.T) {
 	assert.Contains(t, output, "Generated configuration:")
 	assert.Contains(t, output, "upstreamServices:")
 	assert.Contains(t, output, "name: \"my-service\"")
+}
+
+func TestInitCmd(t *testing.T) {
+	viper.Reset()
+	originalStdout := os.Stdout
+	originalStdin := os.Stdin
+	defer func() {
+		os.Stdout = originalStdout
+		os.Stdin = originalStdin
+	}()
+
+	rOut, wOut, _ := os.Pipe()
+	rIn, wIn, _ := os.Pipe()
+	os.Stdout = wOut
+	os.Stdin = rIn
+
+	tmpFile := "test-init-config.yaml"
+	defer func() { _ = os.Remove(tmpFile) }()
+
+	// Inputs
+	inputs := []string{
+		"http",
+		"my-service",
+		"http://localhost:8080",
+		"get-data",
+		"Get some data",
+		"HTTP_METHOD_GET",
+		"/data",
+		"n",       // Add another service? No
+		"y",       // Save to file? Yes
+		tmpFile, // Filename
+	}
+
+	go func() {
+		defer func() { _ = wIn.Close() }()
+		for _, input := range inputs {
+			_, _ = fmt.Fprintln(wIn, input)
+		}
+	}()
+
+	rootCmd := newRootCmd()
+	rootCmd.SetArgs([]string{"init"})
+	err := rootCmd.Execute()
+
+	_ = wOut.Close()
+	out, _ := io.ReadAll(rOut)
+
+	assert.NoError(t, err)
+	output := string(out)
+	assert.Contains(t, output, "Saved to "+tmpFile)
+
+	// Verify file exists
+	_, err = os.Stat(tmpFile)
+	assert.NoError(t, err)
 }
 
 func TestDocCmd(t *testing.T) {
