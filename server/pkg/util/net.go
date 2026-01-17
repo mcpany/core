@@ -68,7 +68,14 @@ func (d *SafeDialer) DialContext(ctx context.Context, network, addr string) (net
 		resolver = net.DefaultResolver
 	}
 
-	ips, err := resolver.LookupIP(ctx, "ip", host)
+	lookupNetwork := "ip"
+	if strings.HasSuffix(network, "4") {
+		lookupNetwork = "ip4"
+	} else if strings.HasSuffix(network, "6") {
+		lookupNetwork = "ip6"
+	}
+
+	ips, err := resolver.LookupIP(ctx, lookupNetwork, host)
 	if err != nil {
 		return nil, fmt.Errorf("dns lookup failed for host %s: %w", host, err)
 	}
