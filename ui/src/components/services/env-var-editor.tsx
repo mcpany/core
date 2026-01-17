@@ -24,6 +24,11 @@ interface EnvVarEditorProps {
   onChange: (env: Record<string, { plainText?: string; secretId?: string }>) => void;
 }
 
+/**
+ * EnvVarEditor.
+ *
+ * @param onChange - The onChange.
+ */
 export function EnvVarEditor({ initialEnv, onChange }: EnvVarEditorProps) {
   const [envVars, setEnvVars] = useState<EnvVar[]>(() => {
       if (!initialEnv) return [];

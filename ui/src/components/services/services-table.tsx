@@ -35,6 +35,11 @@ interface ServicesTableProps {
     onDelete: (service: UpstreamServiceConfig) => void;
 }
 
+/**
+ * ServicesTable.
+ *
+ * @param onDelete - The onDelete.
+ */
 export function ServicesTable({ services, loading, onToggle, onDelete }: ServicesTableProps) {
 
   if (loading) {

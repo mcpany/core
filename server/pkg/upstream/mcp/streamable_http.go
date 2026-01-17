@@ -41,18 +41,56 @@ var (
 // to be injected.
 type ClientSession interface {
 	// ListTools lists the tools available in the session.
+	//
+	// ctx is the context for the request.
+	// params is the params.
+	//
+	// Returns the result.
+	// Returns an error if the operation fails.
 	ListTools(ctx context.Context, params *mcp.ListToolsParams) (*mcp.ListToolsResult, error)
 	// ListPrompts lists the prompts available in the session.
+	//
+	// ctx is the context for the request.
+	// params is the params.
+	//
+	// Returns the result.
+	// Returns an error if the operation fails.
 	ListPrompts(ctx context.Context, params *mcp.ListPromptsParams) (*mcp.ListPromptsResult, error)
 	// ListResources lists the resources available in the session.
+	//
+	// ctx is the context for the request.
+	// params is the params.
+	//
+	// Returns the result.
+	// Returns an error if the operation fails.
 	ListResources(ctx context.Context, params *mcp.ListResourcesParams) (*mcp.ListResourcesResult, error)
 	// GetPrompt retrieves a prompt from the session.
+	//
+	// ctx is the context for the request.
+	// params is the params.
+	//
+	// Returns the result.
+	// Returns an error if the operation fails.
 	GetPrompt(ctx context.Context, params *mcp.GetPromptParams) (*mcp.GetPromptResult, error)
 	// ReadResource reads a resource from the session.
+	//
+	// ctx is the context for the request.
+	// params is the params.
+	//
+	// Returns the result.
+	// Returns an error if the operation fails.
 	ReadResource(ctx context.Context, params *mcp.ReadResourceParams) (*mcp.ReadResourceResult, error)
 	// CallTool calls a tool in the session.
+	//
+	// ctx is the context for the request.
+	// params is the params.
+	//
+	// Returns the result.
+	// Returns an error if the operation fails.
 	CallTool(ctx context.Context, params *mcp.CallToolParams) (*mcp.CallToolResult, error)
 	// Close closes the session.
+	//
+	// Returns an error if the operation fails.
 	Close() error
 }
 
@@ -103,6 +141,10 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 }
 
 // NewUpstream creates a new instance of Upstream.
+//
+// globalSettings is the globalSettings.
+//
+// Returns the result.
 func NewUpstream(globalSettings *configv1.GlobalSettings) upstream.Upstream {
 	return &Upstream{
 		sessionRegistry: NewSessionRegistry(),
@@ -120,11 +162,15 @@ type mcpPrompt struct {
 }
 
 // Prompt returns the underlying *mcp.Prompt definition.
+//
+// Returns the result.
 func (p *mcpPrompt) Prompt() *mcp.Prompt {
 	return p.mcpPrompt
 }
 
 // Service returns the ID of the service that this prompt belongs to.
+//
+// Returns the result.
 func (p *mcpPrompt) Service() string {
 	return p.service
 }
@@ -170,11 +216,15 @@ type mcpResource struct {
 }
 
 // Resource returns the underlying *mcp.Resource definition.
+//
+// Returns the result.
 func (r *mcpResource) Resource() *mcp.Resource {
 	return r.mcpResource
 }
 
 // Service returns the ID of the service that this resource belongs to.
+//
+// Returns the result.
 func (r *mcpResource) Service() string {
 	return r.service
 }
@@ -1012,6 +1062,11 @@ type StreamableHTTP struct {
 }
 
 // RoundTrip executes an HTTP request and returns the response.
+//
+// req is the request object.
+//
+// Returns the response.
+// Returns an error if the operation fails.
 func (t *StreamableHTTP) RoundTrip(req *http.Request) (*http.Response, error) {
 	if t.Client == nil {
 		t.Client = http.DefaultClient

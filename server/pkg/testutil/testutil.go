@@ -39,6 +39,10 @@ type MockAuthenticator struct {
 }
 
 // Authenticate calls the mock AuthenticateFunc if set, otherwise returns nil.
+//
+// req is the request object.
+//
+// Returns an error if the operation fails.
 func (m *MockAuthenticator) Authenticate(req *http.Request) error {
 	if m.AuthenticateFunc != nil {
 		return m.AuthenticateFunc(req)

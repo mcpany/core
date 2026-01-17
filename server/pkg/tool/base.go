@@ -35,11 +35,15 @@ func newBaseTool(toolDef *configv1.ToolDefinition, serviceConfig *configv1.Upstr
 }
 
 // Tool returns the protobuf definition of the tool.
+//
+// Returns the result.
 func (t *baseTool) Tool() *v1.Tool {
 	return t.tool
 }
 
 // MCPTool returns the MCP tool definition.
+//
+// Returns the result.
 func (t *baseTool) MCPTool() *mcp.Tool {
 	t.mcpToolOnce.Do(func() {
 		var err error
@@ -52,6 +56,8 @@ func (t *baseTool) MCPTool() *mcp.Tool {
 }
 
 // GetCacheConfig returns the cache configuration for the tool, or nil if caching is disabled.
+//
+// Returns the result.
 func (t *baseTool) GetCacheConfig() *configv1.CacheConfig {
 	return nil
 }

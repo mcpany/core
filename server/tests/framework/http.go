@@ -17,6 +17,10 @@ import (
 )
 
 // BuildHTTPEchoServer builds and starts an HTTP echo server for testing.
+//
+// t is the t.
+//
+// Returns the result.
 func BuildHTTPEchoServer(t *testing.T) *integration.ManagedProcess {
 	port := integration.FindFreePort(t)
 	root, err := integration.GetProjectRoot()
@@ -27,12 +31,20 @@ func BuildHTTPEchoServer(t *testing.T) *integration.ManagedProcess {
 }
 
 // RegisterHTTPEchoService registers the HTTP echo service with the MCP server.
+//
+// t is the t.
+// registrationClient is the registrationClient.
+// upstreamEndpoint is the upstreamEndpoint.
 func RegisterHTTPEchoService(t *testing.T, registrationClient apiv1.RegistrationServiceClient, upstreamEndpoint string) {
 	const serviceID = "e2e_http_echo"
 	integration.RegisterHTTPService(t, registrationClient, serviceID, upstreamEndpoint, "echo", "/echo", http.MethodPost, nil)
 }
 
 // BuildHTTPAuthedEchoServer builds the HTTP authed echo server for testing.
+//
+// t is the t.
+//
+// Returns the result.
 func BuildHTTPAuthedEchoServer(t *testing.T) *integration.ManagedProcess {
 	port := integration.FindFreePort(t)
 	root, err := integration.GetProjectRoot()
@@ -43,6 +55,10 @@ func BuildHTTPAuthedEchoServer(t *testing.T) *integration.ManagedProcess {
 }
 
 // RegisterHTTPAuthedEchoService registers the HTTP authed echo service with the given registration client.
+//
+// t is the t.
+// registrationClient is the registrationClient.
+// upstreamEndpoint is the upstreamEndpoint.
 func RegisterHTTPAuthedEchoService(t *testing.T, registrationClient apiv1.RegistrationServiceClient, upstreamEndpoint string) {
 	const serviceID = "e2e_http_authed_echo"
 	secret := configv1.SecretValue_builder{

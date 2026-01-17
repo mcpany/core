@@ -92,6 +92,11 @@ function WizardContent({ onComplete, onCancel }: { onComplete: (config: any) => 
     );
 }
 
+/**
+ * CreateConfigWizard.
+ *
+ * @param onComplete - The onComplete.
+ */
 export function CreateConfigWizard({ open, onOpenChange, onComplete }: CreateConfigWizardProps) {
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
