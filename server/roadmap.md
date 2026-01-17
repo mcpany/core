@@ -6,6 +6,7 @@
 
 ### Implemented Features (Recently Completed)
 
+- [x] **Strict JSON Schema Validation**: Enhanced configuration validator to strictly validate `input_schema` and `output_schema` against JSON Schema Draft 2020-12 using `jsonschema` library, preventing runtime errors due to invalid tool definitions. (Friction Fighter)
 - [x] **Strict Config Parsing**: Startup now fails immediately on YAML/JSON syntax errors in configuration files (previously skipped silently).
 - [x] **Upstream Service Diagnostics**: Improved error reporting in the UI for failed upstream connections (e.g., connection refused, auth failure).
 - [x] **Config Environment Variable Validation**: Strict validation for missing environment variables in configuration files. [PR](#)
@@ -114,6 +115,8 @@ These features represent the next logical steps for the product, focusing on Ent
 | 42 | **Config Strict Mode** | **Ops**: Add a CLI flag to treat configuration warnings (e.g. deprecated fields) as errors to ensure clean configs. | Low |
 | 43 | **Stdio Error Channel** | **DevX**: A dedicated side-channel or structured error output for stdio mode to communicate server status without interfering with JSON-RPC or stderr logging. | Medium |
 | 44 | **Log Redaction Rules** | **Security**: Configurable regex-based redaction for logs to prevent accidental leakage of sensitive data (API keys, PII) in stderr/files. | Medium |
+| 45 | **Remote Schema Validation** | **Feature**: Allow validating schemas that use `$ref` to remote URLs by configuring a custom schema loader with HTTP support. | Medium |
+| 46 | **Schema Validation Caching** | **Performance**: Cache compiled schemas to avoid recompilation overhead during configuration reloads. | Low |
 
 ## 3. Codebase Health
 

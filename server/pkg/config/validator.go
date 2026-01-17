@@ -4,6 +4,7 @@
 package config
 
 import (
+	"bytes"
 	"context"
 	"fmt"
 	"net/url"
@@ -17,6 +18,8 @@ import (
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/mcpany/core/server/pkg/util"
 	"github.com/mcpany/core/server/pkg/validation"
+	"github.com/santhosh-tekuri/jsonschema/v5"
+	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
@@ -829,6 +832,30 @@ func validateSchema(s *structpb.Struct) error {
 			return fmt.Errorf("schema 'type' must be a string")
 		}
 	}
+
+	// Validate against strict JSON Schema using jsonschema library
+	// Convert structpb to JSON bytes
+	jsonBytes, err := protojson.Marshal(s)
+	if err != nil {
+		return fmt.Errorf("failed to marshal schema to JSON: %w", err)
+	}
+
+	// Create a new compiler
+	c := jsonschema.NewCompiler()
+	// Add the schema as a resource
+	// We use "schema.json" as a virtual filename
+	if err := c.AddResource("schema.json", bytes.NewReader(jsonBytes)); err != nil {
+		return fmt.Errorf("failed to add schema resource: %w", err)
+	}
+
+	// Compile validates the schema syntax and structure against the meta-schema
+	if _, err := c.Compile("schema.json"); err != nil {
+		return &ActionableError{
+			Err:        fmt.Errorf("invalid JSON schema: %w", err),
+			Suggestion: "Check your 'input_schema' or 'output_schema' definition. Ensure it complies with JSON Schema specification (e.g. types match values).",
+		}
+	}
+
 	return nil
 }
 
