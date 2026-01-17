@@ -2334,6 +2334,7 @@ func isShellCommand(cmd string) bool {
 		"openssl", "git", "hg", "svn",
 		"wget", "curl", "nc", "netcat", "ncat",
 		"socat", "telnet",
+		"find", "xargs", "tar", "zip", "unzip", "make", "tee",
 	}
 	base := filepath.Base(cmd)
 	for _, shell := range shells {

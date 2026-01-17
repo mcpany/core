@@ -42,6 +42,35 @@ func TestShellInjection_Repro(t *testing.T) {
 		assert.Error(t, err)
 		assert.Contains(t, err.Error(), "shell injection detected", "python3.10 should be protected")
 	})
+
+	// Case 3: find (New Protection)
+	t.Run("find_should_be_protected", func(t *testing.T) {
+		cmd := "find"
+		tool := createTestCommandTool(cmd)
+		// Try to inject semi-colon
+		req := &ExecutionRequest{
+			ToolName: "test",
+			ToolInputs: []byte(`{"input": "'; echo 'pwned'; '"}`),
+		}
+
+		_, err := tool.Execute(context.Background(), req)
+		assert.Error(t, err)
+		assert.Contains(t, err.Error(), "shell injection detected", "find should be protected")
+	})
+
+	// Case 4: xargs (New Protection)
+	t.Run("xargs_should_be_protected", func(t *testing.T) {
+		cmd := "xargs"
+		tool := createTestCommandTool(cmd)
+		req := &ExecutionRequest{
+			ToolName: "test",
+			ToolInputs: []byte(`{"input": "'; echo 'pwned'; '"}`),
+		}
+
+		_, err := tool.Execute(context.Background(), req)
+		assert.Error(t, err)
+		assert.Contains(t, err.Error(), "shell injection detected", "xargs should be protected")
+	})
 }
 
 func createTestCommandTool(command string) Tool {
