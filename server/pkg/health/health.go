@@ -370,4 +370,3 @@ func filesystemCheck(name string, c *configv1.FilesystemUpstreamService) health.
 		},
 	}
 }
-

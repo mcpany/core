@@ -692,7 +692,7 @@ func StartInProcessMCPANYServer(t *testing.T, _ string, apiKey ...string) *MCPAN
 
 	appRunner := app.NewApplication()
 	go func() {
-		err := appRunner.Run(ctx, afero.NewOsFs(), false, jsonrpcAddress, grpcRegAddress, []string{}, "", 5*time.Second)
+		err := appRunner.Run(ctx, afero.NewOsFs(), false, jsonrpcAddress, grpcRegAddress, []string{}, actualAPIKey, 5*time.Second)
 		if err != nil && ctx.Err() == nil {
 			t.Logf("Application run error: %v", err)
 		}
