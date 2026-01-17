@@ -4,6 +4,7 @@
 package app
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -11,6 +12,7 @@ import (
 	"net/http"
 	"os"
 	"strings"
+	"time"
 
 	"github.com/google/uuid"
 	configv1 "github.com/mcpany/core/proto/config/v1"
@@ -47,6 +49,7 @@ func (a *Application) createAPIHandler(store storage.Storage) http.Handler {
 	mux := http.NewServeMux()
 
 	mux.HandleFunc("/services", a.handleServices(store))
+	mux.HandleFunc("/services/validate", a.handleServiceValidate())
 	mux.HandleFunc("/services/", a.handleServiceDetail(store))
 	mux.HandleFunc("/health", func(w http.ResponseWriter, _ *http.Request) {
 		w.WriteHeader(http.StatusOK)
@@ -235,6 +238,96 @@ func (a *Application) handleServices(store storage.Storage) http.HandlerFunc {
 			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
 		}
 	}
+}
+
+func (a *Application) handleServiceValidate() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodPost {
+			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+			return
+		}
+		var svc configv1.UpstreamServiceConfig
+		body, err := readBodyWithLimit(w, r, 1048576)
+		if err != nil {
+			return
+		}
+		if err := protojson.Unmarshal(body, &svc); err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+
+		// 1. Static Validation
+		if err := config.ValidateOrError(r.Context(), &svc); err != nil {
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(http.StatusBadRequest)
+			_ = json.NewEncoder(w).Encode(map[string]any{
+				"valid":   false,
+				"error":   err.Error(),
+				"details": "Static validation failed",
+			})
+			return
+		}
+
+		// 2. Connectivity Check (Optional/Basic)
+		// We only check HTTP reachability for now as it's the most common and safe to check.
+		// For others, we just return valid for now.
+		var reachabilityErr error
+		if httpSvc := svc.GetHttpService(); httpSvc != nil {
+			reachabilityErr = checkURLReachability(r.Context(), httpSvc.GetAddress())
+		} else if gqlSvc := svc.GetGraphqlService(); gqlSvc != nil {
+			reachabilityErr = checkURLReachability(r.Context(), gqlSvc.GetAddress())
+		}
+
+		if reachabilityErr != nil {
+			w.Header().Set("Content-Type", "application/json")
+			// Return 200 OK but with valid=false to distinguish from malformed request
+			_ = json.NewEncoder(w).Encode(map[string]any{
+				"valid":   false,
+				"error":   reachabilityErr.Error(),
+				"details": "Connectivity check failed",
+			})
+			return
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		_ = json.NewEncoder(w).Encode(map[string]any{
+			"valid": true,
+		})
+	}
+}
+
+func checkURLReachability(ctx context.Context, urlStr string) error {
+	client := &http.Client{
+		Timeout: 5 * time.Second,
+	}
+	// Try HEAD first
+	req, err := http.NewRequestWithContext(ctx, "HEAD", urlStr, nil)
+	if err != nil {
+		return fmt.Errorf("failed to create request: %w", err)
+	}
+	resp, err := client.Do(req)
+	if err != nil {
+		// Fallback to GET if HEAD is not supported (Method Not Allowed) or fails
+		req, err = http.NewRequestWithContext(ctx, "GET", urlStr, nil)
+		if err != nil {
+			return fmt.Errorf("failed to create request: %w", err)
+		}
+		resp, err = client.Do(req)
+		if err != nil {
+			return fmt.Errorf("failed to reach %s: %w", urlStr, err)
+		}
+	}
+	defer func() { _ = resp.Body.Close() }()
+	if resp.StatusCode >= 400 && resp.StatusCode != http.StatusMethodNotAllowed && resp.StatusCode != http.StatusUnauthorized {
+		// We treat 401/403 as "reachable but requires auth", which is fine for basic connectivity check (auth check is deeper).
+		// But 404 or 500 might indicate issues.
+		// Actually, for validation, maybe we should be strict?
+		// Let's just warn if it's 5xx. 404 might be valid if it's a base URL.
+		if resp.StatusCode >= 500 {
+			return fmt.Errorf("server returned error status: %s", resp.Status)
+		}
+	}
+	return nil
 }
 
 func (a *Application) handleServiceDetail(store storage.Storage) http.HandlerFunc {
