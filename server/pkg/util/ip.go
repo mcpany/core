@@ -62,6 +62,8 @@ func init() {
 		"255.255.255.255/32", // Broadcast
 		"fc00::/7",           // RFC4193 unique local address
 		"2001:db8::/32",      // IPv6 documentation (RFC 3849)
+		"2001:2::/48",        // Benchmarking (RFC 5180)
+		"64:ff9b:1::/48",     // Local-Use NAT64 (RFC 8215)
 	} {
 		_, block, err := net.ParseCIDR(cidr)
 		if err == nil {
