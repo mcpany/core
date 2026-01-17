@@ -121,7 +121,7 @@ func TestUpstreamService_DogFacts(t *testing.T) {
 
 	require.NotNil(t, dogFactResponse["facts"], "The facts should not be nil")
 	if !dogFactResponse["success"].(bool) {
-		t.Skip("Skipping test due to flakiness: dog-api.kinduff.com success is false")
+		t.Skipf("Skipping test due to transient error from dog-api.kinduff.com: success is false")
 	}
 	require.Equal(t, true, dogFactResponse["success"], "The success should be true")
 	t.Logf("SUCCESS: Received a dog fact: %s", textContent.Text)

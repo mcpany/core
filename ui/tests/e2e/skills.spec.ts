@@ -12,7 +12,7 @@ test.describe('Agent Skills', () => {
     await expect(page).toHaveURL(/\/skills\/?$/);
   });
 
-  test.skip('should create and list a new skill', async ({ page }) => {
+  test('should create and list a new skill', async ({ page }) => {
     // Generate unique name
     const testSkillName = `e2e-test-skill-${Date.now()}`;
 
@@ -63,7 +63,7 @@ test.describe('Agent Skills', () => {
     });
   });
 
-  test.skip('should view skill details', async ({ page }) => {
+  test('should view skill details', async ({ page }) => {
     const skillName = 'view-test-skill-' + Date.now();
 
     // Create skill first (reusing logic but simplified)
