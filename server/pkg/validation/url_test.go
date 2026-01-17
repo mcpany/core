@@ -71,6 +71,21 @@ func TestIsSafeURL(t *testing.T) {
 			url:     "http://localhost",
 			wantErr: true,
 		},
+		{
+			name:    "Private IP 10.x",
+			url:     "http://10.0.0.1",
+			wantErr: true,
+		},
+		{
+			name:    "Private IP 192.168.x",
+			url:     "http://192.168.1.1",
+			wantErr: true,
+		},
+		{
+			name:    "Private IP 172.16.x",
+			url:     "http://172.16.0.1",
+			wantErr: true,
+		},
 	}
 
 	for _, tt := range tests {

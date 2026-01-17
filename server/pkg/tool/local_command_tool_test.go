@@ -163,6 +163,6 @@ func TestLocalCommandTool_Execute_JSONProtocol_StderrCapture(t *testing.T) {
 	_, err := localTool.Execute(context.Background(), req)
 	assert.Error(t, err)
 
-	// This assertion should fail before fix
-	assert.Contains(t, err.Error(), "something went wrong")
+	// We expect the stderr to NOT be present in the error message to prevent leakage
+	assert.NotContains(t, err.Error(), "something went wrong")
 }

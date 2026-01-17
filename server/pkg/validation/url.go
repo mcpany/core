@@ -88,5 +88,8 @@ func validateIP(ip net.IP) error {
 	if ip.IsUnspecified() {
 		return fmt.Errorf("unspecified address (0.0.0.0) is not allowed")
 	}
+	if ip.IsPrivate() {
+		return fmt.Errorf("private address is not allowed (RFC 1918/4193)")
+	}
 	return nil
 }

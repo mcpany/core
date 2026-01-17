@@ -1803,7 +1803,9 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 		var result map[string]interface{}
 		if err := fastJSON.NewDecoder(io.LimitReader(stdout, limit)).Decode(&result); err != nil {
 			<-stderrDone
-			return nil, fmt.Errorf("failed to execute JSON CLI command: %w. Stderr: %s", err, stderrBuf.String())
+			// Log stderr for debugging but do not return it to avoid information leakage
+			logging.GetLogger().Error("Failed to execute JSON CLI command", "error", err, "stderr", stderrBuf.String())
+			return nil, fmt.Errorf("failed to execute JSON CLI command: %w", err)
 		}
 		return result, nil
 	}
