@@ -67,6 +67,7 @@ func (cb *CircuitBreaker) Execute(ctx context.Context, work func(context.Context
 			if time.Since(cb.openTime) > cb.config.GetOpenDuration().AsDuration() {
 				cb.setState(StateHalfOpen)
 				cb.halfOpenHits = 0
+				currentState = StateHalfOpen
 			} else {
 				cb.mutex.Unlock()
 				return &CircuitBreakerOpenError{}
