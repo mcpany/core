@@ -18,6 +18,7 @@ docker rm -f "$CONTAINER_NAME" > /dev/null 2>&1 || true
 # We pass flags to override default listen addresses
 docker run -d --name "$CONTAINER_NAME" \
   -P \
+  -e MCPANY_DANGEROUS_ALLOW_LOCAL_IPS=true \
   "$IMAGE_NAME" \
   run \
   --mcp-listen-address :50050 \

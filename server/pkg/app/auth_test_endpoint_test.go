@@ -14,6 +14,7 @@ import (
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/mcpany/core/server/pkg/auth"
 	"github.com/mcpany/core/server/pkg/storage/memory"
+	"github.com/mcpany/core/server/pkg/validation"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/proto"
@@ -21,6 +22,10 @@ import (
 
 func TestHandleAuthTest(t *testing.T) {
 	// Setup
+	originalIsSafeURL := validation.IsSafeURL
+	validation.IsSafeURL = func(urlStr string) error { return nil } // Allow all in tests
+	defer func() { validation.IsSafeURL = originalIsSafeURL }()
+
 	store := memory.NewStore()
 	am := auth.NewManager()
 	am.SetStorage(store)
