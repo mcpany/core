@@ -55,11 +55,12 @@ const nextConfig: NextConfig = {
     const isDev = process.env.NODE_ENV !== 'production';
     const csp = [
       "default-src 'self'",
-      `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ""}`,
-      "style-src 'self' 'unsafe-inline'",
+      `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ""} https://cdn.jsdelivr.net`, // Added cdn.jsdelivr.net
+      "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net", // Added cdn.jsdelivr.net
       "img-src 'self' data: https://placehold.co https://images.unsplash.com https://picsum.photos",
-      "font-src 'self' data:",
-      "connect-src 'self' http://localhost:8080",
+      "font-src 'self' data: https://fonts.gstatic.com",
+      "connect-src 'self' http://localhost:8080 https://cdn.jsdelivr.net", // Added cdn.jsdelivr.net
+      "worker-src 'self' blob:", // Added worker-src
       "object-src 'none'",
       "base-uri 'self'",
       "form-action 'self'",

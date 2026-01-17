@@ -28,11 +28,12 @@ export function middleware(request: NextRequest) {
   // Add Security Headers
   const csp = [
     "default-src 'self'",
-    "script-src 'self' 'unsafe-eval' 'unsafe-inline'", // unsafe-eval needed for some dev tools, unsafe-inline for Next.js
-    "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com", // unsafe-inline needed for CSS-in-JS
+    "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://cdn.jsdelivr.net", // Added cdn.jsdelivr.net for Monaco Editor
+    "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net", // Added cdn.jsdelivr.net
     "img-src 'self' data: https:",
     "font-src 'self' data: https://fonts.gstatic.com",
-    "connect-src 'self'",
+    "connect-src 'self' https://cdn.jsdelivr.net", // Added cdn.jsdelivr.net
+    "worker-src 'self' blob:", // Added for Monaco Editor workers
     "frame-ancestors 'none'",
     "object-src 'none'",
     "base-uri 'self'"

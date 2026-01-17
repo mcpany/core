@@ -5,7 +5,7 @@
 
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -20,8 +20,10 @@ import { useToast } from "@/hooks/use-toast";
 import { apiClient } from "@/lib/client";
 import { UpstreamServiceConfig } from "@/lib/types";
 import { Credential } from "@proto/config/v1/auth";
-import { Plus, RotateCw, ChevronLeft, Loader2, Activity, CheckCircle2, XCircle } from "lucide-react";
+import { Plus, RotateCw, ChevronLeft, Loader2, Activity, CheckCircle2, XCircle, ArrowLeft } from "lucide-react";
 import { SERVICE_TEMPLATES, ServiceTemplate } from "@/lib/templates";
+import { ServiceConfigDiff } from "./services/service-config-diff";
+import { cn } from "@/lib/utils";
 
 const formSchema = z.object({
   name: z.string().min(1, "Name is required"),
@@ -51,6 +53,8 @@ export function RegisterServiceDialog({ onSuccess, trigger, serviceToEdit }: Reg
   const [selectedTemplate, setSelectedTemplate] = useState<ServiceTemplate | null>(null);
   const [isValidating, setIsValidating] = useState(false);
   const [validationResult, setValidationResult] = useState<{valid: boolean, message: string} | null>(null);
+  const [showDiff, setShowDiff] = useState(false);
+  const [pendingConfig, setPendingConfig] = useState<UpstreamServiceConfig | null>(null);
 
   const { toast } = useToast();
   const isEditing = !!serviceToEdit;
@@ -62,6 +66,8 @@ export function RegisterServiceDialog({ onSuccess, trigger, serviceToEdit }: Reg
           setView("templates");
           setSelectedTemplate(null);
           setValidationResult(null);
+          setShowDiff(false);
+          setPendingConfig(null);
           form.reset();
       } else if (isEditing) {
           setView("form");
@@ -111,10 +117,12 @@ export function RegisterServiceDialog({ onSuccess, trigger, serviceToEdit }: Reg
       }
   };
 
-  // Load credentials when dialog opens or tab changes to auth
-  if (open && credentials.length === 0) {
-      loadCredentials();
-  }
+  // Load credentials when dialog opens
+  useEffect(() => {
+    if (open && credentials.length === 0) {
+        loadCredentials();
+    }
+  }, [open]);
 
   const handleTemplateSelect = (template: ServiceTemplate) => {
       setSelectedTemplate(template);
@@ -225,20 +233,40 @@ export function RegisterServiceDialog({ onSuccess, trigger, serviceToEdit }: Reg
       }
   };
 
+  const performSave = async (config: UpstreamServiceConfig) => {
+    try {
+        if (isEditing) {
+            await apiClient.updateService(config);
+            toast({ title: "Service Updated", description: `${config.name} updated successfully.` });
+        } else {
+            await apiClient.registerService(config);
+            toast({ title: "Service Registered", description: `${config.name} registered successfully.` });
+        }
+
+        setOpen(false);
+        if (onSuccess) onSuccess();
+    } catch (error: any) {
+        console.error(error);
+        toast({
+            variant: "destructive",
+            title: isEditing ? "Update Failed" : "Registration Failed",
+            description: error.message || "Something went wrong.",
+        });
+    }
+  };
+
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
       const config = constructConfig(values);
 
-      if (isEditing) {
-          await apiClient.updateService(config);
-           toast({ title: "Service Updated", description: `${values.name} updated successfully.` });
-      } else {
-          await apiClient.registerService(config);
-          toast({ title: "Service Registered", description: `${values.name} registered successfully.` });
+      if (isEditing && !showDiff) {
+          setPendingConfig(config);
+          setShowDiff(true);
+          return;
       }
 
-      setOpen(false);
-      if (onSuccess) onSuccess();
+      await performSave(config);
+
     } catch (error: any) {
       console.error(error);
       toast({
@@ -256,22 +284,40 @@ export function RegisterServiceDialog({ onSuccess, trigger, serviceToEdit }: Reg
       <DialogTrigger asChild>
         {trigger || <Button><Plus className="mr-2 h-4 w-4" /> Register Service</Button>}
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[700px] max-h-[85vh] overflow-y-auto">
+      <DialogContent className={cn("max-h-[85vh] overflow-y-auto transition-all duration-200", showDiff ? "sm:max-w-[900px]" : "sm:max-w-[700px]")}>
         <DialogHeader>
           <DialogTitle>
-              {view === "form" && !isEditing && (
-                  <Button variant="ghost" size="icon" className="mr-2 -ml-2 h-6 w-6" onClick={() => setView("templates")} aria-label="Back to templates">
-                      <ChevronLeft className="h-4 w-4" />
-                  </Button>
-              )}
-              {isEditing ? "Edit Service" : view === "templates" ? "Select Service Template" : "Configure Service"}
+              {showDiff ? (
+                  <div className="flex items-center gap-2">
+                      <Button variant="ghost" size="icon" className="-ml-2 h-6 w-6" onClick={() => setShowDiff(false)}>
+                          <ArrowLeft className="h-4 w-4" />
+                      </Button>
+                      Review Changes
+                  </div>
+              ) : view === "form" && !isEditing ? (
+                  <div className="flex items-center gap-2">
+                    <Button variant="ghost" size="icon" className="-ml-2 h-6 w-6" onClick={() => setView("templates")} aria-label="Back to templates">
+                        <ChevronLeft className="h-4 w-4" />
+                    </Button>
+                    Configure Service
+                  </div>
+              ) : isEditing ? "Edit Service" : view === "templates" ? "Select Service Template" : "Configure Service"}
           </DialogTitle>
           <DialogDescription>
-            {view === "templates" ? "Choose a template to quickly configure a popular service, or start from scratch." : "Configure the upstream service details."}
+            {showDiff ? "Review the changes before applying them." :
+             view === "templates" ? "Choose a template to quickly configure a popular service, or start from scratch." : "Configure the upstream service details."}
           </DialogDescription>
         </DialogHeader>
 
-        {view === "templates" ? (
+        {showDiff && serviceToEdit && pendingConfig ? (
+            <div className="flex flex-col gap-4">
+                <ServiceConfigDiff original={serviceToEdit} modified={pendingConfig} />
+                <div className="flex justify-end gap-2">
+                    <Button variant="outline" onClick={() => setShowDiff(false)}>Back to Edit</Button>
+                    <Button onClick={() => performSave(pendingConfig)}>Confirm & Save</Button>
+                </div>
+            </div>
+        ) : view === "templates" ? (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
                 {SERVICE_TEMPLATES.map((template) => {
                     const Icon = template.icon;
@@ -548,7 +594,7 @@ export function RegisterServiceDialog({ onSuccess, trigger, serviceToEdit }: Reg
                         {isValidating ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Activity className="mr-2 h-4 w-4" />}
                         Test Connection
                     </Button>
-                    <Button type="submit">{isEditing ? "Save Changes" : "Register Service"}</Button>
+                    <Button type="submit">{isEditing ? "Review Changes" : "Register Service"}</Button>
                 </DialogFooter>
                 </form>
                 </Form>
