@@ -12,7 +12,9 @@ import (
 
 // Password hashes a password using bcrypt.
 func Password(password string) (string, error) {
-	bytes, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	// Increase cost to 12 for better security (default is 10)
+	const cost = 12
+	bytes, err := bcrypt.GenerateFromPassword([]byte(password), cost)
 	if err != nil {
 		return "", fmt.Errorf("failed to hash password: %w", err)
 	}
