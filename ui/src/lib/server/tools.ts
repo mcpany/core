@@ -94,6 +94,13 @@ export const BuiltInTools: Record<string, Tool> = {
   }
 };
 
+/**
+ * executeTool executes a built-in tool.
+ *
+ * @param toolName - The name of the tool to execute.
+ * @param args - The arguments for the tool.
+ * @returns {Promise<any>} The result of the tool execution.
+ */
 export async function executeTool(toolName: string, args: any) {
   const tool = BuiltInTools[toolName];
   if (!tool) {

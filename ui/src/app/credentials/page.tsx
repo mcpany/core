@@ -6,6 +6,11 @@
 import { CredentialList } from "@/components/credentials/credential-list"
 import { Separator } from "@/components/ui/separator"
 
+/**
+ * CredentialsPage displays a list of credentials.
+ *
+ * @returns {JSX.Element} The rendered Credentials page.
+ */
 export default function CredentialsPage() {
   return (
     <div className="h-full flex-1 flex-col space-y-8 p-8 md:flex">

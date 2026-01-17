@@ -13,6 +13,9 @@ import { cn } from "@/lib/utils"
 // Format: { THEME_NAME: CSS_SELECTOR }
 const THEMES = { light: "", dark: ".dark" } as const
 
+/**
+ * ChartConfig defines the configuration for the chart.
+ */
 export type ChartConfig = {
   [k in string]: {
     label?: React.ReactNode

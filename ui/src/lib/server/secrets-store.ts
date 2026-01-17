@@ -82,6 +82,9 @@ let mockSecrets: Secret[] = [
     }
 ];
 
+/**
+ * SecretsStore provides an in-memory store for secrets (MOCK).
+ */
 export const SecretsStore = {
     getAllDecrypted: () => {
         // In reality, we wouldn't return decrypted values in list usually,

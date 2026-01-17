@@ -5,8 +5,10 @@
 
 import { NextResponse } from 'next/server';
 
+/** SpanStatus represents the status of a span. */
 export type SpanStatus = 'success' | 'error' | 'pending';
 
+/** Span represents a single operation in a trace. */
 export interface Span {
   id: string;
   name: string;
@@ -21,6 +23,7 @@ export interface Span {
   errorMessage?: string;
 }
 
+/** Trace represents a complete execution trace. */
 export interface Trace {
   id: string;
   rootSpan: Span;
@@ -57,6 +60,12 @@ function generateSpan(
   };
 }
 
+/**
+ * GET handler for fetching traces.
+ *
+ * @param request - The incoming request.
+ * @returns {Promise<NextResponse>} The JSON response containing traces.
+ */
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   // const limit = searchParams.get('limit');

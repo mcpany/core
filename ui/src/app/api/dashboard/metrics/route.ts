@@ -6,6 +6,11 @@
 
 import { NextResponse } from 'next/server';
 
+/**
+ * GET handler for fetching dashboard metrics.
+ *
+ * @returns {Promise<NextResponse>} The JSON response containing metrics.
+ */
 export async function GET() {
   // Mock data for dashboard metrics
   // In a real scenario, this would aggregate data from the backend

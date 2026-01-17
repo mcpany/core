@@ -12,6 +12,9 @@ export interface MarketplaceItemConfig {
   envVars: EnvVarDefinition[];
 }
 
+/**
+ * EnvVarDefinition defines an environment variable required by a marketplace item.
+ */
 export interface EnvVarDefinition {
   name: string;
   description: string;
@@ -21,6 +24,9 @@ export interface EnvVarDefinition {
   addToArgs?: boolean;
 }
 
+/**
+ * MarketplaceItem represents an item in the marketplace.
+ */
 export interface MarketplaceItem {
   id: string;
   name: string;

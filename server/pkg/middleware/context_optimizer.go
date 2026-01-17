@@ -179,6 +179,7 @@ func (w *responseBuffer) Write(b []byte) (int, error) {
 	return w.ResponseWriter.Write(b)
 }
 
+// WriteHeader captures the status code and decides whether to buffer based on headers.
 func (w *responseBuffer) WriteHeader(statusCode int) {
 	if w.wroteHeader {
 		return

@@ -18,6 +18,11 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 
+/**
+ * UpstreamServiceDetailPage displays details for a specific upstream service.
+ *
+ * @returns {JSX.Element} The rendered Upstream Service Detail page.
+ */
 export default function UpstreamServiceDetailPage() {
     const params = useParams();
     const router = useRouter();

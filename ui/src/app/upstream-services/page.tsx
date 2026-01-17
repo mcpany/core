@@ -14,6 +14,11 @@ import { Plus, Power, Trash2, RefreshCw, AlertTriangle } from "lucide-react";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 
+/**
+ * UpstreamServicesPage displays a list of registered upstream services.
+ *
+ * @returns {JSX.Element} The rendered Upstream Services page.
+ */
 export default function UpstreamServicesPage() {
     const { toast } = useToast();
     const [services, setServices] = useState<any[]>([]);

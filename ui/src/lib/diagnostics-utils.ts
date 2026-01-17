@@ -11,6 +11,12 @@ export interface DiagnosticResult {
   severity: "critical" | "warning" | "info";
 }
 
+/**
+ * analyzeConnectionError analyzes a raw error string and returns a diagnostic result.
+ *
+ * @param error - The raw error string.
+ * @returns {DiagnosticResult} The diagnostic result.
+ */
 export function analyzeConnectionError(error: string): DiagnosticResult {
   const err = error.toLowerCase();
 

@@ -9,6 +9,11 @@ import { AlertList } from "@/components/alerts/alert-list";
 import { AlertStats } from "@/components/alerts/alert-stats";
 import { CreateRuleDialog } from "@/components/alerts/create-rule-dialog";
 
+/**
+ * AlertsPage displays a list of alerts.
+ *
+ * @returns {JSX.Element} The rendered Alerts page.
+ */
 export default function AlertsPage() {
   return (
     <div className="flex-1 space-y-4 p-8 pt-6 h-[calc(100vh-4rem)] flex flex-col overflow-hidden">

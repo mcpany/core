@@ -14,6 +14,11 @@ interface BackendService {
   // Other fields we might use later
 }
 
+/**
+ * GET handler for fetching service health.
+ *
+ * @returns {Promise<NextResponse>} The JSON response containing service health.
+ */
 export async function GET() {
   const backendUrl = process.env.BACKEND_URL || 'http://localhost:8080';
 

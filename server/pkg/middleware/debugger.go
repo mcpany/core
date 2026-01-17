@@ -77,6 +77,7 @@ func (w *bodyLogWriter) Write(b []byte) (int, error) {
 	return w.ResponseWriter.Write(b)
 }
 
+// WriteHeader captures the status code for logging.
 func (w *bodyLogWriter) WriteHeader(statusCode int) {
 	if w.wroteHeader {
 		return

@@ -5,6 +5,9 @@
 
 import data from './placeholder-images.json';
 
+/**
+ * ImagePlaceholder represents a placeholder image.
+ */
 export type ImagePlaceholder = {
   id: string;
   description: string;

@@ -11,10 +11,12 @@ type ActionableError struct {
 	Suggestion string
 }
 
+// Error returns the error message including the suggestion.
 func (e *ActionableError) Error() string {
 	return fmt.Sprintf("%v\n\t-> Fix: %s", e.Err, e.Suggestion)
 }
 
+// Unwrap returns the underlying error.
 func (e *ActionableError) Unwrap() error {
 	return e.Err
 }
