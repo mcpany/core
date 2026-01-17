@@ -755,8 +755,8 @@ func (t *HTTPTool) processParameters(ctx context.Context, inputs map[string]any)
 				}
 				// If optional and missing, treat as empty string
 				val = ""
-			} else {
-				// Only delete from inputs if it was present
+			} else if t.paramInPath[i] || t.paramInQuery[i] {
+				// Only delete from inputs if it was present AND used in path/query replacement
 				delete(inputs, name)
 			}
 
