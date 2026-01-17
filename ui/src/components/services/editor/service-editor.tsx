@@ -28,6 +28,11 @@ interface ServiceEditorProps {
     onCancel: () => void;
 }
 
+/**
+ * ServiceEditor.
+ *
+ * @param onCancel - The onCancel.
+ */
 export function ServiceEditor({ service, onChange, onSave, onCancel }: ServiceEditorProps) {
     const [activeTab, setActiveTab] = useState("general");
     const [validating, setValidating] = useState(false);

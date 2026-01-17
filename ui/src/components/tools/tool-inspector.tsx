@@ -23,6 +23,11 @@ interface ToolInspectorProps {
   onOpenChange: (open: boolean) => void;
 }
 
+/**
+ * ToolInspector.
+ *
+ * @param onOpenChange - The onOpenChange.
+ */
 export function ToolInspector({ tool, open, onOpenChange }: ToolInspectorProps) {
   const [input, setInput] = useState("{}");
   const [output, setOutput] = useState<string | null>(null);

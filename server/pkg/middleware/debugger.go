@@ -39,6 +39,10 @@ type Debugger struct {
 }
 
 // NewDebugger creates a new Debugger middleware.
+//
+// size is the size.
+//
+// Returns the result.
 func NewDebugger(size int) *Debugger {
 	return &Debugger{
 		ring:        ring.New(size),
@@ -57,6 +61,11 @@ type bodyLogWriter struct {
 }
 
 // Write writes the data to the connection and captures it for the log.
+//
+// b is the b.
+//
+// Returns the result.
+// Returns an error if the operation fails.
 func (w *bodyLogWriter) Write(b []byte) (int, error) {
 	if !w.wroteHeader {
 		w.WriteHeader(http.StatusOK)
@@ -77,6 +86,9 @@ func (w *bodyLogWriter) Write(b []byte) (int, error) {
 	return w.ResponseWriter.Write(b)
 }
 
+// WriteHeader sends an HTTP response header with the provided status code.
+//
+// statusCode is the HTTP status code to send.
 func (w *bodyLogWriter) WriteHeader(statusCode int) {
 	if w.wroteHeader {
 		return
@@ -93,6 +105,10 @@ type readCloserWrapper struct {
 }
 
 // Handler returns the http handler.
+//
+// next is the next.
+//
+// Returns the result.
 func (d *Debugger) Handler(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		start := time.Now()
@@ -178,6 +194,8 @@ func isTextContent(contentType string) bool {
 }
 
 // Entries returns the last captured entries.
+//
+// Returns the result.
 func (d *Debugger) Entries() []DebugEntry {
 	d.mu.Lock()
 	defer d.mu.Unlock()
@@ -192,6 +210,8 @@ func (d *Debugger) Entries() []DebugEntry {
 }
 
 // APIHandler returns a http.HandlerFunc to view entries.
+//
+// Returns the result.
 func (d *Debugger) APIHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, _ *http.Request) {
 		w.Header().Set("Content-Type", "application/json")

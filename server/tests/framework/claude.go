@@ -24,6 +24,10 @@ type ClaudeCLI struct {
 }
 
 // NewClaudeCLI creates a new ClaudeCLI instance.
+//
+// t is the t.
+//
+// Returns the result.
 func NewClaudeCLI(t *testing.T) *ClaudeCLI {
 	return &ClaudeCLI{t: t}
 }
@@ -49,6 +53,9 @@ func (c *ClaudeCLI) claudeCommand(args ...string) *exec.Cmd {
 }
 
 // AddMCP adds an MCP server to the Claude CLI configuration.
+//
+// name is the name of the resource.
+// endpoint is the endpoint.
 func (c *ClaudeCLI) AddMCP(name, endpoint string) {
 	c.t.Helper()
 
@@ -68,6 +75,8 @@ func (c *ClaudeCLI) AddMCP(name, endpoint string) {
 }
 
 // RemoveMCP removes an MCP server from the Claude CLI configuration.
+//
+// name is the name of the resource.
 func (c *ClaudeCLI) RemoveMCP(name string) {
 	c.t.Helper()
 	cmd := c.claudeCommand("mcp", "remove", name)
@@ -78,6 +87,12 @@ func (c *ClaudeCLI) RemoveMCP(name string) {
 }
 
 // Run executes a prompt against the Claude CLI.
+//
+// apiKey is the apiKey.
+// prompt is the prompt.
+//
+// Returns the result.
+// Returns an error if the operation fails.
 func (c *ClaudeCLI) Run(apiKey, prompt string) (string, error) {
 	c.t.Helper()
 	var outputBuffer strings.Builder

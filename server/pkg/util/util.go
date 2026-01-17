@@ -419,6 +419,10 @@ func replacePlaceholders(input string, params map[string]interface{}, noEscapePa
 }
 
 // IsNil checks if an interface value is nil or holds a nil pointer.
+//
+// i is the i.
+//
+// Returns true if successful.
 func IsNil(i any) bool {
 	if i == nil {
 		return true

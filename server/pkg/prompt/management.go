@@ -15,16 +15,31 @@ import (
 // ManagerInterface defines the interface for a prompt manager.
 type ManagerInterface interface {
 	// AddPrompt registers a new prompt.
+	//
+	// prompt is the prompt.
 	AddPrompt(prompt Prompt)
 	// UpdatePrompt updates an existing prompt.
+	//
+	// prompt is the prompt.
 	UpdatePrompt(prompt Prompt)
 	// GetPrompt retrieves a prompt by name.
+	//
+	// name is the name of the resource.
+	//
+	// Returns the result.
+	// Returns true if successful.
 	GetPrompt(name string) (Prompt, bool)
 	// ListPrompts returns all registered prompts.
+	//
+	// Returns the result.
 	ListPrompts() []Prompt
 	// ClearPromptsForService removes all prompts associated with a service.
+	//
+	// serviceID is the serviceID.
 	ClearPromptsForService(serviceID string)
 	// SetMCPServer sets the MCP server provider.
+	//
+	// mcpServer is the mcpServer.
 	SetMCPServer(mcpServer MCPServerProvider)
 }
 
@@ -37,6 +52,8 @@ type Manager struct {
 }
 
 // NewManager creates and returns a new, empty Manager.
+//
+// Returns the result.
 func NewManager() *Manager {
 	return &Manager{
 		prompts: xsync.NewMap[string, Prompt](),
@@ -44,6 +61,8 @@ func NewManager() *Manager {
 }
 
 // SetMCPServer provides the Manager with a reference to the MCP server.
+//
+// mcpServer is the mcpServer.
 func (pm *Manager) SetMCPServer(mcpServer MCPServerProvider) {
 	pm.mu.Lock()
 	defer pm.mu.Unlock()
@@ -76,12 +95,19 @@ func (pm *Manager) UpdatePrompt(prompt Prompt) {
 }
 
 // GetPrompt retrieves a prompt from the manager by its name.
+//
+// name is the name of the resource.
+//
+// Returns the result.
+// Returns true if successful.
 func (pm *Manager) GetPrompt(name string) (Prompt, bool) {
 	prompt, ok := pm.prompts.Load(name)
 	return prompt, ok
 }
 
 // ListPrompts returns a slice containing all the prompts currently registered.
+//
+// Returns the result.
 func (pm *Manager) ListPrompts() []Prompt {
 	// ⚡ Bolt: Use a read-through cache to avoid repeated map iteration and slice allocation.
 	// The cache is invalidated on any write operation (Add/Update/Clear).
@@ -121,6 +147,8 @@ func (pm *Manager) ListPrompts() []Prompt {
 }
 
 // ClearPromptsForService removes all prompts associated with a given service.
+//
+// serviceID is the serviceID.
 func (pm *Manager) ClearPromptsForService(serviceID string) {
 	changed := false
 	pm.prompts.Range(func(key string, value Prompt) bool {

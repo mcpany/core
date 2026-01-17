@@ -9,6 +9,8 @@ type PermanentError struct {
 }
 
 // Error returns the error message.
+//
+// Returns the result.
 func (e *PermanentError) Error() string {
 	if e.Err == nil {
 		return "permanent error"
@@ -17,6 +19,8 @@ func (e *PermanentError) Error() string {
 }
 
 // Unwrap returns the wrapped error.
+//
+// Returns an error if the operation fails.
 func (e *PermanentError) Unwrap() error {
 	return e.Err
 }

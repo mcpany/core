@@ -15,8 +15,12 @@ import (
 // requests and their corresponding responses.
 type Message interface {
 	// CorrelationID returns the unique identifier used to correlate messages.
+	//
+	// Returns the result.
 	CorrelationID() string
 	// SetCorrelationID sets the correlation identifier for the message.
+	//
+	// id is the unique identifier.
 	SetCorrelationID(id string)
 }
 

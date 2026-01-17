@@ -125,6 +125,11 @@ const SchemaNode = ({ name, schema, required, level = 0 }: SchemaNodeProps) => {
   );
 };
 
+/**
+ * SchemaVisualizer.
+ *
+ * @param { schema - The { schema.
+ */
 export function SchemaVisualizer({ schema }: { schema: any }) {
   if (!schema || Object.keys(schema).length === 0) {
     return (

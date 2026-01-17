@@ -31,6 +31,8 @@ type poolWithChecker[T pool.ClosableClient] struct {
 }
 
 // Close stops the health checker and closes the underlying pool.
+//
+// Returns an error if the operation fails.
 func (p *poolWithChecker[T]) Close() error {
 	p.checker.Stop()
 	return p.Pool.Close()

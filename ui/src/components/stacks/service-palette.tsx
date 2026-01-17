@@ -125,6 +125,11 @@ interface ServicePaletteProps {
     onTemplateSelect: (snippet: string) => void;
 }
 
+/**
+ * ServicePalette.
+ *
+ * @param { onTemplateSelect - The { onTemplateSelect.
+ */
 export function ServicePalette({ onTemplateSelect }: ServicePaletteProps) {
     const [search, setSearch] = React.useState("");
     const [filter, setFilter] = React.useState<string | null>(null);

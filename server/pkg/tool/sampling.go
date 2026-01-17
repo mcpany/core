@@ -13,9 +13,20 @@ import (
 // It includes capabilities like Sampling (CreateMessage) and Roots inspection.
 type Session interface {
 	// CreateMessage requests a message creation (sampling) from the client.
+	//
+	// ctx is the context for the request.
+	// params is the params.
+	//
+	// Returns the result.
+	// Returns an error if the operation fails.
 	CreateMessage(ctx context.Context, params *mcp.CreateMessageParams) (*mcp.CreateMessageResult, error)
 
 	// ListRoots requests the list of roots from the client.
+	//
+	// ctx is the context for the request.
+	//
+	// Returns the result.
+	// Returns an error if the operation fails.
 	ListRoots(ctx context.Context) (*mcp.ListRootsResult, error)
 }
 
@@ -25,11 +36,21 @@ type Sampler = Session
 type sessionContextKey struct{}
 
 // NewContextWithSession creates a new context with the given Session.
+//
+// ctx is the context for the request.
+// s is the s.
+//
+// Returns the result.
 func NewContextWithSession(ctx context.Context, s Session) context.Context {
 	return context.WithValue(ctx, sessionContextKey{}, s)
 }
 
 // GetSession retrieves the Session from the context.
+//
+// ctx is the context for the request.
+//
+// Returns the result.
+// Returns true if successful.
 func GetSession(ctx context.Context) (Session, bool) {
 	s, ok := ctx.Value(sessionContextKey{}).(Session)
 	return s, ok

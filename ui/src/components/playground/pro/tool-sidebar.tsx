@@ -20,6 +20,11 @@ interface ToolSidebarProps {
     className?: string;
 }
 
+/**
+ * ToolSidebar.
+ *
+ * @param className - The className.
+ */
 export function ToolSidebar({ tools, onSelectTool, className }: ToolSidebarProps) {
     const [searchQuery, setSearchQuery] = useState("");
     const [selectedService, setSelectedService] = useState<string | null>(null);
