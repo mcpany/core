@@ -204,10 +204,7 @@ func countTokensInValueSimpleFast(st *SimpleTokenizer, v interface{}) (int, bool
 	case []string:
 		count := 0
 		for _, item := range val {
-			c, err := st.CountTokens(item)
-			if err != nil {
-				return 0, true, err
-			}
+			c, _ := st.CountTokens(item)
 			count += c
 		}
 		return count, true, nil
@@ -242,15 +239,9 @@ func countTokensInValueSimpleFast(st *SimpleTokenizer, v interface{}) (int, bool
 	case map[string]string:
 		count := 0
 		for key, item := range val {
-			kc, err := st.CountTokens(key)
-			if err != nil {
-				return 0, true, err
-			}
+			kc, _ := st.CountTokens(key)
 			count += kc
-			vc, err := st.CountTokens(item)
-			if err != nil {
-				return 0, true, err
-			}
+			vc, _ := st.CountTokens(item)
 			count += vc
 		}
 		return count, true, nil
@@ -276,10 +267,7 @@ func countTokensInValueWordFast(wt *WordTokenizer, v interface{}) (int, bool, er
 	case []string:
 		count := 0
 		for _, item := range val {
-			c, err := wt.CountTokens(item)
-			if err != nil {
-				return 0, true, err
-			}
+			c, _ := wt.CountTokens(item)
 			count += c
 		}
 		return count, true, nil
@@ -294,15 +282,9 @@ func countTokensInValueWordFast(wt *WordTokenizer, v interface{}) (int, bool, er
 	case map[string]string:
 		count := 0
 		for key, item := range val {
-			kc, err := wt.CountTokens(key)
-			if err != nil {
-				return 0, true, err
-			}
+			kc, _ := wt.CountTokens(key)
 			count += kc
-			vc, err := wt.CountTokens(item)
-			if err != nil {
-				return 0, true, err
-			}
+			vc, _ := wt.CountTokens(item)
 			count += vc
 		}
 		return count, true, nil
@@ -321,34 +303,6 @@ func countTokensInValueRecursive(t Tokenizer, v interface{}, visited map[uintptr
 	switch val := v.(type) {
 	case string:
 		return t.CountTokens(val)
-	case []interface{}:
-		count := 0
-		for _, item := range val {
-			c, err := countTokensInValueRecursive(t, item, visited)
-			if err != nil {
-				return 0, err
-			}
-			count += c
-		}
-		return count, nil
-	case map[string]interface{}:
-		count := 0
-		for key, item := range val {
-			// Count the key
-			kc, err := t.CountTokens(key)
-			if err != nil {
-				return 0, err
-			}
-			count += kc
-
-			// Count the value
-			vc, err := countTokensInValueRecursive(t, item, visited)
-			if err != nil {
-				return 0, err
-			}
-			count += vc
-		}
-		return count, nil
 	case []string:
 		count := 0
 		for _, item := range val {
@@ -401,38 +355,7 @@ func countTokensInValueSimple(t *SimpleTokenizer, v interface{}, visited map[uin
 		return c, err
 	}
 
-	switch val := v.(type) {
-	case []interface{}:
-		count := 0
-		for _, item := range val {
-			c, err := countTokensInValueSimple(t, item, visited)
-			if err != nil {
-				return 0, err
-			}
-			count += c
-		}
-		return count, nil
-	case map[string]interface{}:
-		count := 0
-		for key, item := range val {
-			// Count the key
-			kc, err := t.CountTokens(key)
-			if err != nil {
-				return 0, err
-			}
-			count += kc
-
-			// Count the value
-			vc, err := countTokensInValueSimple(t, item, visited)
-			if err != nil {
-				return 0, err
-			}
-			count += vc
-		}
-		return count, nil
-	default:
-		return countTokensReflectGeneric(t, val, visited)
-	}
+	return countTokensReflectGeneric(t, v, visited)
 }
 
 // recursiveTokenizer is an interface for tokenizers that support efficient recursive traversal.
@@ -451,38 +374,7 @@ func countTokensInValueWord(t *WordTokenizer, v interface{}, visited map[uintptr
 		return c, err
 	}
 
-	switch val := v.(type) {
-	case []interface{}:
-		count := 0
-		for _, item := range val {
-			c, err := countTokensInValueWord(t, item, visited)
-			if err != nil {
-				return 0, err
-			}
-			count += c
-		}
-		return count, nil
-	case map[string]interface{}:
-		count := 0
-		for key, item := range val {
-			// Count the key
-			kc, err := t.CountTokens(key)
-			if err != nil {
-				return 0, err
-			}
-			count += kc
-
-			// Count the value
-			vc, err := countTokensInValueWord(t, item, visited)
-			if err != nil {
-				return 0, err
-			}
-			count += vc
-		}
-		return count, nil
-	default:
-		return countTokensReflectGeneric(t, val, visited)
-	}
+	return countTokensReflectGeneric(t, v, visited)
 }
 
 func (t *WordTokenizer) countRecursive(v interface{}, visited map[uintptr]bool) (int, error) {
@@ -550,7 +442,17 @@ func countTokensReflectGeneric[T recursiveTokenizer](t T, v interface{}, visited
 			count += c
 		}
 		return count, nil
-	case reflect.Slice, reflect.Array:
+	case reflect.Slice:
+		if !val.IsNil() {
+			ptr := val.Pointer()
+			if visited[ptr] {
+				return 0, fmt.Errorf("cycle detected in value")
+			}
+			visited[ptr] = true
+			defer delete(visited, ptr)
+		}
+		fallthrough
+	case reflect.Array:
 		count := 0
 		for i := 0; i < val.Len(); i++ {
 			c, err := t.countRecursive(val.Index(i).Interface(), visited)
@@ -561,6 +463,15 @@ func countTokensReflectGeneric[T recursiveTokenizer](t T, v interface{}, visited
 		}
 		return count, nil
 	case reflect.Map:
+		if !val.IsNil() {
+			ptr := val.Pointer()
+			if visited[ptr] {
+				return 0, fmt.Errorf("cycle detected in value")
+			}
+			visited[ptr] = true
+			defer delete(visited, ptr)
+		}
+
 		count := 0
 		iter := val.MapRange()
 		for iter.Next() {
@@ -619,7 +530,17 @@ func countTokensReflect(t Tokenizer, v interface{}, visited map[uintptr]bool, _ 
 			count += c
 		}
 		return count, nil
-	case reflect.Slice, reflect.Array:
+	case reflect.Slice:
+		if !val.IsNil() {
+			ptr := val.Pointer()
+			if visited[ptr] {
+				return 0, fmt.Errorf("cycle detected in value")
+			}
+			visited[ptr] = true
+			defer delete(visited, ptr)
+		}
+		fallthrough
+	case reflect.Array:
 		count := 0
 		for i := 0; i < val.Len(); i++ {
 			c, err := countTokensInValueRecursive(t, val.Index(i).Interface(), visited)
@@ -630,6 +551,15 @@ func countTokensReflect(t Tokenizer, v interface{}, visited map[uintptr]bool, _ 
 		}
 		return count, nil
 	case reflect.Map:
+		if !val.IsNil() {
+			ptr := val.Pointer()
+			if visited[ptr] {
+				return 0, fmt.Errorf("cycle detected in value")
+			}
+			visited[ptr] = true
+			defer delete(visited, ptr)
+		}
+
 		count := 0
 		iter := val.MapRange()
 		for iter.Next() {
