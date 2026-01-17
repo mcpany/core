@@ -466,9 +466,9 @@ func ToString(v any) string {
 	case uint64:
 		return strconv.FormatUint(val, 10)
 	case float32:
-		return strconv.FormatFloat(float64(val), 'g', -1, 32)
+		return strconv.FormatFloat(float64(val), 'f', -1, 32)
 	case float64:
-		return strconv.FormatFloat(val, 'g', -1, 64)
+		return strconv.FormatFloat(val, 'f', -1, 64)
 	case fmt.Stringer:
 		return val.String()
 	default:
