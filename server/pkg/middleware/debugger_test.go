@@ -11,25 +11,20 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestDebuggerMiddleware(t *testing.T) {
-	gin.SetMode(gin.TestMode)
-
 	debugger := NewDebugger(10)
-	r := gin.New()
-	r.Use(debugger.Middleware())
 
-	r.GET("/test", func(c *gin.Context) {
-		c.Status(http.StatusOK)
-	})
+	handler := debugger.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+	}))
 
 	// Make a request
 	w := httptest.NewRecorder()
 	req, _ := http.NewRequest("GET", "/test", nil)
-	r.ServeHTTP(w, req)
+	handler.ServeHTTP(w, req)
 
 	assert.Equal(t, http.StatusOK, w.Code)
 
@@ -44,7 +39,7 @@ func TestDebuggerMiddleware(t *testing.T) {
 	for i := 0; i < 15; i++ {
 		w = httptest.NewRecorder()
 		req, _ = http.NewRequest("GET", "/test", nil)
-		r.ServeHTTP(w, req)
+		handler.ServeHTTP(w, req)
 	}
 
 	entries = debugger.Entries()
@@ -52,16 +47,14 @@ func TestDebuggerMiddleware(t *testing.T) {
 }
 
 func TestDebuggerBodyCapture(t *testing.T) {
-	gin.SetMode(gin.TestMode)
-
 	debugger := NewDebugger(10)
-	r := gin.New()
-	r.Use(debugger.Middleware())
 
-	r.POST("/echo", func(c *gin.Context) {
-		body, _ := io.ReadAll(c.Request.Body)
-		c.Data(http.StatusOK, "application/json", body)
-	})
+	handler := debugger.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		body, _ := io.ReadAll(r.Body)
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		w.Write(body)
+	}))
 
 	payload := map[string]string{"foo": "bar"}
 	payloadBytes, _ := json.Marshal(payload)
@@ -69,7 +62,7 @@ func TestDebuggerBodyCapture(t *testing.T) {
 	w := httptest.NewRecorder()
 	req, _ := http.NewRequest("POST", "/echo", bytes.NewBuffer(payloadBytes))
 	req.Header.Set("Content-Type", "application/json")
-	r.ServeHTTP(w, req)
+	handler.ServeHTTP(w, req)
 
 	assert.Equal(t, http.StatusOK, w.Code)
 	assert.Equal(t, string(payloadBytes), w.Body.String())
@@ -81,24 +74,20 @@ func TestDebuggerBodyCapture(t *testing.T) {
 }
 
 func TestDebuggerLargeBodyTruncation(t *testing.T) {
-	gin.SetMode(gin.TestMode)
-
 	debugger := NewDebugger(10)
 	debugger.maxBodySize = 10 // Very small limit for testing
 
-	r := gin.New()
-	r.Use(debugger.Middleware())
-
-	r.POST("/echo", func(c *gin.Context) {
+	handler := debugger.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// Handler should still receive full body
-		body, _ := io.ReadAll(c.Request.Body)
-		c.String(http.StatusOK, string(body))
-	})
+		body, _ := io.ReadAll(r.Body)
+		w.WriteHeader(http.StatusOK)
+		w.Write(body)
+	}))
 
 	longString := "This is a very long string that should be truncated"
 	w := httptest.NewRecorder()
 	req, _ := http.NewRequest("POST", "/echo", bytes.NewBufferString(longString))
-	r.ServeHTTP(w, req)
+	handler.ServeHTTP(w, req)
 
 	assert.Equal(t, http.StatusOK, w.Code)
 	assert.Equal(t, longString, w.Body.String()) // Handler got full body
