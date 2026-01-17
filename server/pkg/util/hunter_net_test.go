@@ -87,3 +87,108 @@ func TestCheckConnection_NoPort(t *testing.T) {
 	// So we assert that it doesn't panic.
 	_ = err
 }
+
+// Mocks for SafeDialer tests
+
+type spyResolver struct {
+	ips         []net.IP
+	err         error
+	lastNetwork string
+}
+
+func (s *spyResolver) LookupIP(ctx context.Context, network, host string) ([]net.IP, error) {
+	s.lastNetwork = network
+	// Simulate behavior of a real resolver: if asked for ip4, only return IPv4.
+	var filtered []net.IP
+	for _, ip := range s.ips {
+		isV4 := ip.To4() != nil
+		if network == "ip4" && !isV4 {
+			continue
+		}
+		if network == "ip6" && isV4 {
+			continue
+		}
+		filtered = append(filtered, ip)
+	}
+	return filtered, s.err
+}
+
+type mockDialer struct {
+	conn net.Conn
+	err  error
+}
+
+func (m *mockDialer) DialContext(ctx context.Context, network, address string) (net.Conn, error) {
+	return m.conn, m.err
+}
+
+func TestSafeDialer_Bug_MixedFamilies(t *testing.T) {
+	// Scenario: Host resolves to a private IPv6 (loopback) and a public IPv4.
+	// We dial with "tcp4", so we should ignore the IPv6 address and succeed with IPv4.
+
+	privateIPv6 := net.ParseIP("::1") // Loopback, blocked by default
+	publicIPv4 := net.ParseIP("8.8.8.8")
+
+	resolver := &spyResolver{
+		ips: []net.IP{privateIPv6, publicIPv4},
+	}
+
+	dialer := &mockDialer{
+		conn: &net.TCPConn{}, // dummy
+	}
+
+	sd := NewSafeDialer()
+	sd.Resolver = resolver
+	sd.Dialer = dialer
+	// Defaults: AllowLoopback=false, AllowPrivate=false.
+
+	// Action: Dial "tcp4". We only want IPv4.
+	// Since IPv4 (8.8.8.8) is public, this SHOULD succeed.
+	// But currently, SafeDialer looks up "ip" (both), receives both from our spy (if logic is flawed) or resolver,
+	// and checks ALL returned IPs.
+	_, err := sd.DialContext(context.Background(), "tcp4", "example.com:80")
+
+	if err != nil {
+		t.Fatalf("SafeDialer.DialContext(tcp4) failed unexpectedly: %v", err)
+	}
+
+	if resolver.lastNetwork != "ip4" {
+		t.Errorf("Expected resolver network to be 'ip4', got '%s'", resolver.lastNetwork)
+	}
+}
+
+func TestSafeDialer_NetworkMapping(t *testing.T) {
+	tests := []struct {
+		network         string
+		expectedLookup  string
+	}{
+		{"tcp", "ip"},
+		{"tcp4", "ip4"},
+		{"tcp6", "ip6"},
+		{"udp", "ip"},
+		{"udp4", "ip4"},
+		{"udp6", "ip6"},
+		{"ip", "ip"},
+		{"ip4", "ip4"},
+		{"ip6", "ip6"},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.network, func(t *testing.T) {
+			resolver := &spyResolver{
+				ips: []net.IP{net.ParseIP("127.0.0.1")}, // dummy
+			}
+			dialer := &mockDialer{conn: &net.TCPConn{}}
+			sd := NewSafeDialer()
+			sd.Resolver = resolver
+			sd.Dialer = dialer
+			sd.AllowLoopback = true // Allow loopback so we don't block
+
+			_, _ = sd.DialContext(context.Background(), tt.network, "localhost:80")
+
+			if resolver.lastNetwork != tt.expectedLookup {
+				t.Errorf("For network '%s', expected lookup '%s', got '%s'", tt.network, tt.expectedLookup, resolver.lastNetwork)
+			}
+		})
+	}
+}
