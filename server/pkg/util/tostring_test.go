@@ -113,3 +113,24 @@ func TestToString_OtherTypes(t *testing.T) {
 		})
 	}
 }
+
+func TestToString_Float32_Overflow(t *testing.T) {
+	// 2^63 is representable in float32
+	var f float32 = float32(math.Pow(2, 63))
+
+	// Previous behavior: ToString(f) returned -9223372036854775808 because it tried to cast to int64 which overflowed.
+	// Correct behavior: ToString(f) should return scientific notation or float string because it doesn't fit in int64.
+
+	s := ToString(f)
+
+	if s[0] == '-' {
+		t.Errorf("Expected positive string for 2^63, got %s", s)
+	}
+
+    // Check MaxInt64 converted to float32
+    f2 := float32(math.MaxInt64)
+    s2 := ToString(f2)
+    if s2[0] == '-' {
+         t.Errorf("Expected positive string for float32(MaxInt64), got %s", s2)
+    }
+}

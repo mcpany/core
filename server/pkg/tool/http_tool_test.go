@@ -814,3 +814,57 @@ func TestHTTPTool_Execute_ConsecutiveCalls(t *testing.T) {
 	require.True(t, ok)
 	assert.Equal(t, "2", resultMap2["id"])
 }
+
+func TestHTTPTool_Execute_LargeFloatParameter(t *testing.T) {
+	t.Parallel()
+
+	// Handler expects a large number in the path
+	// 2^63 = 9.223372036854776e+18
+	// Note: URL encoding might encode spaces in scientific notation if any? No, e+18 has no spaces.
+	pathHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// We expect the path to contain the large number.
+		// Since it's float32(2^63), it becomes approx 9.223372e+18
+		// Let's just check it is NOT negative.
+		assert.False(t, strings.Contains(r.URL.Path, "-9223372036854775808"), "URL path should NOT contain negative overflow")
+		// The value will be a large number string. It might be scientific notation or full integer depending on what ToString returns for json.Number.
+		// json.Number for large integer is just the digits string.
+		// So we expect 9223372036854775808 (from JSON).
+
+		// If we passed valid JSON integer, it stays as digits.
+		assert.Contains(t, r.URL.Path, "9223372036854775808", "URL path should contain the large number digits")
+
+		w.WriteHeader(http.StatusOK)
+		_, _ = w.Write([]byte(`{"status": "ok"}`))
+	})
+	server := httptest.NewServer(pathHandler)
+	defer server.Close()
+
+	poolManager := pool.NewManager()
+	p, _ := pool.New(func(_ context.Context) (*client.HTTPClientWrapper, error) {
+		return &client.HTTPClientWrapper{Client: server.Client()}, nil
+	}, 1, 1, 0, true)
+	poolManager.Register("test-service", p)
+
+	methodAndURL := "GET " + server.URL + "/data/{{value}}"
+	mcpTool := v1.Tool_builder{
+		UnderlyingMethodFqn: &methodAndURL,
+	}.Build()
+
+	paramMapping := configv1.HttpParameterMapping_builder{
+		Schema: configv1.ParameterSchema_builder{
+			Name: proto.String("value"),
+		}.Build(),
+	}.Build()
+	callDef := configv1.HttpCallDefinition_builder{
+		Parameters: []*configv1.HttpParameterMapping{paramMapping},
+	}.Build()
+
+	httpTool := tool.NewHTTPTool(mcpTool, poolManager, "test-service", nil, callDef, nil, nil, "")
+
+	// 2^63
+	// We pass it as a JSON string for integer to avoid any float parsing issues in test setup
+	inputs := json.RawMessage(`{"value": 9223372036854775808}`)
+	req := &tool.ExecutionRequest{ToolInputs: inputs}
+	_, err := httpTool.Execute(context.Background(), req)
+	require.NoError(t, err)
+}
