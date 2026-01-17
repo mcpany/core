@@ -16,7 +16,13 @@ test.describe('Tool Exploration', () => {
                             name: 'weather-tool',
                             description: 'Get weather for a location',
                             source: 'configured',
-                            serviceName: 'weather-service'
+                            serviceName: 'weather-service',
+                            inputSchema: {
+                                type: 'object',
+                                properties: {
+                                    location: { type: 'string', description: 'City name' }
+                                }
+                            }
                         },
                         {
                             name: 'calculator',
@@ -59,7 +65,7 @@ test.describe('Tool Exploration', () => {
         await toolRow.getByRole('button', { name: 'Inspect' }).click();
 
         await expect(page.getByRole('dialog')).toBeVisible();
-        await expect(page.getByText('Schema')).toBeVisible();
+        await expect(page.getByText('Schema', { exact: true })).toBeVisible();
         await expect(page.getByRole('dialog').getByText('weather-tool')).toBeVisible();
     });
 });
