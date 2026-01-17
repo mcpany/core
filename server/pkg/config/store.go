@@ -387,6 +387,13 @@ func (s *FileStore) Load(ctx context.Context) (*configv1.McpAnyServerConfig, err
 			return nil, logErr
 		}
 
+		// Resolve relative paths based on the config file location.
+		// This ensures that paths like './script.sh' are resolved relative to the config file,
+		// regardless of where the server process was started.
+		if !isURL(path) {
+			ResolveRelativePaths(cfg, filepath.Dir(path))
+		}
+
 		if mergedConfig == nil {
 			mergedConfig = cfg
 		} else {
