@@ -295,10 +295,9 @@ func prepareAndExecuteRequest(ctx context.Context, w http.ResponseWriter, req Te
 	}
 
 	// Use a clean http client
-	client := &http.Client{
-		// Timeout: util.DefaultTimeout, // Commented out used as per lint error
-		Timeout: 30 * time.Second,
-	}
+	// Sentinel Security Update: Use NewSafeHTTPClient to prevent SSRF
+	client := util.NewSafeHTTPClient()
+	client.Timeout = 30 * time.Second
 
 	// Create Request
 	httpReq, err := http.NewRequestWithContext(ctx, method, req.TargetURL, nil)
