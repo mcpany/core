@@ -157,4 +157,50 @@ describe('ResourcePreviewModal', () => {
     fireEvent.click(closeButton);
     expect(onClose).toHaveBeenCalled();
   });
+
+  it('handles download for binary content', async () => {
+    const binaryContent: ResourceContent = {
+        uri: 'file:///image.png',
+        mimeType: 'image/png',
+        blob: 'AQID' // 0x01, 0x02, 0x03
+    };
+
+    const mockResourceImg = { ...mockResource, name: 'image.png', mimeType: 'image/png', uri: 'file:///image.png' };
+
+    // Mock document.createElement('a') and click
+    const clickMock = vi.fn();
+    const linkMock = { href: '', download: '', click: clickMock } as unknown as HTMLAnchorElement;
+
+    const originalCreateElement = document.createElement.bind(document);
+    vi.spyOn(document, 'createElement').mockImplementation((tagName: string, options?: ElementCreationOptions) => {
+        if (tagName === 'a') {
+            return linkMock;
+        }
+        return originalCreateElement(tagName, options);
+    });
+
+    render(
+        <ResourcePreviewModal
+            isOpen={true}
+            onClose={vi.fn()}
+            resource={mockResourceImg}
+            initialContent={binaryContent}
+        />
+    );
+
+    const downloadBtn = screen.getByRole('button', { name: /download/i });
+    fireEvent.click(downloadBtn);
+
+    expect(global.URL.createObjectURL).toHaveBeenCalled();
+    // Check if blob was created correctly
+    // @ts-expect-error Mocking
+    const blob = global.URL.createObjectURL.mock.calls[global.URL.createObjectURL.mock.calls.length - 1][0];
+    expect(blob).toBeInstanceOf(Blob);
+    expect(blob.type).toBe('image/png');
+    expect(blob.size).toBe(3);
+
+    expect(linkMock.href).toBe('blob:mock-url');
+    expect(linkMock.download).toBe('image.png');
+    expect(clickMock).toHaveBeenCalled();
+  });
 });

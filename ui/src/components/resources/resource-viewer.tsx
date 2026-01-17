@@ -50,12 +50,30 @@ export function ResourceViewer({ content, loading }: ResourceViewerProps) {
     const { mimeType, text, uri } = content;
 
     if (mimeType.startsWith("image/")) {
-        // Since we mocked text content, we can't really show an image unless it's a blob URL.
-        // But let's assume we might handle base64 in future.
+        let src = "";
+        if (content.blob) {
+            src = `data:${mimeType};base64,${content.blob}`;
+        } else if (text && text.startsWith("data:image")) {
+            src = text;
+        }
+
+        if (src) {
+            return (
+                <div className="flex items-center justify-center h-full bg-checkered p-4 overflow-hidden">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                        src={src}
+                        alt={uri}
+                        className="max-w-full max-h-full object-contain shadow-sm rounded-md border"
+                    />
+                </div>
+            );
+        }
+
         return (
-             <div className="flex items-center justify-center h-full bg-checkered p-4">
-                 <div className="text-muted-foreground italic">Image preview not supported in this demo.</div>
-             </div>
+            <div className="flex items-center justify-center h-full bg-checkered p-4">
+                <div className="text-muted-foreground italic">Image content not available.</div>
+            </div>
         );
     }
 
