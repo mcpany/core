@@ -113,6 +113,13 @@ func (e *yamlEngine) Unmarshal(b []byte, v proto.Message) error {
 			return fmt.Errorf("%w\n\nDid you mean \"upstream_services\"? It looks like you might be using a Claude Desktop configuration format. MCP Any uses a different configuration structure. See documentation for details.", err)
 		}
 
+		// Detect if the user is using "services" which is a common alias for "upstream_services"
+		if strings.Contains(err.Error(), "unknown field \"services\"") {
+			// revive:disable-next-line:error-strings // This error message is user facing and needs to be descriptive
+			//nolint:staticcheck // This error message is user facing and needs to be descriptive
+			return fmt.Errorf("%w\n\nDid you mean \"upstream_services\"? \"services\" is not a valid top-level key.", err)
+		}
+
 		// Detect invalid use of service_config wrapper (common mistake due to old docs)
 		if strings.Contains(err.Error(), "unknown field \"service_config\"") {
 			// revive:disable-next-line:error-strings // This error message is user facing and needs to be descriptive
@@ -173,6 +180,13 @@ func (e *jsonEngine) Unmarshal(b []byte, v proto.Message) error {
 			// revive:disable-next-line:error-strings // This error message is user facing and needs to be descriptive
 			//nolint:staticcheck // This error message is user facing and needs to be descriptive
 			return fmt.Errorf("%w\n\nDid you mean \"upstream_services\"? It looks like you might be using a Claude Desktop configuration format. MCP Any uses a different configuration structure. See documentation for details.", err)
+		}
+
+		// Detect if the user is using "services" which is a common alias for "upstream_services"
+		if strings.Contains(err.Error(), "unknown field \"services\"") {
+			// revive:disable-next-line:error-strings // This error message is user facing and needs to be descriptive
+			//nolint:staticcheck // This error message is user facing and needs to be descriptive
+			return fmt.Errorf("%w\n\nDid you mean \"upstream_services\"? \"services\" is not a valid top-level key.", err)
 		}
 
 		// Check for unknown fields and suggest fuzzy matches
@@ -789,7 +803,26 @@ func levenshtein(s, t string) int {
 // suggestFix finds the closest matching field name in the proto message.
 func suggestFix(unknownField string, root proto.Message) string {
 	candidates := make(map[string]struct{})
-	collectFieldNames(root.ProtoReflect().Descriptor(), candidates, make(map[string]bool))
+	collectFieldNames(root.ProtoReflect().Descriptor(), candidates)
+
+	// Explicitly add fields from common nested configuration objects to the candidates.
+	// We avoid full recursion to prevent suggesting fields from obscure/irrelevant parts of the schema
+	// (like "services" from Collection which confuses users when they mean "upstream_services").
+	commonMessages := []proto.Message{
+		&configv1.GlobalSettings{},
+		&configv1.UpstreamServiceConfig{},
+		&configv1.HttpUpstreamService{},
+		&configv1.GrpcUpstreamService{},
+		&configv1.McpUpstreamService{},
+		&configv1.OpenapiUpstreamService{},
+		&configv1.CommandLineUpstreamService{},
+		&configv1.SqlUpstreamService{},
+		&configv1.Authentication{},
+	}
+
+	for _, msg := range commonMessages {
+		collectFieldNames(msg.ProtoReflect().Descriptor(), candidates)
+	}
 
 	bestMatch := ""
 	minDist := 100
@@ -815,20 +848,11 @@ func suggestFix(unknownField string, root proto.Message) string {
 	return ""
 }
 
-func collectFieldNames(md protoreflect.MessageDescriptor, candidates map[string]struct{}, visited map[string]bool) {
-	if visited[string(md.FullName())] {
-		return
-	}
-	visited[string(md.FullName())] = true
-
+func collectFieldNames(md protoreflect.MessageDescriptor, candidates map[string]struct{}) {
 	for i := 0; i < md.Fields().Len(); i++ {
 		fd := md.Fields().Get(i)
 		candidates[string(fd.Name())] = struct{}{}
 		candidates[fd.JSONName()] = struct{}{}
-
-		if fd.Kind() == protoreflect.MessageKind {
-			collectFieldNames(fd.Message(), candidates, visited)
-		}
 	}
 }
 

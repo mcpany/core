@@ -57,6 +57,7 @@
 - [x] **Validation CLI Command**: Enhanced `mcpany config validate` with `--check-connection` flag to run deep checks, including connecting to upstream services to verify connectivity. Also added `mcpany doctor` for comprehensive system health diagnosis. (Friction Fighter)
 - [x] **Upstream Connectivity Probe**: Implemented a startup connection check for HTTP upstream services. The server now logs a warning if the upstream service is unreachable during registration, preventing silent failures. (Friction Fighter)
 - [x] **Actionable Config Errors**: Enhanced configuration validator to provide specific, actionable "Fix" suggestions for common errors like missing environment variables, files, or invalid URL schemes. (Friction Fighter)
+- [x] **Alias & Suggestion Improvement**: Added direct support for "services" -> "upstream_services" alias suggestion in configuration errors, and improved fuzzy matching to prioritize fields from common configuration objects while avoiding misleading suggestions from irrelevant schemas. (Friction Fighter)
 
 ## 2. Top 10 Recommended Features
 
@@ -111,6 +112,8 @@ These features represent the next logical steps for the product, focusing on Ent
 | 42 | **Upstream Latency Metrics** | **Observability**: Record the latency of the initial connectivity probe to help diagnose slow upstream services during startup. | Low |
 | 41 | **Tool Name Fuzzy Matching** | **UX**: Improve error messages for tool execution by suggesting similar tool names when a user makes a typo. | Low |
 | 42 | **Config Strict Mode** | **Ops**: Add a CLI flag to treat configuration warnings (e.g. deprecated fields) as errors to ensure clean configs. | Low |
+| 43 | **Context-Aware Suggestions** | **UX**: Refine the fuzzy matching logic to be context-aware, suggesting fields based on the specific message type (e.g., only suggest 'http_service' fields when inside an http_service block). | Medium |
+| 44 | **Interactive Config Validator** | **DevX**: A CLI mode that walks through validation errors one by one and asks the user for the correct value interactively. | Medium |
 
 ## 3. Codebase Health
 
