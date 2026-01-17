@@ -232,7 +232,11 @@ func validateFileExists(path string, workingDir string) error {
 	info, err := osStat(targetPath)
 	if err != nil {
 		if os.IsNotExist(err) {
-			return fmt.Errorf("file not found")
+			absPath, _ := filepath.Abs(targetPath)
+			return &ActionableError{
+				Err:        fmt.Errorf("file not found: %s", targetPath),
+				Suggestion: fmt.Sprintf("Check if the file exists at %q (absolute: %q) and the server process has read permissions.", targetPath, absPath),
+			}
 		}
 		return err
 	}
@@ -259,7 +263,10 @@ func validateSecretValue(secret *configv1.SecretValue) error {
 	case configv1.SecretValue_EnvironmentVariable_case:
 		envVar := secret.GetEnvironmentVariable()
 		if _, exists := os.LookupEnv(envVar); !exists {
-			return fmt.Errorf("environment variable %q is not set", envVar)
+			return &ActionableError{
+				Err:        fmt.Errorf("environment variable %q is not set", envVar),
+				Suggestion: fmt.Sprintf("Set the environment variable %q in your shell or .env file before starting the server.", envVar),
+			}
 		}
 	case configv1.SecretValue_FilePath_case:
 		if err := validation.IsAllowedPath(secret.GetFilePath()); err != nil {
@@ -389,6 +396,10 @@ func validateAuthentication(ctx context.Context, authConfig *configv1.Authentica
 		return validateMtlsAuth(authConfig.GetMtls())
 	case configv1.Authentication_Oauth2_case:
 		return validateOAuth2Auth(ctx, authConfig.GetOauth2())
+	case configv1.Authentication_Oidc_case:
+		return validateOIDCAuth(ctx, authConfig.GetOidc())
+	case configv1.Authentication_TrustedHeader_case:
+		return validateTrustedHeaderAuth(authConfig.GetTrustedHeader())
 	}
 	return nil
 }
@@ -425,7 +436,10 @@ func validateHTTPService(httpService *configv1.HttpUpstreamService) error {
 	}
 	u, _ := url.Parse(httpService.GetAddress())
 	if u.Scheme != schemeHTTP && u.Scheme != schemeHTTPS {
-		return fmt.Errorf("invalid http address scheme: %s", u.Scheme)
+		return &ActionableError{
+			Err:        fmt.Errorf("invalid http address scheme: %s", u.Scheme),
+			Suggestion: "Use 'http' or 'https' as the scheme (e.g., http://example.com).",
+		}
 	}
 
 	for name, call := range httpService.GetCalls() {
@@ -715,12 +729,49 @@ func validateBasicAuth(ctx context.Context, basicAuth *configv1.BasicAuth) error
 	return nil
 }
 
-func validateOAuth2Auth(_ context.Context, oauth *configv1.OAuth2Auth) error {
+func validateOAuth2Auth(ctx context.Context, oauth *configv1.OAuth2Auth) error {
 	if oauth.GetTokenUrl() == "" {
 		return fmt.Errorf("oauth2 token_url is empty")
 	}
 	if !validation.IsValidURL(oauth.GetTokenUrl()) {
 		return fmt.Errorf("invalid oauth2 token_url: %s", oauth.GetTokenUrl())
+	}
+
+	clientID, err := util.ResolveSecret(ctx, oauth.GetClientId())
+	if err != nil {
+		return fmt.Errorf("failed to resolve oauth2 client_id: %w", err)
+	}
+	if clientID == "" {
+		return fmt.Errorf("oauth2 client_id is missing or empty")
+	}
+
+	clientSecret, err := util.ResolveSecret(ctx, oauth.GetClientSecret())
+	if err != nil {
+		return fmt.Errorf("failed to resolve oauth2 client_secret: %w", err)
+	}
+	if clientSecret == "" {
+		return fmt.Errorf("oauth2 client_secret is missing or empty")
+	}
+
+	return nil
+}
+
+func validateOIDCAuth(_ context.Context, oidc *configv1.OIDCAuth) error {
+	if oidc.GetIssuer() == "" {
+		return fmt.Errorf("oidc issuer is empty")
+	}
+	if !validation.IsValidURL(oidc.GetIssuer()) {
+		return fmt.Errorf("invalid oidc issuer url: %s", oidc.GetIssuer())
+	}
+	return nil
+}
+
+func validateTrustedHeaderAuth(th *configv1.TrustedHeaderAuth) error {
+	if th.GetHeaderName() == "" {
+		return fmt.Errorf("trusted header name is empty")
+	}
+	if th.GetHeaderValue() == "" {
+		return fmt.Errorf("trusted header value is empty")
 	}
 	return nil
 }
@@ -905,7 +956,10 @@ func validateCommandExists(command string, workingDir string) error {
 	// If the file contains a slash, it is tried directly and the PATH is not consulted.
 	_, err := execLookPath(command)
 	if err != nil {
-		return fmt.Errorf("command %q not found in PATH or is not executable: %w", command, err)
+		return &ActionableError{
+			Err:        fmt.Errorf("command %q not found in PATH or is not executable: %w", command, err),
+			Suggestion: fmt.Sprintf("Ensure %q is installed and listed in your PATH environment variable.", command),
+		}
 	}
 	return nil
 }

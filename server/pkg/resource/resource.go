@@ -84,12 +84,15 @@ func (rm *Manager) GetResource(uri string) (Resource, bool) {
 //
 // resource is the resource to be added.
 func (rm *Manager) AddResource(resource Resource) {
+	var callback func()
 	rm.mu.Lock()
-	defer rm.mu.Unlock()
 	rm.resources[resource.Resource().URI] = resource
 	rm.cachedResources = nil
-	if rm.onListChangedFunc != nil {
-		rm.onListChangedFunc()
+	callback = rm.onListChangedFunc
+	rm.mu.Unlock()
+
+	if callback != nil {
+		callback()
 	}
 }
 
@@ -99,14 +102,17 @@ func (rm *Manager) AddResource(resource Resource) {
 //
 // uri is the URI of the resource to be removed.
 func (rm *Manager) RemoveResource(uri string) {
+	var callback func()
 	rm.mu.Lock()
-	defer rm.mu.Unlock()
 	if _, ok := rm.resources[uri]; ok {
 		delete(rm.resources, uri)
 		rm.cachedResources = nil
-		if rm.onListChangedFunc != nil {
-			rm.onListChangedFunc()
-		}
+		callback = rm.onListChangedFunc
+	}
+	rm.mu.Unlock()
+
+	if callback != nil {
+		callback()
 	}
 }
 
@@ -174,8 +180,8 @@ func (rm *Manager) Subscribe(ctx context.Context, uri string) error {
 
 // ClearResourcesForService removes all resources associated with a given service ID.
 func (rm *Manager) ClearResourcesForService(serviceID string) {
+	var callback func()
 	rm.mu.Lock()
-	defer rm.mu.Unlock()
 	changed := false
 	for uri, resource := range rm.resources {
 		if resource.Service() == serviceID {
@@ -185,8 +191,11 @@ func (rm *Manager) ClearResourcesForService(serviceID string) {
 	}
 	if changed {
 		rm.cachedResources = nil
-		if rm.onListChangedFunc != nil {
-			rm.onListChangedFunc()
-		}
+		callback = rm.onListChangedFunc
+	}
+	rm.mu.Unlock()
+
+	if callback != nil {
+		callback()
 	}
 }

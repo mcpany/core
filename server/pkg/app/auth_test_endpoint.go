@@ -14,6 +14,7 @@ import (
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/mcpany/core/server/pkg/logging"
+	"github.com/mcpany/core/server/pkg/validation"
 	"google.golang.org/protobuf/encoding/protojson"
 )
 
@@ -120,8 +121,12 @@ func testHTTPConnection(ctx context.Context, cfg *configv1.UpstreamServiceConfig
 		return fmt.Errorf("missing http_service configuration or address")
 	}
 
-	if !strings.HasPrefix(url, "http") {
+	if !strings.HasPrefix(url, "http://") && !strings.HasPrefix(url, "https://") {
 		url = "https://" + url
+	}
+
+	if err := validation.IsSafeURL(url); err != nil {
+		return fmt.Errorf("unsafe url: %w", err)
 	}
 
 	req, err := http.NewRequestWithContext(ctx, "GET", url, nil)

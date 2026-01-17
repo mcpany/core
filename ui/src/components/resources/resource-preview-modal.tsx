@@ -80,7 +80,26 @@ export function ResourcePreviewModal({
 
   const handleDownload = () => {
     if (content && resource) {
-      const blob = new Blob([content.text || ""], { type: content.mimeType });
+      let blob: Blob;
+      if (content.blob) {
+        // Convert base64 to blob
+        try {
+          const byteCharacters = atob(content.blob);
+          const byteNumbers = new Array(byteCharacters.length);
+          for (let i = 0; i < byteCharacters.length; i++) {
+            byteNumbers[i] = byteCharacters.charCodeAt(i);
+          }
+          const byteArray = new Uint8Array(byteNumbers);
+          blob = new Blob([byteArray], { type: content.mimeType });
+        } catch (e) {
+          console.error("Failed to convert base64 to blob", e);
+          // Fallback to text if possible or empty
+          blob = new Blob([content.text || ""], { type: content.mimeType });
+        }
+      } else {
+        blob = new Blob([content.text || ""], { type: content.mimeType });
+      }
+
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;

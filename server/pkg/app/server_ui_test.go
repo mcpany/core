@@ -54,7 +54,7 @@ func TestConfigureUIHandler(t *testing.T) {
 		var buf ThreadSafeBuffer
 		logging.Init(slog.LevelInfo, &buf)
 
-		_ = app.runServerMode(ctx, mcpSrv, busProvider, "localhost:0", "localhost:0", 1*time.Second, nil, middleware.NewCachingMiddleware(toolManager), nil, serviceRegistry, nil)
+		_ = app.runServerMode(ctx, mcpSrv, busProvider, "localhost:0", "localhost:0", 1*time.Second, nil, middleware.NewCachingMiddleware(toolManager), nil, nil, serviceRegistry, nil)
 
 		logs := buf.String()
 		assert.NotContains(t, logs, "UI directory ./ui contains package.json")
@@ -80,7 +80,7 @@ func TestConfigureUIHandler(t *testing.T) {
 		var buf ThreadSafeBuffer
 		logging.Init(slog.LevelInfo, &buf)
 
-		_ = app.runServerMode(ctx, mcpSrv, busProvider, "localhost:0", "localhost:0", 1*time.Second, nil, middleware.NewCachingMiddleware(toolManager), nil, serviceRegistry, nil)
+		_ = app.runServerMode(ctx, mcpSrv, busProvider, "localhost:0", "localhost:0", 1*time.Second, nil, middleware.NewCachingMiddleware(toolManager), nil, nil, serviceRegistry, nil)
 
 		logs := buf.String()
 		assert.Contains(t, logs, "UI directory ./ui contains package.json. Refusing to serve")
@@ -105,7 +105,7 @@ func TestConfigureUIHandler(t *testing.T) {
 		var buf ThreadSafeBuffer
 		logging.Init(slog.LevelInfo, &buf)
 
-		_ = app.runServerMode(ctx, mcpSrv, busProvider, "localhost:0", "localhost:0", 1*time.Second, nil, middleware.NewCachingMiddleware(toolManager), nil, serviceRegistry, nil)
+		_ = app.runServerMode(ctx, mcpSrv, busProvider, "localhost:0", "localhost:0", 1*time.Second, nil, middleware.NewCachingMiddleware(toolManager), nil, nil, serviceRegistry, nil)
 
 		logs := buf.String()
 		assert.NotContains(t, logs, "Refusing to serve")
@@ -129,7 +129,7 @@ func TestConfigureUIHandler(t *testing.T) {
 		var buf ThreadSafeBuffer
 		logging.Init(slog.LevelInfo, &buf)
 
-		_ = app.runServerMode(ctx, mcpSrv, busProvider, "localhost:0", "localhost:0", 1*time.Second, nil, middleware.NewCachingMiddleware(toolManager), nil, serviceRegistry, nil)
+		_ = app.runServerMode(ctx, mcpSrv, busProvider, "localhost:0", "localhost:0", 1*time.Second, nil, middleware.NewCachingMiddleware(toolManager), nil, nil, serviceRegistry, nil)
 
 		logs := buf.String()
 		assert.Contains(t, logs, "No UI directory found")

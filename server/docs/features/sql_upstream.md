@@ -18,7 +18,7 @@ upstreams:
     config:
       driver: postgres
       dsn: "postgres://user:pass@localhost:5432/dbname"
-      queries:
+      calls:
         get_user:
           sql: "SELECT * FROM users WHERE id = :id"
           description: "Get user by ID"

@@ -111,6 +111,12 @@ export interface GlobalSettings {
   allowedFilePaths: string[];
   /** Allowed origins for CORS. */
   allowedOrigins: string[];
+  /** Context Optimizer configuration. */
+  contextOptimizer?:
+    | ContextOptimizerConfig
+    | undefined;
+  /** Debugger configuration. */
+  debugger?: DebuggerConfig | undefined;
 }
 
 export enum GlobalSettings_LogLevel {
@@ -201,6 +207,15 @@ export function globalSettings_LogFormatToJSON(object: GlobalSettings_LogFormat)
     default:
       return "UNRECOGNIZED";
   }
+}
+
+export interface ContextOptimizerConfig {
+  maxChars: number;
+}
+
+export interface DebuggerConfig {
+  enabled: boolean;
+  size: number;
 }
 
 export interface TelemetryConfig {
@@ -752,6 +767,8 @@ function createBaseGlobalSettings(): GlobalSettings {
     middlewares: [],
     allowedFilePaths: [],
     allowedOrigins: [],
+    contextOptimizer: undefined,
+    debugger: undefined,
   };
 }
 
@@ -822,6 +839,12 @@ export const GlobalSettings: MessageFns<GlobalSettings> = {
     }
     for (const v of message.allowedOrigins) {
       writer.uint32(178).string(v!);
+    }
+    if (message.contextOptimizer !== undefined) {
+      ContextOptimizerConfig.encode(message.contextOptimizer, writer.uint32(186).fork()).join();
+    }
+    if (message.debugger !== undefined) {
+      DebuggerConfig.encode(message.debugger, writer.uint32(194).fork()).join();
     }
     return writer;
   },
@@ -1009,6 +1032,22 @@ export const GlobalSettings: MessageFns<GlobalSettings> = {
           message.allowedOrigins.push(reader.string());
           continue;
         }
+        case 23: {
+          if (tag !== 186) {
+            break;
+          }
+
+          message.contextOptimizer = ContextOptimizerConfig.decode(reader, reader.uint32());
+          continue;
+        }
+        case 24: {
+          if (tag !== 194) {
+            break;
+          }
+
+          message.debugger = DebuggerConfig.decode(reader, reader.uint32());
+          continue;
+        }
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -1052,6 +1091,10 @@ export const GlobalSettings: MessageFns<GlobalSettings> = {
       allowedOrigins: globalThis.Array.isArray(object?.allowed_origins)
         ? object.allowed_origins.map((e: any) => globalThis.String(e))
         : [],
+      contextOptimizer: isSet(object.context_optimizer)
+        ? ContextOptimizerConfig.fromJSON(object.context_optimizer)
+        : undefined,
+      debugger: isSet(object.debugger) ? DebuggerConfig.fromJSON(object.debugger) : undefined,
     };
   },
 
@@ -1123,6 +1166,12 @@ export const GlobalSettings: MessageFns<GlobalSettings> = {
     if (message.allowedOrigins?.length) {
       obj.allowed_origins = message.allowedOrigins;
     }
+    if (message.contextOptimizer !== undefined) {
+      obj.context_optimizer = ContextOptimizerConfig.toJSON(message.contextOptimizer);
+    }
+    if (message.debugger !== undefined) {
+      obj.debugger = DebuggerConfig.toJSON(message.debugger);
+    }
     return obj;
   },
 
@@ -1165,6 +1214,146 @@ export const GlobalSettings: MessageFns<GlobalSettings> = {
     message.middlewares = object.middlewares?.map((e) => Middleware.fromPartial(e)) || [];
     message.allowedFilePaths = object.allowedFilePaths?.map((e) => e) || [];
     message.allowedOrigins = object.allowedOrigins?.map((e) => e) || [];
+    message.contextOptimizer = (object.contextOptimizer !== undefined && object.contextOptimizer !== null)
+      ? ContextOptimizerConfig.fromPartial(object.contextOptimizer)
+      : undefined;
+    message.debugger = (object.debugger !== undefined && object.debugger !== null)
+      ? DebuggerConfig.fromPartial(object.debugger)
+      : undefined;
+    return message;
+  },
+};
+
+function createBaseContextOptimizerConfig(): ContextOptimizerConfig {
+  return { maxChars: 0 };
+}
+
+export const ContextOptimizerConfig: MessageFns<ContextOptimizerConfig> = {
+  encode(message: ContextOptimizerConfig, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.maxChars !== 0) {
+      writer.uint32(8).int32(message.maxChars);
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): ContextOptimizerConfig {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseContextOptimizerConfig();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 8) {
+            break;
+          }
+
+          message.maxChars = reader.int32();
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): ContextOptimizerConfig {
+    return { maxChars: isSet(object.max_chars) ? globalThis.Number(object.max_chars) : 0 };
+  },
+
+  toJSON(message: ContextOptimizerConfig): unknown {
+    const obj: any = {};
+    if (message.maxChars !== 0) {
+      obj.max_chars = Math.round(message.maxChars);
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<ContextOptimizerConfig>, I>>(base?: I): ContextOptimizerConfig {
+    return ContextOptimizerConfig.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<ContextOptimizerConfig>, I>>(object: I): ContextOptimizerConfig {
+    const message = createBaseContextOptimizerConfig();
+    message.maxChars = object.maxChars ?? 0;
+    return message;
+  },
+};
+
+function createBaseDebuggerConfig(): DebuggerConfig {
+  return { enabled: false, size: 0 };
+}
+
+export const DebuggerConfig: MessageFns<DebuggerConfig> = {
+  encode(message: DebuggerConfig, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.enabled !== false) {
+      writer.uint32(8).bool(message.enabled);
+    }
+    if (message.size !== 0) {
+      writer.uint32(16).int32(message.size);
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): DebuggerConfig {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseDebuggerConfig();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 8) {
+            break;
+          }
+
+          message.enabled = reader.bool();
+          continue;
+        }
+        case 2: {
+          if (tag !== 16) {
+            break;
+          }
+
+          message.size = reader.int32();
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): DebuggerConfig {
+    return {
+      enabled: isSet(object.enabled) ? globalThis.Boolean(object.enabled) : false,
+      size: isSet(object.size) ? globalThis.Number(object.size) : 0,
+    };
+  },
+
+  toJSON(message: DebuggerConfig): unknown {
+    const obj: any = {};
+    if (message.enabled !== false) {
+      obj.enabled = message.enabled;
+    }
+    if (message.size !== 0) {
+      obj.size = Math.round(message.size);
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<DebuggerConfig>, I>>(base?: I): DebuggerConfig {
+    return DebuggerConfig.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<DebuggerConfig>, I>>(object: I): DebuggerConfig {
+    const message = createBaseDebuggerConfig();
+    message.enabled = object.enabled ?? false;
+    message.size = object.size ?? 0;
     return message;
   },
 };

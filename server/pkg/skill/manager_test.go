@@ -103,4 +103,71 @@ func TestManager(t *testing.T) {
 		_, err = os.Stat(filepath.Join(tempDir, "test-skill-updated"))
 		assert.True(t, os.IsNotExist(err))
 	})
+
+	t.Run("Create Invalid Name", func(t *testing.T) {
+		invalidNames := []string{"", "Test", "test space", "test--dash", "-start", "end-"}
+		for _, name := range invalidNames {
+			skill := &Skill{Frontmatter: Frontmatter{Name: name}}
+			err := m.CreateSkill(skill)
+			assert.Error(t, err, "name %q should be invalid", name)
+		}
+	})
+
+	t.Run("Create Duplicate", func(t *testing.T) {
+		skill := &Skill{Frontmatter: Frontmatter{Name: "dup-skill"}}
+		err := m.CreateSkill(skill)
+		require.NoError(t, err)
+
+		err = m.CreateSkill(skill)
+		assert.Error(t, err)
+		assert.Contains(t, err.Error(), "already exists")
+	})
+
+	t.Run("Update Not Found", func(t *testing.T) {
+		skill := &Skill{Frontmatter: Frontmatter{Name: "non-existent"}}
+		err := m.UpdateSkill("non-existent", skill)
+		assert.Error(t, err)
+		assert.Contains(t, err.Error(), "not found")
+	})
+
+	t.Run("Update to Existing Name", func(t *testing.T) {
+		// Create two skills
+		s1 := &Skill{Frontmatter: Frontmatter{Name: "s1"}}
+		require.NoError(t, m.CreateSkill(s1))
+		s2 := &Skill{Frontmatter: Frontmatter{Name: "s2"}}
+		require.NoError(t, m.CreateSkill(s2))
+
+		// Try to rename s1 to s2
+		s1Update := &Skill{Frontmatter: Frontmatter{Name: "s2"}}
+		err := m.UpdateSkill("s1", s1Update)
+		assert.Error(t, err)
+		assert.Contains(t, err.Error(), "already exists")
+	})
+
+	t.Run("Asset Path Traversal", func(t *testing.T) {
+		// Create a skill first
+		s := &Skill{Frontmatter: Frontmatter{Name: "asset-skill"}}
+		require.NoError(t, m.CreateSkill(s))
+
+		err := m.SaveAsset("asset-skill", "../outside.txt", []byte("bad"))
+		assert.Error(t, err)
+		assert.Contains(t, err.Error(), "invalid asset path")
+
+		err = m.SaveAsset("asset-skill", "/abs/path", []byte("bad"))
+		assert.Error(t, err)
+	})
+
+	t.Run("Load Malformed Skill", func(t *testing.T) {
+		// Manually create a bad skill file
+		dir := filepath.Join(tempDir, "bad-skill")
+		err := os.MkdirAll(dir, 0755)
+		require.NoError(t, err)
+
+		// Write invalid YAML
+		err = os.WriteFile(filepath.Join(dir, SkillFileName), []byte("---: bad\n---\nBody"), 0644)
+		require.NoError(t, err)
+
+		_, err = m.GetSkill("bad-skill")
+		assert.Error(t, err)
+	})
 }

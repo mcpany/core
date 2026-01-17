@@ -10,19 +10,16 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestContextOptimizerMiddleware(t *testing.T) {
-	gin.SetMode(gin.TestMode)
-
 	opt := NewContextOptimizer(10)
-	r := gin.New()
-	r.Use(opt.Middleware())
 
-	r.POST("/long", func(c *gin.Context) {
-		c.JSON(http.StatusOK, map[string]interface{}{
+	mux := http.NewServeMux()
+	mux.HandleFunc("/long", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(map[string]interface{}{
 			"result": map[string]interface{}{
 				"content": []interface{}{
 					map[string]interface{}{
@@ -34,8 +31,9 @@ func TestContextOptimizerMiddleware(t *testing.T) {
 		})
 	})
 
-	r.POST("/short", func(c *gin.Context) {
-		c.JSON(http.StatusOK, map[string]interface{}{
+	mux.HandleFunc("/short", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(map[string]interface{}{
 			"result": map[string]interface{}{
 				"content": []interface{}{
 					map[string]interface{}{
@@ -47,10 +45,12 @@ func TestContextOptimizerMiddleware(t *testing.T) {
 		})
 	})
 
+	handler := opt.Handler(mux)
+
 	// Test Long Response
 	w := httptest.NewRecorder()
 	req, _ := http.NewRequest("POST", "/long", nil)
-	r.ServeHTTP(w, req)
+	handler.ServeHTTP(w, req)
 
 	assert.Equal(t, http.StatusOK, w.Code)
 
@@ -67,7 +67,7 @@ func TestContextOptimizerMiddleware(t *testing.T) {
 	// Test Short Response
 	w = httptest.NewRecorder()
 	req, _ = http.NewRequest("POST", "/short", nil)
-	r.ServeHTTP(w, req)
+	handler.ServeHTTP(w, req)
 
 	assert.Equal(t, http.StatusOK, w.Code)
 
@@ -79,35 +79,22 @@ func TestContextOptimizerMiddleware(t *testing.T) {
 	assert.Equal(t, "Short", text)
 }
 
-func TestContextOptimizerMiddleware_RestoreWriter(t *testing.T) {
-	gin.SetMode(gin.TestMode)
+func TestContextOptimizerMiddleware_WriterType(t *testing.T) {
 	opt := NewContextOptimizer(10)
-	r := gin.New()
 
-	// Upstream middleware
-	r.Use(func(c *gin.Context) {
-		c.Next()
-		// Verify c.Writer is restored
-		// Since we cannot easily check type without importing internal/private types or checking for pointer equality with original
-		// We rely on the fact that if it was NOT restored, it would be *responseBuffer which is defined in this package.
-        // So we can check if it is NOT *responseBuffer.
-
-        // Use reflection or type switch? responseBuffer is exported? No, it's lower case.
-        // But we are in the same package (middleware), so we can see responseBuffer.
-
-        _, isResponseBuffer := c.Writer.(*responseBuffer)
-        assert.False(t, isResponseBuffer, "Writer should NOT be responseBuffer after middleware returns")
+	var isResponseBuffer bool
+	checkHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		_, isResponseBuffer = w.(*responseBuffer)
+		w.WriteHeader(200)
+		w.Write([]byte(`{"message": "pong"}`))
 	})
 
-	r.Use(opt.Middleware())
-
-	r.GET("/ping", func(c *gin.Context) {
-		c.JSON(200, gin.H{"message": "pong"})
-	})
+	handler := opt.Handler(checkHandler)
 
 	w := httptest.NewRecorder()
 	req, _ := http.NewRequest("GET", "/ping", nil)
-	r.ServeHTTP(w, req)
+	handler.ServeHTTP(w, req)
 
+	assert.True(t, isResponseBuffer, "Inner handler should receive responseBuffer")
 	assert.Equal(t, 200, w.Code)
 }
