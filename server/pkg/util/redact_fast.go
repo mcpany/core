@@ -183,20 +183,28 @@ func skipObject(input []byte, start int) int {
 	depth := 1
 	i := start + 1
 	for i < len(input) {
+		// Optimization: Use bytes.IndexAny to skip non-structural characters (whitespace, literals, numbers)
+		idx := bytes.IndexAny(input[i:], "{\"\x7d") // \x7d is '}'
+		if idx == -1 {
+			return len(input)
+		}
+		i += idx
+
 		switch input[i] {
 		case '{':
 			depth++
+			i++
 		case '}':
 			depth--
 			if depth == 0 {
 				return i + 1
 			}
+			i++
 		case '"':
 			// Skip string to avoid confusion with braces inside strings
 			i = skipString(input, i)
 			continue // skipString returns index after string, so continue loop
 		}
-		i++
 	}
 	return len(input)
 }
@@ -206,19 +214,27 @@ func skipArray(input []byte, start int) int {
 	depth := 1
 	i := start + 1
 	for i < len(input) {
+		// Optimization: Use bytes.IndexAny to skip non-structural characters (whitespace, literals, numbers)
+		idx := bytes.IndexAny(input[i:], "[\"\x5d") // \x5d is ']'
+		if idx == -1 {
+			return len(input)
+		}
+		i += idx
+
 		switch input[i] {
 		case '[':
 			depth++
+			i++
 		case ']':
 			depth--
 			if depth == 0 {
 				return i + 1
 			}
+			i++
 		case '"':
 			i = skipString(input, i)
 			continue
 		}
-		i++
 	}
 	return len(input)
 }
@@ -421,13 +437,10 @@ func scanEscapedKeyForSensitive(keyContent []byte) bool {
 func skipNumber(input []byte, start int) int {
 	// Number
 	// Scan until delimiter: , } ] or whitespace
-	i := start
-	for i < len(input) {
-		c := input[i]
-		if c == ',' || c == '}' || c == ']' || c == ' ' || c == '\t' || c == '\n' || c == '\r' {
-			return i
-		}
-		i++
+	// Optimization: Use IndexAny to find delimiter quickly
+	idx := bytes.IndexAny(input[start:], ",}] \t\n\r")
+	if idx != -1 {
+		return start + idx
 	}
-	return i
+	return len(input)
 }
