@@ -59,12 +59,14 @@ func (a *Application) handleUsers(store storage.Storage) http.HandlerFunc {
 			var user configv1.User
 			if userRaw, ok := tempMap["user"]; ok {
 				if err := protojson.Unmarshal(userRaw, &user); err != nil {
-					http.Error(w, "invalid user proto: "+err.Error(), http.StatusBadRequest)
+					logging.GetLogger().Warn("invalid user proto", "error", err)
+					http.Error(w, "invalid user proto", http.StatusBadRequest)
 					return
 				}
 			} else {
 				// Maybe body IS the user?
 				if err := protojson.Unmarshal(body, &user); err != nil {
+					logging.GetLogger().Warn("invalid user body", "error", err)
 					http.Error(w, "missing user field or invalid body", http.StatusBadRequest)
 					return
 				}
@@ -81,12 +83,6 @@ func (a *Application) handleUsers(store storage.Storage) http.HandlerFunc {
 				return
 			}
 
-			// Reload auth manager
-			a.AuthManager.SetUsers([]*configv1.User{&user}) // Wait, this replaces ALL users?
-			// We need to reload usage from config. But ListUsers comes from Storage.
-			// AuthManager might be using config-based users OR storage-based users.
-			// api.go ReloadConfig: a.AuthManager.SetUsers(cfg.GetUsers())
-			// LoadServices loads from store too.
 			if err := a.ReloadConfig(r.Context(), a.fs, a.configPaths); err != nil {
 				logging.GetLogger().Error("failed to reload config after user create", "error", err)
 			}
@@ -139,12 +135,14 @@ func (a *Application) handleUserDetail(store storage.Storage) http.HandlerFunc {
 			var user configv1.User
 			if userRaw, ok := tempMap["user"]; ok {
 				if err := protojson.Unmarshal(userRaw, &user); err != nil {
-					http.Error(w, "invalid user proto: "+err.Error(), http.StatusBadRequest)
+					logging.GetLogger().Warn("invalid user proto", "error", err)
+					http.Error(w, "invalid user proto", http.StatusBadRequest)
 					return
 				}
 			} else {
 				// Maybe body IS the user?
 				if err := protojson.Unmarshal(body, &user); err != nil {
+					logging.GetLogger().Warn("invalid user body", "error", err)
 					http.Error(w, "missing user field or invalid body", http.StatusBadRequest)
 					return
 				}

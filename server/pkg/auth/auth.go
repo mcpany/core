@@ -290,6 +290,8 @@ func NewManager() *Manager {
 func (am *Manager) SetUsers(users []*configv1.User) {
 	am.usersMu.Lock()
 	defer am.usersMu.Unlock()
+	// Recreate the map to ensure we replace state, handling deletions
+	am.users = make(map[string]*configv1.User, len(users))
 	for _, u := range users {
 		am.users[u.GetId()] = u
 	}

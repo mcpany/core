@@ -19,7 +19,6 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/secretsmanager"
 	"github.com/hashicorp/vault/api"
 	configv1 "github.com/mcpany/core/proto/config/v1"
-	"github.com/mcpany/core/server/pkg/validation"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/clientcredentials"
 )
@@ -63,7 +62,7 @@ func resolveSecretRecursive(ctx context.Context, secret *configv1.SecretValue, d
 		}
 		return strings.TrimSpace(value), nil
 	case configv1.SecretValue_FilePath_case:
-		if err := validation.IsAllowedPath(secret.GetFilePath()); err != nil {
+		if err := IsAllowedPath(secret.GetFilePath()); err != nil {
 			return "", fmt.Errorf("invalid secret file path %q: %w", secret.GetFilePath(), err)
 		}
 		// File reading is blocking and generally fast, but technically could verify context.

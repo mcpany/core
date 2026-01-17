@@ -10,6 +10,8 @@ import (
 	"net/url"
 	"os"
 	"time"
+
+	"github.com/mcpany/core/server/pkg/util"
 )
 
 // IsSafeURL checks if the URL is safe to connect to.
@@ -73,6 +75,9 @@ var IsSafeURL = func(urlStr string) error {
 }
 
 func validateIP(ip net.IP) error {
+	if util.IsPrivateIP(ip) {
+		return fmt.Errorf("private/local IP address is not allowed")
+	}
 	if ip.IsLoopback() {
 		return fmt.Errorf("loopback address is not allowed")
 	}
