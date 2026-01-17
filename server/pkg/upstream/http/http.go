@@ -406,7 +406,9 @@ func (u *Upstream) createAndRegisterHTTPTools(ctx context.Context, serviceID, ad
 				return values, invalidParts, flags
 			}
 
-			parts := strings.Split(rawQuery, "&")
+			// Normalize semicolons to ampersands to split correctly
+			normalizedQuery := strings.ReplaceAll(rawQuery, ";", "&")
+			parts := strings.Split(normalizedQuery, "&")
 			for _, part := range parts {
 				if part == "" {
 					continue
