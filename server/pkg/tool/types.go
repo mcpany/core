@@ -705,10 +705,15 @@ func (t *HTTPTool) prepareInputsAndURL(ctx context.Context, req *ExecutionReques
 	// We do this on the encoded string to treat %2F as opaque characters
 	// This prevents path.Clean from treating encoded slashes as separators
 	// and messing up the re-encoding later (which would convert %2F to /).
+	originalPathStr := pathStr
 	hadTrailingSlash := strings.HasSuffix(pathStr, "/")
 	pathStr = cleanPathPreserveDoubleSlash(pathStr)
 	if hadTrailingSlash && pathStr != "/" {
 		pathStr += "/"
+	}
+	// Special fix for // reducing to /
+	if originalPathStr == "//" && pathStr == "/" {
+		pathStr = "//"
 	}
 
 	// Reconstruct URL string manually to avoid re-encoding
