@@ -509,31 +509,27 @@ func (a *Application) Run(
 	a.ToolManager.SetMCPServer(mcpSrv)
 
 	if cfg.GetUpstreamServices() != nil {
-		// Publish registration requests to the bus for each service
-		registrationBus, err := bus.GetBus[*bus.ServiceRegistrationRequest](
-			busProvider,
-			"service_registration_requests",
-		)
-		if err != nil {
-			workerCancel()
-			upstreamWorker.Stop()
-			registrationWorker.Stop()
-			return fmt.Errorf("failed to get registration bus: %w", err)
-		}
+		// Strict Startup Mode: Register services synchronously.
+		// If any service fails to register (e.g., connection refused, invalid auth),
+		// we fail the startup process. This prevents "silent failures" where the server starts
+		// but the configured tools are broken.
 		for _, serviceConfig := range cfg.GetUpstreamServices() {
 			if serviceConfig.GetDisable() {
 				log.Info("Skipping disabled service", "service", serviceConfig.GetName())
 				continue
 			}
 			log.Info(
-				"Queueing service for registration from config",
+				"Registering service synchronously (startup check)",
 				"service",
 				serviceConfig.GetName(),
 			)
-			regReq := &bus.ServiceRegistrationRequest{Config: serviceConfig}
-			// We don't need a correlation ID since we are not waiting for a response here
-			if err := registrationBus.Publish(ctx, "request", regReq); err != nil {
-				log.Error("Failed to publish registration request", "error", err)
+			// We use the main context here. If registration hangs, startup hangs, which is intended.
+			_, _, _, err := serviceRegistry.RegisterService(ctx, serviceConfig)
+			if err != nil {
+				workerCancel()
+				upstreamWorker.Stop()
+				registrationWorker.Stop()
+				return fmt.Errorf("failed to register service %q during startup: %w", serviceConfig.GetName(), err)
 			}
 		}
 	} else {

@@ -53,6 +53,7 @@
 - [x] **Required Environment Variable Validation**: Added explicit `validation.required_env` support for Stdio connections to fail fast with descriptive errors if required environment variables are missing. (Friction Fighter)
 - [x] **JSON Schema for Config**: Auto-generate and publish a JSON Schema for the `config.yaml` to enable intellisense/validation in IDEs like VS Code. (Friction Fighter)
 - [x] **Config Schema Validation via CLI**: `mcpany config check config.yaml` that validates against the full JSON schema (including types and enums) using `jsonschema` library, providing line-number precise errors. (Friction Fighter)
+- [x] **Strict Service Connectivity Validation**: Startup now performs synchronous registration and connectivity checks for upstream services (e.g. fetching OpenAPI specs), failing fast with clear errors if unreachable. This prevents "silent failures" where the server reports healthy but tools are missing. (Friction Fighter)
 
 ## 2. Top 10 Recommended Features
 
@@ -100,6 +101,8 @@ These features represent the next logical steps for the product, focusing on Ent
 | 38 | **HTTP Upstream Env Validation** | **Consistency**: Extend required environment variable validation to HTTP connections (e.g. for `http_address` or auth headers). | Low |
 | 39 | **Config Snapshot/Restore** | **Ops**: Ability to save current runtime configuration state to a file (snapshot) and restore it later, useful for backing up verified working configs. | Medium |
 | 40 | **Config Inheritance** | **DevX**: Allow `config.yaml` to extend/import other configuration files (e.g. `extends: base.yaml`) to reduce duplication across environments. | High |
+| 41 | **Visual Configuration Editor** | **UX**: A graphical editor in the dashboard to build/modify `config.yaml` with drag-and-drop support for services and tools. | High |
+| 42 | **Service Connectivity Diagnostic CLI** | **DevX**: A dedicated `mcpany diagnose <service>` command that runs connectivity checks (DNS, TCP, Auth) and prints a detailed report. | Low |
 
 ## 3. Codebase Health
 

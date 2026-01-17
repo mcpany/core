@@ -1676,16 +1676,22 @@ func TestGRPCServer_ShutdownWithoutRace(t *testing.T) {
 	}
 }
 
-func TestRun_ServiceRegistrationPublication(t *testing.T) {
+func TestRun_ServiceRegistration_Synchronous(t *testing.T) {
 	fs := afero.NewMemMapFs()
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	configContent := `
+	// Start a mock upstream server to ensure connectivity checks pass
+	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+	}))
+	defer ts.Close()
+
+	configContent := fmt.Sprintf(`
 upstream_services:
  - name: "test-service"
    http_service:
-     address: "http://localhost:8080"
+     address: "%s"
      tools:
        - name: "test-call"
          call_id: "test-call"
@@ -1706,19 +1712,12 @@ upstream_services:
           id: "test-call"
           endpoint_path: "/test"
           method: "HTTP_METHOD_POST"
-`
+`, ts.URL)
 	err := afero.WriteFile(fs, "/config.yaml", []byte(configContent), 0o644)
 	require.NoError(t, err)
 
-	// Create a mock bus and set the hook.
-	mockRegBus := newMockBus[*bus.ServiceRegistrationRequest]()
-	bus.GetBusHook = func(_ *bus.Provider, topic string) any {
-		if topic == "service_registration_requests" {
-			return mockRegBus
-		}
-		return nil
-	}
-	defer func() { bus.GetBusHook = nil }()
+	// We no longer expect bus publication for initial load.
+	// We expect services to be registered directly.
 
 	app := NewApplication()
 	errChan := make(chan error, 1)
@@ -1726,75 +1725,47 @@ upstream_services:
 		errChan <- app.Run(ctx, fs, false, "localhost:0", "", []string{"/config.yaml"}, "", 5*time.Second)
 	}()
 
-	// Allow some time for the services to be published.
-	time.Sleep(1 * time.Second)
+	// Wait for startup and ServiceRegistry initialization
+	require.Eventually(t, func() bool {
+		return app.ServiceRegistry != nil
+	}, 2*time.Second, 100*time.Millisecond, "ServiceRegistry should be initialized")
+
+	// Wait for service to be registered (it happens synchronously in Run, but Run is in goroutine)
+	// Actually, ServiceRegistry is set BEFORE registration loop.
+	// So we might need to wait for registration to complete.
+	// However, if we wait for "server ready" (port listening), registration is definitely done.
+	// But we passed ephemeral port "0", we don't know the port to dial easily unless we capture logs or use a fixed port.
+	// But we can just poll GetAllServices.
+
+	require.Eventually(t, func() bool {
+		services, err := app.ServiceRegistry.GetAllServices()
+		if err != nil {
+			return false
+		}
+		// We expect 1 service
+		return len(services) >= 1
+	}, 2*time.Second, 100*time.Millisecond, "Service should be registered")
+
+	// Check services
+	services, err := app.ServiceRegistry.GetAllServices()
+	require.NoError(t, err)
+
+	foundTest := false
+	foundDisabled := false
+	for _, s := range services {
+		if s.GetName() == "test-service" {
+			foundTest = true
+		}
+		if s.GetName() == "disabled-service" {
+			foundDisabled = true
+		}
+	}
+	assert.True(t, foundTest, "test-service should be registered")
+	assert.False(t, foundDisabled, "disabled-service should not be registered")
+
 	cancel()
-
 	err = <-errChan
 	assert.NoError(t, err, "app.Run should return nil on graceful shutdown")
-
-	// Verify that the correct number of messages were published.
-	mockRegBus.mu.Lock()
-	defer mockRegBus.mu.Unlock()
-	assert.Len(t, mockRegBus.publishedMessages, 1, "Expected one service registration request to be published.")
-	if len(mockRegBus.publishedMessages) == 1 {
-		publishedMsg := mockRegBus.publishedMessages[0]
-		assert.Equal(t, "test-service", publishedMsg.Config.GetName(), "The incorrect service was published.")
-	}
-}
-
-func TestRun_ServiceRegistrationSkipsDisabled(t *testing.T) {
-	fs := afero.NewMemMapFs()
-	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
-	defer cancel()
-
-	configContent := `
-upstream_services:
- - name: "enabled-service"
-   disable: false
-   http_service:
-     address: "http://localhost:8080"
-     tools:
-       - name: "test-call"
-         call_id: "test-call"
- - name: "disabled-service"
-   disable: true
-   http_service:
-     address: "http://localhost:8081"
-     tools:
-       - name: "test-call"
-         call_id: "test-call"
-`
-	err := afero.WriteFile(fs, "/config.yaml", []byte(configContent), 0o644)
-	require.NoError(t, err)
-
-	mockRegBus := newMockBus[*bus.ServiceRegistrationRequest]()
-	bus.GetBusHook = func(_ *bus.Provider, topic string) any {
-		if topic == "service_registration_requests" {
-			return mockRegBus
-		}
-		return nil
-	}
-	defer func() { bus.GetBusHook = nil }()
-
-	app := NewApplication()
-	errChan := make(chan error, 1)
-	go func() {
-		errChan <- app.Run(ctx, fs, false, "localhost:0", "", []string{"/config.yaml"}, "", 5*time.Second)
-	}()
-
-	time.Sleep(100 * time.Millisecond) // Allow time for publication.
-	cancel()                           // Trigger shutdown.
-
-	err = <-errChan
-	assert.NoError(t, err, "app.Run should return nil on graceful shutdown")
-
-	mockRegBus.mu.Lock()
-	defer mockRegBus.mu.Unlock()
-	assert.Len(t, mockRegBus.publishedMessages, 1, "Expected only one service registration request.")
-	if len(mockRegBus.publishedMessages) == 1 {
-		assert.Equal(t, "enabled-service", mockRegBus.publishedMessages[0].Config.GetName(), "Only the enabled service should be published.")
-	}
 }
 
 func TestRun_NoConfigDoesNotBlock(t *testing.T) {
