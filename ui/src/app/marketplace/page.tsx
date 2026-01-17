@@ -73,6 +73,13 @@ export default function MarketplacePage() {
     loadData();
   }, [toast]);
 
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('wizard') === 'open') {
+        setIsWizardOpen(true);
+    }
+  }, []);
+
   const handleImportCollection = async () => {
     if (!importUrl) return;
     try {

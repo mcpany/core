@@ -219,11 +219,12 @@ export default function ServicesPage() {
 
           const res = await apiClient.initiateOAuth(serviceId, redirectUrl);
           if (res.authorization_url && res.state) {
-              // Store context for callback verification
-              sessionStorage.setItem(`oauth_pending_${res.state}`, JSON.stringify({
-                  serviceId,
-                  timestamp: Date.now()
-              }));
+              // Store context for callback verification using unified keys
+              sessionStorage.setItem('oauth_service_id', serviceId);
+              sessionStorage.setItem('oauth_state', res.state);
+              sessionStorage.setItem('oauth_redirect_url', redirectUrl);
+              sessionStorage.setItem('oauth_return_path', window.location.pathname + window.location.search);
+
               window.location.href = res.authorization_url;
           }
       } catch (e) {
