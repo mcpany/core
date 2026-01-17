@@ -1,6 +1,7 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
+// Package doctor provides health and connectivity checks for upstream services.
 package doctor
 
 import (
@@ -16,6 +17,7 @@ import (
 	_ "github.com/go-sql-driver/mysql" // Register MySQL driver
 	_ "github.com/lib/pq"              // Register Postgres driver
 	configv1 "github.com/mcpany/core/proto/config/v1"
+	"github.com/mcpany/core/server/pkg/util"
 	"github.com/mcpany/core/server/pkg/validation"
 	_ "modernc.org/sqlite" // Register SQLite driver
 )
@@ -44,7 +46,7 @@ type CheckResult struct {
 
 // RunChecks performs connectivity and health checks on the provided configuration.
 func RunChecks(ctx context.Context, config *configv1.McpAnyServerConfig) []CheckResult {
-	var results []CheckResult
+	results := make([]CheckResult, 0, len(config.GetUpstreamServices()))
 
 	// Check upstream services
 	for _, service := range config.GetUpstreamServices() {
@@ -70,19 +72,21 @@ func checkService(ctx context.Context, service *configv1.UpstreamServiceConfig) 
 	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
 	defer cancel()
 
+	auth := service.GetUpstreamAuth()
+
 	switch service.WhichServiceConfig() {
 	case configv1.UpstreamServiceConfig_HttpService_case:
-		return checkHTTPService(ctx, service.GetHttpService())
+		return checkHTTPService(ctx, service.GetHttpService(), auth)
 	case configv1.UpstreamServiceConfig_GrpcService_case:
 		return checkGRPCService(ctx, service.GetGrpcService())
 	case configv1.UpstreamServiceConfig_OpenapiService_case:
-		return checkOpenAPIService(ctx, service.GetOpenapiService())
+		return checkOpenAPIService(ctx, service.GetOpenapiService(), auth)
 	case configv1.UpstreamServiceConfig_SqlService_case:
 		return checkSQLService(ctx, service.GetSqlService())
 	case configv1.UpstreamServiceConfig_GraphqlService_case:
-		return checkGraphQLService(ctx, service.GetGraphqlService())
+		return checkGraphQLService(ctx, service.GetGraphqlService(), auth)
 	case configv1.UpstreamServiceConfig_McpService_case:
-		return checkMCPService(ctx, service.GetMcpService())
+		return checkMCPService(ctx, service.GetMcpService(), auth)
 	case configv1.UpstreamServiceConfig_CommandLineService_case:
 		return checkCommandLineService(ctx, service.GetCommandLineService())
 	case configv1.UpstreamServiceConfig_WebsocketService_case:
@@ -99,16 +103,16 @@ func checkService(ctx context.Context, service *configv1.UpstreamServiceConfig) 
 	}
 }
 
-func checkHTTPService(ctx context.Context, s *configv1.HttpUpstreamService) CheckResult {
-	return checkURL(ctx, s.GetAddress())
+func checkHTTPService(ctx context.Context, s *configv1.HttpUpstreamService, auth *configv1.Authentication) CheckResult {
+	return checkURL(ctx, s.GetAddress(), auth)
 }
 
-func checkGraphQLService(ctx context.Context, s *configv1.GraphQLUpstreamService) CheckResult {
-	return checkURL(ctx, s.GetAddress())
+func checkGraphQLService(ctx context.Context, s *configv1.GraphQLUpstreamService, auth *configv1.Authentication) CheckResult {
+	return checkURL(ctx, s.GetAddress(), auth)
 }
 
 func checkWebRTCService(ctx context.Context, s *configv1.WebrtcUpstreamService) CheckResult {
-	return checkURL(ctx, s.GetAddress())
+	return checkURL(ctx, s.GetAddress(), nil)
 }
 
 func checkWebSocketService(ctx context.Context, s *configv1.WebsocketUpstreamService) CheckResult {
@@ -123,16 +127,26 @@ func checkWebSocketService(ctx context.Context, s *configv1.WebsocketUpstreamSer
 
 	// Try a simple HTTP GET. Most WS servers will respond to HTTP GET (usually with Upgrade required or 404/200).
 	// If the server is up, we should get a response.
-	return checkURL(ctx, addr)
+	return checkURL(ctx, addr, nil)
 }
 
-func checkURL(ctx context.Context, urlStr string) CheckResult {
+func checkURL(ctx context.Context, urlStr string, auth *configv1.Authentication) CheckResult {
 	req, err := http.NewRequestWithContext(ctx, "GET", urlStr, nil)
 	if err != nil {
 		return CheckResult{
 			Status:  StatusError,
 			Message: fmt.Sprintf("Invalid URL: %v", err),
 			Error:   err,
+		}
+	}
+
+	if auth != nil {
+		if err := applyAuthentication(req, auth); err != nil {
+			return CheckResult{
+				Status:  StatusError,
+				Message: fmt.Sprintf("Failed to resolve authentication secrets: %v", err),
+				Error:   err,
+			}
 		}
 	}
 
@@ -150,7 +164,7 @@ func checkURL(ctx context.Context, urlStr string) CheckResult {
 			Error:   err,
 		}
 	}
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 
 	if resp.StatusCode >= 400 && resp.StatusCode != 404 && resp.StatusCode != 405 && resp.StatusCode != 426 { // 426 Upgrade Required is fine for WS
 		// We consider 4xx a warning because the service is technically reachable, just maybe not at this path.
@@ -192,7 +206,8 @@ func checkGRPCService(ctx context.Context, s *configv1.GrpcUpstreamService) Chec
 		timeout = time.Until(deadline)
 	}
 
-	conn, err := net.DialTimeout("tcp", net.JoinHostPort(host, port), timeout)
+	d := &net.Dialer{Timeout: timeout}
+	conn, err := d.DialContext(ctx, "tcp", net.JoinHostPort(host, port))
 	if err != nil {
 		return CheckResult{
 			Status:  StatusError,
@@ -200,7 +215,7 @@ func checkGRPCService(ctx context.Context, s *configv1.GrpcUpstreamService) Chec
 			Error:   err,
 		}
 	}
-	defer conn.Close()
+	defer func() { _ = conn.Close() }()
 
 	return CheckResult{
 		Status:  StatusOk,
@@ -208,17 +223,17 @@ func checkGRPCService(ctx context.Context, s *configv1.GrpcUpstreamService) Chec
 	}
 }
 
-func checkOpenAPIService(ctx context.Context, s *configv1.OpenapiUpstreamService) CheckResult {
+func checkOpenAPIService(ctx context.Context, s *configv1.OpenapiUpstreamService, auth *configv1.Authentication) CheckResult {
 	if s.GetSpecUrl() != "" {
 		// Check if we can fetch the spec
-		res := checkURL(ctx, s.GetSpecUrl())
+		res := checkURL(ctx, s.GetSpecUrl(), auth)
 		if res.Status != StatusOk {
 			return res
 		}
 	}
 
 	if s.GetAddress() != "" {
-		return checkURL(ctx, s.GetAddress())
+		return checkURL(ctx, s.GetAddress(), auth)
 	}
 
 	return CheckResult{
@@ -249,7 +264,7 @@ func checkSQLService(ctx context.Context, s *configv1.SqlUpstreamService) CheckR
 			Error:   err,
 		}
 	}
-	defer db.Close()
+	defer func() { _ = db.Close() }()
 
 	// Try to ping
 	err = db.PingContext(ctx)
@@ -267,10 +282,10 @@ func checkSQLService(ctx context.Context, s *configv1.SqlUpstreamService) CheckR
 	}
 }
 
-func checkMCPService(ctx context.Context, s *configv1.McpUpstreamService) CheckResult {
+func checkMCPService(ctx context.Context, s *configv1.McpUpstreamService, auth *configv1.Authentication) CheckResult {
 	switch s.WhichConnectionType() {
 	case configv1.McpUpstreamService_HttpConnection_case:
-		return checkURL(ctx, s.GetHttpConnection().GetHttpAddress())
+		return checkURL(ctx, s.GetHttpConnection().GetHttpAddress(), auth)
 	case configv1.McpUpstreamService_StdioConnection_case:
 		// Check if command exists
 		cmd := s.GetStdioConnection().GetCommand()
@@ -295,7 +310,7 @@ func checkMCPService(ctx context.Context, s *configv1.McpUpstreamService) CheckR
 	}
 }
 
-func checkCommandLineService(ctx context.Context, s *configv1.CommandLineUpstreamService) CheckResult {
+func checkCommandLineService(_ context.Context, s *configv1.CommandLineUpstreamService) CheckResult {
 	if s.GetContainerEnvironment().GetImage() != "" {
 		return CheckResult{
 			Status:  StatusSkipped,
@@ -358,4 +373,32 @@ func checkFilesystemService(_ context.Context, s *configv1.FilesystemUpstreamSer
 		Status:  StatusOk,
 		Message: "All root paths exist",
 	}
+}
+
+func applyAuthentication(req *http.Request, auth *configv1.Authentication) error {
+	if auth == nil {
+		return nil
+	}
+
+	if apiKey := auth.GetApiKey(); apiKey != nil {
+		apiKeyValue, err := util.ResolveSecret(req.Context(), apiKey.GetValue())
+		if err != nil {
+			return err
+		}
+		req.Header.Set(apiKey.GetParamName(), apiKeyValue)
+	} else if bearerToken := auth.GetBearerToken(); bearerToken != nil {
+		tokenValue, err := util.ResolveSecret(req.Context(), bearerToken.GetToken())
+		if err != nil {
+			return err
+		}
+		req.Header.Set("Authorization", "Bearer "+tokenValue)
+	} else if basicAuth := auth.GetBasicAuth(); basicAuth != nil {
+		passwordValue, err := util.ResolveSecret(req.Context(), basicAuth.GetPassword())
+		if err != nil {
+			return err
+		}
+		req.SetBasicAuth(basicAuth.GetUsername(), passwordValue)
+	}
+
+	return nil
 }
