@@ -25,7 +25,10 @@ func IsValidBindAddress(s string) error {
 		// we check if it is a valid port-only string by prepending ":".
 		if !strings.Contains(s, ":") {
 			// Ensure it is a numeric port to distinguish from missing-port hostnames like "localhost"
-			if _, err := strconv.Atoi(s); err == nil {
+			if p, err := strconv.Atoi(s); err == nil {
+				if p < 0 || p > 65535 {
+					return fmt.Errorf("port must be between 0 and 65535")
+				}
 				_, port, err = net.SplitHostPort(":" + s)
 				if err == nil && port != "" {
 					return nil
@@ -36,6 +39,15 @@ func IsValidBindAddress(s string) error {
 	}
 	if port == "" {
 		return fmt.Errorf("port is required")
+	}
+	// Check if port is numeric and within range
+	p, err := strconv.Atoi(port)
+	if err != nil {
+		// Non-numeric ports (service names) are allowed.
+		return nil //nolint:nilerr // Intentional: we allow non-numeric ports
+	}
+	if p < 0 || p > 65535 {
+		return fmt.Errorf("port must be between 0 and 65535")
 	}
 	return nil
 }

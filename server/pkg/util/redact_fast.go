@@ -240,7 +240,7 @@ func isKeySensitive(keyContent []byte) bool {
 	var keyToCheck []byte
 	var sensitive bool
 
-	if bytes.Contains(keyContent, []byte{'\\'}) {
+	if bytes.IndexByte(keyContent, '\\') != -1 {
 		// Key contains escape sequences, unescape it to check for sensitivity.
 		// This is slower but safer.
 		// Limit the key size to prevent excessive allocation on malicious input

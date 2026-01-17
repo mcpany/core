@@ -160,10 +160,5 @@ func IsPrivateIP(ip net.IP) bool {
 		return true
 	}
 
-	for _, block := range privateNetworkBlocks {
-		if block.Contains(ip) {
-			return true
-		}
-	}
-	return false
+	return IsPrivateNetworkIP(ip)
 }
