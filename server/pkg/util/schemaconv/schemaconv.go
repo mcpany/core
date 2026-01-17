@@ -163,6 +163,11 @@ func ConfigSchemaToProtoProperties[T ConfigParameter](params []T) (*structpb.Str
 				"description": structpb.NewStringValue(paramSchema.GetDescription()),
 			},
 		}
+
+		if paramSchema.GetDefaultValue() != nil {
+			paramStruct.Fields["default"] = paramSchema.GetDefaultValue()
+		}
+
 		properties.Fields[paramSchema.GetName()] = structpb.NewStructValue(paramStruct)
 	}
 

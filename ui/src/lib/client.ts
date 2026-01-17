@@ -28,6 +28,10 @@ export interface UpstreamServiceConfig extends BaseUpstreamServiceConfig {
      * The last error message encountered by the service, if any.
      */
     lastError?: string;
+    /**
+     * The number of tools registered for this service.
+     */
+    toolCount?: number;
 }
 
 // Re-export generated types
@@ -171,6 +175,7 @@ export const apiClient = {
             preCallHooks: s.pre_call_hooks,
             postCallHooks: s.post_call_hooks,
             lastError: s.last_error,
+            toolCount: s.tool_count,
         }));
     },
 
