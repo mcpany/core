@@ -121,6 +121,15 @@ func (am *Manager) InitiateOAuth(ctx context.Context, userID, serviceID, credent
 }
 
 // HandleOAuthCallback handles the OAuth2 callback code exchange.
+//
+// ctx is the context for the request.
+// userID is the userID.
+// serviceID is the serviceID.
+// credentialID is the credentialID.
+// code is the code.
+// redirectURL is the redirectURL.
+//
+// Returns an error if the operation fails.
 func (am *Manager) HandleOAuthCallback(ctx context.Context, userID, serviceID, credentialID, code, redirectURL string) error {
 	am.mu.RLock()
 	storage := am.storage

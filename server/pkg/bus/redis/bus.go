@@ -20,6 +20,11 @@ type Bus[T any] struct {
 }
 
 // New creates a new RedisBus.
+//
+// redisConfig is the redisConfig.
+//
+// Returns the result.
+// Returns an error if the operation fails.
 func New[T any](redisConfig *bus.RedisBus) (*Bus[T], error) {
 	var options redis.Options
 	if redisConfig != nil {
@@ -31,6 +36,10 @@ func New[T any](redisConfig *bus.RedisBus) (*Bus[T], error) {
 }
 
 // NewWithClient creates a new RedisBus with an existing Redis client.
+//
+// client is the client.
+//
+// Returns the result.
 func NewWithClient[T any](client *redis.Client) *Bus[T] {
 	return &Bus[T]{
 		client: client,
@@ -38,6 +47,12 @@ func NewWithClient[T any](client *redis.Client) *Bus[T] {
 }
 
 // Publish publishes a message to a Redis channel.
+//
+// ctx is the context for the request.
+// topic is the topic.
+// msg is the msg.
+//
+// Returns an error if the operation fails.
 func (b *Bus[T]) Publish(ctx context.Context, topic string, msg T) error {
 	payload, err := json.Marshal(msg)
 	if err != nil {
@@ -47,6 +62,12 @@ func (b *Bus[T]) Publish(ctx context.Context, topic string, msg T) error {
 }
 
 // Subscribe subscribes to a Redis channel.
+//
+// ctx is the context for the request.
+// topic is the topic.
+// handler is the handler.
+//
+// Returns the result.
 func (b *Bus[T]) Subscribe(ctx context.Context, topic string, handler func(T)) (unsubscribe func()) {
 	if handler == nil {
 		logging.GetLogger().Error("redis bus: handler cannot be nil")
@@ -97,6 +118,12 @@ func (b *Bus[T]) Subscribe(ctx context.Context, topic string, handler func(T)) (
 }
 
 // SubscribeOnce subscribes to a topic for a single message.
+//
+// ctx is the context for the request.
+// topic is the topic.
+// handler is the handler.
+//
+// Returns the result.
 func (b *Bus[T]) SubscribeOnce(ctx context.Context, topic string, handler func(T)) (unsubscribe func()) {
 	if handler == nil {
 		logging.GetLogger().Error("redis bus: handler cannot be nil")
@@ -129,6 +156,8 @@ func (b *Bus[T]) SubscribeOnce(ctx context.Context, topic string, handler func(T
 }
 
 // Close closes the Redis client.
+//
+// Returns an error if the operation fails.
 func (b *Bus[T]) Close() error {
 	return b.client.Close()
 }

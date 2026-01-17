@@ -28,6 +28,10 @@ export interface UpstreamServiceConfig extends BaseUpstreamServiceConfig {
      * The last error message encountered by the service, if any.
      */
     lastError?: string;
+    /**
+     * The number of tools registered for this service.
+     */
+    toolCount?: number;
 }
 
 // Re-export generated types
@@ -103,6 +107,30 @@ export interface ReadResourceResponse {
     contents: ResourceContent[];
 }
 
+/**
+ * Result of a single system health check.
+ */
+export interface CheckResult {
+    /** The status of the check (e.g., "ok", "degraded", "error"). */
+    status: string;
+    /** Optional message describing the status or error. */
+    message?: string;
+    /** Optional latency measurement. */
+    latency?: string;
+}
+
+/**
+ * Full doctor report containing system health status.
+ */
+export interface DoctorReport {
+    /** Overall system status. */
+    status: string;
+    /** Timestamp of the report. */
+    timestamp: string;
+    /** Map of check names to their results. */
+    checks: Record<string, CheckResult>;
+}
+
 const getMetadata = () => {
     // Metadata for gRPC calls.
     // Since gRPC-Web calls might bypass Next.js middleware if they go directly to Envoy/Backend,
@@ -147,6 +175,7 @@ export const apiClient = {
             preCallHooks: s.pre_call_hooks,
             postCallHooks: s.post_call_hooks,
             lastError: s.last_error,
+            toolCount: s.tool_count,
         }));
     },
 

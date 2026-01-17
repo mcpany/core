@@ -18,8 +18,12 @@ import (
 type Conn interface {
 	grpc.ClientConnInterface
 	// Close closes the connection to the server.
+	//
+	// Returns an error if the operation fails.
 	Close() error
 	// GetState returns the connectivity.State of the ClientConn.
+	//
+	// Returns the result.
 	GetState() connectivity.State
 }
 

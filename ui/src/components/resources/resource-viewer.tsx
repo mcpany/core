@@ -28,6 +28,11 @@ interface ResourceViewerProps {
     loading: boolean;
 }
 
+/**
+ * ResourceViewer.
+ *
+ * @param loading - The loading.
+ */
 export function ResourceViewer({ content, loading }: ResourceViewerProps) {
     if (loading) {
         return (

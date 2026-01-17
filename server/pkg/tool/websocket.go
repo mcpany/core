@@ -65,11 +65,15 @@ func NewWebsocketTool(
 }
 
 // Tool returns the protobuf definition of the WebSocket tool.
+//
+// Returns the result.
 func (t *WebsocketTool) Tool() *v1.Tool {
 	return t.tool
 }
 
 // MCPTool returns the MCP tool definition.
+//
+// Returns the result.
 func (t *WebsocketTool) MCPTool() *mcp.Tool {
 	t.mcpToolOnce.Do(func() {
 		var err error
@@ -82,6 +86,8 @@ func (t *WebsocketTool) MCPTool() *mcp.Tool {
 }
 
 // GetCacheConfig returns the cache configuration for the WebSocket tool.
+//
+// Returns the result.
 func (t *WebsocketTool) GetCacheConfig() *configv1.CacheConfig {
 	return t.cache
 }

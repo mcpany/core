@@ -41,15 +41,15 @@ func TestUploadFile_Security(t *testing.T) {
 
 		responseBody := w.Body.String()
 
-		// Check that characters are escaped
-		// & -> &amp;
-		// " -> &#34; or &quot; (html.EscapeString uses &#34;)
+		// Check that characters are sanitized
+		// & and " should be replaced by _
+		sanitizedFilename := "test_file_name.txt"
 		if strings.Contains(responseBody, filename) {
-			t.Errorf("Reflected XSS vulnerability detected: Response contains unescaped filename: %s", responseBody)
+			t.Errorf("Reflected XSS/Sanitization failure: Response contains raw filename: %s", responseBody)
 		}
 
-		if !strings.Contains(responseBody, "test&amp;file&#34;name.txt") {
-			t.Errorf("Expected escaped filename not found. Body: %s", responseBody)
+		if !strings.Contains(responseBody, sanitizedFilename) {
+			t.Errorf("Expected sanitized filename '%s' not found. Body: %s", sanitizedFilename, responseBody)
 		}
 	})
 

@@ -7,6 +7,11 @@ import { useState, useEffect } from "react";
 import { apiClient } from "@/lib/client";
 import { UpstreamServiceConfig, ToolDefinition } from "@/lib/types";
 
+/**
+ * useServiceSiblings.
+ *
+ * @param currentServiceId - The currentServiceId.
+ */
 export function useServiceSiblings(currentServiceId: string) {
     const [siblings, setSiblings] = useState<{ label: string; href: string }[]>([]);
 
@@ -23,6 +28,12 @@ export function useServiceSiblings(currentServiceId: string) {
     return siblings;
 }
 
+/**
+ * useToolSiblings.
+ *
+ * @param serviceId - The serviceId.
+ * @param currentToolName - The currentToolName.
+ */
 export function useToolSiblings(serviceId: string, currentToolName: string) {
     const [siblings, setSiblings] = useState<{ label: string; href: string }[]>([]);
 

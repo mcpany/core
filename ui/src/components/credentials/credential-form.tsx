@@ -59,6 +59,11 @@ interface CredentialFormProps {
   onSuccess: (cred: Credential) => void
 }
 
+/**
+ * CredentialForm.
+ *
+ * @param onSuccess - The onSuccess.
+ */
 export function CredentialForm({ initialData, onSuccess }: CredentialFormProps) {
   const { toast } = useToast()
   const [isTesting, setIsTesting] = useState(false)

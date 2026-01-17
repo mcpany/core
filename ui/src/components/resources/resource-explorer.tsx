@@ -49,6 +49,11 @@ interface ResourceExplorerProps {
     initialResources?: ResourceDefinition[];
 }
 
+/**
+ * ResourceExplorer.
+ *
+ * @param { initialResources = [] - The { initialResources = [].
+ */
 export function ResourceExplorer({ initialResources = [] }: ResourceExplorerProps) {
     const [resources, setResources] = useState<ResourceDefinition[]>(initialResources);
     const [loading, setLoading] = useState(false);

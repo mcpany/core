@@ -18,6 +18,10 @@ type GuardrailsConfig struct {
 }
 
 // NewGuardrailsMiddleware creates a new Guardrails middleware.
+//
+// config holds the configuration settings.
+//
+// Returns the result.
 func NewGuardrailsMiddleware(config GuardrailsConfig) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		// Only check POST requests (likely prompt submissions)

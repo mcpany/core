@@ -33,6 +33,10 @@ type Upstream struct {
 }
 
 // Shutdown implements the upstream.Upstream interface.
+//
+// _ is an unused parameter.
+//
+// Returns an error if the operation fails.
 func (u *Upstream) Shutdown(_ context.Context) error {
 	if u.checker != nil {
 		u.checker.Stop()
@@ -41,6 +45,8 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 }
 
 // NewUpstream creates a new instance of CommandUpstream.
+//
+// Returns the result.
 func NewUpstream() upstream.Upstream {
 	return &Upstream{}
 }

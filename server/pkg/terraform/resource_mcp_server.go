@@ -13,6 +13,8 @@ type ResourceMCPServer struct {
 }
 
 // Schema returns the Terraform schema definition (Mock).
+//
+// Returns the result.
 func Schema() map[string]interface{} {
 	return map[string]interface{}{
 		"name": map[string]interface{}{
@@ -36,12 +38,21 @@ func Schema() map[string]interface{} {
 }
 
 // Create mimics the Create operation of a Terraform resource.
+//
+// _ is an unused parameter.
+//
+// Returns an error if the operation fails.
 func Create(_ *ResourceMCPServer) error {
 	// Simulate API call to provision resources
 	return nil
 }
 
 // Read mimics the Read operation.
+//
+// name is the name of the resource.
+//
+// Returns the result.
+// Returns an error if the operation fails.
 func Read(name string) (*ResourceMCPServer, error) {
 	return &ResourceMCPServer{
 		Name:    name,

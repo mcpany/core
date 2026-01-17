@@ -25,7 +25,14 @@ type AuditEntry struct {
 // AuditStore defines the interface for audit log storage.
 type AuditStore interface {
 	// Write writes an audit entry to the store.
+	//
+	// ctx is the context for the request.
+	// entry is the entry.
+	//
+	// Returns an error if the operation fails.
 	Write(ctx context.Context, entry AuditEntry) error
 	// Close closes the store.
+	//
+	// Returns an error if the operation fails.
 	Close() error
 }

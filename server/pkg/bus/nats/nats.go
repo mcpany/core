@@ -23,6 +23,11 @@ type Bus[T any] struct {
 }
 
 // New creates a new NATS bus.
+//
+// config holds the configuration settings.
+//
+// Returns the result.
+// Returns an error if the operation fails.
 func New[T any](config *bus.NatsBus) (*Bus[T], error) {
 	var s *server.Server
 	if config.GetServerUrl() == "" {
@@ -60,6 +65,12 @@ func (b *Bus[T]) Close() {
 }
 
 // Publish sends a message to a NATS topic.
+//
+// _ is an unused parameter.
+// topic is the topic.
+// msg is the msg.
+//
+// Returns an error if the operation fails.
 func (b *Bus[T]) Publish(_ context.Context, topic string, msg T) error {
 	data, err := json.Marshal(msg)
 	if err != nil {
@@ -69,6 +80,12 @@ func (b *Bus[T]) Publish(_ context.Context, topic string, msg T) error {
 }
 
 // Subscribe registers a handler for a NATS topic.
+//
+// _ is an unused parameter.
+// topic is the topic.
+// handler is the handler.
+//
+// Returns the result.
 func (b *Bus[T]) Subscribe(_ context.Context, topic string, handler func(T)) (unsubscribe func()) {
 	sub, _ := b.nc.Subscribe(topic, func(m *natsgo.Msg) {
 		var msg T
@@ -82,6 +99,12 @@ func (b *Bus[T]) Subscribe(_ context.Context, topic string, handler func(T)) (un
 }
 
 // SubscribeOnce registers a one-time handler for a NATS topic.
+//
+// _ is an unused parameter.
+// topic is the topic.
+// handler is the handler.
+//
+// Returns the result.
 func (b *Bus[T]) SubscribeOnce(_ context.Context, topic string, handler func(T)) (unsubscribe func()) {
 	sub, err := b.nc.Subscribe(topic, func(m *natsgo.Msg) {
 		var msg T

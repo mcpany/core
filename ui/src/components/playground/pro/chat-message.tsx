@@ -30,6 +30,11 @@ interface ChatMessageProps {
     message: Message;
 }
 
+/**
+ * ChatMessage.
+ *
+ * @param { message - The { message.
+ */
 export function ChatMessage({ message }: ChatMessageProps) {
     const [copied, setCopied] = useState(false);
 

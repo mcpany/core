@@ -28,46 +28,108 @@ import (
 // concrete server implementation.
 type MCPServerProvider interface {
 	// Server returns the MCP server instance.
+	//
+	// Returns the result.
 	Server() *mcp.Server
 }
 
 // ManagerInterface defines the interface for a tool manager.
 type ManagerInterface interface {
 	// AddTool registers a new tool.
+	//
+	// tool represents the tool definition.
+	//
+	// Returns an error if the operation fails.
 	AddTool(tool Tool) error
 	// GetTool retrieves a tool by name.
+	//
+	// toolName is the toolName.
+	//
+	// Returns the result.
+	// Returns true if successful.
 	GetTool(toolName string) (Tool, bool)
 	// ListTools returns all registered tools.
+	//
+	// Returns the result.
 	ListTools() []Tool
 	// ListMCPTools returns all registered tools in MCP format.
+	//
+	// Returns the result.
 	ListMCPTools() []*mcp.Tool
 	// ClearToolsForService removes all tools for a given service.
+	//
+	// serviceID is the serviceID.
 	ClearToolsForService(serviceID string)
 	// ExecuteTool executes a tool with the given request.
+	//
+	// ctx is the context for the request.
+	// req is the request object.
+	//
+	// Returns the result.
+	// Returns an error if the operation fails.
 	ExecuteTool(ctx context.Context, req *ExecutionRequest) (any, error)
 	// SetMCPServer sets the MCP server provider.
+	//
+	// mcpServer is the mcpServer.
 	SetMCPServer(mcpServer MCPServerProvider)
 	// AddMiddleware adds a middleware to the tool execution chain.
+	//
+	// middleware is the middleware.
 	AddMiddleware(middleware ExecutionMiddleware)
 	// AddServiceInfo adds metadata for a service.
+	//
+	// serviceID is the serviceID.
+	// info is the info.
 	AddServiceInfo(serviceID string, info *ServiceInfo)
 	// GetServiceInfo retrieves metadata for a service.
+	//
+	// serviceID is the serviceID.
+	//
+	// Returns the result.
+	// Returns true if successful.
 	GetServiceInfo(serviceID string) (*ServiceInfo, bool)
 	// ListServices returns all registered services.
+	//
+	// Returns the result.
 	ListServices() []*ServiceInfo
 	// SetProfiles sets the enabled profiles and their definitions.
+	//
+	// enabled is the enabled.
+	// defs is the defs.
 	SetProfiles(enabled []string, defs []*configv1.ProfileDefinition)
 	// IsServiceAllowed checks if a service is allowed for a given profile.
+	//
+	// serviceID is the serviceID.
+	// profileID is the profileID.
+	//
+	// Returns true if successful.
 	IsServiceAllowed(serviceID, profileID string) bool
 	// ToolMatchesProfile checks if a tool matches a given profile.
+	//
+	// tool represents the tool definition.
+	// profileID is the profileID.
+	//
+	// Returns true if successful.
 	ToolMatchesProfile(tool Tool, profileID string) bool
 	// GetAllowedServiceIDs returns a map of allowed service IDs for a given profile.
+	//
+	// profileID is the profileID.
+	//
+	// Returns the result.
+	// Returns true if successful.
 	GetAllowedServiceIDs(profileID string) (map[string]bool, bool)
 }
 
 // ExecutionMiddleware defines the interface for tool execution middleware.
 type ExecutionMiddleware interface {
 	// Execute executes the middleware logic.
+	//
+	// ctx is the context for the request.
+	// req is the request object.
+	// next is the next.
+	//
+	// Returns the result.
+	// Returns an error if the operation fails.
 	Execute(ctx context.Context, req *ExecutionRequest, next ExecutionFunc) (any, error)
 }
 
@@ -91,6 +153,10 @@ type Manager struct {
 }
 
 // NewManager creates and returns a new, empty Manager.
+//
+// bus is the bus.
+//
+// Returns the result.
 func NewManager(bus *bus.Provider) *Manager {
 	return &Manager{
 		bus:         bus,
@@ -102,6 +168,9 @@ func NewManager(bus *bus.Provider) *Manager {
 }
 
 // SetProfiles sets the enabled profiles and their definitions for filtering.
+//
+// enabled is the enabled.
+// defs is the defs.
 func (tm *Manager) SetProfiles(enabled []string, defs []*configv1.ProfileDefinition) {
 	tm.mu.Lock()
 	defer tm.mu.Unlock()
@@ -181,6 +250,11 @@ func (tm *Manager) toolMatchesProfile(t *v1.Tool, profileName string) bool {
 }
 
 // IsServiceAllowed checks if a service is allowed for a given profile.
+//
+// serviceID is the serviceID.
+// profileID is the profileID.
+//
+// Returns true if successful.
 func (tm *Manager) IsServiceAllowed(serviceID, profileID string) bool {
 	tm.mu.RLock()
 	defer tm.mu.RUnlock()
@@ -202,6 +276,11 @@ func (tm *Manager) IsServiceAllowed(serviceID, profileID string) bool {
 }
 
 // ToolMatchesProfile checks if a tool matches a given profile.
+//
+// tool represents the tool definition.
+// profileID is the profileID.
+//
+// Returns true if successful.
 func (tm *Manager) ToolMatchesProfile(tool Tool, profileID string) bool {
 	tm.mu.RLock()
 	defer tm.mu.RUnlock()
@@ -209,6 +288,11 @@ func (tm *Manager) ToolMatchesProfile(tool Tool, profileID string) bool {
 }
 
 // GetAllowedServiceIDs returns a map of allowed service IDs for a given profile.
+//
+// profileID is the profileID.
+//
+// Returns the result.
+// Returns true if successful.
 func (tm *Manager) GetAllowedServiceIDs(profileID string) (map[string]bool, bool) {
 	tm.mu.RLock()
 	defer tm.mu.RUnlock()
@@ -298,6 +382,8 @@ func (tm *Manager) matchesProperties(annotations *v1.ToolAnnotations, props map[
 }
 
 // AddMiddleware adds a middleware to the tool manager.
+//
+// middleware is the middleware.
 func (tm *Manager) AddMiddleware(middleware ExecutionMiddleware) {
 	tm.middlewares = append(tm.middlewares, middleware)
 }
