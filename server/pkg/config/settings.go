@@ -51,6 +51,11 @@ func GlobalSettings() *Settings {
 	return globalSettings
 }
 
+// ToProto returns the underlying GlobalSettings protobuf message.
+func (s *Settings) ToProto() *configv1.GlobalSettings {
+	return s.proto
+}
+
 // Load initializes the global settings from the command line and config files.
 //
 // Parameters:
