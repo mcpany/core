@@ -26,10 +26,27 @@ message RegisterServiceResponse {
     repeated mcpany.config.v1.ResourceDefinition discovered_resources = 4;
 }
 
+message ValidateServiceRequest {
+    mcpany.config.v1.UpstreamServiceConfig config = 1;
+}
+
+message ValidateServiceResponse {
+    bool valid = 1;
+    string message = 2;
+    repeated mcpany.config.v1.ToolDefinition discovered_tools = 3;
+    repeated mcpany.config.v1.ResourceDefinition discovered_resources = 4;
+}
+
 service RegistrationService {
     rpc RegisterService(RegisterServiceRequest) returns (RegisterServiceResponse) {
         option (google.api.http) = {
             post: "/v1/services/register"
+            body: "*"
+        };
+    }
+    rpc ValidateService(ValidateServiceRequest) returns (ValidateServiceResponse) {
+        option (google.api.http) = {
+            post: "/v1/services/validate"
             body: "*"
         };
     }
