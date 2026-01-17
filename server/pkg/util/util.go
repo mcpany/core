@@ -490,7 +490,7 @@ func ToString(v any) string {
 		// We check if the float value is integral.
 		if math.Trunc(val) == val {
 			// Check bounds to avoid undefined behavior or overflow when casting
-			if val >= float64(math.MinInt64) && val <= float64(math.MaxInt64) {
+			if val >= float64(math.MinInt64) && val < float64(math.MaxInt64) {
 				return strconv.FormatInt(int64(val), 10)
 			}
 		}
