@@ -280,10 +280,6 @@ We strive for high code quality. Please ensure the following before submitting a
     ```bash
     go run server/tools/check_doc.go server/
     ```
-  - You can verify TypeScript documentation coverage with:
-    ```bash
-    python3 ui/tools/check_jsdoc.py
-    ```
 - **Testing**: Add unit tests for new functionality. Run all tests with:
   ```bash
   make test
