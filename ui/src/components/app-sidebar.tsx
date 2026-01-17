@@ -23,7 +23,8 @@ import {
   Layers,
   ShoppingBag,
   ShieldCheck,
-  Zap
+  Zap,
+  CheckCircle2
 } from "lucide-react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
@@ -101,6 +102,11 @@ const devItems = [
     title: "Playground",
     url: "/playground",
     icon: Bot,
+  },
+  {
+    title: "Schema Validator",
+    url: "/validator",
+    icon: CheckCircle2,
   },
   {
     title: "Tools",

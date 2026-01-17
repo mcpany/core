@@ -57,6 +57,8 @@
 - [x] **Validation CLI Command**: Enhanced `mcpany config validate` with `--check-connection` flag to run deep checks, including connecting to upstream services to verify connectivity. Also added `mcpany doctor` for comprehensive system health diagnosis. (Friction Fighter)
 - [x] **Upstream Connectivity Probe**: Implemented a startup connection check for HTTP upstream services. The server now logs a warning if the upstream service is unreachable during registration, preventing silent failures. (Friction Fighter)
 - [x] **Actionable Config Errors**: Enhanced configuration validator to provide specific, actionable "Fix" suggestions for common errors like missing environment variables, files, or invalid URL schemes. (Friction Fighter)
+- [x] **Schema Validation Playground**: A dedicated UI in the dashboard to paste JSON/YAML and validate it against the server schema with real-time error highlighting.
+- [x] **Interactive OAuth Handler**: Solve the "copy-paste token" friction. Allow users to click "Login" in the UI to authenticate tools like GitHub/Google. (Backend & UI Implemented)
 
 ## 2. Top 10 Recommended Features
 
@@ -65,8 +67,6 @@ These features represent the next logical steps for the product, focusing on Ent
 | Rank | Feature Name | Why it matters | Difficulty |
 | :--- | :--- | :--- | :--- |
 | 1 | **Tool Poisoning Mitigation** | **Security**: Implement integrity checks for tool definitions to prevent "Rug Pull" attacks where a tool definition changes maliciously after installation. | High |
-| 2 | **Interactive OAuth Handler** | **UX/Auth**: Solve the "copy-paste token" friction. Allow users to click "Login" in the UI to authenticate tools like GitHub/Google. (Backend Implemented, UI Pending) | High |
-| 3 | **Interactive OAuth UI** | **UX**: Complete the UI implementation for the Interactive OAuth Handler to allow seamless user authentication flows. | Medium |
 | 4 | **Local LLM "One-Click" Connect** | **Connectivity**: Auto-detect and connect to local inference servers (Ollama, LM Studio) to democratize AI access without cloud costs. | Low |
 | 5 | **Tool "Dry Run" Mode** | **DevX**: Allow tools to define a "dry run" logic to validate inputs and permissions without executing side effects. | Medium |
 | 6 | **Team Configuration Sync** | **Collaboration**: Allow teams to synchronize `mcpany` configurations and secrets securely, ensuring consistent dev environments. | Medium |
@@ -76,7 +76,6 @@ These features represent the next logical steps for the product, focusing on Ent
 | 10 | **Advanced Tiered Caching** | **Performance**: Implement a multi-layer cache (Memory -> Redis -> Disk) with configurable eviction policies to reduce upstream costs. | Medium |
 | 11 | **Smart Retry Policies** | **Resilience**: Configurable exponential backoff and jitter for upstream connections to handle transient network failures gracefully. | Medium |
 | 12 | **Service Dependency Graph** | **Observability**: Visualize dependencies between services (e.g. Service A calls Tool B in Service C) to detect circular dependencies or bottlenecks. | High |
-| 13 | **Schema Validation Playground** | **DevX**: A dedicated UI in the dashboard to paste JSON/YAML and validate it against the server schema with real-time error highlighting. | Low |
 | 14 | **Partial Reloads** | **Resilience**: When reloading config dynamically, if one service is invalid, keep the old version running instead of removing it or failing the whole reload (if possible). | High |
 | 15 | **Filesystem Health Check** | **Observability**: Add a health check probe for filesystem roots to report status to the UI, not just logs. | Low |
 | 16 | **Safe Symlink Traversal** | **Security**: Add configuration options to strictly control symlink traversal policies (allow/deny/internal-only). | Medium |

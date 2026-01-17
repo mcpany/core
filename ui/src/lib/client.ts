@@ -103,6 +103,11 @@ export interface ReadResourceResponse {
     contents: ResourceContent[];
 }
 
+export interface DoctorReport {
+    status: string;
+    details: any;
+}
+
 const getMetadata = () => {
     // Metadata for gRPC calls.
     // Since gRPC-Web calls might bypass Next.js middleware if they go directly to Envoy/Backend,
