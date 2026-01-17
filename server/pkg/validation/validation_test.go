@@ -93,6 +93,10 @@ func TestIsValidBindAddress(t *testing.T) {
 		{"multiple colons", "localhost:8080:8080", true},
 		{"ipv6", "[::1]:8080", false},
 		{"port only", "50050", false},
+		{"invalid port negative", "localhost:-1", true},
+		{"invalid port negative only", "-1", true},
+		{"invalid port too large", "localhost:65536", true},
+		{"invalid port too large only", "65536", true},
 	}
 
 	for _, tt := range tests {
