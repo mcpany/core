@@ -34,6 +34,11 @@ interface ConnectionDiagnosticDialogProps {
   trigger?: React.ReactNode;
 }
 
+/**
+ * ConnectionDiagnosticDialog.
+ *
+ * @param trigger - The trigger.
+ */
 export function ConnectionDiagnosticDialog({ service, trigger }: ConnectionDiagnosticDialogProps) {
   const [open, setOpen] = useState(false);
   const [isRunning, setIsRunning] = useState(false);

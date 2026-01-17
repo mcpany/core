@@ -46,6 +46,8 @@ const UserContext = createContext<UserContextType | undefined>(undefined);
 
 /**
  * Provider component for user authentication context.
+ *
+ * @param { children - The { children.
  */
 export function UserProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);

@@ -15,6 +15,12 @@ interface MetricCardProps {
     trend?: string
 }
 
+/**
+ * MetricCard.
+ *
+ * @param icon - The icon.
+ * @param trend - The trend.
+ */
 export function MetricCard({ title, value, icon: Icon, description, trend }: MetricCardProps) {
   return (
     <Card>

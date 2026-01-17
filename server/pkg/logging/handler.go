@@ -33,6 +33,10 @@ type BroadcastHandler struct {
 }
 
 // NewBroadcastHandler creates a new BroadcastHandler.
+//
+// broadcaster is the broadcaster.
+//
+// Returns the result.
 func NewBroadcastHandler(broadcaster *Broadcaster) *BroadcastHandler {
 	return &BroadcastHandler{
 		broadcaster: broadcaster,
@@ -40,11 +44,21 @@ func NewBroadcastHandler(broadcaster *Broadcaster) *BroadcastHandler {
 }
 
 // Enabled always returns true as we want to capture all logs (or rely on parent logger level).
+//
+// _ is an unused parameter.
+// _ is an unused parameter.
+//
+// Returns true if successful.
 func (h *BroadcastHandler) Enabled(_ context.Context, _ slog.Level) bool {
 	return true
 }
 
 // Handle handles the log record by converting it to LogEntry and broadcasting it.
+//
+// _ is an unused parameter.
+// r is the r.
+//
+// Returns an error if the operation fails.
 func (h *BroadcastHandler) Handle(_ context.Context, r slog.Record) error {
 	entry := LogEntry{
 		ID:        uuid.New().String(),
@@ -83,6 +97,10 @@ func (h *BroadcastHandler) Handle(_ context.Context, r slog.Record) error {
 }
 
 // WithAttrs returns a new handler with the given attributes.
+//
+// attrs is the attrs.
+//
+// Returns the result.
 func (h *BroadcastHandler) WithAttrs(attrs []slog.Attr) slog.Handler {
 	h.mu.Lock()
 	defer h.mu.Unlock()
@@ -94,6 +112,10 @@ func (h *BroadcastHandler) WithAttrs(attrs []slog.Attr) slog.Handler {
 }
 
 // WithGroup returns a new handler with the given group.
+//
+// name is the name of the resource.
+//
+// Returns the result.
 func (h *BroadcastHandler) WithGroup(name string) slog.Handler {
 	h.mu.Lock()
 	defer h.mu.Unlock()
@@ -110,11 +132,20 @@ type TeeHandler struct {
 }
 
 // NewTeeHandler creates a new TeeHandler.
+//
+// handlers is the handlers.
+//
+// Returns the result.
 func NewTeeHandler(handlers ...slog.Handler) *TeeHandler {
 	return &TeeHandler{handlers: handlers}
 }
 
 // Enabled returns true if any of the handlers are enabled.
+//
+// ctx is the context for the request.
+// level is the level.
+//
+// Returns true if successful.
 func (h *TeeHandler) Enabled(ctx context.Context, level slog.Level) bool {
 	for _, handler := range h.handlers {
 		if handler.Enabled(ctx, level) {
@@ -125,6 +156,11 @@ func (h *TeeHandler) Enabled(ctx context.Context, level slog.Level) bool {
 }
 
 // Handle forwards the record to all enabled handlers.
+//
+// ctx is the context for the request.
+// r is the r.
+//
+// Returns an error if the operation fails.
 func (h *TeeHandler) Handle(ctx context.Context, r slog.Record) error {
 	var err error
 	for _, handler := range h.handlers {
@@ -138,6 +174,10 @@ func (h *TeeHandler) Handle(ctx context.Context, r slog.Record) error {
 }
 
 // WithAttrs returns a new TeeHandler with the attributes applied to all handlers.
+//
+// attrs is the attrs.
+//
+// Returns the result.
 func (h *TeeHandler) WithAttrs(attrs []slog.Attr) slog.Handler {
 	handlers := make([]slog.Handler, len(h.handlers))
 	for i, handler := range h.handlers {
@@ -147,6 +187,10 @@ func (h *TeeHandler) WithAttrs(attrs []slog.Attr) slog.Handler {
 }
 
 // WithGroup returns a new TeeHandler with the group applied to all handlers.
+//
+// name is the name of the resource.
+//
+// Returns the result.
 func (h *TeeHandler) WithGroup(name string) slog.Handler {
 	handlers := make([]slog.Handler, len(h.handlers))
 	for i, handler := range h.handlers {

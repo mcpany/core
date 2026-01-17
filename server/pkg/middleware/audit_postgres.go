@@ -21,6 +21,11 @@ type PostgresAuditStore struct {
 }
 
 // NewPostgresAuditStore creates a new PostgresAuditStore.
+//
+// dsn is the dsn.
+//
+// Returns the result.
+// Returns an error if the operation fails.
 func NewPostgresAuditStore(dsn string) (*PostgresAuditStore, error) {
 	if dsn == "" {
 		return nil, fmt.Errorf("postgres dsn is required")
@@ -73,6 +78,11 @@ func NewPostgresAuditStore(dsn string) (*PostgresAuditStore, error) {
 }
 
 // Write writes an audit entry to the database.
+//
+// ctx is the context for the request.
+// entry is the entry.
+//
+// Returns an error if the operation fails.
 func (s *PostgresAuditStore) Write(ctx context.Context, entry AuditEntry) error {
 	// We don't need mutex here because we use database transaction for concurrency control.
 	// s.mu.Lock() // removed
@@ -154,6 +164,9 @@ func (s *PostgresAuditStore) Write(ctx context.Context, entry AuditEntry) error 
 }
 
 // Verify checks the integrity of the audit logs.
+//
+// Returns true if successful.
+// Returns an error if the operation fails.
 func (s *PostgresAuditStore) Verify() (bool, error) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -218,6 +231,8 @@ func (s *PostgresAuditStore) Verify() (bool, error) {
 }
 
 // Close closes the database connection.
+//
+// Returns an error if the operation fails.
 func (s *PostgresAuditStore) Close() error {
 	s.mu.Lock()
 	defer s.mu.Unlock()

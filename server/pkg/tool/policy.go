@@ -113,6 +113,11 @@ type CompiledCallPolicy struct {
 }
 
 // CompileCallPolicies compiles a list of call policies.
+//
+// policies is the policies.
+//
+// Returns the result.
+// Returns an error if the operation fails.
 func CompileCallPolicies(policies []*configv1.CallPolicy) ([]*CompiledCallPolicy, error) {
 	compiled := make([]*CompiledCallPolicy, 0, len(policies))
 	for _, p := range policies {
@@ -129,6 +134,11 @@ func CompileCallPolicies(policies []*configv1.CallPolicy) ([]*CompiledCallPolicy
 }
 
 // NewCompiledCallPolicy compiles a single call policy.
+//
+// policy is the policy.
+//
+// Returns the result.
+// Returns an error if the operation fails.
 func NewCompiledCallPolicy(policy *configv1.CallPolicy) (*CompiledCallPolicy, error) {
 	compiledRules := make([]compiledCallPolicyRule, len(policy.GetRules()))
 	for i, rule := range policy.GetRules() {
@@ -170,6 +180,14 @@ func NewCompiledCallPolicy(policy *configv1.CallPolicy) (*CompiledCallPolicy, er
 }
 
 // EvaluateCompiledCallPolicy checks if a call should be allowed based on the compiled policies.
+//
+// policies is the policies.
+// toolName is the toolName.
+// callID is the callID.
+// arguments is the arguments.
+//
+// Returns true if successful.
+// Returns an error if the operation fails.
 func EvaluateCompiledCallPolicy(policies []*CompiledCallPolicy, toolName, callID string, arguments []byte) (bool, error) {
 	for _, policy := range policies {
 		policyBlocked := false

@@ -5,14 +5,15 @@
 
 "use client";
 
-import { useMemo, useState, memo } from "react";
+import { useMemo, useState, memo, useCallback, useEffect } from "react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { Settings, Trash2, CheckCircle, XCircle, AlertTriangle, MoreHorizontal, Copy, Download, Filter } from "lucide-react";
+import { Settings, Trash2, CheckCircle, XCircle, AlertTriangle, MoreHorizontal, Copy, Download, Filter, PlayCircle, PauseCircle } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -32,15 +33,50 @@ interface ServiceListProps {
   onDelete?: (name: string) => void;
   onDuplicate?: (service: UpstreamServiceConfig) => void;
   onExport?: (service: UpstreamServiceConfig) => void;
+  onBulkToggle?: (names: string[], enabled: boolean) => void;
+  onBulkDelete?: (names: string[]) => void;
 }
 
-export function ServiceList({ services, isLoading, onToggle, onEdit, onDelete, onDuplicate, onExport }: ServiceListProps) {
+/**
+ * ServiceList.
+ *
+ * @param onExport - The onExport.
+ */
+export function ServiceList({ services, isLoading, onToggle, onEdit, onDelete, onDuplicate, onExport, onBulkToggle, onBulkDelete }: ServiceListProps) {
   const [tagFilter, setTagFilter] = useState("");
+  const [selected, setSelected] = useState<Set<string>>(new Set());
 
   const filteredServices = useMemo(() => {
     if (!tagFilter) return services;
     return services.filter(s => s.tags?.some(tag => tag.toLowerCase().includes(tagFilter.toLowerCase())));
   }, [services, tagFilter]);
+
+  // Reset selection when filtering changes or services change
+  useEffect(() => {
+      setSelected(new Set());
+  }, [tagFilter]);
+
+  const handleSelectAll = useCallback((checked: boolean) => {
+    if (checked) {
+      setSelected(new Set(filteredServices.map(s => s.name)));
+    } else {
+      setSelected(new Set());
+    }
+  }, [filteredServices]);
+
+  const handleSelectOne = useCallback((name: string, checked: boolean) => {
+    setSelected(prev => {
+        const newSelected = new Set(prev);
+        if (checked) {
+          newSelected.add(name);
+        } else {
+          newSelected.delete(name);
+        }
+        return newSelected;
+    });
+  }, []);
+
+  const isAllSelected = filteredServices.length > 0 && selected.size === filteredServices.length;
 
   if (isLoading) {
       return (
@@ -58,19 +94,59 @@ export function ServiceList({ services, isLoading, onToggle, onEdit, onDelete, o
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center space-x-2 w-full md:w-1/3">
-        <Filter className="h-4 w-4 text-muted-foreground" />
-        <Input
-          placeholder="Filter by tag..."
-          value={tagFilter}
-          onChange={(e) => setTagFilter(e.target.value)}
-          className="h-8"
-        />
+      <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-2 w-full md:w-1/3">
+            <Filter className="h-4 w-4 text-muted-foreground" />
+            <Input
+              placeholder="Filter by tag..."
+              value={tagFilter}
+              onChange={(e) => setTagFilter(e.target.value)}
+              className="h-8"
+            />
+          </div>
+
+          {selected.size > 0 && (
+              <div className="flex items-center gap-2 animate-in fade-in slide-in-from-right-4 duration-300">
+                  <span className="text-sm text-muted-foreground mr-2">{selected.size} selected</span>
+                  {onBulkToggle && (
+                      <>
+                        <Button size="sm" variant="outline" onClick={() => {
+                            onBulkToggle(Array.from(selected), true);
+                            setSelected(new Set());
+                        }}>
+                            <PlayCircle className="mr-2 h-4 w-4 text-green-600" /> Enable
+                        </Button>
+                        <Button size="sm" variant="outline" onClick={() => {
+                            onBulkToggle(Array.from(selected), false);
+                            setSelected(new Set());
+                        }}>
+                            <PauseCircle className="mr-2 h-4 w-4 text-amber-600" /> Disable
+                        </Button>
+                      </>
+                  )}
+                  {onBulkDelete && (
+                      <Button size="sm" variant="destructive" onClick={() => {
+                          onBulkDelete(Array.from(selected));
+                          setSelected(new Set());
+                      }}>
+                          <Trash2 className="mr-2 h-4 w-4" /> Delete
+                      </Button>
+                  )}
+              </div>
+          )}
       </div>
+
       <div className="rounded-md border">
         <Table>
           <TableHeader>
             <TableRow>
+              <TableHead className="w-[50px]">
+                  <Checkbox
+                    checked={isAllSelected}
+                    onCheckedChange={(checked) => handleSelectAll(!!checked)}
+                    aria-label="Select all"
+                  />
+              </TableHead>
               <TableHead>Status</TableHead>
               <TableHead>Name</TableHead>
               <TableHead>Type</TableHead>
@@ -86,6 +162,8 @@ export function ServiceList({ services, isLoading, onToggle, onEdit, onDelete, o
                <ServiceRow
                   key={service.name}
                   service={service}
+                  isSelected={selected.has(service.name)}
+                  onSelect={handleSelectOne}
                   onToggle={onToggle}
                   onEdit={onEdit}
                   onDelete={onDelete}
@@ -95,7 +173,7 @@ export function ServiceList({ services, isLoading, onToggle, onEdit, onDelete, o
             ))}
             {filteredServices.length === 0 && (
               <TableRow>
-                <TableCell colSpan={8} className="h-24 text-center">
+                <TableCell colSpan={9} className="h-24 text-center">
                   No services match the tag filter.
                 </TableCell>
               </TableRow>
@@ -107,8 +185,10 @@ export function ServiceList({ services, isLoading, onToggle, onEdit, onDelete, o
   );
 }
 
-const ServiceRow = memo(function ServiceRow({ service, onToggle, onEdit, onDelete, onDuplicate, onExport }: {
+const ServiceRow = memo(function ServiceRow({ service, isSelected, onSelect, onToggle, onEdit, onDelete, onDuplicate, onExport }: {
     service: UpstreamServiceConfig,
+    isSelected: boolean,
+    onSelect: (name: string, checked: boolean) => void,
     onToggle?: (name: string, enabled: boolean) => void,
     onEdit?: (service: UpstreamServiceConfig) => void,
     onDelete?: (name: string) => void,
@@ -138,6 +218,13 @@ const ServiceRow = memo(function ServiceRow({ service, onToggle, onEdit, onDelet
 
     return (
         <TableRow className={service.disable ? "opacity-60 bg-muted/40" : ""}>
+             <TableCell>
+                 <Checkbox
+                    checked={isSelected}
+                    onCheckedChange={(checked) => onSelect(service.name, !!checked)}
+                    aria-label={`Select ${service.name}`}
+                 />
+             </TableCell>
              <TableCell>
                  <div className="flex items-center gap-2">
                     {onToggle && (

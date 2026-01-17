@@ -31,6 +31,10 @@ type SplunkAuditStore struct {
 }
 
 // NewSplunkAuditStore creates a new SplunkAuditStore.
+//
+// config holds the configuration settings.
+//
+// Returns the result.
 func NewSplunkAuditStore(config *configv1.SplunkConfig) *SplunkAuditStore {
 	if config == nil {
 		config = &configv1.SplunkConfig{}
@@ -79,6 +83,11 @@ func (e *SplunkAuditStore) worker() {
 }
 
 // Write implements the AuditStore interface.
+//
+// _ is an unused parameter.
+// entry is the entry.
+//
+// Returns an error if the operation fails.
 func (e *SplunkAuditStore) Write(_ context.Context, entry AuditEntry) error {
 	select {
 	case e.queue <- entry:
@@ -130,6 +139,8 @@ func (e *SplunkAuditStore) send(entry AuditEntry) {
 }
 
 // Close closes the queue and waits for workers to finish.
+//
+// Returns an error if the operation fails.
 func (e *SplunkAuditStore) Close() error {
 	close(e.done)
 	close(e.queue)

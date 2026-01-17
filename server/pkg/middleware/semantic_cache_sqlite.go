@@ -156,6 +156,14 @@ func (s *SQLiteVectorStore) loadFromDB(ctx context.Context) error {
 }
 
 // Add adds a new entry to both memory and DB.
+//
+// ctx is the context for the request.
+// key is the key.
+// vector is the vector.
+// result is the result.
+// ttl is the ttl.
+//
+// Returns an error if the operation fails.
 func (s *SQLiteVectorStore) Add(ctx context.Context, key string, vector []float32, result any, ttl time.Duration) error {
 	// Add to memory first
 	if err := s.memoryStore.Add(ctx, key, vector, result, ttl); err != nil {
@@ -197,11 +205,22 @@ func (s *SQLiteVectorStore) Add(ctx context.Context, key string, vector []float3
 }
 
 // Search searches in memory.
+//
+// ctx is the context for the request.
+// key is the key.
+// query is the query.
+//
+// Returns the result.
+// Returns the result.
+// Returns true if successful.
 func (s *SQLiteVectorStore) Search(ctx context.Context, key string, query []float32) (any, float32, bool) {
 	return s.memoryStore.Search(ctx, key, query)
 }
 
 // Prune removes expired entries from both memory and DB.
+//
+// ctx is the context for the request.
+// key is the key.
 func (s *SQLiteVectorStore) Prune(ctx context.Context, key string) {
 	s.memoryStore.Prune(ctx, key)
 
@@ -210,6 +229,8 @@ func (s *SQLiteVectorStore) Prune(ctx context.Context, key string) {
 }
 
 // Close closes the database connection.
+//
+// Returns an error if the operation fails.
 func (s *SQLiteVectorStore) Close() error {
 	return s.db.Close()
 }

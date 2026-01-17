@@ -158,6 +158,11 @@ func (e *yamlEngine) Unmarshal(b []byte, v proto.Message) error {
 type textprotoEngine struct{}
 
 // Unmarshal parses a textproto byte slice into a `proto.Message`.
+//
+// b is the b.
+// v is the v.
+//
+// Returns an error if the operation fails.
 func (e *textprotoEngine) Unmarshal(b []byte, v proto.Message) error {
 	return prototext.Unmarshal(b, v)
 }
@@ -166,6 +171,11 @@ func (e *textprotoEngine) Unmarshal(b []byte, v proto.Message) error {
 type jsonEngine struct{}
 
 // Unmarshal parses a JSON byte slice into a `proto.Message`.
+//
+// b is the b.
+// v is the v.
+//
+// Returns an error if the operation fails.
 func (e *jsonEngine) Unmarshal(b []byte, v proto.Message) error {
 	if err := protojson.Unmarshal(b, v); err != nil {
 		// Detect if the user is using Claude Desktop config format
@@ -196,9 +206,16 @@ func (e *jsonEngine) Unmarshal(b []byte, v proto.Message) error {
 // server configuration from a source, such as a file or a remote service.
 type Store interface {
 	// Load retrieves and returns the McpAnyServerConfig.
+	//
+	// ctx is the context for the request.
+	//
+	// Returns the result.
+	// Returns an error if the operation fails.
 	Load(ctx context.Context) (*configv1.McpAnyServerConfig, error)
 
 	// HasConfigSources returns true if the store has configuration sources (e.g., file paths) configured.
+	//
+	// Returns true if successful.
 	HasConfigSources() bool
 }
 
@@ -297,6 +314,8 @@ func NewFileStoreWithSkipErrors(fs afero.Fs, paths []string) *FileStore {
 }
 
 // HasConfigSources returns true if the store has configuration paths configured.
+//
+// Returns true if successful.
 func (s *FileStore) HasConfigSources() bool {
 	return len(s.paths) > 0
 }
@@ -736,11 +755,20 @@ type MultiStore struct {
 }
 
 // NewMultiStore creates a new MultiStore with the given stores.
+//
+// stores is the stores.
+//
+// Returns the result.
 func NewMultiStore(stores ...Store) *MultiStore {
 	return &MultiStore{stores: stores}
 }
 
 // Load loads configurations from all stores and merges them into a single config.
+//
+// ctx is the context for the request.
+//
+// Returns the result.
+// Returns an error if the operation fails.
 func (ms *MultiStore) Load(ctx context.Context) (*configv1.McpAnyServerConfig, error) {
 	mergedConfig := &configv1.McpAnyServerConfig{}
 	for _, s := range ms.stores {
@@ -833,6 +861,8 @@ func collectFieldNames(md protoreflect.MessageDescriptor, candidates map[string]
 }
 
 // HasConfigSources returns true if any of the underlying stores have configuration sources.
+//
+// Returns true if successful.
 func (ms *MultiStore) HasConfigSources() bool {
 	for _, s := range ms.stores {
 		if s.HasConfigSources() {

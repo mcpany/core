@@ -38,6 +38,10 @@ func NewHTTPClientWrapper(client *http.Client, config *configv1.UpstreamServiceC
 }
 
 // IsHealthy checks the health of the upstream service by making a request to the configured health check endpoint.
+//
+// ctx is the context for the request.
+//
+// Returns true if successful.
 func (w *HTTPClientWrapper) IsHealthy(ctx context.Context) bool {
 	if w.checker == nil {
 		return true // No health check configured, assume healthy.

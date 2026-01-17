@@ -16,6 +16,8 @@ type WrappedServerStream struct {
 }
 
 // Context returns the modified context.
+//
+// Returns the result.
 func (w *WrappedServerStream) Context() context.Context {
 	return w.Ctx
 }

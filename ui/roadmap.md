@@ -22,14 +22,18 @@
 - [x] **Binary Resource Preview**: Support for previewing images, PDFs, and other binary formats in the resource viewer.
 - [ ] **Prompt/Resource Sibling Navigation**: Enable sibling navigation for Prompts and Resources (requires backend API update to include service_id).
 - [ ] **Breadcrumb History**: Show recently visited breadcrumbs in a dropdown or history menu.
-- [ ] **JSON Schema Visualizer**: Display tool input schemas as interactive diagrams instead of raw JSON for better understanding of complex types.
+- [x] **JSON Schema Visualizer**: Display tool input schemas as interactive diagrams instead of raw JSON for better understanding of complex types.
 - [ ] **Interactive Tool Usage History**: A timeline of tool executions with ability to replay them directly from the UI.
 - [ ] **Bulk Service Import**: Allow importing multiple services from a single config file or URL.
 - [x] **Service Configuration Validation**: Pre-save validation for service configs (e.g. check if URL is reachable).
 - [x] **Service Tagging & Grouping**: Organize services by tags (e.g., prod, staging, external) and filter the list.
 - [ ] **Service Config Diff Viewer**: Visual diff when updating or duplicating services to see exactly what changed.
-- [ ] **Bulk Service Actions**: Enable/Disable or Delete multiple services at once, potentially using tags for selection.
+- [x] **Bulk Service Actions**: Enable/Disable or Delete multiple services at once, potentially using tags for selection.
 - [ ] **Tag-based Access Control**: Restrict service access to specific user profiles based on tags.
+- [ ] **Live Tool Usage Graph**: Visual graph of tool execution metrics over time (RPS, Latency) in Tool Detail view.
+- [ ] **Playground Schema Validation**: Enforce JSON schema validation in the Tool Playground before submission to prevent bad requests.
+- [ ] **Service Health History Visualization**: A sparkline or small graph in the service list row showing uptime/latency history (e.g. last 1h).
+- [ ] **Bulk Edit Configuration**: Ability to edit common properties (like tags, timeout, or environment variables) for multiple selected services.
 
 ### Completed Features
 

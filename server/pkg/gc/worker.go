@@ -28,6 +28,10 @@ type Worker struct {
 }
 
 // New creates a new GC Worker.
+//
+// config holds the configuration settings.
+//
+// Returns the result.
 func New(config Config) *Worker {
 	if config.Interval <= 0 {
 		config.Interval = 1 * time.Hour // Default 1 hour

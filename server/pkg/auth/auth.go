@@ -31,33 +31,63 @@ const (
 )
 
 // ContextWithAPIKey returns a new context with the API Key.
+//
+// ctx is the context for the request.
+// apiKey is the apiKey.
+//
+// Returns the result.
 func ContextWithAPIKey(ctx context.Context, apiKey string) context.Context {
 	return context.WithValue(ctx, APIKeyContextKey, apiKey)
 }
 
 // APIKeyFromContext returns the API Key from the context.
+//
+// ctx is the context for the request.
+//
+// Returns the result.
+// Returns true if successful.
 func APIKeyFromContext(ctx context.Context) (string, bool) {
 	val, ok := ctx.Value(APIKeyContextKey).(string)
 	return val, ok
 }
 
 // ContextWithUser returns a new context with the user ID.
+//
+// ctx is the context for the request.
+// userID is the userID.
+//
+// Returns the result.
 func ContextWithUser(ctx context.Context, userID string) context.Context {
 	return context.WithValue(ctx, UserContextKey, userID)
 }
 
 // UserFromContext returns the user ID from the context.
+//
+// ctx is the context for the request.
+//
+// Returns the result.
+// Returns true if successful.
 func UserFromContext(ctx context.Context) (string, bool) {
 	val, ok := ctx.Value(UserContextKey).(string)
 	return val, ok
 }
 
 // ContextWithProfileID returns a new context with the profile ID.
+//
+// ctx is the context for the request.
+// profileID is the profileID.
+//
+// Returns the result.
 func ContextWithProfileID(ctx context.Context, profileID string) context.Context {
 	return context.WithValue(ctx, ProfileIDContextKey, profileID)
 }
 
 // ProfileIDFromContext returns the profile ID from the context.
+//
+// ctx is the context for the request.
+//
+// Returns the result.
+// Returns true if successful.
 func ProfileIDFromContext(ctx context.Context) (string, bool) {
 	val, ok := ctx.Value(ProfileIDContextKey).(string)
 	return val, ok
@@ -66,6 +96,12 @@ func ProfileIDFromContext(ctx context.Context) (string, bool) {
 // Authenticator checks if a request is authenticated.
 type Authenticator interface {
 	// Authenticate returns the authenticated user's context or an error.
+	//
+	// ctx is the context for the request.
+	// r is the HTTP request.
+	//
+	// Returns the result.
+	// Returns an error if the operation fails.
 	Authenticate(ctx context.Context, r *http.Request) (context.Context, error)
 }
 
@@ -140,6 +176,10 @@ type BasicAuthenticator struct {
 }
 
 // NewBasicAuthenticator creates a new BasicAuthenticator.
+//
+// config holds the configuration settings.
+//
+// Returns the result.
 func NewBasicAuthenticator(config *configv1.BasicAuth) *BasicAuthenticator {
 	if config == nil || config.GetPasswordHash() == "" {
 		return nil
@@ -151,6 +191,12 @@ func NewBasicAuthenticator(config *configv1.BasicAuth) *BasicAuthenticator {
 }
 
 // Authenticate validates the basic auth credentials.
+//
+// ctx is the context for the request.
+// r is the HTTP request.
+//
+// Returns the result.
+// Returns an error if the operation fails.
 func (a *BasicAuthenticator) Authenticate(ctx context.Context, r *http.Request) (context.Context, error) {
 	user, password, ok := r.BasicAuth()
 	if !ok {
@@ -174,6 +220,10 @@ type TrustedHeaderAuthenticator struct {
 }
 
 // NewTrustedHeaderAuthenticator creates a new TrustedHeaderAuthenticator.
+//
+// config holds the configuration settings.
+//
+// Returns the result.
 func NewTrustedHeaderAuthenticator(config *configv1.TrustedHeaderAuth) *TrustedHeaderAuthenticator {
 	if config == nil || config.GetHeaderName() == "" {
 		return nil
@@ -185,6 +235,12 @@ func NewTrustedHeaderAuthenticator(config *configv1.TrustedHeaderAuth) *TrustedH
 }
 
 // Authenticate validates the trusted header.
+//
+// ctx is the context for the request.
+// r is the HTTP request.
+//
+// Returns the result.
+// Returns an error if the operation fails.
 func (a *TrustedHeaderAuthenticator) Authenticate(ctx context.Context, r *http.Request) (context.Context, error) {
 	val := r.Header.Get(a.HeaderName)
 	if val == "" {
@@ -229,6 +285,8 @@ func NewManager() *Manager {
 }
 
 // SetUsers sets the users.
+//
+// users is the users.
 func (am *Manager) SetUsers(users []*configv1.User) {
 	am.usersMu.Lock()
 	defer am.usersMu.Unlock()
@@ -238,6 +296,8 @@ func (am *Manager) SetUsers(users []*configv1.User) {
 }
 
 // SetStorage sets the storage.
+//
+// s is the s.
 func (am *Manager) SetStorage(s storage.Storage) {
 	am.mu.Lock()
 	defer am.mu.Unlock()
@@ -245,6 +305,11 @@ func (am *Manager) SetStorage(s storage.Storage) {
 }
 
 // GetUser retrieves a user by ID.
+//
+// id is the unique identifier.
+//
+// Returns the result.
+// Returns true if successful.
 func (am *Manager) GetUser(id string) (*configv1.User, bool) {
 	am.usersMu.RLock()
 	defer am.usersMu.RUnlock()
@@ -253,6 +318,8 @@ func (am *Manager) GetUser(id string) (*configv1.User, bool) {
 }
 
 // SetAPIKey sets the global API key for the server.
+//
+// apiKey is the apiKey.
 func (am *Manager) SetAPIKey(apiKey string) {
 	am.apiKey = apiKey
 }
@@ -329,6 +396,8 @@ func (am *Manager) GetAuthenticator(serviceID string) (Authenticator, bool) {
 }
 
 // RemoveAuthenticator removes the authenticator for a given service ID.
+//
+// serviceID is the serviceID.
 func (am *Manager) RemoveAuthenticator(serviceID string) {
 	am.authenticators.Delete(serviceID)
 }
