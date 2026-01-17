@@ -28,6 +28,7 @@ import (
 	"github.com/mcpany/core/server/pkg/auth"
 	"github.com/mcpany/core/server/pkg/bus"
 	"github.com/mcpany/core/server/pkg/config"
+	"github.com/mcpany/core/server/pkg/doctor"
 	"github.com/mcpany/core/server/pkg/gc"
 	"github.com/mcpany/core/server/pkg/health"
 	"github.com/mcpany/core/server/pkg/logging"
@@ -326,6 +327,31 @@ func (a *Application) Run(
 	}
 	if cfg == nil {
 		cfg = &config_v1.McpAnyServerConfig{}
+	}
+
+	// Run Doctor Checks (Connectivity)
+	// We run this after config validation to warn about connectivity issues.
+	// This helps users debug "silent failures" where the config is valid but the service is unreachable.
+	doctorResults := doctor.RunChecks(ctx, cfg)
+	var doctorErrors []string
+	for _, res := range doctorResults {
+		if res.Status == doctor.StatusError {
+			msg := fmt.Sprintf("⚠️  Service %q connectivity check failed: %s", res.ServiceName, res.Message)
+			doctorErrors = append(doctorErrors, msg)
+			log.Warn("Service connectivity check failed", "service", res.ServiceName, "status", res.Status, "message", res.Message)
+		} else if res.Status == doctor.StatusWarning {
+			log.Warn("Service connectivity check warning", "service", res.ServiceName, "status", res.Status, "message", res.Message)
+		}
+	}
+
+	if len(doctorErrors) > 0 {
+		// Print to stderr for visibility
+		fmt.Fprintln(os.Stderr, "\nWARNING: Some upstream services are not reachable:")
+		for _, msg := range doctorErrors {
+			fmt.Fprintln(os.Stderr, msg)
+		}
+		fmt.Fprintln(os.Stderr, "The server will continue starting, but these services may not function correctly.")
+		fmt.Fprintln(os.Stderr, "") // Add extra newline for spacing
 	}
 
 	// Initialize Telemetry with loaded config

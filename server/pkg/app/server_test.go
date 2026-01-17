@@ -2324,3 +2324,42 @@ func TestConfigHealthCheck(t *testing.T) {
 	assert.NotEmpty(t, check.Message)
 	assert.Contains(t, check.Message, "yaml")
 }
+
+func TestRun_DoctorCheck(t *testing.T) {
+	logging.ForTestsOnlyResetLogger()
+	var buf ThreadSafeBuffer
+	logging.Init(slog.LevelWarn, &buf) // Capture Warn logs
+
+	fs := afero.NewMemMapFs()
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	// Config with unreachable service
+	// We use a port that is unlikely to be open.
+	configContent := `
+upstream_services:
+  - name: "bad-service"
+    http_service:
+      address: "http://localhost:54321"
+`
+	err := afero.WriteFile(fs, "/config.yaml", []byte(configContent), 0o644)
+	require.NoError(t, err)
+
+	app := NewApplication()
+	errChan := make(chan error, 1)
+	go func() {
+		// Use ephemeral ports
+		errChan <- app.Run(ctx, fs, false, "localhost:0", "localhost:0", []string{"/config.yaml"}, "", 5*time.Second)
+	}()
+
+	// Wait for log to appear
+	require.Eventually(t, func() bool {
+		return strings.Contains(buf.String(), "Service connectivity check failed")
+	}, 2*time.Second, 100*time.Millisecond, "Expected warning log about connectivity failure")
+
+	logs := buf.String()
+	assert.Contains(t, logs, "bad-service")
+
+	cancel()
+	<-errChan
+}
