@@ -173,6 +173,40 @@ func newRootCmd() *cobra.Command { //nolint:gocyclo // Main entry point, expecte
 	config.BindServerFlags(runCmd)
 	rootCmd.AddCommand(runCmd)
 
+	initCmd := &cobra.Command{
+		Use:   "init",
+		Short: "Initialize a new MCP Any configuration",
+		RunE: func(_ *cobra.Command, _ []string) error {
+			gen := config.NewGenerator()
+
+			configPath := "config.yaml"
+			if _, err := os.Stat(configPath); err == nil {
+				fmt.Printf("⚠️  %s already exists. Overwrite? (y/N): ", configPath)
+				response, _ := gen.Reader.ReadString('\n')
+				response = strings.TrimSpace(strings.ToLower(response))
+				if response != "y" && response != "yes" {
+					fmt.Println("Aborted.")
+					return nil
+				}
+			}
+
+			data, err := gen.GenerateFull()
+			if err != nil {
+				return err
+			}
+
+			if err := os.WriteFile(configPath, data, 0600); err != nil {
+				return fmt.Errorf("failed to write config file: %w", err)
+			}
+
+			fmt.Printf("✅ Configuration written to %s\n", configPath)
+			fmt.Println("To run the server:")
+			fmt.Println("  ./build/bin/server run --config-path config.yaml")
+			return nil
+		},
+	}
+	rootCmd.AddCommand(initCmd)
+
 	versionCmd := &cobra.Command{
 		Use:   "version",
 		Short: "Print the version number of mcpany",

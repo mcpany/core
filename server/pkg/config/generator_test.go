@@ -355,3 +355,83 @@ func TestGenerator_Prompt_Bug(t *testing.T) {
 		t.Logf("Got error as expected from current implementation: %v", err)
 	}
 }
+
+func TestGenerator_GenerateFull(t *testing.T) {
+	testCases := []struct {
+		name     string
+		inputs   []string
+		expected string
+	}{
+		{
+			name: "Full Config with HTTP Service",
+			inputs: []string{
+				"0.0.0.0:50050", // Listen Address
+				"INFO",          // Log Level
+				"y",             // Add Service?
+				"http",          // Service Type
+				"test-http",     // Name
+				"http://localhost:8080", // Address
+				"get_user",      // OpID
+				"Get user",      // Desc
+				"GET",           // Method
+				"/users",        // Path
+			},
+			expected: `# Copyright 2025 Author(s) of MCP Any
+# SPDX-License-Identifier: Apache-2.0
+
+global_settings:
+  mcp_listen_address: "0.0.0.0:50050"
+  log_level: "INFO"
+
+upstream_services:
+  - name: "test-http"
+    http_service:
+      address: "http://localhost:8080"
+      calls:
+        - operationId: "get_user"
+          description: "Get user"
+          method: "HTTP_METHOD_GET"
+          endpointPath: "/users"
+`,
+		},
+		{
+			name: "Full Config without Service",
+			inputs: []string{
+				"",     // Default Address
+				"",     // Default Log Level
+				"n",    // No Service
+			},
+			expected: `# Copyright 2025 Author(s) of MCP Any
+# SPDX-License-Identifier: Apache-2.0
+
+global_settings:
+  mcp_listen_address: "0.0.0.0:50050"
+  log_level: "INFO"
+
+upstream_services:
+`,
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			var stdin bytes.Buffer
+			for _, input := range tc.inputs {
+				stdin.WriteString(input + "\n")
+			}
+
+			g := &Generator{
+				Reader: bufio.NewReader(&stdin),
+			}
+
+			configData, err := g.GenerateFull()
+			if err != nil {
+				t.Fatalf("GenerateFull() error = %v", err)
+			}
+
+			if !bytes.Equal(configData, []byte(tc.expected)) {
+				t.Errorf("GenerateFull() = \n%v\nwant \n%v", string(configData), tc.expected)
+			}
+		})
+	}
+}
