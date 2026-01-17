@@ -47,9 +47,9 @@ func TestGetLogger_DefaultInitialization(t *testing.T) {
 	var buf bytes.Buffer
 	// To test the default logger's output, we need to re-initialize it to write to our buffer.
 	ForTestsOnlyResetLogger()
-	defaultLogger = slog.New(slog.NewTextHandler(&buf, &slog.HandlerOptions{
+	defaultLogger.Store(slog.New(slog.NewTextHandler(&buf, &slog.HandlerOptions{
 		Level: slog.LevelInfo,
-	}))
+	})))
 
 	logger = GetLogger()
 	logger.Debug("this should not be logged")
