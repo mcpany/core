@@ -79,6 +79,11 @@ func (s *Settings) Load(cmd *cobra.Command, fs afero.Fs) error {
 	}
 
 	var logOutput io.Writer = os.Stdout
+	// In stdio mode, stdout is used for JSON-RPC, so logs must go to stderr to avoid corruption.
+	if viper.GetBool("stdio") {
+		logOutput = os.Stderr
+	}
+
 	if logfile := viper.GetString("logfile"); logfile != "" {
 		f, err := os.OpenFile(logfile, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0o600) //nolint:gosec // Log file configuration
 		if err != nil {
@@ -87,8 +92,6 @@ func (s *Settings) Load(cmd *cobra.Command, fs afero.Fs) error {
 		// Note: We cannot easily defer close here as this function returns.
 		// The OS will close the file on exit, or we'd need to track it in Settings.
 		logOutput = f
-	} else if viper.GetBool("stdio") {
-		logOutput = io.Discard
 	}
 	logFormat := viper.GetString("log-format")
 	logging.Init(logLevel, logOutput, logFormat)
