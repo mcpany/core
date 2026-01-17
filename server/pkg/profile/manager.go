@@ -19,6 +19,10 @@ type Manager struct {
 }
 
 // NewManager creates a new Profile Manager.
+//
+// profiles is the profiles.
+//
+// Returns the result.
 func NewManager(profiles []*configv1.ProfileDefinition) *Manager {
 	m := &Manager{
 		profiles: make(map[string]*configv1.ProfileDefinition),
@@ -28,6 +32,8 @@ func NewManager(profiles []*configv1.ProfileDefinition) *Manager {
 }
 
 // Update updates the profile definitions managed by the manager.
+//
+// profiles is the profiles.
 func (m *Manager) Update(profiles []*configv1.ProfileDefinition) {
 	newProfiles := make(map[string]*configv1.ProfileDefinition)
 	for _, p := range profiles {
@@ -39,6 +45,11 @@ func (m *Manager) Update(profiles []*configv1.ProfileDefinition) {
 }
 
 // GetProfileDefinition returns the profile definition by name.
+//
+// name is the name of the resource.
+//
+// Returns the result.
+// Returns true if successful.
 func (m *Manager) GetProfileDefinition(name string) (*configv1.ProfileDefinition, bool) {
 	m.mu.RLock()
 	defer m.mu.RUnlock()

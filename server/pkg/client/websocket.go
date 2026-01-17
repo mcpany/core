@@ -26,6 +26,8 @@ func (w *WebsocketClientWrapper) IsHealthy(_ context.Context) bool {
 }
 
 // Close terminates the underlying WebSocket connection.
+//
+// Returns an error if the operation fails.
 func (w *WebsocketClientWrapper) Close() error {
 	return w.Conn.Close()
 }

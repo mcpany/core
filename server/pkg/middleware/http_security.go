@@ -6,6 +6,10 @@ package middleware
 import "net/http"
 
 // HTTPSecurityHeadersMiddleware adds security headers to HTTP responses.
+//
+// next is the next.
+//
+// Returns the result.
 func HTTPSecurityHeadersMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("X-Content-Type-Options", "nosniff")

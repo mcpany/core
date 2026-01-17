@@ -15,6 +15,8 @@ type Provider struct {
 }
 
 // NewProvider creates a new Provider.
+//
+// Returns the result.
 func NewProvider() *Provider {
 	return &Provider{}
 }
@@ -30,6 +32,8 @@ func (b *Provider) BrowsePage(_ context.Context, url string) (string, error) {
 }
 
 // ToolDefinition returns the MCP tool definition.
+//
+// Returns the result.
 func (b *Provider) ToolDefinition() map[string]interface{} {
 	return map[string]interface{}{
 		"name":        "browse_page",

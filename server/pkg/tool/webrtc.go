@@ -30,6 +30,8 @@ type peerConnectionWrapper struct {
 }
 
 // Close closes the peer connection.
+//
+// Returns an error if the operation fails.
 func (w *peerConnectionWrapper) Close() error {
 	if w.PeerConnection == nil {
 		return nil
@@ -38,6 +40,10 @@ func (w *peerConnectionWrapper) Close() error {
 }
 
 // IsHealthy checks if the peer connection is in a usable state.
+//
+// _ is an unused parameter.
+//
+// Returns true if successful.
 func (w *peerConnectionWrapper) IsHealthy(_ context.Context) bool {
 	if w.PeerConnection == nil {
 		return false
@@ -129,11 +135,15 @@ func (t *WebrtcTool) newPeerConnection(_ context.Context) (*peerConnectionWrappe
 }
 
 // Tool returns the protobuf definition of the WebRTC tool.
+//
+// Returns the result.
 func (t *WebrtcTool) Tool() *v1.Tool {
 	return t.tool
 }
 
 // MCPTool returns the MCP tool definition.
+//
+// Returns the result.
 func (t *WebrtcTool) MCPTool() *mcp.Tool {
 	t.mcpToolOnce.Do(func() {
 		var err error
@@ -146,6 +156,8 @@ func (t *WebrtcTool) MCPTool() *mcp.Tool {
 }
 
 // GetCacheConfig returns the cache configuration for the WebRTC tool.
+//
+// Returns the result.
 func (t *WebrtcTool) GetCacheConfig() *configv1.CacheConfig {
 	return t.cache
 }

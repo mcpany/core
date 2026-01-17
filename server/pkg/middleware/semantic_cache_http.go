@@ -26,6 +26,14 @@ type HTTPEmbeddingProvider struct {
 }
 
 // NewHTTPEmbeddingProvider creates a new HTTPEmbeddingProvider.
+//
+// url is the url.
+// headers is the headers.
+// bodyTemplateStr is the bodyTemplateStr.
+// responseJSONPath is the responseJSONPath.
+//
+// Returns the result.
+// Returns an error if the operation fails.
 func NewHTTPEmbeddingProvider(url string, headers map[string]string, bodyTemplateStr, responseJSONPath string) (*HTTPEmbeddingProvider, error) {
 	if url == "" {
 		return nil, fmt.Errorf("url is required")
@@ -48,6 +56,12 @@ func NewHTTPEmbeddingProvider(url string, headers map[string]string, bodyTemplat
 
 
 // Embed generates an embedding for the given text.
+//
+// ctx is the context for the request.
+// text is the text.
+//
+// Returns the result.
+// Returns an error if the operation fails.
 func (p *HTTPEmbeddingProvider) Embed(ctx context.Context, text string) ([]float32, error) {
 	// Simple template replacement.
 	// We assume formatting is handled by the caller or configuration?

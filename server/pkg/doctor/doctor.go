@@ -44,6 +44,11 @@ type CheckResult struct {
 }
 
 // RunChecks performs connectivity and health checks on the provided configuration.
+//
+// ctx is the context for the request.
+// config holds the configuration settings.
+//
+// Returns the result.
 func RunChecks(ctx context.Context, config *configv1.McpAnyServerConfig) []CheckResult {
 	results := make([]CheckResult, 0, len(config.GetUpstreamServices()))
 

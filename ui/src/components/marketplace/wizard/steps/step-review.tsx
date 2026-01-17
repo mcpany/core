@@ -11,6 +11,11 @@ import { CheckCircle2 } from 'lucide-react';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { oneDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
 
+/**
+ * StepReview.
+ *
+ * @param { onComplete - The { onComplete.
+ */
 export function StepReview({ onComplete }: { onComplete: (config: any) => void }) {
     const { state } = useWizard();
     const { config } = state;

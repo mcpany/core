@@ -24,6 +24,10 @@ type GeminiCLI struct {
 }
 
 // NewGeminiCLI creates a new GeminiCLI instance.
+//
+// t is the t.
+//
+// Returns the result.
 func NewGeminiCLI(t *testing.T) *GeminiCLI {
 	return &GeminiCLI{t: t}
 }
@@ -48,6 +52,9 @@ func (g *GeminiCLI) geminiCommand(args ...string) *exec.Cmd {
 }
 
 // AddMCP adds an MCP server to the Gemini CLI configuration.
+//
+// name is the name of the resource.
+// endpoint is the endpoint.
 func (g *GeminiCLI) AddMCP(name, endpoint string) {
 	g.t.Helper()
 	cmd := g.geminiCommand("mcp", "add", "--transport", "http", name, endpoint)
@@ -56,6 +63,8 @@ func (g *GeminiCLI) AddMCP(name, endpoint string) {
 }
 
 // RemoveMCP removes an MCP server from the Gemini CLI configuration.
+//
+// name is the name of the resource.
 func (g *GeminiCLI) RemoveMCP(name string) {
 	g.t.Helper()
 	cmd := g.geminiCommand("mcp", "remove", name)
@@ -66,6 +75,12 @@ func (g *GeminiCLI) RemoveMCP(name string) {
 }
 
 // Run executes a prompt against the Gemini CLI using the provided API key.
+//
+// apiKey is the apiKey.
+// prompt is the prompt.
+//
+// Returns the result.
+// Returns an error if the operation fails.
 func (g *GeminiCLI) Run(apiKey, prompt string) (string, error) {
 	g.t.Helper()
 	var outputBuffer strings.Builder

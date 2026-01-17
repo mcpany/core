@@ -51,6 +51,11 @@ type DockerTransport struct {
 }
 
 // Connect establishes a connection to the service within the Docker container.
+//
+// ctx is the context for the request.
+//
+// Returns the result.
+// Returns an error if the operation fails.
 func (t *DockerTransport) Connect(ctx context.Context) (mcp.Connection, error) {
 	log := logging.GetLogger()
 	cli, err := newDockerClient(client.FromEnv, client.WithAPIVersionNegotiation())
@@ -182,6 +187,11 @@ type dockerConn struct {
 }
 
 // Read decodes a single JSON-RPC message from the container's output stream.
+//
+// _ is an unused parameter.
+//
+// Returns the result.
+// Returns an error if the operation fails.
 func (c *dockerConn) Read(_ context.Context) (jsonrpc.Message, error) {
 	var raw json.RawMessage
 	if err := c.decoder.Decode(&raw); err != nil {
@@ -262,6 +272,11 @@ func (c *dockerConn) Read(_ context.Context) (jsonrpc.Message, error) {
 }
 
 // Write encodes and sends a JSON-RPC message to the container's input stream.
+//
+// _ is an unused parameter.
+// msg is the msg.
+//
+// Returns an error if the operation fails.
 func (c *dockerConn) Write(_ context.Context, msg jsonrpc.Message) error {
 	var method string
 	var params any
@@ -302,11 +317,15 @@ func (c *dockerConn) Write(_ context.Context, msg jsonrpc.Message) error {
 }
 
 // Close terminates the connection by closing the underlying ReadWriteCloser.
+//
+// Returns an error if the operation fails.
 func (c *dockerConn) Close() error {
 	return c.rwc.Close()
 }
 
 // SessionID returns a static identifier for the Docker transport session.
+//
+// Returns the result.
 func (c *dockerConn) SessionID() string {
 	return "docker-transport-session"
 }
@@ -320,6 +339,8 @@ type dockerReadWriteCloser struct {
 }
 
 // Close closes the underlying connection and removes the associated Docker container.
+//
+// Returns an error if the operation fails.
 func (c *dockerReadWriteCloser) Close() error {
 	err := c.WriteCloser.Close()
 
@@ -366,6 +387,11 @@ type tailBuffer struct {
 }
 
 // Write writes data to the buffer, maintaining the size limit.
+//
+// p is the p.
+//
+// Returns the result.
+// Returns an error if the operation fails.
 func (b *tailBuffer) Write(p []byte) (n int, err error) {
 	b.mu.Lock()
 	defer b.mu.Unlock()
@@ -379,6 +405,8 @@ func (b *tailBuffer) Write(p []byte) (n int, err error) {
 }
 
 // String returns the buffered data as a string.
+//
+// Returns the result.
 func (b *tailBuffer) String() string {
 	b.mu.Lock()
 	defer b.mu.Unlock()
