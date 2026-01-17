@@ -871,7 +871,7 @@ func TestValidate_ExtraServices(t *testing.T) {
 				return cfg
 			}(),
 			expectedErrorCount:  1,
-			expectedErrorString: `service "graphql-bad-scheme": invalid graphql address scheme: ftp`,
+			expectedErrorString: "service \"graphql-bad-scheme\": invalid graphql address scheme: ftp\n\t-> Fix: Use 'http' or 'https' as the scheme.",
 		},
 		{
 			name: "valid webrtc service",
@@ -909,7 +909,7 @@ func TestValidate_ExtraServices(t *testing.T) {
 				return cfg
 			}(),
 			expectedErrorCount:  1,
-			expectedErrorString: `service "webrtc-bad-scheme": invalid webrtc address scheme: ftp`,
+			expectedErrorString: "service \"webrtc-bad-scheme\": invalid webrtc address scheme: ftp\n\t-> Fix: Use 'http' or 'https' as the scheme.",
 		},
 		{
 			name: "valid upstream service collection",
