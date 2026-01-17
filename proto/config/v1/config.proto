@@ -119,6 +119,12 @@ message GlobalSettings {
   ContextOptimizerConfig context_optimizer = 23 [json_name = "context_optimizer"];
   // Debugger configuration.
   DebuggerConfig debugger = 24 [json_name = "debugger"];
+  // Guardrails configuration.
+  GuardrailsConfig guardrails = 25 [json_name = "guardrails"];
+}
+
+message GuardrailsConfig {
+  repeated string blocked_phrases = 1 [json_name = "blocked_phrases"];
 }
 
 message ContextOptimizerConfig {

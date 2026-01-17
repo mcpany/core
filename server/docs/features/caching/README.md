@@ -46,11 +46,42 @@ upstream_services:
       ttl: "5m"
 ```
 
+## Semantic Caching
+
+Semantic caching uses vector embeddings to cache results based on the *meaning* of the input, rather than an exact string match. This allows the cache to serve requests that are phrased differently but ask for the same thing (e.g., "weather in London" vs "London weather").
+
+To enable semantic caching, configure the `semantic_config` block within the cache configuration.
+
+### Fields
+
+| Field | Type | Description |
+| :--- | :--- | :--- |
+| `similarity_threshold` | `float` | The similarity threshold (0.0 to 1.0) for a cache hit. Higher values mean stricter matching. Default: 0.9. |
+| `persistence_path` | `string` | Path to a SQLite database file for persistent storage. If empty, cache is in-memory only. |
+| `openai` | `object` | Configuration for OpenAI embedding provider. |
+| `ollama` | `object` | Configuration for Ollama embedding provider. |
+| `http` | `object` | Configuration for HTTP embedding provider. |
+
+### Example
+
+```yaml
+cache:
+  is_enabled: true
+  ttl: "24h"
+  semantic_config:
+    similarity_threshold: 0.95
+    persistence_path: "data/cache.db"
+    openai:
+      model: "text-embedding-3-small"
+      api_key:
+        value: "sk-..."
+```
+
 ## Use Case
 
 Imagine you have a weather service that users query frequently. The weather forecast doesn't change every second, so querying the upstream API for every user request is inefficient and might consume your API rate limits.
 
-By enabling caching with a TTL of 5 minutes, MCP Any will serve repeated requests for the same location from its internal memory, significantly reducing latency and upstream load.
+By enabling caching with a TTL of 5 minutes, MCP Any will serve repeated requests for the same location from its internal memory (or SQLite), significantly reducing latency and upstream load.
 
 ## Public API Example
 

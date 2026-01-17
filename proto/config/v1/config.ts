@@ -116,7 +116,11 @@ export interface GlobalSettings {
     | ContextOptimizerConfig
     | undefined;
   /** Debugger configuration. */
-  debugger?: DebuggerConfig | undefined;
+  debugger?:
+    | DebuggerConfig
+    | undefined;
+  /** Guardrails configuration. */
+  guardrails?: GuardrailsConfig | undefined;
 }
 
 export enum GlobalSettings_LogLevel {
@@ -207,6 +211,10 @@ export function globalSettings_LogFormatToJSON(object: GlobalSettings_LogFormat)
     default:
       return "UNRECOGNIZED";
   }
+}
+
+export interface GuardrailsConfig {
+  blockedPhrases: string[];
 }
 
 export interface ContextOptimizerConfig {
@@ -769,6 +777,7 @@ function createBaseGlobalSettings(): GlobalSettings {
     allowedOrigins: [],
     contextOptimizer: undefined,
     debugger: undefined,
+    guardrails: undefined,
   };
 }
 
@@ -845,6 +854,9 @@ export const GlobalSettings: MessageFns<GlobalSettings> = {
     }
     if (message.debugger !== undefined) {
       DebuggerConfig.encode(message.debugger, writer.uint32(194).fork()).join();
+    }
+    if (message.guardrails !== undefined) {
+      GuardrailsConfig.encode(message.guardrails, writer.uint32(202).fork()).join();
     }
     return writer;
   },
@@ -1048,6 +1060,14 @@ export const GlobalSettings: MessageFns<GlobalSettings> = {
           message.debugger = DebuggerConfig.decode(reader, reader.uint32());
           continue;
         }
+        case 25: {
+          if (tag !== 202) {
+            break;
+          }
+
+          message.guardrails = GuardrailsConfig.decode(reader, reader.uint32());
+          continue;
+        }
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -1095,6 +1115,7 @@ export const GlobalSettings: MessageFns<GlobalSettings> = {
         ? ContextOptimizerConfig.fromJSON(object.context_optimizer)
         : undefined,
       debugger: isSet(object.debugger) ? DebuggerConfig.fromJSON(object.debugger) : undefined,
+      guardrails: isSet(object.guardrails) ? GuardrailsConfig.fromJSON(object.guardrails) : undefined,
     };
   },
 
@@ -1172,6 +1193,9 @@ export const GlobalSettings: MessageFns<GlobalSettings> = {
     if (message.debugger !== undefined) {
       obj.debugger = DebuggerConfig.toJSON(message.debugger);
     }
+    if (message.guardrails !== undefined) {
+      obj.guardrails = GuardrailsConfig.toJSON(message.guardrails);
+    }
     return obj;
   },
 
@@ -1220,6 +1244,71 @@ export const GlobalSettings: MessageFns<GlobalSettings> = {
     message.debugger = (object.debugger !== undefined && object.debugger !== null)
       ? DebuggerConfig.fromPartial(object.debugger)
       : undefined;
+    message.guardrails = (object.guardrails !== undefined && object.guardrails !== null)
+      ? GuardrailsConfig.fromPartial(object.guardrails)
+      : undefined;
+    return message;
+  },
+};
+
+function createBaseGuardrailsConfig(): GuardrailsConfig {
+  return { blockedPhrases: [] };
+}
+
+export const GuardrailsConfig: MessageFns<GuardrailsConfig> = {
+  encode(message: GuardrailsConfig, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    for (const v of message.blockedPhrases) {
+      writer.uint32(10).string(v!);
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): GuardrailsConfig {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseGuardrailsConfig();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.blockedPhrases.push(reader.string());
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): GuardrailsConfig {
+    return {
+      blockedPhrases: globalThis.Array.isArray(object?.blocked_phrases)
+        ? object.blocked_phrases.map((e: any) => globalThis.String(e))
+        : [],
+    };
+  },
+
+  toJSON(message: GuardrailsConfig): unknown {
+    const obj: any = {};
+    if (message.blockedPhrases?.length) {
+      obj.blocked_phrases = message.blockedPhrases;
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<GuardrailsConfig>, I>>(base?: I): GuardrailsConfig {
+    return GuardrailsConfig.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<GuardrailsConfig>, I>>(object: I): GuardrailsConfig {
+    const message = createBaseGuardrailsConfig();
+    message.blockedPhrases = object.blockedPhrases?.map((e) => e) || [];
     return message;
   },
 };

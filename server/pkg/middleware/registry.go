@@ -103,6 +103,7 @@ type StandardMiddlewares struct {
 	GlobalRateLimit  *GlobalRateLimitMiddleware
 	ContextOptimizer *ContextOptimizer
 	Debugger         *Debugger
+	Guardrails       func(http.Handler) http.Handler
 	Cleanup          func() error
 }
 
@@ -116,6 +117,7 @@ func InitStandardMiddlewares(
 	dlpConfig *configv1.DLPConfig,
 	contextOptimizerConfig *configv1.ContextOptimizerConfig,
 	debuggerConfig *configv1.DebuggerConfig,
+	guardrailsConfig *configv1.GuardrailsConfig,
 ) (*StandardMiddlewares, error) {
 	// 1. Logging
 	RegisterMCP("logging", func(_ *configv1.Middleware) func(mcp.MethodHandler) mcp.MethodHandler {
@@ -287,11 +289,23 @@ func InitStandardMiddlewares(
 		})
 	}
 
+	// Guardrails
+	var guardrails func(http.Handler) http.Handler
+	if guardrailsConfig != nil && len(guardrailsConfig.GetBlockedPhrases()) > 0 {
+		guardrails = NewGuardrailsMiddleware(GuardrailsConfig{
+			BlockedPhrases: guardrailsConfig.GetBlockedPhrases(),
+		})
+		Register("guardrails", func(_ *configv1.Middleware) func(http.Handler) http.Handler {
+			return guardrails
+		})
+	}
+
 	return &StandardMiddlewares{
 		Audit:            audit,
 		GlobalRateLimit:  globalRateLimit,
 		ContextOptimizer: contextOptimizer,
 		Debugger:         debugger,
+		Guardrails:       guardrails,
 		Cleanup:          audit.Close,
 	}, nil
 }

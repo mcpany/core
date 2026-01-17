@@ -12,16 +12,30 @@ The SQL Upstream allows you to expose a SQL database as a set of MCP tools.
 ## Configuration
 
 ```yaml
-upstreams:
-  my-db:
-    type: sql
-    config:
-      driver: postgres
+upstream_services:
+  - name: "my-db"
+    sql_service:
+      driver: "postgres"
       dsn: "postgres://user:pass@localhost:5432/dbname"
       calls:
         get_user:
-          sql: "SELECT * FROM users WHERE id = :id"
-          description: "Get user by ID"
-          args:
-            id: string
+          query: "SELECT * FROM users WHERE id = $1"
+          parameter_order: ["id"]
+          input_schema:
+            type: "object"
+            properties:
+              id:
+                type: "string"
+            required: ["id"]
+          output_schema:
+            type: "object"
+            properties:
+              id: {type: "string"}
+              name: {type: "string"}
 ```
+
+## Supported Drivers
+
+- `postgres` (PostgreSQL)
+- `mysql` (MySQL)
+- `sqlite` (SQLite)

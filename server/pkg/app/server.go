@@ -556,6 +556,7 @@ func (a *Application) Run(
 		cfg.GetGlobalSettings().GetDlp(),
 		cfg.GetGlobalSettings().GetContextOptimizer(),
 		cfg.GetGlobalSettings().GetDebugger(),
+		cfg.GetGlobalSettings().GetGuardrails(),
 	)
 	if err != nil {
 		workerCancel()
@@ -1411,6 +1412,10 @@ func (a *Application) runServerMode(
 	mux.Handle("/metrics", authMiddleware(metrics.Handler()))
 	mux.Handle("/upload", authMiddleware(http.HandlerFunc(a.uploadFile)))
 
+	if standardMiddlewares.Debugger != nil {
+		mux.Handle("/debug/entries", authMiddleware(standardMiddlewares.Debugger.APIHandler()))
+	}
+
 	// OIDC Routes
 	var oidcConfig *config_v1.OIDCConfig
 	if globalSettings != nil {
@@ -1515,6 +1520,10 @@ func (a *Application) runServerMode(
 		// Context Optimizer (inner)
 		if standardMiddlewares.ContextOptimizer != nil {
 			finalHandler = standardMiddlewares.ContextOptimizer.Handler(finalHandler)
+		}
+		// Guardrails
+		if standardMiddlewares.Guardrails != nil {
+			finalHandler = standardMiddlewares.Guardrails(finalHandler)
 		}
 		// Debugger (outer to capture optimized response)
 		if standardMiddlewares.Debugger != nil {

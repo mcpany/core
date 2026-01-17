@@ -4,11 +4,14 @@ The Guardrails middleware provides security by intercepting and blocking malicio
 
 ## Configuration
 
+To enable guardrails, add the `guardrails` configuration block to `global_settings`:
+
 ```yaml
-guardrails:
-  blocked_phrases:
-    - "ignore all previous instructions"
-    - "system prompt"
+global_settings:
+  guardrails:
+    blocked_phrases:
+      - "ignore all previous instructions"
+      - "system prompt"
 ```
 
 ## How it works
