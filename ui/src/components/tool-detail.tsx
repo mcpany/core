@@ -11,9 +11,10 @@ import { useToast } from "@/hooks/use-toast";
 import { UpstreamServiceConfig, ToolDefinition } from "@/lib/types";
 import { apiClient } from "@/lib/client";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Wrench, AlertTriangle, TrendingUp } from "lucide-react";
+import { Wrench, AlertTriangle, TrendingUp, Braces } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ServicePropertyCard } from "./service-property-card";
+import { SchemaVisualizer } from "./schema-visualizer";
 
 /**
  * Displays details of a specific tool within a service.
@@ -117,6 +118,19 @@ export function ToolDetail({ serviceId, toolName }: { serviceId: string, toolNam
             "Description": tool.description || "N/A",
             //"Source": tool.source || "N/A"
         }} />
+
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-xl flex items-center gap-2">
+              <Braces className="h-5 w-5" /> Input Schema
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+             {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+             <SchemaVisualizer schema={tool.inputSchema || (tool as any).input_schema} />
+          </CardContent>
+        </Card>
+
         <Card>
             <CardHeader>
                 <CardTitle className="text-xl flex items-center gap-2"><TrendingUp /> Usage Metrics</CardTitle>
