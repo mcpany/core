@@ -8,6 +8,7 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
+	"math"
 	"math/rand"
 	"net/url"
 	"os"
@@ -466,8 +467,27 @@ func ToString(v any) string {
 	case uint64:
 		return strconv.FormatUint(val, 10)
 	case float32:
+		// Check if it's an integer and within safe range for exact representation.
+		// float32 has 23 bits of significand, so exact integers up to 2^24 (16,777,216).
+		if val == float32(int32(val)) {
+			return strconv.FormatInt(int64(val), 10)
+		}
 		return strconv.FormatFloat(float64(val), 'g', -1, 32)
 	case float64:
+		// Check if it's an integer and within int64 range.
+		// float64 has 53 bits of significand. int64 is 64 bits.
+		// We only convert if it fits in int64 and is an exact integer.
+		// math.MinInt64 and math.MaxInt64 are boundaries.
+		// However, casting large float to int64 is undefined if it overflows.
+		// Safe integer range for float64 is +/- 2^53. MaxInt64 is 2^63-1.
+		// So any safe float64 integer fits in int64.
+		// We check if the float value is integral.
+		if math.Trunc(val) == val {
+			// Check bounds to avoid undefined behavior or overflow when casting
+			if val >= float64(math.MinInt64) && val <= float64(math.MaxInt64) {
+				return strconv.FormatInt(int64(val), 10)
+			}
+		}
 		return strconv.FormatFloat(val, 'g', -1, 64)
 	case fmt.Stringer:
 		return val.String()
