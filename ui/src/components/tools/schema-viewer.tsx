@@ -61,6 +61,8 @@ const TypeBadge = ({ type, format }: { type?: string | string[], format?: string
 };
 
 export function SchemaViewer({ schema, name, required = false, depth = 0 }: SchemaViewerProps) {
+  if (!schema) return <div className="text-muted-foreground italic text-xs">No schema defined</div>;
+
   const [isOpen, setIsOpen] = useState(true);
 
   const isObject = schema.type === "object" || !!schema.properties;

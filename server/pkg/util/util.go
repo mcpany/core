@@ -335,7 +335,7 @@ func stringToBytes(s string) []byte {
 // BytesToString converts a byte slice to a string without allocation.
 // IMPORTANT: The byte slice must not be modified while the string is in use.
 func BytesToString(b []byte) string {
-	return unsafe.String(unsafe.SliceData(b), len(b))
+	return unsafe.String(unsafe.SliceData(b), len(b)) //nolint:gosec // Standard zero-copy conversion
 }
 
 // GetDockerCommand returns the command and base arguments for running Docker.
