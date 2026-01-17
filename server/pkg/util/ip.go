@@ -14,6 +14,11 @@ type contextKey string
 const remoteIPContextKey = contextKey("remote_ip")
 
 // ContextWithRemoteIP returns a new context with the remote IP.
+//
+// ctx is the context for the request.
+// ip is the ip.
+//
+// Returns the result.
 func ContextWithRemoteIP(ctx context.Context, ip string) context.Context {
 	return context.WithValue(ctx, remoteIPContextKey, ip)
 }
@@ -38,6 +43,11 @@ func ExtractIP(addr string) string {
 }
 
 // RemoteIPFromContext retrieves the remote IP from the context.
+//
+// ctx is the context for the request.
+//
+// Returns the result.
+// Returns true if successful.
 func RemoteIPFromContext(ctx context.Context) (string, bool) {
 	ip, ok := ctx.Value(remoteIPContextKey).(string)
 	return ip, ok
@@ -142,6 +152,10 @@ func isPrivateNetworkIPv4(ip net.IP) bool {
 }
 
 // IsPrivateIP checks if the IP address is a private, link-local, or loopback address.
+//
+// ip is the ip.
+//
+// Returns true if successful.
 func IsPrivateIP(ip net.IP) bool {
 	if ip.IsLoopback() || ip.IsUnspecified() {
 		return true

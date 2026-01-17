@@ -134,6 +134,10 @@ var sensitiveKeys = []string{
 }
 
 // IsSensitiveKey checks if a key name suggests it contains sensitive information.
+//
+// key is the key.
+//
+// Returns true if successful.
 func IsSensitiveKey(key string) bool {
 	// Use the optimized byte-based scanner for keys as well.
 	// Avoid allocation using zero-copy conversion.

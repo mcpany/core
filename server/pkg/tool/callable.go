@@ -37,11 +37,19 @@ func NewCallableTool(toolDef *configv1.ToolDefinition, serviceConfig *configv1.U
 }
 
 // Execute handles the execution of the tool.
+//
+// ctx is the context for the request.
+// req is the request object.
+//
+// Returns the result.
+// Returns an error if the operation fails.
 func (t *CallableTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
 	return t.callable.Call(ctx, req)
 }
 
 // Callable returns the underlying Callable of the tool.
+//
+// Returns the result.
 func (t *CallableTool) Callable() Callable {
 	return t.callable
 }

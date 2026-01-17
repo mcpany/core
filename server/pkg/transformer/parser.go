@@ -39,6 +39,8 @@ var (
 )
 
 // NewTextParser returns a shared instance of TextParser.
+//
+// Returns the result.
 func NewTextParser() *TextParser {
 	defaultTextParserOnce.Do(func() {
 		defaultTextParser = &TextParser{

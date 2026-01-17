@@ -52,6 +52,11 @@ const defaultState: WizardState = {
 
 const WizardContext = createContext<WizardContextType | undefined>(undefined);
 
+/**
+ * WizardProvider.
+ *
+ * @param { children - The { children.
+ */
 export function WizardProvider({ children }: { children: ReactNode }) {
     const [state, setState] = useState<WizardState>(defaultState);
 

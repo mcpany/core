@@ -24,6 +24,11 @@ type StdioTransport struct {
 }
 
 // Connect starts the command and returns a connection.
+//
+// _ is an unused parameter.
+//
+// Returns the result.
+// Returns an error if the operation fails.
 func (t *StdioTransport) Connect(_ context.Context) (mcp.Connection, error) {
 	log := logging.GetLogger()
 
@@ -87,6 +92,11 @@ type stdioConn struct {
 }
 
 // Read reads a JSON-RPC message from the standard output of the command.
+//
+// _ is an unused parameter.
+//
+// Returns the result.
+// Returns an error if the operation fails.
 func (c *stdioConn) Read(_ context.Context) (jsonrpc.Message, error) {
 	var raw json.RawMessage
 	if err := c.decoder.Decode(&raw); err != nil {
@@ -174,6 +184,11 @@ func (c *stdioConn) Read(_ context.Context) (jsonrpc.Message, error) {
 }
 
 // Write writes a JSON-RPC message to the standard input of the command.
+//
+// _ is an unused parameter.
+// msg is the msg.
+//
+// Returns an error if the operation fails.
 func (c *stdioConn) Write(_ context.Context, msg jsonrpc.Message) error {
 	var method string
 	var params any
@@ -214,6 +229,8 @@ func (c *stdioConn) Write(_ context.Context, msg jsonrpc.Message) error {
 }
 
 // Close terminates the command and closes the streams.
+//
+// Returns an error if the operation fails.
 func (c *stdioConn) Close() error {
 	c.mutex.Lock()
 	defer c.mutex.Unlock()
@@ -230,6 +247,8 @@ func (c *stdioConn) Close() error {
 }
 
 // SessionID returns a static session ID for the stdio connection.
+//
+// Returns the result.
 func (c *stdioConn) SessionID() string {
 	return "stdio-session"
 }

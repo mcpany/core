@@ -32,6 +32,10 @@ type DatadogAuditStore struct {
 }
 
 // NewDatadogAuditStore creates a new DatadogAuditStore.
+//
+// config holds the configuration settings.
+//
+// Returns the result.
 func NewDatadogAuditStore(config *configv1.DatadogConfig) *DatadogAuditStore {
 	if config == nil {
 		config = &configv1.DatadogConfig{}
@@ -87,6 +91,11 @@ func (e *DatadogAuditStore) worker() {
 }
 
 // Write implements the AuditStore interface.
+//
+// _ is an unused parameter.
+// entry is the entry.
+//
+// Returns an error if the operation fails.
 func (e *DatadogAuditStore) Write(_ context.Context, entry AuditEntry) error {
 	select {
 	case e.queue <- entry:
@@ -136,6 +145,8 @@ func (e *DatadogAuditStore) send(entry AuditEntry) {
 }
 
 // Close closes the queue and waits for workers to finish.
+//
+// Returns an error if the operation fails.
 func (e *DatadogAuditStore) Close() error {
 	close(e.done)
 	close(e.queue)

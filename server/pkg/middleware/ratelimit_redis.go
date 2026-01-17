@@ -16,6 +16,8 @@ import (
 var redisClientCreator = redis.NewClient
 
 // SetRedisClientCreatorForTests sets the redis client creator for tests.
+//
+// creator is the creator.
 func SetRedisClientCreatorForTests(creator func(opts *redis.Options) *redis.Client) {
 	redisClientCreator = creator
 }
@@ -23,6 +25,8 @@ func SetRedisClientCreatorForTests(creator func(opts *redis.Options) *redis.Clie
 var timeNow = time.Now
 
 // SetTimeNowForTests sets the time.Now function for tests.
+//
+// nowFunc is the nowFunc.
 func SetTimeNowForTests(nowFunc func() time.Time) {
 	timeNow = nowFunc
 }
@@ -37,11 +41,25 @@ type RedisLimiter struct {
 }
 
 // NewRedisLimiter creates a new RedisLimiter.
+//
+// serviceID is the serviceID.
+// config holds the configuration settings.
+//
+// Returns the result.
+// Returns an error if the operation fails.
 func NewRedisLimiter(serviceID string, config *configv1.RateLimitConfig) (*RedisLimiter, error) {
 	return NewRedisLimiterWithPartition(serviceID, "", "", config)
 }
 
 // NewRedisLimiterWithPartition creates a new RedisLimiter with a partition key.
+//
+// serviceID is the serviceID.
+// limitScopeKey is the limitScopeKey.
+// partitionKey is the partitionKey.
+// config holds the configuration settings.
+//
+// Returns the result.
+// Returns an error if the operation fails.
 func NewRedisLimiterWithPartition(serviceID, limitScopeKey, partitionKey string, config *configv1.RateLimitConfig) (*RedisLimiter, error) {
 	if config.GetRedis() == nil {
 		return nil, fmt.Errorf("redis config is missing")
@@ -72,6 +90,14 @@ func NewRedisLimiterWithPartition(serviceID, limitScopeKey, partitionKey string,
 }
 
 // NewRedisLimiterWithClient creates a new RedisLimiter with an existing client.
+//
+// client is the client.
+// serviceID is the serviceID.
+// limitScopeKey is the limitScopeKey.
+// partitionKey is the partitionKey.
+// config holds the configuration settings.
+//
+// Returns the result.
 func NewRedisLimiterWithClient(client *redis.Client, serviceID, limitScopeKey, partitionKey string, config *configv1.RateLimitConfig) *RedisLimiter {
 	key := "ratelimit:" + serviceID
 	if limitScopeKey != "" {
@@ -141,11 +167,22 @@ const RedisRateLimitScript = `
 var redisRateLimitScript = redis.NewScript(RedisRateLimitScript)
 
 // Allow checks if the request is allowed.
+//
+// ctx is the context for the request.
+//
+// Returns true if successful.
+// Returns an error if the operation fails.
 func (l *RedisLimiter) Allow(ctx context.Context) (bool, error) {
 	return l.AllowN(ctx, 1)
 }
 
 // AllowN checks if the request is allowed with a specific cost.
+//
+// ctx is the context for the request.
+// n is the n.
+//
+// Returns true if successful.
+// Returns an error if the operation fails.
 func (l *RedisLimiter) AllowN(ctx context.Context, n int) (bool, error) {
 	now := timeNow().UnixMicro()
 
@@ -166,17 +203,24 @@ func (l *RedisLimiter) AllowN(ctx context.Context, n int) (bool, error) {
 }
 
 // Update updates the limiter configuration.
+//
+// rps is the rps.
+// burst is the burst.
 func (l *RedisLimiter) Update(rps float64, burst int) {
 	l.rps = rps
 	l.burst = burst
 }
 
 // GetConfigHash returns the hash of the Redis configuration.
+//
+// Returns the result.
 func (l *RedisLimiter) GetConfigHash() string {
 	return l.configHash
 }
 
 // Close closes the Redis client.
+//
+// Returns an error if the operation fails.
 func (l *RedisLimiter) Close() error {
 	return l.client.Close()
 }

@@ -17,6 +17,11 @@ interface ConfigEditorProps {
   readOnly?: boolean;
 }
 
+/**
+ * ConfigEditor.
+ *
+ * @param readOnly = false - The readOnly = false.
+ */
 export function ConfigEditor({ value, onChange, language = "yaml", readOnly = false }: ConfigEditorProps) {
   const { theme, systemTheme } = useTheme();
   const monaco = useMonaco();

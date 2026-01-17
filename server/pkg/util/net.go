@@ -48,6 +48,8 @@ type SafeDialer struct {
 }
 
 // NewSafeDialer creates a new SafeDialer with strict defaults (blocking all non-public IPs).
+//
+// Returns the result.
 func NewSafeDialer() *SafeDialer {
 	return &SafeDialer{
 		AllowLoopback:  false,
@@ -57,6 +59,13 @@ func NewSafeDialer() *SafeDialer {
 }
 
 // DialContext creates a connection to the given address, enforcing the configured egress policy.
+//
+// ctx is the context for the request.
+// network is the network.
+// addr is the addr.
+//
+// Returns the result.
+// Returns an error if the operation fails.
 func (d *SafeDialer) DialContext(ctx context.Context, network, addr string) (net.Conn, error) {
 	host, port, err := net.SplitHostPort(addr)
 	if err != nil {

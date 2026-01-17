@@ -19,6 +19,8 @@ var (
 )
 
 // NewBroadcaster creates a new Broadcaster.
+//
+// Returns the result.
 func NewBroadcaster() *Broadcaster {
 	return &Broadcaster{
 		subscribers: make(map[chan []byte]struct{}),
@@ -37,6 +39,8 @@ func (b *Broadcaster) Subscribe() chan []byte {
 }
 
 // Unsubscribe removes a subscriber channel.
+//
+// ch is the ch.
 func (b *Broadcaster) Unsubscribe(ch chan []byte) {
 	b.mu.Lock()
 	defer b.mu.Unlock()

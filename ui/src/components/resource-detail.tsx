@@ -15,6 +15,12 @@ import { Database, AlertTriangle, TrendingUp } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ServicePropertyCard } from "./service-property-card";
 
+/**
+ * ResourceDetail.
+ *
+ * @param resourceName - The resourceName.
+ * @param resourceName - The resourceName.
+ */
 export function ResourceDetail({ serviceId, resourceName }: { serviceId: string, resourceName: string }) {
   const [resource, setResource] = useState<ResourceDefinition | null>(null);
   const [service, setService] = useState<UpstreamServiceConfig | null>(null);

@@ -18,6 +18,9 @@ import { SchemaVisualizer } from "./schema-visualizer";
 
 /**
  * Displays details of a specific tool within a service.
+ *
+ * @param toolName - The toolName.
+ * @param toolName - The toolName.
  */
 export function ToolDetail({ serviceId, toolName }: { serviceId: string, toolName: string }) {
   const [tool, setTool] = useState<ToolDefinition | null>(null);

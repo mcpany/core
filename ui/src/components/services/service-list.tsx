@@ -34,6 +34,11 @@ interface ServiceListProps {
   onExport?: (service: UpstreamServiceConfig) => void;
 }
 
+/**
+ * ServiceList.
+ *
+ * @param onExport - The onExport.
+ */
 export function ServiceList({ services, isLoading, onToggle, onEdit, onDelete, onDuplicate, onExport }: ServiceListProps) {
   const [tagFilter, setTagFilter] = useState("");
 

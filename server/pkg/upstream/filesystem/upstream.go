@@ -38,6 +38,8 @@ type Upstream struct {
 }
 
 // NewUpstream creates a new instance of FilesystemUpstream.
+//
+// Returns the result.
 func NewUpstream() upstream.Upstream {
 	return &Upstream{
 		closers: make([]io.Closer, 0),
@@ -45,6 +47,10 @@ func NewUpstream() upstream.Upstream {
 }
 
 // Shutdown implements the upstream.Upstream interface.
+//
+// _ is an unused parameter.
+//
+// Returns an error if the operation fails.
 func (u *Upstream) Shutdown(_ context.Context) error {
 	u.mu.Lock()
 	defer u.mu.Unlock()
@@ -59,6 +65,18 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 }
 
 // Register processes the configuration for a filesystem service.
+//
+// ctx is the context for the request.
+// serviceConfig is the serviceConfig.
+// toolManager is the toolManager.
+// _ is an unused parameter.
+// _ is an unused parameter.
+// _ is an unused parameter.
+//
+// Returns the result.
+// Returns the result.
+// Returns the result.
+// Returns an error if the operation fails.
 func (u *Upstream) Register(
 	ctx context.Context,
 	serviceConfig *configv1.UpstreamServiceConfig,

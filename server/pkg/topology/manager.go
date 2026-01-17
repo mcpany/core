@@ -31,6 +31,11 @@ type SessionStats struct {
 }
 
 // NewManager creates a new Topology Manager.
+//
+// registry is the registry.
+// tm is the tm.
+//
+// Returns the result.
 func NewManager(registry serviceregistry.ServiceRegistryInterface, tm tool.ManagerInterface) *Manager {
 	return &Manager{
 		sessions:        make(map[string]*SessionStats),
@@ -40,6 +45,9 @@ func NewManager(registry serviceregistry.ServiceRegistryInterface, tm tool.Manag
 }
 
 // RecordActivity updates the session activity.
+//
+// sessionID is the sessionID.
+// meta is the meta.
 func (m *Manager) RecordActivity(sessionID string, meta map[string]interface{}) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
@@ -63,6 +71,10 @@ func (m *Manager) RecordActivity(sessionID string, meta map[string]interface{}) 
 }
 
 // GetGraph generates the current topology graph.
+//
+// _ is an unused parameter.
+//
+// Returns the result.
 func (m *Manager) GetGraph(_ context.Context) *topologyv1.Graph {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
