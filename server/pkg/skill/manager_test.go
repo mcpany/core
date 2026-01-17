@@ -155,6 +155,11 @@ func TestManager(t *testing.T) {
 
 		err = m.SaveAsset("asset-skill", "/abs/path", []byte("bad"))
 		assert.Error(t, err)
+
+		// Test traversal via skill name
+		err = m.SaveAsset("..", "outside.txt", []byte("bad"))
+		assert.Error(t, err)
+		assert.Contains(t, err.Error(), "invalid skill name")
 	})
 
 	t.Run("Load Malformed Skill", func(t *testing.T) {
