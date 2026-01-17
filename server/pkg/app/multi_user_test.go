@@ -8,7 +8,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"net"
 	"net/http"
 	"testing"
 	"time"
@@ -138,17 +137,7 @@ upstream_services:
 
 	app := NewApplication()
 
-	// Start server on random ports
-	l, err := net.Listen("tcp", "localhost:0")
-	require.NoError(t, err)
-	httpPort := l.Addr().(*net.TCPAddr).Port
-	_ = l.Close()
-
-	l2, err := net.Listen("tcp", "localhost:0")
-	require.NoError(t, err)
-	grpcPort := l2.Addr().(*net.TCPAddr).Port
-	_ = l2.Close()
-
+	// Start server on dynamic ports
 	configContentWithUsers := configContent + `
 users:
   - id: "user-dev"
@@ -194,10 +183,21 @@ users:
 
 	errChan := make(chan error, 1)
 	go func() {
-		errChan <- app.Run(ctx, fs, false, fmt.Sprintf("%d", httpPort), fmt.Sprintf("%d", grpcPort), []string{"/config.yaml"}, "", 5*time.Second)
+		// Pass "127.0.0.1:0" to verify dynamic port binding works
+		errChan <- app.Run(ctx, fs, false, "127.0.0.1:0", "127.0.0.1:0", []string{"/config.yaml"}, "", 5*time.Second)
 	}()
 
-		// Wait for server to start
+	// Wait for server to bind ports
+	var httpPort int
+	require.Eventually(t, func() bool {
+		if app.BoundHTTPPort != 0 {
+			httpPort = app.BoundHTTPPort
+			return true
+		}
+		return false
+	}, 5*time.Second, 100*time.Millisecond, "Server should bind HTTP port")
+
+	// Wait for server to respond
 	baseURL := fmt.Sprintf("http://localhost:%d", httpPort)
 	require.Eventually(t, func() bool {
 		resp, err := http.Get(baseURL + "/healthz")
@@ -206,7 +206,7 @@ users:
 		}
 		defer func() { _ = resp.Body.Close() }()
 		return resp.StatusCode == http.StatusOK
-	}, 5*time.Second, 100*time.Millisecond)
+	}, 5*time.Second, 100*time.Millisecond, "Server should be healthy")
 
 	// Helper to calls tools/list via SSE
 	listTools := func(uid, profileID, headerName, apiKey string) ([]string, error) {
