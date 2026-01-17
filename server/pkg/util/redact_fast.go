@@ -250,14 +250,15 @@ func isKeySensitive(keyContent []byte) bool {
 		// Key contains escape sequences, unescape it to check for sensitivity.
 		// This is slower but safer.
 
-		if len(keyContent) > maxUnescapeLimit {
+		switch {
+		case len(keyContent) > maxUnescapeLimit:
 			// Use streaming/chunked scan for huge keys to avoid allocation
 			if scanEscapedKeyForSensitive(keyContent) {
 				sensitive = true
 			} else {
 				keyToCheck = keyContent
 			}
-		} else if len(keyContent) < unescapeStackLimit {
+		case len(keyContent) < unescapeStackLimit:
 			// Optimization: use stack buffer for small keys
 			if unescaped, ok := unescapeKeySmall(keyContent, stackBuf[:]); ok {
 				keyToCheck = unescaped
@@ -265,7 +266,7 @@ func isKeySensitive(keyContent []byte) bool {
 				// Fallback if unescape failed (e.g. malformed or weird escape)
 				keyToCheck = keyContent
 			}
-		} else {
+		default:
 			// Allocation path for medium keys
 			quoted := make([]byte, len(keyContent)+2)
 			quoted[0] = '"'

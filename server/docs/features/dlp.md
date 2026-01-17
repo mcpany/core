@@ -19,13 +19,10 @@ To enable DLP, add the `dlp` section to your configuration:
 ```yaml
 dlp:
   enabled: true
-  rules:
-    - name: "credit_card"
-      pattern: "\\d{4}-\\d{4}-\\d{4}-\\d{4}"
-      replacement: "[REDACTED_CC]"
-    - name: "email"
-      pattern: "[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}"
-      replacement: "[REDACTED_EMAIL]"
+  # Default patterns (Email, Credit Card, SSN) are automatically enabled.
+  # You can add additional regex patterns to redact here.
+  custom_patterns:
+    - "API_KEY_[A-Z0-9]+" # Example: Custom API Key pattern
 ```
 
 ## Implementation
