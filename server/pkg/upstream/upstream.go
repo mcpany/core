@@ -19,6 +19,10 @@ import (
 // appropriate managers.
 type Upstream interface {
 	// Shutdown gracefully terminates the upstream service.
+	//
+	// ctx is the context for the request.
+	//
+	// Returns an error if the operation fails.
 	Shutdown(ctx context.Context) error
 
 	// Register inspects the upstream service defined by the serviceConfig,

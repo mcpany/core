@@ -28,14 +28,37 @@ type ServiceRegistryInterface interface { //nolint:revive
 	// discovered during registration, and an error if the registration fails.
 	RegisterService(ctx context.Context, serviceConfig *config.UpstreamServiceConfig) (string, []*config.ToolDefinition, []*config.ResourceDefinition, error)
 	// UnregisterService removes a service from the registry.
+	//
+	// ctx is the context for the request.
+	// serviceName is the serviceName.
+	//
+	// Returns an error if the operation fails.
 	UnregisterService(ctx context.Context, serviceName string) error
 	// GetAllServices returns a list of all registered services.
+	//
+	// Returns the result.
+	// Returns an error if the operation fails.
 	GetAllServices() ([]*config.UpstreamServiceConfig, error)
 	// GetServiceInfo retrieves the metadata for a service by its ID.
+	//
+	// serviceID is the serviceID.
+	//
+	// Returns the result.
+	// Returns true if successful.
 	GetServiceInfo(serviceID string) (*tool.ServiceInfo, bool)
 	// GetServiceConfig returns the configuration for a given service key.
+	//
+	// serviceID is the serviceID.
+	//
+	// Returns the result.
+	// Returns true if successful.
 	GetServiceConfig(serviceID string) (*config.UpstreamServiceConfig, bool)
 	// GetServiceError returns the registration error for a service, if any.
+	//
+	// serviceID is the serviceID.
+	//
+	// Returns the result.
+	// Returns true if successful.
 	GetServiceError(serviceID string) (string, bool)
 }
 
@@ -223,6 +246,11 @@ func (r *ServiceRegistry) GetServiceConfig(serviceID string) (*config.UpstreamSe
 }
 
 // UnregisterService removes a service from the registry.
+//
+// ctx is the context for the request.
+// serviceName is the serviceName.
+//
+// Returns an error if the operation fails.
 func (r *ServiceRegistry) UnregisterService(ctx context.Context, serviceName string) error {
 	r.mu.Lock()
 	defer r.mu.Unlock()
@@ -257,6 +285,11 @@ func (r *ServiceRegistry) UnregisterService(ctx context.Context, serviceName str
 }
 
 // GetServiceError returns the registration error for a service, if any.
+//
+// serviceID is the serviceID.
+//
+// Returns the result.
+// Returns true if successful.
 func (r *ServiceRegistry) GetServiceError(serviceID string) (string, bool) {
 	r.mu.RLock()
 	defer r.mu.RUnlock()
@@ -265,6 +298,10 @@ func (r *ServiceRegistry) GetServiceError(serviceID string) (string, bool) {
 }
 
 // Close gracefully shuts down all registered services.
+//
+// ctx is the context for the request.
+//
+// Returns an error if the operation fails.
 func (r *ServiceRegistry) Close(ctx context.Context) error {
 	r.mu.Lock()
 	defer r.mu.Unlock()
@@ -283,6 +320,9 @@ func (r *ServiceRegistry) Close(ctx context.Context) error {
 }
 
 // GetAllServices returns a list of all registered services.
+//
+// Returns the result.
+// Returns an error if the operation fails.
 func (r *ServiceRegistry) GetAllServices() ([]*config.UpstreamServiceConfig, error) {
 	r.mu.RLock()
 	defer r.mu.RUnlock()

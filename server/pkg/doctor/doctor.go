@@ -1,6 +1,7 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
+// Package doctor provides functionality for checking the health and configuration of services.
 package doctor
 
 import (
@@ -43,8 +44,13 @@ type CheckResult struct {
 }
 
 // RunChecks performs connectivity and health checks on the provided configuration.
+//
+// ctx is the context for the request.
+// config holds the configuration settings.
+//
+// Returns the result.
 func RunChecks(ctx context.Context, config *configv1.McpAnyServerConfig) []CheckResult {
-	var results []CheckResult
+	results := make([]CheckResult, 0, len(config.GetUpstreamServices()))
 
 	// Check upstream services
 	for _, service := range config.GetUpstreamServices() {
@@ -150,7 +156,7 @@ func checkURL(ctx context.Context, urlStr string) CheckResult {
 			Error:   err,
 		}
 	}
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 
 	if resp.StatusCode >= 400 && resp.StatusCode != 404 && resp.StatusCode != 405 && resp.StatusCode != 426 { // 426 Upgrade Required is fine for WS
 		// We consider 4xx a warning because the service is technically reachable, just maybe not at this path.
@@ -192,7 +198,8 @@ func checkGRPCService(ctx context.Context, s *configv1.GrpcUpstreamService) Chec
 		timeout = time.Until(deadline)
 	}
 
-	conn, err := net.DialTimeout("tcp", net.JoinHostPort(host, port), timeout)
+	d := net.Dialer{Timeout: timeout}
+	conn, err := d.DialContext(ctx, "tcp", net.JoinHostPort(host, port))
 	if err != nil {
 		return CheckResult{
 			Status:  StatusError,
@@ -200,7 +207,7 @@ func checkGRPCService(ctx context.Context, s *configv1.GrpcUpstreamService) Chec
 			Error:   err,
 		}
 	}
-	defer conn.Close()
+	defer func() { _ = conn.Close() }()
 
 	return CheckResult{
 		Status:  StatusOk,
@@ -249,7 +256,7 @@ func checkSQLService(ctx context.Context, s *configv1.SqlUpstreamService) CheckR
 			Error:   err,
 		}
 	}
-	defer db.Close()
+	defer func() { _ = db.Close() }()
 
 	// Try to ping
 	err = db.PingContext(ctx)
@@ -295,7 +302,7 @@ func checkMCPService(ctx context.Context, s *configv1.McpUpstreamService) CheckR
 	}
 }
 
-func checkCommandLineService(ctx context.Context, s *configv1.CommandLineUpstreamService) CheckResult {
+func checkCommandLineService(_ context.Context, s *configv1.CommandLineUpstreamService) CheckResult {
 	if s.GetContainerEnvironment().GetImage() != "" {
 		return CheckResult{
 			Status:  StatusSkipped,

@@ -35,6 +35,10 @@ type GlobalRateLimitMiddleware struct {
 }
 
 // NewGlobalRateLimitMiddleware creates a new GlobalRateLimitMiddleware.
+//
+// config holds the configuration settings.
+//
+// Returns the result.
 func NewGlobalRateLimitMiddleware(config *configv1.RateLimitConfig) *GlobalRateLimitMiddleware {
 	return &GlobalRateLimitMiddleware{
 		config:   config,
@@ -43,6 +47,8 @@ func NewGlobalRateLimitMiddleware(config *configv1.RateLimitConfig) *GlobalRateL
 }
 
 // UpdateConfig updates the rate limit configuration safely.
+//
+// config holds the configuration settings.
 func (m *GlobalRateLimitMiddleware) UpdateConfig(config *configv1.RateLimitConfig) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
@@ -53,6 +59,14 @@ func (m *GlobalRateLimitMiddleware) UpdateConfig(config *configv1.RateLimitConfi
 }
 
 // Execute executes the rate limiting middleware.
+//
+// ctx is the context for the request.
+// method is the method.
+// req is the request object.
+// next is the next.
+//
+// Returns the result.
+// Returns an error if the operation fails.
 func (m *GlobalRateLimitMiddleware) Execute(ctx context.Context, method string, req mcp.Request, next mcp.MethodHandler) (mcp.Result, error) {
 	m.mu.RLock()
 	config := m.config

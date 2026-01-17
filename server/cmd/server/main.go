@@ -87,6 +87,7 @@ func newRootCmd() *cobra.Command { //nolint:gocyclo // Main entry point, expecte
 		PersistentPreRunE: func(cmd *cobra.Command, _ []string) error {
 			return loadEnv(cmd)
 		},
+		SilenceUsage: true,
 	}
 	rootCmd.PersistentFlags().String("env-file", "", "Path to .env file to load environment variables from")
 

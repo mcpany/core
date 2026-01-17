@@ -34,8 +34,12 @@ const (
 // HTTPServiceWithHealthCheck is an interface for services that have an address and an HTTP health check.
 type HTTPServiceWithHealthCheck interface {
 	// GetAddress returns the address of the service.
+	//
+	// Returns the result.
 	GetAddress() string
 	// GetHealthCheck returns the HTTP health check configuration for the service.
+	//
+	// Returns the result.
 	GetHealthCheck() *configv1.HttpHealthCheck
 }
 
@@ -370,4 +374,3 @@ func filesystemCheck(name string, c *configv1.FilesystemUpstreamService) health.
 		},
 	}
 }
-

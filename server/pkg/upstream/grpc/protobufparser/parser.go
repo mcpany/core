@@ -62,16 +62,22 @@ type McpField struct {
 }
 
 // GetName returns the name of the McpField.
+//
+// Returns the result.
 func (f *McpField) GetName() string {
 	return f.Name
 }
 
 // GetDescription returns the description of the McpField.
+//
+// Returns the result.
 func (f *McpField) GetDescription() string {
 	return f.Description
 }
 
 // GetType returns the type of the McpField.
+//
+// Returns the result.
 func (f *McpField) GetType() string {
 	return f.Type
 }

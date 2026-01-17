@@ -103,6 +103,30 @@ export interface ReadResourceResponse {
     contents: ResourceContent[];
 }
 
+/**
+ * Result of a single system health check.
+ */
+export interface CheckResult {
+    /** The status of the check (e.g., "ok", "degraded", "error"). */
+    status: string;
+    /** Optional message describing the status or error. */
+    message?: string;
+    /** Optional latency measurement. */
+    latency?: string;
+}
+
+/**
+ * Full doctor report containing system health status.
+ */
+export interface DoctorReport {
+    /** Overall system status. */
+    status: string;
+    /** Timestamp of the report. */
+    timestamp: string;
+    /** Map of check names to their results. */
+    checks: Record<string, CheckResult>;
+}
+
 const getMetadata = () => {
     // Metadata for gRPC calls.
     // Since gRPC-Web calls might bypass Next.js middleware if they go directly to Envoy/Backend,
@@ -970,5 +994,17 @@ export const apiClient = {
         });
         if (!res.ok) throw new Error('Failed to delete template');
         return {};
+    },
+
+    // System Health
+
+    /**
+     * Gets the doctor status report.
+     * @returns A promise that resolves to the doctor report.
+     */
+    getDoctorStatus: async (): Promise<DoctorReport> => {
+        const res = await fetchWithAuth('/api/v1/doctor');
+        if (!res.ok) throw new Error('Failed to fetch doctor status');
+        return res.json();
     }
 };

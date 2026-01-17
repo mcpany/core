@@ -91,6 +91,15 @@ test.describe('Generate Detailed Docs Screenshots', () => {
          await route.fulfill({ status: 200, json: { status: 'ok' } });
      });
 
+     // Mock Doctor (System Status) to prevent banner from showing in screenshots
+     await page.route('**/doctor', async route => {
+         await route.fulfill({
+             status: 200,
+             contentType: 'application/json',
+             body: JSON.stringify({ status: 'healthy', checks: {} })
+         });
+     });
+
   });
 
   test('Dashboard Screenshots', async ({ page }) => {

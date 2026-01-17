@@ -53,13 +53,19 @@ var fastJSON = jsoniter.ConfigCompatibleWithStandardLibrary
 // (e.g., gRPC, HTTP, command-line).
 type Tool interface {
 	// Tool returns the protobuf definition of the tool.
+	//
+	// Returns the result.
 	Tool() *v1.Tool
 	// MCPTool returns the MCP tool definition.
+	//
+	// Returns the result.
 	MCPTool() *mcp.Tool
 	// Execute runs the tool with the provided context and request, returning
 	// the result or an error.
 	Execute(ctx context.Context, req *ExecutionRequest) (any, error)
 	// GetCacheConfig returns the cache configuration for the tool.
+	//
+	// Returns the result.
 	GetCacheConfig() *configv1.CacheConfig
 }
 
@@ -107,8 +113,18 @@ type ExecutionRequest struct {
 // components from the main service registry.
 type ServiceRegistry interface {
 	// GetTool retrieves a tool by name.
+	//
+	// toolName is the toolName.
+	//
+	// Returns the result.
+	// Returns true if successful.
 	GetTool(toolName string) (Tool, bool)
 	// GetServiceInfo retrieves metadata for a service.
+	//
+	// serviceID is the serviceID.
+	//
+	// Returns the result.
+	// Returns true if successful.
 	GetServiceInfo(serviceID string) (*ServiceInfo, bool)
 }
 
@@ -120,11 +136,21 @@ type contextKey string
 const toolContextKey = contextKey("tool")
 
 // NewContextWithTool creates a new context with the given tool.
+//
+// ctx is the context for the request.
+// t is the t.
+//
+// Returns the result.
 func NewContextWithTool(ctx context.Context, t Tool) context.Context {
 	return context.WithValue(ctx, toolContextKey, t)
 }
 
 // GetFromContext retrieves a tool from the context.
+//
+// ctx is the context for the request.
+//
+// Returns the result.
+// Returns true if successful.
 func GetFromContext(ctx context.Context) (Tool, bool) {
 	t, ok := ctx.Value(toolContextKey).(Tool)
 	return t, ok
@@ -133,6 +159,12 @@ func GetFromContext(ctx context.Context) (Tool, bool) {
 // Callable is an interface that represents a callable tool.
 type Callable interface {
 	// Call executes the callable with the given request.
+	//
+	// ctx is the context for the request.
+	// req is the request object.
+	//
+	// Returns the result.
+	// Returns an error if the operation fails.
 	Call(ctx context.Context, req *ExecutionRequest) (any, error)
 }
 
@@ -158,11 +190,21 @@ type CacheControl struct {
 const cacheControlContextKey = contextKey("cache_control")
 
 // NewContextWithCacheControl creates a new context with the given CacheControl.
+//
+// ctx is the context for the request.
+// cc is the cc.
+//
+// Returns the result.
 func NewContextWithCacheControl(ctx context.Context, cc *CacheControl) context.Context {
 	return context.WithValue(ctx, cacheControlContextKey, cc)
 }
 
 // GetCacheControl retrieves the CacheControl from the context.
+//
+// ctx is the context for the request.
+//
+// Returns the result.
+// Returns true if successful.
 func GetCacheControl(ctx context.Context) (*CacheControl, bool) {
 	cc, ok := ctx.Value(cacheControlContextKey).(*CacheControl)
 	return cc, ok
@@ -221,11 +263,15 @@ func NewGRPCTool(tool *v1.Tool, poolManager *pool.Manager, serviceID string, met
 }
 
 // Tool returns the protobuf definition of the gRPC tool.
+//
+// Returns the result.
 func (t *GRPCTool) Tool() *v1.Tool {
 	return t.tool
 }
 
 // MCPTool returns the MCP tool definition.
+//
+// Returns the result.
 func (t *GRPCTool) MCPTool() *mcp.Tool {
 	t.mcpToolOnce.Do(func() {
 		var err error
@@ -238,6 +284,8 @@ func (t *GRPCTool) MCPTool() *mcp.Tool {
 }
 
 // GetCacheConfig returns the cache configuration for the gRPC tool.
+//
+// Returns the result.
 func (t *GRPCTool) GetCacheConfig() *configv1.CacheConfig {
 	return t.cache
 }
@@ -448,11 +496,15 @@ func NewHTTPTool(tool *v1.Tool, poolManager *pool.Manager, serviceID string, aut
 }
 
 // Tool returns the protobuf definition of the HTTP tool.
+//
+// Returns the result.
 func (t *HTTPTool) Tool() *v1.Tool {
 	return t.tool
 }
 
 // MCPTool returns the MCP tool definition.
+//
+// Returns the result.
 func (t *HTTPTool) MCPTool() *mcp.Tool {
 	t.mcpToolOnce.Do(func() {
 		var err error
@@ -465,6 +517,8 @@ func (t *HTTPTool) MCPTool() *mcp.Tool {
 }
 
 // GetCacheConfig returns the cache configuration for the HTTP tool.
+//
+// Returns the result.
 func (t *HTTPTool) GetCacheConfig() *configv1.CacheConfig {
 	return t.cache
 }
@@ -1012,11 +1066,15 @@ func NewMCPTool(tool *v1.Tool, client client.MCPClient, callDefinition *configv1
 }
 
 // Tool returns the protobuf definition of the MCP tool.
+//
+// Returns the result.
 func (t *MCPTool) Tool() *v1.Tool {
 	return t.tool
 }
 
 // MCPTool returns the MCP tool definition.
+//
+// Returns the result.
 func (t *MCPTool) MCPTool() *mcp.Tool {
 	t.mcpToolOnce.Do(func() {
 		var err error
@@ -1029,6 +1087,8 @@ func (t *MCPTool) MCPTool() *mcp.Tool {
 }
 
 // GetCacheConfig returns the cache configuration for the MCP tool.
+//
+// Returns the result.
 func (t *MCPTool) GetCacheConfig() *configv1.CacheConfig {
 	return t.cache
 }
@@ -1226,11 +1286,15 @@ func NewOpenAPITool(tool *v1.Tool, client client.HTTPClient, parameterDefs map[s
 }
 
 // Tool returns the protobuf definition of the OpenAPI tool.
+//
+// Returns the result.
 func (t *OpenAPITool) Tool() *v1.Tool {
 	return t.tool
 }
 
 // MCPTool returns the MCP tool definition.
+//
+// Returns the result.
 func (t *OpenAPITool) MCPTool() *mcp.Tool {
 	t.mcpToolOnce.Do(func() {
 		var err error
@@ -1243,6 +1307,8 @@ func (t *OpenAPITool) MCPTool() *mcp.Tool {
 }
 
 // GetCacheConfig returns the cache configuration for the OpenAPI tool.
+//
+// Returns the result.
 func (t *OpenAPITool) GetCacheConfig() *configv1.CacheConfig {
 	return t.cache
 }
@@ -1502,11 +1568,15 @@ func NewLocalCommandTool(
 }
 
 // Tool returns the protobuf definition of the command-line tool.
+//
+// Returns the result.
 func (t *LocalCommandTool) Tool() *v1.Tool {
 	return t.tool
 }
 
 // MCPTool returns the MCP tool definition.
+//
+// Returns the result.
 func (t *LocalCommandTool) MCPTool() *mcp.Tool {
 	t.mcpToolOnce.Do(func() {
 		var err error
@@ -1519,6 +1589,8 @@ func (t *LocalCommandTool) MCPTool() *mcp.Tool {
 }
 
 // GetCacheConfig returns the cache configuration for the command-line tool.
+//
+// Returns the result.
 func (t *LocalCommandTool) GetCacheConfig() *configv1.CacheConfig {
 	if t.callDefinition == nil {
 		return nil
@@ -1785,11 +1857,15 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 }
 
 // Tool returns the protobuf definition of the command-line tool.
+//
+// Returns the result.
 func (t *CommandTool) Tool() *v1.Tool {
 	return t.tool
 }
 
 // MCPTool returns the MCP tool definition.
+//
+// Returns the result.
 func (t *CommandTool) MCPTool() *mcp.Tool {
 	t.mcpToolOnce.Do(func() {
 		var err error
@@ -1802,6 +1878,8 @@ func (t *CommandTool) MCPTool() *mcp.Tool {
 }
 
 // GetCacheConfig returns the cache configuration for the command-line tool.
+//
+// Returns the result.
 func (t *CommandTool) GetCacheConfig() *configv1.CacheConfig {
 	if t.callDefinition == nil {
 		return nil

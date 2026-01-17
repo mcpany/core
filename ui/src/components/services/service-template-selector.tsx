@@ -12,6 +12,11 @@ interface ServiceTemplateSelectorProps {
   onSelect: (template: ServiceTemplate) => void;
 }
 
+/**
+ * ServiceTemplateSelector.
+ *
+ * @param { onSelect - The { onSelect.
+ */
 export function ServiceTemplateSelector({ onSelect }: ServiceTemplateSelectorProps) {
   return (
     <div className="grid grid-cols-1 gap-4 p-1">

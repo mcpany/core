@@ -23,6 +23,11 @@ type StaticResource struct {
 }
 
 // NewStaticResource creates a new instance of StaticResource.
+//
+// def is the def.
+// serviceID is the serviceID.
+//
+// Returns the result.
 func NewStaticResource(def *configv1.ResourceDefinition, serviceID string) *StaticResource {
 	return &StaticResource{
 		resource: &mcp.Resource{
@@ -38,16 +43,25 @@ func NewStaticResource(def *configv1.ResourceDefinition, serviceID string) *Stat
 }
 
 // Resource returns the MCP representation of the resource.
+//
+// Returns the result.
 func (r *StaticResource) Resource() *mcp.Resource {
 	return r.resource
 }
 
 // Service returns the ID of the service that provides this resource.
+//
+// Returns the result.
 func (r *StaticResource) Service() string {
 	return r.serviceID
 }
 
 // Read retrieves the content of the resource by fetching the URI.
+//
+// ctx is the context for the request.
+//
+// Returns the result.
+// Returns an error if the operation fails.
 func (r *StaticResource) Read(ctx context.Context) (*mcp.ReadResourceResult, error) {
 	// Simple HTTP get for now
 	// We might want to use a shared client or pool if available, but for now default http client.
@@ -96,6 +110,10 @@ func (r *StaticResource) Read(ctx context.Context) (*mcp.ReadResourceResult, err
 }
 
 // Subscribe is not yet implemented for static resources.
+//
+// _ is an unused parameter.
+//
+// Returns an error if the operation fails.
 func (r *StaticResource) Subscribe(_ context.Context) error {
 	return fmt.Errorf("subscribing to static resources is not yet implemented")
 }

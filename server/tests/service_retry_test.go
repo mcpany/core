@@ -22,10 +22,24 @@ func TestServiceRetry(t *testing.T) {
 	fs := afero.NewMemMapFs()
 
     // Get an ephemeral port by listening on port 0
-    l, err := net.Listen("tcp", "127.0.0.1:0")
+    var l net.Listener
+    var err error
+    for i := 0; i < 10; i++ {
+        l, err = net.Listen("tcp", ":0")
+        if err == nil {
+            break
+        }
+        time.Sleep(100 * time.Millisecond)
+    }
     require.NoError(t, err)
-    // The actual address is deferred to the httptest.Server
-    targetURL := fmt.Sprintf("http://%s/mcp", l.Addr().String())
+    port := l.Addr().(*net.TCPAddr).Port
+    // Close the listener immediately so we can get "connection refused" which fails fast.
+    // If we leave it open but don't accept, it hangs (until timeout).
+    l.Close()
+
+    // We will attempt to reuse this port. There is a small risk someone else steals it,
+    // but on localhost tests it's usually fine.
+    targetURL := fmt.Sprintf("http://127.0.0.1:%d/mcp", port)
 
 	configContent := fmt.Sprintf(`
 upstream_services:
@@ -33,6 +47,8 @@ upstream_services:
     mcp_service:
       http_connection:
         http_address: "%s"
+    resilience:
+      timeout: "0.5s"
 `, targetURL)
 
 	err = afero.WriteFile(fs, "config.yaml", []byte(configContent), 0644)
@@ -44,7 +60,7 @@ upstream_services:
 
 	a := app.NewApplication()
 	go func() {
-		err := a.Run(ctx, fs, false, ":8085", "", []string{"config.yaml"}, "", 1*time.Second)
+		err := a.Run(ctx, fs, false, "127.0.0.1:0", "", []string{"config.yaml"}, "", 1*time.Second)
         if err != nil && ctx.Err() == nil {
             t.Logf("Application run error: %v", err)
         }
@@ -58,8 +74,12 @@ upstream_services:
 
 	// Verify service failed to register
     require.Eventually(t, func() bool {
-        return a.ServiceRegistry != nil
-    }, 5*time.Second, 100*time.Millisecond, "ServiceRegistry not initialized")
+        if a.ServiceRegistry == nil {
+            return false
+        }
+        _, hasError := a.ServiceRegistry.GetServiceError("delayed-mcp")
+        return hasError
+    }, 15*time.Second, 100*time.Millisecond, "ServiceRegistry not initialized or service did not fail as expected")
 
     errStr, hasError := a.ServiceRegistry.GetServiceError("delayed-mcp")
     t.Logf("Initial Service Error: %s (hasError: %v)", errStr, hasError)
@@ -87,8 +107,10 @@ upstream_services:
         w.Write([]byte(`{"jsonrpc": "2.0", "id": 1, "result": {"protocolVersion": "2024-11-05", "capabilities": {}, "serverInfo": {"name": "mock", "version": "1.0"}}}`))
 	}))
 
-    // Assign the listener with the dynamic port
-    ts.Listener = l
+    // Assign the listener with the dynamic port. We need to re-bind.
+    l2, err := net.Listen("tcp", fmt.Sprintf(":%d", port))
+    require.NoError(t, err, "Failed to re-bind to port %d", port)
+    ts.Listener = l2
 	ts.Start()
 	defer ts.Close()
 

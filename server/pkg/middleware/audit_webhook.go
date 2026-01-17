@@ -21,6 +21,11 @@ type WebhookAuditStore struct {
 }
 
 // NewWebhookAuditStore creates a new WebhookAuditStore.
+//
+// webhookURL is the webhookURL.
+// headers is the headers.
+//
+// Returns the result.
 func NewWebhookAuditStore(webhookURL string, headers map[string]string) *WebhookAuditStore {
 	return &WebhookAuditStore{
 		webhookURL: webhookURL,
@@ -30,6 +35,11 @@ func NewWebhookAuditStore(webhookURL string, headers map[string]string) *Webhook
 }
 
 // Write writes an audit entry to the webhook.
+//
+// ctx is the context for the request.
+// entry is the entry.
+//
+// Returns an error if the operation fails.
 func (s *WebhookAuditStore) Write(ctx context.Context, entry AuditEntry) error {
 	payload, err := json.Marshal(entry)
 	if err != nil {
@@ -64,6 +74,8 @@ func (s *WebhookAuditStore) Write(ctx context.Context, entry AuditEntry) error {
 }
 
 // Close is a no-op for WebhookAuditStore.
+//
+// Returns an error if the operation fails.
 func (s *WebhookAuditStore) Close() error {
 	return nil
 }
