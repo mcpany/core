@@ -33,9 +33,9 @@ func AuthMiddleware(authManager *auth.Manager) mcp.Middleware {
 			if method == consts.MethodToolsCall {
 				if r, ok := req.(*mcp.CallToolRequest); ok {
 					// We expect tool names to be prefixed with the service ID (e.g. "service.tool")
-					parts := strings.SplitN(r.Params.Name, ".", 2)
-					if len(parts) >= 2 {
-						serviceID = parts[0]
+					// Optimization: Use strings.Cut to avoid allocating a slice.
+					if before, _, found := strings.Cut(r.Params.Name, "."); found {
+						serviceID = before
 					}
 				}
 			}
@@ -43,9 +43,9 @@ func AuthMiddleware(authManager *auth.Manager) mcp.Middleware {
 			// Fallback to method-based extraction if serviceID not yet found
 			if serviceID == "" {
 				// Extract serviceID from the method. Assuming the format is "service.method".
-				parts := strings.SplitN(method, ".", 2)
-				if len(parts) >= 2 {
-					serviceID = parts[0]
+				// Optimization: Use strings.Cut to avoid allocating a slice.
+				if before, _, found := strings.Cut(method, "."); found {
+					serviceID = before
 				}
 			}
 
