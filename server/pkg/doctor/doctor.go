@@ -17,6 +17,7 @@ import (
 	_ "github.com/go-sql-driver/mysql" // Register MySQL driver
 	_ "github.com/lib/pq"              // Register Postgres driver
 	configv1 "github.com/mcpany/core/proto/config/v1"
+	"github.com/mcpany/core/server/pkg/util"
 	"github.com/mcpany/core/server/pkg/validation"
 	_ "modernc.org/sqlite" // Register SQLite driver
 )
@@ -80,40 +81,45 @@ func CheckService(ctx context.Context, service *configv1.UpstreamServiceConfig) 
 	defer cancel()
 
 	var authMsg string
+	var upstreamAuth *configv1.Authentication
 
 	// Check authentication first if present
 	if auth := service.GetUpstreamAuth(); auth != nil {
-		authRes := checkAuthentication(ctx, auth)
-		if authRes.Status != StatusOk {
-			return CheckResult{
-				Status:  authRes.Status,
-				Message: fmt.Sprintf("Auth check failed: %s", authRes.Message),
-				Error:   authRes.Error,
+		upstreamAuth = auth
+		// Only check OAuth2/OIDC reachability here, as simple API keys are checked during service connection
+		if auth.GetOauth2() != nil || auth.GetOidc() != nil {
+			authRes := checkAuthentication(ctx, auth)
+			if authRes.Status != StatusOk {
+				return CheckResult{
+					Status:  authRes.Status,
+					Message: fmt.Sprintf("Auth check failed: %s", authRes.Message),
+					Error:   authRes.Error,
+				}
 			}
+			authMsg = fmt.Sprintf("Auth Config [%s]. ", authRes.Message)
 		}
-		authMsg = fmt.Sprintf("Auth [%s]. ", authRes.Message)
 	}
 
 	var res CheckResult
 	switch service.WhichServiceConfig() {
 	case configv1.UpstreamServiceConfig_HttpService_case:
-		res = checkHTTPService(ctx, service.GetHttpService())
+		res = checkHTTPService(ctx, service.GetHttpService(), upstreamAuth)
 	case configv1.UpstreamServiceConfig_GrpcService_case:
 		res = checkGRPCService(ctx, service.GetGrpcService())
 	case configv1.UpstreamServiceConfig_OpenapiService_case:
-		res = checkOpenAPIService(ctx, service.GetOpenapiService())
+		res = checkOpenAPIService(ctx, service.GetOpenapiService(), upstreamAuth)
 	case configv1.UpstreamServiceConfig_SqlService_case:
 		res = checkSQLService(ctx, service.GetSqlService())
 	case configv1.UpstreamServiceConfig_GraphqlService_case:
-		res = checkGraphQLService(ctx, service.GetGraphqlService())
+		res = checkGraphQLService(ctx, service.GetGraphqlService(), upstreamAuth)
 	case configv1.UpstreamServiceConfig_McpService_case:
-		res = checkMCPService(ctx, service.GetMcpService())
+		res = checkMCPService(ctx, service.GetMcpService(), upstreamAuth)
 	case configv1.UpstreamServiceConfig_CommandLineService_case:
 		res = checkCommandLineService(ctx, service.GetCommandLineService())
 	case configv1.UpstreamServiceConfig_WebsocketService_case:
-		res = checkWebSocketService(ctx, service.GetWebsocketService())
+		res = checkWebSocketService(ctx, service.GetWebsocketService(), upstreamAuth)
 	case configv1.UpstreamServiceConfig_WebrtcService_case:
-		res = checkWebRTCService(ctx, service.GetWebrtcService())
+		res = checkWebRTCService(ctx, service.GetWebrtcService(), upstreamAuth)
 	case configv1.UpstreamServiceConfig_FilesystemService_case:
 		res = checkFilesystemService(ctx, service.GetFilesystemService())
 	default:
@@ -137,7 +143,7 @@ func checkAuthentication(ctx context.Context, auth *configv1.Authentication) Che
 		return checkOIDCReachability(ctx, auth.GetOidc())
 	}
 	// Other auth methods (API Key, Basic, etc.) don't have a separate endpoint to check
-	// (they are checked implicitly by the service call, but we don't do a full auth'd call in doctor yet).
+	// (they are checked implicitly by the service call).
 	return CheckResult{Status: StatusOk, Message: "Verified"}
 }
 
@@ -149,10 +155,6 @@ func checkOAuth2Reachability(ctx context.Context, oauth *configv1.OAuth2Auth) Ch
 	}
 
 	// Attempt a POST request to the token URL.
-	// We don't necessarily need to send valid credentials to check reachability.
-	// Sending an empty POST or one with dummy grant_type usually triggers a 400 Bad Request
-	// with a JSON error, which confirms the server is listening and is an OAuth endpoint.
-
 	req, err := http.NewRequestWithContext(ctx, "POST", tokenURL, strings.NewReader("grant_type=client_credentials"))
 	if err != nil {
 		return CheckResult{Status: StatusError, Message: fmt.Sprintf("Failed to create request: %v", err), Error: err}
@@ -178,13 +180,10 @@ func checkOAuth2Reachability(ctx context.Context, oauth *configv1.OAuth2Auth) Ch
 		return CheckResult{Status: StatusOk, Message: "OAuth2 Reachable (200)"}
 	}
 
-	// 400 Bad Request is VERY common for OAuth2 endpoints when sending incomplete credentials.
-	// This confirms the endpoint exists and is processing OAuth requests.
 	if resp.StatusCode == 400 {
 		return CheckResult{Status: StatusOk, Message: "OAuth2 Reachable (400)"}
 	}
 
-	// 401 Unauthorized is also a good sign of reachability (WAF or strict auth).
 	if resp.StatusCode == 401 {
 		return CheckResult{Status: StatusOk, Message: "OAuth2 Reachable (401)"}
 	}
@@ -197,7 +196,6 @@ func checkOAuth2Reachability(ctx context.Context, oauth *configv1.OAuth2Auth) Ch
 		return CheckResult{Status: StatusError, Message: fmt.Sprintf("OAuth2 token URL returned server error: %s", resp.Status)}
 	}
 
-	// Other 4xx codes?
 	return CheckResult{Status: StatusWarning, Message: fmt.Sprintf("OAuth2 token URL returned unexpected status: %s", resp.Status)}
 }
 
@@ -210,24 +208,23 @@ func checkOIDCReachability(ctx context.Context, oidc *configv1.OIDCAuth) CheckRe
 	// OIDC discovery endpoint
 	discoveryURL := strings.TrimSuffix(issuer, "/") + "/.well-known/openid-configuration"
 
-	return checkURL(ctx, discoveryURL)
+	return checkURL(ctx, discoveryURL, nil)
 }
 
-func checkHTTPService(ctx context.Context, s *configv1.HttpUpstreamService) CheckResult {
-	return checkURL(ctx, s.GetAddress())
+func checkHTTPService(ctx context.Context, s *configv1.HttpUpstreamService, auth *configv1.Authentication) CheckResult {
+	return checkURL(ctx, s.GetAddress(), auth)
 }
 
-func checkGraphQLService(ctx context.Context, s *configv1.GraphQLUpstreamService) CheckResult {
-	return checkURL(ctx, s.GetAddress())
+func checkGraphQLService(ctx context.Context, s *configv1.GraphQLUpstreamService, auth *configv1.Authentication) CheckResult {
+	return checkURL(ctx, s.GetAddress(), auth)
 }
 
-func checkWebRTCService(ctx context.Context, s *configv1.WebrtcUpstreamService) CheckResult {
-	return checkURL(ctx, s.GetAddress())
+func checkWebRTCService(ctx context.Context, s *configv1.WebrtcUpstreamService, auth *configv1.Authentication) CheckResult {
+	return checkURL(ctx, s.GetAddress(), auth)
 }
 
-func checkWebSocketService(ctx context.Context, s *configv1.WebsocketUpstreamService) CheckResult {
+func checkWebSocketService(ctx context.Context, s *configv1.WebsocketUpstreamService, auth *configv1.Authentication) CheckResult {
 	// For WebSocket, we can try to dial the TCP connection, or do an HTTP request if it supports upgrade.
-	// Since checkURL assumes HTTP/HTTPS, we might need to handle ws/wss explicitly.
 	addr := s.GetAddress()
 	if strings.HasPrefix(addr, "ws://") {
 		addr = "http://" + strings.TrimPrefix(addr, "ws://")
@@ -235,18 +232,27 @@ func checkWebSocketService(ctx context.Context, s *configv1.WebsocketUpstreamSer
 		addr = "https://" + strings.TrimPrefix(addr, "wss://")
 	}
 
-	// Try a simple HTTP GET. Most WS servers will respond to HTTP GET (usually with Upgrade required or 404/200).
-	// If the server is up, we should get a response.
-	return checkURL(ctx, addr)
+	return checkURL(ctx, addr, auth)
 }
 
-func checkURL(ctx context.Context, urlStr string) CheckResult {
+func checkURL(ctx context.Context, urlStr string, auth *configv1.Authentication) CheckResult {
 	req, err := http.NewRequestWithContext(ctx, "GET", urlStr, nil)
 	if err != nil {
 		return CheckResult{
 			Status:  StatusError,
 			Message: fmt.Sprintf("Invalid URL: %v", err),
 			Error:   err,
+		}
+	}
+
+	// Apply authentication if provided
+	if auth != nil {
+		if err := applyAuthentication(ctx, req, auth); err != nil {
+			return CheckResult{
+				Status:  StatusError,
+				Message: fmt.Sprintf("Failed to apply authentication: %v", err),
+				Error:   err,
+			}
 		}
 	}
 
@@ -265,6 +271,14 @@ func checkURL(ctx context.Context, urlStr string) CheckResult {
 		}
 	}
 	defer func() { _ = resp.Body.Close() }()
+
+	// If Auth was provided, 401/403 are errors
+	if auth != nil && (resp.StatusCode == 401 || resp.StatusCode == 403) {
+		return CheckResult{
+			Status:  StatusError,
+			Message: fmt.Sprintf("Authentication failed (%s): check your credentials", resp.Status),
+		}
+	}
 
 	if resp.StatusCode >= 400 && resp.StatusCode != 404 && resp.StatusCode != 405 && resp.StatusCode != 426 { // 426 Upgrade Required is fine for WS
 		// We consider 4xx a warning because the service is technically reachable, just maybe not at this path.
@@ -291,9 +305,6 @@ func checkGRPCService(ctx context.Context, s *configv1.GrpcUpstreamService) Chec
 	// Basic TCP check for gRPC address
 	host, port, err := net.SplitHostPort(s.GetAddress())
 	if err != nil {
-		// Try to see if it's just missing a port, though gRPC usually needs one.
-		// If using a scheme like dns:///, it might be different.
-		// For now, assume host:port
 		return CheckResult{
 			Status:  StatusError,
 			Message: fmt.Sprintf("Invalid gRPC address format: %v", err),
@@ -323,17 +334,18 @@ func checkGRPCService(ctx context.Context, s *configv1.GrpcUpstreamService) Chec
 	}
 }
 
-func checkOpenAPIService(ctx context.Context, s *configv1.OpenapiUpstreamService) CheckResult {
+func checkOpenAPIService(ctx context.Context, s *configv1.OpenapiUpstreamService, auth *configv1.Authentication) CheckResult {
 	if s.GetSpecUrl() != "" {
-		// Check if we can fetch the spec
-		res := checkURL(ctx, s.GetSpecUrl())
+		// Check if we can fetch the spec (passing auth if needed? Usually spec might be public, but API isn't)
+		// For now, let's assume spec URL might need auth too if it's on the same server.
+		res := checkURL(ctx, s.GetSpecUrl(), auth)
 		if res.Status != StatusOk {
 			return res
 		}
 	}
 
 	if s.GetAddress() != "" {
-		return checkURL(ctx, s.GetAddress())
+		return checkURL(ctx, s.GetAddress(), auth)
 	}
 
 	return CheckResult{
@@ -343,12 +355,6 @@ func checkOpenAPIService(ctx context.Context, s *configv1.OpenapiUpstreamService
 }
 
 func checkSQLService(ctx context.Context, s *configv1.SqlUpstreamService) CheckResult {
-	// We need to resolve secrets in DSN if they exist, but that's handled by `util.ResolveSecret`
-	// Since we don't have access to the secret store easily here without app initialization,
-	// this might be tricky if the DSN relies on secret injection (e.g. ${SECRET_NAME}).
-	// For now, we assume the DSN is raw or we'd need to mock the secret resolver.
-	// Given this is a simple "Doctor", we might skip full DSN parsing if it looks like a template.
-
 	if strings.Contains(s.GetDsn(), "${") {
 		return CheckResult{
 			Status:  StatusWarning,
@@ -382,14 +388,12 @@ func checkSQLService(ctx context.Context, s *configv1.SqlUpstreamService) CheckR
 	}
 }
 
-func checkMCPService(ctx context.Context, s *configv1.McpUpstreamService) CheckResult {
+func checkMCPService(ctx context.Context, s *configv1.McpUpstreamService, auth *configv1.Authentication) CheckResult {
 	switch s.WhichConnectionType() {
 	case configv1.McpUpstreamService_HttpConnection_case:
-		return checkURL(ctx, s.GetHttpConnection().GetHttpAddress())
+		return checkURL(ctx, s.GetHttpConnection().GetHttpAddress(), auth)
 	case configv1.McpUpstreamService_StdioConnection_case:
-		// Check if command exists
 		cmd := s.GetStdioConnection().GetCommand()
-		// Reuse validation logic if possible, or just LookPath
 		_, err := exec.LookPath(cmd)
 		if err != nil {
 			return CheckResult{
@@ -419,10 +423,6 @@ func checkCommandLineService(_ context.Context, s *configv1.CommandLineUpstreamS
 	}
 
 	cmd := s.GetCommand()
-	// Check executable
-	// We might need to handle args? "python script.py" -> check python and script.py
-	// But GetCommand usually is just the executable or the full line.
-	// If it's a full line, we need to split.
 	parts := strings.Fields(cmd)
 	if len(parts) == 0 {
 		return CheckResult{
@@ -441,10 +441,8 @@ func checkCommandLineService(_ context.Context, s *configv1.CommandLineUpstreamS
 		}
 	}
 
-	// Maybe check if script file exists if provided?
 	if len(parts) > 1 {
 		arg := parts[1]
-		// Simple heuristic: if it has an extension and exists, good.
 		if validation.FileExists(arg) == nil {
 			return CheckResult{
 				Status:  StatusOk,
@@ -473,4 +471,38 @@ func checkFilesystemService(_ context.Context, s *configv1.FilesystemUpstreamSer
 		Status:  StatusOk,
 		Message: "All root paths exist",
 	}
+}
+
+// applyAuthentication applies the given authentication configuration to the request.
+// It resolves secrets using util.ResolveSecret.
+func applyAuthentication(ctx context.Context, req *http.Request, auth *configv1.Authentication) error {
+	if auth == nil {
+		return nil
+	}
+
+	if apiKey := auth.GetApiKey(); apiKey != nil {
+		apiKeyValue, err := util.ResolveSecret(ctx, apiKey.GetValue())
+		if err != nil {
+			return err
+		}
+		req.Header.Set(apiKey.GetParamName(), apiKeyValue)
+	} else if bearerToken := auth.GetBearerToken(); bearerToken != nil {
+		tokenValue, err := util.ResolveSecret(ctx, bearerToken.GetToken())
+		if err != nil {
+			return err
+		}
+		req.Header.Set("Authorization", "Bearer "+tokenValue)
+	} else if basicAuth := auth.GetBasicAuth(); basicAuth != nil {
+		passwordValue, err := util.ResolveSecret(ctx, basicAuth.GetPassword())
+		if err != nil {
+			return err
+		}
+		req.SetBasicAuth(basicAuth.GetUsername(), passwordValue)
+	}
+	// Note: OAuth2 logic is complex and usually requires a separate token exchange,
+	// which is handled by oauth2 library. For simpler "Doctor" checks, we might verify
+	// the token endpoint reachability (done separately) or we could try to get a token if we have client credentials.
+	// For now, we skip full OAuth2 flow injection here unless we want to do full token negotiation.
+
+	return nil
 }
