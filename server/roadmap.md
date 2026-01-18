@@ -71,6 +71,7 @@
 - [x] **Preserved Config Error Suggestions**: Fixed an issue where helpful "Fix" suggestions were swallowed by error wrapping during nested validation (e.g., stdio arguments), ensuring users always see actionable advice. (Friction Fighter)
 - [x] **Tool Name Fuzzy Matching**: Improve error messages for tool execution by suggesting similar tool names when a user makes a typo. (Friction Fighter)
 - [x] **Service Status Reporting**: Exposed service health status ("OK", "ERROR") and error messages via the Admin API (`ListServices`, `GetService`). This enables the UI to display failed services instead of just missing them. (Friction Fighter)
+- [x] **OAuth2 Auto-Discovery**: Automatically discover OAuth2 `token_url` from the provided `issuer_url` (via OIDC discovery), reducing configuration friction and error-proneness. (Friction Fighter)
 
 ## 2. Top 10 Recommended Features
 
@@ -116,7 +117,6 @@ These features represent the next logical steps for the product, focusing on Ent
 | 38   | **HTTP Upstream Env Validation**              | **Consistency**: Extend required environment variable validation to HTTP connections (e.g. for `http_address` or auth headers).                                                                                    | Low        |
 | 39   | **Config Snapshot/Restore**                   | **Ops**: Ability to save current runtime configuration state to a file (snapshot) and restore it later, useful for backing up verified working configs.                                                            | Medium     |
 | 40   | **Config Inheritance**                        | **DevX**: Allow `config.yaml` to extend/import other configuration files (e.g. `extends: base.yaml`) to reduce duplication across environments.                                                                    | High       |
-| 42   | **OIDC Auto-Discovery**                       | **UX**: Automatically configure OIDC endpoints (auth URL, token URL, keys) by fetching the `/.well-known/openid-configuration` from the issuer URL, simplifying configuration.                                     | Medium     |
 | 43   | **Doctor Auto-Fix**                           | **DevX**: Allow `mcpany doctor --fix` to automatically correct simple configuration errors (like typos or missing fields with defaults).                                                                           | High       |
 | 44   | **Doctor Web Report**                         | **DevX**: Generate an HTML report from `mcpany doctor` for easier sharing and debugging.                                                                                                                           | Low        |
 | 45   | **Upstream Latency Metrics**                  | **Observability**: Record the latency of the initial connectivity probe to help diagnose slow upstream services during startup.                                                                                    | Low        |
@@ -164,6 +164,8 @@ These features represent the next logical steps for the product, focusing on Ent
 | 63   | **Health Webhooks**                           | **Ops**: Configure webhooks (Slack, Discord, PagerDuty) to be triggered when the system health status changes (e.g., from Healthy to Degraded).                                                                    | Medium     |
 | 64   | **Service Retry Policy**                      | **Resilience**: Automatically retry connecting to failed services with exponential backoff.                                                                                                                        | Medium     |
 | 65   | **Config Reload Status API**                  | **DevX**: Expose the status of the last configuration reload attempt via API to help debug silent reload failures.                                                                                                 | Low        |
+| 66   | **Dynamic Profile Switching**                 | **UX**: Allow users to switch active profiles dynamically via API without restarting the server.                                                                                                                   | Medium     |
+| 67   | **Config Schema Versioning**                  | **Maintenance**: Introduce `apiVersion` field in `config.yaml` to support breaking changes in configuration schema gracefully.                                                                                     | High       |
 
 ## 3. Codebase Health
 
