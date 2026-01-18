@@ -16,6 +16,7 @@ type CheckResult struct {
 	Status  string `json:"status"`
 	Message string `json:"message,omitempty"`
 	Latency string `json:"latency,omitempty"`
+	Diff    string `json:"diff,omitempty"`
 }
 
 // CheckFunc is a function that performs a health check.

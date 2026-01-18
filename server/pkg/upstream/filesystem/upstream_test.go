@@ -265,7 +265,7 @@ func TestFilesystemUpstream_Register_And_Execute(t *testing.T) {
 		assert.Len(t, matches, 1)
 
 		match := matches[0]
-		assert.Equal(t, "searchable.txt", match["file"])
+		assert.Equal(t, "/data/searchable.txt", match["file"])
 		assert.Equal(t, "find me here", match["line_content"])
 		assert.Equal(t, 2, match["line_number"])
 	})
@@ -432,14 +432,14 @@ func TestFilesystemUpstream_Register_And_Execute(t *testing.T) {
 			foundFiles[m["file"].(string)] = true
 		}
 
-		assert.True(t, foundFiles["include.txt"], "include.txt should be found")
+		assert.True(t, foundFiles["/data/include.txt"], "include.txt should be found")
 		// on windows path separator might differ, but tests run on linux usually
 		// filepath.Rel returns OS specific separators.
 		// "src/foo.js" might be "src\foo.js" on windows.
 		// The test environment is linux based on standard tools.
-		assert.True(t, foundFiles[filepath.Join("src", "foo.js")], "src/foo.js should be found")
-		assert.False(t, foundFiles["exclude.log"], "exclude.log should be excluded")
-		assert.False(t, foundFiles[filepath.Join("node_modules", "foo.js")], "node_modules/foo.js should be excluded")
+		assert.True(t, foundFiles[filepath.Join("/data", "src", "foo.js")], "src/foo.js should be found")
+		assert.False(t, foundFiles["/data/exclude.log"], "exclude.log should be excluded")
+		assert.False(t, foundFiles[filepath.Join("/data", "node_modules", "foo.js")], "node_modules/foo.js should be excluded")
 	})
 
 	// Test read_file binary check
