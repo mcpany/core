@@ -412,3 +412,115 @@ func TestRunChecks_WebSocket(t *testing.T) {
 	assert.Len(t, results, 1)
 	assert.Equal(t, StatusOk, results[0].Status)
 }
+
+func TestRunChecks_OIDC(t *testing.T) {
+	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path == "/.well-known/openid-configuration" {
+			w.WriteHeader(http.StatusOK)
+		} else {
+			w.WriteHeader(http.StatusNotFound)
+		}
+	}))
+	defer ts.Close()
+
+	config := &configv1.McpAnyServerConfig{
+		UpstreamServices: []*configv1.UpstreamServiceConfig{
+			{
+				Name: strPtr("oidc-service"),
+				ServiceConfig: &configv1.UpstreamServiceConfig_HttpService{
+					HttpService: &configv1.HttpUpstreamService{Address: strPtr(ts.URL)},
+				},
+				UpstreamAuth: &configv1.Authentication{
+					AuthMethod: &configv1.Authentication_Oidc{
+						Oidc: &configv1.OIDCAuth{
+							Issuer: strPtr(ts.URL),
+						},
+					},
+				},
+			},
+		},
+	}
+
+	results := RunChecks(context.Background(), config)
+	assert.Len(t, results, 1)
+	assert.Equal(t, StatusOk, results[0].Status)
+}
+
+func TestRunChecks_GraphQL(t *testing.T) {
+	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+	}))
+	defer ts.Close()
+
+	config := &configv1.McpAnyServerConfig{
+		UpstreamServices: []*configv1.UpstreamServiceConfig{
+			{
+				Name: strPtr("graphql-service"),
+				ServiceConfig: &configv1.UpstreamServiceConfig_GraphqlService{
+					GraphqlService: &configv1.GraphQLUpstreamService{
+						Address: strPtr(ts.URL),
+					},
+				},
+			},
+		},
+	}
+
+	results := RunChecks(context.Background(), config)
+	assert.Len(t, results, 1)
+	assert.Equal(t, StatusOk, results[0].Status)
+}
+
+func TestRunChecks_WebRTC(t *testing.T) {
+	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+	}))
+	defer ts.Close()
+
+	config := &configv1.McpAnyServerConfig{
+		UpstreamServices: []*configv1.UpstreamServiceConfig{
+			{
+				Name: strPtr("webrtc-service"),
+				ServiceConfig: &configv1.UpstreamServiceConfig_WebrtcService{
+					WebrtcService: &configv1.WebrtcUpstreamService{
+						Address: strPtr(ts.URL),
+					},
+				},
+			},
+		},
+	}
+
+	results := RunChecks(context.Background(), config)
+	assert.Len(t, results, 1)
+	assert.Equal(t, StatusOk, results[0].Status)
+}
+
+func TestRunChecks_SQL(t *testing.T) {
+	// DSN: ":memory:" for sqlite
+	config := &configv1.McpAnyServerConfig{
+		UpstreamServices: []*configv1.UpstreamServiceConfig{
+			{
+				Name: strPtr("sql-service"),
+				ServiceConfig: &configv1.UpstreamServiceConfig_SqlService{
+					SqlService: &configv1.SqlUpstreamService{
+						Driver: strPtr("sqlite"),
+						Dsn:    strPtr(":memory:"),
+					},
+				},
+			},
+			{
+				Name: strPtr("invalid-sql-driver"),
+				ServiceConfig: &configv1.UpstreamServiceConfig_SqlService{
+					SqlService: &configv1.SqlUpstreamService{
+						Driver: strPtr("invalid-driver"),
+						Dsn:    strPtr(":memory:"),
+					},
+				},
+			},
+		},
+	}
+
+	results := RunChecks(context.Background(), config)
+	assert.Len(t, results, 2)
+	assert.Equal(t, StatusOk, results[0].Status)
+	assert.Equal(t, StatusError, results[1].Status)
+}

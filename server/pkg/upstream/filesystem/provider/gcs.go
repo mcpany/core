@@ -25,6 +25,8 @@ type GcsProvider struct {
 	client *storage.Client
 }
 
+var newStorageClient = storage.NewClient
+
 // NewGcsProvider creates a new GcsProvider from the given configuration.
 //
 // _ is an unused parameter.
@@ -37,7 +39,7 @@ func NewGcsProvider(_ context.Context, config *configv1.GcsFs) (*GcsProvider, er
 		return nil, fmt.Errorf("gcs config is nil")
 	}
 
-	client, err := storage.NewClient(context.Background())
+	client, err := newStorageClient(context.Background())
 	if err != nil {
 		return nil, fmt.Errorf("failed to create gcs client: %w", err)
 	}
