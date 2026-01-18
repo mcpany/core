@@ -152,7 +152,6 @@ export function LogStream() {
 
       ws.onopen = () => {
         setIsConnected(true)
-        console.log("Connected to log stream")
       }
 
       ws.onmessage = (event) => {
@@ -178,7 +177,6 @@ export function LogStream() {
 
       ws.onclose = () => {
         setIsConnected(false)
-        console.log("Disconnected from log stream, retrying...")
         setTimeout(connect, 3000)
       }
 
