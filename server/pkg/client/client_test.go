@@ -85,6 +85,7 @@ func TestHTTPClientWrapper(t *testing.T) {
 }
 
 func TestGrpcClientWrapper(t *testing.T) {
+	t.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "true")
 	// Set up a dummy gRPC server to connect to
 	lis, err := net.Listen("tcp", "localhost:0")
 	require.NoError(t, err)
