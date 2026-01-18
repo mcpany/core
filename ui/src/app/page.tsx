@@ -6,6 +6,7 @@
 import { MetricsOverview } from "@/components/dashboard/metrics-overview";
 import { ServiceHealthWidget } from "@/components/dashboard/service-health-widget";
 import { RequestVolumeChart } from "@/components/dashboard/request-volume-chart";
+import { SystemHealthCard } from "@/components/dashboard/system-health-card";
 import { Button } from "@/components/ui/button";
 
 /**
@@ -25,6 +26,7 @@ export default function DashboardPage() {
       <div className="space-y-4">
         <MetricsOverview />
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
+          <SystemHealthCard />
           <ServiceHealthWidget />
           <RequestVolumeChart />
         </div>

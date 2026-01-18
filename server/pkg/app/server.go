@@ -17,6 +17,7 @@ import (
 	"os"
 	"strings"
 	"sync"
+	"sync/atomic"
 	"time"
 
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
@@ -214,6 +215,12 @@ type Application struct {
 	BoundHTTPPort int
 	// BoundGRPCPort stores the actual port the gRPC server is listening on.
 	BoundGRPCPort int
+
+	// startTime stores the time when the application started.
+	startTime time.Time
+
+	// activeConnections stores the number of active HTTP connections.
+	activeConnections int64
 }
 
 // NewApplication creates a new Application with default dependencies.
@@ -232,6 +239,7 @@ func NewApplication() *Application {
 		UpstreamFactory: factory.NewUpstreamServiceFactory(pool.NewManager(), nil),
 		configFiles:     make(map[string]string),
 		startupCh:       make(chan struct{}),
+		startTime:       time.Now(),
 	}
 }
 
@@ -1410,6 +1418,7 @@ func (a *Application) runServerMode(
 		_, _ = fmt.Fprintln(w, "OK")
 	}))
 	mux.Handle("/metrics", authMiddleware(metrics.Handler()))
+	mux.Handle("/api/v1/system/status", authMiddleware(http.HandlerFunc(a.handleSystemStatus)))
 	mux.Handle("/upload", authMiddleware(http.HandlerFunc(a.uploadFile)))
 
 	// OIDC Routes
@@ -1664,7 +1673,24 @@ func (a *Application) runServerMode(
 			a.BoundHTTPPort = addr.Port
 		}
 		expectedReady++
-		startHTTPServer(localCtx, &wg, errChan, readyChan, "MCP Any HTTP", httpLis, handler, shutdownTimeout)
+		startHTTPServer(
+			localCtx,
+			&wg,
+			errChan,
+			readyChan,
+			"MCP Any HTTP",
+			httpLis,
+			handler,
+			shutdownTimeout,
+			func(_ net.Conn, state http.ConnState) {
+				switch state {
+				case http.StateNew:
+					atomic.AddInt64(&a.activeConnections, 1)
+				case http.StateClosed, http.StateHijacked:
+					atomic.AddInt64(&a.activeConnections, -1)
+				}
+			},
+		)
 	}
 
 	// Wait for servers to be ready
@@ -1850,6 +1876,7 @@ func startGrpcServer(
 // name is a descriptive name for the server, used in logging.
 // lis is the net.Listener on which the server will listen.
 // handler is the HTTP handler for processing requests.
+// connState is an optional callback for connection state changes.
 func startHTTPServer(
 	ctx context.Context,
 	wg *sync.WaitGroup,
@@ -1859,6 +1886,7 @@ func startHTTPServer(
 	lis net.Listener,
 	handler http.Handler,
 	shutdownTimeout time.Duration,
+	connState func(net.Conn, http.ConnState),
 ) {
 	wg.Add(1)
 	go func() {
@@ -1892,12 +1920,15 @@ func startHTTPServer(
 			BaseContext: func(_ net.Listener) context.Context {
 				return ctx
 			},
-			ConnState: func(_ net.Conn, state http.ConnState) {
+			ConnState: func(conn net.Conn, state http.ConnState) {
 				switch state {
 				case http.StateNew:
 					metrics.IncrCounter([]string{"http", "connections", "opened", "total"}, 1)
 				case http.StateClosed:
 					metrics.IncrCounter([]string{"http", "connections", "closed", "total"}, 1)
+				}
+				if connState != nil {
+					connState(conn, state)
 				}
 			},
 			ReadHeaderTimeout: 10 * time.Second,

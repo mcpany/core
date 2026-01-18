@@ -1025,7 +1025,7 @@ func TestHTTPServer_GoroutineTerminatesOnError(t *testing.T) {
 	errChan := make(chan error, 1)
 	var wg sync.WaitGroup
 
-	startHTTPServer(ctx, &wg, errChan, nil, "TestHTTP_Error", l, nil, 5*time.Second)
+	startHTTPServer(ctx, &wg, errChan, nil, "TestHTTP_Error", l, nil, 5*time.Second, nil)
 
 	// Wait for the startup error.
 	select {
@@ -1062,7 +1062,7 @@ func TestHTTPServer_ShutdownTimesOut(t *testing.T) {
 		close(handlerStarted)
 		time.Sleep(handlerSleep)
 		w.WriteHeader(http.StatusOK)
-	}), shutdownTimeout)
+	}), shutdownTimeout, nil)
 
 	time.Sleep(50 * time.Millisecond) // give server time to start
 
@@ -1323,7 +1323,7 @@ func TestHTTPServer_HangOnListenError(t *testing.T) {
 	errChan := make(chan error, 1)
 	var wg sync.WaitGroup
 
-	startHTTPServer(ctx, &wg, errChan, nil, "TestHTTP_Hang", l, nil, 5*time.Second)
+	startHTTPServer(ctx, &wg, errChan, nil, "TestHTTP_Hang", l, nil, 5*time.Second, nil)
 
 	// Wait for the startup error.
 	select {
@@ -1577,7 +1577,7 @@ func TestHTTPServer_GracefulShutdown(t *testing.T) {
 	lis, err := net.Listen("tcp", "localhost:0")
 	require.NoError(t, err)
 
-	startHTTPServer(ctx, &wg, errChan, nil, "TestHTTP", lis, nil, 5*time.Second)
+	startHTTPServer(ctx, &wg, errChan, nil, "TestHTTP", lis, nil, 5*time.Second, nil)
 
 	// Immediately cancel to trigger shutdown
 	cancel()
