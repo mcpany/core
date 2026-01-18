@@ -30,6 +30,7 @@ func createTempConfigFile(t *testing.T, content string) string {
 
 // TestLoadServices_ValidConfigs tests loading of various valid service configurations.
 func TestLoadServices_ValidConfigs(t *testing.T) {
+	t.Setenv("MCPANY_SKIP_CONNECTIVITY_CHECK", "true")
 	t.Run("Load from URL", func(t *testing.T) {
 		// Create a mock HTTP server to serve the config file
 		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
@@ -382,6 +383,7 @@ upstream_services: {
 }
 
 func TestDefaultUserHasProfileAccessWhenIdIsMissing(t *testing.T) {
+	t.Setenv("MCPANY_SKIP_CONNECTIVITY_CHECK", "true")
 	content := `
 global_settings: {
     profiles: "dev"
@@ -416,6 +418,7 @@ upstream_services: {
 }
 
 func TestLoadServices_DefaultUser_ImplicitProfile(t *testing.T) {
+	t.Setenv("MCPANY_SKIP_CONNECTIVITY_CHECK", "true")
 	// Configuration with one service that has NO explicit profiles.
 	// It should default to "default" profile.
 	// No users defined, so a default user should be created.

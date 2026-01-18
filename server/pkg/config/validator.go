@@ -453,6 +453,22 @@ func validateHTTPService(httpService *configv1.HttpUpstreamService) error {
 		}
 	}
 
+	// Semantic Validation: Check connectivity if we are in strict mode or just want to warn/fail fast.
+	// We use a short timeout to avoid blocking startup for too long.
+	// This helps catch "tool execution failed" errors early.
+	// We only do this if validation is not running in a strictly offline context (e.g. unit tests without network).
+	// However, we can't easily detect that.
+	// But `Validate` is typically called at startup.
+	// Check env var to skip connectivity check in tests or specific environments.
+	if os.Getenv("MCPANY_SKIP_CONNECTIVITY_CHECK") != "true" {
+		if err := util.CheckConnection(context.Background(), httpService.GetAddress()); err != nil {
+			return &ActionableError{
+				Err:        fmt.Errorf("failed to connect to http service at %s: %w", httpService.GetAddress(), err),
+				Suggestion: "Ensure the service is running and reachable. Check hostname, port, and network connectivity.",
+			}
+		}
+	}
+
 	for name, call := range httpService.GetCalls() {
 		if err := validateSchema(call.GetInputSchema()); err != nil {
 			return fmt.Errorf("http call %q input_schema error: %w", name, err)
@@ -597,6 +613,16 @@ func validateMcpService(mcpService *configv1.McpUpstreamService) error {
 			return &ActionableError{
 				Err:        fmt.Errorf("mcp service with http_connection has invalid http_address: %s", httpConn.GetHttpAddress()),
 				Suggestion: "Ensure the http_address is a valid URL.",
+			}
+		}
+
+		// Semantic Validation: Check connectivity
+		if os.Getenv("MCPANY_SKIP_CONNECTIVITY_CHECK") != "true" {
+			if err := util.CheckConnection(context.Background(), httpConn.GetHttpAddress()); err != nil {
+				return &ActionableError{
+					Err:        fmt.Errorf("failed to connect to mcp http service at %s: %w", httpConn.GetHttpAddress(), err),
+					Suggestion: "Ensure the MCP server is running and reachable at the specified address.",
+				}
 			}
 		}
 	case configv1.McpUpstreamService_StdioConnection_case:

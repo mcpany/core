@@ -108,6 +108,8 @@ func TestValidatorCoverage(t *testing.T) {
 }
 
 func TestValidatorCoverageMore(t *testing.T) {
+    // Set skip connectivity check for these static validation tests
+    t.Setenv("MCPANY_SKIP_CONNECTIVITY_CHECK", "true")
     ctx := context.Background()
 
     // Test Validate (Global Config) with errors

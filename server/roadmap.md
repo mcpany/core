@@ -62,6 +62,7 @@
 - [x] **Enhanced Service Visibility**: Added real-time health status, error reporting, and tool count metrics to the Service Management dashboard table. (Experience Crafter)
 - [x] **Strict Startup Mode**: Implemented `--strict` flag for the `run` command. When enabled, the server performs pre-flight connectivity checks ("doctor" checks) on all configured upstream services and fails to start if any are unreachable, preventing silent failures. (Friction Fighter)
 - [x] **Stdio Logging Visibility**: Fixed an issue where logs were discarded in stdio mode (used by clients like Claude Desktop). Logs now correctly output to stderr, ensuring "silent failures" are visible and debuggable. (Friction Fighter)
+- [x] **Upstream Connectivity Validation**: Implemented semantic validation checks for upstream services (HTTP and MCP) to verify connectivity during startup/validation. If a service is unreachable, the user is warned immediately with actionable advice. (Friction Fighter)
 
 ## 2. Top 10 Recommended Features
 
@@ -134,6 +135,8 @@ These features represent the next logical steps for the product, focusing on Ent
 | 46 | **Schema Validation Caching** | **Performance**: Cache compiled schemas to avoid recompilation overhead during configuration reloads. | Low |
 | 45 | **Config Validation Diff** | **Experience**: When a configuration reload fails, display a diff highlighting the changes that caused the error compared to the last known good configuration. | High |
 | 46 | **Health Webhooks** | **Ops**: Configure webhooks (Slack, Discord, PagerDuty) to be triggered when the system health status changes (e.g., from Healthy to Degraded). | Medium |
+| 47 | **Dynamic Connectivity Checks** | **Resilience**: Periodically re-verify upstream connectivity in the background and update service health status, rather than just checking at startup. | Medium |
+| 48 | **UI Status Dashboard** | **UX**: A dedicated dashboard widget showing real-time connectivity status and latency for all upstream services, with visual indicators for health. | Low |
 
 ## 3. Codebase Health
 
