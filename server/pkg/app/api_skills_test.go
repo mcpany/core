@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"os"
+	"path/filepath"
 	"testing"
 
 	"github.com/mcpany/core/server/pkg/skill"
@@ -16,83 +17,104 @@ import (
 )
 
 func TestHandleUploadSkillAsset(t *testing.T) {
-	// Setup
+	// Setup temporary directory for skills
 	tmpDir, err := os.MkdirTemp("", "skills-test")
 	require.NoError(t, err)
 	defer os.RemoveAll(tmpDir)
 
-	skillManager, err := skill.NewManager(tmpDir)
+	// Initialize SkillManager
+	sm, err := skill.NewManager(tmpDir)
 	require.NoError(t, err)
 
-	// Create a skill first so we can upload asset to it
-	// SaveAsset checks if skill exists
-	err = os.Mkdir(tmpDir+"/myskill", 0755)
-	require.NoError(t, err)
-
+	// Initialize Application
 	app := &Application{
-		SkillManager: skillManager,
+		SkillManager: sm,
 	}
 
-	handler := app.handleUploadSkillAsset()
+	// Create a test skill
+	testSkill := &skill.Skill{
+		Frontmatter: skill.Frontmatter{
+			Name:        "test-skill",
+			Description: "A test skill",
+		},
+		Instructions: "Run this.",
+	}
+	err = sm.CreateSkill(testSkill)
+	require.NoError(t, err)
 
-	// 1. Valid upload
-	t.Run("Valid upload", func(t *testing.T) {
-		req, err := http.NewRequest(http.MethodPost, "/api/v1/skills/myskill/assets?path=test.txt", bytes.NewBufferString("hello world"))
-		require.NoError(t, err)
+	tests := []struct {
+		name           string
+		method         string
+		url            string
+		body           []byte
+		expectedStatus int
+	}{
+		{
+			name:           "Valid Upload",
+			method:         http.MethodPost,
+			url:            "/api/v1/skills/test-skill/assets?path=scripts/test.py",
+			body:           []byte("print('hello')"),
+			expectedStatus: http.StatusOK,
+		},
+		{
+			name:           "Wrong Method",
+			method:         http.MethodGet,
+			url:            "/api/v1/skills/test-skill/assets?path=scripts/test.py",
+			body:           nil,
+			expectedStatus: http.StatusMethodNotAllowed,
+		},
+		{
+			name:           "Invalid URL Format",
+			method:         http.MethodPost,
+			url:            "/api/v1/skills/assets", // Missing skill name
+			body:           []byte("data"),
+			expectedStatus: http.StatusBadRequest,
+		},
+		{
+			name:           "Missing Path Param",
+			method:         http.MethodPost,
+			url:            "/api/v1/skills/test-skill/assets",
+			body:           []byte("data"),
+			expectedStatus: http.StatusBadRequest,
+		},
+		{
+			name:           "Skill Not Found",
+			method:         http.MethodPost,
+			url:            "/api/v1/skills/unknown-skill/assets?path=test.txt",
+			body:           []byte("data"),
+			expectedStatus: http.StatusInternalServerError, // SaveAsset returns error for non-existent skill
+		},
+		{
+			name:           "Invalid Path (Traversal)",
+			method:         http.MethodPost,
+			url:            "/api/v1/skills/test-skill/assets?path=../test.txt",
+			body:           []byte("data"),
+			expectedStatus: http.StatusInternalServerError, // SaveAsset validates path and returns error
+		},
+	}
 
-		rr := httptest.NewRecorder()
-		handler.ServeHTTP(rr, req)
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			req := httptest.NewRequest(tt.method, tt.url, bytes.NewReader(tt.body))
+			w := httptest.NewRecorder()
 
-		assert.Equal(t, http.StatusOK, rr.Code)
+			// The handler expects manually parsed URL parts or router usage.
+			// The implementation manually parses r.URL.Path assuming /api/v1/skills/{name}/assets
+			// So we must use that structure.
 
-		// Verify file content
-		content, err := os.ReadFile(tmpDir + "/myskill/test.txt")
-		require.NoError(t, err)
-		assert.Equal(t, "hello world", string(content))
-	})
+			handler := app.handleUploadSkillAsset()
+			handler.ServeHTTP(w, req)
 
-	// 2. Invalid method
-	t.Run("Invalid method", func(t *testing.T) {
-		req, err := http.NewRequest(http.MethodGet, "/api/v1/skills/myskill/assets?path=test.txt", nil)
-		require.NoError(t, err)
+			assert.Equal(t, tt.expectedStatus, w.Code)
 
-		rr := httptest.NewRecorder()
-		handler.ServeHTTP(rr, req)
-
-		assert.Equal(t, http.StatusMethodNotAllowed, rr.Code)
-	})
-
-	// 3. Missing path param
-	t.Run("Missing path param", func(t *testing.T) {
-		req, err := http.NewRequest(http.MethodPost, "/api/v1/skills/myskill/assets", bytes.NewBufferString("hello"))
-		require.NoError(t, err)
-
-		rr := httptest.NewRecorder()
-		handler.ServeHTTP(rr, req)
-
-		assert.Equal(t, http.StatusBadRequest, rr.Code)
-	})
-
-	// 4. Invalid URL format
-	t.Run("Invalid URL format", func(t *testing.T) {
-		// Path too short
-		req, err := http.NewRequest(http.MethodPost, "/api/v1/skills/assets", bytes.NewBufferString("hello"))
-		require.NoError(t, err)
-
-		rr := httptest.NewRecorder()
-		handler.ServeHTTP(rr, req)
-
-		assert.Equal(t, http.StatusBadRequest, rr.Code)
-	})
-
-	// 5. Skill not found
-	t.Run("Skill not found", func(t *testing.T) {
-		req, err := http.NewRequest(http.MethodPost, "/api/v1/skills/otherskill/assets?path=test.txt", bytes.NewBufferString("hello"))
-		require.NoError(t, err)
-
-		rr := httptest.NewRecorder()
-		handler.ServeHTTP(rr, req)
-
-		assert.Equal(t, http.StatusInternalServerError, rr.Code) // SaveAsset returns error
-	})
+			if tt.expectedStatus == http.StatusOK {
+				// Verify file was written
+				// "scripts/test.py"
+				assetPath := filepath.Join(tmpDir, "test-skill", "scripts", "test.py")
+				content, err := os.ReadFile(assetPath)
+				require.NoError(t, err)
+				assert.Equal(t, tt.body, content)
+			}
+		})
+	}
 }

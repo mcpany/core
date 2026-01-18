@@ -203,11 +203,17 @@ func (a *BasicAuthenticator) Authenticate(ctx context.Context, r *http.Request) 
 		return ctx, fmt.Errorf("unauthorized")
 	}
 
-	if a.Username != "" && user != a.Username {
-		return ctx, fmt.Errorf("unauthorized")
+	usernameMatch := true
+	if a.Username != "" {
+		if subtle.ConstantTimeCompare([]byte(user), []byte(a.Username)) != 1 {
+			usernameMatch = false
+		}
 	}
 
-	if passhash.CheckPassword(password, a.PasswordHash) {
+	// Always check password to avoid timing attacks that could reveal if the username is correct
+	passwordMatch := passhash.CheckPassword(password, a.PasswordHash)
+
+	if usernameMatch && passwordMatch {
 		return ctx, nil
 	}
 	return ctx, fmt.Errorf("unauthorized")

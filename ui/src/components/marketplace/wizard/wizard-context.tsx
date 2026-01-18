@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
 import { UpstreamServiceConfig } from '@/lib/client';
 
 // Define the steps
@@ -44,6 +44,11 @@ const defaultState: WizardState = {
         name: '',
         version: '0.0.1',
         disable: false,
+        commandLineService: {
+            command: '',
+            env: {},
+            workingDirectory: ''
+        } as any
     },
     params: {},
     webhooks: [],
@@ -59,6 +64,27 @@ const WizardContext = createContext<WizardContextType | undefined>(undefined);
  */
 export function WizardProvider({ children }: { children: ReactNode }) {
     const [state, setState] = useState<WizardState>(defaultState);
+    const [isHydrated, setIsHydrated] = useState(false);
+
+    // Initial hydration
+    useEffect(() => {
+        const saved = sessionStorage.getItem('wizard_state');
+        if (saved) {
+            try {
+                setState(JSON.parse(saved));
+            } catch (e) {
+                console.error("Failed to hydrate wizard state", e);
+            }
+        }
+        setIsHydrated(true);
+    }, []);
+
+    // Persistence
+    useEffect(() => {
+        if (isHydrated) {
+            sessionStorage.setItem('wizard_state', JSON.stringify(state));
+        }
+    }, [state, isHydrated]);
 
     const setStep = (step: WizardStep) => setState(prev => ({ ...prev, currentStep: step }));
 

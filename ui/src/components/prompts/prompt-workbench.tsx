@@ -270,7 +270,7 @@ export function PromptWorkbench({ initialPrompts = [] }: PromptWorkbenchProps) {
                 </div>
 
                 {/* Content */}
-                <div className="flex-1 overflow-y-auto p-6">
+                <div className="flex-1 overflow-y-auto p-6" data-testid="prompt-details">
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 h-full">
                         {/* Arguments Column */}
                         <div className="flex flex-col gap-6">

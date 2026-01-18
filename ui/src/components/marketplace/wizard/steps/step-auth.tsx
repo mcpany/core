@@ -13,12 +13,13 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 
 export function StepAuth() {
-  const { state, updateConfig } = useWizard();
-  const { config } = state;
+  const { state, updateConfig, updateState } = useWizard();
+  const { config, authCredentialId } = state;
   const [credentials, setCredentials] = useState<Credential[]>([]);
   const [loading, setLoading] = useState(true);
   const [testing, setTesting] = useState(false);
   const [testResult, setTestResult] = useState<{success: boolean, message: string} | null>(null);
+  const [justConnected, setJustConnected] = useState(false);
 
   useEffect(() => {
     const fetchCredentials = async () => {
@@ -34,14 +35,18 @@ export function StepAuth() {
     fetchCredentials();
   }, []);
 
-  const handleAuthChange = (value: string) => {
-      const cred = credentials.find(c => c.id === value);
-      if (cred) {
-          // Placeholder for handling auth change logic
-      }
-  };
+  const [selectedCredId, setSelectedCredId] = useState<string>(authCredentialId || "");
 
-  const [selectedCredId, setSelectedCredId] = useState<string>("");
+  // Sync with context
+  useEffect(() => {
+      if (authCredentialId && authCredentialId !== selectedCredId) {
+          setSelectedCredId(authCredentialId);
+      }
+  }, [authCredentialId]);
+
+  const handleAuthChange = (value: string) => {
+      updateState({ authCredentialId: value });
+  };
 
   const getServiceType = (c: any) => {
       if (c.httpService) return "http";
@@ -60,7 +65,7 @@ export function StepAuth() {
               credential_id: selectedCredId,
               service_type: getServiceType(config),
               service_config: config
-          });
+           });
           setTestResult({
               success: res.success,
               message: res.message || (res.success ? "Connection successful" : "Connection failed")
@@ -82,14 +87,21 @@ export function StepAuth() {
     try {
         setLoading(true);
         const redirectUrl = `${window.location.origin}/auth/callback`;
+
+        // SAVE to wizard state before leaving!
+        updateState({ authCredentialId: selectedCredId });
+
         const res = await apiClient.initiateOAuth(getServiceType(config), redirectUrl, selectedCredId);
 
         // Store context for callback
-        sessionStorage.setItem('oauth_service_id', getServiceType(config));
+        sessionStorage.setItem('oauth_service_id', getServiceType(config) === 'unknown' ? '' : getServiceType(config));
         sessionStorage.setItem('oauth_credential_id', selectedCredId);
         sessionStorage.setItem('oauth_state', res.state);
         sessionStorage.setItem('oauth_redirect_url', redirectUrl);
-        sessionStorage.setItem('oauth_return_path', window.location.pathname + window.location.search); // Return here? Or just to wizard?
+        const returnPath = window.location.pathname;
+        const searchParams = new URLSearchParams(window.location.search);
+        searchParams.set('wizard', 'open');
+        sessionStorage.setItem('oauth_return_path', `${returnPath}?${searchParams.toString()}`);
 
         // Redirect
         window.location.href = res.authorization_url;
@@ -116,9 +128,9 @@ export function StepAuth() {
       </Alert>
 
       <div className="space-y-4">
-          <Label>Select Credential for Testing</Label>
+          <Label htmlFor="cred-select">Select Credential for Testing</Label>
           <Select onValueChange={(val) => { setSelectedCredId(val); handleAuthChange(val); }} value={selectedCredId}>
-              <SelectTrigger>
+              <SelectTrigger id="cred-select">
                   <SelectValue placeholder="Select a credential..." />
               </SelectTrigger>
               <SelectContent>
@@ -159,6 +171,15 @@ export function StepAuth() {
                    <AlertDescription className={testResult.success ? "text-green-800 dark:text-green-300" : ""}>
                        {testResult.message}
                    </AlertDescription>
+              </Alert>
+          )}
+
+          {isOAuthConfigured && selectedCred?.token?.accessToken && (
+              <Alert variant="default" className="border-green-200 bg-green-50 dark:bg-green-900/10" id="oauth-success-alert">
+                  <AlertDescription className="text-green-800 dark:text-green-300 flex items-center gap-2">
+                      <ShieldCheck className="h-4 w-4" />
+                      Account Connected
+                  </AlertDescription>
               </Alert>
           )}
       </div>
