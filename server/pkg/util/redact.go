@@ -88,7 +88,7 @@ func RedactJSON(input []byte) []byte {
 // RedactMap recursively redacts sensitive keys in a map.
 // Note: This function creates a deep copy of the map with redacted values.
 func RedactMap(m map[string]interface{}) map[string]interface{} {
-	newMap := make(map[string]interface{})
+	newMap := make(map[string]interface{}, len(m))
 	for k, v := range m {
 		if IsSensitiveKey(k) {
 			newMap[k] = redactedPlaceholder

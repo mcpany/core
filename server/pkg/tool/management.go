@@ -411,6 +411,25 @@ func (tm *Manager) ExecuteTool(ctx context.Context, req *ExecutionRequest) (any,
 	t, ok := tm.GetTool(req.ToolName)
 	if !ok {
 		log.Error("Tool not found")
+
+		// Friction Fighter: Fuzzy Matching for better error messages
+		var bestMatch string
+		minDist := 1000
+
+		// Iterate over exposed tool names (keys in nameMap)
+		tm.nameMap.Range(func(name string, _ string) bool {
+			dist := util.LevenshteinDistance(req.ToolName, name)
+			if dist < minDist {
+				minDist = dist
+				bestMatch = name
+			}
+			return true
+		})
+
+		if minDist <= 3 && bestMatch != "" {
+			return nil, fmt.Errorf("%w: %q (did you mean %q?)", ErrToolNotFound, req.ToolName, bestMatch)
+		}
+
 		return nil, ErrToolNotFound
 	}
 	serviceID := t.Tool().GetServiceId()

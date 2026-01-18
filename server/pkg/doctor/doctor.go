@@ -66,7 +66,7 @@ func RunChecks(ctx context.Context, config *configv1.McpAnyServerConfig) []Check
 			continue
 		}
 
-		res := checkService(ctx, service)
+		res := CheckService(ctx, service)
 		res.ServiceName = service.GetName()
 		results = append(results, res)
 	}
@@ -74,7 +74,8 @@ func RunChecks(ctx context.Context, config *configv1.McpAnyServerConfig) []Check
 	return results
 }
 
-func checkService(ctx context.Context, service *configv1.UpstreamServiceConfig) CheckResult {
+// CheckService performs a connectivity check for a single service.
+func CheckService(ctx context.Context, service *configv1.UpstreamServiceConfig) CheckResult {
 	// 5 second timeout for checks
 	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
 	defer cancel()

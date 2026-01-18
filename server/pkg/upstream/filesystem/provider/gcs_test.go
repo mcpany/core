@@ -5,15 +5,30 @@ package provider
 
 import (
 	"context"
+	"fmt"
+	"io"
+	"net/http"
 	"os"
+	"strings"
 	"testing"
 	"time"
 
+	"cloud.google.com/go/storage"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/spf13/afero"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+	"google.golang.org/api/option"
 	"google.golang.org/protobuf/proto"
 )
+
+type mockTransport struct {
+	roundTripFunc func(req *http.Request) (*http.Response, error)
+}
+
+func (m *mockTransport) RoundTrip(req *http.Request) (*http.Response, error) {
+	return m.roundTripFunc(req)
+}
 
 func TestNewGcsProvider(t *testing.T) {
 	t.Run("Nil Config", func(t *testing.T) {
@@ -23,6 +38,8 @@ func TestNewGcsProvider(t *testing.T) {
 	})
 
 	t.Run("Valid Config", func(t *testing.T) {
+		// This test relies on default client behavior, which might fail without creds.
+		// That's fine, we preserve existing behavior.
 		config := &configv1.GcsFs{
 			Bucket: proto.String("my-bucket"),
 		}
@@ -36,6 +53,71 @@ func TestNewGcsProvider(t *testing.T) {
 			t.Logf("NewGcsProvider failed as expected (no creds): %v", err)
 		}
 	})
+}
+
+func TestGcsProvider_WithMockClient(t *testing.T) {
+	// Backup and restore newStorageClient
+	oldNewStorageClient := newStorageClient
+	defer func() { newStorageClient = oldNewStorageClient }()
+
+	newStorageClient = func(ctx context.Context, opts ...option.ClientOption) (*storage.Client, error) {
+		// Create a client with a mock HTTP client
+		httpClient := &http.Client{
+			Transport: &mockTransport{
+				roundTripFunc: func(req *http.Request) (*http.Response, error) {
+					// Dummy response
+					return &http.Response{
+						StatusCode: http.StatusOK,
+						Body:       io.NopCloser(strings.NewReader("content")),
+						Header:     make(http.Header),
+					}, nil
+				},
+			},
+		}
+		return storage.NewClient(ctx, option.WithHTTPClient(httpClient))
+	}
+
+	config := &configv1.GcsFs{
+		Bucket: proto.String("my-bucket"),
+	}
+
+	p, err := NewGcsProvider(context.Background(), config)
+	require.NoError(t, err)
+	defer p.Close()
+
+	// Test GetFs
+	fs := p.GetFs()
+	assert.NotNil(t, fs)
+	assert.Equal(t, "gcs", fs.Name())
+
+	// Test unsupported methods (covered by unit test, but good to verify on instance)
+	err = fs.Mkdir("dir", 0755)
+	assert.NoError(t, err)
+
+	err = fs.MkdirAll("dir/subdir", 0755)
+	assert.NoError(t, err)
+
+	err = fs.Chmod("file", 0644)
+	assert.NoError(t, err)
+}
+
+func TestNewGcsProvider_ClientError(t *testing.T) {
+	// Backup and restore newStorageClient
+	oldNewStorageClient := newStorageClient
+	defer func() { newStorageClient = oldNewStorageClient }()
+
+	newStorageClient = func(ctx context.Context, opts ...option.ClientOption) (*storage.Client, error) {
+		return nil, fmt.Errorf("mock error")
+	}
+
+	config := &configv1.GcsFs{
+		Bucket: proto.String("my-bucket"),
+	}
+
+	_, err := NewGcsProvider(context.Background(), config)
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), "failed to create gcs client")
+	assert.Contains(t, err.Error(), "mock error")
 }
 
 func TestGcsProvider_ResolvePath(t *testing.T) {

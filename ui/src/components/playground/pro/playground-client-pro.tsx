@@ -7,7 +7,7 @@
 
 import { apiClient, ToolDefinition } from "@/lib/client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useMemo } from "react";
 import { Send, Loader2, Sparkles, Terminal, PanelLeftClose, PanelLeftOpen, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -32,35 +32,56 @@ import { ToolForm } from "@/components/playground/tool-form";
 import { ToolSidebar } from "./tool-sidebar";
 import { ChatMessage, Message } from "./chat-message";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useLocalStorage } from "@/hooks/use-local-storage";
 
 import { useSearchParams } from "next/navigation";
 
 export function PlaygroundClientPro() {
-  const [messages, setMessages] = useState<Message[]>([]);
+  const [messages, setMessages, isInitialized] = useLocalStorage<Message[]>("playground-messages", []);
   const [input, setInput] = useState("");
   const searchParams = useSearchParams();
 
+  // Initialize with welcome message if empty and only after local storage is loaded
   useEffect(() => {
-      setMessages([
-          {
-              id: "1",
-              type: "assistant",
-              content: "Hello! I am your MCP Assistant. Select a tool from the sidebar to configure and execute it, or type a command directly.",
-              timestamp: new Date(),
-          }
-      ]);
-  }, []);
+    if (isInitialized) {
+        // We only add welcome message if the array is empty AND
+        // we check if the key was missing from localStorage (implies first visit).
+        // However, useLocalStorage handles default value if key is missing.
+        // If the user explicitly clears the chat, we set it to empty array.
+        // So `messages` being empty array means either:
+        // 1. First visit (default value used)
+        // 2. User cleared chat
+
+        // To strictly follow "persistence", if the user cleared it, it should stay cleared.
+        // But for UX, if I open the page and it's empty, a welcome message is nice.
+        // Let's rely on checking if localStorage has the key to distinguish first visit.
+        const hasKey = typeof window !== "undefined" && window.localStorage.getItem("playground-messages") !== null;
+
+        if (!hasKey && messages.length === 0) {
+            setMessages([
+                {
+                    id: "1",
+                    type: "assistant",
+                    content: "Hello! I am your MCP Assistant. Select a tool from the sidebar to configure and execute it, or type a command directly.",
+                    timestamp: new Date(),
+                }
+            ]);
+        }
+    }
+  }, [isInitialized]); // Only run when initialization status changes
+
+  // Revive dates from stored messages (JSON strings)
+  const displayMessages = useMemo(() => {
+      return messages.map(m => ({
+          ...m,
+          timestamp: new Date(m.timestamp)
+      }));
+  }, [messages]);
 
   useEffect(() => {
     const tool = searchParams.get('tool');
     const args = searchParams.get('args');
     if (tool) {
-        // Prevent overwriting if user already typed?
-        // But this runs on mount/searchParams change.
-        // If we want to support replay, we should set it.
-        // Only set if input is empty? Or always?
-        // Replay implies intent to overwrite.
-        // Assuming clean navigation.
         let command = tool;
         if (args) {
              command += ` ${args}`;
@@ -68,6 +89,7 @@ export function PlaygroundClientPro() {
         setInput(command);
     }
   }, [searchParams]);
+
   const [isLoading, setIsLoading] = useState(false);
   const [availableTools, setAvailableTools] = useState<ToolDefinition[]>([]);
   const [toolToConfigure, setToolToConfigure] = useState<ToolDefinition | null>(null);
@@ -98,7 +120,7 @@ export function PlaygroundClientPro() {
             scrollContainer.scrollTop = scrollContainer.scrollHeight;
         }
     }
-  }, [messages]);
+  }, [displayMessages]);
 
   const handleSend = async () => {
     if (!input.trim()) return;
@@ -123,9 +145,6 @@ export function PlaygroundClientPro() {
     const command = `${toolToConfigure.name} ${JSON.stringify(data)}`;
     setToolToConfigure(null);
     setInput(command);
-    // Do not auto-send. Just populate input.
-    // However, if we want to "Build", maybe we should just populate.
-    // The request says: "generate the toolbox request in the input box (without sending it)"
   };
 
   const handleInputChange = (value: string) => {
@@ -249,7 +268,7 @@ export function PlaygroundClientPro() {
                             size="sm"
                             className="h-7 text-xs"
                             onClick={() => setMessages([])}
-                            disabled={messages.length === 0}
+                            disabled={displayMessages.length === 0}
                           >
                               Clear
                           </Button>
@@ -260,7 +279,7 @@ export function PlaygroundClientPro() {
                 <div className="flex-1 overflow-hidden relative">
                     <ScrollArea className="h-full p-4" ref={scrollAreaRef}>
                         <div className="max-w-4xl mx-auto pb-10 space-y-4">
-                            {messages.map((msg) => (
+                            {displayMessages.map((msg) => (
                                 <ChatMessage key={msg.id} message={msg} />
                             ))}
                             {isLoading && (

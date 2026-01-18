@@ -30,31 +30,17 @@ export interface Trace {
   trigger: 'user' | 'webhook' | 'scheduler' | 'system';
 }
 
-// Helper to generate mock spans
-function generateSpan(
-  id: string,
-  name: string,
-  type: Span['type'],
-  startOffset: number,
-  duration: number,
-  serviceName?: string
-): Span {
-  const now = Date.now();
-  // We'll base timestamps relative to a fixed start for consistency in the response,
-  // but "now" works for fresh data.
-  // Actually, let's just use offsets for the mock generator logic
-  return {
-    id,
-    name,
-    type,
-    startTime: startOffset,
-    endTime: startOffset + duration,
-    status: Math.random() > 0.9 ? 'error' : 'success', // 10% chance of error
-    serviceName,
-    input: { query: "example input", param: 123 },
-    output: { result: "example output", confidence: 0.99 },
-    children: []
-  };
+interface DebugEntry {
+  id: string;
+  timestamp: string;
+  method: string;
+  path: string;
+  status: number;
+  duration: number; // nanoseconds
+  request_headers: Record<string, string[]>;
+  response_headers: Record<string, string[]>;
+  request_body: string;
+  response_body: string;
 }
 
 /**
@@ -63,86 +49,77 @@ function generateSpan(
  * @param request - The request.
  */
 export async function GET(request: Request) {
-  const { searchParams } = new URL(request.url);
-  // const limit = searchParams.get('limit');
+  const backendUrl = process.env.BACKEND_URL || 'http://localhost:50059';
 
-  const traces: Trace[] = [];
-  const now = Date.now();
+  try {
+    const res = await fetch(`${backendUrl}/debug/entries`, {
+        headers: {
+            'Authorization': request.headers.get('Authorization') || '',
+            'X-API-Key': request.headers.get('X-API-Key') || process.env.MCPANY_API_KEY || ''
+        },
+        cache: 'no-store'
+    });
 
-  // Generate 20 mock traces
-  for (let i = 0; i < 20; i++) {
-    const traceId = `tr_${Math.random().toString(36).substring(2, 9)}`;
-    const startTime = now - (i * 1000 * 60 * 5); // spaced out by 5 mins
-
-    // Scenario 1: Simple Calculator
-    if (i % 3 === 0) {
-      const root = generateSpan(`sp_${traceId}_1`, "calculate_sum", "tool", startTime, 150, "math-service");
-      root.status = 'success'; // force success for root
-      root.input = { a: 10, b: 20 };
-      root.output = { result: 30 };
-
-      traces.push({
-        id: traceId,
-        rootSpan: root,
-        timestamp: new Date(startTime).toISOString(),
-        totalDuration: 150,
-        status: 'success',
-        trigger: 'user'
-      });
+    if (!res.ok) {
+        console.error(`Failed to fetch traces from ${backendUrl}/debug/entries: ${res.status} ${res.statusText}`);
+        return NextResponse.json([]);
     }
-    // Scenario 2: RAG Chain (Complex)
-    else if (i % 3 === 1) {
-      const totalDuration = 2500;
-      const root = generateSpan(`sp_${traceId}_1`, "research_topic", "core", startTime, totalDuration, "orchestrator");
 
-      // Step 1: Search
-      const searchSpan = generateSpan(`sp_${traceId}_2`, "google_search", "tool", startTime + 50, 800, "search-service");
-      searchSpan.input = { query: "MCP architecture patterns" };
-      searchSpan.output = { hits: 5, top_url: "..." };
-      root.children!.push(searchSpan);
+    const entries: DebugEntry[] = await res.json();
 
-      // Step 2: Scrape (parallel-ish)
-      const scrapeSpan = generateSpan(`sp_${traceId}_3`, "web_scraper", "tool", startTime + 900, 1200, "browser-service");
-      root.children!.push(scrapeSpan);
-
-      // Step 3: Summarize
-      const summarizeSpan = generateSpan(`sp_${traceId}_4`, "llm_summarize", "tool", startTime + 2150, 300, "llm-gateway");
-      root.children!.push(summarizeSpan);
-
-      const isError = Math.random() > 0.8;
-      if (isError) {
-        scrapeSpan.status = 'error';
-        scrapeSpan.errorMessage = "Timeout waiting for selector .content";
-        root.status = 'error';
-      } else {
-        root.status = 'success';
-      }
-
-      traces.push({
-        id: traceId,
-        rootSpan: root,
-        timestamp: new Date(startTime).toISOString(),
-        totalDuration,
-        status: root.status,
-        trigger: 'webhook'
-      });
+    // Validate if entries is array
+    if (!Array.isArray(entries)) {
+        console.error("Backend returned non-array for traces");
+        return NextResponse.json([]);
     }
-    // Scenario 3: Database Query
-    else {
-      const duration = 45;
-      const root = generateSpan(`sp_${traceId}_1`, "get_user_profile", "resource", startTime, duration, "user-db");
-      root.status = 'success';
 
-      traces.push({
-        id: traceId,
-        rootSpan: root,
-        timestamp: new Date(startTime).toISOString(),
-        totalDuration: duration,
-        status: 'success',
-        trigger: 'system'
-      });
-    }
+    const traces: Trace[] = entries.map(entry => {
+        const startTime = new Date(entry.timestamp).getTime();
+        const durationMs = entry.duration / 1000000; // ns to ms
+
+        let input: Record<string, any> | undefined;
+        try {
+            input = JSON.parse(entry.request_body);
+        } catch {
+            input = { raw: entry.request_body };
+        }
+
+        let output: Record<string, any> | undefined;
+        try {
+            output = JSON.parse(entry.response_body);
+        } catch {
+            output = { raw: entry.response_body };
+        }
+
+        const span: Span = {
+            id: entry.id,
+            name: `${entry.method} ${entry.path}`,
+            type: 'tool', // Assume tool call for now
+            startTime: startTime,
+            endTime: startTime + durationMs,
+            status: entry.status >= 400 ? 'error' : 'success',
+            input: input,
+            output: output,
+            children: [],
+            serviceName: 'backend'
+        };
+
+        return {
+            id: entry.id,
+            rootSpan: span,
+            timestamp: entry.timestamp,
+            totalDuration: durationMs,
+            status: span.status,
+            trigger: 'user'
+        };
+    });
+
+    // Sort by timestamp descending
+    traces.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+
+    return NextResponse.json(traces);
+  } catch (error) {
+    console.error("Error fetching traces:", error);
+    return NextResponse.json([]);
   }
-
-  return NextResponse.json(traces);
 }
