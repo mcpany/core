@@ -57,5 +57,9 @@ func createTestCommandTool(command string) Tool {
 			},
 		},
 	}
-	return NewLocalCommandTool(toolDef, service, callDef, nil, "test-call")
+	t, err := NewLocalCommandTool(toolDef, service, callDef, nil, "test-call")
+	if err != nil {
+		panic(err)
+	}
+	return t
 }

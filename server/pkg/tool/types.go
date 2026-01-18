@@ -14,6 +14,7 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"strconv"
 	"strings"
@@ -1556,13 +1557,23 @@ type LocalCommandTool struct {
 // Returns:
 //
 //	Tool: The created LocalCommandTool.
+//	error: An error if the tool creation fails (e.g., command not found).
 func NewLocalCommandTool(
 	tool *v1.Tool,
 	service *configv1.CommandLineUpstreamService,
 	callDefinition *configv1.CommandLineCallDefinition,
 	policies []*configv1.CallPolicy,
 	callID string,
-) Tool {
+) (Tool, error) {
+	// Pre-flight check: Verify that the command exists in PATH.
+	// This prevents "silent failures" where the server starts but the tool fails at runtime.
+	cmdName := service.GetCommand()
+	if cmdName != "" {
+		if _, err := exec.LookPath(cmdName); err != nil {
+			return nil, fmt.Errorf("command %q not found in PATH: %w. Please check your configuration", cmdName, err)
+		}
+	}
+
 	compiled, err := CompileCallPolicies(policies)
 	t := &LocalCommandTool{
 		tool:           tool,
@@ -1574,7 +1585,7 @@ func NewLocalCommandTool(
 	if err != nil {
 		t.initError = fmt.Errorf("failed to compile call policies: %w", err)
 	}
-	return t
+	return t, nil
 }
 
 // Tool returns the protobuf definition of the command-line tool.

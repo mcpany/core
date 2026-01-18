@@ -205,7 +205,12 @@ func (u *Upstream) createAndRegisterCommandTools(
 
 		var newTool tool.Tool
 		if commandLineService.GetLocal() {
-			newTool = tool.NewLocalCommandTool(newToolProto, commandLineService, callDef, callPolicies, callID)
+			var err error
+			newTool, err = tool.NewLocalCommandTool(newToolProto, commandLineService, callDef, callPolicies, callID)
+			if err != nil {
+				log.Error("Failed to create local command tool", "error", err)
+				return nil, err
+			}
 		} else {
 			newTool = tool.NewCommandTool(newToolProto, commandLineService, callDef, callPolicies, callID)
 		}

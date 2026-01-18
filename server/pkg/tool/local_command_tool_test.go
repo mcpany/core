@@ -40,7 +40,8 @@ func TestLocalCommandTool_Execute(t *testing.T) {
 		},
 	}
 
-	localTool := NewLocalCommandTool(tool, service, callDef, nil, "call-id")
+	localTool, err := NewLocalCommandTool(tool, service, callDef, nil, "call-id")
+	assert.NoError(t, err)
 
 	req := &ExecutionRequest{
 		ToolName: "test-tool",
@@ -82,7 +83,8 @@ func TestLocalCommandTool_Execute_WithEnv(t *testing.T) {
 		Args: []string{"-c", "echo -n $MY_ENV"},
 	}
 
-	localTool := NewLocalCommandTool(tool, service, callDef, nil, "call-id")
+	localTool, err := NewLocalCommandTool(tool, service, callDef, nil, "call-id")
+	assert.NoError(t, err)
 
 	req := &ExecutionRequest{
 		ToolName:  "test-tool-env",
@@ -116,7 +118,8 @@ func TestLocalCommandTool_Execute_BlockedByPolicy(t *testing.T) {
 		},
 	}
 
-	localTool := NewLocalCommandTool(tool, service, callDef, policies, "blocked-call-id")
+	localTool, err := NewLocalCommandTool(tool, service, callDef, policies, "blocked-call-id")
+	assert.NoError(t, err)
 
 	req := &ExecutionRequest{
 		ToolName: "test-tool-blocked",
@@ -152,7 +155,8 @@ func TestLocalCommandTool_Execute_JSONProtocol_StderrCapture(t *testing.T) {
 		Args: []string{"-c", "echo 'something went wrong' >&2; exit 1"},
 	}
 
-	localTool := NewLocalCommandTool(tool, service, callDef, nil, "call-id")
+	localTool, err := NewLocalCommandTool(tool, service, callDef, nil, "call-id")
+	assert.NoError(t, err)
 
 	req := &ExecutionRequest{
 		ToolName:  "test-tool-json-stderr",
@@ -160,7 +164,7 @@ func TestLocalCommandTool_Execute_JSONProtocol_StderrCapture(t *testing.T) {
 	}
 	req.ToolInputs, _ = json.Marshal(req.Arguments)
 
-	_, err := localTool.Execute(context.Background(), req)
+	_, err = localTool.Execute(context.Background(), req)
 	assert.Error(t, err)
 
 	// This assertion should fail before fix

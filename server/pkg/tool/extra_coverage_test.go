@@ -111,13 +111,14 @@ func TestTool_MCPTool_Method(t *testing.T) {
 			Name:      proto.String("cmd-tool"),
 			ServiceId: proto.String("service"),
 		}
-		ct := NewLocalCommandTool(
+		ct, err := NewLocalCommandTool(
 			toolDef,
 			&configv1.CommandLineUpstreamService{},
 			&configv1.CommandLineCallDefinition{},
 			nil,
 			"call-id",
 		)
+		assert.NoError(t, err)
 
 		mcpTool := ct.MCPTool() // It calls ConvertProtoToMCPTool
 		assert.NotNil(t, mcpTool)
@@ -238,13 +239,14 @@ func TestTool_GetCacheConfig(t *testing.T) {
 		)
 		assert.Equal(t, cacheCfg, ct.GetCacheConfig())
 
-		lct := NewLocalCommandTool(
+		lct, err := NewLocalCommandTool(
 			&pb.Tool{},
 			&configv1.CommandLineUpstreamService{},
 			&configv1.CommandLineCallDefinition{Cache: cacheCfg},
 			nil,
 			"",
 		)
+		assert.NoError(t, err)
 		assert.Equal(t, cacheCfg, lct.GetCacheConfig())
 	})
 

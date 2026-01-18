@@ -63,6 +63,7 @@
 - [x] **Strict Startup Mode**: Implemented `--strict` flag for the `run` command. When enabled, the server performs pre-flight connectivity checks ("doctor" checks) on all configured upstream services and fails to start if any are unreachable, preventing silent failures. (Friction Fighter)
 - [x] **Stdio Logging Visibility**: Fixed an issue where logs were discarded in stdio mode (used by clients like Claude Desktop). Logs now correctly output to stderr, ensuring "silent failures" are visible and debuggable. (Friction Fighter)
 - [x] **OAuth2 Token Reachability Check**: Reliability: During validation (or via `doctor` command), attempt to connect to the OAuth2 token URL to verify network connectivity, going beyond simple syntax checks. (Friction Fighter)
+- [x] **Strict Command Existence Check**: Now enforces that local command tools reference a valid executable in the PATH at startup, preventing runtime errors. (Friction Fighter)
 
 ## 2. Top 10 Recommended Features
 
@@ -134,6 +135,8 @@ These features represent the next logical steps for the product, focusing on Ent
 | 46   | **Schema Validation Caching**                 | **Performance**: Cache compiled schemas to avoid recompilation overhead during configuration reloads.                                                                                                              | Low        |
 | 45   | **Config Validation Diff**                    | **Experience**: When a configuration reload fails, display a diff highlighting the changes that caused the error compared to the last known good configuration.                                                    | High       |
 | 46   | **Health Webhooks**                           | **Ops**: Configure webhooks (Slack, Discord, PagerDuty) to be triggered when the system health status changes (e.g., from Healthy to Degraded).                                                                    | Medium     |
+| 47   | **Config Secret Scanning**                    | **Security**: Scan configuration files for potential secrets (API keys, tokens) and warn the user.                                                                                                                 | Medium     |
+| 48   | **Dynamic Service Discovery (mDNS)**          | **Connectivity**: Automatically discover other MCP Any instances on the local network.                                                                                                                             | High       |
 
 ## 3. Codebase Health
 

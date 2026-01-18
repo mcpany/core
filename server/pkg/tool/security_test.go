@@ -32,7 +32,8 @@ func TestLocalCommandTool_ArgumentInjection_Prevention(t *testing.T) {
 		Args: []string{"{{file}}"},
 	}
 
-	localTool := NewLocalCommandTool(tool, service, callDef, nil, "call-id")
+	localTool, err := NewLocalCommandTool(tool, service, callDef, nil, "call-id")
+	assert.NoError(t, err)
 
 	// Case 1: Safe input (relative path)
 	reqSafe := &ExecutionRequest{
@@ -43,7 +44,7 @@ func TestLocalCommandTool_ArgumentInjection_Prevention(t *testing.T) {
 	}
 	reqSafe.ToolInputs, _ = json.Marshal(reqSafe.Arguments)
 
-	_, err := localTool.Execute(context.Background(), reqSafe)
+	_, err = localTool.Execute(context.Background(), reqSafe)
 	if err != nil {
 		assert.NotContains(t, err.Error(), "argument injection")
 		assert.NotContains(t, err.Error(), "absolute path detected")
@@ -95,7 +96,8 @@ func TestLocalCommandTool_ShellInjection_Prevention(t *testing.T) {
 			},
 			Args: []string{"-c", "echo {{msg}}"},
 		}
-		localTool := NewLocalCommandTool(tool, service, callDef, nil, "call-id")
+		localTool, err := NewLocalCommandTool(tool, service, callDef, nil, "call-id")
+		assert.NoError(t, err)
 
 		// Injection attempt
 		reqAttack := &ExecutionRequest{
@@ -106,7 +108,7 @@ func TestLocalCommandTool_ShellInjection_Prevention(t *testing.T) {
 		}
 		reqAttack.ToolInputs, _ = json.Marshal(reqAttack.Arguments)
 
-		_, err := localTool.Execute(context.Background(), reqAttack)
+		_, err = localTool.Execute(context.Background(), reqAttack)
 		assert.Error(t, err)
 		if err != nil {
 			assert.Contains(t, err.Error(), "shell injection detected")
@@ -138,7 +140,8 @@ func TestLocalCommandTool_ShellInjection_Prevention(t *testing.T) {
 			},
 			Args: []string{"-c", "echo '{{msg}}'"},
 		}
-		localTool := NewLocalCommandTool(tool, service, callDef, nil, "call-id")
+		localTool, err := NewLocalCommandTool(tool, service, callDef, nil, "call-id")
+		assert.NoError(t, err)
 
 		// Safe input with special chars
 		reqSafe := &ExecutionRequest{
@@ -149,7 +152,7 @@ func TestLocalCommandTool_ShellInjection_Prevention(t *testing.T) {
 		}
 		reqSafe.ToolInputs, _ = json.Marshal(reqSafe.Arguments)
 
-		_, err := localTool.Execute(context.Background(), reqSafe)
+		_, err = localTool.Execute(context.Background(), reqSafe)
 		// Should PASS because it's quoted
 		if err != nil {
 			assert.NotContains(t, err.Error(), "shell injection detected")
@@ -181,7 +184,8 @@ func TestLocalCommandTool_ShellInjection_Prevention(t *testing.T) {
 			},
 			Args: []string{"-c", "echo \"{{msg}}\""},
 		}
-		localTool := NewLocalCommandTool(tool, service, callDef, nil, "call-id")
+		localTool, err := NewLocalCommandTool(tool, service, callDef, nil, "call-id")
+		assert.NoError(t, err)
 
 		// Safe input
 		reqSafe := &ExecutionRequest{
@@ -191,7 +195,7 @@ func TestLocalCommandTool_ShellInjection_Prevention(t *testing.T) {
 			},
 		}
 		reqSafe.ToolInputs, _ = json.Marshal(reqSafe.Arguments)
-		_, err := localTool.Execute(context.Background(), reqSafe)
+		_, err = localTool.Execute(context.Background(), reqSafe)
 		assert.NoError(t, err)
 
 		// Variable expansion attempt (dangerous in double quotes)
@@ -252,7 +256,8 @@ func TestLocalCommandTool_ShellInjection_Prevention(t *testing.T) {
 			},
 			Args: []string{"{{msg}}"},
 		}
-		localTool := NewLocalCommandTool(tool, service, callDef, nil, "call-id")
+		localTool, err := NewLocalCommandTool(tool, service, callDef, nil, "call-id")
+		assert.NoError(t, err)
 
 		// Input with shell chars - should be allowed for non-shell command
 		reqSafe := &ExecutionRequest{
@@ -262,7 +267,7 @@ func TestLocalCommandTool_ShellInjection_Prevention(t *testing.T) {
 			},
 		}
 		reqSafe.ToolInputs, _ = json.Marshal(reqSafe.Arguments)
-		_, err := localTool.Execute(context.Background(), reqSafe)
+		_, err = localTool.Execute(context.Background(), reqSafe)
 		assert.NoError(t, err)
 	})
 }
@@ -290,7 +295,8 @@ func TestLocalCommandTool_Execute_PythonInjection(t *testing.T) {
 		},
 	}
 
-	ct := NewLocalCommandTool(toolDef, service, callDef, nil, "test-call-id")
+	ct, err := NewLocalCommandTool(toolDef, service, callDef, nil, "test-call-id")
+	assert.NoError(t, err)
 
 	// Malicious input trying to break out of python string
 	// msg = '); print("INJECTED"); print('
@@ -306,7 +312,7 @@ func TestLocalCommandTool_Execute_PythonInjection(t *testing.T) {
 	}
 
 	// Execute
-	_, err := ct.Execute(context.Background(), req)
+	_, err = ct.Execute(context.Background(), req)
 
 	// Expect strict shell injection prevention to kick in for Python
 	assert.Error(t, err)
@@ -331,7 +337,8 @@ func TestLocalCommandTool_ShellInjection_ControlChars(t *testing.T) {
 		},
 	}
 
-	localTool := NewLocalCommandTool(tool, service, callDef, nil, "call-id")
+	localTool, err := NewLocalCommandTool(tool, service, callDef, nil, "call-id")
+	assert.NoError(t, err)
 
 	// Test cases for control characters
 	testCases := []struct {
@@ -356,7 +363,7 @@ func TestLocalCommandTool_ShellInjection_ControlChars(t *testing.T) {
 			}
 			req.ToolInputs, _ = json.Marshal(req.Arguments)
 
-			_, err := localTool.Execute(context.Background(), req)
+			_, err = localTool.Execute(context.Background(), req)
 			if tc.shouldFail {
 				if err == nil {
 					t.Fatalf("Expected error for input %q, but got nil", tc.input)

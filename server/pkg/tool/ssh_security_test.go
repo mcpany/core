@@ -32,7 +32,8 @@ func TestLocalCommandTool_SSHInjection_Prevention(t *testing.T) {
 		Args: []string{"user@host", "echo {{cmd}}"},
 	}
 
-	localTool := NewLocalCommandTool(tool, service, callDef, nil, "call-id")
+	localTool, err := NewLocalCommandTool(tool, service, callDef, nil, "call-id")
+	assert.NoError(t, err)
 
 	// Case 1: Safe input
 	reqSafe := &ExecutionRequest{
@@ -43,7 +44,7 @@ func TestLocalCommandTool_SSHInjection_Prevention(t *testing.T) {
 	}
 	reqSafe.ToolInputs, _ = json.Marshal(reqSafe.Arguments)
 
-	_, err := localTool.Execute(context.Background(), reqSafe)
+	_, err = localTool.Execute(context.Background(), reqSafe)
 	// Execute will fail because ssh is not installed or network fails,
 	// but we only care if it failed due to injection check.
 	// We expect NO injection error.

@@ -42,13 +42,14 @@ func TestLocalCommandTool_Execute_Echo(t *testing.T) {
 		},
 	}
 
-	tool := NewLocalCommandTool(
+	tool, err := NewLocalCommandTool(
 		&pb.Tool{Name: proto.String("echo-tool"), InputSchema: inputSchema},
 		svc,
 		callDef,
 		nil,
 		"call-id",
 	)
+	assert.NoError(t, err)
 
 	// Execute adds input args
 	req := &ExecutionRequest{
@@ -74,13 +75,14 @@ func TestLocalCommandTool_Execute_JSON(t *testing.T) {
 	}
 	callDef := &configv1.CommandLineCallDefinition{}
 
-	tool := NewLocalCommandTool(
+	tool, err := NewLocalCommandTool(
 		&pb.Tool{Name: proto.String("json-tool")},
 		svc,
 		callDef,
 		nil,
 		"call-id",
 	)
+	assert.NoError(t, err)
 
 	// Input JSON will be echoed back.
 	// cliExecutor expects output to be JSON.
@@ -104,13 +106,14 @@ func TestLocalCommandTool_Execute_Error(t *testing.T) {
 	}
 	callDef := &configv1.CommandLineCallDefinition{}
 
-	tool := NewLocalCommandTool(
+	tool, err := NewLocalCommandTool(
 		&pb.Tool{Name: proto.String("fail-tool")},
 		svc,
 		callDef,
 		nil,
 		"call-id",
 	)
+	assert.NoError(t, err)
 
 	req := &ExecutionRequest{
 		ToolInputs: json.RawMessage(`{}`),
@@ -131,18 +134,16 @@ func TestLocalCommandTool_Execute_NonExistent(t *testing.T) {
 	}
 	callDef := &configv1.CommandLineCallDefinition{}
 
-	tool := NewLocalCommandTool(
+	_, err := NewLocalCommandTool(
 		&pb.Tool{Name: proto.String("bad-tool")},
 		svc,
 		callDef,
 		nil,
 		"call-id",
 	)
-
-	req := &ExecutionRequest{ToolInputs: json.RawMessage(`{}`)}
-	_, err := tool.Execute(context.Background(), req)
+	// Now fails at creation time
 	assert.Error(t, err)
-	assert.Contains(t, err.Error(), "executable file not found")
+	assert.Contains(t, err.Error(), "not found in PATH")
 }
 
 func TestLocalCommandTool_Execute_Timeout(t *testing.T) {
@@ -155,13 +156,14 @@ func TestLocalCommandTool_Execute_Timeout(t *testing.T) {
 		Args: []string{"1"}, // Sleep 1 second
 	}
 
-	tool := NewLocalCommandTool(
+	tool, err := NewLocalCommandTool(
 		&pb.Tool{Name: proto.String("timeout-tool")},
 		svc,
 		callDef,
 		nil,
 		"call-id",
 	)
+	assert.NoError(t, err)
 
 	req := &ExecutionRequest{ToolInputs: json.RawMessage(`{}`)}
 	res, err := tool.Execute(context.Background(), req)
@@ -179,10 +181,11 @@ func TestLocalCommandTool_Execute_Timeout(t *testing.T) {
 func TestLocalCommandTool_Execute_InvalidArgs(t *testing.T) {
 	t.Parallel()
 	svc := &configv1.CommandLineUpstreamService{Command: proto.String("echo")}
-	tool := NewLocalCommandTool(&pb.Tool{Name: proto.String("t")}, svc, &configv1.CommandLineCallDefinition{}, nil, "call-id")
+	tool, err := NewLocalCommandTool(&pb.Tool{Name: proto.String("t")}, svc, &configv1.CommandLineCallDefinition{}, nil, "call-id")
+	assert.NoError(t, err)
 
 	// args is not array
-	_, err := tool.Execute(context.Background(), &ExecutionRequest{ToolInputs: json.RawMessage(`{"args": "not-array"}`)})
+	_, err = tool.Execute(context.Background(), &ExecutionRequest{ToolInputs: json.RawMessage(`{"args": "not-array"}`)})
 	assert.Error(t, err)
 
 	// args element not string

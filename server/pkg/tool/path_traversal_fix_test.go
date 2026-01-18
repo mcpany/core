@@ -8,6 +8,9 @@ import (
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
+	"os"
+	"os/exec"
+	"path/filepath"
 	"testing"
 
 	"github.com/mcpany/core/server/pkg/client"
@@ -85,7 +88,23 @@ func TestLocalCommandTool_ShellInjection_Prevention_NewCommands(t *testing.T) {
 	// Tests that newly added commands (busybox, expect, git) are treated as shells
 	t.Parallel()
 
+	// Ensure commands exist for validation
+	tempDir := t.TempDir()
+	oldPath := os.Getenv("PATH")
+	os.Setenv("PATH", tempDir+string(os.PathListSeparator)+oldPath)
+	defer os.Setenv("PATH", oldPath)
+
 	commands := []string{"busybox", "expect", "git"}
+
+	for _, cmd := range commands {
+		// Check if exists in original PATH, if not create dummy
+		if _, err := exec.LookPath(cmd); err != nil {
+			// Create dummy
+			dummyPath := filepath.Join(tempDir, cmd)
+			// Create empty executable
+			_ = os.WriteFile(dummyPath, []byte("#!/bin/sh\nexit 0"), 0755)
+		}
+	}
 
 	for _, cmd := range commands {
 		t.Run(cmd, func(t *testing.T) {
@@ -100,12 +119,13 @@ func TestLocalCommandTool_ShellInjection_Prevention_NewCommands(t *testing.T) {
 				},
 				Args: []string{"{{arg}}"},
 			}
-			localTool := tool.NewLocalCommandTool(toolDef, service, callDef, nil, "call-id")
+			localTool, err := tool.NewLocalCommandTool(toolDef, service, callDef, nil, "call-id")
+			assert.NoError(t, err)
 
 			// Unquoted injection attempt
 			inputs := json.RawMessage(`{"arg": "foo; echo injected"}`)
 			req := &tool.ExecutionRequest{ToolInputs: inputs}
-			_, err := localTool.Execute(context.Background(), req)
+			_, err = localTool.Execute(context.Background(), req)
 			assert.Error(t, err)
 			if err != nil {
 				assert.Contains(t, err.Error(), "shell injection detected")

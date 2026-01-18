@@ -40,7 +40,8 @@ func TestLocalCommandTool_Execute_LargeOutput(t *testing.T) {
 		Args: []string{"-c", "print('a' * 10 * 1024 * 1024)"},
 	}
 
-	localTool := NewLocalCommandTool(tool, service, callDef, nil, "call-id")
+	localTool, err := NewLocalCommandTool(tool, service, callDef, nil, "call-id")
+	assert.NoError(t, err)
 
 	req := &ExecutionRequest{
 		ToolName:  "test-tool-large",
@@ -87,7 +88,8 @@ func TestLocalCommandTool_Execute_LargeOutput_Truncated(t *testing.T) {
 		Args: []string{"-c", "print('a' * 2048)"},
 	}
 
-	localTool := NewLocalCommandTool(tool, service, callDef, nil, "call-id")
+	localTool, err := NewLocalCommandTool(tool, service, callDef, nil, "call-id")
+	assert.NoError(t, err)
 
 	req := &ExecutionRequest{
 		ToolName:  "test-tool-large-truncated",
