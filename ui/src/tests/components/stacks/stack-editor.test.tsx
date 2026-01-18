@@ -55,6 +55,7 @@ describe('StackEditor', () => {
   });
 
   it('loads and displays configuration', async () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (apiClient.getStackConfig as any).mockResolvedValue('version: "1.0"');
 
     render(<StackEditor stackId="test-stack" />);
@@ -67,9 +68,10 @@ describe('StackEditor', () => {
   });
 
   it('validates YAML content', async () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (apiClient.getStackConfig as any).mockResolvedValue('');
 
-    const { container } = render(<StackEditor stackId="test-stack" />);
+    render(<StackEditor stackId="test-stack" />);
 
     // Find textarea by selector if role is elusive
     await waitFor(() => {
@@ -92,6 +94,7 @@ describe('StackEditor', () => {
   });
 
   it('toggles palette and visualizer', async () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (apiClient.getStackConfig as any).mockResolvedValue('');
     render(<StackEditor stackId="test-stack" />);
 
