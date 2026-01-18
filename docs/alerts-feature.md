@@ -1,7 +1,7 @@
 # Alerts & Incidents Feature
 
 **Date:** 2026-01-09
-**Status:** Implemented
+**Status:** UI Prototype (Mock Data)
 
 ## Overview
 
