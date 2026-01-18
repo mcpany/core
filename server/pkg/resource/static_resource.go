@@ -7,6 +7,7 @@ import (
 	"context"
 	"fmt"
 	"io"
+	"math"
 	"net/http"
 
 	"github.com/mcpany/core/server/pkg/util"
@@ -88,8 +89,17 @@ func (r *StaticResource) Read(ctx context.Context) (*mcp.ReadResourceResult, err
 		limit = r.resource.Size
 	}
 
-	// Read up to limit + 1 to detect if the resource exceeds the limit
-	data, err := io.ReadAll(io.LimitReader(resp.Body, limit+1))
+	var reader io.Reader
+	if limit == math.MaxInt64 {
+		// If limit is MaxInt64, limit+1 would overflow to negative, causing LimitReader to read 0 bytes.
+		// In this case, we read everything without a limit reader (or rely on io.ReadAll reading everything).
+		reader = resp.Body
+	} else {
+		// Read up to limit + 1 to detect if the resource exceeds the limit
+		reader = io.LimitReader(resp.Body, limit+1)
+	}
+
+	data, err := io.ReadAll(reader)
 	if err != nil {
 		return nil, fmt.Errorf("failed to read resource body: %w", err)
 	}
