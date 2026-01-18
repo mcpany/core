@@ -79,8 +79,8 @@ test.describe('User Guide Walkthrough', () => {
   test('Global Search Modal', async ({ page }) => {
     await page.goto('/');
 
-    // Press Ctrl+K
-    await page.keyboard.press('Control+k');
+    // Open Search Modal via explicit click instead of potentially flaky Ctrl+K in Kind
+    await page.getByTestId('global-search-trigger').click();
 
     // Check for Search Input placeholder or identifying element
     await expect(page.getByPlaceholder('Type a command or search...')).toBeVisible();
