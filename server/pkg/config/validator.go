@@ -831,11 +831,9 @@ func validateOAuth2Auth(ctx context.Context, oauth *configv1.OAuth2Auth) error {
 			return fmt.Errorf("invalid oauth2 issuer_url: %s", oauth.GetIssuerUrl())
 		}
 		// If IssuerURL is present and valid, we allow TokenUrl to be empty (auto-discovery)
-	} else {
+	} else if !validation.IsValidURL(oauth.GetTokenUrl()) {
 		// Only validate TokenUrl if it is present
-		if !validation.IsValidURL(oauth.GetTokenUrl()) {
-			return fmt.Errorf("invalid oauth2 token_url: %s", oauth.GetTokenUrl())
-		}
+		return fmt.Errorf("invalid oauth2 token_url: %s", oauth.GetTokenUrl())
 	}
 
 	clientID, err := util.ResolveSecret(ctx, oauth.GetClientId())
