@@ -21,6 +21,7 @@ import (
 
 func TestPathEncodingBug(t *testing.T) {
 	t.Setenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS", "true")
+	t.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "true")
 
 	// Create a test server that checks the RequestURI
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -81,6 +82,7 @@ func TestPathEncodingBug(t *testing.T) {
 
 func TestPathEncoding_SlashInParameter_WithTrailingSlash(t *testing.T) {
 	t.Setenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS", "true")
+	t.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "true")
 
 	// Create a test server that checks the path
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

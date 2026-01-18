@@ -57,6 +57,7 @@ func newMockGRPCHealthServer(t *testing.T, status grpc_health_v1.HealthCheckResp
 }
 
 func TestNewChecker(t *testing.T) {
+	t.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "true")
 	ctx := context.Background()
 
 	t.Run("NilConfig", func(t *testing.T) {
@@ -260,6 +261,7 @@ func TestFilesystemCheck(t *testing.T) {
 }
 
 func TestCheckGRPCHealth(t *testing.T) {
+	t.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "true")
 	ctx := context.Background()
 
 	t.Run("Serving", func(t *testing.T) {
@@ -318,6 +320,7 @@ func TestCheckGRPCHealth(t *testing.T) {
 }
 
 func TestCheckConnection(t *testing.T) {
+	t.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "true")
 	t.Run("ConnectionSuccess", func(t *testing.T) {
 		lis, err := net.Listen("tcp", "localhost:0")
 		assert.NoError(t, err)
@@ -339,6 +342,7 @@ func TestCheckConnection(t *testing.T) {
 }
 
 func TestCheckVariousServices(t *testing.T) {
+	t.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "true")
 	ctx := context.Background()
 
 	// Setup a simple listening server for connection checks
@@ -487,6 +491,7 @@ func TestCheckVariousServices(t *testing.T) {
 }
 
 func TestWebsocketCheck(t *testing.T) {
+	t.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "true")
 	ctx := context.Background()
 
 	t.Run("Success", func(t *testing.T) {
@@ -593,6 +598,7 @@ func TestWebsocketCheck(t *testing.T) {
 }
 
 func TestWebSocketHealthCheckBasic(t *testing.T) {
+	t.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "true")
 	ctx := context.Background()
 
 	// Mock WebSocket server
@@ -642,6 +648,7 @@ func TestWebSocketHealthCheckBasic(t *testing.T) {
 }
 
 func TestWebRTCHealthCheck(t *testing.T) {
+	t.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "true")
 	ctx := context.Background()
 
 	// Mock HTTP server for signaling
@@ -689,6 +696,7 @@ func TestWebRTCHealthCheck(t *testing.T) {
 }
 
 func TestCheckConnection_WithScheme(t *testing.T) {
+	t.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "true")
 	lis, err := net.Listen("tcp", "localhost:0")
 	require.NoError(t, err)
 	defer func() { _ = lis.Close() }()
@@ -730,6 +738,7 @@ func TestHTTPCheck_BodyMismatch(t *testing.T) {
 }
 
 func TestGRPC_NoHealthCheck(t *testing.T) {
+	t.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "true")
 	// Should fall back to checkConnection
 	lis, err := net.Listen("tcp", "localhost:0")
 	require.NoError(t, err)

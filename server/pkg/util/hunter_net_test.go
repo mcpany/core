@@ -15,6 +15,7 @@ import (
 )
 
 func TestCheckConnection_Coverage(t *testing.T) {
+	t.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "true")
 	// Start a listener
 	ln, err := net.Listen("tcp", "127.0.0.1:0")
 	require.NoError(t, err)
