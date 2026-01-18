@@ -62,6 +62,33 @@ test.describe('System Status Banner', () => {
     await expect(page.getByText('Invalid YAML syntax in config.yaml')).toBeVisible();
   });
 
+  test('should show configuration error with diff', async ({ page }) => {
+    await page.route('**/doctor', async route => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          status: 'degraded',
+          checks: {
+            configuration: {
+              status: 'error',
+              message: 'Invalid YAML syntax',
+              diff: '--- old\n+++ new\n@@ -1,1 +1,1 @@\n-valid\n+invalid'
+            }
+          }
+        })
+      });
+    });
+
+    await page.goto('/');
+    await expect(page.getByText('Configuration Error')).toBeVisible();
+    await expect(page.getByText('Invalid YAML syntax')).toBeVisible();
+    await expect(page.getByText('Configuration Diff:')).toBeVisible();
+    // Use .locator with hasText to find specific lines if getByText is too strict about newlines
+    await expect(page.locator('pre').filter({ hasText: '-valid' })).toBeVisible();
+    await expect(page.locator('pre').filter({ hasText: '+invalid' })).toBeVisible();
+  });
+
   test('should show degraded status for other check failures', async ({ page }) => {
     await page.route('**/doctor', async route => {
       await route.fulfill({

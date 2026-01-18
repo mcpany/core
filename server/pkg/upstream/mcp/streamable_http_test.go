@@ -924,3 +924,20 @@ func TestStreamableHTTP_RoundTrip(t *testing.T) {
 
 	assert.Equal(t, http.StatusOK, resp.StatusCode)
 }
+
+func TestUpstream_Register_InvalidHTTPAddress(t *testing.T) {
+	u := NewUpstream(nil)
+	ctx := context.Background()
+	serviceConfig := configv1.UpstreamServiceConfig_builder{
+		Name: proto.String("test-service-invalid-http-address"),
+		McpService: configv1.McpUpstreamService_builder{
+			HttpConnection: configv1.McpStreamableHttpConnection_builder{
+				HttpAddress: proto.String("file:///etc/passwd"),
+			}.Build(),
+		}.Build(),
+	}.Build()
+
+	_, _, _, err := u.Register(ctx, serviceConfig, newMockToolManager(), newMockPromptManager(), newMockResourceManager(), false)
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), "invalid mcp http service address scheme")
+}
