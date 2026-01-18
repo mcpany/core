@@ -157,10 +157,11 @@ func (b0 ListServicesRequest_builder) Build() *ListServicesRequest {
 }
 
 type ListServicesResponse struct {
-	state               protoimpl.MessageState       `protogen:"opaque.v1"`
-	xxx_hidden_Services *[]*v1.UpstreamServiceConfig `protobuf:"bytes,1,rep,name=services"`
-	unknownFields       protoimpl.UnknownFields
-	sizeCache           protoimpl.SizeCache
+	state                    protoimpl.MessageState       `protogen:"opaque.v1"`
+	xxx_hidden_Services      *[]*v1.UpstreamServiceConfig `protobuf:"bytes,1,rep,name=services"`
+	xxx_hidden_ServiceStates *[]*ServiceState             `protobuf:"bytes,2,rep,name=service_states,json=serviceStates"`
+	unknownFields            protoimpl.UnknownFields
+	sizeCache                protoimpl.SizeCache
 }
 
 func (x *ListServicesResponse) Reset() {
@@ -188,6 +189,7 @@ func (x *ListServicesResponse) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
+// Deprecated: Marked as deprecated in proto/admin/v1/admin.proto.
 func (x *ListServicesResponse) GetServices() []*v1.UpstreamServiceConfig {
 	if x != nil {
 		if x.xxx_hidden_Services != nil {
@@ -197,14 +199,30 @@ func (x *ListServicesResponse) GetServices() []*v1.UpstreamServiceConfig {
 	return nil
 }
 
+func (x *ListServicesResponse) GetServiceStates() []*ServiceState {
+	if x != nil {
+		if x.xxx_hidden_ServiceStates != nil {
+			return *x.xxx_hidden_ServiceStates
+		}
+	}
+	return nil
+}
+
+// Deprecated: Marked as deprecated in proto/admin/v1/admin.proto.
 func (x *ListServicesResponse) SetServices(v []*v1.UpstreamServiceConfig) {
 	x.xxx_hidden_Services = &v
+}
+
+func (x *ListServicesResponse) SetServiceStates(v []*ServiceState) {
+	x.xxx_hidden_ServiceStates = &v
 }
 
 type ListServicesResponse_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	Services []*v1.UpstreamServiceConfig
+	// Deprecated: Marked as deprecated in proto/admin/v1/admin.proto.
+	Services      []*v1.UpstreamServiceConfig
+	ServiceStates []*ServiceState
 }
 
 func (b0 ListServicesResponse_builder) Build() *ListServicesResponse {
@@ -212,6 +230,143 @@ func (b0 ListServicesResponse_builder) Build() *ListServicesResponse {
 	b, x := &b0, m0
 	_, _ = b, x
 	x.xxx_hidden_Services = &b.Services
+	x.xxx_hidden_ServiceStates = &b.ServiceStates
+	return m0
+}
+
+type ServiceState struct {
+	state                  protoimpl.MessageState    `protogen:"opaque.v1"`
+	xxx_hidden_Config      *v1.UpstreamServiceConfig `protobuf:"bytes,1,opt,name=config"`
+	xxx_hidden_Status      *string                   `protobuf:"bytes,2,opt,name=status"`
+	xxx_hidden_Error       *string                   `protobuf:"bytes,3,opt,name=error"`
+	XXX_raceDetectHookData protoimpl.RaceDetectHookData
+	XXX_presence           [1]uint32
+	unknownFields          protoimpl.UnknownFields
+	sizeCache              protoimpl.SizeCache
+}
+
+func (x *ServiceState) Reset() {
+	*x = ServiceState{}
+	mi := &file_proto_admin_v1_admin_proto_msgTypes[4]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ServiceState) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ServiceState) ProtoMessage() {}
+
+func (x *ServiceState) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_admin_v1_admin_proto_msgTypes[4]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+func (x *ServiceState) GetConfig() *v1.UpstreamServiceConfig {
+	if x != nil {
+		return x.xxx_hidden_Config
+	}
+	return nil
+}
+
+func (x *ServiceState) GetStatus() string {
+	if x != nil {
+		if x.xxx_hidden_Status != nil {
+			return *x.xxx_hidden_Status
+		}
+		return ""
+	}
+	return ""
+}
+
+func (x *ServiceState) GetError() string {
+	if x != nil {
+		if x.xxx_hidden_Error != nil {
+			return *x.xxx_hidden_Error
+		}
+		return ""
+	}
+	return ""
+}
+
+func (x *ServiceState) SetConfig(v *v1.UpstreamServiceConfig) {
+	x.xxx_hidden_Config = v
+}
+
+func (x *ServiceState) SetStatus(v string) {
+	x.xxx_hidden_Status = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 3)
+}
+
+func (x *ServiceState) SetError(v string) {
+	x.xxx_hidden_Error = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 3)
+}
+
+func (x *ServiceState) HasConfig() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_Config != nil
+}
+
+func (x *ServiceState) HasStatus() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 1)
+}
+
+func (x *ServiceState) HasError() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 2)
+}
+
+func (x *ServiceState) ClearConfig() {
+	x.xxx_hidden_Config = nil
+}
+
+func (x *ServiceState) ClearStatus() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 1)
+	x.xxx_hidden_Status = nil
+}
+
+func (x *ServiceState) ClearError() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 2)
+	x.xxx_hidden_Error = nil
+}
+
+type ServiceState_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	Config *v1.UpstreamServiceConfig
+	Status *string
+	Error  *string
+}
+
+func (b0 ServiceState_builder) Build() *ServiceState {
+	m0 := &ServiceState{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_Config = b.Config
+	if b.Status != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 3)
+		x.xxx_hidden_Status = b.Status
+	}
+	if b.Error != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 3)
+		x.xxx_hidden_Error = b.Error
+	}
 	return m0
 }
 
@@ -226,7 +381,7 @@ type GetServiceRequest struct {
 
 func (x *GetServiceRequest) Reset() {
 	*x = GetServiceRequest{}
-	mi := &file_proto_admin_v1_admin_proto_msgTypes[4]
+	mi := &file_proto_admin_v1_admin_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -238,7 +393,7 @@ func (x *GetServiceRequest) String() string {
 func (*GetServiceRequest) ProtoMessage() {}
 
 func (x *GetServiceRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_admin_v1_admin_proto_msgTypes[4]
+	mi := &file_proto_admin_v1_admin_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -294,15 +449,16 @@ func (b0 GetServiceRequest_builder) Build() *GetServiceRequest {
 }
 
 type GetServiceResponse struct {
-	state              protoimpl.MessageState    `protogen:"opaque.v1"`
-	xxx_hidden_Service *v1.UpstreamServiceConfig `protobuf:"bytes,1,opt,name=service"`
-	unknownFields      protoimpl.UnknownFields
-	sizeCache          protoimpl.SizeCache
+	state                   protoimpl.MessageState    `protogen:"opaque.v1"`
+	xxx_hidden_Service      *v1.UpstreamServiceConfig `protobuf:"bytes,1,opt,name=service"`
+	xxx_hidden_ServiceState *ServiceState             `protobuf:"bytes,2,opt,name=service_state,json=serviceState"`
+	unknownFields           protoimpl.UnknownFields
+	sizeCache               protoimpl.SizeCache
 }
 
 func (x *GetServiceResponse) Reset() {
 	*x = GetServiceResponse{}
-	mi := &file_proto_admin_v1_admin_proto_msgTypes[5]
+	mi := &file_proto_admin_v1_admin_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -314,7 +470,7 @@ func (x *GetServiceResponse) String() string {
 func (*GetServiceResponse) ProtoMessage() {}
 
 func (x *GetServiceResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_admin_v1_admin_proto_msgTypes[5]
+	mi := &file_proto_admin_v1_admin_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -325,6 +481,7 @@ func (x *GetServiceResponse) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
+// Deprecated: Marked as deprecated in proto/admin/v1/admin.proto.
 func (x *GetServiceResponse) GetService() *v1.UpstreamServiceConfig {
 	if x != nil {
 		return x.xxx_hidden_Service
@@ -332,10 +489,23 @@ func (x *GetServiceResponse) GetService() *v1.UpstreamServiceConfig {
 	return nil
 }
 
+func (x *GetServiceResponse) GetServiceState() *ServiceState {
+	if x != nil {
+		return x.xxx_hidden_ServiceState
+	}
+	return nil
+}
+
+// Deprecated: Marked as deprecated in proto/admin/v1/admin.proto.
 func (x *GetServiceResponse) SetService(v *v1.UpstreamServiceConfig) {
 	x.xxx_hidden_Service = v
 }
 
+func (x *GetServiceResponse) SetServiceState(v *ServiceState) {
+	x.xxx_hidden_ServiceState = v
+}
+
+// Deprecated: Marked as deprecated in proto/admin/v1/admin.proto.
 func (x *GetServiceResponse) HasService() bool {
 	if x == nil {
 		return false
@@ -343,14 +513,28 @@ func (x *GetServiceResponse) HasService() bool {
 	return x.xxx_hidden_Service != nil
 }
 
+func (x *GetServiceResponse) HasServiceState() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_ServiceState != nil
+}
+
+// Deprecated: Marked as deprecated in proto/admin/v1/admin.proto.
 func (x *GetServiceResponse) ClearService() {
 	x.xxx_hidden_Service = nil
+}
+
+func (x *GetServiceResponse) ClearServiceState() {
+	x.xxx_hidden_ServiceState = nil
 }
 
 type GetServiceResponse_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	Service *v1.UpstreamServiceConfig
+	// Deprecated: Marked as deprecated in proto/admin/v1/admin.proto.
+	Service      *v1.UpstreamServiceConfig
+	ServiceState *ServiceState
 }
 
 func (b0 GetServiceResponse_builder) Build() *GetServiceResponse {
@@ -358,6 +542,7 @@ func (b0 GetServiceResponse_builder) Build() *GetServiceResponse {
 	b, x := &b0, m0
 	_, _ = b, x
 	x.xxx_hidden_Service = b.Service
+	x.xxx_hidden_ServiceState = b.ServiceState
 	return m0
 }
 
@@ -369,7 +554,7 @@ type ListToolsRequest struct {
 
 func (x *ListToolsRequest) Reset() {
 	*x = ListToolsRequest{}
-	mi := &file_proto_admin_v1_admin_proto_msgTypes[6]
+	mi := &file_proto_admin_v1_admin_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -381,7 +566,7 @@ func (x *ListToolsRequest) String() string {
 func (*ListToolsRequest) ProtoMessage() {}
 
 func (x *ListToolsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_admin_v1_admin_proto_msgTypes[6]
+	mi := &file_proto_admin_v1_admin_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -413,7 +598,7 @@ type ListToolsResponse struct {
 
 func (x *ListToolsResponse) Reset() {
 	*x = ListToolsResponse{}
-	mi := &file_proto_admin_v1_admin_proto_msgTypes[7]
+	mi := &file_proto_admin_v1_admin_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -425,7 +610,7 @@ func (x *ListToolsResponse) String() string {
 func (*ListToolsResponse) ProtoMessage() {}
 
 func (x *ListToolsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_admin_v1_admin_proto_msgTypes[7]
+	mi := &file_proto_admin_v1_admin_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -474,7 +659,7 @@ type GetToolRequest struct {
 
 func (x *GetToolRequest) Reset() {
 	*x = GetToolRequest{}
-	mi := &file_proto_admin_v1_admin_proto_msgTypes[8]
+	mi := &file_proto_admin_v1_admin_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -486,7 +671,7 @@ func (x *GetToolRequest) String() string {
 func (*GetToolRequest) ProtoMessage() {}
 
 func (x *GetToolRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_admin_v1_admin_proto_msgTypes[8]
+	mi := &file_proto_admin_v1_admin_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -550,7 +735,7 @@ type GetToolResponse struct {
 
 func (x *GetToolResponse) Reset() {
 	*x = GetToolResponse{}
-	mi := &file_proto_admin_v1_admin_proto_msgTypes[9]
+	mi := &file_proto_admin_v1_admin_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -562,7 +747,7 @@ func (x *GetToolResponse) String() string {
 func (*GetToolResponse) ProtoMessage() {}
 
 func (x *GetToolResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_admin_v1_admin_proto_msgTypes[9]
+	mi := &file_proto_admin_v1_admin_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -618,7 +803,7 @@ type CreateUserRequest struct {
 
 func (x *CreateUserRequest) Reset() {
 	*x = CreateUserRequest{}
-	mi := &file_proto_admin_v1_admin_proto_msgTypes[10]
+	mi := &file_proto_admin_v1_admin_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -630,7 +815,7 @@ func (x *CreateUserRequest) String() string {
 func (*CreateUserRequest) ProtoMessage() {}
 
 func (x *CreateUserRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_admin_v1_admin_proto_msgTypes[10]
+	mi := &file_proto_admin_v1_admin_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -686,7 +871,7 @@ type CreateUserResponse struct {
 
 func (x *CreateUserResponse) Reset() {
 	*x = CreateUserResponse{}
-	mi := &file_proto_admin_v1_admin_proto_msgTypes[11]
+	mi := &file_proto_admin_v1_admin_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -698,7 +883,7 @@ func (x *CreateUserResponse) String() string {
 func (*CreateUserResponse) ProtoMessage() {}
 
 func (x *CreateUserResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_admin_v1_admin_proto_msgTypes[11]
+	mi := &file_proto_admin_v1_admin_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -756,7 +941,7 @@ type GetUserRequest struct {
 
 func (x *GetUserRequest) Reset() {
 	*x = GetUserRequest{}
-	mi := &file_proto_admin_v1_admin_proto_msgTypes[12]
+	mi := &file_proto_admin_v1_admin_proto_msgTypes[13]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -768,7 +953,7 @@ func (x *GetUserRequest) String() string {
 func (*GetUserRequest) ProtoMessage() {}
 
 func (x *GetUserRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_admin_v1_admin_proto_msgTypes[12]
+	mi := &file_proto_admin_v1_admin_proto_msgTypes[13]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -832,7 +1017,7 @@ type GetUserResponse struct {
 
 func (x *GetUserResponse) Reset() {
 	*x = GetUserResponse{}
-	mi := &file_proto_admin_v1_admin_proto_msgTypes[13]
+	mi := &file_proto_admin_v1_admin_proto_msgTypes[14]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -844,7 +1029,7 @@ func (x *GetUserResponse) String() string {
 func (*GetUserResponse) ProtoMessage() {}
 
 func (x *GetUserResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_admin_v1_admin_proto_msgTypes[13]
+	mi := &file_proto_admin_v1_admin_proto_msgTypes[14]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -899,7 +1084,7 @@ type ListUsersRequest struct {
 
 func (x *ListUsersRequest) Reset() {
 	*x = ListUsersRequest{}
-	mi := &file_proto_admin_v1_admin_proto_msgTypes[14]
+	mi := &file_proto_admin_v1_admin_proto_msgTypes[15]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -911,7 +1096,7 @@ func (x *ListUsersRequest) String() string {
 func (*ListUsersRequest) ProtoMessage() {}
 
 func (x *ListUsersRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_admin_v1_admin_proto_msgTypes[14]
+	mi := &file_proto_admin_v1_admin_proto_msgTypes[15]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -943,7 +1128,7 @@ type ListUsersResponse struct {
 
 func (x *ListUsersResponse) Reset() {
 	*x = ListUsersResponse{}
-	mi := &file_proto_admin_v1_admin_proto_msgTypes[15]
+	mi := &file_proto_admin_v1_admin_proto_msgTypes[16]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -955,7 +1140,7 @@ func (x *ListUsersResponse) String() string {
 func (*ListUsersResponse) ProtoMessage() {}
 
 func (x *ListUsersResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_admin_v1_admin_proto_msgTypes[15]
+	mi := &file_proto_admin_v1_admin_proto_msgTypes[16]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1002,7 +1187,7 @@ type UpdateUserRequest struct {
 
 func (x *UpdateUserRequest) Reset() {
 	*x = UpdateUserRequest{}
-	mi := &file_proto_admin_v1_admin_proto_msgTypes[16]
+	mi := &file_proto_admin_v1_admin_proto_msgTypes[17]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1014,7 +1199,7 @@ func (x *UpdateUserRequest) String() string {
 func (*UpdateUserRequest) ProtoMessage() {}
 
 func (x *UpdateUserRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_admin_v1_admin_proto_msgTypes[16]
+	mi := &file_proto_admin_v1_admin_proto_msgTypes[17]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1070,7 +1255,7 @@ type UpdateUserResponse struct {
 
 func (x *UpdateUserResponse) Reset() {
 	*x = UpdateUserResponse{}
-	mi := &file_proto_admin_v1_admin_proto_msgTypes[17]
+	mi := &file_proto_admin_v1_admin_proto_msgTypes[18]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1082,7 +1267,7 @@ func (x *UpdateUserResponse) String() string {
 func (*UpdateUserResponse) ProtoMessage() {}
 
 func (x *UpdateUserResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_admin_v1_admin_proto_msgTypes[17]
+	mi := &file_proto_admin_v1_admin_proto_msgTypes[18]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1140,7 +1325,7 @@ type DeleteUserRequest struct {
 
 func (x *DeleteUserRequest) Reset() {
 	*x = DeleteUserRequest{}
-	mi := &file_proto_admin_v1_admin_proto_msgTypes[18]
+	mi := &file_proto_admin_v1_admin_proto_msgTypes[19]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1152,7 +1337,7 @@ func (x *DeleteUserRequest) String() string {
 func (*DeleteUserRequest) ProtoMessage() {}
 
 func (x *DeleteUserRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_admin_v1_admin_proto_msgTypes[18]
+	mi := &file_proto_admin_v1_admin_proto_msgTypes[19]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1215,7 +1400,7 @@ type DeleteUserResponse struct {
 
 func (x *DeleteUserResponse) Reset() {
 	*x = DeleteUserResponse{}
-	mi := &file_proto_admin_v1_admin_proto_msgTypes[19]
+	mi := &file_proto_admin_v1_admin_proto_msgTypes[20]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1227,7 +1412,7 @@ func (x *DeleteUserResponse) String() string {
 func (*DeleteUserResponse) ProtoMessage() {}
 
 func (x *DeleteUserResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_admin_v1_admin_proto_msgTypes[19]
+	mi := &file_proto_admin_v1_admin_proto_msgTypes[20]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1257,14 +1442,20 @@ const file_proto_admin_v1_admin_proto_rawDesc = "" +
 	"\x1aproto/admin/v1/admin.proto\x12\x0fmcpany.admin.v1\x1a&proto/config/v1/upstream_service.proto\x1a\x1aproto/config/v1/user.proto\x1a$proto/mcp_router/v1/mcp_router.proto\"\x13\n" +
 	"\x11ClearCacheRequest\"\x14\n" +
 	"\x12ClearCacheResponse\"\x15\n" +
-	"\x13ListServicesRequest\"[\n" +
-	"\x14ListServicesResponse\x12C\n" +
-	"\bservices\x18\x01 \x03(\v2'.mcpany.config.v1.UpstreamServiceConfigR\bservices\"2\n" +
+	"\x13ListServicesRequest\"\xa5\x01\n" +
+	"\x14ListServicesResponse\x12G\n" +
+	"\bservices\x18\x01 \x03(\v2'.mcpany.config.v1.UpstreamServiceConfigB\x02\x18\x01R\bservices\x12D\n" +
+	"\x0eservice_states\x18\x02 \x03(\v2\x1d.mcpany.admin.v1.ServiceStateR\rserviceStates\"}\n" +
+	"\fServiceState\x12?\n" +
+	"\x06config\x18\x01 \x01(\v2'.mcpany.config.v1.UpstreamServiceConfigR\x06config\x12\x16\n" +
+	"\x06status\x18\x02 \x01(\tR\x06status\x12\x14\n" +
+	"\x05error\x18\x03 \x01(\tR\x05error\"2\n" +
 	"\x11GetServiceRequest\x12\x1d\n" +
 	"\n" +
-	"service_id\x18\x01 \x01(\tR\tserviceId\"W\n" +
-	"\x12GetServiceResponse\x12A\n" +
-	"\aservice\x18\x01 \x01(\v2'.mcpany.config.v1.UpstreamServiceConfigR\aservice\"\x12\n" +
+	"service_id\x18\x01 \x01(\tR\tserviceId\"\x9f\x01\n" +
+	"\x12GetServiceResponse\x12E\n" +
+	"\aservice\x18\x01 \x01(\v2'.mcpany.config.v1.UpstreamServiceConfigB\x02\x18\x01R\aservice\x12B\n" +
+	"\rservice_state\x18\x02 \x01(\v2\x1d.mcpany.admin.v1.ServiceStateR\fserviceState\"\x12\n" +
 	"\x10ListToolsRequest\"E\n" +
 	"\x11ListToolsResponse\x120\n" +
 	"\x05tools\x18\x01 \x03(\v2\x1a.mcpany.mcp_router.v1.ToolR\x05tools\"-\n" +
@@ -1308,68 +1499,72 @@ const file_proto_admin_v1_admin_proto_rawDesc = "" +
 	"DeleteUser\x12\".mcpany.admin.v1.DeleteUserRequest\x1a#.mcpany.admin.v1.DeleteUserResponseB3B\n" +
 	"AdminProtoZ%github.com/mcpany/core/proto/admin/v1b\beditionsp\xe8\a"
 
-var file_proto_admin_v1_admin_proto_msgTypes = make([]protoimpl.MessageInfo, 20)
+var file_proto_admin_v1_admin_proto_msgTypes = make([]protoimpl.MessageInfo, 21)
 var file_proto_admin_v1_admin_proto_goTypes = []any{
 	(*ClearCacheRequest)(nil),        // 0: mcpany.admin.v1.ClearCacheRequest
 	(*ClearCacheResponse)(nil),       // 1: mcpany.admin.v1.ClearCacheResponse
 	(*ListServicesRequest)(nil),      // 2: mcpany.admin.v1.ListServicesRequest
 	(*ListServicesResponse)(nil),     // 3: mcpany.admin.v1.ListServicesResponse
-	(*GetServiceRequest)(nil),        // 4: mcpany.admin.v1.GetServiceRequest
-	(*GetServiceResponse)(nil),       // 5: mcpany.admin.v1.GetServiceResponse
-	(*ListToolsRequest)(nil),         // 6: mcpany.admin.v1.ListToolsRequest
-	(*ListToolsResponse)(nil),        // 7: mcpany.admin.v1.ListToolsResponse
-	(*GetToolRequest)(nil),           // 8: mcpany.admin.v1.GetToolRequest
-	(*GetToolResponse)(nil),          // 9: mcpany.admin.v1.GetToolResponse
-	(*CreateUserRequest)(nil),        // 10: mcpany.admin.v1.CreateUserRequest
-	(*CreateUserResponse)(nil),       // 11: mcpany.admin.v1.CreateUserResponse
-	(*GetUserRequest)(nil),           // 12: mcpany.admin.v1.GetUserRequest
-	(*GetUserResponse)(nil),          // 13: mcpany.admin.v1.GetUserResponse
-	(*ListUsersRequest)(nil),         // 14: mcpany.admin.v1.ListUsersRequest
-	(*ListUsersResponse)(nil),        // 15: mcpany.admin.v1.ListUsersResponse
-	(*UpdateUserRequest)(nil),        // 16: mcpany.admin.v1.UpdateUserRequest
-	(*UpdateUserResponse)(nil),       // 17: mcpany.admin.v1.UpdateUserResponse
-	(*DeleteUserRequest)(nil),        // 18: mcpany.admin.v1.DeleteUserRequest
-	(*DeleteUserResponse)(nil),       // 19: mcpany.admin.v1.DeleteUserResponse
-	(*v1.UpstreamServiceConfig)(nil), // 20: mcpany.config.v1.UpstreamServiceConfig
-	(*v11.Tool)(nil),                 // 21: mcpany.mcp_router.v1.Tool
-	(*v1.User)(nil),                  // 22: mcpany.config.v1.User
+	(*ServiceState)(nil),             // 4: mcpany.admin.v1.ServiceState
+	(*GetServiceRequest)(nil),        // 5: mcpany.admin.v1.GetServiceRequest
+	(*GetServiceResponse)(nil),       // 6: mcpany.admin.v1.GetServiceResponse
+	(*ListToolsRequest)(nil),         // 7: mcpany.admin.v1.ListToolsRequest
+	(*ListToolsResponse)(nil),        // 8: mcpany.admin.v1.ListToolsResponse
+	(*GetToolRequest)(nil),           // 9: mcpany.admin.v1.GetToolRequest
+	(*GetToolResponse)(nil),          // 10: mcpany.admin.v1.GetToolResponse
+	(*CreateUserRequest)(nil),        // 11: mcpany.admin.v1.CreateUserRequest
+	(*CreateUserResponse)(nil),       // 12: mcpany.admin.v1.CreateUserResponse
+	(*GetUserRequest)(nil),           // 13: mcpany.admin.v1.GetUserRequest
+	(*GetUserResponse)(nil),          // 14: mcpany.admin.v1.GetUserResponse
+	(*ListUsersRequest)(nil),         // 15: mcpany.admin.v1.ListUsersRequest
+	(*ListUsersResponse)(nil),        // 16: mcpany.admin.v1.ListUsersResponse
+	(*UpdateUserRequest)(nil),        // 17: mcpany.admin.v1.UpdateUserRequest
+	(*UpdateUserResponse)(nil),       // 18: mcpany.admin.v1.UpdateUserResponse
+	(*DeleteUserRequest)(nil),        // 19: mcpany.admin.v1.DeleteUserRequest
+	(*DeleteUserResponse)(nil),       // 20: mcpany.admin.v1.DeleteUserResponse
+	(*v1.UpstreamServiceConfig)(nil), // 21: mcpany.config.v1.UpstreamServiceConfig
+	(*v11.Tool)(nil),                 // 22: mcpany.mcp_router.v1.Tool
+	(*v1.User)(nil),                  // 23: mcpany.config.v1.User
 }
 var file_proto_admin_v1_admin_proto_depIdxs = []int32{
-	20, // 0: mcpany.admin.v1.ListServicesResponse.services:type_name -> mcpany.config.v1.UpstreamServiceConfig
-	20, // 1: mcpany.admin.v1.GetServiceResponse.service:type_name -> mcpany.config.v1.UpstreamServiceConfig
-	21, // 2: mcpany.admin.v1.ListToolsResponse.tools:type_name -> mcpany.mcp_router.v1.Tool
-	21, // 3: mcpany.admin.v1.GetToolResponse.tool:type_name -> mcpany.mcp_router.v1.Tool
-	22, // 4: mcpany.admin.v1.CreateUserRequest.user:type_name -> mcpany.config.v1.User
-	22, // 5: mcpany.admin.v1.CreateUserResponse.user:type_name -> mcpany.config.v1.User
-	22, // 6: mcpany.admin.v1.GetUserResponse.user:type_name -> mcpany.config.v1.User
-	22, // 7: mcpany.admin.v1.ListUsersResponse.users:type_name -> mcpany.config.v1.User
-	22, // 8: mcpany.admin.v1.UpdateUserRequest.user:type_name -> mcpany.config.v1.User
-	22, // 9: mcpany.admin.v1.UpdateUserResponse.user:type_name -> mcpany.config.v1.User
-	0,  // 10: mcpany.admin.v1.AdminService.ClearCache:input_type -> mcpany.admin.v1.ClearCacheRequest
-	2,  // 11: mcpany.admin.v1.AdminService.ListServices:input_type -> mcpany.admin.v1.ListServicesRequest
-	4,  // 12: mcpany.admin.v1.AdminService.GetService:input_type -> mcpany.admin.v1.GetServiceRequest
-	6,  // 13: mcpany.admin.v1.AdminService.ListTools:input_type -> mcpany.admin.v1.ListToolsRequest
-	8,  // 14: mcpany.admin.v1.AdminService.GetTool:input_type -> mcpany.admin.v1.GetToolRequest
-	10, // 15: mcpany.admin.v1.AdminService.CreateUser:input_type -> mcpany.admin.v1.CreateUserRequest
-	12, // 16: mcpany.admin.v1.AdminService.GetUser:input_type -> mcpany.admin.v1.GetUserRequest
-	14, // 17: mcpany.admin.v1.AdminService.ListUsers:input_type -> mcpany.admin.v1.ListUsersRequest
-	16, // 18: mcpany.admin.v1.AdminService.UpdateUser:input_type -> mcpany.admin.v1.UpdateUserRequest
-	18, // 19: mcpany.admin.v1.AdminService.DeleteUser:input_type -> mcpany.admin.v1.DeleteUserRequest
-	1,  // 20: mcpany.admin.v1.AdminService.ClearCache:output_type -> mcpany.admin.v1.ClearCacheResponse
-	3,  // 21: mcpany.admin.v1.AdminService.ListServices:output_type -> mcpany.admin.v1.ListServicesResponse
-	5,  // 22: mcpany.admin.v1.AdminService.GetService:output_type -> mcpany.admin.v1.GetServiceResponse
-	7,  // 23: mcpany.admin.v1.AdminService.ListTools:output_type -> mcpany.admin.v1.ListToolsResponse
-	9,  // 24: mcpany.admin.v1.AdminService.GetTool:output_type -> mcpany.admin.v1.GetToolResponse
-	11, // 25: mcpany.admin.v1.AdminService.CreateUser:output_type -> mcpany.admin.v1.CreateUserResponse
-	13, // 26: mcpany.admin.v1.AdminService.GetUser:output_type -> mcpany.admin.v1.GetUserResponse
-	15, // 27: mcpany.admin.v1.AdminService.ListUsers:output_type -> mcpany.admin.v1.ListUsersResponse
-	17, // 28: mcpany.admin.v1.AdminService.UpdateUser:output_type -> mcpany.admin.v1.UpdateUserResponse
-	19, // 29: mcpany.admin.v1.AdminService.DeleteUser:output_type -> mcpany.admin.v1.DeleteUserResponse
-	20, // [20:30] is the sub-list for method output_type
-	10, // [10:20] is the sub-list for method input_type
-	10, // [10:10] is the sub-list for extension type_name
-	10, // [10:10] is the sub-list for extension extendee
-	0,  // [0:10] is the sub-list for field type_name
+	21, // 0: mcpany.admin.v1.ListServicesResponse.services:type_name -> mcpany.config.v1.UpstreamServiceConfig
+	4,  // 1: mcpany.admin.v1.ListServicesResponse.service_states:type_name -> mcpany.admin.v1.ServiceState
+	21, // 2: mcpany.admin.v1.ServiceState.config:type_name -> mcpany.config.v1.UpstreamServiceConfig
+	21, // 3: mcpany.admin.v1.GetServiceResponse.service:type_name -> mcpany.config.v1.UpstreamServiceConfig
+	4,  // 4: mcpany.admin.v1.GetServiceResponse.service_state:type_name -> mcpany.admin.v1.ServiceState
+	22, // 5: mcpany.admin.v1.ListToolsResponse.tools:type_name -> mcpany.mcp_router.v1.Tool
+	22, // 6: mcpany.admin.v1.GetToolResponse.tool:type_name -> mcpany.mcp_router.v1.Tool
+	23, // 7: mcpany.admin.v1.CreateUserRequest.user:type_name -> mcpany.config.v1.User
+	23, // 8: mcpany.admin.v1.CreateUserResponse.user:type_name -> mcpany.config.v1.User
+	23, // 9: mcpany.admin.v1.GetUserResponse.user:type_name -> mcpany.config.v1.User
+	23, // 10: mcpany.admin.v1.ListUsersResponse.users:type_name -> mcpany.config.v1.User
+	23, // 11: mcpany.admin.v1.UpdateUserRequest.user:type_name -> mcpany.config.v1.User
+	23, // 12: mcpany.admin.v1.UpdateUserResponse.user:type_name -> mcpany.config.v1.User
+	0,  // 13: mcpany.admin.v1.AdminService.ClearCache:input_type -> mcpany.admin.v1.ClearCacheRequest
+	2,  // 14: mcpany.admin.v1.AdminService.ListServices:input_type -> mcpany.admin.v1.ListServicesRequest
+	5,  // 15: mcpany.admin.v1.AdminService.GetService:input_type -> mcpany.admin.v1.GetServiceRequest
+	7,  // 16: mcpany.admin.v1.AdminService.ListTools:input_type -> mcpany.admin.v1.ListToolsRequest
+	9,  // 17: mcpany.admin.v1.AdminService.GetTool:input_type -> mcpany.admin.v1.GetToolRequest
+	11, // 18: mcpany.admin.v1.AdminService.CreateUser:input_type -> mcpany.admin.v1.CreateUserRequest
+	13, // 19: mcpany.admin.v1.AdminService.GetUser:input_type -> mcpany.admin.v1.GetUserRequest
+	15, // 20: mcpany.admin.v1.AdminService.ListUsers:input_type -> mcpany.admin.v1.ListUsersRequest
+	17, // 21: mcpany.admin.v1.AdminService.UpdateUser:input_type -> mcpany.admin.v1.UpdateUserRequest
+	19, // 22: mcpany.admin.v1.AdminService.DeleteUser:input_type -> mcpany.admin.v1.DeleteUserRequest
+	1,  // 23: mcpany.admin.v1.AdminService.ClearCache:output_type -> mcpany.admin.v1.ClearCacheResponse
+	3,  // 24: mcpany.admin.v1.AdminService.ListServices:output_type -> mcpany.admin.v1.ListServicesResponse
+	6,  // 25: mcpany.admin.v1.AdminService.GetService:output_type -> mcpany.admin.v1.GetServiceResponse
+	8,  // 26: mcpany.admin.v1.AdminService.ListTools:output_type -> mcpany.admin.v1.ListToolsResponse
+	10, // 27: mcpany.admin.v1.AdminService.GetTool:output_type -> mcpany.admin.v1.GetToolResponse
+	12, // 28: mcpany.admin.v1.AdminService.CreateUser:output_type -> mcpany.admin.v1.CreateUserResponse
+	14, // 29: mcpany.admin.v1.AdminService.GetUser:output_type -> mcpany.admin.v1.GetUserResponse
+	16, // 30: mcpany.admin.v1.AdminService.ListUsers:output_type -> mcpany.admin.v1.ListUsersResponse
+	18, // 31: mcpany.admin.v1.AdminService.UpdateUser:output_type -> mcpany.admin.v1.UpdateUserResponse
+	20, // 32: mcpany.admin.v1.AdminService.DeleteUser:output_type -> mcpany.admin.v1.DeleteUserResponse
+	23, // [23:33] is the sub-list for method output_type
+	13, // [13:23] is the sub-list for method input_type
+	13, // [13:13] is the sub-list for extension type_name
+	13, // [13:13] is the sub-list for extension extendee
+	0,  // [0:13] is the sub-list for field type_name
 }
 
 func init() { file_proto_admin_v1_admin_proto_init() }
@@ -1383,7 +1578,7 @@ func file_proto_admin_v1_admin_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_proto_admin_v1_admin_proto_rawDesc), len(file_proto_admin_v1_admin_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   20,
+			NumMessages:   21,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

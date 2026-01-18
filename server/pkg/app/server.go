@@ -1714,7 +1714,7 @@ func (a *Application) runServerMode(
 	}
 	v1.RegisterRegistrationServiceServer(grpcServer, registrationServer)
 
-	adminServer := admin.NewServer(cachingMiddleware, a.ToolManager, store)
+	adminServer := admin.NewServer(cachingMiddleware, a.ToolManager, serviceRegistry, store)
 	pb_admin.RegisterAdminServiceServer(grpcServer, adminServer)
 
 	// Register Skill Service

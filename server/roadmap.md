@@ -70,6 +70,7 @@
 - [x] **Smart Doctor Diagnosis**: Automatically trigger a detailed "Doctor Diagnosis" log when an upstream service fails to connect during startup, providing clear actionable feedback to the user. (Friction Fighter)
 - [x] **Preserved Config Error Suggestions**: Fixed an issue where helpful "Fix" suggestions were swallowed by error wrapping during nested validation (e.g., stdio arguments), ensuring users always see actionable advice. (Friction Fighter)
 - [x] **Tool Name Fuzzy Matching**: Improve error messages for tool execution by suggesting similar tool names when a user makes a typo. (Friction Fighter)
+- [x] **Service Status Reporting**: Exposed service health status ("OK", "ERROR") and error messages via the Admin API (`ListServices`, `GetService`). This enables the UI to display failed services instead of just missing them. (Friction Fighter)
 
 ## 2. Top 10 Recommended Features
 
@@ -161,6 +162,8 @@ These features represent the next logical steps for the product, focusing on Ent
 | 61   | **Schema Validation Caching**                 | **Performance**: Cache compiled schemas to avoid recompilation overhead during configuration reloads.                                                                                                              | Low        |
 | 62   | **Config Validation Diff**                    | **Experience**: When a configuration reload fails, display a diff highlighting the changes that caused the error compared to the last known good configuration.                                                    | High       |
 | 63   | **Health Webhooks**                           | **Ops**: Configure webhooks (Slack, Discord, PagerDuty) to be triggered when the system health status changes (e.g., from Healthy to Degraded).                                                                    | Medium     |
+| 64   | **Service Retry Policy**                      | **Resilience**: Automatically retry connecting to failed services with exponential backoff.                                                                                                                        | Medium     |
+| 65   | **Config Reload Status API**                  | **DevX**: Expose the status of the last configuration reload attempt via API to help debug silent reload failures.                                                                                                 | Low        |
 
 ## 3. Codebase Health
 
