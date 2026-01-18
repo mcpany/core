@@ -176,9 +176,7 @@ func CountTokensInValue(t Tokenizer, v interface{}) (int, error) {
 	c, err := countTokensInValueRecursive(t, v, visited)
 
 	// Ensure map is cleared before putting back
-	for k := range visited {
-		delete(visited, k)
-	}
+	clear(visited)
 	visitedPool.Put(visited)
 
 	return c, err
