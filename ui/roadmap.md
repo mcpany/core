@@ -33,14 +33,15 @@
 - [x] **Bulk Service Actions**: Enable/Disable or Delete multiple services at once, potentially using tags for selection.
 - [ ] **Tag-based Access Control**: Restrict service access to specific user profiles based on tags.
 - [ ] **Live Tool Usage Graph**: Visual graph of tool execution metrics over time (RPS, Latency) in Tool Detail view.
-- [ ] **Playground Schema Validation**: Enforce JSON schema validation in the Tool Playground before submission to prevent bad requests.
 - [ ] **Favorites/Pinned Tools**: Ability to pin frequently used tools to the top of the list for quick access.
-- [ ] **Schema Validation Playground**: Allow users to test JSON payloads against the schema directly in the inspector with validation feedback.
 - [ ] **Service Health History Visualization**: A sparkline or small graph in the service list row showing uptime/latency history (e.g. last 1h).
 - [ ] **Bulk Edit Configuration**: Ability to edit common properties (like tags, timeout, or environment variables) for multiple selected services.
+- [ ] **Saved Tool Arguments**: Ability to save a set of arguments as a "Preset" for a tool in the Playground, to quickly test different scenarios.
+- [ ] **Tool Execution History Persisted**: Persist the local history of tool executions in `localStorage` or backend, so it survives page reloads.
 
 ### Completed Features
 
+- [x] **Playground Schema Validation**: Implemented robust client-side JSON schema validation using AJV, providing real-time feedback in both Form and JSON modes.
 - [x] **JSON Schema Visualizer**: Implemented a recursive tree view for tool schemas, replacing raw JSON.
 - [x] **Service Duplication & Export**: Added "Duplicate" and "Export" actions to the service list for easier management.
 
