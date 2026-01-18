@@ -16,6 +16,8 @@ import { Switch } from "@/components/ui/switch";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { EnvVarEditor } from "@/components/services/env-var-editor";
+import { OAuthConfig } from "@/components/services/editor/oauth-config";
+import { OAuthConnect } from "@/components/services/editor/oauth-connect";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { AlertCircle, Plus, Trash2, CheckCircle2, XCircle, Loader2 } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
@@ -300,7 +302,7 @@ export function ServiceEditor({ service, onChange, onSave, onCancel }: ServiceEd
                                     <div className="space-y-2">
                                         <Label htmlFor="auth-type">Authentication Type</Label>
                                         <Select
-                                            value={service.upstreamAuth ? (service.upstreamAuth.apiKey ? 'apikey' : service.upstreamAuth.bearerToken ? 'bearer' : 'none') : 'none'}
+                                            value={service.upstreamAuth ? (service.upstreamAuth.apiKey ? 'apikey' : service.upstreamAuth.bearerToken ? 'bearer' : service.upstreamAuth.oauth2 ? 'oauth2' : 'none') : 'none'}
                                             onValueChange={(val) => {
                                                 if (val === 'none') {
                                                     updateService({ upstreamAuth: undefined });
@@ -308,6 +310,8 @@ export function ServiceEditor({ service, onChange, onSave, onCancel }: ServiceEd
                                                     updateService({ upstreamAuth: { apiKey: { key: "", value: "", location: 0 } } });
                                                 } else if (val === 'bearer') {
                                                     updateService({ upstreamAuth: { bearerToken: { token: "" } } });
+                                                } else if (val === 'oauth2') {
+                                                    updateService({ upstreamAuth: { oauth2: { clientId: { plainText: "" }, clientSecret: { plainText: "" }, tokenUrl: "", authorizationUrl: "", scopes: "" } } });
                                                 }
                                             }}
                                         >
@@ -318,9 +322,29 @@ export function ServiceEditor({ service, onChange, onSave, onCancel }: ServiceEd
                                                 <SelectItem value="none">No Authentication</SelectItem>
                                                 <SelectItem value="apikey">API Key (Header/Query)</SelectItem>
                                                 <SelectItem value="bearer">Bearer Token</SelectItem>
+                                                <SelectItem value="oauth2">OAuth 2.0</SelectItem>
                                             </SelectContent>
                                         </Select>
                                     </div>
+
+                                    {service.upstreamAuth?.oauth2 && (
+                                        <>
+                                            <OAuthConfig
+                                                auth={service.upstreamAuth.oauth2}
+                                                onChange={(newAuth) => updateService({ upstreamAuth: { ...service.upstreamAuth, oauth2: newAuth } })}
+                                            />
+                                            {/* Show Connect button if we have an ID (saved) */}
+                                            {service.name && (
+                                                <div className="border-t pt-4 mt-4">
+                                                    <OAuthConnect
+                                                        serviceId={service.name}
+                                                        serviceName={service.name}
+                                                        isSaved={!!service.id}
+                                                    />
+                                                </div>
+                                            )}
+                                        </>
+                                    )}
 
                                     {service.upstreamAuth?.apiKey && (
                                         <div className="space-y-4 border-l-2 border-primary/20 pl-4">

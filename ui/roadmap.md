@@ -42,6 +42,7 @@
 
 ### Completed Features
 
+- [x] **Interactive OAuth Handler**: Added UI support for configuring OAuth 2.0 (Client ID, Secret, URLs) and initiating the authentication flow ("Connect" button) directly from the Service Editor.
 - [x] **Favorites/Pinned Tools**: Ability to pin frequently used tools to the top of the list for quick access.
 - [x] **Playground Schema Validation**: Implemented robust client-side JSON schema validation using AJV, providing real-time feedback in both Form and JSON modes.
 - [x] **JSON Schema Visualizer**: Implemented a recursive tree view for tool schemas, replacing raw JSON.
