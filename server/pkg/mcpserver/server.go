@@ -563,7 +563,7 @@ func (s *Server) CallTool(ctx context.Context, req *tool.ExecutionRequest) (any,
 			{Name: "service_id", Value: serviceID},
 		})
 	}
-	logging.GetLogger().Info("Tool execution completed", "result_type", fmt.Sprintf("%T", result), "result_value", result)
+	logging.GetLogger().Info("Tool execution completed", "result_type", fmt.Sprintf("%T", result), "result_value", LazyLogResult{Value: result})
 
 	if err != nil {
 		return nil, err
@@ -812,6 +812,73 @@ type LazyRedact []byte
 // LogValue implements slog.LogValuer.
 func (l LazyRedact) LogValue() slog.Value {
 	return slog.StringValue(util.BytesToString(util.RedactJSON(l)))
+}
+
+// LazyLogResult wraps a tool execution result for efficient logging.
+// It avoids expensive serialization of large payloads (e.g. images, huge text)
+// and lazily computes the string representation only when logging is enabled.
+type LazyLogResult struct {
+	Value any
+}
+
+// LogValue implements slog.LogValuer.
+func (r LazyLogResult) LogValue() slog.Value {
+	if r.Value == nil {
+		return slog.StringValue("<nil>")
+	}
+
+	switch v := r.Value.(type) {
+	case *mcp.CallToolResult:
+		return summarizeCallToolResult(v)
+	case map[string]any:
+		// Heuristic: Check if it looks like a CallToolResult
+		if ctr, err := convertMapToCallToolResult(v); err == nil {
+			return summarizeCallToolResult(ctr)
+		}
+		// Otherwise redact it. We marshal it to JSON bytes to use RedactJSON.
+		// Use json-iterator for speed.
+		jsonBytes, _ := jsoniter.ConfigCompatibleWithStandardLibrary.Marshal(v)
+		return slog.StringValue(util.BytesToString(util.RedactJSON(jsonBytes)))
+	default:
+		// Fallback for other types
+		return slog.StringValue(util.ToString(v))
+	}
+}
+
+func summarizeCallToolResult(ctr *mcp.CallToolResult) slog.Value {
+	if ctr == nil {
+		return slog.StringValue("<nil>")
+	}
+	attrs := make([]slog.Attr, 0, 2)
+	attrs = append(attrs, slog.Bool("isError", ctr.IsError))
+
+	// Summarize content
+	contentSummaries := make([]string, 0, len(ctr.Content))
+	for _, c := range ctr.Content {
+		switch c := c.(type) {
+		case *mcp.TextContent:
+			// Truncate text if too long
+			text := c.Text
+			if len(text) > 512 {
+				text = text[:512] + fmt.Sprintf("... (%d chars truncated)", len(c.Text)-512)
+			}
+			contentSummaries = append(contentSummaries, fmt.Sprintf("Text(len=%d): %q", len(c.Text), text))
+		case *mcp.ImageContent:
+			contentSummaries = append(contentSummaries, fmt.Sprintf("Image(mime=%s, size=%d bytes)", c.MIMEType, len(c.Data)))
+		case *mcp.EmbeddedResource:
+			res := c.Resource
+			desc := fmt.Sprintf("Resource(uri=%s)", res.URI)
+			if len(res.Blob) > 0 {
+				desc += fmt.Sprintf(" blob=%d bytes", len(res.Blob))
+			}
+			if len(res.Text) > 0 {
+				desc += fmt.Sprintf(" text=%d chars", len(res.Text))
+			}
+			contentSummaries = append(contentSummaries, desc)
+		}
+	}
+	attrs = append(attrs, slog.Any("content", contentSummaries))
+	return slog.GroupValue(attrs...)
 }
 
 func (s *Server) resourceListFilteringMiddleware(next mcp.MethodHandler) mcp.MethodHandler {
