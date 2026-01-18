@@ -59,25 +59,44 @@ func NewChecker(uc *configv1.UpstreamServiceConfig) health.Checker {
 
 	var check health.Check
 	serviceName := uc.GetName()
+	hasCheck := false
 
 	switch uc.WhichServiceConfig() {
 	case configv1.UpstreamServiceConfig_HttpService_case:
-		check = httpCheck(serviceName, uc.GetHttpService())
+		if uc.GetHttpService().GetHealthCheck() != nil {
+			check = httpCheck(serviceName, uc.GetHttpService())
+			hasCheck = true
+		}
 	case configv1.UpstreamServiceConfig_GrpcService_case:
 		check = grpcCheck(serviceName, uc.GetGrpcService())
+		hasCheck = true
 	case configv1.UpstreamServiceConfig_OpenapiService_case:
-		check = httpCheck(serviceName, uc.GetOpenapiService())
+		if uc.GetOpenapiService().GetHealthCheck() != nil {
+			check = httpCheck(serviceName, uc.GetOpenapiService())
+			hasCheck = true
+		}
 	case configv1.UpstreamServiceConfig_CommandLineService_case:
-		check = commandLineCheck(serviceName, uc.GetCommandLineService())
+		if uc.GetCommandLineService().GetHealthCheck() != nil {
+			check = commandLineCheck(serviceName, uc.GetCommandLineService())
+			hasCheck = true
+		}
 	case configv1.UpstreamServiceConfig_WebsocketService_case:
 		check = websocketCheck(serviceName, uc.GetWebsocketService())
+		hasCheck = true
 	case configv1.UpstreamServiceConfig_WebrtcService_case:
 		check = webrtcCheck(serviceName, uc.GetWebrtcService())
+		hasCheck = true
 	case configv1.UpstreamServiceConfig_McpService_case:
 		check = mcpCheck(serviceName, uc.GetMcpService())
+		hasCheck = true
 	case configv1.UpstreamServiceConfig_FilesystemService_case:
 		check = filesystemCheck(serviceName, uc.GetFilesystemService())
+		hasCheck = true
 	default:
+		return nil
+	}
+
+	if !hasCheck {
 		return nil
 	}
 
