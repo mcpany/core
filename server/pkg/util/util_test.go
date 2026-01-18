@@ -613,3 +613,27 @@ func TestSanitizeFilename(t *testing.T) {
 		})
 	}
 }
+
+func TestLevenshteinDistance(t *testing.T) {
+	tests := []struct {
+		s, t     string
+		expected int
+	}{
+		{"", "", 0},
+		{"a", "", 1},
+		{"", "a", 1},
+		{"abc", "abc", 0},
+		{"abc", "abd", 1},
+		{"abc", "ab", 1},
+		{"abc", "abcd", 1},
+		{"kitten", "sitting", 3},
+		{"saturday", "sunday", 3},
+		{"rosettacode", "raisethysword", 8},
+	}
+
+	for _, tt := range tests {
+		t.Run(fmt.Sprintf("%s-%s", tt.s, tt.t), func(t *testing.T) {
+			assert.Equal(t, tt.expected, LevenshteinDistance(tt.s, tt.t))
+		})
+	}
+}

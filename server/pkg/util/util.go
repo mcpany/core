@@ -563,3 +563,65 @@ func SanitizeFilename(filename string) string {
 
 	return result
 }
+
+// LevenshteinDistance calculates the Levenshtein distance between two strings.
+// It returns the number of edits (insertions, deletions, or substitutions)
+// required to change one string into the other.
+func LevenshteinDistance(s, t string) int {
+	sRunes := []rune(s)
+	tRunes := []rune(t)
+
+	lenS := len(sRunes)
+	lenT := len(tRunes)
+
+	if lenS == 0 {
+		return lenT
+	}
+	if lenT == 0 {
+		return lenS
+	}
+
+	// Create a matrix of size (lenS+1) x (lenT+1)
+	// We optimize space by only keeping two rows: previous and current
+	previousRow := make([]int, lenT+1)
+	currentRow := make([]int, lenT+1)
+
+	// Initialize the previous row (0 to lenT)
+	for j := 0; j <= lenT; j++ {
+		previousRow[j] = j
+	}
+
+	for i := 1; i <= lenS; i++ {
+		currentRow[0] = i
+		for j := 1; j <= lenT; j++ {
+			cost := 1
+			if sRunes[i-1] == tRunes[j-1] {
+				cost = 0
+			}
+
+			// min(deletion, insertion, substitution)
+			currentRow[j] = min3(
+				previousRow[j]+1,      // deletion
+				currentRow[j-1]+1,     // insertion
+				previousRow[j-1]+cost, // substitution
+			)
+		}
+		// Move current row to previous row for next iteration
+		copy(previousRow, currentRow)
+	}
+
+	return currentRow[lenT]
+}
+
+func min3(a, b, c int) int {
+	if a < b {
+		if a < c {
+			return a
+		}
+		return c
+	}
+	if b < c {
+		return b
+	}
+	return c
+}

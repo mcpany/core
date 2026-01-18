@@ -6,6 +6,7 @@ package tool
 import (
 	"context"
 	"fmt"
+	"sort"
 	"strings"
 	"sync"
 	"time"
@@ -411,6 +412,12 @@ func (tm *Manager) ExecuteTool(ctx context.Context, req *ExecutionRequest) (any,
 	t, ok := tm.GetTool(req.ToolName)
 	if !ok {
 		log.Error("Tool not found")
+
+		suggestions := tm.findSimilarTools(req.ToolName)
+		if len(suggestions) > 0 {
+			return nil, fmt.Errorf("tool %q not found. Did you mean: %s?: %w", req.ToolName, strings.Join(suggestions, ", "), ErrToolNotFound)
+		}
+
 		return nil, ErrToolNotFound
 	}
 	serviceID := t.Tool().GetServiceId()
@@ -874,4 +881,41 @@ func (tm *Manager) ClearToolsForService(serviceID string) {
 		tm.toolsMutex.Unlock()
 	}
 	log.Debug("Cleared tools for serviceID", "count", deletedCount)
+}
+
+func (tm *Manager) findSimilarTools(name string) []string {
+	var suggestions []string
+	// Use a dynamic threshold based on the input string length
+	// For very short strings, allow fewer edits.
+	// For longer strings, allow up to 3 edits.
+	threshold := 3
+	if len(name) < 4 {
+		threshold = 1
+	}
+
+	tm.nameMap.Range(func(key, _ string) bool {
+		dist := util.LevenshteinDistance(name, key)
+		if dist <= threshold {
+			suggestions = append(suggestions, key)
+		}
+		return true
+	})
+
+	// Also check tool IDs if they are not in nameMap (though normally they should be mapped)
+	// For simplicity, we stick to nameMap which contains exposed names.
+
+	// Sort suggestions by distance (ascending) then alphabetically
+	sort.Slice(suggestions, func(i, j int) bool {
+		d1 := util.LevenshteinDistance(name, suggestions[i])
+		d2 := util.LevenshteinDistance(name, suggestions[j])
+		if d1 != d2 {
+			return d1 < d2
+		}
+		return suggestions[i] < suggestions[j]
+	})
+
+	if len(suggestions) > 3 {
+		return suggestions[:3]
+	}
+	return suggestions
 }
