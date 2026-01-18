@@ -5,6 +5,7 @@ package topology
 
 import (
 	"context"
+	"time"
 
 	"github.com/mcpany/core/server/pkg/auth"
 	"github.com/mcpany/core/server/pkg/consts"
@@ -49,8 +50,16 @@ func (m *Manager) Middleware(next mcp.MethodHandler) mcp.MethodHandler {
 			}
 		}
 
-		m.RecordActivity(sessionID, meta)
+		start := time.Now()
+		res, err := next(ctx, method, req)
+		duration := time.Since(start)
 
-		return next(ctx, method, req)
+		isError := err != nil
+		// We could check specific result types for application-level errors (e.g. CallToolResult.IsError)
+		// but standardizing on error return is safer without knowing the exact SDK interface.
+
+		m.RecordActivity(sessionID, meta, duration, isError)
+
+		return res, err
 	}
 }

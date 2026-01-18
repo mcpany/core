@@ -6,6 +6,7 @@ package provider
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"io"
 	"os"
@@ -156,7 +157,7 @@ func (fs *gcsFs) OpenFile(name string, flag int, _ os.FileMode) (afero.File, err
 	// Read mode
 	rc, err := fs.client.Bucket(fs.bucket).Object(name).NewReader(fs.ctx)
 	if err != nil {
-		if err == storage.ErrObjectNotExist {
+		if errors.Is(err, storage.ErrObjectNotExist) {
 			return nil, os.ErrNotExist
 		}
 		return nil, err
@@ -222,7 +223,7 @@ func (fs *gcsFs) Rename(oldname, newname string) error {
 func (fs *gcsFs) Stat(name string) (os.FileInfo, error) {
 	attrs, err := fs.client.Bucket(fs.bucket).Object(name).Attrs(fs.ctx)
 	if err != nil {
-		if err == storage.ErrObjectNotExist {
+		if errors.Is(err, storage.ErrObjectNotExist) {
 			return nil, os.ErrNotExist
 		}
 		return nil, err
@@ -397,7 +398,7 @@ func (f *gcsFile) Readdir(_ int) ([]os.FileInfo, error) {
 		if attrs.Prefix != "" {
 			// Directory
 			infos = append(infos, &gcsFileInfo{
-				name:  strings.TrimSuffix(attrs.Prefix, "/"),
+				name:  path.Base(strings.TrimSuffix(attrs.Prefix, "/")),
 				size:  0,
 				isDir: true,
 			})
