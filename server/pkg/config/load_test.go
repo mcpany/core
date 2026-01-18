@@ -5,6 +5,8 @@ package config
 
 import (
 	"context"
+	"fmt"
+	"net"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -30,27 +32,41 @@ func createTempConfigFile(t *testing.T, content string) string {
 
 // TestLoadServices_ValidConfigs tests loading of various valid service configurations.
 func TestLoadServices_ValidConfigs(t *testing.T) {
+	// Create a dummy mock upstream server that listens for "diagnostics" or any request.
+	upstreamServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+	}))
+	defer upstreamServer.Close()
+
+	// For gRPC test, we can just open a listener (mock)
+	grpcListener, err := net.Listen("tcp", "localhost:0")
+	require.NoError(t, err)
+	defer grpcListener.Close()
+	grpcAddr := grpcListener.Addr().String()
+
+
 	t.Run("Load from URL", func(t *testing.T) {
 		// Create a mock HTTP server to serve the config file
-		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
-			_, _ = w.Write([]byte(`
+		configServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+			// We point to the upstreamServer which is reachable
+			fmt.Fprintf(w, `
 upstream_services: {
 	name: "http-svc-from-url"
 	http_service: {
-		address: "http://api.example.com/from-url"
+		address: "%s/from-url"
 	}
 }
-`))
+`, upstreamServer.URL)
 		}))
-		defer server.Close()
+		defer configServer.Close()
 		originalClient := httpClient
 		t.Cleanup(func() {
 			httpClient = originalClient
 		})
-		httpClient = server.Client()
+		httpClient = configServer.Client()
 
 		fs := afero.NewOsFs()
-		fileStore := NewFileStore(fs, []string{server.URL + "/config.textproto"})
+		fileStore := NewFileStore(fs, []string{configServer.URL + "/config.textproto"})
 		cfg, err := LoadServices(context.Background(), fileStore, "server")
 		require.NoError(t, err)
 		require.NotNil(t, cfg)
@@ -59,7 +75,7 @@ upstream_services: {
 		assert.Equal(t, "http-svc-from-url", s.GetName())
 		httpService := s.GetHttpService()
 		require.NotNil(t, httpService)
-		assert.Equal(t, "http://api.example.com/from-url", httpService.GetAddress())
+		assert.Equal(t, upstreamServer.URL + "/from-url", httpService.GetAddress())
 	})
 
 	t.Run("Load from URL with 404 error", func(t *testing.T) {
@@ -134,14 +150,14 @@ upstream_services: {
 
 	t.Run("unknown binary type", func(t *testing.T) {
 		// We need a valid config to reach the binary type check
-		content := `
+		content := fmt.Sprintf(`
 upstream_services: {
 	name: "dummy-service"
 	http_service: {
-		address: "http://example.com"
+		address: "%s"
 	}
 }
-`
+`, upstreamServer.URL)
 		filePath := createTempConfigFile(t, content)
 		fs := afero.NewOsFs()
 		fileStore := NewFileStore(fs, []string{filePath})
@@ -149,6 +165,8 @@ upstream_services: {
 		assert.Error(t, err)
 		assert.Contains(t, err.Error(), "unknown binary type: unknown")
 	})
+
+	// Tests using struct table
 	tests := []struct {
 		name             string
 		textprotoContent string
@@ -158,28 +176,28 @@ upstream_services: {
 	}{
 		{
 			name: "valid grpc service with reflection",
-			textprotoContent: `
+			textprotoContent: fmt.Sprintf(`
 upstream_services: {
 	name: "grpc-svc-1"
 	grpc_service: {
-		address: "grpc://localhost:50051"
+		address: "%s"
 		use_reflection: true
 	}
 }
-`,
+`, grpcAddr),
 			expectedCount: 1,
 			checkServices: func(t *testing.T, services []*configv1.UpstreamServiceConfig) {
 				s := services[0]
 				assert.Equal(t, "grpc-svc-1", s.GetName())
 				grpcService := s.GetGrpcService()
 				require.NotNil(t, grpcService)
-				assert.Equal(t, "grpc://localhost:50051", grpcService.GetAddress())
+				assert.Equal(t, grpcAddr, grpcService.GetAddress())
 				assert.True(t, grpcService.GetUseReflection())
 			},
 		},
 		{
 			name: "valid http service with api key auth",
-			textprotoContent: `
+			textprotoContent: fmt.Sprintf(`
 upstream_services: {
 	name: "http-svc-1"
 	upstream_auth: {
@@ -189,7 +207,7 @@ upstream_services: {
 		}
 	}
 	http_service: {
-		address: "http://api.example.com/v1"
+		address: "%s/v1"
 		tools: {
 			name: "get_user"
 			call_id: "get_user_call"
@@ -209,14 +227,14 @@ upstream_services: {
 		}
 	}
 }
-`,
+`, upstreamServer.URL),
 			expectedCount: 1,
 			checkServices: func(t *testing.T, services []*configv1.UpstreamServiceConfig) {
 				s := services[0]
 				assert.Equal(t, "http-svc-1", s.GetName())
 				httpService := s.GetHttpService()
 				require.NotNil(t, httpService)
-				assert.Equal(t, "http://api.example.com/v1", httpService.GetAddress())
+				assert.Equal(t, upstreamServer.URL + "/v1", httpService.GetAddress())
 				auth := s.GetUpstreamAuth()
 				require.NotNil(t, auth)
 				apiKey := auth.GetApiKey()
@@ -236,7 +254,7 @@ upstream_services: {
 		},
 		{
 			name: "valid http service with bearer token auth",
-			textprotoContent: `
+			textprotoContent: fmt.Sprintf(`
 upstream_services: {
 	name: "http-svc-bearer"
 	upstream_auth: {
@@ -245,10 +263,10 @@ upstream_services: {
 		}
 	}
 	http_service: {
-		address: "http://api.example.com/v1"
+		address: "%s/v1"
 	}
 }
-`,
+`, upstreamServer.URL),
 			expectedCount: 1,
 			checkServices: func(t *testing.T, services []*configv1.UpstreamServiceConfig) {
 				s := services[0]
@@ -263,7 +281,7 @@ upstream_services: {
 		},
 		{
 			name: "valid http service with basic auth",
-			textprotoContent: `
+			textprotoContent: fmt.Sprintf(`
 upstream_services: {
 	name: "http-svc-basic"
 	upstream_auth: {
@@ -273,10 +291,10 @@ upstream_services: {
 		}
 	}
 	http_service: {
-		address: "http://api.example.com/v1"
+		address: "%s/v1"
 	}
 }
-`,
+`, upstreamServer.URL),
 			expectedCount: 1,
 			checkServices: func(t *testing.T, services []*configv1.UpstreamServiceConfig) {
 				s := services[0]
@@ -292,65 +310,61 @@ upstream_services: {
 		},
 		{
 			name: "service with invalid cache config",
-			textprotoContent: `
+			textprotoContent: fmt.Sprintf(`
 upstream_services: {
     name: "service-with-invalid-cache"
     http_service: {
-        address: "http://api.example.com/v2"
+        address: "%s/v2"
     }
     cache: {
         is_enabled: true
         ttl: { seconds: -10 } # Invalid TTL
     }
 }
-`,
+`, upstreamServer.URL),
 			expectLoadError: true,
 			expectedCount:   0,
 		},
 		{
 			name: "mixed valid and invalid services",
-			textprotoContent: `
+			textprotoContent: fmt.Sprintf(`
 upstream_services: {
     name: "valid-service"
     http_service: {
-        address: "http://valid.example.com"
+        address: "%s"
     }
 }
 upstream_services: {
     name: "invalid-service"
     # Missing service type
 }
-`,
+`, upstreamServer.URL),
 			expectLoadError: true,
 			expectedCount:   0,
 		},
 		{
 			name: "duplicate service names",
-			textprotoContent: `
+			textprotoContent: fmt.Sprintf(`
 upstream_services: {
 	name: "duplicate-name"
 	http_service: {
-		address: "http://api.example.com/v1"
+		address: "%s/v1"
 	}
 }
 upstream_services: {
 	name: "duplicate-name"
 	http_service: {
-		address: "http://api.example.com/v2"
+		address: "%s/v2"
 	}
 }
-`,
+`, upstreamServer.URL, upstreamServer.URL),
 			expectLoadError: false,
 			expectedCount:   1, // Only the first one should be loaded
 			checkServices: func(t *testing.T, services []*configv1.UpstreamServiceConfig) {
 				s := services[0]
 				assert.Equal(t, "duplicate-name", s.GetName())
 				httpService := s.GetHttpService()
-				// The first one defined should be the one kept (assuming no priority override)
-				// Wait, the manager logic says: "priority < existingPriority: New service has higher priority, replace".
-				// "priority == existingPriority: Same priority, this is a duplicate" -> return nil (skip)
-				// So the first one loaded is kept.
-				assert.Equal(t, "http://api.example.com/v1", httpService.GetAddress())
+				assert.Equal(t, upstreamServer.URL + "/v1", httpService.GetAddress())
 			},
 		},
 	}
@@ -382,17 +396,24 @@ upstream_services: {
 }
 
 func TestDefaultUserHasProfileAccessWhenIdIsMissing(t *testing.T) {
-	content := `
+	// Create a dummy mock upstream server
+	upstreamServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+	}))
+	defer upstreamServer.Close()
+
+	content := fmt.Sprintf(`
 global_settings: {
     profiles: "dev"
 }
 upstream_services: {
 	name: "service-with-named-profile"
 	http_service: {
-		address: "http://api.example.com"
+		address: "%s"
 	}
 }
-`
+`, upstreamServer.URL)
+
 	tmpDir := t.TempDir()
 	filePath := filepath.Join(tmpDir, "config.textproto")
 	fs := afero.NewOsFs()
@@ -416,25 +437,23 @@ upstream_services: {
 }
 
 func TestLoadServices_DefaultUser_ImplicitProfile(t *testing.T) {
-	// Configuration with one service that has NO explicit profiles.
-	// It should default to "default" profile.
-	// No users defined, so a default user should be created.
-	// The default user should have access to the "default" profile.
-	content := `
+	// Create a dummy mock upstream server
+	upstreamServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+	}))
+	defer upstreamServer.Close()
+
+	content := fmt.Sprintf(`
 upstream_services: {
 	name: "service-implicit-profile"
 	http_service: {
-		address: "http://api.example.com"
+		address: "%s"
 	}
 }
-`
+`, upstreamServer.URL)
 	filePath := createTempConfigFile(t, content)
 	fs := afero.NewOsFs()
 	fileStore := NewFileStore(fs, []string{filePath})
-
-	// We use "server" binary type, and since we don't pass specific profiles via env/flags in this test helper directly,
-	// GlobalSettings defaults might be used, but LoadServices internally initializes UpstreamServiceManager.
-	// By default UpstreamServiceManager enables "default" profile if none provided.
 
 	cfg, err := LoadServices(context.Background(), fileStore, "server")
 	require.NoError(t, err)

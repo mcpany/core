@@ -50,6 +50,15 @@ func LoadServices(ctx context.Context, store Store, binaryType string) (*configv
 	}
 
 	validationErrors := Validate(ctx, fileConfig, bt)
+
+	// Run runtime diagnostics (connectivity checks)
+	// We only run this if static validation passed, or maybe we append?
+	// Let's append diagnostics errors to validation errors.
+	if len(validationErrors) == 0 {
+		diagnosticErrors := RunDiagnostics(ctx, fileConfig)
+		validationErrors = append(validationErrors, diagnosticErrors...)
+	}
+
 	if len(validationErrors) > 0 {
 		// Map errors to services for logging
 		serviceErrors := make(map[string]string)
