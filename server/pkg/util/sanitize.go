@@ -8,6 +8,7 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
+// RedactedString is the string used to replace sensitive data.
 const RedactedString = "REDACTED"
 
 // SanitizeUser creates a sanitized copy of the user object with sensitive data redacted.
