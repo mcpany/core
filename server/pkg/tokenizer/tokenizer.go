@@ -260,10 +260,11 @@ func countTokensInValueSimpleFast(st *SimpleTokenizer, v interface{}) (int, bool
 // countTokensInValueWordFast handles fast-path tokenization for WordTokenizer.
 // It returns (count, handled, error). If handled is false, the caller should fallback.
 func countTokensInValueWordFast(wt *WordTokenizer, v interface{}) (int, bool, error) {
-	// Calculate primitive count for WordTokenizer
-	primitiveCount := int(wt.Factor)
-	if primitiveCount < 1 {
-		primitiveCount = 1
+	// For single items, we just use the factor truncated.
+	// We ensure at least 1 token if the factor is small.
+	singleItemCount := int(wt.Factor)
+	if singleItemCount < 1 {
+		singleItemCount = 1
 	}
 
 	switch val := v.(type) {
@@ -271,7 +272,7 @@ func countTokensInValueWordFast(wt *WordTokenizer, v interface{}) (int, bool, er
 		c, err := wt.CountTokens(val)
 		return c, true, err
 	case int, int64, float64, bool, nil:
-		return primitiveCount, true, nil
+		return singleItemCount, true, nil
 	case []string:
 		count := 0
 		for _, item := range val {
@@ -280,13 +281,13 @@ func countTokensInValueWordFast(wt *WordTokenizer, v interface{}) (int, bool, er
 		}
 		return count, true, nil
 	case []int:
-		return len(val) * primitiveCount, true, nil
+		return calculateWordTokens(len(val), wt.Factor), true, nil
 	case []int64:
-		return len(val) * primitiveCount, true, nil
+		return calculateWordTokens(len(val), wt.Factor), true, nil
 	case []float64:
-		return len(val) * primitiveCount, true, nil
+		return calculateWordTokens(len(val), wt.Factor), true, nil
 	case []bool:
-		return len(val) * primitiveCount, true, nil
+		return calculateWordTokens(len(val), wt.Factor), true, nil
 	case map[string]string:
 		count := 0
 		for key, item := range val {
@@ -621,6 +622,17 @@ func simpleTokenizeInt(n int) int {
 	count := l / 4
 	if count < 1 {
 		return 1
+	}
+	return count
+}
+
+func calculateWordTokens(n int, factor float64) int {
+	if n == 0 {
+		return 0
+	}
+	count := int(float64(n) * factor)
+	if count < 1 {
+		count = 1
 	}
 	return count
 }
