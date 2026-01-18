@@ -63,6 +63,7 @@
 - [x] **Strict Startup Mode**: Implemented `--strict` flag for the `run` command. When enabled, the server performs pre-flight connectivity checks ("doctor" checks) on all configured upstream services and fails to start if any are unreachable, preventing silent failures. (Friction Fighter)
 - [x] **Stdio Logging Visibility**: Fixed an issue where logs were discarded in stdio mode (used by clients like Claude Desktop). Logs now correctly output to stderr, ensuring "silent failures" are visible and debuggable. (Friction Fighter)
 - [x] **OAuth2 Token Reachability Check**: Reliability: During validation (or via `doctor` command), attempt to connect to the OAuth2 token URL to verify network connectivity, going beyond simple syntax checks. (Friction Fighter)
+- [x] **Auth Doctor**: Diagnostic tool to verify that configured authentication methods match upstream expectations by performing active probes (e.g., detecting if a Bearer token is rejected by the upstream). (Friction Fighter)
 
 ## 2. Top 10 Recommended Features
 
@@ -90,7 +91,6 @@ These features represent the next logical steps for the product, focusing on Ent
 | 18   | **MCP Server Aggregator/Proxy**               | **Architecture**: A meta-server capability to discover, configure, and manage multiple downstream MCP servers dynamically.                                                                                         | High       |
 | 19   | **Preset Service Gallery**                    | **UX**: A curated list of popular services (like `wttr.in`, `sqlite`, etc.) that can be added via CLI or UI with one click/command.                                                                                | Medium     |
 | 20   | **Configuration Migration Tool**              | **DevX**: A CLI command to convert `claude_desktop_config.json` to `mcpany` config format.                                                                                                                         | Low        |
-| 21   | **Auth Doctor**                               | **UX**: Diagnostic tool to verify that configured authentication methods match upstream expectations (e.g., detecting if a Bearer token is used where Basic Auth is expected).                                     | Medium     |
 | 22   | **Dynamic Tool Pruning**                      | **Performance/Cost**: Feature to filter visible tools based on the current user's role or context to reduce LLM context window usage and costs.                                                                    | High       |
 | 23   | **Config Schema Migration**                   | **Maintenance**: Automated tool to upgrade configuration files when the schema evolves (e.g. `v1alpha` to `v1`).                                                                                                   | Medium     |
 | 25   | **Environment Variable Linter**               | **DevX**: A tool/check to scan config files and verify that all referenced environment variables (e.g. `${API_KEY}`) are actually set in the current shell/env.                                                    | Low        |
@@ -134,6 +134,8 @@ These features represent the next logical steps for the product, focusing on Ent
 | 46   | **Schema Validation Caching**                 | **Performance**: Cache compiled schemas to avoid recompilation overhead during configuration reloads.                                                                                                              | Low        |
 | 45   | **Config Validation Diff**                    | **Experience**: When a configuration reload fails, display a diff highlighting the changes that caused the error compared to the last known good configuration.                                                    | High       |
 | 46   | **Health Webhooks**                           | **Ops**: Configure webhooks (Slack, Discord, PagerDuty) to be triggered when the system health status changes (e.g., from Healthy to Degraded).                                                                    | Medium     |
+| 47   | **Smart Tool Grouping**                       | **UX**: Organize tools into logical groups to help LLMs understand them better.                                                                                                                                    | Medium     |
+| 48   | **Secrets Leak Detection in Logs**            | **Security**: Proactively scan logs for patterns that look like secrets and warn/redact.                                                                                                                           | High       |
 
 ## 3. Codebase Health
 
