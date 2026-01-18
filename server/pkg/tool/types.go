@@ -2431,6 +2431,10 @@ func isShellCommand(cmd string) bool {
 		"openssl", "git", "hg", "svn",
 		"wget", "curl", "nc", "netcat", "ncat",
 		"socat", "telnet",
+		// Build tools and others that can execute commands
+		"tar", "find", "xargs", "tee",
+		"make", "rake", "ant", "mvn", "gradle",
+		"npm", "yarn", "pnpm", "go", "cargo", "pip",
 	}
 	base := filepath.Base(cmd)
 	for _, shell := range shells {
