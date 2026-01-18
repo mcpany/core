@@ -60,5 +60,7 @@
 - [x] **Service Management**: Enable/Disable and configure services.
 - [x] **Tool Playground**: Test tools with auto-generated forms.
 - [x] **Profile Management**: Create and switch between user profiles.
-- [x] **Observability Dashboard**: Real-time metrics and system health.
+- [x] **Observability Dashboard**: Real-time metrics and system health (Now powered by real backend data).
 - [x] **System Status Banner**: A global banner that displays system health status and connectivity issues (polled from `/doctor`).
+- [ ] **Service Health Sparklines**: Visual history of latency/errors in service list.
+- [ ] **Tool Usage Heatmap**: Visual representation of most used tools.

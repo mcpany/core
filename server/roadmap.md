@@ -134,6 +134,8 @@ These features represent the next logical steps for the product, focusing on Ent
 | 46   | **Schema Validation Caching**                 | **Performance**: Cache compiled schemas to avoid recompilation overhead during configuration reloads.                                                                                                              | Low        |
 | 45   | **Config Validation Diff**                    | **Experience**: When a configuration reload fails, display a diff highlighting the changes that caused the error compared to the last known good configuration.                                                    | High       |
 | 46   | **Health Webhooks**                           | **Ops**: Configure webhooks (Slack, Discord, PagerDuty) to be triggered when the system health status changes (e.g., from Healthy to Degraded).                                                                    | Medium     |
+| 47   | **Metrics Persistence**                       | **Observability**: Store historical metrics (latency, error rates) in SQLite/Postgres for long-term trending and analysis.                                                                                         | High       |
+| 48   | **Alerting System**                           | **Ops**: Configurable alerts based on metric thresholds (e.g. Error Rate > 5%) to trigger webhooks.                                                                                                                | Medium     |
 
 ## 3. Codebase Health
 
