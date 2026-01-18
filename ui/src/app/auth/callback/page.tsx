@@ -41,12 +41,12 @@ function OAuthCallbackContent() {
         const handleCallback = async () => {
             try {
                 // Retrieve stored context
-                const serviceID = sessionStorage.getItem('oauth_service_id');
-                const credentialID = sessionStorage.getItem('oauth_credential_id');
-                const storedState = sessionStorage.getItem('oauth_state');
+                const serviceID = sessionStorage.getItem('oauth_service_id') || '';
+                const credentialID = sessionStorage.getItem('oauth_credential_id') || '';
+                const storedState = sessionStorage.getItem('oauth_state') || '';
                 const redirectUrl = sessionStorage.getItem('oauth_redirect_url') || `${window.location.origin}/auth/callback`;
 
-                console.log(`DEBUG: Callback state=${state}, storedState=${storedState}, serviceID=${serviceID}, credentialID=${credentialID}`);
+                console.log(`DEBUG: Callback details - state: ${state}, storedState: ${storedState}, serviceID: ${serviceID}, credentialID: ${credentialID}, redirectUrl: ${redirectUrl}`);
 
                 const storedReturnPath = sessionStorage.getItem('oauth_return_path');
                 if (storedReturnPath) {
@@ -61,8 +61,14 @@ function OAuthCallbackContent() {
 
                 if (!serviceID && !credentialID) {
                     console.error('Missing session data for oauth');
+                    // In some cases (like direct redirect) we might have state but no session.
+                    // This is less secure but allows better E2E integration if session is flaky.
+                    // For now, let's keep it strict but add better logging.
                     throw new Error('No service ID or credential ID found in session. Please start the flow again.');
                 }
+
+                // If serviceID is a generic type (http/grpc/command_line), it might not be the actual service name
+                // handleOAuthCallback handles this by checking if it matches an existing service or needs credential association.
 
                 await apiClient.handleOAuthCallback(serviceID || null, code, redirectUrl, credentialID || undefined);
                 setStatus('success');

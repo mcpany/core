@@ -239,17 +239,15 @@ export function CredentialForm({ initialData, onSuccess }: CredentialFormProps) 
           // We assume user saved what is in the form.
           // Initiate OAuth
           const redirectUrl = `${window.location.origin}/auth/callback`
-          // Store credential ID in session for callback to use
-          sessionStorage.setItem('oauth_credential_id', initialData.id)
-          sessionStorage.setItem('oauth_redirect_url', redirectUrl)
-          sessionStorage.setItem('oauth_return_path', '/credentials')
-
           const res = await apiClient.initiateOAuth("", redirectUrl, initialData.id)
           if (res.authorization_url) {
-              // Store state if returned (it should be!)
-              if (res.state) {
-                  sessionStorage.setItem('oauth_state', res.state)
-              }
+              // Store context for callback using unified keys
+              sessionStorage.setItem('oauth_service_id', ''); // No service context here
+              sessionStorage.setItem('oauth_credential_id', initialData.id)
+              sessionStorage.setItem('oauth_state', res.state || '')
+              sessionStorage.setItem('oauth_redirect_url', redirectUrl)
+              sessionStorage.setItem('oauth_return_path', '/credentials')
+
               window.location.href = res.authorization_url
           } else {
               toast({ variant: "destructive", description: "Failed to get authorization URL" })
