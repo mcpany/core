@@ -17,31 +17,40 @@ func LevenshteinDistance(s1, s2 string) int {
 		return n
 	}
 
-	matrix := make([][]int, n+1)
-	for i := range matrix {
-		matrix[i] = make([]int, m+1)
+	// We want to iterate over the longer string in the outer loop
+	// and use the shorter string for the column vector to minimize memory usage.
+	// So if m > n, we swap them so that m is always the smaller (or equal) length.
+	if m > n {
+		r1, r2 = r2, r1
+		n, m = m, n
 	}
 
-	for i := 0; i <= n; i++ {
-		matrix[i][0] = i
-	}
+	// v0 represents the previous row of distances
+	v0 := make([]int, m+1)
+	// v1 represents the current row of distances
+	v1 := make([]int, m+1)
+
+	// Initialize v0 (the first row, where one string is empty)
 	for j := 0; j <= m; j++ {
-		matrix[0][j] = j
+		v0[j] = j
 	}
 
 	for i := 1; i <= n; i++ {
+		v1[0] = i
 		for j := 1; j <= m; j++ {
 			cost := 0
 			if r1[i-1] != r2[j-1] {
 				cost = 1
 			}
-			matrix[i][j] = min(
-				matrix[i-1][j]+1,      // deletion
-				matrix[i][j-1]+1,      // insertion
-				matrix[i-1][j-1]+cost, // substitution
+			v1[j] = min(
+				v0[j]+1,      // deletion
+				v1[j-1]+1,    // insertion
+				v0[j-1]+cost, // substitution
 			)
 		}
+		// Swap v0 and v1 for the next iteration
+		v0, v1 = v1, v0
 	}
 
-	return matrix[n][m]
+	return v0[m]
 }
