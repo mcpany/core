@@ -49,7 +49,8 @@ export function ServiceList({ services, isLoading, onToggle, onEdit, onDelete, o
 
   const filteredServices = useMemo(() => {
     if (!tagFilter) return services;
-    return services.filter(s => s.tags?.some(tag => tag.toLowerCase().includes(tagFilter.toLowerCase())));
+    const lowerFilter = tagFilter.toLowerCase();
+    return services.filter(s => s.tags?.some(tag => tag.toLowerCase().includes(lowerFilter)));
   }, [services, tagFilter]);
 
   // Reset selection when filtering changes or services change
