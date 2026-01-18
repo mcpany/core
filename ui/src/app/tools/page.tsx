@@ -13,14 +13,17 @@ import { UpstreamServiceConfig } from "@proto/config/v1/upstream_service";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Wrench, Play } from "lucide-react";
+import { Wrench, Play, Star } from "lucide-react";
 import { ToolDefinition } from "@proto/config/v1/tool";
 import { ToolInspector } from "@/components/tools/tool-inspector";
+import { usePinnedTools } from "@/hooks/use-pinned-tools";
 
 export default function ToolsPage() {
   const [tools, setTools] = useState<ToolDefinition[]>([]);
   const [selectedTool, setSelectedTool] = useState<ToolDefinition | null>(null);
   const [inspectorOpen, setInspectorOpen] = useState(false);
+  const { isPinned, togglePin, isLoaded } = usePinnedTools();
+  const [showPinnedOnly, setShowPinnedOnly] = useState(false);
 
   useEffect(() => {
     fetchTools();
@@ -52,10 +55,34 @@ export default function ToolsPage() {
       setInspectorOpen(true);
   };
 
+  const filteredTools = tools
+    .filter((t) => !showPinnedOnly || isPinned(t.name))
+    .sort((a, b) => {
+      const aPinned = isPinned(a.name);
+      const bPinned = isPinned(b.name);
+      if (aPinned && !bPinned) return -1;
+      if (!aPinned && bPinned) return 1;
+      return a.name.localeCompare(b.name);
+    });
+
+  if (!isLoaded) {
+      return null;
+  }
+
   return (
     <div className="flex-1 space-y-4 p-8 pt-6">
       <div className="flex items-center justify-between">
         <h2 className="text-3xl font-bold tracking-tight">Tools</h2>
+        <div className="flex items-center space-x-2">
+            <Switch
+                id="show-pinned"
+                checked={showPinnedOnly}
+                onCheckedChange={setShowPinnedOnly}
+            />
+            <label htmlFor="show-pinned" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                Show Pinned Only
+            </label>
+        </div>
       </div>
 
       <Card className="backdrop-blur-sm bg-background/50">
@@ -67,6 +94,7 @@ export default function ToolsPage() {
           <Table>
             <TableHeader>
               <TableRow>
+                <TableHead className="w-[30px]"></TableHead>
                 <TableHead>Name</TableHead>
                 <TableHead>Description</TableHead>
                 <TableHead>Service</TableHead>
@@ -75,8 +103,19 @@ export default function ToolsPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {tools.map((tool) => (
+              {filteredTools.map((tool) => (
                 <TableRow key={tool.name} className="group">
+                  <TableCell>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-6 w-6"
+                        onClick={() => togglePin(tool.name)}
+                        aria-label={`Pin ${tool.name}`}
+                      >
+                          <Star className={`h-4 w-4 ${isPinned(tool.name) ? "fill-yellow-400 text-yellow-400" : "text-muted-foreground"}`} />
+                      </Button>
+                  </TableCell>
                   <TableCell className="font-medium flex items-center">
                     <Wrench className="h-4 w-4 mr-2 text-muted-foreground" />
                     {tool.name}
