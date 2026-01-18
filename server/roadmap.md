@@ -63,6 +63,7 @@
 - [x] **Strict Startup Mode**: Implemented `--strict` flag for the `run` command. When enabled, the server performs pre-flight connectivity checks ("doctor" checks) on all configured upstream services and fails to start if any are unreachable, preventing silent failures. (Friction Fighter)
 - [x] **Stdio Logging Visibility**: Fixed an issue where logs were discarded in stdio mode (used by clients like Claude Desktop). Logs now correctly output to stderr, ensuring "silent failures" are visible and debuggable. (Friction Fighter)
 - [x] **OAuth2 Token Reachability Check**: Reliability: During validation (or via `doctor` command), attempt to connect to the OAuth2 token URL to verify network connectivity, going beyond simple syntax checks. (Friction Fighter)
+- [x] **Config Validation Diff**: Experience: When a configuration reload fails, display a diff highlighting the changes that caused the error compared to the last known good configuration. (Experience Crafter)
 
 ## 2. Top 10 Recommended Features
 
@@ -132,8 +133,9 @@ These features represent the next logical steps for the product, focusing on Ent
 | 44   | **Log Redaction Rules**                       | **Security**: Configurable regex-based redaction for logs to prevent accidental leakage of sensitive data (API keys, PII) in stderr/files.                                                                         | Medium     |
 | 45   | **Remote Schema Validation**                  | **Feature**: Allow validating schemas that use `$ref` to remote URLs by configuring a custom schema loader with HTTP support.                                                                                      | Medium     |
 | 46   | **Schema Validation Caching**                 | **Performance**: Cache compiled schemas to avoid recompilation overhead during configuration reloads.                                                                                                              | Low        |
-| 45   | **Config Validation Diff**                    | **Experience**: When a configuration reload fails, display a diff highlighting the changes that caused the error compared to the last known good configuration.                                                    | High       |
 | 46   | **Health Webhooks**                           | **Ops**: Configure webhooks (Slack, Discord, PagerDuty) to be triggered when the system health status changes (e.g., from Healthy to Degraded).                                                                    | Medium     |
+| 47   | **Config Validation Dry Run**                 | **DevX**: Allow users to upload a config to a "dry run" endpoint to see if it would pass validation without applying it.                                                                                           | Medium     |
+| 48   | **Config Version History**                    | **Resilience**: Keep a history of last N configurations in DB to allow easy rollback via UI.                                                                                                                       | High       |
 
 ## 3. Codebase Health
 
