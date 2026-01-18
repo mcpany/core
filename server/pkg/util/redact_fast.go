@@ -102,7 +102,16 @@ func redactJSONFast(input []byte) []byte {
 			keyContent := input[quotePos+1 : endQuote]
 			if isKeySensitive(keyContent) {
 				// Identify value start
-				valStart := skipWhitespaceAndComments(input, colonPos+1)
+				valStart := colonPos + 1
+				// Skip whitespace
+				for valStart < n {
+					c := input[valStart]
+					if c == ' ' || c == '\t' || c == '\n' || c == '\r' {
+						valStart++
+						continue
+					}
+					break
+				}
 
 				if valStart < n {
 					// Initialize buffer if needed
@@ -149,47 +158,6 @@ func redactJSONFast(input []byte) []byte {
 	// Write remaining
 	out = append(out, input[lastWrite:]...)
 	return out
-}
-
-// skipWhitespaceAndComments skips whitespace and JSON comments (// and /* */).
-func skipWhitespaceAndComments(input []byte, start int) int {
-	n := len(input)
-	i := start
-	for i < n {
-		c := input[i]
-		if c == ' ' || c == '\t' || c == '\n' || c == '\r' {
-			i++
-			continue
-		}
-		// Check for comments (// or /*)
-		if c == '/' && i+1 < n {
-			next := input[i+1]
-			if next == '/' {
-				// Line comment: skip until newline
-				i += 2
-				for i < n {
-					if input[i] == '\n' || input[i] == '\r' {
-						break
-					}
-					i++
-				}
-				continue
-			} else if next == '*' {
-				// Block comment: skip until */
-				i += 2
-				for i < n {
-					if input[i] == '*' && i+1 < n && input[i+1] == '/' {
-						i += 2
-						break
-					}
-					i++
-				}
-				continue
-			}
-		}
-		break
-	}
-	return i
 }
 
 // skipJSONValue returns the index after the JSON value starting at start.

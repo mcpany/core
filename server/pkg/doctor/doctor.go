@@ -50,12 +50,10 @@ type CheckResult struct {
 //
 // Returns the result.
 func RunChecks(ctx context.Context, config *configv1.McpAnyServerConfig) []CheckResult {
-	// Using 'services' variable to support existing loop
-	services := config.GetUpstreamServices()
-	results := make([]CheckResult, 0, len(services))
+	results := make([]CheckResult, 0, len(config.GetUpstreamServices()))
 
 	// Check upstream services
-	for _, service := range services {
+	for _, service := range config.GetUpstreamServices() {
 		if service.GetDisable() {
 			results = append(results, CheckResult{
 				ServiceName: service.GetName(),
@@ -78,138 +76,33 @@ func checkService(ctx context.Context, service *configv1.UpstreamServiceConfig) 
 	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
 	defer cancel()
 
-	var authMsg string
-
-	// Check authentication first if present
-	if auth := service.GetUpstreamAuth(); auth != nil {
-		authRes := checkAuthentication(ctx, auth)
-		if authRes.Status != StatusOk {
-			return CheckResult{
-				Status:  authRes.Status,
-				Message: fmt.Sprintf("Auth check failed: %s", authRes.Message),
-				Error:   authRes.Error,
-			}
-		}
-		authMsg = fmt.Sprintf("Auth [%s]. ", authRes.Message)
-	}
-
-	var res CheckResult
 	switch service.WhichServiceConfig() {
 	case configv1.UpstreamServiceConfig_HttpService_case:
-		res = checkHTTPService(ctx, service.GetHttpService())
+		return checkHTTPService(ctx, service.GetHttpService())
 	case configv1.UpstreamServiceConfig_GrpcService_case:
-		res = checkGRPCService(ctx, service.GetGrpcService())
+		return checkGRPCService(ctx, service.GetGrpcService())
 	case configv1.UpstreamServiceConfig_OpenapiService_case:
-		res = checkOpenAPIService(ctx, service.GetOpenapiService())
+		return checkOpenAPIService(ctx, service.GetOpenapiService())
 	case configv1.UpstreamServiceConfig_SqlService_case:
-		res = checkSQLService(ctx, service.GetSqlService())
+		return checkSQLService(ctx, service.GetSqlService())
 	case configv1.UpstreamServiceConfig_GraphqlService_case:
-		res = checkGraphQLService(ctx, service.GetGraphqlService())
+		return checkGraphQLService(ctx, service.GetGraphqlService())
 	case configv1.UpstreamServiceConfig_McpService_case:
-		res = checkMCPService(ctx, service.GetMcpService())
+		return checkMCPService(ctx, service.GetMcpService())
 	case configv1.UpstreamServiceConfig_CommandLineService_case:
-		res = checkCommandLineService(ctx, service.GetCommandLineService())
+		return checkCommandLineService(ctx, service.GetCommandLineService())
 	case configv1.UpstreamServiceConfig_WebsocketService_case:
-		res = checkWebSocketService(ctx, service.GetWebsocketService())
+		return checkWebSocketService(ctx, service.GetWebsocketService())
 	case configv1.UpstreamServiceConfig_WebrtcService_case:
-		res = checkWebRTCService(ctx, service.GetWebrtcService())
+		return checkWebRTCService(ctx, service.GetWebrtcService())
 	case configv1.UpstreamServiceConfig_FilesystemService_case:
-		res = checkFilesystemService(ctx, service.GetFilesystemService())
+		return checkFilesystemService(ctx, service.GetFilesystemService())
 	default:
-		res = CheckResult{
+		return CheckResult{
 			Status:  StatusSkipped,
 			Message: "No check implementation for this service type",
 		}
 	}
-
-	if authMsg != "" {
-		res.Message = authMsg + res.Message
-	}
-	return res
-}
-
-func checkAuthentication(ctx context.Context, auth *configv1.Authentication) CheckResult {
-	switch auth.WhichAuthMethod() {
-	case configv1.Authentication_Oauth2_case:
-		return checkOAuth2Reachability(ctx, auth.GetOauth2())
-	case configv1.Authentication_Oidc_case:
-		return checkOIDCReachability(ctx, auth.GetOidc())
-	}
-	// Other auth methods (API Key, Basic, etc.) don't have a separate endpoint to check
-	// (they are checked implicitly by the service call, but we don't do a full auth'd call in doctor yet).
-	return CheckResult{Status: StatusOk, Message: "Verified"}
-}
-
-func checkOAuth2Reachability(ctx context.Context, oauth *configv1.OAuth2Auth) CheckResult {
-	tokenURL := oauth.GetTokenUrl()
-	if tokenURL == "" {
-		// Should have been caught by validator, but safe check
-		return CheckResult{Status: StatusError, Message: "OAuth2 token_url is empty"}
-	}
-
-	// Attempt a POST request to the token URL.
-	// We don't necessarily need to send valid credentials to check reachability.
-	// Sending an empty POST or one with dummy grant_type usually triggers a 400 Bad Request
-	// with a JSON error, which confirms the server is listening and is an OAuth endpoint.
-
-	req, err := http.NewRequestWithContext(ctx, "POST", tokenURL, strings.NewReader("grant_type=client_credentials"))
-	if err != nil {
-		return CheckResult{Status: StatusError, Message: fmt.Sprintf("Failed to create request: %v", err), Error: err}
-	}
-	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
-
-	client := &http.Client{
-		Timeout: 5 * time.Second,
-	}
-
-	resp, err := client.Do(req)
-	if err != nil {
-		return CheckResult{
-			Status:  StatusError,
-			Message: fmt.Sprintf("Failed to connect to OAuth2 token URL: %v", err),
-			Error:   err,
-		}
-	}
-	defer func() { _ = resp.Body.Close() }()
-
-	// Analyze response code
-	if resp.StatusCode == 200 {
-		return CheckResult{Status: StatusOk, Message: "OAuth2 Reachable (200)"}
-	}
-
-	// 400 Bad Request is VERY common for OAuth2 endpoints when sending incomplete credentials.
-	// This confirms the endpoint exists and is processing OAuth requests.
-	if resp.StatusCode == 400 {
-		return CheckResult{Status: StatusOk, Message: "OAuth2 Reachable (400)"}
-	}
-
-	// 401 Unauthorized is also a good sign of reachability (WAF or strict auth).
-	if resp.StatusCode == 401 {
-		return CheckResult{Status: StatusOk, Message: "OAuth2 Reachable (401)"}
-	}
-
-	if resp.StatusCode == 404 {
-		return CheckResult{Status: StatusError, Message: fmt.Sprintf("OAuth2 token URL not found (404): %s", tokenURL)}
-	}
-
-	if resp.StatusCode >= 500 {
-		return CheckResult{Status: StatusError, Message: fmt.Sprintf("OAuth2 token URL returned server error: %s", resp.Status)}
-	}
-
-	// Other 4xx codes?
-	return CheckResult{Status: StatusWarning, Message: fmt.Sprintf("OAuth2 token URL returned unexpected status: %s", resp.Status)}
-}
-
-func checkOIDCReachability(ctx context.Context, oidc *configv1.OIDCAuth) CheckResult {
-	issuer := oidc.GetIssuer()
-	if issuer == "" {
-		return CheckResult{Status: StatusError, Message: "OIDC issuer is empty"}
-	}
-
-	// OIDC discovery endpoint
-	discoveryURL := strings.TrimSuffix(issuer, "/") + "/.well-known/openid-configuration"
-
-	return checkURL(ctx, discoveryURL)
 }
 
 func checkHTTPService(ctx context.Context, s *configv1.HttpUpstreamService) CheckResult {

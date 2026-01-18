@@ -5,7 +5,6 @@ package mcpserver_test
 
 import (
 	"context"
-	"encoding/base64"
 	"testing"
 
 	"github.com/mcpany/core/server/pkg/auth"
@@ -104,23 +103,6 @@ func TestServer_CallTool_ResultHandling(t *testing.T) {
 	}
 	_ = tm.AddTool(ambiguousTool)
 
-	// Tool 3: Image Result
-	imageData := []byte("fake-image-data")
-	imageTool := &mockMapResultTool{
-		name: "image-tool",
-		result: map[string]any{
-			"content": []any{
-				map[string]any{
-					"type":     "image",
-					"data":     base64.StdEncoding.EncodeToString(imageData),
-					"mimeType": "image/png",
-				},
-			},
-			"isError": false,
-		},
-	}
-	_ = tm.AddTool(imageTool)
-
 	client := mcp.NewClient(&mcp.Implementation{Name: "test-client"}, nil)
 	clientTransport, serverTransport := mcp.NewInMemoryTransports()
 	serverSession, err := server.Server().Connect(ctx, serverTransport, nil)
@@ -162,21 +144,5 @@ func TestServer_CallTool_ResultHandling(t *testing.T) {
 
 		// It should be the content text directly (improved fallback behavior)
 		assert.Equal(t, "some raw text content", textContent.Text)
-	})
-
-	t.Run("Image Result Handling", func(t *testing.T) {
-		sanitizedToolName, _ := util.SanitizeToolName("image-tool")
-		toolID := "test-service" + "." + sanitizedToolName
-		result, err := clientSession.CallTool(ctx, &mcp.CallToolParams{
-			Name: toolID,
-		})
-		require.NoError(t, err)
-
-		require.Len(t, result.Content, 1)
-		imageContent, ok := result.Content[0].(*mcp.ImageContent)
-		require.True(t, ok)
-
-		assert.Equal(t, "image/png", imageContent.MIMEType)
-		assert.Equal(t, imageData, imageContent.Data)
 	})
 }

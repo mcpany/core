@@ -288,12 +288,6 @@ func setUnexportedID(idPtr interface{}, val interface{}) error {
 		// This suggests the SDK internal structure has changed.
 		return fmt.Errorf("field 'value' not found in jsonrpc.ID struct")
 	}
-
-	// Safety check: ensure the field is addressable before unsafe operation
-	if !f.CanAddr() {
-		return fmt.Errorf("field 'value' is not addressable")
-	}
-
 	f = reflect.NewAt(f.Type(), unsafe.Pointer(f.UnsafeAddr())).Elem() //nolint:gosec // Need unsafe to access unexported field
 	f.Set(reflect.ValueOf(val))
 	return nil

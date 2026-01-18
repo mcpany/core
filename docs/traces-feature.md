@@ -1,7 +1,5 @@
 # Feature: Traffic Inspector & Replay
 
-**Status:** UI Prototype (Mock Data)
-
 ## Overview
 
 The **Traffic Inspector & Replay** (formerly Request Tracer) is an advanced observability feature that allows users to visualize and interact with the execution path of complex MCP tool chains. It provides a structured "waterfall" view of request traces and enables debugging via replay.

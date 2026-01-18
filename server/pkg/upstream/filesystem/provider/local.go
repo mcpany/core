@@ -205,21 +205,8 @@ func (p *LocalProvider) resolveNonExistentPath(targetPathAbs string) (string, er
 }
 
 func (p *LocalProvider) checkPathSecurity(targetPathCanonical, realRootCanonical string) error {
-	// Robust check using filepath.Rel to prevent prefix matching issues (e.g. /vol/foo vs /vol/foobar)
-	rel, err := filepath.Rel(realRootCanonical, targetPathCanonical)
-	if err != nil {
-		return fmt.Errorf("access denied: failed to calculate relative path: %w", err)
-	}
-
-	// If relative path starts with ".." or is absolute, it's outside.
-	// Also check if we are on different volume (Windows)
-	if strings.HasPrefix(rel, ".."+string(os.PathSeparator)) || rel == ".." {
-		return fmt.Errorf("access denied: path traversal detected")
-	}
-
-	// Double check strict prefix as defense in depth (handling trailing slash behavior)
 	if !strings.HasPrefix(targetPathCanonical, realRootCanonical+string(os.PathSeparator)) && targetPathCanonical != realRootCanonical {
-		return fmt.Errorf("access denied: path traversal detected (prefix check)")
+		return fmt.Errorf("access denied: path traversal detected")
 	}
 
 	if len(p.allowedPaths) > 0 {

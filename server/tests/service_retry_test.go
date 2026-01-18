@@ -37,7 +37,6 @@ func TestServiceRetry(t *testing.T) {
 
 	// 2. Configure App to point to this server
 	fs := afero.NewMemMapFs()
-
 	configContent := fmt.Sprintf(`
 upstream_services:
   - name: "delayed-mcp"
@@ -97,5 +96,4 @@ upstream_services:
 	}, 15*time.Second, 500*time.Millisecond, "Service failed to recover after server was fixed")
 
 	t.Log("Service recovered successfully!")
-
 }
