@@ -210,33 +210,6 @@ export default function ServicesPage() {
       });
   }, [toast]);
 
-  const handleLogin = useCallback(async (service: UpstreamServiceConfig) => {
-      try {
-          // We use name as ID if ID is missing (common in config files)
-          const serviceId = service.id || service.name;
-          // Include service_id in redirect URL so we can retrieve it in the callback
-          const redirectUrl = `${window.location.origin}/oauth/callback?service_id=${encodeURIComponent(serviceId)}`;
-
-          const res = await apiClient.initiateOAuth(serviceId, redirectUrl);
-          if (res.authorization_url && res.state) {
-              // Store context for callback verification using unified keys
-              sessionStorage.setItem('oauth_service_id', serviceId);
-              sessionStorage.setItem('oauth_state', res.state);
-              sessionStorage.setItem('oauth_redirect_url', redirectUrl);
-              sessionStorage.setItem('oauth_return_path', window.location.pathname + window.location.search);
-
-              window.location.href = res.authorization_url;
-          }
-      } catch (e) {
-          console.error("Failed to initiate OAuth", e);
-          toast({
-              variant: "destructive",
-              title: "Login Failed",
-              description: "Could not initiate OAuth flow."
-          });
-      }
-  }, [toast]);
-
   const handleSave = async () => {
       if (!selectedService) return;
 
@@ -287,7 +260,6 @@ export default function ServicesPage() {
                 onExport={handleExport}
                 onBulkToggle={bulkToggleService}
                 onBulkDelete={bulkDeleteService}
-                onLogin={handleLogin}
              />
         </CardContent>
       </Card>

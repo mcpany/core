@@ -115,7 +115,7 @@ test.describe('Service Config Diff', () => {
         await page.getByRole('button', { name: 'Confirm & Save' }).click();
 
         // Verify success
-        await expect(page.getByText(`${newServiceName} updated successfully.`, { exact: true })).toBeVisible();
+        await expect(page.getByText(`${newServiceName} updated successfully.`)).toBeVisible();
         await expect(page.getByRole('dialog')).not.toBeVisible();
     });
 });

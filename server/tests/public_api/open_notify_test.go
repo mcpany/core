@@ -12,9 +12,9 @@ import (
 	"testing"
 	"time"
 
+	"github.com/mcpany/core/server/pkg/util"
 	apiv1 "github.com/mcpany/core/proto/api/v1"
 	configv1 "github.com/mcpany/core/proto/config/v1"
-	"github.com/mcpany/core/server/pkg/util"
 	"github.com/mcpany/core/server/tests/integration"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/require"
@@ -103,10 +103,10 @@ func TestUpstreamService_OpenNotify(t *testing.T) {
 	}
 
 	if err != nil {
-		t.Skipf("Skipping test: all %d retries to api.open-notify.org failed with transient errors. Last error: %v", maxRetries, err)
-		return
+		// t.Skipf("Skipping test: all %d retries to api.open-notify.org failed with transient errors. Last error: %v", maxRetries, err)
 	}
 
+	require.NoError(t, err, "Error calling getAstronauts tool")
 	require.NotNil(t, res, "Nil response from getAstronauts tool")
 
 	// --- 4. Assert Response ---

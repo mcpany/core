@@ -34,6 +34,7 @@ func TestServiceRetry(t *testing.T) {
     require.NoError(t, err)
     port := l.Addr().(*net.TCPAddr).Port
     // Close the listener immediately so we can get "connection refused" which fails fast.
+    // If we leave it open but don't accept, it hangs (until timeout).
     l.Close()
 
     // We will attempt to reuse this port. There is a small risk someone else steals it,
@@ -107,17 +108,8 @@ upstream_services:
 	}))
 
     // Assign the listener with the dynamic port. We need to re-bind.
-    // Retry logic to handle EADDRINUSE
-    var l2 net.Listener
-    require.Eventually(t, func() bool {
-        l2, err = net.Listen("tcp", fmt.Sprintf(":%d", port))
-        if err != nil {
-            t.Logf("Failed to re-bind to port %d: %v. Retrying...", port, err)
-            return false
-        }
-        return true
-    }, 5*time.Second, 100*time.Millisecond, "Failed to re-bind to port %d after retries", port)
-
+    l2, err := net.Listen("tcp", fmt.Sprintf(":%d", port))
+    require.NoError(t, err, "Failed to re-bind to port %d", port)
     ts.Listener = l2
 	ts.Start()
 	defer ts.Close()
