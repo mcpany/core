@@ -14,11 +14,9 @@ import (
 	"go.uber.org/goleak"
 )
 
-// This test is designed to fail before the race condition fix in worker.go is applied.
-// It exposes a race condition between the Start and Stop methods of the worker.
-// The test may not fail on every run because it depends on the scheduler, but it is likely to fail.
+// This test ensures that the race condition between the Start and Stop methods of the worker is fixed.
+// It verifies that Stop() waits for the worker to fully start (and subscribe) before proceeding to unsubscribe.
 func TestWorker_StartStopRace(t *testing.T) {
-	t.Skip("Skipping known flaky test that fails intermittently")
 	defer func() {
 		// Give some time for subscriber goroutines to exit
 		time.Sleep(100 * time.Millisecond)
@@ -30,7 +28,7 @@ func TestWorker_StartStopRace(t *testing.T) {
 	bp, err := bus.NewProvider(busConfig)
 	require.NoError(t, err)
 
-	for i := 0; i < 1; i++ {
+	for i := 0; i < 50; i++ {
 		w := New(bp, &Config{
 			MaxWorkers:   1,
 			MaxQueueSize: 1,
