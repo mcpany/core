@@ -579,7 +579,7 @@ func skipNumber(input []byte, start int) int {
 	i := start
 	for i < len(input) {
 		c := input[i]
-		if c == ',' || c == '}' || c == ']' || c == ' ' || c == '\t' || c == '\n' || c == '\r' {
+		if c == ',' || c == '}' || c == ']' || c == ' ' || c == '\t' || c == '\n' || c == '\r' || c == '/' {
 			return i
 		}
 		i++
