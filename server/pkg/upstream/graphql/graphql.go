@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"net/url"
 	"strings"
 
 	"github.com/machinebox/graphql"
@@ -180,6 +181,18 @@ func (g *Upstream) Register(
 	graphqlConfig := serviceConfig.GetGraphqlService()
 	if graphqlConfig == nil {
 		return "", nil, nil, fmt.Errorf("missing graphql service config")
+	}
+
+	address := graphqlConfig.GetAddress()
+	if address == "" {
+		return "", nil, nil, fmt.Errorf("graphql service address is required")
+	}
+	uURL, err := url.ParseRequestURI(address)
+	if err != nil {
+		return "", nil, nil, fmt.Errorf("invalid graphql service address: %w", err)
+	}
+	if uURL.Scheme != "http" && uURL.Scheme != "https" {
+		return "", nil, nil, fmt.Errorf("invalid graphql service address scheme: %s (must be http or https)", uURL.Scheme)
 	}
 
 	authenticator, err := auth.NewUpstreamAuthenticator(serviceConfig.GetUpstreamAuth())
