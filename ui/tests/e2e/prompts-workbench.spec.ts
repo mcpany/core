@@ -47,7 +47,7 @@ test.describe('Prompts Workbench', () => {
     if (await firstPrompt.isVisible()) {
         await firstPrompt.click();
         // Check for details view
-        await expect(page.getByText('Configuration')).toBeVisible();
+        await expect(page.getByRole('heading', { name: 'Configuration', exact: true })).toBeVisible();
     } else {
         await expect(noPrompts).toBeVisible();
     }
