@@ -95,9 +95,11 @@ ${colorConfig
     const color =
       itemConfig.theme?.[theme as keyof typeof itemConfig.theme] ||
       itemConfig.color
-    // Sentinel Security: Strengthen sanitization to prevent CSS injection.
-    const value = color ? color.replace(/[;{}<>'"\r\n\\]/g, "") : null
-    const safeKey = key.replace(/[;{}<>'"\r\n\\]/g, "")
+    // Sentinel Security: Whitelist allowed characters to prevent CSS injection.
+    // Allowed: alphanumeric, -, _, #, %, ., (,), , (comma)
+    const allowedCharsRegex = /[^a-zA-Z0-9\-_#%.(),\s]/g
+    const value = color ? color.replace(allowedCharsRegex, "") : null
+    const safeKey = key.replace(allowedCharsRegex, "")
     // Block url() to prevent external requests or javascript:
     if (value && /url\(/i.test(value)) {
       return null
