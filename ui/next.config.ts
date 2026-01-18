@@ -51,63 +51,6 @@ const nextConfig: NextConfig = {
     //   },
     // },
   },
-  async headers() {
-    const isDev = process.env.NODE_ENV !== 'production';
-    const csp = [
-      "default-src 'self'",
-      `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ""} https://cdn.jsdelivr.net`, // Added cdn.jsdelivr.net
-      "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net", // Added cdn.jsdelivr.net
-      "img-src 'self' data: https://placehold.co https://images.unsplash.com https://picsum.photos",
-      "font-src 'self' data: https://fonts.gstatic.com",
-      "connect-src 'self' http://localhost:8080 https://cdn.jsdelivr.net", // Added cdn.jsdelivr.net
-      "worker-src 'self' blob:", // Added worker-src
-      "object-src 'none'",
-      "base-uri 'self'",
-      "form-action 'self'",
-      "frame-ancestors 'none'",
-      isDev ? "" : "upgrade-insecure-requests"
-    ].filter(Boolean).join("; ");
-
-    return [
-      {
-        source: '/:path*',
-        headers: [
-          {
-            key: 'X-DNS-Prefetch-Control',
-            value: 'on'
-          },
-          {
-            key: 'Strict-Transport-Security',
-            value: 'max-age=63072000; includeSubDomains; preload'
-          },
-          {
-            key: 'X-XSS-Protection',
-            value: '1; mode=block'
-          },
-          {
-            key: 'X-Frame-Options',
-            value: 'SAMEORIGIN'
-          },
-          {
-            key: 'X-Content-Type-Options',
-            value: 'nosniff'
-          },
-          {
-            key: 'Referrer-Policy',
-            value: 'origin-when-cross-origin'
-          },
-          {
-            key: 'Permissions-Policy',
-            value: 'geolocation=(), camera=(), microphone=(), payment=(), usb=(), vr=()'
-          },
-          {
-            key: 'Content-Security-Policy',
-            value: csp
-          }
-        ]
-      }
-    ];
-  },
   async redirects() {
     return [
       {

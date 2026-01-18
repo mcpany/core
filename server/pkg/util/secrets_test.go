@@ -19,6 +19,7 @@ import (
 )
 
 func TestResolveSecret(t *testing.T) {
+	util.ResetSafeSecretClientForTest()
 	t.Setenv("MCPANY_ALLOW_LOOPBACK_SECRETS", "true")
 	// t.Setenv("MCPANY_FILE_PATH_ALLOW_LIST", os.TempDir())
 	validation.SetAllowedPaths([]string{os.TempDir()})
