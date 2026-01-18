@@ -438,13 +438,8 @@ func buildCommandFromStdioConfig(ctx context.Context, stdio *configv1.McpStdioCo
 		}
 		cmd := exec.CommandContext(ctx, command, args...) //nolint:gosec // Command is validated/configured by user
 		cmd.Dir = stdio.GetWorkingDirectory()
-		currentEnv := os.Environ()
-		env := make([]string, len(currentEnv), len(currentEnv)+len(resolvedEnv))
-		copy(env, currentEnv)
-		for k, v := range resolvedEnv {
-			env = append(env, fmt.Sprintf("%s=%s", k, v))
-		}
-		cmd.Env = env
+		cmd.Env = buildSafeEnv(resolvedEnv)
+		env := cmd.Env // For validation below
 
 		// Validate required environment variables
 		if err := validateRequiredEnv(env, stdio.GetValidation()); err != nil {
@@ -463,13 +458,8 @@ func buildCommandFromStdioConfig(ctx context.Context, stdio *configv1.McpStdioCo
 	if len(setupCommands) == 0 {
 		cmd := exec.CommandContext(ctx, command, args...) //nolint:gosec // Command is configured by user
 		cmd.Dir = stdio.GetWorkingDirectory()
-		currentEnv := os.Environ()
-		env := make([]string, len(currentEnv), len(currentEnv)+len(resolvedEnv))
-		copy(env, currentEnv)
-		for k, v := range resolvedEnv {
-			env = append(env, fmt.Sprintf("%s=%s", k, v))
-		}
-		cmd.Env = env
+		cmd.Env = buildSafeEnv(resolvedEnv)
+		env := cmd.Env // For validation below
 
 		// Validate required environment variables
 		if err := validateRequiredEnv(env, stdio.GetValidation()); err != nil {
@@ -498,13 +488,8 @@ func buildCommandFromStdioConfig(ctx context.Context, stdio *configv1.McpStdioCo
 
 	cmd := exec.CommandContext(ctx, "/bin/sh", "-c", script) //nolint:gosec // Script is configured by user
 	cmd.Dir = stdio.GetWorkingDirectory()
-	currentEnv := os.Environ()
-	env := make([]string, len(currentEnv), len(currentEnv)+len(resolvedEnv))
-	copy(env, currentEnv)
-	for k, v := range resolvedEnv {
-		env = append(env, fmt.Sprintf("%s=%s", k, v))
-	}
-	cmd.Env = env
+	cmd.Env = buildSafeEnv(resolvedEnv)
+	env := cmd.Env // For validation below
 
 	// Validate required environment variables
 	if err := validateRequiredEnv(env, stdio.GetValidation()); err != nil {
@@ -1112,6 +1097,21 @@ func (u *Upstream) createMCPClient(_ context.Context) (*mcp.Client, error) { //n
 	}, &mcp.ClientOptions{
 		CreateMessageHandler: u.handleCreateMessage,
 	}), nil
+}
+
+func buildSafeEnv(resolvedEnv map[string]string) []string {
+	// Sentinel Security: Only pass allowed environment variables to prevent secret leakage
+	allowedEnvVars := []string{"PATH", "HOME", "USER", "TMPDIR", "TZ", "LANG", "LC_ALL"}
+	env := make([]string, 0, len(allowedEnvVars)+len(resolvedEnv))
+	for _, key := range allowedEnvVars {
+		if val, ok := os.LookupEnv(key); ok {
+			env = append(env, fmt.Sprintf("%s=%s", key, val))
+		}
+	}
+	for k, v := range resolvedEnv {
+		env = append(env, fmt.Sprintf("%s=%s", k, v))
+	}
+	return env
 }
 
 func (u *Upstream) handleCreateMessage(ctx context.Context, req *mcp.ClientRequest[*mcp.CreateMessageParams]) (*mcp.CreateMessageResult, error) {

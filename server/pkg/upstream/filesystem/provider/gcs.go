@@ -6,6 +6,7 @@ package provider
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"io"
 	"os"
@@ -25,6 +26,8 @@ type GcsProvider struct {
 	client *storage.Client
 }
 
+var newStorageClient = storage.NewClient
+
 // NewGcsProvider creates a new GcsProvider from the given configuration.
 //
 // _ is an unused parameter.
@@ -37,7 +40,7 @@ func NewGcsProvider(_ context.Context, config *configv1.GcsFs) (*GcsProvider, er
 		return nil, fmt.Errorf("gcs config is nil")
 	}
 
-	client, err := storage.NewClient(context.Background())
+	client, err := newStorageClient(context.Background())
 	if err != nil {
 		return nil, fmt.Errorf("failed to create gcs client: %w", err)
 	}
@@ -154,7 +157,7 @@ func (fs *gcsFs) OpenFile(name string, flag int, _ os.FileMode) (afero.File, err
 	// Read mode
 	rc, err := fs.client.Bucket(fs.bucket).Object(name).NewReader(fs.ctx)
 	if err != nil {
-		if err == storage.ErrObjectNotExist {
+		if errors.Is(err, storage.ErrObjectNotExist) {
 			return nil, os.ErrNotExist
 		}
 		return nil, err
@@ -220,7 +223,7 @@ func (fs *gcsFs) Rename(oldname, newname string) error {
 func (fs *gcsFs) Stat(name string) (os.FileInfo, error) {
 	attrs, err := fs.client.Bucket(fs.bucket).Object(name).Attrs(fs.ctx)
 	if err != nil {
-		if err == storage.ErrObjectNotExist {
+		if errors.Is(err, storage.ErrObjectNotExist) {
 			return nil, os.ErrNotExist
 		}
 		return nil, err
@@ -395,7 +398,7 @@ func (f *gcsFile) Readdir(_ int) ([]os.FileInfo, error) {
 		if attrs.Prefix != "" {
 			// Directory
 			infos = append(infos, &gcsFileInfo{
-				name:  strings.TrimSuffix(attrs.Prefix, "/"),
+				name:  path.Base(strings.TrimSuffix(attrs.Prefix, "/")),
 				size:  0,
 				isDir: true,
 			})
