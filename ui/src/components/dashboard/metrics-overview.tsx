@@ -94,7 +94,7 @@ export const MetricsOverview = memo(function MetricsOverview() {
   useEffect(() => {
     async function fetchMetrics() {
       try {
-        const res = await fetch("/api/dashboard/metrics");
+        const res = await fetch("/api/v1/dashboard/metrics");
         if (res.ok) {
           const data = await res.json();
           setMetrics(data);

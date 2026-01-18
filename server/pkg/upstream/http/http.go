@@ -17,6 +17,7 @@ import (
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	pb "github.com/mcpany/core/proto/mcp_router/v1"
 	"github.com/mcpany/core/server/pkg/auth"
+	"github.com/mcpany/core/server/pkg/doctor"
 	"github.com/mcpany/core/server/pkg/logging"
 	"github.com/mcpany/core/server/pkg/pool"
 	"github.com/mcpany/core/server/pkg/prompt"
@@ -118,8 +119,12 @@ func (u *Upstream) Register(
 	if address == "" {
 		return "", nil, nil, fmt.Errorf("http service address is required")
 	}
-	if _, err := url.ParseRequestURI(address); err != nil {
+	uURL, err := url.ParseRequestURI(address)
+	if err != nil {
 		return "", nil, nil, fmt.Errorf("invalid http service address: %w", err)
+	}
+	if uURL.Scheme != "http" && uURL.Scheme != "https" {
+		return "", nil, nil, fmt.Errorf("invalid http service address scheme: %s (must be http or https)", uURL.Scheme)
 	}
 
 	poolConfig := serviceConfig.GetConnectionPool()
@@ -157,10 +162,43 @@ func (u *Upstream) Register(
 	// Verify that the upstream is reachable.
 	// This is a startup check to warn the user if the service configuration is incorrect or the service is down.
 	if err := util.CheckConnection(ctx, address); err != nil {
-		log.Warn("⚠️  Upstream service appears unreachable. Tools will be registered but may fail at runtime.",
+		// Track 1: Friction Fighter - Automated Diagnosis
+		// If basic connectivity fails, we run a full Doctor check to give actionable advice.
+		log.Warn("⚠️  Upstream service appears unreachable. Running diagnostic...", "service", serviceConfig.GetName())
+		diagnosis := doctor.CheckService(ctx, serviceConfig)
+
+		// Format the diagnosis box
+		border := strings.Repeat("-", 60)
+		var msg string
+		if diagnosis.Status == doctor.StatusOk {
+			// Transient failure that recovered
+			msg = fmt.Sprintf("\n%s\nCONNECTION FLAPPING: %s\n%s\nStatus:  %s\nDetails: %s\n%s\n",
+				border,
+				serviceConfig.GetName(),
+				border,
+				"RECOVERED",
+				"Connection succeeded during diagnostic check (transient failure).",
+				border,
+			)
+			log.Warn(msg)
+		} else {
+			// Confirmed failure
+			msg = fmt.Sprintf("\n%s\nFAILED TO CONNECT: %s\n%s\nStatus:  %s\nDetails: %s\nError:   %v\n%s\n",
+				border,
+				serviceConfig.GetName(),
+				border,
+				diagnosis.Status,
+				diagnosis.Message,
+				diagnosis.Error,
+				border,
+			)
+			// We log as Error to make it stand out, even though we continue startup
+			log.Error(msg)
+		}
+
+		log.Warn("Tools will still be registered but will likely fail at runtime.",
 			"service", serviceConfig.GetName(),
 			"address", address,
-			"error", err,
 		)
 	}
 
@@ -406,33 +444,42 @@ func (u *Upstream) createAndRegisterHTTPTools(ctx context.Context, serviceID, ad
 				return values, invalidParts, flags
 			}
 
-			// Normalize semicolons to ampersands to split correctly
-			normalizedQuery := strings.ReplaceAll(rawQuery, ";", "&")
-			parts := strings.Split(normalizedQuery, "&")
+			// We treat '&' as the only separator. Semicolons are treated as part of the value.
+			parts := strings.Split(rawQuery, "&")
 			for _, part := range parts {
 				if part == "" {
 					continue
 				}
 
-				// Try to parse this single part
-				m, err := url.ParseQuery(part)
-				if err != nil {
+				var key, value string
+				var hasEquals bool
+
+				// Split on first '='
+				if idx := strings.Index(part, "="); idx >= 0 {
+					key = part[:idx]
+					value = part[idx+1:]
+					hasEquals = true
+				} else {
+					key = part
+					value = ""
+					hasEquals = false
+				}
+
+				// Decode key and value
+				decodedKey, errKey := url.QueryUnescape(key)
+				decodedValue, errVal := url.QueryUnescape(value)
+
+				if errKey != nil || errVal != nil {
 					invalidParts = append(invalidParts, part)
 					continue
 				}
 
 				// Check for flag (no equals sign in part)
-				if !strings.Contains(part, "=") {
-					// It's a flag. key is unescaped part.
-					// m should contain { key: [""] }
-					for k := range m {
-						flags[k] = true
-					}
+				if !hasEquals {
+					flags[decodedKey] = true
 				}
 
-				for k, v := range m {
-					values[k] = append(values[k], v...)
-				}
+				values[decodedKey] = append(values[decodedKey], decodedValue)
 			}
 			return values, invalidParts, flags
 		}

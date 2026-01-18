@@ -11,6 +11,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"net/url"
 	"strings"
 	"sync"
 	"time"
@@ -99,6 +100,16 @@ func (u *OpenAPIUpstream) Register(
 		return "", nil, nil, fmt.Errorf("openapi service config is nil")
 	}
 
+	if address := openapiService.GetAddress(); address != "" {
+		uURL, err := url.ParseRequestURI(address)
+		if err != nil {
+			return "", nil, nil, fmt.Errorf("invalid openapi service address: %w", err)
+		}
+		if uURL.Scheme != "http" && uURL.Scheme != "https" {
+			return "", nil, nil, fmt.Errorf("invalid openapi service address scheme: %s (must be http or https)", uURL.Scheme)
+		}
+	}
+
 	info := &tool.ServiceInfo{
 		Name:   serviceConfig.GetName(),
 		Config: serviceConfig,
@@ -108,6 +119,16 @@ func (u *OpenAPIUpstream) Register(
 	specContent := openapiService.GetSpecContent()
 	if specContent == "" {
 		specURL := openapiService.GetSpecUrl()
+		if specURL != "" {
+			if uURL, err := url.ParseRequestURI(specURL); err != nil {
+				logging.GetLogger().Warn("Invalid OpenAPI spec URL", "url", specURL, "error", err)
+				specURL = ""
+			} else if uURL.Scheme != "http" && uURL.Scheme != "https" {
+				logging.GetLogger().Warn("Invalid OpenAPI spec URL scheme (must be http or https)", "url", specURL)
+				specURL = ""
+			}
+		}
+
 		if specURL != "" {
 			client := &http.Client{
 				Timeout: 30 * time.Second,
