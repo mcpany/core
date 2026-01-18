@@ -148,8 +148,12 @@ func searchFilesTool(prov provider.Provider, fs afero.Fs) filesystemToolDef {
 							relPath = filepath.Base(filePath)
 						}
 
+						// Combine with the user-provided path so the result is relative to the provider root (or absolute if input was absolute)
+						// resolvedPath corresponds to path.
+						fullPath := filepath.Join(path, relPath)
+
 						matches = append(matches, map[string]interface{}{
-							"file":         relPath,
+							"file":         fullPath,
 							"line_number":  lineNum,
 							"line_content": strings.TrimSpace(line),
 						})
