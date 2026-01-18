@@ -40,7 +40,30 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 )
 
+// mockUpstreamServer helps tests that need a reachable upstream service
+type mockUpstreamServer struct {
+	server *httptest.Server
+	URL    string
+}
+
+func newMockUpstreamServer() *mockUpstreamServer {
+	s := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+	}))
+	return &mockUpstreamServer{
+		server: s,
+		URL:    s.URL,
+	}
+}
+
+func (m *mockUpstreamServer) Close() {
+	m.server.Close()
+}
+
 func TestReloadConfig(t *testing.T) {
+	mockUpstream := newMockUpstreamServer()
+	defer mockUpstream.Close()
+
 	t.Run("successful reload", func(t *testing.T) {
 		fs := afero.NewMemMapFs()
 		app := NewApplication()
@@ -56,11 +79,11 @@ func TestReloadConfig(t *testing.T) {
 			auth.NewManager(),
 		)
 
-		configContent := `
+		configContent := fmt.Sprintf(`
 upstream_services:
  - name: "test-service"
    http_service:
-     address: "http://localhost:8080"
+     address: "%s"
      tools:
        - name: "test-tool"
          call_id: "test-call"
@@ -69,7 +92,7 @@ upstream_services:
          id: "test-call"
          endpoint_path: "/test"
          method: "HTTP_METHOD_POST"
-`
+`, mockUpstream.URL)
 		err := afero.WriteFile(fs, "/config.yaml", []byte(configContent), 0o644)
 		require.NoError(t, err)
 
@@ -101,6 +124,7 @@ upstream_services:
 		fs := afero.NewMemMapFs()
 		app := NewApplication()
 
+		// Disabled services should NOT be checked for reachability
 		configContent := `
 upstream_services:
  - name: "disabled-service"
@@ -551,12 +575,15 @@ func TestRun_ServerMode(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 	defer cancel()
 
+	mockUpstream := newMockUpstreamServer()
+	defer mockUpstream.Close()
+
 	// Create a dummy config file
-	configContent := `
+	configContent := fmt.Sprintf(`
 upstream_services:
   - name: "test-http-service"
     http_service:
-      address: "http://localhost:8080"
+      address: "%s"
       tools:
         - name: "echo"
           call_id: "echo_call"
@@ -565,7 +592,7 @@ upstream_services:
           id: "echo_call"
           endpoint_path: "/echo"
           method: "HTTP_METHOD_POST"
-`
+`, mockUpstream.URL)
 	err := afero.WriteFile(fs, "/config.yaml", []byte(configContent), 0o644)
 	require.NoError(t, err)
 
@@ -1686,11 +1713,15 @@ func TestRun_ServiceRegistrationPublication(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	configContent := `
+	mockUpstream := newMockUpstreamServer()
+	defer mockUpstream.Close()
+	t.Logf("Mock Upstream URL: %s", mockUpstream.URL)
+
+	configContent := fmt.Sprintf(`
 upstream_services:
  - name: "test-service"
    http_service:
-     address: "http://localhost:8080"
+     address: "%s"
      tools:
        - name: "test-call"
          call_id: "test-call"
@@ -1711,7 +1742,7 @@ upstream_services:
           id: "test-call"
           endpoint_path: "/test"
           method: "HTTP_METHOD_POST"
-`
+`, mockUpstream.URL)
 	err := afero.WriteFile(fs, "/config.yaml", []byte(configContent), 0o644)
 	require.NoError(t, err)
 
@@ -1753,12 +1784,15 @@ func TestRun_ServiceRegistrationSkipsDisabled(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 	defer cancel()
 
-	configContent := `
+	mockUpstream := newMockUpstreamServer()
+	defer mockUpstream.Close()
+
+	configContent := fmt.Sprintf(`
 upstream_services:
  - name: "enabled-service"
    disable: false
    http_service:
-     address: "http://localhost:8080"
+     address: "%s"
      tools:
        - name: "test-call"
          call_id: "test-call"
@@ -1769,7 +1803,7 @@ upstream_services:
      tools:
        - name: "test-call"
          call_id: "test-call"
-`
+`, mockUpstream.URL)
 	err := afero.WriteFile(fs, "/config.yaml", []byte(configContent), 0o644)
 	require.NoError(t, err)
 
@@ -2219,6 +2253,10 @@ func TestGRPCServer_PortReleasedOnGracefulShutdown(t *testing.T) {
 }
 
 func TestRun_IPAllowlist(t *testing.T) {
+	// Create mock upstream for all subtests
+	mockUpstream := newMockUpstreamServer()
+	defer mockUpstream.Close()
+
 	t.Run("Allowed", func(t *testing.T) {
 		fs := afero.NewMemMapFs()
 		ctx, cancel := context.WithCancel(context.Background())
@@ -2231,7 +2269,7 @@ func TestRun_IPAllowlist(t *testing.T) {
 		addr := fmt.Sprintf("localhost:%d", port)
 
 		// Allow localhost (IPv4 and IPv6 just in case)
-		configContent := `
+		configContent := fmt.Sprintf(`
 global_settings:
   allowed_ips:
     - "127.0.0.1"
@@ -2239,8 +2277,8 @@ global_settings:
 upstream_services:
  - name: "test-service"
    http_service:
-     address: "http://localhost:8080"
-`
+     address: "%s"
+`, mockUpstream.URL)
 		err = afero.WriteFile(fs, "/config.yaml", []byte(configContent), 0o644)
 		require.NoError(t, err)
 

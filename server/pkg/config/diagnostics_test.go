@@ -39,8 +39,14 @@ upstream_services: {
 
 	_, err = LoadServices(context.Background(), fileStore, "server")
 
-	// Assert that we get an error about connection refused
+	// Assert that we get an error about connection refused or timeout
 	require.Error(t, err, "Expected LoadServices to fail due to unreachable upstream")
-	assert.Contains(t, err.Error(), "connection refused", "Error should indicate connection issue")
+	// The error might be "connection refused" or "i/o timeout" or "context deadline exceeded" depending on OS/timing
+	assert.True(t,
+		assert.Contains(t, err.Error(), "connection refused") ||
+		assert.Contains(t, err.Error(), "timeout") ||
+		assert.Contains(t, err.Error(), "deadline exceeded"),
+		"Error should indicate connection issue or timeout",
+	)
 	assert.Contains(t, err.Error(), fmt.Sprintf("localhost:%d", port), "Error should mention the target address")
 }

@@ -34,8 +34,10 @@ func RunDiagnostics(ctx context.Context, config *configv1.McpAnyServerConfig) []
 	)
 
 	// We use a shorter timeout for diagnostics to not block startup too long.
-	// 2 seconds should be enough for local/LAN services.
-	diagCtx, cancel := context.WithTimeout(ctx, 3*time.Second)
+	// However, to support services starting in parallel (e.g. docker-compose),
+	// we allow a grace period (retry loop) of up to 5 seconds.
+	// This helps avoid race conditions where the MCP server starts before the upstream.
+	diagCtx, cancel := context.WithTimeout(ctx, 5*time.Second)
 	defer cancel()
 
 	for _, service := range config.GetUpstreamServices() {
@@ -144,14 +146,34 @@ func checkReachability(ctx context.Context, checkType, target string) error {
 
 	log.Debug("Checking connectivity", "target", host, "type", checkType)
 
-	d := net.Dialer{}
-	conn, err := d.DialContext(ctx, "tcp", host)
-	if err != nil {
-		return &ActionableError{
-			Err:        err,
-			Suggestion: fmt.Sprintf("Verify that the service at '%s' is running and reachable from the MCP Any server.\n       If using Docker, ensure you are using the correct hostname (e.g., 'host.docker.internal' instead of 'localhost').", target),
+	// Retry loop with backoff
+	var lastErr error
+	ticker := time.NewTicker(500 * time.Millisecond)
+	defer ticker.Stop()
+
+	for {
+		select {
+		case <-ctx.Done():
+			if lastErr != nil {
+				return &ActionableError{
+					Err:        lastErr,
+					Suggestion: fmt.Sprintf("Verify that the service at '%s' is running and reachable from the MCP Any server.\n       If using Docker, ensure you are using the correct hostname (e.g., 'host.docker.internal' instead of 'localhost').", target),
+				}
+			}
+			return ctx.Err()
+		default:
+			d := net.Dialer{Timeout: 1 * time.Second}
+			conn, err := d.DialContext(ctx, "tcp", host)
+			if err == nil {
+				_ = conn.Close()
+				return nil
+			}
+			lastErr = err
+			// Wait for next tick or context done
+			select {
+			case <-ctx.Done():
+			case <-ticker.C:
+			}
 		}
 	}
-	_ = conn.Close()
-	return nil
 }
