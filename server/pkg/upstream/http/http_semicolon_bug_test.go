@@ -1,22 +1,19 @@
-// Copyright 2026 Author(s) of MCP Any
-// SPDX-License-Identifier: Apache-2.0
-
 package http
 
 import (
 	"context"
 	"testing"
 
+	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/mcpany/core/server/pkg/pool"
 	"github.com/mcpany/core/server/pkg/tool"
 	"github.com/mcpany/core/server/pkg/util"
-	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/encoding/protojson"
 )
 
-func TestHTTPUpstream_URLConstruction_SemicolonBug(t *testing.T) {
+func TestHTTPUpstream_URLConstruction_SemicolonBug_Merge(t *testing.T) {
 	testCases := []struct {
 		name          string
 		address       string
@@ -24,29 +21,16 @@ func TestHTTPUpstream_URLConstruction_SemicolonBug(t *testing.T) {
 		expectedFqn   string
 	}{
 		{
-			name:         "endpoint with semicolon separated flag",
+			name:         "semicolon in value should be preserved",
 			address:      "http://example.com/api",
-			endpointPath: "/test?flag;param=val",
-			// With fix: semicolon is NOT a separator.
-			// "flag;param=val" -> "flag;param" = "val" ? No.
-			// url.ParseQuery fails.
-			// Preserved as-is.
-			expectedFqn:  "GET http://example.com/api/test?flag;param=val",
+			endpointPath: "/v1/test?q=hello;world",
+			expectedFqn:  "GET http://example.com/api/v1/test?q=hello;world",
 		},
 		{
-			name:         "endpoint with semicolon separated flags",
-			address:      "http://example.com/api",
-			endpointPath: "/test?flag1;flag2",
-			// Preserved as-is.
-			expectedFqn:  "GET http://example.com/api/test?flag1;flag2",
-		},
-		{
-			name:         "mixed ampersand and semicolon",
-			address:      "http://example.com/api",
-			endpointPath: "/test?a=1&flag;b=2",
-			// "a=1" -> a=1
-			// "flag;b=2" -> preserved as-is.
-			expectedFqn:  "GET http://example.com/api/test?a=1&flag;b=2",
+			name:         "semicolon in base url value should be preserved when merging",
+			address:      "http://example.com/api?default=a;b",
+			endpointPath: "/v1/test?foo=bar",
+			expectedFqn:  "GET http://example.com/api/v1/test?default=a;b&foo=bar",
 		},
 	}
 
@@ -57,7 +41,7 @@ func TestHTTPUpstream_URLConstruction_SemicolonBug(t *testing.T) {
 			upstream := NewUpstream(pm)
 
 			configJSON := `{
-				"name": "semicolon-service",
+				"name": "semicolon-bug-service-merge",
 				"http_service": {
 					"address": "` + tc.address + `",
 					"tools": [{"name": "test-op", "call_id": "test-op-call"}],

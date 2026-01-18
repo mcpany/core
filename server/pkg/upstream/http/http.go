@@ -406,9 +406,10 @@ func (u *Upstream) createAndRegisterHTTPTools(ctx context.Context, serviceID, ad
 				return values, invalidParts, flags
 			}
 
-			// Normalize semicolons to ampersands to split correctly
-			normalizedQuery := strings.ReplaceAll(rawQuery, ";", "&")
-			parts := strings.Split(normalizedQuery, "&")
+			// We split by "&" only. Semicolons are treated as part of the value (or key),
+			// unless they are properly percent-encoded, in which case url.ParseQuery handles them.
+			// Go's url.ParseQuery (since 1.17) does not support semicolon as separator.
+			parts := strings.Split(rawQuery, "&")
 			for _, part := range parts {
 				if part == "" {
 					continue
