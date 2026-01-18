@@ -6,6 +6,7 @@
 
 ### Implemented Features (Recently Completed)
 
+- [x] **Upstream Error Body Visibility**: Include upstream HTTP response body in error messages to help users diagnose 4xx/5xx failures. (Friction Fighter)
 - [x] **Strict JSON Schema Validation**: Enhanced configuration validator to strictly validate `input_schema` and `output_schema` against JSON Schema Draft 2020-12 using `jsonschema` library, preventing runtime errors due to invalid tool definitions. (Friction Fighter)
 - [x] **Strict Config Parsing**: Startup now fails immediately on YAML/JSON syntax errors in configuration files (previously skipped silently).
 - [x] **Upstream Service Diagnostics**: Improved error reporting in the UI for failed upstream connections (e.g., connection refused, auth failure).
@@ -134,6 +135,8 @@ These features represent the next logical steps for the product, focusing on Ent
 | 46   | **Schema Validation Caching**                 | **Performance**: Cache compiled schemas to avoid recompilation overhead during configuration reloads.                                                                                                              | Low        |
 | 45   | **Config Validation Diff**                    | **Experience**: When a configuration reload fails, display a diff highlighting the changes that caused the error compared to the last known good configuration.                                                    | High       |
 | 46   | **Health Webhooks**                           | **Ops**: Configure webhooks (Slack, Discord, PagerDuty) to be triggered when the system health status changes (e.g., from Healthy to Degraded).                                                                    | Medium     |
+| 47   | **Tool Execution Trace**                      | **Observability**: A dedicated trace log for tool inputs/outputs to help users debug what arguments the LLM is passing.                                                                                            | Medium     |
+| 48   | **Startup Time Profiling**                    | **Observability**: Detailed breakdown of startup time (config loading, connection probing) to diagnose slow starts.                                                                                                  | Low        |
 
 ## 3. Codebase Health
 

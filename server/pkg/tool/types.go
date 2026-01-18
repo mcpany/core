@@ -623,16 +623,21 @@ func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 			return fmt.Errorf("upstream HTTP request failed with status %d (Too Many Requests)", attemptResp.StatusCode)
 		}
 
-		if attemptResp.StatusCode >= 400 && attemptResp.StatusCode < 500 {
-			bodyBytes, _ := io.ReadAll(attemptResp.Body)
+		if attemptResp.StatusCode >= 400 {
+			// Read body to include in error message
+			// Limit to 1KB to avoid flooding logs/context
+			bodyBytes, _ := io.ReadAll(io.LimitReader(attemptResp.Body, 1024))
 			_ = attemptResp.Body.Close()
-			logging.GetLogger().DebugContext(ctx, "Upstream HTTP 4xx", "status", attemptResp.StatusCode, "body", string(bodyBytes), "url", httpReq.URL.String())
-			return &resilience.PermanentError{Err: fmt.Errorf("upstream HTTP request failed with status %d", attemptResp.StatusCode)}
-		}
 
-		if attemptResp.StatusCode >= 500 {
-			_ = attemptResp.Body.Close()
-			return fmt.Errorf("upstream HTTP request failed with status %d", attemptResp.StatusCode)
+			bodyStr := string(bodyBytes)
+			logging.GetLogger().DebugContext(ctx, "Upstream HTTP error", "status", attemptResp.StatusCode, "body", bodyStr, "url", httpReq.URL.String())
+
+			errMsg := fmt.Errorf("upstream HTTP request failed with status %d: %s", attemptResp.StatusCode, bodyStr)
+
+			if attemptResp.StatusCode < 500 {
+				return &resilience.PermanentError{Err: errMsg}
+			}
+			return errMsg
 		}
 
 		resp = attemptResp
