@@ -54,7 +54,9 @@ test.describe('Tool Exploration', () => {
         });
 
         await page.goto('/tools');
-        await expect(page.locator('table tbody tr')).toHaveCount(0);
+        const rows = page.locator('table tbody tr');
+        await expect(rows).toHaveCount(1);
+        await expect(rows.first()).toContainText('No tools available.');
     });
 
     test('should allow inspecting a tool', async ({ page }) => {
