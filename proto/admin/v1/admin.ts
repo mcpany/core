@@ -25,7 +25,18 @@ export interface ListServicesRequest {
 }
 
 export interface ListServicesResponse {
+  /** @deprecated */
   services: UpstreamServiceConfig[];
+  serviceStates: ServiceState[];
+}
+
+export interface ServiceState {
+  config?:
+    | UpstreamServiceConfig
+    | undefined;
+  /** "OK", "ERROR", "CONNECTING" */
+  status: string;
+  error: string;
 }
 
 export interface GetServiceRequest {
@@ -33,7 +44,9 @@ export interface GetServiceRequest {
 }
 
 export interface GetServiceResponse {
+  /** @deprecated */
   service?: UpstreamServiceConfig | undefined;
+  serviceState?: ServiceState | undefined;
 }
 
 export interface ListToolsRequest {
@@ -220,13 +233,16 @@ export const ListServicesRequest: MessageFns<ListServicesRequest> = {
 };
 
 function createBaseListServicesResponse(): ListServicesResponse {
-  return { services: [] };
+  return { services: [], serviceStates: [] };
 }
 
 export const ListServicesResponse: MessageFns<ListServicesResponse> = {
   encode(message: ListServicesResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
     for (const v of message.services) {
       UpstreamServiceConfig.encode(v!, writer.uint32(10).fork()).join();
+    }
+    for (const v of message.serviceStates) {
+      ServiceState.encode(v!, writer.uint32(18).fork()).join();
     }
     return writer;
   },
@@ -246,6 +262,14 @@ export const ListServicesResponse: MessageFns<ListServicesResponse> = {
           message.services.push(UpstreamServiceConfig.decode(reader, reader.uint32()));
           continue;
         }
+        case 2: {
+          if (tag !== 18) {
+            break;
+          }
+
+          message.serviceStates.push(ServiceState.decode(reader, reader.uint32()));
+          continue;
+        }
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -260,6 +284,9 @@ export const ListServicesResponse: MessageFns<ListServicesResponse> = {
       services: globalThis.Array.isArray(object?.services)
         ? object.services.map((e: any) => UpstreamServiceConfig.fromJSON(e))
         : [],
+      serviceStates: globalThis.Array.isArray(object?.serviceStates)
+        ? object.serviceStates.map((e: any) => ServiceState.fromJSON(e))
+        : [],
     };
   },
 
@@ -267,6 +294,9 @@ export const ListServicesResponse: MessageFns<ListServicesResponse> = {
     const obj: any = {};
     if (message.services?.length) {
       obj.services = message.services.map((e) => UpstreamServiceConfig.toJSON(e));
+    }
+    if (message.serviceStates?.length) {
+      obj.serviceStates = message.serviceStates.map((e) => ServiceState.toJSON(e));
     }
     return obj;
   },
@@ -277,6 +307,101 @@ export const ListServicesResponse: MessageFns<ListServicesResponse> = {
   fromPartial<I extends Exact<DeepPartial<ListServicesResponse>, I>>(object: I): ListServicesResponse {
     const message = createBaseListServicesResponse();
     message.services = object.services?.map((e) => UpstreamServiceConfig.fromPartial(e)) || [];
+    message.serviceStates = object.serviceStates?.map((e) => ServiceState.fromPartial(e)) || [];
+    return message;
+  },
+};
+
+function createBaseServiceState(): ServiceState {
+  return { config: undefined, status: "", error: "" };
+}
+
+export const ServiceState: MessageFns<ServiceState> = {
+  encode(message: ServiceState, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.config !== undefined) {
+      UpstreamServiceConfig.encode(message.config, writer.uint32(10).fork()).join();
+    }
+    if (message.status !== "") {
+      writer.uint32(18).string(message.status);
+    }
+    if (message.error !== "") {
+      writer.uint32(26).string(message.error);
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): ServiceState {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseServiceState();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.config = UpstreamServiceConfig.decode(reader, reader.uint32());
+          continue;
+        }
+        case 2: {
+          if (tag !== 18) {
+            break;
+          }
+
+          message.status = reader.string();
+          continue;
+        }
+        case 3: {
+          if (tag !== 26) {
+            break;
+          }
+
+          message.error = reader.string();
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): ServiceState {
+    return {
+      config: isSet(object.config) ? UpstreamServiceConfig.fromJSON(object.config) : undefined,
+      status: isSet(object.status) ? globalThis.String(object.status) : "",
+      error: isSet(object.error) ? globalThis.String(object.error) : "",
+    };
+  },
+
+  toJSON(message: ServiceState): unknown {
+    const obj: any = {};
+    if (message.config !== undefined) {
+      obj.config = UpstreamServiceConfig.toJSON(message.config);
+    }
+    if (message.status !== "") {
+      obj.status = message.status;
+    }
+    if (message.error !== "") {
+      obj.error = message.error;
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<ServiceState>, I>>(base?: I): ServiceState {
+    return ServiceState.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<ServiceState>, I>>(object: I): ServiceState {
+    const message = createBaseServiceState();
+    message.config = (object.config !== undefined && object.config !== null)
+      ? UpstreamServiceConfig.fromPartial(object.config)
+      : undefined;
+    message.status = object.status ?? "";
+    message.error = object.error ?? "";
     return message;
   },
 };
@@ -340,13 +465,16 @@ export const GetServiceRequest: MessageFns<GetServiceRequest> = {
 };
 
 function createBaseGetServiceResponse(): GetServiceResponse {
-  return { service: undefined };
+  return { service: undefined, serviceState: undefined };
 }
 
 export const GetServiceResponse: MessageFns<GetServiceResponse> = {
   encode(message: GetServiceResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
     if (message.service !== undefined) {
       UpstreamServiceConfig.encode(message.service, writer.uint32(10).fork()).join();
+    }
+    if (message.serviceState !== undefined) {
+      ServiceState.encode(message.serviceState, writer.uint32(18).fork()).join();
     }
     return writer;
   },
@@ -366,6 +494,14 @@ export const GetServiceResponse: MessageFns<GetServiceResponse> = {
           message.service = UpstreamServiceConfig.decode(reader, reader.uint32());
           continue;
         }
+        case 2: {
+          if (tag !== 18) {
+            break;
+          }
+
+          message.serviceState = ServiceState.decode(reader, reader.uint32());
+          continue;
+        }
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -376,13 +512,19 @@ export const GetServiceResponse: MessageFns<GetServiceResponse> = {
   },
 
   fromJSON(object: any): GetServiceResponse {
-    return { service: isSet(object.service) ? UpstreamServiceConfig.fromJSON(object.service) : undefined };
+    return {
+      service: isSet(object.service) ? UpstreamServiceConfig.fromJSON(object.service) : undefined,
+      serviceState: isSet(object.serviceState) ? ServiceState.fromJSON(object.serviceState) : undefined,
+    };
   },
 
   toJSON(message: GetServiceResponse): unknown {
     const obj: any = {};
     if (message.service !== undefined) {
       obj.service = UpstreamServiceConfig.toJSON(message.service);
+    }
+    if (message.serviceState !== undefined) {
+      obj.serviceState = ServiceState.toJSON(message.serviceState);
     }
     return obj;
   },
@@ -394,6 +536,9 @@ export const GetServiceResponse: MessageFns<GetServiceResponse> = {
     const message = createBaseGetServiceResponse();
     message.service = (object.service !== undefined && object.service !== null)
       ? UpstreamServiceConfig.fromPartial(object.service)
+      : undefined;
+    message.serviceState = (object.serviceState !== undefined && object.serviceState !== null)
+      ? ServiceState.fromPartial(object.serviceState)
       : undefined;
     return message;
   },

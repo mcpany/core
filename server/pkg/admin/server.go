@@ -12,6 +12,7 @@ import (
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	mcprouterv1 "github.com/mcpany/core/proto/mcp_router/v1"
 	"github.com/mcpany/core/server/pkg/middleware"
+	"github.com/mcpany/core/server/pkg/serviceregistry"
 	"github.com/mcpany/core/server/pkg/storage"
 	"github.com/mcpany/core/server/pkg/tool"
 	"github.com/mcpany/core/server/pkg/util/passhash"
@@ -23,27 +24,31 @@ import (
 // Server implements the AdminServiceServer interface.
 type Server struct {
 	pb.UnimplementedAdminServiceServer
-	cache       *middleware.CachingMiddleware
-	toolManager tool.ManagerInterface
-	storage     storage.Storage
+	cache           *middleware.CachingMiddleware
+	toolManager     tool.ManagerInterface
+	serviceRegistry serviceregistry.ServiceRegistryInterface
+	storage         storage.Storage
 }
 
 // NewServer creates a new Admin Server.
 //
 // cache manages the caching layer.
 // toolManager is the toolManager.
+// serviceRegistry is the registry of upstream services.
 // storage provides the persistence layer.
 //
 // Returns the result.
 func NewServer(
 	cache *middleware.CachingMiddleware,
 	toolManager tool.ManagerInterface,
+	serviceRegistry serviceregistry.ServiceRegistryInterface,
 	storage storage.Storage,
 ) *Server {
 	return &Server{
-		cache:       cache,
-		toolManager: toolManager,
-		storage:     storage,
+		cache:           cache,
+		toolManager:     toolManager,
+		serviceRegistry: serviceRegistry,
+		storage:         storage,
 	}
 }
 
@@ -72,14 +77,45 @@ func (s *Server) ClearCache(ctx context.Context, _ *pb.ClearCacheRequest) (*pb.C
 // Returns the response.
 // Returns an error if the operation fails.
 func (s *Server) ListServices(_ context.Context, _ *pb.ListServicesRequest) (*pb.ListServicesResponse, error) {
-	serviceInfos := s.toolManager.ListServices()
 	var services []*configv1.UpstreamServiceConfig
-	for _, info := range serviceInfos {
-		if info.Config != nil {
-			services = append(services, info.Config)
+	var serviceStates []*pb.ServiceState
+
+	if s.serviceRegistry != nil {
+		configs, err := s.serviceRegistry.GetAllServices()
+		if err != nil {
+			return nil, status.Errorf(codes.Internal, "failed to list services: %v", err)
+		}
+		for _, cfg := range configs {
+			services = append(services, cfg)
+
+			state := &pb.ServiceState{
+				Config: cfg,
+				Status: proto.String("OK"),
+			}
+			if errMsg, ok := s.serviceRegistry.GetServiceError(cfg.GetId()); ok {
+				state.Status = proto.String("ERROR")
+				state.Error = proto.String(errMsg)
+			}
+			serviceStates = append(serviceStates, state)
+		}
+	} else {
+		// Fallback to toolManager if serviceRegistry is not set (e.g. tests)
+		serviceInfos := s.toolManager.ListServices()
+		for _, info := range serviceInfos {
+			if info.Config != nil {
+				services = append(services, info.Config)
+				serviceStates = append(serviceStates, &pb.ServiceState{
+					Config: info.Config,
+					Status: proto.String("OK"),
+				})
+			}
 		}
 	}
-	return &pb.ListServicesResponse{Services: services}, nil
+
+	return &pb.ListServicesResponse{
+		Services:      services,
+		ServiceStates: serviceStates,
+	}, nil
 }
 
 // GetService returns a specific service by ID.
@@ -90,6 +126,25 @@ func (s *Server) ListServices(_ context.Context, _ *pb.ListServicesRequest) (*pb
 // Returns the response.
 // Returns an error if the operation fails.
 func (s *Server) GetService(_ context.Context, req *pb.GetServiceRequest) (*pb.GetServiceResponse, error) {
+	if s.serviceRegistry != nil {
+		cfg, ok := s.serviceRegistry.GetServiceConfig(req.GetServiceId())
+		if !ok {
+			return nil, status.Error(codes.NotFound, "service not found")
+		}
+		state := &pb.ServiceState{
+			Config: cfg,
+			Status: proto.String("OK"),
+		}
+		if errMsg, ok := s.serviceRegistry.GetServiceError(cfg.GetId()); ok {
+			state.Status = proto.String("ERROR")
+			state.Error = proto.String(errMsg)
+		}
+		return &pb.GetServiceResponse{
+			Service:      cfg,
+			ServiceState: state,
+		}, nil
+	}
+
 	info, ok := s.toolManager.GetServiceInfo(req.GetServiceId())
 	if !ok {
 		return nil, status.Error(codes.NotFound, "service not found")
@@ -97,7 +152,13 @@ func (s *Server) GetService(_ context.Context, req *pb.GetServiceRequest) (*pb.G
 	if info.Config == nil {
 		return nil, status.Error(codes.Internal, "service config not found")
 	}
-	return &pb.GetServiceResponse{Service: info.Config}, nil
+	return &pb.GetServiceResponse{
+		Service: info.Config,
+		ServiceState: &pb.ServiceState{
+			Config: info.Config,
+			Status: proto.String("OK"),
+		},
+	}, nil
 }
 
 // ListTools returns all registered tools.
