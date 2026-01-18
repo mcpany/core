@@ -18,6 +18,7 @@ import (
 	"path/filepath"
 	"strings"
 	"sync"
+	"sync/atomic"
 	"time"
 
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
@@ -225,6 +226,11 @@ type Application struct {
 	BoundHTTPPort int
 	// BoundGRPCPort stores the actual port the gRPC server is listening on.
 	BoundGRPCPort int
+
+	// startTime is the time the application started.
+	startTime time.Time
+	// activeConnections tracks the number of active HTTP connections.
+	activeConnections int32
 }
 
 // NewApplication creates a new Application with default dependencies.
@@ -243,6 +249,7 @@ func NewApplication() *Application {
 		UpstreamFactory: factory.NewUpstreamServiceFactory(pool.NewManager(), nil),
 		configFiles:     make(map[string]string),
 		startupCh:       make(chan struct{}),
+		startTime:       time.Now(),
 	}
 }
 
@@ -1789,7 +1796,17 @@ func (a *Application) runServerMode(
 			a.BoundHTTPPort = addr.Port
 		}
 		expectedReady++
-		startHTTPServer(localCtx, &wg, errChan, readyChan, "MCP Any HTTP", httpLis, handler, shutdownTimeout)
+		// Handle active connection tracking
+		connState := func(_ net.Conn, state http.ConnState) {
+			switch state {
+			case http.StateNew:
+				atomic.AddInt32(&a.activeConnections, 1)
+			case http.StateClosed, http.StateHijacked:
+				atomic.AddInt32(&a.activeConnections, -1)
+			}
+		}
+
+		startHTTPServer(localCtx, &wg, errChan, readyChan, "MCP Any HTTP", httpLis, handler, shutdownTimeout, connState)
 	}
 
 	// Wait for servers to be ready
@@ -1984,6 +2001,7 @@ func startHTTPServer(
 	lis net.Listener,
 	handler http.Handler,
 	shutdownTimeout time.Duration,
+	connState func(net.Conn, http.ConnState),
 ) {
 	wg.Add(1)
 	go func() {
