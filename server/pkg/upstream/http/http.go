@@ -118,8 +118,12 @@ func (u *Upstream) Register(
 	if address == "" {
 		return "", nil, nil, fmt.Errorf("http service address is required")
 	}
-	if _, err := url.ParseRequestURI(address); err != nil {
+	uURL, err := url.ParseRequestURI(address)
+	if err != nil {
 		return "", nil, nil, fmt.Errorf("invalid http service address: %w", err)
+	}
+	if uURL.Scheme != "http" && uURL.Scheme != "https" {
+		return "", nil, nil, fmt.Errorf("invalid http service address scheme: %s (must be http or https)", uURL.Scheme)
 	}
 
 	poolConfig := serviceConfig.GetConnectionPool()
