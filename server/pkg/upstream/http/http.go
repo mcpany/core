@@ -579,7 +579,10 @@ func (u *Upstream) createAndRegisterHTTPTools(ctx context.Context, serviceID, ad
 				if reqVal, ok := inputSchema.Fields["required"]; ok {
 					if listVal := reqVal.GetListValue(); listVal != nil {
 						for _, v := range listVal.Values {
-							existingRequired = append(existingRequired, v.GetStringValue())
+							// Only preserve string values, as JSON Schema 'required' must be an array of strings.
+							if _, ok := v.GetKind().(*structpb.Value_StringValue); ok {
+								existingRequired = append(existingRequired, v.GetStringValue())
+							}
 						}
 					}
 				}
