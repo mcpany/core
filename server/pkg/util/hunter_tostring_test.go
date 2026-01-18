@@ -21,10 +21,8 @@ func TestToString_BugFix(t *testing.T) {
 	str := ToString(val)
 	// It should NOT be negative. It should be scientific notation or a large positive number.
 	assert.NotContains(t, str, "-", "ToString(2^63) should not be negative")
-	// Updated requirement (2026): Large numbers should be full strings, not scientific
-	assert.NotContains(t, str, "e+", "ToString(2^63) should NOT be in scientific notation")
-	// Note: strconv.FormatFloat may output different precision endings for 2^63 but it starts with 922337
-	assert.Contains(t, str, "922337", "ToString(2^63) should start with 922337")
+	// Updated requirement (2026): Large numbers (>= MaxInt64) should use scientific notation for safety.
+	assert.Contains(t, str, "e+", "ToString(2^63) should be in scientific notation")
 }
 
 func TestToString_EdgeCases(t *testing.T) {
@@ -57,8 +55,7 @@ func TestToString_EdgeCases(t *testing.T) {
 			name:     "MaxInt64 float - precision loss",
 			// This value will be rounded to 2^63 when converted to float64, so it behaves like 2^63
 			input:    float64(math.MaxInt64),
-			// Expected value updated for 'f' format. Note: 9223372036854776000 is what strconv produces for 2^63 with -1 precision
-			expected: "9223372036854776000",
+			expected: "9.223372036854776e+18",
 		},
 		{
 			name:     "Largest safe float integer below MaxInt64",

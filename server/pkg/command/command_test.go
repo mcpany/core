@@ -8,6 +8,7 @@ import (
 	"context"
 	"encoding/binary"
 	"errors"
+	"fmt"
 	"io"
 	"net"
 	"os"
@@ -311,23 +312,27 @@ func TestDockerExecutor(t *testing.T) {
 		// t.Skip("Skipping flaky test: ContainerIsRemoved")
 		containerEnv := &configv1.ContainerEnvironment{}
 		containerEnv.SetImage("alpine:latest")
-		containerEnv.SetName("test-container-removal")
+		containerName := fmt.Sprintf("test-container-removal-%d", time.Now().UnixNano())
+		containerEnv.SetName(containerName)
 		executor := NewExecutor(containerEnv)
+
+		// Ensure cleanup even if test fails
+		cli, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
+		require.NoError(t, err)
+		defer cli.Close()
+		defer func() {
+			_ = cli.ContainerRemove(context.Background(), containerName, container.RemoveOptions{Force: true})
+		}()
+
 		_, _, exitCodeChan, err := executor.Execute(context.Background(), "echo", []string{"hello"}, "", nil)
 		require.NoError(t, err)
 
 		<-exitCodeChan
 
 		// Check if container is removed
-		// Check if container is removed
-		cli, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
-		require.NoError(t, err)
-		defer cli.Close() // Ensure client is closed
-
-		// Retry logic for container removal (deferred cleanup might race with this check)
 		var lastErr error
 		for i := 0; i < 20; i++ {
-			_, err = cli.ContainerInspect(context.Background(), "test-container-removal")
+			_, err = cli.ContainerInspect(context.Background(), containerName)
 			if dockererrdefs.IsNotFound(err) {
 				lastErr = err
 				break
