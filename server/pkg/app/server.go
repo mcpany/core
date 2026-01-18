@@ -1488,6 +1488,11 @@ func (a *Application) runServerMode(
 	})))
 	mux.Handle("/debug/auth-test", authMiddleware(http.HandlerFunc(a.testAuthHandler)))
 
+	// Register Debugger API if enabled
+	if standardMiddlewares != nil && standardMiddlewares.Debugger != nil {
+		mux.Handle("/debug/entries", authMiddleware(standardMiddlewares.Debugger.APIHandler()))
+	}
+
 	httpBindAddress := bindAddress
 	if httpBindAddress == "" {
 		if envAddr := os.Getenv("MCPANY_DEFAULT_HTTP_ADDR"); envAddr != "" {
