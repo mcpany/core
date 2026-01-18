@@ -66,6 +66,7 @@ func TestHTTPTool_Execute_PoolError(t *testing.T) {
 	t.Parallel()
 	poolManager := pool.NewManager()
 	toolProto := &v1.Tool{}
+	toolProto.SetUnderlyingMethodFqn("GET http://example.com")
 	httpTool := NewHTTPTool(toolProto, poolManager, "non-existent-service", nil, &configv1.HttpCallDefinition{}, nil, nil, "")
 	_, err := httpTool.Execute(context.Background(), &ExecutionRequest{})
 	assert.Error(t, err)
