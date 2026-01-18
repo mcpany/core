@@ -5,7 +5,9 @@ package mcpserver
 
 import (
 	"context"
+	"encoding/base64"
 	"fmt"
+	"log/slog"
 	"time"
 
 	jsoniter "github.com/json-iterator/go"
@@ -521,8 +523,8 @@ func (s *Server) ListTools() []tool.Tool {
 //   - The result of the tool execution.
 //   - An error if the tool execution fails or access is denied.
 func (s *Server) CallTool(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
-	// ⚡ Bolt Optimization: Use BytesToString to avoid allocation when logging arguments.
-	logging.GetLogger().Info("Calling tool...", "toolName", req.ToolName, "arguments", util.BytesToString(util.RedactJSON(req.ToolInputs)))
+	// ⚡ Bolt Optimization: Use LazyRedact to avoid redaction overhead if log level is disabled.
+	logging.GetLogger().Info("Calling tool...", "toolName", req.ToolName, "arguments", LazyRedact(req.ToolInputs))
 	// Try to get service ID from tool
 	var serviceID string
 	if t, ok := s.GetTool(req.ToolName); ok {
@@ -709,9 +711,9 @@ func (s *Server) Reload(ctx context.Context) error {
 }
 
 // convertMapToCallToolResult attempts to convert a map result to a CallToolResult
-// without JSON serialization overhead. It currently supports text content only.
+// without JSON serialization overhead. It supports text, image, and resource content.
 func convertMapToCallToolResult(m map[string]any) (*mcp.CallToolResult, error) {
-	// Fast path for simple text content
+	// Fast path for content
 	contentRaw, ok := m["content"]
 	if !ok {
 		// Maybe it's just error?
@@ -736,7 +738,8 @@ func convertMapToCallToolResult(m map[string]any) (*mcp.CallToolResult, error) {
 			return nil, fmt.Errorf("content type is not a string")
 		}
 
-		if typeStr == "text" {
+		switch typeStr {
+		case "text":
 			text, ok := cMap["text"].(string)
 			if !ok {
 				return nil, fmt.Errorf("text content text is not a string")
@@ -744,8 +747,53 @@ func convertMapToCallToolResult(m map[string]any) (*mcp.CallToolResult, error) {
 			contents = append(contents, &mcp.TextContent{
 				Text: text,
 			})
-		} else {
-			// Fallback for non-text
+		case "image":
+			dataStr, ok := cMap["data"].(string)
+			if !ok {
+				return nil, fmt.Errorf("image content data is not a string")
+			}
+			data, err := base64.StdEncoding.DecodeString(dataStr)
+			if err != nil {
+				return nil, fmt.Errorf("failed to decode image data: %w", err)
+			}
+			mimeType, ok := cMap["mimeType"].(string)
+			if !ok {
+				return nil, fmt.Errorf("image content mimeType is not a string")
+			}
+			contents = append(contents, &mcp.ImageContent{
+				Data:     data,
+				MIMEType: mimeType,
+			})
+		case "resource":
+			resMap, ok := cMap["resource"].(map[string]any)
+			if !ok {
+				return nil, fmt.Errorf("resource content resource is not a map")
+			}
+			uri, ok := resMap["uri"].(string)
+			if !ok {
+				return nil, fmt.Errorf("resource uri is not a string")
+			}
+			resContent := &mcp.ResourceContents{
+				URI: uri,
+			}
+			if mt, ok := resMap["mimeType"].(string); ok {
+				resContent.MIMEType = mt
+			}
+			if txt, ok := resMap["text"].(string); ok {
+				resContent.Text = txt
+			}
+			if blobStr, ok := resMap["blob"].(string); ok {
+				blob, err := base64.StdEncoding.DecodeString(blobStr)
+				if err != nil {
+					return nil, fmt.Errorf("failed to decode resource blob: %w", err)
+				}
+				resContent.Blob = blob
+			}
+			contents = append(contents, &mcp.EmbeddedResource{
+				Resource: resContent,
+			})
+		default:
+			// Fallback for other types
 			return nil, fmt.Errorf("unsupported content type for fast path: %s", typeStr)
 		}
 	}
@@ -755,6 +803,15 @@ func convertMapToCallToolResult(m map[string]any) (*mcp.CallToolResult, error) {
 		Content: contents,
 		IsError: isError,
 	}, nil
+}
+
+// LazyRedact is a byte slice that implements slog.LogValuer to lazily redact
+// its JSON content only when logged.
+type LazyRedact []byte
+
+// LogValue implements slog.LogValuer.
+func (l LazyRedact) LogValue() slog.Value {
+	return slog.StringValue(util.BytesToString(util.RedactJSON(l)))
 }
 
 func (s *Server) resourceListFilteringMiddleware(next mcp.MethodHandler) mcp.MethodHandler {
