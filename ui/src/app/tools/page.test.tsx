@@ -1,3 +1,8 @@
+/**
+ * Copyright 2026 Author(s) of MCP Any
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 import { render, screen, fireEvent, waitFor, within } from '@testing-library/react';
 import ToolsPage from './page';
 import { apiClient } from '@/lib/client';
