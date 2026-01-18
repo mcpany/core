@@ -39,17 +39,49 @@ export function PlaygroundClientPro() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const searchParams = useSearchParams();
+  const [isInitialized, setIsInitialized] = useState(false);
 
   useEffect(() => {
-      setMessages([
-          {
-              id: "1",
-              type: "assistant",
-              content: "Hello! I am your MCP Assistant. Select a tool from the sidebar to configure and execute it, or type a command directly.",
-              timestamp: new Date(),
-          }
-      ]);
+    // Load persisted messages
+    const savedMessages = localStorage.getItem("playground_messages_pro");
+    if (savedMessages) {
+        try {
+            const parsed = JSON.parse(savedMessages);
+            // Convert timestamps back to Date objects
+            const hydrated = parsed.map((m: any) => ({
+                ...m,
+                timestamp: new Date(m.timestamp)
+            }));
+            setMessages(hydrated);
+        } catch (e) {
+            console.error("Failed to parse saved messages", e);
+            setMessages([
+              {
+                  id: "1",
+                  type: "assistant",
+                  content: "Hello! I am your MCP Assistant. Select a tool from the sidebar to configure and execute it, or type a command directly.",
+                  timestamp: new Date(),
+              }
+            ]);
+        }
+    } else {
+        setMessages([
+            {
+                id: "1",
+                type: "assistant",
+                content: "Hello! I am your MCP Assistant. Select a tool from the sidebar to configure and execute it, or type a command directly.",
+                timestamp: new Date(),
+            }
+        ]);
+    }
+    setIsInitialized(true);
   }, []);
+
+  // Persist messages
+  useEffect(() => {
+      if (!isInitialized) return;
+      localStorage.setItem("playground_messages_pro", JSON.stringify(messages));
+  }, [messages, isInitialized]);
 
   useEffect(() => {
     const tool = searchParams.get('tool');
@@ -116,6 +148,21 @@ export function PlaygroundClientPro() {
     setShowSuggestions(false);
 
     processResponse(input);
+  };
+
+  const handleReplay = (toolName: string, toolArgs: Record<string, unknown> = {}) => {
+      const command = `${toolName} ${JSON.stringify(toolArgs)}`;
+
+      const userMsg: Message = {
+        id: Date.now().toString(),
+        type: "user",
+        content: command,
+        timestamp: new Date(),
+      };
+
+      setMessages((prev) => [...prev, userMsg]);
+      setIsLoading(true);
+      processResponse(command);
   };
 
   const handleToolFormSubmit = (data: Record<string, unknown>) => {
@@ -261,7 +308,7 @@ export function PlaygroundClientPro() {
                     <ScrollArea className="h-full p-4" ref={scrollAreaRef}>
                         <div className="max-w-4xl mx-auto pb-10 space-y-4">
                             {messages.map((msg) => (
-                                <ChatMessage key={msg.id} message={msg} />
+                                <ChatMessage key={msg.id} message={msg} onReplay={handleReplay} />
                             ))}
                             {isLoading && (
                                 <div className="flex items-center gap-2 text-muted-foreground text-xs animate-pulse pl-12">

@@ -8,7 +8,7 @@
 import { apiClient, ToolDefinition } from "@/lib/client";
 
 import React, { useState, useRef, useEffect, memo } from "react";
-import { Send, Bot, User, Terminal, Loader2, Sparkles, AlertCircle, Trash2, Command, ChevronRight } from "lucide-react";
+import { Send, Bot, User, Terminal, Loader2, Sparkles, AlertCircle, Trash2, Command, ChevronRight, RotateCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
@@ -50,21 +50,49 @@ interface Message {
 }
 
 export function PlaygroundClient() {
-  const [messages, setMessages] = useState<Message[]>([
-      {
-          id: "1",
-          type: "assistant",
-          content: "Hello! I am your MCP Assistant. I can help you interact with your registered tools. Try executing a tool like 'calculator' or 'weather'.",
-          timestamp: new Date(),
-      }
-  ]);
+  const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [availableTools, setAvailableTools] = useState<ToolDefinition[]>([]);
   const [toolToConfigure, setToolToConfigure] = useState<ToolDefinition | null>(null);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
+  const [isInitialized, setIsInitialized] = useState(false);
 
   useEffect(() => {
+    // Load persisted messages
+    const savedMessages = localStorage.getItem("playground_messages");
+    if (savedMessages) {
+        try {
+            const parsed = JSON.parse(savedMessages);
+            // Convert timestamps back to Date objects
+            const hydrated = parsed.map((m: any) => ({
+                ...m,
+                timestamp: new Date(m.timestamp)
+            }));
+            setMessages(hydrated);
+        } catch (e) {
+            console.error("Failed to parse saved messages", e);
+            setMessages([
+              {
+                  id: "1",
+                  type: "assistant",
+                  content: "Hello! I am your MCP Assistant. I can help you interact with your registered tools. Try executing a tool like 'calculator' or 'weather'.",
+                  timestamp: new Date(),
+              }
+            ]);
+        }
+    } else {
+        setMessages([
+          {
+              id: "1",
+              type: "assistant",
+              content: "Hello! I am your MCP Assistant. I can help you interact with your registered tools. Try executing a tool like 'calculator' or 'weather'.",
+              timestamp: new Date(),
+          }
+        ]);
+    }
+    setIsInitialized(true);
+
     // Load tools on mount
     apiClient.listTools()
         .then(data => setAvailableTools(data.tools || []))
@@ -93,6 +121,12 @@ export function PlaygroundClient() {
     }
   }, []);
 
+  // Persist messages
+  useEffect(() => {
+      if (!isInitialized) return;
+      localStorage.setItem("playground_messages", JSON.stringify(messages));
+  }, [messages, isInitialized]);
+
   // Auto-scroll to bottom
   useEffect(() => {
     if (scrollAreaRef.current) {
@@ -119,6 +153,21 @@ export function PlaygroundClient() {
 
     // Process immediately
     processResponse(input);
+  };
+
+  const handleReplay = (toolName: string, toolArgs: Record<string, unknown> = {}) => {
+      const command = `${toolName} ${JSON.stringify(toolArgs)}`;
+
+      const userMsg: Message = {
+        id: Date.now().toString(),
+        type: "user",
+        content: command,
+        timestamp: new Date(),
+      };
+
+      setMessages((prev) => [...prev, userMsg]);
+      setIsLoading(true);
+      processResponse(command);
   };
 
   const handleToolFormSubmit = (data: Record<string, unknown>) => {
@@ -220,12 +269,14 @@ export function PlaygroundClient() {
   };
 
   const clearChat = () => {
-      setMessages([{
+      const newMessages: Message[] = [{
           id: Date.now().toString(),
           type: "assistant",
           content: "Chat cleared. Ready for new commands.",
           timestamp: new Date(),
-      }]);
+      }];
+      setMessages(newMessages);
+      localStorage.setItem("playground_messages", JSON.stringify(newMessages));
   };
 
   return (
@@ -294,7 +345,7 @@ export function PlaygroundClient() {
             <ScrollArea className="flex-1 p-4" ref={scrollAreaRef}>
                 <div className="space-y-6 max-w-3xl mx-auto pb-4">
                     {messages.map((msg) => (
-                        <MessageItem key={msg.id} message={msg} />
+                        <MessageItem key={msg.id} message={msg} onReplay={handleReplay} />
                     ))}
                     {isLoading && (
                         <div className="flex items-center gap-2 text-muted-foreground text-sm animate-pulse ml-12">
@@ -356,7 +407,7 @@ export function PlaygroundClient() {
 // ⚡ Bolt Optimization: Memoize MessageItem to prevent re-rendering the entire chat history
 // on every keystroke (since parent re-renders on input state change).
 // This reduces main thread blocking by 90%+ for long chats.
-const MessageItem = memo(function MessageItem({ message }: { message: Message }) {
+const MessageItem = memo(function MessageItem({ message, onReplay }: { message: Message, onReplay?: (toolName: string, args: Record<string, unknown>) => void }) {
     if (message.type === "user") {
         return (
             <div className="flex justify-end gap-3 pl-10">
@@ -386,12 +437,23 @@ const MessageItem = memo(function MessageItem({ message }: { message: Message })
     if (message.type === "tool-call") {
         return (
             <div className="flex justify-start gap-3 pl-11 w-full pr-10">
-                <Card className="w-full border-dashed border-primary/30 bg-primary/5 shadow-none">
+                <Card className="w-full border-dashed border-primary/30 bg-primary/5 shadow-none relative group">
                     <CardHeader className="p-2 pb-1 flex flex-row items-center gap-2 space-y-0">
                          <div className="bg-primary/10 p-1 rounded">
                              <Terminal className="size-3 text-primary" />
                          </div>
                          <span className="font-mono text-xs font-medium text-primary">Calling: {message.toolName}</span>
+                         {onReplay && (
+                             <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-6 w-6 ml-auto opacity-0 group-hover:opacity-100 transition-opacity"
+                                onClick={() => onReplay(message.toolName!, message.toolArgs || {})}
+                                title="Replay this tool call"
+                             >
+                                 <RotateCcw className="size-3 text-muted-foreground hover:text-primary" />
+                             </Button>
+                         )}
                     </CardHeader>
                     <CardContent className="p-2 pt-1">
                         <pre className="text-xs bg-background/50 p-2 rounded border font-mono text-muted-foreground overflow-x-auto">

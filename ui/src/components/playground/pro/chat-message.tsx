@@ -5,7 +5,7 @@
 
 "use client";
 
-import { User, Bot, Terminal, Sparkles, AlertCircle, Check, Copy } from "lucide-react";
+import { User, Bot, Terminal, Sparkles, AlertCircle, Check, Copy, RotateCcw } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
@@ -28,6 +28,7 @@ export interface Message {
 
 interface ChatMessageProps {
     message: Message;
+    onReplay?: (toolName: string, args: Record<string, unknown>) => void;
 }
 
 /**
@@ -35,7 +36,7 @@ interface ChatMessageProps {
  *
  * @param { message - The { message.
  */
-export function ChatMessage({ message }: ChatMessageProps) {
+export function ChatMessage({ message, onReplay }: ChatMessageProps) {
     const [copied, setCopied] = useState(false);
 
     const copyToClipboard = (text: string) => {
@@ -83,7 +84,7 @@ export function ChatMessage({ message }: ChatMessageProps) {
     if (message.type === "tool-call") {
         return (
             <div className="flex justify-start gap-3 pl-11 w-full pr-4 md:pr-10 my-2">
-                <Card className="w-full border border-primary/20 bg-primary/5 shadow-none overflow-hidden">
+                <Card className="w-full border border-primary/20 bg-primary/5 shadow-none overflow-hidden relative group/card">
                     <CardHeader className="p-3 pb-2 flex flex-row items-center gap-2 space-y-0 border-b border-primary/10 bg-primary/10">
                          <div className="bg-primary/20 p-1.5 rounded-md">
                              <Terminal className="size-3.5 text-primary" />
@@ -92,6 +93,17 @@ export function ChatMessage({ message }: ChatMessageProps) {
                              <span className="text-[10px] text-primary/70 uppercase tracking-wider font-semibold">Tool Execution</span>
                              <span className="font-mono text-sm font-medium text-primary">{message.toolName}</span>
                          </div>
+                         {onReplay && (
+                             <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-6 w-6 ml-auto opacity-0 group-hover/card:opacity-100 transition-opacity"
+                                onClick={() => onReplay(message.toolName!, message.toolArgs || {})}
+                                title="Replay this tool call"
+                             >
+                                 <RotateCcw className="size-3.5 text-muted-foreground hover:text-primary" />
+                             </Button>
+                         )}
                     </CardHeader>
                     <CardContent className="p-0">
                          <div className="relative group/code">

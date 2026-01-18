@@ -23,7 +23,7 @@
 - [ ] **Prompt/Resource Sibling Navigation**: Enable sibling navigation for Prompts and Resources (requires backend API update to include service_id).
 - [ ] **Breadcrumb History**: Show recently visited breadcrumbs in a dropdown or history menu.
 - [x] **JSON Schema Visualizer**: Display tool input schemas as interactive diagrams instead of raw JSON for better understanding of complex types.
-- [ ] **Interactive Tool Usage History**: A timeline of tool executions with ability to replay them directly from the UI.
+- [x] **Interactive Tool Usage History**: A timeline of tool executions with ability to replay them directly from the UI.
 - [ ] **Bulk Service Import**: Allow importing multiple services from a single config file or URL.
 - [x] **Service Configuration Validation**: Pre-save validation for service configs (e.g. check if URL is reachable).
 - [x] **Service Tagging & Grouping**: Organize services by tags (e.g., prod, staging, external) and filter the list.
@@ -37,7 +37,9 @@
 - [ ] **Service Health History Visualization**: A sparkline or small graph in the service list row showing uptime/latency history (e.g. last 1h).
 - [ ] **Bulk Edit Configuration**: Ability to edit common properties (like tags, timeout, or environment variables) for multiple selected services.
 - [ ] **Saved Tool Arguments**: Ability to save a set of arguments as a "Preset" for a tool in the Playground, to quickly test different scenarios.
-- [ ] **Tool Execution History Persisted**: Persist the local history of tool executions in `localStorage` or backend, so it survives page reloads.
+- [x] **Tool Execution History Persisted**: Persist the local history of tool executions in `localStorage` or backend, so it survives page reloads.
+- [ ] **Export Playground Session**: Ability to export the current chat history as a JSON or Markdown file to share with others.
+- [ ] **Playground "Clear History" Confirmation**: Prevent accidental clearing of history with a confirmation dialog.
 
 ### Completed Features
 
