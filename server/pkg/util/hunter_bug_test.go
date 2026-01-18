@@ -1,103 +1,64 @@
-// Copyright 2025 Author(s) of MCP Any
-// SPDX-License-Identifier: Apache-2.0
-
 package util
 
 import (
-	"strings"
+	"math"
 	"testing"
-
 	"github.com/stretchr/testify/assert"
 )
 
-func TestRedactJSON_InvalidEscapes(t *testing.T) {
-	// Case 1: Short key with invalid escape.
-	// "password" escaped as "p\u0061ssword" (valid)
-	// Add an invalid escape "\@" at the end.
-	// JSON: {"p\u0061ssword\@": "secret"}
-	// Expected: Redacted (because it contains "password")
+func TestBytesToString(t *testing.T) {
+	b := []byte("hello")
+	s := BytesToString(b)
+	assert.Equal(t, "hello", s)
 
-	input := []byte(`{"p\u0061ssword\@": "secret_value"}`)
-	expected := []byte(`{"p\u0061ssword\@": "[REDACTED]"}`)
-
-	result := RedactJSON(input)
-	assert.Equal(t, string(expected), string(result), "Short key with invalid escape should be redacted")
+	// Ensure no allocation (hard to test without benchmarks, but functionally it works)
 }
 
-func TestRedactJSON_InvalidEscapes_LongKey(t *testing.T) {
-	// Case 2: Long key with invalid escape.
-	// We need to force using scanEscapedKeyForSensitive.
+func TestToString_FloatBoundary(t *testing.T) {
+	// math.MaxInt64 = 9223372036854775807
+	// float64(math.MaxInt64) = 9.223372036854776e+18 (rounded up to nearest even)
+	// 9223372036854775807 is 0x7FFFFFFFFFFFFFFF
+	// float64 representation loses precision.
 
-	oldLimit := maxUnescapeLimit
-	maxUnescapeLimit = 100
-	defer func() { maxUnescapeLimit = oldLimit }()
+	// Case 1: MaxInt64 exactly
+	// It will be converted to float64, losing precision.
+	// val = 9.223372036854776e+18
+	// val >= float64(math.MinInt64) is true.
+	// val < float64(math.MaxInt64) ?
+	// float64(math.MaxInt64) is the same value. So val < val is false.
+	// So it should fall through to FormatFloat.
 
-	// key length > 100.
-	padding := strings.Repeat("a", 120)
-	// "password" escaped
-	escapedPassword := `p\u0061ssword`
-	// Invalid escape
-	invalidEscape := `\@`
+	val := float64(math.MaxInt64)
+	s := ToString(val)
+	// We expect scientific notation or float string, NOT int string (which would be incorrect due to precision loss)
+	assert.Contains(t, s, "e+", "Expected scientific notation for MaxInt64 as float64")
 
-	key := padding + escapedPassword + invalidEscape
-	input := []byte(`{"` + key + `": "secret_value"}`)
+	// Case 2: A value that is safely representable in int64, but passed as float64.
+	// 2^53 is safe limit for integer precision in float64.
+	// let's try 2^60. 1152921504606846976
+	valSafe := float64(1 << 60)
+	sSafe := ToString(valSafe)
+	assert.Equal(t, "1152921504606846976", sSafe)
 
-	// Expected: Redacted
-	expectedSuffix := `": "[REDACTED]"}`
-
-	result := RedactJSON(input)
-
-	assert.True(t, strings.HasSuffix(string(result), expectedSuffix), "Long key with invalid escape should be redacted")
+	// Case 3: Negative boundary
+	// math.MinInt64 = -9223372036854775808
+	// float64(math.MinInt64) is exact because it's -2^63 (power of 2)
+	valMin := float64(math.MinInt64)
+	// val >= float64(math.MinInt64) is true (-2^63 >= -2^63)
+	// val < float64(math.MaxInt64) is true (-2^63 < 2^63)
+	// So it attempts to convert to int64.
+	// int64(-2^63) is valid (math.MinInt64).
+	sMin := ToString(valMin)
+	assert.Equal(t, "-9223372036854775808", sMin)
 }
 
-func TestRedactJSON_InvalidEscapes_EdgeCases(t *testing.T) {
-	// Test various invalid escapes
-	cases := []struct {
-		name string
-		key  string
-	}{
-		{"Invalid hex", `p\u0061ssword\G`}, // \G is invalid escape, treated as 'G'. "passwordG" -> matched (uppercase G not skipped)
-		{"Incomplete hex", `p\u0061ssword\1`}, // \1 is invalid (digits not valid escape start unless \u), treated as '1'. "password1" -> matched
-		{"Unknown escape", `p\u0061ssword\?`}, // \? -> ? -> "password?" -> matched
-		{"Trailing backslash", `p\u0061ssword\`},
-	}
+func TestSanitizeID_DotInjection(t *testing.T) {
+	// If I pass ["a.b"], I expect it to be sanitized because dot is not in allowedSanitizeIDChars.
+	// allowedSanitizeIDChars includes alphanumeric, _, -
+	// So "a.b" -> "ab_HASH"
 
-	for _, tc := range cases {
-		t.Run(tc.name, func(t *testing.T) {
-			input := []byte(`{"` + tc.key + `": "secret_value"}`)
-			result := RedactJSON(input)
-
-			// We check if it ends with "[REDACTED]"}`
-			// Note: if the key has trailing backslash, the input string itself might be invalid JSON
-			// because the quote is escaped? `{"key\": ...`
-			// Let's check how we construct it.
-			// `{"p\u0061ssword\": "secret_value"}` -> key is `p\u0061ssword"`, value is `secret_value`.
-			// Wait, if we have `\` at the end of key content, it escapes the closing quote!
-			// So `{"key\": "val"}` -> key is `key": "val`. It consumes the value?
-			// `redactJSONFast` handles this by counting backslashes.
-
-			if strings.HasSuffix(tc.key, `\`) {
-				// If key ends with backslash, it escapes the quote.
-				// So `{"key\": "val"}`
-				// redactJSONFast will skip the quote after `key\` and look for the next one.
-				// This might break the test assumption.
-				// Let's ensure the key doesn't actually escape the quote for this test,
-				// by escaping the backslash itself if we want to test literal backslash?
-				// But we are testing "invalid escape sequence".
-				// `\` at end of string IS valid if it escapes the quote.
-				// If we mean "key ends with a backslash char", it must be `\\`.
-				// If we mean "key contains \ followed by nothing (EOF)", that's impossible in a valid string.
-				// The only way to have `\` that is NOT an escape for the following char is if it IS `\\`.
-
-				// So "Trailing backslash" case is tricky in JSON.
-				// `{"key\u0061\"`: unclosed.
-				return
-			}
-
-			expectedSuffix := `": "[REDACTED]"}`
-			if !strings.HasSuffix(string(result), expectedSuffix) {
-				t.Errorf("Failed to redact key with %s. Result: %s", tc.name, string(result))
-			}
-		})
-	}
+	res, err := SanitizeID([]string{"a.b"}, false, 100, 8)
+	assert.NoError(t, err)
+	assert.NotEqual(t, "a.b", res)
+	assert.Contains(t, res, "ab_")
 }

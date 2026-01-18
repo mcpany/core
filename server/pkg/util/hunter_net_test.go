@@ -22,6 +22,9 @@ func TestCheckConnection_Coverage(t *testing.T) {
 
 	addr := ln.Addr().String()
 
+	// Enable loopback connections for this test
+	t.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "true")
+
 	// 1. Success case with host:port
 	err = CheckConnection(context.Background(), addr)
 	assert.NoError(t, err)
@@ -76,6 +79,9 @@ func TestSafeDialer_Coverage(t *testing.T) {
 }
 
 func TestCheckConnection_NoPort(t *testing.T) {
+	// Enable loopback connections for this test
+	t.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "true")
+
 	// Mocking CheckConnection's behavior for no port is hard because it defaults to 80.
 	// But we can check that it fails or succeeds depending on port 80 accessibility.
 	// Usually 127.0.0.1:80 is closed.
