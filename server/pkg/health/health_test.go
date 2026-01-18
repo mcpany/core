@@ -76,8 +76,7 @@ func TestNewChecker(t *testing.T) {
 		}.Build()
 
 		checker := NewChecker(upstreamConfig)
-		assert.NotNil(t, checker)
-		assert.Equal(t, health.StatusUp, checker.Check(ctx).Status)
+		assert.Nil(t, checker, "Checker should be nil when no health check is configured for HTTP service")
 	})
 
 	t.Run("Failure", func(t *testing.T) {
@@ -480,8 +479,15 @@ func TestCheckVariousServices(t *testing.T) {
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			checker := NewChecker(tc.config)
-			assert.NotNil(t, checker)
-			assert.Equal(t, tc.want, checker.Check(ctx).Status)
+			// For services where we optimized the checker to be nil (no-op check)
+			if (tc.config.GetHttpService() != nil && tc.config.GetHttpService().GetHealthCheck() == nil) ||
+				(tc.config.GetOpenapiService() != nil && tc.config.GetOpenapiService().GetHealthCheck() == nil) ||
+				(tc.config.GetCommandLineService() != nil && tc.config.GetCommandLineService().GetHealthCheck() == nil) {
+				assert.Nil(t, checker)
+			} else {
+				assert.NotNil(t, checker)
+				assert.Equal(t, tc.want, checker.Check(ctx).Status)
+			}
 		})
 	}
 }
