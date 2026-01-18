@@ -17,6 +17,7 @@ import (
 	_ "github.com/go-sql-driver/mysql" // Register MySQL driver
 	_ "github.com/lib/pq"              // Register Postgres driver
 	configv1 "github.com/mcpany/core/proto/config/v1"
+	"github.com/mcpany/core/server/pkg/util"
 	"github.com/mcpany/core/server/pkg/validation"
 	_ "modernc.org/sqlite" // Register SQLite driver
 )
@@ -193,13 +194,10 @@ func checkGRPCService(ctx context.Context, s *configv1.GrpcUpstreamService) Chec
 		}
 	}
 
-	timeout := 5 * time.Second
-	if deadline, ok := ctx.Deadline(); ok {
-		timeout = time.Until(deadline)
-	}
+	// Note: SafeDialContext internally uses NewSafeDialer which does not expose timeout configuration yet,
+	// but respects context deadline.
 
-	d := net.Dialer{Timeout: timeout}
-	conn, err := d.DialContext(ctx, "tcp", net.JoinHostPort(host, port))
+	conn, err := util.SafeDialContext(ctx, "tcp", net.JoinHostPort(host, port))
 	if err != nil {
 		return CheckResult{
 			Status:  StatusError,

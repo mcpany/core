@@ -126,18 +126,24 @@ func (d *SafeDialer) DialContext(ctx context.Context, network, addr string) (net
 	return nil, firstErr
 }
 
-// SafeDialContext creates a connection to the given address, but strictly prevents
+// SafeDialContext creates a connection to the given address, preventing
 // connections to private or loopback IP addresses to mitigate SSRF vulnerabilities.
-//
-// It resolves the host's IP addresses and checks each one. If any resolved IP
-// is private or loopback, the connection is blocked.
+// It respects the MCPANY_ALLOW_LOOPBACK_RESOURCES and MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES
+// environment variables.
 //
 // ctx is the context for the dial operation.
 // network is the network type (e.g., "tcp").
 // addr is the address to connect to (host:port).
 // It returns the established connection or an error if the connection fails or is blocked.
 func SafeDialContext(ctx context.Context, network, addr string) (net.Conn, error) {
-	return NewSafeDialer().DialContext(ctx, network, addr)
+	dialer := NewSafeDialer()
+	if os.Getenv("MCPANY_ALLOW_LOOPBACK_RESOURCES") == TrueStr {
+		dialer.AllowLoopback = true
+	}
+	if os.Getenv("MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES") == TrueStr {
+		dialer.AllowPrivate = true
+	}
+	return dialer.DialContext(ctx, network, addr)
 }
 
 // NewSafeHTTPClient creates a new http.Client that prevents SSRF.
@@ -194,8 +200,7 @@ func CheckConnection(ctx context.Context, address string) error {
 		target = net.JoinHostPort(host, port)
 	}
 
-	d := net.Dialer{Timeout: 5 * time.Second}
-	conn, err := d.DialContext(ctx, "tcp", target)
+	conn, err := SafeDialContext(ctx, "tcp", target)
 	if err != nil {
 		return fmt.Errorf("failed to connect to address %s: %w", target, err)
 	}

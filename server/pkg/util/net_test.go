@@ -125,3 +125,17 @@ func TestSafeDialContext(t *testing.T) {
 	require.Error(t, err)
 	assert.Contains(t, err.Error(), "ssrf attempt blocked")
 }
+
+func TestCheckConnection(t *testing.T) {
+	// Verify CheckConnection blocks loopback addresses by default
+	ctx, cancel := context.WithTimeout(context.Background(), 100*time.Millisecond)
+	defer cancel()
+
+	err := util.CheckConnection(ctx, "http://127.0.0.1:80")
+	require.Error(t, err)
+	assert.Contains(t, err.Error(), "ssrf attempt blocked")
+
+	err = util.CheckConnection(ctx, "127.0.0.1:80")
+	require.Error(t, err)
+	assert.Contains(t, err.Error(), "ssrf attempt blocked")
+}

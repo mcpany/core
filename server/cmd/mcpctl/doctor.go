@@ -96,6 +96,11 @@ func newDoctorCmd() *cobra.Command {
 			client := &http.Client{
 				Timeout: 2 * time.Second,
 			}
+			// Note: We use the default http.Client here because mcpctl is a CLI tool run by the user,
+			// and it is expected to connect to localhost or whatever the user configured.
+			// SSRF protection is more critical for the server itself when handling untrusted config/requests.
+			// However, if mcpctl is used in automated environments with untrusted input, standard protection might apply,
+			// but here it connects to the *server* managed by the same user/admin.
 
 			// Check /health
 			req, err := http.NewRequestWithContext(ctx, http.MethodGet, baseURL+"/health", nil)
