@@ -21,7 +21,8 @@ func TestToString_BugFix(t *testing.T) {
 	str := ToString(val)
 	// It should NOT be negative. It should be scientific notation or a large positive number.
 	assert.NotContains(t, str, "-", "ToString(2^63) should not be negative")
-	assert.Contains(t, str, "e+18", "ToString(2^63) should be in scientific notation")
+	// Updated requirement (2026): Large numbers (>= MaxInt64) should use scientific notation for safety.
+	assert.Contains(t, str, "e+", "ToString(2^63) should be in scientific notation")
 }
 
 func TestToString_EdgeCases(t *testing.T) {

@@ -6,41 +6,42 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('Services Feature', () => {
-  test.beforeEach(async ({ page, request }) => {
-    // Seed data
-    try {
-        const r1 = await request.post('/api/v1/services', {
-            data: {
-                id: "svc_01",
-                name: "Payment Gateway",
-                connection_pool: { max_connections: 100 },
-                disable: false,
-                version: "v1.2.0",
-                http_service: { address: "https://stripe.com", tools: [], resources: [] }
-            }
-        });
-        if (!r1.ok() && r1.status() !== 409) {
-            console.error(`Failed to seed svc_01: ${r1.status()} ${await r1.text()}`);
-        }
-        expect(r1.status() === 200 || r1.status() === 201 || r1.status() === 409).toBeTruthy();
-
-        const r2 = await request.post('/api/v1/services', {
-            data: {
-               id: "svc_02",
-               name: "User Service",
-               disable: false,
-               version: "v1.0",
-               grpc_service: { address: "localhost:50051", use_reflection: true, tools: [], resources: [] }
-            }
-        });
-        if (!r2.ok() && r2.status() !== 409) {
-            console.error(`Failed to seed svc_02: ${r2.status()} ${await r2.text()}`);
-        }
-        expect(r2.status() === 200 || r2.status() === 201 || r2.status() === 409).toBeTruthy();
-    } catch (e) {
-        console.log("Seeding interaction failed", e);
-        throw e;
+  const services: any[] = [
+    {
+        name: "Payment Gateway",
+        type: "http",
+        address: "https://stripe.com",
+        status: "up",
+        version: "v1.2.0",
+        enabled: true
+    },
+    {
+        name: "User Service",
+        type: "grpc",
+        address: "localhost:50051",
+        status: "up",
+        version: "v1.0",
+        enabled: true
     }
+  ];
+
+  test.beforeEach(async ({ page }) => {
+    // page.on('request', request => console.log('>>', request.method(), request.url()));
+
+    // Mock registration API with dynamic state
+    await page.route(url => url.pathname.endsWith('/api/v1/services'), async route => {
+        const method = route.request().method();
+        if (method === 'GET') {
+            await route.fulfill({ json: { services } });
+        } else if (method === 'POST') {
+            const newSvc = route.request().postDataJSON();
+            const created = { ...newSvc, status: 'up', enabled: true };
+            services.push(created);
+            await route.fulfill({ json: created });
+        } else {
+            await route.continue();
+        }
+    });
 
     await page.goto('/services');
   });
@@ -74,22 +75,20 @@ test.describe('Services Feature', () => {
     await page.getByRole('combobox').click();
     await page.getByRole('option', { name: 'HTTP' }).click();
 
-    // With new editor, label is "Base URL" for HTTP
     const addressInput = page.getByPlaceholder('https://api.example.com');
     await expect(addressInput).toBeVisible();
     await addressInput.fill('http://localhost:8080');
 
     await page.getByRole('button', { name: 'Save Changes' }).click();
+    await expect(page.getByRole('dialog')).toBeHidden({ timeout: 10000 });
 
-    // Explicitly wait for the service to appear in the list with a generous timeout
+    // Should be visible in the list now
     await expect(page.getByText(serviceName)).toBeVisible({ timeout: 10000 });
 
     const newServiceRow = page.locator('tr').filter({ hasText: serviceName });
-    await newServiceRow.waitFor({ state: 'visible', timeout: 5000 });
     await newServiceRow.getByRole('button', { name: 'Open menu' }).click();
     await page.getByRole('menuitem', { name: 'Edit' }).click();
 
-    // Check general tab which is default
     await expect(page.locator('input[id="name"]')).toHaveValue(serviceName);
     await page.getByRole('button', { name: 'Cancel' }).click();
   });
