@@ -108,15 +108,20 @@ func (s *Settings) Load(cmd *cobra.Command, fs afero.Fs) error {
 	mcpListenAddress := viper.GetString("mcp-listen-address")
 	if !cmd.Flags().Changed("mcp-listen-address") && len(s.configPaths) > 0 {
 		store := NewFileStore(fs, s.configPaths)
+		// We ignore errors here because we are only peeking for the listen address.
+		// Real validation happens later in main.go or app.Run.
+		// If we fail here, we prevent main.go from printing user-friendly errors for missing files.
 		cfg, err := LoadServices(context.Background(), store, "server")
-		if err != nil {
-			return fmt.Errorf("failed to load services from config: %w", err)
-		}
-		if cfg.GetGlobalSettings().GetMcpListenAddress() != "" {
-			mcpListenAddress = cfg.GetGlobalSettings().GetMcpListenAddress()
-		}
-		if len(cfg.GetGlobalSettings().GetMiddlewares()) > 0 {
-			s.proto.SetMiddlewares(cfg.GetGlobalSettings().GetMiddlewares())
+		if err == nil {
+			if cfg.GetGlobalSettings().GetMcpListenAddress() != "" {
+				mcpListenAddress = cfg.GetGlobalSettings().GetMcpListenAddress()
+			}
+			if len(cfg.GetGlobalSettings().GetMiddlewares()) > 0 {
+				s.proto.SetMiddlewares(cfg.GetGlobalSettings().GetMiddlewares())
+			}
+		} else {
+			// Log at debug level so we don't confuse the user if this was just a missing file that main.go will catch
+			logging.GetLogger().Debug("Failed to peek config for listen address (this is expected if config is invalid or missing)", "error", err)
 		}
 	}
 	s.proto.SetMcpListenAddress(mcpListenAddress)
