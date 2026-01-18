@@ -172,8 +172,16 @@ func CountTokensInValue(t Tokenizer, v interface{}) (int, error) {
 		}
 	}
 
-	visited := make(map[uintptr]bool)
-	return countTokensInValueRecursive(t, v, visited)
+	visited := visitedPool.Get().(map[uintptr]bool)
+	c, err := countTokensInValueRecursive(t, v, visited)
+
+	// Ensure map is cleared before putting back
+	for k := range visited {
+		delete(visited, k)
+	}
+	visitedPool.Put(visited)
+
+	return c, err
 }
 
 // countTokensInValueSimpleFast handles fast-path tokenization for SimpleTokenizer.
@@ -379,6 +387,13 @@ func countTokensInValueWord(t *WordTokenizer, v interface{}, visited map[uintptr
 
 func (t *WordTokenizer) countRecursive(v interface{}, visited map[uintptr]bool) (int, error) {
 	return countTokensInValueWord(t, v, visited)
+}
+
+// visitedPool reuses maps to reduce allocations in CountTokensInValue.
+var visitedPool = sync.Pool{
+	New: func() interface{} {
+		return make(map[uintptr]bool)
+	},
 }
 
 // structFieldCache stores the indices of exported fields for a given struct type.
