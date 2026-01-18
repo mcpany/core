@@ -139,7 +139,7 @@ func TestAuthMiddleware(t *testing.T) {
 		assert.Contains(t, err.Error(), "unauthorized")
 	})
 
-	t.Run("should return error when http request is missing from context", func(t *testing.T) {
+	t.Run("should bypass auth when http request is missing from context (stdio)", func(t *testing.T) {
 		authManager := auth.NewManager()
 		// Add an authenticator so it tries to authenticate
 		authenticator := &auth.APIKeyAuthenticator{
@@ -152,14 +152,16 @@ func TestAuthMiddleware(t *testing.T) {
 
 		mw := middleware.AuthMiddleware(authManager)
 
+		nextCalled := false
 		handler := mw(func(_ context.Context, _ string, _ mcp.Request) (mcp.Result, error) {
+			nextCalled = true
 			return nil, nil
 		})
 
 		// Context without "http.request"
 		_, err = handler(context.Background(), "test.method", nil)
-		require.Error(t, err)
-		assert.Contains(t, err.Error(), "http.Request not found in context")
+		require.NoError(t, err)
+		assert.True(t, nextCalled)
 	})
 
 	t.Run("should enforce auth for tools/call with protected service prefix", func(t *testing.T) {
