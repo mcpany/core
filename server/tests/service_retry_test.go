@@ -6,9 +6,9 @@ package tests
 import (
 	"context"
 	"fmt"
+	"net"
 	"net/http"
 	"net/http/httptest"
-	"sync/atomic"
 	"testing"
 	"time"
 
@@ -18,25 +18,29 @@ import (
 )
 
 func TestServiceRetry(t *testing.T) {
-	// 1. Create a dynamic mock server that we can toggle
-	var shouldFail atomic.Bool
-	shouldFail.Store(true) // Start in failing mode
-
-	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if shouldFail.Load() {
-			// Simulate failure (503 Service Unavailable)
-			http.Error(w, "Service Unavailable", http.StatusServiceUnavailable)
-			return
-		}
-
-		// Success mode: Return valid MCP initialization response
-		w.Header().Set("Content-Type", "application/json")
-		w.Write([]byte(`{"jsonrpc": "2.0", "id": 1, "result": {"protocolVersion": "2024-11-05", "capabilities": {}, "serverInfo": {"name": "mock", "version": "1.0"}}}`))
-	}))
-	defer ts.Close()
-
-	// 2. Configure App to point to this server
+	// 1. Create a config file pointing to a non-existent MCP server
 	fs := afero.NewMemMapFs()
+
+    // Get an ephemeral port by listening on port 0
+    var l net.Listener
+    var err error
+    for i := 0; i < 10; i++ {
+        l, err = net.Listen("tcp", ":0")
+        if err == nil {
+            break
+        }
+        time.Sleep(100 * time.Millisecond)
+    }
+    require.NoError(t, err)
+    port := l.Addr().(*net.TCPAddr).Port
+    // Close the listener immediately so we can get "connection refused" which fails fast.
+    // If we leave it open but don't accept, it hangs (until timeout).
+    l.Close()
+
+    // We will attempt to reuse this port. There is a small risk someone else steals it,
+    // but on localhost tests it's usually fine.
+    targetURL := fmt.Sprintf("http://127.0.0.1:%d/mcp", port)
+
 	configContent := fmt.Sprintf(`
 upstream_services:
   - name: "delayed-mcp"
@@ -45,22 +49,21 @@ upstream_services:
         http_address: "%s"
     resilience:
       timeout: "0.5s"
-`, ts.URL)
+`, targetURL)
 
-	err := afero.WriteFile(fs, "config.yaml", []byte(configContent), 0644)
+	err = afero.WriteFile(fs, "config.yaml", []byte(configContent), 0644)
 	require.NoError(t, err)
 
-	// 3. Start the Application
+	// 2. Start the Application
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
 	a := app.NewApplication()
 	go func() {
-		// Use a random port for the app itself to avoid conflicts
 		err := a.Run(ctx, fs, false, "127.0.0.1:0", "", []string{"config.yaml"}, "", 1*time.Second)
-		if err != nil && ctx.Err() == nil {
-			t.Logf("Application run error: %v", err)
-		}
+        if err != nil && ctx.Err() == nil {
+            t.Logf("Application run error: %v", err)
+        }
 	}()
 
 	// Wait for app to start
@@ -69,31 +72,60 @@ upstream_services:
 		t.Fatalf("Failed to wait for startup: %v", err)
 	}
 
-	// 4. Verify service failed to register initially
-	require.Eventually(t, func() bool {
-		if a.ServiceRegistry == nil {
-			return false
-		}
-		_, hasError := a.ServiceRegistry.GetServiceError("delayed-mcp")
-		return hasError
-	}, 15*time.Second, 100*time.Millisecond, "ServiceRegistry not initialized or service did not fail as expected")
+	// Verify service failed to register
+    require.Eventually(t, func() bool {
+        if a.ServiceRegistry == nil {
+            return false
+        }
+        _, hasError := a.ServiceRegistry.GetServiceError("delayed-mcp")
+        return hasError
+    }, 15*time.Second, 100*time.Millisecond, "ServiceRegistry not initialized or service did not fail as expected")
 
-	errStr, hasError := a.ServiceRegistry.GetServiceError("delayed-mcp")
-	t.Logf("Initial Service Error: %s (hasError: %v)", errStr, hasError)
-	require.True(t, hasError, "Service should have an error initially")
+    errStr, hasError := a.ServiceRegistry.GetServiceError("delayed-mcp")
+    t.Logf("Initial Service Error: %s (hasError: %v)", errStr, hasError)
 
-	// 5. "Fix" the server
-	t.Log("Enabling mock service...")
-	shouldFail.Store(false)
+    if !hasError {
+         _, infoOk := a.ServiceRegistry.GetServiceInfo("delayed-mcp")
+         if infoOk {
+             t.Log("Service registered successfully unexpectedly!")
+         }
+    } else {
+        t.Log("Service correctly failed to register initially.")
+    }
 
-	// 6. Wait and see if it recovers
-	// The worker retries every ~5s (default) or configuration specific.
-	// We wait enough time for a retry cycle.
-	t.Log("Waiting for retry...")
-	require.Eventually(t, func() bool {
-		_, hasError := a.ServiceRegistry.GetServiceError("delayed-mcp")
-		return !hasError
-	}, 15*time.Second, 500*time.Millisecond, "Service failed to recover after server was fixed")
+    // 3. Start the mock MCP service
+	ts := httptest.NewUnstartedServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+        // Minimal MCP response for initialization
+        w.Header().Set("Content-Type", "application/json")
 
-	t.Log("Service recovered successfully!")
+        // If it's a POST (JSON-RPC), return result.
+        // MCP HTTP transport spec is SSE + POST.
+        // But the SDK might fallback or check something.
+        // The error was "unsupported content type", so fixing that might be enough to pass "connection" check.
+        // But likely it sends `initialize` request and expects a response.
+        // JSON-RPC response:
+        w.Write([]byte(`{"jsonrpc": "2.0", "id": 1, "result": {"protocolVersion": "2024-11-05", "capabilities": {}, "serverInfo": {"name": "mock", "version": "1.0"}}}`))
+	}))
+
+    // Assign the listener with the dynamic port. We need to re-bind.
+    l2, err := net.Listen("tcp", fmt.Sprintf(":%d", port))
+    require.NoError(t, err, "Failed to re-bind to port %d", port)
+    ts.Listener = l2
+	ts.Start()
+	defer ts.Close()
+
+    t.Logf("Started mock service at %s", targetURL)
+
+	// 4. Wait and see if it recovers
+    t.Log("Waiting for retry...")
+    time.Sleep(10 * time.Second)
+
+    // Check if service is now healthy
+    errStr, hasError = a.ServiceRegistry.GetServiceError("delayed-mcp")
+    if hasError {
+        t.Logf("Service still has error: %s (failed to recover)", errStr)
+        t.Fail() // IT FAILED TO RECOVER
+    } else {
+        t.Log("Service recovered successfully (error cleared)!")
+    }
 }

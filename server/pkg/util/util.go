@@ -500,16 +500,10 @@ func ToString(v any) string {
 		// So any safe float64 integer fits in int64.
 		// We check if the float value is integral.
 		if math.Trunc(val) == val {
-			// Check bounds to avoid undefined behavior or overflow when casting.
-			// float64 can exactly represent integers up to 2^53.
-			// Beyond that, it can represent some integers but with gaps.
-			// We only use decimal formatting if it is reasonably representative of the value.
+			// Check bounds to avoid undefined behavior or overflow when casting
 			if val >= float64(math.MinInt64) && val < float64(math.MaxInt64) {
 				return strconv.FormatInt(int64(val), 10)
 			}
-			// For extremely large integers (> MaxInt64), use 'f' with 0 precision
-			// UNLESS it's truly massive where scientific is better.
-			// Let's use 'g' as it is standard and usually what's expected for JSON etc.
 		}
 		return strconv.FormatFloat(val, 'g', -1, 64)
 	case fmt.Stringer:

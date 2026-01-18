@@ -1,7 +1,7 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
-// Package doctor provides functionality for checking the health and status of upstream services.
+// Package doctor provides functionality for checking the health and configuration of services.
 package doctor
 
 import (
@@ -198,7 +198,7 @@ func checkGRPCService(ctx context.Context, s *configv1.GrpcUpstreamService) Chec
 		timeout = time.Until(deadline)
 	}
 
-	d := &net.Dialer{Timeout: timeout}
+	d := net.Dialer{Timeout: timeout}
 	conn, err := d.DialContext(ctx, "tcp", net.JoinHostPort(host, port))
 	if err != nil {
 		return CheckResult{

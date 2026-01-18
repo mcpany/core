@@ -51,8 +51,8 @@ export function ToolInspector({ tool, open, onOpenChange }: ToolInspectorProps) 
           arguments: args
       }, isDryRun);
       setOutput(JSON.stringify(res, null, 2));
-    } catch (e: any) {
-      setOutput(`Error: ${e.message}`);
+    } catch (e) {
+      setOutput(`Error: ${(e as Error).message}`);
     } finally {
       setLoading(false);
     }
@@ -91,6 +91,7 @@ export function ToolInspector({ tool, open, onOpenChange }: ToolInspectorProps) 
                   </TabsList>
                   <TabsContent value="visual" className="mt-2">
                      <ScrollArea className="h-[200px] w-full rounded-md border p-4 bg-muted/20">
+                        {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
                         <SchemaViewer schema={tool.inputSchema as any} />
                      </ScrollArea>
                   </TabsContent>

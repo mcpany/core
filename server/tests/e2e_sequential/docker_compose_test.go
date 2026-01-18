@@ -206,13 +206,6 @@ func testFunctionalWeather(t *testing.T, rootDir string) {
 
 	// Cleanup
 	defer func() {
-		if t.Failed() {
-			t.Logf("Dumping logs for %s", containerName)
-			cmd := exec.Command("docker", "logs", containerName)
-			cmd.Stdout = os.Stdout
-			cmd.Stderr = os.Stderr
-			_ = cmd.Run()
-		}
 		_ = exec.Command("docker", "rm", "-f", containerName).Run()
 	}()
 
@@ -267,36 +260,16 @@ func simulateGeminiCLIWeather(t *testing.T, baseURL string) string {
 	defer func() { _ = session.Close() }()
 
 	// List tools to find the correct name
-	var list *mcp.ListToolsResult
-	var toolName string
+	list, err := session.ListTools(ctx, nil)
+	require.NoError(t, err, "Failed to list tools")
+	t.Logf("Available tools: %v", list.Tools)
 
-	// Retry listing tools until get_weather appears or timeout
-	// Service registration might be async or slow (DNS, etc)
-	start := time.Now()
-	for time.Since(start) < 30*time.Second {
-		list, err = session.ListTools(ctx, nil)
-		require.NoError(t, err, "Failed to list tools")
-
-		var toolNames []string
-		for _, tool := range list.Tools {
-			toolNames = append(toolNames, tool.Name)
-			if strings.HasSuffix(tool.Name, "get_weather") {
-				toolName = tool.Name
-			}
-		}
-
-		if toolName != "" {
-			t.Logf("Found weather tool: %s", toolName)
+	toolName := "get_weather"
+	for _, tool := range list.Tools {
+		if strings.HasSuffix(tool.Name, "get_weather") {
+			toolName = tool.Name
 			break
 		}
-
-		t.Logf("Waiting for weather tool... Available: %v", toolNames)
-		time.Sleep(1 * time.Second)
-	}
-
-	if toolName == "" {
-		t.Logf("Available tools (final): %v", list.Tools)
-		require.Fail(t, "weather tool not found after waiting period")
 	}
 	t.Logf("Using tool name: %s", toolName)
 

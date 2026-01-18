@@ -134,8 +134,33 @@ const nextConfig: NextConfig = {
     config.resolve.symlinks = false;
     return config;
   },
-  // rewrites moved to middleware.ts for runtime/dynamic proxy support
-  // async rewrites() { ... }
+  async rewrites() {
+    const backendUrl = process.env.BACKEND_URL || 'http://localhost:50059';
+    console.log("DEBUG: BACKEND_URL env:", process.env.BACKEND_URL);
+    console.log("DEBUG: Using backend URL:", backendUrl);
+    return [
+      {
+        source: '/doctor',
+        destination: `${backendUrl}/doctor`,
+      },
+      {
+        source: '/api/v1/:path*',
+        destination: `${backendUrl}/api/v1/:path*`,
+      },
+      {
+        source: '/mcpany.api.v1.RegistrationService/:path*',
+        destination: `${backendUrl}/mcpany.api.v1.RegistrationService/:path*`,
+      },
+      {
+        source: '/v1/:path*',
+        destination: `${backendUrl}/v1/:path*`,
+      },
+      {
+        source: '/auth/:path*',
+        destination: `${backendUrl}/auth/:path*`,
+      },
+    ];
+  },
 };
 
 export default nextConfig;

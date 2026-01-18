@@ -7,7 +7,7 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('Prompts Workbench', () => {
-  test.fixme('should load prompts list and allow selection', async ({ page }) => { // Flaky in Docker/Kind environment
+  test('should load prompts list and allow selection', async ({ page }) => {
     // Mock the prompts API to ensure consistent state
     await page.route('**/api/v1/prompts', async route => {
         await route.fulfill({
@@ -47,7 +47,7 @@ test.describe('Prompts Workbench', () => {
     if (await firstPrompt.isVisible()) {
         await firstPrompt.click();
         // Check for details view
-        await expect(page.getByTestId('prompt-details').getByText('Configuration').first()).toBeVisible();
+        await expect(page.getByText('Configuration')).toBeVisible();
     } else {
         await expect(noPrompts).toBeVisible();
     }

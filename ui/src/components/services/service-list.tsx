@@ -35,7 +35,6 @@ interface ServiceListProps {
   onExport?: (service: UpstreamServiceConfig) => void;
   onBulkToggle?: (names: string[], enabled: boolean) => void;
   onBulkDelete?: (names: string[]) => void;
-  onLogin?: (service: UpstreamServiceConfig) => void;
 }
 
 /**
@@ -43,7 +42,7 @@ interface ServiceListProps {
  *
  * @param onExport - The onExport.
  */
-export function ServiceList({ services, isLoading, onToggle, onEdit, onDelete, onDuplicate, onExport, onBulkToggle, onBulkDelete, onLogin }: ServiceListProps) {
+export function ServiceList({ services, isLoading, onToggle, onEdit, onDelete, onDuplicate, onExport, onBulkToggle, onBulkDelete }: ServiceListProps) {
   const [tagFilter, setTagFilter] = useState("");
   const [selected, setSelected] = useState<Set<string>>(new Set());
 
@@ -170,7 +169,6 @@ export function ServiceList({ services, isLoading, onToggle, onEdit, onDelete, o
                   onDelete={onDelete}
                   onDuplicate={onDuplicate}
                   onExport={onExport}
-                  onLogin={onLogin}
                />
             ))}
             {filteredServices.length === 0 && (
@@ -187,7 +185,7 @@ export function ServiceList({ services, isLoading, onToggle, onEdit, onDelete, o
   );
 }
 
-const ServiceRow = memo(function ServiceRow({ service, isSelected, onSelect, onToggle, onEdit, onDelete, onDuplicate, onExport, onLogin }: {
+const ServiceRow = memo(function ServiceRow({ service, isSelected, onSelect, onToggle, onEdit, onDelete, onDuplicate, onExport }: {
     service: UpstreamServiceConfig,
     isSelected: boolean,
     onSelect: (name: string, checked: boolean) => void,
@@ -195,8 +193,7 @@ const ServiceRow = memo(function ServiceRow({ service, isSelected, onSelect, onT
     onEdit?: (service: UpstreamServiceConfig) => void,
     onDelete?: (name: string) => void,
     onDuplicate?: (service: UpstreamServiceConfig) => void,
-    onExport?: (service: UpstreamServiceConfig) => void,
-    onLogin?: (service: UpstreamServiceConfig) => void
+    onExport?: (service: UpstreamServiceConfig) => void
 }) {
     const type = useMemo(() => {
         if (service.httpService) return "HTTP";
@@ -302,12 +299,6 @@ const ServiceRow = memo(function ServiceRow({ service, isSelected, onSelect, onT
                              <DropdownMenuItem onClick={() => onExport(service)}>
                                 <Download className="mr-2 h-4 w-4" />
                                 Export
-                            </DropdownMenuItem>
-                        )}
-                        {onLogin && service.upstreamAuth?.oauth2 && (
-                             <DropdownMenuItem onClick={() => onLogin(service)}>
-                                <CheckCircle className="mr-2 h-4 w-4" />
-                                Log In
                             </DropdownMenuItem>
                         )}
                         <DropdownMenuSeparator />

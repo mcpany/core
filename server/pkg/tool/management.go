@@ -574,13 +574,6 @@ func (tm *Manager) AddTool(tool Tool) error {
 		return nil
 	}
 
-	// Feature 1: Tool Poisoning Mitigation
-	// Verify tool integrity if hash is provided
-	if err := VerifyIntegrity(tool.Tool()); err != nil {
-		logging.GetLogger().Error("Tool integrity check failed", "toolName", tool.Tool().GetName(), "error", err)
-		return fmt.Errorf("tool integrity check failed: %w", err)
-	}
-
 	if tool.Tool().GetServiceId() == "" {
 		return fmt.Errorf("tool service ID cannot be empty")
 	}
@@ -813,14 +806,6 @@ func (tm *Manager) ListMCPTools() []*mcp.Tool {
 	mcpTools := make([]*mcp.Tool, 0, len(tools))
 	for _, t := range tools {
 		if mt := t.MCPTool(); mt != nil {
-			// Enforce namespacing for the tool list to match AddTool and mcpServer registration
-			if t.Tool().GetServiceId() != "" {
-				expectedName := t.Tool().GetServiceId() + "." + t.Tool().GetName()
-				if mt.Name != expectedName {
-					// Update the name in the cached MCP tool
-					mt.Name = expectedName
-				}
-			}
 			mcpTools = append(mcpTools, mt)
 		}
 	}

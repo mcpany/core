@@ -118,10 +118,9 @@ func (r *SkillResource) Read(_ context.Context) (*mcp.ReadResourceResult, error)
 			return nil, fmt.Errorf("invalid asset path: %s", r.assetPath)
 		}
 
-		skillPath := filepath.Clean(r.skill.Path)
-		path := filepath.Join(skillPath, cleanAssetPath)
-		// Double check resolved path to prevent traversal (e.g. /skill vs /skill-secret)
-		if path != skillPath && !strings.HasPrefix(path, skillPath+string(os.PathSeparator)) {
+		path := filepath.Join(r.skill.Path, cleanAssetPath)
+		// Double check resolved path
+		if !strings.HasPrefix(path, filepath.Clean(r.skill.Path)) {
 			return nil, fmt.Errorf("invalid path: points outside skill directory")
 		}
 

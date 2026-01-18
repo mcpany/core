@@ -24,12 +24,6 @@ message Tool {
      bool is_stream = 12;
      repeated string tags = 13;
      repeated string profiles = 14;
-     ToolIntegrity integrity = 15;
-}
-
-message ToolIntegrity {
-    string hash = 1;
-    string algorithm = 2; // e.g. "sha256"
 }
 
 message ToolAnnotations {

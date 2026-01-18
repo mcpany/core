@@ -35,13 +35,6 @@ export interface Tool {
   isStream: boolean;
   tags: string[];
   profiles: string[];
-  integrity?: ToolIntegrity | undefined;
-}
-
-export interface ToolIntegrity {
-  hash: string;
-  /** e.g. "sha256" */
-  algorithm: string;
 }
 
 export interface ToolAnnotations {
@@ -223,7 +216,6 @@ function createBaseTool(): Tool {
     isStream: false,
     tags: [],
     profiles: [],
-    integrity: undefined,
   };
 }
 
@@ -267,9 +259,6 @@ export const Tool: MessageFns<Tool> = {
     }
     for (const v of message.profiles) {
       writer.uint32(114).string(v!);
-    }
-    if (message.integrity !== undefined) {
-      ToolIntegrity.encode(message.integrity, writer.uint32(122).fork()).join();
     }
     return writer;
   },
@@ -385,14 +374,6 @@ export const Tool: MessageFns<Tool> = {
           message.profiles.push(reader.string());
           continue;
         }
-        case 15: {
-          if (tag !== 122) {
-            break;
-          }
-
-          message.integrity = ToolIntegrity.decode(reader, reader.uint32());
-          continue;
-        }
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -417,7 +398,6 @@ export const Tool: MessageFns<Tool> = {
       isStream: isSet(object.isStream) ? globalThis.Boolean(object.isStream) : false,
       tags: globalThis.Array.isArray(object?.tags) ? object.tags.map((e: any) => globalThis.String(e)) : [],
       profiles: globalThis.Array.isArray(object?.profiles) ? object.profiles.map((e: any) => globalThis.String(e)) : [],
-      integrity: isSet(object.integrity) ? ToolIntegrity.fromJSON(object.integrity) : undefined,
     };
   },
 
@@ -462,9 +442,6 @@ export const Tool: MessageFns<Tool> = {
     if (message.profiles?.length) {
       obj.profiles = message.profiles;
     }
-    if (message.integrity !== undefined) {
-      obj.integrity = ToolIntegrity.toJSON(message.integrity);
-    }
     return obj;
   },
 
@@ -488,85 +465,6 @@ export const Tool: MessageFns<Tool> = {
     message.isStream = object.isStream ?? false;
     message.tags = object.tags?.map((e) => e) || [];
     message.profiles = object.profiles?.map((e) => e) || [];
-    message.integrity = (object.integrity !== undefined && object.integrity !== null)
-      ? ToolIntegrity.fromPartial(object.integrity)
-      : undefined;
-    return message;
-  },
-};
-
-function createBaseToolIntegrity(): ToolIntegrity {
-  return { hash: "", algorithm: "" };
-}
-
-export const ToolIntegrity: MessageFns<ToolIntegrity> = {
-  encode(message: ToolIntegrity, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.hash !== "") {
-      writer.uint32(10).string(message.hash);
-    }
-    if (message.algorithm !== "") {
-      writer.uint32(18).string(message.algorithm);
-    }
-    return writer;
-  },
-
-  decode(input: BinaryReader | Uint8Array, length?: number): ToolIntegrity {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
-    const end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseToolIntegrity();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1: {
-          if (tag !== 10) {
-            break;
-          }
-
-          message.hash = reader.string();
-          continue;
-        }
-        case 2: {
-          if (tag !== 18) {
-            break;
-          }
-
-          message.algorithm = reader.string();
-          continue;
-        }
-      }
-      if ((tag & 7) === 4 || tag === 0) {
-        break;
-      }
-      reader.skip(tag & 7);
-    }
-    return message;
-  },
-
-  fromJSON(object: any): ToolIntegrity {
-    return {
-      hash: isSet(object.hash) ? globalThis.String(object.hash) : "",
-      algorithm: isSet(object.algorithm) ? globalThis.String(object.algorithm) : "",
-    };
-  },
-
-  toJSON(message: ToolIntegrity): unknown {
-    const obj: any = {};
-    if (message.hash !== "") {
-      obj.hash = message.hash;
-    }
-    if (message.algorithm !== "") {
-      obj.algorithm = message.algorithm;
-    }
-    return obj;
-  },
-
-  create<I extends Exact<DeepPartial<ToolIntegrity>, I>>(base?: I): ToolIntegrity {
-    return ToolIntegrity.fromPartial(base ?? ({} as any));
-  },
-  fromPartial<I extends Exact<DeepPartial<ToolIntegrity>, I>>(object: I): ToolIntegrity {
-    const message = createBaseToolIntegrity();
-    message.hash = object.hash ?? "";
-    message.algorithm = object.algorithm ?? "";
     return message;
   },
 };

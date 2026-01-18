@@ -247,9 +247,6 @@ func TestUpstream_Register(t *testing.T) {
 	})
 
 	t.Run("successful registration with stdio and setup commands", func(t *testing.T) {
-		// Enable unsafe setup commands for this test
-		t.Setenv("MCP_ALLOW_UNSAFE_SETUP_COMMANDS", "true")
-
 		toolManager := tool.NewManager(nil)
 		promptManager := prompt.NewManager()
 		resourceManager := resource.NewManager()
@@ -628,9 +625,6 @@ func TestBuildCommandFromStdioConfig(t *testing.T) {
 	})
 
 	t.Run("with setup commands", func(t *testing.T) {
-		// Enable unsafe setup commands for this test
-		t.Setenv("MCP_ALLOW_UNSAFE_SETUP_COMMANDS", "true")
-
 		stdio := &configv1.McpStdioConnection{}
 		stdio.SetCommand("my-app")
 		stdio.SetArgs([]string{"--verbose"})
@@ -639,19 +633,6 @@ func TestBuildCommandFromStdioConfig(t *testing.T) {
 		assert.NoError(t, err)
 		assert.Equal(t, "/bin/sh", cmd.Path)
 		assert.Equal(t, []string{"/bin/sh", "-c", "cd /tmp && export FOO=bar && exec my-app --verbose"}, cmd.Args)
-	})
-
-	t.Run("with setup commands disabled", func(t *testing.T) {
-		// Ensure it's disabled
-		t.Setenv("MCP_ALLOW_UNSAFE_SETUP_COMMANDS", "")
-
-		stdio := &configv1.McpStdioConnection{}
-		stdio.SetCommand("my-app")
-		stdio.SetSetupCommands([]string{"cd /tmp"})
-		cmd, err := buildCommandFromStdioConfig(context.Background(), stdio, false)
-		assert.Error(t, err)
-		assert.Nil(t, cmd)
-		assert.Contains(t, err.Error(), "setup_commands are disabled by default")
 	})
 
 	t.Run("docker command with sudo", func(t *testing.T) {

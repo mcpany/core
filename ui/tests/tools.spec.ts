@@ -50,11 +50,11 @@ test.describe('Tool Exploration', () => {
 
     test('should show empty state when no tools', async ({ page }) => {
         await page.route((url) => url.pathname.includes('/api/v1/tools'), async (route) => {
-            await route.fulfill({ json: { tools: [] } });
+            await route.fulfill({ json: [] });
         });
 
-        const rows = page.locator('table tbody tr');
-        await expect(rows).toHaveCount(0);
+        await page.goto('/tools');
+        await expect(page.locator('table tbody tr')).toHaveCount(0);
     });
 
     test('should allow inspecting a tool', async ({ page }) => {
