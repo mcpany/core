@@ -56,7 +56,14 @@ message ClearCacheResponse {}
 message ListServicesRequest {}
 
 message ListServicesResponse {
-  repeated mcpany.config.v1.UpstreamServiceConfig services = 1;
+  repeated mcpany.config.v1.UpstreamServiceConfig services = 1 [deprecated = true];
+  repeated ServiceState service_states = 2;
+}
+
+message ServiceState {
+  mcpany.config.v1.UpstreamServiceConfig config = 1;
+  string status = 2; // "OK", "ERROR", "CONNECTING"
+  string error = 3;
 }
 
 message GetServiceRequest {
@@ -64,7 +71,8 @@ message GetServiceRequest {
 }
 
 message GetServiceResponse {
-  mcpany.config.v1.UpstreamServiceConfig service = 1;
+  mcpany.config.v1.UpstreamServiceConfig service = 1 [deprecated = true];
+  ServiceState service_state = 2;
 }
 
 message ListToolsRequest {}
