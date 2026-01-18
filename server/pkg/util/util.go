@@ -447,11 +447,16 @@ func IsNil(i any) bool {
 // Optimization: We manually handle all standard Go numeric types to avoid the overhead
 // of reflection (fmt.Sprintf) which is significantly slower and generates more allocations.
 func ToString(v any) string {
+	if v == nil {
+		return "<nil>"
+	}
 	switch val := v.(type) {
 	case string:
 		return val
 	case json.Number:
 		return val.String()
+	case error:
+		return val.Error()
 	case bool:
 		if val {
 			return "true"
