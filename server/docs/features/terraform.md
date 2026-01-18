@@ -1,12 +1,14 @@
 # Terraform Provider
 
-The MCP Any Terraform Provider enables "Configuration as Code" for managing MCP resources.
+**Status:** Experimental / Skeleton
 
-## Resources
+The MCP Any Terraform Provider is currently in the design phase. It is intended to enable "Configuration as Code" for managing MCP resources.
+
+## Resources (Planned)
 
 - `mcp_server`: Manage MCP server instances.
 
-## Example Usage
+## Example Usage (Proposed)
 
 ```hcl
 resource "mcp_server" "example" {

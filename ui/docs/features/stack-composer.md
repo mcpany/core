@@ -1,6 +1,6 @@
 # Intelligent Stack Composer
 
-**Status:** Implemented
+**Status:** UI Prototype (Simulated Persistence)
 
 ## Goal
 
@@ -38,3 +38,5 @@ You can fine-tune the configuration in the Monaco Editor.
 ### 4. Deploy
 
 Once satisfied, click **"Deploy Stack"**. The system will provision the defined services and route them appropriately.
+
+*Note: In the current prototype, persistence is simulated and changes are not saved to the backend.*
