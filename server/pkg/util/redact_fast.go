@@ -53,9 +53,16 @@ func redactJSONFast(input []byte) []byte {
 			}
 			absQ := scanStart + q
 			// Check for escape
+
+			// Optimization: fast path if previous char is not backslash
+			if input[absQ-1] != '\\' {
+				endQuote = absQ
+				break
+			}
+
 			// Count backslashes before absQ
-			backslashes := 0
-			for j := absQ - 1; j >= scanStart; j-- {
+			backslashes := 1 // we already saw one backslash at input[absQ-1]
+			for j := absQ - 2; j >= scanStart; j-- {
 				if input[j] == '\\' {
 					backslashes++
 				} else {
