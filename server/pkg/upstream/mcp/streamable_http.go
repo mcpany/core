@@ -9,6 +9,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"net/url"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -948,6 +949,17 @@ func (u *Upstream) createAndRegisterMCPItemsFromStreamableHTTP(
 	}
 
 	httpAddress := httpConnection.GetHttpAddress()
+	if httpAddress == "" {
+		return nil, nil, fmt.Errorf("mcp http service address is required")
+	}
+	uURL, err := url.ParseRequestURI(httpAddress)
+	if err != nil {
+		return nil, nil, fmt.Errorf("invalid mcp http service address: %w", err)
+	}
+	if uURL.Scheme != "http" && uURL.Scheme != "https" {
+		return nil, nil, fmt.Errorf("invalid mcp http service address scheme: %s (must be http or https)", uURL.Scheme)
+	}
+
 	transport := &mcp.StreamableClientTransport{
 		Endpoint:   httpAddress,
 		HTTPClient: httpClient,
