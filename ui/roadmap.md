@@ -37,7 +37,7 @@
 - [ ] **Service Health History Visualization**: A sparkline or small graph in the service list row showing uptime/latency history (e.g. last 1h).
 - [ ] **Bulk Edit Configuration**: Ability to edit common properties (like tags, timeout, or environment variables) for multiple selected services.
 - [ ] **Saved Tool Arguments**: Ability to save a set of arguments as a "Preset" for a tool in the Playground, to quickly test different scenarios.
-- [ ] **Tool Execution History Persisted**: Persist the local history of tool executions in `localStorage` or backend, so it survives page reloads.
+- [x] **Tool Execution History Persisted**: Persist the local history of tool executions in `localStorage` or backend, so it survives page reloads.
 
 ### Completed Features
 

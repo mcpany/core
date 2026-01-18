@@ -440,33 +440,42 @@ func (u *Upstream) createAndRegisterHTTPTools(ctx context.Context, serviceID, ad
 				return values, invalidParts, flags
 			}
 
-			// Normalize semicolons to ampersands to split correctly
-			normalizedQuery := strings.ReplaceAll(rawQuery, ";", "&")
-			parts := strings.Split(normalizedQuery, "&")
+			// We treat '&' as the only separator. Semicolons are treated as part of the value.
+			parts := strings.Split(rawQuery, "&")
 			for _, part := range parts {
 				if part == "" {
 					continue
 				}
 
-				// Try to parse this single part
-				m, err := url.ParseQuery(part)
-				if err != nil {
+				var key, value string
+				var hasEquals bool
+
+				// Split on first '='
+				if idx := strings.Index(part, "="); idx >= 0 {
+					key = part[:idx]
+					value = part[idx+1:]
+					hasEquals = true
+				} else {
+					key = part
+					value = ""
+					hasEquals = false
+				}
+
+				// Decode key and value
+				decodedKey, errKey := url.QueryUnescape(key)
+				decodedValue, errVal := url.QueryUnescape(value)
+
+				if errKey != nil || errVal != nil {
 					invalidParts = append(invalidParts, part)
 					continue
 				}
 
 				// Check for flag (no equals sign in part)
-				if !strings.Contains(part, "=") {
-					// It's a flag. key is unescaped part.
-					// m should contain { key: [""] }
-					for k := range m {
-						flags[k] = true
-					}
+				if !hasEquals {
+					flags[decodedKey] = true
 				}
 
-				for k, v := range m {
-					values[k] = append(values[k], v...)
-				}
+				values[decodedKey] = append(values[decodedKey], decodedValue)
 			}
 			return values, invalidParts, flags
 		}
