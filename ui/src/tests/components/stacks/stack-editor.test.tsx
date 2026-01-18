@@ -16,6 +16,32 @@ vi.mock('@/lib/client', () => ({
   },
 }));
 
+// Mock Monaco Editor
+vi.mock('@monaco-editor/react', () => ({
+  default: ({ value, onChange }: { value: string, onChange: (value: string) => void }) => {
+    return (
+      <textarea
+        data-testid="monaco-editor-mock"
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+      />
+    );
+  },
+  useMonaco: vi.fn().mockReturnValue({
+      languages: {
+          register: vi.fn(),
+          registerCompletionItemProvider: vi.fn().mockReturnValue({ dispose: vi.fn() }),
+          setMonarchTokensProvider: vi.fn(),
+          json: {
+              modeConfiguration: {}
+          }
+      },
+      editor: {
+          defineTheme: vi.fn(),
+      }
+  }),
+}));
+
 // Mock ResizeObserver for scroll area
 global.ResizeObserver = class ResizeObserver {
   observe() {}
@@ -46,8 +72,10 @@ describe('StackEditor', () => {
     const { container } = render(<StackEditor stackId="test-stack" />);
 
     // Find textarea by selector if role is elusive
-    const textarea = container.querySelector('textarea');
-    if (!textarea) throw new Error('Textarea not found');
+    await waitFor(() => {
+        expect(screen.getByTestId('monaco-editor-mock')).toBeInTheDocument();
+    });
+    const textarea = screen.getByTestId('monaco-editor-mock');
 
     // Valid YAML
     fireEvent.change(textarea, { target: { value: 'key: value' } });
