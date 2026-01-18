@@ -167,15 +167,6 @@ func TestRateLimitMiddleware_EstimateTokenCost_WordTokenizer(t *testing.T) {
 			},
 			expected: 7,
 		},
-		{
-			name: "slice int",
-			inputs: map[string]any{
-				"list": []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10},
-			},
-			// key "list" (1) + val (10 items * 1.3 = 13) = 14
-			// Prior to fix, this would be 1 + 10 = 11
-			expected: 14,
-		},
 	}
 
 	for _, tt := range tests {

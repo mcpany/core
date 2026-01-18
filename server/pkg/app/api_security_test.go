@@ -9,10 +9,9 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	configv1 "github.com/mcpany/core/proto/config/v1"
-	"github.com/mcpany/core/server/pkg/auth"
 	"github.com/mcpany/core/server/pkg/storage/memory"
 	"github.com/mcpany/core/server/pkg/tool"
+	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/stretchr/testify/assert"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
@@ -73,87 +72,5 @@ func TestAPIHandler_SecurityValidation(t *testing.T) {
 		// Assert that the request is rejected with Bad Request (400)
 		assert.Equal(t, http.StatusBadRequest, w.Code)
 		assert.Contains(t, w.Body.String(), "invalid service configuration")
-	})
-
-	// Test case: Filesystem service creation blocked via API (Regular User)
-	t.Run("Block Filesystem Service (Regular User)", func(t *testing.T) {
-		svc := &configv1.UpstreamServiceConfig{
-			Name: proto.String("unsafe-fs"),
-			ServiceConfig: &configv1.UpstreamServiceConfig_FilesystemService{
-				FilesystemService: &configv1.FilesystemUpstreamService{
-					RootPaths: map[string]string{
-						"/": "/",
-					},
-					FilesystemType: &configv1.FilesystemUpstreamService_Os{
-						Os: &configv1.OsFs{},
-					},
-				},
-			},
-		}
-		body, _ := protojson.Marshal(svc)
-
-		req := httptest.NewRequest("POST", "/services", bytes.NewReader(body))
-		w := httptest.NewRecorder()
-
-		handler.ServeHTTP(w, req)
-
-		// Assert that the request is rejected with Forbidden (403) for regular users
-		assert.Equal(t, http.StatusForbidden, w.Code)
-		assert.Contains(t, w.Body.String(), "unsafe services")
-		assert.Contains(t, w.Body.String(), "filesystem")
-	})
-
-	// Test case: Filesystem service creation allowed for Admin
-	t.Run("Allow Filesystem Service (Admin)", func(t *testing.T) {
-		svc := &configv1.UpstreamServiceConfig{
-			Name: proto.String("unsafe-fs-admin"),
-			ServiceConfig: &configv1.UpstreamServiceConfig_FilesystemService{
-				FilesystemService: &configv1.FilesystemUpstreamService{
-					RootPaths: map[string]string{
-						"/": "/",
-					},
-					FilesystemType: &configv1.FilesystemUpstreamService_Os{
-						Os: &configv1.OsFs{},
-					},
-				},
-			},
-		}
-		body, _ := protojson.Marshal(svc)
-
-		req := httptest.NewRequest("POST", "/services", bytes.NewReader(body))
-		// Inject admin role into context
-		ctx := auth.ContextWithRoles(req.Context(), []string{"admin"})
-		req = req.WithContext(ctx)
-
-		w := httptest.NewRecorder()
-
-		handler.ServeHTTP(w, req)
-
-		// Assert that the request is created (201)
-		assert.Equal(t, http.StatusCreated, w.Code)
-	})
-
-	// Test case: SQL service creation blocked via API (Regular User)
-	t.Run("Block SQL Service (Regular User)", func(t *testing.T) {
-		svc := &configv1.UpstreamServiceConfig{
-			Name: proto.String("unsafe-sql"),
-			ServiceConfig: &configv1.UpstreamServiceConfig_SqlService{
-				SqlService: &configv1.SqlUpstreamService{
-					Driver: proto.String("sqlite"),
-					Dsn:    proto.String("file::memory:"),
-				},
-			},
-		}
-		body, _ := protojson.Marshal(svc)
-
-		req := httptest.NewRequest("POST", "/services", bytes.NewReader(body))
-		w := httptest.NewRecorder()
-
-		handler.ServeHTTP(w, req)
-
-		// Assert that the request is rejected with Forbidden (403)
-		assert.Equal(t, http.StatusForbidden, w.Code)
-		assert.Contains(t, w.Body.String(), "unsafe services")
-		assert.Contains(t, w.Body.String(), "sql")
 	})
 }

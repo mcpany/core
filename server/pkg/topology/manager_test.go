@@ -178,7 +178,7 @@ func TestManager_RecordActivity(t *testing.T) {
 	m.RecordActivity("session-1", map[string]interface{}{
 		"userAgent": "test-agent",
 		"count":     1, // Should be ignored as it's not a string
-	}, 10*time.Millisecond, false)
+	})
 
 	m.mu.RLock()
 	session, exists := m.sessions["session-1"]
@@ -190,11 +190,10 @@ func TestManager_RecordActivity(t *testing.T) {
 	assert.Equal(t, "test-agent", session.Metadata["userAgent"])
 	assert.NotZero(t, session.LastActive)
 	assert.Equal(t, int64(1), session.RequestCount)
-	assert.Equal(t, 10*time.Millisecond, session.TotalLatency)
 
 	// Record again to update stats
 	time.Sleep(100 * time.Millisecond) // Ensure time advances
-	m.RecordActivity("session-1", nil, 20*time.Millisecond, true)
+	m.RecordActivity("session-1", nil)
 
 	m.mu.RLock()
 	session2 := m.sessions["session-1"]
@@ -202,23 +201,6 @@ func TestManager_RecordActivity(t *testing.T) {
 
 	assert.True(t, session2.LastActive.After(lastActive))
 	assert.Equal(t, int64(2), session2.RequestCount)
-	assert.Equal(t, 30*time.Millisecond, session2.TotalLatency)
-	assert.Equal(t, int64(1), session2.ErrorCount)
-}
-
-func TestManager_GetStats(t *testing.T) {
-	mockRegistry := new(MockServiceRegistry)
-	mockTM := new(MockToolManager)
-	m := NewManager(mockRegistry, mockTM)
-
-	m.RecordActivity("session-1", nil, 100*time.Millisecond, false)
-	m.RecordActivity("session-2", nil, 200*time.Millisecond, true)
-
-	stats := m.GetStats()
-
-	assert.Equal(t, int64(2), stats.TotalRequests)
-	assert.Equal(t, 150*time.Millisecond, stats.AvgLatency)
-	assert.Equal(t, 0.5, stats.ErrorRate)
 }
 
 func TestManager_GetGraph(t *testing.T) {
@@ -241,7 +223,7 @@ func TestManager_GetGraph(t *testing.T) {
 	mockTM.On("ListTools").Return([]tool.Tool{mockTool})
 
 	// Record a session
-	m.RecordActivity("session-1", map[string]interface{}{"userAgent": "client-1"}, 10*time.Millisecond, false)
+	m.RecordActivity("session-1", map[string]interface{}{"userAgent": "client-1"})
 
 	graph := m.GetGraph(context.Background())
 
@@ -361,7 +343,7 @@ func TestManager_GetGraph_OldSession(t *testing.T) {
 
 	m := NewManager(mockRegistry, mockTM)
 
-	m.RecordActivity("old-session", nil, 0, false)
+	m.RecordActivity("old-session", nil)
 	// Manually age the session
 	m.mu.Lock()
 	m.sessions["old-session"].LastActive = time.Now().Add(-2 * time.Hour)

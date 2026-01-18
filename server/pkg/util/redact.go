@@ -294,21 +294,11 @@ func matchFoldRest(s, key []byte) bool {
 	for i := 1; i < len(key); i++ {
 		c := s[i]
 		k := key[i] // k is lowercase
-
-		if c == k {
-			continue
-		}
-
-		// Optimization: case-insensitive comparison
-		// We know k is lowercase [a-z] or special char [0-9_-].
-		// If k is [a-z], (c | 0x20) == k handles both c==k and c==upper(k).
-		// If k is not [a-z], we must check c == k.
-		if k >= 'a' && k <= 'z' {
-			if (c | 0x20) != k {
+		if c != k {
+			// Check if c is the uppercase version of k
+			if c < 'A' || c > 'Z' || c+32 != k {
 				return false
 			}
-		} else {
-			return false
 		}
 	}
 	return true

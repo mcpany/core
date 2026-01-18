@@ -70,14 +70,6 @@ export function SystemStatusBanner() {
                     {configCheck.message}
                     </p>
                 )}
-                {configCheck.diff && (
-                    <div className="mt-2">
-                        <p className="text-xs font-semibold mb-1">Configuration Diff:</p>
-                        <pre className="font-mono text-[10px] leading-tight bg-black/10 p-2 rounded overflow-x-auto whitespace-pre">
-                            {configCheck.diff}
-                        </pre>
-                    </div>
-                )}
             </AlertDescription>
             </Alert>
         </div>

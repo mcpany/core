@@ -14,7 +14,7 @@ test.describe('MCP Any UI E2E', () => {
 
   test.beforeEach(async ({ page }) => {
     // Mock metrics API to prevent backend connection errors during tests
-    await page.route('**/api/v1/dashboard/metrics*', async route => {
+    await page.route('**/api/dashboard/metrics*', async route => {
         await route.fulfill({
             json: [
                 { label: "Total Requests", value: "1,234", icon: "Activity", change: "+10%", trend: "up" },

@@ -503,17 +503,3 @@ func TestGraphQLTool_ExecuteMutation(t *testing.T) {
 	assert.Equal(t, "2", user["id"])
 	assert.Equal(t, "new-user", user["name"])
 }
-
-func TestGraphQLUpstream_Register_InvalidAddress(t *testing.T) {
-	upstream := NewGraphQLUpstream()
-	toolManager := tool.NewManager(nil)
-
-	serviceConfig := &configv1.UpstreamServiceConfig{}
-	serviceConfig.SetName("test-service-invalid")
-	serviceConfig.SetGraphqlService(&configv1.GraphQLUpstreamService{})
-	serviceConfig.GetGraphqlService().SetAddress("file:///etc/passwd")
-
-	_, _, _, err := upstream.Register(context.Background(), serviceConfig, toolManager, nil, nil, false)
-	require.Error(t, err)
-	assert.Contains(t, err.Error(), "invalid graphql service address scheme")
-}

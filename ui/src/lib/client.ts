@@ -117,8 +117,6 @@ export interface CheckResult {
     message?: string;
     /** Optional latency measurement. */
     latency?: string;
-    /** Optional diff showing configuration changes on error. */
-    diff?: string;
 }
 
 /**

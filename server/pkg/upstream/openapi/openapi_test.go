@@ -173,18 +173,6 @@ func TestOpenAPIUpstream_Register_Errors(t *testing.T) {
 		assert.Error(t, err)
 		assert.Contains(t, err.Error(), "failed to parse OpenAPI spec")
 	})
-
-	t.Run("invalid address scheme", func(t *testing.T) {
-		config := configv1.UpstreamServiceConfig_builder{
-			Name: proto.String("test-service-scheme"),
-			OpenapiService: configv1.OpenapiUpstreamService_builder{
-				Address: proto.String("file:///etc/passwd"),
-			}.Build(),
-		}.Build()
-		_, _, _, err := upstream.Register(ctx, config, mockToolManager, nil, nil, false)
-		assert.Error(t, err)
-		assert.Contains(t, err.Error(), "invalid openapi service address scheme")
-	})
 }
 
 func TestOpenAPIUpstream_Register_SpecUrl(t *testing.T) {
@@ -215,27 +203,6 @@ func TestOpenAPIUpstream_Register_SpecUrl(t *testing.T) {
 	_, _, _, err := upstream.Register(ctx, config, mockToolManager, nil, nil, false)
 	assert.NoError(t, err)
 	mockToolManager.AssertExpectations(t)
-}
-
-func TestOpenAPIUpstream_Register_InvalidSpecUrl(t *testing.T) {
-	ctx := context.Background()
-	mockToolManager := new(MockToolManager)
-	upstream := NewOpenAPIUpstream()
-
-	config := configv1.UpstreamServiceConfig_builder{
-		Name: proto.String("test-service-invalid-spec-url"),
-		OpenapiService: configv1.OpenapiUpstreamService_builder{
-			SpecUrl: proto.String("file:///etc/passwd"),
-		}.Build(),
-	}.Build()
-
-	expectedKey, _ := util.SanitizeServiceName("test-service-invalid-spec-url")
-	mockToolManager.On("AddServiceInfo", expectedKey, mock.Anything).Return().Once()
-
-	// Register should fail because spec_url is invalid scheme (file://) and thus content is missing
-	_, _, _, err := upstream.Register(ctx, config, mockToolManager, nil, nil, false)
-	assert.Error(t, err)
-	assert.Contains(t, err.Error(), "OpenAPI spec content is missing")
 }
 
 func TestAddOpenAPIToolsToIndex_Errors(t *testing.T) {

@@ -162,6 +162,7 @@ export function ToolForm({ tool, onSubmit, onCancel }: ToolFormProps) {
              setErrors(runValidation(formData));
           }
       }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [formData, jsonInput, mode]);
   // removed errors from deps to avoid infinite loop if setErrors is called.
   // actually including formData/jsonInput is enough.

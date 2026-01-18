@@ -830,20 +830,6 @@ func levenshtein(s, t string) int {
 
 // suggestFix finds the closest matching field name in the proto message.
 func suggestFix(unknownField string, root proto.Message) string {
-	// Check common aliases first for immediate feedback
-	aliases := map[string]string{
-		"url":       "address",
-		"uri":       "address",
-		"endpoint":  "address",
-		"endpoints": "address",
-		"host":      "address",
-		"cmd":       "command",
-		"args":      "arguments",
-	}
-	if correction, ok := aliases[strings.ToLower(unknownField)]; ok {
-		return fmt.Sprintf("Did you mean %q? (Common alias)", correction)
-	}
-
 	candidates := make(map[string]struct{})
 	collectFieldNames(root.ProtoReflect().Descriptor(), candidates)
 
@@ -878,12 +864,9 @@ func suggestFix(unknownField string, root proto.Message) string {
 	}
 
 	// Only suggest if it's reasonably close.
+	// We allow up to 3 edits for short strings, or more for longer strings (50% rule).
 	limit := len(unknownField) / 2
-
-	// For short strings, be strict to avoid garbage suggestions (e.g. xyz -> env)
-	if len(unknownField) <= 3 {
-		limit = 1
-	} else if limit < 3 {
+	if limit < 3 {
 		limit = 3
 	}
 

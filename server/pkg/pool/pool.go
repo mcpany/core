@@ -206,9 +206,15 @@ func (p *poolImpl[T]) Get(ctx context.Context) (T, error) {
 			if item.retry {
 				continue
 			}
-			if p.isHealthySafe(ctx, item.client) {
-				return item.client, nil
+			client := item.client
+
+			if p.disableHealthCheck || client.IsHealthy(ctx) {
+				return client, nil
 			}
+			_ = lo.Try(func() error {
+				return client.Close()
+			})
+			p.sem.Release(1)
 			continue // Retry.
 		default:
 			// Channel is empty, proceed.
@@ -228,9 +234,15 @@ func (p *poolImpl[T]) Get(ctx context.Context) (T, error) {
 				if item.retry {
 					continue
 				}
-				if p.isHealthySafe(ctx, item.client) {
-					return item.client, nil
+				client := item.client
+
+				if p.disableHealthCheck || client.IsHealthy(ctx) {
+					return client, nil
 				}
+				_ = lo.Try(func() error {
+					return client.Close()
+				})
+				p.sem.Release(1)
 				continue // Retry.
 			default:
 				// No client, so create a new one.
@@ -239,9 +251,9 @@ func (p *poolImpl[T]) Get(ctx context.Context) (T, error) {
 					p.sem.Release(1) // Don't leak the permit
 					return zero, ErrPoolClosed
 				}
-
-				client, err := p.factorySafe(ctx)
+				client, err := p.factory(ctx)
 				if err != nil {
+					p.sem.Release(1)
 					return zero, err
 				}
 
@@ -254,9 +266,13 @@ func (p *poolImpl[T]) Get(ctx context.Context) (T, error) {
 					return zero, ErrPoolClosed
 				}
 
-				if p.isHealthySafe(ctx, client) {
+				if p.disableHealthCheck || client.IsHealthy(ctx) {
 					return client, nil
 				}
+				_ = lo.Try(func() error {
+					return client.Close()
+				})
+				p.sem.Release(1)
 
 				// Backoff before retrying to avoid busy loop when upstream is down
 				select {
@@ -278,73 +294,20 @@ func (p *poolImpl[T]) Get(ctx context.Context) (T, error) {
 			if item.retry {
 				continue
 			}
-			if p.isHealthySafe(ctx, item.client) {
-				return item.client, nil
+			client := item.client
+
+			if p.disableHealthCheck || client.IsHealthy(ctx) {
+				return client, nil
 			}
+			_ = lo.Try(func() error {
+				return client.Close()
+			})
+			p.sem.Release(1)
 			continue // Retry.
 		case <-ctx.Done():
 			return zero, ctx.Err()
 		}
 	}
-}
-
-// factorySafe invokes the factory with panic protection.
-// It releases a semaphore permit if the factory fails or panics.
-func (p *poolImpl[T]) factorySafe(ctx context.Context) (T, error) {
-	var client T
-	var err error
-	panicked := true
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				p.sem.Release(1)
-				panic(r)
-			}
-		}()
-		client, err = p.factory(ctx)
-		panicked = false
-	}()
-
-	// If not panicked, but error
-	if !panicked && err != nil {
-		p.sem.Release(1)
-		return client, err // client is zero
-	}
-
-	return client, err
-}
-
-// isHealthySafe checks if the client is healthy with panic protection.
-// It releases a semaphore permit and closes the client if the check fails or panics.
-// Returns true if healthy.
-func (p *poolImpl[T]) isHealthySafe(ctx context.Context, client T) bool {
-	healthy := false
-	panicked := true
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				_ = lo.Try(func() error {
-					return client.Close()
-				})
-				p.sem.Release(1)
-				panic(r)
-			}
-		}()
-		if p.disableHealthCheck || client.IsHealthy(ctx) {
-			healthy = true
-		}
-		panicked = false
-	}()
-
-	// If we didn't panic, but unhealthy, cleanup.
-	if !panicked && !healthy {
-		_ = lo.Try(func() error {
-			return client.Close()
-		})
-		p.sem.Release(1)
-	}
-
-	return healthy
 }
 
 // Put returns a client to the pool for reuse. If the pool is closed or the
@@ -357,7 +320,7 @@ func (p *poolImpl[T]) isHealthySafe(ctx context.Context, client T) bool {
 //   - client: The client to return to the pool.
 func (p *poolImpl[T]) Put(client T) {
 	v := reflect.ValueOf(client)
-	if !v.IsValid() || ((v.Kind() == reflect.Ptr || v.Kind() == reflect.Interface) && v.IsNil()) {
+	if (v.Kind() == reflect.Ptr || v.Kind() == reflect.Interface) && v.IsNil() {
 		p.sem.Release(1)
 		return
 	}

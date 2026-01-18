@@ -216,7 +216,7 @@ func validateStdioArgs(command string, args []string, workingDir string) error {
 
 		// Check if file exists
 		if err := validateFileExists(arg, workingDir); err != nil {
-			return WrapActionableError(fmt.Sprintf("argument %q looks like a script file but does not exist", arg), err)
+			return fmt.Errorf("argument %q looks like a script file but does not exist: %w", arg, err)
 		}
 
 		// We only check the FIRST script argument for interpreters.
@@ -455,10 +455,10 @@ func validateHTTPService(httpService *configv1.HttpUpstreamService) error {
 
 	for name, call := range httpService.GetCalls() {
 		if err := validateSchema(call.GetInputSchema()); err != nil {
-			return WrapActionableError(fmt.Sprintf("http call %q input_schema error", name), err)
+			return fmt.Errorf("http call %q input_schema error: %w", name, err)
 		}
 		if err := validateSchema(call.GetOutputSchema()); err != nil {
-			return WrapActionableError(fmt.Sprintf("http call %q output_schema error", name), err)
+			return fmt.Errorf("http call %q output_schema error: %w", name, err)
 		}
 	}
 	return nil
@@ -487,10 +487,10 @@ func validateWebSocketService(websocketService *configv1.WebsocketUpstreamServic
 
 	for name, call := range websocketService.GetCalls() {
 		if err := validateSchema(call.GetInputSchema()); err != nil {
-			return WrapActionableError(fmt.Sprintf("websocket call %q input_schema error", name), err)
+			return fmt.Errorf("websocket call %q input_schema error: %w", name, err)
 		}
 		if err := validateSchema(call.GetOutputSchema()); err != nil {
-			return WrapActionableError(fmt.Sprintf("websocket call %q output_schema error", name), err)
+			return fmt.Errorf("websocket call %q output_schema error: %w", name, err)
 		}
 	}
 	return nil
@@ -506,10 +506,10 @@ func validateGrpcService(grpcService *configv1.GrpcUpstreamService) error {
 
 	for name, call := range grpcService.GetCalls() {
 		if err := validateSchema(call.GetInputSchema()); err != nil {
-			return WrapActionableError(fmt.Sprintf("grpc call %q input_schema error", name), err)
+			return fmt.Errorf("grpc call %q input_schema error: %w", name, err)
 		}
 		if err := validateSchema(call.GetOutputSchema()); err != nil {
-			return WrapActionableError(fmt.Sprintf("grpc call %q output_schema error", name), err)
+			return fmt.Errorf("grpc call %q output_schema error: %w", name, err)
 		}
 	}
 	return nil
@@ -548,7 +548,7 @@ func validateCommandLineService(commandLineService *configv1.CommandLineUpstream
 	// Only validate command existence if not running in a container
 	if commandLineService.GetContainerEnvironment().GetImage() == "" {
 		if err := validateCommandExists(commandLineService.GetCommand(), commandLineService.GetWorkingDirectory()); err != nil {
-			return WrapActionableError("command_line_service command validation failed", err)
+			return fmt.Errorf("command_line_service command validation failed: %w", err)
 		}
 	}
 
@@ -611,11 +611,11 @@ func validateMcpService(mcpService *configv1.McpUpstreamService) error {
 		// If running in Docker (container_image is set), we don't enforce host path/command restrictions
 		if stdioConn.GetContainerImage() == "" {
 			if err := validateCommandExists(stdioConn.GetCommand(), stdioConn.GetWorkingDirectory()); err != nil {
-				return WrapActionableError("mcp service with stdio_connection command validation failed", err)
+				return fmt.Errorf("mcp service with stdio_connection command validation failed: %w", err)
 			}
 
 			if err := validateStdioArgs(stdioConn.GetCommand(), stdioConn.GetArgs(), stdioConn.GetWorkingDirectory()); err != nil {
-				return WrapActionableError("mcp service with stdio_connection argument validation failed", err)
+				return fmt.Errorf("mcp service with stdio_connection argument validation failed: %w", err)
 			}
 
 			if stdioConn.GetWorkingDirectory() != "" {
@@ -648,10 +648,10 @@ func validateMcpService(mcpService *configv1.McpUpstreamService) error {
 
 	for name, call := range mcpService.GetCalls() {
 		if err := validateSchema(call.GetInputSchema()); err != nil {
-			return WrapActionableError(fmt.Sprintf("mcp call %q input_schema error", name), err)
+			return fmt.Errorf("mcp call %q input_schema error: %w", name, err)
 		}
 		if err := validateSchema(call.GetOutputSchema()); err != nil {
-			return WrapActionableError(fmt.Sprintf("mcp call %q output_schema error", name), err)
+			return fmt.Errorf("mcp call %q output_schema error: %w", name, err)
 		}
 	}
 	return nil
@@ -676,10 +676,10 @@ func validateSQLService(sqlService *configv1.SqlUpstreamService) error {
 			return fmt.Errorf("sql call %q query is empty", name)
 		}
 		if err := validateSchema(call.GetInputSchema()); err != nil {
-			return WrapActionableError(fmt.Sprintf("sql call %q input_schema error", name), err)
+			return fmt.Errorf("sql call %q input_schema error: %w", name, err)
 		}
 		if err := validateSchema(call.GetOutputSchema()); err != nil {
-			return WrapActionableError(fmt.Sprintf("sql call %q output_schema error", name), err)
+			return fmt.Errorf("sql call %q output_schema error: %w", name, err)
 		}
 	}
 	return nil

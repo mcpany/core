@@ -17,17 +17,6 @@ var maxUnescapeLimit = 1024 * 1024
 // unescapeStackLimit is the size of the stack buffer for unescaping keys.
 const unescapeStackLimit = 256
 
-// isJSONWhitespace is a lookup table for fast whitespace checking.
-// It avoids multiple comparisons in the hot path.
-var isJSONWhitespace [256]bool
-
-func init() {
-	isJSONWhitespace[' '] = true
-	isJSONWhitespace['\t'] = true
-	isJSONWhitespace['\n'] = true
-	isJSONWhitespace['\r'] = true
-}
-
 // redactJSONFast is a zero-allocation (mostly) implementation of RedactJSON.
 // It scans the input byte slice and constructs a new slice with redacted values.
 // It avoids full JSON parsing.
@@ -97,17 +86,22 @@ func redactJSONFast(input []byte) []byte {
 		}
 
 		// Check if this string is a key.
-		// It is a key if it is followed by a colon (ignoring whitespace and comments)
+		// It is a key if it is followed by a colon (ignoring whitespace)
 		isKey := false
 		colonPos := -1
-
 		// Scan after endQuote+1 for colon
-		// ⚡ Bolt Optimization: Use optimized skipWhitespaceAndComments with lookup table
-		// This replaces the manual loop and correctly handles comments between key and colon.
-		j := skipWhitespaceAndComments(input, endQuote+1)
-		if j < n && input[j] == ':' {
-			isKey = true
-			colonPos = j
+		j := endQuote + 1
+		for j < n {
+			c := input[j]
+			if c == ' ' || c == '\t' || c == '\n' || c == '\r' {
+				j++
+				continue
+			}
+			if c == ':' {
+				isKey = true
+				colonPos = j
+			}
+			break
 		}
 
 		if isKey {
@@ -170,8 +164,7 @@ func skipWhitespaceAndComments(input []byte, start int) int {
 	i := start
 	for i < n {
 		c := input[i]
-		// ⚡ Bolt Optimization: Fast path for whitespace using lookup table
-		if isJSONWhitespace[c] {
+		if c == ' ' || c == '\t' || c == '\n' || c == '\r' {
 			i++
 			continue
 		}

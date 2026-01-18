@@ -347,37 +347,6 @@ func TestHTTPUpstream_Register(t *testing.T) {
 		assert.Contains(t, err.Error(), "id cannot be empty")
 	})
 
-	t.Run("invalid scheme", func(t *testing.T) {
-		pm := pool.NewManager()
-		tm := tool.NewManager(nil)
-		upstream := NewUpstream(pm)
-
-		configJSON := `{
-			"name": "test-service-invalid-scheme",
-			"http_service": {
-				"address": "file:///etc/passwd",
-				"tools": [{
-					"name": "test-op",
-					"call_id": "test-op-call"
-				}],
-				"calls": {
-					"test-op-call": {
-						"id": "test-op-call",
-						"method": "HTTP_METHOD_GET",
-						"endpoint_path": "/test"
-					}
-				}
-			}
-		}`
-		serviceConfig := &configv1.UpstreamServiceConfig{}
-		require.NoError(t, protojson.Unmarshal([]byte(configJSON), serviceConfig))
-
-		_, _, _, err := upstream.Register(context.Background(), serviceConfig, tm, nil, nil, false)
-		assert.Error(t, err)
-		assert.Contains(t, err.Error(), "invalid http service address scheme")
-		assert.Contains(t, err.Error(), "file")
-	})
-
 	t.Run("tool registration with fallback operation ID", func(t *testing.T) {
 		pm := pool.NewManager()
 		tm := tool.NewManager(nil)

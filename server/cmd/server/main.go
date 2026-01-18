@@ -120,22 +120,8 @@ func newRootCmd() *cobra.Command { //nolint:gocyclo // Main entry point, expecte
 			configPaths := cfg.ConfigPaths()
 
 			log.Info("Configuration", "mcp-listen-address", bindAddress, "registration-port", grpcPort, "stdio", stdio, "config-path", configPaths)
-
-			// Track 1: Friction Fighter - Verify config files exist before proceeding
 			if len(configPaths) > 0 {
 				log.Info("Attempting to load services from config path", "paths", configPaths)
-				for _, path := range configPaths {
-					if strings.HasPrefix(strings.ToLower(path), "http://") || strings.HasPrefix(strings.ToLower(path), "https://") {
-						continue
-					}
-					if _, err := osFs.Stat(path); os.IsNotExist(err) {
-						return fmt.Errorf("❌ Configuration file not found: %s\n\n💡 Tip: You can generate a default configuration using:\n   %s config generate > %s", path, appconsts.Name, path)
-					} else if err != nil {
-						return fmt.Errorf("❌ Failed to access configuration file %s: %w", path, err)
-					}
-				}
-			} else {
-				log.Warn("⚠️  No configuration files provided. Server will run but no tools will be available.")
 			}
 
 			ctx, cancel := context.WithCancel(context.Background())

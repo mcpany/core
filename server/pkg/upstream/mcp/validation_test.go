@@ -50,27 +50,26 @@ func TestBuildCommandFromStdioConfig_Validation(t *testing.T) {
 	})
 
 	t.Run("Validation passed - inherited var", func(t *testing.T) {
-		// Use an allowed variable (LANG) to test inheritance
-		t.Setenv("LANG", "C.UTF-8")
+		t.Setenv("INHERITED_VAR", "exists")
 		stdio := &configv1.McpStdioConnection{
 			Command: strPtr("echo"),
 			Validation: &configv1.EnvValidation{
-				RequiredEnv: []string{"LANG"},
+				RequiredEnv: []string{"INHERITED_VAR"},
 			},
 		}
 
 		cmd, err := buildCommandFromStdioConfig(ctx, stdio, false)
 		assert.NoError(t, err)
 		assert.NotNil(t, cmd)
-		// Env should contain inherited var (filtered from os.Environ)
+		// Env should contain inherited var (os.Environ copy)
 		found := false
 		for _, e := range cmd.Env {
-			if e == "LANG=C.UTF-8" {
+			if e == "INHERITED_VAR=exists" {
 				found = true
 				break
 			}
 		}
-		assert.True(t, found, "Expected LANG to be present in cmd.Env")
+		assert.True(t, found, "Expected INHERITED_VAR to be present in cmd.Env")
 	})
 
 	t.Run("Validation failed - multiple missing", func(t *testing.T) {

@@ -15,7 +15,6 @@ import (
 	"net"
 	"net/http"
 	"os"
-	"path/filepath"
 	"strings"
 	"sync"
 	"sync/atomic"
@@ -52,7 +51,6 @@ import (
 	"github.com/mcpany/core/server/pkg/util"
 	"github.com/mcpany/core/server/pkg/validation"
 	"github.com/mcpany/core/server/pkg/worker"
-	"github.com/pmezard/go-difflib/difflib"
 	otelgrpc "go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc"
 	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 
@@ -213,15 +211,6 @@ type Application struct {
 	// It is protected by configMu.
 	lastReloadTime time.Time
 
-	// lastGoodConfig stores the raw content of the last successfully loaded configuration files.
-	// Map key is the file path, value is the file content.
-	// It is protected by configMu.
-	lastGoodConfig map[string]string
-
-	// configDiff stores the diff between the last good config and the failed config.
-	// It is protected by configMu.
-	configDiff string
-
 	// BoundHTTPPort stores the actual port the HTTP server is listening on.
 	BoundHTTPPort int
 	// BoundGRPCPort stores the actual port the gRPC server is listening on.
@@ -351,11 +340,6 @@ func (a *Application) Run(
 	}
 	if cfg == nil {
 		cfg = &config_v1.McpAnyServerConfig{}
-	}
-
-	// Populate initial good config for diffing
-	if len(configPaths) > 0 {
-		a.lastGoodConfig, _ = a.readConfigFiles(fs, configPaths)
 	}
 
 	// Initialize Telemetry with loaded config
@@ -759,28 +743,12 @@ func (a *Application) ReloadConfig(ctx context.Context, fs afero.Fs, configPaths
 	log.Info("Reloading configuration...")
 	metrics.IncrCounter([]string{"config", "reload", "total"}, 1)
 
-	// Read new config content first for diff generation
-	newConfigRaw, readErr := a.readConfigFiles(fs, configPaths)
-	if readErr != nil {
-		log.Error("Failed to read config files for diff", "error", readErr)
-	}
-
 	cfg, err := a.loadConfig(ctx, fs, configPaths)
 	a.lastReloadTime = time.Now()
 	a.lastReloadErr = err
 	if err != nil {
 		metrics.IncrCounter([]string{"config", "reload", "errors"}, 1)
-		// Generate Diff if we have previous good config and new config
-		if newConfigRaw != nil && a.lastGoodConfig != nil {
-			a.configDiff = a.generateConfigDiff(a.lastGoodConfig, newConfigRaw)
-		}
 		return fmt.Errorf("failed to load services from config: %w", err)
-	}
-
-	// Success: Update last good config and clear diff
-	if newConfigRaw != nil {
-		a.lastGoodConfig = newConfigRaw
-		a.configDiff = ""
 	}
 
 	// Update global settings
@@ -951,98 +919,6 @@ func (a *Application) reconcileServices(ctx context.Context, cfg *config_v1.McpA
 	log.Info("Reload complete", "tools_count", len(a.ToolManager.ListTools()))
 }
 
-// readConfigFiles reads the raw content of the configuration files.
-// It handles directory walking similar to FileStore but only returns raw content.
-func (a *Application) readConfigFiles(fs afero.Fs, paths []string) (map[string]string, error) {
-	result := make(map[string]string)
-	for _, path := range paths {
-		// Handle URL - skip for diffing for now as it requires network call and we only care about file changes mostly
-		if strings.HasPrefix(strings.ToLower(path), "http://") || strings.HasPrefix(strings.ToLower(path), "https://") {
-			continue
-		}
-
-		info, err := fs.Stat(path)
-		if err != nil {
-			return nil, err
-		}
-
-		if info.IsDir() {
-			err := afero.Walk(fs, path, func(p string, fi os.FileInfo, err error) error {
-				if err != nil {
-					return err
-				}
-				if !fi.IsDir() {
-					// Simple check for extension to match Config behavior roughly
-					ext := strings.ToLower(filepath.Ext(p))
-					if ext == ".yaml" || ext == ".yml" || ext == ".json" || ext == ".textproto" || ext == ".prototxt" {
-						b, err := afero.ReadFile(fs, p)
-						if err != nil {
-							return err
-						}
-						result[p] = string(b)
-					}
-				}
-				return nil
-			})
-			if err != nil {
-				return nil, err
-			}
-		} else {
-			b, err := afero.ReadFile(fs, path)
-			if err != nil {
-				return nil, err
-			}
-			result[path] = string(b)
-		}
-	}
-	return result, nil
-}
-
-// generateConfigDiff generates a unified diff between the old and new configuration files.
-func (a *Application) generateConfigDiff(oldConfig, newConfig map[string]string) string {
-	var diffs []string
-	// Check for changed or new files
-	for path, newContent := range newConfig {
-		oldContent, exists := oldConfig[path]
-		if !exists {
-			// New file
-			d, _ := difflib.GetUnifiedDiffString(difflib.UnifiedDiff{
-				A:        difflib.SplitLines(""),
-				B:        difflib.SplitLines(newContent),
-				FromFile: "/dev/null",
-				ToFile:   path,
-				Context:  3,
-			})
-			diffs = append(diffs, fmt.Sprintf("New file: %s\n%s", path, d))
-		} else if oldContent != newContent {
-			// Changed file
-			d, _ := difflib.GetUnifiedDiffString(difflib.UnifiedDiff{
-				A:        difflib.SplitLines(oldContent),
-				B:        difflib.SplitLines(newContent),
-				FromFile: path + " (last known good)",
-				ToFile:   path + " (current broken)",
-				Context:  3,
-			})
-			diffs = append(diffs, d)
-		}
-	}
-	// Check for deleted files
-	for path, oldContent := range oldConfig {
-		if _, exists := newConfig[path]; !exists {
-			// Deleted file
-			d, _ := difflib.GetUnifiedDiffString(difflib.UnifiedDiff{
-				A:        difflib.SplitLines(oldContent),
-				B:        difflib.SplitLines(""),
-				FromFile: path,
-				ToFile:   "/dev/null",
-				Context:  3,
-			})
-			diffs = append(diffs, fmt.Sprintf("Deleted file: %s\n%s", path, d))
-		}
-	}
-	return strings.Join(diffs, "\n")
-}
-
 // WaitForStartup waits for the application to be fully initialized.
 // It returns nil if startup completes, or context error if context is canceled.
 func (a *Application) WaitForStartup(ctx context.Context) error {
@@ -1095,7 +971,6 @@ func (a *Application) configHealthCheck(_ context.Context) health.CheckResult {
 			Status:  "degraded",
 			Message: a.lastReloadErr.Error(),
 			Latency: time.Since(a.lastReloadTime).String(),
-			Diff:    a.configDiff,
 		}
 	}
 

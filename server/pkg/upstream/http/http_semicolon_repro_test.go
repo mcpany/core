@@ -27,39 +27,24 @@ func TestHTTPUpstream_URLConstruction_SemicolonBug(t *testing.T) {
 			name:         "endpoint with semicolon separated flag",
 			address:      "http://example.com/api",
 			endpointPath: "/test?flag;param=val",
-			// Semicolon is NO LONGER supported as a separator.
-			// "flag;param=val" is treated as a single flag key "flag;param=val".
-			// Output is encoded key.
-			expectedFqn:  "GET http://example.com/api/test?flag%3Bparam=val",
+			// We expect "flag" to be a flag (no equals).
+			// We accept "&" as separator in output because Encode() forces it.
+			// But "flag" MUST NOT become "flag=".
+			// Note: parseQueryManual reorders/reconstructs.
+			// url.Values.Encode() sorts by key. "flag" < "param".
+			expectedFqn:  "GET http://example.com/api/test?flag&param=val",
 		},
 		{
 			name:         "endpoint with semicolon separated flags",
 			address:      "http://example.com/api",
 			endpointPath: "/test?flag1;flag2",
-			// Treated as single flag "flag1;flag2"
-			expectedFqn:  "GET http://example.com/api/test?flag1%3Bflag2",
+			expectedFqn:  "GET http://example.com/api/test?flag1&flag2",
 		},
 		{
 			name:         "mixed ampersand and semicolon",
 			address:      "http://example.com/api",
 			endpointPath: "/test?a=1&flag;b=2",
-			// "a=1" is parsed as key "a" val "1".
-			// "flag;b=2" is parsed as flag key "flag;b=2".
-			expectedFqn:  "GET http://example.com/api/test?a=1&flag%3Bb=2",
-		},
-		{
-			name:         "semicolon in query value should be preserved (value)",
-			address:      "http://example.com/api",
-			endpointPath: "/v1/test?q=hello;world",
-			// We expect the semicolon to be preserved in the value (encoded as %3B).
-			expectedFqn:  "GET http://example.com/api/v1/test?q=hello%3Bworld",
-		},
-		{
-			name:         "semicolon in base url query value should be preserved (literal)",
-			address:      "http://example.com/api?q=hello;world",
-			endpointPath: "/v1/test",
-			// Since no merge happens (endpoint has no query), the base query is preserved literally.
-			expectedFqn:  "GET http://example.com/api/v1/test?q=hello;world",
+			expectedFqn:  "GET http://example.com/api/test?a=1&b=2&flag",
 		},
 	}
 

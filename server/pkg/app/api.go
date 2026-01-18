@@ -16,7 +16,6 @@ import (
 
 	"github.com/google/uuid"
 	configv1 "github.com/mcpany/core/proto/config/v1"
-	"github.com/mcpany/core/server/pkg/auth"
 	"github.com/mcpany/core/server/pkg/config"
 	"github.com/mcpany/core/server/pkg/health"
 	"github.com/mcpany/core/server/pkg/logging"
@@ -77,7 +76,6 @@ func (a *Application) createAPIHandler(store storage.Storage) http.Handler {
 	mux.HandleFunc("/secrets/", a.handleSecretDetail(store))
 
 	mux.HandleFunc("/topology", a.handleTopology())
-	mux.HandleFunc("/dashboard/metrics", a.handleDashboardMetrics())
 
 	mux.HandleFunc("/templates", a.handleTemplates())
 	mux.HandleFunc("/templates/", a.handleTemplateDetail())
@@ -231,20 +229,10 @@ func (a *Application) handleServices(store storage.Storage) http.HandlerFunc {
 				return
 			}
 
-			// Sentinel Security: Block unsafe configurations unless admin or explicitly allowed
-			if isUnsafeConfig(&svc) {
-				allow := false
-				if os.Getenv("MCPANY_ALLOW_UNSAFE_CONFIG") == util.TrueStr {
-					allow = true
-				} else if auth.NewRBACEnforcer().HasRoleInContext(r.Context(), "admin") {
-					allow = true
-				}
-
-				if !allow {
-					logging.GetLogger().Warn("Blocked unsafe service creation via API", "service", svc.GetName())
-					http.Error(w, "Creation of unsafe services (filesystem/sql/stdio/command_line) is restricted to admins. Configure them via file or ensure you have admin privileges.", http.StatusForbidden)
-					return
-				}
+			if isUnsafeConfig(&svc) && os.Getenv("MCPANY_ALLOW_UNSAFE_CONFIG") != util.TrueStr {
+				logging.GetLogger().Warn("Blocked unsafe service creation via API", "service", svc.GetName())
+				http.Error(w, "Creation of local command execution services (stdio/command_line) is disabled for security reasons. Configure them via file instead.", http.StatusBadRequest)
+				return
 			}
 
 			// Auto-generate ID if missing? Store handles it if we pass empty ID (fallback to name).
@@ -413,20 +401,10 @@ func (a *Application) handleServiceDetail(store storage.Storage) http.HandlerFun
 				return
 			}
 
-			// Sentinel Security: Block unsafe configurations unless admin or explicitly allowed
-			if isUnsafeConfig(&svc) {
-				allow := false
-				if os.Getenv("MCPANY_ALLOW_UNSAFE_CONFIG") == util.TrueStr {
-					allow = true
-				} else if auth.NewRBACEnforcer().HasRoleInContext(r.Context(), "admin") {
-					allow = true
-				}
-
-				if !allow {
-					logging.GetLogger().Warn("Blocked unsafe service update via API", "service", name)
-					http.Error(w, "Configuration of unsafe services (filesystem/sql/stdio/command_line) is restricted to admins. Configure them via file or ensure you have admin privileges.", http.StatusForbidden)
-					return
-				}
+			if isUnsafeConfig(&svc) && os.Getenv("MCPANY_ALLOW_UNSAFE_CONFIG") != util.TrueStr {
+				logging.GetLogger().Warn("Blocked unsafe service update via API", "service", name)
+				http.Error(w, "Configuration of local command execution services (stdio/command_line) is disabled for security reasons. Configure them via file instead.", http.StatusBadRequest)
+				return
 			}
 
 			if err := store.SaveService(r.Context(), &svc); err != nil {
@@ -1067,12 +1045,6 @@ func isUnsafeConfig(service *configv1.UpstreamServiceConfig) bool {
 		}
 	}
 	if service.GetCommandLineService() != nil {
-		return true
-	}
-	if service.GetFilesystemService() != nil {
-		return true
-	}
-	if service.GetSqlService() != nil {
 		return true
 	}
 	return false

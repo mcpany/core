@@ -28,15 +28,6 @@ type SessionStats struct {
 	Metadata     map[string]string
 	LastActive   time.Time
 	RequestCount int64
-	TotalLatency time.Duration
-	ErrorCount   int64
-}
-
-// Stats aggregated metrics.
-type Stats struct {
-	TotalRequests int64
-	AvgLatency    time.Duration
-	ErrorRate     float64
 }
 
 // NewManager creates a new Topology Manager.
@@ -57,7 +48,7 @@ func NewManager(registry serviceregistry.ServiceRegistryInterface, tm tool.Manag
 //
 // sessionID is the sessionID.
 // meta is the meta.
-func (m *Manager) RecordActivity(sessionID string, meta map[string]interface{}, latency time.Duration, isError bool) {
+func (m *Manager) RecordActivity(sessionID string, meta map[string]interface{}) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
 
@@ -77,40 +68,6 @@ func (m *Manager) RecordActivity(sessionID string, meta map[string]interface{}, 
 	}
 	m.sessions[sessionID].LastActive = time.Now()
 	m.sessions[sessionID].RequestCount++
-	m.sessions[sessionID].TotalLatency += latency
-	if isError {
-		m.sessions[sessionID].ErrorCount++
-	}
-}
-
-// GetStats returns the aggregated stats.
-func (m *Manager) GetStats() Stats {
-	m.mu.RLock()
-	defer m.mu.RUnlock()
-
-	var totalRequests int64
-	var totalLatency time.Duration
-	var totalErrors int64
-
-	for _, session := range m.sessions {
-		totalRequests += session.RequestCount
-		totalLatency += session.TotalLatency
-		totalErrors += session.ErrorCount
-	}
-
-	var avgLatency time.Duration
-	var errorRate float64
-
-	if totalRequests > 0 {
-		avgLatency = time.Duration(int64(totalLatency) / totalRequests)
-		errorRate = float64(totalErrors) / float64(totalRequests)
-	}
-
-	return Stats{
-		TotalRequests: totalRequests,
-		AvgLatency:    avgLatency,
-		ErrorRate:     errorRate,
-	}
 }
 
 // GetGraph generates the current topology graph.

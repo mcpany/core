@@ -449,8 +449,7 @@ func NewHTTPTool(tool *v1.Tool, poolManager *pool.Manager, serviceID string, aut
 	}
 
 	// Pre-calculate URL components
-	// Use SplitN to allow spaces in the URL (e.g. in query parameters with invalid encoding)
-	methodAndURL := strings.SplitN(tool.GetUnderlyingMethodFqn(), " ", 2)
+	methodAndURL := strings.Fields(tool.GetUnderlyingMethodFqn())
 	if len(methodAndURL) != 2 {
 		t.initError = fmt.Errorf("invalid http tool definition: expected method and URL, got %q", tool.GetUnderlyingMethodFqn())
 		return t
@@ -539,10 +538,6 @@ func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 		return nil, fmt.Errorf("tool execution blocked by policy")
 	}
 
-	if t.initError != nil {
-		return nil, t.initError
-	}
-
 	httpPool, ok := pool.Get[*client.HTTPClientWrapper](t.poolManager, t.serviceID)
 	if !ok {
 		metrics.IncrCounter([]string{"http", "request", "error"}, 1)
@@ -554,6 +549,10 @@ func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 		return nil, fmt.Errorf("failed to get client from pool: %w", err)
 	}
 	defer httpPool.Put(httpClient)
+
+	if t.initError != nil {
+		return nil, t.initError
+	}
 
 	inputs, urlString, inputsModified, err := t.prepareInputsAndURL(ctx, req)
 	if err != nil {
@@ -624,21 +623,16 @@ func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 			return fmt.Errorf("upstream HTTP request failed with status %d (Too Many Requests)", attemptResp.StatusCode)
 		}
 
-		if attemptResp.StatusCode >= 400 {
-			// Read body to include in error message
-			// Limit to 1KB to avoid flooding logs/context
-			bodyBytes, _ := io.ReadAll(io.LimitReader(attemptResp.Body, 1024))
+		if attemptResp.StatusCode >= 400 && attemptResp.StatusCode < 500 {
+			bodyBytes, _ := io.ReadAll(attemptResp.Body)
 			_ = attemptResp.Body.Close()
+			logging.GetLogger().DebugContext(ctx, "Upstream HTTP 4xx", "status", attemptResp.StatusCode, "body", string(bodyBytes), "url", httpReq.URL.String())
+			return &resilience.PermanentError{Err: fmt.Errorf("upstream HTTP request failed with status %d", attemptResp.StatusCode)}
+		}
 
-			bodyStr := string(bodyBytes)
-			logging.GetLogger().DebugContext(ctx, "Upstream HTTP error", "status", attemptResp.StatusCode, "body", bodyStr, "url", httpReq.URL.String())
-
-			errMsg := fmt.Errorf("upstream HTTP request failed with status %d: %s", attemptResp.StatusCode, bodyStr)
-
-			if attemptResp.StatusCode < 500 {
-				return &resilience.PermanentError{Err: errMsg}
-			}
-			return errMsg
+		if attemptResp.StatusCode >= 500 {
+			_ = attemptResp.Body.Close()
+			return fmt.Errorf("upstream HTTP request failed with status %d", attemptResp.StatusCode)
 		}
 
 		resp = attemptResp
