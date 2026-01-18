@@ -15,6 +15,7 @@ import { GlobalSearch } from "@/components/global-search"
 import { Separator } from "@/components/ui/separator"
 import { UserProvider } from "@/components/user-context"
 import { KeyboardShortcutsProvider } from "@/contexts/keyboard-shortcuts-context"
+import { FavoritesProvider } from "@/contexts/favorites-context"
 import { SystemStatusBanner } from "@/components/system-status-banner"
 
 export const metadata: Metadata = {
@@ -51,6 +52,7 @@ export default function RootLayout({
           >
           <TooltipProvider>
             <UserProvider>
+              <FavoritesProvider>
               <KeyboardShortcutsProvider>
                 <SidebarProvider>
                   <AppSidebar />
@@ -75,6 +77,7 @@ export default function RootLayout({
                   </SidebarInset>
                 </SidebarProvider>
               </KeyboardShortcutsProvider>
+              </FavoritesProvider>
             </UserProvider>
             <Toaster />
           </TooltipProvider>

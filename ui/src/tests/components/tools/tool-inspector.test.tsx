@@ -8,6 +8,7 @@ import { render, screen } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
 import { ToolInspector } from '@/components/tools/tool-inspector';
 import { ToolDefinition } from '@/lib/client';
+import { FavoritesProvider } from '@/contexts/favorites-context';
 
 // Mock dependencies
 vi.mock('@/components/ui/sheet', () => ({
@@ -53,22 +54,30 @@ describe('ToolInspector', () => {
     }
   };
 
+  const renderWithProviders = (ui: React.ReactNode) => {
+    return render(
+      <FavoritesProvider>
+        {ui}
+      </FavoritesProvider>
+    );
+  };
+
   it('renders nothing when closed', () => {
-    const { container } = render(<ToolInspector tool={mockTool} open={false} onOpenChange={() => {}} />);
+    const { container } = renderWithProviders(<ToolInspector tool={mockTool} open={false} onOpenChange={() => {}} />);
     expect(container.firstChild).toBeNull();
   });
 
   it('renders tool details when open', () => {
-    render(<ToolInspector tool={mockTool} open={true} onOpenChange={() => {}} />);
+    renderWithProviders(<ToolInspector tool={mockTool} open={true} onOpenChange={() => {}} />);
     expect(screen.getByText('test_tool')).toBeDefined();
     expect(screen.getByText('A test tool')).toBeDefined();
     expect(screen.getByText('test_service')).toBeDefined();
   });
 
   it('renders input fields based on schema', () => {
-    render(<ToolInspector tool={mockTool} open={true} onOpenChange={() => {}} />);
-    expect(screen.getByText(/arg1/)).toBeDefined();
-    expect(screen.getByText(/"string"/)).toBeDefined();
+    renderWithProviders(<ToolInspector tool={mockTool} open={true} onOpenChange={() => {}} />);
+    expect(screen.getAllByText(/arg1/).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/"string"/).length).toBeGreaterThan(0);
     // In a real DOM (not mocked Sheet), we would look for the input
   });
 });

@@ -12,10 +12,12 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { ToolDefinition, apiClient } from "@/lib/client";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { PlayCircle, Loader2 } from "lucide-react";
+import { PlayCircle, Loader2, Pin } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { SchemaViewer } from "./schema-viewer";
+import { useFavorites } from "@/contexts/favorites-context";
+import { cn } from "@/lib/utils";
 
 import { Switch } from "@/components/ui/switch";
 
@@ -35,6 +37,7 @@ export function ToolInspector({ tool, open, onOpenChange }: ToolInspectorProps) 
   const [output, setOutput] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [isDryRun, setIsDryRun] = useState(false);
+  const { isPinned, togglePin } = useFavorites();
 
   if (!tool) return null;
 
@@ -59,10 +62,20 @@ export function ToolInspector({ tool, open, onOpenChange }: ToolInspectorProps) 
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[700px]">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-              {tool.name}
-              <Badge variant="outline">{tool.serviceId}</Badge>
-          </DialogTitle>
+          <div className="flex items-center justify-between">
+            <DialogTitle className="flex items-center gap-2">
+                {tool.name}
+                <Badge variant="outline">{tool.serviceId}</Badge>
+            </DialogTitle>
+            <Button
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8 text-muted-foreground hover:text-yellow-500"
+                onClick={() => togglePin(tool.name)}
+            >
+                 <Pin className={cn("h-4 w-4", isPinned(tool.name) && "fill-yellow-500 text-yellow-500")} />
+            </Button>
+          </div>
           <DialogDescription>
             {tool.description}
           </DialogDescription>
