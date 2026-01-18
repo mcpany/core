@@ -449,7 +449,8 @@ func NewHTTPTool(tool *v1.Tool, poolManager *pool.Manager, serviceID string, aut
 	}
 
 	// Pre-calculate URL components
-	methodAndURL := strings.Fields(tool.GetUnderlyingMethodFqn())
+	// Use SplitN to allow spaces in the URL (e.g. in query parameters with invalid encoding)
+	methodAndURL := strings.SplitN(tool.GetUnderlyingMethodFqn(), " ", 2)
 	if len(methodAndURL) != 2 {
 		t.initError = fmt.Errorf("invalid http tool definition: expected method and URL, got %q", tool.GetUnderlyingMethodFqn())
 		return t
@@ -538,6 +539,10 @@ func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 		return nil, fmt.Errorf("tool execution blocked by policy")
 	}
 
+	if t.initError != nil {
+		return nil, t.initError
+	}
+
 	httpPool, ok := pool.Get[*client.HTTPClientWrapper](t.poolManager, t.serviceID)
 	if !ok {
 		metrics.IncrCounter([]string{"http", "request", "error"}, 1)
@@ -549,10 +554,6 @@ func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 		return nil, fmt.Errorf("failed to get client from pool: %w", err)
 	}
 	defer httpPool.Put(httpClient)
-
-	if t.initError != nil {
-		return nil, t.initError
-	}
 
 	inputs, urlString, inputsModified, err := t.prepareInputsAndURL(ctx, req)
 	if err != nil {
