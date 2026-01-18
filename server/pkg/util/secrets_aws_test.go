@@ -44,6 +44,7 @@ func TestResolveSecret_AwsSecretManager(t *testing.T) {
 	t.Setenv("AWS_REGION", "us-east-1")
 	// This is the magic env var for AWS SDK v2 to override endpoint
 	t.Setenv("AWS_ENDPOINT_URL", server.URL)
+	t.Setenv("MCPANY_ALLOW_LOOPBACK_SECRETS", "true")
 
 	t.Run("AwsSecretManager full JSON", func(t *testing.T) {
 		awsSecret := &configv1.AwsSecretManagerSecret{}

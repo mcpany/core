@@ -204,7 +204,9 @@ func resolveSecretRecursive(ctx context.Context, secret *configv1.SecretValue, d
 		smSecret := secret.GetAwsSecretManager()
 
 		// Load default config
-		loadOptions := []func(*config.LoadOptions) error{}
+		loadOptions := []func(*config.LoadOptions) error{
+			config.WithHTTPClient(safeSecretClient),
+		}
 		if smSecret.GetRegion() != "" {
 			loadOptions = append(loadOptions, config.WithRegion(smSecret.GetRegion()))
 		}
