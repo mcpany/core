@@ -5,6 +5,7 @@ package util //nolint:revive
 
 import (
 	"encoding/json"
+	"fmt"
 	"testing"
 )
 
@@ -113,6 +114,26 @@ func BenchmarkRedactJSON(b *testing.B) {
 		b.ResetTimer()
 		for i := 0; i < b.N; i++ {
 			RedactJSON(input)
+		}
+	})
+
+	// RedactMap benchmark
+	b.Run("RedactMap_Large", func(b *testing.B) {
+		m := make(map[string]interface{})
+		for i := 0; i < 1000; i++ {
+			m[fmt.Sprintf("key%d", i)] = "value"
+		}
+		// Nested map
+		nested := make(map[string]interface{})
+		for i := 0; i < 100; i++ {
+			nested[fmt.Sprintf("nested%d", i)] = "value"
+		}
+		m["nested"] = nested
+
+		b.ResetTimer()
+		b.ReportAllocs()
+		for i := 0; i < b.N; i++ {
+			RedactMap(m)
 		}
 	})
 }
