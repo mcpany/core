@@ -19,8 +19,14 @@ func skipString(input []byte, start int) int {
 		}
 		absQ := scanStart + q
 		// Check escape
-		backslashes := 0
-		for j := absQ - 1; j >= scanStart; j-- {
+
+		// Optimization: fast path if previous char is not backslash
+		if input[absQ-1] != '\\' {
+			return absQ + 1
+		}
+
+		backslashes := 1 // we already saw one backslash at input[absQ-1]
+		for j := absQ - 2; j >= scanStart; j-- {
 			if input[j] == '\\' {
 				backslashes++
 			} else {
