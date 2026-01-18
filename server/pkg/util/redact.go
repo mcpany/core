@@ -326,8 +326,8 @@ func scanJSONForSensitiveKeys(input []byte) bool {
 			if start+1 < end-1 {
 				keyContent := input[start+1 : end-1]
 				// Check if keyContent is sensitive.
-				// We use scanForSensitiveKeys with validateKeyContext=false to check the text.
-				if scanForSensitiveKeys(keyContent, false) {
+				// We use isKeySensitive to handle escapes (e.g. \u0061pi_key).
+				if isKeySensitive(keyContent) {
 					return true
 				}
 			}
