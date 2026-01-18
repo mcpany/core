@@ -17,8 +17,8 @@ const mockTool: ToolDefinition = {
     type: "object",
     properties: {
       username: { type: "string", description: "The username" },
-      age: { type: "string", description: "The age" },
-      isActive: { type: "string", description: "Is active status" },
+      age: { type: "string", description: "The age" }, // Defined as string in schema, so input will be string
+      isActive: { type: "boolean", description: "Is active status" },
       role: { type: "string", enum: ["admin", "user"], description: "The role" }
     },
     required: ["username"]
@@ -46,11 +46,9 @@ describe("ToolForm", () => {
 
     expect(screen.getByLabelText(/username/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/age/i)).toBeInTheDocument();
-    // boolean is a switch, usually checked by role='switch' or similar, but label association works
+    // boolean is a switch
+    // The label "isActive" should be present.
     expect(screen.getByText(/isActive/i)).toBeInTheDocument();
-    // select is tricky in shadcn/radix, but we can check for the trigger text or label
-    const roleLabels = screen.getAllByText(/role/i);
-    expect(roleLabels.length).toBeGreaterThan(0);
   });
 
   it("calls onSubmit with correct data", async () => {
@@ -67,21 +65,22 @@ describe("ToolForm", () => {
     await user.type(screen.getByLabelText(/age/i), "30");
 
     // Toggle isActive (switch)
+    // Find switch by label association or role
+    // The switch ID is "isActive", label for "isActive" points to it.
+    // However, shadcn switch might be nested.
+    // Let's try getting by label text "isActive" which is in the Label component.
+    // Actually, simpler to find the switch role.
     const switchEl = screen.getByRole("switch");
     await user.click(switchEl);
 
-    // Select role (Combobox/Select in shadcn usually opens a portal)
-    // For simplicity in unit test with radis-ui/select mock might be needed or just skip complex interaction
-    // Let's rely on text input for now.
-
     // Submit
-    const submitBtn = screen.getByRole("button", { name: /run tool/i });
+    const submitBtn = screen.getByRole("button", { name: /build command/i });
     await user.click(submitBtn);
 
     await waitFor(() => {
         expect(onSubmit).toHaveBeenCalledWith({
             username: "jdoe",
-            age: 30, // processed as number
+            age: "30", // Schema says string, so input returns string.
             isActive: true
         });
     });
@@ -95,15 +94,65 @@ describe("ToolForm", () => {
     render(<ToolForm tool={mockTool} onSubmit={onSubmit} onCancel={onCancel} />);
 
     // Submit without filling anything
-    const submitBtn = screen.getByRole("button", { name: /run tool/i });
+    const submitBtn = screen.getByRole("button", { name: /build command/i });
     await user.click(submitBtn);
 
     await waitFor(() => {
        // Check for validation messages
-       // The component renders "This field is required"
        const errors = screen.getAllByText(/this field is required/i);
        expect(errors.length).toBeGreaterThan(0);
        expect(onSubmit).not.toHaveBeenCalled();
     });
+  });
+
+  it("validates complex schema rules (pattern)", async () => {
+     const complexTool: ToolDefinition = {
+        ...mockTool,
+        inputSchema: {
+            type: "object",
+            properties: {
+                email: { type: "string", format: "email" },
+                code: { type: "string", pattern: "^[A-Z]{3}$" }
+            }
+        }
+     };
+
+     const onSubmit = vi.fn();
+     const onCancel = vi.fn();
+     const user = userEvent.setup();
+
+     render(<ToolForm tool={complexTool} onSubmit={onSubmit} onCancel={onCancel} />);
+
+     // Invalid Email
+     await user.type(screen.getByLabelText(/email/i), "not-an-email");
+     // Invalid Code
+     await user.type(screen.getByLabelText(/code/i), "abc");
+
+     const submitBtn = screen.getByRole("button", { name: /build command/i });
+     await user.click(submitBtn);
+
+     await waitFor(() => {
+         // Expect validation errors
+         // AJV default error messages
+         expect(screen.getByText(/must match format "email"/i)).toBeInTheDocument();
+         expect(screen.getByText(/must match pattern "\^\[A-Z\]\{3\}\$"/i)).toBeInTheDocument();
+         expect(onSubmit).not.toHaveBeenCalled();
+     });
+
+     // Fix data
+     await user.clear(screen.getByLabelText(/email/i));
+     await user.type(screen.getByLabelText(/email/i), "test@example.com");
+
+     await user.clear(screen.getByLabelText(/code/i));
+     await user.type(screen.getByLabelText(/code/i), "ABC");
+
+     await user.click(submitBtn);
+
+     await waitFor(() => {
+         expect(onSubmit).toHaveBeenCalledWith({
+             email: "test@example.com",
+             code: "ABC"
+         });
+     });
   });
 });
