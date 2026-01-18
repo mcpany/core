@@ -7,6 +7,7 @@ import (
 	"context"
 	"crypto/tls"
 	"crypto/x509"
+	"fmt"
 	"net"
 	"net/http"
 	"os"
@@ -16,6 +17,7 @@ import (
 	"github.com/mcpany/core/server/pkg/client"
 	healthChecker "github.com/mcpany/core/server/pkg/health"
 	"github.com/mcpany/core/server/pkg/pool"
+	"github.com/mcpany/core/server/pkg/validation"
 	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 )
 
@@ -73,15 +75,48 @@ var NewHTTPPool = func(
 
 	baseTransport := &http.Transport{
 		TLSClientConfig: tlsConfig,
-		DialContext: (&net.Dialer{
-			Timeout: 30 * time.Second,
-		}).DialContext,
+		DialContext: func(ctx context.Context, network, addr string) (net.Conn, error) {
+			host, port, err := net.SplitHostPort(addr)
+			if err != nil {
+				return nil, err
+			}
+
+			if os.Getenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS") == "true" {
+				return (&net.Dialer{Timeout: 30 * time.Second}).DialContext(ctx, network, addr)
+			}
+
+			ips, err := net.DefaultResolver.LookupIP(ctx, "ip", host)
+			if err != nil {
+				return nil, err
+			}
+
+			for _, ip := range ips {
+				if err := validation.ValidateIP(ip); err != nil {
+					return nil, fmt.Errorf("host %q resolves to unsafe IP %s: %w", host, ip.String(), err)
+				}
+			}
+
+			dialer := &net.Dialer{Timeout: 30 * time.Second}
+			for _, ip := range ips {
+				conn, err := dialer.DialContext(ctx, network, net.JoinHostPort(ip.String(), port))
+				if err == nil {
+					return conn, nil
+				}
+			}
+			return nil, fmt.Errorf("failed to dial any resolved IP for %s", host)
+		},
 		MaxIdleConns:        maxSize,
 		MaxIdleConnsPerHost: maxSize,
 	}
 
 	sharedClient := &http.Client{
 		Transport: otelhttp.NewTransport(baseTransport),
+		CheckRedirect: func(req *http.Request, _ []*http.Request) error {
+			if err := validation.IsSafeURL(req.URL.String()); err != nil {
+				return fmt.Errorf("unsafe redirect: %w", err)
+			}
+			return nil
+		},
 	}
 
 	// Create a shared health checker for all clients in this pool

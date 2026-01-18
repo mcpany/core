@@ -9,6 +9,7 @@ import (
 	"net"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"runtime"
 	"testing"
 	"time"
@@ -21,6 +22,9 @@ import (
 )
 
 func TestHTTPPoolConnectionLeak(t *testing.T) {
+	os.Setenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS", "true")
+	defer os.Unsetenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS")
+
 	// Start a mock server that counts active connections
 	connectionCount := 0
 	server := httptest.NewUnstartedServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

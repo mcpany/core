@@ -7,6 +7,7 @@ import (
 	"errors"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"testing"
 	"time"
 
@@ -21,6 +22,14 @@ import (
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/encoding/protojson"
 )
+
+func TestMain(m *testing.M) {
+	// Allow localhost for all tests in this package
+	os.Setenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS", "true")
+	code := m.Run()
+	os.Unsetenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS")
+	os.Exit(code)
+}
 
 func TestHttpMethodToString(t *testing.T) {
 	testCases := []struct {
@@ -82,7 +91,7 @@ func TestHttpMethodToString(t *testing.T) {
 }
 
 func TestHTTPUpstream_Register_InsecureSkipVerify(t *testing.T) {
-	t.Setenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS", "true")
+	// t.Setenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS", "true") // Handled by TestMain
 
 	// Create a test HTTPS server with a self-signed certificate
 	server := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {

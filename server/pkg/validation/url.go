@@ -45,7 +45,7 @@ var IsSafeURL = func(urlStr string) error {
 
 	// Check if host is an IP literal
 	if ip := net.ParseIP(host); ip != nil {
-		return validateIP(ip)
+		return ValidateIP(ip)
 	}
 
 	// Resolve Domain
@@ -64,7 +64,7 @@ var IsSafeURL = func(urlStr string) error {
 
 	// Check all resolved IPs
 	for _, ip := range ips {
-		if err := validateIP(ip); err != nil {
+		if err := ValidateIP(ip); err != nil {
 			return fmt.Errorf("host %q resolves to unsafe IP %s: %w", host, ip.String(), err)
 		}
 	}
@@ -72,7 +72,9 @@ var IsSafeURL = func(urlStr string) error {
 	return nil
 }
 
-func validateIP(ip net.IP) error {
+// ValidateIP checks if the IP address is safe to connect to.
+// It blocks loopback, link-local, multicast, unspecified, and private addresses.
+func ValidateIP(ip net.IP) error {
 	if ip.IsLoopback() {
 		return fmt.Errorf("loopback address is not allowed")
 	}
@@ -87,6 +89,9 @@ func validateIP(ip net.IP) error {
 	}
 	if ip.IsUnspecified() {
 		return fmt.Errorf("unspecified address (0.0.0.0) is not allowed")
+	}
+	if ip.IsPrivate() {
+		return fmt.Errorf("private address is not allowed")
 	}
 	return nil
 }

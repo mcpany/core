@@ -368,3 +368,42 @@ func TestLocalCommandTool_ShellInjection_ControlChars(t *testing.T) {
 		})
 	}
 }
+
+func TestLocalCommandTool_FindInjection(t *testing.T) {
+	// This test verifies that `find` is treated as a shell command and arguments are sanitized.
+	t.Parallel()
+
+	tool := &v1.Tool{Name: proto.String("test-tool-find")}
+	service := &configv1.CommandLineUpstreamService{
+		Command: proto.String("find"),
+		Local:   proto.Bool(true),
+	}
+	callDef := &configv1.CommandLineCallDefinition{
+		Parameters: []*configv1.CommandLineParameterMapping{
+			{Schema: &configv1.ParameterSchema{Name: proto.String("dir")}},
+		},
+		Args: []string{"{{dir}}", "-name", "*.txt"},
+	}
+	localTool := NewLocalCommandTool(tool, service, callDef, nil, "call-id")
+
+	// Injection attempt: use -exec to run shell command
+	// input: . -exec sh -c 'echo INJECTED' ;
+	// If unquoted, this becomes: find . -exec sh -c 'echo INJECTED' ; -name *.txt
+	// This executes the shell command.
+
+	reqAttack := &ExecutionRequest{
+		ToolName: "test-tool-find",
+		Arguments: map[string]interface{}{
+			"dir": ". -exec sh -c 'echo INJECTED' ;",
+		},
+	}
+	reqAttack.ToolInputs, _ = json.Marshal(reqAttack.Arguments)
+
+	_, err := localTool.Execute(context.Background(), reqAttack)
+	assert.Error(t, err)
+	if err != nil {
+		// Expect shell injection detection because of semicolon, space (if strict), quotes, etc.
+		// Semicolon is in the dangerousChars list for unquoted arguments.
+		assert.Contains(t, err.Error(), "shell injection detected")
+	}
+}
