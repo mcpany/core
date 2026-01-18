@@ -102,4 +102,28 @@ func TestAPIHandler_SecurityValidation(t *testing.T) {
 		assert.Contains(t, w.Body.String(), "unsafe services")
 		assert.Contains(t, w.Body.String(), "filesystem")
 	})
+
+	// Test case: SQL service creation blocked via API
+	t.Run("Block SQL Service", func(t *testing.T) {
+		svc := &configv1.UpstreamServiceConfig{
+			Name: proto.String("unsafe-sql"),
+			ServiceConfig: &configv1.UpstreamServiceConfig_SqlService{
+				SqlService: &configv1.SqlUpstreamService{
+					Driver: proto.String("sqlite"),
+					Dsn:    proto.String("file::memory:"),
+				},
+			},
+		}
+		body, _ := protojson.Marshal(svc)
+
+		req := httptest.NewRequest("POST", "/services", bytes.NewReader(body))
+		w := httptest.NewRecorder()
+
+		handler.ServeHTTP(w, req)
+
+		// Assert that the request is rejected with Bad Request (400)
+		assert.Equal(t, http.StatusBadRequest, w.Code)
+		assert.Contains(t, w.Body.String(), "unsafe services")
+		assert.Contains(t, w.Body.String(), "sql")
+	})
 }
