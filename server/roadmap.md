@@ -64,6 +64,7 @@
 - [x] **Strict Startup Mode**: Implemented `--strict` flag for the `run` command. When enabled, the server performs pre-flight connectivity checks ("doctor" checks) on all configured upstream services and fails to start if any are unreachable, preventing silent failures. (Friction Fighter)
 - [x] **Stdio Logging Visibility**: Fixed an issue where logs were discarded in stdio mode (used by clients like Claude Desktop). Logs now correctly output to stderr, ensuring "silent failures" are visible and debuggable. (Friction Fighter)
 - [x] **OAuth2 Token Reachability Check**: Reliability: During validation (or via `doctor` command), attempt to connect to the OAuth2 token URL to verify network connectivity, going beyond simple syntax checks. (Friction Fighter)
+- [x] **Smart Doctor Diagnosis**: Automatically trigger a detailed "Doctor Diagnosis" log when an upstream service fails to connect during startup, providing clear actionable feedback to the user. (Friction Fighter)
 - [x] **Preserved Config Error Suggestions**: Fixed an issue where helpful "Fix" suggestions were swallowed by error wrapping during nested validation (e.g., stdio arguments), ensuring users always see actionable advice. (Friction Fighter)
 - [x] **Tool Name Fuzzy Matching**: Improve error messages for tool execution by suggesting similar tool names when a user makes a typo. (Friction Fighter)
 
