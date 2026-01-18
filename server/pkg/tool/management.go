@@ -411,6 +411,15 @@ func (tm *Manager) ExecuteTool(ctx context.Context, req *ExecutionRequest) (any,
 	t, ok := tm.GetTool(req.ToolName)
 	if !ok {
 		log.Error("Tool not found")
+		// Attempt to find a close match
+		var candidates []string
+		tm.nameMap.Range(func(key, _ string) bool {
+			candidates = append(candidates, key)
+			return true
+		})
+		if suggestion, found := util.FindClosestMatch(req.ToolName, candidates, 3); found {
+			return nil, fmt.Errorf("%w: %s. Did you mean '%s'?", ErrToolNotFound, req.ToolName, suggestion)
+		}
 		return nil, ErrToolNotFound
 	}
 	serviceID := t.Tool().GetServiceId()
