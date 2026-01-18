@@ -73,4 +73,33 @@ func TestAPIHandler_SecurityValidation(t *testing.T) {
 		assert.Equal(t, http.StatusBadRequest, w.Code)
 		assert.Contains(t, w.Body.String(), "invalid service configuration")
 	})
+
+	// Test case: Filesystem service creation blocked via API
+	t.Run("Block Filesystem Service", func(t *testing.T) {
+		svc := &configv1.UpstreamServiceConfig{
+			Name: proto.String("unsafe-fs"),
+			ServiceConfig: &configv1.UpstreamServiceConfig_FilesystemService{
+				FilesystemService: &configv1.FilesystemUpstreamService{
+					RootPaths: map[string]string{
+						"/": "/",
+					},
+					FilesystemType: &configv1.FilesystemUpstreamService_Os{
+						Os: &configv1.OsFs{},
+					},
+				},
+			},
+		}
+		body, _ := protojson.Marshal(svc)
+
+		req := httptest.NewRequest("POST", "/services", bytes.NewReader(body))
+		w := httptest.NewRecorder()
+
+		handler.ServeHTTP(w, req)
+
+		// Assert that the request is rejected with Bad Request (400)
+		assert.Equal(t, http.StatusBadRequest, w.Code)
+		// We updated the error message in the implementation
+		assert.Contains(t, w.Body.String(), "unsafe services")
+		assert.Contains(t, w.Body.String(), "filesystem")
+	})
 }

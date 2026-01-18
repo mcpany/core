@@ -231,7 +231,7 @@ func (a *Application) handleServices(store storage.Storage) http.HandlerFunc {
 
 			if isUnsafeConfig(&svc) && os.Getenv("MCPANY_ALLOW_UNSAFE_CONFIG") != util.TrueStr {
 				logging.GetLogger().Warn("Blocked unsafe service creation via API", "service", svc.GetName())
-				http.Error(w, "Creation of local command execution services (stdio/command_line) is disabled for security reasons. Configure them via file instead.", http.StatusBadRequest)
+				http.Error(w, "Creation of unsafe services (filesystem/sql/stdio/command_line) is disabled for security reasons. Configure them via file instead.", http.StatusBadRequest)
 				return
 			}
 
@@ -403,7 +403,7 @@ func (a *Application) handleServiceDetail(store storage.Storage) http.HandlerFun
 
 			if isUnsafeConfig(&svc) && os.Getenv("MCPANY_ALLOW_UNSAFE_CONFIG") != util.TrueStr {
 				logging.GetLogger().Warn("Blocked unsafe service update via API", "service", name)
-				http.Error(w, "Configuration of local command execution services (stdio/command_line) is disabled for security reasons. Configure them via file instead.", http.StatusBadRequest)
+				http.Error(w, "Configuration of unsafe services (filesystem/sql/stdio/command_line) is disabled for security reasons. Configure them via file instead.", http.StatusBadRequest)
 				return
 			}
 
@@ -1045,6 +1045,12 @@ func isUnsafeConfig(service *configv1.UpstreamServiceConfig) bool {
 		}
 	}
 	if service.GetCommandLineService() != nil {
+		return true
+	}
+	if service.GetFilesystemService() != nil {
+		return true
+	}
+	if service.GetSqlService() != nil {
 		return true
 	}
 	return false
