@@ -411,6 +411,47 @@ func (tm *Manager) ExecuteTool(ctx context.Context, req *ExecutionRequest) (any,
 	t, ok := tm.GetTool(req.ToolName)
 	if !ok {
 		log.Error("Tool not found")
+
+		// Fuzzy matching for helpful error message
+		var bestMatch string
+		minDist := 1000
+
+		// Check against tool names (client-facing)
+		tm.nameMap.Range(func(key, _ string) bool {
+			dist := util.LevenshteinDistance(req.ToolName, key)
+			if dist < minDist {
+				minDist = dist
+				bestMatch = key
+			}
+			return true
+		})
+
+		// Also check against internal tool IDs if no good match yet
+		if minDist > 3 {
+			tm.tools.Range(func(key string, _ Tool) bool {
+				dist := util.LevenshteinDistance(req.ToolName, key)
+				if dist < minDist {
+					minDist = dist
+					bestMatch = key
+				}
+				return true
+			})
+		}
+
+		// Heuristic: If distance is small enough relative to length, suggest it.
+		// Threshold: 3 edits or 30% of length, whichever is larger, but cap at 5.
+		threshold := len(req.ToolName) / 3
+		if threshold < 3 {
+			threshold = 3
+		}
+		if threshold > 5 {
+			threshold = 5
+		}
+
+		if minDist <= threshold && bestMatch != "" {
+			return nil, fmt.Errorf("%w %q (did you mean %q?)", ErrToolNotFound, req.ToolName, bestMatch)
+		}
+
 		return nil, ErrToolNotFound
 	}
 	serviceID := t.Tool().GetServiceId()
