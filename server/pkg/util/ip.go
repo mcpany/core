@@ -174,5 +174,31 @@ func IsPrivateIP(ip net.IP) bool {
 		return true
 	}
 
+	// Check for NAT64 (IPv4-embedded IPv6) - 64:ff9b::/96 (RFC 6052)
+	// We need to check if the embedded IPv4 address is private, loopback, or link-local.
+	// IsPrivateNetworkIP only checks for private network addresses, not loopback or link-local.
+	if len(ip) == net.IPv6len &&
+		ip[0] == 0x00 && ip[1] == 0x64 && ip[2] == 0xff && ip[3] == 0x9b &&
+		ip[4] == 0 && ip[5] == 0 && ip[6] == 0 && ip[7] == 0 &&
+		ip[8] == 0 && ip[9] == 0 && ip[10] == 0 && ip[11] == 0 {
+		// Last 4 bytes are the IPv4 address
+		ip4 := ip[12:16]
+
+		// Check Loopback (127.0.0.0/8)
+		if ip4[0] == 127 {
+			return true
+		}
+
+		// Check Link-local (169.254.0.0/16)
+		if ip4[0] == 169 && ip4[1] == 254 {
+			return true
+		}
+
+		// Check Private Network (RFC1918, etc.)
+		if isPrivateNetworkIPv4(ip4) {
+			return true
+		}
+	}
+
 	return IsPrivateNetworkIP(ip)
 }

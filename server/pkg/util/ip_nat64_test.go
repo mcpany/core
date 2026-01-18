@@ -71,6 +71,16 @@ func TestIsPrivateIP_NAT64(t *testing.T) {
 			ip:       "64:ff9b::8.8.8.8",
 			expected: false,
 		},
+		{
+			name:     "NAT64 Loopback (127.0.0.1)",
+			ip:       "64:ff9b::127.0.0.1",
+			expected: true,
+		},
+		{
+			name:     "NAT64 Link-Local (169.254.1.1)",
+			ip:       "64:ff9b::169.254.1.1",
+			expected: true,
+		},
 	}
 
 	for _, tt := range tests {
