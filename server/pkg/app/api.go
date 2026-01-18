@@ -134,139 +134,144 @@ func (a *Application) handleServices(store storage.Storage) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case http.MethodGet:
-			var services []*configv1.UpstreamServiceConfig
-			var err error
-			if a.ServiceRegistry != nil {
-				services, err = a.ServiceRegistry.GetAllServices()
-			} else {
-				// Fallback to store if registry not initialized (though it should be)
-				services, err = store.ListServices(r.Context())
-			}
-			if err != nil {
-				logging.GetLogger().Error("failed to list services", "error", err)
-				http.Error(w, "Internal Server Error", http.StatusInternalServerError)
-				return
-			}
-
-			w.Header().Set("Content-Type", "application/json")
-			var buf []byte
-			buf = append(buf, '[')
-			opts := protojson.MarshalOptions{UseProtoNames: true, EmitUnpopulated: false}
-			// Sort services for consistent output
-			// (Optional but good for tests)
-
-			for i, svc := range services {
-				if i > 0 {
-					buf = append(buf, ',')
-				}
-				b, err := opts.Marshal(svc)
-				if err != nil {
-					logging.GetLogger().Error("failed to marshal service", "error", err)
-					continue
-				}
-
-				// Inject runtime error information if available
-				// We unmarshal the JSON bytes to a map, inject the error field, and marshal back.
-				// This is a trade-off for not modifying the proto definition for a transient status.
-				var jsonMap map[string]any
-				if err := json.Unmarshal(b, &jsonMap); err == nil && a.ServiceRegistry != nil {
-					if svcID := svc.GetId(); svcID != "" {
-						if errMsg, ok := a.ServiceRegistry.GetServiceError(svcID); ok {
-							jsonMap["last_error"] = errMsg
-						}
-					}
-					// Also check sanitize name if ID lookup fails (or both?)
-					if svc.GetId() == "" && svc.GetSanitizedName() != "" {
-						if errMsg, ok := a.ServiceRegistry.GetServiceError(svc.GetSanitizedName()); ok {
-							jsonMap["last_error"] = errMsg
-						}
-					}
-
-					// Inject Tool Count
-					if a.ToolManager != nil {
-						tools := a.ToolManager.ListTools()
-						count := 0
-						svcID := svc.GetId()
-						// Fallback to name if ID is empty or not matching (though tools should use ID)
-						sanitizedName := svc.GetSanitizedName()
-
-						for _, t := range tools {
-							tSvcID := t.Tool().GetServiceId()
-							if tSvcID != "" && (tSvcID == svcID || tSvcID == sanitizedName) {
-								count++
-							}
-						}
-						jsonMap["tool_count"] = count
-					}
-
-					// Marshal back to JSON
-					if enrichedBytes, err := json.Marshal(jsonMap); err == nil {
-						b = enrichedBytes
-					}
-				}
-
-				buf = append(buf, b...)
-			}
-			buf = append(buf, ']')
-			_, _ = w.Write(buf)
-
+			a.handleServicesGet(w, r, store)
 		case http.MethodPost:
-			var svc configv1.UpstreamServiceConfig
-			body, err := readBodyWithLimit(w, r, 1048576)
-			if err != nil {
-				return
-			}
-			if err := protojson.Unmarshal(body, &svc); err != nil {
-				http.Error(w, err.Error(), http.StatusBadRequest)
-				return
-			}
-			if svc.GetName() == "" {
-				http.Error(w, "name is required", http.StatusBadRequest)
-				return
-			}
-
-			// Validate service configuration before saving
-			if err := config.ValidateOrError(r.Context(), &svc); err != nil {
-				http.Error(w, "invalid service configuration: "+err.Error(), http.StatusBadRequest)
-				return
-			}
-
-			// Sentinel Security: Block unsafe configurations unless admin or explicitly allowed
-			if isUnsafeConfig(&svc) {
-				allow := false
-				if os.Getenv("MCPANY_ALLOW_UNSAFE_CONFIG") == util.TrueStr {
-					allow = true
-				} else if auth.NewRBACEnforcer().HasRoleInContext(r.Context(), "admin") {
-					allow = true
-				}
-
-				if !allow {
-					logging.GetLogger().Warn("Blocked unsafe service creation via API", "service", svc.GetName())
-					http.Error(w, "Creation of unsafe services (filesystem/sql/stdio/command_line) is restricted to admins. Configure them via file or ensure you have admin privileges.", http.StatusForbidden)
-					return
-				}
-			}
-
-			// Auto-generate ID if missing? Store handles it if we pass empty ID (fallback to name).
-			// But creating UUID here might be better? For now name fallback is fine.
-
-			if err := store.SaveService(r.Context(), &svc); err != nil {
-				logging.GetLogger().Error("failed to save service", "error", err)
-				http.Error(w, "Internal Server Error", http.StatusInternalServerError)
-				return
-			}
-
-			// Trigger reload
-			if err := a.ReloadConfig(r.Context(), a.fs, a.configPaths); err != nil {
-				logging.GetLogger().Error("failed to reload config after save", "error", err)
-			}
-
-			w.WriteHeader(http.StatusCreated)
-			_, _ = w.Write([]byte("{}"))
+			a.handleServicesPost(w, r, store)
 		default:
 			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
 		}
 	}
+}
+
+func (a *Application) handleServicesGet(w http.ResponseWriter, r *http.Request, store storage.Storage) {
+	var services []*configv1.UpstreamServiceConfig
+	var err error
+	if a.ServiceRegistry != nil {
+		services, err = a.ServiceRegistry.GetAllServices()
+	} else {
+		// Fallback to store if registry not initialized (though it should be)
+		services, err = store.ListServices(r.Context())
+	}
+	if err != nil {
+		logging.GetLogger().Error("failed to list services", "error", err)
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	var buf []byte
+	buf = append(buf, '[')
+	opts := protojson.MarshalOptions{UseProtoNames: true, EmitUnpopulated: false}
+
+	for i, svc := range services {
+		if i > 0 {
+			buf = append(buf, ',')
+		}
+		b, err := opts.Marshal(svc)
+		if err != nil {
+			logging.GetLogger().Error("failed to marshal service", "error", err)
+			continue
+		}
+
+		// Inject runtime error information if available
+		b = a.enrichServiceJSON(b, svc)
+
+		buf = append(buf, b...)
+	}
+	buf = append(buf, ']')
+	_, _ = w.Write(buf)
+}
+
+func (a *Application) enrichServiceJSON(b []byte, svc *configv1.UpstreamServiceConfig) []byte {
+	var jsonMap map[string]any
+	if err := json.Unmarshal(b, &jsonMap); err == nil && a.ServiceRegistry != nil {
+		if svcID := svc.GetId(); svcID != "" {
+			if errMsg, ok := a.ServiceRegistry.GetServiceError(svcID); ok {
+				jsonMap["last_error"] = errMsg
+			}
+		}
+		// Also check sanitize name if ID lookup fails (or both?)
+		if svc.GetId() == "" && svc.GetSanitizedName() != "" {
+			if errMsg, ok := a.ServiceRegistry.GetServiceError(svc.GetSanitizedName()); ok {
+				jsonMap["last_error"] = errMsg
+			}
+		}
+
+		// Inject Tool Count
+		if a.ToolManager != nil {
+			tools := a.ToolManager.ListTools()
+			count := 0
+			svcID := svc.GetId()
+			// Fallback to name if ID is empty or not matching (though tools should use ID)
+			sanitizedName := svc.GetSanitizedName()
+
+			for _, t := range tools {
+				tSvcID := t.Tool().GetServiceId()
+				if tSvcID != "" && (tSvcID == svcID || tSvcID == sanitizedName) {
+					count++
+				}
+			}
+			jsonMap["tool_count"] = count
+		}
+
+		// Marshal back to JSON
+		if enrichedBytes, err := json.Marshal(jsonMap); err == nil {
+			return enrichedBytes
+		}
+	}
+	return b
+}
+
+func (a *Application) handleServicesPost(w http.ResponseWriter, r *http.Request, store storage.Storage) {
+	var svc configv1.UpstreamServiceConfig
+	body, err := readBodyWithLimit(w, r, 1048576)
+	if err != nil {
+		return
+	}
+	if err := protojson.Unmarshal(body, &svc); err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	if svc.GetName() == "" {
+		http.Error(w, "name is required", http.StatusBadRequest)
+		return
+	}
+
+	// Validate service configuration before saving
+	if err := config.ValidateOrError(r.Context(), &svc); err != nil {
+		http.Error(w, "invalid service configuration: "+err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	// Sentinel Security: Block unsafe configurations unless admin or explicitly allowed
+	if isUnsafeConfig(&svc) {
+		allow := false
+		if os.Getenv("MCPANY_ALLOW_UNSAFE_CONFIG") == util.TrueStr {
+			allow = true
+		} else if auth.NewRBACEnforcer().HasRoleInContext(r.Context(), "admin") {
+			allow = true
+		}
+
+		if !allow {
+			logging.GetLogger().Warn("Blocked unsafe service creation via API", "service", svc.GetName())
+			http.Error(w, "Creation of unsafe services (filesystem/sql/stdio/command_line) is restricted to admins. Configure them via file or ensure you have admin privileges.", http.StatusForbidden)
+			return
+		}
+	}
+
+	if err := store.SaveService(r.Context(), &svc); err != nil {
+		logging.GetLogger().Error("failed to save service", "error", err)
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		return
+	}
+
+	// Trigger reload
+	if err := a.ReloadConfig(r.Context(), a.fs, a.configPaths); err != nil {
+		logging.GetLogger().Error("failed to reload config after save", "error", err)
+	}
+
+	w.WriteHeader(http.StatusCreated)
+	_, _ = w.Write([]byte("{}"))
 }
 
 func (a *Application) handleServiceValidate() http.HandlerFunc {
