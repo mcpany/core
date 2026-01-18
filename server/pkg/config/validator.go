@@ -67,12 +67,14 @@ func (e *ValidationError) Error() string {
 // validation errors is returned.
 //
 // Parameters:
-//   ctx: The context for the validation (used for secret resolution).
-//   config: The server configuration to be validated.
-//   binaryType: The type of binary (server, worker) which might affect validation rules.
+//
+//	ctx: The context for the validation (used for secret resolution).
+//	config: The server configuration to be validated.
+//	binaryType: The type of binary (server, worker) which might affect validation rules.
 //
 // Returns:
-//   []ValidationError: A slice of ValidationErrors, which will be empty if the configuration is valid.
+//
+//	[]ValidationError: A slice of ValidationErrors, which will be empty if the configuration is valid.
 func Validate(ctx context.Context, config *configv1.McpAnyServerConfig, binaryType BinaryType) []ValidationError {
 	var validationErrors []ValidationError
 	serviceNames := make(map[string]bool)
@@ -351,11 +353,13 @@ func validateGlobalSettings(gs *configv1.GlobalSettings, binaryType BinaryType) 
 // ValidateOrError validates a single upstream service configuration and returns an error if it's invalid.
 //
 // Parameters:
-//   ctx: The context for the validation.
-//   service: The upstream service configuration to validate.
+//
+//	ctx: The context for the validation.
+//	service: The upstream service configuration to validate.
 //
 // Returns:
-//   error: An error if validation fails.
+//
+//	error: An error if validation fails.
 func ValidateOrError(ctx context.Context, service *configv1.UpstreamServiceConfig) error {
 	return validateUpstreamService(ctx, service)
 }
@@ -817,9 +821,18 @@ func validateBasicAuth(ctx context.Context, basicAuth *configv1.BasicAuth) error
 
 func validateOAuth2Auth(ctx context.Context, oauth *configv1.OAuth2Auth) error {
 	if oauth.GetTokenUrl() == "" {
-		return fmt.Errorf("oauth2 token_url is empty")
-	}
-	if !validation.IsValidURL(oauth.GetTokenUrl()) {
+		if oauth.GetIssuerUrl() == "" {
+			return &ActionableError{
+				Err:        fmt.Errorf("oauth2 token_url is empty and no issuer_url provided"),
+				Suggestion: "Provide 'token_url' OR 'issuer_url' to enable auto-discovery.",
+			}
+		}
+		if !validation.IsValidURL(oauth.GetIssuerUrl()) {
+			return fmt.Errorf("invalid oauth2 issuer_url: %s", oauth.GetIssuerUrl())
+		}
+		// If IssuerURL is present and valid, we allow TokenUrl to be empty (auto-discovery)
+	} else if !validation.IsValidURL(oauth.GetTokenUrl()) {
+		// Only validate TokenUrl if it is present
 		return fmt.Errorf("invalid oauth2 token_url: %s", oauth.GetTokenUrl())
 	}
 
@@ -951,8 +964,6 @@ func validateUser(ctx context.Context, user *configv1.User) error {
 	}
 	return nil
 }
-
-
 
 func validateAuditConfig(audit *configv1.AuditConfig) error {
 	if audit == nil {

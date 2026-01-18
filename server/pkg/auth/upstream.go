@@ -4,10 +4,14 @@
 package auth
 
 import (
+	"context"
 	"errors"
+	"fmt"
 	"net/http"
 	"strings"
+	"sync"
 
+	"github.com/coreos/go-oidc/v3/oidc"
 	"github.com/mcpany/core/server/pkg/util"
 	"golang.org/x/oauth2/clientcredentials"
 
@@ -40,6 +44,7 @@ type UpstreamAuthenticator interface {
 // Returns:
 //   - An `UpstreamAuthenticator` implementation, or nil if no auth is configured.
 //   - An error if the configuration is invalid.
+//
 // NewUpstreamAuthenticator creates an `UpstreamAuthenticator` based on the
 // provided authentication configuration. It supports API key, bearer token, and
 // basic authentication, as well as substitution of environment variables in the
@@ -104,13 +109,14 @@ func NewUpstreamAuthenticator(authConfig *configv1.Authentication) (UpstreamAuth
 		if oauth2.GetClientSecret() == nil {
 			return nil, errors.New("OAuth2 authentication requires a client secret")
 		}
-		if oauth2.GetTokenUrl() == "" {
-			return nil, errors.New("OAuth2 authentication requires a token URL")
+		if oauth2.GetTokenUrl() == "" && oauth2.GetIssuerUrl() == "" {
+			return nil, errors.New("OAuth2 authentication requires a token URL or an issuer URL")
 		}
 		return &OAuth2Auth{
 			ClientID:     oauth2.GetClientId(),
 			ClientSecret: oauth2.GetClientSecret(),
 			TokenURL:     oauth2.GetTokenUrl(),
+			IssuerURL:    oauth2.GetIssuerUrl(),
 			Scopes:       strings.Split(oauth2.GetScopes(), " "),
 		}, nil
 	}
@@ -216,7 +222,32 @@ type OAuth2Auth struct {
 	ClientID     *configv1.SecretValue
 	ClientSecret *configv1.SecretValue
 	TokenURL     string
+	IssuerURL    string
 	Scopes       []string
+
+	discoveryMu sync.Mutex
+}
+
+// getTokenURL returns the token URL, performing discovery if necessary.
+func (o *OAuth2Auth) getTokenURL(ctx context.Context) (string, error) {
+	o.discoveryMu.Lock()
+	defer o.discoveryMu.Unlock()
+
+	if o.TokenURL != "" {
+		return o.TokenURL, nil
+	}
+
+	if o.IssuerURL != "" {
+		// Create a context for discovery
+		provider, err := oidc.NewProvider(ctx, o.IssuerURL)
+		if err != nil {
+			return "", fmt.Errorf("failed to discover OIDC configuration from issuer %q: %w", o.IssuerURL, err)
+		}
+		o.TokenURL = provider.Endpoint().TokenURL
+		return o.TokenURL, nil
+	}
+
+	return "", errors.New("OAuth2 authentication requires a token URL (and no issuer provided)")
 }
 
 // Authenticate fetches a token and adds it to the request's "Authorization" header.
@@ -227,6 +258,11 @@ type OAuth2Auth struct {
 // Returns:
 //   - nil on success, or an error if the token cannot be obtained.
 func (o *OAuth2Auth) Authenticate(req *http.Request) error {
+	tokenURL, err := o.getTokenURL(req.Context())
+	if err != nil {
+		return err
+	}
+
 	if o.ClientID == nil {
 		return errors.New("oauth2 client id secret is not configured")
 	}
@@ -244,7 +280,7 @@ func (o *OAuth2Auth) Authenticate(req *http.Request) error {
 	cfg := &clientcredentials.Config{
 		ClientID:     clientID,
 		ClientSecret: clientSecret,
-		TokenURL:     o.TokenURL,
+		TokenURL:     tokenURL,
 		Scopes:       o.Scopes,
 	}
 	token, err := cfg.TokenSource(req.Context()).Token()
