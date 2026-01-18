@@ -236,13 +236,29 @@ func unzipBundle(src, dest string) error {
 	}
 	defer func() { _ = r.Close() }()
 
-	if err := os.MkdirAll(dest, 0750); err != nil {
+	destAbs, err := filepath.Abs(dest)
+	if err != nil {
+		return fmt.Errorf("failed to get absolute path for destination: %w", err)
+	}
+
+	if err := os.MkdirAll(destAbs, 0750); err != nil {
 		return err
 	}
 
+	// Resolve symlinks in destination to ensure we have the canonical path
+	destCanonical, err := filepath.EvalSymlinks(destAbs)
+	if err != nil {
+		return fmt.Errorf("failed to resolve symlinks for destination: %w", err)
+	}
+
 	for _, f := range r.File {
-		fpath := filepath.Join(dest, f.Name) //nolint:gosec // Path is validated immediately after
-		if !strings.HasPrefix(fpath, filepath.Clean(dest)+string(os.PathSeparator)) {
+		// Join path and resolve absolute path
+		fpath := filepath.Join(destCanonical, f.Name) //nolint:gosec // Path is validated immediately after
+
+		// Check for Zip Slip (Zip Path Traversal)
+		// We use HasPrefix on the clean, absolute paths.
+		// Note: filepath.Join cleans the path.
+		if !strings.HasPrefix(fpath, destCanonical+string(os.PathSeparator)) {
 			return fmt.Errorf("illegal file path: %s", fpath)
 		}
 
