@@ -13,6 +13,7 @@ import (
 
 	"github.com/mcpany/core/server/pkg/resource"
 	"github.com/mcpany/core/server/pkg/skill"
+	"github.com/mcpany/core/server/pkg/validation"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
@@ -112,20 +113,28 @@ func (r *SkillResource) Read(_ context.Context) (*mcp.ReadResourceResult, error)
 		content, err = os.ReadFile(path) //nolint:gosec
 	} else {
 		// Read asset
-		// Sanitize and validate path to prevent traversal
-		cleanAssetPath := filepath.Clean(r.assetPath)
-		if strings.Contains(cleanAssetPath, "..") || strings.HasPrefix(cleanAssetPath, "/") || strings.HasPrefix(cleanAssetPath, "\\") {
-			return nil, fmt.Errorf("invalid asset path: %s", r.assetPath)
+		skillPath := filepath.Clean(r.skill.Path)
+		path := filepath.Join(skillPath, r.assetPath)
+
+		// Use centralized validation to ensure path is safe and within allowable bounds (which includes checking traversal)
+		// However, validation.IsAllowedPath checks against CWD or AllowedPaths.
+		// Here we specifically want to check if it is inside skillPath.
+		// We can reuse validation.IsSecurePath to check for '..' traversal in the path string itself first.
+		if err := validation.IsSecurePath(r.assetPath); err != nil {
+			return nil, fmt.Errorf("invalid asset path: %w", err)
 		}
 
-		skillPath := filepath.Clean(r.skill.Path)
-		path := filepath.Join(skillPath, cleanAssetPath)
-		// Double check resolved path to prevent traversal (e.g. /skill vs /skill-secret)
-		if path != skillPath && !strings.HasPrefix(path, skillPath+string(os.PathSeparator)) {
+		// Now verify it resolves to inside skillPath
+		// We can implement a local "isInside" check similar to validation.IsAllowedPath logic
+		// or if we trust IsSecurePath + Join, we just need to ensure the joined path is correct.
+		// But IsSecurePath only checks for '..' components. It doesn't check if the resolved path is inside.
+		// So we repeat the check:
+		cleanPath := filepath.Clean(path)
+		if !strings.HasPrefix(cleanPath, skillPath+string(os.PathSeparator)) && cleanPath != skillPath {
 			return nil, fmt.Errorf("invalid path: points outside skill directory")
 		}
 
-		content, err = os.ReadFile(path) //nolint:gosec // Path is validated to be within skill directory
+		content, err = os.ReadFile(path)
 	}
 
 	if err != nil {

@@ -474,7 +474,7 @@ func buildCommandFromStdioConfig(ctx context.Context, stdio *configv1.McpStdioCo
 		return nil, fmt.Errorf("setup_commands are disabled by default for security reasons. Set MCP_ALLOW_UNSAFE_SETUP_COMMANDS=true to enable them if you trust the configuration")
 	}
 
-	logging.GetLogger().Warn("Using setup_commands in StdioTransport is dangerous and allows Command Injection if config is untrusted.", "setup_commands", setupCommands)
+	logging.GetLogger().Warn("Using setup_commands in StdioTransport is dangerous and allows Command Injection if config is untrusted.", "setup_commands", "HIDDEN")
 	scriptCommands = append(scriptCommands, setupCommands...)
 
 	// Add the main command. `exec` is used to replace the shell process with the main command.
