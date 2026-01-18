@@ -13,7 +13,7 @@ const BASE_URL = process.env.PLAYWRIGHT_BASE_URL || `http://localhost:${PORT}`;
 export default defineConfig({
   testDir: './tests',
   testMatch: ['**/*.spec.ts'], // Changed to match all specs
-  testIgnore: '**/generate_docs_screenshots.spec.ts',
+  // testIgnore: '**/generate_docs_screenshots.spec.ts',
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
@@ -46,13 +46,20 @@ export default defineConfig({
   ],
   webServer: process.env.SKIP_WEBSERVER
     ? undefined
-    : {
-        command: `BACKEND_URL=${process.env.BACKEND_URL || 'http://localhost:50050'} npx next dev -p ${PORT}`,
-        url: BASE_URL,
-        reuseExistingServer: false,
-        env: {
-          BACKEND_URL: process.env.BACKEND_URL || 'http://localhost:50050',
-          MCPANY_API_KEY: process.env.MCPANY_API_KEY || 'test-token',
+    : [
+        {
+          command: `cd .. && ./scripts/test-backend.sh`,
+          port: 19999,
+          reuseExistingServer: !process.env.CI,
         },
-      },
+        {
+          command: `BACKEND_URL=${process.env.BACKEND_URL || 'http://localhost:19999'} npx next dev -p ${PORT}`,
+          url: BASE_URL,
+          reuseExistingServer: !process.env.CI,
+          env: {
+            BACKEND_URL: process.env.BACKEND_URL || 'http://localhost:19999',
+            MCPANY_API_KEY: process.env.MCPANY_API_KEY || 'test-token',
+          },
+        },
+      ],
 });

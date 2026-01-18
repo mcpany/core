@@ -57,6 +57,7 @@ k8s-test: k8s-e2e
 
 lint:
 	$(MAKE) -C server lint
+	$(MAKE) -C ui lint
 
 # Run runs server
 run:

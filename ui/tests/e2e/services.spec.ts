@@ -6,90 +6,64 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('Services Feature', () => {
-  const services: any[] = [
-    {
-        name: "Payment Gateway",
-        type: "http",
-        address: "https://stripe.com",
-        status: "up",
-        version: "v1.2.0",
-        enabled: true
-    },
-    {
-        name: "User Service",
-        type: "grpc",
-        address: "localhost:50051",
-        status: "up",
-        version: "v1.0",
-        enabled: true
-    }
-  ];
-
   test.beforeEach(async ({ page }) => {
-    // page.on('request', request => console.log('>>', request.method(), request.url()));
-
-    // Mock registration API with dynamic state
-    await page.route(url => url.pathname.endsWith('/api/v1/services'), async route => {
-        const method = route.request().method();
-        if (method === 'GET') {
-            await route.fulfill({ json: { services } });
-        } else if (method === 'POST') {
-            const newSvc = route.request().postDataJSON();
-            const created = { ...newSvc, status: 'up', enabled: true };
-            services.push(created);
-            await route.fulfill({ json: created });
-        } else {
-            await route.continue();
-        }
-    });
-
-    await page.goto('/services');
+    await page.goto('/upstream-services');
   });
 
   test('should list services, allow toggle, and manage services', async ({ page }) => {
-    await expect(page.locator('h2')).toContainText('Services');
+    await expect(page.locator('h1')).toContainText('Upstream Services');
 
     // Verify services are listed
     await expect(page.getByText('Payment Gateway')).toBeVisible();
     await expect(page.getByText('User Service')).toBeVisible();
 
     // Verify Toggle exists and is interactive
-    const paymentRow = page.locator('tr').filter({ hasText: 'Payment Gateway' });
-    const switchBtn = paymentRow.getByRole('switch');
-    await expect(switchBtn).toBeVisible();
-    await switchBtn.click();
+    // The UI uses a Power button for toggle
+    const paymentRow = page.locator('.flex-col').filter({ hasText: 'Payment Gateway' });
+    const powerBtn = paymentRow.getByRole('button').first();
+    await expect(powerBtn).toBeVisible();
+    await powerBtn.click();
 
-    // Register a new service
-    await page.getByRole('button', { name: 'Add Service' }).click();
+    // Register a new service via Marketplace
+    await page.getByRole('link', { name: 'Add Service' }).click();
+    await expect(page).toHaveURL(/.*marketplace.*/);
+
+    // 2. Click "Create Config"
+    await page.getByRole('button', { name: 'Create Config' }).click();
     await expect(page.getByRole('dialog')).toBeVisible();
 
-    // Select Custom Service template
-    await page.getByText('Custom Service').click();
-
+    // 3. Fill details (Step 1)
     const serviceName = `new-service-${Date.now()}`;
-    await page.fill('input[id="name"]', serviceName);
+    await page.locator('#service-name').fill(serviceName);
+    await page.getByRole('button', { name: 'Next', exact: true }).click();
 
-    // Switch to Connection tab
-    await page.getByRole('tab', { name: 'Connection' }).click();
+    // 4. Step 2: Parameters
+    await expect(page.locator('#command')).toBeVisible();
+    await page.locator('#command').fill('ls');
+    await page.getByRole('button', { name: 'Next', exact: true }).click();
 
-    await page.getByRole('combobox').click();
-    await page.getByRole('option', { name: 'HTTP' }).click();
+    // 5. Step 3: Webhooks (Optional)
+    await expect(page.getByText(/Webhooks & Transformers/).first()).toBeVisible();
+    await page.getByRole('button', { name: 'Next', exact: true }).click();
 
-    const addressInput = page.getByPlaceholder('https://api.example.com');
-    await expect(addressInput).toBeVisible();
-    await addressInput.fill('http://localhost:8080');
+    // 6. Step 4: Auth (Optional)
+    await expect(page.getByText(/Authentication/).first()).toBeVisible();
+    await page.getByRole('button', { name: 'Next', exact: true }).click();
 
-    await page.getByRole('button', { name: 'Save Changes' }).click();
-    await expect(page.getByRole('dialog')).toBeHidden({ timeout: 10000 });
+    // 7. Step 5: Review
+    await expect(page.getByText(/Review & Finish/).first()).toBeVisible();
+    await page.getByRole('button', { name: 'Save Template', exact: true }).click();
 
-    // Should be visible in the list now
-    await expect(page.getByText(serviceName)).toBeVisible({ timeout: 10000 });
+    // After saving, it should be in Local Templates
+    await page.getByRole('tab', { name: 'Local' }).click();
 
-    const newServiceRow = page.locator('tr').filter({ hasText: serviceName });
-    await newServiceRow.getByRole('button', { name: 'Open menu' }).click();
-    await page.getByRole('menuitem', { name: 'Edit' }).click();
+    // Find the specific card and instantiate it
+    const card = page.locator('div.bg-card', { hasText: serviceName }).first();
+    await card.getByRole('button', { name: 'Instantiate' }).click();
+    await page.getByRole('button', { name: 'Create Instance' }).click();
 
-    await expect(page.locator('input[id="name"]')).toHaveValue(serviceName);
-    await page.getByRole('button', { name: 'Cancel' }).click();
+    // It should redirect to the service page
+    await expect(page).toHaveURL(new RegExp(`/upstream-services/${serviceName}-copy`), { timeout: 15000 });
+    await expect(page.getByText(serviceName).first()).toBeVisible({ timeout: 10000 });
   });
 });

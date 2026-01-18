@@ -6,6 +6,7 @@
 import tsParser from "@typescript-eslint/parser";
 import tsPlugin from "@typescript-eslint/eslint-plugin";
 import nextPlugin from "@next/eslint-plugin-next";
+import reactHooksPlugin from "eslint-plugin-react-hooks";
 
 export default [
   {
@@ -20,11 +21,14 @@ export default [
     },
     plugins: {
       "@typescript-eslint": tsPlugin,
-      "@next/next": nextPlugin
+      "@next/next": nextPlugin,
+      "react-hooks": reactHooksPlugin
     },
     rules: {
        ...tsPlugin.configs.recommended.rules,
        ...nextPlugin.configs.recommended.rules,
+       "react-hooks/rules-of-hooks": "error",
+       "react-hooks/exhaustive-deps": "warn",
        "no-undef": "off",
        "@typescript-eslint/no-unused-vars": ["warn", { "argsIgnorePattern": "^_", "varsIgnorePattern": "^_", "caughtErrorsIgnorePattern": "^_" }],
        "@typescript-eslint/no-explicit-any": "warn"

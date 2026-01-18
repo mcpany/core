@@ -80,10 +80,10 @@ func (d *Doctor) Handler() http.HandlerFunc {
 
 		if err != nil {
 			report.Checks["internet"] = CheckResult{
-				Status:  "degraded",
+				Status:  "warning",
 				Message: err.Error(),
 			}
-			report.Status = "degraded"
+			// Internet check failure doesn't degrade overall status
 		} else {
 			report.Checks["internet"] = CheckResult{
 				Status:  "ok",
@@ -102,7 +102,7 @@ func (d *Doctor) Handler() http.HandlerFunc {
 		for name, check := range d.checks {
 			res := check(r.Context())
 			report.Checks[name] = res
-			if res.Status != "ok" {
+			if res.Status == "error" {
 				report.Status = "degraded"
 			}
 		}
