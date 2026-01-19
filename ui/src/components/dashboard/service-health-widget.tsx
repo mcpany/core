@@ -119,6 +119,10 @@ const ServiceHealthItem = memo(function ServiceHealthItem({ service }: { service
     );
 });
 
+/**
+ * ServiceHealthWidget component.
+ * @returns The rendered component.
+ */
 export function ServiceHealthWidget() {
   const [services, setServices] = useState<ServiceHealth[]>([]);
   const [isLoading, setIsLoading] = useState(true);

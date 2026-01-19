@@ -25,6 +25,7 @@ func boolPtr(b bool) *bool {
 }
 
 func TestRunChecks_Http(t *testing.T) {
+	t.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "true")
 	// Start a mock HTTP server
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
@@ -79,6 +80,7 @@ func TestRunChecks_Http(t *testing.T) {
 }
 
 func TestRunChecks_Grpc(t *testing.T) {
+	t.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "true")
 	// We can cheat and use the HTTP listener address for TCP check
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {}))
 	defer ts.Close()
@@ -115,6 +117,7 @@ func TestRunChecks_Grpc(t *testing.T) {
 }
 
 func TestRunChecks_OpenAPI(t *testing.T) {
+	t.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "true")
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 	}))
@@ -153,6 +156,7 @@ func TestRunChecks_OpenAPI(t *testing.T) {
 }
 
 func TestRunChecks_Authentication_OAuth2(t *testing.T) {
+	t.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "true")
 	// Mock OAuth2 Token Endpoint
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != "POST" {
@@ -344,6 +348,7 @@ func TestRunChecks_CommandLine(t *testing.T) {
 }
 
 func TestRunChecks_MCP(t *testing.T) {
+	t.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "true")
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 	}))
@@ -386,6 +391,7 @@ func TestRunChecks_MCP(t *testing.T) {
 }
 
 func TestRunChecks_WebSocket(t *testing.T) {
+	t.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "true")
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 	}))
@@ -414,6 +420,7 @@ func TestRunChecks_WebSocket(t *testing.T) {
 }
 
 func TestRunChecks_OIDC(t *testing.T) {
+	t.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "true")
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Path == "/.well-known/openid-configuration" {
 			w.WriteHeader(http.StatusOK)
@@ -447,6 +454,7 @@ func TestRunChecks_OIDC(t *testing.T) {
 }
 
 func TestRunChecks_GraphQL(t *testing.T) {
+	t.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "true")
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 	}))
@@ -471,6 +479,7 @@ func TestRunChecks_GraphQL(t *testing.T) {
 }
 
 func TestRunChecks_WebRTC(t *testing.T) {
+	t.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "true")
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 	}))

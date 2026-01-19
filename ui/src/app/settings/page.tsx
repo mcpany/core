@@ -19,6 +19,10 @@ import { SystemStatusWarning } from "@/components/settings/system-status-warning
 
 import Link from "next/link";
 
+/**
+ * SettingsPage component.
+ * @returns The rendered component.
+ */
 export default function SettingsPage() {
   const [activeProfile, setActiveProfile] = useState("development");
 

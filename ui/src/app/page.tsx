@@ -6,6 +6,7 @@
 import { MetricsOverview } from "@/components/dashboard/metrics-overview";
 import { ServiceHealthWidget } from "@/components/dashboard/service-health-widget";
 import { RequestVolumeChart } from "@/components/dashboard/request-volume-chart";
+import { TopToolsWidget } from "@/components/dashboard/top-tools-widget";
 import { Button } from "@/components/ui/button";
 
 /**
@@ -27,6 +28,7 @@ export default function DashboardPage() {
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
           <ServiceHealthWidget />
           <RequestVolumeChart />
+          <TopToolsWidget />
         </div>
       </div>
     </div>
