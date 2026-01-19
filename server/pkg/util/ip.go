@@ -53,29 +53,18 @@ func RemoteIPFromContext(ctx context.Context) (string, bool) {
 	return ip, ok
 }
 
-var privateNetworkBlocks []*net.IPNet
+var privateNetworkBlocksIPv6 []*net.IPNet
 
 func init() {
-	// RFC1918 + RFC4193 + RFC6598 (CGNAT) + others
+	// RFC4193 + others
+	// Note: IPv4 blocks are handled by isPrivateNetworkIPv4 fast path, so we only need IPv6 here.
 	for _, cidr := range []string{
-		"0.0.0.0/8",          // Current network (RFC 1122)
-		"10.0.0.0/8",         // RFC1918
-		"172.16.0.0/12",      // RFC1918
-		"192.168.0.0/16",     // RFC1918
-		"100.64.0.0/10",      // RFC6598 Shared Address Space (CGNAT)
-		"192.0.0.0/24",       // IETF Protocol Assignments (RFC 6890)
-		"192.0.2.0/24",       // TEST-NET-1 (RFC 5737)
-		"198.18.0.0/15",      // Benchmarking (RFC 2544)
-		"198.51.100.0/24",    // TEST-NET-2 (RFC 5737)
-		"203.0.113.0/24",     // TEST-NET-3 (RFC 5737)
-		"240.0.0.0/4",        // Class E (RFC 1112)
-		"255.255.255.255/32", // Broadcast
-		"fc00::/7",           // RFC4193 unique local address
-		"2001:db8::/32",      // IPv6 documentation (RFC 3849)
+		"fc00::/7",      // RFC4193 unique local address
+		"2001:db8::/32", // IPv6 documentation (RFC 3849)
 	} {
 		_, block, err := net.ParseCIDR(cidr)
 		if err == nil {
-			privateNetworkBlocks = append(privateNetworkBlocks, block)
+			privateNetworkBlocksIPv6 = append(privateNetworkBlocksIPv6, block)
 		}
 	}
 }
@@ -107,7 +96,7 @@ func IsPrivateNetworkIP(ip net.IP) bool {
 		return isPrivateNetworkIPv4(ip4)
 	}
 
-	for _, block := range privateNetworkBlocks {
+	for _, block := range privateNetworkBlocksIPv6 {
 		if block.Contains(ip) {
 			return true
 		}
