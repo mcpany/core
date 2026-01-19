@@ -110,7 +110,7 @@ func NewProvider(messageBus *bus.MessageBus) (*Provider, error) {
 }
 
 // GetBusHook is a test hook for overriding the bus retrieval logic.
-var GetBusHook func(p *Provider, topic string) any
+var GetBusHook func(p *Provider, topic string) (any, error)
 
 // GetBus retrieves a bus for the given topic. If a bus for the given topic
 // already exists, it is returned; otherwise, a new one is created and stored for
@@ -128,7 +128,11 @@ var GetBusHook func(p *Provider, topic string) any
 //   error: An error if retrieval or creation fails.
 func GetBus[T any](p *Provider, topic string) (Bus[T], error) {
 	if GetBusHook != nil {
-		if bus := GetBusHook(p, topic); bus != nil {
+		bus, err := GetBusHook(p, topic)
+		if err != nil {
+			return nil, err
+		}
+		if bus != nil {
 			return bus.(Bus[T]), nil
 		}
 	}
