@@ -6,6 +6,7 @@ package config
 import (
 	"os"
 	"path/filepath"
+	"sync/atomic"
 	"testing"
 	"time"
 
@@ -66,10 +67,10 @@ func TestWatcher_Debounce(t *testing.T) {
 	require.NoError(t, err)
 	defer w.Close()
 
-	reloadCount := 0
+	var reloadCount int32
 	go func() {
 		_ = w.Watch([]string{filePath}, func() {
-			reloadCount++
+			atomic.AddInt32(&reloadCount, 1)
 		})
 	}()
 
@@ -85,14 +86,15 @@ func TestWatcher_Debounce(t *testing.T) {
 	// Wait for debounce (500ms)
 	time.Sleep(1 * time.Second)
 
+	count := atomic.LoadInt32(&reloadCount)
 	// Should trigger once (or maybe twice depending on timing, but definitely not 3)
-	if reloadCount == 0 {
+	if count == 0 {
 		t.Error("Watcher failed to reload")
 	}
 	// We expect debouncing to collapse events.
 	// Since we sleep 10ms between writes, and debounce is 500ms, it should reset the timer each time.
 	// So only 1 reload should happen after the last write.
-	if reloadCount > 1 {
-		t.Logf("Reload count: %d (expected 1 due to debouncing)", reloadCount)
+	if count > 1 {
+		t.Logf("Reload count: %d (expected 1 due to debouncing)", count)
 	}
 }
