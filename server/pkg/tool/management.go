@@ -509,11 +509,14 @@ func (tm *Manager) ExecuteTool(ctx context.Context, req *ExecutionRequest) (any,
 		}(chain)
 	}
 
+	start := time.Now()
 	result, err := chain(ctx, req)
+	duration := time.Since(start)
+
 	if err != nil {
-		log.Error("Tool execution chain failed", "error", err)
+		log.Error("Tool execution failed", "error", err, "duration", duration.String())
 	} else {
-		log.Debug("Tool execution chain successful")
+		log.Info("Tool execution successful", "duration", duration.String())
 	}
 	return result, err
 }
