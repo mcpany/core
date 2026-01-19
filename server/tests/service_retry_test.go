@@ -22,7 +22,6 @@ import (
 )
 
 func TestServiceRetry(t *testing.T) {
-<<<<<<< HEAD
 	// Get an ephemeral port by listening on port 0
 	var l net.Listener
 	var err error
