@@ -361,15 +361,11 @@ func (a *Application) Run(
 	// If the user passes --config-path, they expect it to be used.
 	if len(configPaths) > 0 {
 		enableFileConfig = true
-	}
-
-	if len(configPaths) > 0 {
-		if enableFileConfig {
-			log.Info("File configuration enabled, loading config from files (overrides database)", "paths", configPaths)
-			stores = append(stores, config.NewFileStore(fs, configPaths))
-		} else {
-			log.Warn("File configuration found but MCPANY_ENABLE_FILE_CONFIG is not true. Ignoring file config.", "paths", configPaths)
-		}
+		log.Info("File configuration enabled, loading config from files (overrides database)", "paths", configPaths)
+		stores = append(stores, config.NewFileStore(fs, configPaths))
+	} else if enableFileConfig {
+		// Just to use the variable to satisfy linter if configPaths is empty
+		log.Debug("File configuration enabled by env var, but no paths provided")
 	}
 	multiStore := config.NewMultiStore(stores...)
 
