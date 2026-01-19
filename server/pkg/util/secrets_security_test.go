@@ -60,6 +60,7 @@ func TestResolveSecret_ValidPathWithDoubleDotsInName(t *testing.T) {
 }
 
 func TestResolveSecret_SSRF_Blocked(t *testing.T) {
+	util.ResetSafeSecretClientForTest()
 	// Attempt to access AWS Metadata service IP
 	// This should be blocked by our SSRF protection
 	// The test expects the function to return an error explicitly stating it is blocked.
@@ -81,6 +82,7 @@ func TestResolveSecret_SSRF_Blocked(t *testing.T) {
 }
 
 func TestResolveSecret_SSRF_PrivateIP_Blocked(t *testing.T) {
+	util.ResetSafeSecretClientForTest()
 	// Attempt to access a private IP (e.g. 192.168.1.1)
 	// This should be blocked by our SSRF protection (if enhanced).
 
@@ -101,6 +103,7 @@ func TestResolveSecret_SSRF_PrivateIP_Blocked(t *testing.T) {
 }
 
 func TestResolveSecret_SSRF_PrivateIP_Allowed(t *testing.T) {
+	util.ResetSafeSecretClientForTest()
 	// Attempt to access a private IP (e.g. 192.168.1.1)
 	// This should be ALLOWED if env var is true.
 	// Since we can't actually connect, it will timeout or fail with network error.

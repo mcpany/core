@@ -8,10 +8,10 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"net"
 	"net/http"
 	"os"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
@@ -117,7 +117,7 @@ func resolveSecretRecursive(ctx context.Context, secret *configv1.SecretValue, d
 				}
 
 				// Use safeSecretClient for the token request to prevent SSRF
-				tokenCtx := context.WithValue(ctx, oauth2.HTTPClient, safeSecretClient)
+				tokenCtx := context.WithValue(ctx, oauth2.HTTPClient, GetSafeSecretClient())
 				token, err := conf.Token(tokenCtx)
 				if err != nil {
 					return "", fmt.Errorf("failed to get oauth2 token: %w", err)
@@ -127,7 +127,7 @@ func resolveSecretRecursive(ctx context.Context, secret *configv1.SecretValue, d
 			}
 		}
 
-		resp, err := safeSecretClient.Do(req)
+		resp, err := GetSafeSecretClient().Do(req)
 		if err != nil {
 			return "", fmt.Errorf("failed to fetch remote secret: %w", err)
 		}
@@ -146,7 +146,7 @@ func resolveSecretRecursive(ctx context.Context, secret *configv1.SecretValue, d
 		vaultSecret := secret.GetVault()
 		config := &api.Config{
 			Address:    vaultSecret.GetAddress(),
-			HttpClient: safeSecretClient, // Use safe client for vault too
+			HttpClient: GetSafeSecretClient(), // Use safe client for vault too
 		}
 		client, err := api.NewClient(config)
 		if err != nil {
@@ -205,7 +205,7 @@ func resolveSecretRecursive(ctx context.Context, secret *configv1.SecretValue, d
 
 		// Load default config
 		loadOptions := []func(*config.LoadOptions) error{
-			config.WithHTTPClient(safeSecretClient),
+			config.WithHTTPClient(GetSafeSecretClient()),
 		}
 		if smSecret.GetRegion() != "" {
 			loadOptions = append(loadOptions, config.WithRegion(smSecret.GetRegion()))
@@ -303,26 +303,35 @@ func ResolveSecretMap(ctx context.Context, secretMap map[string]*configv1.Secret
 	return result, nil
 }
 
-// safeSecretClient is an http.Client that prevents SSRF by blocking access to link-local IPs (like AWS metadata service).
-// It also resolves the IP before dialing to prevent DNS rebinding attacks.
-var safeSecretClient = &http.Client{
-	Timeout: 10 * time.Second,
-	CheckRedirect: func(_ *http.Request, _ []*http.Request) error {
-		// Prevent redirects to avoid leaking sensitive headers (like Authorization or X-API-Key)
-		// to untrusted third parties.
-		return http.ErrUseLastResponse
-	},
-	Transport: &http.Transport{
-		DialContext: func(ctx context.Context, network, addr string) (net.Conn, error) {
-			dialer := NewSafeDialer()
-			if os.Getenv("MCPANY_ALLOW_LOOPBACK_SECRETS") == TrueStr {
-				dialer.AllowLoopback = true
-			}
-			if os.Getenv("MCPANY_ALLOW_PRIVATE_NETWORK_SECRETS") == TrueStr {
-				dialer.AllowPrivate = true
-			}
-			// LinkLocal is default false (blocked).
-			return dialer.DialContext(ctx, network, addr)
-		},
-	},
+var (
+	safeSecretClient     *http.Client
+	safeSecretClientOnce sync.Once
+)
+
+// GetSafeSecretClient returns a singleton http.Client that prevents SSRF.
+// It initializes the client on the first call, ensuring environment variables are respected.
+func GetSafeSecretClient() *http.Client {
+	safeSecretClientOnce.Do(func() {
+		dialer := NewSafeDialer()
+		if os.Getenv("MCPANY_ALLOW_LOOPBACK_SECRETS") == TrueStr {
+			dialer.AllowLoopback = true
+		}
+		if os.Getenv("MCPANY_ALLOW_PRIVATE_NETWORK_SECRETS") == TrueStr {
+			dialer.AllowPrivate = true
+		}
+		// LinkLocal is default false (blocked).
+
+		safeSecretClient = &http.Client{
+			Timeout: 10 * time.Second,
+			CheckRedirect: func(_ *http.Request, _ []*http.Request) error {
+				// Prevent redirects to avoid leaking sensitive headers (like Authorization or X-API-Key)
+				// to untrusted third parties.
+				return http.ErrUseLastResponse
+			},
+			Transport: &http.Transport{
+				DialContext: dialer.DialContext,
+			},
+		}
+	})
+	return safeSecretClient
 }
