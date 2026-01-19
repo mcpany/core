@@ -42,6 +42,34 @@ func TestShellInjection_Regression(t *testing.T) {
 		assert.Error(t, err)
 		assert.Contains(t, err.Error(), "shell injection detected", "python3.10 should be protected")
 	})
+
+	// Case 3: cmd.exe (Protected against single-quote bypass)
+	t.Run("cmd_exe_single_quote_bypass", func(t *testing.T) {
+		cmd := "cmd.exe"
+		toolDef := &v1.Tool{Name: proto.String("test-tool")}
+		service := &configv1.CommandLineUpstreamService{
+			Command: &cmd,
+		}
+		// Template uses single quotes, which cmd.exe ignores
+		callDef := &configv1.CommandLineCallDefinition{
+			Args: []string{"/c", "echo '{{input}}'"},
+			Parameters: []*configv1.CommandLineParameterMapping{
+				{
+					Schema: &configv1.ParameterSchema{Name: proto.String("input")},
+				},
+			},
+		}
+		tool := NewLocalCommandTool(toolDef, service, callDef, nil, "test-call")
+
+		req := &ExecutionRequest{
+			ToolName:   "test",
+			ToolInputs: []byte(`{"input": "foo & calc"}`),
+		}
+
+		_, err := tool.Execute(context.Background(), req)
+		assert.Error(t, err)
+		assert.Contains(t, err.Error(), "shell injection detected")
+	})
 }
 
 func createTestCommandTool(command string) Tool {

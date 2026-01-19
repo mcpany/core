@@ -2507,12 +2507,30 @@ func checkForShellInjection(val string, template string, placeholder string, com
 		}
 	}
 
+	// Detect if we are running under cmd.exe, where single quotes are not strong quotes.
+	// We check for both "cmd" and "cmd.exe", and handle potentially absolute paths
+	// by checking the base name or if it ends with the command.
+	isCmd := false
+	cmdLower := strings.ToLower(command)
+	base := strings.ToLower(filepath.Base(command))
+	if base == "cmd" || base == "cmd.exe" || strings.HasSuffix(cmdLower, "\\cmd.exe") || strings.HasSuffix(cmdLower, "/cmd.exe") {
+		isCmd = true
+	}
+
 	if isSingleQuoted {
-		// In single quotes, the only dangerous character is single quote itself
-		if strings.Contains(val, "'") {
-			return fmt.Errorf("shell injection detected: value contains single quote which breaks out of single-quoted argument")
+		// In single quotes, the only dangerous character is single quote itself.
+		// HOWEVER, if we are in cmd.exe, single quotes do NOT protect against metacharacters.
+		// So for cmd.exe, we must fall through to stricter checks or handle it specifically.
+		if isCmd {
+			// Cmd.exe treats single quotes as literals. So ' & ' is interpreted as a separator.
+			// We treat single-quoted strings in cmd.exe as effectively unquoted for safety regarding metacharacters.
+			// Fall through to unquoted checks.
+		} else {
+			if strings.Contains(val, "'") {
+				return fmt.Errorf("shell injection detected: value contains single quote which breaks out of single-quoted argument")
+			}
+			return nil
 		}
-		return nil
 	}
 
 	if isDoubleQuoted {
