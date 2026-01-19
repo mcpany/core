@@ -41,7 +41,8 @@ func IsValidBindAddress(s string) error {
 		return fmt.Errorf("port is required")
 	}
 	// Check if port is numeric and within range
-	p, err := strconv.Atoi(port)
+	// Trim whitespace before checking, as SplitHostPort preserves it
+	p, err := strconv.Atoi(strings.TrimSpace(port))
 	if err != nil {
 		// Non-numeric ports (service names) are allowed.
 		return nil //nolint:nilerr // Intentional: we allow non-numeric ports

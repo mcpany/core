@@ -4,6 +4,7 @@
 package validation
 
 import (
+	"net"
 	"os"
 	"path/filepath"
 	"strings"
@@ -104,6 +105,63 @@ func TestIsValidBindAddress(t *testing.T) {
 			err := IsValidBindAddress(tt.address)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("IsValidBindAddress() error = %v, wantErr %v", err, tt.wantErr)
+			}
+		})
+	}
+}
+
+func TestIsValidBindAddress_Whitespace(t *testing.T) {
+	tests := []struct {
+		name    string
+		address string
+		wantErr bool
+	}{
+		{"valid with leading space in port", ": 8080", false},
+		{"valid with trailing space in port", ":8080 ", false},
+		{"invalid port too large with space", ": 65536", true},
+		{"invalid port negative with space", ": -1", true},
+		{"invalid port overflow with space", ": 99999999999", true},
+		{"valid localhost with space", "localhost: 8080", false},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			err := IsValidBindAddress(tt.address)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("IsValidBindAddress(%q) error = %v, wantErr %v", tt.address, err, tt.wantErr)
+			}
+		})
+	}
+}
+
+func TestValidateIP_Coverage(t *testing.T) {
+	tests := []struct {
+		name    string
+		ip      string
+		wantErr bool
+	}{
+		{"loopback ipv4", "127.0.0.1", true},
+		{"loopback ipv6", "::1", true},
+		{"unspecified ipv4", "0.0.0.0", true},
+		{"unspecified ipv6", "::", true},
+		{"link-local unicast ipv4", "169.254.0.1", true},
+		{"link-local unicast ipv6", "fe80::1", true},
+		{"multicast ipv4", "224.0.0.1", true},
+		{"multicast ipv6", "ff00::1", true},
+		{"link-local multicast ipv6", "ff02::1", true},
+		{"valid public ipv4", "8.8.8.8", false},
+		// "valid public ipv6", "2001:4860:4860::8888", false
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			ip := net.ParseIP(tt.ip)
+			if ip == nil {
+				t.Fatalf("Failed to parse IP %q", tt.ip)
+			}
+			err := validateIP(ip)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("validateIP(%q) error = %v, wantErr %v", tt.ip, err, tt.wantErr)
 			}
 		})
 	}
