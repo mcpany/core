@@ -559,6 +559,10 @@ func validateCommandLineService(commandLineService *configv1.CommandLineUpstream
 	if err := validateContainerEnvironment(commandLineService.GetContainerEnvironment()); err != nil {
 		return err
 	}
+
+	if err := validateSecretMap(commandLineService.GetEnv()); err != nil {
+		return fmt.Errorf("command_line_service has invalid secret environment variable: %w", err)
+	}
 	return nil
 }
 
