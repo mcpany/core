@@ -243,9 +243,7 @@ func checkPotentialMatch(input []byte, matchStart int, startChar byte) bool {
 			isPrevLower := (prev >= 'a' && prev <= 'z')
 			isCurrUpper := (input[matchStart] >= 'A' && input[matchStart] <= 'Z')
 
-			if isPrevLower && isCurrUpper {
-				// CamelCase boundary. It IS a match start.
-			} else {
+			if !isPrevLower || !isCurrUpper {
 				return false
 			}
 		}
