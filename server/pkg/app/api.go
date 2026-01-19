@@ -134,16 +134,16 @@ func (a *Application) handleServices(store storage.Storage) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case http.MethodGet:
-			a.listServicesHandler(w, r, store)
+			a.handleServicesList(w, r, store)
 		case http.MethodPost:
-			a.createServiceHandler(w, r, store)
+			a.handleServicesCreate(w, r, store)
 		default:
 			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
 		}
 	}
 }
 
-func (a *Application) listServicesHandler(w http.ResponseWriter, r *http.Request, store storage.Storage) {
+func (a *Application) handleServicesList(w http.ResponseWriter, r *http.Request, store storage.Storage) {
 	var services []*configv1.UpstreamServiceConfig
 	var err error
 	if a.ServiceRegistry != nil {
@@ -221,7 +221,7 @@ func (a *Application) listServicesHandler(w http.ResponseWriter, r *http.Request
 	_, _ = w.Write(buf)
 }
 
-func (a *Application) createServiceHandler(w http.ResponseWriter, r *http.Request, store storage.Storage) {
+func (a *Application) handleServicesCreate(w http.ResponseWriter, r *http.Request, store storage.Storage) {
 	var svc configv1.UpstreamServiceConfig
 	body, err := readBodyWithLimit(w, r, 1048576)
 	if err != nil {
