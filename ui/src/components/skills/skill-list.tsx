@@ -11,6 +11,10 @@ import { Skill, SkillService } from '@/lib/skill-service';
 import Link from 'next/link';
 import { toast } from 'sonner';
 
+/**
+ * SkillList component.
+ * @returns The rendered component.
+ */
 export default function SkillList() {
   const [skills, setSkills] = useState<Skill[]>([]);
   const [loading, setLoading] = useState(true);

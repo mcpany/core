@@ -12,6 +12,12 @@ import { apiClient } from "@/lib/client";
 import { UpstreamServiceConfig } from "@/lib/types";
 import { useServiceSiblings } from "@/hooks/use-siblings";
 
+/**
+ * ResourceDetailPage component.
+ * @param props - The component props.
+ * @param props.params - The params property.
+ * @returns The rendered component.
+ */
 export default function ResourceDetailPage({ params: paramsPromise }: { params: Promise<{ id: string, name: string }> }) {
     const params = use(paramsPromise);
     const [service, setService] = useState<UpstreamServiceConfig | null>(null);

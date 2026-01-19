@@ -15,6 +15,10 @@ import {
   ToastViewport,
 } from "@/components/ui/toast"
 
+/**
+ * Toaster component.
+ * @returns The rendered component.
+ */
 export function Toaster() {
   const { toasts } = useToast()
 

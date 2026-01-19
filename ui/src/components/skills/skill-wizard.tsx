@@ -16,6 +16,10 @@ import { ChevronRight, ChevronLeft, Save, Upload } from 'lucide-react';
 
 const STEPS = ['Metadata', 'Instructions', 'Assets'];
 
+/**
+ * SkillWizard component.
+ * @returns The rendered component.
+ */
 export default function SkillWizard() {
   const params = useParams();
   const name = params?.name as string | undefined;

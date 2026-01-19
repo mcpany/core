@@ -8,6 +8,10 @@ import { Layers, Cuboid } from "lucide-react";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 
+/**
+ * StacksPage component.
+ * @returns The rendered component.
+ */
 export default function StacksPage() {
   // In a real Portainer, this would list multiple stacks.
   // For MCP Any, we assume one main "MCP Any Stack" for now, or maybe files as stacks?

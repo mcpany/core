@@ -11,6 +11,10 @@ import { Label } from '@/components/ui/label';
 import { Trash2, Plus } from 'lucide-react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 
+/**
+ * StepParameters component.
+ * @returns The rendered component.
+ */
 export function StepParameters() {
     const { state, updateState, updateConfig } = useWizard();
     const { params, config } = state;

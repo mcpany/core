@@ -33,6 +33,10 @@ import { apiClient, UpstreamServiceConfig } from "@/lib/client"
 import { useToast } from "@/hooks/use-toast"
 import { ScrollArea } from "@/components/ui/scroll-area"
 
+/**
+ * ShareCollectionDialog component.
+ * @returns The rendered component.
+ */
 export function ShareCollectionDialog() {
   const [open, setOpen] = React.useState(false)
   const [services, setServices] = React.useState<UpstreamServiceConfig[]>([])

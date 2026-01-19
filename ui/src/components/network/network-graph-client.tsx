@@ -329,6 +329,10 @@ function MetricCard({ label, value, unit, intent = "neutral" }: { label: string,
     )
 }
 
+/**
+ * NetworkGraphClient component.
+ * @returns The rendered component.
+ */
 export function NetworkGraphClient() {
     return (
         <ReactFlowProvider>

@@ -37,6 +37,10 @@ import { Alert, Severity, AlertStatus } from "./types";
 import { formatDistanceToNow } from "date-fns";
 import { useToast } from "@/hooks/use-toast";
 
+/**
+ * AlertList component.
+ * @returns The rendered component.
+ */
 export function AlertList() {
   const [alerts, setAlerts] = useState<Alert[]>([]);
   const [loading, setLoading] = useState(true);

@@ -19,6 +19,10 @@ interface SystemStatus {
   security_warnings: string[]
 }
 
+/**
+ * SystemHealthCard component.
+ * @returns The rendered component.
+ */
 export function SystemHealthCard() {
   const [status, setStatus] = useState<SystemStatus | null>(null)
   const [loading, setLoading] = useState(true)

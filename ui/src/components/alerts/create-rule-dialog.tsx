@@ -29,6 +29,10 @@ import { Textarea } from "@/components/ui/textarea";
 import { Plus } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
+/**
+ * CreateRuleDialog component.
+ * @returns The rendered component.
+ */
 export function CreateRuleDialog() {
   const [open, setOpen] = useState(false);
   const { toast } = useToast();

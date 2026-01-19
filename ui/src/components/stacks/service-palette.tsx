@@ -23,6 +23,9 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 
+/**
+ * ServiceTemplate type definition.
+ */
 export interface ServiceTemplate {
     id: string;
     name: string;

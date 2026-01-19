@@ -27,6 +27,15 @@ interface ResourcePreviewModalProps {
   initialContent?: ResourceContent | null;
 }
 
+/**
+ * ResourcePreviewModal component.
+ * @param props - The component props.
+ * @param props.isOpen - Whether the component is open.
+ * @param props.onClose - The onClose property.
+ * @param props.resource - The resource property.
+ * @param props.initialContent - The initialContent property.
+ * @returns The rendered component.
+ */
 export function ResourcePreviewModal({
   isOpen,
   onClose,

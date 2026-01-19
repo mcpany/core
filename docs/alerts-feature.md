@@ -1,7 +1,7 @@
 # Alerts & Incidents Feature
 
 **Date:** 2026-01-19
-**Status:** Active
+**Status:** Active (Partial)
 
 ## Overview
 
@@ -12,7 +12,10 @@ The **Alerts & Incidents** feature provides a centralized console for monitoring
 1.  **Dashboard Stats:** Real-time KPI cards showing Active Critical alerts, Warning counts, MTTR (Mean Time To Resolution), and Total Incident volume.
 2.  **Alert Feed:** A sortable, filterable list of all alerts with color-coded severity badges (Critical, Warning, Info) and status indicators (Active, Acknowledged, Resolved).
 3.  **Filtering:** Users can filter alerts by Severity, Status, or free-text search (Title, Message, Service).
-4.  **Rule Management:** A "Create Alert Rule" dialog allows users to define new monitoring conditions.
+
+## Planned Capabilities (Roadmap)
+
+4.  **Rule Management:** A "Create Alert Rule" dialog allows users to define new monitoring conditions. (Currently UI Prototype).
 
 ## Implementation Details
 
@@ -26,8 +29,8 @@ The **Alerts & Incidents** feature provides a centralized console for monitoring
     -   `AlertsPage`: Main container layout.
     -   `AlertList`: The data table component with filtering logic, connected to the backend API.
     -   `AlertStats`: Top-level metrics.
-    -   `CreateRuleDialog`: Configuration form.
+    -   `CreateRuleDialog`: Configuration form (Prototype).
 
 ## Verification
 
-The feature is fully integrated with the backend `AlertsManager`.
+The feature is integrated with the backend `AlertsManager` for Alert CRUD operations. Rule management logic is pending implementation.

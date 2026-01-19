@@ -54,6 +54,8 @@ func NewCircuitBreaker(config *configv1.CircuitBreakerConfig) *CircuitBreaker {
 // returns a CircuitBreakerOpenError immediately. If the work function fails,
 // it tracks the failure and may trip the breaker.
 func (cb *CircuitBreaker) Execute(ctx context.Context, work func(context.Context) error) error {
+	originState := StateClosed
+
 	// Optimization: Optimistically check if Closed without lock.
 	// This covers the "Happy Path" (most common case).
 	if cb.getState() != StateClosed {
@@ -62,12 +64,14 @@ func (cb *CircuitBreaker) Execute(ctx context.Context, work func(context.Context
 
 		// Re-check state under lock
 		currentState := cb.getState()
+		originState = currentState
 
 		if currentState == StateOpen {
 			if time.Since(cb.openTime) > cb.config.GetOpenDuration().AsDuration() {
 				cb.setState(StateHalfOpen)
 				cb.halfOpenHits = 0
 				currentState = StateHalfOpen
+				originState = StateHalfOpen
 			} else {
 				cb.mutex.Unlock()
 				return &CircuitBreakerOpenError{}
@@ -93,7 +97,7 @@ func (cb *CircuitBreaker) Execute(ctx context.Context, work func(context.Context
 		}
 
 		cb.mutex.Lock()
-		cb.onFailure()
+		cb.onFailure(originState)
 		cb.mutex.Unlock()
 		return err
 	}
@@ -122,9 +126,16 @@ func (cb *CircuitBreaker) onSuccess() {
 	cb.failures = 0
 }
 
-func (cb *CircuitBreaker) onFailure() {
+func (cb *CircuitBreaker) onFailure(originState State) {
 	currentState := cb.getState()
 	if currentState == StateOpen {
+		return
+	}
+
+	// If the request started in HalfOpen state but the breaker is now Closed,
+	// it means another concurrent probe succeeded. In this case, we ignore
+	// this failure to prevent flapping (Closing then immediately Opening).
+	if originState == StateHalfOpen && currentState == StateClosed {
 		return
 	}
 
