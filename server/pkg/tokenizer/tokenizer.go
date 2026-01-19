@@ -279,13 +279,13 @@ func countTokensInValueWordFast(wt *WordTokenizer, v interface{}) (int, bool, er
 		}
 		return count, true, nil
 	case []int:
-		return calculateWordTokens(len(val), wt.Factor), true, nil
+		return len(val) * singleItemCount, true, nil
 	case []int64:
-		return calculateWordTokens(len(val), wt.Factor), true, nil
+		return len(val) * singleItemCount, true, nil
 	case []float64:
-		return calculateWordTokens(len(val), wt.Factor), true, nil
+		return len(val) * singleItemCount, true, nil
 	case []bool:
-		return calculateWordTokens(len(val), wt.Factor), true, nil
+		return len(val) * singleItemCount, true, nil
 	case map[string]string:
 		count := 0
 		for key, item := range val {
@@ -624,16 +624,6 @@ func simpleTokenizeInt(n int) int {
 	return count
 }
 
-func calculateWordTokens(n int, factor float64) int {
-	if n == 0 {
-		return 0
-	}
-	count := int(float64(n) * factor)
-	if count < 1 {
-		count = 1
-	}
-	return count
-}
 
 func simpleTokenizeInt64(n int64) int {
 	l := 0

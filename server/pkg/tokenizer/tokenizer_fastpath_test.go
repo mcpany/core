@@ -112,13 +112,13 @@ func TestCountTokensInValue_FastPathConsistency(t *testing.T) {
 			case int, int64, float64, bool, nil:
 				want = primCount
 			case []int:
-				want = calculateWordTokens(len(v), wt.Factor)
+				want = len(v) * primCount
 			case []int64:
-				want = calculateWordTokens(len(v), wt.Factor)
+				want = len(v) * primCount
 			case []float64:
-				want = calculateWordTokens(len(v), wt.Factor)
+				want = len(v) * primCount
 			case []bool:
-				want = calculateWordTokens(len(v), wt.Factor)
+				want = len(v) * primCount
 			case []string:
 				for _, x := range v {
 					c, _ := wt.CountTokens(x)
