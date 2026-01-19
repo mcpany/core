@@ -221,6 +221,22 @@ func newRootCmd() *cobra.Command { //nolint:gocyclo // Main entry point, expecte
 				log.Info("Strict mode validation passed.")
 			}
 
+			// Track 1: Friction Fighter - Startup Banner
+			// We defer the banner printing until the app is actually running to ensure ports are bound.
+			// However, appRunner.Run blocks, so we need to hook into the startup process.
+			// appRunner.Run takes a startupCallback indirectly via runServerMode logic inside app.
+			// But the Runner interface doesn't expose it.
+			// Instead, we will print "Starting..." here, and the banner logic should ideally handle the "Ready" state.
+			// Since we can't easily modify appRunner.Run signature in this scope without larger refactor,
+			// we will rely on log messages for now, or print a banner BEFORE Run saying "Initializing..."
+
+			if !stdio {
+				fmt.Fprintf(cmd.OutOrStderr(), "\n🚀 Starting %s v%s...\n", appconsts.Name, Version)
+				if len(configPaths) > 0 {
+					fmt.Fprintf(cmd.OutOrStderr(), "📋 Loading configuration from: %s\n", strings.Join(configPaths, ", "))
+				}
+			}
+
 			if err := appRunner.Run(ctx, osFs, stdio, bindAddress, grpcPort, configPaths, cfg.APIKey(), shutdownTimeout); err != nil {
 				log.Error("Application failed", "error", err)
 				return err
@@ -347,21 +363,14 @@ func newRootCmd() *cobra.Command { //nolint:gocyclo // Main entry point, expecte
 			fmt.Println("Running doctor checks...")
 			results := doctor.RunChecks(context.Background(), configs)
 
+			doctor.PrintResults(cmd.OutOrStdout(), results)
+
 			hasErrors := false
 			for _, res := range results {
-				var icon string
-				switch res.Status {
-				case doctor.StatusOk:
-					icon = iconOk
-				case doctor.StatusWarning:
-					icon = iconWarning
-				case doctor.StatusError:
-					icon = iconError
+				if res.Status == doctor.StatusError {
 					hasErrors = true
-				case doctor.StatusSkipped:
-					icon = iconSkipped
+					break
 				}
-				fmt.Printf("%s [%s] %s: %s\n", icon, res.Status, res.ServiceName, res.Message)
 			}
 
 			if hasErrors {
@@ -496,21 +505,14 @@ func newRootCmd() *cobra.Command { //nolint:gocyclo // Main entry point, expecte
 			if checkConnection {
 				fmt.Println("Running connection checks...")
 				results := doctor.RunChecks(context.Background(), configs)
+				doctor.PrintResults(cmd.OutOrStdout(), results)
+
 				hasDoctorErrors := false
 				for _, res := range results {
-					var icon string
-					switch res.Status {
-					case doctor.StatusOk:
-						icon = iconOk
-					case doctor.StatusWarning:
-						icon = iconWarning
-					case doctor.StatusError:
-						icon = iconError
+					if res.Status == doctor.StatusError {
 						hasDoctorErrors = true
-					case doctor.StatusSkipped:
-						icon = iconSkipped
+						break
 					}
-					fmt.Printf("%s [%s] %s: %s\n", icon, res.Status, res.ServiceName, res.Message)
 				}
 				if hasDoctorErrors {
 					return fmt.Errorf("connection checks failed")
