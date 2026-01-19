@@ -7,7 +7,6 @@ import (
 	"context"
 	"crypto/tls"
 	"crypto/x509"
-	"net"
 	"net/http"
 	"os"
 	"time"
@@ -16,6 +15,7 @@ import (
 	"github.com/mcpany/core/server/pkg/client"
 	healthChecker "github.com/mcpany/core/server/pkg/health"
 	"github.com/mcpany/core/server/pkg/pool"
+	"github.com/mcpany/core/server/pkg/validation"
 	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 )
 
@@ -71,14 +71,9 @@ var NewHTTPPool = func(
 		tlsConfig.RootCAs = caCertPool
 	}
 
-	baseTransport := &http.Transport{
-		TLSClientConfig: tlsConfig,
-		DialContext: (&net.Dialer{
-			Timeout: 30 * time.Second,
-		}).DialContext,
-		MaxIdleConns:        maxSize,
-		MaxIdleConnsPerHost: maxSize,
-	}
+	baseTransport := validation.NewSafeTransport(tlsConfig)
+	baseTransport.MaxIdleConns = maxSize
+	baseTransport.MaxIdleConnsPerHost = maxSize
 
 	sharedClient := &http.Client{
 		Transport: otelhttp.NewTransport(baseTransport),
