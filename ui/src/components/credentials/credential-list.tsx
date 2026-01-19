@@ -29,10 +29,6 @@ import { CredentialForm } from "./credential-form"
 import { Plus, Trash, Key, Lock, Globe } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 
-/**
- * CredentialList component.
- * @returns The rendered component.
- */
 export function CredentialList() {
   const { toast } = useToast()
   const [credentials, setCredentials] = useState<Credential[]>([])

@@ -24,10 +24,6 @@ import { Plus, Trash2 } from "lucide-react";
 import { InstantiateDialog } from "@/components/marketplace/instantiate-dialog";
 import { apiClient, UpstreamServiceConfig } from "@/lib/client";
 
-/**
- * MarketplacePage component.
- * @returns The rendered component.
- */
 export default function MarketplacePage() {
   const { toast } = useToast();
   const [collections, setCollections] = useState<ServiceCollection[]>([]);

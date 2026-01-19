@@ -262,6 +262,14 @@ func TestHydrateSecrets_Coverage(t *testing.T) {
         },
     }
     HydrateSecretsInService(httpSvc, secrets)
+
+    // Test hydrateSecretValue with non-env var
+    plainSecret := &configv1.SecretValue{Value: &configv1.SecretValue_PlainText{PlainText: "plain"}}
+    hydrateSecretValue(plainSecret, secrets) // Should do nothing
+
+    // Test hydrateSecretValue with missing secret key
+    missingSecret := &configv1.SecretValue{Value: &configv1.SecretValue_EnvironmentVariable{EnvironmentVariable: "MISSING"}}
+    hydrateSecretValue(missingSecret, secrets) // Should do nothing
 }
 
 func TestStripSecretsFromService_Filesystem_Vector_More(t *testing.T) {

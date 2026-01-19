@@ -28,10 +28,6 @@ const mockProfiles: Profile[] = [
     { id: "p3", name: "Debug All", description: "All services enabled with verbose logging", services: ["weather-service", "memory-store", "local-files"], type: "debug" },
 ];
 
-/**
- * ProfilesPage component.
- * @returns The rendered component.
- */
 export default function ProfilesPage() {
   const [profiles, setProfiles] = useState<Profile[]>(mockProfiles);
   const [isDialogOpen, setIsDialogOpen] = useState(false);

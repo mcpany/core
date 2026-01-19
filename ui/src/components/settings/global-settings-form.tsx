@@ -36,10 +36,6 @@ const settingsSchema = z.object({
 
 type SettingsValues = z.infer<typeof settingsSchema>;
 
-/**
- * GlobalSettingsForm component.
- * @returns The rendered component.
- */
 export function GlobalSettingsForm() {
   const [loading, setLoading] = useState(false);
   const [isReadOnly, setIsReadOnly] = useState(false);

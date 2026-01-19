@@ -14,7 +14,6 @@ import (
 )
 
 func TestRunChecks_Authentication_ActiveVerification(t *testing.T) {
-	t.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "true")
 	// Start a mock HTTP server that enforces authentication
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// Check API Key

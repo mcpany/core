@@ -89,12 +89,12 @@ func levenshteinASCII(s1, s2 string) int {
 
 	// Optimization: Use stack allocation for small strings.
 	// We need m+1 ints for each vector.
-	// If m <= 255, we can use a stack array of 512 ints (256 * 2).
-	// This covers common cases like tool names and medium descriptions.
-	var stackBuf [512]int
+	// If m < 64, we can use a stack array of 128 ints (64 * 2).
+	// This covers common cases like tool names.
+	var stackBuf [128]int
 	var v0, v1 []int
 
-	if m+1 <= 256 {
+	if m+1 <= 64 {
 		v0 = stackBuf[:m+1]
 		v1 = stackBuf[m+1 : 2*(m+1)]
 	} else {

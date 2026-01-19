@@ -38,10 +38,6 @@ const INITIAL_WEBHOOKS: WebhookConfig[] = [
     { id: "wh-2", url: "https://hooks.slack.com/...", events: ["error.occurred"], active: true, lastTriggered: "1 day ago", status: "success" },
 ];
 
-/**
- * WebhooksPage component.
- * @returns The rendered component.
- */
 export default function WebhooksPage() {
     const [webhooks, setWebhooks] = useState<WebhookConfig[]>(INITIAL_WEBHOOKS);
     const [isDialogOpen, setIsDialogOpen] = useState(false);

@@ -42,10 +42,6 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { useToast } from "@/hooks/use-toast";
 import { apiClient, SecretDefinition } from "@/lib/client";
 
-/**
- * SecretsManager component.
- * @returns The rendered component.
- */
 export function SecretsManager() {
     const [secrets, setSecrets] = useState<SecretDefinition[]>([]);
     const [loading, setLoading] = useState(true);

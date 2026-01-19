@@ -17,10 +17,6 @@ import { ToolDefinition } from "@proto/config/v1/tool";
 import { ToolInspector } from "@/components/tools/tool-inspector";
 import { usePinnedTools } from "@/hooks/use-pinned-tools";
 
-/**
- * ToolsPage component.
- * @returns The rendered component.
- */
 export default function ToolsPage() {
   const [tools, setTools] = useState<ToolDefinition[]>([]);
   const [selectedTool, setSelectedTool] = useState<ToolDefinition | null>(null);

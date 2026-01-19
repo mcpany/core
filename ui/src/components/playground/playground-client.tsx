@@ -49,10 +49,6 @@ interface Message {
   timestamp: Date;
 }
 
-/**
- * PlaygroundClient component.
- * @returns The rendered component.
- */
 export function PlaygroundClient() {
   const [messages, setMessages] = useState<Message[]>([
       {

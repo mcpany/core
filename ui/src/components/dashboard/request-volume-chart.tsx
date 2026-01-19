@@ -22,10 +22,6 @@ const generateData = () => {
 
 const data = generateData();
 
-/**
- * RequestVolumeChart component.
- * @returns The rendered component.
- */
 export function RequestVolumeChart() {
     const [isMounted, setIsMounted] = useState(false);
 

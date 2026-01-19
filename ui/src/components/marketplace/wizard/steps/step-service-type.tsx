@@ -58,10 +58,6 @@ const TEMPLATES = [
     }
 ];
 
-/**
- * StepServiceType component.
- * @returns The rendered component.
- */
 export function StepServiceType() {
     const { state, updateConfig, updateState } = useWizard();
     const { config, selectedTemplateId } = state;

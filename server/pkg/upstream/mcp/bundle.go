@@ -251,9 +251,6 @@ func unzipBundle(src, dest string) error {
 		return fmt.Errorf("failed to resolve symlinks for destination: %w", err)
 	}
 
-	var totalBytes int64
-	const maxTotalSize = 5 * 1024 * 1024 * 1024 // 5GB
-
 	for _, f := range r.File {
 		// Join path and resolve absolute path
 		fpath := filepath.Join(destCanonical, f.Name) //nolint:gosec // Path is validated immediately after
@@ -297,13 +294,6 @@ func unzipBundle(src, dest string) error {
 			_ = outFile.Close()
 			_ = rc.Close()
 			return fmt.Errorf("failed to copy file content: %w", err)
-		}
-
-		totalBytes += n
-		if totalBytes > maxTotalSize {
-			_ = outFile.Close()
-			_ = rc.Close()
-			return fmt.Errorf("total decompressed size exceeds limit of %d bytes", maxTotalSize)
 		}
 
 		// Check if there is more data remaining (meaning it exceeded the limit)

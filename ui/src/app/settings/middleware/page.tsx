@@ -16,10 +16,6 @@ interface Middleware {
     disabled: boolean;
 }
 
-/**
- * MiddlewarePage component.
- * @returns The rendered component.
- */
 export default function MiddlewarePage() {
     const [middleware, setMiddleware] = useState<Middleware[]>([]);
 

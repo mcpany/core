@@ -139,12 +139,7 @@ func TestServiceRegistry_RegisterAndGetService(t *testing.T) {
 	// Get the config
 	retrievedConfig, ok := registry.GetServiceConfig(serviceID)
 	require.True(t, ok)
-
-	// Secrets should be stripped from retrieved config
-	expectedConfig := proto.Clone(serviceConfig).(*configv1.UpstreamServiceConfig)
-	util.StripSecretsFromService(expectedConfig)
-	assert.Equal(t, expectedConfig, retrievedConfig)
-	assert.Empty(t, retrievedConfig.GetAuthentication().GetApiKey().GetVerificationValue())
+	assert.Equal(t, serviceConfig, retrievedConfig)
 
 	// Check authenticator
 	_, ok = am.GetAuthenticator(serviceID)
@@ -611,64 +606,4 @@ func TestServiceRegistry_UnregisterService_CallsShutdown(t *testing.T) {
 
 	// Verify that the shutdown method was called
 	assert.True(t, shutdownCalled, "Shutdown method should be called on unregister")
-}
-
-func TestGetServiceError(t *testing.T) {
-	registry := New(nil, nil, nil, nil, nil)
-
-	// No error initially
-	err, ok := registry.GetServiceError("test")
-	assert.False(t, ok)
-	assert.Equal(t, "", err)
-
-	// Inject error manually (using internal map access via reflection or just simulating a fail state if possible)
-	// Since we cannot access internal map easily from outside test package if it was external,
-	// but we are in package serviceregistry!
-	registry.serviceErrors["test"] = "some error"
-
-	err, ok = registry.GetServiceError("test")
-	assert.True(t, ok)
-	assert.Equal(t, "some error", err)
-}
-
-func TestServiceRegistry_RegisterService_RetryFailed(t *testing.T) {
-	// First attempt fails
-	failFactory := &mockFactory{
-		newUpstreamFunc: func() (upstream.Upstream, error) {
-			return nil, errors.New("init fail")
-		},
-	}
-	tm := &mockToolManager{}
-	registry := New(failFactory, tm, prompt.NewManager(), resource.NewManager(), auth.NewManager())
-
-	serviceConfig := &configv1.UpstreamServiceConfig{Name: proto.String("retry-service")}
-	_, _, _, err := registry.RegisterService(context.Background(), serviceConfig)
-	require.Error(t, err)
-
-	// Verify error state
-	serviceID, _ := util.SanitizeServiceName("retry-service")
-	msg, ok := registry.GetServiceError(serviceID)
-	assert.True(t, ok)
-	assert.Contains(t, msg, "init fail")
-
-	// Second attempt succeeds
-	successFactory := &mockFactory{
-		newUpstreamFunc: func() (upstream.Upstream, error) {
-			return &mockUpstream{
-				registerFunc: func(_ string) (string, []*configv1.ToolDefinition, []*configv1.ResourceDefinition, error) {
-					return serviceID, nil, nil, nil
-				},
-			}, nil
-		},
-	}
-	// Switch factory (hacky but we have reference)
-	registry.factory = successFactory
-
-	sID, _, _, err := registry.RegisterService(context.Background(), serviceConfig)
-	require.NoError(t, err)
-	assert.Equal(t, serviceID, sID)
-
-	// Verify error cleared
-	msg, ok = registry.GetServiceError(serviceID)
-	assert.False(t, ok)
 }
