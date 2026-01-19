@@ -106,7 +106,13 @@ func (s *Settings) Load(cmd *cobra.Command, fs afero.Fs) error {
 
 	// Special handling for MCPListenAddress to respect config file precedence
 	mcpListenAddress := viper.GetString("mcp-listen-address")
-	if !cmd.Flags().Changed("mcp-listen-address") && len(s.configPaths) > 0 {
+	// Check if the environment variable is explicitly set.
+	// We want Priority: Flag > Env > Config > Default
+	// viper.GetString("mcp-listen-address") returns Env value if set, or Default.
+	// If Env is set, we do NOT want to overwrite it with Config.
+	envSet := os.Getenv("MCPANY_MCP_LISTEN_ADDRESS") != ""
+
+	if !cmd.Flags().Changed("mcp-listen-address") && !envSet && len(s.configPaths) > 0 {
 		store := NewFileStore(fs, s.configPaths)
 		// We ignore errors here because we are only peeking for the listen address.
 		// Real validation happens later in main.go or app.Run.
