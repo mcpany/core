@@ -889,6 +889,12 @@ func parseURLSegments(template string) []urlSegment {
 		}
 		// part looks like "param}}suffix"
 		subparts := strings.SplitN(part, "}}", 2)
+		// If "}}" is missing, it's not a valid parameter replacement, so treat as literal "{{" + part
+		if len(subparts) == 1 {
+			segments = append(segments, urlSegment{isParam: false, value: "{{" + part})
+			continue
+		}
+
 		paramName := subparts[0]
 		segments = append(segments, urlSegment{isParam: true, value: paramName})
 		if len(subparts) > 1 && subparts[1] != "" {
