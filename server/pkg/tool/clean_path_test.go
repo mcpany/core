@@ -63,7 +63,9 @@ func TestCleanPathPreserveDoubleSlash(t *testing.T) {
 		// weird ones
 		{name: "weird 1", input: "/a//../b", expected: "/a/b"},
 		{name: "weird 2", input: "/a/..//b", expected: "//b"},
-		{name: "weird 3", input: "//../a", expected: "/a"},
+		{name: "weird 3", input: "//../a", expected: "//a"},
+		{name: "double slash with multiple parents", input: "//../../foo", expected: "//foo"},
+		{name: "double slash with parent and double slash", input: "//..//foo", expected: "///foo"},
 	}
 
 	for _, tc := range tests {
