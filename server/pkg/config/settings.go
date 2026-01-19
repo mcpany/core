@@ -117,8 +117,9 @@ func (s *Settings) Load(cmd *cobra.Command, fs afero.Fs) error {
 		// We ignore errors here because we are only peeking for the listen address.
 		// Real validation happens later in main.go or app.Run.
 		// If we fail here, we prevent main.go from printing user-friendly errors for missing files.
-		cfg, err := LoadServices(context.Background(), store, "server")
-		if err == nil {
+		// We use store.Load instead of LoadServices to avoid side effects like logging "Added new service".
+		cfg, err := store.Load(context.Background())
+		if err == nil && cfg != nil {
 			if cfg.GetGlobalSettings().GetMcpListenAddress() != "" {
 				mcpListenAddress = cfg.GetGlobalSettings().GetMcpListenAddress()
 			}

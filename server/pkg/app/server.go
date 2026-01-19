@@ -356,6 +356,13 @@ func (a *Application) Run(
 	stores = append(stores, storageStore)
 
 	enableFileConfig := os.Getenv("MCPANY_ENABLE_FILE_CONFIG") == "true"
+
+	// Track 1: Friction Fighter - Automatically enable file config if paths are explicitly provided.
+	// If the user passes --config-path, they expect it to be used.
+	if len(configPaths) > 0 {
+		enableFileConfig = true
+	}
+
 	if len(configPaths) > 0 {
 		if enableFileConfig {
 			log.Info("File configuration enabled, loading config from files (overrides database)", "paths", configPaths)
@@ -839,6 +846,10 @@ func (a *Application) loadConfig(ctx context.Context, fs afero.Fs, configPaths [
 	}
 
 	enableFileConfig := os.Getenv("MCPANY_ENABLE_FILE_CONFIG") == "true"
+	if len(configPaths) > 0 {
+		enableFileConfig = true
+	}
+
 	if enableFileConfig && len(configPaths) > 0 {
 		stores = append(stores, config.NewFileStore(fs, configPaths))
 	}

@@ -41,6 +41,8 @@
 - [x] **Tool Execution History Persisted**: Persist the local history of tool executions in `localStorage` or backend, so it survives page reloads.
 - [ ] **Tool Execution Duration Tracking**: Display the execution time (latency) for each tool call in the Playground history.
 - [ ] **Export Playground History**: Ability to export the current session's tool execution history to a JSON file for sharing or debugging.
+- [ ] **Config Diagnostics UI**: Visual interface for `mcpany doctor` output, showing loaded config files and validation status.
+- [ ] **Config File Browser**: View and edit loaded configuration files directly in the UI.
 
 ### Completed Features
 
