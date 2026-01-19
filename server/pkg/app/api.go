@@ -127,9 +127,6 @@ func (a *Application) createAPIHandler(store storage.Storage) http.Handler {
 	mux.HandleFunc("/auth/oauth/callback", a.handleOAuthCallback)
 
 	mux.HandleFunc("/ws/logs", a.handleLogsWS())
-	mux.HandleFunc("/traces", a.handleTraces())
-	mux.HandleFunc("/webhooks", a.handleWebhooks())
-	mux.HandleFunc("/stats", a.handleStats())
 
 	return mux
 }
@@ -1069,53 +1066,7 @@ func (a *Application) handleCollectionApply(w http.ResponseWriter, r *http.Reque
 	_, _ = w.Write([]byte("{}"))
 }
 
-func (a *Application) handleTraces() http.HandlerFunc {
-	return func(w http.ResponseWriter, _ *http.Request) {
-		// Mock traces for screenshots
-		traces := []map[string]any{
-			{
-				"id": "tr_1",
-				"rootSpan": map[string]any{
-					"id": "sp_1", "name": "filesystem.read", "type": "tool", "startTime": time.Now().UnixMilli() - 150, "endTime": time.Now().UnixMilli(), "status": "success",
-				},
-				"timestamp":     time.Now().Format(time.RFC3339),
-				"totalDuration": 150,
-				"status":        "success",
-				"trigger":       "user",
-			},
-		}
-		w.Header().Set("Content-Type", "application/json")
-		_ = json.NewEncoder(w).Encode(traces)
-	}
-}
 
-func (a *Application) handleWebhooks() http.HandlerFunc {
-	return func(w http.ResponseWriter, _ *http.Request) {
-		webhooks := []map[string]any{
-			{
-				"id": "wh_1", "url": "https://example.com/webhook", "events": []string{"service.up", "service.down"}, "active": true,
-			},
-		}
-		w.Header().Set("Content-Type", "application/json")
-		_ = json.NewEncoder(w).Encode(webhooks)
-	}
-}
-
-func (a *Application) handleStats() http.HandlerFunc {
-	return func(w http.ResponseWriter, _ *http.Request) {
-		stats := map[string]any{
-			"active_services": 2,
-			"total_requests":  14502,
-			"avg_latency":     45,
-			"error_rate":      0.02,
-			"requests_timeseries": []map[string]any{
-				{"timestamp": time.Now().UnixMilli(), "count": 100},
-			},
-		}
-		w.Header().Set("Content-Type", "application/json")
-		_ = json.NewEncoder(w).Encode(stats)
-	}
-}
 
 func isUnsafeConfig(service *configv1.UpstreamServiceConfig) bool {
 	if mcp := service.GetMcpService(); mcp != nil {

@@ -37,7 +37,7 @@ export function StepReview({ onComplete }: { onComplete: (config: any) => void }
             </div>
 
             <Button className="w-full" size="lg" onClick={() => onComplete(config)}>
-                Save Template
+                Finish & Save to Local Marketplace
             </Button>
         </div>
     );

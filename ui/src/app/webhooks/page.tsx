@@ -5,7 +5,7 @@
 
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -39,26 +39,9 @@ const INITIAL_WEBHOOKS: WebhookConfig[] = [
 ];
 
 export default function WebhooksPage() {
-    const [webhooks, setWebhooks] = useState<WebhookConfig[]>([]);
-    const [loading, setLoading] = useState(true);
+    const [webhooks, setWebhooks] = useState<WebhookConfig[]>(INITIAL_WEBHOOKS);
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [newUrl, setNewUrl] = useState("");
-
-    const loadWebhooks = async () => {
-        try {
-            const res = await fetch('/api/v1/webhooks');
-            const data = await res.json();
-            setWebhooks(data);
-        } catch (err) {
-            console.error("Failed to load webhooks", err);
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    useEffect(() => {
-        loadWebhooks();
-    }, []);
 
     const toggleWebhook = (id: string) => {
         setWebhooks(webhooks.map(w => w.id === id ? { ...w, active: !w.active } : w));
@@ -126,73 +109,67 @@ export default function WebhooksPage() {
                 </Dialog>
             </div>
 
-            {loading ? (
-                <div className="flex items-center justify-center h-64 text-muted-foreground">
-                   Loading webhooks...
-                </div>
-            ) : (
-                <Card className="backdrop-blur-sm bg-background/50">
-                    <CardHeader>
-                        <CardTitle>Configured Webhooks</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                         <Table>
-                            <TableHeader>
-                                <TableRow>
-                                    <TableHead>URL</TableHead>
-                                    <TableHead>Events</TableHead>
-                                    <TableHead>Status</TableHead>
-                                    <TableHead>Last Triggered</TableHead>
-                                    <TableHead className="text-right">Actions</TableHead>
+            <Card className="backdrop-blur-sm bg-background/50">
+                <CardHeader>
+                    <CardTitle>Configured Webhooks</CardTitle>
+                </CardHeader>
+                <CardContent>
+                     <Table>
+                        <TableHeader>
+                            <TableRow>
+                                <TableHead>URL</TableHead>
+                                <TableHead>Events</TableHead>
+                                <TableHead>Status</TableHead>
+                                <TableHead>Last Triggered</TableHead>
+                                <TableHead className="text-right">Actions</TableHead>
+                            </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                            {webhooks.map((hook) => (
+                                <TableRow key={hook.id}>
+                                    <TableCell className="font-mono text-xs">{hook.url}</TableCell>
+                                    <TableCell>
+                                        <div className="flex gap-1 flex-wrap">
+                                            {hook.events.map(e => <Badge key={e} variant="secondary" className="text-xs">{e}</Badge>)}
+                                        </div>
+                                    </TableCell>
+                                    <TableCell>
+                                        <div className="flex items-center gap-2">
+                                            <Switch
+                                                checked={hook.active}
+                                                onCheckedChange={() => toggleWebhook(hook.id)}
+                                            />
+                                            <span className={`text-xs ${hook.status === 'success' ? 'text-green-500' : hook.status === 'failure' ? 'text-red-500' : 'text-muted-foreground'}`}>
+                                                {hook.active ? "Active" : "Inactive"}
+                                            </span>
+                                        </div>
+                                    </TableCell>
+                                    <TableCell className="text-muted-foreground text-xs">
+                                        {hook.lastTriggered || "Never"}
+                                    </TableCell>
+                                    <TableCell className="text-right">
+                                        <div className="flex justify-end gap-2">
+                                            <Button variant="ghost" size="icon" onClick={() => testWebhook(hook.id)} title="Test Delivery">
+                                                <Play className="h-4 w-4" />
+                                            </Button>
+                                             <Button variant="ghost" size="icon" onClick={() => deleteWebhook(hook.id)} className="text-red-500 hover:text-red-600">
+                                                <Trash2 className="h-4 w-4" />
+                                            </Button>
+                                        </div>
+                                    </TableCell>
                                 </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                                {webhooks.map((hook) => (
-                                    <TableRow key={hook.id}>
-                                        <TableCell className="font-mono text-xs">{hook.url}</TableCell>
-                                        <TableCell>
-                                            <div className="flex gap-1 flex-wrap">
-                                                {hook.events.map(e => <Badge key={e} variant="secondary" className="text-xs">{e}</Badge>)}
-                                            </div>
-                                        </TableCell>
-                                        <TableCell>
-                                            <div className="flex items-center gap-2">
-                                                <Switch
-                                                    checked={hook.active}
-                                                    onCheckedChange={() => toggleWebhook(hook.id)}
-                                                />
-                                                <span className={`text-xs ${hook.status === 'success' ? 'text-green-500' : hook.status === 'failure' ? 'text-red-500' : 'text-muted-foreground'}`}>
-                                                    {hook.active ? "Active" : "Inactive"}
-                                                </span>
-                                            </div>
-                                        </TableCell>
-                                        <TableCell className="text-muted-foreground text-xs">
-                                            {hook.lastTriggered || "Never"}
-                                        </TableCell>
-                                        <TableCell className="text-right">
-                                            <div className="flex justify-end gap-2">
-                                                <Button variant="ghost" size="icon" onClick={() => testWebhook(hook.id)} title="Test Delivery">
-                                                    <Play className="h-4 w-4" />
-                                                </Button>
-                                                 <Button variant="ghost" size="icon" onClick={() => deleteWebhook(hook.id)} className="text-red-500 hover:text-red-600">
-                                                    <Trash2 className="h-4 w-4" />
-                                                </Button>
-                                            </div>
-                                        </TableCell>
-                                    </TableRow>
-                                ))}
-                                {webhooks.length === 0 && (
-                                    <TableRow>
-                                        <TableCell colSpan={5} className="text-center h-24 text-muted-foreground">
-                                            No webhooks configured.
-                                        </TableCell>
-                                    </TableRow>
-                                )}
-                            </TableBody>
-                        </Table>
-                    </CardContent>
-                </Card>
-            )}
+                            ))}
+                            {webhooks.length === 0 && (
+                                <TableRow>
+                                    <TableCell colSpan={5} className="text-center h-24 text-muted-foreground">
+                                        No webhooks configured.
+                                    </TableCell>
+                                </TableRow>
+                            )}
+                        </TableBody>
+                    </Table>
+                </CardContent>
+            </Card>
         </div>
     );
 }

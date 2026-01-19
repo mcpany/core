@@ -121,10 +121,9 @@ export function StepParameters() {
              <div className="space-y-4 pt-4 border-t">
                  <h3 className="text-lg font-medium">Command</h3>
                  <div className="grid gap-2">
-                     <Label htmlFor="command">Executable</Label>
+                     <Label>Executable</Label>
 
                      <Input
-                        id="command"
                         value={config.commandLineService?.command || ''}
                         onChange={e => updateConfig({
                             commandLineService: {

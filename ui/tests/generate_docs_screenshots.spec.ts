@@ -16,7 +16,90 @@ if (!fs.existsSync(DOCS_SCREENSHOTS_DIR)) {
 test.describe('Generate Detailed Docs Screenshots', () => {
 
   test.beforeEach(async ({ page }) => {
-     // No mocks - using real backend
+    // Global mocks to ensure consistent state
+    await page.route('**/api/v1/services*', async route => {
+        if (route.request().method() === 'GET') {
+            await route.fulfill({
+                json: {
+                    services: [
+                        {
+                            id: 'postgres-primary',
+                            name: 'Primary DB',
+                            type: 'remote',
+                            endpoint: 'grpc://postgres:5432',
+                            status: 'healthy',
+                            uptime: '2d 4h',
+                            version: '1.0.0'
+                        },
+                        {
+                            id: 'openai-gateway',
+                            name: 'OpenAI Gateway',
+                            type: 'mcp',
+                            endpoint: 'http://openai-mcp:8080',
+                            status: 'healthy',
+                            uptime: '5h 30m',
+                            version: '2.1.0'
+                        }
+                    ]
+                }
+            });
+        } else {
+            await route.continue();
+        }
+    });
+
+    await page.route('**/api/v1/services/postgres-primary', async route => {
+        await route.fulfill({
+            json: {
+                service: {
+                    id: 'postgres-primary',
+                    name: 'Primary DB',
+                    type: 'remote',
+                    endpoint: 'grpc://postgres:5432',
+                    status: 'healthy',
+                    config: {
+                         env: { 'DB_PASS': '********' }
+                    }
+                }
+            }
+        });
+    });
+
+     await page.route('**/api/v1/stats', async route => {
+         await route.fulfill({
+             json: {
+                 active_services: 2,
+                 total_requests: 14502,
+                 avg_latency: 45,
+                 error_rate: 0.02,
+                 requests_timeseries: Array.from({length: 20}, (_, i) => ({timestamp: Date.now() - i*60000, count: Math.floor(Math.random() * 100)}))
+             }
+         });
+     });
+
+     // Mock Logs
+     await page.route('**/api/v1/logs/stream**', async route => {
+         // This might be WS, but if HTTP fallback:
+         await route.fulfill({ json: [] });
+     });
+
+     // Mock Health Check to prevent connection error banner
+     await page.route('**/healthz', async route => {
+         await route.fulfill({ status: 200, body: 'ok' });
+     });
+     await page.route('**/api/v1/health', async route => {
+         await route.fulfill({ status: 200, json: { status: 'ok' } });
+     });
+
+     // Mock Doctor (System Status) to prevent banner from showing in screenshots
+     await page.route('**/doctor', async route => {
+         await route.fulfill({
+             status: 200,
+             contentType: 'application/json',
+             body: JSON.stringify({ status: 'healthy', checks: {} })
+         });
+     });
+
   });
 
   test('Dashboard Screenshots', async ({ page }) => {
@@ -59,7 +142,17 @@ test.describe('Generate Detailed Docs Screenshots', () => {
     await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'playground_blank.png'), fullPage: true });
     await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'playground.png'), fullPage: true });
 
-    // No mocks - using real backend
+    // Mock Tools
+    await page.route('**/api/v1/tools', async route => {
+         await route.fulfill({
+             json: {
+                 tools: [
+                     { name: 'filesystem.list_dir', description: 'List files in directory', inputSchema: { type: 'object', properties: { path: { type: 'string' } }, required: ['path'] } },
+                     { name: 'calculator.add', description: 'Add two numbers', inputSchema: { type: 'object', properties: { a: { type: 'number' }, b: { type: 'number' } }, required: ['a', 'b'] } }
+                 ]
+             }
+         });
+    });
 
     // Reload to get tools
     await page.reload();
@@ -93,7 +186,30 @@ test.describe('Generate Detailed Docs Screenshots', () => {
   });
 
   test('Traces Screenshots', async ({ page }) => {
-    // No mocks - using real backend
+    // Mock Traces (UI calls /api/traces, expects direct array with rootSpan)
+    await page.route('**/api/traces*', async route => {
+        await route.fulfill({
+            json: [
+                 {
+                     id: 't1',
+                     timestamp: Date.now(),
+                     rootSpan: { name: 'filesystem.read' },
+                     status: 'success',
+                     totalDuration: 120,
+                     trigger: 'user'
+                 },
+                 {
+                     id: 't2',
+                     timestamp: Date.now() - 5000,
+                     rootSpan: { name: 'calculator.add' },
+                     status: 'error',
+                     error: 'Division by zero',
+                     totalDuration: 10,
+                     trigger: 'user'
+                 }
+            ]
+        });
+    });
 
     await page.goto('/traces');
     await page.waitForLoadState('networkidle');
@@ -151,7 +267,11 @@ test.describe('Generate Detailed Docs Screenshots', () => {
    });
 
   test('Secrets Screenshots', async ({ page }) => {
-      // No mocks - using real backend
+      await page.route('**/api/v1/secrets*', async route => {
+          await route.fulfill({
+              json: { secrets: [{name: 'API_KEY', value: '*****'}] }
+          });
+      });
       await page.goto('/secrets');
       await page.waitForLoadState('networkidle');
       await page.waitForTimeout(1000);
