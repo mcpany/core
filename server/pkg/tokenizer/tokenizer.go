@@ -198,6 +198,13 @@ func countTokensInValueSimpleFast(st *SimpleTokenizer, v interface{}) (int, bool
 	case nil:
 		return 1, true, nil
 	case float64:
+		// OPTIMIZATION: Use integer tokenization for integer-like floats in safe range.
+		// This avoids expensive strconv.AppendFloat calls for common values (metrics, IDs).
+		// Any integer in (-1e6, 1e6) has max 7 chars (e.g. -999999), so 7/4 = 1 token.
+		if val > -1e6 && val < 1e6 && val == float64(int64(val)) {
+			return 1, true, nil
+		}
+
 		// OPTIMIZATION: Use stack buffer to avoid string allocation.
 		// Logic must match SimpleTokenizer.CountTokens: len(text) / 4.
 		var buf [64]byte
@@ -234,6 +241,13 @@ func countTokensInValueSimpleFast(st *SimpleTokenizer, v interface{}) (int, bool
 		// Logic must match SimpleTokenizer.CountTokens: len(text) / 4.
 		var buf [64]byte
 		for _, item := range val {
+			// OPTIMIZATION: Check for integer-like floats to skip formatting
+			// Any integer in (-1e6, 1e6) has max 7 chars (e.g. -999999), so 7/4 = 1 token.
+			if item > -1e6 && item < 1e6 && item == float64(int64(item)) {
+				count++
+				continue
+			}
+
 			b := strconv.AppendFloat(buf[:0], item, 'g', -1, 64)
 			c := len(b) / 4
 			if c < 1 {
