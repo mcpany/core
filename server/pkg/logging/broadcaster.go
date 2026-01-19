@@ -50,6 +50,13 @@ func (b *Broadcaster) Unsubscribe(ch chan []byte) {
 	}
 }
 
+// HasSubscribers checks if there are any active subscribers.
+func (b *Broadcaster) HasSubscribers() bool {
+	b.mu.RLock()
+	defer b.mu.RUnlock()
+	return len(b.subscribers) > 0
+}
+
 // Broadcast sends a message to all subscribers.
 // This method is non-blocking; if a subscriber's channel is full, the message is dropped for that subscriber.
 func (b *Broadcaster) Broadcast(msg []byte) {
