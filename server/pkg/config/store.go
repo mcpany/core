@@ -74,15 +74,7 @@ func (e *yamlEngine) Unmarshal(b []byte, v proto.Message) error {
 	// First, unmarshal YAML into a generic map.
 	var yamlMap map[string]interface{}
 	if err := yaml.Unmarshal(b, &yamlMap); err != nil {
-		// Enhance error message for common YAML mistakes
-		if strings.Contains(err.Error(), "found character that cannot start any token") {
-			if bytes.Contains(b, []byte("\t")) {
-				// revive:disable-next-line:error-strings // This error message is user facing and needs to be descriptive
-				//nolint:staticcheck // This error message is user facing and needs to be descriptive
-				return fmt.Errorf("failed to unmarshal YAML: %w\n\nHint: YAML files cannot contain tabs. Please use spaces for indentation.", err)
-			}
-		}
-		return fmt.Errorf("failed to unmarshal YAML: %w", err)
+		return enhanceYamlError(err, b)
 	}
 
 	// Apply environment variable overrides: MCPANY__SECTION__KEY -> section.key
@@ -158,6 +150,68 @@ func (e *yamlEngine) Unmarshal(b []byte, v proto.Message) error {
 	}
 
 	return nil
+}
+
+func enhanceYamlError(err error, content []byte) error {
+	msg := err.Error()
+	hint := ""
+
+	// Check for tabs
+	if strings.Contains(msg, "found character that cannot start any token") {
+		if bytes.Contains(content, []byte("\t")) {
+			hint = "Hint: YAML files cannot contain tabs. Please use spaces for indentation."
+		}
+	}
+
+	// Check for indentation issues (common cause of "did not find expected key")
+	if strings.Contains(msg, "did not find expected key") {
+		hint = "Hint: Check your indentation. This often happens when a property is indented incorrectly relative to its parent."
+	}
+
+	// Check for list item issues
+	if strings.Contains(msg, "mapping values are not allowed in this context") {
+		hint = "Hint: You might be trying to use a list item (starting with '-') where a key-value pair is expected, or vice versa. Check for missing colons or incorrect indentation."
+	}
+
+	// Attempt to extract line number
+	lineNum := -1
+	lineRegex := regexp.MustCompile(`line (\d+)`)
+	matches := lineRegex.FindStringSubmatch(msg)
+	if len(matches) > 1 {
+		lineNum, _ = strconv.Atoi(matches[1])
+	}
+
+	// If we have a line number, show context
+	contextStr := ""
+	if lineNum > 0 {
+		lines := bytes.Split(content, []byte("\n"))
+		if lineNum <= len(lines) {
+			// Show previous line, current line, and next line if available
+			start := lineNum - 2
+			if start < 0 {
+				start = 0
+			}
+			end := lineNum + 1
+			if end > len(lines) {
+				end = len(lines)
+			}
+
+			contextStr = "\nContext:\n"
+			for i := start; i < end; i++ {
+				prefix := "  "
+				if i == lineNum-1 {
+					prefix = "> "
+				}
+				contextStr += fmt.Sprintf("%s%d: %s\n", prefix, i+1, string(lines[i]))
+			}
+		}
+	}
+
+	if hint != "" {
+		return fmt.Errorf("failed to unmarshal YAML: %w\n\n%s%s", err, hint, contextStr)
+	}
+
+	return fmt.Errorf("failed to unmarshal YAML: %w%s", err, contextStr)
 }
 
 // textprotoEngine implements the Engine interface for textproto configuration

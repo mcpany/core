@@ -3,7 +3,7 @@
 ## 1. Updated Roadmap
 
 ### Status: Active Development
-
+- **Enhanced Configuration Error Handling**: ✅ Implemented smarter YAML error reporting to help users fix indentation and syntax issues.
 
 ## 2. Top 10 Recommended Features
 
@@ -100,6 +100,8 @@ These features represent the next logical steps for the product, focusing on Ent
 | 67   | **Config Schema Versioning**                  | **Maintenance**: Introduce `apiVersion` field in `config.yaml` to support breaking changes in configuration schema gracefully.                                                                                     | High       |
 | 68   | **Connection Draining**                       | **Availability**: Utilize active connection tracking (from System Health Dashboard) to implement graceful shutdown that waits for connections to finish before exiting.                                       | Medium     |
 | 69   | **Secure Defaults Enforcer**                  | **Security**: Automated "Fix-it" suggestions or enforcement of secure defaults based on security warnings visualized in the Health Dashboard.                                                                  | Medium     |
+| 70   | **JSON Schema Generation for IDEs**           | **DevX**: Auto-generate a JSON Schema from the config protobuf and publish it to SchemaStore so users get intellisense in VS Code/JetBrains.                                                                   | Low        |
+| 71   | **Config Breakdown Tool**                     | **DevX**: A CLI command that parses a monolithic `config.yaml` and splits it into smaller, modular files based on service boundaries.                                                                          | Low        |
 
 ## 3. Codebase Health
 
