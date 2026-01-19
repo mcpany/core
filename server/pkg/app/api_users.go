@@ -4,6 +4,7 @@
 package app
 
 import (
+	"context"
 	"encoding/json"
 	"io"
 	"net/http"
@@ -13,6 +14,7 @@ import (
 	"github.com/mcpany/core/server/pkg/logging"
 	"github.com/mcpany/core/server/pkg/storage"
 	"github.com/mcpany/core/server/pkg/util"
+	"github.com/mcpany/core/server/pkg/util/passhash"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 )
@@ -73,6 +75,12 @@ func (a *Application) handleUsers(store storage.Storage) http.HandlerFunc {
 
 			if user.GetId() == "" {
 				http.Error(w, "id is required", http.StatusBadRequest)
+				return
+			}
+
+			if err := hashUserPassword(r.Context(), &user, store); err != nil {
+				logging.GetLogger().Error("failed to hash password", "error", err)
+				http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 				return
 			}
 
@@ -157,6 +165,12 @@ func (a *Application) handleUserDetail(store storage.Storage) http.HandlerFunc {
 			}
 			user.Id = proto.String(id)
 
+			if err := hashUserPassword(r.Context(), &user, store); err != nil {
+				logging.GetLogger().Error("failed to hash password", "error", err)
+				http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+				return
+			}
+
 			if err := store.UpdateUser(r.Context(), &user); err != nil {
 				logging.GetLogger().Error("failed to update user", "error", err)
 				http.Error(w, "Internal Server Error", http.StatusInternalServerError)
@@ -184,4 +198,48 @@ func (a *Application) handleUserDetail(store storage.Storage) http.HandlerFunc {
 			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
 		}
 	}
+}
+
+// hashUserPassword hashes the user's password if it is provided in plain text.
+// It handles the case where the password is "REDACTED" by fetching the existing user and restoring the hash.
+func hashUserPassword(ctx context.Context, user *configv1.User, store storage.Storage) error {
+	if user.GetAuthentication() != nil && user.GetAuthentication().GetBasicAuth() != nil {
+		basicAuth := user.GetAuthentication().GetBasicAuth()
+		plain := basicAuth.GetPasswordHash()
+
+		// Case 1: Password is REDACTED (from SanitizeUser). Restore existing hash.
+		if plain == util.RedactedString {
+			existingUser, err := store.GetUser(ctx, user.GetId())
+			if err != nil {
+				return err
+			}
+			if existingUser != nil && existingUser.GetAuthentication() != nil && existingUser.GetAuthentication().GetBasicAuth() != nil {
+				existingHash := existingUser.GetAuthentication().GetBasicAuth().GetPasswordHash()
+				basicAuth.PasswordHash = proto.String(existingHash)
+			} else {
+				// If no existing user or auth, clear the REDACTED value to avoid saving it
+				basicAuth.PasswordHash = proto.String("")
+			}
+			return nil
+		}
+
+		// Case 2: Password is provided (likely plain text from UI). Hash it.
+		// We assume that if it's not REDACTED and not empty, it's a new password.
+		// We verify if it is already a bcrypt hash to avoid double hashing, although UI sends plain text.
+		// Bcrypt hashes start with $2a$, $2b$, $2y$ and are 60 chars long.
+		if plain != "" {
+			if len(plain) == 60 && strings.HasPrefix(plain, "$2") {
+				// It looks like a hash, keep it.
+				return nil
+			}
+
+			// Hash it
+			hash, err := passhash.Password(plain)
+			if err != nil {
+				return err
+			}
+			basicAuth.PasswordHash = proto.String(hash)
+		}
+	}
+	return nil
 }
