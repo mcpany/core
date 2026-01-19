@@ -1,7 +1,0 @@
-# Copyright 2026 Author(s) of MCP Any
-# SPDX-License-Identifier: Apache-2.0
-
-upstream_services:
-  - name: "weather-api"
-    http_service:
-      address: "http://localhost:12345"
