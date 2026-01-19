@@ -2380,6 +2380,10 @@ func cleanPathPreserveDoubleSlash(p string) string {
 						continue
 					}
 					// If out ends in "", it might be //
+					// If we are at // (i.e. ["", ""]), we should stay at // (ignore ..)
+					if len(out) == 2 && out[1] == "" {
+						continue
+					}
 					// Pop it
 					out = out[:len(out)-1]
 				} else {
