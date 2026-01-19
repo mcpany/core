@@ -16,7 +16,7 @@ func TestCleanPathPreserveDoubleSlash(t *testing.T) {
 		expected string
 	}{
 		// Basic cases
-		{name: "empty", input: "", expected: "."},
+		{name: "empty", input: "", expected: ""},
 		{name: "root", input: "/", expected: "/"},
 		{name: "simple", input: "/foo/bar", expected: "/foo/bar"},
 		{name: "trailing slash removal", input: "/foo/bar/", expected: "/foo/bar"},
@@ -51,7 +51,7 @@ func TestCleanPathPreserveDoubleSlash(t *testing.T) {
 		{name: "root ..", input: "/..", expected: "/"},
 		{name: "root .. ..", input: "/../..", expected: "/"},
 		{name: "root .", input: "/.", expected: "/"},
-		{name: "relative .", input: ".", expected: "."},
+		{name: "relative .", input: ".", expected: ""},
 		{name: "relative ..", input: "..", expected: ".."},
 
 		// Trailing slash behavior

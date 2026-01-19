@@ -2345,7 +2345,7 @@ func checkForPathTraversal(val string) error {
 // assuming the caller will handle restoring it if necessary.
 func cleanPathPreserveDoubleSlash(p string) string {
 	if p == "" {
-		return "."
+		return ""
 	}
 
 	rooted := strings.HasPrefix(p, "/")
@@ -2403,17 +2403,13 @@ func cleanPathPreserveDoubleSlash(p string) string {
 	}
 
 	if len(out) == 0 {
-		return "."
+		return ""
 	}
 
 	res := strings.Join(out, "/")
 	// If rooted and result is empty string, return "/"
 	if rooted && res == "" {
 		return "/"
-	}
-	// If result is empty string but not rooted, return "."
-	if res == "" {
-		return "."
 	}
 
 	return res
