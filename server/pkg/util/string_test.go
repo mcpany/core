@@ -12,6 +12,7 @@ func TestLevenshteinDistance(t *testing.T) {
 		s1, s2 string
 		want   int
 	}{
+		// ASCII tests
 		{"", "", 0},
 		{"a", "", 1},
 		{"", "a", 1},
@@ -24,6 +25,21 @@ func TestLevenshteinDistance(t *testing.T) {
 		{"get_weather", "get_wether", 1},
 		{"get_weather", "get_weath", 2},
 		{"get_weather", "getweather", 1},
+
+		// Unicode/Rune tests (triggers levenshteinRunes)
+		{"世界", "世界", 0},       // Identical
+		{"世界", "世", 1},        // Deletion
+		{"世", "世界", 1},        // Insertion
+		{"世界", "世 界", 1},      // Space insertion
+		{"hello", "héllo", 1},   // Substitution (e vs é)
+		{"café", "coffee", 4},   // Mixed
+		{"😊", "😢", 1},           // Emojis (substitution)
+		{"😊", "😊😊", 1},          // Emoji insertion
+		{"こんにちは", "こんちには", 2}, // Transposition-like (actually 2 subs or del+ins)
+
+		// Mixed Empty/Unicode tests (triggers early returns in levenshteinRunes)
+		{"", "世界", 2},
+		{"世界", "", 2},
 	}
 
 	for _, tt := range tests {
