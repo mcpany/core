@@ -26,6 +26,8 @@ jobs:
       is_release: ${{ steps.vars.outputs.is_release }}
       tags_dockerhub: ${{ steps.vars.outputs.tags_dockerhub }}
       tags_ghcr: ${{ steps.vars.outputs.tags_ghcr }}
+      tags_ui_dockerhub: ${{ steps.vars.outputs.tags_ui_dockerhub }}
+      tags_ui_ghcr: ${{ steps.vars.outputs.tags_ui_ghcr }}
     steps:
       - name: Set variables
         id: vars
@@ -39,6 +41,8 @@ jobs:
             echo "tags_dockerhub=${{ env.DOCKERHUB_IMAGE }}:${VERSION},${{ env.DOCKERHUB_IMAGE }}:latest" >> $GITHUB_OUTPUT
             # Tags for GHCR
             echo "tags_ghcr=${{ env.GHCR_IMAGE }}:${VERSION},${{ env.GHCR_IMAGE }}:latest" >> $GITHUB_OUTPUT
+            echo "tags_ui_dockerhub=mcpany/ui:${VERSION},mcpany/ui:latest" >> $GITHUB_OUTPUT
+            echo "tags_ui_ghcr=ghcr.io/mcpany/ui:${VERSION},ghcr.io/mcpany/ui:latest" >> $GITHUB_OUTPUT
           else
             # Generate timestamp
             TIMESTAMP=$(date +%Y%m%d%H%M%S)
@@ -49,6 +53,8 @@ jobs:
             # Tags
             echo "tags_dockerhub=${{ env.DOCKERHUB_IMAGE }}:${VERSION},${{ env.DOCKERHUB_IMAGE }}:dev-latest,${{ env.DOCKERHUB_IMAGE }}:dev" >> $GITHUB_OUTPUT
             echo "tags_ghcr=${{ env.GHCR_IMAGE }}:${VERSION},${{ env.GHCR_IMAGE }}:dev-latest,${{ env.GHCR_IMAGE }}:dev" >> $GITHUB_OUTPUT
+            echo "tags_ui_dockerhub=mcpany/ui:${VERSION},mcpany/ui:dev-latest,mcpany/ui:dev" >> $GITHUB_OUTPUT
+            echo "tags_ui_ghcr=ghcr.io/mcpany/ui:${VERSION},ghcr.io/mcpany/ui:dev-latest,ghcr.io/mcpany/ui:dev" >> $GITHUB_OUTPUT
           fi
 
   # ==============================================================================
@@ -220,8 +226,8 @@ jobs:
           file: server/docker/Dockerfile.server
           platforms: ${{ matrix.platform }}
           tags: |
-            ${{ env.DOCKERHUB_IMAGE }}
-            ${{ env.GHCR_IMAGE }}
+            ${{ needs.setup.outputs.tags_dockerhub }}
+            ${{ needs.setup.outputs.tags_ghcr }}
           # Export as tarball for artifact upload
           outputs: type=docker,dest=/tmp/server-image.tar
           cache-from: type=gha,scope=${{ matrix.platform }}
@@ -425,8 +431,8 @@ jobs:
           file: ui/Dockerfile
           platforms: ${{ matrix.platform }}
           tags: |
-            mcpany/ui
-            ghcr.io/mcpany/ui
+            ${{ needs.setup.outputs.tags_ui_dockerhub }}
+            ${{ needs.setup.outputs.tags_ui_ghcr }}
           # Export as tarball for artifact upload
           outputs: type=docker,dest=/tmp/ui-image.tar
           cache-from: type=gha,scope=ui-${{ matrix.platform }}
@@ -516,16 +522,9 @@ jobs:
 
           echo "Generating tags for Version: $VERSION (Is Release: $IS_RELEASE)"
 
-          TAGS_DH=""
-          TAGS_GH=""
+          TAGS_DH="${{ needs.setup.outputs.tags_ui_dockerhub }}"
+          TAGS_GH="${{ needs.setup.outputs.tags_ui_ghcr }}"
 
-          if [ "$IS_RELEASE" = "true" ]; then
-             TAGS_DH="${DOCKERHUB_IMAGE}:${VERSION},${DOCKERHUB_IMAGE}:latest"
-             TAGS_GH="${GHCR_IMAGE}:${VERSION},${GHCR_IMAGE}:latest"
-          else
-             TAGS_DH="${DOCKERHUB_IMAGE}:${VERSION},${DOCKERHUB_IMAGE}:dev-latest,${DOCKERHUB_IMAGE}:dev"
-             TAGS_GH="${GHCR_IMAGE}:${VERSION},${GHCR_IMAGE}:dev-latest,${GHCR_IMAGE}:dev"
-          fi
 
           # Convert comma-separated tags to arrays
           IFS=',' read -ra ADDR_DH <<< "$TAGS_DH"
