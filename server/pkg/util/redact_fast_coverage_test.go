@@ -36,7 +36,7 @@ func TestRedactFast_Coverage(t *testing.T) {
 		for i := 0; i < 200; i++ {
 			sb.WriteString("a")
 		}
-		sb.WriteString("\\u0070assword") // password
+		sb.WriteString("_\\u0070assword") // _password
 
 		keyContent := []byte(sb.String())
 

@@ -102,7 +102,7 @@ func TestScanEscapedKeyForSensitive_BufferFill(t *testing.T) {
 	// "token" split across boundary.
 	// internal bufSize is 4097. overlap 64.
 
-	padding := strings.Repeat("x", 4096)
+	padding := strings.Repeat(".", 4096)
 	// We want "token" to be at the end.
 	// buf[4096] is 'z' (dummy).
 	// valid data up to 4096.

@@ -40,9 +40,8 @@ func TestRedact_EdgeCases(t *testing.T) {
 			want  bool
 		}{
 			{`{"token": "val"}`, true},
-			// "nottoken" contains "token", and since we don't check previous character (suffix match allowed),
-			// it is considered sensitive.
-			{`{"nottoken": "val"}`, true},
+			// "nottoken" contains "token", but we check previous character (suffix match not allowed unless boundary).
+			{`{"nottoken": "val"}`, false},
 			{`{"key": "token"}`, false}, // token in value, not key
 			{`"token"`, false},          // just string, no colon
 			{`"token":`, true},          // key

@@ -19,13 +19,13 @@ func TestScanForSensitiveKeys_LongInput(t *testing.T) {
 	assert.False(t, scanForSensitiveKeys([]byte(longSafe), false))
 
 	// Case 2: Long input with sensitive key at the end
-	longSensitive := strings.Repeat("a", 200) + "password"
+	longSensitive := strings.Repeat("a", 200) + "_password"
 	assert.True(t, scanForSensitiveKeys([]byte(longSensitive), false))
 
 	// Case 3: Long input with sensitive key in the middle
     // Note: Use '.' as filler after password to ensure boundary check passes.
     // If we use 'b', it looks like "passwordbbbb..." which is treated as a different word.
-	longSensitiveMid := strings.Repeat("a", 100) + "password" + strings.Repeat(".", 100)
+	longSensitiveMid := strings.Repeat("a", 100) + "_password" + strings.Repeat(".", 100)
 	assert.True(t, scanForSensitiveKeys([]byte(longSensitiveMid), false))
 
     // Case 4: Long input with sensitive key that requires case folding match

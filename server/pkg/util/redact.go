@@ -234,6 +234,23 @@ func scanForSensitiveKeys(input []byte, validateKeyContext bool) bool { //nolint
 // checkPotentialMatch checks if a sensitive key starts at matchStart.
 // startChar must be the lowercase version of input[matchStart].
 func checkPotentialMatch(input []byte, matchStart int, startChar byte) bool {
+	// Check boundary at start
+	if matchStart > 0 {
+		prev := input[matchStart-1]
+		if (prev >= 'a' && prev <= 'z') || (prev >= 'A' && prev <= 'Z') || (prev >= '0' && prev <= '9') {
+			// It's a continuation of a word (e.g. "betoken" containing "token")
+			// But check for CamelCase boundary (e.g. "authToken")
+			isPrevLower := (prev >= 'a' && prev <= 'z')
+			isCurrUpper := (input[matchStart] >= 'A' && input[matchStart] <= 'Z')
+
+			if isPrevLower && isCurrUpper {
+				// CamelCase boundary. It IS a match start.
+			} else {
+				return false
+			}
+		}
+	}
+
 	// Optimization: Check second character
 	if matchStart+1 < len(input) {
 		second := input[matchStart+1] | 0x20

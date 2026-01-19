@@ -160,8 +160,8 @@ func TestRedactJSONFast_EdgeCases(t *testing.T) {
         // Edge case: Large key
         {
             name: "Large Key Redaction",
-            input: `{"` + makeLargeString(200) + `token": "123"}`,
-            expected: `{"` + makeLargeString(200) + `token": "[REDACTED]"}`,
+            input: `{"` + makeLargeString(200) + `_token": "123"}`,
+            expected: `{"` + makeLargeString(200) + `_token": "[REDACTED]"}`,
         },
         // Edge case: Key split across buffer (simulated by logic?)
         // Hard to simulate buffer split in unit test without mocking.

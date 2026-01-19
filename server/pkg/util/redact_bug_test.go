@@ -34,8 +34,9 @@ func TestRedactJSON_EscapedKey_Complex(t *testing.T) {
 func TestRedactJSON_LargeKeyWithEscapes(t *testing.T) {
 	// Create a key larger than 1024 bytes
 	// "password" escaped as "p\u0061ssword"
+	// Use "_" separator to satisfy start boundary check
 	padding := strings.Repeat("a", 1100)
-	escapedPassword := `p\u0061ssword`
+	escapedPassword := `_p\u0061ssword`
 	key := padding + escapedPassword
 	input := []byte(`{"` + key + `": "secret_value"}`)
 
@@ -54,7 +55,7 @@ func TestRedactJSON_LargeKeyWithEscapes(t *testing.T) {
 	assert.NoError(t, err)
 
 	// The key in the map will have 'a' instead of \u0061
-	expectedKey := padding + "password"
+	expectedKey := padding + "_password"
 	val, ok := m[expectedKey]
 	if !ok {
 		t.Fatalf("Key not found in output")
@@ -66,12 +67,13 @@ func TestRedactJSON_LargeKeyWithEscapes(t *testing.T) {
 func TestRedactJSON_HugeKeyWithEscapes(t *testing.T) {
 	// Create a key larger than 1MB (1024*1024 bytes)
 	// "password" escaped as "p\u0061ssword"
+	// Use "_" separator to satisfy start boundary check
 	// We want to verify that even for huge keys, we attempt to detect sensitive info if possible,
 	// OR (if the current behavior is a bug) we expose the bug.
 
 	// 1MB + padding
 	targetLen := 1024*1024 + 100
-	escapedPassword := `p\u0061ssword`
+	escapedPassword := `_p\u0061ssword`
 	paddingLen := targetLen - len(escapedPassword)
 	padding := strings.Repeat("a", paddingLen)
 
@@ -90,7 +92,7 @@ func TestRedactJSON_HugeKeyWithEscapes(t *testing.T) {
 	err := json.Unmarshal(output, &m)
 	assert.NoError(t, err)
 
-	expectedKey := padding + "password"
+	expectedKey := padding + "_password"
 	val, ok := m[expectedKey]
 	if !ok {
 		t.Fatalf("Key not found in output")
