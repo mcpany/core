@@ -204,13 +204,11 @@ func stripSecretsFromWebrtcService(s *configv1.WebrtcUpstreamService) {
 func stripSecretsFromGrpcService(_ *configv1.GrpcUpstreamService) {
 	// gRPC calls don't have explicit parameter mapping with secrets currently defined in proto.
 	// If they do, add logic here.
-	_ = "placeholder"
 }
 
 func stripSecretsFromOpenapiService(_ *configv1.OpenapiUpstreamService) {
 	// OpenAPI calls use generic structures, check if they have secret mappings.
 	// Current definition OpenAPICallDefinition doesn't have parameter mappings like HTTP.
-	_ = "placeholder"
 }
 
 func stripSecretsFromHook(h *configv1.CallHook) {
@@ -276,7 +274,6 @@ func stripSecretsFromWebrtcCall(c *configv1.WebrtcCallDefinition) {
 func stripSecretsFromMcpCall(_ *configv1.MCPCallDefinition) {
 	// MCPCallDefinition doesn't seem to have explicit parameter mappings with secrets in the proto definition I read.
 	// It uses input_schema and transformers.
-	_ = "placeholder"
 }
 
 func stripSecretsFromSecretMap(m map[string]*configv1.SecretValue) {
