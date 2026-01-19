@@ -115,6 +115,11 @@ export interface UpstreamServiceConfig {
    * @inject_tag: yaml:"-"
    */
   configError: string;
+  /**
+   * If true, this service configuration is read-only (e.g., loaded from a file).
+   * @inject_tag: yaml:"-"
+   */
+  readOnly: boolean;
   /** Configuration for the pool of connections to the upstream service. */
   connectionPool?:
     | ConnectionPoolConfig
@@ -867,6 +872,7 @@ function createBaseUpstreamServiceConfig(): UpstreamServiceConfig {
     disable: false,
     autoDiscoverTool: false,
     configError: "",
+    readOnly: false,
     connectionPool: undefined,
     upstreamAuth: undefined,
     cache: undefined,
@@ -921,6 +927,9 @@ export const UpstreamServiceConfig: MessageFns<UpstreamServiceConfig> = {
     }
     if (message.configError !== "") {
       writer.uint32(66).string(message.configError);
+    }
+    if (message.readOnly !== false) {
+      writer.uint32(280).bool(message.readOnly);
     }
     if (message.connectionPool !== undefined) {
       ConnectionPoolConfig.encode(message.connectionPool, writer.uint32(74).fork()).join();
@@ -1072,6 +1081,14 @@ export const UpstreamServiceConfig: MessageFns<UpstreamServiceConfig> = {
           }
 
           message.configError = reader.string();
+          continue;
+        }
+        case 35: {
+          if (tag !== 280) {
+            break;
+          }
+
+          message.readOnly = reader.bool();
           continue;
         }
         case 9: {
@@ -1301,6 +1318,7 @@ export const UpstreamServiceConfig: MessageFns<UpstreamServiceConfig> = {
       disable: isSet(object.disable) ? globalThis.Boolean(object.disable) : false,
       autoDiscoverTool: isSet(object.auto_discover_tool) ? globalThis.Boolean(object.auto_discover_tool) : false,
       configError: isSet(object.config_error) ? globalThis.String(object.config_error) : "",
+      readOnly: isSet(object.read_only) ? globalThis.Boolean(object.read_only) : false,
       connectionPool: isSet(object.connection_pool) ? ConnectionPoolConfig.fromJSON(object.connection_pool) : undefined,
       upstreamAuth: isSet(object.upstream_auth) ? Authentication.fromJSON(object.upstream_auth) : undefined,
       cache: isSet(object.cache) ? CacheConfig.fromJSON(object.cache) : undefined,
@@ -1381,6 +1399,9 @@ export const UpstreamServiceConfig: MessageFns<UpstreamServiceConfig> = {
     }
     if (message.configError !== "") {
       obj.config_error = message.configError;
+    }
+    if (message.readOnly !== false) {
+      obj.read_only = message.readOnly;
     }
     if (message.connectionPool !== undefined) {
       obj.connection_pool = ConnectionPoolConfig.toJSON(message.connectionPool);
@@ -1476,6 +1497,7 @@ export const UpstreamServiceConfig: MessageFns<UpstreamServiceConfig> = {
     message.disable = object.disable ?? false;
     message.autoDiscoverTool = object.autoDiscoverTool ?? false;
     message.configError = object.configError ?? "";
+    message.readOnly = object.readOnly ?? false;
     message.connectionPool = (object.connectionPool !== undefined && object.connectionPool !== null)
       ? ConnectionPoolConfig.fromPartial(object.connectionPool)
       : undefined;
