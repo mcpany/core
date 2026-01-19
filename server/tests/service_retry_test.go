@@ -12,9 +12,6 @@ import (
 	"testing"
 	"time"
 
-	"google.golang.org/protobuf/proto"
-	"google.golang.org/protobuf/types/known/durationpb"
-
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/mcpany/core/server/pkg/app"
 	"github.com/spf13/afero"
@@ -23,11 +20,14 @@ import (
 )
 
 func TestServiceRetry(t *testing.T) {
+	// 1. Create a config file pointing to a non-existent MCP server
+	fs := afero.NewMemMapFs()
+
 	// Get an ephemeral port by listening on port 0
 	var l net.Listener
 	var err error
 	for i := 0; i < 10; i++ {
-		l, err = net.Listen("tcp", ":0")
+		l, err = net.Listen("tcp", "127.0.0.2:0")
 		if err == nil {
 			break
 		}
@@ -38,35 +38,31 @@ func TestServiceRetry(t *testing.T) {
 	// Close the listener immediately so we can get "connection refused" which fails fast.
 	l.Close()
 
-	targetURL := fmt.Sprintf("http://127.0.0.1:%d/mcp", port)
+	// We will attempt to reuse this port. There is a small risk someone else steals it,
+	// but on localhost tests it's usually fine.
+	targetURL := fmt.Sprintf("http://127.0.0.2:%d/mcp", port)
 
-	// Create config object
-	config := &configv1.McpAnyServerConfig{
-		UpstreamServices: []*configv1.UpstreamServiceConfig{
-			{
-				Name: proto.String("delayed-mcp"),
-				ServiceConfig: &configv1.UpstreamServiceConfig_McpService{
-					McpService: &configv1.McpUpstreamService{
-						ConnectionType: &configv1.McpUpstreamService_HttpConnection{
-							HttpConnection: &configv1.McpStreamableHttpConnection{
-								HttpAddress: proto.String(targetURL),
-							},
-						},
-					},
-				},
-				Resilience: &configv1.ResilienceConfig{
-					Timeout: durationpb.New(500 * time.Millisecond),
-				},
-			},
-		},
-	}
+	configContent := fmt.Sprintf(`
+upstream_services:
+  - name: "delayed-mcp"
+    mcp_service:
+      http_connection:
+        http_address: "%s"
+    resilience:
+      timeout: "0.5s"
+`, targetURL)
+
+	err = afero.WriteFile(fs, "config.yaml", []byte(configContent), 0644)
+	require.NoError(t, err)
 
 	// 2. Start the Application with MockStorage
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
 	mockStore := new(MockStorage)
-	mockStore.On("Load", mock.Anything).Return(config, nil)
+	// We don't really need MockStore to return the config if we use file-based loading,
+	// but keeping it for compatibility with the app initialization if it calls Load().
+	mockStore.On("Load", mock.Anything).Return(&configv1.McpAnyServerConfig{}, nil)
 	mockStore.On("ListServices", mock.Anything).Return([]*configv1.UpstreamServiceConfig{}, nil)
 	mockStore.On("GetGlobalSettings", mock.Anything).Return(&configv1.GlobalSettings{}, nil)
 	mockStore.On("Close").Return(nil)
@@ -75,8 +71,7 @@ func TestServiceRetry(t *testing.T) {
 	a.Storage = mockStore
 
 	go func() {
-		// Empty config paths as we supply config via Storage
-		err := a.Run(ctx, afero.NewMemMapFs(), false, "127.0.0.1:0", "", nil, "", 1*time.Second)
+		err := a.Run(ctx, fs, false, "127.0.0.2:0", "", []string{"config.yaml"}, "", 1*time.Second)
 		if err != nil && ctx.Err() == nil {
 			t.Logf("Application run error: %v", err)
 		}
@@ -115,9 +110,11 @@ func TestServiceRetry(t *testing.T) {
 		w.Write([]byte(`{"jsonrpc": "2.0", "id": 1, "result": {"protocolVersion": "2024-11-05", "capabilities": {}, "serverInfo": {"name": "mock", "version": "1.0"}}}`))
 	}))
 
+	// Assign the listener with the dynamic port. We need to re-bind.
+	// Retry logic to handle EADDRINUSE
 	var l2 net.Listener
 	require.Eventually(t, func() bool {
-		l2, err = net.Listen("tcp", fmt.Sprintf(":%d", port))
+		l2, err = net.Listen("tcp", fmt.Sprintf("127.0.0.2:%d", port))
 		if err != nil {
 			t.Logf("Failed to re-bind to port %d: %v. Retrying...", port, err)
 			return false
@@ -202,26 +199,50 @@ func (m *MockStorage) DeleteSecret(ctx context.Context, id string) error {
 	return nil
 }
 func (m *MockStorage) CreateUser(ctx context.Context, user *configv1.User) error { return nil }
-func (m *MockStorage) GetUser(ctx context.Context, id string) (*configv1.User, error) { return nil, nil }
-func (m *MockStorage) ListUsers(ctx context.Context) ([]*configv1.User, error) { return nil, nil }
+func (m *MockStorage) GetUser(ctx context.Context, id string) (*configv1.User, error) {
+	return nil, nil
+}
+func (m *MockStorage) ListUsers(ctx context.Context) ([]*configv1.User, error)   { return nil, nil }
 func (m *MockStorage) UpdateUser(ctx context.Context, user *configv1.User) error { return nil }
-func (m *MockStorage) DeleteUser(ctx context.Context, id string) error { return nil }
-func (m *MockStorage) ListProfiles(ctx context.Context) ([]*configv1.ProfileDefinition, error) { return nil, nil }
-func (m *MockStorage) GetProfile(ctx context.Context, name string) (*configv1.ProfileDefinition, error) { return nil, nil }
-func (m *MockStorage) SaveProfile(ctx context.Context, profile *configv1.ProfileDefinition) error { return nil }
+func (m *MockStorage) DeleteUser(ctx context.Context, id string) error           { return nil }
+func (m *MockStorage) ListProfiles(ctx context.Context) ([]*configv1.ProfileDefinition, error) {
+	return nil, nil
+}
+func (m *MockStorage) GetProfile(ctx context.Context, name string) (*configv1.ProfileDefinition, error) {
+	return nil, nil
+}
+func (m *MockStorage) SaveProfile(ctx context.Context, profile *configv1.ProfileDefinition) error {
+	return nil
+}
 func (m *MockStorage) DeleteProfile(ctx context.Context, name string) error { return nil }
-func (m *MockStorage) ListServiceCollections(ctx context.Context) ([]*configv1.Collection, error) { return nil, nil }
-func (m *MockStorage) GetServiceCollection(ctx context.Context, name string) (*configv1.Collection, error) { return nil, nil }
-func (m *MockStorage) SaveServiceCollection(ctx context.Context, collection *configv1.Collection) error { return nil }
+func (m *MockStorage) ListServiceCollections(ctx context.Context) ([]*configv1.Collection, error) {
+	return nil, nil
+}
+func (m *MockStorage) GetServiceCollection(ctx context.Context, name string) (*configv1.Collection, error) {
+	return nil, nil
+}
+func (m *MockStorage) SaveServiceCollection(ctx context.Context, collection *configv1.Collection) error {
+	return nil
+}
 func (m *MockStorage) DeleteServiceCollection(ctx context.Context, name string) error { return nil }
 func (m *MockStorage) SaveToken(ctx context.Context, token *configv1.UserToken) error { return nil }
-func (m *MockStorage) GetToken(ctx context.Context, userID, serviceID string) (*configv1.UserToken, error) { return nil, nil }
+func (m *MockStorage) GetToken(ctx context.Context, userID, serviceID string) (*configv1.UserToken, error) {
+	return nil, nil
+}
 func (m *MockStorage) DeleteToken(ctx context.Context, userID, serviceID string) error { return nil }
-func (m *MockStorage) ListCredentials(ctx context.Context) ([]*configv1.Credential, error) { return nil, nil }
-func (m *MockStorage) GetCredential(ctx context.Context, id string) (*configv1.Credential, error) { return nil, nil }
-func (m *MockStorage) SaveCredential(ctx context.Context, cred *configv1.Credential) error { return nil }
+func (m *MockStorage) ListCredentials(ctx context.Context) ([]*configv1.Credential, error) {
+	return nil, nil
+}
+func (m *MockStorage) GetCredential(ctx context.Context, id string) (*configv1.Credential, error) {
+	return nil, nil
+}
+func (m *MockStorage) SaveCredential(ctx context.Context, cred *configv1.Credential) error {
+	return nil
+}
 func (m *MockStorage) DeleteCredential(ctx context.Context, id string) error { return nil }
-func (m *MockStorage) SaveGlobalSettings(ctx context.Context, settings *configv1.GlobalSettings) error { return nil }
+func (m *MockStorage) SaveGlobalSettings(ctx context.Context, settings *configv1.GlobalSettings) error {
+	return nil
+}
 func (m *MockStorage) Close() error {
 	args := m.Called()
 	return args.Error(0)
