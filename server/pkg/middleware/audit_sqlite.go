@@ -11,6 +11,8 @@ import (
 	"sync"
 	"time"
 
+	"github.com/mcpany/core/server/pkg/validation"
+
 	// modernc.org/sqlite is a pure Go SQLite driver.
 	_ "modernc.org/sqlite"
 )
@@ -30,6 +32,10 @@ type SQLiteAuditStore struct {
 func NewSQLiteAuditStore(path string) (*SQLiteAuditStore, error) {
 	if path == "" {
 		return nil, fmt.Errorf("sqlite path is required")
+	}
+
+	if err := validation.IsAllowedPath(path); err != nil {
+		return nil, fmt.Errorf("sqlite audit path not allowed: %w", err)
 	}
 
 	db, err := sql.Open("sqlite", path)

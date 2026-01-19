@@ -46,8 +46,6 @@ function OAuthCallbackContent() {
                 const storedState = sessionStorage.getItem('oauth_state') || '';
                 const redirectUrl = sessionStorage.getItem('oauth_redirect_url') || `${window.location.origin}/auth/callback`;
 
-                console.log(`DEBUG: Callback details - state: ${state}, storedState: ${storedState}, serviceID: ${serviceID}, credentialID: ${credentialID}, redirectUrl: ${redirectUrl}`);
-
                 const storedReturnPath = sessionStorage.getItem('oauth_return_path');
                 if (storedReturnPath) {
                     setReturnPath(storedReturnPath);

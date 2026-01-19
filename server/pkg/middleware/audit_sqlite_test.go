@@ -12,6 +12,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/mcpany/core/server/pkg/validation"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	_ "modernc.org/sqlite"
@@ -24,6 +25,10 @@ func TestEnsureColumn_Validation(t *testing.T) {
 	dbPath := f.Name()
 	f.Close()
 	defer os.Remove(dbPath)
+
+	// Allow the temp path
+	validation.SetAllowedPaths([]string{os.TempDir()})
+	defer validation.SetAllowedPaths(nil)
 
 	// Open DB
 	db, err := sql.Open("sqlite", dbPath)
@@ -56,6 +61,10 @@ func TestSQLiteAuditStore(t *testing.T) {
 	dbPath := f.Name()
 	f.Close()
 	defer os.Remove(dbPath)
+
+	// Allow the temp path
+	validation.SetAllowedPaths([]string{os.TempDir()})
+	defer validation.SetAllowedPaths(nil)
 
 	// Initialize store
 	store, err := NewSQLiteAuditStore(dbPath)
@@ -113,6 +122,10 @@ func TestSQLiteAuditStore_TamperEvident(t *testing.T) {
 	f.Close()
 	defer os.Remove(dbPath)
 
+	// Allow the temp path
+	validation.SetAllowedPaths([]string{os.TempDir()})
+	defer validation.SetAllowedPaths(nil)
+
 	// Initialize store
 	store, err := NewSQLiteAuditStore(dbPath)
 	require.NoError(t, err)
@@ -166,6 +179,10 @@ func TestSQLiteAuditStore_Migration(t *testing.T) {
 	dbPath := f.Name()
 	f.Close()
 	defer os.Remove(dbPath)
+
+	// Allow the temp path
+	validation.SetAllowedPaths([]string{os.TempDir()})
+	defer validation.SetAllowedPaths(nil)
 
 	// Manually create legacy table
 	db, err := sql.Open("sqlite", dbPath)
@@ -237,6 +254,10 @@ func TestSQLiteAuditStore_BackwardCompatibility(t *testing.T) {
 	f.Close()
 	defer os.Remove(dbPath)
 
+	// Allow the temp path
+	validation.SetAllowedPaths([]string{os.TempDir()})
+	defer validation.SetAllowedPaths(nil)
+
 	// Create store to init schema
 	store, err := NewSQLiteAuditStore(dbPath)
 	require.NoError(t, err)
@@ -291,6 +312,10 @@ func TestSQLiteAuditStore_BackwardCompatibility(t *testing.T) {
 // SPDX-License-Identifier: Apache-2.0
 
 func TestNewSQLiteAuditStore_EdgeCases(t *testing.T) {
+	// Allow the temp path
+	validation.SetAllowedPaths([]string{os.TempDir()})
+	defer validation.SetAllowedPaths(nil)
+
 	t.Run("empty path", func(t *testing.T) {
 		store, err := NewSQLiteAuditStore("")
 		assert.Error(t, err)
@@ -328,6 +353,10 @@ func TestNewSQLiteAuditStore_EdgeCases(t *testing.T) {
 }
 
 func TestEnsureColumns_Failure(t *testing.T) {
+	// Allow the temp path
+	validation.SetAllowedPaths([]string{os.TempDir()})
+	defer validation.SetAllowedPaths(nil)
+
 	// This test is tricky because we need to simulate a failure in ensureColumns.
 	// Since NewSQLiteAuditStore calls ensureColumns internally, we can try to
 	// create a table with a schema that conflicts or create a read-only db?
@@ -375,6 +404,10 @@ func TestSQLiteAuditStore_Write_Errors(t *testing.T) {
 	f.Close()
 	defer os.Remove(dbPath)
 
+	// Allow the temp path
+	validation.SetAllowedPaths([]string{os.TempDir()})
+	defer validation.SetAllowedPaths(nil)
+
 	store, err := NewSQLiteAuditStore(dbPath)
 	require.NoError(t, err)
 	defer store.Close()
@@ -398,6 +431,10 @@ func TestSQLiteAuditStore_Verify_Errors(t *testing.T) {
 	f.Close()
 	defer os.Remove(dbPath)
 
+	// Allow the temp path
+	validation.SetAllowedPaths([]string{os.TempDir()})
+	defer validation.SetAllowedPaths(nil)
+
 	store, err := NewSQLiteAuditStore(dbPath)
 	require.NoError(t, err)
 
@@ -418,6 +455,10 @@ func TestSQLiteAuditStore_ComplexWrite(t *testing.T) {
 	dbPath := f.Name()
 	f.Close()
 	defer os.Remove(dbPath)
+
+	// Allow the temp path
+	validation.SetAllowedPaths([]string{os.TempDir()})
+	defer validation.SetAllowedPaths(nil)
 
 	store, err := NewSQLiteAuditStore(dbPath)
 	require.NoError(t, err)
@@ -453,6 +494,10 @@ func TestSQLiteAuditStore_IntegrityViolation_PrevHash(t *testing.T) {
 	f.Close()
 	defer os.Remove(dbPath)
 
+	// Allow the temp path
+	validation.SetAllowedPaths([]string{os.TempDir()})
+	defer validation.SetAllowedPaths(nil)
+
 	store, err := NewSQLiteAuditStore(dbPath)
 	require.NoError(t, err)
 
@@ -486,6 +531,10 @@ func TestEnsureColumns_AlreadyExists(t *testing.T) {
 	f.Close()
 	defer os.Remove(dbPath)
 
+	// Allow the temp path
+	validation.SetAllowedPaths([]string{os.TempDir()})
+	defer validation.SetAllowedPaths(nil)
+
 	// Create DB and columns manually
 	db, err := sql.Open("sqlite", dbPath)
 	require.NoError(t, err)
@@ -507,6 +556,10 @@ func TestSQLiteAuditStore_ConcurrentWrites(t *testing.T) {
 	dbPath := f.Name()
 	f.Close()
 	defer os.Remove(dbPath)
+
+	// Allow the temp path
+	validation.SetAllowedPaths([]string{os.TempDir()})
+	defer validation.SetAllowedPaths(nil)
 
 	store, err := NewSQLiteAuditStore(dbPath)
 	require.NoError(t, err)
