@@ -1767,6 +1767,12 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 
 	for _, param := range t.callDefinition.GetParameters() {
 		name := param.GetSchema().GetName()
+
+		// Validate environment variable name security
+		if isDangerousEnvVar(name) {
+			return nil, fmt.Errorf("parameter %q matches a dangerous environment variable name", name)
+		}
+
 		if secret := param.GetSecret(); secret != nil {
 			secretValue, err := util.ResolveSecret(ctx, secret)
 			if err != nil {
@@ -2078,6 +2084,12 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 
 	for _, param := range t.callDefinition.GetParameters() {
 		name := param.GetSchema().GetName()
+
+		// Validate environment variable name security
+		if isDangerousEnvVar(name) {
+			return nil, fmt.Errorf("parameter %q matches a dangerous environment variable name", name)
+		}
+
 		if secret := param.GetSecret(); secret != nil {
 			secretValue, err := util.ResolveSecret(ctx, secret)
 			if err != nil {
@@ -2463,6 +2475,10 @@ func isShellCommand(cmd string) bool {
 		"tar", "find", "xargs", "tee",
 		"make", "rake", "ant", "mvn", "gradle",
 		"npm", "yarn", "pnpm", "go", "cargo", "pip",
+		// Editors and pagers that can spawn shells
+		"vim", "vi", "emacs", "nano", "less", "more", "man", "view",
+		// Network tools that can execute commands
+		"rsync", "sftp", "nmap",
 	}
 	base := filepath.Base(cmd)
 	for _, shell := range shells {
@@ -2490,6 +2506,28 @@ func isVersionSuffix(s string) bool {
 		}
 	}
 	return true
+}
+
+func isDangerousEnvVar(name string) bool {
+	dangerous := []string{
+		"LD_PRELOAD", "LD_LIBRARY_PATH", "LD_AUDIT", "LD_DEBUG",
+		"GTK_MODULES",
+		"PERL5LIB", "PERLLIB",
+		"PYTHONPATH", "PYTHONSTARTUP", "PYTHONHOME",
+		"NODE_OPTIONS", "NODE_PATH",
+		"BASH_ENV", "ENV", "SHELLOPTS", "PS4", "IFS",
+		"RUBYLIB", "RUBYOPT",
+		"LUA_PATH", "LUA_CPATH",
+		"JAVA_TOOL_OPTIONS", "JDK_JAVA_OPTIONS",
+		"R_PROFILE_USER", "R_ENVIRON_USER",
+	}
+	upper := strings.ToUpper(name)
+	for _, d := range dangerous {
+		if upper == d {
+			return true
+		}
+	}
+	return false
 }
 
 func checkForShellInjection(val string, template string, placeholder string, command string) error {
