@@ -1,3 +1,6 @@
+// Copyright 2026 Author(s) of MCP Any
+// SPDX-License-Identifier: Apache-2.0
+
 package e2e
 
 import (
@@ -32,4 +35,23 @@ func TestRedactor_Bug_CommentInKey(t *testing.T) {
 
 	// Ensure the key is NOT redacted
 	assert.Contains(t, string(redacted), cc)
+}
+
+func TestRedactor_Bug_PlainText(t *testing.T) {
+	// This previously triggered a bug where RedactJSON would modify plain text
+	// if it contained quotes and colons.
+	input := `This is plain text with "token": "mysecret" embedded.`
+
+	// Config enabling default redactors
+	cfg := &configv1.DLPConfig{
+		Enabled: proto.Bool(true),
+	}
+
+	r := middleware.NewRedactor(cfg, nil)
+
+	redacted, err := r.RedactJSON([]byte(input))
+	assert.NoError(t, err)
+
+	// Should verify it is NOT redacted
+	assert.Equal(t, input, string(redacted))
 }
