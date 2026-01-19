@@ -1901,6 +1901,9 @@ func (a *Application) createAuthMiddleware(forcePrivateIPOnly bool) func(http.Ha
 				requestKey := r.Header.Get("X-API-Key")
 				if requestKey == "" {
 					requestKey = r.URL.Query().Get("api_key")
+					if requestKey != "" && r.Method != http.MethodGet && r.Method != http.MethodHead {
+						logging.GetLogger().Warn("API Key passed via query parameter for state-changing method. This is insecure as it may be logged.", "method", r.Method, "path", r.URL.Path)
+					}
 				}
 				if requestKey == "" {
 					authHeader := r.Header.Get("Authorization")

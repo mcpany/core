@@ -17,6 +17,42 @@ export function middleware(request: NextRequest) {
 
   // Intercept /api/v1 requests AND gRPC requests
   if (pathname.startsWith('/api/v1') || pathname.startsWith('/mcpany.api.v1.') || pathname.startsWith('/doctor') || pathname.startsWith('/v1/') || pathname.startsWith('/auth/oauth/') || pathname === '/auth/login' || pathname.startsWith('/debug/')) {
+    // 🛡️ Sentinel Security: CSRF Protection
+    // Ensure that requests to the API proxy originate from this UI application.
+    // This prevents malicious sites from using the user's browser to make authenticated requests via this proxy.
+    const origin = request.headers.get('origin');
+    const host = request.headers.get('host'); // e.g. localhost:3000
+
+    // Strict Origin Check: If Origin header is present, it MUST match the Host.
+    // We only enforce this for state-changing methods to allow external navigation (GET).
+    const isStateChanging = ['POST', 'PUT', 'PATCH', 'DELETE'].includes(request.method);
+
+    if (isStateChanging) {
+      if (origin) {
+        // Remove protocol from origin (http://localhost:3000 -> localhost:3000)
+        const originHost = origin.replace(/^https?:\/\//, '');
+        if (host && originHost !== host) {
+          console.warn(`[Middleware] CSRF blocked: Origin ${origin} does not match Host ${host}`);
+          return new NextResponse(JSON.stringify({ error: 'CSRF Forbidden: Origin mismatch' }), { status: 403, headers: { 'Content-Type': 'application/json' } });
+        }
+      } else {
+        // Fallback to Referer check if Origin is missing
+        const referer = request.headers.get('referer');
+        if (referer) {
+          try {
+            const refererUrl = new URL(referer);
+            if (host && refererUrl.host !== host) {
+              console.warn(`[Middleware] CSRF blocked: Referer ${referer} does not match Host ${host}`);
+              return new NextResponse(JSON.stringify({ error: 'CSRF Forbidden: Referer mismatch' }), { status: 403, headers: { 'Content-Type': 'application/json' } });
+            }
+          } catch (e) {
+            // Invalid referer URL, block it safely
+            return new NextResponse(JSON.stringify({ error: 'CSRF Forbidden: Invalid Referer' }), { status: 403, headers: { 'Content-Type': 'application/json' } });
+          }
+        }
+      }
+    }
+
     // Inject API Key from server-side environment variable
     const apiKey = process.env.MCPANY_API_KEY;
     if (apiKey) {
