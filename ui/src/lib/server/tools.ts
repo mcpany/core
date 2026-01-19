@@ -10,6 +10,9 @@ export interface Tool {
   execute: (args: any) => Promise<any>;
 }
 
+/**
+ * The BuiltInTools const.
+ */
 export const BuiltInTools: Record<string, Tool> = {
   calculator: {
     name: "calculator",

@@ -7,6 +7,10 @@ import { useState, useEffect } from "react";
 
 const STORAGE_KEY = "mcpany-pinned-tools";
 
+/**
+ * Hook for pinnedtools.
+ * @returns The result.
+ */
 export function usePinnedTools() {
   const [pinnedTools, setPinnedTools] = useState<string[]>([]);
   const [isLoaded, setIsLoaded] = useState(false);

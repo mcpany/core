@@ -148,8 +148,9 @@ type Manager struct {
 	cachedMCPTools []*mcp.Tool
 	toolsMutex     sync.RWMutex
 
-	enabledProfiles []string
-	profileDefs     map[string]*configv1.ProfileDefinition
+	enabledProfiles      []string
+	profileDefs          map[string]*configv1.ProfileDefinition
+	allowedServicesCache map[string]map[string]bool
 }
 
 // NewManager creates and returns a new, empty Manager.
@@ -159,11 +160,12 @@ type Manager struct {
 // Returns the result.
 func NewManager(bus *bus.Provider) *Manager {
 	return &Manager{
-		bus:         bus,
-		tools:       xsync.NewMap[string, Tool](),
-		serviceInfo: xsync.NewMap[string, *ServiceInfo](),
-		nameMap:     xsync.NewMap[string, string](),
-		profileDefs: make(map[string]*configv1.ProfileDefinition),
+		bus:                  bus,
+		tools:                xsync.NewMap[string, Tool](),
+		serviceInfo:          xsync.NewMap[string, *ServiceInfo](),
+		nameMap:              xsync.NewMap[string, string](),
+		profileDefs:          make(map[string]*configv1.ProfileDefinition),
+		allowedServicesCache: make(map[string]map[string]bool),
 	}
 }
 
@@ -176,8 +178,19 @@ func (tm *Manager) SetProfiles(enabled []string, defs []*configv1.ProfileDefinit
 	defer tm.mu.Unlock()
 	tm.enabledProfiles = enabled
 	tm.profileDefs = make(map[string]*configv1.ProfileDefinition)
+	tm.allowedServicesCache = make(map[string]map[string]bool)
+
 	for _, d := range defs {
 		tm.profileDefs[d.GetName()] = d
+
+		// Pre-compute allowed services for this profile
+		allowed := make(map[string]bool)
+		for serviceID, sc := range d.GetServiceConfig() {
+			if sc.GetEnabled() {
+				allowed[serviceID] = true
+			}
+		}
+		tm.allowedServicesCache[d.GetName()] = allowed
 	}
 }
 
@@ -293,22 +306,13 @@ func (tm *Manager) ToolMatchesProfile(tool Tool, profileID string) bool {
 //
 // Returns the result.
 // Returns true if successful.
+// Note: The returned map is cached and shared. Do not modify it.
 func (tm *Manager) GetAllowedServiceIDs(profileID string) (map[string]bool, bool) {
 	tm.mu.RLock()
 	defer tm.mu.RUnlock()
 
-	def, ok := tm.profileDefs[profileID]
-	if !ok {
-		return nil, false
-	}
-
-	allowed := make(map[string]bool)
-	for serviceID, sc := range def.GetServiceConfig() {
-		if sc.GetEnabled() {
-			allowed[serviceID] = true
-		}
-	}
-	return allowed, true
+	allowed, ok := tm.allowedServicesCache[profileID]
+	return allowed, ok
 }
 
 func (tm *Manager) matchesSelector(t *v1.Tool, selector *configv1.ProfileSelector) bool {
@@ -505,11 +509,14 @@ func (tm *Manager) ExecuteTool(ctx context.Context, req *ExecutionRequest) (any,
 		}(chain)
 	}
 
+	start := time.Now()
 	result, err := chain(ctx, req)
+	duration := time.Since(start)
+
 	if err != nil {
-		log.Error("Tool execution chain failed", "error", err)
+		log.Error("Tool execution failed", "error", err, "duration", duration.String())
 	} else {
-		log.Debug("Tool execution chain successful")
+		log.Info("Tool execution successful", "duration", duration.String())
 	}
 	return result, err
 }
