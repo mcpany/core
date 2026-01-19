@@ -31,8 +31,6 @@ func TestDockerComposeE2E(t *testing.T) {
 	}
 
 	rootDir, err := os.Getwd()
-	// ... (rest of the body) ...
-
 	require.NoError(t, err)
 
 	// Navigate up to repo root (core)
@@ -78,8 +76,8 @@ func TestDockerComposeE2E(t *testing.T) {
 			cmd.Stdout = os.Stdout
 			cmd.Stderr = os.Stderr
 			if err := cmd.Run(); err != nil {
-                t.Logf("Failed to dump logs: %v", err)
-            }
+				t.Logf("Failed to dump logs: %v", err)
+			}
 		}
 
 		// Dump logs from manually run weather container
