@@ -1717,11 +1717,11 @@ upstream_services:
 
 	// Create a mock bus and set the hook.
 	mockRegBus := newMockBus[*bus.ServiceRegistrationRequest]()
-	bus.GetBusHook = func(_ *bus.Provider, topic string) any {
+	bus.GetBusHook = func(_ *bus.Provider, topic string) (any, error) {
 		if topic == "service_registration_requests" {
-			return mockRegBus
+			return mockRegBus, nil
 		}
-		return nil
+		return nil, nil
 	}
 	defer func() { bus.GetBusHook = nil }()
 
@@ -1774,11 +1774,11 @@ upstream_services:
 	require.NoError(t, err)
 
 	mockRegBus := newMockBus[*bus.ServiceRegistrationRequest]()
-	bus.GetBusHook = func(_ *bus.Provider, topic string) any {
+	bus.GetBusHook = func(_ *bus.Provider, topic string) (any, error) {
 		if topic == "service_registration_requests" {
-			return mockRegBus
+			return mockRegBus, nil
 		}
-		return nil
+		return nil, nil
 	}
 	defer func() { bus.GetBusHook = nil }()
 

@@ -225,14 +225,14 @@ func TestWorker_PublishFailure(t *testing.T) {
 
 	// We need to save previous hook just in case
 	prevHook := bus.GetBusHook
-	bus.GetBusHook = func(_ *bus.Provider, topic string) any {
+	bus.GetBusHook = func(_ *bus.Provider, topic string) (any, error) {
 		if topic == bus.ToolExecutionRequestTopic {
-			return reqBusMock
+			return reqBusMock, nil
 		}
 		if topic == bus.ToolExecutionResultTopic {
-			return resBusMock
+			return resBusMock, nil
 		}
-		return nil
+		return nil, nil
 	}
 	t.Cleanup(func() {
 		bus.GetBusHook = prevHook
@@ -283,14 +283,14 @@ func TestUpstreamWorker_PublishFailure(t *testing.T) {
 	resultBusMock := &mockBus[*bus.ToolExecutionResult]{}
 
 	prevHook := bus.GetBusHook
-	bus.GetBusHook = func(_ *bus.Provider, topic string) any {
+	bus.GetBusHook = func(_ *bus.Provider, topic string) (any, error) {
 		if topic == bus.ToolExecutionRequestTopic {
-			return reqBusMock
+			return reqBusMock, nil
 		}
 		if topic == bus.ToolExecutionResultTopic {
-			return resultBusMock
+			return resultBusMock, nil
 		}
-		return nil
+		return nil, nil
 	}
 	t.Cleanup(func() {
 		bus.GetBusHook = prevHook
@@ -325,5 +325,45 @@ func TestUpstreamWorker_PublishFailure(t *testing.T) {
 		// success
 	case <-time.After(1 * time.Second):
 		t.Fatal("timed out waiting for publish")
+	}
+}
+
+func TestWorker_Start_BusErrors(t *testing.T) {
+	tests := []struct {
+		name      string
+		failTopic string
+	}{
+		{
+			name:      "fail_request_bus",
+			failTopic: bus.ToolExecutionRequestTopic,
+		},
+		{
+			name:      "fail_result_bus",
+			failTopic: bus.ToolExecutionResultTopic,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			messageBus := bus_pb.MessageBus_builder{}.Build()
+			messageBus.SetInMemory(bus_pb.InMemoryBus_builder{}.Build())
+			bp, err := bus.NewProvider(messageBus)
+			require.NoError(t, err)
+
+			prevHook := bus.GetBusHook
+			bus.GetBusHook = func(p *bus.Provider, topic string) (any, error) {
+				if topic == tt.failTopic {
+					return nil, errors.New("simulated bus error")
+				}
+				return nil, nil
+			}
+			t.Cleanup(func() {
+				bus.GetBusHook = prevHook
+			})
+
+			worker := New(bp, &Config{MaxWorkers: 1, MaxQueueSize: 1})
+			worker.Start(context.Background())
+			worker.Stop()
+		})
 	}
 }
