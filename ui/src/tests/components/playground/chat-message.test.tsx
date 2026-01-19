@@ -1,3 +1,8 @@
+/**
+ * Copyright 2026 Author(s) of MCP Any
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 import { render, screen, fireEvent } from '@testing-library/react';
 import { ChatMessage, Message } from '@/components/playground/pro/chat-message';
 import { vi, describe, it, expect } from 'vitest';
