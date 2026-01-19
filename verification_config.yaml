@@ -1,0 +1,5 @@
+upstream_services:
+  - name: "weather-service"
+    command_line_service:
+      command: "echo"
+      arguments: ["hello"]

@@ -1,0 +1,4 @@
+upstream_services:
+  - name: "weather-api"
+    http_service:
+      adress: "https://api.weather.com"
