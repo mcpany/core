@@ -38,19 +38,11 @@ func WalkJSONStrings(input []byte, visitor func(raw []byte) ([]byte, bool)) []by
 		}
 
 		// Check if this string is a key.
-		// It is a key if it is followed by a colon (ignoring whitespace)
+		// It is a key if it is followed by a colon (ignoring whitespace and comments)
 		isKey := false
-		j := endQuote
-		for j < n {
-			c := input[j]
-			if c == ' ' || c == '\t' || c == '\n' || c == '\r' {
-				j++
-				continue
-			}
-			if c == ':' {
-				isKey = true
-			}
-			break
+		j := skipWhitespaceAndComments(input, endQuote)
+		if j < n && input[j] == ':' {
+			isKey = true
 		}
 
 		if !isKey {
