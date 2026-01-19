@@ -5,6 +5,7 @@ package config
 
 import (
 	"os"
+	"strings"
 	"testing"
 	"time"
 
@@ -146,6 +147,48 @@ global_settings:
 	require.NoError(t, err)
 
 	assert.Equal(t, "localhost:9091", settings.MCPListenAddress())
+}
+
+func TestSettings_MCPListenAddress_EnvPrecedence(t *testing.T) {
+	// This test verifies that Environment Variables override Config Files.
+	// Precedence should be: Flag > Env > Config > Default
+	viper.Reset()
+	fs := afero.NewMemMapFs()
+	cmd := &cobra.Command{}
+
+	// 1. Set Environment Variable
+	envKey := "MCPANY_MCP_LISTEN_ADDRESS"
+	expectedVal := "localhost:1111"
+	t.Setenv(envKey, expectedVal)
+
+	// 2. Set Config File
+	viper.Set("config-path", []string{"/config.yaml"})
+	configContent := `
+global_settings:
+  mcp_listen_address: "localhost:9999"
+`
+	err := afero.WriteFile(fs, "/config.yaml", []byte(configContent), 0o644)
+	require.NoError(t, err)
+
+	settings := &Settings{
+		proto: &configv1.GlobalSettings{},
+	}
+	// We need to ensure viper reads the env var.
+	// Since we can't easily re-bind flags in this test context without full setup,
+	// we rely on viper.AutomaticEnv() being called in BindRootFlags, but here we invoke Load directly.
+	// We need to mimic what BindRootFlags does for viper.
+	viper.AutomaticEnv()
+	viper.SetEnvPrefix("MCPANY")
+	viper.SetEnvKeyReplacer(strings.NewReplacer("-", "_"))
+
+	// Note: settings.Load uses viper.GetString("mcp-listen-address").
+	// viper.GetString will pick up the Env var if set.
+
+	err = settings.Load(cmd, fs)
+	require.NoError(t, err)
+
+	// Expect Env Value (1111), NOT Config Value (9999)
+	assert.Equal(t, expectedVal, settings.MCPListenAddress())
 }
 
 func TestSettings_GetDbDsn(t *testing.T) {
