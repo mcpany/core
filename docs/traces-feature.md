@@ -1,6 +1,7 @@
 # Feature: Traffic Inspector & Replay
 
 **Status:** Beta (Connected to Backend)
+**Roadmap Alignment:** Interactive Tool Usage History
 
 ## Overview
 
@@ -17,10 +18,14 @@ The **Traffic Inspector & Replay** (formerly Request Tracer) is an advanced obse
 
 ## Implementation Details
 
-- **Frontend**: Built with Next.js, using `ResizablePanel` for a flexible split-pane layout.
-- **Visualization**: Custom CSS-based timeline visualization for performance and simplicity.
-- **Backend Integration**: Connected to the real backend `Agent Debugger` API (`/debug/entries`).
-- **Data Transformation**: The frontend transforms flat debug logs into a structured trace view for visualization.
+- **Code Location:**
+    -   Backend Source: `server/pkg/middleware/debugger.go` (implied source of `/debug/entries`).
+    -   Frontend BFF: `ui/src/app/api/traces/route.ts` (Fetches and transforms data).
+    -   UI Components: `ui/src/components/traces/trace-detail.tsx`, `ui/src/components/traces/trace-list.tsx`.
+-   **Frontend**: Built with Next.js, using `ResizablePanel` for a flexible split-pane layout.
+-   **Visualization**: Custom CSS-based timeline visualization for performance and simplicity.
+-   **Backend Integration**: Connected to the real backend `Agent Debugger` API (`/debug/entries`).
+-   **Data Transformation**: The frontend API route (`ui/src/app/api/traces/route.ts`) transforms flat debug logs from the backend into a hierarchical trace view for visualization.
 
 ## Usage
 
