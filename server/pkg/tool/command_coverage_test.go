@@ -305,6 +305,30 @@ func TestCommandTool_Execute_InvalidArgs(t *testing.T) {
 	assert.Error(t, err)
 }
 
+func TestLocalCommandTool_ArgumentInjection_Plus(t *testing.T) {
+	t.Parallel()
+	svc := &configv1.CommandLineUpstreamService{Command: proto.String("echo")}
+	callDef := &configv1.CommandLineCallDefinition{
+		Args: []string{"{{arg}}"},
+		Parameters: []*configv1.CommandLineParameterMapping{
+			{Schema: &configv1.ParameterSchema{Name: proto.String("arg")}},
+		},
+	}
+	tool := NewLocalCommandTool(&pb.Tool{Name: proto.String("t")}, svc, callDef, nil, "call-id")
+
+	// +10 (valid number) should pass
+	res, err := tool.Execute(context.Background(), &ExecutionRequest{ToolInputs: json.RawMessage(`{"arg": "+10"}`)})
+	assert.NoError(t, err)
+	resMap, ok := res.(map[string]interface{})
+	assert.True(t, ok)
+	assert.Equal(t, 0, resMap["return_code"])
+
+	// +command (invalid number) should fail
+	_, err = tool.Execute(context.Background(), &ExecutionRequest{ToolInputs: json.RawMessage(`{"arg": "+command"}`)})
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), "argument injection detected: value starts with '+'")
+}
+
 func TestPrettyPrint(t *testing.T) {
 	t.Parallel()
 	assert.Equal(t, "", prettyPrint(nil, ""))

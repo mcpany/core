@@ -2434,6 +2434,13 @@ func checkForArgumentInjection(val string) error {
 		}
 		return fmt.Errorf("argument injection detected: value starts with '-'")
 	}
+	if strings.HasPrefix(val, "+") {
+		// Allow positive numbers (e.g., +10, +123.45)
+		if _, err := strconv.ParseFloat(val, 64); err == nil {
+			return nil
+		}
+		return fmt.Errorf("argument injection detected: value starts with '+'")
+	}
 	return nil
 }
 
