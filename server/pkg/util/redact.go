@@ -31,6 +31,10 @@ var (
 	// sensitiveStartCharBitmap is a bitmap for fast checking if a character is a start char.
 	// It's faster than bytes.IndexAny for short strings because it avoids overhead.
 	sensitiveStartCharBitmap [256]bool
+
+	// allSensitiveStartChars is a string containing all characters that can start a sensitive key.
+	// Used for optimized scanning with bytes.IndexAny.
+	allSensitiveStartChars string
 )
 
 func init() {
@@ -54,6 +58,15 @@ func init() {
 		upper := c - 32
 		sensitiveStartCharBitmap[upper] = true
 	}
+
+	// Build allSensitiveStartChars
+	var sb bytes.Buffer
+	for c := 0; c < 256; c++ {
+		if sensitiveStartCharBitmap[c] {
+			sb.WriteByte(byte(c))
+		}
+	}
+	allSensitiveStartChars = sb.String()
 
 	// Build next char masks
 	for start, keys := range sensitiveKeyGroups {
@@ -80,6 +93,17 @@ func init() {
 // RedactJSON parses a JSON byte slice and redacts sensitive keys.
 // If the input is not valid JSON object or array, it returns the input as is.
 func RedactJSON(input []byte) []byte {
+	// Check if input looks like JSON object or array.
+	// We skip whitespace and comments to find the first significant character.
+	idx := skipWhitespaceAndComments(input, 0)
+	if idx >= len(input) {
+		return input
+	}
+	first := input[idx]
+	if first != '{' && first != '[' {
+		return input
+	}
+
 	// Use fast zero-allocation redaction path
 	// This avoids expensive json.Unmarshal/Marshal for large payloads
 	return redactJSONFast(input)
@@ -174,48 +198,32 @@ func scanForSensitiveKeys(input []byte, validateKeyContext bool) bool { //nolint
 		return false
 	}
 
-	for _, startChar := range sensitiveStartChars {
-		// startChar is lowercase. We need to check for uppercase too.
-		// Optimized loop: skip directly to the next occurrence of startChar or startChar-32
-		upperChar := startChar - 32
-
-		offset := 0
-		for offset < len(input) {
-			slice := input[offset:]
-
-			// Find first occurrence of startChar or upperChar
-			idxL := bytes.IndexByte(slice, startChar)
-			idxU := bytes.IndexByte(slice, upperChar)
-
-			var idx int
-			if idxL == -1 && idxU == -1 {
-				break // No more matches for this char
-			}
-
-			switch {
-			case idxL == -1:
-				idx = idxU
-			case idxU == -1:
-				idx = idxL
-			default:
-				if idxL < idxU {
-					idx = idxL
-				} else {
-					idx = idxU
-				}
-			}
-			// Found candidate start at offset + idx
-			matchStart := offset + idx
-
-			// In this loop, we know the candidate char matches startChar (modulo case).
-			// We can reuse the common validation logic.
-			if checkPotentialMatch(input, matchStart, startChar) {
-				return true
-			}
-
-			// Move past this match
-			offset = matchStart + 1
+	// Optimization: Use IndexAny to find the first occurrence of ANY sensitive start char.
+	// This reduces the number of passes over the data from N (number of unique start chars) to 1.
+	offset := 0
+	for offset < len(input) {
+		slice := input[offset:]
+		idx := bytes.IndexAny(slice, allSensitiveStartChars)
+		if idx == -1 {
+			break
 		}
+		matchStart := offset + idx
+		// Check bounds explicitly to satisfy gosec G602
+		if matchStart >= len(input) {
+			break
+		}
+		c := input[matchStart]
+
+		// We found a character 'c' which is a start char.
+		// We need to know which 'startChar' (lowercase) it corresponds to.
+		lowerC := c | 0x20 // Normalize to lowercase
+
+		// Check if it matches
+		if checkPotentialMatch(input, matchStart, lowerC) {
+			return true
+		}
+
+		offset = matchStart + 1
 	}
 	return false
 }

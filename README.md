@@ -237,6 +237,12 @@ After building, you can run the server locally:
 ./build/bin/server run --config-path server/examples/popular_services/wttr.in/config.yaml
 ```
 
+**Note:** By default, the server prioritizes database configuration. To load configuration from files (and enable read-only mode for those settings), set the `MCPANY_ENABLE_FILE_CONFIG` environment variable to `true`:
+
+```bash
+MCPANY_ENABLE_FILE_CONFIG=true ./build/bin/server run --config-path server/examples/popular_services/wttr.in/config.yaml
+```
+
 ### Project Structure
 
 The project is organized as follows:
