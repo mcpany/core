@@ -21,6 +21,7 @@ import (
 )
 
 func TestHTTPPoolConnectionLeak(t *testing.T) {
+	t.Setenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS", "true")
 	// Start a mock server that counts active connections
 	connectionCount := 0
 	server := httptest.NewUnstartedServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

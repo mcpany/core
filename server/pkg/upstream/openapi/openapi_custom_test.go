@@ -74,6 +74,7 @@ paths:
 }
 
 func TestOpenAPIUpstream_Register_URL(t *testing.T) {
+	t.Setenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS", "true")
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 

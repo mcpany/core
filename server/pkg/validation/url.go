@@ -12,13 +12,36 @@ import (
 	"time"
 )
 
+var privateIPBlocks []*net.IPNet
+
+func init() {
+	for _, cidr := range []string{
+		"127.0.0.0/8",    // IPv4 loopback
+		"10.0.0.0/8",     // RFC1918
+		"172.16.0.0/12",  // RFC1918
+		"192.168.0.0/16", // RFC1918
+		"169.254.0.0/16", // RFC3927 link-local
+		"100.64.0.0/10",  // RFC6598 CGNAT
+		"::1/128",        // IPv6 loopback
+		"fc00::/7",       // IPv6 unique local
+		"fe80::/10",      // IPv6 link-local
+	} {
+		_, block, err := net.ParseCIDR(cidr)
+		if err != nil {
+			panic(fmt.Errorf("parse error on %q: %v", cidr, err))
+		}
+		privateIPBlocks = append(privateIPBlocks, block)
+	}
+}
+
 // IsSafeURL checks if the URL is safe to connect to.
 // It validates the scheme and resolves the host to ensure it doesn't point to
-// loopback, link-local, or multicast addresses.
+// loopback, link-local, private, or multicast addresses.
 //
 // NOTE: This function performs DNS resolution to check the IP.
 // It is susceptible to DNS rebinding attacks if the check is separated from the connection.
-// For critical security, use a custom Dialer that validates the IP after resolution.
+// For critical security, use validation.SafeDialContext or validation.NewSafeTransport
+// to validate the IP after resolution.
 //
 // IsSafeURL is a variable to allow mocking in tests.
 var IsSafeURL = func(urlStr string) error {
@@ -45,7 +68,7 @@ var IsSafeURL = func(urlStr string) error {
 
 	// Check if host is an IP literal
 	if ip := net.ParseIP(host); ip != nil {
-		return validateIP(ip)
+		return ValidateIP(ip)
 	}
 
 	// Resolve Domain
@@ -64,7 +87,7 @@ var IsSafeURL = func(urlStr string) error {
 
 	// Check all resolved IPs
 	for _, ip := range ips {
-		if err := validateIP(ip); err != nil {
+		if err := ValidateIP(ip); err != nil {
 			return fmt.Errorf("host %q resolves to unsafe IP %s: %w", host, ip.String(), err)
 		}
 	}
@@ -72,21 +95,29 @@ var IsSafeURL = func(urlStr string) error {
 	return nil
 }
 
-func validateIP(ip net.IP) error {
-	if ip.IsLoopback() {
-		return fmt.Errorf("loopback address is not allowed")
+// ValidateIP checks if an IP is safe (not private/loopback).
+func ValidateIP(ip net.IP) error {
+	// Bypass if explicitly allowed (for testing/development)
+	if os.Getenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS") == "true" {
+		return nil
 	}
-	if ip.IsLinkLocalUnicast() {
-		return fmt.Errorf("link-local address is not allowed (metadata service protection)")
-	}
-	if ip.IsLinkLocalMulticast() {
-		return fmt.Errorf("link-local multicast address is not allowed")
+
+	if ip.IsUnspecified() {
+		return fmt.Errorf("unspecified address (0.0.0.0) is not allowed")
 	}
 	if ip.IsMulticast() {
 		return fmt.Errorf("multicast address is not allowed")
 	}
-	if ip.IsUnspecified() {
-		return fmt.Errorf("unspecified address (0.0.0.0) is not allowed")
+
+	for _, block := range privateIPBlocks {
+		if block.Contains(ip) {
+			return fmt.Errorf("ip %s is in private/local range %s", ip.String(), block.String())
+		}
 	}
+
 	return nil
+}
+
+func validateIP(ip net.IP) error {
+	return ValidateIP(ip)
 }

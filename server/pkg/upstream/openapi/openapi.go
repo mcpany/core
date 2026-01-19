@@ -27,6 +27,7 @@ import (
 	"github.com/mcpany/core/server/pkg/tool"
 	"github.com/mcpany/core/server/pkg/upstream"
 	"github.com/mcpany/core/server/pkg/util"
+	"github.com/mcpany/core/server/pkg/validation"
 	"google.golang.org/protobuf/proto"
 )
 
@@ -130,8 +131,10 @@ func (u *OpenAPIUpstream) Register(
 		}
 
 		if specURL != "" {
+			transport := validation.NewSafeTransport(nil)
 			client := &http.Client{
-				Timeout: 30 * time.Second,
+				Timeout:   30 * time.Second,
+				Transport: transport,
 			}
 			req, err := http.NewRequestWithContext(ctx, "GET", specURL, nil)
 			if err != nil {
@@ -214,11 +217,10 @@ func (u *OpenAPIUpstream) getHTTPClient(serviceID string) *http.Client {
 		return client
 	}
 
-	transport := &http.Transport{
-		MaxIdleConns:        100,
-		MaxIdleConnsPerHost: 10,
-		IdleConnTimeout:     90 * time.Second,
-	}
+	transport := validation.NewSafeTransport(nil)
+	transport.MaxIdleConns = 100
+	transport.MaxIdleConnsPerHost = 10
+	transport.IdleConnTimeout = 90 * time.Second
 
 	client := &http.Client{
 		Transport: transport,

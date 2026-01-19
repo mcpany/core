@@ -188,6 +188,7 @@ func TestOpenAPIUpstream_Register_Errors(t *testing.T) {
 }
 
 func TestOpenAPIUpstream_Register_SpecUrl(t *testing.T) {
+	t.Setenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS", "true")
 	ctx := context.Background()
 	mockToolManager := new(MockToolManager)
 	upstream := NewOpenAPIUpstream()
@@ -325,6 +326,7 @@ func TestAddOpenAPIToolsToIndex_Errors(t *testing.T) {
 }
 
 func TestOpenAPIUpstream_Register_Cache(t *testing.T) {
+	t.Setenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS", "true")
 	ctx := context.Background()
 	mockToolManager := new(MockToolManager)
 	u := NewOpenAPIUpstream()
