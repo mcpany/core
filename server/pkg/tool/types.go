@@ -2521,16 +2521,15 @@ func checkForShellInjection(val string, template string, placeholder string, com
 		// In single quotes, the only dangerous character is single quote itself.
 		// HOWEVER, if we are in cmd.exe, single quotes do NOT protect against metacharacters.
 		// So for cmd.exe, we must fall through to stricter checks or handle it specifically.
-		if isCmd {
-			// Cmd.exe treats single quotes as literals. So ' & ' is interpreted as a separator.
-			// We treat single-quoted strings in cmd.exe as effectively unquoted for safety regarding metacharacters.
-			// Fall through to unquoted checks.
-		} else {
+		if !isCmd {
 			if strings.Contains(val, "'") {
 				return fmt.Errorf("shell injection detected: value contains single quote which breaks out of single-quoted argument")
 			}
 			return nil
 		}
+		// Cmd.exe treats single quotes as literals. So ' & ' is interpreted as a separator.
+		// We treat single-quoted strings in cmd.exe as effectively unquoted for safety regarding metacharacters.
+		// Fall through to unquoted checks.
 	}
 
 	if isDoubleQuoted {
