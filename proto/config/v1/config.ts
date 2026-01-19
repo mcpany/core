@@ -116,7 +116,14 @@ export interface GlobalSettings {
     | ContextOptimizerConfig
     | undefined;
   /** Debugger configuration. */
-  debugger?: DebuggerConfig | undefined;
+  debugger?:
+    | DebuggerConfig
+    | undefined;
+  /**
+   * If true, the configuration is read-only (e.g., loaded from a file).
+   * @inject_tag: yaml:"-"
+   */
+  readOnly: boolean;
 }
 
 export enum GlobalSettings_LogLevel {
@@ -769,6 +776,7 @@ function createBaseGlobalSettings(): GlobalSettings {
     allowedOrigins: [],
     contextOptimizer: undefined,
     debugger: undefined,
+    readOnly: false,
   };
 }
 
@@ -845,6 +853,9 @@ export const GlobalSettings: MessageFns<GlobalSettings> = {
     }
     if (message.debugger !== undefined) {
       DebuggerConfig.encode(message.debugger, writer.uint32(194).fork()).join();
+    }
+    if (message.readOnly !== false) {
+      writer.uint32(200).bool(message.readOnly);
     }
     return writer;
   },
@@ -1048,6 +1059,14 @@ export const GlobalSettings: MessageFns<GlobalSettings> = {
           message.debugger = DebuggerConfig.decode(reader, reader.uint32());
           continue;
         }
+        case 25: {
+          if (tag !== 200) {
+            break;
+          }
+
+          message.readOnly = reader.bool();
+          continue;
+        }
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -1095,6 +1114,7 @@ export const GlobalSettings: MessageFns<GlobalSettings> = {
         ? ContextOptimizerConfig.fromJSON(object.context_optimizer)
         : undefined,
       debugger: isSet(object.debugger) ? DebuggerConfig.fromJSON(object.debugger) : undefined,
+      readOnly: isSet(object.read_only) ? globalThis.Boolean(object.read_only) : false,
     };
   },
 
@@ -1172,6 +1192,9 @@ export const GlobalSettings: MessageFns<GlobalSettings> = {
     if (message.debugger !== undefined) {
       obj.debugger = DebuggerConfig.toJSON(message.debugger);
     }
+    if (message.readOnly !== false) {
+      obj.read_only = message.readOnly;
+    }
     return obj;
   },
 
@@ -1220,6 +1243,7 @@ export const GlobalSettings: MessageFns<GlobalSettings> = {
     message.debugger = (object.debugger !== undefined && object.debugger !== null)
       ? DebuggerConfig.fromPartial(object.debugger)
       : undefined;
+    message.readOnly = object.readOnly ?? false;
     return message;
   },
 };

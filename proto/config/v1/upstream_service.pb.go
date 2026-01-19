@@ -234,6 +234,9 @@ type UpstreamServiceConfig struct {
 	// The configuration error if the service failed validation.
 	// @inject_tag: yaml:"-"
 	ConfigError *string `protobuf:"bytes,8,opt,name=config_error" json:"config_error,omitempty"`
+	// If true, this service configuration is read-only (e.g., loaded from a file).
+	// @inject_tag: yaml:"-"
+	ReadOnly *bool `protobuf:"varint,35,opt,name=read_only" json:"read_only,omitempty"`
 	// Configuration for the pool of connections to the upstream service.
 	ConnectionPool *ConnectionPoolConfig `protobuf:"bytes,9,opt,name=connection_pool" json:"connection_pool,omitempty"`
 	// Authentication configuration for mcpany to use when connecting to the upstream service (outgoing).
@@ -361,6 +364,13 @@ func (x *UpstreamServiceConfig) GetConfigError() string {
 		return *x.ConfigError
 	}
 	return ""
+}
+
+func (x *UpstreamServiceConfig) GetReadOnly() bool {
+	if x != nil && x.ReadOnly != nil {
+		return *x.ReadOnly
+	}
+	return false
 }
 
 func (x *UpstreamServiceConfig) GetConnectionPool() *ConnectionPoolConfig {
@@ -606,6 +616,10 @@ func (x *UpstreamServiceConfig) SetConfigError(v string) {
 	x.ConfigError = &v
 }
 
+func (x *UpstreamServiceConfig) SetReadOnly(v bool) {
+	x.ReadOnly = &v
+}
+
 func (x *UpstreamServiceConfig) SetConnectionPool(v *ConnectionPoolConfig) {
 	x.ConnectionPool = v
 }
@@ -810,6 +824,13 @@ func (x *UpstreamServiceConfig) HasConfigError() bool {
 	return x.ConfigError != nil
 }
 
+func (x *UpstreamServiceConfig) HasReadOnly() bool {
+	if x == nil {
+		return false
+	}
+	return x.ReadOnly != nil
+}
+
 func (x *UpstreamServiceConfig) HasConnectionPool() bool {
 	if x == nil {
 		return false
@@ -1007,6 +1028,10 @@ func (x *UpstreamServiceConfig) ClearConfigError() {
 	x.ConfigError = nil
 }
 
+func (x *UpstreamServiceConfig) ClearReadOnly() {
+	x.ReadOnly = nil
+}
+
 func (x *UpstreamServiceConfig) ClearConnectionPool() {
 	x.ConnectionPool = nil
 }
@@ -1187,6 +1212,9 @@ type UpstreamServiceConfig_builder struct {
 	// The configuration error if the service failed validation.
 	// @inject_tag: yaml:"-"
 	ConfigError *string
+	// If true, this service configuration is read-only (e.g., loaded from a file).
+	// @inject_tag: yaml:"-"
+	ReadOnly *bool
 	// Configuration for the pool of connections to the upstream service.
 	ConnectionPool *ConnectionPoolConfig
 	// Authentication configuration for mcpany to use when connecting to the upstream service (outgoing).
@@ -1244,6 +1272,7 @@ func (b0 UpstreamServiceConfig_builder) Build() *UpstreamServiceConfig {
 	x.Disable = b.Disable
 	x.AutoDiscoverTool = b.AutoDiscoverTool
 	x.ConfigError = b.ConfigError
+	x.ReadOnly = b.ReadOnly
 	x.ConnectionPool = b.ConnectionPool
 	x.UpstreamAuth = b.UpstreamAuth
 	x.Cache = b.Cache
@@ -7837,7 +7866,7 @@ var File_proto_config_v1_upstream_service_proto protoreflect.FileDescriptor
 
 const file_proto_config_v1_upstream_service_proto_rawDesc = "" +
 	"\n" +
-	"&proto/config/v1/upstream_service.proto\x12\x10mcpany.config.v1\x1a\x1egoogle/protobuf/duration.proto\x1a\x13proto/bus/bus.proto\x1a\x1aproto/config/v1/auth.proto\x1a\x1aproto/config/v1/call.proto\x1a\"proto/config/v1/health_check.proto\x1a\x1dproto/config/v1/profile.proto\x1a\x1cproto/config/v1/prompt.proto\x1a\x1eproto/config/v1/resource.proto\x1a\x1aproto/config/v1/tool.proto\x1a\x1dproto/config/v1/webhook.proto\"\xd7\x11\n" +
+	"&proto/config/v1/upstream_service.proto\x12\x10mcpany.config.v1\x1a\x1egoogle/protobuf/duration.proto\x1a\x13proto/bus/bus.proto\x1a\x1aproto/config/v1/auth.proto\x1a\x1aproto/config/v1/call.proto\x1a\"proto/config/v1/health_check.proto\x1a\x1dproto/config/v1/profile.proto\x1a\x1cproto/config/v1/prompt.proto\x1a\x1eproto/config/v1/resource.proto\x1a\x1aproto/config/v1/tool.proto\x1a\x1dproto/config/v1/webhook.proto\"\xf5\x11\n" +
 	"\x15UpstreamServiceConfig\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12\x0e\n" +
 	"\x02id\x18\x02 \x01(\tR\x02id\x12&\n" +
@@ -7846,7 +7875,8 @@ const file_proto_config_v1_upstream_service_proto_rawDesc = "" +
 	"\bpriority\x18\x05 \x01(\x05R\bpriority\x12\x18\n" +
 	"\adisable\x18\x06 \x01(\bR\adisable\x12.\n" +
 	"\x12auto_discover_tool\x18\a \x01(\bR\x12auto_discover_tool\x12\"\n" +
-	"\fconfig_error\x18\b \x01(\tR\fconfig_error\x12P\n" +
+	"\fconfig_error\x18\b \x01(\tR\fconfig_error\x12\x1c\n" +
+	"\tread_only\x18# \x01(\bR\tread_only\x12P\n" +
 	"\x0fconnection_pool\x18\t \x01(\v2&.mcpany.config.v1.ConnectionPoolConfigR\x0fconnection_pool\x12F\n" +
 	"\rupstream_auth\x18\n" +
 	" \x01(\v2 .mcpany.config.v1.AuthenticationR\rupstream_auth\x123\n" +

@@ -27,6 +27,10 @@ import (
 )
 
 func TestUserManagement(t *testing.T) {
+	// Enable file config for this test
+	os.Setenv("MCPANY_ENABLE_FILE_CONFIG", "true")
+	defer os.Unsetenv("MCPANY_ENABLE_FILE_CONFIG")
+
 	// Mock OIDC Server (Start FIRST so we can use URL in config)
 	mockOIDCMux := http.NewServeMux()
 	// Use TLS to satisfy OIDC requirements (or we'd need to assume insecure which is harder to inject globally without flag)
@@ -202,6 +206,10 @@ ServerStarted:
 	require.NoError(t, err)
 	defer loginResp.Body.Close()
 
+	if loginResp.StatusCode != http.StatusFound {
+		body, _ := io.ReadAll(loginResp.Body)
+		t.Logf("Expected 302, got %d. Body: %s", loginResp.StatusCode, string(body))
+	}
 	require.Equal(t, http.StatusFound, loginResp.StatusCode)
 	loc, err := loginResp.Location()
 	require.NoError(t, err)
