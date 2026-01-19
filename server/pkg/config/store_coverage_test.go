@@ -4,44 +4,117 @@
 package config
 
 import (
+	"context"
 	"testing"
 
-	configv1 "github.com/mcpany/core/proto/config/v1"
-    "github.com/stretchr/testify/assert"
+	"github.com/spf13/afero"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
-func TestYamlEngine_Coverage(t *testing.T) {
-    engine, err := NewEngine("config.yaml")
-    assert.NoError(t, err)
+func TestStore_YAML_Tab_Error(t *testing.T) {
+	fs := afero.NewMemMapFs()
+	// Create a YAML file with a tab character
+	content := []byte("global_settings:\n\tlog_level: debug")
+	err := afero.WriteFile(fs, "/config.yaml", content, 0o644)
+	require.NoError(t, err)
 
-    v := &configv1.McpAnyServerConfig{}
-
-    // Malformed YAML
-    err = engine.Unmarshal([]byte("key: : value"), v)
-    assert.Error(t, err)
-    assert.Contains(t, err.Error(), "failed to unmarshal YAML")
-
-    // Valid YAML but invalid Proto (e.g. unknown field)
-    // Note: mcpServers is special case handled in code
-    err = engine.Unmarshal([]byte("mcpServers: {}"), v)
-    assert.Error(t, err)
-    assert.Contains(t, err.Error(), "Did you mean \"upstream_services\"?")
-
-    // Schema validation fail (structural)
-    // upstream_services should be an array of objects
-    err = engine.Unmarshal([]byte("upstream_services: not-an-array"), v)
-    assert.Error(t, err)
-    // Error message comes from protojson or jsonschema
+	store := NewFileStore(fs, []string{"/config.yaml"})
+	_, err = store.Load(context.Background())
+	require.Error(t, err)
+	assert.Contains(t, err.Error(), "YAML files cannot contain tabs")
 }
 
-func TestNewEngine_Coverage(t *testing.T) {
-    _, err := NewEngine("config.unknown")
-    assert.Error(t, err)
-    assert.Contains(t, err.Error(), "unsupported config file extension")
+func TestStore_ClaudeDesktop_Error(t *testing.T) {
+	fs := afero.NewMemMapFs()
+	content := []byte(`
+mcpServers:
+  weather:
+    command: npx
+`)
+	err := afero.WriteFile(fs, "/config.yaml", content, 0o644)
+	require.NoError(t, err)
 
-    _, err = NewEngine("config.json")
-    assert.NoError(t, err)
+	store := NewFileStore(fs, []string{"/config.yaml"})
+	_, err = store.Load(context.Background())
+	require.Error(t, err)
+	assert.Contains(t, err.Error(), "Claude Desktop configuration format")
+}
 
-    _, err = NewEngine("config.textproto")
-    assert.NoError(t, err)
+func TestStore_Services_Alias_Error(t *testing.T) {
+	fs := afero.NewMemMapFs()
+	content := []byte(`
+services:
+  - name: weather
+`)
+	err := afero.WriteFile(fs, "/config.yaml", content, 0o644)
+	require.NoError(t, err)
+
+	store := NewFileStore(fs, []string{"/config.yaml"})
+	_, err = store.Load(context.Background())
+	require.Error(t, err)
+	assert.Contains(t, err.Error(), "\"services\" is not a valid top-level key")
+}
+
+func TestStore_ServiceConfig_Wrapper_Error(t *testing.T) {
+	fs := afero.NewMemMapFs()
+	content := []byte(`
+upstream_services:
+  - name: weather
+    service_config:
+      command_line_service:
+        command: date
+`)
+	err := afero.WriteFile(fs, "/config.yaml", content, 0o644)
+	require.NoError(t, err)
+
+	store := NewFileStore(fs, []string{"/config.yaml"})
+	_, err = store.Load(context.Background())
+	require.Error(t, err)
+	assert.Contains(t, err.Error(), "using 'service_config' as a wrapper key")
+}
+
+func TestStore_UnknownField_Suggestion(t *testing.T) {
+	fs := afero.NewMemMapFs()
+	content := []byte(`
+global_settings:
+  mcp_litsen_address: :8080
+`)
+	err := afero.WriteFile(fs, "/config.yaml", content, 0o644)
+	require.NoError(t, err)
+
+	store := NewFileStore(fs, []string{"/config.yaml"})
+	_, err = store.Load(context.Background())
+	require.Error(t, err)
+	assert.Contains(t, err.Error(), "Did you mean \"mcp_listen_address\"?")
+}
+
+func TestStore_JSON_Error_Suggestions(t *testing.T) {
+	fs := afero.NewMemMapFs()
+	content := []byte(`{
+		"mcpServers": {}
+	}`)
+	err := afero.WriteFile(fs, "/config.json", content, 0o644)
+	require.NoError(t, err)
+
+	store := NewFileStore(fs, []string{"/config.json"})
+	_, err = store.Load(context.Background())
+	require.Error(t, err)
+	assert.Contains(t, err.Error(), "Claude Desktop configuration format")
+}
+
+func TestStore_JSON_UnknownField(t *testing.T) {
+	fs := afero.NewMemMapFs()
+	content := []byte(`{
+		"global_settings": {
+			"mcp_litsen_address": ":8080"
+		}
+	}`)
+	err := afero.WriteFile(fs, "/config.json", content, 0o644)
+	require.NoError(t, err)
+
+	store := NewFileStore(fs, []string{"/config.json"})
+	_, err = store.Load(context.Background())
+	require.Error(t, err)
+	assert.Contains(t, err.Error(), "Did you mean \"mcp_listen_address\"?")
 }
