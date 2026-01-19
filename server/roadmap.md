@@ -4,6 +4,7 @@
 
 ### Status: Active Development
 
+<<<<<<< HEAD
 ### Implemented Features (Recently Completed)
 
 - [x] **Upstream Error Body Visibility**: Include upstream HTTP response body in error messages to help users diagnose 4xx/5xx failures. (Friction Fighter)
@@ -74,6 +75,8 @@
 - [x] **OAuth2 Auto-Discovery**: Automatically discover OAuth2 `token_url` from the provided `issuer_url` (via OIDC discovery), reducing configuration friction and error-proneness. (Friction Fighter)
 - [x] **System Health Dashboard**: Real-time visibility into server uptime, active connections, and security posture via a dedicated dashboard widget. (Experience Crafter)
 - [x] **Security Warning System**: Automated detection and visualization of insecure configurations (e.g. missing API key) on the main dashboard. (Security Awareness)
+=======
+>>>>>>> origin/main
 
 ## 2. Top 10 Recommended Features
 

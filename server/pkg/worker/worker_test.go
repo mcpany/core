@@ -498,14 +498,14 @@ func TestWorker_ContextPropagation(t *testing.T) {
 	reqBusMock := &mockBus[*bus.ToolExecutionRequest]{}
 	resBusMock := &mockBus[*bus.ToolExecutionResult]{}
 
-	bus.GetBusHook = func(_ *bus.Provider, topic string) any {
+	bus.GetBusHook = func(_ *bus.Provider, topic string) (any, error) {
 		if topic == bus.ToolExecutionRequestTopic {
-			return reqBusMock
+			return reqBusMock, nil
 		}
 		if topic == bus.ToolExecutionResultTopic {
-			return resBusMock
+			return resBusMock, nil
 		}
-		return nil
+		return nil, nil
 	}
 	t.Cleanup(func() {
 		bus.GetBusHook = nil

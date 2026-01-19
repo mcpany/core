@@ -38,11 +38,14 @@ func StartStdioServer(t *testing.T, configFile string) (*MCPClient, func()) {
 	cmd := exec.Command(serverBin, "run", "--stdio", "--config-path", configFile, "--db-path", dbPath, "--metrics-listen-address", LoopbackIP+":0") //nolint:gosec // Test helper
 	cmd.Env = append(os.Environ(), "MCPANY_DANGEROUS_ALLOW_LOCAL_IPS=true")
 	// We need to set pipe before starting
+	cmd.Env = os.Environ()
+	cmd.Env = append(cmd.Env, "MCPANY_ENABLE_FILE_CONFIG=true")
 	stdin, err := cmd.StdinPipe()
 	require.NoError(t, err)
 	stdout, err := cmd.StdoutPipe()
 	require.NoError(t, err)
 	cmd.Stderr = os.Stderr // Pipe stderr to test output for debugging
+
 
 	err = cmd.Start()
 	require.NoError(t, err)
@@ -361,14 +364,14 @@ func TestCallPolicyExecution(t *testing.T) {
 		Name:      "call-policy-test.allowed_tool",
 		Arguments: map[string]interface{}{},
 	})
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	result, err := client.CallTool(ctx, &mcp.CallToolParams{
 		Name:      "call-policy-test.denied_tool",
 		Arguments: map[string]interface{}{},
 	})
-	assert.NoError(t, err)
-	assert.True(t, result.IsError)
+	require.NoError(t, err)
+	require.True(t, result.IsError)
     // Check if content contains the error message
     // content is usually a list of text/image
     contentBytes, _ := json.Marshal(result.Content)
