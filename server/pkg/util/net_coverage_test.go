@@ -15,6 +15,8 @@ import (
 )
 
 func TestCheckConnection(t *testing.T) {
+	t.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "true")
+
 	// Start a local test server
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
