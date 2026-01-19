@@ -247,62 +247,6 @@ export const apiClient = {
     },
 
     /**
-     * Validates a service configuration.
-     * @param config The service configuration to validate.
-     * @returns A promise that resolves to the validation response.
-     */
-    validateService: async (config: UpstreamServiceConfig) => {
-        // Map camelCase (UI) to snake_case (Server REST)
-        // Reuse mapping logic from registerService but wrapped in 'config' object
-        const mappedConfig: any = {
-            id: config.id,
-            name: config.name,
-            version: config.version,
-            disable: config.disable,
-            priority: config.priority,
-            load_balancing_strategy: config.loadBalancingStrategy,
-            tags: config.tags,
-        };
-
-        if (config.httpService) {
-            mappedConfig.http_service = { address: config.httpService.address };
-        }
-        if (config.grpcService) {
-            mappedConfig.grpc_service = { address: config.grpcService.address };
-        }
-        if (config.commandLineService) {
-            mappedConfig.command_line_service = {
-                command: config.commandLineService.command,
-                working_directory: config.commandLineService.workingDirectory,
-                environment: config.commandLineService.env,
-                env: config.commandLineService.env
-            };
-        }
-        if (config.mcpService) {
-            mappedConfig.mcp_service = { ...config.mcpService };
-        }
-        if (config.openapiService) {
-            mappedConfig.openapi_service = { address: config.openapiService.address };
-        }
-        if (config.upstreamAuth) {
-            mappedConfig.upstream_auth = config.upstreamAuth;
-        }
-        // TODO: Map other services if needed
-
-        const response = await fetchWithAuth('/api/v1/services/validate', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ config: mappedConfig })
-        });
-
-        if (!response.ok) {
-             const txt = await response.text();
-             throw new Error(`Failed to validate service: ${response.status} ${txt}`);
-        }
-        return response.json();
-    },
-
-    /**
      * Registers a new upstream service.
      * @param config The configuration of the service to register.
      * @returns A promise that resolves to the registered service configuration.
