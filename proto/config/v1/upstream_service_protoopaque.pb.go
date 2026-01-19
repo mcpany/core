@@ -4012,6 +4012,7 @@ type CommandLineUpstreamService struct {
 	xxx_hidden_CommunicationProtocol CommandLineUpstreamService_CommunicationProtocol `protobuf:"varint,12,opt,name=communication_protocol,enum=mcpany.config.v1.CommandLineUpstreamService_CommunicationProtocol"`
 	xxx_hidden_Local                 bool                                             `protobuf:"varint,13,opt,name=local"`
 	xxx_hidden_Env                   map[string]*SecretValue                          `protobuf:"bytes,14,rep,name=env" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	xxx_hidden_Args                  []string                                         `protobuf:"bytes,15,rep,name=args"`
 	XXX_raceDetectHookData           protoimpl.RaceDetectHookData
 	XXX_presence                     [1]uint32
 	unknownFields                    protoimpl.UnknownFields
@@ -4148,14 +4149,21 @@ func (x *CommandLineUpstreamService) GetEnv() map[string]*SecretValue {
 	return nil
 }
 
+func (x *CommandLineUpstreamService) GetArgs() []string {
+	if x != nil {
+		return x.xxx_hidden_Args
+	}
+	return nil
+}
+
 func (x *CommandLineUpstreamService) SetCommand(v string) {
 	x.xxx_hidden_Command = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 13)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 14)
 }
 
 func (x *CommandLineUpstreamService) SetWorkingDirectory(v string) {
 	x.xxx_hidden_WorkingDirectory = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 13)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 14)
 }
 
 func (x *CommandLineUpstreamService) SetTools(v []*ToolDefinition) {
@@ -4192,16 +4200,20 @@ func (x *CommandLineUpstreamService) SetPrompts(v []*PromptDefinition) {
 
 func (x *CommandLineUpstreamService) SetCommunicationProtocol(v CommandLineUpstreamService_CommunicationProtocol) {
 	x.xxx_hidden_CommunicationProtocol = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 10, 13)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 10, 14)
 }
 
 func (x *CommandLineUpstreamService) SetLocal(v bool) {
 	x.xxx_hidden_Local = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 11, 13)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 11, 14)
 }
 
 func (x *CommandLineUpstreamService) SetEnv(v map[string]*SecretValue) {
 	x.xxx_hidden_Env = v
+}
+
+func (x *CommandLineUpstreamService) SetArgs(v []string) {
+	x.xxx_hidden_Args = v
 }
 
 func (x *CommandLineUpstreamService) HasCommand() bool {
@@ -4324,6 +4336,8 @@ type CommandLineUpstreamService_builder struct {
 	Local *bool
 	// Environment variables to set for the command (supports secrets).
 	Env map[string]*SecretValue
+	// Arguments to the command.
+	Args []string
 }
 
 func (b0 CommandLineUpstreamService_builder) Build() *CommandLineUpstreamService {
@@ -4331,11 +4345,11 @@ func (b0 CommandLineUpstreamService_builder) Build() *CommandLineUpstreamService
 	b, x := &b0, m0
 	_, _ = b, x
 	if b.Command != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 13)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 14)
 		x.xxx_hidden_Command = b.Command
 	}
 	if b.WorkingDirectory != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 13)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 14)
 		x.xxx_hidden_WorkingDirectory = b.WorkingDirectory
 	}
 	x.xxx_hidden_Tools = &b.Tools
@@ -4347,14 +4361,15 @@ func (b0 CommandLineUpstreamService_builder) Build() *CommandLineUpstreamService
 	x.xxx_hidden_Calls = b.Calls
 	x.xxx_hidden_Prompts = &b.Prompts
 	if b.CommunicationProtocol != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 10, 13)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 10, 14)
 		x.xxx_hidden_CommunicationProtocol = *b.CommunicationProtocol
 	}
 	if b.Local != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 11, 13)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 11, 14)
 		x.xxx_hidden_Local = *b.Local
 	}
 	x.xxx_hidden_Env = b.Env
+	x.xxx_hidden_Args = b.Args
 	return m0
 }
 
@@ -8533,7 +8548,7 @@ const file_proto_config_v1_upstream_service_proto_rawDesc = "" +
 	"CallsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12=\n" +
 	"\x05value\x18\x02 \x01(\v2'.mcpany.config.v1.OpenAPICallDefinitionR\x05value:\x028\x01B\r\n" +
-	"\vspec_source\"\xfe\b\n" +
+	"\vspec_source\"\x92\t\n" +
 	"\x1aCommandLineUpstreamService\x12\x18\n" +
 	"\acommand\x18\x01 \x01(\tR\acommand\x12,\n" +
 	"\x11working_directory\x18\x03 \x01(\tR\x11working_directory\x126\n" +
@@ -8548,7 +8563,8 @@ const file_proto_config_v1_upstream_service_proto_rawDesc = "" +
 	"\aprompts\x18\v \x03(\v2\".mcpany.config.v1.PromptDefinitionR\aprompts\x12z\n" +
 	"\x16communication_protocol\x18\f \x01(\x0e2B.mcpany.config.v1.CommandLineUpstreamService.CommunicationProtocolR\x16communication_protocol\x12\x14\n" +
 	"\x05local\x18\r \x01(\bR\x05local\x12G\n" +
-	"\x03env\x18\x0e \x03(\v25.mcpany.config.v1.CommandLineUpstreamService.EnvEntryR\x03env\x1ae\n" +
+	"\x03env\x18\x0e \x03(\v25.mcpany.config.v1.CommandLineUpstreamService.EnvEntryR\x03env\x12\x12\n" +
+	"\x04args\x18\x0f \x03(\tR\x04args\x1ae\n" +
 	"\n" +
 	"CallsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12A\n" +

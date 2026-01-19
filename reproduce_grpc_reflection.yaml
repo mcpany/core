@@ -1,0 +1,8 @@
+# Copyright 2026 Author(s) of MCP Any
+# SPDX-License-Identifier: Apache-2.0
+
+upstream_services:
+  - name: "dead-grpc-reflection"
+    grpc_service:
+      address: "localhost:12345"
+      use_reflection: true

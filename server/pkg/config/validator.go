@@ -508,6 +508,13 @@ func validateGrpcService(grpcService *configv1.GrpcUpstreamService) error {
 		}
 	}
 
+	if !grpcService.GetUseReflection() && len(grpcService.GetProtoDefinitions()) == 0 && len(grpcService.GetProtoCollection()) == 0 {
+		return &ActionableError{
+			Err:        fmt.Errorf("gRPC service requires proto definitions when reflection is disabled"),
+			Suggestion: "Enable 'use_reflection: true' or provide 'proto_definitions' / 'proto_collection'.",
+		}
+	}
+
 	for name, call := range grpcService.GetCalls() {
 		if err := validateSchema(call.GetInputSchema()); err != nil {
 			return WrapActionableError(fmt.Sprintf("grpc call %q input_schema error", name), err)
