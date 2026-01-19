@@ -31,8 +31,14 @@ import {
 } from "@/components/ui/select"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
 
+/**
+ * LogLevel type definition.
+ */
 export type LogLevel = "INFO" | "WARN" | "ERROR" | "DEBUG"
 
+/**
+ * LogEntry type definition.
+ */
 export interface LogEntry {
   id: string
   timestamp: string
@@ -99,6 +105,10 @@ const LogRow = React.memo(({ log }: { log: LogEntry }) => {
 })
 LogRow.displayName = 'LogRow'
 
+/**
+ * LogStream component.
+ * @returns The rendered component.
+ */
 export function LogStream() {
   const [logs, setLogs] = React.useState<LogEntry[]>([])
   const [isPaused, setIsPaused] = React.useState(false)

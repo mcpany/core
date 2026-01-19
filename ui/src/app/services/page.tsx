@@ -25,6 +25,10 @@ import { ServiceEditor } from "@/components/services/editor/service-editor";
 import { ServiceTemplateSelector } from "@/components/services/service-template-selector";
 import { ServiceTemplate } from "@/lib/templates";
 
+/**
+ * ServicesPage component.
+ * @returns The rendered component.
+ */
 export default function ServicesPage() {
   const [services, setServices] = useState<UpstreamServiceConfig[]>([]);
   const [selectedService, setSelectedService] = useState<UpstreamServiceConfig | null>(null);
