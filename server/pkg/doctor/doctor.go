@@ -169,7 +169,7 @@ func checkOAuth2Reachability(ctx context.Context, oauth *configv1.OAuth2Auth) Ch
 	if err != nil {
 		return CheckResult{
 			Status:  StatusError,
-			Message: fmt.Sprintf("Failed to connect to OAuth2 token URL: %v", err),
+			Message: enhanceSSRFError(err, "Failed to connect to OAuth2 token URL"),
 			Error:   err,
 		}
 	}
@@ -265,7 +265,7 @@ func checkURL(ctx context.Context, urlStr string, auth *configv1.Authentication)
 	if err != nil {
 		return CheckResult{
 			Status:  StatusError,
-			Message: fmt.Sprintf("Failed to connect: %v", err),
+			Message: enhanceSSRFError(err, "Failed to connect"),
 			Error:   err,
 		}
 	}
@@ -331,7 +331,7 @@ func checkGRPCService(ctx context.Context, s *configv1.GrpcUpstreamService) Chec
 	if err != nil {
 		return CheckResult{
 			Status:  StatusError,
-			Message: fmt.Sprintf("Failed to connect to gRPC endpoint: %v", err),
+			Message: enhanceSSRFError(err, "Failed to connect to gRPC endpoint"),
 			Error:   err,
 		}
 	}
@@ -341,6 +341,20 @@ func checkGRPCService(ctx context.Context, s *configv1.GrpcUpstreamService) Chec
 		Status:  StatusOk,
 		Message: "TCP connection successful",
 	}
+}
+
+// enhanceSSRFError inspects the error for SSRF block messages and adds a hint on how to resolve it.
+func enhanceSSRFError(err error, prefix string) string {
+	msg := err.Error()
+	hint := ""
+	if strings.Contains(msg, "ssrf attempt blocked") {
+		if strings.Contains(msg, "loopback") {
+			hint = "\n\nHint: To allow connections to loopback addresses (localhost), set the environment variable MCPANY_ALLOW_LOOPBACK_RESOURCES=true"
+		} else if strings.Contains(msg, "private ip") {
+			hint = "\n\nHint: To allow connections to private network addresses, set the environment variable MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES=true"
+		}
+	}
+	return fmt.Sprintf("%s: %v%s", prefix, err, hint)
 }
 
 func checkOpenAPIService(ctx context.Context, s *configv1.OpenapiUpstreamService, auth *configv1.Authentication) CheckResult {
