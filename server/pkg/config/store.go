@@ -269,33 +269,114 @@ type ServiceStore interface {
 var envVarRegex = regexp.MustCompile(`\${([^{}]+)}`)
 var unknownFieldRegex = regexp.MustCompile(`unknown field "([^"]+)"`)
 
-// expand replaces ${VAR} or ${VAR:default} with environment variables.
+// expand replaces ${VAR}, ${VAR:default} or ${VAR:-default} with environment variables.
 // If a variable is missing and no default is provided, it returns an error.
 func expand(b []byte) ([]byte, error) {
 	var missingVars []string
 	expanded := envVarRegex.ReplaceAllFunc(b, func(match []byte) []byte {
+		// match is like "${VAR}" or "${VAR:default}" or "${VAR:-default}"
 		s := string(match[2 : len(match)-1])
-		parts := strings.SplitN(s, ":", 2)
-		varName := parts[0]
+
+		var varName, defaultVal string
+		var hasDefault bool
+
+		// Check for :- separator first (shell style default)
+		if idx := strings.Index(s, ":-"); idx != -1 {
+			varName = s[:idx]
+			defaultVal = s[idx+2:]
+			hasDefault = true
+		} else if idx := strings.Index(s, ":"); idx != -1 {
+			// Check for : separator (legacy style)
+			varName = s[:idx]
+			defaultVal = s[idx+1:]
+			hasDefault = true
+		} else {
+			varName = s
+		}
+
 		val, ok := os.LookupEnv(varName)
 		if ok {
-			if val == "" && len(parts) > 1 {
-				return []byte(parts[1])
+			// If variable is set but empty, shell expansion typically returns empty string
+			// UNLESS it is ${VAR:-default} which treats unset OR null as default.
+			// However, os.LookupEnv returns empty string if set but empty.
+			// Standard shell ${VAR:-default} uses default if VAR is unset or null.
+			// Standard shell ${VAR-default} uses default only if VAR is unset.
+			// Here we are implementing something slightly hybrid but let's stick to user intent.
+			// If the user provided a default value via ':-', they usually want it if the value is empty.
+			if val == "" && hasDefault && strings.Contains(s, ":-") {
+				return []byte(defaultVal)
+			}
+			// If it's just ':', current behavior was: if val is empty, use default.
+			if val == "" && hasDefault {
+				return []byte(defaultVal)
 			}
 			return []byte(val)
 		}
-		if len(parts) > 1 {
-			return []byte(parts[1])
+
+		// Variable is unset
+		if hasDefault {
+			return []byte(defaultVal)
 		}
+
 		missingVars = append(missingVars, varName)
 		return match
 	})
 
 	if len(missingVars) > 0 {
-		return nil, fmt.Errorf("missing environment variables: %v", missingVars)
+		// Deduplicate missing vars
+		uniqueMissing := make(map[string]struct{})
+		var deduped []string
+		for _, v := range missingVars {
+			if _, ok := uniqueMissing[v]; !ok {
+				uniqueMissing[v] = struct{}{}
+				deduped = append(deduped, v)
+			}
+		}
+		sort.Strings(deduped)
+
+		return nil, fmt.Errorf("\n❌ Missing Required Environment Variables:\n"+
+			"The following environment variables are required by your configuration but are not set:\n"+
+			"%s\n\n"+
+			"💡 How to fix:\n"+
+			"1. Create a .env file in the current directory with these variables:\n"+
+			"%s\n"+
+			"2. Or export them in your shell:\n"+
+			"%s",
+			formatList(deduped, "  - "),
+			formatEnvExample(deduped),
+			formatExportExample(deduped),
+		)
 	}
 
 	return expanded, nil
+}
+
+func formatList(items []string, prefix string) string {
+	var sb strings.Builder
+	for _, item := range items {
+		sb.WriteString(prefix + item + "\n")
+	}
+	return strings.TrimRight(sb.String(), "\n")
+}
+
+func formatEnvExample(items []string) string {
+	var sb strings.Builder
+	sb.WriteString("   ```\n")
+	for _, item := range items {
+		sb.WriteString(fmt.Sprintf("   %s=value\n", item))
+	}
+	sb.WriteString("   ```")
+	return sb.String()
+}
+
+func formatExportExample(items []string) string {
+	var sb strings.Builder
+	sb.WriteString("   ```bash\n")
+	for _, item := range items {
+		sb.WriteString(fmt.Sprintf("   export %s=value\n", item))
+	}
+	sb.WriteString("   ```")
+	return sb.String()
 }
 
 // FileStore implements the `Store` interface for loading configurations from one

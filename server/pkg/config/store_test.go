@@ -149,53 +149,65 @@ func TestFileStore_Load_Engines(t *testing.T) {
 
 func TestExpand(t *testing.T) {
 	tests := []struct {
-		name        string
-		input       string
-		env         map[string]string
-		expected    string
-		expectError bool
+		name          string
+		input         string
+		env           map[string]string
+		expected      string
+		expectedError string
 	}{
 		{
-			name:        "Variable set",
-			input:       "Hello ${NAME}",
-			env:         map[string]string{"NAME": "World"},
-			expected:    "Hello World",
-			expectError: false,
+			name:     "Simple variable expansion",
+			input:    "Hello ${NAME}",
+			env:      map[string]string{"NAME": "World"},
+			expected: "Hello World",
 		},
 		{
-			name:        "Variable unset",
-			input:       "Hello ${NAME}",
-			env:         map[string]string{},
-			expected:    "",
-			expectError: true,
+			name:     "Multiple variable expansion",
+			input:    "${GREETING} ${NAME}",
+			env:      map[string]string{"GREETING": "Hi", "NAME": "User"},
+			expected: "Hi User",
 		},
 		{
-			name:        "Variable set to empty",
-			input:       "Hello ${NAME}",
-			env:         map[string]string{"NAME": ""},
-			expected:    "Hello ",
-			expectError: false,
+			name:     "Variable with default value (unset) - shell style",
+			input:    "Port ${PORT:-8080}",
+			env:      map[string]string{},
+			expected: "Port 8080",
 		},
 		{
-			name:        "Variable with default, unset",
-			input:       "Hello ${NAME:World}",
-			env:         map[string]string{},
-			expected:    "Hello World",
-			expectError: false,
+			name:     "Variable with default value (set) - shell style",
+			input:    "Port ${PORT:-8080}",
+			env:      map[string]string{"PORT": "9090"},
+			expected: "Port 9090",
 		},
 		{
-			name:        "Variable with default, set",
-			input:       "Hello ${NAME:World}",
-			env:         map[string]string{"NAME": "Universe"},
-			expected:    "Hello Universe",
-			expectError: false,
+			name:     "Variable with default value (set but empty) - shell style",
+			input:    "Value: ${EMPTY_VAR:-default}",
+			env:      map[string]string{"EMPTY_VAR": ""},
+			expected: "Value: default",
 		},
 		{
-			name:        "Variable with default, set to empty",
-			input:       "Hello ${NAME:World}",
-			env:         map[string]string{"NAME": ""},
-			expected:    "Hello World",
-			expectError: false,
+			name:     "Legacy default syntax (unset)",
+			input:    "Port ${PORT:8080}",
+			env:      map[string]string{},
+			expected: "Port 8080",
+		},
+		{
+			name:     "Legacy default syntax (set but empty)",
+			input:    "Port ${PORT:8080}",
+			env:      map[string]string{"PORT": ""},
+			expected: "Port 8080",
+		},
+		{
+			name:          "Missing variable error",
+			input:         "Hello ${MISSING_VAR}",
+			env:           map[string]string{},
+			expectedError: "Missing Required Environment Variables",
+		},
+		{
+			name:          "Multiple missing variables",
+			input:         "${VAR1} ${VAR2}",
+			env:           map[string]string{},
+			expectedError: "VAR1",
 		},
 	}
 
@@ -211,8 +223,10 @@ func TestExpand(t *testing.T) {
 			}()
 
 			got, err := expand([]byte(tt.input))
-			if tt.expectError {
+
+			if tt.expectedError != "" {
 				assert.Error(t, err)
+				assert.Contains(t, err.Error(), tt.expectedError)
 			} else {
 				assert.NoError(t, err)
 				assert.Equal(t, tt.expected, string(got))

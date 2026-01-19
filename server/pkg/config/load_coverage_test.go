@@ -62,5 +62,5 @@ func TestFileStore_Load_Coverage(t *testing.T) {
 	store = NewFileStore(fs, []string{"/expand.yaml"})
 	_, err = store.Load(context.Background())
 	assert.Error(t, err)
-	assert.Contains(t, err.Error(), "missing environment variables")
+	assert.Contains(t, err.Error(), "Missing Required Environment Variables")
 }
