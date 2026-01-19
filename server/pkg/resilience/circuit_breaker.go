@@ -30,6 +30,7 @@ const (
 type CircuitBreaker struct {
 	mutex sync.Mutex
 
+	generation   int64 // Accessed using atomics for read optimization (must be 64-bit aligned)
 	state        State // Accessed using atomics for read optimization
 	failures     int
 	openTime     time.Time
@@ -54,6 +55,8 @@ func NewCircuitBreaker(config *configv1.CircuitBreakerConfig) *CircuitBreaker {
 // returns a CircuitBreakerOpenError immediately. If the work function fails,
 // it tracks the failure and may trip the breaker.
 func (cb *CircuitBreaker) Execute(ctx context.Context, work func(context.Context) error) error {
+	var generation int64
+
 	// Optimization: Optimistically check if Closed without lock.
 	// This covers the "Happy Path" (most common case).
 	if cb.getState() != StateClosed {
@@ -82,7 +85,10 @@ func (cb *CircuitBreaker) Execute(ctx context.Context, work func(context.Context
 			cb.halfOpenHits++
 		}
 
+		generation = cb.getGeneration()
 		cb.mutex.Unlock()
+	} else {
+		generation = cb.getGeneration()
 	}
 
 	err := work(ctx)
@@ -93,13 +99,13 @@ func (cb *CircuitBreaker) Execute(ctx context.Context, work func(context.Context
 		}
 
 		cb.mutex.Lock()
-		cb.onFailure()
+		cb.onFailure(generation)
 		cb.mutex.Unlock()
 		return err
 	}
 
 	cb.mutex.Lock()
-	cb.onSuccess()
+	cb.onSuccess(generation)
 	cb.mutex.Unlock()
 	return nil
 }
@@ -109,12 +115,22 @@ func (cb *CircuitBreaker) getState() State {
 	return State(atomic.LoadInt32((*int32)(&cb.state)))
 }
 
-// setState updates the state atomically. Caller must hold the mutex.
-func (cb *CircuitBreaker) setState(newState State) {
-	atomic.StoreInt32((*int32)(&cb.state), int32(newState))
+// getGeneration reads the generation atomically.
+func (cb *CircuitBreaker) getGeneration() int64 {
+	return atomic.LoadInt64(&cb.generation)
 }
 
-func (cb *CircuitBreaker) onSuccess() {
+// setState updates the state atomically and increments the generation. Caller must hold the mutex.
+func (cb *CircuitBreaker) setState(newState State) {
+	atomic.StoreInt32((*int32)(&cb.state), int32(newState))
+	atomic.AddInt64(&cb.generation, 1)
+}
+
+func (cb *CircuitBreaker) onSuccess(generation int64) {
+	if generation != cb.getGeneration() {
+		return
+	}
+
 	if cb.getState() == StateHalfOpen {
 		cb.setState(StateClosed)
 		cb.halfOpenHits = 0
@@ -122,7 +138,11 @@ func (cb *CircuitBreaker) onSuccess() {
 	cb.failures = 0
 }
 
-func (cb *CircuitBreaker) onFailure() {
+func (cb *CircuitBreaker) onFailure(generation int64) {
+	if generation != cb.getGeneration() {
+		return
+	}
+
 	currentState := cb.getState()
 	if currentState == StateOpen {
 		return

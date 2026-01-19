@@ -168,10 +168,29 @@ func TestCircuitBreaker_OnFailure_WhenOpen(t *testing.T) {
     cb := NewCircuitBreaker(config)
 
     cb.setState(StateOpen)
+    gen := cb.getGeneration()
 
     // Should return early
-    cb.onFailure()
+    cb.onFailure(gen)
 
     // State should remain Open
+    require.Equal(t, StateOpen, cb.getState())
+}
+
+func TestCircuitBreaker_OnSuccess_StaleGeneration(t *testing.T) {
+    config := &configv1.CircuitBreakerConfig{}
+    cb := NewCircuitBreaker(config)
+
+    // Set state to HalfOpen
+    cb.setState(StateHalfOpen)
+    gen := cb.getGeneration() // captured gen
+
+    // Change state (and generation) externally
+    cb.setState(StateOpen)
+
+    // Call onSuccess with old gen
+    cb.onSuccess(gen)
+
+    // State should remain Open (onSuccess would normally flip HalfOpen -> Closed)
     require.Equal(t, StateOpen, cb.getState())
 }
