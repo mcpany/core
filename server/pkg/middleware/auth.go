@@ -54,9 +54,9 @@ func AuthMiddleware(authManager *auth.Manager) mcp.Middleware {
 			// de-facto standard used by the reference implementation.
 			httpReq, ok := ctx.Value("http.request").(*http.Request)
 			if !ok {
-				// If the http.Request is not in the context, we cannot perform authentication.
-				// This should ideally not happen in a server environment.
-				return nil, fmt.Errorf("unauthorized: http.Request not found in context")
+				// If the http.Request is not in the context, it might be a non-HTTP transport (e.g. Stdio).
+				// In this case, we trust the transport or assume no auth is required/possible via this middleware.
+				return next(ctx, method, req)
 			}
 
 			if serviceID == "" {

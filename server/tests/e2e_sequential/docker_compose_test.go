@@ -53,6 +53,8 @@ func TestDockerComposeE2E(t *testing.T) {
 	// Use a unique project name for isolation
 	projectName := fmt.Sprintf("e2e_seq_%d", time.Now().UnixNano())
 	t.Setenv("COMPOSE_PROJECT_NAME", projectName)
+	t.Setenv("MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES", "true")
+	t.Setenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS", "true")
 	t.Logf("Using COMPOSE_PROJECT_NAME: %s", projectName)
 
 	// Cleanup function
@@ -192,8 +194,10 @@ func testFunctionalWeather(t *testing.T, rootDir string) {
 	containerName := fmt.Sprintf("mcpany-weather-test-%d", time.Now().UnixNano())
 
 	cmd := exec.Command("docker", "run", "-d", "--name", containerName,
-		"-p", "0:50050", // Dynamic port
+		"-p", "25300:50050", // Specific port to avoid exhaustion
 		"-v", fmt.Sprintf("%s:/config.yaml", configPath),
+		"-e", "MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES=true",
+		"-e", "MCPANY_DANGEROUS_ALLOW_LOCAL_IPS=true",
 		"mcpany/server:latest",
 		"run", "--config-path", "/config.yaml", "--mcp-listen-address", ":50050", "--api-key", "demo-key",
 	)
@@ -543,9 +547,18 @@ func createDynamicCompose(t *testing.T, rootDir, originalPath string) string {
 
 	// Replace fixed ports with 0 ports
 	// Match pattern: "HOST_PORT:CONTAINER_PORT"
-	// We want to replace any HostPort with 0.
+	// We want to replace any HostPort with a specific port from our range.
 	re := regexp.MustCompile(`"([0-9\$\{}:_a-zA-Z-]+):([0-9]+)"`)
-	s := re.ReplaceAllString(string(content), `"0:$2"`)
+	port := 25200
+	s := re.ReplaceAllStringFunc(string(content), func(match string) string {
+		parts := re.FindStringSubmatch(match)
+		res := fmt.Sprintf(`"%d:%s"`, port, parts[2])
+		port++
+		return res
+	})
+
+	// Inject SSRF allow-lists into mcpany-server environment (first environment block)
+	s = strings.Replace(s, "environment:", "environment:\n      - MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES=true\n      - MCPANY_DANGEROUS_ALLOW_LOCAL_IPS=true", 1)
 
 	// Ensure build directory exists
 	buildDir := filepath.Join(rootDir, "build")

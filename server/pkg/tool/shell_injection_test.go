@@ -13,7 +13,7 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestShellInjection_Repro(t *testing.T) {
+func TestShellInjection_Regression(t *testing.T) {
 	// Case 1: python3 (Protected)
 	t.Run("python3_protected", func(t *testing.T) {
 		cmd := "python3"
@@ -28,8 +28,8 @@ func TestShellInjection_Repro(t *testing.T) {
 		assert.Contains(t, err.Error(), "shell injection detected", "python3 should be protected")
 	})
 
-	// Case 2: python3.10 (Vulnerable - Bug Repro)
-	// This test fails if python3.10 is NOT recognized as a shell command.
+	// Case 2: python3.10 (Protected)
+	// This test ensures versioned python binaries are also recognized as shell commands.
 	t.Run("python3.10_should_be_protected", func(t *testing.T) {
 		cmd := "python3.10"
 		tool := createTestCommandTool(cmd)
