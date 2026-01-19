@@ -154,7 +154,10 @@ const (
 	localHeaderMcpSessionID = "Mcp-Session-Id"
 	dockerCmd               = "docker"
 	sudoCmd                 = "sudo"
-	dynamicBindAddr         = "127.0.0.1:0"
+	// LoopbackIP is the default loopback IP for testing to avoid 127.0.0.1 saturation.
+	LoopbackIP              = "127.0.0.2"
+	loopbackIP              = LoopbackIP
+	dynamicBindAddr         = loopbackIP + ":0"
 )
 
 var (
@@ -467,7 +470,7 @@ func WaitForTCPPort(t *testing.T, port int, timeout time.Duration) {
 	t.Helper()
 	require.Eventually(t, func() bool {
 		d := net.Dialer{Timeout: 100 * time.Millisecond}
-		conn, err := d.DialContext(context.Background(), "tcp", fmt.Sprintf("127.0.0.1:%d", port))
+		conn, err := d.DialContext(context.Background(), "tcp", net.JoinHostPort(loopbackIP, strconv.Itoa(port)))
 		if err != nil {
 			return false // Port is not open yet
 		}
@@ -671,7 +674,7 @@ func StartWebsocketEchoServer(t *testing.T) *WebsocketEchoServerInfo {
 	t.Helper()
 
 	port := FindFreePort(t)
-	addr := fmt.Sprintf("127.0.0.1:%d", port)
+	addr := net.JoinHostPort(loopbackIP, strconv.Itoa(port))
 
 	upgrader := websocket.Upgrader{}
 	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -789,6 +792,13 @@ func StartInProcessMCPANYServer(t *testing.T, _ string, apiKey ...string) *MCPAN
 
 	ctx, cancel := context.WithCancel(context.Background())
 
+	// Use unique DB path to avoid SQLITE_BUSY conflicts
+	dbFile, err := os.CreateTemp(t.TempDir(), "mcpany-in-process-*.db")
+	require.NoError(t, err)
+	dbPath := dbFile.Name()
+	require.NoError(t, dbFile.Close())
+	t.Setenv("MCPANY_DB_PATH", dbPath)
+
 	appRunner := app.NewApplication()
 	go func() {
 		err := appRunner.Run(ctx, afero.NewOsFs(), false, jsonrpcAddress, grpcRegAddress, []string{}, actualAPIKey, 5*time.Second)
@@ -815,8 +825,8 @@ func StartInProcessMCPANYServer(t *testing.T, _ string, apiKey ...string) *MCPAN
 		t.Logf("Warning: Bound ports are 0 after startup. HTTP: %d, gRPC: %d", jsonrpcPort, grpcRegPort)
 	}
 
-	jsonrpcEndpoint := fmt.Sprintf("http://127.0.0.1:%d", jsonrpcPort)
-	grpcRegEndpoint := fmt.Sprintf("127.0.0.1:%d", grpcRegPort)
+	jsonrpcEndpoint := fmt.Sprintf("http://%s:%d", loopbackIP, jsonrpcPort)
+	grpcRegEndpoint := net.JoinHostPort(loopbackIP, strconv.Itoa(grpcRegPort))
 	mcpRequestURL := jsonrpcEndpoint + "/mcp"
 	if actualAPIKey != "" {
 		mcpRequestURL += "?api_key=" + actualAPIKey
@@ -899,7 +909,7 @@ func StartNatsServer(t *testing.T) (string, func()) {
 	}
 
 	// Use -p -1 to let NATS pick a random free port
-	cmd := exec.CommandContext(context.Background(), natsServerBin, "-p", "-1", "-a", "127.0.0.1") //nolint:gosec // Test helper
+	cmd := exec.CommandContext(context.Background(), natsServerBin, "-p", "-1", "-a", loopbackIP) //nolint:gosec // Test helper
 
 	// Capture output to find the port
 	// We need a thread-safe buffer because we might read while it writes (though wait loop handles this?)
@@ -939,7 +949,7 @@ func StartNatsServer(t *testing.T) (string, func()) {
 	}
 	require.True(t, found, "Failed to find NATS port in logs within timeout. Output:\n%s\nStderr:\n%s", stdout.String(), stderr.String())
 
-	natsURL := fmt.Sprintf("nats://127.0.0.1:%d", natsPort)
+	natsURL := fmt.Sprintf("nats://%s:%d", loopbackIP, natsPort)
 	WaitForTCPPort(t, natsPort, 5*time.Second) // Double check availability
 
 	cleanup := func() {
@@ -958,7 +968,7 @@ func StartRedisContainer(t *testing.T) (redisAddr string, cleanupFunc func()) {
 	// Use port 0 for dynamic host port allocation
 	runArgs := []string{
 		"-d",
-		"-p", "127.0.0.1:0:6379",
+		"-p", net.JoinHostPort(loopbackIP, "0") + ":6379",
 	}
 
 	command := []string{
@@ -1005,7 +1015,7 @@ func StartRedisContainer(t *testing.T) (redisAddr string, cleanupFunc func()) {
 		return true
 	}, 10*time.Second, 500*time.Millisecond, "Failed to inspect container port")
 
-	redisAddr = fmt.Sprintf("127.0.0.1:%d", hostPort)
+	redisAddr = net.JoinHostPort(loopbackIP, strconv.Itoa(hostPort))
 	t.Logf("Redis started at %s", redisAddr)
 
 	// Wait for Redis to be ready
@@ -1153,12 +1163,12 @@ func StartMCPANYServerWithClock(t *testing.T, testName string, healthCheck bool,
 	mcpRequestURL := ""
 
 	if jsonrpcPort != 0 {
-		jsonrpcEndpoint = fmt.Sprintf("http://127.0.0.1:%d", jsonrpcPort)
+		jsonrpcEndpoint = fmt.Sprintf("http://%s:%d", loopbackIP, jsonrpcPort)
 		// Include API Key in URL query param for easy auth
 		mcpRequestURL = fmt.Sprintf("%s/mcp?api_key=%s", jsonrpcEndpoint, apiKey)
 	}
 	if grpcRegPort != 0 {
-		grpcRegEndpoint = fmt.Sprintf("127.0.0.1:%d", grpcRegPort)
+		grpcRegEndpoint = net.JoinHostPort(loopbackIP, strconv.Itoa(grpcRegPort))
 	}
 
 	httpClient := &http.Client{Timeout: 2 * time.Second}
@@ -1226,7 +1236,7 @@ func StartMCPANYServerWithClock(t *testing.T, testName string, healthCheck bool,
 		JSONRPCEndpoint:          jsonrpcEndpoint,
 		HTTPEndpoint:             mcpRequestURL,
 		GrpcRegistrationEndpoint: grpcRegEndpoint,
-		MetricsEndpoint:          fmt.Sprintf("127.0.0.1:%d", metricsPort),
+		MetricsEndpoint:          net.JoinHostPort(loopbackIP, strconv.Itoa(metricsPort)),
 		HTTPClient:               httpClient,
 		GRPCRegConn:              grpcRegConn,
 		RegistrationClient:       registrationClient,

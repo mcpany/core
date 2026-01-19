@@ -124,7 +124,7 @@ func RunE2ETest(t *testing.T, testCase *E2ETestCase) {
 			case testCase.StartMCPANYServer != nil:
 				mcpanyTestServerInfo = testCase.StartMCPANYServer(t, testCase.Name)
 			case method == FileRegistration:
-				configContent := testCase.GenerateUpstreamConfig(fmt.Sprintf("localhost:%d", upstreamServerProc.Port))
+				configContent := testCase.GenerateUpstreamConfig(fmt.Sprintf("127.0.0.2:%d", upstreamServerProc.Port))
 				mcpanyTestServerInfo = integration.StartMCPANYServerWithConfig(t, testCase.Name, configContent)
 			default:
 				mcpanyTestServerInfo = integration.StartMCPANYServer(t, testCase.Name)
@@ -140,17 +140,17 @@ func RunE2ETest(t *testing.T, testCase *E2ETestCase) {
 			case "stdio":
 				upstreamEndpoint = ""
 			case "grpc":
-				upstreamEndpoint = fmt.Sprintf("localhost:%d", upstreamServerProc.Port)
+				upstreamEndpoint = fmt.Sprintf("127.0.0.2:%d", upstreamServerProc.Port)
 			case "websocket":
-				upstreamEndpoint = fmt.Sprintf("ws://localhost:%d/echo", upstreamServerProc.Port)
+				upstreamEndpoint = fmt.Sprintf("ws://127.0.0.2:%d/echo", upstreamServerProc.Port)
 			case "webrtc":
-				upstreamEndpoint = fmt.Sprintf("http://localhost:%d/signal", upstreamServerProc.Port)
+				upstreamEndpoint = fmt.Sprintf("http://127.0.0.2:%d/signal", upstreamServerProc.Port)
 			case "openapi":
-				upstreamEndpoint = fmt.Sprintf("http://localhost:%d", upstreamServerProc.Port)
+				upstreamEndpoint = fmt.Sprintf("http://127.0.0.2:%d", upstreamServerProc.Port)
 			case "streamablehttp":
-				upstreamEndpoint = fmt.Sprintf("http://localhost:%d/mcp", upstreamServerProc.Port)
+				upstreamEndpoint = fmt.Sprintf("http://127.0.0.2:%d/mcp", upstreamServerProc.Port)
 			default:
-				upstreamEndpoint = fmt.Sprintf("http://localhost:%d", upstreamServerProc.Port)
+				upstreamEndpoint = fmt.Sprintf("http://127.0.0.2:%d", upstreamServerProc.Port)
 			}
 			t.Logf("INFO: Registering upstream service with MCPANY at endpoint %s...", upstreamEndpoint)
 			switch method {
@@ -319,7 +319,7 @@ func BuildWebsocketWeatherServer(t *testing.T) *integration.ManagedProcess {
 		err := cmd.Run()
 		require.NoError(t, err, "Failed to build weather-server")
 	}
-	proc := integration.NewManagedProcess(t, "websocket_weather_server", binaryPath, []string{fmt.Sprintf("--addr=localhost:%d", port)}, []string{fmt.Sprintf("HTTP_PORT=%d", port)})
+	proc := integration.NewManagedProcess(t, "websocket_weather_server", binaryPath, []string{fmt.Sprintf("--addr=127.0.0.2:%d", port)}, []string{fmt.Sprintf("HTTP_PORT=%d", port)})
 	proc.Port = port
 	return proc
 }

@@ -16,15 +16,19 @@ import (
 
 func TestCheckConnection(t *testing.T) {
 	// Start a local test server
-	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	l, err := net.Listen("tcp", "127.0.0.2:0")
+	require.NoError(t, err)
+	ts := httptest.NewUnstartedServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 	}))
+	ts.Listener = l
+	ts.Start()
 	defer ts.Close()
 
 	ctx := context.Background()
 
 	// 1. Valid URL with scheme
-	err := CheckConnection(ctx, ts.URL)
+	err = CheckConnection(ctx, ts.URL)
 	assert.NoError(t, err)
 
 	// 2. Valid host:port without scheme
@@ -41,7 +45,7 @@ func TestCheckConnection(t *testing.T) {
 	assert.Error(t, err)
 
 	// 4. Unreachable
-	ln, err := net.Listen("tcp", "127.0.0.1:0")
+	ln, err := net.Listen("tcp", "127.0.0.2:0")
 	require.NoError(t, err)
 	closedAddr := ln.Addr().String()
 	ln.Close()

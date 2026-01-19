@@ -25,7 +25,7 @@ func TestServiceRetry(t *testing.T) {
     var l net.Listener
     var err error
     for i := 0; i < 10; i++ {
-        l, err = net.Listen("tcp", ":0")
+        l, err = net.Listen("tcp", "127.0.0.2:0")
         if err == nil {
             break
         }
@@ -38,7 +38,7 @@ func TestServiceRetry(t *testing.T) {
 
     // We will attempt to reuse this port. There is a small risk someone else steals it,
     // but on localhost tests it's usually fine.
-    targetURL := fmt.Sprintf("http://127.0.0.1:%d/mcp", port)
+    targetURL := fmt.Sprintf("http://127.0.0.2:%d/mcp", port)
 
 	configContent := fmt.Sprintf(`
 upstream_services:
@@ -59,7 +59,7 @@ upstream_services:
 
 	a := app.NewApplication()
 	go func() {
-		err := a.Run(ctx, fs, false, "127.0.0.1:0", "", []string{"config.yaml"}, "", 1*time.Second)
+		err := a.Run(ctx, fs, false, "127.0.0.2:0", "", []string{"config.yaml"}, "", 1*time.Second)
         if err != nil && ctx.Err() == nil {
             t.Logf("Application run error: %v", err)
         }
@@ -110,7 +110,7 @@ upstream_services:
     // Retry logic to handle EADDRINUSE
     var l2 net.Listener
     require.Eventually(t, func() bool {
-        l2, err = net.Listen("tcp", fmt.Sprintf(":%d", port))
+        l2, err = net.Listen("tcp", fmt.Sprintf("127.0.0.2:%d", port))
         if err != nil {
             t.Logf("Failed to re-bind to port %d: %v. Retrying...", port, err)
             return false

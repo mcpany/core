@@ -16,7 +16,10 @@ import (
 
 func TestCheckConnection_Coverage(t *testing.T) {
 	// Start a listener
-	ln, err := net.Listen("tcp", "127.0.0.1:0")
+	ln, err := net.Listen("tcp", "127.0.0.1:24001")
+	if err != nil {
+		ln, err = net.Listen("tcp", "127.0.0.1:0") // Fallback
+	}
 	require.NoError(t, err)
 	defer ln.Close()
 
