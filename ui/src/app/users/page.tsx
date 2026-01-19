@@ -27,6 +27,10 @@ interface User {
   };
 }
 
+/**
+ * UsersPage component.
+ * @returns The rendered component.
+ */
 export default function UsersPage() {
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);

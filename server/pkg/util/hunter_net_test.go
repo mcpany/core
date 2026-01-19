@@ -15,6 +15,9 @@ import (
 )
 
 func TestCheckConnection_Coverage(t *testing.T) {
+	// Allow loopback for this test as we are testing connection checks on local listener
+	t.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "true")
+
 	// Start a listener
 	ln, err := net.Listen("tcp", "127.0.0.1:24001")
 	if err != nil {
@@ -79,6 +82,8 @@ func TestSafeDialer_Coverage(t *testing.T) {
 }
 
 func TestCheckConnection_NoPort(t *testing.T) {
+	t.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "true")
+
 	// Mocking CheckConnection's behavior for no port is hard because it defaults to 80.
 	// But we can check that it fails or succeeds depending on port 80 accessibility.
 	// Usually 127.0.0.1:80 is closed.

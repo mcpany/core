@@ -18,6 +18,7 @@ import (
 	"github.com/mcpany/core/server/pkg/upstream"
 	"github.com/mcpany/core/server/pkg/upstream/factory"
 	"github.com/mcpany/core/server/pkg/util"
+	"google.golang.org/protobuf/proto"
 )
 
 // ServiceRegistryInterface defines the interface for a service registry.
@@ -228,7 +229,18 @@ func (r *ServiceRegistry) GetServiceInfo(serviceID string) (*tool.ServiceInfo, b
 	r.mu.RLock()
 	defer r.mu.RUnlock()
 	info, ok := r.serviceInfo[serviceID]
-	return info, ok
+	if !ok {
+		return nil, false
+	}
+
+	// Clone ServiceInfo to avoid modifying internal state
+	clonedInfo := *info // Shallow copy of struct
+	if info.Config != nil {
+		clonedConfig := proto.Clone(info.Config).(*config.UpstreamServiceConfig)
+		util.StripSecretsFromService(clonedConfig)
+		clonedInfo.Config = clonedConfig
+	}
+	return &clonedInfo, true
 }
 
 // GetServiceConfig returns the configuration for a given service key.
@@ -242,7 +254,12 @@ func (r *ServiceRegistry) GetServiceConfig(serviceID string) (*config.UpstreamSe
 	r.mu.RLock()
 	defer r.mu.RUnlock()
 	serviceConfig, ok := r.serviceConfigs[serviceID]
-	return serviceConfig, ok
+	if !ok {
+		return nil, false
+	}
+	cloned := proto.Clone(serviceConfig).(*config.UpstreamServiceConfig)
+	util.StripSecretsFromService(cloned)
+	return cloned, true
 }
 
 // UnregisterService removes a service from the registry.
@@ -329,7 +346,9 @@ func (r *ServiceRegistry) GetAllServices() ([]*config.UpstreamServiceConfig, err
 
 	services := make([]*config.UpstreamServiceConfig, 0, len(r.serviceConfigs))
 	for _, service := range r.serviceConfigs {
-		services = append(services, service)
+		cloned := proto.Clone(service).(*config.UpstreamServiceConfig)
+		util.StripSecretsFromService(cloned)
+		services = append(services, cloned)
 	}
 	return services, nil
 }
