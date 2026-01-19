@@ -237,12 +237,6 @@ After building, you can run the server locally:
 ./build/bin/server run --config-path server/examples/popular_services/wttr.in/config.yaml
 ```
 
-**Note:** By default, the server prioritizes database configuration. To load configuration from files (and enable read-only mode for those settings), set the `MCPANY_ENABLE_FILE_CONFIG` environment variable to `true`:
-
-```bash
-MCPANY_ENABLE_FILE_CONFIG=true ./build/bin/server run --config-path server/examples/popular_services/wttr.in/config.yaml
-```
-
 ### Project Structure
 
 The project is organized as follows:
@@ -290,10 +284,6 @@ We strive for high code quality. Please ensure the following before submitting a
   - You can verify Go documentation coverage with:
     ```bash
     go run server/tools/check_doc.go server/
-    ```
-  - You can auto-generate/fix TypeScript documentation with:
-    ```bash
-    python3 server/tools/fix_ts_docs.py
     ```
 - **Testing**: Add unit tests for new functionality. Run all tests with:
   ```bash

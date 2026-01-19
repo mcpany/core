@@ -21,7 +21,6 @@ import (
 	"time"
 
 	bus_pb "github.com/mcpany/core/proto/bus"
-	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/mcpany/core/server/pkg/auth"
 	"github.com/mcpany/core/server/pkg/bus"
 	"github.com/mcpany/core/server/pkg/logging"
@@ -36,7 +35,6 @@ import (
 	"github.com/spf13/afero"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 	gogrpc "google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
@@ -596,13 +594,6 @@ func TestRun_ConfigLoadError(t *testing.T) {
 	defer cancel()
 
 	app := NewApplication()
-	mockStore := new(MockStore)
-	mockStore.On("Load", mock.Anything).Return((*configv1.McpAnyServerConfig)(nil), nil)
-	mockStore.On("ListServices", mock.Anything).Return([]*configv1.UpstreamServiceConfig{}, nil)
-	mockStore.On("GetGlobalSettings", mock.Anything).Return(&configv1.GlobalSettings{}, nil)
-	mockStore.On("Close").Return(nil)
-	app.Storage = mockStore
-
 	// Should return error, as we are now strict about config errors during startup
 	err = app.Run(ctx, fs, false, "localhost:0", "localhost:0", []string{"/config.yaml"}, "", 5*time.Second)
 	require.Error(t, err)
@@ -682,12 +673,6 @@ func TestRun_NoGrpcServer(t *testing.T) {
 
 func TestRun_ServerStartupErrors(t *testing.T) {
 	app := NewApplication()
-	mockStore := new(MockStore)
-	mockStore.On("Load", mock.Anything).Return((*configv1.McpAnyServerConfig)(nil), nil)
-	mockStore.On("ListServices", mock.Anything).Return([]*configv1.UpstreamServiceConfig{}, nil)
-	mockStore.On("GetGlobalSettings", mock.Anything).Return(&configv1.GlobalSettings{}, nil)
-	mockStore.On("Close").Return(nil)
-	app.Storage = mockStore
 
 	t.Run("nil_fs_fail", func(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), 100*time.Millisecond)
@@ -1741,13 +1726,6 @@ upstream_services:
 	defer func() { bus.GetBusHook = nil }()
 
 	app := NewApplication()
-	mockStore := new(MockStore)
-	mockStore.On("Load", mock.Anything).Return((*configv1.McpAnyServerConfig)(nil), nil)
-	mockStore.On("ListServices", mock.Anything).Return([]*configv1.UpstreamServiceConfig{}, nil)
-	mockStore.On("GetGlobalSettings", mock.Anything).Return(&configv1.GlobalSettings{}, nil)
-	mockStore.On("Close").Return(nil)
-	app.Storage = mockStore
-
 	errChan := make(chan error, 1)
 	go func() {
 		errChan <- app.Run(ctx, fs, false, "localhost:0", "", []string{"/config.yaml"}, "", 5*time.Second)
@@ -1805,13 +1783,6 @@ upstream_services:
 	defer func() { bus.GetBusHook = nil }()
 
 	app := NewApplication()
-	mockStore := new(MockStore)
-	mockStore.On("Load", mock.Anything).Return((*configv1.McpAnyServerConfig)(nil), nil)
-	mockStore.On("ListServices", mock.Anything).Return([]*configv1.UpstreamServiceConfig{}, nil)
-	mockStore.On("GetGlobalSettings", mock.Anything).Return(&configv1.GlobalSettings{}, nil)
-	mockStore.On("Close").Return(nil)
-	app.Storage = mockStore
-
 	errChan := make(chan error, 1)
 	go func() {
 		errChan <- app.Run(ctx, fs, false, "localhost:0", "", []string{"/config.yaml"}, "", 5*time.Second)
@@ -2273,13 +2244,6 @@ upstream_services:
 		require.NoError(t, err)
 
 		app := NewApplication()
-		mockStore := new(MockStore)
-		mockStore.On("Load", mock.Anything).Return((*configv1.McpAnyServerConfig)(nil), nil)
-	mockStore.On("ListServices", mock.Anything).Return([]*configv1.UpstreamServiceConfig{}, nil)
-	mockStore.On("GetGlobalSettings", mock.Anything).Return(&configv1.GlobalSettings{}, nil)
-		mockStore.On("Close").Return(nil)
-		app.Storage = mockStore
-
 		errChan := make(chan error, 1)
 		go func() {
 			errChan <- app.Run(ctx, fs, false, addr, "", []string{"/config.yaml"}, "", 5*time.Second)
@@ -2317,13 +2281,6 @@ upstream_services: []
 		require.NoError(t, err)
 
 		app := NewApplication()
-		mockStore := new(MockStore)
-		mockStore.On("Load", mock.Anything).Return((*configv1.McpAnyServerConfig)(nil), nil)
-	mockStore.On("ListServices", mock.Anything).Return([]*configv1.UpstreamServiceConfig{}, nil)
-	mockStore.On("GetGlobalSettings", mock.Anything).Return(&configv1.GlobalSettings{}, nil)
-		mockStore.On("Close").Return(nil)
-		app.Storage = mockStore
-
 		errChan := make(chan error, 1)
 		go func() {
 			errChan <- app.Run(ctx, fs, false, addr, "", []string{"/config.yaml"}, "", 5*time.Second)
@@ -2344,12 +2301,6 @@ upstream_services: []
 func TestConfigHealthCheck(t *testing.T) {
 	fs := afero.NewMemMapFs()
 	app := NewApplication()
-	mockStore := new(MockStore)
-	mockStore.On("Load", mock.Anything).Return((*configv1.McpAnyServerConfig)(nil), nil)
-	mockStore.On("ListServices", mock.Anything).Return([]*configv1.UpstreamServiceConfig{}, nil)
-	mockStore.On("GetGlobalSettings", mock.Anything).Return(&configv1.GlobalSettings{}, nil)
-	mockStore.On("Close").Return(nil)
-	app.Storage = mockStore
 
 	// 1. Initial State
 	check := app.configHealthCheck(context.Background())

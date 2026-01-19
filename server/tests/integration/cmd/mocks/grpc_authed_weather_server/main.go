@@ -12,7 +12,6 @@ import (
 	"net"
 	"os"
 	"strings"
-	"time"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -97,7 +96,6 @@ func main() {
 			break
 		}
 		log.Printf("WARN grpc_authed_weather_server: Failed to listen, retrying... error=%v attempt=%d", err, i+1)
-		time.Sleep(100 * time.Millisecond)
 	}
 	if err != nil {
 		log.Fatalf("failed to listen after retries: %v", err)

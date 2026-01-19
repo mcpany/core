@@ -634,10 +634,7 @@ type GlobalSettings struct {
 	// Context Optimizer configuration.
 	ContextOptimizer *ContextOptimizerConfig `protobuf:"bytes,23,opt,name=context_optimizer" json:"context_optimizer,omitempty"`
 	// Debugger configuration.
-	Debugger *DebuggerConfig `protobuf:"bytes,24,opt,name=debugger" json:"debugger,omitempty"`
-	// If true, the configuration is read-only (e.g., loaded from a file).
-	// @inject_tag: yaml:"-"
-	ReadOnly      *bool `protobuf:"varint,25,opt,name=read_only" json:"read_only,omitempty"`
+	Debugger      *DebuggerConfig `protobuf:"bytes,24,opt,name=debugger" json:"debugger,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -835,13 +832,6 @@ func (x *GlobalSettings) GetDebugger() *DebuggerConfig {
 	return nil
 }
 
-func (x *GlobalSettings) GetReadOnly() bool {
-	if x != nil && x.ReadOnly != nil {
-		return *x.ReadOnly
-	}
-	return false
-}
-
 func (x *GlobalSettings) SetMcpListenAddress(v string) {
 	x.McpListenAddress = &v
 }
@@ -936,10 +926,6 @@ func (x *GlobalSettings) SetContextOptimizer(v *ContextOptimizerConfig) {
 
 func (x *GlobalSettings) SetDebugger(v *DebuggerConfig) {
 	x.Debugger = v
-}
-
-func (x *GlobalSettings) SetReadOnly(v bool) {
-	x.ReadOnly = &v
 }
 
 func (x *GlobalSettings) HasMcpListenAddress() bool {
@@ -1068,13 +1054,6 @@ func (x *GlobalSettings) HasDebugger() bool {
 	return x.Debugger != nil
 }
 
-func (x *GlobalSettings) HasReadOnly() bool {
-	if x == nil {
-		return false
-	}
-	return x.ReadOnly != nil
-}
-
 func (x *GlobalSettings) ClearMcpListenAddress() {
 	x.McpListenAddress = nil
 }
@@ -1147,10 +1126,6 @@ func (x *GlobalSettings) ClearDebugger() {
 	x.Debugger = nil
 }
 
-func (x *GlobalSettings) ClearReadOnly() {
-	x.ReadOnly = nil
-}
-
 type GlobalSettings_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
@@ -1202,9 +1177,6 @@ type GlobalSettings_builder struct {
 	ContextOptimizer *ContextOptimizerConfig
 	// Debugger configuration.
 	Debugger *DebuggerConfig
-	// If true, the configuration is read-only (e.g., loaded from a file).
-	// @inject_tag: yaml:"-"
-	ReadOnly *bool
 }
 
 func (b0 GlobalSettings_builder) Build() *GlobalSettings {
@@ -1235,7 +1207,6 @@ func (b0 GlobalSettings_builder) Build() *GlobalSettings {
 	x.AllowedOrigins = b.AllowedOrigins
 	x.ContextOptimizer = b.ContextOptimizer
 	x.Debugger = b.Debugger
-	x.ReadOnly = b.ReadOnly
 	return m0
 }
 
@@ -2885,7 +2856,7 @@ const file_proto_config_v1_config_proto_rawDesc = "" +
 	"created_at\x18\a \x01(\tR\tcreatedAt\"@\n" +
 	"\n" +
 	"SecretList\x122\n" +
-	"\asecrets\x18\x01 \x03(\v2\x18.mcpany.config.v1.SecretR\asecrets\"\xd5\v\n" +
+	"\asecrets\x18\x01 \x03(\v2\x18.mcpany.config.v1.SecretR\asecrets\"\xb7\v\n" +
 	"\x0eGlobalSettings\x12.\n" +
 	"\x12mcp_listen_address\x18\x01 \x01(\tR\x12mcp_listen_address\x12G\n" +
 	"\tlog_level\x18\x02 \x01(\x0e2).mcpany.config.v1.GlobalSettings.LogLevelR\tlog_level\x12\x18\n" +
@@ -2915,8 +2886,7 @@ const file_proto_config_v1_config_proto_rawDesc = "" +
 	"\x12allowed_file_paths\x18\x15 \x03(\tR\x12allowed_file_paths\x12(\n" +
 	"\x0fallowed_origins\x18\x16 \x03(\tR\x0fallowed_origins\x12V\n" +
 	"\x11context_optimizer\x18\x17 \x01(\v2(.mcpany.config.v1.ContextOptimizerConfigR\x11context_optimizer\x12<\n" +
-	"\bdebugger\x18\x18 \x01(\v2 .mcpany.config.v1.DebuggerConfigR\bdebugger\x12\x1c\n" +
-	"\tread_only\x18\x19 \x01(\bR\tread_only\"w\n" +
+	"\bdebugger\x18\x18 \x01(\v2 .mcpany.config.v1.DebuggerConfigR\bdebugger\"w\n" +
 	"\bLogLevel\x12\x19\n" +
 	"\x15LOG_LEVEL_UNSPECIFIED\x10\x00\x12\x12\n" +
 	"\x0eLOG_LEVEL_INFO\x10\x01\x12\x12\n" +

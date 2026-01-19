@@ -46,9 +46,6 @@ message UpstreamServiceConfig {
   // The configuration error if the service failed validation.
   // @inject_tag: yaml:"-"
   string config_error = 8 [json_name = "config_error"];
-  // If true, this service configuration is read-only (e.g., loaded from a file).
-  // @inject_tag: yaml:"-"
-  bool read_only = 35 [json_name = "read_only"];
 
   // Configuration for the pool of connections to the upstream service.
   ConnectionPoolConfig connection_pool = 9 [json_name = "connection_pool"];

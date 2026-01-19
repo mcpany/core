@@ -19,10 +19,6 @@ interface Webhook {
 import Link from "next/link";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
-/**
- * WebhooksPage component.
- * @returns The rendered component.
- */
 export default function WebhooksPage() {
     const [webhooks, setWebhooks] = useState<Webhook[]>([]);
 

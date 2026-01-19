@@ -21,9 +21,7 @@ import (
 )
 
 func TestStartupWithFailingUpstream(t *testing.T) {
-    // Enable file config for this test
-    t.Setenv("MCPANY_ENABLE_FILE_CONFIG", "true")
-
+	t.Parallel()
 
 	// 1. Start a working upstream service
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -135,26 +133,23 @@ upstream_services:
     require.NoError(t, err)
     defer session.Close()
 
-    require.Eventually(t, func() bool {
-        listToolsResult, err := session.ListTools(ctxCall, &mcp.ListToolsParams{})
-        if err != nil {
-            return false
+    listToolsResult, err := session.ListTools(ctxCall, &mcp.ListToolsParams{})
+	require.NoError(t, err)
+
+	workingToolFound := false
+	failingToolFound := false
+
+	for _, tool := range listToolsResult.Tools {
+        if tool.Name == "working-service.hello" {
+            workingToolFound = true
         }
-
-        workingToolFound := false
-        failingToolFound := false
-
-        for _, tool := range listToolsResult.Tools {
-            if tool.Name == "working-service.hello" {
-                workingToolFound = true
-            }
-            if tool.Name == "failing-service.echo" {
-                failingToolFound = true
-            }
+        if tool.Name == "failing-service.echo" {
+            failingToolFound = true
         }
-        return workingToolFound && failingToolFound
-    }, 10*time.Second, 100*time.Millisecond, "All tools should be registered")
+	}
 
+	require.True(t, workingToolFound, "Working tool should be registered")
+    require.True(t, failingToolFound, "Failing tool should be registered even if service is down")
 
     t.Log("Verifying failing tool call fails")
     args := json.RawMessage(`{}`)

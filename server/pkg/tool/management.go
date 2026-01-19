@@ -21,7 +21,6 @@ import (
 	"github.com/mcpany/core/server/pkg/util"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	xsync "github.com/puzpuzpuz/xsync/v4"
-	"google.golang.org/protobuf/proto"
 )
 
 // MCPServerProvider defines an interface for components that can provide an
@@ -149,9 +148,8 @@ type Manager struct {
 	cachedMCPTools []*mcp.Tool
 	toolsMutex     sync.RWMutex
 
-	enabledProfiles      []string
-	profileDefs          map[string]*configv1.ProfileDefinition
-	allowedServicesCache map[string]map[string]bool
+	enabledProfiles []string
+	profileDefs     map[string]*configv1.ProfileDefinition
 }
 
 // NewManager creates and returns a new, empty Manager.
@@ -161,12 +159,11 @@ type Manager struct {
 // Returns the result.
 func NewManager(bus *bus.Provider) *Manager {
 	return &Manager{
-		bus:                  bus,
-		tools:                xsync.NewMap[string, Tool](),
-		serviceInfo:          xsync.NewMap[string, *ServiceInfo](),
-		nameMap:              xsync.NewMap[string, string](),
-		profileDefs:          make(map[string]*configv1.ProfileDefinition),
-		allowedServicesCache: make(map[string]map[string]bool),
+		bus:         bus,
+		tools:       xsync.NewMap[string, Tool](),
+		serviceInfo: xsync.NewMap[string, *ServiceInfo](),
+		nameMap:     xsync.NewMap[string, string](),
+		profileDefs: make(map[string]*configv1.ProfileDefinition),
 	}
 }
 
@@ -179,19 +176,8 @@ func (tm *Manager) SetProfiles(enabled []string, defs []*configv1.ProfileDefinit
 	defer tm.mu.Unlock()
 	tm.enabledProfiles = enabled
 	tm.profileDefs = make(map[string]*configv1.ProfileDefinition)
-	tm.allowedServicesCache = make(map[string]map[string]bool)
-
 	for _, d := range defs {
 		tm.profileDefs[d.GetName()] = d
-
-		// Pre-compute allowed services for this profile
-		allowed := make(map[string]bool)
-		for serviceID, sc := range d.GetServiceConfig() {
-			if sc.GetEnabled() {
-				allowed[serviceID] = true
-			}
-		}
-		tm.allowedServicesCache[d.GetName()] = allowed
 	}
 }
 
@@ -307,13 +293,22 @@ func (tm *Manager) ToolMatchesProfile(tool Tool, profileID string) bool {
 //
 // Returns the result.
 // Returns true if successful.
-// Note: The returned map is cached and shared. Do not modify it.
 func (tm *Manager) GetAllowedServiceIDs(profileID string) (map[string]bool, bool) {
 	tm.mu.RLock()
 	defer tm.mu.RUnlock()
 
-	allowed, ok := tm.allowedServicesCache[profileID]
-	return allowed, ok
+	def, ok := tm.profileDefs[profileID]
+	if !ok {
+		return nil, false
+	}
+
+	allowed := make(map[string]bool)
+	for serviceID, sc := range def.GetServiceConfig() {
+		if sc.GetEnabled() {
+			allowed[serviceID] = true
+		}
+	}
+	return allowed, true
 }
 
 func (tm *Manager) matchesSelector(t *v1.Tool, selector *configv1.ProfileSelector) bool {
@@ -510,14 +505,11 @@ func (tm *Manager) ExecuteTool(ctx context.Context, req *ExecutionRequest) (any,
 		}(chain)
 	}
 
-	start := time.Now()
 	result, err := chain(ctx, req)
-	duration := time.Since(start)
-
 	if err != nil {
-		log.Error("Tool execution failed", "error", err, "duration", duration.String())
+		log.Error("Tool execution chain failed", "error", err)
 	} else {
-		log.Info("Tool execution successful", "duration", duration.String())
+		log.Debug("Tool execution chain successful")
 	}
 	return result, err
 }
@@ -572,13 +564,7 @@ func (tm *Manager) GetServiceInfo(serviceID string) (*ServiceInfo, bool) {
 	if !ok {
 		return nil, false
 	}
-	clonedInfo := *info
-	if info.Config != nil {
-		clonedConfig := proto.Clone(info.Config).(*configv1.UpstreamServiceConfig)
-		util.StripSecretsFromService(clonedConfig)
-		clonedInfo.Config = clonedConfig
-	}
-	return &clonedInfo, true
+	return info, true
 }
 
 // ListServices returns a slice containing all the services currently registered with
@@ -586,13 +572,7 @@ func (tm *Manager) GetServiceInfo(serviceID string) (*ServiceInfo, bool) {
 func (tm *Manager) ListServices() []*ServiceInfo {
 	var services []*ServiceInfo
 	tm.serviceInfo.Range(func(_ string, value *ServiceInfo) bool {
-		clonedInfo := *value
-		if value.Config != nil {
-			clonedConfig := proto.Clone(value.Config).(*configv1.UpstreamServiceConfig)
-			util.StripSecretsFromService(clonedConfig)
-			clonedInfo.Config = clonedConfig
-		}
-		services = append(services, &clonedInfo)
+		services = append(services, value)
 		return true
 	})
 	return services

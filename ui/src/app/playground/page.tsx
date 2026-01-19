@@ -7,10 +7,6 @@ import { Suspense } from "react";
 import { PlaygroundClientPro } from "@/components/playground/pro/playground-client-pro";
 import { Loader2 } from "lucide-react";
 
-/**
- * PlaygroundPage component.
- * @returns The rendered component.
- */
 export default function PlaygroundPage() {
   return (
     <div className="flex flex-col h-[calc(100vh-5rem)]">

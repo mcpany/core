@@ -126,6 +126,10 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
+	var addr string
+	flag := flag.NewFlagSet("weather-server", flag.ExitOnError)
+	flag.StringVar(&addr, "addr", "", "address to listen on")
+	_ = flag.Parse(os.Args[1:])
 	if err := run(os.Args, make(chan os.Signal, 1), nil); err != nil {
 		log.Fatalf("Error: %v", err)
 	}
@@ -134,9 +138,6 @@ func main() {
 func run(args []string, stop chan os.Signal, ready chan<- string) error {
 	fs := flag.NewFlagSet("weather-server", flag.ContinueOnError)
 	port := fs.String("port", "8080", "Port to listen on")
-	var addr string
-	fs.StringVar(&addr, "addr", "", "Address to listen on (overrides port if set)")
-
 	if err := fs.Parse(args[1:]); err != nil {
 		return err
 	}
@@ -146,13 +147,9 @@ func run(args []string, stop chan os.Signal, ready chan<- string) error {
 	mux.HandleFunc("/weather", weatherHandler)
 	mux.HandleFunc("/ws", wsHandler)
 
-	listenAddr := "127.0.0.1:" + *port
-	if addr != "" {
-		listenAddr = addr
-	}
-
 	lc := net.ListenConfig{}
-	ln, err := lc.Listen(context.Background(), "tcp", listenAddr)
+	// Bind to 127.0.0.1 to avoid issues with IPv6 or firewall in some environments
+	ln, err := lc.Listen(context.Background(), "tcp", "127.0.0.1:"+*port)
 	if err != nil {
 		return fmt.Errorf("failed to listen: %w", err)
 	}

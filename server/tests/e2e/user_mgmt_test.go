@@ -10,6 +10,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"os"
+	"strings"
 	"testing"
 	"time"
 
@@ -26,10 +27,6 @@ import (
 )
 
 func TestUserManagement(t *testing.T) {
-	// Enable file config for this test
-	os.Setenv("MCPANY_ENABLE_FILE_CONFIG", "true")
-	defer os.Unsetenv("MCPANY_ENABLE_FILE_CONFIG")
-
 	// Mock OIDC Server (Start FIRST so we can use URL in config)
 	mockOIDCMux := http.NewServeMux()
 	// Use TLS to satisfy OIDC requirements (or we'd need to assume insecure which is harder to inject globally without flag)
@@ -78,38 +75,56 @@ global_settings:
 	err = tmpFile.Close()
 	require.NoError(t, err)
 
+	var jsonrpcPort int
+	var grpcRegPort int
 	var ctx context.Context
 	var cancel context.CancelFunc
+	var appRunner *app.Application
 
 	// Prepare Context with Trusted OIDC Client
 	baseCtx := context.Background()
 	oidcClient := mockOIDC.Client()
 	baseCtx = oidc.ClientContext(baseCtx, oidcClient)
 
-	ctx, cancel = context.WithCancel(baseCtx)
-	defer cancel()
-
-	appRunner := app.NewApplication()
-
-	go func() {
-		// Mock filesystem with our config
-		fs := afero.NewOsFs()
-		// Use :0 to let OS choose free ports
-		err := appRunner.Run(ctx, fs, false, ":0", ":0", []string{tmpFile.Name()}, "", 5*time.Second)
-		if err != nil && err != context.Canceled {
-			t.Logf("Application run error: %v", err)
+	// Retry loop for ports
+	for attempt := 0; attempt < 3; attempt++ {
+		jsonrpcPort = integration.FindFreePort(t)
+		grpcRegPort = integration.FindFreePort(t)
+		for grpcRegPort == jsonrpcPort {
+			grpcRegPort = integration.FindFreePort(t)
 		}
-	}()
 
-	// Wait for app to start
-	err = appRunner.WaitForStartup(ctx)
-	require.NoError(t, err, "Failed to wait for startup")
+		ctx, cancel = context.WithCancel(baseCtx)
+		appRunner = app.NewApplication()
 
-	jsonrpcPort := appRunner.BoundHTTPPort
-	grpcRegPort := appRunner.BoundGRPCPort
+		errChan := make(chan error, 1)
+		go func() {
+			jsonrpcAddress := fmt.Sprintf(":%d", jsonrpcPort)
+			grpcRegAddress := fmt.Sprintf(":%d", grpcRegPort)
+			// Mock filesystem with our config
+			fs := afero.NewOsFs()
+			err := appRunner.Run(ctx, fs, false, jsonrpcAddress, grpcRegAddress, []string{tmpFile.Name()}, "", 5*time.Second)
+			if err != nil && err != context.Canceled {
+				errChan <- err
+			}
+		}()
 
-	require.NotZero(t, jsonrpcPort, "JSON RPC Port should be bound")
-	require.NotZero(t, grpcRegPort, "gRPC Port should be bound")
+		select {
+		case err := <-errChan:
+			cancel()
+			if err != nil && (strings.Contains(err.Error(), "address already in use") || strings.Contains(err.Error(), "bind")) {
+				t.Logf("Port conflict detected, retrying...")
+				continue
+			}
+			t.Fatalf("Server failed to start: %v", err)
+		case <-time.After(500 * time.Millisecond):
+			goto ServerStarted
+		}
+	}
+	t.Fatal("Failed to start server after multiple attempts")
+
+ServerStarted:
+	defer cancel()
 
 	// Wait for health check
 	httpUrl := fmt.Sprintf("http://127.0.0.1:%d/healthz", jsonrpcPort)
@@ -187,10 +202,6 @@ global_settings:
 	require.NoError(t, err)
 	defer loginResp.Body.Close()
 
-	if loginResp.StatusCode != http.StatusFound {
-		body, _ := io.ReadAll(loginResp.Body)
-		t.Logf("Expected 302, got %d. Body: %s", loginResp.StatusCode, string(body))
-	}
 	require.Equal(t, http.StatusFound, loginResp.StatusCode)
 	loc, err := loginResp.Location()
 	require.NoError(t, err)

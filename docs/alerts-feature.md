@@ -1,7 +1,7 @@
 # Alerts & Incidents Feature
 
-**Date:** 2026-01-19
-**Status:** Active (Partial)
+**Date:** 2026-01-09
+**Status:** UI Prototype (Mock Data)
 
 ## Overview
 
@@ -12,25 +12,18 @@ The **Alerts & Incidents** feature provides a centralized console for monitoring
 1.  **Dashboard Stats:** Real-time KPI cards showing Active Critical alerts, Warning counts, MTTR (Mean Time To Resolution), and Total Incident volume.
 2.  **Alert Feed:** A sortable, filterable list of all alerts with color-coded severity badges (Critical, Warning, Info) and status indicators (Active, Acknowledged, Resolved).
 3.  **Filtering:** Users can filter alerts by Severity, Status, or free-text search (Title, Message, Service).
-
-## Planned Capabilities (Roadmap)
-
-4.  **Rule Management:** A "Create Alert Rule" dialog allows users to define new monitoring conditions. (Currently UI Prototype).
+4.  **Rule Management:** A "Create Alert Rule" dialog allows users to define new monitoring conditions using PromQL-like syntax.
 
 ## Implementation Details
 
 -   **Route:** `/alerts`
--   **API Endpoints:**
-    -   `GET /api/v1/alerts`: List all alerts.
-    -   `POST /api/v1/alerts`: Create a new alert.
-    -   `GET /api/v1/alerts/{id}`: Get alert details.
-    -   `PATCH /api/v1/alerts/{id}`: Update alert status.
 -   **Components:**
     -   `AlertsPage`: Main container layout.
-    -   `AlertList`: The data table component with filtering logic, connected to the backend API.
+    -   `AlertList`: The data table component with filtering logic.
     -   `AlertStats`: Top-level metrics.
-    -   `CreateRuleDialog`: Configuration form (Prototype).
+    -   `CreateRuleDialog`: Configuration form.
+-   **Mock Data:** The current implementation uses static mock data for demonstration purposes, simulating a live backend connection.
 
 ## Verification
 
-The feature is integrated with the backend `AlertsManager` for Alert CRUD operations. Rule management logic is pending implementation.
+The feature has been verified with E2E tests using Playwright.

@@ -82,9 +82,6 @@ let mockSecrets: Secret[] = [
     }
 ];
 
-/**
- * The SecretsStore class.
- */
 export const SecretsStore = {
     getAllDecrypted: () => {
         // In reality, we wouldn't return decrypted values in list usually,

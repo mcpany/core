@@ -119,9 +119,6 @@ message GlobalSettings {
   ContextOptimizerConfig context_optimizer = 23 [json_name = "context_optimizer"];
   // Debugger configuration.
   DebuggerConfig debugger = 24 [json_name = "debugger"];
-  // If true, the configuration is read-only (e.g., loaded from a file).
-  // @inject_tag: yaml:"-"
-  bool read_only = 25 [json_name = "read_only"];
 }
 
 message ContextOptimizerConfig {

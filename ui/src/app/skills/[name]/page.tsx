@@ -7,10 +7,6 @@
 
 import SkillDetail from '@/components/skills/skill-detail';
 
-/**
- * SkillDetailPage component.
- * @returns The rendered component.
- */
 export default function SkillDetailPage() {
   return <SkillDetail />;
 }

@@ -26,10 +26,6 @@ const INITIAL_MIDDLEWARE: Middleware[] = [
     { id: "mw-4", name: "Request Validation", type: "validator", enabled: false },
 ];
 
-/**
- * MiddlewarePage component.
- * @returns The rendered component.
- */
 export default function MiddlewarePage() {
     const [middleware, setMiddleware] = useState<Middleware[]>(INITIAL_MIDDLEWARE);
 

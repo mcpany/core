@@ -36,13 +36,8 @@ const settingsSchema = z.object({
 
 type SettingsValues = z.infer<typeof settingsSchema>;
 
-/**
- * GlobalSettingsForm component.
- * @returns The rendered component.
- */
 export function GlobalSettingsForm() {
   const [loading, setLoading] = useState(false);
-  const [isReadOnly, setIsReadOnly] = useState(false);
 
   const form = useForm<SettingsValues>({
     resolver: zodResolver(settingsSchema),
@@ -70,9 +65,6 @@ export function GlobalSettingsForm() {
                 dlp_enabled: settings.dlp?.enabled || false,
                 gc_interval: settings.gc_settings?.interval || "1h",
             });
-            if (settings.read_only) {
-                setIsReadOnly(true);
-            }
         }
       } catch (e) {
         console.error("Failed to load settings", e);
@@ -82,7 +74,6 @@ export function GlobalSettingsForm() {
   }, [form]);
 
   async function onSubmit(data: SettingsValues) {
-    if (isReadOnly) return;
     setLoading(true);
     try {
        // Map strings back to backend enums
@@ -108,16 +99,9 @@ export function GlobalSettingsForm() {
         <CardTitle>Global Configuration</CardTitle>
         <CardDescription>Server-wide operational parameters.</CardDescription>
       </CardHeader>
-      <CardContent className="space-y-6">
-        {isReadOnly && (
-            <div className="bg-yellow-50 dark:bg-yellow-900/20 border-l-4 border-yellow-500 p-4 text-yellow-700 dark:text-yellow-400">
-                <p className="font-bold">Configuration Read-Only</p>
-                <p className="text-sm">Additional configuration can be found in the file configuration. This configuration cannot be edited via the UI.</p>
-            </div>
-        )}
+      <CardContent>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            <fieldset disabled={isReadOnly} className="space-y-6 group-disabled:opacity-50">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <FormField
                 control={form.control}
@@ -161,7 +145,7 @@ export function GlobalSettingsForm() {
                     render={({ field }) => (
                         <FormItem>
                         <FormLabel>Log Level</FormLabel>
-                        <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value} disabled={isReadOnly}>
+                        <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
                             <FormControl>
                             <SelectTrigger>
                                 <SelectValue placeholder="Select a level" />
@@ -184,7 +168,7 @@ export function GlobalSettingsForm() {
                     render={({ field }) => (
                         <FormItem>
                         <FormLabel>Log Format</FormLabel>
-                        <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value} disabled={isReadOnly}>
+                        <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
                             <FormControl>
                             <SelectTrigger>
                                 <SelectValue placeholder="Select a format" />
@@ -217,7 +201,6 @@ export function GlobalSettingsForm() {
                         <Switch
                         checked={field.value}
                         onCheckedChange={field.onChange}
-                        disabled={isReadOnly}
                         />
                     </FormControl>
                     </FormItem>
@@ -239,17 +222,15 @@ export function GlobalSettingsForm() {
                         <Switch
                         checked={field.value}
                         onCheckedChange={field.onChange}
-                        disabled={isReadOnly}
                         />
                     </FormControl>
                     </FormItem>
                 )}
                 />
             </div>
-            </fieldset>
 
-            <Button type="submit" disabled={loading || isReadOnly}>
-                {loading ? "Saving..." : isReadOnly ? "Read Only" : "Save Settings"}
+            <Button type="submit" disabled={loading}>
+                {loading ? "Saving..." : "Save Settings"}
             </Button>
           </form>
         </Form>

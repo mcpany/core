@@ -12,10 +12,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 
-/**
- * StepAuth component.
- * @returns The rendered component.
- */
 export function StepAuth() {
   const { state, updateConfig, updateState } = useWizard();
   const { config, authCredentialId } = state;

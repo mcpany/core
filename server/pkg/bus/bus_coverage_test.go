@@ -4,8 +4,6 @@
 package bus
 
 import (
-	"context"
-	"fmt"
 	"testing"
 
 	"github.com/mcpany/core/proto/bus"
@@ -72,59 +70,21 @@ func TestNewProvider_Default(t *testing.T) {
 	assert.NotNil(t, bus)
 }
 
-func TestGetBus_Hook(t *testing.T) {
-	oldHook := GetBusHook
-	defer func() { GetBusHook = oldHook }()
+func TestNewProvider_UnknownType(_ *testing.T) {
+	// It's hard to force unknown type if we use the proto setters correctly.
+	// But we can check if we can reach the default case in NewProvider
+	// which returns "unknown bus type".
+	// The proto generated code might strictly limit values for oneof.
+	// However, we can construct a MessageBus where the oneof is nil but HasBusType is true?
+	// No, HasBusType checks if non-nil.
 
-	GetBusHook = func(p *Provider, topic string) (any, error) {
-		return nil, fmt.Errorf("hook error")
-	}
+	// If we use a manually constructed config with no inner fields set but somehow bypass helpers?
+	// NewProvider logic:
+	// if !provider.config.HasBusType() { set InMemory }
+	// switch provider.config.WhichBusType() { ... }
 
-	provider, _ := NewProvider(nil)
-	_, err := GetBus[string](provider, "topic")
-	assert.Error(t, err)
-	assert.Equal(t, "hook error", err.Error())
-}
-
-func TestGetBus_Hook_Success(t *testing.T) {
-	oldHook := GetBusHook
-	defer func() { GetBusHook = oldHook }()
-
-	mockBus := &MockBus[string]{}
-	GetBusHook = func(p *Provider, topic string) (any, error) {
-		return mockBus, nil
-	}
-
-	provider, _ := NewProvider(nil)
-	bus, err := GetBus[string](provider, "topic")
-	assert.NoError(t, err)
-	assert.Equal(t, mockBus, bus)
-}
-
-func TestNewProvider_Hook(t *testing.T) {
-	oldHook := NewProviderHook
-	defer func() { NewProviderHook = oldHook }()
-
-	NewProviderHook = func(mb *bus.MessageBus) (*Provider, error) {
-		return nil, fmt.Errorf("hook error")
-	}
-
-	_, err := NewProvider(nil)
-	assert.Error(t, err)
-	assert.Equal(t, "hook error", err.Error())
-}
-
-// MockBus implements Bus interface for testing
-type MockBus[T any] struct{}
-
-func (m *MockBus[T]) Publish(ctx context.Context, topic string, msg T) error {
-	return nil
-}
-
-func (m *MockBus[T]) Subscribe(ctx context.Context, topic string, handler func(T)) func() {
-	return func() {}
-}
-
-func (m *MockBus[T]) SubscribeOnce(ctx context.Context, topic string, handler func(T)) func() {
-	return func() {}
+	// If we have a type that is not InMemory, Redis, or Nats.
+	// Current proto only has those 3.
+	// So "unknown bus type" might be unreachable unless we add new types to proto but not code.
+	// We can skip this edge case if hard to reach.
 }

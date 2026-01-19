@@ -16,13 +16,6 @@ interface ServiceConfigDiffProps {
   modified: UpstreamServiceConfig;
 }
 
-/**
- * ServiceConfigDiff component.
- * @param props - The component props.
- * @param props.original - The original property.
- * @param props.modified - The modified property.
- * @returns The rendered component.
- */
 export function ServiceConfigDiff({ original, modified }: ServiceConfigDiffProps) {
   const { theme, systemTheme } = useTheme();
 

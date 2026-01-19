@@ -131,10 +131,6 @@ function OAuthCallbackContent() {
     );
 }
 
-/**
- * OAuthCallbackPage component.
- * @returns The rendered component.
- */
 export default function OAuthCallbackPage() {
   return (
     <Suspense fallback={<div>Loading...</div>}>

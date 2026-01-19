@@ -666,7 +666,6 @@ type GlobalSettings struct {
 	xxx_hidden_AllowedOrigins     []string                 `protobuf:"bytes,22,rep,name=allowed_origins"`
 	xxx_hidden_ContextOptimizer   *ContextOptimizerConfig  `protobuf:"bytes,23,opt,name=context_optimizer"`
 	xxx_hidden_Debugger           *DebuggerConfig          `protobuf:"bytes,24,opt,name=debugger"`
-	xxx_hidden_ReadOnly           bool                     `protobuf:"varint,25,opt,name=read_only"`
 	XXX_raceDetectHookData        protoimpl.RaceDetectHookData
 	XXX_presence                  [1]uint32
 	unknownFields                 protoimpl.UnknownFields
@@ -892,56 +891,49 @@ func (x *GlobalSettings) GetDebugger() *DebuggerConfig {
 	return nil
 }
 
-func (x *GlobalSettings) GetReadOnly() bool {
-	if x != nil {
-		return x.xxx_hidden_ReadOnly
-	}
-	return false
-}
-
 func (x *GlobalSettings) SetMcpListenAddress(v string) {
 	x.xxx_hidden_McpListenAddress = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 25)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 24)
 }
 
 func (x *GlobalSettings) SetLogLevel(v GlobalSettings_LogLevel) {
 	x.xxx_hidden_LogLevel = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 25)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 24)
 }
 
 func (x *GlobalSettings) SetApiKey(v string) {
 	x.xxx_hidden_ApiKey = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 25)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 24)
 }
 
 func (x *GlobalSettings) SetLogFormat(v GlobalSettings_LogFormat) {
 	x.xxx_hidden_LogFormat = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 3, 25)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 3, 24)
 }
 
 func (x *GlobalSettings) SetDbPath(v string) {
 	x.xxx_hidden_DbPath = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 4, 25)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 4, 24)
 }
 
 func (x *GlobalSettings) SetDbDsn(v string) {
 	x.xxx_hidden_DbDsn = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 5, 25)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 5, 24)
 }
 
 func (x *GlobalSettings) SetDbDriver(v string) {
 	x.xxx_hidden_DbDriver = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 6, 25)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 6, 24)
 }
 
 func (x *GlobalSettings) SetGithubApiUrl(v string) {
 	x.xxx_hidden_GithubApiUrl = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 7, 25)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 7, 24)
 }
 
 func (x *GlobalSettings) SetUseSudoForDocker(v bool) {
 	x.xxx_hidden_UseSudoForDocker = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 8, 25)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 8, 24)
 }
 
 func (x *GlobalSettings) SetMessageBus(v *bus.MessageBus) {
@@ -1002,11 +994,6 @@ func (x *GlobalSettings) SetContextOptimizer(v *ContextOptimizerConfig) {
 
 func (x *GlobalSettings) SetDebugger(v *DebuggerConfig) {
 	x.xxx_hidden_Debugger = v
-}
-
-func (x *GlobalSettings) SetReadOnly(v bool) {
-	x.xxx_hidden_ReadOnly = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 24, 25)
 }
 
 func (x *GlobalSettings) HasMcpListenAddress() bool {
@@ -1135,13 +1122,6 @@ func (x *GlobalSettings) HasDebugger() bool {
 	return x.xxx_hidden_Debugger != nil
 }
 
-func (x *GlobalSettings) HasReadOnly() bool {
-	if x == nil {
-		return false
-	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 24)
-}
-
 func (x *GlobalSettings) ClearMcpListenAddress() {
 	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
 	x.xxx_hidden_McpListenAddress = nil
@@ -1223,11 +1203,6 @@ func (x *GlobalSettings) ClearDebugger() {
 	x.xxx_hidden_Debugger = nil
 }
 
-func (x *GlobalSettings) ClearReadOnly() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 24)
-	x.xxx_hidden_ReadOnly = false
-}
-
 type GlobalSettings_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
@@ -1279,9 +1254,6 @@ type GlobalSettings_builder struct {
 	ContextOptimizer *ContextOptimizerConfig
 	// Debugger configuration.
 	Debugger *DebuggerConfig
-	// If true, the configuration is read-only (e.g., loaded from a file).
-	// @inject_tag: yaml:"-"
-	ReadOnly *bool
 }
 
 func (b0 GlobalSettings_builder) Build() *GlobalSettings {
@@ -1289,39 +1261,39 @@ func (b0 GlobalSettings_builder) Build() *GlobalSettings {
 	b, x := &b0, m0
 	_, _ = b, x
 	if b.McpListenAddress != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 25)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 24)
 		x.xxx_hidden_McpListenAddress = b.McpListenAddress
 	}
 	if b.LogLevel != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 25)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 24)
 		x.xxx_hidden_LogLevel = *b.LogLevel
 	}
 	if b.ApiKey != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 25)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 24)
 		x.xxx_hidden_ApiKey = b.ApiKey
 	}
 	if b.LogFormat != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 3, 25)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 3, 24)
 		x.xxx_hidden_LogFormat = *b.LogFormat
 	}
 	if b.DbPath != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 4, 25)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 4, 24)
 		x.xxx_hidden_DbPath = b.DbPath
 	}
 	if b.DbDsn != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 5, 25)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 5, 24)
 		x.xxx_hidden_DbDsn = b.DbDsn
 	}
 	if b.DbDriver != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 6, 25)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 6, 24)
 		x.xxx_hidden_DbDriver = b.DbDriver
 	}
 	if b.GithubApiUrl != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 7, 25)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 7, 24)
 		x.xxx_hidden_GithubApiUrl = b.GithubApiUrl
 	}
 	if b.UseSudoForDocker != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 8, 25)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 8, 24)
 		x.xxx_hidden_UseSudoForDocker = *b.UseSudoForDocker
 	}
 	x.xxx_hidden_MessageBus = b.MessageBus
@@ -1339,10 +1311,6 @@ func (b0 GlobalSettings_builder) Build() *GlobalSettings {
 	x.xxx_hidden_AllowedOrigins = b.AllowedOrigins
 	x.xxx_hidden_ContextOptimizer = b.ContextOptimizer
 	x.xxx_hidden_Debugger = b.Debugger
-	if b.ReadOnly != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 24, 25)
-		x.xxx_hidden_ReadOnly = *b.ReadOnly
-	}
 	return m0
 }
 
@@ -3226,7 +3194,7 @@ const file_proto_config_v1_config_proto_rawDesc = "" +
 	"created_at\x18\a \x01(\tR\tcreatedAt\"@\n" +
 	"\n" +
 	"SecretList\x122\n" +
-	"\asecrets\x18\x01 \x03(\v2\x18.mcpany.config.v1.SecretR\asecrets\"\xd5\v\n" +
+	"\asecrets\x18\x01 \x03(\v2\x18.mcpany.config.v1.SecretR\asecrets\"\xb7\v\n" +
 	"\x0eGlobalSettings\x12.\n" +
 	"\x12mcp_listen_address\x18\x01 \x01(\tR\x12mcp_listen_address\x12G\n" +
 	"\tlog_level\x18\x02 \x01(\x0e2).mcpany.config.v1.GlobalSettings.LogLevelR\tlog_level\x12\x18\n" +
@@ -3256,8 +3224,7 @@ const file_proto_config_v1_config_proto_rawDesc = "" +
 	"\x12allowed_file_paths\x18\x15 \x03(\tR\x12allowed_file_paths\x12(\n" +
 	"\x0fallowed_origins\x18\x16 \x03(\tR\x0fallowed_origins\x12V\n" +
 	"\x11context_optimizer\x18\x17 \x01(\v2(.mcpany.config.v1.ContextOptimizerConfigR\x11context_optimizer\x12<\n" +
-	"\bdebugger\x18\x18 \x01(\v2 .mcpany.config.v1.DebuggerConfigR\bdebugger\x12\x1c\n" +
-	"\tread_only\x18\x19 \x01(\bR\tread_only\"w\n" +
+	"\bdebugger\x18\x18 \x01(\v2 .mcpany.config.v1.DebuggerConfigR\bdebugger\"w\n" +
 	"\bLogLevel\x12\x19\n" +
 	"\x15LOG_LEVEL_UNSPECIFIED\x10\x00\x12\x12\n" +
 	"\x0eLOG_LEVEL_INFO\x10\x01\x12\x12\n" +

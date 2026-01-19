@@ -26,7 +26,6 @@ import (
 	pb_admin "github.com/mcpany/core/proto/admin/v1"
 	v1 "github.com/mcpany/core/proto/api/v1"
 	"github.com/mcpany/core/server/pkg/admin"
-	"github.com/mcpany/core/server/pkg/alerts"
 	"github.com/mcpany/core/server/pkg/appconsts"
 	"github.com/mcpany/core/server/pkg/auth"
 	"github.com/mcpany/core/server/pkg/bus"
@@ -186,9 +185,6 @@ type Application struct {
 	// SkillManager manages agent skills
 	SkillManager *skill.Manager
 
-	// AlertsManager manages system alerts
-	AlertsManager *alerts.Manager
-
 	// lastReloadErr stores the error from the last configuration reload.
 	standardMiddlewares *middleware.StandardMiddlewares
 	// Settings Manager for global settings (dynamic updates)
@@ -248,7 +244,6 @@ func NewApplication() *Application {
 		runStdioModeFunc: runStdioMode,
 		PromptManager:    prompt.NewManager(),
 		ToolManager:      tool.NewManager(busProvider),
-		AlertsManager:    alerts.NewManager(),
 
 		ResourceManager: resource.NewManager(),
 		UpstreamFactory: factory.NewUpstreamServiceFactory(pool.NewManager(), nil),
@@ -306,37 +301,33 @@ func (a *Application) Run(
 	var storageStore config.Store
 	var storageCloser func() error
 
-	if a.Storage != nil {
-		storageStore = a.Storage
-	} else {
-		// Default to SQLite if not specified or explicitly sqlite
-		dbDriver := config.GlobalSettings().GetDbDriver()
-		switch dbDriver {
-		case "", "sqlite":
-			dbPath := config.GlobalSettings().DBPath()
-			if dbPath == "" {
-				dbPath = "mcpany.db"
-			}
-			sqliteDB, err := sqlite.NewDB(dbPath)
-			if err != nil {
-				return fmt.Errorf("failed to initialize sqlite db: %w", err)
-			}
-			storageCloser = sqliteDB.Close
-			storageStore = sqlite.NewStore(sqliteDB)
-		case "postgres":
-			dsn := config.GlobalSettings().GetDbDsn()
-			if dsn == "" {
-				return fmt.Errorf("postgres driver selected but db_dsn is empty")
-			}
-			pgDB, err := postgres.NewDB(dsn)
-			if err != nil {
-				return fmt.Errorf("failed to initialize postgres db: %w", err)
-			}
-			storageCloser = func() error { return pgDB.Close() }
-			storageStore = postgres.NewStore(pgDB)
-		default:
-			return fmt.Errorf("unsupported db driver: %s", dbDriver)
+	// Default to SQLite if not specified or explicitly sqlite
+	dbDriver := config.GlobalSettings().GetDbDriver()
+	switch dbDriver {
+	case "", "sqlite":
+		dbPath := config.GlobalSettings().DBPath()
+		if dbPath == "" {
+			dbPath = "mcpany.db"
 		}
+		sqliteDB, err := sqlite.NewDB(dbPath)
+		if err != nil {
+			return fmt.Errorf("failed to initialize sqlite db: %w", err)
+		}
+		storageCloser = sqliteDB.Close
+		storageStore = sqlite.NewStore(sqliteDB)
+	case "postgres":
+		dsn := config.GlobalSettings().GetDbDsn()
+		if dsn == "" {
+			return fmt.Errorf("postgres driver selected but db_dsn is empty")
+		}
+		pgDB, err := postgres.NewDB(dsn)
+		if err != nil {
+			return fmt.Errorf("failed to initialize postgres db: %w", err)
+		}
+		storageCloser = func() error { return pgDB.Close() }
+		storageStore = postgres.NewStore(pgDB)
+	default:
+		return fmt.Errorf("unsupported db driver: %s", dbDriver)
 	}
 	defer func() {
 		if storageCloser != nil {
@@ -345,25 +336,11 @@ func (a *Application) Run(
 	}()
 
 	var stores []config.Store
-
-	// Initialize DB if empty
-	if err := a.initializeDatabase(ctx, storageStore); err != nil {
-		return fmt.Errorf("failed to initialize database: %w", err)
-	}
-
-	// Determine config sources
-	// Priority: Database < File (if enabled)
-	stores = append(stores, storageStore)
-
-	enableFileConfig := os.Getenv("MCPANY_ENABLE_FILE_CONFIG") == "true"
 	if len(configPaths) > 0 {
-		if enableFileConfig {
-			log.Info("File configuration enabled, loading config from files (overrides database)", "paths", configPaths)
-			stores = append(stores, config.NewFileStore(fs, configPaths))
-		} else {
-			log.Warn("File configuration found but MCPANY_ENABLE_FILE_CONFIG is not true. Ignoring file config.", "paths", configPaths)
-		}
+		// Use strict FileStore to fail fast on configuration errors (Track 1: Friction Fighter)
+		stores = append(stores, config.NewFileStore(fs, configPaths))
 	}
+	stores = append(stores, storageStore)
 	multiStore := config.NewMultiStore(stores...)
 
 	var cfg *config_v1.McpAnyServerConfig
@@ -833,14 +810,11 @@ func (a *Application) ReloadConfig(ctx context.Context, fs afero.Fs, configPaths
 
 func (a *Application) loadConfig(ctx context.Context, fs afero.Fs, configPaths []string) (*config_v1.McpAnyServerConfig, error) {
 	var stores []config.Store
-
+	if len(configPaths) > 0 {
+		stores = append(stores, config.NewFileStore(fs, configPaths))
+	}
 	if a.Storage != nil {
 		stores = append(stores, a.Storage)
-	}
-
-	enableFileConfig := os.Getenv("MCPANY_ENABLE_FILE_CONFIG") == "true"
-	if enableFileConfig && len(configPaths) > 0 {
-		stores = append(stores, config.NewFileStore(fs, configPaths))
 	}
 
 	store := config.NewMultiStore(stores...)

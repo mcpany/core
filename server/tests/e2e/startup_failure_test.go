@@ -26,9 +26,7 @@ func TestStartup_FailsOnMalformedConfig(t *testing.T) {
 
 	// Run the server command
 	// We assume we are running from server/tests/e2e/, so main is at ../../cmd/server/main.go
-	dbPath := filepath.Join(tmpDir, "test.db")
-	cmd := exec.Command("go", "run", "../../cmd/server/main.go", "run", "--config-path", configPath, "--mcp-listen-address", "127.0.0.1:0", "--grpc-port", "127.0.0.1:0", "--metrics-listen-address", "127.0.0.1:0")
-	cmd.Env = append(os.Environ(), "MCPANY__GLOBAL_SETTINGS__DB_PATH="+dbPath, "MCPANY_ENABLE_FILE_CONFIG=true")
+	cmd := exec.Command("go", "run", "../../cmd/server/main.go", "run", "--config-path", configPath)
 
 	// Set a timeout or rely on go test timeout
 	// But usually startup failure is fast.

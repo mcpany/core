@@ -96,8 +96,7 @@ func ResolveRelativePaths(cfg *configv1.McpAnyServerConfig, baseDir string) {
 		case *configv1.UpstreamServiceConfig_OpenapiService:
 			svc := s.OpenapiService
 			tlsConfig = svc.TlsConfig
-			switch spec := svc.SpecSource.(type) {
-			case *configv1.OpenapiUpstreamService_SpecUrl:
+			if spec, ok := svc.SpecSource.(*configv1.OpenapiUpstreamService_SpecUrl); ok {
 				if isLocalFile(spec.SpecUrl) {
 					spec.SpecUrl = resolveStr(spec.SpecUrl)
 				}

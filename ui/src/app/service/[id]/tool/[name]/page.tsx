@@ -12,12 +12,6 @@ import { apiClient } from "@/lib/client";
 import { UpstreamServiceConfig } from "@/lib/types";
 import { useServiceSiblings, useToolSiblings } from "@/hooks/use-siblings";
 
-/**
- * ToolDetailPage component.
- * @param props - The component props.
- * @param props.params - The params property.
- * @returns The rendered component.
- */
 export default function ToolDetailPage({ params: paramsPromise }: { params: Promise<{ id: string, name: string }> }) {
     const params = use(paramsPromise);
     const [service, setService] = useState<UpstreamServiceConfig | null>(null);

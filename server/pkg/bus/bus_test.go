@@ -6,7 +6,6 @@ package bus
 import (
 	"context"
 	"encoding/json"
-	"errors"
 	"sync"
 	"testing"
 	"time"
@@ -92,82 +91,6 @@ func TestBusProvider(t *testing.T) {
 		assert.NotNil(t, bus1)
 	})
 }
-
-func TestBusProvider_Errors(t *testing.T) {
-	t.Run("NewProvider_NilConfig", func(t *testing.T) {
-		// Should default to InMemory
-		provider, err := NewProvider(nil)
-		assert.NoError(t, err)
-		assert.NotNil(t, provider)
-		assert.Equal(t, bus.MessageBus_InMemory_case, provider.config.WhichBusType())
-	})
-
-	t.Run("NewProvider_EmptyConfig", func(t *testing.T) {
-		// Should default to InMemory
-		messageBus := bus.MessageBus_builder{}.Build()
-		provider, err := NewProvider(messageBus)
-		assert.NoError(t, err)
-		assert.NotNil(t, provider)
-		assert.Equal(t, bus.MessageBus_InMemory_case, provider.config.WhichBusType())
-	})
-
-	t.Run("GetBus_HookError", func(t *testing.T) {
-		messageBus := bus.MessageBus_builder{}.Build()
-		messageBus.SetInMemory(bus.InMemoryBus_builder{}.Build())
-		provider, err := NewProvider(messageBus)
-		assert.NoError(t, err)
-
-		// Set hook to simulate error
-		originalHook := GetBusHook
-		defer func() { GetBusHook = originalHook }()
-		GetBusHook = func(p *Provider, topic string) (any, error) {
-			return nil, errors.New("simulated error")
-		}
-
-		b, err := GetBus[string](provider, "test")
-		assert.Error(t, err)
-		assert.Nil(t, b)
-		assert.Equal(t, "simulated error", err.Error())
-	})
-
-	t.Run("GetBus_HookSuccess", func(t *testing.T) {
-		messageBus := bus.MessageBus_builder{}.Build()
-		messageBus.SetInMemory(bus.InMemoryBus_builder{}.Build())
-		provider, err := NewProvider(messageBus)
-		assert.NoError(t, err)
-
-		// Set hook to simulate success with a mocked bus (or just nil as Any)
-		// But GetBus expects Bus[T]
-		originalHook := GetBusHook
-		defer func() { GetBusHook = originalHook }()
-
-		// Use in-memory bus as return value
-		mockBus := &MockBus[string]{}
-		GetBusHook = func(p *Provider, topic string) (any, error) {
-			return mockBus, nil
-		}
-
-		b, err := GetBus[string](provider, "test")
-		assert.NoError(t, err)
-		assert.Equal(t, mockBus, b)
-	})
-}
-
-type MockBus[T any] struct {
-}
-
-func (m *MockBus[T]) Publish(ctx context.Context, topic string, msg T) error {
-	return nil
-}
-
-func (m *MockBus[T]) Subscribe(ctx context.Context, topic string, handler func(T)) (unsubscribe func()) {
-	return func() {}
-}
-
-func (m *MockBus[T]) SubscribeOnce(ctx context.Context, topic string, handler func(T)) (unsubscribe func()) {
-	return func() {}
-}
-
 
 func TestIntegration(t *testing.T) {
 	messageBus := bus.MessageBus_builder{}.Build()

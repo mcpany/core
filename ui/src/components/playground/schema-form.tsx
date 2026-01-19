@@ -26,15 +26,6 @@ interface SchemaFieldProps {
     level?: number;
 }
 
-/**
- * SchemaForm component.
- * @param props - The component props.
- * @param props.schema - The schema definition.
- * @param props.value - The current value.
- * @param props.onChange - Callback function when value changes.
- * @param props.errors - The error message or object.
- * @returns The rendered component.
- */
 export function SchemaForm({ schema, value, onChange, errors }: {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     schema: any; // Using any for schema as it can be recursive and variable

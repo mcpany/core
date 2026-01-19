@@ -210,7 +210,7 @@ func TestRun(t *testing.T) {
 	var runErr error
 
 	// Retry loop for starting the server
-	for i := 0; i < 20; i++ {
+	for i := 0; i < 10; i++ {
 		stop := make(chan os.Signal, 1)
 		ready := make(chan string, 1)
 		errChan := make(chan error, 1)
@@ -246,7 +246,7 @@ func TestRun(t *testing.T) {
 			// Server failed to start
 			if strings.Contains(runErr.Error(), "address already in use") {
 				t.Logf("Attempt %d: address in use, retrying... error=%v", i+1, runErr)
-				time.Sleep(500 * time.Millisecond)
+				time.Sleep(100 * time.Millisecond)
 				continue
 			}
 			t.Fatalf("Server failed to start: %v", runErr)
@@ -258,5 +258,5 @@ func TestRun(t *testing.T) {
 			continue
 		}
 	}
-	t.Fatalf("Server failed to start after 20 attempts: %v", runErr)
+	t.Fatalf("Server failed to start after 10 attempts: %v", runErr)
 }

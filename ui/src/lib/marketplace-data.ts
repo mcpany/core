@@ -12,9 +12,6 @@ export interface MarketplaceItemConfig {
   envVars: EnvVarDefinition[];
 }
 
-/**
- * EnvVarDefinition type definition.
- */
 export interface EnvVarDefinition {
   name: string;
   description: string;
@@ -24,9 +21,6 @@ export interface EnvVarDefinition {
   addToArgs?: boolean;
 }
 
-/**
- * MarketplaceItem type definition.
- */
 export interface MarketplaceItem {
   id: string;
   name: string;
@@ -35,9 +29,6 @@ export interface MarketplaceItem {
   config: MarketplaceItemConfig;
 }
 
-/**
- * The MARKETPLACE_ITEMS const.
- */
 export const MARKETPLACE_ITEMS: MarketplaceItem[] = [
   {
     id: "filesystem",

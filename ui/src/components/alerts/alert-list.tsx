@@ -5,7 +5,7 @@
 
 "use client";
 
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo } from "react";
 import {
   Table,
   TableBody,
@@ -24,7 +24,7 @@ import {
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { CheckCircle2, AlertCircle, AlertTriangle, Search, Filter, MoreHorizontal, Clock, RefreshCw, Activity, Loader2 } from "lucide-react";
+import { CheckCircle2, AlertCircle, AlertTriangle, Search, Filter, MoreHorizontal, Clock, RefreshCw, Activity } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -35,42 +35,20 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Alert, Severity, AlertStatus } from "./types";
 import { formatDistanceToNow } from "date-fns";
-import { useToast } from "@/hooks/use-toast";
 
-/**
- * AlertList component.
- * @returns The rendered component.
- */
+const MOCK_ALERTS: Alert[] = [
+  { id: "AL-1024", title: "High CPU Usage", message: "CPU usage > 90% for 5m", severity: "critical", status: "active", service: "weather-service", source: "System Monitor", timestamp: new Date(Date.now() - 1000 * 60 * 5).toISOString() },
+  { id: "AL-1023", title: "API Latency Spike", message: "P99 Latency > 2000ms", severity: "warning", status: "active", service: "api-gateway", source: "Latency Watchdog", timestamp: new Date(Date.now() - 1000 * 60 * 15).toISOString() },
+  { id: "AL-1022", title: "Disk Space Low", message: "Volume /data at 85%", severity: "warning", status: "acknowledged", service: "database-primary", source: "Disk Monitor", timestamp: new Date(Date.now() - 1000 * 60 * 45).toISOString() },
+  { id: "AL-1021", title: "Connection Refused", message: "Upstream connection failed", severity: "critical", status: "resolved", service: "payment-provider", source: "Connectivity Check", timestamp: new Date(Date.now() - 1000 * 60 * 60 * 2).toISOString() },
+  { id: "AL-1020", title: "New Service Deployed", message: "Service 'search-v2' detected", severity: "info", status: "resolved", service: "discovery", source: "Orchestrator", timestamp: new Date(Date.now() - 1000 * 60 * 60 * 5).toISOString() },
+];
+
 export function AlertList() {
-  const [alerts, setAlerts] = useState<Alert[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [alerts, setAlerts] = useState<Alert[]>(MOCK_ALERTS);
   const [searchQuery, setSearchQuery] = useState("");
   const [filterSeverity, setFilterSeverity] = useState<string>("all");
   const [filterStatus, setFilterStatus] = useState<string>("all");
-  const { toast } = useToast();
-
-  const fetchAlerts = async () => {
-    setLoading(true);
-    try {
-      const res = await fetch("/api/v1/alerts");
-      if (!res.ok) throw new Error("Failed to fetch alerts");
-      const data = await res.json();
-      setAlerts(data);
-    } catch (error) {
-      console.error(error);
-      toast({
-        title: "Error",
-        description: "Failed to load alerts",
-        variant: "destructive",
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchAlerts();
-  }, []);
 
   const filteredAlerts = useMemo(() => {
     return alerts.filter(alert => {
@@ -86,29 +64,8 @@ export function AlertList() {
     });
   }, [alerts, searchQuery, filterSeverity, filterStatus]);
 
-  const handleStatusChange = async (id: string, newStatus: AlertStatus) => {
-    try {
-        const res = await fetch(`/api/v1/alerts/${id}`, {
-            method: 'PATCH',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ status: newStatus }),
-        });
-        if (!res.ok) throw new Error("Failed to update status");
-
-        const updated = await res.json();
-        setAlerts(prev => prev.map(a => a.id === id ? updated : a));
-        toast({
-            title: "Status Updated",
-            description: `Alert marked as ${newStatus}`,
-        });
-    } catch (error) {
-        console.error(error);
-        toast({
-            title: "Error",
-            description: "Failed to update status",
-            variant: "destructive",
-        });
-    }
+  const handleStatusChange = (id: string, newStatus: AlertStatus) => {
+    setAlerts(prev => prev.map(a => a.id === id ? { ...a, status: newStatus } : a));
   };
 
   const getSeverityBadge = (severity: Severity) => {
@@ -116,7 +73,6 @@ export function AlertList() {
       case "critical": return <Badge variant="destructive" className="uppercase text-[10px]">Critical</Badge>;
       case "warning": return <Badge variant="secondary" className="bg-yellow-500/15 text-yellow-600 dark:text-yellow-400 hover:bg-yellow-500/25 uppercase text-[10px]">Warning</Badge>;
       case "info": return <Badge variant="outline" className="text-blue-500 border-blue-200 dark:border-blue-800 uppercase text-[10px]">Info</Badge>;
-      default: return <Badge variant="outline" className="uppercase text-[10px]">{severity}</Badge>;
     }
   };
 
@@ -125,7 +81,6 @@ export function AlertList() {
       case "active": return <AlertCircle className="h-4 w-4 text-red-500 animate-pulse" />;
       case "acknowledged": return <AlertTriangle className="h-4 w-4 text-yellow-500" />;
       case "resolved": return <CheckCircle2 className="h-4 w-4 text-green-500" />;
-      default: return <Activity className="h-4 w-4 text-muted-foreground" />;
     }
   };
 
@@ -170,8 +125,8 @@ export function AlertList() {
               <SelectItem value="resolved">Resolved</SelectItem>
             </SelectContent>
           </Select>
-          <Button variant="outline" size="icon" onClick={fetchAlerts} disabled={loading}>
-             <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
+          <Button variant="outline" size="icon" onClick={() => setAlerts(MOCK_ALERTS)}>
+             <RefreshCw className="h-4 w-4" />
           </Button>
         </div>
       </div>
@@ -189,16 +144,7 @@ export function AlertList() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {loading && alerts.length === 0 ? (
-                 <TableRow>
-                    <TableCell colSpan={6} className="h-24 text-center text-muted-foreground">
-                        <div className="flex items-center justify-center gap-2">
-                            <Loader2 className="h-4 w-4 animate-spin" />
-                            Loading alerts...
-                        </div>
-                    </TableCell>
-                </TableRow>
-            ) : filteredAlerts.length === 0 ? (
+            {filteredAlerts.length === 0 ? (
                 <TableRow>
                     <TableCell colSpan={6} className="h-24 text-center text-muted-foreground">
                         No alerts match your filters.
