@@ -100,6 +100,8 @@ These features represent the next logical steps for the product, focusing on Ent
 | 67   | **Config Schema Versioning**                  | **Maintenance**: Introduce `apiVersion` field in `config.yaml` to support breaking changes in configuration schema gracefully.                                                                                     | High       |
 | 68   | **Connection Draining**                       | **Availability**: Utilize active connection tracking (from System Health Dashboard) to implement graceful shutdown that waits for connections to finish before exiting.                                       | Medium     |
 | 69   | **Secure Defaults Enforcer**                  | **Security**: Automated "Fix-it" suggestions or enforcement of secure defaults based on security warnings visualized in the Health Dashboard.                                                                  | Medium     |
+| 70   | **Config Secret Linter**                      | **DevX**: Scan config files for potential secret leaks (e.g. simplified syntax hardcoded values vs env vars) and warn.                                                                                             | Low        |
+| 71   | **Verbose Config Upgrader**                   | **DevX**: A CLI command to automatically convert verbose `SecretValue` objects to simplified string syntax where possible, to clean up existing configs.                                                           | Low        |
 
 ## 3. Codebase Health
 

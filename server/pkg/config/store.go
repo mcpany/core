@@ -691,11 +691,45 @@ func convertKind(kind protoreflect.Kind, value string) interface{} {
 // fixTypes traverses the map and converts maps to slices where appropriate based on the protobuf schema.
 // This is necessary because environment variables might create maps for list fields (using indices as keys),
 // but protojson expects slices.
+//
+// It also handles simplified syntax for SecretValue: converting raw strings into {"plain_text": "string"}.
 func fixTypes(m map[string]interface{}, md protoreflect.MessageDescriptor) {
 	for key, val := range m {
 		fd := findField(md, key)
 		if fd == nil {
 			continue
+		}
+
+		// Check for simplified SecretValue syntax
+		isSecretValue := false
+		if fd.Kind() == protoreflect.MessageKind && !fd.IsList() && !fd.IsMap() {
+			if fd.Message().FullName() == "mcpany.config.v1.SecretValue" {
+				isSecretValue = true
+			}
+		}
+
+		isMapOfSecretValue := false
+		if fd.IsMap() {
+			valFd := fd.MapValue()
+			if valFd.Kind() == protoreflect.MessageKind && valFd.Message().FullName() == "mcpany.config.v1.SecretValue" {
+				isMapOfSecretValue = true
+			}
+		}
+
+		if isSecretValue {
+			if strVal, ok := val.(string); ok {
+				newVal := map[string]interface{}{"plain_text": strVal}
+				m[key] = newVal
+				val = newVal
+			}
+		} else if isMapOfSecretValue {
+			if valMap, ok := val.(map[string]interface{}); ok {
+				for k, v := range valMap {
+					if strVal, ok := v.(string); ok {
+						valMap[k] = map[string]interface{}{"plain_text": strVal}
+					}
+				}
+			}
 		}
 
 		if fd.IsList() {
