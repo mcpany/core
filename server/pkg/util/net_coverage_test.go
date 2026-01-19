@@ -15,6 +15,8 @@ import (
 )
 
 func TestCheckConnection(t *testing.T) {
+	t.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "true")
+
 	// Start a local test server
 	l, err := net.Listen("tcp", "127.0.0.2:0")
 	require.NoError(t, err)

@@ -14,9 +14,13 @@ import (
 
 // ManagerInterface defines the interface for managing alerts.
 type ManagerInterface interface {
+	// ListAlerts returns a list of all alerts.
 	ListAlerts() []*Alert
+	// GetAlert retrieves an alert by its ID.
 	GetAlert(id string) *Alert
+	// CreateAlert creates a new alert.
 	CreateAlert(alert *Alert) *Alert
+	// UpdateAlert updates an existing alert.
 	UpdateAlert(id string, alert *Alert) *Alert
 }
 

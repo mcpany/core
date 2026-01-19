@@ -18,6 +18,10 @@ import { AuthSettingsForm } from "@/components/settings/auth-settings";
 
 import Link from "next/link";
 
+/**
+ * SettingsPage component.
+ * @returns The rendered component.
+ */
 export default function SettingsPage() {
   const [activeProfile, setActiveProfile] = useState("development");
 

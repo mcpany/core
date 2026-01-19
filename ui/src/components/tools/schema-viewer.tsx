@@ -60,6 +60,15 @@ const TypeBadge = ({ type, format }: { type?: string | string[], format?: string
   );
 };
 
+/**
+ * SchemaViewer component.
+ * @param props - The component props.
+ * @param props.schema - The schema definition.
+ * @param props.name - The name.
+ * @param props.required - Whether the field is required.
+ * @param props.depth - The nesting depth.
+ * @returns The rendered component.
+ */
 export function SchemaViewer({ schema, name, required = false, depth = 0 }: SchemaViewerProps) {
   if (!schema) return <div className="text-muted-foreground italic text-xs">No schema defined</div>;
 
