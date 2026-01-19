@@ -202,11 +202,16 @@ func scanForSensitiveKeys(input []byte, validateKeyContext bool) bool { //nolint
 	// This reduces the number of passes over the data from N (number of unique start chars) to 1.
 	offset := 0
 	for offset < len(input) {
-		idx := bytes.IndexAny(input[offset:], allSensitiveStartChars)
+		slice := input[offset:]
+		idx := bytes.IndexAny(slice, allSensitiveStartChars)
 		if idx == -1 {
 			break
 		}
 		matchStart := offset + idx
+		// Check bounds explicitly to satisfy gosec G602
+		if matchStart >= len(input) {
+			break
+		}
 		c := input[matchStart]
 
 		// We found a character 'c' which is a start char.
