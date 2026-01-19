@@ -37,4 +37,4 @@ You can fine-tune the configuration in the Monaco Editor.
 
 ### 4. Deploy
 
-Once satisfied, click **"Deploy Stack"**. The system will provision the defined services and route them appropriately.
+Once satisfied, click **"Save Changes"**. The system will save the configuration. If the server is configured for hot-reload, the changes will be applied automatically to the running instance.
