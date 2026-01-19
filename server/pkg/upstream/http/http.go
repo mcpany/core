@@ -510,17 +510,20 @@ func (u *Upstream) createAndRegisterHTTPTools(ctx context.Context, serviceID, ad
 							// It is a flag if:
 							// 1. It is in endFlags (endpoint explicitly set it as flag)
 							// 2. OR It is in baseFlags AND NOT in endVals (base set it, and endpoint didn't override it with a non-flag value)
-							// But wait, if endVals has it, we used endVals value.
-							// If endVals has it and it was a flag, endVals[k] is [""].
-							// So checking endFlags[k] is sufficient if it came from endpoint.
-							// If it came from base (not in endVals), then baseFlags[k].
 
-							// Check if this key should be a flag.
-							// We restore the flag style if it was a flag in either Base or Endpoint.
-							// This preserves the behavior of unioning flags, and ensures that
-							// if a parameter was a flag in the base URL, it remains a flag
-							// even if the endpoint specifies it with an empty value (e.g. ?flag=).
-							if endFlags[decodedKey] || baseFlags[decodedKey] {
+							// Check if this key was present in the endpoint query.
+							_, inEndpoint := endVals[decodedKey]
+
+							isFlag := false
+							if inEndpoint {
+								// If it came from endpoint, respect endpoint's flag status
+								isFlag = endFlags[decodedKey]
+							} else {
+								// If it came from base (and not overridden), respect base's flag status
+								isFlag = baseFlags[decodedKey]
+							}
+
+							if isFlag {
 								parts[i] = encodedKey
 							}
 						}
