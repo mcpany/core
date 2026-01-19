@@ -12,10 +12,6 @@ import { Trace } from "@/app/api/traces/route";
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/components/ui/resizable";
 import { Loader2 } from "lucide-react";
 
-/**
- * TracesPage component.
- * @returns The rendered component.
- */
 export default function TracesPage() {
   const [traces, setTraces] = useState<Trace[]>([]);
   const [selectedId, setSelectedId] = useState<string | null>(null);

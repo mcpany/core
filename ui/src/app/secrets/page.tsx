@@ -5,10 +5,6 @@
 
 import { SecretsManager } from "@/components/settings/secrets-manager";
 
-/**
- * SecretsPage component.
- * @returns The rendered component.
- */
 export default function SecretsPage() {
   return (
     <div className="flex flex-col h-[calc(100vh-4rem)] p-8">

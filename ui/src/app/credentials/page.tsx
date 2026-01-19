@@ -6,10 +6,6 @@
 import { CredentialList } from "@/components/credentials/credential-list"
 import { Separator } from "@/components/ui/separator"
 
-/**
- * CredentialsPage component.
- * @returns The rendered component.
- */
 export default function CredentialsPage() {
   return (
     <div className="h-full flex-1 flex-col space-y-8 p-8 md:flex">

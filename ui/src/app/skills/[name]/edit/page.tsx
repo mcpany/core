@@ -7,10 +7,6 @@
 
 import SkillWizard from '@/components/skills/skill-wizard';
 
-/**
- * EditSkillPage component.
- * @returns The rendered component.
- */
 export default function EditSkillPage() {
   return <SkillWizard />;
 }

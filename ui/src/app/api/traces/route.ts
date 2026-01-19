@@ -5,14 +5,8 @@
 
 import { NextResponse } from 'next/server';
 
-/**
- * Represents the status of a span.
- */
 export type SpanStatus = 'success' | 'error' | 'pending';
 
-/**
- * Represents a span in a trace.
- */
 export interface Span {
   id: string;
   name: string;
@@ -27,9 +21,6 @@ export interface Span {
   errorMessage?: string;
 }
 
-/**
- * Represents a full trace.
- */
 export interface Trace {
   id: string;
   rootSpan: Span;

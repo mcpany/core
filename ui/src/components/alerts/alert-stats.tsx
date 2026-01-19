@@ -8,10 +8,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { AlertCircle, CheckCircle2, AlertTriangle, Activity } from "lucide-react";
 
-/**
- * AlertStats component.
- * @returns The rendered component.
- */
 export function AlertStats() {
   // Mock data - in a real app, this would come from props or a query
   const stats = {

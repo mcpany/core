@@ -103,12 +103,6 @@ function StackStatus({ stackId }: { stackId: string }) {
     );
 }
 
-/**
- * StackDetailPage component.
- * @param props - The component props.
- * @param props.params - The params property.
- * @returns The rendered component.
- */
 export default function StackDetailPage({ params }: { params: Promise<{ stackId: string }> }) {
     const resolvedParams = use(params);
     const [activeTab, setActiveTab] = useState("editor");

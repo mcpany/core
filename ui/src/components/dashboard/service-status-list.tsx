@@ -13,10 +13,6 @@ import { Badge } from "@/components/ui/badge"
 import { mockServices } from "@/lib/mock-data"
 import { UpstreamServiceConfig } from "@proto/config/v1/upstream_service"
 
-/**
- * ServiceStatusList component.
- * @returns The rendered component.
- */
 export function ServiceStatusList() {
     const services = mockServices.slice(0, 5); // Show top 5
 

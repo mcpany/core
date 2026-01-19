@@ -10,7 +10,6 @@ import (
 	"fmt"
 	"net"
 	"net/http"
-	"os"
 	"os/exec"
 	"strings"
 	"time"
@@ -162,8 +161,9 @@ func checkOAuth2Reachability(ctx context.Context, oauth *configv1.OAuth2Auth) Ch
 	}
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 
-	client := util.NewSafeHTTPClient()
-	client.Timeout = 5 * time.Second
+	client := &http.Client{
+		Timeout: 5 * time.Second,
+	}
 
 	resp, err := client.Do(req)
 	if err != nil {
@@ -256,9 +256,10 @@ func checkURL(ctx context.Context, urlStr string, auth *configv1.Authentication)
 		}
 	}
 
-	client := util.NewSafeHTTPClient()
-	if transport, ok := client.Transport.(*http.Transport); ok {
-		transport.TLSHandshakeTimeout = 5 * time.Second
+	client := &http.Client{
+		Transport: &http.Transport{
+			TLSHandshakeTimeout: 5 * time.Second,
+		},
 	}
 
 	resp, err := client.Do(req)
@@ -316,18 +317,8 @@ func checkGRPCService(ctx context.Context, s *configv1.GrpcUpstreamService) Chec
 		timeout = time.Until(deadline)
 	}
 
-	dialer := util.NewSafeDialer()
-	// Check environment variables to allow unsafe connections if configured (consistent with other components)
-	if os.Getenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS") == util.TrueStr || os.Getenv("MCPANY_ALLOW_LOOPBACK_RESOURCES") == util.TrueStr {
-		dialer.AllowLoopback = true
-		dialer.AllowPrivate = true
-	}
-	if os.Getenv("MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES") == util.TrueStr {
-		dialer.AllowPrivate = true
-	}
-	dialer.Dialer = &net.Dialer{Timeout: timeout}
-
-	conn, err := dialer.DialContext(ctx, "tcp", net.JoinHostPort(host, port))
+	d := &net.Dialer{Timeout: timeout}
+	conn, err := d.DialContext(ctx, "tcp", net.JoinHostPort(host, port))
 	if err != nil {
 		return CheckResult{
 			Status:  StatusError,

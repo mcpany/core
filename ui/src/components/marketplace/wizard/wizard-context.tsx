@@ -15,9 +15,6 @@ export enum WizardStep {
     REVIEW = 4,
 }
 
-/**
- * WizardState type definition.
- */
 export interface WizardState {
     currentStep: WizardStep;
     config: Partial<UpstreamServiceConfig>;
@@ -164,10 +161,6 @@ export function WizardProvider({ children }: { children: ReactNode }) {
     );
 }
 
-/**
- * Hook for wizard.
- * @returns The result.
- */
 export function useWizard() {
     const context = useContext(WizardContext);
     if (!context) {

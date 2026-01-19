@@ -21,25 +21,11 @@ const unescapeStackLimit = 256
 // It avoids multiple comparisons in the hot path.
 var isJSONWhitespace [256]bool
 
-// isNumberDelimiter is a lookup table for fast number delimiter checking.
-var isNumberDelimiter [256]bool
-
 func init() {
 	isJSONWhitespace[' '] = true
 	isJSONWhitespace['\t'] = true
 	isJSONWhitespace['\n'] = true
 	isJSONWhitespace['\r'] = true
-
-	// Number delimiters: whitespace, ',', '}', ']'
-	// We also treat '/' as delimiter because of comments check in skipNumber
-	isNumberDelimiter[' '] = true
-	isNumberDelimiter['\t'] = true
-	isNumberDelimiter['\n'] = true
-	isNumberDelimiter['\r'] = true
-	isNumberDelimiter[','] = true
-	isNumberDelimiter['}'] = true
-	isNumberDelimiter[']'] = true
-	isNumberDelimiter['/'] = true
 }
 
 // redactJSONFast is a zero-allocation (mostly) implementation of RedactJSON.
@@ -648,11 +634,10 @@ func scanEscapedKeyForSensitive(keyContent []byte) bool {
 func skipNumber(input []byte, start int) int {
 	// Number
 	// Scan until delimiter: , } ] or whitespace
-	// ⚡ Bolt Optimization: Use lookup table for fast delimiter check
 	i := start
 	for i < len(input) {
 		c := input[i]
-		if isNumberDelimiter[c] {
+		if c == ',' || c == '}' || c == ']' || c == ' ' || c == '\t' || c == '\n' || c == '\r' || c == '/' {
 			return i
 		}
 		i++

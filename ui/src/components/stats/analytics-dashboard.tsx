@@ -83,10 +83,6 @@ const ERROR_DISTRIBUTION = [
     { name: 'Internal Error', value: 10 },
 ];
 
-/**
- * AnalyticsDashboard component.
- * @returns The rendered component.
- */
 export function AnalyticsDashboard() {
     const [timeRange, setTimeRange] = useState("1h");
     const [activeTab, setActiveTab] = useState("overview");

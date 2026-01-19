@@ -13,10 +13,6 @@ import { Skill, SkillService } from '@/lib/skill-service';
 import { Edit, ChevronLeft } from 'lucide-react';
 import { toast } from 'sonner';
 
-/**
- * SkillDetail component.
- * @returns The rendered component.
- */
 export default function SkillDetail() {
   const params = useParams();
   const name = params?.name as string | undefined;

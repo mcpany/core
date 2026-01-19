@@ -5,10 +5,6 @@
 
 import { useState, useEffect, useCallback } from "react";
 
-/**
- * Hook for localstorage.
- * @returns The result.
- */
 export function useLocalStorage<T>(key: string, initialValue: T): [T, (value: T | ((val: T) => T)) => void, boolean] {
   const [storedValue, setStoredValue] = useState<T>(initialValue);
   const [isInitialized, setIsInitialized] = useState(false);
