@@ -15,6 +15,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { GlobalSettingsForm } from "@/components/settings/global-settings-form";
 import { SecretsManager } from "@/components/settings/secrets-manager";
 import { AuthSettingsForm } from "@/components/settings/auth-settings";
+import { SystemStatusWarning } from "@/components/settings/system-status-warning";
 
 import Link from "next/link";
 
@@ -26,6 +27,8 @@ export default function SettingsPage() {
       <div className="flex items-center justify-between">
         <h2 className="text-3xl font-bold tracking-tight">Settings</h2>
       </div>
+
+      <SystemStatusWarning />
 
       <Tabs defaultValue="profiles" className="space-y-4 flex-1 flex flex-col">
         <TabsList>

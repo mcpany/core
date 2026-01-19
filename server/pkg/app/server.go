@@ -235,6 +235,14 @@ type Application struct {
 	startTime time.Time
 	// activeConnections tracks the number of active HTTP connections.
 	activeConnections int32
+
+	// configFileIgnored indicates if the config file was ignored due to missing env var.
+	configFileIgnored bool
+}
+
+// IsConfigFileIgnored returns true if config file was ignored.
+func (a *Application) IsConfigFileIgnored() bool {
+	return a.configFileIgnored
 }
 
 // NewApplication creates a new Application with default dependencies.
@@ -355,18 +363,15 @@ func (a *Application) Run(
 	// Priority: Database < File (if enabled)
 	stores = append(stores, storageStore)
 
-	// Friction Fighter: If config paths are provided (via --config-path), always use them.
-	// We no longer require MCPANY_ENABLE_FILE_CONFIG=true when explicit paths are given.
+	enableFileConfig := os.Getenv("MCPANY_ENABLE_FILE_CONFIG") == "true"
 	if len(configPaths) > 0 {
-		log.Info("File configuration enabled, loading config from files (overrides database)", "paths", configPaths)
-		stores = append(stores, config.NewFileStore(fs, configPaths))
-	} else if os.Getenv("MCPANY_ENABLE_FILE_CONFIG") == "true" {
-		// If no paths provided but env var is set, we might want to load default paths?
-		// Current logic relies on configPaths being populated (e.g. from viper defaults).
-		// If configPaths is empty here, NewFileStore would be empty.
-		// So strictly speaking, we only act if len(configPaths) > 0.
-		// NOTE: This block is kept for future expansion or to document intent, even if empty now.
-		_ = true // Satisfy empty-block linter
+		if enableFileConfig {
+			log.Info("File configuration enabled, loading config from files (overrides database)", "paths", configPaths)
+			stores = append(stores, config.NewFileStore(fs, configPaths))
+		} else {
+			a.configFileIgnored = true
+			log.Warn("File configuration found but MCPANY_ENABLE_FILE_CONFIG is not true. Ignoring file config.", "paths", configPaths)
+		}
 	}
 	multiStore := config.NewMultiStore(stores...)
 

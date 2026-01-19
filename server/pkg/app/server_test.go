@@ -2376,33 +2376,3 @@ func TestConfigHealthCheck(t *testing.T) {
 	assert.NotEmpty(t, check.Message)
 	assert.Contains(t, check.Message, "yaml")
 }
-
-func TestRun_ConfigPathsEnableFileConfig(t *testing.T) {
-	// Ensure env var is FALSE (override TestMain setting)
-	t.Setenv("MCPANY_ENABLE_FILE_CONFIG", "false")
-
-	fs := afero.NewMemMapFs()
-	// Create a malformed config file
-	err := afero.WriteFile(fs, "/config.yaml", []byte("malformed yaml:"), 0o644)
-	require.NoError(t, err)
-
-	ctx, cancel := context.WithTimeout(context.Background(), 100*time.Millisecond)
-	defer cancel()
-
-	app := NewApplication()
-	mockStore := new(MockStore)
-	// We expect Load to return success for the mock store (empty)
-	mockStore.On("Load", mock.Anything).Return((*configv1.McpAnyServerConfig)(nil), nil)
-	mockStore.On("ListServices", mock.Anything).Return([]*configv1.UpstreamServiceConfig{}, nil)
-	mockStore.On("GetGlobalSettings", mock.Anything).Return(&configv1.GlobalSettings{}, nil)
-	mockStore.On("Close").Return(nil)
-	app.Storage = mockStore
-
-	// Run with explicit config path
-	// If my fix works, this should attempt to load /config.yaml, fail on malformed YAML, and return error.
-	// If my fix is missing, it would ignore /config.yaml (because env=false), load only from mockStore, succeed, and timeout.
-	err = app.Run(ctx, fs, false, "localhost:0", "localhost:0", []string{"/config.yaml"}, "", 5*time.Second)
-
-	require.Error(t, err, "app.Run should error because of malformed config file, proving that file was loaded")
-	assert.Contains(t, err.Error(), "malformed yaml")
-}

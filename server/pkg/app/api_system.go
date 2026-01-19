@@ -32,6 +32,11 @@ func (a *Application) handleSystemStatus(w http.ResponseWriter, _ *http.Request)
 		warnings = append(warnings, "No API Key configured")
 	}
 
+	// Check if config file is ignored
+	if a.IsConfigFileIgnored() {
+		warnings = append(warnings, "Config files provided but ignored because MCPANY_ENABLE_FILE_CONFIG is not true.")
+	}
+
 	// Check if listening on all interfaces is complex due to config structure.
 	// For now, focus on API key warning.
 
