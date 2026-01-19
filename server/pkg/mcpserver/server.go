@@ -716,6 +716,10 @@ func convertMapToCallToolResult(m map[string]any) (*mcp.CallToolResult, error) {
 	// Fast path for content
 	contentRaw, ok := m["content"]
 	if !ok {
+		// If content is missing, check for isError
+		if _, hasIsError := m["isError"]; !hasIsError {
+			return nil, fmt.Errorf("neither content nor isError present")
+		}
 		// Maybe it's just error?
 		isError, _ := m["isError"].(bool)
 		return &mcp.CallToolResult{IsError: isError}, nil
