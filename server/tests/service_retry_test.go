@@ -25,7 +25,7 @@ func TestServiceRetry(t *testing.T) {
 	// Get an ephemeral port by listening on port 0
 	var l net.Listener
 	var err error
-	for i := 0; i < 10; i++ {
+	for i := 0; i < 50; i++ {
 		l, err = net.Listen("tcp", "127.0.0.2:0")
 		if err == nil {
 			break
