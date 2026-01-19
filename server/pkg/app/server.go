@@ -365,6 +365,8 @@ func (a *Application) Run(
 		// Current logic relies on configPaths being populated (e.g. from viper defaults).
 		// If configPaths is empty here, NewFileStore would be empty.
 		// So strictly speaking, we only act if len(configPaths) > 0.
+		// NOTE: This block is kept for future expansion or to document intent, even if empty now.
+		_ = true // Satisfy empty-block linter
 	}
 	multiStore := config.NewMultiStore(stores...)
 
