@@ -12,6 +12,7 @@ import (
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/mcpany/core/server/pkg/logging"
 	"github.com/mcpany/core/server/pkg/storage"
+	"github.com/mcpany/core/server/pkg/util"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 )
@@ -34,7 +35,7 @@ func (a *Application) handleUsers(store storage.Storage) http.HandlerFunc {
 				if i > 0 {
 					buf = append(buf, ',')
 				}
-				b, _ := opts.Marshal(u)
+				b, _ := opts.Marshal(util.SanitizeUser(u))
 				buf = append(buf, b...)
 			}
 			buf = append(buf, ']')
@@ -92,7 +93,7 @@ func (a *Application) handleUsers(store storage.Storage) http.HandlerFunc {
 			}
 
 			w.WriteHeader(http.StatusCreated)
-			writeJSON(w, http.StatusCreated, &user)
+			writeJSON(w, http.StatusCreated, util.SanitizeUser(&user))
 
 		default:
 			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
@@ -120,7 +121,7 @@ func (a *Application) handleUserDetail(store storage.Storage) http.HandlerFunc {
 				http.NotFound(w, r)
 				return
 			}
-			writeJSON(w, http.StatusOK, user)
+			writeJSON(w, http.StatusOK, util.SanitizeUser(user))
 
 		case http.MethodPut:
 			// Expect wrapper { user: ... }
@@ -166,7 +167,7 @@ func (a *Application) handleUserDetail(store storage.Storage) http.HandlerFunc {
 				logging.GetLogger().Error("failed to reload config after user update", "error", err)
 			}
 
-			writeJSON(w, http.StatusOK, &user)
+			writeJSON(w, http.StatusOK, util.SanitizeUser(&user))
 
 		case http.MethodDelete:
 			if err := store.DeleteUser(r.Context(), id); err != nil {

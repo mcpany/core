@@ -89,6 +89,10 @@ func (a *Application) listCredentialsHandler(w http.ResponseWriter, r *http.Requ
 		writeError(w, err)
 		return
 	}
+	// Sanitize credentials
+	for i := range creds {
+		creds[i] = util.SanitizeCredential(creds[i])
+	}
 	writeJSON(w, http.StatusOK, creds)
 }
 
@@ -117,7 +121,7 @@ func (a *Application) getCredentialHandler(w http.ResponseWriter, r *http.Reques
 		writeError(w, fmt.Errorf("credential not found: %s", id))
 		return
 	}
-	writeJSON(w, http.StatusOK, cred)
+	writeJSON(w, http.StatusOK, util.SanitizeCredential(cred))
 }
 
 // createCredentialHandler creates a new credential.
@@ -160,7 +164,7 @@ func (a *Application) createCredentialHandler(w http.ResponseWriter, r *http.Req
 		return
 	}
 
-	writeJSON(w, http.StatusCreated, &cred)
+	writeJSON(w, http.StatusCreated, util.SanitizeCredential(&cred))
 }
 
 // updateCredentialHandler updates an existing credential.
@@ -195,7 +199,7 @@ func (a *Application) updateCredentialHandler(w http.ResponseWriter, r *http.Req
 		return
 	}
 
-	writeJSON(w, http.StatusOK, &cred)
+	writeJSON(w, http.StatusOK, util.SanitizeCredential(&cred))
 }
 
 // deleteCredentialHandler deletes a credential.
