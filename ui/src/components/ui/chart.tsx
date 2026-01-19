@@ -101,7 +101,8 @@ ${colorConfig
     const value = color ? color.replace(allowedCharsRegex, "") : null
     const safeKey = key.replace(allowedCharsRegex, "")
     // Block url() to prevent external requests or javascript:
-    if (value && /url\(/i.test(value)) {
+    // Also block expression() for old IE XSS vectors.
+    if (value && (/url\(/i.test(value) || /expression\(/i.test(value))) {
       return null
     }
     return value ? `  --color-${safeKey}: ${value};` : null

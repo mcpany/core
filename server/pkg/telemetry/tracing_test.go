@@ -78,15 +78,52 @@ func TestInitTelemetry_AutoDetectOTLP(t *testing.T) {
 	// Set endpoint but no exporter type, should default to OTLP
 	cfg := &config_v1.TelemetryConfig{
 		TracesExporter: strPtr(""),
-		OtlpEndpoint:   strPtr("http://localhost:4318"),
+		OtlpEndpoint:   strPtr("localhost:4318"),
 	}
 
 	shutdown, err := InitTelemetry(context.Background(), "test-service", "v0.0.1", cfg, nil)
 	// It might succeed in creating the exporter even if the endpoint is not reachable (lazy connection)
 	if err != nil {
 		t.Logf("InitTelemetry with OTLP failed (expected if dependencies missing or validation fails): %v", err)
-		// We don't necessarily fail the test here because creating OTLP client might require more env setup
-		// or network access which we might not have. But if it succeeds, great.
+	} else {
+		_ = shutdown(context.Background())
+	}
+}
+
+func TestInitTelemetry_MetricsStdout(t *testing.T) {
+	cfg := &config_v1.TelemetryConfig{
+		MetricsExporter: strPtr("stdout"),
+	}
+
+	var buf bytes.Buffer
+	shutdown, err := InitTelemetry(context.Background(), "test-service", "v0.0.1", cfg, &buf)
+	if err != nil {
+		t.Fatalf("InitTelemetry failed: %v", err)
+	}
+
+	// Create a meter and a counter to generate some metrics
+	meter := otel.Meter("test-meter")
+	counter, err := meter.Int64Counter("test-counter")
+	if err != nil {
+		t.Fatalf("Failed to create counter: %v", err)
+	}
+	counter.Add(context.Background(), 1)
+
+	// Shutdown to flush metrics
+	if err := shutdown(context.Background()); err != nil {
+		t.Errorf("Shutdown failed: %v", err)
+	}
+}
+
+func TestInitTelemetry_MetricsOTLP(t *testing.T) {
+	cfg := &config_v1.TelemetryConfig{
+		MetricsExporter: strPtr("otlp"),
+		OtlpEndpoint:    strPtr("localhost:4318"),
+	}
+
+	shutdown, err := InitTelemetry(context.Background(), "test-service", "v0.0.1", cfg, nil)
+	if err != nil {
+		t.Logf("InitTelemetry with OTLP metrics failed: %v", err)
 	} else {
 		_ = shutdown(context.Background())
 	}

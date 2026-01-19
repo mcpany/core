@@ -60,6 +60,7 @@ func (a *Application) createAPIHandler(store storage.Storage) http.Handler {
 	doctor := health.NewDoctor()
 	doctor.AddCheck("configuration", a.configHealthCheck)
 	mux.Handle("/doctor", doctor.Handler())
+	mux.HandleFunc("/api/v1/system/status", a.handleSystemStatus)
 
 	mux.HandleFunc("/settings", a.handleSettings(store))
 	mux.HandleFunc("/debug/auth-test", a.handleAuthTest())
@@ -134,16 +135,16 @@ func (a *Application) handleServices(store storage.Storage) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case http.MethodGet:
-			a.handleGetServices(w, r, store)
+			a.handleListServices(w, r, store)
 		case http.MethodPost:
-			a.handlePostServices(w, r, store)
+			a.handleCreateService(w, r, store)
 		default:
 			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
 		}
 	}
 }
 
-func (a *Application) handleGetServices(w http.ResponseWriter, r *http.Request, store storage.Storage) {
+func (a *Application) handleListServices(w http.ResponseWriter, r *http.Request, store storage.Storage) {
 	var services []*configv1.UpstreamServiceConfig
 	var err error
 	if a.ServiceRegistry != nil {
@@ -221,7 +222,7 @@ func (a *Application) handleGetServices(w http.ResponseWriter, r *http.Request, 
 	_, _ = w.Write(buf)
 }
 
-func (a *Application) handlePostServices(w http.ResponseWriter, r *http.Request, store storage.Storage) {
+func (a *Application) handleCreateService(w http.ResponseWriter, r *http.Request, store storage.Storage) {
 	var svc configv1.UpstreamServiceConfig
 	body, err := readBodyWithLimit(w, r, 1048576)
 	if err != nil {
@@ -1064,6 +1065,8 @@ func (a *Application) handleCollectionApply(w http.ResponseWriter, r *http.Reque
 	w.WriteHeader(http.StatusOK)
 	_, _ = w.Write([]byte("{}"))
 }
+
+
 
 func isUnsafeConfig(service *configv1.UpstreamServiceConfig) bool {
 	if mcp := service.GetMcpService(); mcp != nil {
