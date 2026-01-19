@@ -1671,7 +1671,7 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 					}
 					// If running a shell, validate that inputs are safe for shell execution
 					if isShellCommand(t.service.GetCommand()) {
-						if err := checkForShellInjection(val, arg, placeholder); err != nil {
+						if err := checkForShellInjection(val, arg, placeholder, t.service.GetCommand()); err != nil {
 							return nil, fmt.Errorf("parameter %q: %w", k, err)
 						}
 					}
@@ -1713,7 +1713,7 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 						}
 						// If running a shell, args passed dynamically should also be checked
 						if isShellCommand(t.service.GetCommand()) {
-							if err := checkForShellInjection(argStr, "", ""); err != nil {
+							if err := checkForShellInjection(argStr, "", "", t.service.GetCommand()); err != nil {
 								return nil, fmt.Errorf("args parameter: %w", err)
 							}
 						}
@@ -1779,6 +1779,18 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 			}
 			env = append(env, fmt.Sprintf("%s=%s", name, valStr))
 		}
+	}
+
+	if req.DryRun {
+		logging.GetLogger().Info("Dry run execution", "tool", req.ToolName)
+		return map[string]any{
+			"dry_run": true,
+			"request": map[string]any{
+				"command": t.service.GetCommand(),
+				"args":    args,
+				"env":     env,
+			},
+		}, nil
 	}
 
 	startTime := time.Now()
@@ -1960,7 +1972,7 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 					}
 					// If running a shell, validate that inputs are safe for shell execution
 					if isShellCommand(t.service.GetCommand()) {
-						if err := checkForShellInjection(val, arg, placeholder); err != nil {
+						if err := checkForShellInjection(val, arg, placeholder, t.service.GetCommand()); err != nil {
 							return nil, fmt.Errorf("parameter %q: %w", k, err)
 						}
 					}
@@ -2002,7 +2014,7 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 						}
 						// If running a shell, args passed dynamically should also be checked
 						if isShellCommand(t.service.GetCommand()) {
-							if err := checkForShellInjection(argStr, "", ""); err != nil {
+							if err := checkForShellInjection(argStr, "", "", t.service.GetCommand()); err != nil {
 								return nil, fmt.Errorf("args parameter: %w", err)
 							}
 						}
@@ -2470,7 +2482,7 @@ func isVersionSuffix(s string) bool {
 	return true
 }
 
-func checkForShellInjection(val string, template string, placeholder string) error {
+func checkForShellInjection(val string, template string, placeholder string, command string) error {
 	// If the template quotes the placeholder, we can allow more characters
 	// assuming the user knows what they are doing. We still need to prevent escaping the quotes.
 
@@ -2512,6 +2524,12 @@ func checkForShellInjection(val string, template string, placeholder string) err
 	// We also block quotes and backslashes to prevent argument splitting and interpretation abuse
 	// We also block control characters that could act as separators or cause confusion (\r, \t, \v, \f)
 	dangerousChars := []string{";", "|", "&", "$", "`", "(", ")", "{", "}", "<", ">", "!", "\n", "\r", "\t", "\v", "\f", "*", "?", "[", "]", "~", "#", "%", "^", "\"", "'", "\\"}
+
+	// For 'env' command, '=' is dangerous as it allows setting arbitrary environment variables
+	if filepath.Base(command) == "env" {
+		dangerousChars = append(dangerousChars, "=")
+	}
+
 	for _, char := range dangerousChars {
 		if strings.Contains(val, char) {
 			return fmt.Errorf("shell injection detected: value contains dangerous character %q", char)
