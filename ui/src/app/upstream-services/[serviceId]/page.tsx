@@ -18,6 +18,10 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 
+/**
+ * UpstreamServiceDetailPage component.
+ * @returns The rendered component.
+ */
 export default function UpstreamServiceDetailPage() {
     const params = useParams();
     const router = useRouter();

@@ -4,8 +4,14 @@
  */
 
 export type Severity = "critical" | "warning" | "info";
+/**
+ * AlertStatus type definition.
+ */
 export type AlertStatus = "active" | "acknowledged" | "resolved";
 
+/**
+ * Alert type definition.
+ */
 export interface Alert {
   id: string;
   title: string;
@@ -16,6 +22,9 @@ export interface Alert {
   timestamp: string; // ISO string
   source: string;
 }
+/**
+ * Alert type definition.
+ */
 
 export interface AlertRule {
   id: string;
