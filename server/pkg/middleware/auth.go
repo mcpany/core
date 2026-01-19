@@ -12,6 +12,7 @@ import (
 
 	"github.com/mcpany/core/server/pkg/auth"
 	"github.com/mcpany/core/server/pkg/consts"
+	"github.com/mcpany/core/server/pkg/logging"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
@@ -56,6 +57,10 @@ func AuthMiddleware(authManager *auth.Manager) mcp.Middleware {
 			if !ok {
 				// If the http.Request is not in the context, it might be a non-HTTP transport (e.g. Stdio).
 				// In this case, we trust the transport or assume no auth is required/possible via this middleware.
+				// WARNING: If this is exposed over a network without http.request injection, it's an auth bypass.
+				// We assume Stdio is safe/trusted.
+				// Log this event for audit purposes if debugging.
+				logging.GetLogger().Debug("AuthMiddleware: http.request not found in context, skipping auth (assuming Stdio)", "method", method)
 				return next(ctx, method, req)
 			}
 

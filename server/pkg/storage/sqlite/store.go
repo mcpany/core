@@ -87,11 +87,20 @@ func (s *Store) SaveService(ctx context.Context, service *configv1.UpstreamServi
 	if service.GetName() == "" {
 		return fmt.Errorf("service name is required")
 	}
+	if len(service.GetName()) > 256 {
+		return fmt.Errorf("service name is too long (max 256 chars)")
+	}
+	if len(service.GetId()) > 256 {
+		return fmt.Errorf("service ID is too long (max 256 chars)")
+	}
 
 	opts := protojson.MarshalOptions{UseProtoNames: true}
 	configJSON, err := opts.Marshal(service)
 	if err != nil {
 		return fmt.Errorf("failed to marshal service config: %w", err)
+	}
+	if len(configJSON) > 10*1024*1024 { // 10MB limit
+		return fmt.Errorf("service config is too large (max 10MB)")
 	}
 
 	query := `
@@ -204,6 +213,9 @@ func (s *Store) SaveGlobalSettings(ctx context.Context, settings *configv1.Globa
 	if err != nil {
 		return fmt.Errorf("failed to marshal global settings: %w", err)
 	}
+	if len(configJSON) > 10*1024*1024 { // 10MB limit
+		return fmt.Errorf("global settings config is too large (max 10MB)")
+	}
 
 	query := `
 	INSERT INTO global_settings (id, config_json, updated_at)
@@ -231,11 +243,17 @@ func (s *Store) CreateUser(ctx context.Context, user *configv1.User) error {
 	if user.GetId() == "" {
 		return fmt.Errorf("user ID is required")
 	}
+	if len(user.GetId()) > 256 {
+		return fmt.Errorf("user ID is too long (max 256 chars)")
+	}
 
 	opts := protojson.MarshalOptions{UseProtoNames: true}
 	configJSON, err := opts.Marshal(user)
 	if err != nil {
 		return fmt.Errorf("failed to marshal user config: %w", err)
+	}
+	if len(configJSON) > 10*1024*1024 { // 10MB limit
+		return fmt.Errorf("user config is too large (max 10MB)")
 	}
 
 	query := `
@@ -319,11 +337,17 @@ func (s *Store) UpdateUser(ctx context.Context, user *configv1.User) error {
 	if user.GetId() == "" {
 		return fmt.Errorf("user ID is required")
 	}
+	if len(user.GetId()) > 256 {
+		return fmt.Errorf("user ID is too long (max 256 chars)")
+	}
 
 	opts := protojson.MarshalOptions{UseProtoNames: true}
 	configJSON, err := opts.Marshal(user)
 	if err != nil {
 		return fmt.Errorf("failed to marshal user config: %w", err)
+	}
+	if len(configJSON) > 10*1024*1024 { // 10MB limit
+		return fmt.Errorf("user config is too large (max 10MB)")
 	}
 
 	query := `
@@ -429,11 +453,24 @@ func (s *Store) SaveSecret(ctx context.Context, secret *configv1.Secret) error {
 	if secret.GetId() == "" {
 		return fmt.Errorf("secret id is required")
 	}
+	if len(secret.GetId()) > 256 {
+		return fmt.Errorf("secret ID is too long (max 256 chars)")
+	}
+	if len(secret.GetName()) > 256 {
+		return fmt.Errorf("secret name is too long (max 256 chars)")
+	}
+	// Key itself might be long, so we don't limit it too strictly, but maybe 4KB?
+	if len(secret.GetKey()) > 4096 {
+		return fmt.Errorf("secret key is too long (max 4096 chars)")
+	}
 
 	opts := protojson.MarshalOptions{UseProtoNames: true}
 	configJSON, err := opts.Marshal(secret)
 	if err != nil {
 		return fmt.Errorf("failed to marshal secret: %w", err)
+	}
+	if len(configJSON) > 10*1024*1024 { // 10MB limit
+		return fmt.Errorf("secret config is too large (max 10MB)")
 	}
 
 	query := `
@@ -536,11 +573,17 @@ func (s *Store) SaveProfile(ctx context.Context, profile *configv1.ProfileDefini
 	if profile.GetName() == "" {
 		return fmt.Errorf("profile name is required")
 	}
+	if len(profile.GetName()) > 256 {
+		return fmt.Errorf("profile name is too long (max 256 chars)")
+	}
 
 	opts := protojson.MarshalOptions{UseProtoNames: true}
 	configJSON, err := opts.Marshal(profile)
 	if err != nil {
 		return fmt.Errorf("failed to marshal profile config: %w", err)
+	}
+	if len(configJSON) > 10*1024*1024 { // 10MB limit
+		return fmt.Errorf("profile config is too large (max 10MB)")
 	}
 
 	query := `
@@ -643,11 +686,17 @@ func (s *Store) SaveServiceCollection(ctx context.Context, collection *configv1.
 	if collection.GetName() == "" {
 		return fmt.Errorf("collection name is required")
 	}
+	if len(collection.GetName()) > 256 {
+		return fmt.Errorf("collection name is too long (max 256 chars)")
+	}
 
 	opts := protojson.MarshalOptions{UseProtoNames: true}
 	configJSON, err := opts.Marshal(collection)
 	if err != nil {
 		return fmt.Errorf("failed to marshal collection config: %w", err)
+	}
+	if len(configJSON) > 10*1024*1024 { // 10MB limit
+		return fmt.Errorf("collection config is too large (max 10MB)")
 	}
 
 	query := `
@@ -692,11 +741,20 @@ func (s *Store) SaveToken(ctx context.Context, token *configv1.UserToken) error 
 	if token.GetUserId() == "" || token.GetServiceId() == "" {
 		return fmt.Errorf("user ID and service ID are required")
 	}
+	if len(token.GetUserId()) > 256 {
+		return fmt.Errorf("user ID is too long (max 256 chars)")
+	}
+	if len(token.GetServiceId()) > 256 {
+		return fmt.Errorf("service ID is too long (max 256 chars)")
+	}
 
 	opts := protojson.MarshalOptions{UseProtoNames: true}
 	configJSON, err := opts.Marshal(token)
 	if err != nil {
 		return fmt.Errorf("failed to marshal token: %w", err)
+	}
+	if len(configJSON) > 10*1024*1024 { // 10MB limit
+		return fmt.Errorf("token config is too large (max 10MB)")
 	}
 
 	query := `
@@ -825,11 +883,20 @@ func (s *Store) SaveCredential(ctx context.Context, cred *configv1.Credential) e
 	if cred.GetId() == "" {
 		return fmt.Errorf("credential ID is required")
 	}
+	if len(cred.GetId()) > 256 {
+		return fmt.Errorf("credential ID is too long (max 256 chars)")
+	}
+	if len(cred.GetName()) > 256 {
+		return fmt.Errorf("credential name is too long (max 256 chars)")
+	}
 
 	opts := protojson.MarshalOptions{UseProtoNames: true}
 	configJSON, err := opts.Marshal(cred)
 	if err != nil {
 		return fmt.Errorf("failed to marshal credential: %w", err)
+	}
+	if len(configJSON) > 10*1024*1024 { // 10MB limit
+		return fmt.Errorf("credential config is too large (max 10MB)")
 	}
 
 	query := `
