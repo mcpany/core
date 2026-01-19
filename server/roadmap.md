@@ -72,6 +72,8 @@
 - [x] **Tool Name Fuzzy Matching**: Improve error messages for tool execution by suggesting similar tool names when a user makes a typo. (Friction Fighter)
 - [x] **Service Status Reporting**: Exposed service health status ("OK", "ERROR") and error messages via the Admin API (`ListServices`, `GetService`). This enables the UI to display failed services instead of just missing them. (Friction Fighter)
 - [x] **OAuth2 Auto-Discovery**: Automatically discover OAuth2 `token_url` from the provided `issuer_url` (via OIDC discovery), reducing configuration friction and error-proneness. (Friction Fighter)
+- [x] **System Health Dashboard**: Real-time visibility into server uptime, active connections, and security posture via a dedicated dashboard widget. (Experience Crafter)
+- [x] **Security Warning System**: Automated detection and visualization of insecure configurations (e.g. missing API key) on the main dashboard. (Security Awareness)
 
 ## 2. Top 10 Recommended Features
 
@@ -166,6 +168,8 @@ These features represent the next logical steps for the product, focusing on Ent
 | 65   | **Config Reload Status API**                  | **DevX**: Expose the status of the last configuration reload attempt via API to help debug silent reload failures.                                                                                                 | Low        |
 | 66   | **Dynamic Profile Switching**                 | **UX**: Allow users to switch active profiles dynamically via API without restarting the server.                                                                                                                   | Medium     |
 | 67   | **Config Schema Versioning**                  | **Maintenance**: Introduce `apiVersion` field in `config.yaml` to support breaking changes in configuration schema gracefully.                                                                                     | High       |
+| 68   | **Connection Draining**                       | **Availability**: Utilize active connection tracking (from System Health Dashboard) to implement graceful shutdown that waits for connections to finish before exiting.                                       | Medium     |
+| 69   | **Secure Defaults Enforcer**                  | **Security**: Automated "Fix-it" suggestions or enforcement of secure defaults based on security warnings visualized in the Health Dashboard.                                                                  | Medium     |
 
 ## 3. Codebase Health
 
