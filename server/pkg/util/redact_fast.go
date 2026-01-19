@@ -231,8 +231,10 @@ func skipObject(input []byte, start int) int {
 	// Object starts at start, which is '{'
 	depth := 1
 	i := start + 1
-	for i < len(input) {
-		switch input[i] {
+	n := len(input)
+	for i < n {
+		c := input[i]
+		switch c {
 		case '{':
 			depth++
 		case '}':
@@ -244,18 +246,47 @@ func skipObject(input []byte, start int) int {
 			// Skip string to avoid confusion with braces inside strings
 			i = skipString(input, i)
 			continue // skipString returns index after string, so continue loop
+		case '/':
+			// Check for comments
+			if i+1 < n {
+				next := input[i+1]
+				if next == '/' {
+					// Line comment
+					i += 2
+					for i < n {
+						if input[i] == '\n' || input[i] == '\r' {
+							break
+						}
+						i++
+					}
+					continue
+				} else if next == '*' {
+					// Block comment
+					i += 2
+					for i < n {
+						if input[i] == '*' && i+1 < n && input[i+1] == '/' {
+							i += 2
+							break
+						}
+						i++
+					}
+					continue
+				}
+			}
 		}
 		i++
 	}
-	return len(input)
+	return n
 }
 
 func skipArray(input []byte, start int) int {
 	// Array starts at start, which is '['
 	depth := 1
 	i := start + 1
-	for i < len(input) {
-		switch input[i] {
+	n := len(input)
+	for i < n {
+		c := input[i]
+		switch c {
 		case '[':
 			depth++
 		case ']':
@@ -266,10 +297,37 @@ func skipArray(input []byte, start int) int {
 		case '"':
 			i = skipString(input, i)
 			continue
+		case '/':
+			// Check for comments
+			if i+1 < n {
+				next := input[i+1]
+				if next == '/' {
+					// Line comment
+					i += 2
+					for i < n {
+						if input[i] == '\n' || input[i] == '\r' {
+							break
+						}
+						i++
+					}
+					continue
+				} else if next == '*' {
+					// Block comment
+					i += 2
+					for i < n {
+						if input[i] == '*' && i+1 < n && input[i+1] == '/' {
+							i += 2
+							break
+						}
+						i++
+					}
+					continue
+				}
+			}
 		}
 		i++
 	}
-	return len(input)
+	return n
 }
 
 func skipLiteral(input []byte, start int) int {
