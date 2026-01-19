@@ -435,9 +435,14 @@ func TestCoverageEnhancement_QueryFlags(t *testing.T) {
         fqn := tool.Tool().GetUnderlyingMethodFqn()
         name := tool.Tool().GetName() // "op1" or "op2"
 
-        // Both should end with "?f" because ?f= gets restored to ?f
-        assert.Contains(t, fqn, "?f", "Tool %s URL %s should contain flag ?f", name, fqn)
-        assert.NotContains(t, fqn, "?f=", "Tool %s URL %s should NOT contain ?f=", name, fqn)
+        if name == "op1" {
+            // op1 uses endpoint "?f", should be a flag
+            assert.Contains(t, fqn, "?f", "Tool %s URL %s should contain flag ?f", name, fqn)
+            assert.NotContains(t, fqn, "?f=", "Tool %s URL %s should NOT contain ?f=", name, fqn)
+        } else {
+            // op2 uses endpoint "?f=", should have equals
+            assert.Contains(t, fqn, "?f=", "Tool %s URL %s should contain ?f=", name, fqn)
+        }
     }
 }
 

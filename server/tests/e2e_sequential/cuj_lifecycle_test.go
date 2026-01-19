@@ -82,7 +82,7 @@ upstream_services:
 	containerName := fmt.Sprintf("mcpany-cuj-lifecycle-%d", time.Now().UnixNano())
 
 	cmd := exec.Command("docker", "run", "-d", "--name", containerName,
-		"-p", "0:50050",
+		"-p", "25000:50050",
 		"-v", fmt.Sprintf("%s:/mcp_config", configDir),
 		"-v", fmt.Sprintf("%s:/config_data", configDir),
 		"mcpany/server:latest",

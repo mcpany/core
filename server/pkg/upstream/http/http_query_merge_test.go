@@ -7,10 +7,10 @@ import (
 	"context"
 	"testing"
 
+	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/mcpany/core/server/pkg/pool"
 	"github.com/mcpany/core/server/pkg/tool"
 	"github.com/mcpany/core/server/pkg/util"
-	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/encoding/protojson"
@@ -47,10 +47,10 @@ func TestHTTPUpstream_URLConstruction_QueryMergeBug(t *testing.T) {
 			expectedFqn:  "GET http://example.com/api/v1/test?flag=true",
 		},
 		{
-			name:         "flag overridden by empty value should have no equals (restored)",
+			name:         "flag overridden by empty value should have equals",
 			address:      "http://example.com/api?flag",
 			endpointPath: "/v1/test?flag=",
-			expectedFqn:  "GET http://example.com/api/v1/test?flag",
+			expectedFqn:  "GET http://example.com/api/v1/test?flag=",
 		},
 		{
 			name:         "non-flag empty value should have equals",
