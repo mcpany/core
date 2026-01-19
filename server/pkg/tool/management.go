@@ -21,6 +21,7 @@ import (
 	"github.com/mcpany/core/server/pkg/util"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	xsync "github.com/puzpuzpuz/xsync/v4"
+	"google.golang.org/protobuf/proto"
 )
 
 // MCPServerProvider defines an interface for components that can provide an
@@ -564,7 +565,13 @@ func (tm *Manager) GetServiceInfo(serviceID string) (*ServiceInfo, bool) {
 	if !ok {
 		return nil, false
 	}
-	return info, true
+	clonedInfo := *info
+	if info.Config != nil {
+		clonedConfig := proto.Clone(info.Config).(*configv1.UpstreamServiceConfig)
+		util.StripSecretsFromService(clonedConfig)
+		clonedInfo.Config = clonedConfig
+	}
+	return &clonedInfo, true
 }
 
 // ListServices returns a slice containing all the services currently registered with
@@ -572,7 +579,13 @@ func (tm *Manager) GetServiceInfo(serviceID string) (*ServiceInfo, bool) {
 func (tm *Manager) ListServices() []*ServiceInfo {
 	var services []*ServiceInfo
 	tm.serviceInfo.Range(func(_ string, value *ServiceInfo) bool {
-		services = append(services, value)
+		clonedInfo := *value
+		if value.Config != nil {
+			clonedConfig := proto.Clone(value.Config).(*configv1.UpstreamServiceConfig)
+			util.StripSecretsFromService(clonedConfig)
+			clonedInfo.Config = clonedConfig
+		}
+		services = append(services, &clonedInfo)
 		return true
 	})
 	return services
