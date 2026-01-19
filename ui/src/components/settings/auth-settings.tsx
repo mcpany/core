@@ -33,6 +33,10 @@ const authSettingsSchema = z.object({
 
 type AuthSettingsValues = z.infer<typeof authSettingsSchema>;
 
+/**
+ * AuthSettingsForm component.
+ * @returns The rendered component.
+ */
 export function AuthSettingsForm() {
   const [loading, setLoading] = useState(false);
 

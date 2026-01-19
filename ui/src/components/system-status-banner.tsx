@@ -10,6 +10,10 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AlertTriangle, WifiOff, AlertCircle } from "lucide-react";
 import { apiClient, DoctorReport } from "@/lib/client";
 
+/**
+ * SystemStatusBanner component.
+ * @returns The rendered component.
+ */
 export function SystemStatusBanner() {
   const [report, setReport] = useState<DoctorReport | null>(null);
   const [error, setError] = useState<string | null>(null);

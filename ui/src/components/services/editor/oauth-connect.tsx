@@ -17,6 +17,14 @@ interface OAuthConnectProps {
     isSaved: boolean;
 }
 
+/**
+ * OAuthConnect component.
+ * @param props - The component props.
+ * @param props.serviceId - The unique identifier for service.
+ * @param props.serviceName - The name of the service.
+ * @param props.isSaved - The issaved property.
+ * @returns The rendered component.
+ */
 export function OAuthConnect({ serviceId, serviceName, isSaved }: OAuthConnectProps) {
     const [loading, setLoading] = useState(false);
     const { toast } = useToast();

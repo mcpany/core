@@ -15,8 +15,14 @@ import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { useState, useEffect } from "react";
 
+/**
+ * MessageType type definition.
+ */
 export type MessageType = "user" | "assistant" | "tool-call" | "tool-result" | "error";
 
+/**
+ * Message type definition.
+ */
 export interface Message {
   id: string;
   type: MessageType;

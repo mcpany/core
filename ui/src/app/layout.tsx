@@ -17,6 +17,9 @@ import { UserProvider } from "@/components/user-context"
 import { KeyboardShortcutsProvider } from "@/contexts/keyboard-shortcuts-context"
 import { SystemStatusBanner } from "@/components/system-status-banner"
 
+/**
+ * Metadata for the application.
+ */
 export const metadata: Metadata = {
   title: 'MCPAny Manager',
   description: 'A server management UI for the MCP Any server.',
