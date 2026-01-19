@@ -41,6 +41,8 @@ export function middleware(request: NextRequest) {
   // Add Security Headers
   const csp = [
     "default-src 'self'",
+    // 'unsafe-eval' is required for Monaco Editor. 'unsafe-inline' is required for Next.js and some UI components.
+    // TODO: Investigate moving to nonce-based CSP for stricter security.
     "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://cdn.jsdelivr.net", // Added cdn.jsdelivr.net for Monaco Editor
     "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net", // Added cdn.jsdelivr.net
     "img-src 'self' data: https:",

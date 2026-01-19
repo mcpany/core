@@ -181,11 +181,11 @@ var IsAllowedPath = func(path string) error {
 // allowedOpaqueSchemes are schemes that are allowed to not have a host component.
 var allowedOpaqueSchemes = map[string]bool{
 	"dns":         true,
-	"unix":        true,
 	"passthrough": true,
-	"mailto":      true,
 	"data":        true,
-	"file":        true,
+	"unix":        true, // Required for gRPC targets using unix sockets
+	// "file" is intentionally excluded to prevent SSRF/LFI risks
+	// when IsValidURL is used for validating service addresses.
 }
 
 // IsValidURL checks if a given string is a valid URL. This function performs
