@@ -27,8 +27,8 @@ func TestServiceRetry(t *testing.T) {
 	// Get an ephemeral port by listening on port 0
 	var l net.Listener
 	var err error
-	for i := 0; i < 10; i++ {
-		l, err = net.Listen("tcp", ":0")
+	for i := 0; i < 50; i++ {
+		l, err = net.Listen("tcp", "127.0.0.1:0")
 		if err == nil {
 			break
 		}
@@ -118,7 +118,7 @@ func TestServiceRetry(t *testing.T) {
 
 	var l2 net.Listener
 	require.Eventually(t, func() bool {
-		l2, err = net.Listen("tcp", fmt.Sprintf(":%d", port))
+		l2, err = net.Listen("tcp", fmt.Sprintf("127.0.0.1:%d", port))
 		if err != nil {
 			t.Logf("Failed to re-bind to port %d: %v. Retrying...", port, err)
 			return false
