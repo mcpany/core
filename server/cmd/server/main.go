@@ -231,9 +231,9 @@ func newRootCmd() *cobra.Command { //nolint:gocyclo // Main entry point, expecte
 			// we will rely on log messages for now, or print a banner BEFORE Run saying "Initializing..."
 
 			if !stdio {
-				fmt.Fprintf(cmd.OutOrStderr(), "\n🚀 Starting %s v%s...\n", appconsts.Name, Version)
+				_, _ = fmt.Fprintf(cmd.OutOrStderr(), "\n🚀 Starting %s v%s...\n", appconsts.Name, Version)
 				if len(configPaths) > 0 {
-					fmt.Fprintf(cmd.OutOrStderr(), "📋 Loading configuration from: %s\n", strings.Join(configPaths, ", "))
+					_, _ = fmt.Fprintf(cmd.OutOrStderr(), "📋 Loading configuration from: %s\n", strings.Join(configPaths, ", "))
 				}
 			}
 

@@ -1,3 +1,6 @@
+// Copyright 2026 Author(s) of MCP Any
+// SPDX-License-Identifier: Apache-2.0
+
 package doctor
 
 import (
@@ -31,7 +34,7 @@ func PrintResults(w io.Writer, results []CheckResult) {
 			icon = "?"
 		}
 
-		fmt.Fprintf(tw, "%s\t[%s]\t%s\t: %s\n", icon, res.Status, res.ServiceName, res.Message)
+		_, _ = fmt.Fprintf(tw, "%s\t[%s]\t%s\t: %s\n", icon, res.Status, res.ServiceName, res.Message)
 	}
-	tw.Flush()
+	_ = tw.Flush()
 }
