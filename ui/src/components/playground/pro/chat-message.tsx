@@ -5,11 +5,12 @@
 
 "use client";
 
-import { User, Bot, Terminal, Sparkles, AlertCircle, Check, Copy } from "lucide-react";
+import { User, Bot, Terminal, Sparkles, AlertCircle, Check, Copy, RotateCcw } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Button } from "@/components/ui/button";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { useState, useEffect } from "react";
@@ -28,6 +29,7 @@ export interface Message {
 
 interface ChatMessageProps {
     message: Message;
+    onReplay?: (toolName: string, args: Record<string, unknown>) => void;
 }
 
 /**
@@ -35,7 +37,7 @@ interface ChatMessageProps {
  *
  * @param { message - The { message.
  */
-export function ChatMessage({ message }: ChatMessageProps) {
+export function ChatMessage({ message, onReplay }: ChatMessageProps) {
     const [copied, setCopied] = useState(false);
 
     const copyToClipboard = (text: string) => {
@@ -92,6 +94,27 @@ export function ChatMessage({ message }: ChatMessageProps) {
                              <span className="text-[10px] text-primary/70 uppercase tracking-wider font-semibold">Tool Execution</span>
                              <span className="font-mono text-sm font-medium text-primary">{message.toolName}</span>
                          </div>
+                         <div className="flex-1" />
+                         {onReplay && message.toolName && (
+                             <TooltipProvider>
+                                <Tooltip>
+                                    <TooltipTrigger asChild>
+                                         <Button
+                                            variant="ghost"
+                                            size="icon"
+                                            className="h-6 w-6 text-muted-foreground hover:text-foreground"
+                                            onClick={() => onReplay(message.toolName!, message.toolArgs || {})}
+                                            aria-label="Load into console"
+                                         >
+                                             <RotateCcw className="h-3.5 w-3.5" />
+                                         </Button>
+                                    </TooltipTrigger>
+                                    <TooltipContent>
+                                        <p>Load into console</p>
+                                    </TooltipContent>
+                                </Tooltip>
+                             </TooltipProvider>
+                         )}
                     </CardHeader>
                     <CardContent className="p-0">
                          <div className="relative group/code">
