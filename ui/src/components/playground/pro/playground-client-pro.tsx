@@ -94,6 +94,7 @@ export function PlaygroundClientPro() {
   const [availableTools, setAvailableTools] = useState<ToolDefinition[]>([]);
   const [toolToConfigure, setToolToConfigure] = useState<ToolDefinition | null>(null);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const isMobile = useIsMobile();
   const [isDryRun, setIsDryRun] = useState(false);
@@ -161,6 +162,12 @@ export function PlaygroundClientPro() {
   const selectSuggestion = (tool: ToolDefinition) => {
       setToolToConfigure(tool);
       setShowSuggestions(false);
+  };
+
+  const handleReplay = (toolName: string, args: Record<string, unknown>) => {
+      const command = `${toolName} ${JSON.stringify(args)}`;
+      setInput(command);
+      inputRef.current?.focus();
   };
 
   const processResponse = async (userInput: string) => {
@@ -280,7 +287,7 @@ export function PlaygroundClientPro() {
                     <ScrollArea className="h-full p-4" ref={scrollAreaRef}>
                         <div className="max-w-4xl mx-auto pb-10 space-y-4">
                             {displayMessages.map((msg) => (
-                                <ChatMessage key={msg.id} message={msg} />
+                                <ChatMessage key={msg.id} message={msg} onReplay={handleReplay} />
                             ))}
                             {isLoading && (
                                 <div className="flex items-center gap-2 text-muted-foreground text-xs animate-pulse pl-12">
@@ -298,6 +305,7 @@ export function PlaygroundClientPro() {
                     <div className="max-w-4xl mx-auto flex gap-3 relative">
                          <div className="flex-1 relative">
                             <Input
+                                ref={inputRef}
                                 placeholder="Enter command or select a tool..."
                                 value={input}
                                 onChange={(e) => handleInputChange(e.target.value)}

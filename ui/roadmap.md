@@ -23,7 +23,7 @@
 - [ ] **Prompt/Resource Sibling Navigation**: Enable sibling navigation for Prompts and Resources (requires backend API update to include service_id).
 - [ ] **Breadcrumb History**: Show recently visited breadcrumbs in a dropdown or history menu.
 - [x] **JSON Schema Visualizer**: Display tool input schemas as interactive diagrams instead of raw JSON for better understanding of complex types.
-- [ ] **Interactive Tool Usage History**: A timeline of tool executions with ability to replay them directly from the UI.
+- [x] **Interactive Tool Usage History**: A timeline of tool executions with ability to replay them directly from the UI.
 - [ ] **Bulk Service Import**: Allow importing multiple services from a single config file or URL.
 - [x] **Service Configuration Validation**: Pre-save validation for service configs (e.g. check if URL is reachable).
 - [x] **Service Tagging & Grouping**: Organize services by tags (e.g., prod, staging, external) and filter the list.
@@ -39,6 +39,8 @@
 - [ ] **Bulk Edit Configuration**: Ability to edit common properties (like tags, timeout, or environment variables) for multiple selected services.
 - [ ] **Saved Tool Arguments**: Ability to save a set of arguments as a "Preset" for a tool in the Playground, to quickly test different scenarios.
 - [x] **Tool Execution History Persisted**: Persist the local history of tool executions in `localStorage` or backend, so it survives page reloads.
+- [ ] **Tool Execution Duration Tracking**: Display the execution time (latency) for each tool call in the Playground history.
+- [ ] **Export Playground History**: Ability to export the current session's tool execution history to a JSON file for sharing or debugging.
 
 ### Completed Features
 
