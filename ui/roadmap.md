@@ -67,6 +67,7 @@
 - [x] **Profile Management**: Create and switch between user profiles.
 - [x] **Observability Dashboard**: Real-time metrics and system health (Now powered by real backend data).
 - [x] **System Status Banner**: A global banner that displays system health status and connectivity issues (polled from `/doctor`).
+- [x] **Global Diagnostics Page**: A comprehensive system health dashboard with backend connectivity checks, environment validation, and live logs.
 - [ ] **Service Health Sparklines**: Visual history of latency/errors in service list.
 - [x] **Tool Usage Heatmap**: Visual representation of most used tools (Implemented as Top Tools Bar Chart).
 - [ ] **Dashboard Layout Customization**: Ability for users to rearrange and resize dashboard widgets.

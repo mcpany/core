@@ -12,6 +12,8 @@ import { CheckCircle2, AlertTriangle, XCircle, Activity, PauseCircle } from "luc
 import { cn } from "@/lib/utils";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { analyzeConnectionError } from "@/lib/diagnostics-utils";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
 
 interface ServiceHealth {
   id: string;
@@ -203,11 +205,18 @@ export function ServiceHealthWidget() {
 
   return (
     <Card className="col-span-4 backdrop-blur-xl bg-background/60 border border-white/20 shadow-sm transition-all duration-300">
-      <CardHeader>
-        <CardTitle>System Health</CardTitle>
-        <CardDescription>
-          Live health checks for {services.length} connected services.
-        </CardDescription>
+      <CardHeader className="flex flex-row items-start justify-between space-y-0">
+        <div className="space-y-1">
+          <CardTitle>System Health</CardTitle>
+          <CardDescription>
+            Live health checks for {services.length} connected services.
+          </CardDescription>
+        </div>
+        <Button variant="outline" size="sm" asChild className="ml-2 shrink-0">
+          <Link href="/diagnostics">
+             Diagnostics
+          </Link>
+        </Button>
       </CardHeader>
       <CardContent>
         <div className="space-y-1">

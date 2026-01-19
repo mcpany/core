@@ -23,7 +23,8 @@ import {
   Layers,
   ShoppingBag,
   ShieldCheck,
-  Zap
+  Zap,
+  Stethoscope
 } from "lucide-react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
@@ -58,6 +59,11 @@ const platformItems = [
     title: "Dashboard",
     url: "/",
     icon: LayoutDashboard,
+  },
+  {
+    title: "Diagnostics",
+    url: "/diagnostics",
+    icon: Stethoscope,
   },
   {
     title: "Network Graph",

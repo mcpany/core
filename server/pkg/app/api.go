@@ -49,88 +49,107 @@ func readBodyWithLimit(w http.ResponseWriter, r *http.Request, limit int64) ([]b
 func (a *Application) createAPIHandler(store storage.Storage) http.Handler {
 	mux := http.NewServeMux()
 
-	mux.HandleFunc("/services", a.handleServices(store))
-	mux.HandleFunc("/services/validate", a.handleServiceValidate())
-	mux.HandleFunc("/services/", a.handleServiceDetail(store))
+	// Helper to register all standard API routes on a mux
+	registerRoutes := func(m *http.ServeMux) {
+		m.HandleFunc("/services", a.handleServices(store))
+		m.HandleFunc("/services/validate", a.handleServiceValidate())
+		m.HandleFunc("/services/", a.handleServiceDetail(store))
+
+		m.HandleFunc("/settings", a.handleSettings(store))
+		m.HandleFunc("/debug/auth-test", a.handleAuthTest())
+
+		m.HandleFunc("/tools", a.handleTools())
+		m.HandleFunc("/execute", a.handleExecute())
+
+		m.HandleFunc("/prompts", a.handlePrompts())
+		m.HandleFunc("/prompts/", a.handlePromptExecute()) // Handles /prompts/{name}/execute
+
+		m.HandleFunc("/resources", a.handleResources())
+		m.HandleFunc("/resources/read", a.handleResourceRead())
+
+		m.HandleFunc("/secrets", a.handleSecrets(store))
+		m.HandleFunc("/secrets/", a.handleSecretDetail(store))
+
+		m.HandleFunc("/topology", a.handleTopology())
+		m.HandleFunc("/dashboard/metrics", a.handleDashboardMetrics())
+		m.HandleFunc("/dashboard/top-tools", a.handleDashboardTopTools())
+
+		m.HandleFunc("/templates", a.handleTemplates())
+		m.HandleFunc("/templates/", a.handleTemplateDetail())
+
+		m.HandleFunc("/profiles", a.handleProfiles(store))
+		m.HandleFunc("/profiles/", a.handleProfileDetail(store))
+
+		m.HandleFunc("/collections", a.handleCollections(store))
+		m.HandleFunc("/collections/", a.handleCollectionDetail(store))
+
+		// Users
+		m.HandleFunc("/users", a.handleUsers(store))
+		m.HandleFunc("/users/", a.handleUserDetail(store))
+
+		// Credentials
+		m.HandleFunc("/credentials", a.listCredentialsHandler)
+		m.HandleFunc("/credentials/", func(w http.ResponseWriter, r *http.Request) {
+			// Manual dispatch for detail vs specific
+			// listCredentialsHandler handles GET /credentials (handled above)
+			// create is POST /credentials (handled below)
+			// Detail methods use path suffix
+			if r.Method == http.MethodPost {
+				a.createCredentialHandler(w, r)
+				return
+			}
+			// Check if it's a detail request
+			path := strings.TrimPrefix(r.URL.Path, "/credentials/")
+			if path != "" {
+				switch r.Method {
+				case http.MethodGet:
+					a.getCredentialHandler(w, r)
+				case http.MethodPut:
+					a.updateCredentialHandler(w, r)
+				case http.MethodDelete:
+					a.deleteCredentialHandler(w, r)
+				default:
+					http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+				}
+				return
+			}
+			http.NotFound(w, r)
+		})
+
+		// Auth (OAuth)
+		m.HandleFunc("/auth/oauth/initiate", a.handleInitiateOAuth)
+		m.HandleFunc("/auth/oauth/callback", a.handleOAuthCallback)
+
+		m.HandleFunc("/alerts", a.handleAlerts())
+		m.HandleFunc("/alerts/", a.handleAlertDetail())
+
+		m.HandleFunc("/ws/logs", a.handleLogsWS())
+
+		// System Status
+		m.HandleFunc("/system/status", a.handleSystemStatus)
+	}
+
+	// 1. Register routes on Root (Legacy)
+	registerRoutes(mux)
+
+	// 2. Register routes on /api/v1/ (Versioned)
+	v1Mux := http.NewServeMux()
+	registerRoutes(v1Mux)
+	mux.Handle("/api/v1/", http.StripPrefix("/api/v1", v1Mux))
+
+	// 3. Special Routes
 	mux.HandleFunc("/health", func(w http.ResponseWriter, _ *http.Request) {
 		w.WriteHeader(http.StatusOK)
 		_, _ = w.Write([]byte("OK"))
 	})
+
 	// Doctor API
 	doctor := health.NewDoctor()
 	doctor.AddCheck("configuration", a.configHealthCheck)
 	mux.Handle("/doctor", doctor.Handler())
-	mux.HandleFunc("/api/v1/system/status", a.handleSystemStatus)
-
-	mux.HandleFunc("/settings", a.handleSettings(store))
-	mux.HandleFunc("/debug/auth-test", a.handleAuthTest())
-
-	mux.HandleFunc("/tools", a.handleTools())
-	mux.HandleFunc("/execute", a.handleExecute())
-
-	mux.HandleFunc("/prompts", a.handlePrompts())
-	mux.HandleFunc("/prompts/", a.handlePromptExecute()) // Handles /prompts/{name}/execute
-
-	mux.HandleFunc("/resources", a.handleResources())
-	mux.HandleFunc("/resources/read", a.handleResourceRead())
-
-	mux.HandleFunc("/secrets", a.handleSecrets(store))
-	mux.HandleFunc("/secrets/", a.handleSecretDetail(store))
-
-	mux.HandleFunc("/topology", a.handleTopology())
-	mux.HandleFunc("/dashboard/metrics", a.handleDashboardMetrics())
-	mux.HandleFunc("/dashboard/top-tools", a.handleDashboardTopTools())
-
-	mux.HandleFunc("/templates", a.handleTemplates())
-	mux.HandleFunc("/templates/", a.handleTemplateDetail())
-
-	mux.HandleFunc("/profiles", a.handleProfiles(store))
-	mux.HandleFunc("/profiles/", a.handleProfileDetail(store))
-
-	mux.HandleFunc("/collections", a.handleCollections(store))
-	mux.HandleFunc("/collections/", a.handleCollectionDetail(store))
-
-	// Users
-	mux.HandleFunc("/users", a.handleUsers(store))
-	mux.HandleFunc("/users/", a.handleUserDetail(store))
-
-	// Credentials
-	mux.HandleFunc("/credentials", a.listCredentialsHandler)
-	mux.HandleFunc("/credentials/", func(w http.ResponseWriter, r *http.Request) {
-		// Manual dispatch for detail vs specific
-		// listCredentialsHandler handles GET /credentials (handled above)
-		// create is POST /credentials (handled below)
-		// Detail methods use path suffix
-		if r.Method == http.MethodPost {
-			a.createCredentialHandler(w, r)
-			return
-		}
-		// Check if it's a detail request
-		path := strings.TrimPrefix(r.URL.Path, "/credentials/")
-		if path != "" {
-			switch r.Method {
-			case http.MethodGet:
-				a.getCredentialHandler(w, r)
-			case http.MethodPut:
-				a.updateCredentialHandler(w, r)
-			case http.MethodDelete:
-				a.deleteCredentialHandler(w, r)
-			default:
-				http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
-			}
-			return
-		}
-		http.NotFound(w, r)
-	})
-
-	// Auth (OAuth)
-	mux.HandleFunc("/auth/oauth/initiate", a.handleInitiateOAuth)
-	mux.HandleFunc("/auth/oauth/callback", a.handleOAuthCallback)
-
-	mux.HandleFunc("/alerts", a.handleAlerts())
-	mux.HandleFunc("/alerts/", a.handleAlertDetail())
-
-	mux.HandleFunc("/ws/logs", a.handleLogsWS())
+	// Alias Doctor to /api/v1/doctor as well?
+	// The Doctor handler might not care about path, but if we mount it via v1Mux it works.
+	v1Mux.Handle("/doctor", doctor.Handler())
 
 	return mux
 }
