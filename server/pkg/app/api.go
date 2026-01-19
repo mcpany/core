@@ -79,6 +79,7 @@ func (a *Application) createAPIHandler(store storage.Storage) http.Handler {
 
 	mux.HandleFunc("/topology", a.handleTopology())
 	mux.HandleFunc("/dashboard/metrics", a.handleDashboardMetrics())
+	mux.HandleFunc("/dashboard/top-tools", a.handleDashboardTopTools())
 
 	mux.HandleFunc("/templates", a.handleTemplates())
 	mux.HandleFunc("/templates/", a.handleTemplateDetail())

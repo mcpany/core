@@ -102,6 +102,8 @@ These features represent the next logical steps for the product, focusing on Ent
 | 69   | **Secure Defaults Enforcer**                  | **Security**: Automated "Fix-it" suggestions or enforcement of secure defaults based on security warnings visualized in the Health Dashboard.                                                                  | Medium     |
 | 70   | **Tool Activity Feed**                        | **UX**: A dedicated UI component to show the tool execution history (structured), separate from raw logs, providing clear visibility into tool usage and performance.                                          | Medium     |
 | 71   | **Config Validation Playground**              | **DevX**: A dedicated UI in the dashboard to paste JSON/YAML and validate it against the server schema with real-time error highlighting.                                                                      | Low        |
+| 70   | **User Preference Storage**                   | **UX/Backend**: API to store and retrieve user-specific UI preferences (layout, theme, etc.) in the database.                                                                                                    | Low        |
+| 71   | **Top Tools API Extensions**                  | **Observability**: Enhance the top tools API to support time ranges (last 1h, 24h) using historical metrics if available.                                                                                        | Medium     |
 
 ## 3. Codebase Health
 

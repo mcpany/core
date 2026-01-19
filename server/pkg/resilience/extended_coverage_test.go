@@ -170,7 +170,7 @@ func TestCircuitBreaker_OnFailure_WhenOpen(t *testing.T) {
     cb.setState(StateOpen)
 
     // Should return early
-    cb.onFailure()
+    cb.onFailure(StateClosed)
 
     // State should remain Open
     require.Equal(t, StateOpen, cb.getState())
