@@ -29,6 +29,10 @@ export interface UpstreamServiceConfig extends BaseUpstreamServiceConfig {
      */
     lastError?: string;
     /**
+     * The current status of the service (e.g., "OK", "ERROR", "CONNECTING").
+     */
+    status?: string;
+    /**
      * The number of tools registered for this service.
      */
     toolCount?: number;
@@ -177,6 +181,7 @@ export const apiClient = {
             preCallHooks: s.pre_call_hooks,
             postCallHooks: s.post_call_hooks,
             lastError: s.last_error,
+            status: s.status,
             toolCount: s.tool_count,
         }));
     },

@@ -60,6 +60,12 @@ type ServiceRegistryInterface interface { //nolint:revive
 	// Returns the result.
 	// Returns true if successful.
 	GetServiceError(serviceID string) (string, bool)
+	// GetServiceStatus returns the current status of the service (OK, ERROR, CONNECTING).
+	//
+	// serviceID is the serviceID.
+	//
+	// Returns the status string.
+	GetServiceStatus(serviceID string) string
 }
 
 // ServiceRegistry is responsible for managing the lifecycle of upstream
@@ -68,12 +74,13 @@ type ServiceRegistryInterface interface { //nolint:revive
 // respective managers. It also handles the configuration of authentication for
 // each service.
 type ServiceRegistry struct {
-	mu              sync.RWMutex
-	serviceConfigs  map[string]*config.UpstreamServiceConfig
-	serviceInfo     map[string]*tool.ServiceInfo
-	serviceErrors   map[string]string
-	upstreams       map[string]upstream.Upstream
-	factory         factory.Factory
+	mu                sync.RWMutex
+	serviceConfigs    map[string]*config.UpstreamServiceConfig
+	serviceInfo       map[string]*tool.ServiceInfo
+	serviceErrors     map[string]string
+	serviceConnecting map[string]bool
+	upstreams         map[string]upstream.Upstream
+	factory           factory.Factory
 	toolManager     tool.ManagerInterface
 	promptManager   prompt.ManagerInterface
 	resourceManager resource.ManagerInterface
@@ -93,15 +100,16 @@ type ServiceRegistry struct {
 // Returns a new instance of `ServiceRegistry`.
 func New(factory factory.Factory, toolManager tool.ManagerInterface, promptManager prompt.ManagerInterface, resourceManager resource.ManagerInterface, authManager *auth.Manager) *ServiceRegistry {
 	return &ServiceRegistry{
-		serviceConfigs:  make(map[string]*config.UpstreamServiceConfig),
-		serviceInfo:     make(map[string]*tool.ServiceInfo),
-		serviceErrors:   make(map[string]string),
-		upstreams:       make(map[string]upstream.Upstream),
-		factory:         factory,
-		toolManager:     toolManager,
-		promptManager:   promptManager,
-		resourceManager: resourceManager,
-		authManager:     authManager,
+		serviceConfigs:    make(map[string]*config.UpstreamServiceConfig),
+		serviceInfo:       make(map[string]*tool.ServiceInfo),
+		serviceErrors:     make(map[string]string),
+		serviceConnecting: make(map[string]bool),
+		upstreams:         make(map[string]upstream.Upstream),
+		factory:           factory,
+		toolManager:       toolManager,
+		promptManager:     promptManager,
+		resourceManager:   resourceManager,
+		authManager:       authManager,
 	}
 }
 
@@ -140,11 +148,13 @@ func (r *ServiceRegistry) RegisterService(ctx context.Context, serviceConfig *co
 	// Register the config and clear error
 	r.serviceConfigs[serviceID] = serviceConfig
 	delete(r.serviceErrors, serviceID)
+	r.serviceConnecting[serviceID] = true
 
 	u, err := r.factory.NewUpstream(serviceConfig)
 	if err != nil {
 		errMsg := fmt.Sprintf("failed to create upstream for service %s: %v", serviceConfig.GetName(), err)
 		r.serviceErrors[serviceID] = errMsg
+		delete(r.serviceConnecting, serviceID)
 		r.mu.Unlock()
 		return "", nil, nil, fmt.Errorf("%s", errMsg)
 	}
@@ -158,6 +168,7 @@ func (r *ServiceRegistry) RegisterService(ctx context.Context, serviceConfig *co
 
 	r.mu.Lock()
 	defer r.mu.Unlock()
+	delete(r.serviceConnecting, serviceID)
 
 	// Check if the service is still registered (it might have been removed while we were registering)
 	if _, ok := r.serviceConfigs[serviceID]; !ok {
@@ -277,11 +288,29 @@ func (r *ServiceRegistry) UnregisterService(ctx context.Context, serviceName str
 	delete(r.serviceConfigs, serviceID)
 	delete(r.serviceInfo, serviceID)
 	delete(r.serviceErrors, serviceID)
+	delete(r.serviceConnecting, serviceID)
 	r.toolManager.ClearToolsForService(serviceID)
 	r.promptManager.ClearPromptsForService(serviceID)
 	r.resourceManager.ClearResourcesForService(serviceID)
 	r.authManager.RemoveAuthenticator(serviceID)
 	return shutdownErr
+}
+
+// GetServiceStatus returns the current status of the service (OK, ERROR, CONNECTING).
+func (r *ServiceRegistry) GetServiceStatus(serviceID string) string {
+	r.mu.RLock()
+	defer r.mu.RUnlock()
+
+	if _, ok := r.serviceErrors[serviceID]; ok {
+		return "ERROR"
+	}
+	if r.serviceConnecting[serviceID] {
+		return "CONNECTING"
+	}
+	if _, ok := r.serviceConfigs[serviceID]; ok {
+		return "OK"
+	}
+	return "UNKNOWN"
 }
 
 // GetServiceError returns the registration error for a service, if any.

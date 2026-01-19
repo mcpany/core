@@ -60,6 +60,11 @@ func (m *MockServiceRegistry) GetServiceError(serviceID string) (string, bool) {
 	return args.String(0), args.Bool(1)
 }
 
+func (m *MockServiceRegistry) GetServiceStatus(serviceID string) string {
+	args := m.Called(serviceID)
+	return args.String(0)
+}
+
 func TestHandleServices_IncludesError(t *testing.T) {
 	// Setup DB
 	db, err := sqlite.NewDB(":memory:")
@@ -85,8 +90,11 @@ func TestHandleServices_IncludesError(t *testing.T) {
 
 	mockRegistry.On("GetAllServices").Return([]*configv1.UpstreamServiceConfig{service1, service2, service3}, nil)
 	mockRegistry.On("GetServiceError", "service-1").Return("", false)
+	mockRegistry.On("GetServiceStatus", "service-1").Return("OK")
 	mockRegistry.On("GetServiceError", "service-2").Return("Connection refused", true)
+	mockRegistry.On("GetServiceStatus", "service-2").Return("ERROR")
 	mockRegistry.On("GetServiceError", "service-3-sanitized").Return("Another error", true)
+	mockRegistry.On("GetServiceStatus", "service-3-sanitized").Return("ERROR")
 
 	// Setup Application
 	app := NewApplication()
@@ -126,6 +134,9 @@ func TestHandleServices_IncludesError(t *testing.T) {
 
 	// Check errors
 	assert.Nil(t, s1["last_error"], "service-1 should not have error")
+	assert.Equal(t, "OK", s1["status"], "service-1 should have OK status")
 	assert.Equal(t, "Connection refused", s2["last_error"], "service-2 should have error")
+	assert.Equal(t, "ERROR", s2["status"], "service-2 should have ERROR status")
 	assert.Equal(t, "Another error", s3["last_error"], "service-3 should have error")
+	assert.Equal(t, "ERROR", s3["status"], "service-3 should have ERROR status")
 }

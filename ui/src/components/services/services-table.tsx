@@ -16,7 +16,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
-import { MoreHorizontal, Settings, Trash, RefreshCw, AlertCircle, CheckCircle2, CircleOff } from "lucide-react";
+import { MoreHorizontal, Settings, Trash, RefreshCw, AlertCircle, CheckCircle2, CircleOff, Loader2 } from "lucide-react";
 import {
   Tooltip,
   TooltipContent,
@@ -112,7 +112,12 @@ export function ServicesTable({ services, loading, onToggle, onDelete }: Service
                                             <CircleOff className="h-4 w-4 text-muted-foreground" />
                                             <span className="text-sm text-muted-foreground">Disabled</span>
                                         </>
-                                    ) : service.lastError ? (
+                                    ) : service.status === "CONNECTING" ? (
+                                        <>
+                                            <Loader2 className="h-4 w-4 text-blue-500 animate-spin" />
+                                            <span className="text-sm text-blue-500 font-medium">Connecting...</span>
+                                        </>
+                                    ) : service.lastError || service.status === "ERROR" ? (
                                         <>
                                             <AlertCircle className="h-4 w-4 text-destructive" />
                                             <span className="text-sm text-destructive font-medium">Error</span>
@@ -128,10 +133,12 @@ export function ServicesTable({ services, loading, onToggle, onDelete }: Service
                             <TooltipContent>
                                 {service.disable ? (
                                     <p>Service is explicitly disabled.</p>
-                                ) : service.lastError ? (
+                                ) : service.status === "CONNECTING" ? (
+                                    <p>Service is initializing connection...</p>
+                                ) : service.lastError || service.status === "ERROR" ? (
                                     <div className="max-w-xs">
                                         <p className="font-semibold">Error:</p>
-                                        <p className="text-sm break-words">{service.lastError}</p>
+                                        <p className="text-sm break-words">{service.lastError || "Unknown error"}</p>
                                     </div>
                                 ) : (
                                     <p>Service is active and healthy.</p>

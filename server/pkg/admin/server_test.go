@@ -47,6 +47,18 @@ func (m *MockServiceRegistry) GetServiceError(serviceID string) (string, bool) {
 	return err, ok
 }
 
+func (m *MockServiceRegistry) GetServiceStatus(serviceID string) string {
+	if _, ok := m.errors[serviceID]; ok {
+		return "ERROR"
+	}
+	for _, s := range m.services {
+		if s.GetId() == serviceID {
+			return "OK"
+		}
+	}
+	return "UNKNOWN"
+}
+
 func TestNewServer(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()

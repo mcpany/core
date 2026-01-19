@@ -185,12 +185,15 @@ func (a *Application) handleListServices(w http.ResponseWriter, r *http.Request,
 				if errMsg, ok := a.ServiceRegistry.GetServiceError(svcID); ok {
 					jsonMap["last_error"] = errMsg
 				}
+				jsonMap["status"] = a.ServiceRegistry.GetServiceStatus(svcID)
 			}
 			// Also check sanitize name if ID lookup fails (or both?)
 			if svc.GetId() == "" && svc.GetSanitizedName() != "" {
-				if errMsg, ok := a.ServiceRegistry.GetServiceError(svc.GetSanitizedName()); ok {
+				name := svc.GetSanitizedName()
+				if errMsg, ok := a.ServiceRegistry.GetServiceError(name); ok {
 					jsonMap["last_error"] = errMsg
 				}
+				jsonMap["status"] = a.ServiceRegistry.GetServiceStatus(name)
 			}
 
 			// Inject Tool Count

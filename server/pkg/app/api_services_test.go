@@ -153,3 +153,4 @@ func (m *TestMockServiceRegistry) GetAllServices() ([]*configv1.UpstreamServiceC
 func (m *TestMockServiceRegistry) GetServiceInfo(serviceID string) (*tool.ServiceInfo, bool) { return nil, false }
 func (m *TestMockServiceRegistry) GetServiceConfig(serviceID string) (*configv1.UpstreamServiceConfig, bool) { return nil, false }
 func (m *TestMockServiceRegistry) GetServiceError(serviceID string) (string, bool) { return "", false }
+func (m *TestMockServiceRegistry) GetServiceStatus(serviceID string) string { return "OK" }

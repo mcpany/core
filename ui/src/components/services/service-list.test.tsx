@@ -93,4 +93,16 @@ describe("ServiceList", () => {
     expect(screen.queryByText("Service 2")).not.toBeInTheDocument();
     expect(screen.getByText("No services match the tag filter.")).toBeInTheDocument();
   });
+
+  it("renders connecting status", () => {
+    const connectingService = {
+        ...mockServices[0],
+        id: "s3",
+        name: "Connecting Service",
+        status: "CONNECTING"
+    };
+    render(<ServiceList services={[connectingService]} />);
+    expect(screen.getByText("Connecting Service")).toBeInTheDocument();
+    expect(screen.getByText("Connecting...")).toBeInTheDocument();
+  });
 });

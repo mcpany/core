@@ -13,7 +13,7 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { Settings, Trash2, CheckCircle, XCircle, AlertTriangle, MoreHorizontal, Copy, Download, Filter, PlayCircle, PauseCircle } from "lucide-react";
+import { Settings, Trash2, CheckCircle, XCircle, AlertTriangle, MoreHorizontal, Copy, Download, Filter, PlayCircle, PauseCircle, Loader2 } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -241,14 +241,20 @@ const ServiceRow = memo(function ServiceRow({ service, isSelected, onSelect, onT
              <TableCell className="font-medium">
                  <div className="flex items-center gap-2">
                      {service.name}
-                     {service.lastError && (
+                     {service.status === "CONNECTING" && (
+                         <div className="flex items-center text-blue-500 text-xs font-normal ml-2">
+                             <Loader2 className="h-3 w-3 animate-spin mr-1" />
+                             Connecting...
+                         </div>
+                     )}
+                     {(service.lastError || service.status === "ERROR") && (
                          <TooltipProvider>
                              <Tooltip>
                                  <TooltipTrigger>
                                      <AlertTriangle className="h-4 w-4 text-destructive" />
                                  </TooltipTrigger>
                                  <TooltipContent>
-                                     <p className="max-w-xs break-words text-xs">{service.lastError}</p>
+                                     <p className="max-w-xs break-words text-xs">{service.lastError || "Unknown Error"}</p>
                                  </TooltipContent>
                              </Tooltip>
                          </TooltipProvider>

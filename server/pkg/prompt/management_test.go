@@ -43,6 +43,24 @@ func (m *MockServiceRegistry) GetServiceInfo(serviceID string) (*tool.ServiceInf
 	return args.Get(0).(*tool.ServiceInfo), args.Bool(1)
 }
 
+func (m *MockServiceRegistry) GetServiceConfig(serviceID string) (*configv1.UpstreamServiceConfig, bool) {
+	args := m.Called(serviceID)
+	if args.Get(0) == nil {
+		return nil, args.Bool(1)
+	}
+	return args.Get(0).(*configv1.UpstreamServiceConfig), args.Bool(1)
+}
+
+func (m *MockServiceRegistry) GetServiceError(serviceID string) (string, bool) {
+	args := m.Called(serviceID)
+	return args.String(0), args.Bool(1)
+}
+
+func (m *MockServiceRegistry) GetServiceStatus(serviceID string) string {
+	args := m.Called(serviceID)
+	return args.String(0)
+}
+
 // MockPrompt is a mock implementation of the Prompt interface.
 type MockPrompt struct {
 	mock.Mock

@@ -29,6 +29,10 @@ func (m *MockServiceRegistry) UnregisterService(ctx context.Context, name string
 	return nil
 }
 
+func (m *MockServiceRegistry) GetServiceStatus(serviceID string) string {
+	return "OK"
+}
+
 func TestServiceRegistrationWorker_Stop(t *testing.T) {
 	// Setup bus
 	b, err := bus.NewProvider(nil)
