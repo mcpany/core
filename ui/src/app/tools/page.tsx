@@ -6,26 +6,36 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { apiClient } from "@/lib/client";
+import { apiClient, UpstreamServiceConfig } from "@/lib/client";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Wrench, Play, Star } from "lucide-react";
+import { Wrench, Play, Star, Filter } from "lucide-react";
 import { ToolDefinition } from "@proto/config/v1/tool";
 import { ToolInspector } from "@/components/tools/tool-inspector";
 import { usePinnedTools } from "@/hooks/use-pinned-tools";
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select";
 
 export default function ToolsPage() {
   const [tools, setTools] = useState<ToolDefinition[]>([]);
+  const [services, setServices] = useState<UpstreamServiceConfig[]>([]);
   const [selectedTool, setSelectedTool] = useState<ToolDefinition | null>(null);
   const [inspectorOpen, setInspectorOpen] = useState(false);
   const { isPinned, togglePin, isLoaded } = usePinnedTools();
   const [showPinnedOnly, setShowPinnedOnly] = useState(false);
+  const [selectedServiceId, setSelectedServiceId] = useState<string>("all");
 
   useEffect(() => {
     fetchTools();
+    fetchServices();
   }, []);
 
   const fetchTools = async () => {
@@ -34,6 +44,15 @@ export default function ToolsPage() {
       setTools(res.tools || []);
     } catch (e) {
       console.error("Failed to fetch tools", e);
+    }
+  };
+
+  const fetchServices = async () => {
+    try {
+      const res = await apiClient.listServices();
+      setServices(res);
+    } catch (e) {
+      console.error("Failed to fetch services", e);
     }
   };
 
@@ -55,7 +74,11 @@ export default function ToolsPage() {
   };
 
   const filteredTools = tools
-    .filter((t) => !showPinnedOnly || isPinned(t.name))
+    .filter((t) => {
+        if (showPinnedOnly && !isPinned(t.name)) return false;
+        if (selectedServiceId !== "all" && t.serviceId !== selectedServiceId) return false;
+        return true;
+    })
     .sort((a, b) => {
       const aPinned = isPinned(a.name);
       const bPinned = isPinned(b.name);
@@ -72,15 +95,33 @@ export default function ToolsPage() {
     <div className="flex-1 space-y-4 p-8 pt-6">
       <div className="flex items-center justify-between">
         <h2 className="text-3xl font-bold tracking-tight">Tools</h2>
-        <div className="flex items-center space-x-2">
-            <Switch
-                id="show-pinned"
-                checked={showPinnedOnly}
-                onCheckedChange={setShowPinnedOnly}
-            />
-            <label htmlFor="show-pinned" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                Show Pinned Only
-            </label>
+        <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-2">
+                 <Filter className="h-4 w-4 text-muted-foreground" />
+                 <Select value={selectedServiceId} onValueChange={setSelectedServiceId}>
+                    <SelectTrigger className="w-[180px]">
+                        <SelectValue placeholder="Filter by Service" />
+                    </SelectTrigger>
+                    <SelectContent>
+                        <SelectItem value="all">All Services</SelectItem>
+                        {services.map((service) => (
+                            <SelectItem key={service.id || service.name} value={service.id || service.name}>
+                                {service.name}
+                            </SelectItem>
+                        ))}
+                    </SelectContent>
+                </Select>
+            </div>
+            <div className="flex items-center space-x-2">
+                <Switch
+                    id="show-pinned"
+                    checked={showPinnedOnly}
+                    onCheckedChange={setShowPinnedOnly}
+                />
+                <label htmlFor="show-pinned" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                    Show Pinned Only
+                </label>
+            </div>
         </div>
       </div>
 
@@ -102,45 +143,53 @@ export default function ToolsPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filteredTools.map((tool) => (
-                <TableRow key={tool.name} className="group">
-                  <TableCell>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-6 w-6"
-                        onClick={() => togglePin(tool.name)}
-                        aria-label={`Pin ${tool.name}`}
-                      >
-                          <Star className={`h-4 w-4 ${isPinned(tool.name) ? "fill-yellow-400 text-yellow-400" : "text-muted-foreground"}`} />
-                      </Button>
-                  </TableCell>
-                  <TableCell className="font-medium flex items-center">
-                    <Wrench className="h-4 w-4 mr-2 text-muted-foreground" />
-                    {tool.name}
-                  </TableCell>
-                  <TableCell>{tool.description}</TableCell>
-                  <TableCell>
-                      <Badge variant="outline">{tool.serviceId}</Badge>
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex items-center space-x-2">
-                        <Switch
-                            checked={!tool.disable}
-                            onCheckedChange={() => toggleTool(tool.name, !tool.disable)}
-                        />
-                        <span className="text-sm text-muted-foreground w-16">
-                            {!tool.disable ? "Enabled" : "Disabled"}
-                        </span>
-                    </div>
-                  </TableCell>
-                  <TableCell className="text-right">
-                      <Button variant="outline" size="sm" onClick={() => openInspector(tool)}>
-                          <Play className="h-3 w-3 mr-1" /> Inspect
-                      </Button>
-                  </TableCell>
-                </TableRow>
-              ))}
+              {filteredTools.length === 0 ? (
+                  <TableRow>
+                      <TableCell colSpan={6} className="h-24 text-center">
+                          No tools found matching your filters.
+                      </TableCell>
+                  </TableRow>
+              ) : (
+                filteredTools.map((tool) => (
+                    <TableRow key={tool.name} className="group">
+                    <TableCell>
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-6 w-6"
+                            onClick={() => togglePin(tool.name)}
+                            aria-label={`Pin ${tool.name}`}
+                        >
+                            <Star className={`h-4 w-4 ${isPinned(tool.name) ? "fill-yellow-400 text-yellow-400" : "text-muted-foreground"}`} />
+                        </Button>
+                    </TableCell>
+                    <TableCell className="font-medium flex items-center">
+                        <Wrench className="h-4 w-4 mr-2 text-muted-foreground" />
+                        {tool.name}
+                    </TableCell>
+                    <TableCell>{tool.description}</TableCell>
+                    <TableCell>
+                        <Badge variant="outline">{tool.serviceId}</Badge>
+                    </TableCell>
+                    <TableCell>
+                        <div className="flex items-center space-x-2">
+                            <Switch
+                                checked={!tool.disable}
+                                onCheckedChange={() => toggleTool(tool.name, !tool.disable)}
+                            />
+                            <span className="text-sm text-muted-foreground w-16">
+                                {!tool.disable ? "Enabled" : "Disabled"}
+                            </span>
+                        </div>
+                    </TableCell>
+                    <TableCell className="text-right">
+                        <Button variant="outline" size="sm" onClick={() => openInspector(tool)}>
+                            <Play className="h-3 w-3 mr-1" /> Inspect
+                        </Button>
+                    </TableCell>
+                    </TableRow>
+                ))
+              )}
             </TableBody>
           </Table>
         </CardContent>
