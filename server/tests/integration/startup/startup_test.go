@@ -21,7 +21,6 @@ import (
 )
 
 func TestStartupWithFailingUpstream(t *testing.T) {
-	t.Parallel()
     // Enable file config for this test
     t.Setenv("MCPANY_ENABLE_FILE_CONFIG", "true")
 
