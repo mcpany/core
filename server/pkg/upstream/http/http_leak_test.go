@@ -13,8 +13,8 @@ import (
 	"testing"
 	"time"
 
-	httpupstream "github.com/mcpany/core/server/pkg/upstream/http"
 	configv1 "github.com/mcpany/core/proto/config/v1"
+	httpupstream "github.com/mcpany/core/server/pkg/upstream/http"
 	"github.com/stretchr/testify/assert"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/durationpb"
@@ -59,6 +59,8 @@ func TestHTTPPoolConnectionLeak(t *testing.T) {
 		},
 	}
 
+	t.Setenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS", "true")
+
 	for i := 0; i < 20; i++ {
 		// Create a new pool
 		pool, err := httpupstream.NewHTTPPool(1, 10, time.Second, config)
@@ -70,8 +72,9 @@ func TestHTTPPoolConnectionLeak(t *testing.T) {
 		assert.NoError(t, err)
 
 		resp, err := client.Get(server.URL)
-		assert.NoError(t, err)
-		resp.Body.Close()
+		if assert.NoError(t, err) {
+			resp.Body.Close()
+		}
 
 		// Return client to pool
 		pool.Put(client)
