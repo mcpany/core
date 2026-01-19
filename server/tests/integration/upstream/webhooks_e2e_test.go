@@ -51,7 +51,7 @@ func TestWebhooksE2E(t *testing.T) {
 
 	// Wait for server to start
 	require.Eventually(t, func() bool {
-		resp, err := http.Get(fmt.Sprintf("http://localhost:%d/markdown", port)) // Endpoint exists (POST only but connectable)
+		resp, err := http.Get(fmt.Sprintf("http://127.0.0.2:%d/markdown", port)) // Endpoint exists (POST only but connectable)
 		if resp != nil {
 			defer func() { _ = resp.Body.Close() }()
 		}
@@ -59,7 +59,7 @@ func TestWebhooksE2E(t *testing.T) {
 	}, 5*time.Second, 100*time.Millisecond, "Webhook server failed to start")
 
 	t.Run("MarkdownConversion", func(t *testing.T) {
-		url := fmt.Sprintf("http://localhost:%d/markdown", port)
+		url := fmt.Sprintf("http://127.0.0.2:%d/markdown", port)
 		hook := tool.NewWebhookHook(&configv1.WebhookConfig{
 			Url:           url,
 			Timeout:       TIMESTAMPCB.New(5 * time.Second),
@@ -100,7 +100,7 @@ func TestWebhooksE2E(t *testing.T) {
 	})
 
 	t.Run("TextTruncation", func(t *testing.T) {
-		url := fmt.Sprintf("http://localhost:%d/truncate?max_chars=5", port)
+		url := fmt.Sprintf("http://127.0.0.2:%d/truncate?max_chars=5", port)
 		hook := tool.NewWebhookHook(&configv1.WebhookConfig{
 			Url:           url,
 			Timeout:       TIMESTAMPCB.New(5 * time.Second),
@@ -158,7 +158,7 @@ func TestFullSystemWebhooks(t *testing.T) {
 
 	// Wait for webhook server
 	require.Eventually(t, func() bool {
-		resp, err := http.Get(fmt.Sprintf("http://localhost:%d/markdown", port))
+		resp, err := http.Get(fmt.Sprintf("http://127.0.0.2:%d/markdown", port))
 		if resp != nil && resp.Body != nil {
 			defer func() { _ = resp.Body.Close() }()
 		}
@@ -166,7 +166,7 @@ func TestFullSystemWebhooks(t *testing.T) {
 	}, 5*time.Second, 100*time.Millisecond)
 
 	// 4. Configure Upstream Service (Mcpany Core Logic)
-	webhookURL := fmt.Sprintf("http://localhost:%d/markdown", port)
+	webhookURL := fmt.Sprintf("http://127.0.0.2:%d/markdown", port)
 
 	upsConfig := configv1.UpstreamServiceConfig_builder{
 		Name:             proto.String("mock-service"),
@@ -252,7 +252,7 @@ func TestFullSystemWebhooks(t *testing.T) {
 }
 
 func getFreePort(t *testing.T) int {
-	addr, err := net.ResolveTCPAddr("tcp", "localhost:0")
+	addr, err := net.ResolveTCPAddr("tcp", "127.0.0.2:0")
 	require.NoError(t, err)
 	l, err := net.ListenTCP("tcp", addr)
 	require.NoError(t, err)

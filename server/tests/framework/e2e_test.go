@@ -31,7 +31,7 @@ func TestGRPCHelperFunctions(t *testing.T) {
 		mcpanyTestServerInfo := integration.StartMCPANYServer(t, "grpc-weather-test")
 		defer mcpanyTestServerInfo.CleanupFunc()
 
-		upstreamEndpoint := fmt.Sprintf("localhost:%d", proc.Port)
+		upstreamEndpoint := fmt.Sprintf("127.0.0.2:%d", proc.Port)
 		RegisterGRPCWeatherService(t, mcpanyTestServerInfo.RegistrationClient, upstreamEndpoint)
 
 		// Verify the tool is registered
@@ -75,7 +75,7 @@ func TestGRPCHelperFunctions(t *testing.T) {
 		mcpanyTestServerInfo := integration.StartMCPANYServer(t, "grpc-authed-weather-test")
 		defer mcpanyTestServerInfo.CleanupFunc()
 
-		upstreamEndpoint := fmt.Sprintf("localhost:%d", proc.Port)
+		upstreamEndpoint := fmt.Sprintf("127.0.0.2:%d", proc.Port)
 		RegisterGRPCAuthedWeatherService(t, mcpanyTestServerInfo.RegistrationClient, upstreamEndpoint)
 
 		// Verify the tool is registered

@@ -83,9 +83,9 @@ var NewHTTPPool = func(
 	}
 
 	baseTransport := &http.Transport{
-		TLSClientConfig: tlsConfig,
-		DialContext:     dialer.DialContext,
-		MaxIdleConns:    maxSize,
+		TLSClientConfig:     tlsConfig,
+		DialContext:         dialer.DialContext,
+		MaxIdleConns:        maxSize,
 		MaxIdleConnsPerHost: maxSize,
 	}
 
