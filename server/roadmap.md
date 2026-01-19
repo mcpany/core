@@ -100,6 +100,8 @@ These features represent the next logical steps for the product, focusing on Ent
 | 67   | **Config Schema Versioning**                  | **Maintenance**: Introduce `apiVersion` field in `config.yaml` to support breaking changes in configuration schema gracefully.                                                                                     | High       |
 | 68   | **Connection Draining**                       | **Availability**: Utilize active connection tracking (from System Health Dashboard) to implement graceful shutdown that waits for connections to finish before exiting.                                       | Medium     |
 | 69   | **Secure Defaults Enforcer**                  | **Security**: Automated "Fix-it" suggestions or enforcement of secure defaults based on security warnings visualized in the Health Dashboard.                                                                  | Medium     |
+| 70   | **Config Load Order Rationalization**         | **Tech Debt**: Explicitly document and enforce precedence: CLI Flags > Env Vars > Config File > DB > Defaults. Ensure strict validation is consistent across all sources.                                      | Medium     |
+| 71   | **Strict Config Validation Default**          | **Safety**: Make strict validation (failing on unused fields or typos) the default behavior to prevent silent misconfigurations, with an opt-out flag.                                                         | Low        |
 
 ## 3. Codebase Health
 

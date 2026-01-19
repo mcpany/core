@@ -355,14 +355,16 @@ func (a *Application) Run(
 	// Priority: Database < File (if enabled)
 	stores = append(stores, storageStore)
 
-	enableFileConfig := os.Getenv("MCPANY_ENABLE_FILE_CONFIG") == "true"
+	// Friction Fighter: If config paths are provided (via --config-path), always use them.
+	// We no longer require MCPANY_ENABLE_FILE_CONFIG=true when explicit paths are given.
 	if len(configPaths) > 0 {
-		if enableFileConfig {
-			log.Info("File configuration enabled, loading config from files (overrides database)", "paths", configPaths)
-			stores = append(stores, config.NewFileStore(fs, configPaths))
-		} else {
-			log.Warn("File configuration found but MCPANY_ENABLE_FILE_CONFIG is not true. Ignoring file config.", "paths", configPaths)
-		}
+		log.Info("File configuration enabled, loading config from files (overrides database)", "paths", configPaths)
+		stores = append(stores, config.NewFileStore(fs, configPaths))
+	} else if os.Getenv("MCPANY_ENABLE_FILE_CONFIG") == "true" {
+		// If no paths provided but env var is set, we might want to load default paths?
+		// Current logic relies on configPaths being populated (e.g. from viper defaults).
+		// If configPaths is empty here, NewFileStore would be empty.
+		// So strictly speaking, we only act if len(configPaths) > 0.
 	}
 	multiStore := config.NewMultiStore(stores...)
 
