@@ -6,6 +6,7 @@
 
 ### Implemented Features (Recently Completed)
 
+- [x] **Relative Path Resolution**: Ensure paths in configuration files are resolved relative to the config file's location, fixing "file not found" errors when running from a different directory. (Friction Fighter)
 - [x] **Upstream Error Body Visibility**: Include upstream HTTP response body in error messages to help users diagnose 4xx/5xx failures. (Friction Fighter)
 - [x] **Strict JSON Schema Validation**: Enhanced configuration validator to strictly validate `input_schema` and `output_schema` against JSON Schema Draft 2020-12 using `jsonschema` library, preventing runtime errors due to invalid tool definitions. (Friction Fighter)
 - [x] **Strict Config Parsing**: Startup now fails immediately on YAML/JSON syntax errors in configuration files (previously skipped silently).
@@ -170,6 +171,8 @@ These features represent the next logical steps for the product, focusing on Ent
 | 67   | **Config Schema Versioning**                  | **Maintenance**: Introduce `apiVersion` field in `config.yaml` to support breaking changes in configuration schema gracefully.                                                                                     | High       |
 | 68   | **Connection Draining**                       | **Availability**: Utilize active connection tracking (from System Health Dashboard) to implement graceful shutdown that waits for connections to finish before exiting.                                       | Medium     |
 | 69   | **Secure Defaults Enforcer**                  | **Security**: Automated "Fix-it" suggestions or enforcement of secure defaults based on security warnings visualized in the Health Dashboard.                                                                  | Medium     |
+| 70   | **Remote Config Dependencies**                | **DevX**: Support resolving relative paths for remote configuration files (HTTP/S) by downloading referenced assets or resolving against the base URL.                                                             | Medium     |
+| 71   | **Symlink Resolution Policy**                 | **Security**: Strict control over whether relative path resolution follows symlinks or stays within the config directory tree.                                                                                     | Medium     |
 
 ## 3. Codebase Health
 

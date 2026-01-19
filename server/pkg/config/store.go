@@ -420,6 +420,13 @@ func (s *FileStore) Load(ctx context.Context) (*configv1.McpAnyServerConfig, err
 			return nil, logErr
 		}
 
+		// Resolve relative paths in the configuration relative to the file location.
+		// This makes the configuration portable and independent of the working directory.
+		// We only do this for local files, as resolving relative paths for URLs is ambiguous.
+		if !isURL(path) {
+			ResolveRelativePaths(cfg, filepath.Dir(path))
+		}
+
 		if mergedConfig == nil {
 			mergedConfig = cfg
 		} else {
