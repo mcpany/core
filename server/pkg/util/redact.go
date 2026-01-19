@@ -80,6 +80,17 @@ func init() {
 // RedactJSON parses a JSON byte slice and redacts sensitive keys.
 // If the input is not valid JSON object or array, it returns the input as is.
 func RedactJSON(input []byte) []byte {
+	// Check if input looks like JSON object or array.
+	// We skip whitespace and comments to find the first significant character.
+	idx := skipWhitespaceAndComments(input, 0)
+	if idx >= len(input) {
+		return input
+	}
+	first := input[idx]
+	if first != '{' && first != '[' {
+		return input
+	}
+
 	// Use fast zero-allocation redaction path
 	// This avoids expensive json.Unmarshal/Marshal for large payloads
 	return redactJSONFast(input)

@@ -114,6 +114,40 @@ func TestRedactJSON(t *testing.T) {
 		assert.Equal(t, []byte(input), output)
 	})
 
+	t.Run("plain text with json-like structure", func(t *testing.T) {
+		// This previously triggered a bug where RedactJSON would modify plain text
+		// if it contained quotes and colons.
+		input := `This is plain text with "token": "mysecret" embedded.`
+		output := RedactJSON([]byte(input))
+		assert.Equal(t, []byte(input), output)
+	})
+
+	t.Run("json string", func(t *testing.T) {
+		// RedactJSON only targets objects and arrays
+		input := `"some string"`
+		output := RedactJSON([]byte(input))
+		assert.Equal(t, []byte(input), output)
+	})
+
+	t.Run("json number", func(t *testing.T) {
+		input := `12345`
+		output := RedactJSON([]byte(input))
+		assert.Equal(t, []byte(input), output)
+	})
+
+	t.Run("json with leading whitespace", func(t *testing.T) {
+		input := `   {"api_key": "secret"}`
+		output := RedactJSON([]byte(input))
+		assert.Contains(t, string(output), `[REDACTED]`)
+	})
+
+	t.Run("json with leading comment", func(t *testing.T) {
+		input := `// comment
+{"api_key": "secret"}`
+		output := RedactJSON([]byte(input))
+		assert.Contains(t, string(output), `[REDACTED]`)
+	})
+
 	t.Run("large number precision", func(t *testing.T) {
 		// A large integer that loses precision when converted to float64
 		// 1234567890123456789 is large enough.

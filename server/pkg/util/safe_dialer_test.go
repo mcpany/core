@@ -146,3 +146,37 @@ func TestSafeDialer_BlocksUnspecified(t *testing.T) {
 	assert.Contains(t, err.Error(), "ssrf attempt blocked")
 	assert.Contains(t, err.Error(), "private ip")
 }
+
+func TestSafeDialer_Networks(t *testing.T) {
+	// Setup
+	resolver := new(MockIPResolver)
+	dialer := new(MockDialer)
+
+	safeDialer := util.NewSafeDialer()
+	safeDialer.Resolver = resolver
+	safeDialer.Dialer = dialer
+
+	ctx := context.Background()
+	host := "example.com"
+	port := "80"
+	addr := net.JoinHostPort(host, port)
+	ip := net.ParseIP("1.2.3.4")
+
+	t.Run("tcp4", func(t *testing.T) {
+		resolver.On("LookupIP", ctx, "ip4", host).Return([]net.IP{ip}, nil).Once()
+		dialer.On("DialContext", ctx, "tcp4", net.JoinHostPort(ip.String(), port)).Return(&net.TCPConn{}, nil).Once()
+
+		conn, err := safeDialer.DialContext(ctx, "tcp4", addr)
+		require.NoError(t, err)
+		assert.NotNil(t, conn)
+	})
+
+	t.Run("tcp6", func(t *testing.T) {
+		resolver.On("LookupIP", ctx, "ip6", host).Return([]net.IP{ip}, nil).Once()
+		dialer.On("DialContext", ctx, "tcp6", net.JoinHostPort(ip.String(), port)).Return(&net.TCPConn{}, nil).Once()
+
+		conn, err := safeDialer.DialContext(ctx, "tcp6", addr)
+		require.NoError(t, err)
+		assert.NotNil(t, conn)
+	})
+}

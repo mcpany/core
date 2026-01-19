@@ -206,6 +206,56 @@ func TestResolveSecret(t *testing.T) {
 		assert.Equal(t, "my-remote-secret", resolved)
 	})
 
+	t.Run("RemoteContent with OAuth2", func(t *testing.T) {
+		// Mock Token Server
+		tokenServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			assert.Equal(t, "POST", r.Method)
+			assert.Equal(t, "application/x-www-form-urlencoded", r.Header.Get("Content-Type"))
+			// Check credentials
+			username, password, ok := r.BasicAuth()
+			assert.True(t, ok)
+			assert.Equal(t, "my-client-id", username)
+			assert.Equal(t, "my-client-secret", password)
+
+			w.Header().Set("Content-Type", "application/json")
+			_, _ = fmt.Fprint(w, `{"access_token": "my-access-token", "token_type": "Bearer", "expires_in": 3600}`)
+		}))
+		defer tokenServer.Close()
+
+		// Mock Resource Server
+		resourceServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			assert.Equal(t, "Bearer my-access-token", r.Header.Get("Authorization"))
+			_, _ = fmt.Fprint(w, "my-remote-secret-oauth")
+		}))
+		defer resourceServer.Close()
+
+		clientIDSecret := &configv1.SecretValue{}
+		clientIDSecret.SetPlainText("my-client-id")
+
+		clientSecretSecret := &configv1.SecretValue{}
+		clientSecretSecret.SetPlainText("my-client-secret")
+
+		oauth2Auth := &configv1.OAuth2Auth{}
+		oauth2Auth.SetClientId(clientIDSecret)
+		oauth2Auth.SetClientSecret(clientSecretSecret)
+		oauth2Auth.SetTokenUrl(tokenServer.URL)
+		oauth2Auth.SetScopes("read")
+
+		auth := &configv1.Authentication{}
+		auth.SetOauth2(oauth2Auth)
+
+		remoteContent := &configv1.RemoteContent{}
+		remoteContent.SetHttpUrl(resourceServer.URL)
+		remoteContent.SetAuth(auth)
+
+		secret := &configv1.SecretValue{}
+		secret.SetRemoteContent(remoteContent)
+
+		resolved, err := util.ResolveSecret(context.Background(), secret)
+		assert.NoError(t, err)
+		assert.Equal(t, "my-remote-secret-oauth", resolved)
+	})
+
 	t.Run("RemoteContent with bad request", func(t *testing.T) {
 		remoteContent := &configv1.RemoteContent{}
 		remoteContent.SetHttpUrl("bad-url")
@@ -420,6 +470,19 @@ func TestResolveSecret_Vault(t *testing.T) {
 		_, err := util.ResolveSecret(ctx, secret)
 		assert.Error(t, err)
 		assert.Equal(t, context.Canceled, err)
+	})
+
+	t.Run("AwsSecretManager failure", func(t *testing.T) {
+		// Expect error because no credentials/network
+		smSecret := &configv1.AwsSecretManagerSecret{}
+		smSecret.SetSecretId("my-secret")
+		smSecret.SetRegion("us-east-1")
+
+		secret := &configv1.SecretValue{}
+		secret.SetAwsSecretManager(smSecret)
+
+		_, err := util.ResolveSecret(context.Background(), secret)
+		assert.Error(t, err)
 	})
 }
 
