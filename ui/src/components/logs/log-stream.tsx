@@ -39,6 +39,7 @@ export interface LogEntry {
   level: LogLevel
   message: string
   source?: string
+  metadata?: Record<string, any>
   // Optimization: Pre-computed lowercase string for search performance
   searchStr?: string
   // Optimization: Pre-computed formatted time string to avoid repeated Date parsing
@@ -65,6 +66,8 @@ const getLevelColor = (level: LogLevel) => {
 
 // Optimization: Memoize LogRow to prevent unnecessary re-renders when list updates
 const LogRow = React.memo(({ log }: { log: LogEntry }) => {
+  const duration = log.metadata?.duration as string | undefined
+
   return (
     <div
       className="group flex flex-col sm:flex-row sm:items-start gap-1 sm:gap-3 hover:bg-white/5 p-2 sm:p-1 rounded transition-colors break-words border-b border-white/5 sm:border-0"
@@ -93,6 +96,11 @@ const LogRow = React.memo(({ log }: { log: LogEntry }) => {
       )}
       <span className="text-gray-300 flex-1 text-xs sm:text-sm pl-0 sm:pl-0">
         {log.message}
+        {duration && (
+          <span className="ml-2 inline-flex items-center rounded-sm bg-white/10 px-1.5 py-0.5 text-[10px] font-medium text-gray-400 font-mono">
+            {duration}
+          </span>
+        )}
       </span>
     </div>
   )
