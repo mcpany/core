@@ -2035,7 +2035,10 @@ func startHTTPServer(
 			BaseContext: func(_ net.Listener) context.Context {
 				return ctx
 			},
-			ConnState: func(_ net.Conn, state http.ConnState) {
+			ConnState: func(c net.Conn, state http.ConnState) {
+				if connState != nil {
+					connState(c, state)
+				}
 				switch state {
 				case http.StateNew:
 					metrics.IncrCounter([]string{"http", "connections", "opened", "total"}, 1)
