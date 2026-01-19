@@ -26,6 +26,7 @@ import (
 	pb_admin "github.com/mcpany/core/proto/admin/v1"
 	v1 "github.com/mcpany/core/proto/api/v1"
 	"github.com/mcpany/core/server/pkg/admin"
+	"github.com/mcpany/core/server/pkg/alerts"
 	"github.com/mcpany/core/server/pkg/appconsts"
 	"github.com/mcpany/core/server/pkg/auth"
 	"github.com/mcpany/core/server/pkg/bus"
@@ -185,6 +186,9 @@ type Application struct {
 	// SkillManager manages agent skills
 	SkillManager *skill.Manager
 
+	// AlertsManager manages system alerts
+	AlertsManager *alerts.Manager
+
 	// lastReloadErr stores the error from the last configuration reload.
 	standardMiddlewares *middleware.StandardMiddlewares
 	// Settings Manager for global settings (dynamic updates)
@@ -244,6 +248,7 @@ func NewApplication() *Application {
 		runStdioModeFunc: runStdioMode,
 		PromptManager:    prompt.NewManager(),
 		ToolManager:      tool.NewManager(busProvider),
+		AlertsManager:    alerts.NewManager(),
 
 		ResourceManager: resource.NewManager(),
 		UpstreamFactory: factory.NewUpstreamServiceFactory(pool.NewManager(), nil),
