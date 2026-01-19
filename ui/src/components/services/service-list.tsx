@@ -13,7 +13,7 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { Settings, Trash2, CheckCircle, XCircle, AlertTriangle, MoreHorizontal, Copy, Download, Filter, PlayCircle, PauseCircle } from "lucide-react";
+import { Settings, Trash2, CheckCircle, XCircle, AlertTriangle, MoreHorizontal, Copy, Download, Filter, PlayCircle, PauseCircle, Activity } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -23,6 +23,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { UpstreamServiceConfig } from "@/lib/client";
+import { ConnectionDiagnosticDialog } from "@/components/diagnostics/connection-diagnostic";
 
 
 interface ServiceListProps {
@@ -236,6 +237,21 @@ const ServiceRow = memo(function ServiceRow({ service, isSelected, onSelect, onT
                             onCheckedChange={(checked) => onToggle(service.name, checked)}
                         />
                     )}
+                    {service.lastError && (
+                        <ConnectionDiagnosticDialog
+                            service={service}
+                            trigger={
+                                <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    className="h-6 w-6 text-destructive hover:text-destructive hover:bg-destructive/10"
+                                    title="View Error & Troubleshoot"
+                                >
+                                    <AlertTriangle className="h-4 w-4" />
+                                </Button>
+                            }
+                        />
+                    )}
                  </div>
              </TableCell>
              <TableCell className="font-medium">
@@ -244,8 +260,8 @@ const ServiceRow = memo(function ServiceRow({ service, isSelected, onSelect, onT
                      {service.lastError && (
                          <TooltipProvider>
                              <Tooltip>
-                                 <TooltipTrigger>
-                                     <AlertTriangle className="h-4 w-4 text-destructive" />
+                                 <TooltipTrigger asChild>
+                                     <Badge variant="destructive" className="ml-2 text-[10px] px-1 h-5 cursor-pointer">Error</Badge>
                                  </TooltipTrigger>
                                  <TooltipContent>
                                      <p className="max-w-xs break-words text-xs">{service.lastError}</p>
@@ -286,6 +302,15 @@ const ServiceRow = memo(function ServiceRow({ service, isSelected, onSelect, onT
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
                         <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                        <ConnectionDiagnosticDialog
+                            service={service}
+                            trigger={
+                                <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                                    <Activity className="mr-2 h-4 w-4" />
+                                    Diagnose
+                                </DropdownMenuItem>
+                            }
+                        />
                         {onEdit && (
                             <DropdownMenuItem onClick={() => onEdit(service)}>
                                 <Settings className="mr-2 h-4 w-4" />
