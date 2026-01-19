@@ -128,6 +128,10 @@ func TestSafeDialContext(t *testing.T) {
 }
 
 func TestCheckConnection(t *testing.T) {
+	// ⚡ Bolt: Fix test failure by allowing loopback connections for this test
+	os.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "true")
+	defer os.Unsetenv("MCPANY_ALLOW_LOOPBACK_RESOURCES")
+
 	// Start a test server
 	server := http.Server{Handler: http.NotFoundHandler()}
 	listener, err := net.Listen("tcp", "127.0.0.1:0")
