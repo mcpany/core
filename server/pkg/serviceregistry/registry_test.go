@@ -607,3 +607,71 @@ func TestServiceRegistry_UnregisterService_CallsShutdown(t *testing.T) {
 	// Verify that the shutdown method was called
 	assert.True(t, shutdownCalled, "Shutdown method should be called on unregister")
 }
+
+func TestServiceRegistry_StatusLifecycle(t *testing.T) {
+	// We need a way to block inside Register to verify "CONNECTING" status.
+	// We can use a channel in the mockUpstream's registerFunc.
+	startRegCh := make(chan struct{})
+	finishRegCh := make(chan struct{})
+
+	f := &mockFactory{
+		newUpstreamFunc: func() (upstream.Upstream, error) {
+			return &mockUpstream{
+				registerFunc: func(serviceName string) (string, []*configv1.ToolDefinition, []*configv1.ResourceDefinition, error) {
+					serviceID, _ := util.SanitizeServiceName(serviceName)
+					close(startRegCh)
+					<-finishRegCh // Wait until test allows us to proceed
+					return serviceID, nil, nil, nil
+				},
+			}, nil
+		},
+	}
+	tm := &mockToolManager{}
+	registry := New(f, tm, prompt.NewManager(), resource.NewManager(), auth.NewManager())
+
+	serviceConfig := &configv1.UpstreamServiceConfig{}
+	serviceConfig.SetName("status-service")
+
+	// Verify UNKNOWN initially
+	serviceID, _ := util.SanitizeServiceName("status-service")
+	assert.Equal(t, "UNKNOWN", registry.GetServiceStatus(serviceID))
+
+	// Start registration in a goroutine
+	go func() {
+		_, _, _, _ = registry.RegisterService(context.Background(), serviceConfig)
+	}()
+
+	// Wait for registration to start
+	<-startRegCh
+
+	// Verify CONNECTING
+	assert.Equal(t, "CONNECTING", registry.GetServiceStatus(serviceID))
+
+	// Finish registration
+	close(finishRegCh)
+
+	// We need to wait a tiny bit for the goroutine to finish updating state (release lock)
+	// Ideally we'd use a done channel from the goroutine, but RegisterService doesn't return one.
+	// We can poll briefly or just sleep slightly.
+	// Or we can rely on eventually consistent check if we had one.
+	// Since we closed finishRegCh, RegisterService will return shortly.
+	// Let's retry a few times.
+	assert.Eventually(t, func() bool {
+		return registry.GetServiceStatus(serviceID) == "OK"
+	}, 100*time.Millisecond, 10*time.Millisecond, "Status should become OK")
+
+	// Test ERROR status
+	registryError := New(
+		&mockFactory{
+			newUpstreamFunc: func() (upstream.Upstream, error) {
+				return nil, errors.New("start failed")
+			},
+		},
+		tm, prompt.NewManager(), resource.NewManager(), auth.NewManager(),
+	)
+	serviceConfigError := &configv1.UpstreamServiceConfig{Name: proto.String("error-service")}
+	errID, _ := util.SanitizeServiceName("error-service")
+
+	_, _, _, _ = registryError.RegisterService(context.Background(), serviceConfigError)
+	assert.Equal(t, "ERROR", registryError.GetServiceStatus(errID))
+}
