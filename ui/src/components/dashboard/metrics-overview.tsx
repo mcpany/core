@@ -19,6 +19,7 @@ import {
   AlertCircle
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { SystemHealthCard } from "./system-health-card";
 
 interface Metric {
   label: string;
@@ -131,10 +132,13 @@ export const MetricsOverview = memo(function MetricsOverview() {
   }
 
   return (
-    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-      {metrics.map((metric) => (
-        <MetricItem key={metric.label} metric={metric} />
-      ))}
+    <div className="space-y-4">
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        {metrics.map((metric) => (
+          <MetricItem key={metric.label} metric={metric} />
+        ))}
+      </div>
+      <SystemHealthCard />
     </div>
   );
 });
