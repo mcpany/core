@@ -811,10 +811,22 @@ func (t *HTTPTool) processParameters(ctx context.Context, inputs map[string]any)
 				return nil, nil, false, fmt.Errorf("failed to resolve secret for parameter %q: %w", name, err)
 			}
 			if t.paramInPath[i] {
-				pathReplacements[name] = secretValue
+				// Always check for path traversal in path parameters
+				if err := checkForPathTraversal(secretValue); err != nil {
+					return nil, nil, false, fmt.Errorf("path traversal attempt detected in secret parameter %q: %w", name, err)
+				}
+				if param.GetDisableEscape() {
+					pathReplacements[name] = secretValue
+				} else {
+					pathReplacements[name] = url.PathEscape(secretValue)
+				}
 			}
 			if t.paramInQuery[i] {
-				queryReplacements[name] = secretValue
+				if param.GetDisableEscape() {
+					queryReplacements[name] = secretValue
+				} else {
+					queryReplacements[name] = url.QueryEscape(secretValue)
+				}
 			}
 		} else if schema := param.GetSchema(); schema != nil {
 			val, ok := inputs[name]

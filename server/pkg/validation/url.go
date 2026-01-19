@@ -22,9 +22,13 @@ import (
 //
 // IsSafeURL is a variable to allow mocking in tests.
 var IsSafeURL = func(urlStr string) error {
+	allowLoopback := os.Getenv("MCPANY_ALLOW_LOOPBACK_RESOURCES") == "true"
+	allowPrivate := os.Getenv("MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES") == "true"
+
 	// Bypass if explicitly allowed (for testing/development)
 	if os.Getenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS") == "true" {
-		return nil
+		allowLoopback = true
+		allowPrivate = true
 	}
 
 	u, err := url.Parse(urlStr)
@@ -45,7 +49,7 @@ var IsSafeURL = func(urlStr string) error {
 
 	// Check if host is an IP literal
 	if ip := net.ParseIP(host); ip != nil {
-		return validateIP(ip)
+		return validateIP(ip, allowLoopback, allowPrivate)
 	}
 
 	// Resolve Domain
@@ -64,7 +68,7 @@ var IsSafeURL = func(urlStr string) error {
 
 	// Check all resolved IPs
 	for _, ip := range ips {
-		if err := validateIP(ip); err != nil {
+		if err := validateIP(ip, allowLoopback, allowPrivate); err != nil {
 			return fmt.Errorf("host %q resolves to unsafe IP %s: %w", host, ip.String(), err)
 		}
 	}
@@ -72,10 +76,11 @@ var IsSafeURL = func(urlStr string) error {
 	return nil
 }
 
-func validateIP(ip net.IP) error {
-	if ip.IsLoopback() {
+func validateIP(ip net.IP, allowLoopback, allowPrivate bool) error {
+	if !allowLoopback && ip.IsLoopback() {
 		return fmt.Errorf("loopback address is not allowed")
 	}
+	// Link-local addresses are never allowed as they are used for cloud metadata services
 	if ip.IsLinkLocalUnicast() {
 		return fmt.Errorf("link-local address is not allowed (metadata service protection)")
 	}
@@ -87,6 +92,9 @@ func validateIP(ip net.IP) error {
 	}
 	if ip.IsUnspecified() {
 		return fmt.Errorf("unspecified address (0.0.0.0) is not allowed")
+	}
+	if !allowPrivate && IsPrivateNetworkIP(ip) {
+		return fmt.Errorf("private network address is not allowed")
 	}
 	return nil
 }

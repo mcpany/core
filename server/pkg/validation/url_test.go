@@ -54,6 +54,21 @@ func TestIsSafeURL(t *testing.T) {
 			wantErr: true,
 		},
 		{
+			name:    "Private Network (10.x.x.x)",
+			url:     "http://10.0.0.1",
+			wantErr: true,
+		},
+		{
+			name:    "Private Network (172.16.x.x)",
+			url:     "http://172.16.0.1",
+			wantErr: true,
+		},
+		{
+			name:    "Private Network (192.168.x.x)",
+			url:     "http://192.168.1.1",
+			wantErr: true,
+		},
+		{
 			name:    "Invalid Scheme",
 			url:     "ftp://example.com",
 			wantErr: true,
