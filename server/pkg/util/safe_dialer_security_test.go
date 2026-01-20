@@ -191,4 +191,27 @@ func TestSafeDialer_Security(t *testing.T) {
 		assert.Contains(t, err.Error(), "no ip addresses found")
 		assert.Nil(t, conn)
 	})
+
+	t.Run("BlockNAT64LinkLocal_Default", func(t *testing.T) {
+		resolver := new(MockIPResolver)
+		dialer := new(MockDialer)
+		safeDialer := util.NewSafeDialer()
+		safeDialer.Resolver = resolver
+		safeDialer.Dialer = dialer
+
+		// IP resolves to NAT64 link-local (64:ff9b::169.254.1.1)
+		// 169.254.1.1 -> a9.fe.01.01
+		ip := net.ParseIP("64:ff9b::a9fe:0101")
+		resolver.On("LookupIP", ctx, "ip", host).Return([]net.IP{ip}, nil)
+
+		// Exec
+		conn, err := safeDialer.DialContext(ctx, "tcp", addr)
+
+		// Verify
+		require.Error(t, err)
+		assert.Contains(t, err.Error(), "ssrf attempt blocked")
+		assert.Contains(t, err.Error(), "link-local ip")
+		assert.Nil(t, conn)
+		dialer.AssertNotCalled(t, "DialContext")
+	})
 }
