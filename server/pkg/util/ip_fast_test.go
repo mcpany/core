@@ -64,10 +64,7 @@ func TestIsPrivateNetworkIPv4_EdgeCases(t *testing.T) {
 		// Class E and Broadcast
 		{"240.0.0.0", "240.0.0.0", true},
 		{"255.255.255.255", "255.255.255.255", true},
-		{"239.255.255.255", "239.255.255.255", false}, // Multicast is typically not "private" in this specific sense, though usually restricted.
-		// Note: The original implementation iterated privateNetworkBlocks. Multicast (224.0.0.0/4) was NOT in that list.
-		// So strict equality to old behavior is important. My new check:
-		// if ip[0] >= 240. So Multicast (< 240) returns false. Correct.
+		{"239.255.255.255", "239.255.255.255", true}, // Admin Scoped Multicast is private.
 	}
 
 	for _, tt := range tests {

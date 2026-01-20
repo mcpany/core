@@ -97,6 +97,21 @@ func IsPrivateNetworkIP(ip net.IP) bool {
 			return true
 		}
 	}
+
+	// IPv6 Multicast (ff00::/8)
+	// We check the scope field (last 4 bits of the second byte).
+	// Global scope is 0xE. Link-Local scope is 0x2.
+	// We consider all non-global and non-link-local multicast addresses as private.
+	// We also exclude Scope 1 (Interface-Local) as it is treated as loopback (which is excluded by contract).
+	// Scope 0 (Reserved) and F (Reserved) are treated as Private.
+	if len(ip) == net.IPv6len && ip[0] == 0xff {
+		scope := ip[1] & 0x0f
+		// Exclude Global (0xE), Link-Local (0x2), and Interface-Local (0x1)
+		if scope != 0x0e && scope != 0x02 && scope != 0x01 {
+			return true
+		}
+	}
+
 	return false
 }
 
@@ -146,6 +161,8 @@ func isPrivateNetworkIPv4(ip net.IP) bool {
 		return ip[1] == 51 && ip[2] == 100 // 198.51.100.0/24
 	case 203:
 		return ip[1] == 0 && ip[2] == 113 // 203.0.113.0/24
+	case 239:
+		return true // 239.0.0.0/8 (Admin Scoped Multicast)
 	}
 
 	// Class E (240.0.0.0/4) and Broadcast (255.255.255.255)
