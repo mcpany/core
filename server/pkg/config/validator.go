@@ -457,6 +457,13 @@ func validateHTTPService(httpService *configv1.HttpUpstreamService) error {
 		}
 	}
 
+	if err := validateToolReferences(httpService.GetTools(), func(id string) bool {
+		_, ok := httpService.GetCalls()[id]
+		return ok
+	}); err != nil {
+		return err
+	}
+
 	for name, call := range httpService.GetCalls() {
 		if err := validateSchema(call.GetInputSchema()); err != nil {
 			return WrapActionableError(fmt.Sprintf("http call %q input_schema error", name), err)
@@ -489,6 +496,13 @@ func validateWebSocketService(websocketService *configv1.WebsocketUpstreamServic
 		}
 	}
 
+	if err := validateToolReferences(websocketService.GetTools(), func(id string) bool {
+		_, ok := websocketService.GetCalls()[id]
+		return ok
+	}); err != nil {
+		return err
+	}
+
 	for name, call := range websocketService.GetCalls() {
 		if err := validateSchema(call.GetInputSchema()); err != nil {
 			return WrapActionableError(fmt.Sprintf("websocket call %q input_schema error", name), err)
@@ -506,6 +520,13 @@ func validateGrpcService(grpcService *configv1.GrpcUpstreamService) error {
 			Err:        fmt.Errorf("gRPC service has empty address"),
 			Suggestion: "Set the 'address' field in the grpc_service configuration (e.g., 'localhost:50051').",
 		}
+	}
+
+	if err := validateToolReferences(grpcService.GetTools(), func(id string) bool {
+		_, ok := grpcService.GetCalls()[id]
+		return ok
+	}); err != nil {
+		return err
 	}
 
 	for name, call := range grpcService.GetCalls() {
@@ -538,6 +559,14 @@ func validateOpenAPIService(openapiService *configv1.OpenapiUpstreamService) err
 			Suggestion: "Ensure the spec_url is a valid URL.",
 		}
 	}
+
+	if err := validateToolReferences(openapiService.GetTools(), func(id string) bool {
+		_, ok := openapiService.GetCalls()[id]
+		return ok
+	}); err != nil {
+		return err
+	}
+
 	return nil
 }
 
@@ -559,6 +588,14 @@ func validateCommandLineService(commandLineService *configv1.CommandLineUpstream
 	if err := validateContainerEnvironment(commandLineService.GetContainerEnvironment()); err != nil {
 		return err
 	}
+
+	if err := validateToolReferences(commandLineService.GetTools(), func(id string) bool {
+		_, ok := commandLineService.GetCalls()[id]
+		return ok
+	}); err != nil {
+		return err
+	}
+
 	return nil
 }
 
@@ -650,6 +687,13 @@ func validateMcpService(mcpService *configv1.McpUpstreamService) error {
 		return fmt.Errorf("mcp service has no connection_type")
 	}
 
+	if err := validateToolReferences(mcpService.GetTools(), func(id string) bool {
+		_, ok := mcpService.GetCalls()[id]
+		return ok
+	}); err != nil {
+		return err
+	}
+
 	for name, call := range mcpService.GetCalls() {
 		if err := validateSchema(call.GetInputSchema()); err != nil {
 			return WrapActionableError(fmt.Sprintf("mcp call %q input_schema error", name), err)
@@ -707,6 +751,22 @@ func validateGraphQLService(graphqlService *configv1.GraphQLUpstreamService) err
 		return &ActionableError{
 			Err:        fmt.Errorf("invalid graphql address scheme: %s", u.Scheme),
 			Suggestion: "Use 'http' or 'https' as the scheme.",
+		}
+	}
+
+	return nil
+}
+
+func validateToolReferences(tools []*configv1.ToolDefinition, checkCallExists func(string) bool) error {
+	for _, tool := range tools {
+		if tool.GetCallId() == "" {
+			continue
+		}
+		if !checkCallExists(tool.GetCallId()) {
+			return &ActionableError{
+				Err: fmt.Errorf("tool %q references non-existent call_id %q", tool.GetName(), tool.GetCallId()),
+				Suggestion: fmt.Sprintf("Define a call with id %q in the 'calls' section, or update the tool to point to an existing call.", tool.GetCallId()),
+			}
 		}
 	}
 	return nil

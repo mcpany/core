@@ -108,6 +108,9 @@ These features represent the next logical steps for the product, focusing on Ent
 | 71   | **Top Tools API Extensions**                  | **Observability**: Enhance the top tools API to support time ranges (last 1h, 24h) using historical metrics if available.                                                                                        | Medium     |
 | 72   | **Config Hot-Reload Validation**              | **Resilience**: Validate configuration changes before applying them during a hot-reload to prevent breaking the running server with a bad config.                                                                  | High       |
 | 73   | **Docker Secret Native Support**              | **Ops**: Native support for reading Docker secrets (files in `/run/secrets`) and substituting them into configuration without needing environment variable mapping.                                                | Medium     |
+| 74   | **Config Integrity Validation**               | **Safety**: [COMPLETED] Strictly validate that all tools reference valid call IDs during startup to prevent silent failures.                                                                                       | Low        |
+| 75   | **Orphan Call Detection**                     | **Hygiene**: Analyze configuration to identify defined calls that are not referenced by any tool, reducing clutter and potential confusion.                                                                        | Low        |
+| 76   | **Circular Dependency Detection**             | **Safety**: Detect circular dependencies in tool definitions or composite services (e.g. Service A calls Service B calls Service A) to prevent runtime stack overflows.                                            | High       |
 
 ## 3. Codebase Health
 
