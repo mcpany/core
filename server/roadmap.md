@@ -108,6 +108,8 @@ These features represent the next logical steps for the product, focusing on Ent
 | 71   | **Top Tools API Extensions**                  | **Observability**: Enhance the top tools API to support time ranges (last 1h, 24h) using historical metrics if available.                                                                                        | Medium     |
 | 72   | **Config Hot-Reload Validation**              | **Resilience**: Validate configuration changes before applying them during a hot-reload to prevent breaking the running server with a bad config.                                                                  | High       |
 | 73   | **Docker Secret Native Support**              | **Ops**: Native support for reading Docker secrets (files in `/run/secrets`) and substituting them into configuration without needing environment variable mapping.                                                | Medium     |
+| 74   | **CLI Interactive Config Debugger**           | **DevX**: `mcpany run --debug-config` mode that verbose logs the loading process and pauses on errors to ask the user what to do.                                                                                  | Medium     |
+| 75   | **Client Connection Troubleshooter**          | **DevX**: `mcpany doctor --client` mode that mimics a client (like Claude/Gemini) trying to connect and reports exactly where it fails.                                                                            | Medium     |
 
 ## 3. Codebase Health
 
