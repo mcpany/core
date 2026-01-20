@@ -300,3 +300,13 @@ func TestRedactJSON_UnescapeKeyMoreCoverage(t *testing.T) {
 	// But RedactJSON works on byte slice, scanning.
 	// If we provide malformed JSON key: `"key\` -> unescape might fail.
 }
+
+func TestRedactJSON_CommentWithQuoteAfterNumber(t *testing.T) {
+	// This test case demonstrates a fix for a bug where a comment immediately following a number
+	// causes the scanner to misinterpret the comment content as a string.
+	// We verify that "password" is redacted.
+	input := "{\"count\": 123// \" } \n, \"password\": \"leak\"}"
+	got := RedactJSON([]byte(input))
+	assert.Contains(t, string(got), "\"[REDACTED]\"")
+	assert.NotContains(t, string(got), "\"leak\"")
+}
