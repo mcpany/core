@@ -2371,8 +2371,21 @@ func checkForPathTraversal(val string) error {
 
 	// Also check for encoded traversal sequences often used to bypass filters
 	// %2e%2e is ..
-	if strings.Contains(strings.ToLower(val), "%2e%2e") {
-		return fmt.Errorf("path traversal attempt detected (encoded)")
+	// ⚡ Bolt Optimization: Manual scan to avoid strings.ToLower allocation
+	for i := 0; i < len(val); {
+		idx := strings.IndexByte(val[i:], '%')
+		if idx == -1 {
+			break
+		}
+		i += idx
+		if i+5 < len(val) {
+			if val[i+1] == '2' && (val[i+2]|0x20 == 'e') &&
+				val[i+3] == '%' &&
+				val[i+4] == '2' && (val[i+5]|0x20 == 'e') {
+				return fmt.Errorf("path traversal attempt detected (encoded)")
+			}
+		}
+		i++
 	}
 	return nil
 }
@@ -2560,11 +2573,8 @@ func checkForShellInjection(val string, template string, placeholder string, com
 		// In double quotes, dangerous characters are double quote, $, and backtick
 		// We also need to block backslash because it can be used to escape the closing quote
 		// % is also dangerous in Windows CMD inside double quotes
-		dangerousChars := []string{"\"", "$", "`", "\\", "%"}
-		for _, char := range dangerousChars {
-			if strings.Contains(val, char) {
-				return fmt.Errorf("shell injection detected: value contains dangerous character %q inside double-quoted argument", char)
-			}
+		if idx := strings.IndexAny(val, "\"$`\\%"); idx != -1 {
+			return fmt.Errorf("shell injection detected: value contains dangerous character %q inside double-quoted argument", val[idx])
 		}
 		return nil
 	}
@@ -2574,17 +2584,16 @@ func checkForShellInjection(val string, template string, placeholder string, com
 	// % and ^ are Windows CMD metacharacters
 	// We also block quotes and backslashes to prevent argument splitting and interpretation abuse
 	// We also block control characters that could act as separators or cause confusion (\r, \t, \v, \f)
-	dangerousChars := []string{";", "|", "&", "$", "`", "(", ")", "{", "}", "<", ">", "!", "\n", "\r", "\t", "\v", "\f", "*", "?", "[", "]", "~", "#", "%", "^", "\"", "'", "\\"}
+	const dangerousChars = ";|&$`(){}!<>\"\n\r\t\v\f*?[]~#%^'\\"
 
+	charsToCheck := dangerousChars
 	// For 'env' command, '=' is dangerous as it allows setting arbitrary environment variables
 	if filepath.Base(command) == "env" {
-		dangerousChars = append(dangerousChars, "=")
+		charsToCheck += "="
 	}
 
-	for _, char := range dangerousChars {
-		if strings.Contains(val, char) {
-			return fmt.Errorf("shell injection detected: value contains dangerous character %q", char)
-		}
+	if idx := strings.IndexAny(val, charsToCheck); idx != -1 {
+		return fmt.Errorf("shell injection detected: value contains dangerous character %q", val[idx])
 	}
 	return nil
 }
