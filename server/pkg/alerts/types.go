@@ -38,3 +38,16 @@ type Alert struct {
 	Source    string    `json:"source"`
 	Timestamp time.Time `json:"timestamp"`
 }
+
+// AlertRule defines a condition for triggering an alert.
+type AlertRule struct {
+	ID          string    `json:"id"`
+	Name        string    `json:"name"`
+	Metric      string    `json:"metric"`
+	Operator    string    `json:"operator"` // e.g. ">", "<", "="
+	Threshold   float64   `json:"threshold"`
+	Duration    string    `json:"duration"` // e.g. "5m"
+	Severity    Severity  `json:"severity"`
+	Enabled     bool      `json:"enabled"`
+	LastUpdated time.Time `json:"last_updated"`
+}
