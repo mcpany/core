@@ -140,6 +140,12 @@ func (cb *CircuitBreaker) onFailure(originState State) {
 	}
 
 	if currentState == StateHalfOpen {
+		// Only trip the breaker if the failure corresponds to a probe (started in HalfOpen state).
+		// If the request started in Closed state (e.g., a slow request from before the break),
+		// we ignore it to allow the current probes to complete.
+		if originState != StateHalfOpen {
+			return
+		}
 		cb.setState(StateOpen)
 		cb.openTime = time.Now()
 		return
