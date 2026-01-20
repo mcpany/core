@@ -83,12 +83,20 @@ func GetLogger() *slog.Logger {
 
 	mu.Lock()
 	defer mu.Unlock()
-	once.Do(func() {
-		defaultLogger.Store(slog.New(slog.NewTextHandler(os.Stderr, &slog.HandlerOptions{
-			Level:     slog.LevelInfo,
-			AddSource: true,
-		})))
-	})
+
+	// Double-check after acquiring lock to ensure another goroutine didn't initialize it
+	if l := defaultLogger.Load(); l != nil {
+		return l
+	}
+
+	// Initialize with default settings if not already initialized.
+	// We do NOT use sync.Once here because we want Init() to be able to override this
+	// default logger later if called.
+	defaultLogger.Store(slog.New(slog.NewTextHandler(os.Stderr, &slog.HandlerOptions{
+		Level:     slog.LevelInfo,
+		AddSource: true,
+	})))
+
 	return defaultLogger.Load()
 }
 
