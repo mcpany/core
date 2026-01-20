@@ -108,15 +108,17 @@ func (e *yamlEngine) Unmarshal(b []byte, v proto.Message) error {
 	if err := protojson.Unmarshal(jsonData, v); err != nil {
 		// Attempt partial unmarshal for McpAnyServerConfig to support resilient loading
 		if config, ok := v.(*configv1.McpAnyServerConfig); ok {
-			if success, partialErr := tryPartialUnmarshal(yamlMap, config); success {
-				if partialErr != nil {
-					return partialErr
-				}
+			// We need to pass a copy of yamlMap to avoid modifying the original if we needed to retry
+			// (though here we are inside an error case, so modification is fine).
+			// However, tryPartialUnmarshal modifies the map (deletes upstream_services),
+			// so if we were to do anything else with yamlMap afterwards, we should be careful.
+			// Since we return or goto from here, it's fine.
+			if success := tryPartialUnmarshal(yamlMap, config); success {
 				// If successfully loaded partial config, proceed to validation
 				goto Validate
 			}
 		}
-		return handleProtoJsonError(err, v)
+		return handleProtoJSONError(err, v)
 	}
 
 Validate:
@@ -140,7 +142,8 @@ Validate:
 	return nil
 }
 
-func handleProtoJsonError(err error, v proto.Message) error {
+// func handleProtoJSONError reports user friendly error (revive).
+func handleProtoJSONError(err error, v proto.Message) error {
 	// Detect if the user is using Claude Desktop config format
 	if strings.Contains(err.Error(), "unknown field \"mcpServers\"") {
 		// revive:disable-next-line:error-strings // This error message is user facing and needs to be descriptive
@@ -176,17 +179,17 @@ func handleProtoJsonError(err error, v proto.Message) error {
 	return err
 }
 
-func tryPartialUnmarshal(yamlMap map[string]interface{}, config *configv1.McpAnyServerConfig) (bool, error) {
+func tryPartialUnmarshal(yamlMap map[string]interface{}, config *configv1.McpAnyServerConfig) bool {
 	// Check if we have upstream_services
 	// yaml key might be "upstream_services"
 	servicesRaw, ok := yamlMap["upstream_services"]
 	if !ok {
-		return false, nil // Can't help
+		return false // Can't help
 	}
 
 	servicesList, ok := servicesRaw.([]interface{})
 	if !ok {
-		return false, nil // Structurally invalid
+		return false // Structurally invalid
 	}
 
 	// Remove services from map to test base config validity
@@ -195,7 +198,10 @@ func tryPartialUnmarshal(yamlMap map[string]interface{}, config *configv1.McpAny
 	// Marshal rest
 	jsonData, err := json.Marshal(yamlMap)
 	if err != nil {
-		return false, nil // Something else is wrong
+		// If we can't marshal the base config, we definitely can't salvage it.
+		// Returning nil error because this helper returns (success, err).
+		// If success=false, the caller proceeds to return the original unmarshal error.
+		return false
 	}
 
 	// Clear config before unmarshaling again
@@ -204,7 +210,7 @@ func tryPartialUnmarshal(yamlMap map[string]interface{}, config *configv1.McpAny
 	// Unmarshal rest
 	if err := protojson.Unmarshal(jsonData, config); err != nil {
 		// The error wasn't (just) in upstream_services, or was in global settings.
-		return false, nil
+		return false
 	}
 
 	// The base config is valid! Now let's try to add back valid services.
@@ -229,7 +235,7 @@ func tryPartialUnmarshal(yamlMap map[string]interface{}, config *configv1.McpAny
 		svcConfig := &configv1.UpstreamServiceConfig{}
 		if err := protojson.Unmarshal(sJSON, svcConfig); err != nil {
 			// This is the bad service!
-			name := "unknown"
+			var name string
 			if n, ok := sMap["name"].(string); ok {
 				name = n
 			} else {
@@ -237,7 +243,7 @@ func tryPartialUnmarshal(yamlMap map[string]interface{}, config *configv1.McpAny
 			}
 
 			// Format the error nicely
-			niceErr := handleProtoJsonError(err, svcConfig)
+			niceErr := handleProtoJSONError(err, svcConfig)
 
 			log.Error("⚠️  Skipping invalid service configuration",
 				"service", name,
@@ -252,13 +258,13 @@ func tryPartialUnmarshal(yamlMap map[string]interface{}, config *configv1.McpAny
 		// If all services failed, we cannot claim partial success.
 		// We should return an error so the user knows everything failed.
 		// By returning false, we fall back to the original error reporting which covers the failure.
-		return false, nil
+		return false
 	}
 
 	config.UpstreamServices = validServices
 
 	// We successfully salvaged the rest.
-	return true, nil
+	return true
 }
 
 // textprotoEngine implements the Engine interface for textproto configuration
@@ -286,7 +292,7 @@ type jsonEngine struct{}
 // Returns an error if the operation fails.
 func (e *jsonEngine) Unmarshal(b []byte, v proto.Message) error {
 	if err := protojson.Unmarshal(b, v); err != nil {
-		return handleProtoJsonError(err, v)
+		return handleProtoJSONError(err, v)
 	}
 	return nil
 }
