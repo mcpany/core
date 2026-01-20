@@ -24,10 +24,16 @@ type ManagerInterface interface {
 	UpdateAlert(id string, alert *Alert) *Alert
 
 	// Rules
+
+	// ListRules returns a list of all alert rules.
 	ListRules() []*AlertRule
+	// GetRule retrieves an alert rule by its ID.
 	GetRule(id string) *AlertRule
+	// CreateRule creates a new alert rule.
 	CreateRule(rule *AlertRule) *AlertRule
+	// UpdateRule updates an existing alert rule.
 	UpdateRule(id string, rule *AlertRule) *AlertRule
+	// DeleteRule deletes an alert rule by its ID.
 	DeleteRule(id string) error
 }
 

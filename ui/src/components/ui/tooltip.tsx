@@ -10,12 +10,40 @@ import * as TooltipPrimitive from "@radix-ui/react-tooltip"
 
 import { cn } from "@/lib/utils"
 
+/**
+ * TooltipProvider component.
+ * @param props - The component props.
+ * @param props.className - The name of the class.
+ * @param props.sideOffset - The unique identifier for seOffset.
+ * @returns The rendered component.
+ */
 const TooltipProvider = TooltipPrimitive.Provider
 
+/**
+ * Tooltip component.
+ * @param props - The component props.
+ * @param props.className - The name of the class.
+ * @param props.sideOffset - The unique identifier for seOffset.
+ * @returns The rendered component.
+ */
 const Tooltip = TooltipPrimitive.Root
 
+/**
+ * TooltipTrigger component.
+ * @param props - The component props.
+ * @param props.className - The name of the class.
+ * @param props.sideOffset - The unique identifier for seOffset.
+ * @returns The rendered component.
+ */
 const TooltipTrigger = TooltipPrimitive.Trigger
 
+/**
+ * TooltipContent component.
+ * @param props - The component props.
+ * @param props.className - The name of the class.
+ * @param props.sideOffset - The unique identifier for seOffset.
+ * @returns The rendered component.
+ */
 const TooltipContent = React.forwardRef<
   React.ElementRef<typeof TooltipPrimitive.Content>,
   React.ComponentPropsWithoutRef<typeof TooltipPrimitive.Content>

@@ -150,6 +150,12 @@ export function StackVisualizer({ yamlContent }: StackVisualizerProps) {
     );
 }
 
+/**
+ * ServiceIcon component.
+ * @param props - The component props.
+ * @param props.type - The type definition.
+ * @returns The rendered component.
+ */
 function ServiceIcon({ type }: { type: ParsedService['type'] }) {
     switch (type) {
         case "image": return <Database className="h-4 w-4 text-indigo-500" />;

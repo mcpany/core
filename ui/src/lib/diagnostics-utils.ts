@@ -52,6 +52,39 @@ export function analyzeConnectionError(error: string): DiagnosticResult {
     };
   }
 
+  // HTTP 404
+  if (err.includes("404") || err.includes("not found")) {
+    return {
+      category: "configuration",
+      title: "Not Found (404)",
+      description: "The requested path or resource does not exist on the upstream server.",
+      suggestion: "Check the URL path in your configuration. The base URL might be correct, but the endpoint might be wrong.",
+      severity: "warning",
+    };
+  }
+
+  // HTTP 500
+  if (err.includes("500") || err.includes("internal server error")) {
+    return {
+      category: "protocol",
+      title: "Internal Server Error (500)",
+      description: "The upstream server encountered an error while processing the request.",
+      suggestion: "Check the logs of the upstream service. It might be crashing or misconfigured.",
+      severity: "critical",
+    };
+  }
+
+  // HTTP 502/503
+  if (err.includes("502") || err.includes("bad gateway") || err.includes("503") || err.includes("service unavailable")) {
+    return {
+      category: "network",
+      title: "Service Unavailable (502/503)",
+      description: "The upstream server is down or unable to handle the request.",
+      suggestion: "The service might be restarting or overloaded. Check if the upstream process is running healthy.",
+      severity: "critical",
+    };
+  }
+
   // Auth: Unauthorized
   if (err.includes("401") || err.includes("unauthorized") || err.includes("invalid token")) {
     return {
@@ -70,6 +103,17 @@ export function analyzeConnectionError(error: string): DiagnosticResult {
       title: "Access Denied",
       description: "You are authenticated, but lack permissions.",
       suggestion: "Check if the token has the necessary scopes or permissions for this resource.",
+      severity: "critical",
+    };
+  }
+
+  // Mixed Content / WS mismatch
+  if (err.includes("mixed content") || (err.includes("https") && err.includes("ws://"))) {
+    return {
+      category: "configuration",
+      title: "Protocol Mismatch (Mixed Content)",
+      description: "Attempting to connect to an insecure WebSocket (ws://) from a secure page (https://).",
+      suggestion: "Browsers block this for security. Use 'wss://' (Secure WebSocket) or serve your dashboard over HTTP (not recommended).",
       severity: "critical",
     };
   }

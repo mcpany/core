@@ -13,8 +13,11 @@
 - [x] **Service Connection Diagnostic Tool**: Interactive tool to diagnose connection issues with upstream services (DNS, Handshake, Capabilities) - Added based on Ecosystem Audit.
   - _Update_: Enhanced with WebSocket support and browser-side connectivity probing.
 - [x] **Integrated Connection Diagnostics**: Added direct access to the Connection Diagnostic tool from the Service List status indicator, allowing users to quickly troubleshoot failed services.
-- [ ] **Context-Aware Error Suggestions**: When a service error occurs, use heuristics to suggest a fix in the Connection Diagnostic dialog.
+- [x] **Context-Aware Error Suggestions**: When a service error occurs, use heuristics to suggest a fix in the Connection Diagnostic dialog.
+- [x] **Fix E2E Testing Infrastructure**: Resolve persistent CI failures in `e2e-parallel` by implementing robust backend mocking for the Settings & Secrets page tests.
 - [ ] **One-Click Retry/Reconnect**: Button in the Service List (or diagnostic dialog) to immediately trigger a reconnection attempt for a failed service.
+- [ ] **Copy Diagnostic Logs**: Add a button to copy all diagnostic logs to the clipboard for easy sharing/reporting.
+- [ ] **Browser-Side HTTP Connectivity Check**: Add a diagnostic step to attempt fetching the service URL directly from the browser (for HTTP services) to help distinguish between server-side and client-side network issues (subject to CORS).
 - [ ] **Plugin UI Extensions**: Allow server plugins to inject custom UI components.
 - [x] **Service Templates Library**: A built-in library of common service configurations (Postgres, Redis, Slack) to quickly spin up services without manual config.
 - [ ] **Configuration Versioning & Rollback**: UI to view history of service configuration changes and rollback to previous versions.
@@ -39,12 +42,16 @@
 - [ ] **Tool Filtering by Service**: Filter the tool list by selecting a specific service.
 - [ ] **Compact Tool View**: A toggle to switch between comfortable and compact table view for high density lists.
 - [ ] **Bulk Edit Configuration**: Ability to edit common properties (like tags, timeout, or environment variables) for multiple selected services.
-- [ ] **Saved Tool Arguments**: Ability to save a set of arguments as a "Preset" for a tool in the Playground, to quickly test different scenarios.
+- [x] **Saved Tool Arguments**: Ability to save a set of arguments as a "Preset" for a tool in the Playground, to quickly test different scenarios.
 - [x] **Tool Execution History Persisted**: Persist the local history of tool executions in `localStorage` or backend, so it survives page reloads.
 - [ ] **Tool Execution Duration Tracking**: Display the execution time (latency) for each tool call in the Playground history.
 - [ ] **Export Playground History**: Ability to export the current session's tool execution history to a JSON file for sharing or debugging.
 - [ ] **Context Usage Estimator**: Calculate and display estimated token usage for each tool/service to prevent context bloat (Address "MCP servers eat context" pain point).
 - [ ] **Sensitive Data Detection**: Warning when configuring services that might expose sensitive environment variables (e.g. AWS_SECRET_KEY) in tools.
+- [ ] **Preset Sharable URL**: Generate a link to the playground with pre-filled arguments (using presets or query params) to easily share configurations with team members.
+- [ ] **Preset Cloud Sync**: Sync saved tool presets to the backend (user profile) so they persist across devices and browser sessions.
+- [ ] **Robust Mocking Strategy**: Extend the mocking strategy used in Settings E2E tests to other critical E2E flows (Services, Tools) to reduce CI flakiness.
+- [ ] **Error Boundary Reporting**: Implement a global error boundary that catches component crashes (like the SecretsManager issue) and reports them to the diagnostic log or backend.
 
 ### Completed Features
 

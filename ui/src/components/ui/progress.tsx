@@ -10,6 +10,13 @@ import * as ProgressPrimitive from "@radix-ui/react-progress"
 
 import { cn } from "@/lib/utils"
 
+/**
+ * Progress component.
+ * @param props - The component props.
+ * @param props.className - The name of the class.
+ * @param props.value - The current value.
+ * @returns The rendered component.
+ */
 const Progress = React.forwardRef<
   React.ElementRef<typeof ProgressPrimitive.Root>,
   React.ComponentPropsWithoutRef<typeof ProgressPrimitive.Root>

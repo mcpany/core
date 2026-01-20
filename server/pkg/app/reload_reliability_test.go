@@ -85,6 +85,7 @@ upstream_services:
 	writeConfig(0)
 
 	app := NewApplication()
+	app.RegistrationRetryDelay = 100 * time.Millisecond
 
 	// Run in background
 	go func() {

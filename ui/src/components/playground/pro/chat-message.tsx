@@ -209,6 +209,12 @@ export function ChatMessage({ message, onReplay }: ChatMessageProps) {
     return null;
 }
 
+/**
+ * HydrationSafeTime component.
+ * @param props - The component props.
+ * @param props.date - The date property.
+ * @returns The rendered component.
+ */
 function HydrationSafeTime({ date }: { date: Date }) {
     const [mounted, setMounted] = useState(false);
     useEffect(() => setMounted(true), []);

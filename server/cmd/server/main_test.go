@@ -14,15 +14,24 @@ import (
 	"os"
 	"os/exec"
 	"regexp"
+	"strings"
 	"syscall"
 	"testing"
 	"time"
 
 	"github.com/mcpany/core/server/pkg/appconsts"
+	"github.com/mcpany/core/server/pkg/util"
 	"github.com/spf13/afero"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
+
+func init() {
+	// Allow loopback and private network resources for tests, as many tests
+	// use localhost which might resolve to loopback IPs like ::1.
+	os.Setenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS", util.TrueStr)
+}
 
 // mockRunner is a mock implementation of the app.Runner interface for testing.
 type mockRunner struct {
@@ -542,20 +551,17 @@ func TestUpdateCmd(t *testing.T) {
 
 func TestConfigSchemaCmd(t *testing.T) {
 	viper.Reset()
-	originalStdout := os.Stdout
-	r, w, _ := os.Pipe()
-	os.Stdout = w
 
 	rootCmd := newRootCmd()
 	rootCmd.SetArgs([]string{"config", "schema"})
+
+	buf := new(strings.Builder)
+	rootCmd.SetOut(buf)
+
 	err := rootCmd.Execute()
+	require.NoError(t, err)
 
-	_ = w.Close()
-	out, _ := io.ReadAll(r)
-	os.Stdout = originalStdout
-
-	assert.NoError(t, err)
-	output := string(out)
+	output := buf.String()
 	assert.Contains(t, output, "$schema")
 	assert.Contains(t, output, "mcpany.config.v1.McpAnyServerConfig")
 }

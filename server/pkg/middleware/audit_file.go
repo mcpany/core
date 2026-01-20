@@ -62,6 +62,11 @@ func (s *FileAuditStore) Write(_ context.Context, entry AuditEntry) error {
 	return json.NewEncoder(w).Encode(entry)
 }
 
+// Read implements the AuditStore interface.
+func (s *FileAuditStore) Read(_ context.Context, _ AuditFilter) ([]AuditEntry, error) {
+	return nil, fmt.Errorf("read not implemented for file audit store")
+}
+
 // Close closes the file.
 //
 // Returns an error if the operation fails.

@@ -163,6 +163,11 @@ func (s *PostgresAuditStore) Write(ctx context.Context, entry AuditEntry) error 
 	return tx.Commit()
 }
 
+// Read implements the AuditStore interface.
+func (s *PostgresAuditStore) Read(_ context.Context, _ AuditFilter) ([]AuditEntry, error) {
+	return nil, fmt.Errorf("read not implemented for postgres audit store")
+}
+
 // Verify checks the integrity of the audit logs.
 //
 // Returns true if successful.

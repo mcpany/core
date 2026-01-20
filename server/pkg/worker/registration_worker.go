@@ -26,6 +26,7 @@ type ServiceRegistrationWorker struct {
 	bus             *bus.Provider
 	serviceRegistry serviceregistry.ServiceRegistryInterface
 	wg              sync.WaitGroup
+	retryDelay      time.Duration
 }
 
 // NewServiceRegistrationWorker creates a new ServiceRegistrationWorker.
@@ -36,7 +37,13 @@ func NewServiceRegistrationWorker(bus *bus.Provider, serviceRegistry serviceregi
 	return &ServiceRegistrationWorker{
 		bus:             bus,
 		serviceRegistry: serviceRegistry,
+		retryDelay:      5 * time.Second,
 	}
+}
+
+// SetRetryDelay sets the retry delay for failed registrations.
+func (w *ServiceRegistrationWorker) SetRetryDelay(d time.Duration) {
+	w.retryDelay = d
 }
 
 // Start launches the worker in a new goroutine. It subscribes to service
@@ -130,8 +137,8 @@ func (w *ServiceRegistrationWorker) Start(ctx context.Context) {
 				// Schedule a retry
 				// Simple fixed delay for now. In a robust system, we would track retry counts and apply backoff.
 				// Since we don't have a place to store retry count in the request without modifying proto,
-				// we just retry indefinitely every 5 seconds until success or cancellation.
-				retryDelay := 5 * time.Second
+				// we just retry indefinitely every X seconds (configured via retryDelay) until success or cancellation.
+				retryDelay := w.retryDelay
 				log.Info("Scheduling retry for service registration", "service", req.Config.GetName(), "delay", retryDelay)
 
 				go func() {

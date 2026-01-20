@@ -9,6 +9,12 @@ import { vi, describe, it, expect } from "vitest"
 import { KeyboardShortcutsProvider, useShortcut, useKeyboardShortcuts } from "./keyboard-shortcuts-context"
 
 // Mock component to test the hook
+/**
+ * TestComponent component.
+ * @param props - The component props.
+ * @param props.action - The action property.
+ * @returns The rendered component.
+ */
 const TestComponent = ({ action }: { action: () => void }) => {
   useShortcut("test.shortcut", ["meta+k"], action, { label: "Test Shortcut" })
   return <div>Test Component</div>

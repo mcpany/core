@@ -42,6 +42,15 @@ function useChart() {
   return context
 }
 
+/**
+ * ChartContainer component.
+ * @param props - The component props.
+ * @param props.id - The unique identifier.
+ * @param props.className - The name of the class.
+ * @param props.children - The child components.
+ * @param props.config - The configuration object.
+ * @returns The rendered component.
+ */
 const ChartContainer = React.forwardRef<
   HTMLDivElement,
   React.ComponentProps<"div"> & {
@@ -75,6 +84,13 @@ const ChartContainer = React.forwardRef<
 })
 ChartContainer.displayName = "Chart"
 
+/**
+ * ChartStyle component.
+ * @param props - The component props.
+ * @param props.id - The unique identifier.
+ * @param props.config - The configuration object.
+ * @returns The rendered component.
+ */
 const ChartStyle = ({ id, config }: { id: string; config: ChartConfig }) => {
   const colorConfig = Object.entries(config).filter(
     ([, config]) => config.theme || config.color
@@ -120,8 +136,44 @@ ${colorConfig
   )
 }
 
+/**
+ * ChartTooltip component.
+ * @param props - The component props.
+ * @param props.active - The active property.
+ * @param props.payload - The payload property.
+ * @param props.className - The name of the class.
+ * @param props.indicator - The indicator property.
+ * @param props.hideLabel - The unique identifier for heLabel.
+ * @param props.hideIndicator - The unique identifier for heIndicator.
+ * @param props.label - The label property.
+ * @param props.labelFormatter - The labelFormatter property.
+ * @param props.labelClassName - The name of the labelClass.
+ * @param props.formatter - The formatter property.
+ * @param props.color - The color property.
+ * @param props.nameKey - The name of the Key.
+ * @param props.labelKey - The labelKey property.
+ * @returns The rendered component.
+ */
 const ChartTooltip = RechartsPrimitive.Tooltip
 
+/**
+ * ChartTooltipContent component.
+ * @param props - The component props.
+ * @param props.active - The active property.
+ * @param props.payload - The payload property.
+ * @param props.className - The name of the class.
+ * @param props.indicator - The indicator property.
+ * @param props.hideLabel - The unique identifier for heLabel.
+ * @param props.hideIndicator - The unique identifier for heIndicator.
+ * @param props.label - The label property.
+ * @param props.labelFormatter - The labelFormatter property.
+ * @param props.labelClassName - The name of the labelClass.
+ * @param props.formatter - The formatter property.
+ * @param props.color - The color property.
+ * @param props.nameKey - The name of the Key.
+ * @param props.labelKey - The labelKey property.
+ * @returns The rendered component.
+ */
 const ChartTooltipContent = React.forwardRef<
   HTMLDivElement,
   React.ComponentProps<typeof RechartsPrimitive.Tooltip> &
@@ -276,8 +328,28 @@ const ChartTooltipContent = React.forwardRef<
 )
 ChartTooltipContent.displayName = "ChartTooltip"
 
+/**
+ * ChartLegend component.
+ * @param props - The component props.
+ * @param props.className - The name of the class.
+ * @param props.hideIcon - The unique identifier for heIcon.
+ * @param props.payload - The payload property.
+ * @param props.verticalAlign - The verticalAlign property.
+ * @param props.nameKey - The name of the Key.
+ * @returns The rendered component.
+ */
 const ChartLegend = RechartsPrimitive.Legend
 
+/**
+ * ChartLegendContent component.
+ * @param props - The component props.
+ * @param props.className - The name of the class.
+ * @param props.hideIcon - The unique identifier for heIcon.
+ * @param props.payload - The payload property.
+ * @param props.verticalAlign - The verticalAlign property.
+ * @param props.nameKey - The name of the Key.
+ * @returns The rendered component.
+ */
 const ChartLegendContent = React.forwardRef<
   HTMLDivElement,
   React.ComponentProps<"div"> &

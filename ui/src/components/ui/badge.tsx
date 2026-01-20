@@ -35,6 +35,13 @@ export interface BadgeProps
   extends React.HTMLAttributes<HTMLDivElement>,
     VariantProps<typeof badgeVariants> {}
 
+/**
+ * Badge component.
+ * @param props - The component props.
+ * @param props.className - The name of the class.
+ * @param props.variant - The variant property.
+ * @returns The rendered component.
+ */
 function Badge({ className, variant, ...props }: BadgeProps) {
   return (
     <div className={cn(badgeVariants({ variant }), className)} {...props} />
