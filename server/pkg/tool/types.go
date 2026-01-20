@@ -2524,6 +2524,8 @@ func isShellCommand(cmd string) bool {
 		"tar", "find", "xargs", "tee",
 		"make", "rake", "ant", "mvn", "gradle",
 		"npm", "yarn", "pnpm", "go", "cargo", "pip",
+		// Cloud/DevOps tools that can execute commands or have sensitive flags
+		"kubectl", "helm", "aws", "gcloud", "az", "terraform", "ansible", "ansible-playbook",
 	}
 	base := filepath.Base(cmd)
 	for _, shell := range shells {
@@ -2546,7 +2548,7 @@ func isVersionSuffix(s string) bool {
 		return false
 	}
 	for _, r := range s {
-		if (r < '0' || r > '9') && r != '.' {
+		if (r < '0' || r > '9') && r != '.' && r != '-' {
 			return false
 		}
 	}
@@ -2554,21 +2556,10 @@ func isVersionSuffix(s string) bool {
 }
 
 func checkForShellInjection(val string, template string, placeholder string, command string) error {
-	// If the template quotes the placeholder, we can allow more characters
-	// assuming the user knows what they are doing. We still need to prevent escaping the quotes.
+	// Determine the quoting context of the placeholder in the template
+	quoteLevel := analyzeQuoteContext(template, placeholder)
 
-	isSingleQuoted := false
-	isDoubleQuoted := false
-
-	if template != "" && placeholder != "" {
-		if strings.Contains(template, "'"+placeholder+"'") {
-			isSingleQuoted = true
-		} else if strings.Contains(template, "\""+placeholder+"\"") {
-			isDoubleQuoted = true
-		}
-	}
-
-	if isSingleQuoted {
+	if quoteLevel == 2 { // Single Quoted
 		// In single quotes, the only dangerous character is single quote itself
 		if strings.Contains(val, "'") {
 			return fmt.Errorf("shell injection detected: value contains single quote which breaks out of single-quoted argument")
@@ -2576,7 +2567,7 @@ func checkForShellInjection(val string, template string, placeholder string, com
 		return nil
 	}
 
-	if isDoubleQuoted {
+	if quoteLevel == 1 { // Double Quoted
 		// In double quotes, dangerous characters are double quote, $, and backtick
 		// We also need to block backslash because it can be used to escape the closing quote
 		// % is also dangerous in Windows CMD inside double quotes
@@ -2603,4 +2594,64 @@ func checkForShellInjection(val string, template string, placeholder string, com
 		return fmt.Errorf("shell injection detected: value contains dangerous character %q", val[idx])
 	}
 	return nil
+}
+
+func analyzeQuoteContext(template, placeholder string) int {
+	if template == "" || placeholder == "" {
+		return 0
+	}
+
+	// Levels: 0 = Unquoted (Strict), 1 = Double, 2 = Single
+	minLevel := 2
+
+	inSingle := false
+	inDouble := false
+	escaped := false
+
+	foundAny := false
+
+	for i := 0; i < len(template); i++ {
+		// Check if we match placeholder at current position
+		if strings.HasPrefix(template[i:], placeholder) {
+			foundAny = true
+			currentLevel := 0
+			if inSingle {
+				currentLevel = 2
+			} else if inDouble {
+				currentLevel = 1
+			}
+
+			if currentLevel < minLevel {
+				minLevel = currentLevel
+			}
+
+			// Advance past placeholder
+			i += len(placeholder) - 1
+			continue
+		}
+
+		char := template[i]
+
+		if escaped {
+			escaped = false
+			continue
+		}
+
+		if char == '\\' {
+			escaped = true
+			continue
+		}
+
+		if char == '\'' && !inDouble {
+			inSingle = !inSingle
+		} else if char == '"' && !inSingle {
+			inDouble = !inDouble
+		}
+	}
+
+	if !foundAny {
+		return 0 // Should not happen if called correctly, fallback to strict
+	}
+
+	return minLevel
 }
