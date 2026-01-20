@@ -75,6 +75,9 @@ func TestResourceManager_AddGetListRemoveResource(t *testing.T) {
 	resources = rm.ListResources()
 	assert.Len(t, resources, 2)
 
+	// CountResources
+	assert.Equal(t, 2, rm.CountResources())
+
 	// Remove
 	rm.RemoveResource("resource://one")
 	_, ok = rm.GetResource("resource://one")

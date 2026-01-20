@@ -96,6 +96,21 @@ func TestPromptManager(t *testing.T) {
 		assert.Len(t, prompts, 2)
 	})
 
+	t.Run("count prompts", func(t *testing.T) {
+		// Clear existing prompts
+		promptManager.prompts.Clear()
+
+		mockPrompt1 := new(MockPrompt)
+		mockPrompt1.On("Prompt").Return(&mcp.Prompt{Name: "prompt1"})
+		promptManager.AddPrompt(mockPrompt1)
+
+		mockPrompt2 := new(MockPrompt)
+		mockPrompt2.On("Prompt").Return(&mcp.Prompt{Name: "prompt2"})
+		promptManager.AddPrompt(mockPrompt2)
+
+		assert.Equal(t, 2, promptManager.CountPrompts())
+	})
+
 	t.Run("clear prompts for service", func(t *testing.T) {
 		// Clear existing prompts
 		promptManager.prompts.Clear()
