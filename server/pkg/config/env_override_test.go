@@ -93,3 +93,23 @@ global_settings:
 	require.NotNil(t, cfg.GlobalSettings.LogLevel)
 	assert.Equal(t, configv1.GlobalSettings_LOG_LEVEL_DEBUG, *cfg.GlobalSettings.LogLevel)
 }
+
+func TestEnvVarRepeatedMessage(t *testing.T) {
+	// Create an empty config file
+	fs := afero.NewMemMapFs()
+	err := afero.WriteFile(fs, "/minimal.yaml", []byte("{}"), 0644)
+	require.NoError(t, err)
+
+	// Set environment variable for repeated message field as JSON Array
+	os.Setenv("MCPANY__UPSTREAM_SERVICES", `[{"name": "service1", "http_service": {"address": "http://example.com"}}]`)
+	defer os.Unsetenv("MCPANY__UPSTREAM_SERVICES")
+
+	// Load the config
+	store := config.NewFileStore(fs, []string{"/minimal.yaml"})
+	cfg, err := store.Load(context.Background())
+	require.NoError(t, err)
+
+	require.Len(t, cfg.UpstreamServices, 1)
+	require.NotNil(t, cfg.UpstreamServices[0].Name)
+	assert.Equal(t, "service1", *cfg.UpstreamServices[0].Name)
+}
