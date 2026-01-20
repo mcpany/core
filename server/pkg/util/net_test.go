@@ -120,6 +120,10 @@ func TestCheckConnection(t *testing.T) {
 	}()
 	defer func() { _ = server.Close() }()
 
+	// Allow loopback for this test as it connects to a local server
+	os.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "true")
+	defer os.Unsetenv("MCPANY_ALLOW_LOOPBACK_RESOURCES")
+
 	addr := listener.Addr().String()
 
 	// Allow loopback for these tests as we are testing connectivity to local server

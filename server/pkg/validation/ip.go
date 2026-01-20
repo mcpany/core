@@ -39,6 +39,7 @@ func IsPrivateNetworkIP(ip net.IP) bool {
 	}
 
 	if IsNAT64(ip) || IsIPv4Compatible(ip) {
+		// Last 4 bytes are the IPv4 address
 		ip4 := ip[12:16]
 		return IsPrivateNetworkIPv4(ip4)
 	}
