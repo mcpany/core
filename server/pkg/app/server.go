@@ -59,6 +59,7 @@ import (
 
 	// config_v1 "github.com/mcpany/core/proto/config/v1".
 	config_v1 "github.com/mcpany/core/proto/config/v1"
+	"github.com/mcpany/core/server/pkg/api/rest"
 	"github.com/mcpany/core/server/pkg/topology"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/spf13/afero"
@@ -1618,6 +1619,9 @@ func (a *Application) runServerMode(
 	})))
 	// mux.Handle("/api/v1/skills", authMiddleware(a.handleListSkills())) // Replaced by gRPC Gateway
 	// mux.Handle("/api/v1/skills/create", authMiddleware(a.handleCreateSkill())) // Replaced by gRPC Gateway
+
+	// Register Config Validation Endpoint
+	mux.Handle("/api/v1/config/validate", authMiddleware(http.HandlerFunc(rest.ValidateConfigHandler)))
 
 	// Asset upload is handled later in the gRPC gateway block to support fallback
 
