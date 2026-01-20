@@ -340,9 +340,10 @@ func (a *Application) handleServiceValidate() http.HandlerFunc {
 }
 
 func checkURLReachability(ctx context.Context, urlStr string) error {
-	client := &http.Client{
-		Timeout: 5 * time.Second,
-	}
+	// Use SafeHTTPClient to prevent SSRF (blocks loopback, link-local, private IPs by default)
+	client := util.NewSafeHTTPClient()
+	client.Timeout = 5 * time.Second
+
 	// Try HEAD first
 	req, err := http.NewRequestWithContext(ctx, "HEAD", urlStr, nil)
 	if err != nil {
