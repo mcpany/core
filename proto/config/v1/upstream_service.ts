@@ -500,6 +500,8 @@ export interface CommandLineUpstreamService {
   local: boolean;
   /** Environment variables to set for the command (supports secrets). */
   env: { [key: string]: SecretValue };
+  /** Arguments to the command. */
+  arguments: string[];
 }
 
 export enum CommandLineUpstreamService_CommunicationProtocol {
@@ -3851,6 +3853,7 @@ function createBaseCommandLineUpstreamService(): CommandLineUpstreamService {
     communicationProtocol: 0,
     local: false,
     env: {},
+    arguments: [],
   };
 }
 
@@ -3895,6 +3898,9 @@ export const CommandLineUpstreamService: MessageFns<CommandLineUpstreamService> 
     globalThis.Object.entries(message.env).forEach(([key, value]: [string, SecretValue]) => {
       CommandLineUpstreamService_EnvEntry.encode({ key: key as any, value }, writer.uint32(114).fork()).join();
     });
+    for (const v of message.arguments) {
+      writer.uint32(122).string(v!);
+    }
     return writer;
   },
 
@@ -4015,6 +4021,14 @@ export const CommandLineUpstreamService: MessageFns<CommandLineUpstreamService> 
           }
           continue;
         }
+        case 15: {
+          if (tag !== 122) {
+            break;
+          }
+
+          message.arguments.push(reader.string());
+          continue;
+        }
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -4063,6 +4077,9 @@ export const CommandLineUpstreamService: MessageFns<CommandLineUpstreamService> 
           {},
         )
         : {},
+      arguments: globalThis.Array.isArray(object?.arguments)
+        ? object.arguments.map((e: any) => globalThis.String(e))
+        : [],
     };
   },
 
@@ -4121,6 +4138,9 @@ export const CommandLineUpstreamService: MessageFns<CommandLineUpstreamService> 
         });
       }
     }
+    if (message.arguments?.length) {
+      obj.arguments = message.arguments;
+    }
     return obj;
   },
 
@@ -4166,6 +4186,7 @@ export const CommandLineUpstreamService: MessageFns<CommandLineUpstreamService> 
       },
       {},
     );
+    message.arguments = object.arguments?.map((e) => e) || [];
     return message;
   },
 };

@@ -1662,6 +1662,9 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 	}
 
 	args := []string{}
+	if t.service.GetArguments() != nil {
+		args = append(args, t.service.GetArguments()...)
+	}
 	if t.callDefinition.GetArgs() != nil {
 		args = append(args, t.callDefinition.GetArgs()...)
 	}
@@ -1963,6 +1966,9 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 	}
 
 	args := []string{}
+	if t.service.GetArguments() != nil {
+		args = append(args, t.service.GetArguments()...)
+	}
 	if t.callDefinition.GetArgs() != nil {
 		args = append(args, t.callDefinition.GetArgs()...)
 	}

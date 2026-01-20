@@ -313,6 +313,8 @@ message CommandLineUpstreamService {
   bool local = 13;
   // Environment variables to set for the command (supports secrets).
   map<string, SecretValue> env = 14;
+  // Arguments to the command.
+  repeated string arguments = 15 [json_name = "arguments"];
 }
 
 // GraphQLUpstreamService defines an upstream service that speaks GraphQL.
