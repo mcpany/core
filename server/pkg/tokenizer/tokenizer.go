@@ -449,7 +449,18 @@ func countTokensReflectGeneric[T recursiveTokenizer](t T, v interface{}, visited
 		count := 0
 		fields := getExportedFields(val.Type())
 		for _, i := range fields {
-			c, err := t.countRecursive(val.Field(i).Interface(), visited)
+			field := val.Field(i)
+			// OPTIMIZATION: Fast path for strings to avoid Interface() allocation
+			if field.Kind() == reflect.String {
+				c, err := t.CountTokens(field.String())
+				if err != nil {
+					return 0, err
+				}
+				count += c
+				continue
+			}
+
+			c, err := t.countRecursive(field.Interface(), visited)
 			if err != nil {
 				return 0, err
 			}
@@ -464,6 +475,19 @@ func countTokensReflectGeneric[T recursiveTokenizer](t T, v interface{}, visited
 			}
 			visited[ptr] = true
 			defer delete(visited, ptr)
+		}
+
+		// OPTIMIZATION: Fast path for []string
+		if val.Type().Elem().Kind() == reflect.String {
+			count := 0
+			for i := 0; i < val.Len(); i++ {
+				c, err := t.CountTokens(val.Index(i).String())
+				if err != nil {
+					return 0, err
+				}
+				count += c
+			}
+			return count, nil
 		}
 		fallthrough
 	case reflect.Array:
@@ -537,7 +561,18 @@ func countTokensReflect(t Tokenizer, v interface{}, visited map[uintptr]bool, _ 
 		count := 0
 		fields := getExportedFields(val.Type())
 		for _, i := range fields {
-			c, err := countTokensInValueRecursive(t, val.Field(i).Interface(), visited)
+			field := val.Field(i)
+			// OPTIMIZATION: Fast path for strings to avoid Interface() allocation
+			if field.Kind() == reflect.String {
+				c, err := t.CountTokens(field.String())
+				if err != nil {
+					return 0, err
+				}
+				count += c
+				continue
+			}
+
+			c, err := countTokensInValueRecursive(t, field.Interface(), visited)
 			if err != nil {
 				return 0, err
 			}
@@ -552,6 +587,19 @@ func countTokensReflect(t Tokenizer, v interface{}, visited map[uintptr]bool, _ 
 			}
 			visited[ptr] = true
 			defer delete(visited, ptr)
+		}
+
+		// OPTIMIZATION: Fast path for []string
+		if val.Type().Elem().Kind() == reflect.String {
+			count := 0
+			for i := 0; i < val.Len(); i++ {
+				c, err := t.CountTokens(val.Index(i).String())
+				if err != nil {
+					return 0, err
+				}
+				count += c
+			}
+			return count, nil
 		}
 		fallthrough
 	case reflect.Array:
