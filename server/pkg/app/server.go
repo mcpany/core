@@ -355,14 +355,11 @@ func (a *Application) Run(
 	// Priority: Database < File (if enabled)
 	stores = append(stores, storageStore)
 
-	enableFileConfig := os.Getenv("MCPANY_ENABLE_FILE_CONFIG") == "true"
+	// Friction Fighter: If config paths are provided (via CLI flag), we always load them.
+	// We no longer require MCPANY_ENABLE_FILE_CONFIG=true when explicit paths are given.
 	if len(configPaths) > 0 {
-		if enableFileConfig {
-			log.Info("File configuration enabled, loading config from files (overrides database)", "paths", configPaths)
-			stores = append(stores, config.NewFileStore(fs, configPaths))
-		} else {
-			log.Warn("File configuration found but MCPANY_ENABLE_FILE_CONFIG is not true. Ignoring file config.", "paths", configPaths)
-		}
+		log.Info("File configuration enabled, loading config from files (overrides database)", "paths", configPaths)
+		stores = append(stores, config.NewFileStore(fs, configPaths))
 	}
 	multiStore := config.NewMultiStore(stores...)
 
@@ -838,8 +835,7 @@ func (a *Application) loadConfig(ctx context.Context, fs afero.Fs, configPaths [
 		stores = append(stores, a.Storage)
 	}
 
-	enableFileConfig := os.Getenv("MCPANY_ENABLE_FILE_CONFIG") == "true"
-	if enableFileConfig && len(configPaths) > 0 {
+	if len(configPaths) > 0 {
 		stores = append(stores, config.NewFileStore(fs, configPaths))
 	}
 
