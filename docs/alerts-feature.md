@@ -12,7 +12,7 @@ The **Alerts & Incidents** feature provides a centralized console for monitoring
 1.  **Dashboard Stats:** Real-time KPI cards showing Active Critical alerts, Warning counts, MTTR (Mean Time To Resolution), and Total Incident volume.
 2.  **Alert Feed:** A sortable, filterable list of all alerts with color-coded severity badges (Critical, Warning, Info) and status indicators (Active, Acknowledged, Resolved).
 3.  **Filtering:** Users can filter alerts by Severity, Status, or free-text search (Title, Message, Service).
-4.  **Rule Management:** A "Create Alert Rule" dialog allows users to define new monitoring conditions. Backend persistence is fully implemented.
+4.  **Rule Management:** A "Create Alert Rule" dialog allows users to define new monitoring conditions. Backend storage (In-Memory) is fully implemented.
 
 ## Implementation Details
 
@@ -38,4 +38,4 @@ The **Alerts & Incidents** feature provides a centralized console for monitoring
 
 ## Verification
 
-The feature is integrated with the backend `AlertsManager` for Alert and Rule CRUD operations.
+The feature is integrated with the backend `AlertsManager` for Alert and Rule CRUD operations using in-memory storage.
