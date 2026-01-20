@@ -4,7 +4,6 @@ import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import ToolsPage from './page';
 import { apiClient } from '@/lib/client';
 import { vi } from 'vitest';
-import userEvent from '@testing-library/user-event';
 
 // Mock apiClient
 vi.mock('@/lib/client', () => ({
@@ -25,6 +24,7 @@ vi.mock('@/hooks/use-pinned-tools', () => ({
 }));
 
 // Mock Select component to avoid Radix UI interaction issues in JSDOM
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 vi.mock('@/components/ui/select', () => ({
     Select: ({ value, onValueChange, _children }: any) => (
         <div data-testid="select-mock">
