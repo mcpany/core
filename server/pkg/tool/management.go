@@ -420,9 +420,17 @@ func (tm *Manager) ExecuteTool(ctx context.Context, req *ExecutionRequest) (any,
 		// Friction Fighter: Fuzzy Matching for better error messages
 		var bestMatch string
 		minDist := 1000
+		var suffixMatches []string
 
 		// Iterate over exposed tool names (keys in nameMap)
 		tm.nameMap.Range(func(name string, _ string) bool {
+			// Check for missing namespace (suffix match)
+			// e.g. req="get_weather", existing="weather.get_weather"
+			if strings.HasSuffix(name, "."+req.ToolName) {
+				suffixMatches = append(suffixMatches, name)
+			}
+
+			// Levenshtein check
 			dist := util.LevenshteinDistance(req.ToolName, name)
 			if dist < minDist {
 				minDist = dist
@@ -430,6 +438,13 @@ func (tm *Manager) ExecuteTool(ctx context.Context, req *ExecutionRequest) (any,
 			}
 			return true
 		})
+
+		if len(suffixMatches) > 0 {
+			if len(suffixMatches) == 1 {
+				return nil, fmt.Errorf("%w: %q (did you mean %q?)", ErrToolNotFound, req.ToolName, suffixMatches[0])
+			}
+			return nil, fmt.Errorf("%w: %q (did you mean one of: %s?)", ErrToolNotFound, req.ToolName, strings.Join(suffixMatches, ", "))
+		}
 
 		if minDist <= 3 && bestMatch != "" {
 			return nil, fmt.Errorf("%w: %q (did you mean %q?)", ErrToolNotFound, req.ToolName, bestMatch)
