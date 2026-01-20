@@ -270,9 +270,36 @@ var envVarRegex = regexp.MustCompile(`\${([^{}]+)}`)
 var unknownFieldRegex = regexp.MustCompile(`unknown field "([^"]+)"`)
 
 // expand replaces ${VAR} or ${VAR:default} with environment variables.
-// If a variable is missing and no default is provided, it returns an error.
+// If a variable is missing and no default is provided, it returns an error with line number information.
 func expand(b []byte) ([]byte, error) {
-	var missingVars []string
+	var missingErrBuilder strings.Builder
+	missingCount := 0
+
+	// Find all matches first to check for missing variables
+	matches := envVarRegex.FindAllIndex(b, -1)
+
+	for _, loc := range matches {
+		match := b[loc[0]:loc[1]]
+		s := string(match[2 : len(match)-1])
+		parts := strings.SplitN(s, ":", 2)
+		varName := parts[0]
+
+		_, ok := os.LookupEnv(varName)
+		if !ok && len(parts) == 1 {
+			// Missing and no default value
+			missingCount++
+			lineNum := bytes.Count(b[:loc[0]], []byte("\n")) + 1
+			missingErrBuilder.WriteString(fmt.Sprintf("\n  - Line %d: variable ${%s} is missing", lineNum, varName))
+		}
+	}
+
+	if missingCount > 0 {
+		// revive:disable-next-line:error-strings // This error message is user facing and needs to be descriptive
+		//nolint:staticcheck // This error message is user facing and needs to be descriptive
+		return nil, fmt.Errorf("missing environment variables:%s\n    -> Fix: Set these environment variables in your shell or .env file, or provide a default value (e.g., ${VAR:default}).", missingErrBuilder.String())
+	}
+
+	// If no missing vars, perform replacement
 	expanded := envVarRegex.ReplaceAllFunc(b, func(match []byte) []byte {
 		s := string(match[2 : len(match)-1])
 		parts := strings.SplitN(s, ":", 2)
@@ -287,13 +314,9 @@ func expand(b []byte) ([]byte, error) {
 		if len(parts) > 1 {
 			return []byte(parts[1])
 		}
-		missingVars = append(missingVars, varName)
+		// Unreachable: Missing variables without defaults are caught in the first pass.
 		return match
 	})
-
-	if len(missingVars) > 0 {
-		return nil, fmt.Errorf("missing environment variables: %v", missingVars)
-	}
 
 	return expanded, nil
 }
