@@ -33,6 +33,10 @@ type ManagerInterface interface {
 	//
 	// Returns the result.
 	ListPrompts() []Prompt
+	// CountPrompts returns the number of prompts currently in the manager.
+	//
+	// Returns the count.
+	CountPrompts() int
 	// ClearPromptsForService removes all prompts associated with a service.
 	//
 	// serviceID is the serviceID.
@@ -103,6 +107,21 @@ func (pm *Manager) UpdatePrompt(prompt Prompt) {
 func (pm *Manager) GetPrompt(name string) (Prompt, bool) {
 	prompt, ok := pm.prompts.Load(name)
 	return prompt, ok
+}
+
+// CountPrompts returns the number of prompts currently in the manager.
+func (pm *Manager) CountPrompts() int {
+	pm.mu.RLock()
+	defer pm.mu.RUnlock()
+	if pm.cachedPrompts != nil {
+		return len(pm.cachedPrompts)
+	}
+	count := 0
+	pm.prompts.Range(func(_ string, _ Prompt) bool {
+		count++
+		return true
+	})
+	return count
 }
 
 // ListPrompts returns a slice containing all the prompts currently registered.

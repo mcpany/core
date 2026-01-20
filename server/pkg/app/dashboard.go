@@ -52,12 +52,12 @@ func (a *Application) handleDashboardMetrics() http.HandlerFunc {
 
 		resourceCount := 0
 		if a.ResourceManager != nil {
-			resourceCount = len(a.ResourceManager.ListResources())
+			resourceCount = a.ResourceManager.CountResources()
 		}
 
 		promptCount := 0
 		if a.PromptManager != nil {
-			promptCount = len(a.PromptManager.ListPrompts())
+			promptCount = a.PromptManager.CountPrompts()
 		}
 
 		metrics := []Metric{

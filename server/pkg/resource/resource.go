@@ -60,6 +60,10 @@ type ManagerInterface interface {
 	//
 	// Returns the result.
 	ListResources() []Resource
+	// CountResources returns the number of resources currently in the manager.
+	//
+	// Returns the count.
+	CountResources() int
 	// OnListChanged registers a callback function to be called when the list of
 	// resources changes.
 	OnListChanged(func())
@@ -136,6 +140,18 @@ func (rm *Manager) RemoveResource(uri string) {
 	if callback != nil {
 		callback()
 	}
+}
+
+// CountResources returns the number of resources currently in the manager.
+func (rm *Manager) CountResources() int {
+	rm.mu.RLock()
+	defer rm.mu.RUnlock()
+	// Use cache length if available to avoid any map access overhead,
+	// though map len() is also O(1).
+	if rm.cachedResources != nil {
+		return len(rm.cachedResources)
+	}
+	return len(rm.resources)
 }
 
 // ListResources returns a slice containing all the resources currently

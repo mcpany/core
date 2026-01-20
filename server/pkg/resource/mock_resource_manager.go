@@ -137,6 +137,24 @@ func (mr *MockManagerInterfaceMockRecorder) ListResources() *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListResources", reflect.TypeOf((*MockManagerInterface)(nil).ListResources))
 }
 
+// CountResources mocks base method.
+//
+// Returns the count.
+func (m *MockManagerInterface) CountResources() int {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CountResources")
+	ret0, _ := ret[0].(int)
+	return ret0
+}
+
+// CountResources indicates an expected call of CountResources.
+//
+// Returns the count.
+func (mr *MockManagerInterfaceMockRecorder) CountResources() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CountResources", reflect.TypeOf((*MockManagerInterface)(nil).CountResources))
+}
+
 // OnListChanged mocks base method.
 //
 // arg0 is the arg0.

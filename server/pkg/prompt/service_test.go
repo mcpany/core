@@ -83,6 +83,11 @@ func (m *MockPromptManager) ClearPromptsForService(serviceID string) {
 	m.Called(serviceID)
 }
 
+func (m *MockPromptManager) CountPrompts() int {
+	args := m.Called()
+	return args.Int(0)
+}
+
 func (m *MockPromptManager) GetServiceInfo(serviceID string) (*tool.ServiceInfo, bool) {
 	args := m.Called(serviceID)
 	if args.Get(0) == nil {

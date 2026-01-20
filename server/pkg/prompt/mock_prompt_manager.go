@@ -137,6 +137,24 @@ func (mr *MockManagerInterfaceMockRecorder) ListPrompts() *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListPrompts", reflect.TypeOf((*MockManagerInterface)(nil).ListPrompts))
 }
 
+// CountPrompts mocks base method.
+//
+// Returns the count.
+func (m *MockManagerInterface) CountPrompts() int {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CountPrompts")
+	ret0, _ := ret[0].(int)
+	return ret0
+}
+
+// CountPrompts indicates an expected call of CountPrompts.
+//
+// Returns the count.
+func (mr *MockManagerInterfaceMockRecorder) CountPrompts() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CountPrompts", reflect.TypeOf((*MockManagerInterface)(nil).CountPrompts))
+}
+
 // SetMCPServer mocks base method.
 //
 // mcpServer is the mcpServer.
