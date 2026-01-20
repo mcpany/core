@@ -243,6 +243,55 @@ func TestEvaluateCallPolicy(t *testing.T) {
 			toolName: "any",
 			want:     false,
 		},
+		{
+			name: "Invalid Name Regex Ignored",
+			policies: []*configv1.CallPolicy{
+				{
+					Rules: []*configv1.CallPolicyRule{
+						{
+							NameRegex: strPtr("["),
+							Action:    callActionPtr(configv1.CallPolicy_DENY),
+						},
+					},
+					DefaultAction: callActionPtr(configv1.CallPolicy_ALLOW),
+				},
+			},
+			toolName: "any",
+			want:     true,
+		},
+		{
+			name: "Invalid CallID Regex Ignored",
+			policies: []*configv1.CallPolicy{
+				{
+					Rules: []*configv1.CallPolicyRule{
+						{
+							CallIdRegex: strPtr("["),
+							Action:      callActionPtr(configv1.CallPolicy_DENY),
+						},
+					},
+					DefaultAction: callActionPtr(configv1.CallPolicy_ALLOW),
+				},
+			},
+			toolName: "any",
+			want:     true,
+		},
+		{
+			name: "Invalid Argument Regex Ignored",
+			policies: []*configv1.CallPolicy{
+				{
+					Rules: []*configv1.CallPolicyRule{
+						{
+							ArgumentRegex: strPtr("["),
+							Action:        callActionPtr(configv1.CallPolicy_DENY),
+						},
+					},
+					DefaultAction: callActionPtr(configv1.CallPolicy_ALLOW),
+				},
+			},
+			toolName:  "any",
+			arguments: []byte("{}"),
+			want:      true,
+		},
 	}
 
 	for _, tt := range tests {
@@ -334,13 +383,39 @@ func TestEvaluateCompiledCallPolicy(t *testing.T) {
 
 func TestCompileCallPolicies_InvalidRegex(t *testing.T) {
 	t.Parallel()
-	policies := []*configv1.CallPolicy{
-		{
-			Rules: []*configv1.CallPolicyRule{
-				{NameRegex: strPtr("[")},
+	t.Run("Invalid Name Regex", func(t *testing.T) {
+		policies := []*configv1.CallPolicy{
+			{
+				Rules: []*configv1.CallPolicyRule{
+					{NameRegex: strPtr("[")},
+				},
 			},
-		},
-	}
-	_, err := CompileCallPolicies(policies)
-	assert.Error(t, err)
+		}
+		_, err := CompileCallPolicies(policies)
+		assert.Error(t, err)
+	})
+
+	t.Run("Invalid CallID Regex", func(t *testing.T) {
+		policies := []*configv1.CallPolicy{
+			{
+				Rules: []*configv1.CallPolicyRule{
+					{CallIdRegex: strPtr("[")},
+				},
+			},
+		}
+		_, err := CompileCallPolicies(policies)
+		assert.Error(t, err)
+	})
+
+	t.Run("Invalid Argument Regex", func(t *testing.T) {
+		policies := []*configv1.CallPolicy{
+			{
+				Rules: []*configv1.CallPolicyRule{
+					{ArgumentRegex: strPtr("[")},
+				},
+			},
+		}
+		_, err := CompileCallPolicies(policies)
+		assert.Error(t, err)
+	})
 }

@@ -702,3 +702,37 @@ func TestToolManager_ProfileFiltering_Properties(t *testing.T) {
 	assert.Len(t, tools, 1)
 	assert.Equal(t, "ro", tools[0].Tool().GetName())
 }
+
+func TestGetTool_InconsistentState(t *testing.T) {
+	t.Parallel()
+	tm := NewManager(nil)
+	// Manually corrupt state: Add to nameMap but not to tools
+	tm.nameMap.Store("exposed-name", "internal-id")
+
+	// Attempt to get it
+	_, ok := tm.GetTool("exposed-name")
+	assert.False(t, ok, "Should not return tool if ID is missing in tools map")
+}
+
+func TestGetTool_ByNameMap(t *testing.T) {
+	t.Parallel()
+	tm := NewManager(nil)
+	// Tool with special characters that requires sanitization
+	mockTool := &MockTool{
+		ToolFunc: func() *v1.Tool {
+			return &v1.Tool{
+				ServiceId: proto.String("s1"),
+				Name:      proto.String("my tool"), // Space will be sanitized to "_"
+			}
+		},
+	}
+
+	err := tm.AddTool(mockTool)
+	assert.NoError(t, err)
+
+	// Name map lookup (s1.my tool) - targeted for coverage
+	// This will look up via nameMap because the internal ID is sanitized/hashed
+	nameLookup, ok := tm.GetTool("s1.my tool")
+	assert.True(t, ok)
+	assert.NotNil(t, nameLookup)
+}

@@ -848,6 +848,9 @@ func (t *HTTPTool) processParameters(ctx context.Context, inputs map[string]any)
 
 			if param.GetDisableEscape() {
 				if t.paramInPath[i] {
+					if strings.ContainsAny(valStr, "?#") {
+						return nil, nil, false, fmt.Errorf("parameter %q: contains forbidden characters '?' or '#' when disable_escape is true", name)
+					}
 					pathReplacements[name] = valStr
 				}
 				if t.paramInQuery[i] {
