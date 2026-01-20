@@ -539,6 +539,38 @@ func TestStdioUpstream_Register_DynamicResourceErrors(t *testing.T) {
 		// Resource should NOT be added
 		assert.Len(t, rm.ListResources(), 0)
 	})
+
+	t.Run("dynamic resource call is nil", func(t *testing.T) {
+		tm := newMockToolManager()
+		rm := resource.NewManager()
+		prm := prompt.NewManager()
+
+		serviceConfig := &configv1.UpstreamServiceConfig{}
+		serviceConfig.SetName("test-dynamic-resource-call-nil")
+		cmdService := &configv1.CommandLineUpstreamService{}
+
+		resourceDef := &configv1.ResourceDefinition{}
+		resourceDef.SetName("files")
+		dynamicResource := &configv1.DynamicResource{}
+		// Not setting CommandLineCall, so it is nil
+		resourceDef.SetDynamic(dynamicResource)
+
+		cmdService.SetResources([]*configv1.ResourceDefinition{resourceDef})
+		serviceConfig.SetCommandLineService(cmdService)
+
+		_, _, _, err := u.Register(
+			context.Background(),
+			serviceConfig,
+			tm,
+			prm,
+			rm,
+			false,
+		)
+		require.NoError(t, err)
+
+		// Resource should NOT be added
+		assert.Len(t, rm.ListResources(), 0)
+	})
 }
 
 func TestStdioUpstream_Register_Coverage(t *testing.T) {
@@ -617,4 +649,67 @@ func TestStdioUpstream_Register_Coverage(t *testing.T) {
 	sanitizedName, _ := util.SanitizeServiceName("test-coverage-service")
 	_, ok := prm.GetPrompt(sanitizedName + ".disabled-prompt")
 	assert.False(t, ok)
+}
+
+func TestStdioUpstream_Register_AnnotationsAndHints(t *testing.T) {
+	tm := newMockToolManager()
+	prm := prompt.NewManager()
+	rm := resource.NewManager()
+	u := NewUpstream()
+
+	serviceConfig := &configv1.UpstreamServiceConfig{}
+	serviceConfig.SetName("test-annotations-service")
+	cmdService := &configv1.CommandLineUpstreamService{}
+	cmdService.SetCommand("/bin/true")
+
+	toolDef := configv1.ToolDefinition_builder{
+		Name:            proto.String("true-tool"),
+		Title:           proto.String("True Tool"),
+		Description:     proto.String("Returns true"),
+		CallId:          proto.String("true-call"),
+		ReadOnlyHint:    proto.Bool(true),
+		DestructiveHint: proto.Bool(false),
+		IdempotentHint:  proto.Bool(true),
+		OpenWorldHint:   proto.Bool(false),
+	}.Build()
+
+	callDef := configv1.CommandLineCallDefinition_builder{
+		Id: proto.String("true-call"),
+	}.Build()
+
+	calls := make(map[string]*configv1.CommandLineCallDefinition)
+	calls["true-call"] = callDef
+	cmdService.SetCalls(calls)
+	cmdService.SetTools([]*configv1.ToolDefinition{toolDef})
+	serviceConfig.SetCommandLineService(cmdService)
+
+	_, _, _, err := u.Register(
+		context.Background(),
+		serviceConfig,
+		tm,
+		prm,
+		rm,
+		false,
+	)
+	require.NoError(t, err)
+
+	// Verify the tool properties
+	tools := tm.ListTools()
+	require.Len(t, tools, 1)
+	cmdTool := tools[0]
+	toolProto := cmdTool.Tool()
+
+	// Check Title in Annotations
+	annotations := toolProto.GetAnnotations()
+	require.NotNil(t, annotations)
+	assert.Equal(t, "True Tool", annotations.GetTitle())
+
+	// Check Hints in Annotations
+	assert.True(t, annotations.GetReadOnlyHint())
+	assert.False(t, annotations.GetDestructiveHint())
+	assert.True(t, annotations.GetIdempotentHint())
+	assert.False(t, annotations.GetOpenWorldHint())
+
+	// Check DisplayName
+	assert.Equal(t, "True Tool", toolProto.GetDisplayName())
 }
