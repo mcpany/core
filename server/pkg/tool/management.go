@@ -6,6 +6,7 @@ package tool
 import (
 	"context"
 	"fmt"
+	"sort"
 	"strings"
 	"sync"
 	"time"
@@ -418,21 +419,56 @@ func (tm *Manager) ExecuteTool(ctx context.Context, req *ExecutionRequest) (any,
 		log.Error("Tool not found")
 
 		// Friction Fighter: Fuzzy Matching for better error messages
-		var bestMatch string
-		minDist := 1000
+		type suggestion struct {
+			Name string
+			Dist int
+		}
+		var suggestions []suggestion
 
 		// Iterate over exposed tool names (keys in nameMap)
 		tm.nameMap.Range(func(name string, _ string) bool {
+			// Check for Namespace Omission (e.g. user typed "get_weather", tool is "weather.get_weather")
+			if strings.HasSuffix(name, "."+req.ToolName) {
+				suggestions = append(suggestions, suggestion{Name: name, Dist: 0})
+				return true
+			}
+
+			// Check for Fuzzy Match
 			dist := util.LevenshteinDistance(req.ToolName, name)
-			if dist < minDist {
-				minDist = dist
-				bestMatch = name
+
+			// Dynamic threshold: Allow more typos for longer words
+			threshold := 3
+			if len(req.ToolName) > 10 {
+				threshold = 5
+			}
+
+			if dist <= threshold {
+				suggestions = append(suggestions, suggestion{Name: name, Dist: dist})
 			}
 			return true
 		})
 
-		if minDist <= 3 && bestMatch != "" {
-			return nil, fmt.Errorf("%w: %q (did you mean %q?)", ErrToolNotFound, req.ToolName, bestMatch)
+		if len(suggestions) > 0 {
+			// Sort suggestions by distance
+			sort.Slice(suggestions, func(i, j int) bool {
+				return suggestions[i].Dist < suggestions[j].Dist
+			})
+
+			// Take top 3
+			count := len(suggestions)
+			if count > 3 {
+				count = 3
+			}
+
+			if count == 1 {
+				return nil, fmt.Errorf("%w: %q (did you mean %q?)", ErrToolNotFound, req.ToolName, suggestions[0].Name)
+			}
+
+			quotedNames := make([]string, count)
+			for i := 0; i < count; i++ {
+				quotedNames[i] = fmt.Sprintf("%q", suggestions[i].Name)
+			}
+			return nil, fmt.Errorf("%w: %q (did you mean one of these: %s?)", ErrToolNotFound, req.ToolName, strings.Join(quotedNames, ", "))
 		}
 
 		return nil, ErrToolNotFound
