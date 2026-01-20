@@ -8,6 +8,9 @@
 import { createContext, useContext, useEffect, useState, ReactNode, useRef } from 'react';
 import { Graph, NodeType, NodeStatus } from '@/types/topology';
 
+/**
+ * MetricPoint interface.
+ */
 export interface MetricPoint {
     timestamp: number;
     latencyMs: number;
@@ -40,6 +43,7 @@ const POLLING_INTERVAL = 5000;
 
 /**
  * ServiceHealthProvider component.
+ * @param children - The child elements.
  * @param props - The component props.
  * @param props.children - The child components.
  * @returns The rendered component.
@@ -139,6 +143,10 @@ export function ServiceHealthProvider({ children }: { children: ReactNode }) {
     );
 }
 
+/**
+ * Hook to service health.
+ * @returns The result of useServiceHealth.
+ */
 export function useServiceHealth() {
     const context = useContext(ServiceHealthContext);
     if (!context) {

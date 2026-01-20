@@ -22,8 +22,10 @@ interface ToolSidebarProps {
 
 /**
  * ToolSidebar.
- *
+ * @param tools - The tools parameter.
+ * @param onSelectTool - The onSelectTool callback.
  * @param className - The className.
+ * @returns The rendered component.
  */
 export function ToolSidebar({ tools, onSelectTool, className }: ToolSidebarProps) {
     const [searchQuery, setSearchQuery] = useState("");

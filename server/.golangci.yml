@@ -55,6 +55,9 @@ issues:
       linters:
         - "revive"
       text: "var-naming: avoid meaningless package names"
+    - path: "pkg/util/secrets_sanitizer.go"
+      linters:
+        - "revive"
   skip-files:
     - '.*\.pb\.go$'
     - lll

@@ -36,8 +36,9 @@ interface ConnectionDiagnosticDialogProps {
 
 /**
  * ConnectionDiagnosticDialog.
- *
+ * @param service - The service parameter.
  * @param trigger - The trigger.
+ * @returns The rendered component.
  */
 export function ConnectionDiagnosticDialog({ service, trigger }: ConnectionDiagnosticDialogProps) {
   const [open, setOpen] = useState(false);

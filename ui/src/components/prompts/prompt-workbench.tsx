@@ -40,8 +40,8 @@ interface PromptWorkbenchProps {
 
 /**
  * PromptWorkbench.
- *
- * @param { initialPrompts = [] - The { initialPrompts = [].
+ * @param { initialPrompts - The { initialPrompts parameter.
+ * @returns The rendered component.
  */
 export function PromptWorkbench({ initialPrompts = [] }: PromptWorkbenchProps) {
   const [prompts, setPrompts] = useState<PromptDefinition[]>(initialPrompts);

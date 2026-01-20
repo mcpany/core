@@ -11,6 +11,9 @@ import { ChevronRight, ChevronDown, Info } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
+/**
+ * Schema interface.
+ */
 export interface Schema {
   type?: string | string[];
   description?: string;
@@ -69,6 +72,10 @@ const TypeBadge = ({ type, format }: { type?: string | string[], format?: string
 
 /**
  * SchemaViewer component.
+ * @param { schema, name, required - The { schema, name, required value.
+ * @param name - The name value.
+ * @param required - The required parameter.
+ * @param depth - The depth parameter.
  * @param props - The component props.
  * @param props.schema - The schema definition.
  * @param props.name - The name.

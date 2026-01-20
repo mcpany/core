@@ -130,8 +130,8 @@ interface ServicePaletteProps {
 
 /**
  * ServicePalette.
- *
- * @param { onTemplateSelect - The { onTemplateSelect.
+ * @param onTemplateSelect - The onTemplateSelect callback.
+ * @returns The rendered component.
  */
 export function ServicePalette({ onTemplateSelect }: ServicePaletteProps) {
     const [search, setSearch] = React.useState("");

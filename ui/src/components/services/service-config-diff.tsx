@@ -18,6 +18,8 @@ interface ServiceConfigDiffProps {
 
 /**
  * ServiceConfigDiff component.
+ * @param original - The original parameter.
+ * @param modified - } - The modified } parameter.
  * @param props - The component props.
  * @param props.original - The original property.
  * @param props.modified - The modified property.

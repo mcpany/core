@@ -40,8 +40,9 @@ interface ChatMessageProps {
 
 /**
  * ChatMessage.
- *
- * @param { message - The { message.
+ * @param message - The message parameter.
+ * @param onReplay - } - The onReplay } callback.
+ * @returns The rendered component.
  */
 export function ChatMessage({ message, onReplay }: ChatMessageProps) {
     const [copied, setCopied] = useState(false);

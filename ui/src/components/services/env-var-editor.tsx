@@ -26,8 +26,9 @@ interface EnvVarEditorProps {
 
 /**
  * EnvVarEditor.
- *
+ * @param initialEnv - The initialEnv parameter.
  * @param onChange - The onChange.
+ * @returns The rendered component.
  */
 export function EnvVarEditor({ initialEnv, onChange }: EnvVarEditorProps) {
   const [envVars, setEnvVars] = useState<EnvVar[]>(() => {

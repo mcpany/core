@@ -101,8 +101,10 @@ function WizardContent({ onComplete, onCancel }: { onComplete: (config: any) => 
 
 /**
  * CreateConfigWizard.
- *
+ * @param open - The open parameter.
+ * @param onOpenChange - The onOpenChange callback.
  * @param onComplete - The onComplete.
+ * @returns The rendered component.
  */
 export function CreateConfigWizard({ open, onOpenChange, onComplete }: CreateConfigWizardProps) {
     return (

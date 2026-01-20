@@ -153,8 +153,8 @@ function WaterfallItem({
 
 /**
  * TraceDetail.
- *
- * @param { trace - The { trace.
+ * @param trace - The trace parameter.
+ * @returns The rendered component.
  */
 export function TraceDetail({ trace }: { trace: Trace | null }) {
     const router = useRouter();

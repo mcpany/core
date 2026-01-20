@@ -54,8 +54,8 @@ interface DebugEntry {
 
 /**
  * GET.
- *
  * @param request - The request.
+ * @returns The rendered component.
  */
 export async function GET(request: Request) {
   const backendUrl = process.env.BACKEND_URL || 'http://localhost:50059';

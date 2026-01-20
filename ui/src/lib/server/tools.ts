@@ -99,9 +99,9 @@ export const BuiltInTools: Record<string, Tool> = {
 
 /**
  * executeTool.
- *
  * @param toolName - The toolName.
  * @param args - The args.
+ * @returns The result of executeTool.
  */
 export async function executeTool(toolName: string, args: any) {
   const tool = BuiltInTools[toolName];

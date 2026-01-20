@@ -25,8 +25,8 @@ interface StackEditorProps {
 
 /**
  * StackEditor.
- *
- * @param { stackId - The { stackId.
+ * @param stackId - The stackId identifier.
+ * @returns The rendered component.
  */
 export function StackEditor({ stackId }: StackEditorProps) {
     const [content, setContent] = useState("");

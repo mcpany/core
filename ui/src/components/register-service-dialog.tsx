@@ -43,8 +43,10 @@ interface RegisterServiceDialogProps {
 
 /**
  * RegisterServiceDialog.
- *
+ * @param onSuccess - The onSuccess callback.
+ * @param trigger - The trigger parameter.
  * @param serviceToEdit - The serviceToEdit.
+ * @returns The rendered component.
  */
 export function RegisterServiceDialog({ onSuccess, trigger, serviceToEdit }: RegisterServiceDialogProps) {
   const [open, setOpen] = useState(false);

@@ -16,6 +16,8 @@ interface OAuthConfigProps {
 
 /**
  * OAuthConfig component.
+ * @param auth - The auth parameter.
+ * @param onChange - } - The onChange } callback.
  * @param props - The component props.
  * @param props.auth - The authentication configuration.
  * @param props.onChange - Callback function when value changes.

@@ -73,8 +73,14 @@ TraceListItem.displayName = "TraceListItem";
 
 /**
  * TraceList.
- *
+ * @param traces - The traces parameter.
+ * @param selectedId - The selectedId identifier.
+ * @param onSelect - The onSelect callback.
+ * @param searchQuery - The searchQuery parameter.
+ * @param onSearchChange - The onSearchChange callback.
+ * @param isLive - The isLive parameter.
  * @param onToggleLive - The onToggleLive.
+ * @returns The rendered component.
  */
 export function TraceList({ traces, selectedId, onSelect, searchQuery, onSearchChange, isLive, onToggleLive }: TraceListProps) {
 

@@ -61,8 +61,9 @@ interface CredentialFormProps {
 
 /**
  * CredentialForm.
- *
+ * @param initialData - The initialData parameter.
  * @param onSuccess - The onSuccess.
+ * @returns The rendered component.
  */
 export function CredentialForm({ initialData, onSuccess }: CredentialFormProps) {
   const { toast } = useToast()

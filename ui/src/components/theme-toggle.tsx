@@ -19,6 +19,7 @@ import {
 
 /**
  * A dropdown menu button to toggle between light, dark, and system themes.
+ * @returns The rendered component.
  */
 export function ThemeToggle() {
   const { setTheme } = useTheme()

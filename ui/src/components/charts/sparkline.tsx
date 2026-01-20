@@ -19,6 +19,12 @@ interface SparklineProps {
 
 /**
  * Sparkline component.
+ * @param { data, width - The { data, width identifier.
+ * @param width - The width identifier.
+ * @param height - The height parameter.
+ * @param className - The CSS class name.
+ * @param color - The color parameter.
+ * @param max - } - The max } parameter.
  * @param props - The component props.
  * @param props.data - The data to display.
  * @param props.width - The unique identifier for wth.

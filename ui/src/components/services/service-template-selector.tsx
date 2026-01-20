@@ -14,8 +14,8 @@ interface ServiceTemplateSelectorProps {
 
 /**
  * ServiceTemplateSelector.
- *
- * @param { onSelect - The { onSelect.
+ * @param onSelect - The onSelect callback.
+ * @returns The rendered component.
  */
 export function ServiceTemplateSelector({ onSelect }: ServiceTemplateSelectorProps) {
   return (

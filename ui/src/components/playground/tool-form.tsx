@@ -22,8 +22,10 @@ interface ToolFormProps {
 
 /**
  * ToolForm.
- *
+ * @param tool - The tool parameter.
+ * @param onSubmit - The onSubmit callback.
  * @param onCancel - The onCancel.
+ * @returns The rendered component.
  */
 export function ToolForm({ tool, onSubmit, onCancel }: ToolFormProps) {
   const [formData, setFormData] = useState<Record<string, unknown>>({});

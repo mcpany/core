@@ -14,6 +14,10 @@ interface BackendService {
   // Other fields we might use later
 }
 
+/**
+ * GET component.
+ * @returns The rendered component.
+ */
 export async function GET() {
   const backendUrl = process.env.BACKEND_URL || 'http://localhost:8080';
 

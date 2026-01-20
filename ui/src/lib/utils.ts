@@ -8,7 +8,7 @@ import { twMerge } from "tailwind-merge"
 
 /**
  * Combines multiple class names into a single string, handling conflicts and conditionals.
- *
+ * @param ...inputs - The ...inputs parameter.
  * @param inputs - A list of class values (strings, arrays, objects) to combine.
  * @returns A merged class name string.
  */

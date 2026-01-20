@@ -291,7 +291,7 @@ We strive for high code quality. Please ensure the following before submitting a
     ```bash
     go run server/tools/check_doc.go server/
     ```
-  - You can auto-generate/fix TypeScript documentation with:
+  - You can auto-generate/fix TypeScript documentation (including components, functions, hooks, interfaces, and types) with:
     ```bash
     python3 server/tools/fix_ts_docs.py
     ```

@@ -95,6 +95,11 @@ const MetricItem = memo(function MetricItem({ metric }: { metric: Metric }) {
 // Memoized to prevent unnecessary re-renders when parent components update.
 // This component manages its own state and data fetching, so it only needs to re-render
 // when its own state changes, not when the parent re-renders.
+/**
+ * MetricsOverview component.
+ * @param props - The component props.
+ * @returns The rendered component.
+ */
 export const MetricsOverview = memo(function MetricsOverview() {
   const [metrics, setMetrics] = useState<Metric[]>([]);
 

@@ -139,6 +139,11 @@ SchemaNode.displayName = "SchemaNode";
  * @param { schema - The { schema.
  */
 // Optimization: Memoize SchemaVisualizer to prevent re-renders when parent component updates unrelated state.
+/**
+ * SchemaVisualizer component.
+ * @param props - The component props.
+ * @returns The rendered component.
+ */
 export const SchemaVisualizer = memo(function SchemaVisualizer({ schema }: { schema: any }) {
   if (!schema || Object.keys(schema).length === 0) {
     return (

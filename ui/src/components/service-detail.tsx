@@ -140,8 +140,8 @@ function MetricsCard({ serviceId }: { serviceId: string }) {
 
 /**
  * ServiceDetail.
- *
- * @param { serviceId - The { serviceId.
+ * @param serviceId - The serviceId identifier.
+ * @returns The rendered component.
  */
 export function ServiceDetail({ serviceId }: { serviceId: string }) {
   const [service, setService] = useState<UpstreamServiceConfig | null>(null);

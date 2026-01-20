@@ -15,6 +15,10 @@ interface ToolUsageStats {
   count: number;
 }
 
+/**
+ * TopToolsWidget component.
+ * @returns The rendered component.
+ */
 export function TopToolsWidget() {
   const [data, setData] = useState<ToolUsageStats[]>([]);
   const [loading, setLoading] = useState(true);

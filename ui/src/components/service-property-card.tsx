@@ -20,8 +20,9 @@ interface ServicePropertyCardProps {
 
 /**
  * A card component that displays a list of properties.
- *
+ * @param title - The title parameter.
  * @param data - The data.
+ * @returns The rendered component.
  */
 export function ServicePropertyCard({ title, data }: ServicePropertyCardProps) {
     return (

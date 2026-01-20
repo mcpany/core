@@ -24,9 +24,11 @@ interface NavItemProps {
 
 /**
  * A navigation item for the sidebar or menu.
- *
+ * @param href - The href parameter.
  * @param icon - The icon.
+ * @param title - The title parameter.
  * @param isActive - The isActive.
+ * @returns The rendered component.
  */
 export function NavItem({ href, icon: Icon, title, isActive }: NavItemProps) {
   return (

@@ -27,8 +27,10 @@ interface ToolInspectorProps {
 
 /**
  * ToolInspector.
- *
+ * @param tool - The tool parameter.
+ * @param open - The open parameter.
  * @param onOpenChange - The onOpenChange.
+ * @returns The rendered component.
  */
 export function ToolInspector({ tool, open, onOpenChange }: ToolInspectorProps) {
   const [input, setInput] = useState("{}");

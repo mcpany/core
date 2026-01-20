@@ -19,8 +19,11 @@ interface ConfigEditorProps {
 
 /**
  * ConfigEditor.
- *
- * @param readOnly = false - The readOnly = false.
+ * @param { value, onChange, language - The { value, onChange, language parameter.
+ * @param onChange - The onChange callback.
+ * @param language - The language parameter.
+ * @param readOnly - = false - The readOnly = false.
+ * @returns The rendered component.
  */
 export function ConfigEditor({ value, onChange, language = "yaml", readOnly = false }: ConfigEditorProps) {
   const { theme, systemTheme } = useTheme();

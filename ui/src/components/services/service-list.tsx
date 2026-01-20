@@ -43,8 +43,17 @@ interface ServiceListProps {
 
 /**
  * ServiceList.
- *
+ * @param services - The services parameter.
+ * @param isLoading - The isLoading parameter.
+ * @param onToggle - The onToggle callback.
+ * @param onEdit - The onEdit callback.
+ * @param onDelete - The onDelete callback.
+ * @param onDuplicate - The onDuplicate callback.
  * @param onExport - The onExport.
+ * @param onBulkToggle - The onBulkToggle callback.
+ * @param onBulkDelete - The onBulkDelete callback.
+ * @param onLogin - } - The onLogin } callback.
+ * @returns The rendered component.
  */
 export function ServiceList({ services, isLoading, onToggle, onEdit, onDelete, onDuplicate, onExport, onBulkToggle, onBulkDelete, onLogin }: ServiceListProps) {
   const [tagFilter, setTagFilter] = useState("");

@@ -1,32 +1,157 @@
-# Copyright 2025 Author(s) of MCP Any
+# Copyright 2026 Author(s) of MCP Any
 # SPDX-License-Identifier: Apache-2.0
 
 import os
 import re
 
-def get_prop_desc(name):
-    name_lower = name.lower()
-    if name_lower == 'id': return "The unique identifier."
-    if name_lower == 'name': return "The name."
-    if name_lower == 'title': return "The title."
-    if 'id' in name_lower: return f"The unique identifier for {name.replace('Id', '').replace('id', '').strip()}."
-    if 'name' in name_lower: return f"The name of the {name.replace('Name', '').replace('name', '').strip()}."
-    if 'children' in name_lower: return "The child components."
-    if 'classname' in name_lower: return "Additional CSS classes."
-    if 'open' in name_lower: return "Whether the component is open."
-    if 'onchange' in name_lower: return "Callback function when value changes."
-    if 'value' in name_lower: return "The current value."
-    if 'schema' in name_lower: return "The schema definition."
-    if 'required' in name_lower: return "Whether the field is required."
-    if 'depth' in name_lower: return "The nesting depth."
-    if 'auth' in name_lower: return "The authentication configuration."
-    if 'type' in name_lower: return "The type definition."
-    if 'status' in name_lower: return "The current status."
-    if 'data' in name_lower: return "The data to display."
-    if 'error' in name_lower: return "The error message or object."
-    if 'loading' in name_lower: return "Whether data is loading."
-    if 'config' in name_lower: return "The configuration object."
-    return f"The {name} property."
+def get_param_desc(name):
+    name = name.strip()
+    if name.startswith('_'): name = name[1:]
+    if name == 'props': return "The component props."
+    if name == 'children': return "The child elements."
+    if name == 'className': return "The CSS class name."
+    if name == 'ref': return "The reference."
+    if name == 'key': return "The unique key."
+    if 'id' in name.lower(): return f"The {name} identifier."
+    if 'name' in name.lower(): return f"The {name} value."
+    if 'callback' in name.lower() or name.startswith('on'): return f"The {name} callback."
+    return f"The {name} parameter."
+
+def generate_doc_lines(name, type_kind, params):
+    lines = []
+
+    # Description
+    desc = f"{name} {type_kind}."
+    # Improve description based on name
+    if name.startswith("use"):
+        # Split camel case
+        parts = re.findall(r'[A-Z][a-z]*', name)
+        desc_parts = [p.lower() for p in parts]
+        if not desc_parts and len(name) > 3: # usage -> use age
+             desc_parts = [name[3:].lower()]
+
+        desc = f"Hook to {name[3:].lower()}." # Fallback
+        if desc_parts:
+             desc = f"Hook to {' '.join(desc_parts)}."
+    elif type_kind == 'component':
+        desc = f"{name} component."
+    elif type_kind == 'interface':
+        desc = f"{name} interface."
+    elif type_kind == 'type':
+        desc = f"{name} type definition."
+
+    lines.append(f" * {desc}")
+
+    # Params
+    for p in params:
+        lines.append(f" * @param {p} - {get_param_desc(p)}")
+
+    # Return
+    if type_kind in ['function', 'method', 'hook']:
+        if type_kind != 'component':
+            lines.append(f" * @returns The result of {name}.")
+        elif type_kind == 'component':
+            lines.append(" * @returns The rendered component.")
+
+    return lines
+
+def parse_docstring(lines):
+    # lines are the lines of the docstring excluding /** and */ markers
+    desc = []
+    params = {} # name -> desc
+    returns = None
+
+    content = []
+    for line in lines:
+        line = line.strip()
+        if line.startswith('/**'): line = line[3:]
+        if line.endswith('*/'): line = line[:-2]
+        line = line.lstrip('*').strip()
+        if line: content.append(line)
+
+    for line in content:
+        if line.startswith('@param'):
+            match = re.match(r'@param\s+({[^}]+}|\[[^\]]+\]|[a-zA-Z0-9_\.]+)\s*(?:-\s*)?(.*)', line)
+            if match:
+                p_name = match.group(1).strip()
+                p_desc = match.group(2).strip()
+                params[p_name] = p_desc
+        elif line.startswith('@returns') or line.startswith('@return'):
+            match = re.match(r'@returns?\s+(.*)', line)
+            if match:
+                returns = match.group(1).strip()
+        elif line.startswith('@'):
+            pass
+        else:
+            desc.append(line)
+
+    return desc, params, returns
+
+def extract_params(params_str):
+    if not params_str: return []
+
+    # Simple iteration to split by comma respecting braces
+    depth = 0
+    current = ""
+    args = []
+    for char in params_str:
+        if char == ',' and depth == 0:
+            args.append(current)
+            current = ""
+        else:
+            if char in '{[<(': depth += 1
+            if char in '}]>)' and depth > 0: depth -= 1
+            current += char
+    if current: args.append(current)
+
+    final_params = []
+    for arg in args:
+        arg = arg.strip()
+        if not arg: continue
+
+        # Remove type annotation
+        arg_depth = 0
+        split_idx = -1
+        for idx, char in enumerate(arg):
+             if char in '{[<(': arg_depth += 1
+             if char in '}]>)' and arg_depth > 0: arg_depth -= 1
+             if char == ':' and arg_depth == 0:
+                 split_idx = idx
+                 break
+
+        if split_idx != -1:
+            arg_name = arg[:split_idx].strip()
+        else:
+            arg_name = arg.strip()
+
+        # Remove default value
+        if '=' in arg_name:
+            arg_name = arg_name.split('=')[0].strip()
+
+        # Check if destructuring
+        if arg_name.startswith('{') and arg_name.endswith('}'):
+             inner = arg_name[1:-1]
+             # Recursively split inner props
+             # Inner props usually don't have types like outer args, but they might have renaming a:b
+             # We can assume comma split is safe enough for destructuring usually (no types inside usually)
+             sub_props = inner.split(',')
+             for sp in sub_props:
+                 sp = sp.strip()
+                 # handle renaming: a: b
+                 if ':' in sp:
+                     sp = sp.split(':')[0].strip()
+
+                 # Remove default { a = 1 }
+                 if '=' in sp:
+                     sp = sp.split('=')[0].strip()
+
+                 if sp and sp != '...':
+                     final_params.append(sp)
+        else:
+            if arg_name and arg_name != '...':
+                final_params.append(arg_name)
+
+    return final_params
 
 def process_file(filepath):
     with open(filepath, 'r') as f:
@@ -37,144 +162,176 @@ def process_file(filepath):
     i = 0
     modified = False
 
-    # regex for function/const definition (exported or not)
-    # match widely, but only process if it looks like a component (Uppercase)
-    def_pattern = re.compile(r'^\s*(export\s+)?(default\s+)?(function|const)\s+([a-zA-Z0-9_]+)')
+    # Regex patterns
+    func_pattern = re.compile(r'^\s*export\s+(async\s+)?function\s+([a-zA-Z0-9_]+)\s*\(([^)]*)\)')
+    arrow_pattern = re.compile(r'^\s*export\s+const\s+([a-zA-Z0-9_]+)\s*=\s*(async\s*)?(\([^)]*\)|[a-zA-Z0-9_]+)\s*=>')
+    hoc_pattern = re.compile(r'^\s*export\s+const\s+([a-zA-Z0-9_]+)\s*=\s*(memo|forwardRef|dynamic)\(')
+    class_pattern = re.compile(r'^\s*export\s+class\s+([a-zA-Z0-9_]+)')
+    interface_pattern = re.compile(r'^\s*export\s+interface\s+([a-zA-Z0-9_]+)')
+    type_pattern = re.compile(r'^\s*export\s+type\s+([a-zA-Z0-9_]+)')
 
     while i < len(lines):
         line = lines[i]
-        match = def_pattern.match(line)
 
+        # Check if doc exists
+        has_doc = False
+        doc_start = -1
+        doc_end = -1
+
+        j = i - 1
+        while j >= 0:
+            prev = lines[j].strip()
+            if not prev:
+                j -= 1
+                continue
+            if prev.startswith('@'): # decorators
+                j -= 1
+                continue
+            if prev.endswith('*/'):
+                has_doc = True
+                doc_end = j
+                # Find start
+                k = j
+                while k >= 0:
+                    if '/**' in lines[k]:
+                        doc_start = k
+                        break
+                    k -= 1
+            break
+
+        def insert_new_doc(name, kind, params):
+            nonlocal modified, new_lines
+            doc_body = generate_doc_lines(name, kind, params)
+            doc_full = ["/**"] + doc_body + [" */"]
+
+            insert_pos = len(new_lines)
+            while insert_pos > 0 and new_lines[insert_pos-1].strip().startswith('@'):
+                insert_pos -= 1
+            for l in doc_full:
+                new_lines.insert(insert_pos, l)
+                insert_pos += 1
+            modified = True
+
+        def update_existing_doc(name, kind, params):
+            nonlocal modified, new_lines, doc_start, doc_end
+
+            current_doc_lines = lines[doc_start : doc_end+1]
+            desc, existing_params, existing_returns = parse_docstring(current_doc_lines)
+
+            # Clean junk params
+            existing_keys = list(existing_params.keys())
+            for k in existing_keys:
+                if '{' in k or '}' in k or len(k) < 1:
+                    del existing_params[k]
+
+            missing_params = []
+            for p in params:
+                 if p not in existing_params:
+                     missing_params.append(p)
+
+            missing_return = False
+            if kind in ['function', 'method', 'hook', 'component'] and not existing_returns:
+                  if kind == 'component':
+                      missing_return = True
+                  elif kind == 'function' and not name.startswith('set'):
+                      missing_return = True
+                  elif kind == 'hook':
+                      missing_return = True
+
+            if missing_params or missing_return:
+                new_doc = ["/**"]
+                for d in desc:
+                    if d: new_doc.append(f" * {d}")
+
+                processed_params = set()
+                for p in params:
+                    if p in existing_params:
+                        new_doc.append(f" * @param {p} - {existing_params[p]}")
+                    else:
+                        new_doc.append(f" * @param {p} - {get_param_desc(p)}")
+                    processed_params.add(p)
+
+                for p, d in existing_params.items():
+                    if p not in processed_params:
+                        new_doc.append(f" * @param {p} - {d}")
+
+                if existing_returns:
+                    new_doc.append(f" * @returns {existing_returns}")
+                elif missing_return:
+                    if kind == 'component':
+                        new_doc.append(" * @returns The rendered component.")
+                    else:
+                        new_doc.append(f" * @returns The result of {name}.")
+
+                new_doc.append(" */")
+
+                # Replace in new_lines
+                doc_len = doc_end - doc_start + 1
+                decorators_count = 0
+                for k in range(doc_end + 1, i):
+                    if lines[k].strip().startswith('@'):
+                        decorators_count += 1
+
+                end_idx = len(new_lines) - decorators_count
+                start_idx = end_idx - doc_len
+
+                if start_idx < 0 or end_idx > len(new_lines) or new_lines[start_idx].strip() != lines[doc_start].strip():
+                     print(f"Warning: Index mismatch for {name} in {filepath}. Skipping update.")
+                     return
+
+                new_lines[start_idx:end_idx] = new_doc
+                modified = True
+                print(f"Updated doc for {name} in {filepath}")
+
+
+        match = func_pattern.match(line)
         if match:
-            # Found a definition. Check for existing docstring.
-            has_doc = False
-            is_generic = False
+            name = match.group(2)
+            params_str = match.group(3)
+            params = extract_params(params_str)
+            kind = 'function'
+            if name[0].isupper(): kind = 'component'
+            if name.startswith('use'): kind = 'hook'
 
-            # Check previous lines
-            j = i - 1
-            while j >= 0:
-                prev = lines[j].strip()
-                if not prev:
-                    j -= 1
-                    continue
-                if prev.startswith('@'): # decorators
-                    j -= 1
-                    continue
-                if prev.endswith('*/'):
-                    has_doc = True
-                    # Check if it is the generic one we want to replace
-                    # We check if it contains "@returns The rendered component." and NO @param
+            if not has_doc: insert_new_doc(name, kind, params)
+            else: update_existing_doc(name, kind, params)
 
-                    # Read back until /**
-                    doc_content = ""
-                    k = j
-                    while k >= 0:
-                        doc_content = lines[k] + "\n" + doc_content
-                        if lines[k].strip() == '/**':
-                            break
-                        k -= 1
+        match = arrow_pattern.match(line)
+        if match:
+            name = match.group(1)
+            params_str = match.group(3)
+            if params_str.startswith('('): params_str = params_str[1:-1]
+            params = extract_params(params_str)
+            kind = 'function'
+            if name[0].isupper(): kind = 'component'
+            if name.startswith('use'): kind = 'hook'
 
-                    if ("@returns The rendered component." in doc_content and "@param" not in doc_content) or \
-                       ("The name of the ." in doc_content):
-                        is_generic = True
+            if not has_doc: insert_new_doc(name, kind, params)
+            else: update_existing_doc(name, kind, params)
 
-                break
+        match = hoc_pattern.match(line)
+        if match:
+            name = match.group(1)
+            kind = 'component'
+            params = ['props']
+            if not has_doc: insert_new_doc(name, kind, params)
+            else: update_existing_doc(name, kind, params)
 
-            comp_name = match.group(4)
+        match = class_pattern.match(line)
+        if match:
+            name = match.group(1)
+            if not has_doc: insert_new_doc(name, 'class', [])
+            else: update_existing_doc(name, 'class', [])
 
-            # We only care about components (usually Capitalized)
-            if comp_name and comp_name[0].isupper():
+        match = interface_pattern.match(line)
+        if match:
+            name = match.group(1)
+            if not has_doc: insert_new_doc(name, 'interface', [])
 
-                # Parse params
-                # Read lines until ')'
-                func_sig = ""
-                k = i
-                while k < len(lines):
-                    func_sig += lines[k]
-                    if ')' in lines[k] or '=>' in lines[k]: # arrow function might use =>
-                        # For const Name = (...) =>, checking ')' is usually enough for args
-                        if ')' in lines[k]:
-                            break
-                    k += 1
-
-                # Extract props
-                # Case 1: React.forwardRef<T, P>(({ props }, ref) => ...
-                # Case 2: function Name({ props }) ...
-
-                params = []
-
-                # Try to find object pattern destructuring inside function signature
-                # We look for ({ ... }) pattern which is typical for props
-                param_match = re.search(r'\(\s*({[^}]+})', func_sig, re.DOTALL)
-
-                if param_match:
-                    params_str = param_match.group(1)
-                    params_str = params_str.replace('{', '').replace('}', '').replace('\n', '')
-                    params_str = re.sub(r'//.*', '', params_str)
-                    raw_params = [p.split('=')[0].split(':')[0].strip() for p in params_str.split(',')]
-                    params = [p for p in raw_params if p and '...' not in p]
-
-                if params or "React.forwardRef" in func_sig:
-                    # Construct new docstring
-                    new_doc = [
-                        '/**',
-                        f' * {comp_name} component.',
-                        ' * @param props - The component props.'
-                    ]
-                    for p in params:
-                        desc = get_prop_desc(p)
-                        new_doc.append(f' * @param props.{p} - {desc}')
-                    new_doc.append(' * @returns The rendered component.')
-                    new_doc.append(' */')
-
-                    if has_doc and is_generic:
-                         # Remove old docstring from new_lines
-                         idx = len(new_lines) - 1
-                         while idx >= 0:
-                             l = new_lines[idx].strip()
-                             if not l or l.startswith('@'):
-                                 idx -= 1
-                                 continue
-                             if l == '*/':
-                                 end_idx = idx
-                                 # Find start
-                                 while idx >= 0:
-                                     if new_lines[idx].strip() == '/**':
-                                         start_idx = idx
-                                         del new_lines[start_idx : end_idx+1]
-                                         break
-                                     idx -= 1
-                                 break
-                             break
-
-                         insert_pos = len(new_lines)
-                         while insert_pos > 0:
-                             if new_lines[insert_pos-1].strip().startswith('@'):
-                                 insert_pos -= 1
-                             else:
-                                 break
-
-                         for l in new_doc:
-                             new_lines.insert(insert_pos, l)
-                             insert_pos += 1
-
-                         modified = True
-                         print(f"Upgraded docstring in {filepath} for {comp_name}")
-
-                    elif not has_doc:
-                         insert_pos = len(new_lines)
-                         while insert_pos > 0:
-                             if new_lines[insert_pos-1].strip().startswith('@'):
-                                 insert_pos -= 1
-                             else:
-                                 break
-
-                         for l in new_doc:
-                             new_lines.insert(insert_pos, l)
-                             insert_pos += 1
-
-                         modified = True
-                         print(f"Added docstring in {filepath} for {comp_name}")
+        match = type_pattern.match(line)
+        if match:
+            name = match.group(1)
+            if not has_doc: insert_new_doc(name, 'type', [])
 
         new_lines.append(line)
         i += 1
@@ -187,7 +344,10 @@ def main():
     root_dir = 'ui/src'
     for dirpath, dirnames, filenames in os.walk(root_dir):
         for filename in filenames:
-            if filename.endswith('.tsx'):
+            if filename.endswith('.tsx') or filename.endswith('.ts'):
+                if 'node_modules' in dirpath: continue
+                if filename.endswith('.d.ts'): continue
+
                 process_file(os.path.join(dirpath, filename))
 
 if __name__ == "__main__":

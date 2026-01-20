@@ -40,8 +40,9 @@ interface BreadcrumbsProps {
 
 /**
  * Breadcrumbs navigation component.
- *
+ * @param items - The items parameter.
  * @param className - The className.
+ * @returns The rendered component.
  */
 export function Breadcrumbs({ items, className }: BreadcrumbsProps) {
     return (

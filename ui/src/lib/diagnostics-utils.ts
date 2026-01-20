@@ -13,8 +13,8 @@ export interface DiagnosticResult {
 
 /**
  * analyzeConnectionError.
- *
  * @param error - The error.
+ * @returns The result of analyzeConnectionError.
  */
 export function analyzeConnectionError(error: string): DiagnosticResult {
   const err = error.toLowerCase();

@@ -62,8 +62,8 @@ const WizardContext = createContext<WizardContextType | undefined>(undefined);
 
 /**
  * WizardProvider.
- *
- * @param { children - The { children.
+ * @param children - The child elements.
+ * @returns The rendered component.
  */
 export function WizardProvider({ children }: { children: ReactNode }) {
     const [state, setState] = useState<WizardState>(defaultState);

@@ -32,8 +32,11 @@ interface ServiceEditorProps {
 
 /**
  * ServiceEditor.
- *
+ * @param service - The service parameter.
+ * @param onChange - The onChange callback.
+ * @param onSave - The onSave callback.
  * @param onCancel - The onCancel.
+ * @returns The rendered component.
  */
 export function ServiceEditor({ service, onChange, onSave, onCancel }: ServiceEditorProps) {
     const [activeTab, setActiveTab] = useState("general");

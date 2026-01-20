@@ -73,7 +73,9 @@ function CodeBlock({ language, code }: { language: string; code: string }) {
 
 /**
  * Displays the configuration of a service in multiple formats (YAML, JSON, TextProto).
- * @param props.service The service configuration to display.
+ * @param props - The component props.
+ * @param props.service - The service configuration to display.
+ * @returns The rendered component.
  */
 export const FileConfigCard = memo(function FileConfigCard({ service }: { service: UpstreamServiceConfig }) {
     const { jsonConfig, yamlConfig, textProtoConfig } = useMemo(() => {

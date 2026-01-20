@@ -43,8 +43,11 @@ interface ServicesTableProps {
 
 /**
  * ServicesTable.
- *
+ * @param services - The services parameter.
+ * @param loading - The loading parameter.
+ * @param onToggle - The onToggle callback.
  * @param onDelete - The onDelete.
+ * @returns The rendered component.
  */
 export function ServicesTable({ services, loading, onToggle, onDelete }: ServicesTableProps) {
 

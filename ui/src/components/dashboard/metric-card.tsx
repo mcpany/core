@@ -17,9 +17,12 @@ interface MetricCardProps {
 
 /**
  * MetricCard.
- *
+ * @param title - The title parameter.
+ * @param value - The value parameter.
  * @param icon - The icon.
+ * @param description - The description parameter.
  * @param trend - The trend.
+ * @returns The rendered component.
  */
 export function MetricCard({ title, value, icon: Icon, description, trend }: MetricCardProps) {
   return (

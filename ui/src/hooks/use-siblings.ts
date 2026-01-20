@@ -9,8 +9,8 @@ import { UpstreamServiceConfig, ToolDefinition } from "@/lib/types";
 
 /**
  * useServiceSiblings.
- *
  * @param currentServiceId - The currentServiceId.
+ * @returns The result of useServiceSiblings.
  */
 export function useServiceSiblings(currentServiceId: string) {
     const [siblings, setSiblings] = useState<{ label: string; href: string }[]>([]);
@@ -30,9 +30,9 @@ export function useServiceSiblings(currentServiceId: string) {
 
 /**
  * useToolSiblings.
- *
  * @param serviceId - The serviceId.
  * @param currentToolName - The currentToolName.
+ * @returns The result of useToolSiblings.
  */
 export function useToolSiblings(serviceId: string, currentToolName: string) {
     const [siblings, setSiblings] = useState<{ label: string; href: string }[]>([]);

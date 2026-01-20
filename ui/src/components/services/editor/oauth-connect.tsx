@@ -19,6 +19,9 @@ interface OAuthConnectProps {
 
 /**
  * OAuthConnect component.
+ * @param serviceId - The serviceId identifier.
+ * @param serviceName - The serviceName value.
+ * @param isSaved - } - The isSaved } parameter.
  * @param props - The component props.
  * @param props.serviceId - The unique identifier for service.
  * @param props.serviceName - The name of the service.

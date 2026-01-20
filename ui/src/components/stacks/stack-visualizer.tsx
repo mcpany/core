@@ -37,8 +37,8 @@ interface ParsedService {
 
 /**
  * StackVisualizer.
- *
- * @param { yamlContent - The { yamlContent.
+ * @param yamlContent - The yamlContent parameter.
+ * @returns The rendered component.
  */
 export function StackVisualizer({ yamlContent }: StackVisualizerProps) {
     const { services, error } = useMemo(() => {
