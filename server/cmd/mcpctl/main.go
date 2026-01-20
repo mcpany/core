@@ -72,6 +72,7 @@ func newRootCmd() *cobra.Command {
 	config.BindRootFlags(rootCmd)
 	rootCmd.AddCommand(validateCmd)
 	rootCmd.AddCommand(newDoctorCmd())
+	rootCmd.AddCommand(newToolCmd())
 
 	versionCmd := &cobra.Command{
 		Use:   "version",

@@ -73,6 +73,11 @@ func (s *WebhookAuditStore) Write(ctx context.Context, entry AuditEntry) error {
 	return nil
 }
 
+// Read implements the AuditStore interface.
+func (s *WebhookAuditStore) Read(_ context.Context, _ AuditFilter) ([]AuditEntry, error) {
+	return nil, fmt.Errorf("read not implemented for webhook audit store")
+}
+
 // Close is a no-op for WebhookAuditStore.
 //
 // Returns an error if the operation fails.

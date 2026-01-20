@@ -236,6 +236,7 @@ type GRPCTool struct {
 	method         protoreflect.MethodDescriptor
 	requestMessage protoreflect.ProtoMessage
 	cache          *configv1.CacheConfig
+	resilienceManager *resilience.Manager
 }
 
 // NewGRPCTool creates a new GRPCTool.
@@ -247,18 +248,20 @@ type GRPCTool struct {
 //	serviceID: The identifier for the service.
 //	method: The gRPC method descriptor.
 //	callDefinition: The configuration for the gRPC call.
+//	resilienceConfig: The resilience configuration.
 //
 // Returns:
 //
 //	*GRPCTool: The created GRPCTool.
-func NewGRPCTool(tool *v1.Tool, poolManager *pool.Manager, serviceID string, method protoreflect.MethodDescriptor, callDefinition *configv1.GrpcCallDefinition) *GRPCTool {
+func NewGRPCTool(tool *v1.Tool, poolManager *pool.Manager, serviceID string, method protoreflect.MethodDescriptor, callDefinition *configv1.GrpcCallDefinition, resilienceConfig *configv1.ResilienceConfig) *GRPCTool {
 	return &GRPCTool{
-		tool:           tool,
-		poolManager:    poolManager,
-		serviceID:      serviceID,
-		method:         method,
-		requestMessage: dynamicpb.NewMessage(method.Input()),
-		cache:          callDefinition.GetCache(),
+		tool:              tool,
+		poolManager:       poolManager,
+		serviceID:         serviceID,
+		method:            method,
+		requestMessage:    dynamicpb.NewMessage(method.Input()),
+		cache:             callDefinition.GetCache(),
+		resilienceManager: resilience.NewManager(resilienceConfig),
 	}
 }
 
@@ -338,7 +341,11 @@ func (t *GRPCTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 		}, nil
 	}
 
-	if err := grpcClient.Invoke(ctx, grpcMethodName, t.requestMessage, responseMessage); err != nil {
+	work := func(ctx context.Context) error {
+		return grpcClient.Invoke(ctx, grpcMethodName, t.requestMessage, responseMessage)
+	}
+
+	if err := t.resilienceManager.Execute(ctx, work); err != nil {
 		metrics.IncrCounter([]string{"grpc", "request", "error"}, 1)
 		return nil, fmt.Errorf("failed to invoke grpc method: %w", err)
 	}
