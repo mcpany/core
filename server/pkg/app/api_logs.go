@@ -55,32 +55,13 @@ func (a *Application) handleLogsWS() http.HandlerFunc {
 			}
 		}()
 
-		// Read loop to detect client disconnection
-		done := make(chan struct{})
-		go func() {
-			defer close(done)
-			for {
-				if _, _, err := conn.ReadMessage(); err != nil {
-					return
-				}
+		for msg := range logCh {
+			if err := conn.WriteMessage(websocket.TextMessage, msg); err != nil {
+				logging.GetLogger().Error("failed to write log message to websocket", "error", err)
+				return
 			}
-		}()
-
-		for {
-			select {
-			case msg, ok := <-logCh:
-				if !ok {
-					return
-				}
-				if err := conn.WriteMessage(websocket.TextMessage, msg); err != nil {
-					logging.GetLogger().Error("failed to write log message to websocket", "error", err)
-					return
-				}
-				if err := conn.SetWriteDeadline(time.Now().Add(10 * time.Second)); err != nil {
-					logging.GetLogger().Error("failed to set write deadline", "error", err)
-					return
-				}
-			case <-done:
+			if err := conn.SetWriteDeadline(time.Now().Add(10 * time.Second)); err != nil {
+				logging.GetLogger().Error("failed to set write deadline", "error", err)
 				return
 			}
 		}

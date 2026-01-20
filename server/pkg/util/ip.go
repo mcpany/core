@@ -78,6 +78,9 @@ func IsPrivateNetworkIP(ip net.IP) bool {
 	if ip.IsUnspecified() {
 		return true
 	}
+	if ip.IsLoopback() {
+		return false
+	}
 
 	if ip4 := ip.To4(); ip4 != nil {
 		// IPv4 fast path: check directly to avoid linear scan of net.IPNet slices
