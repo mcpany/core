@@ -15,6 +15,7 @@ import { GlobalSearch } from "@/components/global-search"
 import { Separator } from "@/components/ui/separator"
 import { UserProvider } from "@/components/user-context"
 import { KeyboardShortcutsProvider } from "@/contexts/keyboard-shortcuts-context"
+import { ServiceHealthProvider } from "@/contexts/service-health-context"
 import { SystemStatusBanner } from "@/components/system-status-banner"
 
 /**
@@ -54,8 +55,9 @@ export default function RootLayout({
           >
           <TooltipProvider>
             <UserProvider>
-              <KeyboardShortcutsProvider>
-                <SidebarProvider>
+              <ServiceHealthProvider>
+                <KeyboardShortcutsProvider>
+                  <SidebarProvider>
                   <AppSidebar />
                   <SidebarInset>
                   <header className="flex h-14 shrink-0 items-center gap-2 border-b bg-background/95 backdrop-blur px-4 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">
@@ -77,7 +79,8 @@ export default function RootLayout({
                   </main>
                   </SidebarInset>
                 </SidebarProvider>
-              </KeyboardShortcutsProvider>
+                </KeyboardShortcutsProvider>
+              </ServiceHealthProvider>
             </UserProvider>
             <Toaster />
           </TooltipProvider>

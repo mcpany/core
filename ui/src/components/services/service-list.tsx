@@ -24,6 +24,8 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { UpstreamServiceConfig } from "@/lib/client";
 import { ConnectionDiagnosticDialog } from "@/components/diagnostics/connection-diagnostic";
+import { useServiceHealth } from "@/contexts/service-health-context";
+import { Sparkline } from "@/components/charts/sparkline";
 
 
 interface ServiceListProps {
@@ -152,6 +154,7 @@ export function ServiceList({ services, isLoading, onToggle, onEdit, onDelete, o
               <TableHead>Status</TableHead>
               <TableHead>Name</TableHead>
               <TableHead>Type</TableHead>
+              <TableHead>Activity</TableHead>
               <TableHead>Tags</TableHead>
               <TableHead>Address / Command</TableHead>
               <TableHead>Version</TableHead>
@@ -176,7 +179,7 @@ export function ServiceList({ services, isLoading, onToggle, onEdit, onDelete, o
             ))}
             {filteredServices.length === 0 && (
               <TableRow>
-                <TableCell colSpan={9} className="h-24 text-center">
+                <TableCell colSpan={10} className="h-24 text-center">
                   No services match the tag filter.
                 </TableCell>
               </TableRow>
@@ -219,6 +222,20 @@ const ServiceRow = memo(function ServiceRow({ service, isSelected, onSelect, onT
     const secure = useMemo(() => {
         return !!(service.grpcService?.tlsConfig || service.httpService?.tlsConfig || service.mcpService?.httpConnection?.tlsConfig);
     }, [service]);
+
+    const { getServiceHistory } = useServiceHealth();
+    const history = getServiceHistory(service.name);
+    const latencies = useMemo(() => history.map(h => h.latencyMs), [history]);
+    const maxLatency = useMemo(() => Math.max(...latencies, 50), [latencies]); // Minimum max of 50ms for scale
+
+    // Determine color based on latest health
+    const healthColor = useMemo(() => {
+        if (!history.length) return "#94a3b8"; // slate-400
+        const latest = history[history.length - 1];
+        if (latest.status === 'NODE_STATUS_ERROR' || latest.errorRate > 0.1) return "#ef4444"; // red-500
+        if (latest.latencyMs > 500) return "#eab308"; // yellow-500
+        return "#22c55e"; // green-500
+    }, [history]);
 
     return (
         <TableRow className={service.disable ? "opacity-60 bg-muted/40" : ""}>
@@ -273,6 +290,19 @@ const ServiceRow = memo(function ServiceRow({ service, isSelected, onSelect, onT
              </TableCell>
              <TableCell>
                  <Badge variant="outline">{type}</Badge>
+             </TableCell>
+             <TableCell>
+                <div className="w-[80px] h-[24px]">
+                    {!service.disable && (
+                        <Sparkline
+                            data={latencies}
+                            width={80}
+                            height={24}
+                            color={healthColor}
+                            max={maxLatency}
+                        />
+                    )}
+                </div>
              </TableCell>
              <TableCell>
                  <div className="flex flex-wrap gap-1">
