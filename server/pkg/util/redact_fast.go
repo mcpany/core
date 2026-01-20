@@ -62,6 +62,25 @@ func redactJSONFast(input []byte) []byte {
 		}
 		quotePos := i + nextQuote
 
+		// Check for potential comments before the quote
+		// Comments start with '/'
+		// Optimization: Check if '/' exists in input[i:quotePos]
+		// We need to handle comments that might obscure keys or be misinterpreted as code.
+		slashIdx := bytes.IndexByte(input[i:quotePos], '/')
+		if slashIdx != -1 {
+			// Found a slash. Check if it starts a comment.
+			slashPos := i + slashIdx
+			if slashPos+1 < n {
+				next := input[slashPos+1]
+				if next == '/' || next == '*' {
+					// It is a comment!
+					// Skip it and retry scanning from after comment
+					i = skipWhitespaceAndComments(input, slashPos)
+					continue
+				}
+			}
+		}
+
 		// Parse string
 		// We need to find the matching closing quote
 		// Handle escapes: \\ and \"
