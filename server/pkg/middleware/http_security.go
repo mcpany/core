@@ -26,8 +26,10 @@ func HTTPSecurityHeadersMiddleware(next http.Handler) http.Handler {
 		w.Header().Set("Permissions-Policy", "geolocation=(), camera=(), microphone=(), payment=(), usb=(), vr=(), magnetometer=(), gyroscope=(), accelerometer=(), autoplay=(), clipboard-write=(), clipboard-read=()")
 
 		// Additional Security Headers
-		w.Header().Set("Cross-Origin-Opener-Policy", "same-origin")
-		w.Header().Set("Cross-Origin-Embedder-Policy", "require-corp")
+		// COOP and COEP are commented out to avoid breaking external resource loading (e.g. Google Fonts)
+		// in E2E tests or production until all upstream resources support CORP.
+		// w.Header().Set("Cross-Origin-Opener-Policy", "same-origin")
+		// w.Header().Set("Cross-Origin-Embedder-Policy", "require-corp")
 		w.Header().Set("Cross-Origin-Resource-Policy", "same-origin")
 
 		// Prevent caching of sensitive data
