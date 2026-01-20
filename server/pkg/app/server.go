@@ -31,6 +31,7 @@ import (
 	"github.com/mcpany/core/server/pkg/auth"
 	"github.com/mcpany/core/server/pkg/bus"
 	"github.com/mcpany/core/server/pkg/config"
+	"github.com/mcpany/core/server/pkg/discovery"
 	"github.com/mcpany/core/server/pkg/gc"
 	"github.com/mcpany/core/server/pkg/health"
 	"github.com/mcpany/core/server/pkg/logging"
@@ -235,6 +236,10 @@ type Application struct {
 	startTime time.Time
 	// activeConnections tracks the number of active HTTP connections.
 	activeConnections int32
+
+	// RegistrationRetryDelay allows configuring the retry delay for service registration.
+	// If 0, it defaults to 5 seconds (in the worker).
+	RegistrationRetryDelay time.Duration
 }
 
 // NewApplication creates a new Application with default dependencies.
@@ -487,6 +492,9 @@ func (a *Application) Run(
 	// New message bus and workers
 	upstreamWorker := worker.NewUpstreamWorker(busProvider, a.ToolManager)
 	registrationWorker := worker.NewServiceRegistrationWorker(busProvider, serviceRegistry)
+	if a.RegistrationRetryDelay > 0 {
+		registrationWorker.SetRetryDelay(a.RegistrationRetryDelay)
+	}
 
 	// Create a context for workers that we can cancel on shutdown
 	workerCtx, workerCancel := context.WithCancel(ctx)
@@ -609,6 +617,18 @@ func (a *Application) Run(
 		upstreamWorker.Stop()
 		registrationWorker.Stop()
 		return fmt.Errorf("failed to init standard middlewares: %w", err)
+	}
+
+	// Auto-discovery of local services
+	if cfg.GetGlobalSettings().GetAutoDiscoverLocal() {
+		ollamaProvider := &discovery.OllamaProvider{Endpoint: "http://localhost:11434"}
+		discovered, err := ollamaProvider.Discover(ctx)
+		if err == nil {
+			for _, svc := range discovered {
+				log.Info("Auto-discovered local service", "name", svc.GetName())
+				cfg.UpstreamServices = append(cfg.UpstreamServices, svc)
+			}
+		}
 	}
 	a.standardMiddlewares = standardMiddlewares
 	if standardMiddlewares.Cleanup != nil {
@@ -885,6 +905,18 @@ func (a *Application) reconcileServices(ctx context.Context, cfg *config_v1.McpA
 		if err == nil {
 			for _, s := range services {
 				currentServicesMap[s.GetName()] = s
+			}
+		}
+	}
+
+	// Auto-discovery of local services
+	if cfg.GetGlobalSettings().GetAutoDiscoverLocal() {
+		ollamaProvider := &discovery.OllamaProvider{Endpoint: "http://localhost:11434"}
+		discovered, err := ollamaProvider.Discover(ctx)
+		if err == nil {
+			for _, svc := range discovered {
+				log.Info("Auto-discovered local service during reload", "name", svc.GetName())
+				cfg.UpstreamServices = append(cfg.UpstreamServices, svc)
 			}
 		}
 	}

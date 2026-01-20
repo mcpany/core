@@ -122,6 +122,8 @@ message GlobalSettings {
   // If true, the configuration is read-only (e.g., loaded from a file).
   // @inject_tag: yaml:"-"
   bool read_only = 25 [json_name = "read_only"];
+  // Whether to auto-discover local services (e.g. Ollama).
+  bool auto_discover_local = 26 [json_name = "auto_discover_local"];
 }
 
 message ContextOptimizerConfig {
