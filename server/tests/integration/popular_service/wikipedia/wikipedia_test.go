@@ -37,7 +37,7 @@ func TestUpstreamService_Wikipedia(t *testing.T) {
 	require.Greater(t, len(listToolsResult.Tools), 40, "Expected many tools to be registered (>40)")
 
 	// Find the summary tool
-	targetToolName := "get_page_summary_title"
+	targetToolName := "wikipedia.get_page_summary_title"
 	var foundTool bool
 	for _, tool := range listToolsResult.Tools {
 		if tool.Name == targetToolName {

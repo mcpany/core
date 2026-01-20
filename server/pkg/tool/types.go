@@ -685,6 +685,7 @@ func (t *HTTPTool) createHTTPRequest(ctx context.Context, urlString string, body
 		httpReq.Header.Set("Content-Type", contentType)
 	}
 	httpReq.Header.Set("Accept", "*/*")
+	httpReq.Header.Set("User-Agent", "MCPAny/1.0 (https://github.com/mcpany/core; contact@mcpany.org)")
 
 	if t.authenticator != nil {
 		if err := t.authenticator.Authenticate(httpReq); err != nil {

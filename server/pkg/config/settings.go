@@ -32,6 +32,7 @@ type Settings struct {
 	shutdownTimeout time.Duration
 	profiles        []string
 	dbPath          string
+	setValues       []string
 	fs              afero.Fs
 	cmd             *cobra.Command
 }
@@ -103,6 +104,7 @@ func (s *Settings) Load(cmd *cobra.Command, fs afero.Fs) error {
 	s.shutdownTimeout = viper.GetDuration("shutdown-timeout")
 	s.profiles = getStringSlice("profiles")
 	s.dbPath = viper.GetString("db-path")
+	s.setValues = getStringSlice("set")
 
 	// Special handling for MCPListenAddress to respect config file precedence
 	mcpListenAddress := viper.GetString("mcp-listen-address")
@@ -286,6 +288,11 @@ func (s *Settings) LogLevel() configv1.GlobalSettings_LogLevel {
 // Returns the result.
 func (s *Settings) DBPath() string {
 	return s.dbPath
+}
+
+// SetValues returns configuration values to override.
+func (s *Settings) SetValues() []string {
+	return s.setValues
 }
 
 // GetDbDsn returns the database DSN.

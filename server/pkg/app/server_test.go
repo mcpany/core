@@ -1514,7 +1514,10 @@ func TestRun_CachingMiddleware(t *testing.T) {
 
 	// We need a way to inspect the middleware chain. We can use a test hook for this.
 	var middlewareNames []string
+	var mu sync.Mutex
 	mcpserver.AddReceivingMiddlewareHook = func(name string) {
+		mu.Lock()
+		defer mu.Unlock()
 		middlewareNames = append(middlewareNames, name)
 	}
 	defer func() { mcpserver.AddReceivingMiddlewareHook = nil }()

@@ -226,7 +226,11 @@ func ConvertProtoToMCPTool(pbTool *pb.Tool) (*mcp.Tool, error) {
 			mcpTool.InputSchema = annotations.GetInputSchema().AsMap()
 		}
 		if annotations.GetOutputSchema() != nil {
-			mcpTool.OutputSchema = annotations.GetOutputSchema().AsMap()
+			schema := annotations.GetOutputSchema().AsMap()
+			// Only include output schema if it's an object, as the MCP SDK might panic otherwise
+			if t, ok := schema["type"].(string); ok && t == "object" {
+				mcpTool.OutputSchema = schema
+			}
 		}
 	}
 
