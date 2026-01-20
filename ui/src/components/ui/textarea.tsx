@@ -7,6 +7,12 @@ import * as React from 'react';
 
 import {cn} from '@/lib/utils';
 
+/**
+ * Textarea component.
+ * @param props - The component props.
+ * @param props.className - The name of the class.
+ * @returns The rendered component.
+ */
 const Textarea = React.forwardRef<HTMLTextAreaElement, React.ComponentProps<'textarea'>>(
   ({className, ...props}, ref) => {
     return (

@@ -23,6 +23,13 @@ interface CreateConfigWizardProps {
 
 import { useToast } from "@/hooks/use-toast";
 
+/**
+ * WizardContent component.
+ * @param props - The component props.
+ * @param props.onComplete - The onComplete property.
+ * @param props.onCancel - The onCancel property.
+ * @returns The rendered component.
+ */
 function WizardContent({ onComplete, onCancel }: { onComplete: (config: any) => void, onCancel: () => void }) {
     const { state, nextStep, prevStep, validateStep } = useWizard();
     const { currentStep: step } = state;

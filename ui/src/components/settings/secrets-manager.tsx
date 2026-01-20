@@ -261,6 +261,13 @@ export function SecretsManager() {
     );
 }
 
+/**
+ * SecretItem component.
+ * @param props - The component props.
+ * @param props.secret - The secret property.
+ * @param props.onDelete - The onDelete property.
+ * @returns The rendered component.
+ */
 function SecretItem({ secret, onDelete }: { secret: SecretDefinition; onDelete: (id: string) => void }) {
     const [isVisible, setIsVisible] = useState(false);
     const { toast } = useToast();

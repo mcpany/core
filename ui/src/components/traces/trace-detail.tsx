@@ -19,6 +19,12 @@ import React from "react";
 import { useRouter } from "next/navigation";
 
 // For Syntax Highlighting (simple version)
+/**
+ * JsonView component.
+ * @param props - The component props.
+ * @param props.data - The data to display.
+ * @returns The rendered component.
+ */
 function JsonView({ data }: { data: any }) {
     if (!data) return <span className="text-muted-foreground italic">null</span>;
     return (
@@ -28,6 +34,12 @@ function JsonView({ data }: { data: any }) {
     );
 }
 
+/**
+ * SpanIcon component.
+ * @param props - The component props.
+ * @param props.type - The type definition.
+ * @returns The rendered component.
+ */
 function SpanIcon({ type }: { type: Span['type'] }) {
     switch (type) {
         case 'tool': return <Terminal className="h-3 w-3 text-amber-500" />;
@@ -38,6 +50,15 @@ function SpanIcon({ type }: { type: Span['type'] }) {
     }
 }
 
+/**
+ * WaterfallItem component.
+ * @param props - The component props.
+ * @param props.span - The span property.
+ * @param props.depth - The nesting depth.
+ * @param props.traceStart - The traceStart property.
+ * @param props.traceDuration - The traceDuration property.
+ * @returns The rendered component.
+ */
 function WaterfallItem({
     span,
     depth = 0,

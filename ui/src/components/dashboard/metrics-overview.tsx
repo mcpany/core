@@ -43,6 +43,12 @@ const iconMap: Record<string, any> = {
 
 // ⚡ Bolt Optimization: Extracted and memoized MetricItem to prevent unnecessary re-renders
 // when only some metrics change during polling.
+/**
+ * MetricItem component.
+ * @param props - The component props.
+ * @param props.metric - The metric property.
+ * @returns The rendered component.
+ */
 const MetricItem = memo(function MetricItem({ metric }: { metric: Metric }) {
   const Icon = iconMap[metric.icon] || Activity;
   const isPositiveTrend = metric.trend === "up";

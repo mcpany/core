@@ -50,6 +50,12 @@ const getStatusColor = (status: string) => {
 // ⚡ Bolt Optimization: Extracted diagnosis logic to a memoized component.
 // This prevents running analyzeConnectionError on every parent render.
 // The logic now only runs when the service message changes.
+/**
+ * ServiceDiagnosisPopover component.
+ * @param props - The component props.
+ * @param props.message - The message property.
+ * @returns The rendered component.
+ */
 const ServiceDiagnosisPopover = memo(function ServiceDiagnosisPopover({ message }: { message: string }) {
     const diagnosis = useMemo(() => analyzeConnectionError(message), [message]);
 
@@ -80,6 +86,12 @@ const ServiceDiagnosisPopover = memo(function ServiceDiagnosisPopover({ message 
 
 // ⚡ Bolt Optimization: Memoized individual service items.
 // This prevents re-rendering all service items when only one service's state changes (e.g., latency or uptime update).
+/**
+ * ServiceHealthItem component.
+ * @param props - The component props.
+ * @param props.service - The service property.
+ * @returns The rendered component.
+ */
 const ServiceHealthItem = memo(function ServiceHealthItem({ service }: { service: ServiceHealth }) {
     return (
         <div
