@@ -12,6 +12,8 @@ import (
 	"time"
 )
 
+const trueVal = "true"
+
 // IsSafeURL checks if the URL is safe to connect to.
 // It validates the scheme and resolves the host to ensure it doesn't point to
 // loopback, link-local, private, or multicast addresses.
@@ -23,12 +25,12 @@ import (
 // IsSafeURL is a variable to allow mocking in tests.
 var IsSafeURL = func(urlStr string) error {
 	// Bypass if explicitly allowed (for testing/development)
-	if os.Getenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS") == "true" {
+	if os.Getenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS") == trueVal {
 		return nil
 	}
 
-	allowLoopback := os.Getenv("MCPANY_ALLOW_LOOPBACK_RESOURCES") == "true"
-	allowPrivate := os.Getenv("MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES") == "true"
+	allowLoopback := os.Getenv("MCPANY_ALLOW_LOOPBACK_RESOURCES") == trueVal
+	allowPrivate := os.Getenv("MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES") == trueVal
 
 	u, err := url.Parse(urlStr)
 	if err != nil {
