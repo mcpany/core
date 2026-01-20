@@ -130,6 +130,26 @@ func isNAT64(ip net.IP) bool {
 		ip[8] == 0 && ip[9] == 0 && ip[10] == 0 && ip[11] == 0
 }
 
+func isNAT64LinkLocal(ip net.IP) bool {
+	if !isNAT64(ip) {
+		return false
+	}
+	// Extract embedded IPv4 (last 4 bytes)
+	ip4 := ip[12:16]
+	// Check for Link-local (169.254.0.0/16)
+	return ip4[0] == 169 && ip4[1] == 254
+}
+
+func isNAT64Loopback(ip net.IP) bool {
+	if !isNAT64(ip) {
+		return false
+	}
+	// Extract embedded IPv4 (last 4 bytes)
+	ip4 := ip[12:16]
+	// Check for Loopback (127.0.0.0/8)
+	return ip4[0] == 127
+}
+
 func isIPv4Compatible(ip net.IP) bool {
 	// Check for IPv4-compatible IPv6 addresses (::a.b.c.d)
 	// These are deprecated but can be used to bypass filters if the underlying OS supports them.
@@ -201,6 +221,19 @@ func IsPrivateIP(ip net.IP) bool {
 
 	// Check for IPv4-compatible IPv6 addresses (::a.b.c.d) for Loopback/Link-local
 	if isIPv4Compatible(ip) {
+		ip4 := ip[12:16]
+		// Loopback (127.0.0.0/8)
+		if ip4[0] == 127 {
+			return true
+		}
+		// Link-local (169.254.0.0/16)
+		if ip4[0] == 169 && ip4[1] == 254 {
+			return true
+		}
+	}
+
+	// Check for NAT64 (IPv4-embedded IPv6) for Loopback/Link-local
+	if isNAT64(ip) {
 		ip4 := ip[12:16]
 		// Loopback (127.0.0.0/8)
 		if ip4[0] == 127 {
