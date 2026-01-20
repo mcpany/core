@@ -14,6 +14,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"os"
+	"path/filepath"
 	"strings"
 	"sync"
 	"sync/atomic"
@@ -24,15 +25,19 @@ import (
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/mcpany/core/server/pkg/auth"
 	"github.com/mcpany/core/server/pkg/bus"
+	"github.com/mcpany/core/server/pkg/config"
 	"github.com/mcpany/core/server/pkg/logging"
 	"github.com/mcpany/core/server/pkg/mcpserver"
 	"github.com/mcpany/core/server/pkg/middleware"
 	"github.com/mcpany/core/server/pkg/pool"
+	"github.com/mcpany/core/server/pkg/profile"
 	"github.com/mcpany/core/server/pkg/prompt"
 	"github.com/mcpany/core/server/pkg/resource"
 	"github.com/mcpany/core/server/pkg/serviceregistry"
 	"github.com/mcpany/core/server/pkg/tool"
+	"github.com/mcpany/core/server/pkg/upstream"
 	"github.com/mcpany/core/server/pkg/upstream/factory"
+	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/spf13/afero"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
@@ -40,6 +45,7 @@ import (
 	"github.com/stretchr/testify/require"
 	gogrpc "google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
+	"google.golang.org/protobuf/proto"
 )
 
 func TestReloadConfig(t *testing.T) {
@@ -2378,4 +2384,748 @@ func TestConfigHealthCheck(t *testing.T) {
 	assert.Equal(t, "degraded", check.Status)
 	assert.NotEmpty(t, check.Message)
 	assert.Contains(t, check.Message, "yaml")
+}
+
+func ptr[T any](v T) *T {
+	return &v
+}
+
+func TestRunServerMode_Auth(t *testing.T) {
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	l, err := net.Listen("tcp", "127.0.0.1:0")
+	require.NoError(t, err)
+	bindAddress := l.Addr().String()
+	_ = l.Close()
+
+	busProvider, _ := bus.NewProvider(nil)
+	poolManager := pool.NewManager()
+	upstreamFactory := factory.NewUpstreamServiceFactory(poolManager, nil)
+
+	app := NewApplication()
+	app.fs = afero.NewMemMapFs()
+	app.SettingsManager = NewGlobalSettingsManager("global-secret", nil, nil)
+	config.GlobalSettings().SetAPIKey("global-secret")
+	defer config.GlobalSettings().SetAPIKey("")
+
+	authManager := auth.NewManager()
+	authManager.SetAPIKey("global-secret")
+	app.AuthManager = authManager
+	app.ProfileManager = profile.NewManager(nil)
+
+	serviceRegistry := serviceregistry.New(upstreamFactory, app.ToolManager, app.PromptManager, app.ResourceManager, authManager)
+	mcpSrv, err := mcpserver.NewServer(ctx, app.ToolManager, app.PromptManager, app.ResourceManager, authManager, serviceRegistry, busProvider, true)
+	require.NoError(t, err)
+
+	users := []*configv1.User{
+		{
+			Id: proto.String("user_with_auth"),
+			Authentication: &configv1.Authentication{
+				AuthMethod: &configv1.Authentication_ApiKey{
+					ApiKey: &configv1.APIKeyAuth{
+						VerificationValue: ptr("user-secret"),
+						In:                ptr(configv1.APIKeyAuth_HEADER),
+						ParamName:         ptr("X-API-Key"),
+					},
+				},
+			},
+			ProfileIds: []string{"profileA"},
+		},
+		{
+			Id: proto.String("user_no_auth"),
+			ProfileIds: []string{"profileB"},
+		},
+		{
+			Id:         proto.String("user_blocked"),
+			ProfileIds: []string{},
+		},
+	}
+	authManager.SetUsers(users)
+
+	cachingMiddleware := middleware.NewCachingMiddleware(app.ToolManager)
+	errChan := make(chan error, 1)
+	go func() {
+		errChan <- app.runServerMode(ctx, mcpSrv, busProvider, bindAddress, "", 5*time.Second, nil, cachingMiddleware, nil, app.Storage, serviceRegistry, nil)
+	}()
+
+	waitForServerReady(t, bindAddress)
+	baseURL := fmt.Sprintf("http://%s", bindAddress)
+
+	t.Run("Invalid Path", func(t *testing.T) {
+		resp, err := http.Get(baseURL + "/mcp/u/foo")
+		require.NoError(t, err)
+		defer resp.Body.Close()
+		assert.Equal(t, http.StatusNotFound, resp.StatusCode)
+	})
+
+	t.Run("User Not Found", func(t *testing.T) {
+		resp, err := http.Get(baseURL + "/mcp/u/unknown_user/profile/any")
+		require.NoError(t, err)
+		defer resp.Body.Close()
+		assert.Equal(t, http.StatusNotFound, resp.StatusCode)
+	})
+
+	t.Run("User Auth - Correct Key", func(t *testing.T) {
+		req, _ := http.NewRequest("POST", baseURL+"/mcp/u/user_with_auth/profile/profileA", nil)
+		req.Header.Set("X-API-Key", "user-secret")
+		resp, err := http.DefaultClient.Do(req)
+		require.NoError(t, err)
+		defer resp.Body.Close()
+		assert.NotEqual(t, http.StatusUnauthorized, resp.StatusCode)
+		assert.NotEqual(t, http.StatusForbidden, resp.StatusCode)
+	})
+
+	t.Run("User No Auth - Global Correct", func(t *testing.T) {
+		req, _ := http.NewRequest("POST", baseURL+"/mcp/u/user_no_auth/profile/profileB", nil)
+		req.Header.Set("X-API-Key", "global-secret")
+		resp, err := http.DefaultClient.Do(req)
+		require.NoError(t, err)
+		defer resp.Body.Close()
+		assert.NotEqual(t, http.StatusUnauthorized, resp.StatusCode)
+	})
+
+	cancel()
+	<-errChan
+}
+
+func TestAuthMiddleware_LocalhostSecurity(t *testing.T) {
+	app := NewApplication()
+	app.SettingsManager = NewGlobalSettingsManager("", nil, nil)
+
+	t.Run("No Key - Localhost Allowed", func(t *testing.T) {
+		middleware := app.createAuthMiddleware(false, false)
+		handler := middleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.WriteHeader(http.StatusOK)
+		}))
+		req := httptest.NewRequest("GET", "/", nil)
+		req.RemoteAddr = "127.0.0.1:12345"
+		rec := httptest.NewRecorder()
+		handler.ServeHTTP(rec, req)
+		assert.Equal(t, http.StatusOK, rec.Code)
+	})
+}
+
+func TestAuthMiddleware_AuthDisabled(t *testing.T) {
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	l, err := net.Listen("tcp", "127.0.0.1:0")
+	require.NoError(t, err)
+	bindAddress := l.Addr().String()
+	_ = l.Close()
+
+	app := NewApplication()
+	app.fs = afero.NewMemMapFs()
+	app.SettingsManager = NewGlobalSettingsManager("", nil, nil)
+
+	busProvider, _ := bus.NewProvider(nil)
+	poolManager := pool.NewManager()
+	upstreamFactory := factory.NewUpstreamServiceFactory(poolManager, nil)
+	authManager := auth.NewManager()
+	app.AuthManager = authManager
+
+	serviceRegistry := serviceregistry.New(upstreamFactory, app.ToolManager, app.PromptManager, app.ResourceManager, authManager)
+	mcpSrv, err := mcpserver.NewServer(ctx, app.ToolManager, app.PromptManager, app.ResourceManager, authManager, serviceRegistry, busProvider, true)
+	require.NoError(t, err)
+
+	origMiddlewares := config.GlobalSettings().Middlewares()
+	defer config.GlobalSettings().SetMiddlewares(origMiddlewares)
+	config.GlobalSettings().SetMiddlewares([]*configv1.Middleware{
+		{Name: proto.String("auth"), Priority: proto.Int32(1), Disabled: proto.Bool(true)},
+	})
+
+	errChan := make(chan error, 1)
+	go func() {
+		errChan <- app.runServerMode(ctx, mcpSrv, busProvider, bindAddress, "", 5*time.Second, nil, middleware.NewCachingMiddleware(app.ToolManager), nil, nil, serviceRegistry, nil)
+	}()
+
+	waitForServerReady(t, bindAddress)
+	resp, err := http.Get("http://" + bindAddress + "/healthz")
+	require.NoError(t, err)
+	defer resp.Body.Close()
+	assert.Equal(t, http.StatusOK, resp.StatusCode)
+
+	cancel()
+	<-errChan
+}
+
+func TestReloadConfig_Directory(t *testing.T) {
+	fs := afero.NewMemMapFs()
+	app := NewApplication()
+	poolManager := pool.NewManager()
+	upstreamFactory := factory.NewUpstreamServiceFactory(poolManager, nil)
+	app.ServiceRegistry = serviceregistry.New(upstreamFactory, app.ToolManager, app.PromptManager, app.ResourceManager, auth.NewManager())
+
+	fs.MkdirAll("/config", 0755)
+	afero.WriteFile(fs, "/config/service1.yaml", []byte("upstream_services:\n - name: \"service1\"\n   http_service:\n     address: \"http://localhost:8081\""), 0644)
+	afero.WriteFile(fs, "/config/service2.json", []byte("{\"upstream_services\": [{\"name\": \"service2\", \"http_service\": {\"address\": \"http://localhost:8082\"}}]}"), 0644)
+
+	err := app.ReloadConfig(context.Background(), fs, []string{"/config"})
+	require.NoError(t, err)
+}
+
+func TestServer_CORS(t *testing.T) {
+	fs := afero.NewMemMapFs()
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	l, err := net.Listen("tcp", "127.0.0.1:0")
+	require.NoError(t, err)
+	addr := l.Addr().String()
+	_ = l.Close()
+
+	afero.WriteFile(fs, "/config.yaml", []byte("global_settings:\n  log_level: DEBUG\nupstream_services: []"), 0644)
+
+	app := NewApplication()
+	errChan := make(chan error, 1)
+	go func() {
+		errChan <- app.Run(ctx, fs, false, addr, "", []string{"/config.yaml"}, "", 5*time.Second)
+	}()
+
+	waitForServerReady(t, addr)
+
+	origin := "http://example.com"
+	req, _ := http.NewRequest("OPTIONS", "http://"+addr+"/upload", nil)
+	req.Header.Set("Origin", origin)
+	req.Header.Set("Access-Control-Request-Method", "POST")
+	resp, err := http.DefaultClient.Do(req)
+	require.NoError(t, err)
+	resp.Body.Close()
+	assert.Equal(t, "*", resp.Header.Get("Access-Control-Allow-Origin"))
+
+	cancel()
+	<-errChan
+}
+
+func TestServer_CORS_Strict(t *testing.T) {
+	fs := afero.NewMemMapFs()
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	l, err := net.Listen("tcp", "127.0.0.1:0")
+	require.NoError(t, err)
+	addr := l.Addr().String()
+	_ = l.Close()
+
+	afero.WriteFile(fs, "/config.yaml", []byte("global_settings:\n  log_level: INFO\nupstream_services: []"), 0644)
+
+	app := NewApplication()
+	errChan := make(chan error, 1)
+	go func() {
+		errChan <- app.Run(ctx, fs, false, addr, "", []string{"/config.yaml"}, "", 5*time.Second)
+	}()
+
+	waitForServerReady(t, addr)
+
+	req, _ := http.NewRequest("OPTIONS", "http://"+addr+"/upload", nil)
+	req.Header.Set("Origin", "http://example.com")
+	req.Header.Set("Access-Control-Request-Method", "POST")
+	resp, err := http.DefaultClient.Do(req)
+	require.NoError(t, err)
+	resp.Body.Close()
+	assert.Empty(t, resp.Header.Get("Access-Control-Allow-Origin"))
+
+	cancel()
+	<-errChan
+}
+
+func TestHealthCheckWithContext_InvalidAddr(t *testing.T) {
+	err := HealthCheckWithContext(context.Background(), io.Discard, "invalid\naddr")
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), "failed to create request")
+}
+
+func TestRun_WithListenAddress(t *testing.T) {
+	fs := afero.NewMemMapFs()
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	afero.WriteFile(fs, "/config.yaml", []byte("global_settings:\n  mcp_listen_address: \"127.0.0.1:0\"\nupstream_services: []"), 0644)
+	app := NewApplication()
+	errChan := make(chan error, 1)
+	go func() {
+		errChan <- app.Run(ctx, fs, false, "", "", []string{"/config.yaml"}, "", 5*time.Second)
+	}()
+
+	time.Sleep(100 * time.Millisecond)
+	cancel()
+	err := <-errChan
+	assert.NoError(t, err)
+}
+
+func TestUploadFile_TempDirFail(t *testing.T) {
+	orig := os.Getenv("TMPDIR")
+	_ = os.Setenv("TMPDIR", "/non-existent")
+	defer os.Setenv("TMPDIR", orig)
+
+	app := NewApplication()
+	var buf bytes.Buffer
+	writer := multipart.NewWriter(&buf)
+	part, _ := writer.CreateFormFile("file", "test.txt")
+	part.Write([]byte("test content"))
+	writer.Close()
+
+	req := httptest.NewRequest(http.MethodPost, "/upload", &buf)
+	req.Header.Set("Content-Type", writer.FormDataContentType())
+	rr := httptest.NewRecorder()
+	app.uploadFile(rr, req)
+
+	if rr.Code == http.StatusInternalServerError {
+		assert.Contains(t, rr.Body.String(), "failed to create temporary file")
+	}
+}
+
+func TestMultiUserHandler_EdgeCases(t *testing.T) {
+	fs := afero.NewMemMapFs()
+	afero.WriteFile(fs, "/config.yaml", []byte("users:\n  - id: \"user1\"\n    profile_ids: [\"profile1\"]"), 0644)
+
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	app := NewApplication()
+	mockStore := new(MockStore)
+	mockStore.On("Load", mock.Anything).Return((*configv1.McpAnyServerConfig)(nil), nil)
+	mockStore.On("ListServices", mock.Anything).Return([]*configv1.UpstreamServiceConfig{}, nil)
+	mockStore.On("GetGlobalSettings", mock.Anything).Return(&configv1.GlobalSettings{}, nil)
+	mockStore.On("Close").Return(nil)
+	app.Storage = mockStore
+
+	l, err := net.Listen("tcp", "127.0.0.1:0")
+	require.NoError(t, err)
+	addr := l.Addr().String()
+	_ = l.Close()
+
+	errChan := make(chan error, 1)
+	go func() {
+		errChan <- app.Run(ctx, fs, false, addr, "", []string{"/config.yaml"}, "", 5*time.Second)
+	}()
+
+	waitForServerReady(t, addr)
+	baseURL := "http://" + addr
+	client := &http.Client{Timeout: 2 * time.Second}
+
+	t.Run("Invalid Path Format", func(t *testing.T) {
+		resp, _ := client.Get(baseURL + "/mcp/u/user1/invalid")
+		assert.Equal(t, http.StatusNotFound, resp.StatusCode)
+	})
+
+	t.Run("User Not Found", func(t *testing.T) {
+		resp, _ := client.Get(baseURL + "/mcp/u/unknown/profile/p1")
+		assert.Equal(t, http.StatusNotFound, resp.StatusCode)
+	})
+
+	t.Run("Stateless JSON-RPC Invalid JSON", func(t *testing.T) {
+		resp, _ := client.Post(baseURL+"/mcp/u/user1/profile/profile1", "application/json", strings.NewReader("invalid"))
+		assert.Equal(t, http.StatusBadRequest, resp.StatusCode)
+	})
+
+	cancel()
+	<-errChan
+}
+
+func TestMultiUserHandler_UserAuth(t *testing.T) {
+	fs := afero.NewMemMapFs()
+	configContent := "users:\n  - id: \"user_auth\"\n    profile_ids: [\"p1\"]\n    authentication:\n      api_key:\n        param_name: \"X-Key\"\n        verification_value: \"secret\"\n        in: \"HEADER\""
+	afero.WriteFile(fs, "/config.yaml", []byte(configContent), 0644)
+
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	app := NewApplication()
+	mockStore := new(MockStore)
+	mockStore.On("Load", mock.Anything).Return((*configv1.McpAnyServerConfig)(nil), nil)
+	mockStore.On("ListServices", mock.Anything).Return([]*configv1.UpstreamServiceConfig{}, nil)
+	mockStore.On("GetGlobalSettings", mock.Anything).Return(&configv1.GlobalSettings{}, nil)
+	mockStore.On("Close").Return(nil)
+	app.Storage = mockStore
+
+	l, err := net.Listen("tcp", "127.0.0.1:0")
+	require.NoError(t, err)
+	addr := l.Addr().String()
+	_ = l.Close()
+
+	go func() {
+		app.Run(ctx, fs, false, addr, "", []string{"/config.yaml"}, "", 5*time.Second)
+	}()
+
+	waitForServerReady(t, addr)
+	baseURL := "http://" + addr
+	client := &http.Client{Timeout: 2 * time.Second}
+
+	t.Run("Missing Auth", func(t *testing.T) {
+		resp, _ := client.Get(baseURL + "/mcp/u/user_auth/profile/p1")
+		assert.Equal(t, http.StatusUnauthorized, resp.StatusCode)
+	})
+
+	t.Run("Correct Auth", func(t *testing.T) {
+		req, _ := http.NewRequest("POST", baseURL+"/mcp/u/user_auth/profile/p1", strings.NewReader("{}"))
+		req.Header.Set("X-Key", "secret")
+		resp, _ := client.Do(req)
+		assert.Equal(t, http.StatusMethodNotAllowed, resp.StatusCode)
+	})
+
+	cancel()
+}
+
+func TestReloadConfig_DynamicUpdates(t *testing.T) {
+	fs := afero.NewMemMapFs()
+	afero.WriteFile(fs, "/config.yaml", []byte("global_settings:\n  allowed_ips: [\"127.0.0.1\"]"), 0644)
+
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	app := NewApplication()
+	mockStore := new(MockStore)
+	mockStore.On("Load", mock.Anything).Return((*configv1.McpAnyServerConfig)(nil), nil)
+	mockStore.On("ListServices", mock.Anything).Return([]*configv1.UpstreamServiceConfig{}, nil)
+	mockStore.On("GetGlobalSettings", mock.Anything).Return(&configv1.GlobalSettings{}, nil)
+	mockStore.On("Close").Return(nil)
+	app.Storage = mockStore
+
+	l, err := net.Listen("tcp", "127.0.0.1:0")
+	require.NoError(t, err)
+	addr := l.Addr().String()
+	_ = l.Close()
+
+	go func() {
+		app.Run(ctx, fs, false, addr, "", []string{"/config.yaml"}, "", 5*time.Second)
+	}()
+
+	require.NoError(t, app.WaitForStartup(ctx))
+	assert.True(t, app.ipMiddleware.Allow("127.0.0.1"))
+	assert.False(t, app.ipMiddleware.Allow("10.0.0.1"))
+
+	afero.WriteFile(fs, "/config.yaml", []byte("global_settings:\n  allowed_ips: [\"127.0.0.1\", \"10.0.0.1\"]"), 0644)
+	err = app.ReloadConfig(ctx, fs, []string{"/config.yaml"})
+	require.NoError(t, err)
+	assert.True(t, app.ipMiddleware.Allow("10.0.0.1"))
+}
+
+func TestMultiUserHandler_RBAC_RoleMismatch(t *testing.T) {
+	fs := afero.NewMemMapFs()
+	configContent := "global_settings:\n  profile_definitions:\n    - name: \"admin_profile\"\n      required_roles: [\"admin\"]\nusers:\n  - id: \"user_regular\"\n    profile_ids: [\"admin_profile\"]\n    roles: [\"user\"]"
+	afero.WriteFile(fs, "/config.yaml", []byte(configContent), 0644)
+
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	app := NewApplication()
+	mockStore := new(MockStore)
+	mockStore.On("Load", mock.Anything).Return((*configv1.McpAnyServerConfig)(nil), nil)
+	mockStore.On("ListServices", mock.Anything).Return([]*configv1.UpstreamServiceConfig{}, nil)
+	mockStore.On("GetGlobalSettings", mock.Anything).Return(&configv1.GlobalSettings{}, nil)
+	mockStore.On("Close").Return(nil)
+	app.Storage = mockStore
+
+	l, err := net.Listen("tcp", "127.0.0.1:0")
+	require.NoError(t, err)
+	addr := l.Addr().String()
+	_ = l.Close()
+
+	go func() {
+		app.Run(ctx, fs, false, addr, "", []string{"/config.yaml"}, "", 5*time.Second)
+	}()
+
+	waitForServerReady(t, addr)
+	resp, _ := http.Get("http://" + addr + "/mcp/u/user_regular/profile/admin_profile")
+	assert.Equal(t, http.StatusForbidden, resp.StatusCode)
+}
+
+type MockUpstreamFactory struct {
+	NewUpstreamFunc func(config *configv1.UpstreamServiceConfig) (upstream.Upstream, error)
+}
+
+func (m *MockUpstreamFactory) NewUpstream(config *configv1.UpstreamServiceConfig) (upstream.Upstream, error) {
+	if m.NewUpstreamFunc != nil {
+		return m.NewUpstreamFunc(config)
+	}
+	return nil, fmt.Errorf("mock factory: NewUpstreamFunc not set")
+}
+
+func TestReloadConfig_FactoryError(t *testing.T) {
+	fs := afero.NewMemMapFs()
+	app := NewApplication()
+	app.UpstreamFactory = &MockUpstreamFactory{
+		NewUpstreamFunc: func(_ *configv1.UpstreamServiceConfig) (upstream.Upstream, error) {
+			return nil, fmt.Errorf("factory error")
+		},
+	}
+
+	afero.WriteFile(fs, "/config.yaml", []byte("upstream_services:\n - name: \"test-service\"\n   http_service:\n     address: \"http://example.com\""), 0644)
+	err := app.ReloadConfig(context.Background(), fs, []string{"/config.yaml"})
+	require.NoError(t, err)
+}
+
+func TestHealthCheckWithContextConcurrent(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+		w.WriteHeader(http.StatusOK)
+	}))
+	defer server.Close()
+
+	var wg sync.WaitGroup
+	for i := 0; i < 10; i++ {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
+			defer cancel()
+			err := HealthCheckWithContext(ctx, io.Discard, server.Listener.Addr().String())
+			assert.NoError(t, err)
+		}()
+	}
+	wg.Wait()
+}
+
+func TestAuthMiddleware_IPBypass(t *testing.T) {
+	app := NewApplication()
+	app.SettingsManager = NewGlobalSettingsManager("", nil, nil)
+	middleware := app.createAuthMiddleware(false, false)
+	handler := middleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+	}))
+
+	tests := []struct {
+		name       string
+		remoteAddr string
+		wantStatus int
+	}{
+		{"IPv4 Loopback", "127.0.0.1:12345", http.StatusOK},
+		{"IPv4 Private", "192.168.1.1:12345", http.StatusOK},
+		{"IPv6 Loopback", "[::1]:12345", http.StatusOK},
+		{"IPv4 Public", "8.8.8.8:12345", http.StatusForbidden},
+		{"IPv4-Compatible Loopback", "[::127.0.0.1]:12345", http.StatusOK},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			req := httptest.NewRequest("GET", "/", nil)
+			req.RemoteAddr = tt.remoteAddr
+			rr := httptest.NewRecorder()
+			handler.ServeHTTP(rr, req)
+			assert.Equal(t, tt.wantStatus, rr.Code)
+		})
+	}
+}
+
+type MockMiddlewareFactory struct {
+	mock.Mock
+}
+
+func (m *MockMiddlewareFactory) Create(cfg *configv1.Middleware) func(mcp.MethodHandler) mcp.MethodHandler {
+	args := m.Called(cfg)
+	return args.Get(0).(func(mcp.MethodHandler) mcp.MethodHandler)
+}
+
+func TestMiddlewareRegistry(t *testing.T) {
+	middleware.RegisterMCP("test_middleware", func(cfg *configv1.Middleware) func(mcp.MethodHandler) mcp.MethodHandler {
+		return func(next mcp.MethodHandler) mcp.MethodHandler {
+			return func(ctx context.Context, method string, req mcp.Request) (mcp.Result, error) {
+				return next(ctx, method, req)
+			}
+		}
+	})
+
+	t.Run("GetMCPMiddlewares sorts by priority", func(t *testing.T) {
+		configs := []*configv1.Middleware{
+			{Name: proto.String("test_middleware"), Priority: proto.Int32(100)},
+			{Name: proto.String("logging"), Priority: proto.Int32(10)},
+		}
+		middleware.RegisterMCP("logging", func(cfg *configv1.Middleware) func(mcp.MethodHandler) mcp.MethodHandler {
+			return func(next mcp.MethodHandler) mcp.MethodHandler { return next }
+		})
+		chain := middleware.GetMCPMiddlewares(configs)
+		assert.Equal(t, 2, len(chain))
+	})
+}
+
+func TestConfigureUIHandler(t *testing.T) {
+	busProvider, _ := bus.NewProvider(nil)
+	poolManager := pool.NewManager()
+	upstreamFactory := factory.NewUpstreamServiceFactory(poolManager, nil)
+	toolManager := tool.NewManager(busProvider)
+	authManager := auth.NewManager()
+	serviceRegistry := serviceregistry.New(upstreamFactory, toolManager, prompt.NewManager(), resource.NewManager(), authManager)
+	mcpSrv, _ := mcpserver.NewServer(context.Background(), toolManager, prompt.NewManager(), resource.NewManager(), authManager, serviceRegistry, busProvider, false)
+
+	t.Run("No UI directory", func(t *testing.T) {
+		fs := afero.NewMemMapFs()
+		app := NewApplication()
+		app.fs = fs
+		app.SettingsManager = NewGlobalSettingsManager("", nil, nil)
+		ctx, cancel := context.WithCancel(context.Background())
+		go func() { time.Sleep(50 * time.Millisecond); cancel() }()
+		logging.ForTestsOnlyResetLogger()
+		var buf ThreadSafeBuffer
+		logging.Init(slog.LevelInfo, &buf)
+		_ = app.runServerMode(ctx, mcpSrv, busProvider, "127.0.0.1:0", "127.0.0.1:0", 1*time.Second, nil, middleware.NewCachingMiddleware(toolManager), nil, nil, serviceRegistry, nil)
+		assert.Contains(t, buf.String(), "No UI directory found")
+	})
+}
+
+func TestUploadFile_Coverage(t *testing.T) {
+	app := NewApplication()
+
+	t.Run("Invalid Method", func(t *testing.T) {
+		req := httptest.NewRequest("GET", "/upload", nil)
+		w := httptest.NewRecorder()
+
+		app.uploadFile(w, req)
+
+		resp := w.Result()
+		assert.Equal(t, http.StatusMethodNotAllowed, resp.StatusCode)
+	})
+
+	t.Run("Missing File", func(t *testing.T) {
+		body := &bytes.Buffer{}
+		writer := multipart.NewWriter(body)
+		writer.Close() // Empty form
+
+		req := httptest.NewRequest("POST", "/upload", body)
+		req.Header.Set("Content-Type", writer.FormDataContentType())
+		w := httptest.NewRecorder()
+
+		app.uploadFile(w, req)
+
+		resp := w.Result()
+		// If file is missing, FormFile returns error
+		assert.Equal(t, http.StatusBadRequest, resp.StatusCode)
+	})
+
+	t.Run("Unicode Filename", func(t *testing.T) {
+		body := &bytes.Buffer{}
+		writer := multipart.NewWriter(body)
+		part, err := writer.CreateFormFile("file", "测试.txt")
+		assert.NoError(t, err)
+		_, err = part.Write([]byte("content"))
+		assert.NoError(t, err)
+		writer.Close()
+
+		req := httptest.NewRequest("POST", "/upload", body)
+		req.Header.Set("Content-Type", writer.FormDataContentType())
+		w := httptest.NewRecorder()
+
+		app.uploadFile(w, req)
+
+		resp := w.Result()
+		assert.Equal(t, http.StatusOK, resp.StatusCode)
+
+		// Read response body
+		respBody := w.Body.String()
+		// Expect: File '测试.txt' uploaded successfully
+		assert.Contains(t, respBody, "测试.txt")
+	})
+}
+
+func TestFilesystemHealthCheck(t *testing.T) {
+	tempDir := t.TempDir()
+	existingDir := filepath.Join(tempDir, "existing")
+	os.Mkdir(existingDir, 0755)
+
+	app := NewApplication()
+	services := []*configv1.UpstreamServiceConfig{
+		{
+			Name: proto.String("svc-1"),
+			ServiceConfig: &configv1.UpstreamServiceConfig_FilesystemService{
+				FilesystemService: &configv1.FilesystemUpstreamService{
+					RootPaths: map[string]string{"/data": existingDir},
+				},
+			},
+		},
+	}
+
+	app.ServiceRegistry = &TestMockServiceRegistry{services: services}
+	res := app.filesystemHealthCheck(context.Background())
+	assert.Equal(t, "ok", res.Status)
+}
+
+func TestMultiUserToolFiltering(t *testing.T) {
+	fs := afero.NewMemMapFs()
+	configContent := `
+global_settings:
+  profile_definitions:
+    - name: "dev-profile"
+      service_config: {dev-service: {enabled: true}}
+upstream_services:
+  - name: "dev-service"
+    id: "dev-service"
+    http_service:
+      address: "http://127.0.0.1:8081"
+      tools: [{name: "dev-tool", call_id: "dev-call"}]
+      calls: {dev-call: {id: "dev-call", endpoint_path: "/dev", method: "HTTP_METHOD_POST"}}
+`
+	afero.WriteFile(fs, "/config.yaml", []byte(configContent), 0o644)
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	app := NewApplication()
+	go app.Run(ctx, fs, false, "127.0.0.1:0", "127.0.0.1:0", []string{"/config.yaml"}, "", 5*time.Second)
+
+	require.Eventually(t, func() bool { return app.BoundHTTPPort != 0 }, 5*time.Second, 100*time.Millisecond)
+}
+
+func TestFix_ReloadReliability(t *testing.T) {
+	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte(`{"openapi": "3.0.0", "info": {"title": "T", "version": "1"}, "paths": {"/t": {"get": {"operationId": "op"}}}}`))
+	}))
+	defer ts.Close()
+
+	fs := afero.NewMemMapFs()
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	configPath := "/config.yaml"
+	config := fmt.Sprintf("upstream_services: [{name: 's', openapi_service: {address: '%s', spec_url: '%s'}}]", ts.URL, ts.URL)
+	afero.WriteFile(fs, configPath, []byte(config), 0o644)
+
+	app := NewApplication()
+	go app.Run(ctx, fs, false, "127.0.0.1:0", "127.0.0.1:0", []string{configPath}, "", 5*time.Second)
+
+	require.NoError(t, app.WaitForStartup(ctx))
+}
+
+func TestStartup_Resilience_UpstreamFailure(t *testing.T) {
+	fs := afero.NewMemMapFs()
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	config := "upstream_services: [{name: 'f', openapi_service: {address: 'http://192.0.2.1', spec_url: 'http://192.0.2.1'}}]"
+	afero.WriteFile(fs, "/config.yaml", []byte(config), 0o644)
+
+	app := NewApplication()
+	go app.Run(ctx, fs, false, "127.0.0.1:0", "127.0.0.1:0", []string{"/config.yaml"}, "", 5*time.Second)
+
+	startupCtx, scancel := context.WithTimeout(ctx, 5*time.Second)
+	defer scancel()
+	err := app.WaitForStartup(startupCtx)
+	require.NoError(t, err)
+}
+
+func TestTemplateManager_Persistence(t *testing.T) {
+	tmpDir := t.TempDir()
+	tm := NewTemplateManager(tmpDir)
+
+	tpl1 := &configv1.UpstreamServiceConfig{
+		Name: proto.String("svc1"),
+		Id:   proto.String("id1"),
+	}
+	tm.SaveTemplate(tpl1)
+
+	tm2 := NewTemplateManager(tmpDir)
+	list2 := tm2.ListTemplates()
+	require.Len(t, list2, 1)
+	assert.Equal(t, "svc1", list2[0].GetName())
+
+	tm.DeleteTemplate("id1")
+	assert.Empty(t, tm.ListTemplates())
+}
+
+func TestTemplateManager_LoadCorrupt(t *testing.T) {
+	tmpDir := t.TempDir()
+	path := filepath.Join(tmpDir, "templates.json")
+	os.WriteFile(path, []byte("{invalid json"), 0600)
+
+	tm := NewTemplateManager(tmpDir)
+	assert.Empty(t, tm.ListTemplates())
 }
