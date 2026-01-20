@@ -88,6 +88,8 @@ func (e *yamlEngine) Unmarshal(b []byte, v proto.Message) error {
 	// Expand environment variables within the AST
 	if err := expandYamlNode(&node); err != nil {
 		if strings.Contains(err.Error(), "variable ${") && strings.Contains(err.Error(), "is missing") {
+			// revive:disable-next-line:error-strings // This error message is user facing and needs to be descriptive
+			//nolint:staticcheck // This error message is user facing and needs to be descriptive
 			return fmt.Errorf("failed to expand environment variables in YAML: %w\n    -> Fix: Set these environment variables in your shell or .env file, or provide a default value (e.g., ${VAR:default}).", err)
 		}
 		return fmt.Errorf("failed to expand environment variables in YAML: %w", err)
@@ -120,7 +122,7 @@ func (e *yamlEngine) Unmarshal(b []byte, v proto.Message) error {
 
 	// Finally, unmarshal the JSON into the protobuf message.
 	if err := protojson.Unmarshal(jsonData, v); err != nil {
-		return handleProtoJsonError(err, v)
+		return handleProtoJSONError(err, v)
 	}
 	// Debug logging to inspect unmarshaled user
 
@@ -175,7 +177,7 @@ func (e *jsonEngine) Unmarshal(b []byte, v proto.Message) error {
 	// Unmarshal JSON into generic interface to allow safe expansion
 	var vMap interface{}
 	if err := json.Unmarshal(b, &vMap); err != nil {
-		return handleProtoJsonError(err, v)
+		return handleProtoJSONError(err, v)
 	}
 
 	// Expand environment variables within the map structure
@@ -190,12 +192,12 @@ func (e *jsonEngine) Unmarshal(b []byte, v proto.Message) error {
 	}
 
 	if err := protojson.Unmarshal(expandedBytes, v); err != nil {
-		return handleProtoJsonError(err, v)
+		return handleProtoJSONError(err, v)
 	}
 	return nil
 }
 
-func handleProtoJsonError(err error, v proto.Message) error {
+func handleProtoJSONError(err error, v proto.Message) error {
 	// Detect if the user is using Claude Desktop config format
 	if strings.Contains(err.Error(), "unknown field \"mcpServers\"") {
 		// revive:disable-next-line:error-strings // This error message is user facing and needs to be descriptive
@@ -381,7 +383,7 @@ func expandYamlNode(node *yaml.Node) error {
 		if node.Tag == "!!str" || node.Tag == "" { // Only expand strings (or untagged which might be strings)
 			expanded, err := expandString(node.Value)
 			if err != nil {
-				return fmt.Errorf("Line %d: %w", node.Line, err)
+				return fmt.Errorf("line %d: %w", node.Line, err)
 			}
 			node.Value = expanded
 		}
