@@ -250,6 +250,12 @@ export function CredentialForm({ initialData, onSuccess }: CredentialFormProps) 
                   returnPath: '/credentials'
               }))
 
+              // Legacy keys for compatibility with /auth/callback/page.tsx
+              sessionStorage.setItem('oauth_credential_id', initialData.id)
+              sessionStorage.setItem('oauth_state', res.state)
+              sessionStorage.setItem('oauth_redirect_url', redirectUrl)
+              sessionStorage.setItem('oauth_return_path', '/credentials')
+
               window.location.href = res.authorization_url
           } else {
               toast({ variant: "destructive", description: "Failed to get authorization URL" })
