@@ -24,6 +24,12 @@ interface SchemaNodeProps {
   level?: number;
 }
 
+/**
+ * TypeBadge component.
+ * @param props - The component props.
+ * @param props.type - The type definition.
+ * @returns The rendered component.
+ */
 const TypeBadge = ({ type }: { type: string }) => {
   const colors: Record<string, string> = {
     string: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300",
@@ -44,6 +50,15 @@ const TypeBadge = ({ type }: { type: string }) => {
   );
 };
 
+/**
+ * SchemaNode component.
+ * @param props - The component props.
+ * @param props.name - The name.
+ * @param props.schema - The schema definition.
+ * @param props.required - Whether the field is required.
+ * @param props.level - The level property.
+ * @returns The rendered component.
+ */
 const SchemaNode = ({ name, schema, required, level = 0 }: SchemaNodeProps) => {
   const [expanded, setExpanded] = useState(true);
 

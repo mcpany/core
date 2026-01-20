@@ -10,6 +10,12 @@ import * as ResizablePrimitive from "react-resizable-panels"
 
 import { cn } from "@/lib/utils"
 
+/**
+ * ResizablePanelGroup component.
+ * @param props - The component props.
+ * @param props.className - The name of the class.
+ * @returns The rendered component.
+ */
 const ResizablePanelGroup = ({
   className,
   ...props
@@ -23,8 +29,22 @@ const ResizablePanelGroup = ({
   />
 )
 
+/**
+ * ResizablePanel component.
+ * @param props - The component props.
+ * @param props.withHandle - The withHandle property.
+ * @param props.className - The name of the class.
+ * @returns The rendered component.
+ */
 const ResizablePanel = ResizablePrimitive.Panel
 
+/**
+ * ResizableHandle component.
+ * @param props - The component props.
+ * @param props.withHandle - The withHandle property.
+ * @param props.className - The name of the class.
+ * @returns The rendered component.
+ */
 const ResizableHandle = ({
   withHandle,
   className,

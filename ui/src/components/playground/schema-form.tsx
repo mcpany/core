@@ -56,6 +56,19 @@ export function SchemaForm({ schema, value, onChange, errors }: {
     );
 }
 
+/**
+ * SchemaField component.
+ * @param props - The component props.
+ * @param props.path - The path property.
+ * @param props.schema - The schema definition.
+ * @param props.value - The current value.
+ * @param props.onChange - Callback function when value changes.
+ * @param props.errors - The error message or object.
+ * @param props.required - Whether the field is required.
+ * @param props.label - The label property.
+ * @param props.level - The level property.
+ * @returns The rendered component.
+ */
 function SchemaField({ path, schema, value, onChange, errors, required, label, level = 0 }: SchemaFieldProps) {
     const type = schema.type;
     const description = schema.description;
@@ -253,6 +266,18 @@ function SchemaField({ path, schema, value, onChange, errors, required, label, l
     );
 }
 
+/**
+ * FieldWrapper component.
+ * @param props - The component props.
+ * @param props.children - The child components.
+ * @param props.label - The label property.
+ * @param props.description - The description property.
+ * @param props.required - Whether the field is required.
+ * @param props.error - The error message or object.
+ * @param props.level - The level property.
+ * @param props.inputId - The unique identifier for input.
+ * @returns The rendered component.
+ */
 function FieldWrapper({ children, label, description, required, error, level, inputId }: {
     children: React.ReactNode, label?: string, description?: string, required?: boolean, error?: string, level: number, inputId?: string
 }) {

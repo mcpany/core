@@ -5,6 +5,12 @@
 
 import { cn } from "@/lib/utils"
 
+/**
+ * Skeleton component.
+ * @param props - The component props.
+ * @param props.className - The name of the class.
+ * @returns The rendered component.
+ */
 function Skeleton({
   className,
   ...props

@@ -360,6 +360,12 @@ export function PlaygroundClient() {
 // ⚡ Bolt Optimization: Memoize MessageItem to prevent re-rendering the entire chat history
 // on every keystroke (since parent re-renders on input state change).
 // This reduces main thread blocking by 90%+ for long chats.
+/**
+ * MessageItem component.
+ * @param props - The component props.
+ * @param props.message - The message property.
+ * @returns The rendered component.
+ */
 const MessageItem = memo(function MessageItem({ message }: { message: Message }) {
     if (message.type === "user") {
         return (
