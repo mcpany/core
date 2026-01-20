@@ -495,6 +495,8 @@ func (a *Application) Run(
 	// Start background workers
 	upstreamWorker.Start(workerCtx)
 	registrationWorker.Start(workerCtx)
+	// Start periodic health checks (every 30 seconds)
+	serviceRegistry.StartHealthChecks(workerCtx, 30*time.Second)
 
 	// If we're using an in-memory bus, start the in-process worker
 	if busConfig == nil || busConfig.GetInMemory() != nil {

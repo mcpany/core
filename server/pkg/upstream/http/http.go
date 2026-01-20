@@ -56,6 +56,15 @@ func httpMethodToString(method configv1.HttpCallDefinition_HttpMethod) (string, 
 type Upstream struct {
 	poolManager *pool.Manager
 	serviceID   string
+	address     string
+}
+
+// CheckHealth performs a health check on the upstream service.
+func (u *Upstream) CheckHealth(ctx context.Context) error {
+	if u.address == "" {
+		return fmt.Errorf("no address configured")
+	}
+	return util.CheckConnection(ctx, u.address)
 }
 
 // Shutdown gracefully terminates the HTTP upstream service by shutting down the
@@ -119,6 +128,8 @@ func (u *Upstream) Register(
 	if address == "" {
 		return "", nil, nil, fmt.Errorf("http service address is required")
 	}
+	u.address = address
+
 	uURL, err := url.ParseRequestURI(address)
 	if err != nil {
 		return "", nil, nil, fmt.Errorf("invalid http service address: %w", err)

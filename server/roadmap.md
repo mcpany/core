@@ -4,6 +4,8 @@
 
 ### Status: Active Development
 
+**Recently Completed:**
+- **Upstream Health Monitoring**: Implemented runtime health checks for HTTP upstreams, exposing real-time error status to the UI.
 
 ## 2. Top 10 Recommended Features
 
@@ -108,6 +110,8 @@ These features represent the next logical steps for the product, focusing on Ent
 | 71   | **Top Tools API Extensions**                  | **Observability**: Enhance the top tools API to support time ranges (last 1h, 24h) using historical metrics if available.                                                                                        | Medium     |
 | 72   | **Config Hot-Reload Validation**              | **Resilience**: Validate configuration changes before applying them during a hot-reload to prevent breaking the running server with a bad config.                                                                  | High       |
 | 73   | **Docker Secret Native Support**              | **Ops**: Native support for reading Docker secrets (files in `/run/secrets`) and substituting them into configuration without needing environment variable mapping.                                                | Medium     |
+| 74   | **gRPC Health Checks**                        | **Observability**: Implement `CheckHealth` for gRPC upstreams using the standard gRPC Health Checking Protocol to detect service availability.                                                                     | Medium     |
+| 75   | **Health Check Flap Damping**                 | **Resilience**: Configurable retries and thresholds for health checks to prevent services from flapping between Healthy and Unhealthy states due to transient network issues.                                      | Medium     |
 
 ## 3. Codebase Health
 
