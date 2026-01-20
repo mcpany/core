@@ -122,6 +122,11 @@ const devItems = [
     url: "/skills",
     icon: Zap,
   },
+  {
+    title: "Config Validator",
+    url: "/config-validator",
+    icon: ShieldCheck,
+  },
 ]
 
 const configItems = [
