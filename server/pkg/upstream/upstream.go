@@ -50,3 +50,11 @@ type Upstream interface {
 		isReload bool,
 	) (string, []*configv1.ToolDefinition, []*configv1.ResourceDefinition, error)
 }
+
+// HealthChecker is an optional interface that Upstreams can implement to provide
+// runtime health status.
+type HealthChecker interface {
+	// CheckHealth performs a health check on the upstream service.
+	// Returns nil if healthy, or an error if unhealthy.
+	CheckHealth(ctx context.Context) error
+}

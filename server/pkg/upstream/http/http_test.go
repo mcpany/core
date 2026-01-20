@@ -902,3 +902,33 @@ func TestHTTPUpstream_Shutdown(t *testing.T) {
 	err := upstream.Shutdown(context.Background())
 	assert.NoError(t, err)
 }
+
+func TestHTTPUpstream_CheckHealth(t *testing.T) {
+	pm := pool.NewManager()
+	u := NewUpstream(pm)
+
+	// Cast to concrete type to access CheckHealth, or use interface if exported
+	checker, ok := u.(interface{ CheckHealth(context.Context) error })
+	require.True(t, ok)
+
+	// Test with no address (should fail)
+	err := checker.CheckHealth(context.Background())
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), "no address configured")
+
+	// Register with bad address
+	configJSON := `{"name": "health-test", "http_service": {"address": "http://localhost:54321"}}`
+	serviceConfig := &configv1.UpstreamServiceConfig{}
+	require.NoError(t, protojson.Unmarshal([]byte(configJSON), serviceConfig))
+	tm := tool.NewManager(nil)
+
+	// Register populates address
+	_, _, _, err = u.Register(context.Background(), serviceConfig, tm, nil, nil, false)
+	assert.NoError(t, err)
+
+	// Check health (should fail connection)
+	err = checker.CheckHealth(context.Background())
+	assert.Error(t, err)
+	// Error message depends on OS/network stack, but usually contains "connection refused" or "dial tcp"
+	assert.True(t, err != nil)
+}
