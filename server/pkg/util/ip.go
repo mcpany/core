@@ -54,7 +54,7 @@ func GetClientIP(r *http.Request, trustProxy bool) string {
 			// Use the first IP in the list (client IP)
 			if parts := strings.Split(xff, ","); len(parts) > 0 {
 				if clientIP := strings.TrimSpace(parts[0]); clientIP != "" {
-					ip = clientIP
+					ip = ExtractIP(clientIP)
 				}
 			}
 		}
