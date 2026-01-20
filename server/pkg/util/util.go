@@ -460,9 +460,12 @@ func IsNil(i any) bool {
 	if i == nil {
 		return true
 	}
-	switch reflect.TypeOf(i).Kind() {
+	// Optimization: Use reflect.ValueOf directly which contains the type information.
+	// This avoids an extra reflect.TypeOf call.
+	v := reflect.ValueOf(i)
+	switch v.Kind() {
 	case reflect.Ptr, reflect.Map, reflect.Chan, reflect.Slice, reflect.Func, reflect.UnsafePointer:
-		return reflect.ValueOf(i).IsNil()
+		return v.IsNil()
 	}
 	return false
 }
