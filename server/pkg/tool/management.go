@@ -6,6 +6,7 @@ package tool
 import (
 	"context"
 	"fmt"
+	"sort"
 	"strings"
 	"sync"
 	"time"
@@ -417,22 +418,81 @@ func (tm *Manager) ExecuteTool(ctx context.Context, req *ExecutionRequest) (any,
 	if !ok {
 		log.Error("Tool not found")
 
-		// Friction Fighter: Fuzzy Matching for better error messages
-		var bestMatch string
-		minDist := 1000
+		// Friction Fighter: Smart Matching for better error messages
+		type candidate struct {
+			name         string
+			dist         int
+			isShortMatch bool
+		}
+		var candidates []candidate
 
 		// Iterate over exposed tool names (keys in nameMap)
-		tm.nameMap.Range(func(name string, _ string) bool {
-			dist := util.LevenshteinDistance(req.ToolName, name)
-			if dist < minDist {
-				minDist = dist
-				bestMatch = name
+		tm.nameMap.Range(func(nameKey, _ string) bool {
+			name := nameKey
+
+			// 1. Calculate distance against full name
+			distFull := util.LevenshteinDistance(req.ToolName, name)
+
+			// 2. Calculate distance against short name (if namespaced)
+			// This catches cases where user forgot the namespace (e.g. "get_weather" vs "weather.get_weather")
+			// or made a typo in the short name.
+			distShort := 1000
+			if idx := strings.LastIndex(name, "."); idx != -1 {
+				shortName := name[idx+1:]
+				distShort = util.LevenshteinDistance(req.ToolName, shortName)
+			}
+
+			finalDist := distFull
+			isShortMatch := false
+			if distShort < distFull {
+				finalDist = distShort
+				isShortMatch = true
+			}
+
+			// Threshold: 3 seems reasonable for Levenshtein on tool names.
+			if finalDist <= 3 {
+				candidates = append(candidates, candidate{
+					name:         name,
+					dist:         finalDist,
+					isShortMatch: isShortMatch,
+				})
 			}
 			return true
 		})
 
-		if minDist <= 3 && bestMatch != "" {
-			return nil, fmt.Errorf("%w: %q (did you mean %q?)", ErrToolNotFound, req.ToolName, bestMatch)
+		if len(candidates) > 0 {
+			// Sort candidates
+			sort.Slice(candidates, func(i, j int) bool {
+				// Priority 1: Lower distance is better
+				if candidates[i].dist != candidates[j].dist {
+					return candidates[i].dist < candidates[j].dist
+				}
+				// Priority 2: Full match is better than short match (if distances equal)
+				// e.g. if user typed "status" and we have "status" (dist 0) and "git.status" (dist 0 short),
+				// prefer "status".
+				if candidates[i].isShortMatch != candidates[j].isShortMatch {
+					return !candidates[i].isShortMatch
+				}
+				// Priority 3: Alphabetical
+				return candidates[i].name < candidates[j].name
+			})
+
+			// Limit suggestions to top 3
+			if len(candidates) > 3 {
+				candidates = candidates[:3]
+			}
+
+			suggestions := make([]string, len(candidates))
+			for i, c := range candidates {
+				suggestions[i] = fmt.Sprintf("%q", c.name)
+			}
+
+			msg := fmt.Sprintf("did you mean %s?", strings.Join(suggestions, ", "))
+			if len(candidates) > 1 {
+				msg = fmt.Sprintf("did you mean one of these: %s?", strings.Join(suggestions, ", "))
+			}
+
+			return nil, fmt.Errorf("%w: %q (%s)", ErrToolNotFound, req.ToolName, msg)
 		}
 
 		return nil, ErrToolNotFound
