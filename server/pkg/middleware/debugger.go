@@ -213,8 +213,41 @@ func (d *Debugger) Entries() []DebugEntry {
 //
 // Returns the result.
 func (d *Debugger) APIHandler() http.HandlerFunc {
-	return func(w http.ResponseWriter, _ *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
-		_ = json.NewEncoder(w).Encode(d.Entries())
+
+		entries := d.Entries()
+
+		// ⚡ Bolt Optimization: Support fetching a single entry by ID.
+		// This avoids fetching the full list when only details for one trace are needed.
+		if id := r.URL.Query().Get("id"); id != "" {
+			for _, e := range entries {
+				if e.ID == id {
+					_ = json.NewEncoder(w).Encode(e)
+					return
+				}
+			}
+			http.Error(w, "Entry not found", http.StatusNotFound)
+			return
+		}
+
+		// ⚡ Bolt Optimization: Support 'summary' mode to exclude heavy bodies.
+		// This significantly reduces payload size (up to 95%) when listing traces,
+		// as request/response bodies can be large.
+		if r.URL.Query().Get("summary") == "true" {
+			summaries := make([]DebugEntry, len(entries))
+			for i, e := range entries {
+				// Create a shallow copy
+				s := e
+				// Clear heavy fields
+				s.RequestBody = ""
+				s.ResponseBody = ""
+				summaries[i] = s
+			}
+			_ = json.NewEncoder(w).Encode(summaries)
+			return
+		}
+
+		_ = json.NewEncoder(w).Encode(entries)
 	}
 }

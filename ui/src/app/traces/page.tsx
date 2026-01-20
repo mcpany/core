@@ -26,13 +26,30 @@ export default function TracesPage() {
   // Separate load function for reuse
   const loadTraces = async (isFirstLoad = false) => {
       try {
-        const res = await fetch('/api/traces');
+        // ⚡ Bolt Optimization: Request summary only for list to save bandwidth/CPU
+        const res = await fetch('/api/traces?summary=true');
         const data = await res.json();
 
-        // If live, prepend new traces or merge?
-        // For simplicity, we just replace since the API returns a fresh list.
-        // In a real app we might want to merge.
-        setTraces(data);
+        setTraces(prev => {
+             // Merge strategy to preserve full details if we already fetched them
+             const traceMap = new Map(prev.map(t => [t.id, t]));
+             return data.map((newTrace: Trace) => {
+                 const oldTrace = traceMap.get(newTrace.id);
+                 // If old trace has details (not summary) and new trace is summary, keep details
+                 if (oldTrace && !oldTrace.isSummary && newTrace.isSummary) {
+                     return {
+                         ...newTrace,
+                         isSummary: false, // Keep it as full trace
+                         rootSpan: {
+                             ...newTrace.rootSpan,
+                             input: oldTrace.rootSpan.input,
+                             output: oldTrace.rootSpan.output
+                         }
+                     };
+                 }
+                 return newTrace;
+             });
+        });
 
         if (isFirstLoad && data.length > 0 && !selectedId) {
             setSelectedId(data[0].id);
@@ -47,6 +64,25 @@ export default function TracesPage() {
   useEffect(() => {
     loadTraces(true);
   }, []);
+
+  // ⚡ Bolt Optimization: Fetch full details only for the selected trace
+  useEffect(() => {
+      if (selectedId) {
+         const trace = traces.find(t => t.id === selectedId);
+         // If it's a summary trace, fetch full details
+         if (trace && trace.isSummary) {
+              fetch(`/api/traces/${selectedId}`)
+                  .then(res => {
+                      if (!res.ok) throw new Error("Failed to fetch trace details");
+                      return res.json();
+                  })
+                  .then((fullTrace: Trace) => {
+                      setTraces(prev => prev.map(t => t.id === fullTrace.id ? fullTrace : t));
+                  })
+                  .catch(err => console.error("Failed to load full trace", err));
+         }
+      }
+  }, [selectedId, traces]);
 
   useEffect(() => {
       let interval: NodeJS.Timeout;
