@@ -9,6 +9,7 @@ import (
 	"net"
 	"net/http"
 	"net/http/httptest"
+	"strings"
 	"testing"
 	"time"
 
@@ -221,6 +222,25 @@ func TestRunServerMode_Auth(t *testing.T) {
 		resp, err := http.DefaultClient.Do(req)
 		require.NoError(t, err)
 		defer func() { _ = resp.Body.Close() }()
+		assert.NotEqual(t, http.StatusUnauthorized, resp.StatusCode)
+	})
+
+	// Case 10: JSON-RPC Endpoint (Trigger httpHandler wrapper)
+	t.Run("JSON-RPC Endpoint", func(t *testing.T) {
+		// Use a body < 10MB
+		body := `{"jsonrpc":"2.0","method":"ping","id":1}`
+		req, _ := http.NewRequest("POST", baseURL+"/", strings.NewReader(body))
+		req.Header.Set("X-API-Key", "global-secret")
+		req.Header.Set("Content-Type", "application/json")
+
+		resp, err := http.DefaultClient.Do(req)
+		require.NoError(t, err)
+		defer func() { _ = resp.Body.Close() }()
+		// We just want to ensure it doesn't 404 (handled by mux) or 401 (auth failed).
+		// Since we pass correct auth, it should hit the httpHandler.
+		// Even if method is not supported, it should return a JSON-RPC error, which is 200 OK mostly or 4xx/5xx from handler.
+		// Just assert not 404 and not 401.
+		assert.NotEqual(t, http.StatusNotFound, resp.StatusCode)
 		assert.NotEqual(t, http.StatusUnauthorized, resp.StatusCode)
 	})
 
