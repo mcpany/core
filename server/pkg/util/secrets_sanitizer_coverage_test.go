@@ -65,6 +65,15 @@ func TestStripSecretsFromService_Coverage(t *testing.T) {
 				Env: map[string]*configv1.SecretValue{
 					"FOO": {Value: &configv1.SecretValue_PlainText{PlainText: "secret"}},
 				},
+				Calls: map[string]*configv1.CommandLineCallDefinition{
+					"call1": {
+						Parameters: []*configv1.CommandLineParameterMapping{
+							{
+								Secret: &configv1.SecretValue{Value: &configv1.SecretValue_PlainText{PlainText: "secret"}},
+							},
+						},
+					},
+				},
 			},
 		},
 	}
@@ -72,6 +81,9 @@ func TestStripSecretsFromService_Coverage(t *testing.T) {
 	// Verify environment variable secret was stripped
 	envVar := cmdSvc.GetCommandLineService().Env["FOO"]
 	assert.Nil(t, envVar.Value, "Plain text secret in Env should be stripped")
+	// Verify call parameters secret was stripped
+	callParam := cmdSvc.GetCommandLineService().Calls["call1"].Parameters[0].Secret
+	assert.Nil(t, callParam.Value, "Plain text secret in Call Parameters should be stripped")
 
 	// 5. HttpService with Calls
 	httpSvc := &configv1.UpstreamServiceConfig{
@@ -134,7 +146,58 @@ func TestStripSecretsFromService_Coverage(t *testing.T) {
 	StripSecretsFromService(webrtcSvc)
 	assert.Nil(t, webrtcSvc.GetWebrtcService().Calls["call1"].Parameters[0].Secret.Value)
 
-	// 8. Nil checks
+	// 8. Nil Service Pointers in OneOf
+	// This covers "if s == nil" inside the stripSecretsFrom*Service functions
+	httpSvcNil := &configv1.UpstreamServiceConfig{
+		ServiceConfig: &configv1.UpstreamServiceConfig_HttpService{
+			HttpService: nil,
+		},
+	}
+	StripSecretsFromService(httpSvcNil)
+
+	wsSvcNil := &configv1.UpstreamServiceConfig{
+		ServiceConfig: &configv1.UpstreamServiceConfig_WebsocketService{
+			WebsocketService: nil,
+		},
+	}
+	StripSecretsFromService(wsSvcNil)
+
+	webrtcSvcNil := &configv1.UpstreamServiceConfig{
+		ServiceConfig: &configv1.UpstreamServiceConfig_WebrtcService{
+			WebrtcService: nil,
+		},
+	}
+	StripSecretsFromService(webrtcSvcNil)
+
+	cmdSvcNil := &configv1.UpstreamServiceConfig{
+		ServiceConfig: &configv1.UpstreamServiceConfig_CommandLineService{
+			CommandLineService: nil,
+		},
+	}
+	StripSecretsFromService(cmdSvcNil)
+
+	mcpSvcNil := &configv1.UpstreamServiceConfig{
+		ServiceConfig: &configv1.UpstreamServiceConfig_McpService{
+			McpService: nil,
+		},
+	}
+	StripSecretsFromService(mcpSvcNil)
+
+	fsSvcNil := &configv1.UpstreamServiceConfig{
+		ServiceConfig: &configv1.UpstreamServiceConfig_FilesystemService{
+			FilesystemService: nil,
+		},
+	}
+	StripSecretsFromService(fsSvcNil)
+
+	vecSvcNil := &configv1.UpstreamServiceConfig{
+		ServiceConfig: &configv1.UpstreamServiceConfig_VectorService{
+			VectorService: nil,
+		},
+	}
+	StripSecretsFromService(vecSvcNil)
+
+	// 9. Nil checks
 	StripSecretsFromService(nil)
 	StripSecretsFromAuth(nil)
 	StripSecretsFromProfile(nil)
@@ -284,6 +347,62 @@ func TestHydrateSecrets_Coverage(t *testing.T) {
 	// 4. Nil checks
 	HydrateSecretsInService(nil, secrets)
 	HydrateSecretsInService(svc, nil)
+
+	// 5. Nil Calls in Maps (for hydration)
+	httpSvcNilCall := &configv1.UpstreamServiceConfig{
+		ServiceConfig: &configv1.UpstreamServiceConfig_HttpService{
+			HttpService: &configv1.HttpUpstreamService{
+				Calls: map[string]*configv1.HttpCallDefinition{
+					"nil_call": nil,
+				},
+			},
+		},
+	}
+	HydrateSecretsInService(httpSvcNilCall, secrets)
+
+	wsSvcNilCall := &configv1.UpstreamServiceConfig{
+		ServiceConfig: &configv1.UpstreamServiceConfig_WebsocketService{
+			WebsocketService: &configv1.WebsocketUpstreamService{
+				Calls: map[string]*configv1.WebsocketCallDefinition{
+					"nil_call": nil,
+				},
+			},
+		},
+	}
+	HydrateSecretsInService(wsSvcNilCall, secrets)
+
+	webrtcSvcNilCall := &configv1.UpstreamServiceConfig{
+		ServiceConfig: &configv1.UpstreamServiceConfig_WebrtcService{
+			WebrtcService: &configv1.WebrtcUpstreamService{
+				Calls: map[string]*configv1.WebrtcCallDefinition{
+					"nil_call": nil,
+				},
+			},
+		},
+	}
+	HydrateSecretsInService(webrtcSvcNilCall, secrets)
+
+	// 6. Nil Service Pointers (for hydration)
+	httpSvcNilPtr := &configv1.UpstreamServiceConfig{
+		ServiceConfig: &configv1.UpstreamServiceConfig_HttpService{
+			HttpService: nil,
+		},
+	}
+	HydrateSecretsInService(httpSvcNilPtr, secrets)
+
+	wsSvcNilPtr := &configv1.UpstreamServiceConfig{
+		ServiceConfig: &configv1.UpstreamServiceConfig_WebsocketService{
+			WebsocketService: nil,
+		},
+	}
+	HydrateSecretsInService(wsSvcNilPtr, secrets)
+
+	webrtcSvcNilPtr := &configv1.UpstreamServiceConfig{
+		ServiceConfig: &configv1.UpstreamServiceConfig_WebrtcService{
+			WebrtcService: nil,
+		},
+	}
+	HydrateSecretsInService(webrtcSvcNilPtr, secrets)
 }
 
 func TestStripSecretsFromAuth_Coverage(t *testing.T) {

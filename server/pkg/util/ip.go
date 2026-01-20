@@ -176,8 +176,8 @@ func IsPrivateIP(ip net.IP) bool {
 		return true
 	}
 
-	// Check for IPv4-compatible IPv6 addresses (::a.b.c.d) for Loopback/Link-local
-	if isIPv4Compatible(ip) {
+	// Check for IPv4-compatible IPv6 addresses (::a.b.c.d) or NAT64 (64:ff9b::a.b.c.d) for Loopback/Link-local
+	if isIPv4Compatible(ip) || isNAT64(ip) {
 		ip4 := ip[12:16]
 		// Loopback (127.0.0.0/8)
 		if ip4[0] == 127 {

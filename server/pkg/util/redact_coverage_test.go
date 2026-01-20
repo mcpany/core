@@ -57,3 +57,17 @@ func TestScanForSensitiveKeys_EdgeCases(t *testing.T) {
     // It continues (skips).
     assert.False(t, scanForSensitiveKeys([]byte("AUTHORITY"), false))
 }
+
+func TestRedactSlice_Coverage(t *testing.T) {
+	// Cover the unused redactSlice function
+	input := []interface{}{
+		map[string]interface{}{"api_key": "secret"},
+		"plain",
+		[]interface{}{map[string]interface{}{"token": "secret"}},
+	}
+	output := redactSlice(input)
+
+	assert.Equal(t, "[REDACTED]", output[0].(map[string]interface{})["api_key"])
+	assert.Equal(t, "plain", output[1])
+	assert.Equal(t, "[REDACTED]", output[2].([]interface{})[0].(map[string]interface{})["token"])
+}
