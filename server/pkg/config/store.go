@@ -294,6 +294,8 @@ func expand(b []byte) ([]byte, error) {
 	}
 
 	if missingCount > 0 {
+		// revive:disable-next-line:error-strings // This error message is user facing and needs to be descriptive
+		//nolint:staticcheck // This error message is user facing and needs to be descriptive
 		return nil, fmt.Errorf("missing environment variables:%s\n    -> Fix: Set these environment variables in your shell or .env file, or provide a default value (e.g., ${VAR:default}).", missingErrBuilder.String())
 	}
 
