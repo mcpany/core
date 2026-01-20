@@ -1,3 +1,6 @@
+// Copyright 2026 Author(s) of MCP Any
+// SPDX-License-Identifier: Apache-2.0
+
 // Package install provides the install command for the MCP Any CLI.
 package install
 

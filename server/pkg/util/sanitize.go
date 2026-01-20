@@ -1,6 +1,7 @@
 // Copyright 2026 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
+// Package util provides utility functions for the server.
 package util
 
 import (
