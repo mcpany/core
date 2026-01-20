@@ -19,6 +19,9 @@ The **Alerts & Incidents** feature provides a centralized console for monitoring
 
 ## Implementation Details
 
+-   **Code Location:**
+    -   Backend: `server/pkg/alerts/manager.go` (In-memory storage and logic), `server/pkg/app/api_alerts.go` (HTTP Handlers).
+    -   Frontend: `ui/src/app/alerts/page.tsx`, `ui/src/components/alerts/alert-list.tsx`.
 -   **Route:** `/alerts`
 -   **API Endpoints:**
     -   `GET /api/v1/alerts`: List all alerts.
@@ -29,7 +32,7 @@ The **Alerts & Incidents** feature provides a centralized console for monitoring
     -   `AlertsPage`: Main container layout.
     -   `AlertList`: The data table component with filtering logic, connected to the backend API.
     -   `AlertStats`: Top-level metrics.
-    -   `CreateRuleDialog`: Configuration form (Prototype).
+    -   `CreateRuleDialog`: Configuration form (Prototype - No backend persistence yet).
 
 ## Verification
 
