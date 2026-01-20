@@ -10,6 +10,12 @@ import { ResourceContent } from '@/lib/client';
 
 // Mock syntax highlighter since it might cause issues in JSDOM
 vi.mock('react-syntax-highlighter/dist/esm/light', () => {
+/**
+ * MockHighlighter component.
+ * @param props - The component props.
+ * @param props.children - The child components.
+ * @returns The rendered component.
+ */
     const MockHighlighter = ({ children }: { children: React.ReactNode }) => <pre data-testid="code-block">{children}</pre>;
     // Mock static methods like registerLanguage
     MockHighlighter.registerLanguage = vi.fn();

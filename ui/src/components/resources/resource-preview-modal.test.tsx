@@ -22,6 +22,12 @@ vi.mock('@/hooks/use-toast', () => ({
 
 // Mock syntax highlighter
 vi.mock('react-syntax-highlighter/dist/esm/light', () => {
+/**
+ * MockHighlighter component.
+ * @param props - The component props.
+ * @param props.children - The child components.
+ * @returns The rendered component.
+ */
     const MockHighlighter = ({ children }: { children: React.ReactNode }) => <pre data-testid="code-block">{children}</pre>;
     MockHighlighter.registerLanguage = vi.fn();
     return { default: MockHighlighter };

@@ -25,6 +25,16 @@ import { RegisterServiceDialog } from "./register-service-dialog";
 import { ConnectionDiagnosticDialog } from "@/components/diagnostics/connection-diagnostic";
 import { Button } from "@/components/ui/button";
 
+/**
+ * DefinitionsTable component.
+ * @param props - The component props.
+ * @param props.title - The title.
+ * @param props.data - The data to display.
+ * @param props.icon - The icon property.
+ * @param props.serviceId - The unique identifier for service.
+ * @param props.linkPath - The linkPath property.
+ * @returns The rendered component.
+ */
 function DefinitionsTable<T extends { name: string; description?: string; type?: string; source?: string; }>({ title, data, icon, serviceId, linkPath }: { title: string; data?: T[], icon: React.ReactNode, serviceId: string, linkPath: string }) {
   if (!data || data.length === 0) {
     return (
@@ -74,6 +84,12 @@ function DefinitionsTable<T extends { name: string; description?: string; type?:
   )
 }
 
+/**
+ * MetricsCard component.
+ * @param props - The component props.
+ * @param props.serviceId - The unique identifier for service.
+ * @returns The rendered component.
+ */
 function MetricsCard({ serviceId }: { serviceId: string }) {
     const [metrics, setMetrics] = useState<Record<string, number> | null>(null);
     const [isLoading, setIsLoading] = useState(true);

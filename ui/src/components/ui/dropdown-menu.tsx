@@ -11,18 +11,74 @@ import { Check, ChevronRight, Circle } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 
+/**
+ * DropdownMenu component.
+ * @param props - The component props.
+ * @param props.className - The name of the class.
+ * @param props.inset - The inset property.
+ * @param props.children - The child components.
+ * @returns The rendered component.
+ */
 const DropdownMenu = DropdownMenuPrimitive.Root
 
+/**
+ * DropdownMenuTrigger component.
+ * @param props - The component props.
+ * @param props.className - The name of the class.
+ * @param props.inset - The inset property.
+ * @param props.children - The child components.
+ * @returns The rendered component.
+ */
 const DropdownMenuTrigger = DropdownMenuPrimitive.Trigger
 
+/**
+ * DropdownMenuGroup component.
+ * @param props - The component props.
+ * @param props.className - The name of the class.
+ * @param props.inset - The inset property.
+ * @param props.children - The child components.
+ * @returns The rendered component.
+ */
 const DropdownMenuGroup = DropdownMenuPrimitive.Group
 
+/**
+ * DropdownMenuPortal component.
+ * @param props - The component props.
+ * @param props.className - The name of the class.
+ * @param props.inset - The inset property.
+ * @param props.children - The child components.
+ * @returns The rendered component.
+ */
 const DropdownMenuPortal = DropdownMenuPrimitive.Portal
 
+/**
+ * DropdownMenuSub component.
+ * @param props - The component props.
+ * @param props.className - The name of the class.
+ * @param props.inset - The inset property.
+ * @param props.children - The child components.
+ * @returns The rendered component.
+ */
 const DropdownMenuSub = DropdownMenuPrimitive.Sub
 
+/**
+ * DropdownMenuRadioGroup component.
+ * @param props - The component props.
+ * @param props.className - The name of the class.
+ * @param props.inset - The inset property.
+ * @param props.children - The child components.
+ * @returns The rendered component.
+ */
 const DropdownMenuRadioGroup = DropdownMenuPrimitive.RadioGroup
 
+/**
+ * DropdownMenuSubTrigger component.
+ * @param props - The component props.
+ * @param props.className - The name of the class.
+ * @param props.inset - The inset property.
+ * @param props.children - The child components.
+ * @returns The rendered component.
+ */
 const DropdownMenuSubTrigger = React.forwardRef<
   React.ElementRef<typeof DropdownMenuPrimitive.SubTrigger>,
   React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.SubTrigger> & {
@@ -45,6 +101,12 @@ const DropdownMenuSubTrigger = React.forwardRef<
 DropdownMenuSubTrigger.displayName =
   DropdownMenuPrimitive.SubTrigger.displayName
 
+/**
+ * DropdownMenuSubContent component.
+ * @param props - The component props.
+ * @param props.className - The name of the class.
+ * @returns The rendered component.
+ */
 const DropdownMenuSubContent = React.forwardRef<
   React.ElementRef<typeof DropdownMenuPrimitive.SubContent>,
   React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.SubContent>
@@ -61,6 +123,13 @@ const DropdownMenuSubContent = React.forwardRef<
 DropdownMenuSubContent.displayName =
   DropdownMenuPrimitive.SubContent.displayName
 
+/**
+ * DropdownMenuContent component.
+ * @param props - The component props.
+ * @param props.className - The name of the class.
+ * @param props.sideOffset - The unique identifier for seOffset.
+ * @returns The rendered component.
+ */
 const DropdownMenuContent = React.forwardRef<
   React.ElementRef<typeof DropdownMenuPrimitive.Content>,
   React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Content>
@@ -79,6 +148,13 @@ const DropdownMenuContent = React.forwardRef<
 ))
 DropdownMenuContent.displayName = DropdownMenuPrimitive.Content.displayName
 
+/**
+ * DropdownMenuItem component.
+ * @param props - The component props.
+ * @param props.className - The name of the class.
+ * @param props.inset - The inset property.
+ * @returns The rendered component.
+ */
 const DropdownMenuItem = React.forwardRef<
   React.ElementRef<typeof DropdownMenuPrimitive.Item>,
   React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Item> & {
@@ -97,6 +173,14 @@ const DropdownMenuItem = React.forwardRef<
 ))
 DropdownMenuItem.displayName = DropdownMenuPrimitive.Item.displayName
 
+/**
+ * DropdownMenuCheckboxItem component.
+ * @param props - The component props.
+ * @param props.className - The name of the class.
+ * @param props.children - The child components.
+ * @param props.checked - The checked property.
+ * @returns The rendered component.
+ */
 const DropdownMenuCheckboxItem = React.forwardRef<
   React.ElementRef<typeof DropdownMenuPrimitive.CheckboxItem>,
   React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.CheckboxItem>
@@ -121,6 +205,13 @@ const DropdownMenuCheckboxItem = React.forwardRef<
 DropdownMenuCheckboxItem.displayName =
   DropdownMenuPrimitive.CheckboxItem.displayName
 
+/**
+ * DropdownMenuRadioItem component.
+ * @param props - The component props.
+ * @param props.className - The name of the class.
+ * @param props.children - The child components.
+ * @returns The rendered component.
+ */
 const DropdownMenuRadioItem = React.forwardRef<
   React.ElementRef<typeof DropdownMenuPrimitive.RadioItem>,
   React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.RadioItem>
@@ -143,6 +234,13 @@ const DropdownMenuRadioItem = React.forwardRef<
 ))
 DropdownMenuRadioItem.displayName = DropdownMenuPrimitive.RadioItem.displayName
 
+/**
+ * DropdownMenuLabel component.
+ * @param props - The component props.
+ * @param props.className - The name of the class.
+ * @param props.inset - The inset property.
+ * @returns The rendered component.
+ */
 const DropdownMenuLabel = React.forwardRef<
   React.ElementRef<typeof DropdownMenuPrimitive.Label>,
   React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Label> & {
@@ -161,6 +259,12 @@ const DropdownMenuLabel = React.forwardRef<
 ))
 DropdownMenuLabel.displayName = DropdownMenuPrimitive.Label.displayName
 
+/**
+ * DropdownMenuSeparator component.
+ * @param props - The component props.
+ * @param props.className - The name of the class.
+ * @returns The rendered component.
+ */
 const DropdownMenuSeparator = React.forwardRef<
   React.ElementRef<typeof DropdownMenuPrimitive.Separator>,
   React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Separator>
@@ -173,6 +277,12 @@ const DropdownMenuSeparator = React.forwardRef<
 ))
 DropdownMenuSeparator.displayName = DropdownMenuPrimitive.Separator.displayName
 
+/**
+ * DropdownMenuShortcut component.
+ * @param props - The component props.
+ * @param props.className - The name of the class.
+ * @returns The rendered component.
+ */
 const DropdownMenuShortcut = ({
   className,
   ...props

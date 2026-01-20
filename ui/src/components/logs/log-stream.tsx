@@ -71,6 +71,12 @@ const getLevelColor = (level: LogLevel) => {
 }
 
 // Optimization: Memoize LogRow to prevent unnecessary re-renders when list updates
+/**
+ * LogRow component.
+ * @param props - The component props.
+ * @param props.log - The log property.
+ * @returns The rendered component.
+ */
 const LogRow = React.memo(({ log }: { log: LogEntry }) => {
   const duration = log.metadata?.duration as string | undefined
 

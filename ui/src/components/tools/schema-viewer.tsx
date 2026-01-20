@@ -48,6 +48,13 @@ const getTypeColor = (type?: string | string[]) => {
   }
 };
 
+/**
+ * TypeBadge component.
+ * @param props - The component props.
+ * @param props.type - The type definition.
+ * @param props.format - The format property.
+ * @returns The rendered component.
+ */
 const TypeBadge = ({ type, format }: { type?: string | string[], format?: string }) => {
   if (!type) return null;
   const label = Array.isArray(type) ? type.join(" | ") : type;

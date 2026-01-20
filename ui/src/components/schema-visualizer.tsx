@@ -24,6 +24,12 @@ interface SchemaNodeProps {
   level?: number;
 }
 
+/**
+ * TypeBadge component.
+ * @param props - The component props.
+ * @param props.type - The type definition.
+ * @returns The rendered component.
+ */
 const TypeBadge = ({ type }: { type: string }) => {
   const colors: Record<string, string> = {
     string: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300",

@@ -28,6 +28,14 @@ interface TraceListProps {
 
 // Optimization: Memoize TraceListItem to prevent re-renders of all items when one is selected.
 // Only the selected and previously selected items will re-render.
+/**
+ * TraceListItem component.
+ * @param props - The component props.
+ * @param props.trace - The trace property.
+ * @param props.isSelected - The isSelected property.
+ * @param props.onSelect - The onSelect property.
+ * @returns The rendered component.
+ */
 const TraceListItem = memo(({ trace, isSelected, onSelect }: { trace: Trace, isSelected: boolean, onSelect: (id: string) => void }) => {
   return (
     <button
@@ -123,12 +131,26 @@ export function TraceList({ traces, selectedId, onSelect, searchQuery, onSearchC
   );
 }
 
+/**
+ * StatusIcon component.
+ * @param props - The component props.
+ * @param props.status - The current status.
+ * @param props.className - The name of the class.
+ * @returns The rendered component.
+ */
 function StatusIcon({ status, className }: { status: SpanStatus, className?: string }) {
   if (status === 'error') return <AlertCircle className={cn("text-destructive", className)} />;
   if (status === 'success') return <CheckCircle2 className={cn("text-green-500", className)} />;
   return <Clock className={cn("text-muted-foreground", className)} />;
 }
 
+/**
+ * TriggerIcon component.
+ * @param props - The component props.
+ * @param props.trigger - The trigger property.
+ * @param props.className - The name of the class.
+ * @returns The rendered component.
+ */
 function TriggerIcon({ trigger, className }: { trigger: Trace['trigger'], className?: string }) {
     switch(trigger) {
         case 'user': return <User className={className} />;

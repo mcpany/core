@@ -60,6 +60,12 @@ interface NodeData extends Record<string, unknown> {
     metadata?: Record<string, string>;
 }
 
+/**
+ * NodeIcon component.
+ * @param props - The component props.
+ * @param props.type - The type definition.
+ * @returns The rendered component.
+ */
 const NodeIcon = React.memo(({ type }: { type: NodeType }) => {
     switch (type) {
         case 'NODE_TYPE_CORE': return <Cpu className="h-4 w-4 text-blue-500 dark:text-blue-400" />;
@@ -76,6 +82,12 @@ const NodeIcon = React.memo(({ type }: { type: NodeType }) => {
 });
 NodeIcon.displayName = 'NodeIcon';
 
+/**
+ * StatusIcon component.
+ * @param props - The component props.
+ * @param props.status - The current status.
+ * @returns The rendered component.
+ */
 const StatusIcon = React.memo(({ status }: { status: NodeStatus }) => {
     switch (status) {
         case 'NODE_STATUS_ACTIVE': return <CheckCircle2 className="h-4 w-4 text-green-500" />;
@@ -318,6 +330,15 @@ function Flow() {
   );
 }
 
+/**
+ * MetricCard component.
+ * @param props - The component props.
+ * @param props.label - The label property.
+ * @param props.value - The current value.
+ * @param props.unit - The unit property.
+ * @param props.intent - The intent property.
+ * @returns The rendered component.
+ */
 function MetricCard({ label, value, unit, intent = "neutral" }: { label: string, value?: string, unit: string, intent?: "neutral" | "danger" | "success" }) {
     return (
         <Card className={`p-3 bg-card/50 ${intent === 'danger' ? 'border-red-200 bg-red-50 dark:bg-red-900/10 dark:border-red-900' : ''}`}>

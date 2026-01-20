@@ -15,6 +15,12 @@ import { RefreshCcw, Activity, PlayCircle, StopCircle, Trash2, Box } from "lucid
 import { use } from "react";
 
 // Placeholder for StackStatus if we want a separate component
+/**
+ * StackStatus component.
+ * @param props - The component props.
+ * @param props.stackId - The unique identifier for stack.
+ * @returns The rendered component.
+ */
 function StackStatus({ stackId }: { stackId: string }) {
     // Mock data for runtime status
     const services = [
