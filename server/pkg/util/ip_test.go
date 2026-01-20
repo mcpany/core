@@ -172,6 +172,10 @@ func TestIsPrivateNetworkIP(t *testing.T) {
 		{"100.64.0.1", true},
 		{"100.127.255.255", true},
 
+		// Class E / Broadcast
+		{"240.0.0.1", true},
+		{"255.255.255.255", true},
+
 		// IPv4 Loopback (handled by separate function usually, but IsPrivateIP calls IsPrivateNetworkIP for others)
 		// IsPrivateNetworkIP logic for IPv4 includes:
 		// 127.0.0.0/8 is NOT in isPrivateNetworkIPv4 list explicitly?
@@ -238,6 +242,9 @@ func TestIsPrivateIP(t *testing.T) {
 		{"192.168.1.1", true},
 		{"10.0.0.1", true},
 
+		// Broadcast
+		{"255.255.255.255", true},
+
 		// Public
 		{"8.8.8.8", false},
 		{"2607:f8b0:4005:805::200e", false},
@@ -253,6 +260,27 @@ func TestIsPrivateIP(t *testing.T) {
 			ip := net.ParseIP(tt.ip)
 			if got := IsPrivateIP(ip); got != tt.expected {
 				t.Errorf("IsPrivateIP(%q) = %v, want %v", tt.ip, got, tt.expected)
+			}
+		})
+	}
+}
+
+func TestIsBroadcastIP(t *testing.T) {
+	t.Parallel()
+	tests := []struct {
+		ip       string
+		expected bool
+	}{
+		{"255.255.255.255", true},
+		{"127.0.0.1", false},
+		{"8.8.8.8", false},
+		{"::1", false},
+	}
+	for _, tt := range tests {
+		t.Run(tt.ip, func(t *testing.T) {
+			ip := net.ParseIP(tt.ip)
+			if got := IsBroadcastIP(ip); got != tt.expected {
+				t.Errorf("IsBroadcastIP(%q) = %v, want %v", tt.ip, got, tt.expected)
 			}
 		})
 	}

@@ -211,6 +211,10 @@ func IsPrivateIP(ip net.IP) bool {
 		if ip4[0] == 169 && ip4[1] == 254 {
 			return true
 		}
+		// Limited broadcast (255.255.255.255)
+		if ip4[0] == 255 && ip4[1] == 255 && ip4[2] == 255 && ip4[3] == 255 {
+			return true
+		}
 		return isPrivateNetworkIPv4(ip4)
 	}
 
@@ -246,4 +250,12 @@ func IsPrivateIP(ip net.IP) bool {
 	}
 
 	return IsPrivateNetworkIP(ip)
+}
+
+// IsBroadcastIP checks if the IP is a broadcast address.
+func IsBroadcastIP(ip net.IP) bool {
+	if ip4 := ip.To4(); ip4 != nil {
+		return ip4.Equal(net.IPv4bcast)
+	}
+	return false
 }
