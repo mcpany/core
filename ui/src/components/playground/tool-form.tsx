@@ -9,6 +9,7 @@ import { useState, useMemo, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { ToolDefinition } from "@/lib/client";
 import { SchemaForm } from "./schema-form";
+import { ToolPresets } from "./tool-presets";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import Ajv, { ErrorObject } from "ajv";
@@ -136,6 +137,23 @@ export function ToolForm({ tool, onSubmit, onCancel }: ToolFormProps) {
       }
   };
 
+  const handlePresetSelect = (data: Record<string, unknown>) => {
+      setFormData(data);
+      setJsonInput(JSON.stringify(data, null, 2));
+      // Validation will trigger via useEffect
+  };
+
+  const getCurrentData = () => {
+      if (mode === "json") {
+          try {
+              return JSON.parse(jsonInput);
+          } catch {
+              return formData;
+          }
+      }
+      return formData;
+  };
+
   // Real-time validation for JSON mode
   useEffect(() => {
       if (mode === "json") {
@@ -174,6 +192,11 @@ export function ToolForm({ tool, onSubmit, onCancel }: ToolFormProps) {
                 <TabsTrigger value="form">Form</TabsTrigger>
                 <TabsTrigger value="json">JSON</TabsTrigger>
             </TabsList>
+            <ToolPresets
+                toolName={tool.name}
+                currentData={getCurrentData()}
+                onSelect={handlePresetSelect}
+            />
         </div>
 
         <TabsContent value="form" className="flex-1 overflow-y-auto pr-2 mt-0">
