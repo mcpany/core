@@ -41,3 +41,71 @@ func TestToolManager_ExecuteTool_FuzzyMatch(t *testing.T) {
 	assert.Error(t, err)
 	assert.Contains(t, err.Error(), `did you mean "weather.get_weather"?`)
 }
+
+func TestToolManager_ExecuteTool_SmartFuzzyMatch(t *testing.T) {
+	t.Parallel()
+	tm := NewManager(nil)
+
+	serviceID := "weather"
+	toolName := "get_forecast"
+
+	mockTool := &MockTool{
+		ToolFunc: func() *v1.Tool {
+			return &v1.Tool{
+				ServiceId: proto.String(serviceID),
+				Name:      proto.String(toolName),
+			}
+		},
+		ExecuteFunc: func(_ context.Context, _ *ExecutionRequest) (any, error) {
+			return "sunny", nil
+		},
+	}
+
+	err := tm.AddTool(mockTool)
+	assert.NoError(t, err)
+
+	// Case 1: Missing Namespace
+	// User types "get_forecast" -> "weather.get_forecast"
+	t.Run("Missing Namespace", func(t *testing.T) {
+		execReq := &ExecutionRequest{ToolName: "get_forecast", ToolInputs: []byte(`{}`)}
+		_, err := tm.ExecuteTool(context.Background(), execReq)
+		assert.Error(t, err)
+		assert.Contains(t, err.Error(), `did you mean "weather.get_forecast"?`)
+	})
+
+	// Case 2: Typo in Short Name
+	// User types "get_forcast" -> "weather.get_forecast"
+	t.Run("Typo in Short Name", func(t *testing.T) {
+		execReq := &ExecutionRequest{ToolName: "get_forcast", ToolInputs: []byte(`{}`)}
+		_, err := tm.ExecuteTool(context.Background(), execReq)
+		assert.Error(t, err)
+		assert.Contains(t, err.Error(), `did you mean "weather.get_forecast"?`)
+	})
+
+	// Case 3: Case Insensitive Short Name
+	// User types "GetForecast" -> "weather.get_forecast"
+	t.Run("Case Insensitive Short Name", func(t *testing.T) {
+		execReq := &ExecutionRequest{ToolName: "GetForecast", ToolInputs: []byte(`{}`)}
+		_, err := tm.ExecuteTool(context.Background(), execReq)
+		assert.Error(t, err)
+		assert.Contains(t, err.Error(), `did you mean "weather.get_forecast"?`)
+	})
+
+	// Case 4: Case Insensitive Full Name (if they typed namespace but wrong case)
+	// User types "Weather.GetForecast" -> "weather.get_forecast"
+	t.Run("Case Insensitive Full Name", func(t *testing.T) {
+		execReq := &ExecutionRequest{ToolName: "Weather.GetForecast", ToolInputs: []byte(`{}`)}
+		_, err := tm.ExecuteTool(context.Background(), execReq)
+		assert.Error(t, err)
+		assert.Contains(t, err.Error(), `did you mean "weather.get_forecast"?`)
+	})
+
+	// Case 5: Typo in Full Name (Standard Levenshtein)
+	// User types "weather.get_forcast" -> "weather.get_forecast"
+	t.Run("Typo in Full Name", func(t *testing.T) {
+		execReq := &ExecutionRequest{ToolName: "weather.get_forcast", ToolInputs: []byte(`{}`)}
+		_, err := tm.ExecuteTool(context.Background(), execReq)
+		assert.Error(t, err)
+		assert.Contains(t, err.Error(), `did you mean "weather.get_forecast"?`)
+	})
+}

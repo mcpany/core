@@ -417,20 +417,82 @@ func (tm *Manager) ExecuteTool(ctx context.Context, req *ExecutionRequest) (any,
 	if !ok {
 		log.Error("Tool not found")
 
-		// Friction Fighter: Fuzzy Matching for better error messages
+		// Friction Fighter: Smart Fuzzy Matching for better error messages
+		// We look for:
+		// 1. Missing namespace (e.g. "get_weather" -> "weather.get_weather")
+		// 2. Case mismatch (e.g. "GetWeather" -> "weather.get_weather")
+		// 3. Typo in short name (e.g. "get_wether" -> "weather.get_weather")
+		// 4. Typo in full name (e.g. "weather.get_wether" -> "weather.get_weather")
+
 		var bestMatch string
 		minDist := 1000
+		reqNorm := strings.ReplaceAll(strings.ReplaceAll(req.ToolName, "_", ""), "-", "")
 
-		// Iterate over exposed tool names (keys in nameMap)
-		tm.nameMap.Range(func(name string, _ string) bool {
-			dist := util.LevenshteinDistance(req.ToolName, name)
-			if dist < minDist {
-				minDist = dist
-				bestMatch = name
+		tm.nameMap.Range(func(exposedName string, _ string) bool {
+			// Check 1: Missing Namespace (Exact Suffix Match)
+			// If the exposed name ends with "." + requested name, it's a strong candidate.
+			if strings.HasSuffix(exposedName, "."+req.ToolName) {
+				bestMatch = exposedName
+				minDist = 0 // Perfect semantic match
+				return false // Stop iteration, we found a very likely candidate
 			}
+
+			// Check 2: Case Insensitive Match (Full or Short)
+			if strings.EqualFold(exposedName, req.ToolName) {
+				bestMatch = exposedName
+				minDist = 0
+				return false
+			}
+
+			// Check 2b: Normalized Case Insensitive Match (Ignore underscores/hyphens)
+			// This handles cases like "GetForecast" matching "get_forecast"
+			exposedNorm := strings.ReplaceAll(strings.ReplaceAll(exposedName, "_", ""), "-", "")
+			if strings.EqualFold(exposedNorm, reqNorm) {
+				bestMatch = exposedName
+				minDist = 0
+				return false
+			}
+
+			// Extract short name from exposed name (service.tool -> tool)
+			parts := strings.SplitN(exposedName, ".", 2)
+			var shortName string
+			if len(parts) == 2 {
+				shortName = parts[1]
+			} else {
+				shortName = exposedName
+			}
+
+			if strings.EqualFold(shortName, req.ToolName) {
+				bestMatch = exposedName
+				minDist = 0
+				return false
+			}
+
+			// Check 3: Fuzzy Match on Full Name
+			distFull := util.LevenshteinDistance(req.ToolName, exposedName)
+			if distFull < minDist {
+				minDist = distFull
+				bestMatch = exposedName
+			}
+
+			// Check 4: Fuzzy Match on Short Name
+			// Only if requested name is also "short" (no dots), otherwise comparing against short name is misleading?
+			// Actually, if I type "get_wether", I want it to match "weather.get_weather".
+			if !strings.Contains(req.ToolName, ".") {
+				distShort := util.LevenshteinDistance(req.ToolName, shortName)
+				// We prioritize short name match if it's very close
+				if distShort < minDist {
+					minDist = distShort
+					bestMatch = exposedName
+				}
+			}
+
 			return true
 		})
 
+		// Thresholds:
+		// - 0: Perfect semantic match (namespace/case)
+		// - <= 3: Typo
 		if minDist <= 3 && bestMatch != "" {
 			return nil, fmt.Errorf("%w: %q (did you mean %q?)", ErrToolNotFound, req.ToolName, bestMatch)
 		}
