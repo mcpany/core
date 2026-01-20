@@ -128,6 +128,9 @@ func TestSafeDialContext(t *testing.T) {
 }
 
 func TestCheckConnection(t *testing.T) {
+	// Allow loopback for testing
+	t.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "true")
+
 	// Start a test server
 	server := http.Server{Handler: http.NotFoundHandler()}
 	listener, err := net.Listen("tcp", "127.0.0.1:0")

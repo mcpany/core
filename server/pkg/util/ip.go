@@ -97,6 +97,21 @@ func IsPrivateNetworkIP(ip net.IP) bool {
 	return false
 }
 
+// IsLoopbackIP checks if the IP address is a loopback address.
+// It handles standard Loopback (127.0.0.0/8, ::1) and IPv4-compatible IPv6 Loopback (::127.x.x.x).
+func IsLoopbackIP(ip net.IP) bool {
+	if ip.IsLoopback() {
+		return true
+	}
+	// Check for IPv4-compatible IPv6 addresses (::a.b.c.d) for Loopback
+	if isIPv4Compatible(ip) {
+		ip4 := ip[12:16]
+		// Loopback (127.0.0.0/8)
+		return ip4[0] == 127
+	}
+	return false
+}
+
 func isNAT64(ip net.IP) bool {
 	// Check for NAT64 (IPv4-embedded IPv6) - 64:ff9b::/96 (RFC 6052)
 	// If it matches, we extract the last 4 bytes and check if they are private.
