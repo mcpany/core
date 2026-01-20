@@ -7,7 +7,6 @@ import (
 	"context"
 	"net"
 	"net/http"
-	"os"
 	"testing"
 	"time"
 
