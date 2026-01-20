@@ -33,8 +33,10 @@
 - [x] **Bulk Service Actions**: Enable/Disable or Delete multiple services at once, potentially using tags for selection.
 - [ ] **Tag-based Access Control**: Restrict service access to specific user profiles based on tags.
 - [ ] **Live Tool Usage Graph**: Visual graph of tool execution metrics over time (RPS, Latency) in Tool Detail view.
-- [ ] **Tool Filtering by Service**: Filter the tool list by selecting a specific service.
+- [x] **Tool Filtering by Service**: Filter the tool list by selecting a specific service.
 - [ ] **Compact Tool View**: A toggle to switch between comfortable and compact table view for high density lists.
+- [ ] **Tool Search & Sorting**: Search tools by name/description and sort by various criteria (name, service, usage).
+- [ ] **Service-Context Tool Navigation**: Link from Service Detail view to Tools page with the service pre-selected in the filter.
 - [ ] **Service Health History Visualization**: A sparkline or small graph in the service list row showing uptime/latency history (e.g. last 1h).
 - [ ] **Bulk Edit Configuration**: Ability to edit common properties (like tags, timeout, or environment variables) for multiple selected services.
 - [ ] **Saved Tool Arguments**: Ability to save a set of arguments as a "Preset" for a tool in the Playground, to quickly test different scenarios.

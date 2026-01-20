@@ -4,6 +4,7 @@
  */
 
 import { render, screen, fireEvent, waitFor, within } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import ToolsPage from './page';
 import { apiClient } from '@/lib/client';
 import { vi, describe, it, expect, beforeEach } from 'vitest';
@@ -19,6 +20,23 @@ vi.mock('@/lib/client', () => ({
 // Mock ToolInspector to avoid issues with its internal dependencies or rendering
 vi.mock('@/components/tools/tool-inspector', () => ({
   ToolInspector: () => <div data-testid="tool-inspector" />,
+}));
+
+// Mock Select components to avoid Radix UI interaction issues in JSDOM
+vi.mock('@/components/ui/select', () => ({
+  Select: ({ value, onValueChange, children }: any) => (
+    <select
+      data-testid="service-select"
+      value={value}
+      onChange={(e) => onValueChange(e.target.value)}
+    >
+      {children}
+    </select>
+  ),
+  SelectTrigger: () => null,
+  SelectValue: () => null,
+  SelectContent: ({ children }: any) => <>{children}</>,
+  SelectItem: ({ value, children }: any) => <option value={value}>{children}</option>,
 }));
 
 describe('ToolsPage', () => {
@@ -70,6 +88,44 @@ describe('ToolsPage', () => {
     await waitFor(() => {
         expect(screen.getByText('toolB')).toBeInTheDocument();
         expect(screen.queryByText('toolA')).not.toBeInTheDocument();
+    });
+  });
+
+  it('filters tools by service', async () => {
+    const user = userEvent.setup();
+    const mockTools = [
+      { name: 'toolA', description: 'Description A', serviceId: 'service1', disable: false },
+      { name: 'toolB', description: 'Description B', serviceId: 'service2', disable: false },
+    ];
+
+    (apiClient.listTools as any).mockResolvedValue({ tools: mockTools });
+
+    render(<ToolsPage />);
+
+    // Wait for tools to load
+    await waitFor(() => {
+      expect(screen.getByText('toolA')).toBeInTheDocument();
+      expect(screen.getByText('toolB')).toBeInTheDocument();
+    });
+
+    // Select "service2" using the mock select
+    const selectElement = screen.getByTestId('service-select');
+    await user.selectOptions(selectElement, 'service2');
+
+    // Verify only toolB is visible
+    await waitFor(() => {
+        expect(screen.getByText('toolB')).toBeInTheDocument();
+        expect(screen.queryByText('toolA')).not.toBeInTheDocument();
+    });
+
+    // Clear filter
+    const clearBtn = screen.getByTitle('Clear Filter');
+    await user.click(clearBtn);
+
+    // Verify both are visible
+    await waitFor(() => {
+        expect(screen.getByText('toolA')).toBeInTheDocument();
+        expect(screen.getByText('toolB')).toBeInTheDocument();
     });
   });
 });
