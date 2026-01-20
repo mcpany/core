@@ -106,40 +106,20 @@ func (e *yamlEngine) Unmarshal(b []byte, v proto.Message) error {
 
 	// Finally, unmarshal the JSON into the protobuf message.
 	if err := protojson.Unmarshal(jsonData, v); err != nil {
-		// Detect if the user is using Claude Desktop config format
-		if strings.Contains(err.Error(), "unknown field \"mcpServers\"") {
-			// revive:disable-next-line:error-strings // This error message is user facing and needs to be descriptive
-			//nolint:staticcheck // This error message is user facing and needs to be descriptive
-			return fmt.Errorf("%w\n\nDid you mean \"upstream_services\"? It looks like you might be using a Claude Desktop configuration format. MCP Any uses a different configuration structure. See documentation for details.", err)
-		}
-
-		// Detect if the user is using "services" which is a common alias for "upstream_services"
-		if strings.Contains(err.Error(), "unknown field \"services\"") {
-			// revive:disable-next-line:error-strings // This error message is user facing and needs to be descriptive
-			//nolint:staticcheck // This error message is user facing and needs to be descriptive
-			return fmt.Errorf("%w\n\nDid you mean \"upstream_services\"? \"services\" is not a valid top-level key.", err)
-		}
-
-		// Detect invalid use of service_config wrapper (common mistake due to old docs)
-		if strings.Contains(err.Error(), "unknown field \"service_config\"") {
-			// revive:disable-next-line:error-strings // This error message is user facing and needs to be descriptive
-			//nolint:staticcheck // This error message is user facing and needs to be descriptive
-			return fmt.Errorf("%w\n\nIt looks like you are using 'service_config' as a wrapper key. In MCP Any configuration, you should place the service type (e.g., 'http_service', 'grpc_service') directly under the service definition, without a 'service_config' wrapper.", err)
-		}
-
-		// Check for unknown fields and suggest fuzzy matches
-		if strings.Contains(err.Error(), "unknown field") {
-			matches := unknownFieldRegex.FindStringSubmatch(err.Error())
-			if len(matches) > 1 {
-				unknownField := matches[1]
-				suggestion := suggestFix(unknownField, v)
-				if suggestion != "" {
-					return fmt.Errorf("%w\n\n%s", err, suggestion)
+		// Attempt partial unmarshal for McpAnyServerConfig to support resilient loading
+		if config, ok := v.(*configv1.McpAnyServerConfig); ok {
+			if success, partialErr := tryPartialUnmarshal(yamlMap, config); success {
+				if partialErr != nil {
+					return partialErr
 				}
+				// If successfully loaded partial config, proceed to validation
+				goto Validate
 			}
 		}
-		return err
+		return handleProtoJsonError(err, v)
 	}
+
+Validate:
 	// Debug logging to inspect unmarshaled user
 
 	// Validate the unmarshaled message against the schema
@@ -158,6 +138,127 @@ func (e *yamlEngine) Unmarshal(b []byte, v proto.Message) error {
 	}
 
 	return nil
+}
+
+func handleProtoJsonError(err error, v proto.Message) error {
+	// Detect if the user is using Claude Desktop config format
+	if strings.Contains(err.Error(), "unknown field \"mcpServers\"") {
+		// revive:disable-next-line:error-strings // This error message is user facing and needs to be descriptive
+		//nolint:staticcheck // This error message is user facing and needs to be descriptive
+		return fmt.Errorf("%w\n\nDid you mean \"upstream_services\"? It looks like you might be using a Claude Desktop configuration format. MCP Any uses a different configuration structure. See documentation for details.", err)
+	}
+
+	// Detect if the user is using "services" which is a common alias for "upstream_services"
+	if strings.Contains(err.Error(), "unknown field \"services\"") {
+		// revive:disable-next-line:error-strings // This error message is user facing and needs to be descriptive
+		//nolint:staticcheck // This error message is user facing and needs to be descriptive
+		return fmt.Errorf("%w\n\nDid you mean \"upstream_services\"? \"services\" is not a valid top-level key.", err)
+	}
+
+	// Detect invalid use of service_config wrapper (common mistake due to old docs)
+	if strings.Contains(err.Error(), "unknown field \"service_config\"") {
+		// revive:disable-next-line:error-strings // This error message is user facing and needs to be descriptive
+		//nolint:staticcheck // This error message is user facing and needs to be descriptive
+		return fmt.Errorf("%w\n\nIt looks like you are using 'service_config' as a wrapper key. In MCP Any configuration, you should place the service type (e.g., 'http_service', 'grpc_service') directly under the service definition, without a 'service_config' wrapper.", err)
+	}
+
+	// Check for unknown fields and suggest fuzzy matches
+	if strings.Contains(err.Error(), "unknown field") {
+		matches := unknownFieldRegex.FindStringSubmatch(err.Error())
+		if len(matches) > 1 {
+			unknownField := matches[1]
+			suggestion := suggestFix(unknownField, v)
+			if suggestion != "" {
+				return fmt.Errorf("%w\n\n%s", err, suggestion)
+			}
+		}
+	}
+	return err
+}
+
+func tryPartialUnmarshal(yamlMap map[string]interface{}, config *configv1.McpAnyServerConfig) (bool, error) {
+	// Check if we have upstream_services
+	// yaml key might be "upstream_services"
+	servicesRaw, ok := yamlMap["upstream_services"]
+	if !ok {
+		return false, nil // Can't help
+	}
+
+	servicesList, ok := servicesRaw.([]interface{})
+	if !ok {
+		return false, nil // Structurally invalid
+	}
+
+	// Remove services from map to test base config validity
+	delete(yamlMap, "upstream_services")
+
+	// Marshal rest
+	jsonData, err := json.Marshal(yamlMap)
+	if err != nil {
+		return false, nil // Something else is wrong
+	}
+
+	// Clear config before unmarshaling again
+	proto.Reset(config)
+
+	// Unmarshal rest
+	if err := protojson.Unmarshal(jsonData, config); err != nil {
+		// The error wasn't (just) in upstream_services, or was in global settings.
+		return false, nil
+	}
+
+	// The base config is valid! Now let's try to add back valid services.
+	validServices := []*configv1.UpstreamServiceConfig{}
+
+	log := logging.GetLogger().With("component", "configLoader")
+
+	for i, s := range servicesList {
+		// s should be map[string]interface{}
+		sMap, ok := s.(map[string]interface{})
+		if !ok {
+			log.Error("Skipping invalid service definition (not a map)", "index", i)
+			continue
+		}
+
+		sJSON, err := json.Marshal(sMap)
+		if err != nil {
+			log.Error("Skipping service definition (json marshal failed)", "index", i)
+			continue
+		}
+
+		svcConfig := &configv1.UpstreamServiceConfig{}
+		if err := protojson.Unmarshal(sJSON, svcConfig); err != nil {
+			// This is the bad service!
+			name := "unknown"
+			if n, ok := sMap["name"].(string); ok {
+				name = n
+			} else {
+				name = fmt.Sprintf("index-%d", i)
+			}
+
+			// Format the error nicely
+			niceErr := handleProtoJsonError(err, svcConfig)
+
+			log.Error("⚠️  Skipping invalid service configuration",
+				"service", name,
+				"error", niceErr.Error())
+			continue
+		}
+
+		validServices = append(validServices, svcConfig)
+	}
+
+	if len(validServices) == 0 && len(servicesList) > 0 {
+		// If all services failed, we cannot claim partial success.
+		// We should return an error so the user knows everything failed.
+		// By returning false, we fall back to the original error reporting which covers the failure.
+		return false, nil
+	}
+
+	config.UpstreamServices = validServices
+
+	// We successfully salvaged the rest.
+	return true, nil
 }
 
 // textprotoEngine implements the Engine interface for textproto configuration
@@ -185,32 +286,7 @@ type jsonEngine struct{}
 // Returns an error if the operation fails.
 func (e *jsonEngine) Unmarshal(b []byte, v proto.Message) error {
 	if err := protojson.Unmarshal(b, v); err != nil {
-		// Detect if the user is using Claude Desktop config format
-		if strings.Contains(err.Error(), "unknown field \"mcpServers\"") {
-			// revive:disable-next-line:error-strings // This error message is user facing and needs to be descriptive
-			//nolint:staticcheck // This error message is user facing and needs to be descriptive
-			return fmt.Errorf("%w\n\nDid you mean \"upstream_services\"? It looks like you might be using a Claude Desktop configuration format. MCP Any uses a different configuration structure. See documentation for details.", err)
-		}
-
-		// Detect if the user is using "services" which is a common alias for "upstream_services"
-		if strings.Contains(err.Error(), "unknown field \"services\"") {
-			// revive:disable-next-line:error-strings // This error message is user facing and needs to be descriptive
-			//nolint:staticcheck // This error message is user facing and needs to be descriptive
-			return fmt.Errorf("%w\n\nDid you mean \"upstream_services\"? \"services\" is not a valid top-level key.", err)
-		}
-
-		// Check for unknown fields and suggest fuzzy matches
-		if strings.Contains(err.Error(), "unknown field") {
-			matches := unknownFieldRegex.FindStringSubmatch(err.Error())
-			if len(matches) > 1 {
-				unknownField := matches[1]
-				suggestion := suggestFix(unknownField, v)
-				if suggestion != "" {
-					return fmt.Errorf("%w\n\n%s", err, suggestion)
-				}
-			}
-		}
-		return err
+		return handleProtoJsonError(err, v)
 	}
 	return nil
 }
