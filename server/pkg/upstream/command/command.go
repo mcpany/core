@@ -160,7 +160,7 @@ func (u *Upstream) createAndRegisterCommandTools(
 
 		command := definition.GetName()
 
-		inputProperties, err := schemaconv.ConfigSchemaToProtoProperties(callDef.GetParameters())
+		inputProperties, required, err := schemaconv.ConfigSchemaToProtoProperties(callDef.GetParameters())
 		if err != nil {
 			log.Error("Failed to convert config schema to proto properties", "error", err)
 			continue
@@ -175,6 +175,14 @@ func (u *Upstream) createAndRegisterCommandTools(
 				"type":       structpb.NewStringValue("object"),
 				"properties": structpb.NewStructValue(inputProperties),
 			},
+		}
+
+		if len(required) > 0 {
+			requiredVals := make([]*structpb.Value, len(required))
+			for i, v := range required {
+				requiredVals[i] = structpb.NewStringValue(v)
+			}
+			inputSchema.Fields["required"] = structpb.NewListValue(&structpb.ListValue{Values: requiredVals})
 		}
 
 		outputProperties, err := structpb.NewStruct(map[string]interface{}{

@@ -181,3 +181,20 @@ func TestNewHTTPClientWithTLS(t *testing.T) {
 		assert.Len(t, transport.TLSClientConfig.Certificates, 1)
 	})
 }
+
+func TestNewHTTPClientWithTLS_Env(t *testing.T) {
+	t.Run("with MCPANY_DENY_PRIVATE_UPSTREAM", func(t *testing.T) {
+		t.Setenv("MCPANY_DENY_PRIVATE_UPSTREAM", "true")
+		client, err := NewHTTPClientWithTLS(nil)
+		require.NoError(t, err)
+		transport, ok := client.Transport.(*http.Transport)
+		require.True(t, ok)
+
+		// Should block private
+		ctx, cancel := context.WithTimeout(context.Background(), 100*time.Millisecond)
+		defer cancel()
+		_, err = transport.DialContext(ctx, "tcp", "192.168.1.1:80")
+		require.Error(t, err)
+		assert.Contains(t, err.Error(), "ssrf attempt blocked")
+	})
+}

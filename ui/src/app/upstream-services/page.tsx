@@ -14,6 +14,10 @@ import { Plus, Power, Trash2, RefreshCw, AlertTriangle } from "lucide-react";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 
+/**
+ * UpstreamServicesPage component.
+ * @returns The rendered component.
+ */
 export default function UpstreamServicesPage() {
     const { toast } = useToast();
     const [services, setServices] = useState<any[]>([]);

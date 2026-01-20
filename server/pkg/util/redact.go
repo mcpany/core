@@ -6,6 +6,7 @@ package util //nolint:revive,nolintlint // Package name 'util' is common in this
 import (
 	"bytes"
 	"encoding/json"
+	"sort"
 	"unsafe"
 )
 
@@ -31,6 +32,10 @@ var (
 	// sensitiveStartCharBitmap is a bitmap for fast checking if a character is a start char.
 	// It's faster than bytes.IndexAny for short strings because it avoids overhead.
 	sensitiveStartCharBitmap [256]bool
+
+	// allSensitiveStartChars is a string containing all characters that can start a sensitive key.
+	// Used for optimized scanning with bytes.IndexAny.
+	allSensitiveStartChars string
 )
 
 func init() {
@@ -47,6 +52,18 @@ func init() {
 		}
 	}
 
+	// ⚡ Bolt Optimization: Sort keys in each group by length descending.
+	// This ensures that we check longer keys first (e.g. "authorization" before "auth").
+	// If the longer key matches, we are done. If "auth" matched first, we might fail the boundary check
+	// (e.g. next char is 'o') and then have to check "authorization" anyway.
+	for i := range sensitiveKeyGroups {
+		if len(sensitiveKeyGroups[i]) > 1 {
+			sort.Slice(sensitiveKeyGroups[i], func(j, k int) bool {
+				return len(sensitiveKeyGroups[i][j]) > len(sensitiveKeyGroups[i][k])
+			})
+		}
+	}
+
 	// Build sensitiveStartCharsAny and bitmap
 	for _, c := range sensitiveStartChars {
 		sensitiveStartCharBitmap[c] = true
@@ -54,6 +71,15 @@ func init() {
 		upper := c - 32
 		sensitiveStartCharBitmap[upper] = true
 	}
+
+	// Build allSensitiveStartChars
+	var sb bytes.Buffer
+	for c := 0; c < 256; c++ {
+		if sensitiveStartCharBitmap[c] {
+			sb.WriteByte(byte(c))
+		}
+	}
+	allSensitiveStartChars = sb.String()
 
 	// Build next char masks
 	for start, keys := range sensitiveKeyGroups {
@@ -80,32 +106,132 @@ func init() {
 // RedactJSON parses a JSON byte slice and redacts sensitive keys.
 // If the input is not valid JSON object or array, it returns the input as is.
 func RedactJSON(input []byte) []byte {
+	// Check if input looks like JSON object or array.
+	// We skip whitespace and comments to find the first significant character.
+	idx := skipWhitespaceAndComments(input, 0)
+	if idx >= len(input) {
+		return input
+	}
+	first := input[idx]
+	if first != '{' && first != '[' {
+		return input
+	}
+
 	// Use fast zero-allocation redaction path
 	// This avoids expensive json.Unmarshal/Marshal for large payloads
 	return redactJSONFast(input)
 }
 
 // RedactMap recursively redacts sensitive keys in a map.
-// Note: This function creates a deep copy of the map with redacted values.
+// Optimization: This function performs a copy-on-write.
+// If no sensitive keys are found, it returns the original map (zero allocation).
+// If sensitive keys are found, it returns a new map with redacted values (and copies other fields).
+// Note: This aligns with RedactJSON behavior which returns original slice if clean.
 func RedactMap(m map[string]interface{}) map[string]interface{} {
-	newMap := make(map[string]interface{}, len(m))
-	for k, v := range m {
-		if IsSensitiveKey(k) {
-			newMap[k] = redactedPlaceholder
-		} else {
-			if nestedMap, ok := v.(map[string]interface{}); ok {
-				newMap[k] = RedactMap(nestedMap)
-			} else if nestedSlice, ok := v.([]interface{}); ok {
-				newMap[k] = redactSlice(nestedSlice)
-			} else {
-				newMap[k] = v
+	redacted, changed := redactMapMaybe(m)
+	if changed {
+		return redacted
+	}
+	return m
+}
+
+// redactMapMaybe recursively checks and redacts the map.
+// It returns (newMap, true) if any redaction happened.
+// It returns (nil, false) if no redaction happened (optimization to avoid copying).
+func redactMapMaybe(m map[string]interface{}) (map[string]interface{}, bool) {
+	// First pass: check if we need to modify anything.
+	// This avoids allocation for the common case (clean map).
+	// We do a shallow check of keys and recursive check of values.
+
+	// Since map iteration order is random, we can't "copy seen so far" deterministically easily
+	// unless we keep track of keys or just iterate again.
+	// But allocating the map when we find the first dirty key is efficient enough.
+	// We will have to iterate again to copy the rest, but that's fine.
+
+	var newMap map[string]interface{}
+
+	// Helper to initialize newMap with a copy of m
+	initMap := func() {
+		if newMap == nil {
+			newMap = make(map[string]interface{}, len(m))
+			for mk, mv := range m {
+				newMap[mk] = mv
 			}
 		}
 	}
-	return newMap
+
+	for k, v := range m {
+		// Check if key is sensitive
+		if IsSensitiveKey(k) {
+			initMap()
+			// Apply redaction
+			newMap[k] = redactedPlaceholder
+			continue
+		}
+
+		// Check recursive values
+		if nestedMap, ok := v.(map[string]interface{}); ok {
+			if res, changed := redactMapMaybe(nestedMap); changed {
+				initMap()
+				newMap[k] = res
+			}
+		} else if nestedSlice, ok := v.([]interface{}); ok {
+			if res, changed := redactSliceMaybe(nestedSlice); changed {
+				initMap()
+				newMap[k] = res
+			}
+		}
+	}
+
+	if newMap != nil {
+		return newMap, true
+	}
+	return nil, false
 }
 
+func redactSliceMaybe(s []interface{}) ([]interface{}, bool) {
+	var newSlice []interface{}
+
+	for i, v := range s {
+		if nestedMap, ok := v.(map[string]interface{}); ok {
+			if res, changed := redactMapMaybe(nestedMap); changed {
+				if newSlice == nil {
+					newSlice = make([]interface{}, len(s))
+					copy(newSlice, s)
+				}
+				newSlice[i] = res
+			}
+		} else if nestedSlice, ok := v.([]interface{}); ok {
+			if res, changed := redactSliceMaybe(nestedSlice); changed {
+				if newSlice == nil {
+					newSlice = make([]interface{}, len(s))
+					copy(newSlice, s)
+				}
+				newSlice[i] = res
+			}
+		}
+	}
+
+	if newSlice != nil {
+		return newSlice, true
+	}
+	return nil, false
+}
+
+// redactSlice is preserved for potential future use or external tests that might rely on it,
+// although it's currently unused in this package.
+//
+//nolint:unused
 func redactSlice(s []interface{}) []interface{} {
+	// Legacy wrapper if needed, but we updated usage.
+	// RedactMap uses redactSliceMaybe now.
+	res, changed := redactSliceMaybe(s)
+	if changed {
+		return res
+	}
+
+	// For legacy support (if used internally elsewhere), return a deep copy to be safe.
+	// Although currently it seems unused, we keep it consistent.
 	newSlice := make([]interface{}, len(s))
 	for i, v := range s {
 		if nestedMap, ok := v.(map[string]interface{}); ok {
@@ -174,48 +300,32 @@ func scanForSensitiveKeys(input []byte, validateKeyContext bool) bool { //nolint
 		return false
 	}
 
-	for _, startChar := range sensitiveStartChars {
-		// startChar is lowercase. We need to check for uppercase too.
-		// Optimized loop: skip directly to the next occurrence of startChar or startChar-32
-		upperChar := startChar - 32
-
-		offset := 0
-		for offset < len(input) {
-			slice := input[offset:]
-
-			// Find first occurrence of startChar or upperChar
-			idxL := bytes.IndexByte(slice, startChar)
-			idxU := bytes.IndexByte(slice, upperChar)
-
-			var idx int
-			if idxL == -1 && idxU == -1 {
-				break // No more matches for this char
-			}
-
-			switch {
-			case idxL == -1:
-				idx = idxU
-			case idxU == -1:
-				idx = idxL
-			default:
-				if idxL < idxU {
-					idx = idxL
-				} else {
-					idx = idxU
-				}
-			}
-			// Found candidate start at offset + idx
-			matchStart := offset + idx
-
-			// In this loop, we know the candidate char matches startChar (modulo case).
-			// We can reuse the common validation logic.
-			if checkPotentialMatch(input, matchStart, startChar) {
-				return true
-			}
-
-			// Move past this match
-			offset = matchStart + 1
+	// Optimization: Use IndexAny to find the first occurrence of ANY sensitive start char.
+	// This reduces the number of passes over the data from N (number of unique start chars) to 1.
+	offset := 0
+	for offset < len(input) {
+		slice := input[offset:]
+		idx := bytes.IndexAny(slice, allSensitiveStartChars)
+		if idx == -1 {
+			break
 		}
+		matchStart := offset + idx
+		// Check bounds explicitly to satisfy gosec G602
+		if matchStart >= len(input) {
+			break
+		}
+		c := input[matchStart]
+
+		// We found a character 'c' which is a start char.
+		// We need to know which 'startChar' (lowercase) it corresponds to.
+		lowerC := c | 0x20 // Normalize to lowercase
+
+		// Check if it matches
+		if checkPotentialMatch(input, matchStart, lowerC) {
+			return true
+		}
+
+		offset = matchStart + 1
 	}
 	return false
 }

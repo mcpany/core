@@ -21,11 +21,25 @@ const unescapeStackLimit = 256
 // It avoids multiple comparisons in the hot path.
 var isJSONWhitespace [256]bool
 
+// isNumberDelimiter is a lookup table for fast number delimiter checking.
+var isNumberDelimiter [256]bool
+
 func init() {
 	isJSONWhitespace[' '] = true
 	isJSONWhitespace['\t'] = true
 	isJSONWhitespace['\n'] = true
 	isJSONWhitespace['\r'] = true
+
+	// Number delimiters: whitespace, ',', '}', ']'
+	// We also treat '/' as delimiter because of comments check in skipNumber
+	isNumberDelimiter[' '] = true
+	isNumberDelimiter['\t'] = true
+	isNumberDelimiter['\n'] = true
+	isNumberDelimiter['\r'] = true
+	isNumberDelimiter[','] = true
+	isNumberDelimiter['}'] = true
+	isNumberDelimiter[']'] = true
+	isNumberDelimiter['/'] = true
 }
 
 // redactJSONFast is a zero-allocation (mostly) implementation of RedactJSON.
@@ -47,6 +61,25 @@ func redactJSONFast(input []byte) []byte {
 			break
 		}
 		quotePos := i + nextQuote
+
+		// Check for potential comments before the quote
+		// Comments start with '/'
+		// Optimization: Check if '/' exists in input[i:quotePos]
+		// We need to handle comments that might obscure keys or be misinterpreted as code.
+		slashIdx := bytes.IndexByte(input[i:quotePos], '/')
+		if slashIdx != -1 {
+			// Found a slash. Check if it starts a comment.
+			slashPos := i + slashIdx
+			if slashPos+1 < n {
+				next := input[slashPos+1]
+				if next == '/' || next == '*' {
+					// It is a comment!
+					// Skip it and retry scanning from after comment
+					i = skipWhitespaceAndComments(input, slashPos)
+					continue
+				}
+			}
+		}
 
 		// Parse string
 		// We need to find the matching closing quote
@@ -634,10 +667,11 @@ func scanEscapedKeyForSensitive(keyContent []byte) bool {
 func skipNumber(input []byte, start int) int {
 	// Number
 	// Scan until delimiter: , } ] or whitespace
+	// ⚡ Bolt Optimization: Use lookup table for fast delimiter check
 	i := start
 	for i < len(input) {
 		c := input[i]
-		if c == ',' || c == '}' || c == ']' || c == ' ' || c == '\t' || c == '\n' || c == '\r' || c == '/' {
+		if isNumberDelimiter[c] {
 			return i
 		}
 		i++

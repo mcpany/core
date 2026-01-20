@@ -12,8 +12,10 @@ import (
 	"testing"
 	"time"
 
+	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/spf13/afero"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 )
 
@@ -32,6 +34,12 @@ users:
 	defer cancel()
 
 	app := NewApplication()
+	mockStore := new(MockStore)
+	mockStore.On("Load", mock.Anything).Return((*configv1.McpAnyServerConfig)(nil), nil)
+	mockStore.On("ListServices", mock.Anything).Return([]*configv1.UpstreamServiceConfig{}, nil)
+	mockStore.On("GetGlobalSettings", mock.Anything).Return(&configv1.GlobalSettings{}, nil)
+	mockStore.On("Close").Return(nil)
+	app.Storage = mockStore
 
 	// Start server on random ports
 	l, err := net.Listen("tcp", "localhost:0")
@@ -149,6 +157,12 @@ users:
 	defer cancel()
 
 	app := NewApplication()
+	mockStore := new(MockStore)
+	mockStore.On("Load", mock.Anything).Return((*configv1.McpAnyServerConfig)(nil), nil)
+	mockStore.On("ListServices", mock.Anything).Return([]*configv1.UpstreamServiceConfig{}, nil)
+	mockStore.On("GetGlobalSettings", mock.Anything).Return(&configv1.GlobalSettings{}, nil)
+	mockStore.On("Close").Return(nil)
+	app.Storage = mockStore
 
 	l, err := net.Listen("tcp", "localhost:0")
 	require.NoError(t, err)
@@ -221,6 +235,12 @@ global_settings:
     defer cancel()
 
     app := NewApplication()
+	mockStore := new(MockStore)
+	mockStore.On("Load", mock.Anything).Return((*configv1.McpAnyServerConfig)(nil), nil)
+	mockStore.On("ListServices", mock.Anything).Return([]*configv1.UpstreamServiceConfig{}, nil)
+	mockStore.On("GetGlobalSettings", mock.Anything).Return(&configv1.GlobalSettings{}, nil)
+	mockStore.On("Close").Return(nil)
+	app.Storage = mockStore
 
     // We need to Mock Run or just init what we need.
     // Init minimal state
@@ -284,6 +304,12 @@ users:
     defer cancel()
 
     app := NewApplication()
+	mockStore := new(MockStore)
+	mockStore.On("Load", mock.Anything).Return((*configv1.McpAnyServerConfig)(nil), nil)
+	mockStore.On("ListServices", mock.Anything).Return([]*configv1.UpstreamServiceConfig{}, nil)
+	mockStore.On("GetGlobalSettings", mock.Anything).Return(&configv1.GlobalSettings{}, nil)
+	mockStore.On("Close").Return(nil)
+	app.Storage = mockStore
 
     l, err := net.Listen("tcp", "localhost:0")
     require.NoError(t, err)

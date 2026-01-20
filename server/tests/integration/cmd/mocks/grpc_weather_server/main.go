@@ -13,6 +13,7 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 
 	weatherPb "github.com/mcpany/core/proto/examples/weather/v1"
 	"google.golang.org/grpc"
@@ -62,8 +63,7 @@ func main() {
 			break
 		}
 		slog.Warn("grpc_weather_server: Failed to listen, retrying...", "error", err, "attempt", i+1)
-		// Small backoff
-		// time.Sleep not essential for bind error if ephemeral, but good practice
+		time.Sleep(100 * time.Millisecond)
 	}
 	if err != nil {
 		slog.Error("grpc_weather_server: Failed to listen after retries", "error", err)

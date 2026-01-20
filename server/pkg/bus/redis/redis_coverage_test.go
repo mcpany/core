@@ -20,6 +20,12 @@ func TestBus_Coverage_New(t *testing.T) {
 	assert.NotNil(t, b)
 }
 
+func TestBus_Coverage_New_Nil(t *testing.T) {
+	// Verify handling of nil config
+	b, _ := New[any](nil)
+	assert.NotNil(t, b)
+}
+
 func TestBus_Close_Error_Simple(t *testing.T) {
 	// redismock v9 might not expose ExpectClose.
 	// If it doesn't, we can skip Close error test or check if there's another way.

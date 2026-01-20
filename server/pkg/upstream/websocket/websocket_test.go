@@ -348,7 +348,8 @@ func TestUpstream_Register_Mocked(t *testing.T) {
 
 		param1 := configv1.WebsocketParameterMapping_builder{
 			Schema: configv1.ParameterSchema_builder{
-				Name: proto.String("param1"),
+				Name:       proto.String("param1"),
+				IsRequired: proto.Bool(true),
 			}.Build(),
 		}.Build()
 		param2 := configv1.WebsocketParameterMapping_builder{
@@ -393,6 +394,12 @@ func TestUpstream_Register_Mocked(t *testing.T) {
 		properties := inputSchema.GetFields()["properties"].GetStructValue().GetFields()
 		assert.Contains(t, properties, "param1")
 		assert.Contains(t, properties, "param2")
+
+		requiredVal, ok := inputSchema.GetFields()["required"]
+		require.True(t, ok, "required field should be present")
+		requiredList := requiredVal.GetListValue().GetValues()
+		assert.Len(t, requiredList, 1)
+		assert.Equal(t, "param1", requiredList[0].GetStringValue())
 	})
 }
 

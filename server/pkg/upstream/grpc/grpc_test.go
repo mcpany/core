@@ -13,6 +13,7 @@ import (
 	"net/url"
 	"sync"
 	"testing"
+	"time"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	pb "github.com/mcpany/core/proto/examples/weather/v1"
@@ -313,7 +314,16 @@ func (s *mockWeatherServer) GetWeather(_ context.Context, _ *pb.GetWeatherReques
 }
 
 func startMockServer(t *testing.T) (*grpc.Server, string) {
-	lis, err := net.Listen("tcp", "127.0.0.1:0")
+	var lis net.Listener
+	var err error
+	// Retry loop to handle rare "address already in use" errors on ephemeral ports
+	for i := 0; i < 10; i++ {
+		lis, err = net.Listen("tcp", "127.0.0.1:0")
+		if err == nil {
+			break
+		}
+		time.Sleep(100 * time.Millisecond)
+	}
 	if err != nil {
 		t.Fatalf("failed to listen: %v", err)
 	}

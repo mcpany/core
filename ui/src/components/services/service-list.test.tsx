@@ -6,6 +6,7 @@
 import { render, screen, fireEvent } from "@testing-library/react";
 import { ServiceList } from "./service-list";
 import { UpstreamServiceConfig } from "@/lib/client";
+import { ServiceHealthProvider } from "@/contexts/service-health-context";
 
 const mockServices: UpstreamServiceConfig[] = [
   {
@@ -57,14 +58,22 @@ const mockServices: UpstreamServiceConfig[] = [
 ];
 
 describe("ServiceList", () => {
+  const renderWithProvider = (component: React.ReactNode) => {
+    return render(
+      <ServiceHealthProvider>
+        {component}
+      </ServiceHealthProvider>
+    );
+  };
+
   it("renders services", () => {
-    render(<ServiceList services={mockServices} />);
+    renderWithProvider(<ServiceList services={mockServices} />);
     expect(screen.getByText("Service 1")).toBeInTheDocument();
     expect(screen.getByText("Service 2")).toBeInTheDocument();
   });
 
   it("filters services by tag", () => {
-    render(<ServiceList services={mockServices} />);
+    renderWithProvider(<ServiceList services={mockServices} />);
 
     const input = screen.getByPlaceholderText("Filter by tag...");
     fireEvent.change(input, { target: { value: "prod" } });
@@ -74,7 +83,7 @@ describe("ServiceList", () => {
   });
 
   it("filters services by partial tag match", () => {
-    render(<ServiceList services={mockServices} />);
+    renderWithProvider(<ServiceList services={mockServices} />);
 
     const input = screen.getByPlaceholderText("Filter by tag...");
     fireEvent.change(input, { target: { value: "ext" } });
@@ -84,7 +93,7 @@ describe("ServiceList", () => {
   });
 
   it("shows no results when no match", () => {
-    render(<ServiceList services={mockServices} />);
+    renderWithProvider(<ServiceList services={mockServices} />);
 
     const input = screen.getByPlaceholderText("Filter by tag...");
     fireEvent.change(input, { target: { value: "missing" } });

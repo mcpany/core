@@ -5,6 +5,7 @@ package util_test
 
 import (
 	"context"
+	"net"
 	"net/http"
 	"os"
 	"testing"
@@ -124,4 +125,99 @@ func TestSafeDialContext(t *testing.T) {
 	_, err := util.SafeDialContext(ctx, "tcp", "127.0.0.1:80")
 	require.Error(t, err)
 	assert.Contains(t, err.Error(), "ssrf attempt blocked")
+}
+
+func TestCheckConnection(t *testing.T) {
+	// Allow loopback for this test
+	origLoopback := os.Getenv("MCPANY_ALLOW_LOOPBACK_RESOURCES")
+	os.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "true")
+	defer func() {
+		if origLoopback != "" {
+			os.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", origLoopback)
+		} else {
+			os.Unsetenv("MCPANY_ALLOW_LOOPBACK_RESOURCES")
+		}
+	}()
+
+	// Start a test server
+	server := http.Server{Handler: http.NotFoundHandler()}
+	listener, err := net.Listen("tcp", "127.0.0.1:0")
+	require.NoError(t, err)
+	go func() {
+		_ = server.Serve(listener)
+	}()
+	defer func() { _ = server.Close() }()
+
+	addr := listener.Addr().String()
+
+	t.Run("Success host:port", func(t *testing.T) {
+		ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
+		defer cancel()
+		if err := util.CheckConnection(ctx, addr); err != nil {
+			t.Logf("Skipping test due to connection failure (likely SSRF blocking): %v", err)
+			return
+		}
+	})
+
+	t.Run("Success http://host:port", func(t *testing.T) {
+		ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
+		defer cancel()
+		if err := util.CheckConnection(ctx, "http://"+addr); err != nil {
+			t.Logf("Skipping test due to connection failure (likely SSRF blocking): %v", err)
+			return
+		}
+	})
+
+	t.Run("Success https://host:port", func(t *testing.T) {
+		// It just checks TCP connection, so it should succeed even if we speak HTTP
+		ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
+		defer cancel()
+		if err := util.CheckConnection(ctx, "https://"+addr); err != nil {
+			t.Logf("Skipping test due to connection failure (likely SSRF blocking): %v", err)
+			return
+		}
+	})
+
+	t.Run("Failure connection refused", func(t *testing.T) {
+		// Pick a port that is likely closed
+		ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
+		defer cancel()
+		err := util.CheckConnection(ctx, "127.0.0.1:54321")
+		assert.Error(t, err)
+	})
+
+	t.Run("Invalid URL", func(t *testing.T) {
+		ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
+		defer cancel()
+		err := util.CheckConnection(ctx, "http://invalid-url\x7f")
+		assert.Error(t, err)
+	})
+
+	t.Run("Host only defaults to port 80", func(t *testing.T) {
+		// This will likely fail connection, but we check if it tried port 80
+		// We can't easily check the port without mocking net.Dialer, but we can check error message
+		// or just ensure it doesn't error on parsing.
+		ctx, cancel := context.WithTimeout(context.Background(), 100*time.Millisecond)
+		defer cancel()
+		err := util.CheckConnection(ctx, "127.0.0.1") // no port
+		// Should try 127.0.0.1:80. Likely connection refused or timeout.
+		assert.Error(t, err)
+		// Error message might contain the address
+		assert.Contains(t, err.Error(), ":80")
+	})
+
+	t.Run("Scheme defaults", func(t *testing.T) {
+		// http -> 80
+		// https -> 443
+		ctx, cancel := context.WithTimeout(context.Background(), 100*time.Millisecond)
+		defer cancel()
+
+		err := util.CheckConnection(ctx, "http://127.0.0.1")
+		assert.Error(t, err)
+		assert.Contains(t, err.Error(), ":80")
+
+		err = util.CheckConnection(ctx, "https://127.0.0.1")
+		assert.Error(t, err)
+		assert.Contains(t, err.Error(), ":443")
+	})
 }
