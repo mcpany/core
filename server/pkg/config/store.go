@@ -71,9 +71,9 @@ type yamlEngine struct{}
 // This two-step process is a common pattern for converting YAML to a protobuf
 // message.
 func (e *yamlEngine) Unmarshal(b []byte, v proto.Message) error {
-	// First, unmarshal YAML into a generic map.
-	var yamlMap map[string]interface{}
-	if err := yaml.Unmarshal(b, &yamlMap); err != nil {
+	// Unmarshal YAML into yaml.Node first to allow safe expansion
+	var node yaml.Node
+	if err := yaml.Unmarshal(b, &node); err != nil {
 		// Enhance error message for common YAML mistakes
 		if strings.Contains(err.Error(), "found character that cannot start any token") {
 			if bytes.Contains(b, []byte("\t")) {
@@ -83,6 +83,20 @@ func (e *yamlEngine) Unmarshal(b []byte, v proto.Message) error {
 			}
 		}
 		return fmt.Errorf("failed to unmarshal YAML: %w", err)
+	}
+
+	// Expand environment variables within the AST
+	if err := expandYamlNode(&node); err != nil {
+		if strings.Contains(err.Error(), "variable ${") && strings.Contains(err.Error(), "is missing") {
+			return fmt.Errorf("failed to expand environment variables in YAML: %w\n    -> Fix: Set these environment variables in your shell or .env file, or provide a default value (e.g., ${VAR:default}).", err)
+		}
+		return fmt.Errorf("failed to expand environment variables in YAML: %w", err)
+	}
+
+	// Decode the expanded AST into a map
+	var yamlMap map[string]interface{}
+	if err := node.Decode(&yamlMap); err != nil {
+		return fmt.Errorf("failed to decode YAML node to map: %w", err)
 	}
 
 	// Apply environment variable overrides: MCPANY__SECTION__KEY -> section.key
@@ -106,39 +120,7 @@ func (e *yamlEngine) Unmarshal(b []byte, v proto.Message) error {
 
 	// Finally, unmarshal the JSON into the protobuf message.
 	if err := protojson.Unmarshal(jsonData, v); err != nil {
-		// Detect if the user is using Claude Desktop config format
-		if strings.Contains(err.Error(), "unknown field \"mcpServers\"") {
-			// revive:disable-next-line:error-strings // This error message is user facing and needs to be descriptive
-			//nolint:staticcheck // This error message is user facing and needs to be descriptive
-			return fmt.Errorf("%w\n\nDid you mean \"upstream_services\"? It looks like you might be using a Claude Desktop configuration format. MCP Any uses a different configuration structure. See documentation for details.", err)
-		}
-
-		// Detect if the user is using "services" which is a common alias for "upstream_services"
-		if strings.Contains(err.Error(), "unknown field \"services\"") {
-			// revive:disable-next-line:error-strings // This error message is user facing and needs to be descriptive
-			//nolint:staticcheck // This error message is user facing and needs to be descriptive
-			return fmt.Errorf("%w\n\nDid you mean \"upstream_services\"? \"services\" is not a valid top-level key.", err)
-		}
-
-		// Detect invalid use of service_config wrapper (common mistake due to old docs)
-		if strings.Contains(err.Error(), "unknown field \"service_config\"") {
-			// revive:disable-next-line:error-strings // This error message is user facing and needs to be descriptive
-			//nolint:staticcheck // This error message is user facing and needs to be descriptive
-			return fmt.Errorf("%w\n\nIt looks like you are using 'service_config' as a wrapper key. In MCP Any configuration, you should place the service type (e.g., 'http_service', 'grpc_service') directly under the service definition, without a 'service_config' wrapper.", err)
-		}
-
-		// Check for unknown fields and suggest fuzzy matches
-		if strings.Contains(err.Error(), "unknown field") {
-			matches := unknownFieldRegex.FindStringSubmatch(err.Error())
-			if len(matches) > 1 {
-				unknownField := matches[1]
-				suggestion := suggestFix(unknownField, v)
-				if suggestion != "" {
-					return fmt.Errorf("%w\n\n%s", err, suggestion)
-				}
-			}
-		}
-		return err
+		return handleProtoJsonError(err, v)
 	}
 	// Debug logging to inspect unmarshaled user
 
@@ -171,7 +153,13 @@ type textprotoEngine struct{}
 //
 // Returns an error if the operation fails.
 func (e *textprotoEngine) Unmarshal(b []byte, v proto.Message) error {
-	return prototext.Unmarshal(b, v)
+	// For TextProto, we use the legacy expansion method (string replacement)
+	// because we don't have easy AST manipulation for TextProto.
+	expanded, err := expandBytes(b)
+	if err != nil {
+		return err
+	}
+	return prototext.Unmarshal(expanded, v)
 }
 
 // jsonEngine implements the Engine interface for JSON configuration files.
@@ -184,35 +172,63 @@ type jsonEngine struct{}
 //
 // Returns an error if the operation fails.
 func (e *jsonEngine) Unmarshal(b []byte, v proto.Message) error {
-	if err := protojson.Unmarshal(b, v); err != nil {
-		// Detect if the user is using Claude Desktop config format
-		if strings.Contains(err.Error(), "unknown field \"mcpServers\"") {
-			// revive:disable-next-line:error-strings // This error message is user facing and needs to be descriptive
-			//nolint:staticcheck // This error message is user facing and needs to be descriptive
-			return fmt.Errorf("%w\n\nDid you mean \"upstream_services\"? It looks like you might be using a Claude Desktop configuration format. MCP Any uses a different configuration structure. See documentation for details.", err)
-		}
+	// Unmarshal JSON into generic interface to allow safe expansion
+	var vMap interface{}
+	if err := json.Unmarshal(b, &vMap); err != nil {
+		return handleProtoJsonError(err, v)
+	}
 
-		// Detect if the user is using "services" which is a common alias for "upstream_services"
-		if strings.Contains(err.Error(), "unknown field \"services\"") {
-			// revive:disable-next-line:error-strings // This error message is user facing and needs to be descriptive
-			//nolint:staticcheck // This error message is user facing and needs to be descriptive
-			return fmt.Errorf("%w\n\nDid you mean \"upstream_services\"? \"services\" is not a valid top-level key.", err)
-		}
+	// Expand environment variables within the map structure
+	if err := expandMap(vMap); err != nil {
+		return fmt.Errorf("failed to expand environment variables in JSON: %w", err)
+	}
 
-		// Check for unknown fields and suggest fuzzy matches
-		if strings.Contains(err.Error(), "unknown field") {
-			matches := unknownFieldRegex.FindStringSubmatch(err.Error())
-			if len(matches) > 1 {
-				unknownField := matches[1]
-				suggestion := suggestFix(unknownField, v)
-				if suggestion != "" {
-					return fmt.Errorf("%w\n\n%s", err, suggestion)
-				}
-			}
-		}
-		return err
+	// Marshal back to bytes
+	expandedBytes, err := json.Marshal(vMap)
+	if err != nil {
+		return fmt.Errorf("failed to re-marshal JSON after expansion: %w", err)
+	}
+
+	if err := protojson.Unmarshal(expandedBytes, v); err != nil {
+		return handleProtoJsonError(err, v)
 	}
 	return nil
+}
+
+func handleProtoJsonError(err error, v proto.Message) error {
+	// Detect if the user is using Claude Desktop config format
+	if strings.Contains(err.Error(), "unknown field \"mcpServers\"") {
+		// revive:disable-next-line:error-strings // This error message is user facing and needs to be descriptive
+		//nolint:staticcheck // This error message is user facing and needs to be descriptive
+		return fmt.Errorf("%w\n\nDid you mean \"upstream_services\"? It looks like you might be using a Claude Desktop configuration format. MCP Any uses a different configuration structure. See documentation for details.", err)
+	}
+
+	// Detect if the user is using "services" which is a common alias for "upstream_services"
+	if strings.Contains(err.Error(), "unknown field \"services\"") {
+		// revive:disable-next-line:error-strings // This error message is user facing and needs to be descriptive
+		//nolint:staticcheck // This error message is user facing and needs to be descriptive
+		return fmt.Errorf("%w\n\nDid you mean \"upstream_services\"? \"services\" is not a valid top-level key.", err)
+	}
+
+	// Detect invalid use of service_config wrapper (common mistake due to old docs)
+	if strings.Contains(err.Error(), "unknown field \"service_config\"") {
+		// revive:disable-next-line:error-strings // This error message is user facing and needs to be descriptive
+		//nolint:staticcheck // This error message is user facing and needs to be descriptive
+		return fmt.Errorf("%w\n\nIt looks like you are using 'service_config' as a wrapper key. In MCP Any configuration, you should place the service type (e.g., 'http_service', 'grpc_service') directly under the service definition, without a 'service_config' wrapper.", err)
+	}
+
+	// Check for unknown fields and suggest fuzzy matches
+	if strings.Contains(err.Error(), "unknown field") {
+		matches := unknownFieldRegex.FindStringSubmatch(err.Error())
+		if len(matches) > 1 {
+			unknownField := matches[1]
+			suggestion := suggestFix(unknownField, v)
+			if suggestion != "" {
+				return fmt.Errorf("%w\n\n%s", err, suggestion)
+			}
+		}
+	}
+	return err
 }
 
 // Store defines the interface for loading MCP-X server configurations.
@@ -269,9 +285,9 @@ type ServiceStore interface {
 var envVarRegex = regexp.MustCompile(`\${([^{}]+)}`)
 var unknownFieldRegex = regexp.MustCompile(`unknown field "([^"]+)"`)
 
-// expand replaces ${VAR} or ${VAR:default} with environment variables.
-// If a variable is missing and no default is provided, it returns an error with line number information.
-func expand(b []byte) ([]byte, error) {
+// expandBytes replaces ${VAR} or ${VAR:default} with environment variables in a byte slice.
+// This is used for TextProto files.
+func expandBytes(b []byte) ([]byte, error) {
 	var missingErrBuilder strings.Builder
 	missingCount := 0
 
@@ -319,6 +335,100 @@ func expand(b []byte) ([]byte, error) {
 	})
 
 	return expanded, nil
+}
+
+// expandString replaces ${VAR} or ${VAR:default} with environment variables in a string.
+// Returns error if a variable is missing and no default is provided.
+func expandString(s string) (string, error) {
+	if !strings.Contains(s, "${") {
+		return s, nil
+	}
+
+	var err error
+	expanded := envVarRegex.ReplaceAllStringFunc(s, func(match string) string {
+		inner := match[2 : len(match)-1]
+		parts := strings.SplitN(inner, ":", 2)
+		varName := parts[0]
+
+		val, ok := os.LookupEnv(varName)
+		if ok {
+			if val == "" && len(parts) > 1 {
+				return parts[1]
+			}
+			return val
+		}
+
+		if len(parts) > 1 {
+			return parts[1]
+		}
+
+		// Missing variable
+		if err == nil {
+			err = fmt.Errorf("variable ${%s} is missing", varName)
+		}
+		return match
+	})
+
+	if err != nil {
+		return "", err
+	}
+	return expanded, nil
+}
+
+// expandYamlNode recursively walks the YAML node tree and expands environment variables in Scalar nodes.
+func expandYamlNode(node *yaml.Node) error {
+	if node.Kind == yaml.ScalarNode {
+		if node.Tag == "!!str" || node.Tag == "" { // Only expand strings (or untagged which might be strings)
+			expanded, err := expandString(node.Value)
+			if err != nil {
+				return fmt.Errorf("Line %d: %w", node.Line, err)
+			}
+			node.Value = expanded
+		}
+		return nil
+	}
+
+	for _, child := range node.Content {
+		if err := expandYamlNode(child); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+// expandMap recursively walks a map/slice structure and expands environment variables in string values.
+func expandMap(v interface{}) error {
+	switch t := v.(type) {
+	case map[string]interface{}:
+		for k, val := range t {
+			if strVal, ok := val.(string); ok {
+				expanded, err := expandString(strVal)
+				if err != nil {
+					return fmt.Errorf("key %q: %w", k, err)
+				}
+				t[k] = expanded
+			} else {
+				if err := expandMap(val); err != nil {
+					return err
+				}
+			}
+		}
+	case []interface{}:
+		for i, val := range t {
+			if strVal, ok := val.(string); ok {
+				expanded, err := expandString(strVal)
+				if err != nil {
+					return fmt.Errorf("index %d: %w", i, err)
+				}
+				t[i] = expanded
+			} else {
+				if err := expandMap(val); err != nil {
+					return err
+				}
+			}
+		}
+	}
+	return nil
 }
 
 // FileStore implements the `Store` interface for loading configurations from one
@@ -394,10 +504,9 @@ func (s *FileStore) Load(ctx context.Context) (*configv1.McpAnyServerConfig, err
 			continue
 		}
 
-		b, err = expand(b)
-		if err != nil {
-			return nil, fmt.Errorf("failed to expand environment variables in %s: %w", path, err)
-		}
+		// Note: We deliberately do NOT call expand(b) here anymore.
+		// Expansion is now handled inside the specific Engine.Unmarshal implementation
+		// to ensure safe substitution (AST-aware) and prevent injection vulnerabilities.
 
 		engine, err := NewEngine(path)
 		if err != nil {
