@@ -472,10 +472,10 @@ func isKeyColon(input []byte, endOffset int) bool {
 	return false
 }
 
-var dsnPasswordRegex = regexp.MustCompile(`(:)([^:@]+)(@)`)
+var dsnPasswordRegex = regexp.MustCompile(`(//)([^:@]+)(:)([^:@]+)(@)`)
 
 // RedactDSN redacts the password from a DSN string.
 // Supported formats: postgres://user:password@host...
 func RedactDSN(dsn string) string {
-	return dsnPasswordRegex.ReplaceAllString(dsn, "$1"+redactedPlaceholder+"$3")
+	return dsnPasswordRegex.ReplaceAllString(dsn, "$1$2$3"+redactedPlaceholder+"$5")
 }

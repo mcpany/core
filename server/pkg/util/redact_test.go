@@ -390,3 +390,23 @@ func TestRedact_Authentication(t *testing.T) {
 		})
 	}
 }
+
+func TestRedactDSN(t *testing.T) {
+	t.Parallel()
+	tests := []struct {
+		name     string
+		input    string
+		expected string
+	}{
+		{"postgres", "postgres://user:password@host:5432/db", "postgres://user:[REDACTED]@host:5432/db"},
+		{"mysql", "mysql://user:password@host:3306/db", "mysql://user:[REDACTED]@host:3306/db"},
+		{"no password", "postgres://user@host:5432/db", "postgres://user@host:5432/db"},
+		{"complex password", "postgres://user:pass!word@host:5432/db", "postgres://user:[REDACTED]@host:5432/db"},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			assert.Equal(t, tt.expected, RedactDSN(tt.input))
+		})
+	}
+}
