@@ -14,6 +14,7 @@
   - _Update_: Enhanced with WebSocket support and browser-side connectivity probing.
 - [x] **Integrated Connection Diagnostics**: Added direct access to the Connection Diagnostic tool from the Service List status indicator, allowing users to quickly troubleshoot failed services.
 - [x] **Context-Aware Error Suggestions**: When a service error occurs, use heuristics to suggest a fix in the Connection Diagnostic dialog.
+- [x] **Fix E2E Testing Infrastructure**: Resolve persistent CI failures in `e2e-parallel` by implementing robust backend mocking for the Settings & Secrets page tests.
 - [ ] **One-Click Retry/Reconnect**: Button in the Service List (or diagnostic dialog) to immediately trigger a reconnection attempt for a failed service.
 - [ ] **Copy Diagnostic Logs**: Add a button to copy all diagnostic logs to the clipboard for easy sharing/reporting.
 - [ ] **Browser-Side HTTP Connectivity Check**: Add a diagnostic step to attempt fetching the service URL directly from the browser (for HTTP services) to help distinguish between server-side and client-side network issues (subject to CORS).
@@ -47,6 +48,8 @@
 - [ ] **Export Playground History**: Ability to export the current session's tool execution history to a JSON file for sharing or debugging.
 - [ ] **Context Usage Estimator**: Calculate and display estimated token usage for each tool/service to prevent context bloat (Address "MCP servers eat context" pain point).
 - [ ] **Sensitive Data Detection**: Warning when configuring services that might expose sensitive environment variables (e.g. AWS_SECRET_KEY) in tools.
+- [ ] **Robust Mocking Strategy**: Extend the mocking strategy used in Settings E2E tests to other critical E2E flows (Services, Tools) to reduce CI flakiness.
+- [ ] **Error Boundary Reporting**: Implement a global error boundary that catches component crashes (like the SecretsManager issue) and reports them to the diagnostic log or backend.
 
 ### Completed Features
 
