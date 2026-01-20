@@ -38,12 +38,13 @@
 - [ ] **Live Tool Usage Graph**: Visual graph of tool execution metrics over time (RPS, Latency) in Tool Detail view.
 - [ ] **Tool Filtering by Service**: Filter the tool list by selecting a specific service.
 - [ ] **Compact Tool View**: A toggle to switch between comfortable and compact table view for high density lists.
-- [ ] **Service Health History Visualization**: A sparkline or small graph in the service list row showing uptime/latency history (e.g. last 1h).
 - [ ] **Bulk Edit Configuration**: Ability to edit common properties (like tags, timeout, or environment variables) for multiple selected services.
 - [ ] **Saved Tool Arguments**: Ability to save a set of arguments as a "Preset" for a tool in the Playground, to quickly test different scenarios.
 - [x] **Tool Execution History Persisted**: Persist the local history of tool executions in `localStorage` or backend, so it survives page reloads.
 - [ ] **Tool Execution Duration Tracking**: Display the execution time (latency) for each tool call in the Playground history.
 - [ ] **Export Playground History**: Ability to export the current session's tool execution history to a JSON file for sharing or debugging.
+- [ ] **Context Usage Estimator**: Calculate and display estimated token usage for each tool/service to prevent context bloat (Address "MCP servers eat context" pain point).
+- [ ] **Sensitive Data Detection**: Warning when configuring services that might expose sensitive environment variables (e.g. AWS_SECRET_KEY) in tools.
 
 ### Completed Features
 
@@ -70,7 +71,7 @@
 - [x] **Profile Management**: Create and switch between user profiles.
 - [x] **Observability Dashboard**: Real-time metrics and system health (Now powered by real backend data).
 - [x] **System Status Banner**: A global banner that displays system health status and connectivity issues (polled from `/doctor`).
-- [ ] **Service Health Sparklines**: Visual history of latency/errors in service list.
+- [x] **Service Health Sparklines**: Visual history of latency/errors in service list.
 - [x] **Tool Usage Heatmap**: Visual representation of most used tools (Implemented as Top Tools Bar Chart).
 - [ ] **Dashboard Layout Customization**: Ability for users to rearrange and resize dashboard widgets.
 - [ ] **Tool Failure Rate Widget**: A dashboard widget showing tools with the highest error rates.
