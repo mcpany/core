@@ -1258,6 +1258,8 @@ func (a *Application) runServerMode(
 
 	// Wrap the HTTP handler with OpenTelemetry instrumentation
 	httpHandler := otelhttp.NewHandler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// Enforce 10MB limit for JSON-RPC body to prevent DoS
+		r.Body = http.MaxBytesReader(w, r.Body, 10<<20)
 		ctx := context.WithValue(r.Context(), "http.request", r) //nolint:revive,staticcheck // matching legacy usage in auth.go
 		rawHTTPHandler.ServeHTTP(w, r.WithContext(ctx))
 	}), "server-request")
@@ -1283,13 +1285,16 @@ func (a *Application) runServerMode(
 		}
 	}
 
+	// Trust Proxy Config
+	trustProxy := os.Getenv("MCPANY_TRUST_PROXY") == util.TrueStr
+
 	var authMiddleware func(http.Handler) http.Handler
 	if authDisabled {
 		logging.GetLogger().Warn("Auth middleware is disabled by config! Enforcing private-IP-only access for safety.")
 		// Even if auth is disabled, we enforce private-IP-only access to prevent public exposure.
-		authMiddleware = a.createAuthMiddleware(true)
+		authMiddleware = a.createAuthMiddleware(true, trustProxy)
 	} else {
-		authMiddleware = a.createAuthMiddleware(false)
+		authMiddleware = a.createAuthMiddleware(false, trustProxy)
 	}
 
 	mux := http.NewServeMux()
@@ -1665,7 +1670,7 @@ func (a *Application) runServerMode(
 	// Apply Global Rate Limit: 20 RPS with a burst of 50.
 	// This helps prevent basic DoS attacks on all HTTP endpoints, including /upload.
 	// We enable trustProxy if MCPANY_TRUST_PROXY is set, to handle load balancers correctly.
-	trustProxy := os.Getenv("MCPANY_TRUST_PROXY") == util.TrueStr
+	// trustProxy is already defined above
 	rateLimiter := middleware.NewHTTPRateLimitMiddleware(20, 50, middleware.WithTrustProxy(trustProxy))
 
 	// Apply CORS Middleware
@@ -1887,10 +1892,10 @@ func (a *Application) runServerMode(
 }
 
 // createAuthMiddleware creates the authentication middleware.
-func (a *Application) createAuthMiddleware(forcePrivateIPOnly bool) func(http.Handler) http.Handler {
+func (a *Application) createAuthMiddleware(forcePrivateIPOnly bool, trustProxy bool) func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			ip := util.ExtractIP(r.RemoteAddr)
+			ip := util.GetClientIP(r, trustProxy)
 			ctx := util.ContextWithRemoteIP(r.Context(), ip)
 			r = r.WithContext(ctx)
 
