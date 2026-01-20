@@ -15,39 +15,48 @@ func LevenshteinDistance(s1, s2 string) int {
 		return levenshteinASCII(s1, s2)
 	}
 
-	r1, r2 := []rune(s1), []rune(s2)
-	n, m := len(r1), len(r2)
-
-	if n == 0 {
-		return m
-	}
-	if m == 0 {
-		return n
+	// Optimization: avoid []rune conversion for the longer string.
+	// We use len(s) (bytes) as a heuristic for swapping, because converting to []rune
+	// just to check length defeats the purpose of avoiding allocation.
+	if len(s1) < len(s2) {
+		s1, s2 = s2, s1
 	}
 
-	// We want to iterate over the longer string in the outer loop
-	// and use the shorter string for the column vector to minimize memory usage.
-	// So if m > n, we swap them so that m is always the smaller (or equal) length.
-	if m > n {
-		r1, r2 = r2, r1
-		n, m = m, n
+	// If s2 is empty, the distance is the rune count of s1
+	if len(s2) == 0 {
+		return utf8.RuneCountInString(s1)
 	}
 
-	// v0 represents the previous row of distances
-	v0 := make([]int, m+1)
-	// v1 represents the current row of distances
-	v1 := make([]int, m+1)
+	// Convert shorter string to runes for fast random access
+	r2 := []rune(s2)
+	m := len(r2)
+
+	// Stack allocation for v0, v1 if m is small enough.
+	// Reusing the same logic as levenshteinASCII.
+	// 256 ints is a safe stack size.
+	var stackBuf [512]int
+	var v0, v1 []int
+
+	if m+1 <= 256 {
+		v0 = stackBuf[:m+1]
+		v1 = stackBuf[m+1 : 2*(m+1)]
+	} else {
+		v0 = make([]int, m+1)
+		v1 = make([]int, m+1)
+	}
 
 	// Initialize v0 (the first row, where one string is empty)
 	for j := 0; j <= m; j++ {
 		v0[j] = j
 	}
 
-	for i := 1; i <= n; i++ {
+	i := 0
+	for _, c1 := range s1 {
+		i++
 		v1[0] = i
 		for j := 1; j <= m; j++ {
 			cost := 0
-			if r1[i-1] != r2[j-1] {
+			if c1 != r2[j-1] {
 				cost = 1
 			}
 			v1[j] = min(
