@@ -29,13 +29,24 @@ You want to alert if the error rate of your "weather-service" exceeds 5% or if t
 
 ## Available Metrics
 
+### Tool Execution Metrics
+
 - `mcpany_tools_call_total`: Total number of tool calls.
+  - Labels: `tool`, `service_id`, `status` (success/error), `error_type`
+  - *Note: To count errors, query this metric where `status="error"`.*
+- `mcpany_tools_call_latency_seconds`: Latency of tool calls in seconds.
+  - Labels: `tool`, `service_id`, `status`, `error_type`
+- `mcpany_tools_call_input_bytes`: Size of tool input in bytes.
   - Labels: `tool`, `service_id`
-- `mcpany_tools_call_errors`: Total number of tool call errors.
+- `mcpany_tools_call_output_bytes`: Size of tool output in bytes.
   - Labels: `tool`, `service_id`
-- `mcpany_tools_call_latency`: Latency of tool calls.
+- `mcpany_tools_call_tokens_total`: Total number of tokens in tool executions.
+  - Labels: `tool`, `service_id`, `direction` (input/output)
+- `mcpany_tools_call_in_flight`: Current number of tool executions in flight.
   - Labels: `tool`, `service_id`
-- `mcpany_tools_list_total`: Total number of tools/list requests.
+
+### System Metrics
+
 - `mcpany_config_reload_total`: Configuration reload events.
 - `mcpany_grpc_connections_opened_total`: Total number of opened gRPC connections.
 - `mcpany_grpc_connections_closed_total`: Total number of closed gRPC connections.
