@@ -236,6 +236,10 @@ type Application struct {
 	startTime time.Time
 	// activeConnections tracks the number of active HTTP connections.
 	activeConnections int32
+
+	// RegistrationRetryDelay allows configuring the retry delay for service registration.
+	// If 0, it defaults to 5 seconds (in the worker).
+	RegistrationRetryDelay time.Duration
 }
 
 // NewApplication creates a new Application with default dependencies.
@@ -488,6 +492,9 @@ func (a *Application) Run(
 	// New message bus and workers
 	upstreamWorker := worker.NewUpstreamWorker(busProvider, a.ToolManager)
 	registrationWorker := worker.NewServiceRegistrationWorker(busProvider, serviceRegistry)
+	if a.RegistrationRetryDelay > 0 {
+		registrationWorker.SetRetryDelay(a.RegistrationRetryDelay)
+	}
 
 	// Create a context for workers that we can cancel on shutdown
 	workerCtx, workerCancel := context.WithCancel(ctx)
