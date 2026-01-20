@@ -102,9 +102,15 @@ level=DEBUG msg="Cache hit" key=...
 ### Automated Verification
 
 Run the E2E verification test:
-```bash
-go test -v -count=1 -tags=e2e ./docs/features/caching
-```
+
+1.  Build the server binary:
+    ```bash
+    make build
+    ```
+2.  Run the test:
+    ```bash
+    go test -v -count=1 -tags=e2e ./docs/features/caching
+    ```
 
 ### Metrics
 
