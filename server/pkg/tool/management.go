@@ -426,7 +426,7 @@ func (tm *Manager) ExecuteTool(ctx context.Context, req *ExecutionRequest) (any,
 
 		var bestMatch string
 		minDist := 1000
-		reqNorm := strings.ReplaceAll(strings.ReplaceAll(req.ToolName, "_", ""), "-", "")
+		reqNorm := strings.ReplaceAll(strings.ReplaceAll(strings.ReplaceAll(req.ToolName, "_", ""), "-", ""), ".", "")
 
 		tm.nameMap.Range(func(exposedName string, _ string) bool {
 			// Check 1: Missing Namespace (Exact Suffix Match)
@@ -444,9 +444,10 @@ func (tm *Manager) ExecuteTool(ctx context.Context, req *ExecutionRequest) (any,
 				return false
 			}
 
-			// Check 2b: Normalized Case Insensitive Match (Ignore underscores/hyphens)
-			// This handles cases like "GetForecast" matching "get_forecast"
-			exposedNorm := strings.ReplaceAll(strings.ReplaceAll(exposedName, "_", ""), "-", "")
+			// Check 2b: Normalized Case Insensitive Match (Ignore underscores/hyphens/dots)
+			// This handles cases like "Weather-Get-Forecast" matching "weather.get_forecast"
+			// We strip dots as well to handle namespace separators differences.
+			exposedNorm := strings.ReplaceAll(strings.ReplaceAll(strings.ReplaceAll(exposedName, "_", ""), "-", ""), ".", "")
 			if strings.EqualFold(exposedNorm, reqNorm) {
 				bestMatch = exposedName
 				minDist = 0
@@ -460,6 +461,15 @@ func (tm *Manager) ExecuteTool(ctx context.Context, req *ExecutionRequest) (any,
 				shortName = parts[1]
 			} else {
 				shortName = exposedName
+			}
+
+			// Check 2c: Normalized Short Name Match
+			// This handles cases like "GetForecast" matching "weather.get_forecast" (matching the short name part)
+			shortNorm := strings.ReplaceAll(strings.ReplaceAll(shortName, "_", ""), "-", "")
+			if strings.EqualFold(shortNorm, reqNorm) {
+				bestMatch = exposedName
+				minDist = 0
+				return false
 			}
 
 			if strings.EqualFold(shortName, req.ToolName) {

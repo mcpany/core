@@ -100,12 +100,52 @@ func TestToolManager_ExecuteTool_SmartFuzzyMatch(t *testing.T) {
 		assert.Contains(t, err.Error(), `did you mean "weather.get_forecast"?`)
 	})
 
-	// Case 5: Typo in Full Name (Standard Levenshtein)
+	// Case 5: Normalized Match (Hyphens/Underscores/Case)
+	// User types "weather-get-forecast" -> "weather.get_forecast"
+	t.Run("Normalized Match", func(t *testing.T) {
+		execReq := &ExecutionRequest{ToolName: "Weather-Get-Forecast", ToolInputs: []byte(`{}`)}
+		_, err := tm.ExecuteTool(context.Background(), execReq)
+		assert.Error(t, err)
+		assert.Contains(t, err.Error(), `did you mean "weather.get_forecast"?`)
+	})
+
+	// Case 6: Typo in Full Name (Standard Levenshtein)
 	// User types "weather.get_forcast" -> "weather.get_forecast"
 	t.Run("Typo in Full Name", func(t *testing.T) {
 		execReq := &ExecutionRequest{ToolName: "weather.get_forcast", ToolInputs: []byte(`{}`)}
 		_, err := tm.ExecuteTool(context.Background(), execReq)
 		assert.Error(t, err)
 		assert.Contains(t, err.Error(), `did you mean "weather.get_forecast"?`)
+	})
+}
+
+func TestToolManager_ExecuteTool_FuzzyMatch_NoNamespace(t *testing.T) {
+	t.Parallel()
+	tm := NewManager(nil)
+
+	// Tool with no Service ID (simulating internal tool or legacy)
+	mockTool := &MockTool{
+		ToolFunc: func() *v1.Tool {
+			return &v1.Tool{
+				Name:      proto.String("internal_tool"),
+				ServiceId: proto.String("internal"), // Needs a dummy service ID to pass validation
+			}
+		},
+		ExecuteFunc: func(_ context.Context, _ *ExecutionRequest) (any, error) {
+			return "ok", nil
+		},
+	}
+
+	err := tm.AddTool(mockTool)
+	assert.NoError(t, err)
+
+	// Case 7: Typo in Non-Namespaced Tool
+	// Note: With the fix, we assign a Service ID "internal", so the exposed name becomes "internal.internal_tool".
+	// The fuzzy matcher should suggest "internal.internal_tool" even if we typed "intenal_tool".
+	t.Run("Typo in Non-Namespaced Tool", func(t *testing.T) {
+		execReq := &ExecutionRequest{ToolName: "intenal_tool", ToolInputs: []byte(`{}`)}
+		_, err := tm.ExecuteTool(context.Background(), execReq)
+		assert.Error(t, err)
+		assert.Contains(t, err.Error(), `did you mean "internal.internal_tool"?`)
 	})
 }
