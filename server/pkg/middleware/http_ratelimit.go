@@ -67,11 +67,11 @@ func (m *HTTPRateLimitMiddleware) Handler(next http.Handler) http.Handler {
 
 		if m.trustProxy {
 			if xff := r.Header.Get("X-Forwarded-For"); xff != "" {
-				// Use the first IP in the list (client IP)
-				if parts := strings.Split(xff, ","); len(parts) > 0 {
-					if clientIP := strings.TrimSpace(parts[0]); clientIP != "" {
-						ip = clientIP
-					}
+				// Use the first IP in the list (client IP).
+				// Optimization: Use strings.Cut to avoid allocating a slice of strings.
+				clientIP, _, _ := strings.Cut(xff, ",")
+				if clientIP = strings.TrimSpace(clientIP); clientIP != "" {
+					ip = clientIP
 				}
 			}
 		}

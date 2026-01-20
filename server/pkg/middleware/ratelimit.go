@@ -23,6 +23,10 @@ import (
 	"github.com/patrickmn/go-cache"
 )
 
+// metricRateLimitRequestsTotal is the metric name for rate limit requests.
+// Pre-allocated to avoid allocation on every request.
+var metricRateLimitRequestsTotal = []string{"rate_limit", "requests_total"}
+
 // RateLimitMiddleware is a tool execution middleware that provides rate limiting
 // functionality for upstream services.
 type RateLimitMiddleware struct {
@@ -167,7 +171,7 @@ func (m *RateLimitMiddleware) checkLimit(ctx context.Context, limiter Limiter, c
 }
 
 func (m *RateLimitMiddleware) recordMetrics(serviceID, limitType, status string) {
-	metrics.IncrCounterWithLabels([]string{"rate_limit", "requests_total"}, 1, []armonmetrics.Label{
+	metrics.IncrCounterWithLabels(metricRateLimitRequestsTotal, 1, []armonmetrics.Label{
 		{Name: "service_id", Value: serviceID},
 		{Name: "limit_type", Value: limitType},
 		{Name: "status", Value: status},
