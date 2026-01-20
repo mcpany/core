@@ -33,12 +33,15 @@ func TestHTTPUpstream_URLConstruction_QueryMergeBug(t *testing.T) {
 			name:         "base url with encoded flag (space) should be preserved",
 			address:      "http://example.com/api?a%20b",
 			endpointPath: "/v1/test?foo=bar",
-			// "a%20b" decodes to "a b". Encode() typically outputs "a+b" (or "a%20b").
-			// The key is to ensure it doesn't have "=".
-			// We accept either "a+b" or "a%20b" as long as it's a valid encoding of "a b" and has no "=".
-			// However, since we are reconstructing from encoded parts, we expect it to match the encoder's output for the key,
-			// which is usually "a+b" in Go's url package.
-			expectedFqn:  "GET http://example.com/api/v1/test?a+b&foo=bar",
+			// "a%20b" decodes to "a b".
+			// We now preserve the original encoding from the base URL if possible.
+			expectedFqn:  "GET http://example.com/api/v1/test?a%20b&foo=bar",
+		},
+		{
+			name:         "base url with valid then invalid query param should preserve order",
+			address:      "http://example.com/api?a=1&invalid%",
+			endpointPath: "/v1/test?b=2",
+			expectedFqn:  "GET http://example.com/api/v1/test?a=1&invalid%&b=2",
 		},
 		{
 			name:         "flag overridden by value should have equals",
