@@ -9,6 +9,7 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"fmt"
+	"sync"
 
 	"github.com/alexliesenfeld/health"
 	mcphealth "github.com/mcpany/core/server/pkg/health"
@@ -30,6 +31,7 @@ import (
 // a list of commands defined in the service configuration.
 type Upstream struct {
 	checker health.Checker
+	mu      sync.Mutex
 }
 
 // Shutdown implements the upstream.Upstream interface.
@@ -38,6 +40,8 @@ type Upstream struct {
 //
 // Returns an error if the operation fails.
 func (u *Upstream) Shutdown(_ context.Context) error {
+	u.mu.Lock()
+	defer u.mu.Unlock()
 	if u.checker != nil {
 		u.checker.Stop()
 	}
@@ -89,6 +93,7 @@ func (u *Upstream) Register(
 	toolManager.AddServiceInfo(serviceID, info)
 
 	// Initialize and start health checker
+	u.mu.Lock()
 	if u.checker != nil {
 		u.checker.Stop()
 	}
@@ -96,6 +101,7 @@ func (u *Upstream) Register(
 	if u.checker != nil {
 		u.checker.Start()
 	}
+	u.mu.Unlock()
 
 	discoveredTools, err := u.createAndRegisterCommandTools(
 		ctx,
