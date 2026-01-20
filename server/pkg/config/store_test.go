@@ -197,6 +197,34 @@ func TestExpand(t *testing.T) {
 			expected:    "Hello World",
 			expectError: false,
 		},
+		{
+			name:        "Short syntax variable",
+			input:       "Hello $NAME",
+			env:         map[string]string{"NAME": "World"},
+			expected:    "Hello World",
+			expectError: false,
+		},
+		{
+			name:        "Short syntax variable with text following",
+			input:       "Hello $NAME!",
+			env:         map[string]string{"NAME": "World"},
+			expected:    "Hello World!",
+			expectError: false,
+		},
+		{
+			name:        "Short syntax variable with underscore",
+			input:       "Hello $MY_NAME",
+			env:         map[string]string{"MY_NAME": "World"},
+			expected:    "Hello World",
+			expectError: false,
+		},
+		{
+			name:        "Short syntax variable missing (no default supported)",
+			input:       "Hello $MISSING",
+			env:         map[string]string{},
+			expected:    "",
+			expectError: true,
+		},
 	}
 
 	for _, tt := range tests {
