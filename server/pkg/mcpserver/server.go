@@ -792,6 +792,8 @@ func convertMapToCallToolResult(m map[string]any) (*mcp.CallToolResult, error) {
 					return nil, fmt.Errorf("failed to decode resource blob: %w", err)
 				}
 				resContent.Blob = blob
+			} else if blobBytes, ok := resMap["blob"].([]byte); ok {
+				resContent.Blob = blobBytes
 			}
 			contents = append(contents, &mcp.EmbeddedResource{
 				Resource: resContent,
