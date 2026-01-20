@@ -4,6 +4,8 @@
 
 ### Status: Active Development
 
+**Recently Completed:**
+- **Upstream Health Monitoring**: Implemented runtime health checks for HTTP upstreams, exposing real-time error status to the UI.
 - **Flexible Environment Variable Syntax**: [COMPLETED] Support `$VAR` syntax in configuration files in addition to `${VAR}` to reduce user friction.
 - **DSN Redaction**: [COMPLETED] Redact sensitive information (passwords) from DSNs in error messages during doctor checks.
 
@@ -112,6 +114,8 @@ These features represent the next logical steps for the product, focusing on Ent
 | 76   | **Config Auto-Format API**                    | **DevX**: API endpoint to format uploaded config (JSON/YAML) according to standard style.                                                                                                                        | Low        |
 | 77   | **Service Dependency Alerts**                 | **Ops**: Alert if a service dependency (e.g. database) is down for more than X minutes.                                                                                                                          | Medium     |
 | 73   | **Docker Secret Native Support**              | **Ops**: Native support for reading Docker secrets (files in `/run/secrets`) and substituting them into configuration without needing environment variable mapping.                                                | Medium     |
+| 74   | **gRPC Health Checks**                        | **Observability**: Implement `CheckHealth` for gRPC upstreams using the standard gRPC Health Checking Protocol to detect service availability.                                                                     | Medium     |
+| 75   | **Health Check Flap Damping**                 | **Resilience**: Configurable retries and thresholds for health checks to prevent services from flapping between Healthy and Unhealthy states due to transient network issues.                                      | Medium     |
 | 74   | **Environment Variable Wizard**               | **DevX**: A UI helper to identify used environment variables in a config and prompt the user to fill them if missing during startup/testing.                                                                       | Low        |
 | 75   | **Global Redaction Policy**                   | **Security**: Centralized configuration to define patterns (regex) for redaction across all logs, error messages, and traces.                                                                                      | Medium     |
 | 74   | **Tool Search & Filter API**                  | **UX/DevX**: A dedicated API to search tools by name/description/tags with fuzzy matching, to power UI search bars and "did you mean" hints in the frontend.                                                       | Low        |

@@ -8,6 +8,7 @@ import (
 	"context"
 	"fmt"
 	"sync"
+	"time"
 
 	config "github.com/mcpany/core/proto/config/v1"
 	"github.com/mcpany/core/server/pkg/auth"
@@ -73,6 +74,7 @@ type ServiceRegistry struct {
 	serviceConfigs  map[string]*config.UpstreamServiceConfig
 	serviceInfo     map[string]*tool.ServiceInfo
 	serviceErrors   map[string]string
+	healthErrors    map[string]string
 	upstreams       map[string]upstream.Upstream
 	factory         factory.Factory
 	toolManager     tool.ManagerInterface
@@ -97,6 +99,7 @@ func New(factory factory.Factory, toolManager tool.ManagerInterface, promptManag
 		serviceConfigs:  make(map[string]*config.UpstreamServiceConfig),
 		serviceInfo:     make(map[string]*tool.ServiceInfo),
 		serviceErrors:   make(map[string]string),
+		healthErrors:    make(map[string]string),
 		upstreams:       make(map[string]upstream.Upstream),
 		factory:         factory,
 		toolManager:     toolManager,
@@ -188,6 +191,18 @@ func (r *ServiceRegistry) RegisterService(ctx context.Context, serviceConfig *co
 			delete(r.upstreams, serviceID)
 		}
 		return "", nil, nil, err
+	}
+
+	// Perform initial health check
+	if checker, ok := u.(upstream.HealthChecker); ok {
+		// Use a short timeout for health checks
+		checkCtx, cancel := context.WithTimeout(ctx, 5*time.Second)
+		if hErr := checker.CheckHealth(checkCtx); hErr != nil {
+			r.healthErrors[serviceID] = hErr.Error()
+		} else {
+			delete(r.healthErrors, serviceID)
+		}
+		cancel()
 	}
 
 	if authConfig := serviceConfig.GetAuthentication(); authConfig != nil {
@@ -302,6 +317,7 @@ func (r *ServiceRegistry) UnregisterService(ctx context.Context, serviceName str
 }
 
 // GetServiceError returns the registration error for a service, if any.
+// It prioritizes registration errors, then health check errors.
 //
 // serviceID is the serviceID.
 //
@@ -310,8 +326,59 @@ func (r *ServiceRegistry) UnregisterService(ctx context.Context, serviceName str
 func (r *ServiceRegistry) GetServiceError(serviceID string) (string, bool) {
 	r.mu.RLock()
 	defer r.mu.RUnlock()
-	err, ok := r.serviceErrors[serviceID]
+	if err, ok := r.serviceErrors[serviceID]; ok {
+		return err, true
+	}
+	err, ok := r.healthErrors[serviceID]
 	return err, ok
+}
+
+// StartHealthChecks starts a background loop to periodically check the health
+// of registered upstream services.
+func (r *ServiceRegistry) StartHealthChecks(ctx context.Context, interval time.Duration) {
+	go func() {
+		ticker := time.NewTicker(interval)
+		defer ticker.Stop()
+
+		for {
+			select {
+			case <-ctx.Done():
+				return
+			case <-ticker.C:
+				r.checkAllHealth(ctx)
+			}
+		}
+	}()
+}
+
+func (r *ServiceRegistry) checkAllHealth(ctx context.Context) {
+	r.mu.RLock()
+	// Copy upstreams to avoid holding lock during network calls
+	targets := make(map[string]upstream.Upstream)
+	for id, u := range r.upstreams {
+		targets[id] = u
+	}
+	r.mu.RUnlock()
+
+	for id, u := range targets {
+		var errStr string
+		if checker, ok := u.(upstream.HealthChecker); ok {
+			// Use a short timeout for health checks
+			checkCtx, cancel := context.WithTimeout(ctx, 5*time.Second)
+			if err := checker.CheckHealth(checkCtx); err != nil {
+				errStr = err.Error()
+			}
+			cancel()
+		}
+
+		r.mu.Lock()
+		if errStr != "" {
+			r.healthErrors[id] = errStr
+		} else {
+			delete(r.healthErrors, id)
+		}
+		r.mu.Unlock()
+	}
 }
 
 // Close gracefully shuts down all registered services.
