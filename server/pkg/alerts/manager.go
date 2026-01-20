@@ -22,18 +22,27 @@ type ManagerInterface interface {
 	CreateAlert(alert *Alert) *Alert
 	// UpdateAlert updates an existing alert.
 	UpdateAlert(id string, alert *Alert) *Alert
+
+	// Rules
+	ListRules() []*AlertRule
+	GetRule(id string) *AlertRule
+	CreateRule(rule *AlertRule) *AlertRule
+	UpdateRule(id string, rule *AlertRule) *AlertRule
+	DeleteRule(id string) error
 }
 
 // Manager implements ManagerInterface using in-memory storage.
 type Manager struct {
 	mu     sync.RWMutex
 	alerts map[string]*Alert
+	rules  map[string]*AlertRule
 }
 
 // NewManager creates a new Manager and seeds it with initial data.
 func NewManager() *Manager {
 	m := &Manager{
 		alerts: make(map[string]*Alert),
+		rules:  make(map[string]*AlertRule),
 	}
 	m.seedData()
 	return m
@@ -47,6 +56,10 @@ func (m *Manager) seedData() {
 	m.CreateAlert(&Alert{ID: "AL-1022", Title: "Disk Space Low", Message: "Volume /data at 85%", Severity: SeverityWarning, Status: StatusAcknowledged, Service: "database-primary", Source: "Disk Monitor", Timestamp: now.Add(-45 * time.Minute)})
 	m.CreateAlert(&Alert{ID: "AL-1021", Title: "Connection Refused", Message: "Upstream connection failed", Severity: SeverityCritical, Status: StatusResolved, Service: "payment-provider", Source: "Connectivity Check", Timestamp: now.Add(-2 * time.Hour)})
 	m.CreateAlert(&Alert{ID: "AL-1020", Title: "New Service Deployed", Message: "Service 'search-v2' detected", Severity: SeverityInfo, Status: StatusResolved, Service: "discovery", Source: "Orchestrator", Timestamp: now.Add(-5 * time.Hour)})
+
+	// Seed Rules
+	m.CreateRule(&AlertRule{ID: "rule-1", Name: "High CPU", Metric: "cpu_usage", Operator: ">", Threshold: 90, Duration: "5m", Severity: SeverityCritical, Enabled: true, LastUpdated: now})
+	m.CreateRule(&AlertRule{ID: "rule-2", Name: "High Latency", Metric: "http_latency_p99", Operator: ">", Threshold: 1000, Duration: "1m", Severity: SeverityWarning, Enabled: true, LastUpdated: now})
 }
 
 // ListAlerts returns all alerts sorted by timestamp descending.
@@ -99,4 +112,64 @@ func (m *Manager) UpdateAlert(id string, alert *Alert) *Alert {
 	}
 	// Can add more updatable fields here
 	return existing
+}
+
+// ListRules returns all rules.
+func (m *Manager) ListRules() []*AlertRule {
+	m.mu.RLock()
+	defer m.mu.RUnlock()
+	list := make([]*AlertRule, 0, len(m.rules))
+	for _, r := range m.rules {
+		list = append(list, r)
+	}
+	sort.Slice(list, func(i, j int) bool {
+		return list[i].Name < list[j].Name
+	})
+	return list
+}
+
+// GetRule returns a rule by ID.
+func (m *Manager) GetRule(id string) *AlertRule {
+	m.mu.RLock()
+	defer m.mu.RUnlock()
+	return m.rules[id]
+}
+
+// CreateRule creates a new rule.
+func (m *Manager) CreateRule(rule *AlertRule) *AlertRule {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+	if rule.ID == "" {
+		rule.ID = uuid.New().String()
+	}
+	rule.LastUpdated = time.Now()
+	m.rules[rule.ID] = rule
+	return rule
+}
+
+// UpdateRule updates a rule.
+func (m *Manager) UpdateRule(id string, rule *AlertRule) *AlertRule {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+	existing, ok := m.rules[id]
+	if !ok {
+		return nil
+	}
+	existing.Name = rule.Name
+	existing.Metric = rule.Metric
+	existing.Operator = rule.Operator
+	existing.Threshold = rule.Threshold
+	existing.Duration = rule.Duration
+	existing.Severity = rule.Severity
+	existing.Enabled = rule.Enabled
+	existing.LastUpdated = time.Now()
+	return existing
+}
+
+// DeleteRule deletes a rule.
+func (m *Manager) DeleteRule(id string) error {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+	delete(m.rules, id)
+	return nil
 }
