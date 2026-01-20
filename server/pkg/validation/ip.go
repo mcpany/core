@@ -52,7 +52,7 @@ func IsPrivateNetworkIP(ip net.IP) bool {
 	return false
 }
 
-// IsNAT64 checks for NAT64 (IPv4-embedded IPv6) - 64:ff9b::/96 (RFC 6052).
+// IsNAT64 checks for NAT64 (IPv4-embedded IPv6) addresses - 64:ff9b::/96 (RFC 6052).
 func IsNAT64(ip net.IP) bool {
 	// 64:ff9b:: expands to 0064:ff9b:0000:0000:0000:0000 (96 bits)
 	return len(ip) == net.IPv6len &&
