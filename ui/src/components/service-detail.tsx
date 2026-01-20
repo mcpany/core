@@ -11,6 +11,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { useToast } from "@/hooks/use-toast";
 import { UpstreamServiceConfig, ToolDefinition, PromptDefinition, ResourceDefinition } from "@/lib/types";
 import { apiClient } from "@/lib/client";
+import { OAuthStatusBanner } from './oauth-status-banner';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Server, AlertTriangle, Wrench, Book, Database, Settings, TrendingUp } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -182,35 +183,14 @@ export function ServiceDetail({ serviceId }: { serviceId: string }) {
   const handleConnect = async () => {
     if (!service) return;
     try {
-        // Use current window location as redirect URL basis, but append /auth/callback or similar if UI handles it?
-        // Actually the backend expects a redirect URL that *it* will redirect the user to after upstream auth.
-        // If we want the user to come back to the UI, we should pass a UI URL.
-        // But the backend `handleOAuthCallback` *also* takes a `redirectURL` (to verify against what was sent mostly or to redirect?).
-        // Wait, standard OAuth:
-        // 1. Client (us) sends `redirect_uri` to Provider (via Backend).
-        // 2. Provider redirects to `redirect_uri` with code.
-        // 3. Backend exchanges code.
-        // If `redirect_uri` points to the BACKEND directly (`/auth/oauth/callback`), the backend gets the code immediately.
-        // But then the backend needs to know where to redirect the user *after* saving the token.
-        // My implementation in `interactive.go`:
-        // `InitiateOAuth` takes `redirectURL`. This is passed to `conf.AuthCodeURL`.
-        // So this MUST be where the Provider redirects the browser.
-        // If we want the Backend to handle it, `redirectURL` should be `https://backend/auth/oauth/callback`.
-        // But `interactive.go` logic seems to imply the *caller* decides.
-        // If we pass `window.location.origin + '/oauth/callback'`, the UI must have a route for this.
-        // Let's assume we want the UI to handle the callback code and pass it to backend?
-        // My backend API `handleOAuthCallback` takes `code` in the body.
-        // This confirms the UI receives the code and posts it to backend.
-        // So `redirectURL` should be a page in the UI. e.g. `/services/{id}/callback` or global `/oauth/callback`.
-        // Let's use `/auth/callback` in UI.
-
-        const redirectUrl = `${window.location.origin}/auth/callback`;
+        const redirectUrl = `${window.location.origin}/oauth/callback`;
         const { authorization_url, state } = await apiClient.initiateOAuth(serviceId, redirectUrl);
 
-        // Store state/serviceId in local storage to verify/resume?
-        sessionStorage.setItem('oauth_state', state);
-        sessionStorage.setItem('oauth_service_id', serviceId);
-        sessionStorage.setItem('oauth_redirect_url', redirectUrl);
+        // Store state/serviceId in session storage for the callback page
+        sessionStorage.setItem(`oauth_pending_${state}`, JSON.stringify({
+            serviceId: serviceId,
+            credentialId: (service as any).upstreamAuth?.oauth2?.credential_id || ""
+        }));
 
         // Redirect user
         window.location.href = authorization_url;

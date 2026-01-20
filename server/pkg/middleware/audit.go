@@ -11,10 +11,10 @@ import (
 	"sync"
 	"time"
 
+	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/mcpany/core/server/pkg/auth"
 	"github.com/mcpany/core/server/pkg/config"
 	"github.com/mcpany/core/server/pkg/tool"
-	configv1 "github.com/mcpany/core/proto/config/v1"
 	"google.golang.org/protobuf/proto"
 )
 
@@ -228,6 +228,18 @@ func (m *AuditMiddleware) writeLog(ctx context.Context, store AuditStore, entry 
 	if err := store.Write(ctx, entry); err != nil {
 		fmt.Fprintf(os.Stderr, "Failed to write audit log: %v\n", err)
 	}
+}
+
+// Read reads audit entries from the underlying store.
+func (m *AuditMiddleware) Read(ctx context.Context, filter AuditFilter) ([]AuditEntry, error) {
+	m.mu.RLock()
+	store := m.store
+	m.mu.RUnlock()
+
+	if store == nil {
+		return nil, fmt.Errorf("audit store not initialized")
+	}
+	return store.Read(ctx, filter)
 }
 
 // Close closes the underlying store.

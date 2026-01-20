@@ -124,6 +124,8 @@ export interface GlobalSettings {
    * @inject_tag: yaml:"-"
    */
   readOnly: boolean;
+  /** Whether to auto-discover local services (e.g. Ollama). */
+  autoDiscoverLocal: boolean;
 }
 
 export enum GlobalSettings_LogLevel {
@@ -777,6 +779,7 @@ function createBaseGlobalSettings(): GlobalSettings {
     contextOptimizer: undefined,
     debugger: undefined,
     readOnly: false,
+    autoDiscoverLocal: false,
   };
 }
 
@@ -856,6 +859,9 @@ export const GlobalSettings: MessageFns<GlobalSettings> = {
     }
     if (message.readOnly !== false) {
       writer.uint32(200).bool(message.readOnly);
+    }
+    if (message.autoDiscoverLocal !== false) {
+      writer.uint32(208).bool(message.autoDiscoverLocal);
     }
     return writer;
   },
@@ -1067,6 +1073,14 @@ export const GlobalSettings: MessageFns<GlobalSettings> = {
           message.readOnly = reader.bool();
           continue;
         }
+        case 26: {
+          if (tag !== 208) {
+            break;
+          }
+
+          message.autoDiscoverLocal = reader.bool();
+          continue;
+        }
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -1115,6 +1129,7 @@ export const GlobalSettings: MessageFns<GlobalSettings> = {
         : undefined,
       debugger: isSet(object.debugger) ? DebuggerConfig.fromJSON(object.debugger) : undefined,
       readOnly: isSet(object.read_only) ? globalThis.Boolean(object.read_only) : false,
+      autoDiscoverLocal: isSet(object.auto_discover_local) ? globalThis.Boolean(object.auto_discover_local) : false,
     };
   },
 
@@ -1195,6 +1210,9 @@ export const GlobalSettings: MessageFns<GlobalSettings> = {
     if (message.readOnly !== false) {
       obj.read_only = message.readOnly;
     }
+    if (message.autoDiscoverLocal !== false) {
+      obj.auto_discover_local = message.autoDiscoverLocal;
+    }
     return obj;
   },
 
@@ -1244,6 +1262,7 @@ export const GlobalSettings: MessageFns<GlobalSettings> = {
       ? DebuggerConfig.fromPartial(object.debugger)
       : undefined;
     message.readOnly = object.readOnly ?? false;
+    message.autoDiscoverLocal = object.autoDiscoverLocal ?? false;
     return message;
   },
 };

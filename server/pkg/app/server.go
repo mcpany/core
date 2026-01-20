@@ -31,6 +31,7 @@ import (
 	"github.com/mcpany/core/server/pkg/auth"
 	"github.com/mcpany/core/server/pkg/bus"
 	"github.com/mcpany/core/server/pkg/config"
+	"github.com/mcpany/core/server/pkg/discovery"
 	"github.com/mcpany/core/server/pkg/gc"
 	"github.com/mcpany/core/server/pkg/health"
 	"github.com/mcpany/core/server/pkg/logging"
@@ -610,6 +611,18 @@ func (a *Application) Run(
 		registrationWorker.Stop()
 		return fmt.Errorf("failed to init standard middlewares: %w", err)
 	}
+
+	// Auto-discovery of local services
+	if cfg.GetGlobalSettings().GetAutoDiscoverLocal() {
+		ollamaProvider := &discovery.OllamaProvider{Endpoint: "http://localhost:11434"}
+		discovered, err := ollamaProvider.Discover(ctx)
+		if err == nil {
+			for _, svc := range discovered {
+				log.Info("Auto-discovered local service", "name", svc.GetName())
+				cfg.UpstreamServices = append(cfg.UpstreamServices, svc)
+			}
+		}
+	}
 	a.standardMiddlewares = standardMiddlewares
 	if standardMiddlewares.Cleanup != nil {
 		defer func() {
@@ -885,6 +898,18 @@ func (a *Application) reconcileServices(ctx context.Context, cfg *config_v1.McpA
 		if err == nil {
 			for _, s := range services {
 				currentServicesMap[s.GetName()] = s
+			}
+		}
+	}
+
+	// Auto-discovery of local services
+	if cfg.GetGlobalSettings().GetAutoDiscoverLocal() {
+		ollamaProvider := &discovery.OllamaProvider{Endpoint: "http://localhost:11434"}
+		discovered, err := ollamaProvider.Discover(ctx)
+		if err == nil {
+			for _, svc := range discovered {
+				log.Info("Auto-discovered local service during reload", "name", svc.GetName())
+				cfg.UpstreamServices = append(cfg.UpstreamServices, svc)
 			}
 		}
 	}

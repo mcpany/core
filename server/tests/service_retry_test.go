@@ -17,12 +17,11 @@ import (
 	"github.com/spf13/afero"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
+	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/types/known/durationpb"
 )
 
 func TestServiceRetry(t *testing.T) {
-	// 1. Create a config file pointing to a non-existent MCP server
-	fs := afero.NewMemMapFs()
-
 	// Get an ephemeral port by listening on port 0
 	var l net.Listener
 	var err error
@@ -42,27 +41,33 @@ func TestServiceRetry(t *testing.T) {
 	// but on localhost tests it's usually fine.
 	targetURL := fmt.Sprintf("http://127.0.0.2:%d/mcp", port)
 
-	configContent := fmt.Sprintf(`
-upstream_services:
-  - name: "delayed-mcp"
-    mcp_service:
-      http_connection:
-        http_address: "%s"
-    resilience:
-      timeout: "0.5s"
-`, targetURL)
-
-	err = afero.WriteFile(fs, "config.yaml", []byte(configContent), 0644)
-	require.NoError(t, err)
-
 	// 2. Start the Application with MockStorage
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
+	// Create config object
+	config := &configv1.McpAnyServerConfig{
+		UpstreamServices: []*configv1.UpstreamServiceConfig{
+			{
+				Name: proto.String("delayed-mcp"),
+				ServiceConfig: &configv1.UpstreamServiceConfig_McpService{
+					McpService: &configv1.McpUpstreamService{
+						ConnectionType: &configv1.McpUpstreamService_HttpConnection{
+							HttpConnection: &configv1.McpStreamableHttpConnection{
+								HttpAddress: proto.String(targetURL),
+							},
+						},
+					},
+				},
+				Resilience: &configv1.ResilienceConfig{
+					Timeout: durationpb.New(500 * time.Millisecond),
+				},
+			},
+		},
+	}
+
 	mockStore := new(MockStorage)
-	// We don't really need MockStore to return the config if we use file-based loading,
-	// but keeping it for compatibility with the app initialization if it calls Load().
-	mockStore.On("Load", mock.Anything).Return(&configv1.McpAnyServerConfig{}, nil)
+	mockStore.On("Load", mock.Anything).Return(config, nil)
 	mockStore.On("ListServices", mock.Anything).Return([]*configv1.UpstreamServiceConfig{}, nil)
 	mockStore.On("GetGlobalSettings", mock.Anything).Return(&configv1.GlobalSettings{}, nil)
 	mockStore.On("Close").Return(nil)
@@ -71,7 +76,8 @@ upstream_services:
 	a.Storage = mockStore
 
 	go func() {
-		err := a.Run(ctx, fs, false, "127.0.0.2:0", "", []string{"config.yaml"}, "", 1*time.Second)
+		// Empty config paths as we supply config via Storage
+		err := a.Run(ctx, afero.NewMemMapFs(), false, "127.0.0.2:0", "", nil, "", 1*time.Second)
 		if err != nil && ctx.Err() == nil {
 			t.Logf("Application run error: %v", err)
 		}
