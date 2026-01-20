@@ -65,6 +65,9 @@ func TestStripSecretsFromService_Coverage(t *testing.T) {
 				Env: map[string]*configv1.SecretValue{
 					"FOO": {Value: &configv1.SecretValue_PlainText{PlainText: "secret"}},
 				},
+				Calls: map[string]*configv1.CommandLineCallDefinition{
+					"call_nil": nil,
+				},
 			},
 		},
 	}
@@ -87,6 +90,7 @@ func TestStripSecretsFromService_Coverage(t *testing.T) {
 							},
 						},
 					},
+					"call_nil": nil,
 				},
 			},
 		},
@@ -108,6 +112,7 @@ func TestStripSecretsFromService_Coverage(t *testing.T) {
 							},
 						},
 					},
+					"call_nil": nil,
 				},
 			},
 		},
@@ -127,6 +132,7 @@ func TestStripSecretsFromService_Coverage(t *testing.T) {
 							},
 						},
 					},
+					"call_nil": nil,
 				},
 			},
 		},
