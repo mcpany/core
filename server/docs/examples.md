@@ -4,40 +4,40 @@ This document provides examples of how to use the MCP Any. It includes instructi
 
 ## Running the Examples
 
-The examples are located in the `proto/examples` directory. Each example includes a server that can be run to demonstrate how to use MCP Any with a different type of service.
+The examples are located in the `server/examples/upstream_service_demo` directory. Each example includes a server that can be run to demonstrate how to use MCP Any with a different type of service.
 
 ### Weather Example
 
-The weather example demonstrates how to use MCP Any with a gRPC service.
+The weather example demonstrates how to use MCP Any with a HTTP service.
 
 1. **Start the main server:**
 
    ```bash
-   make server
+   make run
    ```
 
 2. **Start the example weather server:**
    In a new terminal window, run the following command:
 
    ```bash
-   go run proto/examples/weather/v1/server/main.go
+   go run server/examples/upstream_service_demo/http/server/weather_server/weather_server.go
    ```
 
-### User Service Example
+### Greeter Service Example
 
-The user service example demonstrates how to use MCP Any with a gRPC service that uses gRPC reflection.
+The greeter service example demonstrates how to use MCP Any with a gRPC service that uses gRPC reflection.
 
 1. **Start the main server:**
 
    ```bash
-   make server
+   make run
    ```
 
-2. **Start the example user service server:**
+2. **Start the example greeter service server:**
    In a new terminal window, run the following command:
 
    ```bash
-   go run proto/examples/userservice/v1/server/main.go
+   go run server/examples/upstream_service_demo/grpc/greeter_server/server/main.go
    ```
 
 ## Interacting with the Server
