@@ -710,6 +710,67 @@ func TestUpstream_Register_CornerCases(t *testing.T) {
 		require.NoError(t, err)
 		assert.Empty(t, promptManager.ListPrompts())
 	})
+
+	t.Run("correct input schema generation", func(t *testing.T) {
+		toolManager := NewMockToolManager()
+		poolManager := pool.NewManager()
+		upstream := NewUpstream(poolManager)
+
+		param1 := configv1.WebrtcParameterMapping_builder{
+			Schema: configv1.ParameterSchema_builder{
+				Name:       proto.String("param1"),
+				IsRequired: proto.Bool(true),
+			}.Build(),
+		}.Build()
+		param2 := configv1.WebrtcParameterMapping_builder{
+			Schema: configv1.ParameterSchema_builder{
+				Name: proto.String("param2"),
+			}.Build(),
+		}.Build()
+
+		toolDef := configv1.ToolDefinition_builder{
+			Name:   proto.String("test-tool"),
+			CallId: proto.String("test-call"),
+		}.Build()
+
+		webrtcService := configv1.WebrtcUpstreamService_builder{
+			Address: proto.String("http://localhost:8080/signal"),
+			Tools:   []*configv1.ToolDefinition{toolDef},
+			Calls: map[string]*configv1.WebrtcCallDefinition{
+				"test-call": configv1.WebrtcCallDefinition_builder{
+					Id:         proto.String("test-call"),
+					Parameters: []*configv1.WebrtcParameterMapping{param1, param2},
+				}.Build(),
+			},
+		}.Build()
+
+		serviceConfig := configv1.UpstreamServiceConfig_builder{
+			Name:          proto.String("test-webrtc-service"),
+			WebrtcService: webrtcService,
+		}.Build()
+
+		serviceID, _, _, err := upstream.Register(context.Background(), serviceConfig, toolManager, nil, nil, false)
+		require.NoError(t, err)
+
+		sanitizedToolName, _ := util.SanitizeToolName("test-tool")
+		toolID := serviceID + "." + sanitizedToolName
+		registeredTool, ok := toolManager.GetTool(toolID)
+		require.True(t, ok)
+
+		inputSchema := registeredTool.Tool().GetAnnotations().GetInputSchema()
+		require.NotNil(t, inputSchema)
+		assert.Equal(t, "object", inputSchema.GetFields()["type"].GetStringValue())
+
+		properties := inputSchema.GetFields()["properties"].GetStructValue().GetFields()
+		assert.Contains(t, properties, "param1")
+		assert.Contains(t, properties, "param2")
+
+		requiredVal, ok := inputSchema.GetFields()["required"]
+		require.True(t, ok, "required field should be present")
+		requiredList := requiredVal.GetListValue().GetValues()
+		assert.Len(t, requiredList, 1)
+		assert.Equal(t, "param1", requiredList[0].GetStringValue())
+	})
 }
 
 func (m *MockToolManager) GetAllowedServiceIDs(_ string) (map[string]bool, bool) {
