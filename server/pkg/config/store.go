@@ -266,10 +266,10 @@ type ServiceStore interface {
 	DeleteService(ctx context.Context, name string) error
 }
 
-var envVarRegex = regexp.MustCompile(`\${([^{}]+)}`)
+var envVarRegex = regexp.MustCompile(`\${([^{}]+)}|\$([a-zA-Z_][a-zA-Z0-9_]*)`)
 var unknownFieldRegex = regexp.MustCompile(`unknown field "([^"]+)"`)
 
-// expand replaces ${VAR} or ${VAR:default} with environment variables.
+// expand replaces ${VAR}, $VAR, or ${VAR:default} with environment variables.
 // If a variable is missing and no default is provided, it returns an error with line number information.
 func expand(b []byte) ([]byte, error) {
 	var missingErrBuilder strings.Builder
@@ -280,16 +280,28 @@ func expand(b []byte) ([]byte, error) {
 
 	for _, loc := range matches {
 		match := b[loc[0]:loc[1]]
-		s := string(match[2 : len(match)-1])
-		parts := strings.SplitN(s, ":", 2)
-		varName := parts[0]
+		var varName string
+		var hasDefault bool
+
+		// Check which form matches
+		if bytes.HasPrefix(match, []byte("${")) {
+			// ${VAR} form
+			s := string(match[2 : len(match)-1])
+			parts := strings.SplitN(s, ":", 2)
+			varName = parts[0]
+			hasDefault = len(parts) > 1
+		} else {
+			// $VAR form
+			varName = string(match[1:])
+			hasDefault = false
+		}
 
 		_, ok := os.LookupEnv(varName)
-		if !ok && len(parts) == 1 {
+		if !ok && !hasDefault {
 			// Missing and no default value
 			missingCount++
 			lineNum := bytes.Count(b[:loc[0]], []byte("\n")) + 1
-			missingErrBuilder.WriteString(fmt.Sprintf("\n  - Line %d: variable ${%s} is missing", lineNum, varName))
+			missingErrBuilder.WriteString(fmt.Sprintf("\n  - Line %d: variable %s is missing", lineNum, varName))
 		}
 	}
 
@@ -301,18 +313,34 @@ func expand(b []byte) ([]byte, error) {
 
 	// If no missing vars, perform replacement
 	expanded := envVarRegex.ReplaceAllFunc(b, func(match []byte) []byte {
-		s := string(match[2 : len(match)-1])
-		parts := strings.SplitN(s, ":", 2)
-		varName := parts[0]
+		var varName string
+		var defaultValue string
+		var hasDefault bool
+
+		if bytes.HasPrefix(match, []byte("${")) {
+			// ${VAR} form
+			s := string(match[2 : len(match)-1])
+			parts := strings.SplitN(s, ":", 2)
+			varName = parts[0]
+			if len(parts) > 1 {
+				defaultValue = parts[1]
+				hasDefault = true
+			}
+		} else {
+			// $VAR form
+			varName = string(match[1:])
+			hasDefault = false
+		}
+
 		val, ok := os.LookupEnv(varName)
 		if ok {
-			if val == "" && len(parts) > 1 {
-				return []byte(parts[1])
+			if val == "" && hasDefault {
+				return []byte(defaultValue)
 			}
 			return []byte(val)
 		}
-		if len(parts) > 1 {
-			return []byte(parts[1])
+		if hasDefault {
+			return []byte(defaultValue)
 		}
 		// Unreachable: Missing variables without defaults are caught in the first pass.
 		return match

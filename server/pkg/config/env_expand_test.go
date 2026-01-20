@@ -36,7 +36,7 @@ upstream_services:
 	_, err := store.Load(context.Background())
 
 	if assert.Error(t, err) {
-		assert.Contains(t, err.Error(), "Line 5: variable ${MCP_TEST_MISSING_VAR} is missing")
+		assert.Contains(t, err.Error(), "Line 5: variable MCP_TEST_MISSING_VAR is missing")
 		assert.Contains(t, err.Error(), "Fix: Set these environment variables")
 	}
 }

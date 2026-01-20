@@ -9,10 +9,10 @@ import { useState } from "react";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { CheckCircle2, XCircle, Loader2, Play, Activity, Terminal } from "lucide-react";
+import { CheckCircle2, XCircle, Loader2, Play, Activity, Terminal, AlertTriangle, Lightbulb } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { UpstreamServiceConfig } from "@/lib/types";
-import { analyzeConnectionError } from "@/lib/diagnostics-utils";
+import { analyzeConnectionError, DiagnosticResult } from "@/lib/diagnostics-utils";
 
 interface DiagnosticStep {
   id: string;
@@ -43,6 +43,7 @@ export function ConnectionDiagnosticDialog({ service, trigger }: ConnectionDiagn
   const [open, setOpen] = useState(false);
   const [isRunning, setIsRunning] = useState(false);
   const [steps, setSteps] = useState<DiagnosticStep[]>([]);
+  const [diagnosticResult, setDiagnosticResult] = useState<DiagnosticResult | null>(null);
 
   const resetSteps = () => {
     const initialSteps: DiagnosticStep[] = [
@@ -55,6 +56,7 @@ export function ConnectionDiagnosticDialog({ service, trigger }: ConnectionDiagn
     }
 
     setSteps(initialSteps);
+    setDiagnosticResult(null);
   };
 
   const runDiagnostics = async () => {
@@ -181,6 +183,7 @@ export function ConnectionDiagnosticDialog({ service, trigger }: ConnectionDiagn
                  if (diagnosis.category !== 'unknown') {
                      addLog("backend_health", `Analysis: ${diagnosis.title} - ${diagnosis.description}`);
                      addLog("backend_health", `Suggestion: ${diagnosis.suggestion}`);
+                     setDiagnosticResult(diagnosis);
                  }
 
                  updateStep("backend_health", { status: "failure", detail: serviceStatus.status });
@@ -261,26 +264,58 @@ export function ConnectionDiagnosticDialog({ service, trigger }: ConnectionDiagn
                 ))}
             </div>
 
-            {/* Logs View */}
-            <div className="col-span-2 bg-black/90 text-green-400 font-mono text-xs p-4 overflow-hidden flex flex-col">
-                <div className="flex items-center gap-2 mb-2 pb-2 border-b border-white/10 text-muted-foreground">
-                    <Terminal className="h-3 w-3" />
-                    <span>Diagnostic Logs</span>
-                </div>
-                <ScrollArea className="flex-1">
-                    <div className="space-y-1">
-                        {steps.flatMap(s => s.logs).length === 0 ? (
-                            <span className="text-muted-foreground/50 italic">Waiting to start diagnostics...</span>
-                        ) : (
-                            steps.flatMap(s => s.logs).map((log, i) => (
-                                <div key={i} className="break-all whitespace-pre-wrap">{log}</div>
-                            ))
-                        )}
-                        {isRunning && (
-                            <div className="animate-pulse">_</div>
-                        )}
+            {/* Logs View & Diagnosis Report */}
+            <div className="col-span-2 flex flex-col h-full bg-black/90">
+                {/* Logs */}
+                <div className="flex-1 overflow-hidden flex flex-col p-4 text-green-400 font-mono text-xs">
+                    <div className="flex items-center gap-2 mb-2 pb-2 border-b border-white/10 text-muted-foreground">
+                        <Terminal className="h-3 w-3" />
+                        <span>Diagnostic Logs</span>
                     </div>
-                </ScrollArea>
+                    <ScrollArea className="flex-1">
+                        <div className="space-y-1">
+                            {steps.flatMap(s => s.logs).length === 0 ? (
+                                <span className="text-muted-foreground/50 italic">Waiting to start diagnostics...</span>
+                            ) : (
+                                steps.flatMap(s => s.logs).map((log, i) => (
+                                    <div key={i} className="break-all whitespace-pre-wrap">{log}</div>
+                                ))
+                            )}
+                            {isRunning && (
+                                <div className="animate-pulse">_</div>
+                            )}
+                        </div>
+                    </ScrollArea>
+                </div>
+
+                {/* Diagnosis Suggestion Card */}
+                {diagnosticResult && (
+                    <div className="p-4 bg-muted/20 border-t border-white/10">
+                        <div className={cn(
+                            "rounded-md border p-3 flex gap-3",
+                            diagnosticResult.severity === 'critical' ? "bg-red-950/30 border-red-900/50" :
+                            diagnosticResult.severity === 'warning' ? "bg-amber-950/30 border-amber-900/50" :
+                            "bg-blue-950/30 border-blue-900/50"
+                        )}>
+                            <div className={cn(
+                                "shrink-0 mt-0.5",
+                                diagnosticResult.severity === 'critical' ? "text-red-500" :
+                                diagnosticResult.severity === 'warning' ? "text-amber-500" :
+                                "text-blue-500"
+                            )}>
+                                <AlertTriangle className="h-5 w-5" />
+                            </div>
+                            <div className="space-y-1 text-sm">
+                                <p className="font-semibold text-foreground">{diagnosticResult.title}</p>
+                                <p className="text-muted-foreground">{diagnosticResult.description}</p>
+                                <div className="mt-2 flex gap-2 text-primary/90 bg-primary/10 p-2 rounded text-xs items-start">
+                                    <Lightbulb className="h-4 w-4 shrink-0 mt-0.5" />
+                                    <span className="whitespace-pre-wrap font-medium">{diagnosticResult.suggestion}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                )}
             </div>
         </div>
 
