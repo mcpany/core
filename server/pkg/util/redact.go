@@ -6,8 +6,10 @@ package util //nolint:revive,nolintlint // Package name 'util' is common in this
 import (
 	"bytes"
 	"encoding/json"
+	"net/url"
 	"regexp"
 	"sort"
+	"strings"
 	"unsafe"
 )
 
@@ -472,10 +474,35 @@ func isKeyColon(input []byte, endOffset int) bool {
 	return false
 }
 
+// dsnPasswordRegex handles fallback cases but we prefer net/url
 var dsnPasswordRegex = regexp.MustCompile(`(:)([^:@]+)(@)`)
 
 // RedactDSN redacts the password from a DSN string.
 // Supported formats: postgres://user:password@host...
 func RedactDSN(dsn string) string {
+	u, err := url.Parse(dsn)
+	if err == nil && u.User != nil {
+		if _, hasPassword := u.User.Password(); hasPassword {
+			u.User = url.UserPassword(u.User.Username(), redactedPlaceholder)
+			// url.String() encodes the placeholder, e.g. [REDACTED] -> %5BREDACTED%5D
+			// We decode it back to keep it readable, as standard loggers often prefer readable placeholders.
+			// However, a simple string replace is safer than query unescaping the whole string.
+			s := u.String()
+			// Replace URL encoded placeholder with readable one.
+			// Note: [ is %5B and ] is %5D
+			// We do string replacement.
+			encodedPlaceholder := "%5BREDACTED%5D"
+			// Replace all occurrences of the encoded placeholder with the readable one
+			return strings.Replace(s, encodedPlaceholder, redactedPlaceholder, 1)
+		}
+		// If parsed successfully AND found User but no password, we trust the parser.
+		// This handles cases like mysql://user@host correctly (don't fallback to regex).
+		return dsn
+	}
+
+	// Fallback to regex if parsing fails (e.g. not a valid URL)
+	// OR if url.Parse succeeded but found no user/password structure (e.g. user:pass@tcp(...) where Scheme is "user" and User is nil).
+	// But note: the regex is known to be imperfect for complex cases (e.g. colons in password).
+	// We apply the regex as a best-effort attempt.
 	return dsnPasswordRegex.ReplaceAllString(dsn, "$1"+redactedPlaceholder+"$3")
 }
