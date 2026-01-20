@@ -375,7 +375,7 @@ func checkSQLService(ctx context.Context, s *configv1.SqlUpstreamService) CheckR
 	if err != nil {
 		return CheckResult{
 			Status:  StatusError,
-			Message: fmt.Sprintf("Failed to initialize SQL driver: %v", err),
+			Message: fmt.Sprintf("Failed to initialize SQL driver: %v", util.RedactDSN(err.Error())),
 			Error:   err,
 		}
 	}
@@ -386,7 +386,7 @@ func checkSQLService(ctx context.Context, s *configv1.SqlUpstreamService) CheckR
 	if err != nil {
 		return CheckResult{
 			Status:  StatusError,
-			Message: fmt.Sprintf("Failed to ping database: %v", err),
+			Message: fmt.Sprintf("Failed to ping database: %v", util.RedactDSN(err.Error())),
 			Error:   err,
 		}
 	}
