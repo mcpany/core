@@ -110,26 +110,115 @@ func RedactJSON(input []byte) []byte {
 }
 
 // RedactMap recursively redacts sensitive keys in a map.
-// Note: This function creates a deep copy of the map with redacted values.
+// Optimization: This function performs a copy-on-write.
+// If no sensitive keys are found, it returns the original map (zero allocation).
+// If sensitive keys are found, it returns a new map with redacted values (and copies other fields).
+// Note: This aligns with RedactJSON behavior which returns original slice if clean.
 func RedactMap(m map[string]interface{}) map[string]interface{} {
-	newMap := make(map[string]interface{}, len(m))
-	for k, v := range m {
-		if IsSensitiveKey(k) {
-			newMap[k] = redactedPlaceholder
-		} else {
-			if nestedMap, ok := v.(map[string]interface{}); ok {
-				newMap[k] = RedactMap(nestedMap)
-			} else if nestedSlice, ok := v.([]interface{}); ok {
-				newMap[k] = redactSlice(nestedSlice)
-			} else {
-				newMap[k] = v
+	redacted, changed := redactMapMaybe(m)
+	if changed {
+		return redacted
+	}
+	return m
+}
+
+// redactMapMaybe recursively checks and redacts the map.
+// It returns (newMap, true) if any redaction happened.
+// It returns (nil, false) if no redaction happened (optimization to avoid copying).
+func redactMapMaybe(m map[string]interface{}) (map[string]interface{}, bool) {
+	// First pass: check if we need to modify anything.
+	// This avoids allocation for the common case (clean map).
+	// We do a shallow check of keys and recursive check of values.
+
+	// Since map iteration order is random, we can't "copy seen so far" deterministically easily
+	// unless we keep track of keys or just iterate again.
+	// But allocating the map when we find the first dirty key is efficient enough.
+	// We will have to iterate again to copy the rest, but that's fine.
+
+	var newMap map[string]interface{}
+
+	// Helper to initialize newMap with a copy of m
+	initMap := func() {
+		if newMap == nil {
+			newMap = make(map[string]interface{}, len(m))
+			for mk, mv := range m {
+				newMap[mk] = mv
 			}
 		}
 	}
-	return newMap
+
+	for k, v := range m {
+		// Check if key is sensitive
+		if IsSensitiveKey(k) {
+			initMap()
+			// Apply redaction
+			newMap[k] = redactedPlaceholder
+			continue
+		}
+
+		// Check recursive values
+		if nestedMap, ok := v.(map[string]interface{}); ok {
+			if res, changed := redactMapMaybe(nestedMap); changed {
+				initMap()
+				newMap[k] = res
+			}
+		} else if nestedSlice, ok := v.([]interface{}); ok {
+			if res, changed := redactSliceMaybe(nestedSlice); changed {
+				initMap()
+				newMap[k] = res
+			}
+		}
+	}
+
+	if newMap != nil {
+		return newMap, true
+	}
+	return nil, false
 }
 
+func redactSliceMaybe(s []interface{}) ([]interface{}, bool) {
+	var newSlice []interface{}
+
+	for i, v := range s {
+		if nestedMap, ok := v.(map[string]interface{}); ok {
+			if res, changed := redactMapMaybe(nestedMap); changed {
+				if newSlice == nil {
+					newSlice = make([]interface{}, len(s))
+					copy(newSlice, s)
+				}
+				newSlice[i] = res
+			}
+		} else if nestedSlice, ok := v.([]interface{}); ok {
+			if res, changed := redactSliceMaybe(nestedSlice); changed {
+				if newSlice == nil {
+					newSlice = make([]interface{}, len(s))
+					copy(newSlice, s)
+				}
+				newSlice[i] = res
+			}
+		}
+	}
+
+	if newSlice != nil {
+		return newSlice, true
+	}
+	return nil, false
+}
+
+// redactSlice is preserved for potential future use or external tests that might rely on it,
+// although it's currently unused in this package.
+//
+//nolint:unused
 func redactSlice(s []interface{}) []interface{} {
+	// Legacy wrapper if needed, but we updated usage.
+	// RedactMap uses redactSliceMaybe now.
+	res, changed := redactSliceMaybe(s)
+	if changed {
+		return res
+	}
+
+	// For legacy support (if used internally elsewhere), return a deep copy to be safe.
+	// Although currently it seems unused, we keep it consistent.
 	newSlice := make([]interface{}, len(s))
 	for i, v := range s {
 		if nestedMap, ok := v.(map[string]interface{}); ok {
