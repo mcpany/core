@@ -138,7 +138,7 @@ func (u *Upstream) createAndRegisterWebrtcTools(_ context.Context, serviceID, ad
 			}
 		}
 
-		properties, err := schemaconv.ConfigSchemaToProtoProperties(wrtcDef.GetParameters())
+		properties, required, err := schemaconv.ConfigSchemaToProtoProperties(wrtcDef.GetParameters())
 		if err != nil {
 			log.Error("Failed to convert schema to properties", "error", err)
 			continue
@@ -152,6 +152,14 @@ func (u *Upstream) createAndRegisterWebrtcTools(_ context.Context, serviceID, ad
 				"type":       structpb.NewStringValue("object"),
 				"properties": structpb.NewStructValue(properties),
 			},
+		}
+
+		if len(required) > 0 {
+			requiredVals := make([]*structpb.Value, len(required))
+			for i, v := range required {
+				requiredVals[i] = structpb.NewStringValue(v)
+			}
+			inputSchema.Fields["required"] = structpb.NewListValue(&structpb.ListValue{Values: requiredVals})
 		}
 
 		newToolProto := pb.Tool_builder{
