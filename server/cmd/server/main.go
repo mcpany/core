@@ -18,6 +18,7 @@ import (
 	"github.com/joho/godotenv"
 	"github.com/mcpany/core/server/pkg/app"
 	"github.com/mcpany/core/server/pkg/appconsts"
+	"github.com/mcpany/core/server/pkg/cli/install"
 	"github.com/mcpany/core/server/pkg/config"
 	"github.com/mcpany/core/server/pkg/doctor"
 	"github.com/mcpany/core/server/pkg/lint"
@@ -248,6 +249,8 @@ func newRootCmd() *cobra.Command { //nolint:gocyclo // Main entry point, expecte
 	runCmd.Flags().Bool("strict", false, "Run in strict mode (validate upstream connectivity before starting)")
 	config.BindServerFlags(runCmd)
 	rootCmd.AddCommand(runCmd)
+
+	rootCmd.AddCommand(install.NewCmdInstall())
 
 	versionCmd := &cobra.Command{
 		Use:   "version",

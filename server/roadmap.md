@@ -3,7 +3,7 @@
 ## 1. Updated Roadmap
 
 ### Status: Active Development
-
+- **Automatic Client Configuration**: [COMPLETED] Implemented `mcpany install` CLI command to automatically configure Claude Desktop to use MCP Any.
 
 ## 2. Top 10 Recommended Features
 
@@ -108,6 +108,8 @@ These features represent the next logical steps for the product, focusing on Ent
 | 71   | **Top Tools API Extensions**                  | **Observability**: Enhance the top tools API to support time ranges (last 1h, 24h) using historical metrics if available.                                                                                        | Medium     |
 | 72   | **Config Hot-Reload Validation**              | **Resilience**: Validate configuration changes before applying them during a hot-reload to prevent breaking the running server with a bad config.                                                                  | High       |
 | 73   | **Docker Secret Native Support**              | **Ops**: Native support for reading Docker secrets (files in `/run/secrets`) and substituting them into configuration without needing environment variable mapping.                                                | Medium     |
+| 74   | **Cursor Client Support**                     | **DevX**: Extend `mcpany install` to support Cursor IDE configuration (`~/.cursor/mcp.json`).                                                                                                                      | Low        |
+| 75   | **VS Code Client Support**                    | **DevX**: Extend `mcpany install` to support VS Code configuration (User Settings or Workspace `.vscode/mcp.json`).                                                                                                | Low        |
 
 ## 3. Codebase Health
 
@@ -134,6 +136,8 @@ These features represent the next logical steps for the product, focusing on Ent
 
 1.  **UI Component Duplication**: Some UI components in `ui/src/components` seem to have overlapping responsibilities (e.g., multiple "detail" views). A UI component audit is recommended.
 2.  **Test Coverage gaps**: While core logic is tested, cloud providers (S3/GCS) and some new UI features lack comprehensive integration tests.
+3.  **CLI Install Logic Extensibility**: The `install` command logic is currently specific to Claude. It should be refactored into a generic `clientconfig` package to support Cursor, VS Code, and others easily.
+4.  **Docker Volume Mounting Robustness**: The `install` command's Docker volume mounting strategy is simple (file-based). It needs to be more robust to handle configuration files that reference other local files (relative paths).
 
 ### Healthy Areas
 
