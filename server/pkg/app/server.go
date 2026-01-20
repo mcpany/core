@@ -1900,7 +1900,12 @@ func (a *Application) createAuthMiddleware(forcePrivateIPOnly bool) func(http.Ha
 				// Check X-API-Key or Authorization header
 				requestKey := r.Header.Get("X-API-Key")
 				if requestKey == "" {
-					requestKey = r.URL.Query().Get("api_key")
+					// Check query param (Deprecated/Insecure)
+					if qKey := r.URL.Query().Get("api_key"); qKey != "" {
+						requestKey = qKey
+						// Sentinel Security Update: Log warning for insecure API key usage in URL
+						logging.GetLogger().Warn("Security Warning: 'api_key' passed in query parameter. This is insecure and will be removed in future versions. Use 'X-API-Key' header or 'Authorization: Bearer <key>' instead.", "path", r.URL.Path)
+					}
 				}
 				if requestKey == "" {
 					authHeader := r.Header.Get("Authorization")

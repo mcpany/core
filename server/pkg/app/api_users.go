@@ -91,11 +91,8 @@ func (a *Application) handleUsers(store storage.Storage) http.HandlerFunc {
 			}
 
 			// Reload auth manager
-			a.AuthManager.SetUsers([]*configv1.User{&user}) // Wait, this replaces ALL users?
-			// We need to reload usage from config. But ListUsers comes from Storage.
-			// AuthManager might be using config-based users OR storage-based users.
-			// api.go ReloadConfig: a.AuthManager.SetUsers(cfg.GetUsers())
-			// LoadServices loads from store too.
+			// Sentinel Security Update: Removed incorrect SetUsers call that would wipe out other users.
+			// ReloadConfig below will reload all users from storage/config, which is the correct behavior.
 			if err := a.ReloadConfig(r.Context(), a.fs, a.configPaths); err != nil {
 				logging.GetLogger().Error("failed to reload config after user create", "error", err)
 			}
