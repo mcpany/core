@@ -162,9 +162,25 @@ For production or staging environments, you can deploy `mcpany` to a Kubernetes 
 
 ## 4. Claude Desktop
 
-To use `mcpany` with [Claude Desktop](https://modelcontextprotocol.io/quickstart/user), configure it to run the `mcpany` Docker container.
+The easiest way to configure [Claude Desktop](https://modelcontextprotocol.io/quickstart/user) is using the `install` command.
 
-Add the following to your `claude_desktop_config.json`:
+### Automated Setup (Recommended)
+
+Run the following command to automatically update your Claude Desktop configuration:
+
+```bash
+# Using Docker (Recommended)
+mcpany install --config-path /path/to/your/config.yaml
+
+# Using Local Binary
+mcpany install --local-binary --config-path /path/to/your/config.yaml
+```
+
+This will automatically locate your `claude_desktop_config.json` and add the `mcpany` server entry.
+
+### Manual Setup
+
+If you prefer to configure it manually, add the following to your `claude_desktop_config.json`:
 
 ```json
 {
