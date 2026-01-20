@@ -313,18 +313,10 @@ func (u *Upstream) createAndRegisterHTTPTools(ctx context.Context, serviceID, ad
 			continue
 		}
 
-		properties, err := schemaconv.ConfigSchemaToProtoProperties(httpDef.GetParameters())
+		properties, requiredParams, err := schemaconv.ConfigSchemaToProtoProperties(httpDef.GetParameters())
 		if err != nil {
 			log.Error("Failed to convert schema to properties", "error", err)
 			continue
-		}
-
-		requiredParams := []string{}
-		for _, param := range httpDef.GetParameters() {
-			paramSchema := param.GetSchema()
-			if paramSchema.GetIsRequired() {
-				requiredParams = append(requiredParams, paramSchema.GetName())
-			}
 		}
 
 		method, err := httpMethodToString(httpDef.GetMethod())
