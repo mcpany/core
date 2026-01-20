@@ -63,6 +63,7 @@ func TestUserManagement(t *testing.T) {
 global_settings:
     db_driver: "sqlite"
     db_path: "%s"
+    # api_key via config file is fine, but accessing it via query param is what we disabled.
     api_key: "test-api-key"
     oidc:
         issuer: "%s"

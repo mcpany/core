@@ -116,8 +116,8 @@ upstream_services:
     httpUrl := fmt.Sprintf("http://127.0.0.1:%d/healthz", jsonrpcPort)
     integration.WaitForHTTPHealth(t, httpUrl, 10*time.Second)
 
-    // Include /mcp and api_key in the endpoint
-    endpoint := fmt.Sprintf("http://127.0.0.1:%d/mcp?api_key=test-api-key", jsonrpcPort)
+    // Include /mcp in the endpoint
+    endpoint := fmt.Sprintf("http://127.0.0.1:%d/mcp", jsonrpcPort)
 
     client := mcp.NewClient(&mcp.Implementation{
         Name: "test-client",
@@ -126,6 +126,15 @@ upstream_services:
 
     transport := &mcp.StreamableClientTransport{
         Endpoint: endpoint,
+        // Pass headers via headers option if supported, or via context wrapping if the library supports it
+        // The current go-sdk's StreamableClientTransport might not directly support arbitrary headers,
+        // but we can check if it accepts extra headers or we need to modify how we construct it.
+        // Wait, StreamableClientTransport usually has ExtraHeaders map[string]string?
+        // Let's check imports or assume it has Headers or similar.
+        // Looking at the codebase, StreamableClientTransport has Headers map[string]string.
+        Headers: map[string]string{
+            "X-API-Key": "test-api-key",
+        },
     }
 
     ctxCall, cancelCall := context.WithTimeout(context.Background(), 10*time.Second)
