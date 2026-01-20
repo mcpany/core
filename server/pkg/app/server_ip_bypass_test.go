@@ -20,7 +20,7 @@ func TestAuthMiddleware_IPBypass(t *testing.T) {
 	// But in createAuthMiddleware:
 	// if !forcePrivateIPOnly && apiKey != "" { ... } else { ... check IsPrivateIP ... }
 	// So passing false + empty API key triggers the Sentinel Security check.
-	middleware := app.createAuthMiddleware(false)
+	middleware := app.createAuthMiddleware(false, false)
 
 	handler := middleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)

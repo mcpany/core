@@ -2497,6 +2497,9 @@ func isShellCommand(cmd string) bool {
 		"openssl", "git", "hg", "svn",
 		"wget", "curl", "nc", "netcat", "ncat",
 		"socat", "telnet",
+		// Editors and pagers that can execute commands
+		"vi", "vim", "nvim", "emacs", "nano",
+		"less", "more", "man",
 		// Build tools and others that can execute commands
 		"tar", "find", "xargs", "tee",
 		"make", "rake", "ant", "mvn", "gradle",

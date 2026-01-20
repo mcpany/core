@@ -123,61 +123,87 @@ func SanitizeID(ids []string, alwaysAppendHash bool, maxSanitizedPrefixLength, r
 }
 
 func sanitizePart(sb *strings.Builder, id string, alwaysAppendHash bool, maxSanitizedPrefixLength, reqHashLength int) error { //nolint:unparam
-	// Pass 1: Scan for dirty chars and count clean length
-	dirtyCount := 0
-	for j := 0; j < len(id); j++ {
-		if !isValidChar(id[j]) {
-			dirtyCount++
-		}
-	}
-
-	rawSanitizedLen := len(id) - dirtyCount
-	appendHash := alwaysAppendHash || dirtyCount > 0 || rawSanitizedLen > maxSanitizedPrefixLength
-
-	finalSanitizedLen := rawSanitizedLen
-	if finalSanitizedLen > maxSanitizedPrefixLength {
-		finalSanitizedLen = maxSanitizedPrefixLength
-	}
-
-	if appendHash {
-		if finalSanitizedLen == 0 {
-			sb.WriteString("id")
-		} else {
-			// Write up to finalSanitizedLen clean chars
-			written := 0
-			for j := 0; j < len(id) && written < finalSanitizedLen; j++ {
-				c := id[j]
-				if isValidChar(c) {
-					sb.WriteByte(c)
-					written++
-				}
+	// Check quick conditions for mandatory hashing
+	if alwaysAppendHash || len(id) > maxSanitizedPrefixLength {
+		// Must append hash.
+		// Write up to maxSanitizedPrefixLength clean chars.
+		written := 0
+		for i := 0; i < len(id) && written < maxSanitizedPrefixLength; i++ {
+			if isValidChar(id[i]) {
+				sb.WriteByte(id[i])
+				written++
 			}
 		}
 
-		// Append Hash
-		// Optimization: Use sha256.Sum256 to avoid heap allocation of hash.Hash
-		sum := sha256.Sum256(stringToBytes(id))
-
-		// Avoid hex.EncodeToString allocation
-		var hashBuf [64]byte // sha256 hex is 64 chars
-		hex.Encode(hashBuf[:], sum[:])
-
-		sb.WriteByte('_')
-
-		// Determine effective hash length
-		effectiveLen := reqHashLength
-		if effectiveLen <= 0 {
-			effectiveLen = hashLength // Use package-level constant (8)
-		} else if effectiveLen > 64 {
-			effectiveLen = 64
+		if written == 0 {
+			sb.WriteString("id")
 		}
 
-		sb.Write(hashBuf[:effectiveLen])
-	} else { // appendHash is false, so dirtyCount == 0 and len(id) <= maxSanitizedPrefixLength
-		// We can just write id
-		sb.WriteString(id)
+		appendHashSuffix(sb, id, reqHashLength)
+		return nil
 	}
+
+	// Here, len(id) <= maxSanitizedPrefixLength AND !alwaysAppendHash.
+	// We only append hash if we find a dirty char.
+
+	// Scan for dirty char
+	dirtyIdx := -1
+	for i := 0; i < len(id); i++ {
+		if !isValidChar(id[i]) {
+			dirtyIdx = i
+			break
+		}
+	}
+
+	if dirtyIdx == -1 {
+		// All clean, no hash needed.
+		sb.WriteString(id)
+		return nil
+	}
+
+	// Found dirty char at dirtyIdx.
+	// We must append hash.
+
+	// We write everything before dirtyIdx (all clean).
+	sb.WriteString(id[:dirtyIdx])
+	written := dirtyIdx
+
+	// Continue from dirtyIdx + 1, skipping dirty chars.
+	for i := dirtyIdx + 1; i < len(id); i++ {
+		if isValidChar(id[i]) {
+			sb.WriteByte(id[i])
+			written++
+		}
+	}
+
+	if written == 0 {
+		sb.WriteString("id")
+	}
+
+	appendHashSuffix(sb, id, reqHashLength)
 	return nil
+}
+
+func appendHashSuffix(sb *strings.Builder, id string, reqHashLength int) {
+	// Append Hash
+	// Optimization: Use sha256.Sum256 to avoid heap allocation of hash.Hash
+	sum := sha256.Sum256(stringToBytes(id))
+
+	// Avoid hex.EncodeToString allocation
+	var hashBuf [64]byte // sha256 hex is 64 chars
+	hex.Encode(hashBuf[:], sum[:])
+
+	sb.WriteByte('_')
+
+	// Determine effective hash length
+	effectiveLen := reqHashLength
+	if effectiveLen <= 0 {
+		effectiveLen = hashLength // Use package-level constant (8)
+	} else if effectiveLen > 64 {
+		effectiveLen = 64
+	}
+
+	sb.Write(hashBuf[:effectiveLen])
 }
 
 func isValidChar(c byte) bool {
