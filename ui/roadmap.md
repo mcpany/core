@@ -39,12 +39,14 @@
 - [ ] **Tool Filtering by Service**: Filter the tool list by selecting a specific service.
 - [ ] **Compact Tool View**: A toggle to switch between comfortable and compact table view for high density lists.
 - [ ] **Bulk Edit Configuration**: Ability to edit common properties (like tags, timeout, or environment variables) for multiple selected services.
-- [ ] **Saved Tool Arguments**: Ability to save a set of arguments as a "Preset" for a tool in the Playground, to quickly test different scenarios.
+- [x] **Saved Tool Arguments**: Ability to save a set of arguments as a "Preset" for a tool in the Playground, to quickly test different scenarios.
 - [x] **Tool Execution History Persisted**: Persist the local history of tool executions in `localStorage` or backend, so it survives page reloads.
 - [ ] **Tool Execution Duration Tracking**: Display the execution time (latency) for each tool call in the Playground history.
 - [ ] **Export Playground History**: Ability to export the current session's tool execution history to a JSON file for sharing or debugging.
 - [ ] **Context Usage Estimator**: Calculate and display estimated token usage for each tool/service to prevent context bloat (Address "MCP servers eat context" pain point).
 - [ ] **Sensitive Data Detection**: Warning when configuring services that might expose sensitive environment variables (e.g. AWS_SECRET_KEY) in tools.
+- [ ] **Preset Sharable URL**: Generate a link to the playground with pre-filled arguments (using presets or query params) to easily share configurations with team members.
+- [ ] **Preset Cloud Sync**: Sync saved tool presets to the backend (user profile) so they persist across devices and browser sessions.
 
 ### Completed Features
 
