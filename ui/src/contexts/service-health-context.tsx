@@ -28,13 +28,14 @@ const POLLING_INTERVAL = 5000;
 
 export function ServiceHealthProvider({ children }: { children: ReactNode }) {
     const [history, setHistory] = useState<Record<string, MetricPoint[]>>({});
-    const historyRef = useRef<Record<string, MetricPoint[]>>({});
 
     useEffect(() => {
         const fetchTopology = async () => {
             if (document.hidden) return;
             try {
-                const res = await fetch('/api/v1/topology');
+                // Handle relative URL for fetch in jsdom/test env
+                const url = typeof window !== 'undefined' ? '/api/v1/topology' : 'http://localhost/api/v1/topology';
+                const res = await fetch(url);
                 if (!res.ok) return;
                 const graph: Graph = await res.json();
 
@@ -42,6 +43,10 @@ export function ServiceHealthProvider({ children }: { children: ReactNode }) {
                 const newPoints: Record<string, MetricPoint> = {};
 
                 // Helper to extract service nodes
+                // Using 'any' for node because TopologyNode type from types/topology
+                // might not match exactly what comes from API or recursion needs to be flexible
+                // But we should try to be safer if possible.
+                // Assuming Node type from @/types/topology
                 const extractServiceNodes = (nodes: any[]) => {
                     nodes.forEach(node => {
                         if (node.type === 'NODE_TYPE_SERVICE') {
@@ -78,7 +83,6 @@ export function ServiceHealthProvider({ children }: { children: ReactNode }) {
                     // Also initialize entries for services that didn't report (optional, or let them be empty)
                     // We only track what we see in topology.
 
-                    historyRef.current = next;
                     return next;
                 });
 
@@ -87,11 +91,11 @@ export function ServiceHealthProvider({ children }: { children: ReactNode }) {
             }
         };
 
-        fetchTopology();
-        const interval = setInterval(fetchTopology, POLLING_INTERVAL);
+        void fetchTopology();
+        const interval = setInterval(() => void fetchTopology(), POLLING_INTERVAL);
 
         const onVisibilityChange = () => {
-            if (!document.hidden) fetchTopology();
+            if (!document.hidden) void fetchTopology();
         };
         document.addEventListener("visibilitychange", onVisibilityChange);
 
