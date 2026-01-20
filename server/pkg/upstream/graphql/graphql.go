@@ -15,6 +15,7 @@ import (
 	"github.com/machinebox/graphql"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/mcpany/core/server/pkg/auth"
+	"github.com/mcpany/core/server/pkg/util"
 	"github.com/mcpany/core/server/pkg/prompt"
 	"github.com/mcpany/core/server/pkg/resource"
 	"github.com/mcpany/core/server/pkg/tool"
@@ -200,7 +201,7 @@ func (g *Upstream) Register(
 		return "", nil, nil, fmt.Errorf("failed to create upstream authenticator: %w", err)
 	}
 
-	client := graphql.NewClient(graphqlConfig.GetAddress())
+	client := graphql.NewClient(graphqlConfig.GetAddress(), graphql.WithHTTPClient(util.NewSafeHTTPClient()))
 
 	req := graphql.NewRequest(introspectionQuery)
 	if authenticator != nil {

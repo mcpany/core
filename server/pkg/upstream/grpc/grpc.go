@@ -9,6 +9,7 @@ import (
 	"encoding/hex"
 	"errors"
 	"fmt"
+	"net"
 	"strings"
 	"time"
 
@@ -111,7 +112,12 @@ func (u *Upstream) Register(
 	}
 	grpcCreds := auth.NewPerRPCCredentials(upstreamAuthenticator)
 
-	grpcPool, err := NewGrpcPool(0, 10, 300*time.Second, nil, grpcCreds, serviceConfig, false)
+	safeDialer := util.NewSafeDialer()
+	dialer := func(ctx context.Context, addr string) (net.Conn, error) {
+		return safeDialer.DialContext(ctx, "tcp", addr)
+	}
+
+	grpcPool, err := NewGrpcPool(0, 10, 300*time.Second, dialer, grpcCreds, serviceConfig, false)
 	if err != nil {
 		return "", nil, nil, fmt.Errorf("failed to create gRPC pool for %s: %w", serviceConfig.GetName(), err)
 	}
