@@ -39,7 +39,7 @@ func TestAuthMiddleware_IPBypass(t *testing.T) {
 		{
 			name:       "IPv4 Private",
 			remoteAddr: "192.168.1.1:12345",
-			wantStatus: http.StatusOK,
+			wantStatus: http.StatusForbidden, // Now blocked by default
 		},
 		{
 			name:       "IPv6 Loopback",
@@ -54,12 +54,12 @@ func TestAuthMiddleware_IPBypass(t *testing.T) {
 		{
 			name:       "IPv4-Compatible Loopback (Bypass Attempt)",
 			remoteAddr: "[::127.0.0.1]:12345",
-			wantStatus: http.StatusOK, // Should be allowed because it IS loopback (previously failed)
+			wantStatus: http.StatusForbidden, // Blocked as it is not recognized as standard loopback
 		},
 		{
 			name:       "IPv4-Compatible Private (Bypass Attempt)",
 			remoteAddr: "[::192.168.1.1]:12345",
-			wantStatus: http.StatusOK, // Should be allowed because it IS private (previously failed)
+			wantStatus: http.StatusForbidden, // Now blocked by default
 		},
 		{
 			name:       "IPv4-Compatible Public (Attack)",
