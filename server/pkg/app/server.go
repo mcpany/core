@@ -31,6 +31,7 @@ import (
 	"github.com/mcpany/core/server/pkg/auth"
 	"github.com/mcpany/core/server/pkg/bus"
 	"github.com/mcpany/core/server/pkg/config"
+	"github.com/mcpany/core/server/pkg/discovery"
 	"github.com/mcpany/core/server/pkg/gc"
 	"github.com/mcpany/core/server/pkg/health"
 	"github.com/mcpany/core/server/pkg/logging"
@@ -235,6 +236,10 @@ type Application struct {
 	startTime time.Time
 	// activeConnections tracks the number of active HTTP connections.
 	activeConnections int32
+
+	// RegistrationRetryDelay allows configuring the retry delay for service registration.
+	// If 0, it defaults to 5 seconds (in the worker).
+	RegistrationRetryDelay time.Duration
 }
 
 // NewApplication creates a new Application with default dependencies.
@@ -487,6 +492,9 @@ func (a *Application) Run(
 	// New message bus and workers
 	upstreamWorker := worker.NewUpstreamWorker(busProvider, a.ToolManager)
 	registrationWorker := worker.NewServiceRegistrationWorker(busProvider, serviceRegistry)
+	if a.RegistrationRetryDelay > 0 {
+		registrationWorker.SetRetryDelay(a.RegistrationRetryDelay)
+	}
 
 	// Create a context for workers that we can cancel on shutdown
 	workerCtx, workerCancel := context.WithCancel(ctx)
@@ -609,6 +617,18 @@ func (a *Application) Run(
 		upstreamWorker.Stop()
 		registrationWorker.Stop()
 		return fmt.Errorf("failed to init standard middlewares: %w", err)
+	}
+
+	// Auto-discovery of local services
+	if cfg.GetGlobalSettings().GetAutoDiscoverLocal() {
+		ollamaProvider := &discovery.OllamaProvider{Endpoint: "http://localhost:11434"}
+		discovered, err := ollamaProvider.Discover(ctx)
+		if err == nil {
+			for _, svc := range discovered {
+				log.Info("Auto-discovered local service", "name", svc.GetName())
+				cfg.UpstreamServices = append(cfg.UpstreamServices, svc)
+			}
+		}
 	}
 	a.standardMiddlewares = standardMiddlewares
 	if standardMiddlewares.Cleanup != nil {
@@ -885,6 +905,18 @@ func (a *Application) reconcileServices(ctx context.Context, cfg *config_v1.McpA
 		if err == nil {
 			for _, s := range services {
 				currentServicesMap[s.GetName()] = s
+			}
+		}
+	}
+
+	// Auto-discovery of local services
+	if cfg.GetGlobalSettings().GetAutoDiscoverLocal() {
+		ollamaProvider := &discovery.OllamaProvider{Endpoint: "http://localhost:11434"}
+		discovered, err := ollamaProvider.Discover(ctx)
+		if err == nil {
+			for _, svc := range discovered {
+				log.Info("Auto-discovered local service during reload", "name", svc.GetName())
+				cfg.UpstreamServices = append(cfg.UpstreamServices, svc)
 			}
 		}
 	}
@@ -1258,6 +1290,8 @@ func (a *Application) runServerMode(
 
 	// Wrap the HTTP handler with OpenTelemetry instrumentation
 	httpHandler := otelhttp.NewHandler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// Enforce 10MB limit for JSON-RPC body to prevent DoS
+		r.Body = http.MaxBytesReader(w, r.Body, 10<<20)
 		ctx := context.WithValue(r.Context(), "http.request", r) //nolint:revive,staticcheck // matching legacy usage in auth.go
 		rawHTTPHandler.ServeHTTP(w, r.WithContext(ctx))
 	}), "server-request")
@@ -1283,13 +1317,16 @@ func (a *Application) runServerMode(
 		}
 	}
 
+	// Trust Proxy Config
+	trustProxy := os.Getenv("MCPANY_TRUST_PROXY") == util.TrueStr
+
 	var authMiddleware func(http.Handler) http.Handler
 	if authDisabled {
 		logging.GetLogger().Warn("Auth middleware is disabled by config! Enforcing private-IP-only access for safety.")
 		// Even if auth is disabled, we enforce private-IP-only access to prevent public exposure.
-		authMiddleware = a.createAuthMiddleware(true)
+		authMiddleware = a.createAuthMiddleware(true, trustProxy)
 	} else {
-		authMiddleware = a.createAuthMiddleware(false)
+		authMiddleware = a.createAuthMiddleware(false, trustProxy)
 	}
 
 	mux := http.NewServeMux()
@@ -1665,7 +1702,7 @@ func (a *Application) runServerMode(
 	// Apply Global Rate Limit: 20 RPS with a burst of 50.
 	// This helps prevent basic DoS attacks on all HTTP endpoints, including /upload.
 	// We enable trustProxy if MCPANY_TRUST_PROXY is set, to handle load balancers correctly.
-	trustProxy := os.Getenv("MCPANY_TRUST_PROXY") == util.TrueStr
+	// trustProxy is already defined above
 	rateLimiter := middleware.NewHTTPRateLimitMiddleware(20, 50, middleware.WithTrustProxy(trustProxy))
 
 	// Apply CORS Middleware
@@ -1887,10 +1924,10 @@ func (a *Application) runServerMode(
 }
 
 // createAuthMiddleware creates the authentication middleware.
-func (a *Application) createAuthMiddleware(forcePrivateIPOnly bool) func(http.Handler) http.Handler {
+func (a *Application) createAuthMiddleware(forcePrivateIPOnly bool, trustProxy bool) func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			ip := util.ExtractIP(r.RemoteAddr)
+			ip := util.GetClientIP(r, trustProxy)
 			ctx := util.ContextWithRemoteIP(r.Context(), ip)
 			r = r.WithContext(ctx)
 

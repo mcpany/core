@@ -83,6 +83,34 @@ func TestCommandInjection_Advanced(t *testing.T) {
 		assert.Error(t, err)
 		assert.Contains(t, err.Error(), "absolute path detected")
 	})
+
+	// Case 6: Shell injection bypass attempt with versioned binary (e.g. python-3.14)
+	t.Run("versioned_binary_bypass", func(t *testing.T) {
+		cmd := "python-3.14" // Should be treated as python
+		tool := createTestCommandToolWithTemplate(cmd, "{{input}}")
+		req := &ExecutionRequest{
+			ToolName: "test",
+			ToolInputs: []byte(`{"input": "print('hello'); import os; os.system('rm -rf /')"}`),
+		}
+
+		_, err := tool.Execute(context.Background(), req)
+		assert.Error(t, err)
+		assert.Contains(t, err.Error(), "shell injection detected")
+	})
+
+	// Case 7: Improved quote detection allows safe chars in quotes
+	t.Run("improved_quote_detection", func(t *testing.T) {
+		cmd := "python"
+		tool := createTestCommandToolWithTemplate(cmd, "print('Prefix: {{input}}')")
+		// This input is safe in python string but blocked by strict check currently
+		req := &ExecutionRequest{
+			ToolName: "test",
+			ToolInputs: []byte(`{"input": "foo; bar"}`),
+		}
+
+		_, err := tool.Execute(context.Background(), req)
+		assert.NoError(t, err)
+	})
 }
 
 func createTestCommandToolWithTemplate(command string, template string) Tool {

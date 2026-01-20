@@ -23,9 +23,27 @@ interface ServiceHealthContextType {
 
 const ServiceHealthContext = createContext<ServiceHealthContextType | undefined>(undefined);
 
+/**
+ * MAX_HISTORY_POINTS component.
+ * @param props - The component props.
+ * @param props.children - The child components.
+ * @returns The rendered component.
+ */
 const MAX_HISTORY_POINTS = 30; // 30 points * 5s = 2.5 minutes history
+/**
+ * POLLING_INTERVAL component.
+ * @param props - The component props.
+ * @param props.children - The child components.
+ * @returns The rendered component.
+ */
 const POLLING_INTERVAL = 5000;
 
+/**
+ * ServiceHealthProvider component.
+ * @param props - The component props.
+ * @param props.children - The child components.
+ * @returns The rendered component.
+ */
 export function ServiceHealthProvider({ children }: { children: ReactNode }) {
     const [history, setHistory] = useState<Record<string, MetricPoint[]>>({});
 

@@ -71,6 +71,12 @@ const getLevelColor = (level: LogLevel) => {
 }
 
 // Optimization: Memoize LogRow to prevent unnecessary re-renders when list updates
+/**
+ * LogRow component.
+ * @param props - The component props.
+ * @param props.log - The log property.
+ * @returns The rendered component.
+ */
 const LogRow = React.memo(({ log }: { log: LogEntry }) => {
   const duration = log.metadata?.duration as string | undefined
 
@@ -120,6 +126,14 @@ LogRow.displayName = 'LogRow'
 export function LogStream() {
   const [logs, setLogs] = React.useState<LogEntry[]>([])
   const [isPaused, setIsPaused] = React.useState(false)
+  // Optimization: Use a ref to access the latest isPaused state inside the WebSocket closure
+  // without triggering a reconnection or having a stale closure.
+  const isPausedRef = React.useRef(isPaused)
+
+  React.useEffect(() => {
+    isPausedRef.current = isPaused
+  }, [isPaused])
+
   const [filterLevel, setFilterLevel] = React.useState<string>("ALL")
   const [searchQuery, setSearchQuery] = React.useState("")
   const [isConnected, setIsConnected] = React.useState(false)
@@ -173,7 +187,8 @@ export function LogStream() {
       }
 
       ws.onmessage = (event) => {
-        if (isPaused) return
+        // Optimization: check against the ref to ensure we respect the current pause state
+        if (isPausedRef.current) return
         if (document.hidden) return
 
         try {

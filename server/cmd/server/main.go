@@ -437,12 +437,15 @@ func newRootCmd() *cobra.Command { //nolint:gocyclo // Main entry point, expecte
 	schemaCmd := &cobra.Command{
 		Use:   "schema",
 		Short: "Print the JSON Schema for configuration",
-		RunE: func(_ *cobra.Command, _ []string) error {
+		RunE: func(cmd *cobra.Command, _ []string) error {
 			schemaBytes, err := config.GenerateJSONSchemaBytes()
 			if err != nil {
 				return fmt.Errorf("failed to generate schema: %w", err)
 			}
-			fmt.Println(string(schemaBytes))
+			_, err = fmt.Fprintln(cmd.OutOrStdout(), string(schemaBytes))
+			if err != nil {
+				return fmt.Errorf("failed to print schema: %w", err)
+			}
 			return nil
 		},
 	}

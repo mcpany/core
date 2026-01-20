@@ -77,6 +77,14 @@ func TestHTTPRateLimitMiddleware_TrustProxy(t *testing.T) {
 	rec2 := httptest.NewRecorder()
 	handler.ServeHTTP(rec2, req2)
 	assert.Equal(t, http.StatusOK, rec2.Code, "User 2 Request 1 should be allowed")
+
+	// User 3: Multiple IPs in X-Forwarded-For
+	req3 := httptest.NewRequest("GET", "/", nil)
+	req3.RemoteAddr = remoteAddr
+	req3.Header.Set("X-Forwarded-For", "203.0.113.3, 10.0.0.1")
+	rec3 := httptest.NewRecorder()
+	handler.ServeHTTP(rec3, req3)
+	assert.Equal(t, http.StatusOK, rec3.Code, "User 3 Request 1 should be allowed")
 }
 
 func TestHTTPRateLimitMiddleware_NoTrustProxy(t *testing.T) {

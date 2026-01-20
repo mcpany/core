@@ -11,11 +11,11 @@ import (
 	"os"
 	"testing"
 
+	weatherpb "github.com/mcpany/core/proto/examples/weather/v1"
+	v1 "github.com/mcpany/core/proto/mcp_router/v1"
 	"github.com/mcpany/core/server/pkg/client"
 	"github.com/mcpany/core/server/pkg/pool"
 	"github.com/mcpany/core/server/pkg/tool"
-	weatherpb "github.com/mcpany/core/proto/examples/weather/v1"
-	v1 "github.com/mcpany/core/proto/mcp_router/v1"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/grpc"
@@ -70,7 +70,7 @@ func TestNewGRPCTool(t *testing.T) {
 	toolProto := &v1.Tool{}
 	methodDesc := findMethodDescriptor(t, "WeatherService", "GetWeather")
 
-	grpcTool := tool.NewGRPCTool(toolProto, pm, serviceID, methodDesc, nil)
+	grpcTool := tool.NewGRPCTool(toolProto, pm, serviceID, methodDesc, nil, nil)
 	require.NotNil(t, grpcTool)
 	assert.Equal(t, toolProto, grpcTool.Tool())
 }
@@ -158,7 +158,7 @@ func TestGRPCTool_Execute(t *testing.T) {
 		}
 		pm.Register("grpc-test", mockPool)
 
-		grpcTool := tool.NewGRPCTool(toolProto, pm, "grpc-test", methodDesc, nil)
+		grpcTool := tool.NewGRPCTool(toolProto, pm, "grpc-test", methodDesc, nil, nil)
 		inputs := json.RawMessage(`{"location": "London"}`)
 		req := &tool.ExecutionRequest{ToolInputs: inputs}
 
@@ -176,7 +176,7 @@ func TestGRPCTool_Execute(t *testing.T) {
 		}
 		pm.Register("grpc-test", mockPool)
 
-		grpcTool := tool.NewGRPCTool(toolProto, pm, "grpc-test", methodDesc, nil)
+		grpcTool := tool.NewGRPCTool(toolProto, pm, "grpc-test", methodDesc, nil, nil)
 		req := &tool.ExecutionRequest{ToolInputs: json.RawMessage(`{}`)}
 		_, err := grpcTool.Execute(context.Background(), req)
 		assert.Error(t, err)
@@ -199,7 +199,7 @@ func TestGRPCTool_Execute(t *testing.T) {
 		}
 		pm.Register("grpc-test", mockPool)
 
-		grpcTool := tool.NewGRPCTool(toolProto, pm, "grpc-test", methodDesc, nil)
+		grpcTool := tool.NewGRPCTool(toolProto, pm, "grpc-test", methodDesc, nil, nil)
 		inputs := json.RawMessage(`{"location": "London"}`)
 		req := &tool.ExecutionRequest{ToolInputs: inputs}
 		_, err := grpcTool.Execute(context.Background(), req)
@@ -208,7 +208,7 @@ func TestGRPCTool_Execute(t *testing.T) {
 
 	t.Run("invalid input json", func(t *testing.T) {
 		pm := pool.NewManager()
-		grpcTool := tool.NewGRPCTool(toolProto, pm, "grpc-test", methodDesc, nil)
+		grpcTool := tool.NewGRPCTool(toolProto, pm, "grpc-test", methodDesc, nil, nil)
 		inputs := json.RawMessage(`{invalid}`)
 		req := &tool.ExecutionRequest{ToolInputs: inputs}
 		_, err := grpcTool.Execute(context.Background(), req)
