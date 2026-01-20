@@ -36,9 +36,11 @@
 - [x] **Bulk Service Actions**: Enable/Disable or Delete multiple services at once, potentially using tags for selection.
 - [ ] **Tag-based Access Control**: Restrict service access to specific user profiles based on tags.
 - [ ] **Live Tool Usage Graph**: Visual graph of tool execution metrics over time (RPS, Latency) in Tool Detail view.
-- [ ] **Tool Filtering by Service**: Filter the tool list by selecting a specific service.
+- [x] **Tool Filtering by Service**: Filter the tool list by selecting a specific service.
 - [ ] **Compact Tool View**: A toggle to switch between comfortable and compact table view for high density lists.
 - [ ] **Bulk Edit Configuration**: Ability to edit common properties (like tags, timeout, or environment variables) for multiple selected services.
+- [ ] **Tool Search Bar**: A text input to filter tools by name or description within the current view (filtered by service or not).
+- [ ] **Tool Grouping by Category**: Group tools not just by service but by category/tags if available.
 - [ ] **Saved Tool Arguments**: Ability to save a set of arguments as a "Preset" for a tool in the Playground, to quickly test different scenarios.
 - [x] **Tool Execution History Persisted**: Persist the local history of tool executions in `localStorage` or backend, so it survives page reloads.
 - [ ] **Tool Execution Duration Tracking**: Display the execution time (latency) for each tool call in the Playground history.
@@ -53,6 +55,7 @@
 - [x] **Playground Schema Validation**: Implemented robust client-side JSON schema validation using AJV, providing real-time feedback in both Form and JSON modes.
 - [x] **JSON Schema Visualizer**: Implemented a recursive tree view for tool schemas, replacing raw JSON.
 - [x] **Service Duplication & Export**: Added "Duplicate" and "Export" actions to the service list for easier management.
+- [x] **Tool Filtering by Service**: Added a dropdown filter to the Tools page to show tools only from a specific service.
 
 - [x] **Resource Preview Modal**: A dedicated modal to preview resources for larger viewing area.
 - [x] **Service Template Integration**: Integrated Service Templates into the main "Add Service" flow for better discoverability.
