@@ -6,6 +6,7 @@ package util //nolint:revive,nolintlint // Package name 'util' is common in this
 import (
 	"bytes"
 	"encoding/json"
+	"sort"
 	"unsafe"
 )
 
@@ -48,6 +49,18 @@ func init() {
 				sensitiveStartChars = append(sensitiveStartChars, first)
 			}
 			sensitiveKeyGroups[first] = append(sensitiveKeyGroups[first], kb)
+		}
+	}
+
+	// ⚡ Bolt Optimization: Sort keys in each group by length descending.
+	// This ensures that we check longer keys first (e.g. "authorization" before "auth").
+	// If the longer key matches, we are done. If "auth" matched first, we might fail the boundary check
+	// (e.g. next char is 'o') and then have to check "authorization" anyway.
+	for i := range sensitiveKeyGroups {
+		if len(sensitiveKeyGroups[i]) > 1 {
+			sort.Slice(sensitiveKeyGroups[i], func(j, k int) bool {
+				return len(sensitiveKeyGroups[i][j]) > len(sensitiveKeyGroups[i][k])
+			})
 		}
 	}
 
