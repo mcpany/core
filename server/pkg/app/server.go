@@ -19,6 +19,7 @@ import (
 	"strings"
 	"sync"
 	"sync/atomic"
+	"text/tabwriter"
 	"time"
 
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
@@ -1861,6 +1862,22 @@ func (a *Application) runServerMode(
 		startupCallback()
 	}
 
+	// Retrieve services from registry to verify initial status
+	if services, err := serviceRegistry.GetAllServices(); err == nil && len(services) > 0 {
+		var activeServices []string
+		for _, s := range services {
+			if !s.GetDisable() {
+				activeServices = append(activeServices, s.GetName())
+			}
+		}
+		if len(activeServices) > 0 {
+			waitCtx, cancel := context.WithTimeout(ctx, 15*time.Second)
+			defer cancel()
+			a.waitForRegistrations(waitCtx, activeServices)
+			a.printStartupSummary(activeServices)
+		}
+	}
+
 	var startupErr error
 	select {
 	case err := <-errChan:
@@ -2012,6 +2029,73 @@ func startGrpcServer(
 		<-shutdownComplete
 		serverLog.Info("Server shut down.")
 	}()
+}
+
+// waitForRegistrations waits for the initial registration of services to complete.
+func (a *Application) waitForRegistrations(ctx context.Context, serviceNames []string) {
+	log := logging.GetLogger()
+	log.Info("Waiting for initial service registration...", "count", len(serviceNames))
+
+	ticker := time.NewTicker(500 * time.Millisecond)
+	defer ticker.Stop()
+
+	for {
+		select {
+		case <-ctx.Done():
+			return
+		case <-ticker.C:
+			allDone := true
+			for _, name := range serviceNames {
+				status := a.ServiceRegistry.GetServiceStatus(name)
+				if status == serviceregistry.ServiceStatusPending {
+					allDone = false
+					break
+				}
+			}
+			if allDone {
+				return
+			}
+		}
+	}
+}
+
+// printStartupSummary prints a table summarizing the status of services.
+func (a *Application) printStartupSummary(serviceNames []string) {
+	var buf bytes.Buffer
+	w := tabwriter.NewWriter(&buf, 0, 0, 2, ' ', 0)
+	fmt.Fprintln(w, "\nSERVICE\tSTATUS\tDETAILS")
+	fmt.Fprintln(w, "-------\t------\t-------")
+
+	for _, name := range serviceNames {
+		status := a.ServiceRegistry.GetServiceStatus(name)
+		statusStr := string(status)
+		details := ""
+
+		switch status {
+		case serviceregistry.ServiceStatusRunning:
+			statusStr = "✅ " + statusStr
+			id, _ := util.SanitizeServiceName(name)
+			details = fmt.Sprintf("ID: %s", id)
+		case serviceregistry.ServiceStatusError:
+			statusStr = "❌ " + statusStr
+			id, _ := util.SanitizeServiceName(name)
+			if err, ok := a.ServiceRegistry.GetServiceError(id); ok {
+				details = err
+			} else {
+				details = "Check logs for details"
+			}
+		case serviceregistry.ServiceStatusPending:
+			statusStr = "⏳ " + statusStr
+			details = "Still initializing..."
+		}
+		// Truncate details if too long
+		if len(details) > 80 {
+			details = details[:77] + "..."
+		}
+		fmt.Fprintf(w, "%s\t%s\t%s\n", name, statusStr, details)
+	}
+	w.Flush()
+	fmt.Println(buf.String())
 }
 
 // startHTTPServer starts an HTTP server in a new goroutine. It handles graceful

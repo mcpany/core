@@ -61,7 +61,23 @@ type ServiceRegistryInterface interface { //nolint:revive
 	// Returns the result.
 	// Returns true if successful.
 	GetServiceError(serviceID string) (string, bool)
+	// GetServiceStatus returns the current status of a service.
+	GetServiceStatus(serviceName string) ServiceStatus
 }
+
+// ServiceStatus represents the lifecycle state of a service in the registry.
+type ServiceStatus string
+
+const (
+	// ServiceStatusPending indicates the service is queued or initializing.
+	ServiceStatusPending ServiceStatus = "PENDING"
+	// ServiceStatusRunning indicates the service is successfully registered and active.
+	ServiceStatusRunning ServiceStatus = "RUNNING"
+	// ServiceStatusError indicates the service failed to register.
+	ServiceStatusError ServiceStatus = "ERROR"
+	// ServiceStatusUnknown indicates the service is not found in the registry.
+	ServiceStatusUnknown ServiceStatus = "UNKNOWN"
+)
 
 // ServiceRegistry is responsible for managing the lifecycle of upstream
 // services. It orchestrates the creation of upstream service instances via a
@@ -312,6 +328,35 @@ func (r *ServiceRegistry) GetServiceError(serviceID string) (string, bool) {
 	defer r.mu.RUnlock()
 	err, ok := r.serviceErrors[serviceID]
 	return err, ok
+}
+
+// GetServiceStatus returns the current status of a service.
+func (r *ServiceRegistry) GetServiceStatus(serviceName string) ServiceStatus {
+	serviceID, err := util.SanitizeServiceName(serviceName)
+	if err != nil {
+		return ServiceStatusUnknown
+	}
+
+	r.mu.RLock()
+	defer r.mu.RUnlock()
+
+	// If not in config, it's unknown (unless it was removed)
+	if _, ok := r.serviceConfigs[serviceID]; !ok {
+		return ServiceStatusUnknown
+	}
+
+	// Check Error first
+	if _, hasError := r.serviceErrors[serviceID]; hasError {
+		return ServiceStatusError
+	}
+
+	// Check Upstreams (Running)
+	if _, isUp := r.upstreams[serviceID]; isUp {
+		return ServiceStatusRunning
+	}
+
+	// In Config but not in Upstream and not in Error -> Pending
+	return ServiceStatusPending
 }
 
 // Close gracefully shuts down all registered services.

@@ -672,3 +672,47 @@ func TestServiceRegistry_RegisterService_RetryFailed(t *testing.T) {
 	msg, ok = registry.GetServiceError(serviceID)
 	assert.False(t, ok)
 }
+
+func TestServiceRegistry_GetServiceStatus(t *testing.T) {
+	f := &mockFactory{
+		newUpstreamFunc: func() (upstream.Upstream, error) {
+			return &mockUpstream{
+				registerFunc: func(serviceName string) (string, []*configv1.ToolDefinition, []*configv1.ResourceDefinition, error) {
+					serviceID, err := util.SanitizeServiceName(serviceName)
+					require.NoError(t, err)
+					return serviceID, nil, nil, nil
+				},
+			}, nil
+		},
+	}
+	tm := &mockToolManager{}
+	registry := New(f, tm, prompt.NewManager(), resource.NewManager(), auth.NewManager())
+
+	serviceName := "status-test"
+	serviceConfig := &configv1.UpstreamServiceConfig{Name: proto.String(serviceName)}
+
+	// 1. Unknown
+	status := registry.GetServiceStatus(serviceName)
+	assert.Equal(t, ServiceStatusUnknown, status)
+
+	// 2. Pending (We have to simulate the state where it's in config but not yet in upstream)
+	// Since RegisterService is synchronous in this implementation (locks held or released in sequence),
+	// it's hard to catch it in PENDING state unless we block inside the factory.
+	// We can manually manipulate the map for testing.
+
+	serviceID, _ := util.SanitizeServiceName(serviceName)
+	registry.serviceConfigs[serviceID] = serviceConfig
+	status = registry.GetServiceStatus(serviceName)
+	assert.Equal(t, ServiceStatusPending, status)
+
+	// 3. Error
+	registry.serviceErrors[serviceID] = "some error"
+	status = registry.GetServiceStatus(serviceName)
+	assert.Equal(t, ServiceStatusError, status)
+
+	// 4. Running
+	delete(registry.serviceErrors, serviceID)
+	registry.upstreams[serviceID] = &mockUpstream{}
+	status = registry.GetServiceStatus(serviceName)
+	assert.Equal(t, ServiceStatusRunning, status)
+}

@@ -13,6 +13,7 @@ import (
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	v1 "github.com/mcpany/core/proto/mcp_router/v1"
 	"github.com/mcpany/core/server/pkg/bus"
+	"github.com/mcpany/core/server/pkg/serviceregistry"
 	"github.com/mcpany/core/server/pkg/tool"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/assert"
@@ -153,3 +154,4 @@ func (m *TestMockServiceRegistry) GetAllServices() ([]*configv1.UpstreamServiceC
 func (m *TestMockServiceRegistry) GetServiceInfo(serviceID string) (*tool.ServiceInfo, bool) { return nil, false }
 func (m *TestMockServiceRegistry) GetServiceConfig(serviceID string) (*configv1.UpstreamServiceConfig, bool) { return nil, false }
 func (m *TestMockServiceRegistry) GetServiceError(serviceID string) (string, bool) { return "", false }
+func (m *TestMockServiceRegistry) GetServiceStatus(serviceName string) serviceregistry.ServiceStatus { return serviceregistry.ServiceStatusUnknown }

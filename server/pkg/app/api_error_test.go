@@ -11,6 +11,7 @@ import (
 	"testing"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
+	"github.com/mcpany/core/server/pkg/serviceregistry"
 	"github.com/mcpany/core/server/pkg/storage/sqlite"
 	"github.com/mcpany/core/server/pkg/tool"
 	"github.com/stretchr/testify/assert"
@@ -58,6 +59,11 @@ func (m *MockServiceRegistry) GetServiceConfig(serviceID string) (*configv1.Upst
 func (m *MockServiceRegistry) GetServiceError(serviceID string) (string, bool) {
 	args := m.Called(serviceID)
 	return args.String(0), args.Bool(1)
+}
+
+func (m *MockServiceRegistry) GetServiceStatus(serviceName string) serviceregistry.ServiceStatus {
+	args := m.Called(serviceName)
+	return args.Get(0).(serviceregistry.ServiceStatus)
 }
 
 func TestHandleServices_IncludesError(t *testing.T) {
