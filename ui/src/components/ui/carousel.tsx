@@ -47,6 +47,17 @@ function useCarousel() {
   return context
 }
 
+/**
+ * Carousel component.
+ * @param props - The component props.
+ * @param props.orientation - The orientation property.
+ * @param props.opts - The opts property.
+ * @param props.setApi - The setApi property.
+ * @param props.plugins - The plugins property.
+ * @param props.className - The name of the class.
+ * @param props.children - The child components.
+ * @returns The rendered component.
+ */
 const Carousel = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement> & CarouselProps
@@ -155,6 +166,12 @@ const Carousel = React.forwardRef<
 )
 Carousel.displayName = "Carousel"
 
+/**
+ * CarouselContent component.
+ * @param props - The component props.
+ * @param props.className - The name of the class.
+ * @returns The rendered component.
+ */
 const CarouselContent = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
@@ -177,6 +194,12 @@ const CarouselContent = React.forwardRef<
 })
 CarouselContent.displayName = "CarouselContent"
 
+/**
+ * CarouselItem component.
+ * @param props - The component props.
+ * @param props.className - The name of the class.
+ * @returns The rendered component.
+ */
 const CarouselItem = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
@@ -199,6 +222,14 @@ const CarouselItem = React.forwardRef<
 })
 CarouselItem.displayName = "CarouselItem"
 
+/**
+ * CarouselPrevious component.
+ * @param props - The component props.
+ * @param props.className - The name of the class.
+ * @param props.variant - The variant property.
+ * @param props.size - The size property.
+ * @returns The rendered component.
+ */
 const CarouselPrevious = React.forwardRef<
   HTMLButtonElement,
   React.ComponentProps<typeof Button>
@@ -228,6 +259,14 @@ const CarouselPrevious = React.forwardRef<
 })
 CarouselPrevious.displayName = "CarouselPrevious"
 
+/**
+ * CarouselNext component.
+ * @param props - The component props.
+ * @param props.className - The name of the class.
+ * @param props.variant - The variant property.
+ * @param props.size - The size property.
+ * @returns The rendered component.
+ */
 const CarouselNext = React.forwardRef<
   HTMLButtonElement,
   React.ComponentProps<typeof Button>

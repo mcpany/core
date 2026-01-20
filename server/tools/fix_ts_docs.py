@@ -37,19 +37,16 @@ def process_file(filepath):
     i = 0
     modified = False
 
-    # regex for exported function/const
-    # export function Name
-    # export default function Name
-    # export const Name =
-
-    export_pattern = re.compile(r'^\s*export\s+(default\s+)?(function|const)\s+([a-zA-Z0-9_]+)')
+    # regex for function/const definition (exported or not)
+    # match widely, but only process if it looks like a component (Uppercase)
+    def_pattern = re.compile(r'^\s*(export\s+)?(default\s+)?(function|const)\s+([a-zA-Z0-9_]+)')
 
     while i < len(lines):
         line = lines[i]
-        match = export_pattern.match(line)
+        match = def_pattern.match(line)
 
         if match:
-            # Found an export. Check for existing docstring.
+            # Found a definition. Check for existing docstring.
             has_doc = False
             is_generic = False
 
@@ -83,11 +80,10 @@ def process_file(filepath):
 
                 break
 
-            comp_name = match.group(3)
-            comp_type = match.group(2)
+            comp_name = match.group(4)
 
             # We only care about components (usually Capitalized)
-            if comp_name[0].isupper():
+            if comp_name and comp_name[0].isupper():
 
                 # Parse params
                 # Read lines until ')'
@@ -102,8 +98,15 @@ def process_file(filepath):
                     k += 1
 
                 # Extract props
-                param_match = re.search(r'\(\s*({[^}]+})', func_sig, re.DOTALL)
+                # Case 1: React.forwardRef<T, P>(({ props }, ref) => ...
+                # Case 2: function Name({ props }) ...
+
                 params = []
+
+                # Try to find object pattern destructuring inside function signature
+                # We look for ({ ... }) pattern which is typical for props
+                param_match = re.search(r'\(\s*({[^}]+})', func_sig, re.DOTALL)
+
                 if param_match:
                     params_str = param_match.group(1)
                     params_str = params_str.replace('{', '').replace('}', '').replace('\n', '')
@@ -111,7 +114,7 @@ def process_file(filepath):
                     raw_params = [p.split('=')[0].split(':')[0].strip() for p in params_str.split(',')]
                     params = [p for p in raw_params if p and '...' not in p]
 
-                if params:
+                if params or "React.forwardRef" in func_sig:
                     # Construct new docstring
                     new_doc = [
                         '/**',

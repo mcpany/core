@@ -138,6 +138,11 @@ func (e *SplunkAuditStore) send(entry AuditEntry) {
 	}
 }
 
+// Read implements the AuditStore interface.
+func (e *SplunkAuditStore) Read(_ context.Context, _ AuditFilter) ([]AuditEntry, error) {
+	return nil, fmt.Errorf("read not implemented for splunk audit store")
+}
+
 // Close closes the queue and waits for workers to finish.
 //
 // Returns an error if the operation fails.

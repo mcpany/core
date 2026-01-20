@@ -236,6 +236,7 @@ type GRPCTool struct {
 	method         protoreflect.MethodDescriptor
 	requestMessage protoreflect.ProtoMessage
 	cache          *configv1.CacheConfig
+	resilienceManager *resilience.Manager
 }
 
 // NewGRPCTool creates a new GRPCTool.
@@ -247,18 +248,20 @@ type GRPCTool struct {
 //	serviceID: The identifier for the service.
 //	method: The gRPC method descriptor.
 //	callDefinition: The configuration for the gRPC call.
+//	resilienceConfig: The resilience configuration.
 //
 // Returns:
 //
 //	*GRPCTool: The created GRPCTool.
-func NewGRPCTool(tool *v1.Tool, poolManager *pool.Manager, serviceID string, method protoreflect.MethodDescriptor, callDefinition *configv1.GrpcCallDefinition) *GRPCTool {
+func NewGRPCTool(tool *v1.Tool, poolManager *pool.Manager, serviceID string, method protoreflect.MethodDescriptor, callDefinition *configv1.GrpcCallDefinition, resilienceConfig *configv1.ResilienceConfig) *GRPCTool {
 	return &GRPCTool{
-		tool:           tool,
-		poolManager:    poolManager,
-		serviceID:      serviceID,
-		method:         method,
-		requestMessage: dynamicpb.NewMessage(method.Input()),
-		cache:          callDefinition.GetCache(),
+		tool:              tool,
+		poolManager:       poolManager,
+		serviceID:         serviceID,
+		method:            method,
+		requestMessage:    dynamicpb.NewMessage(method.Input()),
+		cache:             callDefinition.GetCache(),
+		resilienceManager: resilience.NewManager(resilienceConfig),
 	}
 }
 
@@ -338,7 +341,11 @@ func (t *GRPCTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 		}, nil
 	}
 
-	if err := grpcClient.Invoke(ctx, grpcMethodName, t.requestMessage, responseMessage); err != nil {
+	work := func(ctx context.Context) error {
+		return grpcClient.Invoke(ctx, grpcMethodName, t.requestMessage, responseMessage)
+	}
+
+	if err := t.resilienceManager.Execute(ctx, work); err != nil {
 		metrics.IncrCounter([]string{"grpc", "request", "error"}, 1)
 		return nil, fmt.Errorf("failed to invoke grpc method: %w", err)
 	}
@@ -2371,8 +2378,21 @@ func checkForPathTraversal(val string) error {
 
 	// Also check for encoded traversal sequences often used to bypass filters
 	// %2e%2e is ..
-	if strings.Contains(strings.ToLower(val), "%2e%2e") {
-		return fmt.Errorf("path traversal attempt detected (encoded)")
+	// ⚡ Bolt Optimization: Manual scan to avoid strings.ToLower allocation
+	for i := 0; i < len(val); {
+		idx := strings.IndexByte(val[i:], '%')
+		if idx == -1 {
+			break
+		}
+		i += idx
+		if i+5 < len(val) {
+			if val[i+1] == '2' && (val[i+2]|0x20 == 'e') &&
+				val[i+3] == '%' &&
+				val[i+4] == '2' && (val[i+5]|0x20 == 'e') {
+				return fmt.Errorf("path traversal attempt detected (encoded)")
+			}
+		}
+		i++
 	}
 	return nil
 }
@@ -2497,10 +2517,15 @@ func isShellCommand(cmd string) bool {
 		"openssl", "git", "hg", "svn",
 		"wget", "curl", "nc", "netcat", "ncat",
 		"socat", "telnet",
+		// Editors and pagers that can execute commands
+		"vi", "vim", "nvim", "emacs", "nano",
+		"less", "more", "man",
 		// Build tools and others that can execute commands
 		"tar", "find", "xargs", "tee",
 		"make", "rake", "ant", "mvn", "gradle",
 		"npm", "yarn", "pnpm", "go", "cargo", "pip",
+		// Cloud/DevOps tools that can execute commands or have sensitive flags
+		"kubectl", "helm", "aws", "gcloud", "az", "terraform", "ansible", "ansible-playbook",
 	}
 	base := filepath.Base(cmd)
 	for _, shell := range shells {
@@ -2523,7 +2548,7 @@ func isVersionSuffix(s string) bool {
 		return false
 	}
 	for _, r := range s {
-		if (r < '0' || r > '9') && r != '.' {
+		if (r < '0' || r > '9') && r != '.' && r != '-' {
 			return false
 		}
 	}
@@ -2531,21 +2556,10 @@ func isVersionSuffix(s string) bool {
 }
 
 func checkForShellInjection(val string, template string, placeholder string, command string) error {
-	// If the template quotes the placeholder, we can allow more characters
-	// assuming the user knows what they are doing. We still need to prevent escaping the quotes.
+	// Determine the quoting context of the placeholder in the template
+	quoteLevel := analyzeQuoteContext(template, placeholder)
 
-	isSingleQuoted := false
-	isDoubleQuoted := false
-
-	if template != "" && placeholder != "" {
-		if strings.Contains(template, "'"+placeholder+"'") {
-			isSingleQuoted = true
-		} else if strings.Contains(template, "\""+placeholder+"\"") {
-			isDoubleQuoted = true
-		}
-	}
-
-	if isSingleQuoted {
+	if quoteLevel == 2 { // Single Quoted
 		// In single quotes, the only dangerous character is single quote itself
 		if strings.Contains(val, "'") {
 			return fmt.Errorf("shell injection detected: value contains single quote which breaks out of single-quoted argument")
@@ -2553,15 +2567,12 @@ func checkForShellInjection(val string, template string, placeholder string, com
 		return nil
 	}
 
-	if isDoubleQuoted {
+	if quoteLevel == 1 { // Double Quoted
 		// In double quotes, dangerous characters are double quote, $, and backtick
 		// We also need to block backslash because it can be used to escape the closing quote
 		// % is also dangerous in Windows CMD inside double quotes
-		dangerousChars := []string{"\"", "$", "`", "\\", "%"}
-		for _, char := range dangerousChars {
-			if strings.Contains(val, char) {
-				return fmt.Errorf("shell injection detected: value contains dangerous character %q inside double-quoted argument", char)
-			}
+		if idx := strings.IndexAny(val, "\"$`\\%"); idx != -1 {
+			return fmt.Errorf("shell injection detected: value contains dangerous character %q inside double-quoted argument", val[idx])
 		}
 		return nil
 	}
@@ -2571,17 +2582,76 @@ func checkForShellInjection(val string, template string, placeholder string, com
 	// % and ^ are Windows CMD metacharacters
 	// We also block quotes and backslashes to prevent argument splitting and interpretation abuse
 	// We also block control characters that could act as separators or cause confusion (\r, \t, \v, \f)
-	dangerousChars := []string{";", "|", "&", "$", "`", "(", ")", "{", "}", "<", ">", "!", "\n", "\r", "\t", "\v", "\f", "*", "?", "[", "]", "~", "#", "%", "^", "\"", "'", "\\"}
+	const dangerousChars = ";|&$`(){}!<>\"\n\r\t\v\f*?[]~#%^'\\"
 
+	charsToCheck := dangerousChars
 	// For 'env' command, '=' is dangerous as it allows setting arbitrary environment variables
 	if filepath.Base(command) == "env" {
-		dangerousChars = append(dangerousChars, "=")
+		charsToCheck += "="
 	}
 
-	for _, char := range dangerousChars {
-		if strings.Contains(val, char) {
-			return fmt.Errorf("shell injection detected: value contains dangerous character %q", char)
-		}
+	if idx := strings.IndexAny(val, charsToCheck); idx != -1 {
+		return fmt.Errorf("shell injection detected: value contains dangerous character %q", val[idx])
 	}
 	return nil
+}
+
+func analyzeQuoteContext(template, placeholder string) int {
+	if template == "" || placeholder == "" {
+		return 0
+	}
+
+	// Levels: 0 = Unquoted (Strict), 1 = Double, 2 = Single
+	minLevel := 2
+
+	inSingle := false
+	inDouble := false
+	escaped := false
+
+	foundAny := false
+
+	for i := 0; i < len(template); i++ {
+		// Check if we match placeholder at current position
+		if strings.HasPrefix(template[i:], placeholder) {
+			foundAny = true
+			currentLevel := 0
+			if inSingle {
+				currentLevel = 2
+			} else if inDouble {
+				currentLevel = 1
+			}
+
+			if currentLevel < minLevel {
+				minLevel = currentLevel
+			}
+
+			// Advance past placeholder
+			i += len(placeholder) - 1
+			continue
+		}
+
+		char := template[i]
+
+		if escaped {
+			escaped = false
+			continue
+		}
+
+		if char == '\\' {
+			escaped = true
+			continue
+		}
+
+		if char == '\'' && !inDouble {
+			inSingle = !inSingle
+		} else if char == '"' && !inSingle {
+			inDouble = !inDouble
+		}
+	}
+
+	if !foundAny {
+		return 0 // Should not happen if called correctly, fallback to strict
+	}
+
+	return minLevel
 }

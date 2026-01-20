@@ -11,12 +11,36 @@ import * as AlertDialogPrimitive from "@radix-ui/react-alert-dialog"
 import { cn } from "@/lib/utils"
 import { buttonVariants } from "@/components/ui/button"
 
+/**
+ * AlertDialog component.
+ * @param props - The component props.
+ * @param props.className - The name of the class.
+ * @returns The rendered component.
+ */
 const AlertDialog = AlertDialogPrimitive.Root
 
+/**
+ * AlertDialogTrigger component.
+ * @param props - The component props.
+ * @param props.className - The name of the class.
+ * @returns The rendered component.
+ */
 const AlertDialogTrigger = AlertDialogPrimitive.Trigger
 
+/**
+ * AlertDialogPortal component.
+ * @param props - The component props.
+ * @param props.className - The name of the class.
+ * @returns The rendered component.
+ */
 const AlertDialogPortal = AlertDialogPrimitive.Portal
 
+/**
+ * AlertDialogOverlay component.
+ * @param props - The component props.
+ * @param props.className - The name of the class.
+ * @returns The rendered component.
+ */
 const AlertDialogOverlay = React.forwardRef<
   React.ElementRef<typeof AlertDialogPrimitive.Overlay>,
   React.ComponentPropsWithoutRef<typeof AlertDialogPrimitive.Overlay>
@@ -32,6 +56,12 @@ const AlertDialogOverlay = React.forwardRef<
 ))
 AlertDialogOverlay.displayName = AlertDialogPrimitive.Overlay.displayName
 
+/**
+ * AlertDialogContent component.
+ * @param props - The component props.
+ * @param props.className - The name of the class.
+ * @returns The rendered component.
+ */
 const AlertDialogContent = React.forwardRef<
   React.ElementRef<typeof AlertDialogPrimitive.Content>,
   React.ComponentPropsWithoutRef<typeof AlertDialogPrimitive.Content>
@@ -50,6 +80,12 @@ const AlertDialogContent = React.forwardRef<
 ))
 AlertDialogContent.displayName = AlertDialogPrimitive.Content.displayName
 
+/**
+ * AlertDialogHeader component.
+ * @param props - The component props.
+ * @param props.className - The name of the class.
+ * @returns The rendered component.
+ */
 const AlertDialogHeader = ({
   className,
   ...props
@@ -64,6 +100,12 @@ const AlertDialogHeader = ({
 )
 AlertDialogHeader.displayName = "AlertDialogHeader"
 
+/**
+ * AlertDialogFooter component.
+ * @param props - The component props.
+ * @param props.className - The name of the class.
+ * @returns The rendered component.
+ */
 const AlertDialogFooter = ({
   className,
   ...props
@@ -78,6 +120,12 @@ const AlertDialogFooter = ({
 )
 AlertDialogFooter.displayName = "AlertDialogFooter"
 
+/**
+ * AlertDialogTitle component.
+ * @param props - The component props.
+ * @param props.className - The name of the class.
+ * @returns The rendered component.
+ */
 const AlertDialogTitle = React.forwardRef<
   React.ElementRef<typeof AlertDialogPrimitive.Title>,
   React.ComponentPropsWithoutRef<typeof AlertDialogPrimitive.Title>
@@ -90,6 +138,12 @@ const AlertDialogTitle = React.forwardRef<
 ))
 AlertDialogTitle.displayName = AlertDialogPrimitive.Title.displayName
 
+/**
+ * AlertDialogDescription component.
+ * @param props - The component props.
+ * @param props.className - The name of the class.
+ * @returns The rendered component.
+ */
 const AlertDialogDescription = React.forwardRef<
   React.ElementRef<typeof AlertDialogPrimitive.Description>,
   React.ComponentPropsWithoutRef<typeof AlertDialogPrimitive.Description>
@@ -103,6 +157,12 @@ const AlertDialogDescription = React.forwardRef<
 AlertDialogDescription.displayName =
   AlertDialogPrimitive.Description.displayName
 
+/**
+ * AlertDialogAction component.
+ * @param props - The component props.
+ * @param props.className - The name of the class.
+ * @returns The rendered component.
+ */
 const AlertDialogAction = React.forwardRef<
   React.ElementRef<typeof AlertDialogPrimitive.Action>,
   React.ComponentPropsWithoutRef<typeof AlertDialogPrimitive.Action>
@@ -115,6 +175,12 @@ const AlertDialogAction = React.forwardRef<
 ))
 AlertDialogAction.displayName = AlertDialogPrimitive.Action.displayName
 
+/**
+ * AlertDialogCancel component.
+ * @param props - The component props.
+ * @param props.className - The name of the class.
+ * @returns The rendered component.
+ */
 const AlertDialogCancel = React.forwardRef<
   React.ElementRef<typeof AlertDialogPrimitive.Cancel>,
   React.ComponentPropsWithoutRef<typeof AlertDialogPrimitive.Cancel>

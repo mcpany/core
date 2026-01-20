@@ -191,6 +191,20 @@ export function ServiceList({ services, isLoading, onToggle, onEdit, onDelete, o
   );
 }
 
+/**
+ * ServiceRow component.
+ * @param props - The component props.
+ * @param props.service - The service property.
+ * @param props.isSelected - The isSelected property.
+ * @param props.onSelect - The onSelect property.
+ * @param props.onToggle - The onToggle property.
+ * @param props.onEdit - The onEdit property.
+ * @param props.onDelete - The onDelete property.
+ * @param props.onDuplicate - The onDuplicate property.
+ * @param props.onExport - The onExport property.
+ * @param props.onLogin - The onLogin property.
+ * @returns The rendered component.
+ */
 const ServiceRow = memo(function ServiceRow({ service, isSelected, onSelect, onToggle, onEdit, onDelete, onDuplicate, onExport, onLogin }: {
     service: UpstreamServiceConfig,
     isSelected: boolean,

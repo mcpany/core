@@ -144,7 +144,8 @@ export function SecretsManager() {
         setNewSecretProvider("custom");
     };
 
-    const filteredSecrets = secrets.filter(s =>
+    const safeSecrets = Array.isArray(secrets) ? secrets : [];
+    const filteredSecrets = safeSecrets.filter(s =>
         s.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         s.key.toLowerCase().includes(searchQuery.toLowerCase())
     );
@@ -261,6 +262,13 @@ export function SecretsManager() {
     );
 }
 
+/**
+ * SecretItem component.
+ * @param props - The component props.
+ * @param props.secret - The secret property.
+ * @param props.onDelete - The onDelete property.
+ * @returns The rendered component.
+ */
 function SecretItem({ secret, onDelete }: { secret: SecretDefinition; onDelete: (id: string) => void }) {
     const [isVisible, setIsVisible] = useState(false);
     const { toast } = useToast();

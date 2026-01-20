@@ -11,10 +11,10 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/mcpany/core/server/pkg/client"
-	"github.com/mcpany/core/server/pkg/pool"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	v1 "github.com/mcpany/core/proto/mcp_router/v1"
+	"github.com/mcpany/core/server/pkg/client"
+	"github.com/mcpany/core/server/pkg/pool"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
@@ -56,7 +56,7 @@ func TestGRPCTool_Execute_PoolError(t *testing.T) {
 	mockMethodDesc := new(MockMethodDescriptor)
 	mockMsgDesc := new(MockMessageDescriptor)
 	mockMethodDesc.On("Input").Return(mockMsgDesc)
-	grpcTool := NewGRPCTool(toolProto, poolManager, "non-existent-service", mockMethodDesc, &configv1.GrpcCallDefinition{})
+	grpcTool := NewGRPCTool(toolProto, poolManager, "non-existent-service", mockMethodDesc, &configv1.GrpcCallDefinition{}, nil)
 	_, err := grpcTool.Execute(context.Background(), &ExecutionRequest{})
 	assert.Error(t, err)
 	assert.Contains(t, err.Error(), "no grpc pool found for service")
@@ -294,7 +294,7 @@ func TestGRPCTool_Execute_Success(t *testing.T) {
 	mockMethodDesc.On("Input").Return(mockMsgDesc)
 	mockMethodDesc.On("Output").Return(mockMsgDesc)
 
-	grpcTool := NewGRPCTool(toolProto, poolManager, "grpc-service", mockMethodDesc, &configv1.GrpcCallDefinition{})
+	grpcTool := NewGRPCTool(toolProto, poolManager, "grpc-service", mockMethodDesc, &configv1.GrpcCallDefinition{}, nil)
 	_, err := grpcTool.Execute(context.Background(), &ExecutionRequest{ToolInputs: json.RawMessage(`{}`)})
 	assert.NoError(t, err)
 	mockConn.AssertCalled(t, "Invoke", mock.Anything, "/test.service/Method", mock.AnythingOfType("*dynamicpb.Message"), mock.AnythingOfType("*dynamicpb.Message"), mock.Anything)
@@ -377,7 +377,7 @@ func TestGRPCTool_Getters(t *testing.T) {
 	callDef.SetCache(cacheConfig)
 	mockMethodDesc := new(MockMethodDescriptor)
 	mockMethodDesc.On("Input").Return(new(MockMessageDescriptor))
-	grpcTool := NewGRPCTool(toolProto, nil, "", mockMethodDesc, callDef)
+	grpcTool := NewGRPCTool(toolProto, nil, "", mockMethodDesc, callDef, nil)
 
 	assert.Equal(t, toolProto, grpcTool.Tool(), "Tool() should return the correct tool proto")
 	assert.Equal(t, cacheConfig, grpcTool.GetCacheConfig(), "GetCacheConfig() should return the correct cache config")
@@ -429,7 +429,7 @@ func TestGRPCTool_Execute_UnmarshalError(t *testing.T) {
 	mockMsgDesc := new(MockMessageDescriptor)
 	mockMethodDesc.On("Input").Return(mockMsgDesc)
 
-	grpcTool := NewGRPCTool(toolProto, poolManager, "grpc-error", mockMethodDesc, &configv1.GrpcCallDefinition{})
+	grpcTool := NewGRPCTool(toolProto, poolManager, "grpc-error", mockMethodDesc, &configv1.GrpcCallDefinition{}, nil)
 
 	// Malformed JSON
 	_, err := grpcTool.Execute(context.Background(), &ExecutionRequest{ToolInputs: json.RawMessage(`{invalid`)})
@@ -457,7 +457,7 @@ func TestGRPCTool_Execute_InvokeError(t *testing.T) {
 	mockMethodDesc.On("Input").Return(mockMsgDesc)
 	mockMethodDesc.On("Output").Return(mockMsgDesc)
 
-	grpcTool := NewGRPCTool(toolProto, poolManager, "grpc-error", mockMethodDesc, &configv1.GrpcCallDefinition{})
+	grpcTool := NewGRPCTool(toolProto, poolManager, "grpc-error", mockMethodDesc, &configv1.GrpcCallDefinition{}, nil)
 
 	_, err := grpcTool.Execute(context.Background(), &ExecutionRequest{ToolInputs: json.RawMessage(`{}`)})
 	assert.Error(t, err)

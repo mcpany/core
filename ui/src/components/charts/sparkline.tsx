@@ -17,6 +17,17 @@ interface SparklineProps {
     max?: number;
 }
 
+/**
+ * Sparkline component.
+ * @param props - The component props.
+ * @param props.data - The data to display.
+ * @param props.width - The unique identifier for wth.
+ * @param props.height - The height property.
+ * @param props.className - The name of the class.
+ * @param props.color - The color property.
+ * @param props.max - The max property.
+ * @returns The rendered component.
+ */
 export function Sparkline({ data, width = 60, height = 24, className, color = "#22c55e", max }: SparklineProps) {
     const { path, fillPath, gradientId } = useMemo(() => {
         if (!data || data.length === 0) return { path: "", fillPath: "", gradientId: "" };

@@ -637,9 +637,11 @@ type GlobalSettings struct {
 	Debugger *DebuggerConfig `protobuf:"bytes,24,opt,name=debugger" json:"debugger,omitempty"`
 	// If true, the configuration is read-only (e.g., loaded from a file).
 	// @inject_tag: yaml:"-"
-	ReadOnly      *bool `protobuf:"varint,25,opt,name=read_only" json:"read_only,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	ReadOnly *bool `protobuf:"varint,25,opt,name=read_only" json:"read_only,omitempty"`
+	// Whether to auto-discover local services (e.g. Ollama).
+	AutoDiscoverLocal *bool `protobuf:"varint,26,opt,name=auto_discover_local" json:"auto_discover_local,omitempty"`
+	unknownFields     protoimpl.UnknownFields
+	sizeCache         protoimpl.SizeCache
 }
 
 func (x *GlobalSettings) Reset() {
@@ -842,6 +844,13 @@ func (x *GlobalSettings) GetReadOnly() bool {
 	return false
 }
 
+func (x *GlobalSettings) GetAutoDiscoverLocal() bool {
+	if x != nil && x.AutoDiscoverLocal != nil {
+		return *x.AutoDiscoverLocal
+	}
+	return false
+}
+
 func (x *GlobalSettings) SetMcpListenAddress(v string) {
 	x.McpListenAddress = &v
 }
@@ -940,6 +949,10 @@ func (x *GlobalSettings) SetDebugger(v *DebuggerConfig) {
 
 func (x *GlobalSettings) SetReadOnly(v bool) {
 	x.ReadOnly = &v
+}
+
+func (x *GlobalSettings) SetAutoDiscoverLocal(v bool) {
+	x.AutoDiscoverLocal = &v
 }
 
 func (x *GlobalSettings) HasMcpListenAddress() bool {
@@ -1075,6 +1088,13 @@ func (x *GlobalSettings) HasReadOnly() bool {
 	return x.ReadOnly != nil
 }
 
+func (x *GlobalSettings) HasAutoDiscoverLocal() bool {
+	if x == nil {
+		return false
+	}
+	return x.AutoDiscoverLocal != nil
+}
+
 func (x *GlobalSettings) ClearMcpListenAddress() {
 	x.McpListenAddress = nil
 }
@@ -1151,6 +1171,10 @@ func (x *GlobalSettings) ClearReadOnly() {
 	x.ReadOnly = nil
 }
 
+func (x *GlobalSettings) ClearAutoDiscoverLocal() {
+	x.AutoDiscoverLocal = nil
+}
+
 type GlobalSettings_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
@@ -1205,6 +1229,8 @@ type GlobalSettings_builder struct {
 	// If true, the configuration is read-only (e.g., loaded from a file).
 	// @inject_tag: yaml:"-"
 	ReadOnly *bool
+	// Whether to auto-discover local services (e.g. Ollama).
+	AutoDiscoverLocal *bool
 }
 
 func (b0 GlobalSettings_builder) Build() *GlobalSettings {
@@ -1236,6 +1262,7 @@ func (b0 GlobalSettings_builder) Build() *GlobalSettings {
 	x.ContextOptimizer = b.ContextOptimizer
 	x.Debugger = b.Debugger
 	x.ReadOnly = b.ReadOnly
+	x.AutoDiscoverLocal = b.AutoDiscoverLocal
 	return m0
 }
 
@@ -2885,7 +2912,7 @@ const file_proto_config_v1_config_proto_rawDesc = "" +
 	"created_at\x18\a \x01(\tR\tcreatedAt\"@\n" +
 	"\n" +
 	"SecretList\x122\n" +
-	"\asecrets\x18\x01 \x03(\v2\x18.mcpany.config.v1.SecretR\asecrets\"\xd5\v\n" +
+	"\asecrets\x18\x01 \x03(\v2\x18.mcpany.config.v1.SecretR\asecrets\"\x87\f\n" +
 	"\x0eGlobalSettings\x12.\n" +
 	"\x12mcp_listen_address\x18\x01 \x01(\tR\x12mcp_listen_address\x12G\n" +
 	"\tlog_level\x18\x02 \x01(\x0e2).mcpany.config.v1.GlobalSettings.LogLevelR\tlog_level\x12\x18\n" +
@@ -2916,7 +2943,8 @@ const file_proto_config_v1_config_proto_rawDesc = "" +
 	"\x0fallowed_origins\x18\x16 \x03(\tR\x0fallowed_origins\x12V\n" +
 	"\x11context_optimizer\x18\x17 \x01(\v2(.mcpany.config.v1.ContextOptimizerConfigR\x11context_optimizer\x12<\n" +
 	"\bdebugger\x18\x18 \x01(\v2 .mcpany.config.v1.DebuggerConfigR\bdebugger\x12\x1c\n" +
-	"\tread_only\x18\x19 \x01(\bR\tread_only\"w\n" +
+	"\tread_only\x18\x19 \x01(\bR\tread_only\x120\n" +
+	"\x13auto_discover_local\x18\x1a \x01(\bR\x13auto_discover_local\"w\n" +
 	"\bLogLevel\x12\x19\n" +
 	"\x15LOG_LEVEL_UNSPECIFIED\x10\x00\x12\x12\n" +
 	"\x0eLOG_LEVEL_INFO\x10\x01\x12\x12\n" +

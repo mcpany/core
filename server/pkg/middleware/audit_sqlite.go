@@ -189,6 +189,76 @@ func (s *SQLiteAuditStore) Write(ctx context.Context, entry AuditEntry) error {
 	return err
 }
 
+// Read reads audit entries from the database based on the filter.
+func (s *SQLiteAuditStore) Read(ctx context.Context, filter AuditFilter) ([]AuditEntry, error) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	query := "SELECT timestamp, tool_name, user_id, profile_id, arguments, result, error, duration_ms FROM audit_logs WHERE 1=1"
+	var args []any
+
+	if filter.StartTime != nil {
+		query += " AND timestamp >= ?"
+		args = append(args, filter.StartTime.Format(time.RFC3339Nano))
+	}
+	if filter.EndTime != nil {
+		query += " AND timestamp <= ?"
+		args = append(args, filter.EndTime.Format(time.RFC3339Nano))
+	}
+	if filter.ToolName != "" {
+		query += " AND tool_name = ?"
+		args = append(args, filter.ToolName)
+	}
+	if filter.UserID != "" {
+		query += " AND user_id = ?"
+		args = append(args, filter.UserID)
+	}
+	if filter.ProfileID != "" {
+		query += " AND profile_id = ?"
+		args = append(args, filter.ProfileID)
+	}
+
+	query += " ORDER BY timestamp DESC"
+
+	if filter.Limit > 0 {
+		query += " LIMIT ?"
+		args = append(args, filter.Limit)
+	}
+	if filter.Offset > 0 {
+		query += " OFFSET ?"
+		args = append(args, filter.Offset)
+	}
+
+	rows, err := s.db.QueryContext(ctx, query, args...)
+	if err != nil {
+		return nil, err
+	}
+	defer func() { _ = rows.Close() }()
+
+	var entries []AuditEntry
+	for rows.Next() {
+		var entry AuditEntry
+		var tsStr, argsStr, resultStr string
+		if err := rows.Scan(&tsStr, &entry.ToolName, &entry.UserID, &entry.ProfileID, &argsStr, &resultStr, &entry.Error, &entry.DurationMs); err != nil {
+			return nil, err
+		}
+
+		entry.Timestamp, _ = time.Parse(time.RFC3339Nano, tsStr)
+		entry.Arguments = json.RawMessage(argsStr)
+		if resultStr != "" && resultStr != "{}" {
+			_ = json.Unmarshal([]byte(resultStr), &entry.Result)
+		}
+		entry.Duration = fmt.Sprintf("%dms", entry.DurationMs)
+
+		entries = append(entries, entry)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return entries, nil
+}
+
 // Verify checks the integrity of the audit logs.
 // It returns true if the chain is valid, false otherwise.
 // If an error occurs during reading, it returns false and the error.

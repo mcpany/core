@@ -10,7 +10,7 @@ import (
 	"testing"
 )
 
-func TestIsPrivateNetworkIP(t *testing.T) {
+func TestIsPrivateNetworkIP_Extended(t *testing.T) {
 	tests := []struct {
 		ip       string
 		expected bool

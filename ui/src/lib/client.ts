@@ -573,7 +573,8 @@ export const apiClient = {
     listSecrets: async () => {
         const res = await fetchWithAuth('/api/v1/secrets');
         if (!res.ok) throw new Error('Failed to fetch secrets');
-        return res.json();
+        const data = await res.json();
+        return Array.isArray(data) ? data : (data.secrets || []);
     },
 
     /**
