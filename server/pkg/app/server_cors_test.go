@@ -23,11 +23,11 @@ func TestServer_CORS(t *testing.T) {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	l, err := net.Listen("tcp", "localhost:0")
+	l, err := net.Listen("tcp", "127.0.0.1:0")
 	require.NoError(t, err)
 	port := l.Addr().(*net.TCPAddr).Port
 	_ = l.Close()
-	addr := fmt.Sprintf("localhost:%d", port)
+	addr := fmt.Sprintf("127.0.0.1:%d", port)
 
 	// Config with debug mode enabled to trigger permissive CORS
 	configContent := `
@@ -84,11 +84,11 @@ func TestServer_CORS_Strict(t *testing.T) {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	l, err := net.Listen("tcp", "localhost:0")
+	l, err := net.Listen("tcp", "127.0.0.1:0")
 	require.NoError(t, err)
 	port := l.Addr().(*net.TCPAddr).Port
 	_ = l.Close()
-	addr := fmt.Sprintf("localhost:%d", port)
+	addr := fmt.Sprintf("127.0.0.1:%d", port)
 
 	// Config with default log level (INFO) -> IsDebug() false
 	configContent := `

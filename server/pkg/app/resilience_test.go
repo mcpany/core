@@ -30,7 +30,7 @@ func TestStartup_Resilience_UpstreamFailure(t *testing.T) {
 	defer cancel()
 
 	// Find free ports for the server
-	l, err := net.Listen("tcp", "localhost:0")
+	l, err := net.Listen("tcp", "127.0.0.1:0")
 	require.NoError(t, err)
 	httpPort := l.Addr().(*net.TCPAddr).Port
 	_ = l.Close()
@@ -57,7 +57,7 @@ upstream_services:
 
 	errChan := make(chan error, 1)
 	go func() {
-		errChan <- app.Run(ctx, fs, false, fmt.Sprintf("localhost:%d", httpPort), "localhost:0", []string{"/config.yaml"}, "", 5*time.Second)
+		errChan <- app.Run(ctx, fs, false, fmt.Sprintf("127.0.0.1:%d", httpPort), "127.0.0.1:0", []string{"/config.yaml"}, "", 5*time.Second)
 	}()
 
 	// 2. Verify Startup
@@ -72,7 +72,7 @@ upstream_services:
 	// 3. Verify Health
 	// Check if the server is responsive
 	// Pass io.Discard to avoid panic on nil writer
-	err = HealthCheck(io.Discard, fmt.Sprintf("localhost:%d", httpPort), 2*time.Second)
+	err = HealthCheck(io.Discard, fmt.Sprintf("127.0.0.1:%d", httpPort), 2*time.Second)
 	assert.NoError(t, err, "Server should be healthy")
 
 	// 4. Verify Service Registry

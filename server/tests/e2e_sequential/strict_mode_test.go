@@ -49,7 +49,7 @@ func TestStrictFlag(t *testing.T) {
 	brokenConfigPath := filepath.Join(configDir, "broken.yaml")
 	brokenConfig := `
 global_settings:
-  mcp_listen_address: "localhost:0" # Random port
+  mcp_listen_address: "127.0.0.1:0" # Random port
 upstream_services:
   - name: "broken_service"
     http_service:

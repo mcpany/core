@@ -103,6 +103,11 @@ const devItems = [
     icon: Bot,
   },
   {
+    title: "Schema Validation",
+    url: "/playground/schema",
+    icon: ShieldCheck,
+  },
+  {
     title: "Tools",
     url: "/tools",
     icon: Wrench,

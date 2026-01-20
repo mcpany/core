@@ -48,7 +48,7 @@ func TestHtmlToMdE2E_Binary(t *testing.T) {
 		}
 	}()
 
-	webhookUrl := "http://localhost:8082/convert"
+	webhookUrl := "http://127.0.0.1:8082/convert"
 	waitForServer(t, webhookUrl)
 
 	// 3. Setup Mock Upstream Service

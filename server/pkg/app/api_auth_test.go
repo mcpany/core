@@ -101,7 +101,7 @@ func TestHandleInitiateOAuth(t *testing.T) {
 			method: http.MethodPost,
 			body: map[string]string{
 				"service_id":   svcID,
-				"redirect_url": "http://localhost:8080/cb",
+				"redirect_url": "http://127.0.0.1:8080/cb",
 			},
 			userInContext:  "",
 			expectedStatus: http.StatusUnauthorized,
@@ -111,7 +111,7 @@ func TestHandleInitiateOAuth(t *testing.T) {
 			method: http.MethodPost,
 			body: map[string]string{
 				"service_id":   svcID,
-				"redirect_url": "http://localhost:8080/cb",
+				"redirect_url": "http://127.0.0.1:8080/cb",
 			},
 			userInContext:  "user1",
 			expectedStatus: http.StatusOK,
@@ -121,7 +121,7 @@ func TestHandleInitiateOAuth(t *testing.T) {
 			method: http.MethodPost,
 			body: map[string]string{
 				"credential_id": credID,
-				"redirect_url":  "http://localhost:8080/cb",
+				"redirect_url":  "http://127.0.0.1:8080/cb",
 			},
 			userInContext:  "user1",
 			expectedStatus: http.StatusOK,
@@ -131,7 +131,7 @@ func TestHandleInitiateOAuth(t *testing.T) {
 			method: http.MethodPost,
 			body: map[string]string{
 				"service_id":   "unknown",
-				"redirect_url": "http://localhost:8080/cb",
+				"redirect_url": "http://127.0.0.1:8080/cb",
 			},
 			userInContext:  "user1",
 			expectedStatus: http.StatusInternalServerError,

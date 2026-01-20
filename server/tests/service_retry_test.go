@@ -14,6 +14,7 @@ import (
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/mcpany/core/server/pkg/app"
+	"github.com/mcpany/core/server/pkg/util"
 	"github.com/spf13/afero"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
@@ -22,24 +23,19 @@ import (
 )
 
 func TestServiceRetry(t *testing.T) {
-	// Get an ephemeral port by listening on port 0
-	var l net.Listener
-	var err error
-	for i := 0; i < 50; i++ {
-		l, err = net.Listen("tcp", "127.0.0.2:0")
-		if err == nil {
-			break
-		}
-		time.Sleep(100 * time.Millisecond)
-	}
+	// Get two separate ephemeral ports to avoid application/mock collisions
+	// Use 127.0.0.2 to avoid collisions with other local services and test SSRF bypass
+	l1, err := util.ListenWithRetry(context.Background(), "tcp", "127.0.0.2:0")
 	require.NoError(t, err)
-	port := l.Addr().(*net.TCPAddr).Port
-	// Close the listener immediately so we can get "connection refused" which fails fast.
-	l.Close()
+	targetPort := l1.Addr().(*net.TCPAddr).Port
+	l1.Close()
 
-	// We will attempt to reuse this port. There is a small risk someone else steals it,
-	// but on localhost tests it's usually fine.
-	targetURL := fmt.Sprintf("http://127.0.0.2:%d/mcp", port)
+	l2, err := util.ListenWithRetry(context.Background(), "tcp", "127.0.0.2:0")
+	require.NoError(t, err)
+	appPort := l2.Addr().(*net.TCPAddr).Port
+	l2.Close()
+
+	targetURL := fmt.Sprintf("http://127.0.0.2:%d/mcp", targetPort)
 
 	// 2. Start the Application with MockStorage
 	ctx, cancel := context.WithCancel(context.Background())
@@ -77,7 +73,7 @@ func TestServiceRetry(t *testing.T) {
 
 	go func() {
 		// Empty config paths as we supply config via Storage
-		err := a.Run(ctx, afero.NewMemMapFs(), false, "127.0.0.2:0", "", nil, "", 1*time.Second)
+		err := a.Run(ctx, afero.NewMemMapFs(), false, fmt.Sprintf("127.0.0.2:%d", appPort), "", nil, "", 1*time.Second)
 		if err != nil && ctx.Err() == nil {
 			t.Logf("Application run error: %v", err)
 		}
@@ -116,19 +112,17 @@ func TestServiceRetry(t *testing.T) {
 		w.Write([]byte(`{"jsonrpc": "2.0", "id": 1, "result": {"protocolVersion": "2024-11-05", "capabilities": {}, "serverInfo": {"name": "mock", "version": "1.0"}}}`))
 	}))
 
-	// Assign the listener with the dynamic port. We need to re-bind.
-	// Retry logic to handle EADDRINUSE
-	var l2 net.Listener
+	var l3 net.Listener
 	require.Eventually(t, func() bool {
-		l2, err = net.Listen("tcp", fmt.Sprintf("127.0.0.2:%d", port))
+		l3, err = util.ListenWithRetry(context.Background(), "tcp", fmt.Sprintf("127.0.0.2:%d", targetPort))
 		if err != nil {
-			t.Logf("Failed to re-bind to port %d: %v. Retrying...", port, err)
+			t.Logf("Failed to re-bind to port 127.0.0.2:%d: %v. Retrying...", targetPort, err)
 			return false
 		}
 		return true
-	}, 5*time.Second, 100*time.Millisecond, "Failed to re-bind to port %d after retries", port)
+	}, 10*time.Second, 100*time.Millisecond, "Failed to re-bind to port 127.0.0.2:%d after retries", targetPort)
 
-	ts.Listener = l2
+	ts.Listener = l3
 	ts.Start()
 	defer ts.Close()
 

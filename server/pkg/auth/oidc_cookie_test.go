@@ -20,7 +20,7 @@ func TestOIDCProvider_HandleLogin_CookieSecurity(t *testing.T) {
 		Issuer:       "https://issuer.example.com",
 		ClientID:     "client-id",
 		ClientSecret: "client-secret",
-		RedirectURL:  "http://localhost/callback",
+		RedirectURL:  "http://127.0.0.1/callback",
 	}
 
 	// Mock OIDC discovery

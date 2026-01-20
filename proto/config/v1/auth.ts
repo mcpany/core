@@ -20,7 +20,11 @@ export interface SecretValue {
   filePath?: string | undefined;
   remoteContent?: RemoteContent | undefined;
   vault?: VaultSecret | undefined;
-  awsSecretManager?: AwsSecretManagerSecret | undefined;
+  awsSecretManager?:
+    | AwsSecretManagerSecret
+    | undefined;
+  /** Optional: A regex to validate the resolved secret value. */
+  validationRegex: string;
 }
 
 /** AwsSecretManagerSecret defines the parameters for fetching a secret from AWS Secrets Manager. */
@@ -239,6 +243,7 @@ function createBaseSecretValue(): SecretValue {
     remoteContent: undefined,
     vault: undefined,
     awsSecretManager: undefined,
+    validationRegex: "",
   };
 }
 
@@ -261,6 +266,9 @@ export const SecretValue: MessageFns<SecretValue> = {
     }
     if (message.awsSecretManager !== undefined) {
       AwsSecretManagerSecret.encode(message.awsSecretManager, writer.uint32(50).fork()).join();
+    }
+    if (message.validationRegex !== "") {
+      writer.uint32(58).string(message.validationRegex);
     }
     return writer;
   },
@@ -320,6 +328,14 @@ export const SecretValue: MessageFns<SecretValue> = {
           message.awsSecretManager = AwsSecretManagerSecret.decode(reader, reader.uint32());
           continue;
         }
+        case 7: {
+          if (tag !== 58) {
+            break;
+          }
+
+          message.validationRegex = reader.string();
+          continue;
+        }
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -341,6 +357,7 @@ export const SecretValue: MessageFns<SecretValue> = {
       awsSecretManager: isSet(object.awsSecretManager)
         ? AwsSecretManagerSecret.fromJSON(object.awsSecretManager)
         : undefined,
+      validationRegex: isSet(object.validation_regex) ? globalThis.String(object.validation_regex) : "",
     };
   },
 
@@ -364,6 +381,9 @@ export const SecretValue: MessageFns<SecretValue> = {
     if (message.awsSecretManager !== undefined) {
       obj.awsSecretManager = AwsSecretManagerSecret.toJSON(message.awsSecretManager);
     }
+    if (message.validationRegex !== "") {
+      obj.validation_regex = message.validationRegex;
+    }
     return obj;
   },
 
@@ -384,6 +404,7 @@ export const SecretValue: MessageFns<SecretValue> = {
     message.awsSecretManager = (object.awsSecretManager !== undefined && object.awsSecretManager !== null)
       ? AwsSecretManagerSecret.fromPartial(object.awsSecretManager)
       : undefined;
+    message.validationRegex = object.validationRegex ?? "";
     return message;
   },
 };

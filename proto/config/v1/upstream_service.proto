@@ -358,6 +358,18 @@ message FilesystemUpstreamService {
   // List of glob patterns for denied paths. Checked after allowed_paths.
   repeated string denied_paths = 7 [json_name = "denied_paths"];
 
+  enum SymlinkMode {
+    SYMLINK_MODE_UNSPECIFIED = 0;
+    // Allow all symlinks (still checked against root_paths target).
+    ALLOW = 1;
+    // Deny all symlinks.
+    DENY = 2;
+    // Allow symlinks only if target is within the same root.
+    INTERNAL_ONLY = 3;
+  }
+  // The policy for following symlinks.
+  SymlinkMode symlink_mode = 8 [json_name = "symlink_mode"];
+
   // The specific configuration for the filesystem type.
   oneof filesystem_type {
     OsFs os = 10;

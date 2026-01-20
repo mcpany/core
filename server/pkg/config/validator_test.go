@@ -146,6 +146,59 @@ func TestValidateSecretValue(t *testing.T) {
 			expectErr: true,
 			errMsg:    "remote secret has invalid http_url scheme",
 		},
+		{
+			name: "Valid regex match (plain_text)",
+			secret: &configv1.SecretValue{
+				Value: &configv1.SecretValue_PlainText{
+					PlainText: "sk-1234567890",
+				},
+				ValidationRegex: proto.String(`^sk-[a-zA-Z0-9]{10}$`),
+			},
+			expectErr: false,
+		},
+		{
+			name: "Invalid regex match (plain_text)",
+			secret: &configv1.SecretValue{
+				Value: &configv1.SecretValue_PlainText{
+					PlainText: "invalid-key",
+				},
+				ValidationRegex: proto.String(`^sk-[a-zA-Z0-9]{10}$`),
+			},
+			expectErr: true,
+			errMsg:    "secret value does not match validation regex",
+		},
+		{
+			name: "Valid regex match (env_var)",
+			secret: &configv1.SecretValue{
+				Value: &configv1.SecretValue_EnvironmentVariable{
+					EnvironmentVariable: "TEST_ENV_VAR",
+				},
+				ValidationRegex: proto.String(`^exists$`),
+			},
+			expectErr: false,
+		},
+		{
+			name: "Invalid regex match (env_var)",
+			secret: &configv1.SecretValue{
+				Value: &configv1.SecretValue_EnvironmentVariable{
+					EnvironmentVariable: "TEST_ENV_VAR",
+				},
+				ValidationRegex: proto.String(`^wrong$`),
+			},
+			expectErr: true,
+			errMsg:    "secret value does not match validation regex",
+		},
+		{
+			name: "Invalid regex pattern",
+			secret: &configv1.SecretValue{
+				Value: &configv1.SecretValue_PlainText{
+					PlainText: "value",
+				},
+				ValidationRegex: proto.String(`[`),
+			},
+			expectErr: true,
+			errMsg:    "invalid validation regex",
+		},
 	}
 
 	for _, tt := range tests {

@@ -42,12 +42,12 @@ func TestStripSecretsFromService_MoreTypes(t *testing.T) {
 	grpcSvc := &configv1.UpstreamServiceConfig{
 		ServiceConfig: &configv1.UpstreamServiceConfig_GrpcService{
 			GrpcService: &configv1.GrpcUpstreamService{
-				Address: proto.String("localhost:50051"),
+				Address: proto.String("127.0.0.1:50051"),
 			},
 		},
 	}
 	StripSecretsFromService(grpcSvc)
-	assert.Equal(t, "localhost:50051", grpcSvc.GetGrpcService().GetAddress())
+	assert.Equal(t, "127.0.0.1:50051", grpcSvc.GetGrpcService().GetAddress())
 
 	// OpenAPI Service (currently no-op)
 	openapiSvc := &configv1.UpstreamServiceConfig{

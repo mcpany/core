@@ -22,7 +22,7 @@ func TestGenerator_Generate(t *testing.T) {
 			inputs: []string{
 				"http",
 				"test-http",
-				"http://localhost:8080",
+				"http://127.0.0.1:8080",
 				"get_user",
 				"Get user by ID",
 				"HTTP_METHOD_GET",
@@ -31,7 +31,7 @@ func TestGenerator_Generate(t *testing.T) {
 			expected: `upstreamServices:
   - name: "test-http"
     httpService:
-      address: "http://localhost:8080"
+      address: "http://127.0.0.1:8080"
       calls:
         - operationId: "get_user"
           description: "Get user by ID"
@@ -44,13 +44,13 @@ func TestGenerator_Generate(t *testing.T) {
 			inputs: []string{
 				"grpc",
 				"test-grpc",
-				"localhost:50051",
+				"127.0.0.1:50051",
 				"true",
 			},
 			expected: `upstreamServices:
   - name: "test-grpc"
     grpcService:
-      address: "localhost:50051"
+      address: "127.0.0.1:50051"
       reflection:
         enabled: true
 `,
@@ -60,13 +60,13 @@ func TestGenerator_Generate(t *testing.T) {
 			inputs: []string{
 				"grpc",
 				"test-grpc-y",
-				"localhost:50051",
+				"127.0.0.1:50051",
 				"y",
 			},
 			expected: `upstreamServices:
   - name: "test-grpc-y"
     grpcService:
-      address: "localhost:50051"
+      address: "127.0.0.1:50051"
       reflection:
         enabled: true
 `,
@@ -76,13 +76,13 @@ func TestGenerator_Generate(t *testing.T) {
 			inputs: []string{
 				"grpc",
 				"test-grpc-n",
-				"localhost:50051",
+				"127.0.0.1:50051",
 				"N",
 			},
 			expected: `upstreamServices:
   - name: "test-grpc-n"
     grpcService:
-      address: "localhost:50051"
+      address: "127.0.0.1:50051"
       reflection:
         enabled: false
 `,
@@ -92,7 +92,7 @@ func TestGenerator_Generate(t *testing.T) {
 			inputs: []string{
 				"HTTP",
 				"test-http-upper",
-				"http://localhost:8080",
+				"http://127.0.0.1:8080",
 				"get_user",
 				"Get user by ID",
 				"HTTP_METHOD_GET",
@@ -101,7 +101,7 @@ func TestGenerator_Generate(t *testing.T) {
 			expected: `upstreamServices:
   - name: "test-http-upper"
     httpService:
-      address: "http://localhost:8080"
+      address: "http://127.0.0.1:8080"
       calls:
         - operationId: "get_user"
           description: "Get user by ID"
@@ -114,13 +114,13 @@ func TestGenerator_Generate(t *testing.T) {
 			inputs: []string{
 				"grpc",
 				"test-grpc-disabled",
-				"localhost:50051",
+				"127.0.0.1:50051",
 				"false",
 			},
 			expected: `upstreamServices:
   - name: "test-grpc-disabled"
     grpcService:
-      address: "localhost:50051"
+      address: "127.0.0.1:50051"
       reflection:
         enabled: false
 `,
@@ -130,14 +130,14 @@ func TestGenerator_Generate(t *testing.T) {
 			inputs: []string{
 				"grpc",
 				"test-grpc-invalid",
-				"localhost:50051",
+				"127.0.0.1:50051",
 				"invalid",
 				"true",
 			},
 			expected: `upstreamServices:
   - name: "test-grpc-invalid"
     grpcService:
-      address: "localhost:50051"
+      address: "127.0.0.1:50051"
       reflection:
         enabled: true
 `,
@@ -161,14 +161,14 @@ func TestGenerator_Generate(t *testing.T) {
 			inputs: []string{
 				"graphql",
 				"test-graphql",
-				"http://localhost:8080/graphql",
+				"http://127.0.0.1:8080/graphql",
 				"user",
 				"{ id name }",
 			},
 			expected: `upstreamServices:
   - name: "test-graphql"
     graphqlService:
-      address: "http://localhost:8080/graphql"
+      address: "http://127.0.0.1:8080/graphql"
       calls:
         - name: "user"
           selectionSet: "{ id name }"

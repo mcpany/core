@@ -114,7 +114,7 @@ func TestServiceRegistry_RegisterAndGetService(t *testing.T) {
 	serviceConfig := &configv1.UpstreamServiceConfig{}
 	serviceConfig.SetName("test-service")
 	httpService := &configv1.HttpUpstreamService{}
-	httpService.SetAddress("http://localhost")
+	httpService.SetAddress("http://127.0.0.1")
 	serviceConfig.SetHttpService(httpService)
 
 	apiKeyAuth := &configv1.APIKeyAuth{
@@ -158,7 +158,7 @@ func TestServiceRegistry_RegisterAndGetService(t *testing.T) {
 		serviceConfig := &configv1.UpstreamServiceConfig{}
 		serviceConfig.SetName("oauth2-service")
 		httpService := &configv1.HttpUpstreamService{}
-		httpService.SetAddress("http://localhost")
+		httpService.SetAddress("http://127.0.0.1")
 		serviceConfig.SetHttpService(httpService)
 		oauth2Config := &configv1.OAuth2Auth{
 			IssuerUrl: proto.String("https://accounts.google.com"),

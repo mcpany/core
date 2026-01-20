@@ -87,7 +87,7 @@ func TestResolvePath_EdgeCases(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			p := NewLocalProvider(nil, rootPaths, nil, nil)
+			p := NewLocalProvider(nil, rootPaths, nil, nil, 0)
 			_, err := p.ResolvePath(tt.virtualPath)
 			if tt.wantErr {
 				assert.Error(t, err)

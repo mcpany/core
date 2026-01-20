@@ -50,7 +50,7 @@ func TestHandleTemplates(t *testing.T) {
 			"id":   "test-id",
 			"mcp_service": map[string]interface{}{
 				"http_connection": map[string]interface{}{
-					"http_address": "http://localhost:8080",
+					"http_address": "http://127.0.0.1:8080",
 				},
 			},
 		}

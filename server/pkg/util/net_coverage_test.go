@@ -57,7 +57,7 @@ func TestCheckConnection(t *testing.T) {
 	assert.Error(t, err)
 
 	// 5. Host without port (defaults to 80)
-	// localhost:80 is likely closed or filtered, causing error.
+	// 127.0.0.1:80 is likely closed or filtered, causing error.
 	// This exercises the path "net.SplitHostPort fails -> assume port 80".
 	// Note: CheckConnection timeout is 5s, so this might slow down tests if it hangs.
 	// But usually connection refused is fast.

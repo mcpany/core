@@ -46,7 +46,7 @@ func TestRunChecks_Http(t *testing.T) {
 				Name: strPtr("invalid-http"),
 				ServiceConfig: &configv1.UpstreamServiceConfig_HttpService{
 					HttpService: &configv1.HttpUpstreamService{
-						Address: strPtr("http://localhost:12345/nonexistent"),
+						Address: strPtr("http://127.0.0.1:12345/nonexistent"),
 					},
 				},
 			},
@@ -102,7 +102,7 @@ func TestRunChecks_Grpc(t *testing.T) {
 				Name: strPtr("invalid-grpc"),
 				ServiceConfig: &configv1.UpstreamServiceConfig_GrpcService{
 					GrpcService: &configv1.GrpcUpstreamService{
-						Address: strPtr("localhost:1"), // Unlikely port
+						Address: strPtr("127.0.0.1:1"), // Unlikely port
 					},
 				},
 			},
@@ -140,7 +140,7 @@ func TestRunChecks_OpenAPI(t *testing.T) {
 				ServiceConfig: &configv1.UpstreamServiceConfig_OpenapiService{
 					OpenapiService: &configv1.OpenapiUpstreamService{
 						SpecSource: &configv1.OpenapiUpstreamService_SpecUrl{
-							SpecUrl: "http://localhost:12345/nonexistent",
+							SpecUrl: "http://127.0.0.1:12345/nonexistent",
 						},
 					},
 				},

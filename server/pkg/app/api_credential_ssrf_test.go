@@ -22,16 +22,16 @@ func TestAuthTestEndpoint_SSRF(t *testing.T) {
 
 	app := setupTestApp()
 
-	// Create a mock upstream server (on localhost)
+	// Create a mock upstream server (on 127.0.0.1)
 	upstream := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 		w.Write([]byte("success"))
 	}))
 	defer upstream.Close()
 
-	t.Run("should block localhost access by default", func(t *testing.T) {
+	t.Run("should block 127.0.0.1 access by default", func(t *testing.T) {
 		reqData := TestAuthRequest{
-			TargetURL: upstream.URL, // This is localhost
+			TargetURL: upstream.URL, // This is 127.0.0.1
 		}
 		body, _ := json.Marshal(reqData)
 		req := httptest.NewRequest(http.MethodPost, "/api/v1/debug/auth-test", bytes.NewReader(body))
@@ -49,7 +49,7 @@ func TestAuthTestEndpoint_SSRF(t *testing.T) {
 		// If fixed, resp.Error will be present and contain "blocked".
 
 		if resp.Status == 200 && resp.Body == "success" {
-			t.Logf("VULNERABILITY CONFIRMED: Successfully accessed localhost: %s", upstream.URL)
+			t.Logf("VULNERABILITY CONFIRMED: Successfully accessed 127.0.0.1: %s", upstream.URL)
 			t.Fail() // Fail the test to indicate vulnerability exists (or regression)
 		} else {
 			assert.NotEmpty(t, resp.Error, "Expected an error message due to blocked connection")

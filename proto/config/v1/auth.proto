@@ -23,6 +23,8 @@ message SecretValue {
     VaultSecret vault = 5;
     AwsSecretManagerSecret aws_secret_manager = 6;
   }
+  // Optional: A regex to validate the resolved secret value.
+  string validation_regex = 7 [json_name = "validation_regex"];
 }
 
 // AwsSecretManagerSecret defines the parameters for fetching a secret from AWS Secrets Manager.

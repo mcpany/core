@@ -127,7 +127,7 @@ func TestUpstream_Register_DisabledTool(t *testing.T) {
 	}.Build()
 
 	websocketService := &configv1.WebsocketUpstreamService{}
-	websocketService.SetAddress("ws://localhost:8080/echo")
+	websocketService.SetAddress("ws://127.0.0.1:8080/echo")
 	websocketService.SetTools([]*configv1.ToolDefinition{toolDef})
 	calls := make(map[string]*configv1.WebsocketCallDefinition)
 	calls["echo-call"] = configv1.WebsocketCallDefinition_builder{
@@ -169,7 +169,7 @@ func TestUpstream_Register_Mocked(t *testing.T) {
 		}.Build()
 
 		websocketService := &configv1.WebsocketUpstreamService{}
-		websocketService.SetAddress("ws://localhost:8080/echo")
+		websocketService.SetAddress("ws://127.0.0.1:8080/echo")
 		websocketService.SetTools([]*configv1.ToolDefinition{toolDef})
 		calls := make(map[string]*configv1.WebsocketCallDefinition)
 		calls["echo-call"] = configv1.WebsocketCallDefinition_builder{
@@ -235,7 +235,7 @@ func TestUpstream_Register_Mocked(t *testing.T) {
 		}.Build()
 
 		websocketService := &configv1.WebsocketUpstreamService{}
-		websocketService.SetAddress("ws://localhost:8080/echo")
+		websocketService.SetAddress("ws://127.0.0.1:8080/echo")
 		websocketService.SetTools([]*configv1.ToolDefinition{toolDef})
 		calls := make(map[string]*configv1.WebsocketCallDefinition)
 		calls["echo-call"] = configv1.WebsocketCallDefinition_builder{
@@ -265,7 +265,7 @@ func TestUpstream_Register_Mocked(t *testing.T) {
 		}.Build()
 
 		websocketService := &configv1.WebsocketUpstreamService{}
-		websocketService.SetAddress("ws://localhost:8080/echo")
+		websocketService.SetAddress("ws://127.0.0.1:8080/echo")
 		websocketService.SetTools([]*configv1.ToolDefinition{toolDef})
 		calls := make(map[string]*configv1.WebsocketCallDefinition)
 		calls["echo-call"] = configv1.WebsocketCallDefinition_builder{
@@ -308,7 +308,7 @@ func TestUpstream_Register_Mocked(t *testing.T) {
 		}.Build()
 
 		websocketService := &configv1.WebsocketUpstreamService{}
-		websocketService.SetAddress("ws://localhost:8080/echo")
+		websocketService.SetAddress("ws://127.0.0.1:8080/echo")
 		websocketService.SetTools([]*configv1.ToolDefinition{toolDef1, toolDef2})
 		calls := make(map[string]*configv1.WebsocketCallDefinition)
 		calls["call1"] = configv1.WebsocketCallDefinition_builder{
@@ -364,7 +364,7 @@ func TestUpstream_Register_Mocked(t *testing.T) {
 		}.Build()
 
 		websocketService := configv1.WebsocketUpstreamService_builder{
-			Address: proto.String("ws://localhost:8080/test"),
+			Address: proto.String("ws://127.0.0.1:8080/test"),
 			Tools:   []*configv1.ToolDefinition{toolDef},
 			Calls: map[string]*configv1.WebsocketCallDefinition{
 				"test-call": configv1.WebsocketCallDefinition_builder{
@@ -699,7 +699,7 @@ func TestUpstream_createAndRegisterWebsocketTools_DisabledTool(t *testing.T) {
 	}.Build()
 
 	websocketService := &configv1.WebsocketUpstreamService{}
-	websocketService.SetAddress("ws://localhost:8080/echo")
+	websocketService.SetAddress("ws://127.0.0.1:8080/echo")
 	websocketService.SetTools([]*configv1.ToolDefinition{toolDef})
 
 	serviceConfig := &configv1.UpstreamServiceConfig{}
@@ -727,7 +727,7 @@ func TestUpstream_createAndRegisterWebsocketTools_MissingCallDefinition(t *testi
 	}.Build()
 
 	websocketService := &configv1.WebsocketUpstreamService{}
-	websocketService.SetAddress("ws://localhost:8080/echo")
+	websocketService.SetAddress("ws://127.0.0.1:8080/echo")
 	websocketService.SetTools([]*configv1.ToolDefinition{toolDef})
 
 	serviceConfig := &configv1.UpstreamServiceConfig{}
@@ -754,7 +754,7 @@ func TestUpstream_createAndRegisterWebsocketTools_MissingToolName(t *testing.T) 
 	}.Build()
 
 	websocketService := &configv1.WebsocketUpstreamService{}
-	websocketService.SetAddress("ws://localhost:8080/echo")
+	websocketService.SetAddress("ws://127.0.0.1:8080/echo")
 	websocketService.SetTools([]*configv1.ToolDefinition{toolDef})
 	calls := make(map[string]*configv1.WebsocketCallDefinition)
 	calls["echo-call"] = configv1.WebsocketCallDefinition_builder{
@@ -788,7 +788,7 @@ func TestUpstream_createAndRegisterWebsocketTools_DynamicResourceMissingTool(t *
 	}.Build()
 
 	websocketService := configv1.WebsocketUpstreamService_builder{
-		Address:   proto.String("ws://localhost:8080/test"),
+		Address:   proto.String("ws://127.0.0.1:8080/test"),
 		Resources: []*configv1.ResourceDefinition{dynamicResource},
 	}.Build()
 
@@ -811,7 +811,7 @@ func TestUpstream_Shutdown(t *testing.T) {
 	serviceConfig := configv1.UpstreamServiceConfig_builder{
 		Name: proto.String("test-service"),
 		WebsocketService: configv1.WebsocketUpstreamService_builder{
-			Address: proto.String("ws://localhost"),
+			Address: proto.String("ws://127.0.0.1"),
 		}.Build(),
 	}.Build()
 
@@ -852,7 +852,7 @@ func TestUpstream_createAndRegisterWebsocketTools_DynamicResource_HappyPath(t *t
 	}.Build()
 
 	websocketService := configv1.WebsocketUpstreamService_builder{
-		Address:   proto.String("ws://localhost:8080/test"),
+		Address:   proto.String("ws://127.0.0.1:8080/test"),
 		Tools:     []*configv1.ToolDefinition{toolDef},
 		Resources: []*configv1.ResourceDefinition{dynamicResource},
 		Calls: map[string]*configv1.WebsocketCallDefinition{
@@ -895,7 +895,7 @@ func TestUpstream_createAndRegisterWebsocketTools_DynamicResource_Disabled(t *te
 	}.Build()
 
 	websocketService := configv1.WebsocketUpstreamService_builder{
-		Address:   proto.String("ws://localhost:8080/test"),
+		Address:   proto.String("ws://127.0.0.1:8080/test"),
 		Tools:     []*configv1.ToolDefinition{toolDef},
 		Resources: []*configv1.ResourceDefinition{dynamicResource},
 		Calls: map[string]*configv1.WebsocketCallDefinition{
@@ -930,7 +930,7 @@ func TestUpstream_createAndRegisterWebsocketTools_DynamicResource_NoCall(t *test
 	}.Build()
 
 	websocketService := configv1.WebsocketUpstreamService_builder{
-		Address:   proto.String("ws://localhost:8080/test"),
+		Address:   proto.String("ws://127.0.0.1:8080/test"),
 		Resources: []*configv1.ResourceDefinition{dynamicResource},
 	}.Build()
 

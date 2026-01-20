@@ -44,7 +44,7 @@ func TestHandleServices(t *testing.T) {
 		Name: proto.String("test-service"),
 		ServiceConfig: &configv1.UpstreamServiceConfig_HttpService{
 			HttpService: &configv1.HttpUpstreamService{
-				Address: proto.String("http://localhost:8080"),
+				Address: proto.String("http://127.0.0.1:8080"),
 			},
 		},
 		Id: proto.String(uuid.New().String()),
@@ -87,7 +87,7 @@ func TestHandleServiceDetail(t *testing.T) {
 		Name: proto.String("test-service"),
 		ServiceConfig: &configv1.UpstreamServiceConfig_HttpService{
 			HttpService: &configv1.HttpUpstreamService{
-				Address: proto.String("http://localhost:8080"),
+				Address: proto.String("http://127.0.0.1:8080"),
 			},
 		},
 		Id: proto.String(uuid.New().String()),
@@ -142,7 +142,7 @@ func TestHandleServiceStatus(t *testing.T) {
 		Name: proto.String("test-service"),
 		ServiceConfig: &configv1.UpstreamServiceConfig_HttpService{
 			HttpService: &configv1.HttpUpstreamService{
-				Address: proto.String("http://localhost:8080"),
+				Address: proto.String("http://127.0.0.1:8080"),
 			},
 		},
 	}

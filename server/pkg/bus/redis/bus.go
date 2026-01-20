@@ -9,8 +9,8 @@ import (
 	"encoding/json"
 	"sync"
 
-	"github.com/mcpany/core/server/pkg/logging"
 	"github.com/mcpany/core/proto/bus"
+	"github.com/mcpany/core/server/pkg/logging"
 	"github.com/redis/go-redis/v9"
 )
 
@@ -26,9 +26,13 @@ type Bus[T any] struct {
 // Returns the result.
 // Returns an error if the operation fails.
 func New[T any](redisConfig *bus.RedisBus) (*Bus[T], error) {
-	var options redis.Options
+	options := redis.Options{
+		Addr: "127.0.0.1:6379",
+	}
 	if redisConfig != nil {
-		options.Addr = redisConfig.GetAddress()
+		if addr := redisConfig.GetAddress(); addr != "" {
+			options.Addr = addr
+		}
 		options.Password = redisConfig.GetPassword()
 		options.DB = int(redisConfig.GetDb())
 	}

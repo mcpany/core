@@ -24,7 +24,7 @@ func TestResolveSecret_Extended(t *testing.T) {
 		auth.SetApiKey(apiKeyAuth)
 
 		remoteContent := &configv1.RemoteContent{}
-		remoteContent.SetHttpUrl("http://localhost")
+		remoteContent.SetHttpUrl("http://127.0.0.1")
 		remoteContent.SetAuth(auth)
 
 		secret := &configv1.SecretValue{}
@@ -47,7 +47,7 @@ func TestResolveSecret_Extended(t *testing.T) {
 		auth.SetBearerToken(bearerAuth)
 
 		remoteContent := &configv1.RemoteContent{}
-		remoteContent.SetHttpUrl("http://localhost")
+		remoteContent.SetHttpUrl("http://127.0.0.1")
 		remoteContent.SetAuth(auth)
 
 		secret := &configv1.SecretValue{}
@@ -71,7 +71,7 @@ func TestResolveSecret_Extended(t *testing.T) {
 		auth.SetBasicAuth(basicAuth)
 
 		remoteContent := &configv1.RemoteContent{}
-		remoteContent.SetHttpUrl("http://localhost")
+		remoteContent.SetHttpUrl("http://127.0.0.1")
 		remoteContent.SetAuth(auth)
 
 		secret := &configv1.SecretValue{}
@@ -92,13 +92,13 @@ func TestResolveSecret_Extended(t *testing.T) {
 		oauth2Auth.SetClientSecret(&configv1.SecretValue{
 			Value: &configv1.SecretValue_PlainText{PlainText: "secret"},
 		})
-		oauth2Auth.SetTokenUrl("http://localhost/token")
+		oauth2Auth.SetTokenUrl("http://127.0.0.1/token")
 
 		auth := &configv1.Authentication{}
 		auth.SetOauth2(oauth2Auth)
 
 		remoteContent := &configv1.RemoteContent{}
-		remoteContent.SetHttpUrl("http://localhost")
+		remoteContent.SetHttpUrl("http://127.0.0.1")
 		remoteContent.SetAuth(auth)
 
 		secret := &configv1.SecretValue{}
@@ -119,13 +119,13 @@ func TestResolveSecret_Extended(t *testing.T) {
 			Value: &configv1.SecretValue_PlainText{PlainText: "id"},
 		})
 		oauth2Auth.SetClientSecret(failSecret)
-		oauth2Auth.SetTokenUrl("http://localhost/token")
+		oauth2Auth.SetTokenUrl("http://127.0.0.1/token")
 
 		auth := &configv1.Authentication{}
 		auth.SetOauth2(oauth2Auth)
 
 		remoteContent := &configv1.RemoteContent{}
-		remoteContent.SetHttpUrl("http://localhost")
+		remoteContent.SetHttpUrl("http://127.0.0.1")
 		remoteContent.SetAuth(auth)
 
 		secret := &configv1.SecretValue{}
@@ -142,7 +142,7 @@ func TestResolveSecret_Extended(t *testing.T) {
 		failSecret.SetEnvironmentVariable("NON_EXISTENT_VAR_FOR_VAULT_TOKEN")
 
 		vaultSecret := &configv1.VaultSecret{}
-		vaultSecret.SetAddress("http://localhost")
+		vaultSecret.SetAddress("http://127.0.0.1")
 		vaultSecret.SetToken(failSecret)
 		vaultSecret.SetPath("secret/foo")
 		vaultSecret.SetKey("bar")

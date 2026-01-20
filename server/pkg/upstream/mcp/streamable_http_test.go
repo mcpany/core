@@ -481,7 +481,7 @@ func TestUpstream_Register(t *testing.T) {
 		config.SetName("test-service-fail")
 		mcpService := &configv1.McpUpstreamService{}
 		httpConnection := &configv1.McpStreamableHttpConnection{}
-		httpConnection.SetHttpAddress("http://localhost:9999")
+		httpConnection.SetHttpAddress("http://127.0.0.1:9999")
 		mcpService.SetHttpConnection(httpConnection)
 		config.SetMcpService(mcpService)
 
@@ -571,7 +571,7 @@ func TestAuthenticatedRoundTripper(t *testing.T) {
 		base:          &mockRoundTripper{},
 	}
 
-	req, err := http.NewRequest("GET", "http://localhost", nil)
+	req, err := http.NewRequest("GET", "http://127.0.0.1", nil)
 	require.NoError(t, err)
 	resp, err := rt.RoundTrip(req)
 	if resp != nil {
@@ -588,7 +588,7 @@ func TestUpstream_Register_HttpConnectionError(t *testing.T) {
 		Name: proto.String("test-service-http-error"),
 		McpService: configv1.McpUpstreamService_builder{
 			HttpConnection: configv1.McpStreamableHttpConnection_builder{
-				HttpAddress: proto.String("http://localhost:12345"),
+				HttpAddress: proto.String("http://127.0.0.1:12345"),
 			}.Build(),
 			Tools: []*configv1.ToolDefinition{
 				configv1.ToolDefinition_builder{

@@ -39,12 +39,12 @@ func TestRunServerMode_Auth(t *testing.T) {
 	defer cancel()
 
 	// Find free port
-	l, err := net.Listen("tcp", "localhost:0")
+	l, err := net.Listen("tcp", "127.0.0.1:0")
 	require.NoError(t, err)
 	port := l.Addr().(*net.TCPAddr).Port
 	_ = l.Close()
 
-	bindAddress := fmt.Sprintf("localhost:%d", port)
+	bindAddress := fmt.Sprintf("127.0.0.1:%d", port)
 	grpcPort := "" // Disable gRPC for this test
 
 	busProvider, _ := bus.NewProvider(nil)
@@ -378,11 +378,11 @@ func TestAuthMiddleware_AuthDisabled(t *testing.T) {
 	defer cancel()
 
 	// Find free port
-	l, err := net.Listen("tcp", "localhost:0")
+	l, err := net.Listen("tcp", "127.0.0.1:0")
 	require.NoError(t, err)
 	port := l.Addr().(*net.TCPAddr).Port
 	_ = l.Close()
-	bindAddress := fmt.Sprintf("localhost:%d", port)
+	bindAddress := fmt.Sprintf("127.0.0.1:%d", port)
 
 	app := NewApplication()
 	app.fs = afero.NewMemMapFs()
@@ -450,8 +450,8 @@ func TestAuthMiddleware_AuthDisabled(t *testing.T) {
 	// Even though auth is disabled, we enforce private IP check.
 	// We simulate public access by mocking RemoteAddr?
 	// We can't mock RemoteAddr easily with http.Get/Client unless we use a custom Dialer or explicit Request with test setup.
-	// But here we are integration testing with a real server listening on localhost.
-	// So requests WILL come from localhost (127.0.0.1).
+	// But here we are integration testing with a real server listening on 127.0.0.1.
+	// So requests WILL come from 127.0.0.1 (127.0.0.1).
 	// So they SHOULD SUCCEED.
 
 	// Wait, if I want to test that PUBLIC access is BLOCKED, I need to send a request that LOOKS like it comes from public IP.
@@ -459,8 +459,8 @@ func TestAuthMiddleware_AuthDisabled(t *testing.T) {
 	// But `runServerMode` uses `createAuthMiddleware` which uses `r.RemoteAddr`.
 
 	// If I can't spoof RemoteAddr in integration test, I can at least verify that LOCALHOST access works when auth is disabled.
-	// Before my fix, localhost access worked.
-	// After my fix, localhost access STILL works (because it's private IP).
+	// Before my fix, 127.0.0.1 access worked.
+	// After my fix, 127.0.0.1 access STILL works (because it's private IP).
 
 	// To verify the "Security" part (blocking public), I need to unit test `createAuthMiddleware("")` logic, which I already did in `TestAuthMiddleware_LocalhostSecurity`.
 	// AND I need to verify that `runServerMode` actually WIRES it up.
@@ -479,7 +479,7 @@ func TestAuthMiddleware_AuthDisabled(t *testing.T) {
 	require.NoError(t, err)
 	defer func() { _ = resp.Body.Close() }()
 
-	// Should be OK (200) because we are on localhost
+	// Should be OK (200) because we are on 127.0.0.1
 	assert.Equal(t, http.StatusOK, resp.StatusCode)
 
 	cancel()

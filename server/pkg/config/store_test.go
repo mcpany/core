@@ -49,7 +49,7 @@ func TestFileStore_CollectFilePaths(t *testing.T) {
 upstream_services:
   - name: expanded-service
     http_service:
-      address: http://localhost:${TEST_PORT}
+      address: http://127.0.0.1:${TEST_PORT}
 `), 0644))
 
 	tests := []struct {
@@ -271,7 +271,7 @@ func TestYamlEngine_ValidationFail(_ *testing.T) {
 
 func TestReadURL_Redirect(t *testing.T) {
 	// Verify that redirects are disabled.
-	// We mock the global httpClient for this test to allow localhost connections
+	// We mock the global httpClient for this test to allow 127.0.0.1 connections
 	// while maintaining the CheckRedirect logic we want to test.
 	originalClient := httpClient
 	defer func() { httpClient = originalClient }()
@@ -302,7 +302,7 @@ upstream_services:
     http_service:
       address: http://example.com
     grpc_service:
-      address: localhost:50051
+      address: 127.0.0.1:50051
 `), 0644))
 
 	store := NewFileStore(fs, []string{"/config/multi.yaml"})
@@ -350,7 +350,7 @@ mcpServers:
 }
 
 func TestReadURL_Localhost(t *testing.T) {
-	// Verify we can read from localhost if the client is configured to allow it.
+	// Verify we can read from 127.0.0.1 if the client is configured to allow it.
 	// We mock the global httpClient to simulate a SafeHTTPClient with loopback enabled.
 	originalClient := httpClient
 	defer func() { httpClient = originalClient }()

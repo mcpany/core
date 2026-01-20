@@ -27,7 +27,7 @@ func (s *MainTestSuite) TestSetup_InMemoryBus() {
 }
 
 func (s *MainTestSuite) TestSetup_ValidRedisAddress() {
-	s.T().Setenv("REDIS_ADDR", "localhost:6379")
+	s.T().Setenv("REDIS_ADDR", "127.0.0.1:6379")
 
 	_, err := setup()
 	s.NoError(err, "setup() should not return an error with a valid REDIS_ADDR because the connection is lazy")

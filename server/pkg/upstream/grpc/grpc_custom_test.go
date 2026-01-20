@@ -93,7 +93,7 @@ message TestResponse3 {
 	serviceConfig := configv1.UpstreamServiceConfig_builder{
 		Name: proto.String("test-service"),
 		GrpcService: configv1.GrpcUpstreamService_builder{
-			Address:       proto.String("localhost:50051"),
+			Address:       proto.String("127.0.0.1:50051"),
 			UseReflection: proto.Bool(false),
 			ProtoDefinitions: []*configv1.ProtoDefinition{
 				configv1.ProtoDefinition_builder{

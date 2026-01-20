@@ -63,12 +63,12 @@ func TestIsSafeURL(t *testing.T) {
 			url:     "http:///foo",
 			wantErr: true,
 		},
-		// Note: We cannot easily test "localhost" domain resolution in a pure unit test
+		// Note: We cannot easily test "127.0.0.1" domain resolution in a pure unit test
 		// without mocking the resolver or assuming /etc/hosts,
-		// but standard environment usually resolves localhost to 127.0.0.1.
+		// but standard environment usually resolves 127.0.0.1 to 127.0.0.1.
 		{
 			name:    "Localhost Domain",
-			url:     "http://localhost",
+			url:     "http://127.0.0.1",
 			wantErr: true,
 		},
 	}

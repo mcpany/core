@@ -18,7 +18,7 @@ func TestRedisLimiter_GetConfigHash(t *testing.T) {
 	rps := 10.0
 	burst := int64(20)
 
-	address := "localhost:6379"
+	address := "127.0.0.1:6379"
 	password := "pass"
 	dbIdx := int32(0)
 
@@ -36,7 +36,7 @@ func TestRedisLimiter_GetConfigHash(t *testing.T) {
 
 	limiter := NewRedisLimiterWithClient(db, "service", "", "partition", config)
 
-	expectedHash := "localhost:6379|pass|0"
+	expectedHash := "127.0.0.1:6379|pass|0"
 	assert.Equal(t, expectedHash, limiter.GetConfigHash())
 
 	// Test with no redis config

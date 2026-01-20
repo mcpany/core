@@ -19,6 +19,7 @@ type LocalProvider struct {
 	rootPaths    map[string]string
 	allowedPaths []string
 	deniedPaths  []string
+	symlinkMode  configv1.FilesystemUpstreamService_SymlinkMode
 }
 
 // NewLocalProvider creates a new LocalProvider from the given configuration.
@@ -27,14 +28,16 @@ type LocalProvider struct {
 // rootPaths is the rootPaths.
 // allowedPaths is the allowedPaths.
 // deniedPaths is the deniedPaths.
+// symlinkMode is the symlinkMode.
 //
 // Returns the result.
-func NewLocalProvider(_ *configv1.OsFs, rootPaths map[string]string, allowedPaths, deniedPaths []string) *LocalProvider {
+func NewLocalProvider(_ *configv1.OsFs, rootPaths map[string]string, allowedPaths, deniedPaths []string, symlinkMode configv1.FilesystemUpstreamService_SymlinkMode) *LocalProvider {
 	return &LocalProvider{
 		fs:           afero.NewOsFs(),
 		rootPaths:    rootPaths,
 		allowedPaths: allowedPaths,
 		deniedPaths:  deniedPaths,
+		symlinkMode:  symlinkMode,
 	}
 }
 
@@ -59,6 +62,15 @@ func (p *LocalProvider) ResolvePath(virtualPath string) (string, error) {
 	bestMatchVirtual, bestMatchReal, err := p.findBestMatch(virtualPath)
 	if err != nil {
 		return "", err
+	}
+
+	// For DENY mode, check if the input path relative to root contains any symlinks
+	if p.symlinkMode == configv1.FilesystemUpstreamService_DENY {
+		if contains, err := p.containsSymlink(virtualPath, bestMatchVirtual, bestMatchReal); err != nil {
+			return "", err
+		} else if contains {
+			return "", fmt.Errorf("access denied: symlinks are disabled")
+		}
 	}
 
 	targetPathCanonical, realRootCanonical, err := p.resolveSymlinks(virtualPath, bestMatchVirtual, bestMatchReal)
@@ -252,6 +264,37 @@ func (p *LocalProvider) matchPath(pattern, targetPath string) bool {
 		return true
 	}
 	return strings.HasPrefix(targetPath, pattern)
+}
+
+func (p *LocalProvider) containsSymlink(virtualPath, bestMatchVirtual, bestMatchReal string) (bool, error) {
+	relativePath := strings.TrimPrefix(virtualPath, bestMatchVirtual)
+	relativePath = strings.TrimPrefix(relativePath, "/")
+
+	if relativePath == "" || relativePath == "." {
+		return false, nil
+	}
+
+	current := bestMatchReal
+	parts := strings.Split(relativePath, string(os.PathSeparator))
+
+	for _, part := range parts {
+		if part == "" || part == "." {
+			continue
+		}
+		current = filepath.Join(current, part)
+		info, err := os.Lstat(current)
+		if err != nil {
+			if os.IsNotExist(err) {
+				return false, nil
+			}
+			return false, err
+		}
+		if info.Mode()&os.ModeSymlink != 0 {
+			return true, nil
+		}
+	}
+
+	return false, nil
 }
 
 // Close closes the provider.

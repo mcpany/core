@@ -32,6 +32,6 @@ func TestNewDBFromSQLDB(t *testing.T) {
 
 func TestNewDB_Error(t *testing.T) {
 	// Without a running postgres, this should fail
-	_, err := NewDB("postgres://invalid:invalid@localhost:5432/invalid?sslmode=disable")
+	_, err := NewDB("postgres://invalid:invalid@127.0.0.1:5432/invalid?sslmode=disable")
 	require.Error(t, err)
 }

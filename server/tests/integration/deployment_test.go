@@ -140,7 +140,7 @@ func TestDockerCompose(t *testing.T) {
 	payload := `{"jsonrpc": "2.0", "method": "tools/call", "params": {"name": "docker-http-echo/-/echo", "arguments": {"message": "Hello from Docker!"}}, "id": 1}`
 	var resp *http.Response
 	require.Eventually(t, func() bool {
-		req, err := http.NewRequest("POST", "http://localhost:50050/mcp", bytes.NewBufferString(payload))
+		req, err := http.NewRequest("POST", "http://127.0.0.1:50050/mcp", bytes.NewBufferString(payload))
 		if err != nil {
 			t.Logf("failed to create request: %v", err)
 			return false
@@ -323,7 +323,7 @@ func TestK8sFullStack(t *testing.T) {
 	// Wait for port-forward compatibility
 	t.Log("Waiting for port-forward to be ready...")
 	require.Eventually(t, func() bool {
-		resp, err := http.Get("http://localhost:" + localUIPort)
+		resp, err := http.Get("http://127.0.0.1:" + localUIPort)
 		if err != nil {
 			return false
 		}
@@ -337,7 +337,7 @@ func TestK8sFullStack(t *testing.T) {
 	e2eCmd.Dir = uiDir
 	e2eCmd.Env = os.Environ()
 	e2eCmd.Env = append(e2eCmd.Env, "REAL_CLUSTER=true")
-	e2eCmd.Env = append(e2eCmd.Env, "PLAYWRIGHT_BASE_URL=http://localhost:"+localUIPort)
+	e2eCmd.Env = append(e2eCmd.Env, "PLAYWRIGHT_BASE_URL=http://127.0.0.1:"+localUIPort)
 	// We might need to skip some tests specifically?
 	// The current suite runs all tests in e2e.spec.ts.
 
@@ -350,7 +350,7 @@ func TestK8sFullStack(t *testing.T) {
 
 func findFreePort(t *testing.T) int {
 	t.Helper()
-	addr, err := net.ResolveTCPAddr("tcp", "localhost:0")
+	addr, err := net.ResolveTCPAddr("tcp", "127.0.0.1:0")
 	if err != nil {
 		t.Fatalf("failed to resolve tcp addr: %v", err)
 	}

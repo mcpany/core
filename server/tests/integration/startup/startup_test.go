@@ -49,7 +49,7 @@ upstream_services:
           description: "working tool"
   - name: "failing-service"
     http_service:
-      address: "http://localhost:%d"
+      address: "http://127.0.0.1:%d"
       calls:
         echo:
           method: "HTTP_METHOD_GET"

@@ -29,7 +29,7 @@ func TestMetrics(t *testing.T) {
 upstreamServices:
   - name: "http-echo-server"
     httpService:
-      address: "http://localhost:8080"
+      address: "http://127.0.0.1:8080"
       calls:
         - operationId: "echo"
           description: "Echoes back the request body"
@@ -45,7 +45,7 @@ upstreamServices:
 
 	mcpany := testutil.NewMCPAny(t, ctx,
 		"--config-path", configPath,
-		"--metrics-listen-address", "localhost:9090",
+		"--metrics-listen-address", "127.0.0.1:9090",
 	)
 	defer mcpany.Stop()
 
@@ -57,7 +57,7 @@ upstreamServices:
 	require.NoError(t, err)
 
 	// Make a request to the metrics endpoint
-	resp, err := http.Get("http://localhost:9090/metrics")
+	resp, err := http.Get("http://127.0.0.1:9090/metrics")
 	require.NoError(t, err)
 	defer resp.Body.Close()
 

@@ -62,6 +62,8 @@ export interface ToolDefinition {
   profiles: Profile[];
   mergeStrategy: ToolDefinition_MergeStrategy;
   tags: string[];
+  /** Integrity check for the tool definition. */
+  integrity?: Integrity | undefined;
 }
 
 export enum ToolDefinition_MergeStrategy {
@@ -103,6 +105,12 @@ export function toolDefinition_MergeStrategyToJSON(object: ToolDefinition_MergeS
   }
 }
 
+export interface Integrity {
+  hash: string;
+  /** e.g. "sha256" */
+  algorithm: string;
+}
+
 function createBaseToolDefinition(): ToolDefinition {
   return {
     name: "",
@@ -120,6 +128,7 @@ function createBaseToolDefinition(): ToolDefinition {
     profiles: [],
     mergeStrategy: 0,
     tags: [],
+    integrity: undefined,
   };
 }
 
@@ -169,6 +178,9 @@ export const ToolDefinition: MessageFns<ToolDefinition> = {
     }
     for (const v of message.tags) {
       writer.uint32(130).string(v!);
+    }
+    if (message.integrity !== undefined) {
+      Integrity.encode(message.integrity, writer.uint32(138).fork()).join();
     }
     return writer;
   },
@@ -300,6 +312,14 @@ export const ToolDefinition: MessageFns<ToolDefinition> = {
           message.tags.push(reader.string());
           continue;
         }
+        case 17: {
+          if (tag !== 138) {
+            break;
+          }
+
+          message.integrity = Integrity.decode(reader, reader.uint32());
+          continue;
+        }
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -326,6 +346,7 @@ export const ToolDefinition: MessageFns<ToolDefinition> = {
       profiles: globalThis.Array.isArray(object?.profiles) ? object.profiles.map((e: any) => Profile.fromJSON(e)) : [],
       mergeStrategy: isSet(object.merge_strategy) ? toolDefinition_MergeStrategyFromJSON(object.merge_strategy) : 0,
       tags: globalThis.Array.isArray(object?.tags) ? object.tags.map((e: any) => globalThis.String(e)) : [],
+      integrity: isSet(object.integrity) ? Integrity.fromJSON(object.integrity) : undefined,
     };
   },
 
@@ -376,6 +397,9 @@ export const ToolDefinition: MessageFns<ToolDefinition> = {
     if (message.tags?.length) {
       obj.tags = message.tags;
     }
+    if (message.integrity !== undefined) {
+      obj.integrity = Integrity.toJSON(message.integrity);
+    }
     return obj;
   },
 
@@ -399,6 +423,85 @@ export const ToolDefinition: MessageFns<ToolDefinition> = {
     message.profiles = object.profiles?.map((e) => Profile.fromPartial(e)) || [];
     message.mergeStrategy = object.mergeStrategy ?? 0;
     message.tags = object.tags?.map((e) => e) || [];
+    message.integrity = (object.integrity !== undefined && object.integrity !== null)
+      ? Integrity.fromPartial(object.integrity)
+      : undefined;
+    return message;
+  },
+};
+
+function createBaseIntegrity(): Integrity {
+  return { hash: "", algorithm: "" };
+}
+
+export const Integrity: MessageFns<Integrity> = {
+  encode(message: Integrity, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.hash !== "") {
+      writer.uint32(10).string(message.hash);
+    }
+    if (message.algorithm !== "") {
+      writer.uint32(18).string(message.algorithm);
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): Integrity {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseIntegrity();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.hash = reader.string();
+          continue;
+        }
+        case 2: {
+          if (tag !== 18) {
+            break;
+          }
+
+          message.algorithm = reader.string();
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): Integrity {
+    return {
+      hash: isSet(object.hash) ? globalThis.String(object.hash) : "",
+      algorithm: isSet(object.algorithm) ? globalThis.String(object.algorithm) : "",
+    };
+  },
+
+  toJSON(message: Integrity): unknown {
+    const obj: any = {};
+    if (message.hash !== "") {
+      obj.hash = message.hash;
+    }
+    if (message.algorithm !== "") {
+      obj.algorithm = message.algorithm;
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<Integrity>, I>>(base?: I): Integrity {
+    return Integrity.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<Integrity>, I>>(object: I): Integrity {
+    const message = createBaseIntegrity();
+    message.hash = object.hash ?? "";
+    message.algorithm = object.algorithm ?? "";
     return message;
   },
 };

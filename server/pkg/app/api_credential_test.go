@@ -123,7 +123,7 @@ func TestCredentialCRUD(t *testing.T) {
 }
 
 func TestAuthTestEndpoint(t *testing.T) {
-	// Allow loopback for this test since httptest.NewServer uses localhost
+	// Allow loopback for this test since httptest.NewServer uses 127.0.0.1
 	t.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "true")
 
 	app := setupTestApp()

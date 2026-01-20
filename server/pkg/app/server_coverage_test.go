@@ -32,7 +32,7 @@ func TestRun_WithListenAddress(t *testing.T) {
 
 	configContent := `
 global_settings:
-  mcp_listen_address: "localhost:0"
+  mcp_listen_address: "127.0.0.1:0"
 upstream_services: []
 `
 	err := afero.WriteFile(fs, "/config.yaml", []byte(configContent), 0o644)

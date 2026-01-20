@@ -19,7 +19,7 @@ import (
 func TestMilvusClient_Query(t *testing.T) {
 	mock := &mockMilvusClient{}
 	config := &configv1.MilvusVectorDB{
-		Address:        proto.String("localhost:19530"),
+		Address:        proto.String("127.0.0.1:19530"),
 		CollectionName: proto.String("test_coll"),
 	}
 	c := &MilvusClient{
@@ -146,7 +146,7 @@ func TestMilvusClient_Query_Errors(t *testing.T) {
 func TestMilvusClient_Upsert(t *testing.T) {
 	mock := &mockMilvusClient{}
 	config := &configv1.MilvusVectorDB{
-		Address:        proto.String("localhost:19530"),
+		Address:        proto.String("127.0.0.1:19530"),
 		CollectionName: proto.String("test_coll"),
 	}
 	c := &MilvusClient{
@@ -242,7 +242,7 @@ func TestMilvusClient_Upsert_Errors(t *testing.T) {
 func TestMilvusClient_Delete(t *testing.T) {
 	mock := &mockMilvusClient{}
 	config := &configv1.MilvusVectorDB{
-		Address:        proto.String("localhost:19530"),
+		Address:        proto.String("127.0.0.1:19530"),
 		CollectionName: proto.String("test_coll"),
 	}
 	c := &MilvusClient{
@@ -336,7 +336,7 @@ func TestMilvusClient_Delete_Errors(t *testing.T) {
 func TestMilvusClient_DescribeIndexStats(t *testing.T) {
 	mock := &mockMilvusClient{}
 	config := &configv1.MilvusVectorDB{
-		Address:        proto.String("localhost:19530"),
+		Address:        proto.String("127.0.0.1:19530"),
 		CollectionName: proto.String("test_coll"),
 	}
 	c := &MilvusClient{

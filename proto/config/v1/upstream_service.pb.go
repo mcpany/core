@@ -207,6 +207,56 @@ func (x CommandLineUpstreamService_CommunicationProtocol) Number() protoreflect.
 	return protoreflect.EnumNumber(x)
 }
 
+type FilesystemUpstreamService_SymlinkMode int32
+
+const (
+	FilesystemUpstreamService_SYMLINK_MODE_UNSPECIFIED FilesystemUpstreamService_SymlinkMode = 0
+	// Allow all symlinks (still checked against root_paths target).
+	FilesystemUpstreamService_ALLOW FilesystemUpstreamService_SymlinkMode = 1
+	// Deny all symlinks.
+	FilesystemUpstreamService_DENY FilesystemUpstreamService_SymlinkMode = 2
+	// Allow symlinks only if target is within the same root.
+	FilesystemUpstreamService_INTERNAL_ONLY FilesystemUpstreamService_SymlinkMode = 3
+)
+
+// Enum value maps for FilesystemUpstreamService_SymlinkMode.
+var (
+	FilesystemUpstreamService_SymlinkMode_name = map[int32]string{
+		0: "SYMLINK_MODE_UNSPECIFIED",
+		1: "ALLOW",
+		2: "DENY",
+		3: "INTERNAL_ONLY",
+	}
+	FilesystemUpstreamService_SymlinkMode_value = map[string]int32{
+		"SYMLINK_MODE_UNSPECIFIED": 0,
+		"ALLOW":                    1,
+		"DENY":                     2,
+		"INTERNAL_ONLY":            3,
+	}
+)
+
+func (x FilesystemUpstreamService_SymlinkMode) Enum() *FilesystemUpstreamService_SymlinkMode {
+	p := new(FilesystemUpstreamService_SymlinkMode)
+	*p = x
+	return p
+}
+
+func (x FilesystemUpstreamService_SymlinkMode) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (FilesystemUpstreamService_SymlinkMode) Descriptor() protoreflect.EnumDescriptor {
+	return file_proto_config_v1_upstream_service_proto_enumTypes[4].Descriptor()
+}
+
+func (FilesystemUpstreamService_SymlinkMode) Type() protoreflect.EnumType {
+	return &file_proto_config_v1_upstream_service_proto_enumTypes[4]
+}
+
+func (x FilesystemUpstreamService_SymlinkMode) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
 // UpstreamServiceConfig is the top-level configuration for a single upstream service
 // that mcpany will proxy. It defines the service's identity, how to connect to it,
 // and policies like authentication, caching, rate limiting, and load balancing.
@@ -4406,6 +4456,8 @@ type FilesystemUpstreamService struct {
 	AllowedPaths []string `protobuf:"bytes,6,rep,name=allowed_paths" json:"allowed_paths,omitempty"`
 	// List of glob patterns for denied paths. Checked after allowed_paths.
 	DeniedPaths []string `protobuf:"bytes,7,rep,name=denied_paths" json:"denied_paths,omitempty"`
+	// The policy for following symlinks.
+	SymlinkMode *FilesystemUpstreamService_SymlinkMode `protobuf:"varint,8,opt,name=symlink_mode,enum=mcpany.config.v1.FilesystemUpstreamService_SymlinkMode" json:"symlink_mode,omitempty"`
 	// The specific configuration for the filesystem type.
 	//
 	// Types that are valid to be assigned to FilesystemType:
@@ -4494,6 +4546,13 @@ func (x *FilesystemUpstreamService) GetDeniedPaths() []string {
 		return x.DeniedPaths
 	}
 	return nil
+}
+
+func (x *FilesystemUpstreamService) GetSymlinkMode() FilesystemUpstreamService_SymlinkMode {
+	if x != nil && x.SymlinkMode != nil {
+		return *x.SymlinkMode
+	}
+	return FilesystemUpstreamService_SYMLINK_MODE_UNSPECIFIED
 }
 
 func (x *FilesystemUpstreamService) GetFilesystemType() isFilesystemUpstreamService_FilesystemType {
@@ -4594,6 +4653,10 @@ func (x *FilesystemUpstreamService) SetDeniedPaths(v []string) {
 	x.DeniedPaths = v
 }
 
+func (x *FilesystemUpstreamService) SetSymlinkMode(v FilesystemUpstreamService_SymlinkMode) {
+	x.SymlinkMode = &v
+}
+
 func (x *FilesystemUpstreamService) SetOs(v *OsFs) {
 	if v == nil {
 		x.FilesystemType = nil
@@ -4655,6 +4718,13 @@ func (x *FilesystemUpstreamService) HasReadOnly() bool {
 		return false
 	}
 	return x.ReadOnly != nil
+}
+
+func (x *FilesystemUpstreamService) HasSymlinkMode() bool {
+	if x == nil {
+		return false
+	}
+	return x.SymlinkMode != nil
 }
 
 func (x *FilesystemUpstreamService) HasFilesystemType() bool {
@@ -4722,6 +4792,10 @@ func (x *FilesystemUpstreamService) HasS3() bool {
 
 func (x *FilesystemUpstreamService) ClearReadOnly() {
 	x.ReadOnly = nil
+}
+
+func (x *FilesystemUpstreamService) ClearSymlinkMode() {
+	x.SymlinkMode = nil
 }
 
 func (x *FilesystemUpstreamService) ClearFilesystemType() {
@@ -4822,6 +4896,8 @@ type FilesystemUpstreamService_builder struct {
 	AllowedPaths []string
 	// List of glob patterns for denied paths. Checked after allowed_paths.
 	DeniedPaths []string
+	// The policy for following symlinks.
+	SymlinkMode *FilesystemUpstreamService_SymlinkMode
 	// The specific configuration for the filesystem type.
 
 	// Fields of oneof FilesystemType:
@@ -4846,6 +4922,7 @@ func (b0 FilesystemUpstreamService_builder) Build() *FilesystemUpstreamService {
 	x.Prompts = b.Prompts
 	x.AllowedPaths = b.AllowedPaths
 	x.DeniedPaths = b.DeniedPaths
+	x.SymlinkMode = b.SymlinkMode
 	if b.Os != nil {
 		x.FilesystemType = &FilesystemUpstreamService_Os{b.Os}
 	}
@@ -8083,7 +8160,7 @@ const file_proto_config_v1_upstream_service_proto_rawDesc = "" +
 	"\n" +
 	"CallsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x129\n" +
-	"\x05value\x18\x02 \x01(\v2#.mcpany.config.v1.SqlCallDefinitionR\x05value:\x028\x01\"\xac\x06\n" +
+	"\x05value\x18\x02 \x01(\v2#.mcpany.config.v1.SqlCallDefinitionR\x05value:\x028\x01\"\xde\a\n" +
 	"\x19FilesystemUpstreamService\x12Z\n" +
 	"\n" +
 	"root_paths\x18\x01 \x03(\v2:.mcpany.config.v1.FilesystemUpstreamService.RootPathsEntryR\n" +
@@ -8093,7 +8170,8 @@ const file_proto_config_v1_upstream_service_proto_rawDesc = "" +
 	"\tresources\x18\x04 \x03(\v2$.mcpany.config.v1.ResourceDefinitionR\tresources\x12<\n" +
 	"\aprompts\x18\x05 \x03(\v2\".mcpany.config.v1.PromptDefinitionR\aprompts\x12$\n" +
 	"\rallowed_paths\x18\x06 \x03(\tR\rallowed_paths\x12\"\n" +
-	"\fdenied_paths\x18\a \x03(\tR\fdenied_paths\x12(\n" +
+	"\fdenied_paths\x18\a \x03(\tR\fdenied_paths\x12[\n" +
+	"\fsymlink_mode\x18\b \x01(\x0e27.mcpany.config.v1.FilesystemUpstreamService.SymlinkModeR\fsymlink_mode\x12(\n" +
 	"\x02os\x18\n" +
 	" \x01(\v2\x16.mcpany.config.v1.OsFsH\x00R\x02os\x122\n" +
 	"\x05tmpfs\x18\v \x01(\v2\x1a.mcpany.config.v1.MemMapFsH\x00R\x05tmpfs\x12.\n" +
@@ -8104,7 +8182,12 @@ const file_proto_config_v1_upstream_service_proto_rawDesc = "" +
 	"\x02s3\x18\x10 \x01(\v2\x16.mcpany.config.v1.S3FsH\x00R\x02s3\x1a<\n" +
 	"\x0eRootPathsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01B\x11\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"S\n" +
+	"\vSymlinkMode\x12\x1c\n" +
+	"\x18SYMLINK_MODE_UNSPECIFIED\x10\x00\x12\t\n" +
+	"\x05ALLOW\x10\x01\x12\b\n" +
+	"\x04DENY\x10\x02\x12\x11\n" +
+	"\rINTERNAL_ONLY\x10\x03B\x11\n" +
 	"\x0ffilesystem_type\"\x06\n" +
 	"\x04OsFs\"\n" +
 	"\n" +
@@ -8235,227 +8318,229 @@ const file_proto_config_v1_upstream_service_proto_rawDesc = "" +
 	"\n" +
 	"\x06RANDOM\x10\x02B>B\x14UpstreamServiceProtoZ&github.com/mcpany/core/proto/config/v1b\beditionsp\xe8\a"
 
-var file_proto_config_v1_upstream_service_proto_enumTypes = make([]protoimpl.EnumInfo, 4)
+var file_proto_config_v1_upstream_service_proto_enumTypes = make([]protoimpl.EnumInfo, 5)
 var file_proto_config_v1_upstream_service_proto_msgTypes = make([]protoimpl.MessageInfo, 55)
 var file_proto_config_v1_upstream_service_proto_goTypes = []any{
 	(LoadBalancingStrategy)(0),                            // 0: mcpany.config.v1.LoadBalancingStrategy
 	(CallPolicy_Action)(0),                                // 1: mcpany.config.v1.CallPolicy.Action
 	(ExportPolicy_Action)(0),                              // 2: mcpany.config.v1.ExportPolicy.Action
 	(CommandLineUpstreamService_CommunicationProtocol)(0), // 3: mcpany.config.v1.CommandLineUpstreamService.CommunicationProtocol
-	(*UpstreamServiceConfig)(nil),                         // 4: mcpany.config.v1.UpstreamServiceConfig
-	(*CallPolicy)(nil),                                    // 5: mcpany.config.v1.CallPolicy
-	(*CallPolicyRule)(nil),                                // 6: mcpany.config.v1.CallPolicyRule
-	(*ExportPolicy)(nil),                                  // 7: mcpany.config.v1.ExportPolicy
-	(*ExportRule)(nil),                                    // 8: mcpany.config.v1.ExportRule
-	(*CallHook)(nil),                                      // 9: mcpany.config.v1.CallHook
-	(*GrpcUpstreamService)(nil),                           // 10: mcpany.config.v1.GrpcUpstreamService
-	(*ProtoDefinition)(nil),                               // 11: mcpany.config.v1.ProtoDefinition
-	(*ProtoFile)(nil),                                     // 12: mcpany.config.v1.ProtoFile
-	(*ProtoDescriptor)(nil),                               // 13: mcpany.config.v1.ProtoDescriptor
-	(*ProtoCollection)(nil),                               // 14: mcpany.config.v1.ProtoCollection
-	(*HttpUpstreamService)(nil),                           // 15: mcpany.config.v1.HttpUpstreamService
-	(*WebsocketUpstreamService)(nil),                      // 16: mcpany.config.v1.WebsocketUpstreamService
-	(*WebrtcUpstreamService)(nil),                         // 17: mcpany.config.v1.WebrtcUpstreamService
-	(*OpenapiUpstreamService)(nil),                        // 18: mcpany.config.v1.OpenapiUpstreamService
-	(*CommandLineUpstreamService)(nil),                    // 19: mcpany.config.v1.CommandLineUpstreamService
-	(*GraphQLUpstreamService)(nil),                        // 20: mcpany.config.v1.GraphQLUpstreamService
-	(*SqlUpstreamService)(nil),                            // 21: mcpany.config.v1.SqlUpstreamService
-	(*FilesystemUpstreamService)(nil),                     // 22: mcpany.config.v1.FilesystemUpstreamService
-	(*OsFs)(nil),                                          // 23: mcpany.config.v1.OsFs
-	(*MemMapFs)(nil),                                      // 24: mcpany.config.v1.MemMapFs
-	(*HttpFs)(nil),                                        // 25: mcpany.config.v1.HttpFs
-	(*ZipFs)(nil),                                         // 26: mcpany.config.v1.ZipFs
-	(*GcsFs)(nil),                                         // 27: mcpany.config.v1.GcsFs
-	(*S3Fs)(nil),                                          // 28: mcpany.config.v1.S3Fs
-	(*SftpFs)(nil),                                        // 29: mcpany.config.v1.SftpFs
-	(*VectorUpstreamService)(nil),                         // 30: mcpany.config.v1.VectorUpstreamService
-	(*PineconeVectorDB)(nil),                              // 31: mcpany.config.v1.PineconeVectorDB
-	(*MilvusVectorDB)(nil),                                // 32: mcpany.config.v1.MilvusVectorDB
-	(*McpUpstreamService)(nil),                            // 33: mcpany.config.v1.McpUpstreamService
-	(*McpStdioConnection)(nil),                            // 34: mcpany.config.v1.McpStdioConnection
-	(*EnvValidation)(nil),                                 // 35: mcpany.config.v1.EnvValidation
-	(*McpStreamableHttpConnection)(nil),                   // 36: mcpany.config.v1.McpStreamableHttpConnection
-	(*McpBundleConnection)(nil),                           // 37: mcpany.config.v1.McpBundleConnection
-	(*ConnectionPoolConfig)(nil),                          // 38: mcpany.config.v1.ConnectionPoolConfig
-	(*ContainerEnvironment)(nil),                          // 39: mcpany.config.v1.ContainerEnvironment
-	(*ResilienceConfig)(nil),                              // 40: mcpany.config.v1.ResilienceConfig
-	(*CircuitBreakerConfig)(nil),                          // 41: mcpany.config.v1.CircuitBreakerConfig
-	(*RetryConfig)(nil),                                   // 42: mcpany.config.v1.RetryConfig
-	(*TLSConfig)(nil),                                     // 43: mcpany.config.v1.TLSConfig
-	nil,                                                   // 44: mcpany.config.v1.GrpcUpstreamService.CallsEntry
-	nil,                                                   // 45: mcpany.config.v1.HttpUpstreamService.CallsEntry
-	nil,                                                   // 46: mcpany.config.v1.WebsocketUpstreamService.CallsEntry
-	nil,                                                   // 47: mcpany.config.v1.WebrtcUpstreamService.CallsEntry
-	nil,                                                   // 48: mcpany.config.v1.OpenapiUpstreamService.CallsEntry
-	nil,                                                   // 49: mcpany.config.v1.CommandLineUpstreamService.CallsEntry
-	nil,                                                   // 50: mcpany.config.v1.CommandLineUpstreamService.EnvEntry
-	nil,                                                   // 51: mcpany.config.v1.GraphQLUpstreamService.CallsEntry
-	nil,                                                   // 52: mcpany.config.v1.SqlUpstreamService.CallsEntry
-	nil,                                                   // 53: mcpany.config.v1.FilesystemUpstreamService.RootPathsEntry
-	nil,                                                   // 54: mcpany.config.v1.McpUpstreamService.CallsEntry
-	nil,                                                   // 55: mcpany.config.v1.McpStdioConnection.EnvEntry
-	nil,                                                   // 56: mcpany.config.v1.McpBundleConnection.EnvEntry
-	nil,                                                   // 57: mcpany.config.v1.ContainerEnvironment.VolumesEntry
-	nil,                                                   // 58: mcpany.config.v1.ContainerEnvironment.EnvEntry
-	(*Authentication)(nil),                                // 59: mcpany.config.v1.Authentication
-	(*CacheConfig)(nil),                                   // 60: mcpany.config.v1.CacheConfig
-	(*RateLimitConfig)(nil),                               // 61: mcpany.config.v1.RateLimitConfig
-	(*PromptDefinition)(nil),                              // 62: mcpany.config.v1.PromptDefinition
-	(*WebhookConfig)(nil),                                 // 63: mcpany.config.v1.WebhookConfig
-	(*ToolDefinition)(nil),                                // 64: mcpany.config.v1.ToolDefinition
-	(*GrpcHealthCheck)(nil),                               // 65: mcpany.config.v1.GrpcHealthCheck
-	(*ResourceDefinition)(nil),                            // 66: mcpany.config.v1.ResourceDefinition
-	(*HttpHealthCheck)(nil),                               // 67: mcpany.config.v1.HttpHealthCheck
-	(*WebsocketHealthCheck)(nil),                          // 68: mcpany.config.v1.WebsocketHealthCheck
-	(*WebRTCHealthCheck)(nil),                             // 69: mcpany.config.v1.WebRTCHealthCheck
-	(*CommandLineHealthCheck)(nil),                        // 70: mcpany.config.v1.CommandLineHealthCheck
-	(*durationpb.Duration)(nil),                           // 71: google.protobuf.Duration
-	(*GrpcCallDefinition)(nil),                            // 72: mcpany.config.v1.GrpcCallDefinition
-	(*HttpCallDefinition)(nil),                            // 73: mcpany.config.v1.HttpCallDefinition
-	(*WebsocketCallDefinition)(nil),                       // 74: mcpany.config.v1.WebsocketCallDefinition
-	(*WebrtcCallDefinition)(nil),                          // 75: mcpany.config.v1.WebrtcCallDefinition
-	(*OpenAPICallDefinition)(nil),                         // 76: mcpany.config.v1.OpenAPICallDefinition
-	(*CommandLineCallDefinition)(nil),                     // 77: mcpany.config.v1.CommandLineCallDefinition
-	(*SecretValue)(nil),                                   // 78: mcpany.config.v1.SecretValue
-	(*GraphQLCallDefinition)(nil),                         // 79: mcpany.config.v1.GraphQLCallDefinition
-	(*SqlCallDefinition)(nil),                             // 80: mcpany.config.v1.SqlCallDefinition
-	(*MCPCallDefinition)(nil),                             // 81: mcpany.config.v1.MCPCallDefinition
+	(FilesystemUpstreamService_SymlinkMode)(0),            // 4: mcpany.config.v1.FilesystemUpstreamService.SymlinkMode
+	(*UpstreamServiceConfig)(nil),                         // 5: mcpany.config.v1.UpstreamServiceConfig
+	(*CallPolicy)(nil),                                    // 6: mcpany.config.v1.CallPolicy
+	(*CallPolicyRule)(nil),                                // 7: mcpany.config.v1.CallPolicyRule
+	(*ExportPolicy)(nil),                                  // 8: mcpany.config.v1.ExportPolicy
+	(*ExportRule)(nil),                                    // 9: mcpany.config.v1.ExportRule
+	(*CallHook)(nil),                                      // 10: mcpany.config.v1.CallHook
+	(*GrpcUpstreamService)(nil),                           // 11: mcpany.config.v1.GrpcUpstreamService
+	(*ProtoDefinition)(nil),                               // 12: mcpany.config.v1.ProtoDefinition
+	(*ProtoFile)(nil),                                     // 13: mcpany.config.v1.ProtoFile
+	(*ProtoDescriptor)(nil),                               // 14: mcpany.config.v1.ProtoDescriptor
+	(*ProtoCollection)(nil),                               // 15: mcpany.config.v1.ProtoCollection
+	(*HttpUpstreamService)(nil),                           // 16: mcpany.config.v1.HttpUpstreamService
+	(*WebsocketUpstreamService)(nil),                      // 17: mcpany.config.v1.WebsocketUpstreamService
+	(*WebrtcUpstreamService)(nil),                         // 18: mcpany.config.v1.WebrtcUpstreamService
+	(*OpenapiUpstreamService)(nil),                        // 19: mcpany.config.v1.OpenapiUpstreamService
+	(*CommandLineUpstreamService)(nil),                    // 20: mcpany.config.v1.CommandLineUpstreamService
+	(*GraphQLUpstreamService)(nil),                        // 21: mcpany.config.v1.GraphQLUpstreamService
+	(*SqlUpstreamService)(nil),                            // 22: mcpany.config.v1.SqlUpstreamService
+	(*FilesystemUpstreamService)(nil),                     // 23: mcpany.config.v1.FilesystemUpstreamService
+	(*OsFs)(nil),                                          // 24: mcpany.config.v1.OsFs
+	(*MemMapFs)(nil),                                      // 25: mcpany.config.v1.MemMapFs
+	(*HttpFs)(nil),                                        // 26: mcpany.config.v1.HttpFs
+	(*ZipFs)(nil),                                         // 27: mcpany.config.v1.ZipFs
+	(*GcsFs)(nil),                                         // 28: mcpany.config.v1.GcsFs
+	(*S3Fs)(nil),                                          // 29: mcpany.config.v1.S3Fs
+	(*SftpFs)(nil),                                        // 30: mcpany.config.v1.SftpFs
+	(*VectorUpstreamService)(nil),                         // 31: mcpany.config.v1.VectorUpstreamService
+	(*PineconeVectorDB)(nil),                              // 32: mcpany.config.v1.PineconeVectorDB
+	(*MilvusVectorDB)(nil),                                // 33: mcpany.config.v1.MilvusVectorDB
+	(*McpUpstreamService)(nil),                            // 34: mcpany.config.v1.McpUpstreamService
+	(*McpStdioConnection)(nil),                            // 35: mcpany.config.v1.McpStdioConnection
+	(*EnvValidation)(nil),                                 // 36: mcpany.config.v1.EnvValidation
+	(*McpStreamableHttpConnection)(nil),                   // 37: mcpany.config.v1.McpStreamableHttpConnection
+	(*McpBundleConnection)(nil),                           // 38: mcpany.config.v1.McpBundleConnection
+	(*ConnectionPoolConfig)(nil),                          // 39: mcpany.config.v1.ConnectionPoolConfig
+	(*ContainerEnvironment)(nil),                          // 40: mcpany.config.v1.ContainerEnvironment
+	(*ResilienceConfig)(nil),                              // 41: mcpany.config.v1.ResilienceConfig
+	(*CircuitBreakerConfig)(nil),                          // 42: mcpany.config.v1.CircuitBreakerConfig
+	(*RetryConfig)(nil),                                   // 43: mcpany.config.v1.RetryConfig
+	(*TLSConfig)(nil),                                     // 44: mcpany.config.v1.TLSConfig
+	nil,                                                   // 45: mcpany.config.v1.GrpcUpstreamService.CallsEntry
+	nil,                                                   // 46: mcpany.config.v1.HttpUpstreamService.CallsEntry
+	nil,                                                   // 47: mcpany.config.v1.WebsocketUpstreamService.CallsEntry
+	nil,                                                   // 48: mcpany.config.v1.WebrtcUpstreamService.CallsEntry
+	nil,                                                   // 49: mcpany.config.v1.OpenapiUpstreamService.CallsEntry
+	nil,                                                   // 50: mcpany.config.v1.CommandLineUpstreamService.CallsEntry
+	nil,                                                   // 51: mcpany.config.v1.CommandLineUpstreamService.EnvEntry
+	nil,                                                   // 52: mcpany.config.v1.GraphQLUpstreamService.CallsEntry
+	nil,                                                   // 53: mcpany.config.v1.SqlUpstreamService.CallsEntry
+	nil,                                                   // 54: mcpany.config.v1.FilesystemUpstreamService.RootPathsEntry
+	nil,                                                   // 55: mcpany.config.v1.McpUpstreamService.CallsEntry
+	nil,                                                   // 56: mcpany.config.v1.McpStdioConnection.EnvEntry
+	nil,                                                   // 57: mcpany.config.v1.McpBundleConnection.EnvEntry
+	nil,                                                   // 58: mcpany.config.v1.ContainerEnvironment.VolumesEntry
+	nil,                                                   // 59: mcpany.config.v1.ContainerEnvironment.EnvEntry
+	(*Authentication)(nil),                                // 60: mcpany.config.v1.Authentication
+	(*CacheConfig)(nil),                                   // 61: mcpany.config.v1.CacheConfig
+	(*RateLimitConfig)(nil),                               // 62: mcpany.config.v1.RateLimitConfig
+	(*PromptDefinition)(nil),                              // 63: mcpany.config.v1.PromptDefinition
+	(*WebhookConfig)(nil),                                 // 64: mcpany.config.v1.WebhookConfig
+	(*ToolDefinition)(nil),                                // 65: mcpany.config.v1.ToolDefinition
+	(*GrpcHealthCheck)(nil),                               // 66: mcpany.config.v1.GrpcHealthCheck
+	(*ResourceDefinition)(nil),                            // 67: mcpany.config.v1.ResourceDefinition
+	(*HttpHealthCheck)(nil),                               // 68: mcpany.config.v1.HttpHealthCheck
+	(*WebsocketHealthCheck)(nil),                          // 69: mcpany.config.v1.WebsocketHealthCheck
+	(*WebRTCHealthCheck)(nil),                             // 70: mcpany.config.v1.WebRTCHealthCheck
+	(*CommandLineHealthCheck)(nil),                        // 71: mcpany.config.v1.CommandLineHealthCheck
+	(*durationpb.Duration)(nil),                           // 72: google.protobuf.Duration
+	(*GrpcCallDefinition)(nil),                            // 73: mcpany.config.v1.GrpcCallDefinition
+	(*HttpCallDefinition)(nil),                            // 74: mcpany.config.v1.HttpCallDefinition
+	(*WebsocketCallDefinition)(nil),                       // 75: mcpany.config.v1.WebsocketCallDefinition
+	(*WebrtcCallDefinition)(nil),                          // 76: mcpany.config.v1.WebrtcCallDefinition
+	(*OpenAPICallDefinition)(nil),                         // 77: mcpany.config.v1.OpenAPICallDefinition
+	(*CommandLineCallDefinition)(nil),                     // 78: mcpany.config.v1.CommandLineCallDefinition
+	(*SecretValue)(nil),                                   // 79: mcpany.config.v1.SecretValue
+	(*GraphQLCallDefinition)(nil),                         // 80: mcpany.config.v1.GraphQLCallDefinition
+	(*SqlCallDefinition)(nil),                             // 81: mcpany.config.v1.SqlCallDefinition
+	(*MCPCallDefinition)(nil),                             // 82: mcpany.config.v1.MCPCallDefinition
 }
 var file_proto_config_v1_upstream_service_proto_depIdxs = []int32{
-	38,  // 0: mcpany.config.v1.UpstreamServiceConfig.connection_pool:type_name -> mcpany.config.v1.ConnectionPoolConfig
-	59,  // 1: mcpany.config.v1.UpstreamServiceConfig.upstream_auth:type_name -> mcpany.config.v1.Authentication
-	60,  // 2: mcpany.config.v1.UpstreamServiceConfig.cache:type_name -> mcpany.config.v1.CacheConfig
-	61,  // 3: mcpany.config.v1.UpstreamServiceConfig.rate_limit:type_name -> mcpany.config.v1.RateLimitConfig
+	39,  // 0: mcpany.config.v1.UpstreamServiceConfig.connection_pool:type_name -> mcpany.config.v1.ConnectionPoolConfig
+	60,  // 1: mcpany.config.v1.UpstreamServiceConfig.upstream_auth:type_name -> mcpany.config.v1.Authentication
+	61,  // 2: mcpany.config.v1.UpstreamServiceConfig.cache:type_name -> mcpany.config.v1.CacheConfig
+	62,  // 3: mcpany.config.v1.UpstreamServiceConfig.rate_limit:type_name -> mcpany.config.v1.RateLimitConfig
 	0,   // 4: mcpany.config.v1.UpstreamServiceConfig.load_balancing_strategy:type_name -> mcpany.config.v1.LoadBalancingStrategy
-	40,  // 5: mcpany.config.v1.UpstreamServiceConfig.resilience:type_name -> mcpany.config.v1.ResilienceConfig
-	59,  // 6: mcpany.config.v1.UpstreamServiceConfig.authentication:type_name -> mcpany.config.v1.Authentication
-	7,   // 7: mcpany.config.v1.UpstreamServiceConfig.tool_export_policy:type_name -> mcpany.config.v1.ExportPolicy
-	7,   // 8: mcpany.config.v1.UpstreamServiceConfig.prompt_export_policy:type_name -> mcpany.config.v1.ExportPolicy
-	7,   // 9: mcpany.config.v1.UpstreamServiceConfig.resource_export_policy:type_name -> mcpany.config.v1.ExportPolicy
-	33,  // 10: mcpany.config.v1.UpstreamServiceConfig.mcp_service:type_name -> mcpany.config.v1.McpUpstreamService
-	15,  // 11: mcpany.config.v1.UpstreamServiceConfig.http_service:type_name -> mcpany.config.v1.HttpUpstreamService
-	10,  // 12: mcpany.config.v1.UpstreamServiceConfig.grpc_service:type_name -> mcpany.config.v1.GrpcUpstreamService
-	18,  // 13: mcpany.config.v1.UpstreamServiceConfig.openapi_service:type_name -> mcpany.config.v1.OpenapiUpstreamService
-	19,  // 14: mcpany.config.v1.UpstreamServiceConfig.command_line_service:type_name -> mcpany.config.v1.CommandLineUpstreamService
-	16,  // 15: mcpany.config.v1.UpstreamServiceConfig.websocket_service:type_name -> mcpany.config.v1.WebsocketUpstreamService
-	17,  // 16: mcpany.config.v1.UpstreamServiceConfig.webrtc_service:type_name -> mcpany.config.v1.WebrtcUpstreamService
-	20,  // 17: mcpany.config.v1.UpstreamServiceConfig.graphql_service:type_name -> mcpany.config.v1.GraphQLUpstreamService
-	21,  // 18: mcpany.config.v1.UpstreamServiceConfig.sql_service:type_name -> mcpany.config.v1.SqlUpstreamService
-	22,  // 19: mcpany.config.v1.UpstreamServiceConfig.filesystem_service:type_name -> mcpany.config.v1.FilesystemUpstreamService
-	30,  // 20: mcpany.config.v1.UpstreamServiceConfig.vector_service:type_name -> mcpany.config.v1.VectorUpstreamService
-	5,   // 21: mcpany.config.v1.UpstreamServiceConfig.call_policies:type_name -> mcpany.config.v1.CallPolicy
-	9,   // 22: mcpany.config.v1.UpstreamServiceConfig.pre_call_hooks:type_name -> mcpany.config.v1.CallHook
-	9,   // 23: mcpany.config.v1.UpstreamServiceConfig.post_call_hooks:type_name -> mcpany.config.v1.CallHook
-	62,  // 24: mcpany.config.v1.UpstreamServiceConfig.prompts:type_name -> mcpany.config.v1.PromptDefinition
+	41,  // 5: mcpany.config.v1.UpstreamServiceConfig.resilience:type_name -> mcpany.config.v1.ResilienceConfig
+	60,  // 6: mcpany.config.v1.UpstreamServiceConfig.authentication:type_name -> mcpany.config.v1.Authentication
+	8,   // 7: mcpany.config.v1.UpstreamServiceConfig.tool_export_policy:type_name -> mcpany.config.v1.ExportPolicy
+	8,   // 8: mcpany.config.v1.UpstreamServiceConfig.prompt_export_policy:type_name -> mcpany.config.v1.ExportPolicy
+	8,   // 9: mcpany.config.v1.UpstreamServiceConfig.resource_export_policy:type_name -> mcpany.config.v1.ExportPolicy
+	34,  // 10: mcpany.config.v1.UpstreamServiceConfig.mcp_service:type_name -> mcpany.config.v1.McpUpstreamService
+	16,  // 11: mcpany.config.v1.UpstreamServiceConfig.http_service:type_name -> mcpany.config.v1.HttpUpstreamService
+	11,  // 12: mcpany.config.v1.UpstreamServiceConfig.grpc_service:type_name -> mcpany.config.v1.GrpcUpstreamService
+	19,  // 13: mcpany.config.v1.UpstreamServiceConfig.openapi_service:type_name -> mcpany.config.v1.OpenapiUpstreamService
+	20,  // 14: mcpany.config.v1.UpstreamServiceConfig.command_line_service:type_name -> mcpany.config.v1.CommandLineUpstreamService
+	17,  // 15: mcpany.config.v1.UpstreamServiceConfig.websocket_service:type_name -> mcpany.config.v1.WebsocketUpstreamService
+	18,  // 16: mcpany.config.v1.UpstreamServiceConfig.webrtc_service:type_name -> mcpany.config.v1.WebrtcUpstreamService
+	21,  // 17: mcpany.config.v1.UpstreamServiceConfig.graphql_service:type_name -> mcpany.config.v1.GraphQLUpstreamService
+	22,  // 18: mcpany.config.v1.UpstreamServiceConfig.sql_service:type_name -> mcpany.config.v1.SqlUpstreamService
+	23,  // 19: mcpany.config.v1.UpstreamServiceConfig.filesystem_service:type_name -> mcpany.config.v1.FilesystemUpstreamService
+	31,  // 20: mcpany.config.v1.UpstreamServiceConfig.vector_service:type_name -> mcpany.config.v1.VectorUpstreamService
+	6,   // 21: mcpany.config.v1.UpstreamServiceConfig.call_policies:type_name -> mcpany.config.v1.CallPolicy
+	10,  // 22: mcpany.config.v1.UpstreamServiceConfig.pre_call_hooks:type_name -> mcpany.config.v1.CallHook
+	10,  // 23: mcpany.config.v1.UpstreamServiceConfig.post_call_hooks:type_name -> mcpany.config.v1.CallHook
+	63,  // 24: mcpany.config.v1.UpstreamServiceConfig.prompts:type_name -> mcpany.config.v1.PromptDefinition
 	1,   // 25: mcpany.config.v1.CallPolicy.default_action:type_name -> mcpany.config.v1.CallPolicy.Action
-	6,   // 26: mcpany.config.v1.CallPolicy.rules:type_name -> mcpany.config.v1.CallPolicyRule
+	7,   // 26: mcpany.config.v1.CallPolicy.rules:type_name -> mcpany.config.v1.CallPolicyRule
 	1,   // 27: mcpany.config.v1.CallPolicyRule.action:type_name -> mcpany.config.v1.CallPolicy.Action
 	2,   // 28: mcpany.config.v1.ExportPolicy.default_action:type_name -> mcpany.config.v1.ExportPolicy.Action
-	8,   // 29: mcpany.config.v1.ExportPolicy.rules:type_name -> mcpany.config.v1.ExportRule
+	9,   // 29: mcpany.config.v1.ExportPolicy.rules:type_name -> mcpany.config.v1.ExportRule
 	2,   // 30: mcpany.config.v1.ExportRule.action:type_name -> mcpany.config.v1.ExportPolicy.Action
-	63,  // 31: mcpany.config.v1.CallHook.webhook:type_name -> mcpany.config.v1.WebhookConfig
-	5,   // 32: mcpany.config.v1.CallHook.call_policy:type_name -> mcpany.config.v1.CallPolicy
-	43,  // 33: mcpany.config.v1.GrpcUpstreamService.tls_config:type_name -> mcpany.config.v1.TLSConfig
-	64,  // 34: mcpany.config.v1.GrpcUpstreamService.tools:type_name -> mcpany.config.v1.ToolDefinition
-	65,  // 35: mcpany.config.v1.GrpcUpstreamService.health_check:type_name -> mcpany.config.v1.GrpcHealthCheck
-	11,  // 36: mcpany.config.v1.GrpcUpstreamService.proto_definitions:type_name -> mcpany.config.v1.ProtoDefinition
-	14,  // 37: mcpany.config.v1.GrpcUpstreamService.proto_collection:type_name -> mcpany.config.v1.ProtoCollection
-	66,  // 38: mcpany.config.v1.GrpcUpstreamService.resources:type_name -> mcpany.config.v1.ResourceDefinition
-	44,  // 39: mcpany.config.v1.GrpcUpstreamService.calls:type_name -> mcpany.config.v1.GrpcUpstreamService.CallsEntry
-	62,  // 40: mcpany.config.v1.GrpcUpstreamService.prompts:type_name -> mcpany.config.v1.PromptDefinition
-	12,  // 41: mcpany.config.v1.ProtoDefinition.proto_file:type_name -> mcpany.config.v1.ProtoFile
-	13,  // 42: mcpany.config.v1.ProtoDefinition.proto_descriptor:type_name -> mcpany.config.v1.ProtoDescriptor
-	64,  // 43: mcpany.config.v1.HttpUpstreamService.tools:type_name -> mcpany.config.v1.ToolDefinition
-	45,  // 44: mcpany.config.v1.HttpUpstreamService.calls:type_name -> mcpany.config.v1.HttpUpstreamService.CallsEntry
-	67,  // 45: mcpany.config.v1.HttpUpstreamService.health_check:type_name -> mcpany.config.v1.HttpHealthCheck
-	43,  // 46: mcpany.config.v1.HttpUpstreamService.tls_config:type_name -> mcpany.config.v1.TLSConfig
-	66,  // 47: mcpany.config.v1.HttpUpstreamService.resources:type_name -> mcpany.config.v1.ResourceDefinition
-	62,  // 48: mcpany.config.v1.HttpUpstreamService.prompts:type_name -> mcpany.config.v1.PromptDefinition
-	64,  // 49: mcpany.config.v1.WebsocketUpstreamService.tools:type_name -> mcpany.config.v1.ToolDefinition
-	43,  // 50: mcpany.config.v1.WebsocketUpstreamService.tls_config:type_name -> mcpany.config.v1.TLSConfig
-	66,  // 51: mcpany.config.v1.WebsocketUpstreamService.resources:type_name -> mcpany.config.v1.ResourceDefinition
-	46,  // 52: mcpany.config.v1.WebsocketUpstreamService.calls:type_name -> mcpany.config.v1.WebsocketUpstreamService.CallsEntry
-	62,  // 53: mcpany.config.v1.WebsocketUpstreamService.prompts:type_name -> mcpany.config.v1.PromptDefinition
-	68,  // 54: mcpany.config.v1.WebsocketUpstreamService.health_check:type_name -> mcpany.config.v1.WebsocketHealthCheck
-	64,  // 55: mcpany.config.v1.WebrtcUpstreamService.tools:type_name -> mcpany.config.v1.ToolDefinition
-	43,  // 56: mcpany.config.v1.WebrtcUpstreamService.tls_config:type_name -> mcpany.config.v1.TLSConfig
-	66,  // 57: mcpany.config.v1.WebrtcUpstreamService.resources:type_name -> mcpany.config.v1.ResourceDefinition
-	47,  // 58: mcpany.config.v1.WebrtcUpstreamService.calls:type_name -> mcpany.config.v1.WebrtcUpstreamService.CallsEntry
-	62,  // 59: mcpany.config.v1.WebrtcUpstreamService.prompts:type_name -> mcpany.config.v1.PromptDefinition
-	69,  // 60: mcpany.config.v1.WebrtcUpstreamService.health_check:type_name -> mcpany.config.v1.WebRTCHealthCheck
-	67,  // 61: mcpany.config.v1.OpenapiUpstreamService.health_check:type_name -> mcpany.config.v1.HttpHealthCheck
-	43,  // 62: mcpany.config.v1.OpenapiUpstreamService.tls_config:type_name -> mcpany.config.v1.TLSConfig
-	64,  // 63: mcpany.config.v1.OpenapiUpstreamService.tools:type_name -> mcpany.config.v1.ToolDefinition
-	66,  // 64: mcpany.config.v1.OpenapiUpstreamService.resources:type_name -> mcpany.config.v1.ResourceDefinition
-	48,  // 65: mcpany.config.v1.OpenapiUpstreamService.calls:type_name -> mcpany.config.v1.OpenapiUpstreamService.CallsEntry
-	62,  // 66: mcpany.config.v1.OpenapiUpstreamService.prompts:type_name -> mcpany.config.v1.PromptDefinition
-	64,  // 67: mcpany.config.v1.CommandLineUpstreamService.tools:type_name -> mcpany.config.v1.ToolDefinition
-	70,  // 68: mcpany.config.v1.CommandLineUpstreamService.health_check:type_name -> mcpany.config.v1.CommandLineHealthCheck
-	60,  // 69: mcpany.config.v1.CommandLineUpstreamService.cache:type_name -> mcpany.config.v1.CacheConfig
-	39,  // 70: mcpany.config.v1.CommandLineUpstreamService.container_environment:type_name -> mcpany.config.v1.ContainerEnvironment
-	71,  // 71: mcpany.config.v1.CommandLineUpstreamService.timeout:type_name -> google.protobuf.Duration
-	66,  // 72: mcpany.config.v1.CommandLineUpstreamService.resources:type_name -> mcpany.config.v1.ResourceDefinition
-	49,  // 73: mcpany.config.v1.CommandLineUpstreamService.calls:type_name -> mcpany.config.v1.CommandLineUpstreamService.CallsEntry
-	62,  // 74: mcpany.config.v1.CommandLineUpstreamService.prompts:type_name -> mcpany.config.v1.PromptDefinition
+	64,  // 31: mcpany.config.v1.CallHook.webhook:type_name -> mcpany.config.v1.WebhookConfig
+	6,   // 32: mcpany.config.v1.CallHook.call_policy:type_name -> mcpany.config.v1.CallPolicy
+	44,  // 33: mcpany.config.v1.GrpcUpstreamService.tls_config:type_name -> mcpany.config.v1.TLSConfig
+	65,  // 34: mcpany.config.v1.GrpcUpstreamService.tools:type_name -> mcpany.config.v1.ToolDefinition
+	66,  // 35: mcpany.config.v1.GrpcUpstreamService.health_check:type_name -> mcpany.config.v1.GrpcHealthCheck
+	12,  // 36: mcpany.config.v1.GrpcUpstreamService.proto_definitions:type_name -> mcpany.config.v1.ProtoDefinition
+	15,  // 37: mcpany.config.v1.GrpcUpstreamService.proto_collection:type_name -> mcpany.config.v1.ProtoCollection
+	67,  // 38: mcpany.config.v1.GrpcUpstreamService.resources:type_name -> mcpany.config.v1.ResourceDefinition
+	45,  // 39: mcpany.config.v1.GrpcUpstreamService.calls:type_name -> mcpany.config.v1.GrpcUpstreamService.CallsEntry
+	63,  // 40: mcpany.config.v1.GrpcUpstreamService.prompts:type_name -> mcpany.config.v1.PromptDefinition
+	13,  // 41: mcpany.config.v1.ProtoDefinition.proto_file:type_name -> mcpany.config.v1.ProtoFile
+	14,  // 42: mcpany.config.v1.ProtoDefinition.proto_descriptor:type_name -> mcpany.config.v1.ProtoDescriptor
+	65,  // 43: mcpany.config.v1.HttpUpstreamService.tools:type_name -> mcpany.config.v1.ToolDefinition
+	46,  // 44: mcpany.config.v1.HttpUpstreamService.calls:type_name -> mcpany.config.v1.HttpUpstreamService.CallsEntry
+	68,  // 45: mcpany.config.v1.HttpUpstreamService.health_check:type_name -> mcpany.config.v1.HttpHealthCheck
+	44,  // 46: mcpany.config.v1.HttpUpstreamService.tls_config:type_name -> mcpany.config.v1.TLSConfig
+	67,  // 47: mcpany.config.v1.HttpUpstreamService.resources:type_name -> mcpany.config.v1.ResourceDefinition
+	63,  // 48: mcpany.config.v1.HttpUpstreamService.prompts:type_name -> mcpany.config.v1.PromptDefinition
+	65,  // 49: mcpany.config.v1.WebsocketUpstreamService.tools:type_name -> mcpany.config.v1.ToolDefinition
+	44,  // 50: mcpany.config.v1.WebsocketUpstreamService.tls_config:type_name -> mcpany.config.v1.TLSConfig
+	67,  // 51: mcpany.config.v1.WebsocketUpstreamService.resources:type_name -> mcpany.config.v1.ResourceDefinition
+	47,  // 52: mcpany.config.v1.WebsocketUpstreamService.calls:type_name -> mcpany.config.v1.WebsocketUpstreamService.CallsEntry
+	63,  // 53: mcpany.config.v1.WebsocketUpstreamService.prompts:type_name -> mcpany.config.v1.PromptDefinition
+	69,  // 54: mcpany.config.v1.WebsocketUpstreamService.health_check:type_name -> mcpany.config.v1.WebsocketHealthCheck
+	65,  // 55: mcpany.config.v1.WebrtcUpstreamService.tools:type_name -> mcpany.config.v1.ToolDefinition
+	44,  // 56: mcpany.config.v1.WebrtcUpstreamService.tls_config:type_name -> mcpany.config.v1.TLSConfig
+	67,  // 57: mcpany.config.v1.WebrtcUpstreamService.resources:type_name -> mcpany.config.v1.ResourceDefinition
+	48,  // 58: mcpany.config.v1.WebrtcUpstreamService.calls:type_name -> mcpany.config.v1.WebrtcUpstreamService.CallsEntry
+	63,  // 59: mcpany.config.v1.WebrtcUpstreamService.prompts:type_name -> mcpany.config.v1.PromptDefinition
+	70,  // 60: mcpany.config.v1.WebrtcUpstreamService.health_check:type_name -> mcpany.config.v1.WebRTCHealthCheck
+	68,  // 61: mcpany.config.v1.OpenapiUpstreamService.health_check:type_name -> mcpany.config.v1.HttpHealthCheck
+	44,  // 62: mcpany.config.v1.OpenapiUpstreamService.tls_config:type_name -> mcpany.config.v1.TLSConfig
+	65,  // 63: mcpany.config.v1.OpenapiUpstreamService.tools:type_name -> mcpany.config.v1.ToolDefinition
+	67,  // 64: mcpany.config.v1.OpenapiUpstreamService.resources:type_name -> mcpany.config.v1.ResourceDefinition
+	49,  // 65: mcpany.config.v1.OpenapiUpstreamService.calls:type_name -> mcpany.config.v1.OpenapiUpstreamService.CallsEntry
+	63,  // 66: mcpany.config.v1.OpenapiUpstreamService.prompts:type_name -> mcpany.config.v1.PromptDefinition
+	65,  // 67: mcpany.config.v1.CommandLineUpstreamService.tools:type_name -> mcpany.config.v1.ToolDefinition
+	71,  // 68: mcpany.config.v1.CommandLineUpstreamService.health_check:type_name -> mcpany.config.v1.CommandLineHealthCheck
+	61,  // 69: mcpany.config.v1.CommandLineUpstreamService.cache:type_name -> mcpany.config.v1.CacheConfig
+	40,  // 70: mcpany.config.v1.CommandLineUpstreamService.container_environment:type_name -> mcpany.config.v1.ContainerEnvironment
+	72,  // 71: mcpany.config.v1.CommandLineUpstreamService.timeout:type_name -> google.protobuf.Duration
+	67,  // 72: mcpany.config.v1.CommandLineUpstreamService.resources:type_name -> mcpany.config.v1.ResourceDefinition
+	50,  // 73: mcpany.config.v1.CommandLineUpstreamService.calls:type_name -> mcpany.config.v1.CommandLineUpstreamService.CallsEntry
+	63,  // 74: mcpany.config.v1.CommandLineUpstreamService.prompts:type_name -> mcpany.config.v1.PromptDefinition
 	3,   // 75: mcpany.config.v1.CommandLineUpstreamService.communication_protocol:type_name -> mcpany.config.v1.CommandLineUpstreamService.CommunicationProtocol
-	50,  // 76: mcpany.config.v1.CommandLineUpstreamService.env:type_name -> mcpany.config.v1.CommandLineUpstreamService.EnvEntry
-	51,  // 77: mcpany.config.v1.GraphQLUpstreamService.calls:type_name -> mcpany.config.v1.GraphQLUpstreamService.CallsEntry
-	52,  // 78: mcpany.config.v1.SqlUpstreamService.calls:type_name -> mcpany.config.v1.SqlUpstreamService.CallsEntry
-	53,  // 79: mcpany.config.v1.FilesystemUpstreamService.root_paths:type_name -> mcpany.config.v1.FilesystemUpstreamService.RootPathsEntry
-	64,  // 80: mcpany.config.v1.FilesystemUpstreamService.tools:type_name -> mcpany.config.v1.ToolDefinition
-	66,  // 81: mcpany.config.v1.FilesystemUpstreamService.resources:type_name -> mcpany.config.v1.ResourceDefinition
-	62,  // 82: mcpany.config.v1.FilesystemUpstreamService.prompts:type_name -> mcpany.config.v1.PromptDefinition
-	23,  // 83: mcpany.config.v1.FilesystemUpstreamService.os:type_name -> mcpany.config.v1.OsFs
-	24,  // 84: mcpany.config.v1.FilesystemUpstreamService.tmpfs:type_name -> mcpany.config.v1.MemMapFs
-	25,  // 85: mcpany.config.v1.FilesystemUpstreamService.http:type_name -> mcpany.config.v1.HttpFs
-	26,  // 86: mcpany.config.v1.FilesystemUpstreamService.zip:type_name -> mcpany.config.v1.ZipFs
-	27,  // 87: mcpany.config.v1.FilesystemUpstreamService.gcs:type_name -> mcpany.config.v1.GcsFs
-	29,  // 88: mcpany.config.v1.FilesystemUpstreamService.sftp:type_name -> mcpany.config.v1.SftpFs
-	28,  // 89: mcpany.config.v1.FilesystemUpstreamService.s3:type_name -> mcpany.config.v1.S3Fs
-	31,  // 90: mcpany.config.v1.VectorUpstreamService.pinecone:type_name -> mcpany.config.v1.PineconeVectorDB
-	32,  // 91: mcpany.config.v1.VectorUpstreamService.milvus:type_name -> mcpany.config.v1.MilvusVectorDB
-	64,  // 92: mcpany.config.v1.VectorUpstreamService.tools:type_name -> mcpany.config.v1.ToolDefinition
-	66,  // 93: mcpany.config.v1.VectorUpstreamService.resources:type_name -> mcpany.config.v1.ResourceDefinition
-	62,  // 94: mcpany.config.v1.VectorUpstreamService.prompts:type_name -> mcpany.config.v1.PromptDefinition
-	36,  // 95: mcpany.config.v1.McpUpstreamService.http_connection:type_name -> mcpany.config.v1.McpStreamableHttpConnection
-	34,  // 96: mcpany.config.v1.McpUpstreamService.stdio_connection:type_name -> mcpany.config.v1.McpStdioConnection
-	37,  // 97: mcpany.config.v1.McpUpstreamService.bundle_connection:type_name -> mcpany.config.v1.McpBundleConnection
-	64,  // 98: mcpany.config.v1.McpUpstreamService.tools:type_name -> mcpany.config.v1.ToolDefinition
-	66,  // 99: mcpany.config.v1.McpUpstreamService.resources:type_name -> mcpany.config.v1.ResourceDefinition
-	54,  // 100: mcpany.config.v1.McpUpstreamService.calls:type_name -> mcpany.config.v1.McpUpstreamService.CallsEntry
-	62,  // 101: mcpany.config.v1.McpUpstreamService.prompts:type_name -> mcpany.config.v1.PromptDefinition
-	55,  // 102: mcpany.config.v1.McpStdioConnection.env:type_name -> mcpany.config.v1.McpStdioConnection.EnvEntry
-	35,  // 103: mcpany.config.v1.McpStdioConnection.validation:type_name -> mcpany.config.v1.EnvValidation
-	43,  // 104: mcpany.config.v1.McpStreamableHttpConnection.tls_config:type_name -> mcpany.config.v1.TLSConfig
-	56,  // 105: mcpany.config.v1.McpBundleConnection.env:type_name -> mcpany.config.v1.McpBundleConnection.EnvEntry
-	71,  // 106: mcpany.config.v1.ConnectionPoolConfig.idle_timeout:type_name -> google.protobuf.Duration
-	57,  // 107: mcpany.config.v1.ContainerEnvironment.volumes:type_name -> mcpany.config.v1.ContainerEnvironment.VolumesEntry
-	58,  // 108: mcpany.config.v1.ContainerEnvironment.env:type_name -> mcpany.config.v1.ContainerEnvironment.EnvEntry
-	41,  // 109: mcpany.config.v1.ResilienceConfig.circuit_breaker:type_name -> mcpany.config.v1.CircuitBreakerConfig
-	42,  // 110: mcpany.config.v1.ResilienceConfig.retry_policy:type_name -> mcpany.config.v1.RetryConfig
-	71,  // 111: mcpany.config.v1.ResilienceConfig.timeout:type_name -> google.protobuf.Duration
-	71,  // 112: mcpany.config.v1.CircuitBreakerConfig.open_duration:type_name -> google.protobuf.Duration
-	71,  // 113: mcpany.config.v1.RetryConfig.base_backoff:type_name -> google.protobuf.Duration
-	71,  // 114: mcpany.config.v1.RetryConfig.max_backoff:type_name -> google.protobuf.Duration
-	71,  // 115: mcpany.config.v1.RetryConfig.max_elapsed_time:type_name -> google.protobuf.Duration
-	72,  // 116: mcpany.config.v1.GrpcUpstreamService.CallsEntry.value:type_name -> mcpany.config.v1.GrpcCallDefinition
-	73,  // 117: mcpany.config.v1.HttpUpstreamService.CallsEntry.value:type_name -> mcpany.config.v1.HttpCallDefinition
-	74,  // 118: mcpany.config.v1.WebsocketUpstreamService.CallsEntry.value:type_name -> mcpany.config.v1.WebsocketCallDefinition
-	75,  // 119: mcpany.config.v1.WebrtcUpstreamService.CallsEntry.value:type_name -> mcpany.config.v1.WebrtcCallDefinition
-	76,  // 120: mcpany.config.v1.OpenapiUpstreamService.CallsEntry.value:type_name -> mcpany.config.v1.OpenAPICallDefinition
-	77,  // 121: mcpany.config.v1.CommandLineUpstreamService.CallsEntry.value:type_name -> mcpany.config.v1.CommandLineCallDefinition
-	78,  // 122: mcpany.config.v1.CommandLineUpstreamService.EnvEntry.value:type_name -> mcpany.config.v1.SecretValue
-	79,  // 123: mcpany.config.v1.GraphQLUpstreamService.CallsEntry.value:type_name -> mcpany.config.v1.GraphQLCallDefinition
-	80,  // 124: mcpany.config.v1.SqlUpstreamService.CallsEntry.value:type_name -> mcpany.config.v1.SqlCallDefinition
-	81,  // 125: mcpany.config.v1.McpUpstreamService.CallsEntry.value:type_name -> mcpany.config.v1.MCPCallDefinition
-	78,  // 126: mcpany.config.v1.McpStdioConnection.EnvEntry.value:type_name -> mcpany.config.v1.SecretValue
-	78,  // 127: mcpany.config.v1.McpBundleConnection.EnvEntry.value:type_name -> mcpany.config.v1.SecretValue
-	78,  // 128: mcpany.config.v1.ContainerEnvironment.EnvEntry.value:type_name -> mcpany.config.v1.SecretValue
-	129, // [129:129] is the sub-list for method output_type
-	129, // [129:129] is the sub-list for method input_type
-	129, // [129:129] is the sub-list for extension type_name
-	129, // [129:129] is the sub-list for extension extendee
-	0,   // [0:129] is the sub-list for field type_name
+	51,  // 76: mcpany.config.v1.CommandLineUpstreamService.env:type_name -> mcpany.config.v1.CommandLineUpstreamService.EnvEntry
+	52,  // 77: mcpany.config.v1.GraphQLUpstreamService.calls:type_name -> mcpany.config.v1.GraphQLUpstreamService.CallsEntry
+	53,  // 78: mcpany.config.v1.SqlUpstreamService.calls:type_name -> mcpany.config.v1.SqlUpstreamService.CallsEntry
+	54,  // 79: mcpany.config.v1.FilesystemUpstreamService.root_paths:type_name -> mcpany.config.v1.FilesystemUpstreamService.RootPathsEntry
+	65,  // 80: mcpany.config.v1.FilesystemUpstreamService.tools:type_name -> mcpany.config.v1.ToolDefinition
+	67,  // 81: mcpany.config.v1.FilesystemUpstreamService.resources:type_name -> mcpany.config.v1.ResourceDefinition
+	63,  // 82: mcpany.config.v1.FilesystemUpstreamService.prompts:type_name -> mcpany.config.v1.PromptDefinition
+	4,   // 83: mcpany.config.v1.FilesystemUpstreamService.symlink_mode:type_name -> mcpany.config.v1.FilesystemUpstreamService.SymlinkMode
+	24,  // 84: mcpany.config.v1.FilesystemUpstreamService.os:type_name -> mcpany.config.v1.OsFs
+	25,  // 85: mcpany.config.v1.FilesystemUpstreamService.tmpfs:type_name -> mcpany.config.v1.MemMapFs
+	26,  // 86: mcpany.config.v1.FilesystemUpstreamService.http:type_name -> mcpany.config.v1.HttpFs
+	27,  // 87: mcpany.config.v1.FilesystemUpstreamService.zip:type_name -> mcpany.config.v1.ZipFs
+	28,  // 88: mcpany.config.v1.FilesystemUpstreamService.gcs:type_name -> mcpany.config.v1.GcsFs
+	30,  // 89: mcpany.config.v1.FilesystemUpstreamService.sftp:type_name -> mcpany.config.v1.SftpFs
+	29,  // 90: mcpany.config.v1.FilesystemUpstreamService.s3:type_name -> mcpany.config.v1.S3Fs
+	32,  // 91: mcpany.config.v1.VectorUpstreamService.pinecone:type_name -> mcpany.config.v1.PineconeVectorDB
+	33,  // 92: mcpany.config.v1.VectorUpstreamService.milvus:type_name -> mcpany.config.v1.MilvusVectorDB
+	65,  // 93: mcpany.config.v1.VectorUpstreamService.tools:type_name -> mcpany.config.v1.ToolDefinition
+	67,  // 94: mcpany.config.v1.VectorUpstreamService.resources:type_name -> mcpany.config.v1.ResourceDefinition
+	63,  // 95: mcpany.config.v1.VectorUpstreamService.prompts:type_name -> mcpany.config.v1.PromptDefinition
+	37,  // 96: mcpany.config.v1.McpUpstreamService.http_connection:type_name -> mcpany.config.v1.McpStreamableHttpConnection
+	35,  // 97: mcpany.config.v1.McpUpstreamService.stdio_connection:type_name -> mcpany.config.v1.McpStdioConnection
+	38,  // 98: mcpany.config.v1.McpUpstreamService.bundle_connection:type_name -> mcpany.config.v1.McpBundleConnection
+	65,  // 99: mcpany.config.v1.McpUpstreamService.tools:type_name -> mcpany.config.v1.ToolDefinition
+	67,  // 100: mcpany.config.v1.McpUpstreamService.resources:type_name -> mcpany.config.v1.ResourceDefinition
+	55,  // 101: mcpany.config.v1.McpUpstreamService.calls:type_name -> mcpany.config.v1.McpUpstreamService.CallsEntry
+	63,  // 102: mcpany.config.v1.McpUpstreamService.prompts:type_name -> mcpany.config.v1.PromptDefinition
+	56,  // 103: mcpany.config.v1.McpStdioConnection.env:type_name -> mcpany.config.v1.McpStdioConnection.EnvEntry
+	36,  // 104: mcpany.config.v1.McpStdioConnection.validation:type_name -> mcpany.config.v1.EnvValidation
+	44,  // 105: mcpany.config.v1.McpStreamableHttpConnection.tls_config:type_name -> mcpany.config.v1.TLSConfig
+	57,  // 106: mcpany.config.v1.McpBundleConnection.env:type_name -> mcpany.config.v1.McpBundleConnection.EnvEntry
+	72,  // 107: mcpany.config.v1.ConnectionPoolConfig.idle_timeout:type_name -> google.protobuf.Duration
+	58,  // 108: mcpany.config.v1.ContainerEnvironment.volumes:type_name -> mcpany.config.v1.ContainerEnvironment.VolumesEntry
+	59,  // 109: mcpany.config.v1.ContainerEnvironment.env:type_name -> mcpany.config.v1.ContainerEnvironment.EnvEntry
+	42,  // 110: mcpany.config.v1.ResilienceConfig.circuit_breaker:type_name -> mcpany.config.v1.CircuitBreakerConfig
+	43,  // 111: mcpany.config.v1.ResilienceConfig.retry_policy:type_name -> mcpany.config.v1.RetryConfig
+	72,  // 112: mcpany.config.v1.ResilienceConfig.timeout:type_name -> google.protobuf.Duration
+	72,  // 113: mcpany.config.v1.CircuitBreakerConfig.open_duration:type_name -> google.protobuf.Duration
+	72,  // 114: mcpany.config.v1.RetryConfig.base_backoff:type_name -> google.protobuf.Duration
+	72,  // 115: mcpany.config.v1.RetryConfig.max_backoff:type_name -> google.protobuf.Duration
+	72,  // 116: mcpany.config.v1.RetryConfig.max_elapsed_time:type_name -> google.protobuf.Duration
+	73,  // 117: mcpany.config.v1.GrpcUpstreamService.CallsEntry.value:type_name -> mcpany.config.v1.GrpcCallDefinition
+	74,  // 118: mcpany.config.v1.HttpUpstreamService.CallsEntry.value:type_name -> mcpany.config.v1.HttpCallDefinition
+	75,  // 119: mcpany.config.v1.WebsocketUpstreamService.CallsEntry.value:type_name -> mcpany.config.v1.WebsocketCallDefinition
+	76,  // 120: mcpany.config.v1.WebrtcUpstreamService.CallsEntry.value:type_name -> mcpany.config.v1.WebrtcCallDefinition
+	77,  // 121: mcpany.config.v1.OpenapiUpstreamService.CallsEntry.value:type_name -> mcpany.config.v1.OpenAPICallDefinition
+	78,  // 122: mcpany.config.v1.CommandLineUpstreamService.CallsEntry.value:type_name -> mcpany.config.v1.CommandLineCallDefinition
+	79,  // 123: mcpany.config.v1.CommandLineUpstreamService.EnvEntry.value:type_name -> mcpany.config.v1.SecretValue
+	80,  // 124: mcpany.config.v1.GraphQLUpstreamService.CallsEntry.value:type_name -> mcpany.config.v1.GraphQLCallDefinition
+	81,  // 125: mcpany.config.v1.SqlUpstreamService.CallsEntry.value:type_name -> mcpany.config.v1.SqlCallDefinition
+	82,  // 126: mcpany.config.v1.McpUpstreamService.CallsEntry.value:type_name -> mcpany.config.v1.MCPCallDefinition
+	79,  // 127: mcpany.config.v1.McpStdioConnection.EnvEntry.value:type_name -> mcpany.config.v1.SecretValue
+	79,  // 128: mcpany.config.v1.McpBundleConnection.EnvEntry.value:type_name -> mcpany.config.v1.SecretValue
+	79,  // 129: mcpany.config.v1.ContainerEnvironment.EnvEntry.value:type_name -> mcpany.config.v1.SecretValue
+	130, // [130:130] is the sub-list for method output_type
+	130, // [130:130] is the sub-list for method input_type
+	130, // [130:130] is the sub-list for extension type_name
+	130, // [130:130] is the sub-list for extension extendee
+	0,   // [0:130] is the sub-list for field type_name
 }
 
 func init() { file_proto_config_v1_upstream_service_proto_init() }
@@ -8526,7 +8611,7 @@ func file_proto_config_v1_upstream_service_proto_init() {
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_proto_config_v1_upstream_service_proto_rawDesc), len(file_proto_config_v1_upstream_service_proto_rawDesc)),
-			NumEnums:      4,
+			NumEnums:      5,
 			NumMessages:   55,
 			NumExtensions: 0,
 			NumServices:   0,

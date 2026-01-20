@@ -32,6 +32,11 @@ func TestNewSafeHTTPClient(t *testing.T) {
 		client := util.NewSafeHTTPClient()
 		assert.Equal(t, 10*time.Second, client.Timeout)
 
+		// Attempting to dial 127.0.0.1 should fail (we need to be careful not to actually rely on external network)
+		// But here we are just unit testing the creation logic.
+		// To verify the dialer logic, we'd need to invoke the DialContext.
+		// Let's try to invoke DialContext with a loopback address.
+
 		transport, ok := client.Transport.(*http.Transport)
 		require.True(t, ok)
 

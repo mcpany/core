@@ -542,7 +542,7 @@ func TestCachingMiddleware_ProviderFactory(t *testing.T) {
 	// Test 2: Ollama Config
 	err = triggerFactory(configv1.SemanticCacheConfig_builder{
 		Ollama: configv1.OllamaEmbeddingProviderConfig_builder{
-			BaseUrl: proto.String("http://localhost:11434"),
+			BaseUrl: proto.String("http://127.0.0.1:11434"),
 			Model:   proto.String("nomic-embed-text"),
 		}.Build(),
 	}.Build(), "ollama")
@@ -551,7 +551,7 @@ func TestCachingMiddleware_ProviderFactory(t *testing.T) {
 	// Test 3: HTTP Config
 	err = triggerFactory(configv1.SemanticCacheConfig_builder{
 		Http: configv1.HttpEmbeddingProviderConfig_builder{
-			Url:              proto.String("http://localhost:8080"),
+			Url:              proto.String("http://127.0.0.1:8080"),
 			ResponseJsonPath: proto.String("$.embedding"),
 		}.Build(),
 	}.Build(), "http")

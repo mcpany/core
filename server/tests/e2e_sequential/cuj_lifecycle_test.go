@@ -119,7 +119,7 @@ upstream_services:
 	}
 	_, portStr, err := net.SplitHostPort(portBinding)
 	require.NoError(t, err)
-	baseURL := fmt.Sprintf("http://localhost:%s", portStr)
+	baseURL := fmt.Sprintf("http://127.0.0.1:%s", portStr)
 
 	// CUJ 1: Health
 	verifyEndpoint(t, fmt.Sprintf("%s/healthz", baseURL), 200, 60*time.Second)
@@ -192,7 +192,7 @@ upstream_services:
 	}
 	_, portStr, err = net.SplitHostPort(portBinding)
 	require.NoError(t, err)
-	baseURL = fmt.Sprintf("http://localhost:%s", portStr)
+	baseURL = fmt.Sprintf("http://127.0.0.1:%s", portStr)
 
 	// Wait for health
 	verifyEndpoint(t, fmt.Sprintf("%s/healthz", baseURL), 200, 60*time.Second)
@@ -256,7 +256,7 @@ upstream_services:
 	}
 	_, portStr, err = net.SplitHostPort(portBinding)
 	require.NoError(t, err)
-	baseURL = fmt.Sprintf("http://localhost:%s", portStr)
+	baseURL = fmt.Sprintf("http://127.0.0.1:%s", portStr)
 
 	// Wait for health
 	verifyEndpoint(t, fmt.Sprintf("%s/healthz", baseURL), 200, 60*time.Second)

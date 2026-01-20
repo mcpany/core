@@ -39,7 +39,7 @@ func TestBlockRmE2E_Binary(t *testing.T) {
 
 	// 2. Start Webhook Server
 	// Find a free port
-	l, err := net.Listen("tcp", "localhost:0")
+	l, err := net.Listen("tcp", "127.0.0.1:0")
 	require.NoError(t, err)
 	port := l.Addr().(*net.TCPAddr).Port
 	_ = l.Close()
@@ -55,7 +55,7 @@ func TestBlockRmE2E_Binary(t *testing.T) {
 		}
 	}()
 
-	url := fmt.Sprintf("http://localhost:%d/validate", port)
+	url := fmt.Sprintf("http://127.0.0.1:%d/validate", port)
 	waitForServer(t, url)
 
 	// 3. Setup Tool Manager and Upstream

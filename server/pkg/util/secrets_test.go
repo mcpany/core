@@ -459,7 +459,7 @@ func TestResolveSecret_Vault(t *testing.T) {
 		secret := &configv1.SecretValue{}
 		// Use Vault type to trigger the context check
 		vaultSecret := &configv1.VaultSecret{}
-		vaultSecret.SetAddress("http://localhost:8200")
+		vaultSecret.SetAddress("http://127.0.0.1:8200")
 		vaultSecret.SetToken(&configv1.SecretValue{
 			Value: &configv1.SecretValue_PlainText{PlainText: "token"},
 		})

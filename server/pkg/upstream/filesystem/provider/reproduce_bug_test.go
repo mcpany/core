@@ -28,7 +28,7 @@ func TestBug_BrokenSymlinkTraversal(t *testing.T) {
 	require.NoError(t, err)
 
 	// 5. Setup provider
-	p := NewLocalProvider(nil, map[string]string{"/": rootDir}, nil, nil)
+	p := NewLocalProvider(nil, map[string]string{"/": rootDir}, nil, nil, 0)
 
 	// 6. Try to resolve the symlink path
 	resolved, err := p.ResolvePath("/badlink")

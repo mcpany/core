@@ -246,7 +246,7 @@ func TestUpstream_Register(t *testing.T) {
 		}.Build()
 
 		webrtcService := &configv1.WebrtcUpstreamService{}
-		webrtcService.SetAddress("http://localhost:8080/signal")
+		webrtcService.SetAddress("http://127.0.0.1:8080/signal")
 		webrtcService.SetTools([]*configv1.ToolDefinition{toolDef})
 		calls := make(map[string]*configv1.WebrtcCallDefinition)
 		calls["echo-call"] = configv1.WebrtcCallDefinition_builder{
@@ -312,7 +312,7 @@ func TestUpstream_Register(t *testing.T) {
 		}.Build()
 
 		webrtcService := &configv1.WebrtcUpstreamService{}
-		webrtcService.SetAddress("http://localhost:8080/signal")
+		webrtcService.SetAddress("http://127.0.0.1:8080/signal")
 		webrtcService.SetTools([]*configv1.ToolDefinition{toolDef})
 		calls := make(map[string]*configv1.WebrtcCallDefinition)
 		calls["echo-call"] = configv1.WebrtcCallDefinition_builder{
@@ -348,7 +348,7 @@ func TestUpstream_Register(t *testing.T) {
 		serviceConfig.SetUpstreamAuth(authConfig)
 
 		webrtcService := &configv1.WebrtcUpstreamService{}
-		webrtcService.SetAddress("http://localhost:8080/signal")
+		webrtcService.SetAddress("http://127.0.0.1:8080/signal")
 		toolDef := &configv1.ToolDefinition{}
 		toolDef.SetName("echo")
 		toolDef.SetCallId("echo-call")
@@ -376,7 +376,7 @@ func TestUpstream_Register(t *testing.T) {
 		serviceConfig := &configv1.UpstreamServiceConfig{}
 		serviceConfig.SetName("test-webrtc-service")
 		webrtcService := &configv1.WebrtcUpstreamService{}
-		webrtcService.SetAddress("http://localhost:8080/signal")
+		webrtcService.SetAddress("http://127.0.0.1:8080/signal")
 		toolDef := &configv1.ToolDefinition{}
 		toolDef.SetName("echo")
 		toolDef.SetCallId("non-existent-call-id")
@@ -400,7 +400,7 @@ func TestUpstream_Register(t *testing.T) {
 		serviceConfig.SetName("test-webrtc-service-with-prompts-and-resources")
 
 		webrtcService := &configv1.WebrtcUpstreamService{}
-		webrtcService.SetAddress("http://localhost:8080/signal")
+		webrtcService.SetAddress("http://127.0.0.1:8080/signal")
 		toolDef := &configv1.ToolDefinition{}
 		toolDef.SetName("get-weather")
 		toolDef.SetCallId("get-weather-call")
@@ -456,7 +456,7 @@ func TestUpstream_Register(t *testing.T) {
 		serviceConfig.SetName("test-webrtc-service-with-sanitizer-failure")
 
 		webrtcService := &configv1.WebrtcUpstreamService{}
-		webrtcService.SetAddress("http://localhost:8080/signal")
+		webrtcService.SetAddress("http://127.0.0.1:8080/signal")
 		toolDef := &configv1.ToolDefinition{}
 		toolDef.SetName("get-weather")
 		toolDef.SetCallId("get-weather-call")
@@ -500,7 +500,7 @@ func TestUpstream_Register_ToolNameGeneration(t *testing.T) {
 	}.Build()
 
 	webrtcService := &configv1.WebrtcUpstreamService{}
-	webrtcService.SetAddress("http://localhost:8080/signal")
+	webrtcService.SetAddress("http://127.0.0.1:8080/signal")
 	webrtcService.SetTools([]*configv1.ToolDefinition{toolDef})
 	calls := make(map[string]*configv1.WebrtcCallDefinition)
 	calls["test-call"] = configv1.WebrtcCallDefinition_builder{
@@ -533,7 +533,7 @@ func TestUpstream_Register_CornerCases(t *testing.T) {
 		}.Build()
 
 		webrtcService := &configv1.WebrtcUpstreamService{}
-		webrtcService.SetAddress("http://localhost:8080/signal")
+		webrtcService.SetAddress("http://127.0.0.1:8080/signal")
 		webrtcService.SetTools([]*configv1.ToolDefinition{toolDef})
 
 		serviceConfig := &configv1.UpstreamServiceConfig{}
@@ -557,7 +557,7 @@ func TestUpstream_Register_CornerCases(t *testing.T) {
 		}.Build()
 
 		webrtcService := &configv1.WebrtcUpstreamService{}
-		webrtcService.SetAddress("http://localhost:8080/signal")
+		webrtcService.SetAddress("http://127.0.0.1:8080/signal")
 		webrtcService.SetTools([]*configv1.ToolDefinition{toolDef})
 		calls := make(map[string]*configv1.WebrtcCallDefinition)
 		calls["call-id"] = configv1.WebrtcCallDefinition_builder{Id: proto.String("call-id")}.Build()
@@ -582,7 +582,7 @@ func TestUpstream_Register_CornerCases(t *testing.T) {
 		upstream := NewUpstream(poolManager)
 
 		webrtcService := &configv1.WebrtcUpstreamService{}
-		webrtcService.SetAddress("http://localhost:8080/signal")
+		webrtcService.SetAddress("http://127.0.0.1:8080/signal")
 
 		resourceDef := &configv1.ResourceDefinition{}
 		resourceDef.SetName("disabled-resource")
@@ -605,7 +605,7 @@ func TestUpstream_Register_CornerCases(t *testing.T) {
 		upstream := NewUpstream(poolManager)
 
 		webrtcService := &configv1.WebrtcUpstreamService{}
-		webrtcService.SetAddress("http://localhost:8080/signal")
+		webrtcService.SetAddress("http://127.0.0.1:8080/signal")
 
 		resourceDef := &configv1.ResourceDefinition{}
 		resourceDef.SetName("resource-missing-call")
@@ -630,7 +630,7 @@ func TestUpstream_Register_CornerCases(t *testing.T) {
 		upstream := NewUpstream(poolManager)
 
 		webrtcService := &configv1.WebrtcUpstreamService{}
-		webrtcService.SetAddress("http://localhost:8080/signal")
+		webrtcService.SetAddress("http://127.0.0.1:8080/signal")
 
 		resourceDef := &configv1.ResourceDefinition{}
 		resourceDef.SetName("resource-call-not-found")
@@ -664,7 +664,7 @@ func TestUpstream_Register_CornerCases(t *testing.T) {
 		}.Build()
 
 		webrtcService := &configv1.WebrtcUpstreamService{}
-		webrtcService.SetAddress("http://localhost:8080/signal")
+		webrtcService.SetAddress("http://127.0.0.1:8080/signal")
 		webrtcService.SetTools([]*configv1.ToolDefinition{toolDef})
 		calls := make(map[string]*configv1.WebrtcCallDefinition)
 		calls["call1"] = configv1.WebrtcCallDefinition_builder{Id: proto.String("call1")}.Build()
@@ -695,7 +695,7 @@ func TestUpstream_Register_CornerCases(t *testing.T) {
 		upstream := NewUpstream(poolManager)
 
 		webrtcService := &configv1.WebrtcUpstreamService{}
-		webrtcService.SetAddress("http://localhost:8080/signal")
+		webrtcService.SetAddress("http://127.0.0.1:8080/signal")
 
 		promptDef := &configv1.PromptDefinition{}
 		promptDef.SetName("disabled-prompt")

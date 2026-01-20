@@ -29,7 +29,7 @@ func TestHTTPUpstream_Register_CallPolicy_Blocked(t *testing.T) {
 	configJSON := `{
 		"name": "blocked-service",
 		"http_service": {
-			"address": "http://localhost",
+			"address": "http://127.0.0.1",
 			"tools": [
 				{"name": "allowed", "call_id": "call-allowed"},
 				{"name": "blocked", "call_id": "call-blocked"},
@@ -71,7 +71,7 @@ func TestHTTPUpstream_Register_MalformedURL(t *testing.T) {
 	configJSON := `{
 		"name": "bad-url-service",
 		"http_service": {
-			"address": "http://localhost",
+			"address": "http://127.0.0.1",
 			"tools": [{"name": "bad-op", "call_id": "bad-op-call"}],
 			"calls": {
 				"bad-op-call": {
@@ -99,7 +99,7 @@ func TestHTTPUpstream_Register_ExportPolicy(t *testing.T) {
 	configJSON := `{
 		"name": "export-policy-test",
 		"http_service": {
-			"address": "http://localhost",
+			"address": "http://127.0.0.1",
 			"tools": [
 				{"name": "private-tool", "call_id": "call1"},
 				{"name": "public-tool", "call_id": "call2"}
@@ -133,7 +133,7 @@ func TestHTTPUpstream_Register_AutoDiscover(t *testing.T) {
 	configJSON := `{
 		"name": "autodiscover-test",
 		"http_service": {
-			"address": "http://localhost",
+			"address": "http://127.0.0.1",
 			"calls": {
 				"call1": {"id": "call1", "method": "HTTP_METHOD_GET"},
 				"call2": {"id": "call2", "method": "HTTP_METHOD_GET"}
@@ -160,7 +160,7 @@ func TestHTTPUpstream_Register_Comprehensive(t *testing.T) {
 	configJSON := `{
 		"name": "comprehensive-test",
 		"http_service": {
-			"address": "http://localhost",
+			"address": "http://127.0.0.1",
 			"tools": [
 				{"name": "allowed-tool", "call_id": "call-allowed"},
 				{"name": "blocked-tool", "call_id": "call-blocked"}
@@ -256,7 +256,7 @@ func TestHTTPUpstream_Register_InputSchemaGeneration(t *testing.T) {
 	configJSON := `{
 		"name": "schema-gen-test",
 		"http_service": {
-			"address": "http://localhost",
+			"address": "http://127.0.0.1",
 			"tools": [
 				{"name": "schema-tool", "call_id": "call1"}
 			],
@@ -331,7 +331,7 @@ func TestHTTPUpstream_Register_PoolConfig(t *testing.T) {
 	configJSON := `{
 		"name": "pool-config-test",
 		"http_service": {
-			"address": "http://localhost"
+			"address": "http://127.0.0.1"
 		},
 		"connection_pool": {
 			"max_connections": 5,
@@ -360,7 +360,7 @@ func TestHTTPUpstream_Register_PoolCreationFailure(t *testing.T) {
 	configJSON := `{
 		"name": "pool-fail-service",
 		"http_service": {
-			"address": "http://localhost"
+			"address": "http://127.0.0.1"
 		}
 	}`
 	serviceConfig := &configv1.UpstreamServiceConfig{}
@@ -387,7 +387,7 @@ func TestHTTPUpstream_Register_ResourceErrors(t *testing.T) {
 	configJSON := `{
 		"name": "resource-error-service",
 		"http_service": {
-			"address": "http://localhost",
+			"address": "http://127.0.0.1",
 			"tools": [
 				{"name": "tool1", "call_id": "call1"}
 			],
@@ -483,7 +483,7 @@ func TestHTTPUpstream_Register_PromptExportPolicy(t *testing.T) {
 	configJSON := `{
 		"name": "prompt-export-test",
 		"http_service": {
-			"address": "http://localhost",
+			"address": "http://127.0.0.1",
 			"prompts": [
 				{"name": "p-default-allow", "disable": false},
 				{"name": "p-default-deny", "disable": false},
@@ -544,7 +544,7 @@ func TestHTTPUpstream_Register_CoverageEnhancement(t *testing.T) {
 	configUnsupportedMethod := `{
 		"name": "unsupported-method",
 		"http_service": {
-			"address": "http://localhost",
+			"address": "http://127.0.0.1",
 			"tools": [{"name": "bad-method", "call_id": "call1"}],
 			"calls": {
 				"call1": {"id": "call1", "method": "HTTP_METHOD_UNSPECIFIED", "endpoint_path": "/path"}
@@ -561,7 +561,7 @@ func TestHTTPUpstream_Register_CoverageEnhancement(t *testing.T) {
 	configDoubleSlash := `{
 		"name": "double-slash-service",
 		"http_service": {
-			"address": "http://localhost",
+			"address": "http://127.0.0.1",
 			"tools": [{"name": "ds-tool", "call_id": "call1"}],
 			"calls": {
 				"call1": {"id": "call1", "method": "HTTP_METHOD_GET", "endpoint_path": "//foo/bar"}
@@ -578,7 +578,7 @@ func TestHTTPUpstream_Register_CoverageEnhancement(t *testing.T) {
 	configInvalidPath := `{
 		"name": "invalid-path-service",
 		"http_service": {
-			"address": "http://localhost",
+			"address": "http://127.0.0.1",
 			"tools": [{"name": "bad-path-tool", "call_id": "call1"}],
 			"calls": {
 				"call1": {"id": "call1", "method": "HTTP_METHOD_GET", "endpoint_path": "/%gh"}
@@ -595,7 +595,7 @@ func TestHTTPUpstream_Register_CoverageEnhancement(t *testing.T) {
 	configBadPolicy := `{
 		"name": "bad-policy-service",
 		"http_service": {
-			"address": "http://localhost",
+			"address": "http://127.0.0.1",
 			"tools": [{"name": "tool1", "call_id": "call1"}],
 			"calls": {
 				"call1": {"id": "call1", "method": "HTTP_METHOD_GET", "endpoint_path": "/path"}
@@ -624,7 +624,7 @@ func TestHTTPUpstream_Register_MoreDoubleSlash(t *testing.T) {
     configBadDouble := `{
 		"name": "bad-double-service",
 		"http_service": {
-			"address": "http://localhost",
+			"address": "http://127.0.0.1",
 			"tools": [{"name": "bad-tool", "call_id": "call1"}],
 			"calls": {
 				"call1": {"id": "call1", "method": "HTTP_METHOD_GET", "endpoint_path": "//%gh"}
@@ -647,7 +647,7 @@ func TestHTTPUpstream_Register_InputSchemaMerge(t *testing.T) {
     configJSON := `{
 		"name": "schema-merge-service",
 		"http_service": {
-			"address": "http://localhost",
+			"address": "http://127.0.0.1",
 			"tools": [{"name": "tool1", "call_id": "call1"}],
 			"calls": {
 				"call1": {
@@ -708,7 +708,7 @@ func TestHTTPUpstream_Register_DoubleSlashRecovery(t *testing.T) {
 	configJSON := `{
 		"name": "double-slash-recovery",
 		"http_service": {
-			"address": "http://localhost",
+			"address": "http://127.0.0.1",
 			"tools": [{"name": "tool1", "call_id": "call1"}],
 			"calls": {
 				"call1": {
@@ -742,7 +742,7 @@ func TestHTTPUpstream_Register_DisabledItems(t *testing.T) {
 	configJSON := `{
 		"name": "disabled-items-service",
 		"http_service": {
-			"address": "http://localhost",
+			"address": "http://127.0.0.1",
 			"tools": [
 				{"name": "t-enabled", "call_id": "c1"},
 				{"name": "t-disabled", "call_id": "c2", "disable": true}

@@ -82,9 +82,9 @@ func main() {
 		port = "8080"
 	}
 
-	log.Printf("Starting Webhook Server on :%s", port)
+	log.Printf("Starting Webhook Server on 127.0.0.1:%s", port)
 	server := &http.Server{
-		Addr:              ":" + port,
+		Addr:              "127.0.0.1:" + port,
 		ReadHeaderTimeout: 3 * time.Second,
 		ReadTimeout:       5 * time.Second,
 		WriteTimeout:      10 * time.Second,

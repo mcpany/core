@@ -241,12 +241,14 @@ export function CredentialForm({ initialData, onSuccess }: CredentialFormProps) 
           const redirectUrl = `${window.location.origin}/auth/callback`
           const res = await apiClient.initiateOAuth("", redirectUrl, initialData.id)
           if (res.authorization_url) {
-              // Store context for callback using unified keys
-              sessionStorage.setItem('oauth_service_id', ''); // No service context here
-              sessionStorage.setItem('oauth_credential_id', initialData.id)
-              sessionStorage.setItem('oauth_state', res.state || '')
-              sessionStorage.setItem('oauth_redirect_url', redirectUrl)
-              sessionStorage.setItem('oauth_return_path', '/credentials')
+              // Store context for callback using unified JSON pattern
+              sessionStorage.setItem(`oauth_pending_${res.state}`, JSON.stringify({
+                  serviceId: '',
+                  credentialId: initialData.id,
+                  state: res.state,
+                  redirectUrl: redirectUrl,
+                  returnPath: '/credentials'
+              }))
 
               window.location.href = res.authorization_url
           } else {

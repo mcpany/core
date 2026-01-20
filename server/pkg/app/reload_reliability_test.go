@@ -56,14 +56,14 @@ func TestFix_ReloadReliability(t *testing.T) {
 	defer cancel()
 
 	// Find free ports
-	l, err := net.Listen("tcp", "localhost:0")
+	l, err := net.Listen("tcp", "127.0.0.1:0")
 	require.NoError(t, err)
 	httpPort := l.Addr().(*net.TCPAddr).Port
 	_ = l.Close()
 
-	l2, err := net.Listen("tcp", "localhost:0")
+	l2, err := net.Listen("tcp", "127.0.0.1:0")
 	require.NoError(t, err)
-	grpcPortStr := fmt.Sprintf("localhost:%d", l2.Addr().(*net.TCPAddr).Port)
+	grpcPortStr := fmt.Sprintf("127.0.0.1:%d", l2.Addr().(*net.TCPAddr).Port)
 	_ = l2.Close()
 
 	configPath := "/config.yaml"
@@ -89,7 +89,7 @@ upstream_services:
 
 	// Run in background
 	go func() {
-		_ = app.Run(ctx, fs, false, fmt.Sprintf("localhost:%d", httpPort), grpcPortStr, []string{configPath}, "", 5*time.Second)
+		_ = app.Run(ctx, fs, false, fmt.Sprintf("127.0.0.1:%d", httpPort), grpcPortStr, []string{configPath}, "", 5*time.Second)
 	}()
 
 	require.NoError(t, app.WaitForStartup(ctx))

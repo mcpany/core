@@ -42,7 +42,7 @@ users:
 	app.Storage = mockStore
 
 	// Start server on random ports
-	l, err := net.Listen("tcp", "localhost:0")
+	l, err := net.Listen("tcp", "127.0.0.1:0")
 	require.NoError(t, err)
 	httpPort := l.Addr().(*net.TCPAddr).Port
 	_ = l.Close()
@@ -53,7 +53,7 @@ users:
 	}()
 
 	// Wait for server to start
-	baseURL := fmt.Sprintf("http://localhost:%d", httpPort)
+	baseURL := fmt.Sprintf("http://127.0.0.1:%d", httpPort)
 	require.Eventually(t, func() bool {
 		resp, err := http.Get(baseURL + "/healthz")
 		if err != nil {
@@ -164,7 +164,7 @@ users:
 	mockStore.On("Close").Return(nil)
 	app.Storage = mockStore
 
-	l, err := net.Listen("tcp", "localhost:0")
+	l, err := net.Listen("tcp", "127.0.0.1:0")
 	require.NoError(t, err)
 	httpPort := l.Addr().(*net.TCPAddr).Port
 	_ = l.Close()
@@ -173,7 +173,7 @@ users:
 		app.Run(ctx, fs, false, fmt.Sprintf("%d", httpPort), "", []string{"/config.yaml"}, "", 5*time.Second)
 	}()
 
-	baseURL := fmt.Sprintf("http://localhost:%d", httpPort)
+	baseURL := fmt.Sprintf("http://127.0.0.1:%d", httpPort)
 	require.Eventually(t, func() bool {
 		resp, err := http.Get(baseURL + "/healthz")
 		if err != nil { return false }
@@ -205,7 +205,7 @@ users:
 func TestRun_ConflictingPorts(t *testing.T) {
     // This tests if Run returns error when ports are already taken.
     // It's partially covered in server_test.go but adding explicit check here.
-    l, err := net.Listen("tcp", "localhost:0")
+    l, err := net.Listen("tcp", "127.0.0.1:0")
     require.NoError(t, err)
     defer l.Close()
     port := l.Addr().(*net.TCPAddr).Port
@@ -250,7 +250,7 @@ global_settings:
     // We can manually init it.
 
     // Actually simpler to run full app.
-    l, err := net.Listen("tcp", "localhost:0")
+    l, err := net.Listen("tcp", "127.0.0.1:0")
     require.NoError(t, err)
     port := l.Addr().(*net.TCPAddr).Port
     _ = l.Close()
@@ -311,7 +311,7 @@ users:
 	mockStore.On("Close").Return(nil)
 	app.Storage = mockStore
 
-    l, err := net.Listen("tcp", "localhost:0")
+    l, err := net.Listen("tcp", "127.0.0.1:0")
     require.NoError(t, err)
     port := l.Addr().(*net.TCPAddr).Port
     _ = l.Close()
@@ -320,7 +320,7 @@ users:
         app.Run(ctx, fs, false, fmt.Sprintf("%d", port), "", []string{"/config.yaml"}, "", 5*time.Second)
     }()
 
-    baseURL := fmt.Sprintf("http://localhost:%d", port)
+    baseURL := fmt.Sprintf("http://127.0.0.1:%d", port)
     require.Eventually(t, func() bool {
 		resp, err := http.Get(baseURL + "/healthz")
 		if err != nil { return false }
@@ -328,7 +328,7 @@ users:
 		return resp.StatusCode == http.StatusOK
 	}, 5*time.Second, 100*time.Millisecond)
 
-    resp, err := http.Get(fmt.Sprintf("http://localhost:%d/mcp/u/user_regular/profile/admin_profile", port))
+    resp, err := http.Get(fmt.Sprintf("http://127.0.0.1:%d/mcp/u/user_regular/profile/admin_profile", port))
     require.NoError(t, err)
     defer resp.Body.Close()
 

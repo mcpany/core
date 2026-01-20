@@ -62,7 +62,7 @@ func TestReloadConfig(t *testing.T) {
 upstream_services:
  - name: "test-service"
    http_service:
-     address: "http://localhost:8080"
+     address: "http://127.0.0.1:8080"
      tools:
        - name: "test-tool"
          call_id: "test-call"
@@ -108,7 +108,7 @@ upstream_services:
  - name: "disabled-service"
    disable: true
    http_service:
-     address: "http://localhost:8080"
+     address: "http://127.0.0.1:8080"
      tools:
        - name: "test-tool"
          call_id: "test-call"
@@ -234,12 +234,12 @@ func (b *ThreadSafeBuffer) String() string {
 
 func TestHealthCheck(t *testing.T) {
 	t.Run("health check against specific IP address", func(t *testing.T) {
-		// This test is designed to fail if 'localhost' resolves to an IP
+		// This test is designed to fail if '127.0.0.1' resolves to an IP
 		// address that the server is not listening on. For example, on an
-		// IPv6-enabled system, 'localhost' might resolve to '::1', but our
+		// IPv6-enabled system, '127.0.0.1' might resolve to '::1', but our
 		// test server below is explicitly listening on the IPv4 loopback
 		// '127.0.0.1'. The HealthCheck function, as written, assumes
-		// 'localhost', which makes it fragile.
+		// '127.0.0.1', which makes it fragile.
 
 		server := httptest.NewUnstartedServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 			w.WriteHeader(http.StatusOK)
@@ -306,7 +306,7 @@ func TestHealthCheck(t *testing.T) {
 
 	t.Run("failed health check with connection error", func(t *testing.T) {
 		// Find a free port, then close it, to ensure it's not listening
-		l, err := net.Listen("tcp", "localhost:0")
+		l, err := net.Listen("tcp", "127.0.0.1:0")
 		require.NoError(t, err)
 		addr := l.Addr().String()
 		_ = l.Close()
@@ -365,7 +365,7 @@ func TestHealthCheck(t *testing.T) {
 
 	t.Run("connection is reused", func(t *testing.T) {
 		// Set up a listener that can count the number of connections.
-		rawLis, err := net.Listen("tcp", "localhost:0")
+		rawLis, err := net.Listen("tcp", "127.0.0.1:0")
 		require.NoError(t, err)
 		countingLis := &connCountingListener{Listener: rawLis}
 
@@ -397,7 +397,7 @@ func TestHealthCheck(t *testing.T) {
 
 	t.Run("connection is reused across multiple health checks", func(t *testing.T) {
 		// Set up a listener that can count the number of connections.
-		rawLis, err := net.Listen("tcp", "localhost:0")
+		rawLis, err := net.Listen("tcp", "127.0.0.1:0")
 		require.NoError(t, err)
 		countingLis := &connCountingListener{Listener: rawLis}
 
@@ -445,7 +445,7 @@ func TestHealthCheck(t *testing.T) {
 	})
 
 	t.Run("failed health check does not write to writer", func(t *testing.T) {
-		l, err := net.Listen("tcp", "localhost:0")
+		l, err := net.Listen("tcp", "127.0.0.1:0")
 		require.NoError(t, err)
 		addr := l.Addr().String()
 		_ = l.Close()
@@ -558,7 +558,7 @@ func TestRun_ServerMode(t *testing.T) {
 upstream_services:
   - name: "test-http-service"
     http_service:
-      address: "http://localhost:8080"
+      address: "http://127.0.0.1:8080"
       tools:
         - name: "echo"
           call_id: "echo_call"
@@ -577,7 +577,7 @@ upstream_services:
 		// Use ephemeral ports by passing "0"
 		// The test will hang if we use a real port that's not available.
 		// We expect the Run function to exit gracefully when the context is canceled.
-		errChan <- app.Run(ctx, fs, false, "localhost:0", "localhost:0", []string{"/config.yaml"}, "", 5*time.Second)
+		errChan <- app.Run(ctx, fs, false, "127.0.0.1:0", "127.0.0.1:0", []string{"/config.yaml"}, "", 5*time.Second)
 	}()
 
 	// We expect the server to run until the context is canceled, at which point it should
@@ -604,7 +604,7 @@ func TestRun_ConfigLoadError(t *testing.T) {
 	app.Storage = mockStore
 
 	// Should return error, as we are now strict about config errors during startup
-	err = app.Run(ctx, fs, false, "localhost:0", "localhost:0", []string{"/config.yaml"}, "", 5*time.Second)
+	err = app.Run(ctx, fs, false, "127.0.0.1:0", "127.0.0.1:0", []string{"/config.yaml"}, "", 5*time.Second)
 	require.Error(t, err)
 	assert.Contains(t, err.Error(), "malformed yaml")
 }
@@ -623,7 +623,7 @@ func TestRun_BusProviderError(t *testing.T) {
 	defer cancel()
 
 	app := NewApplication()
-	err = app.Run(ctx, fs, false, "localhost:0", "localhost:0", []string{"/config.yaml"}, "", 5*time.Second)
+	err = app.Run(ctx, fs, false, "127.0.0.1:0", "127.0.0.1:0", []string{"/config.yaml"}, "", 5*time.Second)
 
 	require.Error(t, err)
 	assert.Contains(t, err.Error(), "failed to create bus provider: injected bus provider error")
@@ -640,7 +640,7 @@ func TestRun_EmptyConfig(t *testing.T) {
 
 	app := NewApplication()
 	// This should not panic
-	err = app.Run(ctx, fs, false, "localhost:0", "localhost:0", []string{"/config.yaml"}, "", 5*time.Second)
+	err = app.Run(ctx, fs, false, "127.0.0.1:0", "127.0.0.1:0", []string{"/config.yaml"}, "", 5*time.Second)
 	require.NoError(t, err)
 }
 
@@ -659,7 +659,7 @@ func TestRun_StdioMode(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), 100*time.Millisecond)
 	defer cancel()
 
-	err := app.Run(ctx, fs, true, "localhost:0", "localhost:0", nil, "", 5*time.Second)
+	err := app.Run(ctx, fs, true, "127.0.0.1:0", "127.0.0.1:0", nil, "", 5*time.Second)
 
 	assert.True(t, stdioModeCalled, "runStdioMode should have been called")
 	assert.EqualError(t, err, "stdio mode error")
@@ -673,7 +673,7 @@ func TestRun_NoGrpcServer(t *testing.T) {
 	app := NewApplication()
 	errChan := make(chan error, 1)
 	go func() {
-		errChan <- app.Run(ctx, fs, false, "localhost:0", "", nil, "", 5*time.Second)
+		errChan <- app.Run(ctx, fs, false, "127.0.0.1:0", "", nil, "", 5*time.Second)
 	}()
 
 	err := <-errChan
@@ -700,7 +700,7 @@ func TestRun_ServerStartupErrors(t *testing.T) {
 
 	t.Run("http_server_fail", func(t *testing.T) {
 		// Find a free port and occupy it
-		l, err := net.Listen("tcp", "localhost:0")
+		l, err := net.Listen("tcp", "127.0.0.1:0")
 		require.NoError(t, err)
 		defer func() { _ = l.Close() }()
 		port := l.Addr().(*net.TCPAddr).Port
@@ -717,7 +717,7 @@ func TestRun_ServerStartupErrors(t *testing.T) {
 
 	t.Run("grpc_server_fail", func(t *testing.T) {
 		// Find a free port and occupy it
-		l, err := net.Listen("tcp", "localhost:0")
+		l, err := net.Listen("tcp", "127.0.0.1:0")
 		require.NoError(t, err)
 		defer func() { _ = l.Close() }()
 		port := l.Addr().(*net.TCPAddr).Port
@@ -739,7 +739,7 @@ func TestRun_ServerStartupError_GracefulShutdown(t *testing.T) {
 	logging.Init(slog.LevelInfo, &buf)
 
 	// Occupy a port to ensure the HTTP server fails to start.
-	l, err := net.Listen("tcp", "localhost:0")
+	l, err := net.Listen("tcp", "127.0.0.1:0")
 	require.NoError(t, err)
 	defer func() { _ = l.Close() }()
 	httpPort := l.Addr().(*net.TCPAddr).Port
@@ -749,7 +749,7 @@ func TestRun_ServerStartupError_GracefulShutdown(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	runErr := app.Run(ctx, fs, false, fmt.Sprintf("localhost:%d", httpPort), "localhost:0", nil, "", 1*time.Second)
+	runErr := app.Run(ctx, fs, false, fmt.Sprintf("127.0.0.1:%d", httpPort), "127.0.0.1:0", nil, "", 1*time.Second)
 
 	require.Error(t, runErr, "app.Run should return an error")
 	assert.Contains(t, runErr.Error(), "failed to start a server", "The error should indicate a server startup failure.")
@@ -766,9 +766,9 @@ func TestRun_ServerStartupError_GracefulShutdown(t *testing.T) {
 }
 
 func TestRun_DefaultBindAddress(t *testing.T) {
-	// Set the environment variable to use a dynamic port (localhost:0) as default
+	// Set the environment variable to use a dynamic port (127.0.0.1:0) as default
 	// This avoids "address already in use" errors when 8070 is occupied.
-	t.Setenv("MCPANY_DEFAULT_HTTP_ADDR", "localhost:0")
+	t.Setenv("MCPANY_DEFAULT_HTTP_ADDR", "127.0.0.1:0")
 
 	fs := afero.NewMemMapFs()
 	ctx, cancel := context.WithCancel(context.Background())
@@ -779,8 +779,8 @@ func TestRun_DefaultBindAddress(t *testing.T) {
 
 	go func() {
 		// Run with empty jsonrpcPort. gRPC is on an ephemeral port.
-		// Because we set MCPANY_DEFAULT_HTTP_ADDR="localhost:0", empty string means localhost:0
-		errChan <- app.Run(ctx, fs, false, "", "localhost:0", nil, "", 5*time.Second)
+		// Because we set MCPANY_DEFAULT_HTTP_ADDR="127.0.0.1:0", empty string means 127.0.0.1:0
+		errChan <- app.Run(ctx, fs, false, "", "127.0.0.1:0", nil, "", 5*time.Second)
 	}()
 
 	// Wait for the server to start up and bind
@@ -791,7 +791,7 @@ func TestRun_DefaultBindAddress(t *testing.T) {
 	require.NotZero(t, port, "BoundHTTPPort should be set after startup")
 
 	// Verify we can dial the assigned port
-	defaultAddr := fmt.Sprintf("localhost:%d", port)
+	defaultAddr := fmt.Sprintf("127.0.0.1:%d", port)
 	require.Eventually(t, func() bool {
 		conn, err := net.DialTimeout("tcp", defaultAddr, 100*time.Millisecond)
 		if err == nil {
@@ -829,7 +829,7 @@ func TestRun_GrpcPortNumber(t *testing.T) {
 
 	go func() {
 		// Run with "127.0.0.1:0" to use loopback ephemeral port
-		errChan <- app.Run(ctx, fs, false, "localhost:0", "127.0.0.1:0", nil, "", 5*time.Second)
+		errChan <- app.Run(ctx, fs, false, "127.0.0.1:0", "127.0.0.1:0", nil, "", 5*time.Second)
 	}()
 
 	// Wait for the server to start up and bind
@@ -840,7 +840,7 @@ func TestRun_GrpcPortNumber(t *testing.T) {
 	require.NotZero(t, port, "BoundGRPCPort should be set after startup")
 
 	// Verify we can connect
-	grpcAddr := fmt.Sprintf("localhost:%d", port)
+	grpcAddr := fmt.Sprintf("127.0.0.1:%d", port)
 	require.Eventually(t, func() bool {
 		conn, err := net.DialTimeout("tcp", grpcAddr, 100*time.Millisecond)
 		if err == nil {
@@ -903,7 +903,7 @@ func TestRunServerMode_GracefulShutdownOnContextCancel(t *testing.T) {
 	errChan := make(chan error, 1)
 	go func() {
 		// Use ephemeral ports to avoid conflicts.
-		errChan <- app.runServerMode(ctx, mcpSrv, busProvider, "localhost:0", "localhost:0", 1*time.Second, nil, cachingMiddleware, nil, nil, serviceRegistry, nil)
+		errChan <- app.runServerMode(ctx, mcpSrv, busProvider, "127.0.0.1:0", "127.0.0.1:0", 1*time.Second, nil, cachingMiddleware, nil, nil, serviceRegistry, nil)
 	}()
 
 	// Give the servers a moment to start up.
@@ -927,7 +927,7 @@ func TestRunServerMode_GracefulShutdownOnContextCancel(t *testing.T) {
 
 func TestGRPCServer_PortReleasedAfterShutdown(t *testing.T) {
 	// Find an available port for the gRPC server to listen on.
-	lis, err := net.Listen("tcp", "localhost:0")
+	lis, err := net.Listen("tcp", "127.0.0.1:0")
 	require.NoError(t, err, "Failed to find a free port.")
 	port := lis.Addr().(*net.TCPAddr).Port
 	// We close the listener immediately and just use the port number.
@@ -939,7 +939,7 @@ func TestGRPCServer_PortReleasedAfterShutdown(t *testing.T) {
 	var wg sync.WaitGroup
 
 	// Start the gRPC server in a goroutine.
-	lis, err = net.Listen("tcp", fmt.Sprintf("localhost:%d", port))
+	lis, err = net.Listen("tcp", fmt.Sprintf("127.0.0.1:%d", port))
 	require.NoError(t, err)
 	srv := gogrpc.NewServer()
 	startGrpcServer(ctx, &wg, errChan, nil, "TestGRPC", lis, 5*time.Second, srv)
@@ -962,7 +962,7 @@ func TestGRPCServer_PortReleasedAfterShutdown(t *testing.T) {
 
 	// After shutdown, attempt to listen on the same port again.
 	// If the original listener was properly closed, this should succeed.
-	lis, err = net.Listen("tcp", fmt.Sprintf("localhost:%d", port))
+	lis, err = net.Listen("tcp", fmt.Sprintf("127.0.0.1:%d", port))
 	require.NoError(t, err, "The port should be available for reuse after the server has shut down.")
 	if lis != nil {
 		_ = lis.Close()
@@ -982,7 +982,7 @@ func TestRun_ServerMode_LogsCorrectPort(t *testing.T) {
 	errChan := make(chan error, 1)
 
 	go func() {
-		errChan <- app.Run(ctx, fs, false, "localhost:0", "localhost:0", nil, "", 1*time.Second)
+		errChan <- app.Run(ctx, fs, false, "127.0.0.1:0", "127.0.0.1:0", nil, "", 1*time.Second)
 	}()
 
 	err := <-errChan
@@ -992,7 +992,7 @@ func TestRun_ServerMode_LogsCorrectPort(t *testing.T) {
 	t.Log(logs)
 	assert.Contains(t, logs, "HTTP server listening", "Should log HTTP server startup.")
 	assert.Contains(t, logs, "gRPC server listening", "Should log gRPC server startup.")
-	assert.NotContains(t, logs, "port:localhost:0", "Should not log the configured port '0'.")
+	assert.NotContains(t, logs, "port:127.0.0.1:0", "Should not log the configured port '0'.")
 }
 
 func TestGRPCServer_FastShutdownRace(t *testing.T) {
@@ -1000,7 +1000,7 @@ func TestGRPCServer_FastShutdownRace(t *testing.T) {
 	// We run it multiple times to increase the chance of catching it.
 	for i := 0; i < 20; i++ {
 		t.Run(fmt.Sprintf("iteration_%d", i), func(t *testing.T) {
-			lis, err := net.Listen("tcp", "localhost:0")
+			lis, err := net.Listen("tcp", "127.0.0.1:0")
 			require.NoError(t, err)
 			port := lis.Addr().(*net.TCPAddr).Port
 			_ = lis.Close() // Close immediately, we just needed a free port.
@@ -1009,7 +1009,7 @@ func TestGRPCServer_FastShutdownRace(t *testing.T) {
 			errChan := make(chan error, 2)
 			var wg sync.WaitGroup
 
-			raceLis, err := net.Listen("tcp", fmt.Sprintf("localhost:%d", port))
+			raceLis, err := net.Listen("tcp", fmt.Sprintf("127.0.0.1:%d", port))
 			require.NoError(t, err)
 			srv := gogrpc.NewServer()
 			startGrpcServer(ctx, &wg, errChan, nil, "TestGRPC_Race", raceLis, 5*time.Second, srv)
@@ -1032,7 +1032,7 @@ func TestGRPCServer_FastShutdownRace(t *testing.T) {
 
 func TestHTTPServer_GoroutineTerminatesOnError(t *testing.T) {
 	// Create a listener and close it immediately to force a Serve error
-	l, err := net.Listen("tcp", "localhost:0")
+	l, err := net.Listen("tcp", "127.0.0.1:0")
 	require.NoError(t, err)
 	_ = l.Close()
 
@@ -1061,7 +1061,7 @@ func TestHTTPServer_ShutdownTimesOut(t *testing.T) {
 	// This test verifies that the HTTP server's graceful shutdown waits for
 	// the timeout duration when a request hangs.
 
-	lis, err := net.Listen("tcp", "localhost:0")
+	lis, err := net.Listen("tcp", "127.0.0.1:0")
 	require.NoError(t, err, "Failed to find a free port.")
 	port := lis.Addr().(*net.TCPAddr).Port
 
@@ -1082,7 +1082,7 @@ func TestHTTPServer_ShutdownTimesOut(t *testing.T) {
 	time.Sleep(50 * time.Millisecond) // give server time to start
 
 	go func() {
-		resp, err := http.Get(fmt.Sprintf("http://localhost:%d", port))
+		resp, err := http.Get(fmt.Sprintf("http://127.0.0.1:%d", port))
 		if err == nil {
 			_ = resp.Body.Close()
 		}
@@ -1123,7 +1123,7 @@ func TestGRPCServer_GracefulShutdownHangs(t *testing.T) {
 	// and this test will PASS.
 
 	// Find a free port.
-	lis, err := net.Listen("tcp", "localhost:0")
+	lis, err := net.Listen("tcp", "127.0.0.1:0")
 	require.NoError(t, err, "Failed to find a free port.")
 	port := lis.Addr().(*net.TCPAddr).Port
 	_ = lis.Close()
@@ -1133,7 +1133,7 @@ func TestGRPCServer_GracefulShutdownHangs(t *testing.T) {
 	var wg sync.WaitGroup
 
 	// Start the gRPC server with a service that will hang.
-	lis, err = net.Listen("tcp", fmt.Sprintf("localhost:%d", port))
+	lis, err = net.Listen("tcp", fmt.Sprintf("127.0.0.1:%d", port))
 	require.NoError(t, err)
 	srv := gogrpc.NewServer()
 	hangService := &mockHangService{hangTime: 5 * time.Second}
@@ -1159,7 +1159,7 @@ func TestGRPCServer_GracefulShutdownHangs(t *testing.T) {
 
 	// Make a call to the hanging RPC in a separate goroutine.
 	go func() {
-		conn, err := gogrpc.NewClient(fmt.Sprintf("localhost:%d", port), gogrpc.WithTransportCredentials(insecure.NewCredentials()))
+		conn, err := gogrpc.NewClient(fmt.Sprintf("127.0.0.1:%d", port), gogrpc.WithTransportCredentials(insecure.NewCredentials()))
 		if err != nil {
 			t.Logf("Failed to dial gRPC server: %v", err)
 			return
@@ -1202,7 +1202,7 @@ func TestGRPCServer_GracefulShutdownWithTimeout(t *testing.T) {
 	// indefinitely.
 
 	// Find a free port to run the test server on.
-	lis, err := net.Listen("tcp", "localhost:0")
+	lis, err := net.Listen("tcp", "127.0.0.1:0")
 	require.NoError(t, err, "Failed to find a free port.")
 	port := lis.Addr().(*net.TCPAddr).Port
 	_ = lis.Close()
@@ -1212,7 +1212,7 @@ func TestGRPCServer_GracefulShutdownWithTimeout(t *testing.T) {
 	var wg sync.WaitGroup
 
 	// Start the gRPC server with a mock service that hangs.
-	lis, err = net.Listen("tcp", fmt.Sprintf("localhost:%d", port))
+	lis, err = net.Listen("tcp", fmt.Sprintf("127.0.0.1:%d", port))
 	require.NoError(t, err)
 	srv := gogrpc.NewServer()
 	hangService := &mockHangService{hangTime: 10 * time.Second}
@@ -1238,7 +1238,7 @@ func TestGRPCServer_GracefulShutdownWithTimeout(t *testing.T) {
 
 	// In a separate goroutine, make a call to the hanging RPC.
 	go func() {
-		conn, err := gogrpc.NewClient(fmt.Sprintf("localhost:%d", port), gogrpc.WithTransportCredentials(insecure.NewCredentials()))
+		conn, err := gogrpc.NewClient(fmt.Sprintf("127.0.0.1:%d", port), gogrpc.WithTransportCredentials(insecure.NewCredentials()))
 		if err != nil {
 			// If we can't connect, there's no point in continuing the test.
 			t.Logf("Failed to dial gRPC server: %v", err)
@@ -1274,7 +1274,7 @@ func TestGRPCServer_GracefulShutdownWithTimeout(t *testing.T) {
 func TestGRPCServer_NoDoubleClickOnForceShutdown(t *testing.T) {
 	// This test ensures that the listener is not closed more than once, even
 	// when a graceful shutdown times out and the server is forcefully stopped.
-	rawlis, err := net.Listen("tcp", "localhost:0")
+	rawlis, err := net.Listen("tcp", "127.0.0.1:0")
 	require.NoError(t, err)
 	countinglis := &mockCloseCountingListener{Listener: rawlis}
 
@@ -1309,7 +1309,7 @@ func TestGRPCServer_NoDoubleClickOnForceShutdown(t *testing.T) {
 	// In a separate goroutine, make a call to the hanging RPC.
 	go func() {
 		port := countinglis.Addr().(*net.TCPAddr).Port
-		conn, err := gogrpc.NewClient(fmt.Sprintf("localhost:%d", port), gogrpc.WithTransportCredentials(insecure.NewCredentials()))
+		conn, err := gogrpc.NewClient(fmt.Sprintf("127.0.0.1:%d", port), gogrpc.WithTransportCredentials(insecure.NewCredentials()))
 		if err != nil {
 			return // Don't fail the test if the connection fails, as the server might be shutting down.
 		}
@@ -1330,7 +1330,7 @@ func TestGRPCServer_NoDoubleClickOnForceShutdown(t *testing.T) {
 
 func TestHTTPServer_HangOnListenError(t *testing.T) {
 	// Create a listener and close it to simulate error during Serve (since we passed Listen phase)
-	l, err := net.Listen("tcp", "localhost:0")
+	l, err := net.Listen("tcp", "127.0.0.1:0")
 	require.NoError(t, err)
 	_ = l.Close()
 
@@ -1384,7 +1384,7 @@ func TestRunServerMode_ContextCancellation(t *testing.T) {
 	cachingMiddleware := middleware.NewCachingMiddleware(app.ToolManager)
 
 	go func() {
-		errChan <- app.runServerMode(ctx, mcpSrv, busProvider, "localhost:0", "localhost:0", 5*time.Second, nil, cachingMiddleware, nil, nil, serviceRegistry, nil)
+		errChan <- app.runServerMode(ctx, mcpSrv, busProvider, "127.0.0.1:0", "127.0.0.1:0", 5*time.Second, nil, cachingMiddleware, nil, nil, serviceRegistry, nil)
 	}()
 
 	// Allow some time for the servers to start up
@@ -1416,7 +1416,7 @@ func TestRunStdioMode(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), 100*time.Millisecond)
 	defer cancel()
 
-	err := app.Run(ctx, fs, true, "localhost:0", "localhost:0", nil, "", 5*time.Second)
+	err := app.Run(ctx, fs, true, "127.0.0.1:0", "127.0.0.1:0", nil, "", 5*time.Second)
 
 	assert.True(t, called, "runStdioMode should have been called")
 	assert.NoError(t, err, "runStdioMode should not return an error in this mock")
@@ -1498,7 +1498,7 @@ func TestRun_InMemoryBus(t *testing.T) {
 
 	app := NewApplication()
 	// This should not panic and should exit gracefully.
-	err = app.Run(ctx, fs, false, "localhost:0", "localhost:0", []string{"/config.yaml"}, "", 5*time.Second)
+	err = app.Run(ctx, fs, false, "127.0.0.1:0", "127.0.0.1:0", []string{"/config.yaml"}, "", 5*time.Second)
 	require.NoError(t, err)
 }
 
@@ -1519,7 +1519,7 @@ func TestRun_CachingMiddleware(t *testing.T) {
 	}
 	defer func() { mcpserver.AddReceivingMiddlewareHook = nil }()
 
-	err = app.Run(ctx, fs, false, "localhost:0", "", nil, "", 5*time.Second)
+	err = app.Run(ctx, fs, false, "127.0.0.1:0", "", nil, "", 5*time.Second)
 	require.NoError(t, err)
 
 	assert.Contains(t, middlewareNames, "CachingMiddleware", "CachingMiddleware should be in the middleware chain")
@@ -1537,7 +1537,7 @@ func TestStartGrpcServer_RegistrationServerError(t *testing.T) {
 	errChan := make(chan error, 1)
 	var wg sync.WaitGroup
 
-	lis, err := net.Listen("tcp", "localhost:0")
+	lis, err := net.Listen("tcp", "127.0.0.1:0")
 	require.NoError(t, err)
 	// We want to simulate a NewRegistrationServer error.
 	// Since we are now creating the server outside, we can just fail the test if we can't simulate it easily via startGrpcServer options
@@ -1589,7 +1589,7 @@ func TestHTTPServer_GracefulShutdown(t *testing.T) {
 	ctx, cancel := context.WithCancel(context.Background())
 	var wg sync.WaitGroup
 
-	lis, err := net.Listen("tcp", "localhost:0")
+	lis, err := net.Listen("tcp", "127.0.0.1:0")
 	require.NoError(t, err)
 
 	startHTTPServer(ctx, &wg, errChan, nil, "TestHTTP", lis, nil, 5*time.Second, nil)
@@ -1611,7 +1611,7 @@ func TestGRPCServer_GracefulShutdown(t *testing.T) {
 	ctx, cancel := context.WithCancel(context.Background())
 	var wg sync.WaitGroup
 
-	lis, err := net.Listen("tcp", "localhost:0")
+	lis, err := net.Listen("tcp", "127.0.0.1:0")
 	require.NoError(t, err)
 	startGrpcServer(ctx, &wg, errChan, nil, "TestGRPC", lis, 5*time.Second, gogrpc.NewServer())
 
@@ -1629,7 +1629,7 @@ func TestGRPCServer_GracefulShutdown(t *testing.T) {
 
 func TestGRPCServer_GoroutineTerminatesOnError(t *testing.T) {
 	// Find a free port and create a listener that is already closed to force an error.
-	l, err := net.Listen("tcp", "localhost:0")
+	l, err := net.Listen("tcp", "127.0.0.1:0")
 	require.NoError(t, err)
 	addr := l.Addr().String()
 	_ = l.Close()
@@ -1664,7 +1664,7 @@ func TestGRPCServer_ShutdownWithoutRace(t *testing.T) {
 	// It runs the shutdown sequence multiple times to ensure stability.
 	for i := 0; i < 10; i++ {
 		t.Run(fmt.Sprintf("iteration_%d", i), func(t *testing.T) {
-			lis, err := net.Listen("tcp", "localhost:0")
+			lis, err := net.Listen("tcp", "127.0.0.1:0")
 			require.NoError(t, err)
 			port := lis.Addr().(*net.TCPAddr).Port
 			_ = lis.Close()
@@ -1674,7 +1674,7 @@ func TestGRPCServer_ShutdownWithoutRace(t *testing.T) {
 			var wg sync.WaitGroup
 
 			// Start the gRPC server.
-			noRaceLis, err := net.Listen("tcp", fmt.Sprintf("localhost:%d", port))
+			noRaceLis, err := net.Listen("tcp", fmt.Sprintf("127.0.0.1:%d", port))
 			require.NoError(t, err)
 			startGrpcServer(ctx, &wg, errChan, nil, "TestGRPC_NoRace", noRaceLis, 5*time.Second, gogrpc.NewServer())
 
@@ -1705,7 +1705,7 @@ func TestRun_ServiceRegistrationPublication(t *testing.T) {
 upstream_services:
  - name: "test-service"
    http_service:
-     address: "http://localhost:8080"
+     address: "http://127.0.0.1:8080"
      tools:
        - name: "test-call"
          call_id: "test-call"
@@ -1717,7 +1717,7 @@ upstream_services:
  - name: "disabled-service"
    disable: true
    http_service:
-     address: "http://localhost:8081"
+     address: "http://127.0.0.1:8081"
      tools:
        - name: "test-call"
          call_id: "test-call"
@@ -1750,7 +1750,7 @@ upstream_services:
 
 	errChan := make(chan error, 1)
 	go func() {
-		errChan <- app.Run(ctx, fs, false, "localhost:0", "", []string{"/config.yaml"}, "", 5*time.Second)
+		errChan <- app.Run(ctx, fs, false, "127.0.0.1:0", "", []string{"/config.yaml"}, "", 5*time.Second)
 	}()
 
 	// Allow some time for the services to be published.
@@ -1780,14 +1780,14 @@ upstream_services:
  - name: "enabled-service"
    disable: false
    http_service:
-     address: "http://localhost:8080"
+     address: "http://127.0.0.1:8080"
      tools:
        - name: "test-call"
          call_id: "test-call"
  - name: "disabled-service"
    disable: true
    http_service:
-     address: "http://localhost:8081"
+     address: "http://127.0.0.1:8081"
      tools:
        - name: "test-call"
          call_id: "test-call"
@@ -1814,7 +1814,7 @@ upstream_services:
 
 	errChan := make(chan error, 1)
 	go func() {
-		errChan <- app.Run(ctx, fs, false, "localhost:0", "", []string{"/config.yaml"}, "", 5*time.Second)
+		errChan <- app.Run(ctx, fs, false, "127.0.0.1:0", "", []string{"/config.yaml"}, "", 5*time.Second)
 	}()
 
 	time.Sleep(100 * time.Millisecond) // Allow time for publication.
@@ -1840,7 +1840,7 @@ func TestRun_NoConfigDoesNotBlock(t *testing.T) {
 	errChan := make(chan error, 1)
 
 	go func() {
-		errChan <- app.Run(ctx, fs, false, "localhost:0", "localhost:0", nil, "", 5*time.Second)
+		errChan <- app.Run(ctx, fs, false, "127.0.0.1:0", "127.0.0.1:0", nil, "", 5*time.Second)
 	}()
 
 	err := <-errChan
@@ -1855,7 +1855,7 @@ func TestRun_NoConfig(t *testing.T) {
 	app := NewApplication()
 	errChan := make(chan error, 1)
 	go func() {
-		errChan <- app.Run(ctx, fs, false, "localhost:0", "", nil, "", 5*time.Second)
+		errChan <- app.Run(ctx, fs, false, "127.0.0.1:0", "", nil, "", 5*time.Second)
 	}()
 
 	runErr := <-errChan
@@ -1887,7 +1887,7 @@ func (l *closableListener) isClosed() bool {
 func TestGRPCServer_ListenerClosedOnForcedShutdown(t *testing.T) {
 	// This test verifies that the network listener is closed even when a
 	// graceful shutdown of the gRPC server times out and is forced to stop.
-	rawLis, err := net.Listen("tcp", "localhost:0")
+	rawLis, err := net.Listen("tcp", "127.0.0.1:0")
 	require.NoError(t, err)
 	mockLis := &closableListener{Listener: rawLis}
 
@@ -1947,7 +1947,7 @@ func (l *mockCloseCountingListener) Close() error {
 func TestGRPCServer_NoListenerDoubleClickOnForceShutdown(t *testing.T) {
 	// This test ensures that the listener is not closed more than once, even
 	// when a graceful shutdown times out and the server is forcefully stopped.
-	rawLis, err := net.Listen("tcp", "localhost:0")
+	rawLis, err := net.Listen("tcp", "127.0.0.1:0")
 	require.NoError(t, err)
 	countingLis := &mockCloseCountingListener{Listener: rawLis}
 
@@ -1982,7 +1982,7 @@ func TestGRPCServer_NoListenerDoubleClickOnForceShutdown(t *testing.T) {
 	// In a separate goroutine, make a call to the hanging RPC.
 	go func() {
 		port := countingLis.Addr().(*net.TCPAddr).Port
-		conn, err := gogrpc.NewClient(fmt.Sprintf("localhost:%d", port), gogrpc.WithTransportCredentials(insecure.NewCredentials()))
+		conn, err := gogrpc.NewClient(fmt.Sprintf("127.0.0.1:%d", port), gogrpc.WithTransportCredentials(insecure.NewCredentials()))
 		if err != nil {
 			return // Don't fail the test if the connection fails, as the server might be shutting down.
 		}
@@ -2041,7 +2041,7 @@ func TestGRPCServer_PanicInRegistration(t *testing.T) {
 func TestRunServerMode_grpcListenErrorHangs(t *testing.T) {
 	// This test is designed to fail by timing out if the bug is present.
 	// Occupy a port to force a listen error.
-	l, err := net.Listen("tcp", "localhost:0")
+	l, err := net.Listen("tcp", "127.0.0.1:0")
 	require.NoError(t, err)
 	defer func() { _ = l.Close() }()
 	port := l.Addr().(*net.TCPAddr).Port
@@ -2061,7 +2061,7 @@ func TestRunServerMode_grpcListenErrorHangs(t *testing.T) {
 	errChan := make(chan error, 1)
 	go func() {
 		// Pass required args
-		errChan <- app.runServerMode(ctx, nil, busProvider, "localhost:0", fmt.Sprintf("localhost:%d", port), 5*time.Second, nil, nil, nil, nil, nil, nil)
+		errChan <- app.runServerMode(ctx, nil, busProvider, "127.0.0.1:0", fmt.Sprintf("127.0.0.1:%d", port), 5*time.Second, nil, nil, nil, nil, nil, nil)
 	}()
 
 	select {
@@ -2082,7 +2082,7 @@ func TestStartGrpcServer_PanicInRegistrationRecovers(t *testing.T) {
 }
 
 func TestGRPCServer_PortReleasedOnForcedShutdown(t *testing.T) {
-	lis, err := net.Listen("tcp", "localhost:0")
+	lis, err := net.Listen("tcp", "127.0.0.1:0")
 	require.NoError(t, err, "Failed to find a free port.")
 	port := lis.Addr().(*net.TCPAddr).Port
 	_ = lis.Close()
@@ -2091,7 +2091,7 @@ func TestGRPCServer_PortReleasedOnForcedShutdown(t *testing.T) {
 	errChan := make(chan error, 1)
 	var wg sync.WaitGroup
 
-	lis, err = net.Listen("tcp", fmt.Sprintf("localhost:%d", port))
+	lis, err = net.Listen("tcp", fmt.Sprintf("127.0.0.1:%d", port))
 	require.NoError(t, err)
 	srv := gogrpc.NewServer()
 	hangService := &mockHangService{hangTime: 10 * time.Second}
@@ -2115,7 +2115,7 @@ func TestGRPCServer_PortReleasedOnForcedShutdown(t *testing.T) {
 	time.Sleep(100 * time.Millisecond)
 
 	go func() {
-		conn, err := gogrpc.NewClient(fmt.Sprintf("localhost:%d", port), gogrpc.WithTransportCredentials(insecure.NewCredentials()))
+		conn, err := gogrpc.NewClient(fmt.Sprintf("127.0.0.1:%d", port), gogrpc.WithTransportCredentials(insecure.NewCredentials()))
 		if err != nil {
 			t.Logf("Failed to dial gRPC server: %v", err)
 			return
@@ -2129,7 +2129,7 @@ func TestGRPCServer_PortReleasedOnForcedShutdown(t *testing.T) {
 	cancel()
 	wg.Wait()
 
-	l, err := net.Listen("tcp", fmt.Sprintf("localhost:%d", port))
+	l, err := net.Listen("tcp", fmt.Sprintf("127.0.0.1:%d", port))
 	require.NoError(t, err, "Port should be released and available for reuse after forced shutdown.")
 	if l != nil {
 		_ = l.Close()
@@ -2161,7 +2161,7 @@ func TestRun_APIKeyAuthentication(t *testing.T) {
 	defer viper.Set("api-key", "")
 
 	// Get the address from the listener
-	l, err := net.Listen("tcp", "localhost:0")
+	l, err := net.Listen("tcp", "127.0.0.1:0")
 	require.NoError(t, err)
 	addr := l.Addr().String()
 	_ = l.Close()
@@ -2206,7 +2206,7 @@ func TestRun_APIKeyAuthentication(t *testing.T) {
 
 func TestGRPCServer_PortReleasedOnGracefulShutdown(t *testing.T) {
 	// Find an available port for the gRPC server to listen on.
-	lis, err := net.Listen("tcp", "localhost:0")
+	lis, err := net.Listen("tcp", "127.0.0.1:0")
 	require.NoError(t, err, "Failed to find a free port.")
 	port := lis.Addr().(*net.TCPAddr).Port
 	// We close the listener immediately and just use the port number.
@@ -2218,7 +2218,7 @@ func TestGRPCServer_PortReleasedOnGracefulShutdown(t *testing.T) {
 	var wg sync.WaitGroup
 
 	// Start the gRPC server in a goroutine.
-	lis, err = net.Listen("tcp", fmt.Sprintf("localhost:%d", port))
+	lis, err = net.Listen("tcp", fmt.Sprintf("127.0.0.1:%d", port))
 	require.NoError(t, err)
 	startGrpcServer(ctx, &wg, errChan, nil, "TestGRPC_PortRelease", lis, 5*time.Second, gogrpc.NewServer())
 
@@ -2240,7 +2240,7 @@ func TestGRPCServer_PortReleasedOnGracefulShutdown(t *testing.T) {
 
 	// After shutdown, attempt to listen on the same port again.
 	// If the original listener was properly closed, this should succeed.
-	lis, err = net.Listen("tcp", fmt.Sprintf("localhost:%d", port))
+	lis, err = net.Listen("tcp", fmt.Sprintf("127.0.0.1:%d", port))
 	require.NoError(t, err, "The port should be available for reuse after the server has shut down gracefully.")
 	if lis != nil {
 		_ = lis.Close()
@@ -2258,7 +2258,7 @@ func TestRun_IPAllowlist(t *testing.T) {
 		addr := l.Addr().String()
 		_ = l.Close()
 
-		// Allow localhost (IPv4 and IPv6 just in case)
+		// Allow 127.0.0.1 (IPv4 and IPv6 just in case)
 		configContent := `
 global_settings:
   allowed_ips:
@@ -2267,7 +2267,7 @@ global_settings:
 upstream_services:
  - name: "test-service"
    http_service:
-     address: "http://localhost:8080"
+     address: "http://127.0.0.1:8080"
 `
 		err = afero.WriteFile(fs, "/config.yaml", []byte(configContent), 0o644)
 		require.NoError(t, err)
@@ -2301,7 +2301,7 @@ upstream_services:
 		ctx, cancel := context.WithCancel(context.Background())
 		defer cancel()
 
-		l, err := net.Listen("tcp", "localhost:0")
+		l, err := net.Listen("tcp", "127.0.0.1:0")
 		require.NoError(t, err)
 		addr := l.Addr().String()
 		_ = l.Close()

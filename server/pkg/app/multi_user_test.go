@@ -67,7 +67,7 @@ upstream_services:
   - name: "dev-service"
     id: "dev-service"
     http_service:
-      address: "http://localhost:8081"
+      address: "http://127.0.0.1:8081"
       tools:
         - name: "dev-tool"
           call_id: "dev-call"
@@ -79,7 +79,7 @@ upstream_services:
   - name: "prod-service"
     id: "prod-service"
     http_service:
-      address: "http://localhost:8082"
+      address: "http://127.0.0.1:8082"
       tools:
         - name: "prod-tool"
           call_id: "prod-call"
@@ -91,7 +91,7 @@ upstream_services:
   - name: "secure-service"
     id: "secure-service"
     http_service:
-      address: "http://localhost:8084"
+      address: "http://127.0.0.1:8084"
       tools:
         - name: "secure-tool"
           call_id: "secure-call"
@@ -103,7 +103,7 @@ upstream_services:
   - name: "shared-service"
     id: "shared-service"
     http_service:
-      address: "http://localhost:8083"
+      address: "http://127.0.0.1:8083"
       tools:
         - name: "shared-tool"
           call_id: "shared-call"
@@ -115,7 +115,7 @@ upstream_services:
   - name: "rbac-service"
     id: "rbac-service"
     http_service:
-      address: "http://localhost:8085"
+      address: "http://127.0.0.1:8085"
       tools:
         - name: "rbac-tool"
           call_id: "rbac-call"
@@ -198,7 +198,7 @@ users:
 	}, 5*time.Second, 100*time.Millisecond, "Server should bind HTTP port")
 
 	// Wait for server to respond
-	baseURL := fmt.Sprintf("http://localhost:%d", httpPort)
+	baseURL := fmt.Sprintf("http://127.0.0.1:%d", httpPort)
 	require.Eventually(t, func() bool {
 		resp, err := http.Get(baseURL + "/healthz")
 		if err != nil {

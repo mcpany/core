@@ -59,9 +59,11 @@ func (a *Application) createAPIHandler(store storage.Storage) http.Handler {
 	// Doctor API
 	doctor := health.NewDoctor()
 	doctor.AddCheck("configuration", a.configHealthCheck)
+	doctor.AddCheck("filesystem", a.filesystemHealthCheck)
 	mux.Handle("/doctor", doctor.Handler())
 	mux.HandleFunc("/api/v1/system/status", a.handleSystemStatus)
 	mux.HandleFunc("/api/v1/audit/export", a.handleAuditExport)
+	mux.HandleFunc("/api/v1/validate", a.handleValidate())
 
 	mux.HandleFunc("/settings", a.handleSettings(store))
 	mux.HandleFunc("/debug/auth-test", a.handleAuthTest())
@@ -1072,8 +1074,6 @@ func (a *Application) handleCollectionApply(w http.ResponseWriter, r *http.Reque
 	w.WriteHeader(http.StatusOK)
 	_, _ = w.Write([]byte("{}"))
 }
-
-
 
 func isUnsafeConfig(service *configv1.UpstreamServiceConfig) bool {
 	if mcp := service.GetMcpService(); mcp != nil {

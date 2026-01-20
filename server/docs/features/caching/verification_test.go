@@ -55,7 +55,7 @@ func TestCachingConfig(t *testing.T) {
 
 func TestCachingE2E(t *testing.T) {
 	metricsPort := 0 // Use 0 to let the OS assign a random available port
-	os.Setenv("MCPANY_METRICS_LISTEN_ADDRESS", fmt.Sprintf("localhost:%d", metricsPort))
+	os.Setenv("MCPANY_METRICS_LISTEN_ADDRESS", fmt.Sprintf("127.0.0.1:%d", metricsPort))
 	defer os.Unsetenv("MCPANY_METRICS_LISTEN_ADDRESS")
 
 	testCase := &framework.E2ETestCase{
@@ -64,7 +64,7 @@ func TestCachingE2E(t *testing.T) {
 		BuildUpstream:       framework.BuildWebsocketWeatherServer,
 		RegistrationMethods: []framework.RegistrationMethod{framework.FileRegistration},
 		GenerateUpstreamConfig: func(upstreamAddr string) string {
-			// upstreamAddr is localhost:PORT
+			// upstreamAddr is 127.0.0.1:PORT
 			return fmt.Sprintf(`
 upstream_services:
   - name: "cached-weather-service"
@@ -96,7 +96,7 @@ upstream_services:
       ttl: "2s" # Short TTL for expiration test
 global_settings:
   log_level: LOG_LEVEL_DEBUG
-  mcp_listen_address: "localhost:0" # Random port
+  mcp_listen_address: "127.0.0.1:0" # Random port
 `, upstreamAddr)
 		},
 		InvokeAIClientWithServerInfo: func(t *testing.T, serverInfo *integration.MCPANYTestServerInfo) {
@@ -127,7 +127,7 @@ global_settings:
 					port = 19091
 				}
 
-				resp, err := http.Get(fmt.Sprintf("http://localhost:%d/metrics", port))
+				resp, err := http.Get(fmt.Sprintf("http://127.0.0.1:%d/metrics", port))
 				require.NoError(t, err)
 				defer resp.Body.Close()
 
@@ -242,7 +242,7 @@ global_settings:
 	}
 
 	// Set metrics env var
-	os.Setenv("MCPANY_METRICS_LISTEN_ADDRESS", fmt.Sprintf("localhost:%d", metricsPort))
+	os.Setenv("MCPANY_METRICS_LISTEN_ADDRESS", fmt.Sprintf("127.0.0.1:%d", metricsPort))
 	defer os.Unsetenv("MCPANY_METRICS_LISTEN_ADDRESS")
 
 	framework.RunE2ETest(t, testCase)

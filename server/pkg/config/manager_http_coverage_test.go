@@ -18,12 +18,12 @@ import (
 func TestLoadFromURL_Success(t *testing.T) {
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
-		w.Write([]byte(`{"services": [{"name": "s1", "http_service": {"address": "http://localhost"}}]}`))
+		w.Write([]byte(`{"services": [{"name": "s1", "http_service": {"address": "http://127.0.0.1"}}]}`))
 	}))
 	defer ts.Close()
 
 	m := NewUpstreamServiceManager(nil)
-	m.httpClient = http.DefaultClient // Allow localhost
+	m.httpClient = http.DefaultClient // Allow 127.0.0.1
 	collection := &configv1.Collection{Name: proto.String("test")}
 
 	err := m.loadFromURL(context.Background(), ts.URL, collection)
@@ -43,7 +43,7 @@ func TestLoadFromURL_Auth(t *testing.T) {
 	defer ts.Close()
 
 	m := NewUpstreamServiceManager(nil)
-	m.httpClient = http.DefaultClient // Allow localhost
+	m.httpClient = http.DefaultClient // Allow 127.0.0.1
 	collection := &configv1.Collection{
 		Name: proto.String("test"),
 		Authentication: &configv1.Authentication{
@@ -68,7 +68,7 @@ func TestLoadFromURL_Error(t *testing.T) {
 	defer ts.Close()
 
 	m := NewUpstreamServiceManager(nil)
-	m.httpClient = http.DefaultClient // Allow localhost
+	m.httpClient = http.DefaultClient // Allow 127.0.0.1
 	collection := &configv1.Collection{Name: proto.String("test")}
 
 	err := m.loadFromURL(context.Background(), ts.URL, collection)
