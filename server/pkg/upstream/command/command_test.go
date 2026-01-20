@@ -306,4 +306,131 @@ func TestStdioUpstream_Register(t *testing.T) {
 		assert.Empty(t, tmWithError.ListTools())
 		assert.Contains(t, err.Error(), "failed to add tool")
 	})
+
+	t.Run("successful registration with required params", func(t *testing.T) {
+		tm := newMockToolManager()
+		serviceConfig := &configv1.UpstreamServiceConfig{}
+		serviceConfig.SetName("test-stdio-service-required")
+		cmdService := &configv1.CommandLineUpstreamService{}
+		cmdService.SetCommand("/bin/echo")
+		toolDef := configv1.ToolDefinition_builder{
+			Name:   proto.String("echo-required"),
+			CallId: proto.String("echo-call-required"),
+		}.Build()
+		callDef := configv1.CommandLineCallDefinition_builder{
+			Id: proto.String("echo-call-required"),
+		}.Build()
+
+		argsParam := configv1.CommandLineParameterMapping_builder{
+			Schema: configv1.ParameterSchema_builder{
+				Name:        proto.String("required_arg"),
+				Type:        configv1.ParameterType_STRING.Enum(),
+				Description: proto.String("Required argument"),
+				IsRequired:  proto.Bool(true),
+			}.Build(),
+		}.Build()
+		callDef.SetParameters([]*configv1.CommandLineParameterMapping{argsParam})
+
+		calls := make(map[string]*configv1.CommandLineCallDefinition)
+		calls["echo-call-required"] = callDef
+		cmdService.SetCalls(calls)
+		cmdService.SetTools([]*configv1.ToolDefinition{toolDef})
+		serviceConfig.SetCommandLineService(cmdService)
+
+		_, discoveredTools, _, err := u.Register(
+			context.Background(),
+			serviceConfig,
+			tm,
+			prm,
+			rm,
+			false,
+		)
+		require.NoError(t, err)
+		assert.Len(t, discoveredTools, 1)
+
+		cmdTool := tm.ListTools()[0]
+		inputSchema := cmdTool.Tool().GetInputSchema()
+		require.NotNil(t, inputSchema)
+
+		requiredVal := inputSchema.Fields["required"]
+		require.NotNil(t, requiredVal)
+		listVal := requiredVal.GetListValue()
+		require.NotNil(t, listVal)
+		assert.Len(t, listVal.Values, 1)
+		assert.Equal(t, "required_arg", listVal.Values[0].GetStringValue())
+	})
+
+	t.Run("local service registration", func(t *testing.T) {
+		tm := newMockToolManager()
+		serviceConfig := &configv1.UpstreamServiceConfig{}
+		serviceConfig.SetName("test-local-service")
+		cmdService := &configv1.CommandLineUpstreamService{}
+		cmdService.SetLocal(true)
+		cmdService.SetCommand("/bin/echo")
+		toolDef := configv1.ToolDefinition_builder{
+			Name:   proto.String("echo-local"),
+			CallId: proto.String("echo-call-local"),
+		}.Build()
+		callDef := configv1.CommandLineCallDefinition_builder{
+			Id: proto.String("echo-call-local"),
+		}.Build()
+		calls := make(map[string]*configv1.CommandLineCallDefinition)
+		calls["echo-call-local"] = callDef
+		cmdService.SetCalls(calls)
+		cmdService.SetTools([]*configv1.ToolDefinition{toolDef})
+		serviceConfig.SetCommandLineService(cmdService)
+
+		_, discoveredTools, _, err := u.Register(
+			context.Background(),
+			serviceConfig,
+			tm,
+			prm,
+			rm,
+			false,
+		)
+		require.NoError(t, err)
+		assert.Len(t, discoveredTools, 1)
+	})
+}
+
+func TestStdioUpstream_Shutdown(t *testing.T) {
+	u := NewUpstream()
+	// Test shutdown without registration (checker is nil)
+	err := u.Shutdown(context.Background())
+	assert.NoError(t, err)
+
+	// Test shutdown with checker (simulate registration)
+	// Since we can't easily access the internal checker field, we rely on Register setting it.
+	tm := newMockToolManager()
+	prm := prompt.NewManager()
+	rm := resource.NewManager()
+	serviceConfig := &configv1.UpstreamServiceConfig{}
+	serviceConfig.SetName("test-shutdown-service")
+	cmdService := &configv1.CommandLineUpstreamService{}
+	cmdService.SetCommand("/bin/echo")
+	toolDef := configv1.ToolDefinition_builder{
+		Name:   proto.String("echo"),
+		CallId: proto.String("echo-call"),
+	}.Build()
+	callDef := configv1.CommandLineCallDefinition_builder{
+		Id: proto.String("echo-call"),
+	}.Build()
+	calls := make(map[string]*configv1.CommandLineCallDefinition)
+	calls["echo-call"] = callDef
+	cmdService.SetCalls(calls)
+	cmdService.SetTools([]*configv1.ToolDefinition{toolDef})
+	serviceConfig.SetCommandLineService(cmdService)
+
+	_, _, _, err = u.Register(
+		context.Background(),
+		serviceConfig,
+		tm,
+		prm,
+		rm,
+		false,
+	)
+	require.NoError(t, err)
+
+	err = u.Shutdown(context.Background())
+	assert.NoError(t, err)
 }
