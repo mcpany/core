@@ -138,11 +138,7 @@ func (u *Upstream) createAndRegisterWebrtcTools(_ context.Context, serviceID, ad
 			}
 		}
 
-		properties, required, err := schemaconv.ConfigSchemaToProtoProperties(wrtcDef.GetParameters())
-		if err != nil {
-			log.Error("Failed to convert schema to properties", "error", err)
-			continue
-		}
+		properties, required := schemaconv.ConfigSchemaToProtoProperties(wrtcDef.GetParameters())
 
 		if properties == nil {
 			properties = &structpb.Struct{Fields: make(map[string]*structpb.Value)}

@@ -148,7 +148,7 @@ type McpFieldParameter interface {
 // ConfigSchemaToProtoProperties converts a slice of parameter schema definitions
 // from a service configuration into a `structpb.Struct` that can be used as the
 // `properties` field in a protobuf-based tool input schema.
-func ConfigSchemaToProtoProperties[T ConfigParameter](params []T) (*structpb.Struct, []string, error) {
+func ConfigSchemaToProtoProperties[T ConfigParameter](params []T) (*structpb.Struct, []string) {
 	properties := &structpb.Struct{Fields: make(map[string]*structpb.Value)}
 	var required []string
 
@@ -176,7 +176,7 @@ func ConfigSchemaToProtoProperties[T ConfigParameter](params []T) (*structpb.Str
 		properties.Fields[paramSchema.GetName()] = structpb.NewStructValue(paramStruct)
 	}
 
-	return properties, required, nil
+	return properties, required
 }
 
 // McpFieldsToProtoProperties converts a slice of McpField definitions into a

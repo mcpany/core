@@ -154,11 +154,7 @@ func (u *Upstream) createAndRegisterCommandTools(
 
 		command := definition.GetName()
 
-		inputProperties, required, err := schemaconv.ConfigSchemaToProtoProperties(callDef.GetParameters())
-		if err != nil {
-			log.Error("Failed to convert config schema to proto properties", "error", err)
-			continue
-		}
+		inputProperties, required := schemaconv.ConfigSchemaToProtoProperties(callDef.GetParameters())
 
 		if inputProperties.Fields == nil {
 			inputProperties.Fields = make(map[string]*structpb.Value)

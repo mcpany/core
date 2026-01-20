@@ -8,7 +8,6 @@ import (
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/proto"
 )
 
@@ -32,8 +31,7 @@ func TestConfigSchemaToProtoProperties_RequiredFields(t *testing.T) {
 	}
 
 	// Now the function returns properties and required fields.
-	properties, required, err := ConfigSchemaToProtoProperties(params)
-	require.NoError(t, err)
+	properties, required := ConfigSchemaToProtoProperties(params)
 
 	assert.NotNil(t, properties)
 	assert.Len(t, required, 1)

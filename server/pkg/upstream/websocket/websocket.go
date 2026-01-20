@@ -151,11 +151,7 @@ func (u *Upstream) createAndRegisterWebsocketTools(_ context.Context, serviceID,
 		if wsDef.GetInputSchema() != nil && len(wsDef.GetInputSchema().GetFields()) > 0 {
 			inputSchema = wsDef.GetInputSchema()
 		} else {
-			properties, required, err := schemaconv.ConfigSchemaToProtoProperties(wsDef.GetParameters())
-			if err != nil {
-				log.Error("Failed to convert schema to properties", "error", err)
-				continue
-			}
+			properties, required := schemaconv.ConfigSchemaToProtoProperties(wsDef.GetParameters())
 
 			if properties == nil {
 				properties = &structpb.Struct{Fields: make(map[string]*structpb.Value)}

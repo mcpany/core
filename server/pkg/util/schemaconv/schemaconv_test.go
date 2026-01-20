@@ -51,8 +51,7 @@ func TestConfigSchemaToProtoProperties(t *testing.T) {
 		{schema: nil},
 	}
 
-	properties, _, err := ConfigSchemaToProtoProperties(params)
-	require.NoError(t, err)
+	properties, _ := ConfigSchemaToProtoProperties(params)
 	assert.Len(t, properties.Fields, 2)
 
 	param1, ok := properties.Fields["param1"]
@@ -529,8 +528,7 @@ func TestConfigSchemaToProtoProperties_DefaultValue(t *testing.T) {
 		},
 	}
 
-	properties, _, err := ConfigSchemaToProtoProperties(params)
-	require.NoError(t, err)
+	properties, _ := ConfigSchemaToProtoProperties(params)
 
 	param, ok := properties.Fields["param_with_default"]
 	require.True(t, ok)
