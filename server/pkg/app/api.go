@@ -128,6 +128,8 @@ func (a *Application) createAPIHandler(store storage.Storage) http.Handler {
 	mux.HandleFunc("/auth/oauth/callback", a.handleOAuthCallback)
 
 	mux.HandleFunc("/alerts", a.handleAlerts())
+	mux.HandleFunc("/alerts/rules", a.handleAlertRules())
+	mux.HandleFunc("/alerts/rules/", a.handleAlertRuleDetail())
 	mux.HandleFunc("/alerts/", a.handleAlertDetail())
 
 	mux.HandleFunc("/ws/logs", a.handleLogsWS())
