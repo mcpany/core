@@ -7,6 +7,8 @@ package util
 import (
 	"context"
 	"net"
+	"net/http"
+	"strings"
 )
 
 type contextKey string
@@ -37,6 +39,24 @@ func ExtractIP(addr string) string {
 	for i := 0; i < len(ip); i++ {
 		if ip[i] == '%' {
 			return ip[:i]
+		}
+	}
+	return ip
+}
+
+// GetClientIP extracts the client IP from the request.
+// If trustProxy is true, it respects X-Forwarded-For header.
+func GetClientIP(r *http.Request, trustProxy bool) string {
+	ip := ExtractIP(r.RemoteAddr)
+
+	if trustProxy {
+		if xff := r.Header.Get("X-Forwarded-For"); xff != "" {
+			// Use the first IP in the list (client IP)
+			if parts := strings.Split(xff, ","); len(parts) > 0 {
+				if clientIP := strings.TrimSpace(parts[0]); clientIP != "" {
+					ip = clientIP
+				}
+			}
 		}
 	}
 	return ip
