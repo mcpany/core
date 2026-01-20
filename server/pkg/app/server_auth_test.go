@@ -293,7 +293,8 @@ func TestAuthMiddleware_LocalhostSecurity(t *testing.T) {
 		rec := httptest.NewRecorder()
 
 		handler.ServeHTTP(rec, req)
-		assert.Equal(t, http.StatusOK, rec.Code)
+		// Now blocked by default (strict loopback check)
+		assert.Equal(t, http.StatusForbidden, rec.Code)
 	})
 
 	t.Run("No Key - Public IP Denied", func(t *testing.T) {
