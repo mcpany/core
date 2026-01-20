@@ -73,6 +73,12 @@ func init() {
 // This includes RFC1918, RFC4193 (Unique Local), and RFC6598 (CGNAT).
 // It does NOT include loopback or link-local addresses.
 func IsPrivateNetworkIP(ip net.IP) bool {
+	// Loopback addresses are not considered "Private Network" in this context
+	// (they are local-only, not part of a private LAN/WAN).
+	if ip.IsLoopback() {
+		return false
+	}
+
 	// Treat unspecified addresses (0.0.0.0 and ::) as private.
 	// 0.0.0.0 is also covered by isPrivateNetworkIPv4, but :: wasn't.
 	if ip.IsUnspecified() {
