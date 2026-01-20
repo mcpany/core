@@ -18,6 +18,12 @@ import { useToast } from "@/hooks/use-toast";
 import { ArrowLeft, Download, Terminal } from "lucide-react";
 import Link from "next/link";
 
+/**
+ * ExternalMarketplacePage component.
+ * @param props - The component props.
+ * @param props.params - The params property.
+ * @returns The rendered component.
+ */
 export default function ExternalMarketplacePage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
   const router = useRouter();

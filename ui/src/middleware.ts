@@ -6,6 +6,11 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
+/**
+ * Middleware for handling request interception, proxying, and security headers.
+ * @param request - The incoming NextRequest object.
+ * @returns A NextResponse object.
+ */
 export function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
   const requestHeaders = new Headers(request.headers);
@@ -62,6 +67,9 @@ export function middleware(request: NextRequest) {
   return response;
 }
 
+/**
+ * Configuration for the middleware matcher.
+ */
 export const config = {
   matcher: [
     // Apply to all routes except static files

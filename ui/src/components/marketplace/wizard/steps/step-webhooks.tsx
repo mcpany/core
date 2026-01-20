@@ -10,6 +10,10 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
 import { Plus, Trash2, Webhook } from "lucide-react";
 
+/**
+ * StepWebhooks component.
+ * @returns The rendered component.
+ */
 export function StepWebhooks() {
   const { state, updateConfig } = useWizard();
   const { config } = state;

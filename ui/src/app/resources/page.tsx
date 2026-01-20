@@ -5,6 +5,10 @@
 
 import { ResourceExplorer } from "@/components/resources/resource-explorer";
 
+/**
+ * ResourcesPage component.
+ * @returns The rendered component.
+ */
 export default function ResourcesPage() {
   return (
     <div className="flex flex-col h-[calc(100vh-4rem)] p-4 md:p-8 gap-4">

@@ -85,7 +85,11 @@ func getMcpanyConfig(t *testing.T, serverURL string) string {
 
 
 func TestTransformerE2E_Extraction(t *testing.T) {
-	t.Parallel()
+	// Cannot use t.Parallel() with t.Setenv
+	// t.Parallel()
+
+	// Allow local IPs for testing
+	t.Setenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS", "true")
 
 	mockServer := newMockServer(t)
 	defer mockServer.Close()

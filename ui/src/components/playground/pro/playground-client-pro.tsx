@@ -36,6 +36,10 @@ import { useLocalStorage } from "@/hooks/use-local-storage";
 
 import { useSearchParams } from "next/navigation";
 
+/**
+ * PlaygroundClientPro component.
+ * @returns The rendered component.
+ */
 export function PlaygroundClientPro() {
   const [messages, setMessages, isInitialized] = useLocalStorage<Message[]>("playground-messages", []);
   const [input, setInput] = useState("");

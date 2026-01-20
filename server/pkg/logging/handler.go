@@ -17,11 +17,12 @@ import (
 // LogEntry is the structure for logs sent over WebSocket.
 // It matches the frontend expectation.
 type LogEntry struct {
-	ID        string `json:"id"`
-	Timestamp string `json:"timestamp"`
-	Level     string `json:"level"`
-	Message   string `json:"message"`
-	Source    string `json:"source,omitempty"`
+	ID        string         `json:"id"`
+	Timestamp string         `json:"timestamp"`
+	Level     string         `json:"level"`
+	Message   string         `json:"message"`
+	Source    string         `json:"source,omitempty"`
+	Metadata  map[string]any `json:"metadata,omitempty"`
 }
 
 // BroadcastHandler implements slog.Handler and sends logs to the Broadcaster.
@@ -65,13 +66,26 @@ func (h *BroadcastHandler) Handle(_ context.Context, r slog.Record) error {
 		Timestamp: r.Time.Format(time.RFC3339),
 		Level:     r.Level.String(),
 		Message:   r.Message,
+		Metadata:  make(map[string]any),
 	}
+
+	// Track source priority to ensure we get the most specific source
+	sourcePriority := 0 // 0: none, 1: component/source, 2: toolName
 
 	// Try to find source in attributes or use default
 	r.Attrs(func(a slog.Attr) bool {
+		// Collect all attributes into Metadata
+		entry.Metadata[a.Key] = a.Value.Any()
+
 		if a.Key == "source" || a.Key == "component" {
+			if sourcePriority < 1 {
+				entry.Source = a.Value.String()
+				sourcePriority = 1
+			}
+		}
+		if a.Key == "toolName" {
 			entry.Source = a.Value.String()
-			return false // Stop iteration
+			sourcePriority = 2
 		}
 		return true
 	})
