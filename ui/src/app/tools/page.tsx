@@ -6,12 +6,19 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { apiClient } from "@/lib/client";
+import { apiClient, UpstreamServiceConfig } from "@/lib/client";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Wrench, Play, Star } from "lucide-react";
 import { ToolDefinition } from "@proto/config/v1/tool";
 import { ToolInspector } from "@/components/tools/tool-inspector";
@@ -23,13 +30,16 @@ import { usePinnedTools } from "@/hooks/use-pinned-tools";
  */
 export default function ToolsPage() {
   const [tools, setTools] = useState<ToolDefinition[]>([]);
+  const [services, setServices] = useState<UpstreamServiceConfig[]>([]);
   const [selectedTool, setSelectedTool] = useState<ToolDefinition | null>(null);
   const [inspectorOpen, setInspectorOpen] = useState(false);
   const { isPinned, togglePin, isLoaded } = usePinnedTools();
   const [showPinnedOnly, setShowPinnedOnly] = useState(false);
+  const [selectedService, setSelectedService] = useState<string>("all");
 
   useEffect(() => {
     fetchTools();
+    fetchServices();
   }, []);
 
   const fetchTools = async () => {
@@ -38,6 +48,15 @@ export default function ToolsPage() {
       setTools(res.tools || []);
     } catch (e) {
       console.error("Failed to fetch tools", e);
+    }
+  };
+
+  const fetchServices = async () => {
+    try {
+      const res = await apiClient.listServices();
+      setServices(res);
+    } catch (e) {
+      console.error("Failed to fetch services", e);
     }
   };
 
@@ -60,6 +79,7 @@ export default function ToolsPage() {
 
   const filteredTools = tools
     .filter((t) => !showPinnedOnly || isPinned(t.name))
+    .filter((t) => selectedService === "all" || t.serviceId === selectedService)
     .sort((a, b) => {
       const aPinned = isPinned(a.name);
       const bPinned = isPinned(b.name);
@@ -76,15 +96,32 @@ export default function ToolsPage() {
     <div className="flex-1 space-y-4 p-8 pt-6">
       <div className="flex items-center justify-between">
         <h2 className="text-3xl font-bold tracking-tight">Tools</h2>
-        <div className="flex items-center space-x-2">
-            <Switch
-                id="show-pinned"
-                checked={showPinnedOnly}
-                onCheckedChange={setShowPinnedOnly}
-            />
-            <label htmlFor="show-pinned" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                Show Pinned Only
-            </label>
+        <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-2">
+                <Select value={selectedService} onValueChange={setSelectedService}>
+                    <SelectTrigger className="w-[200px] backdrop-blur-sm bg-background/50">
+                        <SelectValue placeholder="Filter by Service" />
+                    </SelectTrigger>
+                    <SelectContent>
+                        <SelectItem value="all">All Services</SelectItem>
+                        {services.map((service) => (
+                            <SelectItem key={service.id} value={service.id}>
+                                {service.name}
+                            </SelectItem>
+                        ))}
+                    </SelectContent>
+                </Select>
+            </div>
+            <div className="flex items-center space-x-2">
+                <Switch
+                    id="show-pinned"
+                    checked={showPinnedOnly}
+                    onCheckedChange={setShowPinnedOnly}
+                />
+                <label htmlFor="show-pinned" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                    Show Pinned Only
+                </label>
+            </div>
         </div>
       </div>
 
