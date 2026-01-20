@@ -5,6 +5,7 @@ package vector
 
 import (
 	"context"
+	"errors"
 	"testing"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
@@ -48,18 +49,10 @@ func TestMilvusClient_Query(t *testing.T) {
 		// Create result
 		ids := entity.NewColumnInt64("id", []int64{1, 2})
 
-		// Since we cannot easily instantiate Fields (column list) properly without complex mocking of private structs or helpers
-		// We will return empty Fields and rely on ID/Score verification for now,
-		// acknowledging that metadata extraction test is limited here.
-		// If we really need to test metadata, we would need to dive deeper into sdk internals or use integration tests.
-
 		res := client.SearchResult{
 			ResultCount: 2,
 			IDs:         ids,
 			Scores:      []float32{0.9, 0.8},
-			// Fields: nil, // Will cause panic or empty range if accessed blindly.
-			// Milvus SDK usage: `res.Fields.GetColumn(field)`.
-			// If Fields is nil, it might panic.
 		}
 
 		return []client.SearchResult{res}, nil
@@ -76,6 +69,78 @@ func TestMilvusClient_Query(t *testing.T) {
 	assert.Len(t, matches, 2)
 	assert.Equal(t, int64(1), matches[0]["id"])
 	assert.Equal(t, float32(0.9), matches[0]["score"])
+}
+
+func TestMilvusClient_Query_Errors(t *testing.T) {
+	ctx := context.Background()
+	config := &configv1.MilvusVectorDB{
+		Address:        proto.String("localhost:19530"),
+		CollectionName: proto.String("test_coll"),
+	}
+
+	t.Run("LoadCollection_Fail", func(t *testing.T) {
+		mock := &mockMilvusClient{}
+		c := &MilvusClient{config: config, client: mock}
+		mock.loadCollectionFunc = func(ctx context.Context, name string, async bool, opts ...client.LoadCollectionOption) error {
+			return errors.New("load failed")
+		}
+		_, err := c.Query(ctx, []float32{0.1}, 1, nil, "")
+		assert.Error(t, err)
+		assert.Contains(t, err.Error(), "load failed")
+	})
+
+	t.Run("DescribeCollection_Fail", func(t *testing.T) {
+		mock := &mockMilvusClient{}
+		c := &MilvusClient{config: config, client: mock}
+		mock.loadCollectionFunc = func(ctx context.Context, name string, async bool, opts ...client.LoadCollectionOption) error {
+			return nil
+		}
+		mock.describeCollectionFunc = func(ctx context.Context, name string) (*entity.Collection, error) {
+			return nil, errors.New("describe failed")
+		}
+		_, err := c.Query(ctx, []float32{0.1}, 1, nil, "")
+		assert.Error(t, err)
+		assert.Contains(t, err.Error(), "describe failed")
+	})
+
+	t.Run("Search_Fail", func(t *testing.T) {
+		mock := &mockMilvusClient{}
+		c := &MilvusClient{config: config, client: mock}
+		mock.loadCollectionFunc = func(ctx context.Context, name string, async bool, opts ...client.LoadCollectionOption) error { return nil }
+		mock.describeCollectionFunc = func(ctx context.Context, name string) (*entity.Collection, error) {
+			return &entity.Collection{
+				Schema: &entity.Schema{
+					Fields: []*entity.Field{
+						{Name: "embedding", DataType: entity.FieldTypeFloatVector},
+					},
+				},
+			}, nil
+		}
+		mock.searchFunc = func(ctx context.Context, collectionName string, partitions []string, expr string, outputFields []string, vectors []entity.Vector, vectorField string, metricType entity.MetricType, topK int, sp entity.SearchParam, opts ...client.SearchQueryOptionFunc) ([]client.SearchResult, error) {
+			return nil, errors.New("search failed")
+		}
+		_, err := c.Query(ctx, []float32{0.1}, 1, nil, "")
+		assert.Error(t, err)
+		assert.Contains(t, err.Error(), "search failed")
+	})
+
+	t.Run("No_Vector_Field", func(t *testing.T) {
+		mock := &mockMilvusClient{}
+		c := &MilvusClient{config: config, client: mock}
+		mock.loadCollectionFunc = func(ctx context.Context, name string, async bool, opts ...client.LoadCollectionOption) error { return nil }
+		mock.describeCollectionFunc = func(ctx context.Context, name string) (*entity.Collection, error) {
+			return &entity.Collection{
+				Schema: &entity.Schema{
+					Fields: []*entity.Field{
+						{Name: "id", DataType: entity.FieldTypeInt64},
+					},
+				},
+			}, nil
+		}
+		_, err := c.Query(ctx, []float32{0.1}, 1, nil, "")
+		assert.Error(t, err)
+		assert.Contains(t, err.Error(), "no float vector field found")
+	})
 }
 
 func TestMilvusClient_Upsert(t *testing.T) {
@@ -118,6 +183,62 @@ func TestMilvusClient_Upsert(t *testing.T) {
 	assert.Equal(t, int64(1), res["upserted_count"])
 }
 
+func TestMilvusClient_Upsert_Errors(t *testing.T) {
+	ctx := context.Background()
+	config := &configv1.MilvusVectorDB{
+		Address:        proto.String("localhost:19530"),
+		CollectionName: proto.String("test_coll"),
+	}
+
+	t.Run("DescribeCollection_Fail", func(t *testing.T) {
+		mock := &mockMilvusClient{}
+		c := &MilvusClient{config: config, client: mock}
+		mock.describeCollectionFunc = func(ctx context.Context, name string) (*entity.Collection, error) {
+			return nil, errors.New("describe failed")
+		}
+		_, err := c.Upsert(ctx, []map[string]interface{}{{"id": 1}}, "")
+		assert.Error(t, err)
+		assert.Contains(t, err.Error(), "describe failed")
+	})
+
+	t.Run("Conversion_Fail", func(t *testing.T) {
+		mock := &mockMilvusClient{}
+		c := &MilvusClient{config: config, client: mock}
+		mock.describeCollectionFunc = func(ctx context.Context, name string) (*entity.Collection, error) {
+			return &entity.Collection{
+				Schema: &entity.Schema{
+					Fields: []*entity.Field{
+						{Name: "embedding", DataType: entity.FieldTypeFloatVector, TypeParams: map[string]string{"dim": "invalid"}},
+					},
+				},
+			}, nil
+		}
+		_, err := c.Upsert(ctx, []map[string]interface{}{{"values": []interface{}{0.1}}}, "")
+		assert.Error(t, err)
+		assert.Contains(t, err.Error(), "failed to parse dimension")
+	})
+
+	t.Run("Upsert_Fail", func(t *testing.T) {
+		mock := &mockMilvusClient{}
+		c := &MilvusClient{config: config, client: mock}
+		mock.describeCollectionFunc = func(ctx context.Context, name string) (*entity.Collection, error) {
+			return &entity.Collection{
+				Schema: &entity.Schema{
+					Fields: []*entity.Field{
+						{Name: "id", DataType: entity.FieldTypeInt64, PrimaryKey: true},
+					},
+				},
+			}, nil
+		}
+		mock.upsertFunc = func(ctx context.Context, collectionName string, partitionName string, columns ...entity.Column) (entity.Column, error) {
+			return nil, errors.New("upsert failed")
+		}
+		_, err := c.Upsert(ctx, []map[string]interface{}{{"id": 1}}, "")
+		assert.Error(t, err)
+		assert.Contains(t, err.Error(), "upsert failed")
+	})
+}
+
 func TestMilvusClient_Delete(t *testing.T) {
 	mock := &mockMilvusClient{}
 	config := &configv1.MilvusVectorDB{
@@ -150,6 +271,66 @@ func TestMilvusClient_Delete(t *testing.T) {
 	res, err := c.Delete(ctx, ids, "", nil)
 	require.NoError(t, err)
 	assert.Equal(t, true, res["success"])
+}
+
+func TestMilvusClient_Delete_Errors(t *testing.T) {
+	ctx := context.Background()
+	config := &configv1.MilvusVectorDB{
+		Address:        proto.String("localhost:19530"),
+		CollectionName: proto.String("test_coll"),
+	}
+
+	t.Run("DescribeCollection_Fail", func(t *testing.T) {
+		mock := &mockMilvusClient{}
+		c := &MilvusClient{config: config, client: mock}
+		mock.describeCollectionFunc = func(ctx context.Context, name string) (*entity.Collection, error) {
+			return nil, errors.New("describe failed")
+		}
+		_, err := c.Delete(ctx, []string{"1"}, "", nil)
+		assert.Error(t, err)
+		assert.Contains(t, err.Error(), "describe failed")
+	})
+
+	t.Run("PK_Not_Found", func(t *testing.T) {
+		mock := &mockMilvusClient{}
+		c := &MilvusClient{config: config, client: mock}
+		mock.describeCollectionFunc = func(ctx context.Context, name string) (*entity.Collection, error) {
+			return &entity.Collection{
+				Schema: &entity.Schema{Fields: []*entity.Field{}},
+			}, nil
+		}
+		_, err := c.Delete(ctx, []string{"1"}, "", nil)
+		assert.Error(t, err)
+		assert.Contains(t, err.Error(), "PK field not found")
+	})
+
+	t.Run("Delete_Fail", func(t *testing.T) {
+		mock := &mockMilvusClient{}
+		c := &MilvusClient{config: config, client: mock}
+		mock.describeCollectionFunc = func(ctx context.Context, name string) (*entity.Collection, error) {
+			return &entity.Collection{
+				Schema: &entity.Schema{
+					Fields: []*entity.Field{
+						{Name: "id", DataType: entity.FieldTypeInt64, PrimaryKey: true},
+					},
+				},
+			}, nil
+		}
+		mock.deleteFunc = func(ctx context.Context, collectionName string, partitionName string, expr string) error {
+			return errors.New("delete failed")
+		}
+		_, err := c.Delete(ctx, []string{"1"}, "", nil)
+		assert.Error(t, err)
+		assert.Contains(t, err.Error(), "delete failed")
+	})
+
+	t.Run("Missing_Args", func(t *testing.T) {
+		mock := &mockMilvusClient{}
+		c := &MilvusClient{config: config, client: mock}
+		_, err := c.Delete(ctx, nil, "", nil)
+		assert.Error(t, err)
+		assert.Contains(t, err.Error(), "must provide ids or filter")
+	})
 }
 
 func TestMilvusClient_DescribeIndexStats(t *testing.T) {
