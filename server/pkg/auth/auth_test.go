@@ -169,11 +169,22 @@ func TestAuthManager(t *testing.T) {
 	t.Run("authenticate_with_global_api_key", func(t *testing.T) {
 		authManager.SetAPIKey("global-secret-key")
 
-		// Successful authentication
+		// Successful authentication via Header
 		req := httptest.NewRequest("GET", "/", nil)
 		req.Header.Set("X-API-Key", "global-secret-key")
 		_, err := authManager.Authenticate(context.Background(), "any-service", req)
 		assert.NoError(t, err)
+
+		// Successful authentication via Bearer Token
+		req = httptest.NewRequest("GET", "/", nil)
+		req.Header.Set("Authorization", "Bearer global-secret-key")
+		_, err = authManager.Authenticate(context.Background(), "any-service", req)
+		assert.NoError(t, err)
+
+		// Failed authentication via Query (Removed Support)
+		req = httptest.NewRequest("GET", "/?api_key=global-secret-key", nil)
+		_, err = authManager.Authenticate(context.Background(), "any-service", req)
+		assert.Error(t, err)
 
 		// Failed authentication
 		req = httptest.NewRequest("GET", "/", nil)

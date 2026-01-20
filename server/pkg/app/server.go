@@ -1900,9 +1900,6 @@ func (a *Application) createAuthMiddleware(forcePrivateIPOnly bool) func(http.Ha
 				// Check X-API-Key or Authorization header
 				requestKey := r.Header.Get("X-API-Key")
 				if requestKey == "" {
-					requestKey = r.URL.Query().Get("api_key")
-				}
-				if requestKey == "" {
 					authHeader := r.Header.Get("Authorization")
 					if strings.HasPrefix(authHeader, "Bearer ") {
 						requestKey = strings.TrimPrefix(authHeader, "Bearer ")
