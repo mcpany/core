@@ -598,6 +598,14 @@ func countTokensReflect(t Tokenizer, v interface{}, visited map[uintptr]bool, _ 
 }
 
 func simpleTokenizeInt(n int) int {
+	// Optimization: Fast path for common integers.
+	// Integers with < 8 chars (including sign) always result in 1 token (length/4 < 2).
+	// Positive: 0 to 9,999,999 (7 digits) -> 1 token.
+	// Negative: -1 to -999,999 (7 chars) -> 1 token.
+	if n > -1000000 && n < 10000000 {
+		return 1
+	}
+
 	l := 0
 	if n == 0 {
 		l = 1
@@ -636,6 +644,11 @@ func calculateWordTokens(n int, factor float64) int {
 }
 
 func simpleTokenizeInt64(n int64) int {
+	// Optimization: Fast path for common integers.
+	if n > -1000000 && n < 10000000 {
+		return 1
+	}
+
 	l := 0
 	if n == 0 {
 		l = 1
