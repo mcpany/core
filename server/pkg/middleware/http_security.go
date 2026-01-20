@@ -24,6 +24,12 @@ func HTTPSecurityHeadersMiddleware(next http.Handler) http.Handler {
 		w.Header().Set("Content-Security-Policy", "default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; script-src 'self'; connect-src 'self'; img-src 'self' data: https:; object-src 'none'; base-uri 'self'; frame-ancestors 'self'; form-action 'self'; upgrade-insecure-requests")
 		w.Header().Set("Strict-Transport-Security", "max-age=63072000; includeSubDomains; preload")
 		w.Header().Set("Permissions-Policy", "geolocation=(), camera=(), microphone=(), payment=(), usb=(), vr=(), magnetometer=(), gyroscope=(), accelerometer=(), autoplay=(), clipboard-write=(), clipboard-read=()")
+
+		// Additional Security Headers
+		w.Header().Set("Cross-Origin-Opener-Policy", "same-origin")
+		w.Header().Set("Cross-Origin-Embedder-Policy", "require-corp")
+		w.Header().Set("Cross-Origin-Resource-Policy", "same-origin")
+
 		// Prevent caching of sensitive data
 		w.Header().Set("Cache-Control", "no-store, no-cache, must-revalidate, proxy-revalidate")
 		w.Header().Set("Pragma", "no-cache")

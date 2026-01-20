@@ -235,7 +235,7 @@ func TestAuthMiddleware_LocalhostSecurity(t *testing.T) {
 
 	// Case 1: No API Key Configured
 	t.Run("No Key - Localhost Allowed", func(t *testing.T) {
-		middleware := app.createAuthMiddleware(false) // No key
+		middleware := app.createAuthMiddleware(false, false) // No key
 		handler := middleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusOK)
 		}))
@@ -249,7 +249,7 @@ func TestAuthMiddleware_LocalhostSecurity(t *testing.T) {
 	})
 
 	t.Run("No Key - IPv6 Localhost Allowed", func(t *testing.T) {
-		middleware := app.createAuthMiddleware(false) // No key
+		middleware := app.createAuthMiddleware(false, false) // No key
 		handler := middleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusOK)
 		}))
@@ -263,7 +263,7 @@ func TestAuthMiddleware_LocalhostSecurity(t *testing.T) {
 	})
 
 	t.Run("No Key - Private IP Allowed", func(t *testing.T) {
-		middleware := app.createAuthMiddleware(false) // No key
+		middleware := app.createAuthMiddleware(false, false) // No key
 		handler := middleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusOK)
 		}))
@@ -277,7 +277,7 @@ func TestAuthMiddleware_LocalhostSecurity(t *testing.T) {
 	})
 
 	t.Run("No Key - Public IP Denied", func(t *testing.T) {
-		middleware := app.createAuthMiddleware(false) // No key
+		middleware := app.createAuthMiddleware(false, false) // No key
 		handler := middleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusOK)
 		}))
@@ -294,7 +294,7 @@ func TestAuthMiddleware_LocalhostSecurity(t *testing.T) {
 	app.SettingsManager.Update(nil, "secret") // Set key
 
 	t.Run("With Key - Localhost Needs Key", func(t *testing.T) {
-		middleware := app.createAuthMiddleware(false)
+		middleware := app.createAuthMiddleware(false, false)
 		handler := middleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusOK)
 		}))
@@ -308,7 +308,7 @@ func TestAuthMiddleware_LocalhostSecurity(t *testing.T) {
 	})
 
 	t.Run("With Key - External Needs Key", func(t *testing.T) {
-		middleware := app.createAuthMiddleware(false)
+		middleware := app.createAuthMiddleware(false, false)
 		handler := middleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusOK)
 		}))
@@ -322,7 +322,7 @@ func TestAuthMiddleware_LocalhostSecurity(t *testing.T) {
 	})
 
 	t.Run("With Key - External With Correct Key Allowed", func(t *testing.T) {
-		middleware := app.createAuthMiddleware(false)
+		middleware := app.createAuthMiddleware(false, false)
 		handler := middleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusOK)
 		}))
@@ -337,7 +337,7 @@ func TestAuthMiddleware_LocalhostSecurity(t *testing.T) {
 	})
 
 	t.Run("With Key - External With Authorization Bearer Allowed", func(t *testing.T) {
-		middleware := app.createAuthMiddleware(false)
+		middleware := app.createAuthMiddleware(false, false)
 		handler := middleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusOK)
 		}))
