@@ -4,6 +4,8 @@
 
 ### Status: Active Development
 
+- **Flexible Environment Variable Syntax**: [COMPLETED] Support `$VAR` syntax in configuration files in addition to `${VAR}` to reduce user friction.
+- **DSN Redaction**: [COMPLETED] Redact sensitive information (passwords) from DSNs in error messages during doctor checks.
 
 ## 2. Top 10 Recommended Features
 
@@ -108,6 +110,8 @@ These features represent the next logical steps for the product, focusing on Ent
 | 71   | **Top Tools API Extensions**                  | **Observability**: Enhance the top tools API to support time ranges (last 1h, 24h) using historical metrics if available.                                                                                        | Medium     |
 | 72   | **Config Hot-Reload Validation**              | **Resilience**: Validate configuration changes before applying them during a hot-reload to prevent breaking the running server with a bad config.                                                                  | High       |
 | 73   | **Docker Secret Native Support**              | **Ops**: Native support for reading Docker secrets (files in `/run/secrets`) and substituting them into configuration without needing environment variable mapping.                                                | Medium     |
+| 74   | **Environment Variable Wizard**               | **DevX**: A UI helper to identify used environment variables in a config and prompt the user to fill them if missing during startup/testing.                                                                       | Low        |
+| 75   | **Global Redaction Policy**                   | **Security**: Centralized configuration to define patterns (regex) for redaction across all logs, error messages, and traces.                                                                                      | Medium     |
 
 ## 3. Codebase Health
 
