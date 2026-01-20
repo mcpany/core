@@ -630,10 +630,22 @@ func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 			bodyBytes, _ := io.ReadAll(io.LimitReader(attemptResp.Body, 1024))
 			_ = attemptResp.Body.Close()
 
+			// Try to redact JSON content to avoid leaking sensitive fields in error messages
+			// (e.g. if the error response contains the request payload or secrets)
+			bodyBytes = util.RedactJSON(bodyBytes)
 			bodyStr := string(bodyBytes)
+
 			logging.GetLogger().DebugContext(ctx, "Upstream HTTP error", "status", attemptResp.StatusCode, "body", bodyStr, "url", httpReq.URL.String())
 
-			errMsg := fmt.Errorf("upstream HTTP request failed with status %d: %s", attemptResp.StatusCode, bodyStr)
+			// Truncate body for the returned error message to prevent leaking large stack traces or extensive details to the user/LLM.
+			// We keep enough to likely identify the issue (e.g. "invalid argument").
+			displayBody := bodyStr
+			const maxErrorBodyLen = 200
+			if len(displayBody) > maxErrorBodyLen {
+				displayBody = displayBody[:maxErrorBodyLen] + "... (truncated)"
+			}
+
+			errMsg := fmt.Errorf("upstream HTTP request failed with status %d: %s", attemptResp.StatusCode, displayBody)
 
 			if attemptResp.StatusCode < 500 {
 				return &resilience.PermanentError{Err: errMsg}
@@ -2265,6 +2277,8 @@ func prettyPrint(input []byte, contentType string) string {
 		encoder := xml.NewEncoder(&buf)
 		encoder.Indent("", "  ")
 
+		var stack []string
+
 		// Attempt to decode and re-encode to format
 		for {
 			token, err := decoder.Token()
@@ -2276,6 +2290,30 @@ func prettyPrint(input []byte, contentType string) string {
 				// XML parsing failed, return raw string
 				return string(input)
 			}
+
+			switch t := token.(type) {
+			case xml.StartElement:
+				// Redact attributes
+				for i := range t.Attr {
+					if util.IsSensitiveKey(t.Attr[i].Name.Local) {
+						t.Attr[i].Value = redactedPlaceholder
+					}
+				}
+				token = t
+				stack = append(stack, t.Name.Local)
+			case xml.EndElement:
+				if len(stack) > 0 {
+					stack = stack[:len(stack)-1]
+				}
+			case xml.CharData:
+				if len(stack) > 0 {
+					currentTag := stack[len(stack)-1]
+					if util.IsSensitiveKey(currentTag) {
+						token = xml.CharData([]byte(redactedPlaceholder))
+					}
+				}
+			}
+
 			if err := encoder.EncodeToken(token); err != nil {
 				return string(input)
 			}
