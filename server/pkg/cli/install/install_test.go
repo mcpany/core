@@ -97,6 +97,41 @@ func TestRun(t *testing.T) {
 	assert.NotEqual(t, "docker", mcpanyServer["command"])
 }
 
+func TestRun_Errors(t *testing.T) {
+	fs := afero.NewMemMapFs()
+	cmd := &cobra.Command{}
+
+	// Test 1: Missing Config Path
+	opts := &Options{
+		Client:     "claude",
+		ConfigPath: "",
+		Fs:         fs,
+	}
+	err := Run(cmd, opts)
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), "config-path is required")
+
+	// Test 2: Non-existent Config File
+	opts.ConfigPath = "/non/existent/path.yaml"
+	err = Run(cmd, opts)
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), "configuration file not found")
+
+	// Test 3: Unsupported Client
+	// Create a dummy config file so we pass the file check
+	configPath := "/tmp/valid.yaml"
+	if runtime.GOOS == "windows" {
+		configPath = `C:\tmp\valid.yaml`
+	}
+	_ = afero.WriteFile(fs, configPath, []byte("{}"), 0644)
+
+	opts.ConfigPath = configPath
+	opts.Client = "unsupported"
+	err = Run(cmd, opts)
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), "unsupported client")
+}
+
 func TestBuildServerConfig_Docker(t *testing.T) {
 	opts := &Options{
 		LocalBinary: false,
