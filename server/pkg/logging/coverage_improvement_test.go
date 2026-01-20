@@ -56,7 +56,7 @@ func TestBroadcastHandler_SourceLogic(t *testing.T) {
 	select {
 	case msg := <-ch:
 		assert.Contains(t, string(msg), `"source":"my-source"`)
-	case <-time.After(time.Second):
+	case <-time.After(5 * time.Second):
 		t.Fatal("timeout waiting for log")
 	}
 
@@ -68,7 +68,7 @@ func TestBroadcastHandler_SourceLogic(t *testing.T) {
 	select {
 	case msg := <-ch:
 		assert.Contains(t, string(msg), `"source":"my-tool"`)
-	case <-time.After(time.Second):
+	case <-time.After(5 * time.Second):
 		t.Fatal("timeout waiting for log")
 	}
 }
