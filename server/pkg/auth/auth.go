@@ -364,9 +364,8 @@ func (am *Manager) AddAuthenticator(serviceID string, authenticator Authenticato
 func (am *Manager) Authenticate(ctx context.Context, serviceID string, r *http.Request) (context.Context, error) {
 	if am.apiKey != "" {
 		receivedKey := r.Header.Get("X-API-Key")
-		if receivedKey == "" {
-			receivedKey = r.URL.Query().Get("api_key")
-		}
+		// NOTE: We do not support "api_key" in query parameters for the global API key
+		// to prevent credential leakage in logs.
 
 		if receivedKey == "" {
 			return ctx, fmt.Errorf("unauthorized")

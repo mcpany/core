@@ -186,6 +186,11 @@ func TestAuthManager(t *testing.T) {
 		_, err = authManager.Authenticate(context.Background(), "any-service", req)
 		assert.Error(t, err)
 
+		// Failed authentication (query param not supported for global key)
+		req = httptest.NewRequest("GET", "/?api_key=global-secret-key", nil)
+		_, err = authManager.Authenticate(context.Background(), "any-service", req)
+		assert.Error(t, err)
+
 		authManager.SetAPIKey("")
 	})
 
