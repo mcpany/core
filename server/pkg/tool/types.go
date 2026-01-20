@@ -635,7 +635,7 @@ func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 			bodyBytes = util.RedactJSON(bodyBytes)
 			bodyStr := string(bodyBytes)
 
-			logging.GetLogger().DebugContext(ctx, "Upstream HTTP error", "status", attemptResp.StatusCode, "body", bodyStr, "url", httpReq.URL.String())
+			logging.GetLogger().DebugContext(ctx, "Upstream HTTP error", "status", attemptResp.StatusCode, "body", bodyStr, "url", util.RedactURL(httpReq.URL))
 
 			// Truncate body for the returned error message to prevent leaking large stack traces or extensive details to the user/LLM.
 			// We keep enough to likely identify the issue (e.g. "invalid argument").
@@ -701,7 +701,9 @@ func (t *HTTPTool) createHTTPRequest(ctx context.Context, urlString string, body
 func (t *HTTPTool) logRequest(ctx context.Context, httpReq *http.Request, body io.Reader) {
 	// Log headers
 	var headerBuf bytes.Buffer
-	headerBuf.WriteString(fmt.Sprintf("%s %s %s\n", httpReq.Method, httpReq.URL.Path, httpReq.Proto))
+	// Use RedactURL to safely log the URL including query parameters
+	safeURL := util.RedactURL(httpReq.URL)
+	headerBuf.WriteString(fmt.Sprintf("%s %s %s\n", httpReq.Method, safeURL, httpReq.Proto))
 	headerBuf.WriteString(fmt.Sprintf("Host: %s\n", httpReq.Host))
 	for k, v := range httpReq.Header {
 		val := strings.Join(v, ", ")
@@ -1465,7 +1467,20 @@ func (t *OpenAPITool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 	}
 
 	if resp.StatusCode >= 400 {
-		return nil, fmt.Errorf("upstream OpenAPI request failed with status %d: %s", resp.StatusCode, string(respBody))
+		// Redact sensitive info from body
+		respBody = util.RedactJSON(respBody)
+		bodyStr := string(respBody)
+
+		logging.GetLogger().DebugContext(ctx, "Upstream OpenAPI error", "status", resp.StatusCode, "body", bodyStr, "url", util.RedactURL(httpReq.URL))
+
+		// Truncate body for the returned error message
+		displayBody := bodyStr
+		const maxErrorBodyLen = 200
+		if len(displayBody) > maxErrorBodyLen {
+			displayBody = displayBody[:maxErrorBodyLen] + "... (truncated)"
+		}
+
+		return nil, fmt.Errorf("upstream OpenAPI request failed with status %d: %s", resp.StatusCode, displayBody)
 	}
 
 	if t.outputTransformer != nil {
