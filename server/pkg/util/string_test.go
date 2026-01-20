@@ -4,6 +4,7 @@
 package util
 
 import (
+	"strings"
 	"testing"
 )
 
@@ -63,6 +64,18 @@ func TestLevenshteinDistance_LargeASCII(t *testing.T) {
 	got := LevenshteinDistance(s1, s2)
 	if got != 1 {
 		t.Errorf("LevenshteinDistance long string = %d, want 1", got)
+	}
+}
+
+func TestLevenshteinDistance_LargeUnicode(t *testing.T) {
+	// Trigger the non-stack path (m+1 > 256) for Unicode
+	// Japanese 'a' is 3 bytes. 300 chars > 256.
+	s1 := strings.Repeat("あ", 300)
+	s2 := strings.Repeat("あ", 299) + "い" // Substitution at the end
+
+	got := LevenshteinDistance(s1, s2)
+	if got != 1 {
+		t.Errorf("LevenshteinDistance large unicode = %d, want 1", got)
 	}
 }
 
