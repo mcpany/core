@@ -14,7 +14,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { ChevronDown, ChevronRight } from "lucide-react";
-import { useState } from "react";
+import { useState, memo } from "react";
 import { cn } from "@/lib/utils";
 
 interface SchemaNodeProps {
@@ -50,16 +50,8 @@ const TypeBadge = ({ type }: { type: string }) => {
   );
 };
 
-/**
- * SchemaNode component.
- * @param props - The component props.
- * @param props.name - The name.
- * @param props.schema - The schema definition.
- * @param props.required - Whether the field is required.
- * @param props.level - The level property.
- * @returns The rendered component.
- */
-const SchemaNode = ({ name, schema, required, level = 0 }: SchemaNodeProps) => {
+// Optimization: Memoize SchemaNode to prevent unnecessary recursive re-renders when parent re-renders but sub-schema is unchanged.
+const SchemaNode = memo(({ name, schema, required, level = 0 }: SchemaNodeProps) => {
   const [expanded, setExpanded] = useState(true);
 
   if (!schema) return null;
@@ -138,14 +130,16 @@ const SchemaNode = ({ name, schema, required, level = 0 }: SchemaNodeProps) => {
       )}
     </>
   );
-};
+});
+SchemaNode.displayName = "SchemaNode";
 
 /**
  * SchemaVisualizer.
  *
  * @param { schema - The { schema.
  */
-export function SchemaVisualizer({ schema }: { schema: any }) {
+// Optimization: Memoize SchemaVisualizer to prevent re-renders when parent component updates unrelated state.
+export const SchemaVisualizer = memo(function SchemaVisualizer({ schema }: { schema: any }) {
   if (!schema || Object.keys(schema).length === 0) {
     return (
       <div className="text-muted-foreground text-sm italic p-4 text-center border rounded-md bg-muted/20">
@@ -185,4 +179,5 @@ export function SchemaVisualizer({ schema }: { schema: any }) {
       </Table>
     </div>
   );
-}
+});
+SchemaVisualizer.displayName = "SchemaVisualizer";

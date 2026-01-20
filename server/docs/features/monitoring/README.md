@@ -30,13 +30,9 @@ You want to alert if the error rate of your "weather-service" exceeds 5% or if t
 ## Available Metrics
 
 - `mcpany_tools_call_total`: Total number of tool calls.
-  - Labels: `tool`, `service_id`
-- `mcpany_tools_call_errors`: Total number of tool call errors.
-  - Labels: `tool`, `service_id`
-- `mcpany_tools_call_latency`: Latency of tool calls.
-  - Labels: `tool`, `service_id`
-- `mcpany_tools_list_total`: Total number of tools/list requests.
-- `mcpany_config_reload_total`: Configuration reload events.
+  - Labels: `tool`, `service_id`, `status` (success/error), `error_type`
+- `mcpany_tools_call_latency_seconds`: Latency of tool calls in seconds.
+  - Labels: `tool`, `service_id`, `status`
 - `mcpany_grpc_connections_opened_total`: Total number of opened gRPC connections.
 - `mcpany_grpc_connections_closed_total`: Total number of closed gRPC connections.
 - `mcpany_grpc_rpc_started_total`: Total number of started gRPC RPCs.

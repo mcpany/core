@@ -9,6 +9,7 @@ import (
 	"net"
 	"net/http"
 	"net/http/httptest"
+	"strings"
 	"testing"
 	"time"
 
@@ -224,6 +225,25 @@ func TestRunServerMode_Auth(t *testing.T) {
 		assert.NotEqual(t, http.StatusUnauthorized, resp.StatusCode)
 	})
 
+	// Case 10: JSON-RPC Endpoint (Trigger httpHandler wrapper)
+	t.Run("JSON-RPC Endpoint", func(t *testing.T) {
+		// Use a body < 10MB
+		body := `{"jsonrpc":"2.0","method":"ping","id":1}`
+		req, _ := http.NewRequest("POST", baseURL+"/", strings.NewReader(body))
+		req.Header.Set("X-API-Key", "global-secret")
+		req.Header.Set("Content-Type", "application/json")
+
+		resp, err := http.DefaultClient.Do(req)
+		require.NoError(t, err)
+		defer func() { _ = resp.Body.Close() }()
+		// We just want to ensure it doesn't 404 (handled by mux) or 401 (auth failed).
+		// Since we pass correct auth, it should hit the httpHandler.
+		// Even if method is not supported, it should return a JSON-RPC error, which is 200 OK mostly or 4xx/5xx from handler.
+		// Just assert not 404 and not 401.
+		assert.NotEqual(t, http.StatusNotFound, resp.StatusCode)
+		assert.NotEqual(t, http.StatusUnauthorized, resp.StatusCode)
+	})
+
 	// Clean up
 	cancel()
 	<-errChan
@@ -235,7 +255,7 @@ func TestAuthMiddleware_LocalhostSecurity(t *testing.T) {
 
 	// Case 1: No API Key Configured
 	t.Run("No Key - Localhost Allowed", func(t *testing.T) {
-		middleware := app.createAuthMiddleware(false) // No key
+		middleware := app.createAuthMiddleware(false, false) // No key
 		handler := middleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusOK)
 		}))
@@ -249,7 +269,7 @@ func TestAuthMiddleware_LocalhostSecurity(t *testing.T) {
 	})
 
 	t.Run("No Key - IPv6 Localhost Allowed", func(t *testing.T) {
-		middleware := app.createAuthMiddleware(false) // No key
+		middleware := app.createAuthMiddleware(false, false) // No key
 		handler := middleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusOK)
 		}))
@@ -263,7 +283,7 @@ func TestAuthMiddleware_LocalhostSecurity(t *testing.T) {
 	})
 
 	t.Run("No Key - Private IP Allowed", func(t *testing.T) {
-		middleware := app.createAuthMiddleware(false) // No key
+		middleware := app.createAuthMiddleware(false, false) // No key
 		handler := middleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusOK)
 		}))
@@ -277,7 +297,7 @@ func TestAuthMiddleware_LocalhostSecurity(t *testing.T) {
 	})
 
 	t.Run("No Key - Public IP Denied", func(t *testing.T) {
-		middleware := app.createAuthMiddleware(false) // No key
+		middleware := app.createAuthMiddleware(false, false) // No key
 		handler := middleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusOK)
 		}))
@@ -294,7 +314,7 @@ func TestAuthMiddleware_LocalhostSecurity(t *testing.T) {
 	app.SettingsManager.Update(nil, "secret") // Set key
 
 	t.Run("With Key - Localhost Needs Key", func(t *testing.T) {
-		middleware := app.createAuthMiddleware(false)
+		middleware := app.createAuthMiddleware(false, false)
 		handler := middleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusOK)
 		}))
@@ -308,7 +328,7 @@ func TestAuthMiddleware_LocalhostSecurity(t *testing.T) {
 	})
 
 	t.Run("With Key - External Needs Key", func(t *testing.T) {
-		middleware := app.createAuthMiddleware(false)
+		middleware := app.createAuthMiddleware(false, false)
 		handler := middleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusOK)
 		}))
@@ -322,7 +342,7 @@ func TestAuthMiddleware_LocalhostSecurity(t *testing.T) {
 	})
 
 	t.Run("With Key - External With Correct Key Allowed", func(t *testing.T) {
-		middleware := app.createAuthMiddleware(false)
+		middleware := app.createAuthMiddleware(false, false)
 		handler := middleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusOK)
 		}))
@@ -337,7 +357,7 @@ func TestAuthMiddleware_LocalhostSecurity(t *testing.T) {
 	})
 
 	t.Run("With Key - External With Authorization Bearer Allowed", func(t *testing.T) {
-		middleware := app.createAuthMiddleware(false)
+		middleware := app.createAuthMiddleware(false, false)
 		handler := middleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusOK)
 		}))

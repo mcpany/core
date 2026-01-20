@@ -6,6 +6,7 @@ package util //nolint:revive,nolintlint // Package name 'util' is common in this
 import (
 	"bytes"
 	"encoding/json"
+	"regexp"
 	"sort"
 	"unsafe"
 )
@@ -469,4 +470,12 @@ func isKeyColon(input []byte, endOffset int) bool {
 		return c == ':'
 	}
 	return false
+}
+
+var dsnPasswordRegex = regexp.MustCompile(`(:)([^:@]+)(@)`)
+
+// RedactDSN redacts the password from a DSN string.
+// Supported formats: postgres://user:password@host...
+func RedactDSN(dsn string) string {
+	return dsnPasswordRegex.ReplaceAllString(dsn, "$1"+redactedPlaceholder+"$3")
 }

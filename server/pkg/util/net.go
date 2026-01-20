@@ -95,10 +95,10 @@ func (d *SafeDialer) DialContext(ctx context.Context, network, addr string) (net
 
 	// Check all resolved IPs. If any are forbidden, block the request.
 	for _, ip := range ips {
-		if !d.AllowLoopback && ip.IsLoopback() {
+		if !d.AllowLoopback && (ip.IsLoopback() || isNAT64Loopback(ip)) {
 			return nil, fmt.Errorf("ssrf attempt blocked: host %s resolved to loopback ip %s", host, ip)
 		}
-		if !d.AllowLinkLocal && (ip.IsLinkLocalUnicast() || ip.IsLinkLocalMulticast()) {
+		if !d.AllowLinkLocal && (ip.IsLinkLocalUnicast() || ip.IsLinkLocalMulticast() || isNAT64LinkLocal(ip)) {
 			return nil, fmt.Errorf("ssrf attempt blocked: host %s resolved to link-local ip %s", host, ip)
 		}
 		if !d.AllowPrivate && IsPrivateNetworkIP(ip) {
