@@ -58,7 +58,7 @@ const mockWebSocketService: UpstreamServiceConfig = {
 
 describe("ConnectionDiagnosticDialog", () => {
   beforeEach(() => {
-    // Mock global fetch
+    // Default mock global fetch (Success case)
     global.fetch = vi.fn(() =>
         Promise.resolve({
             ok: true,
@@ -149,4 +149,65 @@ describe("ConnectionDiagnosticDialog", () => {
         expect(screen.getByText("Browser Connectivity Check")).toBeInTheDocument();
     });
   });
+
+  it("displays context-aware suggestion for 404 error", async () => {
+      // Mock failure response with 404 error
+      global.fetch = vi.fn(() =>
+        Promise.resolve({
+            ok: true,
+            json: () => Promise.resolve([
+                { id: "test-service", name: "Test Service", status: "unhealthy", message: "404 Not Found" }
+            ]),
+        })
+      ) as any;
+
+      render(<ConnectionDiagnosticDialog service={mockService} />);
+
+      const trigger = screen.getByText("Troubleshoot");
+      fireEvent.click(trigger);
+
+      const startButton = screen.getByText("Start Diagnostics");
+      fireEvent.click(startButton);
+
+      // Wait for completion
+      await waitFor(() => {
+          expect(screen.getByText("Rerun Diagnostics")).toBeInTheDocument();
+      }, { timeout: 5000 });
+
+      // Check for suggestion card elements
+      expect(screen.getByText("Not Found (404)")).toBeInTheDocument();
+      expect(screen.getByText("The requested path or resource does not exist on the upstream server.")).toBeInTheDocument();
+      // Use getAllByText because it appears in logs and the card
+      expect(screen.getAllByText(/Check the URL path in your configuration/).length).toBeGreaterThan(0);
+  });
+
+  it("displays context-aware suggestion for Connection Refused", async () => {
+    // Mock failure response with connection refused
+    global.fetch = vi.fn(() =>
+      Promise.resolve({
+          ok: true,
+          json: () => Promise.resolve([
+              { id: "test-service", name: "Test Service", status: "unhealthy", message: "dial tcp 127.0.0.1:8080: connect: connection refused" }
+          ]),
+      })
+    ) as any;
+
+    render(<ConnectionDiagnosticDialog service={mockService} />);
+
+    const trigger = screen.getByText("Troubleshoot");
+    fireEvent.click(trigger);
+
+    const startButton = screen.getByText("Start Diagnostics");
+    fireEvent.click(startButton);
+
+    // Wait for completion
+    await waitFor(() => {
+        expect(screen.getByText("Rerun Diagnostics")).toBeInTheDocument();
+    }, { timeout: 5000 });
+
+    // Check for suggestion card elements
+    expect(screen.getByText("Connection Refused")).toBeInTheDocument();
+    // Use getAllByText because it appears in logs and the card
+    expect(screen.getAllByText(/Check if the upstream service is running/).length).toBeGreaterThan(0);
+});
 });

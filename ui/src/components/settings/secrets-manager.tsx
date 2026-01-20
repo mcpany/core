@@ -144,7 +144,8 @@ export function SecretsManager() {
         setNewSecretProvider("custom");
     };
 
-    const filteredSecrets = secrets.filter(s =>
+    const safeSecrets = Array.isArray(secrets) ? secrets : [];
+    const filteredSecrets = safeSecrets.filter(s =>
         s.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         s.key.toLowerCase().includes(searchQuery.toLowerCase())
     );
