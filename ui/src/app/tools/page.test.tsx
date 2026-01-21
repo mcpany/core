@@ -1,3 +1,8 @@
+/**
+ * Copyright 2026 Author(s) of MCP Any
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 
 import React from 'react';
 import { render, screen, waitFor, fireEvent } from '@testing-library/react';
