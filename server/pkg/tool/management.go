@@ -453,7 +453,8 @@ func (tm *Manager) ExecuteTool(ctx context.Context, req *ExecutionRequest) (any,
 		return nil, ErrToolNotFound
 	}
 	serviceID := t.Tool().GetServiceId()
-	serviceInfo, ok := tm.GetServiceInfo(serviceID)
+	// ⚡ Bolt Optimization: Use direct load to avoid expensive config cloning/stripping in GetServiceInfo
+	serviceInfo, ok := tm.serviceInfo.Load(serviceID)
 
 	var preHooks []PreCallHook
 	var postHooks []PostCallHook
@@ -825,7 +826,8 @@ func (tm *Manager) rebuildCachedTools() []Tool {
 	tm.tools.Range(func(_ string, value Tool) bool {
 		// Check service health
 		serviceID := value.Tool().GetServiceId()
-		if info, ok := tm.GetServiceInfo(serviceID); ok {
+		// ⚡ Bolt Optimization: Use direct load to avoid expensive config cloning/stripping in GetServiceInfo
+		if info, ok := tm.serviceInfo.Load(serviceID); ok {
 			if info.HealthStatus == "unhealthy" {
 				return true // Skip unhealthy tools
 			}
