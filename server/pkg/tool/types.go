@@ -2446,25 +2446,45 @@ func cleanPathPreserveDoubleSlash(p string) string {
 			if len(out) > 0 {
 				last := out[len(out)-1]
 				if rooted {
-					// At root, ignore ..
-					// Root is [""] or ["", "", ...]
-					// If out is just [""], we are at /.
+					// Pop all trailing empty segments to find the real parent
+					// But we must stop if we hit the root (index 0)
+					for len(out) > 1 && out[len(out)-1] == "" {
+						out = out[:len(out)-1]
+					}
+
+					// At this point:
+					// If out is [""], we are at root.
+					// If out is ["", "foo"], we are at /foo.
+
+					// If we are at root (len(out) == 1 && out[0] == ""), ignore ..
 					if len(out) == 1 && out[0] == "" {
 						continue
 					}
-					// If out ends in "", it might be //
-					// If we are at // (i.e. ["", ""]), we should stay at // (ignore ..)
-					if len(out) == 2 && out[1] == "" {
-						continue
-					}
-					// Pop it
+
+					// Pop the real parent
 					out = out[:len(out)-1]
 				} else {
 					if last == ".." {
 						out = append(out, part)
 					} else {
 						// Pop previous segment
-						out = out[:len(out)-1]
+						// For non-rooted paths, double slashes (empty segments) are consumed by ..
+						// until we hit a real segment or ".." or empty list.
+						for len(out) > 0 && out[len(out)-1] == "" {
+							out = out[:len(out)-1]
+						}
+						if len(out) > 0 {
+							// Check last again after popping empty segments
+							last = out[len(out)-1]
+							if last == ".." {
+								out = append(out, part)
+							} else {
+								out = out[:len(out)-1]
+							}
+						} else {
+							// If we popped everything, append ..
+							out = append(out, part)
+						}
 					}
 				}
 			} else if !rooted {

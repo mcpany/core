@@ -35,7 +35,7 @@ func TestCleanPathPreserveDoubleSlash(t *testing.T) {
 
 		// Complex cases combining double slashes and dots
 		{name: "double slash and dot", input: "/foo//./bar", expected: "/foo//bar"},
-		{name: "double slash and parent", input: "/foo//../bar", expected: "/foo/bar"}, // .. pops empty segment
+		{name: "double slash and parent", input: "/foo//../bar", expected: "/bar"}, // .. pops empty segment AND parent
 		{name: "parent pops double slash", input: "/foo/bar/..//baz", expected: "/foo//baz"},
 
 		// Relative paths
@@ -45,7 +45,7 @@ func TestCleanPathPreserveDoubleSlash(t *testing.T) {
 		{name: "relative parent", input: "foo/../bar", expected: "bar"},
 		{name: "relative parent start", input: "../foo", expected: "../foo"},
 		{name: "relative parent start 2", input: "../../foo", expected: "../../foo"},
-		{name: "relative parent after double slash", input: "foo//../bar", expected: "foo/bar"},
+		{name: "relative parent after double slash", input: "foo//../bar", expected: "bar"},
 
 		// Edge cases from logic analysis
 		{name: "root ..", input: "/..", expected: "/"},
@@ -61,11 +61,11 @@ func TestCleanPathPreserveDoubleSlash(t *testing.T) {
 		{name: "path trailing .. with slash", input: "/a/../", expected: "/"},
 
 		// weird ones
-		{name: "weird 1", input: "/a//../b", expected: "/a/b"},
+		{name: "weird 1", input: "/a//../b", expected: "/b"},
 		{name: "weird 2", input: "/a/..//b", expected: "//b"},
-		{name: "weird 3", input: "//../a", expected: "//a"},
-		{name: "double slash with multiple parents", input: "//../../foo", expected: "//foo"},
-		{name: "double slash with parent and double slash", input: "//..//foo", expected: "///foo"},
+		{name: "weird 3", input: "//../a", expected: "/a"},
+		{name: "double slash with multiple parents", input: "//../../foo", expected: "/foo"},
+		{name: "double slash with parent and double slash", input: "//..//foo", expected: "//foo"},
 	}
 
 	for _, tc := range tests {
