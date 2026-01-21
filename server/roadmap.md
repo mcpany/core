@@ -114,6 +114,8 @@ These features represent the next logical steps for the product, focusing on Ent
 | 75   | **Global Redaction Policy**                   | **Security**: Centralized configuration to define patterns (regex) for redaction across all logs, error messages, and traces.                                                                                      | Medium     |
 | 74   | **Tool Search & Filter API**                  | **UX/DevX**: A dedicated API to search tools by name/description/tags with fuzzy matching, to power UI search bars and "did you mean" hints in the frontend.                                                       | Low        |
 | 75   | **Tool Execution Trace ID**                   | **Observability**: Propagate a trace ID through the tool execution flow (hooks, middleware, execution) to aid in debugging complex tool chains.                                                                    | Medium     |
+| 76   | **Auto-Discovery Status API**                 | **Observability**: Expose the status of auto-discovery providers (Last run, Error, Success) via API to the UI, so users know why local tools (like Ollama) are missing.                                            | Low        |
+| 77   | **Configurable Discovery Providers**          | **Configuration**: Allow defining discovery providers in `config.yaml` (e.g. `discovery: { ollama: { url: "http://host:11434" } }`) instead of hardcoded defaults.                                                  | Medium     |
 
 ## 3. Codebase Health
 
