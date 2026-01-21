@@ -25,7 +25,7 @@ func TestHTTPUpstream_Register_CallPolicyCompileError(t *testing.T) {
 	configJSON := `{
 		"name": "policy-compile-error",
 		"http_service": {
-			"address": "http://localhost",
+			"address": "http://127.0.0.1",
 			"tools": [{"name": "op", "call_id": "call"}],
 			"calls": {
 				"call": {"id": "call", "method": "HTTP_METHOD_GET"}
@@ -61,7 +61,7 @@ func TestHTTPUpstream_Register_UnsupportedMethod(t *testing.T) {
 	configJSON := `{
 		"name": "unsupported-method",
 		"http_service": {
-			"address": "http://localhost",
+			"address": "http://127.0.0.1",
 			"tools": [{"name": "op", "call_id": "call"}],
 			"calls": {
 				"call": {"id": "call", "method": "HTTP_METHOD_UNSPECIFIED"}
@@ -89,7 +89,7 @@ func TestHTTPUpstream_Register_DoubleSlashParseFailure(t *testing.T) {
 	configJSON := `{
 		"name": "double-slash-parse-fail",
 		"http_service": {
-			"address": "http://localhost",
+			"address": "http://127.0.0.1",
 			"tools": [{"name": "op", "call_id": "call"}],
 			"calls": {
 				"call": {
@@ -121,9 +121,9 @@ func TestHTTPUpstream_Register_DoubleSlashParseFailure(t *testing.T) {
 		tool, ok := tm.GetTool(toolID)
 		assert.True(t, ok)
 		fqn := tool.Tool().GetUnderlyingMethodFqn()
-		// If recovered: http://localhost//:invalid
-		// Update: My analysis showed it resolves to http://localhost//:invalid
-		assert.Contains(t, fqn, "http://localhost//:invalid")
+		// If recovered: http://127.0.0.1//:invalid
+		// Update: My analysis showed it resolves to http://127.0.0.1//:invalid
+		assert.Contains(t, fqn, "http://127.0.0.1//:invalid")
 	}
 }
 
@@ -135,7 +135,7 @@ func TestHTTPUpstream_Register_InputSchema_PropertiesNotStruct(t *testing.T) {
 	configJSON := `{
 		"name": "schema-bad-props",
 		"http_service": {
-			"address": "http://localhost",
+			"address": "http://127.0.0.1",
 			"tools": [{"name": "op", "call_id": "call"}],
 			"calls": {
 				"call": {
@@ -217,7 +217,7 @@ func TestHTTPUpstream_Register_DoubleSlashPath(t *testing.T) {
 	configJSON := `{
 		"name": "double-slash-test",
 		"http_service": {
-			"address": "http://localhost",
+			"address": "http://127.0.0.1",
 			"tools": [{"name": "op", "call_id": "call"}],
 			"calls": {
 				"call": {
@@ -241,7 +241,7 @@ func TestHTTPUpstream_Register_DoubleSlashPath(t *testing.T) {
 	tool, ok := tm.GetTool(toolID)
 	assert.True(t, ok)
 	fqn := tool.Tool().GetUnderlyingMethodFqn()
-	assert.Contains(t, fqn, "http://localhost//foo/bar")
+	assert.Contains(t, fqn, "http://127.0.0.1//foo/bar")
 }
 
 func TestHTTPUpstream_Register_ExplicitInputSchema_Merging(t *testing.T) {
@@ -255,7 +255,7 @@ func TestHTTPUpstream_Register_ExplicitInputSchema_Merging(t *testing.T) {
 	configJSON := `{
 		"name": "explicit-schema-merge",
 		"http_service": {
-			"address": "http://localhost",
+			"address": "http://127.0.0.1",
 			"tools": [{"name": "op", "call_id": "call"}],
 			"calls": {
 				"call": {
@@ -322,7 +322,7 @@ func TestHTTPUpstream_Register_EndpointParseFailure(t *testing.T) {
 	configJSON := `{
 		"name": "endpoint-parse-fail",
 		"http_service": {
-			"address": "http://localhost",
+			"address": "http://127.0.0.1",
 			"tools": [{"name": "op", "call_id": "call"}],
 			"calls": {
 				"call": {

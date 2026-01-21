@@ -20,7 +20,7 @@ func TestStripSecretsFromService_Coverage(t *testing.T) {
 			svc: &configv1.UpstreamServiceConfig{
 				ServiceConfig: &configv1.UpstreamServiceConfig_GrpcService{
 					GrpcService: &configv1.GrpcUpstreamService{
-						Address: proto.String("localhost:50051"),
+						Address: proto.String("127.0.0.1:50051"),
 					},
 				},
 			},

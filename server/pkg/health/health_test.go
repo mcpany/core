@@ -46,7 +46,7 @@ func (s *mockHealthServer) Watch(
 
 // newMockGRPCHealthServer starts a gRPC server with the mock health service.
 func newMockGRPCHealthServer(t *testing.T, status grpc_health_v1.HealthCheckResponse_ServingStatus) (*grpc.Server, net.Listener) {
-	lis, err := net.Listen("tcp", "localhost:0")
+	lis, err := net.Listen("tcp", "127.0.0.1:0")
 	if err != nil {
 		t.Fatalf("failed to listen: %v", err)
 	}
@@ -303,7 +303,7 @@ func TestCheckGRPCHealth(t *testing.T) {
 		upstreamConfig := configv1.UpstreamServiceConfig_builder{
 			Name: lo.ToPtr("test-service"),
 			GrpcService: configv1.GrpcUpstreamService_builder{
-				Address: lo.ToPtr("localhost:12345"),
+				Address: lo.ToPtr("127.0.0.1:12345"),
 				HealthCheck: configv1.GrpcHealthCheck_builder{
 					Service: lo.ToPtr("test-service"),
 				}.Build(),
@@ -318,7 +318,7 @@ func TestCheckGRPCHealth(t *testing.T) {
 
 func TestCheckConnection(t *testing.T) {
 	t.Run("ConnectionSuccess", func(t *testing.T) {
-		lis, err := net.Listen("tcp", "localhost:0")
+		lis, err := net.Listen("tcp", "127.0.0.1:0")
 		assert.NoError(t, err)
 		defer func() { _ = lis.Close() }()
 		assert.NoError(
@@ -331,7 +331,7 @@ func TestCheckConnection(t *testing.T) {
 	t.Run("ConnectionFailure", func(t *testing.T) {
 		assert.Error(
 			t,
-			util.CheckConnection(context.Background(), "localhost:12345"),
+			util.CheckConnection(context.Background(), "127.0.0.1:12345"),
 			"checkConnection should fail for a non-listening port",
 		)
 	})
@@ -341,7 +341,7 @@ func TestCheckVariousServices(t *testing.T) {
 	ctx := context.Background()
 
 	// Setup a simple listening server for connection checks
-	lis, err := net.Listen("tcp", "localhost:0")
+	lis, err := net.Listen("tcp", "127.0.0.1:0")
 	assert.NoError(t, err)
 	defer func() { _ = lis.Close() }()
 	addr := lis.Addr().String()
@@ -413,7 +413,7 @@ func TestCheckVariousServices(t *testing.T) {
 			config: configv1.UpstreamServiceConfig_builder{
 				Name: lo.ToPtr("websocket-service-unreachable"),
 				WebsocketService: configv1.WebsocketUpstreamService_builder{
-					Address: lo.ToPtr("localhost:12345"),
+					Address: lo.ToPtr("127.0.0.1:12345"),
 				}.Build(),
 			}.Build(),
 			want: health.StatusDown,
@@ -430,7 +430,7 @@ func TestCheckVariousServices(t *testing.T) {
 			name: "WebRTC Service Unreachable",
 			config: configv1.UpstreamServiceConfig_builder{
 				Name:          lo.ToPtr("webrtc-service-unreachable"),
-				WebrtcService: configv1.WebrtcUpstreamService_builder{Address: lo.ToPtr("localhost:12345")}.Build(),
+				WebrtcService: configv1.WebrtcUpstreamService_builder{Address: lo.ToPtr("127.0.0.1:12345")}.Build(),
 			}.Build(),
 			want: health.StatusDown,
 		},
@@ -557,7 +557,7 @@ func TestWebsocketCheck(t *testing.T) {
 	})
 
 	t.Run("ServerUnreachable", func(t *testing.T) {
-		addr := "localhost:12345"
+		addr := "127.0.0.1:12345"
 		upstreamConfig := configv1.UpstreamServiceConfig_builder{
 			Name: lo.ToPtr("websocket-service"),
 			WebsocketService: configv1.WebsocketUpstreamService_builder{
@@ -632,9 +632,9 @@ func TestWebSocketHealthCheckBasic(t *testing.T) {
 		config := (&configv1.UpstreamServiceConfig_builder{
 			Name: lo.ToPtr("websocket-service-unhealthy"),
 			WebsocketService: (&configv1.WebsocketUpstreamService_builder{
-				Address: lo.ToPtr("localhost:12345"),
+				Address: lo.ToPtr("127.0.0.1:12345"),
 				HealthCheck: (&configv1.WebsocketHealthCheck_builder{
-					Url: lo.ToPtr("ws://localhost:12345"),
+					Url: lo.ToPtr("ws://127.0.0.1:12345"),
 				}).Build(),
 			}).Build(),
 		}).Build()
@@ -677,10 +677,10 @@ func TestWebRTCHealthCheck(t *testing.T) {
 		config := (&configv1.UpstreamServiceConfig_builder{
 			Name: lo.ToPtr("webrtc-service-unhealthy"),
 			WebrtcService: (&configv1.WebrtcUpstreamService_builder{
-				Address: lo.ToPtr("localhost:12345"),
+				Address: lo.ToPtr("127.0.0.1:12345"),
 				HealthCheck: (&configv1.WebRTCHealthCheck_builder{
 					Http: (&configv1.HttpHealthCheck_builder{
-						Url: lo.ToPtr("http://localhost:12345"),
+						Url: lo.ToPtr("http://127.0.0.1:12345"),
 					}).Build(),
 				}).Build(),
 			}).Build(),
@@ -692,7 +692,7 @@ func TestWebRTCHealthCheck(t *testing.T) {
 }
 
 func TestCheckConnection_WithScheme(t *testing.T) {
-	lis, err := net.Listen("tcp", "localhost:0")
+	lis, err := net.Listen("tcp", "127.0.0.1:0")
 	require.NoError(t, err)
 	defer func() { _ = lis.Close() }()
 
@@ -709,7 +709,7 @@ func TestCheckConnection_WithScheme(t *testing.T) {
 
 	// Test with https default port (use dummy host that we know wont connect or we test that it tries port 443)
 	// We verify that it returns an error (connection refused or timeout)
-	err = util.CheckConnection(context.Background(), "http://localhost")
+	err = util.CheckConnection(context.Background(), "http://127.0.0.1")
 	assert.Error(t, err) // Should ensure it tries port 80
 }
 
@@ -734,7 +734,7 @@ func TestHTTPCheck_BodyMismatch(t *testing.T) {
 
 func TestGRPC_NoHealthCheck(t *testing.T) {
 	// Should fall back to checkConnection
-	lis, err := net.Listen("tcp", "localhost:0")
+	lis, err := net.Listen("tcp", "127.0.0.1:0")
 	require.NoError(t, err)
 	defer func() { _ = lis.Close() }()
 

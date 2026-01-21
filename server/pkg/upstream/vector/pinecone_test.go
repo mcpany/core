@@ -150,7 +150,7 @@ func TestPineconeClient_Errors(t *testing.T) {
 	assert.Error(t, err)
 
 	// Connection Error
-	c.baseURL = "http://localhost:12345" // Port likely closed
+	c.baseURL = "http://127.0.0.1:12345" // Port likely closed
 	_, err = c.Query(context.Background(), []float32{0.1}, 1, nil, "")
 	assert.Error(t, err)
 

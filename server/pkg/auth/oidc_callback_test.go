@@ -92,7 +92,7 @@ func TestOIDCProvider_HandleCallback(t *testing.T) {
 		Issuer:       providerServer.URL,
 		ClientID:     "client-id",
 		ClientSecret: "client-secret",
-		RedirectURL:  "http://localhost/callback",
+		RedirectURL:  "http://127.0.0.1/callback",
 	}
 
 	provider, err := NewOIDCProvider(context.Background(), config)

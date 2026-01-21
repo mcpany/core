@@ -25,7 +25,7 @@ func TestResolvePath_BrokenSymlink(t *testing.T) {
 	// Try to resolve path through broken symlink
 	// /broken_link/some/file.txt
 	rootPaths := map[string]string{"/": rootDir}
-	p := NewLocalProvider(nil, rootPaths, nil, nil)
+	p := NewLocalProvider(nil, rootPaths, nil, nil, 0)
 
 	_, err = p.ResolvePath("/broken_link/some/file.txt")
 	assert.Error(t, err)
@@ -86,7 +86,7 @@ func TestResolvePath_PermissionDenied(t *testing.T) {
 	// /locked/nonexistent.txt
 
 	rootPaths := map[string]string{"/": rootDir}
-	p := NewLocalProvider(nil, rootPaths, nil, nil)
+	p := NewLocalProvider(nil, rootPaths, nil, nil, 0)
 
 	_, err = p.ResolvePath("/locked/nonexistent.txt")
 	// We expect an error because checking the path involves Lstat/EvalSymlinks which hits Permission Denied
@@ -111,7 +111,7 @@ func TestResolvePath_BestMatchEdgeCases(t *testing.T) {
 		"/a":  dirA,
 		"/ab": dirAB,
 	}
-	p := NewLocalProvider(nil, rootPaths, nil, nil)
+	p := NewLocalProvider(nil, rootPaths, nil, nil, 0)
 
 	// Test exact match
 	p1, err := p.ResolvePath("/a/file.txt")
@@ -127,14 +127,14 @@ func TestResolvePath_BestMatchEdgeCases(t *testing.T) {
 	rootPathsWithSlash := map[string]string{
 		"/a/": dirA,
 	}
-	pSlash := NewLocalProvider(nil, rootPathsWithSlash, nil, nil)
+	pSlash := NewLocalProvider(nil, rootPathsWithSlash, nil, nil, 0)
 	p3, err := pSlash.ResolvePath("/a/file.txt")
 	assert.NoError(t, err)
 	assert.Equal(t, filepath.Join(dirA, "file.txt"), p3)
 }
 
 func TestResolvePath_NoRoots(t *testing.T) {
-	p := NewLocalProvider(nil, nil, nil, nil)
+	p := NewLocalProvider(nil, nil, nil, nil, 0)
 	_, err := p.ResolvePath("/anything")
 	assert.Error(t, err)
 	assert.Contains(t, err.Error(), "no root paths defined")
@@ -142,7 +142,7 @@ func TestResolvePath_NoRoots(t *testing.T) {
 
 func TestResolvePath_NoMatch(t *testing.T) {
 	rootPaths := map[string]string{"/data": "/tmp/data"}
-	p := NewLocalProvider(nil, rootPaths, nil, nil)
+	p := NewLocalProvider(nil, rootPaths, nil, nil, 0)
 
 	_, err := p.ResolvePath("/other/file")
 	assert.Error(t, err)
@@ -164,7 +164,7 @@ func TestResolvePath_SymlinkLoop(t *testing.T) {
 	require.NoError(t, err)
 
 	rootPaths := map[string]string{"/": rootDir}
-	p := NewLocalProvider(nil, rootPaths, nil, nil)
+	p := NewLocalProvider(nil, rootPaths, nil, nil, 0)
 
 	_, err = p.ResolvePath("/link1")
 	assert.Error(t, err)
@@ -198,7 +198,7 @@ func TestResolvePath_ComplexGlobs(t *testing.T) {
 		filepath.Join(rootDir, "allowed", "*", "*.txt"),
 	}
 
-	p := NewLocalProvider(nil, rootPaths, allowed, nil)
+	p := NewLocalProvider(nil, rootPaths, allowed, nil, 0)
 
 	// allowed/ok.txt -> Matches first pattern
 	_, err = p.ResolvePath("/allowed/ok.txt")

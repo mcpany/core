@@ -12,7 +12,7 @@ import (
 
 func TestMain(m *testing.M) {
 	// Mock IsSafeURL to allow all URLs during tests in this package.
-	// This is necessary because many tests use httptest.NewServer which runs on localhost.
+	// This is necessary because many tests use httptest.NewServer which runs on 127.0.0.1.
 	originalIsSafeURL := validation.IsSafeURL
 	validation.IsSafeURL = func(urlStr string) error { return nil }
 	defer func() { validation.IsSafeURL = originalIsSafeURL }()

@@ -1068,20 +1068,23 @@ upstream_services:
             required:
               - seed_article
           output_schema:
-            type: array
-            description: the prioritized list of Wikidata IDs recommended for creation as Wikipedia articles
-            items:
-              type: object
-              properties:
-                wikidata_id:
-                  type: string
-                  description: Wikidata ID for the item
-                score:
-                  type: number
-                  description: Score of the recommendation. The higher the score, the more important the recommendation is.
-                source_language:
-                  type: string
-                  description: Source of the recommendation -- which wiki is recommending the current article.
+            type: object
+            properties:
+              recommendations:
+                type: array
+                description: the prioritized list of Wikidata IDs recommended for creation as Wikipedia articles
+                items:
+                  type: object
+                  properties:
+                    wikidata_id:
+                      type: string
+                      description: Wikidata ID for the item
+                    score:
+                      type: number
+                      description: Score of the recommendation. The higher the score, the more important the recommendation is.
+                    source_language:
+                      type: string
+                      description: Source of the recommendation -- which wiki is recommending the current article.
         get_data_css_mobile_type:
           id: get_data_css_mobile_type
           endpoint_path: /data/css/mobile/{{type}}

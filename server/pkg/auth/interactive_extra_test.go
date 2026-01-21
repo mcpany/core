@@ -51,7 +51,7 @@ func TestHandleOAuthCallbackExtra(t *testing.T) {
 		}
 		require.NoError(t, store.SaveCredential(ctx, cred))
 
-		err := manager.HandleOAuthCallback(ctx, "user1", "", "test-cred", "auth-code", "http://localhost/cb")
+		err := manager.HandleOAuthCallback(ctx, "user1", "", "test-cred", "auth-code", "http://127.0.0.1/cb")
 		require.NoError(t, err)
 
 		updatedCred, err := store.GetCredential(ctx, "test-cred")
@@ -77,7 +77,7 @@ func TestHandleOAuthCallbackExtra(t *testing.T) {
 		}
 		require.NoError(t, store.SaveService(ctx, svc))
 
-		err := manager.HandleOAuthCallback(ctx, "user1", "test-service", "", "auth-code", "http://localhost/cb")
+		err := manager.HandleOAuthCallback(ctx, "user1", "test-service", "", "auth-code", "http://127.0.0.1/cb")
 		require.NoError(t, err)
 
 		token, err := store.GetToken(ctx, "user1", "test-service")

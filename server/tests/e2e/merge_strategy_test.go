@@ -248,7 +248,7 @@ upstream_services:
 }
 
 func getFreePort(t *testing.T) string {
-	l, err := net.Listen("tcp", "localhost:0")
+	l, err := net.Listen("tcp", "127.0.0.1:0")
 	require.NoError(t, err)
 	defer l.Close()
 	return l.Addr().String()

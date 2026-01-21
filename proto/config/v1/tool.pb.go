@@ -111,6 +111,8 @@ type ToolDefinition struct {
 	Profiles      []*Profile                    `protobuf:"bytes,14,rep,name=profiles" json:"profiles,omitempty"`
 	MergeStrategy *ToolDefinition_MergeStrategy `protobuf:"varint,15,opt,name=merge_strategy,enum=mcpany.config.v1.ToolDefinition_MergeStrategy" json:"merge_strategy,omitempty"`
 	Tags          []string                      `protobuf:"bytes,16,rep,name=tags" json:"tags,omitempty"`
+	// Integrity check for the tool definition.
+	Integrity     *Integrity `protobuf:"bytes,17,opt,name=integrity" json:"integrity,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -245,6 +247,13 @@ func (x *ToolDefinition) GetTags() []string {
 	return nil
 }
 
+func (x *ToolDefinition) GetIntegrity() *Integrity {
+	if x != nil {
+		return x.Integrity
+	}
+	return nil
+}
+
 func (x *ToolDefinition) SetName(v string) {
 	x.Name = &v
 }
@@ -303,6 +312,10 @@ func (x *ToolDefinition) SetMergeStrategy(v ToolDefinition_MergeStrategy) {
 
 func (x *ToolDefinition) SetTags(v []string) {
 	x.Tags = v
+}
+
+func (x *ToolDefinition) SetIntegrity(v *Integrity) {
+	x.Integrity = v
 }
 
 func (x *ToolDefinition) HasName() bool {
@@ -396,6 +409,13 @@ func (x *ToolDefinition) HasMergeStrategy() bool {
 	return x.MergeStrategy != nil
 }
 
+func (x *ToolDefinition) HasIntegrity() bool {
+	if x == nil {
+		return false
+	}
+	return x.Integrity != nil
+}
+
 func (x *ToolDefinition) ClearName() {
 	x.Name = nil
 }
@@ -448,6 +468,10 @@ func (x *ToolDefinition) ClearMergeStrategy() {
 	x.MergeStrategy = nil
 }
 
+func (x *ToolDefinition) ClearIntegrity() {
+	x.Integrity = nil
+}
+
 type ToolDefinition_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
@@ -489,6 +513,8 @@ type ToolDefinition_builder struct {
 	Profiles      []*Profile
 	MergeStrategy *ToolDefinition_MergeStrategy
 	Tags          []string
+	// Integrity check for the tool definition.
+	Integrity *Integrity
 }
 
 func (b0 ToolDefinition_builder) Build() *ToolDefinition {
@@ -510,6 +536,100 @@ func (b0 ToolDefinition_builder) Build() *ToolDefinition {
 	x.Profiles = b.Profiles
 	x.MergeStrategy = b.MergeStrategy
 	x.Tags = b.Tags
+	x.Integrity = b.Integrity
+	return m0
+}
+
+type Integrity struct {
+	state         protoimpl.MessageState `protogen:"hybrid.v1"`
+	Hash          *string                `protobuf:"bytes,1,opt,name=hash" json:"hash,omitempty"`
+	Algorithm     *string                `protobuf:"bytes,2,opt,name=algorithm" json:"algorithm,omitempty"` // e.g. "sha256"
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *Integrity) Reset() {
+	*x = Integrity{}
+	mi := &file_proto_config_v1_tool_proto_msgTypes[1]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Integrity) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Integrity) ProtoMessage() {}
+
+func (x *Integrity) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_config_v1_tool_proto_msgTypes[1]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+func (x *Integrity) GetHash() string {
+	if x != nil && x.Hash != nil {
+		return *x.Hash
+	}
+	return ""
+}
+
+func (x *Integrity) GetAlgorithm() string {
+	if x != nil && x.Algorithm != nil {
+		return *x.Algorithm
+	}
+	return ""
+}
+
+func (x *Integrity) SetHash(v string) {
+	x.Hash = &v
+}
+
+func (x *Integrity) SetAlgorithm(v string) {
+	x.Algorithm = &v
+}
+
+func (x *Integrity) HasHash() bool {
+	if x == nil {
+		return false
+	}
+	return x.Hash != nil
+}
+
+func (x *Integrity) HasAlgorithm() bool {
+	if x == nil {
+		return false
+	}
+	return x.Algorithm != nil
+}
+
+func (x *Integrity) ClearHash() {
+	x.Hash = nil
+}
+
+func (x *Integrity) ClearAlgorithm() {
+	x.Algorithm = nil
+}
+
+type Integrity_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	Hash      *string
+	Algorithm *string
+}
+
+func (b0 Integrity_builder) Build() *Integrity {
+	m0 := &Integrity{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.Hash = b.Hash
+	x.Algorithm = b.Algorithm
 	return m0
 }
 
@@ -517,7 +637,7 @@ var File_proto_config_v1_tool_proto protoreflect.FileDescriptor
 
 const file_proto_config_v1_tool_proto_rawDesc = "" +
 	"\n" +
-	"\x1aproto/config/v1/tool.proto\x12\x10mcpany.config.v1\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1dproto/config/v1/profile.proto\"\xbe\x05\n" +
+	"\x1aproto/config/v1/tool.proto\x12\x10mcpany.config.v1\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1dproto/config/v1/profile.proto\"\xf9\x05\n" +
 	"\x0eToolDefinition\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12;\n" +
 	"\finput_schema\x18\x03 \x01(\v2\x17.google.protobuf.StructR\finput_schema\x12\x1e\n" +
@@ -536,29 +656,35 @@ const file_proto_config_v1_tool_proto_rawDesc = "" +
 	"\adisable\x18\f \x01(\bR\adisable\x125\n" +
 	"\bprofiles\x18\x0e \x03(\v2\x19.mcpany.config.v1.ProfileR\bprofiles\x12V\n" +
 	"\x0emerge_strategy\x18\x0f \x01(\x0e2..mcpany.config.v1.ToolDefinition.MergeStrategyR\x0emerge_strategy\x12\x12\n" +
-	"\x04tags\x18\x10 \x03(\tR\x04tags\"f\n" +
+	"\x04tags\x18\x10 \x03(\tR\x04tags\x129\n" +
+	"\tintegrity\x18\x11 \x01(\v2\x1b.mcpany.config.v1.IntegrityR\tintegrity\"f\n" +
 	"\rMergeStrategy\x12\x1e\n" +
 	"\x1aMERGE_STRATEGY_UNSPECIFIED\x10\x00\x12\x18\n" +
 	"\x14MERGE_STRATEGY_MERGE\x10\x01\x12\x1b\n" +
-	"\x17MERGE_STRATEGY_OVERRIDE\x10\x02B3B\tToolProtoZ&github.com/mcpany/core/proto/config/v1b\beditionsp\xe8\a"
+	"\x17MERGE_STRATEGY_OVERRIDE\x10\x02\"=\n" +
+	"\tIntegrity\x12\x12\n" +
+	"\x04hash\x18\x01 \x01(\tR\x04hash\x12\x1c\n" +
+	"\talgorithm\x18\x02 \x01(\tR\talgorithmB3B\tToolProtoZ&github.com/mcpany/core/proto/config/v1b\beditionsp\xe8\a"
 
 var file_proto_config_v1_tool_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_proto_config_v1_tool_proto_msgTypes = make([]protoimpl.MessageInfo, 1)
+var file_proto_config_v1_tool_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
 var file_proto_config_v1_tool_proto_goTypes = []any{
 	(ToolDefinition_MergeStrategy)(0), // 0: mcpany.config.v1.ToolDefinition.MergeStrategy
 	(*ToolDefinition)(nil),            // 1: mcpany.config.v1.ToolDefinition
-	(*structpb.Struct)(nil),           // 2: google.protobuf.Struct
-	(*Profile)(nil),                   // 3: mcpany.config.v1.Profile
+	(*Integrity)(nil),                 // 2: mcpany.config.v1.Integrity
+	(*structpb.Struct)(nil),           // 3: google.protobuf.Struct
+	(*Profile)(nil),                   // 4: mcpany.config.v1.Profile
 }
 var file_proto_config_v1_tool_proto_depIdxs = []int32{
-	2, // 0: mcpany.config.v1.ToolDefinition.input_schema:type_name -> google.protobuf.Struct
-	3, // 1: mcpany.config.v1.ToolDefinition.profiles:type_name -> mcpany.config.v1.Profile
+	3, // 0: mcpany.config.v1.ToolDefinition.input_schema:type_name -> google.protobuf.Struct
+	4, // 1: mcpany.config.v1.ToolDefinition.profiles:type_name -> mcpany.config.v1.Profile
 	0, // 2: mcpany.config.v1.ToolDefinition.merge_strategy:type_name -> mcpany.config.v1.ToolDefinition.MergeStrategy
-	3, // [3:3] is the sub-list for method output_type
-	3, // [3:3] is the sub-list for method input_type
-	3, // [3:3] is the sub-list for extension type_name
-	3, // [3:3] is the sub-list for extension extendee
-	0, // [0:3] is the sub-list for field type_name
+	2, // 3: mcpany.config.v1.ToolDefinition.integrity:type_name -> mcpany.config.v1.Integrity
+	4, // [4:4] is the sub-list for method output_type
+	4, // [4:4] is the sub-list for method input_type
+	4, // [4:4] is the sub-list for extension type_name
+	4, // [4:4] is the sub-list for extension extendee
+	0, // [0:4] is the sub-list for field type_name
 }
 
 func init() { file_proto_config_v1_tool_proto_init() }
@@ -573,7 +699,7 @@ func file_proto_config_v1_tool_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_proto_config_v1_tool_proto_rawDesc), len(file_proto_config_v1_tool_proto_rawDesc)),
 			NumEnums:      1,
-			NumMessages:   1,
+			NumMessages:   2,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

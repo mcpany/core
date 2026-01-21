@@ -597,6 +597,8 @@ export interface FilesystemUpstreamService {
   allowedPaths: string[];
   /** List of glob patterns for denied paths. Checked after allowed_paths. */
   deniedPaths: string[];
+  /** The policy for following symlinks. */
+  symlinkMode: FilesystemUpstreamService_SymlinkMode;
   os?: OsFs | undefined;
   tmpfs?: MemMapFs | undefined;
   http?: HttpFs | undefined;
@@ -604,6 +606,54 @@ export interface FilesystemUpstreamService {
   gcs?: GcsFs | undefined;
   sftp?: SftpFs | undefined;
   s3?: S3Fs | undefined;
+}
+
+export enum FilesystemUpstreamService_SymlinkMode {
+  SYMLINK_MODE_UNSPECIFIED = 0,
+  /** ALLOW - Allow all symlinks (still checked against root_paths target). */
+  ALLOW = 1,
+  /** DENY - Deny all symlinks. */
+  DENY = 2,
+  /** INTERNAL_ONLY - Allow symlinks only if target is within the same root. */
+  INTERNAL_ONLY = 3,
+  UNRECOGNIZED = -1,
+}
+
+export function filesystemUpstreamService_SymlinkModeFromJSON(object: any): FilesystemUpstreamService_SymlinkMode {
+  switch (object) {
+    case 0:
+    case "SYMLINK_MODE_UNSPECIFIED":
+      return FilesystemUpstreamService_SymlinkMode.SYMLINK_MODE_UNSPECIFIED;
+    case 1:
+    case "ALLOW":
+      return FilesystemUpstreamService_SymlinkMode.ALLOW;
+    case 2:
+    case "DENY":
+      return FilesystemUpstreamService_SymlinkMode.DENY;
+    case 3:
+    case "INTERNAL_ONLY":
+      return FilesystemUpstreamService_SymlinkMode.INTERNAL_ONLY;
+    case -1:
+    case "UNRECOGNIZED":
+    default:
+      return FilesystemUpstreamService_SymlinkMode.UNRECOGNIZED;
+  }
+}
+
+export function filesystemUpstreamService_SymlinkModeToJSON(object: FilesystemUpstreamService_SymlinkMode): string {
+  switch (object) {
+    case FilesystemUpstreamService_SymlinkMode.SYMLINK_MODE_UNSPECIFIED:
+      return "SYMLINK_MODE_UNSPECIFIED";
+    case FilesystemUpstreamService_SymlinkMode.ALLOW:
+      return "ALLOW";
+    case FilesystemUpstreamService_SymlinkMode.DENY:
+      return "DENY";
+    case FilesystemUpstreamService_SymlinkMode.INTERNAL_ONLY:
+      return "INTERNAL_ONLY";
+    case FilesystemUpstreamService_SymlinkMode.UNRECOGNIZED:
+    default:
+      return "UNRECOGNIZED";
+  }
 }
 
 export interface FilesystemUpstreamService_RootPathsEntry {
@@ -4723,6 +4773,7 @@ function createBaseFilesystemUpstreamService(): FilesystemUpstreamService {
     prompts: [],
     allowedPaths: [],
     deniedPaths: [],
+    symlinkMode: 0,
     os: undefined,
     tmpfs: undefined,
     http: undefined,
@@ -4755,6 +4806,9 @@ export const FilesystemUpstreamService: MessageFns<FilesystemUpstreamService> = 
     }
     for (const v of message.deniedPaths) {
       writer.uint32(58).string(v!);
+    }
+    if (message.symlinkMode !== 0) {
+      writer.uint32(64).int32(message.symlinkMode);
     }
     if (message.os !== undefined) {
       OsFs.encode(message.os, writer.uint32(82).fork()).join();
@@ -4844,6 +4898,14 @@ export const FilesystemUpstreamService: MessageFns<FilesystemUpstreamService> = 
           }
 
           message.deniedPaths.push(reader.string());
+          continue;
+        }
+        case 8: {
+          if (tag !== 64) {
+            break;
+          }
+
+          message.symlinkMode = reader.int32() as any;
           continue;
         }
         case 10: {
@@ -4936,6 +4998,7 @@ export const FilesystemUpstreamService: MessageFns<FilesystemUpstreamService> = 
       deniedPaths: globalThis.Array.isArray(object?.denied_paths)
         ? object.denied_paths.map((e: any) => globalThis.String(e))
         : [],
+      symlinkMode: isSet(object.symlink_mode) ? filesystemUpstreamService_SymlinkModeFromJSON(object.symlink_mode) : 0,
       os: isSet(object.os) ? OsFs.fromJSON(object.os) : undefined,
       tmpfs: isSet(object.tmpfs) ? MemMapFs.fromJSON(object.tmpfs) : undefined,
       http: isSet(object.http) ? HttpFs.fromJSON(object.http) : undefined,
@@ -4974,6 +5037,9 @@ export const FilesystemUpstreamService: MessageFns<FilesystemUpstreamService> = 
     }
     if (message.deniedPaths?.length) {
       obj.denied_paths = message.deniedPaths;
+    }
+    if (message.symlinkMode !== 0) {
+      obj.symlink_mode = filesystemUpstreamService_SymlinkModeToJSON(message.symlinkMode);
     }
     if (message.os !== undefined) {
       obj.os = OsFs.toJSON(message.os);
@@ -5019,6 +5085,7 @@ export const FilesystemUpstreamService: MessageFns<FilesystemUpstreamService> = 
     message.prompts = object.prompts?.map((e) => PromptDefinition.fromPartial(e)) || [];
     message.allowedPaths = object.allowedPaths?.map((e) => e) || [];
     message.deniedPaths = object.deniedPaths?.map((e) => e) || [];
+    message.symlinkMode = object.symlinkMode ?? 0;
     message.os = (object.os !== undefined && object.os !== null) ? OsFs.fromPartial(object.os) : undefined;
     message.tmpfs = (object.tmpfs !== undefined && object.tmpfs !== null)
       ? MemMapFs.fromPartial(object.tmpfs)

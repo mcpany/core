@@ -25,9 +25,9 @@ func TestHTTPUpstream_URLConstruction_FragmentBug(t *testing.T) {
 	}{
 		{
 			name:         "endpoint fragment should be preserved",
-			address:      "http://localhost:8080",
+			address:      "http://127.0.0.1:8080",
 			endpointPath: "/api/v1/test#frag",
-			expectedFqn:  "GET http://localhost:8080/api/v1/test#frag",
+			expectedFqn:  "GET http://127.0.0.1:8080/api/v1/test#frag",
 		},
 		{
 			name:         "base fragment should be preserved when endpoint has no fragment",

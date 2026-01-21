@@ -29,7 +29,7 @@ func TestNewMilvusClient_Validation(t *testing.T) {
 
 	t.Run("Missing Collection", func(t *testing.T) {
 		cfg := &configv1.MilvusVectorDB{
-			Address: proto.String("localhost:19530"),
+			Address: proto.String("127.0.0.1:19530"),
 		}
 		c, err := NewMilvusClient(cfg)
 		assert.Error(t, err)
@@ -40,7 +40,7 @@ func TestNewMilvusClient_Validation(t *testing.T) {
 	t.Run("Connection Failure", func(t *testing.T) {
 		// Attempt to connect to a random closed port
 		cfg := &configv1.MilvusVectorDB{
-			Address:        proto.String("localhost:54321"),
+			Address:        proto.String("127.0.0.1:54321"),
 			CollectionName: proto.String("test"),
 		}
 		c, err := NewMilvusClient(cfg)

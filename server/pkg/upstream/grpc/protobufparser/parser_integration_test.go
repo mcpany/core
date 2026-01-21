@@ -26,7 +26,7 @@ func (s *mockWeatherServer) GetWeather(_ context.Context, _ *v1.GetWeatherReques
 
 func setupMockGRPCServer(t *testing.T) (string, func()) {
 	t.Helper()
-	lis, err := net.Listen("tcp", "localhost:0")
+	lis, err := net.Listen("tcp", "127.0.0.1:0")
 	require.NoError(t, err)
 
 	server := grpc.NewServer()
@@ -69,7 +69,7 @@ func TestParseProtoByReflection_Integration(t *testing.T) {
 	})
 
 	t.Run("connection failure", func(t *testing.T) {
-		_, err := ParseProtoByReflection(context.Background(), "localhost:9999") // Invalid address
+		_, err := ParseProtoByReflection(context.Background(), "127.0.0.1:9999") // Invalid address
 		assert.Error(t, err)
 	})
 }

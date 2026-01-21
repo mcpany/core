@@ -36,7 +36,7 @@ func TestInputSchemaRequiredCorruption(t *testing.T) {
 	configJSON := `{
 		"name": "bug-repro-service",
 		"http_service": {
-			"address": "http://localhost",
+			"address": "http://127.0.0.1",
 			"tools": [{
 				"name": "test-op",
 				"call_id": "test-op-call"

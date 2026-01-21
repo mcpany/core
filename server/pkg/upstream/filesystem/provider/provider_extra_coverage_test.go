@@ -29,7 +29,7 @@ func TestNewZipProvider_FileNotFound(t *testing.T) {
 
 func TestNewSftpProvider_InvalidKeyFile(t *testing.T) {
 	config := &configv1.SftpFs{
-		Address:  proto.String("localhost:2222"),
+		Address:  proto.String("127.0.0.1:2222"),
 		Username: proto.String("user"),
 		KeyPath:  proto.String("/path/to/non/existent/key"),
 	}
@@ -55,7 +55,7 @@ func TestSftpProvider_ConfigValidation(t *testing.T) {
 	tmpFile.Close()
 
 	config := &configv1.SftpFs{
-		Address:  proto.String("localhost"), // No port, should add :22
+		Address:  proto.String("127.0.0.1"), // No port, should add :22
 		Username: proto.String("user"),
 		KeyPath:  proto.String(tmpFile.Name()),
 	}
@@ -89,7 +89,7 @@ func TestLocalProvider_ResolveNonExistentPath_EdgeCases(t *testing.T) {
 
 	p := NewLocalProvider(nil, map[string]string{
 		"/": tmpDir,
-	}, nil, nil)
+	}, nil, nil, 0)
 
 	// Case 1: Resolve a path that goes through a valid symlink to a non-existent file
 	path1 := "/link/non_existent_file.txt"

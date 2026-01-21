@@ -152,7 +152,7 @@ upstream_services:
 		return true
 	}, 10*time.Second, 500*time.Millisecond)
 
-	baseURL := fmt.Sprintf("http://localhost:%s", portStr)
+	baseURL := fmt.Sprintf("http://127.0.0.1:%s", portStr)
 
 	require.Eventually(t, func() bool {
 		resp, err := http.Get(fmt.Sprintf("%s/healthz", baseURL))

@@ -74,7 +74,7 @@ func TestStaticResource(t *testing.T) {
 
 	t.Run("ReadNetworkError", func(t *testing.T) {
 		badDef := &configv1.ResourceDefinition{
-			Uri: strPtr("http://localhost:0"), // Invalid port
+			Uri: strPtr("http://127.0.0.1:0"), // Invalid port
 		}
 		badR := NewStaticResource(badDef, serviceID)
 		_, err := badR.Read(context.Background())

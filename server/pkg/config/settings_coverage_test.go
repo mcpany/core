@@ -22,7 +22,7 @@ func ptr[T any](v T) *T {
 func TestSettings_Getters(t *testing.T) {
 	s := &Settings{
 		proto: &configv1.GlobalSettings{
-			DbDsn:    ptr("postgres://user:pass@localhost:5432/db"),
+			DbDsn:    ptr("postgres://user:pass@127.0.0.1:5432/db"),
 			DbDriver: ptr("postgres"),
 			Dlp: &configv1.DLPConfig{
 				Enabled: ptr(true),
@@ -30,7 +30,7 @@ func TestSettings_Getters(t *testing.T) {
 		},
 	}
 
-	assert.Equal(t, "postgres://user:pass@localhost:5432/db", s.GetDbDsn())
+	assert.Equal(t, "postgres://user:pass@127.0.0.1:5432/db", s.GetDbDsn())
 	assert.Equal(t, "postgres", s.GetDbDriver())
 	assert.NotNil(t, s.GetDlp())
 	assert.True(t, s.GetDlp().GetEnabled())

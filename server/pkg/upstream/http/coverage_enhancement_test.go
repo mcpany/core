@@ -33,7 +33,7 @@ func TestCoverageEnhancement_DynamicResourceErrors(t *testing.T) {
 	configJSON := `{
 		"name": "resource-error-service",
 		"http_service": {
-			"address": "http://localhost",
+			"address": "http://127.0.0.1",
 			"tools": [
 				{"name": "op1", "call_id": "op1-call"}
 			],
@@ -88,7 +88,7 @@ func TestCoverageEnhancement_InvalidEndpointPath(t *testing.T) {
 	configJSON := `{
 		"name": "invalid-path-service",
 		"http_service": {
-			"address": "http://localhost",
+			"address": "http://127.0.0.1",
 			"tools": [
 				{"name": "op1", "call_id": "op1-call"}
 			],
@@ -121,7 +121,7 @@ func TestCoverageEnhancement_InvalidQueryEncoding(t *testing.T) {
 	configJSON := `{
 		"name": "invalid-query-service",
 		"http_service": {
-			"address": "http://localhost",
+			"address": "http://127.0.0.1",
 			"tools": [
 				{"name": "op1", "call_id": "op1-call"}
 			],
@@ -160,7 +160,7 @@ func TestCoverageEnhancement_MTLSError(t *testing.T) {
 	configJSON := `{
 		"name": "mtls-error-service",
 		"http_service": {
-			"address": "https://localhost",
+			"address": "https://127.0.0.1",
 			"tools": [
 				{"name": "op1", "call_id": "op1-call"}
 			],
@@ -209,7 +209,7 @@ func TestCoverageEnhancement_URLConstruction(t *testing.T) {
         configJSON := `{
             "name": "url-edge-service",
             "http_service": {
-                "address": "http://localhost/base",
+                "address": "http://127.0.0.1/base",
                 "tools": [
                     {"name": "op1", "call_id": "op1-call"}
                 ],
@@ -249,7 +249,7 @@ func TestCoverageEnhancement_ExportPolicy(t *testing.T) {
 	configJSON := `{
 		"name": "export-policy-service",
 		"http_service": {
-			"address": "http://localhost",
+			"address": "http://127.0.0.1",
 			"tools": [
 				{"name": "public-tool", "call_id": "c1"},
                 {"name": "private-tool", "call_id": "c2"}
@@ -285,7 +285,7 @@ func TestCoverageEnhancement_InvalidCallPolicy(t *testing.T) {
 	configJSON := `{
 		"name": "invalid-policy-service",
 		"http_service": {
-			"address": "http://localhost",
+			"address": "http://127.0.0.1",
 			"tools": [
 				{"name": "op1", "call_id": "c1"}
 			],
@@ -323,7 +323,7 @@ func TestCoverageEnhancement_DynamicResource_EmptyToolName(t *testing.T) {
 	configJSON := `{
 		"name": "empty-tool-name-service",
 		"http_service": {
-			"address": "http://localhost",
+			"address": "http://127.0.0.1",
 			"tools": [
 				{"call_id": "c1"}
 			],
@@ -361,7 +361,7 @@ func TestCoverageEnhancement_DynamicResource_NoCall(t *testing.T) {
 	configJSON := `{
 		"name": "no-call-resource-service",
 		"http_service": {
-			"address": "http://localhost",
+			"address": "http://127.0.0.1",
 			"tools": [
 				{"name": "op1", "call_id": "c1"}
 			],
@@ -402,7 +402,7 @@ func TestCoverageEnhancement_QueryFlags(t *testing.T) {
 	configJSON := `{
 		"name": "query-flag-service",
 		"http_service": {
-			"address": "http://localhost?f",
+			"address": "http://127.0.0.1?f",
 			"tools": [
 				{"name": "op1", "call_id": "c1"},
                 {"name": "op2", "call_id": "c2"}
@@ -458,7 +458,7 @@ func TestCoverageEnhancement_InputSchemaOverlap(t *testing.T) {
 	configJSON := `{
 		"name": "overlap-service",
 		"http_service": {
-			"address": "http://localhost",
+			"address": "http://127.0.0.1",
 			"tools": [
 				{"name": "op1", "call_id": "c1"}
 			],
@@ -535,7 +535,7 @@ func TestCoverageEnhancement_InputSchema_InvalidPropertiesType(t *testing.T) {
 	configJSON := `{
 		"name": "invalid-props-service",
 		"http_service": {
-			"address": "http://localhost",
+			"address": "http://127.0.0.1",
 			"tools": [
 				{"name": "op1", "call_id": "c1"}
 			],
@@ -643,7 +643,7 @@ func TestCoverageEnhancement_MTLSSuccess(t *testing.T) {
 	configJSON := `{
 		"name": "mtls-success-service",
 		"http_service": {
-			"address": "https://localhost",
+			"address": "https://127.0.0.1",
 			"tools": [
 				{"name": "op1", "call_id": "op1-call"}
 			],
@@ -682,7 +682,7 @@ func TestCoverageEnhancement_AutoDiscovery(t *testing.T) {
 		"name": "autodisc-service",
         "auto_discover_tool": true,
 		"http_service": {
-			"address": "http://localhost",
+			"address": "http://127.0.0.1",
 			"tools": [
 				{"name": "explicit-tool", "call_id": "explicit-call"}
 			],
@@ -727,7 +727,7 @@ func TestCoverageEnhancement_InputSchema_EmptyStruct(t *testing.T) {
 	configJSON := `{
 		"name": "empty-schema-service",
 		"http_service": {
-			"address": "http://localhost",
+			"address": "http://127.0.0.1",
 			"tools": [
 				{"name": "op1", "call_id": "c1"}
 			],

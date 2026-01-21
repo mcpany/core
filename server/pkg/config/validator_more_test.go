@@ -626,7 +626,7 @@ func TestValidate_MoreServices(t *testing.T) {
 						Name: proto.String("grpc-schema-error"),
 						ServiceConfig: &configv1.UpstreamServiceConfig_GrpcService{
 							GrpcService: &configv1.GrpcUpstreamService{
-								Address: proto.String("localhost:50051"),
+								Address: proto.String("127.0.0.1:50051"),
 								Calls: map[string]*configv1.GrpcCallDefinition{
 									"bad-call": {
 										InputSchema: &structpb.Struct{
@@ -753,7 +753,7 @@ func TestValidate_MoreServices(t *testing.T) {
 						Name: proto.String("grpc-output-error"),
 						ServiceConfig: &configv1.UpstreamServiceConfig_GrpcService{
 							GrpcService: &configv1.GrpcUpstreamService{
-								Address: proto.String("localhost:50051"),
+								Address: proto.String("127.0.0.1:50051"),
 								Calls: map[string]*configv1.GrpcCallDefinition{
 									"bad-output": {
 										OutputSchema: &structpb.Struct{

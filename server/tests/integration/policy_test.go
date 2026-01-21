@@ -36,10 +36,11 @@ func StartStdioServer(t *testing.T, configFile string) (*MCPClient, func()) {
 
 	// Create command
 	cmd := exec.Command(serverBin, "run", "--stdio", "--config-path", configFile, "--db-path", dbPath, "--metrics-listen-address", LoopbackIP+":0") //nolint:gosec // Test helper
-	cmd.Env = append(os.Environ(), "MCPANY_DANGEROUS_ALLOW_LOCAL_IPS=true")
-	// We need to set pipe before starting
-	cmd.Env = os.Environ()
-	cmd.Env = append(cmd.Env, "MCPANY_ENABLE_FILE_CONFIG=true")
+	cmd.Env = append(os.Environ(),
+		"MCPANY_DANGEROUS_ALLOW_LOCAL_IPS=true",
+		"MCPANY_ENABLE_FILE_CONFIG=true",
+		"MCPANY_ALLOW_LOOPBACK_RESOURCES=true",
+	)
 	stdin, err := cmd.StdinPipe()
 	require.NoError(t, err)
 	stdout, err := cmd.StdoutPipe()

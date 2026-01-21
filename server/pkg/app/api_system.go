@@ -38,8 +38,8 @@ func (a *Application) handleSystemStatus(w http.ResponseWriter, _ *http.Request)
 	resp := SystemStatusResponse{
 		UptimeSeconds:     uptime,
 		ActiveConnections: activeConns,
-		BoundHTTPPort:     a.BoundHTTPPort,
-		BoundGRPCPort:     a.BoundGRPCPort,
+		BoundHTTPPort:     int(a.BoundHTTPPort.Load()),
+		BoundGRPCPort:     int(a.BoundGRPCPort.Load()),
 		Version:           appconsts.Version,
 		SecurityWarnings:  warnings,
 	}

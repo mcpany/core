@@ -175,10 +175,10 @@ func TestLinter_Run_OtherInsecureHTTP(t *testing.T) {
 				},
 			},
 			{
-				Name: ptr("safe-localhost"),
+				Name: ptr("safe-127.0.0.1"),
 				ServiceConfig: &configv1.UpstreamServiceConfig_HttpService{
 					HttpService: &configv1.HttpUpstreamService{
-						Address: ptr("http://localhost:8080"),
+						Address: ptr("http://127.0.0.1:8080"),
 					},
 				},
 			},

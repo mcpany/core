@@ -22,7 +22,6 @@ func TestUpstreamService_Twilio(t *testing.T) {
 	defer cancel()
 
 	t.Log("INFO: Starting E2E Test Scenario for Twilio Server...")
-	t.Parallel()
 
 	// --- Mock Twilio API Server ---
 	mockServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -43,7 +42,9 @@ func TestUpstreamService_Twilio(t *testing.T) {
 	// --- 1. Start MCPANY Server ---
 	t.Setenv("TWILIO_ACCOUNT_SID", "test_account_sid")
 	t.Setenv("TWILIO_AUTH_TOKEN", "test_auth_token")
-	mcpAnyTestServerInfo := integration.StartMCPANYServer(t, "E2ETwilioServerTest", "--config-path", "../../../../examples/popular_services/twilio", "--set", "upstream[0].http.address="+mockServer.URL)
+	t.Setenv("TWILIO_API_KEY", "test_key")
+	t.Setenv("TWILIO_API_SECRET", "test_secret")
+	mcpAnyTestServerInfo := integration.StartMCPANYServer(t, "E2ETwilioServerTest", "--config-path", "../../../../examples/popular_services/twilio", "--set", "upstream_services[0].mcp_service.http_connection.http_address="+mockServer.URL)
 	defer mcpAnyTestServerInfo.CleanupFunc()
 
 	// --- 2. Call Tool via MCPANY ---

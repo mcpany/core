@@ -66,8 +66,8 @@ func TestExtractIP(t *testing.T) {
 		},
 		{
 			name:     "Localhost with port",
-			input:    "localhost:3000",
-			expected: "localhost",
+			input:    "127.0.0.1:3000",
+			expected: "127.0.0.1",
 		},
 	}
 

@@ -15,7 +15,7 @@ import (
 )
 
 func TestStore_SSRF_Protection(t *testing.T) {
-	// This test confirms that the SSRF protection blocks access to localhost.
+	// This test confirms that the SSRF protection blocks access to 127.0.0.1.
 	// It relies on the default configuration of the secure http client.
 
 	// Start a local HTTP server
@@ -31,7 +31,7 @@ func TestStore_SSRF_Protection(t *testing.T) {
 	fs := afero.NewMemMapFs()
 	store := NewFileStore(fs, []string{configURL})
 
-	// Attempt to load from localhost
+	// Attempt to load from 127.0.0.1
 	_, err := store.Load(context.Background())
 
 	// Assert that we get an error due to SSRF protection

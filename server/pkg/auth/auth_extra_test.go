@@ -55,7 +55,7 @@ func TestValidateAuthentication_Extended(t *testing.T) {
 		config := &configv1.Authentication{
 			AuthMethod: &configv1.Authentication_Oauth2{
 				Oauth2: &configv1.OAuth2Auth{
-					IssuerUrl: proto.String("http://localhost:12345"), // Unlikely to exist
+					IssuerUrl: proto.String("http://127.0.0.1:12345"), // Unlikely to exist
 					Audience:  proto.String("aud"),
 				},
 			},
@@ -134,7 +134,7 @@ func TestValidateAuthentication_Extended(t *testing.T) {
 		config := &configv1.Authentication{
 			AuthMethod: &configv1.Authentication_Oidc{
 				Oidc: &configv1.OIDCAuth{
-					Issuer: proto.String("http://localhost:54321"),
+					Issuer: proto.String("http://127.0.0.1:54321"),
 				},
 			},
 		}

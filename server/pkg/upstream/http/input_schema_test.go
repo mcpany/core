@@ -28,7 +28,7 @@ func TestHTTPUpstream_InputSchema_BugRepro(t *testing.T) {
 	configJSON := `{
 		"name": "schema-bug-service",
 		"http_service": {
-			"address": "http://localhost",
+			"address": "http://127.0.0.1",
 			"tools": [{"name": "test-op", "call_id": "test-op-call"}],
 			"calls": {
 				"test-op-call": {

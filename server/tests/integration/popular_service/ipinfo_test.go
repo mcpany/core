@@ -27,7 +27,6 @@ func TestIPInfoService(t *testing.T) {
 	defer cancel()
 
 	t.Log("INFO: Starting E2E Test Scenario for ipinfo.io Service...")
-	t.Parallel()
 
 	// --- 1. Start MCPANY Server ---
 	mcpAnyTestServerInfo := integration.StartMCPANYServer(t, "E2EIPInfoServiceTest", "--config-path", "../../../examples/popular_services/ipinfo.io")

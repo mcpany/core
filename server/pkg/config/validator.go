@@ -306,6 +306,26 @@ func validateSecretValue(secret *configv1.SecretValue) error {
 			return fmt.Errorf("remote secret has invalid http_url scheme: %s", u.Scheme)
 		}
 	}
+
+	if secret.GetValidationRegex() != "" {
+		re, err := regexp.Compile(secret.GetValidationRegex())
+		if err != nil {
+			return fmt.Errorf("invalid validation regex %q: %w", secret.GetValidationRegex(), err)
+		}
+
+		var valueToValidate string
+		switch secret.WhichValue() {
+		case configv1.SecretValue_PlainText_case:
+			valueToValidate = secret.GetPlainText()
+		case configv1.SecretValue_EnvironmentVariable_case:
+			valueToValidate = os.Getenv(secret.GetEnvironmentVariable())
+		}
+
+		if valueToValidate != "" && !re.MatchString(valueToValidate) {
+			return fmt.Errorf("secret value does not match validation regex %q", secret.GetValidationRegex())
+		}
+	}
+
 	return nil
 }
 

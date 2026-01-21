@@ -49,7 +49,7 @@ func (m *MockReader) Close() error {
 func TestPublish(t *testing.T) {
 	mockWriter := new(MockWriter)
 	config := &bus.KafkaBus{}
-	config.SetBrokers([]string{"localhost:9092"})
+	config.SetBrokers([]string{"127.0.0.1:9092"})
 
 	b, err := New[string](config)
 	assert.NoError(t, err)
@@ -75,7 +75,7 @@ func TestSubscribe(t *testing.T) {
 	mockReader := new(MockReader)
 
 	config := &bus.KafkaBus{}
-	config.SetBrokers([]string{"localhost:9092"})
+	config.SetBrokers([]string{"127.0.0.1:9092"})
 
 	b, err := New[string](config)
 	assert.NoError(t, err)
@@ -124,7 +124,7 @@ func TestSubscribeOnce(t *testing.T) {
 	mockReader := new(MockReader)
 
 	config := &bus.KafkaBus{}
-	config.SetBrokers([]string{"localhost:9092"})
+	config.SetBrokers([]string{"127.0.0.1:9092"})
 
 	b, err := New[string](config)
 	assert.NoError(t, err)
@@ -182,7 +182,7 @@ func TestNew_Errors(t *testing.T) {
 func TestClose(t *testing.T) {
 	mockWriter := new(MockWriter)
 	config := &bus.KafkaBus{}
-	config.SetBrokers([]string{"localhost:9092"})
+	config.SetBrokers([]string{"127.0.0.1:9092"})
 
 	b, err := New[string](config)
 	assert.NoError(t, err)
@@ -198,7 +198,7 @@ func TestClose(t *testing.T) {
 func TestPublish_Error(t *testing.T) {
 	mockWriter := new(MockWriter)
 	config := &bus.KafkaBus{}
-	config.SetBrokers([]string{"localhost:9092"})
+	config.SetBrokers([]string{"127.0.0.1:9092"})
 
 	b, err := New[string](config)
 	assert.NoError(t, err)
@@ -221,7 +221,7 @@ func TestPublish_Error(t *testing.T) {
 
 func TestSubscribe_HandlerNil(t *testing.T) {
 	config := &bus.KafkaBus{}
-	config.SetBrokers([]string{"localhost:9092"})
+	config.SetBrokers([]string{"127.0.0.1:9092"})
 	b, err := New[string](config)
 	assert.NoError(t, err)
 
@@ -232,7 +232,7 @@ func TestSubscribe_HandlerNil(t *testing.T) {
 
 func TestSubscribeOnce_HandlerNil(t *testing.T) {
 	config := &bus.KafkaBus{}
-	config.SetBrokers([]string{"localhost:9092"})
+	config.SetBrokers([]string{"127.0.0.1:9092"})
 	b, err := New[string](config)
 	assert.NoError(t, err)
 

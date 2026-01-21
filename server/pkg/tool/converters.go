@@ -8,9 +8,9 @@ import (
 	"strings"
 
 	"github.com/google/jsonschema-go/jsonschema"
-	"github.com/mcpany/core/server/pkg/upstream/grpc/protobufparser"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	pb "github.com/mcpany/core/proto/mcp_router/v1"
+	"github.com/mcpany/core/server/pkg/upstream/grpc/protobufparser"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/structpb"
@@ -146,7 +146,7 @@ func ConvertToolDefinitionToProto(toolDef *configv1.ToolDefinition, inputSchema,
 		}
 	}
 
-	pbTool := pb.Tool_builder{
+	builder := pb.Tool_builder{
 		Name:        proto.String(toolDef.GetName()),
 		Description: proto.String(toolDef.GetDescription()),
 		DisplayName: proto.String(toolDef.GetTitle()),
@@ -154,9 +154,16 @@ func ConvertToolDefinitionToProto(toolDef *configv1.ToolDefinition, inputSchema,
 		Annotations: annotationsBuilder.Build(),
 		Tags:        toolDef.GetTags(),
 		Profiles:    profiles,
-	}.Build()
+	}
 
-	return pbTool, nil
+	if toolDef.GetIntegrity() != nil {
+		builder.Integrity = &pb.ToolIntegrity{
+			Hash:      proto.String(toolDef.GetIntegrity().GetHash()),
+			Algorithm: proto.String(toolDef.GetIntegrity().GetAlgorithm()),
+		}
+	}
+
+	return builder.Build(), nil
 }
 
 // GetJSONSchemaForScalarType maps a protobuf scalar type (e.g., "TYPE_STRING",
@@ -219,7 +226,11 @@ func ConvertProtoToMCPTool(pbTool *pb.Tool) (*mcp.Tool, error) {
 			mcpTool.InputSchema = annotations.GetInputSchema().AsMap()
 		}
 		if annotations.GetOutputSchema() != nil {
-			mcpTool.OutputSchema = annotations.GetOutputSchema().AsMap()
+			schema := annotations.GetOutputSchema().AsMap()
+			// Only include output schema if it's an object, as the MCP SDK might panic otherwise
+			if t, ok := schema["type"].(string); ok && t == "object" {
+				mcpTool.OutputSchema = schema
+			}
 		}
 	}
 

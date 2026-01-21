@@ -142,12 +142,18 @@ func newRootCmd() *cobra.Command { //nolint:gocyclo // Main entry point, expecte
 			defer cancel()
 
 			go func() {
-				// Wait for an interrupt signal
+				// Wait for an interrupt signal or context cancellation
 				sigChan := make(chan os.Signal, 1)
 				signal.Notify(sigChan, syscall.SIGINT, syscall.SIGTERM)
-				<-sigChan
-				log.Info("Received interrupt signal, shutting down...")
-				cancel()
+				defer signal.Stop(sigChan)
+
+				select {
+				case <-sigChan:
+					log.Info("Received interrupt signal, shutting down...")
+					cancel()
+				case <-ctx.Done():
+					// Context cancelled, exit goroutine
+				}
 			}()
 
 			// Start file watcher

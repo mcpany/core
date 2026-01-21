@@ -190,7 +190,7 @@ func mustMarshal(t *testing.T, v interface{}) []byte {
 
 func TestNewOAuth2Authenticator_Error(t *testing.T) {
 	config := &OAuth2Config{
-		IssuerURL: "http://localhost:12345",
+		IssuerURL: "http://127.0.0.1:12345",
 	}
 	_, err := NewOAuth2Authenticator(context.Background(), config)
 	assert.Error(t, err)

@@ -87,7 +87,14 @@ func (e *yamlEngine) Unmarshal(b []byte, v proto.Message) error {
 
 	// Apply environment variable overrides: MCPANY__SECTION__KEY -> section.key
 	// This allows overriding any configuration value using environment variables.
-	applyEnvVars(yamlMap, v)
+	applyEnvVarsFromSlice(yamlMap, os.Environ(), v)
+
+	// Apply --set overrides: section.key=value or section[idx].key=value
+	applySetOverrides(yamlMap, GlobalSettings().SetValues(), v)
+
+	if v != nil {
+		fixTypes(yamlMap, v.ProtoReflect().Descriptor())
+	}
 
 	// Helper to fix log level if it was set via env vars or file without prefix
 	if gs, ok := yamlMap["global_settings"].(map[string]interface{}); ok {
@@ -562,15 +569,6 @@ func isURL(path string) bool {
 	return strings.HasPrefix(strings.ToLower(path), "http://") || strings.HasPrefix(strings.ToLower(path), "https://")
 }
 
-// applyEnvVars iterates over environment variables and applies those starting with "MCPANY__"
-// to the configuration map. It supports nested structure via "__" separator.
-// Example: MCPANY__GLOBAL_SETTINGS__MCP_LISTEN_ADDRESS -> global_settings.mcp_listen_address.
-func applyEnvVars(m map[string]interface{}, v proto.Message) {
-	applyEnvVarsFromSlice(m, os.Environ(), v)
-	if v != nil {
-		fixTypes(m, v.ProtoReflect().Descriptor())
-	}
-}
 
 // applyEnvVarsFromSlice is the logic for applyEnvVars, separated for testing.
 func applyEnvVarsFromSlice(m map[string]interface{}, environ []string, v proto.Message) {
@@ -596,34 +594,114 @@ func applyEnvVarsFromSlice(m map[string]interface{}, environ []string, v proto.M
 		trimmedKey := strings.TrimPrefix(key, "MCPANY__")
 		path := strings.Split(trimmedKey, "__")
 
-		// Walk the map and create nested maps as needed
-		current := m
-		for i, originalSection := range path {
-			section := strings.ToLower(originalSection) // Normalize to snake_case/lowercase
-			if i == len(path)-1 {
-				// We are at the leaf, set the value.
-				// We overwrite whatever is there.
-				resolvedValue := resolveEnvValue(v, path, value)
-				current[section] = resolvedValue
-			} else {
-				// We need to go deeper
-				if next, ok := current[section].(map[string]interface{}); ok {
-					current = next
-				} else if slice, ok := current[section].([]interface{}); ok {
-					// It is a slice, convert to map keyed by index to support merging
-					next := make(map[string]interface{})
-					for idx, val := range slice {
-						next[strconv.Itoa(idx)] = val
-					}
-					current[section] = next
-					current = next
-				} else {
-					// Create new map if it doesn't exist or isn't a map
-					next := make(map[string]interface{})
-					current[section] = next
-					current = next
+		applyPathToMap(m, path, value, v)
+	}
+}
+
+// applySetOverrides applies configuration overrides from the --set flag.
+// It supports dot notation and bracket notation for indices.
+// Example: upstream_services[0].http_service.address=http://localhost:8080
+func applySetOverrides(m map[string]interface{}, setValues []string, v proto.Message) {
+	for _, sv := range setValues {
+		parts := strings.SplitN(sv, "=", 2)
+		if len(parts) != 2 {
+			continue
+		}
+		key := parts[0]
+		value := parts[1]
+
+		// Normalize key: replace [idx] with .idx.
+		key = strings.ReplaceAll(key, "[", ".")
+		key = strings.ReplaceAll(key, "]", ".")
+		key = strings.ReplaceAll(key, "..", ".")
+		key = strings.Trim(key, ".")
+		path := strings.Split(key, ".")
+
+		applyPathToMap(m, path, value, v)
+	}
+}
+
+// applyPathToMap walks the map and sets the value at the given path.
+func applyPathToMap(m map[string]interface{}, path []string, value string, v proto.Message) {
+	if len(path) > 0 && path[0] == "upstream" {
+		path[0] = "upstream_services"
+	}
+	current := m
+	for i, originalSection := range path {
+		section := strings.ToLower(originalSection) // Normalize to snake_case/lowercase
+
+		// Clear oneof siblings if this field is part of a oneof.
+		// This prevents "oneof is already set" errors when overriding.
+		if v != nil {
+			md := getDescriptorAtSubpath(v.ProtoReflect().Descriptor(), path[:i])
+			if md != nil {
+				if fd := findField(md, section); fd != nil {
+					clearOneofSiblings(current, fd)
 				}
 			}
+		}
+
+		if i == len(path)-1 {
+			// We are at the leaf, set the value.
+			// We overwrite whatever is there.
+			resolvedValue := resolveEnvValue(v, path, value)
+			current[section] = resolvedValue
+		} else {
+			// We need to go deeper
+			if next, ok := current[section].(map[string]interface{}); ok {
+				current = next
+			} else if slice, ok := current[section].([]interface{}); ok {
+				// It is a slice, convert to map keyed by index to support merging
+				next := make(map[string]interface{})
+				for idx, val := range slice {
+					next[strconv.Itoa(idx)] = val
+				}
+				current[section] = next
+				current = next
+			} else {
+				// Create new map if it doesn't exist or isn't a map
+				next := make(map[string]interface{})
+				current[section] = next
+				current = next
+			}
+		}
+	}
+}
+
+func getDescriptorAtSubpath(md protoreflect.MessageDescriptor, path []string) protoreflect.MessageDescriptor {
+	current := md
+	for _, part := range path {
+		if _, err := strconv.Atoi(part); err == nil {
+			// If part is a number, we assume it's a list index.
+			// The current 'md' should already be the message type of the list elements.
+			continue
+		}
+		fd := findField(current, part)
+		if fd == nil {
+			return nil
+		}
+		if fd.IsList() || fd.Kind() == protoreflect.MessageKind {
+			if fd.Kind() == protoreflect.MessageKind {
+				current = fd.Message()
+			}
+			continue
+		}
+		return nil
+	}
+	return current
+}
+
+func clearOneofSiblings(m map[string]interface{}, fd protoreflect.FieldDescriptor) {
+	oo := fd.ContainingOneof()
+	if oo == nil {
+		return
+	}
+	for i := 0; i < oo.Fields().Len(); i++ {
+		sibling := oo.Fields().Get(i)
+		if sibling.FullName() != fd.FullName() {
+			fmt.Fprintf(os.Stderr, "DEBUG: Clearing oneof sibling %s (Name: %s, JSONName: %s) because %s is being set\n", sibling.FullName(), sibling.Name(), sibling.JSONName(), fd.Name())
+			delete(m, string(sibling.Name()))
+			delete(m, sibling.JSONName())
 		}
 	}
 }

@@ -22,7 +22,7 @@ func TestCheckService_HTTP_Unreachable(t *testing.T) {
 		Name: proto.String("test-service"),
 		ServiceConfig: &configv1.UpstreamServiceConfig_HttpService{
 			HttpService: &configv1.HttpUpstreamService{
-				Address: proto.String("http://localhost:54321"),
+				Address: proto.String("http://127.0.0.1:54321"),
 			},
 		},
 	}

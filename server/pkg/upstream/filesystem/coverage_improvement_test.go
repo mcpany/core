@@ -69,7 +69,7 @@ func TestCreateProvider_Coverage(t *testing.T) {
 			},
 		},
 	}
-	// NewSftpProvider calls Dial, which should fail for localhost if no ssh server or creds wrong
+	// NewSftpProvider calls Dial, which should fail for 127.0.0.1 if no ssh server or creds wrong
 	// Use invalid port/host to be sure.
 	configSftp.GetFilesystemService().GetSftp().Address = proto.String("invalid.host.local:2222")
 	_, _, _, err = u.Register(context.Background(), configSftp, tm, nil, nil, false)
@@ -397,7 +397,7 @@ func TestTools_ErrorPaths(t *testing.T) {
 		configGrpc := &configv1.UpstreamServiceConfig{
 			Name: proto.String("test_grpc"),
 			ServiceConfig: &configv1.UpstreamServiceConfig_GrpcService{
-				GrpcService: &configv1.GrpcUpstreamService{Address: proto.String("localhost:50051")},
+				GrpcService: &configv1.GrpcUpstreamService{Address: proto.String("127.0.0.1:50051")},
 			},
 		}
 		_, _, _, err := u.Register(context.Background(), configGrpc, tm, nil, nil, false)

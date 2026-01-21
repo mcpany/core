@@ -795,7 +795,7 @@ func TestUpstream_Register_Coverage(t *testing.T) {
 		Name: proto.String("test-http"),
 		McpService: configv1.McpUpstreamService_builder{
 			HttpConnection: configv1.McpStreamableHttpConnection_builder{
-				HttpAddress: proto.String("http://localhost"),
+				HttpAddress: proto.String("http://127.0.0.1"),
 			}.Build(),
 		}.Build(),
 	}

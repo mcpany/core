@@ -338,7 +338,7 @@ func TestRateLimitMiddleware(t *testing.T) {
 			Burst:             10,
 			Storage:           storageRedis,
 			Redis: busproto.RedisBus_builder{
-				Address: proto.String("localhost:6379"),
+				Address: proto.String("127.0.0.1:6379"),
 			}.Build(),
 		}.Build()
 
@@ -413,7 +413,7 @@ func TestRateLimitMiddleware(t *testing.T) {
 			Burst:             10,
 			Storage:           storageRedis,
 			Redis: busproto.RedisBus_builder{
-				Address: proto.String("localhost:6379"),
+				Address: proto.String("127.0.0.1:6379"),
 			}.Build(),
 		}.Build()
 

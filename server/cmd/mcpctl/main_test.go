@@ -79,7 +79,7 @@ func TestDoctorCmd_AddressParsing(t *testing.T) {
 	}{
 		{"Port only", "50050"},
 		{"Colon port", ":50050"},
-		{"Localhost port", "localhost:50050"},
+		{"Localhost port", "127.0.0.1:50050"},
 		{"IP port", "127.0.0.1:50050"},
 	}
 

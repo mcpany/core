@@ -77,8 +77,8 @@ function OAuthCallbackContent() {
                 if (window.opener) {
                     setTimeout(() => window.close(), 1500);
                 } else {
-                    // Redirect to tools or services?
-                    setTimeout(() => router.push("/services"), 1500);
+                    // Redirect back to the originating page
+                    setTimeout(() => router.push(context.returnPath || "/services"), 1500);
                 }
 
             } catch (e: any) {

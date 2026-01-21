@@ -15,7 +15,7 @@ import (
 func TestReproduction_SilentFailure_BadConfig(t *testing.T) {
 	fs := afero.NewMemMapFs()
 	// Create a malformed YAML file
-	_ = afero.WriteFile(fs, "bad.yaml", []byte("upstream_services:\n  - name: test\n    http_service:\n      address: http://localhost\n  indentation_error"), 0644)
+	_ = afero.WriteFile(fs, "bad.yaml", []byte("upstream_services:\n  - name: test\n    http_service:\n      address: http://127.0.0.1\n  indentation_error"), 0644)
 
 	// Use the lenient store, as used in server.go
 	store := NewFileStoreWithSkipErrors(fs, []string{"bad.yaml"})
@@ -66,7 +66,7 @@ func TestReproduction_Typo_UnknownField_HelpfulError(t *testing.T) {
 upstream_services:
   - name: "my-service"
     http_service:
-      target_address: "http://localhost:8080"
+      target_address: "http://127.0.0.1:8080"
 `
 	_ = afero.WriteFile(fs, "typo_config.yaml", []byte(typoConfig), 0644)
 

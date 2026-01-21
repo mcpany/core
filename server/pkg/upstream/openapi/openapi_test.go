@@ -333,7 +333,7 @@ func TestOpenAPIUpstream_Register_Cache(t *testing.T) {
 	config := configv1.UpstreamServiceConfig_builder{
 		Name: proto.String("test-service"),
 		OpenapiService: configv1.OpenapiUpstreamService_builder{
-			Address:     proto.String("http://localhost"),
+			Address:     proto.String("http://127.0.0.1"),
 			SpecContent: proto.String(sampleOpenAPISpecJSONForCacheTest),
 			Tools: []*configv1.ToolDefinition{
 				configv1.ToolDefinition_builder{

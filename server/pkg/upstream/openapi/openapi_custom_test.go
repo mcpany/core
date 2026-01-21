@@ -49,7 +49,7 @@ paths:
 				SpecSource: &configv1.OpenapiUpstreamService_SpecContent{
 					SpecContent: specContent,
 				},
-				Address: proto.String("http://localhost"),
+				Address: proto.String("http://127.0.0.1"),
 			},
 		},
 	}
@@ -154,7 +154,7 @@ paths:
 				SpecSource: &configv1.OpenapiUpstreamService_SpecContent{
 					SpecContent: specContent,
 				},
-				Address: proto.String("http://localhost"),
+				Address: proto.String("http://127.0.0.1"),
 				Prompts: []*configv1.PromptDefinition{
 					{
 						Name: proto.String("test-prompt"),

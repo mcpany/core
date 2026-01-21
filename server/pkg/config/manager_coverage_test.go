@@ -14,7 +14,7 @@ import (
 
 func TestUnmarshalServices_JSON(t *testing.T) {
 	m := NewUpstreamServiceManager(nil)
-	data := []byte(`{"services": [{"name": "s1", "http_service": {"address": "http://localhost"}}]}`)
+	data := []byte(`{"services": [{"name": "s1", "http_service": {"address": "http://127.0.0.1"}}]}`)
 	var services []*configv1.UpstreamServiceConfig
 	err := m.unmarshalServices(data, &services, "application/json")
 	require.NoError(t, err)
@@ -28,7 +28,7 @@ func TestUnmarshalServices_YAML(t *testing.T) {
 services:
   - name: s1
     http_service:
-      address: http://localhost
+      address: http://127.0.0.1
 `)
 	var services []*configv1.UpstreamServiceConfig
 	err := m.unmarshalServices(data, &services, "application/yaml")
@@ -44,7 +44,7 @@ func TestUnmarshalServices_ProtoText(t *testing.T) {
 services {
   name: "s1"
   http_service {
-    address: "http://localhost"
+    address: "http://127.0.0.1"
   }
 }
 `)
@@ -57,7 +57,7 @@ services {
 
 func TestUnmarshalServices_SingleService_JSON(t *testing.T) {
 	m := NewUpstreamServiceManager(nil)
-	data := []byte(`{"name": "s1", "http_service": {"address": "http://localhost"}}`)
+	data := []byte(`{"name": "s1", "http_service": {"address": "http://127.0.0.1"}}`)
 	var services []*configv1.UpstreamServiceConfig
 	err := m.unmarshalServices(data, &services, "application/json")
 	require.NoError(t, err)
