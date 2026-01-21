@@ -216,7 +216,7 @@ func TestHTTPTool_Execute_Errors(t *testing.T) {
 		errorFactory := func(_ context.Context) (*client.HTTPClientWrapper, error) {
 			return nil, errors.New("pool factory error")
 		}
-		p, err := pool.New(errorFactory, 0, 1, 0, true)
+		p, err := pool.New(errorFactory, 0, 1, 1, 0, true)
 		require.NoError(t, err)
 		poolManager.Register("test-service", p)
 
